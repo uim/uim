@@ -18,8 +18,11 @@ libuim_la_SOURCES = uim.c uim-scm.c uim-util.c uim-func.c uim-key.c \
 		intl.c \
 		uim-ipc.c \
 		getpeereid.c \
-		setenv.c \
 		plugin.c
+
+if NEED_SETENV_C
+libuim_la_SOURCES += setenv.c
+endif
 
 if COMPAT_TABLE
 libuim_la_SOURCES += uim-table.c
