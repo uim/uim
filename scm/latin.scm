@@ -30,42 +30,36 @@
 
 ;; Charset of this file is UTF-8
 
-(require "util.scm")
-(require "rk.scm")
 (require "generic.scm")
 
-(define-key latin-backspace-key? '("backspace" "<Control>h"))
-(define-key latin-commit-key? "Return")
-
 (define latin-compose-rule '(
-((("\\" "\\"))("\\"))
-((("\\" " " " "))(" "))
-((("\\" " " "'"))("'"))
-((("\\" " " "("))("˘"))
-((("\\" " " "-"))("~"))
-((("\\" " " "<"))("ˇ"))
-((("\\" " " ">"))("^"))
-((("\\" " " "^"))("^"))
-((("\\" " " "`"))("`"))
-((("\\" " " "~"))("~"))
-((("\\" "!" "!"))("¡"))
-((("\\" "!" "P"))("¶"))
-((("\\" "!" "S"))("§"))
-((("\\" "!" "p"))("¶"))
-((("\\" "!" "s"))("§"))
-((("\\" "\"" "\""))("¨"))
-((("\\" "\"" "A"))("Ä"))
-((("\\" "\"" "E"))("Ë"))
-((("\\" "\"" "I"))("Ï"))
-((("\\" "\"" "O"))("Ö"))
-((("\\" "\"" "U"))("Ü"))
-((("\\" "\"" "Y"))("Ÿ"))
-((("\\" "\"" "a"))("ä"))
-((("\\" "\"" "e"))("ë"))
-((("\\" "\"" "i"))("ï"))
-((("\\" "\"" "o"))("ö"))
-((("\\" "\"" "u"))("ü"))
-((("\\" "\"" "y"))("ÿ"))
+((("\\" " " " " ))(" "))
+((("\\" " " "'" ))("'"))
+((("\\" " " "(" ))("˘"))
+((("\\" " " "-" ))("~"))
+((("\\" " " "<" ))("ˇ"))
+((("\\" " " ">" ))("^"))
+((("\\" " " "^" ))("^"))
+((("\\" " " "`" ))("`"))
+((("\\" " " "~" ))("~"))
+((("\\" "!" "!" ))("¡"))
+((("\\" "!" "P" ))("¶"))
+((("\\" "!" "S" ))("§"))
+((("\\" "!" "p" ))("¶"))
+((("\\" "!" "s" ))("§"))
+((("\\" "\"" "\"" ))("¨"))
+((("\\" "\"" "A" ))("Ä"))
+((("\\" "\"" "E" ))("Ë"))
+((("\\" "\"" "I" ))("Ï"))
+((("\\" "\"" "O" ))("Ö"))
+((("\\" "\"" "U" ))("Ü"))
+((("\\" "\"" "Y" ))("Ÿ"))
+((("\\" "\"" "a" ))("ä"))
+((("\\" "\"" "e" ))("ë"))
+((("\\" "\"" "i" ))("ï"))
+((("\\" "\"" "o" ))("ö"))
+((("\\" "\"" "u" ))("ü"))
+((("\\" "\"" "y" ))("ÿ"))
 ((("\\" "'" " " ))("'"))
 ((("\\" "'" "'" ))("´"))
 ((("\\" "'" "A" ))("Á"))
@@ -577,234 +571,14 @@
 
 (define latin-init-handler
   (lambda (id im arg)
-    (latin-context-new id im)))
+    (generic-context-new id im latin-im-rule #f)))
 
-;; widgets and actions
-
-;; widgets
-(define latin-widgets '(widget_latin_input_mode))
-
-;; default activity for each widgets
-(define default-widget_latin_input_mode 'action_latin_off)
-
-;; actions of widget_latin_input_mode
-(define latin-input-mode-actions
-  '(action_latin_off
-    action_latin_on))
-
-
-;;; implementations
-
-(define ascii-rule
-  (map (compose (lambda (entry)
-		  (list (list entry) entry))
-		list
-		charcode->string)
-       (iota 127 32)))
-
-(define latin-prepare-activation
-  (lambda (gc)
-    (let ((rkc (latin-context-rk-context gc)))
-      (rk-flush rkc)
-      (latin-update-preedit gc))))
-
-(register-action 'action_latin_off
-		 (lambda (gc)
-		   (list
-		    'figure_latin_off
-		    "-"
-		    (N_ "off")
-		    (N_ "Direct Input Mode")))
-		 (lambda (gc)
-		   (not (latin-context-on gc)))
-		 (lambda (gc)
-		   (latin-prepare-activation gc)
-		   (latin-context-set-on! gc #f)))
-
-(register-action 'action_latin_on
-		 (lambda (gc)
-		   (let* ((im (latin-context-im gc))
-			  (name (symbol->string (im-name im))))
-		     (list
-		      'figure_latin_on
-		      "O"
-		      (N_ "on")
-		      (string-append name (N_ " Mode")))))
-		 (lambda (gc)
-		   (latin-context-on gc))
-		 (lambda (gc)
-		   (latin-prepare-activation gc)
-		   (latin-context-set-on! gc #t)))
-
-;; Update widget definitions based on action configurations. The
-;; procedure is needed for on-the-fly reconfiguration involving the
-;; custom API
-(define latin-configure-widgets
-  (lambda ()
-    (register-widget 'widget_latin_input_mode
-		     (activity-indicator-new latin-input-mode-actions)
-		     (actions-new latin-input-mode-actions))))
-
-(define latin-context-rec-spec
-  (append
-   context-rec-spec
-   '((rk-context         #f)
-     (rk-nth             0)
-     (on                 #t)
-     (candidate-op-count 0)
-     (raw-commit         #f)
-     (converting         #f))))
-(define-record 'latin-context latin-context-rec-spec)
-(define latin-context-new-internal latin-context-new)
-
-(define latin-context-new
-  (lambda (id im)
-    (let ((gc (latin-context-new-internal id im))
-	  (rkc (rk-context-new latin-im-rule #f #f)))
-      (latin-context-set-widgets! gc latin-widgets)
-      (latin-context-set-rk-context! gc rkc)
-      gc)))
-
-(define latin-context-flush
-  (lambda (pc)
-    (latin-context-set-rk-nth! pc 0)
-    (latin-context-set-candidate-op-count! pc 0)
-    (latin-context-set-converting! pc #f)))
-
-(define latin-update-preedit
-  (lambda (pc)
-    (let* ((rkc (latin-context-rk-context pc))
-	   (cs (rk-current-seq rkc))
-	   (n (latin-context-rk-nth pc)))
-      (im-clear-preedit pc)
-      (im-pushback-preedit
-       pc preedit-reverse
-       (if cs
-	   (nth n (cadr cs))
-	   (rk-pending rkc)))
-      (im-update-preedit pc))))
-
-(define latin-commit-raw
-  (lambda (pc)
-    (im-commit-raw pc)
-    (latin-context-set-raw-commit! pc #t)))
-
-(define latin-commit
-  (lambda (pc)
-    (let* ((rkc (latin-context-rk-context pc))
-	   (cs (rk-current-seq rkc)))
-      (if (> (length (cadr cs)) 0)
-	  (begin
-	    (im-commit pc (nth (latin-context-rk-nth pc) (cadr cs)))
-	    (im-deactivate-candidate-selector pc)
-	    (rk-flush rkc)
-	    (latin-context-flush pc))
-	  (begin
-	    (im-commit-raw pc)
-	    (rk-flush rkc)
-	    (im-update-preedit pc))))))
-
-(define latin-proc-input-state
-  (lambda (pc key state)
-    (let* ((rkc (latin-context-rk-context pc))
-	   (n (latin-context-rk-nth pc))
-	   (cs (cadr (rk-current-seq rkc)))
-	   (res))
-      (and
-       (if (latin-backspace-key? key state)
-	   (begin
-	     (if (not (rk-backspace rkc))
-		 (latin-commit-raw pc))
-	     (latin-context-set-rk-nth! pc 0)
-	     (im-deactivate-candidate-selector pc)
-	     #f)
-	   #t)
-       (if (latin-commit-key? key state)
-	   (begin
-	     (latin-commit pc)
-	     #f)
-	   #t)
-       (if (symbol? key)
-	   (begin
-	     (rk-flush rkc)
-	     (latin-commit-raw pc)
-	     (latin-context-flush pc)
-	     #f)
-	   #t)
-       (if (and (modifier-key-mask state)
-		(not (shift-key-mask state)))
-	   (begin
-	     (latin-commit-raw pc)
-	     #f)
-	   #t)
-       (begin
-	 (set! res
-	       (rk-push-key!
-		rkc
-		(charcode->string key)))
-	 #t))
-      (if (not (rk-partial? rkc))
-	  (let ((cs (rk-current-seq rkc)))
-	    (if (= (length (cadr cs)) 1)
-		(begin
-		  (im-commit pc
-			     (nth (latin-context-rk-nth pc) (cadr cs)))
-		  (latin-context-set-rk-nth! pc 0)
-		  (latin-context-set-candidate-op-count! pc 0)
-		  (im-deactivate-candidate-selector pc)
-		  (rk-flush rkc)))))
-      (if res
-	  (begin
-	    (im-commit pc (nth (latin-context-rk-nth pc) res))
-	    (latin-context-set-rk-nth! pc 0)
-	    (latin-context-set-candidate-op-count! pc 0)
-	    (im-deactivate-candidate-selector pc))
-	  ))))
-
-(define latin-press-key-handler
-  (lambda (pc key state)
-    (if (control-char? key)
-	(im-commit-raw pc)
-	(latin-proc-input-state pc key state))
-    (latin-update-preedit pc)
-    ()))
-
-(define latin-release-key-handler
-  (lambda (pc key state)
-    (if (or (control-char? key)
-	    (not (latin-context-on pc)))
-	;; don't discard key release event for apps
-	(latin-commit-raw pc))))
-
-(define latin-reset-handler
-  (lambda (pc)
-    (let ((rkc (latin-context-rk-context pc)))
-      (rk-flush rkc))))
-
-(define latin-get-candidate-handler
-  (lambda (pc idx accel-enum-hint)
-    ()))
-
-(define latin-set-candidate-index-handler
-  (lambda (pc idx)
-    ()))
-
-(latin-configure-widgets)
-
-(register-im
+(generic-register-im
  'latin
  ""
  "UTF-8"
+ ;; I think that the name "euro" is not appropriate since it
+ ;; represents nation or geographic region.  -- YamaKen 2005-01-29
  (N_ "Latin characters")
  (N_ "Latin characters mainly used for Latin and German languages")
- #f
- latin-init-handler
- #f
- context-mode-handler
- latin-press-key-handler
- latin-release-key-handler
- latin-reset-handler
- #f
- #f
- context-prop-activate-handler
-)
+ latin-init-handler)
