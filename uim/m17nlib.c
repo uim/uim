@@ -32,7 +32,6 @@
 */
 
 #include "config.h"
-#ifdef HAVE_M17NLIB
 #include <stdlib.h>
 #include <string.h>
 #include <m17n.h>
@@ -202,15 +201,16 @@ candidates_done_cb(MInputContext *ic, MSymbol command)
 static void
 register_callbacks(void)
 {
+  /*
   mplist_add(minput_default_driver.callback_list, Minput_preedit_start, (void *)preedit_start_cb);
   mplist_add(minput_default_driver.callback_list, Minput_preedit_draw,  (void *)preedit_draw_cb);
   mplist_add(minput_default_driver.callback_list, Minput_preedit_done,  (void *)preedit_done_cb);
-  mplist_add(minput_default_driver.callback_list, Minput_status_start,  (void *)status_start_cb);
+    mplist_add(minput_default_driver.callback_list, Minput_status_start,  (void *)status_start_cb);
   mplist_add(minput_default_driver.callback_list, Minput_status_draw,   (void *)status_draw_cb);
   mplist_add(minput_default_driver.callback_list, Minput_status_done,   (void *)status_done_cb);
   mplist_add(minput_default_driver.callback_list, Minput_candidates_start, (void *)candidates_start_cb);
   mplist_add(minput_default_driver.callback_list, Minput_candidates_draw,  (void *)candidates_draw_cb);
-  mplist_add(minput_default_driver.callback_list, Minput_candidates_done,  (void *)candidates_done_cb);
+  mplist_add(minput_default_driver.callback_list, Minput_candidates_done,  (void *)candidates_done_cb);*/
 }
 
 static uim_lisp
@@ -242,7 +242,7 @@ init_m17nlib()
       }
     }
   }
-  register_callbacks();
+  /*  register_callbacks();*/
   m17n_object_unref(imlist);
   converter = mconv_buffer_converter(utf8, NULL, 0);
   if (!converter) {
@@ -828,4 +828,3 @@ uim_plugin_instance_quit(void)
     free(ic_array);
   }
 }
-#endif /* HAVE_M17NLIB */
