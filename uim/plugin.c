@@ -109,11 +109,6 @@ plugin_load(uim_lisp _name)
     plugin_lib_filename = NULL;
   }
 
-  if(plugin_lib_filename == NULL) {
-    free(plugin_name);
-    return uim_scm_f();
-  }
-  
   for(path_car = uim_scm_car(scm_path), path_cdr = uim_scm_cdr(scm_path);
       path_car != uim_scm_f();
       path_car = uim_scm_car(path_cdr), path_cdr = uim_scm_cdr(path_cdr))
@@ -134,8 +129,7 @@ plugin_load(uim_lisp _name)
     plugin_scm_filename = NULL;
   }
 
-  if(plugin_scm_filename == NULL) {
-    free(plugin_lib_filename);
+  if(plugin_lib_filename == NULL) {
     free(plugin_name);
     return uim_scm_f();
   }
