@@ -53,7 +53,7 @@ main(int argc, char *argv[]) {
 
   verbose = uim_scm_get_verbose_level();
   uim_scm_set_verbose_level(1);
-  uim_scm_load_file("uim-sh.scm");
+  uim_scm_require_file("uim-sh.scm");
 #ifdef UIM_SH_USE_EXIT_HOOK
   /*
      is not working even if uim_siod_fatal is accessible. outermost

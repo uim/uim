@@ -637,7 +637,7 @@ uim_custom_init(void)
 
   uim_scm_init_subr_3("custom-update-cb-gate", uim_custom_cb_update_cb_gate);
 
-  uim_scm_load_file("custom.scm");
+  uim_scm_require_file("custom.scm");
 
   return UIM_TRUE;
 }
