@@ -21,6 +21,12 @@ helper/dict-cclass-dialog.h
 helper/pref-gtk.c
 helper/toolbar-common-gtk.c
 helper/input-pad-ja.c
+qt/candwin-qt.cpp
+qt/switcher-qt.cpp
+qt/toolbar-common-quimhelpertoolbar.cpp
+qt/toolbar-standalone-qt.cpp
+qt/pref-qt.cpp
+qt/pref-customwidgets.cpp
 scm/PY.scm
 scm/action.scm
 scm/anthy-custom.scm

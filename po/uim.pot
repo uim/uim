@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-03 15:47+0900\n"
+"POT-Creation-Date: 2005-02-04 03:47+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,35 +36,36 @@ msgstr ""
 msgid "uim applet for the GNOME2 panel"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:274
+#: helper/im-switcher-gtk.c:274 qt/switcher-qt.cpp:98
 msgid "InputMethodName"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:283
+#: helper/im-switcher-gtk.c:283 qt/switcher-qt.cpp:99
 msgid "Language"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:292
+#: helper/im-switcher-gtk.c:292 qt/switcher-qt.cpp:100
 msgid "Description"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:322
+#: helper/im-switcher-gtk.c:322 qt/switcher-qt.cpp:67
 msgid "uim input method switcher"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:348
+#: helper/im-switcher-gtk.c:348 qt/switcher-qt.cpp:104
 msgid "Changing way"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:356
+#: helper/im-switcher-gtk.c:356 qt/switcher-qt.cpp:105
 msgid "Change whole desktop"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:357
+#. default is "Change whole desktop"
+#: helper/im-switcher-gtk.c:357 qt/switcher-qt.cpp:108
 msgid "Change this application only"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:358
+#: helper/im-switcher-gtk.c:358 qt/switcher-qt.cpp:110
 msgid "Change this text area only"
 msgstr ""
 
@@ -344,7 +345,7 @@ msgid ""
 "Do you realy quit this program?"
 msgstr ""
 
-#: helper/pref-gtk.c:235
+#: helper/pref-gtk.c:235 qt/pref-qt.cpp:100
 msgid "Group"
 msgstr ""
 
@@ -352,7 +353,7 @@ msgstr ""
 msgid "Specify file"
 msgstr ""
 
-#: helper/pref-gtk.c:526
+#: helper/pref-gtk.c:526 qt/pref-customwidgets.cpp:168
 msgid "File"
 msgstr ""
 
@@ -401,14 +402,16 @@ msgid "..."
 msgstr ""
 
 #: helper/toolbar-common-gtk.c:484 helper/toolbar-common-gtk.c:686
+#: qt/toolbar-common-quimhelpertoolbar.cpp:55
 msgid "Execute uim's input method switcher"
 msgstr ""
 
 #: helper/toolbar-common-gtk.c:491 helper/toolbar-common-gtk.c:731
+#: qt/toolbar-common-quimhelpertoolbar.cpp:56
 msgid "Execute uim's preference tool"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:498
+#: helper/toolbar-common-gtk.c:498 qt/toolbar-common-quimhelpertoolbar.cpp:57
 msgid "Quit this toolbar"
 msgstr ""
 
@@ -428,16 +431,43 @@ msgstr ""
 msgid "eisu"
 msgstr ""
 
+#: qt/switcher-qt.cpp:115 qt/pref-qt.cpp:115 qt/pref-qt.cpp:255
+msgid "OK"
+msgstr ""
+
+#: qt/switcher-qt.cpp:120 qt/pref-qt.cpp:122 qt/pref-qt.cpp:256
+msgid "Cancel"
+msgstr ""
+
+#: qt/toolbar-common-quimhelpertoolbar.cpp:93 scm/action.lisp:531
+#: scm/action.lisp:532
+msgid "exec im-switcher"
+msgstr ""
+
+#: qt/toolbar-common-quimhelpertoolbar.cpp:117
+msgid "exec Preference Application"
+msgstr ""
+
+#: qt/pref-qt.cpp:112
+msgid "Defaults"
+msgstr ""
+
+#: qt/pref-qt.cpp:192
+msgid ""
+"The value was changed.\n"
+"Save?"
+msgstr ""
+
+#: qt/pref-customwidgets.cpp:304 qt/pref-customwidgets.cpp:584
+msgid "Edit"
+msgstr ""
+
 #: scm/action.lisp:486 scm/action.lisp:487
 msgid "unknown"
 msgstr ""
 
 #: scm/action.lisp:526
 msgid "Japanese Kana Kanji Conversion Engine, Example"
-msgstr ""
-
-#: scm/action.lisp:531 scm/action.lisp:532
-msgid "exec im-switcher"
 msgstr ""
 
 #: scm/anthy-custom.lisp:35

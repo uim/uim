@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 2010\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-03 15:47+0900\n"
-"PO-Revision-Date: 2005-02-03 15:56+0900\n"
-"Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
+"POT-Creation-Date: 2005-02-04 03:47+0900\n"
+"PO-Revision-Date: 2005-02-04 04:02+0900\n"
+"Last-Translator: Kazuki Ohta <mover@hct.zaq.ne.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=EUC-JP\n"
@@ -35,35 +35,36 @@ msgstr "uimアプレットファクトリー"
 msgid "uim applet for the GNOME2 panel"
 msgstr "GNOME2パネル用uimアプレット"
 
-#: helper/im-switcher-gtk.c:274
+#: helper/im-switcher-gtk.c:274 qt/switcher-qt.cpp:98
 msgid "InputMethodName"
 msgstr "インプットメソッド名"
 
-#: helper/im-switcher-gtk.c:283
+#: helper/im-switcher-gtk.c:283 qt/switcher-qt.cpp:99
 msgid "Language"
 msgstr "言語名"
 
-#: helper/im-switcher-gtk.c:292
+#: helper/im-switcher-gtk.c:292 qt/switcher-qt.cpp:100
 msgid "Description"
 msgstr "説明"
 
-#: helper/im-switcher-gtk.c:322
+#: helper/im-switcher-gtk.c:322 qt/switcher-qt.cpp:67
 msgid "uim input method switcher"
 msgstr "入力言語の切り替え"
 
-#: helper/im-switcher-gtk.c:348
+#: helper/im-switcher-gtk.c:348 qt/switcher-qt.cpp:104
 msgid "Changing way"
 msgstr "切替え方法"
 
-#: helper/im-switcher-gtk.c:356
+#: helper/im-switcher-gtk.c:356 qt/switcher-qt.cpp:105
 msgid "Change whole desktop"
 msgstr "デスクトップ全体を切り替え"
 
-#: helper/im-switcher-gtk.c:357
+#. default is "Change whole desktop"
+#: helper/im-switcher-gtk.c:357 qt/switcher-qt.cpp:108
 msgid "Change this application only"
 msgstr "このアプリケーションのみ切り替え"
 
-#: helper/im-switcher-gtk.c:358
+#: helper/im-switcher-gtk.c:358 qt/switcher-qt.cpp:110
 msgid "Change this text area only"
 msgstr "このテキストエリアのみ切り替え"
 
@@ -347,7 +348,7 @@ msgstr ""
 "設定が変更されています。\n"
 "本当に終了しますか?"
 
-#: helper/pref-gtk.c:235
+#: helper/pref-gtk.c:235 qt/pref-qt.cpp:100
 msgid "Group"
 msgstr "グループ"
 
@@ -355,7 +356,7 @@ msgstr "グループ"
 msgid "Specify file"
 msgstr "ファイルの指定"
 
-#: helper/pref-gtk.c:526
+#: helper/pref-gtk.c:526 qt/pref-customwidgets.cpp:168
 msgid "File"
 msgstr "参照"
 
@@ -404,14 +405,16 @@ msgid "..."
 msgstr "..."
 
 #: helper/toolbar-common-gtk.c:484 helper/toolbar-common-gtk.c:686
+#: qt/toolbar-common-quimhelpertoolbar.cpp:55
 msgid "Execute uim's input method switcher"
 msgstr "入力方式の切り替え"
 
 #: helper/toolbar-common-gtk.c:491 helper/toolbar-common-gtk.c:731
+#: qt/toolbar-common-quimhelpertoolbar.cpp:56
 msgid "Execute uim's preference tool"
 msgstr "設定ツールの起動"
 
-#: helper/toolbar-common-gtk.c:498
+#: helper/toolbar-common-gtk.c:498 qt/toolbar-common-quimhelpertoolbar.cpp:57
 msgid "Quit this toolbar"
 msgstr "このツールバーを閉じる"
 
@@ -431,6 +434,39 @@ msgstr "カタカナ"
 msgid "eisu"
 msgstr "英数"
 
+#: qt/switcher-qt.cpp:115 qt/pref-qt.cpp:115 qt/pref-qt.cpp:255
+msgid "OK"
+msgstr ""
+
+#: qt/switcher-qt.cpp:120 qt/pref-qt.cpp:122 qt/pref-qt.cpp:256
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: qt/toolbar-common-quimhelpertoolbar.cpp:93 scm/action.lisp:531
+#: scm/action.lisp:532
+msgid "exec im-switcher"
+msgstr "入力方式の切り替え"
+
+#: qt/toolbar-common-quimhelpertoolbar.cpp:117
+msgid "exec Preference Application"
+msgstr "設定ツールの起動"
+
+#: qt/pref-qt.cpp:112
+msgid "Defaults"
+msgstr "デフォルト"
+
+#: qt/pref-qt.cpp:192
+msgid ""
+"The value was changed.\n"
+"Save?"
+msgstr ""
+"設定が変更されています。\n"
+"セーブしますか?"
+
+#: qt/pref-customwidgets.cpp:304 qt/pref-customwidgets.cpp:584
+msgid "Edit"
+msgstr "編集"
+
 #: scm/action.lisp:486 scm/action.lisp:487
 msgid "unknown"
 msgstr "不明"
@@ -438,10 +474,6 @@ msgstr "不明"
 #: scm/action.lisp:526
 msgid "Japanese Kana Kanji Conversion Engine, Example"
 msgstr "日本語かな漢字変換エンジン例"
-
-#: scm/action.lisp:531 scm/action.lisp:532
-msgid "exec im-switcher"
-msgstr "入力方式の切り替え"
 
 #: scm/anthy-custom.lisp:35
 msgid "Anthy"
