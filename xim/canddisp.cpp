@@ -61,7 +61,9 @@ static const char *candwin_command(void)
 
     candwin_prog = getenv("UIM_CANDWIN_PROG");
     if (candwin_prog == NULL) {
-#ifdef USE_GTK2
+#if defined(USE_QT_CANDWIN)
+	return "uim-candwin-qt";
+#elif defined(USE_GTK_CANDWIN) && defined(USE_GTK2)
 	return "uim-candwin-gtk";
 #else
 	return NULL;

@@ -7,6 +7,13 @@ uim_xim_CPPFLAGS = -I$(top_srcdir)
 uim_xim_CFLAGS = @X_CFLAGS@ -Wall
 uim_xim_CXXFLAGS = @X_CFLAGS@ -Wall
 
+if DEFAULT_TOOLKIT_GTK
+uim_xim_CPPFLAGS += -DUSE_GTK_CANDWIN
+endif
+if DEFAULT_TOOLKIT_QT
+uim_xim_CPPFLAGS += -DUSE_QT_CANDWIN
+endif
+
 uim_xim_SOURCES = \
 	main.cpp convdisp.cpp \
         connection.cpp ximic.cpp \
