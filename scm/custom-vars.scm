@@ -245,6 +245,12 @@
   (_ "Number of candidates in candidate window at a time")
   (_ "long description will be here."))
 
+(define-custom 'anthy-select-candidate-by-numeral-key? #f
+  '(anthy)
+  '(boolean)
+  (_ "Select candidate by numeral keys")
+  (_ "long description will be here."))
+
 (define-custom 'anthy-show-segment-separator? #f
   '(anthy advanced)
   '(boolean)
