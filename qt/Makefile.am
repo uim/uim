@@ -3,6 +3,7 @@ if QT
 INCLUDES        = -I$(top_srcdir) -I$(top_builddir)
 CXXFLAGS        += $(UIM_QT_CFLAGS)
 CFLAGS          += $(UIM_QT_CFLAGS)
+LDFLAGS         += $(UIM_QT_LDFLAGS)
 
 if QT_IMMODULE
 CXXFLAGS        += -DQT_IMMODULE
@@ -38,9 +39,6 @@ UI_TMP_FILES = \
 	pref-keygrabformbase.moc
 
 noinst_HEADERS = $(HEADER_FILES)
-CLEANFILES = \
-	$(MOC_FILES) \
-	$(UI_TMP_FILES)
 
 bin_PROGRAMS = \
 	uim-toolbar-qt \
@@ -48,10 +46,47 @@ bin_PROGRAMS = \
 	uim-im-switcher-qt \
 	uim-pref-qt
 
+# Immodule
+if QT_IMMODULE
+extra_LTLIBRARIES = libquiminputcontextplugin.la
+extradir = $(QT_PLUGINSDIR)/inputmethods
+
+noinst_HEADERS += \
+	immodule-candidatewindow.h immodule-qhelpermanager.h \
+	immodule-quiminputcontext.h immodule-quiminputcontext_with_slave.h \
+	immodule-subwindow.h
+MOC_FILES += \
+	immodule-candidatewindow.moc immodule-qhelpermanager.moc \
+	immodule-quiminputcontext.moc immodule-quiminputcontext_with_slave.moc \
+	immodule-subwindow.moc
+
+libquiminputcontextplugin_la_SOURCES = \
+	immodule-plugin.cpp immodule-candidatewindow.cpp immodule-qhelpermanager.cpp \
+	immodule-quiminputcontext.cpp immodule-quiminputcontext_with_slave.cpp \
+	immodule-subwindow.cpp
+libquiminputcontextplugin_la_LIBADD = $(top_builddir)/uim/libuim.la -lqt-mt
+
+immodule-candidatewindow.cpp: immodule-candidatewindow.moc
+immodule-candidatewindow.moc: immodule-candidatewindow.h
+	$(MOC) immodule-candidatewindow.h -o immodule-candidatewindow.moc
+immodule-qhelpermanager.cpp: immodule-qhelpermanager.moc
+immodule-qhelpermanager.moc: immodule-qhelpermanager.h
+	$(MOC) immodule-qhelpermanager.h -o immodule-qhelpermanager.moc
+immodule-quiminputcontext.cpp: immodule-quiminputcontext.moc
+immodule-quiminputcontext.moc: immodule-quiminputcontext.h
+	$(MOC) immodule-quiminputcontext.h -o immodule-quiminputcontext.moc
+immodule-quiminputcontext_with_slave.cpp: immodule-quiminputcontext_with_slave.moc
+immodule-quiminputcontext_with_slave.moc: immodule-quiminputcontext_with_slave.h
+	$(MOC) immodule-quiminputcontext_with_slave.h -o immodule-quiminputcontext_with_slave.moc
+immodule-subwindow.cpp: immodule-subwindow.moc
+immodule-subwindow.moc: immodule-subwindow.h
+	$(MOC) immodule-subwindow.h -o immodule-subwindow.moc
+endif
+
 # Toolbar Common
 noinst_LTLIBRARIES = libtoolbarcommon.la
 libtoolbarcommon_la_SOURCES = toolbar-common-quimhelpertoolbar.cpp toolbar-common-uimstateindicator.cpp
-libtoolbarcommon_la_LIBADD = -luim
+libtoolbarcommon_la_LIBADD = $(top_builddir)/uim/libuim.la
 toolbar-common-quimhelpertoolbar.cpp: toolbar-common-quimhelpertoolbar.moc
 toolbar-common-quimhelpertoolbar.moc: toolbar-common-quimhelpertoolbar.h
 	$(MOC) toolbar-common-quimhelpertoolbar.h -o toolbar-common-quimhelpertoolbar.moc
@@ -61,21 +96,21 @@ toolbar-common-uimstateindicator.moc: toolbar-common-uimstateindicator.h
 
 # Toolbar Standalone
 uim_toolbar_qt_SOURCES = toolbar-standalone-qt.cpp
-uim_toolbar_qt_LDADD   = -lqt-mt -luim ./libtoolbarcommon.la
+uim_toolbar_qt_LDADD   = $(top_builddir)/uim/libuim.la ./libtoolbarcommon.la
 toolbar-standalone-qt.cpp: toolbar-standalone-qt.moc
 toolbar-standalone-qt.moc: toolbar-standalone-qt.h
 	$(MOC) toolbar-standalone-qt.h -o toolbar-standalone-qt.moc
 
 # Candidate Window
 uim_candwin_qt_SOURCES = candwin-qt.cpp
-uim_candwin_qt_LDADD = -lqt-mt -luim
+uim_candwin_qt_LDADD = $(top_builddir)/uim/libuim.la
 candwin-qt.cpp: candwin-qt.moc
 candwin-qt.moc: candwin-qt.h
 	$(MOC) candwin-qt.h -o candwin-qt.moc
 
 # Switcher
 uim_im_switcher_qt_SOURCES = switcher-qt.cpp
-uim_im_switcher_qt_LDADD = -lqt-mt -luim
+uim_im_switcher_qt_LDADD = $(top_builddir)/uim/libuim.la
 switcher-qt.cpp: switcher-qt.moc
 switcher-qt.moc: switcher-qt.h
 	$(MOC) switcher-qt.h -o switcher-qt.moc
@@ -85,7 +120,7 @@ uim_pref_qt_SOURCES = \
 	pref-olisteditformbase.cpp pref-keyeditformbase.cpp pref-keygrabformbase.cpp \
 	pref-qt.cpp pref-customwidgets.cpp pref-kseparator.cpp
 
-uim_pref_qt_LDADD = -lqt-mt -luim -luim-custom
+uim_pref_qt_LDADD = $(top_builddir)/uim/libuim.la $(top_builddir)/uim/libuim-custom.la
 
 pref-customwidgets.h:pref-olisteditformbase.h pref-keyeditformbase.h pref-keygrabformbase.h
 pref-qt.h:pref-olisteditformbase.h pref-keyeditformbase.h pref-keygrabformbase.h
@@ -125,3 +160,7 @@ pref-keygrabformbase.cpp: pref-keygrabformbase.h
 	mv pref-keygrabformbase.cpp.tmp pref-keygrabformbase.cpp
 
 endif
+
+CLEANFILES = \
+	$(MOC_FILES) \
+	$(UI_TMP_FILES)
