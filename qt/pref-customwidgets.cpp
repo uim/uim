@@ -820,7 +820,12 @@ void KeyEditForm::slotSelectionChanged( QListViewItem *item )
 KeyGrabForm::KeyGrabForm( QWidget *parent, const char *name )
     : KeyGrabFormBase( parent, name )
 {
-
+    m_shiftCheckBox->installEventFilter( this );
+    m_controlCheckBox->installEventFilter( this );
+    m_altCheckBox->installEventFilter( this );
+    m_keyLineEdit->installEventFilter( this );
+    m_okButton->installEventFilter( this );
+    m_cancelButton->installEventFilter( this );
 }
 
 void KeyGrabForm::keyPressEvent( QKeyEvent *e )
@@ -983,5 +988,17 @@ void KeyGrabForm::keyPressEvent( QKeyEvent *e )
 
     m_keystr = keystr;
 }
+
+bool KeyGrabForm::eventFilter( QObject * watched, QEvent * e )
+{
+    if( e->type() == QEvent::KeyPress )
+    {
+        keyPressEvent( (QKeyEvent*)e );
+        return true;
+    }
+
+    return false;
+}
+
 
 #include "pref-customwidgets.moc"
