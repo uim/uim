@@ -110,7 +110,8 @@
 		mode key-press key-release reset
 		get-candidate set-candidate-index prop)
     (and (or (null? enabled-im-list)  ;; bootstrap
-	     (memq name enabled-im-list))
+	     (memq name enabled-im-list)
+	     (eq? name 'direct))  ;; direct IM must always be enabled
 	 (let ((im (im-new name lang encoding name-label short-desc
 			   init-arg init release
 			   mode key-press key-release reset
