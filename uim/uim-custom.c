@@ -700,11 +700,11 @@ uim_custom_set(const struct uim_custom *custom)
 		      custom->symbol, custom->value->as_int);
     break;
   case UCustom_Str:
-    UIM_EVAL_FSTRING2(NULL, "(custom-set! '%s %s)",
+    UIM_EVAL_FSTRING2(NULL, "(custom-set! '%s \"%s\")",
 		      custom->symbol, custom->value->as_str);
     break;
   case UCustom_Pathname:
-    UIM_EVAL_FSTRING2(NULL, "(custom-set! '%s %s)",
+    UIM_EVAL_FSTRING2(NULL, "(custom-set! '%s \"%s\")",
 		      custom->symbol, custom->value->as_pathname);
     break;
   case UCustom_Choice:
