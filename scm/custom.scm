@@ -412,69 +412,69 @@
 
 ;; Global
 
-(define direct-im-canonical-name (N_ "Direct"))
-(define direct-im-desc (N_ "Direct input method mainly used for latin languages"))
+(define direct-im-canonical-name (_ "Direct"))
+(define direct-im-desc (_ "Direct input method mainly used for latin languages"))
 
-(define anthy-im-canonical-name (N_ "Anthy"))
-(define anthy-im-desc (N_ "long description will be here."))
+(define anthy-im-canonical-name (_ "Anthy"))
+(define anthy-im-desc (_ "long description will be here."))
 
-(define canna-im-canonical-name (N_ "Canna"))
-(define canna-im-desc (N_ "long description will be here."))
+(define canna-im-canonical-name (_ "Canna"))
+(define canna-im-desc (_ "long description will be here."))
 
-(define skk-im-canonical-name (N_ "SKK"))
-(define skk-im-desc (N_ "long description will be here."))
+(define skk-im-canonical-name (_ "SKK"))
+(define skk-im-desc (_ "long description will be here."))
 
-(define prime-im-canonical-name (N_ "PRIME"))
-(define prime-im-desc (N_ "long description will be here."))
+(define prime-im-canonical-name (_ "PRIME"))
+(define prime-im-desc (_ "long description will be here."))
 
-(define pyunihan-im-canonical-name (N_ "pyunihan"))
-(define pyunihan-im-desc (N_ "long description will be here."))
+(define pyunihan-im-canonical-name (_ "pyunihan"))
+(define pyunihan-im-desc (_ "long description will be here."))
 
-(define pinyin-big5-im-canonical-name (N_ "pinyin-big5"))
-(define pinyin-big5-im-desc (N_ "long description will be here."))
+(define pinyin-big5-im-canonical-name (_ "pinyin-big5"))
+(define pinyin-big5-im-desc (_ "long description will be here."))
 
-(define py-im-canonical-name (N_ "Pinyin"))
-(define py-im-desc (N_ "long description will be here."))
+(define py-im-canonical-name (_ "Pinyin"))
+(define py-im-desc (_ "long description will be here."))
 
-(define ipa-im-canonical-name (N_ "International Phonetic Alphabet"))
-(define ipa-im-desc (N_ "long description will be here."))
+(define ipa-im-canonical-name (_ "International Phonetic Alphabet"))
+(define ipa-im-desc (_ "long description will be here."))
 
-(define romaja-im-canonical-name (N_ "Romaja"))
-(define romaja-im-desc (N_ "long description will be here."))
+(define romaja-im-canonical-name (_ "Romaja"))
+(define romaja-im-desc (_ "long description will be here."))
 
-(define hangul3-im-canonical-name (N_ "Hangul3"))
-(define hangul3-im-desc (N_ "long description will be here."))
+(define hangul3-im-canonical-name (_ "Hangul3"))
+(define hangul3-im-desc (_ "long description will be here."))
 
-(define hangul2-im-canonical-name (N_ "Hangul2"))
-(define hangul2-im-desc (N_ "long description will be here."))
+(define hangul2-im-canonical-name (_ "Hangul2"))
+(define hangul2-im-desc (_ "long description will be here."))
 
-(define viqr-im-canonical-name (N_ "Viqr"))
-(define viqr-im-desc (N_ "long description will be here."))
+(define viqr-im-canonical-name (_ "Viqr"))
+(define viqr-im-desc (_ "long description will be here."))
 
-(define tutcode-im-canonical-name (N_ "TUT-Code"))
-(define tutcode-im-desc (N_ "long description will be here."))
+(define tutcode-im-canonical-name (_ "TUT-Code"))
+(define tutcode-im-desc (_ "long description will be here."))
 
-(define tcode-im-canonical-name (N_ "T-Code"))
-(define tcode-im-desc (N_ "long description will be here."))
+(define tcode-im-canonical-name (_ "T-Code"))
+(define tcode-im-desc (_ "long description will be here."))
 
-(define spellcheck-im-canonical-name (N_ "Spellcheck"))
-(define spellcheck-im-desc (N_ "long description will be here."))
+(define spellcheck-im-canonical-name (_ "Spellcheck"))
+(define spellcheck-im-desc (_ "long description will be here."))
 
 (custom-define-group 'global
-		     (N_ "Global settings")
-		     (N_ "long description will be here."))
+		     (_ "Global settings")
+		     (_ "long description will be here."))
 
 (custom-define-group 'advanced
-		     (N_ "Advanced settings")
-		     (N_ "long description will be here."))
+		     (_ "Advanced settings")
+		     (_ "long description will be here."))
 
 (define-custom 'uim-color 'uim-color-uim
   '(global)
   '(symbol
     (uim-color-uim "uim" "uim native")
     (uim-color-atok "ATOK like" "Similar to ATOK"))
-  (N_ "Preedit color")
-  (N_ "long description will be here."))
+  (_ "Preedit color")
+  (_ "long description will be here."))
 
 ;; TODO: configure loader.scm
 
@@ -482,14 +482,14 @@
 ;; default-im-name
 ;;
 (custom-define-group 'default-im-name
-		     (N_ "Default input method")
-		     (N_ "long description will be here."))
+		     (_ "Default input method")
+		     (_ "long description will be here."))
 
 (define-custom 'custom-activate-default-im-name? #f
   '(global default-im-name)
   '(boolean)
-  (N_ "Specify default IM")
-  (N_ "long description will be here."))
+  (_ "Specify default IM")
+  (_ "long description will be here."))
 
 ;; requires predefined *-im-canonical-name and *-im-desc
 (define-custom 'custom-preserved-default-im-name (im-name (find-default-im #f))
@@ -508,8 +508,8 @@
 				    (symbol->string sym))))
 		     (list sym name desc)))
 		 im-list)))
-  (N_ "Default input method")
-  (N_ "long description will be here."))
+  (_ "Default input method")
+  (_ "long description will be here."))
 
 ;; activity dependency
 (custom-add-hook 'custom-preserved-default-im-name
@@ -566,14 +566,14 @@
 ;; im-switching
 ;;
 (custom-define-group 'im-switching
-		     (N_ "Input method switching")
-		     (N_ "long description will be here."))
+		     (_ "Input method switching")
+		     (_ "long description will be here."))
 
 (define-custom 'enable-im-switch #f
   '(global im-switching advanced)
   '(boolean)
-  (N_ "Enable IM switching by hotkey")
-  (N_ "long description will be here."))
+  (_ "Enable IM switching by hotkey")
+  (_ "long description will be here."))
 
 ;;(define-custom 'switch-im-key? '("<Control>Shift_key" "<Shift>Control_key")
 ;;  '(global im-switching advanced)
@@ -590,8 +590,8 @@
 (define-custom 'candidate-window-position "caret"
   '(global)
   '(string "^(caret|left|right)$")
-  (N_ "Candidate window position")
-  (N_ "long description will be here."))
+  (_ "Candidate window position")
+  (_ "long description will be here."))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -604,32 +604,32 @@
 (define-custom 'anthy-use-candidate-window? #t
   '(anthy)
   '(boolean)
-  (N_ "Use candidate window")
-  (N_ "long description will be here."))
+  (_ "Use candidate window")
+  (_ "long description will be here."))
 
 (define-custom 'anthy-candidate-op-count 1
   '(anthy)
   '(integer 0 99)
-  (N_ "Conversion key press count to show candidate window")
-  (N_ "long description will be here."))
+  (_ "Conversion key press count to show candidate window")
+  (_ "long description will be here."))
 
 (define-custom 'anthy-nr-candidate-max 10
   '(anthy)
   '(integer 1 20)
-  (N_ "Number of candidates in candidate window at a time")
-  (N_ "long description will be here."))
+  (_ "Number of candidates in candidate window at a time")
+  (_ "long description will be here."))
 
 (define-custom 'anthy-show-segment-separator? #f
   '(anthy advanced)
   '(boolean)
-  (N_ "Show segment separator")
-  (N_ "long description will be here."))
+  (_ "Show segment separator")
+  (_ "long description will be here."))
 
 (define-custom 'anthy-segment-separator "|"
   '(anthy advanced)
   '(string ".*")
-  (N_ "Segment separator")
-  (N_ "long description will be here."))
+  (_ "Segment separator")
+  (_ "long description will be here."))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -642,57 +642,57 @@
 (define-custom 'canna-use-candidate-window? #t
   '(canna)
   '(boolean)
-  (N_ "Use candidate window")
-  (N_ "long description will be here."))
+  (_ "Use candidate window")
+  (_ "long description will be here."))
 
 (define-custom 'canna-candidate-op-count 1
   '(canna)
   '(integer 0 99)
-  (N_ "Conversion key press count to show candidate window")
-  (N_ "long description will be here."))
+  (_ "Conversion key press count to show candidate window")
+  (_ "long description will be here."))
 
 (define-custom 'canna-nr-candidate-max 10
   '(canna)
   '(integer 1 20)
-  (N_ "Number of candidates in candidate window at a time")
-  (N_ "long description will be here."))
+  (_ "Number of candidates in candidate window at a time")
+  (_ "long description will be here."))
 
 (define-custom 'canna-show-segment-separator? #f
   '(canna advanced)
   '(boolean)
-  (N_ "Show segment separator")
-  (N_ "long description will be here."))
+  (_ "Show segment separator")
+  (_ "long description will be here."))
 
 (define-custom 'canna-segment-separator "|"
   '(canna advanced)
   '(string ".*")
-  (N_ "Segment separator")
-  (N_ "long description will be here."))
+  (_ "Segment separator")
+  (_ "long description will be here."))
 
 ;;
 ;; canna-server-name
 ;;
 (custom-define-group 'cannaserver
-		     (N_ "Canna server")
-		     (N_ "long description will be here."))
+		     (_ "Canna server")
+		     (_ "long description will be here."))
 
 (define-custom 'custom-activate-canna-server-name? #f
   '(canna cannaserver)
   '(boolean)
-  (N_ "Use Canna server")
-  (N_ "long description will be here."))
+  (_ "Use Canna server")
+  (_ "long description will be here."))
 
 (define-custom 'custom-preserved-canna-server-name ""
   '(canna cannaserver)
   '(string ".*")
-  (N_ "Canna server name")
-  (N_ "long description will be here."))
+  (_ "Canna server name")
+  (_ "long description will be here."))
 
 (define-custom 'canna-server-name ""
   '(canna cannaserver)
   '(string ".*")
-  (N_ "Canna server name")
-  (N_ "long description will be here."))
+  (_ "Canna server name")
+  (_ "long description will be here."))
 
 ;; activity dependency
 (custom-add-hook 'custom-preserved-canna-server-name
@@ -740,66 +740,66 @@
 (define-custom 'skk-dic-file-name "/usr/share/skk/SKK-JISYO.L"
   '(skk)
   '(pathname)
-  (N_ "Dictionary file")
-  (N_ "long description will be here."))
+  (_ "Dictionary file")
+  (_ "long description will be here."))
 
 (define-custom 'skk-personal-dic-filename
   (string-append (getenv "HOME") "/.skk-jisyo")
   '(skk)
   '(pathname)
-  (N_ "Personal dictionary file")
-  (N_ "long description will be here."))
+  (_ "Personal dictionary file")
+  (_ "long description will be here."))
 
 (define-custom 'skk-uim-personal-dic-filename
   (string-append (getenv "HOME") "/.skk-uim-jisyo")
   '(skk)
   '(pathname)
-  (N_ "Personal dictionary file (dedicated to uim)")
-  (N_ "long description will be here."))
+  (_ "Personal dictionary file (dedicated to uim)")
+  (_ "long description will be here."))
 
 (define-custom 'skk-use-candidate-window? #t
   '(skk)
   '(boolean)
-  (N_ "Use candidate window")
-  (N_ "long description will be here."))
+  (_ "Use candidate window")
+  (_ "long description will be here."))
 
 (define-custom 'skk-candidate-op-count 0
   '(skk)
   '(integer 0 99)
-  (N_ "Conversion key press count to show candidate window")
-  (N_ "long description will be here."))
+  (_ "Conversion key press count to show candidate window")
+  (_ "long description will be here."))
 
 (define-custom 'skk-nr-candidate-max 10
   '(skk)
   '(integer 1 20)
-  (N_ "Number of candidates in candidate window at a time")
-  (N_ "long description will be here."))
+  (_ "Number of candidates in candidate window at a time")
+  (_ "long description will be here."))
 
 (define-custom 'skk-use-recursive-learning? #t
   '(skk advanced)
   '(boolean)
-  (N_ "Use recursive learning")
-  (N_ "long description will be here."))
+  (_ "Use recursive learning")
+  (_ "long description will be here."))
 
 (define-custom 'skk-egg-like-newline? #f
   '(skk advanced)
   '(boolean)
-  (N_ "Use Enter key as just committing (egg-like operation)")
-  (N_ "long description will be here."))
+  (_ "Use Enter key as just committing (egg-like operation)")
+  (_ "long description will be here."))
 
 (define-custom 'skk-commit-newline-explicitly? #f
   '(skk advanced)
   '(boolean)
-  (N_ "Commit newline as ASCII string instead of native key-event")
-  (N_ "long description will be here."))
+  (_ "Commit newline as ASCII string instead of native key-event")
+  (_ "long description will be here."))
 
 (define-custom 'skk-style 'skk-style-ddskk-like
   '(skk advanced)
   '(symbol
     (skk-style-ddskk-like "ddskk" "Similar to ddskk")
     (skk-style-uim "uim" "uim native"))
-  (N_ "Visual style")
-  (N_ "long description will be here."))
+  (_ "Visual style")
+  (_ "long description will be here."))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -824,26 +824,26 @@
 (define-custom 'prime-nr-candidate-max 10
   '(prime)
   '(integer 1 20)
-  (N_ "Number of candidates in candidate window at a time")
-  (N_ "long description will be here."))
+  (_ "Number of candidates in candidate window at a time")
+  (_ "long description will be here."))
 
 (define-custom 'prime-always-show-window? #t
   '(prime)
   '(boolean)
-  (N_ "Always showing candidate window")
-  (N_ "long description will be here."))
+  (_ "Always showing candidate window")
+  (_ "long description will be here."))
 
 (define-custom 'prime-preedit-immediate-commit? #f
   '(prime)
   '(boolean)
-  (N_ "prime-preedit-immediate-commit?")
-  (N_ "long description will be here."))
+  (_ "prime-preedit-immediate-commit?")
+  (_ "long description will be here."))
 
 (define-custom 'prime-mask-pending-preedit? #f
   '(prime)
   '(boolean)
-  (N_ "prime-mask-pending-preedit?")
-  (N_ "long description will be here."))
+  (_ "prime-mask-pending-preedit?")
+  (_ "long description will be here."))
 
 ;(define-custom 'prime-use-numeral-key-to-select-cand? #t
 ;  '(prime)
@@ -856,26 +856,26 @@
 ;; Other IMs
 
 (custom-define-group 'other-ims
-		     (N_ "Other input methods")
-		     (N_ "long description will be here."))
+		     (_ "Other input methods")
+		     (_ "long description will be here."))
 
 (define-custom 'generic-use-candidate-window? #t
   '(other-ims)
   '(boolean)
-  (N_ "Use candidate window")
-  (N_ "long description will be here."))
+  (_ "Use candidate window")
+  (_ "long description will be here."))
 
 (define-custom 'generic-candidate-op-count 1
   '(other-ims)
   '(integer 0 99)
-  (N_ "Conversion key press count to show candidate window")
-  (N_ "long description will be here."))
+  (_ "Conversion key press count to show candidate window")
+  (_ "long description will be here."))
 
 (define-custom 'generic-nr-candidate-max 10
   '(other-ims)
   '(integer 1 20)
-  (N_ "Number of candidates in candidate window at a time")
-  (N_ "long description will be here."))
+  (_ "Number of candidates in candidate window at a time")
+  (_ "long description will be here."))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -888,25 +888,25 @@
 (define-custom 'spellcheck-use-candidate-window? #t
   '(spellcheck)
   '(boolean)
-  (N_ "Use candidate window")
-  (N_ "long description will be here."))
+  (_ "Use candidate window")
+  (_ "long description will be here."))
 
 (define-custom 'spellcheck-candidate-op-count 1
   '(spellcheck)
   '(integer 0 99)
-  (N_ "Conversion key press count to show candidate window")
-  (N_ "long description will be here."))
+  (_ "Conversion key press count to show candidate window")
+  (_ "long description will be here."))
 
 (define-custom 'spellcheck-preedit-immediate-commit? #f
   '(spellcheck)
   '(boolean)
-  (N_ "spellcheck-preedit-immediate-commit?")
-  (N_ "long description will be here."))
+  (_ "spellcheck-preedit-immediate-commit?")
+  (_ "long description will be here."))
 
 (define-custom 'spellcheck-always-show-window? #t
   '(spellcheck)
   '(boolean)
-  (N_ "Always showing candidate window")
-  (N_ "long description will be here."))
+  (_ "Always showing candidate window")
+  (_ "long description will be here."))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

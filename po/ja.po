@@ -1,15 +1,15 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Free Software Foundation, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Copyright (C) 2005 uim Project http://uim.freedesktop.org/.
+# This file is distributed under the same license as the uim package.
+#  TOKUNAGA Hiroyuki <tkng@xem.jp>.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: uim 2010\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-12-09 17:48+0900\n"
-"PO-Revision-Date: 2004-12-09 18:51+0900\n"
-"Last-Translator: TOKUNAGA Hiroyuki <tkng@xem.jp>\n"
+"POT-Creation-Date: 2005-01-07 12:35+0900\n"
+"PO-Revision-Date: 2005-01-07 12:34+0900\n"
+"Last-Translator: Takuro Ashie <ashie@homa.ne.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=EUC-JP\n"
@@ -35,44 +35,44 @@ msgstr "GNOME2パネル用Uimアプレット"
 msgid "Utility"
 msgstr "ユーティリティ"
 
-#: helper/im-switcher-gtk.c:270
+#: helper/im-switcher-gtk.c:268
 msgid "InputMethodName"
 msgstr "インプットメソッド名"
 
-#: helper/im-switcher-gtk.c:279
+#: helper/im-switcher-gtk.c:277
 msgid "Language"
 msgstr "言語名"
 
-#: helper/im-switcher-gtk.c:288
+#: helper/im-switcher-gtk.c:286
 msgid "Description"
 msgstr "説明"
 
-#: helper/im-switcher-gtk.c:318
+#: helper/im-switcher-gtk.c:316
 msgid "uim input method switcher"
 msgstr "入力言語の切り替え"
 
-#: helper/im-switcher-gtk.c:342
+#: helper/im-switcher-gtk.c:340
 msgid "Changing way"
 msgstr "切替え方法"
 
-#: helper/im-switcher-gtk.c:347
+#: helper/im-switcher-gtk.c:345
 msgid "Change whole desktop"
 msgstr "デスクトップ全体を切り替え"
 
-#: helper/im-switcher-gtk.c:348
+#: helper/im-switcher-gtk.c:346
 msgid "Change this application only"
 msgstr "このアプリケーションのみ切り替え"
 
-#: helper/im-switcher-gtk.c:349
+#: helper/im-switcher-gtk.c:347
 msgid "Change this text area only"
 msgstr "このテキストエリアのみ切り替え"
 
-#: helper/dict-main-gtk.c:155 helper/dict-anthy.c:77
+#: helper/dict-main-gtk.c:161 helper/dict-anthy.c:77
 #: helper/dict-word-list-win-gtk.c:255
 msgid "Anthy private dictionary"
 msgstr "Anthy個人辞書"
 
-#: helper/dict-main-gtk.c:218
+#: helper/dict-main-gtk.c:224
 #, c-format
 msgid "Error:%s\n"
 msgstr "エラー:%s\n"
@@ -331,29 +331,89 @@ msgstr "送り"
 msgid "Example"
 msgstr "例"
 
-#: helper/toolbar-common-gtk.c:474
+#: helper/pref-gtk.c:128
+msgid "Group"
+msgstr "グループ"
+
+#: helper/toolbar-common-gtk.c:470
 msgid "sw"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:482 scm/action.lisp:526 scm/action.lisp:527
+#: helper/toolbar-common-gtk.c:479 scm/action.lisp:526 scm/action.lisp:527
 msgid "exec im-switcher"
 msgstr "im-switcherを起動"
 
-#: helper/input-pad-ja.c:272
+#: helper/toolbar-common-gtk.c:503
+msgid "tools menu"
+msgstr "ツールメニュー"
+
+#: helper/toolbar-common-gtk.c:538
+msgid "IM switcher"
+msgstr "IM切替え"
+
+#: helper/toolbar-common-gtk.c:544
+msgid "input pad"
+msgstr "入力パッド"
+
+#: helper/toolbar-common-gtk.c:550
+msgid "free hand"
+msgstr "手書き"
+
+#: helper/toolbar-common-gtk.c:556
+msgid "Edit dictionary"
+msgstr "辞書を編集"
+
+#: helper/input-pad-ja.c:371
 msgid "ja-pad"
 msgstr ""
 
-#: helper/input-pad-ja.c:293
+#: helper/input-pad-ja.c:393
 msgid "hiragana"
 msgstr "ひらがな"
 
-#: helper/input-pad-ja.c:296
+#: helper/input-pad-ja.c:396
 msgid "katakana"
 msgstr "カタカナ"
 
-#: helper/input-pad-ja.c:299
+#: helper/input-pad-ja.c:399
 msgid "eisu"
 msgstr "英数"
+
+#: helper/input-pad-ja.c:402
+msgid "symbol"
+msgstr "記号"
+
+#: helper/input-pad-ja.c:405
+msgid "bracket"
+msgstr "括弧"
+
+#: helper/input-pad-ja.c:408
+msgid "arrow"
+msgstr "矢印"
+
+#: helper/input-pad-ja.c:411
+msgid "omission"
+msgstr "省略記号"
+
+#: helper/input-pad-ja.c:414
+msgid "unit"
+msgstr "単位"
+
+#: helper/input-pad-ja.c:417
+msgid "dot"
+msgstr "点"
+
+#: helper/input-pad-ja.c:420
+msgid "number"
+msgstr "数字"
+
+#: helper/input-pad-ja.c:423
+msgid "academic"
+msgstr "学術"
+
+#: helper/input-pad-ja.c:426
+msgid "line"
+msgstr "線"
 
 #: scm/action.lisp:481 scm/action.lisp:482
 msgid "unknown"
@@ -363,11 +423,11 @@ msgstr ""
 msgid "Japanese Kana Kanji Conversion Engine, Example"
 msgstr "日本語かな漢字変換エンジン例"
 
-#: scm/anthy.lisp:956
+#: scm/anthy.lisp:1085
 msgid "Japanese Kana Kanji Conversion Engine, Anthy"
 msgstr "日本語かな漢字変換エンジンAnthy"
 
-#: scm/canna.lisp:826 scm/custom.lisp:393
+#: scm/canna.lisp:826 scm/custom.lisp:421
 msgid "Canna"
 msgstr "Canna"
 
@@ -376,206 +436,206 @@ msgstr "Canna"
 #.
 #.
 #. Global
-#: scm/custom.lisp:387
+#: scm/custom.lisp:415
 msgid "Direct"
 msgstr "直接入力"
 
-#: scm/custom.lisp:388 scm/direct.lisp:131
+#: scm/custom.lisp:416 scm/direct.lisp:131
 msgid "Direct input method mainly used for latin languages"
 msgstr "主にラテン語入力用の直接入力方式"
 
-#: scm/custom.lisp:390
+#: scm/custom.lisp:418
 msgid "Anthy"
 msgstr "Anthy"
 
-#: scm/custom.lisp:391 scm/custom.lisp:394 scm/custom.lisp:397
-#: scm/custom.lisp:400 scm/custom.lisp:403 scm/custom.lisp:406
-#: scm/custom.lisp:409 scm/custom.lisp:412 scm/custom.lisp:415
-#: scm/custom.lisp:418 scm/custom.lisp:421 scm/custom.lisp:424
-#: scm/custom.lisp:427 scm/custom.lisp:430 scm/custom.lisp:433
-#: scm/custom.lisp:437 scm/custom.lisp:441 scm/custom.lisp:449
-#: scm/custom.lisp:458 scm/custom.lisp:464 scm/custom.lisp:484
-#: scm/custom.lisp:542 scm/custom.lisp:548 scm/custom.lisp:566
-#: scm/custom.lisp:580 scm/custom.lisp:586 scm/custom.lisp:592
-#: scm/custom.lisp:598 scm/custom.lisp:604 scm/custom.lisp:618
-#: scm/custom.lisp:624 scm/custom.lisp:630 scm/custom.lisp:636
-#: scm/custom.lisp:642 scm/custom.lisp:649 scm/custom.lisp:655
-#: scm/custom.lisp:661 scm/custom.lisp:667 scm/custom.lisp:716
-#: scm/custom.lisp:723 scm/custom.lisp:730 scm/custom.lisp:736
-#: scm/custom.lisp:742 scm/custom.lisp:748 scm/custom.lisp:754
-#: scm/custom.lisp:760 scm/custom.lisp:766 scm/custom.lisp:774
-#: scm/custom.lisp:800 scm/custom.lisp:806 scm/custom.lisp:812
-#: scm/custom.lisp:818 scm/custom.lisp:832 scm/custom.lisp:838
-#: scm/custom.lisp:844 scm/custom.lisp:850 scm/custom.lisp:864
-#: scm/custom.lisp:870 scm/custom.lisp:876 scm/custom.lisp:882
+#: scm/custom.lisp:419 scm/custom.lisp:422 scm/custom.lisp:425
+#: scm/custom.lisp:428 scm/custom.lisp:431 scm/custom.lisp:434
+#: scm/custom.lisp:437 scm/custom.lisp:440 scm/custom.lisp:443
+#: scm/custom.lisp:446 scm/custom.lisp:449 scm/custom.lisp:452
+#: scm/custom.lisp:455 scm/custom.lisp:458 scm/custom.lisp:461
+#: scm/custom.lisp:465 scm/custom.lisp:469 scm/custom.lisp:477
+#: scm/custom.lisp:486 scm/custom.lisp:492 scm/custom.lisp:512
+#: scm/custom.lisp:570 scm/custom.lisp:576 scm/custom.lisp:594
+#: scm/custom.lisp:608 scm/custom.lisp:614 scm/custom.lisp:620
+#: scm/custom.lisp:626 scm/custom.lisp:632 scm/custom.lisp:646
+#: scm/custom.lisp:652 scm/custom.lisp:658 scm/custom.lisp:664
+#: scm/custom.lisp:670 scm/custom.lisp:677 scm/custom.lisp:683
+#: scm/custom.lisp:689 scm/custom.lisp:695 scm/custom.lisp:744
+#: scm/custom.lisp:751 scm/custom.lisp:758 scm/custom.lisp:764
+#: scm/custom.lisp:770 scm/custom.lisp:776 scm/custom.lisp:782
+#: scm/custom.lisp:788 scm/custom.lisp:794 scm/custom.lisp:802
+#: scm/custom.lisp:828 scm/custom.lisp:834 scm/custom.lisp:840
+#: scm/custom.lisp:846 scm/custom.lisp:860 scm/custom.lisp:866
+#: scm/custom.lisp:872 scm/custom.lisp:878 scm/custom.lisp:892
+#: scm/custom.lisp:898 scm/custom.lisp:904 scm/custom.lisp:910
 msgid "long description will be here."
 msgstr ""
 
-#: scm/custom.lisp:396
+#: scm/custom.lisp:424
 msgid "SKK"
 msgstr "SKK"
 
-#: scm/custom.lisp:399
+#: scm/custom.lisp:427
 msgid "PRIME"
 msgstr "PRIME"
 
-#: scm/custom.lisp:402
+#: scm/custom.lisp:430
 msgid "pyunihan"
 msgstr ""
 
-#: scm/custom.lisp:405
+#: scm/custom.lisp:433
 msgid "pinyin-big5"
 msgstr ""
 
-#: scm/custom.lisp:408
+#: scm/custom.lisp:436
 msgid "Pinyin"
 msgstr "Pinyin"
 
-#: scm/custom.lisp:411 scm/ipa.lisp:103
+#: scm/custom.lisp:439 scm/ipa.lisp:103
 msgid "International Phonetic Alphabet"
 msgstr "IPA (国際発声記号)"
 
-#: scm/custom.lisp:414
+#: scm/custom.lisp:442
 #, fuzzy
 msgid "Romaja"
 msgstr "ルーマニア語"
 
-#: scm/custom.lisp:417
+#: scm/custom.lisp:445
 msgid "Hangul3"
 msgstr ""
 
-#: scm/custom.lisp:420
+#: scm/custom.lisp:448
 msgid "Hangul2"
 msgstr ""
 
-#: scm/custom.lisp:423
+#: scm/custom.lisp:451
 msgid "Viqr"
 msgstr ""
 
-#: scm/custom.lisp:426 scm/tutcode.lisp:274
+#: scm/custom.lisp:454 scm/tutcode.lisp:274
 msgid "TUT-Code"
 msgstr "TUT-Code"
 
-#: scm/custom.lisp:429 scm/tcode.lisp:1725
+#: scm/custom.lisp:457 scm/tcode.lisp:1725
 msgid "T-Code"
 msgstr "T-Code"
 
-#: scm/custom.lisp:432 scm/spellcheck.lisp:558
+#: scm/custom.lisp:460 scm/spellcheck.lisp:558
 msgid "Spellcheck"
 msgstr "スペルチェック"
 
-#: scm/custom.lisp:436
+#: scm/custom.lisp:464
 msgid "Global settings"
 msgstr "全体設定"
 
-#: scm/custom.lisp:440
+#: scm/custom.lisp:468
 msgid "Advanced settings"
 msgstr "上級設定"
 
-#: scm/custom.lisp:448
+#: scm/custom.lisp:476
 msgid "Preedit color"
 msgstr "プリエディット色"
 
-#: scm/custom.lisp:457 scm/custom.lisp:483
+#: scm/custom.lisp:485 scm/custom.lisp:511
 msgid "Default input method"
 msgstr "デフォルトの入力方式"
 
-#: scm/custom.lisp:463
+#: scm/custom.lisp:491
 msgid "Specify default IM"
 msgstr "デフォルトIMを指定する"
 
-#: scm/custom.lisp:541
+#: scm/custom.lisp:569
 msgid "Input method switching"
 msgstr "入力言語の切り替え"
 
-#: scm/custom.lisp:547
+#: scm/custom.lisp:575
 msgid "Enable IM switching by hotkey"
 msgstr "ホットキーでのIM切替えを有効にする"
 
-#: scm/custom.lisp:565
+#: scm/custom.lisp:593
 msgid "Candidate window position"
 msgstr "候補ウィンドウの位置"
 
-#: scm/custom.lisp:579 scm/custom.lisp:617 scm/custom.lisp:735
-#: scm/custom.lisp:837 scm/custom.lisp:863
+#: scm/custom.lisp:607 scm/custom.lisp:645 scm/custom.lisp:763
+#: scm/custom.lisp:865 scm/custom.lisp:891
 msgid "Use candidate window"
 msgstr "候補ウィンドウを使用する"
 
-#: scm/custom.lisp:585 scm/custom.lisp:623 scm/custom.lisp:741
-#: scm/custom.lisp:843 scm/custom.lisp:869
+#: scm/custom.lisp:613 scm/custom.lisp:651 scm/custom.lisp:769
+#: scm/custom.lisp:871 scm/custom.lisp:897
 msgid "Conversion key press count to show candidate window"
 msgstr "候補ウィンドウの表示を開始するまでの変換キー押下数"
 
-#: scm/custom.lisp:591 scm/custom.lisp:629 scm/custom.lisp:747
-#: scm/custom.lisp:799 scm/custom.lisp:849
+#: scm/custom.lisp:619 scm/custom.lisp:657 scm/custom.lisp:775
+#: scm/custom.lisp:827 scm/custom.lisp:877
 msgid "Number of candidates in candidate window at a time"
 msgstr "候補ウィンドウに表示する候補数"
 
-#: scm/custom.lisp:597 scm/custom.lisp:635
+#: scm/custom.lisp:625 scm/custom.lisp:663
 msgid "Show segment separator"
 msgstr "文節区切りを表示する"
 
-#: scm/custom.lisp:603 scm/custom.lisp:641
+#: scm/custom.lisp:631 scm/custom.lisp:669
 msgid "Segment separator"
 msgstr "文節区切り"
 
-#: scm/custom.lisp:648
+#: scm/custom.lisp:676
 msgid "Canna server"
 msgstr "Cannaサーバ"
 
-#: scm/custom.lisp:654
+#: scm/custom.lisp:682
 msgid "Use Canna server"
 msgstr "Cannaサーバを使用する"
 
-#: scm/custom.lisp:660 scm/custom.lisp:666
+#: scm/custom.lisp:688 scm/custom.lisp:694
 msgid "Canna server name"
 msgstr "Cannaサーバ名"
 
-#: scm/custom.lisp:715
+#: scm/custom.lisp:743
 msgid "Dictionary file"
 msgstr "辞書ファイル"
 
-#: scm/custom.lisp:722
+#: scm/custom.lisp:750
 msgid "Personal dictionary file"
 msgstr "個人辞書ファイル"
 
-#: scm/custom.lisp:729
+#: scm/custom.lisp:757
 msgid "Personal dictionary file (dedicated to uim)"
-msgstr ""
+msgstr "個人辞書ファイル (uim専用)"
 
-#: scm/custom.lisp:753
+#: scm/custom.lisp:781
 msgid "Use recursive learning"
 msgstr "再帰学習を使用する"
 
-#: scm/custom.lisp:759
+#: scm/custom.lisp:787
 msgid "Use Enter key as just committing (egg-like operation)"
-msgstr ""
+msgstr "Enterキーをコミットにのみ使用する (egg風の操作)"
 
-#: scm/custom.lisp:765
+#: scm/custom.lisp:793
 msgid "Commit newline as ASCII string instead of native key-event"
 msgstr "新規行をネイティブキーイベントの代わりにASCII文字列としてコミットする"
 
-#: scm/custom.lisp:773
+#: scm/custom.lisp:801
 msgid "Visual style"
-msgstr ""
+msgstr "ビジュアルスタイル"
 
-#: scm/custom.lisp:805 scm/custom.lisp:881
+#: scm/custom.lisp:833 scm/custom.lisp:909
 msgid "Always showing candidate window"
 msgstr "候補ウィンドウを常に表示する"
 
-#: scm/custom.lisp:811
+#: scm/custom.lisp:839
 msgid "prime-preedit-immediate-commit?"
 msgstr ""
 
-#: scm/custom.lisp:817
+#: scm/custom.lisp:845
 msgid "prime-mask-pending-preedit?"
 msgstr ""
 
-#: scm/custom.lisp:831
+#: scm/custom.lisp:859
 msgid "Other input methods"
 msgstr "その他の入力方式"
 
-#: scm/custom.lisp:875
+#: scm/custom.lisp:903
 msgid "spellcheck-preedit-immediate-commit?"
 msgstr ""
 
@@ -635,7 +695,7 @@ msgstr "PinYin入力方式 (ユニコード)"
 msgid "PinYin input method (Big5 version)"
 msgstr "PinYin入力方式 (Big5)"
 
-#: scm/skk.lisp:1537
+#: scm/skk.lisp:1570
 msgid "Uim's SKK like input method"
 msgstr "UimのSKK風入力方式"
 
