@@ -136,23 +136,23 @@ void UimPrefDialog::createGroupWidgets()
 {
     char **primary_groups = uim_custom_primary_groups();
     char **grp = NULL;
-    QListViewItem *previousItem = NULL;
     for( grp = primary_groups; *grp; grp++ )
     {
         struct uim_custom_group *group = uim_custom_group_get( *grp );
 
         /* insert item in uim's order */
         QListViewItem *item = NULL;
-        if( previousItem == NULL )
-            item = new QListViewItem( m_groupListView, *grp );
+        QListViewItem *lastItem = m_groupListView->lastItem();
+        if( lastItem )
+            item = new QListViewItem( m_groupListView, lastItem, *grp );
         else
-            item = new QListViewItem( m_groupListView, previousItem, *grp );
+            item = new QListViewItem( m_groupListView, *grp );
+
 
         QWidget *w = createGroupWidget( *grp );
         m_groupWidgetsDict.insert( *grp, w );
         m_groupWidgetStack->addWidget( w );
 
-        previousItem = item;
         uim_custom_group_free( group );
     }
 }
@@ -240,8 +240,6 @@ void UimPrefDialog::addCustom( QVBox *vbox, const char *custom_sym )
 void UimPrefDialog::addCustomTypeBool( QVBox *vbox, struct uim_custom *custom )
 {
     CustomCheckBox *checkBox = new CustomCheckBox( custom, vbox );
-    checkBox->setText( _FU8(custom->label) );
-    checkBox->setChecked( custom->value->as_bool );
     QObject::connect( checkBox, SIGNAL(customValueChanged()),
                       this, SLOT(slotCustomValueChanged()) );
 }
@@ -253,9 +251,6 @@ void UimPrefDialog::addCustomTypeInteger( QVBox *vbox, struct uim_custom *custom
     QLabel *label = new QLabel( _FU8(custom->label), hbox );
     hbox->setStretchFactor( new QWidget( hbox ), 1 );
     CustomSpinBox *spinBox = new CustomSpinBox( custom, hbox );
-    spinBox->setValue( custom->value->as_int );
-    spinBox->setMinValue( custom->range->as_int.min );
-    spinBox->setMaxValue( custom->range->as_int.max );
     label->setBuddy( spinBox );
 
     QObject::connect( spinBox, SIGNAL(customValueChanged()),
@@ -268,7 +263,6 @@ void UimPrefDialog::addCustomTypeString( QVBox *vbox, struct uim_custom *custom 
     hbox->setSpacing( 6 );
     QLabel *label = new QLabel( _FU8(custom->label) + ":", hbox );
     CustomLineEdit *lineEdit = new CustomLineEdit( custom, hbox );
-    lineEdit->setText( _FU8(custom->value->as_str) );
     label->setBuddy( lineEdit );
 
     QObject::connect( lineEdit, SIGNAL(customValueChanged()),
@@ -281,7 +275,6 @@ void UimPrefDialog::addCustomTypePathname( QVBox *vbox, struct uim_custom *custo
     hbox->setSpacing( 6 );
     QLabel *label = new QLabel( _FU8(custom->label), hbox );
     CustomPathnameEdit *pathnameEdit = new CustomPathnameEdit( custom, hbox );
-    pathnameEdit->setText( _FU8(custom->value->as_pathname) );
     label->setBuddy( pathnameEdit );
 
     QObject::connect( pathnameEdit, SIGNAL(customValueChanged()),
@@ -295,23 +288,6 @@ void UimPrefDialog::addCustomTypeChoice( QVBox *vbox, struct uim_custom *custom 
     QLabel *label = new QLabel( _FU8(custom->label), hbox );
 
     CustomChoiceCombo *choiceCombo = new CustomChoiceCombo( custom, hbox );
-    char *default_symbol = custom->value->as_choice->symbol;
-    int default_index = -1;
-    int index = 0;
-    struct uim_custom_choice **item = custom->range->as_choice.valid_items;
-    while( *item )
-    {
-        int count = choiceCombo->count();
-        choiceCombo->insertItem( _FU8((*item)->label), count ); // insert item at last
-
-        if( QString::compare( default_symbol, (*item)->symbol ) == 0 )
-            default_index = index;
-
-        index++;
-        item++;
-    }
-    choiceCombo->setCurrentItem( default_index );
-
     label->setBuddy( choiceCombo );
 
     QObject::connect( choiceCombo, SIGNAL(customValueChanged()),
@@ -361,6 +337,10 @@ void UimPrefDialog::confirmChange()
     if( cDialog->exec() == QDialog::Accepted )
     {
         slotApply();
+    }
+    else
+    {
+        m_isValueChanged = false;
     }
 }
 

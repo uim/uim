@@ -63,11 +63,26 @@ public:
     UimCustomItemIface( struct uim_custom *c = NULL )
     {
         m_custom = c;
+
+        // callback
+        uim_custom_cb_add( m_custom->symbol, this, UimCustomItemIface::update_cb );
+
+//        update();
     }
     virtual ~UimCustomItemIface()
     {
         if( m_custom ) uim_custom_free( m_custom );
     }
+
+    /* Custom Update Callback */
+    static void update_cb( void *ptr, const char *custom_sym )
+    {
+        UimCustomItemIface *iface = (UimCustomItemIface*)ptr;
+        iface->updateItem( custom_sym );        
+        iface->update();
+    }
+    virtual void update() = 0;
+
 
 protected:
     void setCustom( struct uim_custom *custom )
@@ -77,6 +92,13 @@ protected:
             currentCustomValueChanged();
         else
             qFatal( "Failed to set value for \"%s\".", custom->symbol );
+    }
+    void updateItem( const char *custom_sym )
+    {
+        // remove current custom
+        if( m_custom ) uim_custom_free( m_custom );
+        // set new item
+        m_custom = uim_custom_get( custom_sym );
     }
 
     virtual void currentCustomValueChanged() = 0;
@@ -91,6 +113,7 @@ class CustomCheckBox : public QCheckBox, public UimCustomItemIface
 
 public:
     CustomCheckBox( struct uim_custom *c, QWidget *parent, const char *name = 0);
+    virtual void update();
 protected slots:
     void slotCustomToggled( bool check );
 protected:
@@ -105,6 +128,7 @@ class CustomSpinBox : public QSpinBox, public UimCustomItemIface
 
 public:
     CustomSpinBox( struct uim_custom *c, QWidget *parent, const char *name = 0 );
+    virtual void update();
 public slots:
     void slotCustomValueChanged( int value );
 protected:
@@ -119,6 +143,7 @@ class CustomLineEdit : public QLineEdit, public UimCustomItemIface
 
 public:
     CustomLineEdit( struct uim_custom *c, QWidget *parent, const char *name = 0 );
+    virtual void update();
 public slots:
     void slotCustomTextChanged( const QString &text );
 protected:
@@ -133,8 +158,8 @@ class CustomPathnameEdit : public QHBox, public UimCustomItemIface
 
 public:
     CustomPathnameEdit( struct uim_custom *c, QWidget *parent, const char *name = 0 );
-    void setText( const QString & str ) { m_lineEdit->setText( str ); }
-
+    virtual void update();
+    
 protected slots:
     void slotPathnameButtonClicked();
     void slotCustomTextChanged( const QString & text );
@@ -153,6 +178,7 @@ class CustomChoiceCombo : public QComboBox, public UimCustomItemIface
 
 public:
     CustomChoiceCombo( struct uim_custom *c, QWidget *parent, const char *name = 0 );
+    virtual void update();
 public slots:
     void slotHighlighted( int index );
 protected:
@@ -167,6 +193,7 @@ class CustomOrderedListEdit : public QHBox, public UimCustomItemIface
 
 public:
     CustomOrderedListEdit( struct uim_custom *c, QWidget *parent, const char *name = 0 );
+    virtual void update();
 public slots:
     void slotEditButtonClicked();
 private:
@@ -188,9 +215,9 @@ class OListEditForm : public OListEditFormBase {
 
 public:
     OListEditForm( QWidget *parent = 0, const char *name = 0 );
+    
     void addCheckItem( bool isActive, const QString &str );
     QStringList activeItemLabels() const;
-
 protected slots:
     void upItem();
     void downItem();

@@ -40,6 +40,19 @@ CustomCheckBox::CustomCheckBox( struct uim_custom *c, QWidget *parent, const cha
 {
     QObject::connect( this, SIGNAL(toggled(bool)),
                       this, SLOT(slotCustomToggled(bool)) );
+
+    update();
+}
+
+void CustomCheckBox::update()
+{    
+    setEnabled( m_custom->is_active );
+
+    if( m_custom->is_active )
+    {
+        setText( _FU8(m_custom->label) );
+        setChecked( m_custom->value->as_bool );
+    }
 }
 
 void CustomCheckBox::slotCustomToggled( bool check )
@@ -56,6 +69,19 @@ CustomSpinBox::CustomSpinBox( struct uim_custom *c, QWidget *parent, const char 
 {
     QObject::connect( this, SIGNAL(valueChanged(int)),
                       this, SLOT(slotCustomValueChanged(int)) );
+    update();
+}
+
+void CustomSpinBox::update()
+{
+    setEnabled( m_custom->is_active );
+
+    if( m_custom->is_active )
+    {
+        setValue( m_custom->value->as_int );
+        setMinValue( m_custom->range->as_int.min );
+        setMaxValue( m_custom->range->as_int.max );
+    }
 }
 
 void CustomSpinBox::slotCustomValueChanged( int value )
@@ -72,6 +98,18 @@ CustomLineEdit::CustomLineEdit( struct uim_custom *c, QWidget *parent, const cha
 {
     QObject::connect( this, SIGNAL(textChanged(const QString&)),
                       this, SLOT(slotCustomTextChanged(const QString&)) );
+
+    update();
+}
+
+void CustomLineEdit::update()
+{
+    setEnabled( m_custom->is_active );
+
+    if( m_custom->is_active )
+    {
+        setText( _FU8(m_custom->value->as_str) );
+    }
 }
 
 void CustomLineEdit::slotCustomTextChanged( const QString &text )
@@ -97,6 +135,19 @@ CustomPathnameEdit::CustomPathnameEdit( struct uim_custom *c, QWidget *parent, c
     m_fileButton->setText( "File" );
     QObject::connect( m_fileButton, SIGNAL(clicked()),
                       this, SLOT(slotPathnameButtonClicked()) );
+
+    update();
+}
+
+void CustomPathnameEdit::update()
+{
+    m_lineEdit->setEnabled( m_custom->is_active );
+    m_fileButton->setEnabled( m_custom->is_active );
+
+    if( m_custom->is_active )
+    {
+        m_lineEdit->setText( _FU8(m_custom->value->as_pathname) );
+    }
 }
 
 void CustomPathnameEdit::slotPathnameButtonClicked()
@@ -126,6 +177,33 @@ CustomChoiceCombo::CustomChoiceCombo( struct uim_custom *c, QWidget *parent, con
 {
     QObject::connect( this, SIGNAL(highlighted(int)),
                       this, SLOT(slotHighlighted(int)) );
+
+    update();
+}
+
+void CustomChoiceCombo::update()
+{
+    setEnabled( m_custom->is_active );
+
+    if( m_custom->is_active )
+    {
+        char *default_symbol = m_custom->value->as_choice->symbol;
+        int default_index = -1;
+        int index = 0;
+        struct uim_custom_choice **item = m_custom->range->as_choice.valid_items;
+        while( *item )
+        {
+            int count = this->count();
+            insertItem( _FU8((*item)->label), count ); // insert item at last
+            
+            if( QString::compare( default_symbol, (*item)->symbol ) == 0 )
+                default_index = index;
+            
+            index++;
+            item++;
+        }
+        setCurrentItem( default_index );
+    }
 }
 
 void CustomChoiceCombo::slotHighlighted( int index )
@@ -168,6 +246,19 @@ CustomOrderedListEdit::CustomOrderedListEdit( struct uim_custom *c, QWidget *par
 
     QObject::connect( m_editButton, SIGNAL(clicked()),
                       this, SLOT(slotEditButtonClicked()) );
+
+    update();
+}
+
+void CustomOrderedListEdit::update()
+{
+    m_lineEdit->setEnabled( m_custom->is_active );
+    m_editButton->setEnabled( m_custom->is_active );
+
+    if( m_custom->is_active )
+    {
+        updateText();        
+    }
 }
 
 void CustomOrderedListEdit::initPtrList()
@@ -291,7 +382,7 @@ void CustomOrderedListEdit::slotEditButtonClicked()
         setCustom( m_custom );
 
         /* reload */
-        updateText();
+        update();
     }
 }
 
