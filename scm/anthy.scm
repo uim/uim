@@ -649,21 +649,43 @@
   (lambda (ustr)
     (evmap-context-list-preedit-string (ustr-whole-seq ustr))))
 
+;; returns #f or list of chars expressed as string
+(define evmap-ustr-cursor-frontside-string
+  (lambda (ustr)
+    (and (not (ustr-cursor-at-end? ustr))
+	 (let* ((emc (ustr-cursor-frontside ustr))
+		(str (evmap-context-preedit-string emc)))
+	   (and (not (null? str))
+		str)))))
+
+(define evmap-ustr-cursor-next-visible!
+  (lambda (ustr)
+    (or (ustr-cursor-at-end? ustr)
+	(begin
+	  (ustr-cursor-move-forward! ustr)
+	  (evmap-ustr-cursor-frontside-string ustr))
+	(evmap-ustr-cursor-next-visible! ustr))))
+
+(define evmap-ustr-cursor-prev-visible!
+  (lambda (ustr)
+    (or (ustr-cursor-at-beginning? ustr)
+	(begin
+	  (ustr-cursor-move-backward! ustr)
+	  (evmap-ustr-cursor-frontside-string ustr))
+	(evmap-ustr-cursor-prev-visible! ustr))))
+
 (define evmap-ustr-set-visible-pos!
   (lambda (ustr pos)
     (ustr-cursor-move-beginning! ustr)
     (let self ((rest pos))
-      (if (ustr-cursor-at-end? ustr)
-	  ustr
-	  (let* ((emc (ustr-cursor-frontside ustr))
-		 (visible-len (length (evmap-context-preedit-string emc))))
-	    (if (and (> visible-len 0)
+      (or (ustr-cursor-at-end? ustr)
+	  (let ((str (evmap-ustr-cursor-frontside-string ustr)))
+	    (or (and str
 		     (<= rest 0))
-		ustr
 		(begin
-		  (ustr-cursor-move-forward! ustr)
-		  (self (if (> visible-len 0)
-			    (- rest visible-len)
+		  (evmap-ustr-cursor-next-visible! ustr)
+		  (self (if str
+			    (- rest (length str))
 			    rest)))))))))
 
 (define evmap-ustr-substr-visible
@@ -685,11 +707,15 @@
 	     (ustr-insert-elem! ustr emc)
 	     closer-tree)))))
 
+(define evmap-ustr-last-emc
+  (lambda (ustr)
+    (and (not (ustr-cursor-at-beginning? ustr))
+	 (ustr-cursor-backside ustr))))
+
 ;; returns closer-tree or #f
 (define evmap-ustr-input!
   (lambda (ustr ruletree ev)
-    (let* ((last-emc (and (not (ustr-cursor-at-beginning? ustr))
-			  (ustr-cursor-backside ustr)))
+    (let* ((last-emc (evmap-ustr-last-emc ustr))
 	   (closer-tree (or (and last-emc
 				 (not (evmap-context-complete? last-emc))
 				 (evmap-context-input! last-emc ev))
@@ -720,12 +746,25 @@
 ;; "¤Á¤ã" -> backspace -> "¤Á"
 (define evmap-ustr-backspace!
   (lambda (ustr)
-    (let ((last-emc (and (not (ustr-cursor-at-beginning? ustr))
-			 (ustr-cursor-backside ustr))))
+    (let ((last-emc (evmap-ustr-last-emc ustr)))
       (if last-emc
-	  (if (evmap-context-complete? last-emc)
-	      (ustr-cursor-delete-backside! ustr)
-	      (evmap-context-undo! last-emc))))))
+	  (cond
+	   ((evmap-context-complete? last-emc)
+	    (ustr-cursor-delete-backside! ustr))
+	   ((or (evmap-context-initial? last-emc)
+		(null? (evmap-context-preedit-string last-emc)))
+	    (ustr-cursor-delete-backside! ustr)
+	    (evmap-ustr-backspace! ustr))
+	   (else
+	    (evmap-context-undo! last-emc)))))))
+
+(define evmap-ustr-delete!
+  (lambda (ustr)
+    (or (ustr-cursor-at-end? ustr)
+	(let ((visible? (evmap-ustr-cursor-frontside-string ustr)))
+	  (ustr-cursor-delete-frontside! ustr)
+	  (or visible?
+	      (evmap-ustr-delete! ustr))))))
 
 (define evmap-ustr-transpose
   (lambda (ustr new-ruletree)
@@ -1057,7 +1096,7 @@
 	 (evmap-ustr-backspace! preconv-ustr))
 
 	((action_anthy_delete)
-	 (ustr-cursor-delete-frontside! preconv-ustr))
+	 (evmap-ustr-delete! preconv-ustr))
 
 	((action_anthy_kill)
 	 (ustr-clear-latter! preconv-ustr))
@@ -1095,10 +1134,10 @@
 	 (anthy-commit-preconv! ac))
 
 	((action_anthy_go_left)
-	 (ustr-cursor-move-backward! preconv-ustr))
+	 (evmap-ustr-cursor-prev-visible! preconv-ustr))
 
 	((action_anthy_go_right)
-	 (ustr-cursor-move-forward! preconv-ustr))
+	 (evmap-ustr-cursor-next-visible! preconv-ustr))
 
 	((action_anthy_beginning_of_preedit)
 	 (ustr-cursor-move-beginning! preconv-ustr))
