@@ -153,15 +153,13 @@ plugin_load(uim_lisp _name) {
   uim_scm_require_file(plugin_scm_filename);
 
   {
-    uim_lisp form, stack_start;
-    uim_scm_gc_protect_stack(&stack_start);
+    uim_lisp form;
     form = uim_scm_list5(uim_scm_make_symbol("plugin-list-append"),
 		         _name,
 		         uim_scm_make_ptr(library),
 			 uim_scm_make_ptr((void *)plugin_instance_init),
 			 uim_scm_make_ptr((void *)plugin_instance_quit));
     uim_scm_eval(form);
-    uim_scm_gc_unprotect_stack(&stack_start);
   }
   free(plugin_scm_filename);
   free(plugin_name);
