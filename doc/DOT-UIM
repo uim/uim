@@ -31,7 +31,7 @@ This file describes the latter way.
 * Overriding lazy-loaded settings
 
   The lazy-loading feature introduced in uim 0.4.6 has caused the
-  problem that the entity to be overridded is not loaded at loading
+  problem that the entity to be overridden is not loaded at loading
   ~/.uim.
 
   For example, following configuration causes the error because
@@ -86,5 +86,5 @@ This file describes the latter way.
       "<Control>a" is interpreted as case sensitive and shift
       insensitive by define-key. But uim-pref recognizes it as case
       insensitive and shift sensitive. The different rule of uim-pref
-      is introduced to unifiy "<Control>a" and "<Control>A" regardless
+      is introduced to unify "<Control>a" and "<Control>A" regardless
       of caps lock status.
