@@ -88,6 +88,7 @@
     (skk-preedit-attr-pending-rk	   . preedit-attr?)
     (skk-preedit-attr-conv-body		   . preedit-attr?)
     (skk-preedit-attr-conv-okuri	   . preedit-attr?)
+    (skk-preedit-attr-conv-appendix	   . preedit-attr?)
     (skk-preedit-attr-direct-pending-rk    . preedit-attr?)
     (skk-preedit-attr-child-beginning-mark . preedit-attr?)
     (skk-preedit-attr-child-end-mark       . preedit-attr?)
@@ -104,6 +105,7 @@
     (skk-preedit-attr-pending-rk	   . preedit-reverse)
     (skk-preedit-attr-conv-body		   . preedit-reverse)
     (skk-preedit-attr-conv-okuri	   . preedit-reverse)
+    (skk-preedit-attr-conv-appendix	   . preedit-reverse)
     (skk-preedit-attr-direct-pending-rk    . preedit-underline)
     (skk-preedit-attr-child-beginning-mark . preedit-reverse)
     (skk-preedit-attr-child-end-mark       . preedit-reverse)
@@ -119,6 +121,7 @@
     (skk-preedit-attr-pending-rk	   . preedit-underline)
     (skk-preedit-attr-conv-body		   . preedit-reverse)
     (skk-preedit-attr-conv-okuri	   . preedit-underline)
+    (skk-preedit-attr-conv-appendix	   . preedit-underline)
     (skk-preedit-attr-direct-pending-rk    . preedit-underline)
     (skk-preedit-attr-child-beginning-mark . preedit-underline)
     (skk-preedit-attr-child-end-mark       . preedit-underline)
@@ -275,6 +278,7 @@
     (list 'head		      '())
     (list 'okuri-head	      "")
     (list 'okuri	      '())
+    (list 'appendix	      '())
     ;(list 'candidates	      '())
     (list 'nth		      0)
     (list 'nr-candidates      0)
@@ -322,6 +326,7 @@
     (skk-context-set-head! sc '())
     (skk-context-set-okuri-head! sc "")
     (skk-context-set-okuri! sc '())
+    (skk-context-set-appendix! sc '())
     (skk-reset-candidate-window sc)
     (skk-context-set-latin-conv! sc #f)))
 
@@ -505,7 +510,9 @@
     (let* ((cand (skk-lib-remove-annotation (skk-get-current-candidate sc)))
 	   (okuri (skk-make-string (skk-context-okuri sc)
 				   (skk-context-kana-mode sc)))
-	   (res (string-append cand okuri))
+	   (appendix (skk-make-string (skk-context-appendix sc)
+				   (skk-context-kana-mode sc)))
+	   (res (string-append (string-append cand okuri) appendix))
 	   (head (skk-context-head sc)))
       (if skk-use-numeric-conversion?
 	  ;; store original number for numeric conversion #4
@@ -652,6 +659,10 @@
 	    (im-pushback-preedit
 	     sc skk-preedit-attr-conv-okuri
 	     (skk-make-string (skk-context-okuri sc)
+			      (skk-context-kana-mode sc)))
+	    (im-pushback-preedit
+	     sc skk-preedit-attr-conv-appendix
+	     (skk-make-string (skk-context-appendix sc)
 			      (skk-context-kana-mode sc)))))
       (if (and
 	   (not (null? csc))
@@ -1147,7 +1158,7 @@
 	       skk-auto-start-henkan?
 	       (string-find skk-auto-start-henkan-keyword-list (car res)))
 	      (begin
-		(skk-context-set-okuri! sc (list res))
+		(skk-context-set-appendix! sc (list res))
 		(skk-begin-conversion sc)
 		#f)
 	      #t)
@@ -1295,7 +1306,12 @@
 	(skk-context-set-head! sc
 			       (append (skk-context-okuri sc)
 				       (skk-context-head sc))))
-    (skk-context-set-okuri! sc '())))
+    (if (not (null? (skk-context-appendix sc)))
+	(skk-context-set-head! sc
+			       (append (skk-context-appendix sc)
+				       (skk-context-head sc))))
+    (skk-context-set-okuri! sc '())
+    (skk-context-set-appendix! sc '())))
 
 (define skk-change-completion-index
   (lambda (sc incr)
