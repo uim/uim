@@ -754,9 +754,11 @@
     (let* ((psc (skk-context-parent-context sc))
 	   (okuri (skk-make-string (skk-context-okuri sc)
 				   (skk-context-kana-mode sc)))
+	   (appendix (skk-make-string (skk-context-appendix sc)
+				   (skk-context-kana-mode sc)))
 	   (str (if (not (null? psc))
 		    str
-		    (string-append str okuri))))
+		    (string-append (string-append str okuri) appendix))))
       (skk-flush sc)
       (skk-context-set-child-context! sc #f)
       (skk-commit sc str))))
