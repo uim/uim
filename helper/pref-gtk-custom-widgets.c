@@ -1969,7 +1969,7 @@ uim_pref_gtk_set_default_value(GtkWidget *widget)
 			    sizeof(struct uim_custom_key *) * (num + 1));
     for (i = 0; i < num; i++) {
       value->as_key[i] = malloc(sizeof(struct uim_custom_key));
-      value->as_key[i] = defval->as_key[i];
+      *value->as_key[i] = *defval->as_key[i];
       value->as_key[i]->literal = strdup(defval->as_key[i]->literal);
       value->as_key[i]->label   = strdup(defval->as_key[i]->label);
       value->as_key[i]->desc    = strdup(defval->as_key[i]->desc);
