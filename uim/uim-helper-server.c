@@ -43,6 +43,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <signal.h>
 #include "uim.h"
 #include "uim-helper.h"
 
@@ -127,12 +128,17 @@ static void
 parse_content(char *content, struct client *cl)
 {
   int i;
+  int ret;
 
-  for (i = 0; i < nr_client_slots; i ++){
-    if(clients[i].fd != -1 && 
-       clients[i].fd != cl->fd && 
-       uim_helper_fd_writable(clients[i].fd)) {
-      write(clients[i].fd, content, strlen(content));
+  for (i = 0; i < nr_client_slots; i++) {
+    if (clients[i].fd != -1 && clients[i].fd != cl->fd &&
+		    (uim_helper_fd_writable(clients[i].fd) > 0)) {
+      ret = write(clients[i].fd, content, strlen(content));
+
+      if (ret == -1 && errno == EPIPE) {
+	close(clients[i].fd);
+	free_client(&clients[i]);
+      }
     }
   }
 }
@@ -266,6 +272,8 @@ main(int argc, char **argv)
   /*  fprintf(stderr,"Waiting for connection at %s\n", path);*/
 
   free(path);
+
+  signal(SIGPIPE, SIG_IGN);
 
   uim_helper_server_process_connection(serv_fd);
 

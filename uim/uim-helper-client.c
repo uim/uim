@@ -186,12 +186,12 @@ uim_helper_read_proc(int fd)
   char buf[BUFFER_SIZE];
   int rc;
 
-  while(uim_helper_fd_readable(fd) > 0) {
+  while (uim_helper_fd_readable(fd) > 0) {
     
     rc = read(fd, buf, sizeof(buf)-1);
     buf[rc] = '\0';
     
-    if(rc == 0) {
+    if (rc == 0) {
       if (uim_disconnect_cb) {
 	uim_disconnect_cb();
       }

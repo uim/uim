@@ -91,7 +91,7 @@ uim_helper_send_message(int fd, const char *message)
   /* readable and cannot read any character, means disconnected.
      so we should read here and proc such condition. */
 
-  if (uim_helper_fd(fd, WRITE)) {
+  if (uim_helper_fd(fd, WRITE) > 0) {
     int len = strlen(message);
     char *buf = malloc(len + 2);
     snprintf(buf, len + 2,"%s\n", message);
