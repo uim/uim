@@ -570,19 +570,19 @@ uim_cand_win_gtk_get_index(UIMCandidateWindow *cwin)
 static void
 uim_cand_win_gtk_set_index(UIMCandidateWindow *cwin, gint index)
 {
-  gint new_page = 0;
+  gint new_page;
 
   g_return_if_fail(UIM_IS_CANDIDATE_WINDOW(cwin));
 
-  if (index < 0)
-    cwin->candidate_index = cwin->nr_candidates - 1;
-  else if ((guint) index >= cwin->nr_candidates)
+  if (index >= (gint) cwin->nr_candidates)
     cwin->candidate_index = 0;
   else
     cwin->candidate_index = index;
 
-  if (cwin->display_limit)
+  if (cwin->candidate_index >= 0 && cwin->display_limit)
     new_page = cwin->candidate_index / cwin->display_limit;
+  else
+    new_page = cwin->page_index;
 
   if (cwin->page_index != new_page)
     uim_cand_win_gtk_set_page(cwin, new_page);
@@ -612,7 +612,7 @@ static void
 uim_cand_win_gtk_set_page(UIMCandidateWindow *cwin, gint page)
 {
   guint len, new_page;
-  guint new_index;
+  gint new_index;
 
   g_return_if_fail(UIM_IS_CANDIDATE_WINDOW(cwin));
   g_return_if_fail(cwin->stores);
@@ -642,12 +642,12 @@ uim_cand_win_gtk_set_page(UIMCandidateWindow *cwin, gint page)
       new_index
 	= (new_page * cwin->display_limit) + (cwin->candidate_index % cwin->display_limit);
     else
-      new_index = new_page * cwin->display_limit;
+      new_index = -1;
   } else {
     new_index = cwin->candidate_index;
   }
 
-  if (new_index >= cwin->nr_candidates)
+  if (new_index >= (gint) cwin->nr_candidates)
     new_index = cwin->nr_candidates - 1;
 
  /* shrink the window */
