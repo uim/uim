@@ -462,6 +462,8 @@ candwin_activate(gchar **str)
   }
 
   uim_cand_win_gtk_set_page(cwin, 0);
+  update_label(cwin);
+
   gtk_widget_show_all(GTK_WIDGET(cwin));
   cwin->is_active = TRUE;
 }
