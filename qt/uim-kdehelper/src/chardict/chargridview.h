@@ -30,71 +30,45 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#ifndef _UIM_CHARDICT_QT_H_
-#define _UIM_CHARDICT_QT_H_
+#ifndef _CHAR_GRID_VIEW_H_
+#define _CHAR_GRID_VIEW_H_
 
-#include <qstring.h>
-#include <qwidget.h>
-#include <qcombobox.h>
-#include <qlineedit.h>
-#include <qwidgetstack.h>
-#include <qscrollview.h>
 #include <qgridview.h>
 #include <qstringlist.h>
-#include <qtoolbutton.h>
+#include <qfont.h>
+#include <qpoint.h>
 
-class BushuViewWidget;
-class UnicodeViewWidget;
-
-class KUimCharDict : public QWidget
+class CharGridView : public QGridView
 {
     Q_OBJECT
 
 public:
-    KUimCharDict( QWidget *parent = 0, const char *name = 0 );
-    ~KUimCharDict();
+    CharGridView( int x, int y, QWidget *parent = 0, const char *name = 0 );
+    ~CharGridView();
 
-    enum Mode {
-        BUSHU = 0,
-        UNICODE = 1
-    };
+    void setCharacters( const QStringList &charList );
+    virtual QSize sizeHint( void ) const;
+
+    void setFont( const QFont &font ) { m_font = font; }
 
 protected:
-    void setupWidgets();
-    void setupBushuWidgets();
+    virtual void paintCell( QPainter * painter, int y, int x );
+    virtual void resizeEvent( QResizeEvent * e );
+    virtual void contentsMousePressEvent( QMouseEvent * e );
+    virtual void contentsMouseReleaseEvent( QMouseEvent * e );
 
-    void writeConfig();
-    void readConfig();
-
-    void setCharDictFont( const QFont &font );
+    void updateCharGridView();
 
 protected slots:
-    void changeMode( int mode );
-    void slotSelectFont();
-    void slotCharSelected( const QString &c );
-
-protected:
-    QComboBox *m_modeCombo;
-    QToolButton *m_fontselButton;
-    QLineEdit *m_charLineEdit;
-
-    QWidgetStack *m_widgetStack;
-    BushuViewWidget *m_bushuView;
-    UnicodeViewWidget *m_unicodeView;
-};
-
-class CharDictViewBase : public QWidget
-{
-    Q_OBJECT
-
-public:
-    CharDictViewBase( QWidget *parent = 0, const char *name = 0 )
-            : QWidget( parent, name ) {}
-
-    virtual void setFont( const QFont &font ) = 0;
+    QString coordsToChar( int x, int y );
 
 signals:
     void charSelected( const QString & );
+
+protected:
+    QPoint m_activeCell;
+    QStringList m_charList;
+    QFont m_font;
 };
 
-#endif /* Not def: _UIM_CHARDICT_QT_H_ */
+#endif /* Not def: _CHAR_GRID_VIEW_H_ */

@@ -30,71 +30,48 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#ifndef _UIM_CHARDICT_QT_H_
-#define _UIM_CHARDICT_QT_H_
+#ifndef _UNICODE_VIEW_WIDGET_H_
+#define _UNICODE_VIEW_WIDGET_H_
 
-#include <qstring.h>
+#include "uim-chardict-qt.h"
+
+#include <qlistview.h>
 #include <qwidget.h>
-#include <qcombobox.h>
-#include <qlineedit.h>
-#include <qwidgetstack.h>
-#include <qscrollview.h>
-#include <qgridview.h>
-#include <qstringlist.h>
-#include <qtoolbutton.h>
+#include <qsplitter.h>
+#include <qmap.h>
+#include <qfont.h>
 
-class BushuViewWidget;
-class UnicodeViewWidget;
+class CharGridView;
+class UnicodeBlock;
 
-class KUimCharDict : public QWidget
+class UnicodeViewWidget : public CharDictViewBase
 {
     Q_OBJECT
 
 public:
-    KUimCharDict( QWidget *parent = 0, const char *name = 0 );
-    ~KUimCharDict();
+    UnicodeViewWidget( QWidget *parent = 0, const char *name = 0 );
+    ~UnicodeViewWidget();
 
-    enum Mode {
-        BUSHU = 0,
-        UNICODE = 1
-    };
+    void setFont( const QFont &font );
 
 protected:
     void setupWidgets();
-    void setupBushuWidgets();
 
     void writeConfig();
     void readConfig();
 
-    void setCharDictFont( const QFont &font );
-
 protected slots:
-    void changeMode( int mode );
-    void slotSelectFont();
-    void slotCharSelected( const QString &c );
-
-protected:
-    QComboBox *m_modeCombo;
-    QToolButton *m_fontselButton;
-    QLineEdit *m_charLineEdit;
-
-    QWidgetStack *m_widgetStack;
-    BushuViewWidget *m_bushuView;
-    UnicodeViewWidget *m_unicodeView;
-};
-
-class CharDictViewBase : public QWidget
-{
-    Q_OBJECT
-
-public:
-    CharDictViewBase( QWidget *parent = 0, const char *name = 0 )
-            : QWidget( parent, name ) {}
-
-    virtual void setFont( const QFont &font ) = 0;
+    void slotUnicodeBlockSelected( QListViewItem * );
 
 signals:
     void charSelected( const QString & );
+
+protected:
+    QMap<QListViewItem *, UnicodeBlock*> uBlockMap;
+
+    QSplitter *m_mainSplitter;
+    QListView *m_unicodeBlockListView;
+    CharGridView *m_charGridView;
 };
 
-#endif /* Not def: _UIM_CHARDICT_QT_H_ */
+#endif /* Not def: _UNICODE_VIEW_WIDGET_H_ */

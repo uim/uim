@@ -30,71 +30,42 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#ifndef _UIM_CHARDICT_QT_H_
-#define _UIM_CHARDICT_QT_H_
+#ifndef _BUSHU_VIEW_WIDGET_H_
+#define _BUSHU_VIEW_WIDGET_H_
 
-#include <qstring.h>
+#include "uim-chardict-qt.h"
+
 #include <qwidget.h>
-#include <qcombobox.h>
-#include <qlineedit.h>
-#include <qwidgetstack.h>
-#include <qscrollview.h>
-#include <qgridview.h>
-#include <qstringlist.h>
-#include <qtoolbutton.h>
+#include <qfont.h>
+#include <qlistview.h>
+#include <qsplitter.h>
 
-class BushuViewWidget;
-class UnicodeViewWidget;
+class CharGridView;
 
-class KUimCharDict : public QWidget
+class BushuViewWidget : public CharDictViewBase
 {
     Q_OBJECT
 
 public:
-    KUimCharDict( QWidget *parent = 0, const char *name = 0 );
-    ~KUimCharDict();
+    BushuViewWidget( QWidget *parent = 0, const char *name = 0 );
+    ~BushuViewWidget();
 
-    enum Mode {
-        BUSHU = 0,
-        UNICODE = 1
-    };
+    void setFont( const QFont &font );
 
 protected:
     void setupWidgets();
-    void setupBushuWidgets();
+    void readDict();
 
     void writeConfig();
     void readConfig();
 
-    void setCharDictFont( const QFont &font );
-
 protected slots:
-    void changeMode( int mode );
-    void slotSelectFont();
-    void slotCharSelected( const QString &c );
+    void slotBushuSelected( QListViewItem * );
 
 protected:
-    QComboBox *m_modeCombo;
-    QToolButton *m_fontselButton;
-    QLineEdit *m_charLineEdit;
-
-    QWidgetStack *m_widgetStack;
-    BushuViewWidget *m_bushuView;
-    UnicodeViewWidget *m_unicodeView;
+    QSplitter *m_mainSplitter;
+    QListView *m_bushuListView;
+    CharGridView *m_charGridView;
 };
 
-class CharDictViewBase : public QWidget
-{
-    Q_OBJECT
-
-public:
-    CharDictViewBase( QWidget *parent = 0, const char *name = 0 )
-            : QWidget( parent, name ) {}
-
-    virtual void setFont( const QFont &font ) = 0;
-
-signals:
-    void charSelected( const QString & );
-};
-
-#endif /* Not def: _UIM_CHARDICT_QT_H_ */
+#endif /* Not def: _BUSHU_VIEW_WIDGET_H_ */
