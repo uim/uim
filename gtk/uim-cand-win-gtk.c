@@ -121,7 +121,6 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
   GtkWidget *vbox;
-  gchar *leftp;
   GtkTreeSelection *selection;
 
   uim_init();
@@ -140,15 +139,6 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
 
   cwin->cursor.x = cwin->cursor.y = 0;
   cwin->cursor.width = cwin->cursor.height = 0;
-
-  leftp = uim_symbol_value_str("candidate-window-position");
-  if (leftp && !strcmp(leftp, "left")) {
-    cwin->left = TRUE;
-  } else {
-    cwin->left = FALSE;
-  }
-  g_free(leftp);
-
 
   /* build window */
   vbox = gtk_vbox_new(FALSE, 0);
@@ -316,8 +306,17 @@ uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
 				GSList *candidates)
 {
   gint i, nr_stores = 1;
+  gchar *leftp;
 
   g_return_if_fail(UIM_IS_CAND_WIN_GTK(cwin));
+
+  leftp = uim_symbol_value_str("candidate-window-position");
+  if (leftp && !strcmp(leftp, "left")) {
+    cwin->left = TRUE;
+  } else {
+    cwin->left = FALSE;
+  }
+  g_free(leftp);
 
   if (cwin->stores == NULL)
     cwin->stores = g_ptr_array_new();
