@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 190 of new repository
+;; This file is tested with revision 254 of new repository
 
 ;; TODO:
 ;;
@@ -50,7 +50,27 @@
 (define-uim-test-case "testcase custom validators"
   (setup
    (lambda ()
-     (uim '(require "custom.scm"))))
+     (uim '(require "custom.scm"))
+     (uim '(define-custom 'test-cancel-key '("<Control>g" "escape")
+	     '(global)
+	     '(key)
+	     "test cancel key"
+	     "long description will be here"))
+     (uim '(define-custom 'test-foo-key '("a" test-cancel-key)
+	     '(global)
+	     '(key)
+	     "test foo key"
+	     "long description will be here"))
+     (uim '(define-custom 'test-bar-key '("b")
+	     '(global)
+	     '(key)
+	     "test bar key"
+	     "long description will be here"))
+     (uim '(define-custom 'test-baz-key '(test-foo-key "c" test-bar-key "d")
+	     '(global)
+	     '(key)
+	     "test bar key"
+	     "long description will be here"))))
 
   ("test anything?"
    (assert-true (uim-bool '(anything? #f)))
@@ -224,30 +244,74 @@
 			     '(uim-color-uim uim-color-atok uim-color-nonexistent)
 			     '(uim-color-uim "uim" "uim native")
 			     '(uim-color-atok "ATOK like" "Similar to ATOK")))))
-  ("test key-definition?"
-   ;; more detailed test is done by test valid-strict-key-str?
-
-   ;; null key fails
-   (assert-false (uim-bool '(valid-strict-key-str? "")))
-   
-   ;; invalid key definitions
-   (assert-false  (uim-bool '(valid-key-str? "nonexistent")))
-   (assert-false  (uim-bool '(valid-key-str? "<Shift>nonexistent")))
-   (assert-false  (uim-bool '(valid-key-str? "<Nonexistent>a")))
-
+  ("test custom-key?"
+   ;; no keys
+   (assert-true  (uim-bool '(custom-key? ())))
+   ;; single key
+   (assert-true  (uim-bool '(custom-key? '("a"))))
+   ;; single symbolic key
+   (assert-true  (uim-bool '(custom-key? '("return"))))
    ;; single key with single modifier
-   (assert-true  (uim-bool '(valid-strict-key-str? "<Shift>a")))
+   (assert-true  (uim-bool '(custom-key? '("<Control>a"))))
+   ;; single key with multiple modifier
+   (assert-true  (uim-bool '(custom-key? '("<Control><Alt>a"))))
+   ;; multiple keys
+   (assert-true  (uim-bool '(custom-key?
+			     '("a" "return" "<Control>a" "<Control><Alt>a"))))
+   ;; single key reference
+   (assert-true  (uim-bool '(custom-key? '(test-cancel-key))))
+   ;; multiple key reference
+   (assert-true  (uim-bool '(custom-key?
+			     '(test-cancel-key test-foo-key test-bar-key))))
+   ;; key and key reference
+   (assert-true  (uim-bool '(custom-key?
+			     '(test-cancel-key "a" test-bar-key "<Alt>a"))))
 
-   ;; single key with multiple modifiers
-   (assert-true  (uim-bool '(valid-strict-key-str? "<Shift><Control><Meta>A")))
+   ;; custom-key must be a list
+   (assert-false (uim-bool '(custom-key? "a")))
+   (assert-false (uim-bool '(custom-key? 'test-cancel-key)))
+   (assert-false (uim-bool '(custom-key? test-cancel-key?)))
+   (assert-false (uim-bool '(custom-key? 32)))
+   ;; siod interprets #f as ()
+   ;;(assert-false (uim-bool '(custom-key? #f)))
+   ;; null key is invalid
+   (assert-false (uim-bool '(custom-key? '(""))))
+   ;; custom-key cannot contain key with translator
+   (assert-false (uim-bool '(custom-key? '("<IgnoreShift>0"))))
+   (assert-false (uim-bool '(custom-key?
+			     '("<IgnoreShift><IgnoreCase>return"))))
+   ;; custom-key cannot contain raw closure
+   (assert-false (uim-bool '(custom-key? (list test-cancel-key))))
+   ;; key reference must exist
+   (assert-false (uim-bool '(custom-key? '(test-nonexistent-key))))
+   ;; symbolic key must be valid
+   (assert-false (uim-bool '(custom-key? '("nonexistent"))))
+   (assert-false (uim-bool '(custom-key? '("<Control>nonexistent"))))
+   ;; symbolic key must be expressed as string
+   (assert-false (uim-bool '(custom-key? '(return))))
+   ;; custom-key cannot contain invalid key elements
+   (assert-false (uim-bool '(custom-key?
+			     '(test-nonexistent-key "<Alt>a")))))
 
-   ;; single key with single translator
-   (assert-false (uim-bool '(valid-strict-key-str? "<IgnoreShift>0")))
+  ("test custom-expand-key-references"
+   (assert-equal '("<Control>g" "escape")
+		 (uim '(custom-value 'test-cancel-key)))
+   ;; no expansion
+   (assert-equal '("<Control>g" "escape")
+		 (uim '(custom-expand-key-references
+			(custom-value 'test-cancel-key))))
+   ;; single expansion
+   (assert-equal '("a" "<Control>g" "escape")
+		 (uim '(custom-expand-key-references
+			(custom-value 'test-foo-key))))
+   (assert-equal '(test-foo-key "c" test-bar-key "d")
+		 (uim '(custom-value 'test-baz-key)))
+   ;; recursive expansion
+   (assert-equal '("a" "<Control>g" "escape" "c" "b" "d")
+		 (uim '(custom-expand-key-references
+			(custom-value 'test-baz-key))))))
 
-   ;; single key with multiple translators
-   (assert-false (uim-bool '(valid-strict-key-str? "<IgnoreShift><IgnoreCase>return")))))
-
-(define-uim-test-case "testcase custom custom-symbol"
+(define-uim-test-case "testcase custom custom-choice"
   (setup
    (lambda ()
      (uim '(require "custom.scm"))))
@@ -314,8 +378,8 @@
 	       (_ "Candidate window position")
 	       (_ "long description will be here."))
 	     (define-custom-group 'anthy
-	       anthy-im-canonical-name
-	       anthy-im-desc)
+	       "Anthy"
+	       "Japanese Kana Kanji Conversion Engine, Anthy")
 
 	     (define-custom 'anthy-use-candidate-window? #t
 	       '(anthy)
@@ -353,8 +417,8 @@
 	       (_ "Segment separator")
 	       (_ "long description will be here."))
 	     (define-custom-group 'canna
-	       canna-im-canonical-name
-	       canna-im-desc)
+	       "Canna"
+	       "Canna")
 
 	     (define-custom 'canna-use-candidate-window? #t
 	       '(canna)
@@ -386,8 +450,8 @@
 	       (_ "Segment separator")
 	       (_ "long description will be here."))
 	     (define-custom-group 'skk
-	       skk-im-canonical-name
-	       skk-im-desc)
+	       "SKK"
+	       "Uim's SKK like input method")
 
 	     (define-custom 'skk-dic-file-name (string-append (sys-datadir)
 							      "/skk/SKK-JISYO.L")
@@ -454,8 +518,8 @@
 	       (_ "Visual style")
 	       (_ "long description will be here."))
 	     (define-custom-group 'prime
-	       prime-im-canonical-name
-	       prime-im-desc)
+	       "PRIME"
+	       "Japanese predictable input method")
 	     (define-custom 'prime-nr-candidate-max 10
 	       '(prime)
 	       '(integer 1 20)
@@ -514,8 +578,8 @@
 	       (_ "Number of candidates in candidate window at a time")
 	       (_ "long description will be here."))
 	     (define-custom-group 'spellcheck
-	       spellcheck-im-canonical-name
-	       spellcheck-im-desc)
+	       "Spellcheck"
+	       "Spellcheck")
 
 	     (define-custom 'spellcheck-use-candidate-window? #t
 	       '(spellcheck)
@@ -1109,7 +1173,7 @@
    (assert-true  (uim-bool '(custom-set-value! 'test-custom1 'test-custom1-uim)))
    (assert-equal '(custom1-func custom1-ptr test-custom1)
 		 (uim 'test-custom1-trace)))
-("test custom-register-update-cb (2 callbaks)"
+  ("test custom-register-update-cb (2 callbaks)"
    (uim '(define test-update-gate (lambda (func ptr custom-sym)
 				    (set! test-custom1-trace
 					  (cons (list func ptr custom-sym)
@@ -1244,7 +1308,7 @@
    (lambda ()
      (uim '(require "custom.scm"))))
 
-  ("test define-custom (symbol)"
+  ("test define-custom (choice)"
    (assert-false (uim-bool '(symbol-bound? 'test-style)))
 
    (uim '(define-custom 'test-style 'test-style-ddskk
@@ -1256,7 +1320,59 @@
 	   "Test style"
 	   "long description will be here."))
 
-   (assert-true (uim-bool '(symbol-bound? 'test-style)))))
+   (assert-true (uim-bool '(symbol-bound? 'test-style)))
+   (assert-equal 'test-style-ddskk
+		 (uim 'test-style)))
+
+  ("test define-custom (choice) #2"
+   (uim '(define test-style 'test-style-uim))
+
+   (uim '(define-custom 'test-style 'test-style-ddskk
+	   '(global)
+	   '(choice
+	     (test-style-uim "uim" "uim native")
+	     (test-style-ddskk "ddskk like" "Similar to ddskk")
+	     (test-style-canna "canna like" "Similar to canna"))
+	   "Test style"
+	   "long description will be here."))
+
+   (assert-true  (uim-bool '(symbol-bound? 'test-style)))
+   ;; preexisting value is not overridden
+   (assert-equal 'test-style-uim
+		 (uim 'test-style)))
+
+  ("test define-custom (key)"
+   (assert-false (uim-bool '(symbol-bound? 'test-foo-key)))
+   (assert-false (uim-bool '(symbol-bound? 'test-foo-key?)))
+
+   (uim '(define-custom 'test-foo-key '("a")
+	   '(global)
+	   '(key)
+	   "test foo key"
+	   "long description will be here"))
+
+   (assert-true  (uim-bool '(symbol-bound? 'test-foo-key)))
+   (assert-equal '("a")
+		 (uim 'test-foo-key))
+   (assert-true  (uim-bool '(symbol-bound? 'test-foo-key?)))
+   (assert-true  (uim-bool '(test-foo-key? (string->charcode "a") 0))))
+
+  ("test define-custom (key) #2"
+   (uim '(define test-foo-key '("b")))
+   (assert-false (uim-bool '(symbol-bound? 'test-foo-key?)))
+
+   (uim '(define-custom 'test-foo-key '("a")
+	   '(global)
+	   '(key)
+	   "test foo key"
+	   "long description will be here"))
+
+   ;; preexisting value is not overridden
+   (assert-equal '("b")
+		 (uim 'test-foo-key))
+   ;; key predicate is not defined since custom-set-value! is not
+   ;; invoked
+   (assert-false (uim-bool '(symbol-bound? 'test-foo-key?)))))
 
 (define-uim-test-case "testcase custom methods"
   (setup
@@ -1278,6 +1394,21 @@
 	       (skk "SKK" "SKK"))
 	     "Test avalilable IMs"
 	     "long description will be here."))
+     (uim '(define-custom 'test-cancel-key '("<Control>g" "escape")
+	   '(global)
+	   '(key)
+	   "test cancel key"
+	   "long description will be here."))
+     (uim '(define-custom 'test-foo-key '("a" test-cancel-key)
+	     '(global)
+	     '(key)
+	     "test foo key"
+	     "long description will be here."))
+     (uim '(define-custom 'test-bar-key '("b")
+	   '(global)
+	   '(key)
+	   "test bar key"
+	   "long description will be here."))
      (uim '(define-custom 'test-use-candidate-window? #t
 	     '(test ui)
 	     '(boolean)
@@ -1331,6 +1462,32 @@
 					   '(nonexistent))))
    (assert-false (uim-bool '(custom-valid? 'test-available-ims
 					   '(anthy nonexistent))))
+   ;; key
+   (assert-true  (uim-bool '(custom-valid? 'test-cancel-key ())))
+   (assert-true  (uim-bool '(custom-valid? 'test-cancel-key '("a"))))
+   (assert-true  (uim-bool '(custom-valid? 'test-cancel-key '("return"))))
+   (assert-true  (uim-bool '(custom-valid? 'test-cancel-key '("<Control>a"))))
+   (assert-true  (uim-bool '(custom-valid? 'test-cancel-key '("<Control><Alt>a"))))
+   (assert-true  (uim-bool '(custom-valid? 'test-cancel-key '("a" "return" "<Control>a" "<Control><Alt>a"))))
+   (assert-true  (uim-bool '(custom-valid? 'test-cancel-key '(test-cancel-key))))
+   (assert-true  (uim-bool '(custom-valid? 'test-cancel-key '(test-cancel-key test-foo-key test-bar-key))))
+   (assert-true  (uim-bool '(custom-valid? 'test-cancel-key '(test-cancel-key "a" test-bar-key "<Alt>a"))))
+   (assert-false (uim-bool '(custom-valid? 'test-cancel-key "a")))
+   (assert-false (uim-bool '(custom-valid? 'test-cancel-key 'test-cancel-key)))
+   (assert-false (uim-bool '(custom-valid? 'test-cancel-key test-cancel-key?)))
+   (assert-false (uim-bool '(custom-valid? 'test-cancel-key 32)))
+   ;; siod interprets #f as ()
+   ;;(assert-false (uim-bool '(custom-valid? 'test-cancel-key #f)))
+   (assert-false (uim-bool '(custom-valid? 'test-cancel-key '(""))))
+   (assert-false (uim-bool '(custom-valid? 'test-cancel-key '("<IgnoreShift>0"))))
+   (assert-false (uim-bool '(custom-valid? 'test-cancel-key '("<IgnoreShift><IgnoreCase>return"))))
+   (assert-false (uim-bool '(custom-valid? 'test-cancel-key (list test-cancel-key))))
+   (assert-false (uim-bool '(custom-valid? 'test-cancel-key '(test-nonexistent-key))))
+   (assert-false (uim-bool '(custom-valid? 'test-cancel-key '("nonexistent"))))
+   (assert-false (uim-bool '(custom-valid? 'test-cancel-key '("<Control>nonexistent"))))
+   (assert-false (uim-bool '(custom-valid? 'test-cancel-key '(return))))
+   (assert-false (uim-bool '(custom-valid? 'test-cancel-key '(test-nonexistent-key "<Alt>a"))))
+
    ;; integer
    (assert-false (uim-bool '(custom-valid? 'test-nr-candidate-max 0)))
    (assert-true  (uim-bool '(custom-valid? 'test-nr-candidate-max 1)))
@@ -1343,6 +1500,8 @@
 		 (uim '(custom-value 'test-style)))
    (assert-equal '(anthy canna skk)
 		 (uim '(custom-value 'test-available-ims)))
+   (assert-equal '("<Control>g" "escape")
+		 (uim '(custom-value 'test-cancel-key)))
    (assert-true  (uim-bool '(custom-value 'test-use-candidate-window?)))
    (assert-equal 10
 		 (uim '(custom-value 'test-nr-candidate-max)))
@@ -1395,6 +1554,20 @@
 					       '(nonexistent))))
    (assert-equal '(skk anthy canna)
 		 (uim '(custom-value 'test-available-ims)))
+
+   ;;; key
+   ;; default value
+   (assert-equal '("<Control>g" "escape")
+		 (uim '(custom-value 'test-cancel-key)))
+   ;; valid value
+   (assert-true  (uim-bool '(custom-set-value! 'test-cancel-key '("a"))))
+   (assert-equal '("a")
+		 (uim '(custom-value 'test-cancel-key)))
+   ;; invalid value is ignored
+   (assert-false (uim-bool '(custom-set-value! 'test-cancel-key
+					       '(test-nonexistent "a"))))
+   (assert-equal '("a")
+		 (uim '(custom-value 'test-cancel-key)))
 
    ;;; boolean
    ;; default value
@@ -1485,6 +1658,19 @@
 					       '(anthy canna skk))))
    (assert-true  (uim-bool '(custom-default? 'test-available-ims)))
 
+   ;;; key
+   ;; default value
+   (assert-equal '("<Control>g" "escape")
+		 (uim '(custom-value 'test-cancel-key)))
+   (assert-true  (uim-bool '(custom-default? 'test-cancel-key)))
+   ;; valid, but non-default value
+   (assert-true  (uim-bool '(custom-set-value! 'test-cancel-key '("a"))))
+   (assert-false (uim-bool '(custom-default? 'test-cancel-key)))
+   ;; come back to default
+   (assert-true  (uim-bool '(custom-set-value! 'test-cancel-key
+					       '("<Control>g" "escape"))))
+   (assert-true  (uim-bool '(custom-default? 'test-cancel-key)))
+
    ;;; boolean
    ;; default value
    (assert-true  (uim-bool '(custom-value 'test-use-candidate-window?)))
@@ -1561,6 +1747,19 @@
    (assert-equal '(anthy canna skk)
 		 (uim '(custom-default-value 'test-available-ims)))
 
+   ;;; key
+   ;; default value
+   (assert-equal '("<Control>g" "escape")
+		 (uim '(custom-value 'test-cancel-key)))
+   (assert-equal '("<Control>g" "escape")
+		 (uim '(custom-default-value 'test-cancel-key)))
+   ;; default value is not affected by current value
+   (assert-true  (uim-bool '(custom-set-value! 'test-cancel-key '("a"))))
+   (assert-equal '("a")
+		 (uim '(custom-value 'test-cancel-key)))
+   (assert-equal '("<Control>g" "escape")
+		 (uim '(custom-default-value 'test-cancel-key)))
+
    ;;; boolean
    ;; default value
    (assert-true  (uim-bool '(custom-value 'test-use-candidate-window?)))
@@ -1615,6 +1814,8 @@
 		 (uim '(custom-groups 'test-style)))
    (assert-equal '(global)
 		 (uim '(custom-groups 'test-available-ims)))
+   (assert-equal '(global)
+		 (uim '(custom-groups 'test-cancel-key)))
    (assert-equal '(test ui)
 		 (uim '(custom-groups 'test-use-candidate-window?)))
    (assert-equal '(test advanced ui)
@@ -1629,6 +1830,8 @@
 		 (uim '(custom-type 'test-style)))
    (assert-equal 'ordered-list
 		 (uim '(custom-type 'test-available-ims)))
+   (assert-equal 'key
+		 (uim '(custom-type 'test-cancel-key)))
    (assert-equal 'boolean
 		 (uim '(custom-type 'test-use-candidate-window?)))
    (assert-equal 'integer
@@ -1648,6 +1851,8 @@
 		   (skk "SKK" "SKK"))
 		 (uim '(custom-type-attrs 'test-available-ims)))
    (assert-equal ()
+		 (uim '(custom-type-attrs 'test-cancel-key)))
+   (assert-equal ()
 		 (uim '(custom-type-attrs 'test-use-candidate-window?)))
    (assert-equal '(1 20)
 		 (uim '(custom-type-attrs 'test-nr-candidate-max)))
@@ -1663,7 +1868,10 @@
 		   (canna "Cannd" "Canna")
 		   (skk "SKK" "SKK"))
 		 (uim '(custom-range 'test-available-ims)))
-   (assert-false (uim-bool '(custom-range 'test-use-candidate-window?)))
+   (assert-equal ()
+		 (uim '(custom-range 'test-cancel-key)))
+   (assert-equal ()
+		 (uim '(custom-range 'test-use-candidate-window?)))
    (assert-equal '(1 20)
 		 (uim '(custom-range 'test-nr-candidate-max)))
    (assert-equal '(".+")
@@ -1676,6 +1884,8 @@
 		 (uim '(custom-label 'test-style)))
    (assert-equal "Test avalilable IMs"
 		 (uim '(custom-label 'test-available-ims)))
+   (assert-equal "test cancel key"
+		 (uim '(custom-label 'test-cancel-key)))
    (assert-equal "Use candidate window"
 		 (uim '(custom-label 'test-use-candidate-window?)))
    (assert-equal "Number of candidates in candidate window at a time"
@@ -1691,6 +1901,8 @@
    (assert-equal "long description will be here."
 		 (uim '(custom-desc 'test-available-ims)))
    (assert-equal "long description will be here."
+		 (uim '(custom-desc 'test-cancel-key)))
+   (assert-equal "long description will be here."
 		 (uim '(custom-desc 'test-use-candidate-window?)))
    (assert-equal "long description will be here."
 		 (uim '(custom-desc 'test-nr-candidate-max)))
@@ -1704,6 +1916,8 @@
 		 (uim '(custom-value-as-literal 'test-style)))
    (assert-equal "'(anthy canna skk)"
 		 (uim '(custom-value-as-literal 'test-available-ims)))
+   (assert-equal "'(\"<Control>g\" \"escape\")"
+		 (uim '(custom-value-as-literal 'test-cancel-key)))
    (assert-equal "#t"
 		 (uim '(custom-value-as-literal 'test-use-candidate-window?)))
    (assert-equal "10"
@@ -1718,6 +1932,8 @@
 		 (uim '(custom-definition-as-literal 'test-style)))
    (assert-equal "(define test-available-ims '(anthy canna skk))"
 		 (uim '(custom-definition-as-literal 'test-available-ims)))
+   (assert-equal "(define test-cancel-key '(\"<Control>g\" \"escape\"))\n(define-key test-cancel-key? '(\"<Control>g\" \"escape\"))"
+		 (uim '(custom-definition-as-literal 'test-cancel-key)))
    (assert-equal "(define test-use-candidate-window? #t)"
 		 (uim '(custom-definition-as-literal 'test-use-candidate-window?)))
    (assert-equal "(define test-nr-candidate-max 10)"

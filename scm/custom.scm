@@ -100,7 +100,8 @@
   (lambda (key-repls)
     (and (list? key-repls)
 	 (every (lambda (key)
-		  (or (string? key)       ;; "<Control>a"
+		  (or (and (string? key)  ;; "<Control>a"
+			   (valid-strict-key-str? key))
 		      (and (symbol? key)  ;; 'generic-cancel-key
 			   (custom-exist? key 'key))))
 		key-repls))))
@@ -259,11 +260,11 @@
 	  (set! custom-rec-alist (cons crec
 				       custom-rec-alist)))
       (if (not (symbol-bound? sym))
-	  (let ((default (if (or (symbol? default)
-				 (list? default))
-			     (list 'quote default)
-			     default)))
-	    (eval (list 'define sym default)
+	  (let ((quoted-default (if (or (symbol? default)
+					(list? default))
+				    (list 'quote default)
+				    default)))
+	    (eval (list 'define sym quoted-default)
 		  toplevel-env)
 	    (custom-set-value! sym default)))  ;; to apply hooks
       (for-each (lambda (subgrp)
@@ -309,7 +310,7 @@
 	   (set-symbol-value! sym val)
 	   (if (eq? (custom-type sym)
 		    'key)
-	       (define-key (symbolconc sym '?) val))
+	       (define-key-internal (symbolconc sym '?) val))
 	   (custom-call-hook-procs sym custom-set-hooks)
 	   (let ((post-activities (map custom-active? custom-syms)))
 	     (for-each (lambda (another-sym pre post)
