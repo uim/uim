@@ -98,6 +98,7 @@
 		     (_ "Canna server")
 		     (_ "long description will be here."))
 
+;; warning: must be defined before custom-preserved-canna-server-name
 (define-custom 'custom-activate-canna-server-name? #f
   '(canna cannaserver)
   '(boolean)
@@ -235,7 +236,7 @@
 (custom-add-hook 'canna-widgets
 		 'custom-set-hooks
 		 (lambda ()
-		   canna-configure-widgets))
+		   (canna-configure-widgets)))
 
 
 ;;; Input mode
@@ -258,13 +259,14 @@
   (_ "long description will be here."))
 
 ;; value dependency
-(custom-add-hook 'canna-input-mode-actions
-		 'custom-set-hooks
-		 (lambda ()
-		   (custom-choice-range-reflect-olist-val
-		    'default-widget_canna_input_mode
-		    'canna-input-mode-actions
-		    canna-input-mode-indication-alist)))
+(if custom-full-featured?
+    (custom-add-hook 'canna-input-mode-actions
+		     'custom-set-hooks
+		     (lambda ()
+		       (custom-choice-range-reflect-olist-val
+			'default-widget_canna_input_mode
+			'canna-input-mode-actions
+			canna-input-mode-indication-alist))))
 
 ;; activity dependency
 (custom-add-hook 'default-widget_canna_input_mode
@@ -281,12 +283,12 @@
 (custom-add-hook 'default-widget_canna_input_mode
 		 'custom-set-hooks
 		 (lambda ()
-		   canna-configure-widgets))
+		   (canna-configure-widgets)))
 
 (custom-add-hook 'canna-input-mode-actions
 		 'custom-set-hooks
 		 (lambda ()
-		   canna-configure-widgets))
+		   (canna-configure-widgets)))
 
 ;;; Kana input method
 
@@ -308,13 +310,14 @@
   (_ "long description will be here."))
 
 ;; value dependency
-(custom-add-hook 'canna-kana-input-method-actions
-		 'custom-set-hooks
-		 (lambda ()
-		   (custom-choice-range-reflect-olist-val
-		    'default-widget_canna_kana_input_method
-		    'canna-kana-input-method-actions
-		    canna-kana-input-method-indication-alist)))
+(if custom-full-featured?
+    (custom-add-hook 'canna-kana-input-method-actions
+		     'custom-set-hooks
+		     (lambda ()
+		       (custom-choice-range-reflect-olist-val
+			'default-widget_canna_kana_input_method
+			'canna-kana-input-method-actions
+			canna-kana-input-method-indication-alist))))
 
 ;; activity dependency
 (custom-add-hook 'default-widget_canna_kana_input_method
@@ -331,9 +334,9 @@
 (custom-add-hook 'default-widget_canna_kana_input_method
 		 'custom-set-hooks
 		 (lambda ()
-		   canna-configure-widgets))
+		   (canna-configure-widgets)))
 
 (custom-add-hook 'canna-kana-input-method-actions
 		 'custom-set-hooks
 		 (lambda ()
-		   canna-configure-widgets))
+		   (canna-configure-widgets)))

@@ -52,6 +52,7 @@
 
 (define custom-required-custom-files ())
 (define custom-rt-primary-groups ())
+(define custom-set-hooks ())
 
 ;; full implementation
 (define custom-load-group-conf
@@ -103,10 +104,15 @@
   (lambda ()
     (reverse custom-rt-primary-groups)))
 
+;; TODO: write test
 ;; lightweight implementation
 (define custom-add-hook
   (lambda (custom-sym hook-sym proc)
-    #f))
+    (if (eq? hook-sym
+	     'custom-set-hooks)
+	(set! custom-set-hooks
+	      (alist-replace (cons custom-sym proc)
+			     custom-set-hooks)))))
 
 ;; lightweight implementation
 (define define-custom-group
@@ -132,22 +138,27 @@
   (lambda (sym)
     (symbol-value sym)))
 
+;; TODO: rewrite test
 ;; lightweight implementation
 (define custom-set-value!
   (lambda (sym val)
-    (cond
-     ((custom-key-exist? sym)
-      (set-symbol-value! sym val)
-      (let ((key-val (custom-modify-key-predicate-names val)))
-	(eval (list 'define (symbolconc sym '?)
-		    (list 'make-key-predicate (list 'quote key-val)))
-	      toplevel-env))
-      #t)
-     ((custom-exist? sym #f)
-      (set-symbol-value! sym val)
-      #t)
-     (else
-      #f))))
+    (and (cond
+	  ((custom-key-exist? sym)
+	   (set-symbol-value! sym val)
+	   (let ((key-val (custom-modify-key-predicate-names val)))
+	     (eval (list 'define (symbolconc sym '?)
+			 (list 'make-key-predicate (list 'quote key-val)))
+		   toplevel-env))
+	   #t)
+	  ((custom-exist? sym #f)
+	   (set-symbol-value! sym val)
+	   #t)
+	  (else
+	   #f))
+	 (let ((hook (assq sym custom-set-hooks)))
+	   (if hook
+	       ((cdr hook)))
+	   #t))))
 
 ;; lightweight implementation
 (define define-custom

@@ -154,22 +154,23 @@
   (_ "long description will be here."))
 
 ;; value dependency
-(custom-add-hook 'prime-input-mode-actions
-		 'custom-set-hooks
-		 (lambda ()
-		   (custom-choice-range-reflect-olist-val
-		    'default-widget_prime_input_mode
-		    'prime-input-mode-actions
-		    prime-input-mode-indication-alist)))
+(if custom-full-featured?
+    (custom-add-hook 'prime-input-mode-actions
+		     'custom-set-hooks
+		     (lambda ()
+		       (custom-choice-range-reflect-olist-val
+			'default-widget_prime_input_mode
+			'prime-input-mode-actions
+			prime-input-mode-indication-alist))))
 
 ;; dynamic reconfiguration
 (custom-add-hook 'default-widget_prime_input_mode
 		 'custom-set-hooks
 		 (lambda ()
-		   prime-configure-widgets))
+		   (prime-configure-widgets)))
 
 (custom-add-hook 'prime-input-mode-actions
 		 'custom-set-hooks
 		 (lambda ()
-		   prime-configure-widgets))
+		   (prime-configure-widgets)))
 

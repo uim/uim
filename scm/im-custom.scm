@@ -67,6 +67,7 @@
 		     (_ "Default input method")
 		     (_ "long description will be here."))
 
+;; warning: must be defined before custom-preserved-default-im-name
 (define-custom 'custom-activate-default-im-name? #f
   '(global default-im-name)
   '(boolean)

@@ -169,7 +169,7 @@
 (custom-add-hook 'anthy-widgets
 		 'custom-set-hooks
 		 (lambda ()
-		   anthy-configure-widgets))
+		   (anthy-configure-widgets)))
 
 
 ;;; Input mode
@@ -192,13 +192,14 @@
   (_ "long description will be here."))
 
 ;; value dependency
-(custom-add-hook 'anthy-input-mode-actions
-		 'custom-set-hooks
-		 (lambda ()
-		   (custom-choice-range-reflect-olist-val
-		    'default-widget_anthy_input_mode
-		    'anthy-input-mode-actions
-		    anthy-input-mode-indication-alist)))
+(if custom-full-featured?
+    (custom-add-hook 'anthy-input-mode-actions
+		     'custom-set-hooks
+		     (lambda ()
+		       (custom-choice-range-reflect-olist-val
+			'default-widget_anthy_input_mode
+			'anthy-input-mode-actions
+			anthy-input-mode-indication-alist))))
 
 ;; activity dependency
 (custom-add-hook 'default-widget_anthy_input_mode
@@ -215,12 +216,12 @@
 (custom-add-hook 'default-widget_anthy_input_mode
 		 'custom-set-hooks
 		 (lambda ()
-		   anthy-configure-widgets))
+		   (anthy-configure-widgets)))
 
 (custom-add-hook 'anthy-input-mode-actions
 		 'custom-set-hooks
 		 (lambda ()
-		   anthy-configure-widgets))
+		   (anthy-configure-widgets)))
 
 ;;; Kana input method
 
@@ -242,13 +243,14 @@
   (_ "long description will be here."))
 
 ;; value dependency
-(custom-add-hook 'anthy-kana-input-method-actions
-		 'custom-set-hooks
-		 (lambda ()
-		   (custom-choice-range-reflect-olist-val
-		    'default-widget_anthy_kana_input_method
-		    'anthy-kana-input-method-actions
-		    anthy-kana-input-method-indication-alist)))
+(if custom-full-featured?
+    (custom-add-hook 'anthy-kana-input-method-actions
+		     'custom-set-hooks
+		     (lambda ()
+		       (custom-choice-range-reflect-olist-val
+			'default-widget_anthy_kana_input_method
+			'anthy-kana-input-method-actions
+			anthy-kana-input-method-indication-alist))))
 
 ;; activity dependency
 (custom-add-hook 'default-widget_anthy_kana_input_method
@@ -265,9 +267,9 @@
 (custom-add-hook 'default-widget_anthy_kana_input_method
 		 'custom-set-hooks
 		 (lambda ()
-		   anthy-configure-widgets))
+		   (anthy-configure-widgets)))
 
 (custom-add-hook 'anthy-kana-input-method-actions
 		 'custom-set-hooks
 		 (lambda ()
-		   anthy-configure-widgets))
+		   (anthy-configure-widgets)))

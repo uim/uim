@@ -219,22 +219,23 @@
   (_ "long description will be here."))
 
 ;; value dependency
-(custom-add-hook 'skk-input-mode-actions
-		 'custom-set-hooks
-		 (lambda ()
-		   (custom-choice-range-reflect-olist-val
-		    'default-widget_skk_input_mode
-		    'skk-input-mode-actions
-		    skk-input-mode-indication-alist)))
+(if custom-full-featured?
+    (custom-add-hook 'skk-input-mode-actions
+		     'custom-set-hooks
+		     (lambda ()
+		       (custom-choice-range-reflect-olist-val
+			'default-widget_skk_input_mode
+			'skk-input-mode-actions
+			skk-input-mode-indication-alist))))
 
 ;; dynamic reconfiguration
 (custom-add-hook 'default-widget_skk_input_mode
 		 'custom-set-hooks
 		 (lambda ()
-		   skk-configure-widgets))
+		   (skk-configure-widgets)))
 
 (custom-add-hook 'skk-input-mode-actions
 		 'custom-set-hooks
 		 (lambda ()
-		   skk-configure-widgets))
+		   (skk-configure-widgets)))
 
