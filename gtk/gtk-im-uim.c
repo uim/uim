@@ -279,6 +279,25 @@ filter_keypress(GtkIMContext *ic,
 		GdkEventKey *key)
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
+
+  /*** Hack for combination of xchat + GTK+ 2.6 ***/
+  if (snooper_installed == FALSE) {
+    int rv;
+    int kv = convert_keyval(key->keyval);
+    int mod = convert_modifier(key->state);
+
+    if (key->type == GDK_KEY_RELEASE) {
+      rv = uim_release_key(focused_context->uc, kv, mod);
+    } else {
+      rv = uim_press_key(focused_context->uc, kv, mod);
+    }
+    if (rv) {
+      return gtk_im_context_filter_keypress(uic->slave, key);
+    }
+    return TRUE;
+  }
+  /*** Hack for combination of xchat + GTK+ 2.6 ***/
+
   return gtk_im_context_filter_keypress(uic->slave, key);
 }
 
@@ -448,7 +467,7 @@ focus_in(GtkIMContext *ic)
   focused_context = uic;
   disable_focused_context = FALSE;
 
-  /* XXX:This is not recommended way!! */
+  /* XXX:Use of key snooper is not recommended way!! */
   if(snooper_installed == FALSE) {
     snooper_id = gtk_key_snooper_install((GtkKeySnoopFunc)uim_key_snoop, NULL );
     snooper_installed = TRUE;
@@ -728,7 +747,6 @@ im_uim_send_im_list(void)
     g_string_append(msg, "\t");
     if(strcmp(name, current_im_name) == 0) {
       g_string_append(msg, "selected");
-      g_print("%s has been selected\n", name);
     }
     g_string_append(msg, "\n");
   }
@@ -832,7 +850,6 @@ im_module_create(const gchar *context_id)
 
   obj = g_object_new(type_im_uim, NULL);
   uic = IM_UIM_CONTEXT(obj);
-
   im_name = uim_get_default_im_name(setlocale(LC_CTYPE, NULL));
   uic->uc = uim_create_context(uic, "UTF-8",
 			       NULL, im_name,
@@ -994,6 +1011,7 @@ uim_key_snoop(GtkWidget *grab_widget, GdkEventKey *key, gpointer data)
     }
     return TRUE;
   }
+
   return FALSE;
 }
 
