@@ -508,40 +508,6 @@ uim_get_im_name_for_locale(const char *localename)
   return valid_im_name;
 }
 
-
-static int
-load_conf()
-{
-  struct passwd *pw;
-  char *fn;
-  long verbose, ret;
-  struct stat st;
-
-  verbose = uim_scm_get_verbose_level();
-  fn = getenv("LIBUIM_USER_SCM_FILE");
-
-  if (!fn) {
-    pw = getpwuid(getuid());
-    fn = malloc(strlen(pw->pw_dir) + sizeof("/.uim"));
-    sprintf(fn, "%s/.uim", pw->pw_dir);
-  } else {
-    fn = strdup(fn);
-  }
-
-  if (stat(fn, &st) == -1) {
-    free(fn);
-    return -1;
-  }
-
-  if (verbose < 1) {
-    uim_scm_set_verbose_level(1);  /* to show error message */
-  }
-  ret = uim_scm_load_file(fn) ? 0 : -1;
-  uim_scm_set_verbose_level(verbose);
-  free(fn);
-  return ret;
-}
-
 int uim_set_candidate_selector_cb(uim_context uc,
 				  void (*activate_cb)(void *ptr, int nr, int display_limit),
 				  void (*select_cb)(void *ptr, int index),
@@ -660,17 +626,7 @@ uim_init_scm()
   scm_files = getenv("LIBUIM_SCM_FILES");
   uim_scm_set_lib_path((scm_files) ? scm_files : SCM_FILES);
 
-  uim_scm_require_file("plugin.scm");
-  uim_scm_require_file("custom-rt.scm");
-  uim_scm_require_file("im.scm");
-  uim_scm_load_file("init.scm");
-  /* must be loaded at last of IMs */
-  UIM_EVAL_STRING(NULL, "(require-module \"direct\")");
-
-  if (getenv("LIBUIM_VANILLA") ||
-      load_conf() == -1) {
-    uim_scm_load_file("default.scm");
-  }
+  uim_scm_require_file("init.scm");
 
   uim_return_str = NULL;
   for (i = 0; i < (int)UIM_RETURN_STR_LIST_SIZE; i++){

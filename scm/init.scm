@@ -28,7 +28,29 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+;; This file initializes platform dependent execution
+;; environment. Following codes are written for ordinary UNIX desktop
+;; system. Modify this file with careful investigation to change uim
+;; configuration for special platforms such as embedded environments
+;;   -- YamaKen 2005-01-29
+
+(require "plugin.scm");
+(require "custom-rt.scm");
+(require "im.scm");
 (load "installed-modules.scm")
+
+(define load-user-conf
+  (lambda ()
+    (let ((orig-verbose (verbose))
+	  (file (or (getenv "LIBUIM_USER_SCM_FILE")
+		    (string-append (getenv "HOME") "/.uim"))))
+      (if (>= (verbose)
+	      1)
+	  (verbose 1))
+      (let ((succeeded (try-load file)))
+	(verbose orig-verbose)
+	succeeded))))
+      
 
 (or (and (symbol-bound? 'per-user-enabled-im-list-loaded?)
 	 per-user-enabled-im-list-loaded?)
@@ -39,3 +61,10 @@
       (for-each require-module installed-im-module-list)
       (define enabled-im-list (reverse (cons 'direct
 					     (map im-name im-list))))))
+
+;; must be loaded at last of IMs
+(require-module "direct")
+
+(or (getenv "LIBUIM_VANILLA")
+    (load-user-conf)
+    (load "default.scm"))
