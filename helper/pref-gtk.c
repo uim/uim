@@ -1069,7 +1069,8 @@ olist_pref_selection_changed(GtkTreeSelection *selection,
 static void
 choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
 {
-  GtkWidget *dialog, *hbox, *vbox, *scrwin, *tree_view, *button, *arrow, *label;
+  GtkWidget *dialog, *hbox, *vbox, *scrwin, *table;
+  GtkWidget *tree_view, *button, *arrow, *label;
   GtkListStore *store;
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
@@ -1136,10 +1137,18 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
 		     FALSE, FALSE, 4);
   gtk_widget_show(vbox);
 
+  table = gtk_table_new(3, 0, FALSE);
+  gtk_table_set_row_spacings(GTK_TABLE(table), 3);
+  gtk_table_set_col_spacings(GTK_TABLE(table), 3);
+  gtk_box_pack_start(GTK_BOX(vbox), table, FALSE, FALSE, 0);
+  gtk_widget_show(table);
+
   /* up button */
   button = gtk_button_new();
   olist_pref_win.up_button = button;
-  gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+  gtk_table_attach_defaults(GTK_TABLE(table), button,
+			    1, 2,
+			    0, 1);
   gtk_widget_show(button);
   arrow = gtk_arrow_new(GTK_ARROW_UP, GTK_SHADOW_NONE);
   gtk_container_add(GTK_CONTAINER(button), arrow);
@@ -1150,7 +1159,9 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   /* down button */
   button = gtk_button_new();
   olist_pref_win.down_button = button;
-  gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+  gtk_table_attach_defaults(GTK_TABLE(table), button,
+			    1, 2,
+			    2, 3);
   gtk_widget_show(button);
   arrow = gtk_arrow_new(GTK_ARROW_DOWN, GTK_SHADOW_NONE);
   gtk_container_add(GTK_CONTAINER(button), arrow);
@@ -1161,7 +1172,9 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   /* left button */
   button = gtk_button_new();
   olist_pref_win.left_button = button;
-  gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+  gtk_table_attach_defaults(GTK_TABLE(table), button,
+			    0, 1,
+			    1, 2);
   gtk_widget_show(button);
   arrow = gtk_arrow_new(GTK_ARROW_LEFT, GTK_SHADOW_NONE);
   gtk_container_add(GTK_CONTAINER(button), arrow);
@@ -1172,7 +1185,9 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   /* right button */
   button = gtk_button_new();
   olist_pref_win.right_button = button;
-  gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+  gtk_table_attach_defaults(GTK_TABLE(table), button,
+			    2, 3,
+			    1, 2);
   gtk_widget_show(button);
   arrow = gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_NONE);
   gtk_container_add(GTK_CONTAINER(button), arrow);
