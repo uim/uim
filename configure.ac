@@ -229,6 +229,10 @@ AC_ARG_ENABLE(compat-custom,
   AC_HELP_STRING([--enable-compat-custom],
                  [enable obsolete version of 'custom API' required by sumika. This exclusively disables new custom API]))
 
+AC_ARG_ENABLE(scm-nested-eval,
+  AC_HELP_STRING([--enable-scm-nested-eval],
+                 [enable nested Scheme evaluation from C (i.e. C -> Scheme -> C -> Scheme) (for developer, experimental)]))
+
 AC_ARG_ENABLE(fep,
   AC_HELP_STRING([--disable-fep],
                  [disable uim-fep]),
@@ -295,6 +299,7 @@ AM_CONDITIONAL(DICT, test x$use_dict = xyes)
 AM_CONDITIONAL(DEBUG, test x$enable_debug = xyes)
 AM_CONDITIONAL(COMPAT_SCM, test x$enable_compat_scm = xyes)
 AM_CONDITIONAL(COMPAT_CUSTOM, test x$enable_compat_custom = xyes)
+AM_CONDITIONAL(SCM_NESTED_EVAL, test x$enable_scm_nested_eval = xyes)
 
 GTK_BINARY_VERSION=`pkg-config gtk+-2.0 --variable=gtk_binary_version`
 AC_SUBST(GTK_BINARY_VERSION)
@@ -330,6 +335,13 @@ fi
 if test x$enable_compat_custom = xyes; then
   AC_DEFINE(UIM_COMPAT_CUSTOM, 1,
             [Enable obsolete version of 'custom API' required by sumika])
+fi
+
+if test x$enable_scm_nested_eval = xyes; then
+  AC_DEFINE(UIM_SCM_NESTED_EVAL, 1,
+            [Enable nested Scheme evaluation from C])
+  AC_DEFINE(NESTED_REPL_C_STRING, 1,
+            [Enable nested Scheme evaluation from C])
 fi
 
 # Checks for typedefs, structures, and compiler characteristics.

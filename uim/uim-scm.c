@@ -121,6 +121,22 @@ uim_scm_gc_protect(uim_lisp *location)
   gc_protect((LISP *)location);
 }
 
+void
+uim_scm_gc_protect_stack(uim_lisp *stack_start)
+{
+#ifdef UIM_SCM_NESTED_EVAL
+  siod_gc_protect_stack((LISP *)stack_start);
+#endif
+}
+
+void
+uim_scm_gc_unprotect_stack(uim_lisp *stack_start)
+{
+#ifdef UIM_SCM_NESTED_EVAL
+  siod_gc_unprotect_stack((LISP *)stack_start);
+#endif
+}
+
 long
 uim_scm_get_verbose_level(void)
 {
@@ -184,7 +200,18 @@ uim_scm_string_equal(uim_lisp a, uim_lisp b) {
 
 uim_lisp
 uim_scm_eval(uim_lisp obj) {
-  return (uim_lisp)leval((LISP)obj, NIL);
+  uim_lisp ret;  /* intentionally outside of next stack_start */
+#ifdef UIM_SCM_NESTED_EVAL
+  uim_lisp stack_start;
+
+  uim_scm_gc_protect_stack(&stack_start);
+#endif
+  ret = (uim_lisp)leval((LISP)obj, NIL);
+#ifdef UIM_SCM_NESTED_EVAL
+  uim_scm_gc_unprotect_stack(&stack_start);
+#endif
+
+  return ret;
 }
 
 uim_lisp

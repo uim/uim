@@ -79,7 +79,11 @@
   added 'else' symbol definition (Sep-21-2004) YamaKen
   fix broken feature? and provide (Sep-28-2004) YamaKen
   removed non-standard _"str" syntax for i18n (Sep-30-2004) YamaKen
+  added NESTED_REPL_C_STRING feature (Dec-31-2004) YamaKen
  */
+
+#include "config.h"
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
@@ -97,7 +101,7 @@
 #include "siod.h"
 #include "intl.h"
 
-/* strcut */
+/* struct */
 
 struct catch_frame {
   LISP tag;
@@ -766,8 +770,12 @@ repl_driver (long want_init, struct repl_hooks *h)
   struct repl_hooks hd;
   LISP stack_start;
   func_trace = NULL;
+#if (NESTED_REPL_C_STRING)
+  siod_gc_protect_stack(&stack_start);
+#else
   stack_start_ptr = &stack_start;
   stack_limit_ptr = STACK_LIMIT (stack_start_ptr, stack_size);
+#endif
   k = setjmp (errjmp);
   if (k == 2)
     return (2);
@@ -1321,6 +1329,24 @@ nconc (LISP a, LISP b)
   setcdr (last (a), b);
   return (a);
 }
+
+#if (NESTED_REPL_C_STRING)
+void
+siod_gc_protect_stack(LISP *stack_start)
+{
+  if (!stack_start_ptr) {
+    stack_start_ptr = stack_start;
+    stack_limit_ptr = STACK_LIMIT (stack_start, stack_size);
+  }
+}
+
+void
+siod_gc_unprotect_stack(LISP *stack_start)
+{
+  if (stack_start_ptr == stack_start)
+    stack_start_ptr = NULL;
+}
+#endif  /* NESTED_REPL_C_STRING */
 
 static LISP
 stack_limit (LISP amount, LISP silent)
@@ -2170,9 +2196,11 @@ init_storage_1 (void)
 static void
 init_storage (void)
 {
+#if (!NESTED_REPL_C_STRING)
   LISP stack_start;
   if (stack_start_ptr == NULL)
     stack_start_ptr = &stack_start;
+#endif
   init_storage_1 ();
   init_storage_a ();
   set_gc_hooks (tc_c_file, 0, file_gc_free);
@@ -4552,6 +4580,9 @@ siod_init (int argc, char **argv, int warnflag, FILE *fp)
 {
   int k;
   char *ptr;
+#if (NESTED_REPL_C_STRING)
+  LISP stack_start;
+#endif
 
   siod_output = fp;
 
@@ -4647,10 +4678,16 @@ siod_init (int argc, char **argv, int warnflag, FILE *fp)
 	    fprintf (stderr, "bad arg: %s\n", argv[k]);
 	}
     }
+#if (NESTED_REPL_C_STRING)
+  siod_gc_protect_stack(&stack_start);
+#endif
   init_storage ();
   init_subrs ();
   init_intl ();
 #if DEBUG_SCM
   init_dbg ();
+#endif
+#if (NESTED_REPL_C_STRING)
+  siod_gc_unprotect_stack(&stack_start);
 #endif
 }

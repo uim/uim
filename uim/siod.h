@@ -17,11 +17,21 @@
  *  (2) C context
  *       No scheme context on the stack
  * Yusuke.
+ *
+ * The nested Scheme evaluation feature (NESTED_REPL_C_STRING) will
+ * remove this limitation. The feature will be enabled by default once
+ * tested enough.  -- YamaKen 2004-12-31
  */
 #ifndef __SIOD_H__
 #define __SIOD_H__
 
+#include "config.h"
+
 #include <stdio.h>
+
+#ifndef NESTED_REPL_C_STRING
+#define NESTED_REPL_C_STRING 0
+#endif
 
 struct obj
   {
@@ -239,6 +249,10 @@ LISP equal (LISP, LISP);
 void set_fatal_exit_hook (void (*fcn) (void));
 LISP intern (LISP x);
 void gc_protect (LISP * location); /* exported as temporary solution for custom API */
+#if (NESTED_REPL_C_STRING)
+void siod_gc_protect_stack(LISP *stack_start);
+void siod_gc_unprotect_stack(LISP *stack_start);
+#endif
 long repl_c_string (const char *, long want_init, long want_print);
 LISP siod_return_value (void);
 LISP reverse (LISP);
