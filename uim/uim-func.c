@@ -579,11 +579,9 @@ im_update_prop_list(LISP id, LISP prop_)
   if(uc) {
 #ifdef UIM_CALLBACK_QUEUE
     uim_schedule_cb(uc, PROP_LIST_UPDATE_CB, NULL, 0, 0);
-#else
-    if (uc->prop_list_update_cb) {
-      uc->prop_list_update_cb(uc->ptr, uc->propstr);
-    }
 #endif
+  } else {
+    return false_sym;
   }
   
   if(uc && uc->propstr)
@@ -592,6 +590,12 @@ im_update_prop_list(LISP id, LISP prop_)
   uc->propstr = uc->conv_if->convert(uc->conv, prop);
   
   free(prop);
+
+#ifndef UIM_CALLBACK_QUEUE
+    if (uc->prop_list_update_cb) {
+      uc->prop_list_update_cb(uc->ptr, uc->propstr);
+    }
+#endif
 
   return false_sym;
 }
@@ -606,10 +610,6 @@ im_update_prop_label(LISP id, LISP prop_)
   if(uc) {
 #ifdef UIM_CALLBACK_QUEUE
     uim_schedule_cb(uc, PROP_LABEL_UPDATE_CB, NULL, 0, 0);
-#else
-    if (uc->prop_label_update_cb) {
-      uc->prop_label_update_cb(uc->ptr, uc->proplabelstr);
-    }
 #endif
   } else {
     return false_sym;
@@ -619,8 +619,14 @@ im_update_prop_label(LISP id, LISP prop_)
     free(uc->proplabelstr);
   
   uc->proplabelstr = uc->conv_if->convert(uc->conv, prop);
-  
+
   free(prop);
+  
+#ifndef UIM_CALLBACK_QUEUE
+    if (uc->prop_label_update_cb) {
+      uc->prop_label_update_cb(uc->ptr, uc->proplabelstr);
+    }
+#endif
 
   return false_sym;
 }
