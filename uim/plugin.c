@@ -125,7 +125,7 @@ plugin_load(uim_lisp _name)
     plugin_scm_filename = NULL;
   }
   
-  if(plugin_lib_filename == NULL || plugin_scm_filename == NULL) {
+  if(plugin_lib_filename == NULL) {
     return uim_scm_f();
   }
   
@@ -151,7 +151,8 @@ plugin_load(uim_lisp _name)
   }
 
   (plugin_instance_init)();
-  uim_scm_require_file(plugin_scm_filename);
+  if (plugin_scm_filename)
+    uim_scm_require_file(plugin_scm_filename);
 
   {
     uim_lisp form;

@@ -4,7 +4,7 @@ EXTRA_DIST = config.h.in iso-639-1.def slib.c uim-compat-scm.c
 
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 
-lib_LTLIBRARIES = libuim.la
+lib_LTLIBRARIES = libuim.la libuim-custom.la
 
 uim_plugin_LTLIBRARIES = 
 uim_plugindir = $(pkglibdir)/plugin
@@ -15,7 +15,6 @@ pkginclude_HEADERS = uim.h uim-util.h uim-helper.h uim-im-switcher.h \
 libuim_la_SOURCES = uim.c uim-scm.c uim-util.c uim-func.c uim-key.c \
 		siod.h context.h gettext.h \
 		uim-helper.c uim-helper-client.c \
-		uim-custom.c \
 		intl.c \
 		uim-ipc.c \
 		getpeereid.c \
@@ -35,6 +34,8 @@ endif
 if COMPAT_SCM
   pkginclude_HEADERS += uim-compat-scm.h
 endif
+
+libuim_custom_la_SOURCES = uim-custom.c
 
 if M17NLIB
   uim_plugin_LTLIBRARIES += libuim-m17nlib.la
@@ -90,6 +91,17 @@ libuim_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DPKGLIBDIR=\"$(pkglibdir)\" \
 if DEBUG
 libuim_la_CPPFLAGS += -DDEBUG -DDEBUG_SCM=1
 endif
+
+libuim_custom_la_LDFLAGS = -version-info 0:1:0 -export-symbols-regex uim.\*
+libuim_custom_la_LIBADD = 
+libuim_custom_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
+
+uim_plugin_LTLIBRARIES += libuim-custom-enabler.la
+libuim_custom_enabler_la_SOURCES = uim-custom-enabler.c
+libuim_custom_enabler_la_LIBADD = libuim.la libuim-custom.la
+libuim_custom_enabler_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_custom_enabler_la_CPPFLAGS = -I$(top_srcdir)
+
 
 bin_PROGRAMS = uim-helper-server uim-sh
 

@@ -58,6 +58,10 @@
 typedef void (*uim_custom_cb_update_cb_t)(void *ptr, const char *custom_sym);
 typedef void (*uim_custom_global_cb_update_cb_t)(void *ptr);
 
+/* exported for internal use */
+uim_bool uim_custom_init(void);
+uim_bool uim_custom_quit(void);
+
 static char *c_list_to_str(const void *const *list, char *(*mapper)(const void *elem), const char *sep);
 
 static int uim_custom_type_eq(const char *custom_sym, const char *custom_type);
@@ -629,8 +633,9 @@ helper_disconnect_cb(void)
 }
 
 /**
- * Enable full of custom API. This function must be called before uim_custom_*()
- * functions are called. uim_init() must be called before this function.
+ * Enables use of custom API. This function must be called before
+ * uim_custom_*() functions are called. uim_init() must be called before this
+ * function.
  *
  * @see uim_init()
  * @retval UIM_TRUE succeeded
@@ -638,6 +643,23 @@ helper_disconnect_cb(void)
  */
 uim_bool
 uim_custom_enable(void)
+{
+  UIM_EVAL_STRING(NULL, "(load-plugin \"custom-enabler\")");
+  return uim_scm_c_bool(uim_scm_return_value());
+}
+
+/*
+ * This function is exported as internal use. Intentionally disdocumented.
+ *
+ * Initializes custom API. This function must be called before uim_custom_*()
+ * functions are called. uim_init() must be called before this function.
+ *
+ * @see uim_init()
+ * @retval UIM_TRUE succeeded
+ * @retval UIM_FALSE failed
+ */
+uim_bool
+uim_custom_init(void)
 {
   return_val = uim_scm_f();
 
@@ -655,8 +677,10 @@ uim_custom_enable(void)
   return UIM_TRUE;
 }
 
-/**
- * Finalizes custom API. This function called in uim_quit().
+/*
+ * This function is exported as internal use. Intentionally disdocumented.
+ *
+ * Finalizes custom API. This function must be called before uim_quit().
  *
  * @see uim_quit()
  * @retval UIM_TRUE succeeded
