@@ -480,9 +480,9 @@ InputContext::focusIn()
 
     check_helper_connection();
     uim_helper_client_focus_in(mUc);
+    mFocusedContext = this;
     uim_prop_list_update(mUc);	
     uim_prop_label_update(mUc);	
-    mFocusedContext = this;
 }
 
 void
