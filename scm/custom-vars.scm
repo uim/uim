@@ -30,12 +30,8 @@
 ;;;;
 
 ;;
-;; Particular definitions: may be distributed into appropriate files
+;; All contains of this file may be distributed into appropriate files
 ;;
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; Global
 
 (define direct-im-canonical-name (_ "Direct"))
 (define anthy-im-canonical-name (_ "Anthy"))
@@ -54,6 +50,10 @@
 (define tcode-im-canonical-name (_ "T-Code"))
 (define spellcheck-im-canonical-name (_ "Spellcheck"))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Global
+
 (define-custom-group 'global
 		     (_ "Global settings")
 		     (_ "long description will be here."))
@@ -61,16 +61,6 @@
 (define-custom-group 'advanced
 		     (_ "Advanced settings")
 		     (_ "long description will be here."))
-
-(define-custom 'uim-color 'uim-color-uim
-  '(global)
-  '(choice
-    (uim-color-uim "uim" "uim native")
-    (uim-color-atok "ATOK like" "Similar to ATOK"))
-  (_ "Preedit color")
-  (_ "long description will be here."))
-
-;; TODO: configure loader.scm
 
 ;; 
 ;; default-im-name
@@ -179,6 +169,14 @@
 		 'custom-activity-hooks
 		 (lambda ()
 		   enable-im-switch))
+
+(define-custom 'uim-color 'uim-color-uim
+  '(global)
+  '(choice
+    (uim-color-uim "uim" "uim native")
+    (uim-color-atok "ATOK like" "Similar to ATOK"))
+  (_ "Preedit color")
+  (_ "long description will be here."))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -379,6 +377,14 @@
   (_ "Number of candidates in candidate window at a time")
   (_ "long description will be here."))
 
+(define-custom 'skk-style 'skk-style-ddskk-like
+  '(skk advanced)
+  '(choice
+    (skk-style-ddskk-like "ddskk" "Similar to ddskk")
+    (skk-style-uim "uim" "uim native"))
+  (_ "Visual style")
+  (_ "long description will be here."))
+
 (define-custom 'skk-use-recursive-learning? #t
   '(skk advanced)
   '(boolean)
@@ -395,14 +401,6 @@
   '(skk advanced)
   '(boolean)
   (_ "Commit newline as ASCII string instead of native key-event")
-  (_ "long description will be here."))
-
-(define-custom 'skk-style 'skk-style-ddskk-like
-  '(skk advanced)
-  '(choice
-    (skk-style-ddskk-like "ddskk" "Similar to ddskk")
-    (skk-style-uim "uim" "uim native"))
-  (_ "Visual style")
   (_ "long description will be here."))
 
 (define-custom 'skk-use-numeric-conversion? #t
@@ -510,32 +508,34 @@
 
 ;; Spellcheck
 
-(define-custom-group 'spellcheck
-		     spellcheck-im-canonical-name
-		     "TODO: share im-short-desc of the IM")
+;; spellcheck IM is not available yet
 
-(define-custom 'spellcheck-use-candidate-window? #t
-  '(spellcheck)
-  '(boolean)
-  (_ "Use candidate window")
-  (_ "long description will be here."))
-
-(define-custom 'spellcheck-candidate-op-count 1
-  '(spellcheck)
-  '(integer 0 99)
-  (_ "Conversion key press count to show candidate window")
-  (_ "long description will be here."))
-
-(define-custom 'spellcheck-preedit-immediate-commit? #f
-  '(spellcheck)
-  '(boolean)
-  (_ "spellcheck-preedit-immediate-commit?")
-  (_ "long description will be here."))
-
-(define-custom 'spellcheck-always-show-window? #t
-  '(spellcheck)
-  '(boolean)
-  (_ "Always showing candidate window")
-  (_ "long description will be here."))
+;;(define-custom-group 'spellcheck
+;;		     spellcheck-im-canonical-name
+;;		     "TODO: share im-short-desc of the IM")
+;;
+;;(define-custom 'spellcheck-use-candidate-window? #t
+;;  '(spellcheck)
+;;  '(boolean)
+;;  (_ "Use candidate window")
+;;  (_ "long description will be here."))
+;;
+;;(define-custom 'spellcheck-candidate-op-count 1
+;;  '(spellcheck)
+;;  '(integer 0 99)
+;;  (_ "Conversion key press count to show candidate window")
+;;  (_ "long description will be here."))
+;;
+;;(define-custom 'spellcheck-preedit-immediate-commit? #f
+;;  '(spellcheck)
+;;  '(boolean)
+;;  (_ "spellcheck-preedit-immediate-commit?")
+;;  (_ "long description will be here."))
+;;
+;;(define-custom 'spellcheck-always-show-window? #t
+;;  '(spellcheck)
+;;  '(boolean)
+;;  (_ "Always showing candidate window")
+;;  (_ "long description will be here."))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
