@@ -600,8 +600,6 @@
 
 (define ja-default-small-tsu-roma "xtu")
 
-;(define ja-rk-rule ja-kana-rule)
-
 ;; What's intended? The name "ja-direct-rule" makes me confused
 ;; because it acts in non-direct modes. This rule makes
 ;; uim-anthy improper as always sending zenkaku-space in
@@ -739,7 +737,7 @@
 (define load-kana-table
   (lambda ()
     (require "japanese-kana.scm")
-    (set! ja-rk-rule ja-kana-rule)
+    (set! ja-rk-rule ja-kana-hiragana-rule)
     (set! using-kana-table? #t)
     (define-key anthy-kana-toggle-key? "")
     (define-key anthy-latin-key? generic-on-key?)
