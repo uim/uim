@@ -1705,7 +1705,7 @@ parse_dic_line(struct dic_info *di, char *line)
     return ;
   }
   *sep = '\0';
-  if (!isalpha((unsigned char)buf[0]) && islower((unsigned char)sep[-1])) { /* okuri-ari entry */
+  if (!isalnum((unsigned char)buf[0]) && islower((unsigned char)sep[-1])) { /* okuri-ari entry */
     char okuri_head = sep[-1];
     sep[-1] = 0;
     sl = compose_line(di, buf, okuri_head, line);
