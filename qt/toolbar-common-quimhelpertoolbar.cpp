@@ -38,7 +38,7 @@
 
 #include <stdlib.h>
 
-#include "uim/gettext.h"
+#include "qtgettext.h"
 
 QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags f )
         : QHBox( parent, name, f )

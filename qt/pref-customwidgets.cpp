@@ -35,7 +35,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "uim/gettext.h"
+#include "qtgettext.h"
 
 #define _FU8(String) QString::fromUtf8(String)
 

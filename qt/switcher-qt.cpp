@@ -46,7 +46,7 @@
 #include <locale.h>
 
 #include "uim/config.h"
-#include "uim/gettext.h"
+#include "qtgettext.h"
 
 #define NAME_COLUMN 0
 
@@ -58,6 +58,7 @@ int main( int argc, char **argv )
     setlocale(LC_ALL, "");
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);
+    bind_textdomain_codeset(PACKAGE, "UTF-8"); // ensure code encoding is UTF8-
     
     QApplication a( argc, argv );
 

@@ -55,7 +55,8 @@
 #include <qobjectlist.h>
 
 #include "uim/config.h"
-#include "uim/gettext.h"
+
+#include "qtgettext.h"
 
 #include <unistd.h>
 #include <stdlib.h>
