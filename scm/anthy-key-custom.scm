@@ -81,6 +81,12 @@
 	       (_ "[Anthy] commit as fullwidth alphanumeric")
 	       (_ "long description will be here"))
 
+(define-custom 'anthy-commit-as-hiragana-key '("F6")
+               '(anthy-keys1)
+	       '(key)
+	       (_ "[Anthy] commit as hiragana")
+	       (_ "long description will be here"))
+
 (define-custom 'anthy-commit-as-katakana-key '("F7")
                '(anthy-keys1)
 	       '(key)

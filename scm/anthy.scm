@@ -52,6 +52,13 @@
 (define anthy-input-rule-kana 1)
 (define anthy-input-rule-azik 2)
 
+(define anthy-direct-convert-opposite-kana -1)
+(define anthy-direct-convert-hiragana -2)
+(define anthy-direct-convert-katakana -3)
+(define anthy-direct-convert-hankana -4)
+(define anthy-direct-convert-latin -5)
+(define anthy-direct-convert-wide-latin -6)
+
 (define anthy-prepare-activation
   (lambda (ac)
     (anthy-flush ac)
@@ -303,21 +310,22 @@
 (define anthy-make-raw-string
   (lambda (raw-str-list wide?)
     (if (not (null? raw-str-list))
-        (if wide?
-            (string-append
-             (ja-string-list-to-wide-alphabet (string-to-list (car raw-str-list)))
-             (anthy-make-raw-string (cdr raw-str-list) wide?))
-            (string-append
-             (car raw-str-list)
-             (anthy-make-raw-string (cdr raw-str-list) wide?)))
+        (if (string=? (car raw-str-list) " ")
+            (anthy-make-raw-string (cdr raw-str-list) wide?)
+            (if wide?
+                (string-append
+                 (ja-string-list-to-wide-alphabet (string-to-list (car raw-str-list)))
+                 (anthy-make-raw-string (cdr raw-str-list) wide?))
+                (string-append
+                 (car raw-str-list)
+                 (anthy-make-raw-string (cdr raw-str-list) wide?))))
         "")))
 
 (define anthy-make-whole-raw-string
-  (lambda (ac wide?)
+  (lambda (ac raw-str wide?)
     (let* ((rkc (anthy-context-rkc ac))
 	   (pending (rk-pending rkc))
            (residual-kana (rk-push-key-last! rkc))
-	   (raw-str (anthy-context-raw-ustr ac))
 	   (right-str (ustr-latter-seq raw-str))
 	   (left-str (ustr-former-seq raw-str)))
       (anthy-make-raw-string
@@ -327,12 +335,12 @@
 		    (begin
 		      (if (null? right-str)
 			  (list pending)
-			  (append right-str (list pending))))
+			  (append (list pending) right-str)))
                     (begin
                       (rk-flush rkc)
                       (if (null? right-str)
                           (list pending)
-			  (append right-str (list pending)))))))
+			  (append (list pending) right-str))))))
        wide?))))
 
 (define anthy-init-handler
@@ -502,45 +510,29 @@
 	  (rk-flush rkc)
 	  (ustr-clear-former! preconv-str)))
 
-       ;; 現在とは逆のかなモードでかなを確定する
+       ;; 現在とは逆のかなモードへかなを変換する
        ((anthy-commit-as-opposite-kana-key? key key-state)
-	(begin
-	  (im-commit
-	   ac
-	   (anthy-make-whole-string ac #t (multi-segment-opposite-kana kana)))
-	  (anthy-flush ac)))
+        (anthy-begin-direct-convert ac anthy-direct-convert-opposite-kana))
 
-       ;; カタカナモードでかなを確定する
+       ;; かなをひらがなに変換する
+       ((anthy-commit-as-hiragana-key? key key-state)
+        (anthy-begin-direct-convert ac anthy-direct-convert-hiragana))
+
+       ;; かなをカタカナに変換する
        ((anthy-commit-as-katakana-key? key key-state)
-	(begin
-	  (im-commit
-	   ac
-	   (anthy-make-whole-string ac #t multi-segment-type-katakana))
-	  (anthy-flush ac)))
+        (anthy-begin-direct-convert ac anthy-direct-convert-katakana))
 
-       ;; 半角カタカナモードでかなを確定する
+       ;; かなを半角カタカナに変換する
        ((anthy-commit-as-hankana-key? key key-state)
-	(begin
-	  (im-commit
-	   ac
-	   (anthy-make-whole-string ac #t multi-segment-type-hankana))
-	  (anthy-flush ac)))
+        (anthy-begin-direct-convert ac anthy-direct-convert-hankana))
 
-       ;; かなを英数字に戻して確定する
+       ;; かなを英数字に戻す
        ((anthy-commit-as-latin-key? key key-state)
-	(begin
-	  (im-commit
-	   ac
-           (anthy-make-whole-raw-string ac #f))
-	  (anthy-flush ac)))
+        (anthy-begin-direct-convert ac anthy-direct-convert-latin))
 
-       ;; かなを全角英数字に戻して確定する
+       ;; かなを全角英数字に戻す
        ((anthy-commit-as-wide-latin-key? key key-state)
-	(begin
-	  (im-commit
-	   ac
-           (anthy-make-whole-raw-string ac #t))
-	  (anthy-flush ac)))
+        (anthy-begin-direct-convert ac anthy-direct-convert-wide-latin))
 
        ;; Commit current preedit string, then toggle hiragana/katakana mode.
        ((anthy-kana-toggle-key? key key-state)
@@ -548,7 +540,8 @@
 	  (im-commit
 	   ac
 	   (anthy-make-whole-string ac #t kana))
-	  (anthy-flush ac)
+          (anthy-cancel-conv ac)
+ 	  (anthy-flush ac)
 	  (anthy-context-kana-toggle ac)))
 
        ;; cancel
@@ -614,14 +607,23 @@
 		   (or (list? (car res))
 		       (not (string=? (car res) ""))))
               (let ((next-pend (rk-pending rkc)))
-		(if (list? (car res))
-		    (ustr-insert-seq!  preconv-str res)
-		    (ustr-insert-elem! preconv-str res))
 		(if (and next-pend
 			 (not (string=? next-pend "")))
-		    (ustr-insert-elem! raw-str pend)
-		    (ustr-insert-elem! raw-str (string-append pend key-str))))
-	      )))))))
+                    (ustr-insert-elem! raw-str pend)
+                      (ustr-insert-elem! raw-str (string-append pend key-str)))
+		(if (list? (car res))
+		    (begin
+                      (anthy-insert-raw-str-padding ac (- (length res) 1))
+                      (ustr-insert-seq!  preconv-str res))
+		    (ustr-insert-elem! preconv-str res))))))))))
+
+(define anthy-insert-raw-str-padding
+  (lambda (ac n)
+    (let ((raw-str (anthy-context-raw-ustr ac)))
+      (if (> n 0)
+          (begin
+            (ustr-insert-elem! raw-str " ")
+            (anthy-insert-raw-str-padding ac (- n 1)))))))
 
 (define anthy-context-confirm-kana!
   (lambda (ac)
@@ -649,6 +651,73 @@
 	  (cons attr anthy-segment-separator)
 	  #f))))
 
+(define anthy-make-special-candidate-string
+  (lambda (ac preconv-str convert-pending-into-kana? kana)
+    (let* ((rule (anthy-context-input-rule ac))
+           (extract-kana
+            (if (= rule anthy-input-rule-kana)
+                (lambda (entry) (car entry))
+                (lambda (entry) (nth kana entry)))))
+      (string-append-map-ustr-whole extract-kana preconv-str))))
+
+(define anthy-get-segment-pos
+  (lambda (ac seg-idx)
+    (let* ((ac-id (anthy-context-ac-id ac)))
+      (if (<= seg-idx 0)
+          0
+          (+ (anthy-lib-get-segment-length ac-id (- seg-idx 1))
+             (anthy-get-segment-pos ac (- seg-idx 1)))))))
+
+(define anthy-get-nth-candidate
+  (lambda (ac seg-idx cand-idx)
+    (let* ((ac-id (anthy-context-ac-id ac))
+           (seg-pos (anthy-get-segment-pos ac seg-idx))
+           (seg-len (anthy-lib-get-segment-length ac-id seg-idx))
+           (kana (anthy-context-kana-mode ac))
+           (preconv-ustr (ustr-new))
+           (rkc (anthy-context-rkc ac))
+           (residual-kana (rk-peek-terminal-match rkc))
+           (pending (rk-pending rkc)))
+      (if (< cand-idx 0)
+          (begin
+            ;; get whole string as hiragana
+            (if (or (= cand-idx anthy-direct-convert-latin)
+                    (= cand-idx anthy-direct-convert-wide-latin))
+                (begin
+                  (ustr-set-former-seq! preconv-ustr
+                                        (ustr-whole-seq (anthy-context-raw-ustr ac)))
+                  (if pending
+                      (ustr-append! preconv-ustr (list pending))))
+                (begin
+                  (ustr-set-former-seq! preconv-ustr
+                                        (ustr-whole-seq (anthy-context-preconv-ustr ac)))
+                  (if residual-kana
+                      (ustr-append! preconv-ustr (list residual-kana)))))
+            ;; reduce the string as segment
+            (ustr-set-former-seq!
+             preconv-ustr
+             (list-head (nthcdr seg-pos (ustr-whole-seq preconv-ustr))
+                        seg-len))))
+      (cond
+       ((>= cand-idx 0)
+        (anthy-lib-get-nth-candidate ac-id seg-idx cand-idx))
+       ((= cand-idx anthy-direct-convert-opposite-kana)
+        (anthy-make-special-candidate-string
+         ac preconv-ustr #t (multi-segment-opposite-kana kana)))
+       ((= cand-idx anthy-direct-convert-hiragana)
+        (anthy-make-special-candidate-string
+         ac preconv-ustr #t multi-segment-type-hiragana))
+       ((= cand-idx anthy-direct-convert-katakana)
+        (anthy-make-special-candidate-string
+         ac preconv-ustr #t multi-segment-type-katakana))
+       ((= cand-idx anthy-direct-convert-hankana)
+        (anthy-make-special-candidate-string
+         ac preconv-ustr #t multi-segment-type-hankana))
+       ((= cand-idx anthy-direct-convert-latin)
+        (anthy-make-whole-raw-string ac preconv-ustr #f))
+       ((= cand-idx anthy-direct-convert-wide-latin)
+        (anthy-make-whole-raw-string ac preconv-ustr #t))))))
+
 (define anthy-converting-state-preedit
   (lambda (ac)
     (let* ((ac-id (anthy-context-ac-id ac))
@@ -661,8 +730,8 @@
 			  (bit-or preedit-reverse
 				  preedit-cursor)
 			  preedit-underline))
-		(cand (anthy-lib-get-nth-candidate ac-id seg-idx cand-idx))
-		(seg (list (cons attr cand))))
+                (cand (anthy-get-nth-candidate ac seg-idx cand-idx))
+ 		(seg (list (cons attr cand))))
 	   (if (and separator
 		    (< 0 seg-idx))
 	       (cons separator seg)
@@ -699,8 +768,8 @@
     (let ((ac-id (anthy-context-ac-id ac))
 	  (segments (anthy-context-segments ac)))
       (string-append-map (lambda (seg-idx cand-idx)
-			   (anthy-lib-get-nth-candidate ac-id seg-idx cand-idx))
-			 (iota (ustr-length segments))
+                           (anthy-get-nth-candidate ac seg-idx cand-idx))
+ 			 (iota (ustr-length segments))
 			 (ustr-whole-seq segments)))))
 
 (define anthy-commit-string
@@ -708,8 +777,9 @@
     (let ((ac-id (anthy-context-ac-id ac))
 	  (segments (anthy-context-segments ac)))
       (for-each (lambda (seg-idx cand-idx)
-		  (anthy-lib-commit-segment ac-id seg-idx cand-idx))
-		(iota (ustr-length segments))
+                  (if (>= cand-idx 0)
+                      (anthy-lib-commit-segment ac-id seg-idx cand-idx)))
+ 		(iota (ustr-length segments))
 		(ustr-whole-seq segments)))))
 
 (define anthy-do-commit
@@ -804,9 +874,110 @@
 	  (anthy-context-set-candidate-window! ac #f)))
     (anthy-context-set-candidate-op-count! ac 0)))
 
+(define anthy-join-all-segments
+  (lambda (ac)
+    (let* ((ac-id (anthy-context-ac-id ac))
+           (nr-segments (anthy-lib-get-nr-segments ac-id)))
+      (if (> nr-segments 1)
+          (let ((next-seg-len  (anthy-lib-get-segment-length ac-id 1)))
+            (anthy-resize-segment ac next-seg-len)
+            (anthy-join-all-segments ac))))))
+
+(define anthy-begin-direct-convert
+  (lambda (ac cand-idx)
+    (anthy-begin-conv ac)
+    (let ((ac-id (anthy-context-ac-id ac)))
+      (anthy-join-all-segments ac)
+      (anthy-direct-convert ac cand-idx))))
+
+(define anthy-direct-convert
+  (lambda (ac cand-idx)
+    (let* ((ac-id (anthy-context-ac-id ac))
+           (segments (anthy-context-segments ac))
+           (compensated-idx (cond
+                             ((> cand-idx 0)
+                              -1)
+                             ((< cand-idx -6)
+                              -6)
+                             (else
+                              cand-idx))))
+      (ustr-cursor-set-frontside! segments compensated-idx)
+      (anthy-context-set-candidate-op-count! ac 0)
+      (anthy-reset-candidate-window ac)
+      (anthy-update-preedit ac))))
+
+(define anthy-backspace-proc-on-conversion
+  (lambda (ac)
+    (let* ((ac-id (anthy-context-ac-id ac))
+           (preconv-str (anthy-context-preconv-ustr ac))
+           (raw-str (anthy-context-raw-ustr ac))
+           (cur-seg (ustr-cursor-pos (anthy-context-segments ac)))
+           (nr-segments (anthy-lib-get-nr-segments ac-id))
+           (segments (anthy-context-segments ac))
+           (cur-cand (ustr-cursor-frontside segments))
+           (cur-seg-pos (anthy-get-segment-pos ac cur-seg))
+           (cur-seg-len (anthy-lib-get-segment-length ac-id cur-seg)))
+      (anthy-cancel-conv ac)
+      (if (and (< cur-cand 0) (= nr-segments 1))
+          (begin
+            (ustr-cursor-delete-backside! preconv-str)
+            (ustr-cursor-delete-backside! raw-str)
+            (anthy-begin-direct-convert ac cur-cand))
+          (begin
+            (ustr-set-cursor-pos! preconv-str (+ cur-seg-pos cur-seg-len))
+            (ustr-set-cursor-pos! raw-str (+ cur-seg-pos cur-seg-len))
+            (ustr-cursor-delete-backside! preconv-str)
+            (ustr-cursor-delete-backside! raw-str))))))
+
+(define anthy-input-proc-on-conversion
+  (lambda (ac key key-state)
+    (let* ((ac-id (anthy-context-ac-id ac))
+           (preconv-str (anthy-context-preconv-ustr ac))
+           (raw-str (anthy-context-raw-ustr ac))
+           (cur-seg (ustr-cursor-pos (anthy-context-segments ac)))
+           (nr-segments (anthy-lib-get-nr-segments ac-id))
+           (segments (anthy-context-segments ac))
+           (cur-cand (ustr-cursor-frontside segments))
+           (cur-seg-pos (anthy-get-segment-pos ac cur-seg))
+           (cur-seg-len (anthy-lib-get-segment-length ac-id cur-seg)))
+      (if (and (< cur-cand 0) (= nr-segments 1))
+          (begin
+            (anthy-cancel-conv ac)
+            (anthy-proc-input-state-with-preedit ac key key-state)
+            (anthy-begin-direct-convert ac cur-cand))
+          (begin
+            (anthy-cancel-conv ac)
+            (ustr-set-cursor-pos! preconv-str (+ cur-seg-pos cur-seg-len))
+            (ustr-set-cursor-pos! raw-str (+ cur-seg-pos cur-seg-len))
+            (anthy-proc-input-state-with-preedit ac key key-state))))))
+
 (define anthy-proc-converting-state
   (lambda (ac key key-state)
     (cond
+     ;; 現在とは逆のかなモードにかなを変換する
+     ((anthy-commit-as-opposite-kana-key? key key-state)
+      (anthy-direct-convert ac anthy-direct-convert-opposite-kana))
+
+     ;; かなをひらがなに変換する
+     ((anthy-commit-as-hiragana-key? key key-state)
+      (anthy-direct-convert ac anthy-direct-convert-hiragana))
+
+     ;; かなをカタカナに変換する
+     ((anthy-commit-as-katakana-key? key key-state)
+      (anthy-direct-convert ac anthy-direct-convert-katakana))
+
+     ;; かなをカタカナに変換する
+     ((anthy-commit-as-hankana-key? key key-state)
+      (anthy-direct-convert ac anthy-direct-convert-hankana))
+
+     ;; かなを英数字に変換する
+     ((anthy-commit-as-latin-key? key key-state)
+      (anthy-direct-convert ac anthy-direct-convert-latin))
+
+     ;; かなを全角英数字に変換する
+     ((anthy-commit-as-wide-latin-key? key key-state)
+      (anthy-direct-convert ac anthy-direct-convert-wide-latin))
+
      ((anthy-prev-page-key? key key-state)
       (if (anthy-context-candidate-window ac)
 	  (im-shift-page-candidate ac #f)))
@@ -842,7 +1013,7 @@
 	(anthy-reset-candidate-window ac)))
 
      ((anthy-backspace-key? key key-state)
-      (anthy-cancel-conv ac))
+      (anthy-backspace-proc-on-conversion ac))
 
      ((anthy-next-candidate-key? key key-state)
       (anthy-move-candidate ac 1))
@@ -869,9 +1040,7 @@
       #f)
 
      (else
-      (begin
-	(anthy-do-commit ac)
-	(anthy-proc-input-state ac key key-state))))))
+      (anthy-input-proc-on-conversion ac key key-state)))))
 
 (define anthy-proc-wide-latin
   (lambda (ac key key-state)
@@ -926,7 +1095,7 @@
   (lambda (ac idx accel-enum-hint)
     (let* ((ac-id (anthy-context-ac-id ac))
 	   (cur-seg (ustr-cursor-pos (anthy-context-segments ac)))
-	   (cand (anthy-lib-get-nth-candidate ac-id cur-seg idx)))
+	   (cand (anthy-get-nth-candidate ac cur-seg idx)))
       (list cand (digit->string (+ idx 1)) ""))))
 
 (define anthy-set-candidate-index-handler
