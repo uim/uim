@@ -67,7 +67,7 @@
 		 (lambda (gc)
 		   (list
 		    'figure_generic_off
-		    "o"
+		    "-"
 		    (N_ "off")
 		    (N_ "Direct Input Mode")))
 		 (lambda (gc)

@@ -7,8 +7,8 @@
                 <item value="IDL:Bonobo/GenericFactory:1.0"/>
                 <item value="IDL:Bonobo/Unknown:1.0"/>
         </oaf_attribute>
-        <oaf_attribute name="name" type="string" _value="Uim Applet Factory"/>
-        <oaf_attribute name="description" type="string" _value="Uim applet factory"/>
+        <oaf_attribute name="name" type="string" _value="uim Applet Factory"/>
+        <oaf_attribute name="description" type="string" _value="uim applet factory"/>
 </oaf_server>
 
 <oaf_server iid="OAFIID:GNOME_UimApplet"
@@ -20,8 +20,8 @@
                 <item value="IDL:Bonobo/Control:1.0"/>
                 <item value="IDL:Bonobo/Unknown:1.0"/>
         </oaf_attribute>
-        <oaf_attribute name="name" type="string" _value="Uim Applet"/>
-        <oaf_attribute name="description" type="string" _value="Uim applet for the GNOME2 panel"/>
+        <oaf_attribute name="name" type="string" _value="uim Applet"/>
+        <oaf_attribute name="description" type="string" _value="uim applet for the GNOME2 panel"/>
         <oaf_attribute name="panel:category" type="string" _value="Utility"/>
         <oaf_attribute name="panel:icon" type="string" value="gnome-applets.png"/>
 </oaf_server>

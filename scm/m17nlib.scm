@@ -58,7 +58,7 @@
 		 (lambda (mc)
 		   (list
 		    'figure_m17nlib_off
-		    "o"
+		    "-"
 		    (N_ "off")
 		    (N_ "Direct Input Mode")))
 		 (lambda (mc)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-01-31 09:13+0900\n"
+"POT-Creation-Date: 2005-02-01 01:56+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,23 +17,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: helper/GNOME_UimApplet.server.in.in.h:1
-msgid "Uim Applet"
+msgid "Utility"
 msgstr ""
 
 #: helper/GNOME_UimApplet.server.in.in.h:2
-msgid "Uim Applet Factory"
+msgid "uim Applet"
 msgstr ""
 
 #: helper/GNOME_UimApplet.server.in.in.h:3
-msgid "Uim applet factory"
+msgid "uim Applet Factory"
 msgstr ""
 
 #: helper/GNOME_UimApplet.server.in.in.h:4
-msgid "Uim applet for the GNOME2 panel"
+msgid "uim applet factory"
 msgstr ""
 
 #: helper/GNOME_UimApplet.server.in.in.h:5
-msgid "Utility"
+msgid "uim applet for the GNOME2 panel"
 msgstr ""
 
 #: helper/im-switcher-gtk.c:274
@@ -348,55 +348,55 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
-#: helper/pref-gtk.c:495
+#: helper/pref-gtk.c:499
 msgid "Specify file"
 msgstr ""
 
-#: helper/pref-gtk.c:538
+#: helper/pref-gtk.c:542
 msgid "File"
 msgstr ""
 
-#: helper/pref-gtk.c:1099
+#: helper/pref-gtk.c:1128
 msgid "Enabled"
 msgstr ""
 
-#: helper/pref-gtk.c:1125
+#: helper/pref-gtk.c:1154
 msgid "Enabled items"
 msgstr ""
 
-#: helper/pref-gtk.c:1189
+#: helper/pref-gtk.c:1232
 msgid "Disabled"
 msgstr ""
 
-#: helper/pref-gtk.c:1215
+#: helper/pref-gtk.c:1258
 msgid "Disabled items"
 msgstr ""
 
-#: helper/pref-gtk.c:1249 helper/pref-gtk.c:1821
+#: helper/pref-gtk.c:1292 helper/pref-gtk.c:1864
 msgid "Choose..."
 msgstr ""
 
-#: helper/pref-gtk.c:1444
+#: helper/pref-gtk.c:1487
 msgid "Press any key to grab..."
 msgstr ""
 
-#: helper/pref-gtk.c:1687
+#: helper/pref-gtk.c:1730
 msgid "Key preference"
 msgstr ""
 
-#: helper/pref-gtk.c:1733
+#: helper/pref-gtk.c:1776
 msgid "_Shift"
 msgstr ""
 
-#: helper/pref-gtk.c:1738
+#: helper/pref-gtk.c:1781
 msgid "_Control"
 msgstr ""
 
-#: helper/pref-gtk.c:1743
+#: helper/pref-gtk.c:1786
 msgid "_Alt"
 msgstr ""
 
-#: helper/pref-gtk.c:1759
+#: helper/pref-gtk.c:1802
 msgid "..."
 msgstr ""
 
@@ -621,7 +621,7 @@ msgstr ""
 msgid "direct"
 msgstr ""
 
-#: scm/direct.lisp:54 scm/generic.lisp:65 scm/m17nlib.lisp:63
+#: scm/direct.lisp:54 scm/generic.lisp:72 scm/m17nlib.lisp:63
 msgid "Direct Input Mode"
 msgstr ""
 
@@ -726,15 +726,15 @@ msgstr ""
 msgid "[Global] return"
 msgstr ""
 
-#: scm/generic.lisp:64 scm/m17nlib.lisp:62
+#: scm/generic.lisp:71 scm/m17nlib.lisp:62
 msgid "off"
 msgstr ""
 
-#: scm/generic.lisp:79 scm/m17nlib.lisp:76
+#: scm/generic.lisp:86 scm/m17nlib.lisp:76
 msgid "on"
 msgstr ""
 
-#: scm/generic.lisp:80 scm/m17nlib.lisp:77
+#: scm/generic.lisp:87 scm/m17nlib.lisp:77
 msgid " Mode"
 msgstr ""
 
@@ -852,11 +852,11 @@ msgstr ""
 
 #. I think that the name "euro" is not appropriate since it
 #. represents nation or geographic region.  -- YamaKen 2005-01-29
-#: scm/latin.lisp:579
+#: scm/latin.lisp:582
 msgid "Latin characters"
 msgstr ""
 
-#: scm/latin.lisp:580
+#: scm/latin.lisp:583
 msgid "Latin characters mainly used for Latin and German languages"
 msgstr ""
 
@@ -929,7 +929,7 @@ msgid "SKK"
 msgstr ""
 
 #: scm/skk-custom.lisp:36
-msgid "Uim's SKK like input method"
+msgid "uim's SKK like input method"
 msgstr ""
 
 #: scm/skk-custom.lisp:63
@@ -1013,11 +1013,11 @@ msgstr ""
 msgid "TUT-Code"
 msgstr ""
 
-#: scm/viqr.lisp:204
+#: scm/viqr.lisp:206
 msgid "VIQR"
 msgstr ""
 
-#: scm/viqr.lisp:205
+#: scm/viqr.lisp:207
 msgid "VIetnamese Quoted-Readable"
 msgstr ""
 
