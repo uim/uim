@@ -843,7 +843,8 @@
 	     (set! res (rk-push-key-last! rkc))
 	     #f)
 	   #t)
-       ;; commits with flushing pending rk, and adds explicit newline. 
+       ;; commits "n" as kana according to kana-mode, and send
+       ;; native return
        (if (skk-return-key? key key-state)
 	   (begin
 	     (set! res (rk-push-key-last! rkc))
@@ -918,10 +919,10 @@
 	     #f)
 	   #t)
        ;; bad strategy. see bug #528
-       (if (or
-	    (control-key-mask key-state)
-	    (alt-key-mask key-state)
-	    (= key 32))  ;; "<Control> ", "<Alt> ", and so on
+       ;; "<Control>a", "<Alt> ", "<Meta>b" and so on
+       (if (and
+	     (modifier-key-mask key-state)
+	     (not (shift-key-mask key-state)))
 	   (begin
 	     (skk-flush sc)
 	     (skk-commit-raw-with-preedit-update sc key key-state)
