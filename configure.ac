@@ -395,12 +395,30 @@ if test x$use_qt = xyes ; then
     QT_VERSION=3.2.0
     QT_VERSION_NUM=320
 
+    # GUESS $QTDIR
+    if test -z "$QTDIR"; then
+      QTDIR="/usr/lib/qt3"
+    fi
+    if test -z "$QTDIR"; then
+      QTDIR="/usr/lib/qt"
+    fi
+    if test -z "$QTDIR"; then
+      QTDIR="/usr/share/qt3"
+    fi
     if test -z "$QTDIR"; then
       QTDIR="/usr"
     fi
+
+    # GUESS $QTINCDIR
     QTINCDIR="/include/qt"
     if test ! -d "$QTDIR$QTINCDIR"; then
        QTINCDIR="/include/X11/qt"
+    fi
+    if test ! -d "$QTDIR$QTINCDIR"; then
+       QTINCDIR="/include/qt3"
+    fi
+    if test ! -d "$QTDIR$QTINCDIR"; then
+       QTINCDIR="/include/qt"
     fi
     if test ! -d "$QTDIR$QTINCDIR"; then
        QTINCDIR="/include"
