@@ -45,7 +45,6 @@
 #include "uim/gettext.h"
 #include "pref-gtk-custom-widgets.h"
 
-#define USE_SUB_GROUP 1
 #define DEFAULT_WINDOW_WIDTH_MAX 800
 #define DEFAULT_WINDOW_HEIGHT_MAX 600
 
@@ -67,11 +66,14 @@ static gboolean	pref_tree_selection_changed(GtkTreeSelection *selection,
 					     gpointer data);
 static GtkWidget *create_pref_treeview(void);
 static GtkWidget *create_group_widget(const char *group_name);
-#if USE_SUB_GROUP
 static void create_sub_group_widgets(GtkWidget *parent_widget,
 				     const char *parent_group);
-#endif
 
+/*
+ *  2005-02-10 Takuro Ashie <ashie@homa.ne.jp>
+ *    This feature is disabled according to [Anthy-dev 1795].
+ */
+#if 0
 static void
 save_confirm_dialog_response_cb(GtkDialog *dialog, gint arg, gpointer user_data)
 {
@@ -89,6 +91,7 @@ save_confirm_dialog_response_cb(GtkDialog *dialog, gint arg, gpointer user_data)
     break;
   }
 }
+#endif
 
 static gboolean
 pref_tree_selection_changed(GtkTreeSelection *selection,
@@ -100,6 +103,11 @@ pref_tree_selection_changed(GtkTreeSelection *selection,
   char *group_name;
   GtkWidget *group_widget;
 
+/*
+ *  2005-02-10 Takuro Ashie <ashie@homa.ne.jp>
+ *    This feature is disabled according to [Anthy-dev 1795].
+ */
+#if 0
   /* Preference save check should be here. */
   if (uim_pref_gtk_value_changed) {
     GtkWidget *dialog;
@@ -116,6 +124,7 @@ pref_tree_selection_changed(GtkTreeSelection *selection,
     gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(dialog);
   }
+#endif
 
   if(gtk_tree_selection_get_selected(selection, &model, &iter) == FALSE)
     return TRUE;
@@ -355,20 +364,7 @@ create_group_widget(const char *group_name)
 
   gtk_box_pack_start (GTK_BOX(vbox), group_label, FALSE, TRUE, 8);
 
-#if USE_SUB_GROUP
   create_sub_group_widgets(vbox, group_name);
-#else
-  {
-    char **custom_syms, **custom_sym;
-    custom_syms = uim_custom_collect_by_group(group_name);
-    if (custom_syms) {
-      for (custom_sym = custom_syms; *custom_sym; custom_sym++) {
-	uim_pref_gtk_add_custom(vbox, *custom_sym);
-      }
-      uim_custom_symbol_list_free(custom_syms);
-    }
-  }
-#endif
 
   uim_custom_group_free(group);
 
@@ -378,7 +374,6 @@ create_group_widget(const char *group_name)
   return vbox;
 }
 
-#if USE_SUB_GROUP
 static void create_sub_group_widgets(GtkWidget *parent_widget, const char *parent_group)
 {
     char **sgrp_syms = uim_custom_group_subgroups(parent_group);
@@ -436,7 +431,6 @@ static void create_sub_group_widgets(GtkWidget *parent_widget, const char *paren
 
     uim_custom_symbol_list_free(sgrp_syms);
 }
-#endif
 
 static GtkWidget *
 create_pref_window(void)
