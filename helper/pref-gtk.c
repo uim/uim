@@ -43,19 +43,20 @@
 
 static GtkWidget *pref_tree_view;
 static GtkWidget *pref_hbox;
-static GtkWidget *pref_widget;  /* Bad naming. Better one need. */
+static GtkWidget *current_group_widget;
 static GtkSizeGroup *spin_button_sgroup;
 
 enum
 {
   GROUP_COLUMN=0,
+  GROUP_WIDGET=1,
   NUM_COLUMNS
 };
 
 static gboolean	pref_tree_selection_changed(GtkTreeSelection *selection,
 					     gpointer data);
 static GtkWidget *create_pref_treeview(void);
-static GtkWidget *create_pref_widget(const char *group_name);
+static GtkWidget *create_group_widget(const char *group_name);
 
 static gboolean
 pref_tree_selection_changed(GtkTreeSelection *selection,
@@ -65,6 +66,7 @@ pref_tree_selection_changed(GtkTreeSelection *selection,
   GtkTreeIter iter;
   GtkTreeModel *model;
   char *group_name;
+  GtkWidget *group_widget;
 
   /* Preference save check should be here. */
 
@@ -74,16 +76,25 @@ pref_tree_selection_changed(GtkTreeSelection *selection,
   store = GTK_TREE_STORE(model);
   gtk_tree_model_get(model, &iter,
 		     GROUP_COLUMN, &group_name,
+		     GROUP_WIDGET, &group_widget,
 		     -1);
 
   if(group_name == NULL)
     return TRUE;
 
-  if(pref_widget)
-    gtk_widget_destroy(pref_widget);
-  pref_widget = create_pref_widget(group_name);
-  gtk_box_pack_start (GTK_BOX (pref_hbox), pref_widget, TRUE, TRUE, 0);
-  gtk_widget_show_all(pref_widget);
+  /* hide current selected group's widget */
+  if(current_group_widget)
+    gtk_widget_hide(current_group_widget);
+
+  /* whether group_widget is already packed or not */
+  if(!gtk_widget_get_parent(group_widget))
+    gtk_box_pack_start (GTK_BOX (pref_hbox), group_widget, TRUE, TRUE, 0);
+
+  /* show selected group's widget */
+  gtk_widget_show_all(group_widget);
+
+  current_group_widget = group_widget;
+  
   free(group_name);
   return TRUE;
 }
@@ -104,7 +115,8 @@ create_pref_treeview(void)
   char **primary_groups, **grp;
   GtkTreeSelection *selection;
   tree_store = gtk_tree_store_new (NUM_COLUMNS,
-				   G_TYPE_STRING);
+				   G_TYPE_STRING,
+				   GTK_TYPE_WIDGET);
   
   pref_tree_view = gtk_tree_view_new();
 
@@ -121,6 +133,7 @@ create_pref_treeview(void)
     gtk_tree_store_append (tree_store, &iter, NULL/* parent iter */);
     gtk_tree_store_set (tree_store, &iter,
 			GROUP_COLUMN, *grp,
+			GROUP_WIDGET, create_group_widget(*grp),
 			-1);
   }
   gtk_tree_view_set_model (GTK_TREE_VIEW(pref_tree_view), GTK_TREE_MODEL(tree_store));
@@ -327,7 +340,7 @@ create_setting_button_box(const char *group_name)
 }
 
 static GtkWidget *
-create_pref_widget(const char *group_name)
+create_group_widget(const char *group_name)
 {
   GtkWidget *vbox;
   GtkWidget *group_label;
@@ -391,10 +404,6 @@ create_pref_window(void)
 				  GTK_POLICY_AUTOMATIC);
   gtk_box_pack_start(GTK_BOX(pref_hbox), scrolled_win, FALSE, TRUE, 0);
 
-  pref_widget = create_pref_widget("global");
-
-  gtk_box_pack_start(GTK_BOX(pref_hbox), pref_widget, TRUE, TRUE, 0);
-
   gtk_container_add(GTK_CONTAINER(scrolled_win), create_pref_treeview());
   gtk_container_add(GTK_CONTAINER(window), pref_hbox);
 
@@ -406,6 +415,18 @@ create_pref_window(void)
   gtk_window_set_position(GTK_WINDOW(window),
 			  GTK_WIN_POS_CENTER_ALWAYS);
   }
+
+  /*
+   * 2004-01-04 Kazuki Ohta <mover@hct.zaq.ne.jp>
+   *
+   * First, we should select "global" section.
+   * But how can I do this in Gtk+?
+   *
+   */
+
+  /* current selected widget is null initially  */
+  current_group_widget = NULL;
+
   return window;
 }
 
