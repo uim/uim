@@ -50,38 +50,10 @@
 ;;;     #tの場合:カタカナモード。#fの場合:ひらがなモード。
 
 (require "generic.scm")
+(require-custom "generic-key-custom.scm")
+(require-custom "tutcode-key-custom.scm")
 
 ;;; user configs
-
-;; key defs
-
-;;; TUT-Codeモードに入るキー(CTRL-\)かどうかを判定する。
-;;; @param key 判定するキー
-;;; @param key-state コントロールキー等の状態
-;;; @return #t: keyがTUT-Codeモードに入るキーの場合。
-;;;	    #f: そうでない場合。 
-(define-key tutcode-on-key? "<Control>\\")
-
-;;; TUT-Codeモードを抜けるキー(CTRL-\)かどうかを判定する。
-;;; @param key 判定するキー
-;;; @param key-state コントロールキー等の状態
-;;; @return #t: keyがTUT-Codeモードを抜けるキーの場合。
-;;;	    #f: そうでない場合。 
-(define-key tutcode-off-key? "<Control>\\")
-
-;;; ひらがな/カタカナモードの切り替えを行うキー(')かどうかを判定する。
-;;; @param key 判定するキー
-;;; @param key-state コントロールキー等の状態
-;;; @return #t: keyがひらがな/カタカナモードの切り替えキーの場合。
-;;;	    #f: そうでない場合。 
-(define-key tutcode-kana-toggle-key? "'")
-
-;;; Backspaceキーかどうかを判定する。
-;;; @param key 判定するキー
-;;; @param key-state コントロールキー等の状態
-;;; @return #t: keyがBackspaceキーの場合。
-;;;	    #f: そうでない場合。 
-(define-key tutcode-backspace-key? 'generic-backspace-key?)
 
 ;; widgets and actions
 
