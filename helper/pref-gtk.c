@@ -1953,8 +1953,17 @@ apply_button_clicked(GtkButton *button, gpointer user_data)
 
   if (value_changed) {
     uim_custom_save();
+    fprintf(stderr, "save done\n");
     uim_custom_broadcast();
+    fprintf(stderr, "broadcast done\n");
     value_changed = FALSE;
+
+    /*
+      This code fragment is very slow. It takes approximately 8 second
+      in my environment. And it seems to be increasing by number of
+      custom variables exponentially. Can it be reduced? -- YamaKen
+      2005-02-03
+    */
     gtk_tree_model_foreach(
       gtk_tree_view_get_model(GTK_TREE_VIEW(pref_tree_view)), 
       pref_tree_model_foreach_unset_value_changed_fn,
