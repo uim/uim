@@ -95,7 +95,7 @@ char *
 uim_scm_symbol_value_str(const char *symbol_str)
 {
   uim_lisp stack_start;
-  uim_lisp val_ = false_sym;
+  uim_lisp val_ = uim_scm_f();
   char *val;
 
   uim_scm_gc_protect_stack(&stack_start);
@@ -148,7 +148,7 @@ uim_scm_symbol_value(const char *symbol_str)
   if TRUEP((uim_lisp)symbol_boundp(symbol_str_, NIL)) {
     return (uim_lisp)symbol_value(symbol_str_, NIL);         
   } else {
-    return (uim_lisp)false_sym;
+    return uim_scm_f();
   }
 }
 

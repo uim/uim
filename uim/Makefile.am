@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = config.h.in iso-639-1.def
+EXTRA_DIST = config.h.in iso-639-1.def slib.c uim-compat-scm.c
 
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 
@@ -11,8 +11,8 @@ uim_plugindir = $(pkglibdir)/plugin
 
 pkginclude_HEADERS = uim.h uim-util.h uim-helper.h uim-im-switcher.h uim-scm.h plugin.h
 
-libuim_la_SOURCES = uim.c uim-scm.c uim-func.c uim-key.c uim-util.c \
-		slib.c siod.h context.h gettext.h \
+libuim_la_SOURCES = uim.c uim-scm.c uim-util.c uim-func.c uim-key.c \
+		siod.h context.h gettext.h \
 		uim-helper.c uim-helper-client.c \
 		prime.c \
 		intl.c \
@@ -27,7 +27,6 @@ endif
 
 if COMPAT_SCM
   pkginclude_HEADERS += uim-compat-scm.h
-  libuim_la_SOURCES += uim-compat-scm.c
 endif
 
 if COMPAT_CUSTOM

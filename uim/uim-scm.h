@@ -65,17 +65,11 @@ extern "C" {
 */
 typedef struct uim_opaque * uim_lisp;
 
-#if 1
-/* will be deprecated. use uim_scm_t() and uim_scm_f() for new design */
-extern uim_lisp true_sym;
-extern uim_lisp false_sym;
-#endif
-
-#define TRUEP(x) (uim_scm_eq(x, true_sym))
-#define FALSEP(x) (uim_scm_eq(x, false_sym))
+#define TRUEP(x) (uim_scm_eq(x, uim_scm_t()))
+#define FALSEP(x) (uim_scm_eq(x, uim_scm_f()))
  
-#define NTRUEP(x) (!uim_scm_eq(x, true_sym))
-#define NFALSEP(x) (!uim_scm_eq(x, false_sym))
+#define NTRUEP(x) (!uim_scm_eq(x, uim_scm_t()))
+#define NFALSEP(x) (!uim_scm_eq(x, uim_scm_f()))
 
 
 /* 'uim_scm' prefix is not appropriate for these functions... any ideas? */

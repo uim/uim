@@ -42,29 +42,24 @@
 #include "uim-compat-scm.h"
 #include "context.h"
 
-#if 0
 /*
-  To avoid namespace pollution, all siod functions should be static
-  and wrapped into uim-scm.c by direct inclusion rather than linked
-  via public symbols. After uim_scm_* abstraction, the Scheme
-  interpreter implementation can be switched to another one such as
-  uim-scm-tinyscheme.c or uim-scm-gauche.c. But uim/*.[hc] and
+  To avoid namespace pollution, all siod functions are defined as
+  static and wrapped into uim-scm.c by direct inclusion rather than
+  linked via public symbols. After elaboration of uim-scm API, the
+  Scheme interpreter implementation can be switched to another one
+  such as uim-scm-tinyscheme.c or uim-scm-gauche.c. But uim/*.[hc] and
   scm/*.scm are still depending on siod in several ways. At least full
   test suite for *.scm files are required to migrate to another Scheme
-  implementation.  -- YamaKen 2004-12-21
+  implementation.  -- YamaKen 2004-12-21, 2005-01-10
 */
 #include "slib.c"
+#ifdef UIM_COMPAT_SCM
+#include "uim-compat-scm.c"
 #endif
 
-static uim_lisp string_equal(uim_lisp x, uim_lisp y);
-
-#if 1
-/* will be deprecated. use uim_scm_t() and uim_scm_f() for new design */
-uim_lisp true_sym;
-uim_lisp false_sym;
-
+static uim_lisp true_sym;
+static uim_lisp false_sym;
 static uim_lisp protected_arg0;
-#endif
 
 static int uim_siod_fatal;
 static FILE *uim_output = NULL;
@@ -278,26 +273,10 @@ uim_scm_eq(uim_lisp a, uim_lisp b)
   return EQ(a, b);
 }
 
-static uim_lisp
-string_equal(uim_lisp x, uim_lisp y)
-{
-  long xl, yl;
-  char *xs, *ys;
-  xs = get_c_string_dim((LISP)x, &xl);
-  ys = get_c_string_dim((LISP)y, &yl);
-  if (xl != yl) {
-    return uim_scm_f();
-  }
-  if (!strncmp(xs, ys, xl)) {
-    return uim_scm_t();
-  }
-  return uim_scm_f();
-}
-
 uim_bool
 uim_scm_string_equal(uim_lisp a, uim_lisp b)
 {
-  return NFALSEP(string_equal(a, b));
+  return NFALSEP((uim_lisp)string_equal((LISP)a, (LISP)b));
 }
 
 uim_lisp
@@ -504,8 +483,6 @@ uim_scm_init(const char *verbose_level)
 
   protected_arg0 = uim_scm_f();
   uim_scm_gc_protect(&protected_arg0);
-
-  uim_scm_init_subr_2("string=?", string_equal);
 }
 
 void

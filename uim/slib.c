@@ -187,7 +187,7 @@ static void gc_for_newcell (void);
 #endif /* DEBUG_SCM */
 
 /* exported global symbol */
-long siod_verbose_level;
+static long siod_verbose_level;
 static LISP sym_t;
 /*  Added by Spencer Kimball for script-fu shit 6/3/97 */
 static FILE *siod_output;
@@ -448,7 +448,7 @@ get_user_type_hooks (long type)
   return (NULL);
 }
 
-int
+static int
 get_c_int (LISP x)
 {
   if NINTNUMP
@@ -456,7 +456,7 @@ get_c_int (LISP x)
   return ((long) INTNM (x));
 }
 
-long
+static long
 nlength (LISP obj)
 {
   LISP l;
@@ -659,7 +659,7 @@ lprin1 (LISP exp, LISP lf)
   return (NIL);
 }
 
-void
+static void
 siod_set_lib_path(const char *path)
 {
   siod_lib = path;
@@ -885,7 +885,7 @@ flush_ws (struct gen_readio *f, char *eoferr)
     }
 }
 
-LISP
+static LISP
 strcons (long length, const char *data)
 {
   LISP s;
@@ -1271,7 +1271,7 @@ not_ignore_print (LISP x)
   lprint (x, NIL);
 }
 
-long
+static long
 repl_c_string (const char *str,
 	       long want_init, long want_print)
 {
@@ -1299,14 +1299,14 @@ repl_c_string (const char *str,
 }
 
 #if (!NESTED_REPL_C_STRING)
-int
+static int
 siod_repl_c_string_entered (void)
 {
   return repl_c_string_entered;
 }
 #endif
 
-void
+static void
 set_repl_hooks (void (*puts_f) (char *),
 		LISP (*read_f) (void),
 		LISP (*eval_f) (LISP),
@@ -1318,7 +1318,7 @@ set_repl_hooks (void (*puts_f) (char *),
   repl_print = print_f;
 }
 
-LISP
+static LISP
 siod_return_value (void)
 {
   return repl_return_val;
@@ -1337,7 +1337,7 @@ fputs_fcn (char *st, void *cb)
   return (1);
 }
 
-void
+static void
 set_fatal_exit_hook (void (*fcn) (void))
 {
   fatal_exit_hook = fcn;
@@ -1369,7 +1369,7 @@ nconc (LISP a, LISP b)
 }
 
 #if (NESTED_REPL_C_STRING)
-void
+static void
 siod_gc_protect_stack(LISP *stack_start)
 {
   if (!stack_start_ptr) {
@@ -1378,7 +1378,7 @@ siod_gc_protect_stack(LISP *stack_start)
   }
 }
 
-void
+static void
 siod_gc_unprotect_stack(LISP *stack_start)
 {
   if (stack_start_ptr == stack_start)
@@ -1407,7 +1407,7 @@ stack_limit (LISP amount, LISP silent)
     return (intcons (stack_size));
 }
 
-char *
+static char *
 get_c_string (LISP x)
 {
   if TYPEP
@@ -1421,7 +1421,7 @@ get_c_string (LISP x)
   return (NULL);
 }
 
-char *
+static char *
 get_c_string_dim (LISP x, long *len)
 {
   switch (TYPE (x))
@@ -1454,7 +1454,7 @@ gc_fatal_error (void)
   my_err ("ran out of storage", NIL);
 }
 
-LISP
+static LISP
 cons (LISP x, LISP y)
 {
   LISP z;
@@ -1473,7 +1473,7 @@ consp (LISP x)
     return (NIL);
 }
 
-LISP
+static LISP
 car (LISP x)
 {
   switch TYPE
@@ -1488,7 +1488,7 @@ car (LISP x)
     }
 }
 
-LISP
+static LISP
 cdr (LISP x)
 {
   switch TYPE
@@ -1503,7 +1503,7 @@ cdr (LISP x)
     }
 }
 
-LISP
+static LISP
 setcar (LISP cell, LISP value)
 {
   if NCONSP
@@ -1511,7 +1511,7 @@ setcar (LISP cell, LISP value)
   return (CAR (cell) = value);
 }
 
-LISP
+static LISP
 intcons (int x)
 {
   LISP z;
@@ -1708,7 +1708,7 @@ assoc (LISP x, LISP alist)
   return (my_err ("improper list to assoc", alist));
 }
 
-LISP
+static LISP
 equal (LISP a, LISP b)
 {
   struct user_type_hooks *p;
@@ -1751,7 +1751,7 @@ eq (LISP x, LISP y)
     return (NIL);
 }
 
-LISP
+static LISP
 eql (LISP x, LISP y)
 {
   if EQ
@@ -1802,7 +1802,7 @@ append (LISP l)
     return (append2 (car (l), append (cdr (l))));
 }
 
-LISP
+static LISP
 symcons (char *pname, LISP vcell)
 {
   LISP z;
@@ -1827,7 +1827,7 @@ err_ubv (LISP v)
   return (my_err ("unbound variable", v));
 }
 
-LISP
+static LISP
 symbol_boundp (LISP x, LISP env)
 {
   LISP tmp;
@@ -1842,7 +1842,7 @@ symbol_boundp (LISP x, LISP env)
     return (sym_t);
 }
 
-LISP
+static LISP
 symbol_value (LISP x, LISP env)
 {
   LISP tmp;
@@ -1857,7 +1857,7 @@ symbol_value (LISP x, LISP env)
   return (tmp);
 }
 
-LISP
+static LISP
 symbol_to_string (LISP x, LISP env)
 {
   LISP tmp;
@@ -1871,7 +1871,7 @@ symbol_to_string (LISP x, LISP env)
 }
 
 
-char *
+static char *
 must_malloc (unsigned long size)
 {
   char *tmp;
@@ -1964,13 +1964,13 @@ undefine(LISP name_list, LISP env)
   return NIL;
 }
 
-LISP
+static LISP
 rintern (const char *name)
 {
   return (gen_intern (name));
 }
 
-LISP
+static LISP
 intern (LISP name)
 {
   return (rintern (get_c_string (name)));
@@ -1986,7 +1986,7 @@ subrcons (long type, char *name, SUBR_FUNC f)
   return (z);
 }
 
-LISP
+static LISP
 closure (LISP env, LISP code)
 {
   LISP z;
@@ -2007,8 +2007,7 @@ gc_protect_n (LISP * location, long n)
   protected_registers = reg;
 }
 
-/* exported as temporary solution for custom API */
-/* static */ void
+static void
 gc_protect (LISP * location)
 {
   gc_protect_n (location, 1);
@@ -2170,14 +2169,15 @@ file_prin1 (LISP ptr, struct gen_printio *f)
   gput_st (f, ">");
 }
 
-void *get_c_pointer (LISP x)
+static void *
+get_c_pointer (LISP x)
 {
   if POINTERP
     (x) my_err ("not a C pointer", x);
   return (x->storage_as.c_pointer.data);
 }
 
-LISP
+static LISP
 ptrcons (void *ptr)
 {
   LISP x;
@@ -2273,67 +2273,67 @@ init_storage (void)
   set_print_hooks (tc_c_pointer, pointer_prin1);
 }
 
-void
+static void
 init_subr (char *name, long type, SUBR_FUNC fcn)
 {
   setvar (rintern (name), subrcons (type, name, fcn), NIL);
 }
 
-void
+static void
 init_subr_0 (char *name, LISP (*fcn) (void))
 {
   init_subr (name, tc_subr_0, (SUBR_FUNC) fcn);
 }
 
-void
+static void
 init_subr_1 (char *name, LISP (*fcn) (LISP))
 {
   init_subr (name, tc_subr_1, (SUBR_FUNC) fcn);
 }
 
-void
+static void
 init_subr_2 (char *name, LISP (*fcn) (LISP, LISP))
 {
   init_subr (name, tc_subr_2, (SUBR_FUNC) fcn);
 }
 
-void
+static void
 init_subr_2n (char *name, LISP (*fcn) (LISP, LISP))
 {
   init_subr (name, tc_subr_2n, (SUBR_FUNC) fcn);
 }
 
-void
+static void
 init_subr_3 (char *name, LISP (*fcn) (LISP, LISP, LISP))
 {
   init_subr (name, tc_subr_3, (SUBR_FUNC) fcn);
 }
 
-void
+static void
 init_subr_4 (char *name, LISP (*fcn) (LISP, LISP, LISP, LISP))
 {
   init_subr (name, tc_subr_4, (SUBR_FUNC) fcn);
 }
 
-void
+static void
 init_subr_5 (char *name, LISP (*fcn) (LISP, LISP, LISP, LISP, LISP))
 {
   init_subr (name, tc_subr_5, (SUBR_FUNC) fcn);
 }
 
-void
+static void
 init_lsubr (char *name, LISP (*fcn) (LISP))
 {
   init_subr (name, tc_lsubr, (SUBR_FUNC) fcn);
 }
 
-void
+static void
 init_fsubr (char *name, LISP (*fcn) (LISP, LISP))
 {
   init_subr (name, tc_fsubr, (SUBR_FUNC) fcn);
 }
 
-void
+static void
 init_msubr (char *name, LISP (*fcn) (LISP *, LISP *))
 {
   init_subr (name, tc_msubr, (SUBR_FUNC) fcn);
@@ -2749,7 +2749,7 @@ extend_env (LISP actuals, LISP formals, LISP env)
   return (cons (cons (formals, actuals), env));
 }
 
-void
+static void
 set_eval_hooks (long type, LISP (*fcn) (LISP, LISP *, LISP *))
 {
   struct user_type_hooks *p;
@@ -2764,7 +2764,7 @@ err_closure_code (LISP tmp)
 }
 
 /* main evaluator */
-LISP
+static LISP
 leval (LISP x, LISP env)
 {
   LISP tmp, arg1;
@@ -2969,7 +2969,7 @@ loop:
   return rval;
 }
 
-LISP
+static LISP
 lapply (LISP fcn, LISP args)
 {
   struct user_type_hooks *p;
@@ -3271,7 +3271,7 @@ letstar_macro (LISP form)
   return (form);
 }
 
-LISP
+static LISP
 reverse (LISP l)
 {
   LISP n, p;
@@ -3381,7 +3381,7 @@ leval_while (LISP args, LISP env)
   return (NIL);
 }
 
-LISP
+static LISP
 symbolconc (LISP args)
 {
   long size;
@@ -3577,7 +3577,7 @@ lprint (LISP exp, LISP lf)
   return (NIL);
 }
 
-LISP
+static LISP
 lprin1f (LISP exp, FILE * f)
 {
   struct gen_printio s;
@@ -3588,7 +3588,7 @@ lprin1f (LISP exp, FILE * f)
   return (NIL);
 }
 
-LISP
+static LISP
 lread (LISP f)
 {
   return (lreadf (get_c_file (f, stdin)));
@@ -3608,7 +3608,7 @@ f_ungetc (int c, FILE * f)
   ungetc (c, f);
 }
 
-LISP
+static LISP
 lreadf (FILE * f)
 {
   struct gen_readio s;
@@ -3618,7 +3618,7 @@ lreadf (FILE * f)
   return (readtl (&s));
 }
 
-LISP
+static LISP
 lreadtk (char *buffer, long j)
 {
   int flag;
@@ -3697,7 +3697,7 @@ apropos (LISP matchl)
   return (result);
 }
 
-LISP
+static LISP
 delq (LISP elem, LISP l)
 {
   if NULLP
@@ -3745,7 +3745,7 @@ provide (LISP name)
   return (NIL);
 }
 
-void
+static void
 siod_c_provide(const char *name)
 {
   provide(rintern(name));
@@ -3764,7 +3764,7 @@ load (LISP fname, LISP cflag, LISP rflag)
 		 1));
 }
 
-LISP
+static LISP
 require (LISP fname)
 {
   LISP sym;
@@ -3801,7 +3801,7 @@ stringp (LISP x)
   return (TYPEP (x, tc_string) ? sym_t : NIL);
 }
 
-FILE *
+static FILE *
 get_c_file (LISP p, FILE * deflt)
 {
   if (NULLP (p) && deflt)
@@ -3886,7 +3886,7 @@ lwhile (LISP form, LISP env)
   return (NIL);
 }
 
-LISP
+static LISP
 nreverse (LISP x)
 {
   LISP newp, oldp, nextp;
@@ -3922,25 +3922,25 @@ lrealtime (void)
   return (intcons (myrealtime ()));
 }
 
-LISP
+static LISP
 caar (LISP x)
 {
   return (car (car (x)));
 }
 
-LISP
+static LISP
 cadr (LISP x)
 {
   return (car (cdr (x)));
 }
 
-LISP
+static LISP
 cdar (LISP x)
 {
   return (cdr (car (x)));
 }
 
-LISP
+static LISP
 cddr (LISP x)
 {
   return (cdr (cdr (x)));
@@ -3979,19 +3979,19 @@ lsrand (LISP s)
   return (NIL);
 }
 
-LISP
+static LISP
 siod_true_value (void)
 {
   return (sym_t);
 }
 
-LISP
+static LISP
 siod_false_value (void)
 {
   return (sym_f);
 }
 
-char *
+static char *
 last_c_errmsg (int num)
 {
   int xerrno = (num < 0) ? errno : num;
@@ -4006,7 +4006,7 @@ last_c_errmsg (int num)
   return ((char *) errmsg);
 }
 
-LISP
+static LISP
 llast_c_errmsg (int num)
 {
   int xerrno = (num < 0) ? errno : num;
@@ -4311,7 +4311,7 @@ leval_cond (LISP * pform, LISP * penv)
   return (sym_t);
 }
 
-LISP
+static LISP
 funcall1 (LISP fcn, LISP a1)
 {
   switch TYPE
@@ -4335,7 +4335,7 @@ funcall1 (LISP fcn, LISP a1)
     }
 }
 
-LISP
+static LISP
 funcall2 (LISP fcn, LISP a1, LISP a2)
 {
   switch TYPE
@@ -4417,7 +4417,7 @@ lsubset (LISP fcn, LISP l)
   return (nreverse (result));
 }
 
-LISP
+static LISP
 listn (long n,...)
 {
   LISP result, ptr;
@@ -4545,6 +4545,7 @@ init_subrs (void)
   init_subr_1 ("string-dimension", string_dim);
   init_lsubr ("string-append", string_append);
   init_subr_1 ("string->integer",string2integer);
+  init_subr_2 ("string=?",string_equal);
   init_subr_2 ("eval", leval);
   init_subr_2 ("apply", lapply);
   init_fsubr ("define", leval_define);
@@ -4638,7 +4639,7 @@ init_subrs (void)
   init_slib_version ();
 }
 
-void
+static void
 siod_quit (void)
 {
   int i;
@@ -4668,7 +4669,7 @@ siod_quit (void)
   free(inums);
 }
 
-void
+static void
 siod_init (int argc, char **argv, int warnflag, FILE *fp)
 {
   int k;

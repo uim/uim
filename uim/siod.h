@@ -205,98 +205,86 @@ typedef LISP (*SUBR_FUNC) (void);
 
 #define TKBUFFERN 5120
 
-void siod_init (int argc, char **argv, int warnflag, FILE *);
-void siod_quit (void);
+static void siod_init (int argc, char **argv, int warnflag, FILE *);
+static void siod_quit (void);
 
-void set_repl_hooks (void (*puts_f) (char *),
-		     LISP (*read_f) (void),
-		     LISP (*eval_f) (LISP),
-		     void (*print_f) (LISP));
-char *get_c_string (LISP x);
-char *get_c_string_dim (LISP x, long *);
-int get_c_int (LISP x);
-long nlength(LISP x);
-void *get_c_pointer (LISP x);
+static void set_repl_hooks (void (*puts_f) (char *),
+			    LISP (*read_f) (void),
+			    LISP (*eval_f) (LISP),
+			    void (*print_f) (LISP));
+static char *get_c_string (LISP x);
+static char *get_c_string_dim (LISP x, long *);
+static int get_c_int (LISP x);
+static long nlength(LISP x);
+static void *get_c_pointer (LISP x);
 
-LISP cons (LISP x, LISP y);
-LISP car (LISP x);
-LISP cdr (LISP x);
-LISP setcar (LISP cell, LISP value);
-LISP intcons (int x);
-LISP eql (LISP x, LISP y);
-LISP symcons (char *pname, LISP vcell);
-LISP symbol_boundp (LISP x, LISP env);
-LISP symbol_value (LISP x, LISP env);
-LISP symbol_to_string (LISP x, LISP env);
-LISP rintern (const char *name);
-LISP closure (LISP env, LISP code);
-LISP ptrcons (void *ptr);
+static LISP cons (LISP x, LISP y);
+static LISP car (LISP x);
+static LISP cdr (LISP x);
+static LISP setcar (LISP cell, LISP value);
+static LISP intcons (int x);
+static LISP eql (LISP x, LISP y);
+static LISP symcons (char *pname, LISP vcell);
+static LISP symbol_boundp (LISP x, LISP env);
+static LISP symbol_value (LISP x, LISP env);
+static LISP symbol_to_string (LISP x, LISP env);
+static LISP rintern (const char *name);
+static LISP closure (LISP env, LISP code);
+static LISP ptrcons (void *ptr);
 
-void init_subr (char *name, long type, SUBR_FUNC fcn);
-void init_subr_0 (char *name, LISP (*fcn) (void));
-void init_subr_1 (char *name, LISP (*fcn) (LISP));
-void init_subr_2 (char *name, LISP (*fcn) (LISP, LISP));
-void init_subr_2n (char *name, LISP (*fcn) (LISP, LISP));
-void init_subr_3 (char *name, LISP (*fcn) (LISP, LISP, LISP));
-void init_subr_4 (char *name, LISP (*fcn) (LISP, LISP, LISP, LISP));
-void init_subr_5 (char *name, LISP (*fcn) (LISP, LISP, LISP, LISP, LISP));
-void init_lsubr (char *name, LISP (*fcn) (LISP));
-void init_fsubr (char *name, LISP (*fcn) (LISP, LISP));
-void init_msubr (char *name, LISP (*fcn) (LISP *, LISP *));
+static void init_subr (char *name, long type, SUBR_FUNC fcn);
+static void init_subr_0 (char *name, LISP (*fcn) (void));
+static void init_subr_1 (char *name, LISP (*fcn) (LISP));
+static void init_subr_2 (char *name, LISP (*fcn) (LISP, LISP));
+static void init_subr_2n (char *name, LISP (*fcn) (LISP, LISP));
+static void init_subr_3 (char *name, LISP (*fcn) (LISP, LISP, LISP));
+static void init_subr_4 (char *name, LISP (*fcn) (LISP, LISP, LISP, LISP));
+static void init_subr_5 (char *name, LISP (*fcn) (LISP, LISP, LISP, LISP, LISP));
+static void init_lsubr (char *name, LISP (*fcn) (LISP));
+static void init_fsubr (char *name, LISP (*fcn) (LISP, LISP));
+static void init_msubr (char *name, LISP (*fcn) (LISP *, LISP *));
 
-LISP delq (LISP elem, LISP l);
-void set_eval_hooks (long type, LISP (*fcn) (LISP, LISP *, LISP *));
-LISP leval (LISP x, LISP env);
-LISP symbolconc (LISP args);
-LISP lprin1f (LISP exp, FILE * f);
-LISP lread (LISP);
-LISP lreadtk (char *, long j);
-LISP lreadf (FILE * f);
-LISP require (LISP fname);
-LISP strcons (long length, const char *data);
-LISP equal (LISP, LISP);
-void set_fatal_exit_hook (void (*fcn) (void));
-LISP intern (LISP x);
-void gc_protect (LISP * location); /* exported as temporary solution for custom API */
+static LISP delq (LISP elem, LISP l);
+static void set_eval_hooks (long type, LISP (*fcn) (LISP, LISP *, LISP *));
+static LISP leval (LISP x, LISP env);
+static LISP symbolconc (LISP args);
+static LISP lprin1f (LISP exp, FILE * f);
+static LISP lread (LISP);
+static LISP lreadtk (char *, long j);
+static LISP lreadf (FILE * f);
+static LISP require (LISP fname);
+static LISP strcons (long length, const char *data);
+static LISP equal (LISP, LISP);
+static void set_fatal_exit_hook (void (*fcn) (void));
+static LISP intern (LISP x);
+static void gc_protect (LISP * location);
 #if (NESTED_REPL_C_STRING)
-void siod_gc_protect_stack(LISP *stack_start);
-void siod_gc_unprotect_stack(LISP *stack_start);
+static void siod_gc_protect_stack(LISP *stack_start);
+static void siod_gc_unprotect_stack(LISP *stack_start);
 #else
-int siod_repl_c_string_entered (void);
+static int siod_repl_c_string_entered (void);
 #endif
-long repl_c_string (const char *, long want_init, long want_print);
-LISP siod_return_value (void);
-LISP reverse (LISP);
-LISP nreverse (LISP);
-LISP number2string (LISP, LISP, LISP, LISP);
-LISP string2number (LISP, LISP);
-LISP cadr (LISP);
-LISP caar (LISP);
-LISP cdar (LISP);
-LISP cddr (LISP);
-LISP caaar (LISP);
-LISP caadr (LISP);
-LISP cadar (LISP);
-LISP caddr (LISP);
-LISP cdaar (LISP);
-LISP cdadr (LISP);
-LISP cddar (LISP);
-LISP cdddr (LISP);
-LISP siod_true_value (void);
-LISP siod_false_value (void);
-LISP lapply (LISP fcn, LISP args);
-LISP listn (long n,...);
-char *must_malloc (unsigned long size);
-FILE *get_c_file (LISP p, FILE * deflt);
-char *last_c_errmsg (int);
-LISP llast_c_errmsg (int);
-void siod_c_provide(const char *);
+static long repl_c_string (const char *, long want_init, long want_print);
+static LISP siod_return_value (void);
+static LISP reverse (LISP);
+static LISP nreverse (LISP);
+static LISP cadr (LISP);
+static LISP caar (LISP);
+static LISP cdar (LISP);
+static LISP cddr (LISP);
+static LISP siod_true_value (void);
+static LISP siod_false_value (void);
+static LISP lapply (LISP fcn, LISP args);
+static LISP listn (long n,...);
+static char *must_malloc (unsigned long size);
+static FILE *get_c_file (LISP p, FILE * deflt);
+static char *last_c_errmsg (int);
+static LISP llast_c_errmsg (int);
+static void siod_c_provide(const char *);
 
-LISP funcall1 (LISP, LISP);
-LISP funcall2 (LISP, LISP, LISP);
-LISP apply1 (LISP, LISP, LISP);
+static LISP funcall1 (LISP, LISP);
+static LISP funcall2 (LISP, LISP, LISP);
 
-extern long siod_verbose_level;
-void siod_set_lib_path(const char *);
+static void siod_set_lib_path(const char *);
 
 #endif /* __SIOD_H__ */
