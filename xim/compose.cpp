@@ -429,7 +429,6 @@ XimIM::get_mb_string(char *buf, KeySym ks)
 }
 
 #define AllMask (ShiftMask | LockMask | ControlMask | Mod1Mask)
-#define LOCAL_WC_BUFSIZE 128
 #define LOCAL_UTF8_BUFSIZE 256
 #define SEQUENCE_MAX    10
 
@@ -448,8 +447,7 @@ XimIM::parse_compose_line(FILE *fp, char* tokenbuf)
     char *rhs_string_mb;
     int l;
     int lastch = 0;
-    char local_mb_buf[MB_LEN_MAX+1];
-    wchar_t local_wc_buf[LOCAL_WC_BUFSIZE], *rhs_string_wc;
+    char local_mb_buf[MB_LEN_MAX + 1];
     char local_utf8_buf[LOCAL_UTF8_BUFSIZE], *rhs_string_utf8;
 
     struct DefBuffer {
@@ -554,7 +552,7 @@ XimIM::parse_compose_line(FILE *fp, char* tokenbuf)
 
     token = nexttoken(fp, tokenbuf, &lastch);
     if (token == STRING) {
-	if( (rhs_string_mb = (char *)malloc(strlen(tokenbuf) + 1)) == NULL )
+	if ((rhs_string_mb = (char *)malloc(strlen(tokenbuf) + 1)) == NULL)
 	    goto error;
 	strcpy(rhs_string_mb, tokenbuf);
 	token = nexttoken(fp, tokenbuf, &lastch);
@@ -595,25 +593,11 @@ XimIM::parse_compose_line(FILE *fp, char* tokenbuf)
 	goto error;
     }
 
-    l = mbstowcs(local_wc_buf, rhs_string_mb, LOCAL_WC_BUFSIZE - 1);
-    if (l == LOCAL_WC_BUFSIZE - 1) {
-	local_wc_buf[l] = (wchar_t)'\0';
-    }
-    if( (rhs_string_wc = (wchar_t *)malloc((l + 1) * sizeof(wchar_t))) == NULL
-) {
-	free(rhs_string_mb);
-	return 0;
-    }
-
-    memcpy((char *)rhs_string_wc, (char *)local_wc_buf, (l + 1) * sizeof(wchar_t
-) );
-
     l = mb_string_to_utf8(local_utf8_buf, rhs_string_mb, LOCAL_UTF8_BUFSIZE - 1, encoding);
     if (l == LOCAL_UTF8_BUFSIZE - 1) {
 	local_utf8_buf[l] = '\0';
     }
     if ((rhs_string_utf8 = (char *)malloc(l + 1)) == NULL) {
-	free(rhs_string_wc);
 	free(rhs_string_mb);
 	return 0;
     }
@@ -640,7 +624,6 @@ XimIM::parse_compose_line(FILE *fp, char* tokenbuf)
 	    p->succession = NULL;
 	    p->next = *top;
 	    p->mb = NULL;
-	    p->wc = NULL;
 	    p->utf8 = NULL;
 	    p->ks = NoSymbol;
 	    *top = p;
@@ -651,9 +634,6 @@ XimIM::parse_compose_line(FILE *fp, char* tokenbuf)
     if (p->mb != NULL)
 	free(p->mb);
     p->mb = rhs_string_mb;
-    if (p->wc != NULL)
-	free(p->wc);
-    p->wc = rhs_string_wc;
     if (p->utf8 != NULL)
 	free(p->utf8);
     p->utf8 = rhs_string_utf8;
@@ -678,13 +658,12 @@ XimIM::ParseComposeStringFile(FILE *fp)
 	mTreeTop->succession = NULL;
 	mTreeTop->next = NULL;
 	mTreeTop->mb = NULL;
-	mTreeTop->wc = NULL;
 	mTreeTop->utf8 = NULL;
 	mTreeTop->ks = NoSymbol;
     }
 
     if (fstat(fileno (fp), &st) != -1) {
-	unsigned long size = (unsigned long) st.st_size;
+	unsigned long size = (unsigned long)st.st_size;
 	if (size <= sizeof tb)
 	    tbp = tb;
 	else
@@ -703,7 +682,6 @@ void XimIM::create_compose_tree()
 {
     FILE *fp = NULL;
     char *name, *tmpname = NULL;
-    char *orig_locale, *locale;
     const char *lang_region, *encoding;
 
     name = getenv("XCOMPOSEFILE");
@@ -740,7 +718,6 @@ void XimIM::create_compose_tree()
     if (fp == NULL)
 	return;
 
-    orig_locale = strdup(setlocale(LC_CTYPE, NULL));
     lang_region = get_lang_region();
     encoding = get_encoding();
     if (lang_region == NULL || encoding == NULL) {
@@ -748,17 +725,9 @@ void XimIM::create_compose_tree()
 	fclose(fp);
 	return;
     }
-    locale = (char *)malloc(strlen(lang_region) + strlen(encoding) + 2);
-    if (locale != NULL) {
-	sprintf(locale, "%s.%s", lang_region, encoding);
-	setlocale(LC_CTYPE, locale);
-    }
 
     ParseComposeStringFile(fp);
     fclose(fp);
-
-    setlocale(LC_CTYPE, orig_locale);
-    free(orig_locale);
 }
 
 DefTree *XimIM::get_compose_tree()

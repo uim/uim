@@ -44,7 +44,6 @@ typedef struct _DefTree {
     unsigned modifier;
     KeySym keysym;			/* leaf only */
     char *mb;
-    wchar_t *wc;			/* make from mb */
     char *utf8;				/* make from mb */
     KeySym ks;
 } DefTree;
