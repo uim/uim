@@ -1,8 +1,8 @@
-EXTRA_DIST = pref-keyeditformbase.ui  pref-keygrabformbase.ui  pref-olisteditformbase.ui
+EXTRA_DIST = pref-keyeditformbase.ui  pref-keygrabformbase.ui  pref-olisteditformbase.ui bushu.t
 
 if QT
 
-INCLUDES    = -I$(top_srcdir) -I$(top_builddir)
+INCLUDES    = -I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/qt -I$(top_builddir)/qt
 
 QT_CXXFLAGS = $(UIM_QT_CXXFLAGS)
 QT_LDFLAGS  = $(UIM_QT_LDFLAGS)
@@ -74,9 +74,11 @@ MOC_FILES += \
 	immodule-subwindow.moc
 
 libquiminputcontextplugin_la_SOURCES = \
-	immodule-plugin.cpp immodule-candidatewindow.cpp immodule-qhelpermanager.cpp \
+	immodule-candidatewindow.cpp  immodule-qhelpermanager.cpp immodule-plugin.cpp \
+	immodule-candidatewindow.h    immodule-qhelpermanager.h \
 	immodule-quiminputcontext.cpp immodule-quiminputcontext_with_slave.cpp \
-	immodule-subwindow.cpp
+	immodule-quiminputcontext.h   immodule-quiminputcontext_with_slave.h \
+	immodule-subwindow.cpp immodule-subwindow.h
 libquiminputcontextplugin_la_CXXFLAGS = $(QT_CXXFLAGS)
 libquiminputcontextplugin_la_LDFLAGS  = $(QT_LDFLAGS) -avoid-version
 libquiminputcontextplugin_la_LIBADD   = $(top_builddir)/uim/libuim.la
@@ -90,7 +92,8 @@ endif
 
 # Toolbar Common
 noinst_LTLIBRARIES = libtoolbarcommon.la
-libtoolbarcommon_la_SOURCES  = toolbar-common-quimhelpertoolbar.cpp toolbar-common-uimstateindicator.cpp qtgettext.h
+libtoolbarcommon_la_SOURCES  = toolbar-common-quimhelpertoolbar.cpp toolbar-common-uimstateindicator.cpp qtgettext.h \
+			       toolbar-common-quimhelpertoolbar.h   toolbar-common-uimstateindicator.h
 libtoolbarcommon_la_CXXFLAGS = $(QT_CXXFLAGS)
 libtoolbarcommon_la_LDFLAGS  = $(QT_LDFLAGS) -avoid-version
 libtoolbarcommon_la_LIBADD   = $(top_builddir)/uim/libuim.la
@@ -98,21 +101,22 @@ toolbar-common-quimhelpertoolbar.cpp: toolbar-common-quimhelpertoolbar.moc
 toolbar-common-uimstateindicator.cpp: toolbar-common-uimstateindicator.moc
 
 # Toolbar Standalone
-uim_toolbar_qt_SOURCES = toolbar-standalone-qt.cpp qtgettext.h
+uim_toolbar_qt_SOURCES = toolbar-standalone-qt.cpp toolbar-standalone-qt.h qtgettext.h \
+			 toolbar-common-quimhelpertoolbar.h toolbar-common-uimstateindicator.h
 uim_toolbar_qt_CXXFLAGS = $(QT_CXXFLAGS)
 uim_toolbar_qt_LDFLAGS  = $(QT_LDFLAGS)
 uim_toolbar_qt_LDADD    = $(top_builddir)/uim/libuim.la ./libtoolbarcommon.la
 toolbar-standalone-qt.cpp: toolbar-standalone-qt.moc
 
 # Candidate Window
-uim_candwin_qt_SOURCES  = candwin-qt.cpp qtgettext.h
+uim_candwin_qt_SOURCES  = candwin-qt.cpp candwin-qt.h qtgettext.h
 uim_candwin_qt_CXXFLAGS = $(QT_CXXFLAGS)
 uim_candwin_qt_LDFLAGS  = $(QT_LDFLAGS)
 uim_candwin_qt_LDADD = $(top_builddir)/uim/libuim.la
 candwin-qt.cpp: candwin-qt.moc
 
 # Switcher
-uim_im_switcher_qt_SOURCES  = switcher-qt.cpp qtgettext.h
+uim_im_switcher_qt_SOURCES  = switcher-qt.cpp switcher-qt.h qtgettext.h
 uim_im_switcher_qt_CXXFLAGS = $(QT_CXXFLAGS)
 uim_im_switcher_qt_LDFLAGS  = $(QT_LDFLAGS)
 uim_im_switcher_qt_LDADD    = $(top_builddir)/uim/libuim.la
@@ -121,7 +125,9 @@ switcher-qt.cpp: switcher-qt.moc
 # Pref
 uim_pref_qt_SOURCES = \
 	pref-olisteditformbase.cpp pref-keyeditformbase.cpp pref-keygrabformbase.cpp \
-	pref-qt.cpp pref-customwidgets.cpp pref-kseparator.cpp qtgettext.h
+	pref-olisteditformbase.h   pref-keyeditformbase.h   pref-keygrabformbase.h   \
+	pref-qt.cpp pref-customwidgets.cpp pref-kseparator.cpp qtgettext.h pref-qt.h \
+	pref-customwidgets.h pref-kseparator.h
 
 uim_pref_qt_CXXFLAGS = $(QT_CXXFLAGS)
 uim_pref_qt_LDFLAGS  = $(QT_LDFLAGS)
@@ -134,36 +140,33 @@ pref-qt.cpp: pref-qt.moc
 pref-customwidgets.cpp: pref-customwidgets.moc
 pref-kseparator.cpp: pref-kseparator.moc
 
-pref-olisteditformbase.cpp:pref-olisteditformbase.h
+pref-olisteditformbase.cpp: pref-olisteditformbase.h pref-olisteditformbase.moc
 	$(UIC) $(top_srcdir)/qt/pref-olisteditformbase.ui -i pref-olisteditformbase.h > pref-olisteditformbase.cpp.tmp
-	$(MOC) pref-olisteditformbase.h -o pref-olisteditformbase.moc
 	echo '#include "pref-olisteditformbase.moc"' >> pref-olisteditformbase.cpp.tmp
 	mv pref-olisteditformbase.cpp.tmp pref-olisteditformbase.cpp
 pref-olisteditformbase.h:
 	$(UIC) $(top_srcdir)/qt/pref-olisteditformbase.ui -o pref-olisteditformbase.h
 
-pref-keyeditformbase.cpp: pref-keyeditformbase.h
+pref-keyeditformbase.cpp: pref-keyeditformbase.h pref-keyeditformbase.moc
 	$(UIC) $(top_srcdir)/qt/pref-keyeditformbase.ui -i pref-keyeditformbase.h > pref-keyeditformbase.cpp.tmp
-	$(MOC) pref-keyeditformbase.h -o pref-keyeditformbase.moc
 	echo '#include "pref-keyeditformbase.moc"' >> pref-keyeditformbase.cpp.tmp
 	mv pref-keyeditformbase.cpp.tmp pref-keyeditformbase.cpp
 pref-keyeditformbase.h:
 	$(UIC) $(top_srcdir)/qt/pref-keyeditformbase.ui -o pref-keyeditformbase.h
 
-pref-keygrabformbase.cpp: pref-keygrabformbase.h
+pref-keygrabformbase.cpp: pref-keygrabformbase.h pref-keygrabformbase.moc
 	$(UIC) $(top_srcdir)/qt/pref-keygrabformbase.ui -i pref-keygrabformbase.h > pref-keygrabformbase.cpp.tmp
-	$(MOC) pref-keygrabformbase.h -o pref-keygrabformbase.moc
 	echo '#include "pref-keygrabformbase.moc"' >> pref-keygrabformbase.cpp.tmp
 	mv pref-keygrabformbase.cpp.tmp pref-keygrabformbase.cpp
 pref-keygrabformbase.h:
 	$(UIC) $(top_srcdir)/qt/pref-keygrabformbase.ui -o pref-keygrabformbase.h
 
 uim_chardict_qt_SOURCES = \
-	chardict-qt.cpp \
-	chardict-bushuviewwidget.cpp \
-	chardict-chargridview.cpp \
-	chardict-kseparator.cpp \
-	chardict-unicodeviewwidget.cpp \
+	chardict-qt.cpp chardict-qt.h \
+	chardict-bushuviewwidget.cpp chardict-bushuviewwidget.h \
+	chardict-chargridview.cpp chardict-chargridview.h \
+	chardict-kseparator.cpp chardict-kseparator.h \
+	chardict-unicodeviewwidget.cpp chardict-unicodeviewwidget.h \
 	qtgettext.h
 uim_chardict_qt_CXXFLAGS = $(QT_CXXFLAGS) -DBUSHUDICT=\"$(datadir)/uim/helperdata/bushu.t\"
 uim_chardict_qt_LDFLAGS  = $(QT_LDFLAGS)
