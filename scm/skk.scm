@@ -791,7 +791,9 @@
       (skk-commit-raw sc key key-state)
       #f)
      ((and (modifier-key-mask key-state)
-	   (not (shift-key-mask key-state)))
+	   (not (and
+	         (shift-key-mask key-state)
+		 (alphabet-char? key))))
       (skk-commit-raw sc key key-state)
       #f)
      (else
@@ -902,8 +904,10 @@
        ;; bad strategy. see bug #528
        ;; "<Control>a", "<Alt> ", "<Meta>b" and so on
        (if (and
-	     (modifier-key-mask key-state)
-	     (not (shift-key-mask key-state)))
+	    (modifier-key-mask key-state)
+	    (not (and
+		  (shift-key-mask key-state)
+		  (alphabet-char? key))))
 	   (begin
 	     (skk-flush sc)
 	     (skk-commit-raw-with-preedit-update sc key key-state)
