@@ -585,7 +585,8 @@
 
 ;; 変則促音 変換中表示
 (define ja-romaji-hepburn-irregular-double-consonant-guide-ruleset
-  '((("t" "c")         (("っ" "c") ("ッ" "c") ("ｯ" "c")))))
+  '((("t" "c")         (("っ" "c") ("ッ" "c") ("ｯ" "c")))
+    (("t" "c" "h")     (("っ" "c" "h") ("ッ" "c" "h") ("ｯ" "c" "h")))))
 
 ;; 変則促音
 (define ja-romaji-hepburn-irregular-double-consonant-ruleset
