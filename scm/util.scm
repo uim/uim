@@ -175,6 +175,11 @@
   (lambda (key alist)
     (safe-cdr (assq key alist))))
 
+(define clamp
+  (lambda (x bottom ceiling)
+    (max bottom
+	 (min x ceiling))))
+
 ;;
 ;; R5RS procedures (don't expect 100% compatibility)
 ;;
@@ -196,6 +201,20 @@
     (or (null? x)
 	(and (pair? x)
 	     (list? (cdr x))))))
+
+(define zero?
+  (lambda (x)
+    (if (integer? x)
+	(= x 0)
+	(error "non-numeric value for zero?"))))
+
+(define positive?
+  (lambda (x)
+    (> x 0)))
+
+(define negative?
+  (lambda (x)
+    (< x 0)))
 
 (define string->symbol intern)
 
