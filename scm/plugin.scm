@@ -32,41 +32,45 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require "util.scm")
+
 (define uim-plugin-lib-load-path
-  (list (string-append (getenv "HOME") "/.uim.d/plugin")
-	(string-append (sys-pkglibdir) "/plugin")))
+  (filter string?
+	  (append (list (string-append (getenv "HOME") "/.uim.d/plugin")
+			(string-append (sys-pkglibdir) "/plugin")
+			(getenv "LIBUIM_PLUGIN_DIR"))
+		  ;; XXX
+		  (if (getenv "LD_LIBRARY_PATH")
+		      (string-split (getenv "LD_LIBRARY_PATH") ":")
+		      ()))))
+
 (define uim-plugin-scm-load-path
-  (list (string-append (getenv "HOME") "/.uim.d/plugin")
-	(sys-pkgdatadir)))
-
-(if (getenv "LIBUIM_PLUGIN_DIR")
-    (set! uim-plugin-lib-load-path
-	  (append (list (getenv "LIBUIM_PLUGIN_DIR"))
-		  uim-plugin-lib-load-path)))
-(if (getenv "LIBUIM_SCM_FILES")
-    (set! uim-plugin-scm-load-path
-	  (append (list (getenv "LIBUIM_SCM_FILES"))
-		  uim-plugin-scm-load-path)))
-
-;;; XXX
-(if (getenv "LD_LIBRARY_PATH")
-    (set! uim-plugin-lib-load-path
-	  (append uim-plugin-lib-load-path
-		  (string-split (getenv "LD_LIBRARY_PATH") ":"))))
+  (filter string?
+	  (list (string-append (getenv "HOME") "/.uim.d/plugin")
+		(sys-pkgdatadir)
+		(getenv "LIBUIM_SCM_FILES"))))
 
 ;; 'print' prevents testing framework from normal run.
 ;;(print uim-plugin-lib-load-path)
 ;;(print uim-plugin-scm-load-path)
+
 (define plugin-alist ())
 (define plugin-func-alist ())
 
+(define-record 'plugin-entry
+  '((name      "")
+    ;;(desc      "")
+    ;;(author    "")
+    ;;(version   #f)
+    (library   #f)
+    (init-proc #f)
+    (quit-proc #f)))
+
 (define plugin-list-append
   (lambda (plugin-name library init quit)
-   (let
-     ((funcs (list init quit)))
+   (let ((entry (plugin-entry-new plugin-name library init quit)))
      (set! plugin-alist
-       (append plugin-alist
-	       (list (list plugin-name library funcs)))))))
+	   (append plugin-alist (list entry))))))
 
 (define plugin-list-query
   (lambda (plugin-name)
@@ -74,17 +78,18 @@
 
 (define plugin-list-query-library
   (lambda (plugin-name)
-    (let ((plugin-entry (plugin-list-query plugin-name)))
-      (nth 1 plugin-entry))))
+    (let ((entry (plugin-list-query plugin-name)))
+      (and entry
+	   (plugin-entry-library entry)))))
 
 (define plugin-list-query-instance-init
   (lambda (plugin-name)
-    (let* ((plugin-entry (plugin-list-query plugin-name))
-	   (plugin-funcs (nth 2 plugin-entry)))
-      (car plugin-funcs))))
+    (let ((entry (plugin-list-query plugin-name)))
+      (and entry
+	   (plugin-entry-init-proc entry)))))
 
 (define plugin-list-query-instance-quit
   (lambda (plugin-name)
-    (let* ((plugin-entry (plugin-list-query plugin-name))
-	   (plugin-funcs (nth 2 plugin-entry)))
-      (nth 1 plugin-funcs))))
+    (let ((entry (plugin-list-query plugin-name)))
+      (and entry
+	   (plugin-entry-quit-proc entry)))))

@@ -203,10 +203,12 @@ void uim_quit_plugin(void)
 
     name = uim_scm_car(list_car);
 
-    UIM_EVAL_FSTRING1(NULL, "(plugin-list-query-library \"%s\")", uim_scm_c_str(name));
+    UIM_EVAL_FSTRING1(NULL, "(plugin-list-query-library \"%s\")",
+		      uim_scm_refer_c_str(name));
     library = uim_scm_c_ptr(uim_scm_return_value());
 
-    UIM_EVAL_FSTRING1(NULL, "(plugin-list-query-instance-quit \"%s\")", uim_scm_c_str(name));
+    UIM_EVAL_FSTRING1(NULL, "(plugin-list-query-instance-quit \"%s\")",
+		      uim_scm_refer_c_str(name));
     plugin_instance_quit = (void (*)(void))uim_scm_c_ptr(uim_scm_return_value());
 
     (plugin_instance_quit)();
