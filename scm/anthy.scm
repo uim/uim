@@ -900,25 +900,6 @@
 	   (opposite-kana (multi-segment-opposite-kana kana)))
       (anthy-switch-kana-mode! ac opposite-kana))))
 
-;; experimental feature
-(define anthy-transpose-sub-preconv!
-  (lambda (ac transpose-idx start len)
-    (let* ((orig (ustr-dup (anthy-context-preconv-ustr ac)))
-	   (former (evmap-ustr-substr-visible orig 0 start))
-	   (cur-seg (evmap-ustr-substr-visible orig start len))
-	   (latter (begin
-		     (evmap-ustr-set-visible-pos! orig (+ start len))
-		     (ustr-clear-former! orig)
-		     orig))
-	   (ruletree (anthy-transpose-idx->ruletree ac transpose-idx))
-	   (transposed (evmap-ustr-transpose cur-seg ruletree)))
-      (ustr-prepend! transposed (ustr-whole-seq former))
-      (ustr-append! transposed (ustr-whole-seq latter))
-      (anthy-context-set-preconv-ustr! ac transposed)
-      ;; ruletree has changed temporarily until commit to re-edit with
-      ;; transposed charset
-      (anthy-context-set-ruletree! ac ruletree))))
-
 (define anthy-transpose-preconv!
   (lambda (ac transpose-idx)
     (let* ((preconv-ustr (anthy-context-preconv-ustr ac))
@@ -1060,16 +1041,13 @@
 
 (define anthy-cancel-conv
   (lambda (ac)
-    (let* ((ac-id (anthy-context-ac-id ac))
-           (preconv-ustr (anthy-context-preconv-ustr ac))
-	   (segments (anthy-context-segments ac))
-           (cur-seg (ustr-cursor-pos segments))
-           (cur-seg-pos (anthy-get-segment-pos ac cur-seg))
-           (cur-seg-len (anthy-lib-get-segment-length ac-id cur-seg))
-	   (new-pos (+ cur-seg-pos cur-seg-len)))
+    (let ((preconv-ustr (if anthy-transpose-sub-preconv-with-segment?
+			    (anthy-restored-preconv ac)
+			    (anthy-context-preconv-ustr ac)))
+	  (segments (anthy-context-segments ac)))
       (anthy-reset-candidate-window ac)
       (anthy-context-set-converting! ac #f)
-      (evmap-ustr-set-visible-pos! preconv-ustr new-pos)
+      (anthy-context-set-preconv-ustr! ac preconv-ustr)
       (ustr-clear! segments)
       (anthy-select-actmap-ruletree! ac)
       (anthy-update-preedit ac)  ;; TODO: remove this
@@ -1192,22 +1170,51 @@
 	     (has-preedit? #t))
 	(anthy-ruletree input-rule (or trans-kana kana-mode) on? wide? has-preedit?)))))
 
+(define anthy-get-nth-preconv-ustr
+  (lambda (ac seg-idx cand-idx)
+    (let* ((ac-id (anthy-context-ac-id ac))
+	   (transposed? (< cand-idx 0))
+	   (seg-pos (anthy-get-segment-pos ac seg-idx))
+	   (seg-len (anthy-lib-get-segment-length ac-id seg-idx))
+	   (preconv-ustr (anthy-context-preconv-ustr ac))
+	   (seg-ustr (evmap-ustr-substr-visible preconv-ustr
+						seg-pos
+						seg-len))
+	   (cand-ruletree (anthy-transpose-idx->ruletree ac cand-idx)))
+      (if transposed?
+	  (begin
+	    ;; ruletree has changed temporarily until commit to
+	    ;; re-edit with transposed charset
+	    (anthy-context-set-ruletree! ac cand-ruletree)
+	    (evmap-ustr-transpose seg-ustr cand-ruletree))
+	  seg-ustr))))
+
+(define anthy-restored-preconv
+  (lambda (ac)
+    (let* ((segments (ustr-dup (anthy-context-segments ac)))
+	   (map-preconv (lambda (seg-idx cand-idx)
+			  (ustr-whole-seq
+			   (anthy-get-nth-preconv-ustr ac seg-idx cand-idx))))
+	   (former-seg (begin
+			 (ustr-cursor-move-forward! segments)
+			 (ustr-former-seq segments)))
+	   (latter-seg (ustr-latter-seq segments))
+	   (former (append-map map-preconv
+			       (iota (length former-seg))
+			       former-seg))
+	   (latter (append-map map-preconv
+			       (iota (ustr-length segments)
+				     (length former-seg))
+			       latter-seg)))
+      (ustr-new former latter))))
+
 (define anthy-get-nth-candidate
   (lambda (ac seg-idx cand-idx)
     (let ((ac-id (anthy-context-ac-id ac)))
       (if (>= cand-idx 0)
 	  (anthy-lib-get-nth-candidate ac-id seg-idx cand-idx)
-	  (let* ((seg-pos (anthy-get-segment-pos ac seg-idx))
-		 (seg-len (anthy-lib-get-segment-length ac-id seg-idx))
-		 (preconv-ustr (anthy-context-preconv-ustr ac))
-		 (seg-ustr (evmap-ustr-substr-visible preconv-ustr
-						      seg-pos
-						      seg-len))
-		 (cand-ruletree (anthy-transpose-idx->ruletree ac cand-idx))
-		 (cand-ustr (evmap-ustr-transpose seg-ustr cand-ruletree)))
-	    (if anthy-transpose-sub-preconv-with-segment?
-		(anthy-transpose-sub-preconv! ac cand-idx seg-pos seg-len))
-	    (evmap-ustr-preedit-string cand-ustr))))))
+	  (evmap-ustr-preedit-string
+	   (anthy-get-nth-preconv-ustr ac seg-idx cand-idx))))))
 
 (define anthy-converting-state-preedit
   (lambda (ac)
