@@ -359,14 +359,10 @@ create_group_widget(const char *group_name)
   group_label = gtk_label_new("");
   label_text  = g_markup_printf_escaped("<span size=\"xx-large\">%s</span>",
 					group->label);
-					
   gtk_label_set_markup(GTK_LABEL(group_label), label_text);
   g_free(label_text);
-  gtk_box_pack_start (GTK_BOX(vbox), group_label, FALSE, TRUE, 8);
 
-  group = uim_custom_group_get(group_name);
-  if (!group)
-    return NULL;
+  gtk_box_pack_start (GTK_BOX(vbox), group_label, FALSE, TRUE, 8);
 
   custom_syms = uim_custom_collect_by_group(group_name);
   if (custom_syms) {
@@ -376,6 +372,8 @@ create_group_widget(const char *group_name)
     uim_custom_symbol_list_free(custom_syms);
   }
   
+  uim_custom_group_free(group);
+
   setting_button_box = create_setting_button_box(group_name);
   gtk_box_pack_end(GTK_BOX(vbox), setting_button_box, FALSE, FALSE, 8);
 
@@ -453,7 +451,6 @@ main (int argc, char *argv[])
 
   gtk_main();
 
-  uim_custom_quit();
   uim_quit();
 
   return 0;
