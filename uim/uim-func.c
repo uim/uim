@@ -245,6 +245,9 @@ uim_iconv_create(const char *tocode, const char *fromcode)
 {
   iconv_t ic;
 
+  if (!strcmp(tocode, fromcode))
+    return (void *) 0;
+
   ic = iconv_open(tocode, fromcode);
   if (ic == (iconv_t)-1) {
     ic = (iconv_t)0;
