@@ -38,8 +38,6 @@
 
 ;;; user configs
 
-(define canna-init-lib-ok? #f)
-
 ;;; Key definitions
 (define-key canna-on-key? '("<Control>\\" generic-on-key?))
 (define-key canna-off-key? '("<Control>\\" generic-off-key?))
@@ -69,34 +67,9 @@
 (define-key canna-next-segment-key? 'generic-go-right-key?)
 (define-key canna-prev-segment-key? 'generic-go-left-key?)
 
-;; widgets and actions
-
-;; canna-widgets which controls:
-;; - what widgets will be shown for user
-;; - shown in what order
-(define canna-widgets '(widget_canna_input_mode
-			widget_canna_kana_input_method))
-
-;; default activity for each widgets
-(define default-widget_canna_input_mode 'action_canna_direct)
-(define default-widget_canna_kana_input_method 'action_canna_roma)
-
-;; actions of widget_canna_input_mode
-(define canna-input-mode-actions
-  '(action_canna_direct
-    action_canna_hiragana
-    action_canna_katakana
-    action_canna_hankana
-    action_canna_zenkaku))
-
-;; actions of widget_canna_kana_input_method
-(define canna-kana-input-method-actions
-  '(action_canna_roma
-    action_canna_kana
-    action_canna_azik))
-
-
 ;;; implementations
+
+(define canna-init-lib-ok? #f)
 
 (define canna-input-rule-roma 0)
 (define canna-input-rule-kana 1)

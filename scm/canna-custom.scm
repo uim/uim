@@ -149,3 +149,180 @@
 (custom-add-hook 'custom-preserved-canna-server-name
 		 'custom-literalize-hooks
 		 custom-hook-literalize-preserved-canna-server-name)
+
+
+;;
+;; toolbar
+;;
+
+;; Can't be unified with action definitions in canna.scm until uim
+;; 0.4.6.
+(define canna-input-mode-indication-alist
+  (list
+   (list 'action_canna_direct
+	 'figure_ja_direct
+	 "a"
+	 (N_ "Direct input")
+	 (N_ "Direct input mode"))
+   (list 'action_canna_hiragana
+	 'figure_ja_hiragana
+	 "дв"
+	 (N_ "Hiragana")
+	 (N_ "Hiragana input mode"))
+   (list 'action_canna_katakana
+	 'figure_ja_katakana
+	 "ев"
+	 (N_ "Katakana")
+	 (N_ "Katakana input mode"))
+   (list 'action_canna_hankana
+	 'figure_ja_hankana
+	 "О▒"
+	 (N_ "Halfwidth Katakana")
+	 (N_ "Halfwidth Katakana input mode"))
+   (list 'action_canna_zenkaku
+	 'figure_ja_zenkaku
+	 "г┴"
+	 (N_ "Fullwidth Alphanumeric")
+	 (N_ "Fullwidth Alphanumeric input mode"))))
+
+(define canna-kana-input-method-indication-alist
+  (list
+   (list 'action_canna_roma
+	 'figure_ja_roma
+	 "г╥"
+	 (N_ "Romaji")
+	 (N_ "Romaji input mode"))
+   (list 'action_canna_kana
+	 'figure_ja_kana
+	 "дл"
+	 (N_ "Kana")
+	 (N_ "Kana input mode"))
+   (list 'action_canna_azik
+	 'figure_ja_azik
+	 "г┴"
+	 (N_ "AZIK")
+	 (N_ "AZIK extended romaji input mode"))))
+
+;;; Buttons
+
+(define-custom 'canna-widgets '(widget_canna_input_mode
+				widget_canna_kana_input_method)
+  '(canna toolbar)
+  (list 'ordered-list
+	(list 'widget_canna_input_mode
+	      (_ "Input mode")
+	      (_ "Input mode"))
+	(list 'widget_canna_kana_input_method
+	      (_ "Kana input method")
+	      (_ "Kana input method")))
+  (_ "Enabled toolbar buttons")
+  (_ "long description will be here."))
+
+;; dynamic reconfiguration
+;; canna-configure-widgets is not defined at this point. So wrapping
+;; into lambda.
+(custom-add-hook 'canna-widgets
+		 'custom-set-hooks
+		 (lambda ()
+		   canna-configure-widgets))
+
+
+;;; Input mode
+
+(define-custom 'default-widget_canna_input_mode 'action_canna_direct
+  '(canna toolbar)
+  (cons 'choice
+	(map indication-alist-entry-extract-choice
+	     canna-input-mode-indication-alist))
+  (_ "Default input mode")
+  (_ "long description will be here."))
+
+(define-custom 'canna-input-mode-actions
+               (map car canna-input-mode-indication-alist)
+  '(canna toolbar)
+  (cons 'ordered-list
+	(map indication-alist-entry-extract-choice
+	     canna-input-mode-indication-alist))
+  (_ "Input mode menu items")
+  (_ "long description will be here."))
+
+;; value dependency
+(custom-add-hook 'canna-input-mode-actions
+		 'custom-set-hooks
+		 (lambda ()
+		   (custom-choice-range-reflect-olist-val
+		    'default-widget_canna_input_mode
+		    'canna-input-mode-actions
+		    canna-input-mode-indication-alist)))
+
+;; activity dependency
+(custom-add-hook 'default-widget_canna_input_mode
+		 'custom-activity-hooks
+		 (lambda ()
+		   (memq 'widget_canna_input_mode canna-widgets)))
+
+(custom-add-hook 'canna-input-mode-actions
+		 'custom-activity-hooks
+		 (lambda ()
+		   (memq 'widget_canna_input_mode canna-widgets)))
+
+;; dynamic reconfiguration
+(custom-add-hook 'default-widget_canna_input_mode
+		 'custom-set-hooks
+		 (lambda ()
+		   canna-configure-widgets))
+
+(custom-add-hook 'canna-input-mode-actions
+		 'custom-set-hooks
+		 (lambda ()
+		   canna-configure-widgets))
+
+;;; Kana input method
+
+(define-custom 'default-widget_canna_kana_input_method 'action_canna_roma
+  '(canna toolbar)
+  (cons 'choice
+	(map indication-alist-entry-extract-choice
+	     canna-kana-input-method-indication-alist))
+  (_ "Default kana input method")
+  (_ "long description will be here."))
+
+(define-custom 'canna-kana-input-method-actions
+               (map car canna-kana-input-method-indication-alist)
+  '(canna toolbar)
+  (cons 'ordered-list
+	(map indication-alist-entry-extract-choice
+	     canna-kana-input-method-indication-alist))
+  (_ "Kana input method menu items")
+  (_ "long description will be here."))
+
+;; value dependency
+(custom-add-hook 'canna-kana-input-method-actions
+		 'custom-set-hooks
+		 (lambda ()
+		   (custom-choice-range-reflect-olist-val
+		    'default-widget_canna_kana_input_method
+		    'canna-kana-input-method-actions
+		    canna-kana-input-method-indication-alist)))
+
+;; activity dependency
+(custom-add-hook 'default-widget_canna_kana_input_method
+		 'custom-activity-hooks
+		 (lambda ()
+		   (memq 'widget_canna_kana_input_method canna-widgets)))
+
+(custom-add-hook 'canna-kana-input-method-actions
+		 'custom-activity-hooks
+		 (lambda ()
+		   (memq 'widget_canna_kana_input_method canna-widgets)))
+
+;; dynamic reconfiguration
+(custom-add-hook 'default-widget_canna_kana_input_method
+		 'custom-set-hooks
+		 (lambda ()
+		   canna-configure-widgets))
+
+(custom-add-hook 'canna-kana-input-method-actions
+		 'custom-set-hooks
+		 (lambda ()
+		   canna-configure-widgets))
