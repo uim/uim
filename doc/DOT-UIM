@@ -28,27 +28,6 @@ This file describes the latter way.
     installed-im-module-list
 
 
-* Configuring key bindings
-
-  To configure key bindings in ~/.uim, write 'define-key' forms. See
-  also doc/KEY for further information
-
-  Be careful about following two issues.
-
-    - Meaning of the key expression such as "<Control>a" differs
-      between define-key and uim-pref.
-
-      "<Control>a" is interpreted as case sensitive and shift
-      insensitive by define-key. But uim-pref recognizes it as case
-      insensitive and shift sensitive. The different rule of uim-pref
-      is introduced to unifiy "<Control>a" and "<Control>A" regardless
-      of caps lock status.
-
-    - define-key written in ~/.uim will be ignored by uim 0.4.6 alpha1
-
-      We will resolve it.
-
-
 * Overriding lazy-loaded settings
 
   The lazy-loading feature introduced in uim 0.4.6 has caused the
@@ -85,3 +64,27 @@ This file describes the latter way.
     (require-module "pyload")
     (require-module "viqr")
     (require-module "anthy")
+
+
+* Configuring key bindings
+
+  To configure key bindings in ~/.uim, write 'define-key' forms. See
+  also doc/KEY for further information
+
+  Be careful about following two issues.
+
+    - Corresponding input method must be loaded by 'require-module'
+      before define-key. This implies that define-key described in
+      ~/.uim disables lazy-loading for the input method.
+
+      (require-module "skk")
+      (define-key skk-cancel-key? "<Control>[")
+
+    - Meaning of the key expression such as "<Control>a" differs
+      between define-key and uim-pref.
+
+      "<Control>a" is interpreted as case sensitive and shift
+      insensitive by define-key. But uim-pref recognizes it as case
+      insensitive and shift sensitive. The different rule of uim-pref
+      is introduced to unifiy "<Control>a" and "<Control>A" regardless
+      of caps lock status.

@@ -114,6 +114,14 @@
 	      (alist-replace (cons custom-sym proc)
 			     custom-set-hooks)))))
 
+;; TODO: write test
+;; lightweight implementation
+(define custom-call-hook-procs
+  (lambda (sym hook)
+    (let ((proc (assq sym hook)))
+      (if proc
+	  ((cdr proc))))))
+
 ;; lightweight implementation
 (define define-custom-group
   (lambda (gsym label desc)
@@ -155,11 +163,11 @@
 	   #t)
 	  (else
 	   #f))
-	 (let ((hook (assq sym custom-set-hooks)))
-	   (if hook
-	       ((cdr hook)))
+	 (begin
+	   (custom-call-hook-procs sym custom-set-hooks)
 	   #t))))
 
+;; TODO: rewrite test
 ;; lightweight implementation
 (define define-custom
   (lambda (sym default groups type label desc)
@@ -172,10 +180,13 @@
 				    default)))
 	    (eval (list 'define sym quoted-default)
 		  toplevel-env)
-	    (if (eq? (car type)
-		     'key)
-		(eval (list 'define (symbolconc sym '?) list)))
-	    (custom-set-value! sym default))))))  ;; to apply hooks
+	    (if (custom-key-exist? sym)
+		;; already define-key'ed in ~/.uim
+		(custom-call-hook-procs sym custom-set-hooks)
+		(begin
+		  (eval (list 'define (symbolconc sym '?) list)
+			toplevel-env)
+		  (custom-set-value! sym default))))))))  ;; to apply hooks
 
 ;; lightweight implementation
 ;; warning: no validation performed
