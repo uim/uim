@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -105,6 +105,9 @@ uim_scm_nreverse(uim_lisp cell);
 
 void
 uim_scm_init_fsubr(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp));
+
+void
+uim_scm_provide(const char *feature);
 
 /*
   C representation of list: These interfaces are not yet stable and

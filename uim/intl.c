@@ -1,3 +1,43 @@
+/*
+
+  Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
+
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+  3. Neither the name of authors nor the names of its contributors
+     may be used to endorse or promote products derived from this software
+     without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  SUCH DAMAGE.
+
+*/
+
+/*
+  Make this file plugin when alternative Scheme interpreter that has
+  gettext feature has been added to libuim.  -- YamaKen 2004-01-10
+*/
+
+#include "config.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include "config.h"
@@ -6,100 +46,102 @@
 #endif
 
 #include "gettext.h"
-#include "siod.h"
+#include "uim-scm.h"
+#include "uim-compat-scm.h"
 
-#include "intl.h"
+/* for uim_init_intl_subrs() */
+#include "context.h"
 
-static LISP
+static uim_lisp
 intl_gettext_package()
 {
-  return strcons(-1, GETTEXT_PACKAGE);
+  return uim_scm_make_str(GETTEXT_PACKAGE);
 }
 
 
-static LISP
-intl_textdomain(LISP domainname)
+static uim_lisp
+intl_textdomain(uim_lisp domainname)
 {
   const char *new_domain;
 
-  if NULLP(domainname) {
+  if (uim_scm_nullp(domainname)) {
     new_domain = textdomain(NULL);
   } else {
-    new_domain = textdomain(get_c_string(domainname));
+    new_domain = textdomain(uim_scm_refer_c_str(domainname));
   }
 
-  return strcons(-1, new_domain);
+  return uim_scm_make_str(new_domain);
 }
 
-static LISP
-intl_bindtextdomain(LISP domainname, LISP dirname)
+static uim_lisp
+intl_bindtextdomain(uim_lisp domainname, uim_lisp dirname)
 {
   const char *domain, *new_dir;
 
-  domain = get_c_string(domainname);
+  domain = uim_scm_refer_c_str(domainname);
 
-  if NULLP(dirname) {
+  if (uim_scm_nullp(dirname)) {
     new_dir = bindtextdomain(domain, NULL);
   } else {
-    new_dir = bindtextdomain(domain, get_c_string(dirname));
+    new_dir = bindtextdomain(domain, uim_scm_refer_c_str(dirname));
   }
 
-  return strcons(-1, new_dir);
+  return uim_scm_make_str(new_dir);
 }
 
-static LISP
-intl_bind_textdomain_codeset(LISP domainname, LISP codeset)
+static uim_lisp
+intl_bind_textdomain_codeset(uim_lisp domainname, uim_lisp codeset)
 {
-  return strcons(-1, bind_textdomain_codeset(get_c_string(domainname),
-                                             get_c_string(codeset)));
+  return uim_scm_make_str(bind_textdomain_codeset(uim_scm_refer_c_str(domainname),
+						  uim_scm_refer_c_str(codeset)));
 }
 
-static LISP
-intl_gettext(LISP msgid)
+static uim_lisp
+intl_gettext(uim_lisp msgid)
 {
-  return strcons(-1, gettext(get_c_string(msgid)));
+  return uim_scm_make_str(gettext(uim_scm_refer_c_str(msgid)));
 }
 
-static LISP
-intl_dgettext(LISP domainname, LISP msgid)
+static uim_lisp
+intl_dgettext(uim_lisp domainname, uim_lisp msgid)
 {
-  return strcons(-1, dgettext(get_c_string(domainname),
-                              get_c_string(msgid)));
+  return uim_scm_make_str(dgettext(uim_scm_refer_c_str(domainname),
+				   uim_scm_refer_c_str(msgid)));
 }
 
-static LISP
-intl_dcgettext(LISP domainname, LISP msgid, LISP category)
+static uim_lisp
+intl_dcgettext(uim_lisp domainname, uim_lisp msgid, uim_lisp category)
 {
-  return strcons(-1, dcgettext(get_c_string(domainname),
-                               get_c_string(msgid),
-                               get_c_int(category)));
+  return uim_scm_make_str(dcgettext(uim_scm_refer_c_str(domainname),
+				    uim_scm_refer_c_str(msgid),
+				    uim_scm_c_int(category)));
 }
 
-static LISP
-intl_ngettext(LISP msgid1, LISP msgid2, LISP n)
+static uim_lisp
+intl_ngettext(uim_lisp msgid1, uim_lisp msgid2, uim_lisp n)
 {
-  return strcons(-1, ngettext(get_c_string(msgid1),
-                              get_c_string(msgid2),
-                              get_c_int(n)));
+  return uim_scm_make_str(ngettext(uim_scm_refer_c_str(msgid1),
+				   uim_scm_refer_c_str(msgid2),
+				   uim_scm_c_int(n)));
 }
 
-static LISP
-intl_dngettext(LISP domainname, LISP msgid1, LISP msgid2, LISP n)
+static uim_lisp
+intl_dngettext(uim_lisp domainname, uim_lisp msgid1, uim_lisp msgid2, uim_lisp n)
 {
-  return strcons(-1, dngettext(get_c_string(domainname),
-                               get_c_string(msgid1),
-                               get_c_string(msgid2),
-                               get_c_int(n)));
+  return uim_scm_make_str(dngettext(uim_scm_refer_c_str(domainname),
+				    uim_scm_refer_c_str(msgid1),
+				    uim_scm_refer_c_str(msgid2),
+				    uim_scm_c_int(n)));
 }
 
-static LISP
-intl_dcngettext(LISP domainname, LISP msgid1, LISP msgid2, LISP n, LISP category)
+static uim_lisp
+intl_dcngettext(uim_lisp domainname, uim_lisp msgid1, uim_lisp msgid2, uim_lisp n, uim_lisp category)
 {
-  return strcons(-1, dcngettext(get_c_string(domainname),
-                                get_c_string(msgid1),
-                                get_c_string(msgid2),
-                                get_c_int(n),
-                                get_c_int(category)));
+  return uim_scm_make_str(dcngettext(uim_scm_refer_c_str(domainname),
+				     uim_scm_refer_c_str(msgid1),
+				     uim_scm_refer_c_str(msgid2),
+				     uim_scm_c_int(n),
+				     uim_scm_c_int(category)));
 }
 
 static void
@@ -129,22 +171,22 @@ intl_init_locale(void)
 }
 
 void
-init_intl(void)
+uim_init_intl_subrs(void)
 {
   intl_init_locale();
 
-  init_subr_0("gettext-package", intl_gettext_package);
-  init_subr_1("textdomain", intl_textdomain);
-  init_subr_2("bindtextdomain", intl_bindtextdomain);
-  init_subr_2("bind-textdomain-codeset", intl_bind_textdomain_codeset);
-  init_subr_1("gettext", intl_gettext);
-  init_subr_2("dgettext", intl_dgettext);
-  init_subr_3("dcgettext", intl_dcgettext);
-  init_subr_3("ngettext", intl_ngettext);
-  init_subr_4("dngettext", intl_dngettext);
-  init_subr_5("dcngettext", intl_dcngettext);
+  uim_scm_init_subr_0("gettext-package", intl_gettext_package);
+  uim_scm_init_subr_1("textdomain", intl_textdomain);
+  uim_scm_init_subr_2("bindtextdomain", intl_bindtextdomain);
+  uim_scm_init_subr_2("bind-textdomain-codeset", intl_bind_textdomain_codeset);
+  uim_scm_init_subr_1("gettext", intl_gettext);
+  uim_scm_init_subr_2("dgettext", intl_dgettext);
+  uim_scm_init_subr_3("dcgettext", intl_dcgettext);
+  uim_scm_init_subr_3("ngettext", intl_ngettext);
+  uim_scm_init_subr_4("dngettext", intl_dngettext);
+  uim_scm_init_subr_5("dcngettext", intl_dcngettext);
 
 #ifdef ENABLE_NLS
-  siod_c_provide("nls");
+  uim_scm_provide("nls");
 #endif
 }

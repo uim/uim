@@ -636,9 +636,10 @@ uim_init_scm()
 #ifdef UIM_COMPAT_SCM
   uim_init_compat_scm_subrs();
 #endif
+  uim_init_intl_subrs();
+  uim_init_util_subrs();
   uim_init_plugin();
   uim_init_im_subrs();
-  uim_init_util_subrs();
   uim_init_key_subrs();
 #ifdef UIM_COMPAT_TABLE
   uim_init_table_subrs();

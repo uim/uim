@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -281,6 +281,7 @@ void uim_init_util_subrs(void);
 void uim_init_table_subrs(void);
 #endif
 void uim_init_im_subrs(void);
+void uim_init_intl_subrs(void);
 
 /**/
 void uim_init_prime(void);

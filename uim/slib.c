@@ -100,7 +100,6 @@
 #endif
 
 #include "siod.h"
-#include "intl.h"
 
 /* struct */
 
@@ -4785,7 +4784,6 @@ siod_init (int argc, char **argv, int warnflag, FILE *fp)
 #endif
   init_storage ();
   init_subrs ();
-  init_intl ();
 #if DEBUG_SCM
   init_dbg ();
 #endif

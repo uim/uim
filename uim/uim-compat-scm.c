@@ -234,6 +234,13 @@ uim_scm_init_fsubr(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp))
   init_fsubr(name, (LISP (*)(LISP, LISP))fcn);
 }
 
+void
+uim_scm_provide(const char *feature)
+{
+  siod_c_provide(feature);
+}
+
+
 /*
   - list_repl must always returns same list for each evaluation
   - returns NULL terminated array. NULL will not appeared except terminator

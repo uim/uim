@@ -15,7 +15,7 @@ libuim_la_SOURCES = uim.c uim-scm.c uim-func.c uim-key.c uim-util.c \
 		slib.c siod.h context.h gettext.h \
 		uim-helper.c uim-helper-client.c \
 		prime.c \
-		intl.c intl.h \
+		intl.c \
 		uim-ipc.c \
 		getpeereid.c \
 		setenv.c \
