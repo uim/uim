@@ -297,7 +297,8 @@ uim_scm_c_list_free(void **list, uim_scm_c_list_free_func free_func)
   if (!list)
     return;
 
-  for (p = list; elem = *p; p++) {
+  for (p = list; *p; p++) {
+    elem = *p;
     free_func(elem);
   }
   free(list);

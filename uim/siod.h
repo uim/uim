@@ -129,6 +129,11 @@ struct obj
 	    void *data;
 	  }
 	c_pointer;
+	struct
+	  {
+	    void (*func)(void);
+	  }
+	c_func_pointer;
       }
     storage_as;
 #if DEBUG_SCM
@@ -185,27 +190,35 @@ struct obj
 #define tc_subr_2n 21
 #define tc_user_min 50
 #define tc_c_pointer 50
+#define tc_c_func_pointer 51
 #define tc_user_max 100
 
 #define tc_table_dim 100
 
 typedef struct obj *LISP;
 typedef LISP (*SUBR_FUNC) (void);
+typedef void (*C_FUNC) (void);
 
 #define CONSP(x)   TYPEP(x,tc_cons)
 #define INTNUMP(x) TYPEP(x,tc_intnum)
 #define SYMBOLP(x) TYPEP(x,tc_symbol)
 #define STRINGP(x) TYPEP(x,tc_string)
 #define POINTERP(x) TYPEP(x,tc_c_pointer)
+#define FPOINTERP(x) TYPEP(x,tc_c_func_pointer)
 
 #define NCONSP(x)   NTYPEP(x,tc_cons)
 #define NINTNUMP(x) NTYPEP(x,tc_intnum)
 #define NSYMBOLP(x) NTYPEP(x,tc_symbol)
 #define NSTRINGP(x) NTYPEP(x,tc_string)
 #define NPOINTERP(x) NTYPEP(x,tc_c_pointer)
+#define NFPOINTERP(x) NTYPEP(x,tc_c_func_pointer)
 
 #define TKBUFFERN 5120
 
+/*
+  These static functions will be moved into slib.c siod.h is only a
+  temporary place.  -- YamaKen 2005-01-12
+*/
 static void siod_init (int argc, char **argv, int warnflag, FILE *);
 static void siod_quit (void);
 
@@ -218,6 +231,7 @@ static char *get_c_string_dim (LISP x, long *);
 static int get_c_int (LISP x);
 static long nlength(LISP x);
 static void *get_c_pointer (LISP x);
+static C_FUNC get_c_func_pointer (LISP x);
 
 static LISP cons (LISP x, LISP y);
 static LISP car (LISP x);
@@ -232,6 +246,7 @@ static LISP symbol_to_string (LISP x, LISP env);
 static LISP rintern (const char *name);
 static LISP closure (LISP env, LISP code);
 static LISP ptrcons (void *ptr);
+static LISP funcptrcons (C_FUNC ptr);
 
 static void init_subr (char *name, long type, SUBR_FUNC fcn);
 static void init_subr_0 (char *name, LISP (*fcn) (void));

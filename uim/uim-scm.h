@@ -64,6 +64,7 @@ extern "C" {
   uim_opaque exists only for type check and has no actual definition.
 */
 typedef struct uim_opaque * uim_lisp;
+typedef void (*uim_func_ptr)(void);
 
 #define TRUEP(x) (uim_scm_eq(x, uim_scm_t()))
 #define FALSEP(x) (uim_scm_eq(x, uim_scm_f()))
@@ -137,6 +138,11 @@ void *
 uim_scm_c_ptr(uim_lisp ptr);
 uim_lisp
 uim_scm_make_ptr(void *ptr);
+
+uim_func_ptr
+uim_scm_c_func_ptr(uim_lisp func_ptr);
+uim_lisp
+uim_scm_make_func_ptr(uim_func_ptr func_ptr);
 
 void
 uim_scm_init_subr_0(char *name, uim_lisp (*fcn)(void));

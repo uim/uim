@@ -271,7 +271,8 @@ extract_choice_list(const char *list_repl, const char *custom_sym)
   if (!choice_sym_list)
     return NULL;
 
-  for (p = choice_sym_list; choice_sym = *p; p++) {
+  for (p = choice_sym_list; *p; p++) {
+    choice_sym = *p;
     custom_choice = uim_custom_choice_get(custom_sym, choice_sym);
     *p = (char *)custom_choice;  /* intentionally overwrite */
   }
@@ -1177,7 +1178,7 @@ uim_custom_cb_update_cb_gate(uim_lisp cb, uim_lisp ptr, uim_lisp custom_sym)
   void *c_ptr;
   char *c_custom_sym;
 
-  update_cb = (uim_custom_cb_update_cb_t)uim_scm_c_ptr(cb);
+  update_cb = (uim_custom_cb_update_cb_t)uim_scm_c_func_ptr(cb);
   c_ptr = uim_scm_c_ptr(ptr);
   c_custom_sym = uim_scm_c_symbol(custom_sym);
   (*update_cb)(c_ptr, c_custom_sym);
@@ -1210,7 +1211,7 @@ uim_custom_cb_add(const char *custom_sym, void *ptr,
 		       uim_scm_make_symbol(custom_sym),
 		       uim_scm_make_ptr(ptr),
 		       uim_scm_make_symbol("custom-update-cb-gate"),
-		       uim_scm_make_ptr((void *)update_cb));
+		       uim_scm_make_func_ptr((void (*)(void))update_cb));
   succeeded = uim_scm_c_bool(uim_scm_eval(form));
   uim_scm_gc_unprotect_stack(&stack_start);
 

@@ -63,7 +63,8 @@
 #define PLUGIN_SUFFIX ".so"
 
 static uim_lisp 
-plugin_load(uim_lisp _name) {
+plugin_load(uim_lisp _name)
+{
   char *plugin_name;
   char *plugin_lib_filename, *plugin_scm_filename;
 #ifdef UIM_SCM_NESTED_EVAL
@@ -157,8 +158,8 @@ plugin_load(uim_lisp _name) {
     form = uim_scm_list5(uim_scm_make_symbol("plugin-list-append"),
 		         _name,
 		         uim_scm_make_ptr(library),
-			 uim_scm_make_ptr((void *)plugin_instance_init),
-			 uim_scm_make_ptr((void *)plugin_instance_quit));
+			 uim_scm_make_func_ptr(plugin_instance_init),
+			 uim_scm_make_func_ptr(plugin_instance_quit));
     uim_scm_eval(form);
   }
   free(plugin_scm_filename);
@@ -183,7 +184,7 @@ plugin_unload(uim_lisp _name)
 
   UIM_EVAL_FSTRING1(NULL, "(plugin-list-query-instance-quit \"%s\")",
 		    uim_scm_refer_c_str(_name));
-  plugin_instance_quit = (void (*)(void))uim_scm_c_ptr(uim_scm_return_value());
+  plugin_instance_quit = uim_scm_c_func_ptr(uim_scm_return_value());
 
   (plugin_instance_quit)();
   dlclose(library);

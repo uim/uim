@@ -45,6 +45,8 @@
 #include "uim-compat-scm.h"
 #include "plugin.h"
 
+/* #define UIM_CANNA_DEBUG */
+
 #define MAX_CONTEXT 256
 #define LIBCANNA_SO	"libcanna.so"
 
@@ -65,7 +67,9 @@ struct canna_context {
 
 static struct canna_context *context_array = NULL;
 
+#if 0
 static int context_array_len;
+#endif
 static int rk_initialized = -1;
 static char *cannaserver = NULL;
 
@@ -81,9 +85,10 @@ get_canna_context(int id)
     return NULL;
   for(i = 0; i < id; i++)
     context++;
-
-/*  printf("rk_context_id: %d\n", context->rk_context_id);
-    printf("segment_num: %d\n", context->segment_num); */
+#ifdef UIM_CANNA_DEBUG
+  printf("rk_context_id: %d\n", context->rk_context_id);
+  printf("segment_num: %d\n", context->segment_num);
+#endif
   return context;
 }
 
@@ -246,8 +251,10 @@ _update_segment (const int id, const int segment_num)
   for(i = 0; i <= tmp_segment_num; i++) {
     int len;
     RkGoTo(cc->rk_context_id, i);
-    len = RkGetKanji(cc->rk_context_id, buf, BUFSIZE);
-/*    printf("segment: %d, buf: %s\n", i, buf); */
+    len = RkGetKanji(cc->rk_context_id, (unsigned char *)buf, BUFSIZE);
+#ifdef UIM_CANNA_DEBUG
+    printf("segment: %d, buf: %s\n", i, buf);
+#endif
   }
 
   RkGoTo(cc->rk_context_id, tmp_segment_num);
@@ -308,9 +315,10 @@ get_nth_candidate(uim_lisp id_, uim_lisp seg_, uim_lisp nth_)
     nth = 0;
 
   RkXfer(cc->rk_context_id, nth);
-  len = RkGetKanji(cc->rk_context_id, buf, BUFSIZE);
-
-/*  printf("nth: %d, kanji: %s\n", nth, buf); */
+  len = RkGetKanji(cc->rk_context_id, (unsigned char *)buf, BUFSIZE);
+#ifdef UIM_CANNA_DEBUG
+  printf("nth: %d, kanji: %s\n", nth, buf);
+#endif
   return uim_scm_make_str(buf);
 }
 
@@ -383,8 +391,10 @@ static uim_lisp
 commit_segment(uim_lisp id_, uim_lisp s_, uim_lisp nth_)
 {
   int id = uim_scm_c_int(id_);
+#if 0
   int s = uim_scm_c_int(s_);
   int nth = uim_scm_c_int(nth_);
+#endif
   struct canna_context *cc = get_canna_context(id);
 
   if(cc == NULL)
@@ -433,7 +443,7 @@ uim_plugin_instance_quit(void)
      cannaserver = NULL;
   }
 
-  if(RkFinalize && rk_initialized == 1) {
+  if(/* RkFinalize && */ rk_initialized == 1) {
      RkFinalize();
      rk_initialized = -1;
   }

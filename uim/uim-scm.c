@@ -47,10 +47,10 @@
   static and wrapped into uim-scm.c by direct inclusion rather than
   linked via public symbols. After elaboration of uim-scm API, the
   Scheme interpreter implementation can be switched to another one
-  such as uim-scm-tinyscheme.c or uim-scm-gauche.c. But uim/*.[hc] and
-  scm/*.scm are still depending on siod in several ways. At least full
-  test suite for *.scm files are required to migrate to another Scheme
-  implementation.  -- YamaKen 2004-12-21, 2005-01-10
+  such as uim-scm-tinyscheme.c or uim-scm-gauche.c. But *.[hc] under
+  uim/ and *.scm are still depending on siod in several ways. At least
+  full test suite for *.scm files are required to migrate to another
+  Scheme implementation.  -- YamaKen 2004-12-21, 2005-01-10
 */
 #include "slib.c"
 #ifdef UIM_COMPAT_SCM
@@ -165,6 +165,18 @@ uim_lisp
 uim_scm_make_ptr(void *ptr)
 {
   return (uim_lisp)ptrcons(ptr);
+}
+
+uim_func_ptr
+uim_scm_c_func_ptr(uim_lisp func_ptr)
+{
+  return get_c_func_pointer((LISP)func_ptr);
+}
+
+uim_lisp
+uim_scm_make_func_ptr(uim_func_ptr func_ptr)
+{
+  return (uim_lisp)funcptrcons(func_ptr);
 }
 
 void

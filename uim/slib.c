@@ -2197,6 +2197,42 @@ pointer_prin1 (LISP ptr, struct gen_printio *f)
   gput_st (f, ">");
 }
 
+static C_FUNC
+get_c_func_pointer (LISP x)
+{
+  if NFPOINTERP
+    (x) my_err ("not a C function pointer", x);
+  return (x->storage_as.c_func_pointer.func);
+}
+
+static LISP
+funcptrcons (C_FUNC ptr)
+{
+  LISP x;
+  NEWCELL (x, tc_c_func_pointer);
+  (*x).storage_as.c_func_pointer.func = ptr;
+  return (x);
+}
+
+static void
+func_pointer_prin1 (LISP ptr, struct gen_printio *f)
+{
+  void *c_ptr;
+#if 0
+  c_ptr = (void *)ptr->storage_as.c_func_pointer.func;
+#else
+  /*
+    to suppress warning about function pointer to object pointer, we
+    use a dirty trick.  -- YamaKen 2005-01-12
+  */
+  c_ptr = ptr->storage_as.c_pointer.data;
+#endif
+  gput_st (f, "#<FUNC_PTR ");
+  sprintf (tkbuffer, " %p", c_ptr);
+  gput_st (f, tkbuffer);
+  gput_st (f, ">");
+}
+
 
 static void
 init_storage_1 (void)
@@ -2271,6 +2307,7 @@ init_storage (void)
   set_gc_hooks (tc_c_file, 0, file_gc_free);
   set_print_hooks (tc_c_file, file_prin1);
   set_print_hooks (tc_c_pointer, pointer_prin1);
+  set_print_hooks (tc_c_func_pointer, func_pointer_prin1);
 }
 
 static void
