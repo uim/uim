@@ -51,13 +51,11 @@
 (define load-modules
   (lambda ()
     (if (getenv "LIBUIM_VANILLA")
-	(set! enable-lazy-loading? #f))
-
-    (or (getenv "LIBUIM_VANILLA")
-	(and enable-lazy-loading?
-	     (require "lazy-load.scm")
-	     (load-stub-ims))
-	(for-each require-module installed-im-module-list))
+	(set! enable-lazy-loading? #f)
+	(begin
+	  (if enable-lazy-loading?
+	      (require "lazy-load.scm"))
+	  (load-enabled-modules)))
 
     (if (not (memq 'direct enabled-im-list))
 	(set! enabled-im-list (append enabled-im-list '(direct))))

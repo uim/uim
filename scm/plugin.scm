@@ -130,3 +130,14 @@
 		       (append orig-module-list installed-im-module-list))
 		 (set! enabled-im-list
 		       (append orig-enabled-list enabled-im-list))))))))
+
+
+;; TODO: write test
+(define load-enabled-modules
+  (lambda ()
+    (let* ((user-module-dir (string-append (getenv "HOME") "/.uim.d/plugin/"))
+	   (file "stub-ims.scm")  ;; should be renamed
+	   (user-file (string-append user-module-dir file)))
+      (and (try-load file)
+	   (or (try-load user-file)
+	       #t)))))
