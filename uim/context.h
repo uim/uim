@@ -278,6 +278,8 @@ void uim_init_prime(void);
 void uim_quit_prime(void);
 void uim_init_m17nlib(void);
 void uim_quit_m17nlib(void);
+void uim_init_plugin(void);
+void uim_quit_plugin(void);
 
 /**/
 char *uim_get_c_string(LISP str);
