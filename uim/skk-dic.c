@@ -200,7 +200,7 @@ open_dic(const char *fn)
   }
   close(fd);
   di = (struct dic_info *)malloc(sizeof(struct dic_info));
-  di->addr = addr;
+  di->addr = success ? addr : NULL;
   di->size = success ? st.st_size : 0;
   di->first = success ? find_first_line(di) : 0;
   di->border = success ? find_border(di, st.st_size) : 0;
