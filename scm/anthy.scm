@@ -649,6 +649,32 @@
   (lambda (ustr)
     (evmap-context-list-preedit-string (ustr-whole-seq ustr))))
 
+(define evmap-ustr-set-visible-pos!
+  (lambda (ustr pos)
+    (ustr-cursor-move-beginning! ustr)
+    (let self ((rest pos))
+      (if (ustr-cursor-at-end? ustr)
+	  ustr
+	  (let* ((emc (ustr-cursor-frontside ustr))
+		 (visible-len (length (evmap-context-preedit-string emc))))
+	    (if (and (> visible-len 0)
+		     (<= rest 0))
+		ustr
+		(begin
+		  (ustr-cursor-move-forward! ustr)
+		  (self (if (> visible-len 0)
+			    (- rest visible-len)
+			    rest)))))))))
+
+(define evmap-ustr-substr-visible
+  (lambda (ustr start len)
+    (let ((substr (ustr-dup ustr)))
+      (evmap-ustr-set-visible-pos! substr start)
+      (ustr-clear-former! substr)
+      (evmap-ustr-set-visible-pos! substr len)
+      (ustr-clear-latter! substr)
+      substr)))
+
 ;; returns closer-tree or #f
 (define evmap-ustr-input-with-new-emc!
   (lambda (ustr ruletree ev)
@@ -986,7 +1012,7 @@
 	   (new-pos (+ cur-seg-pos cur-seg-len)))
       (anthy-reset-candidate-window ac)
       (anthy-context-set-converting! ac #f)
-      (ustr-set-cursor-pos! preconv-ustr new-pos)
+      (evmap-ustr-set-visible-pos! preconv-ustr new-pos)
       (ustr-clear! segments)
       (anthy-context-set-actmap-emc! ac (evmap-context-new
 					 (anthy-actmap-ruletree ac)))
@@ -1112,16 +1138,12 @@
     (let ((ac-id (anthy-context-ac-id ac)))
       (if (>= cand-idx 0)
 	  (anthy-lib-get-nth-candidate ac-id seg-idx cand-idx)
-	  (let* (;; TODO: acquire correct positions. FIXME!
-		 ;;(seg-pos (anthy-get-segment-pos ac seg-idx))
-		 ;;(seg-len (anthy-lib-get-segment-length ac-id seg-idx))
-		 (seg-pos 0)
-		 (seg-len 2)
+	  (let* ((seg-pos (anthy-get-segment-pos ac seg-idx))
+		 (seg-len (anthy-lib-get-segment-length ac-id seg-idx))
 		 (preconv-ustr (anthy-context-preconv-ustr ac))
-		 (seg-ustr (ustr-new
-			    (list-head (list-tail (ustr-whole-seq preconv-ustr)
-						  seg-pos)
-				       seg-len)))
+		 (seg-ustr (evmap-ustr-substr-visible preconv-ustr
+						      seg-pos
+						      seg-len))
 		 (cand-kana (anthy-cand-idx->type ac cand-idx))
 		 (cand-rule (anthy-context-input-rule ac))
 		 (cand-ruletree (anthy-ruletree cand-rule cand-kana))
