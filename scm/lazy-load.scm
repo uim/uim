@@ -34,13 +34,13 @@
 (define stub-im-generate-init-handler
   (lambda (name module-name)
     (lambda (id fake-im fake-arg)
-      (let ((stub-im (retrieve-im name)))
+      (let ((stub-im-init-handler (im-init-handler (retrieve-im name))))
 	(and (require-module module-name)
 	     (let* ((im (retrieve-im name))
 		    (init-handler (im-init-handler im))
 		    (arg (im-init-arg im))
 		    (context (if (not (eq? init-handler
-					   (im-init-handler stub-im)))
+					   stub-im-init-handler))
 				 (init-handler id im arg)
 				 (begin
 				   (error "stub IM actualization failed")
