@@ -54,6 +54,7 @@
 #include "helper.h"
 
 #include "uim/uim-helper.h"
+#include "uim/uim-compat-scm.h"
 
 #ifndef __GNUC__
 # ifdef HAVE_ALLOCA_H
@@ -481,6 +482,7 @@ InputContext::focusIn()
     check_helper_connection();
     uim_helper_client_focus_in(mUc);
     mFocusedContext = this;
+    mXic->move_candwin(); // move candwin before updating prop label
     uim_prop_list_update(mUc);	
     uim_prop_label_update(mUc);	
 }
@@ -790,12 +792,18 @@ void InputContext::update_prop_list(const char *str)
 void InputContext::update_prop_label(const char *str)
 {
     char *buf;
+    uim_bool show_caret_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
 
     asprintf(&buf, "prop_label_update\ncharset=UTF-8\n%s", str);
     if (!buf)
 	return;
     uim_helper_send_message(lib_uim_fd, buf);
     free(buf);
+    
+    if (show_caret_state == UIM_TRUE) {
+	Canddisp *disp = canddisp_singleton();
+	disp->show_caret_state(str);
+    }
 }
 
 const char *InputContext::get_engine_name()

@@ -187,6 +187,10 @@ ustring_to_utf8_str(uString *s)
     return c;
 }
 
+Locale::~Locale()
+{
+}
+
 bool
 Locale::supportOverTheSpot()
 {
@@ -244,7 +248,8 @@ char *utf8_to_native_str(char *utf8, const char *enc) {
 
 class UTF8_Locale : public Locale {
 public:
-    UTF8_Locale::UTF8_Locale(const char *lang);
+    UTF8_Locale(const char *lang);
+    virtual ~UTF8_Locale();
     virtual char *uStringToCtext(uString *us, const char *encoding) {
 	char *str = ustring_to_utf8_str(us);
 	XTextProperty prop;
@@ -280,6 +285,11 @@ private:
 UTF8_Locale::UTF8_Locale(const char *im_lang)
 {
     mLocaleName = strdup(compose_localenames_from_im_lang(im_lang));
+}
+
+UTF8_Locale::~UTF8_Locale()
+{
+    free(mLocaleName);
 }
 
 static const char *

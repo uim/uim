@@ -36,7 +36,6 @@
 #include <uim/uim.h>
 #include "uim/config.h"
 #include "uim/uim-helper.h"
-#include "uim/uim-compat-scm.h"
 #include "uim/gettext.h"
 
 /*
@@ -68,12 +67,7 @@ caret_state_indicator_update(GtkWidget *window, gint topwin_x, gint topwin_y, co
   GtkWidget *label = g_object_get_data(G_OBJECT(window), "label");
   gint cursor_x = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), "cursor_x"));
   gint cursor_y = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), "cursor_y"));
-  uim_bool show_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
   gchar **labels;
-
-  if(show_state == UIM_FALSE) {
-    return;
-  }
 
   labels = g_strsplit(str, "\t", 2);
   gtk_window_move(GTK_WINDOW(window), topwin_x + cursor_x, topwin_y + cursor_y + 3);

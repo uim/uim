@@ -51,6 +51,7 @@
 #include "uim/uim-im-switcher.h"
 #include "uim/config.h"
 #include "uim/gettext.h"
+#include "uim/uim-compat-scm.h"
 #include "uim-cand-win-gtk.h"
 #include "caret-state-indicator.h"
 
@@ -715,6 +716,7 @@ update_prop_label_cb(void *ptr, const char *str)
   IMUIMContext *uic = (IMUIMContext *)ptr;
   GString *tmp;
   gint x, y;
+  uim_bool show_state;
 
   if (uic != focused_context)
     return;
@@ -725,8 +727,11 @@ update_prop_label_cb(void *ptr, const char *str)
   uim_helper_send_message(im_uim_fd, tmp->str);
   g_string_free(tmp, TRUE);
 
-  gdk_window_get_origin(uic->win, &x, &y);
-  caret_state_indicator_update(uic->caret_state_indicator, x, y, str);
+  show_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
+  if (show_state == UIM_TRUE) {
+    gdk_window_get_origin(uic->win, &x, &y);
+    caret_state_indicator_update(uic->caret_state_indicator, x, y, str);
+  }
 }
 
 static void

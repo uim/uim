@@ -47,7 +47,9 @@ if GTK2_4
 bin_PROGRAMS += uim-pref-gtk
 endif
 
-uim_candwin_gtk_SOURCES  = helper-candwin-gtk.c
+uim_candwin_gtk_SOURCES  = helper-candwin-gtk.c \
+			   ../gtk/caret-state-indicator.c \
+			   ../gtk/caret-state-indicator.h
 uim_candwin_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim.la
 uim_candwin_gtk_CPPFLAGS = -I$(top_srcdir)
 uim_candwin_gtk_CFLAGS   = @GTK2_CFLAGS@  -Wall

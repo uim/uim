@@ -44,6 +44,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "../gtk/caret-state-indicator.h"
+
 #define UIM_TYPE_CANDIDATE_WINDOW	(candidate_window_get_type())
 #define UIM_CANDIDATE_WINDOW(obj)	(G_TYPE_CHECK_INSTANCE_CAST ((obj), candidate_window_get_type(), UIMCandidateWindow))
 #define UIM_IS_CANDIDATE_WINDOW(obj)	(G_TYPE_CHECK_INSTANCE_TYPE ((obj), UIM_TYPE_CANDIDATE_WINDOW))
@@ -71,6 +73,8 @@ struct _UIMCandidateWindow {
   gint pos_y;
   gint width;
   gint height;
+
+  GtkWidget *caret_state_indicator;
 
   gboolean is_active;
 };
@@ -365,6 +369,7 @@ candidate_window_init(UIMCandidateWindow *cwin)
   cwin->pos_x = 0;
   cwin->pos_y = 0;
   cwin->is_active = FALSE;
+  cwin->caret_state_indicator = caret_state_indicator_new();
 
   gtk_widget_show(cwin->scrolled_window);
   gtk_widget_show(cwin->view);
@@ -482,10 +487,17 @@ candwin_update(gchar **str)
 static void
 candwin_move(char **str)
 {
+  GdkRectangle cursor_location;
+
   sscanf(str[1], "%d", &cwin->pos_x);
   sscanf(str[2], "%d", &cwin->pos_y);
 
+  cursor_location.x = 0;
+  cursor_location.y = 0;
+  cursor_location.height = 0;
+
   uim_cand_win_gtk_layout();
+  caret_state_indicator_set_cursor_location(cwin->caret_state_indicator, &cursor_location);
 }
 
 static void
@@ -500,6 +512,13 @@ candwin_deactivate(void)
 {
   gtk_widget_hide(GTK_WIDGET(cwin));
   cwin->is_active = FALSE;
+}
+
+static void
+caret_state_show(gchar **str)
+{
+  caret_state_indicator_update(cwin->caret_state_indicator, cwin->pos_x, cwin->pos_y, str[1]);
+  gtk_widget_show(GTK_WIDGET(cwin->caret_state_indicator));
 }
 
 static void str_parse(gchar *str)
@@ -523,6 +542,8 @@ static void str_parse(gchar *str)
       candwin_move(tmp);
     } else if (strcmp("deactivate", command) == 0) {
       candwin_deactivate();
+    } else if (strcmp("show_caret_state", command) == 0) {
+      caret_state_show(tmp);
     }
   }
   g_strfreev(tmp);

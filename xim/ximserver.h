@@ -203,6 +203,7 @@ private:
 
 class Locale {
 public:
+    virtual ~Locale();
     virtual char *uStringToCtext(uString *us, const char *encoding) = 0;
     virtual bool supportOverTheSpot();
     virtual void set_localename_from_im_lang(const char *im_lang) = 0;

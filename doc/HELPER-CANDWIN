@@ -20,7 +20,8 @@ Recieving Message format BNF
 	      move       |
 	      show       |
 	      hide       |
-	      deactivate) "\n" "\n"
+	      deactivate |
+	      show_caret_state) "\n" "\n"
   charset_specifier = "charset=" charset "\n"
   charset = "UTF-8" | "EUC-JP" | "GB18030" |
             <or any name that can be specified as iconv_open(3) argument>
@@ -67,6 +68,12 @@ Recieving Message format BNF
     Deactivating the candidate window
 
     deactivate = "deactivate" "\n"
+
+  7. show_caret_state
+    Deactivating the candidate window
+
+    show_caret_state = "show_caret_state" "\n" caret_state
+    caret_state = "\n" str
 
 Sending Message format BNF
   session  = messages

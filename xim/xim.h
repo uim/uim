@@ -281,6 +281,7 @@ public:
     void changeContext(const char *engine);
     const char *get_encoding();
     const char *get_lang_region();
+    void move_candwin();
 
 public:
     static XimIC *get_current_ic();

@@ -154,6 +154,16 @@ void Canddisp::move(int x, int y)
     fflush(candwin_w);
 }
 
+void Canddisp::show_caret_state(const char *str)
+{
+    if (candwin_w == NULL)
+	return;
+    fprintf(candwin_w, "show_caret_state\n");
+    fprintf(candwin_w, "%s", str);
+    fprintf(candwin_w, "\n");
+    fflush(candwin_w);
+}
+
 static void candwin_read_cb(int fd, int ev)
 {
     char buf[1024];

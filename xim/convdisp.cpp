@@ -685,6 +685,9 @@ ConvdispOv::ConvdispOv(InputContext *k, icxatr *a) : Convdisp(k, a)
     m_initial_lang = strdup(mIMLang);
     m_initial_fontset = NULL;
     m_lang_changed = false;
+#ifdef FLASHPLAYER_WORKAROUND
+    revised_spot_y = -1;
+#endif
 }
 
 ConvdispOv::~ConvdispOv()
@@ -717,14 +720,6 @@ void ConvdispOv::set_im_lang(const char *im_lang)
 
 void ConvdispOv::update_preedit()
 {
-    if (!m_pe)
-	return;
-
-    if (!m_pe->get_char_count()) {
-	clear_preedit();
-	return;
-    }
-
     draw_preedit();
     move_candwin();
 }
@@ -842,7 +837,15 @@ void ConvdispOv::update_icxatr()
 
 void ConvdispOv::draw_preedit()
 {
+    if (!m_pe)
+	return;
+
     m_ce_len = m_pe->get_char_count();
+    if (!m_ce_len) {
+	clear_preedit();
+	return;
+    }
+
     if (!check_win())
 	return;
 
@@ -903,7 +906,7 @@ void ConvdispOv::do_draw_preedit()
 		    // preedit area goes beyond the top window's geometry
 		    if ((y - m_atr->area.y) < topattr.y) {
 			// Set preedit at upper side of the top
-			// window.  But it may doesn't work because it
+			// window.  But it may not work because it
 			// lacks height for window manager's title bar
 			// and some toolbars of browser...
 			m_ov_win->set_pos(m_atr->area.x, topattr.y - (y - m_atr->area.y));
@@ -1119,6 +1122,7 @@ ConvdispOs::~ConvdispOs()
 
 void ConvdispOs::update_preedit()
 {
+    move_candwin();
     if (!m_pe)
 	return;
 
@@ -1170,7 +1174,6 @@ void ConvdispOs::update_preedit()
       t->pushC32(style);
       mConn->push_packet(t);
       */
-    move_candwin();
 }
       
 void ConvdispOs::move_candwin()

@@ -46,6 +46,7 @@ public:
     void show();
     void hide();
     void move(int x, int y);
+    void show_caret_state(const char *str);
 };
 
 Canddisp *canddisp_singleton();
