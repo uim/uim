@@ -125,7 +125,7 @@
 (define event-exp-collector-add-modifier!
   (lambda (evc mod)
     (let ((modifier (event-exp-collector-modifier evc)))
-      (event-exp-collector-set-modifier! evc (bit-or mod modifier)))))
+      (event-exp-collector-set-modifier! evc (bitwise-or mod modifier)))))
 
 (define event-exp-collector-add-predicate!
   (lambda (evc pred)
@@ -148,16 +148,14 @@
   (lambda (evc)
     (event-exp-collector-normalize-predicates! evc)
     (let* ((modifier (event-exp-collector-modifier evc))
-	   (exp-list (filter (lambda (elem)
-			       elem)
+	   (exp-list (remove not
 			     (append
 			      (list
 			       (event-exp-collector-str evc)
 			       (event-exp-collector-lkey evc)
-			       (event-exp-collector-pkey evc))
-			      (if (not (= modifier 0))
-				  (list modifier)
-				  ())
+			       (event-exp-collector-pkey evc)
+			       (and (not (= modifier 0))
+				    modifier))
 			      (event-exp-collector-predicates evc)))))
       (if (= (length exp-list)
 	     1)
@@ -863,9 +861,12 @@
     ((lkey_Shift_R lkey_Shift_R) (action_toggle_shift_lock))))
 
 ;; for functional test and demonstration
+;; TODO: strip any modifier and re-generate in evmap
 (define qwerty-shift->space-ruleset
-  '((((lkey_Shift press))   (($1 " " lkey_space mod_None)))
-    (((lkey_Shift release)) (($1 " " lkey_space mod_None)))))
+  '((((lkey_Shift_L press))   (($1 " " lkey_space)))
+    (((lkey_Shift_L mod_Shift release)) (($1 " " lkey_space)))
+    (((lkey_Shift_R press))   (($1 " " lkey_space)))
+    (((lkey_Shift_R mod_Shift release)) (($1 " " lkey_space)))))
 
 (define jp106-henkan-muhenkan->shift-ruleset
   '((((lkey_Henkan   press))   (($1 lkey_Shift_R)))

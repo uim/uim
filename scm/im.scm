@@ -266,27 +266,19 @@
 ;; codes is needed.
 (define key-press-handler
   (lambda (id key state)
-    (let* ((c (find-context id))
-	   (im (and c (context-im c))))
-      (cond
-       ((and enable-im-switch
-	     (switch-im-key? key state))
-	(switch-im id (im-name im)))
-       ((modifier-key? key state)
-	;; don't discard modifier press/release edge for apps
-	(im-commit-raw c))
-       (else
-	(invoke-handler im-key-press-handler id key state))))))
+    (cond
+     ((and enable-im-switch
+	   (switch-im-key? key state))
+      (let* ((c (find-context id))
+	     (im (and c
+		      (context-im c))))
+	(switch-im id (im-name im))))
+     (else
+      (invoke-handler im-key-press-handler id key state)))))
 
 (define key-release-handler
   (lambda (id key state)
-    (let ((c (find-context id)))
-      (cond
-       ((modifier-key? key state)
-	;; don't discard modifier press/release edge for apps
-	(im-commit-raw c))
-       (else
-	(invoke-handler im-key-release-handler id key state))))))
+    (invoke-handler im-key-release-handler id key state)))
 
 (define reset-handler
   (lambda (id)
