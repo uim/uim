@@ -32,9 +32,8 @@
 */
 
 /*
-  This implementation is not yet working and lacking error
-  handlings. Restruction of uim-scm API is required to work.
-    -- YamaKen 2004-12-17
+  This implementation is still lacking error handlings. Be careful to use.
+    -- YamaKen 2004-12-30
 */
 
 /*
@@ -426,6 +425,14 @@ helper_disconnect_cb(void)
   helper_fd = -1;
 }
 
+/**
+ * Initializes custom API. This function must be called before uim_custom_*()
+ * functions are called. uim_init() must be called before this function.
+ *
+ * @see uim_init()
+ * @retval UIM_TRUE succeeded
+ * @retval UIM_FALSE failed
+ */
 uim_bool
 uim_custom_init(void)
 {
@@ -435,6 +442,13 @@ uim_custom_init(void)
   return UIM_TRUE;
 }
 
+/**
+ * Finalizes custom API. This function must be called before uim_quit().
+ *
+ * @see uim_quit()
+ * @retval UIM_TRUE succeeded
+ * @retval UIM_FALSE failed
+ */
 uim_bool
 uim_custom_quit(void)
 {
@@ -531,6 +545,15 @@ uim_custom_load_group(const char *group)
   return UIM_TRUE;
 }
 
+/**
+ * Loads per-user custom variable configurations. This function loads per-user
+ * custom variable values from ~/.uim.d/customs/custom-*.scm previously saved
+ * by uim_custom_save().
+ *
+ * @see uim_custom_save()
+ * @retval UIM_TRUE succeeded
+ * @retval UIM_FALSE failed
+ */
 uim_bool
 uim_custom_load(void)
 {
@@ -578,12 +601,33 @@ uim_custom_save_group(const char *group)
   return UIM_TRUE;
 }
 
+/**
+ * Saves per-user custom variable configurations. This function saves current
+ * custom variable values into ~/.uim.d/customs/custom-*.scm. The directory
+ * will be made if not exist. The saved values will be implicitly loaded at
+ * uim_init() or can explicitly be loaded by uim_custom_load().
+ *
+ * @see uim_init()
+ * @see uim_custom_load()
+ * @retval UIM_TRUE succeeded
+ * @retval UIM_FALSE failed
+ */
 uim_bool
 uim_custom_save(void)
 {
   return for_each_primary_groups(uim_custom_save_group);
 }
 
+/**
+ * Broadcasts custom variable configurations to other uim-enabled application
+ * processes via uim-helper-server. This function broadcasts current custom
+ * variable values to other uim-enabled application processes via
+ * uim-helper-server. The received processes updates custom variables
+ * dynamically. This enables dynamic re-configuration of input methods.
+ *
+ * @retval UIM_TRUE succeeded
+ * @retval UIM_FALSE failed
+ */
 uim_bool
 uim_custom_broadcast(void)
 {
@@ -616,6 +660,14 @@ uim_custom_broadcast(void)
   return UIM_TRUE;
 }
 
+/**
+ * Returns attributes and current value of a custom variable. Returned value
+ * must be freed by uim_custom_free().
+ *
+ * @see uim_custom_free()
+ * @return custom variable attributes and current value
+ * @param custom_sym custom variable name
+ */
 struct uim_custom *
 uim_custom_get(const char *custom_sym)
 {
@@ -634,6 +686,20 @@ uim_custom_get(const char *custom_sym)
   return custom;
 }
 
+/**
+ * Updates value of a custom variable. This function tries that an update of
+ * the custom variable specified by symbol and value of contained in @a
+ * custom. Update failes when passed value is invalid for the custom
+ * variable. Previous value is kept in real custom variable when the
+ * failure. @a custom should be created by uim_custom_get() and then user of
+ * uim-custom API can modify value of the @custom before passing to this
+ * function.
+ *
+ * @see uim_custom_get()
+ * @param custom custom variable symbol and value
+ * @retval UIM_TRUE succeeded
+ * @retval UIM_FALSE failed
+ */
 uim_bool
 uim_custom_set(const struct uim_custom *custom)
 {
@@ -670,6 +736,14 @@ uim_custom_set(const struct uim_custom *custom)
   return NFALSEP(uim_scm_return_value());
 }
 
+/**
+ * Frees pre-allocated C representation of a custom variable. All C
+ * representation of a custom variable allocated by uim_custom_get() must be
+ * freed by this function.
+ *
+ * @see uim_custom_get()
+ * @param custom C representation of a custom variable
+ */
 void
 uim_custom_free(struct uim_custom *custom)
 {
@@ -682,18 +756,40 @@ uim_custom_free(struct uim_custom *custom)
   free(custom);
 }
 
+/**
+ * Returns Scheme literal of a custom variable value. Returned string must be
+ * free() by caller.
+ *
+ * @return the literal
+ * @param custom_sym custom variable name
+ */
 char *
 uim_custom_value_as_literal(const char *custom_sym)
 {
   return uim_custom_get_str(custom_sym, "custom-canonical-value-as-string");
 }
 
+/**
+ * Returns Scheme literal of a custom variable definition. Returned string
+ * must be free() by caller.
+ *
+ * @return the literal
+ * @param custom_sym custom variable name
+ */
 char *
 uim_custom_definition_as_literal(const char *custom_sym)
 {
   return uim_custom_get_str(custom_sym, "custom-as-string");
 }
 
+/**
+ * Returns attributes of a custom group.and current value of a custom
+ * variable. Returned value must be freed by uim_custom_group_free().
+ *
+ * @see uim_custom_group_free()
+ * @return attributes of custom group
+ * @param group_sym custom group name
+ */
 struct uim_custom_group *
 uim_custom_group_get(const char *group_sym)
 {
@@ -707,6 +803,12 @@ uim_custom_group_get(const char *group_sym)
   return custom_group;
 }
 
+/**
+ * Frees C representation of a custom group.
+ *
+ * @see uim_custom_group_get()
+ * @param custom_group C representation of custom group
+ */
 void
 uim_custom_group_free(struct uim_custom_group *custom_group)
 {
@@ -716,7 +818,15 @@ uim_custom_group_free(struct uim_custom_group *custom_group)
   free(custom_group);
 }
 
-/* NULL as group_sym means 'any group' */
+/**
+ * Returns custom variable symbols that belongs to @a group_sym. The symbols
+ * consist of NULL-terminated array of C string and must be freed by
+ * uim_custom_symbol_list_free().
+ *
+ * @see uim_custom_symbol_list_free()
+ * @return custom variable symbols
+ * @param group_sym custom group name. NULL means 'any group'
+ */
 char **
 uim_custom_collect_by_group(const char *group_sym)
 {
@@ -729,6 +839,14 @@ uim_custom_collect_by_group(const char *group_sym)
   return custom_list;
 }
 
+/**
+ * Returns all existing custom group symbols. The symbols consist of
+ * NULL-terminated array of C string and must be freed by
+ * uim_custom_symbol_list_free().
+ *
+ * @see uim_custom_symbol_list_free()
+ * @return custom variable symbols
+ */
 char **
 uim_custom_groups(void)
 {
@@ -740,6 +858,14 @@ uim_custom_groups(void)
   return group_list;
 }
 
+/**
+ * Returns all existing primary custom group symbols. Subgroups are not
+ * returned. The symbols consist of NULL-terminated array of C string and must
+ * be freed by uim_custom_symbol_list_free().
+ *
+ * @see uim_custom_symbol_list_free()
+ * @return custom variable symbols
+ */
 char **
 uim_custom_primary_groups(void)
 {
@@ -752,6 +878,15 @@ uim_custom_primary_groups(void)
   return group_list;
 }
 
+/**
+ * Returns subgroup symbols of @a group_sym. The symbols consist of
+ * NULL-terminated array of C string and must be freed by
+ * uim_custom_symbol_list_free().
+ *
+ * @see uim_custom_symbol_list_free()
+ * @return custom subgroup symbols
+ * @param group_sym custom group name
+ */
 char **
 uim_custom_group_subgroups(const char *group_sym)
 {
@@ -764,13 +899,34 @@ uim_custom_group_subgroups(const char *group_sym)
   return group_list;
 }
 
+/**
+ * Frees a symbol list allocated by uim_custom_*() functions. The term 'list'
+ * does not mean linked list. Actually NULL-terminated array.
+ *
+ * @see uim_custom_collect_by_group()
+ * @see uim_custom_groups()
+ * @see uim_custom_primary_groups()
+ * @see uim_custom_group_subgroups()
+ * @param symbol_list pre-allocated symbol list
+ */
 void
 uim_custom_symbol_list_free(char **symbol_list)
 {
   uim_scm_c_list_free((void **)symbol_list, (uim_scm_c_list_free_func)free);
 }
 
-/* returns succeeded or not */
+/**
+ * Set a callback function in a custom variable. The @a update_cb is called
+ * back when the custom variable specified by @a custom_sym is updated. This
+ * function is not implemented yet.
+ *
+ * @retval UIM_TRUE succeeded
+ * @retval UIM_FALSE failed
+ * @param custom_sym custom variable name
+ * @param ptr an opaque value passed back to client at callback
+ * @param update_cb function pointer called back when the custom variable is
+ *        updated
+ */
 uim_bool
 uim_custom_cb_set(const char *custom_sym, void *ptr,
 		   void (*update_cb)(void *ptr, const char *custom_sym))

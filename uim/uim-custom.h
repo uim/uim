@@ -98,13 +98,9 @@ struct uim_custom_group {
 uim_bool uim_custom_init(void);
 uim_bool uim_custom_quit(void);
 
-/* load customs from configuration files ~/.uim.d/customs/custom-*.scm */
+/* load & save */
 uim_bool uim_custom_load(void);
-
-/* save customs into configuration files ~/.uim.d/customs/custom-*.scm */
 uim_bool uim_custom_save(void);
-
-/* broadcast customs via uim-helper-server */
 uim_bool uim_custom_broadcast(void);
 
 /* custom variable */
@@ -112,7 +108,7 @@ struct uim_custom *uim_custom_get(const char *custom_sym);
 uim_bool uim_custom_set(const struct uim_custom *custom);
 void uim_custom_free(struct uim_custom *custom);
 
-/* literalization of custom variable */
+/* literalization */
 char *uim_custom_value_as_literal(const char *custom_sym);
 char *uim_custom_definition_as_literal(const char *custom_sym);
 
@@ -120,10 +116,10 @@ char *uim_custom_definition_as_literal(const char *custom_sym);
 struct uim_custom_group *uim_custom_group_get(const char *group_sym);
 void uim_custom_group_free(struct uim_custom_group *custom_group);
 
-/* returns NULL terminated custom symbol list */
+/* custom symbol list */
 char **uim_custom_collect_by_group(const char *group_sym);
 
-/* returns NULL terminated group symbol list */
+/* group symbol list */
 char **uim_custom_groups(void);
 char **uim_custom_primary_groups(void);
 char **uim_custom_group_subgroups(const char *group_sym);
