@@ -554,7 +554,7 @@
    ;;ja-romaji-hiragana-hepburn-irregular-double-consonant-guide-ruleset
    ;;ja-romaji-hiragana-hepburn-irregular-double-consonant-ruleset
    ;;ja-romaji-hiragana-skk-like-symbol-ruleset
-   ja-azik-hiragana-basic-ruleset
+   ja-azik-hiragana-core-ruleset
    ))
 
 (define ja-azik-katakana-ruleset
@@ -580,7 +580,7 @@
    ;;ja-romaji-katakana-hepburn-irregular-double-consonant-guide-ruleset
    ;;ja-romaji-katakana-hepburn-irregular-double-consonant-ruleset
    ;;ja-romaji-katakana-skk-like-symbol-ruleset
-   ja-azik-katakana-basic-ruleset
+   ja-azik-katakana-core-ruleset
    ))
 
 (define ja-azik-halfkana-ruleset
@@ -606,5 +606,5 @@
    ;;ja-romaji-halfkana-hepburn-irregular-double-consonant-guide-ruleset
    ;;ja-romaji-halfkana-hepburn-irregular-double-consonant-ruleset
    ;;ja-romaji-halfkana-skk-like-symbol-ruleset
-   ja-azik-halfkana-basic-ruleset
+   ja-azik-halfkana-core-ruleset
    ))

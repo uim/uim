@@ -465,11 +465,15 @@
 
 (define list-copy!
   (lambda (dst src)
-    (if (not (or (null? dst)
-		 (null? src)))
-	(begin
-	  (set-car! dst (car src))
-	  (list-copy! (cdr dst) (cdr src))))))
+    (let self ((rest-dst dst)
+	       (rest-src src))
+      (if (or (null? rest-dst)
+	      (null? rest-src))
+	  dst
+	  (begin
+	    (set-car! rest-dst (car rest-src))
+	    (self (cdr rest-dst)
+		  (cdr rest-src)))))))
 
 (define action-exp-directive-positional-var
   (lambda (pos)
