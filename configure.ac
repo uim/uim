@@ -481,7 +481,7 @@ AC_ARG_WITH(eb,
     if test "x$HAVE_EBLIB" = "xyes"; then
       AC_DEFINE(HAVE_EBLIB, 1,
          [Define to 1 if you have EB library and header file])
-      EBLIB_LIBS="-leb"
+      EBLIB_LIBS="-leb -lz"
       use_eb="yes"
     fi
   fi
