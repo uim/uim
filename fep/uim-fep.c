@@ -232,6 +232,7 @@ int main(int argc, char **argv)
   }
   command[1] = NULL;
 
+  init_str();
   engine = get_default_im_name();
 
   while ((op = getopt(argc, argv, "e:s:u:b:w:t:C:Sciovh")) != -1) {
@@ -352,8 +353,6 @@ opt_end:
     }
     return EXIT_FAILURE;
   }
-
-  init_str();
 
   tcgetattr(g_win_in, &s_save_tios);
   setupterm(NULL, g_win_out, NULL);
@@ -921,7 +920,7 @@ static void usage(void)
   int max_im_name_len = 0;
 
   uim_init();
-  context = uim_create_context(NULL, NULL, NULL, NULL, uim_iconv, commit_cb);
+  context = uim_create_context(NULL, get_enc(), NULL, NULL, uim_iconv, commit_cb);
 
   printf("usage: uim-fep [OPTIONS]\n"
       "\n"

@@ -81,14 +81,14 @@ void init_str(void)
  */
 const char *get_enc(void)
 {
-  const char *locale;
-  if ((locale = setlocale(LC_CTYPE, "")) != NULL) {
-    if (strcasecmp(locale, "ja") == 0) {
-      return "EUC-JP";
-    } else {
-      char *ptr = strstr(locale, ".");
-      return ptr != NULL ? ptr + 1 : "UTF-8";
-    }
+  const char *locale = setlocale(LC_CTYPE, NULL);
+  assert(locale != NULL);
+
+  if (strcasecmp(locale, "ja") == 0) {
+    return "EUC-JP";
+  } else {
+    char *ptr = strstr(locale, ".");
+    return ptr != NULL ? ptr + 1 : "UTF-8";
   }
   return "UTF-8";
 }
