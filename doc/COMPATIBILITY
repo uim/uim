@@ -58,17 +58,22 @@ Each change consist of following fields. All fields are required.
 The changes are described below in most recently updated order.
 
 ------------------------------------------------------------------------------
-Summary: 
-Affects: 
+Summary: New helper-candwin protocol about showing input state
+Affects: Helper program developers
 Updates: Helper-candwin protocol
 Version: 0.4.7
 Revision: ac744
-Date: 
+Date: 2004-03-04
 Modifier: Etsushi Kato
-Related: 
+Related: 'bridge-show-input-state? of im-custom.scm
 URL:
 Changes:
+  (new) "show_caret_state"
 Description:
+  New helper-candwin message from uim-xim to uim-candwin-{gtk,qt} for 
+  showing caret state.  The string must be UTF-8 encoded and its
+  format is as same as the format of "prop_label_update" message in
+  generic helper protocol.
 ------------------------------------------------------------------------------
 Summary: A boolean type for uim
 Affects: Helper program developers, Bridge developers, uim developers

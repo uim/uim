@@ -70,7 +70,7 @@ Recieving Message format BNF
     deactivate = "deactivate" "\n"
 
   7. show_caret_state
-    Deactivating the candidate window
+    Show caret state of the input mode
 
     show_caret_state = "show_caret_state" "\n" caret_state
     caret_state = "\n" str
