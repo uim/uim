@@ -41,10 +41,13 @@
 #include <uim/uim-custom.h>
 #include "uim/gettext.h"
 
+#define OBJECT_DATA_UIM_CUSTOM "uim-pref-gtk::uim-custom"
+
 static GtkWidget *pref_tree_view;
 static GtkWidget *pref_hbox;
 static GtkWidget *current_group_widget;
 static GtkSizeGroup *spin_button_sgroup;
+static gboolean value_changed = FALSE;
 
 enum
 {
@@ -154,7 +157,34 @@ create_pref_treeview(void)
 }
 
 static void
-add_custom_type_bool(GtkWidget *vbox, const struct uim_custom *custom)
+custom_check_button_toggled_cb(GtkToggleButton *button, gpointer user_data)
+{
+  struct uim_custom *custom;
+  uim_bool rv;
+  gboolean active;
+
+  active = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button));
+
+  custom = g_object_get_data(G_OBJECT(button), OBJECT_DATA_UIM_CUSTOM);
+  g_return_if_fail(custom);
+
+  if (custom->type == UCustom_Bool) {
+    custom->value->as_bool = active;
+    rv = uim_custom_set(custom);
+
+    if (rv) {
+      value_changed = TRUE;
+    } else {
+      g_printerr("Faild to set bool value for \"%s\".\n", custom->symbol);
+      /* FIXME! reset the widget */
+    }
+  } else {
+    g_printerr("Invalid value type passed for \"%s\".\n", custom->symbol);
+  }
+}
+
+static void
+add_custom_type_bool(GtkWidget *vbox, struct uim_custom *custom)
 {
   GtkWidget *hbox;
   GtkWidget *label;
@@ -165,14 +195,44 @@ add_custom_type_bool(GtkWidget *vbox, const struct uim_custom *custom)
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 
   check_button = gtk_check_button_new();
+  g_object_set_data_full(G_OBJECT(check_button),
+			 OBJECT_DATA_UIM_CUSTOM, custom,
+			 (GDestroyNotify) uim_custom_free);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button),
+			       custom->value->as_bool);
+  g_signal_connect(G_OBJECT(check_button), "toggled",
+		   G_CALLBACK(custom_check_button_toggled_cb), NULL);
 
   gtk_box_pack_start (GTK_BOX (hbox), check_button, FALSE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
 }
 
+static void
+custom_adjustment_value_changed(GtkAdjustment *adj, gpointer user_data)
+{
+  struct uim_custom *custom;
+  uim_bool rv;
+
+  custom = g_object_get_data(G_OBJECT(adj), OBJECT_DATA_UIM_CUSTOM);
+  g_return_if_fail(custom);
+
+  if (custom->type == UCustom_Int) {
+    custom->value->as_int = adj->value;
+    rv = uim_custom_set(custom);
+
+    if (rv) {
+      value_changed = TRUE;
+    } else {
+      g_printerr("Faild to set int value for \"%s\".\n", custom->symbol);
+      /* FIXME! reset the widget */
+    }
+  } else {
+    g_printerr("Invalid value type passed for \"%s\".\n", custom->symbol);
+  }
+}
 
 static void
-add_custom_type_integer(GtkWidget *vbox, const struct uim_custom *custom)
+add_custom_type_integer(GtkWidget *vbox, struct uim_custom *custom)
 {
   GtkWidget *hbox;
   GtkWidget *label;
@@ -189,7 +249,12 @@ add_custom_type_integer(GtkWidget *vbox, const struct uim_custom *custom)
 						  1.0,
 						  10.0,
 						  100.0);
-  
+  g_object_set_data_full(G_OBJECT(adjustment),
+			 OBJECT_DATA_UIM_CUSTOM, custom,
+			 (GDestroyNotify) uim_custom_free);
+  g_signal_connect(G_OBJECT(adjustment), "value-changed",
+		   G_CALLBACK(custom_adjustment_value_changed), NULL);
+
   spin = gtk_spin_button_new(adjustment, 1.0, 0);
   gtk_size_group_add_widget(spin_button_sgroup, spin);
   gtk_box_pack_end (GTK_BOX (hbox), spin, FALSE, TRUE, 0);
@@ -198,7 +263,42 @@ add_custom_type_integer(GtkWidget *vbox, const struct uim_custom *custom)
 }
 
 static void
-add_custom_type_string(GtkWidget *vbox, const struct uim_custom *custom)
+custom_entry_changed_cb(GtkEntry *entry, gpointer user_data)
+{
+  struct uim_custom *custom;
+  uim_bool rv;
+
+  custom = g_object_get_data(G_OBJECT(entry), OBJECT_DATA_UIM_CUSTOM);
+  g_return_if_fail(custom);
+
+  if (custom->type == UCustom_Str || custom->type == UCustom_Pathname) {
+    const char *str = gtk_entry_get_text(GTK_ENTRY(entry));
+
+    if (custom->type == UCustom_Str) {
+      free(custom->value->as_str);
+      custom->value->as_str = strdup(str);
+      rv = uim_custom_set(custom);
+    } else if (custom->type == UCustom_Pathname) {
+      free(custom->value->as_pathname);
+      custom->value->as_pathname = strdup(str);
+      rv = uim_custom_set(custom);
+    } else {
+      rv = UIM_FALSE;
+    }
+
+    if (rv) {
+      value_changed = TRUE;
+    } else {
+      g_printerr("Faild to set str value for \"%s\".\n", custom->symbol);
+      /* FIXME! reset the widget */
+    }
+  } else {
+    g_printerr("Invalid value type passed for \"%s\".\n", custom->symbol);
+  }
+}
+
+static void
+add_custom_type_string(GtkWidget *vbox, struct uim_custom *custom)
 {
   GtkWidget *hbox;
   GtkWidget *label;
@@ -210,8 +310,13 @@ add_custom_type_string(GtkWidget *vbox, const struct uim_custom *custom)
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 
   entry = gtk_entry_new();
+  g_object_set_data_full(G_OBJECT(entry),
+			 OBJECT_DATA_UIM_CUSTOM, custom,
+			 (GDestroyNotify) uim_custom_free);
   gtk_entry_set_text(GTK_ENTRY(entry), custom->value->as_str);
   gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
+  g_signal_connect(G_OBJECT(entry), "changed",
+		   G_CALLBACK(custom_entry_changed_cb), NULL);
 
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
 }
@@ -240,7 +345,7 @@ custom_pathname_button_clicked_cb(GtkWidget *button, GtkWidget *entry)
 }
 
 static void
-add_custom_type_pathname(GtkWidget *vbox, const struct uim_custom *custom)
+add_custom_type_pathname(GtkWidget *vbox, struct uim_custom *custom)
 {
   GtkWidget *hbox;
   GtkWidget *label;
@@ -249,14 +354,19 @@ add_custom_type_pathname(GtkWidget *vbox, const struct uim_custom *custom)
 
   hbox = gtk_hbox_new(FALSE, 8);
  
-  label = gtk_label_new(custom->label); 
+  label = gtk_label_new(custom->label);
   gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
   gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
 
   entry = gtk_entry_new();
+  g_object_set_data_full(G_OBJECT(entry),
+			 OBJECT_DATA_UIM_CUSTOM, custom,
+			 (GDestroyNotify) uim_custom_free);
   gtk_entry_set_text(GTK_ENTRY(entry), custom->value->as_pathname);
   gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
+  g_signal_connect(G_OBJECT(entry), "changed",
+		   G_CALLBACK(custom_entry_changed_cb), NULL);
 
   button = gtk_button_new_with_label("File");
 
@@ -269,13 +379,58 @@ add_custom_type_pathname(GtkWidget *vbox, const struct uim_custom *custom)
 }
 
 static void
-add_custom_type_choice(GtkWidget *vbox, const struct uim_custom *custom)
+custom_combo_box_changed(GtkComboBox *combo_box, gpointer user_data)
+{
+  struct uim_custom *custom;
+  uim_bool rv;
+
+  custom = g_object_get_data(G_OBJECT(combo_box), OBJECT_DATA_UIM_CUSTOM);
+  g_return_if_fail(custom);
+
+  if (custom->type == UCustom_Choice) {
+    gint i, num = gtk_combo_box_get_active(combo_box);
+    struct uim_custom_choice *choice = NULL;
+
+    /* check length of custom->range->as_choice.valid_items */
+    for (i = 0;
+	 custom->range->as_choice.valid_items &&
+	   custom->range->as_choice.valid_items[i];
+	 i++)
+    {
+      if (i == num) {
+	choice = custom->range->as_choice.valid_items[i];
+      }
+    }
+    g_return_if_fail(choice);
+
+    free(custom->value->as_choice->symbol);
+    free(custom->value->as_choice->label);
+    free(custom->value->as_choice->desc);
+
+    custom->value->as_choice->symbol = strdup(choice->symbol);
+    custom->value->as_choice->label  = strdup(choice->label);
+    custom->value->as_choice->desc   = strdup(choice->desc);
+
+    rv = uim_custom_set(custom);
+
+    if (rv) {
+      value_changed = TRUE;
+    } else {
+      g_printerr("Faild to set str value for \"%s\".\n", custom->symbol);
+      /* FIXME! reset the widget */
+    }
+  } else {
+  }
+}
+
+static void
+add_custom_type_choice(GtkWidget *vbox, struct uim_custom *custom)
 {
   GtkWidget *hbox;
   GtkWidget *label;
   GtkWidget *combobox;
   struct uim_custom_choice **item;
-  gint i, default_index;
+  gint i, default_index = 0;
   gchar *default_symbol;
 
   hbox = gtk_hbox_new(FALSE, 8);
@@ -283,6 +438,9 @@ add_custom_type_choice(GtkWidget *vbox, const struct uim_custom *custom)
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 
   combobox = gtk_combo_box_new_text();
+  g_object_set_data_full(G_OBJECT(combobox),
+			 OBJECT_DATA_UIM_CUSTOM, custom,
+			 (GDestroyNotify) uim_custom_free);
   
   default_symbol = custom->default_value->as_choice->symbol;
 
@@ -294,11 +452,14 @@ add_custom_type_choice(GtkWidget *vbox, const struct uim_custom *custom)
   }
   gtk_combo_box_set_active(GTK_COMBO_BOX(combobox), default_index);
   gtk_box_pack_start (GTK_BOX (hbox), combobox, FALSE, TRUE, 0);
+  g_signal_connect(G_OBJECT(combobox), "changed",
+		   G_CALLBACK(custom_combo_box_changed), NULL);
+
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
 }
 
 static void
-add_custom_type_key(GtkWidget *vbox, const struct uim_custom *custom)
+add_custom_type_key(GtkWidget *vbox, struct uim_custom *custom)
 {
   GtkWidget *hbox;
   GtkWidget *label;
@@ -306,6 +467,12 @@ add_custom_type_key(GtkWidget *vbox, const struct uim_custom *custom)
   hbox = gtk_hbox_new(FALSE, 8);
   label = gtk_label_new(custom->label);
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
+
+  /*
+  g_object_set_data_full(G_OBJECT(hoge),
+			 OBJECT_DATA_UIM_CUSTOM, custom,
+			 (GDestroyNotify) uim_custom_free);
+  */
 
   gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
 }
@@ -317,7 +484,6 @@ add_custom(GtkWidget *vbox, const char *custom_sym)
   custom = uim_custom_get(custom_sym);
 
   if (custom) {
-    
     /* Should be rewritten with table. */
     switch (custom->type) {
     case UCustom_Bool:
@@ -338,8 +504,39 @@ add_custom(GtkWidget *vbox, const char *custom_sym)
     case UCustom_Key:
       add_custom_type_key(vbox, custom);
       break;
+    default:
+      g_printerr("Invalid custom type: %d\n", custom->type);
+      uim_custom_free(custom);
+      break;
     }
-  uim_custom_free(custom);
+  } else {
+    g_printerr("Faild to get uim_custom object for %s.\n", custom_sym);
+  }
+}
+
+static void
+ok_button_clicked(GtkButton *button, gpointer user_data)
+{
+  /*const char *group_name = user_data;*/
+
+  if (value_changed) {
+    uim_custom_save();
+    uim_custom_broadcast();
+    value_changed = FALSE;
+  }
+
+  gtk_main_quit();
+}
+
+static void
+apply_button_clicked(GtkButton *button, gpointer user_data)
+{
+  /*const char *group_name = user_data;*/
+
+  if (value_changed) {
+    uim_custom_save();
+    uim_custom_broadcast();
+    value_changed = FALSE;
   }
 }
 
@@ -355,6 +552,8 @@ create_setting_button_box(const char *group_name)
 
   /* Apply button */
   button = gtk_button_new_from_stock(GTK_STOCK_APPLY);
+  g_signal_connect(G_OBJECT(button), "clicked",
+		   G_CALLBACK(apply_button_clicked), (gpointer) group_name);
   gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 8);
 
   /* Cancel button */
@@ -365,8 +564,8 @@ create_setting_button_box(const char *group_name)
 
   /* OK button */
   button = gtk_button_new_from_stock(GTK_STOCK_OK);
-  /*  g_signal_connect(G_OBJECT(button), "clicked",
-      G_CALLBACK(ok_button_clicked), group_name);*/
+  g_signal_connect(G_OBJECT(button), "clicked",
+		   G_CALLBACK(ok_button_clicked), (gpointer) group_name);
   gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 8);
   return setting_button_box;
 }
@@ -382,6 +581,8 @@ create_group_widget(const char *group_name)
   char *label_text;
   spin_button_sgroup = gtk_size_group_new(GTK_SIZE_GROUP_VERTICAL);
   vbox = gtk_vbox_new(FALSE, 8);
+
+  gtk_container_set_border_width(GTK_CONTAINER(vbox), 4);
 
   group = uim_custom_group_get(group_name);
 
