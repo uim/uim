@@ -2172,7 +2172,7 @@ file_prin1 (LISP ptr, struct gen_printio *f)
 static void *
 get_c_pointer (LISP x)
 {
-  if POINTERP
+  if NPOINTERP
     (x) my_err ("not a C pointer", x);
   return (x->storage_as.c_pointer.data);
 }

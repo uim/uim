@@ -202,6 +202,7 @@ typedef LISP (*SUBR_FUNC) (void);
 #define NINTNUMP(x) NTYPEP(x,tc_intnum)
 #define NSYMBOLP(x) NTYPEP(x,tc_symbol)
 #define NSTRINGP(x) NTYPEP(x,tc_string)
+#define NPOINTERP(x) NTYPEP(x,tc_c_pointer)
 
 #define TKBUFFERN 5120
 

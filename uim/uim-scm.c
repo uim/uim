@@ -57,6 +57,8 @@
 #include "uim-compat-scm.c"
 #endif
 
+static void siod_init_subr(char *name, long type, uim_lisp (*fcn)(void));
+
 static uim_lisp true_sym;
 static uim_lisp false_sym;
 static uim_lisp protected_arg0;
@@ -391,42 +393,52 @@ uim_scm_require_file(const char *fn)
   return succeeded;
 }
 
+static void
+siod_init_subr(char *name, long type, uim_lisp (*fcn)(void))
+{
+  uim_lisp stack_start;
+
+  uim_scm_gc_protect_stack(&stack_start);
+  init_subr(name, type, (SUBR_FUNC)fcn);
+  uim_scm_gc_unprotect_stack(&stack_start);
+}
+
 void
 uim_scm_init_subr_0(char *name, uim_lisp (*fcn)(void))
 {
-  init_subr(name, tc_subr_0, (SUBR_FUNC)fcn);
+  siod_init_subr(name, tc_subr_0, (SUBR_FUNC)fcn);
 }
 
 void
 uim_scm_init_subr_1(char *name, uim_lisp (*fcn)(uim_lisp))
 {
-  init_subr(name, tc_subr_1, (SUBR_FUNC)fcn);
+  siod_init_subr(name, tc_subr_1, (SUBR_FUNC)fcn);
 }
 
 void
 uim_scm_init_subr_2(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp))
 {
-  init_subr(name, tc_subr_2, (SUBR_FUNC)fcn);
+  siod_init_subr(name, tc_subr_2, (SUBR_FUNC)fcn);
 }
 
 void
 uim_scm_init_subr_3(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp))
 {
-  init_subr(name, tc_subr_3, (SUBR_FUNC)fcn);
+  siod_init_subr(name, tc_subr_3, (SUBR_FUNC)fcn);
 }
 
 void
 uim_scm_init_subr_4(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
 						uim_lisp))
 {
-  init_subr(name, tc_subr_4, (SUBR_FUNC)fcn);
+  siod_init_subr(name, tc_subr_4, (SUBR_FUNC)fcn);
 }
 
 void
 uim_scm_init_subr_5(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
 						uim_lisp, uim_lisp))
 {
-  init_subr(name, tc_subr_5, (SUBR_FUNC)fcn);
+  siod_init_subr(name, tc_subr_5, (SUBR_FUNC)fcn);
 }
 
 static void

@@ -186,11 +186,13 @@ void uim_init_plugin(void)
 /* Called from uim_quit */
 void uim_quit_plugin(void)
 {
-#if 0
-  /* XXX: This code does not work well */
+#ifdef UIM_SCM_NESTED_EVAL
+  uim_lisp stack_start;
   uim_lisp list_car, list_cdr;
-  uim_lisp alist = uim_scm_eval_c_string("plugin-alist");
+  uim_lisp alist;
 
+  uim_scm_gc_protect_stack(&stack_start);
+  alist = uim_scm_eval_c_string("plugin-alist");
   for(list_car = uim_scm_car(alist), list_cdr = uim_scm_cdr(alist);
       list_car != uim_scm_f();
       list_car = uim_scm_car(list_cdr), list_cdr = uim_scm_cdr(list_cdr))
@@ -210,5 +212,6 @@ void uim_quit_plugin(void)
     (plugin_instance_quit)();
     dlclose(library);
   }
+  uim_scm_gc_unprotect_stack(&stack_start);
 #endif
 }
