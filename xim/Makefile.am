@@ -1,3 +1,5 @@
+if XIM
+
 bin_PROGRAMS = uim-xim
 uim_xim_LDFLAGS =  @X_LIBS@
 uim_xim_LDADD =  -lXext -lX11 $(top_builddir)/uim/libuim.la @LIBICONV@
@@ -17,3 +19,4 @@ uim_xim_SOURCES = \
 	util.cpp util.h \
 	helper.cpp helper.h \
 	compose.cpp compose.h
+endif
