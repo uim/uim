@@ -166,6 +166,7 @@ void XimServer::customContext(const char *custom, const char *val) {
     }
     if (!strcmp(custom, "custom-preserved-default-im-name") &&
 		    mUsePreservedDefaultIM == true) {
+	val++;
 	set_im(val);
     }
 
