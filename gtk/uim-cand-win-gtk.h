@@ -71,6 +71,14 @@ struct _UIMCandWinGtk {
   UimCandWinPos	 position;
 
   GdkRectangle	 cursor;
+
+  /* sub window */
+  struct sub_window {
+    GtkWidget	*window;
+    GtkWidget	*scrolled_window;
+    GtkWidget	*text_view;
+    gboolean     active;
+  } sub_window;
 };
 
 struct _UIMCandWinGtkClass {

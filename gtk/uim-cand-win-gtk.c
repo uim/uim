@@ -46,20 +46,30 @@ enum {
 enum {
   TERMINATOR = -1,
   COLUMN_HEADING,
-  COLUMN_CANDIDATE
+  COLUMN_CANDIDATE,
+  COLUMN_ANNOTATION,
+  NR_COLUMNS
 };
 
 static void	uim_cand_win_gtk_init		(UIMCandWinGtk *cwin);
 static void	uim_cand_win_gtk_class_init	(UIMCandWinGtkClass *klass);
 static void	uim_cand_win_gtk_dispose	(GObject *obj);
+static void	uim_cand_win_gtk_map		(GtkWidget *widget);
+static void	uim_cand_win_gtk_unmap		(GtkWidget *widget);
+static void	uim_cand_win_gtk_create_sub_window(UIMCandWinGtk *cwin);
+static void	uim_cand_win_gtk_layout_sub_window(UIMCandWinGtk *cwin);
 
-static gboolean	tree_selection_changed		(GtkTreeSelection *selection,
+static gboolean	tree_selection_change		(GtkTreeSelection *selection,
 						 GtkTreeModel *model,
 						 GtkTreePath *path,
 						 gboolean path_currently_selected,
 						 gpointer data);
-static gboolean
-tree_view_button_press(GtkWidget *widget, GdkEventButton *event, gpointer data);
+static gboolean tree_selection_changed		(GtkTreeSelection *selection,
+						 gpointer data);
+static gboolean tree_view_button_press		(GtkWidget *widget,
+						 GdkEventButton *event,
+						 gpointer data);
+
 
 static GType cand_win_type = 0;
 static GTypeInfo const object_info = {
@@ -101,6 +111,7 @@ static void
 uim_cand_win_gtk_class_init (UIMCandWinGtkClass *klass)
 {
   GObjectClass *object_class = (GObjectClass *) klass;
+  GtkWidgetClass *widget_class = (GtkWidgetClass *) klass;
 
   parent_class = g_type_class_peek_parent (klass);
   object_class->dispose = uim_cand_win_gtk_dispose;
@@ -113,6 +124,9 @@ uim_cand_win_gtk_class_init (UIMCandWinGtkClass *klass)
 		   NULL, NULL,
 		   g_cclosure_marshal_VOID__VOID,
 		   G_TYPE_NONE, 0);
+
+  widget_class->map   = uim_cand_win_gtk_map;
+  widget_class->unmap = uim_cand_win_gtk_unmap;
 }
 
 static void
@@ -140,6 +154,11 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
   cwin->cursor.x = cwin->cursor.y = 0;
   cwin->cursor.width = cwin->cursor.height = 0;
 
+  cwin->sub_window.window          = NULL;
+  cwin->sub_window.scrolled_window = NULL;
+  cwin->sub_window.text_view       = NULL;
+  cwin->sub_window.active          = FALSE;
+
   /* build window */
   vbox = gtk_vbox_new(FALSE, 0);
 
@@ -155,9 +174,11 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(cwin->view));
 
   gtk_tree_selection_set_select_function(selection,
-					 tree_selection_changed,
+					 tree_selection_change,
 					 cwin,
 					 NULL);
+  g_signal_connect (G_OBJECT(selection), "changed",
+		    G_CALLBACK(tree_selection_changed), cwin);
 
   renderer = gtk_cell_renderer_text_new();
   column = gtk_tree_view_column_new_with_attributes("No",
@@ -212,8 +233,40 @@ uim_cand_win_gtk_dispose (GObject *obj)
     cwin->stores = NULL;
   }
 
+  if (cwin->sub_window.window) {
+    gtk_widget_destroy(cwin->sub_window.window);
+    cwin->sub_window.window          = NULL;
+    cwin->sub_window.scrolled_window = NULL;
+    cwin->sub_window.text_view       = NULL;
+  }
+
   if (G_OBJECT_CLASS (parent_class)->dispose)
     G_OBJECT_CLASS (parent_class)->dispose(obj);
+}
+
+static void        
+uim_cand_win_gtk_map (GtkWidget *widget)
+{
+  UIMCandWinGtk *cwin = UIM_CAND_WIN_GTK(widget);
+
+  if (cwin->sub_window.active)
+    gtk_widget_show(cwin->sub_window.window);
+
+  if (GTK_WIDGET_CLASS (parent_class)->map)
+    GTK_WIDGET_CLASS (parent_class)->map(widget);
+}
+
+
+static void        
+uim_cand_win_gtk_unmap (GtkWidget *widget)
+{
+  UIMCandWinGtk *cwin = UIM_CAND_WIN_GTK(widget);
+
+  if (cwin->sub_window.window)
+    gtk_widget_hide(cwin->sub_window.window);
+
+  if (GTK_WIDGET_CLASS (parent_class)->unmap)
+    GTK_WIDGET_CLASS (parent_class)->unmap(widget);
 }
 
 UIMCandWinGtk *
@@ -241,11 +294,11 @@ update_label(UIMCandWinGtk *cwin)
 }
 
 static gboolean
-tree_selection_changed(GtkTreeSelection *selection,
-		       GtkTreeModel *model,
-		       GtkTreePath *path,
-		       gboolean path_currently_selected,
-		       gpointer data)
+tree_selection_change(GtkTreeSelection *selection,
+		      GtkTreeModel *model,
+		      GtkTreePath *path,
+		      gboolean path_currently_selected,
+		      gpointer data)
 {
   UIMCandWinGtk *cwin = data;
   gint *indicies;
@@ -276,6 +329,45 @@ tree_selection_changed(GtkTreeSelection *selection,
 
     return TRUE;
   }
+}
+
+static gboolean
+tree_selection_changed(GtkTreeSelection *selection,
+		       gpointer data)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  UIMCandWinGtk *cwin = UIM_CAND_WIN_GTK(data);
+
+  if (gtk_tree_selection_get_selected(selection, &model, &iter)) {
+    gchar *annotation = NULL;
+    gtk_tree_model_get(model, &iter,
+		       COLUMN_ANNOTATION, &annotation,
+		       -1);
+    if (annotation && *annotation) {
+      if (!cwin->sub_window.window)
+	uim_cand_win_gtk_create_sub_window(cwin);
+      gtk_text_buffer_set_text(
+	gtk_text_view_get_buffer(GTK_TEXT_VIEW(cwin->sub_window.text_view)),
+	annotation, -1);
+      uim_cand_win_gtk_layout_sub_window(cwin);
+      gtk_widget_show(cwin->sub_window.window);
+      cwin->sub_window.active = TRUE;
+    } else {
+      if (cwin->sub_window.window) {
+	gtk_widget_hide(cwin->sub_window.window);
+	cwin->sub_window.active = FALSE;
+      }
+    }
+    g_free(annotation);
+  } else {
+    if (cwin->sub_window.window) {
+      gtk_widget_hide(cwin->sub_window.window);
+      cwin->sub_window.active = FALSE;
+    }
+  }
+
+  return TRUE;
 }
 
 static gboolean
@@ -345,6 +437,8 @@ uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
   cwin->nr_candidates = g_slist_length(candidates);
   cwin->display_limit = display_limit;
 
+  cwin->sub_window.active = FALSE;
+
   if (candidates == NULL)
     return;
 
@@ -357,7 +451,10 @@ uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
 
   /* create GtkListStores, and set candidates */
   for (i = 0; i < nr_stores; i++) {
-    GtkListStore *store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
+    GtkListStore *store = gtk_list_store_new(NR_COLUMNS,
+					     G_TYPE_STRING,
+					     G_TYPE_STRING,
+					     G_TYPE_STRING);
     GSList *node;
     guint j;
 
@@ -370,13 +467,13 @@ uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
     {
       GtkTreeIter ti;
 
-
       if (node) {
 	uim_candidate cand = node->data;
 	gtk_list_store_append(store, &ti);
         gtk_list_store_set(store, &ti,
-			   COLUMN_HEADING,   uim_candidate_get_heading_label(cand),
-			   COLUMN_CANDIDATE, uim_candidate_get_cand_str(cand),
+			   COLUMN_HEADING,    uim_candidate_get_heading_label(cand),
+			   COLUMN_CANDIDATE,  uim_candidate_get_cand_str(cand),
+			   COLUMN_ANNOTATION, NULL, /*uim_candidate_get_annotation(cand),*/
 			   TERMINATOR);
       } else {
 #if 1
@@ -389,8 +486,9 @@ uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
 	 */
 	gtk_list_store_append(store, &ti);
         gtk_list_store_set(store, &ti,
-			   COLUMN_HEADING,   "",
-			   COLUMN_CANDIDATE, "",
+			   COLUMN_HEADING,    "",
+			   COLUMN_CANDIDATE,  "",
+			   COLUMN_ANNOTATION, NULL,
 			   TERMINATOR);
 #endif
       }
@@ -589,6 +687,8 @@ uim_cand_win_gtk_layout(UIMCandWinGtk *cwin,
   }
 
   gtk_window_move(GTK_WINDOW(cwin), x, y );
+
+  uim_cand_win_gtk_layout_sub_window(cwin);
 }
 
 void
@@ -598,4 +698,55 @@ uim_cand_win_gtk_set_cursor_location(UIMCandWinGtk *cwin, GdkRectangle *area)
   g_return_if_fail(area);
 
   cwin->cursor = *area;
+}
+
+
+static void
+uim_cand_win_gtk_create_sub_window(UIMCandWinGtk *cwin)
+{
+  GtkWidget *window, *scrwin, *text_view;
+
+  if (cwin->sub_window.window)
+    return;
+
+  cwin->sub_window.window = window = gtk_window_new(GTK_WINDOW_POPUP);
+  gtk_window_set_default_size(GTK_WINDOW(window), 200, 200);
+
+  cwin->sub_window.scrolled_window = scrwin = gtk_scrolled_window_new(NULL, NULL);
+  gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrwin),
+				 GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+
+  cwin->sub_window.text_view = text_view = gtk_text_view_new();
+  gtk_text_view_set_editable(GTK_TEXT_VIEW(text_view), FALSE);
+  gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_view), GTK_WRAP_WORD);
+  gtk_widget_show(text_view);
+
+  gtk_container_add(GTK_CONTAINER(scrwin), text_view);
+  gtk_container_add(GTK_CONTAINER(window), scrwin);
+  gtk_widget_show(scrwin);
+  gtk_widget_show(text_view);
+}
+
+static void
+uim_cand_win_gtk_layout_sub_window(UIMCandWinGtk *cwin)
+{
+  gint x, y, w, h, d, sw, sh, x2, y2, w2, h2, d2;
+
+  if (!cwin->sub_window.window)
+    return;
+
+  gdk_window_get_geometry(GTK_WIDGET(cwin)->window,
+			  &x, &y, &w, &h, &d);
+  gdk_window_get_origin(GTK_WIDGET(cwin)->window, &x, &y);
+
+  sw = gdk_screen_get_width  (gdk_screen_get_default ());
+  sh = gdk_screen_get_height (gdk_screen_get_default ()); 
+ gdk_window_get_geometry(cwin->sub_window.window->window,
+			  &x2, &y2, &w2, &h2, &d2);
+  if (x + w + w2 > sw)
+    x = x - w2;
+  else
+    x = x + w;
+
+  gtk_window_move(GTK_WINDOW(cwin->sub_window.window), x, y);
 }
