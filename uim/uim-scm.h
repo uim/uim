@@ -38,7 +38,12 @@
    API easily causes fatal crash involving GC if you does not pay
    attention enough. Be careful.
 
-                                                2004-12-21 YamaKen
+   This API is not intended to provide all R5RS features. Only 'core'
+   ones to write Scheme-C adapters should be added. Consider how
+   frequently it will be used, and whether it should be written by C,
+   when you add an API function.
+
+                                                2005-01-10 YamaKen
 */
 
 
@@ -191,6 +196,8 @@ uim_lisp
 uim_scm_cdar(uim_lisp cell);
 uim_lisp
 uim_scm_cddr(uim_lisp cell);
+uim_lisp
+uim_scm_length(uim_lisp list);
 uim_lisp
 uim_scm_reverse(uim_lisp cell);
 

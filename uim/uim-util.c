@@ -39,7 +39,6 @@
 #include <langinfo.h>
 #include "context.h"
 #include "gettext.h"
-#include "siod.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "uim-util.h"
@@ -76,23 +75,6 @@ static uim_lisp
 sys_pkgdatadir()
 {
   return uim_scm_make_str(PKGDATADIR);
-}
-
-
-static uim_lisp
-string_equal(uim_lisp x, uim_lisp y)
-{
-  long xl, yl;
-  char *xs, *ys;
-  xs = get_c_string_dim((LISP)x, &xl);
-  ys = get_c_string_dim((LISP)y, &yl);
-  if (xl != yl) {
-    return uim_scm_f();
-  }
-  if (!strncmp(xs, ys, xl)) {
-    return uim_scm_t();
-  }
-  return uim_scm_f();
 }
 
 static uim_lisp
@@ -149,14 +131,14 @@ nthcdr(uim_lisp nth_, uim_lisp lst)
 static uim_lisp
 str_seq_equal(uim_lisp seq, uim_lisp rule)
 {
-  int sl = nlength((LISP)seq);
-  int rl = nlength((LISP)rule);
+  int sl = uim_scm_c_int(uim_scm_length(seq));
+  int rl = uim_scm_c_int(uim_scm_length(rule));
   int i;
   if (sl != rl) {
     return uim_scm_f();
   }
   for (i = 0; i < sl; i++) {
-    if FALSEP(string_equal(uim_scm_car(seq), uim_scm_car(rule))) {
+    if (!uim_scm_string_equal(uim_scm_car(seq), uim_scm_car(rule))) {
       return uim_scm_f();
     }
     seq = uim_scm_cdr(seq);
@@ -174,8 +156,8 @@ str_seq_equal(uim_lisp seq, uim_lisp rule)
 static uim_lisp
 str_seq_partial(uim_lisp seq, uim_lisp rule)
 {
-  int sl = nlength((LISP)seq);
-  int rl = nlength((LISP)rule);
+  int sl = uim_scm_c_int(uim_scm_length(seq));
+  int rl = uim_scm_c_int(uim_scm_length(rule));
   int i;
 
   if (sl >= rl) {
@@ -183,7 +165,7 @@ str_seq_partial(uim_lisp seq, uim_lisp rule)
   }
   /* Obviously. sl < rl */
   for (i = 0; i < sl; i++) {
-    if FALSEP(string_equal(uim_scm_car(seq), uim_scm_car(rule))) {
+    if (!uim_scm_string_equal(uim_scm_car(seq), uim_scm_car(rule))) {
       return uim_scm_f();
     }
     seq = uim_scm_cdr(seq);
@@ -457,7 +439,6 @@ uim_init_util_subrs()
   uim_scm_init_subr_0("sys-pkglibdir", sys_pkglibdir);
   uim_scm_init_subr_0("sys-datadir", sys_datadir);
   uim_scm_init_subr_0("sys-pkgdatadir", sys_pkgdatadir);
-  uim_scm_init_subr_2("string=?", string_equal);
   uim_scm_init_subr_2("nthcdr", nthcdr);
   uim_scm_init_subr_1("charcode->string", charcode2string);
   uim_scm_init_subr_1("string->charcode", string2charcode);

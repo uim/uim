@@ -56,6 +56,8 @@
 #include "slib.c"
 #endif
 
+static uim_lisp string_equal(uim_lisp x, uim_lisp y);
+
 #if 1
 /* will be deprecated. use uim_scm_t() and uim_scm_f() for new design */
 uim_lisp true_sym;
@@ -246,7 +248,7 @@ uim_scm_null_list(void)
   return (uim_lisp)NIL;
 }
 
-int
+uim_bool
 uim_scm_nullp(uim_lisp obj)
 {
   return NULLP((LISP)obj);
@@ -270,21 +272,32 @@ uim_scm_stringp(uim_lisp obj)
   return STRINGP((LISP)obj);
 }
 
-int
+uim_bool
 uim_scm_eq(uim_lisp a, uim_lisp b)
 {
   return EQ(a, b);
 }
 
-int
+static uim_lisp
+string_equal(uim_lisp x, uim_lisp y)
+{
+  long xl, yl;
+  char *xs, *ys;
+  xs = get_c_string_dim((LISP)x, &xl);
+  ys = get_c_string_dim((LISP)y, &yl);
+  if (xl != yl) {
+    return uim_scm_f();
+  }
+  if (!strncmp(xs, ys, xl)) {
+    return uim_scm_t();
+  }
+  return uim_scm_f();
+}
+
+uim_bool
 uim_scm_string_equal(uim_lisp a, uim_lisp b)
 {
-  uim_lisp form, p;
-  protected_arg0 = form = uim_scm_list3(uim_scm_make_symbol("string=?"),
-					a,
-					b);
-  p = uim_scm_eval(form);
-  return TRUEP(p);
+  return NFALSEP(string_equal(a, b));
 }
 
 uim_lisp
@@ -353,6 +366,16 @@ uim_lisp
 uim_scm_cons(uim_lisp car, uim_lisp cdr)
 {
   return (uim_lisp)cons((LISP)car, (LISP)cdr);
+}
+
+uim_lisp
+uim_scm_length(uim_lisp list)
+{
+  /*
+    although nlength() of siod returns length of anything, this
+    function should be called only for list
+  */
+  return (uim_lisp)uim_scm_make_int(nlength((LISP)list));
 }
 
 uim_lisp
@@ -481,6 +504,8 @@ uim_scm_init(const char *verbose_level)
 
   protected_arg0 = uim_scm_f();
   uim_scm_gc_protect(&protected_arg0);
+
+  uim_scm_init_subr_2("string=?", string_equal);
 }
 
 void
