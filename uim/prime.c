@@ -37,7 +37,6 @@
 
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
-#include "siod.h"
 #include "context.h"
 
 static FILE *primer = NULL, *primew = NULL;
@@ -45,41 +44,41 @@ static int prime_pid = 0;
 
 static char *prime_command = "prime";
 
-static LISP
-prime_send_command(LISP str_)
+static uim_lisp
+prime_send_command(uim_lisp str_)
 {
-  char *str = get_c_string( str_ );
+  char *str = uim_scm_c_str( str_ );
   char *result;
-  LISP ret;
+  uim_lisp ret;
 
   result = uim_ipc_send_command(&prime_pid, &primer, &primew, prime_command, str);
 
   if(result == NULL)
     {
-      return NIL;
+      return uim_scm_f();
     }
 
- ret = strcons( strlen(result), result );
+ ret = uim_scm_make_str(result);
  free(result);
  return ret;
 
 }
 
-static LISP
+static uim_lisp
 prime_lib_init(void)
 {
   prime_pid = uim_ipc_open_command(prime_pid, &primer, &primew, prime_command );
   if(prime_pid == 0) {
-    return NIL;
+    return uim_scm_f();
   }
-  return siod_true_value();
+  return uim_scm_t();
 }
 
 void
 uim_init_prime(void)
 {
-  init_subr_0("prime-lib-init", prime_lib_init);
-  init_subr_1("prime-lib-send-command", prime_send_command);
+  uim_scm_init_subr_0("prime-lib-init", prime_lib_init);
+  uim_scm_init_subr_1("prime-lib-send-command", prime_send_command);
 }
 
 void

@@ -118,6 +118,14 @@ init_canna_lib(uim_lisp str_)
     context++;
   }
 
+  if(rk_initialized == -1) {
+    if(RkInitialize(cannaserver) == -1) {
+      fprintf(stderr, "%s\n", strerror(errno));
+      return uim_scm_f();
+    }
+    RkFinalize();
+  }
+
   return uim_scm_t();
 }
 
