@@ -746,20 +746,14 @@ uim_init_m17nlib(void)
 
 
 void
-#ifndef NEW_UIM_PLUGIN
-plugin_init(void) {
-#else
 uim_plugin_instance_init(void)
 {
-#endif
   uim_init_m17nlib();
 }
 
-#ifndef NEW_UIM_PLUGIN
 void
 uim_plugin_instance_quit(void)
 {
   return;
 }
-#endif
 #endif /* HAVE_M17NLIB */

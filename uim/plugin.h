@@ -35,20 +35,15 @@
 #ifndef _uim_plugin_h_included_
 #define _uim_plugin_h_included_
 
-/* #define NEW_UIM_PLUGIN 1 */
+#define NEW_UIM_PLUGIN 1
 
 typedef struct _uim_plugin_info {
   char *name;        /* XXX: should have in scm? */
   char *description; /* XXX: should have in scm? */
   char *author;      /* XXX: should have in scm? */
   char *version;     /* XXX: should have in scm? */
-#ifndef NEW_UIM_PLUGIN
-  void (*plugin_init)(void);
-  void (*plugin_quit)(void);
-#else
   void (*plugin_instance_init)(void);
   void (*plugin_instance_quit)(void);
-#endif
   void *library;
   /*	void *plugin_unload; */
 /*	void *plugin_extra_funcs */

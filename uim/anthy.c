@@ -278,11 +278,7 @@ commit_segment(uim_lisp id_, uim_lisp s_, uim_lisp nth_)
 }
 
 void
-#ifndef NEW_UIM_PLUGIN
-plugin_init(void)
-#else
 uim_plugin_instance_init(void)
-#endif
 {
   uim_scm_init_subr_0("anthy-lib-init", init_anthy_lib);
   uim_scm_init_subr_0("anthy-lib-alloc-context", create_context);
@@ -296,11 +292,7 @@ uim_plugin_instance_init(void)
 }
 
 void
-#ifndef NEW_UIM_PLUGIN
-plugin_quit(void)
-#else
 uim_plugin_instance_quit(void)
-#endif
 {
   int i;
 
