@@ -71,6 +71,21 @@
     (and (char-printable? c)
 	 (not (= c 32)))))
 
+;; TODO: write test
+(define char-vowel?
+  (let ((vowel-chars (map string->char
+			  '("a" "i" "u" "e" "o"))))
+    (lambda (c)
+      (and (char-alphabetic? c)
+	   (member (char-downcase c)
+		   vowel-chars)))))
+
+;; TODO: write test
+(define char-consonant?
+  (lambda (c)
+    (and (char-alphabetic? c)
+	 (not (char-vowel? c)))))
+
 (define numeral-char->number
   (lambda (c)
     (if (char-numeric? c)
@@ -223,6 +238,23 @@
 	    arg)
 	  (reverse funcs))))
 
+;; TODO: write test
+(define safe-car
+  (lambda (pair)
+    (and (pair? pair)
+	 (car pair))))
+
+;; TODO: write test
+(define safe-cdr
+  (lambda (pair)
+    (and (pair? pair)
+	 (cdr pair))))
+
+;; TODO: write test
+(define assq-cdr
+  (lambda (key alist)
+    (safe-cdr (assq key alist))))
+
 ;;
 ;; R5RS procedures (don't expect 100% compatibility)
 ;;
@@ -346,6 +378,17 @@
      (else
       (find f (cdr lst))))))
 
+;; TODO: write test
+(define find-tail
+  (lambda (pred lst)
+    (cond
+     ((null? lst)
+      #f)
+     ((pred (car lst))
+      lst)
+     (else
+      (find-tail pred (cdr lst))))))
+
 (define any
   (lambda args
     (let* ((pred (car args))
@@ -449,6 +492,23 @@
 	      (key=? (car elm)
 		     key))
 	    alist))))
+
+;; SRFI-60 procedures
+;; Siod's bit operation procedures take only two arguments
+;; TODO: write tests
+(define bitwise-not bit-not)
+
+(define bitwise-and
+  (lambda xs
+    (fold bit-and (bitwise-not 0) xs)))
+
+(define bitwise-or
+  (lambda xs
+    (fold bit-or 0 xs)))
+
+(define bitwise-xor
+  (lambda xs
+    (fold bit-xor 0 xs)))
 
 ;;
 ;; uim-specific utilities
