@@ -207,3 +207,9 @@
 	 "consumed"
 	 "not-consumed")
      "\n")))
+
+(define key-event-print-inspected
+  (lambda (msg ev)
+    (if inspect-key-event-translation?
+	(puts (string-append msg
+			     (key-event-inspect ev))))))

@@ -911,12 +911,6 @@
   (lambda ()
     (evmap-context-new key-event-translator-ruletree)))
 
-(define key-event-inspect
-  (lambda (msg ev)
-    (if inspect-key-event-translation?
-	(puts (string-append msg
-			     (key-event-inspect ev))))))
-
 ;; TODO: write test
 (define key-event-translator-translate!
   (lambda (emc ev)
