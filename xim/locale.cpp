@@ -62,98 +62,99 @@ static char *all_locale_names;
 static struct {
     const char *lang;
     const char *localename;
+    const char *supplemental_encoding;
 } locale_map[] = {
-    {"af", "af_ZA"},
-    {"am", "am_ET"},
-    {"ar", "ar_AA:ar_BH:ar_DZ:ar_EG:ar_IQ:ar_JO:ar_KW:ar_LB:ar_LY:ar_MA:ar_OM:ar_QA:ar_SA:ar_SD:ar_SY:ar_TN:ar_YE"},
-    // {"as", "as"},
-    {"az", "az_AZ"},
-    {"be", "be_BY"},
-    {"bg", "bg_BG"},
-    {"bn", "bn_BD"},
-    // {"bo", "bo"},
-    {"br", "br_FR"},
-    {"ca", "ca_ES"},
-    {"cs", "cs_CZ"},
-    {"cy", "cy_GB"},
-    {"cz", "cz_CZ"},
-    {"da", "da_DK"},
-    {"de", "de_DE:de_AT:de_BE:de_CH:de_LI:de_LU"},
-    {"el", "el_GR"},
-    {"en", "en_US:en_AU:en_BE:en_BZ:en_BW:en_CA:en_GB:en_HK:en_IE:en_IN:en_JM:en_NZ:en_PH:en_SG:en_TT:en_UK:en_ZA"},
-    {"eo", "eo_XX:eo_EO"},
-    {"es", "es_ES:es_AR:es_BO:es_CL:es_CO:es_CR:es_DO:es_EC:es_GT:es_HN:es_MX:es_NI:es_PA:es_PE:es_PR:es_PY:es_SV:es_US:es_UY:es_VE"},
-    {"et", "et_EE"},
-    {"eu", "eu_ES"},
-    {"fa", "fa_IR"},
-    {"fi", "fi_FI"},
-    {"fo", "fo_FO"},
-    {"fr", "fr_FR:fr_BE:fr_CA:fr_CH:fr_LU"},
-    {"ga", "ga_IE"},
-    {"gd", "gd_GB"},
-    {"gl", "gl_ES"},
-    // {"gu", "gu"},
-    {"gv", "gv_GB"},
-    {"he", "he_IL"},
-    {"hi", "hi_IN"},
-    {"hr", "hr_HR"},
-    {"hy", "hy_AM"},
-    {"id", "id_ID"},
-    {"is", "is_IS"},
-    {"it", "it_IT:it_CH"},
-    {"ja", "ja_JP"},
-    {"ka", "ka_GE"},
-    // {"kk", "kk"},
-    {"kl", "kl_GL"},
-    // {"kn", "kn"},
-    {"ko", "ko_KR"},
-    {"kw", "kw_GB"},
-    {"lo", "lo_LA"},
-    {"lt", "lt_LT"},
-    {"lv", "lv_LV"},
-    {"mi", "mi_NZ"},
-    {"mk", "mk_MK"},
-    // {"ml", "ml"},
-    {"ms", "ms_MY"},
-    {"mt", "mt_MT"},
-    {"nb", "nb_NO"},
-    {"nl", "nl_NL:nl_BE"},
-    {"nn", "nn_NO"},
-    {"no", "no_NO"},
-    {"ny", "ny_NO"},
-    {"oc", "oc_FR"},
-    // {"or", "or"},
-    // {"pa", "pa"},
-    {"pd", "pd_DE"},
-    {"ph", "ph_PH"},
-    {"pl", "pl_PL"},
-    {"pp", "pp_AN"},
-    {"pt", "pt_PT:pt_BR"},
-    {"ro", "ro_RO"},
-    {"ru", "ru_RU:ru_UA"},
-    {"sh", "sh_YU"},
-    {"sk", "sk_SK"},
-    {"sl", "sl_SI"},
-    {"sp", "sp_YU"},
-    {"sq", "sq_AL"},
-    {"sr", "sr_YU:sr_SP"},
-    {"sv", "sv_SE:sv_FI"},
-    {"ta", "ta_IN"},
-    {"te", "te_IN"},
-    {"tg", "tg_TJ"},
-    {"th", "th_TH"},
-    {"tl", "tl_PH"},
-    {"tr", "tr_TR"},
-    {"tt", "tt_RU"},
-    {"uk", "uk_UA"},
-    {"ur", "ur_PK"},
-    {"vi", "vi_VN"},
-    {"wa", "wa_BE"},
-    {"yi", "yi_US"},
-    {"zh", "zh_CN:zh_TW:zh_HK"},
-    {"zh_CN", "zh_CN"},	// from uim-py and uim-pyunihan
-    {"zh_TW:zh_HK", "zh_TW:zh_HK"},	// from uim-pinyin-big5
-    {NULL, NULL}
+    {"af", "af_ZA", "ISO8859-1:UTF-8"},
+    {"am", "am_ET", "UTF-8"},
+    {"ar", "ar_AA:ar_BH:ar_DZ:ar_EG:ar_IQ:ar_JO:ar_KW:ar_LB:ar_LY:ar_MA:ar_OM:ar_QA:ar_SA:ar_SD:ar_SY:ar_TN:ar_YE", "ISO8859-6:UTF-8"},
+    // {"as", "as", NULL},
+    {"az", "az_AZ", "ISO8859-9E"},
+    {"be", "be_BY", "CP1251:UTF-8"},
+    {"bg", "bg_BG", "ISO8859-5:CP1251:KOI8-R:UTF-8"},
+    {"bn", "bn_BD", NULL},
+    // {"bo", "bo", NULL},
+    {"br", "br_FR", "ISO8859-1:ISO8859-14:ISO8859-15"},
+    {"ca", "ca_ES", "ISO8859-1:ISO8859-15:UTF-8"},
+    {"cs", "cs_CZ", "ISO8859-2:UTF-8"},
+    {"cy", "cy_GB", "ISO8859-1:ISO8859-14:ISO8859-15"},
+    {"cz", "cz_CZ", "ISO8859-2"},
+    {"da", "da_DK", "ISO8859-1:ISO8859-15:UTF-8"},
+    {"de", "de_DE:de_AT:de_BE:de_CH:de_LI:de_LU", "ISO8859-1:ISO8859-15:UTF-8"},
+    {"el", "el_GR", "ISO8859-7:ISO8859-15:UTF-8"},
+    {"en", "en_US:en_AU:en_BE:en_BZ:en_BW:en_CA:en_GB:en_HK:en_IE:en_IN:en_JM:en_NZ:en_PH:en_SG:en_TT:en_UK:en_ZA", "ISO8859-1:ISO8859-15:UTF-8"},
+    {"eo", "eo_XX:eo_EO", "ISO8859-3"},
+    {"es", "es_ES:es_AR:es_BO:es_CL:es_CO:es_CR:es_DO:es_EC:es_GT:es_HN:es_MX:es_NI:es_PA:es_PE:es_PR:es_PY:es_SV:es_US:es_UY:es_VE", "ISO8859-1:UTF-8"},
+    {"et", "et_EE", "ISO8859-15:ISO8859-1:ISO8859-4:UTF-8"},
+    {"eu", "eu_ES", "ISO8859-1:ISO8859-15"},
+    {"fa", "fa_IR", "UTF-8:ISIRI-3342"},
+    {"fi", "fi_FI", "ISO8859-15:ISO8859-1:UTF-8"},
+    {"fo", "fo_FO", "ISO8859-1:ISO8859-15:UTF-8"},
+    {"fr", "fr_FR:fr_BE:fr_CA:fr_CH:fr_LU", "ISO8859-1:ISO8859-15:UTF-8"},
+    {"ga", "ga_IE", "ISO8859-1:ISO8859-14:ISO8859-15"},
+    {"gd", "gd_GB", "ISO8859-1:ISO8859-14:ISO8859-15"},
+    {"gl", "gl_ES", "ISO8859-1:ISO8859-15:UTF-8"},
+    // {"gu", "gu", NULL},
+    {"gv", "gv_GB", "ISO8859-1:ISO8859-14:ISO8859-15"},
+    {"he", "he_IL", "ISO8859-8:CP1255:UTF-8"},
+    {"hi", "hi_IN", "ISCII-DEV:UTF-8"},
+    {"hr", "hr_HR", "ISO8859-2:UTF-8"},
+    {"hy", "hy_AM", NULL},
+    {"id", "id_ID", NULL},
+    {"is", "is_IS", "ISO8859-1:ISO8859-15:UTF-8"},
+    {"it", "it_IT:it_CH", "ISO8859-1:ISO8859-15:UTF-8"},
+    {"ja", "ja_JP", "eucJP:EUC:SJIS:UTF-8"},
+    {"ka", "ka_GE", "GEORGIAN-ACADEMY:GEORGIAN-PS"},
+    // {"kk", "kk", NULL},
+    {"kl", "kl_GL", "ISO8859-1:ISO8859-15:UTF-8"},
+    // {"kn", "kn", NULL},
+    {"ko", "ko_KR", "eucKR:EUC:UTF-8"},
+    {"kw", "kw_GB", "ISO8859-1:ISO8859-14:ISO8859-15"},
+    {"lo", "lo_LA", "MULELAO-1:IBM-CP1133"},
+    {"lt", "lt_LT", "ISO8859-13:ISO8859-4:UTF-8"},
+    {"lv", "lv_LV", "ISO8859-13:UTF-8"},
+    {"mi", "mi_NZ", "ISO8859-1:ISO8859-5"},
+    {"mk", "mk_MK", "ISO8859-5:CP1251:UTF-8"},
+    // {"ml", "ml", NULL},
+    {"ms", "ms_MY", "ISO8859-1"},
+    {"mt", "mt_MT", "ISO8859-3"},
+    {"nb", "nb_NO", "ISO8859-1:ISO8859-15"},
+    {"nl", "nl_NL:nl_BE", "ISO8859-1:ISO8859-15:UTF-8"},
+    {"nn", "nn_NO", "ISO8859-1:ISO8859-15"},
+    {"no", "no_NO", "ISO8859-1:ISO8859-15:UTF-8"},
+    {"ny", "ny_NO", "ISO8859-1:ISO8859-15"},
+    {"oc", "oc_FR", "ISO8859-1:ISO8859-15"},
+    // {"or", "or", NULL},
+    // {"pa", "pa", NULL},
+    {"pd", "pd_DE", "ISO8859-1:ISO8859-15"},
+    {"ph", "ph_PH", "ISO8859-1"},
+    {"pl", "pl_PL", "ISO8859-2:UTF-8"},
+    {"pp", "pp_AN", "ISO8859-1"},
+    {"pt", "pt_PT:pt_BR", "ISO8859-1:ISO8859-15:UTF-8"},
+    {"ro", "ro_RO", "ISO8859-2:UTF-8"},
+    {"ru", "ru_RU:ru_UA", "KOI8-R:ISO8859-5:CP1251:KOI8-U"},
+    {"sh", "sh_YU", "ISO8859-2:UTF-8"},
+    {"sk", "sk_SK", "ISO8859-2:UTF-8"},
+    {"sl", "sl_SI", "ISO8859-2:UTF-8"},
+    {"sp", "sp_YU", "ISO8859-5"},
+    {"sq", "sq_AL", "ISO8859-2:UTF-8"},
+    {"sr", "sr_YU:sr_SP", "ISO8859-2:ISO8859-5:CP1251:UTF-8"},
+    {"sv", "sv_SE:sv_FI", "ISO8859-1:ISO8859-15:UTF-8"},
+    {"ta", "ta_IN", "TSCII-0"},
+    {"te", "te_IN", NULL},
+    {"tg", "tg_TJ", "KOI8-C"},
+    {"th", "th_TH", "ISO8859-11:TIS620:UTF-8"},
+    {"tl", "tl_PH", "ISO8859-1"},
+    {"tr", "tr_TR", "ISO8859-9:UTF-8"},
+    {"tt", "tt_RU", "TATAR-CYR:KOI8-C"},
+    {"uk", "uk_UA", "KOI8-U:ISO8859-5:CP1251:UTF-8"},
+    {"ur", "ur_PK", "CP1256"},
+    {"vi", "vi_VN", "TCVN:VISCII:UTF-8"},
+    {"wa", "wa_BE", "ISO8859-1:ISO8859-15"},
+    {"yi", "yi_US", "CP1255"},
+    {"zh_CN", "zh_CN", "gb2312:eucCN:gbk:UTF-8"},	// from uim-py and uim-pyunihan
+    {"zh_TW:zh_HK", "zh_TW:zh_HK", "big5:eucTW:big5hkscs:UTF-8"},	// from uim-pinyin-big5
+    {"zh", "zh_CN:zh_TW:zh_HK", NULL},	// this entry must be here since its encoding is assigned as NULL
+    {NULL, NULL, NULL}
 };
 
 
@@ -287,24 +288,59 @@ get_valid_locales(const char *locales)
     char *valid_locales = NULL;
     char *validated;
     char *locale;
+    char *tmp, *tmpp;
     int len = 0;
 
-    char *tmp = strdup(locales);
-
+    tmp = tmpp = strdup(locales);
     char *orig_locale = strdup(setlocale(LC_CTYPE, NULL));
 
     // locales is separated with ':'
-    while ((locale = strsep(&tmp, ":")) != NULL) {
+    while ((locale = strsep(&tmpp, ":")) != NULL) {
 	if (setlocale(LC_CTYPE, locale) != NULL) {
 	    asprintf(&validated, "%s:", locale);
 	    len += strlen(validated);
 	    if (valid_locales) {
 		valid_locales = (char *)realloc(valid_locales, len + 1);
-	        strcat(valid_locales, validated);
+		strcat(valid_locales, validated);
 	    } else
 		valid_locales = strdup(validated);
 
 	    free(validated);
+	} else {
+	    // retry with supplemental encodings
+	    int i;
+	    for (i = 0; locale_map[i].localename; i++) {
+		if (is_locale_included(locale_map[i].localename, locale))
+		    break;
+	    }
+	    if (locale_map[i].supplemental_encoding) {
+		char *encs, *encsp, *encoding;
+		encs = encsp = strdup(locale_map[i].supplemental_encoding);
+
+		while ((encoding = strsep(&encsp, ":")) != NULL) {
+		    char *test_locale = strdup(locale);
+		    test_locale = (char *)realloc(test_locale, strlen(test_locale) + strlen(encoding) + 2);
+		    strcat(test_locale, ".");
+		    strcat(test_locale, encoding);
+
+		    if (setlocale(LC_CTYPE, test_locale) != NULL) {
+			asprintf(&validated, "%s:", locale);
+			len += strlen(validated);
+
+			if (valid_locales) {
+			    valid_locales = (char *)realloc(valid_locales, len + 1);
+			    strcat(valid_locales, validated);
+			} else
+			    valid_locales = strdup(validated);
+
+			free(validated);
+			free(test_locale);
+			break;
+		    } else
+			free(test_locale);
+		}
+		free(encs);
+	    }
 	}
     }
     if (valid_locales)
@@ -333,9 +369,8 @@ all_locales(void)
 	return all_locale_names;
 
     for (i = 0; locale_map[i].lang; i++) {
-	// exclude uim specific languages.
-	if (!strcmp(locale_map[i].lang, "zh_CN") ||
-	    !strcmp(locale_map[i].lang, "zh_TW:zh_HK"))
+	// exclude languages of which uim has its own version.
+	if (!strcmp(locale_map[i].lang, "zh"))
 	    continue;
 
 	valid_locales = get_valid_locales(locale_map[i].localename);
