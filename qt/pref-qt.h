@@ -131,11 +131,9 @@ public:
     SubgroupData( QWidget *parentWidget, const char *parent_group_name );
     ~SubgroupData();
 
-    QVGroupBox *getMainSubgroupGroupVBox() const{ return m_defaultGVBox; }
     QVGroupBox *searchGroupVBoxByCustomSym( const char *custom_sym ) const;
 
 protected:
-    QVGroupBox *m_defaultGVBox;
     QMap<QString, QVGroupBox*> gvboxMap;
 };
 

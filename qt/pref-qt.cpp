@@ -293,6 +293,9 @@ void GroupPageWidget::setupWidgets( const char *group_name )
     KSeparator *separator = new KSeparator( this );
     vLayout->addWidget( separator );
 
+    /* default QVGroupBox */
+    QVGroupBox *defaultGroupVBox = new QVGroupBox( this );
+
     /* subgroup data */
     SubgroupData *sd = new SubgroupData( this, group_name );
 
@@ -303,8 +306,18 @@ void GroupPageWidget::setupWidgets( const char *group_name )
         for( char **custom_sym = custom_syms; *custom_sym; custom_sym++ )
         {
             QVGroupBox *vbox = sd->searchGroupVBoxByCustomSym( *custom_sym );
+            if( vbox == NULL )
+            {
+                /* 2004-02-02 Kazuki Ohta <mover@hct.zaq.ne.jp>
+                 *
+                 * If no QVGroup box is found, let's use DefaultVBox!
+                 */
+                vbox = defaultGroupVBox;
+            }
+            
             UimCustomItemIface *iface = addCustom( vbox, *custom_sym );
-            m_customIfaceList.append( iface );
+            if( iface )
+                m_customIfaceList.append( iface );
         }
 
         uim_custom_symbol_list_free( custom_syms );
@@ -315,10 +328,9 @@ void GroupPageWidget::setupWidgets( const char *group_name )
      * This is very adhoc hack!!
      * if "main" subgroup's gvbox dosn't have child, hides it!
      */
-    QVGroupBox *mainSubgroupGroupVBox = sd->getMainSubgroupGroupVBox();
-    if( mainSubgroupGroupVBox && !mainSubgroupGroupVBox->children()->isEmpty() )
+    if( defaultGroupVBox && !defaultGroupVBox->children()->isEmpty() )
     {
-        mainSubgroupGroupVBox->hide();
+        defaultGroupVBox->hide();
     }
 
     /* free */
@@ -459,17 +471,21 @@ UimCustomItemIface *GroupPageWidget::addCustomTypeOrderedList( QVGroupBox *vbox,
 
 UimCustomItemIface *GroupPageWidget::addCustomTypeKey( QVGroupBox *vbox, struct uim_custom *custom )
 {
-    // FIXME: not implemented yet
+    // Crash. Why?
+    /*
     QHBox *hbox = new QHBox( vbox );
     hbox->setSpacing( 6 );
     QLabel *label = new QLabel( _FU8(custom->label), hbox );
-    CustomKeyEdit *keyEditBox = new CustomKeyEdit( custom, hbox );
+    CustomKeyEdit *keyEditBox = new CustomKeyEdit( custom, vbox );
+    CustomChoiceCombo *c = new CustomChoiceCombo( custom, vbox );
     label->setBuddy( keyEditBox );
-
     QObject::connect( keyEditBox, SIGNAL(customValueChanged()),
                       this, SLOT(slotCustomValueChanged()) );
+    */
+    
+    
 
-    return keyEditBox;
+    return NULL;
 }
 
 void GroupPageWidget::setDefault()
@@ -485,7 +501,6 @@ void GroupPageWidget::setDefault()
 //-----------------------------------------------------------------------------------
 SubgroupData::SubgroupData( QWidget*parentWidget, const char *parent_group_name )
 {
-    // QVGroupBox for other subgroups
     char **sub_groups = uim_custom_group_subgroups( parent_group_name );
     char **sgrp;
     for( sgrp = sub_groups; *sgrp; sgrp++ )
@@ -499,9 +514,6 @@ SubgroupData::SubgroupData( QWidget*parentWidget, const char *parent_group_name 
          */
         if( QString::compare( *sgrp, "main" ) == 0 )
         {
-            // QVGroupBox for "main" subgroup
-            m_defaultGVBox = new QVGroupBox( "main", parentWidget );
-            parentWidget->layout()->add( m_defaultGVBox );
             uim_custom_group_free( sgroup_custom );
             continue;
         }
@@ -532,11 +544,7 @@ SubgroupData::~SubgroupData()
 
 QVGroupBox * SubgroupData::searchGroupVBoxByCustomSym( const char *custom_sym ) const
 {
-    QVGroupBox *b = gvboxMap[QString(custom_sym)];
-    if( b == NULL )
-        return m_defaultGVBox;        
-
-    return b;
+    return gvboxMap[QString(custom_sym)];
 }
 
 //--------------------------------------------------------------------------------------
