@@ -120,7 +120,7 @@ c_list_to_str(const void *const *list, char *(*mapper)(const void *elem), const 
   char *buf, *bufp, *str;
   const void *const *elem;
 
-  buf_size = sizeof('\0');
+  buf_size = sizeof(char);
   for (elem = list; *elem; elem++) {
     if (elem != list)
       buf_size += strlen(sep);
@@ -140,6 +140,7 @@ c_list_to_str(const void *const *list, char *(*mapper)(const void *elem), const 
     bufp += strlen(str);
     free(str);
   }
+  buf[buf_size - 1] = '\0';
 
   return buf;
 }
