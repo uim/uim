@@ -44,7 +44,7 @@
 #include "uim/gettext.h"
 
 
-static int read_tag;
+static unsigned int read_tag;
 static int uim_fd; /* file descriptor to connect helper message bus */
 static gchar *im_list_str_old; /* To compare new im_list_str */
 static GtkWidget *switcher_tree_view;
@@ -466,19 +466,21 @@ static void
 helper_disconnect_cb(void)
 {
   uim_fd = -1;
-  gdk_input_remove(read_tag);
+  g_source_remove(read_tag);
 }
 
-static void
-fd_read_cb(gpointer p, gint fd, GdkInputCondition c)
+static gboolean
+fd_read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
 {
   char *tmp;
-  
+  int fd = g_io_channel_unix_get_fd(channel);
+
   uim_helper_read_proc(fd);
   while ((tmp = uim_helper_get_message())) {
     parse_helper_str(tmp);
     g_free(tmp); tmp = NULL;
   }
+  return TRUE;
 }
 
 
@@ -487,9 +489,13 @@ check_helper_connection(void)
 {
   if(uim_fd < 0) {
     uim_fd = uim_helper_init_client_fd(helper_disconnect_cb);
-    if(uim_fd > 0)
-      read_tag = gdk_input_add(uim_fd, (GdkInputCondition)GDK_INPUT_READ,
-			       fd_read_cb, NULL);
+    if(uim_fd > 0) {
+      GIOChannel *channel;
+      channel = g_io_channel_unix_new(uim_fd);
+      read_tag = g_io_add_watch(channel, G_IO_IN | G_IO_HUP | G_IO_ERR,
+				fd_read_cb, NULL);
+      g_io_channel_unref(channel);
+    }
   }
 }
 

@@ -137,7 +137,7 @@ static GTypeInfo const object_info = {
 
 static gint cand_win_gtk_signals[NR_SIGNALS] = {0};
 
-static int read_tag;
+static unsigned int read_tag;
 
 static void init_candidate_win(void);
 static void candwin_activate(gchar **str);
@@ -526,13 +526,14 @@ static void str_parse(gchar *str)
   g_strfreev(tmp);
 }
 
-static void
-read_cb(gpointer p, int fd, GdkInputCondition c)
+static gboolean
+read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
 {
   char buf[1024];
   int i = 0;
   int n;
   gchar **tmp;
+  int fd = g_io_channel_unix_get_fd(channel);
 
   n = read(fd, buf, 1024 - 1);
   if (n == 0) {
@@ -540,7 +541,7 @@ read_cb(gpointer p, int fd, GdkInputCondition c)
     exit(-1);
   }
   if (n == -1)
-    return;
+    return TRUE;
 
   buf[n] = '\0';
   tmp = g_strsplit(buf, "\n\n", 0);
@@ -550,19 +551,24 @@ read_cb(gpointer p, int fd, GdkInputCondition c)
     i++;
   }
   g_strfreev(tmp);
-  return;
+  return TRUE;
 }
 
 int
 main(int argc, char *argv[])
 {
+  GIOChannel *channel;
+
   gtk_set_locale();
   gtk_init(&argc, &argv);
 
   init_candidate_win();
 
-  read_tag = gdk_input_add(0, (GdkInputCondition)GDK_INPUT_READ,
-			   read_cb, 0);
+  channel = g_io_channel_unix_new(0);
+  read_tag = g_io_add_watch(channel, G_IO_IN | G_IO_HUP | G_IO_ERR,
+			    read_cb, 0);
+  g_io_channel_unref(channel);
+
   gtk_main();
   return 0;
 }
