@@ -424,18 +424,29 @@
 ;; uim-specific utilities
 ;;
 
-;; TODO: suppress error messages
+;; TODO: write test
+(define make-scm-pathname
+  (lambda (file)
+    (or (and (= (string->charcode file)
+		(string->charcode "/"))
+	     file)
+	(string-append (load-path) "/" file))))
+
+;; TODO: write test
 ;; returns succeeded or not
 (define try-load
   (lambda (file)
-    (not (*catch 'errobj (load file)))))
+    (and (file-readable? (make-scm-pathname file))
+	 (not (*catch 'errobj (begin (load file)
+				     #f))))))
 
-;; TODO: suppress error messages
+;; TODO: write test
 ;; returns succeeded or not
 (define try-require
   (lambda (file)
-    (eq? (symbolconc '* (string->symbol file) '-loaded*)
-	 (*catch 'errobj (require file)))))
+    (and (file-readable? (make-scm-pathname file))
+	 (eq? (symbolconc '* (string->symbol file) '-loaded*)
+	      (*catch 'errobj (require file))))))
 
 ;; for eval
 (define toplevel-env ())

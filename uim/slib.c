@@ -3991,6 +3991,12 @@ siod_verbose (LISP arg)
 }
 
 static LISP
+siod_lib_path (void)
+{
+  return (strcons (-1, siod_lib));
+}
+
+static LISP
 lruntime (void)
 {
   return (cons (intcons (myruntime ()),
@@ -4643,6 +4649,7 @@ init_subrs (void)
   init_fsubr ("quote", leval_quote);
   init_lsubr ("apropos", apropos);
   init_lsubr ("verbose", siod_verbose);
+  init_subr_0 ("load-path", siod_lib_path);
   init_subr_1 ("copy-list", copy_list);
   init_lsubr ("gc-status", gc_status);
   init_lsubr ("gc", user_gc);

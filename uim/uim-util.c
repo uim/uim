@@ -33,6 +33,8 @@
 
 #include "config.h"
 
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
@@ -75,6 +77,53 @@ static uim_lisp
 sys_pkgdatadir()
 {
   return uim_scm_make_str(PKGDATADIR);
+}
+
+static uim_lisp
+file_stat_mode(uim_lisp filename, mode_t mode)
+{
+  struct stat st;
+  const char *c_filename;
+
+  if (!uim_scm_stringp(filename))
+    return uim_scm_f();
+
+  c_filename = uim_scm_refer_c_str(filename);
+  if (stat(c_filename, &st) < 0) {
+    return uim_scm_f();
+  } else {
+    return ((st.st_mode & mode) == mode) ? uim_scm_t() : uim_scm_f();
+  }
+}
+
+static uim_lisp
+file_readablep(uim_lisp filename)
+{
+  return file_stat_mode(filename, S_IRUSR);
+}
+
+static uim_lisp
+file_writablep(uim_lisp filename)
+{
+  return file_stat_mode(filename, S_IWUSR);
+}
+
+static uim_lisp
+file_executablep(uim_lisp filename)
+{
+  return file_stat_mode(filename, S_IXUSR);
+}
+
+static uim_lisp
+file_regularp(uim_lisp filename)
+{
+  return file_stat_mode(filename, S_IFREG);
+}
+
+static uim_lisp
+file_directoryp(uim_lisp filename)
+{
+  return file_stat_mode(filename, S_IFDIR);
 }
 
 static uim_lisp
@@ -442,6 +491,11 @@ uim_init_util_subrs()
   uim_scm_init_subr_0("sys-pkglibdir", sys_pkglibdir);
   uim_scm_init_subr_0("sys-datadir", sys_datadir);
   uim_scm_init_subr_0("sys-pkgdatadir", sys_pkgdatadir);
+  uim_scm_init_subr_1("file-readable?", file_readablep);
+  uim_scm_init_subr_1("file-writable?", file_writablep);
+  uim_scm_init_subr_1("file-executable?", file_executablep);
+  uim_scm_init_subr_1("file-regular?", file_regularp);
+  uim_scm_init_subr_1("file-directory?", file_directoryp);
   uim_scm_init_subr_2("nthcdr", nthcdr);
   uim_scm_init_subr_1("charcode->string", charcode2string);
   uim_scm_init_subr_1("string->charcode", string2charcode);
