@@ -322,7 +322,8 @@
     (rk-flush (skk-context-rk-context sc))
     (if skk-use-recursive-learning?
 	(skk-editor-flush (skk-context-editor sc)))
-    (skk-context-set-state! sc 'skk-state-direct)
+    (if (not (skk-latin-state? sc))
+	(skk-context-set-state! sc 'skk-state-direct))
     (skk-context-set-head! sc '())
     (skk-context-set-okuri-head! sc "")
     (skk-context-set-okuri! sc '())
@@ -1609,11 +1610,7 @@
 
 (define skk-reset-handler
   (lambda (sc)
-    (let ((st (skk-context-state sc)))
-      (if (not (or
-		(= st 'skk-state-latin)
-		(= st 'skk-state-wide-latin))
-	  (skk-flush sc))))))
+    (skk-flush sc)))
 
 (define skk-get-candidate-handler
   (lambda (sc idx)
