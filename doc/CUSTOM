@@ -19,6 +19,9 @@ developers.
   require-custom performs per-user configuration loading and reload
   management, but ordinary 'require' does not.
 
+  "-custom" suffix of the filename is only a convention and not
+  required. But we recomment the naming convention to manage the files
+  easily.
 
 * Control activity of a custom variable
 
@@ -80,6 +83,9 @@ developers.
 
   All activity predicates will be evaluated and noticed via
   corresponding callback when any of custom variables has been set.
+
+  No group relationships including subgrouping is not required to set
+  variable relationships.
 
   (define-custom 'show-segment-separator? #f
     '(foo)
