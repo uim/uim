@@ -744,16 +744,12 @@ calc_menu_position(GtkMenu *prop_menu, gint *x, gint *y, gboolean *push_in, GtkW
   }
 }
 
-static GtkWidget *
-toolbar_new(gint type)
+static void
+regist_icon(void)
 {
   GtkIconFactory *factory;
   GtkIconSet *icon_set;
   GdkPixbuf *pixbuf;
-  GtkWidget *button;
-  GtkWidget *hbox;
-  GList *menu_buttons = NULL;
-  GtkSizeGroup *sg;
 
   /* regist our icons */
   factory = gtk_icon_factory_new();
@@ -765,6 +761,17 @@ toolbar_new(gint type)
   gtk_icon_set_unref(icon_set);
   g_object_unref(G_OBJECT(pixbuf));
   g_object_unref(G_OBJECT (factory));
+}
+
+static GtkWidget *
+toolbar_new(gint type)
+{
+  GtkWidget *button;
+  GtkWidget *hbox;
+  GList *menu_buttons = NULL;
+  GtkSizeGroup *sg;
+
+  regist_icon();
 
   /* create widgets */
   hbox = gtk_hbox_new(FALSE, 0);
@@ -811,6 +818,8 @@ GtkWidget *
 uim_helper_trayicon_new(void)
 {
   GtkWidget *button;
+
+  regist_icon();
 
   prop_menu = gtk_menu_new();
   right_click_menu = right_click_menu_create();
