@@ -506,6 +506,12 @@ load_conf()
   verbose = uim_scm_get_verbose_level();
   fn = getenv("LIBUIM_USER_SCM_FILE");
 
+  fp = fopen(fn, "r");
+  if (!fp) {
+    return -1;
+  }
+  fclose(fp);
+
   if (!fn) {
     pw = getpwuid(getuid());
     fn = malloc(strlen(pw->pw_dir) + sizeof("/.uim"));
