@@ -35,6 +35,7 @@
 ;; http://ja.wikipedia.org/wiki/%E3%83%AD%E3%83%BC%E3%83%9E%E5%AD%97
 
 (require "ng-japanese.scm")
+(require-custom "japanese-romaji-custom.scm")
 
 
 ;;
@@ -607,12 +608,11 @@
 ;; may be replaced with more efficient way for ruleset composition(merging)
 (define ja-romaji-hiragana-ruleset
   (append
-   ja-fullwidth-space-ruleset
-   ja-fullwidth-kana-period-ruleset
-   ja-fullwidth-kana-comma-ruleset
-   ja-fullwidth-basic-symbol-ruleset
-   ja-fullwidth-number-ruleset
-   ja-fullwidth-alphabet-ruleset
+   (symbol-value ja-romaji-fullwidth-space-ruleset)
+   (symbol-value ja-romaji-fullwidth-basic-symbol-ruleset)
+   (symbol-value ja-romaji-fullwidth-number-ruleset)
+   (symbol-value ja-romaji-fullwidth-kana-period-ruleset)
+   (symbol-value ja-romaji-fullwidth-kana-comma-ruleset)
    ja-romaji-hiragana-basic-ruleset
    ja-romaji-hiragana-double-consonant-guide-ruleset
    ja-romaji-hiragana-basic-double-consonant-ruleset
@@ -631,12 +631,11 @@
 
 (define ja-romaji-katakana-ruleset
   (append
-   ja-fullwidth-space-ruleset
-   ja-fullwidth-kana-period-ruleset
-   ja-fullwidth-kana-comma-ruleset
-   ja-fullwidth-basic-symbol-ruleset
-   ja-fullwidth-number-ruleset
-   ja-fullwidth-alphabet-ruleset
+   (symbol-value ja-romaji-fullwidth-space-ruleset)
+   (symbol-value ja-romaji-fullwidth-basic-symbol-ruleset)
+   (symbol-value ja-romaji-fullwidth-number-ruleset)
+   (symbol-value ja-romaji-fullwidth-kana-period-ruleset)
+   (symbol-value ja-romaji-fullwidth-kana-comma-ruleset)
    ja-romaji-katakana-basic-ruleset
    ja-romaji-katakana-double-consonant-guide-ruleset
    ja-romaji-katakana-basic-double-consonant-ruleset

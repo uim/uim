@@ -755,3 +755,7 @@
 
 (prealloc-heaps-for-heavy-job)
 (custom-reload-customs)
+
+;; Since these customs will be loaded only when it is really needed,
+;; we must explicitly load them to customize
+(require-custom "japanese-romaji-custom.scm")
