@@ -39,6 +39,10 @@
                      (ugettext skk-im-name-label)
                      (ugettext skk-im-short-desc))
 
+(define-custom-group 'skk-dict
+                     (_ "SKK dictionaries")
+                     (_ "Dictionary settings for SKK"))
+
 (define-custom-group 'skk-advanced
                      (_ "SKK (advanced)")
                      (_ "Advanced settings for SKK"))
@@ -122,7 +126,42 @@
 	 (N_ "Fullwidth Alphanumeric")
 	 (N_ "Fullwidth Alphanumeric input mode"))))
 
-(define skk-widgets '(widget_skk_input_mode))
+(define skk-kana-input-method-indication-alist
+  (list
+   (list 'action_skk_roma
+	 'figure_ja_roma
+	 "£Ò"
+	 (N_ "Romaji")
+	 (N_ "Romaji input mode"))
+   (list 'action_skk_azik
+	 'figure_ja_azik
+	 "£Á"
+	 (N_ "AZIK")
+	 (N_ "AZIK extended romaji input mode"))))
+
+;;; Buttons
+
+(define-custom 'skk-widgets '(widget_skk_input_mode
+			      widget_skk_kana_input_method)
+  '(skk toolbar)
+  (list 'ordered-list
+	(list 'widget_skk_input_mode
+	      (_ "Input mode")
+	      (_ "Input mode"))
+	(list 'widget_skk_kana_input_method
+	      (_ "Kana input method")
+	      (_ "Kana input method")))
+  (_ "Enabled toolbar buttons")
+  (_ "long description will be here."))
+
+;; dynamic reconfiguration
+;; skk-configure-widgets is not defined at this point. So wrapping
+;; into lambda.
+(custom-add-hook 'skk-widgets
+		 'custom-set-hooks
+		 (lambda ()
+		   (skk-configure-widgets)))
+
 
 ;;; Input mode
 
@@ -164,27 +203,79 @@
 		 (lambda ()
 		   (skk-configure-widgets)))
 
+;;; Kana input method
+
+(define-custom 'default-widget_skk_kana_input_method 'action_skk_roma
+  '(skk toolbar)
+  (cons 'choice
+	(map indication-alist-entry-extract-choice
+	     skk-kana-input-method-indication-alist))
+  (_ "Default kana input method")
+  (_ "long description will be here."))
+
+(define-custom 'skk-kana-input-method-actions
+               (map car skk-kana-input-method-indication-alist)
+  '(skk toolbar)
+  (cons 'ordered-list
+	(map indication-alist-entry-extract-choice
+	     skk-kana-input-method-indication-alist))
+  (_ "Kana input method menu items")
+  (_ "long description will be here."))
+
+;; value dependency
+(if custom-full-featured?
+    (custom-add-hook 'skk-kana-input-method-actions
+		     'custom-set-hooks
+		     (lambda ()
+		       (custom-choice-range-reflect-olist-val
+			'default-widget_skk_kana_input_method
+			'skk-kana-input-method-actions
+			skk-kana-input-method-indication-alist))))
+
+;; activity dependency
+(custom-add-hook 'default-widget_skk_kana_input_method
+		 'custom-activity-hooks
+		 (lambda ()
+		   (memq 'widget_skk_kana_input_method skk-widgets)))
+
+(custom-add-hook 'skk-kana-input-method-actions
+		 'custom-activity-hooks
+		 (lambda ()
+		   (memq 'widget_skk_kana_input_method skk-widgets)))
+
+;; dynamic reconfiguration
+(custom-add-hook 'default-widget_skk_kana_input_method
+		 'custom-set-hooks
+		 (lambda ()
+		   (skk-configure-widgets)))
+
+(custom-add-hook 'skk-kana-input-method-actions
+		 'custom-set-hooks
+		 (lambda ()
+		   (skk-configure-widgets)))
+
+
 ;;
 ;; dictionary
 ;;
 
 (define-custom 'skk-dic-file-name (string-append (sys-datadir)
 						 "/skk/SKK-JISYO.L")
-  '(skk dictionary)
+  '(skk-dict)
   '(pathname)
   (_ "Dictionary file")
   (_ "long description will be here."))
 
 (define-custom 'skk-personal-dic-filename
   (string-append (getenv "HOME") "/.skk-jisyo")
-  '(skk dictionary)
+  '(skk-dict)
   '(pathname)
   (_ "Personal dictionary file")
   (_ "long description will be here."))
 
 (define-custom 'skk-uim-personal-dic-filename
   (string-append (getenv "HOME") "/.skk-uim-jisyo")
-  '(skk dictionary)
+  '(skk-dict)
   '(pathname)
   (_ "Personal dictionary file (dedicated to uim)")
   (_ "long description will be here."))
@@ -205,12 +296,6 @@
   '(skk-advanced)
   '(boolean)
   (_ "Use recursive learning")
-  (_ "long description will be here."))
-
-(define-custom 'skk-use-azik? #f
-  '(skk-advanced)
-  '(boolean)
-  (_ "AZIK extended romaji input mode")
   (_ "long description will be here."))
 
 (define-custom 'skk-use-numeric-conversion? #t

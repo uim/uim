@@ -44,7 +44,6 @@
 ;;
 ;;
 (require "japanese.scm")
-(require "japanese-azik.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "skk-custom.scm")
 (require-custom "skk-key-custom.scm")
@@ -113,6 +112,9 @@
 (define skk-type-hiragana 0)
 (define skk-type-katakana 1)
 (define skk-type-hankana 2)
+
+(define skk-input-rule-roma 0)
+(define skk-input-rule-azik 1)
 
 ;; style elements
 (define skk-preedit-attr-mode-mark #f)
@@ -218,6 +220,38 @@
 		     (skk-prepare-activation dsc)
 		     (skk-context-set-state! dsc 'skk-state-wide-latin))))
 
+(register-action 'action_skk_roma
+		 (lambda (sc)
+		   '(figure_ja_roma
+		     "Ｒ"
+		     "ローマ字"
+		     "ローマ字入力モード"))
+		 (lambda (sc)
+		   (= (skk-context-input-rule sc)
+		      skk-input-rule-roma))
+		 (lambda (sc)
+		   (skk-prepare-activation sc)
+		   (rk-context-set-rule! (skk-context-rk-context sc)
+					 ja-rk-rule)
+		   (skk-context-set-input-rule! sc skk-input-rule-roma)))
+
+
+(register-action 'action_skk_azik
+		 (lambda (sc)
+		   '(figure_ja_azik
+		     "Ａ"
+		     "AZIK"
+		     "AZIK拡張ローマ字入力モード"))
+		 (lambda (sc)
+		   (= (skk-context-input-rule sc)
+		      skk-input-rule-azik))
+		 (lambda (sc)
+		   (require "japanese-azik.scm")
+		   (skk-prepare-activation sc)
+		   (rk-context-set-rule! (skk-context-rk-context sc)
+					 ja-azik-rule)
+		   (skk-context-set-input-rule! sc skk-input-rule-azik)))
+
 ;; Update widget definitions based on action configurations. The
 ;; procedure is needed for on-the-fly reconfiguration involving the
 ;; custom API
@@ -226,6 +260,10 @@
     (register-widget 'widget_skk_input_mode
 		     (activity-indicator-new skk-input-mode-actions)
 		     (actions-new skk-input-mode-actions))
+
+    (register-widget 'widget_skk_kana_input_method
+		     (activity-indicator-new skk-kana-input-method-actions)
+		     (actions-new skk-kana-input-method-actions))
     (context-list-replace-widgets! 'skk skk-widgets)))
 
 (define skk-context-rec-spec
@@ -234,6 +272,7 @@
    (list
     (list 'state	      'skk-state-latin)
     (list 'kana-mode	      skk-type-hiragana)
+    (list 'input-rule	      skk-input-rule-roma)
     (list 'head		      '())
     (list 'okuri-head	      "")
     (list 'okuri	      '())
@@ -302,7 +341,6 @@
 	  (skk-read-personal-dictionary)))
     (let ((sc (skk-context-new-internal id im))
 	  (rkc (rk-context-new ja-rk-rule #t #f)))
-      (if skk-use-azik? (rk-context-set-rule! rkc ja-azik-rule))
       (skk-context-set-widgets! sc skk-widgets)
       (skk-context-set-head! sc '())
       (skk-context-set-rk-context! sc rkc)
