@@ -4,4 +4,5 @@ EXTRA_DIST = uim-test-utils.scm run-test.scm \
         test-lazy-load.scm test-plugin.scm test-slib.scm \
         test-uim-test-utils.scm test-uim-util.scm test-ustr.scm \
         test-util.scm \
-	test-ng-key.scm test-event.scm test-evmap.scm test-evmap-csv.scm
+	test-ng-key.scm test-event.scm test-evmap.scm test-evmap-csv.scm \
+	test-legacy-api-bridge.scm
