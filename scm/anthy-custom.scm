@@ -75,6 +75,11 @@
   (_ "Segment separator")
   (_ "long description will be here."))
 
+(custom-add-hook 'anthy-segment-separator
+		 'custom-activity-hooks
+		 (lambda ()
+		   anthy-show-segment-separator?))
+
 ;;
 ;; toolbar
 ;;

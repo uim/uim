@@ -69,6 +69,11 @@
   (_ "Segment separator")
   (_ "long description will be here."))
 
+(custom-add-hook 'canna-segment-separator
+		 'custom-activity-hooks
+		 (lambda ()
+		   canna-show-segment-separator?))
+
 ;;
 ;; canna-server-name
 ;;

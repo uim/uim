@@ -182,8 +182,9 @@
 ;; im-switching
 ;;
 
-;; I think that current 'im-switching' feature is not useful. So
-;; commented out them to avoid confusion of users.  -- YamaKen 2005-02-01
+;; I think that current "im-switching by hotkey" feature is not
+;; useful. So commented out them to avoid confusion of users.
+;;   -- YamaKen 2005-02-01
 
 ;;(define-custom-group 'im-switching
 ;;		     (_ "Input method switching")
