@@ -1,12 +1,12 @@
 if QT
 
 INCLUDES        = -I$(top_srcdir) -I$(top_builddir)
-CXXFLAGS        += $(UIM_QT_CFLAGS)
-CFLAGS          += $(UIM_QT_CFLAGS)
-LDFLAGS         += $(UIM_QT_LDFLAGS)
+
+QT_CXXFLAGS = $(UIM_QT_CXXFLAGS)
+QT_LDFLAGS  = $(UIM_QT_LDFLAGS)
 
 if QT_IMMODULE
-CXXFLAGS        += -DQT_IMMODULE
+QT_CXXFLAGS += -DQT_IMMODULE
 endif
 
 HEADER_FILES = \
@@ -64,7 +64,9 @@ libquiminputcontextplugin_la_SOURCES = \
 	immodule-plugin.cpp immodule-candidatewindow.cpp immodule-qhelpermanager.cpp \
 	immodule-quiminputcontext.cpp immodule-quiminputcontext_with_slave.cpp \
 	immodule-subwindow.cpp
-libquiminputcontextplugin_la_LIBADD = $(top_builddir)/uim/libuim.la -lqt-mt
+libquiminputcontextplugin_la_CXXFLAGS = $(QT_CXXFLAGS)
+libquiminputcontextplugin_la_LDFLAGS  = $(QT_LDFLAGS)
+libquiminputcontextplugin_la_LIBADD   = $(top_builddir)/uim/libuim.la
 
 immodule-candidatewindow.cpp: immodule-candidatewindow.moc
 immodule-candidatewindow.moc: immodule-candidatewindow.h
@@ -85,8 +87,10 @@ endif
 
 # Toolbar Common
 noinst_LTLIBRARIES = libtoolbarcommon.la
-libtoolbarcommon_la_SOURCES = toolbar-common-quimhelpertoolbar.cpp toolbar-common-uimstateindicator.cpp
-libtoolbarcommon_la_LIBADD = $(top_builddir)/uim/libuim.la
+libtoolbarcommon_la_SOURCES  = toolbar-common-quimhelpertoolbar.cpp toolbar-common-uimstateindicator.cpp
+libtoolbarcommon_la_CXXFLAGS = $(QT_CXXFLAGS)
+libtoolbarcommon_la_LDFLAGS  = $(QT_LDFLAGS)
+libtoolbarcommon_la_LIBADD   = $(top_builddir)/uim/libuim.la
 toolbar-common-quimhelpertoolbar.cpp: toolbar-common-quimhelpertoolbar.moc
 toolbar-common-quimhelpertoolbar.moc: toolbar-common-quimhelpertoolbar.h
 	$(MOC) toolbar-common-quimhelpertoolbar.h -o toolbar-common-quimhelpertoolbar.moc
@@ -96,21 +100,27 @@ toolbar-common-uimstateindicator.moc: toolbar-common-uimstateindicator.h
 
 # Toolbar Standalone
 uim_toolbar_qt_SOURCES = toolbar-standalone-qt.cpp
-uim_toolbar_qt_LDADD   = $(top_builddir)/uim/libuim.la ./libtoolbarcommon.la
+uim_toolbar_qt_CXXFLAGS = $(QT_CXXFLAGS)
+uim_toolbar_qt_LDFLAGS  = $(QT_LDFLAGS)
+uim_toolbar_qt_LDADD    = $(top_builddir)/uim/libuim.la ./libtoolbarcommon.la
 toolbar-standalone-qt.cpp: toolbar-standalone-qt.moc
 toolbar-standalone-qt.moc: toolbar-standalone-qt.h
 	$(MOC) toolbar-standalone-qt.h -o toolbar-standalone-qt.moc
 
 # Candidate Window
-uim_candwin_qt_SOURCES = candwin-qt.cpp
+uim_candwin_qt_SOURCES  = candwin-qt.cpp
+uim_candwin_qt_CXXFLAGS = $(QT_CXXFLAGS)
+uim_candwin_qt_LDFLAGS  = $(QT_LDFLAGS)
 uim_candwin_qt_LDADD = $(top_builddir)/uim/libuim.la
 candwin-qt.cpp: candwin-qt.moc
 candwin-qt.moc: candwin-qt.h
 	$(MOC) candwin-qt.h -o candwin-qt.moc
 
 # Switcher
-uim_im_switcher_qt_SOURCES = switcher-qt.cpp
-uim_im_switcher_qt_LDADD = $(top_builddir)/uim/libuim.la
+uim_im_switcher_qt_SOURCES  = switcher-qt.cpp
+uim_im_switcher_qt_CXXFLAGS = $(QT_CXXFLAGS)
+uim_im_switcher_qt_LDFLAGS  = $(QT_LDFLAGS)
+uim_im_switcher_qt_LDADD    = $(top_builddir)/uim/libuim.la
 switcher-qt.cpp: switcher-qt.moc
 switcher-qt.moc: switcher-qt.h
 	$(MOC) switcher-qt.h -o switcher-qt.moc
@@ -120,7 +130,9 @@ uim_pref_qt_SOURCES = \
 	pref-olisteditformbase.cpp pref-keyeditformbase.cpp pref-keygrabformbase.cpp \
 	pref-qt.cpp pref-customwidgets.cpp pref-kseparator.cpp
 
-uim_pref_qt_LDADD = $(top_builddir)/uim/libuim.la $(top_builddir)/uim/libuim-custom.la
+uim_pref_qt_CXXFLAGS = $(QT_CXXFLAGS)
+uim_pref_qt_LDFLAGS  = $(QT_LDFLAGS)
+uim_pref_qt_LDADD    = $(top_builddir)/uim/libuim.la $(top_builddir)/uim/libuim-custom.la
 
 pref-customwidgets.h:pref-olisteditformbase.h pref-keyeditformbase.h pref-keygrabformbase.h
 pref-qt.h:pref-olisteditformbase.h pref-keyeditformbase.h pref-keygrabformbase.h

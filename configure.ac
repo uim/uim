@@ -422,25 +422,44 @@ if test x$use_qt = xyes ; then
       QTDIR="/usr/lib/qt"
     fi
     if test -z "$QTDIR"; then
-      QTDIR="/usr/share/qt3"
-    fi
-    if test -z "$QTDIR"; then
       QTDIR="/usr"
     fi
 
-    # GUESS $QTINCDIR
-    QTINCDIR="/include/qt"
-    if test ! -d "$QTDIR$QTINCDIR"; then
-       QTINCDIR="/include/X11/qt"
+    # GUESS $QTINCDIR from $QTDIR
+    QTINCDIR="$QTDIR/include/qt"
+    if test ! -d "$QTINCDIR"; then
+       QTINCDIR="$QTDIR/include/X11/qt"
     fi
-    if test ! -d "$QTDIR$QTINCDIR"; then
-       QTINCDIR="/include/qt3"
+    if test ! -d "$QTINCDIR"; then
+       QTINCDIR="$QTDIR/include/qt3"
     fi
-    if test ! -d "$QTDIR$QTINCDIR"; then
-       QTINCDIR="/include/qt"
+    if test ! -d "$QTINCDIR"; then
+       QTINCDIR="$QTDIR/include"
     fi
-    if test ! -d "$QTDIR$QTINCDIR"; then
-       QTINCDIR="/include"
+    # GUESS $QTINCDIR independently
+    if test ! -d "$QTINCDIR"; then
+       QTINCDIR="/usr/include/X11/qt"
+    fi
+    if test ! -d "$QTINCDIR"; then
+       QTINCDIR="/usr/include/qt3"
+    fi
+    if test ! -d "$QTINCDIR"; then
+       QTINCDIR="/usr/include/qt"
+    fi
+    if test ! -d "$QTINCDIR"; then
+       QTINCDIR="/usr/include"
+    fi
+
+    # GUESS $QTLIBDIR
+    QTLIBDIR="$QTDIR/lib"
+    if test ! -d "$QTLIBDIR"; then
+       QTLIBDIR="/usr/lib/qt3"
+    fi
+    if test ! -d "$QTLIBDIR"; then
+       QTLIBDIR="/usr/lib/qt"
+    fi
+    if test ! -d "$QTLIBDIR"; then
+       QTINCDIR="/usr/lib"
     fi
 
     # Check For MOC
@@ -477,12 +496,12 @@ if test x$use_qt = xyes ; then
 
 
     # Process for compiler & linker flags
-    QT_CFLAGS="-I${QTDIR}${QTINCDIR} -DQT_GENUINE_STR -DQT_NO_STL"
+    QT_CXXFLAGS="-I${QTINCDIR} -DQT_GENUINE_STR -DQT_NO_STL"
     if test -z "$enable_debug"; then
-      QT_CFLAGS="$QT_CFLAGS -DQT_NO_DEBUG -DNO_DEBUG"
+      QT_CXXFLAGS="$QT_CXXFLAGS -DQT_NO_DEBUG -DNO_DEBUG"
     fi
     _SAVE_LDFLAGS=$LDFLAGS
-    QT_LDFLAGS=-L${QTDIR}/lib
+    QT_LDFLAGS=-L${QTLIBDIR}
     LDFLAGS="$LDFLAGS $QT_LDFLAGS"
     AC_LANG_SAVE
     AC_LANG_CPLUSPLUS
@@ -491,19 +510,16 @@ if test x$use_qt = xyes ; then
             AC_MSG_ERROR([Cannot find QT libraries.])))
 
     if test "$QT_LIB" = "-lqt-mt"; then
-      QT_CFLAGS="$QT_CFLAGS -DQT_THREAD_SUPPORT"
+      QT_CXXFLAGS="$QT_CXXFLAGS -DQT_THREAD_SUPPORT"
     fi
 
     LDFLAGS=$_SAVE_LDFLAGS
     QT_LIBS="-L/usr/X11R6/lib $QT_LDFLAGS $QT_LIB -lXext -lX11"
 
-    UIM_QT_LDFLAGS=$QT_LIBS
-    UIM_QT_CFLAGS=$QT_CFLAGS
-
     _SAVE_CXXFLAGS=$CXXFLAGS
     _SAVE_LIBS=$LIBS
 
-    CXXFLAGS="$CXXFLAGS $QT_CFLAGS"
+    CXXFLAGS="$CXXFLAGS $QT_CXXFLAGS"
     LIBS="$LIBS $QT_LIBS"
 
     AC_MSG_CHECKING(Qt - version >= $QT_VERSION)
@@ -523,9 +539,12 @@ if test x$use_qt = xyes ; then
 
     AC_LANG_RESTORE
 
+    UIM_QT_LDFLAGS=$QT_LIBS
+    UIM_QT_CXXFLAGS=$QT_CXXFLAGS
+
     AC_SUBST(MOC)
     AC_SUBST(UIC)
-    AC_SUBST(UIM_QT_CFLAGS)
+    AC_SUBST(UIM_QT_CXXFLAGS)
     AC_SUBST(UIM_QT_LDFLAGS)
 fi
 
@@ -533,7 +552,7 @@ if test x$use_qt = xyes ; then
     AC_MSG_CHECKING(for qt-immodule patch)
     if test x$use_qtimmodule = xyes ; then
         # Check for immodule for Qt patch
-        if test ! -e $QTDIR$QTINCDIR/qinputcontext.h -o ! -e $QTDIR$QTINCDIR/qinputcontextplugin.h; then
+        if test ! -e $QTINCDIR/qinputcontext.h -o ! -e $QTINCDIR/qinputcontextplugin.h; then
           AC_MSG_RESULT(no)
           $use_qtimmodule="cannot"
         else
