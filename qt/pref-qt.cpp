@@ -603,6 +603,8 @@ SubgroupData::~SubgroupData()
 
 QVGroupBox * SubgroupData::searchGroupVBoxByCustomSym( const char *custom_sym ) const
 {
+    if (gvboxMap.find(custom_sym) == gvboxMap.end())
+        return NULL;
     return gvboxMap[QString(custom_sym)];
 }
 
