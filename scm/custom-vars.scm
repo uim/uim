@@ -184,11 +184,11 @@
   (_ "Enable IM switching by hotkey")
   (_ "long description will be here."))
 
-;;(define-custom 'switch-im-key? '("<Control>Shift_key" "<Shift>Control_key")
-;;  '(global im-switching advanced)
-;;  '(key)
-;;  "IM switching key"
-;;  "long description will be here.")
+(define-custom 'switch-im-key '("<Control>Shift_key" "<Shift>Control_key")
+  '(global im-switching advanced)
+  '(key)
+  (_ "IM switching key")
+  (_ "long description will be here."))
 
 ;; activity dependency
 (custom-add-hook 'switch-im-key?
@@ -220,110 +220,110 @@
 (define-custom 'generic-on-key '("zenkaku-hankaku" "<Shift> ")
                '(global-keys key)
 	       '(key)
-	       "[Global] on"
-	       "long description will be here")
+	       (_ "[Global] on")
+	       (_ "long description will be here"))
 
 (define-custom 'generic-off-key '("zenkaku-hankaku" "<Shift> ")
                '(global-keys key)
 	       '(key)
-	       "[Global] off"
-	       "long description will be here")
+	       (_ "[Global] off")
+	       (_ "long description will be here"))
 
 (define-custom 'generic-begin-conv-key '(" ")
                '(global-keys key)
 	       '(key)
-	       "[Global] begin conversion"
-	       "long description will be here")
+	       (_ "[Global] begin conversion")
+	       (_ "long description will be here"))
 
 (define-custom 'generic-commit-key '("<Control>j" "<Control>J" generic-return-key)
                '(global-keys key)
 	       '(key)
-	       "[Global] commit"
-	       "long description will be here")
+	       (_ "[Global] commit")
+	       (_ "long description will be here"))
 
 (define-custom 'generic-cancel-key '("escape" "<Control>g" "<Control>G")
                '(global-keys key)
 	       '(key)
-	       "[Global] cancel"
-	       "long description will be here")
+	       (_ "[Global] cancel")
+	       (_ "long description will be here"))
 
 (define-custom 'generic-next-candidate-key '(" " "down" "<Control>n" "<Control>N")
                '(global-keys key)
 	       '(key)
-	       "[Global] next candidate"
-	       "long description will be here")
+	       (_ "[Global] next candidate")
+	       (_ "long description will be here"))
 
 (define-custom 'generic-prev-candidate-key '("up" "<Control>p" "<Control>P")
                '(global-keys key)
 	       '(key)
-	       "[Global] previous candidate"
-	       "long description will be here")
+	       (_ "[Global] previous candidate")
+	       (_ "long description will be here"))
 
 (define-custom 'generic-next-page-key '("next")
                '(global-keys key)
 	       '(key)
-	       "[Global] next page of candidate window"
-	       "long description will be here")
+	       (_ "[Global] next page of candidate window")
+	       (_ "long description will be here"))
 
 (define-custom 'generic-prev-page-key '("prior")
                '(global-keys key)
 	       '(key)
-	       "[Global] previous page of candidate window"
-	       "long description will be here")
+	       (_ "[Global] previous page of candidate window")
+	       (_ "long description will be here"))
 
 (define-custom 'generic-beginning-of-preedit-key '("home" "<Control>a" "<Control>A")
                '(global-keys key)
 	       '(key)
-	       "[Global] beginning of preedit"
-	       "long description will be here")
+	       (_ "[Global] beginning of preedit")
+	       (_ "long description will be here"))
 
 (define-custom 'generic-end-of-preedit-key '("end" "<Control>e" "<Control>E")
                '(global-keys key)
 	       '(key)
-	       "[Global] end of preedit"
-	       "long description will be here")
+	       (_ "[Global] end of preedit")
+	       (_ "long description will be here"))
 
 (define-custom 'generic-kill-key '("<Control>k" "<Control>K")
                '(global-keys key advanced)
 	       '(key)
-	       "[Global] erase after cursor"
-	       "long description will be here")
+	       (_ "[Global] erase after cursor")
+	       (_ "long description will be here"))
 
 (define-custom 'generic-kill-backward-key '("<Control>u" "<Control>U")
                '(global-keys key advanced)
 	       '(key)
-	       "[Global] erase before cursor"
-	       "long description will be here")
+	       (_ "[Global] erase before cursor")
+	       (_ "long description will be here"))
 
 (define-custom 'generic-backspace-key '("backspace" "<Control>h" "<Control>H")
                '(global-keys key advanced)
 	       '(key)
-	       "[Global] backspace"
-	       "long description will be here")
+	       (_ "[Global] backspace")
+	       (_ "long description will be here"))
 
 (define-custom 'generic-delete-key '("delete" "<Control>d" "<Control>D")
                '(global-keys key advanced)
 	       '(key)
-	       "[Global] delete"
-	       "long description will be here")
+	       (_ "[Global] delete")
+	       (_ "long description will be here"))
 
 (define-custom 'generic-go-left-key '("left" "<Control>b" "<Control>B")
                '(global-keys key advanced)
 	       '(key)
-	       "[Global] left"
-	       "long description will be here")
+	       (_ "[Global] left")
+	       (_ "long description will be here"))
 
 (define-custom 'generic-go-right-key '("right" "<Control>f" "<Control>F")
                '(global-keys key advanced)
 	       '(key)
-	       "[Global] right"
-	       "long description will be here")
+	       (_ "[Global] right")
+	       (_ "long description will be here"))
 
 (define-custom 'generic-return-key '("return" "<Control>m" "<Control>M")
                '(global-keys key advanced)
 	       '(key)
-	       "[Global] return"
-	       "long description will be here")
+	       (_ "[Global] return")
+	       (_ "long description will be here"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -485,27 +485,6 @@
 		     skk-im-canonical-name
 		     "TODO: share im-short-desc of the IM")
 
-(define-custom 'skk-dic-file-name (string-append (sys-datadir)
-						 "/skk/SKK-JISYO.L")
-  '(skk)
-  '(pathname)
-  (_ "Dictionary file")
-  (_ "long description will be here."))
-
-(define-custom 'skk-personal-dic-filename
-  (string-append (getenv "HOME") "/.skk-jisyo")
-  '(skk)
-  '(pathname)
-  (_ "Personal dictionary file")
-  (_ "long description will be here."))
-
-(define-custom 'skk-uim-personal-dic-filename
-  (string-append (getenv "HOME") "/.skk-uim-jisyo")
-  '(skk)
-  '(pathname)
-  (_ "Personal dictionary file (dedicated to uim)")
-  (_ "long description will be here."))
-
 (define-custom 'skk-use-candidate-window? #t
   '(skk)
   '(boolean)
@@ -560,6 +539,27 @@
   '(skk advanced)
   '(boolean)
   (_ "Friendly for vi user")
+  (_ "long description will be here."))
+
+(define-custom 'skk-dic-file-name (string-append (sys-datadir)
+						 "/skk/SKK-JISYO.L")
+  '(skk)
+  '(pathname)
+  (_ "Dictionary file")
+  (_ "long description will be here."))
+
+(define-custom 'skk-personal-dic-filename
+  (string-append (getenv "HOME") "/.skk-jisyo")
+  '(skk)
+  '(pathname)
+  (_ "Personal dictionary file")
+  (_ "long description will be here."))
+
+(define-custom 'skk-uim-personal-dic-filename
+  (string-append (getenv "HOME") "/.skk-uim-jisyo")
+  '(skk)
+  '(pathname)
+  (_ "Personal dictionary file (dedicated to uim)")
   (_ "long description will be here."))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

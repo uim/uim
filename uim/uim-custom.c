@@ -335,7 +335,7 @@ uim_custom_key_get(const char *custom_sym)
   int *key_type_list, editor_type, list_len, i;
   struct uim_custom_key *custom_key, **custom_key_list;
 
-  UIM_EVAL_FSTRING2(NULL, "(define %s (apply (if uim-custom-expand-key? custom-expand-key-references list) (custom-value '%s))",
+  UIM_EVAL_FSTRING2(NULL, "(define %s (apply (if uim-custom-expand-key? custom-expand-key-references list) (custom-value '%s)))",
 		    str_list_arg, custom_sym);
   key_literal_list =
     (char **)uim_scm_c_list(str_list_arg,
@@ -348,11 +348,11 @@ uim_custom_key_get(const char *custom_sym)
   key_label_list =
     (char **)uim_scm_c_list(str_list_arg,
 			    "(lambda (key) (if (symbol? key) (custom-label key) #f))",
-			    (uim_scm_c_list_conv_func)uim_scm_c_str);
+			    (uim_scm_c_list_conv_func)uim_scm_c_str_failsafe);
   key_desc_list =
     (char **)uim_scm_c_list(str_list_arg,
 			    "(lambda (key) (if (symbol? key) (custom-desc key) #f))",
-			    (uim_scm_c_list_conv_func)uim_scm_c_str);
+			    (uim_scm_c_list_conv_func)uim_scm_c_str_failsafe);
   if (!key_type_list || !key_literal_list || !key_label_list || !key_desc_list)
   {
     free(key_type_list);
@@ -1230,7 +1230,7 @@ uim_custom_cb_remove(const char *custom_sym)
 {
   uim_bool removed;
 
-  UIM_EVAL_FSTRING1(NULL, "(custom-remove-hook '%s 'custom-update-hook)",
+  UIM_EVAL_FSTRING1(NULL, "(custom-remove-hook '%s 'custom-update-hooks)",
 		    (custom_sym) ? custom_sym : "#f");
   removed = uim_scm_c_bool(uim_scm_return_value());
 

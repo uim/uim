@@ -274,9 +274,7 @@ uim_scm_c_list(const char *list_repl, const char *mapper_proc,
 char *
 uim_scm_c_str_failsafe(uim_lisp str)
 {
-  char *c_str;
-  c_str = uim_scm_c_str(str);
-  return (c_str) ? c_str : strdup("");
+  return (NFALSEP(str)) ? uim_scm_c_str(str) : strdup("");
 }
 
 char **
