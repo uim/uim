@@ -924,7 +924,14 @@
 
 (define anthy-key-handler
   (lambda (ac key key-state press?)
-    (let ((ev (legacy-key->key-event key key-state press?)))
+    (let ((ev (legacy-key->key-event key key-state press?))
+	  (debug? (and (symbol-bound? 'anthy-debug?)
+		       anthy-debug?)))
+
+      (if debug?
+	  (begin
+	    (puts "key-event:  ")
+	    (puts (key-event-inspect ev))))
 
       ;; temporary workaround for NICOLA input
       ;; TODO: replace with ja-nicola-jp106-pseudo-thumb-shift-ruleset
@@ -934,6 +941,11 @@
       (if (eq? (key-event-lkey ev)
 	       'lkey_Muhenkan)
 	  (key-event-set-lkey! ev 'lkey_Thumb_Shift_L))
+
+      (if debug?
+	  (begin
+	    (puts "translated: ")
+	    (puts (key-event-inspect ev))))
 
       (if (anthy-context-on ac)
 	  (if (anthy-context-converting ac)

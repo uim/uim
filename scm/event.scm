@@ -171,3 +171,39 @@
 			  (getter other)))
 		(list key-event-press
 		      key-event-autorepeat)))))
+
+;; TODO: write test
+(define key-event-inspect
+  (lambda (ev)
+    (string-append
+     (if (key-event-str ev)
+	 (string-append "\"" (key-event-str ev) "\"")
+	 "-")
+     " "
+     (symbol->string (or (key-event-lkey ev)
+			 '-))
+     " "
+     (symbol->string (or (key-event-pkey ev)
+			 '-))
+     " ("
+     (string-join
+      " "
+      (filter-map (lambda (mod-sym)
+		    (and (not (= (bitwise-and (symbol-value mod-sym)
+					      (key-event-modifier ev))
+				 0))
+			 (symbol->string mod-sym)))
+		  valid-modifiers))
+     ") "
+     (if (key-event-press ev)
+	 "press"
+	 "release")
+     " "
+     (if (key-event-autorepeat ev)
+	 "autorepeat"
+	 "nonrepeat")
+     " "
+     (if (event-consumed ev)
+	 "consumed"
+	 "not-consumed")
+     "\n")))
