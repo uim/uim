@@ -135,13 +135,15 @@
 ;; only accepts single-arg functions
 ;; (define caddr (compose car cdr cdr))
 (define compose
-  (lambda funcs
-    (fold (lambda (f g)
-	    (lambda (arg)
-	      (f (g arg))))
-	  (lambda (arg)
-	    arg)
-	  (reverse funcs))))
+  (lambda args
+    (let ((funcs (if (null? args)
+		     (list (lambda (x) x))
+		     args)))
+      (fold (lambda (f g)
+	      (lambda (arg)
+		(f (g arg))))
+	    (car (reverse funcs))
+	    (cdr (reverse funcs))))))
 
 ;; TODO: write test
 (define safe-car
@@ -326,7 +328,6 @@
 ;;(define take-right)
 ;;(define drop-right)
 ;;(define split-at)
-;;(define last)
 
 (define list-tabulate
   (lambda (n init-proc)
@@ -358,7 +359,25 @@
       (list-tabulate (- count start)
 		     (lambda (i)
 		       (+ start i))))))
+
+;; TODO: write test
+(define last
+  (lambda (lst)
+    (car (last-pair lst))))
+
+;; only accepts 2 lists
+;; TODO: write test
+(define append! nconc)
     
+(define concatenate
+  (lambda (lists)
+    (apply append lists)))
+
+(define concatenate!
+  (lambda (lists)
+    ;;(fold-right append! () lists)
+    (fold append! () (reverse lists))))
+
 (define zip
   (lambda lists
       (let ((runs-out? (apply proc-or (map null? lists))))
@@ -370,7 +389,7 @@
 
 (define append-map
   (lambda args
-    (apply append (apply map args))))
+    (concatenate! (apply map args))))
 
 (define append-reverse
   (lambda (rev-head tail)
@@ -387,15 +406,16 @@
       (find f (cdr lst))))))
 
 ;; TODO: write test
-(define find-tail
-  (lambda (pred lst)
-    (cond
-     ((null? lst)
-      #f)
-     ((pred (car lst))
-      lst)
-     (else
-      (find-tail pred (cdr lst))))))
+;; replaced with faster C version
+;;(define find-tail
+;;  (lambda (pred lst)
+;;    (cond
+;;     ((null? lst)
+;;      #f)
+;;     ((pred (car lst))
+;;      lst)
+;;     (else
+;;      (find-tail pred (cdr lst))))))
 
 (define any
   (lambda args

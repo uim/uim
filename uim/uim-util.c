@@ -490,12 +490,10 @@ shift_elems(uim_lisp lists)
 static uim_lisp
 iterate_lists(uim_lisp mapper, uim_lisp seed, uim_lisp lists)
 {
-  uim_lisp sym_apply, form;
-  uim_lisp elms, rest, rests, mapped, res, termp, pair;
+  uim_lisp elms, rest, rests, mapped, res, termp, pair, form;
   uim_bool single_listp;
 
   single_listp = (uim_scm_length(lists) == 1) ? UIM_TRUE : UIM_FALSE;
-  sym_apply = uim_scm_make_symbol("apply");
   res = seed;
   if (single_listp) {
     rest = uim_scm_car(lists);
@@ -517,15 +515,30 @@ iterate_lists(uim_lisp mapper, uim_lisp seed, uim_lisp lists)
       }
     }
 
-    form = uim_scm_list3(sym_apply,
-			 mapper,
-			 uim_scm_quote(uim_scm_list2(res, elms)));
+    form = uim_scm_list3(mapper,
+			 uim_scm_quote(res),
+			 uim_scm_quote(elms));
     mapped = uim_scm_eval(form);
     termp = uim_scm_car(mapped);
     res = uim_scm_cdr(mapped);
   } while (FALSEP(termp));
 
   return res;
+}
+
+static uim_lisp
+find_tail(uim_lisp pred, uim_lisp lst)
+{
+  uim_lisp form, elem;
+
+  for (; !uim_scm_nullp(lst); lst = uim_scm_cdr(lst)) {
+    elem = uim_scm_car(lst);
+    form = uim_scm_list2(pred, uim_scm_quote(elem));
+    if (NFALSEP(uim_scm_eval(form)))
+      return lst;
+  }
+
+  return uim_scm_f();
 }
 
 /* Following is utility functions for C world */
@@ -615,6 +628,7 @@ uim_init_util_subrs()
   uim_scm_init_subr_2("string-prefix?", string_prefixp);
   uim_scm_init_subr_2("string-prefix-ci?", string_prefix_cip);
   uim_scm_init_subr_3("iterate-lists", iterate_lists);
+  uim_scm_init_subr_2("find-tail", find_tail);
   uim_scm_init_subr_1("lang-code->lang-name-raw", lang_code_to_lang_name_raw);
   uim_scm_init_subr_0("is-set-ugid?", is_setugidp);
 }

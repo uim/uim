@@ -65,6 +65,11 @@
 (require "ng-key.scm")
 
 
+(define event-exp-list?
+  (lambda (x)
+    (or (pair? x)
+	(null? x))))
+
 ;;
 ;; event expression
 ;;
@@ -136,11 +141,20 @@
   (lambda (evc)
     (let* ((pred-alist (event-exp-collector-pred-alist evc))
 	   (predicates (event-exp-collector-predicates evc))
-	   (normalized (filter-map (lambda (pair)
-				     (let ((pred (cdr pair)))
-				       (and (memq pred predicates)
-					    pred)))
-				   pred-alist)))
+	   (normalized (or ;; fast path
+			   (and (= (length predicates)
+				   1)
+				(find-tail (lambda (pair)
+					     (eq? (car predicates)
+						  (cdr pair)))
+					   pred-alist)
+				predicates)
+			   ;; ordinary path
+			   (filter-map (lambda (pair)
+					 (let ((pred (cdr pair)))
+					   (and (memq pred predicates)
+						pred)))
+				       pred-alist))))
       (event-exp-collector-set-predicates! evc normalized))))
 
 ;; returns normalized event-exp expression
@@ -149,7 +163,7 @@
     (event-exp-collector-normalize-predicates! evc)
     (let* ((modifier (event-exp-collector-modifier evc))
 	   (exp-list (remove not
-			     (append
+			     (append!
 			      (list
 			       (event-exp-collector-str evc)
 			       (event-exp-collector-lkey evc)
@@ -163,34 +177,34 @@
 	  exp-list))))
 
 (define event-exp-collector-fold-elem
-  (lambda (evc exp)
-    (let ((pred-alist (event-exp-collector-pred-alist evc))
-	  (evc-error (lambda (msg)
-		       (error (string-append "invalid event-exp expression: "
-					     msg)))))
+  (let ((evc-error (lambda (msg)
+		     (error (string-append "invalid event-exp expression: "
+					   msg)))))
+    (lambda (evc exp)
       (cond
        ((string? exp)
 	(if (event-exp-collector-str evc)
 	    (evc-error "duplicated str"))
 	(event-exp-collector-set-str! evc exp))
        ((symbol? exp)
-	(cond
-	 ((modifier-symbol? exp)
-	  (event-exp-collector-add-modifier! evc (symbol-value exp)))
-	 ((assq exp pred-alist)
-	  (let ((match? (assq-cdr exp pred-alist)))
-	    (event-exp-collector-add-predicate! evc match?)))
-	 ((logical-key? exp)
-	  (if (event-exp-collector-lkey evc)
-	      (evc-error "duplicated logical key"))
-	  (event-exp-collector-set-lkey! evc exp))
-	 ((physical-key? exp)
-	  (if (event-exp-collector-pkey evc)
-	      (evc-error "duplicated physical key"))
-	  (event-exp-collector-set-pkey! evc exp))
-	 (else
-	  (evc-error (string-append "unknown symbol '" exp)))))
-       ((list? exp)
+	(let ((pred-ent (assq exp (event-exp-collector-pred-alist evc))))
+	  (cond
+	   (pred-ent
+	    (let ((match? (cdr pred-ent)))
+	      (event-exp-collector-add-predicate! evc match?)))
+	   ((modifier-symbol? exp)
+	    (event-exp-collector-add-modifier! evc (symbol-value exp)))
+	   ((logical-key? exp)
+	    (if (event-exp-collector-lkey evc)
+		(evc-error "duplicated logical key"))
+	    (event-exp-collector-set-lkey! evc exp))
+	   ((physical-key? exp)
+	    (if (event-exp-collector-pkey evc)
+		(evc-error "duplicated physical key"))
+	    (event-exp-collector-set-pkey! evc exp))
+	   (else
+	    (evc-error (string-append "unknown symbol '" exp))))))
+       ((pair? exp)
 	(evc-error "invalid nested list"))
        (else
 	(evc-error "invalid element")))
@@ -202,7 +216,7 @@
       (fold (lambda (exp evc)
 	      (event-exp-collector-fold-elem evc exp))
 	    evc
-	    (if (list? exp)
+	    (if (event-exp-list? exp)
 		exp
 		(list exp))))))
 
@@ -213,7 +227,7 @@
 
 (define event-exp-add-elem
   (lambda (exp elem)
-    (if (list? exp)
+    (if (event-exp-list? exp)
 	(cons elem exp)
 	(list elem exp))))
 
@@ -225,7 +239,7 @@
 
 (define event-exp-has-elem?
   (lambda (exp elem)
-    (if (list? exp)
+    (if (event-exp-list? exp)
 	(member elem exp)
 	(equal? elem exp))))
 
@@ -273,7 +287,7 @@
 		      (elem ev))
 		     (else
 		      #f)))
-		  (if (list? exp)
+		  (if (event-exp-list? exp)
 		      exp
 		      (list exp)))
 	   (or modifier-explicitly-matched?
@@ -289,26 +303,29 @@
 
 ;; abbreviation of press-release macro
 (define event-exp-implicit-macro?
+  (let ((implicit-macro-body? (lambda (elem)
+				(or (string? elem)
+				    (logical-key? elem)
+				    (physical-key? elem)))))
+    (lambda (exp)
+      (if (pair? exp)
+	  (and (not (memq 'press exp))
+	       (not (memq 'release exp))
+	       (not (assq (car exp) event-exp-macro-alist))
+	       (find implicit-macro-body? exp))
+	  (implicit-macro-body? exp)))))
+
+(define event-exp-formal-macro?
   (lambda (exp)
-    (let ((exp-list (if (list? exp)
-			exp
-			(list exp))))
-      (and (not (memq 'press exp-list))
-	   (not (memq 'release exp-list))
-	   (not (assq (car exp-list) event-exp-macro-alist))
-	   (find (lambda (elem)
-		   (or (string? elem)
-		       (logical-key? elem)
-		       (physical-key? elem)))
-		 exp-list)))))
+    (let ((macro-sym (safe-car exp)))
+      (and macro-sym
+	   (symbol? macro-sym)
+	   (assq-cdr macro-sym event-exp-macro-alist)))))
 
 (define event-exp-macro?
   (lambda (exp)
-    (let ((macro-sym (safe-car exp)))
-      (or (and macro-sym
-	       (symbol? macro-sym)
-	       (assq-cdr macro-sym event-exp-macro-alist))
-	  (event-exp-implicit-macro? exp)))))
+    (or (event-exp-implicit-macro? exp)
+	(event-exp-formal-macro? exp))))
 
 ;; 'press-release' macro
 ;; Collects corresponding release edge of the key. Default behavior.
@@ -416,17 +433,16 @@
 	(let ((exp (car ev-exps))
 	      (rest (cdr ev-exps)))
 	  (cond
-	   ;; macro
-	   ((event-exp-macro? exp)
-	    (let* ((implicit-macro? (event-exp-implicit-macro? exp))
-		   (macro-sym (if implicit-macro?
-				  'press-release
-				  (car exp)))
-		   (macro-args (if implicit-macro?
-				   (if (list? exp)
-				       exp
-				       (list exp))
-				   (cdr exp)))
+	   ;; fast path for implicit press-release macro
+	   ((event-exp-implicit-macro? exp)
+	    (let ((expanded (car (event-exp-expand-macro-press-release exp))))
+	      (event-exp-list-expand-macro
+	       rest
+	       (append-reverse expanded parsed))))
+	   ;; ordinary macros
+	   ((event-exp-formal-macro? exp)
+	    (let* ((macro-sym (car exp))
+		   (macro-args (cdr exp))
 		   (macro (assq-cdr macro-sym event-exp-macro-alist)))
 	      (append-map (lambda (expanded)
 			    (event-exp-list-expand-macro
@@ -437,10 +453,51 @@
 	   (else
 	    (event-exp-list-expand-macro rest (cons exp parsed))))))))
 
+(define event-exp-list-expand-macro
+  (lambda (ev-exps parsed)
+    (if (null? ev-exps)
+	(list (concatenate (reverse parsed)))
+	(let ((exp (car ev-exps))
+	      (rest (cdr ev-exps)))
+	  (cond
+	   ;; fast path for implicit press-release macro
+	   ((event-exp-implicit-macro? exp)
+	    (let ((expanded (car (event-exp-expand-macro-press-release exp))))
+	      (event-exp-list-expand-macro
+	       rest
+	       (cons expanded parsed))))
+	   ;; ordinary macros
+	   ((event-exp-formal-macro? exp)
+	    (let* ((macro-sym (car exp))
+		   (macro-args (cdr exp))
+		   (macro (assq-cdr macro-sym event-exp-macro-alist)))
+	      (append-map (lambda (expanded)
+			    (event-exp-list-expand-macro
+			     rest
+			     (cons expanded parsed)))
+			  (macro macro-args))))
+	   ;; AND expression, other simple elements
+	   (else
+	    (event-exp-list-expand-macro rest (cons (list exp) parsed))))))))
+
 ;; returns list of ev-exps
 (define event-exp-seq-parse
-  (let ((canonicalize (compose event-exp-collector-exp
-			       event-exp-collector-fold)))
+  (let* ((list-canonicalize (compose event-exp-collector-exp
+				     event-exp-collector-fold))
+	 (canonicalize (lambda (exp)
+			 (cond
+			  ;; fast path for simple press-release elements
+			  ((and (pair? exp)
+				(= (length exp)
+				   2)
+				(memq (car exp)
+				      '(press release))
+				(string? (cadr exp)))
+			   (list (cadr exp)
+				 (event-exp-predicate (car exp))))
+			  ;; other expressions
+			  (else
+			   (list-canonicalize exp))))))
     (lambda (ev-exp-seq)
       (let ((expandeds (event-exp-list-expand-macro ev-exp-seq ())))
 	(map (lambda (expanded)
@@ -526,16 +583,18 @@
     (event-exp-collector-fold-internal exp action-exp-collector-new)))
 
 (define action-exp-seq-parse
-  (lambda (act-exps)
-    (let ((action-symbol? (lambda (sym)
-			    (and (symbol? sym)
-				 (string-prefix? "action_"
-						 (symbol->string sym))
-				 sym)))
-	  (canonicalize (compose event-exp-collector-exp
-				 action-exp-collector-fold)))
+  (let ((action-symbol? (lambda (sym)
+			  (and (symbol? sym)
+			       (string-prefix? "action_"
+					       (symbol->string sym))
+			       sym)))
+	(canonicalize (compose event-exp-collector-exp
+			       action-exp-collector-fold)))
+    (lambda (act-exps)
       (map (lambda (exp)
-	     (or (action-symbol? exp)
+	     (or (and (string? exp)
+		      exp)
+		 (action-symbol? exp)
 		 (canonicalize exp)))
 	   act-exps))))
 
@@ -636,17 +695,15 @@
 	  (ev=? (if (null? (cddr args))
 		    event-exp-match?
 		    (car (cddr args)))))
-      (and (evmap-tree-node? tree)
-	   (find-tail (lambda (child)
-			(let ((child-ev (evmap-tree-event child)))
-			  (ev=? child-ev ev)))
-		      (evmap-tree-branches tree))))))
+      (find-tail (lambda (child)
+		   (ev=? (evmap-tree-event child) ev))
+		 (evmap-tree-branches tree)))))
 
 (define evmap-tree-insert-node!
   (lambda (tree node)
-    (let ((inserted (cons node (evmap-tree-branches tree))))
-      (evmap-tree-set-branches! tree inserted)
-      node)))
+    (evmap-tree-set-branches! tree
+			      (cons node (evmap-tree-branches tree)))
+    node))
 
 ;; presumes normalized
 (define evmap-tree-insert-rule!
@@ -663,6 +720,20 @@
 	  (if (null? rest)
 	      (evmap-tree-set-action-seq! child act-exps)
 	      (evmap-tree-insert-rule! child rest act-exps))))))
+
+;; simple but slower
+;;(define evmap-tree-insert-rule!
+;;  (lambda (tree ev-exps act-exps)
+;;    (if (null? ev-exps)
+;;	(error "invalid null event expression in rule")
+;;	(evmap-tree-set-action-seq!
+;;	 (fold (lambda (ev-exp node)
+;;		 (or (safe-car (evmap-tree-find-branches node ev-exp equal?))
+;;		     (evmap-tree-insert-node! node
+;;					      (evmap-tree-new ev-exp))))
+;;	       tree
+;;	       ev-exps)
+;;	 act-exps))))
 
 ;; API
 ;; returns evmap-tree

@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 815 of new repository
+;; This file is tested with revision 816 of new repository
 
 (use test.unit)
 

@@ -143,7 +143,7 @@
     (map (lambda (rule)
 	   (let ((kana (kana-extractor (evmap-rule-action-seq rule))))
 	     (list (evmap-rule-event-seq rule)
-		   (if (list? kana)
+		   (if (pair? kana)
 		       kana
 		       (list kana)))))
 	 ruleset)))

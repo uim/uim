@@ -64,7 +64,7 @@
 				  (let* ((seq (evmap-rule-event-seq rule))
 					 (res (evmap-rule-action-seq rule))
 					 (listified (map (lambda (elem)
-							   (if (list? elem)
+							   (if (pair? elem)
 							       elem
 							       (list elem)))
 							 res)))
