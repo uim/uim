@@ -1147,7 +1147,7 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   button = gtk_button_new();
   olist_pref_win.up_button = button;
   gtk_table_attach_defaults(GTK_TABLE(table), button,
-			    1, 2,
+			    0, 1,
 			    0, 1);
   gtk_widget_show(button);
   arrow = gtk_arrow_new(GTK_ARROW_UP, GTK_SHADOW_NONE);
@@ -1160,7 +1160,7 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   button = gtk_button_new();
   olist_pref_win.down_button = button;
   gtk_table_attach_defaults(GTK_TABLE(table), button,
-			    1, 2,
+			    0, 1,
 			    2, 3);
   gtk_widget_show(button);
   arrow = gtk_arrow_new(GTK_ARROW_DOWN, GTK_SHADOW_NONE);
