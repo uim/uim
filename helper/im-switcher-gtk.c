@@ -58,6 +58,8 @@ parse_helper_str_im_list(const char *im_list_str_new);
 static void
 check_helper_connection(void);
 
+static gint changing_way;
+GtkWidget *radio0, *radio1, *radio2;
 
 
 /* TreeItem structure */
@@ -212,17 +214,21 @@ send_message_im_change(const gchar *type)
 }
 
 static void
-change_input_method(GtkButton *button, GtkWidget *radio)
+toggle_changing_way(GtkToggleButton *togglebutton, gpointer user_data)
 {
-  int i = 0;
-  GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio));
-
-  while((group = g_slist_next(group)) != NULL) {
-    if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(group->data))) {
-      break;
-    }
-    i++;
+  if (gtk_toggle_button_get_active((GtkToggleButton *)radio0)) {
+    changing_way = 0;
+  } else if (gtk_toggle_button_get_active((GtkToggleButton *)radio1)) {
+    changing_way = 1;
+  } else  if (gtk_toggle_button_get_active((GtkToggleButton *)radio2)) {
+    changing_way = 2;
   }
+}
+
+static void
+change_input_method(GtkButton *button, gpointer user_data)
+{
+  int i = changing_way;
   switch (i) {
   case 0:
     send_message_im_change("im_change_whole_desktop\n");
@@ -309,7 +315,7 @@ create_switcher(void)
   GtkWidget *hbox, *vbox1, *vbox2;
   GtkWidget *setting_button_box;
   GtkWidget *button;
-  GtkWidget *frame, *radio0, *radio1, *radio2;
+  GtkWidget *frame;
 
   switcher_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(switcher_win),
@@ -350,6 +356,12 @@ create_switcher(void)
   gtk_box_pack_start(GTK_BOX(vbox2), radio1, FALSE, FALSE, 3);
   gtk_box_pack_start(GTK_BOX(vbox2), radio2, FALSE, FALSE, 3);
 
+  g_signal_connect(G_OBJECT(radio0), "toggled", G_CALLBACK(toggle_changing_way), NULL);
+  g_signal_connect(G_OBJECT(radio1), "toggled", G_CALLBACK(toggle_changing_way), NULL);
+  g_signal_connect(G_OBJECT(radio2), "toggled", G_CALLBACK(toggle_changing_way), NULL);
+
+  /* set radio0 (Change whole desktop) as default */
+  gtk_toggle_button_set_active((GtkToggleButton *)radio0, TRUE);
 
   setting_button_box = gtk_hbutton_box_new();
   gtk_button_box_set_layout(GTK_BUTTON_BOX(setting_button_box), GTK_BUTTONBOX_END);
@@ -364,7 +376,7 @@ create_switcher(void)
   /* Apply button */
   button = gtk_button_new_from_stock(GTK_STOCK_OK);
   g_signal_connect(G_OBJECT(button), "clicked",
-		   G_CALLBACK(change_input_method), radio0);
+		   G_CALLBACK(change_input_method), NULL);
   gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 2);
 
   gtk_box_pack_start(GTK_BOX(vbox1), setting_button_box, FALSE, FALSE, 2);
