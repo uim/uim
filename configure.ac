@@ -437,8 +437,6 @@ AC_CONFIG_FILES([test.sh
 		 fep/Makefile
 		 tables/Makefile
 		 test/Makefile
-                 data/Makefile
-                 data/icons/Makefile
 		 examples/Makefile
 		 examples/uim-custom/Makefile
 		 pixmaps/Makefile
