@@ -43,10 +43,12 @@
 (define custom-subgroup-alist ())
 
 (define custom-activity-hooks ())
-(define custom-update-hooks ())
 (define custom-get-hooks ())
 (define custom-set-hooks ())
 (define custom-literalize-hooks ())
+(define custom-update-hooks ())
+(define custom-group-update-hooks ())
+(define custom-group-list-update-hooks ())
 
 (define custom-validator-alist
   '((boolean      . custom-boolean?)
@@ -152,8 +154,10 @@
   (lambda (gsym label desc)
     (let ((grec (custom-group-rec-new gsym label desc)))
       (if (not (custom-group-rec gsym))
-	  (set! custom-group-rec-alist (cons grec
-					     custom-group-rec-alist))))))
+	  (begin
+	    (set! custom-group-rec-alist (cons grec custom-group-rec-alist))
+	    (custom-call-hook-procs 'global
+				    custom-group-list-update-hooks))))))
 
 (define custom-group-rec
   (lambda (gsym)
@@ -262,8 +266,9 @@
 	  (primary-grp (car groups))
 	  (subgrps (cons 'main (cdr groups))))
       (if (not (custom-rec sym))
-	  (set! custom-rec-alist (cons crec
-				       custom-rec-alist)))
+	  (begin
+	    (set! custom-rec-alist (cons crec custom-rec-alist))
+	    (custom-call-hook-procs primary-grp custom-group-update-hooks)))
       (if (not (symbol-bound? sym))
 	  (let ((quoted-default (if (or (symbol? default)
 					(list? default))
@@ -464,8 +469,8 @@
   (lambda (context custom-sym val)
     (custom-set-value! custom-sym val)))
 
-(define custom-register-update-cb
-  (lambda (custom-sym ptr gate-func func)
-    (and (custom-rec custom-sym)
+(define custom-register-cb
+  (lambda (hook valid? custom-sym ptr gate-func func)
+    (and (valid? custom-sym)
 	 (let ((cb (lambda () (gate-func func ptr custom-sym))))
-	   (custom-add-hook custom-sym 'custom-update-hooks cb)))))
+	   (custom-add-hook custom-sym hook cb)))))

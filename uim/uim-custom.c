@@ -56,6 +56,7 @@
 
 
 typedef void (*uim_custom_cb_update_cb_t)(void *ptr, const char *custom_sym);
+typedef void (*uim_custom_global_cb_update_cb_t)(void *ptr);
 
 static char *c_list_to_str(const void *const *list, char *(*mapper)(const void *elem), const char *sep);
 
@@ -90,6 +91,11 @@ static uim_lisp uim_custom_range_elem(const char *custom_sym, const char *access
 static union uim_custom_range *uim_custom_range_get(const char *custom_sym);
 static void uim_custom_range_free(int custom_type, union uim_custom_range *custom_range);
 static uim_lisp uim_custom_cb_update_cb_gate(uim_lisp cb, uim_lisp ptr, uim_lisp custom_sym);
+static uim_lisp uim_custom_global_cb_update_cb_gate(uim_lisp cb, uim_lisp ptr);
+static uim_bool custom_cb_add(const char *hook, const char *validator,
+			      const char *custom_sym, void *ptr,
+			      const char *gate_func, void (*cb)(void));
+static uim_bool custom_cb_remove(const char *key_sym, const char *hook);
 
 static void helper_disconnect_cb(void);
 static char *uim_conf_path(const char *subpath);
@@ -637,6 +643,8 @@ uim_custom_init(void)
   uim_scm_gc_protect(&return_val);
 
   uim_scm_init_subr_3("custom-update-cb-gate", uim_custom_cb_update_cb_gate);
+  uim_scm_init_subr_2("custom-global-update-cb-gate",
+		      uim_custom_global_cb_update_cb_gate);
 
   uim_scm_require_file("custom.scm");
 
@@ -1186,6 +1194,54 @@ uim_custom_cb_update_cb_gate(uim_lisp cb, uim_lisp ptr, uim_lisp custom_sym)
   return uim_scm_f();
 }
 
+static uim_lisp
+uim_custom_global_cb_update_cb_gate(uim_lisp cb, uim_lisp ptr)
+{
+  uim_custom_global_cb_update_cb_t update_cb;
+  void *c_ptr;
+
+  update_cb = (uim_custom_global_cb_update_cb_t)uim_scm_c_func_ptr(cb);
+  c_ptr = uim_scm_c_ptr(ptr);
+  (*update_cb)(c_ptr);
+
+  return uim_scm_f();
+}
+
+static uim_bool
+custom_cb_add(const char *hook, const char *validator,
+	      const char *custom_sym, void *ptr,
+	      const char *gate_func, void (*cb)(void))
+{
+  uim_bool succeeded;
+  uim_lisp stack_start;
+  uim_lisp form;
+
+  uim_scm_gc_protect_stack(&stack_start);
+  form = uim_scm_list5(uim_scm_quote(uim_scm_make_symbol(hook)),
+		       uim_scm_make_symbol(custom_sym),
+		       uim_scm_make_ptr(ptr),
+		       uim_scm_make_symbol(gate_func),
+		       uim_scm_make_func_ptr(cb));
+  form = uim_scm_cons(uim_scm_make_symbol(validator), form);
+  form = uim_scm_cons(uim_scm_make_symbol("custom-register-cb"), form);
+  succeeded = uim_scm_c_bool(uim_scm_eval(form));
+  uim_scm_gc_unprotect_stack(&stack_start);
+
+  return succeeded;
+}
+
+static uim_bool
+custom_cb_remove(const char *key_sym, const char *hook)
+{
+  uim_bool removed;
+
+  UIM_EVAL_FSTRING2(NULL, "(custom-remove-hook '%s '%s)",
+		    (key_sym) ? key_sym : "#f", hook);
+  removed = uim_scm_c_bool(uim_scm_return_value());
+
+  return removed;
+}
+
 /**
  * Set a callback function in a custom variable. The @a update_cb is called
  * back when the custom variable specified by @a custom_sym is
@@ -1202,20 +1258,9 @@ uim_bool
 uim_custom_cb_add(const char *custom_sym, void *ptr,
 		  void (*update_cb)(void *ptr, const char *custom_sym))
 {
-  uim_bool succeeded;
-  uim_lisp stack_start;
-  uim_lisp form;
-
-  uim_scm_gc_protect_stack(&stack_start);
-  form = uim_scm_list5(uim_scm_make_symbol("custom-register-update-cb"),
-		       uim_scm_make_symbol(custom_sym),
-		       uim_scm_make_ptr(ptr),
-		       uim_scm_make_symbol("custom-update-cb-gate"),
-		       uim_scm_make_func_ptr((void (*)(void))update_cb));
-  succeeded = uim_scm_c_bool(uim_scm_eval(form));
-  uim_scm_gc_unprotect_stack(&stack_start);
-
-  return succeeded;
+  return custom_cb_add("custom-update-hooks", "custom-rec",
+		       custom_sym, ptr,
+		       "custom-update-cb-gate", (void (*)(void))update_cb);
 }
 
 /**
@@ -1229,11 +1274,74 @@ uim_custom_cb_add(const char *custom_sym, void *ptr,
 uim_bool
 uim_custom_cb_remove(const char *custom_sym)
 {
-  uim_bool removed;
+  return custom_cb_remove(custom_sym, "custom-update-hooks");
+}
 
-  UIM_EVAL_FSTRING1(NULL, "(custom-remove-hook '%s 'custom-update-hooks)",
-		    (custom_sym) ? custom_sym : "#f");
-  removed = uim_scm_c_bool(uim_scm_return_value());
+/**
+ * Set a callback function in a custom group. The @a update_cb is
+ * called back when the custom group specified by @a group_sym is
+ * updated (i.e. new custom variable has been defined in the group or
+ * a custom variable is removed from the group). Multiple callbacks
+ * for one custom variable is allowed.
+ *
+ * @retval UIM_TRUE succeeded
+ * @retval UIM_FALSE failed
+ * @param group_sym custom group name
+ * @param ptr an opaque value passed back to client at callback
+ * @param update_cb function pointer called back when the custom group is
+ *        updated
+ */
+uim_bool
+uim_custom_group_cb_add(const char *group_sym, void *ptr,
+			void (*update_cb)(void *ptr, const char *group_sym))
+{
+  return custom_cb_add("custom-group-update-hooks", "custom-group-rec",
+		       group_sym, ptr,
+		       "custom-update-cb-gate", (void (*)(void))update_cb);
+}
 
-  return removed;
+/**
+ * Remove the callback functions in a custom group. All functions set for @a
+ * group_sym will be removed.
+ *
+ * @retval UIM_TRUE some functions are removed
+ * @retval UIM_FALSE no functions are removed
+ * @param group_sym custom group name. NULL instructs 'all callbacks'
+ */
+uim_bool
+uim_custom_group_cb_remove(const char *group_sym)
+{
+  return custom_cb_remove(group_sym, "custom-group-update-hooks");
+}
+
+/**
+ * Set a callback function for global events. The @a
+ * group_list_update_cb is called back when group list is updated
+ * (i.e. new custom group has been defined or a custom group is
+ * undefined). Multiple callbacks is allowed.
+ *
+ * @retval UIM_TRUE succeeded
+ * @retval UIM_FALSE failed
+ * @param ptr an opaque value passed back to client at callback
+ * @param group_list_update_cb function pointer called back when
+ *        custom group list is updated
+ */
+uim_bool
+uim_custom_global_cb_add(void *ptr, void (*group_list_update_cb)(void *ptr))
+{
+  return custom_cb_add("custom-group-update-hooks", "(lambda (dummy) #t)",
+		       "global", ptr,
+		       "custom-global-update-cb-gate",
+		       (void (*)(void))group_list_update_cb);
+}
+
+/**
+ * Remove all callback functions for global events.
+ *
+ * @retval UIM_TRUE some functions are removed
+ * @retval UIM_FALSE no functions are removed
+ */
+uim_bool uim_custom_global_cb_remove(void)
+{
+  return custom_cb_remove("global", "custom-group-list-update-hooks");
 }

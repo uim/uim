@@ -764,11 +764,15 @@
    (lambda ()
      (uim '(require "custom.scm"))
      (uim '(define test-hook ()))
+     (uim '(define test-group1-trace ()))
      (uim '(define test-custom1-trace ()))
      (uim '(define test-custom2-trace ()))
      (uim '(define test-custom3-trace ()))
+     (uim '(define-custom-group 'test-group1
+	                        (_ "Test group 1")
+				(_ "long description will be here.")))
      (uim '(define-custom 'test-custom1 'test-custom1-ddskk
-	     '(global)
+	     '(test-group1)
 	     '(choice
 	       (test-custom1-uim "uim" "uim native")
 	       (test-custom1-ddskk "ddskk like" "Similar to ddskk")
@@ -1158,32 +1162,38 @@
 		 (uim 'test-custom1-trace))
    (assert-true  (uim-bool '(custom-active? 'test-custom1))))
 
-  ("test custom-register-update-cb"
+  ("test custom-register-cb (custom update hook)"
    (uim '(define test-update-gate (lambda (func ptr custom-sym)
 				    (set! test-custom1-trace
 					  (list func ptr custom-sym)))))
-   (uim '(custom-register-update-cb 'test-custom1
-				    'custom1-ptr
-				    test-update-gate 'custom1-func))
+   (uim '(custom-register-cb 'custom-update-hooks
+			     custom-rec
+	                     'test-custom1
+			     'custom1-ptr
+			     test-update-gate 'custom1-func))
    (assert-equal ()
 		 (uim 'test-custom1-trace))
    (assert-equal 'test-custom1-ddskk
 		 (uim 'test-custom1))
-   ;; update hook
+   ;; custom update hook
    (assert-true  (uim-bool '(custom-set-value! 'test-custom1 'test-custom1-uim)))
    (assert-equal '(custom1-func custom1-ptr test-custom1)
 		 (uim 'test-custom1-trace)))
-  ("test custom-register-update-cb (2 callbaks)"
+  ("test custom-register-cb (custom update hook, 2 callbaks)"
    (uim '(define test-update-gate (lambda (func ptr custom-sym)
 				    (set! test-custom1-trace
 					  (cons (list func ptr custom-sym)
 						test-custom1-trace)))))
-   (uim '(custom-register-update-cb 'test-custom1
-				    'custom1-ptr
-				    test-update-gate 'custom1-func))
-   (uim '(custom-register-update-cb 'test-custom1
-				    'custom1-ptr2
-				    test-update-gate 'custom1-func2))
+   (uim '(custom-register-cb 'custom-update-hooks
+			     custom-rec
+			     'test-custom1
+			     'custom1-ptr
+			     test-update-gate 'custom1-func))
+   (uim '(custom-register-cb 'custom-update-hooks
+			     custom-rec
+			     'test-custom1
+			     'custom1-ptr2
+			     test-update-gate 'custom1-func2))
    (assert-equal ()
 		 (uim 'test-custom1-trace))
    (assert-equal 'test-custom1-ddskk
@@ -1192,7 +1202,108 @@
    (assert-true  (uim-bool '(custom-set-value! 'test-custom1 'test-custom1-uim)))
    (assert-equal '((custom1-func custom1-ptr test-custom1)
 		   (custom1-func2 custom1-ptr2 test-custom1))
-		 (uim 'test-custom1-trace))))
+		 (uim 'test-custom1-trace)))
+
+  ("test custom-register-cb (custom-group update hook)"
+   (uim '(define test-update-gate (lambda (func ptr custom-sym)
+				    (set! test-group1-trace
+					  (list func ptr custom-sym)))))
+   (uim '(custom-register-cb 'custom-group-update-hooks
+			     custom-group-rec
+	                     'test-group1
+			     'group1-ptr
+			     test-update-gate 'group1-func))
+   (assert-equal ()
+		 (uim 'test-group1-trace))
+   (assert-equal 'test-custom1-ddskk
+		 (uim 'test-custom1))
+   ;; custom update hook is not set
+   (assert-true  (uim-bool '(custom-set-value! 'test-custom1 'test-custom1-uim)))
+   ;; custom-group update hook
+   (uim '(define-custom 'test-custom4 #f
+	   '(global)
+	   '(boolean)
+	   "Test custom4"
+	   "long description will be here."))
+   (assert-equal ()
+		 (uim 'test-group1-trace))
+   (uim '(define-custom 'test-custom5 #f
+	   '(test-group1)
+	   '(boolean)
+	   "Test custom5"
+	   "long description will be here."))
+   (assert-equal '(group1-func group1-ptr test-group1)
+		 (uim 'test-group1-trace)))
+
+  ("test custom-register-cb (custom-group update hook, 2 callbaks)"
+   (uim '(define test-update-gate (lambda (func ptr custom-sym)
+				    (set! test-group1-trace
+					  (cons (list func ptr custom-sym)
+						test-group1-trace)))))
+   (uim '(custom-register-cb 'custom-group-update-hooks
+			     custom-group-rec
+	                     'test-group1
+			     'group1-ptr
+			     test-update-gate 'group1-func))
+   (uim '(custom-register-cb 'custom-group-update-hooks
+			     custom-group-rec
+	                     'test-group1
+			     'group1-ptr
+			     test-update-gate 'group1-func2))
+   (assert-equal ()
+		 (uim 'test-group1-trace))
+   (assert-equal 'test-custom1-ddskk
+		 (uim 'test-custom1))
+   ;; custom update hook is not set
+   (assert-true  (uim-bool '(custom-set-value! 'test-custom1 'test-custom1-uim)))
+   (assert-equal '()
+		 (uim 'test-custom1-trace))
+   ;; custom-group update hook
+   (uim '(define-custom 'test-custom4 #f
+	   '(global)
+	   '(boolean)
+	   "Test custom4"
+	   "long description will be here."))
+   (assert-equal ()
+		 (uim 'test-group1-trace))
+   (uim '(define-custom 'test-custom5 #f
+	   '(test-group1)
+	   '(boolean)
+	   "Test custom5"
+	   "long description will be here."))
+   (assert-equal '((group1-func group1-ptr test-group1)
+		   (group1-func2 group1-ptr test-group1))
+		 (uim 'test-group1-trace)))
+
+  ("test custom-register-cb (group-list update hook)"
+   (uim '(define test-update-gate (lambda (func ptr custom-sym)
+				    (set! test-group1-trace
+					  (list func ptr custom-sym)))))
+   (uim '(custom-register-cb 'custom-group-list-update-hooks
+			     (lambda (dummy) #t)
+	                     'global
+			     'group1-ptr
+			     test-update-gate 'group1-func))
+   (assert-equal ()
+		 (uim 'test-group1-trace))
+   (assert-equal 'test-custom1-ddskk
+		 (uim 'test-custom1))
+   ;; custom update hook is not set
+   (assert-true  (uim-bool '(custom-set-value! 'test-custom1 'test-custom1-uim)))
+   ;; custom-group update hook is not set
+   (uim '(define-custom 'test-custom5 #f
+	   '(test-group1)
+	   '(boolean)
+	   "Test custom5"
+	   "long description will be here."))
+   (assert-equal ()
+		 (uim 'test-group1-trace))
+   ;; new group causes group-list-update-hook invocation
+   (uim '(define-custom-group 'test-group2
+	                      (_ "Test group 2")
+			      (_ "long description will be here.")))
+   (assert-equal '(group1-func group1-ptr global)
+		 (uim 'test-group1-trace))))
 
 (define-uim-test-case "testcase custom get and set hooks"
   (setup

@@ -138,6 +138,12 @@ void uim_custom_free(struct uim_custom *custom);
 uim_bool uim_custom_cb_add(const char *custom_sym, void *ptr,
 			   void (*update_cb)(void *ptr, const char *custom_sym));
 uim_bool uim_custom_cb_remove(const char *custom_sym);
+uim_bool uim_custom_group_cb_add(const char *group_sym, void *ptr,
+				 void (*update_cb)(void *ptr, const char *group_sym));
+uim_bool uim_custom_group_cb_remove(const char *group_sym);
+uim_bool uim_custom_global_cb_add(void *ptr,
+				  void (*group_list_update_cb)(void *ptr));
+uim_bool uim_custom_global_cb_remove(void);
 
 /* literalization */
 char *uim_custom_value_as_literal(const char *custom_sym);
