@@ -641,6 +641,7 @@ sub GeneratePOTemplate
 	    if ($SRCDIR eq ".") {
 	        print OUTFILE "$_\n";
                 system("cp", "../$scm", "../$lisp");
+                push @temp_headers, "../$scm.h";
                 push @temp_headers, "../$lisp";
 	    } else {
                 #I'm not confident in following commented code...
