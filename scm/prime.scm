@@ -44,7 +44,7 @@
 (require "japanese.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "prime-custom.scm")
-;;(require-custom "prime-key-custom.scm")
+(require-custom "prime-key-custom.scm")
 
 ;; configs
 
@@ -62,30 +62,6 @@
 	  (lambda (key key-state)
 	    (and (numeral-char? key)
 		 (control-key-mask key-state))))))
-
-;; key
-(define-key prime-latin-key?          '("<Control>l" generic-off-key?))
-(define-key prime-wide-latin-key?     "<Control>L")
-(define-key prime-begin-conv-key?     'generic-begin-conv-key?)
-(define-key prime-on-key?         '("<Control>j" "<Control>J" generic-on-key?))
-(define-key prime-commit-key?         'generic-commit-key?)
-(define-key prime-next-candidate-key? 'generic-next-candidate-key?)
-(define-key prime-prev-candidate-key? 'generic-prev-candidate-key?)
-(define-key prime-next-page-key?      'generic-next-page-key?)
-(define-key prime-prev-page-key?      'generic-prev-page-key?)
-(define-key prime-cancel-key?         'generic-cancel-key?)
-(define-key prime-backspace-key?      'generic-backspace-key?)
-(define-key prime-delete-key?         'generic-delete-key?)
-(define-key prime-go-left-key?        'generic-go-left-key?)
-(define-key prime-go-right-key?       'generic-go-right-key?)
-(define-key prime-go-left-edge-key?   '("<Control>a" "<Control>left"))
-(define-key prime-go-right-edge-key?  '("<Control>e" "<Control>right"))
-(define-key prime-register-key?       '("<Control>w"))
-(define-key prime-typing-mode-hiragana-key?   "F6")
-(define-key prime-typing-mode-katakana-key?   "F7")
-(define-key prime-typing-mode-hankana-key?    "F8")
-(define-key prime-typing-mode-wideascii-key?  "F9")
-(define-key prime-typing-mode-ascii-key?      "F10")
 
 (define-key prime-space-key?          '(" "))
 (define-key prime-altspace-key?       '("<Control> " "<Alt> "))

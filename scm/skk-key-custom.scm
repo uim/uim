@@ -84,7 +84,6 @@
 	       (_ "[SKK] on")
 	       (_ "long description will be here"))
 
-
 (define-custom 'skk-latin-key '("<IgnoreCase>l" generic-off-key)  ;; "l"
                '(skk-keys mode-transition)
 	       '(key)
