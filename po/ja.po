@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 0.4.6-alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-20 22:24+0900\n"
-"PO-Revision-Date: 2005-02-20 22:30+0900\n"
+"POT-Creation-Date: 2005-03-04 12:24+0900\n"
+"PO-Revision-Date: 2005-03-04 12:31+0900\n"
 "Last-Translator: Takuro Ashie <ashie@homa.ne.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -508,12 +508,12 @@ msgstr "学術"
 msgid "line"
 msgstr "線"
 
-#: qt/switcher-qt.cpp:116 qt/pref-qt.cpp:158 qt/pref-qt.cpp:238
-#: qt/pref-qt.cpp:320
+#: qt/switcher-qt.cpp:116 qt/pref-qt.cpp:158 qt/pref-qt.cpp:236
+#: qt/pref-qt.cpp:318
 msgid "OK"
 msgstr "OK"
 
-#: qt/switcher-qt.cpp:121 qt/pref-qt.cpp:165 qt/pref-qt.cpp:239
+#: qt/switcher-qt.cpp:121 qt/pref-qt.cpp:165 qt/pref-qt.cpp:237
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -562,11 +562,11 @@ msgstr "~/.uimが存在します!"
 msgid "Defaults"
 msgstr "デフォルト"
 
-#: qt/pref-qt.cpp:236
+#: qt/pref-qt.cpp:234
 msgid "Save Confirm"
 msgstr "セーブ確認"
 
-#: qt/pref-qt.cpp:237
+#: qt/pref-qt.cpp:235
 msgid ""
 "The value was changed.\n"
 "Save?"
@@ -574,7 +574,7 @@ msgstr ""
 "設定が変更されています。\n"
 "セーブしますか?"
 
-#: qt/pref-qt.cpp:315
+#: qt/pref-qt.cpp:313
 msgid "Show this dialog on startup"
 msgstr "起動時にこのダイアログを表示する"
 
@@ -608,9 +608,9 @@ msgstr "文節区切りを表示する"
 
 #: scm/anthy-custom.lisp:51 scm/anthy-custom.lisp:57 scm/anthy-custom.lisp:72
 #: scm/anthy-custom.lisp:78 scm/anthy-custom.lisp:84 scm/anthy-custom.lisp:90
-#: scm/anthy-custom.lisp:173 scm/anthy-custom.lisp:192
-#: scm/anthy-custom.lisp:201 scm/anthy-custom.lisp:243
-#: scm/anthy-custom.lisp:252 scm/anthy-key-custom.lisp:37
+#: scm/anthy-custom.lisp:178 scm/anthy-custom.lisp:197
+#: scm/anthy-custom.lisp:206 scm/anthy-custom.lisp:248
+#: scm/anthy-custom.lisp:257 scm/anthy-key-custom.lisp:37
 #: scm/anthy-key-custom.lisp:41 scm/anthy-key-custom.lisp:45
 #: scm/canna-custom.lisp:44 scm/canna-custom.lisp:55 scm/canna-custom.lisp:61
 #: scm/canna-custom.lisp:76 scm/canna-custom.lisp:82 scm/canna-custom.lisp:88
@@ -631,7 +631,10 @@ msgstr "文節区切りを表示する"
 #: scm/im-custom.lisp:295 scm/im-custom.lisp:301 scm/im-custom.lisp:308
 #: scm/im-custom.lisp:314 scm/im-custom.lisp:320 scm/im-custom.lisp:326
 #: scm/im-custom.lisp:332 scm/im-custom.lisp:338 scm/im-custom.lisp:346
-#: scm/im-custom.lisp:352 scm/im-custom.lisp:359 scm/prime-custom.lisp:58
+#: scm/im-custom.lisp:352 scm/im-custom.lisp:359
+#: scm/japanese-romaji-custom.lisp:64 scm/japanese-romaji-custom.lisp:77
+#: scm/japanese-romaji-custom.lisp:90 scm/japanese-romaji-custom.lisp:110
+#: scm/japanese-romaji-custom.lisp:126 scm/prime-custom.lisp:58
 #: scm/prime-custom.lisp:64 scm/prime-custom.lisp:70 scm/prime-custom.lisp:76
 #: scm/prime-custom.lisp:82 scm/prime-custom.lisp:90 scm/prime-custom.lisp:96
 #: scm/prime-custom.lisp:102 scm/prime-custom.lisp:145
@@ -647,6 +650,7 @@ msgstr "文節区切りを表示する"
 #: scm/skk-key-custom.lisp:73 scm/skk-key-custom.lisp:78
 #: scm/spellcheck-custom.lisp:48 scm/spellcheck-custom.lisp:54
 #: scm/spellcheck-custom.lisp:60 scm/spellcheck-custom.lisp:66
+#: scm/tutcode-key-custom.lisp:66 scm/tutcode-key-custom.lisp:70
 msgid "long description will be here."
 msgstr "詳細記述予定"
 
@@ -742,35 +746,43 @@ msgstr "AZIK"
 msgid "AZIK extended romaji input mode"
 msgstr "AZIK拡張ローマ字入力モード"
 
-#: scm/anthy-custom.lisp:167 scm/anthy-custom.lisp:168
+#: scm/anthy-custom.lisp:162
+msgid "NICOLA"
+msgstr "NICOLA"
+
+#: scm/anthy-custom.lisp:163
+msgid "NICOLA input mode"
+msgstr "NICOLA入力モード"
+
+#: scm/anthy-custom.lisp:172 scm/anthy-custom.lisp:173
 #: scm/canna-custom.lisp:161 scm/canna-custom.lisp:162
 msgid "Input mode"
 msgstr "入力モード"
 
-#: scm/anthy-custom.lisp:170 scm/anthy-custom.lisp:171
+#: scm/anthy-custom.lisp:175 scm/anthy-custom.lisp:176
 #: scm/canna-custom.lisp:164 scm/canna-custom.lisp:165
 msgid "Kana input method"
 msgstr "かな入力方式"
 
-#: scm/anthy-custom.lisp:172 scm/canna-custom.lisp:166
+#: scm/anthy-custom.lisp:177 scm/canna-custom.lisp:166
 msgid "Enabled toolbar buttons"
 msgstr "ツールバー上に表示するボタン"
 
-#: scm/anthy-custom.lisp:191 scm/canna-custom.lisp:185
+#: scm/anthy-custom.lisp:196 scm/canna-custom.lisp:185
 #: scm/prime-custom.lisp:144 scm/skk-custom.lisp:134
 msgid "Default input mode"
 msgstr "デフォルトの入力モード"
 
-#: scm/anthy-custom.lisp:200 scm/canna-custom.lisp:194
+#: scm/anthy-custom.lisp:205 scm/canna-custom.lisp:194
 #: scm/prime-custom.lisp:153 scm/skk-custom.lisp:143
 msgid "Input mode menu items"
 msgstr "入力モードメニュー項目"
 
-#: scm/anthy-custom.lisp:242 scm/canna-custom.lisp:236
+#: scm/anthy-custom.lisp:247 scm/canna-custom.lisp:236
 msgid "Default kana input method"
 msgstr "デフォルトのかな入力方式"
 
-#: scm/anthy-custom.lisp:251 scm/canna-custom.lisp:245
+#: scm/anthy-custom.lisp:256 scm/canna-custom.lisp:245
 msgid "Kana input method menu items"
 msgstr "かな入力方式メニュー項目"
 
@@ -848,7 +860,9 @@ msgstr "[Anthy] 次の文節"
 #: scm/skk-key-custom.lisp:215 scm/skk-key-custom.lisp:221
 #: scm/skk-key-custom.lisp:227 scm/skk-key-custom.lisp:233
 #: scm/skk-key-custom.lisp:239 scm/skk-key-custom.lisp:245
-#: scm/spellcheck-custom.lisp:72
+#: scm/spellcheck-custom.lisp:72 scm/tutcode-key-custom.lisp:76
+#: scm/tutcode-key-custom.lisp:82 scm/tutcode-key-custom.lisp:88
+#: scm/tutcode-key-custom.lisp:95
 msgid "long description will be here"
 msgstr "詳細記述予定"
 
@@ -1353,6 +1367,86 @@ msgstr "EB辞書ファイルを格納しているディレクトリ"
 msgid "International Phonetic Alphabet (X-SAMPA)"
 msgstr "IPA (国際発声記号 X-SAMPA版)"
 
+#: scm/japanese-romaji-custom.lisp:36 scm/japanese-romaji-custom.lisp:37
+msgid "Japanese romaji"
+msgstr "日本語ローマ字"
+
+#: scm/japanese-romaji-custom.lisp:41 scm/japanese-romaji-custom.lisp:42
+msgid "Symbolic characters for fullwidth kana modes"
+msgstr "全角かなモード用記号文字"
+
+#: scm/japanese-romaji-custom.lisp:46 scm/japanese-romaji-custom.lisp:47
+msgid "Punctuation marks for fullwidth kana modes"
+msgstr "全角かなモード用句読点"
+
+#: scm/japanese-romaji-custom.lisp:58 scm/japanese-romaji-custom.lisp:59
+msgid "Halfwidth space"
+msgstr "半角スペース"
+
+#: scm/japanese-romaji-custom.lisp:61 scm/japanese-romaji-custom.lisp:62
+msgid "Fullwidth space"
+msgstr "全角スペース"
+
+#: scm/japanese-romaji-custom.lisp:63
+msgid "Space character"
+msgstr "スペース文字"
+
+#: scm/japanese-romaji-custom.lisp:71 scm/japanese-romaji-custom.lisp:72
+msgid "Halfwidth symbols"
+msgstr "半角記号"
+
+#: scm/japanese-romaji-custom.lisp:74 scm/japanese-romaji-custom.lisp:75
+msgid "Fullwidth symbols"
+msgstr "全角記号"
+
+#: scm/japanese-romaji-custom.lisp:76
+msgid "Symbolic characters"
+msgstr "記号文字"
+
+#: scm/japanese-romaji-custom.lisp:84 scm/japanese-romaji-custom.lisp:85
+msgid "Halfwidth numbers"
+msgstr "半角数字"
+
+#: scm/japanese-romaji-custom.lisp:87 scm/japanese-romaji-custom.lisp:88
+msgid "Fullwidth numbers"
+msgstr "全角数字"
+
+#: scm/japanese-romaji-custom.lisp:89
+msgid "Numeric characters"
+msgstr "数字"
+
+#: scm/japanese-romaji-custom.lisp:101 scm/japanese-romaji-custom.lisp:102
+msgid "Halfwidth comma"
+msgstr "半角コンマ"
+
+#: scm/japanese-romaji-custom.lisp:104 scm/japanese-romaji-custom.lisp:105
+msgid "Fullwidth comma"
+msgstr "全角コンマ"
+
+#: scm/japanese-romaji-custom.lisp:107 scm/japanese-romaji-custom.lisp:108
+msgid "Fullwidth kana comma"
+msgstr "全角かな読点"
+
+#: scm/japanese-romaji-custom.lisp:109
+msgid "Comma character"
+msgstr "読点文字"
+
+#: scm/japanese-romaji-custom.lisp:117 scm/japanese-romaji-custom.lisp:118
+msgid "Halfwidth period"
+msgstr "半角ピリオド"
+
+#: scm/japanese-romaji-custom.lisp:120 scm/japanese-romaji-custom.lisp:121
+msgid "Fullwidth period"
+msgstr "全角ピリオド"
+
+#: scm/japanese-romaji-custom.lisp:123 scm/japanese-romaji-custom.lisp:124
+msgid "Fullwidth kana full stop"
+msgstr "全角かな句点"
+
+#: scm/japanese-romaji-custom.lisp:125
+msgid "Period character"
+msgstr "句点文字"
+
 #. I think that the name "euro" is not appropriate since it
 #. represents nation or geographic region.  -- YamaKen 2005-01-29
 #: scm/latin.lisp:582
@@ -1742,17 +1836,41 @@ msgstr ""
 
 #: scm/spellcheck-custom.lisp:71
 msgid "[Spellcheck] on"
-msgstr ""
+msgstr "[Spellcheck] オン"
 
 #: scm/tcode.lisp:1725
 msgid "T-Code"
 msgstr "T-Code"
 
-#: scm/tcode.lisp:1726 scm/tutcode.lisp:275
+#: scm/tcode.lisp:1726 scm/tutcode.lisp:247
 msgid "A kanji direct input method"
 msgstr "漢字直接入力方式"
 
-#: scm/tutcode.lisp:274
+#: scm/tutcode-key-custom.lisp:65
+msgid "tutcode key bindings 1"
+msgstr "tutcodeキー設定 1"
+
+#: scm/tutcode-key-custom.lisp:69
+msgid "tutcode key bindings 2"
+msgstr "tutcodeキー設定 2"
+
+#: scm/tutcode-key-custom.lisp:75
+msgid "[tutcode] on"
+msgstr "[tutcode] オン"
+
+#: scm/tutcode-key-custom.lisp:81
+msgid "[tutcode] off"
+msgstr "[tutcode] オフ"
+
+#: scm/tutcode-key-custom.lisp:87
+msgid "[tutcode] toggle hiragana/katakana mode"
+msgstr "[tutcode] ひらがな/カタカナ入力モードを反転"
+
+#: scm/tutcode-key-custom.lisp:94
+msgid "[tutcode] backspace"
+msgstr "[tutcode] バックスペース"
+
+#: scm/tutcode.lisp:246
 msgid "TUT-Code"
 msgstr "TUT-Code"
 

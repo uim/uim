@@ -51,6 +51,7 @@ scm/im-custom.scm
 scm/im.scm
 scm/ipa-x-sampa.scm
 scm/japanese-azik.scm
+scm/japanese-romaji-custom.scm
 scm/japanese-kana.scm
 scm/japanese.scm
 scm/key.scm
@@ -74,6 +75,7 @@ scm/skk.scm
 scm/spellcheck-custom.scm
 scm/spellcheck.scm
 scm/tcode.scm
+scm/tutcode-key-custom.scm
 scm/tutcode.scm
 scm/uim-sh.scm
 scm/ustr.scm
