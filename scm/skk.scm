@@ -77,6 +77,8 @@
 (define-key skk-vi-escape-key? '("escape" "<Control>["))
 (define-key skk-state-direct-no-preedit-nop-key? '("<Control>j" "<Control>J"))
 
+(define skk-auto-start-henkan-keyword-list '("¤ò" "¡¢" "¡£" "¡¥" "¡¤" "¡©" "¡×" "¡ª" "¡¨" "¡§" ")" ";" ":" "¡Ë" "¡É" "¡Û" "¡Ù" "¡Õ" "¡Ó" "¡Ñ" "¡Ï" "¡Í" "}" "]" "?" "." "," "!"))
+
 ;; style specification
 (define skk-style-spec
   '(;; (style-element-name . validator)
@@ -1140,20 +1142,32 @@
 	       (rk-push-key!
 		rkc
 		(charcode->string key)))
-	 (if (and res
-		  (= stat 'skk-state-kanji)
-		  (or
-		   (list? (car res))
-		   (not (string=? (car res) ""))))
-	     (skk-append-string sc res))
-	 (if (and res
-	 	  (= stat 'skk-state-okuri)
-		  (or
-		   (list? (car res))
-		   (not (string=? (car res) ""))))
-	     (begin
-	       (skk-append-okuri-string sc res)
-	       (skk-begin-conversion sc)))))
+	 (and
+	  (if (and
+	       skk-auto-start-henkan?
+	       (string-find skk-auto-start-henkan-keyword-list (car res)))
+	      (begin
+		(skk-context-set-okuri! sc (list res))
+		(skk-begin-conversion sc)
+		#f)
+	      #t)
+	  (if (and res
+		   (= stat 'skk-state-kanji)
+		   (or
+		    (list? (car res))
+		    (not (string=? (car res) ""))))
+	      (begin
+		(skk-append-string sc res)
+		#t)
+	      #t)
+	   (if (and res
+	 	    (= stat 'skk-state-okuri)
+		    (or
+		     (list? (car res))
+		     (not (string=? (car res) ""))))
+	       (begin
+		 (skk-append-okuri-string sc res)
+		 (skk-begin-conversion sc))))))
       #f)))
 
 (define skk-setup-child-context
