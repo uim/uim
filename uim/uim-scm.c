@@ -133,13 +133,18 @@ uim_scm_set_verbose_level(long new_value)
   siod_verbose_level = new_value;
 }
 
-void
+uim_bool
 uim_scm_load_file(const char *fn)
 {
-  if(!fn)
-    return;
+  uim_bool succeeded;
+
+  if (!fn)
+    return UIM_FALSE;
 
   UIM_EVAL_FSTRING1(NULL, "(*catch 'errobj (load \"%s\" #f #f))", fn);
+  succeeded = FALSEP(uim_scm_return_value());
+
+  return succeeded;
 }
 
 uim_lisp

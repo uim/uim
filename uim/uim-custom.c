@@ -492,12 +492,16 @@ custom_file_path(const char *group, pid_t pid)
 static uim_bool
 prepare_dir(const char *dir)
 {
-  /* TODO: permission check and proper error handling */
   int err;
+  struct stat st;
 
-  err = mkdir(dir, 0700);
+  if (stat(dir, &st) < 0) {
+    return (mkdir(dir, 0700) < 0) ? UIM_FALSE : UIM_TRUE;
+  } else {
+    mode_t mode = S_IFDIR | S_IRUSR | S_IWUSR | S_IXUSR;
 
-  return (err) ? UIM_FALSE : UIM_TRUE;
+    return (st.st_mode & mode == mode) ? UIM_TRUE : UIM_FALSE;
+  }
 }
 
 static uim_bool
@@ -536,13 +540,13 @@ static uim_bool
 uim_custom_load_group(const char *group)
 {
   char *file_path;
+  uim_bool succeeded;
 
   file_path = custom_file_path(group, 0);
-  /* TODO: existence and readability check */
-  UIM_EVAL_FSTRING1(NULL, "(load \"%s\")", file_path);
+  succeeded = uim_scm_load_file(file_path);
   free(file_path);
 
-  return UIM_TRUE;
+  return succeeded;
 }
 
 /**

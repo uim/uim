@@ -98,7 +98,7 @@ uim_scm_set_verbose_level(long new_value);
 /* evaluations */
 void
 uim_scm_gc_protect(uim_lisp *location);
-void
+uim_bool
 uim_scm_load_file(const char *fn);
 uim_lisp
 uim_scm_eval(uim_lisp obj);

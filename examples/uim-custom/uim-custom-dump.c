@@ -32,7 +32,6 @@
 
 #include <stdio.h>
 #include <uim/uim.h>
-#include <uim/uim-scm.h>
 #include <uim/uim-custom.h>
 
 static uim_bool

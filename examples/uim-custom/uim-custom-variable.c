@@ -33,7 +33,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <uim/uim.h>
-#include <uim/uim-scm.h>
 #include <uim/uim-custom.h>
 
 static char *

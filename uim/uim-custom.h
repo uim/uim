@@ -35,6 +35,9 @@
 #ifndef _uim_custom_h_included_
 #define _uim_custom_h_included_
 
+/* for uim_bool */
+#include "uim-scm.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
