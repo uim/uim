@@ -1785,11 +1785,11 @@ compare_entry(struct skk_line *p, struct skk_line *q)
  * "midashi-go".  p and q are needed to be sorted.
  */
 static struct skk_line *
-cache_line_diffs(struct skk_line *p, struct skk_line *q)
+cache_line_diffs(struct skk_line *p, struct skk_line *q, int *len)
 {
   struct skk_line *r, *s, head;
   int cmp;
-  
+
   for (r = &head; p && q; ) {
     cmp = compare_entry(p, q);
     if (cmp < 0) {
@@ -1799,6 +1799,7 @@ cache_line_diffs(struct skk_line *p, struct skk_line *q)
       r->next = s;
       r = s;
       q = q->next;
+      (*len)++;
     } else {
       compare_and_merge_skk_line(p, q);
       p = p->next;
@@ -1810,6 +1811,7 @@ cache_line_diffs(struct skk_line *p, struct skk_line *q)
     r->next = s;
     r = s;
     q = q->next;
+    (*len)++;
   }
   r->next = NULL;
   return head.next;
@@ -1859,7 +1861,7 @@ update_personal_dictionary_cache(char *fn)
 {
   struct dic_info *di;
   struct skk_line *sl, *tmp, *diff, **cache_array;
-  int i;
+  int i, diff_len = 0;
 
   di = (struct dic_info *)malloc(sizeof(struct dic_info));
   if (di == NULL)
@@ -1884,7 +1886,7 @@ update_personal_dictionary_cache(char *fn)
   skk_dic->head.next = lsort(skk_dic->head.next);
 
   /* get differential lines and merge candidate */
-  diff = cache_line_diffs(skk_dic->head.next, di->head.next);
+  diff = cache_line_diffs(skk_dic->head.next, di->head.next, &diff_len);
 
   /* revert sequence of the cache */
   if (cache_array[0]) {
@@ -1900,6 +1902,7 @@ update_personal_dictionary_cache(char *fn)
   if (diff != NULL) {
     diff->next = skk_dic->head.next;
     skk_dic->head.next = diff;
+    skk_dic->cache_len += diff_len;
   }
   skk_dic->cache_modified = 1;
 
