@@ -125,23 +125,23 @@ init_anthy_lib(void)
 {
   int i;
   if (context_slot) {
-    return siod_true_value();
+    return uim_scm_t();
   }
   if (get_anthy_api() == -1) {
-    return siod_false_value();
+    return uim_scm_f();
   }
   if (api.init() == -1) {
-    return siod_false_value();
+    return uim_scm_f();
   }
   context_slot = malloc(sizeof(struct context) *
 			MAX_CONTEXT);
   if(!context_slot) {
-    return siod_false_value();
+    return uim_scm_f();
   }
   for (i = 0; i < MAX_CONTEXT; i++) {
     context_slot[i].ac = NULL;
   }
-  return siod_true_value();
+  return uim_scm_t();
 }
 
 static LISP
@@ -149,20 +149,20 @@ create_context(void)
 {
   int i;
   if (!context_slot) {
-    return siod_false_value();
+    return uim_scm_f();
   }
 
   for (i = 0; i < MAX_CONTEXT; i++) {
     if (!context_slot[i].ac) {
       struct anthy_context *ac = api.create_context();
       if (!ac) {
-	return siod_false_value();
+	return uim_scm_f();
       }
       context_slot[i].ac = ac;
       return intcons(i);
     }
   }
-  return siod_false_value();
+  return uim_scm_f();
 }
 
 
@@ -174,7 +174,7 @@ release_context(LISP id_)
     api.release_context(context_slot[id].ac);
     context_slot[id].ac = NULL;
   }
-  return siod_false_value();
+  return uim_scm_f();
 }
 
 static LISP
@@ -184,12 +184,12 @@ set_string(LISP id_, LISP str_)
   char *str;
   struct anthy_context *ac = get_anthy_context(id);
   if (!ac) {
-    return siod_false_value();
+    return uim_scm_f();
   }
   str = uim_get_c_string(str_);
   api.set_string(ac, str);
   free(str);
-  return siod_false_value();
+  return uim_scm_f();
 }
 
 static LISP
@@ -199,7 +199,7 @@ get_nr_segments(LISP id_)
   struct anthy_conv_stat acs;
   struct anthy_context *ac = get_anthy_context(id);
   if (!ac) {
-    return siod_false_value();
+    return uim_scm_f();
   }
   api.get_stat(ac, &acs);
 
@@ -216,7 +216,7 @@ get_nr_candidates(LISP id_, LISP nth_)
   nth = get_c_int(nth_);
   ac = get_anthy_context(id);
   if (!ac) {
-    return siod_false_value();
+    return uim_scm_f();
   }
   api.get_stat(ac, &cs);
   if (nth < cs.nr_segment) {
@@ -224,7 +224,7 @@ get_nr_candidates(LISP id_, LISP nth_)
     api.get_segment_stat(ac, nth, &ss);
     return intcons(ss.nr_candidate);
   }
-  return siod_false_value();
+  return uim_scm_f();
 }
 
 static LISP
@@ -238,11 +238,11 @@ get_nth_candidate(LISP id_, LISP seg_, LISP nth_)
   LISP buf_;
   struct anthy_context *ac = get_anthy_context(id);
   if (!ac) {
-    return siod_false_value();
+    return uim_scm_f();
   }
   buflen = api.get_segment(ac, seg, nth, NULL, 0);
   if (buflen == -1) {
-    return siod_false_value();
+    return uim_scm_f();
   }
   buf = malloc(buflen+1);
   api.get_segment(ac, seg, nth, buf, buflen+1);
@@ -259,7 +259,7 @@ resize_segment(LISP id_, LISP seg_, LISP cnt_)
   int cnt = get_c_int(cnt_);
   struct anthy_context *ac = get_anthy_context(id);
   api.resize_segment(ac, seg, cnt);
-  return siod_false_value();
+  return uim_scm_f();
 }
 
 static LISP
@@ -270,7 +270,7 @@ commit_segment(LISP id_, LISP s_, LISP nth_)
   int nth = get_c_int(nth_);
   struct anthy_context *ac = get_anthy_context(id);
   api.commit_segment(ac, s, nth);
-  return siod_false_value();
+  return uim_scm_f();
 }
 
 void
