@@ -4355,6 +4355,25 @@ ltypeof (LISP obj)
     }
 }
 
+LISP
+string2integer (LISP str)
+{
+  char *s = get_c_string(str);
+  int len = strlen(s);
+  int i;
+  int d = 1, num = 0;
+
+  for(i=len-1; i>=0; i--) {
+    int n = s[i];
+    if(n < 48 || n > 57)
+      return sym_f;
+
+    num += d * (n - 48);
+    d = d * 10;
+  }
+  return intcons(num);
+}
+
 static void
 init_subrs (void)
 {
@@ -4398,6 +4417,7 @@ init_subrs (void)
   init_subr_1 ("string-length", string_length);
   init_subr_1 ("string-dimension", string_dim);
   init_lsubr ("string-append", string_append);
+  init_subr_1 ("string->integer",string2integer);
   init_subr_2 ("eval", leval);
   init_subr_2 ("apply", lapply);
   init_fsubr ("define", leval_define);
