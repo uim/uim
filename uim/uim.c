@@ -34,7 +34,7 @@
 #include <pwd.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <stdio.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
 #include "config.h"
@@ -503,16 +503,10 @@ load_conf()
   struct passwd *pw;
   char *fn;
   long verbose, ret;
-  FILE *fp;
+  struct stat st;
 
   verbose = uim_scm_get_verbose_level();
   fn = getenv("LIBUIM_USER_SCM_FILE");
-
-  fp = fopen(fn, "r");
-  if (!fp) {
-    return -1;
-  }
-  fclose(fp);
 
   if (!fn) {
     pw = getpwuid(getuid());
@@ -520,6 +514,11 @@ load_conf()
     sprintf(fn, "%s/.uim", pw->pw_dir);
   } else {
     fn = strdup(fn);
+  }
+
+  if (stat(fn, &st) == -1) {
+    free(fn);
+    return -1;
   }
 
   if (verbose < 1) {
