@@ -81,10 +81,10 @@ static void uim_custom_choice_free(struct uim_custom_choice *custom_choice);
 static struct uim_custom_choice **extract_choice_list(const char *list_repl, const char *custom_sym);
 static struct uim_custom_choice **uim_custom_choice_item_list(const char *custom_sym);
 
-static struct uim_custom_choice **uim_custom_olist_get(const char *custom_sym);
+static struct uim_custom_choice **uim_custom_olist_get(const char *custom_sym, const char *getter_proc);
 static struct uim_custom_choice **uim_custom_olist_item_list(const char *custom_sym);
 
-static struct uim_custom_key **uim_custom_key_get(const char *custom_sym);
+static struct uim_custom_key **uim_custom_key_get(const char *custom_sym, const char *getter_proc);
 static void uim_custom_key_free(struct uim_custom_key *custom_key);
 static char *extract_key_literal(const struct uim_custom_key *custom_key);
 static char *key_list_to_str(const struct uim_custom_key *const *list, const char *sep);
@@ -347,10 +347,10 @@ uim_custom_choice_list_free(struct uim_custom_choice **list)
 
 /* ordered list */
 static struct uim_custom_choice **
-uim_custom_olist_get(const char *custom_sym)
+uim_custom_olist_get(const char *custom_sym, const char getter_proc)
 {
-  UIM_EVAL_FSTRING2(NULL, "(define %s (custom-value '%s))",
-		    str_list_arg, custom_sym);
+  UIM_EVAL_FSTRING3(NULL, "(define %s (%s '%s))",
+		    str_list_arg, getter_proc, custom_sym);
   return extract_choice_list(str_list_arg, custom_sym);
 }
 
@@ -362,14 +362,14 @@ uim_custom_olist_item_list(const char *custom_sym)
 
 /* key */
 static struct uim_custom_key **
-uim_custom_key_get(const char *custom_sym)
+uim_custom_key_get(const char *custom_sym, const char *getter_proc)
 {
   char **key_literal_list, **key_label_list, **key_desc_list;
   int *key_type_list, editor_type, list_len, i;
   struct uim_custom_key *custom_key, **custom_key_list;
 
-  UIM_EVAL_FSTRING2(NULL, "(define %s ((if uim-custom-expand-key? custom-expand-key-references (lambda (l) l)) (custom-value '%s)))",
-		    str_list_arg, custom_sym);
+  UIM_EVAL_FSTRING3(NULL, "(define %s ((if uim-custom-expand-key? custom-expand-key-references (lambda (l) l)) (%s '%s)))",
+		    str_list_arg, getter_proc, custom_sym);
   key_literal_list =
     (char **)uim_scm_c_list(str_list_arg,
 			    "(lambda (key) (if (symbol? key) (symbol->string key) key))",
@@ -530,10 +530,10 @@ uim_custom_value_internal(const char *custom_sym, const char *getter_proc)
     free(custom_value_symbol);
     break;
   case UCustom_OrderedList:
-    value->as_olist = uim_custom_olist_get(custom_sym);
+    value->as_olist = uim_custom_olist_get(custom_sym, getter_proc);
     break;
   case UCustom_Key:
-    value->as_key = uim_custom_key_get(custom_sym);
+    value->as_key = uim_custom_key_get(custom_sym, getter_proc);
     break;
   default:
     value = NULL;
