@@ -19,8 +19,8 @@ const Qt::WFlags candidateFlag = ( Qt::WType_TopLevel
 
 CandidateWindow::CandidateWindow( QWidget * parent )
         : QVBox( parent, candidateFlag ),
-        ic( NULL ), nrCandidates( 0 ), candidateIndex( -1 ),
-        displayLimit( 0 ), pageIndex( -1 )
+          ic( NULL ), nrCandidates( 0 ), candidateIndex( -1 ),
+          displayLimit( 0 ), pageIndex( -1 ), isAlwaysLeft( false )
 {
     QLabel * test = new QLabel( this );
     test->setText( "list isn't implemented yet" );

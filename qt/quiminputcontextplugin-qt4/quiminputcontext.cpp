@@ -12,6 +12,7 @@
 #include <qlabel.h>
 
 #include <ctype.h>
+#include <string.h>
 
 #include "candidatewindow.h"
 #include "qhelpermanager.h"
@@ -51,6 +52,9 @@ QUimInputContext::QUimInputContext( const char *imname, const char *lang )
         m_HelperManager = new QUimHelperManager();
 
     createUimInfo();
+
+    // read configuration
+    readIMConf();
 
     qDebug( "QUimInputContext()" );
 }
@@ -497,8 +501,10 @@ QString QUimInputContext::getPreeditString()
 
 int QUimInputContext::getPreeditCursorPosition()
 {
+    if( cwin->isAlwaysLeftPosition() )
+        return 0;
+    
     int cursorPos = 0;
-
     QList<PreeditSegment*>::ConstIterator seg = psegs.begin();
     const QList<PreeditSegment*>::ConstIterator end = psegs.end();
     for ( ; seg != end; ++seg )
@@ -600,4 +606,14 @@ void QUimInputContext::createUimInfo()
         uimInfo.append( ui );
     }
     uim_release_context( tmp_uc );
+}
+
+void QUimInputContext::readIMConf()
+{
+    char *leftp = uim_symbol_value_str("candidate-window-position");
+    if( leftp && !strcmp(leftp, "left") )
+        cwin->setAlwaysLeftPostion( true );
+    else
+        cwin->setAlwaysLeftPostion( false );
+    free(leftp);
 }

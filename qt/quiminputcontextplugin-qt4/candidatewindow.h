@@ -24,6 +24,9 @@ public:
     void clearCandidates();
     void popup();
 
+    void setAlwaysLeftPosition( bool left ){ isAlwaysLeft = left; }
+    bool isAlwaysLeftPosition() const { return isAlwaysLeft; }
+
     void setCandidates( int displayLimit, const QList<uim_candidate> &candidates );
     void setPage( int page );
     void shiftPage( bool forward );
@@ -47,6 +50,8 @@ protected:
     int candidateIndex;
     int displayLimit;
     int pageIndex;
+
+    bool isAlwaysLeft;
 };
 
 #endif /* Not def: _CANDIDATE_WINDOW_H_ */

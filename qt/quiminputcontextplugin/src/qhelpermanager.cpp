@@ -156,19 +156,26 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
         {
             uim_switch_im( focusedInputContext->uimContext(), ( const char* ) im_name );
             uim_prop_list_update( focusedInputContext->uimContext() );
+            focusedInputContext->readIMConf();
         }
     }
     else if ( str.startsWith( "im_change_whole_desktop" ) )
     {
         for ( cc = contextList.first(); cc; cc = contextList.next() )
+        {
             uim_switch_im( cc->uimContext(), ( const char* ) im_name );
+            cc->readIMConf();
+        }
     }
     else if ( str.startsWith( "im_change_this_application_only" ) )
     {
         if ( focusedInputContext )
         {
             for ( cc = contextList.first(); cc; cc = contextList.next() )
+            {
                 uim_switch_im( cc->uimContext(), ( const char* ) im_name );
+                cc->readIMConf();
+            }
         }
     }
 }

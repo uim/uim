@@ -54,6 +54,8 @@ protected:
     virtual bool isPreeditPreservationEnabled();  // not a QInputContext func
 
     void createUimInfo();
+
+    void readIMConf();
 private:
     QString getPreeditString();
     int getPreeditCursorPosition();

@@ -41,6 +41,7 @@ SUCH DAMAGE.
 #include <qvaluelist.h>
 
 #include <ctype.h>
+#include <string.h>
 
 #include "candidatewindow.h"
 #include "qhelpermanager.h"
@@ -79,6 +80,9 @@ QUimInputContext::QUimInputContext( const char *imname, const char *lang )
         m_HelperManager = new QUimHelperManager();
 
     createUimInfo();
+
+    // read configuration
+    readIMConf();
 
     qDebug( "QUimInputContext()" );
 }
@@ -511,8 +515,10 @@ QString QUimInputContext::getPreeditString()
 
 int QUimInputContext::getPreeditCursorPosition()
 {
+    if( cwin->isAlwaysLeftPosition() )
+        return 0;
+    
     int cursorPos = 0;
-
     QPtrList<PreeditSegment>::ConstIterator seg = psegs.begin();
     const QPtrList<PreeditSegment>::ConstIterator end = psegs.end();
     for ( ; seg != end; ++seg )
@@ -615,4 +621,14 @@ void QUimInputContext::createUimInfo()
         uimInfo.append( ui );
     }
     uim_release_context( tmp_uc );
+}
+
+void QUimInputContext::readIMConf()
+{
+    char *leftp = uim_symbol_value_str("candidate-window-position");
+    if( leftp && !strcmp(leftp, "left") )
+        cwin->setAlwaysLeftPosition( true );
+    else
+        cwin->setAlwaysLeftPosition( false );
+    free(leftp);
 }

@@ -83,6 +83,8 @@ CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
     candidateIndex = -1;
     displayLimit = 0;
     pageIndex = -1;
+
+    isAlwaysLeft = false;
 }
 
 CandidateWindow::~CandidateWindow()

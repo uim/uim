@@ -81,6 +81,8 @@ public:
 
     void commitString( const QString& str );
 
+    void readIMConf();
+
 protected:
     uim_context createUimContext( const char *imname );
     virtual bool isPreeditPreservationEnabled();  // not a QInputContext func
