@@ -61,7 +61,7 @@
 		     (_ "long description will be here."))
 
 (define-custom-group 'prime-keys2
-		     (_ "PRIME key bindings 2)")
+		     (_ "PRIME key bindings 2")
 		     (_ "long description will be here."))
 
 (define-custom-group 'prime-keys3
