@@ -339,7 +339,7 @@ create_switcher(void)
   gtk_box_pack_start (GTK_BOX (vbox1), hbox, TRUE, TRUE, 0);
 
 
-  frame = gtk_frame_new("Changing way");
+  frame = gtk_frame_new(_("Changing way"));
   gtk_box_pack_start(GTK_BOX(vbox1), frame, FALSE, FALSE, 3);
   vbox2 = gtk_vbox_new(FALSE, 3);
   gtk_container_add(GTK_CONTAINER(frame), vbox2);

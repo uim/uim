@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-25 17:58+0900\n"
+"POT-Creation-Date: 2004-12-09 17:48+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,6 +50,10 @@ msgstr ""
 
 #: helper/im-switcher-gtk.c:318
 msgid "uim input method switcher"
+msgstr ""
+
+#: helper/im-switcher-gtk.c:342
+msgid "Changing way"
 msgstr ""
 
 #: helper/im-switcher-gtk.c:347
@@ -326,6 +330,317 @@ msgstr ""
 
 #: helper/dict-cclass-dialog.c:112
 msgid "Example"
+msgstr ""
+
+#: helper/toolbar-common-gtk.c:474
+msgid "sw"
+msgstr ""
+
+#: helper/toolbar-common-gtk.c:482 scm/action.lisp:526 scm/action.lisp:527
+msgid "exec im-switcher"
+msgstr ""
+
+#: helper/input-pad-ja.c:272
+msgid "ja-pad"
+msgstr ""
+
+#: helper/input-pad-ja.c:293
+msgid "hiragana"
+msgstr ""
+
+#: helper/input-pad-ja.c:296
+msgid "katakana"
+msgstr ""
+
+#: helper/input-pad-ja.c:299
+msgid "eisu"
+msgstr ""
+
+#: scm/action.lisp:481 scm/action.lisp:482
+msgid "unknown"
+msgstr ""
+
+#: scm/action.lisp:521
+msgid "Japanese Kana Kanji Conversion Engine, Example"
+msgstr ""
+
+#: scm/anthy.lisp:956
+msgid "Japanese Kana Kanji Conversion Engine, Anthy"
+msgstr ""
+
+#: scm/canna.lisp:826 scm/custom.lisp:393
+msgid "Canna"
+msgstr ""
+
+#.
+#. Particular definitions: may be split into independent file(s)
+#.
+#.
+#. Global
+#: scm/custom.lisp:387
+msgid "Direct"
+msgstr ""
+
+#: scm/custom.lisp:388 scm/direct.lisp:131
+msgid "Direct input method mainly used for latin languages"
+msgstr ""
+
+#: scm/custom.lisp:390
+msgid "Anthy"
+msgstr ""
+
+#: scm/custom.lisp:391 scm/custom.lisp:394 scm/custom.lisp:397
+#: scm/custom.lisp:400 scm/custom.lisp:403 scm/custom.lisp:406
+#: scm/custom.lisp:409 scm/custom.lisp:412 scm/custom.lisp:415
+#: scm/custom.lisp:418 scm/custom.lisp:421 scm/custom.lisp:424
+#: scm/custom.lisp:427 scm/custom.lisp:430 scm/custom.lisp:433
+#: scm/custom.lisp:437 scm/custom.lisp:441 scm/custom.lisp:449
+#: scm/custom.lisp:458 scm/custom.lisp:464 scm/custom.lisp:484
+#: scm/custom.lisp:542 scm/custom.lisp:548 scm/custom.lisp:566
+#: scm/custom.lisp:580 scm/custom.lisp:586 scm/custom.lisp:592
+#: scm/custom.lisp:598 scm/custom.lisp:604 scm/custom.lisp:618
+#: scm/custom.lisp:624 scm/custom.lisp:630 scm/custom.lisp:636
+#: scm/custom.lisp:642 scm/custom.lisp:649 scm/custom.lisp:655
+#: scm/custom.lisp:661 scm/custom.lisp:667 scm/custom.lisp:716
+#: scm/custom.lisp:723 scm/custom.lisp:730 scm/custom.lisp:736
+#: scm/custom.lisp:742 scm/custom.lisp:748 scm/custom.lisp:754
+#: scm/custom.lisp:760 scm/custom.lisp:766 scm/custom.lisp:774
+#: scm/custom.lisp:800 scm/custom.lisp:806 scm/custom.lisp:812
+#: scm/custom.lisp:818 scm/custom.lisp:832 scm/custom.lisp:838
+#: scm/custom.lisp:844 scm/custom.lisp:850 scm/custom.lisp:864
+#: scm/custom.lisp:870 scm/custom.lisp:876 scm/custom.lisp:882
+msgid "long description will be here."
+msgstr ""
+
+#: scm/custom.lisp:396
+msgid "SKK"
+msgstr ""
+
+#: scm/custom.lisp:399
+msgid "PRIME"
+msgstr ""
+
+#: scm/custom.lisp:402
+msgid "pyunihan"
+msgstr ""
+
+#: scm/custom.lisp:405
+msgid "pinyin-big5"
+msgstr ""
+
+#: scm/custom.lisp:408
+msgid "Pinyin"
+msgstr ""
+
+#: scm/custom.lisp:411 scm/ipa.lisp:103
+msgid "International Phonetic Alphabet"
+msgstr ""
+
+#: scm/custom.lisp:414
+msgid "Romaja"
+msgstr ""
+
+#: scm/custom.lisp:417
+msgid "Hangul3"
+msgstr ""
+
+#: scm/custom.lisp:420
+msgid "Hangul2"
+msgstr ""
+
+#: scm/custom.lisp:423
+msgid "Viqr"
+msgstr ""
+
+#: scm/custom.lisp:426 scm/tutcode.lisp:274
+msgid "TUT-Code"
+msgstr ""
+
+#: scm/custom.lisp:429 scm/tcode.lisp:1725
+msgid "T-Code"
+msgstr ""
+
+#: scm/custom.lisp:432 scm/spellcheck.lisp:558
+msgid "Spellcheck"
+msgstr ""
+
+#: scm/custom.lisp:436
+msgid "Global settings"
+msgstr ""
+
+#: scm/custom.lisp:440
+msgid "Advanced settings"
+msgstr ""
+
+#: scm/custom.lisp:448
+msgid "Preedit color"
+msgstr ""
+
+#: scm/custom.lisp:457 scm/custom.lisp:483
+msgid "Default input method"
+msgstr ""
+
+#: scm/custom.lisp:463
+msgid "Specify default IM"
+msgstr ""
+
+#: scm/custom.lisp:541
+msgid "Input method switching"
+msgstr ""
+
+#: scm/custom.lisp:547
+msgid "Enable IM switching by hotkey"
+msgstr ""
+
+#: scm/custom.lisp:565
+msgid "Candidate window position"
+msgstr ""
+
+#: scm/custom.lisp:579 scm/custom.lisp:617 scm/custom.lisp:735
+#: scm/custom.lisp:837 scm/custom.lisp:863
+msgid "Use candidate window"
+msgstr ""
+
+#: scm/custom.lisp:585 scm/custom.lisp:623 scm/custom.lisp:741
+#: scm/custom.lisp:843 scm/custom.lisp:869
+msgid "Conversion key press count to show candidate window"
+msgstr ""
+
+#: scm/custom.lisp:591 scm/custom.lisp:629 scm/custom.lisp:747
+#: scm/custom.lisp:799 scm/custom.lisp:849
+msgid "Number of candidates in candidate window at a time"
+msgstr ""
+
+#: scm/custom.lisp:597 scm/custom.lisp:635
+msgid "Show segment separator"
+msgstr ""
+
+#: scm/custom.lisp:603 scm/custom.lisp:641
+msgid "Segment separator"
+msgstr ""
+
+#: scm/custom.lisp:648
+msgid "Canna server"
+msgstr ""
+
+#: scm/custom.lisp:654
+msgid "Use Canna server"
+msgstr ""
+
+#: scm/custom.lisp:660 scm/custom.lisp:666
+msgid "Canna server name"
+msgstr ""
+
+#: scm/custom.lisp:715
+msgid "Dictionary file"
+msgstr ""
+
+#: scm/custom.lisp:722
+msgid "Personal dictionary file"
+msgstr ""
+
+#: scm/custom.lisp:729
+msgid "Personal dictionary file (dedicated to uim)"
+msgstr ""
+
+#: scm/custom.lisp:753
+msgid "Use recursive learning"
+msgstr ""
+
+#: scm/custom.lisp:759
+msgid "Use Enter key as just committing (egg-like operation)"
+msgstr ""
+
+#: scm/custom.lisp:765
+msgid "Commit newline as ASCII string instead of native key-event"
+msgstr ""
+
+#: scm/custom.lisp:773
+msgid "Visual style"
+msgstr ""
+
+#: scm/custom.lisp:805 scm/custom.lisp:881
+msgid "Always showing candidate window"
+msgstr ""
+
+#: scm/custom.lisp:811
+msgid "prime-preedit-immediate-commit?"
+msgstr ""
+
+#: scm/custom.lisp:817
+msgid "prime-mask-pending-preedit?"
+msgstr ""
+
+#: scm/custom.lisp:831
+msgid "Other input methods"
+msgstr ""
+
+#: scm/custom.lisp:875
+msgid "spellcheck-preedit-immediate-commit?"
+msgstr ""
+
+#: scm/direct.lisp:53
+msgid "direct"
+msgstr ""
+
+#: scm/direct.lisp:54 scm/generic.lisp:68 scm/m17nlib.lisp:63
+msgid "Direct Input Mode"
+msgstr ""
+
+#: scm/generic.lisp:67 scm/m17nlib.lisp:62
+msgid "off"
+msgstr ""
+
+#: scm/generic.lisp:82 scm/m17nlib.lisp:76
+msgid "on"
+msgstr ""
+
+#: scm/generic.lisp:83 scm/m17nlib.lisp:77
+msgid " Mode"
+msgstr ""
+
+#: scm/hangul.lisp:89
+msgid "hangul2"
+msgstr ""
+
+#: scm/hangul.lisp:93
+msgid "hangul3"
+msgstr ""
+
+#: scm/hangul.lisp:96
+msgid "romaja"
+msgstr ""
+
+#: scm/latin.lisp:575
+msgid "euro"
+msgstr ""
+
+#: scm/m17nlib.lisp:297
+msgid "An input method provided by the m17n library"
+msgstr ""
+
+#: scm/prime.lisp:1444
+msgid "Japanese predictable input method"
+msgstr ""
+
+#: scm/pyload.lisp:39
+msgid "PinYin input method"
+msgstr ""
+
+#: scm/pyload.lisp:47
+msgid "PinYin input method (Unicode version)"
+msgstr ""
+
+#: scm/pyload.lisp:55
+msgid "PinYin input method (Big5 version)"
+msgstr ""
+
+#: scm/skk.lisp:1537
+msgid "Uim's SKK like input method"
+msgstr ""
+
+#: scm/viqr.lisp:201
+msgid "viqr"
 msgstr ""
 
 #.
