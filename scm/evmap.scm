@@ -529,17 +529,14 @@
   (lambda (act-exps)
     (let ((action-symbol? (lambda (sym)
 			    (and (symbol? sym)
-				 (let* ((str (symbol->string sym))
-					(prefix (safe-car
-						 (string-split str "_"))))
-				   (and prefix
-					(string=? prefix "action")))
-				 sym))))
+				 (string-prefix? "action_"
+						 (symbol->string sym))
+				 sym)))
+	  (canonicalize (compose event-exp-collector-exp
+				 action-exp-collector-fold)))
       (map (lambda (exp)
 	     (or (action-symbol? exp)
-		 ((compose event-exp-collector-exp
-			   action-exp-collector-fold)
-		  exp)))
+		 (canonicalize exp)))
 	   act-exps))))
 
 ;; presumes normalized
