@@ -449,7 +449,7 @@ candwin_activate(gchar **str)
       GtkTreeIter ti;
       if (node) {
 	gchar *str = node->data;
-	gchar **column = g_strsplit(str, "\t", 0);
+	gchar **column = g_strsplit(str, "\t", 2);
 	gtk_list_store_append(store, &ti);
 	gtk_list_store_set(store, &ti,
 			   COLUMN_HEADING, column[0],

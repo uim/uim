@@ -137,7 +137,7 @@ void CandidateWindow::activateCand( const QStringList &list )
             break;
 
         // split heading_label and cand_str
-        const QStringList l = QStringList::split( "\t", list [ i ] );
+        QStringList l = QStringList::split( "\t", list [ i ], true );
 
         // store data
         CandData d;
@@ -153,10 +153,16 @@ void CandidateWindow::activateCand( const QStringList &list )
 
         d.label = headString;
 
+	// XXX Current prime (0.4.6) may return candidate string
+	// containing "\t", and we can't handle annotation in another
+	// window yet.
+	l.pop_front();
+	QString candString = l.join( "\t" );
+
         if ( codec )
-            d.str = codec->toUnicode( l [ 1 ] );
+            d.str = codec->toUnicode( candString );
         else
-            d.str = l [ 1 ];
+            d.str = candString;
 
         stores.append( d );
     }
