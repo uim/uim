@@ -355,6 +355,12 @@ uim_scm_cons(uim_lisp car, uim_lisp cdr)
   return (uim_lisp)cons((LISP)car, (LISP)cdr);
 }
 
+uim_lisp
+uim_scm_reverse(uim_lisp cell)
+{
+  return (uim_lisp)reverse((LISP)cell);
+}
+
 uim_bool
 uim_scm_require_file(const char *fn)
 {

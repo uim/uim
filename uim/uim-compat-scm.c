@@ -223,12 +223,6 @@ uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
 }
 
 uim_lisp
-uim_scm_reverse(uim_lisp cell)
-{
-  return (uim_lisp)reverse((LISP)cell);
-}
-
-uim_lisp
 uim_scm_nreverse(uim_lisp cell)
 {
   return (uim_lisp)nreverse((LISP)cell);

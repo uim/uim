@@ -191,6 +191,8 @@ uim_lisp
 uim_scm_cdar(uim_lisp cell);
 uim_lisp
 uim_scm_cddr(uim_lisp cell);
+uim_lisp
+uim_scm_reverse(uim_lisp cell);
 
 #ifdef __cplusplus
 }
