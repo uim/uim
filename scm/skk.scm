@@ -44,6 +44,7 @@
 ;;
 ;;
 (require "japanese.scm")
+(require "japanese-azik.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "skk-custom.scm")
 (require-custom "skk-key-custom.scm")
@@ -301,6 +302,7 @@
 	  (skk-read-personal-dictionary)))
     (let ((sc (skk-context-new-internal id im))
 	  (rkc (rk-context-new ja-rk-rule #t #f)))
+      (if skk-use-azik? (rk-context-set-rule! rkc ja-azik-rule))
       (skk-context-set-widgets! sc skk-widgets)
       (skk-context-set-head! sc '())
       (skk-context-set-rk-context! sc rkc)

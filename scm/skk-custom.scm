@@ -207,6 +207,12 @@
   (_ "Use recursive learning")
   (_ "long description will be here."))
 
+(define-custom 'skk-use-azik? #f
+  '(skk-advanced)
+  '(boolean)
+  (_ "AZIK extended romaji input mode")
+  (_ "long description will be here."))
+
 (define-custom 'skk-use-numeric-conversion? #t
   '(skk-advanced)
   '(boolean)

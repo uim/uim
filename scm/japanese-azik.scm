@@ -28,7 +28,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(define ja-azik-rule
+(define ja-azik-rule-basic
   '(
 
     (((":"). ())("ー" "ー" "ｰ"))
@@ -520,3 +520,5 @@
     ((("z" "y" "z"). ())(("じ" "ジ" "ｼﾞ") ("ゃ" "ャ" "ｬ") ("ん" "ン" "ﾝ")))
     ((("z" "z"). ())(("ざ" "ザ" "ｻﾞ") ("ん" "ン" "ﾝ")))
 ))
+
+(define ja-azik-rule (append ja-azik-rule-basic ja-rk-rule-basic))

@@ -748,7 +748,7 @@
 (define load-azik-table
   (lambda ()
     (require "japanese-azik.scm")
-    (set! ja-rk-rule (append ja-azik-rule ja-rk-rule-basic))
+    (set! ja-rk-rule ja-azik-rule)
     (define-key skk-prev-candidate-key? 'generic-prev-candidate-key?)
     (define-key skk-kana-toggle-key? "@")
     (define-key skk-kanji-mode-key? "`")
