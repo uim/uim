@@ -76,6 +76,11 @@
                      (_ "long description will be here."))
 
 ;; subgroup
+(define-custom-group 'mode-transition
+                     (_ "Mode transition")
+                     (_ "long description will be here."))
+
+;; subgroup
 (define-custom-group 'special-op
                      (_ "Special operation")
                      (_ "long description will be here."))

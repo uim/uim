@@ -46,37 +46,13 @@
 (require "japanese.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "skk-custom.scm")
-;;(require-custom "skk-key-custom.scm")
+(require-custom "skk-key-custom.scm")
 
 
-;; key defs
-(define-key skk-latin-key? '("l" generic-off-key?))
-(define-key skk-wide-latin-key? "L")
-(define-key skk-begin-conv-key? 'generic-begin-conv-key?)
-(define-key skk-begin-completion-key? '("tab" "<Control>i" "<Control>I"))
-(define-key skk-next-completion-key? '("." skk-begin-completion-key?))
-(define-key skk-prev-completion-key? ",")
-(define-key skk-on-key? '("<Control>j" "<Control>J" generic-on-key?))
-(define-key skk-hankaku-kana-key? '("<Control>q" "<Control>Q"))
-(define-key skk-return-key? 'generic-return-key?)
-(define-key skk-commit-key? '("<Control>j" "<Control>J"))
-(define-key skk-next-candidate-key? 'generic-next-candidate-key?)
-(define-key skk-prev-candidate-key? '("x" generic-prev-candidate-key?))
-(define-key skk-next-page-key? 'generic-next-page-key?)
-(define-key skk-prev-page-key? 'generic-prev-page-key?)
-(define-key skk-kana-toggle-key? "q")
-(define-key skk-cancel-key? 'generic-cancel-key?)
-(define-key skk-backspace-key? 'generic-backspace-key?)
-(define-key skk-go-left-key? 'generic-go-left-key?)
-(define-key skk-go-right-key? 'generic-go-right-key?)
-(define-key skk-latin-conv-key? "/")
-(define-key skk-kanji-mode-key? "Q")
-(define-key skk-special-midashi-key? '(">" "<" "?"))
-(define-key skk-conv-wide-latin-key? '("<Control>q" "<Control>Q"))
-(define-key skk-plain-space-key? " ")  ;; should not be changed
-(define-key skk-vi-escape-key? '("escape" "<Control>["))
-(define-key skk-state-direct-no-preedit-nop-key? '("<Control>j" "<Control>J"))
+;;; user config
 
+;; TODO: Support new custom type string-list. It involves character
+;; encoding conversion problem.  -- YamaKen 2005-02-02
 (define skk-auto-start-henkan-keyword-list '("¤ò" "¡¢" "¡£" "¡¥" "¡¤" "¡©" "¡×" "¡ª" "¡¨" "¡§" ")" ";" ":" "¡Ë" "¡É" "¡Û" "¡Ù" "¡Õ" "¡Ó" "¡Ñ" "¡Ï" "¡Í" "}" "]" "?" "." "," "!"))
 
 ;; style specification

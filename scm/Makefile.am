@@ -14,7 +14,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  anthy.scm anthy-custom.scm anthy-key-custom.scm \
  canna.scm canna-custom.scm \
  prime.scm prime-custom.scm \
- skk.scm skk-editor.scm skk-custom.scm \
+ skk.scm skk-editor.scm skk-custom.scm skk-key-custom.scm \
  tcode.scm \
  tutcode.scm \
  hangul.scm hangul2.scm hangul3.scm romaja.scm \

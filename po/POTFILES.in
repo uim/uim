@@ -59,6 +59,7 @@ scm/rk.scm
 scm/romaja.scm
 scm/skk-custom.scm
 scm/skk-editor.scm
+scm/skk-key-custom.scm
 scm/skk.scm
 scm/spellcheck-custom.scm
 scm/spellcheck.scm
