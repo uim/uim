@@ -1452,7 +1452,10 @@
 	     (begin
 	       (skk-append-okuri-string sc res)
 	       (if (string=? (rk-pending rkc) "")
-		   (skk-begin-conversion sc))))))
+		   (skk-begin-conversion sc)))
+	     (begin
+	       (if (= (length (rk-context-seq rkc)) 1)
+		   (skk-context-set-okuri-head! sc (charcode->string key)))))))
       #f)))
 
 (define skk-proc-state-latin
@@ -1541,11 +1544,10 @@
 (define skk-reset-handler
   (lambda (sc)
     (let ((st (skk-context-state sc)))
-      (if (or
-	   (= st 'skk-state-latin)
-	   (= st 'skk-state-wide-latin))
-	  ()
-	  (skk-flush sc)))))
+      (if (not (or
+		(= st 'skk-state-latin)
+		(= st 'skk-state-wide-latin))
+	  (skk-flush sc))))))
 
 (define skk-get-candidate-handler
   (lambda (sc idx)

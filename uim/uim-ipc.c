@@ -151,7 +151,7 @@ uim_ipc_open_command_with_option(int old_pid, FILE **read_fp,
 {
   int new_pid, result;
   char **ap, *argv[10];
-  char *p;
+  char *str, *p;
 
   if (*read_fp != NULL) {
     fclose(*read_fp);
@@ -188,13 +188,14 @@ uim_ipc_open_command_with_option(int old_pid, FILE **read_fp,
       argv[1] = NULL;
     } else {
       argv[0] = (char *)command;
-      p = (char *)option;
+      str = p = strdup(option);
       for (ap = &argv[1]; (*ap = strsep(&p, " ")) != NULL;) {
 	if (**ap != '\0')
 	  if (++ap >= &argv[9])
 	    break;
       }
       *ap = NULL;
+      free(str);
     }
 
     result = execvp(command, argv);
