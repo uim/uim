@@ -349,16 +349,18 @@
 (define custom-choice-label
   (lambda (custom-sym val-sym)
     (let* ((sym-rec-alist (custom-type-attrs custom-sym))
-	   (srec (assq val-sym sym-rec-alist))
-	   (label (custom-choice-rec-label srec)))
-      label)))
+	   (srec (assq val-sym sym-rec-alist)))
+      (if (null? srec)
+	  ""
+	  (custom-choice-rec-label srec)))))
 
 (define custom-choice-desc
   (lambda (custom-sym val-sym)
     (let* ((sym-rec-alist (custom-type-attrs custom-sym))
-	   (srec (assq val-sym sym-rec-alist))
-	   (desc (custom-choice-rec-desc srec)))
-      desc)))
+	   (srec (assq val-sym sym-rec-alist)))
+      (if (null? srec)
+	  "" 
+	  (custom-choice-rec-desc srec)))))
 
 (define custom-choice-range-reflect-olist-val
   (lambda (dst-sym src-sym indication-alist)
