@@ -462,8 +462,16 @@ void XimIC::commit_string(const char *str)
 
 void XimIC::extra_input(char *s)
 {
-    if (s != NULL)
-	commit_string(s);
+    if (s == NULL)
+	return;
+
+    commit_string(s);
+
+    XKeyEvent e;
+    e.type = KeyPress;
+    e.keycode = 0;
+    send_key_event(&e);
+
     if (m_xatr.has_atr(ICA_FocusWindow))
 	force_event(m_xatr.focus_window);
 }
