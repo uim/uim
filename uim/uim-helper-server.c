@@ -33,6 +33,7 @@
 */
 
 #include <sys/types.h>
+#include <pwd.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <netinet/in.h>
@@ -70,6 +71,8 @@ init_serv_fd(char *path)
   int foo;
   int fd;
   struct sockaddr_un myhost;
+  struct passwd *pw;
+  char *logname;
 
   fd = socket(PF_UNIX, SOCK_STREAM, 0);
   if (fd < 0) {
@@ -88,6 +91,13 @@ init_serv_fd(char *path)
   }
 
   chmod(path, S_IRUSR|S_IWUSR);
+
+  logname = getenv("LOGNAME");
+  if(logname) {
+    pw = getpwnam(logname);
+    if(pw)
+      chown(path, pw->pw_uid, -1);
+  }
 
   foo = listen(fd, 5);
   if (foo == -1) {
