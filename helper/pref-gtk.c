@@ -43,7 +43,7 @@
 #include <uim/uim-custom.h>
 #include "uim/gettext.h"
 
-#define OBJECT_DATA_UIM_CUSTOM    "uim-pref-gtk::uim-custom"
+#define OBJECT_DATA_UIM_CUSTOM_SYM    "uim-pref-gtk::uim-custom-sym"
 
 static GtkWidget *pref_window = NULL;
 static GtkWidget *pref_tree_view = NULL;
@@ -271,28 +271,29 @@ create_pref_treeview(void)
 static void
 custom_check_button_toggled_cb(GtkToggleButton *button, gpointer user_data)
 {
+  const char *custom_sym;
   struct uim_custom *custom;
   uim_bool rv;
   gboolean active;
 
+  custom_sym = g_object_get_data(G_OBJECT(button), OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
+
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom && custom->type == UCustom_Bool);
+
   active = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button));
+  custom->value->as_bool = active;
+  rv = uim_custom_set(custom);
 
-  custom = g_object_get_data(G_OBJECT(button), OBJECT_DATA_UIM_CUSTOM);
-  g_return_if_fail(custom);
-
-  if (custom->type == UCustom_Bool) {
-    custom->value->as_bool = active;
-    rv = uim_custom_set(custom);
-
-    if (rv) {
-      value_changed = TRUE;
-    } else {
-      g_printerr("Faild to set bool value for \"%s\".\n", custom->symbol);
-      /* FIXME! reset the widget */
-    }
+  if (rv) {
+    value_changed = TRUE;
   } else {
-    g_printerr("Invalid value type passed for \"%s\".\n", custom->symbol);
+    g_printerr("Faild to set bool value for \"%s\".\n", custom->symbol);
+    /* FIXME! reset the widget */
   }
+
+  uim_custom_free(custom);
 }
 
 
@@ -305,36 +306,31 @@ update_custom_type_bool_cb(void *ptr, const char *custom_sym)
   if (!custom || custom->type != UCustom_Bool)
     return;
 
-  g_object_set_data_full(G_OBJECT(check_button),
-			 OBJECT_DATA_UIM_CUSTOM, custom,
-			 (GDestroyNotify) uim_custom_free);
-
   gtk_widget_set_sensitive(check_button, custom->is_active);
-
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button),
 			       custom->value->as_bool);
+
+  uim_custom_free(custom);
 }
 
 static void
 add_custom_type_bool(GtkWidget *vbox, struct uim_custom *custom)
 {
   GtkWidget *hbox;
-  GtkWidget *label;
   GtkWidget *check_button;
   hbox = gtk_hbox_new(FALSE, 8);
 
-  label = gtk_label_new(custom->label);
-  gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
-
-  check_button = gtk_check_button_new();
+  check_button = gtk_check_button_new_with_label(custom->label);
   g_object_set_data_full(G_OBJECT(check_button),
-			 OBJECT_DATA_UIM_CUSTOM, custom,
-			 (GDestroyNotify) uim_custom_free);
+			 OBJECT_DATA_UIM_CUSTOM_SYM, g_strdup(custom->symbol),
+			 (GDestroyNotify) g_free);
+
+  gtk_widget_set_sensitive(check_button, custom->is_active);
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button),
 			       custom->value->as_bool);
+
   g_signal_connect(G_OBJECT(check_button), "toggled",
 		   G_CALLBACK(custom_check_button_toggled_cb), NULL);
-
   uim_custom_cb_add(custom->symbol, check_button, update_custom_type_bool_cb);
 
   gtk_box_pack_start (GTK_BOX (hbox), check_button, FALSE, TRUE, 0);
@@ -344,25 +340,27 @@ add_custom_type_bool(GtkWidget *vbox, struct uim_custom *custom)
 static void
 custom_adjustment_value_changed(GtkAdjustment *adj, gpointer user_data)
 {
+  const char *custom_sym;
   struct uim_custom *custom;
   uim_bool rv;
 
-  custom = g_object_get_data(G_OBJECT(adj), OBJECT_DATA_UIM_CUSTOM);
-  g_return_if_fail(custom);
+  custom_sym = g_object_get_data(G_OBJECT(adj), OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
 
-  if (custom->type == UCustom_Int) {
-    custom->value->as_int = adj->value;
-    rv = uim_custom_set(custom);
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom && custom->type == UCustom_Int);
 
-    if (rv) {
-      value_changed = TRUE;
-    } else {
-      g_printerr("Faild to set int value for \"%s\".\n", custom->symbol);
-      /* FIXME! reset the widget */
-    }
+  custom->value->as_int = adj->value;
+  rv = uim_custom_set(custom);
+
+  if (rv) {
+    value_changed = TRUE;
   } else {
-    g_printerr("Invalid value type passed for \"%s\".\n", custom->symbol);
+    g_printerr("Faild to set int value for \"%s\".\n", custom->symbol);
+    /* FIXME! reset the widget */
   }
+
+  uim_custom_free(custom);
 }
 
 static void
@@ -383,15 +381,15 @@ add_custom_type_integer(GtkWidget *vbox, struct uim_custom *custom)
 						  1.0,
 						  10.0,
 						  100.0);
-  g_object_set_data_full(G_OBJECT(adjustment),
-			 OBJECT_DATA_UIM_CUSTOM, custom,
-			 (GDestroyNotify) uim_custom_free);
-
   spin = gtk_spin_button_new(adjustment, 1.0, 0);
   gtk_size_group_add_widget(spin_button_sgroup, spin);
   gtk_box_pack_end (GTK_BOX (hbox), spin, FALSE, TRUE, 0);
-  
+
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
+
+  g_object_set_data_full(G_OBJECT(adjustment),
+			 OBJECT_DATA_UIM_CUSTOM_SYM, g_strdup(custom->symbol),
+			 (GDestroyNotify) g_free);
 
   g_signal_connect(G_OBJECT(adjustment), "value-changed",
 		   G_CALLBACK(custom_adjustment_value_changed), NULL);
@@ -400,36 +398,41 @@ add_custom_type_integer(GtkWidget *vbox, struct uim_custom *custom)
 static void
 custom_entry_changed_cb(GtkEntry *entry, gpointer user_data)
 {
+  const char *custom_sym;
   struct uim_custom *custom;
   uim_bool rv;
+  const char *str;
 
-  custom = g_object_get_data(G_OBJECT(entry), OBJECT_DATA_UIM_CUSTOM);
-  g_return_if_fail(custom);
+  custom_sym = g_object_get_data(G_OBJECT(entry), OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
 
-  if (custom->type == UCustom_Str || custom->type == UCustom_Pathname) {
-    const char *str = gtk_entry_get_text(GTK_ENTRY(entry));
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom &&
+		   (custom->type == UCustom_Str ||
+		    custom->type == UCustom_Pathname));
 
-    if (custom->type == UCustom_Str) {
-      free(custom->value->as_str);
-      custom->value->as_str = strdup(str);
-      rv = uim_custom_set(custom);
-    } else if (custom->type == UCustom_Pathname) {
-      free(custom->value->as_pathname);
-      custom->value->as_pathname = strdup(str);
-      rv = uim_custom_set(custom);
-    } else {
-      rv = UIM_FALSE;
-    }
+  str = gtk_entry_get_text(GTK_ENTRY(entry));
 
-    if (rv) {
-      value_changed = TRUE;
-    } else {
-      g_printerr("Faild to set str value for \"%s\".\n", custom->symbol);
-      /* FIXME! reset the widget */
-    }
+  if (custom->type == UCustom_Str) {
+    free(custom->value->as_str);
+    custom->value->as_str = strdup(str);
+    rv = uim_custom_set(custom);
+  } else if (custom->type == UCustom_Pathname) {
+    free(custom->value->as_pathname);
+    custom->value->as_pathname = strdup(str);
+    rv = uim_custom_set(custom);
   } else {
-    g_printerr("Invalid value type passed for \"%s\".\n", custom->symbol);
+    rv = UIM_FALSE;
   }
+
+  if (rv) {
+    value_changed = TRUE;
+  } else {
+    g_printerr("Faild to set str value for \"%s\".\n", custom->symbol);
+    /* FIXME! reset the widget */
+  }
+
+  uim_custom_free(custom);
 }
 
 
@@ -461,19 +464,19 @@ add_custom_type_string(GtkWidget *vbox, struct uim_custom *custom)
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 
   entry = gtk_entry_new();
-  g_object_set_data_full(G_OBJECT(entry),
-			 OBJECT_DATA_UIM_CUSTOM, custom,
-			 (GDestroyNotify) uim_custom_free);
-  gtk_entry_set_text(GTK_ENTRY(entry), custom->value->as_str);
   gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
-  g_signal_connect(G_OBJECT(entry), "changed",
-		   G_CALLBACK(custom_entry_changed_cb), NULL);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
+
+  g_object_set_data_full(G_OBJECT(entry),
+			 OBJECT_DATA_UIM_CUSTOM_SYM, g_strdup(custom->symbol),
+			 (GDestroyNotify) g_free);
 
   gtk_widget_set_sensitive(entry, custom->is_active);
+  gtk_entry_set_text(GTK_ENTRY(entry), custom->value->as_str);
 
+  g_signal_connect(G_OBJECT(entry), "changed",
+		   G_CALLBACK(custom_entry_changed_cb), NULL);
   uim_custom_cb_add(custom->symbol, entry, update_custom_type_string_cb);
-
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
 }
 
 static void
@@ -515,67 +518,74 @@ add_custom_type_pathname(GtkWidget *vbox, struct uim_custom *custom)
   gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
 
   entry = gtk_entry_new();
-  g_object_set_data_full(G_OBJECT(entry),
-			 OBJECT_DATA_UIM_CUSTOM, custom,
-			 (GDestroyNotify) uim_custom_free);
-  gtk_entry_set_text(GTK_ENTRY(entry), custom->value->as_pathname);
   gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
-  g_signal_connect(G_OBJECT(entry), "changed",
-		   G_CALLBACK(custom_entry_changed_cb), NULL);
 
   button = gtk_button_new_with_label(_("File"));
-
-  g_signal_connect(G_OBJECT(button), "clicked",
-		   G_CALLBACK(custom_pathname_button_clicked_cb), entry);
-
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
 
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
+
+  g_object_set_data_full(G_OBJECT(entry),
+			 OBJECT_DATA_UIM_CUSTOM_SYM, g_strdup(custom->symbol),
+			 (GDestroyNotify) g_free);
+
+  gtk_widget_set_sensitive(entry, custom->is_active);
+  gtk_entry_set_text(GTK_ENTRY(entry), custom->value->as_pathname);
+
+  g_signal_connect(G_OBJECT(entry), "changed",
+		   G_CALLBACK(custom_entry_changed_cb), NULL);
+
+  g_signal_connect(G_OBJECT(button), "clicked",
+		   G_CALLBACK(custom_pathname_button_clicked_cb), entry);
 }
 
 static void
 custom_combo_box_changed(GtkComboBox *combo_box, gpointer user_data)
 {
+  const char *custom_sym;
   struct uim_custom *custom;
+  struct uim_custom_choice *choice = NULL;
+  gint i, num;
   uim_bool rv;
 
-  custom = g_object_get_data(G_OBJECT(combo_box), OBJECT_DATA_UIM_CUSTOM);
-  g_return_if_fail(custom);
+  custom_sym = g_object_get_data(G_OBJECT(combo_box), OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
 
-  if (custom->type == UCustom_Choice) {
-    gint i, num = gtk_combo_box_get_active(combo_box);
-    struct uim_custom_choice *choice = NULL;
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom_sym && custom->type == UCustom_Choice);
 
-    /* check length of custom->range->as_choice.valid_items */
-    for (i = 0;
-	 custom->range->as_choice.valid_items &&
-	   custom->range->as_choice.valid_items[i];
-	 i++)
-    {
-      if (i == num) {
-	choice = custom->range->as_choice.valid_items[i];
-      }
+  num = gtk_combo_box_get_active(combo_box);
+
+  /* check length of custom->range->as_choice.valid_items */
+  for (i = 0;
+       custom->range->as_choice.valid_items &&
+	 custom->range->as_choice.valid_items[i];
+       i++)
+  {
+    if (i == num) {
+      choice = custom->range->as_choice.valid_items[i];
     }
-    g_return_if_fail(choice);
-
-    free(custom->value->as_choice->symbol);
-    free(custom->value->as_choice->label);
-    free(custom->value->as_choice->desc);
-
-    custom->value->as_choice->symbol = choice->symbol ? strdup(choice->symbol): NULL;
-    custom->value->as_choice->label  = choice->label  ? strdup(choice->label) : NULL;
-    custom->value->as_choice->desc   = choice->desc   ? strdup(choice->desc)  : NULL;
-
-    rv = uim_custom_set(custom);
-
-    if (rv) {
-      value_changed = TRUE;
-    } else {
-      g_printerr("Faild to set str value for \"%s\".\n", custom->symbol);
-      /* FIXME! reset the widget */
-    }
-  } else {
   }
+  g_return_if_fail(choice);
+
+  free(custom->value->as_choice->symbol);
+  free(custom->value->as_choice->label);
+  free(custom->value->as_choice->desc);
+
+  custom->value->as_choice->symbol = choice->symbol ? strdup(choice->symbol): NULL;
+  custom->value->as_choice->label  = choice->label  ? strdup(choice->label) : NULL;
+  custom->value->as_choice->desc   = choice->desc   ? strdup(choice->desc)  : NULL;
+
+  rv = uim_custom_set(custom);
+
+  if (rv) {
+    value_changed = TRUE;
+  } else {
+    g_printerr("Faild to set str value for \"%s\".\n", custom->symbol);
+    /* FIXME! reset the widget */
+  }
+
+  uim_custom_free(custom);
 }
 
 static void
@@ -590,14 +600,13 @@ update_custom_type_choice_cb(void *ptr, const char *custom_sym)
   if (!custom || custom->type != UCustom_Choice)
     return;
   
-  g_object_set_data_full(G_OBJECT(combobox),
-			 OBJECT_DATA_UIM_CUSTOM, custom,
-			 (GDestroyNotify) uim_custom_free);
   gtk_widget_set_sensitive(combobox, custom->is_active);
 
   item = custom->range->as_choice.valid_items;
-  if(item == NULL || *item == NULL)
+  if(item == NULL || *item == NULL) {
+    uim_custom_free(custom);
     return;
+  }
   
   g_signal_handlers_disconnect_by_func(G_OBJECT(combobox), (gpointer)custom_combo_box_changed, NULL);
 
@@ -615,6 +624,8 @@ update_custom_type_choice_cb(void *ptr, const char *custom_sym)
   gtk_combo_box_set_active(GTK_COMBO_BOX(combobox), default_index);
   g_signal_connect(G_OBJECT(combobox), "changed",
 		   G_CALLBACK(custom_combo_box_changed), NULL);
+
+  uim_custom_free(custom);
 }
 
 static void
@@ -628,13 +639,17 @@ add_custom_type_choice(GtkWidget *vbox, struct uim_custom *custom)
   gchar *default_symbol;
 
   hbox = gtk_hbox_new(FALSE, 8);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
+
   label = gtk_label_new(custom->label);
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 
   combobox = gtk_combo_box_new_text();
+  gtk_box_pack_start (GTK_BOX (hbox), combobox, FALSE, TRUE, 0);
+
   g_object_set_data_full(G_OBJECT(combobox),
-			 OBJECT_DATA_UIM_CUSTOM, custom,
-			 (GDestroyNotify) uim_custom_free);
+			 OBJECT_DATA_UIM_CUSTOM_SYM, g_strdup(custom->symbol),
+			 (GDestroyNotify) g_free);
   
   default_symbol = custom->value->as_choice->symbol;
 
@@ -645,15 +660,12 @@ add_custom_type_choice(GtkWidget *vbox, struct uim_custom *custom)
       default_index = i;
   }
   gtk_combo_box_set_active(GTK_COMBO_BOX(combobox), default_index);
-  gtk_box_pack_start (GTK_BOX (hbox), combobox, FALSE, TRUE, 0);
+  gtk_widget_set_sensitive(combobox, custom->is_active);
+
   g_signal_connect(G_OBJECT(combobox), "changed",
 		   G_CALLBACK(custom_combo_box_changed), NULL);
 
-  gtk_widget_set_sensitive(combobox, custom->is_active);
-  
   uim_custom_cb_add(custom->symbol, combobox, update_custom_type_choice_cb);
-
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
 }
 
 static void
@@ -665,12 +677,17 @@ olist_pref_dialog_response_cb(GtkDialog *dialog, gint action, GtkEntry *key_entr
 static void
 olist_pref_entry_set_value(GtkEntry *entry)
 {
+  const char *custom_sym;
   struct uim_custom *custom;
   struct uim_custom_choice *item;
   GString *str;
   gint i;
 
-  custom = g_object_get_data(G_OBJECT(entry), OBJECT_DATA_UIM_CUSTOM);
+  custom_sym = g_object_get_data(G_OBJECT(entry), OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
+
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom && custom->type == UCustom_OrderedList);
 
   str = g_string_new("");
 
@@ -690,6 +707,7 @@ olist_pref_entry_set_value(GtkEntry *entry)
   gtk_entry_set_text(GTK_ENTRY(entry), str->str);
 
   g_string_free(str, TRUE);
+  uim_custom_free(custom);
 }
 
 static void
@@ -697,6 +715,7 @@ olist_pref_tree_view_set_value(GtkEntry *olist_entry,
 			       gboolean left_view,
 			       gboolean right_view)
 {
+  const char *custom_sym;
   struct uim_custom *custom;
   struct uim_custom_choice *item;
   GtkTreeView *view;
@@ -704,7 +723,11 @@ olist_pref_tree_view_set_value(GtkEntry *olist_entry,
   GtkTreeIter iter;
   gint i;
 
-  custom = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM);
+  custom_sym = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
+
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom && custom->type == UCustom_OrderedList);
 
   /* left tree view */
   if (left_view) {
@@ -719,7 +742,7 @@ olist_pref_tree_view_set_value(GtkEntry *olist_entry,
       gtk_list_store_append(store, &iter);
       gtk_list_store_set(store, &iter,
 			 0, item->label,
-			 1, item,
+			 1, item->symbol,
 			 -1);
     }
   }
@@ -752,16 +775,19 @@ olist_pref_tree_view_set_value(GtkEntry *olist_entry,
 	gtk_list_store_append(store, &iter);
 	gtk_list_store_set(store, &iter,
 			   0, item->label,
-			   1, item,
+			   1, item->symbol,
 			   -1);
       }
     }
   }
+
+  uim_custom_free(custom);
 }
 
 static void
 set_olist_buttons_sensitive(GtkEntry *olist_entry)
 {
+  const char *custom_sym;
   struct uim_custom *custom;
   GtkWidget *view;
   GtkTreeSelection *selection;
@@ -769,7 +795,12 @@ set_olist_buttons_sensitive(GtkEntry *olist_entry)
   gboolean is_selected1 = FALSE, is_selected2 = FALSE;
   gboolean is_multiple = FALSE, is_first = FALSE, is_end = FALSE;
 
-  custom = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM);
+  custom_sym = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
+
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom && custom->type == UCustom_OrderedList);
+
   view = olist_pref_win.tree_view[0];
   selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
   num = gtk_tree_selection_count_selected_rows(selection);
@@ -810,11 +841,14 @@ set_olist_buttons_sensitive(GtkEntry *olist_entry)
 			   is_selected1 && !is_end && !is_multiple);
   gtk_widget_set_sensitive(olist_pref_win.right_button, is_selected1);
   gtk_widget_set_sensitive(olist_pref_win.left_button,  is_selected2);
+
+  uim_custom_free(custom);
 }
 
 static void
 olist_pref_up_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
 {
+  const char *custom_sym;
   struct uim_custom *custom;
   struct uim_custom_choice *choice;
   GtkWidget *view;
@@ -828,15 +862,24 @@ olist_pref_up_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   uim_bool urv;
   gint *indices, idx;
 
-  custom = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM);
+  custom_sym = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
+
+  custom = uim_custom_get(custom_sym);;
+  g_return_if_fail(custom && custom->type == UCustom_OrderedList);
+
   view = olist_pref_win.tree_view[0];
 
   selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
   num = gtk_tree_selection_count_selected_rows(selection);
-  if (num < 1)
+  if (num < 1) {
+    uim_custom_free(custom);
     return;
-  if (num > 1)
+  }
+  if (num > 1) {
+    uim_custom_free(custom);
     return;
+  }
 
   rows = gtk_tree_selection_get_selected_rows(selection, &model);
   path = rows->data;
@@ -878,6 +921,7 @@ olist_pref_up_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   olist_pref_entry_set_value(GTK_ENTRY(olist_entry));
 
 ERROR:
+  uim_custom_free(custom);
   g_list_foreach(rows, (GFunc)gtk_tree_path_free, NULL);
   g_list_free(rows);
 }
@@ -885,6 +929,7 @@ ERROR:
 static void
 olist_pref_down_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
 {
+  const char *custom_sym;
   struct uim_custom *custom;
   struct uim_custom_choice *choice;
   GtkWidget *view;
@@ -897,15 +942,24 @@ olist_pref_down_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   gboolean rv;
   uim_bool urv;
 
-  custom = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM);
+  custom_sym = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
+
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom && custom->type == UCustom_OrderedList);
+
   view = olist_pref_win.tree_view[0];
 
   selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
   num = gtk_tree_selection_count_selected_rows(selection);
-  if (num < 1)
+  if (num < 1) {
+    uim_custom_free(custom);
     return;
-  if (num > 1)
+  }
+  if (num > 1) {
+    uim_custom_free(custom);
     return;
+  }
 
   rows = gtk_tree_selection_get_selected_rows(selection, &model);
   path = rows->data;
@@ -946,6 +1000,7 @@ olist_pref_down_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   olist_pref_entry_set_value(GTK_ENTRY(olist_entry));
 
 ERROR:
+  uim_custom_free(custom);
   g_list_foreach(rows, (GFunc)gtk_tree_path_free, NULL);
   g_list_free(rows);
 }
@@ -953,8 +1008,8 @@ ERROR:
 static void
 olist_pref_left_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
 {
+  const char *custom_sym;
   struct uim_custom *custom;
-  struct uim_custom_choice *choice = NULL;
   GtkWidget *view;
   GtkTreeSelection *selection;
   GtkTreeModel *model;
@@ -964,23 +1019,49 @@ olist_pref_left_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   GList *rows = NULL, *node;
   uim_bool urv;
 
-  custom = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM);
-  for (num = 0; custom->value->as_olist[num]; num++);
+  custom_sym = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
+
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom && custom->type == UCustom_OrderedList);
 
   view = olist_pref_win.tree_view[1];
 
   selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
   rows = gtk_tree_selection_get_selected_rows(selection, &model);
-  if (!rows)
+  if (!rows) {
+    uim_custom_free(custom);
     return;
+  }
+
+  for (num = 0; custom->value->as_olist[num]; num++);
 
   for (node = rows; node; node = g_list_next(node)) {
+    char *symbol = NULL;
+    struct uim_custom_choice *choice = NULL;
+    gint i;
+
     path = node->data;
 
     gtk_tree_model_get_iter(model, &iter, path);
     gtk_tree_model_get(model, &iter,
-		       1, &choice,
+		       1, &symbol,
 		       -1);
+
+    if (!symbol)
+      continue;
+
+    for (i = 0; custom->range->as_olist.valid_items[i]->symbol; i++) {
+      if (!strcmp(custom->range->as_olist.valid_items[i]->symbol, symbol)) {
+	choice = custom->range->as_olist.valid_items[i];
+	break;
+      }
+    }
+
+    g_free(symbol);
+
+    if (!choice)
+      continue;
 
     num++;
     custom->value->as_olist = realloc(custom->value->as_olist,
@@ -1003,6 +1084,7 @@ olist_pref_left_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
     /* error message */
   }
 
+  uim_custom_free(custom);
   g_list_foreach(rows, (GFunc)gtk_tree_path_free, NULL);
   g_list_free(rows);
 }
@@ -1010,6 +1092,7 @@ olist_pref_left_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
 static void
 olist_pref_right_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
 {
+  const char *custom_sym;
   struct uim_custom *custom;
   struct uim_custom_choice *choice;
   GtkWidget *view;
@@ -1020,13 +1103,20 @@ olist_pref_right_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   GList *rows = NULL, *node;
   uim_bool urv;
 
-  custom = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM);
+  custom_sym = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
+
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom && custom->type == UCustom_OrderedList);
+
   view = olist_pref_win.tree_view[0];
 
   selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
   rows = gtk_tree_selection_get_selected_rows(selection, &model);
-  if (!rows)
+  if (!rows) {
+    uim_custom_free(custom);
     return;
+  }
 
   for (num = 0; custom->value->as_olist[num]; num++);
 
@@ -1062,6 +1152,7 @@ olist_pref_right_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
     /* error message */
   }
 
+  uim_custom_free(custom);
   g_list_foreach(rows, (GFunc)gtk_tree_path_free, NULL);
   g_list_free(rows);
 }
@@ -1120,7 +1211,7 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
 		     TRUE, TRUE, 0);
   gtk_widget_show(scrwin);
 
-  store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+  store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
   tree_view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
   olist_pref_win.tree_view[0] = tree_view;
   gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(tree_view), FALSE);
@@ -1224,7 +1315,7 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
 		     TRUE, TRUE, 0);
   gtk_widget_show(scrwin);
 
-  store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+  store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
   tree_view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
   olist_pref_win.tree_view[1] = tree_view;
   gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(tree_view), FALSE);
@@ -1259,23 +1350,25 @@ add_custom_type_orderedlist(GtkWidget *vbox, struct uim_custom *custom)
   GtkWidget *label, *entry, *button;
 
   hbox = gtk_hbox_new(FALSE, 8);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
   label = gtk_label_new(custom->label);
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 
   entry = gtk_entry_new();
   gtk_entry_set_editable(GTK_ENTRY(entry), FALSE);
-  g_object_set_data_full(G_OBJECT(entry),
-			 OBJECT_DATA_UIM_CUSTOM, custom,
-			 (GDestroyNotify) uim_custom_free);
-  olist_pref_entry_set_value(GTK_ENTRY(entry));
   gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
 
   button = gtk_button_new_with_label(_("Choose..."));
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, FALSE, 0);
+
+  g_object_set_data_full(G_OBJECT(entry),
+			 OBJECT_DATA_UIM_CUSTOM_SYM, g_strdup(custom->symbol),
+			 (GDestroyNotify) g_free);
+  olist_pref_entry_set_value(GTK_ENTRY(entry));
+
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(choose_olist_clicked_cb), entry);
-
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 }
 
 static gboolean
@@ -1487,12 +1580,16 @@ static void
 key_pref_entry_set_value(GtkEntry *entry)
 {
   GString *str;
+  const char *custom_sym;
   struct uim_custom *custom;
   struct uim_custom_key *key;
   gint i;
 
-  custom = g_object_get_data(G_OBJECT(entry), OBJECT_DATA_UIM_CUSTOM);
-  g_return_if_fail(custom);
+  custom_sym = g_object_get_data(G_OBJECT(entry), OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
+
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom && custom->type == UCustom_Key);
 
   str = g_string_new("");
 
@@ -1512,12 +1609,13 @@ key_pref_entry_set_value(GtkEntry *entry)
   gtk_entry_set_text(GTK_ENTRY(entry), str->str);
 
   g_string_free(str, TRUE);
-
+  uim_custom_free(custom);
 }
 
 static void
 key_pref_add_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 {
+  const char *custom_sym;
   struct uim_custom *custom;
   const char *key_code;
   GString *str;
@@ -1528,12 +1626,17 @@ key_pref_add_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 
   g_return_if_fail(GTK_IS_ENTRY(key_entry));
 
-  custom = g_object_get_data(G_OBJECT(key_entry), OBJECT_DATA_UIM_CUSTOM);
-  g_return_if_fail(custom);
+  custom_sym = g_object_get_data(G_OBJECT(key_entry), OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
+
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom && custom->type == UCustom_Key);
 
   key_code = gtk_entry_get_text(GTK_ENTRY(key_pref_win.keycode_entry));
-  if (!key_code || !*key_code)
+  if (!key_code || !*key_code) {
+    uim_custom_free(custom);
     return;
+  }
 
   str = g_string_new("");
 
@@ -1575,11 +1678,13 @@ key_pref_add_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
   }
 
   g_string_free(str, TRUE);
+  uim_custom_free(custom);
 }
 
 static void
 key_pref_remove_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 {
+  const char *custom_sym;
   struct uim_custom *custom;
   GtkTreeSelection *selection;
   GtkTreeModel *model;
@@ -1591,14 +1696,19 @@ key_pref_remove_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 
   g_return_if_fail(GTK_IS_ENTRY(key_entry));
 
-  custom = g_object_get_data(G_OBJECT(key_entry), OBJECT_DATA_UIM_CUSTOM);
-  g_return_if_fail(custom);
+  custom_sym = g_object_get_data(G_OBJECT(key_entry), OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
+
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom && custom->type == UCustom_Key);
 
   selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(key_pref_win.tree_view));
 
   selected = gtk_tree_selection_get_selected(selection, &model, &iter);
-  if (!selected)
+  if (!selected) {
+    uim_custom_free(custom);
     return;
+  }
 
   for (num = 0; custom->value->as_key[num]; num++);
 
@@ -1635,6 +1745,8 @@ key_pref_remove_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 
   selected = gtk_tree_selection_get_selected(selection, &model, &iter);
   gtk_widget_set_sensitive(key_pref_win.remove_button, selected);
+
+  uim_custom_free(custom);
 }
 
 static void
@@ -1660,14 +1772,18 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
   GtkListStore *store;
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
+  const char *custom_sym;
   struct uim_custom *custom;
   struct uim_custom_key *key;
   gint i;
 
   g_return_if_fail(GTK_IS_ENTRY(key_entry));
 
-  custom = g_object_get_data(G_OBJECT(key_entry), OBJECT_DATA_UIM_CUSTOM);
-  g_return_if_fail(custom);
+  custom_sym = g_object_get_data(G_OBJECT(key_entry), OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
+
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom && custom->type == UCustom_Key);
 
   /* setup key pref dialog */
   dialog = gtk_dialog_new_with_buttons("key", GTK_WINDOW(pref_window),
@@ -1801,6 +1917,7 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 
   /* clean */
   g_object_unref(G_OBJECT(store));
+  uim_custom_free(custom);
 }
 
 static void
@@ -1812,10 +1929,9 @@ update_custom_type_key_cb(void *ptr, const char *custom_sym)
   if (!custom || custom->type != UCustom_Key)
     return;
   
-  g_object_set_data_full(G_OBJECT(entry),
-			 OBJECT_DATA_UIM_CUSTOM, custom,
-			 (GDestroyNotify) uim_custom_free);
   gtk_widget_set_sensitive(entry, custom->is_active);
+
+  uim_custom_free(custom);
 }
 
 static void
@@ -1831,8 +1947,8 @@ add_custom_type_key(GtkWidget *vbox, struct uim_custom *custom)
   entry = gtk_entry_new();
   gtk_entry_set_editable(GTK_ENTRY(entry), FALSE);
   g_object_set_data_full(G_OBJECT(entry),
-			 OBJECT_DATA_UIM_CUSTOM, custom,
-			 (GDestroyNotify) uim_custom_free);
+			 OBJECT_DATA_UIM_CUSTOM_SYM, g_strdup(custom->symbol),
+			 (GDestroyNotify) g_free);
   gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
   key_pref_entry_set_value(GTK_ENTRY(entry));
 
@@ -1877,12 +1993,13 @@ add_custom(GtkWidget *vbox, const char *custom_sym)
       break;
     default:
       g_printerr("Invalid custom type: %d\n", custom->type);
-      uim_custom_free(custom);
       break;
     }
   } else {
     g_printerr("Faild to get uim_custom object for %s.\n", custom_sym);
   }
+
+  uim_custom_free(custom);
 }
 
 static void
