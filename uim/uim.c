@@ -463,6 +463,10 @@ static const char *
 uim_check_im_exist(const char *im_engine_name)
 {
   int i;
+
+  if (im_engine_name == NULL)
+    return NULL;
+
   for(i = 0; i < uim_nr_im; i++) {
     struct uim_im *im = &uim_im_array[i];
     if (strcmp(im_engine_name, im->name) == 0) {
