@@ -312,7 +312,7 @@ create_switcher(void)
 {
   GtkWidget *switcher_win;
   GtkWidget *scrolled_win; /* treeview container */
-  GtkWidget *hbox, *vbox1, *vbox2;
+  GtkWidget *hbox, *vbox1, *vbox2, *vbox3;
   GtkWidget *setting_button_box;
   GtkWidget *button;
   GtkWidget *frame;
@@ -327,8 +327,10 @@ create_switcher(void)
   g_signal_connect(G_OBJECT(switcher_win), "focus-in-event",
 		   G_CALLBACK(reload_im_list), NULL);
 
-  vbox1 = gtk_vbox_new(FALSE, 8);
+  vbox1 = gtk_vbox_new(FALSE, 0);
+  vbox3 = gtk_vbox_new(FALSE, 0);
   hbox = gtk_hbox_new(FALSE, 8);
+  gtk_container_set_border_width(GTK_CONTAINER(vbox3), 4);
 
   scrolled_win = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_win),
@@ -344,17 +346,20 @@ create_switcher(void)
 
 
   frame = gtk_frame_new(_("Changing way"));
-  gtk_box_pack_start(GTK_BOX(vbox1), frame, FALSE, FALSE, 3);
-  vbox2 = gtk_vbox_new(FALSE, 3);
+  gtk_frame_set_label_align(frame, 0.015, 0.5);
+
+  gtk_box_pack_start(GTK_BOX(vbox3), frame, FALSE, FALSE, 6);
+  vbox2 = gtk_vbox_new(FALSE, 8);
+  gtk_container_set_border_width(GTK_CONTAINER(vbox2), 10);
   gtk_container_add(GTK_CONTAINER(frame), vbox2);
 
   radio0 = gtk_radio_button_new_with_label(NULL, _("Change whole desktop"));
   radio1 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radio0), _("Change this application only"));
   radio2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radio0), _("Change this text area only"));
 
-  gtk_box_pack_start(GTK_BOX(vbox2), radio0, FALSE, FALSE, 3);
-  gtk_box_pack_start(GTK_BOX(vbox2), radio1, FALSE, FALSE, 3);
-  gtk_box_pack_start(GTK_BOX(vbox2), radio2, FALSE, FALSE, 3);
+  gtk_box_pack_start(GTK_BOX(vbox2), radio0, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox2), radio1, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox2), radio2, FALSE, FALSE, 0);
 
   g_signal_connect(G_OBJECT(radio0), "toggled", G_CALLBACK(toggle_changing_way), NULL);
   g_signal_connect(G_OBJECT(radio1), "toggled", G_CALLBACK(toggle_changing_way), NULL);
@@ -373,13 +378,14 @@ create_switcher(void)
 		   G_CALLBACK(gtk_main_quit), NULL);
   gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 2);
 
-  /* Apply button */
+  /* OK button */
   button = gtk_button_new_from_stock(GTK_STOCK_OK);
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(change_input_method), NULL);
   gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 2);
 
-  gtk_box_pack_start(GTK_BOX(vbox1), setting_button_box, FALSE, FALSE, 2);
+  gtk_box_pack_start(GTK_BOX(vbox3), setting_button_box, FALSE, FALSE, 8);
+  gtk_box_pack_start(GTK_BOX(vbox1), vbox3, FALSE, FALSE, 0);
   gtk_container_add(GTK_CONTAINER(switcher_win), vbox1);
 
   {
