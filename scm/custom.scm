@@ -41,11 +41,11 @@
 (define custom-group-rec-alist ())
 (define custom-subgroup-alist ())
 
-(define custom-activity-hook ())
-(define custom-update-hook ())
-(define custom-get-hook ())
-(define custom-set-hook ())
-(define custom-literalize-hook ())
+(define custom-activity-hooks ())
+(define custom-update-hooks ())
+(define custom-get-hooks ())
+(define custom-set-hooks ())
+(define custom-literalize-hooks ())
 
 (define custom-validator-alist
   '((boolean   . custom-boolean?)
@@ -255,7 +255,7 @@
 ;; API
 (define custom-value
   (lambda (sym)
-    (custom-call-hook-procs sym custom-get-hook)
+    (custom-call-hook-procs sym custom-get-hooks)
     (let ((val (symbol-value sym)))
       (if (custom-valid? sym val)
 	  val
@@ -268,13 +268,13 @@
 	 (let* ((custom-syms (custom-collect-by-group #f))
 		(pre-activities (map custom-active? custom-syms)))
 	   (set-symbol-value! sym val)
-	   (custom-call-hook-procs sym custom-set-hook)
+	   (custom-call-hook-procs sym custom-set-hooks)
 	   (let ((post-activities (map custom-active? custom-syms)))
 	     (for-each (lambda (another-sym pre post)
 			 (if (or (eq? another-sym sym)
 				 (not (eq? pre post)))
 			     (custom-call-hook-procs another-sym
-						     custom-update-hook)))
+						     custom-update-hooks)))
 		       custom-syms
 		       pre-activities
 		       post-activities)
@@ -282,7 +282,7 @@
 
 (define custom-active?
   (lambda (sym)
-    (let* ((procs (custom-hook-procs sym custom-activity-hook))
+    (let* ((procs (custom-hook-procs sym custom-activity-hooks))
 	   (activities (map (lambda (proc)
 			      (proc))
 			    procs))
@@ -373,7 +373,7 @@
 
 (define custom-as-string
   (lambda (sym)
-    (let ((hooked (custom-call-hook-procs sym custom-literalize-hook)))
+    (let ((hooked (custom-call-hook-procs sym custom-literalize-hooks)))
       (if (not (null? hooked))
 	  (apply string-append hooked)
 	  (custom-canonical-definition-as-string sym)))))
@@ -400,4 +400,4 @@
   (lambda (custom-sym ptr gate-func func)
     (and (custom-rec custom-sym)
 	 (let ((cb (lambda () (gate-func func ptr custom-sym))))
-	   (custom-add-hook custom-sym 'custom-update-hook cb)))))
+	   (custom-add-hook custom-sym 'custom-update-hooks cb)))))

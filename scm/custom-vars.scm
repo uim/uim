@@ -138,7 +138,7 @@
 
 ;; activity dependency
 (custom-add-hook 'custom-preserved-default-im-name
-		 'custom-activity-hook
+		 'custom-activity-hooks
 		 (lambda ()
 		   custom-activate-default-im-name?))
 
@@ -151,10 +151,10 @@
 
 ;; decode #f from default-im-name
 (custom-add-hook 'custom-activate-default-im-name?
-		 'custom-get-hook
+		 'custom-get-hooks
 		 custom-hook-get-default-im-name)
 (custom-add-hook 'custom-preserved-default-im-name
-		 'custom-get-hook
+		 'custom-get-hooks
 		 custom-hook-get-default-im-name)
 
 (define custom-hook-set-default-im-name
@@ -166,10 +166,10 @@
 
 ;; encode #f into default-im-name
 (custom-add-hook 'custom-activate-default-im-name?
-		 'custom-set-hook
+		 'custom-set-hooks
 		 custom-hook-set-default-im-name)
 (custom-add-hook 'custom-preserved-default-im-name
-		 'custom-set-hook
+		 'custom-set-hooks
 		 custom-hook-set-default-im-name)
 
 (define custom-hook-literalize-preserved-default-im-name
@@ -184,7 +184,7 @@
      ")")))
 
 (custom-add-hook 'custom-preserved-default-im-name
-		 'custom-literalize-hook
+		 'custom-literalize-hooks
 		 custom-hook-literalize-preserved-default-im-name)
 
 ;;
@@ -208,7 +208,7 @@
 
 ;; activity dependency
 (custom-add-hook 'switch-im-key?
-		 'custom-activity-hook
+		 'custom-activity-hooks
 		 (lambda ()
 		   enable-im-switch))
 
@@ -321,7 +321,7 @@
 
 ;; activity dependency
 (custom-add-hook 'custom-preserved-canna-server-name
-		 'custom-activity-hook
+		 'custom-activity-hooks
 		 (lambda ()
 		   custom-activate-canna-server-name?))
 
@@ -334,10 +334,10 @@
 
 ;; decode #f from canna-server-name
 (custom-add-hook 'custom-activate-canna-server-name?
-		 'custom-get-hook
+		 'custom-get-hooks
 		 custom-hook-get-canna-server-name)
 (custom-add-hook 'canna-server-name
-		 'custom-get-hook
+		 'custom-get-hooks
 		 custom-hook-get-canna-server-name)
 
 (define custom-hook-set-canna-server-name
@@ -348,10 +348,10 @@
 
 ;; encode #f into canna-server-name
 (custom-add-hook 'custom-activate-canna-server-name?
-		 'custom-set-hook
+		 'custom-set-hooks
 		 custom-hook-set-canna-server-name)
 (custom-add-hook 'custom-preserved-canna-server-name
-		 'custom-set-hook
+		 'custom-set-hooks
 		 custom-hook-set-canna-server-name)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -683,46 +683,46 @@
 
   ("test custom-active?"
    (uim '(custom-add-hook 'test-custom1
-			  'custom-activity-hook
+			  'custom-activity-hooks
 			  (lambda ()
 			    (symbol-bound? 'car))))
    (assert-true  (uim-bool '(custom-active? 'test-custom1)))
 
    (uim '(custom-add-hook 'test-custom1
-			  'custom-activity-hook
+			  'custom-activity-hooks
 			  (lambda ()
 			    (symbol-bound? 'cdr))))
    (assert-true  (uim-bool '(custom-active? 'test-custom1)))
   
    (uim '(begin
 	   (custom-add-hook 'test-custom1
-			    'custom-activity-hook
+			    'custom-activity-hooks
 			    (lambda ()
 			      (symbol-bound? 'test-nonexistent)))))
    (assert-false (uim-bool '(custom-active? 'test-custom1)))
 
    (uim '(custom-add-hook 'test-custom1
-			  'custom-activity-hook
+			  'custom-activity-hooks
 			  (lambda ()
 			    (symbol-bound? 'cons))))
    (assert-false (uim-bool '(custom-active? 'test-custom1))))
 
-  ("test custom-update-hook"
+  ("test custom-update-hooks"
    (uim '(custom-add-hook 'test-custom1
-			  'custom-activity-hook
+			  'custom-activity-hooks
 			  (lambda ()
 			    (eq? test-custom3 'test-custom3-uim))))
    (uim '(custom-add-hook 'test-custom2
-			  'custom-activity-hook
+			  'custom-activity-hooks
 			  (lambda ()
 			    (eq? test-custom3 'test-custom3-uim))))
    (uim '(custom-add-hook 'test-custom1
-			  'custom-update-hook
+			  'custom-update-hooks
 			  (lambda ()
 			    (set! test-custom1-trace
 				  (cons 'updated test-custom1-trace)))))
    (uim '(custom-add-hook 'test-custom2
-			  'custom-update-hook
+			  'custom-update-hooks
 			  (lambda ()
 			    (set! test-custom2-trace
 				  (cons 'updated test-custom2-trace)))))
@@ -742,13 +742,13 @@
 		 (uim 'test-custom2-trace))
    (assert-true  (uim-bool '(custom-active? 'test-custom1)))
    (assert-true  (uim-bool '(custom-active? 'test-custom2))))
-  ("test custom-update-hook (self update)"
+  ("test custom-update-hooks (self update)"
    (uim '(custom-add-hook 'test-custom1
-			  'custom-activity-hook
+			  'custom-activity-hooks
 			  (lambda ()
 			    (eq? test-custom1 'test-custom1-uim))))
    (uim '(custom-add-hook 'test-custom1
-			  'custom-update-hook
+			  'custom-update-hooks
 			  (lambda ()
 			    (set! test-custom1-trace
 				  (cons 'updated test-custom1-trace)))))
@@ -814,7 +814,7 @@
 	     "Test custom1"
 	     "long description will be here."))))
 
-  ("test custom-get-hook"
+  ("test custom-get-hooks"
    (assert-equal ()
 		 (uim 'test-custom1-trace))
    (assert-equal 'test-custom1-ddskk
@@ -822,7 +822,7 @@
    (assert-equal ()
 		 (uim 'test-custom1-trace))
    (uim '(custom-add-hook 'test-custom1
-			  'custom-get-hook
+			  'custom-get-hooks
 			  (lambda ()
 			    (set! test-custom1-trace
 				  (cons 'first
@@ -833,7 +833,7 @@
 		 (uim '(custom-value 'test-custom1)))
    (assert-equal '(first)
 		 (uim 'test-custom1-trace)))
-  ("test custom-get-hook (self update)"
+  ("test custom-get-hooks (self update)"
    (assert-equal ()
 		 (uim 'test-custom1-trace))
    (assert-equal 'test-custom1-ddskk
@@ -841,7 +841,7 @@
    (assert-equal ()
 		 (uim 'test-custom1-trace))
    (uim '(custom-add-hook 'test-custom1
-			  'custom-get-hook
+			  'custom-get-hooks
 			  (lambda ()
 			    (set! test-custom1
 				  'test-custom1-uim)
@@ -855,7 +855,7 @@
    (assert-equal '(first)
 		 (uim 'test-custom1-trace)))
 
-  ("test custom-set-hook"
+  ("test custom-set-hooks"
    (assert-equal 'test-custom1-ddskk
 		 (uim '(custom-value 'test-custom1)))
    (assert-equal '()
@@ -866,7 +866,7 @@
    (assert-equal '()
 		 (uim 'test-custom1-trace))
    (uim '(custom-add-hook 'test-custom1
-			  'custom-set-hook
+			  'custom-set-hooks
 			  (lambda ()
 			    (set! test-custom1-trace
 				  (cons 'second
@@ -880,7 +880,7 @@
 		 (uim '(custom-value 'test-custom1)))
    (assert-equal '(second)
 		 (uim 'test-custom1-trace)))
-  ("test custom-set-hook (self update)"
+  ("test custom-set-hooks (self update)"
    (assert-equal 'test-custom1-ddskk
 		 (uim '(custom-value 'test-custom1)))
    (assert-equal '()
@@ -891,7 +891,7 @@
    (assert-equal '()
 		 (uim 'test-custom1-trace))
    (uim '(custom-add-hook 'test-custom1
-			  'custom-set-hook
+			  'custom-set-hooks
 			  (lambda ()
 			    (set! test-custom1
 				  'test-custom1-canna)
@@ -1277,11 +1277,11 @@
   ("test custom-as-string"
    (assert-equal "(define test-style 'test-style-ddskk)"
 		 (uim '(custom-as-string 'test-style)))
-   (uim '(custom-add-hook 'test-style 'custom-literalize-hook
+   (uim '(custom-add-hook 'test-style 'custom-literalize-hooks
 			  (lambda () "(define test-style 'hooked)")))
    (assert-equal "(define test-style 'hooked)"
 		 (uim '(custom-as-string 'test-style)))
-   (uim '(custom-add-hook 'test-style 'custom-literalize-hook
+   (uim '(custom-add-hook 'test-style 'custom-literalize-hooks
 			  (lambda () "(define test-style 'hooked2)")))
    (assert-equal "(define test-style 'hooked2)(define test-style 'hooked)"
 		 (uim '(custom-as-string 'test-style)))))
