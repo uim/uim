@@ -119,8 +119,14 @@ AC_ARG_WITH(canna,
 	use_canna="no"
 ])
 
-# Checks for header files.
 AC_PATH_XTRA
+
+if test x$with_x = xyes && test x$have_x = xyes; then
+   use_x="yes"
+fi
+
+
+# Checks for header files.
 AC_FUNC_ALLOCA
 AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h locale.h stdlib.h unistd.h])
@@ -386,6 +392,7 @@ AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test x$default_toolkit = xqt)
 AM_CONDITIONAL(GNOME2, test x$use_gnome2 = xyes)
 AM_CONDITIONAL(APPLET, test x$use_applet = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
+AM_CONDITIONAL(XIM, test x$use_x = xyes)
 AM_CONDITIONAL(DICT, test x$use_dict = xyes)
 AM_CONDITIONAL(DEBUG, test x$enable_debug = xyes)
 AM_CONDITIONAL(COMPAT_SCM, test x$enable_compat_scm = xyes)
