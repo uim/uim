@@ -287,9 +287,9 @@ filter_keypress(GtkIMContext *ic,
     int mod = convert_modifier(key->state);
 
     if (key->type == GDK_KEY_RELEASE) {
-      rv = uim_release_key(focused_context->uc, kv, mod);
+      rv = uim_release_key(uic->uc, kv, mod);
     } else {
-      rv = uim_press_key(focused_context->uc, kv, mod);
+      rv = uim_press_key(uic->uc, kv, mod);
     }
     if (rv) {
       return gtk_im_context_filter_keypress(uic->slave, key);
