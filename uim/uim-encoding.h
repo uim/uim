@@ -96,7 +96,6 @@ static const char *alias_iso88592[] = {
   "iso8859-2", "8859-2", "iso8859_2", "iso_8859_2",
   NULL
 };
-
 static const char *alias_iso88593[] = {
   "ISO-8859-3", "ISO-IR-109", "ISO_8859-3:1988", "ISO_8859-3",
   "LATIN3", "L3", "csISOLatin3", "913", "cp913", "ibm-913", "ibm913",
@@ -325,7 +324,7 @@ static const char **uim_encoding_list[] = {
   alias_cp1255,
   alias_tis620,
   alias_georgianps,
-  NULL,
+  NULL
 };
 
 #endif
