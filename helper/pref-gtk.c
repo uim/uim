@@ -190,7 +190,7 @@ quit_confirm (void)
 				    GTK_MESSAGE_QUESTION,
 				    GTK_BUTTONS_OK_CANCEL,
 				    _("Some value(s) have been changed.\n"
-				    "Do you realy quit this program?"));
+				      "Do you realy quit this program?"));
     gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(pref_window));
     gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER_ON_PARENT);
     g_signal_connect(G_OBJECT(dialog), "response",
@@ -632,27 +632,14 @@ key_pref_selection_changed(GtkTreeSelection *selection,
 
   selected = gtk_tree_selection_get_selected(selection, &model, &iter);
 
-  /* gtk_widget_set_sensitive(key_pref_win.remove_button, selected); */
+  gtk_widget_set_sensitive(key_pref_win.remove_button, selected);
 
   return TRUE;
 }
 
-static gboolean
-grab_win_key_press_cb (GtkWidget *widget, GdkEventKey *event,
-		       gpointer user_data)
+static void
+key_pref_set_value(guint keyval, GdkModifierType mod)
 {
-  key_pref_win.grabbed_key_val   = event->keyval;
-  key_pref_win.grabbed_key_state = event->state;
-
-  return FALSE;
-}
-
-static gboolean
-grab_win_key_release_cb (GtkWidget *widget, GdkEventKey *event,
-			 gpointer user_data)
-{
-  guint keyval = key_pref_win.grabbed_key_val;
-  GdkModifierType mod = key_pref_win.grabbed_key_state;
   gchar keystr[256] = {0};
   gint len = sizeof(keystr) / sizeof(gchar);
 
@@ -720,38 +707,26 @@ grab_win_key_release_cb (GtkWidget *widget, GdkEventKey *event,
     g_snprintf(keystr, len, "Muhenkan");
     break;
   case GDK_Shift_L:
-    g_snprintf(keystr, len, "Shift_key");
-    break;
   case GDK_Shift_R:
     g_snprintf(keystr, len, "Shift_key");
     break;
   case GDK_Control_L:
-    g_snprintf(keystr, len, "Control_key");
-    break;
   case GDK_Control_R:
     g_snprintf(keystr, len, "Control_key");
     break;
   case GDK_Alt_L:
-    g_snprintf(keystr, len, "Alt_key");
-    break;
   case GDK_Alt_R:
     g_snprintf(keystr, len, "Alt_key");
     break;
   case GDK_Meta_L:
-    g_snprintf(keystr, len, "Meta_key");
-    break;
   case GDK_Meta_R:
     g_snprintf(keystr, len, "Meta_key");
     break;
   case GDK_Super_L:
-    g_snprintf(keystr, len, "Super_key");
-    break;
   case GDK_Super_R:
     g_snprintf(keystr, len, "Super_key");
     break;
   case GDK_Hyper_L:
-    g_snprintf(keystr, len, "Hyper_key");
-    break;
   case GDK_Hyper_R:
     g_snprintf(keystr, len, "Hyper_key");
     break;
@@ -773,21 +748,47 @@ grab_win_key_release_cb (GtkWidget *widget, GdkEventKey *event,
 
   key_pref_win.grabbed_key_val   = 0;
   key_pref_win.grabbed_key_state = 0;
+}
+
+static gboolean
+grab_win_key_press_cb (GtkWidget *widget, GdkEventKey *event,
+		       GtkEntry *key_entry)
+{
+  key_pref_win.grabbed_key_val   = event->keyval;
+  key_pref_win.grabbed_key_state = event->state;
+
+  return FALSE;
+}
+
+static gboolean
+grab_win_key_release_cb (GtkWidget *widget, GdkEventKey *event,
+			 GtkEntry *key_entry)
+{
+  key_pref_set_value(key_pref_win.grabbed_key_val,
+		     key_pref_win.grabbed_key_state);
 
   g_signal_handlers_disconnect_by_func(G_OBJECT(widget),
 				       (gpointer) grab_win_key_press_cb,
-				       NULL);
+				       key_entry);
   g_signal_handlers_disconnect_by_func(G_OBJECT(widget),
 				       (gpointer) grab_win_key_release_cb,
-				       NULL);
+				       key_entry);
 
   gtk_dialog_response(GTK_DIALOG(widget), 0);
 
   return TRUE;
 }
 
+static gboolean
+key_choose_entry_key_press_cb (GtkWidget *widget, GdkEventKey *event,
+			       GtkEntry *key_entry)
+{
+  key_pref_set_value(event->keyval, event->state);
+  return TRUE;
+}
+
 static void
-choose_key_button_clicked_cb(GtkWidget *widget, gpointer user_data)
+choose_key_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 {
   GtkWidget *dialog;
   gint rv;
@@ -799,9 +800,9 @@ choose_key_button_clicked_cb(GtkWidget *widget, gpointer user_data)
 				  _("Press any key to grab..."));
   gtk_window_set_title(GTK_WINDOW(dialog), "Grabbing a key");
   g_signal_connect(G_OBJECT(dialog), "key-press-event",
-		   G_CALLBACK(grab_win_key_press_cb), NULL);
+		   G_CALLBACK(grab_win_key_press_cb), key_entry);
   g_signal_connect(G_OBJECT(dialog), "key-release-event",
-		   G_CALLBACK(grab_win_key_release_cb), NULL);
+		   G_CALLBACK(grab_win_key_release_cb), key_entry);
 
   gtk_widget_realize(dialog);
   gdk_keyboard_grab(GTK_WIDGET(dialog)->window,
@@ -814,12 +815,52 @@ choose_key_button_clicked_cb(GtkWidget *widget, gpointer user_data)
 }
 
 static void
-key_pref_add_button_clicked_cb(GtkWidget *widget, gpointer user_data)
+key_pref_entry_set_value(GtkEntry *entry)
 {
+  GString *str;
+  struct uim_custom *custom;
+  struct uim_custom_key *key;
+  gint i;
+
+  custom = g_object_get_data(G_OBJECT(entry), OBJECT_DATA_UIM_CUSTOM);
+  g_return_if_fail(custom);
+
+  str = g_string_new("");
+
+  if (custom->value->as_key) {
+    for (key = custom->value->as_key[0], i = 0;
+	 key;
+	 key = custom->value->as_key[++i])
+    {
+      if (i != 0)
+	g_string_append(str, ",");
+      g_string_append(str, key->literal);
+    }
+  } else {
+    /* error message */
+  }
+
+  gtk_entry_set_text(GTK_ENTRY(entry), str->str);
+
+  g_string_free(str, TRUE);
+
+}
+
+static void
+key_pref_add_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
+{
+  struct uim_custom *custom;
   const char *key_code;
   GString *str;
   GtkTreeModel *model;
   GtkTreeIter iter;
+  gint num;
+  uim_bool rv;
+
+  g_return_if_fail(GTK_IS_ENTRY(key_entry));
+
+  custom = g_object_get_data(G_OBJECT(key_entry), OBJECT_DATA_UIM_CUSTOM);
+  g_return_if_fail(custom);
 
   key_code = gtk_entry_get_text(GTK_ENTRY(key_pref_win.keycode_entry));
   if (!key_code || !*key_code)
@@ -836,22 +877,56 @@ key_pref_add_button_clicked_cb(GtkWidget *widget, gpointer user_data)
 
   g_string_append(str, key_code);
 
-  model = gtk_tree_view_get_model(GTK_TREE_VIEW(key_pref_win.tree_view));
-  gtk_list_store_append(GTK_LIST_STORE(model), &iter);
-  gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-		     0, str->str,
-		     -1);
+  for (num = 0; custom->value->as_key[num]; num++);
+  num++;
+
+  custom->value->as_key = realloc(custom->value->as_key, sizeof(struct uim_custom *) * (num + 1));
+
+  custom->value->as_key[num - 1] = malloc(sizeof(struct uim_custom));
+  custom->value->as_key[num - 1]->type = UCustomKey_Regular;
+  custom->value->as_key[num - 1]->editor_type = UCustomKeyEditor_Basic;
+  custom->value->as_key[num - 1]->literal = strdup(str->str);
+  custom->value->as_key[num - 1]->label = strdup("");
+  custom->value->as_key[num - 1]->desc = strdup("");
+  custom->value->as_key[num] = NULL;
+
+  rv = uim_custom_set(custom);
+
+  if (rv != UIM_FALSE) {
+    value_changed = TRUE;
+    g_object_set_data(G_OBJECT(current_group_widget),
+		      OBJECT_DATA_VALUE_CHANGED,
+		      GINT_TO_POINTER(TRUE));
+
+    model = gtk_tree_view_get_model(GTK_TREE_VIEW(key_pref_win.tree_view));
+    gtk_list_store_append(GTK_LIST_STORE(model), &iter);
+    gtk_list_store_set(GTK_LIST_STORE(model), &iter,
+		       0, str->str,
+		       -1);
+    key_pref_entry_set_value(key_entry);
+  } else {
+    g_printerr("Faild to set key value for \"%s\".\n", custom->symbol);
+  }
 
   g_string_free(str, TRUE);
 }
 
 static void
-key_pref_remove_button_clicked_cb(GtkWidget *widget, gpointer user_data)
+key_pref_remove_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 {
+  struct uim_custom *custom;
   GtkTreeSelection *selection;
   GtkTreeModel *model;
   GtkTreeIter iter;
+  GtkTreePath *path;
   gboolean selected;
+  gint num, *indices;
+  uim_bool rv;
+
+  g_return_if_fail(GTK_IS_ENTRY(key_entry));
+
+  custom = g_object_get_data(G_OBJECT(key_entry), OBJECT_DATA_UIM_CUSTOM);
+  g_return_if_fail(custom);
 
   selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(key_pref_win.tree_view));
 
@@ -859,19 +934,71 @@ key_pref_remove_button_clicked_cb(GtkWidget *widget, gpointer user_data)
   if (!selected)
     return;
 
-  gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+  for (num = 0; custom->value->as_key[num]; num++);
+
+  path = gtk_tree_model_get_path(model, &iter);
+  indices = gtk_tree_path_get_indices(path);
+
+  if (num > 0 && *indices < num) {
+    free(custom->value->as_key[*indices]->literal);
+    free(custom->value->as_key[*indices]->label);
+    free(custom->value->as_key[*indices]->desc);
+    free(custom->value->as_key[*indices]);
+
+    memmove(custom->value->as_key + *indices,
+	    custom->value->as_key + *indices + 1,
+	    sizeof(struct uim_custom_key *) * (num - *indices));
+    custom->value->as_key = realloc(custom->value->as_key,
+				    sizeof(struct uim_custom_key *) * num);
+
+    rv = uim_custom_set(custom);
+
+    if (rv != UIM_FALSE) {
+      value_changed = TRUE;
+      g_object_set_data(G_OBJECT(current_group_widget),
+			OBJECT_DATA_VALUE_CHANGED,
+			GINT_TO_POINTER(TRUE));
+      gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+
+      key_pref_entry_set_value(key_entry);
+    } else {
+      g_printerr("Faild to set key value for \"%s\".\n", custom->symbol);
+    }
+  } else {
+    /* error */
+  }
+
+  gtk_tree_path_free(path);
+
+  selected = gtk_tree_selection_get_selected(selection, &model, &iter);
+  gtk_widget_set_sensitive(key_pref_win.remove_button, selected);
 }
 
 static void
-choose_key_clicked_cb(GtkWidget *widget, struct uim_custom *custom)
+key_val_entry_changed_cb(GtkEntry *entry, GtkEntry *key_entry)
+{
+  const char *str = gtk_entry_get_text(entry);
+
+  /* FIXME! validate key value */
+  gtk_widget_set_sensitive(key_pref_win.add_button, str && *str);
+}
+
+static void
+choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 {
   GtkWidget *dialog, *scrwin, *view, *hbox, *vbox, *button, *entry;
   GtkTreeSelection *selection;
   GtkListStore *store;
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
+  struct uim_custom *custom;
   struct uim_custom_key *key;
   gint i;
+
+  g_return_if_fail(GTK_IS_ENTRY(key_entry));
+
+  custom = g_object_get_data(G_OBJECT(key_entry), OBJECT_DATA_UIM_CUSTOM);
+  g_return_if_fail(custom);
 
   /* setup key pref dialog */
   dialog = gtk_dialog_new_with_buttons("key", GTK_WINDOW(pref_window),
@@ -913,7 +1040,7 @@ choose_key_clicked_cb(GtkWidget *widget, struct uim_custom *custom)
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
   gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
   g_signal_connect (G_OBJECT(selection), "changed",
-		    G_CALLBACK(key_pref_selection_changed), NULL);
+		    G_CALLBACK(key_pref_selection_changed), key_entry);
 
   vbox = gtk_vbox_new(TRUE, 0);
   gtk_box_pack_start(GTK_BOX(hbox), vbox, FALSE, FALSE, 4);
@@ -933,14 +1060,16 @@ choose_key_clicked_cb(GtkWidget *widget, struct uim_custom *custom)
   key_pref_win.add_button = button;
   gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 2);
   g_signal_connect(G_OBJECT(button), "clicked",
-		   G_CALLBACK(key_pref_add_button_clicked_cb), NULL);
+		   G_CALLBACK(key_pref_add_button_clicked_cb), key_entry);
+  gtk_widget_set_sensitive(button, FALSE);
   gtk_widget_show(button);
 
   button = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
   key_pref_win.remove_button = button;
   gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 2);
   g_signal_connect(G_OBJECT(button), "clicked",
-		   G_CALLBACK(key_pref_remove_button_clicked_cb), NULL);
+		   G_CALLBACK(key_pref_remove_button_clicked_cb), key_entry);
+  gtk_widget_set_sensitive(button, FALSE);
   gtk_widget_show(button);
 
   hbox = gtk_hbox_new(FALSE, 0);
@@ -964,15 +1093,20 @@ choose_key_clicked_cb(GtkWidget *widget, struct uim_custom *custom)
   gtk_widget_show(button);
 
   entry = gtk_entry_new();
+  gtk_entry_set_editable(GTK_ENTRY(entry), FALSE);
   key_pref_win.keycode_entry = entry;
   gtk_widget_set_size_request(GTK_WIDGET(entry), 100, -1);
   gtk_box_pack_start(GTK_BOX(hbox), entry, TRUE, TRUE, 4);
+  g_signal_connect(G_OBJECT(entry), "changed",
+		   G_CALLBACK(key_val_entry_changed_cb), key_entry);
+  g_signal_connect(G_OBJECT(entry), "key-press-event",
+		   G_CALLBACK(key_choose_entry_key_press_cb), key_entry);
   gtk_widget_show(entry);
 
   button = gtk_button_new_with_label(_("..."));
   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 4);
   g_signal_connect(G_OBJECT(button), "clicked",
-		   G_CALLBACK(choose_key_button_clicked_cb), NULL);
+		   G_CALLBACK(choose_key_button_clicked_cb), key_entry);
   gtk_widget_show(button);
 
   /* set value */
@@ -1004,9 +1138,6 @@ add_custom_type_key(GtkWidget *vbox, struct uim_custom *custom)
 {
   GtkWidget *hbox;
   GtkWidget *label, *entry, *button;
-  struct uim_custom_key *key;
-  GString *str = g_string_new("");
-  gint i;
 
   hbox = gtk_hbox_new(FALSE, 8);
   label = gtk_label_new(custom->label);
@@ -1017,32 +1148,13 @@ add_custom_type_key(GtkWidget *vbox, struct uim_custom *custom)
   g_object_set_data_full(G_OBJECT(entry),
 			 OBJECT_DATA_UIM_CUSTOM, custom,
 			 (GDestroyNotify) uim_custom_free);
-
-  if (custom->value->as_key) {
-    for (key = custom->value->as_key[0], i = 0;
-	 key;
-	 key = custom->value->as_key[++i])
-    {
-      if (i != 0)
-	g_string_append(str, ",");
-      g_string_append(str, key->literal);
-    }
-  } else {
-    /* error message */
-  }
   gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
-  /*
-  g_signal_connect(G_OBJECT(entry), "changed",
-		   G_CALLBACK(custom_entry_changed_cb), NULL);
-  */
-  gtk_entry_set_text(GTK_ENTRY(entry), str->str);
-
-  g_string_free(str, TRUE);
+  key_pref_entry_set_value(GTK_ENTRY(entry));
 
   button = gtk_button_new_with_label(_("Choose..."));
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, FALSE, 0);
   g_signal_connect(G_OBJECT(button), "clicked",
-		   G_CALLBACK(choose_key_clicked_cb), custom);
+		   G_CALLBACK(choose_key_clicked_cb), entry);
 
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 }
