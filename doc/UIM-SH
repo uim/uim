@@ -6,6 +6,8 @@ uim-sh
 Usage
  uim-sh [options]
   -b        batch mode. suppress shell prompts
+  -B        strict batch mode, implies -b. suppress shell prompts and
+            evaluated results
   -h        show help
 
 Examples
