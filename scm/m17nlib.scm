@@ -35,8 +35,8 @@
 (define m17nlib-candidate-max 10)
 
 ;; key defs
-(define-key m17nlib-on-key? generic-on-key?)
-(define-key m17nlib-off-key? generic-off-key?)
+(define-key m17nlib-on-key? 'generic-on-key?)
+(define-key m17nlib-off-key? 'generic-off-key?)
 
 ;; widgets and actions
 
