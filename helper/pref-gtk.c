@@ -44,7 +44,6 @@
 #include "uim/gettext.h"
 
 #define OBJECT_DATA_UIM_CUSTOM    "uim-pref-gtk::uim-custom"
-#define OBJECT_DATA_VALUE_CHANGED "uim-pref-gtk::value-changed"
 
 static GtkWidget *pref_window = NULL;
 static GtkWidget *pref_tree_view = NULL;
@@ -98,12 +97,10 @@ save_confirm_dialog_response_cb(GtkDialog *dialog, gint arg, gpointer user_data)
   case GTK_RESPONSE_YES:
     uim_custom_save();
     uim_custom_broadcast();
-    g_object_set_data(G_OBJECT(current_group_widget),
-		      OBJECT_DATA_VALUE_CHANGED,
-		      GINT_TO_POINTER(FALSE));
     value_changed = FALSE;
     break;
   case GTK_RESPONSE_NO:
+    value_changed = FALSE;
     break;
   default:
     break;
@@ -119,13 +116,9 @@ pref_tree_selection_changed(GtkTreeSelection *selection,
   GtkTreeModel *model;
   char *group_name;
   GtkWidget *group_widget;
-  gboolean changed = FALSE;
 
   /* Preference save check should be here. */
-  if (current_group_widget)
-    changed = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(current_group_widget),
-						OBJECT_DATA_VALUE_CHANGED));
-  if (changed) {
+  if (value_changed) {
     GtkWidget *dialog;
     dialog = gtk_message_dialog_new(NULL,
 				    GTK_DIALOG_MODAL,
@@ -293,9 +286,6 @@ custom_check_button_toggled_cb(GtkToggleButton *button, gpointer user_data)
 
     if (rv) {
       value_changed = TRUE;
-      g_object_set_data(G_OBJECT(current_group_widget),
-			OBJECT_DATA_VALUE_CHANGED,
-			GINT_TO_POINTER(TRUE));
     } else {
       g_printerr("Faild to set bool value for \"%s\".\n", custom->symbol);
       /* FIXME! reset the widget */
@@ -366,9 +356,6 @@ custom_adjustment_value_changed(GtkAdjustment *adj, gpointer user_data)
 
     if (rv) {
       value_changed = TRUE;
-      g_object_set_data(G_OBJECT(current_group_widget),
-			OBJECT_DATA_VALUE_CHANGED,
-			GINT_TO_POINTER(FALSE));
     } else {
       g_printerr("Faild to set int value for \"%s\".\n", custom->symbol);
       /* FIXME! reset the widget */
@@ -436,9 +423,6 @@ custom_entry_changed_cb(GtkEntry *entry, gpointer user_data)
 
     if (rv) {
       value_changed = TRUE;
-      g_object_set_data(G_OBJECT(current_group_widget),
-			OBJECT_DATA_VALUE_CHANGED,
-			GINT_TO_POINTER(FALSE));
     } else {
       g_printerr("Faild to set str value for \"%s\".\n", custom->symbol);
       /* FIXME! reset the widget */
@@ -586,9 +570,6 @@ custom_combo_box_changed(GtkComboBox *combo_box, gpointer user_data)
 
     if (rv) {
       value_changed = TRUE;
-      g_object_set_data(G_OBJECT(current_group_widget),
-			OBJECT_DATA_VALUE_CHANGED,
-			GINT_TO_POINTER(FALSE));
     } else {
       g_printerr("Faild to set str value for \"%s\".\n", custom->symbol);
       /* FIXME! reset the widget */
@@ -1582,10 +1563,6 @@ key_pref_add_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 
   if (rv != UIM_FALSE) {
     value_changed = TRUE;
-    g_object_set_data(G_OBJECT(current_group_widget),
-		      OBJECT_DATA_VALUE_CHANGED,
-		      GINT_TO_POINTER(TRUE));
-
     model = gtk_tree_view_get_model(GTK_TREE_VIEW(key_pref_win.tree_view));
     gtk_list_store_append(GTK_LIST_STORE(model), &iter);
     gtk_list_store_set(GTK_LIST_STORE(model), &iter,
@@ -1643,9 +1620,6 @@ key_pref_remove_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 
     if (rv != UIM_FALSE) {
       value_changed = TRUE;
-      g_object_set_data(G_OBJECT(current_group_widget),
-			OBJECT_DATA_VALUE_CHANGED,
-			GINT_TO_POINTER(TRUE));
       gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
 
       key_pref_entry_set_value(key_entry);
@@ -1910,24 +1884,6 @@ add_custom(GtkWidget *vbox, const char *custom_sym)
   }
 }
 
-static gboolean
-pref_tree_model_foreach_unset_value_changed_fn(GtkTreeModel *model,
-					       GtkTreePath *path,
-					       GtkTreeIter *iter,
-					       gpointer data)
-{
-  GtkWidget *widget = NULL;
-
-  gtk_tree_model_get(model, iter,
-		     GROUP_WIDGET, &widget,
-		     -1);
-  if (widget)
-    g_object_set_data(G_OBJECT(widget), OBJECT_DATA_VALUE_CHANGED,
-		      GINT_TO_POINTER(FALSE));
-
-  return FALSE;
-}
-
 static void
 ok_button_clicked(GtkButton *button, gpointer user_data)
 {
@@ -1937,10 +1893,6 @@ ok_button_clicked(GtkButton *button, gpointer user_data)
     uim_custom_save();
     uim_custom_broadcast();
     value_changed = FALSE;
-    gtk_tree_model_foreach(
-      gtk_tree_view_get_model(GTK_TREE_VIEW(pref_tree_view)),
-      pref_tree_model_foreach_unset_value_changed_fn,
-      NULL);
   }
 
   gtk_main_quit();
@@ -1957,17 +1909,6 @@ apply_button_clicked(GtkButton *button, gpointer user_data)
     uim_custom_broadcast();
     fprintf(stderr, "broadcast done\n");
     value_changed = FALSE;
-
-    /*
-      This code fragment is very slow. It takes approximately 8 second
-      in my environment. And it seems to be increasing by number of
-      custom variables exponentially. Can it be reduced? -- YamaKen
-      2005-02-03
-    */
-    gtk_tree_model_foreach(
-      gtk_tree_view_get_model(GTK_TREE_VIEW(pref_tree_view)), 
-      pref_tree_model_foreach_unset_value_changed_fn,
-      NULL);
   }
 }
 
