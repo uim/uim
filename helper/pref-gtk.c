@@ -611,12 +611,12 @@ update_custom_type_choice_cb(void *ptr, const char *custom_sym)
 			 OBJECT_DATA_UIM_CUSTOM, custom,
 			 (GDestroyNotify) uim_custom_free);
   gtk_widget_set_sensitive(combobox, custom->is_active);
-
+  /*
   item = custom->range->as_choice.valid_items;
 
   if(item == NULL || *item == NULL)
     return;
-
+  
   g_signal_handlers_disconnect_by_func(G_OBJECT(combobox), (gpointer)custom_combo_box_changed, NULL);
 
   gtk_cell_layout_clear(GTK_CELL_LAYOUT(combobox));
@@ -633,6 +633,7 @@ update_custom_type_choice_cb(void *ptr, const char *custom_sym)
   gtk_combo_box_set_active(GTK_COMBO_BOX(combobox), default_index);
   g_signal_connect(G_OBJECT(combobox), "changed",
 		   G_CALLBACK(custom_combo_box_changed), NULL);
+  */
 }
 
 static void
