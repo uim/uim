@@ -141,7 +141,7 @@ uim_helper_send_message(int fd, const char *message)
 
 	FD_ZERO(&fds);
 	FD_SET(fd, &fds);
-	tv.tv_sec = 10;
+	tv.tv_sec = 2;
 	tv.tv_usec = 0;
 	rc = select(fd + 1, NULL, &fds, NULL, &tv);
 	if (rc > 0 && FD_ISSET(fd, &fds)) {
