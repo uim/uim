@@ -442,7 +442,7 @@ add_custom_type_choice(GtkWidget *vbox, struct uim_custom *custom)
 			 OBJECT_DATA_UIM_CUSTOM, custom,
 			 (GDestroyNotify) uim_custom_free);
   
-  default_symbol = custom->default_value->as_choice->symbol;
+  default_symbol = custom->value->as_choice->symbol;
 
   for(i = 0, item = custom->range->as_choice.valid_items; *item; i++, item++) {
     gtk_combo_box_append_text(GTK_COMBO_BOX(combobox),
