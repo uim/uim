@@ -95,6 +95,7 @@
   (list
    (cons 'consume         (lambda (ev) (event-set-consumed! ev #t) #t))
    (cons 'peek            (lambda (ev) (event-set-consumed! ev 'peek) #t))
+   (cons 'drop-release    (lambda (ev) (event-set-consumed! ev 'drop-release) #t))
    (cons 'loopback        (lambda (ev) (event-set-loopback! ev #t) #t))))
 
 (define event-exp-predicate
@@ -248,6 +249,14 @@
     (any (lambda (exp)
 	   (event-exp-has-elem? exp elem))
 	 exp-list)))
+
+(define event-exp-has-explicit-press?
+  (lambda (exp)
+    (let ((press-pred (event-exp-predicate 'press)))
+      (if (pair? exp)
+	  (memq press-pred exp)
+	  (eq? press-pred exp)))))
+	
 
 ;; side effect: event-consumed of passed ev is modified when matched
 ;; and explicit directive 'consume' or 'peek' is specified. The
@@ -429,40 +438,15 @@
 (define event-exp-list-expand-macro
   (lambda (ev-exps parsed)
     (if (null? ev-exps)
-	(list (reverse parsed))
-	(let ((exp (car ev-exps))
-	      (rest (cdr ev-exps)))
-	  (cond
-	   ;; fast path for implicit press-release macro
-	   ((event-exp-implicit-macro? exp)
-	    (let ((expanded (car (event-exp-expand-macro-press-release exp))))
-	      (event-exp-list-expand-macro
-	       rest
-	       (append-reverse expanded parsed))))
-	   ;; ordinary macros
-	   ((event-exp-formal-macro? exp)
-	    (let* ((macro-sym (car exp))
-		   (macro-args (cdr exp))
-		   (macro (assq-cdr macro-sym event-exp-macro-alist)))
-	      (append-map (lambda (expanded)
-			    (event-exp-list-expand-macro
-			     rest
-			     (append-reverse expanded parsed)))
-			  (macro macro-args))))
-	   ;; AND expression, other simple elements
-	   (else
-	    (event-exp-list-expand-macro rest (cons exp parsed))))))))
-
-(define event-exp-list-expand-macro
-  (lambda (ev-exps parsed)
-    (if (null? ev-exps)
 	(list (concatenate (reverse parsed)))
 	(let ((exp (car ev-exps))
 	      (rest (cdr ev-exps)))
 	  (cond
-	   ;; fast path for implicit press-release macro
+	   ;; fast path for implicit macro
 	   ((event-exp-implicit-macro? exp)
-	    (let ((expanded (car (event-exp-expand-macro-press-release exp))))
+	    (let ((expanded (list exp)  ;; for key-release dropper
+			    ;;(car (event-exp-expand-macro-press-release exp))
+			    ))
 	      (event-exp-list-expand-macro
 	       rest
 	       (cons expanded parsed))))
@@ -486,6 +470,10 @@
 				     event-exp-collector-fold))
 	 (canonicalize (lambda (exp)
 			 (cond
+			  ;; fast path for single expression
+			  ((or (string? exp)
+			       (symbol? exp))
+			   exp)
 			  ;; fast path for simple press-release elements
 			  ((and (pair? exp)
 				(= (length exp)
@@ -880,6 +868,10 @@
 	   (let* ((peek (eq? (event-consumed ev)
 			     'peek))
 		  (branches (evmap-tree-branches closer-tree))
+		  (ev-exp (evmap-tree-event closer-tree))
+		  (implicit-press? (and (key-event-press ev)
+					(not (event-exp-has-explicit-press?
+					      ev-exp))))
 		  (substituted (evmap-tree-new (if peek
 						   (key-event-new) ;; dummy
 						   ev)
@@ -889,7 +881,15 @@
 	     (ustr-insert-elem! seq substituted)
 	     (evmap-tree-set-action-seq! substituted
 					 (action-exp-seq-extract act-exps emc))
-	     (event-set-consumed! ev (if peek #f #t))
+	     (event-set-consumed! ev (cond
+				      (peek
+				       #f)
+				      (implicit-press?
+				       'drop-release)
+				      ((symbol? (event-consumed ev))
+				       (event-consumed ev))
+				      (else
+				       #t)))
 	     closer-tree)))))
 
 ;; Current implementation only supports these undo behaviors.
@@ -914,3 +914,34 @@
        (else
 	(ustr-cursor-delete-backside! seq)
 	(undo seq))))))
+
+;;
+;; event-dropper
+;;
+(define-record 'event-dropper
+  '((ev-set ())))
+
+(define event-dropper-add-event!
+  (lambda (dropper ev)
+    (event-dropper-set-ev-set! dropper
+			       (cons ev (event-dropper-ev-set dropper)))))
+
+;; TODO: introduce event expression to generalize matching
+;; returns dropped or not
+(define key-release-event-dropper-drop!
+  (lambda (dropper ev remove-matcher?)
+    (let ((orig (event-dropper-ev-set dropper))
+	  (removed (remove (lambda (matcher-ev)
+			     (and (not (key-event-press ev))
+				  (eq? (key-event-lkey matcher-ev)
+				       (key-event-lkey ev))
+				  (eq? (key-event-pkey matcher-ev)
+				       (key-event-pkey ev))))
+			   (event-dropper-ev-set dropper))))
+      (and (not (= (length orig)
+		   (length removed)))
+	   (begin
+	     (event-set-consumed! ev #t)
+	     (if remove-matcher?
+		 (event-dropper-set-ev-set! dropper removed))
+	     #t)))))

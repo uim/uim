@@ -842,6 +842,7 @@
     (list 'ruletree           #f)    ;; current composition rule
     (list 'keytrans-emc       #f)    ;; evmap-context for key-event translator
     (list 'actmap-emc         #f)    ;; evmap-context for action mapper
+    (list 'ev-dropper         #f)    ;; key-release-event dropper
     (list 'mod-state          mod_None)    ;; regenerated modifier state
     (list 'mod-lock           mod_None)    ;; modifier lock state
     (list 'mod-stick          mod_None)))) ;; sticky modifier state
@@ -859,6 +860,7 @@
      (anthy-context-set-preconv-ustr! ac (ustr-new))
      (anthy-context-set-segments! ac (ustr-new))
      (anthy-context-set-keytrans-emc! ac (key-event-translator-new))
+     (anthy-context-set-ev-dropper! ac (event-dropper-new))
      (anthy-select-ruletree! ac)
      ac)))
 
@@ -918,39 +920,44 @@
 
 (define anthy-input!
   (lambda (ac ev)
-    (let* ((actmap-emc (anthy-context-actmap-emc ac))
-	   (last-emc (evmap-ustr-last-emc (anthy-context-preconv-ustr ac)))
-	   (operating? (not (evmap-context-initial? actmap-emc)))
-	   (composing? (and last-emc
-			    (not (evmap-context-initial? last-emc))
-			    (not (evmap-context-complete? last-emc))))
-	   (actmap-input!
-	    (lambda ()
-	      (let ((matched? (evmap-context-input! actmap-emc ev)))
-		(if (evmap-context-complete? actmap-emc)
+    (or (key-release-event-dropper-drop! (anthy-context-ev-dropper ac) ev #t)
+	(let* ((actmap-emc (anthy-context-actmap-emc ac))
+	       (last-emc (evmap-ustr-last-emc (anthy-context-preconv-ustr ac)))
+	       (operating? (not (evmap-context-initial? actmap-emc)))
+	       (composing? (and last-emc
+				(not (evmap-context-initial? last-emc))
+				(not (evmap-context-complete? last-emc))))
+	       (actmap-input!
+		(lambda ()
+		  (let ((matched? (evmap-context-input! actmap-emc ev)))
+		    (if (evmap-context-complete? actmap-emc)
+			(begin
+			  (for-each (lambda (act-id)
+				      (anthy-activate-action! ac act-id))
+				    (evmap-context-action-seq actmap-emc))
+			  (evmap-context-flush! actmap-emc)))
+		    matched?))))
+	  (if (or (and (or operating?
+			   (not composing?))
+		       (actmap-input!))
+		  (let* ((rejected-ev-list (evmap-context-event-seq actmap-emc))
+			 (matched-list (map (lambda (rej-ev)
+					      (anthy-preedit-input! ac rej-ev))
+					    (append rejected-ev-list
+						    (list ev)))))
+		    (evmap-context-flush! actmap-emc)
+		    (apply proc-or matched-list))
+		  (actmap-input!)) ;; to accept "nq" sequence
+	      (begin
+		(if (eq? (event-consumed ev)
+			 'drop-release)
+		    (event-dropper-add-event! (anthy-context-ev-dropper ac)
+					      ev))
+		(if (event-loopback ev)
 		    (begin
-		      (for-each (lambda (act-id)
-				  (anthy-activate-action! ac act-id))
-				(evmap-context-action-seq actmap-emc))
-		      (evmap-context-flush! actmap-emc)))
-		matched?))))
-      (if (or (and (or operating?
-		       (not composing?))
-		   (actmap-input!))
-	      (let* ((rejected-ev-list (evmap-context-event-seq actmap-emc))
-		     (matched-list (map (lambda (rej-ev)
-					  (anthy-preedit-input! ac rej-ev))
-					(append rejected-ev-list
-						(list ev)))))
-		(evmap-context-flush! actmap-emc)
-		(apply proc-or matched-list))
-	      (actmap-input!))  ;; to accept "nq" sequence
-	  (begin
-	    (if (event-loopback ev)
-		(begin
-		  (event-set-loopback! ev #f)
-		  (anthy-input! ac ev)))
-	    (anthy-update-preedit ac))))))
+		      (event-set-loopback! ev #f)
+		      (anthy-input! ac ev)))
+		(anthy-update-preedit ac)))))))
 
 ;; returns matched
 (define anthy-preedit-input!
