@@ -573,7 +573,7 @@ olist_pref_dialog_response_cb(GtkDialog *dialog, gint action, GtkEntry *key_entr
 }
 
 static void
-olist_pref_entry_set_value(GtkEntry *entry)
+sync_value_olist(GtkEntry *entry)
 {
   const char *custom_sym;
   struct uim_custom *custom;
@@ -817,7 +817,7 @@ olist_pref_up_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
 			       FALSE, 0.0, 0.0);
   gtk_tree_path_free(path);
   set_olist_buttons_sensitive(olist_entry);
-  olist_pref_entry_set_value(GTK_ENTRY(olist_entry));
+  sync_value_olist(GTK_ENTRY(olist_entry));
 
 ERROR:
   uim_custom_free(custom);
@@ -896,7 +896,7 @@ olist_pref_down_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
 			       FALSE, 0.0, 0.0);
   gtk_tree_path_free(path);
   set_olist_buttons_sensitive(olist_entry);
-  olist_pref_entry_set_value(GTK_ENTRY(olist_entry));
+  sync_value_olist(GTK_ENTRY(olist_entry));
 
 ERROR:
   uim_custom_free(custom);
@@ -975,7 +975,7 @@ olist_pref_left_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   urv = uim_custom_set(custom);
 
   if (urv != UIM_FALSE) {
-    olist_pref_entry_set_value(GTK_ENTRY(olist_entry));
+    sync_value_olist(GTK_ENTRY(olist_entry));
     olist_pref_tree_view_set_value(GTK_ENTRY(olist_entry), TRUE, TRUE);
     uim_pref_gtk_value_changed = TRUE;
   } else {
@@ -1042,7 +1042,7 @@ olist_pref_right_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   urv = uim_custom_set(custom);
 
   if (urv != UIM_FALSE) {
-    olist_pref_entry_set_value(GTK_ENTRY(olist_entry));
+    sync_value_olist(GTK_ENTRY(olist_entry));
     olist_pref_tree_view_set_value(GTK_ENTRY(olist_entry), TRUE, TRUE);
     uim_pref_gtk_value_changed = TRUE;
     /* FIXME! reset the selection */
@@ -1243,6 +1243,12 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
 }
 
 static void
+update_custom_type_olist_cb(void *ptr, const char *custom_sym)
+{
+  sync_value_olist(GTK_ENTRY(ptr));
+}
+
+static void
 add_custom_type_orderedlist(GtkWidget *vbox, struct uim_custom *custom)
 {
   GtkWidget *hbox;
@@ -1265,10 +1271,11 @@ add_custom_type_orderedlist(GtkWidget *vbox, struct uim_custom *custom)
 			 OBJECT_DATA_UIM_CUSTOM_SYM, g_strdup(custom->symbol),
 			 (GDestroyNotify) g_free);
 
-  olist_pref_entry_set_value(GTK_ENTRY(entry));
+  sync_value_olist(GTK_ENTRY(entry));
 
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(choose_olist_clicked_cb), entry);
+  uim_custom_cb_add(custom->symbol, entry, update_custom_type_olist_cb);
 }
 
 
@@ -1480,7 +1487,7 @@ choose_key_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 }
 
 static void
-key_pref_entry_set_value(GtkEntry *entry)
+sync_value_key(GtkEntry *entry)
 {
   GString *str;
   const char *custom_sym;
@@ -1569,7 +1576,7 @@ key_pref_add_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
     gtk_list_store_set(GTK_LIST_STORE(model), &iter,
 		       0, str->str,
 		       -1);
-    key_pref_entry_set_value(key_entry);
+    sync_value_key(key_entry);
   } else {
     g_printerr("Failed to set key value for \"%s\".\n", custom->symbol);
   }
@@ -1630,7 +1637,7 @@ key_pref_remove_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
       uim_pref_gtk_value_changed = TRUE;
       gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
 
-      key_pref_entry_set_value(key_entry);
+      sync_value_key(key_entry);
     } else {
       g_printerr("Failed to set key value for \"%s\".\n", custom->symbol);
     }
@@ -1818,15 +1825,7 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 static void
 update_custom_type_key_cb(void *ptr, const char *custom_sym)
 {
-  struct uim_custom *custom = uim_custom_get(custom_sym);
-  GtkWidget *entry = GTK_WIDGET(ptr);
-
-  if (!custom || custom->type != UCustom_Key)
-    return;
-  
-  gtk_widget_set_sensitive(entry, custom->is_active);
-
-  uim_custom_free(custom);
+  sync_value_key(GTK_ENTRY(ptr));
 }
 
 static void
@@ -1846,7 +1845,7 @@ add_custom_type_key(GtkWidget *vbox, struct uim_custom *custom)
 			 (GDestroyNotify) g_free);
   gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
 
-  key_pref_entry_set_value(GTK_ENTRY(entry));
+  sync_value_key(GTK_ENTRY(entry));
 
   button = gtk_button_new_with_label(_("Choose..."));
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, FALSE, 0);
@@ -2008,10 +2007,10 @@ uim_pref_gtk_set_default_value(GtkWidget *widget)
     sync_value_choice(GTK_COMBO_BOX(widget));
     break;
   case UCustom_OrderedList:
-    olist_pref_entry_set_value(GTK_ENTRY(widget));
+    sync_value_olist(GTK_ENTRY(widget));
     break;
   case UCustom_Key:
-    key_pref_entry_set_value(GTK_ENTRY(widget));
+    sync_value_key(GTK_ENTRY(widget));
     break;
   default:
     return;
