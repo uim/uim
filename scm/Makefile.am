@@ -1,11 +1,10 @@
 EXTRA_DIST = $(SCM_FILES)
 scmdir = $(datadir)/uim
-scm_DATA = $(SCM_FILES)
+scm_DATA = $(SCM_FILES) installed-modules.scm enabled-ims.scm
 SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm loader.scm \
  default.scm \
  util.scm key.scm ustr.scm action.scm load-action.scm i18n.scm \
  uim-sh.scm custom.scm custom-rt.scm \
- installed-modules.scm enabled-ims.scm \
  direct.scm \
  rk.scm \
  generic.scm generic-custom.scm generic-key-custom.scm \
@@ -58,7 +57,7 @@ if SCIM
 #  module_names += "scim"
 endif
 
-installed-modules.scm:
+installed-modules.scm: $(SCM_FILES)
 	echo ";; The described order of input methods affects which IM is preferred" >$@ && \
 	echo ";; at the default IM selection process for each locale. i.e. list" >>$@ && \
 	echo ";; preferable IM first for each language" >>$@ && \
