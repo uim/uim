@@ -301,9 +301,10 @@
 	(begin
 	  (if (not (duplicated-im? (m17nlib-lib-nth-input-method-name i)))
 	      (register-im
-	       (intern (m17nlib-lib-nth-input-method-name i))
+	       (string->symbol (m17nlib-lib-nth-input-method-name i))
 	       (m17nlib-lib-nth-input-method-lang i)
 	       "UTF-8"
+	       (m17nlib-lib-nth-input-method-name i)
 	       (N_ "An input method provided by the m17n library")
 	       (m17nlib-lib-nth-input-method-name i)
 	       m17nlib-init-handler

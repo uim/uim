@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -198,4 +198,9 @@
     (generic-context-new id im viqr-rule #f)))
 
 (generic-register-im
- 'viqr "vi" "UTF-8" (N_ "VIetnamese Quoted-Readable") viqr-init-handler)
+ 'viqr
+ "vi"
+ "UTF-8"
+ (N_ "VIQR")
+ (N_ "VIetnamese Quoted-Readable")
+ viqr-init-handler)

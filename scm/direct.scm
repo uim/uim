@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -128,6 +128,7 @@
  'direct
  "*"  ;; wildcard language. see i18n.scm
  "UTF-8"
+ (N_ "Direct")
  (N_ "Direct input method mainly used for latin languages")
  #f
  direct-init-handler

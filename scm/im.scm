@@ -1,6 +1,6 @@
 ;;; im.scm: Core IM management functions for uim
 ;;;
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -63,6 +63,7 @@
    (list 'name                        #f)  ;; must be first member
    (list 'lang                        "")
    (list 'encoding                    "")
+   (list 'label-name                  "")  ;; under discussion
    (list 'short-desc                  "")
    (list 'init-arg                    #f)
    (list 'init-handler                list)
@@ -82,10 +83,11 @@
 	list)))
 
 (define register-im
-  (lambda (name lang encoding short-desc init-arg init release
+  (lambda (name lang encoding label-name short-desc init-arg init release
 		mode key-press key-release reset
 		get-candidate set-candidate-index prop)
-    (let ((im (im-new name lang encoding short-desc init-arg init release
+    (let ((im (im-new name lang encoding label-name short-desc
+		      init-arg init release
 		      mode key-press key-release reset
 		      get-candidate set-candidate-index prop)))
       (if (im-register-im name lang encoding short-desc)

@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -1722,5 +1722,6 @@
  'tcode
  "ja"
  "EUC-JP"
+ (N_ "T-Code")
  (N_ "T-Code")
  tcode-init-handler)

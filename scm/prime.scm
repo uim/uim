@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -1596,6 +1596,7 @@
  'prime
  "ja"
  "EUC-JP"
+ (N_ "PRIME")
  (N_ "Japanese predictable input method")
  #f
  prime-init-handler

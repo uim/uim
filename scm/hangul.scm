@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -53,11 +53,12 @@
       (generic-key-press-handler-with-this-env gc key state))))
 
 (define hangul-register-im
-  (lambda (name lang code short-desc init-arg)
+  (lambda (name lang code label-name short-desc init-arg)
     (register-im
      name
      lang
      code
+     label-name
      short-desc
      init-arg
      generic-init-handler
@@ -86,11 +87,26 @@
     (generic-context-new id im romaja-rule #t)))
 
 (hangul-register-im
- 'hangul2 "ko" "UTF-8" (N_ "2-bul style hangul input method") hangul2-init-handler)
+ 'hangul2
+ "ko"
+ "UTF-8"
+ (N_ "Hangul (2-bul)")
+ (N_ "2-bul style hangul input method")
+ hangul2-init-handler)
 
 ;; hangul3 IM does not require generic-keys disabled
 (generic-register-im
- 'hangul3 "ko" "UTF-8" (N_ "3-bul style hangul input method") hangul3-init-handler)
+ 'hangul3
+ "ko"
+ "UTF-8"
+ (N_ "Hangul (3-bul)")
+ (N_ "3-bul style hangul input method")
+ hangul3-init-handler)
 
 (hangul-register-im
- 'romaja "ko" "UTF-8" (N_ "Romaja input style hangul input method") romaja-init-handler)
+ 'romaja
+ "ko"
+ "UTF-8"
+ (N_ "Hangul (Romaja)")
+ (N_ "Romaja input style hangul input method")
+ romaja-init-handler)

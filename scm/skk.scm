@@ -1590,6 +1590,7 @@
  'skk
  "ja"
  "EUC-JP"
+ (N_ "SKK")
  (N_ "Uim's SKK like input method")
  #f
  skk-init-handler

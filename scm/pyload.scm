@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -36,7 +36,12 @@
     (generic-context-new id im py-rule #f)))
 
 (generic-register-im
- 'py "zh_CN" "GB18030" (N_ "PinYin input method") py-init-handler)
+ 'py
+ "zh_CN"
+ "GB18030"
+ (N_ "Pinyin (Simplified)")
+ (N_ "Pinyin input method (Simplified Chinese version)")
+ py-init-handler)
 
 (define pyunihan-init-handler
   (lambda (id im arg)
@@ -44,7 +49,12 @@
     (generic-context-new id im pyunihan-rule #f)))
 
 (generic-register-im
- 'pyunihan "zh_CN" "UTF-8" (N_ "PinYin input method (Unicode version)") pyunihan-init-handler)
+ 'pyunihan
+ "zh_CN"
+ "UTF-8"
+ (N_ "Pinyin (Unicode)")
+ (N_ "Pinyin input method (Unicode version)")
+ pyunihan-init-handler)
 
 (define pinyin-big5-init-handler
   (lambda (id im arg)
@@ -52,4 +62,9 @@
     (generic-context-new id im pinyin-big5-rule #f)))
 
 (generic-register-im
- 'pinyin-big5 "zh_TW:zh_HK" "UTF-8" (N_ "PinYin input method (Big5 version)") pinyin-big5-init-handler)
+ 'pinyin-big5
+ "zh_TW:zh_HK"
+ "UTF-8"
+ (N_ "Pinyin (Traditional)")
+ (N_ "Pinyin input method (Traditional Chinese version)")
+ pinyin-big5-init-handler)

@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -271,6 +271,7 @@
  'tutcode
  "ja"
  "EUC-JP"
+ (N_ "TUT-Code")
  (N_ "TUT-Code")
  #f
  tutcode-init-handler

@@ -573,4 +573,5 @@
  ""
  "UTF-8"
  (N_ "euro")
+ (N_ "euro")
  latin-init-handler)

@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -100,4 +100,9 @@
     (generic-context-new id im ipa-rule #f)))
 
 (generic-register-im
- 'ipa "" "UTF-8" (N_ "International Phonetic Alphabet") ipa-init-handler)
+ 'ipa
+ ""
+ "UTF-8"
+ (N_ "International Phonetic Alphabet")
+ (N_ "International Phonetic Alphabet")
+ ipa-init-handler)

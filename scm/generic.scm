@@ -424,11 +424,12 @@
     (init-handler id im #f)))
 
 (define generic-register-im
-  (lambda (name lang code short-desc init-arg)
+  (lambda (name lang code label-name short-desc init-arg)
     (register-im
      name
      lang
      code
+     label-name
      short-desc
      init-arg
      generic-init-handler

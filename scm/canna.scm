@@ -1,6 +1,6 @@
 ;;; canna.scm: Canna for uim.
 ;;;
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -823,6 +823,7 @@
        'canna
        "ja"
        "EUC-JP"
+       (N_ "Canna")
        (N_ "Japanese Kana Kanji Conversion Engine, Canna")
        #f
        canna-init-handler
