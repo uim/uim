@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 0.4.6-alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-06 10:44+0900\n"
-"PO-Revision-Date: 2005-02-06 10:50+0900\n"
+"POT-Creation-Date: 2005-02-06 18:50+0900\n"
+"PO-Revision-Date: 2005-02-06 18:51+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -357,6 +357,50 @@ msgstr "グループ"
 msgid "_Defaults"
 msgstr "デフォルト(_D)"
 
+#: helper/pref-gtk-custom-widgets.c:382
+msgid "Specify file"
+msgstr "ファイルの指定"
+
+#: helper/pref-gtk-custom-widgets.c:419
+msgid "File..."
+msgstr "参照..."
+
+#: helper/pref-gtk-custom-widgets.c:1098
+msgid "Enabled"
+msgstr "有効"
+
+#: helper/pref-gtk-custom-widgets.c:1124
+msgid "Enabled items"
+msgstr "有効な項目"
+
+#: helper/pref-gtk-custom-widgets.c:1202
+msgid "Disabled"
+msgstr "無効"
+
+#: helper/pref-gtk-custom-widgets.c:1228
+msgid "Disabled items"
+msgstr "無効な項目"
+
+#: helper/pref-gtk-custom-widgets.c:1266 helper/pref-gtk-custom-widgets.c:1849
+msgid "Edit..."
+msgstr "編集..."
+
+#: helper/pref-gtk-custom-widgets.c:1471
+msgid "Press keys to grab (e.g. <Control>a)"
+msgstr "取得するキーを押して下さい (例:<Control>a)"
+
+#: helper/pref-gtk-custom-widgets.c:1727
+msgid "Key preference"
+msgstr "キー設定"
+
+#: helper/pref-gtk-custom-widgets.c:1773
+msgid "Key:"
+msgstr "キー:"
+
+#: helper/pref-gtk-custom-widgets.c:1794
+msgid "Grab..."
+msgstr "取得..."
+
 #: helper/toolbar-common-gtk.c:484 helper/toolbar-common-gtk.c:686
 #: qt/toolbar-common-quimhelpertoolbar.cpp:55
 msgid "Execute uim's input method switcher"
@@ -425,7 +469,7 @@ msgstr "線"
 
 #: qt/switcher-qt.cpp:116 qt/pref-qt.cpp:118 qt/pref-qt.cpp:258
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: qt/switcher-qt.cpp:121 qt/pref-qt.cpp:125 qt/pref-qt.cpp:259
 msgid "Cancel"
@@ -495,30 +539,30 @@ msgstr "文節区切りを表示する"
 #: scm/canna-key-custom.lisp:41 scm/canna-key-custom.lisp:45
 #: scm/generic-custom.lisp:37 scm/generic-custom.lisp:43
 #: scm/generic-custom.lisp:49 scm/generic-custom.lisp:55
-#: scm/generic-custom.lisp:61 scm/generic-key-custom.lisp:37
-#: scm/generic-key-custom.lisp:41 scm/im-custom.lisp:46 scm/im-custom.lisp:51
-#: scm/im-custom.lisp:56 scm/im-custom.lisp:61 scm/im-custom.lisp:66
-#: scm/im-custom.lisp:71 scm/im-custom.lisp:76 scm/im-custom.lisp:81
-#: scm/im-custom.lisp:86 scm/im-custom.lisp:91 scm/im-custom.lisp:96
-#: scm/im-custom.lisp:101 scm/im-custom.lisp:112 scm/im-custom.lisp:122
-#: scm/im-custom.lisp:215 scm/im-custom.lisp:275 scm/im-custom.lisp:291
-#: scm/im-custom.lisp:297 scm/im-custom.lisp:303 scm/im-custom.lisp:310
-#: scm/prime-custom.lisp:58 scm/prime-custom.lisp:64 scm/prime-custom.lisp:70
-#: scm/prime-custom.lisp:76 scm/prime-custom.lisp:82 scm/prime-custom.lisp:90
-#: scm/prime-custom.lisp:96 scm/prime-custom.lisp:102
-#: scm/prime-custom.lisp:145 scm/prime-custom.lisp:154
-#: scm/prime-key-custom.lisp:61 scm/prime-key-custom.lisp:65
-#: scm/prime-key-custom.lisp:69 scm/skk-custom.lisp:55 scm/skk-custom.lisp:61
-#: scm/skk-custom.lisp:67 scm/skk-custom.lisp:73 scm/skk-custom.lisp:135
-#: scm/skk-custom.lisp:144 scm/skk-custom.lisp:176 scm/skk-custom.lisp:183
-#: scm/skk-custom.lisp:190 scm/skk-custom.lisp:202 scm/skk-custom.lisp:208
-#: scm/skk-custom.lisp:214 scm/skk-custom.lisp:220 scm/skk-custom.lisp:230
-#: scm/skk-custom.lisp:236 scm/skk-custom.lisp:257 scm/skk-custom.lisp:263
-#: scm/skk-custom.lisp:270 scm/skk-key-custom.lisp:65
-#: scm/skk-key-custom.lisp:69 scm/skk-key-custom.lisp:73
-#: scm/skk-key-custom.lisp:78 scm/spellcheck-custom.lisp:48
-#: scm/spellcheck-custom.lisp:54 scm/spellcheck-custom.lisp:60
-#: scm/spellcheck-custom.lisp:66
+#: scm/generic-custom.lisp:61 scm/generic-custom.lisp:67
+#: scm/generic-key-custom.lisp:37 scm/generic-key-custom.lisp:41
+#: scm/im-custom.lisp:46 scm/im-custom.lisp:51 scm/im-custom.lisp:56
+#: scm/im-custom.lisp:61 scm/im-custom.lisp:66 scm/im-custom.lisp:71
+#: scm/im-custom.lisp:76 scm/im-custom.lisp:81 scm/im-custom.lisp:86
+#: scm/im-custom.lisp:91 scm/im-custom.lisp:96 scm/im-custom.lisp:101
+#: scm/im-custom.lisp:112 scm/im-custom.lisp:122 scm/im-custom.lisp:215
+#: scm/im-custom.lisp:275 scm/im-custom.lisp:291 scm/im-custom.lisp:297
+#: scm/im-custom.lisp:303 scm/im-custom.lisp:310 scm/prime-custom.lisp:58
+#: scm/prime-custom.lisp:64 scm/prime-custom.lisp:70 scm/prime-custom.lisp:76
+#: scm/prime-custom.lisp:82 scm/prime-custom.lisp:90 scm/prime-custom.lisp:96
+#: scm/prime-custom.lisp:102 scm/prime-custom.lisp:145
+#: scm/prime-custom.lisp:154 scm/prime-key-custom.lisp:61
+#: scm/prime-key-custom.lisp:65 scm/prime-key-custom.lisp:69
+#: scm/skk-custom.lisp:55 scm/skk-custom.lisp:61 scm/skk-custom.lisp:67
+#: scm/skk-custom.lisp:73 scm/skk-custom.lisp:135 scm/skk-custom.lisp:144
+#: scm/skk-custom.lisp:176 scm/skk-custom.lisp:183 scm/skk-custom.lisp:190
+#: scm/skk-custom.lisp:202 scm/skk-custom.lisp:208 scm/skk-custom.lisp:214
+#: scm/skk-custom.lisp:220 scm/skk-custom.lisp:230 scm/skk-custom.lisp:236
+#: scm/skk-custom.lisp:257 scm/skk-custom.lisp:263 scm/skk-custom.lisp:270
+#: scm/skk-key-custom.lisp:65 scm/skk-key-custom.lisp:69
+#: scm/skk-key-custom.lisp:73 scm/skk-key-custom.lisp:78
+#: scm/spellcheck-custom.lisp:48 scm/spellcheck-custom.lisp:54
+#: scm/spellcheck-custom.lisp:60 scm/spellcheck-custom.lisp:66
 msgid "long description will be here."
 msgstr "詳細記述予定"
 
@@ -967,6 +1011,11 @@ msgstr "全てのユーザ入力を素通し"
 #: scm/generic-custom.lisp:36
 msgid "Other input methods"
 msgstr "その他の入力方式"
+
+#: scm/generic-custom.lisp:66
+#, fuzzy
+msgid "Use dictionary search"
+msgstr "個人辞書ファイル"
 
 #: scm/generic-key-custom.lisp:36
 msgid "Global key bindings 1"
@@ -2206,33 +2255,8 @@ msgstr "ヨルバ語"
 msgid "Zulu"
 msgstr "ズールー語"
 
-#~ msgid "Specify file"
-#~ msgstr "ファイルの指定"
-
-#~ msgid "Enabled"
-#~ msgstr "有効"
-
-#~ msgid "Enabled items"
-#~ msgstr "有効な項目"
-
-#~ msgid "Disabled"
-#~ msgstr "無効"
-
-#~ msgid "Disabled items"
-#~ msgstr "無効な項目"
-
 #~ msgid "Choose..."
 #~ msgstr "選択..."
-
-#~ msgid "Press any key to grab..."
-#~ msgstr "取得するキーを押して下さい..."
-
-#~ msgid "..."
-#~ msgstr "..."
-
-#, fuzzy
-#~ msgid "Use dictionary search"
-#~ msgstr "個人辞書ファイル"
 
 #~ msgid "_Shift"
 #~ msgstr "_Shift"

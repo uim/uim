@@ -416,7 +416,7 @@ add_custom_type_pathname(GtkWidget *vbox, struct uim_custom *custom)
   entry = gtk_entry_new();
   gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
 
-  button = gtk_button_new_with_label(_("File"));
+  button = gtk_button_new_with_label(_("File..."));
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
 
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
@@ -1263,7 +1263,7 @@ add_custom_type_orderedlist(GtkWidget *vbox, struct uim_custom *custom)
   gtk_entry_set_editable(GTK_ENTRY(entry), FALSE);
   gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
 
-  button = gtk_button_new_with_label(_("Choose..."));
+  button = gtk_button_new_with_label(_("Edit..."));
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, FALSE, 0);
 
   g_object_set_data_full(G_OBJECT(entry),
@@ -1468,7 +1468,7 @@ choose_key_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 				  GTK_DIALOG_MODAL,
 				  GTK_MESSAGE_INFO,
 				  GTK_BUTTONS_CANCEL,
-				  _("Press any key to grab..."));
+				  _("Press keys to grab (e.g. <Control>a)"));
   gtk_window_set_title(GTK_WINDOW(dialog), "Grabbing a key");
   g_signal_connect(G_OBJECT(dialog), "key-press-event",
 		   G_CALLBACK(grab_win_key_press_cb), key_entry);
@@ -1791,7 +1791,7 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 		   G_CALLBACK(key_choose_entry_key_press_cb), key_entry);
   gtk_widget_show(entry);
 
-  button = gtk_button_new_with_label(_("..."));
+  button = gtk_button_new_with_label(_("Grab..."));
   gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 4);
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(choose_key_button_clicked_cb), key_entry);
@@ -1846,7 +1846,7 @@ add_custom_type_key(GtkWidget *vbox, struct uim_custom *custom)
 
   sync_value_key(GTK_ENTRY(entry));
 
-  button = gtk_button_new_with_label(_("Choose..."));
+  button = gtk_button_new_with_label(_("Edit..."));
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, FALSE, 0);
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(choose_key_clicked_cb), entry);
