@@ -726,8 +726,7 @@ void ConvdispOv::update_preedit()
 
 void ConvdispOv::move_candwin()
 {
-    if (m_atr->has_atr(ICA_SpotLocation) &&
-		mKkContext == InputContext::focusedContext()) {
+    if (m_atr->has_atr(ICA_SpotLocation) ) {
 	int x = -1, y = -1;
 	Window win;
 
@@ -761,7 +760,7 @@ void ConvdispOv::move_candwin()
 	    Canddisp *disp = canddisp_singleton();
 	    disp->move(x, y + UNDERLINE_HEIGHT + 1);
 	}
-#ifdef FLASHPLAYER_WORKAROUND
+#if 0
     } else if (m_atr->has_atr(ICA_SpotLocation)) {
 	int x = -1, y = -1;
 	Window win;

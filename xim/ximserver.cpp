@@ -482,7 +482,6 @@ InputContext::focusIn()
     check_helper_connection();
     uim_helper_client_focus_in(mUc);
     mFocusedContext = this;
-    mXic->move_candwin(); // move candwin before updating prop label
     uim_prop_list_update(mUc);	
     uim_prop_label_update(mUc);	
 }

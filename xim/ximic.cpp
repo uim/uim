@@ -388,6 +388,7 @@ void XimIC::setFocus()
 	mConvdisp->unset_focus();
     }
 
+    mConvdisp->move_candwin();
     m_kkContext->focusIn();
 
     if (mConvdisp && is_candwin_active == true) {
