@@ -96,6 +96,12 @@
 (define usual-char? char-graphic?)
 (define to-lower-char char-downcase)
 
+;; TODO: write test
+(define string-escape
+  (lambda (s)
+    (let ((buf (string-append "\"\"" s s)))
+      (print-to-string s buf))))
+
 (define string->letter
   (lambda (str)
     (let ((c (and (= (string-length str)

@@ -610,7 +610,7 @@
 				 ((symbol? elem)
 				  (symbol->string elem))
 				 ((string? elem)
-				  (string-append "\"" elem "\""))
+				  (string-escape elem))
 				 (else
 				  "")))
 			      lst)))
@@ -620,16 +620,14 @@
 (define custom-value-as-literal
   (lambda (sym)
     (let ((val (custom-value sym))
-	  (type (custom-type sym))
-	  (as-string (lambda (s)
-		       (string-append "\"" s "\""))))
+	  (type (custom-type sym)))
       (cond
        ((eq? type 'integer)
 	(digit->string val))
        ((eq? type 'string)
-	(as-string val))
+	(string-escape val))
        ((eq? type 'pathname)
-	(as-string val))
+	(string-escape val))
        ((eq? type 'choice)
 	(string-append "'" (symbol->string val)))
        ((or (eq? type 'ordered-list)
