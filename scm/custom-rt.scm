@@ -138,8 +138,10 @@
     (cond
      ((custom-key-exist? sym)
       (set-symbol-value! sym val)
-      (define-key-internal (symbolconc sym '?)
-	                   (custom-modify-key-predicate-names val))
+      (let ((key-val (custom-modify-key-predicate-names val)))
+	(eval (list 'define (symbolconc sym '?)
+		    (list 'make-key-predicate (list 'quote key-val)))
+	      toplevel-env))
       #t)
      ((custom-exist? sym #f)
       (set-symbol-value! sym val)
