@@ -81,6 +81,7 @@
   removed non-standard _"str" syntax for i18n (Sep-30-2004) YamaKen
   added NESTED_REPL_C_STRING feature (Dec-31-2004) YamaKen
   added heap_alloc_threshold and make configurable (Jan-07-2005) YamaKen
+  added support for interactive debugging (Feb-09-2005) Jun Inoue
  */
 
 #include "config.h"
@@ -94,6 +95,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <errno.h>
+#include <limits.h>
 #include <sys/types.h>
 #if HAVE_SYS_TIMES_H
 #include <sys/times.h>
@@ -181,6 +183,7 @@ static LISP rintern (const char *name);
 static LISP closure (LISP env, LISP code);
 static LISP ptrcons (void *ptr);
 static LISP funcptrcons (C_FUNC ptr);
+static LISP assoc (LISP x, LISP alist);
 
 static void init_subr (char *name, long type, SUBR_FUNC fcn);
 static void init_subr_0 (char *name, LISP (*fcn) (void));
@@ -251,7 +254,7 @@ static void siod_set_lib_path(const char *);
 #define STACK_CHECK(_ptr) \
   if (((char *) (_ptr)) < stack_limit_ptr) err_stack((char *) _ptr);
 
-#define _NEWCELL(_into, _type)        \
+#define NEWCELL(_into, _type)         \
 {  if NULLP(freelist)                 \
       gc_for_newcell();               \
     _into = freelist;                 \
@@ -260,15 +263,11 @@ static void siod_set_lib_path(const char *);
  (*_into).gc_mark = 0;                \
  (*_into).type = (short) _type;}
 
-#if DEBUG_SCM
-#define NEWCELL(_into,_type)          \
-{  _NEWCELL (_into, _type);           \
-   (*_into).dbg_info = car (dbg_pos);}
-#else  /* not DEBUG_SCM */
-#define NEWCELL(_into, _type) _NEWCELL (_into, _type)
+#if ! DEBUG_SCM
 #define dbg_readini(f)
 #define dbg_readend()
 #define dbg_readabrt()
+#define dbg_register_closure(x)
 #endif /* DEBUG_SCM */
 
 /* exported global symbol */
@@ -337,6 +336,7 @@ static struct func_frame *func_trace;
 
 #if DEBUG_SCM
 static LISP dbg_pos = NIL;
+static LISP dbg_mod = NIL;
 
 static LISP orig_readtl (struct gen_readio * f);
 static int dbg_getc (struct gen_readio * f);
@@ -345,9 +345,6 @@ static void dbg_readini (char *file);
 static void dbg_readend (void);
 static void dbg_lineinc (void);
 static void dbg_linedec (void);
-#if 0
-static LISP dbg_curpos (void);
-#endif
 static void init_dbg (void);
 #endif /* DEBUG_SCM */
 
@@ -799,7 +796,7 @@ vload (char *fname, long cflag, long rflag)
       if (c == '\n')
 	{
 	  c = getc (f);
-#ifdef DEBUG_SCM
+#if DEBUG_SCM
 	  dbg_lineinc ();
 #endif
 	}
@@ -1111,9 +1108,26 @@ lreadr (struct gen_readio *f)
 {
   int c, j;
   char *p, *buffer = tkbuffer;
+#if DEBUG_SCM
+  LISP dbg_start_pos, dbg_ret;
+#define return(val)                            \
+  do                                           \
+    {                                          \
+      dbg_ret = (val);                         \
+      if NNULLP                                \
+        (dbg_ret)                              \
+	  dbg_ret->dbg_info = dbg_start_pos;   \
+      return (dbg_ret);                        \
+    }                                          \
+  while (0)
+#endif /* DEBUG_SCM */
+  
   STACK_CHECK (&f);
   p = buffer;
   c = flush_ws (f, "end of file inside read");
+#if DEBUG_SCM
+  dbg_start_pos = car (dbg_pos);
+#endif
   switch (c)
     {
     case '(':
@@ -1176,6 +1190,7 @@ lreadr (struct gen_readio *f)
       *p++ = c;
     }
   return (my_err ("token larger than TKBUFFERN", NIL));
+#undef return
 }
 
 /* Iterative version */
@@ -1188,6 +1203,10 @@ lreadparen (struct gen_readio * f)
 
   while ((c = flush_ws(f, "end of file inside list")) != ')')
     {
+#if DEBUG_SCM
+      LISP dbg_start_pos;
+      dbg_start_pos = car (dbg_pos);
+#endif
       UNGETC_FCN (c,f);
       tmp = lreadr (f);
       if EQ
@@ -1212,15 +1231,18 @@ lreadparen (struct gen_readio * f)
 	  CDR (last) = cons (tmp, NIL);
 	  last = cdr (last);
 	}
+#if DEBUG_SCM
+      last->dbg_info = dbg_start_pos;
+#endif
     }
   return l;
 }
 
 static LISP
 readtl (struct gen_readio * f)
-#if DEBUG_SCM
 {
-  /* wrapper that prepares debugging information */
+  int c;
+#if DEBUG_SCM
   if NNULLP
     (dbg_pos)
     {
@@ -1231,8 +1253,16 @@ readtl (struct gen_readio * f)
       s.cb_argument = (void *) f;
       f = &s;
     }
-  return orig_readtl (f);
+#endif
+
+  c = flush_ws (f, (char *) NULL);
+  if (c == EOF)
+    return (eof_val);
+  UNGETC_FCN (c, f);
+  return (lreadr (f));
 }
+
+#if DEBUG_SCM
 
 static int
 dbg_getc (struct gen_readio * f)
@@ -1261,9 +1291,8 @@ dbg_lineinc (void)
     {
       file = CAR (CAR (dbg_pos));
       line = CDR (CAR (dbg_pos));
-      line = intcons (INTNM (line) + 1);
-      CAR (dbg_pos) = cons (file, line);
-      line->dbg_info = CAR (dbg_pos)->dbg_info = NIL;
+      CAR (dbg_pos) = cons (file, intcons (INTNM (line) + 1));
+      CAR (dbg_pos)->dbg_info = NIL;
     }
   /* else: we have given up debugging information */
 }
@@ -1277,9 +1306,8 @@ dbg_linedec (void)
     {
       file = CAR (CAR (dbg_pos));
       line = CDR (CAR (dbg_pos));
-      line = intcons (INTNM (line) - 1);
-      CAR (dbg_pos) = cons (file, line);
-      line->dbg_info = CAR (dbg_pos)->dbg_info = NIL;
+      CAR (dbg_pos) = cons (file, intcons (INTNM (line) - 1));
+      CAR (dbg_pos)->dbg_info = NIL;
     }
   /* else: we have given up debugging information */
 }
@@ -1287,17 +1315,148 @@ dbg_linedec (void)
 static void
 dbg_readini (char *filename)
 {
-  LISP tmp;
-  tmp = cons (strcons (-1, filename), intcons (1));
-  tmp->dbg_info = CAR(tmp)->dbg_info = CDR(tmp)->dbg_info = NIL;
-  dbg_pos = cons (tmp, dbg_pos);
-  dbg_pos->dbg_info = NIL;
+  LISP f, dbg_pos_save, dbg_closures;
+
+  /* no debug info needed for now */
+  dbg_pos_save = dbg_pos;
+  dbg_pos = NIL;
+
+  /* maintain a list of toplevel closures */
+  f = strcons (-1, filename);
+  dbg_closures = rintern ("dbg-closures");
+  dbg_mod = assoc (f, VCELL (dbg_closures));
+  if NNULLP
+    (dbg_mod)
+      CDR (dbg_mod) = NIL;
+  else
+    {
+      dbg_mod = cons (cons (f, NIL), VCELL (dbg_closures));
+      setvar (dbg_closures, dbg_mod, NIL);
+      dbg_mod = CAR (dbg_mod);
+    }
+
+  dbg_pos = cons (cons (f, intcons (1)), dbg_pos_save);
 }
 
 static void
 dbg_readend (void)
 {
   dbg_pos = cdr (dbg_pos);
+  if CONSP
+    (dbg_pos)
+    {
+      dbg_mod = assoc (CAR (CAR (dbg_pos)), VCELL (rintern ("dbg-closures")));
+      if NULLP
+	(dbg_mod)
+	  abort ();
+    }
+}
+
+static void
+dbg_register_closure (LISP x)
+{
+  /* maintain a list of toplevel closures */
+  if CONSP
+    (dbg_pos)
+    {
+      CDR (dbg_mod) = cons (x, CDR (dbg_mod));
+      /* toplevel closures should know where their definitions begin */
+      if NNULLP
+	(cddr (x->storage_as.closure.code))
+	  x->dbg_info = CDR (CDR (x->storage_as.closure.code))->dbg_info;
+    }
+}
+
+static LISP
+dbg_expand_file_name (LISP fl)
+{
+  char *fname, *fnbuf;
+  FILE *f;
+  size_t len;
+
+  if NTYPEP
+    (fl, tc_string)
+      my_err ("wta to dbg_expand_file_name ()", fl);
+  fname = fl->storage_as.string.data;
+  if ((fname[0] != '/'))
+    {
+      len = strlen (siod_lib) + strlen (fname) + 2;
+      fnbuf = must_malloc (len);
+      strcpy (fnbuf, siod_lib);
+      strcat (fnbuf, "/");
+      strcat (fnbuf, fname);
+      if ((f = fopen (fnbuf, "r")))
+	{
+	  fclose (f);
+	  fl = cons (NIL, NIL);
+	  fl->type = tc_string;
+	  fl->storage_as.string.data = fnbuf;
+	  fl->storage_as.string.dim = len-1;
+	  return (fl);
+	}
+      free (fnbuf);
+    }
+  return (fl);
+}
+
+static LISP
+dbg_get_info (LISP x)
+{
+  return NNULLP (x) ? x->dbg_info : NIL;
+}
+
+static LISP
+dbg_get_line (LISP x)
+{
+  x = dbg_get_info (x);
+#if DEBUG_SCM
+  return NNULLP (x) ? CDR (x) : intcons (-1);
+#endif
+}
+
+static LISP
+dbg_get_file (LISP x)
+{
+  x = dbg_get_info (x);
+  return NNULLP (x) ? CAR (x) : strcons (-1, "(No file info)");
+}
+
+static LISP
+dbg_copy_info (LISP x, LISP y)
+{
+  return (x->dbg_info = dbg_get_info (y));
+}
+
+static LISP
+integer2string (LISP args)
+{
+  char buf[sizeof (long)*CHAR_BIT];
+  char *p = buf + sizeof (buf);
+  unsigned long n, r;
+  LISP x, radix;
+  x = car (args);
+  radix = NNULLP (cdr (args)) ? CAR (CDR (args)) : intcons (10);
+  if NINTNUMP
+    (x)
+      my_err ("wta to integer2string", x);
+  if NINTNUMP
+    (radix)
+      my_err ("wta to integer2string", radix);
+  r = INTNM (radix);
+  if (r < 2 || 16 < r)
+    my_err ("invalid radix to integer2string", radix);
+  n = (r == 10) ? labs (INTNM (x)) : INTNM (x);
+  do
+    {
+      if (n % r > 9)
+	*--p = 'A' + n % r - 10;
+      else
+	*--p = '0' + n % r;
+    }
+  while (n /= r);
+  if (r == 10 && INTNM (x) < 0)
+    *--p = '-';
+  return strcons (sizeof(buf)-(p-buf), p);
 }
 
 static void
@@ -1305,20 +1464,17 @@ init_dbg (void)
 {
   dbg_pos = NIL;
   gc_protect (&dbg_pos);
+  init_subr_1 ("dbg-get-info", dbg_get_info);
+  init_subr_1 ("dbg-get-line", dbg_get_line);
+  init_subr_1 ("dbg-get-file", dbg_get_file);
+  init_subr_2 ("dbg-copy-info!", dbg_copy_info);
+  init_subr_1 ("dbg-expand-file-name", dbg_expand_file_name);
+  init_lsubr ("number->string", integer2string);
+  setvar (rintern ("dbg-closures"), NIL, NIL);
   provide (rintern ("debug"));
 }
 
-static LISP
-orig_readtl (struct gen_readio * f)
 #endif /* DEBUG_SCM */
-{
-  int c;
-  c = flush_ws (f, (char *) NULL);
-  if (c == EOF)
-    return (eof_val);
-  UNGETC_FCN (c, f);
-  return (lreadr (f));
-}
 
 static LISP
 read_from_string (LISP x)
@@ -2100,6 +2256,7 @@ closure (LISP env, LISP code)
   NEWCELL (z, tc_closure);
   (*z).storage_as.closure.env = env;
   (*z).storage_as.closure.code = code;
+  dbg_register_closure (z);
   return (z);
 }
 
@@ -3304,10 +3461,13 @@ static LISP
 leval_lambda (LISP args, LISP env)
 {
   LISP body;
+#if ! DEBUG_SCM
+  /* the debugger needs the body to be a list */
   if NULLP
     (cdr (cdr (args)))
       body = car (cdr (args));
   else
+#endif
     body = cons (sym_progn, cdr (args));
   return (closure (env, cons (arglchk (car (args)), body)));
 }
@@ -3441,11 +3601,22 @@ letstar_macro (LISP form)
 {
   LISP bindings = cadr (form);
   if (NNULLP (bindings) && NNULLP (cdr (bindings)))
-    setcdr (form, cons (cons (car (bindings), NIL),
-			cons (cons (rintern ("let*"),
-				    cons (cdr (bindings),
-					  cddr (form))),
-			      NIL)));
+    {
+      setcdr (form, cons (cons (car (bindings), NIL),
+			  cons (cons (rintern ("let*"),
+				      cons (cdr (bindings),
+					    cddr (form))),
+				NIL)));
+#if DEBUG_SCM
+      /* (let (bind1) (let* (bind2+) body)) */
+      CDR (form)->dbg_info = bindings->dbg_info;
+      CAR (CDR (form))->dbg_info = bindings->dbg_info;
+      CDR (CDR (form))->dbg_info = CDR (bindings)->dbg_info;
+      CAR (CDR (CDR (form)))->dbg_info = CDR (bindings)->dbg_info;
+      CDR (CAR (CDR (CDR (form))))->dbg_info = CDR (bindings)->dbg_info;
+      CAR (CDR (CAR (CDR (CDR (form)))))->dbg_info = CDR (bindings)->dbg_info;
+#endif
+    }
   setcar (form, rintern ("let"));
   return (form);
 }
@@ -3488,6 +3659,9 @@ static LISP
 named_let_macro (LISP form)
 {
   LISP name, fl, al, bindings, body;
+#if DEBUG_SCM
+  LISP orgbind = car (cddr (form));
+#endif
   
   bindings = split_to_name_and_value (car (cddr (form)));
   fl = car (bindings);
@@ -3505,6 +3679,27 @@ named_let_macro (LISP form)
                                cons (sym_lambda, cons (reverse (fl), body)))),
                  name));
   setcdr (form, reverse (al));
+#if DEBUG_SCM
+  /* (let name (orgbind) body) */
+  /* ((letrec ((name (lambda vars body))) name) inits) */
+  if NNULLP
+    (orgbind)
+    {
+      al = CDR (form);
+      fl = orgbind;
+      for (; NNULLP (al); al = CDR (al), fl = CDR (fl))
+	{
+	  if NNULLP
+	    (cdar (fl))
+	      al->dbg_info = CDR (CAR (fl))->dbg_info;
+	}
+    }
+  al = dbg_get_info (body);
+  form->dbg_info = al;
+  CDR (CAR (form))->dbg_info = al;
+  CDR (CAR (CAR (CDR (CAR (form)))))->dbg_info = al;
+  CDR (CDR (CAR (CDR (CAR (CAR (CDR (CAR (form))))))))->dbg_info = al;
+#endif
   return (form);
 }
 
@@ -3512,18 +3707,39 @@ static LISP
 normal_let_macro (LISP form)
 {
   LISP fl, al, bindings, body;
+#if DEBUG_SCM
+  LISP orgbind = cadr (form);
+#endif
 
   bindings = split_to_name_and_value (cadr (form));
   fl = car (bindings);
   al = cdr (bindings);
   
   body = cddr (form);
+#if ! DEBUG_SCM
   if NULLP
     (cdr (body)) body = car (body);
   else
+#endif
     body = cons (sym_progn, body);
   setcdr (form, cons (reverse (fl), cons (reverse (al), cons (body, NIL))));
   setcar (form, rintern ("let-internal"));
+#if DEBUG_SCM
+  if NNULLP
+    (orgbind)
+    {
+      CDR (CDR (form))->dbg_info = orgbind->dbg_info;
+      al = CAR (CDR (CDR (form)));
+      fl = orgbind;
+      for (; NNULLP (al); al = CDR (al), fl = CDR (fl))
+	{
+	  if NNULLP
+	    (cdar (fl))
+	      al->dbg_info = CDR (CAR (fl))->dbg_info;
+	}
+    }
+  CDR (CDR (CDR (form)))->dbg_info = dbg_get_info (CDR (body));
+#endif
   return (form);
 }
 
@@ -4133,9 +4349,16 @@ letrec_macro (LISP form)
     {
       letb = cons (cons (caar (l), NIL), letb);
       setb = cons (listn (3, rintern ("set!"), caar (l), car(cdar (l))), setb);
+#if DEBUG_SCM
+      setb->dbg_info = dbg_get_info (cdar (l));
+      CDR (CDR (CAR (setb)))->dbg_info = dbg_get_info (cdar (l));
+#endif
     }
   setcdr (form, cons (letb, setb));
   setcar (form, rintern ("let"));
+#if DEBUG_SCM
+  CDR (form)->dbg_info = dbg_get_info (setb);
+#endif
   return (form);
 }
 
