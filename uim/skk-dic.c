@@ -1547,59 +1547,103 @@ learn_word_to_cand_array(struct skk_cand_array *ca, char *word)
   ca->line->need_save = 1;
 }
 
+#define CAND_QUOTE_BUFSIZ	1024
 static char *
 quote_word(const char *word)
 {
   char *str;
-  const char *tmp;
+  const char *p;
   int len;
 
-  str= strdup("(concat \"");
-  for (tmp = word; *tmp; tmp++) {
-    len = strlen(str);
+  str = malloc(CAND_QUOTE_BUFSIZ);
+  if (!str)
+    return NULL;
+  strcpy(str, "(concat \"");
+  len = strlen(str);
 
-    switch(*tmp) {
+  for (p = word; *p; p++) {
+    switch(*p) {
     case '/':
-	    str = realloc(str, len + strlen("\\057") + 1);
+	    len += strlen("\\057");
+	    if (len >= CAND_QUOTE_BUFSIZ) {
+	       free(str);
+	       return NULL;
+	    }
 	    strcat(str, "\\057");
 	    break;
     case '[':
-	    str = realloc(str, len + strlen("[") + 1);
+	    len += strlen("[");
+	    if (len >= CAND_QUOTE_BUFSIZ) {
+	       free(str);
+	       return NULL;
+	    }
 	    strcat(str, "[");
 	    break;
     case ']':
-	    str = realloc(str, len + strlen("]") + 1);
+	    len =+ strlen("]");
+	    if (len >= CAND_QUOTE_BUFSIZ) {
+	       free(str);
+	       return NULL;
+	    }
 	    strcat(str, "]");
 	    break;
     case '\n':
-	    str = realloc(str, len + strlen("\\n") + 1);
+	    len += strlen("\\n");
+	    if (len >= CAND_QUOTE_BUFSIZ) {
+	       free(str);
+	       return NULL;
+	    }
 	    strcat(str, "\\n");
 	    break;
     case '\r':
-	    str = realloc(str, len + strlen("\\r") + 1);
+	    len += strlen("\\r");
+	    if (len >= CAND_QUOTE_BUFSIZ) {
+	       free(str);
+	       return NULL;
+	    }
 	    strcat(str, "\\r");
 	    break;
     case '\\':
-	    str = realloc(str, len + strlen("\\\\") + 1);
+	    len += strlen("\\\\");
+	    if (len >= CAND_QUOTE_BUFSIZ) {
+	       free(str);
+	       return NULL;
+	    }
 	    strcat(str, "\\\\");
 	    break;
     case ';':
-	    str = realloc(str, len + strlen("\\073") + 1);
+	    len += strlen("\\073");
+	    if (len >= CAND_QUOTE_BUFSIZ) {
+	       free(str);
+	       return NULL;
+	    }
 	    strcat(str, "\\073");
 	    break;
     case '"':
-	    str = realloc(str, len + strlen("\\\""));
+	    len += strlen("\\\"");
+	    if (len >= CAND_QUOTE_BUFSIZ) {
+	       free(str);
+	       return NULL;
+	    }
 	    strcat(str, "\\\"");
 	    break;
     default:
-	    str = realloc(str, len + 2);
-	    str[len] = *tmp;
+	    if ((len + 1) >= CAND_QUOTE_BUFSIZ) {
+	       free(str);
+	       return NULL;
+	    }
+	    str[len] = *p;
 	    str[len + 1] = '\0';
+	    len++;
 	    break;
     }
   }
-  len = strlen(str);
-  str = realloc(str, len + strlen("\")") + 1);
+
+  len += strlen("\")");
+  if (len >= CAND_QUOTE_BUFSIZ) {
+     free(str);
+     return NULL;
+  }
   strcat(str, "\")");
 
   return str;
@@ -1608,14 +1652,14 @@ quote_word(const char *word)
 static char *
 sanitize_word(const char *arg)
 {
-  const char *tmp;
+  const char *p;
   int is_space_only = 1;
 
   if (!arg || !strlen(arg)) {
     return NULL;
   }
-  for (tmp = arg; *tmp; tmp++) {
-    switch(*tmp) {
+  for (p = arg; *p; p++) {
+    switch(*p) {
     case '/':
     case '[':
     case ']':
