@@ -212,6 +212,7 @@ prime_lib_init(uim_lisp use_udp_)
       
       prime_fd = prime_init_ud(prime_ud_path);
       if(prime_fd == -1) {
+	unlink(prime_ud_path);
 	option = malloc(strlen("-u ") + strlen(prime_ud_path) + 1);
 	sprintf(option, "-u %s", prime_ud_path);
 	prime_pid = uim_ipc_open_command_with_option(prime_pid, &primer, &primew, prime_command, option);
