@@ -41,12 +41,14 @@
 #include <uim/uim-custom.h>
 #include "uim/gettext.h"
 
-#define OBJECT_DATA_UIM_CUSTOM "uim-pref-gtk::uim-custom"
+#define OBJECT_DATA_UIM_CUSTOM    "uim-pref-gtk::uim-custom"
+#define OBJECT_DATA_VALUE_CHANGED "uim-pref-gtk::value-changed"
 
-static GtkWidget *pref_tree_view;
-static GtkWidget *pref_hbox;
-static GtkWidget *current_group_widget;
-static GtkSizeGroup *spin_button_sgroup;
+static GtkWidget *pref_window = NULL;
+static GtkWidget *pref_tree_view = NULL;
+static GtkWidget *pref_hbox = NULL;
+static GtkWidget *current_group_widget = NULL;
+static GtkSizeGroup *spin_button_sgroup = NULL;
 static gboolean value_changed = FALSE;
 
 enum
@@ -61,6 +63,26 @@ static gboolean	pref_tree_selection_changed(GtkTreeSelection *selection,
 static GtkWidget *create_pref_treeview(void);
 static GtkWidget *create_group_widget(const char *group_name);
 
+static void
+save_confirm_dialog_response_cb(GtkDialog *dialog, gint arg, gpointer user_data)
+{
+  switch (arg)
+  {
+  case GTK_RESPONSE_YES:
+    uim_custom_save();
+    uim_custom_broadcast();
+    g_object_set_data(G_OBJECT(current_group_widget),
+		      OBJECT_DATA_VALUE_CHANGED,
+		      GINT_TO_POINTER(FALSE));
+    value_changed = FALSE;
+    break;
+  case GTK_RESPONSE_NO:
+    break;
+  default:
+    break;
+  }
+}
+
 static gboolean
 pref_tree_selection_changed(GtkTreeSelection *selection,
 			     gpointer data)
@@ -70,8 +92,27 @@ pref_tree_selection_changed(GtkTreeSelection *selection,
   GtkTreeModel *model;
   char *group_name;
   GtkWidget *group_widget;
+  gboolean changed = FALSE;
 
   /* Preference save check should be here. */
+  if (current_group_widget)
+    changed = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(current_group_widget),
+						OBJECT_DATA_VALUE_CHANGED));
+  if (changed) {
+    GtkWidget *dialog;
+    dialog = gtk_message_dialog_new(NULL,
+				    GTK_DIALOG_MODAL,
+				    GTK_MESSAGE_QUESTION,
+				    GTK_BUTTONS_YES_NO,
+				    _("Value was changed.\n"
+				      "Save?"));
+    gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(pref_window));
+    gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER_ON_PARENT);
+    g_signal_connect(G_OBJECT(dialog), "response",
+		     G_CALLBACK(save_confirm_dialog_response_cb), NULL);
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+  }
 
   if(gtk_tree_selection_get_selected(selection, &model, &iter) == FALSE)
     return TRUE;
@@ -102,10 +143,56 @@ pref_tree_selection_changed(GtkTreeSelection *selection,
   return TRUE;
 }
 
+
+static void
+quit_confirm_dialog_response_cb(GtkDialog *dialog, gint arg, gpointer user_data)
+{
+  gboolean *quit = user_data;
+
+  switch (arg)
+  {
+  case GTK_RESPONSE_OK:
+    *quit = TRUE;
+    break;
+  case GTK_RESPONSE_CANCEL:
+    *quit = FALSE;
+    break;
+  default:
+    break;
+  }
+}
+
+static void
+quit_confirm (void)
+{
+  if (value_changed) {
+    GtkWidget *dialog;
+    gboolean quit = FALSE;
+
+    dialog = gtk_message_dialog_new(NULL,
+				    GTK_DIALOG_MODAL,
+				    GTK_MESSAGE_QUESTION,
+				    GTK_BUTTONS_OK_CANCEL,
+				    _("Value was changed.\n"
+				    "Do you realy quit this program?"));
+    gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(pref_window));
+    gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER_ON_PARENT);
+    g_signal_connect(G_OBJECT(dialog), "response",
+		     G_CALLBACK(quit_confirm_dialog_response_cb), &quit);
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+
+    if (quit)
+      gtk_main_quit();
+  } else {
+    gtk_main_quit();
+  }
+}
+
 static void
 delete_event_cb(GtkWidget *widget, gpointer data)
 {
-  gtk_main_quit();
+  quit_confirm();
 }
 
 static GtkWidget *
@@ -176,6 +263,9 @@ custom_check_button_toggled_cb(GtkToggleButton *button, gpointer user_data)
 
     if (rv) {
       value_changed = TRUE;
+      g_object_set_data(G_OBJECT(current_group_widget),
+			OBJECT_DATA_VALUE_CHANGED,
+			GINT_TO_POINTER(TRUE));
     } else {
       g_printerr("Faild to set bool value for \"%s\".\n", custom->symbol);
       /* FIXME! reset the widget */
@@ -224,6 +314,9 @@ custom_adjustment_value_changed(GtkAdjustment *adj, gpointer user_data)
 
     if (rv) {
       value_changed = TRUE;
+      g_object_set_data(G_OBJECT(current_group_widget),
+			OBJECT_DATA_VALUE_CHANGED,
+			GINT_TO_POINTER(FALSE));
     } else {
       g_printerr("Faild to set int value for \"%s\".\n", custom->symbol);
       /* FIXME! reset the widget */
@@ -254,14 +347,15 @@ add_custom_type_integer(GtkWidget *vbox, struct uim_custom *custom)
   g_object_set_data_full(G_OBJECT(adjustment),
 			 OBJECT_DATA_UIM_CUSTOM, custom,
 			 (GDestroyNotify) uim_custom_free);
-  g_signal_connect(G_OBJECT(adjustment), "value-changed",
-		   G_CALLBACK(custom_adjustment_value_changed), NULL);
 
   spin = gtk_spin_button_new(adjustment, 1.0, 0);
   gtk_size_group_add_widget(spin_button_sgroup, spin);
   gtk_box_pack_end (GTK_BOX (hbox), spin, FALSE, TRUE, 0);
   
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
+
+  g_signal_connect(G_OBJECT(adjustment), "value-changed",
+		   G_CALLBACK(custom_adjustment_value_changed), NULL);
 }
 
 static void
@@ -290,6 +384,9 @@ custom_entry_changed_cb(GtkEntry *entry, gpointer user_data)
 
     if (rv) {
       value_changed = TRUE;
+      g_object_set_data(G_OBJECT(current_group_widget),
+			OBJECT_DATA_VALUE_CHANGED,
+			GINT_TO_POINTER(FALSE));
     } else {
       g_printerr("Faild to set str value for \"%s\".\n", custom->symbol);
       /* FIXME! reset the widget */
@@ -327,7 +424,7 @@ static void
 custom_pathname_button_clicked_cb(GtkWidget *button, GtkWidget *entry)
 {
   GtkWidget *dialog;
-  dialog = gtk_file_chooser_dialog_new ("Specify file",
+  dialog = gtk_file_chooser_dialog_new (_("Specify file"),
 					NULL,
 					GTK_FILE_CHOOSER_ACTION_OPEN,
 					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
@@ -370,7 +467,7 @@ add_custom_type_pathname(GtkWidget *vbox, struct uim_custom *custom)
   g_signal_connect(G_OBJECT(entry), "changed",
 		   G_CALLBACK(custom_entry_changed_cb), NULL);
 
-  button = gtk_button_new_with_label("File");
+  button = gtk_button_new_with_label(_("File"));
 
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(custom_pathname_button_clicked_cb), entry);
@@ -417,6 +514,9 @@ custom_combo_box_changed(GtkComboBox *combo_box, gpointer user_data)
 
     if (rv) {
       value_changed = TRUE;
+      g_object_set_data(G_OBJECT(current_group_widget),
+			OBJECT_DATA_VALUE_CHANGED,
+			GINT_TO_POINTER(FALSE));
     } else {
       g_printerr("Faild to set str value for \"%s\".\n", custom->symbol);
       /* FIXME! reset the widget */
@@ -516,6 +616,24 @@ add_custom(GtkWidget *vbox, const char *custom_sym)
   }
 }
 
+static gboolean
+pref_tree_model_foreach_unset_value_changed_fn(GtkTreeModel *model,
+					       GtkTreePath *path,
+					       GtkTreeIter *iter,
+					       gpointer data)
+{
+  GtkWidget *widget = NULL;
+
+  gtk_tree_model_get(model, iter,
+		     GROUP_WIDGET, &widget,
+		     -1);
+  if (widget)
+    g_object_set_data(G_OBJECT(widget), OBJECT_DATA_VALUE_CHANGED,
+		      GINT_TO_POINTER(FALSE));
+
+  return FALSE;
+}
+
 static void
 ok_button_clicked(GtkButton *button, gpointer user_data)
 {
@@ -525,6 +643,10 @@ ok_button_clicked(GtkButton *button, gpointer user_data)
     uim_custom_save();
     uim_custom_broadcast();
     value_changed = FALSE;
+    gtk_tree_model_foreach(
+      gtk_tree_view_get_model(GTK_TREE_VIEW(pref_tree_view)),
+      pref_tree_model_foreach_unset_value_changed_fn,
+      NULL);
   }
 
   gtk_main_quit();
@@ -539,6 +661,10 @@ apply_button_clicked(GtkButton *button, gpointer user_data)
     uim_custom_save();
     uim_custom_broadcast();
     value_changed = FALSE;
+    gtk_tree_model_foreach(
+      gtk_tree_view_get_model(GTK_TREE_VIEW(pref_tree_view)), 
+      pref_tree_model_foreach_unset_value_changed_fn,
+      NULL);
   }
 }
 
@@ -561,7 +687,7 @@ create_setting_button_box(const char *group_name)
   /* Cancel button */
   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
   g_signal_connect(G_OBJECT(button), "clicked",
-		   G_CALLBACK(gtk_main_quit), NULL);
+		   G_CALLBACK(quit_confirm), NULL);
   gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 8);
 
   /* OK button */
@@ -622,7 +748,7 @@ create_pref_window(void)
   GtkWidget *window;
   GtkWidget *scrolled_win; /* treeview container */
 
-  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  pref_window = window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   
   g_signal_connect(G_OBJECT (window), "delete_event",
 		   G_CALLBACK (delete_event_cb), NULL);
