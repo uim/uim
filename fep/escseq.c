@@ -86,8 +86,6 @@ static int s_cursor_invisible = FALSE;
 static int s_save = FALSE;
 /* 保存したカーソル */
 static struct point_tag s_save_cursor;
-/* プリエディットとステータスラインを描画するモード */
-static int s_uim_mode = FALSE;
 /* uim_modeになるときに出力するエスケープシーケンス */
 static const char *s_enter_uim_mode;
 /* enter_underline_modeに含まれる数字 */
@@ -148,8 +146,6 @@ static char *escseq2n(const char *escseq);
 static void escseq2n2(const char *escseq, const char **first, const char **second);
 static const char *attr2escseq(const struct attribute_tag *attr);
 static void set_attr(const char *str, int len);
-static void put_enter_uim_mode(void);
-static void put_exit_uim_mode(void);
 static int my_putchar(int c);
 #ifndef HAVE_CFMAKERAW
 static int cfmakeraw(struct termios *termios_p);
@@ -574,73 +570,6 @@ void put_cursor_normal(void)
 }
 
 /*
- * underlineモードを開始する
- */
-void put_enter_underline_mode(void)
-{
-  put_enter_uim_mode();
-  if (!s_attr.underline) {
-    s_attr.underline = TRUE;
-    my_putp(enter_underline_mode);
-    debug(("<{_>"));
-  }
-}
-
-/*
- * underlineモードになっていたら、underlineモードとstandoutモードを終了する
- */
-void put_exit_underline_mode(void)
-{
-  if (s_attr.underline) {
-    if (!s_uim_mode) {
-      s_uim_mode = TRUE;
-      debug(("<{uim>"));
-      s_attr_pty = s_attr;
-    }
-    put_exit_attribute_mode();
-    if (s_enter_uim_mode != NULL) {
-      my_putp(s_enter_uim_mode);
-      debug(("%s", s_enter_uim_mode));
-    }
-    /* debug(("<_}>")); */
-  }
-}
-
-/*
- * standoutモードを開始する
- */
-void put_enter_standout_mode(void)
-{
-  put_enter_uim_mode();
-  if (!s_attr.standout) {
-    s_attr.standout = TRUE;
-    my_putp(enter_standout_mode);
-    debug(("<{r>"));
-  }
-}
-
-/*
- * standoutモードになっていたら、underlineモードとstandoutモードを終了する
- */
-void put_exit_standout_mode(void)
-{
-  if (s_attr.standout) {
-    if (!s_uim_mode) {
-      s_uim_mode = TRUE;
-      debug(("<{uim>"));
-      s_attr_pty = s_attr;
-    }
-    put_exit_attribute_mode();
-    if (s_enter_uim_mode != NULL) {
-      my_putp(s_enter_uim_mode);
-      debug(("%s", s_enter_uim_mode));
-      debug(("<{uim>"));
-    }
-    /* debug(("<r}>")); */
-  }
-}
-
-/*
  * standoutモード、underlineモードを終了する
  * 文字色、背景色を元に戻す
  */
@@ -652,15 +581,16 @@ void put_exit_attribute_mode(void)
 }
 
 /*
- * 属性をfromからtoに変更する
+ * 属性をfromからtoに変更し、from <= to
  */
-static void change_attr(const struct attribute_tag *from, const struct attribute_tag *to)
+static void change_attr(struct attribute_tag *from, const struct attribute_tag *to)
 {
   const char *escseq;
-  if ((from->underline && !to->underline)
-      || (from->standout && !to->standout)
-      || (from->bold && !to->bold)
-      || (from->blink && !to->blink)
+
+  if (   (from->underline           && !to->underline)
+      || (from->standout            && !to->standout)
+      || (from->bold                && !to->bold)
+      || (from->blink               && !to->blink)
       || (from->foreground != FALSE && to->foreground == FALSE)
       || (from->background != FALSE && to->background == FALSE)
       ) {
@@ -690,36 +620,8 @@ static void change_attr(const struct attribute_tag *from, const struct attribute
   }
   if (escseq != NULL) {
     my_putp(escseq);
+    *from = *to;
     debug(("change_attr %s\n", escseq));
-  }
-}
-
-/*
- * uimモードを開始する
- */
-static void put_enter_uim_mode(void)
-{
-  if (!s_uim_mode) {
-    s_uim_mode = TRUE;
-    s_attr_pty = s_attr;
-    s_attr_uim.standout = s_attr.standout;
-    s_attr_uim.underline = s_attr.underline;
-    change_attr(&s_attr, &s_attr_uim);
-    debug(("<{uim>"));
-    s_attr = s_attr_uim;
-  }
-}
-
-/*
- * uimモードを終了する
- */
-static void put_exit_uim_mode(void)
-{
-  if (s_uim_mode) {
-    s_uim_mode = FALSE;
-    change_attr(&s_attr, &s_attr_pty);
-    debug(("<uim}>"));
-    s_attr = s_attr_pty;
   }
 }
 
@@ -895,6 +797,7 @@ static void set_attr(const char *str, int len)
   if (must_free) {
     free((char *)free_str);
   }
+  s_attr_pty = s_attr;
 }
 
 /*
@@ -943,13 +846,20 @@ void put_insert(int n)
 void put_delete(int n)
 {
   const char *tmp;
+
   if (n <= 0) {
     return;
   }
+
   if (back_color_erase) {
-    put_exit_underline_mode();
-    put_exit_standout_mode();
+    struct attribute_tag no_background_attr = s_attr_none;
+    if (!(s_attr.underline || s_attr.standout || s_attr.blink || s_attr.background)) {
+      no_background_attr.bold       = s_attr.bold;
+      no_background_attr.foreground = s_attr.foreground;
+    }
+    change_attr(&s_attr, &no_background_attr);
   }
+
   tmp = tparm(parm_dch, n);
   my_putp(tmp);
   debug(("<del %d>", n));
@@ -994,34 +904,36 @@ void put_erase(int n)
 {
   int i;
   char *spaces;
+
   if (n <= 0) {
     return;
   }
+
   spaces = malloc(n + 1);
-  put_exit_underline_mode();
-  put_exit_standout_mode();
   for (i = 0; i < n; i++) {
     spaces[i] = ' ';
   }
   spaces[n] = '\0';
-  put_uim_str(spaces);
+
+  put_uim_str(spaces, UPreeditAttr_None);
+
   free(spaces);
+  debug(("<put erase %d>", n));
 }
 
 /*
  * underlineモードとstandoutモードを終了して行末まで消去
  * カーソル位置は変わらない
  */
-void put_clear_to_end_of_line(int width)
+void put_clear_to_end_of_line(void)
 {
-  put_enter_uim_mode();
-  if (s_attr_uim.background != FALSE && !back_color_erase) {
-    put_erase(width);
-    return;
-  }
   if (back_color_erase) {
-    put_exit_standout_mode();
-    put_exit_underline_mode();
+    struct attribute_tag no_background_attr = s_attr_none;
+    if (!(s_attr.underline || s_attr.standout || s_attr.blink || s_attr.background)) {
+      no_background_attr.bold       = s_attr.bold;
+      no_background_attr.foreground = s_attr.foreground;
+    }
+    change_attr(&s_attr, &no_background_attr);
   }
   my_putp(clr_eol);
   debug(("<clear>"));
@@ -1042,8 +954,9 @@ void put_change_scroll_region(int start, int end)
  * strを端末に出力する
  * 画面の右端を越えてはいけない
  * エスケープシーケンスは含まない
+ * 下線、反転はattrで指定
  */
-void put_uim_str(const char *str)
+void put_uim_str(const char *str, int attr)
 {
   if (str[0] == '\0') {
     return;
@@ -1052,22 +965,49 @@ void put_uim_str(const char *str)
     free(s_escseq_buf);
     s_escseq_buf = NULL;
   }
-  put_enter_uim_mode();
+
+  s_attr_uim.standout = attr & UPreeditAttr_Reverse;
+  s_attr_uim.underline = attr & UPreeditAttr_UnderLine;
+  change_attr(&s_attr, &s_attr_uim);
+
   s_cursor.col += strwidth(str);
   assert(s_cursor.col <= g_win->ws_col);
   write(g_win_out, str, strlen(str));
   debug(("<put_uim_str \"%s\">", str));
 }
 
-/* strのlenだけ出力する
+/*
+ * strのlenだけ出力するput_uim_str
  * const char *strとなっているが，一時的に書換えるのでstrを文字列定数
  * にしてはいけない．
  */
-void put_uim_str_len(const char *str, int len)
+void put_uim_str_len(const char *str, int attr, int len)
 {
   char save_char = str[len];
   ((char *)str)[len] = '\0';
-  put_uim_str(str);
+  put_uim_str(str, attr);
+  ((char *)str)[len] = save_char;
+}
+
+/*
+ * strを色なしで出力するput_uim_str
+ */
+void put_uim_str_no_color(const char *str, int attr)
+{
+  struct attribute_tag save_attr = s_attr_uim;
+  s_attr_uim = s_attr_none;
+  put_uim_str(str, attr);
+  s_attr_uim = save_attr;
+}
+
+/*
+ * strのlenだけ出力するput_uim_str_no_color
+ */
+void put_uim_str_no_color_len(const char *str, int attr, int len)
+{
+  char save_char = str[len];
+  ((char *)str)[len] = '\0';
+  put_uim_str_no_color(str, attr);
   ((char *)str)[len] = save_char;
 }
 
@@ -1080,7 +1020,8 @@ void put_pty_str(const char *str, int len)
   if (len == 0) {
     return;
   }
-  put_exit_uim_mode();
+  change_attr(&s_attr, &s_attr_pty);
+  /* put_exit_uim_mode(); */
   write(g_win_out, str, len);
   set_attr(str, len);
   g_commit = FALSE;

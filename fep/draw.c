@@ -105,7 +105,6 @@ static void draw_preedit(struct preedit_tag *preedit, struct preedit_tag *prev_p
 static void draw_subpreedit(struct preedit_tag *p, int start, int end);
 static int is_eq_region(void);
 static void draw_pseg(struct preedit_segment_tag *pseg, int start_width);
-static void change_attr(int attr);
 static int compare_preedit(struct preedit_tag *p1, struct preedit_tag *p2);
 static int compare_preedit_rev(struct preedit_tag *p1, struct preedit_tag *p2);
 static int min(int a, int b);
@@ -218,8 +217,12 @@ void draw(void)
       put_cursor_invisible();
       if (s_gnu_screen) {
         put_cursor_left(prev_preedit->cursor);
-        put_erase(prev_preedit->width);
-        put_cursor_left(prev_preedit->width);
+        if (s_on_the_spot) {
+          put_delete(prev_preedit->width);
+        } else {
+          put_erase(prev_preedit->width);
+          put_cursor_left(prev_preedit->width);
+        }
       } else {
         erase_preedit();
       }
@@ -408,7 +411,7 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
       }
       put_cursor_invisible();
       put_goto_lastline(0);
-      put_clear_to_end_of_line(prev_statusline_str_width);
+      put_clear_to_end_of_line();
       /* 候補一覧を消した後はモードを描画する必要がある */
       force = TRUE;
     } else if (s_status_type == BACKTICK) {
@@ -425,28 +428,24 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
           put_save_cursor();
         }
         put_cursor_invisible();
-        put_exit_standout_mode();
-        put_exit_underline_mode();
         put_goto_lastline(0);
         /* 候補が選択されているか */
         if (candidate_col != UNDEFINED) {
           int byte_cand = (width2byte(statusline_str, candidate_col))[0];
           int byte_index = (width2byte(statusline_str, index_col))[0];
-          put_uim_str_len(statusline_str, byte_cand);
-          put_enter_standout_mode();
-          put_uim_str(candidate_str);
-          put_exit_standout_mode();
-          put_uim_str_len(statusline_str + byte_cand + strlen(candidate_str), byte_index - byte_cand - strlen(candidate_str));
+          put_uim_str_no_color_len(statusline_str, UPreeditAttr_None, byte_cand);
+          put_uim_str_no_color(candidate_str, UPreeditAttr_Reverse);
+          put_uim_str_no_color_len(statusline_str + byte_cand + strlen(candidate_str),
+              UPreeditAttr_None,
+              byte_index - byte_cand - strlen(candidate_str));
           assert(index_col != UNDEFINED);
-          put_uim_str(index_str);
-          put_uim_str(statusline_str + byte_index + strlen(index_str));
+          put_uim_str_no_color(index_str, UPreeditAttr_None);
+          put_uim_str_no_color(statusline_str + byte_index + strlen(index_str), UPreeditAttr_None);
         } else {
-          put_uim_str(statusline_str);
+          put_uim_str_no_color(statusline_str, UPreeditAttr_None);
         }
-        if (draw_background) {
-          put_clear_to_end_of_line(g_win->ws_col - statusline_str_width);
-        } else if (statusline_str_width < prev_statusline_str_width) {
-          put_clear_to_end_of_line(prev_statusline_str_width - statusline_str_width);
+        if (draw_background || statusline_str_width < prev_statusline_str_width) {
+          put_clear_to_end_of_line();
         }
         goto end_candidate;
       } else if (s_status_type == BACKTICK) {
@@ -461,10 +460,8 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
             put_save_cursor();
           }
           put_cursor_invisible();
-          put_exit_standout_mode();
-          put_exit_underline_mode();
           put_goto_lastline(prev_candidate_col);
-          put_uim_str(prev_candidate_str);
+          put_uim_str_no_color(prev_candidate_str, UPreeditAttr_None);
         }
       }
       /* 選択された候補を反転する */
@@ -474,10 +471,8 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
             put_save_cursor();
           }
           put_cursor_invisible();
-          put_exit_underline_mode();
-          put_enter_standout_mode();
           put_goto_lastline(candidate_col);
-          put_uim_str(candidate_str);
+          put_uim_str_no_color(candidate_str, UPreeditAttr_Reverse);
         } else if (s_status_type == BACKTICK) {
           int byte;
           strncpy(s_candbuf, statusline_str, CANDSIZE - 1);
@@ -499,8 +494,6 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
           put_save_cursor();
         }
         put_cursor_invisible();
-        put_exit_underline_mode();
-        put_exit_standout_mode();
         /* index_strはascii */
         if (prev_index_col != UNDEFINED) {
           for (i = 0; i < (int)strlen(index_str); i++) {
@@ -511,7 +504,7 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
         }
         if (i < (int)strlen(index_str)) {
           put_goto_lastline(index_col + i);
-          put_uim_str(index_str + i);
+          put_uim_str_no_color(index_str + i, UPreeditAttr_None);
         }
       } else if (s_status_type == BACKTICK) {
         memcpy(s_candbuf + (width2byte(statusline_str, index_col))[0], index_str, strlen(index_str));
@@ -540,14 +533,10 @@ end_candidate:
         }
         put_cursor_invisible();
         put_goto_lastline(0);
-        put_exit_standout_mode();
-        put_exit_underline_mode();
-        put_uim_str(mode_str);
+        put_uim_str_no_color(mode_str, UPreeditAttr_None);
         mode_width = strwidth(mode_str);
-        if (draw_background) {
-          put_clear_to_end_of_line(g_win->ws_col - mode_width);
-        } else if (prev_mode_width > mode_width) {
-          put_clear_to_end_of_line(prev_mode_width - mode_width);
+        if (draw_background || prev_mode_width > mode_width) {
+          put_clear_to_end_of_line();
         }
       } else if (s_status_type == BACKTICK) {
         strncpy(s_modebuf, mode_str, MODESIZE - 1);
@@ -615,7 +604,7 @@ void clear_lastline(void)
 {
   assert(s_status_type == LASTLINE);
   put_goto_lastline(0);
-  put_clear_to_end_of_line(g_win->ws_col);
+  put_clear_to_end_of_line();
 }
 
 /*
@@ -688,14 +677,21 @@ static void draw_preedit(struct preedit_tag *preedit, struct preedit_tag *prev_p
     return;
   }
 
+  if (s_gnu_screen && s_on_the_spot && preedit->width > prev_preedit->width) {
+    put_insert(preedit->width - prev_preedit->width);
+  }
   draw_subpreedit(preedit, eq_width, preedit->width);
 
   if (s_gnu_screen) {
     if (preedit->width > prev_preedit->width) {
       put_cursor_left(preedit->width - preedit->cursor);
     } else {
-      put_erase(prev_preedit->width - preedit->width);
-      put_cursor_left(prev_preedit->width - preedit->cursor);
+      if (s_on_the_spot) {
+        put_delete(prev_preedit->width - preedit->width);
+      } else {
+        put_erase(prev_preedit->width - preedit->width);
+        put_cursor_left(prev_preedit->width - preedit->cursor);
+      }
     }
   } else {
     erase_prev_preedit();
@@ -761,8 +757,7 @@ static void draw_subpreedit(struct preedit_tag *p, int start, int end)
     int seg_w = strwidth(seg_str);
     if (w + seg_w <= width) {
       if (s_gnu_screen) {
-        change_attr(p->pseg[i].attr);
-        put_uim_str(seg_str);
+        put_uim_str(seg_str, p->pseg[i].attr);
       } else {
         draw_pseg(&(p->pseg[i]), start + w);
       }
@@ -776,8 +771,7 @@ static void draw_subpreedit(struct preedit_tag *p, int start, int end)
       int save_char = seg_str[byte];
       seg_str[byte] = '\0';
       if (s_gnu_screen) {
-        change_attr(p->pseg[i].attr);
-        put_uim_str(seg_str);
+        put_uim_str(seg_str, p->pseg[i].attr);
       } else {
         draw_pseg(&(p->pseg[i]), start + w);
       }
@@ -802,7 +796,6 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
   int seg_w = strwidth(seg_str);
 
   assert(margin >= 0 && margin <= g_win->ws_col);
-  change_attr(pseg->attr);
 
   while (TRUE) {
     int *byte_width;
@@ -815,7 +808,7 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
         byte_width = width2byte(seg_str, margin2);
         byte = byte_width[0];
         width = byte_width[1];
-        put_uim_str_len(seg_str, byte);
+        put_uim_str_len(seg_str, pseg->attr, byte);
         if (width < margin2) {
           put_cursor_address(s_head.row + lineno, s_prev_line2width[lineno]);
           put_insert(s_line2width[lineno] - s_prev_line2width[lineno]);
@@ -832,7 +825,7 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
 
     /* 折り返す必要がないか */
     if (seg_w < margin) {
-      put_uim_str(seg_str);
+      put_uim_str(seg_str, pseg->attr);
       break;
     }
 
@@ -841,7 +834,7 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
     width = byte_width[1];
 
     /* 行末まで出力 */
-    put_uim_str_len(seg_str, byte);
+    put_uim_str_len(seg_str, pseg->attr, byte);
 
     /* 右端の文字を消す必要があるか */
     if (s_line2width[lineno] < s_prev_line2width[lineno]) {
@@ -850,7 +843,6 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
       } else {
         put_erase(s_prev_line2width[lineno] - s_line2width[lineno]);
       }
-      change_attr(pseg->attr);
       s_prev_line2width[lineno] = s_line2width[lineno];
     }
 
@@ -866,25 +858,6 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
     seg_w -= width;
     margin = g_win->ws_col;
     lineno++;
-  }
-}
-
-/*
- * 属性をattrにする
- */
-static void change_attr(int attr)
-{
-  if (!(attr & UPreeditAttr_Reverse)) {
-    put_exit_standout_mode();
-  }
-  if (!(attr & UPreeditAttr_UnderLine)) {
-    put_exit_underline_mode();
-  }
-  if (attr & UPreeditAttr_Reverse) {
-    put_enter_standout_mode();
-  }
-  if (attr & UPreeditAttr_UnderLine) {
-    put_enter_underline_mode();
   }
 }
 

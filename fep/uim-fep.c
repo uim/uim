@@ -212,8 +212,8 @@ int main(int argc, char **argv)
     FALSE,     /* standout */
     FALSE,     /* bold */
     FALSE,     /* blink */
-    FALSE,     /* foreground */
-    FALSE      /* background */
+    UNDEFINED, /* foreground */
+    UNDEFINED  /* background */
   };
 
   tcflag_t save_iflag;
@@ -328,6 +328,13 @@ opt_end:
   if (optind != argc) {
     usage();
     return EXIT_FAILURE;
+  }
+
+  if (attr_uim.foreground == UNDEFINED) {
+    attr_uim.foreground = FALSE;
+  }
+  if (attr_uim.background == UNDEFINED) {
+    attr_uim.background = FALSE;
   }
 
   if (s_gnu_screen) {
@@ -832,8 +839,6 @@ static void set_signal_handler(void)
 static void recover(int sig_no)
 {
   put_exit_attribute_mode();
-  put_exit_standout_mode();
-  put_exit_underline_mode();
   put_restore_cursor();
   put_cursor_normal();
   recover_loop();

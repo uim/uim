@@ -153,7 +153,7 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのfepです。
         bind K eval 'exec cat' kill redisplay
         このように書けば、C-a Jでuim-fepをフィルタとして起動し、C-a K
         で終了できるようになります。
-        -Sオプションを付けると、-sオプションにかかわらずモード表示には
+        -sオプションにかかわらずモード表示には
         backtickが使われます。
 
   o -e command arg1 arg2 ...
@@ -209,7 +209,7 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのfepです。
   M-C-a .. M-C-z        ->        "<Control><Alt>a" ..  "<Control><Alt>z"
   return                ->        "<Control>m"
   backspace(C-hのとき)  ->        "<Control>h"
-  backspace(C-?のとき)  ->        "<Control>?"
+  backspace(C-?のとき)  ->        "delete"
   backspace(それ以外)   ->        "backspace"
   tab                   ->        "<Control>i"
   del, C-?              ->        "delete"
