@@ -56,6 +56,8 @@
 #include <qptrlist.h>
 
 #include "olisteditformbase.h"
+#include "keyeditformbase.h"
+#include "keygrabformbase.h"
 
 class UimCustomItemIface
 {
@@ -107,6 +109,7 @@ protected:
     struct uim_custom *m_custom;
 };
 
+//----------------------------------------------------------------------------------------
 class CustomCheckBox : public QCheckBox, public UimCustomItemIface
 {
     Q_OBJECT
@@ -124,6 +127,7 @@ signals:
     void customValueChanged();
 };
 
+//----------------------------------------------------------------------------------------
 class CustomSpinBox : public QSpinBox, public UimCustomItemIface
 {
     Q_OBJECT
@@ -141,6 +145,7 @@ signals:
     void customValueChanged();
 };
 
+//----------------------------------------------------------------------------------------
 class CustomLineEdit : public QLineEdit, public UimCustomItemIface
 {
     Q_OBJECT
@@ -150,7 +155,7 @@ public:
 
     virtual void update();
     virtual void setDefault();
-public slots:
+protected slots:
     void slotCustomTextChanged( const QString &text );
 protected:
     void currentCustomValueChanged(){ emit customValueChanged(); }    
@@ -158,6 +163,7 @@ signals:
     void customValueChanged();
 };
 
+//----------------------------------------------------------------------------------------
 class CustomPathnameEdit : public QHBox, public UimCustomItemIface
 {
     Q_OBJECT
@@ -179,6 +185,7 @@ signals:
     void customValueChanged();
 };
 
+//----------------------------------------------------------------------------------------
 class CustomChoiceCombo : public QComboBox, public UimCustomItemIface
 {
     Q_OBJECT
@@ -188,7 +195,7 @@ public:
 
     virtual void update();
     virtual void setDefault();
-public slots:
+protected slots:
     void slotActivated( int index );
 protected:
     void currentCustomValueChanged(){ emit customValueChanged(); }
@@ -196,6 +203,7 @@ signals:
     void customValueChanged();
 };
 
+//----------------------------------------------------------------------------------------
 class CustomOrderedListEdit : public QHBox, public UimCustomItemIface
 {
     Q_OBJECT
@@ -205,7 +213,7 @@ public:
     
     virtual void update();
     virtual void setDefault();
-public slots:
+protected slots:
     void slotEditButtonClicked();
 private:
     QLineEdit *m_lineEdit;
@@ -232,6 +240,47 @@ public:
 protected slots:
     void upItem();
     void downItem();
+};
+
+//----------------------------------------------------------------------------------------
+class CustomKeyEdit : public QHBox, public UimCustomItemIface
+{
+    Q_OBJECT
+
+public:
+    CustomKeyEdit( struct uim_custom *c, QWidget *parent, const char *name = 0 );
+
+    virtual void update();
+    virtual void setDefault();
+protected:
+    void updateText();
+protected slots:
+    void slotKeyButtonClicked();
+private:
+    QLineEdit *m_lineEdit;
+    QToolButton *m_editButton;
+protected:
+    void currentCustomValueChanged(){ emit customValueChanged(); }
+signals:
+    void customValueChanged();
+};
+
+class KeyEditForm : public KeyEditFormBase {
+    Q_OBJECT
+
+public:
+    KeyEditForm( QWidget *parent = 0, const char *name = 0 );
+
+protected slots:
+    void slotAddClicked();
+    void slotSelectionChanged( QListViewItem * );
+};
+
+class KeyGrabForm : public KeyGrabFormBase {
+    Q_OBJECT
+
+public:
+    KeyGrabForm( QWidget *parent = 0, const char *name = 0 );
 };
 
 #endif /* Not def: _CUSTOMWIDGETS_H_ */

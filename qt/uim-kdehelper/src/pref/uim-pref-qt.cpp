@@ -449,7 +449,16 @@ UimCustomItemIface *GroupPageWidget::addCustomTypeOrderedList( QVGroupBox *vbox,
 UimCustomItemIface *GroupPageWidget::addCustomTypeKey( QVGroupBox *vbox, struct uim_custom *custom )
 {
     // FIXME: not implemented yet
-    return NULL;
+    QHBox *hbox = new QHBox( vbox );
+    hbox->setSpacing( 6 );
+    QLabel *label = new QLabel( _FU8(custom->label), hbox );
+    CustomKeyEdit *keyEditBox = new CustomKeyEdit( custom, hbox );
+    label->setBuddy( keyEditBox );
+
+    QObject::connect( keyEditBox, SIGNAL(customValueChanged()),
+                      this, SLOT(slotCustomValueChanged()) );
+
+    return keyEditBox;
 }
 
 void GroupPageWidget::setDefault()
@@ -503,6 +512,11 @@ SubgroupData::SubgroupData( QWidget*parentWidget, const char *parent_group_name 
         uim_custom_group_free( sgroup_custom );
     }
     uim_custom_symbol_list_free( sub_groups );
+}
+
+SubgroupData::~SubgroupData()
+{
+    gvboxMap.clear();    
 }
 
 QVGroupBox * SubgroupData::searchGroupVBoxByCustomSym( const char *custom_sym )

@@ -1,15 +1,15 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>OListEditFormBase</class>
+<class>KeyEditFormBase</class>
 <widget class="QDialog">
     <property name="name">
-        <cstring>OListEditFormBase</cstring>
+        <cstring>KeyEditFormBase</cstring>
     </property>
     <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>380</width>
-            <height>200</height>
+            <width>392</width>
+            <height>229</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -21,7 +21,7 @@
         </sizepolicy>
     </property>
     <property name="caption">
-        <string>OListEditBase</string>
+        <string>KeyEditDialog</string>
     </property>
     <grid>
         <property name="name">
@@ -29,7 +29,7 @@
         </property>
         <widget class="QLayoutWidget" row="0" column="0">
             <property name="name">
-                <cstring>layout3</cstring>
+                <cstring>layout9</cstring>
             </property>
             <hbox>
                 <property name="name">
@@ -38,7 +38,7 @@
                 <widget class="QListView">
                     <column>
                         <property name="text">
-                            <string>Available Items</string>
+                            <string>Key Combination</string>
                         </property>
                         <property name="clickable">
                             <bool>false</bool>
@@ -50,13 +50,10 @@
                     <property name="name">
                         <cstring>m_listView</cstring>
                     </property>
-                    <property name="selectionMode">
-                        <enum>Single</enum>
-                    </property>
                 </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout2</cstring>
+                        <cstring>layout8</cstring>
                     </property>
                     <vbox>
                         <property name="name">
@@ -64,23 +61,31 @@
                         </property>
                         <widget class="QPushButton">
                             <property name="name">
-                                <cstring>m_upButton</cstring>
+                                <cstring>m_addButton</cstring>
                             </property>
                             <property name="text">
-                                <string>Up</string>
+                                <string>Add</string>
                             </property>
                         </widget>
                         <widget class="QPushButton">
                             <property name="name">
-                                <cstring>m_downButton</cstring>
+                                <cstring>m_removeButton</cstring>
                             </property>
                             <property name="text">
-                                <string>Down</string>
+                                <string>Remove</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>m_editButton</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Edit</string>
                             </property>
                         </widget>
                         <spacer>
                             <property name="name">
-                                <cstring>spacer2</cstring>
+                                <cstring>spacer1</cstring>
                             </property>
                             <property name="orientation">
                                 <enum>Vertical</enum>
@@ -90,8 +95,8 @@
                             </property>
                             <property name="sizeHint">
                                 <size>
-                                    <width>20</width>
-                                    <height>140</height>
+                                    <width>77</width>
+                                    <height>50</height>
                                 </size>
                             </property>
                         </spacer>
@@ -121,13 +126,13 @@
     <connection>
         <sender>m_okButton</sender>
         <signal>clicked()</signal>
-        <receiver>OListEditFormBase</receiver>
+        <receiver>KeyEditFormBase</receiver>
         <slot>accept()</slot>
     </connection>
     <connection>
         <sender>m_cancelButton</sender>
         <signal>clicked()</signal>
-        <receiver>OListEditFormBase</receiver>
+        <receiver>KeyEditFormBase</receiver>
         <slot>reject()</slot>
     </connection>
 </connections>

@@ -45,7 +45,7 @@ CustomCheckBox::CustomCheckBox( struct uim_custom *c, QWidget *parent, const cha
 }
 
 void CustomCheckBox::update()
-{    
+{
     setEnabled( m_custom->is_active );
 
     if( m_custom->is_active )
@@ -71,6 +71,7 @@ void CustomCheckBox::slotCustomToggled( bool check )
     setCustom( m_custom );
 }
 
+//----------------------------------------------------------------------------------------
 CustomSpinBox::CustomSpinBox( struct uim_custom *c, QWidget *parent, const char *name)
     : QSpinBox( parent, name ),
       UimCustomItemIface( c )
@@ -108,6 +109,7 @@ void CustomSpinBox::slotCustomValueChanged( int value )
     setCustom( m_custom );
 }
 
+//----------------------------------------------------------------------------------------
 CustomLineEdit::CustomLineEdit( struct uim_custom *c, QWidget *parent, const char *name)
     : QLineEdit( parent, name ),
       UimCustomItemIface( c )
@@ -147,15 +149,16 @@ void CustomLineEdit::slotCustomTextChanged( const QString &text )
     setCustom( m_custom );
 }
 
+//----------------------------------------------------------------------------------------
 CustomPathnameEdit::CustomPathnameEdit( struct uim_custom *c, QWidget *parent, const char *name)
     : QHBox( parent, name ),
       UimCustomItemIface( c )
 {
     setSpacing( 3 );
     m_lineEdit = new QLineEdit( this );
-    m_lineEdit->setText( m_custom->value->as_pathname );
     QObject::connect( m_lineEdit, SIGNAL(textChanged(const QString &)),
                       this, SLOT(slotCustomTextChanged(const QString &)) );
+
     m_fileButton = new QToolButton( this );
     m_fileButton->setText( "File" );
     QObject::connect( m_fileButton, SIGNAL(clicked()),
@@ -205,6 +208,7 @@ void CustomPathnameEdit::slotCustomTextChanged( const QString & text )
     setCustom( m_custom );
 }
 
+//----------------------------------------------------------------------------------------
 CustomChoiceCombo::CustomChoiceCombo( struct uim_custom *c, QWidget *parent, const char *name)
     : QComboBox( parent, name ),
       UimCustomItemIface( c )
@@ -281,6 +285,7 @@ void CustomChoiceCombo::slotActivated( int index )
     setCustom( m_custom );
 }
 
+//----------------------------------------------------------------------------------------
 CustomOrderedListEdit::CustomOrderedListEdit( struct uim_custom *c, QWidget *parent, const char *name )
     : QHBox( parent, name ),
       UimCustomItemIface( c )
@@ -288,11 +293,10 @@ CustomOrderedListEdit::CustomOrderedListEdit( struct uim_custom *c, QWidget *par
     setSpacing( 3 );
 
     m_lineEdit = new QLineEdit( this );
+    m_lineEdit->setReadOnly( true );
+    
     m_editButton = new QToolButton( this );
     m_editButton->setText( "Edit" );
-
-    updateText();    
-
     QObject::connect( m_editButton, SIGNAL(clicked()),
                       this, SLOT(slotEditButtonClicked()) );
 
@@ -560,4 +564,139 @@ QStringList OListEditForm::activeItemLabels() const
         }
     }
     return activeItemLabelList;
+}
+
+//----------------------------------------------------------------------------------------
+CustomKeyEdit::CustomKeyEdit( struct uim_custom *c, QWidget *parent, const char *name )
+    : QHBox( parent, name ),
+      UimCustomItemIface( c )
+{
+    setSpacing( 3 );
+    m_lineEdit = new QLineEdit( this );
+    m_lineEdit->setReadOnly( false );
+    
+    m_editButton = new QToolButton( this );
+    m_editButton->setText( "Edit" );
+    QObject::connect( m_editButton, SIGNAL(clicked()),
+                      this, SLOT(slotKeyButtonClicked()) );
+
+    update();
+}
+
+void CustomKeyEdit::update()
+{
+    m_lineEdit->setEnabled( m_custom->is_active );
+    m_editButton->setEnabled( m_custom->is_active );
+
+    if( m_custom->is_active )
+    {
+        updateText();
+    }
+}
+
+void CustomKeyEdit::updateText()
+{
+    QString str = QString::null;
+    if (m_custom->value->as_key) {
+        struct uim_custom_key *key = NULL;
+        int i = 0;
+        for (key = m_custom->value->as_key[0], i = 0;
+             key;
+             key = m_custom->value->as_key[++i])
+        {
+            if( i != 0 )
+                str.append(",");
+            str.append( key->literal );
+        }
+    } else {
+        /* error message */
+    }
+    m_lineEdit->setText( str );
+}
+
+
+void CustomKeyEdit::setDefault()
+{
+    /* free old items */
+    int num = 0;
+    for( num = 0; m_custom->value->as_key[num]; num++ )
+        ;
+    
+    for( int i = 0; i < num; i++ )
+    {
+        free( m_custom->value->as_key[i]->literal );
+        free( m_custom->value->as_key[i]->label );
+        free( m_custom->value->as_key[i]->desc );
+        free( m_custom->value->as_key[i] );
+    }
+
+    /* copy default_value to value */
+    int default_num = 0;
+    for( default_num = 0; m_custom->default_value->as_key[default_num]; default_num++ )
+        ;
+
+    m_custom->value->as_key = (struct uim_custom_key **)realloc( m_custom->value->as_key,
+                                                                 sizeof(struct uim_custom_key *) * (default_num + 1) );
+    
+    for( int i = 0; i < default_num; i++ )
+    {
+        struct uim_custom_key *default_item = m_custom->default_value->as_key[i];
+        struct uim_custom_key *item = (struct uim_custom_key *)malloc(sizeof(struct uim_custom_key));
+
+        item->type        = default_item->type;
+        item->editor_type = default_item->editor_type;
+        item->literal     = default_item->literal ? strdup(default_item->literal) : NULL;
+        item->label       = default_item->label   ? strdup(default_item->label)   : NULL;
+        item->desc        = default_item->desc    ? strdup(default_item->desc)    : NULL;
+
+        m_custom->value->as_key[i] = item;
+    }
+    m_custom->value->as_key[default_num] = NULL; /* NULL-terminated */
+
+    setCustom( m_custom );
+    update();
+}
+
+void CustomKeyEdit::slotKeyButtonClicked()
+{
+    KeyEditForm *d = new KeyEditForm( this );
+    if( d->exec() == KeyEditForm::Accepted )
+    {
+        ;
+    }
+}
+
+KeyEditForm::KeyEditForm( QWidget *parent, const char *name )
+    : KeyEditFormBase( parent, name )
+{
+    m_editButton->setEnabled( false );
+
+    QObject::connect( m_addButton, SIGNAL(clicked()),
+                      this, SLOT(slotAddClicked()) );
+
+    QObject::connect( m_listView, SIGNAL(selectionChanged(QListViewItem *)),
+                      this, SLOT(slotSelectionChanged(QListViewItem*)) );
+}
+
+void KeyEditForm::slotAddClicked()
+{
+    KeyGrabForm *d = new KeyGrabForm( this );
+    if( d->exec() == KeyGrabForm::Accepted )
+    {
+        ;
+    }
+}
+
+void KeyEditForm::slotSelectionChanged( QListViewItem *item )
+{
+    if( item )
+    {
+        m_editButton->setEnabled( true );
+    }
+}
+
+KeyGrabForm::KeyGrabForm( QWidget *parent, const char *name )
+    : KeyGrabFormBase( parent, name )
+{
+    
 }
