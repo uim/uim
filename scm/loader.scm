@@ -36,10 +36,8 @@
 (require "pyload.scm")
 
 (load-plugin "anthy")
-
 (load-plugin "canna")
-
-(require "prime.scm")
+(load-plugin "prime")
 (load-plugin "skk")
 (require "tcode.scm")
 (require "tutcode.scm")

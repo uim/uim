@@ -284,8 +284,6 @@ void uim_init_im_subrs(void);
 void uim_init_intl_subrs(void);
 
 /**/
-void uim_init_prime(void);
-void uim_quit_prime(void);
 void uim_init_plugin(void);
 void uim_quit_plugin(void);
 

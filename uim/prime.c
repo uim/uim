@@ -38,6 +38,7 @@
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "context.h"
+#include "plugin.h"
 
 static FILE *primer = NULL, *primew = NULL;
 static int prime_pid = 0;
@@ -75,14 +76,14 @@ prime_lib_init(void)
 }
 
 void
-uim_init_prime(void)
+uim_plugin_instance_init(void)
 {
   uim_scm_init_subr_0("prime-lib-init", prime_lib_init);
   uim_scm_init_subr_1("prime-lib-send-command", prime_send_command);
 }
 
 void
-uim_quit_prime(void)
+uim_plugin_instance_quit(void)
 {
   if(primew) {
     uim_ipc_send_command(&prime_pid, &primer, &primew, prime_command, "close\n");
