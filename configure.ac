@@ -238,6 +238,17 @@ AC_ARG_ENABLE(applet,
   [ PKG_CHECK_MODULES(APPLET, libpanelapplet-2.0, use_applet="yes",use_applet="no") ])
 
 
+AC_ARG_ENABLE(dummy,
+  AC_HELP_STRING([--default-toolkit],
+                 [Determine default toolkit]),
+  [],
+  [
+  default_toolkit=gtk
+  if test x"$default_toolkit" = "xgtk" && test x"use_gtk2" = "xyes"; then
+     default_toolkit=gtk
+  fi
+  ])
+
 AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug],
                  [enable debugging]),
@@ -328,6 +339,8 @@ AM_CONDITIONAL(PRIME, true)
 AM_CONDITIONAL(SKK, true)
 AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
 AM_CONDITIONAL(GTK2_4, test x$use_gtk2_4 = xyes)
+AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test x$default_toolkit = xgtk)
+AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test x$default_toolkit = xqt)
 AM_CONDITIONAL(GNOME2, test x$use_gnome2 = xyes)
 AM_CONDITIONAL(APPLET, test x$use_applet = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
@@ -433,15 +446,16 @@ AC_OUTPUT
 AC_MSG_RESULT([
 Configure Result :
 
-   Anthy        : ${use_anthy}
-   Canna        : ${use_canna}
-   m17n-lib     : ${use_m17nlib}
-   SCIM         : ${use_scim}
-   Gtk+         : ${use_gtk2}
-   Gnome        : ${use_gnome2}
-   Gnome Applet : ${use_applet}
-   FEP          : ${use_uim_fep}
-   DICT         : ${use_dict}
+   Anthy           : ${use_anthy}
+   Canna           : ${use_canna}
+   m17n-lib        : ${use_m17nlib}
+   SCIM            : ${use_scim}
+   Gtk+            : ${use_gtk2}
+   Gnome           : ${use_gnome2}
+   Gnome Applet    : ${use_applet}
+   FEP             : ${use_uim_fep}
+   DICT            : ${use_dict}
+   Default toolkit : ${default_toolkit}
 ])
 
 if test x$enable_debug = xyes; then
