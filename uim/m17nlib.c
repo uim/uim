@@ -331,7 +331,7 @@ get_right_of_cursor(uim_lisp id_)
   int i;
   uim_lisp buf_;
   char *buf;
-  unsigned char *p;
+  char *p;
   MInputContext *ic = ic_array[id].mic;
   if (!ic) {
     return uim_scm_make_str("");
@@ -355,7 +355,7 @@ get_left_of_candidate(uim_lisp id_)
   int buflen;
   int i;
   uim_lisp buf_;
-  unsigned char *buf;
+  char *buf;
   char *p;
   MInputContext *ic = ic_array[id].mic;
   if (!ic) {
@@ -365,7 +365,7 @@ get_left_of_candidate(uim_lisp id_)
     return uim_scm_make_str("");
   }
   buf = convert_mtext2str(ic->preedit);
-  p = (char *)buf;
+  p = buf;
 
   for(i=0; i<ic->candidate_from ;i++) {
     p = m17nlib_utf8_find_next_char(p);
@@ -384,9 +384,9 @@ get_selected_candidate(uim_lisp id_)
   int buflen;
   int i;
   uim_lisp buf_;
-  unsigned char *buf;
-  unsigned char *p;
-  unsigned char *start;
+  char *buf;
+  char *p;
+  char *start;
   MInputContext *ic = ic_array[id].mic;
   if (!ic) {
     return uim_scm_make_str("");
@@ -399,17 +399,17 @@ get_selected_candidate(uim_lisp id_)
   }
 
   for(i=0; i<ic->candidate_from ;i++) {
-    p = (unsigned char *)m17nlib_utf8_find_next_char((char *)p);
+    p = m17nlib_utf8_find_next_char(p);
   }
   start = p;
 
   for(i=0; i<ic->candidate_to - ic->candidate_from ;i++) {
-    p = (unsigned char *)m17nlib_utf8_find_next_char((char *)p);
+    p = m17nlib_utf8_find_next_char(p);
   }
   *p = 0;
 
-  buflen = strlen((char *)start);
-  buf_ = uim_scm_make_str((char *)start);
+  buflen = strlen(start);
+  buf_ = uim_scm_make_str(start);
   free(buf);
   return buf_;
 }
@@ -421,8 +421,8 @@ get_right_of_candidate(uim_lisp id_)
   int buflen;
   int i;
   uim_lisp buf_;
-  unsigned char *buf;
-  unsigned char *p;
+  char *buf;
+  char *p;
   MInputContext *ic = ic_array[id].mic;
   if (!ic) {
     return uim_scm_make_str("");
@@ -431,10 +431,10 @@ get_right_of_candidate(uim_lisp id_)
   p = buf;
 
   for(i=0; i<ic->candidate_to ;i++) {
-    p = (unsigned char *)m17nlib_utf8_find_next_char((char *)p);
+    p = m17nlib_utf8_find_next_char(p);
   }
-  buflen = strlen((char *)p);
-  buf_ = uim_scm_make_str((char *)p);
+  buflen = strlen(p);
+  buf_ = uim_scm_make_str(p);
   free(buf);
   return buf_;
 }
@@ -567,7 +567,7 @@ static uim_lisp
 get_commit_string(uim_lisp id_)
 {
   MText *produced;
-  unsigned char *buf;
+  char *buf;
   int id = uim_scm_c_int(id_);
   MInputContext *ic = ic_array[id].mic;
   uim_lisp buf_;
@@ -640,7 +640,7 @@ get_nth_candidate(uim_lisp id_, uim_lisp nth_)
   MPlist *group;
   MPlist *elm;
   int i;
-  unsigned char *buf = NULL; /* Quiet gcc */
+  char *buf = NULL; /* Quiet gcc */
   int id = uim_scm_c_int(id_);
   int nth = uim_scm_c_int(nth_);
   MInputContext *ic = ic_array[id].mic;
