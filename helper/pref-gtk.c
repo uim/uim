@@ -163,10 +163,12 @@ quit_confirm_dialog_response_cb(GtkDialog *dialog, gint arg, gpointer user_data)
 
   switch (arg)
   {
+  case GTK_RESPONSE_YES:
   case GTK_RESPONSE_OK:
     *quit = TRUE;
     break;
   case GTK_RESPONSE_CANCEL:
+  case GTK_RESPONSE_NO:
     *quit = FALSE;
     break;
   default:
@@ -184,7 +186,7 @@ quit_confirm(void)
     dialog = gtk_message_dialog_new(NULL,
 				    GTK_DIALOG_MODAL,
 				    GTK_MESSAGE_QUESTION,
-				    GTK_BUTTONS_OK_CANCEL,
+				    GTK_BUTTONS_YES_NO,
 				    _("Some value(s) have been changed.\n"
 				      "Do you realy quit this program?"));
     gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(pref_window));
@@ -494,6 +496,10 @@ check_dot_uim_file(void)
 				  GTK_MESSAGE_WARNING,
 				  GTK_BUTTONS_OK,
 				  _(message));
+  if (pref_window) {
+    gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(pref_window));
+    gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER_ON_PARENT);
+  }
 
   /*
    *  2005-02-07 Takuro Ashie <ashie@homa.ne.jp>
