@@ -84,6 +84,7 @@
       (define activity-indicator-new do-nothing)
       (define actions-new do-nothing)
       (define context-init-widgets do-nothing)
+      (define context-list-replace-widgets! do-nothing)
       (define context-update-widgets do-nothing)
       (define context-prop-activate-handler do-nothing)
       (define context-mode-handler do-nothing)))

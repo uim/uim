@@ -315,6 +315,7 @@
       (context-propagate-widget-configuration context))))
 
 ;; TODO: write test
+;; API for uim developers
 (define context-list-replace-widgets!
   (lambda (target-im-name widget-id-list)
     (for-each (lambda (context)

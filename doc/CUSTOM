@@ -23,6 +23,54 @@ developers.
   required. But we recommend the naming convention to manage the files
   easily.
 
+
+* Invoke an arbitrary procedure when a custom variable has been set
+
+  The feature is usable via the hook named 'custom-set-hooks'. See
+  following example.
+
+  (custom-add-hook 'anthy-input-mode-actions
+                   'custom-set-hooks
+                   (lambda ()
+                     (puts "anthy-input-mode-actions has been set\n")
+                     (anthy-configure-widgets)))
+
+  Any procedure that takes no argument can be placed into the third
+  argument to custom-add-hook. The procedure will be invoked when the
+  custom variable anthy-input-mode-actions has been set. Interprocess
+  custom variable update via uim-helper-server also triggers this
+  hook. So some variables edited on uim-pref will be propagated to any
+  processes and invokes the hook on the fly.
+
+  For example, dynamic file switching can be triggered by uim-pref
+  using following hook.
+
+  (custom-add-hook 'skk-dic-file-name
+                   'custom-set-hooks
+                   skk-reload-dic)
+
+  There are some limitations for the set-hook feature.
+
+  - Runtime version of the custom facility (custom-rt.scm) only
+    accepts at most one hook per custom variable (full-featured
+    version can handle multiple hooks)
+
+  - Custom API enabled only in full-featured version (custom.scm)
+    cannot be invoked in the hook procedure.
+
+    Enclose such code into conditional block as follows. This ensures
+    that custom-rt.scm ignores the hook.
+
+    (if custom-full-featured?
+        (custom-add-hook 'anthy-kana-input-method-actions
+                         'custom-set-hooks
+                         (lambda ()
+                           (custom-choice-range-reflect-olist-val
+                            'default-widget_anthy_kana_input_method
+                            'anthy-kana-input-method-actions
+                            anthy-kana-input-method-indication-alist))))
+
+
 * Control activity of a custom variable
 
   Any custom variables has a state named 'activity'. This state
