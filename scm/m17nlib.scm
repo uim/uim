@@ -298,7 +298,7 @@
 
 (define duplicated-im?
   (lambda (name)
-    (member name duplicated-im-list)
+    (member name duplicated-im-list)))
 
 (define m17nlib-register
   (lambda (i nr-im)
