@@ -100,7 +100,7 @@ libuim_custom_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
 
 uim_plugin_LTLIBRARIES += libuim-custom-enabler.la
 libuim_custom_enabler_la_SOURCES = uim-custom-enabler.c
-libuim_custom_enabler_la_LIBADD = libuim.la libuim-custom.la
+libuim_custom_enabler_la_LIBADD = libuim-custom.la libuim.la
 libuim_custom_enabler_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_custom_enabler_la_CPPFLAGS = -I$(top_srcdir)
 
