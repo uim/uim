@@ -662,9 +662,9 @@ uim_init_scm()
   scm_files = getenv("LIBUIM_SCM_FILES");
   uim_scm_set_lib_path((scm_files) ? scm_files : SCM_FILES);
 
-  uim_scm_require_file("im.scm");
   uim_scm_require_file("plugin.scm");
   uim_scm_require_file("custom-rt.scm");
+  uim_scm_require_file("im.scm");
   uim_scm_load_file("loader.scm");
   uim_scm_require_file("direct.scm");  /* must be loaded at last of IMs */
 

@@ -33,31 +33,26 @@
 ;; All contains of this file may be distributed into appropriate files
 ;;
 
-(define direct-im-canonical-name (_ "Direct"))
-(define anthy-im-canonical-name (_ "Anthy"))
-(define canna-im-canonical-name (_ "Canna"))
-(define skk-im-canonical-name (_ "SKK"))
-(define prime-im-canonical-name (_ "PRIME"))
-(define pyunihan-im-canonical-name (_ "Pinyin (Unicode)"))
-(define pinyin-big5-im-canonical-name (_ "Pinyin (Traditional)"))
-(define py-im-canonical-name (_ "Pinyin (Simplified)"))
-(define ipa-im-canonical-name (_ "International Phonetic Alphabet"))
-(define romaja-im-canonical-name (_ "Hangul (Romaja)"))
-(define hangul3-im-canonical-name (_ "Hangul (3-bul)"))
-(define hangul2-im-canonical-name (_ "Hangul (2-bul)"))
-(define viqr-im-canonical-name (_ "VIQR"))
-(define tutcode-im-canonical-name (_ "TUT-Code"))
-(define tcode-im-canonical-name (_ "T-Code"))
-(define spellcheck-im-canonical-name (_ "Spellcheck"))
+(require "i18n.scm")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Global
 
+(define custom-im-list-as-choice-rec
+  (lambda (lst)
+    (reverse (map (lambda (im)
+		    (let ((sym (im-name im))
+			  (label-name (im-label-name im))
+			  (desc (im-short-desc im)))
+		      (custom-choice-rec-new sym label-name desc)))
+		  lst))))
+
 (define-custom-group 'global
 		     (_ "Global settings")
 		     (_ "long description will be here."))
 
+;; subgroup
 (define-custom-group 'advanced
 		     (_ "Advanced settings")
 		     (_ "long description will be here."))
@@ -75,21 +70,11 @@
   (_ "Specify default IM")
   (_ "long description will be here."))
 
-;; requires predefined *-im-canonical-name
 (define-custom 'custom-preserved-default-im-name (im-name (find-default-im #f))
   '(global default-im-name)
   (cons
    'choice
-   (reverse (map (lambda (im)
-		   (let* ((sym (im-name im))
-			  (cname-proc (symbolconc sym '-im-canonical-name))
-			  (name (or (and (symbol-bound? cname-proc)
-					 (symbol-value cname-proc))
-				    (symbol->string sym)))
-			  (desc-proc (symbolconc sym '-im-desc))
-			  (desc (im-short-desc im)))
-		     (custom-choice-rec-new sym name desc)))
-		 im-list)))
+   (custom-im-list-as-choice-rec im-list))
   (_ "Default input method")
   (_ "long description will be here."))
 
@@ -149,18 +134,8 @@
 ;; Enabled IM list
 ;;
 
-;; requires predefined *-im-canonical-name
 (define custom-default-enabled-im-list
-  (reverse (map (lambda (im)
-		  (let* ((sym (im-name im))
-			 (cname-proc (symbolconc sym '-im-canonical-name))
-			 (name (or (and (symbol-bound? cname-proc)
-					(symbol-value cname-proc))
-				   (symbol->string sym)))
-			 (desc-proc (symbolconc sym '-im-desc))
-			 (desc (im-short-desc im)))
-		    (custom-choice-rec-new sym name desc)))
-		im-list)))
+  (custom-im-list-as-choice-rec im-list))
 
 (define-custom 'enabled-im-list
                (map custom-choice-rec-sym custom-default-enabled-im-list)
@@ -224,119 +199,114 @@
 
 ;; global-keys
 
-;; subgroup 'key'
-(define-custom-group 'key
-		     (_ "Key bindings")
-		     (_ "long description will be here."))
-
 (define-custom-group 'global-keys
 		     (_ "Global key bindings")
 		     (_ "long description will be here."))
 
 (define-custom 'generic-on-key '("zenkaku-hankaku" "<Shift> ")
-               '(global-keys key)
+               '(global-keys)
 	       '(key)
 	       (_ "[Global] on")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-off-key '("zenkaku-hankaku" "<Shift> ")
-               '(global-keys key)
+               '(global-keys)
 	       '(key)
 	       (_ "[Global] off")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-begin-conv-key '(" ")
-               '(global-keys key)
+               '(global-keys)
 	       '(key)
 	       (_ "[Global] begin conversion")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-commit-key '("<Control>j" "<Control>J" generic-return-key)
-               '(global-keys key)
+               '(global-keys)
 	       '(key)
 	       (_ "[Global] commit")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-cancel-key '("escape" "<Control>g" "<Control>G")
-               '(global-keys key)
+               '(global-keys)
 	       '(key)
 	       (_ "[Global] cancel")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-next-candidate-key '(" " "down" "<Control>n" "<Control>N")
-               '(global-keys key)
+               '(global-keys)
 	       '(key)
 	       (_ "[Global] next candidate")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-prev-candidate-key '("up" "<Control>p" "<Control>P")
-               '(global-keys key)
+               '(global-keys)
 	       '(key)
 	       (_ "[Global] previous candidate")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-next-page-key '("next")
-               '(global-keys key)
+               '(global-keys)
 	       '(key)
 	       (_ "[Global] next page of candidate window")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-prev-page-key '("prior")
-               '(global-keys key)
+               '(global-keys)
 	       '(key)
 	       (_ "[Global] previous page of candidate window")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-beginning-of-preedit-key '("home" "<Control>a" "<Control>A")
-               '(global-keys key)
+               '(global-keys)
 	       '(key)
 	       (_ "[Global] beginning of preedit")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-end-of-preedit-key '("end" "<Control>e" "<Control>E")
-               '(global-keys key)
+               '(global-keys)
 	       '(key)
 	       (_ "[Global] end of preedit")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-kill-key '("<Control>k" "<Control>K")
-               '(global-keys key advanced)
+               '(global-keys advanced)
 	       '(key)
 	       (_ "[Global] erase after cursor")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-kill-backward-key '("<Control>u" "<Control>U")
-               '(global-keys key advanced)
+               '(global-keys advanced)
 	       '(key)
 	       (_ "[Global] erase before cursor")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-backspace-key '("backspace" "<Control>h" "<Control>H")
-               '(global-keys key advanced)
+               '(global-keys advanced)
 	       '(key)
 	       (_ "[Global] backspace")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-delete-key '("delete" "<Control>d" "<Control>D")
-               '(global-keys key advanced)
+               '(global-keys advanced)
 	       '(key)
 	       (_ "[Global] delete")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-go-left-key '("left" "<Control>b" "<Control>B")
-               '(global-keys key advanced)
+               '(global-keys advanced)
 	       '(key)
 	       (_ "[Global] left")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-go-right-key '("right" "<Control>f" "<Control>F")
-               '(global-keys key advanced)
+               '(global-keys advanced)
 	       '(key)
 	       (_ "[Global] right")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-return-key '("return" "<Control>m" "<Control>M")
-               '(global-keys key advanced)
+               '(global-keys advanced)
 	       '(key)
 	       (_ "[Global] return")
 	       (_ "long description will be here"))
@@ -345,9 +315,12 @@
 
 ;; anthy
 
+(define anthy-im-label-name (N_ "Anthy"))
+(define anthy-im-short-desc (N_ "Japanese Kana Kanji Conversion Engine, Anthy"))
+
 (define-custom-group 'anthy
-		     anthy-im-canonical-name
-		     "TODO: share im-short-desc of the IM")
+                     (ugettext anthy-im-label-name)
+                     (ugettext anthy-im-short-desc))
 
 (define-custom 'anthy-use-candidate-window? #t
   '(anthy)
@@ -389,9 +362,12 @@
 
 ;; canna
 
+(define canna-im-label-name (N_ "Canna"))
+(define canna-im-short-desc (N_ "Japanese Kana Kanji Conversion Engine, Canna"))
+
 (define-custom-group 'canna
-		     canna-im-canonical-name
-		     "TODO: share im-short-desc of the IM")
+                     (ugettext canna-im-label-name)
+                     (ugettext canna-im-short-desc))
 
 (define-custom 'canna-use-candidate-window? #t
   '(canna)
@@ -497,9 +473,12 @@
 
 ;; skk
 
+(define skk-im-label-name (N_ "SKK"))
+(define skk-im-short-desc (N_ "Uim's SKK like input method"))
+
 (define-custom-group 'skk
-		     skk-im-canonical-name
-		     "TODO: share im-short-desc of the IM")
+                     (ugettext skk-im-label-name)
+                     (ugettext skk-im-short-desc))
 
 (define-custom 'skk-use-candidate-window? #t
   '(skk)
@@ -588,9 +567,12 @@
 
 ;; prime
 
+(define prime-im-label-name (N_ "PRIME"))
+(define prime-im-short-desc (N_ "Japanese predictable input method"))
+
 (define-custom-group 'prime
-		     prime-im-canonical-name
-		     "TODO: share im-short-desc of the IM")
+                     (ugettext prime-im-label-name)
+                     (ugettext prime-im-short-desc))
 
 ;(define-custom 'prime-use-candidate-window? #t
 ;  '(prime)
@@ -679,29 +661,32 @@
 
 ;; spellcheck IM is not available yet
 
-;;(define-custom-group 'spellcheck
-;;		     spellcheck-im-canonical-name
-;;		     "TODO: share im-short-desc of the IM")
+;;(define spell-im-label-name (N_ "Spellcheck"))
+;;(define spell-im-short-desc (N_ "Spellcheck"))
 ;;
-;;(define-custom 'spellcheck-use-candidate-window? #t
+;;(define-custom-group 'spellcheck
+;;                     (ugettext spell-im-label-name)
+;;                     (ugettext spell-im-short-desc))
+;;
+;;(define-custom 'spell-use-candidate-window? #t
 ;;  '(spellcheck)
 ;;  '(boolean)
 ;;  (_ "Use candidate window")
 ;;  (_ "long description will be here."))
 ;;
-;;(define-custom 'spellcheck-candidate-op-count 1
+;;(define-custom 'spell-candidate-op-count 1
 ;;  '(spellcheck)
 ;;  '(integer 0 99)
 ;;  (_ "Conversion key press count to show candidate window")
 ;;  (_ "long description will be here."))
 ;;
-;;(define-custom 'spellcheck-preedit-immediate-commit? #f
+;;(define-custom 'spell-preedit-immediate-commit? #f
 ;;  '(spellcheck)
 ;;  '(boolean)
-;;  (_ "spellcheck-preedit-immediate-commit?")
+;;  (_ "spell-preedit-immediate-commit?")
 ;;  (_ "long description will be here."))
 ;;
-;;(define-custom 'spellcheck-always-show-window? #t
+;;(define-custom 'spell-always-show-window? #t
 ;;  '(spellcheck)
 ;;  '(boolean)
 ;;  (_ "Always showing candidate window")
