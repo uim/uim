@@ -342,7 +342,7 @@ uim_custom_key_get(const char *custom_sym)
   int *key_type_list, editor_type, list_len, i;
   struct uim_custom_key *custom_key, **custom_key_list;
 
-  UIM_EVAL_FSTRING2(NULL, "(define %s (apply (if uim-custom-expand-key? custom-expand-key-references list) (custom-value '%s)))",
+  UIM_EVAL_FSTRING2(NULL, "(define %s ((if uim-custom-expand-key? custom-expand-key-references (lambda (l) l)) (custom-value '%s)))",
 		    str_list_arg, custom_sym);
   key_literal_list =
     (char **)uim_scm_c_list(str_list_arg,
@@ -936,6 +936,10 @@ uim_custom_get(const char *custom_sym)
  * failure. @a custom should be created by uim_custom_get() and then user of
  * uim-custom API can modify value of the @custom before passing to this
  * function.
+ *
+ * If you want to set null list as value for ordered-list or key,
+ * allocate an array contains 1 NULL element and set it into
+ * custom->value->as_foo.
  *
  * @see uim_custom_get()
  * @param custom custom variable symbol and value
