@@ -30,7 +30,7 @@
 #include <stdio.h>
 
 #ifndef NESTED_REPL_C_STRING
-#define NESTED_REPL_C_STRING 0
+#define NESTED_REPL_C_STRING 1
 #endif
 
 struct obj

@@ -46,14 +46,6 @@ struct uim_im {
   char *short_desc;
 };
 
-#ifdef UIM_CALLBACK_QUEUE
-struct cb_q {
-  struct cb *first_cb;
-  struct cb *tail_cb;
-  int flushing;
-};
-#endif
-
 struct uim_candidate_ {
   char *str;         /* candidate */
   char *heading_label;
@@ -118,40 +110,10 @@ struct uim_context_ {
   /* surrounding text */
   void (*request_surrounding_text_cb)(void *ptr);
   int (*delete_surrounding_text_cb)(void *ptr, int offset, int len);
-#ifdef UIM_CALLBACK_QUEUE
-  /* callback queue */
-  struct cb_q cb_q;
-#endif
   /* preedit segments array */
   struct preedit_segment *psegs;
   int nr_psegs;
 };
-
-#ifdef UIM_CALLBACK_QUEUE
-enum {
-  CAND_ACTIVATE_CB,
-  CAND_SELECT_CB,
-  CAND_DEACTIVATE_CB,
-  COMMIT_CB,
-  PREEDIT_CLEAR_CB,
-  PREEDIT_PUSHBACK_CB,
-  PREEDIT_UPDATE_CB,
-  MODE_UPDATE_CB,
-  MODE_LIST_UPDATE_CB,
-  PROP_LABEL_UPDATE_CB,
-  PROP_LIST_UPDATE_CB,
-  CAND_SHIFT_PAGE_CB,
-  REQUEST_SURROUNDING_CB,
-  DELETE_SURROUNDING_CB
-};
-
-struct cb {
-  int type;
-  char *str;
-  int n1, n2;
-  struct cb *next;
-};
-#endif
 
 
 #ifdef ENABLE_NLS
@@ -294,9 +256,6 @@ void uim_iconv_release(void *obj);
 
 int uim_sizeof_sexp_str(const char *tmpl, ...);
 void uim_eval_string(uim_context, char *str);
-#ifdef UIM_CALLBACK_QUEUE
-void uim_schedule_cb(uim_context, int type, char *str, int n1, int n2);
-#endif
 void uim_release_preedit_segments(uim_context uc);
 void uim_update_preedit_segments(uim_context uc);
 

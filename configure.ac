@@ -357,27 +357,6 @@ AC_ARG_ENABLE(compat-table,
     enable_compat_table="no"
   ])
 
-
-AC_ARG_ENABLE(scm-nested-eval,
-  AC_HELP_STRING([--disable-scm-nested-eval],
-                 [disable nested Scheme evaluation from C (i.e. C -> Scheme -> C -> Scheme) (for developer, will be obsolete)]),
-  [
-    if test "$enable_scm_nested_eval" != "no" ;then
-      enable_scm_nested_eval="yes"
-    fi
-  ],
-  [
-    enable_scm_nested_eval="yes"
-  ])
-
-AC_ARG_ENABLE(callback-queue,
-  AC_HELP_STRING([--enable-callback-queue],
-                 [enable callback queue (for developer, will be obsolete)]),
-  [],
-  [
-    enable_callback_queue="no"
-  ])
-
 AC_ARG_ENABLE(fep,
   AC_HELP_STRING([--disable-fep],
                  [disable uim-fep]),
@@ -492,8 +471,6 @@ AM_CONDITIONAL(EB, test x$use_eb = xyes)
 AM_CONDITIONAL(DEBUG, test x$enable_debug = xyes)
 AM_CONDITIONAL(COMPAT_SCM, test x$enable_compat_scm = xyes)
 AM_CONDITIONAL(COMPAT_TABLE, test x$enable_compat_table = xyes)
-AM_CONDITIONAL(SCM_NESTED_EVAL, test x$enable_scm_nested_eval = xyes)
-AM_CONDITIONAL(CALLBACK_QUEUE, test x$enable_callback_queue = xyes)
 AM_CONDITIONAL(NEED_SETENV_C, test $ac_cv_func_setenv = no -o $ac_cv_func_unsetenv = no)
 AM_CONDITIONAL(NEED_STRSEP_C, test $ac_cv_func_strsep = no)
 
@@ -689,18 +666,6 @@ if test x$enable_compat_table = xyes; then
             [Enable obsolete table API for hk.scm (broken)])
 fi
 
-if test x$enable_scm_nested_eval = xyes; then
-  AC_DEFINE(UIM_SCM_NESTED_EVAL, 1,
-            [Enable nested Scheme evaluation from C])
-  AC_DEFINE(NESTED_REPL_C_STRING, 1,
-            [Enable nested Scheme evaluation from C])
-fi
-
-if test x$enable_callback_queue = xyes; then
-  AC_DEFINE(UIM_CALLBACK_QUEUE, 1,
-            [Enable callback queue])
-fi
-
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
 AC_C_CONST
@@ -769,7 +734,5 @@ Configure Result for developers:
    DEBUG           : ${enable_debug}
    COMPAT_SCM      : ${enable_compat_scm}
    COMPAT_TABLE    : ${enable_compat_table}
-   SCM_NESTED_EVAL : ${enable_scm_nested_eval}
-   CALLBACK_QUEUE  : ${enable_callback_queue}
 ])
 fi

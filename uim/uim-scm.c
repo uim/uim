@@ -188,17 +188,13 @@ uim_scm_gc_protect(uim_lisp *location)
 void
 uim_scm_gc_protect_stack(uim_lisp *stack_start)
 {
-#ifdef UIM_SCM_NESTED_EVAL
   siod_gc_protect_stack((LISP *)stack_start);
-#endif
 }
 
 void
 uim_scm_gc_unprotect_stack(uim_lisp *stack_start)
 {
-#ifdef UIM_SCM_NESTED_EVAL
   siod_gc_unprotect_stack((LISP *)stack_start);
-#endif
 }
 
 uim_bool
@@ -381,26 +377,12 @@ uim_bool
 uim_scm_require_file(const char *fn)
 {
   uim_bool succeeded;
-#ifndef UIM_SCM_NESTED_EVAL
-  uim_lisp _fn;
-#endif
 
   if (!fn)
     return UIM_FALSE;
 
-#ifdef UIM_SCM_NESTED_EVAL
   UIM_EVAL_FSTRING2(NULL, "(eq? '*%s-loaded* (*catch 'errobj (require \"%s\")))", fn, fn);
   succeeded = uim_scm_c_bool(uim_scm_return_value());
-#else
-  if (siod_repl_c_string_entered()) {
-    _fn = uim_scm_make_str(fn);
-    require((LISP)_fn);
-    succeeded = UIM_TRUE;  /* bogus result */
-  } else {
-    UIM_EVAL_FSTRING2(NULL, "(eq? '*%s-loaded* (*catch 'errobj (require \"%s\")))", fn, fn);
-    succeeded = uim_scm_c_bool(uim_scm_return_value());
-  }
-#endif
 
   return succeeded;
 }

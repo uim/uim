@@ -49,9 +49,7 @@
 #include "uim.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
-#ifndef UIM_SCM_NESTED_EVAL
 #include "uim-compat-scm.h"
-#endif
 #include "plugin.h"
 #include "context.h"
 
@@ -67,13 +65,8 @@ plugin_load(uim_lisp _name)
 {
   const char *plugin_name;
   char *plugin_lib_filename, *plugin_scm_filename;
-#ifdef UIM_SCM_NESTED_EVAL
   uim_lisp lib_path = uim_scm_eval_c_string("uim-plugin-lib-load-path");
   uim_lisp scm_path = uim_scm_eval_c_string("uim-plugin-scm-load-path");
-#else
-  uim_lisp lib_path = uim_scm_symbol_value("uim-plugin-lib-load-path");
-  uim_lisp scm_path = uim_scm_symbol_value("uim-plugin-scm-load-path");
-#endif
   uim_lisp path_car, path_cdr;
   void *library;
   void (*plugin_instance_init)(void);
@@ -182,7 +175,6 @@ plugin_load(uim_lisp _name)
 static uim_lisp
 plugin_unload(uim_lisp _name)
 {
-#ifdef UIM_SCM_NESTED_EVAL
   uim_lisp stack_start;
   void *library;
   void (*plugin_instance_quit)(void);
@@ -207,7 +199,6 @@ plugin_unload(uim_lisp _name)
   UIM_EVAL_FSTRING1(NULL, "(plugin-list-delete \"%s\")",
 		    uim_scm_refer_c_str(_name));
   uim_scm_gc_unprotect_stack(&stack_start);
-#endif
   return uim_scm_t();
 }
 
@@ -223,7 +214,6 @@ void uim_init_plugin(void)
 /* Called from uim_quit */
 void uim_quit_plugin(void)
 {
-#ifdef UIM_SCM_NESTED_EVAL
   uim_lisp stack_start;
   uim_lisp alist, rest, entry, name;
 
@@ -236,5 +226,4 @@ void uim_quit_plugin(void)
     plugin_unload(name);
   }
   uim_scm_gc_unprotect_stack(&stack_start);
-#endif
 }

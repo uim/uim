@@ -196,50 +196,47 @@ static uim_lisp
 prime_lib_init(uim_lisp use_udp_)
 {
   char *option;
-#ifdef UIM_SCM_NESTED_EVAL
   uim_bool use_udp = uim_scm_c_bool(use_udp_);
   if(use_udp == UIM_TRUE)
     use_unix_domain_socket = UIM_TRUE;
   else
     use_unix_domain_socket = UIM_FALSE;
-#else
-    use_unix_domain_socket = UIM_FALSE;
-#endif
-    if(use_unix_domain_socket == UIM_TRUE) {
-      prime_ud_path = prime_get_ud_path();
-      if(!prime_ud_path)
-	return uim_scm_f();
-      
-      prime_fd = prime_init_ud(prime_ud_path);
-      if(prime_fd == -1) {
-	unlink(prime_ud_path);
-	option = malloc(strlen("-u ") + strlen(prime_ud_path) + 1);
-	sprintf(option, "-u %s", prime_ud_path);
-	prime_pid = uim_ipc_open_command_with_option(prime_pid, &primer, &primew, prime_command, option);
-	free(option);
-	if(prime_pid == 0) {
-	  return uim_scm_f();
-	} else {
-	  prime_fd = prime_init_ud(prime_ud_path);
-	  while(prime_fd == -1) {
-	    prime_fd = prime_init_ud(prime_ud_path);
-	  }
-	}
-      }
 
-      if(prime_fd == -1)
-	return uim_scm_f();
-      else
-	return uim_scm_t();
-    } else {
-      if (prime_pid == 0) {
-	prime_pid = uim_ipc_open_command( prime_pid, &primer, &primew, prime_command );
-      }
+  if(use_unix_domain_socket == UIM_TRUE) {
+    prime_ud_path = prime_get_ud_path();
+    if(!prime_ud_path)
+      return uim_scm_f();
+      
+    prime_fd = prime_init_ud(prime_ud_path);
+    if(prime_fd == -1) {
+      unlink(prime_ud_path);
+      option = malloc(strlen("-u ") + strlen(prime_ud_path) + 1);
+      sprintf(option, "-u %s", prime_ud_path);
+      prime_pid = uim_ipc_open_command_with_option(prime_pid, &primer, &primew, prime_command, option);
+      free(option);
       if(prime_pid == 0) {
 	return uim_scm_f();
+      } else {
+	prime_fd = prime_init_ud(prime_ud_path);
+	while(prime_fd == -1) {
+	  prime_fd = prime_init_ud(prime_ud_path);
+	}
       }
-      return uim_scm_t();
     }
+
+    if(prime_fd == -1)
+      return uim_scm_f();
+    else
+      return uim_scm_t();
+  } else {
+    if (prime_pid == 0) {
+      prime_pid = uim_ipc_open_command( prime_pid, &primer, &primew, prime_command );
+    }
+    if(prime_pid == 0) {
+      return uim_scm_f();
+    }
+    return uim_scm_t();
+  }
 }
 
 void
