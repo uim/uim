@@ -255,6 +255,27 @@ get_nth_candidate(uim_lisp id_, uim_lisp seg_, uim_lisp nth_)
 }
 
 static uim_lisp
+get_segment_length(uim_lisp id_, uim_lisp nth_)
+{
+  int id, nth;
+  struct anthy_context *ac;
+  struct anthy_conv_stat cs;
+  id = uim_scm_c_int(id_);
+  nth = uim_scm_c_int(nth_);
+  ac = get_anthy_context(id);
+  if (!ac) {
+    return uim_scm_f();
+  }
+  api.get_stat(ac, &cs);
+  if (nth < cs.nr_segment) {
+    struct anthy_segment_stat ss;
+    api.get_segment_stat(ac, nth, &ss);
+    return uim_scm_make_int(ss.seg_len);
+  }
+  return uim_scm_f();
+}
+
+static uim_lisp
 resize_segment(uim_lisp id_, uim_lisp seg_, uim_lisp cnt_)
 {
   int id = uim_scm_c_int(id_);
@@ -286,6 +307,7 @@ uim_plugin_instance_init(void)
   uim_scm_init_subr_1("anthy-lib-get-nr-segments",get_nr_segments);
   uim_scm_init_subr_2("anthy-lib-get-nr-candidates", get_nr_candidates);
   uim_scm_init_subr_3("anthy-lib-get-nth-candidate", get_nth_candidate);
+  uim_scm_init_subr_2("anthy-lib-get-segment-length", get_segment_length);
   uim_scm_init_subr_3("anthy-lib-resize-segment", resize_segment);
   uim_scm_init_subr_3("anthy-lib-commit-segment", commit_segment);
 }
