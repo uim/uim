@@ -698,4 +698,5 @@
 		     (_ "Hidden settings")
 		     (_ "Hidden settings of this group. This group is invisible from uim_custom clients. Exists for internal variable management."))
 
+(prealloc-heaps-for-heavy-job)
 (custom-reload-customs)

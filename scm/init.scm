@@ -36,6 +36,16 @@
 
 (define enable-action? #t)
 
+;; Performance tuning for heavy job such as custom.scm. The value 64
+;; allocates approximately 12MB of heaps. Reduce it for less-memory
+;; environment (by redefining the proc in ~/.uim or default.scm).
+;;   -- YamaKen 2005-02-01
+(define prealloc-heaps-for-heavy-job
+  (lambda ()
+    (for-each (lambda (i)
+		(allocate-heap))
+	      (iota 64))))
+
 (define load-user-conf
   (lambda ()
     (let ((orig-verbose (verbose))
