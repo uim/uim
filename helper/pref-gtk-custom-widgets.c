@@ -1984,10 +1984,10 @@ uim_pref_gtk_set_default_value(GtkWidget *widget)
   }
 
   rv = uim_custom_set(custom);
+  uim_custom_free(custom);
 
   if (rv == UIM_FALSE) {
     g_printerr("Faild to set value for \"%s\".\n", custom->symbol);
-    uim_custom_free(custom);
     return;
   }
 
