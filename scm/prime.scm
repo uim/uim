@@ -28,9 +28,6 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;;TODO
-;;    ::単語登録
-;;
 ;;モード一覧
 ;;  日本語入力モード(カタカナ日本語入力モードも必要？)
 ;;  英数モード
@@ -320,7 +317,7 @@
 		   '(figure_prime_mode_latin
 		     "P"
 		     "直接入力"
-		     "PRIME オフ"))
+		     "PRIMEをオフ"))
 		 (lambda (pc)
 		   (= (prime-context-mode pc)
 		      prime-mode-latin))
@@ -332,7 +329,7 @@
 		   '(figure_prime_mode_hiragana
 		     "ぷ"
 		     "日本語"
-		     "PRIME オン"))
+		     "PRIMEをオン"))
 		 (lambda (pc)
 		   (= (prime-context-mode pc)
 		      prime-mode-hiragana))
@@ -390,6 +387,7 @@
       (prime-context-set-session!          context session1)
       (prime-context-set-session-default!  context session1)
       (prime-context-set-session-register! context session2)
+      (prime-context-set-widgets! context prime-widgets)
       context)))
 
 (define prime-context-history-set!
