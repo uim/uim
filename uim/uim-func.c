@@ -351,10 +351,11 @@ uim_iconv_create(const char *tocode, const char *fromcode)
   iconv_t ic;
 
   if (check_encoding_equivalence(tocode, fromcode))
-    return (void *)0;
+    return NULL;
 
   ic = uim_iconv_open(tocode, fromcode);
   if (ic == (iconv_t)-1) {
+    /* since iconv_t is not explicit pointer, use 0 instead of NULL */
     ic = (iconv_t)0;
   }
   return (void *)ic;
