@@ -31,7 +31,7 @@
 ;; from GTK
 (require "generic.scm")
 ;;
-(define ipa-rule
+(define ipa-x-sampa-rule
   '(
 ((("!" ))("↓"))
 ((("!" "\\" ))("!"))
@@ -216,14 +216,14 @@
 ((("}" )) ("ʉ"))
 ((("~" )) ("̃"))))
 
-(define ipa-init-handler
+(define ipa-x-sampa-init-handler
   (lambda (id im arg)
-    (generic-context-new id im ipa-rule #f)))
+    (generic-context-new id im ipa-x-sampa-rule #f)))
 
 (generic-register-im
- 'ipa
+ 'ipa-x-sampa
  ""
  "UTF-8"
  (N_ "International Phonetic Alphabet (X-SAMPA)")
  (N_ "International Phonetic Alphabet (X-SAMPA)")
- ipa-init-handler)
+ ipa-x-sampa-init-handler)

@@ -22,7 +22,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  tutcode.scm \
  hangul.scm hangul2.scm hangul3.scm romaja.scm \
  viqr.scm \
- ipa.scm \
+ ipa-x-sampa.scm \
  latin.scm \
  m17nlib.scm \
  spellcheck.scm spellcheck-custom.scm \
@@ -51,7 +51,7 @@ if SKK
   module_names += "skk"
 endif
 
-module_names += "tcode" "tutcode" "hangul" "viqr" "ipa" "latin"
+module_names += "tcode" "tutcode" "hangul" "viqr" "ipa-x-sampa" "latin"
 
 if M17NLIB
   module_names += "m17nlib"
