@@ -54,4 +54,7 @@ int asprintf(char **ptr, const char *format, ...);
 int vasprintf(char **ptr, const char *fmt, va_list ap);
 #endif
 
+#ifndef HAVE_STRSEP
+char *strsep(char **stringp, const char *delim);
+#endif
 #endif

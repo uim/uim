@@ -359,7 +359,8 @@ all_locales(void)
 	free(tmp);
     }
     // remove trailing ":"
-    locales[len - 1] = '\0';
+    if (locales)
+	locales[len - 1] = '\0';
 
     // assign result into the cache
     all_locale_names = locales;
