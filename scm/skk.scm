@@ -911,13 +911,11 @@
        ;; 1. commits "n" as kana according to kana-mode
        ;; 2. commits " " as native space (such as Qt::Key_Space)
        ;;    unless expected rkc list includes " "
-       (if (skk-plain-space-key? key key-state)
+       (if (and (skk-plain-space-key? key key-state)
+		(not (string-find (rk-expect rkc) key-str)))
 	   (begin
-	     (if (string-find (rk-expect rkc) " ")
-		 (set! res (rk-push-key! rkc key-str))
-		 (begin
-		   (set! res (rk-push-key! rkc key-str))
-		   (skk-commit-raw-with-preedit-update sc key key-state)))
+	     (set! res (rk-push-key-last! rkc))
+	     (skk-commit-raw-with-preedit-update sc key key-state)
 	     #f)
 	   #t)
        ;; bad strategy. see bug #528
