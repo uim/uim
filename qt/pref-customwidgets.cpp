@@ -97,7 +97,8 @@ void CustomSpinBox::update()
     setMinValue( m_custom->range->as_int.min );
     setMaxValue( m_custom->range->as_int.max );
 
-    setEnabled( m_custom->is_active );
+    /* sync with Label */
+    parentWidget()->setEnabled( m_custom->is_active );
 }
 
 void CustomSpinBox::setDefault()
@@ -134,7 +135,8 @@ void CustomLineEdit::update()
    
     setText( _FU8(m_custom->value->as_str) );
 
-    setEnabled( m_custom->is_active );
+    /* sync with Label */
+    parentWidget()->setEnabled( m_custom->is_active );
 }
 
 void CustomLineEdit::setDefault()
@@ -181,8 +183,8 @@ void CustomPathnameEdit::update()
     
     m_lineEdit->setText( _FU8(m_custom->value->as_pathname) );
 
-    m_lineEdit->setEnabled( m_custom->is_active );
-    m_fileButton->setEnabled( m_custom->is_active );
+    /* sync with Label */
+    parentWidget()->setEnabled( m_custom->is_active );
 }
 
 void CustomPathnameEdit::setDefault()
@@ -249,7 +251,8 @@ void CustomChoiceCombo::update()
     }
     setCurrentItem( default_index );
 
-    setEnabled( m_custom->is_active );
+    /* sync with Label */
+    parentWidget()->setEnabled( m_custom->is_active );
 }
 
 void CustomChoiceCombo::setDefault()
@@ -317,8 +320,8 @@ void CustomOrderedListEdit::update()
     
     updateText();
 
-    m_lineEdit->setEnabled( m_custom->is_active );
-    m_editButton->setEnabled( m_custom->is_active );
+    /* sync with Label */
+    parentWidget()->setEnabled( m_custom->is_active );
 }
 
 void CustomOrderedListEdit::setDefault()
@@ -597,8 +600,8 @@ void CustomKeyEdit::update()
 
     updateText();
 
-    m_lineEdit->setEnabled( m_custom->is_active );
-    m_editButton->setEnabled( m_custom->is_active );
+    /* sync with Label */
+    parentWidget()->setEnabled( m_custom->is_active );
 }
 
 void CustomKeyEdit::updateText()
