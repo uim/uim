@@ -1165,7 +1165,7 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
 		     FALSE, FALSE, 4);
   gtk_widget_show(vbox);
 
-  table = gtk_table_new(3, 0, FALSE);
+  table = gtk_table_new(3, 6, FALSE);
   gtk_table_set_row_spacings(GTK_TABLE(table), 3);
   gtk_table_set_col_spacings(GTK_TABLE(table), 3);
   gtk_box_pack_start(GTK_BOX(vbox), table, FALSE, FALSE, 0);
@@ -1175,7 +1175,7 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   button = gtk_button_new();
   olist_pref_win.up_button = button;
   gtk_table_attach_defaults(GTK_TABLE(table), button,
-			    0, 1,
+			    1, 2,
 			    0, 1);
   gtk_widget_show(button);
   arrow = gtk_arrow_new(GTK_ARROW_UP, GTK_SHADOW_NONE);
@@ -1188,7 +1188,7 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   button = gtk_button_new();
   olist_pref_win.down_button = button;
   gtk_table_attach_defaults(GTK_TABLE(table), button,
-			    0, 1,
+			    1, 2,
 			    2, 3);
   gtk_widget_show(button);
   arrow = gtk_arrow_new(GTK_ARROW_DOWN, GTK_SHADOW_NONE);
