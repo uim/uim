@@ -346,7 +346,7 @@ skk_dic_open(uim_lisp fn_)
     skk_dic = open_dic(fn);
   }
   free(fn);
-  return NIL;
+  return uim_scm_f();
 }
 
 static void
@@ -676,10 +676,10 @@ find_cand_array_lisp(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_,
   struct skk_cand_array *ca;
 
   hs = get_c_string(head_);
-  if (okuri_ != NIL) {
+  if (okuri_ != uim_scm_f()) {
     okuri = uim_get_c_string(okuri_);
   }
-  if (okuri_head_ == NIL) {
+  if (okuri_head_ == uim_scm_f()) {
     o = 0;
   } else {
     char *os= get_c_string(okuri_head_);
@@ -700,7 +700,7 @@ skk_get_entry(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_)
   if (ca) {
     return siod_true_value();
   }
-  return NIL;
+  return uim_scm_f();
 }
 
 static uim_lisp
@@ -1021,7 +1021,7 @@ skk_merge_replaced_numeric_str(uim_lisp str_, uim_lisp numlst_)
   uim_lisp merged_str;
 
   if NULLP(str_)
-    return NIL;
+    return uim_scm_f();
 
   str = uim_get_c_string(str_); /* malloced */
   len = strlen(str);
@@ -1108,7 +1108,7 @@ get_nth(int nth, uim_lisp lst_)
   int i;
   for (i = 1; i < nth; i++) {
     if NULLP(lst_) {
-      return NIL;
+      return uim_scm_f();
     }
     lst_ = uim_scm_cdr(lst_);
   }
@@ -1289,7 +1289,7 @@ skk_get_completion(uim_lisp head_)
     ca->refcount++;
     return siod_true_value();
   }
-  return NIL;
+  return uim_scm_f();
 }
 
 static uim_lisp
@@ -1305,7 +1305,7 @@ skk_get_nth_completion(uim_lisp nth_, uim_lisp head_)
     str = ca->comps[n];
     return strcons(strlen(str), str);
   }
-  return NIL;
+  return uim_scm_f();
 }
 
 static uim_lisp
@@ -1447,7 +1447,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
 
   ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
   if (!ca) {
-    return NIL;
+    return uim_scm_f();
   }
 
   nr_cands = ca->nr_cands;
@@ -1465,7 +1465,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
 	    if (k == nth) {
 	      str = ca->cands[i];
 	      /* reorder sub candidate */
-	      skk_commit_candidate(numstr_, NIL, NIL, uim_scm_make_int(j), NIL);
+	      skk_commit_candidate(numstr_, uim_scm_f(), uim_scm_f(), uim_scm_make_int(j), NIL);
 	      break;
 	    }
 	    k++;
@@ -1482,15 +1482,15 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
       }
     }
     if (!str)
-      return NIL;
+      return uim_scm_f();
   } else {
     if (nr_cands <= nth)
-      return NIL;
+      return uim_scm_f();
     str = ca->cands[nth];
   }
   reorder_candidate(ca, str);
 
-  if (okuri_ != NIL) {
+  if (okuri_ != uim_scm_f()) {
     struct skk_line *sl;
     char *okuri;
     int found = 0;
@@ -1513,7 +1513,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
   ca->line->need_save = 1;
   move_line_to_cache_head(skk_dic, ca->line);
 
-  return NIL;
+  return uim_scm_f();
 }
 
 static void
@@ -1557,7 +1557,7 @@ skk_learn_word(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp w
   word = sanitize_word(tmp);
   free(tmp);
   if (!word) {
-    return NIL;
+    return uim_scm_f();
   }
 
   ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 1);
@@ -1574,7 +1574,7 @@ skk_learn_word(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp w
   }
   free(tmp);
   free(word);
-  return NIL;
+  return uim_scm_f();
 }
 
 static void
@@ -1706,13 +1706,13 @@ skk_read_personal_dictionary(struct dic_info *di, char *fn)
 
   if (stat(fn, &st) == -1) {
     close_lock(lock_fd);
-    return NIL;
+    return uim_scm_f();
   }
 
   fp = fopen(fn, "r");
   if (!fp) {
     close_lock(lock_fd);
-    return NIL;
+    return uim_scm_f();
   }
 
   di->personal_dic_timestamp = st.st_mtime;
@@ -1968,14 +1968,14 @@ skk_lib_save_personal_dictionary(uim_lisp fn_)
     }
     if (skk_dic->cache_modified == 0) {
       free(fn);
-      return NIL;
+      return uim_scm_f();
     }
     lock_fd = open_lock(fn, F_WRLCK);
     fp = fopen(fn, "w");
     free(fn);
     if (!fp) {
       close_lock(lock_fd);
-      return NIL;
+      return uim_scm_f();
     }
   } else {
     fp = stdout;
@@ -1994,7 +1994,7 @@ skk_lib_save_personal_dictionary(uim_lisp fn_)
   close_lock(lock_fd);
   skk_dic->cache_modified = 0;
 
-  return NIL;
+  return uim_scm_f();
 }
 
 static uim_lisp
