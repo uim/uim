@@ -213,3 +213,15 @@
 	      (_ "Right end of preedit area")))
   (_ "Candidate window position")
   (_ "long description will be here."))
+
+(define-custom 'toolbar-show-switcher-button? #t
+  '(global)
+  '(boolean)
+  (_ "Show input method switcher button on toolbar")
+  (_ "long description will be here."))
+
+(define-custom 'toolbar-show-pref-button? #t
+  '(global)
+  '(boolean)
+  (_ "Show uim preference tool button on toolbar")
+  (_ "long description will be here."))

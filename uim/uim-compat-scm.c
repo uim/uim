@@ -123,6 +123,21 @@ uim_symbol_value_str(const char *symbol_str)
   return val;
 }
 
+/* temprary solution for getting an value from Scheme world */
+uim_bool
+uim_scm_symbol_value_bool(const char *symbol_str)
+{
+  uim_bool val;
+
+  if (!symbol_str)
+    return UIM_FALSE;
+
+  UIM_EVAL_FSTRING1(NULL, "(symbol-value '%s)", symbol_str);
+  val = uim_scm_c_bool(uim_scm_return_value);
+
+  return val;
+}
+
 uim_lisp
 uim_scm_str_from_c_str(const char *str)
 {

@@ -75,6 +75,9 @@ uim_scm_symbol_value_str(const char *symbol_str);
 uim_lisp
 uim_scm_str_from_c_str(const char *str);
 
+uim_bool
+uim_scm_symbol_value_bool(const char *symbol_str);
+
 uim_lisp
 uim_scm_c_strs_into_list(int n_strs, const char *const *strs);
 uim_lisp
