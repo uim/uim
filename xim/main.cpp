@@ -92,6 +92,7 @@ static std::map<unsigned int, WindowIf *> window_watch_stat;
 
 static char *supported_locales;
 std::list<UIMInfo> uim_info;
+static void check_pending_xevent(void);
 
 bool
 pretrans_register()
@@ -144,8 +145,8 @@ static void main_loop()
     while (1) {
 	FD_ZERO(&rfds);
 	FD_ZERO(&wfds);
-	tv.tv_sec = 0;
-	tv.tv_usec = 100000;
+	tv.tv_sec = 2;
+	tv.tv_usec = 0;
 
 	std::map<int, fd_watch_struct>::iterator it;
 	int  fd_max = 0;
@@ -158,8 +159,10 @@ static void main_loop()
 	    if (fd_max < fd)
 		fd_max = fd;
 	}
-	if ((select(fd_max + 1, &rfds, &wfds, NULL, &tv)) == 0)
+	if ((select(fd_max + 1, &rfds, &wfds, NULL, &tv)) == 0) {
+	    check_pending_xevent();
 	    continue;
+	}
 
 	for (it = fd_watch_stat.begin(); it != fd_watch_stat.end(); it++) {
 	    int fd = it->first;
@@ -302,15 +305,20 @@ ProcXEvent(XEvent *e)
 }
 
 static void
-xEventRead(int fd, int ev)
+check_pending_xevent(void)
 {
-    XFlush(XimServer::gDpy);
-
     XEvent e;
     while (XPending(XimServer::gDpy)) {
 	XNextEvent(XimServer::gDpy, &e);
 	ProcXEvent(&e);
     }
+}
+
+static void
+xEventRead(int fd, int ev)
+{
+    XFlush(XimServer::gDpy);
+    check_pending_xevent();
 }
 
 static int
@@ -538,11 +546,7 @@ main(int argc, char **argv)
 	return 0;
 
     // Handle pending events to prevent hang just after startup
-    XEvent e;
-    while (XPending(XimServer::gDpy)) {
-	XNextEvent(XimServer::gDpy, &e);
-	ProcXEvent(&e);
-    }
+    check_pending_xevent();
 
     main_loop();
     return 0;
