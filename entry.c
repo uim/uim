@@ -35,8 +35,12 @@ int main( int   argc,
     GtkWidget *button;
     GtkWidget *check;
 
+    GTimer *tim = g_timer_new();
+
     gtk_set_locale();
     gtk_init (&argc, &argv);
+
+    g_timer_start(tim);
 
     /* create a new window */
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -88,6 +92,9 @@ int main( int   argc,
     gtk_widget_show (button);
     
     gtk_widget_show(window);
+
+    g_print("elapsed time: %f\n",g_timer_elapsed(tim,NULL));
+    g_timer_destroy(tim);
 
     gtk_main();
     return(0);
