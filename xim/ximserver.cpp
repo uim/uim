@@ -99,7 +99,7 @@ void print_ustring(uString *s)
 	ch = *i;
 	nbyte = utf8_wctomb((unsigned char *)utf8, ch);
 	utf8[nbyte] = '\0';
-	printf(utf8);
+	printf("%s", utf8);
     }
     printf("\n");
 }
@@ -190,10 +190,9 @@ XimServer::getInputStyles()
 bool
 XimServer::setupConnection(bool useDefaultIM)
 {
-    char *buf;
+    const char *buf;
     if (!useDefaultIM) {
-	buf = (char *)alloca(15 + strlen(mIMName));
-	sprintf(buf, "@server=uim-%s", mIMName);
+	return false;
     } else {
 	buf = "@server=uim";
     }

@@ -70,7 +70,7 @@ public:
     virtual int pushC16(unsigned int) = 0;
     virtual int pushC32(unsigned int) = 0;
     virtual int pushSTRING(char *) = 0;
-    virtual int pushBytes(char *, int) = 0;
+    virtual int pushBytes(const char *, int) = 0;
 
     virtual int pop_back() = 0;
 };
@@ -112,7 +112,7 @@ public:
     void push_packet(TxPacket *); // for normal packet for reply
     void push_passive_packet(TxPacket *); // for preceding packet for reply
     int byte_order() {return mByteorder;};
-    void push_error_packet(int imid, int icid, int er, char *str);
+    void push_error_packet(int imid, int icid, int er, const char *str);
 
     unsigned short to_hs(unsigned short s);
     unsigned int to_hl(unsigned int l);

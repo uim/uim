@@ -312,7 +312,7 @@ modmask(char *name)
     long mask;
 
     struct _modtbl {
-	char *name;
+	const char *name;
 	long mask;
     };
     struct _modtbl *p;

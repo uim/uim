@@ -200,7 +200,7 @@ private:
 
 class TxBytes : public TxElement {
 public:
-    TxBytes(char *s, int len) {
+    TxBytes(const char *s, int len) {
 	m_str = (char *)malloc(len);
 	m_len = len;
 	memcpy(m_str, s, len);
@@ -235,7 +235,7 @@ public:
     virtual int pushC16(unsigned int);
     virtual int pushC32(unsigned int);
     virtual int pushSTRING(char *);
-    virtual int pushBytes(char *, int);
+    virtual int pushBytes(const char *, int);
 
     virtual int pop_back();
 private:
@@ -319,7 +319,7 @@ int TxPacket_impl::pushSTRING(char *s)
     return e->get_size();
 }
 
-int TxPacket_impl::pushBytes(char *b, int len)
+int TxPacket_impl::pushBytes(const char *b, int len)
 {
     TxElement *e;
     e = new TxBytes(b, len);

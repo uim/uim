@@ -215,7 +215,7 @@ X_IOErrorHandler(Display *d)
 
 
 static void
-sendSelectionNotify(XEvent *ev, char *buf, int len)
+sendSelectionNotify(XEvent *ev, const char *buf, int len)
 {
     XEvent e;
     e.type = SelectionNotify;
@@ -317,14 +317,14 @@ pretrans_setup()
 static void
 print_version()
 {
-    printf(version_name);
+    printf("%s", version_name);
 }
 
 static void
 print_usage()
 {
     print_version();
-    printf(usage);
+    printf("%s", usage);
     exit(0);
 }
 
@@ -517,20 +517,6 @@ main(int argc, char **argv)
 	    break;
 	}
     }
-
-#if 0
-    // XXX Setup each backend as a separated XimServer, aimed for
-    // backward compatibility, and should be removed in the future.
-    for (it = uim_info.begin(); it != uim_info.end(); it++) {
-	XimServer *xs = new XimServer(it->locale, it->name, it->lang);
-	res = xs->setupConnection(false);
-	if (res)
-	    printf("XMODIFIERS=@im=uim-%s (%s) registered\n",
-			    it->name, it->lang);
-	else
-	    delete xs;
-    }
-#endif
 
     if (!res) {
 	printf("aborting...\n");

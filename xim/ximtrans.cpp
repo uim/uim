@@ -48,7 +48,7 @@
 # endif
 #endif
 
-char *xim_packet_name[] = {
+const char *xim_packet_name[] = {
     // 0
     0, "XIM_CONNECT", "XIM_CONNECT_REPLY",
     "XIM_DISCONNECT", "XIM_DISCONNECT_REPLY",
@@ -90,16 +90,16 @@ char *xim_packet_name[] = {
 };
 
 static struct XIMATTRIBUTE{
-    XIMATTRIBUTE(char *n, int t);
+    XIMATTRIBUTE(const char *n, int t);
     static void write_imattr_to_packet(TxPacket *p);
 
-    char *name;
+    const char *name;
     int type;
 }xim_attributes[]={
     XIMATTRIBUTE(XNQueryInputStyle, TYPE_XIMSTYLE),
 };
 
-XIMATTRIBUTE::XIMATTRIBUTE(char *n, int t)
+XIMATTRIBUTE::XIMATTRIBUTE(const char *n, int t)
 {
     name = n;
     type = t;
@@ -130,9 +130,9 @@ void XIMATTRIBUTE::write_imattr_to_packet(TxPacket *p)
 }
 
 static struct XICATTRIBUTE{
-    XICATTRIBUTE(char *n, int t);
+    XICATTRIBUTE(const char *n, int t);
     static void write_icattr_to_packet(TxPacket *p);
-    char *name;
+    const char *name;
     int type;
 }xic_attributes[]={
     // the sequence is required to be same as the order of
@@ -158,7 +158,7 @@ static struct XICATTRIBUTE{
     XICATTRIBUTE(XNSeparatorofNestedList, TYPE_SEPARATOR),
 };
 
-XICATTRIBUTE::XICATTRIBUTE(char *n, int t)
+XICATTRIBUTE::XICATTRIBUTE(const char *n, int t)
 {
     name = n;
     type = t;
@@ -359,7 +359,7 @@ void Connection::push_passive_packet(TxPacket *p)
     mPTxQ.push_back(p);
 }
 
-void Connection::push_error_packet(int imid, int icid, int er, char *str)
+void Connection::push_error_packet(int imid, int icid, int er, const char *str)
 {
     TxPacket *t;
     t = createTxPacket(XIM_ERROR, 0);

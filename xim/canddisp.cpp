@@ -51,11 +51,11 @@
 static FILE *candwin_r = NULL, *candwin_w = NULL;
 static int candwin_pid = 0;
 static Canddisp *disp;
-static char *command;
+static const char *command;
 
 static void candwin_read_cb(int fd, int ev);
 
-static char *candwin_command(void)
+static const char *candwin_command(void)
 {
     char *candwin_prog = NULL;
 
