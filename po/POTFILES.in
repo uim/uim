@@ -27,6 +27,7 @@ scm/anthy-custom.scm
 scm/anthy-key-custom.scm
 scm/anthy.scm
 scm/canna-custom.scm
+scm/canna-key-custom.scm
 scm/canna.scm
 scm/default.scm
 scm/direct.scm
@@ -52,6 +53,7 @@ scm/init.scm
 scm/m17nlib.scm
 scm/pinyin-big5.scm
 scm/prime-custom.scm
+scm/prime-key-custom.scm
 scm/prime.scm
 scm/pyload.scm
 scm/pyunihan.scm

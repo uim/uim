@@ -34,38 +34,8 @@
 (require "japanese-azik.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "canna-custom.scm")
-;;(require-custom "canna-key-custom.scm")
+(require-custom "canna-key-custom.scm")
 
-;;; user configs
-
-;;; Key definitions
-(define-key canna-on-key? '("<Control>\\" generic-on-key?))
-(define-key canna-off-key? '("<Control>\\" generic-off-key?))
-(define-key canna-latin-key? '("<Control>\\" generic-off-key?))
-;(define-key canna-latin-key '("l" generic-on-key?))
-(define-key canna-wide-latin-key? "L")
-(define-key canna-hankaku-kana-key? '("<Control>q" "<Control>Q"))
-(define-key canna-kana-toggle-key? "q")
-(define-key canna-commit-as-opposite-kana-key? "Q")
-(define-key canna-begin-conv-key? '(generic-begin-conv-key? generic-on-key?))
-(define-key canna-commit-key? 'generic-commit-key?)
-(define-key canna-extend-segment-key? '("<Control>o" "<Control>O" "<Shift>right"))
-(define-key canna-shrink-segment-key? '("<Control>i" "<Control>I" "<Shift>left"))
-(define-key canna-next-candidate-key? 'generic-next-candidate-key?)
-(define-key canna-prev-candidate-key? 'generic-prev-candidate-key?)
-;(define-key canna-next-page-key? 'generic-next-page-key?)
-;(define-key canna-prev-page-key? 'generic-prev-page-key?)
-(define-key canna-cancel-key? 'generic-cancel-key?)
-(define-key canna-backspace-key? 'generic-backspace-key?)
-(define-key canna-delete-key? 'generic-delete-key?)
-;(define-key canna-kill-key? 'generic-kill-key?)
-;(define-key canna-kill-backward-key? 'generic-kill-backward-key?)
-(define-key canna-go-left-key? 'generic-go-left-key?)
-(define-key canna-go-right-key? 'generic-go-right-key?)
-(define-key canna-beginning-of-preedit-key? 'generic-beginning-of-preedit-key?)
-(define-key canna-end-of-preedit-key? 'generic-end-of-preedit-key?)
-(define-key canna-next-segment-key? 'generic-go-right-key?)
-(define-key canna-prev-segment-key? 'generic-go-left-key?)
 
 ;;; implementations
 

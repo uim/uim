@@ -12,8 +12,8 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  pyload.scm PY.scm pyunihan.scm pinyin-big5.scm \
  japanese.scm japanese-azik.scm japanese-kana.scm \
  anthy.scm anthy-custom.scm anthy-key-custom.scm \
- canna.scm canna-custom.scm \
- prime.scm prime-custom.scm \
+ canna.scm canna-custom.scm canna-key-custom.scm \
+ prime.scm prime-custom.scm prime-key-custom.scm \
  skk.scm skk-editor.scm skk-custom.scm skk-key-custom.scm \
  tcode.scm \
  tutcode.scm \
