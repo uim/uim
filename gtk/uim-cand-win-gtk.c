@@ -135,6 +135,8 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
   cwin->candidate_index = -1;
   cwin->page_index = 0;
 
+  cwin->position = UIM_CAND_WIN_POS_CARET;
+
   cwin->cursor.x = cwin->cursor.y = 0;
   cwin->cursor.width = cwin->cursor.height = 0;
 
