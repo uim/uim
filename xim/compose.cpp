@@ -48,8 +48,8 @@
 #include "compose.h"
 
 #define COMPOSE_FILE	"Compose"
-#define COMPOSE_DIR_FILE	"/usr/X11R6/lib/X11/locale/compose.dir"
-#define XLOCALE_DIR	"/usr/X11R6/lib/X11/locale"
+#define COMPOSE_DIR_FILE	"X11/locale/compose.dir"
+#define XLOCALE_DIR	"X11/locale"
 
 #define XLC_BUFSIZE	256
 #define iscomment(ch)	((ch) == '#' || (ch) == '\0')
@@ -772,7 +772,7 @@ DefTree *XimIM::get_compose_tree()
 
 char *XimIM::get_compose_filename()
 {
-    char *compose_dir_file = COMPOSE_DIR_FILE;
+    char *compose_dir_file;
     char *locale;
     const char *lang_region, *encoding;
 
@@ -790,9 +790,19 @@ char *XimIM::get_compose_filename()
 	return NULL;
     sprintf(locale, "%s.%s", lang_region, encoding);
 
-    fp = fopen(compose_dir_file, "r");
-    if (fp == NULL)
+    compose_dir_file = (char *)malloc(strlen(XLIB_DIR) + strlen(COMPOSE_DIR_FILE) + 2);
+    if (compose_dir_file == NULL) {
+	free(locale);
 	return NULL;
+    }
+    sprintf(compose_dir_file, "%s/%s", XLIB_DIR, COMPOSE_DIR_FILE);
+
+    fp = fopen(compose_dir_file, "r");
+    if (fp == NULL) {
+	free(locale);
+	free(compose_dir_file);
+	return NULL;
+    }
 
     while (fgets(buf, XLC_BUFSIZE, fp) != NULL) {
 	char *p = buf;
@@ -819,16 +829,15 @@ char *XimIM::get_compose_filename()
     }
     fclose(fp);
     free(locale);
+    free(compose_dir_file);
 
     if (name == NULL)
 	return NULL;
 
-    filename = strdup(XLOCALE_DIR);
-    filename = (char *)realloc(filename, sizeof(char *) * (strlen(filename) + strlen(name) + 2));
+    filename = (char *)malloc(sizeof(char *) * (strlen(XLIB_DIR) + strlen(XLOCALE_DIR) + strlen(name) + 3));
     if (filename == NULL)
 	return NULL;
-    strcat(filename, "/");
-    strcat(filename, name);
+    sprintf(filename, "%s/%s/%s", XLIB_DIR, XLOCALE_DIR, name);
     free(name);
 
     return filename;

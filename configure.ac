@@ -155,6 +155,8 @@ LOCALEDIR=`eval echo ${datadir}/locale`
 AC_SUBST(localedir)
 AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR", [locale dir])
 AC_DEFINE_UNQUOTED(GNOMELOCALEDIR, "$LOCALEDIR", [locale dir for gnome])
+# define XLIB directory
+AC_DEFINE_UNQUOTED(XLIB_DIR, "$x_libraries", [X11 Library Directory])
 
 AC_ARG_WITH(gtk2,
   AC_HELP_STRING([--without-gtk2],
