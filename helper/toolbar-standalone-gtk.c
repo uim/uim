@@ -35,6 +35,7 @@
 #  include <config.h>
 #endif
 
+#include <locale.h>
 #include <uim/gettext.h>
 #include <gtk/gtk.h>
 
