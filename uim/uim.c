@@ -55,7 +55,7 @@ extern char *uim_return_str_list[10];
 
 char *uim_last_client_encoding;
 
-#define CONTEXT_ARRAY_SIZE 5
+#define CONTEXT_ARRAY_SIZE 512
 static uim_context context_array[CONTEXT_ARRAY_SIZE];
 struct uim_im *uim_im_array;
 int uim_nr_im;
@@ -264,6 +264,7 @@ uim_release_context(uim_context uc)
   uim_release_preedit_segments(uc);
   for (i = 0; i < uc->nr_modes; i++) {
     free(uc->modes[i]);
+    uc->modes[i] = NULL;
   }
   free(uc->propstr);
   free(uc->proplabelstr);
