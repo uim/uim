@@ -1,3 +1,5 @@
+EXTRA_DIST = pref-keyeditformbase.ui  pref-keygrabformbase.ui  pref-olisteditformbase.ui
+
 if QT
 
 INCLUDES    = -I$(top_srcdir) -I$(top_builddir)
@@ -143,22 +145,28 @@ pref-customwidgets.cpp: pref-customwidgets.moc
 pref-kseparator.cpp: pref-kseparator.moc
 
 pref-olisteditformbase.cpp:pref-olisteditformbase.h
-	$(UIC) pref-olisteditformbase.ui -i pref-olisteditformbase.h > pref-olisteditformbase.cpp.tmp
+	$(UIC) $(top_srcdir)/qt/pref-olisteditformbase.ui -i pref-olisteditformbase.h > pref-olisteditformbase.cpp.tmp
 	$(MOC) pref-olisteditformbase.h -o pref-olisteditformbase.moc
 	echo '#include "pref-olisteditformbase.moc"' >> pref-olisteditformbase.cpp.tmp
 	mv pref-olisteditformbase.cpp.tmp pref-olisteditformbase.cpp
+pref-olisteditformbase.h:
+	$(UIC) $(top_srcdir)/qt/pref-olisteditformbase.ui -o pref-olisteditformbase.h
 
 pref-keyeditformbase.cpp: pref-keyeditformbase.h
-	$(UIC) pref-keyeditformbase.ui -i pref-keyeditformbase.h > pref-keyeditformbase.cpp.tmp
+	$(UIC) $(top_srcdir)/qt/pref-keyeditformbase.ui -i pref-keyeditformbase.h > pref-keyeditformbase.cpp.tmp
 	$(MOC) pref-keyeditformbase.h -o pref-keyeditformbase.moc
 	echo '#include "pref-keyeditformbase.moc"' >> pref-keyeditformbase.cpp.tmp
 	mv pref-keyeditformbase.cpp.tmp pref-keyeditformbase.cpp
+pref-keyeditformbase.h:
+	$(UIC) $(top_srcdir)/qt/pref-keyeditformbase.ui -o pref-keyeditformbase.h
 
 pref-keygrabformbase.cpp: pref-keygrabformbase.h
-	$(UIC) pref-keygrabformbase.ui -i pref-keygrabformbase.h > pref-keygrabformbase.cpp.tmp
+	$(UIC) $(top_srcdir)/qt/pref-keygrabformbase.ui -i pref-keygrabformbase.h > pref-keygrabformbase.cpp.tmp
 	$(MOC) pref-keygrabformbase.h -o pref-keygrabformbase.moc
 	echo '#include "pref-keygrabformbase.moc"' >> pref-keygrabformbase.cpp.tmp
 	mv pref-keygrabformbase.cpp.tmp pref-keygrabformbase.cpp
+pref-keygrabformbase.h:
+	$(UIC) $(top_srcdir)/qt/pref-keygrabformbase.ui -o pref-keygrabformbase.h
 
 uim_chardict_qt_SOURCES = \
 	chardict-qt.cpp \
@@ -173,17 +181,17 @@ chardict-qt.cpp: chardict-qt.moc
 
 chardict-bushuviewwidget.cpp: chardict-bushuviewwidget.moc
 chardict-bushuviewwidget.moc: chardict-bushuviewwidget.h
-	$(MOC) chardict-bushuviewwidget.h -o chardict-bushuviewwidget.moc
+	$(MOC) $(top_srcdir)/qt/chardict-bushuviewwidget.h -o chardict-bushuviewwidget.moc
 chardict-unicodeviewwidget.cpp: chardict-unicodeviewwidget.moc
 chardict-unicodeviewwidget.moc: chardict-unicodeviewwidget.h
-	$(MOC) chardict-unicodeviewwidget.h -o chardict-unicodeviewwidget.moc
+	$(MOC) $(top_srcdir)/qt/chardict-unicodeviewwidget.h -o chardict-unicodeviewwidget.moc
 chardict-chargridview.cpp: chardict-chargridview.moc
 chardict-chargridview.moc: chardict-chargridview.h
-	$(MOC) chardict-chargridview.h -o chardict-chargridview.moc
+	$(MOC) $(top_srcdir)/qt/chardict-chargridview.h -o chardict-chargridview.moc
 chardict-kseparator.cpp: chardict-kseparator.moc
 chardict-kseparator.moc: chardict-kseparator.h
-	$(MOC) chardict-kseparator.h -o chardict-kseparator.moc
-EXTRA_DIST = $(helperdata_DATA)
+	$(MOC) $(top_srcdir)/qt/chardict-kseparator.h -o chardict-kseparator.moc
+EXTRA_DIST += $(helperdata_DATA)
 helperdatadir = $(datadir)/uim/helperdata
 helperdata_DATA = bushu.t
 
