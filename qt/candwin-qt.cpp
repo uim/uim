@@ -39,10 +39,14 @@
 #include <qtextcodec.h>
 #include <qrect.h>
 
+#include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+#include "uim/config.h"
+#include "uim/gettext.h"
 
 #include "candwin-qt.h"
 
@@ -448,6 +452,10 @@ void CandidateWindow::updateLabel()
 
 int main( int argc, char *argv[] )
 {
+    setlocale(LC_ALL, "");
+    bindtextdomain(PACKAGE, LOCALEDIR);
+    textdomain(PACKAGE);
+
     QApplication a( argc, argv );
 
     CandidateWindow b;

@@ -43,7 +43,10 @@
 #include <qlayout.h>
 #include <qsizepolicy.h>
 
-#define i18n(string) (string)
+#include <locale.h>
+
+#include "uim/config.h"
+#include "uim/gettext.h"
 
 #define NAME_COLUMN 0
 
@@ -52,11 +55,15 @@ static QSocketNotifier *notifier = NULL;
 
 int main( int argc, char **argv )
 {
+    setlocale(LC_ALL, "");
+    bindtextdomain(PACKAGE, LOCALEDIR);
+    textdomain(PACKAGE);
+    
     QApplication a( argc, argv );
 
     UimImSwitcher switcher;
     switcher.resize( 550, 400 );
-    switcher.setCaption( i18n( "uim input method switcher" ) );
+    switcher.setCaption( _( "uim input method switcher" ) );
     a.setMainWidget( &switcher );
     switcher.show();
 
@@ -87,29 +94,29 @@ void UimImSwitcher::createGUI()
     /* im list view */
     listview = new QListView( this );
     listview->setSelectionMode( QListView::Single );
-    listview->addColumn( i18n( "InputMethodName" ) );
-    listview->addColumn( i18n( "Language" ) );
-    listview->addColumn( i18n( "Description" ) );
+    listview->addColumn( _( "InputMethodName" ) );
+    listview->addColumn( _( "Language" ) );
+    listview->addColumn( _( "Description" ) );
 
     /* radio buttons for changing way*/
     QRadioButton *button;
-    vbGroup = new QVButtonGroup( i18n( "Changing way" ), this );
-    button = new QRadioButton( i18n( "Change whole desktop" ), vbGroup );
+    vbGroup = new QVButtonGroup( _( "Changing way" ), this );
+    button = new QRadioButton( _( "Change whole desktop" ), vbGroup );
     vbGroup->insert( button, ID_CHANGE_WHOLE_DESKTOP );
     button->setChecked( TRUE ); // default is "Change whole desktop"
-    button = new QRadioButton( i18n( "Change this application only" ), vbGroup );
+    button = new QRadioButton( _( "Change this application only" ), vbGroup );
     vbGroup->insert( button, ID_CHANGE_THIS_APPLICATION_ONLY );
-    button = new QRadioButton( i18n( "Change this text area only" ), vbGroup );
+    button = new QRadioButton( _( "Change this text area only" ), vbGroup );
     vbGroup->insert( button, ID_CHANGE_THIS_TEXT_AREA_ONLY );
 
     /* cancel & ok button */
     okButton = new QToolButton( this );
-    okButton->setText( i18n( "OK" ) );
+    okButton->setText( _( "OK" ) );
     okButton->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
     QObject::connect( okButton, SIGNAL( clicked() ),
                       this, SLOT( slotChangeInputMethod() ) );
     cancelButton = new QToolButton( this );
-    cancelButton->setText( i18n( "Cancel" ) );
+    cancelButton->setText( _( "Cancel" ) );
     cancelButton->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
     QObject::connect( cancelButton, SIGNAL( clicked() ),
                       qApp, SLOT( quit() ) );

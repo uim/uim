@@ -35,6 +35,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#include "uim/gettext.h"
+
 #define _FU8(String) QString::fromUtf8(String)
 
 CustomCheckBox::CustomCheckBox( struct uim_custom *c, QWidget *parent, const char *name )
@@ -172,7 +174,7 @@ CustomPathnameEdit::CustomPathnameEdit( struct uim_custom *c, QWidget *parent, c
                       this, SLOT(slotCustomTextChanged(const QString &)) );
 
     m_fileButton = new QToolButton( this );
-    m_fileButton->setText( "File" );
+    m_fileButton->setText( _("File") );
     QObject::connect( m_fileButton, SIGNAL(clicked()),
                       this, SLOT(slotPathnameButtonClicked()) );
 
@@ -314,7 +316,7 @@ CustomOrderedListEdit::CustomOrderedListEdit( struct uim_custom *c, QWidget *par
     m_lineEdit->setReadOnly( true );
 
     m_editButton = new QToolButton( this );
-    m_editButton->setText( "Edit" );
+    m_editButton->setText( _("Edit") );
     QObject::connect( m_editButton, SIGNAL(clicked()),
                       this, SLOT(slotEditButtonClicked()) );
 
@@ -597,7 +599,7 @@ CustomKeyEdit::CustomKeyEdit( struct uim_custom *c, QWidget *parent, const char 
     m_lineEdit->setReadOnly( false );
 
     m_editButton = new QToolButton( this );
-    m_editButton->setText( "Edit" );
+    m_editButton->setText( _("Edit") );
     QObject::connect( m_editButton, SIGNAL(clicked()),
                       this, SLOT(slotKeyButtonClicked()) );
 

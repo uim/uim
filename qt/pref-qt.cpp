@@ -54,17 +54,12 @@
 #include <qlayout.h>
 #include <qobjectlist.h>
 
-/*
- * FIXME! : 2004-01-14 Kazuki Ohta <mover@hct.zaq.ne.jp>
- * After uim-kdehelper is merged to uim, please include these files
- * instead of including <libintl.h>
- *
- * #include "uim/config.h"
- * #include "uim/gettext.h"
- */
-#include <libintl.h>
+#include "uim/config.h"
+#include "uim/gettext.h"
+
 #include <unistd.h>
 #include <stdlib.h>
+#include <locale.h>
 
 #define _FU8(String) QString::fromUtf8(String)
 
@@ -104,7 +99,7 @@ void UimPrefDialog::createMainWidgets()
     QSplitter *mainSplitter = new QSplitter( this );
 
     m_groupListView = new QListView( mainSplitter );
-    m_groupListView->addColumn( "Group" );
+    m_groupListView->addColumn( _("Group") );
     m_groupListView->setSelectionMode( QListView::Single );
     m_groupListView->setSorting( -1 );
     QObject::connect( m_groupListView, SIGNAL(selectionChanged( QListViewItem * )),
@@ -116,17 +111,17 @@ void UimPrefDialog::createMainWidgets()
     m_groupWidgetStack = new QWidgetStack( leftSideWidget );
     QHBoxLayout *buttonHLayout = new QHBoxLayout( buttonHWidget );
     buttonHLayout->setSpacing( 6 );
-    QPushButton *defaultButton = new QPushButton( "Defaults", buttonHWidget );
+    QPushButton *defaultButton = new QPushButton( _("Defaults"), buttonHWidget );
     QObject::connect( defaultButton, SIGNAL(clicked()),
                       this, SLOT(slotSetDefault()) );
-    QPushButton *okButton = new QPushButton( "OK", buttonHWidget );
+    QPushButton *okButton = new QPushButton( _("OK"), buttonHWidget );
     QObject::connect( okButton, SIGNAL(clicked()),
                       this, SLOT(slotOK()) );
     m_applyButton = new QPushButton( "Apply", buttonHWidget );
     m_applyButton->setEnabled( false );
     QObject::connect( m_applyButton, SIGNAL(clicked()),
                       this, SLOT(slotApply()) );
-    QPushButton *cancelButton = new QPushButton( "Cancel", buttonHWidget );
+    QPushButton *cancelButton = new QPushButton( _("Cancel"), buttonHWidget );
     QObject::connect( cancelButton, SIGNAL(clicked()),
                       this, SLOT(slotCancel()) );
     buttonHLayout->addWidget( defaultButton );
@@ -196,7 +191,7 @@ void UimPrefDialog::slotCustomValueChanged()
 
 void UimPrefDialog::confirmChange()
 {
-    QConfirmDialog *cDialog = new QConfirmDialog( "The value was changed.\nSave?",
+    QConfirmDialog *cDialog = new QConfirmDialog( _("The value was changed.\nSave?"),
                                                   this );
     if( cDialog->exec() == QDialog::Accepted )
     {
@@ -259,8 +254,8 @@ QConfirmDialog::QConfirmDialog( const QString &msg, QWidget *parent, const char 
     vLayout->setMargin( 10 );
     QLabel *msgLabel = new QLabel( msg, this );
     QHBox *buttonHBox = new QHBox( this );
-    QPushButton *okButton = new QPushButton( "OK", buttonHBox );
-    QPushButton *cancelButton = new QPushButton( "Cancel", buttonHBox );
+    QPushButton *okButton = new QPushButton( _("OK"), buttonHBox );
+    QPushButton *cancelButton = new QPushButton( _("Cancel"), buttonHBox );
     vLayout->addWidget( msgLabel );
     vLayout->addWidget( buttonHBox );
 
@@ -546,13 +541,10 @@ QVGroupBox * SubgroupData::searchGroupVBoxByCustomSym( const char *custom_sym ) 
 //--------------------------------------------------------------------------------------
 int main( int argc, char **argv )
 {
-    /*
-     * FIXME! : 2004-01-14 Kazuki Ohta <mover@hct.zaq.ne.jp>
-     * After uim-kdehelper is merged to uim, please use PACKAGE
-     * instead of "uim"
-     */
-    // ensure code encoding is UTF-8
-    bind_textdomain_codeset( "uim", "UTF-8" );
+    setlocale(LC_ALL, "");
+    bindtextdomain(PACKAGE, LOCALEDIR);
+    textdomain(PACKAGE);
+    bind_textdomain_codeset(PACKAGE, "UTF-8"); // ensure code encoding is UTF8-
     
     QApplication a( argc, argv );
 

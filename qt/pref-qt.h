@@ -49,12 +49,8 @@
 #include <uim/uim.h>
 #include <uim/uim-custom.h>
 
-class UimCustomItemIface;
 
-static const char * tr(const char *str)
-{
-    return str;
-}
+class UimCustomItemIface;
 
 class UimPrefDialog : public QDialog
 {

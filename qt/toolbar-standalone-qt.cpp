@@ -39,6 +39,11 @@
 #include <qstyle.h>
 #include <qcursor.h>
 
+#include <locale.h>
+
+#include "uim/config.h"
+#include "uim/gettext.h"
+
 UimToolbarDraggingHandler::UimToolbarDraggingHandler( QWidget *parent,
         const char* name )
         : QFrame( parent, name ),
@@ -88,6 +93,10 @@ void UimToolbarDraggingHandler::mouseMoveEvent( QMouseEvent * e )
 
 int main( int argc, char *argv[] )
 {
+    setlocale(LC_ALL, "");
+    bindtextdomain(PACKAGE, LOCALEDIR);
+    textdomain(PACKAGE);
+    
     QApplication a( argc, argv );
 
     QHBox toolbar( 0, 0, Qt::WStyle_NoBorder | Qt::WX11BypassWM );

@@ -38,7 +38,7 @@
 
 #include <stdlib.h>
 
-#define i18n(string) (string)
+#include "uim/gettext.h"
 
 QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags f )
         : QHBox( parent, name, f )
@@ -58,10 +58,10 @@ QUimHelperToolbar::~QUimHelperToolbar()
 void QUimHelperToolbar::addExecImSwitcherButton()
 {
     QToolButton * swbutton = new QToolButton( this );
-    swbutton->setText( i18n( "sw" ) );
+    swbutton->setText( _( "sw" ) );
     QObject::connect( swbutton, SIGNAL( clicked() ),
                       this, SLOT( slotExecSwitcher() ) );
-    QToolTip::add( swbutton, i18n( "exec im-switcher" ) );
+    QToolTip::add( swbutton, _( "exec im-switcher" ) );
 }
 
 
@@ -75,10 +75,10 @@ void QUimHelperToolbar::addExecKasumiButton()
 {
 #ifdef USE_KASUMI
     QToolButton * kasumiButton = new QToolButton( this );
-    kasumiButton->setText( i18n( "Kasumi" ) );
+    kasumiButton->setText( _( "Kasumi" ) );
     QObject::connect( kasumiButton, SIGNAL( clicked() ),
                       this, SLOT( slotExecKasumi() ) );
-    QToolTip::add( kasumiButton, i18n( "exec Kasumi" ) );
+    QToolTip::add( kasumiButton, _( "exec Kasumi" ) );
 #endif
 }
 

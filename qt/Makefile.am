@@ -1,3 +1,4 @@
+INCLUDES        = -I$(top_srcdir) -I$(top_builddir)
 CXXFLAGS        += $(UIM_QT_CFLAGS)
 CFLAGS          += $(UIM_QT_CFLAGS)
 
