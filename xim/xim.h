@@ -41,6 +41,7 @@
 #include <list>
 #include "ximserver.h"
 #include "ximpn.h"
+#include "compose.h"
 
 // The header file contains about connection of XIM protocol, and the
 // definition of IM and IC.
@@ -170,7 +171,7 @@ private:
 class XimIM {
 public:
     XimIM(Connection *, int id);
-    virtual ~XimIM() {};
+    virtual ~XimIM();
     
     virtual void create_ic(RxPacket *) = 0;
     virtual void destroy_ic(int) = 0;
@@ -187,12 +188,24 @@ public:
     const char *get_encoding();
     void set_lang_region(const char *name);
     const char *get_lang_region();
+    // for Compose
+    void create_compose_tree();
+    DefTree *get_compose_tree();
 
 protected:
     Connection *mConn;
     int mID;
     char *mEncoding;
     char *mLangRegion;
+
+    // for Compose
+    char *get_compose_filename();
+    char *TransFileName(char *name);
+    void XimParseStringFile(FILE *fp);
+    void FreeComposeTree(DefTree *top);
+    int parseline(FILE *fp, char *tokenbuf);
+    int get_mb_string(char *buf, KeySym ks);
+    DefTree *mTreeTop;
 };
 
 int unused_im_id();
@@ -291,7 +304,7 @@ private:
     int mIMid;
     uString mPending;
     bool mIsActive;
-    keyState m_keyState;
+    keyState *m_keyState;
 private:
     static XimIC *current_ic;
     static int nrActiveIC;

@@ -581,19 +581,23 @@ void InputContext::update_preedit()
 int InputContext::pushKey(keyState *k)
 {
     int key = k->key();
-    if (key != UKey_Other) {
-	int rv;
-	if (k->is_push())
-	  rv = uim_press_key(mUc, key, k->modifier());
-	else
-	  rv = uim_release_key(mUc, key, k->modifier());
+    int rv = 1;
 
-	if (rv)
-	    return COMMIT_RAW;
+    if (key != UKey_Other) {
+	if (k->is_push())
+	    rv = uim_press_key(mUc, key, k->modifier());
 	else
-	    return UPDATE_MODE;
+	    rv = uim_release_key(mUc, key, k->modifier());
     }
-    return COMMIT_RAW;
+
+    if (rv) {
+	if (k->check_compose())
+	    return UPDATE_MODE;
+	else
+	    return COMMIT_RAW;
+    } else {
+	return UPDATE_MODE;
+    }
 }
 
 bool InputContext::hasActiveCandwin()
@@ -755,21 +759,33 @@ const char *InputContext::get_locale_name()
     return mLocaleName;
 }
 
-keyState::keyState()
+keyState::keyState(XimIC *ic)
 {
+    XimIM *im;
+    DefTree *top;
+
     mAltOn = false;
     mMetaOn = false;
     mSuperOn = false;
     mHyperOn = false;
+    mIc = ic;
+
+    im = get_im_by_id(mIc->get_imid());
+    top = im->get_compose_tree();
+
+    mCompose = new Compose(top, mIc);
 }
 
 keyState::~keyState()
 {
+    delete mCompose;
 }
 
 void keyState::check_key(keyEventX *x)
 {
     mModifier = 0;
+    mXKeySym = x->key_sym;
+    mXKeyState = x->state;
 
     if (x->press) {
 	m_bPush = true;
@@ -847,6 +863,8 @@ void keyState::check_key(keyEventX *x)
 	mKey = x->key_sym;
     else if (x->key_sym >= XK_F1 && x->key_sym <= XK_F35)
 	mKey = x->key_sym - XK_F1 + UKey_F1;
+    else if (x->key_sym >= 0xfe50 && x->key_sym <= 0xfe62)
+	mKey = UKey_Other; // Don't forward deadkeys to libuim.
     else {
 	switch (x->key_sym) {
 	case XK_BackSpace: mKey = UKey_Backspace; break;
@@ -864,7 +882,9 @@ void keyState::check_key(keyEventX *x)
 	case XK_End: mKey = UKey_End; break;
 	case XK_Kanji:
 	case XK_Zenkaku_Hankaku: mKey = UKey_Zenkaku_Hankaku; break;
-	case XK_Multi_key: mKey = UKey_Multi_key; break;
+	// Don't forward Multi_key to libuim.
+	//case XK_Multi_key: mKey = UKey_Multi_key; break;
+	case XK_Multi_key: mKey = UKey_Other; break;
 	case XK_Mode_switch: mKey = UKey_Mode_switch; break;
 	case XK_Henkan_Mode: mKey = UKey_Henkan_Mode; break;
 	case XK_Muhenkan: mKey = UKey_Muhenkan; break;
@@ -880,16 +900,21 @@ void keyState::check_key(keyEventX *x)
 	case XK_Super_R: mKey = UKey_Super_key; break;
 	case XK_Hyper_L: mKey = UKey_Hyper_key; break;
 	case XK_Hyper_R: mKey = UKey_Hyper_key; break;
-	default: mKey = UKey_Other;
+	default:
+	    mKey = UKey_Other;
 	}
     }
+}
+
+bool keyState::check_compose()
+{
+    return mCompose->handleKey(mXKeySym, mXKeyState, m_bPush);
 }
 
 int keyState::key()
 {
     return mKey;
 }
-
 
 int keyState::modifier()
 {
@@ -913,6 +938,16 @@ int keyState::revise_mod(int uim_mod)
 	uim_mod &= ~UMod_Hyper;
 
     return uim_mod;
+}
+
+KeySym keyState::xkeysym()
+{
+    return mXKeySym;
+}
+
+int keyState::xkeystate()
+{
+    return mXKeyState;
 }
 
 void keyState::print()

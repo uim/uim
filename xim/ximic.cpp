@@ -223,7 +223,7 @@ void icxatr::set_atr(int id, C8 *val, int len, int o)
     }
     break;
     case ICA_LineSpace:
-	line_space=readC16(val, o);
+	line_space = readC16(val, o);
 	break;
     default:
 	// unknown attribute
@@ -332,6 +332,7 @@ XimIC::XimIC(Connection *c, int imid, int icid, const char *engine)
     m_xatr.set_locale_name(locale);
 
     mConvdisp = 0;
+    m_keyState = new keyState(this);
     if (g_option_mask & OPT_TRACE)
 	printf("imid=%d, icid=%d ic created.\n", mIMid, mICid);
 }
@@ -349,6 +350,7 @@ XimIC::~XimIC()
     delete m_kkContext;
     if (mConvdisp)
 	delete mConvdisp;
+    delete m_keyState;
 }
 
 bool XimIC::isActive()
@@ -409,9 +411,9 @@ void XimIC::unsetFocus()
 void XimIC::OnKeyEvent(keyEventX e)
 {
     int s;
-    m_keyState.check_key(&e);
+    m_keyState->check_key(&e);
 
-    s = m_kkContext->pushKey(&m_keyState);
+    s = m_kkContext->pushKey(m_keyState);
     if (s & COMMIT_RAW)
 	send_key_event(&e.ev.xkey);
 

@@ -42,6 +42,7 @@
 #include <map>
 
 #include "uim/uim.h"
+#include "compose.h"
 
 
 // preedit ornament
@@ -105,14 +106,17 @@ extern int scr_width, scr_height;
 #define COMMIT_RAW 1
 #define UPDATE_MODE 2
 
-// do convert from original event, and released within the same function
+// do convert from original event into uim event
 class keyState {
 public:
-    keyState();
+    keyState(class XimIC *);
     ~keyState();
     void check_key(class keyEventX *);
+    bool check_compose();
     int key();
     int modifier();
+    KeySym xkeysym();
+    int xkeystate();
 
     bool is_push(); // for distinguish from release
     void print();
@@ -120,11 +124,15 @@ private:
     int revise_mod(int uim_mod);
     int mKey;
     int mModifier;
+    KeySym mXKeySym;
+    int mXKeyState;
     bool m_bPush;
     bool mAltOn;
     bool mMetaOn;
     bool mHyperOn;
     bool mSuperOn;
+    Compose *mCompose;
+    XimIC *mIc;
 };
 
 class XimIC;

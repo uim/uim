@@ -204,7 +204,7 @@ char *utf8_to_native_str(char *utf8, const char *enc) {
 	return NULL;
     }
 
-    inbuf = strdup(utf8);
+    inbuf = utf8;
     if (!inbuf) {
 	iconv_close(cd);
 	return NULL;
@@ -212,7 +212,6 @@ char *utf8_to_native_str(char *utf8, const char *enc) {
     outbuf = (char *)malloc(outbufsize);
     if (!outbuf) {
 	iconv_close(cd);
-	free(inbuf);
 	return NULL;
     }
     inchar = inbuf;
@@ -224,21 +223,18 @@ char *utf8_to_native_str(char *utf8, const char *enc) {
     if (ret_val == (size_t)-1 && errno != E2BIG) {
 	//perror("error in iconv");
 	iconv_close(cd);
-	free(inbuf);
 	free(outbuf);
 	return NULL;
     }
     iconv_close(cd);
     convstr = (char *)malloc(outbufsize - outbytesleft + 1);
     if (!convstr) {
-	free(inbuf);
 	free(outbuf);
 	return NULL;
     }
     strncpy(convstr, outbuf, outbufsize - outbytesleft);
     convstr[outbufsize - outbytesleft] = '\0';
     free(outbuf);
-    free(inbuf);
     return convstr;
 }
 

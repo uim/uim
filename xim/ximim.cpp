@@ -92,6 +92,11 @@ void XimIM_impl::create_ic(RxPacket *p)
 {
     XimIC *ic;
     int icid= unused_ic_id();
+
+    // create compose table with the first ic
+    if (icid == 1)
+	create_compose_tree();
+
     ic = ::create_ic(mConn, p, mID, icid, mEngineName);
     if (!ic) {
 	mConn->push_error_packet(mID, icid,
@@ -349,6 +354,26 @@ XimIM::XimIM(Connection *c, int id)
     mID = id;
     mEncoding = NULL;
     mLangRegion = NULL;
+    mTreeTop = NULL;
+}
+
+XimIM::~XimIM()
+{
+    free(mEncoding);
+    free(mLangRegion);
+    FreeComposeTree(mTreeTop);
+}
+
+void XimIM::FreeComposeTree(DefTree *top)
+{
+   if (!top)
+	return;
+
+   if (top->succession)
+	FreeComposeTree(top->succession);
+   if (top->next)
+	FreeComposeTree(top->next);
+   free(top);
 }
 
 void XimIM::set_encoding(const char *encoding)

@@ -15,4 +15,5 @@ uim_xim_SOURCES = \
 	xim.h xdispatch.h ximpn.h \
 	canddisp.cpp canddisp.h \
 	util.cpp util.h \
-	helper.cpp helper.h
+	helper.cpp helper.h \
+	compose.cpp compose.h
