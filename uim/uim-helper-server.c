@@ -239,16 +239,15 @@ uim_helper_server_process_connection(int serv_fd)
   int i;
   fd_set readfds;
   fd_set writefds;
-  struct timeval tv;
 
   while (1) {
     memcpy(&readfds, &s_fdset_read, sizeof(fd_set));
     memcpy(&writefds, &s_fdset_write, sizeof(fd_set));
-    tv.tv_sec = 1;
-    tv.tv_usec = 0;
 
     /* call select(), waiting until a file descriptor readable */
-    if (select(s_max_fd + 1, &readfds, &writefds, NULL, &tv) <= 0) {
+    if (select(s_max_fd + 1, &readfds, &writefds, NULL, NULL) <= 0) {
+      perror("uim-helper_server select(2) failed");
+      sleep(3);
       continue;
     }
 
@@ -303,14 +302,21 @@ uim_helper_server_process_connection(int serv_fd)
 	  message_len = out_len = strlen(clients[i].write_queue);
 	  while (out_len > 0) {
 	    if ((ret = write(clients[i].fd, out, out_len)) < 0) {
-	      perror("uim-helper_server write(2) failed");
-	      if (errno == EPIPE) {
-	        FD_CLR(clients[i].fd, &s_fdset_read);
-	        FD_CLR(clients[i].fd, &s_fdset_write);
-	        if (clients[i].fd == s_max_fd)
-	          s_max_fd--;
-	        close(clients[i].fd);
-	        free_client(&clients[i]);
+	      if (errno == EAGAIN) {
+#if 0
+		fprintf(stderr, "EAGAIN: fd = %d\n", clients[i].fd);
+#endif
+	      } else {
+		perror("uim-helper_server write(2) failed");
+		if (errno == EPIPE) {
+		  fprintf(stderr, "fd = %d\n", clients[i].fd);
+		  FD_CLR(clients[i].fd, &s_fdset_read);
+		  FD_CLR(clients[i].fd, &s_fdset_write);
+		  if (clients[i].fd == s_max_fd)
+		    s_max_fd--;
+		  close(clients[i].fd);
+		  free_client(&clients[i]);
+		}
 	      }
 	      break;
 	    } else {
