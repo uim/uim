@@ -47,14 +47,14 @@
 (require "generic-key.scm")
 (require "util.scm")
 
-;;; user configs
-
 ;; configs
 (define prime-nr-candidate-max 10)
 (define prime-always-show-window? #t)
 (define prime-auto-register-mode? #t)
 (define prime-pseudo-mode-cursor? #f)
 (define prime-char-annotation?    #t)
+;; If #t a candidate window displays usage examples of candidate words.
+(define prime-custom-display-usage? #t)
 
 (define prime-mask-pending-preedit? #f)
 
@@ -90,6 +90,11 @@
 (define-key prime-go-left-edge-key?   '("<Control>a" "<Control>left"))
 (define-key prime-go-right-edge-key?  '("<Control>e" "<Control>right"))
 (define-key prime-register-key?       '("<Control>w"))
+(define-key prime-typing-mode-hiragana-key?   "F6")
+(define-key prime-typing-mode-katakana-key?   "F7")
+(define-key prime-typing-mode-hankana-key?    "F8")
+(define-key prime-typing-mode-wideascii-key?  "F9")
+(define-key prime-typing-mode-ascii-key?      "F10")
 
 (define-key prime-space-key?          '(" "))
 (define-key prime-altspace-key?       '("<Control> " "<Alt> "))
@@ -145,7 +150,39 @@
 	      #f
 	      (prime-keymap-get-command (cdr keymap) key key-state))
       ))))
-    
+
+(define prime-keymap-latin-mode
+  '(
+   (prime-on-key?  . prime-command-japanese-mode)
+   (prime-any-key? . prime-command-latin-input)
+   ))
+
+(define prime-keymap-wide-latin-mode
+  '(
+   (prime-on-key?     . prime-command-japanese-mode)
+   (prime-normal-key? . prime-command-wide-latin-input)
+   (prime-any-key?    . prime-command-commit-raw)
+   ))
+
+(define prime-keymap-fund-state
+  '(
+   (prime-wide-latin-key?   . prime-command-wide-latin-mode)
+   (prime-latin-key?        . prime-command-latin-mode)
+   ;; Typing mode key bindings
+   (prime-typing-mode-hiragana-key?  . prime-command-mode-hiragana)
+   (prime-typing-mode-katakana-key?  . prime-command-mode-katakana)
+   (prime-typing-mode-hankana-key?   . prime-command-mode-hankana)
+   (prime-typing-mode-wideascii-key? . prime-command-mode-wideascii)
+   (prime-typing-mode-ascii-key?     . prime-command-mode-ascii)
+
+   (prime-space-key?        . prime-command-fund-space)
+   (prime-altspace-key?     . prime-command-fund-altspace)
+   (prime-with-control-key? . prime-command-commit-raw)
+   (prime-ja-direct-key?    . prime-command-fund-commit-ja-direct)
+   (prime-symbol-key?       . prime-command-commit-raw)
+   (prime-any-key?          . prime-command-fund-input)
+   ))
+
 (define prime-keymap-register-fund-state
   '(
    (prime-prev-candidate-key?  . prime-command-register-fund-cancel)
@@ -169,34 +206,17 @@
    (prime-go-right-key?      . prime-command-register-fund-cursor-right)
    (prime-go-left-edge-key?  . prime-command-register-fund-cursor-left-edge)
    (prime-go-right-edge-key? . prime-command-register-fund-cursor-right-edge)
+
+   ;; Typing mode key bindings
+   (prime-typing-mode-hiragana-key?  . prime-command-mode-hiragana)
+   (prime-typing-mode-katakana-key?  . prime-command-mode-katakana)
+   (prime-typing-mode-hankana-key?   . prime-command-mode-hankana)
+   (prime-typing-mode-wideascii-key? . prime-command-mode-wideascii)
+   (prime-typing-mode-ascii-key?     . prime-command-mode-ascii)
+
 ;   (prime-with-control-key? . prime-command-commit-raw)
    (prime-with-control-key? . prime-command-pass)
    (prime-symbol-key?       . prime-command-pass)
-   (prime-any-key?          . prime-command-fund-input)
-   ))
-
-(define prime-keymap-latin-mode
-  '(
-   (prime-on-key?  . prime-command-japanese-mode)
-   (prime-any-key? . prime-command-latin-input)
-   ))
-
-(define prime-keymap-wide-latin-mode
-  '(
-   (prime-on-key?     . prime-command-japanese-mode)
-   (prime-normal-key? . prime-command-wide-latin-input)
-   (prime-any-key?    . prime-command-commit-raw)
-   ))
-
-(define prime-keymap-fund-state
-  '(
-   (prime-wide-latin-key?   . prime-command-wide-latin-mode)
-   (prime-latin-key?        . prime-command-latin-mode)
-   (prime-space-key?        . prime-command-fund-space)
-   (prime-altspace-key?     . prime-command-fund-altspace)
-   (prime-with-control-key? . prime-command-commit-raw)
-   (prime-ja-direct-key?    . prime-command-fund-commit-ja-direct)
-   (prime-symbol-key?       . prime-command-commit-raw)
    (prime-any-key?          . prime-command-fund-input)
    ))
 
@@ -215,6 +235,13 @@
    (prime-go-left-key?        . prime-command-preedit-cursor-left)
    (prime-go-right-key?       . prime-command-preedit-cursor-right)
    (prime-cand-select-key?    . prime-command-preedit-commit-candidate)
+   ;; Typing mode key bindings
+   (prime-typing-mode-hiragana-key?  . prime-command-mode-hiragana)
+   (prime-typing-mode-katakana-key?  . prime-command-mode-katakana)
+   (prime-typing-mode-hankana-key?   . prime-command-mode-hankana)
+   (prime-typing-mode-wideascii-key? . prime-command-mode-wideascii)
+   (prime-typing-mode-ascii-key?     . prime-command-mode-ascii)
+
    (prime-command-key?        . prime-command-pass)
    (prime-symbol-key?         . prime-command-pass)
    (prime-any-key?            . prime-command-preedit-input)
@@ -234,22 +261,16 @@
    (prime-go-left-key?        . prime-command-preedit-cursor-left)
    (prime-go-right-key?       . prime-command-preedit-cursor-right)
    (prime-cand-select-key?    . prime-command-register-preedit-commit-candidate)
+   ;; Typing mode key bindings
+   (prime-typing-mode-hiragana-key?  . prime-command-mode-hiragana)
+   (prime-typing-mode-katakana-key?  . prime-command-mode-katakana)
+   (prime-typing-mode-hankana-key?   . prime-command-mode-hankana)
+   (prime-typing-mode-wideascii-key? . prime-command-mode-wideascii)
+   (prime-typing-mode-ascii-key?     . prime-command-mode-ascii)
+
    (prime-command-key?        . prime-command-pass)
    (prime-symbol-key?         . prime-command-pass)
    (prime-any-key?            . prime-command-preedit-input)
-   ))
-
-(define prime-keymap-register-conv-state
-  '(
-   (prime-next-candidate-key? . prime-command-register-conv-next)
-   (prime-prev-candidate-key? . prime-command-conv-prev)
-   (prime-cancel-key?         . prime-command-conv-cancel)
-   (prime-backspace-key?      . prime-command-conv-cancel)
-   (prime-commit-key?         . prime-command-register-conv-commit)
-   (prime-cand-select-key?    . prime-command-register-conv-select)
-   (prime-symbol-key?         . prime-command-pass)
-   (prime-with-control-key?   . prime-command-pass)
-   (prime-any-key?            . prime-command-register-conv-input)
    ))
 
 (define prime-keymap-conv-state
@@ -261,9 +282,35 @@
    (prime-backspace-key?      . prime-command-conv-cancel)
    (prime-commit-key?         . prime-command-conv-commit)
    (prime-cand-select-key?    . prime-command-conv-select)
+   ;; Typing mode key bindings
+   (prime-typing-mode-hiragana-key?  . prime-command-mode-hiragana)
+   (prime-typing-mode-katakana-key?  . prime-command-mode-katakana)
+   (prime-typing-mode-hankana-key?   . prime-command-mode-hankana)
+   (prime-typing-mode-wideascii-key? . prime-command-mode-wideascii)
+   (prime-typing-mode-ascii-key?     . prime-command-mode-ascii)
+
    (prime-symbol-key?         . prime-command-pass)
    (prime-with-control-key?   . prime-command-pass)
    (prime-any-key?            . prime-command-conv-input)
+   ))
+
+(define prime-keymap-register-conv-state
+  '(
+   (prime-next-candidate-key? . prime-command-register-conv-next)
+   (prime-prev-candidate-key? . prime-command-conv-prev)
+   (prime-cancel-key?         . prime-command-conv-cancel)
+   (prime-backspace-key?      . prime-command-conv-cancel)
+   (prime-commit-key?         . prime-command-register-conv-commit)
+   (prime-cand-select-key?    . prime-command-register-conv-select)
+   ;; Typing mode key bindings
+   (prime-typing-mode-hiragana-key?  . prime-command-mode-hiragana)
+   (prime-typing-mode-katakana-key?  . prime-command-mode-katakana)
+   (prime-typing-mode-hankana-key?   . prime-command-mode-hankana)
+   (prime-typing-mode-wideascii-key? . prime-command-mode-wideascii)
+   (prime-typing-mode-ascii-key?     . prime-command-mode-ascii)
+   (prime-symbol-key?         . prime-command-pass)
+   (prime-with-control-key?   . prime-command-pass)
+   (prime-any-key?            . prime-command-register-conv-input)
    ))
 
 ;;;; ------------------------------------------------------------
@@ -341,83 +388,84 @@
    context-rec-spec
    (list
     (list 'state         'prime-state-no-preedit)
-    ;;(list 'unused-1st    #t)
-    (list 'learning-word ())
-    ;;(list 'unused-3rd    ())
-    ;;(list 'unused-4th    ())
-    ;;(list 'unused-5th    ())
+    (list 'learning-word #f)
     (list 'nth           0)
-    ;;(list 'unused-7th    ())
-    ;;(list 'unused-8th    ())
     (list 'candidates    ())
-    ;;(list 'unused-10th   ())
-    ;;(list 'unused-11th   ())
     (list 'mode          prime-mode-latin)
     (list 'last-word     "") ;;PRIMEやPOBoxの用語でいうContext
-    ;;(list 'unused-14th   #t)
-    ;;(list 'unused-15th   #f)
-    (list 'preedit-line  '(() . ()))
+    (list 'session          "")  ; the actual value is -default or -register.
+    (list 'session-default  "")
+    (list 'session-register "")
     (list 'register-line '(() . ()))
-    (list 'history       '(prime-state-no-preedit (() . ()) (() . ()) 0)))))
+    ;; history = (prev-status, prev-preedition, prev-register-preedtion 
+    ;;            index-of-candidate)
+    (list 'history       '(prime-state-no-preedit ("" "" "") (() . ()) 0)))))
 (define-record 'prime-context prime-context-rec-spec)
 (define prime-context-new-internal prime-context-new)
 
 (define prime-context-new
   (lambda (id im)
     (print "prime-context-new")
-    (let ((pc (prime-context-new-internal id im)))
-      (prime-context-set-widgets! pc prime-widgets)
-      pc)))
+    (let ((context (prime-context-new-internal id im))
+	  (session1 (prime-engine-session-start))
+	  (session2 (prime-engine-session-start)))
+      (prime-context-set-session!          context session1)
+      (prime-context-set-session-default!  context session1)
+      (prime-context-set-session-register! context session2)
+      context)))
 
 (define prime-context-history-set!
-  (lambda (sc)
-    (prime-context-set-history! sc (list
-				    (prime-context-state sc)
-				    (prime-context-copy-preedit-line  sc)
-				    (prime-context-copy-register-line sc)
-				    (prime-context-nth sc)))))
+  (lambda (context)
+    (prime-context-set-history! context (list
+				    (prime-context-state context)
+				    (prime-context-copy-preedit-line  context)
+				    (prime-context-copy-register-line context)
+				    (prime-context-nth context)))))
 (define prime-context-history-get prime-context-history)
 (define prime-context-history-compare
-  (lambda (sc)
+  (lambda (context)
     (print "prime-context-history-compare")
-    (let ((prev-data (prime-context-history-get sc)))
+    (let ((prev-data (prime-context-history-get context)))
       (cond
-       ((not (equal? (prime-context-state sc) (nth 0 prev-data)))
+       ((not (equal? (prime-context-state context) (nth 0 prev-data)))
 	'state)
-       ((not (equal? (prime-context-get-preedit-line sc)  (nth 1 prev-data)))
+       ((not (equal? (prime-context-get-preedit-line context)  (nth 1 prev-data)))
 	'preedit)
-       ((not (equal? (prime-context-get-register-line sc) (nth 2 prev-data)))
+       ((not (equal? (prime-context-get-register-line context) (nth 2 prev-data)))
 	'cursor)
-       ((not (equal? (prime-context-nth sc) (nth 3 prev-data)))
+       ((not (equal? (prime-context-nth context) (nth 3 prev-data)))
 	'nth)
        ))))
 
+
+(define prime-context-reset-register-line!
+ (lambda (context)
+   (prime-editor-set-left  (prime-context-get-register-line context) '())
+   (prime-editor-set-right (prime-context-get-register-line context) '())
+   ))
 (define prime-context-copy-register-line
-  (lambda (sc)
-    (let ((line (prime-context-get-register-line sc)))
+  (lambda (context)
+    (let ((line (prime-context-get-register-line context)))
       (cons (copy-list (car line)) (copy-list (cdr line)))
       )))
-(define prime-context-reset-register-line!
- (lambda (sc)
-   (prime-editor-set-left  (prime-context-get-register-line sc) '())
-   (prime-editor-set-right (prime-context-get-register-line sc) '())
-   ))
 (define prime-context-get-register-line prime-context-register-line)
 ;; prime-context-set-register-line! is implicitly defined by define-record
 
-(define prime-context-reset-preedit-line!
- (lambda (sc)
-   (prime-editor-set-left  (prime-context-get-preedit-line sc) '())
-   (prime-editor-set-right (prime-context-get-preedit-line sc) '())
-   ))
 
+(define prime-context-reset-preedit-line!
+ (lambda (context)
+   (prime-engine-edit-erase (prime-context-session context))))
+
+;; This returns a duplicated list of the current preedition.
 (define prime-context-copy-preedit-line
-  (lambda (sc)
-    (let ((preedit (prime-context-get-preedit-line sc)))
-      (cons (copy-list (car preedit)) (copy-list (cdr preedit)))
-      )))
-(define prime-context-get-preedit-line prime-context-preedit-line)
-;; prime-context-set-preedit-line! is implicitly defined by define-record
+  (lambda (context)
+    (copy-list (prime-context-get-preedit-line context))))
+
+;; This returns a list of the current preedition.
+;; The structure of the list is [left, cursor, right]. ex. ["ab", "c", "de"].
+(define prime-context-get-preedit-line
+  (lambda (context)
+    (prime-engine-edit-get-preedition (prime-context-session context))))
 
 
 (define prime-send-command
@@ -430,43 +478,63 @@
 	    )))))
 
 (define prime-preedit-reset!
-  (lambda (sc)
+  (lambda (context)
     (print "prime-preedit-reset!")
 
-    (prime-context-set-state! sc 'prime-state-no-preedit)
-    (prime-context-reset-preedit-line!  sc)
-    (prime-context-set-nth! sc 0)
+    (prime-context-set-state! context 'prime-state-no-preedit)
+    (prime-context-reset-preedit-line!  context)
+    (prime-context-set-nth! context 0)
     ))
 
 (define prime-get-nth-candidate
-  (lambda (sc n)
-    (if (> n (prime-get-nr-candidates sc))
+  (lambda (context n)
+    (print "prime-get-nth-candidate")
+    (if (>= n (prime-get-nr-candidates context))
 	#f
-	(car (cdr (car (nthcdr n (prime-context-candidates sc))))))))
+	(nth 1 (nth n (prime-context-candidates context))))))
+
+;; This returns the data sepecified by key of the N th word.
+;; This is called by prime-get-nth-usage and prime-get-nth-annotation.
+(define prime-get-nth-word-data
+  (lambda (context n key)
+    (if (> n (prime-get-nr-candidates context))
+	#f
+	(cadr (assoc key
+		     (nth 2 (nth n (prime-context-candidates context))))))))
+
+(define prime-get-nth-usage
+  (lambda (context n)
+    (print "prime-get-nth-usage")
+    (prime-get-nth-word-data context n "usage")))
+
+(define prime-get-nth-annotation
+  (lambda (context n)
+    (print "prime-get-nth-annotation")
+    (prime-get-nth-word-data context n "annotation")))
 
 (define prime-get-nr-candidates
-  (lambda (sc)
-    (length (prime-context-candidates sc))))
+  (lambda (context)
+    (length (prime-context-candidates context))))
 
 (define prime-get-current-candidate
-  (lambda (sc)
-    (prime-get-nth-candidate
-     sc
-     (prime-context-nth sc))))
+  (lambda (context)
+    (print "prime-get-current-candidate")
+    (prime-get-nth-candidate context (prime-context-nth context))))
 
 (define prime-get-candidates! ;;もうちょっと関数名をどうにかしたい
-  (lambda (sc preedit context)
-    (prime-engine-set-context context)
+  (lambda (context preedit prime-context)
+    (print "prime-get-candidates!")
+    (prime-engine-set-context prime-context)
     (prime-context-set-candidates!
-     sc
+     context
      (prime-engine-lookup prime-engine-command-lookup preedit))
     ))
 
 (define prime-get-all-candidates! ;;これももうちょっと関数名をどうにかしたい
-  (lambda (sc preedit context)
-    (prime-engine-set-context context)
+  (lambda (context preedit prime-context)
+    (prime-engine-set-context prime-context)
     (prime-context-set-candidates!
-     sc
+     context
      (prime-engine-lookup prime-engine-command-lookup-all preedit))
     ))
 
@@ -491,16 +559,35 @@
        (string-split str "="))
      lst)))
 
+;; This splits the string by the separator.  The difference from string-split
+;; is the result of spliting "\t\t" by "\t".
+;; (string-split "\t\t" "\t") => ().
+;; (prime-util-string-split "\t\t" "\t") => ("" "" "").
+;; The second argument separator must be a single character string.
+(define prime-util-string-split
+  (lambda (string separator)
+    (let ((result (list))
+	  (node-string ""))
+      (map (lambda (target)
+	     (if (equal? target separator)
+		 (begin
+		   (set! result (cons node-string result))
+		   (set! node-string ""))
+		 (set! node-string (string-append node-string target))))
+	   (reverse (string-to-list string)))
+      (set! result (cons node-string result))
+      (reverse result))))
+
 ;;;; ------------------------------------------------------------
 ;;;; prime-uim:
 ;;;; ------------------------------------------------------------
 
 (define prime-uim-candwin-get-range
-  (lambda (sc)
-    (let* ((beginning (* (/ (prime-context-nth sc) prime-nr-candidate-max)
+  (lambda (context)
+    (let* ((beginning (* (/ (prime-context-nth context) prime-nr-candidate-max)
 			 prime-nr-candidate-max))
 	   (end       (min (+ beginning prime-nr-candidate-max)
-			   (prime-get-nr-candidates sc))))
+			   (prime-get-nr-candidates context))))
       (cons beginning end))))
 
 ;;;; ------------------------------------------------------------
@@ -517,26 +604,76 @@
 
 (define prime-engine-lookup
   (lambda (command string)
+    (print "prime-engine-lookup")
     (mapcar
      (lambda (string-line)
-       (string-split string-line "\t"))
-     (delq "" (prime-engine-send-command (list command string))))))
+       (let ((word-data (prime-util-string-split string-line "\t")))
+	 (list (nth 0 word-data)  ; reading
+	       (nth 1 word-data)  ; literal
+	       (prime-util-assoc-list (nthcdr 2 word-data)))))
+     (prime-engine-send-command (list command string)))))
 
 (define prime-engine-set-context
-  (lambda (string)
-    (if (string=? string "")
+  (lambda (prime-context)
+    (if (string=? prime-context "")
 	(prime-engine-reset-context)
-	(prime-engine-send-command (list "set_context" string)))))
+	(prime-engine-send-command (list "set_context" prime-context)))))
 
 (define prime-engine-reset-context
   (lambda ()
     (prime-engine-send-command (list "reset_context"))))
 
-(define prime-engine-get-label
-  (lambda (string)
-    (if (string=? string "")
-	""
-	(car (prime-engine-send-command (list "get_label" string))))))
+;; session operations
+(define prime-engine-session-start
+  (lambda ()
+    (car (prime-engine-send-command (list "session_start")))))
+(define prime-engine-session-end
+  (lambda (prime-session)
+    (prime-engine-send-command (list "session_end" prime-session))))
+
+;; composing operations
+(define prime-engine-edit-insert
+  (lambda (prime-session string)
+    (prime-engine-send-command (list "edit_insert"    prime-session string))))
+(define prime-engine-edit-delete
+  (lambda (prime-session)
+    (prime-engine-send-command (list "edit_delete"    prime-session))))
+(define prime-engine-edit-backspace
+  (lambda (prime-session)
+    (prime-engine-send-command (list "edit_backspace" prime-session))))
+(define prime-engine-edit-erase
+  (lambda (prime-session)
+    (prime-engine-send-command (list "edit_erase"     prime-session))))
+
+;; cursor operations
+(define prime-engine-edit-cursor-left
+  (lambda (prime-session)
+    (prime-engine-send-command (list "edit_cursor_left" prime-session))))
+(define prime-engine-edit-cursor-right
+  (lambda (prime-session)
+    (prime-engine-send-command (list "edit_cursor_right" prime-session))))
+(define prime-engine-edit-cursor-left-edge
+  (lambda (prime-session)
+    (prime-engine-send-command (list "edit_cursor_left_edge" prime-session))))
+(define prime-engine-edit-cursor-right-edge
+  (lambda (prime-session)
+    (prime-engine-send-command (list "edit_cursor_right_edge" prime-session))))
+
+;; preedition-getting operations
+(define prime-engine-edit-get-preedition
+  (lambda (prime-session)
+    (prime-util-string-split (car (prime-engine-send-command
+				   (list "edit_get_preedition" prime-session)))
+			     "\t")))
+(define prime-engine-edit-get-query-string
+  (lambda (prime-session)
+    (car (prime-engine-send-command
+	  (list "edit_get_query_string" prime-session)))))
+
+;; mode operations
+(define prime-engine-edit-set-mode
+  (lambda (prime-session mode)
+    (prime-engine-send-command (list "edit_set_mode" prime-session mode))))
 
 (define prime-engine-preedit-convert-input
   (lambda (string)
@@ -550,22 +687,25 @@
 	   ((not conversion)
 	    '(""))
 	   ;; Check the charcode of the beginning char of conversion
-	   ((= (string->charcode conversion) (string->charcode "\t"))
-	    (cons "" (string-split conversion "\t")))
 	   (else
-	    (string-split conversion "\t")))))))
+ 	    (prime-util-string-split conversion "\t")))))))
 
 (define prime-engine-learn-word
   (lambda (pron literal pos context suffix rest)
     (prime-engine-send-command (list "learn_word"
 				     pron literal pos context suffix rest))))
 
+;; This returns a version string of the PRIME server.
+(define prime-engine-get-version
+  (lambda ()
+    (car (prime-engine-send-command '("get_version")))))
+
 (define prime-engine-get-env
   (lambda (env-name)
 ;    (print "prime-engine-get-env")
-    (let* ((result (string-split (car (prime-engine-send-command
-				       (list "get_env" env-name)))
- 				 "\t"))
+    (let* ((result (prime-util-string-split
+		    (car (prime-engine-send-command (list "get_env" env-name)))
+		    "\t"))
 	   (result-type (car result)))
       (cond
        ((string=? result-type "nil")
@@ -573,7 +713,7 @@
        ((string=? result-type "string")
 	(nth 1 result))
        ((string=? result-type "array")
-	(string-split (cdr result) "\t"))
+	(prime-util-string-split (cdr result) "\t"))
        ((string=? result-type "boolean")
 	(string=? (nth 1 result) "true"))
        (t
@@ -599,6 +739,39 @@
 
 ;;;; prime-command: modes
 
+;; This changes the typing mode specified by mode-string.
+(define prime-mode-set-mode
+  (lambda (context mode-string)
+    (print "prime-mode-set-mode")
+    (if (= (prime-context-state context) 'prime-state-converting)
+	(prime-convert-cancel context))
+    (prime-engine-edit-set-mode (prime-context-session context) mode-string)))
+    
+;; This sets the typing mode to the default/Hiragana mode.
+(define prime-command-mode-hiragana
+  (lambda (context key key-state)
+    (prime-mode-set-mode context "default")))
+
+;; This sets the typing mode to the Katakana mode.
+(define prime-command-mode-katakana
+  (lambda (context key key-state)
+    (prime-mode-set-mode context "katakana")))
+
+;; This sets the typing mode to the hankaku(half-width) Katakana mode.
+(define prime-command-mode-hankana
+  (lambda (context key key-state)
+    (prime-mode-set-mode context "half_katakana")))
+
+;; This sets the typing mode to the zenkaku(wide-width) ASCII mode.
+(define prime-command-mode-wideascii
+  (lambda (context key key-state)
+    (prime-mode-set-mode context "wide_ascii")))
+
+;; This sets the typing mode to the raw/ASCII mode.
+(define prime-command-mode-ascii
+  (lambda (context key key-state)
+    (prime-mode-set-mode context "raw")))
+
 (define prime-command-japanese-mode
   (lambda (context key key-state)
     (prime-mode-set context prime-mode-hiragana)))
@@ -614,10 +787,7 @@
 
 (define prime-command-register-mode
   (lambda (context key key-state)
-    (let ((learning-word (prime-context-learning-word context)))
-      (if (not learning-word)
-	  (prime-word-learning-start! context))
-      )))
+    (prime-register-mode-on context)))
 
 
 ;;;; ------------------------------------------------------------
@@ -658,15 +828,15 @@
 (define prime-command-conv-prev
   (lambda (context key key-state)
     (if (> (prime-context-nth context) 0)
-	(prime-context-set-nth! context (- (prime-context-nth       context) 1))
-	(prime-context-set-nth! context (- (prime-get-nr-candidates context) 1)))
+	(prime-context-set-nth! context
+				(- (prime-context-nth context) 1))
+	(prime-context-set-nth! context
+				(- (prime-get-nr-candidates context) 1)))
     ))
 
 (define prime-command-conv-cancel
   (lambda (context key key-state)
-    (prime-context-set-state! context 'prime-state-preedit)
-    (prime-context-set-nth! context 0)
-    ))
+    (prime-convert-cancel context)))
 
 (define prime-command-conv-commit
   (lambda (context key key-state)
@@ -676,8 +846,9 @@
 
 (define prime-command-register-conv-commit
   (lambda (context key key-state)
-    (print "prime-command-conv-commit")
-    (prime-commit-to-register-buffer context (prime-get-current-candidate context))
+    (print "prime-command-register-conv-commit")
+    (prime-commit-to-register-buffer context
+				     (prime-get-current-candidate context))
     ))
 
 (define prime-command-conv-select
@@ -724,18 +895,15 @@
 
 (define prime-command-preedit-cancel
   (lambda (context key key-state)
-    (prime-context-reset-preedit-line! context)
-    ))
+    (prime-engine-edit-erase (prime-context-session context))))
 
 (define prime-command-preedit-backspace
   (lambda (context key key-state)
-    (prime-editor-backspace-char (prime-context-get-preedit-line context))
-    ))
+    (prime-engine-edit-backspace (prime-context-session context))))
 
 (define prime-command-preedit-delete
   (lambda (context key key-state)
-    (prime-editor-delete-char (prime-context-get-preedit-line context))
-    ))
+    (prime-engine-edit-delete (prime-context-session context))))
 
 (define prime-command-preedit-commit
   (lambda (context key key-state)
@@ -753,28 +921,25 @@
 
 (define prime-command-preedit-cursor-left-edge
   (lambda (context key key-state)
-    (prime-editor-cursor-move-left-edge
-     (prime-context-get-preedit-line context))))
+    (prime-engine-edit-cursor-left-edge (prime-context-session context))))
 
 (define prime-command-preedit-cursor-right-edge
   (lambda (context key key-state)
-    (prime-editor-cursor-move-right-edge
-     (prime-context-get-preedit-line context))))
+    (prime-engine-edit-cursor-right-edge (prime-context-session context))))
 
 (define prime-command-preedit-cursor-left
   (lambda (context key key-state)
-    (prime-editor-cursor-move (prime-context-get-preedit-line context) -1)))
+    (prime-engine-edit-cursor-left (prime-context-session context))))
 
 (define prime-command-preedit-cursor-right
   (lambda (context key key-state)
-    (prime-editor-cursor-move (prime-context-get-preedit-line context) 1)))
+    (prime-engine-edit-cursor-right (prime-context-session context))))
 
 (define prime-command-preedit-input
   (lambda (context key key-state)
     (print "prime-command-preedit-input")
-    (let ((line (prime-context-get-preedit-line context)))
-      (prime-editor-insert-char line (charcode->string key))
-      )))
+    (prime-engine-edit-insert (prime-context-session context)
+			      (charcode->string key))))
 
 (define prime-command-preedit-commit-candidate
   (lambda (context key key-state)
@@ -858,26 +1023,25 @@
 
 (define prime-command-register-fund-cancel
   (lambda (context key key-state)
-    (prime-context-set-preedit-line!
-     context (cons (prime-context-learning-word context) '()))
-    (prime-context-set-learning-word! context '())
-    (prime-context-reset-register-line! context)
+    (prime-register-mode-off context)
 
     (prime-context-set-nth! context 0)
     (prime-context-set-state! context 'prime-state-preedit)
     ))
 
+;; This registers the specified word to the PRIME dictionary and
+;; reset the status to the normal fund mode.
 (define prime-command-register-fund-commit
   (lambda (context key key-state)
     (print "prime-command-register-fund-commit")
-    (let* ((learning-word
-	    (string-list-concat (prime-context-learning-word context)))
-	   (registered (prime-register-get-string-label context)))
+    (let* ((learning-word (prime-context-learning-word context))
+	   (registered    (prime-register-get-string-label context)))
       (if (not (string=? registered ""))
 	  (let ((word-data (list (list "basekey" learning-word)
 				 (list "base"    registered))))
 	    (prime-commit-word-data context word-data)
-	    (prime-context-set-learning-word! context '()))))
+	    (prime-register-mode-off context)
+	    (prime-command-preedit-cancel context key key-state))))
     ))
 
 (define prime-command-register-fund-cursor-left-edge
@@ -904,9 +1068,12 @@
 
 (define prime-proc-call-command
   (lambda (keymap context key key-state)
+    (print "prime-proc-call-command")
     (let ((command (prime-keymap-get-command keymap key key-state)))
       (if command
-	  (begin ((symbol-value command) context key key-state) #t)
+	  (begin
+	    ((symbol-value command) context key key-state)
+	    #t)
 	  #f))))
 
 (define prime-push-key
@@ -1007,40 +1174,26 @@
     (prime-editor-set-right line (cdr (prime-editor-get-right line)))))
 
 
-(define prime-preedit-exist?
-  (lambda (sc)
-    (let ((line (prime-context-get-preedit-line sc)))
-      (or
-       (> (length (prime-editor-get-left  line)) 0)
-       (> (length (prime-editor-get-right line)) 0)
-       ))))
-
+;; This returns a preediting string.
 (define prime-preedit-get-string-label
-  (lambda (sc)
-    (let ((line (prime-context-get-preedit-line sc)))
-      (string-append
-       (prime-engine-get-label
-	(string-list-concat (prime-editor-get-left line)))
-       (string-list-concat (reverse (prime-editor-get-right line)))))))
+  (lambda (context)
+    (apply string-append (prime-engine-edit-get-preedition
+			  (prime-context-session context)))))
 
+;; This returns #t if the preediting string is not empty.  Or #f.
+(define prime-preedit-exist?
+  (lambda (context)
+    (> (length (prime-preedit-get-string-label context)) 0)))
+
+;; This returns a query string for PRIME server.
 (define prime-preedit-get-string-raw
-  (lambda (sc)
-    (let ((line (prime-context-get-preedit-line sc)))
-      (string-append
-       (string-list-concat (prime-editor-get-left line))
-       (string-list-concat (reverse (prime-editor-get-right line)))))))
+  (lambda (context)
+    (prime-engine-edit-get-query-string (prime-context-session context))))
 
-(define prime-preedit-mask
-  (lambda (preedition)
-    (print "prime-preedit-mask")
-    (let ((conv-list (prime-engine-preedit-convert-input preedition)))
-      (if (car (cdr conv-list))
-	  (string-append (car conv-list) "*")
-	  (car conv-list)))))
-
+;; This returns a commited string of register mode.
 (define prime-register-get-string-label
-  (lambda (sc)
-    (let ((line (prime-context-get-register-line sc)))
+  (lambda (context)
+    (let ((line (prime-context-get-register-line context)))
       (string-append
        (string-list-concat (prime-editor-get-left line))
        (string-list-concat (reverse (prime-editor-get-right line)))))))
@@ -1070,92 +1223,108 @@
 ;;;; ------------------------------------------------------------
 
 (define prime-commit-raw
-  (lambda (sc)
+  (lambda (context)
     (print "prime-commit-raw")
-    (im-commit-raw sc)
-    (prime-context-set-last-word! sc "")
-    (prime-preedit-reset! sc)
+    (im-commit-raw context)
+    (prime-context-set-last-word! context "")
+    (prime-preedit-reset! context)
     ))
 
 (define prime-commit-without-learning
-  (lambda (sc word)
-    (im-commit sc word)
-    (prime-context-set-last-word! sc "")
+  (lambda (context word)
+    (im-commit context word)
+    (prime-context-set-last-word! context "")
     ))
 
 (define prime-commit-word-data
-  (lambda (sc word-data)
-    (im-commit sc (string-append (or (cadr (assoc "base" word-data)) "")
-				 (or (cadr (assoc "conjugation" word-data)) "")
-				 (or (cadr (assoc "suffix" word-data)) "")))
-    (prime-learn-word sc word-data)
-    (prime-preedit-reset! sc)))
+  (lambda (context word-data)
+    (print "prime-commit-word-data")
+    (im-commit context
+	       (string-append (or (cadr (assoc "base"        word-data)) "")
+			      (or (cadr (assoc "conjugation" word-data)) "")
+			      (or (cadr (assoc "suffix"      word-data)) "")))
+    (prime-learn-word context word-data)
+    (prime-preedit-reset! context)))
 
 (define prime-commit-candidate
-  (lambda (sc nth)
+  (lambda (context n)
+    (print "prime-commit-candidate")
     (let ((word-data
-	   (prime-util-assoc-list
-	    (cdr (cdar (nthcdr nth (prime-context-candidates sc)))))))
-      (prime-commit-word-data sc word-data))))
+	   (nth 2 (nth n (prime-context-candidates context)))))
+      (prime-commit-word-data context word-data))))
 
 (define prime-commit-to-register-buffer
-  (lambda (sc word)
-    (let ((line (prime-context-get-register-line sc)))
+  (lambda (context word)
+    (let ((line (prime-context-get-register-line context)))
       (prime-editor-set-left line (append (string-to-list word)
 					  (prime-editor-get-left line)))
-      (prime-preedit-reset! sc)
+      (prime-preedit-reset! context)
       )))
 
 ;;;; ------------------------------------------------------------
 
 (define prime-learn-word
-  (lambda (sc assoc-list)
+  (lambda (context assoc-list)
+    (print "prime-learn-word")
     (let ((key     (or (cadr (assoc "basekey"     assoc-list)) ""))
 	  (value   (or (cadr (assoc "base"        assoc-list)) ""))
 	  (part    (or (cadr (assoc "part"        assoc-list)) ""))
-	  (context (or (prime-context-last-word sc) ""))
+	  (prime-context (or (prime-context-last-word context) ""))
 	  (suffix  (or (cadr (assoc "conjugation" assoc-list)) ""))
 	  (rest    (or (cadr (assoc "suffix"      assoc-list)) "")))
       
-      (prime-engine-learn-word key value part context suffix rest)
-      (prime-context-set-last-word! sc (string-append value suffix rest)))))
+      (prime-engine-learn-word key value part prime-context suffix rest)
+      (prime-context-set-last-word! context
+				    (string-append value suffix rest))
+      )))
 
+;; This function moves the cursor of candidate words.  If the cursor is out of
+;; the range and the variable prime-auto-register-mode? is #t, the mode is
+;; changed to register-mode.
 (define prime-convert-selection-move
-  (lambda (sc selection-index)
-    (prime-context-set-nth! sc selection-index)
-    (if (prime-get-current-candidate sc)
+  (lambda (context selection-index)
+    (prime-context-set-nth! context selection-index)
+    (if (prime-get-current-candidate context)
 	#f
 	(if prime-auto-register-mode?
-	    (prime-word-learning-start! sc)
-	    (prime-context-set-nth! sc 0)))
+	    (prime-register-mode-on context)
+	    (prime-context-set-nth! context 0)))
     ))
 
+;; This resets the converting mode and goes to the preediting mode.
+(define prime-convert-cancel
+  (lambda (context)
+    (print "prime-convert-cancel")
+    (prime-context-set-state! context 'prime-state-preedit)
+    (prime-context-set-nth! context 0)))
+
+
 (define prime-begin-conversion-internal
-  (lambda (sc init-idx)
+  (lambda (context init-idx)
     (print "prime-begin-conversion-internal")
-    (print (prime-preedit-get-string-raw sc))
     (let ((res))
-      (prime-get-all-candidates! sc
-				 (prime-preedit-get-string-raw sc)
-				 (prime-context-last-word sc))
-      (set! res (prime-get-nth-candidate sc init-idx))
+      (prime-get-all-candidates! context
+				 (prime-preedit-get-string-raw context)
+				 (prime-context-last-word context))
+      (set! res (prime-get-nth-candidate context init-idx))
+      (print res)
       (if res
 	  (begin
-	    (prime-context-set-nth!   sc init-idx)
-	    (prime-context-set-state! sc 'prime-state-converting))
+	    (prime-context-set-nth!   context init-idx)
+	    (prime-context-set-state! context 'prime-state-converting))
 	  )
-      (prime-convert-selection-move sc init-idx)
+      (prime-convert-selection-move context init-idx)
       )))
 
 (define prime-begin-conversion-reversely
-  (lambda (sc)
-    (let ((last-idx (- (prime-get-nr-candidates sc)
+  (lambda (context)
+    (let ((last-idx (- (prime-get-nr-candidates context)
 		       1)))
-      (prime-begin-conversion-internal sc last-idx))))
+      (prime-begin-conversion-internal context last-idx))))
 
 (define prime-begin-conversion
-  (lambda (sc)
-    (prime-begin-conversion-internal sc 0)))
+  (lambda (context)
+    (prime-begin-conversion-internal context 0)))
 
 
 ;;;; ------------------------------------------------------------
@@ -1163,90 +1332,86 @@
 ;;;; ------------------------------------------------------------
 
 (define prime-update
-  (lambda (sc)
+  (lambda (context)
     (print "prime-update")
+    (print (prime-context-state context))
 
-    (prime-update-state sc)
-    (prime-update-prediction sc)
+    (prime-update-state context)
+    (prime-update-prediction context)
     
-    (prime-update-candidate-window sc)
-    (prime-update-preedit sc)
+    (prime-update-candidate-window context)
+    (prime-update-preedit context)
 
-    (prime-update-history sc)
+    (prime-update-history context)
     ))
 
 (define prime-update-state
-  (lambda (sc)
-    (if (not (prime-preedit-exist? sc))
+  (lambda (context)
+    (if (not (prime-preedit-exist? context))
 	(begin
 	  (print "  prime-update-state: set-state no-preedit")
-	  (prime-context-set-state! sc 'prime-state-no-preedit)))
+	  (prime-context-set-state! context 'prime-state-no-preedit)))
     ))
 
 (define prime-update-history
-  (lambda (sc)
+  (lambda (context)
     (print "prime-update-history")
-    (prime-context-history-set! sc)))
+    (prime-context-history-set! context)))
 
 (define prime-update-preedit
-  (lambda (sc)
+  (lambda (context)
     (print "prime-update-preedit")
 
-    (if (prime-context-history-compare sc)
-	(let ((learning-word (prime-context-learning-word sc)))
-	  (im-clear-preedit sc)
+    (if (prime-context-history-compare context)
+	(let ((learning-word (prime-context-learning-word context)))
+	  (im-clear-preedit context)
 	  (prime-display-preedit
-	   sc
+	   context
 	   (if learning-word
-	       (prime-register-state-update-preedit sc)
-	       (prime-preedit-state-update-preedit  sc)))
-	  (im-update-preedit sc)
+	       (prime-register-state-update-preedit context)
+	       (prime-preedit-state-update-preedit  context)))
+	  (im-update-preedit context)
 	  ))
     ))
 
 (define prime-register-state-update-preedit
-  (lambda (sc)
-    (let* ((learning-word  (prime-context-learning-word     sc))
-	   (line           (prime-context-get-register-line sc))
+  (lambda (context)
+    (print "prime-register-state-update-preedit")
+    (let* ((learning-word  (prime-context-learning-word     context))
+	   (line           (prime-context-get-register-line context))
 	   (register-left  (prime-editor-get-left           line))
 	   (register-right (reverse (prime-editor-get-right line))))
       (append
        (list
 	(cons 'register-label  "単語登録")
 	(cons 'register-border "[")
-	(cons 'register-word   (prime-engine-get-label
-				(string-list-concat learning-word)))
+	(cons 'register-word   learning-word)
 	(cons 'register-border "|")
 	(cons 'committed (string-list-concat register-left)))
 
-       (prime-preedit-state-update-preedit sc)
+       (prime-preedit-state-update-preedit context)
        (list
 	(cons 'committed (string-list-concat register-right))
 	(cons 'register-border "]"))))))
 
 (define prime-preedit-state-update-preedit
-  (lambda (sc)
+  (lambda (context)
     (print "prime-preedit-state-update-preedit")
-    (let* ((state (prime-context-state            sc))
-	   (line  (prime-context-get-preedit-line sc))
-	   (left  (string-list-concat (prime-editor-get-left line)))
-	   (right (string-list-concat (reverse (prime-editor-get-right line))))
+    (let* ((state (prime-context-state            context))
+	   (line  (prime-context-get-preedit-line context))
+	   (left  (car line))
+	   (right (apply string-append (cdr line)))
 	   )
       (cond
        ((= state 'prime-state-converting)
-	(list (cons 'converting (prime-get-current-candidate sc))))
+	(list (cons 'converting (prime-get-current-candidate context))))
 
-       ((prime-preedit-exist? sc)
-	(if prime-mask-pending-preedit?
-	    (list (cons 'preedit (prime-preedit-mask left))
-		  (cons 'cursor "")
-		  (cons 'preedit right))
-	    (list (cons 'preedit (prime-engine-get-label left))
-		  (cons 'cursor "")
-		  (cons 'preedit right))))
+       ((prime-preedit-exist? context)
+	(list (cons 'preedit left)
+	      (cons 'cursor "")
+	      (cons 'preedit right)))
        (else
-	(list (cons 'cursor "")))))
-    ))
+	(list (cons 'cursor "")))))))
 
 (define prime-display-preedit-format
   (list (cons 'committed        preedit-none)
@@ -1261,118 +1426,136 @@
 
 
 (define prime-display-preedit
-  (lambda (sc preedit-list)
+  (lambda (context preedit-list)
     (if preedit-list
 	(let ((type   (car (car preedit-list)))
 	      (string (cdr (car preedit-list))))
 	  (cond
 	   ((eq? type 'cursor)
-	    (prime-display-preedit-cursor sc))
+	    (prime-display-preedit-cursor context))
 	   ((not (string=? string ""))
 	    (im-pushback-preedit
-	     sc (cdr (assoc type prime-display-preedit-format)) string))
+	     context (cdr (assoc type prime-display-preedit-format)) string))
 	   )
-	  (prime-display-preedit sc (cdr preedit-list))))))
+	  (prime-display-preedit context (cdr preedit-list))))))
 
 (define prime-display-preedit-cursor
-  (lambda (sc)
+  (lambda (context)
     (im-pushback-preedit
-     sc (cdr (assoc 'cursor prime-display-preedit-format)) "")
+     context (cdr (assoc 'cursor prime-display-preedit-format)) "")
     (if (and prime-pseudo-mode-cursor?
-	     (= (prime-context-mode sc) prime-mode-hiragana)
-	     (eq? (prime-context-state sc) 'prime-state-no-preedit))
-	(im-pushback-preedit
-	 sc (cdr (assoc 'pseudo-cursor prime-display-preedit-format)) " "))
+	     (= (prime-context-mode context) prime-mode-hiragana)
+	     (eq? (prime-context-state context) 'prime-state-no-preedit))
+	(im-pushback-preedit context
+			     (cdr (assoc 'pseudo-cursor
+					 prime-display-preedit-format))
+			     " "))
     ))
 
 (define prime-update-prediction
-  (lambda (sc)
+  (lambda (context)
     (print "prime-update-prediction")
-    (let ((diff (prime-context-history-compare sc)))
+    (let ((diff (prime-context-history-compare context)))
       (cond
        ((= diff 'state)
-	(let ((state     (prime-context-state sc))
-	      (last-word (prime-context-last-word sc)))
+	(let ((state     (prime-context-state context))
+	      (last-word (prime-context-last-word context)))
 	  (cond
 	   ((= state 'prime-state-preedit)
-	    (prime-get-candidates! sc
-				   (prime-preedit-get-string-raw sc)
-				   (prime-context-last-word sc)))
+	    (prime-get-candidates! context
+				   (prime-preedit-get-string-raw context)
+				   (prime-context-last-word context)))
 	   ((= state 'prime-state-converting)
-	    (prime-get-all-candidates! sc
-				       (prime-preedit-get-string-raw sc)
-				       (prime-context-last-word sc)))
+	    (prime-get-all-candidates! context
+				       (prime-preedit-get-string-raw context)
+				       (prime-context-last-word context)))
 	   ((= state 'prime-state-no-preedit)
-	    (prime-context-set-candidates! sc '()))
+	    (prime-context-set-candidates! context '()))
 	    )))
        ((= diff 'preedit)
-	(prime-get-candidates! sc
-			       (prime-preedit-get-string-raw sc)
-			       (prime-context-last-word sc)))
+	(prime-get-candidates! context
+			       (prime-preedit-get-string-raw context)
+			       (prime-context-last-word context)))
        ))))
 
 (define prime-update-candidate-window
-  (lambda (sc)
+  (lambda (context)
     (print "prime-update-candidate-window")
-    (let ((diff (prime-context-history-compare sc)))
+    (let ((diff (prime-context-history-compare context)))
       (cond
        ((= diff 'state)
-	(let ((state (prime-context-state sc)))
+	(let ((state (prime-context-state context)))
 	  (cond
 	   ((= state 'prime-state-no-preedit)
-	    (im-deactivate-candidate-selector sc))
+	    (im-deactivate-candidate-selector context))
 	   ((= state 'prime-state-preedit)
-	    (if (> (prime-get-nr-candidates sc) 0)
+	    (if (> (prime-get-nr-candidates context) 0)
 		(im-activate-candidate-selector
-		 sc (prime-get-nr-candidates sc) prime-nr-candidate-max)))
+		 context
+		 (prime-get-nr-candidates context)
+		 3)))
+;		 prime-nr-candidate-max)))
 	   ((= state 'prime-state-converting)
  	    (im-activate-candidate-selector
- 	     sc (prime-get-nr-candidates sc) prime-nr-candidate-max)
-	    (im-select-candidate sc (prime-context-nth sc)))
+ 	     context (prime-get-nr-candidates context) prime-nr-candidate-max)
+	    (im-select-candidate context (prime-context-nth context)))
 	    )))
        ((= diff 'nth)
-	(im-select-candidate sc (prime-context-nth sc)))
+	(im-select-candidate context (prime-context-nth context)))
        ((= diff 'preedit)
-	(if (> (prime-get-nr-candidates sc) 0)
+	(if (> (prime-get-nr-candidates context) 0)
 	    (im-activate-candidate-selector
-	     sc (prime-get-nr-candidates sc) prime-nr-candidate-max)
-	    (im-deactivate-candidate-selector sc)))
+	     context (prime-get-nr-candidates context) prime-nr-candidate-max)
+	    (im-deactivate-candidate-selector context)))
        ))))
 
 ;;;; ------------------------------------------------------------
 
-(define prime-word-learning-start!
-  (lambda (sc)
-    (prime-context-set-learning-word!
-     sc (prime-editor-get-line (prime-context-get-preedit-line sc)))
-    (prime-preedit-reset! sc)
+(define prime-register-mode-on
+  (lambda (context)
+    (print "prime-register-mode-on")
+    (prime-context-set-learning-word! context
+				      (prime-preedit-get-string-label context))
+    (prime-context-set-session! context
+				(prime-context-session-register context))
+    ))
+
+(define prime-register-mode-off
+  (lambda (context)
+    (prime-context-reset-register-line! context)
+    (prime-context-set-learning-word!   context #f)
+    (prime-context-set-session! context
+				(prime-context-session-default context))
     ))
 
 (define prime-init-handler
   (lambda (id im arg)
     (print "prime-init-handler")
-    ;; pc stands for 'prime context'. all other 'sc' in this file
-    ;; should be renamed to 'pc' or 'context'
-    (let ((pc (prime-context-new id im)))
-      (set! candidate-window-position "left")
+    (let ((context (prime-context-new id im)))
       (prime-custom-init)
-      pc)))
+      context)))
+
+(define prime-release-handler
+  (lambda (context)
+    (prime-engine-session-end (prime-context-session-default  context))
+    (prime-engine-session-end (prime-context-session-register context))
+    ))
 
 (define prime-press-key-handler
-  (lambda (sc key state)
+  (lambda (context key state)
     (if (control-char? key)
-	(im-commit-raw sc)
-	(prime-push-key sc key state))))
+	(im-commit-raw context)
+	(prime-push-key context key state))))
 
 (define prime-release-key-handler
-  (lambda (sc key state)
+  (lambda (context key state)
     (if (or (control-char? key)
-	    (= (prime-context-mode sc)
+	    (= (prime-context-mode context)
 	       prime-mode-latin))
-	(im-commit-raw sc))))
+	(im-commit-raw context))))
 
 (define prime-reset-handler
-  (lambda (sc)
+  (lambda (context)
     (print "prime-reset-handler")
     ))
 
@@ -1384,55 +1567,27 @@
     ))
 
 (define prime-get-candidate-handler
-  (lambda (sc idx accel-enum-hint)
-    (let* ((cand (prime-get-nth-candidate sc idx))
-	   (annotation (assoc cand prime-char-annotation-alist)))
-      (if (and prime-char-annotation? annotation)
-	  (list (string-append cand "  (" (cdr annotation) ")")
-		(digit->string (+ idx 1)) "")
-	  (list cand
-		(digit->string (+ idx 1)) "")))))
+  (lambda (context idx accel-enum-hint)
+    (let* ((cand       (prime-get-nth-candidate  context idx))
+	   (usage      (prime-get-nth-usage      context idx))
+	   (annotation (prime-get-nth-annotation context idx)))
+      (if (and prime-char-annotation?
+	       annotation
+	       (= (prime-context-state context) 'prime-state-converting))
+	  (set! cand (string-append cand "  (" annotation ")")))
+      (if (and prime-custom-display-usage?
+	       usage
+	       (= (prime-context-state context) 'prime-state-converting))
+	  (set! cand (string-append cand "\t▽" usage)))
+
+      ;; The return value is a list with a candidate string and the next index.
+      (list cand (digit->string (+ idx 1))))))
 
 (define prime-set-candidate-index-handler
-  (lambda (sc selection-index)
+  (lambda (context selection-index)
     (print "prime-set-candidate-index-handler")
-    (prime-convert-selection-move sc selection-index)
-    (prime-update sc)
-    ))
-
-;; unused
-(define prime-mode
-  (list
-   (list prime-mode-latin      "P"  "直接入力" "PRIME オフ" "prop_prime_mode_latin")
-   (list prime-mode-hiragana   "ぷ" "日本語"   "PRIME オン" "prop_prime_mode_hiragana")
-   (list prime-mode-wide-latin "Ｐ" "全角英数" "全角を入力" "prop_prime_mode_wide_latin")))
-
-(define prime-char-annotation-alist
-  '(("-"  . "半角「マイナス」")
-    ("−" . "全角「マイナス」")
-    ("ー" . "長音")
-    ("─" . "罫線")
-    ("一" . "漢数「いち」")
-    ("―" . "記号「ダッシュ」")
-    ("‐" . "記号「ハイフン」")
-    ("x"  . "半角「エックス」")
-    ("X"  . "半角「エックス」")
-    ("ｘ" . "全角「エックス」")
-    ("Ｘ" . "全角「エックス」")
-    ("×" . "記号「かける」")
-    ("o"  . "半角「オー」")
-    ("O"  . "半角「オー」")
-    ("0"  . "半角「ゼロ」")
-    ("ｏ" . "全角「オー」")
-    ("Ｏ" . "全角「オー」")
-    ("０" . "全角「ゼロ」")
-    ("〇" . "漢数「ゼロ」")
-    ("○" . "記号「まる」")
-    ("◯" . "記号「まる(2)」")
-    ("ニ" . "全角カタカナ")
-    ("二" . "漢数「に」")
-    ("|"  . "半角")
-    ("｜" . "全角")
+    (prime-convert-selection-move context selection-index)
+    (prime-update context)
     ))
 
 (prime-configure-widgets)
