@@ -47,7 +47,7 @@ scm/key.scm
 scm/latin.scm
 scm/lazy-load.scm
 scm/load-action.scm
-scm/loader.scm
+scm/init.scm
 scm/m17nlib.scm
 scm/pinyin-big5.scm
 scm/prime-custom.scm

@@ -663,7 +663,7 @@ uim_init_scm()
   uim_scm_require_file("plugin.scm");
   uim_scm_require_file("custom-rt.scm");
   uim_scm_require_file("im.scm");
-  uim_scm_load_file("loader.scm");
+  uim_scm_load_file("init.scm");
   /* must be loaded at last of IMs */
   UIM_EVAL_STRING(NULL, "(require-module \"direct\")");
 
