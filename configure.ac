@@ -140,6 +140,11 @@ AC_PATH_XTRA
 use_xim="no"
 if test x$have_x != xdisabled && test x$have_x != xno; then
    use_xim="yes"
+   AC_CXX_NAMESPACES
+   AC_CXX_HAVE_STL
+   if test $ac_cv_cxx_have_stl = no; then
+     use_xim="no"
+   fi
 fi
 
 
