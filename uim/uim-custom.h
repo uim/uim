@@ -57,6 +57,11 @@ enum UCustomKeyType {
   UCustomKey_Reference  /* "generic-cancel-key" */
 };
 
+enum UCustomKeyEditorType {
+  UCustomKeyEditor_Basic,    /* only "<Control>j" style should be available */
+  UCustomKeyEditor_Advanced  /* "generic-cancel-key" style should be specifiable */
+};
+
 union uim_custom_value {
   int as_bool;
   int as_int;
@@ -74,7 +79,8 @@ struct uim_custom_choice {
 };
 
 struct uim_custom_key {
-  int type;  /* UCustomKeyType */
+  int type;         /* UCustomKeyType */
+  int editor_type;  /* UCustomKeyEditorType */
   char *literal;
   char *label;
   char *desc;
@@ -160,6 +166,7 @@ void uim_custom_choice_list_free(struct uim_custom_choice **list);
 
 /* custom key */
 struct uim_custom_key *uim_custom_key_new(int type,
+					  int editor_type,
 					  char *literal,
 					  char *label,
 					  char *desc);

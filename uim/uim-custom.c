@@ -69,7 +69,6 @@ static char *uim_custom_desc(const char *custom_sym);
 static struct uim_custom_choice *uim_custom_choice_get(const char *custom_sym, const char *choice_sym);
 static char *extract_choice_symbol(const struct uim_custom_choice *custom_choice);
 static char *choice_list_to_str(const struct uim_custom_choice *const *list, const char *sep);
-struct uim_custom_choice *uim_custom_choice_new(char *symbol, char *label, char *desc);
 static void uim_custom_choice_free(struct uim_custom_choice *custom_choice);
 static struct uim_custom_choice **extract_choice_list(const char *list_repl, const char *custom_sym);
 static struct uim_custom_choice **uim_custom_choice_item_list(const char *custom_sym);
@@ -78,7 +77,6 @@ static struct uim_custom_choice **uim_custom_olist_get(const char *custom_sym);
 static struct uim_custom_choice **uim_custom_olist_item_list(const char *custom_sym);
 
 static struct uim_custom_key **uim_custom_key_get(const char *custom_sym);
-struct uim_custom_key *uim_custom_key_new(int type, char *literal, char *label, char *desc);
 static void uim_custom_key_free(struct uim_custom_key *custom_key);
 static char *extract_key_literal(const struct uim_custom_key *custom_key);
 static char *key_list_to_str(const struct uim_custom_key *const *list, const char *sep);
@@ -334,10 +332,10 @@ static struct uim_custom_key **
 uim_custom_key_get(const char *custom_sym)
 {
   char **key_literal_list, **key_label_list, **key_desc_list;
-  int *key_type_list, list_len, i;
+  int *key_type_list, editor_type, list_len, i;
   struct uim_custom_key *custom_key, **custom_key_list;
 
-  UIM_EVAL_FSTRING3(NULL, "(define #%s (custom-expand-key-references '%s (custom-range '%s))",
+  UIM_EVAL_FSTRING3(NULL, "(define %s (custom-expand-key-references '%s (custom-range '%s))",
 		    str_list_arg, custom_sym, custom_sym);
   key_literal_list =
     (char **)uim_scm_c_list(str_list_arg,
@@ -364,6 +362,10 @@ uim_custom_key_get(const char *custom_sym)
     return NULL;
   }
 
+  UIM_EVAL_FSTRING1(NULL, "(custom-key-advanced-editor? '%s)", custom_sym);
+  return_val = uim_scm_return_value();
+  editor_type = uim_scm_c_bool(return_val) ? UCustomKeyEditor_Advanced : UCustomKeyEditor_Basic;
+
   UIM_EVAL_FSTRING1(NULL, "(length %s)", str_list_arg);
   return_val = uim_scm_return_value();
   list_len = uim_scm_c_int(return_val);
@@ -375,7 +377,7 @@ uim_custom_key_get(const char *custom_sym)
     literal = key_literal_list[i];
     label = key_label_list[i];
     desc = key_desc_list[i];
-    custom_key = uim_custom_key_new(type, literal, label, desc);
+    custom_key = uim_custom_key_new(type, editor_type, literal, label, desc);
     key_literal_list[i] = (char *)custom_key;  /* intentionally overwrite */
   }
   /* reuse the list structure */
@@ -393,7 +395,8 @@ uim_custom_key_get(const char *custom_sym)
  * TODO
  */
 struct uim_custom_key *
-uim_custom_key_new(int type, char *literal, char *label, char *desc)
+uim_custom_key_new(int type, int editor_type,
+		   char *literal, char *label, char *desc)
 {
   struct uim_custom_key *custom_key;
 
@@ -402,6 +405,7 @@ uim_custom_key_new(int type, char *literal, char *label, char *desc)
     return NULL;
 
   custom_key->type = type;
+  custom_key->editor_type = editor_type;
   custom_key->literal = literal;
   custom_key->label = label;
   custom_key->desc = desc;
