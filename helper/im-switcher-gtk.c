@@ -346,7 +346,7 @@ create_switcher(void)
 
 
   frame = gtk_frame_new(_("Changing way"));
-  gtk_frame_set_label_align(frame, 0.015, 0.5);
+  gtk_frame_set_label_align(GTK_FRAME(frame), 0.015, 0.5);
 
   gtk_box_pack_start(GTK_BOX(vbox3), frame, FALSE, FALSE, 6);
   vbox2 = gtk_vbox_new(FALSE, 8);
