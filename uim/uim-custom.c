@@ -1248,7 +1248,7 @@ custom_cb_add(const char *hook, const char *validator,
 
   uim_scm_gc_protect_stack(&stack_start);
   form = uim_scm_list5(uim_scm_make_symbol(validator),
-		       uim_scm_make_symbol(custom_sym),
+		       uim_scm_quote(uim_scm_make_symbol(custom_sym)),
 		       uim_scm_make_ptr(ptr),
 		       uim_scm_make_symbol(gate_func),
 		       uim_scm_make_func_ptr(cb));
