@@ -103,11 +103,16 @@
       (print-to-string s buf))))
 
 ;; TODO: write test
+(define string->char
+  (lambda (str)
+    (and (= (string-length str)
+	    1)
+	 (string->charcode str))))
+
+;; TODO: write test
 (define string->printable-char
   (lambda (str)
-    (let ((c (and (= (string-length str)
-		     1)
-		  (string->charcode str))))
+    (let ((c (string->char str)))
       (and (char-printable? c)
 	   c))))
 
