@@ -688,6 +688,7 @@ static void draw_preedit(struct preedit_tag *preedit, struct preedit_tag *prev_p
     } else {
       if (s_on_the_spot) {
         put_delete(prev_preedit->width - preedit->width);
+        put_cursor_left(preedit->width - preedit->cursor);
       } else {
         put_erase(prev_preedit->width - preedit->width);
         put_cursor_left(prev_preedit->width - preedit->cursor);
