@@ -578,6 +578,10 @@ uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
     cand->heading_label = NULL;
   }
 
+  if (uim_return_str_list[2]) {
+    cand->annotation = uc->conv_if->convert(uc->conv, uim_return_str_list[2]);
+  }
+
   return cand;
 }
 
@@ -593,12 +597,20 @@ uim_candidate_get_heading_label(uim_candidate cand)
   return cand->heading_label;
 }
 
+const char *
+uim_candidate_get_annotation_str(uim_candidate cand)
+{
+  return cand->annotation;
+}
+
 void
 uim_candidate_free(uim_candidate cand)
 {
   free(cand->str);
   free(cand->heading_label);
-  /* free(cand->annotation); */
+  if (cand->annotation)
+    free(cand->annotation);
+
   free(cand);
 }
 

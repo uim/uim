@@ -433,9 +433,9 @@ void  uim_set_candidate_index(uim_context uc, int index);
 /**
  * Get the string of candidate.
  *
- * @param cand the data you got by uim_get_candidate
+ * @warning You must not free the result. All datas are freed by calling uim_candidate_free.
  *
- * @warning You must not free the result.
+ * @param cand the data you got by calling uim_get_candidate
  *
  * @see uim_get_candidate
  *
@@ -445,16 +445,29 @@ const char *uim_candidate_get_cand_str(uim_candidate cand);
 /**
  * Get the string of candidate's heading label.
  *
- * @param cand the data you got by uim_get_candidate
+ * @warning You must not free the result. All datas are freed by calling uim_candidate_free.
  *
- * @warning You must not free the result.
+ * @param cand the data you got by uim_get_candidate
  *
  * @see uim_get_candidate
  *
  * @return string of candidate data's heading label
  */
 const char *uim_candidate_get_heading_label(uim_candidate cand);
-  
+
+/**
+ * Get the string of candidate's annotation.
+ *
+ * @warning You must not free the result. All datas are freed by calling uim_candidate_free.
+ * @warning This string can be "NULL".
+ *
+ * @param cand the data you got by uim_get_candidate
+ *
+ * @see uim_get_candidate
+ *
+ * @return string of candidate's annotation str
+ */
+const char *uim_candidate_get_annotation_str(uim_candidate cand);
 
 /*property*/
 /**
