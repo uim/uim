@@ -109,20 +109,20 @@
 ;; lightweight implementation
 (define custom-exist?
   (lambda (sym type)
-    #t))
+    (symbol-bound? sym)))
 
 ;; lightweight implementation
 (define custom-value
-  (lambda (custom-sym)
-    (symbol-value custom-sym)))
+  (lambda (sym)
+    (symbol-value sym)))
 
 ;; lightweight implementation
 (define define-custom
   (lambda (sym default groups type label desc)
     (custom-rt-add-primary-groups (car groups))
-    (if (not (symbol-bound? sym))
+    (if (not (custom-exist? sym type))
 	(if (eq? (car type)
-		   'key)
+		 'key)
 	    (define-key-internal (symbolconc sym '?)
 	                         (custom-modify-key-predicate-names default))
 	    (let ((quoted-default (if (or (symbol? default)
@@ -133,6 +133,7 @@
 		    toplevel-env))))))
 
 ;; lightweight implementation
+;; TODO: implement
 (define custom-prop-update-custom-handler
   (lambda (context custom-sym val)
     #f))
