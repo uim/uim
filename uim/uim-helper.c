@@ -42,6 +42,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <pwd.h>
+#include <signal.h>
 #include <errno.h>
 #include "context.h"
 #include "uim-helper.h"
@@ -66,10 +67,10 @@ uim_helper_fd(int fd, enum RorW rw)
     FD_SET(fd, &fds);
     tv.tv_sec = tv.tv_usec = 0;
 
-    if(rw == READ)
-      rc = select(fd+1, &fds, NULL, NULL, &tv);
+    if (rw == READ)
+      rc = select(fd + 1 , &fds, NULL, NULL, &tv);
     else    
-      rc = select(fd+1, NULL, &fds, NULL, &tv);
+      rc = select(fd + 1, NULL, &fds, NULL, &tv);
 
     if (rc < 0)
       return -1;
@@ -81,7 +82,9 @@ void
 uim_helper_send_message(int fd, const char *message)
 {
   int res;
-  int out_len;
+  int len, out_len;
+  sig_t old_sigpipe;
+  char *buf, *bufp;
 
   if (fd < 0)
     return;
@@ -115,26 +118,26 @@ uim_helper_send_message(int fd, const char *message)
     -- YamaKen 2005-02-07
   */
 
-  if (uim_helper_fd(fd, WRITE) > 0) {
-    int len = strlen(message);
-    char *buf = malloc(len + 2);
-    char *bufp;
-    snprintf(buf, len + 2,"%s\n", message);
+  len = strlen(message);
+  buf = malloc(len + 2);
+  snprintf(buf, len + 2,"%s\n", message);
 
-    out_len = len + 1;
-    bufp = buf;
-    while (out_len > 0) {
-      if ((res = write(fd, bufp, out_len)) < 0) {
-	if (errno == EAGAIN || errno == EINTR)
-	  continue;
-	break;
-      }
+  old_sigpipe = signal(SIGPIPE, SIG_IGN);
 
-      bufp += res;
-      out_len -= res;
+  out_len = len + 1;
+  bufp = buf;
+  while (out_len > 0) {
+    if ((res = write(fd, bufp, out_len)) < 0) {
+      if (errno == EAGAIN || errno == EINTR)
+	continue;
+      break;
     }
-    free(buf);
+
+    bufp += res;
+    out_len -= res;
   }
+  free(buf);
+  signal(SIGPIPE, old_sigpipe);
   return;
 }
 
