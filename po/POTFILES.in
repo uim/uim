@@ -25,7 +25,7 @@ scm/PY.scm
 scm/action.scm
 scm/anthy.scm
 scm/canna.scm
-scm/custom.scm
+scm/custom-vars.scm
 scm/default.scm
 scm/direct.scm
 scm/generic-key.scm

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-12-09 17:48+0900\n"
+"POT-Creation-Date: 2005-01-10 12:40+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,44 +36,44 @@ msgstr ""
 msgid "Utility"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:270
+#: helper/im-switcher-gtk.c:274
 msgid "InputMethodName"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:279
+#: helper/im-switcher-gtk.c:283
 msgid "Language"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:288
+#: helper/im-switcher-gtk.c:292
 msgid "Description"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:318
+#: helper/im-switcher-gtk.c:322
 msgid "uim input method switcher"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:342
+#: helper/im-switcher-gtk.c:346
 msgid "Changing way"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:347
+#: helper/im-switcher-gtk.c:351
 msgid "Change whole desktop"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:348
+#: helper/im-switcher-gtk.c:352
 msgid "Change this application only"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:349
+#: helper/im-switcher-gtk.c:353
 msgid "Change this text area only"
 msgstr ""
 
-#: helper/dict-main-gtk.c:155 helper/dict-anthy.c:77
+#: helper/dict-main-gtk.c:161 helper/dict-anthy.c:77
 #: helper/dict-word-list-win-gtk.c:255
 msgid "Anthy private dictionary"
 msgstr ""
 
-#: helper/dict-main-gtk.c:218
+#: helper/dict-main-gtk.c:224
 #, c-format
 msgid "Error:%s\n"
 msgstr ""
@@ -332,11 +332,35 @@ msgstr ""
 msgid "Example"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:474
+#: helper/pref-gtk.c:107
+msgid ""
+"Value was changed.\n"
+"Save?"
+msgstr ""
+
+#: helper/pref-gtk.c:176
+msgid ""
+"Value was changed.\n"
+"Do you realy quit this program?"
+msgstr ""
+
+#: helper/pref-gtk.c:215
+msgid "Group"
+msgstr ""
+
+#: helper/pref-gtk.c:427
+msgid "Specify file"
+msgstr ""
+
+#: helper/pref-gtk.c:470
+msgid "File"
+msgstr ""
+
+#: helper/toolbar-common-gtk.c:480
 msgid "sw"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:482 scm/action.lisp:526 scm/action.lisp:527
+#: helper/toolbar-common-gtk.c:488 scm/action.lisp:526 scm/action.lisp:527
 msgid "exec im-switcher"
 msgstr ""
 
@@ -364,218 +388,261 @@ msgstr ""
 msgid "Japanese Kana Kanji Conversion Engine, Example"
 msgstr ""
 
-#: scm/anthy.lisp:956
+#: scm/anthy.lisp:987
 msgid "Japanese Kana Kanji Conversion Engine, Anthy"
 msgstr ""
 
-#: scm/canna.lisp:826 scm/custom.lisp:393
+#: scm/canna.lisp:826 scm/custom-vars.lisp:46
 msgid "Canna"
 msgstr ""
 
+#. custom-vars.scm: Customization variables
 #.
-#. Particular definitions: may be split into independent file(s)
+#. Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
+#.
+#. All rights reserved.
+#.
+#. Redistribution and use in source and binary forms, with or without
+#. modification, are permitted provided that the following conditions
+#. are met:
+#. 1. Redistributions of source code must retain the above copyright
+#. notice, this list of conditions and the following disclaimer.
+#. 2. Redistributions in binary form must reproduce the above copyright
+#. notice, this list of conditions and the following disclaimer in the
+#. documentation and/or other materials provided with the distribution.
+#. 3. Neither the name of authors nor the names of its contributors
+#. may be used to endorse or promote products derived from this software
+#. without specific prior written permission.
+#.
+#. THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+#. ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+#. IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+#. ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+#. FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+#. DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+#. OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#. HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#. LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+#. OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+#. SUCH DAMAGE.
+#.
+#.
+#. Particular definitions: may be distributed into appropriate files
 #.
 #.
 #. Global
-#: scm/custom.lisp:387
+#: scm/custom-vars.lisp:40
 msgid "Direct"
 msgstr ""
 
-#: scm/custom.lisp:388 scm/direct.lisp:131
+#: scm/custom-vars.lisp:41 scm/direct.lisp:131
 msgid "Direct input method mainly used for latin languages"
 msgstr ""
 
-#: scm/custom.lisp:390
+#: scm/custom-vars.lisp:43
 msgid "Anthy"
 msgstr ""
 
-#: scm/custom.lisp:391 scm/custom.lisp:394 scm/custom.lisp:397
-#: scm/custom.lisp:400 scm/custom.lisp:403 scm/custom.lisp:406
-#: scm/custom.lisp:409 scm/custom.lisp:412 scm/custom.lisp:415
-#: scm/custom.lisp:418 scm/custom.lisp:421 scm/custom.lisp:424
-#: scm/custom.lisp:427 scm/custom.lisp:430 scm/custom.lisp:433
-#: scm/custom.lisp:437 scm/custom.lisp:441 scm/custom.lisp:449
-#: scm/custom.lisp:458 scm/custom.lisp:464 scm/custom.lisp:484
-#: scm/custom.lisp:542 scm/custom.lisp:548 scm/custom.lisp:566
-#: scm/custom.lisp:580 scm/custom.lisp:586 scm/custom.lisp:592
-#: scm/custom.lisp:598 scm/custom.lisp:604 scm/custom.lisp:618
-#: scm/custom.lisp:624 scm/custom.lisp:630 scm/custom.lisp:636
-#: scm/custom.lisp:642 scm/custom.lisp:649 scm/custom.lisp:655
-#: scm/custom.lisp:661 scm/custom.lisp:667 scm/custom.lisp:716
-#: scm/custom.lisp:723 scm/custom.lisp:730 scm/custom.lisp:736
-#: scm/custom.lisp:742 scm/custom.lisp:748 scm/custom.lisp:754
-#: scm/custom.lisp:760 scm/custom.lisp:766 scm/custom.lisp:774
-#: scm/custom.lisp:800 scm/custom.lisp:806 scm/custom.lisp:812
-#: scm/custom.lisp:818 scm/custom.lisp:832 scm/custom.lisp:838
-#: scm/custom.lisp:844 scm/custom.lisp:850 scm/custom.lisp:864
-#: scm/custom.lisp:870 scm/custom.lisp:876 scm/custom.lisp:882
+#: scm/custom-vars.lisp:44 scm/custom-vars.lisp:47 scm/custom-vars.lisp:50
+#: scm/custom-vars.lisp:53 scm/custom-vars.lisp:56 scm/custom-vars.lisp:59
+#: scm/custom-vars.lisp:62 scm/custom-vars.lisp:65 scm/custom-vars.lisp:68
+#: scm/custom-vars.lisp:71 scm/custom-vars.lisp:74 scm/custom-vars.lisp:77
+#: scm/custom-vars.lisp:80 scm/custom-vars.lisp:83 scm/custom-vars.lisp:86
+#: scm/custom-vars.lisp:90 scm/custom-vars.lisp:94 scm/custom-vars.lisp:102
+#: scm/custom-vars.lisp:111 scm/custom-vars.lisp:117 scm/custom-vars.lisp:137
+#: scm/custom-vars.lisp:196 scm/custom-vars.lisp:202 scm/custom-vars.lisp:220
+#: scm/custom-vars.lisp:234 scm/custom-vars.lisp:240 scm/custom-vars.lisp:246
+#: scm/custom-vars.lisp:252 scm/custom-vars.lisp:258 scm/custom-vars.lisp:264
+#: scm/custom-vars.lisp:278 scm/custom-vars.lisp:284 scm/custom-vars.lisp:290
+#: scm/custom-vars.lisp:296 scm/custom-vars.lisp:302 scm/custom-vars.lisp:309
+#: scm/custom-vars.lisp:315 scm/custom-vars.lisp:321 scm/custom-vars.lisp:327
+#: scm/custom-vars.lisp:377 scm/custom-vars.lisp:384 scm/custom-vars.lisp:391
+#: scm/custom-vars.lisp:397 scm/custom-vars.lisp:403 scm/custom-vars.lisp:409
+#: scm/custom-vars.lisp:415 scm/custom-vars.lisp:421 scm/custom-vars.lisp:427
+#: scm/custom-vars.lisp:435 scm/custom-vars.lisp:461 scm/custom-vars.lisp:467
+#: scm/custom-vars.lisp:473 scm/custom-vars.lisp:479 scm/custom-vars.lisp:485
+#: scm/custom-vars.lisp:492 scm/custom-vars.lisp:506 scm/custom-vars.lisp:512
+#: scm/custom-vars.lisp:518 scm/custom-vars.lisp:524 scm/custom-vars.lisp:538
+#: scm/custom-vars.lisp:544 scm/custom-vars.lisp:550 scm/custom-vars.lisp:556
 msgid "long description will be here."
 msgstr ""
 
-#: scm/custom.lisp:396
+#: scm/custom-vars.lisp:49
 msgid "SKK"
 msgstr ""
 
-#: scm/custom.lisp:399
+#: scm/custom-vars.lisp:52
 msgid "PRIME"
 msgstr ""
 
-#: scm/custom.lisp:402
+#: scm/custom-vars.lisp:55
 msgid "pyunihan"
 msgstr ""
 
-#: scm/custom.lisp:405
+#: scm/custom-vars.lisp:58
 msgid "pinyin-big5"
 msgstr ""
 
-#: scm/custom.lisp:408
+#: scm/custom-vars.lisp:61
 msgid "Pinyin"
 msgstr ""
 
-#: scm/custom.lisp:411 scm/ipa.lisp:103
+#: scm/custom-vars.lisp:64 scm/ipa.lisp:103
 msgid "International Phonetic Alphabet"
 msgstr ""
 
-#: scm/custom.lisp:414
+#: scm/custom-vars.lisp:67
 msgid "Romaja"
 msgstr ""
 
-#: scm/custom.lisp:417
+#: scm/custom-vars.lisp:70
 msgid "Hangul3"
 msgstr ""
 
-#: scm/custom.lisp:420
+#: scm/custom-vars.lisp:73
 msgid "Hangul2"
 msgstr ""
 
-#: scm/custom.lisp:423
+#: scm/custom-vars.lisp:76
 msgid "Viqr"
 msgstr ""
 
-#: scm/custom.lisp:426 scm/tutcode.lisp:274
+#: scm/custom-vars.lisp:79 scm/tutcode.lisp:274
 msgid "TUT-Code"
 msgstr ""
 
-#: scm/custom.lisp:429 scm/tcode.lisp:1725
+#: scm/custom-vars.lisp:82 scm/tcode.lisp:1725
 msgid "T-Code"
 msgstr ""
 
-#: scm/custom.lisp:432 scm/spellcheck.lisp:558
+#: scm/custom-vars.lisp:85 scm/spellcheck.lisp:558
 msgid "Spellcheck"
 msgstr ""
 
-#: scm/custom.lisp:436
+#: scm/custom-vars.lisp:89
 msgid "Global settings"
 msgstr ""
 
-#: scm/custom.lisp:440
+#: scm/custom-vars.lisp:93
 msgid "Advanced settings"
 msgstr ""
 
-#: scm/custom.lisp:448
+#: scm/custom-vars.lisp:101
 msgid "Preedit color"
 msgstr ""
 
-#: scm/custom.lisp:457 scm/custom.lisp:483
+#: scm/custom-vars.lisp:110 scm/custom-vars.lisp:136
 msgid "Default input method"
 msgstr ""
 
-#: scm/custom.lisp:463
+#: scm/custom-vars.lisp:116
 msgid "Specify default IM"
 msgstr ""
 
-#: scm/custom.lisp:541
+#: scm/custom-vars.lisp:195
 msgid "Input method switching"
 msgstr ""
 
-#: scm/custom.lisp:547
+#: scm/custom-vars.lisp:201
 msgid "Enable IM switching by hotkey"
 msgstr ""
 
-#: scm/custom.lisp:565
+#: scm/custom-vars.lisp:219
 msgid "Candidate window position"
 msgstr ""
 
-#: scm/custom.lisp:579 scm/custom.lisp:617 scm/custom.lisp:735
-#: scm/custom.lisp:837 scm/custom.lisp:863
+#: scm/custom-vars.lisp:233 scm/custom-vars.lisp:277 scm/custom-vars.lisp:396
+#: scm/custom-vars.lisp:511 scm/custom-vars.lisp:537
 msgid "Use candidate window"
 msgstr ""
 
-#: scm/custom.lisp:585 scm/custom.lisp:623 scm/custom.lisp:741
-#: scm/custom.lisp:843 scm/custom.lisp:869
+#: scm/custom-vars.lisp:239 scm/custom-vars.lisp:283 scm/custom-vars.lisp:402
+#: scm/custom-vars.lisp:517 scm/custom-vars.lisp:543
 msgid "Conversion key press count to show candidate window"
 msgstr ""
 
-#: scm/custom.lisp:591 scm/custom.lisp:629 scm/custom.lisp:747
-#: scm/custom.lisp:799 scm/custom.lisp:849
+#: scm/custom-vars.lisp:245 scm/custom-vars.lisp:289 scm/custom-vars.lisp:408
+#: scm/custom-vars.lisp:460 scm/custom-vars.lisp:523
 msgid "Number of candidates in candidate window at a time"
 msgstr ""
 
-#: scm/custom.lisp:597 scm/custom.lisp:635
+#: scm/custom-vars.lisp:251
+msgid "Select candidate by numeral keys"
+msgstr ""
+
+#: scm/custom-vars.lisp:257 scm/custom-vars.lisp:295
 msgid "Show segment separator"
 msgstr ""
 
-#: scm/custom.lisp:603 scm/custom.lisp:641
+#: scm/custom-vars.lisp:263 scm/custom-vars.lisp:301
 msgid "Segment separator"
 msgstr ""
 
-#: scm/custom.lisp:648
+#: scm/custom-vars.lisp:308
 msgid "Canna server"
 msgstr ""
 
-#: scm/custom.lisp:654
+#: scm/custom-vars.lisp:314
 msgid "Use Canna server"
 msgstr ""
 
-#: scm/custom.lisp:660 scm/custom.lisp:666
+#: scm/custom-vars.lisp:320 scm/custom-vars.lisp:326
 msgid "Canna server name"
 msgstr ""
 
-#: scm/custom.lisp:715
+#: scm/custom-vars.lisp:376
 msgid "Dictionary file"
 msgstr ""
 
-#: scm/custom.lisp:722
+#: scm/custom-vars.lisp:383
 msgid "Personal dictionary file"
 msgstr ""
 
-#: scm/custom.lisp:729
+#: scm/custom-vars.lisp:390
 msgid "Personal dictionary file (dedicated to uim)"
 msgstr ""
 
-#: scm/custom.lisp:753
+#: scm/custom-vars.lisp:414
 msgid "Use recursive learning"
 msgstr ""
 
-#: scm/custom.lisp:759
+#: scm/custom-vars.lisp:420
 msgid "Use Enter key as just committing (egg-like operation)"
 msgstr ""
 
-#: scm/custom.lisp:765
+#: scm/custom-vars.lisp:426
 msgid "Commit newline as ASCII string instead of native key-event"
 msgstr ""
 
-#: scm/custom.lisp:773
+#: scm/custom-vars.lisp:434
 msgid "Visual style"
 msgstr ""
 
-#: scm/custom.lisp:805 scm/custom.lisp:881
+#: scm/custom-vars.lisp:466 scm/custom-vars.lisp:555
 msgid "Always showing candidate window"
 msgstr ""
 
-#: scm/custom.lisp:811
-msgid "prime-preedit-immediate-commit?"
+#: scm/custom-vars.lisp:472
+msgid "Enable auto register mode"
 msgstr ""
 
-#: scm/custom.lisp:817
-msgid "prime-mask-pending-preedit?"
+#: scm/custom-vars.lisp:478
+msgid "Enable psedo mode cursor"
 msgstr ""
 
-#: scm/custom.lisp:831
+#: scm/custom-vars.lisp:484
+msgid "Show candidate annotations"
+msgstr ""
+
+#: scm/custom-vars.lisp:491
+msgid "Mask preedit strings (For tcode users)"
+msgstr ""
+
+#: scm/custom-vars.lisp:505
 msgid "Other input methods"
 msgstr ""
 
-#: scm/custom.lisp:875
+#: scm/custom-vars.lisp:549
 msgid "spellcheck-preedit-immediate-commit?"
 msgstr ""
 
@@ -619,7 +686,7 @@ msgstr ""
 msgid "An input method provided by the m17n library"
 msgstr ""
 
-#: scm/prime.lisp:1444
+#: scm/prime.lisp:1599
 msgid "Japanese predictable input method"
 msgstr ""
 
@@ -635,7 +702,7 @@ msgstr ""
 msgid "PinYin input method (Big5 version)"
 msgstr ""
 
-#: scm/skk.lisp:1537
+#: scm/skk.lisp:1571
 msgid "Uim's SKK like input method"
 msgstr ""
 
