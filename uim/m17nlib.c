@@ -493,7 +493,11 @@ find_im_by_name(char *name)
   name = &name[5];
   for (i = 0; i < nr_input_methods; i++) {
     char buf[100];
-    sprintf(buf, "%s-%s", im_array[i].lang, im_array[i].name);
+    if(im_array[i].lang == NULL) {
+      snprintf(buf, 100, "%s", im_array[i].name);
+    } else {
+      snprintf(buf, 100, "%s-%s", im_array[i].lang, im_array[i].name);
+    }
     if (!strcmp(name, buf)) {
       return im_array[i].im;
     }
