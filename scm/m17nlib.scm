@@ -286,27 +286,43 @@
   (lambda (mc idx)
     #f))
 
+(define duplicated-im-list
+  '("m17n-ja-anthy"
+    "m17n-ja-tcode"
+    "m17n-zh-pinyin"
+    "m17n-zh-py"))
+
+(define duplicated-im?
+  (lambda (name)
+    (let loop ((im-list deplicated-im-list))
+      (if (string=? name (car im-list))
+	  #t
+	  (if (null? (cdr im-list))
+	      #f
+	      (loop (cdr im-list)))))))
+
 (define m17nlib-register
   (lambda (i nr-im)
     (if (> nr-im i)
 	(begin
-	  (register-im
-	   (intern (m17nlib-lib-nth-input-method-name i))
-	   (m17nlib-lib-nth-input-method-lang i)
-	   "UTF-8"
-	   (N_ "An input method provided by the m17n library")
-	   (m17nlib-lib-nth-input-method-name i)
-	   m17nlib-init-handler
-	   m17nlib-release-handler
-	   context-mode-handler
-	   m17nlib-press-key-handler
-	   m17nlib-release-key-handler
-	   m17nlib-reset-handler
-	   m17nlib-get-candidate-handler
-	   m17nlib-set-candidate-index-handler
-	   context-prop-activate-handler
-	   )
-	  (m17nlib-register (+ i 1) nr-im))
+	  (if (not (duplicated-im? (m17nlib-lib-nth-input-method-name i)))
+	      (register-im
+	       (intern (m17nlib-lib-nth-input-method-name i))
+	       (m17nlib-lib-nth-input-method-lang i)
+	       "UTF-8"
+	       (N_ "An input method provided by the m17n library")
+	       (m17nlib-lib-nth-input-method-name i)
+	       m17nlib-init-handler
+	       m17nlib-release-handler
+	       context-mode-handler
+	       m17nlib-press-key-handler
+	       m17nlib-release-key-handler
+	       m17nlib-reset-handler
+	       m17nlib-get-candidate-handler
+	       m17nlib-set-candidate-index-handler
+	       context-prop-activate-handler
+	       ))
+	      (m17nlib-register (+ i 1) nr-im))
 	())))
 
 (m17nlib-lib-init)
