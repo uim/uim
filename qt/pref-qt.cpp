@@ -295,9 +295,13 @@ void GroupPageWidget::setupWidgets( const char *group_name )
 
     /* default QVGroupBox */
     QVGroupBox *defaultGroupVBox = new QVGroupBox( this );
+    vLayout->addWidget( defaultGroupVBox );    
 
-    /* subgroup data */
-    SubgroupData *sd = new SubgroupData( this, group_name );
+    /* 2004-02-03 Kazuki Ohta <mover@hct.zaq.ne.jp>
+     * subgrouping feature seems to unstable and cause the crash in some reason.
+     *
+     * SubgroupData *sd = new SubgroupData( this, group_name );
+     */
 
     /* add various widgets to the vbox */
     char **custom_syms = uim_custom_collect_by_group( group_name );
@@ -305,16 +309,15 @@ void GroupPageWidget::setupWidgets( const char *group_name )
     {
         for( char **custom_sym = custom_syms; *custom_sym; custom_sym++ )
         {
+            /*
             QVGroupBox *vbox = sd->searchGroupVBoxByCustomSym( *custom_sym );
             if( vbox == NULL )
             {
-                /* 2004-02-02 Kazuki Ohta <mover@hct.zaq.ne.jp>
-                 *
-                 * If no QVGroup box is found, let's use DefaultVBox!
-                 */
                 vbox = defaultGroupVBox;
             }
+            */
             
+            QVGroupBox *vbox = defaultGroupVBox;
             UimCustomItemIface *iface = addCustom( vbox, *custom_sym );
             if( iface )
                 m_customIfaceList.append( iface );
@@ -328,13 +331,13 @@ void GroupPageWidget::setupWidgets( const char *group_name )
      * This is very adhoc hack!!
      * if "main" subgroup's gvbox dosn't have child, hides it!
      */
-    if( defaultGroupVBox && !defaultGroupVBox->children()->isEmpty() )
+    if( defaultGroupVBox && defaultGroupVBox->children()->isEmpty() )
     {
         defaultGroupVBox->hide();
     }
 
     /* free */
-    delete sd;
+//    delete sd;
     uim_custom_group_free( group );
 
     /* bottom up */
@@ -471,21 +474,15 @@ UimCustomItemIface *GroupPageWidget::addCustomTypeOrderedList( QVGroupBox *vbox,
 
 UimCustomItemIface *GroupPageWidget::addCustomTypeKey( QVGroupBox *vbox, struct uim_custom *custom )
 {
-    // Crash. Why?
-    /*
     QHBox *hbox = new QHBox( vbox );
     hbox->setSpacing( 6 );
     QLabel *label = new QLabel( _FU8(custom->label), hbox );
-    CustomKeyEdit *keyEditBox = new CustomKeyEdit( custom, vbox );
-    CustomChoiceCombo *c = new CustomChoiceCombo( custom, vbox );
+    CustomKeyEdit *keyEditBox = new CustomKeyEdit( custom, hbox );
     label->setBuddy( keyEditBox );
     QObject::connect( keyEditBox, SIGNAL(customValueChanged()),
                       this, SLOT(slotCustomValueChanged()) );
-    */
-    
-    
 
-    return NULL;
+    return keyEditBox;
 }
 
 void GroupPageWidget::setDefault()
@@ -522,15 +519,15 @@ SubgroupData::SubgroupData( QWidget*parentWidget, const char *parent_group_name 
         parentWidget->layout()->add( gvbox );
         
         char **custom_syms = uim_custom_collect_by_group( *sgrp );
-        if( custom_syms )
+        if( !custom_syms )
+            continue;
+
+        for( char **custom_sym = custom_syms; *custom_sym; custom_sym++ )
         {
-            for( char **custom_sym = custom_syms; *custom_sym; custom_sym++ )
-            {
-                gvboxMap[QString(*custom_sym)] = gvbox;
-            }
-        
-            uim_custom_symbol_list_free( custom_syms );
+            gvboxMap[QString(*custom_sym)] = gvbox;
         }
+        uim_custom_symbol_list_free( custom_syms );
+
 
         uim_custom_group_free( sgroup_custom );
     }

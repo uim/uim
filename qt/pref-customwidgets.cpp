@@ -54,13 +54,10 @@ void CustomCheckBox::update()
     if( !m_custom || m_custom->type != UCustom_Bool )
         return;
     
-    setEnabled( m_custom->is_active );
+    setText( _FU8(m_custom->label) );
+    setChecked( m_custom->value->as_bool );
 
-    if( m_custom->is_active )
-    {
-        setText( _FU8(m_custom->label) );
-        setChecked( m_custom->value->as_bool );
-    }
+    setEnabled( m_custom->is_active );
 }
 
 void CustomCheckBox::setDefault()
@@ -94,14 +91,11 @@ void CustomSpinBox::update()
     if( !m_custom || m_custom->type != UCustom_Int )
         return;
 
-    setEnabled( m_custom->is_active );
+    setValue( m_custom->value->as_int );
+    setMinValue( m_custom->range->as_int.min );
+    setMaxValue( m_custom->range->as_int.max );
 
-    if( m_custom->is_active )
-    {
-        setValue( m_custom->value->as_int );
-        setMinValue( m_custom->range->as_int.min );
-        setMaxValue( m_custom->range->as_int.max );
-    }
+    setEnabled( m_custom->is_active );
 }
 
 void CustomSpinBox::setDefault()
@@ -135,13 +129,10 @@ void CustomLineEdit::update()
 {
     if( !m_custom || m_custom->type != UCustom_Str )
         return;
-    
-    setEnabled( m_custom->is_active );
+   
+    setText( _FU8(m_custom->value->as_str) );
 
-    if( m_custom->is_active )
-    {
-        setText( _FU8(m_custom->value->as_str) );
-    }
+    setEnabled( m_custom->is_active );
 }
 
 void CustomLineEdit::setDefault()
@@ -186,13 +177,10 @@ void CustomPathnameEdit::update()
     if( !m_custom || m_custom->type != UCustom_Pathname )
         return;
     
+    m_lineEdit->setText( _FU8(m_custom->value->as_pathname) );
+
     m_lineEdit->setEnabled( m_custom->is_active );
     m_fileButton->setEnabled( m_custom->is_active );
-
-    if( m_custom->is_active )
-    {
-        m_lineEdit->setText( _FU8(m_custom->value->as_pathname) );
-    }
 }
 
 void CustomPathnameEdit::setDefault()
@@ -241,28 +229,25 @@ void CustomChoiceCombo::update()
     if( !m_custom || m_custom->type != UCustom_Choice )
         return;
 
-    setEnabled( m_custom->is_active );
-
     clear();
-    if( m_custom->is_active )
+    char *default_symbol = m_custom->value->as_choice->symbol;
+    int default_index = -1;
+    int index = 0;
+    struct uim_custom_choice **item = m_custom->range->as_choice.valid_items;
+    while( *item )
     {
-        char *default_symbol = m_custom->value->as_choice->symbol;
-        int default_index = -1;
-        int index = 0;
-        struct uim_custom_choice **item = m_custom->range->as_choice.valid_items;
-        while( *item )
-        {
-            int count = this->count();
-            insertItem( _FU8((*item)->label), count ); // insert item at last
-
-            if( QString::compare( default_symbol, (*item)->symbol ) == 0 )
-                default_index = index;
-
-            index++;
-            item++;
-        }
-        setCurrentItem( default_index );
+        int count = this->count();
+        insertItem( _FU8((*item)->label), count ); // insert item at last
+        
+        if( QString::compare( default_symbol, (*item)->symbol ) == 0 )
+            default_index = index;
+        
+        index++;
+        item++;
     }
+    setCurrentItem( default_index );
+
+    setEnabled( m_custom->is_active );
 }
 
 void CustomChoiceCombo::setDefault()
@@ -328,13 +313,10 @@ void CustomOrderedListEdit::update()
     if( !m_custom || m_custom->type != UCustom_OrderedList )
         return;
     
+    updateText();
+
     m_lineEdit->setEnabled( m_custom->is_active );
     m_editButton->setEnabled( m_custom->is_active );
-
-    if( m_custom->is_active )
-    {
-        updateText();
-    }
 }
 
 void CustomOrderedListEdit::setDefault()
@@ -611,13 +593,10 @@ void CustomKeyEdit::update()
     if( !m_custom || m_custom->type != UCustom_Key )
         return;
 
+    updateText();
+
     m_lineEdit->setEnabled( m_custom->is_active );
     m_editButton->setEnabled( m_custom->is_active );
-
-    if( m_custom->is_active )
-    {
-        updateText();
-    }
 }
 
 void CustomKeyEdit::updateText()

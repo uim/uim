@@ -17,7 +17,7 @@
 #undef N_
 #endif
 #ifdef gettext_noop
-#define N_(String) gettext_noop(String)
+#define N_(String) QString::fromUtf8( gettext_noop(String) )
 #else
 #define N_(String) (String)
 #endif /* gettext_noop */
