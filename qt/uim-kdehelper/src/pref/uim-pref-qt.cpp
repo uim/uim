@@ -280,14 +280,14 @@ void UimPrefDialog::addCustomTypeChoice( QVBox *vbox, struct uim_custom *custom 
     QLabel *label = new QLabel( _FU8(custom->label), hbox );
 
     CustomChoiceCombo *choiceCombo = new CustomChoiceCombo( custom, hbox );
-    char *default_symbol = NULL;
+    char *default_symbol = custom->value->as_choice->symbol;
     int default_index = -1;
     int index = 0;
     struct uim_custom_choice **item = custom->range->as_choice.valid_items;
     while( *item )
     {
         int count = choiceCombo->count();
-        choiceCombo->insertItem( _FU8((*item)->label), count - 1 ); // insert item at last
+        choiceCombo->insertItem( _FU8((*item)->label), count ); // insert item at last
 
         if( QString::compare( default_symbol, (*item)->symbol ) == 0 )
             default_index = index;
@@ -306,13 +306,11 @@ void UimPrefDialog::addCustomTypeChoice( QVBox *vbox, struct uim_custom *custom 
 void UimPrefDialog::addCustomTypeOrderedList( QVBox *vbox, struct uim_custom *custom )
 {
     // FIXME: not implemented yet
-    ;
 }
 
 void UimPrefDialog::addCustomTypeKey( QVBox *vbox, struct uim_custom *custom )
 {
     // FIXME: not implemented yet
-    ;
 }
 
 /*
