@@ -24,6 +24,7 @@ helper/input-pad-ja.c
 scm/PY.scm
 scm/action.scm
 scm/anthy-custom.scm
+scm/anthy-key-custom.scm
 scm/anthy.scm
 scm/canna-custom.scm
 scm/canna.scm
