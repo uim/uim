@@ -857,12 +857,14 @@
 	     (require-module "tcode")))))
 
   ("test custom-im-list-as-choice-rec"
-   (assert-equal '((canna "Canna" "Japanese Kana Kanji Conversion Engine, Canna")
-		   (skk "SKK" "uim's SKK like input method")
-		   (anthy "Anthy" "Japanese Kana Kanji Conversion Engine, Anthy"))
+   (assert-equal '((canna "Canna" "A multi-segment kana-kanji conversion engine")
+		   (skk "SKK" "uim version of SKK input method")
+		   (anthy "Anthy" "A multi-segment kana-kanji conversion engine"))
 		 (uim '(custom-im-list-as-choice-rec
 			(map retrieve-im '(canna skk anthy)))))
-   (assert-equal '((tcode "T-Code" "T-Code"))
+   (assert-equal '((tcode
+		    "T-Code"
+		    "A kanji direct input method"))
 		 (uim '(custom-im-list-as-choice-rec
 			(map retrieve-im '(tcode)))))
    (assert-equal ()

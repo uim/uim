@@ -34,7 +34,9 @@
 (define stub-im-generate-init-handler
   (lambda (name module-name)
     (lambda (id fake-im fake-arg)
-      (let ((stub-im-init-handler (im-init-handler (retrieve-im name))))
+      (let* ((stub-im (retrieve-im name))
+	     (stub-im-init-handler (and stub-im
+					(im-init-handler stub-im))))
 	(and (require-module module-name)
 	     (let* ((im (retrieve-im name))
 		    (init-handler (im-init-handler im))

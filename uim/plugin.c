@@ -65,7 +65,7 @@
 static uim_lisp 
 plugin_load(uim_lisp _name)
 {
-  char *plugin_name;
+  const char *plugin_name;
   char *plugin_lib_filename, *plugin_scm_filename;
 #ifdef UIM_SCM_NESTED_EVAL
   uim_lisp lib_path = uim_scm_eval_c_string("uim-plugin-lib-load-path");
@@ -81,57 +81,55 @@ plugin_load(uim_lisp _name)
 
   size_t len;
   
-  plugin_name = uim_scm_c_str(_name);
+  plugin_name = uim_scm_refer_c_str(_name);
   
   if(plugin_name == NULL) {
     return uim_scm_f();
   }
 
-/*  fprintf(stderr, "uim-plugin-lib-load-path\n"); */
-  for(path_car = uim_scm_car(lib_path), path_cdr = uim_scm_cdr(lib_path);
-      path_car != uim_scm_f();
-      path_car = uim_scm_car(path_cdr), path_cdr = uim_scm_cdr(path_cdr))
+  for (path_cdr = lib_path;
+       !uim_scm_nullp(path_cdr);
+       path_cdr = uim_scm_cdr(path_cdr))
   {
     int fd;
-    char *path = uim_scm_c_str(path_car);
+    const char *path;
+    path_car = uim_scm_car(path_cdr);
+    path = uim_scm_refer_c_str(path_car);
     len = strlen(path) + 1 + strlen(PLUGIN_PREFIX) + strlen(plugin_name)+ strlen(PLUGIN_SUFFIX) + 1;
     plugin_lib_filename = malloc(sizeof(char) * len);
     snprintf(plugin_lib_filename, len, "%s/%s%s%s",
 	     path, PLUGIN_PREFIX, plugin_name, PLUGIN_SUFFIX);
     fd = open(plugin_lib_filename, O_RDONLY);
     if(fd >= 0) {
-      free(path);
       close(fd);
       break;
     }
-    free(path);
     free(plugin_lib_filename);
     plugin_lib_filename = NULL;
   }
 
-  for(path_car = uim_scm_car(scm_path), path_cdr = uim_scm_cdr(scm_path);
-      path_car != uim_scm_f();
-      path_car = uim_scm_car(path_cdr), path_cdr = uim_scm_cdr(path_cdr))
+  for (path_cdr = scm_path;
+       !uim_scm_nullp(path_cdr);
+       path_cdr = uim_scm_cdr(path_cdr))
   {
     int fd;
-    char *path = uim_scm_c_str(path_car);
+    const char *path;
+    path_car = uim_scm_car(path_cdr);
+    path = uim_scm_refer_c_str(path_car);
     len = strlen(path) + 1 + strlen(plugin_name)+ strlen(".scm") + 1;
     plugin_scm_filename = malloc(sizeof(char) * len);
     snprintf(plugin_scm_filename, len, "%s/%s.scm", path, plugin_name);
     fd = open(plugin_scm_filename, O_RDONLY);
     if(fd >= 0) {
-      free(path);
       close(fd);
       break;
     }
-    free(path);
     free(plugin_scm_filename);
     plugin_scm_filename = NULL;
   }
 
   if(plugin_lib_filename == NULL) {
     free(plugin_scm_filename);
-    free(plugin_name);
     return uim_scm_f();
   }
     
@@ -141,7 +139,6 @@ plugin_load(uim_lisp _name)
   if(library == NULL) {
     fprintf(stderr, "load failed %s\n", dlerror());
     free(plugin_scm_filename);
-    free(plugin_name);
     return uim_scm_f();
   }
 
@@ -152,7 +149,6 @@ plugin_load(uim_lisp _name)
   if(!plugin_instance_init) {
     fprintf(stderr, "%s plugin init failed\n", plugin_name);
     free(plugin_scm_filename);
-    free(plugin_name);
     return uim_scm_f();
   }
 
@@ -165,7 +161,6 @@ plugin_load(uim_lisp _name)
       fprintf(stderr, "%s plugin subsequent %s loading failed\n",
 	      plugin_name, plugin_scm_filename);
       free(plugin_scm_filename);
-      free(plugin_name);
       return uim_scm_f();
     }
   }
@@ -180,7 +175,6 @@ plugin_load(uim_lisp _name)
     uim_scm_eval(form);
   }
   free(plugin_scm_filename);
-  free(plugin_name);
 
   return uim_scm_t();
 }

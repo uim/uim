@@ -165,7 +165,7 @@
 		   "         \"ja\"\n"
 		   "         \"EUC-JP\"\n"
 		   "         \"T-Code\"\n"
-		   "         \"T-Code\"\n"
+		   "         \"A kanji direct input method\"\n"
 		   "         \"tcode\")\n"
 		   "        (require-module \"tcode\")))\n"))
 		 (uim '(stub-im-generate-stub-im-list '(tcode))))
@@ -190,7 +190,7 @@
 		   "         \"ja\"\n"
 		   "         \"EUC-JP\"\n"
 		   "         \"T-Code\"\n"
-		   "         \"T-Code\"\n"
+		   "         \"A kanji direct input method\"\n"
 		   "         \"tcode\")\n"
 		   "        (require-module \"tcode\")))\n")
 		  (string-append
@@ -218,7 +218,7 @@
 		   "         \"ja\"\n"
 		   "         \"EUC-JP\"\n"
 		   "         \"T-Code\"\n"
-		   "         \"T-Code\"\n"
+		   "         \"A kanji direct input method\"\n"
 		   "         \"tcode\")\n"
 		   "        (require-module \"tcode\")))\n")
 		  (string-append
