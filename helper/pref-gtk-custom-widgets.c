@@ -95,7 +95,7 @@ custom_check_button_toggled_cb(GtkToggleButton *button, gpointer user_data)
   if (rv) {
     uim_pref_gtk_value_changed = TRUE;
   } else {
-    g_printerr("Faild to set bool value for \"%s\".\n", custom->symbol);
+    g_printerr("Failed to set bool value for \"%s\".\n", custom->symbol);
     /* FIXME! reset the widget */
   }
 
@@ -177,7 +177,7 @@ custom_spin_button_value_changed(GtkSpinButton *spin, gpointer user_data)
   if (rv) {
     uim_pref_gtk_value_changed = TRUE;
   } else {
-    g_printerr("Faild to set int value for \"%s\".\n", custom->symbol);
+    g_printerr("Failed to set int value for \"%s\".\n", custom->symbol);
     /* FIXME! reset the widget */
   }
 
@@ -301,7 +301,7 @@ custom_entry_changed_cb(GtkEntry *entry, gpointer user_data)
   if (rv) {
     uim_pref_gtk_value_changed = TRUE;
   } else {
-    g_printerr("Faild to set str value for \"%s\".\n", custom->symbol);
+    g_printerr("Failed to set str value for \"%s\".\n", custom->symbol);
     /* FIXME! reset the widget */
   }
 
@@ -479,7 +479,7 @@ custom_combo_box_changed(GtkComboBox *combo_box, gpointer user_data)
   if (rv) {
     uim_pref_gtk_value_changed = TRUE;
   } else {
-    g_printerr("Faild to set str value for \"%s\".\n", custom->symbol);
+    g_printerr("Failed to set str value for \"%s\".\n", custom->symbol);
     /* FIXME! reset the widget */
   }
 
@@ -1571,7 +1571,7 @@ key_pref_add_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 		       -1);
     key_pref_entry_set_value(key_entry);
   } else {
-    g_printerr("Faild to set key value for \"%s\".\n", custom->symbol);
+    g_printerr("Failed to set key value for \"%s\".\n", custom->symbol);
   }
 
   g_string_free(str, TRUE);
@@ -1632,7 +1632,7 @@ key_pref_remove_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 
       key_pref_entry_set_value(key_entry);
     } else {
-      g_printerr("Faild to set key value for \"%s\".\n", custom->symbol);
+      g_printerr("Failed to set key value for \"%s\".\n", custom->symbol);
     }
   } else {
     /* error */
@@ -1894,7 +1894,7 @@ uim_pref_gtk_add_custom(GtkWidget *vbox, const char *custom_sym)
       break;
     }
   } else {
-    g_printerr("Faild to get uim_custom object for %s.\n", custom_sym);
+    g_printerr("Failed to get uim_custom object for %s.\n", custom_sym);
   }
 
   uim_custom_free(custom);
@@ -1987,7 +1987,7 @@ uim_pref_gtk_set_default_value(GtkWidget *widget)
   uim_custom_free(custom);
 
   if (rv == UIM_FALSE) {
-    g_printerr("Faild to set value for \"%s\".\n", custom->symbol);
+    g_printerr("Failed to set value for \"%s\".\n", custom->symbol);
     return;
   }
 
