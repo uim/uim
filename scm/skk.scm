@@ -288,32 +288,32 @@
     (list 'head               "")
     (list 'okuri-head         "")
     (list 'okuri              "")
-    ;;(list 'candidates         ())
-    (list 'nth                ())
-    (list 'nr-candidates      ())
-    (list 'rk-context         ())
-    (list 'candidate-op-count ())
-    (list 'candidate-window   ())
-    (list 'child-context      ())
-    (list 'parent-context     ())
-    (list 'editor             ())
-    (list 'latin-conv         ())
+    ;;(list 'candidates         '())
+    (list 'nth                0)
+    (list 'nr-candidates      0)
+    (list 'rk-context         '())
+    (list 'candidate-op-count 0)
+    (list 'candidate-window   #f)
+    (list 'child-context      '())
+    (list 'parent-context     '())
+    (list 'editor             '())
+    (list 'latin-conv         #f)
     (list 'commit-raw         #f)
-    (list 'completion-nth     ()))))
+    (list 'completion-nth     0))))
 (define-record 'skk-context skk-context-rec-spec)
 (define skk-context-new-internal skk-context-new)
 
 (define skk-find-root-context
   (lambda (sc)
     (let ((pc (skk-context-parent-context sc)))
-      (if pc
+      (if (not (null? pc))
 	  (skk-find-root-context pc)
 	  sc))))
 
 (define skk-find-descendant-context
   (lambda (sc)
     (let ((csc (skk-context-child-context sc)))
-      (if csc
+      (if (not (null? csc))
 	  (skk-find-descendant-context csc)
 	  sc))))
 
@@ -340,7 +340,7 @@
 
 (define skk-context-new
   (lambda (id im)
-    (if (null? skk-dic-init)
+    (if (not skk-dic-init)
 	(begin
 	  (set! skk-dic-init #t)
 	  (if skk-use-recursive-learning?
@@ -350,10 +350,10 @@
     (let ((sc (skk-context-new-internal id im))
 	  (rkc (rk-context-new ja-rk-rule #t #f)))
       (skk-context-set-widgets! sc skk-widgets)
-      (skk-context-set-head! sc ())
+      (skk-context-set-head! sc '())
       (skk-context-set-rk-context! sc rkc)
-      (skk-context-set-child-context! sc ())
-      (skk-context-set-parent-context! sc ())
+      (skk-context-set-child-context! sc '())
+      (skk-context-set-parent-context! sc '())
       (if skk-use-recursive-learning?
 	  (skk-context-set-editor! sc (skk-editor-new sc)))
       (skk-flush sc)
@@ -377,7 +377,7 @@
 	       (car (cdar l)))
 	      ((= kana skk-type-hankana)
 	       (cadr (cdar l)))))))
-    (if sl
+    (if (not (null? sl))
 	(string-append (skk-make-string (cdr sl) kana)
 		       (get-str-by-type sl))
 	""))))
@@ -387,7 +387,7 @@
     (let ((get-wide-latin-str
 	   (lambda (l)
 	     (ja-wide (caar l)))))
-    (if sl
+    (if (not (null? sl))
 	(string-append (skk-conv-wide-latin (cdr sl))
 		       (get-wide-latin-str sl))
 	""))))
@@ -445,31 +445,25 @@
 
 (define skk-get-nth-candidate
   (lambda (sc n)
-    (let ((head (skk-context-head sc))
-	  (res ()))
+    (let ((head (skk-context-head sc)))
       (if skk-use-numeric-conversion?
 	  ;; store and restore numeric strings
 	  (let ((numlst (skk-lib-store-replaced-numstr
 			 (skk-make-string head skk-type-hiragana))))
-	    (set! res (skk-lib-merge-replaced-numstr
-			(skk-lib-get-nth-candidate
-			 n
-			 (skk-lib-replace-numeric
-			  (skk-make-string head skk-type-hiragana))
-			 (skk-context-okuri-head sc)
-			 (skk-make-string (skk-context-okuri sc)
-					  skk-type-hiragana)
-			 numlst)
-		       numlst)))
-	  (begin
-	    (set! res
-		  (skk-lib-get-nth-candidate
-		   n
-		   (skk-make-string head skk-type-hiragana)
-		   (skk-context-okuri-head sc)
-		   (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
-		   ()))))
-      res)))
+	    (skk-lib-merge-replaced-numstr
+	     (skk-lib-get-nth-candidate
+	      n
+	      (skk-lib-replace-numeric (skk-make-string head skk-type-hiragana))
+	      (skk-context-okuri-head sc)
+	      (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
+	      numlst)
+	     numlst))
+	  (skk-lib-get-nth-candidate
+	   n
+	   (skk-make-string head skk-type-hiragana)
+	   (skk-context-okuri-head sc)
+	   (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
+	   '())))))
 
 (define skk-get-current-candidate
   (lambda (sc)
@@ -492,7 +486,7 @@
 (define skk-commit-raw
   (lambda (sc key key-state)
     (let ((psc (skk-context-parent-context sc)))
-      (if psc
+      (if (not (null? psc))
 	  (skk-editor-commit-raw
 	   (skk-context-editor psc)
 	   key key-state)
@@ -503,7 +497,7 @@
 (define skk-commit-raw-with-preedit-update
   (lambda (sc key key-state)
     (let ((psc (skk-context-parent-context sc)))
-      (if psc
+      (if (not (null? psc))
 	  (skk-editor-commit-raw
 	   (skk-context-editor psc)
 	   key key-state)
@@ -515,7 +509,7 @@
 (define skk-commit
   (lambda (sc str)
     (let ((psc (skk-context-parent-context sc)))
-      (if psc
+      (if (not (null? psc))
 	  (skk-editor-commit (skk-context-editor psc) str)
 	  (im-commit sc str)))))
 
@@ -542,7 +536,7 @@
 	     (skk-context-okuri-head sc)
 	     (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
 	     (skk-context-nth sc)
-	     ())))
+	     '())))
       (if (> (skk-context-nth sc) 0)
 	  (skk-save-personal-dictionary))
       (skk-reset-candidate-window sc)
@@ -587,7 +581,7 @@
 
 (define skk-begin-conversion
   (lambda (sc)
-    (let ((res ())
+    (let ((res #f)
 	  (head (skk-context-head sc)))
       (if skk-use-numeric-conversion?
 	  ;; no need to store original number for numeric conversion
@@ -613,8 +607,7 @@
 	     sc 'skk-state-converting))
 	  (if skk-use-recursive-learning?
 	      (skk-setup-child-context sc)
-	      (skk-flush sc)))
-      ())))
+	      (skk-flush sc))))))
 
 (define skk-begin-completion
   (lambda (sc)
@@ -638,18 +631,18 @@
 	  (stat (skk-context-state sc))
 	  (csc (skk-context-child-context sc)))
       (if (and
-	   (not csc)
+	   (null? csc)
 	   (or
 	    (= stat 'skk-state-kanji)
 	    (= stat 'skk-state-completion)
 	    (= stat 'skk-state-okuri)))
 	  (im-pushback-preedit sc skk-preedit-attr-mode-mark "▽"))
       (if (or
-	   csc
+	   (not (null? csc))
 	   (= stat 'skk-state-converting))
 	  (im-pushback-preedit sc skk-preedit-attr-mode-mark "▼"))
       (if (and
-           (not csc)
+           (null? csc)
 	   (or
 	    (= stat 'skk-state-kanji)
 	    (= stat 'skk-state-okuri)))
@@ -662,7 +655,7 @@
 		 h))))
       (if (and
 	   (= stat 'skk-state-converting)
-	   (not csc))
+	   (null? csc))
 	  (begin
 	    (im-pushback-preedit
 	     sc
@@ -674,12 +667,12 @@
 	     (skk-make-string (skk-context-okuri sc)
 			      (skk-context-kana-mode sc)))))
       (if (and
-	   csc
+	   (not (null? csc))
 	    (or
 	     (= stat 'skk-state-kanji)
 	     (= stat 'skk-state-okuri)
 	     (= stat 'skk-state-converting)))
-	  (let ((h ()))
+	  (let ((h '()))
 	    (if skk-use-numeric-conversion?
 	      ;; replace numeric string with #
 	      (set! h (skk-lib-replace-numeric
@@ -695,7 +688,7 @@
 		 h))))
       (if (and
 	   (= stat 'skk-state-completion)
-	   (not csc))
+	   (null? csc))
 	  (begin
 	    (im-pushback-preedit
 	     sc skk-preedit-attr-head
@@ -704,7 +697,7 @@
       (if (or
 	   (= stat 'skk-state-okuri)
 	   (and
-	    csc
+	    (not (null? csc))
 	    (= stat 'skk-state-converting)
 	    (skk-context-okuri sc)))
 	  (begin
@@ -734,7 +727,7 @@
 		(im-pushback-preedit sc preedit-cursor ""))))
 
       ;; child context's preedit
-      (if csc
+      (if (not (null? csc))
 	  (let ((editor (skk-context-editor sc)))
 	    (im-pushback-preedit sc skk-preedit-attr-child-beginning-mark
 				 skk-child-context-beginning-mark)
@@ -763,7 +756,7 @@
     (let* ((psc (skk-context-parent-context sc))
 	   (okuri (skk-make-string (skk-context-okuri sc)
 				   (skk-context-kana-mode sc)))
-	   (str (if psc
+	   (str (if (not (null? psc))
 		    str
 		    (string-append str okuri))))
       (skk-flush sc)
@@ -1002,7 +995,7 @@
        (if (skk-begin-conv-key? key key-state)
 	   (begin
 	     (skk-append-residual-kana sc)
-	     (if (skk-context-head sc)
+	     (if (not (null? (skk-context-head sc)))
 		 (skk-begin-conversion sc)
 		 (skk-flush sc))
 	     #f)
@@ -1050,7 +1043,7 @@
 	     (if (skk-conv-wide-latin-key? key key-state) 
 		 ;; wide latin conversion
 		 (begin
-		   (if (skk-context-head sc)
+		   (if (not (null? (skk-context-head sc)))
 		       (begin
 			 (skk-commit sc (skk-conv-wide-latin
 					 (skk-context-head sc)))
@@ -1066,7 +1059,7 @@
        (if (skk-kanji-mode-key? key key-state)
 	   (begin
 	     (skk-append-residual-kana sc)
-	     (if (skk-context-head sc)
+	     (if (not (null? (skk-context-head sc)))
 		 (begin
 		   (skk-commit sc (skk-make-string
 				   (skk-context-head sc)
@@ -1086,7 +1079,7 @@
 	   #t)
        (if (and (shift-key-mask key-state)
        		(alphabet-char? key)
-		(skk-context-head sc))
+		(not (null? (skk-context-head sc))))
 	   (begin
 	     (skk-context-set-state! sc 'skk-state-okuri)
 	     (set! key (to-lower-char key))
@@ -1100,15 +1093,14 @@
 		       (skk-context-set-head! sc
 					      (cons
 					       res
-					       (skk-context-head sc))))
-		 ))
+					       (skk-context-head sc))))))
 	     (skk-append-residual-kana sc)
 	     #t)
 	   #t)
        (if (skk-kana-toggle-key? key key-state)
 	   (begin
 	     (skk-append-residual-kana sc)
-	     (if (skk-context-head sc)
+	     (if (not (null? (skk-context-head sc)))
 		 (begin
 		   (skk-commit sc (skk-make-string
 				   (skk-context-head sc)
@@ -1120,7 +1112,7 @@
        (if (skk-hankaku-kana-key? key key-state)
 	   (begin
 	     (skk-append-residual-kana sc)
-	     (if (skk-context-head sc)
+	     (if (not (null? (skk-context-head sc)))
 		 (begin
 		   (skk-commit sc (skk-make-string (skk-context-head sc)
 						   skk-type-hankana))
@@ -1209,7 +1201,7 @@
 	       (skk-make-string head skk-type-hiragana)
 	       (skk-context-okuri-head sc)
 	       (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
-	       ()))
+	       '()))
 	     (im-activate-candidate-selector
 	      sc
 	      (skk-context-nr-candidates sc)
@@ -1253,14 +1245,14 @@
 		(skk-context-set-nth!
 		 sc
 		 (- (skk-context-nr-candidates sc) 1)))))
-      (if (not (skk-get-current-candidate sc))
+      (if (null? (skk-get-current-candidate sc))
 	  (begin
 	    (skk-context-set-nth! sc 0)
 	    (if skk-use-recursive-learning?
 		(begin
 		  (skk-reset-candidate-window sc)
 		  (skk-setup-child-context sc)))))
-      (if (not (skk-context-child-context sc))
+      (if (null? (skk-context-child-context sc))
 	  (begin
 	    ;; 候補Windowの表示を開始するか
 	    (skk-check-candidate-window-begin sc)
@@ -1286,7 +1278,7 @@
 	(skk-context-set-head! sc
 			       (append (skk-context-okuri sc)
 				       (skk-context-head sc))))
-    (skk-context-set-okuri! sc ())))
+    (skk-context-set-okuri! sc '())))
 
 (define skk-change-completion-index
   (lambda (sc incr)
@@ -1307,7 +1299,7 @@
 
 (define find-kana-list-from-rule
   (lambda (rule str)
-    (if rule
+    (if (not (null? rule))
 	(if (pair? (member str (car (cdr (car rule)))))
 	    (car (cdr (car rule)))
 	    (find-kana-list-from-rule (cdr rule) str))
@@ -1319,7 +1311,7 @@
 
 (define skk-string-list-to-context-head
   (lambda (sc sl)
-    (if sl
+    (if (not (null? sl))
 	(begin
 	  (skk-append-list-to-context-head
 	   sc
@@ -1347,7 +1339,7 @@
        (let ((sl (string-to-list (skk-get-current-completion sc))))
 	 (skk-lib-clear-completions
 	   (skk-make-string (skk-context-head sc) (skk-context-kana-mode sc)))
-	 (skk-context-set-head! sc ())
+	 (skk-context-set-head! sc '())
 	 (skk-string-list-to-context-head sc sl)
 	 (skk-context-set-state! sc 'skk-state-kanji)
 	 (skk-proc-state-kanji c key key-state)))
@@ -1362,7 +1354,7 @@
 (define skk-proc-state-converting
   (lambda (c key key-state)
     (let ((sc (skk-find-descendant-context c))
-	  (res ()))
+	  (res #f))
       (and
        (if (skk-next-candidate-key? key key-state)
 	   (skk-change-candidate-index sc #t)
@@ -1396,7 +1388,7 @@
 	     (if (skk-return-key? key key-state)
 		 (begin
 		   (skk-commit sc res)
-		   (set! res ())
+		   (set! res #f)
 		   (if (not skk-egg-like-newline?)
 		       (if skk-commit-newline-explicitly?
 			   (skk-commit sc "\n")
@@ -1424,8 +1416,7 @@
 	     (begin
 	       (skk-context-set-state! sc 'skk-state-kanji)
 	       (skk-append-string sc '(">"))
-	       (set! res #f)
-	       )
+	       (set! res #f))
 	     (set! res (skk-proc-state-direct c key key-state)))))
       res)))
 
@@ -1442,13 +1433,9 @@
 	     #f)
 	   #t)
        (if (skk-backspace-key? key key-state)
-	   (begin
-	     (if (not (rk-backspace rkc))
-		 (begin
-		   (if (cdr (skk-context-okuri sc))
-		       (skk-context-set-okuri! sc
-			(cdr (skk-context-okuri sc)))
-		       (skk-back-to-kanji-state sc))))
+           (begin
+	     (rk-backspace rkc)
+	     (skk-back-to-kanji-state sc)
 	     #f)
 	   #t)
        ;; committing incomplete head: conformed the behavior to ddskk
@@ -1479,7 +1466,7 @@
 	       (skk-append-okuri-string sc res)
 	       (if (string=? (rk-pending rkc) "")
 		   (skk-begin-conversion sc))))))
-      ())))
+      #f)))
 
 (define skk-proc-state-latin
   (lambda (c key key-state)
@@ -1490,7 +1477,7 @@
 	 (skk-context-set-state! sc 'skk-state-direct)
 	 (skk-context-set-kana-mode! sc skk-type-hiragana))
        (skk-commit-raw sc key key-state))
-      ())))
+      #f)))
 
 (define skk-proc-state-wide-latin
   (lambda (c key key-state)
@@ -1512,7 +1499,7 @@
 	(skk-commit sc w))
        (else
 	(skk-commit-raw sc key key-state)))
-      ())))
+      #f)))
 
 (define skk-push-key
   (lambda (c key key-state)
@@ -1580,7 +1567,7 @@
 	   (okuri (skk-context-okuri dcsc)))
       (list
        (if (and
-	    okuri
+	    (not (null? okuri))
 	    skk-show-candidates-with-okuri?)
 	   (string-append cand
 			  (skk-make-string okuri skk-type-hiragana))

@@ -32,9 +32,9 @@
 ;;
 
 (define-record 'skk-editor
-  '((context      ())
-    (left-string  ())
-    (right-string ())))
+  '((context      '())
+    (left-string  '())
+    (right-string '())))
 (define skk-editor-new-internal skk-editor-new)
 
 (define skk-editor-new
