@@ -377,9 +377,9 @@ AC_ARG_ENABLE(fep,
       ;;
       yes|*)
         use_uim_fep="yes"
+	AC_CHECK_LIB(curses, setupterm, FEP_LIBADD="-lcurses $FEP_LIBADD")
 	AC_CHECK_LIB(ncurses, setupterm, FEP_LIBADD="-lncurses $FEP_LIBADD",
-	  [AC_CHECK_LIB(curses, setupterm, FEP_LIBADD="-lcurses $FEP_LIBADD",
-	    AC_MSG_WARN([fep needs libncurses. disabled...]);use_uim_fep="no")])
+	  AC_MSG_WARN([fep needs libncurses. disabled...]);use_uim_fep="no")
 	AC_CHECK_FUNCS(forkpty)
 	if test $ac_cv_func_forkpty = no; then
 	  AC_CHECK_LIB(util, forkpty, [AC_DEFINE(HAVE_FORKPTY) FEP_LIBADD="-lutil $FEP_LIBADD"])
@@ -389,9 +389,9 @@ AC_ARG_ENABLE(fep,
     esac
   ],
   [ use_uim_fep="yes"
+    AC_CHECK_LIB(curses, setupterm, FEP_LIBADD="-lcurses $FEP_LIBADD")
     AC_CHECK_LIB(ncurses, setupterm, FEP_LIBADD="-lncurses $FEP_LIBADD",
-      [AC_CHECK_LIB(curses, setupterm, FEP_LIBADD="-lcurses $FEP_LIBADD",
-        AC_MSG_WARN([fep needs libncurses. disabled...]);use_uim_fep="no")])
+      AC_MSG_WARN([fep needs libncurses. disabled...]);use_uim_fep="no")
     AC_CHECK_FUNCS(forkpty)
     if test $ac_cv_func_forkpty = no; then
       AC_CHECK_LIB(util, forkpty, [AC_DEFINE(HAVE_FORKPTY) FEP_LIBADD="-lutil $FEP_LIBADD"])
