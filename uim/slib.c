@@ -80,6 +80,7 @@
   fix broken feature? and provide (Sep-28-2004) YamaKen
   removed non-standard _"str" syntax for i18n (Sep-30-2004) YamaKen
   added NESTED_REPL_C_STRING feature (Dec-31-2004) YamaKen
+  added heap_alloc_threshold and make configurable (Jan-07-2005) YamaKen
  */
 
 #include "config.h"
@@ -201,6 +202,7 @@ static long nheaps;
 static LISP *heaps;
 static LISP heap, heap_end;
 static long heap_size;
+static long heap_alloc_threshold;
 static long gc_status_flag;
 static char *init_file;
 static char *tkbuffer;
@@ -236,6 +238,7 @@ static struct user_type_hooks *user_types;
 static struct gc_protected *protected_registers;
 static jmp_buf save_regs_gc_mark;
 static double gc_rt;
+static long gc_cells_sweeped;
 static long gc_cells_collected;
 static char *user_ch_readm;
 static char *user_te_readm;
@@ -2493,9 +2496,9 @@ static void
 gc_sweep (void)
 {
   LISP ptr, end, nfreelist, org;
-  long n, k;
+  long s, n, k;
   end = heap_end;
-  n = 0;
+  s = n = 0;
   nfreelist = NIL;
   for (k = 0; k < nheaps; ++k)
     if (heaps[k])
@@ -2511,9 +2514,12 @@ gc_sweep (void)
 	      CDR (ptr) = nfreelist;
 	      nfreelist = ptr;
 	    }
-	  else
+	  else {
 	    (*ptr).gc_mark = 0;
+	    ++s;
+	  }
       }
+  gc_cells_sweeped = s;
   gc_cells_collected = n;
   freelist = nfreelist;
 }
@@ -2545,12 +2551,20 @@ gc_ms_stats_start (void)
 static void
 gc_ms_stats_end (void)
 {
+  long n, i;
+  for (n = i = 0; i < nheaps; ++i)
+    if (heaps[i])
+      ++n;
+
   gc_rt = myruntime () - gc_rt;
   gc_time_taken = gc_time_taken + gc_rt;
   if (gc_status_flag && (siod_verbose_level >= 4))
-    fprintf (siod_output, "[GC took %g cpu seconds, %ld cells collected]\n",
+    fprintf (siod_output, "[GC took %g cpu seconds, %ld / %ld cells collected in %ld / %ld heaps]\n",
 	     gc_rt,
-	     gc_cells_collected);
+	     gc_cells_collected,
+	     gc_cells_sweeped,
+	     n,
+	     nheaps);
 }
 
 static void
@@ -2577,8 +2591,6 @@ gc_mark_and_sweep (void)
 static void
 gc_for_newcell (void)
 {
-  long n;
-  LISP l;
   if (heap < heap_end)
     {
       freelist = heap;
@@ -2591,15 +2603,13 @@ gc_for_newcell (void)
   errjmp_ok = 0;
   gc_mark_and_sweep ();
   errjmp_ok = 1;
-  for (n = 0, l = freelist; (n < 100) && NNULLP (l); ++n)
-    l = CDR (l);
-  if (n == 0)
+  if (gc_cells_collected == 0)
     {
       if NULLP
 	(allocate_aheap ())
 	  gc_fatal_error ();
     }
-  else if ((n == 100) && NNULLP (sym_after_gc))
+  else if ((gc_cells_collected >= heap_alloc_threshold) && NNULLP (sym_after_gc))
     leval (leval (sym_after_gc, NIL), NIL);
   else
     allocate_aheap ();
@@ -4659,6 +4669,7 @@ siod_init (int argc, char **argv, int warnflag, FILE *fp)
   heaps = NULL;
   heap = 0; heap_end = 0;
   heap_size = 5000;
+  heap_alloc_threshold = 100;
   gc_status_flag = 1;
   init_file = (char *)NULL;
   tkbuffer = NULL;
@@ -4692,6 +4703,7 @@ siod_init (int argc, char **argv, int warnflag, FILE *fp)
   user_types = NULL;
   protected_registers = NULL;
   gc_rt = 0;
+  gc_cells_sweeped = 0;
   gc_cells_collected = 0;
   user_ch_readm = "";
   user_te_readm = "";
@@ -4721,6 +4733,9 @@ siod_init (int argc, char **argv, int warnflag, FILE *fp)
 	  heap_size = atol (&(argv[k][2]));
 	  if ((ptr = strchr (&(argv[k][2]), ':')))
 	    nheaps = atol (&ptr[1]);
+	  break;
+	case 't':
+	  heap_alloc_threshold = atol (&(argv[k][2]));
 	  break;
 	case 'o':
 	  obarray_dim = atol (&(argv[k][2]));

@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -419,11 +419,12 @@ uim_scm_init(const char *verbose_level)
   char *siod_argv[] =
     {
       "siod",
+      "-v0",          /* siod_verbose_level */
       "-h16384:64",   /* heap_size(unit: lisp objects):nheaps */
+      "-t16384",      /* heap_alloc_threshold (unit: lisp objects) */
       "-o1024",       /* obarray_dim (hash size of symbol table) */
       "-s262144",     /* stack_size (unit: bytes) */
-      "-n128",        /* inums_dim (preallocated fixnum objects) */
-      "-v0"           /* siod_verbose_level */
+      "-n128"         /* inums_dim (preallocated fixnum objects) */
     };
   char verbose_argv[] = "-v4";
   int siod_argc, warnflag = 1;
@@ -439,7 +440,7 @@ uim_scm_init(const char *verbose_level)
       else
 	verbose_argv[2] = verbose_level[0];
     }
-    siod_argv[5] = verbose_argv;
+    siod_argv[1] = verbose_argv;
   }
   /* init siod */
   siod_argc = sizeof(siod_argv) / sizeof(char *);
