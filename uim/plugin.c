@@ -100,12 +100,18 @@ plugin_load(uim_lisp _name)
 	     path, PLUGIN_PREFIX, plugin_name, PLUGIN_SUFFIX);
     fd = open(plugin_lib_filename, O_RDONLY);
     if(fd >= 0) {
+      free(path);
       close(fd);
       break;
     }
     free(path);
     free(plugin_lib_filename);
     plugin_lib_filename = NULL;
+  }
+
+  if(plugin_lib_filename == NULL) {
+    free(plugin_name);
+    return uim_scm_f();
   }
   
   for(path_car = uim_scm_car(scm_path), path_cdr = uim_scm_cdr(scm_path);
@@ -119,6 +125,7 @@ plugin_load(uim_lisp _name)
     snprintf(plugin_scm_filename, len, "%s/%s.scm", path, plugin_name);
     fd = open(plugin_scm_filename, O_RDONLY);
     if(fd >= 0) {
+      free(path);
       close(fd);
       break;
     }
@@ -126,11 +133,13 @@ plugin_load(uim_lisp _name)
     free(plugin_scm_filename);
     plugin_scm_filename = NULL;
   }
-  
-  if(plugin_lib_filename == NULL) {
+
+  if(plugin_scm_filename == NULL) {
+    free(plugin_lib_filename);
+    free(plugin_name);
     return uim_scm_f();
   }
-  
+    
   library = dlopen(plugin_lib_filename, RTLD_NOW);
   free(plugin_lib_filename);
 
