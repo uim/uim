@@ -220,6 +220,10 @@ void QUimHelperManager::helper_disconnect_cb()
 
 void QUimHelperManager::update_prop_list_cb( void *ptr, const char *str )
 {
+    QUimInputContext *ic = ( QUimInputContext* ) ptr;
+    if ( ic != focusedInputContext )
+        return;
+
     QString msg = "prop_list_update\ncharset=UTF-8\n";
     msg += QString::fromUtf8( str );
 
@@ -228,6 +232,10 @@ void QUimHelperManager::update_prop_list_cb( void *ptr, const char *str )
 
 void QUimHelperManager::update_prop_label_cb( void *ptr, const char *str )
 {
+    QUimInputContext *ic = ( QUimInputContext* ) ptr;
+    if ( ic != focusedInputContext )
+        return;
+
     QString msg = "prop_label_update\ncharset=UTF-8\n";
     msg += QString::fromUtf8( str );
 

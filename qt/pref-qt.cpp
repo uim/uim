@@ -112,7 +112,7 @@ void UimPrefDialog::checkDotUimFile()
                                                 this );
         d->setCaption( _("~/.uim exists!") );
         d->exec();
-        delete d;
+        //delete d;
     }
 }
 
