@@ -763,11 +763,16 @@
 
 (define evmap-ustr-transpose
   (lambda (ustr new-ruletree)
-    (fold (lambda (ev new-ustr)
-	    (evmap-ustr-input! new-ustr new-ruletree ev)
-	    new-ustr)
-	  (ustr-new)
-	  (append-map-ustr-whole evmap-context-event-seq ustr))))
+    (let* ((former-seq (append-map-ustr-former evmap-context-event-seq ustr))
+	   (latter-seq (append-map-ustr-latter evmap-context-event-seq ustr))
+	   (inject (lambda (ev new-ustr)
+		     (evmap-ustr-input! new-ustr new-ruletree ev)
+		     new-ustr))
+	   (transposed (fold inject (ustr-new) former-seq))
+	   (pos (ustr-cursor-pos transposed)))
+      (fold inject transposed latter-seq)
+      (ustr-set-cursor-pos! transposed pos)
+      transposed)))
 
 (define anthy-ruletree
   (lambda (input-rule kana-mode on? wide? has-preedit?)
