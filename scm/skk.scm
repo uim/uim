@@ -268,12 +268,14 @@
 
 (define skk-read-personal-dictionary
   (lambda ()
-    (or (skk-lib-read-personal-dictionary skk-uim-personal-dic-filename)
-	(skk-lib-read-personal-dictionary skk-personal-dic-filename))))
+    (if (not (is-set-ugid?))
+	(or (skk-lib-read-personal-dictionary skk-uim-personal-dic-filename)
+	    (skk-lib-read-personal-dictionary skk-personal-dic-filename)))))
 
 (define skk-save-personal-dictionary
   (lambda ()
-    (skk-lib-save-personal-dictionary skk-uim-personal-dic-filename)))
+    (if (not (is-set-ugid?))
+	(skk-lib-save-personal-dictionary skk-uim-personal-dic-filename))))
 
 (define skk-flush
   (lambda (sc)

@@ -164,11 +164,13 @@ char *
 uim_helper_get_pathname(void)
 {
   char *path;
-  char *login;
+  char *login = NULL;
   struct passwd *pw = NULL;
  
-  login = getenv("LOGNAME");
-  
+  if(is_setugid() == 0) {
+    login = getenv("LOGNAME");
+  }
+
   if (!login) {
     pw = getpwuid(getuid());
     login = strdup(pw->pw_name);
@@ -203,5 +205,19 @@ int uim_helper_str_terminated(const char *str)
      str[strlen(str)-2] == '\n' )
     return 1;
 
+  return 0;
+}
+
+int
+is_setugid(void)
+{
+  uid_t ruid = getuid();  /* real uid */
+  gid_t rgid = getgid();  /* real gid */
+  uid_t euid = geteuid(); /* effective uid */
+  gid_t egid = getegid(); /* effective gid */
+
+  if (ruid != euid || rgid != egid) {
+    return 1;
+  }
   return 0;
 }

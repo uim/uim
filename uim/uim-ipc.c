@@ -197,8 +197,24 @@ uim_ipc_open_command_with_option(int old_pid, FILE **read_fp,
       }
       *ap = NULL;
     }
+    if(is_setugid() != 0) {
+      int cmd_len = strlen(command) + 30;
+      char *fullpath_command = malloc(cmd_len);
+      
+      /*if(setuid(getuid())!=0) abort();*/ /* discarding privilege */
+      
+      snprintf(fullpath_command, cmd_len, "/usr/local/bin/%s", command);
 
-    result = execvp(command, argv);
+      result = execvp(fullpath_command, argv);
+
+      if(result == -1) {
+ 	snprintf(fullpath_command, cmd_len, "/usr/bin/%s", command);
+	result = execvp(fullpath_command, argv);
+      }
+      free(fullpath_command);
+    } else {
+      result = execvp(command, argv);
+    }
     free(str);
 
     if(result == -1) {

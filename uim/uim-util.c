@@ -284,6 +284,7 @@ c_getenv(uim_lisp str_)
   if (!str) {
     return uim_scm_f();
   }
+
   val = getenv(str);
   if (val) {
     return uim_scm_make_str(val);
@@ -484,6 +485,15 @@ lang_code_to_lang_name_raw(uim_lisp code_)
   return (name) ? uim_scm_make_str(name) : uim_scm_f();
 }
 
+static uim_lisp
+is_setugidp(void)
+{
+  if(is_setugid()) {
+    return uim_scm_t();
+  }
+  return uim_scm_f();
+}
+
 void
 uim_init_util_subrs()
 {
@@ -511,4 +521,5 @@ uim_init_util_subrs()
   uim_scm_init_subr_2("string-split", uim_split_string);
   uim_scm_init_subr_1("string-to-list", eucjp_string_to_list);
   uim_scm_init_subr_1("lang-code->lang-name-raw", lang_code_to_lang_name_raw);
+  uim_scm_init_subr_0("is-set-ugid?", is_setugidp);
 }

@@ -35,21 +35,24 @@
 (require "util.scm")
 
 (define uim-plugin-lib-load-path
-  (filter string?
-	  (append (list (getenv "LIBUIM_PLUGIN_LIB_DIR")
-			(string-append (getenv "HOME") "/.uim.d/plugin")
-			(string-append (sys-pkglibdir) "/plugin"))
-		  ;; XXX
-		  (if (getenv "LD_LIBRARY_PATH")
-		      (string-split (getenv "LD_LIBRARY_PATH") ":")
-		      ()))))
+   (if (is-set-ugid?)
+       (list (string-append (sys-pkglibdir) "/plugin"))
+       (filter string?
+ 	      (append (list (getenv "LIBUIM_PLUGIN_LIB_DIR")
+ 			    (string-append (getenv "HOME") "/.uim.d/plugin")
+ 			    (string-append (sys-pkglibdir) "/plugin"))
+ 		      ;; XXX
+ 		      (if (getenv "LD_LIBRARY_PATH")
+ 			  (string-split (getenv "LD_LIBRARY_PATH") ":")
+ 			  ())))))
 
 (define uim-plugin-scm-load-path
-  (filter string?
-	  (list (getenv "LIBUIM_SCM_FILES")
-		(string-append (getenv "HOME") "/.uim.d/plugin")
-		(sys-pkgdatadir))))
-		
+  (if (is-set-ugid?)
+      (list (sys-pkgdatadir))
+      (filter string?
+ 	      (list (getenv "LIBUIM_SCM_FILES")
+ 		    (string-append (getenv "HOME") "/.uim.d/plugin")
+ 		    (sys-pkgdatadir)))))
 
 (define plugin-alist ())
 (define plugin-func-alist ())
@@ -122,14 +125,16 @@
 	   (conf-file "installed-modules.scm")
 	   (user-conf-file (string-append user-module-dir conf-file)))
       (try-load conf-file)
-      (if (not (getenv "LIBUIM_VANILLA"))
-	  (let ((orig-module-list installed-im-module-list)
-		(orig-enabled-list enabled-im-list))
-	    (and (try-load user-conf-file)
-		 (set! installed-im-module-list
-		       (append orig-module-list installed-im-module-list))
-		 (set! enabled-im-list
-		       (append orig-enabled-list enabled-im-list))))))))
+      (if (is-set-ugid?)
+	  #f
+	  (if (not (getenv "LIBUIM_VANILLA"))
+	      (let ((orig-module-list installed-im-module-list)
+		    (orig-enabled-list enabled-im-list))
+		(and (try-load user-conf-file)
+		     (set! installed-im-module-list
+			   (append orig-module-list installed-im-module-list))
+		     (set! enabled-im-list
+			   (append orig-enabled-list enabled-im-list)))))))))
 
 
 ;; TODO: write test
@@ -139,5 +144,7 @@
 	   (file "loader.scm")
 	   (user-file (string-append user-module-dir file)))
       (and (try-load file)
-	   (or (try-load user-file)
-	       #t)))))
+	   (or 
+	    (if (is-set-ugid?) 
+		(try-load user-file)
+		#t))))))

@@ -48,15 +48,17 @@
 
 (define load-user-conf
   (lambda ()
-    (let ((orig-verbose (verbose))
-	  (file (or (getenv "LIBUIM_USER_SCM_FILE")
-		    (string-append (getenv "HOME") "/.uim"))))
-      (if (>= (verbose)
-	      1)
-	  (verbose 1))
-      (let ((succeeded (try-load file)))
-	(verbose orig-verbose)
-	succeeded))))
+    (if (is-set-ugid?)
+	#f
+	(let ((orig-verbose (verbose))
+	      (file (or (getenv "LIBUIM_USER_SCM_FILE")
+			(string-append (getenv "HOME") "/.uim"))))
+	  (if (>= (verbose)
+		  1)
+	      (verbose 1))
+	  (let ((succeeded (try-load file)))
+	    (verbose orig-verbose)
+	    succeeded)))))
 
 (define load-modules
   (lambda ()

@@ -610,10 +610,12 @@ static void
 uim_init_scm()
 {
   int i;
-  char *scm_files;
-  char *env;
+  char *scm_files = NULL;
+  char *env = NULL;
 
-  env = getenv("LIBUIM_VERBOSE");
+  /*  if(is_setugid() == 0) {*/
+    env = getenv("LIBUIM_VERBOSE");
+    /*  }*/
   uim_scm_init(env);  /* init Scheme interpreter */
 
 #ifdef UIM_COMPAT_SCM
@@ -628,7 +630,10 @@ uim_init_scm()
   uim_init_table_subrs();
 #endif
 
-  scm_files = getenv("LIBUIM_SCM_FILES");
+  
+  if(is_setugid() == 0) {
+    scm_files = getenv("LIBUIM_SCM_FILES");
+  }
   uim_scm_set_lib_path((scm_files) ? scm_files : SCM_FILES);
 
   uim_scm_require_file("init.scm");
