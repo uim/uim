@@ -45,6 +45,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <signal.h>
+#include <fcntl.h>
 #include "uim.h"
 #include "uim-helper.h"
 
@@ -70,6 +71,7 @@ init_serv_fd(char *path)
 {
   int foo;
   int fd;
+  int flag;
   struct sockaddr_un myhost;
   struct passwd *pw;
   char *logname;
@@ -97,6 +99,17 @@ init_serv_fd(char *path)
     pw = getpwnam(logname);
     if(pw)
       chown(path, pw->pw_uid, -1);
+  }
+
+  if ((flag = fcntl(fd, F_GETFL)) == -1) {
+    close(fd);
+    return -1;
+  }
+
+  flag |= O_NONBLOCK;
+  if (fcntl(fd, F_SETFL, flag) == -1) {
+    close(fd);
+    return -1;
   }
 
   foo = listen(fd, 5);
@@ -152,7 +165,19 @@ parse_content(char *content, struct client *cl)
       while (out_len > 0) {
 	if ((ret = write(clients[i].fd, out, out_len)) < 0) {
 	  if (errno == EAGAIN || errno == EINTR) {
-	    continue;
+	    fd_set fds;
+	    struct timeval tv;
+	    int rc;
+
+	    FD_ZERO(&fds);
+	    FD_SET(clients[i].fd, &fds);
+	    tv.tv_sec = 10;
+	    tv.tv_usec = 0;
+	    rc = select(clients[i].fd + 1, NULL, &fds, NULL, &tv);
+	    if (rc > 0 && FD_ISSET(clients[i].fd, &fds)) {
+	      continue;
+	    }
+	    fprintf(stderr, "uim-helper-server failed to write\n");
 	  }
 
       	  if (errno == EPIPE) {
@@ -230,11 +255,23 @@ uim_helper_server_process_connection(int serv_fd)
       struct sockaddr_un clientsoc;
       socklen_t len = sizeof(clientsoc);
       int new_fd;
+      int flag;
       struct client *cl;
       new_fd = accept(serv_fd, (struct sockaddr *)&clientsoc, &len);
 
       if(new_fd < 0) {
 	perror("accpet failed");
+	continue;
+      }
+
+      if ((flag = fcntl(new_fd, F_GETFL)) == -1) {
+	close(new_fd);
+	continue;
+      }
+
+      flag |= O_NONBLOCK;
+      if (fcntl(new_fd, F_SETFL, flag) == -1) {
+	close(new_fd);
 	continue;
       }
 
@@ -261,6 +298,8 @@ uim_helper_server_process_connection(int serv_fd)
 
 	  if (result < 0) {
 	    FD_CLR(clients[i].fd, &readfds);
+	    if (clients[i].fd == fd_biggest)
+	      fd_biggest--;
 	    close(clients[i].fd);
 	    free_client(&clients[i]);
 	  }
