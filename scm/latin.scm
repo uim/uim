@@ -30,6 +30,8 @@
 
 ;; Charset of this file is UTF-8
 
+(require "generic.scm")
+
 (define latin-compose-rule '(
 ((("\\" " " " " ))(" "))
 ((("\\" " " "'" ))("'"))
