@@ -1066,6 +1066,8 @@ olist_pref_selection_changed(GtkTreeSelection *selection,
 static void
 choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
 {
+  const char *custom_sym;
+  struct uim_custom *custom;
   GtkWidget *dialog, *hbox, *vbox, *scrwin, *table;
   GtkWidget *tree_view, *button, *arrow, *label;
   GtkListStore *store;
@@ -1073,11 +1075,19 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   GtkTreeViewColumn *column;
   GtkTreeSelection *selection;
 
+  custom_sym = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM_SYM);;
+  g_return_if_fail(custom_sym);
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom);
+
   dialog = gtk_dialog_new_with_buttons(
-    "ordered list", GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(olist_entry))),
+    custom->label, GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(olist_entry))),
     GTK_DIALOG_MODAL,
     GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
     NULL);
+
+  uim_custom_free(custom);
+
   olist_pref_win.window = dialog;
   gtk_window_set_default_size(GTK_WINDOW(dialog), 400, 250);
   g_signal_connect(G_OBJECT(dialog), "response",
@@ -1680,6 +1690,7 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
   struct uim_custom_key *key;
   gint i;
   GtkIMContext *im_context;
+  gchar title[256];
 
   g_return_if_fail(GTK_IS_ENTRY(key_entry));
 
@@ -1689,15 +1700,17 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
   custom = uim_custom_get(custom_sym);
   g_return_if_fail(custom && custom->type == UCustom_Key);
 
+  g_snprintf(title, sizeof(title), _("%s - key configuration"), custom->label);
+
   /* setup key pref dialog */
   dialog = gtk_dialog_new_with_buttons(
-    "key",
+    title,
     GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(key_entry))),
     GTK_DIALOG_MODAL,
     GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
     NULL);
   key_pref_win.window = dialog;
-  gtk_window_set_default_size(GTK_WINDOW(dialog), 250, 200);
+  gtk_window_set_default_size(GTK_WINDOW(dialog), 280, 220);
   g_signal_connect(G_OBJECT(dialog), "response",
 		   G_CALLBACK(key_pref_dialog_response_cb), key_entry);
 

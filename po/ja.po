@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 0.4.6-alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-06 18:50+0900\n"
-"PO-Revision-Date: 2005-02-06 18:51+0900\n"
+"POT-Creation-Date: 2005-02-07 11:39+0900\n"
+"PO-Revision-Date: 2005-02-07 11:44+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -348,7 +348,7 @@ msgstr ""
 "設定が変更されています。\n"
 "本当に終了しますか?"
 
-#: helper/pref-gtk.c:214 qt/pref-qt.cpp:102
+#: helper/pref-gtk.c:214 qt/pref-qt.cpp:103
 msgid "Group"
 msgstr "グループ"
 
@@ -365,39 +365,48 @@ msgstr "ファイルの指定"
 msgid "File..."
 msgstr "参照..."
 
-#: helper/pref-gtk-custom-widgets.c:1098
+#: helper/pref-gtk-custom-widgets.c:1108
 msgid "Enabled"
 msgstr "有効"
 
-#: helper/pref-gtk-custom-widgets.c:1124
+#: helper/pref-gtk-custom-widgets.c:1134
 msgid "Enabled items"
 msgstr "有効な項目"
 
-#: helper/pref-gtk-custom-widgets.c:1202
+#: helper/pref-gtk-custom-widgets.c:1212
 msgid "Disabled"
 msgstr "無効"
 
-#: helper/pref-gtk-custom-widgets.c:1228
+#: helper/pref-gtk-custom-widgets.c:1238
 msgid "Disabled items"
 msgstr "無効な項目"
 
-#: helper/pref-gtk-custom-widgets.c:1266 helper/pref-gtk-custom-widgets.c:1849
+#: helper/pref-gtk-custom-widgets.c:1276 helper/pref-gtk-custom-widgets.c:1862
 msgid "Edit..."
 msgstr "編集..."
 
-#: helper/pref-gtk-custom-widgets.c:1471
+#: helper/pref-gtk-custom-widgets.c:1481
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr "取得するキーを押して下さい (例:<Control>a)"
 
-#: helper/pref-gtk-custom-widgets.c:1727
+#: helper/pref-gtk-custom-widgets.c:1482
+msgid "Grabbing keys"
+msgstr "キーを取得中"
+
+#: helper/pref-gtk-custom-widgets.c:1703
+#, c-format
+msgid "%s - key configuration"
+msgstr "%s - キー設定"
+
+#: helper/pref-gtk-custom-widgets.c:1740
 msgid "Key preference"
 msgstr "キー設定"
 
-#: helper/pref-gtk-custom-widgets.c:1773
+#: helper/pref-gtk-custom-widgets.c:1786
 msgid "Key:"
 msgstr "キー:"
 
-#: helper/pref-gtk-custom-widgets.c:1794
+#: helper/pref-gtk-custom-widgets.c:1807
 msgid "Grab..."
 msgstr "取得..."
 
@@ -467,11 +476,11 @@ msgstr "学術"
 msgid "line"
 msgstr "線"
 
-#: qt/switcher-qt.cpp:116 qt/pref-qt.cpp:118 qt/pref-qt.cpp:258
+#: qt/switcher-qt.cpp:116 qt/pref-qt.cpp:124 qt/pref-qt.cpp:262
 msgid "OK"
 msgstr "OK"
 
-#: qt/switcher-qt.cpp:121 qt/pref-qt.cpp:125 qt/pref-qt.cpp:259
+#: qt/switcher-qt.cpp:121 qt/pref-qt.cpp:131 qt/pref-qt.cpp:263
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -484,11 +493,11 @@ msgstr "入力方式の切り替え"
 msgid "exec Preference Application"
 msgstr "設定ツールの起動"
 
-#: qt/pref-qt.cpp:115
+#: qt/pref-qt.cpp:121
 msgid "Defaults"
 msgstr "デフォルト"
 
-#: qt/pref-qt.cpp:195
+#: qt/pref-qt.cpp:199
 msgid ""
 "The value was changed.\n"
 "Save?"
@@ -496,11 +505,11 @@ msgstr ""
 "設定が変更されています。\n"
 "セーブしますか?"
 
-#: qt/pref-customwidgets.cpp:170
+#: qt/pref-customwidgets.cpp:172
 msgid "File"
 msgstr "参照"
 
-#: qt/pref-customwidgets.cpp:306 qt/pref-customwidgets.cpp:586
+#: qt/pref-customwidgets.cpp:309 qt/pref-customwidgets.cpp:589
 msgid "Edit"
 msgstr "編集"
 
@@ -539,30 +548,30 @@ msgstr "文節区切りを表示する"
 #: scm/canna-key-custom.lisp:41 scm/canna-key-custom.lisp:45
 #: scm/generic-custom.lisp:37 scm/generic-custom.lisp:43
 #: scm/generic-custom.lisp:49 scm/generic-custom.lisp:55
-#: scm/generic-custom.lisp:61 scm/generic-custom.lisp:67
-#: scm/generic-key-custom.lisp:37 scm/generic-key-custom.lisp:41
-#: scm/im-custom.lisp:46 scm/im-custom.lisp:51 scm/im-custom.lisp:56
-#: scm/im-custom.lisp:61 scm/im-custom.lisp:66 scm/im-custom.lisp:71
-#: scm/im-custom.lisp:76 scm/im-custom.lisp:81 scm/im-custom.lisp:86
-#: scm/im-custom.lisp:91 scm/im-custom.lisp:96 scm/im-custom.lisp:101
-#: scm/im-custom.lisp:112 scm/im-custom.lisp:122 scm/im-custom.lisp:215
-#: scm/im-custom.lisp:275 scm/im-custom.lisp:291 scm/im-custom.lisp:297
-#: scm/im-custom.lisp:303 scm/im-custom.lisp:310 scm/prime-custom.lisp:58
-#: scm/prime-custom.lisp:64 scm/prime-custom.lisp:70 scm/prime-custom.lisp:76
-#: scm/prime-custom.lisp:82 scm/prime-custom.lisp:90 scm/prime-custom.lisp:96
-#: scm/prime-custom.lisp:102 scm/prime-custom.lisp:145
-#: scm/prime-custom.lisp:154 scm/prime-key-custom.lisp:61
-#: scm/prime-key-custom.lisp:65 scm/prime-key-custom.lisp:69
-#: scm/skk-custom.lisp:55 scm/skk-custom.lisp:61 scm/skk-custom.lisp:67
-#: scm/skk-custom.lisp:73 scm/skk-custom.lisp:135 scm/skk-custom.lisp:144
-#: scm/skk-custom.lisp:176 scm/skk-custom.lisp:183 scm/skk-custom.lisp:190
-#: scm/skk-custom.lisp:202 scm/skk-custom.lisp:208 scm/skk-custom.lisp:214
-#: scm/skk-custom.lisp:220 scm/skk-custom.lisp:230 scm/skk-custom.lisp:236
-#: scm/skk-custom.lisp:257 scm/skk-custom.lisp:263 scm/skk-custom.lisp:270
-#: scm/skk-key-custom.lisp:65 scm/skk-key-custom.lisp:69
-#: scm/skk-key-custom.lisp:73 scm/skk-key-custom.lisp:78
-#: scm/spellcheck-custom.lisp:48 scm/spellcheck-custom.lisp:54
-#: scm/spellcheck-custom.lisp:60 scm/spellcheck-custom.lisp:66
+#: scm/generic-custom.lisp:61 scm/generic-key-custom.lisp:37
+#: scm/generic-key-custom.lisp:41 scm/im-custom.lisp:46 scm/im-custom.lisp:51
+#: scm/im-custom.lisp:56 scm/im-custom.lisp:61 scm/im-custom.lisp:66
+#: scm/im-custom.lisp:71 scm/im-custom.lisp:76 scm/im-custom.lisp:81
+#: scm/im-custom.lisp:86 scm/im-custom.lisp:91 scm/im-custom.lisp:96
+#: scm/im-custom.lisp:101 scm/im-custom.lisp:112 scm/im-custom.lisp:122
+#: scm/im-custom.lisp:215 scm/im-custom.lisp:275 scm/im-custom.lisp:291
+#: scm/im-custom.lisp:297 scm/im-custom.lisp:303 scm/im-custom.lisp:310
+#: scm/prime-custom.lisp:58 scm/prime-custom.lisp:64 scm/prime-custom.lisp:70
+#: scm/prime-custom.lisp:76 scm/prime-custom.lisp:82 scm/prime-custom.lisp:90
+#: scm/prime-custom.lisp:96 scm/prime-custom.lisp:102
+#: scm/prime-custom.lisp:145 scm/prime-custom.lisp:154
+#: scm/prime-key-custom.lisp:61 scm/prime-key-custom.lisp:65
+#: scm/prime-key-custom.lisp:69 scm/skk-custom.lisp:55 scm/skk-custom.lisp:61
+#: scm/skk-custom.lisp:67 scm/skk-custom.lisp:73 scm/skk-custom.lisp:135
+#: scm/skk-custom.lisp:144 scm/skk-custom.lisp:176 scm/skk-custom.lisp:183
+#: scm/skk-custom.lisp:190 scm/skk-custom.lisp:202 scm/skk-custom.lisp:208
+#: scm/skk-custom.lisp:214 scm/skk-custom.lisp:220 scm/skk-custom.lisp:230
+#: scm/skk-custom.lisp:236 scm/skk-custom.lisp:257 scm/skk-custom.lisp:263
+#: scm/skk-custom.lisp:270 scm/skk-key-custom.lisp:65
+#: scm/skk-key-custom.lisp:69 scm/skk-key-custom.lisp:73
+#: scm/skk-key-custom.lisp:78 scm/spellcheck-custom.lisp:48
+#: scm/spellcheck-custom.lisp:54 scm/spellcheck-custom.lisp:60
+#: scm/spellcheck-custom.lisp:66
 msgid "long description will be here."
 msgstr "詳細記述予定"
 
@@ -1012,11 +1021,6 @@ msgstr "全てのユーザ入力を素通し"
 msgid "Other input methods"
 msgstr "その他の入力方式"
 
-#: scm/generic-custom.lisp:66
-#, fuzzy
-msgid "Use dictionary search"
-msgstr "個人辞書ファイル"
-
 #: scm/generic-key-custom.lisp:36
 msgid "Global key bindings 1"
 msgstr "全体キー設定 1"
@@ -1233,8 +1237,9 @@ msgstr "設定ツールの起動ボタンをツールバーに表示する"
 msgid "Enable lazy input method loading for fast startup"
 msgstr "高速起動のための遅延ローディングを有効にする"
 
-#: scm/ipa.lisp:228 scm/ipa.lisp:229
-msgid "International Phonetic Alphabet"
+#: scm/ipa.lisp:227 scm/ipa.lisp:228
+#, fuzzy
+msgid "International Phonetic Alphabet (X-SAMPA)"
 msgstr "IPA (国際発声記号)"
 
 #. I think that the name "euro" is not appropriate since it
