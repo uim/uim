@@ -23,4 +23,5 @@ SCM_FILES = im.scm util.scm loader.scm\
  zaurus.scm \
  romaja.scm pyunihan.scm pyload.scm m17nlib.scm \
  uim-sh.scm custom.scm \
- pinyin-big5.scm
+ pinyin-big5.scm \
+ plugin.scm
