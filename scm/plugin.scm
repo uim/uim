@@ -36,9 +36,9 @@
 
 (define uim-plugin-lib-load-path
   (filter string?
-	  (append (list (string-append (getenv "HOME") "/.uim.d/plugin")
-			(string-append (sys-pkglibdir) "/plugin")
-			(getenv "LIBUIM_PLUGIN_DIR"))
+	  (append (list (getenv "LIBUIM_PLUGIN_DIR")
+			(string-append (getenv "HOME") "/.uim.d/plugin")
+			(string-append (sys-pkglibdir) "/plugin"))
 		  ;; XXX
 		  (if (getenv "LD_LIBRARY_PATH")
 		      (string-split (getenv "LD_LIBRARY_PATH") ":")
@@ -46,9 +46,10 @@
 
 (define uim-plugin-scm-load-path
   (filter string?
-	  (list (string-append (getenv "HOME") "/.uim.d/plugin")
-		(sys-pkgdatadir)
-		(getenv "LIBUIM_SCM_FILES"))))
+	  (list (getenv "LIBUIM_SCM_FILES")
+		(string-append (getenv "HOME") "/.uim.d/plugin")
+		(sys-pkgdatadir))))
+		
 
 ;; 'print' prevents testing framework from normal run.
 ;;(print uim-plugin-lib-load-path)
