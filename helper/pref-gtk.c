@@ -447,8 +447,8 @@ add_custom_type_choice(GtkWidget *vbox, struct uim_custom *custom)
   for(i = 0, item = custom->range->as_choice.valid_items; *item; i++, item++) {
     gtk_combo_box_append_text(GTK_COMBO_BOX(combobox),
 			      (*item)->label);
-    if(default_symbol == (*item)->symbol);
-    default_index = i;
+    if(!strcmp(default_symbol, (*item)->symbol))
+      default_index = i;
   }
   gtk_combo_box_set_active(GTK_COMBO_BOX(combobox), default_index);
   gtk_box_pack_start (GTK_BOX (hbox), combobox, FALSE, TRUE, 0);
