@@ -285,14 +285,16 @@ static char *
 next_cand_slash(char *str)
 {
   int p = 0;
+  int i = 0;
   while (*str && (*str != '/' || p == 1)) {
-    if (*str == '[' && (*(str - 1) == '\0' || *(str - 1) == '/')) {
+    if (*str == '[' && i == 0) {
       p = 1;
     }
     if (p == 1 && *str == ']' && *(str + 1) == '/') {
       p = 0;
     }
     str++;
+    i++;
   }
   return str;
 }
