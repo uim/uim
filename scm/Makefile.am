@@ -8,6 +8,8 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  default.scm \
  util.scm key.scm ustr.scm action.scm load-action.scm i18n.scm \
  ng-key.scm physical-key.scm event.scm evmap.scm evmap-csv.scm \
+ event-translator.scm \
+ key-custom.scm \
  uim-sh.scm custom.scm custom-rt.scm \
  manage-modules.scm \
  direct.scm \
