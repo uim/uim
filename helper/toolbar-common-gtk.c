@@ -66,6 +66,11 @@ switcher_button_create(void);
 static void
 switcher_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer user_data);
 
+static GtkWidget *
+pref_button_create(void);
+static void
+pref_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer user_data);
+
 static void
 calc_menu_position(GtkMenu *prop_menu, gint *x, gint *y, gboolean *push_in, GtkWidget *prop_button);
 
@@ -211,6 +216,10 @@ helper_applet_prop_list_update(gchar **tmp)
 
   /* create button for exec switcher */
   button = switcher_button_create();
+  gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
+  menu_buttons = g_list_append(menu_buttons, button);
+
+  button = pref_button_create();
   gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
   menu_buttons = g_list_append(menu_buttons, button);
 
@@ -502,6 +511,39 @@ switcher_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer 
     }
 }
 
+static GtkWidget *
+pref_button_create(void)
+{
+
+  GtkWidget *button;
+  GtkTooltips *tooltip;
+  GtkWidget *img;
+  button = gtk_button_new();
+  img = gtk_image_new_from_stock(GTK_STOCK_PREFERENCES, GTK_ICON_SIZE_MENU);
+  gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
+  gtk_size_group_add_widget(button_size_group, button);
+  g_signal_connect(G_OBJECT(button), "button_press_event",
+		   G_CALLBACK(pref_button_pressed), NULL);
+  gtk_container_add(GTK_CONTAINER(button), img);
+
+  /* tooltip */
+  tooltip = gtk_tooltips_new();
+  gtk_tooltips_set_tip(tooltip, button, _("Exec uim's preference tool."), NULL);
+
+  return button;
+}
+
+static void
+pref_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer user_data)
+{ 
+  if (event->button == 2 || event->button == 3) {
+    if (helper_parent_widget)
+      gtk_propagate_event(GTK_WIDGET(helper_parent_widget), (GdkEvent *) event);
+    } else {
+      /* exec uim-im-pref */
+      system("uim-pref-gtk &");
+    }
+}
 
 static void
 hbox_hierarchy_changed(GtkWidget *widget, GtkWidget *widget2, gpointer data)
