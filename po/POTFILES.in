@@ -18,6 +18,8 @@ helper/dict-dict.c
 helper/dict-dict.h
 helper/dict-cclass-dialog.c
 helper/dict-cclass-dialog.h
+helper/toolbar-common-gtk.c
+helper/input-pad-ja.c
 scm/PY.scm
 scm/action.scm
 scm/anthy.scm
