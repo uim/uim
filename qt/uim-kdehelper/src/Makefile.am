@@ -1,1 +1,1 @@
-SUBDIRS = common applet systray toolbar candwin switcher
+SUBDIRS = common applet systray toolbar candwin switcher chardict
