@@ -214,7 +214,8 @@
 
     (register-widget 'widget_canna_kana_input_method
 		     (activity-indicator-new canna-kana-input-method-actions)
-		     (actions-new canna-kana-input-method-actions))))
+		     (actions-new canna-kana-input-method-actions))
+    (context-list-replace-widgets! 'canna canna-widgets)))
 
 (define canna-context-rec-spec
   (append

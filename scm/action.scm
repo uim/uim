@@ -314,6 +314,17 @@
       (context-set-widgets! context widgets)
       (context-propagate-widget-configuration context))))
 
+;; TODO: write test
+(define context-list-replace-widgets!
+  (lambda (target-im-name widget-id-list)
+    (for-each (lambda (context)
+		(let* ((im (context-im context))
+		       (name (im-name im)))
+		  (and (eq? name
+			    target-im-name)
+		       (context-init-widgets! context widget-id-list))))
+	      context-list)))
+
 ;; API for uim developers
 (define context-update-widgets
   (lambda (context)

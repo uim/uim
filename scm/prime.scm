@@ -358,7 +358,8 @@
   (lambda ()
     (register-widget 'widget_prime_input_mode
 		     (activity-indicator-new prime-input-mode-actions)
-		     (actions-new prime-input-mode-actions))))
+		     (actions-new prime-input-mode-actions))
+    (context-list-replace-widgets! 'prime prime-widgets)))
 
 (define prime-context-rec-spec
   (append

@@ -248,7 +248,8 @@
   (lambda ()
     (register-widget 'widget_skk_input_mode
 		     (activity-indicator-new skk-input-mode-actions)
-		     (actions-new skk-input-mode-actions))))
+		     (actions-new skk-input-mode-actions))
+    (context-list-replace-widgets! 'skk skk-widgets)))
 
 (define skk-context-rec-spec
   (append

@@ -249,7 +249,8 @@
 
     (register-widget 'widget_anthy_kana_input_method
 		     (activity-indicator-new anthy-kana-input-method-actions)
-		     (actions-new anthy-kana-input-method-actions))))
+		     (actions-new anthy-kana-input-method-actions))
+    (context-list-replace-widgets! 'anthy anthy-widgets)))
 
 (define anthy-context-rec-spec
   (append
