@@ -47,11 +47,13 @@ struct uim_im {
   char *short_desc;
 };
 
+#ifdef UIM_CALLBACK_QUEUE
 struct cb_q {
   struct cb *first_cb;
   struct cb *tail_cb;
   int flushing;
 };
+#endif
 
 struct uim_candidate_ {
   char *str;         /* candidate */
@@ -117,13 +119,16 @@ struct uim_context_ {
   /* surrounding text */
   void (*request_surrounding_text_cb)(void *ptr);
   int (*delete_surrounding_text_cb)(void *ptr, int offset, int len);
+#ifdef UIM_CALLBACK_QUEUE
   /* callback queue */
   struct cb_q cb_q;
+#endif
   /* preedit segments array */
   struct preedit_segment *psegs;
   int nr_psegs;
 };
 
+#ifdef UIM_CALLBACK_QUEUE
 enum {
   CAND_ACTIVATE_CB,
   CAND_SELECT_CB,
@@ -147,6 +152,7 @@ struct cb {
   int n1, n2;
   struct cb *next;
 };
+#endif
 
 
 #ifdef ENABLE_NLS

@@ -169,10 +169,12 @@ uim_create_context(void *ptr,
   /**/
   uc->nr_candidates = 0;
   uc->candidate_index = 0;
+#ifdef UIM_CALLBACK_QUEUE
   /**/
   uc->cb_q.first_cb = NULL;
   uc->cb_q.tail_cb = NULL;
   uc->cb_q.flushing = 0;
+#endif
   /**/
   uc->psegs = NULL;
   uc->nr_psegs = 0;

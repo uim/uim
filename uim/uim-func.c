@@ -84,6 +84,7 @@ uim_update_preedit_segments(uim_context uc)
   }
 }
 
+#ifdef UIM_CALLBACK_QUEUE
 static void
 uim_flush_cb(uim_context uc)
 {
@@ -199,6 +200,7 @@ uim_flush_cb(uim_context uc)
   uc->cb_q.first_cb = NULL;
   uc->cb_q.tail_cb = NULL;
 }
+#endif
 
 /* release preedit segment in a context */
 void
@@ -279,6 +281,7 @@ uim_iconv_release(void *obj)
   err = iconv_close((iconv_t)obj);
 }
 
+#ifdef UIM_CALLBACK_QUEUE
 void
 uim_schedule_cb(uim_context uc, int type, char *str, int n1, int n2)
 {
@@ -302,6 +305,7 @@ uim_schedule_cb(uim_context uc, int type, char *str, int n1, int n2)
   }
   uc->cb_q.tail_cb = cb;
 }
+#endif
 
 /** Calculate actual sexp string size from printf-style args.
  * This function calculates actual sexp string size from printf-style
@@ -356,6 +360,7 @@ uim_eval_string(uim_context uc, char *buf)
   /* Evaluate */
   repl_c_string(buf, 0, 1);
 
+#ifdef UIM_CALLBACK_QUEUE
   /* Flush callback requests queued during scheme evaluation 
    * (To avoid C -> scheme -> C call, actual call is delayed to here)
    */
@@ -364,6 +369,7 @@ uim_eval_string(uim_context uc, char *buf)
     uim_flush_cb(uc);
     uc->cb_q.flushing --;
   }
+#endif
 }
 
 /* this is not a uim API, so did not name as uim_retrieve_context() */
@@ -382,7 +388,11 @@ static LISP
 im_clear_preedit(LISP id)
 {
   uim_context uc = retrieve_uim_context(id);
+#ifdef UIM_CALLBACK_QUEUE
   uim_schedule_cb(uc, PREEDIT_CLEAR_CB, NULL, 0, 0);
+#else
+  uim_release_preedit_segments(uc);
+#endif
   return false_sym;
 }
 
@@ -395,7 +405,15 @@ im_pushback_preedit(LISP id_, LISP attr_, LISP str_)
   if (str_) {
     str = uim_get_c_string(str_);
   }
+#ifdef UIM_CALLBACK_QUEUE
   uim_schedule_cb(uc, PREEDIT_PUSHBACK_CB, str, attr, 0);
+#else
+  {
+    char *s;
+    s = uc->conv_if->convert(uc->conv, str);
+    pushback_preedit_segment(uc, attr, s);
+  }
+#endif
   return false_sym;
 }
 
@@ -403,7 +421,11 @@ static LISP
 im_update_preedit(LISP id)
 {
   uim_context uc = retrieve_uim_context(id);
+#ifdef UIM_CALLBACK_QUEUE
   uim_schedule_cb(uc, PREEDIT_UPDATE_CB, NULL, 0, 0);
+#else
+  uim_update_preedit_segments(uc);
+#endif
   return false_sym;
 }
 
@@ -415,7 +437,18 @@ im_commit(LISP id, LISP str_)
   char *str = NULL;
   if STRINGP(str_) {
     str = uim_get_c_string(str_);
+#ifdef UIM_CALLBACK_QUEUE
     uim_schedule_cb(uc, COMMIT_CB, str, 0, 0);
+#else
+    {
+      char *s;
+      s = uc->conv_if->convert(uc->conv, str);
+      if (uc->commit_cb) {
+	uc->commit_cb(uc->ptr, s);
+      }
+      free(s);
+    }
+#endif
   }
   return false_sym;
 }
@@ -527,7 +560,13 @@ im_update_mode_list(LISP id)
   if(!uc)
     return false_sym;
 
+#ifdef UIM_CALLBACK_QUEUE
   uim_schedule_cb(uc, MODE_LIST_UPDATE_CB, NULL, 0, 0);
+#else
+  if (uc->mode_list_update_cb) {
+    uc->mode_list_update_cb(uc->ptr);
+  }
+#endif
   return false_sym;
 }
 
@@ -537,8 +576,15 @@ im_update_prop_list(LISP id, LISP prop_)
   uim_context uc = retrieve_uim_context(id);
   char *prop     = uim_get_c_string(prop_);
 
-  if(uc)
+  if(uc) {
+#ifdef UIM_CALLBACK_QUEUE
     uim_schedule_cb(uc, PROP_LIST_UPDATE_CB, NULL, 0, 0);
+#else
+    if (uc->prop_list_update_cb) {
+      uc->prop_list_update_cb(uc->ptr, uc->propstr);
+    }
+#endif
+  }
   
   if(uc && uc->propstr)
     free(uc->propstr);
@@ -558,7 +604,13 @@ im_update_prop_label(LISP id, LISP prop_)
   char *prop     = uim_get_c_string(prop_);
     
   if(uc) {
+#ifdef UIM_CALLBACK_QUEUE
     uim_schedule_cb(uc, PROP_LABEL_UPDATE_CB, NULL, 0, 0);
+#else
+    if (uc->prop_label_update_cb) {
+      uc->prop_label_update_cb(uc->ptr, uc->proplabelstr);
+    }
+#endif
   } else {
     return false_sym;
   }
@@ -583,7 +635,13 @@ im_update_mode(LISP id, LISP mode_)
     return false_sym;
 
   uc->mode = mode;
+#ifdef UIM_CALLBACK_QUEUE
   uim_schedule_cb(uc, MODE_UPDATE_CB, NULL, mode, 0);
+#else
+  if (uc->mode_update_cb) {
+    uc->mode_update_cb(uc->ptr, mode);
+  }
+#endif
   return false_sym;
 }
 
@@ -628,7 +686,13 @@ im_activate_candidate_selector(LISP id_, LISP nr_, LISP display_limit_)
   uim_context uc = retrieve_uim_context(id_);
   int display_limit = get_c_int(display_limit_);
   int nr = get_c_int(nr_);
+#ifdef UIM_CALLBACK_QUEUE
   uim_schedule_cb(uc, CAND_ACTIVATE_CB, NULL, nr, display_limit);
+#else
+  if (uc->candidate_selector_activate_cb) {
+    uc->candidate_selector_activate_cb(uc->ptr, nr, display_limit);
+  }
+#endif
   return false_sym;
 }
 
@@ -637,7 +701,13 @@ im_select_candidate(LISP id_, LISP idx_)
 {
   uim_context uc = retrieve_uim_context(id_);
   int idx = get_c_int(idx_);
+#ifdef UIM_CALLBACK_QUEUE
   uim_schedule_cb(uc, CAND_SELECT_CB, NULL, idx, 0);
+#else
+  if (uc->candidate_selector_select_cb) {
+    uc->candidate_selector_select_cb(uc->ptr, idx);
+  }
+#endif
   return false_sym;
 }
 
@@ -654,7 +724,13 @@ im_shift_page_candidate(LISP id_, LISP dir_)
   else
     dir = 1;
     
+#ifdef UIM_CALLBACK_QUEUE
   uim_schedule_cb(uc, CAND_SHIFT_PAGE_CB, NULL, dir, 0);
+#else
+  if (uc->candidate_selector_shift_page_cb) {
+    uc->candidate_selector_shift_page_cb(uc->ptr, dir);
+  }
+#endif
   return false_sym;
 }
 
@@ -662,7 +738,13 @@ static LISP
 im_deactivate_candidate_selector(LISP id_)
 {
   uim_context uc = retrieve_uim_context(id_);
+#ifdef UIM_CALLBACK_QUEUE
   uim_schedule_cb(uc, CAND_DEACTIVATE_CB, NULL, 0, 0);
+#else
+  if (uc->candidate_selector_deactivate_cb) {
+    uc->candidate_selector_deactivate_cb(uc->ptr);
+  }
+#endif
   return false_sym;
 }
 
@@ -718,7 +800,13 @@ im_request_surrounding(LISP id_)
   if (!uc->request_surrounding_text_cb) {
     return NIL;
   }
+#ifdef UIM_CALLBACK_QUEUE
   uim_schedule_cb(uc, REQUEST_SURROUNDING_CB, NULL, 0, 0);
+#else
+  if (uc->request_surrounding_text_cb) {
+    uc->request_surrounding_text_cb(uc->ptr);
+  }
+#endif
   return true_sym;
 }
 
@@ -731,7 +819,13 @@ im_delete_surrounding(LISP id_, LISP offset_, LISP len_)
   if (!uc->delete_surrounding_text_cb) {
     return NIL;
   }
+#ifdef UIM_CALLBACK_QUEUE
   uim_schedule_cb(uc, DELETE_SURROUNDING_CB, NULL, offset, len);
+#else
+  if (uc->delete_surrounding_text_cb) {
+    uc->delete_surrounding_text_cb(uc->ptr, offset, len);
+  }
+#endif
   return true_sym;
 }
 
