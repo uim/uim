@@ -141,6 +141,12 @@
 		 (lambda ()
 		   skk-show-annotation?))
 
+(custom-add-hook 'skk-show-annotation?
+		 'custom-get-hooks
+		 (lambda ()
+		   (if (not skk-show-annotation?)
+		       (set! skk-show-annotation-in-preedit? #f))))
+
 (define-custom 'skk-dic-file-name (string-append (sys-datadir)
 						 "/skk/SKK-JISYO.L")
   '(skk)
