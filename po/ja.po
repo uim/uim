@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+# uim  -  a multilingual input method library
 # Copyright (C) 2005 uim Project http://uim.freedesktop.org/.
 # This file is distributed under the same license as the uim package.
 #  TOKUNAGA Hiroyuki <tkng@xem.jp>.
@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 2010\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-03 10:27+0900\n"
-"PO-Revision-Date: 2005-02-03 10:36+0900\n"
+"POT-Creation-Date: 2005-02-03 15:47+0900\n"
+"PO-Revision-Date: 2005-02-03 15:56+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -375,31 +375,31 @@ msgstr "無効"
 msgid "Disabled items"
 msgstr "無効な項目"
 
-#: helper/pref-gtk.c:1273 helper/pref-gtk.c:1838
+#: helper/pref-gtk.c:1273 helper/pref-gtk.c:1839
 msgid "Choose..."
 msgstr "選択..."
 
-#: helper/pref-gtk.c:1468
+#: helper/pref-gtk.c:1469
 msgid "Press any key to grab..."
 msgstr "取得するキーを押して下さい..."
 
-#: helper/pref-gtk.c:1704
+#: helper/pref-gtk.c:1705
 msgid "Key preference"
 msgstr "キー設定"
 
-#: helper/pref-gtk.c:1750
+#: helper/pref-gtk.c:1751
 msgid "_Shift"
 msgstr "_Shift"
 
-#: helper/pref-gtk.c:1755
+#: helper/pref-gtk.c:1756
 msgid "_Control"
 msgstr "_Control"
 
-#: helper/pref-gtk.c:1760
+#: helper/pref-gtk.c:1761
 msgid "_Alt"
 msgstr "_Alt"
 
-#: helper/pref-gtk.c:1776
+#: helper/pref-gtk.c:1777
 msgid "..."
 msgstr "..."
 
@@ -480,13 +480,15 @@ msgstr "文節区切りを表示する"
 #: scm/im-custom.lisp:284 scm/prime-custom.lisp:58 scm/prime-custom.lisp:64
 #: scm/prime-custom.lisp:70 scm/prime-custom.lisp:76 scm/prime-custom.lisp:82
 #: scm/prime-custom.lisp:90 scm/prime-custom.lisp:96 scm/prime-custom.lisp:102
-#: scm/prime-custom.lisp:145 scm/prime-custom.lisp:154 scm/skk-custom.lisp:55
-#: scm/skk-custom.lisp:61 scm/skk-custom.lisp:67 scm/skk-custom.lisp:73
-#: scm/skk-custom.lisp:135 scm/skk-custom.lisp:144 scm/skk-custom.lisp:176
-#: scm/skk-custom.lisp:183 scm/skk-custom.lisp:190 scm/skk-custom.lisp:202
-#: scm/skk-custom.lisp:208 scm/skk-custom.lisp:214 scm/skk-custom.lisp:220
-#: scm/skk-custom.lisp:230 scm/skk-custom.lisp:236 scm/skk-custom.lisp:257
-#: scm/skk-custom.lisp:263 scm/skk-custom.lisp:270 scm/skk-key-custom.lisp:65
+#: scm/prime-custom.lisp:145 scm/prime-custom.lisp:154
+#: scm/prime-key-custom.lisp:61 scm/prime-key-custom.lisp:65
+#: scm/prime-key-custom.lisp:69 scm/skk-custom.lisp:55 scm/skk-custom.lisp:61
+#: scm/skk-custom.lisp:67 scm/skk-custom.lisp:73 scm/skk-custom.lisp:135
+#: scm/skk-custom.lisp:144 scm/skk-custom.lisp:176 scm/skk-custom.lisp:183
+#: scm/skk-custom.lisp:190 scm/skk-custom.lisp:202 scm/skk-custom.lisp:208
+#: scm/skk-custom.lisp:214 scm/skk-custom.lisp:220 scm/skk-custom.lisp:230
+#: scm/skk-custom.lisp:236 scm/skk-custom.lisp:257 scm/skk-custom.lisp:263
+#: scm/skk-custom.lisp:270 scm/skk-key-custom.lisp:65
 #: scm/skk-key-custom.lisp:69 scm/skk-key-custom.lisp:73
 #: scm/skk-key-custom.lisp:78 scm/spellcheck-custom.lisp:48
 #: scm/spellcheck-custom.lisp:54 scm/spellcheck-custom.lisp:60
@@ -669,19 +671,30 @@ msgstr "[Anthy] 次の文節"
 #: scm/generic-key-custom.lisp:124 scm/generic-key-custom.lisp:130
 #: scm/generic-key-custom.lisp:136 scm/generic-key-custom.lisp:142
 #: scm/generic-key-custom.lisp:148 scm/generic-key-custom.lisp:154
-#: scm/skk-key-custom.lisp:85 scm/skk-key-custom.lisp:92
-#: scm/skk-key-custom.lisp:98 scm/skk-key-custom.lisp:104
-#: scm/skk-key-custom.lisp:110 scm/skk-key-custom.lisp:116
-#: scm/skk-key-custom.lisp:122 scm/skk-key-custom.lisp:128
-#: scm/skk-key-custom.lisp:134 scm/skk-key-custom.lisp:144
-#: scm/skk-key-custom.lisp:150 scm/skk-key-custom.lisp:156
-#: scm/skk-key-custom.lisp:162 scm/skk-key-custom.lisp:168
-#: scm/skk-key-custom.lisp:174 scm/skk-key-custom.lisp:180
-#: scm/skk-key-custom.lisp:186 scm/skk-key-custom.lisp:192
-#: scm/skk-key-custom.lisp:210 scm/skk-key-custom.lisp:216
-#: scm/skk-key-custom.lisp:222 scm/skk-key-custom.lisp:228
-#: scm/skk-key-custom.lisp:234 scm/skk-key-custom.lisp:240
-#: scm/skk-key-custom.lisp:246 scm/spellcheck-custom.lisp:72
+#: scm/prime-key-custom.lisp:76 scm/prime-key-custom.lisp:82
+#: scm/prime-key-custom.lisp:88 scm/prime-key-custom.lisp:94
+#: scm/prime-key-custom.lisp:100 scm/prime-key-custom.lisp:106
+#: scm/prime-key-custom.lisp:115 scm/prime-key-custom.lisp:121
+#: scm/prime-key-custom.lisp:127 scm/prime-key-custom.lisp:133
+#: scm/prime-key-custom.lisp:139 scm/prime-key-custom.lisp:145
+#: scm/prime-key-custom.lisp:151 scm/prime-key-custom.lisp:157
+#: scm/prime-key-custom.lisp:163 scm/prime-key-custom.lisp:169
+#: scm/prime-key-custom.lisp:178 scm/prime-key-custom.lisp:184
+#: scm/prime-key-custom.lisp:190 scm/prime-key-custom.lisp:196
+#: scm/prime-key-custom.lisp:202 scm/prime-key-custom.lisp:208
+#: scm/skk-key-custom.lisp:85 scm/skk-key-custom.lisp:91
+#: scm/skk-key-custom.lisp:97 scm/skk-key-custom.lisp:103
+#: scm/skk-key-custom.lisp:109 scm/skk-key-custom.lisp:115
+#: scm/skk-key-custom.lisp:121 scm/skk-key-custom.lisp:127
+#: scm/skk-key-custom.lisp:133 scm/skk-key-custom.lisp:143
+#: scm/skk-key-custom.lisp:149 scm/skk-key-custom.lisp:155
+#: scm/skk-key-custom.lisp:161 scm/skk-key-custom.lisp:167
+#: scm/skk-key-custom.lisp:173 scm/skk-key-custom.lisp:179
+#: scm/skk-key-custom.lisp:185 scm/skk-key-custom.lisp:191
+#: scm/skk-key-custom.lisp:209 scm/skk-key-custom.lisp:215
+#: scm/skk-key-custom.lisp:221 scm/skk-key-custom.lisp:227
+#: scm/skk-key-custom.lisp:233 scm/skk-key-custom.lisp:239
+#: scm/skk-key-custom.lisp:245 scm/spellcheck-custom.lisp:72
 msgid "long description will be here"
 msgstr "詳細記述予定"
 
@@ -1209,6 +1222,107 @@ msgstr "日本語"
 msgid "PRIME on"
 msgstr "PRIME オン"
 
+#: scm/prime-key-custom.lisp:60
+msgid "PRIME key bindings"
+msgstr "PRIMEキー設定"
+
+# (高度1)が変だというのは自覚してます。代案希望。  -- YamaKen  2005-02-02
+#: scm/prime-key-custom.lisp:64
+msgid "PRIME advanced key bindings (1)"
+msgstr "PRIMEキー設定 (高度1)"
+
+#: scm/prime-key-custom.lisp:68
+msgid "PRIME advanced key bindings (2)"
+msgstr "PRIMEキー設定 (高度2)"
+
+#: scm/prime-key-custom.lisp:75
+msgid "[PRIME] prime-register-key"
+msgstr ""
+
+#: scm/prime-key-custom.lisp:81
+msgid "[PRIME] prime-typing-mode-hiragana-key"
+msgstr ""
+
+#: scm/prime-key-custom.lisp:87
+msgid "[PRIME] prime-typing-mode-katakana-key"
+msgstr ""
+
+#: scm/prime-key-custom.lisp:93
+msgid "[PRIME] prime-typing-mode-hankana-key"
+msgstr ""
+
+#: scm/prime-key-custom.lisp:99
+msgid "[PRIME] prime-typing-mode-wideascii-key"
+msgstr ""
+
+#: scm/prime-key-custom.lisp:105
+msgid "[PRIME] prime-typing-mode-ascii-key"
+msgstr ""
+
+#: scm/prime-key-custom.lisp:114
+msgid "[PRIME] on"
+msgstr "[PRIME] オン"
+
+#: scm/prime-key-custom.lisp:120
+msgid "[PRIME] off"
+msgstr "[PRIME] オフ"
+
+#: scm/prime-key-custom.lisp:126
+msgid "[PRIME] fullwidth alphanumeric mode"
+msgstr "[PRIME] 全角英数入力モード"
+
+#: scm/prime-key-custom.lisp:132
+msgid "[PRIME] begin conversion"
+msgstr "[PRIME] 変換開始"
+
+#: scm/prime-key-custom.lisp:138
+msgid "[PRIME] commit"
+msgstr "[PRIME] 確定"
+
+#: scm/prime-key-custom.lisp:144
+msgid "[PRIME] cancel"
+msgstr "[PRIME] キャンセル"
+
+#: scm/prime-key-custom.lisp:150
+msgid "[PRIME] next candidate"
+msgstr "[PRIME] 次候補"
+
+#: scm/prime-key-custom.lisp:156
+msgid "[PRIME] previous candidate"
+msgstr "[PRIME] 前候補"
+
+#: scm/prime-key-custom.lisp:162
+msgid "[PRIME] next page of candidate window"
+msgstr "[PRIME] 候補ウィンドウの次ページ"
+
+#: scm/prime-key-custom.lisp:168
+msgid "[PRIME] previous page of candidate window"
+msgstr "[PRIME] 候補ウィンドウの前ページ"
+
+#: scm/prime-key-custom.lisp:177
+msgid "[PRIME] beginning of preedit"
+msgstr "[PRIME] 編集領域の先頭"
+
+#: scm/prime-key-custom.lisp:183
+msgid "[PRIME] end of preedit"
+msgstr "[PRIME] 編集領域の末尾"
+
+#: scm/prime-key-custom.lisp:189
+msgid "[PRIME] backspace"
+msgstr "[PRIME] バックスペース"
+
+#: scm/prime-key-custom.lisp:195
+msgid "[PRIME] delete"
+msgstr "[PRIME] デリート"
+
+#: scm/prime-key-custom.lisp:201
+msgid "[PRIME] go left"
+msgstr "[PRIME] 左に移動"
+
+#: scm/prime-key-custom.lisp:207
+msgid "[PRIME] go right"
+msgstr "[PRIME] 右に移動"
+
 #: scm/pyload.lisp:42
 msgid "Pinyin (Simplified)"
 msgstr "ピンイン (簡体字)"
@@ -1330,99 +1444,99 @@ msgstr "補完"
 msgid "[SKK] on"
 msgstr "[SKK] オン"
 
-#: scm/skk-key-custom.lisp:91
+#: scm/skk-key-custom.lisp:90
 msgid "[SKK] latin mode"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:97
+#: scm/skk-key-custom.lisp:96
 msgid "[SKK] wide-latin mode"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:103
+#: scm/skk-key-custom.lisp:102
 msgid "[SKK] kanji mode"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:109
+#: scm/skk-key-custom.lisp:108
 msgid "[SKK] halfwidth katakana mode"
 msgstr "[SKK] 半角カタカナ入力モード"
 
-#: scm/skk-key-custom.lisp:115
+#: scm/skk-key-custom.lisp:114
 msgid "[SKK] toggle hiragana/katakana mode"
 msgstr "[SKK] ひらがな/カタカナ入力モードを反転"
 
-#: scm/skk-key-custom.lisp:121
+#: scm/skk-key-custom.lisp:120
 msgid "[SKK] begin conversion"
 msgstr "[SKK] 変換開始"
 
-#: scm/skk-key-custom.lisp:127
+#: scm/skk-key-custom.lisp:126
 msgid "[SKK] commit"
 msgstr "[SKK] 確定"
 
-#: scm/skk-key-custom.lisp:133
+#: scm/skk-key-custom.lisp:132
 msgid "[SKK] cancel"
 msgstr "[SKK] キャンセル"
 
-#: scm/skk-key-custom.lisp:143
+#: scm/skk-key-custom.lisp:142
 msgid "[SKK] return"
 msgstr "[SKK] リターン"
 
-#: scm/skk-key-custom.lisp:149
+#: scm/skk-key-custom.lisp:148
 msgid "[SKK] commit preedit string as fullwidth alphanumeric"
 msgstr "[SKK] 全角英数として確定"
 
-#: scm/skk-key-custom.lisp:155
+#: scm/skk-key-custom.lisp:154
 msgid "[SKK] begin latin conversion"
 msgstr "[SKK] アルファベット変換開始"
 
-#: scm/skk-key-custom.lisp:161
+#: scm/skk-key-custom.lisp:160
 msgid "[SKK] begin completion"
 msgstr "[SKK] 補完開始"
 
-#: scm/skk-key-custom.lisp:167
+#: scm/skk-key-custom.lisp:166
 msgid "[SKK] next completion candidate"
 msgstr "[SKK] 次の補完候補"
 
-#: scm/skk-key-custom.lisp:173
+#: scm/skk-key-custom.lisp:172
 msgid "[SKK] previous completion candidate"
 msgstr "[SKK] 前の補完候補"
 
-#: scm/skk-key-custom.lisp:179
+#: scm/skk-key-custom.lisp:178
 msgid "[SKK] skk-special-midashi-key?"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:185
+#: scm/skk-key-custom.lisp:184
 msgid "[SKK] skk-vi-escape-key?"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:191
+#: scm/skk-key-custom.lisp:190
 msgid "[SKK] skk-state-direct-no-preedit-nop-key?"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:209
+#: scm/skk-key-custom.lisp:208
 msgid "[SKK] next candidate"
 msgstr "[SKK] 次候補"
 
-#: scm/skk-key-custom.lisp:215
+#: scm/skk-key-custom.lisp:214
 msgid "[SKK] previous candidate"
 msgstr "[SKK] 前候補"
 
-#: scm/skk-key-custom.lisp:221
+#: scm/skk-key-custom.lisp:220
 msgid "[SKK] next page of candidate window"
 msgstr "[SKK] 候補ウィンドウの次ページ"
 
-#: scm/skk-key-custom.lisp:227
+#: scm/skk-key-custom.lisp:226
 msgid "[SKK] previous page of candidate window"
 msgstr "[SKK] 候補ウィンドウの前ページ"
 
-#: scm/skk-key-custom.lisp:233
+#: scm/skk-key-custom.lisp:232
 msgid "[SKK] backspace"
 msgstr "[SKK] バックスペース"
 
-#: scm/skk-key-custom.lisp:239
+#: scm/skk-key-custom.lisp:238
 msgid "[SKK] go left"
 msgstr "[SKK] 左に移動"
 
-#: scm/skk-key-custom.lisp:245
+#: scm/skk-key-custom.lisp:244
 msgid "[SKK] go right"
 msgstr "[SKK] 右に移動"
 
