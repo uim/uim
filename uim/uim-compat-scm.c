@@ -57,7 +57,7 @@ uim_scm_symbol_value_int(const char *symbol_str)
   uim_scm_gc_protect_stack(&stack_start);
   val_ = uim_scm_symbol_value(symbol_str);
 
-  if NNULLP(val_) {
+  if NFALSEP(val_) {
     val = uim_scm_c_int(val_);
   } else {
     val = 0;
@@ -115,7 +115,7 @@ uim_scm_c_strs_into_list(int n_strs, const char *const *strs) {
     lst = cons(str, lst);
   }
 
-  return lst;
+  return (uim_lisp)lst;
 }
 
 uim_lisp
@@ -123,7 +123,7 @@ uim_scm_symbol_value(const char *symbol_str)
 {
   LISP symbol_str_ = rintern(symbol_str);
   
-  if TRUEP(symbol_boundp(symbol_str_, NIL)) {
+  if TRUEP((uim_lisp)symbol_boundp(symbol_str_, NIL)) {
     return (uim_lisp)symbol_value(symbol_str_, NIL);         
   } else {
     return (uim_lisp)false_sym;
@@ -210,4 +210,5 @@ void
 uim_init_compat_scm_subrs(void)
 {
   quote_sym = uim_scm_intern_c_str("quote");
+  uim_scm_gc_protect(&quote_sym);
 }

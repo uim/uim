@@ -78,8 +78,15 @@ uim_scm_make_bool(uim_bool val)
 int
 uim_scm_c_int(uim_lisp integer)
 {
+  int c_int;
+  uim_lisp stack_start;
+
+  uim_scm_gc_protect_stack(&stack_start);  /* required for my_err() */
   protected_arg0 = integer;
-  return get_c_int((LISP)integer);
+  c_int = get_c_int((LISP)integer);
+  uim_scm_gc_unprotect_stack(&stack_start);
+
+  return c_int;
 }
 
 uim_lisp
@@ -91,8 +98,15 @@ uim_scm_make_int(int integer)
 char *
 uim_scm_c_str(uim_lisp str)
 {
+  char *c_str;
+  uim_lisp stack_start;
+
+  uim_scm_gc_protect_stack(&stack_start);  /* required for my_err() */
   protected_arg0 = str;
-  return strdup(get_c_string((LISP)str));
+  c_str = get_c_string((LISP)str);
+  uim_scm_gc_unprotect_stack(&stack_start);
+
+  return (c_str) ? strdup(c_str) : NULL;
 }
 
 uim_lisp
@@ -201,15 +215,11 @@ uim_scm_string_equal(uim_lisp a, uim_lisp b) {
 uim_lisp
 uim_scm_eval(uim_lisp obj) {
   uim_lisp ret;  /* intentionally outside of next stack_start */
-#ifdef UIM_SCM_NESTED_EVAL
   uim_lisp stack_start;
 
   uim_scm_gc_protect_stack(&stack_start);
-#endif
   ret = (uim_lisp)leval((LISP)obj, NIL);
-#ifdef UIM_SCM_NESTED_EVAL
   uim_scm_gc_unprotect_stack(&stack_start);
-#endif
 
   return ret;
 }
@@ -333,10 +343,6 @@ uim_scm_init_subr_5(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
 void
 uim_init_scm_subrs()
 {
-  uim_scm_gc_protect(&true_sym);
-  uim_scm_gc_protect(&false_sym);
-  uim_scm_gc_protect(&protected_arg0);
-
   true_sym  = (uim_lisp)siod_true_value();
 #if 0
   false_sym = (uim_lisp)siod_false_value();
@@ -346,4 +352,9 @@ uim_init_scm_subrs()
    */
   false_sym = (uim_lisp)NIL;
 #endif
+  uim_scm_gc_protect(&true_sym);
+  uim_scm_gc_protect(&false_sym);
+
+  protected_arg0 = uim_scm_f();
+  uim_scm_gc_protect(&protected_arg0);
 }

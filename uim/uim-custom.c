@@ -460,8 +460,11 @@ helper_disconnect_cb(void)
 uim_bool
 uim_custom_init(void)
 {
-  uim_scm_load_file("custom.scm");
+  return_val = uim_scm_f();
+
   uim_scm_gc_protect(&return_val);
+
+  uim_scm_load_file("custom.scm");
 
   return UIM_TRUE;
 }
