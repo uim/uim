@@ -801,6 +801,10 @@ olist_pref_up_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
     goto ERROR;
 
   gtk_list_store_swap(GTK_LIST_STORE(model), &iter1, &iter2);
+  path = gtk_tree_model_get_path(model, &iter1);
+  gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(view), path, NULL,
+			       FALSE, 0.0, 0.0);
+  gtk_tree_path_free(path);
   set_olist_buttons_sensitive(olist_entry);
   olist_pref_entry_set_value(GTK_ENTRY(olist_entry));
 
@@ -865,6 +869,10 @@ olist_pref_down_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
 
   /* sync the view */
   gtk_list_store_swap(GTK_LIST_STORE(model), &iter1, &iter2);
+  path = gtk_tree_model_get_path(model, &iter1);
+  gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(view), path, NULL,
+			       FALSE, 0.0, 0.0);
+  gtk_tree_path_free(path);
   set_olist_buttons_sensitive(olist_entry);
   olist_pref_entry_set_value(GTK_ENTRY(olist_entry));
 
