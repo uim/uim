@@ -41,7 +41,7 @@
 #include <uim/uim.h>
 #include "uim/config.h"
 #include "uim/uim-helper.h"
-#include "uim-compat-scm.h"
+#include "uim/uim-compat-scm.h"
 #include "uim/gettext.h"
 
 #define BUTTON_WIDTH  22
