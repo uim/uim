@@ -48,7 +48,6 @@ static unsigned int read_tag;
 static int uim_fd; /* file descriptor to connect helper message bus */
 static gchar *im_list_str_old; /* To compare new im_list_str */
 static GtkWidget *switcher_tree_view;
-static gboolean grouped;
 
 static void
 reload_im_list(GtkWindow *window, gpointer user_data);
@@ -224,12 +223,11 @@ change_input_method(GtkButton *button, GtkWidget *radio)
     }
     i++;
   }
-  printf("**%d**\n",i);
   switch (i) {
-  case 1:
+  case 0:
     send_message_im_change("im_change_whole_desktop\n");
     break;
-  case 0:
+  case 1:
     send_message_im_change("im_change_this_application_only\n");
     break;
   case 2:
