@@ -42,7 +42,6 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <fcntl.h>
 #include "uim.h"
 #include "uim-helper.h"
 #include "context.h"
@@ -71,7 +70,6 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   int fd;
   struct sockaddr_un server;
   char *path = uim_helper_get_pathname();
-  int flag;
   
   uim_fd = -1;
   
@@ -121,17 +119,6 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   }
 
   if (uim_helper_check_connection_fd(fd)) {
-    close(fd);
-    return -1;
-  }
-
-  if ((flag = fcntl(fd, F_GETFL)) == -1) {
-    close(fd);
-    return -1;
-  }
-
-  flag |= O_NONBLOCK;
-  if (fcntl(fd, F_SETFL, flag) == -1) {
     close(fd);
     return -1;
   }
@@ -211,7 +198,7 @@ uim_helper_read_proc(int fd)
       uim_fd = -1;
       return;
     }
-    uim_read_buf = (char *)realloc(uim_read_buf, strlen(uim_read_buf) + strlen(buf)+1);
+    uim_read_buf = (char *)realloc(uim_read_buf, strlen(uim_read_buf) + strlen(buf) + 1);
     strcat(uim_read_buf, buf);
   }
   uim_read_buf_size = strlen(uim_read_buf);
@@ -235,11 +222,11 @@ uim_helper_get_message(void)
 
   for (i = 0; i < uim_read_buf_size - 1; i++) {
     if (uim_read_buf[i] == '\n' &&
-	uim_read_buf[i+1] == '\n') {
-      buf = (char *)malloc(i+2);
-      memcpy(buf, uim_read_buf, i+1);
-      buf[i+1] = '\0';
-      shift_read_buffer(i+2);
+	uim_read_buf[i + 1] == '\n') {
+      buf = (char *)malloc(i + 2);
+      memcpy(buf, uim_read_buf, i + 1);
+      buf[i + 1] = '\0';
+      shift_read_buffer(i + 2);
       return buf;
     }
   }

@@ -57,10 +57,15 @@
   (sizeof(*(su)) - sizeof((su)->sun_path) + strlen((su)->sun_path))
 #endif
 
+static fd_set s_fdset_read;
+static fd_set s_fdset_write;
+static int s_max_fd;
+
 static int nr_client_slots;
 static struct client {
   int fd;
   char *rbuf;
+  char *write_queue;
 } *clients;
 
 /*
@@ -118,6 +123,8 @@ init_serv_fd(char *path)
     return -1;
   }
   /*  fprintf(stderr,"listen at %s\n",path);*/
+  FD_SET(fd, &s_fdset_read);
+  s_max_fd = fd;
   return fd;
 }
 
@@ -130,9 +137,10 @@ get_unused_client()
       return &clients[i];
     }
   }
-  nr_client_slots ++;
+  nr_client_slots++;
   clients = realloc(clients, sizeof(struct client) * nr_client_slots);
   clients[nr_client_slots - 1].rbuf = strdup("");
+  clients[nr_client_slots - 1].write_queue = strdup("");
   return &clients[nr_client_slots - 1];
 }
 
@@ -143,6 +151,10 @@ free_client(struct client *cl)
     free(cl->rbuf);
     cl->rbuf = strdup("");
   }
+  if (cl->write_queue) {
+    free(cl->write_queue);
+    cl->write_queue = strdup("");
+  }
   cl->fd = -1;
 }
 
@@ -150,9 +162,7 @@ free_client(struct client *cl)
 static void
 parse_content(char *content, struct client *cl)
 {
-  int i;
-  int ret, content_len, out_len;
-  char *out;
+  int i, content_len;
 
   content_len = strlen(content);
 
@@ -160,38 +170,39 @@ parse_content(char *content, struct client *cl)
     if (clients[i].fd == -1 || clients[i].fd == cl->fd) {
       continue;
     } else {
-      out = content;
-      out_len = content_len;
-      while (out_len > 0) {
-	if ((ret = write(clients[i].fd, out, out_len)) < 0) {
-	  if (errno == EAGAIN || errno == EINTR) {
-	    fd_set fds;
-	    struct timeval tv;
-	    int rc;
-
-	    FD_ZERO(&fds);
-	    FD_SET(clients[i].fd, &fds);
-	    tv.tv_sec = 10;
-	    tv.tv_usec = 0;
-	    rc = select(clients[i].fd + 1, NULL, &fds, NULL, &tv);
-	    if (rc > 0 && FD_ISSET(clients[i].fd, &fds)) {
-	      continue;
-	    }
-	    fprintf(stderr, "uim-helper-server failed to write\n");
-	  }
-
-      	  if (errno == EPIPE) {
-	    close(clients[i].fd);
-	    free_client(&clients[i]);
-	  }
-	  break;
-	}
-
-	out += ret;
-	out_len -= ret;
-      }
+      clients[i].write_queue = (char *)realloc(clients[i].write_queue,
+		      strlen(clients[i].write_queue) + content_len + 1);
+      strcat(clients[i].write_queue, content);
+      FD_SET(clients[i].fd, &s_fdset_write);
     }
   }
+}
+
+static void
+shift_buffer(char *buf, int count)
+{
+  int len = strlen(buf);
+  memmove(buf, &buf[count], len - count);
+  buf[len - count] = '\0';
+}
+
+static char *
+uim_helper_server_get_message(char *buf)
+{
+  int i;
+  int len = strlen(buf);
+  char *ret;
+
+  for (i = 0; i < len - 1; i++) {
+    if (buf[i] == '\n' && buf[i + 1] == '\n') {
+      ret = (char *)malloc(i + 3);
+      memcpy(ret, buf, i + 2);
+      ret[i + 2] = '\0';
+      shift_buffer(buf, i + 2);
+      return ret;
+    }
+  }
+  return NULL;
 }
 
 static int
@@ -199,10 +210,13 @@ proc_func(struct client *cl)
 {
   int rc;
   char buf[BUFFER_SIZE];
+  char *message;
 
   /* do read */
   rc = read(cl->fd, buf, BUFFER_SIZE - 1);
   if (rc <= 0) {
+    if (rc < 0 && (errno == EAGAIN || errno == EINTR))
+      return 0;
     return -1;
   }
 
@@ -211,13 +225,11 @@ proc_func(struct client *cl)
   cl->rbuf = (char *)realloc(cl->rbuf, strlen(cl->rbuf) + strlen(buf) + 1);
   strcat(cl->rbuf, buf);
 
-  if (uim_helper_str_terminated(cl->rbuf)) {
+  while ((message = uim_helper_server_get_message(cl->rbuf))) {
     /* process */
-    parse_content(cl->rbuf, cl);
-    free(cl->rbuf);
-    cl->rbuf = strdup("");
+    parse_content(message, cl);
+    free(message);
   }
-
   return 1;
 }
 
@@ -225,29 +237,19 @@ static void
 uim_helper_server_process_connection(int serv_fd)
 {
   int i;
-  int fd_biggest = 0;
   fd_set readfds;
-
-  fd_biggest = serv_fd;
+  fd_set writefds;
+  struct timeval tv;
 
   while (1) {
-    /* setup readfds */
-    FD_ZERO(&readfds);
-    FD_SET(serv_fd, &readfds);  
-    for (i = 0; i < nr_client_slots; i++) {
-      int fd = clients[i].fd;
-      if (fd == -1) {
-	continue;
-      }
-      FD_SET(fd, &readfds);
-      if (fd > fd_biggest) {
-	fd_biggest = fd;
-      }
-    }
+    memcpy(&readfds, &s_fdset_read, sizeof(fd_set));
+    memcpy(&writefds, &s_fdset_write, sizeof(fd_set));
+    tv.tv_sec = 1;
+    tv.tv_usec = 0;
 
     /* call select(), waiting until a file descriptor readable */
-    if (select(fd_biggest + 1, &readfds, NULL, NULL, NULL) < 0) {
-      perror("select faild");
+    if (select(s_max_fd + 1, &readfds, &writefds, NULL, &tv) <= 0) {
+      continue;
     }
 
     /* for accept new connection */
@@ -287,19 +289,53 @@ uim_helper_server_process_connection(int serv_fd)
 	write(cl->fd, buf, 1);
       }
 #endif
+      FD_SET(cl->fd, &s_fdset_read);
+      if (cl->fd > s_max_fd)
+	s_max_fd = cl->fd;
     } else {
-      /* check data from clients reached */
+      /* check data to write and from clients reached */
       for (i = 0; i < nr_client_slots; i++) {
-	if (clients[i].fd != -1 &&
-	  FD_ISSET(clients[i].fd, &readfds)) {
+	if (clients[i].fd != -1 && FD_ISSET(clients[i].fd, &writefds)) {
+	  int ret, message_len, out_len;
+	  char *out;
+
+	  out = clients[i].write_queue;
+	  message_len = out_len = strlen(clients[i].write_queue);
+	  while (out_len > 0) {
+	    if ((ret = write(clients[i].fd, out, out_len)) < 0) {
+	      perror("uim-helper_server write(2) failed");
+	      if (errno == EPIPE) {
+	        FD_CLR(clients[i].fd, &s_fdset_read);
+	        FD_CLR(clients[i].fd, &s_fdset_write);
+	        if (clients[i].fd == s_max_fd)
+	          s_max_fd--;
+	        close(clients[i].fd);
+	        free_client(&clients[i]);
+	      }
+	      break;
+	    } else {
+	      out += ret;
+	      out_len -= ret;
+	    }
+	  }
+	  if (out_len == 0) {
+	    free(clients[i].write_queue);
+	    clients[i].write_queue = strdup("");
+	    FD_CLR(clients[i].fd, &s_fdset_write);
+	  } else {
+	    shift_buffer(clients[i].write_queue, message_len - out_len);
+	  }
+	}
+	if (clients[i].fd != -1 && FD_ISSET(clients[i].fd, &readfds)) {
 	  int result;
 	  /* actual process */
 	  result = proc_func(&clients[i]);
 
 	  if (result < 0) {
-	    FD_CLR(clients[i].fd, &readfds);
-	    if (clients[i].fd == fd_biggest)
-	      fd_biggest--;
+	    FD_CLR(clients[i].fd, &s_fdset_read);
+	    FD_CLR(clients[i].fd, &s_fdset_write);
+	    if (clients[i].fd == s_max_fd)
+	      s_max_fd--;
 	    close(clients[i].fd);
 	    free_client(&clients[i]);
 	  }
@@ -319,6 +355,9 @@ main(int argc, char **argv)
   clients = NULL;
   nr_client_slots = 0;
 
+  FD_ZERO(&s_fdset_read);
+  FD_ZERO(&s_fdset_write);
+  s_max_fd = 0;
   serv_fd = init_serv_fd(path);
 
   printf("waiting\n\n");

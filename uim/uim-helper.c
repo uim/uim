@@ -134,21 +134,8 @@ uim_helper_send_message(int fd, const char *message)
   bufp = buf;
   while (out_len > 0) {
     if ((res = write(fd, bufp, out_len)) < 0) {
-      if (errno == EAGAIN || errno == EINTR) {
-	fd_set fds;
-	struct timeval tv;
-	int rc;
-
-	FD_ZERO(&fds);
-	FD_SET(fd, &fds);
-	tv.tv_sec = 2;
-	tv.tv_usec = 0;
-	rc = select(fd + 1, NULL, &fds, NULL, &tv);
-	if (rc > 0 && FD_ISSET(fd, &fds)) {
-	  continue;
-	}
-	fprintf(stderr, "uim_helper_send_message: write failed\n");
-      }
+      if (errno == EAGAIN || errno == EINTR)
+	continue;
       break;
     }
 
@@ -200,9 +187,9 @@ int uim_helper_str_terminated(const char *str)
   if (!str)
     return 0;
 
-  if (strlen(str) > 2&&
-     str[strlen(str)-1] == '\n' &&
-     str[strlen(str)-2] == '\n' )
+  if (strlen(str) > 2 &&
+     str[strlen(str) - 1] == '\n' &&
+     str[strlen(str) - 2] == '\n')
     return 1;
 
   return 0;
