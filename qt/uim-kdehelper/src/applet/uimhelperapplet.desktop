@@ -1,6 +1,0 @@
-[Desktop Entry] 
-
-Name = Uim Helper Applet
-Comment = the applet for indicating the IM state by Uim.
-X-KDE-Library = libuimhelperapplet
-X-KDE-UniqueApplet = true

@@ -1,8 +1,0 @@
-make -f Makefile.cvs
-if test "$1" = "release"; then
-  echo "Cleaning files"
-  find . -name .cvsignore | xargs rm -fr
-  rm templates/ -fr
-  find -name \.svn | xargs rm -rf
-  rm autom4te.cache *.kdev* stamp*.in -fr
-fi
