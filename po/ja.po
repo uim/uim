@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 0.4.6-alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-08 12:53+0900\n"
-"PO-Revision-Date: 2005-02-08 12:54+0900\n"
+"POT-Creation-Date: 2005-02-11 23:48+0900\n"
+"PO-Revision-Date: 2005-02-11 23:49+0900\n"
 "Last-Translator: Takuro Ashie <ashie@homa.ne.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -338,7 +338,7 @@ msgstr "送り"
 msgid "Example"
 msgstr "例"
 
-#: helper/pref-gtk.c:106
+#: helper/pref-gtk.c:118
 msgid ""
 "Some value(s) have been changed.\n"
 "Save?"
@@ -346,7 +346,7 @@ msgstr ""
 "設定が変更されています。\n"
 "セーブしますか?"
 
-#: helper/pref-gtk.c:175
+#: helper/pref-gtk.c:188
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you realy quit this program?"
@@ -354,12 +354,12 @@ msgstr ""
 "設定が変更されています。\n"
 "本当に終了しますか?"
 
-#: helper/pref-gtk.c:214 qt/pref-qt.cpp:137
+#: helper/pref-gtk.c:227 qt/pref-qt.cpp:137
 msgid "Group"
 msgstr "グループ"
 
 #. Defaults button
-#: helper/pref-gtk.c:304
+#: helper/pref-gtk.c:317
 msgid "_Defaults"
 msgstr "デフォルト(_D)"
 
@@ -375,17 +375,87 @@ msgstr ""
 "(\"~/.uim.d/customs/*.scm\") よりも優先されます。\n"
 "設定が反映されない場合は、このファイルをチェックして下さい。"
 
-#: helper/toolbar-common-gtk.c:484 helper/toolbar-common-gtk.c:686
+#: helper/pref-gtk-custom-widgets.c:382
+msgid "Specify file"
+msgstr "ファイルの指定"
+
+#: helper/pref-gtk-custom-widgets.c:419
+msgid "File..."
+msgstr "参照..."
+
+#: helper/pref-gtk-custom-widgets.c:1108
+msgid "Enabled"
+msgstr "有効"
+
+#: helper/pref-gtk-custom-widgets.c:1134
+msgid "Enabled items"
+msgstr "有効な項目"
+
+#: helper/pref-gtk-custom-widgets.c:1212
+msgid "Disabled"
+msgstr "無効"
+
+#: helper/pref-gtk-custom-widgets.c:1238
+msgid "Disabled items"
+msgstr "無効な項目"
+
+#: helper/pref-gtk-custom-widgets.c:1276 helper/pref-gtk-custom-widgets.c:1865
+msgid "Edit..."
+msgstr "編集..."
+
+#: helper/pref-gtk-custom-widgets.c:1484
+msgid "Press keys to grab (e.g. <Control>a)"
+msgstr "取得するキーを押して下さい (例:<Control>a)"
+
+#: helper/pref-gtk-custom-widgets.c:1485
+msgid "Grabbing keys"
+msgstr "キーを取得中"
+
+#: helper/pref-gtk-custom-widgets.c:1706
+#, c-format
+msgid "%s - key configuration"
+msgstr "%s - キー設定"
+
+#: helper/pref-gtk-custom-widgets.c:1743
+msgid "Key preference"
+msgstr "キー設定"
+
+#: helper/pref-gtk-custom-widgets.c:1789
+msgid "Key:"
+msgstr "キー:"
+
+#: helper/pref-gtk-custom-widgets.c:1810
+msgid "Grab..."
+msgstr "取得..."
+
+#. FIXME! menu and command's should be customizable.
+#: helper/toolbar-common-gtk.c:510 helper/toolbar-common-gtk.c:732
 #: qt/toolbar-common-quimhelpertoolbar.cpp:55
 msgid "Execute uim's input method switcher"
 msgstr "入力方式の切り替え"
 
-#: helper/toolbar-common-gtk.c:491 helper/toolbar-common-gtk.c:731
+#: helper/toolbar-common-gtk.c:517 helper/toolbar-common-gtk.c:777
 #: qt/toolbar-common-quimhelpertoolbar.cpp:56
 msgid "Execute uim's preference tool"
 msgstr "設定ツールの起動"
 
-#: helper/toolbar-common-gtk.c:498 qt/toolbar-common-quimhelpertoolbar.cpp:57
+#: helper/toolbar-common-gtk.c:523 qt/toolbar-common-quimhelpertoolbar.cpp:57
+msgid "Execute uim's Japanese dictionary tool"
+msgstr "日本語辞書ツールの起動"
+
+#: helper/toolbar-common-gtk.c:528 qt/toolbar-common-quimhelpertoolbar.cpp:58
+msgid "Execute uim's input pad tool"
+msgstr "入力パッドの起動"
+
+#: helper/toolbar-common-gtk.c:533 qt/toolbar-common-quimhelpertoolbar.cpp:59
+msgid "Execute uim's handwriting input pad tool"
+msgstr "手書き入力パッドの起動"
+
+#: helper/toolbar-common-gtk.c:538 qt/toolbar-common-quimhelpertoolbar.cpp:60
+msgid "Execute uim's help tool"
+msgstr "ヘルプの起動"
+
+#: helper/toolbar-common-gtk.c:544 qt/toolbar-common-quimhelpertoolbar.cpp:61
 msgid "Quit this toolbar"
 msgstr "このツールバーを閉じる"
 
@@ -450,14 +520,30 @@ msgstr "OK"
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:93 scm/action.lisp:531
+#: qt/toolbar-common-quimhelpertoolbar.cpp:99 scm/action.lisp:531
 #: scm/action.lisp:532
 msgid "exec im-switcher"
 msgstr "入力方式の切り替え"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:117
+#: qt/toolbar-common-quimhelpertoolbar.cpp:123
 msgid "exec Preference Application"
 msgstr "設定ツールの起動"
+
+#: qt/toolbar-common-quimhelpertoolbar.cpp:143
+msgid "exec Japanese dictionary Tool Application"
+msgstr "日本語辞書ツールの起動"
+
+#: qt/toolbar-common-quimhelpertoolbar.cpp:163
+msgid "exec Input Pad Tool Application"
+msgstr "入力パッドの起動"
+
+#: qt/toolbar-common-quimhelpertoolbar.cpp:183
+msgid "exec Handwriting Input Pad Tool Application"
+msgstr "手書き入力パッドの起動"
+
+#: qt/toolbar-common-quimhelpertoolbar.cpp:202
+msgid "exec Help Application"
+msgstr "ヘルプの起動"
 
 #: qt/pref-qt.cpp:106
 msgid ""
@@ -539,34 +625,35 @@ msgstr "文節区切りを表示する"
 #: scm/generic-custom.lisp:37 scm/generic-custom.lisp:43
 #: scm/generic-custom.lisp:49 scm/generic-custom.lisp:55
 #: scm/generic-custom.lisp:61 scm/generic-key-custom.lisp:37
-#: scm/generic-key-custom.lisp:41 scm/im-custom.lisp:46 scm/im-custom.lisp:51
-#: scm/im-custom.lisp:56 scm/im-custom.lisp:61 scm/im-custom.lisp:66
-#: scm/im-custom.lisp:71 scm/im-custom.lisp:76 scm/im-custom.lisp:81
-#: scm/im-custom.lisp:86 scm/im-custom.lisp:91 scm/im-custom.lisp:96
-#: scm/im-custom.lisp:101 scm/im-custom.lisp:112 scm/im-custom.lisp:122
-#: scm/im-custom.lisp:215 scm/im-custom.lisp:275 scm/im-custom.lisp:291
-#: scm/im-custom.lisp:297 scm/im-custom.lisp:303 scm/im-custom.lisp:310
-#: scm/im-custom.lisp:318 scm/im-custom.lisp:324 scm/im-custom.lisp:331
-#: scm/prime-custom.lisp:58 scm/prime-custom.lisp:64 scm/prime-custom.lisp:70
-#: scm/prime-custom.lisp:76 scm/prime-custom.lisp:82 scm/prime-custom.lisp:90
-#: scm/prime-custom.lisp:96 scm/prime-custom.lisp:102
-#: scm/prime-custom.lisp:145 scm/prime-custom.lisp:154
-#: scm/prime-key-custom.lisp:61 scm/prime-key-custom.lisp:65
-#: scm/prime-key-custom.lisp:69 scm/skk-custom.lisp:55 scm/skk-custom.lisp:61
-#: scm/skk-custom.lisp:67 scm/skk-custom.lisp:73 scm/skk-custom.lisp:135
-#: scm/skk-custom.lisp:144 scm/skk-custom.lisp:176 scm/skk-custom.lisp:183
-#: scm/skk-custom.lisp:190 scm/skk-custom.lisp:202 scm/skk-custom.lisp:208
-#: scm/skk-custom.lisp:214 scm/skk-custom.lisp:220 scm/skk-custom.lisp:230
-#: scm/skk-custom.lisp:236 scm/skk-custom.lisp:257 scm/skk-custom.lisp:263
-#: scm/skk-custom.lisp:270 scm/skk-key-custom.lisp:65
-#: scm/skk-key-custom.lisp:69 scm/skk-key-custom.lisp:73
-#: scm/skk-key-custom.lisp:78 scm/spellcheck-custom.lisp:48
-#: scm/spellcheck-custom.lisp:54 scm/spellcheck-custom.lisp:60
-#: scm/spellcheck-custom.lisp:66
+#: scm/generic-key-custom.lisp:41 scm/im-custom.lisp:46 scm/im-custom.lisp:50
+#: scm/im-custom.lisp:55 scm/im-custom.lisp:60 scm/im-custom.lisp:65
+#: scm/im-custom.lisp:70 scm/im-custom.lisp:75 scm/im-custom.lisp:80
+#: scm/im-custom.lisp:85 scm/im-custom.lisp:90 scm/im-custom.lisp:95
+#: scm/im-custom.lisp:100 scm/im-custom.lisp:105 scm/im-custom.lisp:116
+#: scm/im-custom.lisp:126 scm/im-custom.lisp:219 scm/im-custom.lisp:279
+#: scm/im-custom.lisp:295 scm/im-custom.lisp:301 scm/im-custom.lisp:308
+#: scm/im-custom.lisp:314 scm/im-custom.lisp:320 scm/im-custom.lisp:326
+#: scm/im-custom.lisp:332 scm/im-custom.lisp:338 scm/im-custom.lisp:346
+#: scm/im-custom.lisp:352 scm/im-custom.lisp:359 scm/prime-custom.lisp:58
+#: scm/prime-custom.lisp:64 scm/prime-custom.lisp:70 scm/prime-custom.lisp:76
+#: scm/prime-custom.lisp:82 scm/prime-custom.lisp:90 scm/prime-custom.lisp:96
+#: scm/prime-custom.lisp:102 scm/prime-custom.lisp:145
+#: scm/prime-custom.lisp:154 scm/prime-key-custom.lisp:61
+#: scm/prime-key-custom.lisp:65 scm/prime-key-custom.lisp:69
+#: scm/skk-custom.lisp:55 scm/skk-custom.lisp:61 scm/skk-custom.lisp:67
+#: scm/skk-custom.lisp:73 scm/skk-custom.lisp:135 scm/skk-custom.lisp:144
+#: scm/skk-custom.lisp:176 scm/skk-custom.lisp:183 scm/skk-custom.lisp:190
+#: scm/skk-custom.lisp:202 scm/skk-custom.lisp:208 scm/skk-custom.lisp:214
+#: scm/skk-custom.lisp:220 scm/skk-custom.lisp:230 scm/skk-custom.lisp:236
+#: scm/skk-custom.lisp:257 scm/skk-custom.lisp:263 scm/skk-custom.lisp:270
+#: scm/skk-key-custom.lisp:65 scm/skk-key-custom.lisp:69
+#: scm/skk-key-custom.lisp:73 scm/skk-key-custom.lisp:78
+#: scm/spellcheck-custom.lisp:48 scm/spellcheck-custom.lisp:54
+#: scm/spellcheck-custom.lisp:60 scm/spellcheck-custom.lisp:66
 msgid "long description will be here."
 msgstr "詳細記述予定"
 
-#: scm/anthy-custom.lisp:56 scm/canna-custom.lisp:60 scm/im-custom.lisp:75
+#: scm/anthy-custom.lisp:56 scm/canna-custom.lisp:60 scm/im-custom.lisp:79
 msgid "Segment separator"
 msgstr "文節区切り"
 
@@ -1132,111 +1219,131 @@ msgstr "ローマ字入力式ハングル入力方式"
 msgid "Global settings"
 msgstr "全体設定"
 
-#: scm/im-custom.lisp:50
-msgid "Advanced settings"
-msgstr "上級設定"
-
-#: scm/im-custom.lisp:55
+#: scm/im-custom.lisp:49
 msgid "Toolbar"
 msgstr "ツールバー"
 
-#: scm/im-custom.lisp:60
+#: scm/im-custom.lisp:54
+msgid "Advanced settings"
+msgstr "上級設定"
+
+#: scm/im-custom.lisp:59
+msgid "Buttons"
+msgstr "ボタン"
+
+#: scm/im-custom.lisp:64
 msgid "Candidate window"
 msgstr "候補ウィンドウ"
 
-#: scm/im-custom.lisp:65
+#: scm/im-custom.lisp:69
 msgid "Annotation"
 msgstr "註釈"
 
-#: scm/im-custom.lisp:70
+#: scm/im-custom.lisp:74
 msgid "Dictionary"
 msgstr "辞書"
 
-#: scm/im-custom.lisp:80
+#: scm/im-custom.lisp:84
 msgid "Mode transition"
 msgstr "モード遷移"
 
-#: scm/im-custom.lisp:85
+#: scm/im-custom.lisp:89
 msgid "Special operation"
 msgstr "特殊操作"
 
-#: scm/im-custom.lisp:90 scm/im-custom.lisp:121
+#: scm/im-custom.lisp:94 scm/im-custom.lisp:125
 msgid "Default input method"
 msgstr "デフォルトの入力方式"
 
-#: scm/im-custom.lisp:95
+#: scm/im-custom.lisp:99
 msgid "Input method deployment"
 msgstr "入力方式の利用準備"
 
-#: scm/im-custom.lisp:100
+#: scm/im-custom.lisp:104
 msgid "Visual preference"
 msgstr "視覚設定"
 
-#: scm/im-custom.lisp:111
+#: scm/im-custom.lisp:115
 msgid "Specify default IM"
 msgstr "デフォルトの入力方式を指定する"
 
-#: scm/im-custom.lisp:214
+#: scm/im-custom.lisp:218
 msgid "Enabled input methods"
 msgstr "使用可能にする入力方式"
 
-#: scm/im-custom.lisp:272 scm/skk-custom.lisp:200
+#: scm/im-custom.lisp:276 scm/skk-custom.lisp:200
 msgid "uim"
 msgstr "uim"
 
-#: scm/im-custom.lisp:272 scm/skk-custom.lisp:200
+#: scm/im-custom.lisp:276 scm/skk-custom.lisp:200
 msgid "uim native"
 msgstr "uimネイティブ"
 
-#: scm/im-custom.lisp:273
+#: scm/im-custom.lisp:277
 msgid "ATOK like"
 msgstr "ATOK風"
 
-#: scm/im-custom.lisp:273
+#: scm/im-custom.lisp:277
 msgid "Similar to ATOK"
 msgstr "ATOK風"
 
-#: scm/im-custom.lisp:274
+#: scm/im-custom.lisp:278
 msgid "Preedit color"
 msgstr "編集領域色"
 
-#: scm/im-custom.lisp:282 scm/im-custom.lisp:283
+#: scm/im-custom.lisp:286 scm/im-custom.lisp:287
 msgid "Adjacent to cursor"
 msgstr "カーソルに隣接"
 
-#: scm/im-custom.lisp:285 scm/im-custom.lisp:286
+#: scm/im-custom.lisp:289 scm/im-custom.lisp:290
 msgid "Left end of preedit area"
 msgstr "編集領域の左端"
 
-#: scm/im-custom.lisp:288 scm/im-custom.lisp:289
+#: scm/im-custom.lisp:292 scm/im-custom.lisp:293
 msgid "Right end of preedit area"
 msgstr "編集領域の右端"
 
-#: scm/im-custom.lisp:290
+#: scm/im-custom.lisp:294
 msgid "Candidate window position"
 msgstr "候補ウィンドウ表示位置"
 
-#: scm/im-custom.lisp:296
-msgid "Show input method switcher button on toolbar"
-msgstr "入力方式の切り替えボタンをツールバーに表示する"
-
-#: scm/im-custom.lisp:302
-msgid "Show uim preference tool button on toolbar"
-msgstr "設定ツールの起動ボタンをツールバーに表示する"
-
-#: scm/im-custom.lisp:309
+#: scm/im-custom.lisp:300
 msgid "Enable lazy input method loading for fast startup"
 msgstr "高速起動のための遅延ローディングを有効にする"
 
-#: scm/im-custom.lisp:317
+#: scm/im-custom.lisp:307
+msgid "Show input method switcher button on toolbar"
+msgstr "入力方式の切り替えボタンをツールバーに表示する"
+
+#: scm/im-custom.lisp:313
+msgid "Show uim preference tool button on toolbar"
+msgstr "設定ツールの起動ボタンをツールバーに表示する"
+
+#: scm/im-custom.lisp:319
+msgid "Show uim Japanese dictionary tool button on toolbar"
+msgstr "日本語辞書ツールの起動ボタンをツールバーに表示する"
+
+#: scm/im-custom.lisp:325
+msgid "Show uim input pad button on toolbar"
+msgstr "入力パッドの起動ボタンをツールバーに表示する"
+
+#: scm/im-custom.lisp:331
+msgid "Show uim handwriting-input pad button on toolbar"
+msgstr "手書き入力パッドの起動ボタンをツールバーに表示する"
+
+#: scm/im-custom.lisp:337
+msgid "Show uim help button on toolbar"
+msgstr "ヘルプボタンをツールバーに表示する"
+
+#: scm/im-custom.lisp:345
 msgid "EB library settings"
 msgstr "EBライブラリ設定"
 
-#: scm/im-custom.lisp:323
+#: scm/im-custom.lisp:351
 msgid "Use EB library to search annotations"
 msgstr "注釈の検索にEBライブラリを使用する"
 
-#: scm/im-custom.lisp:330
+#: scm/im-custom.lisp:358
 msgid "The directory which contains EB dictionary file"
 msgstr "EB辞書ファイルを格納しているディレクトリ"
 
@@ -2262,44 +2369,8 @@ msgstr "ヨルバ語"
 msgid "Zulu"
 msgstr "ズールー語"
 
-#~ msgid "Specify file"
-#~ msgstr "ファイルの指定"
-
-#~ msgid "File..."
-#~ msgstr "参照..."
-
-#~ msgid "Enabled"
-#~ msgstr "有効"
-
-#~ msgid "Enabled items"
-#~ msgstr "有効な項目"
-
-#~ msgid "Disabled"
-#~ msgstr "無効"
-
-#~ msgid "Disabled items"
-#~ msgstr "無効な項目"
-
-#~ msgid "Edit..."
-#~ msgstr "編集..."
-
-#~ msgid "Press keys to grab (e.g. <Control>a)"
-#~ msgstr "取得するキーを押して下さい (例:<Control>a)"
-
-#~ msgid "Grabbing keys"
-#~ msgstr "キーを取得中"
-
-#~ msgid "%s - key configuration"
-#~ msgstr "%s - キー設定"
-
-#~ msgid "Key preference"
-#~ msgstr "キー設定"
-
-#~ msgid "Key:"
-#~ msgstr "キー:"
-
-#~ msgid "Grab..."
-#~ msgstr "取得..."
+#~ msgid "Execute uim's japanese dictionary tool"
+#~ msgstr "日本語辞書ツールの起動"
 
 #~ msgid "Choose..."
 #~ msgstr "選択..."

@@ -45,14 +45,18 @@
 		     (_ "Global settings")
 		     (_ "long description will be here."))
 
+(define-custom-group 'toolbar
+		     (_ "Toolbar")
+		     (_ "long description will be here."))
+
 ;; subgroup
 (define-custom-group 'advanced
 		     (_ "Advanced settings")
 		     (_ "long description will be here."))
 
 ;; subgroup
-(define-custom-group 'toolbar
-		     (_ "Toolbar")
+(define-custom-group 'buttons
+		     (_ "Buttons")
 		     (_ "long description will be here."))
 
 ;; subgroup
@@ -290,47 +294,47 @@
   (_ "Candidate window position")
   (_ "long description will be here."))
 
+(define-custom 'enable-lazy-loading? #t
+  '(global advanced)
+  '(boolean)
+  (_ "Enable lazy input method loading for fast startup")
+  (_ "long description will be here."))
+
 ;; toolbar buttons
 (define-custom 'toolbar-show-switcher-button? #t
-  '(global toolbar)
+  '(toolbar buttons)
   '(boolean)
   (_ "Show input method switcher button on toolbar")
   (_ "long description will be here."))
 
 (define-custom 'toolbar-show-pref-button? #t
-  '(global toolbar)
+  '(toolbar buttons)
   '(boolean)
   (_ "Show uim preference tool button on toolbar")
   (_ "long description will be here."))
 
 (define-custom 'toolbar-show-dict-button? #f
-  '(global toolbar)
+  '(toolbar buttons)
   '(boolean)
-  (_ "Show uim japanese dictionary tool button on toolbar")
+  (_ "Show uim Japanese dictionary tool button on toolbar")
   (_ "long description will be here."))
 
 (define-custom 'toolbar-show-input-pad-button? #f
-  '(global toolbar)
+  '(toolbar buttons)
   '(boolean)
   (_ "Show uim input pad button on toolbar")
   (_ "long description will be here."))
 
 (define-custom 'toolbar-show-handwriting-input-pad-button? #f
-  '(global toolbar)
+  '(toolbar buttons)
   '(boolean)
   (_ "Show uim handwriting-input pad button on toolbar")
   (_ "long description will be here."))
 
 (define-custom 'toolbar-show-help-button? #f
-  '(global toolbar)
+  '(toolbar buttons)
   '(boolean)
   (_ "Show uim help button on toolbar")
-  (_ "long description will be here."))
-
-(define-custom 'enable-lazy-loading? #t
-  '(global advanced)
-  '(boolean)
-  (_ "Enable lazy input method loading for fast startup")
   (_ "long description will be here."))
 
 
