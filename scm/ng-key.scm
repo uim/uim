@@ -30,6 +30,7 @@
 ;;;;
 
 (require "util.scm")
+(require-custom "key-custom.scm")
 
 ;;
 ;; modifiers

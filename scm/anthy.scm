@@ -34,6 +34,7 @@
 (require "ustr.scm")
 (require "event.scm")
 (require "evmap.scm")
+(require "event-translator.scm")
 (require "legacy-api-bridge.scm")
 (require "ng-japanese.scm")
 (require-custom "generic-key-custom.scm")
@@ -148,13 +149,19 @@
 	(set! anthy-valid-actions (cons id anthy-valid-actions)))
     (register-action id indication-handler activity-pred handler)))
 
-(define anthy-register-per-state-action
-  (lambda (id label short-desc)
+(define anthy-register-std-action
+  (lambda (id label short-desc handler)
     (anthy-register-action id
 			   (anthy-std-indication-handler label short-desc)
 			   #f
-			   (anthy-per-state-action-handler id))))
+			   handler)))
 
+(define anthy-register-per-state-action
+  (lambda (id label short-desc)
+    (anthy-register-std-action id
+			       label
+			       short-desc
+			       (anthy-per-state-action-handler id))))
 
 (anthy-register-per-state-action 'action_anthy_on
 				 "On"
@@ -290,6 +297,55 @@
 	      (iota anthy-nr-candidate-max))))
 
 (anthy-register-candidate-actions)
+
+(define anthy-set-mod-state-handler
+  (lambda (mod)
+    (lambda (ac)
+      (let ((mod-state (bitwise-or (anthy-context-mod-state ac)
+				   mod)))
+	(puts "anthy-set-mod-state-handler: ")
+	(print mod-state)
+	(anthy-context-set-mod-state! ac mod-state)))))
+
+(define anthy-reset-mod-state-handler
+  (lambda (mod)
+    (lambda (ac)
+      (let ((mod-state (bitwise-and (anthy-context-mod-state ac)
+				    (bitwise-not mod))))
+	(puts "anthy-reset-mod-state-handler: ")
+	(print mod-state)
+	(anthy-context-set-mod-state! ac mod-state)))))
+
+(define anthy-register-modifier-action
+  (lambda (mod-sym act-sym)
+    (let* ((mod-str (symbol->string mod-sym))
+	   (mod-var (symbol-value mod-sym))
+	   (set-label (string-append "Set " mod-str " state"))
+	   (reset-label (string-append "Reset " mod-str " state"))
+	   (set-act-sym (symbolconc 'action_set_ act-sym '_state))
+	   (reset-act-sym (symbolconc 'action_reset_ act-sym '_state)))
+      (anthy-register-std-action set-act-sym
+				 set-label
+				 set-label
+				 (anthy-set-mod-state-handler mod-var))
+      (anthy-register-std-action reset-act-sym
+				 reset-label
+				 reset-label
+				 (anthy-reset-mod-state-handler mod-var)))))
+
+(anthy-register-modifier-action 'mod_Shift_L 'shift_l)
+(anthy-register-modifier-action 'mod_Shift_R 'shift_r)
+(anthy-register-modifier-action 'mod_Control_L 'control_l)
+(anthy-register-modifier-action 'mod_Control_R 'control_r)
+(anthy-register-modifier-action 'mod_Alt_L 'alt_l)
+(anthy-register-modifier-action 'mod_Alt_R 'alt_r)
+(anthy-register-modifier-action 'mod_Meta_L 'meta_l)
+(anthy-register-modifier-action 'mod_Meta_R 'meta_r)
+(anthy-register-modifier-action 'mod_Super_L 'super_l)
+(anthy-register-modifier-action 'mod_Super_R 'super_r)
+(anthy-register-modifier-action 'mod_Hyper_L 'hyper_l)
+(anthy-register-modifier-action 'mod_Hyper_R 'hyper_r)
+
 
 (define anthy-prepare-activation
   (lambda (ac)
@@ -652,9 +708,12 @@
     (list 'wide-latin         #f)
     (list 'kana-mode          anthy-type-hiragana)
     (list 'input-rule         anthy-input-rule-roma)
-    (list 'ruletree           #f)
-    (list 'keytrans-emc      #f)     ;; evmap-context for key-event translator
-    (list 'actmap-emc        #f))))  ;; evmap-context for action mapper
+    (list 'ruletree           #f)    ;; current composition rule
+    (list 'keytrans-emc       #f)    ;; evmap-context for key-event translator
+    (list 'actmap-emc         #f)    ;; evmap-context for action mapper
+    (list 'mod-state          mod_None)    ;; regenerated modifier state
+    (list 'mod-lock           mod_None)    ;; modifier lock state
+    (list 'mod-stick          mod_None)))) ;; sticky modifier state
 (define-record 'anthy-context anthy-context-rec-spec)
 (define anthy-context-new-internal anthy-context-new)
 
@@ -723,8 +782,7 @@
 
 (define anthy-input!
   (lambda (ac ev)
-    (let ((ruletree (anthy-context-ruletree ac))
-	  (actmap-emc (anthy-context-actmap-emc ac)))
+    (let ((actmap-emc (anthy-context-actmap-emc ac)))
       (if (evmap-context-input! actmap-emc ev)
 	  (if (evmap-context-complete? actmap-emc)
 	      (begin
@@ -1246,11 +1304,26 @@
 
 (define anthy-key-handler
   (lambda (ac key key-state press?)
-    (let ((ev (legacy-key->key-event key key-state press?))
-	  (keytrans-emc (anthy-context-keytrans-emc ac)))
-
-      (key-event-print-inspected "key-event:  " ev)
-      (key-event-translator-translate! keytrans-emc ev)
+    (let* ((ev (legacy-key->key-event key key-state press?))
+	   (keytrans-emc (anthy-context-keytrans-emc ac))
+	   (act-seq (begin
+		      (key-event-print-inspected "key-event:  " ev)
+		      (key-event-translator-translate! keytrans-emc ev))))
+      (if act-seq
+	  (for-each (lambda (act-id)
+		      (and (symbol? act-id)
+			   (anthy-activate-action! ac act-id)))
+		    act-seq))
+      (if enable-modifier-translation?
+	  (begin
+	    (key-event-set-modifier! ev
+				     (bitwise-or (key-event-modifier ev)
+						 (anthy-context-mod-state ac)
+						 (anthy-context-mod-lock ac)
+						 (anthy-context-mod-stick ac)))
+	    (if (modifier-match? mod_Shift
+				 (key-event-modifier ev))
+		(key-event-char-upcase! ev))))
       (key-event-print-inspected "translated: " ev)
 
       (anthy-input! ac ev)
