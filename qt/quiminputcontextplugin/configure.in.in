@@ -41,19 +41,17 @@ kde_locale="$datadir"/locale
 AC_SUBST(kde_locale)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [The gettext domain])
 
-#AC_ARG_ENABLE(uimqt-debug,
-#              [  --enable-uim-debug            Turn on debugging],
-#              uimqt_debug=yes,
-#              uimqt_debug=no)
+AC_ARG_ENABLE(uimqt-debug,
+              [  --enable-uimqt-debug            Turn on debugging],
+              uimqt_debug=yes,
+              uimqt_debug=no)
 
-#if test "$uimqt_debug" = "yes"; then
-#  AC_DEFINE(ENABLE_DEBUG,1,[Define this to enable the debug facility in UimQt])
-#  AC_DEFINE(QT_DEBUG,,[Enable QT debug output])
-#  CFLAGS="$CFLAGS -g"
-#  CXXFLAGS="$CXXFLAGS -g"
-#else
-#  AC_DEFINE(ENABLE_DEBUG,0)
-#fi
+if test "$uimqt_debug" = "yes"; then
+  AC_DEFINE(ENABLE_DEBUG,1,[Define this to enable the debug facility in UimQt])
+  AC_DEFINE(QT_DEBUG,,[Enable QT debug output])
+  CFLAGS="$CFLAGS -g"
+  CXXFLAGS="$CXXFLAGS -g"
+fi
 
 INPUTMETHODSDIR=$QTROOTDIR/plugins/inputmethods
 AC_SUBST(INPUTMETHODSDIR)

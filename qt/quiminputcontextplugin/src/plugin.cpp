@@ -132,7 +132,9 @@ QStringList UimInputContextPlugin::createImList() const
             qs = "uim-" + qs;
             lst << qs;
 
+#ifdef ENABLE_DEBUG
             qDebug( "name = %s", name );
+#endif
         }
     }
     uim_release_context( tmp_uc );

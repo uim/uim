@@ -129,7 +129,9 @@ void CandidateWindow::deactivateCandwin()
 
 void CandidateWindow::clearCandidates()
 {
+#ifdef ENABLE_DEBUG
     qDebug( "clear Candidates" );
+#endif
 
     candidateIndex = -1;
     displayLimit = 0;
@@ -144,7 +146,9 @@ void CandidateWindow::clearCandidates()
 
 void CandidateWindow::setCandidates( int dl, const QValueList<uim_candidate> &candidates )
 {
+#ifdef ENABLE_DEBUG
     qDebug( "setCandidates" );
+#endif
 
     // remove old data
     if ( !stores.isEmpty() )
@@ -167,7 +171,9 @@ void CandidateWindow::setCandidates( int dl, const QValueList<uim_candidate> &ca
 
 void CandidateWindow::setPage( int page )
 {
+#ifdef ENABLE_DEBUG
     qDebug( "setPage : page = %d", page );
+#endif
 
     // clear items
     cList->clear();
@@ -245,7 +251,9 @@ void CandidateWindow::setPage( int page )
 
 void CandidateWindow::setIndex( int totalindex )
 {
+#ifdef ENABLE_DEBUG
     qDebug( "setIndex : totalindex = %d", totalindex );
+#endif
 
     // validity check
     if ( totalindex < 0 )
@@ -299,7 +307,10 @@ void CandidateWindow::slotCandidateSelected( QListViewItem * item )
 
 void CandidateWindow::shiftPage( bool forward )
 {
+#ifdef ENABLE_DEBUG
     qDebug( "candidateIndex = %d", candidateIndex );
+#endif
+    
     if ( forward )
     {
         candidateIndex += displayLimit;
