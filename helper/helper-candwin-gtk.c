@@ -528,16 +528,17 @@ static void str_parse(gchar *str)
   g_strfreev(tmp);
 }
 
+#define CANDIDATE_BUFFER_SIZE	4096
 static gboolean
 read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
 {
-  char buf[2048];
+  char buf[CANDIDATE_BUFFER_SIZE];
   int i = 0;
   int n;
   gchar **tmp;
   int fd = g_io_channel_unix_get_fd(channel);
 
-  n = read(fd, buf, 2048 - 1);
+  n = read(fd, buf, CANDIDATE_BUFFER_SIZE - 1);
   if (n == 0) {
     close(fd);
     exit(-1);
