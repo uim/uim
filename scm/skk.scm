@@ -227,14 +227,13 @@
 		     "ローマ字"
 		     "ローマ字入力モード"))
 		 (lambda (sc)
-		   (= (skk-context-input-rule sc)
-		      skk-input-rule-roma))
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (= (skk-context-input-rule dsc)
+			skk-input-rule-roma)))
 		 (lambda (sc)
-		   (skk-prepare-activation sc)
-		   (rk-context-set-rule! (skk-context-rk-context sc)
-					 ja-rk-rule)
-		   (skk-context-set-input-rule! sc skk-input-rule-roma)))
-
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (skk-prepare-activation dsc)
+		     (skk-set-rule! dsc skk-input-rule-roma))))
 
 (register-action 'action_skk_azik
 		 (lambda (sc)
@@ -243,14 +242,13 @@
 		     "AZIK"
 		     "AZIK拡張ローマ字入力モード"))
 		 (lambda (sc)
-		   (= (skk-context-input-rule sc)
-		      skk-input-rule-azik))
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (= (skk-context-input-rule dsc)
+			skk-input-rule-azik)))
 		 (lambda (sc)
-		   (require "japanese-azik.scm")
-		   (skk-prepare-activation sc)
-		   (rk-context-set-rule! (skk-context-rk-context sc)
-					 ja-azik-rule)
-		   (skk-context-set-input-rule! sc skk-input-rule-azik)))
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (skk-prepare-activation dsc)
+		     (skk-set-rule! dsc skk-input-rule-azik))))
 
 ;; Update widget definitions based on action configurations. The
 ;; procedure is needed for on-the-fly reconfiguration involving the
@@ -291,6 +289,18 @@
     (list 'completion-nth     0))))
 (define-record 'skk-context skk-context-rec-spec)
 (define skk-context-new-internal skk-context-new)
+
+(define skk-set-rule!
+  (lambda (sc input-rule)
+    (let ((rkc (skk-context-rk-context sc))
+	  (rule (cond
+		 ((= input-rule skk-input-rule-roma)
+		  ja-rk-rule)
+		 ((= input-rule skk-input-rule-azik)
+		  (require "japanese-azik.scm")
+		  ja-azik-rule))))
+      (skk-context-set-input-rule! sc input-rule)
+      (rk-context-set-rule! rkc rule))))
 
 (define skk-find-root-context
   (lambda (sc)
@@ -1190,10 +1200,12 @@
 (define skk-setup-child-context
   (lambda (sc)
     (let ((csc (skk-context-new (skk-context-id sc)
-				(skk-context-im sc))))
+				(skk-context-im sc)))
+	  (input-rule (skk-context-input-rule sc)))
       (skk-context-set-child-context! sc csc)
       (skk-context-set-parent-context! csc sc)
-      (skk-context-set-state! csc 'skk-state-direct))))
+      (skk-context-set-state! csc 'skk-state-direct)
+      (skk-set-rule! csc input-rule))))
 
 (define skk-check-candidate-window-begin
   (lambda (sc)
