@@ -30,6 +30,7 @@
 
 */
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <uim/uim.h>
@@ -66,7 +67,8 @@ static void
 inspect_custom(const struct uim_custom *custom)
 {
   char buf_val[64], buf_default_val[64], buf_range[128];
-  const char *s_type, *s_value, *s_default_value, *s_range;
+  const char *s_type, *s_value, *s_default_value;
+  char *s_range;
 
   s_range = "";
   switch (custom->type) {
@@ -114,6 +116,10 @@ inspect_custom(const struct uim_custom *custom)
     s_value = "";
     s_default_value = "";
     break;
+  default:
+    s_type = "";
+    s_value = "";
+    s_default_value = "";
   }
 
   printf("symbol:        %s\n", custom->symbol);
@@ -134,7 +140,6 @@ main(int argc, char *argv[])
 {
   uim_bool succeeded;
   struct uim_custom *custom;
-  char **primary_groups, **grp;
 
   uim_init();
   uim_custom_init();

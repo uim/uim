@@ -30,6 +30,7 @@
 
 */
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <uim/uim.h>
 #include <uim/uim-custom.h>

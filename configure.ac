@@ -372,6 +372,8 @@ AC_CONFIG_FILES([test.sh
 		 test/Makefile
                  data/Makefile
                  data/icons/Makefile
+		 examples/Makefile
+		 examples/uim-custom/Makefile
 		 uim.pc])
 
 AC_OUTPUT
