@@ -338,7 +338,7 @@
     (custom-rec-desc (custom-rec sym))))
 
 ;; API
-(define custom-canonical-value-as-string
+(define custom-value-as-literal
   (lambda (sym)
     (let ((val (custom-value sym))
 	  (type (custom-type sym))
@@ -364,19 +364,15 @@
        ((eq? type 'key)
 	"")))))  ;; TODO
 
-(define custom-canonical-definition-as-string
+(define custom-definition-as-literal
   (lambda (sym)
     (let ((var (symbol->string sym))
-	  (val (custom-canonical-value-as-string sym)))
-      (string-append
-       "(define " var " " val ")"))))
-
-(define custom-as-string
-  (lambda (sym)
-    (let ((hooked (custom-call-hook-procs sym custom-literalize-hooks)))
+	  (val (custom-value-as-literal sym))
+	  (hooked (custom-call-hook-procs sym custom-literalize-hooks)))
       (if (not (null? hooked))
 	  (apply string-append hooked)
-	  (custom-canonical-definition-as-string sym)))))
+	  (string-append
+	   "(define " var " " val ")")))))
 
 ;; API
 ;; TODO: implement after uim 0.4.6 depending on scm-nested-eval

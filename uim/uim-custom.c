@@ -1012,7 +1012,7 @@ uim_custom_free(struct uim_custom *custom)
 char *
 uim_custom_value_as_literal(const char *custom_sym)
 {
-  return uim_custom_get_str(custom_sym, "custom-canonical-value-as-string");
+  return uim_custom_get_str(custom_sym, "custom-value-as-literal");
 }
 
 /**
@@ -1025,7 +1025,7 @@ uim_custom_value_as_literal(const char *custom_sym)
 char *
 uim_custom_definition_as_literal(const char *custom_sym)
 {
-  return uim_custom_get_str(custom_sym, "custom-as-string");
+  return uim_custom_get_str(custom_sym, "custom-definition-as-literal");
 }
 
 /**

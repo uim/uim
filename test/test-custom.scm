@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 176 of new repository
+;; This file is tested with revision 182 of new repository
 
 ;; TODO:
 ;;
@@ -1250,41 +1250,40 @@
    (assert-equal "long description will be here."
 		 (uim '(custom-desc 'test-dic-file-name))))
 
-  ("test custom-canonical-value-as-string"
+  ("test custom-value-as-literal"
    (assert-equal "'test-style-ddskk"
-		 (uim '(custom-canonical-value-as-string 'test-style)))
+		 (uim '(custom-value-as-literal 'test-style)))
    (assert-equal "#t"
-		 (uim '(custom-canonical-value-as-string 'test-use-candidate-window?)))
+		 (uim '(custom-value-as-literal 'test-use-candidate-window?)))
    (assert-equal "10"
-		 (uim '(custom-canonical-value-as-string 'test-nr-candidate-max)))
+		 (uim '(custom-value-as-literal 'test-nr-candidate-max)))
    (assert-equal "\"a string\""
-		 (uim '(custom-canonical-value-as-string 'test-string)))
+		 (uim '(custom-value-as-literal 'test-string)))
    (assert-equal "\"/usr/share/skk/SKK-JISYO.L\""
-		 (uim '(custom-canonical-value-as-string 'test-dic-file-name))))
+		 (uim '(custom-value-as-literal 'test-dic-file-name))))
 
-  ("test custom-canonical-definition-as-string"
+  ("test custom-definition-as-literal"
    (assert-equal "(define test-style 'test-style-ddskk)"
-		 (uim '(custom-canonical-definition-as-string 'test-style)))
+		 (uim '(custom-definition-as-literal 'test-style)))
    (assert-equal "(define test-use-candidate-window? #t)"
-		 (uim '(custom-canonical-definition-as-string 'test-use-candidate-window?)))
+		 (uim '(custom-definition-as-literal 'test-use-candidate-window?)))
    (assert-equal "(define test-nr-candidate-max 10)"
-		 (uim '(custom-canonical-definition-as-string 'test-nr-candidate-max)))
+		 (uim '(custom-definition-as-literal 'test-nr-candidate-max)))
    (assert-equal "(define test-string \"a string\")"
-		 (uim '(custom-canonical-definition-as-string 'test-string)))
+		 (uim '(custom-definition-as-literal 'test-string)))
    (assert-equal "(define test-dic-file-name \"/usr/share/skk/SKK-JISYO.L\")"
-		 (uim '(custom-canonical-definition-as-string 'test-dic-file-name))))
-
-  ("test custom-as-string"
+		 (uim '(custom-definition-as-literal 'test-dic-file-name)))
+   ;; hooked
    (assert-equal "(define test-style 'test-style-ddskk)"
-		 (uim '(custom-as-string 'test-style)))
+		 (uim '(custom-definition-as-literal 'test-style)))
    (uim '(custom-add-hook 'test-style 'custom-literalize-hooks
 			  (lambda () "(define test-style 'hooked)")))
    (assert-equal "(define test-style 'hooked)"
-		 (uim '(custom-as-string 'test-style)))
+		 (uim '(custom-definition-as-literal 'test-style)))
    (uim '(custom-add-hook 'test-style 'custom-literalize-hooks
 			  (lambda () "(define test-style 'hooked2)")))
    (assert-equal "(define test-style 'hooked2)(define test-style 'hooked)"
-		 (uim '(custom-as-string 'test-style)))))
+		 (uim '(custom-definition-as-literal 'test-style)))))
 
 (define-uim-test-case "testcase custom interfaces"
   (setup

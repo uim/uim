@@ -175,7 +175,7 @@
 (define custom-hook-literalize-preserved-default-im-name
   (lambda ()
     (string-append
-     (custom-canonical-definition-as-string 'custom-preserved-default-im-name)
+     (custom-definition-as-literal 'custom-preserved-default-im-name)
      "\n"
      "(define default-im-name "
      (if default-im-name
