@@ -186,7 +186,7 @@
 
 (define-custom-group 'anthy
 		     anthy-im-canonical-name
-		     anthy-im-desc)
+		     "TODO: share im-short-desc of the IM")
 
 (define-custom 'anthy-use-candidate-window? #t
   '(anthy)
@@ -230,7 +230,7 @@
 
 (define-custom-group 'canna
 		     canna-im-canonical-name
-		     canna-im-desc)
+		     "TODO: share im-short-desc of the IM")
 
 (define-custom 'canna-use-candidate-window? #t
   '(canna)
@@ -338,7 +338,7 @@
 
 (define-custom-group 'skk
 		     skk-im-canonical-name
-		     skk-im-desc)
+		     "TODO: share im-short-desc of the IM")
 
 (define-custom 'skk-dic-file-name (string-append (sys-datadir)
 						 "/skk/SKK-JISYO.L")
@@ -423,7 +423,7 @@
 
 (define-custom-group 'prime
 		     prime-im-canonical-name
-		     prime-im-desc)
+		     "TODO: share im-short-desc of the IM")
 
 ;(define-custom 'prime-use-candidate-window? #t
 ;  '(prime)
@@ -512,7 +512,7 @@
 
 (define-custom-group 'spellcheck
 		     spellcheck-im-canonical-name
-		     spellcheck-im-desc)
+		     "TODO: share im-short-desc of the IM")
 
 (define-custom 'spellcheck-use-candidate-window? #t
   '(spellcheck)
