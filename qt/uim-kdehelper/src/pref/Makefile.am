@@ -1,7 +1,7 @@
 INCLUDES = $(all_includes)
 METASOURCES = AUTO
 
-noinst_HEADERS = uim-pref-qt.h
+noinst_HEADERS = uim-pref-qt.h customwidgets.h
 
 bin_PROGRAMS = uim-pref-qt
 uim_pref_qt_SOURCES = uim-pref-qt.cpp
