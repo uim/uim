@@ -280,8 +280,266 @@
 (define-uim-test-case "testcase custom custom-group"
   (setup
    (lambda ()
-     ;;(uim '(load "custom.scm"))
-     (uim '(define test-group-recs-length 0))))
+     (uim '(begin
+	     (load "custom.scm") ;; to reset previously defined groups
+	     (define test-group-recs-length 0)
+	     (define-custom-group 'global
+	       (_ "Global settings")
+	       (_ "long description will be here."))
+
+	     (define-custom-group 'advanced
+	       (_ "Advanced settings")
+	       (_ "long description will be here."))
+
+	     (define-custom 'uim-color 'uim-color-uim
+	       '(global)
+	       '(choice
+		 (uim-color-uim "uim" "uim native")
+		 (uim-color-atok "ATOK like" "Similar to ATOK"))
+	       (_ "Preedit color")
+	       (_ "long description will be here."))
+	     (define-custom-group 'im-switching
+	       (_ "Input method switching")
+	       (_ "long description will be here."))
+
+	     (define-custom 'enable-im-switch #f
+	       '(global im-switching advanced)
+	       '(boolean)
+	       (_ "Enable IM switching by hotkey")
+	       (_ "long description will be here."))
+
+	     (define-custom 'candidate-window-position "caret"
+	       '(global)
+	       '(string "^(caret|left|right)$")
+	       (_ "Candidate window position")
+	       (_ "long description will be here."))
+	     (define-custom-group 'anthy
+	       anthy-im-canonical-name
+	       anthy-im-desc)
+
+	     (define-custom 'anthy-use-candidate-window? #t
+	       '(anthy)
+	       '(boolean)
+	       (_ "Use candidate window")
+	       (_ "long description will be here."))
+
+	     (define-custom 'anthy-candidate-op-count 1
+	       '(anthy)
+	       '(integer 0 99)
+	       (_ "Conversion key press count to show candidate window")
+	       (_ "long description will be here."))
+
+	     (define-custom 'anthy-nr-candidate-max 10
+	       '(anthy)
+	       '(integer 1 20)
+	       (_ "Number of candidates in candidate window at a time")
+	       (_ "long description will be here."))
+
+	     (define-custom 'anthy-select-candidate-by-numeral-key? #f
+	       '(anthy)
+	       '(boolean)
+	       (_ "Select candidate by numeral keys")
+	       (_ "long description will be here."))
+
+	     (define-custom 'anthy-show-segment-separator? #f
+	       '(anthy advanced)
+	       '(boolean)
+	       (_ "Show segment separator")
+	       (_ "long description will be here."))
+
+	     (define-custom 'anthy-segment-separator "|"
+	       '(anthy advanced)
+	       '(string ".*")
+	       (_ "Segment separator")
+	       (_ "long description will be here."))
+	     (define-custom-group 'canna
+	       canna-im-canonical-name
+	       canna-im-desc)
+
+	     (define-custom 'canna-use-candidate-window? #t
+	       '(canna)
+	       '(boolean)
+	       (_ "Use candidate window")
+	       (_ "long description will be here."))
+
+	     (define-custom 'canna-candidate-op-count 1
+	       '(canna)
+	       '(integer 0 99)
+	       (_ "Conversion key press count to show candidate window")
+	       (_ "long description will be here."))
+
+	     (define-custom 'canna-nr-candidate-max 10
+	       '(canna)
+	       '(integer 1 20)
+	       (_ "Number of candidates in candidate window at a time")
+	       (_ "long description will be here."))
+
+	     (define-custom 'canna-show-segment-separator? #f
+	       '(canna advanced)
+	       '(boolean)
+	       (_ "Show segment separator")
+	       (_ "long description will be here."))
+
+	     (define-custom 'canna-segment-separator "|"
+	       '(canna advanced)
+	       '(string ".*")
+	       (_ "Segment separator")
+	       (_ "long description will be here."))
+	     (define-custom-group 'skk
+	       skk-im-canonical-name
+	       skk-im-desc)
+
+	     (define-custom 'skk-dic-file-name (string-append (sys-datadir)
+							      "/skk/SKK-JISYO.L")
+	       '(skk)
+	       '(pathname)
+	       (_ "Dictionary file")
+	       (_ "long description will be here."))
+
+	     (define-custom 'skk-personal-dic-filename
+	       (string-append (getenv "HOME") "/.skk-jisyo")
+	       '(skk)
+	       '(pathname)
+	       (_ "Personal dictionary file")
+	       (_ "long description will be here."))
+
+	     (define-custom 'skk-uim-personal-dic-filename
+	       (string-append (getenv "HOME") "/.skk-uim-jisyo")
+	       '(skk)
+	       '(pathname)
+	       (_ "Personal dictionary file (dedicated to uim)")
+	       (_ "long description will be here."))
+
+	     (define-custom 'skk-use-candidate-window? #t
+	       '(skk)
+	       '(boolean)
+	       (_ "Use candidate window")
+	       (_ "long description will be here."))
+
+	     (define-custom 'skk-candidate-op-count 0
+	       '(skk)
+	       '(integer 0 99)
+	       (_ "Conversion key press count to show candidate window")
+	       (_ "long description will be here."))
+
+	     (define-custom 'skk-nr-candidate-max 10
+	       '(skk)
+	       '(integer 1 20)
+	       (_ "Number of candidates in candidate window at a time")
+	       (_ "long description will be here."))
+
+	     (define-custom 'skk-use-recursive-learning? #t
+	       '(skk advanced)
+	       '(boolean)
+	       (_ "Use recursive learning")
+	       (_ "long description will be here."))
+
+	     (define-custom 'skk-egg-like-newline? #f
+	       '(skk advanced)
+	       '(boolean)
+	       (_ "Use Enter key as just committing (egg-like operation)")
+	       (_ "long description will be here."))
+
+	     (define-custom 'skk-commit-newline-explicitly? #f
+	       '(skk advanced)
+	       '(boolean)
+	       (_ "Commit newline as ASCII string instead of native key-event")
+	       (_ "long description will be here."))
+
+	     (define-custom 'skk-style 'skk-style-ddskk-like
+	       '(skk advanced)
+	       '(choice
+		 (skk-style-ddskk-like "ddskk" "Similar to ddskk")
+		 (skk-style-uim "uim" "uim native"))
+	       (_ "Visual style")
+	       (_ "long description will be here."))
+	     (define-custom-group 'prime
+	       prime-im-canonical-name
+	       prime-im-desc)
+	     (define-custom 'prime-nr-candidate-max 10
+	       '(prime)
+	       '(integer 1 20)
+	       (_ "Number of candidates in candidate window at a time")
+	       (_ "long description will be here."))
+
+	     (define-custom 'prime-always-show-window? #t
+	       '(prime)
+	       '(boolean)
+	       (_ "Always showing candidate window")
+	       (_ "long description will be here."))
+
+	     (define-custom 'prime-auto-register-mode? #t
+	       '(prime)
+	       '(boolean)
+	       (_ "Enable auto register mode")
+	       (_ "long description will be here."))
+
+	     (define-custom 'prime-pseudo-mode-cursor? #f
+	       '(prime)
+	       '(boolean)
+	       (_ "Enable pseudo mode cursor")
+	       (_ "long description will be here."))
+
+	     (define-custom 'prime-char-annotation? #t
+	       '(prime)
+	       '(boolean)
+	       (_ "Show candidate annotations")
+	       (_ "long description will be here."))
+
+
+	     (define-custom 'prime-mask-pending-preedit? #f
+	       '(prime)
+	       '(boolean)
+	       (_ "Mask preedit strings (For tcode users)")
+	       (_ "long description will be here."))
+	     (define-custom-group 'other-ims
+	       (_ "Other input methods")
+	       (_ "long description will be here."))
+
+	     (define-custom 'generic-use-candidate-window? #t
+	       '(other-ims)
+	       '(boolean)
+	       (_ "Use candidate window")
+	       (_ "long description will be here."))
+
+	     (define-custom 'generic-candidate-op-count 1
+	       '(other-ims)
+	       '(integer 0 99)
+	       (_ "Conversion key press count to show candidate window")
+	       (_ "long description will be here."))
+
+	     (define-custom 'generic-nr-candidate-max 10
+	       '(other-ims)
+	       '(integer 1 20)
+	       (_ "Number of candidates in candidate window at a time")
+	       (_ "long description will be here."))
+	     (define-custom-group 'spellcheck
+	       spellcheck-im-canonical-name
+	       spellcheck-im-desc)
+
+	     (define-custom 'spellcheck-use-candidate-window? #t
+	       '(spellcheck)
+	       '(boolean)
+	       (_ "Use candidate window")
+	       (_ "long description will be here."))
+
+	     (define-custom 'spellcheck-candidate-op-count 1
+	       '(spellcheck)
+	       '(integer 0 99)
+	       (_ "Conversion key press count to show candidate window")
+	       (_ "long description will be here."))
+
+	     (define-custom 'spellcheck-preedit-immediate-commit? #f
+	       '(spellcheck)
+	       '(boolean)
+	       (_ "spellcheck-preedit-immediate-commit?")
+	       (_ "long description will be here."))
+
+	     (define-custom 'spellcheck-always-show-window? #t
+	       '(spellcheck)
+	       '(boolean)
+	       (_ "Always showing candidate window")
+	       (_ "long description will be here."))))))
 
   ("test custom-group-rec-new"
    (assert-equal (uim '(list #f "" ""))
@@ -344,7 +602,7 @@
 			     "long description of test group 3"))
 		 (uim '(custom-group-rec 'test-group3))))
   ("test custom-list-groups"
-   (assert-equal '(advanced anthy canna cannaserver default-im-name global im-switching other-ims prime skk spellcheck)
+   (assert-equal '(advanced anthy canna global im-switching other-ims prime skk spellcheck)
 		 (sort-symbol (uim '(custom-list-groups)))))
   ("test custom-list-primary-groups"
    ;; defined order have to be kept
@@ -352,17 +610,17 @@
 		 (uim '(custom-list-primary-groups))))
   ("test custom-collect-by-group"
    ;; defined order have to be kept
-   (assert-equal '(uim-color custom-activate-default-im-name? custom-preserved-default-im-name enable-im-switch candidate-window-position anthy-use-candidate-window? anthy-candidate-op-count anthy-nr-candidate-max anthy-show-segment-separator? anthy-segment-separator canna-use-candidate-window? canna-candidate-op-count canna-nr-candidate-max canna-show-segment-separator? canna-segment-separator custom-activate-canna-server-name? custom-preserved-canna-server-name canna-server-name skk-dic-file-name skk-personal-dic-filename skk-uim-personal-dic-filename skk-use-candidate-window? skk-candidate-op-count skk-nr-candidate-max skk-use-recursive-learning? skk-egg-like-newline? skk-commit-newline-explicitly? skk-style prime-nr-candidate-max prime-always-show-window? prime-preedit-immediate-commit? prime-mask-pending-preedit? generic-use-candidate-window? generic-candidate-op-count generic-nr-candidate-max spellcheck-use-candidate-window? spellcheck-candidate-op-count spellcheck-preedit-immediate-commit? spellcheck-always-show-window?)
+   (assert-equal '(uim-color enable-im-switch candidate-window-position anthy-use-candidate-window? anthy-candidate-op-count anthy-nr-candidate-max anthy-select-candidate-by-numeral-key? anthy-show-segment-separator? anthy-segment-separator canna-use-candidate-window? canna-candidate-op-count canna-nr-candidate-max canna-show-segment-separator? canna-segment-separator skk-dic-file-name skk-personal-dic-filename skk-uim-personal-dic-filename skk-use-candidate-window? skk-candidate-op-count skk-nr-candidate-max skk-use-recursive-learning? skk-egg-like-newline? skk-commit-newline-explicitly? skk-style prime-nr-candidate-max prime-always-show-window? prime-auto-register-mode? prime-pseudo-mode-cursor? prime-char-annotation? prime-mask-pending-preedit? generic-use-candidate-window? generic-candidate-op-count generic-nr-candidate-max spellcheck-use-candidate-window? spellcheck-candidate-op-count spellcheck-preedit-immediate-commit? spellcheck-always-show-window?)
 		 (uim '(custom-collect-by-group #f)))  ;; any group
-   (assert-equal '(uim-color custom-activate-default-im-name? custom-preserved-default-im-name enable-im-switch candidate-window-position)
+   (assert-equal '(uim-color enable-im-switch candidate-window-position)
 		 (uim '(custom-collect-by-group 'global)))
-   (assert-equal '(anthy-use-candidate-window? anthy-candidate-op-count anthy-nr-candidate-max anthy-show-segment-separator? anthy-segment-separator)
+   (assert-equal '(anthy-use-candidate-window? anthy-candidate-op-count anthy-nr-candidate-max anthy-select-candidate-by-numeral-key? anthy-show-segment-separator? anthy-segment-separator)
 		 (uim '(custom-collect-by-group 'anthy)))
-   (assert-equal '(canna-use-candidate-window? canna-candidate-op-count canna-nr-candidate-max canna-show-segment-separator? canna-segment-separator custom-activate-canna-server-name? custom-preserved-canna-server-name canna-server-name)
+   (assert-equal '(canna-use-candidate-window? canna-candidate-op-count canna-nr-candidate-max canna-show-segment-separator? canna-segment-separator)
 		 (uim '(custom-collect-by-group 'canna)))
    (assert-equal '(skk-dic-file-name skk-personal-dic-filename skk-uim-personal-dic-filename skk-use-candidate-window? skk-candidate-op-count skk-nr-candidate-max skk-use-recursive-learning? skk-egg-like-newline? skk-commit-newline-explicitly? skk-style)
 		 (uim '(custom-collect-by-group 'skk)))
-   (assert-equal '(prime-nr-candidate-max prime-always-show-window? prime-preedit-immediate-commit? prime-mask-pending-preedit?)
+   (assert-equal '(prime-nr-candidate-max prime-always-show-window? prime-auto-register-mode? prime-pseudo-mode-cursor? prime-char-annotation? prime-mask-pending-preedit?)
 		 (uim '(custom-collect-by-group 'prime)))
    (assert-equal '(generic-use-candidate-window? generic-candidate-op-count generic-nr-candidate-max)
 		 (uim '(custom-collect-by-group 'other-ims)))
