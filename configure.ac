@@ -384,8 +384,6 @@ AM_CONDITIONAL(GTK2_4, test x$use_gtk2_4 = xyes)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test x$default_toolkit = xgtk)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test x$default_toolkit = xqt)
 AM_CONDITIONAL(GNOME2, test x$use_gnome2 = xyes)
-AM_CONDITIONAL(QT, test x$use_qt = xyes)
-AM_CONDITIONAL(QT_IMMODULE, test x$use_qtimmodule = xyes)
 AM_CONDITIONAL(APPLET, test x$use_applet = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
 AM_CONDITIONAL(DICT, test x$use_dict = xyes)
@@ -531,7 +529,8 @@ if test x$use_qt = xyes ; then
 
     AC_MSG_RESULT("$result")
     if test "$result" = "no"; then
-       AC_MSG_ERROR([Qt Helper requires at least version $QT_VERSION of Qt])
+       use_qt="no"
+       AC_MSG_WARN([Qt Helper requires at least version $QT_VERSION of Qt])
     fi
     CXXFLAGS=$_SAVE_CXXFLAGS
     LIBS=$_SAVE_LIBS
@@ -547,18 +546,21 @@ if test x$use_qt = xyes ; then
     AC_SUBST(UIM_QT_LDFLAGS)
 fi
 
-if test x$use_qt = xyes ; then
-    if test x$use_qtimmodule = xyes ; then
-        AC_MSG_CHECKING(for qt-immodule patch)
-        # Check for immodule for Qt patch
-        if test ! -e $QTINCDIR/qinputcontext.h -o ! -e $QTINCDIR/qinputcontextplugin.h; then
-          AC_MSG_RESULT(no)
-          $use_qtimmodule="cannot"
-        else
-	  AC_MSG_RESULT(yes)
-        fi
+if test x$use_qtimmodule = xyes ; then
+    AC_MSG_CHECKING(for qt-immodule patch)
+    # Check for immodule for Qt patch
+    if test ! -f $QTINCDIR/qinputcontext.h  || test ! -f $QTINCDIR/qinputcontextplugin.h; then
+      AC_MSG_RESULT(no)
+      use_qtimmodule="cannot"
+    else
+      AC_MSG_RESULT(yes)
     fi
 fi
+
+
+AM_CONDITIONAL(QT, test x$use_qt = xyes)
+AM_CONDITIONAL(QT_IMMODULE, test x$use_qtimmodule = xyes)
+
 
 # add debugging flags to CFLAGS regardless of GCC=yes or not
 if test x$enable_debug = xyes; then
