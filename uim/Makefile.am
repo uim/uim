@@ -14,7 +14,6 @@ pkginclude_HEADERS = uim.h uim-util.h uim-helper.h uim-im-switcher.h uim-scm.h p
 libuim_la_SOURCES = uim.c uim-scm.c uim-func.c uim-key.c uim-util.c \
 		slib.c siod.h context.h gettext.h \
 		uim-helper.c uim-helper-client.c \
-		skk-dic.c \
 		prime.c \
 		intl.c intl.h \
 		uim-ipc.c \
@@ -42,7 +41,7 @@ endif
 if M17NLIB
   uim_plugin_LTLIBRARIES += libuim-m17nlib.la
   libuim_m17nlib_la_SOURCES = m17nlib.c
-  libuim_m17nlib_la_LIBADD = @LIBINTL@ @LIBICONV@ @M17NLIB_LIBS@ libuim.la
+  libuim_m17nlib_la_LIBADD = @M17NLIB_LIBS@ libuim.la
   libuim_m17nlib_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
   libuim_m17nlib_la_CPPFLAGS = -I$(top_srcdir)
 endif
@@ -50,7 +49,7 @@ endif
 if SCIM
   uim_plugin_LTLIBRARIES += libuim-scim.la
   libuim_scim_la_SOURCES = scim.cpp
-  libuim_scim_la_LIBADD = @LIBINTL@ @LIBICONV@ @SCIM_LIBS@ libuim.la
+  libuim_scim_la_LIBADD = @SCIM_LIBS@ libuim.la
   libuim_scim_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
   libuim_scim_la_CXXFLAGS = -I$(top_srcdir) @SCIM_CFLAGS@
 endif
@@ -58,18 +57,24 @@ endif
 if CANNA
   uim_plugin_LTLIBRARIES += libuim-canna.la
   libuim_canna_la_SOURCES = canna.c
-  libuim_canna_la_LIBADD = @LIBINTL@ @LIBICONV@ libuim.la
-  libuim_canna_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module -lcanna
+  libuim_canna_la_LIBADD = libuim.la -lcanna
+  libuim_canna_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
   libuim_canna_la_CPPFLAGS = -I$(top_srcdir)
 endif
 
 if ANTHY
   uim_plugin_LTLIBRARIES += libuim-anthy.la
   libuim_anthy_la_SOURCES = anthy.c
-  libuim_anthy_la_LIBADD = @LIBINTL@ @LIBICONV@ libuim.la
+  libuim_anthy_la_LIBADD = libuim.la
   libuim_anthy_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
   libuim_anthy_la_CPPFLAGS = -I$(top_srcdir)
 endif
+
+uim_plugin_LTLIBRARIES += libuim-skk.la
+libuim_skk_la_SOURCES = skk-dic.c
+libuim_skk_la_LIBADD = libuim.la
+libuim_skk_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_skk_la_CPPFLAGS = -I$(top_srcdir)
 
 libuimincludedir =  $(includedir)/uim
 

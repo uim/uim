@@ -40,7 +40,7 @@
 (load-plugin "canna")
 
 (require "prime.scm")
-(require "skk.scm")
+(load-plugin "skk")
 (require "tcode.scm")
 (require "tutcode.scm")
 

@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -49,6 +49,7 @@
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "context.h"
+#include "plugin.h"
 
 /*
  * cand : candidate
@@ -2029,7 +2030,7 @@ skk_lib_remove_annotation(uim_lisp str_)
 }
 
 void
-uim_init_skk_dic(void)
+uim_plugin_instance_init(void)
 {
   uim_scm_init_subr_1("skk-lib-dic-open", skk_dic_open);
   uim_scm_init_subr_1("skk-lib-read-personal-dictionary", skk_lib_read_personal_dictionary);
@@ -2051,7 +2052,7 @@ uim_init_skk_dic(void)
 }
 
 void
-uim_quit_skk_dic(void)
+uim_plugin_instance_quit(void)
 {
   struct skk_line *sl, *tmp;
 

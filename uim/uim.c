@@ -644,7 +644,6 @@ uim_init_scm()
   uim_init_table_subrs();
 #endif
   uim_init_prime();
-  uim_init_skk_dic();
 
   scm_files = getenv("LIBUIM_SCM_FILES");
   uim_scm_set_lib_path((scm_files) ? scm_files : SCM_FILES);
@@ -714,7 +713,6 @@ uim_quit(void)
     }
   }
   /**/
-  uim_quit_skk_dic();
   uim_quit_prime();
   uim_quit_plugin();
   uim_scm_quit();
