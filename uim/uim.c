@@ -55,7 +55,7 @@ extern char *uim_return_str_list[10];
 
 char *uim_last_client_encoding;
 
-#define CONTEXT_ARRAY_SIZE 512
+#define CONTEXT_ARRAY_SIZE 5
 static uim_context context_array[CONTEXT_ARRAY_SIZE];
 struct uim_im *uim_im_array;
 int uim_nr_im;
@@ -85,6 +85,7 @@ get_context_id(uim_context uc)
       return;
     }
   }
+  uc->id = -1;
 }
 
 static void
@@ -116,6 +117,9 @@ uim_create_context(void *ptr,
     return NULL;
   }
   get_context_id(uc);
+  if(uc->id == -1)
+    return NULL;
+
   uc->ptr = ptr;
   uc->is_enable = 1;
   uc->commit_cb = commit_cb;
@@ -214,8 +218,13 @@ uim_switch_im(uim_context uc, const char *engine)
      immodule API. We should follow its design to make our API simple.
      -- 2004-10-05 YamaKen
   */
-  uim_reset_context(uc);
-  UIM_EVAL_FSTRING2(uc, "(create-context %d #f '%s)", uc->id, engine);
+  int id = uc->id;
+  uim_reset_context(uc); /* FIXME: reset should be called here? */
+
+  UIM_EVAL_FSTRING1(uc, "(release-context %d)", uc->id);
+  uim_release_preedit_segments(uc);
+
+  UIM_EVAL_FSTRING2(uc, "(create-context %d #f '%s)", id, engine);
   if (uc->current_im_name)
     free(uc->current_im_name);
   uc->current_im_name = strdup(engine);
