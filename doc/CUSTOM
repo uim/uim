@@ -1,0 +1,99 @@
+This document describes usage of the uim-custom API and facility for
+developers.
+
+
+* Abstract
+
+* Design basics and decisions
+
+* How to define your own customs
+
+* How to reflect defined customs into your IM code
+
+  To acquire a defined custom in your IM, describe as following in the
+  your IM file.
+
+    (require-custom "your-custom.scm")
+
+  Don't use ordinary 'require' to load a custom file. The
+  require-custom performs per-user configuration loading and reload
+  management, but ordinary 'require' does not.
+
+
+* Control activity of a custom variable
+
+  Any custom variables has a state named 'activity'. This state
+  indicates whether the value set in the custom variable makes sense
+  or not. The state should be reflected to value editability of the
+  corresponding widget on preference tools. i.e. Use
+  gtk_widget_set_sensitive() for the corresponding widget to reflect
+  the state.
+
+  To control activity of a custom variable, configure the hook for the
+  custom variable. Otherwise all custom variables are always active.
+
+
+  Example1: Simple activity
+
+  Following example shows that the custom variable
+  my-frequently-used-string1 is active only when username is
+  "yamaken". The third argument of custom-add-hook can be any
+  predicate to indicate whether the custom variable is active or
+  inactive.
+
+  The activity is tested by the predicate when:
+
+  - The custom variable has been acquired by uim_custom_get().
+
+  - Invoking custom-active? explicitly
+
+  - Any custom variable has been set. See next example for further
+    information
+
+  (define-custom 'my-frequently-used-string1 "I'm hungry! Give me some sweets."
+    '(my-private)
+    '(string)
+    (_ "My frequently used string 1")
+    (_ "long description will be here."))
+
+  (custom-add-hook 'my-frequently-used-string1
+                   'custom-activity-hooks
+                   (lambda ()
+                     (string=? (getenv "USER")
+                               "yamaken")))
+
+
+  Example2: Dynamic activity update reflecting other custom variable
+
+  The activity alters when other custom variables have been set.
+
+  In following example, segment-separator will be active only when
+  show-segment-separator? is true. The activity will be changed
+  automatically and noticed to client of uim-custom via callback for
+  the segment-separator previously set immediately after new value of
+  show-segment-separator? has been set.
+
+  The predicate will be evaluated when any of custom variables have
+  been set (changing to different value is not required). So you can
+  place any flexible predicate as the third argument for the
+  custom-add-hook.
+
+  All activity predicates will be evaluated and noticed via
+  corresponding callback when any of custom variables has been set.
+
+  (define-custom 'show-segment-separator? #f
+    '(foo)
+    '(boolean)
+    (_ "Show segment separator")
+    (_ "long description will be here."))
+
+  (define-custom 'segment-separator "|"
+    '(bar)
+    '(string ".*")
+    (_ "Segment separator")
+    (_ "long description will be here."))
+
+  (custom-add-hook 'segment-separator
+                   'custom-activity-hooks
+                   (lambda ()
+                     show-segment-separator?))

@@ -1,5 +1,6 @@
 00INDEX (This file) contain the index.
 COMPATIBILITY       Tracks API/ABI compatibility change
+CUSTOM              Usage of uim-custom API for developers
 HELPER-CANDWIN      Protocol between candidatewindow apps and uim-xim
 HELPER-PROTOCOL     Description of the helper message protocol 
 KEY                 KEY customizationg guide
