@@ -355,21 +355,21 @@ right_click_menu_create(void)
   img = gtk_image_new_from_file(path);
   g_free(path);
 
-  menu_item = gtk_image_menu_item_new_with_label("Execute uim's input method switcher.");
+  menu_item = gtk_image_menu_item_new_with_label(_("Execute uim's input method switcher"));
   gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
   gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
   g_signal_connect(G_OBJECT(menu_item), "activate", 
 		   G_CALLBACK(menu_switcher_activated), NULL);
 
   img = gtk_image_new_from_stock(GTK_STOCK_PREFERENCES, GTK_ICON_SIZE_MENU);
-  menu_item = gtk_image_menu_item_new_with_label("Execute uim's preference tool.");
+  menu_item = gtk_image_menu_item_new_with_label(_("Execute uim's preference tool"));
   gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
   gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
   g_signal_connect(G_OBJECT(menu_item), "activate", 
 		   G_CALLBACK(menu_pref_activated), NULL);
 
   img = gtk_image_new_from_stock(GTK_STOCK_QUIT, GTK_ICON_SIZE_MENU);
-  menu_item = gtk_image_menu_item_new_with_label("Quit this toolbar.");
+  menu_item = gtk_image_menu_item_new_with_label(_("Quit this toolbar"));
   gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
   gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
   g_signal_connect(G_OBJECT(menu_item), "activate", 
@@ -548,7 +548,7 @@ switcher_button_create(void)
   
   /* tooltip */
   tooltip = gtk_tooltips_new();
-  gtk_tooltips_set_tip(tooltip, button, _("Execute uim's input method switcher."), NULL);
+  gtk_tooltips_set_tip(tooltip, button, _("Execute uim's input method switcher"), NULL);
 
   return button;
 }
@@ -584,7 +584,7 @@ pref_button_create(void)
 
   /* tooltip */
   tooltip = gtk_tooltips_new();
-  gtk_tooltips_set_tip(tooltip, button, _("Execute uim's preference tool."), NULL);
+  gtk_tooltips_set_tip(tooltip, button, _("Execute uim's preference tool"), NULL);
 
   return button;
 }
