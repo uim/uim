@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 282 of new repository
+;; This file is tested with revision 327 of new repository
 
 ;; TODO:
 ;;
@@ -1439,7 +1439,32 @@
 
    (assert-true (uim-bool '(symbol-bound? 'test-style)))
    (assert-equal 'test-style-ddskk
-		 (uim 'test-style)))
+		 (uim 'test-style))
+   (assert-equal '(global)
+		 (uim '(custom-groups 'test-style)))
+   (assert-equal '(test-style-uim test-style-ddskk test-style-canna)
+		 (uim '(custom-range 'test-style)))
+   (assert-equal "Test style"
+		 (uim '(custom-label 'test-style)))
+
+   ;; overwriting definition
+   (uim '(define-custom 'test-style 'test-style-uim
+	   '(global-keys)
+	   '(choice
+	     (test-style-canna "canna like" "Similar to canna")
+	     (test-style-uim "uim" "uim native"))
+	   "Test style (overwritten)"
+	   "long description will be here."))
+
+   (assert-true (uim-bool '(symbol-bound? 'test-style)))
+   (assert-equal 'test-style-ddskk
+		 (uim 'test-style))
+   (assert-equal '(global-keys)
+		 (uim '(custom-groups 'test-style)))
+   (assert-equal '(test-style-canna test-style-uim)
+		 (uim '(custom-range 'test-style)))
+   (assert-equal "Test style (overwritten)"
+		 (uim '(custom-label 'test-style))))
 
   ("test define-custom (choice) #2"
    (uim '(define test-style 'test-style-uim))
@@ -1529,6 +1554,14 @@
 	       (skk "SKK" "SKK"))
 	     "Test avalilable IMs"
 	     "long description will be here."))
+     (uim '(define-custom 'test-null-ims ()
+	     '(global)
+	     '(ordered-list
+	       (anthy "Anthy" "Anthy")
+	       (canna "Cannd" "Canna")
+	       (skk "SKK" "SKK"))
+	     "Test avalilable IMs"
+	     "long description will be here."))
      (uim '(define-custom 'test-cancel-key '("<Control>g" "escape")
 	   '(global)
 	   '(key)
@@ -1544,10 +1577,20 @@
 	   '(key)
 	   "test bar key"
 	   "long description will be here."))
+     (uim '(define-custom 'test-null-key ()
+	   '(global)
+	   '(key)
+	   "test null key"
+	   "long description will be here."))
      (uim '(define-custom 'test-use-candidate-window? #t
 	     '(test ui)
 	     '(boolean)
 	     "Use candidate window"
+	     "long description will be here."))
+     (uim '(define-custom 'test-use-with-vi? #f
+	     '(test ui)
+	     '(boolean)
+	     "Use with vi"
 	     "long description will be here."))
      (uim '(define-custom 'test-nr-candidate-max 10
 	     '(test advanced ui)
@@ -2049,10 +2092,16 @@
 		 (uim '(custom-value-as-literal 'test-style)))
    (assert-equal "'(anthy canna skk)"
 		 (uim '(custom-value-as-literal 'test-available-ims)))
+   (assert-equal "'()"
+		 (uim '(custom-value-as-literal 'test-null-ims)))
    (assert-equal "'(\"<Control>g\" \"escape\")"
 		 (uim '(custom-value-as-literal 'test-cancel-key)))
+   (assert-equal "'()"
+		 (uim '(custom-value-as-literal 'test-null-key)))
    (assert-equal "#t"
 		 (uim '(custom-value-as-literal 'test-use-candidate-window?)))
+   (assert-equal "#f"
+		 (uim '(custom-value-as-literal 'test-use-with-vi?)))
    (assert-equal "10"
 		 (uim '(custom-value-as-literal 'test-nr-candidate-max)))
    (assert-equal "\"a string\""
@@ -2065,10 +2114,16 @@
 		 (uim '(custom-definition-as-literal 'test-style)))
    (assert-equal "(define test-available-ims '(anthy canna skk))"
 		 (uim '(custom-definition-as-literal 'test-available-ims)))
+   (assert-equal "(define test-null-ims '())"
+		 (uim '(custom-definition-as-literal 'test-null-ims)))
    (assert-equal "(define test-cancel-key '(\"<Control>g\" \"escape\"))\n(define-key test-cancel-key? '(\"<Control>g\" \"escape\"))"
 		 (uim '(custom-definition-as-literal 'test-cancel-key)))
+   (assert-equal "(define test-null-key '())\n(define-key test-null-key? '())"
+		 (uim '(custom-definition-as-literal 'test-null-key)))
    (assert-equal "(define test-use-candidate-window? #t)"
 		 (uim '(custom-definition-as-literal 'test-use-candidate-window?)))
+   (assert-equal "(define test-use-with-vi? #f)"
+		 (uim '(custom-definition-as-literal 'test-use-with-vi?)))
    (assert-equal "(define test-nr-candidate-max 10)"
 		 (uim '(custom-definition-as-literal 'test-nr-candidate-max)))
    (assert-equal "(define test-string \"a string\")"

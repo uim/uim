@@ -31,7 +31,6 @@
 
 (require "i18n.scm")
 
-;; TODO: write test
 (define custom-im-list-as-choice-rec
   (lambda (lst)
     (map (lambda (im)

@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 1648
+;; This file is tested with revision 327 of new repository
 
 (use test.unit)
 
@@ -52,6 +52,7 @@
      (uim '(define prev-im #f))
      (uim '(define prev-nr-ims (length im-list)))
      (uim '(define test-im-init-args #f))
+     (uim '(define test-im-alt-init-args #f))
      (uim '(begin
 	     (set! test-im-init-args (list 'test-im
 					   "ja"
@@ -68,24 +69,121 @@
 					   direct-get-candidate-handler
 					   direct-set-candidate-index-handler
 					   context-prop-activate-handler))
+	     (set! test-im-alt-init-args (list 'test-im
+					       "en"
+					       "en_US.UTF-8"
+					       "an alternative label"
+					       "an alternative short desc"
+					       'alt-arg
+					       'alt-init-handler
+					       'alt-release-handler
+					       'alt-mode-handler
+					       'alt-key-press-handler
+					       'alt-key-release-handler
+					       'alt-reset-handler
+					       'alt-get-candidate-handler
+					       'alt-set-candidate-index-handler
+					       'alt-prop-activate-handler))
 	     #t))))
 
-  ("test register-im"
-   (uim '(begin
-	   (apply register-im test-im-init-args)
-	   #t))
+  ("test normalize-im-list"
+   (uim '(set! im-list (remove (lambda (im)
+				 (not (eq? (im-name im)
+					   'direct)))
+			       im-list)))
+   (assert-equal '(direct)
+		 (uim '(map im-name im-list)))
+   ;; direct IM always remains at head
+   (assert-true  (uim-bool '(apply register-im test-im-init-args)))
+   (assert-equal '(direct test-im)
+		 (uim '(map im-name im-list)))
+   ;; other IMs are cons'ed at right of direct
+   (assert-true  (uim-bool '(apply register-im (cons 'test-im2
+						     (cdr test-im-init-args)))))
+   (assert-equal '(direct test-im2 test-im)
+		 (uim '(map im-name im-list)))
+   ;; direct IM can be registered to null list
+   (uim '(set! im-list ()))
+   ;; second time im-register-im for 'direct returns #f
+   (assert-false (uim-bool '(apply register-im (cons 'direct
+						     (cdr test-im-init-args)))))
+   (assert-equal '(direct)
+		 (uim '(map im-name im-list)))
+   ;; ordinary IM can be registered to null list
+   (uim '(set! im-list ()))
+   ;; second time im-register-im for 'test-im returns #f
+   (assert-false (uim-bool '(apply register-im test-im-init-args)))
+   (assert-equal '(test-im)
+		 (uim '(map im-name im-list))))
 
+  ("test register-im"
+   (assert-true  (uim-bool '(apply register-im test-im-init-args)))
    (assert-equal (+ (uim 'prev-nr-ims) 1)
 		 (uim '(length im-list)))
    (assert-equal 'test-im
 		 (uim '(im-name (retrieve-im 'test-im #f))))
+   (assert-false (uim-bool '(im-module-name (retrieve-im 'test-im #f))))
    (assert-equal 16
 		 (uim '(length (retrieve-im 'test-im #f))))
+   (uim '(im-set-module-name! (retrieve-im 'test-im #f) "foo"))
+   (assert-equal "foo"
+		 (uim '(im-module-name (retrieve-im 'test-im #f))))
 
-   ;; duplicate register will be rejected
-   (assert-false (uim-bool '(apply register-im test-im-init-args)))
+   ;; duplicate register overwrites preexisting one
+   (assert-false (uim-bool '(apply register-im test-im-alt-init-args)))
    (assert-equal (+ (uim 'prev-nr-ims) 1)
-		 (uim '(length im-list))))
+		 (uim '(length im-list)))
+   (assert-equal '(test-im
+		   "en"
+		   "en_US.UTF-8"
+		   "an alternative label"
+		   "an alternative short desc"
+		   alt-arg
+		   alt-init-handler
+		   alt-release-handler
+		   alt-mode-handler
+		   alt-key-press-handler
+		   alt-key-release-handler
+		   alt-reset-handler
+		   alt-get-candidate-handler
+		   alt-set-candidate-index-handler
+		   alt-prop-activate-handler
+		   ())  ;; replace with #f for R5RS compliant interpreter
+		 (uim '(retrieve-im 'test-im #f)))
+   ;; subsequent registration that has different im-name will be
+   ;; registered as another IM
+   (assert-true  (uim-bool '(apply register-im
+				   (cons 'test-im2
+					 (cdr test-im-alt-init-args)))))
+   (assert-equal (+ (uim 'prev-nr-ims) 2)
+		 (uim '(length im-list)))
+   (assert-equal '(test-im2
+		   "en"
+		   "en_US.UTF-8"
+		   "an alternative label"
+		   "an alternative short desc"
+		   alt-arg
+		   alt-init-handler
+		   alt-release-handler
+		   alt-mode-handler
+		   alt-key-press-handler
+		   alt-key-release-handler
+		   alt-reset-handler
+		   alt-get-candidate-handler
+		   alt-set-candidate-index-handler
+		   alt-prop-activate-handler
+		   ())  ;; replace with #f for R5RS compliant interpreter
+		 (uim '(retrieve-im 'test-im2 #f))))
+
+  ("test register-im (module-name)"
+   (assert-true  (uim-bool '(apply register-im test-im-init-args)))
+   (assert-false (uim-bool '(im-module-name (retrieve-im 'test-im #f))))
+
+   (uim '(set! currently-loading-module-name "foo"))
+   (assert-true  (uim-bool '(apply register-im (cons 'test-im2
+						     (cdr test-im-init-args)))))
+   (assert-equal "foo"
+		 (uim '(im-module-name (retrieve-im 'test-im2 #f)))))
 
   ("test retrieve-im"
    (assert-false (uim-bool '(retrieve-im 'nonexistent)))
@@ -739,3 +837,16 @@
   ("test set-candidate-index"
    )
   )
+
+(define-uim-test-case "testcase im im-custom"
+  ("test custom-im-list-as-choice-rec"
+   (assert-equal '((canna "Canna" "Japanese Kana Kanji Conversion Engine, Canna")
+		   (skk "SKK" "Uim's SKK like input method")
+		   (anthy "Anthy" "Japanese Kana Kanji Conversion Engine, Anthy"))
+		 (uim '(custom-im-list-as-choice-rec
+			(map retrieve-im '(canna skk anthy)))))
+   (assert-equal '((tcode "T-Code" "T-Code"))
+		 (uim '(custom-im-list-as-choice-rec
+			(map retrieve-im '(tcode)))))
+   (assert-equal ()
+		 (uim '(custom-im-list-as-choice-rec ())))))

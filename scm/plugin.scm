@@ -99,7 +99,7 @@
 (define currently-loading-module-name #f)
 
 ;;
-;; TODO: write test
+;; TODO: write test for load-plugin
 ;; returns whether initialization is succeeded
 (define require-module
   (lambda (module-name)

@@ -58,7 +58,6 @@
 ;;
 (define im-list ())
 
-;; TODO: rewrite test for module-name
 (define-record 'im
   (list
    (list 'name                        #f)  ;; must be first member
@@ -84,7 +83,6 @@
 	custom-prop-update-custom-handler
 	list)))
 
-;; TODO: write test
 (define normalize-im-list
   (lambda ()
     (let ((ordinary-im-list (alist-delete 'direct im-list eq?))
@@ -93,8 +91,8 @@
 	  (set! im-list (cons direct-im
 			      ordinary-im-list))))))
 
-;; TODO: rewrite test
 ;; accepts overwrite register
+;; returns initial register or not
 (define register-im
   (lambda (name lang encoding label-name short-desc init-arg init release
 		mode key-press key-release reset

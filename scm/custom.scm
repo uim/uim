@@ -401,7 +401,6 @@
 			      lst)))
       (string-append "'(" (string-join " " canonicalized) ")"))))
 
-;; rewrite test for () as list
 ;; API
 (define custom-value-as-literal
   (lambda (sym)
