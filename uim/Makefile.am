@@ -69,11 +69,13 @@ if ANTHY
   libuim_anthy_la_CPPFLAGS = -I$(top_srcdir)
 endif
 
-uim_plugin_LTLIBRARIES += libuim-prime.la
-libuim_prime_la_SOURCES = prime.c
-libuim_prime_la_LIBADD = libuim.la
-libuim_prime_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
-libuim_prime_la_CPPFLAGS = -I$(top_srcdir)
+if PRIME
+  uim_plugin_LTLIBRARIES += libuim-prime.la
+  libuim_prime_la_SOURCES = prime.c
+  libuim_prime_la_LIBADD = libuim.la
+  libuim_prime_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+  libuim_prime_la_CPPFLAGS = -I$(top_srcdir)
+endif
 
 uim_plugin_LTLIBRARIES += libuim-skk.la
 libuim_skk_la_SOURCES = skk-dic.c

@@ -119,6 +119,22 @@ AC_ARG_WITH(canna,
 	use_canna="no"
 ])
 
+# ***********************
+# *** Tests for PRIME ***
+# ***********************
+AC_ARG_WITH(prime,
+	AS_HELP_STRING([--with-prime], [Build a plugin for PRIME]),
+	[
+	if test "x$with_prime" = "xyes"; then
+	        PKG_CHECK_MODULES(PRIME, prime >= 0.8.5.2, use_prime="yes",use_prime="no")
+	else
+		use_canna="no"
+	fi
+	],[
+	        PKG_CHECK_MODULES(PRIME, prime >= 0.8.5.2, use_prime="yes",use_prime="no")
+])
+
+
 AC_PATH_XTRA
 
 use_xim="no"
@@ -287,14 +303,17 @@ AC_ARG_WITH(qt-immodule,
     use_qtimmodule="no"
   ])
 
-AC_ARG_ENABLE(dummy,
+default_toolkit="gtk"
+AC_ARG_ENABLE(default-toolkit,
   AC_HELP_STRING([--default-toolkit],
                  [Determine default toolkit]),
   [],
   [
-  default_toolkit=gtk
-  if test x"$default_toolkit" = "xgtk" && test x"use_gtk2" = "xyes"; then
-     default_toolkit=gtk
+  if test x"$enable_default_toolkit" = "xgtk" && test x"use_gtk2" = "xyes"; then
+     default_toolkit="gtk"
+  fi
+  if test x"$enable_default_toolkit" = "xqt" && test x"use_qt" = "xyes"; then
+     default_toolkit="qt"
   fi
   ])
 
@@ -384,7 +403,7 @@ AM_CONDITIONAL(M17NLIB, test x$use_m17nlib = xyes)
 AM_CONDITIONAL(SCIM, test x$use_scim = xyes)
 AM_CONDITIONAL(ANTHY, test x$use_anthy = xyes)
 AM_CONDITIONAL(CANNA, test x$use_canna = xyes)
-AM_CONDITIONAL(PRIME, true)
+AM_CONDITIONAL(PRIME, test x$use_prime = xyes)
 AM_CONDITIONAL(SKK, true)
 AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
 AM_CONDITIONAL(GTK2_4, test x$use_gtk2_4 = xyes)
