@@ -439,16 +439,9 @@ extract_key_literal(const struct uim_custom_key *custom_key)
 
   switch (custom_key->type) {
   case UCustomKey_Regular:
-  {
-    int len = strlen(custom_key->literal);
-
-    literal = malloc(len + 2 + 1);
-    literal[0] = '"';
-    strcpy(literal + 1, custom_key->literal);
-    literal[len + 1] = '"';
-    literal[len + 2] = '\0';
+    UIM_EVAL_FSTRING1(NULL, "\"\\\"%s\\\"\"", custom_key->literal);
+    literal = uim_scm_c_str(uim_scm_return_value());
     break;
-  }
   case UCustomKey_Reference:
     literal = strdup(custom_key->literal);
     break;
