@@ -396,7 +396,7 @@
   (_ "Use candidate window")
   (_ "long description will be here."))
 
-(define-custom 'skk-candidate-op-count 0
+(define-custom 'skk-candidate-op-count 2
   '(skk)
   '(integer 0 99)
   (_ "Conversion key press count to show candidate window")
@@ -432,6 +432,18 @@
     (skk-style-ddskk-like "ddskk" "Similar to ddskk")
     (skk-style-uim "uim" "uim native"))
   (_ "Visual style")
+  (_ "long description will be here."))
+
+(define-custom 'skk-use-numeric-conversion? #t
+  '(skk advanced)
+  '(boolean)
+  (_ "Use numeric conversion")
+  (_ "long description will be here."))
+
+(define-custom 'skk-use-with-vi? #f
+  '(skk advanced)
+  '(boolean)
+  (_ "Frendly for vi user")
   (_ "long description will be here."))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

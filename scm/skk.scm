@@ -57,7 +57,7 @@
 (define skk-dic-init #f)
 ;; configs
 (define skk-use-candidate-window? #t)
-(define skk-candidate-op-count 0)
+(define skk-candidate-op-count 2)
 (define skk-nr-candidate-max 10)
 (define skk-use-recursive-learning? #t)
 (define skk-egg-like-newline? #f)
@@ -604,6 +604,9 @@
       (if res
 	  (begin
 	    (skk-context-set-nth! sc 0)
+	    (skk-check-candidate-window-begin sc)
+	    (if (skk-context-candidate-window sc)
+		(im-select-candidate sc 0))
 	    (skk-context-set-state!
 	     sc 'skk-state-converting))
 	  (if skk-use-recursive-learning?
@@ -1171,8 +1174,10 @@
 	(not
 	 (skk-context-candidate-window sc))
 	skk-use-candidate-window?
+	;; XXX skk-context-candidate-op-count start from 0 with
+	;; the first entry of the candidates
 	(> (skk-context-candidate-op-count sc)
-	   skk-candidate-op-count))
+	   (- skk-candidate-op-count 2)))
 	(begin
 	 (skk-context-set-candidate-window! sc #t)
 	 (if skk-use-numeric-conversion?
