@@ -663,7 +663,7 @@ XimIM::ParseComposeStringFile(FILE *fp)
 	mTreeTop->ks = NoSymbol;
     }
 
-    if (fstat(fileno (fp), &st) != -1) {
+    if (fstat(fileno(fp), &st) != -1) {
 	unsigned long size = (unsigned long)st.st_size;
 	if (size <= sizeof tb)
 	    tbp = tb;

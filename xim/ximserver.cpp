@@ -455,9 +455,9 @@ InputContext::focusIn()
     setlocale(LC_CTYPE, mLocaleName);
 
     check_helper_connection();
+    uim_helper_client_focus_in(mUc);
     uim_prop_list_update(mUc);	
     uim_prop_label_update(mUc);	
-    uim_helper_client_focus_in(mUc);
     mFocusedContext = this;
 }
 
