@@ -53,6 +53,9 @@
 #include <qlineedit.h>
 #include <qfiledialog.h>
 #include <qcombobox.h>
+#include <qptrlist.h>
+
+#include "olisteditformbase.h"
 
 class UimCustomItemIface
 {
@@ -87,23 +90,9 @@ class CustomCheckBox : public QCheckBox, public UimCustomItemIface
     Q_OBJECT
 
 public:
-    CustomCheckBox( struct uim_custom *c, QWidget *parent, const char *name = 0 )
-        : QCheckBox( parent, name ),
-          UimCustomItemIface( c )
-    {
-        QObject::connect( this, SIGNAL(toggled(bool)),
-                          this, SLOT(slotCustomToggled(bool)) );
-    }
-
+    CustomCheckBox( struct uim_custom *c, QWidget *parent, const char *name = 0);
 protected slots:
-    void slotCustomToggled( bool check )
-    {
-        Q_ASSERT( m_custom->type == UCustom_Bool );
-
-        m_custom->value->as_bool = check;
-        setCustom( m_custom );
-    }
-
+    void slotCustomToggled( bool check );
 protected:
     void currentCustomValueChanged(){ emit customValueChanged(); }
 signals:
@@ -115,23 +104,9 @@ class CustomSpinBox : public QSpinBox, public UimCustomItemIface
     Q_OBJECT
 
 public:
-    CustomSpinBox( struct uim_custom *c, QWidget *parent, const char *name = 0 )
-        : QSpinBox( parent, name ),
-          UimCustomItemIface( c )
-    {
-        QObject::connect( this, SIGNAL(valueChanged(int)),
-                          this, SLOT(slotCustomValueChanged(int)) );
-    }
-
+    CustomSpinBox( struct uim_custom *c, QWidget *parent, const char *name = 0 );
 public slots:
-    void slotCustomValueChanged( int value )
-    {
-        Q_ASSERT( m_custom->type == UCustom_Int );
-
-        m_custom->value->as_int = value;
-        setCustom( m_custom );
-    }
-
+    void slotCustomValueChanged( int value );
 protected:
     void currentCustomValueChanged(){ emit customValueChanged(); }    
 signals:
@@ -143,25 +118,9 @@ class CustomLineEdit : public QLineEdit, public UimCustomItemIface
     Q_OBJECT
 
 public:
-    CustomLineEdit( struct uim_custom *c, QWidget *parent, const char *name = 0 )
-        : QLineEdit( parent, name ),
-          UimCustomItemIface( c )
-    {
-        QObject::connect( this, SIGNAL(textChanged(const QString&)),
-                          this, SLOT(slotCustomTextChanged(const QString&)) );
-    }
-
+    CustomLineEdit( struct uim_custom *c, QWidget *parent, const char *name = 0 );
 public slots:
-    void slotCustomTextChanged( const QString &text )
-    {
-        Q_ASSERT( m_custom->type == UCustom_Str );
-
-        free( m_custom->value->as_str );
-        m_custom->value->as_str = strdup( (const char*)text.utf8() );
-
-        setCustom( m_custom );
-    }
-
+    void slotCustomTextChanged( const QString &text );
 protected:
     void currentCustomValueChanged(){ emit customValueChanged(); }    
 signals:
@@ -173,52 +132,15 @@ class CustomPathnameEdit : public QHBox, public UimCustomItemIface
     Q_OBJECT
 
 public:
-    CustomPathnameEdit( struct uim_custom *c, QWidget *parent, const char *name = 0 )
-        : QHBox( parent, name ),
-          UimCustomItemIface( c )
-    {
-        setSpacing( 6 );
-        m_lineEdit = new QLineEdit( this );
-        m_lineEdit->setText( m_custom->value->as_pathname );
-        QObject::connect( m_lineEdit, SIGNAL(textChanged(const QString &)),
-                          this, SLOT(slotCustomTextChanged(const QString &)) );
-        QToolButton *m_fileButton = new QToolButton( this );
-        m_fileButton->setText( "File" );
-        QObject::connect( m_fileButton, SIGNAL(clicked()),
-                          this, SLOT(slotPathnameButtonClicked()) );
-    }
-
-    void setText( const QString & str )
-    {
-        m_lineEdit->setText( str );
-    }
+    CustomPathnameEdit( struct uim_custom *c, QWidget *parent, const char *name = 0 );
+    void setText( const QString & str ) { m_lineEdit->setText( str ); }
 
 protected slots:
-    void slotPathnameButtonClicked()
-    {
-        QFileDialog* fd = new QFileDialog( this, "file dialog" );
-        fd->setMode( QFileDialog::Directory );
-        if ( fd->exec() == QDialog::Accepted )
-        {
-            QString fileName = fd->selectedFile();
-            m_lineEdit->setText( fileName );
-        }
-    }
-
-    void slotCustomTextChanged( const QString & text )
-    {
-        Q_ASSERT( m_custom->type == UCustom_Pathname );
-
-        free( m_custom->value->as_pathname );
-        m_custom->value->as_pathname = strdup( (const char*)text.utf8() );
-
-        setCustom( m_custom );
-    }
-
+    void slotPathnameButtonClicked();
+    void slotCustomTextChanged( const QString & text );
 private:
     QLineEdit *m_lineEdit;
-    QToolButton *m_filebutton;
-
+    QToolButton *m_fileButton;
 protected:
     void currentCustomValueChanged(){ emit customValueChanged(); }
 signals:
@@ -230,45 +152,47 @@ class CustomChoiceCombo : public QComboBox, public UimCustomItemIface
     Q_OBJECT
 
 public:
-    CustomChoiceCombo( struct uim_custom *c, QWidget *parent, const char *name = 0 )
-        : QComboBox( parent, name ),
-          UimCustomItemIface( c )
-    {
-        QObject::connect( this, SIGNAL(highlighted(int)),
-                          this, SLOT(slotHighlighted(int)) );
-    }
-
+    CustomChoiceCombo( struct uim_custom *c, QWidget *parent, const char *name = 0 );
 public slots:
-    void slotHighlighted( int index )
-    {
-        Q_ASSERT( m_custom->type == UCustom_Choice );
-
-        struct uim_custom_choice **valid_items = m_custom->range->as_choice.valid_items;
-        struct uim_custom_choice *choice = NULL;
-        if( valid_items )
-        {
-            for( int i = 0; valid_items[i]; i++ )
-            {
-                if( i == index )
-                    choice = valid_items[i];
-            }
-        }
-
-        free( m_custom->value->as_choice->symbol );
-        free( m_custom->value->as_choice->label );
-        free( m_custom->value->as_choice->desc );
-
-        m_custom->value->as_choice->symbol = strdup( choice->symbol );
-        m_custom->value->as_choice->label  = strdup( choice->label );
-        m_custom->value->as_choice->desc   = strdup( choice->desc );
-
-        setCustom( m_custom );
-    }
-
+    void slotHighlighted( int index );
 protected:
     void currentCustomValueChanged(){ emit customValueChanged(); }
 signals:
     void customValueChanged();
+};
+
+class CustomOrderedListEdit : public QHBox, public UimCustomItemIface
+{
+    Q_OBJECT
+
+public:
+    CustomOrderedListEdit( struct uim_custom *c, QWidget *parent, const char *name = 0 );
+public slots:
+    void slotEditButtonClicked();
+private:
+    QLineEdit *m_lineEdit;
+    QToolButton *m_editButton;
+
+    QPtrList<struct uim_custom_choice> m_validItemList;
+    QPtrList<struct uim_custom_choice> m_itemList;
+protected:
+    void initPtrList();
+    void currentCustomValueChanged(){ emit customValueChanged(); }
+signals:
+    void customValueChanged();
+};
+
+class OListEditForm : public OListEditFormBase {
+    Q_OBJECT
+
+public:
+    OListEditForm( QWidget *parent = 0, const char *name = 0 );
+    void addCheckItem( bool isActive, const QString &str );
+    QStringList activeItemLabels() const;
+
+protected slots:
+    void upItem();
+    void downItem();
 };
 
 #endif /* Not def: _CUSTOMWIDGETS_H_ */

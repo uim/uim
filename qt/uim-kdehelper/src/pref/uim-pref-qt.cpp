@@ -32,6 +32,7 @@
 */
 #include "uim-pref-qt.h"
 #include "customwidgets.h"
+#include <kseparator.h>
 
 #include <qvbox.h>
 #include <qhbox.h>
@@ -159,17 +160,21 @@ void UimPrefDialog::createGroupWidgets()
 QWidget* UimPrefDialog::createGroupWidget( const char *group_name )
 {
     QVBox *vbox = new QVBox( m_groupWidgetStack );
+    vbox->setSpacing( 3 );
 
     struct uim_custom_group *group = uim_custom_group_get( group_name );
     if( group == NULL )
         return NULL;
 
     QLabel *groupLabel = new QLabel( group_name, vbox );
-    groupLabel->setAlignment( Qt::AlignHCenter );
+    groupLabel->setAlignment( Qt::AlignLeft );
+    new KSeparator( vbox );
+    /*
     QFont font;
     font.setWeight( QFont::Bold );
     font.setPixelSize( fontInfo().pixelSize() + 12 );
     groupLabel->setFont( font );
+    */
 
     /* add various widgets to the vbox */
     char **custom_syms = uim_custom_collect_by_group( group_name );
@@ -315,7 +320,14 @@ void UimPrefDialog::addCustomTypeChoice( QVBox *vbox, struct uim_custom *custom 
 
 void UimPrefDialog::addCustomTypeOrderedList( QVBox *vbox, struct uim_custom *custom )
 {
-    // FIXME: not implemented yet
+    QHBox *hbox = new QHBox( vbox );
+    hbox->setSpacing( 6 );
+    QLabel *label = new QLabel( _FU8(custom->label), hbox );
+    CustomOrderedListEdit *olistEditBox = new CustomOrderedListEdit( custom, hbox );
+    label->setBuddy( olistEditBox );
+
+    QObject::connect( olistEditBox, SIGNAL(customValueChanged()),
+                      this, SLOT(slotCustomValueChanged()) );
 }
 
 void UimPrefDialog::addCustomTypeKey( QVBox *vbox, struct uim_custom *custom )
@@ -376,7 +388,9 @@ void UimPrefDialog::slotOK()
 
 void UimPrefDialog::slotCancel()
 {
-    confirmChange();
+    if( m_isValueChanged )
+        confirmChange();
+
     reject();
 }
 
