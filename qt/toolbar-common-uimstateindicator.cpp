@@ -105,7 +105,6 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
     if ( !buttons.isEmpty() )
         buttons.clear();
 
-    QHelperToolbarButton *button = NULL;
     QHelperPopupMenu *popupMenu = NULL;
 
     QStringList::ConstIterator it = lines.begin();
@@ -124,15 +123,15 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                     fallbackButton = NULL;
                 }
                 // create popup
-                popupMenu = new QHelperPopupMenu( button );
+                popupMenu = new QHelperPopupMenu( 0 );
                 popupMenu->setCheckable( true );
 
                 // create button
-                button = new QHelperToolbarButton( this );
+                QHelperToolbarButton *button = new QHelperToolbarButton( this );
                 button->setText( fields[ 1 ] );
                 QToolTip::add( button, fields[ 2 ] );
                 button->setPopup( popupMenu );
-                button->setPopupDelay( 1 );
+                button->setPopupDelay( 50 );
                 button->show();
 
                 buttons.append( button );
@@ -220,7 +219,7 @@ void UimStateIndicator::slotStdinActivated( int /*socket*/ )
 /**/
 
 QHelperPopupMenu::QHelperPopupMenu( QWidget *parent, const char *name )
-        : QPopupMenu( parent, name )
+    : QPopupMenu( parent, name )
 {
     msgDict.setAutoDelete( true );
     msgDict.clear();
