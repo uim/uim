@@ -6,48 +6,79 @@ program .
 uim-candwin-[xaw|gtk|qt] is executed from uim-xim and receives/sends
 messages via pipe.
 
+               message
+  +-------+ ------------>  +--------------+
+  |uim-xim|    (pipe)      |HELPER-CANDWIN|
+  +-------+ <------------  +--------------+
+               message
 
-Received message format:
-  "$command\n$messages\n\n"
+Recieving Message format BNF
+  session  = messages
+  messages = messages message | message
+  message  = (activate   |
+	      select     |
+	      move       |
+	      show       |
+	      hide       |
+	      deactivate) "\n" "\n"
+  charset_specifier = "charset=" charset "\n"
+  charset = "UTF-8" | "EUC-JP" | "GB18030" |
+            <or any name that can be specified as iconv_open(3) argument>
+  str = str <any characters except for '\0', '\t' or '\n'> | ""
+  num = /[0-9]+/
 
-   $command: [ activate | select | move | show | hide | deactivate ]
-   $messages: see detailed below.
- 
   1. activate
-    purpose: activating the candidate window with display_limit value,
-           and add heading labels and candidates to it. The order of
-	   candidates must be as is.
-    example:
-    activate\ncharset=UTF-8\ndisplay_limit=$value\nhead1\tcand1\nhead2\tcand2\nhead3\tcand3\n
- 
+   Activating the candidate window with display_limit value,
+   and add heading labels and candidates to it. The order of
+   candidates must be as is.
+
+   activate = "activate" "\n" label
+   label = charset_specifier display_limit_str "\n" candidate_strs
+   display_limit_str = display_limit_label num
+   display_limit_label = "display_limit"
+   candidate_strs = candidate_str candidate_str candidate_str ....
+   candidate_str = cand_head "\t" cand_candidate "\n"
+   cand_head = str
+   cand_candidate = str
+
   2. select
-    purpose: selecting the specified candidate
-    example: select\n$num\n
+    Selecting the specified candidate in helper-candwin window.
+
+    select = "select" "\n" num
 
   3. move
-    purpose: moving to the Point (XPos, YPos)
-    example: move\n$XPos\n$YPos
- 
+    Moving the helper-candwin window.
+
+    move = "move" "\n" XPos "\n" YPos
+    XPos = num
+    YPos = num
+
   4. show
-    purpose: showing the candidate window
-    example: show\n
- 
+    Showing the candidate window
+
+    show = "show" "\n"
+
   5. hide
-    purpose: hiding the candidate window
-    example: hide\n
+    Hide the candidate window
+
+    hide = "hide" "\n"
 
   6. deactivate
-    purpose: deactivating the candidate window
-    example: deactivate\n
+    Deactivating the candidate window
 
+    deactivate = "deactivate" "\n"
 
-Sending message format:
-  "$command\n$messages\n\n"
+Sending Message format BNF
+  session  = messages
+  messages = messages message | message
+  message  = ( index ) "\n"
+  charset_specifier = "charset=" charset "\n"
+  charset = "UTF-8" | "EUC-JP" | "GB18030" |
+            <or any name that can be specified as iconv_open(3) argument>
+  str = str <any characters except for '\0', '\t' or '\n'> | ""
+  num = /[0-9]+/
 
-   $command: [ index ]
-   $messages: [ $num ]
- 
   1. index
-    purpose: sending index of selected candidate with mouse pointer to uim-xim
-    example: index\n$num\n\n
- 
+    Sending index of selected candidate with mouse pointer to uim-xim.
+
+    index = "index" "\n" num "\n\n"
