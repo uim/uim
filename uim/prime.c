@@ -232,7 +232,9 @@ prime_lib_init(uim_lisp use_udp_)
       else
 	return uim_scm_t();
     } else {
-      prime_pid = uim_ipc_open_command(prime_pid, &primer, &primew, prime_command );
+      if (prime_pid == 0) {
+	prime_pid = uim_ipc_open_command( prime_pid, &primer, &primew, prime_command );
+      }
       if(prime_pid == 0) {
 	return uim_scm_f();
       }
