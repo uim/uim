@@ -108,7 +108,7 @@ void CandidateWindow::activateCand( const QStringList &list )
     qDebug( "uim-helper-candwin-qt: activateCand()" );
 
     /**
-     * format: activate\ncharset=$charset\ndisplay_limit=$value\ncand1\ncand2\ncand3\n
+     * format: activate\ncharset=$charset\ndisplay_limit=$value\nhead1\tcand1\nhead2\tcand2\nhead3\tcand3\n
      */
 
     // remove old data
@@ -136,19 +136,27 @@ void CandidateWindow::activateCand( const QStringList &list )
         if ( list[ i ].isEmpty() )
             break;
 
+        // split heading_label and cand_str
+        const QStringList l = QStringList::split( "\t", list [ i ] );
+
         // store data
         CandData d;
-        QString headString = QString::number( i - 2 );
-        if ( ( i - 2 < 10 && i - 2 + displayLimit > 10 )
-                || ( i - 2 < 100 && i - 2 + displayLimit > 100 ) )
+        QString headString;
+        if ( codec )
+            headString = codec->toUnicode( l [ 0 ] );
+        else
+            headString = l [ 0 ];
+
+        if ( ( headString.toInt() < 10 && headString.toInt() + displayLimit > 10 )
+                || ( headString.toInt() < 100 && headString.toInt() + displayLimit > 100 ) )
             headString.prepend( "0" );
 
         d.label = headString;
 
         if ( codec )
-            d.str = codec->toUnicode( list[ i ] );
+            d.str = codec->toUnicode( l [ 1 ] );
         else
-            d.str = list[ i ];
+            d.str = l [ 1 ];
 
         stores.append( d );
     }

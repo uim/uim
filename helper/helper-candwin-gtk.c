@@ -436,7 +436,7 @@ candwin_activate(gchar **str)
 
   /* create GtkListStores, and set candidates */
   for (i = 0; i < nr_stores; i++) {
-    GtkListStore *store = gtk_list_store_new(2, G_TYPE_UINT, G_TYPE_STRING);
+    GtkListStore *store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
     GSList *node;
 
     g_ptr_array_add(cwin->stores, store);
@@ -448,13 +448,15 @@ candwin_activate(gchar **str)
     {
       GtkTreeIter ti;
       if (node) {
-	gchar *cand = node->data;
+	gchar *str = node->data;
+	gchar **column = g_strsplit(str, "\t", 0);
 	gtk_list_store_append(store, &ti);
 	gtk_list_store_set(store, &ti,
-			   COLUMN_HEADING, j + 1,
-			   COLUMN_CANDIDATE, cand,
+			   COLUMN_HEADING, column[0],
+			   COLUMN_CANDIDATE, column[1],
 			   TERMINATOR);
-	g_free(cand);
+	g_strfreev(column);
+	g_free(str);
       } else {
 	/* No need to set any data for empty row. */
       }
@@ -503,25 +505,25 @@ candwin_deactivate(void)
 static void str_parse(gchar *str)
 {
   gchar **tmp;
-  int i = 0;
+  gchar *command;
 
   tmp = g_strsplit(str, "\n", 0);
+  command = tmp[0];
 
-  while (tmp[i]) {
-    if (strcmp("activate", tmp[i]) == 0) {
+  if (command) {
+    if (strcmp("activate", command) == 0) {
       candwin_activate(tmp);
-    } else if (strcmp("select", tmp[i]) == 0) {
+    } else if (strcmp("select", command) == 0) {
       candwin_update(tmp);
-    } else if (strcmp("show", tmp[i]) == 0) {
+    } else if (strcmp("show", command) == 0) {
       candwin_show();
-    } else if (strcmp("hide", tmp[i]) == 0) {
+    } else if (strcmp("hide", command) == 0) {
       gtk_widget_hide_all(GTK_WIDGET(cwin));
-    } else if (strcmp("move", tmp[i]) == 0) {
+    } else if (strcmp("move", command) == 0) {
       candwin_move(tmp);
-    } else if (strcmp("deactivate", tmp[i]) == 0) {
+    } else if (strcmp("deactivate", command) == 0) {
       candwin_deactivate();
     }
-    i++;
   }
   g_strfreev(tmp);
 }

@@ -3,8 +3,8 @@ uses external helper program to show candidate selection window.  This
 file describes communication protocol between uim-xim and its helper
 program .
 
-uim-helper-candwin-[xaw|gtk|qt] is executed from uim-xim and
-receives/sends messages via pipe.
+uim-candwin-[xaw|gtk|qt] is executed from uim-xim and receives/sends
+messages via pipe.
 
 
 Received message format:
@@ -15,8 +15,10 @@ Received message format:
  
   1. activate
     purpose: activating the candidate window with display_limit value,
-           and add candidates to it. The order of candidates must be as is.
-    example: activate\ncharset=UTF-8\ndisplay_limit=$value\ncand1\ncand2\ncand3\n
+           and add heading labels and candidates to it. The order of
+	   candidates must be as is.
+    example:
+    activate\ncharset=UTF-8\ndisplay_limit=$value\nhead1\tcand1\nhead2\tcand2\nhead3\tcand3\n
  
   2. select
     purpose: selecting the specified candidate

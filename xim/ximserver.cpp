@@ -653,19 +653,26 @@ void InputContext::candidate_activate(int nr, int display_limit)
 {
     int i;
     const char *cand_str;
+    const char *heading_label;
     uim_candidate cand[nr];
     std::vector<const char *> candidates;
+    char *str;
 
     Canddisp *disp = canddisp_singleton();
 
     for (i = 0; i < nr; i++) {
 	cand[i] = uim_get_candidate(mUc, i, i % display_limit);
 	cand_str = uim_candidate_get_cand_str(cand[i]);
-	if (cand_str)
-	    candidates.push_back((const char *)strdup(cand_str));
+	heading_label = uim_candidate_get_heading_label(cand[i]);
+	//annotation_str = uim_candidate_get_annotation(cand[i]);
+	if (cand_str && heading_label) {
+	    str = (char *)malloc(strlen(cand_str) + strlen(heading_label) + 2);
+	    sprintf(str, "%s\t%s", heading_label, cand_str);
+	    candidates.push_back((const char *)str);
+	}
 	else {
 	    fprintf(stderr, "Warning: cand_str at %d is NULL\n", i);
-	    candidates.push_back((const char *)strdup(""));
+	    candidates.push_back((const char *)strdup("\t"));
 	}
     }
     disp->activate(candidates, display_limit);
