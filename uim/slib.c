@@ -1272,6 +1272,12 @@ set_repl_hooks (void (*puts_f) (char *),
   repl_print = print_f;
 }
 
+LISP
+siod_return_value (void)
+{
+  return repl_return_val;
+}
+
 static void
 gput_st (struct gen_printio *f, char *st)
 {

@@ -43,6 +43,8 @@
 #ifndef _uim_scm_h_included_
 #define _uim_scm_h_included_
 
+#include <stdio.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -147,6 +149,7 @@ uim_scm_reverse(uim_lisp cell);
 uim_lisp
 uim_scm_nreverse(uim_lisp cell);
 
+#ifndef UIM_NO_COMPAT_CUSTOM
 /* Customize interface functions: They are not appropriate to be
  * here. More discussion is required.
  *
@@ -211,6 +214,7 @@ char *
 uim_custom_value_as_string(uim_lisp sym);
 char *
 uim_custom_definition_as_string(uim_lisp sym);
+#endif  /* UIM_COMPAT_CUSTOM */
 
 /* function table for dynamic loading */
 struct uim_api_tbl {

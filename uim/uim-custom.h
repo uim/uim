@@ -43,12 +43,24 @@
 extern "C" {
 #endif
 
+#if 1
+/*
+  I want a boolean type for uim to explicitly indicate intention about
+  values. It should be reorganized into uim.h after agreement with
+  other developers. -- YamaKen 2004-12-17
+*/
+typedef int uim_bool;
+
+#define UIM_FALSE 0
+#define UIM_TRUE 1
+#endif
+
 enum UCustomType {
   UCustom_Bool,
   UCustom_Int,
   UCustom_Str,
   UCustom_Pathname,
-  UCustom_Symbol,
+  UCustom_Choice,
   UCustom_Key
 };
 
@@ -57,14 +69,28 @@ union uim_custom_value {
   int as_int;
   char *as_str;
   char *as_pathname;
-  char *as_symbol;
+  struct uim_custom_choice *as_choice;
   /* char *as_key; */
 };
 
-struct uim_custom_symbol {
+struct uim_custom_choice {
   char *symbol;
   char *label;
   char *desc;
+};
+
+union uim_custom_range {
+  struct {
+    int min, max;
+  } as_int;
+
+  struct {
+    char *regex;
+  } as_str;
+
+  struct {
+    struct uim_custom_choice **valid_items;
+  } as_choice;
 };
 
 struct uim_custom {
@@ -73,21 +99,9 @@ struct uim_custom {
   char *symbol;
   char *label;
   char *desc;
-  union uim_custom_value value;
-  union uim_custom_value default_value;
-  union {
-    struct {
-      int min, max;
-    } as_int;
-
-    struct {
-      char *regex;
-    } as_str;
-
-    struct {
-      struct uim_custom_symbol **valid_symbols;
-    } as_symbol;
-  } range;
+  union uim_custom_value *value;
+  union uim_custom_value *default_value;
+  union uim_custom_range *range;
 };
 
 struct uim_custom_group {
@@ -97,21 +111,21 @@ struct uim_custom_group {
 };
 
 
-int uim_custom_init(void);
-int uim_custom_quit(void);
+uim_bool uim_custom_init(void);
+uim_bool uim_custom_quit(void);
 
 /* save customs into the configuration file */
-int uim_custom_save(void);
+uim_bool uim_custom_save(void);
 
 /* broadcast via helper-server */
-int uim_custom_broadcast(void);
+uim_bool uim_custom_broadcast(void);
 
 /* custom variable */
 struct uim_custom *uim_custom_get(const char *custom_sym);
-int uim_custom_set(const struct uim_custom *custom);
+uim_bool uim_custom_set(const struct uim_custom *custom);
 void uim_custom_free(struct uim_custom *custom);
-char *uim_custom_value_as_string(const char *custom_sym);
-char *uim_custom_definition_as_string(const char *custom_sym);
+char *uim_custom_value_as_literal(const char *custom_sym);
+char *uim_custom_definition_as_literal(const char *custom_sym);
 
 /* custom group */
 struct uim_custom_group *uim_custom_group_get(const char *group_sym);
