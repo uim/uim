@@ -998,10 +998,7 @@
     (ustr-clear! (anthy-context-preconv-ustr ac))
     (ustr-clear! (anthy-context-segments ac))
     (anthy-context-set-converting! ac #f)
-    (if (anthy-context-candidate-window ac)
-	(im-deactivate-candidate-selector ac))
-    (anthy-context-set-candidate-window! ac #f)
-    (anthy-context-set-candidate-op-count! ac 0)
+    (anthy-reset-candidate-window ac)
     (anthy-select-ruletree! ac)  ;; to reset transposed ruletree
     (anthy-update-preedit ac)  ;; TODO: remove this
     ))
@@ -1297,7 +1294,7 @@
       (if (anthy-context-candidate-window ac)
 	  ;;(im-select-candidate ac compensated-idx)
 	  (begin
-	    (im-deactivate-candidate-selector ac)
+	    (anthy-reset-candidate-window ac)
 	    (anthy-update-preedit ac))))))
 
 (define anthy-move-candidate
@@ -1433,10 +1430,6 @@
 	 (ustr-cursor-move-end! segments)
 	 (anthy-correct-segment-cursor segments)
 	 (anthy-reset-candidate-window ac))
-
-	((action_anthy_backspace)
-	 (anthy-cancel-conv ac)
-	 (ustr-cursor-delete-backside! preconv-ustr))
 
 	((action_anthy_next_candidate)
 	 (anthy-move-candidate ac 1))
