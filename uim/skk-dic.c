@@ -1547,7 +1547,6 @@ learn_word_to_cand_array(struct skk_cand_array *ca, char *word)
   ca->line->need_save = 1;
 }
 
-#define CAND_QUOTE_BUFSIZ	1024
 static char *
 quote_word(const char *word)
 {
@@ -1555,95 +1554,52 @@ quote_word(const char *word)
   const char *p;
   int len;
 
-  str = malloc(CAND_QUOTE_BUFSIZ);
-  if (!str)
-    return NULL;
-  strcpy(str, "(concat \"");
-  len = strlen(str);
-
+  str= strdup("(concat \"");
   for (p = word; *p; p++) {
+    len = strlen(str);
+
     switch(*p) {
     case '/':
-	    len += strlen("\\057");
-	    if (len >= CAND_QUOTE_BUFSIZ) {
-	       free(str);
-	       return NULL;
-	    }
+	    str = realloc(str, len + strlen("\\057") + 1);
 	    strcat(str, "\\057");
 	    break;
     case '[':
-	    len += strlen("[");
-	    if (len >= CAND_QUOTE_BUFSIZ) {
-	       free(str);
-	       return NULL;
-	    }
+	    str = realloc(str, len + strlen("[") + 1);
 	    strcat(str, "[");
 	    break;
     case ']':
-	    len =+ strlen("]");
-	    if (len >= CAND_QUOTE_BUFSIZ) {
-	       free(str);
-	       return NULL;
-	    }
+	    str = realloc(str, len + strlen("]") + 1);
 	    strcat(str, "]");
 	    break;
     case '\n':
-	    len += strlen("\\n");
-	    if (len >= CAND_QUOTE_BUFSIZ) {
-	       free(str);
-	       return NULL;
-	    }
+	    str = realloc(str, len + strlen("\\n") + 1);
 	    strcat(str, "\\n");
 	    break;
     case '\r':
-	    len += strlen("\\r");
-	    if (len >= CAND_QUOTE_BUFSIZ) {
-	       free(str);
-	       return NULL;
-	    }
+	    str = realloc(str, len + strlen("\\r") + 1);
 	    strcat(str, "\\r");
 	    break;
     case '\\':
-	    len += strlen("\\\\");
-	    if (len >= CAND_QUOTE_BUFSIZ) {
-	       free(str);
-	       return NULL;
-	    }
+	    str = realloc(str, len + strlen("\\\\") + 1);
 	    strcat(str, "\\\\");
 	    break;
     case ';':
-	    len += strlen("\\073");
-	    if (len >= CAND_QUOTE_BUFSIZ) {
-	       free(str);
-	       return NULL;
-	    }
+	    str = realloc(str, len + strlen("\\073") + 1);
 	    strcat(str, "\\073");
 	    break;
     case '"':
-	    len += strlen("\\\"");
-	    if (len >= CAND_QUOTE_BUFSIZ) {
-	       free(str);
-	       return NULL;
-	    }
+	    str = realloc(str, len + strlen("\\\"") + 1);
 	    strcat(str, "\\\"");
 	    break;
     default:
-	    if ((len + 1) >= CAND_QUOTE_BUFSIZ) {
-	       free(str);
-	       return NULL;
-	    }
+	    str = realloc(str, len + 2);
 	    str[len] = *p;
 	    str[len + 1] = '\0';
-	    len++;
 	    break;
     }
   }
-
-  len += strlen("\")");
-  if (len >= CAND_QUOTE_BUFSIZ) {
-     free(str);
-     return NULL;
-  }
+  len = strlen(str);
+  str = realloc(str, len + strlen("\")") + 1);
   strcat(str, "\")");
 
   return str;
