@@ -171,7 +171,7 @@
 				  (+ pageidx 10))
 				 (else
 				  pageidx)))
-	   (idx (+ (* cur-page anthy-nr-candidate-max) compensated-pageidx)))
+	   (idx (+ (* cur-page generic-nr-candidate-max) compensated-pageidx)))
       (im-commit pc (nth idx (cadr cs)))
       (im-deactivate-candidate-selector pc)
       (rk-flush rkc))))

@@ -198,6 +198,8 @@
 
 (define for-each map)
 
+(define quotient /)	;; / in siod is quotient actually
+
 ;;(define list-tail
 ;;  (lambda (lst n)
 ;;    (if (= n 0)

@@ -541,6 +541,12 @@
   (_ "Friendly for vi user")
   (_ "long description will be here."))
 
+(define-custom 'skk-commit-candidate-by-label-key? #t
+  '(skk advanced)
+  '(boolean)
+  (_ "Commit candidate by heading label keys")
+  (_ "long description will be here."))
+
 (define-custom 'skk-dic-file-name (string-append (sys-datadir)
 						 "/skk/SKK-JISYO.L")
   '(skk)

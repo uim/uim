@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -65,6 +65,7 @@
 (define skk-style 'skk-style-ddskk-like)
 (define skk-use-with-vi? #f)
 (define skk-use-numeric-conversion? #t)
+(define skk-commit-candidate-by-label-key? #f)
 
 ;; key defs
 (define-key skk-latin-key? '("l" generic-off-key?))
@@ -289,6 +290,7 @@
     (list 'okuri              "")
     ;;(list 'candidates         ())
     (list 'nth                ())
+    (list 'nr-candidates      ())
     (list 'rk-context         ())
     (list 'candidate-op-count ())
     (list 'candidate-window   ())
@@ -603,6 +605,7 @@
       (if res
 	  (begin
 	    (skk-context-set-nth! sc 0)
+	    (skk-context-set-nr-candidates! sc 0)
 	    (skk-check-candidate-window-begin sc)
 	    (if (skk-context-candidate-window sc)
 		(im-select-candidate sc 0))
@@ -913,7 +916,7 @@
 	     ;; For special exception, don't commit native space if
 	     ;; this key sequcence produce zenkaku space.
 	     (if (not (and res
-		           (string=? (car res) "¡¡")))
+			   (string=? (car res) "¡¡")))
 		 (skk-commit-raw-with-preedit-update sc key key-state))
 	     #f)
 	   #t)
@@ -1189,23 +1192,52 @@
 	   ;; store numeric strings to check #4
 	   (let ((numlst (skk-lib-store-replaced-numstr
 			  (skk-make-string head skk-type-hiragana))))
-	     (im-activate-candidate-selector
+	     (skk-context-set-nr-candidates!
 	      sc
 	      (skk-lib-get-nr-candidates
-	       (skk-lib-replace-numeric
-		(skk-make-string head skk-type-hiragana))
+		(skk-lib-replace-numeric
+		 (skk-make-string head skk-type-hiragana))
+		(skk-context-okuri-head sc)
+		(skk-make-string (skk-context-okuri sc) skk-type-hiragana)
+		numlst))
+	     (im-activate-candidate-selector
+	      sc
+	      (skk-context-nr-candidates sc)
+	      skk-nr-candidate-max))
+	   (begin
+	     (skk-context-set-nr-candidates!
+	      sc
+	      (skk-lib-get-nr-candidates
+	       (skk-make-string head skk-type-hiragana)
 	       (skk-context-okuri-head sc)
 	       (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
-	       numlst)
-	      skk-nr-candidate-max))
-	   (im-activate-candidate-selector
-	    sc
-	    (skk-lib-get-nr-candidates
-	     (skk-make-string head skk-type-hiragana)
-	     (skk-context-okuri-head sc)
-	     (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
-	     #f)
-	    skk-nr-candidate-max)))))))
+	       #f))
+	     (im-activate-candidate-selector
+	      sc
+	      (skk-context-nr-candidates sc)
+	      skk-nr-candidate-max))))))))
+
+(define skk-commit-by-label-key
+  (lambda (sc key)
+    (let ((nr (skk-context-nr-candidates sc))
+	  (cur-page (quotient (skk-context-nth sc) skk-nr-candidate-max))
+	  (idx -1)
+	  (res #f))
+      (if (numeral-char? key)
+	  (let ((num (numeral-char->number key)))
+	    (if (= num 0)
+		(set! num 9) ; pressing key_0
+		(set! num (- num 1)))
+	    (if (< num skk-nr-candidate-max)
+		(set! idx (+ (* cur-page skk-nr-candidate-max) num))))
+	  ;; FIXME: add code to handle labels other than number here
+	  )
+      (if (and (>= idx 0)
+	       (< idx nr))
+	  (begin
+	    (skk-context-set-nth! sc idx)
+	    (set! res (skk-prepare-commit-string sc))))
+      res)))
 
 (define skk-change-candidate-index
   (lambda (sc incr)
@@ -1220,30 +1252,9 @@
 	  (begin
 	    (if (> (skk-context-nth sc) 0)
 		(skk-context-set-nth! sc (- (skk-context-nth sc) 1))
-		(begin
-		  (if skk-use-numeric-conversion?
-		    ;; store original number for numeric conversion
-		    (let ((numlst (skk-lib-store-replaced-numstr
-				   (skk-make-string head skk-type-hiragana))))
-		      (skk-context-set-nth! sc (- (skk-lib-get-nr-candidates
-						   (skk-lib-replace-numeric
-						    (skk-make-string
-						   head skk-type-hiragana))
-						   (skk-context-okuri-head sc)
-						   (skk-make-string
-						    (skk-context-okuri sc)
-						    skk-type-hiragana)
-						   numlst)
-						  1)))
-		    (skk-context-set-nth! sc (- (skk-lib-get-nr-candidates
-						 (skk-make-string
-						  head skk-type-hiragana)
-						 (skk-context-okuri-head sc)
-						 (skk-make-string
-						  (skk-context-okuri sc)
-						  skk-type-hiragana)
-						 #f)
-						1)))))))
+		(skk-context-set-nth!
+		 sc
+		 (- (skk-context-nr-candidates sc) 1)))))
       (if (not (skk-get-current-candidate sc))
 	  (begin
 	    (skk-context-set-nth! sc 0)
@@ -1344,6 +1355,12 @@
 	 (skk-proc-state-kanji c key key-state)))
       #f)))
 
+(define skk-heading-label-char?
+  (lambda (key)
+    (if (numeral-char? key) ;; FIXME: should handle key other than number
+	#t
+	#f)))
+
 (define skk-proc-state-converting
   (lambda (c key key-state)
     (let ((sc (skk-find-descendant-context c))
@@ -1389,6 +1406,15 @@
 			     (skk-update-preedit sc)
 			     (skk-proc-state-direct c key key-state))))))
 	     #f)
+	   #t)
+       (if (and skk-commit-candidate-by-label-key?
+       		(skk-heading-label-char? key)
+		(skk-context-candidate-window sc))
+	   (begin
+	     (set! res (skk-commit-by-label-key sc key))
+	     (if res
+		 #f
+		 #t))
 	   #t)
        (begin
 	 (skk-context-set-state! sc 'skk-state-direct)
@@ -1561,7 +1587,8 @@
 	   (string-append cand
 			  (skk-make-string okuri skk-type-hiragana))
 	   cand)
-       (digit->string (+ idx 1))
+       ;; FIXME make sure to enable lable other than number
+       (digit->string (+ (remainder idx skk-nr-candidate-max) 1))
        ""))))
 
 (define skk-set-candidate-index-handler

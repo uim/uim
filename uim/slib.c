@@ -1598,12 +1598,28 @@ Quotient (LISP x, LISP y)
     (x) my_err ("wta(1st) to quotient", x);
   if NULLP
     (y)
-      return (intcons (1 / INTNM (x)));
+      return (intcons (1 / INTNM (x))); /* XXX divided by 0 actually */
   else
     {
       if NINTNUMP
 	(y) my_err ("wta(2nd) to quotient", y);
       return (intcons (INTNM (x) / INTNM (y)));
+    }
+}
+
+static LISP
+Remainder (LISP x, LISP y)
+{
+  if NINTNUMP
+    (x) my_err ("wta(1st) to remainder", x);
+  if NULLP
+    (y)
+      return (intcons (1 % INTNM (x))); /* XXX divided by 0 actually */
+  else
+    {
+      if NINTNUMP
+	(y) my_err ("wta(2nd) to remainder", y);
+      return (intcons (INTNM (x) % INTNM (y)));
     }
 }
 
@@ -4555,6 +4571,7 @@ init_subrs (void)
   init_subr_2n ("-", difference);
   init_subr_2n ("*", ltimes);
   init_subr_2n ("/", Quotient);
+  init_subr_2n ("remainder", Remainder);
   init_subr_2n ("min", lmin);
   init_subr_2n ("max", lmax);
   init_subr_1 ("abs", lllabs);
