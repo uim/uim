@@ -442,7 +442,13 @@
 		  (list "(define " var " " val ")")
 		  (if (eq? (custom-type sym)
 			   'key)
-		      (list "\n(define-key " var "? " val ")")
+		      (let ((key-val (custom-list-as-literal
+				      (map (lambda (key)
+					     (if (symbol? key)
+						 (symbolconc key '?)
+						 key))
+					   (custom-value sym)))))
+			(list "\n(define-key " var "? " key-val ")"))
 		      ())))))))
 
 ;; API
