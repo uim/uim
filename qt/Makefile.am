@@ -82,20 +82,10 @@ libquiminputcontextplugin_la_LDFLAGS  = $(QT_LDFLAGS) -avoid-version
 libquiminputcontextplugin_la_LIBADD   = $(top_builddir)/uim/libuim.la
 
 immodule-candidatewindow.cpp: immodule-candidatewindow.moc
-immodule-candidatewindow.moc: immodule-candidatewindow.h
-	$(MOC) immodule-candidatewindow.h -o immodule-candidatewindow.moc
 immodule-qhelpermanager.cpp: immodule-qhelpermanager.moc
-immodule-qhelpermanager.moc: immodule-qhelpermanager.h
-	$(MOC) immodule-qhelpermanager.h -o immodule-qhelpermanager.moc
 immodule-quiminputcontext.cpp: immodule-quiminputcontext.moc
-immodule-quiminputcontext.moc: immodule-quiminputcontext.h
-	$(MOC) immodule-quiminputcontext.h -o immodule-quiminputcontext.moc
 immodule-quiminputcontext_with_slave.cpp: immodule-quiminputcontext_with_slave.moc
-immodule-quiminputcontext_with_slave.moc: immodule-quiminputcontext_with_slave.h
-	$(MOC) immodule-quiminputcontext_with_slave.h -o immodule-quiminputcontext_with_slave.moc
 immodule-subwindow.cpp: immodule-subwindow.moc
-immodule-subwindow.moc: immodule-subwindow.h
-	$(MOC) immodule-subwindow.h -o immodule-subwindow.moc
 endif
 
 # Toolbar Common
@@ -106,8 +96,6 @@ libtoolbarcommon_la_LDFLAGS  = $(QT_LDFLAGS) -avoid-version
 libtoolbarcommon_la_LIBADD   = $(top_builddir)/uim/libuim.la
 toolbar-common-quimhelpertoolbar.cpp: toolbar-common-quimhelpertoolbar.moc
 toolbar-common-uimstateindicator.cpp: toolbar-common-uimstateindicator.moc
-toolbar-common-quimhelpertoolbar.moc:
-	$(MOC) $(top_srcdir)/qt/toolbar-common-quimhelpertoolbar.h -o toolbar-common-quimhelpertoolbar.moc
 
 # Toolbar Standalone
 uim_toolbar_qt_SOURCES = toolbar-standalone-qt.cpp qtgettext.h
@@ -183,17 +171,9 @@ uim_chardict_qt_LDADD    = $(top_builddir)/uim/libuim.la
 chardict-qt.cpp: chardict-qt.moc
 
 chardict-bushuviewwidget.cpp: chardict-bushuviewwidget.moc
-chardict-bushuviewwidget.moc: chardict-bushuviewwidget.h
-	$(MOC) $(top_srcdir)/qt/chardict-bushuviewwidget.h -o chardict-bushuviewwidget.moc
 chardict-unicodeviewwidget.cpp: chardict-unicodeviewwidget.moc
-chardict-unicodeviewwidget.moc: chardict-unicodeviewwidget.h
-	$(MOC) $(top_srcdir)/qt/chardict-unicodeviewwidget.h -o chardict-unicodeviewwidget.moc
 chardict-chargridview.cpp: chardict-chargridview.moc
-chardict-chargridview.moc: chardict-chargridview.h
-	$(MOC) $(top_srcdir)/qt/chardict-chargridview.h -o chardict-chargridview.moc
 chardict-kseparator.cpp: chardict-kseparator.moc
-chardict-kseparator.moc: chardict-kseparator.h
-	$(MOC) $(top_srcdir)/qt/chardict-kseparator.h -o chardict-kseparator.moc
 EXTRA_DIST += $(helperdata_DATA)
 helperdatadir = $(datadir)/uim/helperdata
 helperdata_DATA = bushu.t

@@ -38,7 +38,7 @@
 
 #include <stdlib.h>
 
-#include "uim-compat-scm.h"
+#include "uim/uim-compat-scm.h"
 #include "qtgettext.h"
 
 static const QString ICONDIR = UIM_PIXMAPSDIR;
