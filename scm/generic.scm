@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -28,6 +28,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require "util.scm")
 (require "rk.scm")
 (require "generic-key.scm")
 
@@ -36,6 +37,7 @@
 (define generic-use-candidate-window? #t)
 (define generic-candidate-op-count 1)
 (define generic-nr-candidate-max 10)
+(define generic-commit-candidate-by-numeral-key? #t)
 
 ;; widgets and actions
 
@@ -142,6 +144,37 @@
     (im-commit-raw pc)
     (generic-context-set-raw-commit! pc #t)))
 
+(define generic-commit
+  (lambda (pc)
+    (let* ((rkc (generic-context-rk-context pc))
+	   (cs (rk-current-seq rkc)))
+      (if (> (length (cadr cs)) 0)
+	  (begin
+	    (im-commit pc (nth (generic-context-rk-nth pc) (cadr cs)))
+	    (im-deactivate-candidate-selector pc)
+	    (rk-flush rkc)
+	    (generic-context-flush pc))
+	  (begin
+	    (im-commit-raw pc)
+	    (rk-flush rkc)
+	    (im-update-preedit pc))))))
+
+(define generic-commit-by-numkey
+  (lambda (pc key)
+    (let* ((rkc (generic-context-rk-context pc))
+	   (cs (rk-current-seq rkc))
+	   (n (generic-context-rk-nth pc) (cadr cs))
+	   (cur-page (/ n generic-nr-candidate-max))
+	   (pageidx (- (numeral-char->number key) 1))
+	   (compensated-pageidx (cond
+				 ((< pageidx 0) ; pressing key_0
+				  (+ pageidx 10))
+				 (else
+				  pageidx)))
+	   (idx (+ (* cur-page anthy-nr-candidate-max) compensated-pageidx)))
+      (im-commit pc (nth idx (cadr cs)))
+      (im-deactivate-candidate-selector pc)
+      (rk-flush rkc))))
 
 ;; XXX: This function is too long, we should split into several functions..
 ;; 2004-11-05 TOKUNAGA Hiroyuki
@@ -184,17 +217,8 @@
 	     #f)
 	   #t)
        (if (generic-commit-key? key state)
-	   (let ((cs (rk-current-seq rkc)))
-	     (if (> (length (cadr cs)) 0)
-		 (begin
-		   (im-commit pc (nth (generic-context-rk-nth pc) (cadr cs)))
-		   (im-deactivate-candidate-selector pc)
-		   (rk-flush rkc)
-		   (generic-context-flush pc))
-		 (begin
-		   (im-commit-raw pc)
-		   (rk-flush rkc)
-		   (im-update-preedit pc)))
+	   (begin
+	     (generic-commit pc)
 	     #f)
 	   #t)
        (if (symbol? key)
@@ -311,17 +335,8 @@
 	     #f)
 	   #t)
        (if (generic-commit-key? key state)
-	   (let ((cs (rk-current-seq rkc)))
-	     (if (> (length (cadr cs)) 0)
-		 (begin
-		   (im-commit pc (nth (generic-context-rk-nth pc) (cadr cs)))
-		   (generic-context-flush pc)
-		   (rk-flush rkc)
-		   (im-deactivate-candidate-selector pc))
-		 (begin
-		   (im-commit-raw pc)
-		   (rk-flush rkc)
-		   (im-update-preedit pc)))
+	   (begin
+	     (generic-commit pc)
 	     #f)
 	   #t)
        (if (symbol? key)
@@ -333,6 +348,12 @@
 		 (generic-commit-raw pc)
 		 (generic-context-set-rk-nth! pc 0)
 		 #f))
+	   #t)
+       (if (and generic-commit-candidate-by-numeral-key?
+		(numeral-char? key))
+	   (begin
+	     (generic-commit-by-numkey pc key)
+	     #f)
 	   #t)
        (if (and (modifier-key-mask state)
 		(not (shift-key-mask state)))
