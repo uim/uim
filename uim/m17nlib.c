@@ -252,21 +252,6 @@ init_m17nlib()
   return uim_scm_t();
 }
 
-void
-uim_quit_m17nlib(void)
-{
-  if (converter) {
-    mconv_free_converter(converter);
-    converter = NULL;
-  }
-  if (m17nlib_ok) {
-    M17N_FINI();
-    m17nlib_ok = 0;
-  }
-  free(im_array);
-  free(ic_array);
-}
-
 static char *
 convert_mtext2str(MText *mtext)
 {
@@ -719,7 +704,7 @@ m17nlib_utf8_find_next_char(const char *p)
 }
 
 void
-uim_init_m17nlib(void)
+uim_plugin_instance_init(void)
 {
   uim_scm_init_subr_0("m17nlib-lib-init", init_m17nlib);
   uim_scm_init_subr_0("m17nlib-lib-nr-input-methods", get_nr_input_methods);
@@ -744,16 +729,18 @@ uim_init_m17nlib(void)
   uim_scm_init_subr_1("m17nlib-lib-get-candidate-index", get_candidate_index);
 }
 
-
-void
-uim_plugin_instance_init(void)
-{
-  uim_init_m17nlib();
-}
-
 void
 uim_plugin_instance_quit(void)
 {
-  return;
+  if (converter) {
+    mconv_free_converter(converter);
+    converter = NULL;
+  }
+  if (m17nlib_ok) {
+    M17N_FINI();
+    m17nlib_ok = 0;
+  }
+  free(im_array);
+  free(ic_array);
 }
 #endif /* HAVE_M17NLIB */
