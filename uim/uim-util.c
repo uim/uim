@@ -54,25 +54,25 @@ void unsetenv(const char *);
 extern char *uim_return_str;
 
 /* define constants as procedure to ensure unmodifiable */
-static LISP
+static uim_lisp
 sys_libdir()
 {
   return uim_scm_make_str(LIBDIR);
 }
 
-static LISP
+static uim_lisp
 sys_pkglibdir()
 {
   return uim_scm_make_str(PKGLIBDIR);
 }
 
-static LISP
+static uim_lisp
 sys_datadir()
 {
   return uim_scm_make_str(DATADIR);
 }
 
-static LISP
+static uim_lisp
 sys_pkgdatadir()
 {
   return uim_scm_make_str(PKGDATADIR);

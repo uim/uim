@@ -35,8 +35,6 @@
 #ifndef _uim_plugin_h_included_
 #define _uim_plugin_h_included_
 
-#define NEW_UIM_PLUGIN 1
-
 typedef struct _uim_plugin_info {
   char *name;        /* XXX: should have in scm? */
   char *description; /* XXX: should have in scm? */
@@ -54,7 +52,7 @@ typedef struct _plugin_list {
   struct _plugin_list *next;
 } uim_plugin_info_list;
 
-void uim_plugin_init(void);
-void uim_plugin_quit(void);
+void uim_plugin_instance_init(void);
+void uim_plugin_instance_quit(void);
 
 #endif /* _uim_plugin_h_included_ */
