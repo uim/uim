@@ -56,7 +56,6 @@ static GtkSizeGroup *button_size_group;
 
 static unsigned int read_tag;
 static int uim_fd;
-static GtkWidget *helper_parent_widget;
 
 static gboolean
 prop_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkMenuShell *prop_menu);
@@ -78,9 +77,6 @@ calc_menu_position(GtkMenu *prop_menu, gint *x, gint *y, gboolean *push_in, GtkW
 
 static void
 prop_menu_activate(GtkMenu *menu_item, gpointer data);
-
-static void
-hbox_hierarchy_changed(GtkWidget *widget, GtkWidget *widget2, gpointer data);
 
 GtkWidget *
 uim_helper_toolbar_new(void);
@@ -423,8 +419,7 @@ prop_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkMenuShell 
   if(event->button == 3) {
     prop_right_button_pressed(prop_button, event, prop_menu);
   } else if(event->button == 2) {
-    if(helper_parent_widget)
-      gtk_propagate_event(GTK_WIDGET(helper_parent_widget), (GdkEvent *) event);
+    gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
   }
   return FALSE;
 }
@@ -464,8 +459,7 @@ prop_button_released(GtkButton *prop_button, GdkEventButton *event, gpointer dum
   if (!event) {
     return FALSE;
   } else if (event->button == 2 || event->button == 3) {
-    if(helper_parent_widget)
-      gtk_propagate_event(GTK_WIDGET(helper_parent_widget), (GdkEvent *) event);
+    gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
     return FALSE;
   }
 
@@ -590,8 +584,7 @@ switcher_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer 
   if(event->button == 3) {
     prop_right_button_pressed(prop_button, event, prop_menu);
   } else if(event->button == 2) {
-    if (helper_parent_widget)
-      gtk_propagate_event(GTK_WIDGET(helper_parent_widget), (GdkEvent *) event);
+    gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
   } else {
     /* exec uim-im-switcher */
     system("uim-im-switcher &");
@@ -632,20 +625,12 @@ pref_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer user
   if(event->button == 3) {
     prop_right_button_pressed(prop_button, event, prop_menu);
   } else if(event->button == 2) {
-    if (helper_parent_widget)
-      gtk_propagate_event(GTK_WIDGET(helper_parent_widget), (GdkEvent *) event);
+    gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
   } else {
     /* exec uim-pref */
     system("uim-pref-gtk &");
   }
 }
-
-static void
-hbox_hierarchy_changed(GtkWidget *widget, GtkWidget *widget2, gpointer data)
-{
-  helper_parent_widget =  gtk_widget_get_parent(widget);
-}
-
 
 GtkWidget *
 uim_helper_toolbar_new(void)
@@ -655,9 +640,6 @@ uim_helper_toolbar_new(void)
   right_click_menu = right_click_menu_create();
   button_size_group = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
  
-  g_signal_connect(G_OBJECT(hbox), "hierarchy-changed",
-		   G_CALLBACK(hbox_hierarchy_changed), hbox);
-
   if(!menu_buttons){
     tmp_button = gtk_button_new_with_label("?");
     gtk_button_set_relief(GTK_BUTTON(tmp_button), GTK_RELIEF_NONE);
