@@ -333,8 +333,7 @@
     (skk-context-set-head! sc '())
     (skk-context-set-okuri-head! sc "")
     (skk-context-set-okuri! sc '())
-    (skk-context-set-candidate-op-count! sc 0)
-    (skk-context-set-candidate-window! sc #f)
+    (skk-reset-candidate-window sc)
     (skk-context-set-latin-conv! sc #f)))
 
 (define skk-context-new
