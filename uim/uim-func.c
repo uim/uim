@@ -207,6 +207,10 @@ void
 uim_release_preedit_segments(uim_context uc)
 {
   int i;
+
+  if(!uc)
+    return;
+
   if (!uc->psegs) {
     uc->nr_psegs = 0;
     return ;
@@ -520,9 +524,11 @@ im_clear_mode_list(uim_lisp id)
     return uim_scm_f();
 
   for (i = 0; i < uc->nr_modes; i++) {
-    if (uc->modes[i]) {
-      free(uc->modes[i]);
-    }
+    if (!uc->modes[i])
+      break;
+
+    free(uc->modes[i]);
+    uc->modes[i] = NULL;
   }
   if (uc->modes) {
     free(uc->modes);
