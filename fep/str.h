@@ -44,5 +44,6 @@ int *width2byte(const char *str, int n);
 int *width2byte2(const char *str, int n);
 int strhead(char *str, int n);
 char *rstrstr(char *haystack, const char *needle);
+char *tab2space(const char *tabstr);
 #endif
 

@@ -76,18 +76,24 @@ void init_str(void)
 }
 
 /*
- * LC_ALLなどの環境変数で設定されているエンコーディングを返す
+ * LC_ALL, LC_CTYPE, LANGで設定されているエンコーディングを返す
  * 設定されていない場合は"utf-8"を返す
  */
 const char *get_enc(void)
 {
-  const char *locale = setlocale(LC_CTYPE, NULL);
-  if (strcasecmp(locale, "ja") == 0) {
-    return "euc-jp";
-  } else {
-    char *ptr = strstr(locale, ".");
-    return ptr != NULL ? ptr + 1 : "utf-8";
+  const char *locale;
+  if ((locale = getenv("LC_ALL")) ||
+      (locale = getenv("LC_CTYPE")) ||
+      (locale = getenv("LANG")))
+  {
+    if (strcasecmp(locale, "ja") == 0) {
+      return "euc-jp";
+    } else {
+      char *ptr = strstr(locale, ".");
+      return ptr != NULL ? ptr + 1 : "utf-8";
+    }
   }
+  return "utf-8";
 }
 
 /*
@@ -630,4 +636,39 @@ char *rstrstr(char *haystack, const char *needle)
 static int min(int a, int b)
 {
   return a < b ? a : b;
+}
+
+#define TAB_WIDTH 4
+/*
+ * tabstrのタブをTAB_WIDTH個のスペースに置き換える。
+ * 返り値はfreeする。
+ */
+char *tab2space(const char *tabstr)
+{
+  char *spacestr;
+  int tabstr_len = strlen(tabstr);
+  int i, j;
+  int tabcount = 0;
+
+  for (i = 0; i < tabstr_len; i++) {
+    if (tabstr[i] == '\t') {
+      tabcount++;
+    }
+  }
+
+  spacestr = malloc((tabstr_len - tabcount) + (TAB_WIDTH * tabcount) + 1);
+
+  for (i = 0, j = 0; i < tabstr_len + 1; i++, j++) {
+    if (tabstr[i] == '\t') {
+      int i2;
+      for (i2 = 0; i2 < TAB_WIDTH; i2++, j++) {
+        spacestr[j] = ' ';
+      }
+      j--;
+    } else {
+      spacestr[j] = tabstr[i];
+    }
+  }
+
+  return spacestr;
 }

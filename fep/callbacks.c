@@ -529,13 +529,14 @@ static void make_page_strs(void)
 
     uim_candidate cand = uim_get_candidate(s_context, index, index_in_page);
     const char *cand_str_label = uim_candidate_get_heading_label(cand);
-    const char *cand_str_cand = uim_candidate_get_cand_str(cand);
+    char *cand_str_cand = tab2space(uim_candidate_get_cand_str(cand));
     int cand_label_width = strwidth(cand_str_label);
     int cand_width = cand_label_width + 1 + strwidth(cand_str_cand) + 1;
     int cand_byte = strlen(cand_str_label) + 1 + strlen(cand_str_cand) + 1;
     char *cand_str = malloc(cand_byte + 1);
     sprintf(cand_str, "%s:%s ", cand_str_label, cand_str_cand);
     uim_candidate_free(cand);
+    free(cand_str_cand);
 
     if (index_in_page == 0) {
       s_candidate.page2index = realloc(s_candidate.page2index, (s_candidate.nr_pages + 1) * sizeof(int));
@@ -709,7 +710,7 @@ static void get_candidate(void)
     uim_candidate_free(cand);
     return;
   }
-  s_candidate_str = strdup(uim_candidate_get_cand_str(cand));
+  s_candidate_str = tab2space(uim_candidate_get_cand_str(cand));
   cand_width = strwidth(s_candidate_str);
   index_width = 3 + numwidth(s_candidate.index + 1) + numwidth(s_candidate.nr);
   /* よほど端末の幅が狭くないかぎりはみ出ない */

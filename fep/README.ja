@@ -6,7 +6,7 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのfepです。
 
 
 * 使い方
-  LANGを使用する言語とエンコーディングに設定します。
+  LANGに使用する言語とエンコーディングを設定します。
   LC_ALLかLC_CTYPEでもいいです。
   サポートされている言語とエンコーディングは
   locale -a
@@ -19,23 +19,23 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのfepです。
   % setenv LANG ja_JP.utf8
 
   例 Solarisでeuc-jpで使う
+  $ LANG=ja ; export LANG
   % setenv LANG ja
 
   $ uim-fep
   SHELLが起動します。キーバインドなどはuimのマニュアルを見てください。
 
-  デフォルトの変換エンジンは~/.uimに
+  変換エンジンは~/.uimに
   (define default-im-name 'anthy)
   のように書きます。
 
   注意
-  デフォルトのキーバインドでは、uim-fepでanthyの直接入力モードからひら
-  がなモード以外のモード変更ができません。primeでは全角英数モードへの
-  モード変更ができません。これらのモード変更を行うためには次のように~
-  /.uimに書きます。
+  デフォルトのキーバインドでは、uim-fepでanthyのカタカナモードなどへの
+  モード変更ができません。primeでは全角英数モードへのモード変更ができ
+  ません。これらのモード変更を行うためには次のように
+  ~/.uimに書きます。
 
   例
-  (define-key anthy-latin-key? '("l" generic-off-key?))
   (define-key anthy-wide-latin-key? "L")
   (define-key anthy-hankaku-kana-key? "<Control>q")
   (define-key anthy-kana-toggle-key? "q")

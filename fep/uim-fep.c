@@ -175,7 +175,7 @@ static void init_agent(const char *engine, const char *enc)
     }
   }
   if (i == nr) {
-    printf("%s is not input method\n\n", engine);
+    printf("%s is not a input method\n\n", engine);
     usage();
     exit(1);
   }
@@ -220,8 +220,11 @@ int main(int argc, char **argv)
   int op;
 
   /* exit if stdin is redirected */
-  if (!isatty(STDIN_FILENO)) {
-    printf("stdin is not a terminal\n");
+  if (!(isatty(STDIN_FILENO) && isatty(STDOUT_FILENO))) {
+    FILE *tty;
+    if ((tty = fopen("/dev/tty", "w")) != NULL) {
+      fprintf(tty, "stdin or stdout is not a terminal\n");
+    }
     return EXIT_FAILURE;
   }
 
@@ -261,8 +264,11 @@ int main(int argc, char **argv)
     s_setmode_fd = -1;
   }
 
-  if ((command[0] = getenv("SHELL")) == NULL) {
-    command[0] = "/bin/sh";
+  if ((command[0] = getenv("SHELL")) == NULL || *command[0] == '\0') {
+    struct passwd *pw;
+    if ((pw = getpwuid(getuid())) == NULL || *(command[0] = pw->pw_shell) == '\0') {
+      command[0] = "/bin/sh";
+    }
   }
   command[1] = NULL;
 
