@@ -554,7 +554,7 @@ fi
 # add warning flags to CFLAGS if GCC=yes
 if test x$CC = xgcc; then
 	CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
-	CXXFLAGS="$CXXFLAGS -Wall"
+	CXXFLAGS="$CXXFLAGS -Wnon-virtual-dtor -Wno-long-long -ansi -Wcast-align -Wconversion -Wchar-subscripts -Wall -W -Wpointer-arith -Wwrite-strings -Wformat-security -Wmissing-format-attribute"
 fi
 
 if test x$enable_compat_scm = xyes; then
