@@ -43,6 +43,8 @@
 #include "uim/uim-custom.h"
 #include "uim/gettext.h"
 
+#define USE_SUB_GROUP 0
+
 static GtkWidget *pref_window = NULL;
 static GtkWidget *pref_tree_view = NULL;
 static GtkWidget *pref_hbox = NULL;
@@ -61,6 +63,10 @@ static gboolean	pref_tree_selection_changed(GtkTreeSelection *selection,
 					     gpointer data);
 static GtkWidget *create_pref_treeview(void);
 static GtkWidget *create_group_widget(const char *group_name);
+#if USE_SUB_GROUP
+static void create_sub_group_widget(GtkWidget *parent_widget,
+				    const char *parent_group);
+#endif
 
 static void
 save_confirm_dialog_response_cb(GtkDialog *dialog, gint arg, gpointer user_data)
@@ -327,7 +333,6 @@ create_group_widget(const char *group_name)
   GtkWidget *group_label;
   GtkWidget *setting_button_box;
   struct uim_custom_group *group;
-  char **custom_syms, **custom_sym;
   char *label_text;
   vbox = gtk_vbox_new(FALSE, 8);
 
@@ -346,14 +351,21 @@ create_group_widget(const char *group_name)
 
   gtk_box_pack_start (GTK_BOX(vbox), group_label, FALSE, TRUE, 8);
 
-  custom_syms = uim_custom_collect_by_group(group_name);
-  if (custom_syms) {
-    for (custom_sym = custom_syms; *custom_sym; custom_sym++) {
-      uim_pref_gtk_add_custom(vbox, *custom_sym);
+#if USE_SUB_GROUP
+  create_sub_group_widget(vbox, group_name);
+#else
+  {
+    char **custom_syms, **custom_sym;
+    custom_syms = uim_custom_collect_by_group(group_name);
+    if (custom_syms) {
+      for (custom_sym = custom_syms; *custom_sym; custom_sym++) {
+	uim_pref_gtk_add_custom(vbox, *custom_sym);
+      }
+      uim_custom_symbol_list_free(custom_syms);
     }
-    uim_custom_symbol_list_free(custom_syms);
   }
-  
+#endif
+
   uim_custom_group_free(group);
 
   setting_button_box = create_setting_button_box(group_name);
@@ -361,6 +373,46 @@ create_group_widget(const char *group_name)
 
   return vbox;
 }
+
+#if USE_SUB_GROUP
+static void create_sub_group_widget(GtkWidget *parent_widget, const char *parent_group)
+{
+    char **sgrp_syms = uim_custom_group_subgroups(parent_group);
+    char **sgrp_sym;
+
+    for(sgrp_sym = sgrp_syms; *sgrp_sym; sgrp_sym++)
+    {
+        struct uim_custom_group *sgrp =  uim_custom_group_get(*sgrp_sym);
+	char **custom_syms, **custom_sym;
+	GtkWidget *frame;
+	GtkWidget *vbox;
+
+	if(sgrp == NULL)
+	  continue;
+
+	frame = gtk_frame_new(sgrp->label);
+	gtk_frame_set_label_align(GTK_FRAME(frame), 0.02, 0.5);
+	gtk_box_pack_start(GTK_BOX(parent_widget), frame, FALSE, FALSE, 0);
+
+	vbox = gtk_vbox_new(FALSE, 8);
+	gtk_container_add(GTK_CONTAINER(frame), vbox);
+
+	gtk_container_set_border_width(GTK_CONTAINER(vbox), 6);
+
+	custom_syms = uim_custom_collect_by_group(*sgrp_sym);
+	if (custom_syms) {
+	  for (custom_sym = custom_syms; *custom_sym; custom_sym++) {
+	    uim_pref_gtk_add_custom(vbox, *custom_sym);
+	  }
+	  uim_custom_symbol_list_free(custom_syms);
+	}
+
+	uim_custom_group_free(sgrp);
+    }
+
+    uim_custom_symbol_list_free(sgrp_syms);
+}
+#endif
 
 static GtkWidget *
 create_pref_window(void)
