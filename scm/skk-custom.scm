@@ -136,6 +136,10 @@
   (_ "Show annotation in preedit area")
   (_ "long description will be here."))
 
+(custom-add-hook 'skk-show-annotation-in-preedit?
+		 'custom-activity-hooks
+		 (lambda ()
+		   skk-show-annotation?))
 
 (define-custom 'skk-dic-file-name (string-append (sys-datadir)
 						 "/skk/SKK-JISYO.L")
