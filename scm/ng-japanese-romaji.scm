@@ -68,7 +68,8 @@
 							       elem
 							       (list elem)))
 							 res)))
-				    (and (string=? letter
+				    (and (string? (car seq))
+					 (string=? letter
 						   (car seq))
 					 (list (cons letter seq)
 					       (map cons kana listified)))))
@@ -504,72 +505,66 @@
 
 ;; ん
 (define ja-romaji-hepburn-n-ruleset
-  '(
-    ;; "namba" → "なんば"
-    (("m" ("b" press peek)) (("ん" ($3 loopback))
-			     ("ン" ($3 loopback))
-			     ("ﾝ"  ($3 loopback))))
+  '(;; "namba" → "なんば"
+    (("m" ("b" press peek loopback)) ("ん" "ン" "ﾝ"))
 
     ;; "homma" → "ほんま"
-    (("m" ("m" press peek)) (("ん" ($3 loopback))
-			     ("ン" ($3 loopback))
-			     ("ﾝ"  ($3 loopback))))
+    (("m" ("m" press peek loopback)) ("ん" "ン" "ﾝ"))
 
     ;; "kampo" → "かんぽ"
-    (("m" ("p" press peek)) (("ん" ($3 loopback))
-			     ("ン" ($3 loopback))
-			     ("ﾝ"  ($3 loopback))))))
+    (("m" ("p" press peek loopback)) ("ん" "ン" "ﾝ"))))
 
-;; おお、おう (experimental)
+;; おお、おう (experimental, still broken)
 (define ja-romaji-hepburn-oh-ruleset
-  '((("o" "h"     (char-nonvowel press peek)) (("お" "お" ($5 loopback))
-					       ("オ" "オ" ($5 loopback))
-					       ("ｵ" "ｵ"   ($5 loopback))))
-    (("k" "o" "h" (char-nonvowel press peek)) (("こ" "う" ($7 loopback))
-					       ("コ" "ウ" ($7 loopback))
-					       ("ｺ" "ｳ"   ($7 loopback))))
-    (("g" "o" "h" (char-nonvowel press peek)) (("ご" "う" ($7 loopback))
-					       ("ゴ" "ウ" ($7 loopback))
-					       ("ｺ" "ﾞ" "ｳ" ($7 loopback))))
-    (("s" "o" "h" (char-nonvowel press peek)) (("そ" "う" ($7 loopback))
-					       ("ソ" "ウ" ($7 loopback))
-					       ("ｿ" "ｳ"   ($7 loopback))))
-    (("z" "o" "h" (char-nonvowel press peek)) (("ぞ" "う" ($7 loopback))
-					       ("ゾ" "ウ" ($7 loopback))
-					       ("ｿ" "ﾞ" "ｳ" ($7 loopback))))
-    (("j" "o" "h" (char-nonvowel press peek)) (("じ" "ょ" "う" ($7 loopback))
-					       ("ジ" "ョ" "ウ" ($7 loopback))
-					       ("ｼ" "ﾞ" "ｮ" "ｳ" ($7 loopback))))
-    (("t" "o" "h" (char-nonvowel press peek)) (("と" "う" ($7 loopback))
-					       ("ト" "ウ" ($7 loopback))
-					       ("ﾄ" "ｳ"   ($7 loopback))))
-    (("d" "o" "h" (char-nonvowel press peek)) (("ど" "う" ($7 loopback))
-					       ("ド" "ウ" ($7 loopback))
-					       ("ﾄ" "ﾞ" "ｳ" ($7 loopback))))
-    (("n" "o" "h" (char-nonvowel press peek)) (("の" "う" ($7 loopback))
-					       ("ノ" "ウ" ($7 loopback))
-					       ("ﾉ" "ｳ"   ($7 loopback))))
-    (("h" "o" "h" (char-nonvowel press peek)) (("ほ" "う" ($7 loopback))
-					       ("ホ" "ウ" ($7 loopback))
-					       ("ﾎ" "ｳ"   ($7 loopback))))
-;;    (("f" "o" "h" (char-nonvowel press peek)) (("ふ" "ぉ" "う" ($7 loopback))
-;;					       ("フ" "ォ" "ウ" ($7 loopback))
-;;					       ("ﾌ" "ｫ" "ｳ"    ($7 loopback))))
-    (("b" "o" "h" (char-nonvowel press peek)) (("ぼ" "う" ($7 loopback))
-					       ("ボ" "ウ" ($7 loopback))
-					       ("ﾎ" "ﾞ" "ｳ" ($7 loopback))))
-    (("p" "o" "h" (char-nonvowel press peek)) (("ぽ" "う" ($7 loopback))
-					       ("ポ" "ウ" ($7 loopback))
-					       ("ﾎ" "ﾟ" "ｳ" ($7 loopback))))
-    (("m" "o" "h" (char-nonvowel press peek)) (("も" "う" ($7 loopback))
-					       ("モ" "ウ" ($7 loopback))
-					       ("ﾓ" "ｳ"   ($7 loopback))))
-    (("y" "o" "h" (char-nonvowel press peek)) (("よ" "う" ($7 loopback))
-					       ("ヨ" "ウ" ($7 loopback))
-					       ("ﾖ" "ｳ"   ($7 loopback))))
-    (("r" "o" "h" (char-nonvowel press peek)) (("ろ" "う" ($7 loopback))
-					       ("ロ" "ウ" ($7 loopback))
-					       ("ﾛ" "ｳ"   ($7 loopback))))))
+  '(
+    (("o" "h"     (char-nonvowel press peek loopback)) (("お" "お")
+							("オ" "オ")
+							("ｵ" "ｵ")))
+    (("k" "o" "h" (char-nonvowel press peek loopback)) (("こ" "う")
+							("コ" "ウ")
+							("ｺ" "ｳ")))
+    (("g" "o" "h" (char-nonvowel press peek loopback)) (("ご" "う")
+							("ゴ" "ウ")
+							("ｺ" "ﾞ" "ｳ")))
+    (("s" "o" "h" (char-nonvowel press peek loopback)) (("そ" "う")
+							("ソ" "ウ")
+							("ｿ" "ｳ")))
+    (("z" "o" "h" (char-nonvowel press peek loopback)) (("ぞ" "う")
+							("ゾ" "ウ")
+							("ｿ" "ﾞ" "ｳ")))
+    (("j" "o" "h" (char-nonvowel press peek loopback)) (("じ" "ょ" "う")
+							("ジ" "ョ" "ウ")
+							("ｼ" "ﾞ" "ｮ" "ｳ")))
+    (("t" "o" "h" (char-nonvowel press peek loopback)) (("と" "う")
+							("ト" "ウ")
+							("ﾄ" "ｳ")))
+    (("d" "o" "h" (char-nonvowel press peek loopback)) (("ど" "う")
+							("ド" "ウ")
+							("ﾄ" "ﾞ" "ｳ")))
+    (("n" "o" "h" (char-nonvowel press peek loopback)) (("の" "う")
+							("ノ" "ウ")
+							("ﾉ" "ｳ")))
+    (("h" "o" "h" (char-nonvowel press peek loopback)) (("ほ" "う")
+							("ホ" "ウ")
+							("ﾎ" "ｳ")))
+;;    (("f" "o" "h" (char-nonvowel press peek loopback)) (("ふ" "ぉ" "う")
+;;							("フ" "ォ" "ウ")
+;;							("ﾌ" "ｫ" "ｳ")))
+    (("b" "o" "h" (char-nonvowel press peek loopback)) (("ぼ" "う")
+							("ボ" "ウ")
+							("ﾎ" "ﾞ" "ｳ")))
+    (("p" "o" "h" (char-nonvowel press peek loopback)) (("ぽ" "う")
+							("ポ" "ウ")
+							("ﾎ" "ﾟ" "ｳ")))
+    (("m" "o" "h" (char-nonvowel press peek loopback)) (("も" "う")
+							("モ" "ウ")
+							("ﾓ" "ｳ")))
+    (("y" "o" "h" (char-nonvowel press peek loopback)) (("よ" "う")
+							("ヨ" "ウ")
+							("ﾖ" "ｳ")))
+    (("r" "o" "h" (char-nonvowel press peek loopback)) (("ろ" "う")
+							("ロ" "ウ")
+							("ﾛ" "ｳ")))))
 
 ;; 変則促音 変換中表示
 (define ja-romaji-hepburn-irregular-double-consonant-guide-ruleset
@@ -609,7 +604,7 @@
 ;; may be replaced with more efficient way for ruleset composition(merging)
 (define ja-romaji-hiragana-ruleset
   (append
-   (symbol-value ja-romaji-fullwidth-space-ruleset)
+   ;;(symbol-value ja-romaji-fullwidth-space-ruleset)
    (symbol-value ja-romaji-fullwidth-basic-symbol-ruleset)
    (symbol-value ja-romaji-fullwidth-number-ruleset)
    (symbol-value ja-romaji-fullwidth-kana-period-ruleset)
@@ -632,7 +627,7 @@
 
 (define ja-romaji-katakana-ruleset
   (append
-   (symbol-value ja-romaji-fullwidth-space-ruleset)
+   ;;(symbol-value ja-romaji-fullwidth-space-ruleset)
    (symbol-value ja-romaji-fullwidth-basic-symbol-ruleset)
    (symbol-value ja-romaji-fullwidth-number-ruleset)
    (symbol-value ja-romaji-fullwidth-kana-period-ruleset)
@@ -655,7 +650,7 @@
 
 (define ja-romaji-halfkana-ruleset
   (append
-   ja-halfwidth-space-ruleset
+   ;;ja-halfwidth-space-ruleset
    ja-halfwidth-kana-period-ruleset
    ja-halfwidth-kana-comma-ruleset
    ja-halfwidth-basic-symbol-ruleset

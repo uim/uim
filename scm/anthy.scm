@@ -715,11 +715,7 @@
 				 (not (evmap-context-complete? last-emc))
 				 (evmap-context-input! last-emc ev))
 			    (evmap-ustr-input-with-new-emc! ustr ruletree ev))))
-      (if (event-loopback ev)
-	  (begin
-	    (event-set-loopback! ev #f)
-	    (evmap-ustr-input! ustr ruletree ev))
-	  closer-tree))))
+      closer-tree)))
 
 ;; returns #t or commit string when consumed
 (define evmap-ustr-input-to-immediate-commit!
@@ -922,25 +918,41 @@
 
 (define anthy-input!
   (lambda (ac ev)
-    (let ((actmap-emc (anthy-context-actmap-emc ac)))
-      (if (evmap-context-input! actmap-emc ev)
-	  (if (evmap-context-complete? actmap-emc)
-	      (begin
-		(for-each (lambda (act-id)
-			    (anthy-activate-action! ac act-id))
-			  (evmap-context-action-seq actmap-emc))
+    (let* ((actmap-emc (anthy-context-actmap-emc ac))
+	   (last-emc (evmap-ustr-last-emc (anthy-context-preconv-ustr ac)))
+	   (operating? (not (evmap-context-initial? actmap-emc)))
+	   (composing? (and last-emc
+			    (not (evmap-context-initial? last-emc))
+			    (not (evmap-context-complete? last-emc))))
+	   (actmap-input!
+	    (lambda ()
+	      (let ((matched? (evmap-context-input! actmap-emc ev)))
+		(if (evmap-context-complete? actmap-emc)
+		    (begin
+		      (for-each (lambda (act-id)
+				  (anthy-activate-action! ac act-id))
+				(evmap-context-action-seq actmap-emc))
+		      (evmap-context-flush! actmap-emc)))
+		matched?))))
+      (if (or (and (or operating?
+		       (not composing?))
+		   (actmap-input!))
+	      (let* ((rejected-ev-list (evmap-context-event-seq actmap-emc))
+		     (matched-list (map (lambda (rej-ev)
+					  (anthy-preedit-input! ac rej-ev))
+					(append rejected-ev-list
+						(list ev)))))
 		(evmap-context-flush! actmap-emc)
-		(anthy-update-preedit ac)))
-	  (let* ((rejected-ev-list (evmap-context-event-seq actmap-emc))
-		 (consumed-list (map (lambda (rej-ev)
-				       (anthy-preedit-input! ac rej-ev))
-				     (append rejected-ev-list
-					     (list ev)))))
-	    (evmap-context-flush! actmap-emc)
-	    (if (apply proc-or consumed-list)
-		(anthy-update-preedit ac)))))))
+		(apply proc-or matched-list))
+	      (actmap-input!))  ;; to accept "nq" sequence
+	  (begin
+	    (if (event-loopback ev)
+		(begin
+		  (event-set-loopback! ev #f)
+		  (anthy-input! ac ev)))
+	    (anthy-update-preedit ac))))))
 
-;; returns consumed
+;; returns matched
 (define anthy-preedit-input!
   (lambda (ac ev)
     (let* ((preconv-ustr (anthy-context-preconv-ustr ac))
@@ -961,26 +973,22 @@
        ((anthy-wide-latin-mode? ac)
 	(immediate-commit ruletree))
        ((anthy-converting-state? ac)
-	(if (and (eq? (event-type ev)
-		      'key)
-		 (char-printable? (key-event-char ev))
-;;		 (modifier-match? mod_ignore_Shift
-;;				  (key-event-modifier ev))
-		 )
+	(if (evmap-context-input! (evmap-context-new ruletree)
+				  (copy-list ev))
 	    (begin
 	      (anthy-cancel-conv ac)
 	      (anthy-input! ac ev))))
        ((anthy-input-state? ac)
 	(let* ((preedit? (anthy-has-preedit? ac))
-	       (consumed? (or (immediate-commit ja-immediate-commit-ruletree)
-			      (evmap-ustr-input! preconv-ustr ruletree ev)))
+	       (matched? (or (immediate-commit imm-ruletree)
+			     (evmap-ustr-input! preconv-ustr ruletree ev)))
 	       (post-preedit? (anthy-has-preedit? ac))
 	       (transit? (not (= preedit? post-preedit?))))
 	  ;; main ruletree must not be changed here to preserve
 	  ;; transposed one
 	  (if transit?
 	      (anthy-select-actmap-ruletree! ac))
-	  consumed?))))))
+	  matched?))))))
 
 (define anthy-init-handler
   (lambda (id im arg)
