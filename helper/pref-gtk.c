@@ -470,6 +470,43 @@ create_pref_window(void)
   return window;
 }
 
+static gboolean
+check_dot_uim_file(void)
+{
+  GString *dot_uim = g_string_new(g_get_home_dir());
+  GtkWidget *dialog;
+  const gchar *message =
+    N_("The user customize file \"~/.uim\" is found.\n"
+       "This file will overrid all conflicted settings set by\n"
+       "this tool (stored in ~/.uim.d/customs/*.scm).\n"
+       "Please check this file if you find settings aren't applied.");
+
+  g_string_append(dot_uim, "/.uim");
+
+  if (!g_file_test(dot_uim->str, G_FILE_TEST_EXISTS)) {
+    g_string_free(dot_uim, TRUE);
+    return FALSE;
+  }
+  g_string_free(dot_uim, TRUE);
+
+  dialog = gtk_message_dialog_new(NULL,
+				  GTK_DIALOG_MODAL,
+				  GTK_MESSAGE_WARNING,
+				  GTK_BUTTONS_OK,
+				  _(message));
+
+  /*
+   *  2005-02-07 Takuro Ashie <ashie@homa.ne.jp>
+   *    FIXME! We shoud add a check box like
+   *    "Show this message every time on start up.".
+   */
+
+  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy(GTK_WIDGET(dialog));
+
+  return FALSE;
+}
+
 int 
 main (int argc, char *argv[])
 {
@@ -489,6 +526,8 @@ main (int argc, char *argv[])
 
   if (uim_custom_enable()) {
     GtkWidget *pref;
+
+    gtk_idle_add((GtkFunction) check_dot_uim_file, NULL);
   
     pref = create_pref_window();
 
