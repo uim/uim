@@ -108,7 +108,7 @@ int main(int argc, char **argv)
 
 static void version(void)
 {
-  fprintf(stderr, "uim-fep-tick %s\n", PACKAGE_VERSION);
+  printf("uim-fep-tick %s\n", PACKAGE_VERSION);
 }
 
 static void usage(void)

@@ -228,6 +228,11 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
+  if (getenv("UIM_FEP_PID")) {
+    puts("uim-fep is already running");
+    return EXIT_FAILURE;
+  }
+
   init_str();
 
   tcgetattr(STDIN_FILENO, &s_save_tios);
@@ -250,15 +255,21 @@ int main(int argc, char **argv)
   env_buf = malloc(30);
   snprintf(env_buf, 30, "UIM_FEP_PID=%d", getpid());
   putenv(env_buf);
-  env_buf = malloc(strlen("UIM_FEP_GETMODE=") + strlen(s_path_getmode) + 1);
-  sprintf(env_buf, "UIM_FEP_GETMODE=%s", s_path_getmode);
-  putenv(env_buf);
+
+  if (fopen(s_path_getmode, "wt") != NULL) {
+    unlink(s_path_getmode);
+    env_buf = malloc(strlen("UIM_FEP_GETMODE=") + strlen(s_path_getmode) + 1);
+    sprintf(env_buf, "UIM_FEP_GETMODE=%s", s_path_getmode);
+    putenv(env_buf);
+  } else {
+    s_path_getmode[0] = '\0';
+  }
 
   if (mkfifo(s_path_setmode, 0600) != -1) {
+    unlink(s_path_setmode);
     env_buf = malloc(strlen("UIM_FEP_SETMODE=") + strlen(s_path_setmode) + 1);
     sprintf(env_buf, "UIM_FEP_SETMODE=%s", s_path_setmode);
     putenv(env_buf);
-    s_setmode_fd = open(s_path_setmode, O_RDONLY | O_NONBLOCK);
   } else {
     s_path_setmode[0] = '\0';
     s_setmode_fd = -1;
@@ -398,6 +409,14 @@ opt_end:
   init_draw(s_context, on_the_spot, s_status_type, s_master, s_path_getmode);
   init_escseq(use_civis, on_the_spot, s_status_type, &attr_uim);
   set_signal_handler();
+
+  if (s_path_setmode[0] != '\0' && mkfifo(s_path_setmode, 0600) != -1) {
+    s_setmode_fd = open(s_path_setmode, O_RDONLY | O_NONBLOCK);
+  } else {
+    s_path_setmode[0] = '\0';
+    s_setmode_fd = -1;
+  }
+
   main_loop();
   done(EXIT_SUCCESS);
   return EXIT_SUCCESS;

@@ -506,7 +506,7 @@ end_candidate:
 
   if (force || mode != prev_mode) {
 
-    /* 現在のモードをUIM_FEP_SETMODEに書き込む */
+    /* 現在のモードをUIM_FEP_GETMODEに書き込む */
     if (s_path_getmode[0] != '\0') {
       FILE *fp = fopen(s_path_getmode, "wt");
       if (fp) {
