@@ -31,19 +31,23 @@
 
 */
 
-#include <pref-gtk-custom-widgets.h>
+#include "uim/config.h"
+
+#include <glib.h>
 #include <gdk/gdkkeysyms.h>
 
 #include <string.h>
 #include <stdlib.h>
 #include <locale.h>
 
-#include "uim/config.h"
 #include "uim/uim.h"
 #include "uim/uim-custom.h"
 #include "uim/gettext.h"
+#include "pref-gtk-custom-widgets.h"
 
 #define USE_SUB_GROUP 1
+#define DEFAULT_WINDOW_WIDTH_MAX 800
+#define DEFAULT_WINDOW_HEIGHT_MAX 600
 
 static GtkWidget *pref_window = NULL;
 static GtkWidget *pref_tree_view = NULL;
@@ -449,22 +453,24 @@ create_pref_window(void)
 
   scrolled_win = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_win),
-				       GTK_SHADOW_ETCHED_IN);
+				      GTK_SHADOW_ETCHED_IN);
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win),
-				  GTK_POLICY_NEVER,
-				  GTK_POLICY_AUTOMATIC);
+				 GTK_POLICY_NEVER,
+				 GTK_POLICY_AUTOMATIC);
   gtk_box_pack_start(GTK_BOX(pref_hbox), scrolled_win, FALSE, TRUE, 0);
 
   gtk_container_add(GTK_CONTAINER(scrolled_win), create_pref_treeview());
   gtk_container_add(GTK_CONTAINER(window), pref_hbox);
 
   {
-  GdkScreen *scr = gtk_window_get_screen(GTK_WINDOW(window));
-  gtk_window_set_default_size(GTK_WINDOW(window),
-			      gdk_screen_get_width(scr)  * 0.7,
-			      gdk_screen_get_height(scr) * 0.7);
-  gtk_window_set_position(GTK_WINDOW(window),
-			  GTK_WIN_POS_CENTER_ALWAYS);
+    GdkScreen *scr;
+    gint w, h;
+
+    scr = gtk_window_get_screen(GTK_WINDOW(window));
+    w = CLAMP(gdk_screen_get_width(scr)  * 0.95, 0, DEFAULT_WINDOW_WIDTH_MAX);
+    h = CLAMP(gdk_screen_get_height(scr) * 0.95, 0, DEFAULT_WINDOW_HEIGHT_MAX);
+    gtk_window_set_default_size(GTK_WINDOW(window), w, h);
+    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
   }
   
   return window;
