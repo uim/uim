@@ -48,12 +48,13 @@
 (define custom-literalize-hooks ())
 
 (define custom-validator-alist
-  '((boolean   . custom-boolean?)
-    (integer   . custom-integer?)
-    (string    . custom-string?)
-    (pathname  . custom-pathname?)
-    (choice    . custom-valid-choice?)
-    (key       . custom-key?)))
+  '((boolean      . custom-boolean?)
+    (integer      . custom-integer?)
+    (string       . custom-string?)
+    (pathname     . custom-pathname?)
+    (choice       . custom-valid-choice?)
+    (ordered-list . custom-ordered-list?)
+    (key          . custom-key?)))
 
 (define anything?
   (lambda (x)
@@ -79,11 +80,20 @@
 
 (define custom-valid-choice?
   (lambda arg
-    (let* ((sym (car arg))
-	   (choice-rec-alist (cdr arg)))
+    (let ((sym (car arg))
+	  (choice-rec-alist (cdr arg)))
       (and (symbol? sym)
 	   (assq sym choice-rec-alist)
 	   #t))))
+
+(define custom-ordered-list?
+  (lambda arg
+    (let ((syms (car arg))
+	  (choice-rec-alist (cdr arg)))
+      (and (list? syms)
+	   (every (lambda (sym)
+		    (apply custom-valid-choice? (cons sym choice-rec-alist)))
+		  syms)))))
 
 (define-record 'custom-choice-rec
   '((sym   #f)
@@ -229,7 +239,8 @@
 	  (set! custom-rec-alist (cons crec
 				       custom-rec-alist)))
       (if (not (symbol-bound? sym))
-	  (let ((default (if (symbol? default)
+	  (let ((default (if (or (symbol? default)
+				 (list? default))
 			     (list 'quote default)
 			     default)))
 	    (eval (list 'define sym default)
@@ -360,6 +371,15 @@
 	(as-string val))
        ((eq? type 'choice)
 	(string-append "'" (symbol->string val)))
+       ((eq? type 'ordered-list)
+	(let* ((padded-list (map (lambda (item)
+				   (list " " (symbol->string item)))
+				 val))
+	       (literalized (if (null? padded-list)
+				""
+				(apply string-append
+				       (cdr (apply append padded-list))))))
+	  (string-append "'(" literalized ")")))
        ((eq? type 'key)
 	"")))))  ;; TODO
 

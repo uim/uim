@@ -151,6 +151,79 @@
 			     'uim-color-nonexistent
 			     '(uim-color-uim "uim" "uim native")
 			     '(uim-color-atok "ATOK like" "Similar to ATOK")))))
+  ("test custom-ordered-list?"
+   ;; siod interprets #f as ()
+;;   (assert-false (uim-bool '(custom-ordered-list?
+;;			     #f
+;;			     '(uim-color-uim "uim" "uim native")
+;;			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
+   (assert-false (uim-bool '(custom-ordered-list?
+			     "foo"
+			     '(uim-color-uim "uim" "uim native")
+			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
+   (assert-false (uim-bool '(custom-ordered-list?
+			     -1
+			     '(uim-color-uim "uim" "uim native")
+			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
+   (assert-false (uim-bool '(custom-ordered-list?
+			     0
+			     '(uim-color-uim "uim" "uim native")
+			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
+   (assert-false (uim-bool '(custom-ordered-list?
+			     1
+			     '(uim-color-uim "uim" "uim native")
+			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
+   (assert-false (uim-bool '(custom-ordered-list?
+			     10
+			     '(uim-color-uim "uim" "uim native")
+			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
+   (assert-true  (uim-bool '(custom-ordered-list?
+			     ()
+			     '(uim-color-uim "uim" "uim native")
+			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
+   (assert-false (uim-bool '(custom-ordered-list?
+			     '(1 "2" 'three)
+			     '(uim-color-uim "uim" "uim native")
+			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
+   (assert-false (uim-bool '(custom-ordered-list?
+			     'uim-color-uim
+			     '(uim-color-uim "uim" "uim native")
+			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
+
+   (assert-true  (uim-bool '(custom-ordered-list?
+			     '(uim-color-uim)
+			     '(uim-color-uim "uim" "uim native")
+			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
+   (assert-true  (uim-bool '(custom-ordered-list?
+			     '(uim-color-uim uim-color-atok)
+			     '(uim-color-uim "uim" "uim native")
+			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
+   (assert-true  (uim-bool '(custom-ordered-list?
+			     '(uim-color-atok uim-color-uim)
+			     '(uim-color-uim "uim" "uim native")
+			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
+   (assert-true  (uim-bool '(custom-ordered-list?
+			     '(uim-color-atok uim-color-uim uim-color-user)
+			     '(uim-color-uim "uim" "uim native")
+			     '(uim-color-atok "ATOK like" "Similar to ATOK")
+			     '(uim-color-user "user defined" "user defined"))))
+   (assert-true  (uim-bool '(custom-ordered-list?
+			     '(uim-color-atok uim-color-user)
+			     '(uim-color-uim "uim" "uim native")
+			     '(uim-color-atok "ATOK like" "Similar to ATOK")
+			     '(uim-color-user "user defined" "user defined"))))
+   (assert-false (uim-bool '(custom-ordered-list?
+			     '(uim-color-nonexistent)
+			     '(uim-color-uim "uim" "uim native")
+			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
+   (assert-false (uim-bool '(custom-ordered-list?
+			     '(uim-color-uim uim-color-nonexistent)
+			     '(uim-color-uim "uim" "uim native")
+			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
+   (assert-false (uim-bool '(custom-ordered-list?
+			     '(uim-color-uim uim-color-atok uim-color-nonexistent)
+			     '(uim-color-uim "uim" "uim native")
+			     '(uim-color-atok "ATOK like" "Similar to ATOK")))))
   ("test key-definition?"
    ;; more detailed test is done by test valid-strict-key-str?
 
@@ -939,6 +1012,14 @@
 	       (test-style-canna "canna like" "Similar to canna"))
 	     "Test style"
 	     "long description will be here."))
+     (uim '(define-custom 'test-available-ims '(anthy canna skk)
+	     '(global)
+	     '(ordered-list
+	       (anthy "Anthy" "Anthy")
+	       (canna "Cannd" "Canna")
+	       (skk "SKK" "SKK"))
+	     "Test avalilable IMs"
+	     "long description will be here."))
      (uim '(define-custom 'test-use-candidate-window? #t
 	     '(test ui)
 	     '(boolean)
@@ -970,10 +1051,29 @@
 	     "long description will be here."))))
 
   ("test custom-valid?"
+   ;; choice
    (assert-true  (uim-bool '(custom-valid? 'test-style 'test-style-uim)))
    (assert-true  (uim-bool '(custom-valid? 'test-style 'test-style-ddskk)))
    (assert-true  (uim-bool '(custom-valid? 'test-style 'test-style-canna)))
    (assert-false (uim-bool '(custom-valid? 'test-style 'test-style-invalid)))
+   ;; ordered-list
+   (assert-false (uim-bool '(custom-valid? 'test-available-ims 'anthy)))
+   (assert-false (uim-bool '(custom-valid? 'test-available-ims 'canna)))
+   (assert-false (uim-bool '(custom-valid? 'test-available-ims 'skk)))
+   (assert-false (uim-bool '(custom-valid? 'test-available-ims 'nonexistent)))
+   (assert-true  (uim-bool '(custom-valid? 'test-available-ims ())))
+   (assert-true  (uim-bool '(custom-valid? 'test-available-ims '(anthy))))
+   (assert-true  (uim-bool '(custom-valid? 'test-available-ims '(canna))))
+   (assert-true  (uim-bool '(custom-valid? 'test-available-ims '(skk))))
+   (assert-true  (uim-bool '(custom-valid? 'test-available-ims '(anthy skk))))
+   (assert-true  (uim-bool '(custom-valid? 'test-available-ims '(skk anthy))))
+   (assert-true  (uim-bool '(custom-valid? 'test-available-ims
+					   '(skk anthy canna))))
+   (assert-false (uim-bool '(custom-valid? 'test-available-ims
+					   '(nonexistent))))
+   (assert-false (uim-bool '(custom-valid? 'test-available-ims
+					   '(anthy nonexistent))))
+   ;; integer
    (assert-false (uim-bool '(custom-valid? 'test-nr-candidate-max 0)))
    (assert-true  (uim-bool '(custom-valid? 'test-nr-candidate-max 1)))
    (assert-true  (uim-bool '(custom-valid? 'test-nr-candidate-max 10)))
@@ -983,6 +1083,8 @@
   ("test custom-value"
    (assert-equal 'test-style-ddskk
 		 (uim '(custom-value 'test-style)))
+   (assert-equal '(anthy canna skk)
+		 (uim '(custom-value 'test-available-ims)))
    (assert-true  (uim-bool '(custom-value 'test-use-candidate-window?)))
    (assert-equal 10
 		 (uim '(custom-value 'test-nr-candidate-max)))
@@ -992,6 +1094,7 @@
 		 (uim '(custom-value 'test-dic-file-name))))
 
   ("test custom-set-value!"
+   ;;; choice
    ;; default value
    (assert-equal 'test-style-ddskk
 		 (uim '(custom-value 'test-style)))
@@ -1004,6 +1107,38 @@
    (assert-equal 'test-style-uim
 		 (uim '(custom-value 'test-style)))
 
+   ;;; ordered-list
+   ;; default value
+   (assert-equal '(anthy canna skk)
+		 (uim '(custom-value 'test-available-ims)))
+   ;; valid value
+   (assert-true  (uim-bool '(custom-set-value! 'test-available-ims
+					       ())))
+   (assert-equal ()
+		 (uim '(custom-value 'test-available-ims)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-available-ims
+					       '(anthy))))
+   (assert-equal '(anthy)
+		 (uim '(custom-value 'test-available-ims)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-available-ims
+					       '(anthy skk))))
+   (assert-equal '(anthy skk)
+		 (uim '(custom-value 'test-available-ims)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-available-ims
+					       '(skk anthy))))
+   (assert-equal '(skk anthy)
+		 (uim '(custom-value 'test-available-ims)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-available-ims
+					       '(skk anthy canna))))
+   (assert-equal '(skk anthy canna)
+		 (uim '(custom-value 'test-available-ims)))
+   ;; invalid value is ignored
+   (assert-false (uim-bool '(custom-set-value! 'test-available-ims
+					       '(nonexistent))))
+   (assert-equal '(skk anthy canna)
+		 (uim '(custom-value 'test-available-ims)))
+
+   ;;; boolean
    ;; default value
    (assert-true  (uim-bool '(custom-value 'test-use-candidate-window?)))
    ;; valid value
@@ -1013,6 +1148,7 @@
    (assert-true (uim-bool '(custom-set-value! 'test-use-candidate-window? 10)))
    (assert-true (uim-bool '(custom-value 'test-use-candidate-window?)))
 
+   ;;; integer
    ;; default value
    (assert-equal 10
 		 (uim '(custom-value 'test-nr-candidate-max)))
@@ -1025,6 +1161,7 @@
    (assert-equal 5
 		 (uim '(custom-value 'test-nr-candidate-max)))
 
+   ;;; string
    ;; default value
    (assert-equal "a string"
 		 (uim '(custom-value 'test-string)))
@@ -1037,6 +1174,7 @@
    (assert-equal "a altered string"
 		 (uim '(custom-value 'test-string)))
 
+   ;;; pathname
    ;; default value
    (assert-equal "/usr/share/skk/SKK-JISYO.L"
 		 (uim '(custom-value 'test-dic-file-name)))
@@ -1050,6 +1188,7 @@
    (assert-equal "/usr/local/share/skk/SKK-JISYO.ML"
 		 (uim '(custom-value 'test-dic-file-name)))
 
+   ;;; choice (2)
    ;; default value
    (assert-equal 'hiragana
 		 (uim '(custom-value 'test-modelist)))
@@ -1063,6 +1202,7 @@
 		 (uim '(custom-value 'test-modelist))))
 
   ("test custom-default?"
+   ;;; choice
    ;; default value
    (assert-equal 'test-style-ddskk
 		 (uim '(custom-value 'test-style)))
@@ -1074,6 +1214,20 @@
    (assert-true  (uim-bool '(custom-set-value! 'test-style 'test-style-ddskk)))
    (assert-true  (uim-bool '(custom-default? 'test-style)))
 
+   ;;; ordered-list
+   ;; default value
+   (assert-equal '(anthy canna skk)
+		 (uim '(custom-value 'test-available-ims)))
+   (assert-true  (uim-bool '(custom-default? 'test-available-ims)))
+   ;; valid, but non-default value
+   (assert-true  (uim-bool '(custom-set-value! 'test-available-ims '(anthy))))
+   (assert-false (uim-bool '(custom-default? 'test-available-ims)))
+   ;; come back to default
+   (assert-true  (uim-bool '(custom-set-value! 'test-available-ims
+					       '(anthy canna skk))))
+   (assert-true  (uim-bool '(custom-default? 'test-available-ims)))
+
+   ;;; boolean
    ;; default value
    (assert-true  (uim-bool '(custom-value 'test-use-candidate-window?)))
    (assert-true  (uim-bool '(custom-default? 'test-use-candidate-window?)))
@@ -1084,6 +1238,7 @@
    (assert-true  (uim-bool '(custom-set-value! 'test-use-candidate-window? #t)))
    (assert-true  (uim-bool '(custom-default? 'test-use-candidate-window?)))
 
+   ;;; integer
    ;; default value
    (assert-equal 10
 		 (uim '(custom-value 'test-nr-candidate-max)))
@@ -1095,6 +1250,7 @@
    (assert-true  (uim-bool '(custom-set-value! 'test-nr-candidate-max 10)))
    (assert-true  (uim-bool '(custom-default? 'test-nr-candidate-max)))
 
+   ;;; string
    ;; default value
    (assert-equal "a string"
 		 (uim '(custom-value 'test-string)))
@@ -1106,6 +1262,7 @@
    (assert-true  (uim-bool '(custom-set-value! 'test-string "a string")))
    (assert-true  (uim-bool '(custom-default? 'test-string)))
 
+   ;;; pathname
    ;; default value
    (assert-equal "/usr/share/skk/SKK-JISYO.L"
 		 (uim '(custom-value 'test-dic-file-name)))
@@ -1120,6 +1277,7 @@
    (assert-true  (uim-bool '(custom-default? 'test-dic-file-name))))
 
   ("test custom-default-value"
+   ;;; choice
    ;; default value
    (assert-equal 'test-style-ddskk
 		 (uim '(custom-value 'test-style)))
@@ -1131,7 +1289,21 @@
 		 (uim '(custom-value 'test-style)))
    (assert-equal 'test-style-ddskk
 		 (uim '(custom-default-value 'test-style)))
-   
+
+   ;;; ordered-list
+   ;; default value
+   (assert-equal '(anthy canna skk)
+		 (uim '(custom-value 'test-available-ims)))
+   (assert-equal '(anthy canna skk)
+		 (uim '(custom-default-value 'test-available-ims)))
+   ;; default value is not affected by current value
+   (assert-true  (uim-bool '(custom-set-value! 'test-available-ims '(anthy))))
+   (assert-equal '(anthy)
+		 (uim '(custom-value 'test-available-ims)))
+   (assert-equal '(anthy canna skk)
+		 (uim '(custom-default-value 'test-available-ims)))
+
+   ;;; boolean
    ;; default value
    (assert-true  (uim-bool '(custom-value 'test-use-candidate-window?)))
    (assert-true  (uim-bool '(custom-default-value 'test-use-candidate-window?)))
@@ -1140,6 +1312,7 @@
    (assert-false (uim-bool '(custom-value 'test-use-candidate-window?)))
    (assert-true  (uim-bool '(custom-default-value 'test-use-candidate-window?)))
 
+   ;;; integer
    ;; default value
    (assert-equal 10
 		 (uim '(custom-value 'test-nr-candidate-max)))
@@ -1152,6 +1325,7 @@
    (assert-equal 10
 		 (uim '(custom-default-value 'test-nr-candidate-max)))
 
+   ;;; string
    ;; default value
    (assert-equal "a string"
 		 (uim '(custom-value 'test-string)))
@@ -1164,6 +1338,7 @@
    (assert-equal "a string"
 		 (uim '(custom-default-value 'test-string)))
 
+   ;;; pathname
    ;; default value
    (assert-equal "/usr/share/skk/SKK-JISYO.L"
 		 (uim '(custom-value 'test-dic-file-name)))
@@ -1180,6 +1355,8 @@
   ("test custom-groups"
    (assert-equal '(global)
 		 (uim '(custom-groups 'test-style)))
+   (assert-equal '(global)
+		 (uim '(custom-groups 'test-available-ims)))
    (assert-equal '(test ui)
 		 (uim '(custom-groups 'test-use-candidate-window?)))
    (assert-equal '(test advanced ui)
@@ -1192,6 +1369,8 @@
   ("test custom-type"
    (assert-equal 'choice
 		 (uim '(custom-type 'test-style)))
+   (assert-equal 'ordered-list
+		 (uim '(custom-type 'test-available-ims)))
    (assert-equal 'boolean
 		 (uim '(custom-type 'test-use-candidate-window?)))
    (assert-equal 'integer
@@ -1206,6 +1385,10 @@
 		   (test-style-ddskk "ddskk like" "Similar to ddskk")
 		   (test-style-canna "canna like" "Similar to canna"))
 		 (uim '(custom-type-attrs 'test-style)))
+   (assert-equal '((anthy "Anthy" "Anthy")
+		   (canna "Cannd" "Canna")
+		   (skk "SKK" "SKK"))
+		 (uim '(custom-type-attrs 'test-available-ims)))
    (assert-equal ()
 		 (uim '(custom-type-attrs 'test-use-candidate-window?)))
    (assert-equal '(1 20)
@@ -1218,6 +1401,10 @@
   ("test custom-range"
    (assert-equal '(test-style-uim test-style-ddskk test-style-canna)
 		 (uim '(custom-range 'test-style)))
+   (assert-equal '((anthy "Anthy" "Anthy")
+		   (canna "Cannd" "Canna")
+		   (skk "SKK" "SKK"))
+		 (uim '(custom-range 'test-available-ims)))
    (assert-false (uim-bool '(custom-range 'test-use-candidate-window?)))
    (assert-equal '(1 20)
 		 (uim '(custom-range 'test-nr-candidate-max)))
@@ -1229,6 +1416,8 @@
   ("test custom-label"
    (assert-equal "Test style"
 		 (uim '(custom-label 'test-style)))
+   (assert-equal "Test avalilable IMs"
+		 (uim '(custom-label 'test-available-ims)))
    (assert-equal "Use candidate window"
 		 (uim '(custom-label 'test-use-candidate-window?)))
    (assert-equal "Number of candidates in candidate window at a time"
@@ -1242,6 +1431,8 @@
    (assert-equal "long description will be here."
 		 (uim '(custom-desc 'test-style)))
    (assert-equal "long description will be here."
+		 (uim '(custom-desc 'test-available-ims)))
+   (assert-equal "long description will be here."
 		 (uim '(custom-desc 'test-use-candidate-window?)))
    (assert-equal "long description will be here."
 		 (uim '(custom-desc 'test-nr-candidate-max)))
@@ -1253,6 +1444,8 @@
   ("test custom-value-as-literal"
    (assert-equal "'test-style-ddskk"
 		 (uim '(custom-value-as-literal 'test-style)))
+   (assert-equal "'(anthy canna skk)"
+		 (uim '(custom-value-as-literal 'test-available-ims)))
    (assert-equal "#t"
 		 (uim '(custom-value-as-literal 'test-use-candidate-window?)))
    (assert-equal "10"
@@ -1265,6 +1458,8 @@
   ("test custom-definition-as-literal"
    (assert-equal "(define test-style 'test-style-ddskk)"
 		 (uim '(custom-definition-as-literal 'test-style)))
+   (assert-equal "(define test-available-ims '(anthy canna skk))"
+		 (uim '(custom-definition-as-literal 'test-available-ims)))
    (assert-equal "(define test-use-candidate-window? #t)"
 		 (uim '(custom-definition-as-literal 'test-use-candidate-window?)))
    (assert-equal "(define test-nr-candidate-max 10)"
