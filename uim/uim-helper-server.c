@@ -159,8 +159,6 @@ parse_content(char *content, struct client *cl)
 	  }
 	  break;
         }
-	if (ret == 0)
-	  break;
 
 	out += ret;
 	out_len -= ret;

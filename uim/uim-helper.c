@@ -92,22 +92,42 @@ uim_helper_send_message(int fd, const char *message)
   /* readable and cannot read any character, means disconnected.
      so we should read here and proc such condition. */
 
+  /*
+    The assumption described above is not correct. uim_helper_fd()
+    does only select(2), which only indicates whether system is busy
+    or not. i.e. select(2) exists for non-blocking IO. Not indicates
+    connection availability.
+
+    What we have to do is:
+
+    - Don't use uim_helper_fd() for testing connection availability
+
+    - Determine connection error by EPIPE error of write(2) or some
+      appropriate methods
+
+    - Write all data even if uim_helper_fd() has returned 0
+      (i.e. retry until written all data). (uim_helper_fd() == 0) only
+      indicates system is busy.
+    
+    -- YamaKen 2005-02-07
+  */
+
   if (uim_helper_fd(fd, WRITE) > 0) {
     int len = strlen(message);
     char *buf = malloc(len + 2);
+    char *bufp;
     snprintf(buf, len + 2,"%s\n", message);
 
     out_len = len + 1;
+    bufp = buf;
     while (out_len > 0) {
-      if ((res = write(fd, buf, out_len) < 0)) {
+      if ((res = write(fd, bufp, out_len)) < 0) {
 	if (errno == EAGAIN || errno == EINTR)
 	  continue;
 	break;
       }
-      if (res == 0)
-	break;
 
-      buf += res;
+      bufp += res;
       out_len -= res;
     }
     free(buf);
