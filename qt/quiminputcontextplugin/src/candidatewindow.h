@@ -39,6 +39,7 @@ SUCH DAMAGE.
 #include <qlistview.h>
 #include <qvaluelist.h>
 #include <qevent.h>
+#include <qfontmetrics.h>
 
 class QLabel;
 
@@ -71,15 +72,14 @@ public:
 
     void setQUimInputContext( QUimInputContext* m_ic ) { ic = m_ic; }
 
+    QSize sizeHint(void) const;
+
 protected slots:
     void slotCandidateSelected( QListViewItem* );
     void slotHookSubwindow( QListViewItem* );
 
 protected:
     void updateLabel();
-
-    // not completed
-    void adjustCandidateWindowSize();
 
     // Moving and Resizing affects the positon of Subwindow
     virtual void moveEvent( QMoveEvent * );
@@ -129,7 +129,7 @@ public:
         }
     }
 
-    QListViewItem* itemAtIndex( int index )
+    QListViewItem* itemAtIndex( int index ) const
     {
         if ( index < 0 )
             return 0;
@@ -143,6 +143,7 @@ public:
 
         return 0;
     }
-};
 
+    QSize sizeHint( void ) const;
+};
 #endif /* Not def: _CANDIDATE_WINDOW_H_ */

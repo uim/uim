@@ -239,8 +239,8 @@ void CandidateWindow::setPage( int page )
     if ( newindex != candidateIndex )
         setIndex( newindex );
 
-    // set candwin size
-    adjustCandidateWindowSize();
+    // size adjustment
+    adjustSize();
 }
 
 void CandidateWindow::setIndex( int totalindex )
@@ -337,38 +337,6 @@ void CandidateWindow::layoutWindow( int x, int y, int w, int h )
     move( destX, destY );
 }
 
-void CandidateWindow::adjustCandidateWindowSize()
-{
-    qDebug( "adjustCandidateWindowSize()" );
-
-    int width = 0;
-    int height = 0;
-    QListViewItem *item = cList->firstChild();
-    if ( item )
-        height = item->height() * ( cList->childCount() + 1 );
-
-    // 2004-08-02 Kazuki Ohta <mover@hct.zaq.ne.jp>
-    // FIXME!:
-    //    There may be more proper way. Now width is adjusted by indeterminal 3 spaces.
-    //    Using QWidget::adjustSize() seems not to work properly...
-    unsigned int maxCharIndex = 0, maxCharCount = 0;
-    for ( int i = 0; i < cList->childCount(); i++ )
-    {
-        if ( maxCharCount < cList->itemAtIndex( i ) ->text( 1 ).length() )
-        {
-            maxCharIndex = i;
-            maxCharCount = cList->itemAtIndex( i ) ->text( 1 ).length();
-        }
-    }
-    QFontMetrics fm( cList->font() );
-    width = fm.width( cList->itemAtIndex( maxCharIndex ) ->text( 0 ) + "   " + cList->itemAtIndex( maxCharIndex ) ->text( 1 ) );
-    if ( width < MIN_CAND_WIDTH )
-        width = MIN_CAND_WIDTH;
-
-    resize( width, height );
-}
-
-
 void CandidateWindow::updateLabel()
 {
     QString indexString = QString::null;
@@ -404,4 +372,46 @@ void CandidateWindow::resizeEvent( QResizeEvent *e )
 {
     // move subwindow
     subWin->layoutWindow( pos().x() + e->size().width(), pos().y() );
+}
+
+
+QSize CandidateWindow::sizeHint( void ) const
+{
+    QSize cListSizeHint = cList->sizeHint();
+
+    int width = cListSizeHint.width();
+    int height = cListSizeHint.height() + numLabel->height();
+
+    return QSize( width, height );
+}
+
+QSize CandidateListView::sizeHint( void ) const
+{
+    if(childCount() == 0)
+        return QSize( MIN_CAND_WIDTH, 0 );
+    
+    int width = 0;
+    int height = 0;
+    QListViewItem *item = firstChild();
+    if ( item )
+        height = item->height() * childCount() + 3;
+    
+    // 2004-08-02 Kazuki Ohta <mover@hct.zaq.ne.jp>
+    // FIXME!:
+    //    There may be more proper way. Now width is adjusted by indeterminal 3 spaces.
+    unsigned int maxCharIndex = 0, maxCharCount = 0;
+    for ( int i = 0; i < childCount(); i++ )
+    {
+        if ( maxCharCount < itemAtIndex( i )->text( 1 ).length() )
+        {
+            maxCharIndex = i;
+            maxCharCount = itemAtIndex( i )->text( 1 ).length();
+        }
+    }
+    QFontMetrics fm( font() );
+    width = fm.width( itemAtIndex( maxCharIndex )->text( 0 ) + "   " + itemAtIndex( maxCharIndex )->text( 1 ) );
+    if ( width < MIN_CAND_WIDTH )
+        width = MIN_CAND_WIDTH;
+    
+    return QSize( width, height );
 }
