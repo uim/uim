@@ -828,6 +828,9 @@
       #f)
      ;; bad strategy. see bug #528
      ((or
+       (and
+	(shift-key-mask key-state)
+	(not (char-graphic? key)))
        (control-key-mask key-state)
        (alt-key-mask key-state)
        (meta-key-mask key-state)
@@ -944,6 +947,9 @@
        ;; bad strategy. see bug #528
        ;; "<Control>a", "<Alt> ", "<Meta>b" and so on
        (if (or
+	    (and
+	     (shift-key-mask key-state)
+	     (not (char-graphic? key)))
 	    (control-key-mask key-state)
 	    (alt-key-mask key-state)
 	    (meta-key-mask key-state)
