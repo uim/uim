@@ -16,6 +16,7 @@ libuim_la_SOURCES = uim.c uim-func.c \
 		intl.c intl.h \
 		uim-ipc.c uim-table.c \
 		getpeereid.c \
+		setenv.c \
 		$(canna_source) \
 		plugin.c
 

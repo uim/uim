@@ -41,6 +41,12 @@
 #include "gettext.h"
 #include "uim-util.h"
 
+#ifndef HAVE_SETENV
+int setenv(const char *, const char *, int);
+#endif
+#ifndef HAVE_UNSETENV
+void unsetenv(const char *);
+#endif
 
 #define TRUEP(x) EQ(x, true_sym)
 #define FALSEP(x) EQ(x, false_sym)
