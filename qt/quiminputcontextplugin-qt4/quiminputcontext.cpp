@@ -257,6 +257,8 @@ void QUimInputContext::unsetFocus()
 
     cwin->hide();
 
+    m_HelperManager->checkHelperConnection();
+
     uim_helper_client_focus_out( m_uc );
 }
 

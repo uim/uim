@@ -482,6 +482,8 @@ focus_out(GtkIMContext *ic)
     snooper_installed = FALSE;
   }
 
+  check_helper_connection();
+
   uim_helper_client_focus_out(uic->uc);
 
   if (uic->cwin) {
