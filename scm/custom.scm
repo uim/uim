@@ -37,11 +37,9 @@
 (require "util.scm")
 (require "key.scm")
 
-;; private
-(define custom-rec-alist ())
-(define custom-group-rec-alist ())
-(define custom-subgroup-alist ())
+(define custom-full-featured? #t)
 
+;; public
 (define custom-activity-hooks ())
 (define custom-get-hooks ())
 (define custom-set-hooks ())
@@ -49,6 +47,11 @@
 (define custom-update-hooks ())
 (define custom-group-update-hooks ())
 (define custom-group-list-update-hooks ())
+
+;; private
+(define custom-rec-alist ())
+(define custom-group-rec-alist ())
+(define custom-subgroup-alist ())
 
 (define custom-validator-alist
   '((boolean      . custom-boolean?)
@@ -471,8 +474,6 @@
 
 (define custom-reload-customs
   (lambda ()
-    (for-each (lambda (file)
-		(load file))
-	      (reverse custom-required-custom-files))))
+    (for-each load (reverse custom-required-custom-files))))
 
 (custom-reload-customs)

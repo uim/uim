@@ -132,72 +132,78 @@
 		 (uim '(stub-im-generate-stub-im-list ())))
    (assert-equal (list
 		  (string-append
-		   "(if (and (symbol-bound? '*lazy-load.scm-loaded*)\n"
-		   "         (member 'hangul2 enabled-im-list))\n"
-		   "  (register-stub-im\n"
-		   "   'hangul2\n"
-		   "   \"ko\"\n"
-		   "   \"UTF-8\"\n"
-		   "   \"Hangul (2-bul)\"\n"
-		   "   \"2-bul style hangul input method\"\n"
-		   "   \"hangul\"))\n"))
+		   "(if im-lazy-loading-enabled?\n"
+		   "  (begin\n"
+		   "    (require \"lazy-load.scm\")\n"
+		   "    (register-stub-im\n"
+		   "     'hangul2\n"
+		   "     \"ko\"\n"
+		   "     \"UTF-8\"\n"
+		   "     \"Hangul (2-bul)\"\n"
+		   "     \"2-bul style hangul input method\"\n"
+		   "     \"hangul\")))\n"))
 		 (uim '(stub-im-generate-stub-im-list '(hangul2))))
    (assert-equal (list
 		  (string-append
-		   "(if (and (symbol-bound? '*lazy-load.scm-loaded*)\n"
-		   "         (member 'hangul3 enabled-im-list))\n"
-		   "  (register-stub-im\n"
-		   "   'hangul3\n"
-		   "   \"ko\"\n"
-		   "   \"UTF-8\"\n"
-		   "   \"Hangul (3-bul)\"\n"
-		   "   \"3-bul style hangul input method\"\n"
-		   "   \"hangul\"))\n"))
+		   "(if im-lazy-loading-enabled?\n"
+		   "  (begin\n"
+		   "    (require \"lazy-load.scm\")\n"
+		   "    (register-stub-im\n"
+		   "     'hangul3\n"
+		   "     \"ko\"\n"
+		   "     \"UTF-8\"\n"
+		   "     \"Hangul (3-bul)\"\n"
+		   "     \"3-bul style hangul input method\"\n"
+		   "     \"hangul\")))\n"))
 		 (uim '(stub-im-generate-stub-im-list '(hangul3))))
    (assert-equal (list
 		  (string-append
-		   "(if (and (symbol-bound? '*lazy-load.scm-loaded*)\n"
-		   "         (member 'tcode enabled-im-list))\n"
-		   "  (register-stub-im\n"
-		   "   'tcode\n"
-		   "   \"ja\"\n"
-		   "   \"EUC-JP\"\n"
-		   "   \"T-Code\"\n"
-		   "   \"T-Code\"\n"
-		   "   \"tcode\"))\n"))
+		   "(if im-lazy-loading-enabled?\n"
+		   "  (begin\n"
+		   "    (require \"lazy-load.scm\")\n"
+		   "    (register-stub-im\n"
+		   "     'tcode\n"
+		   "     \"ja\"\n"
+		   "     \"EUC-JP\"\n"
+		   "     \"T-Code\"\n"
+		   "     \"T-Code\"\n"
+		   "     \"tcode\")))\n"))
 		 (uim '(stub-im-generate-stub-im-list '(tcode))))
 
    (assert-equal (list
 		  (string-append
-		   "(if (and (symbol-bound? '*lazy-load.scm-loaded*)\n"
-		   "         (member 'hangul2 enabled-im-list))\n"
-		   "  (register-stub-im\n"
-		   "   'hangul2\n"
-		   "   \"ko\"\n"
-		   "   \"UTF-8\"\n"
-		   "   \"Hangul (2-bul)\"\n"
-		   "   \"2-bul style hangul input method\"\n"
-		   "   \"hangul\"))\n")
+		   "(if im-lazy-loading-enabled?\n"
+		   "  (begin\n"
+		   "    (require \"lazy-load.scm\")\n"
+		   "    (register-stub-im\n"
+		   "     'hangul2\n"
+		   "     \"ko\"\n"
+		   "     \"UTF-8\"\n"
+		   "     \"Hangul (2-bul)\"\n"
+		   "     \"2-bul style hangul input method\"\n"
+		   "     \"hangul\")))\n")
 		  (string-append
-		   "(if (and (symbol-bound? '*lazy-load.scm-loaded*)\n"
-		   "         (member 'tcode enabled-im-list))\n"
-		   "  (register-stub-im\n"
-		   "   'tcode\n"
-		   "   \"ja\"\n"
-		   "   \"EUC-JP\"\n"
-		   "   \"T-Code\"\n"
-		   "   \"T-Code\"\n"
-		   "   \"tcode\"))\n")
+		   "(if im-lazy-loading-enabled?\n"
+		   "  (begin\n"
+		   "    (require \"lazy-load.scm\")\n"
+		   "    (register-stub-im\n"
+		   "     'tcode\n"
+		   "     \"ja\"\n"
+		   "     \"EUC-JP\"\n"
+		   "     \"T-Code\"\n"
+		   "     \"T-Code\"\n"
+		   "     \"tcode\")))\n")
 		  (string-append
-		   "(if (and (symbol-bound? '*lazy-load.scm-loaded*)\n"
-		   "         (member 'hangul3 enabled-im-list))\n"
-		   "  (register-stub-im\n"
-		   "   'hangul3\n"
-		   "   \"ko\"\n"
-		   "   \"UTF-8\"\n"
-		   "   \"Hangul (3-bul)\"\n"
-		   "   \"3-bul style hangul input method\"\n"
-		   "   \"hangul\"))\n"))
+		   "(if im-lazy-loading-enabled?\n"
+		   "  (begin\n"
+		   "    (require \"lazy-load.scm\")\n"
+		   "    (register-stub-im\n"
+		   "     'hangul3\n"
+		   "     \"ko\"\n"
+		   "     \"UTF-8\"\n"
+		   "     \"Hangul (3-bul)\"\n"
+		   "     \"3-bul style hangul input method\"\n"
+		   "     \"hangul\")))\n"))
 		 (uim '(stub-im-generate-stub-im-list '(hangul2 tcode hangul3)))))
 
   ("test stub-im-generate-all-stub-im-list"
@@ -208,35 +214,38 @@
 			       im-list)))
    (assert-equal (list
 		  (string-append
-		   "(if (and (symbol-bound? '*lazy-load.scm-loaded*)\n"
-		   "         (member 'tcode enabled-im-list))\n"
-		   "  (register-stub-im\n"
-		   "   'tcode\n"
-		   "   \"ja\"\n"
-		   "   \"EUC-JP\"\n"
-		   "   \"T-Code\"\n"
-		   "   \"T-Code\"\n"
-		   "   \"tcode\"))\n")
+		   "(if im-lazy-loading-enabled?\n"
+		   "  (begin\n"
+		   "    (require \"lazy-load.scm\")\n"
+		   "    (register-stub-im\n"
+		   "     'tcode\n"
+		   "     \"ja\"\n"
+		   "     \"EUC-JP\"\n"
+		   "     \"T-Code\"\n"
+		   "     \"T-Code\"\n"
+		   "     \"tcode\")))\n")
 		  (string-append
-		   "(if (and (symbol-bound? '*lazy-load.scm-loaded*)\n"
-		   "         (member 'hangul2 enabled-im-list))\n"
-		   "  (register-stub-im\n"
-		   "   'hangul2\n"
-		   "   \"ko\"\n"
-		   "   \"UTF-8\"\n"
-		   "   \"Hangul (2-bul)\"\n"
-		   "   \"2-bul style hangul input method\"\n"
-		   "   \"hangul\"))\n")
+		   "(if im-lazy-loading-enabled?\n"
+		   "  (begin\n"
+		   "    (require \"lazy-load.scm\")\n"
+		   "    (register-stub-im\n"
+		   "     'hangul2\n"
+		   "     \"ko\"\n"
+		   "     \"UTF-8\"\n"
+		   "     \"Hangul (2-bul)\"\n"
+		   "     \"2-bul style hangul input method\"\n"
+		   "     \"hangul\")))\n")
 		  (string-append
-		   "(if (and (symbol-bound? '*lazy-load.scm-loaded*)\n"
-		   "         (member 'hangul3 enabled-im-list))\n"
-		   "  (register-stub-im\n"
-		   "   'hangul3\n"
-		   "   \"ko\"\n"
-		   "   \"UTF-8\"\n"
-		   "   \"Hangul (3-bul)\"\n"
-		   "   \"3-bul style hangul input method\"\n"
-		   "   \"hangul\"))\n"))
+		   "(if im-lazy-loading-enabled?\n"
+		   "  (begin\n"
+		   "    (require \"lazy-load.scm\")\n"
+		   "    (register-stub-im\n"
+		   "     'hangul3\n"
+		   "     \"ko\"\n"
+		   "     \"UTF-8\"\n"
+		   "     \"Hangul (3-bul)\"\n"
+		   "     \"3-bul style hangul input method\"\n"
+		   "     \"hangul\")))\n"))
 		 (uim '(stub-im-generate-all-stub-im-list)))
 
    (uim '(set! im-list ()))

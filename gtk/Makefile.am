@@ -29,6 +29,6 @@ uninstall-hook:
 else
 install-data-hook:
 
- uninstall-hook:
+uninstall-hook:
 
 endif

@@ -28,39 +28,14 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; The described order of input methods affects which IM is preferred
-;; at the default IM selection process for each locale. i.e. list
-;; preferable IM first for each language
-(define installed-im-module-list
-  '(;; Chinese input methods
-    "pyload"
+(load "installed-modules.scm")
 
-    ;; Japanese input methods
-    "anthy"
-    "canna"
-    "prime"
-    "skk"
-    "tcode"
-    "tutcode"
-
-    ;; Korean input methods
-    "hangul"
-
-    ;; Vietnamese input methods
-    "viqr"
-
-    ;; other input methods
-    "ipa"
-    ;;"spellcheck"
-
-    ;; latin input method
-    "latin"
-
-    ;; other input method frameworks
-    "m17nlib"
-    ;;"scim"
-    ))
-
-;; don't touch this
-(if (not (symbol-bound? '*lazy-load.scm-loaded*))
-    (for-each require-module installed-im-module-list))
+(or (and (symbol-bound? 'per-user-enabled-im-list-loaded?)
+	 per-user-enabled-im-list-loaded?)
+    (and (symbol-bound? 'im-lazy-loading-enabled?)
+	 im-lazy-loading-enabled?
+	 (try-load "enabled-ims.scm"))
+    (begin
+      (for-each require-module installed-im-module-list)
+      (define enabled-im-list (reverse (cons 'direct
+					     (map im-name im-list))))))

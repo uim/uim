@@ -32,6 +32,7 @@
 
 (define uim-sh-prompt "uim> ")
 (define uim-sh-opt-batch #f)
+(define uim-sh-opt-strict-batch #f)
 (define uim-sh-opt-help #f)
 
 (define uim-sh-loop
@@ -42,21 +43,31 @@
 	   (eof (eq? (eof-val) expr)))
       (if (not eof)
 	  (begin
-	    (print (eval expr))
+	    ((if  uim-sh-opt-strict-batch
+		  (lambda () #f)
+		  print)
+	     (eval expr))
 	    (uim-sh-loop))
 	  #f))))
 
 (define uim-sh-parse-args
   (lambda (args)
-    (set! uim-sh-opt-batch (or (string-find args "-b")
-			       (string-find args "--batch")))
-    (set! uim-sh-opt-help (or (string-find args "-h")
-			      (string-find args "--help")))))
+    (let ((batch? (or (member "-b" args)
+		      (member "--batch" args)))
+	  (strict-batch? (or (member "-B" args)
+			     (member "--strict-batch" args))))
+    (set! uim-sh-opt-batch (or batch?
+			       strict-batch?))
+    (set! uim-sh-opt-strict-batch strict-batch?)
+    (set! uim-sh-opt-help (or (member "-h" args)
+			      (member "--help" args))))))
 
 (define uim-sh-usage
   (lambda ()
     (puts "Usage: uim-sh [options]
   -b        batch mode. suppress shell prompts
+  -B        strict batch mode, implies -b. suppress shell prompts and
+            evaluated results
   -h        show this help
 ")))
 

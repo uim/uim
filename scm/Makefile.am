@@ -5,8 +5,9 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm loader.scm \
  default.scm \
  util.scm key.scm ustr.scm action.scm load-action.scm i18n.scm \
  uim-sh.scm custom.scm custom-rt.scm \
- rk.scm \
+ installed-modules.scm enabled-ims.scm \
  direct.scm \
+ rk.scm \
  generic.scm generic-custom.scm generic-key-custom.scm \
  pyload.scm PY.scm pyunihan.scm pinyin-big5.scm \
  japanese.scm japanese-azik.scm japanese-kana.scm \
@@ -27,3 +28,48 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm loader.scm \
 if COMPAT_TABLE
 SCM_FILES += hk.scm
 endif
+
+
+module_names = "pyload"
+
+if ANTHY
+  module_names += "anthy"
+endif
+
+if CANNA
+  module_names += "canna"
+endif
+
+if PRIME
+  module_names += "prime"
+endif
+
+if SKK
+  module_names += "skk"
+endif
+
+module_names += "tcode" "tutcode" "hangul" "viqr" "ipa" "latin"
+
+if M17NLIB
+  module_names += "m17nlib"
+endif
+
+if SCIM
+#  module_names += "scim"
+endif
+
+installed-modules.scm:
+	echo ";; The described order of input methods affects which IM is preferred" >$@
+	echo ";; at the default IM selection process for each locale. i.e. list" >>$@
+	echo ";; preferable IM first for each language" >>$@
+	echo -n "(define installed-im-module-list '(" >>$@
+	echo -n '$(module_names)' >>$@
+	echo '))' >>$@
+
+# TODO: resolve dependency to $(top_builddir)/uim/uim-sh
+enabled-ims.scm: installed-modules.scm
+	echo ";; Don't edit this file manually" >$@
+	echo '(require "custom.scm") \
+	      (puts (custom-hook-literalize-enabled-im-list))' \
+	| LIBUIM_VERBOSE=1 LIBUIM_VANILLA=1 LIBUIM_SCM_FILES=${PWD} \
+	  $(top_builddir)/uim/uim-sh -B >>$@

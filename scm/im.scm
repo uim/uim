@@ -58,6 +58,11 @@
 ;;
 (define im-list ())
 
+;; enabled-im-list cannot be changed once libuim has been
+;; initialized. This limitation may be removed after uim 0.4.6.
+;;   -- YamaKen 2005-01-25
+(define enabled-im-list ())
+
 (define-record 'im
   (list
    (list 'name                        #f)  ;; must be first member
@@ -83,6 +88,12 @@
 	custom-prop-update-custom-handler
 	list)))
 
+;; Invoking this procedure causes inconsistency between im-list and
+;; corresponding IM management entity in C-side
+;; (uim_im_array). uim-im-switcher may show IM list in strange
+;; order. This inconsistency problem is also preventing IM removal
+;; feature implementation. We should resolve it after uim 0.4.6.
+;;   -- YamaKen 2005-01-25
 (define normalize-im-list
   (lambda ()
     (let ((ordinary-im-list (alist-delete 'direct im-list eq?))
@@ -97,14 +108,17 @@
   (lambda (name lang encoding label-name short-desc init-arg init release
 		mode key-press key-release reset
 		get-candidate set-candidate-index prop)
-    (let ((im (im-new name lang encoding label-name short-desc
-		      init-arg init release
-		      mode key-press key-release reset
-		      get-candidate set-candidate-index prop
-		      currently-loading-module-name)))
-      (set! im-list (alist-replace im im-list))
-      (normalize-im-list)
-      (im-register-im name lang encoding short-desc))))
+    (and (or (memq name enabled-im-list)
+	     (not (assq 'direct im-list))  ;; bootstrap
+	     custom-full-featured?)
+	 (let ((im (im-new name lang encoding label-name short-desc
+			   init-arg init release
+			   mode key-press key-release reset
+			   get-candidate set-candidate-index prop
+			   currently-loading-module-name)))
+	   (set! im-list (alist-replace im im-list))
+	   (normalize-im-list)
+	   (im-register-im name lang encoding short-desc)))))
 
 ;; called from C
 (define uim-get-im-short-desc

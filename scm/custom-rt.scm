@@ -43,6 +43,8 @@
 (require "util.scm")
 (require "key.scm")
 
+(define custom-full-featured? #f)
+
 (define-record 'custom-choice-rec
   '((sym   #f)
     (label "")

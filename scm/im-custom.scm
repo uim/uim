@@ -132,7 +132,8 @@
   (begin
     (if (symbol-bound? 'installed-im-module-list)
 	(for-each require-module installed-im-module-list))
-    (custom-im-list-as-choice-rec (reverse im-list))))
+    (custom-im-list-as-choice-rec (reverse
+				   (alist-delete 'direct im-list eq?)))))
 
 (define-custom 'enabled-im-list
                (map custom-choice-rec-sym custom-installed-im-list)
@@ -156,7 +157,8 @@
      "(define enabled-im-list "
      (custom-value-as-literal 'enabled-im-list)
      ")\n"
-     "(require \"lazy-load.scm\")\n\n"
+     "(define per-user-enabled-im-list-loaded? #t)\n"
+     "(define im-lazy-loading-enabled? #t)\n\n"
      (string-join "\n" (stub-im-generate-stub-im-list enabled-im-list)))))
 
 (custom-add-hook 'enabled-im-list

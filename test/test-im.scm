@@ -48,12 +48,15 @@
 (define-uim-test-case "testcase im im-management"
   (setup
    (lambda ()
-     (uim '(for-each require-module installed-im-module-list))
-     (uim '(define prev-im #f))
-     (uim '(define prev-nr-ims (length im-list)))
-     (uim '(define test-im-init-args #f))
-     (uim '(define test-im-alt-init-args #f))
      (uim '(begin
+	     (for-each require-module installed-im-module-list)
+	     (define prev-im #f)
+	     (define prev-nr-ims (length im-list))
+	     (define test-im-init-args #f)
+	     (define test-im-alt-init-args #f)
+	     ;; temporary workaround to cheat on revised register-im
+	     ;; TODO: rewrite tests in accordance with enabled-im-list
+	     (define custom-full-featured? #t)
 	     (set! test-im-init-args (list 'test-im
 					   "ja"
 					   "UTF-8"

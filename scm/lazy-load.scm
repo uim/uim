@@ -29,8 +29,6 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; TODO: write test
-
 (require "util.scm")
 
 (define stub-im-generate-init-handler
@@ -75,15 +73,16 @@
 	   (let* ((im (retrieve-im name))
 		  (name-str (symbol->string name)))
 	     (string-append
-	      "(if (and (symbol-bound? '*lazy-load.scm-loaded*)\n"
-	      "         (member '" name-str " enabled-im-list))\n"
-	      "  (register-stub-im\n"
-	      "   '" name-str "\n"
-	      "   \"" (im-lang im) "\"\n"
-	      "   \"" (im-encoding im) "\"\n"
-	      "   \"" (im-label-name im) "\"\n"
-	      "   \"" (im-short-desc im) "\"\n"
-	      "   \"" (im-module-name im) "\"))\n")))
+	      "(if im-lazy-loading-enabled?\n"
+	      "  (begin\n"
+	      "    (require \"lazy-load.scm\")\n"
+	      "    (register-stub-im\n"
+	      "     '" name-str "\n"
+	      "     \"" (im-lang im) "\"\n"
+	      "     \"" (im-encoding im) "\"\n"
+	      "     \"" (im-label-name im) "\"\n"
+	      "     \"" (im-short-desc im) "\"\n"
+	      "     \"" (im-module-name im) "\")))\n")))
 	 im-names)))
 
 ;; side effect: invoke require-module for all IM listed in
