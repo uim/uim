@@ -1,6 +1,6 @@
 #!/usr/bin/env gosh
 
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -36,86 +36,154 @@
 (require "test/uim-test-utils")
 
 (define-uim-test-case "testcase util character predicates"
+  ("test char-control?"
+   (assert-true  (uim-bool '(char-control? 0)))    ; NUL
+   (assert-true  (uim-bool '(char-control? 1)))    ; SOH
+   (assert-true  (uim-bool '(char-control? 31)))   ; US
+   (assert-false (uim-bool '(char-control? 32)))   ; SPACE
+   (assert-false (uim-bool '(char-control? 33)))   ; !
+   (assert-false (uim-bool '(char-control? 47)))   ; /
+   (assert-false (uim-bool '(char-control? 48)))   ; 0
+   (assert-false (uim-bool '(char-control? 57)))   ; 9
+   (assert-false (uim-bool '(char-control? 58)))   ; :
+   (assert-false (uim-bool '(char-control? 64)))   ; @
+   (assert-false (uim-bool '(char-control? 65)))   ; A
+   (assert-false (uim-bool '(char-control? 90)))   ; Z
+   (assert-false (uim-bool '(char-control? 91)))   ; [
+   (assert-false (uim-bool '(char-control? 96)))   ; `
+   (assert-false (uim-bool '(char-control? 97)))   ; a
+   (assert-false (uim-bool '(char-control? 122)))  ; z
+   (assert-false (uim-bool '(char-control? 123)))  ; {
+   (assert-false (uim-bool '(char-control? 126)))  ; ~
+   (assert-true  (uim-bool '(char-control? 127)))) ; DEL
+  ("test char-upper-case?"
+   (assert-false (uim-bool '(char-upper-case? 0)))    ; NUL
+   (assert-false (uim-bool '(char-upper-case? 1)))    ; SOH
+   (assert-false (uim-bool '(char-upper-case? 31)))   ; US
+   (assert-false (uim-bool '(char-upper-case? 32)))   ; SPACE
+   (assert-false (uim-bool '(char-upper-case? 33)))   ; !
+   (assert-false (uim-bool '(char-upper-case? 47)))   ; /
+   (assert-false (uim-bool '(char-upper-case? 48)))   ; 0
+   (assert-false (uim-bool '(char-upper-case? 57)))   ; 9
+   (assert-false (uim-bool '(char-upper-case? 58)))   ; :
+   (assert-false (uim-bool '(char-upper-case? 64)))   ; @
+   (assert-true  (uim-bool '(char-upper-case? 65)))   ; A
+   (assert-true  (uim-bool '(char-upper-case? 90)))   ; Z
+   (assert-false (uim-bool '(char-upper-case? 91)))   ; [
+   (assert-false (uim-bool '(char-upper-case? 96)))   ; `
+   (assert-false (uim-bool '(char-upper-case? 97)))   ; a
+   (assert-false (uim-bool '(char-upper-case? 122)))  ; z
+   (assert-false (uim-bool '(char-upper-case? 123)))  ; {
+   (assert-false (uim-bool '(char-upper-case? 126)))  ; ~
+   (assert-false (uim-bool '(char-upper-case? 127)))) ; DEL
+  ("test char-lower-case?"
+   (assert-false (uim-bool '(char-lower-case? 0)))    ; NUL
+   (assert-false (uim-bool '(char-lower-case? 1)))    ; SOH
+   (assert-false (uim-bool '(char-lower-case? 31)))   ; US
+   (assert-false (uim-bool '(char-lower-case? 32)))   ; SPACE
+   (assert-false (uim-bool '(char-lower-case? 33)))   ; !
+   (assert-false (uim-bool '(char-lower-case? 47)))   ; /
+   (assert-false (uim-bool '(char-lower-case? 48)))   ; 0
+   (assert-false (uim-bool '(char-lower-case? 57)))   ; 9
+   (assert-false (uim-bool '(char-lower-case? 58)))   ; :
+   (assert-false (uim-bool '(char-lower-case? 64)))   ; @
+   (assert-false (uim-bool '(char-lower-case? 65)))   ; A
+   (assert-false (uim-bool '(char-lower-case? 90)))   ; Z
+   (assert-false (uim-bool '(char-lower-case? 91)))   ; [
+   (assert-false (uim-bool '(char-lower-case? 96)))   ; `
+   (assert-true  (uim-bool '(char-lower-case? 97)))   ; a
+   (assert-true  (uim-bool '(char-lower-case? 122)))  ; z
+   (assert-false (uim-bool '(char-lower-case? 123)))  ; {
+   (assert-false (uim-bool '(char-lower-case? 126)))  ; ~
+   (assert-false (uim-bool '(char-lower-case? 127)))) ; DEL
+  ("test char-alphabetic?"
+   (assert-false (uim-bool '(char-alphabetic? 0)))    ; NUL
+   (assert-false (uim-bool '(char-alphabetic? 1)))    ; SOH
+   (assert-false (uim-bool '(char-alphabetic? 31)))   ; US
+   (assert-false (uim-bool '(char-alphabetic? 32)))   ; SPACE
+   (assert-false (uim-bool '(char-alphabetic? 33)))   ; !
+   (assert-false (uim-bool '(char-alphabetic? 47)))   ; /
+   (assert-false (uim-bool '(char-alphabetic? 48)))   ; 0
+   (assert-false (uim-bool '(char-alphabetic? 57)))   ; 9
+   (assert-false (uim-bool '(char-alphabetic? 58)))   ; :
+   (assert-false (uim-bool '(char-alphabetic? 64)))   ; @
+   (assert-true  (uim-bool '(char-alphabetic? 65)))   ; A
+   (assert-true  (uim-bool '(char-alphabetic? 90)))   ; Z
+   (assert-false (uim-bool '(char-alphabetic? 91)))   ; [
+   (assert-false (uim-bool '(char-alphabetic? 96)))   ; `
+   (assert-true  (uim-bool '(char-alphabetic? 97)))   ; a
+   (assert-true  (uim-bool '(char-alphabetic? 122)))  ; z
+   (assert-false (uim-bool '(char-alphabetic? 123)))  ; {
+   (assert-false (uim-bool '(char-alphabetic? 126)))  ; ~
+   (assert-false (uim-bool '(char-alphabetic? 127)))) ; DEL
+  ("test char-numeric?"
+   (assert-false (uim-bool '(char-numeric? 0)))     ; NUL
+   (assert-false (uim-bool '(char-numeric? 1)))     ; SOH
+   (assert-false (uim-bool '(char-numeric? 31)))    ; US
+   (assert-false (uim-bool '(char-numeric? 32)))    ; SPACE
+   (assert-false (uim-bool '(char-numeric? 33)))    ; !
+   (assert-false (uim-bool '(char-numeric? 47)))    ; /
+   (assert-true  (uim-bool '(char-numeric? 48)))    ; 0
+   (assert-true  (uim-bool '(char-numeric? 57)))    ; 9
+   (assert-false (uim-bool '(char-numeric? 58)))    ; :
+   (assert-false (uim-bool '(char-numeric? 64)))    ; @
+   (assert-false (uim-bool '(char-numeric? 65)))    ; A
+   (assert-false (uim-bool '(char-numeric? 90)))    ; Z
+   (assert-false (uim-bool '(char-numeric? 91)))    ; [
+   (assert-false (uim-bool '(char-numeric? 96)))    ; `
+   (assert-false (uim-bool '(char-numeric? 97)))    ; a
+   (assert-false (uim-bool '(char-numeric? 122)))   ; z
+   (assert-false (uim-bool '(char-numeric? 123)))   ; {
+   (assert-false (uim-bool '(char-numeric? 126)))   ; ~
+   (assert-false (uim-bool '(char-numeric? 127)))) ; DEL
+  ("test char-printable?"
+   (assert-false (uim-bool '(char-printable? 0)))    ; NUL
+   (assert-false (uim-bool '(char-printable? 1)))    ; SOH
+   (assert-false (uim-bool '(char-printable? 31)))   ; US
+   (assert-true  (uim-bool '(char-printable? 32)))   ; SPACE
+   (assert-true  (uim-bool '(char-printable? 33)))   ; !
+   (assert-true  (uim-bool '(char-printable? 47)))   ; /
+   (assert-true  (uim-bool '(char-printable? 48)))   ; 0
+   (assert-true  (uim-bool '(char-printable? 57)))   ; 9
+   (assert-true  (uim-bool '(char-printable? 58)))   ; :
+   (assert-true  (uim-bool '(char-printable? 64)))   ; @
+   (assert-true  (uim-bool '(char-printable? 65)))   ; A
+   (assert-true  (uim-bool '(char-printable? 90)))   ; Z
+   (assert-true  (uim-bool '(char-printable? 91)))   ; [
+   (assert-true  (uim-bool '(char-printable? 96)))   ; `
+   (assert-true  (uim-bool '(char-printable? 97)))   ; a
+   (assert-true  (uim-bool '(char-printable? 122)))  ; z
+   (assert-true  (uim-bool '(char-printable? 123)))  ; {
+   (assert-true  (uim-bool '(char-printable? 126)))  ; ~
+   (assert-false (uim-bool '(char-printable? 127)))) ; DEL
+  ("test char-graphic?"
+   (assert-false (uim-bool '(char-graphic? 0)))    ; NUL
+   (assert-false (uim-bool '(char-graphic? 1)))    ; SOH
+   (assert-false (uim-bool '(char-graphic? 31)))   ; US
+   (assert-false (uim-bool '(char-graphic? 32)))   ; SPACE
+   (assert-true  (uim-bool '(char-graphic? 33)))   ; !
+   (assert-true  (uim-bool '(char-graphic? 47)))   ; /
+   (assert-true  (uim-bool '(char-graphic? 48)))   ; 0
+   (assert-true  (uim-bool '(char-graphic? 57)))   ; 9
+   (assert-true  (uim-bool '(char-graphic? 58)))   ; :
+   (assert-true  (uim-bool '(char-graphic? 64)))   ; @
+   (assert-true  (uim-bool '(char-graphic? 65)))   ; A
+   (assert-true  (uim-bool '(char-graphic? 90)))   ; Z
+   (assert-true  (uim-bool '(char-graphic? 91)))   ; [
+   (assert-true  (uim-bool '(char-graphic? 96)))   ; `
+   (assert-true  (uim-bool '(char-graphic? 97)))   ; a
+   (assert-true  (uim-bool '(char-graphic? 122)))  ; z
+   (assert-true  (uim-bool '(char-graphic? 123)))  ; {
+   (assert-true  (uim-bool '(char-graphic? 126)))  ; ~
+   (assert-false (uim-bool '(char-graphic? 127)))) ; DEL
   ("test control-char?"
-   (assert-true  (uim-bool '(control-char? 0)))    ; NUL
-   (assert-true  (uim-bool '(control-char? 1)))    ; SOH
-   (assert-true  (uim-bool '(control-char? 31)))   ; US
-   (assert-false (uim-bool '(control-char? 32)))   ; SPACE
-   (assert-false (uim-bool '(control-char? 33)))   ; !
-   (assert-false (uim-bool '(control-char? 47)))   ; /
-   (assert-false (uim-bool '(control-char? 48)))   ; 0
-   (assert-false (uim-bool '(control-char? 57)))   ; 9
-   (assert-false (uim-bool '(control-char? 58)))   ; :
-   (assert-false (uim-bool '(control-char? 64)))   ; @
-   (assert-false (uim-bool '(control-char? 65)))   ; A
-   (assert-false (uim-bool '(control-char? 90)))   ; Z
-   (assert-false (uim-bool '(control-char? 91)))   ; [
-   (assert-false (uim-bool '(control-char? 96)))   ; `
-   (assert-false (uim-bool '(control-char? 97)))   ; a
-   (assert-false (uim-bool '(control-char? 122)))  ; z
-   (assert-false (uim-bool '(control-char? 123)))  ; {
-   (assert-false (uim-bool '(control-char? 126)))  ; ~
-   (assert-true  (uim-bool '(control-char? 127)))) ; DEL
+   (assert-true  (uim-bool '(eq? control-char? char-control?))))
   ("test alphabet-char?"
-   (assert-false (uim-bool '(alphabet-char? 0)))    ; NUL
-   (assert-false (uim-bool '(alphabet-char? 1)))    ; SOH
-   (assert-false (uim-bool '(alphabet-char? 31)))   ; US
-   (assert-false (uim-bool '(alphabet-char? 32)))   ; SPACE
-   (assert-false (uim-bool '(alphabet-char? 33)))   ; !
-   (assert-false (uim-bool '(alphabet-char? 47)))   ; /
-   (assert-false (uim-bool '(alphabet-char? 48)))   ; 0
-   (assert-false (uim-bool '(alphabet-char? 57)))   ; 9
-   (assert-false (uim-bool '(alphabet-char? 58)))   ; :
-   (assert-false (uim-bool '(alphabet-char? 64)))   ; @
-   (assert-true  (uim-bool '(alphabet-char? 65)))   ; A
-   (assert-true  (uim-bool '(alphabet-char? 90)))   ; Z
-   (assert-false (uim-bool '(alphabet-char? 91)))   ; [
-   (assert-false (uim-bool '(alphabet-char? 96)))   ; `
-   (assert-true  (uim-bool '(alphabet-char? 97)))   ; a
-   (assert-true  (uim-bool '(alphabet-char? 122)))  ; z
-   (assert-false (uim-bool '(alphabet-char? 123)))  ; {
-   (assert-false (uim-bool '(alphabet-char? 126)))  ; ~
-   (assert-false (uim-bool '(alphabet-char? 127)))) ; DEL
-  ("test usual-char?"
-   (assert-false (uim-bool '(usual-char? 0)))    ; NUL
-   (assert-false (uim-bool '(usual-char? 1)))    ; SOH
-   (assert-false (uim-bool '(usual-char? 31)))   ; US
-   (assert-false (uim-bool '(usual-char? 32)))   ; SPACE
-   (assert-true  (uim-bool '(usual-char? 33)))   ; !
-   (assert-true  (uim-bool '(usual-char? 47)))   ; /
-   (assert-true  (uim-bool '(usual-char? 48)))   ; 0
-   (assert-true  (uim-bool '(usual-char? 57)))   ; 9
-   (assert-true  (uim-bool '(usual-char? 58)))   ; :
-   (assert-true  (uim-bool '(usual-char? 64)))   ; @
-   (assert-true  (uim-bool '(usual-char? 65)))   ; A
-   (assert-true  (uim-bool '(usual-char? 90)))   ; Z
-   (assert-true  (uim-bool '(usual-char? 91)))   ; [
-   (assert-true  (uim-bool '(usual-char? 96)))   ; `
-   (assert-true  (uim-bool '(usual-char? 97)))   ; a
-   (assert-true  (uim-bool '(usual-char? 122)))  ; z
-   (assert-true  (uim-bool '(usual-char? 123)))  ; {
-   (assert-true  (uim-bool '(usual-char? 126)))  ; ~
-   (assert-false (uim-bool '(usual-char? 127)))) ; DEL
+   (assert-true  (uim-bool '(eq? alphabet-char? char-alphabetic?))))
   ("test numeral-char?"
-   (assert-false (uim-bool '(numeral-char? 0)))     ; NUL
-   (assert-false (uim-bool '(numeral-char? 1)))     ; SOH
-   (assert-false (uim-bool '(numeral-char? 31)))    ; US
-   (assert-false (uim-bool '(numeral-char? 32)))    ; SPACE
-   (assert-false (uim-bool '(numeral-char? 33)))    ; !
-   (assert-false (uim-bool '(numeral-char? 47)))    ; /
-   (assert-true  (uim-bool '(numeral-char? 48)))    ; 0
-   (assert-true  (uim-bool '(numeral-char? 57)))    ; 9
-   (assert-false (uim-bool '(numeral-char? 58)))    ; :
-   (assert-false (uim-bool '(numeral-char? 64)))    ; @
-   (assert-false (uim-bool '(numeral-char? 65)))    ; A
-   (assert-false (uim-bool '(numeral-char? 90)))    ; Z
-   (assert-false (uim-bool '(numeral-char? 91)))    ; [
-   (assert-false (uim-bool '(numeral-char? 96)))    ; `
-   (assert-false (uim-bool '(numeral-char? 97)))    ; a
-   (assert-false (uim-bool '(numeral-char? 122)))   ; z
-   (assert-false (uim-bool '(numeral-char? 123)))   ; {
-   (assert-false (uim-bool '(numeral-char? 126)))   ; ~
-   (assert-false (uim-bool '(numeral-char? 127))))) ; DEL
+   (assert-true  (uim-bool '(eq? numeral-char? char-numeric?))))
+  ("test usual-char?"
+   (assert-true  (uim-bool '(eq? usual-char? char-graphic?)))))
 
 (define-uim-test-case "test util character conversion procedures"
   ("test numeral-char->number"
@@ -146,26 +214,48 @@
    (assert-true  (uim-bool '(integer? (numeral-char->number 123))))  ; {
    (assert-true  (uim-bool '(integer? (numeral-char->number 126))))  ; ~
    (assert-true  (uim-bool '(integer? (numeral-char->number 127))))) ; DEL
+  ("test char-downcase"
+   (assert-equal 0   (uim '(char-downcase 0)))     ; NUL
+   (assert-equal 1   (uim '(char-downcase 1)))     ; SOH
+   (assert-equal 31  (uim '(char-downcase 31)))    ; US
+   (assert-equal 32  (uim '(char-downcase 32)))    ; SPACE
+   (assert-equal 33  (uim '(char-downcase 33)))    ; !
+   (assert-equal 47  (uim '(char-downcase 47)))    ; /
+   (assert-equal 48  (uim '(char-downcase 48)))    ; 0
+   (assert-equal 57  (uim '(char-downcase 57)))    ; 9
+   (assert-equal 58  (uim '(char-downcase 58)))    ; :
+   (assert-equal 64  (uim '(char-downcase 64)))    ; @
+   (assert-equal 97  (uim '(char-downcase 65)))    ; A
+   (assert-equal 122 (uim '(char-downcase 90)))    ; Z
+   (assert-equal 91  (uim '(char-downcase 91)))    ; [
+   (assert-equal 96  (uim '(char-downcase 96)))    ; `
+   (assert-equal 97  (uim '(char-downcase 97)))    ; a
+   (assert-equal 122 (uim '(char-downcase 122)))   ; z
+   (assert-equal 123 (uim '(char-downcase 123)))   ; {
+   (assert-equal 126 (uim '(char-downcase 126)))   ; ~
+   (assert-equal 127 (uim '(char-downcase 127))))  ; DEL
+  ("test char-upcase"
+   (assert-equal 0   (uim '(char-upcase 0)))     ; NUL
+   (assert-equal 1   (uim '(char-upcase 1)))     ; SOH
+   (assert-equal 31  (uim '(char-upcase 31)))    ; US
+   (assert-equal 32  (uim '(char-upcase 32)))    ; SPACE
+   (assert-equal 33  (uim '(char-upcase 33)))    ; !
+   (assert-equal 47  (uim '(char-upcase 47)))    ; /
+   (assert-equal 48  (uim '(char-upcase 48)))    ; 0
+   (assert-equal 57  (uim '(char-upcase 57)))    ; 9
+   (assert-equal 58  (uim '(char-upcase 58)))    ; :
+   (assert-equal 64  (uim '(char-upcase 64)))    ; @
+   (assert-equal 65  (uim '(char-upcase 65)))    ; A
+   (assert-equal 90  (uim '(char-upcase 90)))    ; Z
+   (assert-equal 91  (uim '(char-upcase 91)))    ; [
+   (assert-equal 96  (uim '(char-upcase 96)))    ; `
+   (assert-equal 65  (uim '(char-upcase 97)))    ; a
+   (assert-equal 90  (uim '(char-upcase 122)))   ; z
+   (assert-equal 123 (uim '(char-upcase 123)))   ; {
+   (assert-equal 126 (uim '(char-upcase 126)))   ; ~
+   (assert-equal 127 (uim '(char-upcase 127))))  ; DEL
   ("test to-lower-char"
-   (assert-equal 0   (uim '(to-lower-char 0)))     ; NUL
-   (assert-equal 1   (uim '(to-lower-char 1)))     ; SOH
-   (assert-equal 31  (uim '(to-lower-char 31)))    ; US
-   (assert-equal 32  (uim '(to-lower-char 32)))    ; SPACE
-   (assert-equal 33  (uim '(to-lower-char 33)))    ; !
-   (assert-equal 47  (uim '(to-lower-char 47)))    ; /
-   (assert-equal 48  (uim '(to-lower-char 48)))    ; 0
-   (assert-equal 57  (uim '(to-lower-char 57)))    ; 9
-   (assert-equal 58  (uim '(to-lower-char 58)))    ; :
-   (assert-equal 64  (uim '(to-lower-char 64)))    ; @
-   (assert-equal 97  (uim '(to-lower-char 65)))    ; A
-   (assert-equal 122 (uim '(to-lower-char 90)))    ; Z
-   (assert-equal 91  (uim '(to-lower-char 91)))    ; [
-   (assert-equal 96  (uim '(to-lower-char 96)))    ; `
-   (assert-equal 97  (uim '(to-lower-char 97)))    ; a
-   (assert-equal 122 (uim '(to-lower-char 122)))   ; z
-   (assert-equal 123 (uim '(to-lower-char 123)))   ; {
-   (assert-equal 126 (uim '(to-lower-char 126)))   ; ~
-   (assert-equal 127 (uim '(to-lower-char 127))))) ; DEL
+   (assert-true  (uim-bool '(eq? to-lower-char char-downcase)))))
 
 (define-uim-test-case "test util string list procedures"
   ("test string-list-concat"
@@ -408,6 +498,26 @@
 		 (uim '(string-append-map car '(("c" "C") ("a" "A")))))
    (assert-equal "car"
 		 (uim '(string-append-map car '(("c" "C") ("a" "A") ("r" "R")))))))
+
+(define-uim-test-case "testcase util misc"
+  ("test compose"
+   (uim '(define test-list '(0 1 2 3 4 5)))
+   (assert-true  (uim-bool '(procedure? (compose))))
+   (assert-true  (uim-bool '(procedure? (compose car))))
+   (assert-true  (uim-bool '(procedure? (compose car cdr))))
+   (assert-true  (uim-bool '(procedure? (compose car cdr list))))
+   (assert-equal '(0 1 2 3 4 5)
+		 (uim '((compose) test-list)))
+   (assert-equal 0
+		 (uim '((compose car) test-list)))
+   (assert-equal 1
+		 (uim '((compose car cdr) test-list)))
+   (assert-equal 2
+		 (uim '((compose car cdr cdr) test-list)))
+   (assert-equal 4
+		 (uim '((compose car cdr reverse) test-list)))
+   (assert-equal 3
+		 (uim '((compose car cdr cdr reverse) test-list)))))
 
 (define-uim-test-case "testcase util R5RS procedures"
   (setup
@@ -812,6 +922,114 @@
 		 (uim '(fold * 1 '(1 2 3 4 5))))
    (assert-equal 14400
 		 (uim '(fold * 1 '(1 2 3 4 5) '(1 2 3 4 5)))))
+  ("test unfold"
+   ;; immediate term
+   (assert-equal '()
+		 (uim '(unfold (lambda (x)
+				 (= x 5))
+			       (lambda (rest)
+				 rest)
+			       (lambda (rest)
+				 (- rest 1))
+			       5)))
+   (assert-equal '(5)
+		 (uim '(unfold (lambda (x)
+				 (= x 5))
+			       (lambda (rest)
+				 rest)
+			       (lambda (rest)
+				 (- rest 1))
+			       5
+			       (lambda (rest)
+				 (list rest)))))
+   (assert-equal '(-1)
+		 (uim '(unfold (lambda (x)
+				 (= x 5))
+			       (lambda (rest)
+				 rest)
+			       (lambda (rest)
+				 (- rest 1))
+			       5
+			       (lambda (rest)
+				 '(-1)))))
+   ;; 5 times
+   (assert-equal '(5 4 3 2 1)
+		 (uim '(unfold (lambda (x)
+				 (= x 0))
+			       (lambda (rest)
+				 rest)
+			       (lambda (rest)
+				 (- rest 1))
+			       5)))
+   (assert-equal '(5 4 3 2 1 0)
+		 (uim '(unfold (lambda (x)
+				 (= x 0))
+			       (lambda (rest)
+				 rest)
+			       (lambda (rest)
+				 (- rest 1))
+			       5
+			       (lambda (x)
+				 (list x)))))
+   (assert-equal '(5 4 3 2 1 -1)
+		 (uim '(unfold (lambda (x)
+				 (= x 0))
+			       (lambda (rest)
+				 rest)
+			       (lambda (rest)
+				 (- rest 1))
+			       5
+			       (lambda (x)
+				 '(-1)))))
+   ;; 5 times, reversed
+   (assert-equal '(0 1 2 3 4)
+		 (uim '(unfold (lambda (x)
+				 (= x 5))
+			       (lambda (rest)
+				 rest)
+			       (lambda (rest)
+				 (+ rest 1))
+			       0)))
+   (assert-equal '(0 1 2 3 4 5)
+		 (uim '(unfold (lambda (x)
+				 (= x 5))
+			       (lambda (rest)
+				 rest)
+			       (lambda (rest)
+				 (+ rest 1))
+			       0
+			       (lambda (x)
+				 (list x)))))
+   (assert-equal '(0 1 2 3 4 -1)
+		 (uim '(unfold (lambda (x)
+				 (= x 5))
+			       (lambda (rest)
+				 rest)
+			       (lambda (rest)
+				 (+ rest 1))
+			       0
+			       (lambda (x)
+				 '(-1)))))
+   ;; restruct same list
+   (assert-equal '(0 1 2 3 4 5)
+		 (uim '(unfold null?
+			       car
+			       cdr
+			       '(0 1 2 3 4 5))))
+   (assert-equal '(0 1 2 3 4 5)
+		 (uim '(unfold null?
+			       car
+			       cdr
+			       '(0 1 2 3 4 5)
+			       (lambda (x)
+				 x))))
+   (assert-equal '(0 1 2 3 4 5 . -1)
+		 (uim '(unfold null?
+			       car
+			       cdr
+			       '(0 1 2 3 4 5)
+			       (lambda (x)
+				 -1)))))
   ("test filter"
    (assert-equal ()
 		 (uim '(filter not ())))

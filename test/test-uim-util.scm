@@ -1,6 +1,6 @@
 #!/usr/bin/env gosh
 
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -28,6 +28,8 @@
 ;;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ;;; SUCH DAMAGE.
 ;;;;
+
+;; This file is tested with revision 362 of new repository
 
 (use test.unit)
 
@@ -192,6 +194,7 @@
    (assert-equal 126 (uim '(string->charcode "~"))))
 
   ("test digit->string"
+   (assert-equal "-2147483648" (uim '(digit->string -2147483648)))
    (assert-equal "-10"  (uim '(digit->string -10)))
    (assert-equal "-2"   (uim '(digit->string -2)))
    (assert-equal "-1"   (uim '(digit->string -1)))
@@ -216,7 +219,8 @@
    (assert-equal "18"   (uim '(digit->string 18)))
    (assert-equal "19"   (uim '(digit->string 19)))
    (assert-equal "100"  (uim '(digit->string 100)))
-   (assert-equal "1000" (uim '(digit->string 1000))))
+   (assert-equal "1000" (uim '(digit->string 1000)))
+   (assert-equal "2147483647" (uim '(digit->string 2147483647))))
 
   ;; compare string sequence
   ("test str-seq-equal?"

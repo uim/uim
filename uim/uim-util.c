@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -104,13 +104,16 @@ string2charcode(uim_lisp x)
 static uim_lisp
 digit2string(uim_lisp x)
 {
-  char buf[10];
-  int i;
+  if (uim_scm_integerp(x)) {
+    int i;
 
-  i = uim_scm_c_int(x);
+    i = uim_scm_c_int(x);
+    UIM_EVAL_FSTRING1(NULL, "\"%d\"", i);
 
-  sprintf(buf,"%d",i);
-  return uim_scm_make_str(buf);
+    return uim_scm_return_value();
+  } else {
+    return uim_scm_f();
+  }
 }
 
 static uim_lisp
