@@ -3,11 +3,12 @@
 
 #include <kcmultidialog.h>
 
-class UimPrefDialog : public KCMultiDialog {
+class UimPrefDialog : public KCMultiDialog
+{
     Q_OBJECT
 
 public:
-    UimPrefDialog(QWidget *parent = 0, const char *name = 0);
+    UimPrefDialog( QWidget *parent = 0, const char *name = 0 );
     ~UimPrefDialog();
 
 public slots:

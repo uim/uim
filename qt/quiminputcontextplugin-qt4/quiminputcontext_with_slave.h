@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
+ Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
 */
 
 #ifndef _QUIMINPUT_CONTEXT_WITH_SLAVE_H_
@@ -11,7 +11,8 @@
 // Have QSimpleInputContext as slave and forward event to the
 // slave when isComposing==false.
 
-class QUimInputContextWithSlave : public QUimInputContext {
+class QUimInputContextWithSlave : public QUimInputContext
+{
     Q_OBJECT
 public:
     QUimInputContextWithSlave( const char *imname = 0, const char *lang = 0 );

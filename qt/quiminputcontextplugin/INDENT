@@ -1,0 +1,22 @@
+Indentation is done automatically by using Artistic Style(http://astyle.sourceforge.net/)
+
+These options are used
+
+ * -c  - Indent a C, C++ or C# source file
+ * -s4 - Indent using 4 spaces per indent
+ * -N  - Indent the contents of namespace blocks.
+ * -L  - Indent labels so that they appear one indent less than
+         the current indentation level, rather than being
+         flushed completely to the left
+ * -b  - Break brackets from pre-block code
+ * -l  - Break definition-block brackets and attach command-block
+         brackets.
+ * -o  - Don't break lines containing multiple statements into
+         multiple single-statement lines.
+ * -O  - Don't break blocks residing completely on one line
+ * -P  - Insert space paddings around operators AND parenthesies.
+ * --convert-tabs - Convert tabs to spaces.
+
+So, command is like this.
+
+ $ astyle -c -s4 -N -L -l -O -o -P -b --convert-tabs *.h *.cpp

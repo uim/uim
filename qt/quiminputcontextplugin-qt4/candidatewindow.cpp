@@ -15,18 +15,18 @@ const Qt::WFlags candidateFlag = ( Qt::WType_TopLevel
 #if defined(Q_WS_X11)
                                    | Qt::WX11BypassWM
 #endif
-                                   );
+                                 );
 
-CandidateWindow::CandidateWindow(QWidget * parent)
-    : QVBox(parent, candidateFlag),
-      ic(NULL), nrCandidates(0), candidateIndex(-1),
-      displayLimit(0), pageIndex(-1)
+CandidateWindow::CandidateWindow( QWidget * parent )
+        : QVBox( parent, candidateFlag ),
+        ic( NULL ), nrCandidates( 0 ), candidateIndex( -1 ),
+        displayLimit( 0 ), pageIndex( -1 )
 {
-    QLabel *test = new QLabel(this);
-    test->setText("list isn't implemented yet");
-    
+    QLabel * test = new QLabel( this );
+    test->setText( "list isn't implemented yet" );
+
     // setup NumberLabel
-    numLabel = new QLabel(this);
+    numLabel = new QLabel( this );
 
     stores.clear();
 }
@@ -34,10 +34,11 @@ CandidateWindow::CandidateWindow(QWidget * parent)
 
 CandidateWindow::~CandidateWindow()
 {
-    if (!stores.isEmpty()) {
+    if ( !stores.isEmpty() )
+    {
         // clear stored candidate datas
-        for (int i = 0; i < stores.size(); i++)
-            uim_candidate_free(stores[i]);
+        for ( int i = 0; i < stores.size(); i++ )
+            uim_candidate_free( stores[ i ] );
         stores.clear();
     }
 }
@@ -48,7 +49,7 @@ void CandidateWindow::popup()
     show();
 }
 
-void CandidateWindow::activateCandwin(int dLimit)
+void CandidateWindow::activateCandwin( int dLimit )
 {
     candidateIndex = -1;
     displayLimit = dLimit;
@@ -62,24 +63,24 @@ void CandidateWindow::deactivateCandwin()
 
 void CandidateWindow::clearCandidates()
 {
-    qDebug("clear Candidates");
+    qDebug( "clear Candidates" );
 
     candidateIndex = -1;
     displayLimit = 0;
     nrCandidates = 0;
 
     // clear stored candidate datas
-    for (int i = 0; i < stores.size(); i++)
-        uim_candidate_free(stores[i]);
+    for ( int i = 0; i < stores.size(); i++ )
+        uim_candidate_free( stores[ i ] );
     stores.clear();
 }
 
-void CandidateWindow::setCandidates(int dl, const QList<uim_candidate> &candidates)
+void CandidateWindow::setCandidates( int dl, const QList<uim_candidate> &candidates )
 {
-    qDebug("setCandidates");
+    qDebug( "setCandidates" );
 
     // remove old data
-    if (!stores.isEmpty())
+    if ( !stores.isEmpty() )
         clearCandidates();
 
     // set defalt value
@@ -87,31 +88,36 @@ void CandidateWindow::setCandidates(int dl, const QList<uim_candidate> &candidat
     nrCandidates = candidates.count();
     displayLimit = dl;
 
-    if (candidates.isEmpty())
-        return;
+    if ( candidates.isEmpty() )
+        return ;
 
     // set candidates
     stores = candidates;
 
     // shift to default page
-    setPage(0);
+    setPage( 0 );
 }
 
-void CandidateWindow::setPage(int page)
+void CandidateWindow::setPage( int page )
 {
-    qDebug("setPage : page = %d", page);
+    qDebug( "setPage : page = %d", page );
 
     // clear items
-//    cList->clear();
+    //    cList->clear();
 
     // calculate page
     int newpage, lastpage;
-    lastpage = nrCandidates/displayLimit;
-    if (page < 0) {
+    lastpage = nrCandidates / displayLimit;
+    if ( page < 0 )
+    {
         newpage = lastpage;
-    } else if (page > lastpage) {
+    }
+    else if ( page > lastpage )
+    {
         newpage = 0;
-    } else {
+    }
+    else
+    {
         newpage = page;
     }
 
@@ -119,16 +125,19 @@ void CandidateWindow::setPage(int page)
 
     // calculate index
     int newindex;
-    if (displayLimit) {
-        if (candidateIndex >= 0)
-            newindex = (newpage * displayLimit) + (candidateIndex%displayLimit);
+    if ( displayLimit )
+    {
+        if ( candidateIndex >= 0 )
+            newindex = ( newpage * displayLimit ) + ( candidateIndex % displayLimit );
         else
             newindex = newpage * displayLimit;
-    } else {
+    }
+    else
+    {
         newindex = candidateIndex;
     }
 
-    if (newindex >= nrCandidates)
+    if ( newindex >= nrCandidates )
         newindex = nrCandidates - 1;
 
     // set cand items
@@ -139,59 +148,63 @@ void CandidateWindow::setPage(int page)
     // ex. if nrCandidate==14 and displayLimit==10, the number of
     //     last page's item==4
     int ncandidates = displayLimit;
-    if (newpage == lastpage)
-        ncandidates = nrCandidates - displayLimit*lastpage;
-    for (int i = 0; i < ncandidates; i++) {
-        uim_candidate cand = stores[displayLimit * newpage + i];
-        QString headString = QString::fromUtf8((const char *)uim_candidate_get_heading_label(cand));
-        if(headString.toInt() < 10)
-            headString.prepend("0");
-        QString candString = QString::fromUtf8((const char *)uim_candidate_get_cand_str(cand));
+    if ( newpage == lastpage )
+        ncandidates = nrCandidates - displayLimit * lastpage;
+    for ( int i = 0; i < ncandidates; i++ )
+    {
+        uim_candidate cand = stores[ displayLimit * newpage + i ];
+        QString headString = QString::fromUtf8( ( const char * ) uim_candidate_get_heading_label( cand ) );
+        if ( headString.toInt() < 10 )
+            headString.prepend( "0" );
+        QString candString = QString::fromUtf8( ( const char * ) uim_candidate_get_cand_str( cand ) );
 
         // insert new item to the candidate list
-//        new QListViewItem(cList, headString, candString);
+        //        new QListViewItem(cList, headString, candString);
     }
 
     // set index
-    setIndex(newindex);
+    setIndex( newindex );
 
     // set candwin size
-//    adjustCandidateWindowSize();
+    //    adjustCandidateWindowSize();
 }
 
-void CandidateWindow::setIndex(int totalindex)
+void CandidateWindow::setIndex( int totalindex )
 {
-    qDebug("setTotalIndex : totalindex = %d", totalindex);
+    qDebug( "setTotalIndex : totalindex = %d", totalindex );
 
     // validity check
-    if (totalindex < 0)
+    if ( totalindex < 0 )
         candidateIndex = nrCandidates - 1;
-    else if (totalindex >= nrCandidates)
+    else if ( totalindex >= nrCandidates )
         candidateIndex = 0;
     else
         candidateIndex = totalindex;
 
     // set page
     int newpage = 0;
-    if (displayLimit)
-        newpage = (int)candidateIndex/displayLimit;
-    if (pageIndex != newpage)
-        setPage(newpage);
+    if ( displayLimit )
+        newpage = ( int ) candidateIndex / displayLimit;
+    if ( pageIndex != newpage )
+        setPage( newpage );
 
     // select item
-    if (candidateIndex >= 0) {
+    if ( candidateIndex >= 0 )
+    {
         int pos = totalindex;
-        if (displayLimit)
-            pos = candidateIndex%displayLimit;
+        if ( displayLimit )
+            pos = candidateIndex % displayLimit;
 
-//        if (cList->itemAtIndex(pos) && ! (cList->itemAtIndex(pos)->isSelected()))
-//            cList->setSelected(cList->itemAtIndex(pos), true);
-    } else {
-//        cList->clearSelection();
+        //        if (cList->itemAtIndex(pos) && ! (cList->itemAtIndex(pos)->isSelected()))
+        //            cList->setSelected(cList->itemAtIndex(pos), true);
+    }
+    else
+    {
+        //        cList->clearSelection();
     }
 }
 
-void CandidateWindow::setIndexInPage(int index)
+void CandidateWindow::setIndexInPage( int index )
 {
     /*
     QListViewItem* selectedItem = cList->itemAtIndex(index);
@@ -201,50 +214,53 @@ void CandidateWindow::setIndexInPage(int index)
     */
 }
 
-void CandidateWindow::shiftPage(bool forward)
+void CandidateWindow::shiftPage( bool forward )
 {
-    if (forward) {
+    if ( forward )
+    {
         candidateIndex += displayLimit;
-        setPage(pageIndex+1);
-    } else {
-        if (candidateIndex < displayLimit)
-            candidateIndex = displayLimit * (nrCandidates/displayLimit) + candidateIndex;
+        setPage( pageIndex + 1 );
+    }
+    else
+    {
+        if ( candidateIndex < displayLimit )
+            candidateIndex = displayLimit * ( nrCandidates / displayLimit ) + candidateIndex;
         else
             candidateIndex -= displayLimit;
 
-        setPage(pageIndex-1);
-        setPage(pageIndex-1);
+        setPage( pageIndex - 1 );
+        setPage( pageIndex - 1 );
     }
-    
-//    cList->setSelected(cList->itemAtIndex(candidateIndex%displayLimit), true);
-    if (ic && ic->uimContext())
-        uim_set_candidate_index(ic->uimContext(), candidateIndex);
+
+    //    cList->setSelected(cList->itemAtIndex(candidateIndex%displayLimit), true);
+    if ( ic && ic->uimContext() )
+        uim_set_candidate_index( ic->uimContext(), candidateIndex );
 }
 
-void CandidateWindow::layoutWindow(int x, int y, int w, int h)
+void CandidateWindow::layoutWindow( int x, int y, int w, int h )
 {
     int destX = x;
     int destY = y + h;
-    
-    int screenW = QApplication::desktop()->screenGeometry().width();
-    int screenH = QApplication::desktop()->screenGeometry().height();
 
-    if (destX + width() > screenW)
+    int screenW = QApplication::desktop() ->screenGeometry().width();
+    int screenH = QApplication::desktop() ->screenGeometry().height();
+
+    if ( destX + width() > screenW )
         destX = screenW - width();
 
-    if (destY + height() > screenH)
-        destY = y -  height();
+    if ( destY + height() > screenH )
+        destY = y - height();
 
-    move(destX, destY);
+    move( destX, destY );
 }
 
 void CandidateWindow::updateLabel()
 {
     QString indexString = QString::null;
-    if (candidateIndex >= 0)
-        indexString = QString::number(candidateIndex+1) + " / " + QString::number(nrCandidates);
+    if ( candidateIndex >= 0 )
+        indexString = QString::number( candidateIndex + 1 ) + " / " + QString::number( nrCandidates );
     else
-        indexString = "- / " + QString::number(nrCandidates);
+        indexString = "- / " + QString::number( nrCandidates );
 
-    numLabel->setText(indexString);
+    numLabel->setText( indexString );
 }

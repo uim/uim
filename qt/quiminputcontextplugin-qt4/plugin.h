@@ -20,7 +20,7 @@ protected:
 
     QStringList createImList() const;
     QStringList createLanguageList( const QString &key ) const;
-    
+
     bool uimReady;
 };
 

@@ -11,26 +11,27 @@ class QLabel;
 
 class QUimInputContext;
 
-class CandidateWindow : public QVBox {
+class CandidateWindow : public QVBox
+{
     Q_OBJECT
 
 public:
-    CandidateWindow(QWidget * parent = 0);
+    CandidateWindow( QWidget * parent = 0 );
     ~CandidateWindow();
 
-    void activateCandwin(int dLimit);
+    void activateCandwin( int dLimit );
     void deactivateCandwin();
     void clearCandidates();
     void popup();
 
-    void setCandidates(int displayLimit, const QList<uim_candidate> &candidates);
-    void setPage(int page);
-    void shiftPage(bool forward);
-    void layoutWindow(int x, int y, int w, int h);
-    void setIndex(int totalindex);
-    void setIndexInPage(int index);
+    void setCandidates( int displayLimit, const QList<uim_candidate> &candidates );
+    void setPage( int page );
+    void shiftPage( bool forward );
+    void layoutWindow( int x, int y, int w, int h );
+    void setIndex( int totalindex );
+    void setIndexInPage( int index );
 
-    void setQUimInputContext(QUimInputContext* m_ic){ ic = m_ic; }
+    void setQUimInputContext( QUimInputContext* m_ic ) { ic = m_ic; }
 
 protected:
     void updateLabel();
