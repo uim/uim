@@ -50,6 +50,7 @@ static GtkWidget *hbox;
 static GtkWidget *tmp_button;
 static GList *menu_buttons;
 static GtkWidget *prop_menu;
+static GtkWidget *right_click_menu;
 static GtkSizeGroup *button_size_group;
 
 static unsigned int read_tag;
@@ -323,13 +324,83 @@ uim_applet_fd_read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
   return TRUE;
 }
 
+static void
+menu_switcher_activated(GtkMenu *menu_item, gpointer data)
+{
+  system("uim-im-switcher &");
+}
+
+static void
+menu_pref_activated(GtkMenu *menu_item, gpointer data)
+{
+  system("uim-pref-gtk &");
+}
+
+static void
+menu_quit_activated(GtkMenu *menu_item, gpointer data)
+{
+  gtk_main_quit();
+}
+
+static GtkWidget *
+right_click_menu_create(void)
+{
+  GtkWidget *menu;
+  GtkWidget *menu_item;
+  GtkWidget *img;
+  gchar *path;
+
+  menu = gtk_menu_new();
+  path = g_strconcat(UIM_PIXMAPSDIR, "/switcher-icon.png", NULL);
+  img = gtk_image_new_from_file(path);
+  g_free(path);
+
+  menu_item = gtk_image_menu_item_new_with_label("Execute uim's input method switcher.");
+  gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
+  g_signal_connect(G_OBJECT(menu_item), "activate", 
+		   G_CALLBACK(menu_switcher_activated), NULL);
+
+  img = gtk_image_new_from_stock(GTK_STOCK_PREFERENCES, GTK_ICON_SIZE_MENU);
+  menu_item = gtk_image_menu_item_new_with_label("Execute uim's preference tool.");
+  gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
+  g_signal_connect(G_OBJECT(menu_item), "activate", 
+		   G_CALLBACK(menu_pref_activated), NULL);
+
+  img = gtk_image_new_from_stock(GTK_STOCK_QUIT, GTK_ICON_SIZE_MENU);
+  menu_item = gtk_image_menu_item_new_with_label("Quit this toolbar.");
+  gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
+  g_signal_connect(G_OBJECT(menu_item), "activate", 
+		   G_CALLBACK(menu_quit_activated), NULL);
+
+
+  gtk_widget_show_all(menu);
+
+  return menu;
+}
+
+static gboolean
+prop_right_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer dummy)
+{
+  gtk_menu_popup(GTK_MENU(right_click_menu), NULL, NULL, 
+		 (GtkMenuPositionFunc) calc_menu_position,
+		 (gpointer)prop_button, event->button, 
+		 gtk_get_current_event_time());
+  return FALSE;
+}
+
+
 static gboolean
 prop_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkMenuShell *prop_menu)
 { 
-  if(event->button == 2 || event->button == 3) {
-  if(helper_parent_widget)
+  if(event->button == 3) {
+    prop_right_button_pressed(prop_button, event, prop_menu);
+  } else if(event->button == 2) {
+    if(helper_parent_widget)
       gtk_propagate_event(GTK_WIDGET(helper_parent_widget), (GdkEvent *) event);
- }
+  }
   return FALSE;
 }
 
@@ -540,6 +611,7 @@ uim_helper_toolbar_new(void)
 {
   hbox = gtk_hbox_new(FALSE, 0);
   prop_menu = gtk_menu_new();
+  right_click_menu = right_click_menu_create();
   button_size_group = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
  
   g_signal_connect(G_OBJECT(hbox), "hierarchy-changed",
