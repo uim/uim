@@ -100,12 +100,12 @@ plugin_load(uim_lisp _module_filename) {
 	info_list_entry = malloc(sizeof(uim_plugin_info_list));
 	info = malloc(sizeof(uim_plugin_info));
 
-	printf("load %s\n",module_filename_fullpath);
+	fprintf(stderr, "load %s\n",module_filename_fullpath);
 	info->library = dlopen(module_filename_fullpath,
 			      RTLD_NOW);
 	if(info->library == NULL) {
 	  
-	  printf("load failed %s\n", dlerror());
+	  fprintf(stderr, "load failed %s\n", dlerror());
 	  return uim_scm_f();
 	}
 
@@ -115,7 +115,7 @@ plugin_load(uim_lisp _module_filename) {
 	info->plugin_init = (void (*)(void))dlfunc(info->library, "plugin_init");
     
 	if(info->plugin_init) {
-	  printf("plugin init\n");
+	  fprintf(stderr, "plugin init\n");
 	  (info->plugin_init)();
 	}
 	/*	plugin_list_append(uim_plugin_entry); */

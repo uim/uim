@@ -264,8 +264,8 @@ uim_custom_choice_item_list(const char *custom_sym)
   UIM_EVAL_FSTRING2(NULL, "(define %s (custom-range '%s))",
 		    str_list_arg, custom_sym);
   choice_sym_list =
-    (char **)uim_scm_c_list(str_list_arg, "custom-symbol-rec-sym",
-			    (uim_scm_c_list_conv_func)uim_scm_c_symbol);
+    (char **)uim_scm_c_list(str_list_arg, "symbol->string",
+			    (uim_scm_c_list_conv_func)uim_scm_c_str);
 
   for (p = choice_sym_list; choice_sym = *p; p++) {
     custom_choice = uim_custom_choice_get(custom_sym, choice_sym);
