@@ -1029,8 +1029,7 @@
 	   (preconv-ustr (anthy-context-preconv-ustr ac))
 	   (preconv-str (evmap-ustr-preedit-string preconv-ustr)))
       (if (and (number? (anthy-context-ac-id ac))
-	       (> (string-length preconv-str)
-		  0))
+	       (positive? (string-length preconv-str)))
 	  (begin
 	    (anthy-lib-set-string ac-id preconv-str)
 	    (let ((nr-segments (anthy-lib-get-nr-segments ac-id)))
@@ -1173,7 +1172,7 @@
 (define anthy-get-nth-preconv-ustr
   (lambda (ac seg-idx cand-idx)
     (let* ((ac-id (anthy-context-ac-id ac))
-	   (transposed? (< cand-idx 0))
+	   (transposed? (negative? cand-idx))
 	   (seg-pos (anthy-get-segment-pos ac seg-idx))
 	   (seg-len (anthy-lib-get-segment-length ac-id seg-idx))
 	   (preconv-ustr (anthy-context-preconv-ustr ac))
