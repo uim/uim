@@ -35,6 +35,7 @@
 
 #include "uim.h"
 #include "uim-scm.h"
+#include "uim-compat-scm.h"
 
 #ifdef UIM_SH_USE_EXIT_HOOK
 extern int uim_siod_fatal;

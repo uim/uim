@@ -672,6 +672,11 @@ uim_init_scm()
   siod_init (6, siod_argv, 1, uim_output);
   set_fatal_exit_hook(exit_hook);
   /**/
+  uim_init_scm_subrs();
+#ifdef UIM_COMPAT_SCM
+  uim_init_compat_scm_subrs();
+#endif
+  uim_init_plugin();
   uim_init_im_subrs();
   uim_init_util_subrs();
   uim_init_key_subrs();
@@ -679,7 +684,6 @@ uim_init_scm()
   uim_init_anthy();
   uim_init_prime();
   uim_init_skk_dic();
-  uim_init_plugin();
 
   scm_files = getenv("LIBUIM_SCM_FILES");
   if (scm_files) {

@@ -206,6 +206,22 @@ AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug],
                  [enable debugging]))
 
+AC_ARG_ENABLE(compat-scm,
+  AC_HELP_STRING([--disable-compat-scm],
+                 [disable obsolete part of uim-scm API (experimental)]),
+  [
+    if test "$enable_compat_scm" != "no" ;then
+      enable_compat_scm="yes"
+    fi
+  ],
+  [
+    enable_compat_scm="yes"
+  ])
+
+AC_ARG_ENABLE(compat-custom,
+  AC_HELP_STRING([--enable-compat-custom],
+                 [enable obsolete version of 'custom API' required by sumika. This exclusively disables new custom API]))
+
 AC_ARG_ENABLE(fep,
   AC_HELP_STRING([--disable-fep],
                  [disable uim-fep]),
@@ -230,6 +246,10 @@ AC_ARG_ENABLE(sumika,
         use_sumika="no"
       ;;
       yes|*)
+        if test "x$enable_compat_scm" != "xyes" \
+                -o "x$enable_compat_custom" != "xyes" ; then
+          AC_MSG_ERROR([Sumika requires --enable-compat-scm and --enable-compat-custom])
+        fi
         PKG_CHECK_MODULES(SUMIKA, gtk+-2.0 >= 2.4.0,
                            use_sumika="yes",
                           AC_MSG_WARN([sumika needs Gtk+ 2.4 or higher. sumika disabled...]);use_sumika="no")
@@ -267,6 +287,8 @@ AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
 AM_CONDITIONAL(SUMIKA, test x$use_sumika = xyes)
 AM_CONDITIONAL(DICT, test x$use_dict = xyes)
 AM_CONDITIONAL(DEBUG, test x$enable_debug = xyes)
+AM_CONDITIONAL(COMPAT_SCM, test x$enable_compat_scm = xyes)
+AM_CONDITIONAL(COMPAT_CUSTOM, test x$enable_compat_custom = xyes)
 
 GTK_BINARY_VERSION=`pkg-config gtk+-2.0 --variable=gtk_binary_version`
 AC_SUBST(GTK_BINARY_VERSION)
@@ -289,6 +311,16 @@ fi
 if test x$CC = xgcc; then
 	CFLAGS="$CFLAGS -O2 -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
 	CXXFLAGS="$CXXFLAGS -O2 -Wall"
+fi
+
+if test x$enable_compat_scm = xyes; then
+  AC_DEFINE(UIM_COMPAT_SCM, 1,
+            [Enable obsolete part of uim-scm API])
+fi
+
+if test x$enable_compat_custom = xyes; then
+  AC_DEFINE(UIM_COMPAT_CUSTOM, 1,
+            [Enable obsolete version of 'custom API' required by sumika])
 fi
 
 # Checks for typedefs, structures, and compiler characteristics.

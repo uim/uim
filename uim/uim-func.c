@@ -54,14 +54,6 @@ static struct uim_code_converter uim_iconv_tbl = {
 };
 struct uim_code_converter *uim_iconv = &uim_iconv_tbl;
 
-#define TRUEP(x) EQ(x, true_sym)
-#define FALSEP(x) EQ(x, false_sym)
- 
-#define NTRUEP(x) NEQ(x, true_sym)
-#define NFALSEP(x) NEQ(x, false_sym)
-
-static LISP true_sym;
-static LISP false_sym;
 
 /* push back a preedit segment to context */
 static void
@@ -746,16 +738,6 @@ im_delete_surrounding(LISP id_, LISP offset_, LISP len_)
 void
 uim_init_im_subrs(void)
 {
-  true_sym  = siod_true_value();
-#if 0
-  false_sym = siod_false_value();
-#else
-  /* false_sym has to be NIL until bug #617 and #642 are fixed
-   * -- YamaKen
-   */
-  false_sym = NIL;
-#endif
-
   /**/
   init_subr_1("im-return-str", im_return_str);
   init_subr_1("im-return-str-list", im_return_str_list);

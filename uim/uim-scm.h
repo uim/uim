@@ -33,9 +33,12 @@
 
 /*                         !!CAUTION!!
 
-   Don't use this API! It will be obsolete due to the defective design.
+   This API is designed for input method plugin and internal uim
+   implementation. Other developers should not use this API since the
+   API easily causes fatal crash involving GC if you does not pay
+   attention enough. Be careful.
 
-                                                2004-10-03 YamaKen
+                                                2004-12-21 YamaKen
 */
 
 
@@ -49,8 +52,34 @@
 extern "C" {
 #endif
 
+#if 1
+/*
+  I want a boolean type for uim to explicitly indicate intention about
+  values. It should be reorganized into uim.h after agreement with
+  other developers. -- YamaKen 2004-12-17
+*/
+typedef int uim_bool;
+
+#define UIM_FALSE 0
+#define UIM_TRUE 1
+#endif
+
+
 /* uim companion tools should treat lisp object as opaque */
 typedef void * uim_lisp;
+
+#if 1
+/* will be deprecated. use uim_scm_t() and uim_scm_f() for new design */
+extern uim_lisp true_sym;
+extern uim_lisp false_sym;
+#endif
+
+#define TRUEP(x) (uim_scm_eq(x, true_sym))
+#define FALSEP(x) (uim_scm_eq(x, false_sym))
+ 
+#define NTRUEP(x) (!uim_scm_eq(x, true_sym))
+#define NFALSEP(x) (!uim_scm_eq(x, false_sym))
+
 
 /* 'uim_scm' prefix is not appropriate for these functions... any ideas? */
 FILE *
@@ -58,64 +87,82 @@ uim_scm_get_output(void);
 void
 uim_scm_set_output(FILE *fp);
   
-/* Scheme interpreter interface functions: "uim_scm" prefix is not
- * stable name. More discussion is required.
- *
- * See also bug #481 "Export Scheme interpreter interface as uim API"
- * on freedesktop.org.
- * http://freedesktop.org/cgi-bin/bugzilla/show_bug.cgi?id=481
- */
 long
 uim_scm_get_verbose_level(void);
 void
 uim_scm_set_verbose_level(long new_value);
-void
-uim_scm_load_file(const char *fn);
 
-/* These function names are badly inconsistent. Rename appropriately
- * before becoming proper API.
- */
-int
-uim_scm_c_int(uim_lisp integer);
-int
-uim_scm_symbol_value_int(const char *symbol_str);
-uim_lisp
-uim_scm_int_from_c_int(int integer);
-char *
-uim_scm_c_str(uim_lisp str);
-char *
-uim_scm_symbol_value_str(const char *symbol_str);
-uim_lisp
-uim_scm_str_from_c_str(const char *str);
-uim_lisp
-uim_scm_c_strs_into_list(int n_strs, const char *const *strs);
-uim_lisp
-uim_scm_symbol_value(const char *symbol_str);
-uim_lisp
-uim_scm_intern_c_str(const char *str);
-uim_lisp
-uim_scm_qintern_c_str(const char *str);
+/* evaluations */
 void
 uim_scm_gc_protect(uim_lisp *location);
-long
-uim_scm_repl_c_string(char *str, long want_init, long want_print);
+void
+uim_scm_load_file(const char *fn);
+uim_lisp
+uim_scm_eval(uim_lisp obj);
+uim_lisp
+uim_scm_eval_c_string(const char *str);
+uim_lisp
+uim_scm_return_value(void);
+/*
+  TODO: reorganize UIM_EVAL_FSTRINGn(), uim_sizeof_sexp_str() and
+  uim_eval_string() in context.h into this file
+*/
 
+/* type conversions */
+uim_bool
+uim_scm_c_bool(uim_lisp val);
+uim_lisp
+uim_scm_make_bool(uim_bool val);
+
+int
+uim_scm_c_int(uim_lisp integer);
+uim_lisp
+uim_scm_make_int(int integer);
+
+char *
+uim_scm_c_str(uim_lisp str);
+uim_lisp
+uim_scm_make_str(const char *str);
+
+char *
+uim_scm_c_symbol(uim_lisp str);
+uim_lisp
+uim_scm_make_symbol(const char *str);
+
+void
+uim_scm_init_subr_0(char *name, uim_lisp (*fcn)(void));
+void
+uim_scm_init_subr_1(char *name, uim_lisp (*fcn)(uim_lisp));
+void
+uim_scm_init_subr_2(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp));
+void
+uim_scm_init_subr_3(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp));
+void
+uim_scm_init_subr_4(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
+		   				 uim_lisp));
+void
+uim_scm_init_subr_5(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
+						uim_lisp, uim_lisp));
+
+/* constants */
 uim_lisp
 uim_scm_t(void);
 uim_lisp
 uim_scm_f(void);
 uim_lisp
 uim_scm_null_list(void);
-int
+
+/* predicates */
+uim_bool
 uim_scm_nullp(uim_lisp obj);
-int
+uim_bool
 uim_scm_eq(uim_lisp a, uim_lisp b);
-int
+uim_bool
 uim_scm_string_equal(uim_lisp a, uim_lisp b);
+
+/* list operations */
 uim_lisp
-uim_scm_eval(uim_lisp obj);
-uim_lisp
-uim_scm_quote(uim_lisp obj);
+uim_scm_cons(uim_lisp car, uim_lisp cdr);
 uim_lisp
 uim_scm_car(uim_lisp cell);
 uim_lisp
@@ -128,170 +175,6 @@ uim_lisp
 uim_scm_cdar(uim_lisp cell);
 uim_lisp
 uim_scm_cddr(uim_lisp cell);
-uim_lisp
-uim_scm_cons(uim_lisp car, uim_lisp cdr);
-uim_lisp
-uim_scm_nth(uim_lisp n, uim_lisp lst);
-uim_lisp
-uim_scm_list1(uim_lisp elm1);
-uim_lisp
-uim_scm_list2(uim_lisp elm1, uim_lisp elm2);
-uim_lisp
-uim_scm_list3(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3);
-uim_lisp
-uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4);
-uim_lisp
-uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
-              uim_lisp elm5);
-uim_lisp
-uim_scm_reverse(uim_lisp cell);
-
-uim_lisp
-uim_scm_nreverse(uim_lisp cell);
-
-#ifndef UIM_NO_COMPAT_CUSTOM
-/* Customize interface functions: They are not appropriate to be
- * here. More discussion is required.
- *
- * See also bug #538 "Add customization interface to uim" on
- * freedesktop.org.
- * http://freedesktop.org/cgi-bin/bugzilla/show_bug.cgi?id=538
- */
-
-enum UCustomType {
-  UCustom_Bool,
-  UCustom_Int,
-  UCustom_Str,
-  UCustom_Path,
-  UCustom_Symbol,
-  UCustom_Key
-};
-
-uim_lisp
-uim_custom_value(uim_lisp custom_sym);
-int
-uim_custom_value_as_bool(uim_lisp custom_sym);
-int
-uim_custom_value_as_int(uim_lisp custom_sym);
-char *
-uim_custom_value_as_str(uim_lisp custom_sym);
-char *
-uim_custom_value_as_path(uim_lisp custom_sym);
-uim_lisp
-uim_custom_value_as_symbol(uim_lisp custom_sym);
-/* char **uim_custom_value_as_key(uim_lisp custom_sym); */
-void
-uim_custom_set(uim_lisp custom_sym, uim_lisp custom_val);
-char *
-uim_custom_symbol_label(uim_lisp custom_sym, uim_lisp val_sym);
-char *
-uim_custom_symbol_desc(uim_lisp custom_sym, uim_lisp val_sym);
-uim_lisp
-uim_custom_label(uim_lisp custom_sym);
-uim_lisp
-uim_custom_desc(uim_lisp custom_sym);
-uim_lisp
-uim_custom_type(uim_lisp custom_sym);
-uim_lisp
-uim_custom_default_value(uim_lisp custom_sym);
-int
-uim_custom_ctype(uim_lisp custom_sym);
-uim_lisp
-uim_custom_range(uim_lisp custom_sym);
-char *
-uim_custom_group_label(uim_lisp group_sym);
-char *
-uim_custom_group_desc(uim_lisp group_sym);
-uim_lisp
-uim_custom_group_subgroups(uim_lisp group_sym);
-uim_lisp
-uim_custom_list_groups(void);
-uim_lisp
-uim_custom_list_primary_groups(void);
-uim_lisp
-uim_custom_collect_by_group(uim_lisp group_sym);
-char *
-uim_custom_value_as_string(uim_lisp sym);
-char *
-uim_custom_definition_as_string(uim_lisp sym);
-#endif  /* UIM_COMPAT_CUSTOM */
-
-/* function table for dynamic loading */
-struct uim_api_tbl {
-  int       (*uim_init)(void);
-  void      (*uim_quit)(void);
-
-  FILE     *(*uim_scm_get_output)(void);
-  void      (*uim_scm_set_output)(FILE *fp);
-  long      (*uim_scm_get_verbose_level)(void);
-  void      (*uim_scm_set_verbose_level)(long new_value);
-  void      (*uim_scm_load_file)(const char *fn);
-
-  int       (*uim_scm_c_int)(uim_lisp integer);
-  int       (*uim_scm_symbol_value_int)(const char *symbol_str);
-  uim_lisp  (*uim_scm_int_from_c_int)(int integer);
-  char     *(*uim_scm_c_str)(uim_lisp str);
-  char     *(*uim_scm_symbol_value_str)(const char *symbol_str);
-  uim_lisp  (*uim_scm_str_from_c_str)(const char *str);
-  uim_lisp  (*uim_scm_c_strs_into_list)(int n_strs, const char *const *strs);
-  uim_lisp  (*uim_scm_symbol_value)(const char *symbol_str);
-  uim_lisp  (*uim_scm_intern_c_str)(const char *str);
-  uim_lisp  (*uim_scm_qintern_c_str)(const char *str);
-  void      (*uim_scm_gc_protect)(uim_lisp *location);
-  long      (*uim_scm_repl_c_string)(char *str,
-				     long want_init, long want_print);
-
-  uim_lisp  (*uim_scm_t)(void);
-  uim_lisp  (*uim_scm_f)(void);
-  uim_lisp  (*uim_scm_null_list)(void);
-  int       (*uim_scm_nullp)(uim_lisp obj);
-  int       (*uim_scm_eq)(uim_lisp a, uim_lisp b);
-  int       (*uim_scm_string_equal)(uim_lisp a, uim_lisp b);
-  uim_lisp  (*uim_scm_eval)(uim_lisp obj);
-  uim_lisp  (*uim_scm_quote)(uim_lisp obj);
-  uim_lisp  (*uim_scm_car)(uim_lisp cell);
-  uim_lisp  (*uim_scm_cdr)(uim_lisp cell);
-  uim_lisp  (*uim_scm_cadr)(uim_lisp cell);
-  uim_lisp  (*uim_scm_caar)(uim_lisp cell);
-  uim_lisp  (*uim_scm_cdar)(uim_lisp cell);
-  uim_lisp  (*uim_scm_cddr)(uim_lisp cell);
-  uim_lisp  (*uim_scm_cons)(uim_lisp car, uim_lisp cdr);
-  uim_lisp  (*uim_scm_nth)(uim_lisp n, uim_lisp lst);
-  uim_lisp  (*uim_scm_list1)(uim_lisp elm1);
-  uim_lisp  (*uim_scm_list2)(uim_lisp elm1, uim_lisp elm2);
-  uim_lisp  (*uim_scm_list3)(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3);
-  uim_lisp  (*uim_scm_list4)(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3,
-			     uim_lisp elm4);
-  uim_lisp  (*uim_scm_list5)(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3,
-			     uim_lisp elm4, uim_lisp elm5);
-
-  uim_lisp  (*uim_scm_reverse)(uim_lisp cell);
-  uim_lisp  (*uim_scm_nreverse)(uim_lisp cell);
-
-  uim_lisp  (*uim_custom_value)(uim_lisp custom_sym);
-  int       (*uim_custom_value_as_bool)(uim_lisp custom_sym);
-  int       (*uim_custom_value_as_int)(uim_lisp custom_sym);
-  char     *(*uim_custom_value_as_str)(uim_lisp custom_sym);
-  char     *(*uim_custom_value_as_path)(uim_lisp custom_sym);
-  uim_lisp  (*uim_custom_value_as_symbol)(uim_lisp custom_sym);
-  void      (*uim_custom_set)(uim_lisp custom_sym, uim_lisp custom_val);
-  char     *(*uim_custom_symbol_label)(uim_lisp custom_sym, uim_lisp val_sym);
-  char     *(*uim_custom_symbol_desc)(uim_lisp custom_sym, uim_lisp val_sym);
-  uim_lisp  (*uim_custom_label)(uim_lisp custom_sym);
-  uim_lisp  (*uim_custom_desc)(uim_lisp custom_sym);
-  uim_lisp  (*uim_custom_type)(uim_lisp custom_sym);
-  uim_lisp  (*uim_custom_default_value)(uim_lisp custom_sym);
-  int       (*uim_custom_ctype)(uim_lisp custom_sym);
-  uim_lisp  (*uim_custom_range)(uim_lisp custom_sym);
-  char     *(*uim_custom_group_label)(uim_lisp group_sym);
-  char     *(*uim_custom_group_desc)(uim_lisp group_sym);
-  uim_lisp  (*uim_custom_group_subgroups)(uim_lisp group_sym);
-  uim_lisp  (*uim_custom_list_groups)(void);
-  uim_lisp  (*uim_custom_list_primary_groups)(void);
-  uim_lisp  (*uim_custom_collect_by_group)(uim_lisp group_sym);
-  char     *(*uim_custom_value_as_string)(uim_lisp sym);
-  char     *(*uim_custom_definition_as_string)(uim_lisp sym);
-};
 
 #ifdef __cplusplus
 }

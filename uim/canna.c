@@ -41,13 +41,13 @@
 #include <errno.h>
 #include <string.h>
 #include "context.h"
+#include "uim-scm.h"
+#include "uim-compat-scm.h"
 
 #define MAX_CONTEXT 256
 #define LIBCANNA_SO	"libcanna.so"
 
 #define BUFSIZE 1024
-
-static LISP true_sym;
 
 struct canna_context {
   char diclist[BUFSIZE];
@@ -459,7 +459,6 @@ reset_conversion(LISP id_)
 void
 uim_init_canna(void)
 {
-  true_sym = siod_true_value();
   init_subr_1("canna-lib-init", init_canna_lib);
 
   init_subr_0("canna-lib-alloc-context", create_context);

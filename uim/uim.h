@@ -561,7 +561,7 @@ char *
 uim_ipc_send_command(int *pid, FILE **read_handler,
 		     FILE **write_handler, char *command, char *str);
 
-/* will be deprecated. use uim-scm.h (still preliminary) instead */
+/* will be deprecated. use custom API (uim-custom.h) instead */
 char *uim_symbol_value_str(const char *symbol_str);
 
 /* an uim_code_converter implementation using iconv */

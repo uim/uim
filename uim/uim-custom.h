@@ -31,28 +31,12 @@
 
 */
 
-/*
-  This is a prototype of new custom API. Implementation is not yet
-  available. -- YamaKen 2004-11-10
-*/
 
 #ifndef _uim_custom_h_included_
 #define _uim_custom_h_included_
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#if 1
-/*
-  I want a boolean type for uim to explicitly indicate intention about
-  values. It should be reorganized into uim.h after agreement with
-  other developers. -- YamaKen 2004-12-17
-*/
-typedef int uim_bool;
-
-#define UIM_FALSE 0
-#define UIM_TRUE 1
 #endif
 
 enum UCustomType {

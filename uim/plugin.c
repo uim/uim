@@ -44,18 +44,15 @@
 
 #include "config.h"
 #include "uim.h"
-#include "uim-util.h"
+#include "uim-scm.h"
 #include "plugin.h"
 #include "context.h"
 
 static uim_plugin_info_list *uim_plugin_list = NULL;
 static void plugin_list_append(uim_plugin_info_list *entry);
 
-static LISP true_sym;
-static LISP false_sym;
-
-static LISP 
-plugin_load(LISP _module_filename) {
+static uim_lisp 
+plugin_load(uim_lisp _module_filename) {
 	uim_plugin_info *info;
 	uim_plugin_info_list *info_list_entry;
 	char *module_filename;
@@ -66,14 +63,14 @@ plugin_load(LISP _module_filename) {
 	module_filename = uim_scm_c_str(_module_filename);
 
 	if(module_filename == NULL) {
-	  return NIL;
+	  return uim_scm_f();
 	}
 
 	len = strlen(module_filename);
 	module_filename_suffix = strrchr(module_filename, '.');
 	if(len < 3 || module_filename_suffix == NULL) {
 	  free(module_filename);
-	  return NIL;
+	  return uim_scm_f();
 	}
 
 	if( module_filename[0] != '/') {
@@ -105,7 +102,7 @@ plugin_load(LISP _module_filename) {
 	if(info->library == NULL) {
 	  
 	  printf("load failed %s\n", dlerror());
-	  return NIL;
+	  return uim_scm_f();
 	}
 
 	free(module_filename_fullpath);
@@ -119,7 +116,7 @@ plugin_load(LISP _module_filename) {
 	}
 	/*	plugin_list_append(uim_plugin_entry); */
 
-	return true_sym;
+	return uim_scm_t();
 }
 
 static void plugin_list_append(uim_plugin_info_list *entry)
@@ -135,21 +132,18 @@ static void plugin_list_append(uim_plugin_info_list *entry)
   }
 }
 
-static LISP
-plugin_unload(LISP _filename)
+static uim_lisp
+plugin_unload(uim_lisp _filename)
 {
 	/* XXX: Dynamic unloading is not supported yet*/
-	return NIL;
+	return uim_scm_f();
 }
 
 /* Called from uim_init */
 void uim_init_plugin(void)
 {
-  true_sym = siod_true_value();
-  false_sym = siod_false_value();
-  
-  init_subr_1("load-plugin", plugin_load);
-  init_subr_1("unload-plugin", plugin_unload);
+  uim_scm_init_subr_1("load-plugin", plugin_load);
+  uim_scm_init_subr_1("unload-plugin", plugin_unload);
 }
 
 /* Called from uim_quit */

@@ -264,6 +264,10 @@ struct cb {
 /**/
 uim_context
 uim_find_context(int id);
+void uim_init_scm_subrs(void);
+#ifdef UIM_COMPAT_SCM
+void uim_init_compat_scm_subrs(void);
+#endif
 void uim_init_key_subrs(void);
 void uim_init_util_subrs(void);
 void uim_init_table_subrs(void);

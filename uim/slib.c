@@ -799,7 +799,7 @@ noprompt_puts (char *st)
     put_st (st);
 }
 
-static char *repl_c_string_arg = NULL;
+static const char *repl_c_string_arg = NULL;
 static long repl_c_string_flag = 0;
 
 static int
@@ -1234,7 +1234,7 @@ not_ignore_print (LISP x)
 }
 
 long
-repl_c_string (char *str,
+repl_c_string (const char *str,
 	       long want_init, long want_print)
 {
   struct repl_hooks h;

@@ -42,7 +42,8 @@
 
 #include "uim/config.h"
 #include "uim/uim.h"
-#include "uim/uim-scm.h"
+#include "uim/uim-compat-scm.h"
+#include "uim/uim-compat-custom.h"
 #include "uim/gettext.h"
 
 #define SYMBOL_EQ(custom_sym, str) \

@@ -42,14 +42,13 @@
   argument that causes no action.  -- YamaKen 2004-12-17
 */
 
-#define UIM_NO_COMPAT_CUSTOM
+#include "config.h"
 
 #include <stdlib.h>
 #include <string.h>
-#include "config.h"
-#include "context.h"
 #include "uim-scm.h"
 #include "uim-custom.h"
+#include "context.h"
 
 
 static int uim_custom_type_eq(const char *custom_sym, const char *custom_type);
@@ -75,40 +74,17 @@ static const char str_list_arg[] = "uim-custom-c-str-list-arg";
 
 
 #if 1  /* should be reorganized into uim-scm.[hc] */
-#define TRUEP(x) EQ(x, true_sym)
-#define FALSEP(x) EQ(x, false_sym)
- 
-#define NTRUEP(x) NEQ(x, true_sym)
-#define NFALSEP(x) NEQ(x, false_sym)
-
 typedef void *(*uim_scm_c_list_conv_func)(uim_lisp elem);
 typedef void (*uim_scm_c_list_free_func)(void *elem);
 
-uim_lisp uim_scm_return_value(void);
-char *uim_scm_c_symbol(uim_lisp symbol);
 void **uim_scm_c_list(const char *list_repl, const char *mapper_proc,
 		      uim_scm_c_list_conv_func conv_func);
 char *uim_scm_c_str_failsafe(uim_lisp str);
 char **uim_scm_c_str_list(const char *list_repl, const char *mapper_proc);
 void uim_scm_c_list_free(void **list, uim_scm_c_list_free_func free_func);
 
-static uim_lisp true_sym;
-static uim_lisp false_sym;
 static uim_lisp return_val;
 
-
-uim_lisp
-uim_scm_return_value(void)
-{
-  return (uim_lisp)siod_return_value();
-}
-
-char *
-uim_scm_c_symbol(uim_lisp symbol)
-{
-  /* siod dependent */
-  return uim_scm_c_str(symbol);
-}
 
 /*
   - list_repl must always returns same list for each evaluation
@@ -431,18 +407,6 @@ uim_custom_range_free(int custom_type, union uim_custom_range *custom_range)
 uim_bool
 uim_custom_init(void)
 {
-#if 1  /* should be reorganized into uim-scm.c */
-  true_sym  = (uim_lisp)siod_true_value();
-#if 0
-  false_sym = (uim_lisp)siod_false_value();
-#else
-  /* false_sym has to be NIL until bug #617 and #642 are fixed
-   * -- YamaKen
-   */
-  false_sym = uim_scm_f();
-#endif
-#endif
-
   uim_scm_load_file("custom.scm");
   uim_scm_gc_protect(return_val);
 

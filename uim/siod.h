@@ -239,7 +239,7 @@ LISP equal (LISP, LISP);
 void set_fatal_exit_hook (void (*fcn) (void));
 LISP intern (LISP x);
 void gc_protect (LISP * location); /* exported as temporary solution for custom API */
-long repl_c_string (char *, long want_init, long want_print);
+long repl_c_string (const char *, long want_init, long want_print);
 LISP siod_return_value (void);
 LISP reverse (LISP);
 LISP nreverse (LISP);
