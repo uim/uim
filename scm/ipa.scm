@@ -224,6 +224,6 @@
  'ipa
  ""
  "UTF-8"
- (N_ "International Phonetic Alphabet")
- (N_ "International Phonetic Alphabet")
+ (N_ "International Phonetic Alphabet (X-SAMPA)")
+ (N_ "International Phonetic Alphabet (X-SAMPA)")
  ipa-init-handler)
