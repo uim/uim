@@ -68,10 +68,12 @@ uim_input_pad_ja_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim.la
 uim_input_pad_ja_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
 uim_input_pad_ja_CFLAGS   = @GTK2_CFLAGS@ -Wall
 
+if GTK2_4
 uim_pref_gtk_SOURCES  = pref-gtk.c
 uim_pref_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim.la
 uim_pref_gtk_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
 uim_pref_gtk_CFLAGS   = @GTK2_CFLAGS@ -Wall
+endif
 
 if DICT
 uim_dict_SOURCES  = dict-main-gtk.c dict-anthy.c dict-anthy.h dict-canna.c dict-canna.h dict-word-win-gtk.c dict-word-win-gtk.h dict-word-list-win-gtk.c dict-word-list-win-gtk.h dict-util.c dict-util.h dict-word-list-view-gtk.c dict-word-list-view-gtk.h dict-word.c dict-word.h dict-dict.c dict-dict.h dict-cclass-dialog.c dict-cclass-dialog.h

@@ -167,11 +167,13 @@ AC_ARG_WITH(gtk2,
         use_gtk2="no"
       ;;
       yes|*)
-        PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.4.0, use_gtk2="yes",use_gtk2="no")
+        PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.2.0, use_gtk2="yes",use_gtk2="no")
+        PKG_CHECK_MODULES(GTK2_4, gtk+-2.0 >= 2.4.0, use_gtk2.4="yes",use_gtk2.4="no")
       ;;
     esac
   ],
-  [ PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.4.0, use_gtk2="yes",use_gtk2="no") ])
+  [ PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.2.0, use_gtk2="yes",use_gtk2="no")
+    PKG_CHECK_MODULES(GTK2_4, gtk+-2.0 >= 2.4.0, use_gtk2.4="yes",use_gtk2.4="no") ])
 
 AC_ARG_WITH(gnome2,
   AC_HELP_STRING([--without-gnome2],
@@ -305,6 +307,7 @@ AM_CONDITIONAL(M17NLIB, test x$use_m17nlib = xyes)
 AM_CONDITIONAL(SCIM, test x$use_scim = xyes)
 AM_CONDITIONAL(CANNA, test x$use_canna = xyes)
 AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
+AM_CONDITIONAL(GTK2_4, test x$use_gtk2.4 = xyes)
 AM_CONDITIONAL(GNOME2, test x$use_gnome2 = xyes)
 AM_CONDITIONAL(APPLET, test x$use_applet = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
