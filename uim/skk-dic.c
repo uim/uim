@@ -1585,6 +1585,10 @@ quote_word(const char *word)
 	    str = realloc(str, len + strlen("\\073") + 1);
 	    strcat(str, "\\073");
 	    break;
+    case '"':
+	    str = realloc(str, len + strlen("\\\""));
+	    strcat(str, "\\\"");
+	    break;
     default:
 	    str = realloc(str, len + 2);
 	    str[len] = *tmp;
@@ -1617,6 +1621,7 @@ sanitize_word(const char *arg)
     case '\r':
     case '\\':
     case ';':
+    case '"':
       return quote_word(arg);
     case ' ':
       break;
