@@ -134,11 +134,13 @@ create_pref_treeview(void)
   
   primary_groups = uim_custom_primary_groups();
   for (grp = primary_groups; *grp; grp++) {
+    struct uim_custom_group *group = uim_custom_group_get(*grp);
     gtk_tree_store_append (tree_store, &iter, NULL/* parent iter */);
     gtk_tree_store_set (tree_store, &iter,
-			GROUP_COLUMN, *grp,
+			GROUP_COLUMN, group->label,
 			GROUP_WIDGET, create_group_widget(*grp),
 			-1);
+    uim_custom_group_free(group);
   }
   gtk_tree_view_set_model (GTK_TREE_VIEW(pref_tree_view), GTK_TREE_MODEL(tree_store));
   g_object_unref (tree_store);
