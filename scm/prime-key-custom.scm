@@ -72,37 +72,37 @@
 (define-custom 'prime-register-key '("<Control>w")
                '(prime-keys1)
 	       '(key)
-	       (_ "[PRIME] prime-register-key")
+	       (_ "[PRIME] regist a word")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-typing-mode-hiragana-key '("F6")
                '(prime-keys1 mode-transition)
 	       '(key)
-	       (_ "[PRIME] prime-typing-mode-hiragana-key")
+	       (_ "[PRIME] hiragana typing mode")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-typing-mode-katakana-key '("F7")
                '(prime-keys1 mode-transition)
 	       '(key)
-	       (_ "[PRIME] prime-typing-mode-katakana-key")
+	       (_ "[PRIME] katakana typing mode")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-typing-mode-hankana-key '("F8")
                '(prime-keys1 mode-transition)
 	       '(key)
-	       (_ "[PRIME] prime-typing-mode-hankana-key")
+	       (_ "[PRIME] halfwidth katakana typing mode")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-typing-mode-wideascii-key '("F9")
                '(prime-keys1 mode-transition)
 	       '(key)
-	       (_ "[PRIME] prime-typing-mode-wideascii-key")
+	       (_ "[PRIME] wide ascii typing mode")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-typing-mode-ascii-key '("F10")
                '(prime-keys1 mode-transition)
 	       '(key)
-	       (_ "[PRIME] prime-typing-mode-ascii-key")
+	       (_ "[PRIME] ascii typing mode")
 	       (_ "long description will be here"))
 
 ;;

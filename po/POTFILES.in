@@ -19,6 +19,8 @@ helper/dict-dict.h
 helper/dict-cclass-dialog.c
 helper/dict-cclass-dialog.h
 helper/pref-gtk.c
+helper/pref-gtk-custom-widgets.c
+helper/pref-gtk-custom-widgets.h
 helper/toolbar-common-gtk.c
 helper/input-pad-ja.c
 qt/candwin-qt.cpp
