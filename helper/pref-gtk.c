@@ -102,7 +102,7 @@ pref_tree_selection_changed(GtkTreeSelection *selection,
 static void
 delete_event_cb(GtkWidget *widget, gpointer data)
 {
-  gtk_main_quit ();
+  gtk_main_quit();
 }
 
 static GtkWidget *
@@ -222,7 +222,7 @@ add_custom_type_pathname(GtkWidget *vbox, const struct uim_custom *custom)
   hbox = gtk_hbox_new(FALSE, 8);
  
   label = gtk_label_new(custom->label); 
-  gtk_label_set_justify(label,GTK_JUSTIFY_LEFT);
+  gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
   gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
 
   entry = gtk_entry_new();
@@ -334,7 +334,7 @@ create_setting_button_box(const char *group_name)
   /* OK button */
   button = gtk_button_new_from_stock(GTK_STOCK_OK);
   /*  g_signal_connect(G_OBJECT(button), "clicked",
-		   G_CALLBACK(change_input_method), radio0);*/
+      G_CALLBACK(ok_button_clicked), group_name);*/
   gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 8);
   return setting_button_box;
 }
@@ -360,7 +360,7 @@ create_group_widget(const char *group_name)
   label_text  = g_markup_printf_escaped("<span size=\"xx-large\">%s</span>",
 					group->label);
 					
-  gtk_label_set_markup(group_label, label_text);
+  gtk_label_set_markup(GTK_LABEL(group_label), label_text);
   g_free(label_text);
   gtk_box_pack_start (GTK_BOX(vbox), group_label, FALSE, TRUE, 8);
 
