@@ -56,18 +56,18 @@ AC_SUBST(M17NLIB_LIBS)
 
 AC_ARG_WITH(scim,
   AC_HELP_STRING([--with-scim],
-                 [build against SCIM (experimental)]),
+                 [build against SCIM (too experimental)]),
   [
     case $with_scim in
       no)
         use_scim="no"
       ;;
       yes|*)
-        PKG_CHECK_MODULES(SCIM, scim >= 1.0.0, use_scim="yes",use_scim="no")
+        PKG_CHECK_MODULES(SCIM, scim >= 1.2.0, use_scim="yes",use_scim="no")
       ;;
     esac
   ],
-  [ PKG_CHECK_MODULES(SCIM, scim >= 1.0.0, use_scim="yes",use_scim="no") ])
+  [ PKG_CHECK_MODULES(SCIM, scim >= 1.2.0, use_scim="yes",use_scim="no") ])
 
 # ***********************
 # *** Tests for Anthy ***

@@ -26,12 +26,12 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  latin.scm \
  m17nlib.scm \
  spellcheck.scm spellcheck-custom.scm \
- zaurus.scm
+ zaurus.scm \
+ scim.scm
 
 if COMPAT_TABLE
 SCM_FILES += hk.scm
 endif
-
 
 module_names = "pyload"
 
@@ -58,7 +58,7 @@ if M17NLIB
 endif
 
 if SCIM
-#  module_names += "scim"
+  module_names += "scim"
 endif
 
 
