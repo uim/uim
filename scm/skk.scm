@@ -1501,7 +1501,7 @@
        (if (skk-cancel-key? key key-state)
 	   (begin
 	     (rk-flush rkc)
-	     (skk-context-set-state! sc 'skk-state-kanji)
+	     (skk-back-to-kanji-state sc)
 	     #f)
 	   #t)
        (if (skk-backspace-key? key key-state)
