@@ -106,3 +106,70 @@
 ;  '(boolean)
 ;  "Use numeral key to select candidate directly"
 ;  "long description will be here.")
+
+
+;;
+;; toolbar
+;;
+
+;; Can't be unified with action definitions in prime.scm until uim
+;; 0.4.6.
+(define prime-input-mode-indication-alist
+  (list
+   (list 'action_prime_mode_latin
+	 'figure_prime_mode_latin
+	 "P"
+	 (N_ "Direct input")
+	 (N_ "PRIME off"))
+   (list 'action_prime_mode_hiragana
+	 'figure_prime_mode_hiragana
+	 "คื"
+	 (N_ "Japanese")
+	 (N_ "PRIME on"))
+   (list 'action_prime_mode_wide_latin
+	 'figure_prime_mode_wide_latin
+	 "ฃะ"
+	 (N_ "Fullwidth Alphanumeric")
+	 (N_ "Fullwidth Alphanumeric input mode"))))
+
+(define prime-widgets '(widget_prime_input_mode))
+
+;;; Input mode
+
+(define-custom 'default-widget_prime_input_mode 'action_prime_mode_latin
+  '(prime toolbar)
+  (cons 'choice
+	(map indication-alist-entry-extract-choice
+	     prime-input-mode-indication-alist))
+  (_ "Default input mode")
+  (_ "long description will be here."))
+
+(define-custom 'prime-input-mode-actions
+               (map car prime-input-mode-indication-alist)
+  '(prime toolbar)
+  (cons 'ordered-list
+	(map indication-alist-entry-extract-choice
+	     prime-input-mode-indication-alist))
+  (_ "Input mode menu items")
+  (_ "long description will be here."))
+
+;; value dependency
+(custom-add-hook 'prime-input-mode-actions
+		 'custom-set-hooks
+		 (lambda ()
+		   (custom-choice-range-reflect-olist-val
+		    'default-widget_prime_input_mode
+		    'prime-input-mode-actions
+		    prime-input-mode-indication-alist)))
+
+;; dynamic reconfiguration
+(custom-add-hook 'default-widget_prime_input_mode
+		 'custom-set-hooks
+		 (lambda ()
+		   prime-configure-widgets))
+
+(custom-add-hook 'prime-input-mode-actions
+		 'custom-set-hooks
+		 (lambda ()
+		   prime-configure-widgets))
+

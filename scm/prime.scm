@@ -309,23 +309,6 @@
 
 ;;;; ------------------------------------------------------------
 
-;; widgets and actions
-
-;; widgets
-(define prime-widgets '(widget_prime_input_mode))
-
-;; default activity for each widgets
-(define default-widget_prime_input_mode 'action_prime_mode_latin)
-
-;; actions of widget_prime_input_mode
-(define prime-input-mode-actions
-  '(action_prime_mode_latin
-    action_prime_mode_hiragana
-    action_prime_mode_wide_latin))
-
-
-;;;; ------------------------------------------------------------
-
 ;;; implementations
 
 (define prime-mode-latin      0)
