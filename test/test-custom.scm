@@ -352,21 +352,21 @@
 		 (uim '(custom-list-primary-groups))))
   ("test custom-collect-by-group"
    ;; defined order have to be kept
-   (assert-equal '(spellcheck-always-show-window? spellcheck-preedit-immediate-commit? spellcheck-candidate-op-count spellcheck-use-candidate-window? generic-nr-candidate-max generic-candidate-op-count generic-use-candidate-window? prime-mask-pending-preedit? prime-preedit-immediate-commit? prime-always-show-window? prime-nr-candidate-max skk-style skk-commit-newline-explicitly? skk-egg-like-newline? skk-use-recursive-learning? skk-nr-candidate-max skk-candidate-op-count skk-use-candidate-window? skk-uim-personal-dic-filename skk-personal-dic-filename skk-dic-file-name canna-server-name custom-preserved-canna-server-name custom-activate-canna-server-name? canna-segment-separator canna-show-segment-separator? canna-nr-candidate-max canna-candidate-op-count canna-use-candidate-window? anthy-segment-separator anthy-show-segment-separator? anthy-nr-candidate-max anthy-candidate-op-count anthy-use-candidate-window? candidate-window-position enable-im-switch custom-preserved-default-im-name custom-activate-default-im-name? uim-color)
+   (assert-equal '(uim-color custom-activate-default-im-name? custom-preserved-default-im-name enable-im-switch candidate-window-position anthy-use-candidate-window? anthy-candidate-op-count anthy-nr-candidate-max anthy-show-segment-separator? anthy-segment-separator canna-use-candidate-window? canna-candidate-op-count canna-nr-candidate-max canna-show-segment-separator? canna-segment-separator custom-activate-canna-server-name? custom-preserved-canna-server-name canna-server-name skk-dic-file-name skk-personal-dic-filename skk-uim-personal-dic-filename skk-use-candidate-window? skk-candidate-op-count skk-nr-candidate-max skk-use-recursive-learning? skk-egg-like-newline? skk-commit-newline-explicitly? skk-style prime-nr-candidate-max prime-always-show-window? prime-preedit-immediate-commit? prime-mask-pending-preedit? generic-use-candidate-window? generic-candidate-op-count generic-nr-candidate-max spellcheck-use-candidate-window? spellcheck-candidate-op-count spellcheck-preedit-immediate-commit? spellcheck-always-show-window?)
 		 (uim '(custom-collect-by-group #f)))  ;; any group
-   (assert-equal '(candidate-window-position enable-im-switch custom-preserved-default-im-name custom-activate-default-im-name? uim-color)
+   (assert-equal '(uim-color custom-activate-default-im-name? custom-preserved-default-im-name enable-im-switch candidate-window-position)
 		 (uim '(custom-collect-by-group 'global)))
-   (assert-equal '(anthy-segment-separator anthy-show-segment-separator? anthy-nr-candidate-max anthy-candidate-op-count anthy-use-candidate-window?)
+   (assert-equal '(anthy-use-candidate-window? anthy-candidate-op-count anthy-nr-candidate-max anthy-show-segment-separator? anthy-segment-separator)
 		 (uim '(custom-collect-by-group 'anthy)))
-   (assert-equal '(canna-server-name custom-preserved-canna-server-name custom-activate-canna-server-name? canna-segment-separator canna-show-segment-separator? canna-nr-candidate-max canna-candidate-op-count canna-use-candidate-window?)
+   (assert-equal '(canna-use-candidate-window? canna-candidate-op-count canna-nr-candidate-max canna-show-segment-separator? canna-segment-separator custom-activate-canna-server-name? custom-preserved-canna-server-name canna-server-name)
 		 (uim '(custom-collect-by-group 'canna)))
-   (assert-equal '(skk-style skk-commit-newline-explicitly? skk-egg-like-newline? skk-use-recursive-learning? skk-nr-candidate-max skk-candidate-op-count skk-use-candidate-window? skk-uim-personal-dic-filename skk-personal-dic-filename skk-dic-file-name)
+   (assert-equal '(skk-dic-file-name skk-personal-dic-filename skk-uim-personal-dic-filename skk-use-candidate-window? skk-candidate-op-count skk-nr-candidate-max skk-use-recursive-learning? skk-egg-like-newline? skk-commit-newline-explicitly? skk-style)
 		 (uim '(custom-collect-by-group 'skk)))
-   (assert-equal '(prime-mask-pending-preedit? prime-preedit-immediate-commit? prime-always-show-window? prime-nr-candidate-max)
+   (assert-equal '(prime-nr-candidate-max prime-always-show-window? prime-preedit-immediate-commit? prime-mask-pending-preedit?)
 		 (uim '(custom-collect-by-group 'prime)))
-   (assert-equal '(generic-nr-candidate-max generic-candidate-op-count generic-use-candidate-window?)
+   (assert-equal '(generic-use-candidate-window? generic-candidate-op-count generic-nr-candidate-max)
 		 (uim '(custom-collect-by-group 'other-ims)))
-   (assert-equal '(spellcheck-always-show-window? spellcheck-preedit-immediate-commit? spellcheck-candidate-op-count spellcheck-use-candidate-window?)
+   (assert-equal '(spellcheck-use-candidate-window? spellcheck-candidate-op-count spellcheck-preedit-immediate-commit? spellcheck-always-show-window?)
 		 (uim '(custom-collect-by-group 'spellcheck)))))
 
 (define-uim-test-case "testcase custom custom-group methods"

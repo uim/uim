@@ -177,11 +177,12 @@
 ;; TODO: support "AND" expression
 (define custom-collect-by-group
   (lambda (group)
-    (filter-map (lambda (crec)
-		  (and (or (not group)
-			   (memq group (custom-rec-groups crec)))
-		       (custom-rec-sym crec)))
-		custom-rec-alist)))
+    (reverse
+     (filter-map (lambda (crec)
+		   (and (or (not group)
+			    (memq group (custom-rec-groups crec)))
+			(custom-rec-sym crec)))
+		 custom-rec-alist))))
 
 (define custom-add-hook
   (lambda (custom-sym hook-sym proc)
