@@ -45,10 +45,8 @@
 #define NEED_EVENTS	// for declaration of xEvent
 #include <X11/Xproto.h>
 
-#ifndef __GNUC__
-# ifdef HAVE_ALLOCA_H
-#  include <alloca.h>
-# endif
+#ifdef HAVE_ALLOCA_H
+# include <alloca.h>
 #endif
 
 static std::map<int, XimIM *> g_ims;

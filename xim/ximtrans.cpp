@@ -42,10 +42,8 @@
 #include "xim.h"
 #include "util.h"
 
-#ifndef __GNUC__
-# ifdef HAVE_ALLOCA_H
-#  include <alloca.h>
-# endif
+#ifdef HAVE_ALLOCA_H
+# include <alloca.h>
 #endif
 
 const char *xim_packet_name[] = {

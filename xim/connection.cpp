@@ -32,6 +32,10 @@
 
 // connection management
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,10 +43,8 @@
 #include <list>
 #include <map>
 #include <X11/Xatom.h>
-#ifndef __GNUC__
-# ifdef HAVE_ALLOCA_H
-#  include <alloca.h>
-# endif
+#ifdef HAVE_ALLOCA_H
+# include <alloca.h>
 #endif
 
 #define BUF_SIZE 1024
