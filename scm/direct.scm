@@ -129,7 +129,7 @@
  "*"  ;; wildcard language. see i18n.scm
  "UTF-8"
  (N_ "Direct")
- (N_ "Direct input method mainly used for latin languages")
+ (N_ "Direct input method mainly used for Latin and German languages")
  #f
  direct-init-handler
  direct-release-handler

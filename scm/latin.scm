@@ -574,6 +574,8 @@
  'latin
  ""
  "UTF-8"
- (N_ "euro")
- (N_ "euro")
+ ;; I think that the name "euro" is not appropriate since it
+ ;; represents nation or geographic region.  -- YamaKen 2005-01-29
+ (N_ "Latin characters")
+ (N_ "Latin characters mainly used for Latin and German languages")
  latin-init-handler)
