@@ -108,6 +108,9 @@ uim_helper_send_message(int fd, const char *message)
     - Write all data even if uim_helper_fd() has returned 0
       (i.e. retry until written all data). (uim_helper_fd() == 0) only
       indicates system is busy.
+
+    I think that we should remove uim_helper_fd() for
+    writing. Blocking write is sufficient for uim.
     
     -- YamaKen 2005-02-07
   */
