@@ -530,6 +530,7 @@ add_line_to_cache_head(struct dic_info *di, struct skk_line *sl)
   di->head.next = sl;
 
   di->cache_len++;
+  di->cache_modified = 1;
 }
 
 static void
@@ -547,6 +548,8 @@ move_line_to_cache_head(struct dic_info *di, struct skk_line *sl)
   prev->next = sl->next;
   sl->next = di->head.next;
   di->head.next = sl;
+
+  di->cache_modified = 1;
 }
 
 static void
@@ -566,6 +569,7 @@ add_line_to_cache_last(struct dic_info *di, struct skk_line *sl)
   sl->next = NULL;
 
   di->cache_len++;
+  di->cache_modified = 1;
 }
 
 static struct skk_line *
@@ -1479,7 +1483,6 @@ skk_commit_candidate(LISP head_, LISP okuri_head_,
 
   ca->line->need_save = 1;
   move_line_to_cache_head(skk_dic, ca->line);
-  skk_dic->cache_modified = 1;
 
   return NIL;
 }
@@ -1891,7 +1894,7 @@ update_personal_dictionary_cache(char *fn)
   /* revert sequence of the cache */
   if (cache_array[0]) {
     sl = skk_dic->head.next = cache_array[0];
-    for (i = 0; i < skk_dic->cache_len - 2; i++) {
+    for (i = 0; i < skk_dic->cache_len - 1; i++) {
       sl->next = cache_array[i + 1];
       sl = sl->next;
     }
@@ -1900,7 +1903,11 @@ update_personal_dictionary_cache(char *fn)
 
   /* add differential lines at the top of the cache */
   if (diff != NULL) {
-    diff->next = skk_dic->head.next;
+    sl = diff;
+    while (sl->next) {
+      sl = sl->next;
+    }
+    sl->next = skk_dic->head.next;
     skk_dic->head.next = diff;
     skk_dic->cache_len += diff_len;
   }
