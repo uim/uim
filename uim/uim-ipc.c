@@ -191,7 +191,7 @@ uim_ipc_open_command_with_option(int old_pid, FILE **read_fp,
       p = (char *)option;
       for (ap = &argv[1]; (*ap = strsep(&p, " ")) != NULL;) {
 	if (**ap != '\0')
-	  if (++ap >= &argv[10])
+	  if (++ap >= &argv[9])
 	    break;
       }
       *ap = NULL;
