@@ -494,13 +494,16 @@
   (lambda (sym)
     (assq sym custom-rec-alist)))
 
-;; TODO: rewrite test for overwriting
+;; TODO: rewrite test for overwriting and 'main' subgroup
 ;; API
 (define define-custom
   (lambda (sym default groups type label desc)
-    (let ((crec (custom-rec-new sym default groups type label desc))
-	  (primary-grp (car groups))
-	  (subgrps (cons 'main (cdr groups))))
+    (let* ((primary-grp (car groups))
+	   (subgrps (if (null? (cdr groups))
+			'(main)
+			(cdr groups)))
+	   (modified-groups (cons primary-grp subgrps))
+	   (crec (custom-rec-new sym default modified-groups type label desc)))
       (set! custom-rec-alist (alist-replace crec custom-rec-alist))
       (custom-call-hook-procs primary-grp custom-group-update-hooks)
       (if (not (symbol-bound? sym))
@@ -741,7 +744,7 @@
     (custom-call-all-hook-procs custom-set-hooks)))
 
 (define-custom-group 'main
-		     (_ "")
+		     (_ "-")
 		     (_ "Main settings of this group"))
 
 (define-custom-group 'hidden

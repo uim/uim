@@ -43,7 +43,7 @@
 #include "uim/uim-custom.h"
 #include "uim/gettext.h"
 
-#define USE_SUB_GROUP 0
+#define USE_SUB_GROUP 1
 
 static GtkWidget *pref_window = NULL;
 static GtkWidget *pref_tree_view = NULL;
@@ -404,12 +404,21 @@ static void create_sub_group_widgets(GtkWidget *parent_widget, const char *paren
 	  continue;
 	}
 
-	frame = gtk_frame_new(sgrp->label);
-	gtk_frame_set_label_align(GTK_FRAME(frame), 0.02, 0.5);
-	gtk_box_pack_start(GTK_BOX(parent_widget), frame, FALSE, FALSE, 0);
-
 	vbox = gtk_vbox_new(FALSE, 8);
-	gtk_container_add(GTK_CONTAINER(frame), vbox);
+	if (strcmp(*sgrp_sym, "main")) {
+	  frame = gtk_frame_new(sgrp->label);
+	  gtk_frame_set_label_align(GTK_FRAME(frame), 0.02, 0.5);
+	  gtk_box_pack_start(GTK_BOX(parent_widget), frame, FALSE, FALSE, 0);
+
+	  gtk_container_add(GTK_CONTAINER(frame), vbox);
+	} else {
+
+	  /*
+	   * Removing frame for 'main' subgroup. If you feel it
+	   * strange, Replace it as you favor.  -- YamaKen 2005-02-06
+	   */
+	  gtk_box_pack_start(GTK_BOX(parent_widget), vbox, FALSE, FALSE, 0);
+	}
 
 	gtk_container_set_border_width(GTK_CONTAINER(vbox), 6);
 
