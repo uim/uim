@@ -199,23 +199,18 @@ candidates_done_cb(MInputContext *ic, MSymbol command)
   fprintf(stderr,"candidate done\n");
 }
 
-static MPlist *
-register_callbacks(MPlist *callback_list)
+static void
+register_callbacks(void)
 {
-  if(!callback_list)
-    callback_list = mplist();
-
-  mplist_add(callback_list, Minput_preedit_start, (void *)preedit_start_cb);
-  mplist_add(callback_list, Minput_preedit_draw,  (void *)preedit_draw_cb);
-  mplist_add(callback_list, Minput_preedit_done,  (void *)preedit_done_cb);
-  mplist_add(callback_list, Minput_status_start,  (void *)status_start_cb);
-  mplist_add(callback_list, Minput_status_draw,   (void *)status_draw_cb);
-  mplist_add(callback_list, Minput_status_done,   (void *)status_done_cb);
-  mplist_add(callback_list, Minput_candidates_start, (void *)candidates_start_cb);
-  mplist_add(callback_list, Minput_candidates_draw,  (void *)candidates_draw_cb);
-  mplist_add(callback_list, Minput_candidates_done,  (void *)candidates_done_cb);
-
-  return callback_list;
+  mplist_add(minput_default_driver.callback_list, Minput_preedit_start, (void *)preedit_start_cb);
+  mplist_add(minput_default_driver.callback_list, Minput_preedit_draw,  (void *)preedit_draw_cb);
+  mplist_add(minput_default_driver.callback_list, Minput_preedit_done,  (void *)preedit_done_cb);
+  mplist_add(minput_default_driver.callback_list, Minput_status_start,  (void *)status_start_cb);
+  mplist_add(minput_default_driver.callback_list, Minput_status_draw,   (void *)status_draw_cb);
+  mplist_add(minput_default_driver.callback_list, Minput_status_done,   (void *)status_done_cb);
+  mplist_add(minput_default_driver.callback_list, Minput_candidates_start, (void *)candidates_start_cb);
+  mplist_add(minput_default_driver.callback_list, Minput_candidates_draw,  (void *)candidates_draw_cb);
+  mplist_add(minput_default_driver.callback_list, Minput_candidates_done,  (void *)candidates_done_cb);
 }
 
 static uim_lisp
@@ -244,10 +239,10 @@ init_m17nlib()
 	pushback_input_method(im, msymbol_name(lang),
 			      msymbol_name(im->name));
 	
-	im->driver.callback_list = register_callbacks(im->driver.callback_list);
       }
     }
   }
+  register_callbacks();
   m17n_object_unref(imlist);
   converter = mconv_buffer_converter(utf8, NULL, 0);
   if (!converter) {
