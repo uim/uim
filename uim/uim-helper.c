@@ -129,10 +129,19 @@ uim_helper_send_message(int fd, const char *message)
   while (out_len > 0) {
     if ((res = write(fd, bufp, out_len)) < 0) {
       if (errno == EAGAIN || errno == EINTR) {
-	//while (uim_helper_fd_writable(fd) == 0) {
-	  usleep((rand() % getpid()) * 10);
-	//}
-	continue;
+	fd_set fds;
+	struct timeval tv;
+	int rc;
+
+	FD_ZERO(&fds);
+	FD_SET(fd, &fds);
+	tv.tv_sec = 0;
+	tv.tv_usec = 100000;
+	rc = select(fd + 1, NULL, &fds, NULL, &tv);
+	if (rc > 0 && FD_ISSET(fd, &fds)) {
+	  continue;
+	}
+	fprintf(stderr, "uim_helper_send_message: write failed\n");
       }
       break;
     }
