@@ -645,12 +645,12 @@ im_uim_finalize(GObject *obj)
 
   if (uic->menu) {
     gtk_widget_destroy(uic->menu);
+    uic->menu = NULL;
   }
   if (uic->cwin) {
     gtk_widget_destroy(GTK_WIDGET(uic->cwin));
     uic->cwin = NULL;
   }
-  uic->menu = NULL;
 
   uim_release_context(uic->uc);
 
@@ -838,10 +838,12 @@ cand_deactivate_cb(void *ptr)
   uic->cwin_is_active = FALSE;
 
   if (uic->cwin) {
-    GdkWindow *toplevel;
-
     gtk_widget_hide(GTK_WIDGET(uic->cwin));
     uim_cand_win_gtk_clear_candidates(uic->cwin);
+  }
+  if (uic->win) {
+    GdkWindow *toplevel;
+
     toplevel = gdk_window_get_toplevel(uic->win);
     gdk_window_remove_filter(toplevel, toplevel_window_candidate_cb, uic);
   }
