@@ -567,6 +567,7 @@ uim_candidate
 uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
 {
   uim_candidate cand = malloc(sizeof(*cand));
+  memset(cand, 0, sizeof(*cand));
   UIM_EVAL_FSTRING3(uc, "(get-candidate %d %d %d)",
 		    uc->id, index, accel_enumeration_hint);
 
