@@ -201,9 +201,9 @@ protected:
     // for Compose
     char *get_compose_filename();
     char *TransFileName(char *name);
-    void XimParseStringFile(FILE *fp);
+    void ParseComposeStringFile(FILE *fp);
     void FreeComposeTree(DefTree *top);
-    int parseline(FILE *fp, char *tokenbuf);
+    int parse_compose_line(FILE *fp, char *tokenbuf);
     int get_mb_string(char *buf, KeySym ks);
     DefTree *mTreeTop;
 };

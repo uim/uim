@@ -434,7 +434,7 @@ XimIM::get_mb_string(char *buf, KeySym ks)
 #define SEQUENCE_MAX    10
 
 int
-XimIM::parseline(FILE *fp, char* tokenbuf)
+XimIM::parse_compose_line(FILE *fp, char* tokenbuf)
 {
     int token;
     unsigned modifier_mask;
@@ -485,7 +485,7 @@ XimIM::parseline(FILE *fp, char* tokenbuf)
 	    free(filename);
 	    if (infp == NULL)
 		goto error;
-	    XimParseStringFile(infp);
+	    ParseComposeStringFile(infp);
 	    return (0);
 	} else if ((token == KEY) && (strcmp("None", tokenbuf) == 0)) {
 	    modifier = 0;
@@ -610,7 +610,7 @@ XimIM::parseline(FILE *fp, char* tokenbuf)
 
     l = mb_string_to_utf8(local_utf8_buf, rhs_string_mb, LOCAL_UTF8_BUFSIZE - 1, encoding);
     if (l == LOCAL_UTF8_BUFSIZE - 1) {
-	local_wc_buf[l] = '\0';
+	local_utf8_buf[l] = '\0';
     }
     if ((rhs_string_utf8 = (char *)malloc(l + 1)) == NULL) {
 	free(rhs_string_wc);
@@ -667,7 +667,7 @@ error:
 }
 
 void
-XimIM::XimParseStringFile(FILE *fp)
+XimIM::ParseComposeStringFile(FILE *fp)
 {
     char tb[8192];
     char* tbp;
@@ -691,7 +691,7 @@ XimIM::XimParseStringFile(FILE *fp)
 	    tbp = (char *)malloc(size);
 
 	if (tbp != NULL) {
-	    while (parseline(fp, tbp) >= 0) {
+	    while (parse_compose_line(fp, tbp) >= 0) {
 	    }
 	    if (tbp != tb)
 		free (tbp);
@@ -754,7 +754,7 @@ void XimIM::create_compose_tree()
 	setlocale(LC_CTYPE, locale);
     }
 
-    XimParseStringFile(fp);
+    ParseComposeStringFile(fp);
     fclose(fp);
 
     setlocale(LC_CTYPE, orig_locale);
@@ -1195,18 +1195,21 @@ mb_string_to_utf8(char *utf8, const char *str, int len, const char *enc) {
     cd = iconv_open("UTF-8", enc);
     if (cd == (iconv_t)-1) {
 	perror("error in iconv_open");
-	return NULL;
+	utf8[0] = '\0';
+	return 0;
     }
 
     inbuf = str;
     if (!inbuf) {
 	iconv_close(cd);
-	return NULL;
+	utf8[0] = '\0';
+	return 0;
     }
     outbuf = (char *)malloc(outbufsize);
     if (!outbuf) {
 	iconv_close(cd);
-	return NULL;
+	utf8[0] = '\0';
+	return 0;
     }
     inchar = (char *)inbuf;
     outchar = outbuf;
@@ -1218,7 +1221,8 @@ mb_string_to_utf8(char *utf8, const char *str, int len, const char *enc) {
 	//perror("error in iconv");
 	iconv_close(cd);
 	free(outbuf);
-	return NULL;
+	utf8[0] = '\0';
+	return 0;
     }
     iconv_close(cd);
 
