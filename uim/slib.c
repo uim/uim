@@ -1604,7 +1604,7 @@ Quotient (LISP x, LISP y)
       if NINTNUMP
 	(y) my_err ("wta(2nd) to quotient", y);
       if (INTNM(y) == 0)
-        return (intcons (0)); /* divided by 0 actually */
+	return (my_err ("divided by 0 in quotient", y));
       else
         return (intcons (INTNM (x) / INTNM (y)));
     }
@@ -1623,7 +1623,7 @@ Remainder (LISP x, LISP y)
       if NINTNUMP
 	(y) my_err ("wta(2nd) to remainder", y);
       if (INTNM(y) == 0)
-        return (intcons (INTNM (x))); /* divided by 0 actually */
+	return (my_err ("dividev by 0 in remainder", y));
       else
         return (intcons (INTNM (x) % INTNM (y)));
     }
