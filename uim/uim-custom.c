@@ -66,7 +66,6 @@ static char *uim_custom_desc(const char *custom_sym);
 static struct uim_custom_choice *uim_custom_choice_get(const char *custom_sym, const char *choice_sym);
 static void uim_custom_choice_free(struct uim_custom_choice *custom_choice);
 static struct uim_custom_choice **uim_custom_choice_item_list(const char *custom_sym);
-static void uim_custom_choice_list_free(struct uim_custom_choice **list);
 static union uim_custom_value *uim_custom_value_internal(const char *custom_sym, const char *getter_proc);
 
 static union uim_custom_value *uim_custom_value(const char *custom_sym);
@@ -213,7 +212,7 @@ uim_custom_choice_item_list(const char *custom_sym)
   return custom_choice_list;
 }
 
-static void
+void
 uim_custom_choice_list_free(struct uim_custom_choice **list)
 {
   uim_scm_c_list_free((void **)list,

@@ -48,7 +48,13 @@ enum UCustomType {
   UCustom_Str,
   UCustom_Pathname,
   UCustom_Choice,
+  UCustom_OrderedList,
   UCustom_Key
+};
+
+enum UCustomKeyType {
+  UCustomKey_Regular,   /* "<Control>j" */
+  UCustomKey_Reference  /* "generic-cancel-key" */
 };
 
 union uim_custom_value {
@@ -57,11 +63,19 @@ union uim_custom_value {
   char *as_str;
   char *as_pathname;
   struct uim_custom_choice *as_choice;
-  /* char *as_key; */
+  struct uim_custom_choice **as_olist;
+  struct uim_custom_key **as_key;
 };
 
 struct uim_custom_choice {
   char *symbol;
+  char *label;
+  char *desc;
+};
+
+struct uim_custom_key {
+  int type;  /* UCustomKeyType */
+  char *literal;
   char *label;
   char *desc;
 };
@@ -78,6 +92,10 @@ union uim_custom_range {
   struct {
     struct uim_custom_choice **valid_items;
   } as_choice;
+
+  struct {
+    struct uim_custom_choice **valid_items;  /* contains all possible items */
+  } as_olist;
 };
 
 struct uim_custom {
@@ -133,6 +151,19 @@ char **uim_custom_primary_groups(void);
 char **uim_custom_group_subgroups(const char *group_sym);
 
 void uim_custom_symbol_list_free(char **symbol_list);
+
+/* custom choice (for ordered list) */
+struct uim_custom_choice *uim_custom_choice_new(const char *symbol,
+						const char *label,
+						const char *desc);
+void uim_custom_choice_list_free(struct uim_custom_choice **list);
+
+/* custom key */
+struct uim_custom_choice *uim_custom_key_new(int type,
+					     const char *literal,
+					     const char *label,
+					     const char *desc);
+void uim_custom_key_list_free(struct uim_custom_key **list);
 
 #ifdef __cplusplus
 }
