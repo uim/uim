@@ -690,4 +690,8 @@
     (for-each load (reverse custom-required-custom-files))
     (custom-call-all-hook-procs custom-set-hooks)))
 
+(define-custom-group 'main
+		     (_ "")
+		     (_ "Main settings of this group"))
+
 (custom-reload-customs)

@@ -756,6 +756,8 @@
 		 (uim '(custom-group-desc 'test-group3))))
 
   ("test custom-group-subgroups"
+   (assert-true  (uim-bool '(string? (custom-group-label 'main))))
+   (assert-true  (uim-bool '(string? (custom-group-desc 'main))))
    (assert-equal '(main test-group2 test-group3)
 		 (uim '(custom-group-subgroups 'test-group)))
    (assert-equal ()
