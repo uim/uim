@@ -44,11 +44,11 @@ AC_ARG_WITH(m17nlib,
                  [Don't build against m17nlib]),
   [
   if test "x$with_m17nlib" = "xyes"; then
-    PKG_CHECK_MODULES(M17NLIB, m17n-core >= 1.2.0, use_m17nlib="yes",use_m17nlib="no")
+    PKG_CHECK_MODULES(M17NLIB, m17n-shell >= 1.2.0, use_m17nlib="yes",use_m17nlib="no")
   fi
   ],
   [
-    PKG_CHECK_MODULES(M17NLIB, m17n-core >= 1.2.0, use_m17nlib="yes",use_m17nlib="no")
+    PKG_CHECK_MODULES(M17NLIB, m17n-shell >= 1.2.0, use_m17nlib="yes",use_m17nlib="no")
 ])
 
 AC_SUBST(M17NLIB_LIBS)
