@@ -84,9 +84,27 @@ AC_ARG_WITH(scim,
   ],
   [ PKG_CHECK_MODULES(SCIM, scim >= 1.0.0, use_scim="yes",use_scim="no") ])
 
-# *************************
+# ***********************
+# *** Tests for Anthy ***
+# ***********************
+AC_ARG_WITH(anthy,
+  AC_HELP_STRING([--without-anthy], [Don't build with libanthy]),
+  [
+    if test "x$with_anthy" = "xyes"; then
+      AC_CHECK_HEADERS([anthy/anthy.h], [use_anthy="yes"],
+                       [use_anthy="no"])
+    else
+      use_anthy="no"
+    fi
+  ],
+  [
+    AC_CHECK_HEADERS([anthy/anthy.h], [use_anthy="yes"],
+                     [use_anthy="no"])
+  ])
+
+# ***********************
 # *** Tests for Canna ***
-# *************************
+# ***********************
 AC_ARG_WITH(canna,
 	AS_HELP_STRING([--with-canna], [Build with libcanna]),
 	[
@@ -307,6 +325,7 @@ AC_ARG_ENABLE(dict,
 
 AM_CONDITIONAL(M17NLIB, test x$use_m17nlib = xyes)
 AM_CONDITIONAL(SCIM, test x$use_scim = xyes)
+AM_CONDITIONAL(ANTHY, test x$use_anthy = xyes)
 AM_CONDITIONAL(CANNA, test x$use_canna = xyes)
 AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
 AM_CONDITIONAL(GTK2_4, test x$use_gtk2_4 = xyes)
@@ -418,6 +437,7 @@ AC_OUTPUT
 AC_MSG_RESULT([
 Configure Result :
 
+   Anthy        : ${use_anthy}
    Canna        : ${use_canna}
    m17n-lib     : ${use_m17nlib}
    SCIM         : ${use_scim}

@@ -61,9 +61,21 @@ sys_libdir()
 }
 
 static LISP
+sys_pkglibdir()
+{
+  return uim_scm_make_str(PKGLIBDIR);
+}
+
+static LISP
 sys_datadir()
 {
   return uim_scm_make_str(DATADIR);
+}
+
+static LISP
+sys_pkgdatadir()
+{
+  return uim_scm_make_str(PKGDATADIR);
 }
 
 
@@ -442,7 +454,9 @@ void
 uim_init_util_subrs()
 {
   uim_scm_init_subr_0("sys-libdir", sys_libdir);
+  uim_scm_init_subr_0("sys-pkglibdir", sys_pkglibdir);
   uim_scm_init_subr_0("sys-datadir", sys_datadir);
+  uim_scm_init_subr_0("sys-pkgdatadir", sys_pkgdatadir);
   uim_scm_init_subr_2("string=?", string_equal);
   uim_scm_init_subr_2("nthcdr", nthcdr);
   uim_scm_init_subr_1("charcode->string", charcode2string);
