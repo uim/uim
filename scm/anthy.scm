@@ -64,169 +64,363 @@
 (define anthy-direct-convert-latin -5)
 (define anthy-direct-convert-wide-latin -6)
 
+(define anthy-hiragana-mode?
+  (lambda (ac)
+    (and (anthy-context-on ac)
+	 (= (anthy-context-kana-mode ac)
+	    anthy-type-hiragana))))
+
+(define anthy-katakana-mode?
+  (lambda (ac)
+    (and (anthy-context-on ac)
+	 (= (anthy-context-kana-mode ac)
+	    anthy-type-katakana))))
+
+(define anthy-hankana-mode?
+  (lambda (ac)
+    (and (anthy-context-on ac)
+	 (= (anthy-context-kana-mode ac)
+	    anthy-type-hankana))))
+
+(define anthy-direct-mode?
+  (lambda (ac)
+    (and (not (anthy-context-on ac))
+	 (not (anthy-context-wide-latin ac)))))
+
+(define anthy-wide-latin-mode?
+  (lambda (ac)
+    (and (not (anthy-context-on ac))
+	 (anthy-context-wide-latin ac))))
+
+(define anthy-input-state?
+  (lambda (ac)
+    (and (anthy-context-on ac)
+	 (not (anthy-context-converting ac)))))
+
+(define anthy-converting-state?
+  (lambda (ac)
+    (and (anthy-context-on ac)
+	 (anthy-context-converting ac))))
+
+(define anthy-std-indication-handler
+  (lambda (label short-desc)
+    (lambda (ac)
+      (indication-new 'figure_std_action
+		      ""
+		      label
+		      short-desc))))
+
+;; action.scm must be redesigned and simplified to handle non-widget
+;; actions flexibly. But now is not the time. So I perform it in a
+;; dirty way to defer the redesign. It will be carried out when the
+;; ustore framework has been introduced near uim 1.0 as the big API
+;; change. -- YamaKen 2005-03-04
+(define anthy-valid-actions ())
+
+(define anthy-activate-action!
+  (lambda (ac act-id)
+    (let* ((act (and (memq act-id anthy-valid-actions)
+		     (fetch-action act-id)))
+	   (handler (and act
+			 (action-handler act))))
+      (if handler
+	  (handler ac)
+	  (context-prop-activate-handler ac (symbol->string act-id))))))
+
+(define anthy-per-state-action-handler
+  (lambda (act-id)
+    (lambda (ac)
+      (cond
+       ((anthy-direct-mode? ac)
+	(anthy-direct-state-action ac act-id))
+       ((anthy-wide-latin-mode? ac)
+	(anthy-wide-latin-state-action ac act-id))
+       ((anthy-input-state? ac)
+	(if (anthy-has-preedit? ac)
+	    (anthy-input-state-with-preedit-action ac act-id)
+	    (anthy-input-state-no-preedit-action ac act-id)))
+       ((anthy-converting-state? ac)
+	(anthy-converting-state-action ac act-id))))))
+
+(define anthy-register-action
+  (lambda (id indication-handler activity-pred handler)
+    (if (not (memq id anthy-valid-actions))
+	(set! anthy-valid-actions (cons id anthy-valid-actions)))
+    (register-action id indication-handler activity-pred handler)))
+
+(define anthy-register-per-state-action
+  (lambda (id label short-desc)
+    (anthy-register-action id
+			   (anthy-std-indication-handler label short-desc)
+			   #f
+			   (anthy-per-state-action-handler id))))
+
+
+(anthy-register-per-state-action 'action_anthy_on
+				 "On"
+				 "On")
+
+(anthy-register-per-state-action 'action_anthy_toggle_kana
+				 "Toggle hiragana/katakana mode"
+				 "Toggle hiragana/katakana mode")
+
+(anthy-register-per-state-action 'action_anthy_begin_conv
+				 "Begin conversion"
+				 "Begin conversion")
+
+(anthy-register-per-state-action 'action_anthy_delete
+				 "Delete"
+				 "Delete")
+
+(anthy-register-per-state-action 'action_anthy_kill
+				 "Erase after cursor"
+				 "Erase after cursor")
+
+(anthy-register-per-state-action 'action_anthy_kill_backward
+				 "Erase before cursor"
+				 "Erase before cursor")
+
+(anthy-register-per-state-action 'action_anthy_go_left
+				 "Go left"
+				 "Go left")
+
+(anthy-register-per-state-action 'action_anthy_go_right
+				 "Go right"
+				 "Go right")
+
+(anthy-register-per-state-action 'action_anthy_commit_as_opposite_kana
+				 "Commit as opposite kana"
+				 "Commit as opposite kana")
+
+(anthy-register-per-state-action 'action_anthy_commit_as_hiragana
+				 "Commit as hiragana"
+				 "Commit as hiragana")
+
+(anthy-register-per-state-action 'action_anthy_commit_as_katakana
+				 "Commit as katakana"
+				 "Commit as katakana")
+
+(anthy-register-per-state-action 'action_anthy_commit_as_halfkana
+				 "Commit as halfwidth kana"
+				 "Commit as halfwidth katakana")
+
+(anthy-register-per-state-action 'action_anthy_commit_as_half_alnum
+				 "Commit as halfwidth alphanumeric"
+				 "Commit as halfwidth alphanumeric")
+
+(anthy-register-per-state-action 'action_anthy_commit_as_full_alnum
+				 "Commit as fullwidth alphanumeric"
+				 "Commit as fullwidth alphanumeric")
+
+(anthy-register-per-state-action 'action_anthy_prev_page
+				 "Previous page"
+				 "Previous page of candidate window")
+
+(anthy-register-per-state-action 'action_anthy_next_page
+				 "Next page"
+				 "Next page of candidate window")
+
+(anthy-register-per-state-action 'action_anthy_commit
+				 "Commit"
+				 "Commit")
+
+(anthy-register-per-state-action 'action_anthy_extend_segment
+				 "Extend segment"
+				 "Extend segment")
+
+(anthy-register-per-state-action 'action_anthy_shrink_segment
+				 "Shrink segment"
+				 "Shrink segment")
+
+(anthy-register-per-state-action 'action_anthy_next_segment
+				 "Next segment"
+				 "Next segment")
+
+(anthy-register-per-state-action 'action_anthy_prev_segment
+				 "Previous segment"
+				 "Previous segment")
+
+(anthy-register-per-state-action 'action_anthy_beginning_of_preedit
+				 "Beginning of preedit"
+				 "Beginning of preedit")
+
+(anthy-register-per-state-action 'action_anthy_end_of_preedit
+				 "End of preedit"
+				 "End of preedit")
+
+(anthy-register-per-state-action 'action_anthy_backspace
+				 "Backspace"
+				 "Backspace")
+
+(anthy-register-per-state-action 'action_anthy_next_candidate
+				 "Next candidate"
+				 "Next candidate")
+
+(anthy-register-per-state-action 'action_anthy_prev_candidate
+				 "Previous candidate"
+				 "Previous candidate")
+
+(anthy-register-per-state-action 'action_anthy_cancel_conv
+				 "Cancel conversion"
+				 "Cancel conversion")
+
+;; candidate selections: Don't use lkey_0 because it may reject KP_0
+;; (("0") (action_anthy_candidate_0))
+(define anthy-candidate-action-map-ruleset ())
+
+(define anthy-register-candidate-actions
+  (lambda ()
+    (set! anthy-candidate-action-map-ruleset ())
+    (for-each (lambda (idx)
+		(let* ((idx-str (digit->string idx))
+		       (idx-sym (string->symbol idx-str))
+		       (act-sym (symbolconc 'action_anthy_candidate_ idx-sym))
+		       (label (string-append "Select candidate " idx-str))
+		       (ind-handler (anthy-std-indication-handler label label))
+		       (act-handler
+			(lambda (ac)
+			  (and (anthy-converting-state? ac)
+			       (anthy-context-candidate-window ac)
+			       (anthy-set-relative-candidate idx)))))
+		  (anthy-register-action act-sym ind-handler #f act-handler)
+		  (set! anthy-candidate-action-map-ruleset
+			(cons (list (list idx-str)   ;; event-seq
+				    (list act-sym))  ;; action-seq
+			      anthy-candidate-action-map-ruleset))))
+	      (iota anthy-nr-candidate-max))))
+
+(anthy-register-candidate-actions)
+
 (define anthy-prepare-activation
   (lambda (ac)
     (anthy-flush ac)
     (anthy-update-preedit ac)))
 
-(register-action 'action_anthy_hiragana
+(anthy-register-action 'action_anthy_hiragana
 ;;		 (indication-alist-indicator 'action_anthy_hiragana
 ;;					     anthy-input-mode-indication-alist)
-		 (lambda (ac) ;; indication handler
-		   '(figure_ja_hiragana
-		     "あ"
-		     "ひらがな"
-		     "ひらがな入力モード"))
+		       (lambda (ac) ;; indication handler
+			 '(figure_ja_hiragana
+			   "あ"
+			   "ひらがな"
+			   "ひらがな入力モード"))
 
-		 (lambda (ac) ;; activity predicate
-		   (and (anthy-context-on ac)
-			(= (anthy-context-kana-mode ac)
-			   anthy-type-hiragana)))
+		       anthy-hiragana-mode? ;; activity predicate
 
-		 (lambda (ac) ;; action handler
-		   (anthy-prepare-activation ac)
-		   (anthy-context-set-on! ac #t)
-		   (anthy-switch-kana-mode! ac anthy-type-hiragana)))
+		       (lambda (ac) ;; action handler
+			 (anthy-prepare-activation ac)
+			 (anthy-context-set-on! ac #t)
+			 (anthy-switch-kana-mode! ac anthy-type-hiragana)))
 
-(register-action 'action_anthy_katakana
-;;		 (indication-alist-indicator 'action_anthy_katakana
-;;					     anthy-input-mode-indication-alist)
-		 (lambda (ac)
-		   '(figure_ja_katakana
-		     "ア"
-		     "カタカナ"
-		     "カタカナ入力モード"))
-		 (lambda (ac)
-		   (and (anthy-context-on ac)
-			(= (anthy-context-kana-mode ac)
-			   anthy-type-katakana)))
-		 (lambda (ac)
-		   (anthy-prepare-activation ac)
-		   (anthy-context-set-on! ac #t)
-		   (anthy-switch-kana-mode! ac anthy-type-katakana)))
+(anthy-register-action 'action_anthy_katakana
+		       (lambda (ac)
+			 '(figure_ja_katakana
+			   "ア"
+			   "カタカナ"
+			   "カタカナ入力モード"))
+		       anthy-katakana-mode?
+		       (lambda (ac)
+			 (anthy-prepare-activation ac)
+			 (anthy-context-set-on! ac #t)
+			 (anthy-switch-kana-mode! ac anthy-type-katakana)))
 
-(register-action 'action_anthy_hankana
-;;		 (indication-alist-indicator 'action_anthy_hankana
-;;					     anthy-input-mode-indication-alist)
-		 (lambda (ac)
-		   '(figure_ja_hankana
-		     "ｱ"
-		     "半角カタカナ"
-		     "半角カタカナ入力モード"))
-		 (lambda (ac)
-		   (and (anthy-context-on ac)
-			(= (anthy-context-kana-mode ac)
-			   anthy-type-hankana)))
-		 (lambda (ac)
-		   (anthy-prepare-activation ac)
-		   (anthy-context-set-on! ac #t)
-		   (anthy-switch-kana-mode! ac anthy-type-hankana)))
+(anthy-register-action 'action_anthy_hankana
+		       (lambda (ac)
+			 '(figure_ja_hankana
+			   "ｱ"
+			   "半角カタカナ"
+			   "半角カタカナ入力モード"))
+		       anthy-hankana-mode?
+		       (lambda (ac)
+			 (anthy-prepare-activation ac)
+			 (anthy-context-set-on! ac #t)
+			 (anthy-switch-kana-mode! ac anthy-type-hankana)))
 
-(register-action 'action_anthy_direct
-;;		 (indication-alist-indicator 'action_anthy_direct
-;;					     anthy-input-mode-indication-alist)
-		 (lambda (ac)
-		   '(figure_ja_direct
-		     "a"
-		     "直接入力"
-		     "直接(無変換)入力モード"))
-		 (lambda (ac)
-		   (and (not (anthy-context-on ac))
-			(not (anthy-context-wide-latin ac))))
-		 (lambda (ac)
-		   (anthy-prepare-activation ac)
-		   (anthy-context-set-on! ac #f)
-		   (anthy-context-set-wide-latin! ac #f)
-		   (anthy-switch-kana-mode! ac anthy-type-direct)))
+(anthy-register-action 'action_anthy_direct
+		       (lambda (ac)
+			 '(figure_ja_direct
+			   "a"
+			   "直接入力"
+			   "直接(無変換)入力モード"))
+		       anthy-direct-mode?
+		       (lambda (ac)
+			 (anthy-prepare-activation ac)
+			 (anthy-context-set-on! ac #f)
+			 (anthy-context-set-wide-latin! ac #f)
+			 (anthy-switch-kana-mode! ac anthy-type-direct)))
 
-(register-action 'action_anthy_zenkaku
-;;		 (indication-alist-indicator 'action_anthy_zenkaku
-;;					     anthy-input-mode-indication-alist)
-		 (lambda (ac)
-		   '(figure_ja_zenkaku
-		     "Ａ"
-		     "全角英数"
-		     "全角英数入力モード"))
-		 (lambda (ac)
-		   (and (not (anthy-context-on ac))
-			(anthy-context-wide-latin ac)))
-		 (lambda (ac)
-		   (anthy-prepare-activation ac)
-		   (anthy-context-set-on! ac #f)
-		   (anthy-context-set-wide-latin! ac #t)
-		   (anthy-switch-kana-mode! ac anthy-type-fullwidth)))
+(anthy-register-action 'action_anthy_zenkaku
+		       (lambda (ac)
+			 '(figure_ja_zenkaku
+			   "Ａ"
+			   "全角英数"
+			   "全角英数入力モード"))
+		       anthy-wide-latin-mode?
+		       (lambda (ac)
+			 (anthy-prepare-activation ac)
+			 (anthy-context-set-on! ac #f)
+			 (anthy-context-set-wide-latin! ac #t)
+			 (anthy-switch-kana-mode! ac anthy-type-fullwidth)))
 
-(register-action 'action_anthy_roma
-;;		 (indication-alist-indicator 'action_anthy_roma
-;;					     anthy-kana-input-method-indication-alist)
-		 (lambda (ac)
-		   '(figure_ja_roma
-		     "Ｒ"
-		     "ローマ字"
-		     "ローマ字入力モード"))
-		 (lambda (ac)
-		   (= (anthy-context-input-rule ac)
-		      anthy-input-rule-roma))
-		 (lambda (ac)
-		   (anthy-prepare-activation ac)
-		   (anthy-switch-ruletree! ac
-					   anthy-input-rule-roma
-					   (anthy-context-kana-mode ac))))
+(anthy-register-action 'action_anthy_roma
+		       (lambda (ac)
+			 '(figure_ja_roma
+			   "Ｒ"
+			   "ローマ字"
+			   "ローマ字入力モード"))
+		       (lambda (ac)
+			 (= (anthy-context-input-rule ac)
+			    anthy-input-rule-roma))
+		       (lambda (ac)
+			 (anthy-prepare-activation ac)
+			 (anthy-switch-ruletree! ac
+						 anthy-input-rule-roma
+						 (anthy-context-kana-mode ac))))
 
-(register-action 'action_anthy_kana
-;;		 (indication-alist-indicator 'action_anthy_kana
-;;					     anthy-kana-input-method-indication-alist)
-		 (lambda (ac)
-		   '(figure_ja_kana
-		     "か"
-		     "かな"
-		     "かな入力モード"))
-		 (lambda (ac)
-		   (= (anthy-context-input-rule ac)
-		      anthy-input-rule-kana))
-		 (lambda (ac)
-		   (anthy-prepare-activation ac)
-		   (anthy-switch-ruletree! ac
-					   anthy-input-rule-kana
-					   (anthy-context-kana-mode ac))
-		   ;;(define-key anthy-kana-toggle-key? "")
-		   ;;(define-key anthy-latin-key? generic-on-key?)
-		   ;;(define-key anthy-wide-latin-key? "")
-		   ))
+(anthy-register-action 'action_anthy_kana
+		       (lambda (ac)
+			 '(figure_ja_kana
+			   "か"
+			   "かな"
+			   "かな入力モード"))
+		       (lambda (ac)
+			 (= (anthy-context-input-rule ac)
+			    anthy-input-rule-kana))
+		       (lambda (ac)
+			 (anthy-prepare-activation ac)
+			 (anthy-switch-ruletree! ac
+						 anthy-input-rule-kana
+						 (anthy-context-kana-mode ac))))
 
-(register-action 'action_anthy_azik
-;;		 (indication-alist-indicator 'action_anthy_azik
-;;					     anthy-kana-input-method-indication-alist)
-		 (lambda (ac)
-		   '(figure_ja_azik
-		     "Ａ"
-		     "AZIK"
-		     "AZIK拡張ローマ字入力モード"))
-		 (lambda (ac)
-		   (= (anthy-context-input-rule ac)
-		      anthy-input-rule-azik))
-		 (lambda (ac)
-		   (anthy-prepare-activation ac)
-		   (anthy-switch-ruletree! ac
-					   anthy-input-rule-azik
-					   (anthy-context-kana-mode ac))))
+(anthy-register-action 'action_anthy_azik
+		       (lambda (ac)
+			 '(figure_ja_azik
+			   "Ａ"
+			   "AZIK"
+			   "AZIK拡張ローマ字入力モード"))
+		       (lambda (ac)
+			 (= (anthy-context-input-rule ac)
+			    anthy-input-rule-azik))
+		       (lambda (ac)
+			 (anthy-prepare-activation ac)
+			 (anthy-switch-ruletree! ac
+						 anthy-input-rule-azik
+						 (anthy-context-kana-mode ac))))
 
-(register-action 'action_anthy_nicola
-;;		 (indication-alist-indicator 'action_anthy_nicola
-;;					     anthy-kana-input-method-indication-alist)
-		 (lambda (ac)
-		   '(figure_ja_nicola
-		     "親"
-		     "NICOLA"
-		     "NICOLA入力モード"))
-		 (lambda (ac)
-		   (= (anthy-context-input-rule ac)
-		      anthy-input-rule-nicola))
-		 (lambda (ac)
-		   (anthy-prepare-activation ac)
-		   (anthy-switch-ruletree! ac
-					   anthy-input-rule-nicola
-					   (anthy-context-kana-mode ac))))
+(anthy-register-action 'action_anthy_nicola
+		       (lambda (ac)
+			 '(figure_ja_nicola
+			   "親"
+			   "NICOLA"
+			   "NICOLA入力モード"))
+		       (lambda (ac)
+			 (= (anthy-context-input-rule ac)
+			    anthy-input-rule-nicola))
+		       (lambda (ac)
+			 (anthy-prepare-activation ac)
+			 (anthy-switch-ruletree! ac
+						 anthy-input-rule-nicola
+						 (anthy-context-kana-mode ac))))
 
 ;; Update widget definitions based on action configurations. The
 ;; procedure is needed for on-the-fly reconfiguration involving the
@@ -242,6 +436,94 @@
 		     (actions-new anthy-kana-input-method-actions))
     (context-list-replace-widgets! 'anthy anthy-widgets)))
 
+;; TODO: accept only for current state
+(define anthy-action-map-ruleset
+  (append
+   '(
+     (((mod_Control lkey_j))   (action_anthy_on))
+     (((mod_Control lkey_J))   (action_anthy_on))
+     (((mod_Shift lkey_space)) (action_anthy_on))  ;; generic
+     ((lkey_Zenkaku_Hankaku)   (action_anthy_on))  ;; generic
+     ;;((lkey_q)                 (action_anthy_toggle_kana))
+     ;;((lkey_Q)                 (action_anthy_toggle_kana))
+     ((lkey_space)             (action_anthy_begin_conv))  ;; generic
+     ((lkey_Delete)            (action_anthy_delete))  ;; generic
+     (((mod_Control lkey_d))   (action_anthy_delete))  ;; generic
+     (((mod_Control lkey_D))   (action_anthy_delete))  ;; generic
+     (((mod_Control lkey_k))   (action_anthy_kill))  ;; generic
+     (((mod_Control lkey_K))   (action_anthy_kill))  ;; generic
+     (((mod_Control lkey_u))   (action_anthy_kill_backward))  ;; generic
+     (((mod_Control lkey_U))   (action_anthy_kill_backward))  ;; generic
+     ((lkey_Left)              (action_anthy_go_left))  ;; generic
+     (((mod_Control lkey_b))   (action_anthy_go_left))  ;; generic
+     (((mod_Control lkey_B))   (action_anthy_go_left))  ;; generic
+     ((lkey_Right)             (action_anthy_go_right))  ;; generic
+     (((mod_Control lkey_f))   (action_anthy_go_right))  ;; generic
+     (((mod_Control lkey_F))   (action_anthy_go_right))  ;; generic
+     ;;(((mod_Shift lkey_q))     (action_anthy_commit_as_opposite_kana))
+     ;;(((mod_Shift lkey_Q))     (action_anthy_commit_as_opposite_kana))
+     ((lkey_F6)                (action_anthy_commit_as_hiragana))
+     ((lkey_F7)                (action_anthy_commit_as_katakana))
+     ((lkey_F8)                (action_anthy_commit_as_halfkana))
+     ((lkey_F9)                (action_anthy_commit_as_half_alnum))
+     ((lkey_F10)               (action_anthy_commit_as_full_alnum))
+     ((lkey_Page_Up)           (action_anthy_prev_page))  ;; generic
+     ((lkey_Page_Down)         (action_anthy_next_page))  ;; generic
+     ;;(((mod_Control lkey_j))   (action_anthy_commit))  ;; generic
+     ;;(((mod_Control lkey_J))   (action_anthy_commit))  ;; generic
+     (((mod_Control lkey_m))   (action_anthy_commit))  ;; generic-return
+     (((mod_Control lkey_M))   (action_anthy_commit))  ;; generic-return
+     ((lkey_Return)            (action_anthy_commit))  ;; generic-return
+     (((mod_Control lkey_o))   (action_anthy_extend_segment))
+     (((mod_Control lkey_O))   (action_anthy_extend_segment))
+     ((mod_Shift lkey_Right)   (action_anthy_extend_segment))
+     (((mod_Control lkey_i))   (action_anthy_shrink_segment))
+     (((mod_Control lkey_I))   (action_anthy_shrink_segment))
+     ((mod_Shift lkey_Left)    (action_anthy_shrink_segment))
+     (((mod_Control lkey_f))   (action_anthy_next_segment))
+     (((mod_Control lkey_F))   (action_anthy_next_segment))
+     ((mod_Shift lkey_Right)   (action_anthy_next_segment))
+     (((mod_Control lkey_b))   (action_anthy_prev_segment))
+     (((mod_Control lkey_B))   (action_anthy_prev_segment))
+     ((mod_Shift lkey_Left)    (action_anthy_prev_segment))
+     (((mod_Control lkey_a))   (action_anthy_beginning_of_preedit))  ;; generic
+     (((mod_Control lkey_A))   (action_anthy_beginning_of_preedit))  ;; generic
+     ((lkey_Home)              (action_anthy_beginning_of_preedit))  ;; generic
+     (((mod_Control lkey_e))   (action_anthy_end_of_preedit))  ;; generic
+     (((mod_Control lkey_E))   (action_anthy_end_of_preedit))  ;; generic
+     ((lkey_End)               (action_anthy_end_of_preedit))  ;; generic
+     (((mod_Control lkey_h))   (action_anthy_backspace))  ;; generic
+     (((mod_Control lkey_H))   (action_anthy_backspace))  ;; generic
+     ((lkey_BackSpace)         (action_anthy_backspace))  ;; generic
+     ;;((lkey_space)             (action_anthy_next_candidate))  ;; generic
+     ((lkey_Down)              (action_anthy_next_candidate))  ;; generic
+     (((mod_Control lkey_n))   (action_anthy_next_candidate))  ;; generic
+     (((mod_Control lkey_N))   (action_anthy_next_candidate))  ;; generic
+     ((lkey_Up)                (action_anthy_prev_candidate))  ;; generic
+     (((mod_Control lkey_p))   (action_anthy_prev_candidate))  ;; generic
+     (((mod_Control lkey_P))   (action_anthy_prev_candidate))  ;; generic
+     ((lkey_Escape)            (action_anthy_cancel_conv))  ;; generic
+     (((mod_Control lkey_g))   (action_anthy_cancel_conv))  ;; generic
+     (((mod_Control lkey_G))   (action_anthy_cancel_conv))  ;; generic
+     ;;(()                       (action_anthy_hiragana))
+     ;;(()                       (action_anthy_katakana))
+     ;;(((mod_Control lkey_q))   (action_anthy_hankana))
+     ;;(((mod_Control lkey_Q))   (action_anthy_hankana))
+     ;;((lkey_l)                 (action_anthy_direct))
+     ;;((lkey_L)                 (action_anthy_direct))
+     ;;((mod_Shift lkey_l)       (action_anthy_zenkaku))
+     ;;((mod_Shift lkey_L)       (action_anthy_zenkaku))
+     ;;(()                       (action_anthy_roma))
+     ;;(()                       (action_anthy_kana))
+     ;;(()                       (action_anthy_azik))
+     ;;(()                       (action_anthy_nicola))
+     )
+   anthy-candidate-action-map-ruleset   
+   ))
+
+(define anthy-action-map-ruletree
+  (evmap-parse-ruleset anthy-action-map-ruleset))
+
 (define evmap-context-list-preedit-string
   (lambda (emc-list)
     (apply string-append
@@ -253,22 +535,24 @@
   (lambda (ustr)
     (evmap-context-list-preedit-string (ustr-whole-seq ustr))))
 
+;; returns closer-tree or #f
 (define evmap-ustr-input-with-new-emc!
   (lambda (ustr ruletree ev)
     (let* ((emc (evmap-context-new ruletree))
 	   (closer-tree (evmap-context-input! emc ev)))
-      (if closer-tree
-	  (begin
-	    (ustr-insert-elem! ustr emc)
-	    closer-tree)))))
+      (and closer-tree
+	   (begin
+	     (ustr-insert-elem! ustr emc)
+	     closer-tree)))))
 
+;; returns closer-tree or #f
 (define evmap-ustr-input!
   (lambda (ustr ruletree ev)
-    (let* ((former-emc (and (not (ustr-cursor-at-beginning? ustr))
-			    (ustr-cursor-backside ustr)))
-	   (closer-tree (or (and former-emc
-				 (not (evmap-context-complete? former-emc))
-				 (evmap-context-input! former-emc ev))
+    (let* ((last-emc (and (not (ustr-cursor-at-beginning? ustr))
+			  (ustr-cursor-backside ustr)))
+	   (closer-tree (or (and last-emc
+				 (not (evmap-context-complete? last-emc))
+				 (evmap-context-input! last-emc ev))
 			    (evmap-ustr-input-with-new-emc! ustr ruletree ev))))
       (if (event-loopback ev)
 	  (begin
@@ -276,16 +560,32 @@
 	    (evmap-ustr-input! ustr ruletree ev))
 	  closer-tree))))
 
+;; returns #t or commit string when consumed
+(define evmap-ustr-input-to-immediate-commit!
+  (lambda (ustr ev alt-ruletree)
+    (let ((last-emc (ustr-end-elem ustr)))
+      (and (or (ustr-empty? ustr)
+	       (and last-emc
+		    (eq? (evmap-context-root last-emc)
+			 alt-ruletree)))
+	   (evmap-ustr-input! ustr alt-ruletree ev)
+	   (let ((last-emc (ustr-end-elem ustr)))
+	     (if (evmap-context-complete? last-emc)
+		 (let ((commit-str (evmap-ustr-preedit-string ustr)))
+		   (ustr-clear! ustr)
+		   commit-str)
+		 #t))))))
+
 ;; TODO: Support following alternative behavior
 ;; "ちゃ" -> backspace -> "ち"
 (define evmap-ustr-backspace!
   (lambda (ustr)
-    (let ((former-emc (and (not (ustr-cursor-at-beginning? ustr))
-			   (ustr-cursor-backside ustr))))
-      (if former-emc
-	  (if (evmap-context-complete? former-emc)
+    (let ((last-emc (and (not (ustr-cursor-at-beginning? ustr))
+			 (ustr-cursor-backside ustr))))
+      (if last-emc
+	  (if (evmap-context-complete? last-emc)
 	      (ustr-cursor-delete-backside! ustr)
-	      (evmap-context-undo! former-emc))))))
+	      (evmap-context-undo! last-emc))))))
 
 (define evmap-ustr-transpose
   (lambda (ustr new-ruletree)
@@ -353,7 +653,8 @@
     (list 'kana-mode          anthy-type-hiragana)
     (list 'input-rule         anthy-input-rule-roma)
     (list 'ruletree           #f)
-    (list 'keytrans-emc      #f))))  ;; evmap-context for key-event translator
+    (list 'keytrans-emc      #f)     ;; evmap-context for key-event translator
+    (list 'actmap-emc        #f))))  ;; evmap-context for action mapper
 (define-record 'anthy-context anthy-context-rec-spec)
 (define anthy-context-new-internal anthy-context-new)
 
@@ -368,6 +669,8 @@
      (anthy-context-set-preconv-ustr! ac (ustr-new))
      (anthy-context-set-segments! ac (ustr-new))
      (anthy-context-set-keytrans-emc! ac (key-event-translator-new))
+     (anthy-context-set-actmap-emc! ac (evmap-context-new
+					anthy-action-map-ruletree))
 
      ;; 2004-08-26 Takuro Ashie <ashie@homa.ne.jp>
      ;;   * I think load-kana-table should be marked as depracated.
@@ -411,9 +714,9 @@
 (define anthy-commit-transposed-preconv!
   (lambda (ac kana-mode)
     (anthy-transpose-preconv! ac kana-mode)
-    (anthy-commit! ac)))
+    (anthy-commit-preconv! ac)))
 
-(define anthy-commit!
+(define anthy-commit-preconv!
   (lambda (ac)
     (im-commit ac (evmap-ustr-preedit-string (anthy-context-preconv-ustr ac)))
     (anthy-flush ac)))
@@ -421,9 +724,56 @@
 (define anthy-input!
   (lambda (ac ev)
     (let ((ruletree (anthy-context-ruletree ac))
-	  (preconv-ustr (anthy-context-preconv-ustr ac)))
-      (if (evmap-ustr-input! preconv-ustr ruletree ev)
-	  (anthy-update-preedit ac)))))
+	  (actmap-emc (anthy-context-actmap-emc ac)))
+      (if (evmap-context-input! actmap-emc ev)
+	  (if (evmap-context-complete? actmap-emc)
+	      (begin
+		(for-each (lambda (act-id)
+			    (anthy-activate-action! ac act-id))
+			  (evmap-context-action-seq actmap-emc))
+		(evmap-context-flush! actmap-emc)
+		(anthy-update-preedit ac)))
+	  (let* ((rejected-ev-list (evmap-context-event-seq actmap-emc))
+		 (consumed-list (map (lambda (rej-ev)
+				       (anthy-preedit-input! ac rej-ev))
+				     (append rejected-ev-list
+					     (list ev)))))
+	    (evmap-context-flush! actmap-emc)
+	    (if (apply proc-or consumed-list)
+		(anthy-update-preedit ac)))))))
+
+;; returns consumed
+(define anthy-preedit-input!
+  (lambda (ac ev)
+    (let* ((preconv-ustr (anthy-context-preconv-ustr ac))
+	   (ruletree (anthy-context-ruletree ac))
+	   (imm-ruletree ja-immediate-commit-ruletree)
+	   (immediate-commit
+	    (lambda (alt-ruletree)
+	      (let ((consumed (evmap-ustr-input-to-immediate-commit!
+			       preconv-ustr
+			       ev
+			       alt-ruletree)))
+		(if (string? consumed)
+		    (im-commit ac consumed))
+		consumed))))
+      (cond
+       ((anthy-direct-mode? ac)
+	#f)
+       ((anthy-wide-latin-mode? ac)
+	(immediate-commit ruletree))
+       ((anthy-converting-state? ac)
+	(if (and (eq? (event-type ev)
+		      'key)
+		 (char-printable? (key-event-char ev))
+		 (modifier-match? mod_ignore_Shift
+				  (key-event-modifier ev)))
+	    (begin
+	      (anthy-cancel-conv ac)
+	      (anthy-input! ac ev))))
+       ((anthy-input-state? ac)
+	(or (immediate-commit ja-immediate-commit-ruletree)
+	    (evmap-ustr-input! preconv-ustr ruletree ev)))))))
 
 (define anthy-init-handler
   (lambda (id im arg)
@@ -459,13 +809,13 @@
 			    (anthy-input-state-preedit ac))
 			())))
       (context-update-preedit ac segments))))
-  
-(define anthy-proc-raw-state
-  (lambda (ac ev key key-state)
-    (if (anthy-on-key? key key-state)
-	(begin
-	  (anthy-begin-input ac)
-	  (event-set-consumed! ev #t)))))
+
+(define anthy-direct-state-action
+  (lambda (ac act-id)
+    (case act-id
+      ((action_anthy_on)
+       (anthy-begin-input ac)
+       (anthy-switch-kana-mode! ac (anthy-context-kana-mode ac))))))
 
 (define anthy-begin-conv
   (lambda (ac)
@@ -499,120 +849,92 @@
       (anthy-update-preedit ac)  ;; TODO: remove this
       )))
 
-(define anthy-proc-input-state-no-preedit
-  (lambda (ac ev key key-state)
-    (cond
-     ((anthy-wide-latin-key? key key-state)
+(define anthy-input-state-no-preedit-action
+  (lambda (ac act-id)
+    (case act-id
+     ((action_anthy_zenkaku)
       (anthy-flush ac)
       (anthy-context-set-on! ac #f)
       (anthy-context-set-wide-latin! ac #t))
-	  
-     ((anthy-latin-key? key key-state)
+
+     ((action_anthy_direct)
       (anthy-flush ac)
       (anthy-context-set-on! ac #f)
       (anthy-context-set-wide-latin! ac #f))
 
-     ((anthy-hankaku-kana-key? key key-state)
+     ((action_anthy_hankana)
       (anthy-switch-kana-mode! ac anthy-type-hankana))
 
-     ((anthy-kana-toggle-key? key key-state)
-      (anthy-toggle-kana-mode! ac))
-
-     (else
-      (anthy-input! ac ev)))))
+     ((action_anthy_toggle_kana)
+      (anthy-toggle-kana-mode! ac)))))
 
 (define anthy-has-preedit?
   (lambda (ac)
     (not (ustr-empty? (anthy-context-preconv-ustr ac)))))
 
-(define anthy-proc-input-state-with-preedit
-  (lambda (ac ev key key-state)
+(define anthy-input-state-with-preedit-action
+  (lambda (ac act-id)
     (let ((preconv-ustr (anthy-context-preconv-ustr ac))
 	  (kana (anthy-context-kana-mode ac))
 	  (transpose (if #t
 			 anthy-commit-transposed-preconv!
 			 anthy-transpose-preconv!))) ;; does not commit
-      (cond
-       ;; begin conversion
-       ((anthy-begin-conv-key? key key-state)
+      (case act-id
+       ((action_anthy_begin_conv)
 	(anthy-begin-conv ac))
-       
-       ;; backspace
-       ((anthy-backspace-key? key key-state)
+
+       ((action_anthy_backspace)
 	(evmap-ustr-backspace! preconv-ustr))
 
-       ;; delete
-       ((anthy-delete-key? key key-state)
+       ((action_anthy_delete)
 	(ustr-cursor-delete-frontside! preconv-ustr))
 
-       ;; kill
-       ((anthy-kill-key? key key-state)
+       ((action_anthy_kill)
 	(ustr-clear-latter! preconv-ustr))
-       
-       ;; kill-backward
-       ((anthy-kill-backward-key? key key-state)
+
+       ((action_anthy_kill_backward)
 	(ustr-clear-former! preconv-ustr))
 
-       ;; commit as opposite kana
-       ((anthy-commit-as-opposite-kana-key? key key-state)
+       ((action_anthy_commit_as_opposite_kana)
 	(transpose ac (multi-segment-opposite-kana kana)))
 
-       ;; commit as hiragana
-       ((anthy-commit-as-hiragana-key? key key-state)
+       ((action_anthy_commit_as_hiragana)
 	(transpose ac anthy-type-hiragana))
 
-       ;; commit as katakana
-       ((anthy-commit-as-katakana-key? key key-state)
+       ((action_anthy_commit_as_katakana)
 	(transpose ac anthy-type-katakana))
 
-       ;; commit as halfwidth katakana
-       ((anthy-commit-as-hankana-key? key key-state)
+       ((action_anthy_commit_as_halfkana)
 	(transpose ac anthy-type-hankana))
 
-       ;; commit as halfwidth alphanumeric
-       ((anthy-commit-as-latin-key? key key-state)
+       ((action_anthy_commit_as_half_alnum)
 	(transpose ac anthy-type-halfwidth))
 
-       ;; commit as fullwidth alphanumeric
-       ((anthy-commit-as-wide-latin-key? key key-state)
+       ((action_anthy_commit_as_full_alnum)
 	(transpose ac anthy-type-fullwidth))
 
        ;; commit current preedit string, then toggle hiragana/katakana mode.
-       ((anthy-kana-toggle-key? key key-state)
-	(anthy-commit! ac)
+       ((action_anthy_toggle_kana)
+	(anthy-commit-preconv! ac)
 	(anthy-toggle-kana-mode! ac))
 
-       ;; cancel
-       ((anthy-cancel-key? key key-state)
+       ((action_anthy_cancel_conv)
 	(anthy-flush ac))
 
-       ;; commit
-       ((anthy-commit-key? key key-state)
-	(anthy-commit! ac))
+       ((action_anthy_commit)
+	(anthy-commit-preconv! ac))
 
-       ((anthy-go-left-key? key key-state)
+       ((action_anthy_go_left)
 	(ustr-cursor-move-backward! preconv-ustr))
 
-       ;; right
-       ((anthy-go-right-key? key key-state)
+       ((action_anthy_go_right)
 	(ustr-cursor-move-forward! preconv-ustr))
 
-       ;; beginning-of-preedit
-       ((anthy-beginning-of-preedit-key? key key-state)
+       ((action_anthy_beginning_of_preedit)
 	(ustr-cursor-move-beginning! preconv-ustr))
 
-       ;; end-of-preedit
-       ((anthy-end-of-preedit-key? key key-state)
-	(ustr-cursor-move-end! preconv-ustr))
-
-       (else
-	(anthy-input! ac ev))))))
-
-(define anthy-proc-input-state
-  (lambda (ac ev key key-state)
-    (if (anthy-has-preedit? ac)
-	(anthy-proc-input-state-with-preedit ac ev key key-state)
-	(anthy-proc-input-state-no-preedit ac ev key key-state))))
+       ((action_anthy_end_of_preedit)
+	(ustr-cursor-move-end! preconv-ustr))))))
 
 (define anthy-separator
   (lambda (ac)
@@ -717,7 +1039,7 @@
  		(iota (ustr-length segments))
 		(ustr-whole-seq segments)))))
 
-(define anthy-do-commit
+(define anthy-commit-converted!
   (lambda (ac)
     (im-commit ac (anthy-get-commit-string ac))
     (anthy-commit-string ac)
@@ -824,6 +1146,14 @@
       (im-select-candidate ac compensated-idx)
       (anthy-update-preedit ac))))
 
+;; takes index in current page
+(define anthy-set-relative-candidate
+  (lambda (idx)
+    (lambda (ac)
+      (and (anthy-converting-state? ac)
+	   (anthy-context-candidate-window ac)
+	   (anthy-move-candidate-in-page ac ((string->char "0") + idx))))))
+
 (define anthy-reset-candidate-window
   (lambda (ac)
     (if (anthy-context-candidate-window ac)
@@ -832,112 +1162,98 @@
 	  (anthy-context-set-candidate-window! ac #f)))
     (anthy-context-set-candidate-op-count! ac 0)))
 
-(define anthy-proc-converting-state
-  (lambda (ac ev key key-state)
+(define anthy-converting-state-action
+  (lambda (ac act-id)
     (let ((preconv-ustr (anthy-context-preconv-ustr ac))
 	  (segments (anthy-context-segments ac)))
-      (cond
+     (case act-id
        ;; transpose current segment to opposite kana
-       ((anthy-commit-as-opposite-kana-key? key key-state)
+       ((action_anthy_commit_as_opposite_kana)
 	(anthy-set-candidate ac anthy-direct-convert-opposite-kana))
 
        ;; transpose current segment to hiragana
-       ((anthy-commit-as-hiragana-key? key key-state)
+       ((action_anthy_commit_as_hiragana)
 	(anthy-set-candidate ac anthy-direct-convert-hiragana))
 
        ;; transpose current segment to katakana
-       ((anthy-commit-as-katakana-key? key key-state)
+       ((action_anthy_commit_as_katakana)
 	(anthy-set-candidate ac anthy-direct-convert-katakana))
 
        ;; transpose current segment to halfwidth katakana
-       ((anthy-commit-as-hankana-key? key key-state)
+       ((action_anthy_commit_as_halfkana)
 	(anthy-set-candidate ac anthy-direct-convert-hankana))
 
        ;; transpose current segment to halfwidth alphanumeric
-       ((anthy-commit-as-latin-key? key key-state)
+       ((action_anthy_commit_as_half_alnum)
 	(anthy-set-candidate ac anthy-direct-convert-latin))
 
        ;; transpose current segment to fullwidth alphanumeric
-       ((anthy-commit-as-wide-latin-key? key key-state)
+       ((action_anthy_commit_as_full_alnum)
 	(anthy-set-candidate ac anthy-direct-convert-wide-latin))
 
-       ((anthy-prev-page-key? key key-state)
+       ((action_anthy_prev_page)
 	(if (anthy-context-candidate-window ac)
 	    (im-shift-page-candidate ac #f)))
 
-       ((anthy-next-page-key? key key-state)
+       ((action_anthy_next_page)
 	(if (anthy-context-candidate-window ac)
 	    (im-shift-page-candidate ac #t)))
 
-       ((anthy-commit-key? key key-state)
-	(anthy-do-commit ac))
-     
-       ((anthy-extend-segment-key? key key-state)
+       ((action_anthy_commit)
+	(anthy-commit-converted! ac))
+
+       ((action_anthy_extend_segment)
 	(anthy-resize-segment ac 1))
-     
-       ((anthy-shrink-segment-key? key key-state)
+
+       ((action_anthy_shrink_segment)
 	(anthy-resize-segment ac -1))
-     
-       ((anthy-next-segment-key? key key-state)
+
+       ((action_anthy_next_segment)
 	(anthy-move-segment ac 1))
-     
-       ((anthy-prev-segment-key? key key-state)
+
+       ((action_anthy_prev_segment)
 	(anthy-move-segment ac -1))
 
-       ((anthy-beginning-of-preedit-key? key key-state)
+       ((action_anthy_beginning_of_preedit)
 	(ustr-cursor-move-beginning! segments)
 	(anthy-reset-candidate-window ac))
 
-       ((anthy-end-of-preedit-key? key key-state)
+       ((action_anthy_end_of_preedit)
 	(ustr-cursor-move-end! segments)
 	(anthy-correct-segment-cursor segments)
 	(anthy-reset-candidate-window ac))
 
-       ((anthy-backspace-key? key key-state)
+       ((action_anthy_backspace)
 	(anthy-cancel-conv ac)
 	(ustr-cursor-delete-backside! preconv-ustr))
 
-       ((anthy-next-candidate-key? key key-state)
+       ((action_anthy_next_candidate)
 	(anthy-move-candidate ac 1))
 
-       ((anthy-prev-candidate-key? key key-state)
+       ((action_anthy_prev_candidate)
 	(anthy-move-candidate ac -1))
 
-       ((anthy-cancel-key? key key-state)
-	(anthy-cancel-conv ac))
+       ((action_anthy_cancel_conv)
+	(anthy-cancel-conv ac))))))
 
-       ((and anthy-select-candidate-by-numeral-key?
-	     (numeral-char? key)
-	     (anthy-context-candidate-window ac))
-	(anthy-move-candidate-in-page ac key))
-
-       (else
-	(anthy-cancel-conv ac)
-	(anthy-proc-input-state-with-preedit ac ev key key-state))))))
-
-(define anthy-proc-wide-latin
-  (lambda (ac ev key key-state)
-    (cond
-     ((anthy-on-key? key key-state)
+(define anthy-wide-latin-state-action
+  (lambda (ac act-id)
+    (case act-id
+     ((action_anthy_on)
       (anthy-flush ac)
-      (anthy-context-set-on! ac #t))
-     (else
-      (anthy-input! ac ev)))))
+      (anthy-context-set-on! ac #t)
+      (anthy-switch-kana-mode! ac (anthy-context-kana-mode ac))))))
 
 (define anthy-key-handler
   (lambda (ac key key-state press?)
     (let ((ev (legacy-key->key-event key key-state press?))
 	  (keytrans-emc (anthy-context-keytrans-emc ac)))
+
       (key-event-print-inspected "key-event:  " ev)
       (key-event-translator-translate! keytrans-emc ev)
       (key-event-print-inspected "translated: " ev)
-      (if (anthy-context-on ac)
-	  (if (anthy-context-converting ac)
-	      (anthy-proc-converting-state ac ev key key-state)
-	      (anthy-proc-input-state ac ev key key-state))
-	  (if (anthy-context-wide-latin ac)
-	      (anthy-proc-wide-latin ac ev key key-state)
-	      (anthy-proc-raw-state ac ev key key-state)))
+
+      (anthy-input! ac ev)
       (if (not (event-consumed ev))
 	  (im-commit-raw ac)))))
 
@@ -951,8 +1267,7 @@
 
 (define anthy-reset-handler
   (lambda (ac)
-    (if (anthy-context-on ac)
-	(anthy-flush ac))
+    (anthy-flush ac)
     ;; code to commit pending string must not be added to here.
     ;; -- YamaKen 2004-10-21
     ))

@@ -32,6 +32,8 @@
 (require "util.scm")
 (require "ng-key.scm")
 (require "evmap.scm")
+;; temporary workaround for ja-immediate-commit-ruleset
+(require-custom "japanese-romaji-custom.scm")
 
 
 ;;
@@ -429,8 +431,6 @@
     ((("Y" mod_ignore_Shift)) ("£Ù"))
     ((("Z" mod_ignore_Shift)) ("£Ú"))))
 
-(define ja-direct-ruleset '())
-
 ;; This ruleset will not be used in ordinary input method. Direct
 ;; input mode passes through almost of key events instead of using
 ;; this ruleset.
@@ -454,11 +454,26 @@
    ja-fullwidth-number-ruleset
    ja-fullwidth-alphabet-ruleset))
 
-(define ja-direct-ruletree
-  (evmap-parse-ruleset ja-direct-ruleset))
+(define ja-direct-ruleset '())
+
+;; Although the ruleset contains 'romaji' participants, this ruleset
+;; is prepared for all japanese rulsets. It should be reorganized as
+;; appropriately.
+(define ja-immediate-commit-ruleset
+  (append
+   (symbol-value ja-romaji-fullwidth-space-ruleset)
+   ;;(symbol-value ja-romaji-fullwidth-basic-symbol-ruleset)
+   ;;(symbol-value ja-romaji-fullwidth-number-ruleset)
+   ))
 
 (define ja-halfwidth-alphanumeric-ruletree
   (evmap-parse-ruleset ja-halfwidth-alphanumeric-ruleset))
 
 (define ja-fullwidth-alphanumeric-ruletree
   (evmap-parse-ruleset ja-fullwidth-alphanumeric-ruleset))
+
+(define ja-direct-ruletree
+  (evmap-parse-ruleset ja-direct-ruleset))
+
+(define ja-immediate-commit-ruletree
+  (evmap-parse-ruleset ja-immediate-commit-ruleset))

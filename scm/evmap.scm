@@ -189,7 +189,7 @@
 	      (evc-error "duplicated physical key"))
 	  (event-exp-collector-set-pkey! evc exp))
 	 (else
-	  (evc-error "unknown symbol"))))
+	  (evc-error (string-append "unknown symbol '" exp)))))
        ((list? exp)
 	(evc-error "invalid nested list"))
        (else
@@ -527,9 +527,20 @@
 
 (define action-exp-seq-parse
   (lambda (act-exps)
-    (map (compose event-exp-collector-exp
-		  action-exp-collector-fold)
-	 act-exps)))
+    (let ((action-symbol? (lambda (sym)
+			    (and (symbol? sym)
+				 (let* ((str (symbol->string sym))
+					(prefix (safe-car
+						 (string-split str "_"))))
+				   (and prefix
+					(string=? prefix "action")))
+				 sym))))
+      (map (lambda (exp)
+	     (or (action-symbol? exp)
+		 ((compose event-exp-collector-exp
+			   action-exp-collector-fold)
+		  exp)))
+	   act-exps))))
 
 ;; presumes normalized
 ;; TODO:

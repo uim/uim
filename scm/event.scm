@@ -129,7 +129,10 @@
 
 ;; TODO: make encoding sensitive
 (define key-event-char
-  (compose string->char key-event-str))
+  (lambda (ev)
+    (let ((str (key-event-str ev)))
+      (and (string? str)
+	   (string->char str)))))
 
 (define key-event-extract-press-str
   (lambda (ev)
