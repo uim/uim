@@ -599,6 +599,9 @@ void XimIC::reset_ic()
     // After sending RESET_IC_REPLY, uim-xim needs to clear and reset
     // the input context.
     m_kkContext->clear();
+
+    // Also reset key state
+    m_keyState->reset();
 }
 
 Convdisp *XimIC::get_convdisp()

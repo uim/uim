@@ -117,6 +117,7 @@ public:
     int modifier();
     KeySym xkeysym();
     int xkeystate();
+    void reset();
 
     bool is_push(); // for distinguish from release
     void print();

@@ -108,6 +108,12 @@ bool Compose::handleKey(KeySym xkeysym, int xkeystate, bool is_push)
     }
 }
 
+void Compose::reset()
+{
+    m_context = m_top;
+    m_composed = (DefTree *)NULL;
+}
+
 static int
 nextch(
     FILE *fp,

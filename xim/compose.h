@@ -55,6 +55,7 @@ public:
     Compose(DefTree *, XimIC *);
     ~Compose();
     bool handleKey(KeySym xkeysym, int xstate, bool is_push);
+    void reset();
 private:
     XimIC *m_xic;
     DefTree *m_top;

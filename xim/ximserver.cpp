@@ -950,6 +950,12 @@ int keyState::xkeystate()
     return mXKeyState;
 }
 
+void keyState::reset()
+{
+    mAltOn = mMetaOn = mHyperOn = mSuperOn = false;
+    mCompose->reset();
+}
+
 void keyState::print()
 {
     printf("key code=%x,modifier=%d.\n",
