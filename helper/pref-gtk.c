@@ -114,6 +114,7 @@ create_pref_treeview(void)
   GtkTreeIter iter;
   char **primary_groups, **grp;
   GtkTreeSelection *selection;
+  GtkTreePath *first_path;
   tree_store = gtk_tree_store_new (NUM_COLUMNS,
 				   G_TYPE_STRING,
 				   GTK_TYPE_WIDGET);
@@ -143,7 +144,12 @@ create_pref_treeview(void)
   gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
   g_signal_connect (G_OBJECT(selection), "changed",
 		    G_CALLBACK(pref_tree_selection_changed), NULL);
-  
+
+  first_path = gtk_tree_path_new_from_indices (0, -1);
+
+  gtk_tree_view_set_cursor(GTK_TREE_VIEW(pref_tree_view),
+			   first_path, NULL, FALSE);  
+
   return pref_tree_view;
 }
 
@@ -413,18 +419,7 @@ create_pref_window(void)
   gtk_window_set_position(GTK_WINDOW(window),
 			  GTK_WIN_POS_CENTER_ALWAYS);
   }
-
-  /*
-   * 2004-01-04 Kazuki Ohta <mover@hct.zaq.ne.jp>
-   *
-   * First, we should select "global" section.
-   * But how can I do this in Gtk+?
-   *
-   */
-
-  /* current selected widget is null initially  */
-  current_group_widget = NULL;
-
+  
   return window;
 }
 
