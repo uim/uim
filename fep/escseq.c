@@ -146,7 +146,7 @@ static char *escseq2n(const char *escseq);
 static void escseq2n2(const char *escseq, const char **first, const char **second);
 static const char *attr2escseq(const struct attribute_tag *attr);
 static void set_attr(const char *str, int len);
-static int my_putchar(char c);
+static int my_putchar(int c);
 #ifndef HAVE_CFMAKERAW
 static int cfmakeraw(struct termios *termios_p);
 #endif
@@ -1067,9 +1067,10 @@ void escseq_winch(void)
   s_cursor.row = s_cursor.col = UNDEFINED;
 }
 
-static int my_putchar(char c)
+static int my_putchar(int c)
 {
-  write(g_win_out, &c, 1);
+  char ch = c;
+  write(g_win_out, &ch, 1);
   return c;
 }
 
