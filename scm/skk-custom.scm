@@ -105,7 +105,7 @@
 (define-custom 'skk-auto-start-henkan? #t
   '(skk advanced)
   '(boolean)
-  (_ "Enable auto convertion with key input of specific characters")
+  (_ "Enable auto convertion with punctuation marks")
   (_ "long description will be here."))
 
 (define-custom 'skk-dic-file-name (string-append (sys-datadir)
