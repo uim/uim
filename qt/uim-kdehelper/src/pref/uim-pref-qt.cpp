@@ -51,6 +51,17 @@
 #include <qfiledialog.h>
 #include <qcombobox.h>
 
+/*
+ * FIXME! : 2004-01-14 Kazuki Ohta <mover@hct.zaq.ne.jp>
+ * After uim-kdehelper is merged to uim, please include these files
+ * instead of including <libintl.h>
+ *
+ * #include "uim/config.h"
+ * #include "uim/gettext.h"
+ */
+#include <libintl.h>
+
+#define _FU8(String) QString::fromUtf8(String)
 
 UimPrefDialog::UimPrefDialog( QWidget *parent, const char *name )
     : QDialog( parent, name ),
@@ -67,6 +78,9 @@ UimPrefDialog::~UimPrefDialog()
     uim_quit();
 }
 
+/*
+ * Building up GUI
+ */
 void UimPrefDialog::setupWidgets()
 {
     createMainWidgets();
@@ -168,6 +182,9 @@ QWidget* UimPrefDialog::createGroupWidget( const char *group_name )
     return vbox;
 }
 
+/*
+ * Building up GUI in accordance with Custom Type.
+ */
 void UimPrefDialog::addCustom( QVBox *vbox, const char *custom_sym )
 {
     struct uim_custom *custom = uim_custom_get( custom_sym );
@@ -190,23 +207,26 @@ void UimPrefDialog::addCustom( QVBox *vbox, const char *custom_sym )
         case UCustom_Choice:
             addCustomTypeChoice( vbox, custom );
             break;
+        case UCustom_OrderedList:
+            addCustomTypeOrderedList( vbox, custom );
+            break;
         case UCustom_Key:
             addCustomTypeKey( vbox, custom );
             break;
         default:
-            qFatal( "Invalid custom type: %d\n", custom->type );
+            qWarning( "Invalid custom type: %d\n", custom->type );
             uim_custom_free( custom );
             break;
         }
     } else {
-        qFatal( "Failed to get uim_custom object for %s.", custom_sym );
+        qWarning( "Failed to get uim_custom object for %s.", custom_sym );
     }
 }
 
 void UimPrefDialog::addCustomTypeBool( QVBox *vbox, struct uim_custom *custom )
 {
     CustomCheckBox *checkBox = new CustomCheckBox( custom, vbox );
-    checkBox->setText( custom->label );
+    checkBox->setText( _FU8(custom->label) );
     checkBox->setChecked( custom->value->as_bool );
     QObject::connect( checkBox, SIGNAL(customValueChanged()),
                       this, SLOT(slotCustomValueChanged()) );
@@ -216,7 +236,7 @@ void UimPrefDialog::addCustomTypeInteger( QVBox *vbox, struct uim_custom *custom
 {
     QHBox *hbox = new QHBox( vbox );
     hbox->setSpacing( 6 );
-    QLabel *label = new QLabel( custom->label, hbox );
+    QLabel *label = new QLabel( _FU8(custom->label), hbox );
     CustomSpinBox *spinBox = new CustomSpinBox( custom, hbox );
     spinBox->setValue( custom->value->as_int );
     spinBox->setMinValue( custom->range->as_int.min );
@@ -231,9 +251,9 @@ void UimPrefDialog::addCustomTypeString( QVBox *vbox, struct uim_custom *custom 
 {
     QHBox *hbox = new QHBox( vbox );
     hbox->setSpacing( 6 );
-    QLabel *label = new QLabel( custom->label, hbox );
+    QLabel *label = new QLabel( _FU8(custom->label), hbox );
     CustomLineEdit *lineEdit = new CustomLineEdit( custom, hbox );
-    lineEdit->setText( custom->value->as_str );
+    lineEdit->setText( _FU8(custom->value->as_str) );
     label->setBuddy( lineEdit );
 
     QObject::connect( lineEdit, SIGNAL(customValueChanged()),
@@ -244,9 +264,9 @@ void UimPrefDialog::addCustomTypePathname( QVBox *vbox, struct uim_custom *custo
 {
     QHBox *hbox = new QHBox( vbox );
     hbox->setSpacing( 6 );
-    QLabel *label = new QLabel( custom->label, hbox );
+    QLabel *label = new QLabel( _FU8(custom->label), hbox );
     CustomPathnameEdit *pathnameEdit = new CustomPathnameEdit( custom, hbox );
-    pathnameEdit->setText( custom->value->as_pathname );
+    pathnameEdit->setText( _FU8(custom->value->as_pathname) );
     label->setBuddy( pathnameEdit );
 
     QObject::connect( pathnameEdit, SIGNAL(customValueChanged()),
@@ -257,7 +277,7 @@ void UimPrefDialog::addCustomTypeChoice( QVBox *vbox, struct uim_custom *custom 
 {
     QHBox *hbox = new QHBox( vbox );
     hbox->setSpacing( 6 );
-    QLabel *label = new QLabel( custom->label, hbox );
+    QLabel *label = new QLabel( _FU8(custom->label), hbox );
 
     CustomChoiceCombo *choiceCombo = new CustomChoiceCombo( custom, hbox );
     char *default_symbol = NULL;
@@ -267,7 +287,7 @@ void UimPrefDialog::addCustomTypeChoice( QVBox *vbox, struct uim_custom *custom 
     while( *item )
     {
         int count = choiceCombo->count();
-        choiceCombo->insertItem( (*item)->label, count - 1 ); // insert item at last
+        choiceCombo->insertItem( _FU8((*item)->label), count - 1 ); // insert item at last
 
         if( QString::compare( default_symbol, (*item)->symbol ) == 0 )
             default_index = index;
@@ -283,12 +303,21 @@ void UimPrefDialog::addCustomTypeChoice( QVBox *vbox, struct uim_custom *custom 
                       this, SLOT(slotCustomValueChanged()) );
 }
 
+void UimPrefDialog::addCustomTypeOrderedList( QVBox *vbox, struct uim_custom *custom )
+{
+    // FIXME: not implemented yet
+    ;
+}
+
 void UimPrefDialog::addCustomTypeKey( QVBox *vbox, struct uim_custom *custom )
 {
     // FIXME: not implemented yet
     ;
 }
 
+/*
+ * GUI event handling
+ */
 void UimPrefDialog::slotSelectionChanged( QListViewItem * item )
 {
     /* confirm if save the change */
@@ -313,17 +342,6 @@ void UimPrefDialog::confirmChange()
     {
         slotApply();
     }
-}
-
-int main( int argc, char **argv )
-{
-    QApplication a( argc, argv );
-
-    UimPrefDialog *dlg = new UimPrefDialog();
-    a.setMainWidget( dlg );
-    dlg->show();
-
-    return a.exec();
 }
 
 void UimPrefDialog::slotApply()
@@ -354,6 +372,7 @@ void UimPrefDialog::slotCancel()
     reject();
 }
 
+//-------------------------------------------------------------------------------------
 QConfirmDialog::QConfirmDialog( const QString &msg, QWidget *parent, const char *name )
     : QDialog( parent, name )
 {
@@ -371,4 +390,24 @@ QConfirmDialog::QConfirmDialog( const QString &msg, QWidget *parent, const char 
                       this, SLOT(accept()) );
     QObject::connect( cancelButton, SIGNAL(clicked()),
                       this, SLOT(reject()) );
+}
+
+//--------------------------------------------------------------------------
+int main( int argc, char **argv )
+{
+    /*
+     * FIXME! : 2004-01-14 Kazuki Ohta <mover@hct.zaq.ne.jp>
+     * After uim-kdehelper is merged to uim, please use PACKAGE
+     * instead of "uim"
+     */
+    // ensure code encoding is UTF-8
+    bind_textdomain_codeset( "uim", "UTF-8" );
+    
+    QApplication a( argc, argv );
+
+    UimPrefDialog *dlg = new UimPrefDialog();
+    a.setMainWidget( dlg );
+    dlg->show();
+
+    return a.exec();
 }

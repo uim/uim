@@ -67,6 +67,7 @@ protected:
     void addCustomTypeString( QVBox *vbox, struct uim_custom *custom );
     void addCustomTypePathname( QVBox *vbox, struct uim_custom *custom );
     void addCustomTypeChoice( QVBox *vbox, struct uim_custom *custom );
+    void addCustomTypeOrderedList( QVBox *vbox, struct uim_custom *custom );
     void addCustomTypeKey( QVBox *vbox, struct uim_custom *custom );
 
     void confirmChange();
