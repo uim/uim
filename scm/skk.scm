@@ -787,9 +787,15 @@
      ((skk-kana-toggle-key? key key-state)
       (skk-context-kana-toggle sc)
       #f)
+     ;; Don't forward C-j as native event in direct-mode.  I think
+     ;; this should be configurable --ekato
+     ((skk-on-key? key key-state)
+      #f)
+     ;; bad strategy. see bug #528
      ((symbol? key)
       (skk-commit-raw sc key key-state)
       #f)
+     ;; bad strategy. see bug #528
      ((and (modifier-key-mask key-state)
 	   (not (and
 	         (shift-key-mask key-state)
