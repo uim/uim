@@ -4,7 +4,7 @@ EXTRA_DIST = README.ja INSTALL.ja test.sh.in uim.spec.in \
 	intltool-extract.in intltool-merge.in intltool-update.in \
 	uim.pc.in ChangeLog.old uim.desktop
 
-DISTCLEANFILES = uim.pc intltool-extract\
+DISTCLEANFILES = uim.pc intltool-extract \
                  intltool-merge intltool-update po/.intltool-merge-cache
 
 pkgconfigdir = $(libdir)/pkgconfig
@@ -48,12 +48,12 @@ ChangeLog:
 
 releasetest-all-flag-enabled: RELEASETEST_CONFIGURE_FLAGS= --enable-debug \
 	 --enable-fep --enable-dict --with-m17nlib --with-canna \
-	 --with-gtk2 --with-gnome2
+	 --with-gtk2 --with-gnome2 --with-qt
 releasetest-all-flag-enabled: each-releasetest
 
 releasetest-all-flag-disabled: RELEASETEST_CONFIGURE_FLAGS= --disable-debug \
 	--disable-fep --disable-sumika	--disable-dict --without-m17nlib \
-	--without-canna --without-gtk2  --without-gnome2
+	--without-canna --without-gtk2  --without-gnome2 --without-qt
 releasetest-all-flag-disabled: each-releasetest
 
 each-releasetest:

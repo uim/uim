@@ -245,9 +245,9 @@ AC_ARG_ENABLE(applet,
 dnl ****************************
 dnl *** Check for Qt Library ***
 dnl ****************************
-AC_ARG_ENABLE(qt,
-  AC_HELP_STRING([--enable-qt],
-                 [enable qt helper applications]),
+AC_ARG_WITH(qt,
+  AC_HELP_STRING([--with-qt],
+                 [build with qt helper applications]),
   [
     case $enable_qt in
       no)
@@ -263,9 +263,9 @@ AC_ARG_ENABLE(qt,
     use_qt="no"
   ])
 
-AC_ARG_ENABLE(qt-immodule,
-  AC_HELP_STRING([--enable-qt-immodule],
-                 [use qt-immodule extension]),
+AC_ARG_WITH(qt-immodule,
+  AC_HELP_STRING([--with-qt-immodule],
+                 [Build qt-immodule extension]),
   [
     case $enable_qtimmodule in
       no)
