@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 2010\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-01-10 12:40+0900\n"
+"POT-Creation-Date: 2005-01-10 13:15+0900\n"
 "PO-Revision-Date: 2005-01-07 12:34+0900\n"
 "Last-Translator: Takuro Ashie <ashie@homa.ne.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
@@ -333,13 +333,13 @@ msgstr "Œ„"
 
 #: helper/pref-gtk.c:107
 msgid ""
-"Value was changed.\n"
+"Some value(s) have been changed.\n"
 "Save?"
 msgstr ""
 
 #: helper/pref-gtk.c:176
 msgid ""
-"Value was changed.\n"
+"Some value(s) have been changed.\n"
 "Do you realy quit this program?"
 msgstr ""
 
@@ -629,7 +629,7 @@ msgid "Enable auto register mode"
 msgstr ""
 
 #: scm/custom-vars.lisp:478
-msgid "Enable psedo mode cursor"
+msgid "Enable pseudo mode cursor"
 msgstr ""
 
 #: scm/custom-vars.lisp:484

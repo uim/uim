@@ -475,7 +475,7 @@
 (define-custom 'prime-pseudo-mode-cursor? #f
   '(prime)
   '(boolean)
-  (_ "Enable psedo mode cursor")
+  (_ "Enable pseudo mode cursor")
   (_ "long description will be here."))
 
 (define-custom 'prime-char-annotation? #t
