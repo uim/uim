@@ -57,7 +57,7 @@
 #include "uim-compat-scm.c"
 #endif
 
-static void siod_init_subr(char *name, long type, uim_lisp (*fcn)(void));
+static void siod_init_subr(char *name, long type, SUBR_FUNC fcn);
 
 static uim_lisp true_sym;
 static uim_lisp false_sym;
@@ -394,12 +394,12 @@ uim_scm_require_file(const char *fn)
 }
 
 static void
-siod_init_subr(char *name, long type, uim_lisp (*fcn)(void))
+siod_init_subr(char *name, long type, SUBR_FUNC fcn)
 {
   uim_lisp stack_start;
 
   uim_scm_gc_protect_stack(&stack_start);
-  init_subr(name, type, (SUBR_FUNC)fcn);
+  init_subr(name, type, fcn);
   uim_scm_gc_unprotect_stack(&stack_start);
 }
 
