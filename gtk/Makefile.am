@@ -11,12 +11,16 @@ module_LTLIBRARIES = $(im_uim_la)
 
 im_uim_la_SOURCES = $(IM_UIM_SOURCES)
 im_uim_la_LDFLAGS = -module -avoid-version @GTK2_LIBS@
-im_uim_la_LIBADD = $(top_builddir)/uim/libuim.la
+im_uim_la_LIBADD = $(top_builddir)/uim/libuim.la $(EBLIB_LIBS)
 
 
 IM_UIM_SOURCES = \
 	gtk-im-uim.c \
 	uim-cand-win-gtk.c uim-cand-win-gtk.h
+
+if EB
+IM_UIM_SOURCES += uim-eb.c uim-eb.h
+endif
 
 install-data-hook:
 	if test -f $(GTK_IMMODULES); then \

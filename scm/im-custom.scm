@@ -308,3 +308,24 @@
   '(boolean)
   (_ "Enable lazy input method loading for fast startup")
   (_ "long description will be here."))
+
+
+;; EB Library support
+;; 2005-02-08 Takuro Ashie <ashie@homa.ne.jp>
+;; FIXME! Here isn't suitable position for EB support preference
+(define-custom-group 'eb
+		     (_ "EB library settings")
+		     (_ "long description will be here."))
+
+(define-custom 'eb-enable? #f
+  '(eb candwin)
+  '(boolean)
+  (_ "Use EB library to search annotations")
+  (_ "long description will be here."))
+
+(define-custom 'eb-dic-path
+  (string-append (getenv "HOME") "/dict")
+  '(eb candwin)
+  '(pathname)
+  (_ "The directory which contains EB dictionary file")
+  (_ "long description will be here."))

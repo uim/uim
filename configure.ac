@@ -398,6 +398,51 @@ AC_ARG_ENABLE(dict,
   ],
   [ use_dict="no" ])
 
+dnl ****************************
+dnl *** Tests for EB Library ***
+dnl ****************************
+
+use_eb="no"
+AC_ARG_WITH(eb,
+  AS_HELP_STRING([--without-eb],
+                 [Don't build against EB]),
+  [
+  if test "x$with_eb" = "xyes"; then
+    _SAVE_LDFLAGS=$LDFLAGS
+    EB_LDFLAGS="-lz"
+    LDFLAGS="$LDFLAGS $EB_LDFLAGS"
+    AC_CHECK_LIB(eb, eb_initialize_library, HAVE_EBLIB=yes, HAVE_EBLIB=no)
+    if test "x$HAVE_EBLIB" = "xyes"; then
+      AC_CHECK_HEADER(eb/eb.h, HAVE_EBLIB=yes, HAVE_EBLIB=no)
+      if test "x$HAVE_EBLIB" = "xyes"; then
+        AC_DEFINE(HAVE_EBLIB, 1,
+           [Define to 1 if you have EB library and header file])
+        EBLIB_LIBS="-leb -lz"
+        use_eb="yes"
+      fi
+    LDFLAGS=$_SAVE_LDFLAGS
+    fi
+  fi
+  ],
+  [
+  _SAVE_LDFLAGS=$LDFLAGS
+  EB_LDFLAGS="-lz"
+  LDFLAGS="$LDFLAGS $EB_LDFLAGS"
+  AC_CHECK_LIB(eb, eb_initialize_library, HAVE_EBLIB=yes, HAVE_EBLIB=no)
+  if test "x$HAVE_EBLIB" = "xyes"; then
+    AC_CHECK_HEADER(eb/eb.h, HAVE_EBLIB=yes, HAVE_EBLIB=no)
+    if test "x$HAVE_EBLIB" = "xyes"; then
+      AC_DEFINE(HAVE_EBLIB, 1,
+         [Define to 1 if you have EB library and header file])
+      EBLIB_LIBS="-leb"
+      use_eb="yes"
+    fi
+  fi
+  LDFLAGS=$_SAVE_LDFLAGS
+])
+
+AC_SUBST(EBLIB_LIBS)
+
 
 AM_CONDITIONAL(M17NLIB, test x$use_m17nlib = xyes)
 AM_CONDITIONAL(SCIM, test x$use_scim = xyes)
@@ -414,6 +459,7 @@ AM_CONDITIONAL(APPLET, test x$use_applet = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
 AM_CONDITIONAL(XIM, test x$use_xim = xyes)
 AM_CONDITIONAL(DICT, test x$use_dict = xyes)
+AM_CONDITIONAL(EB, test x$use_eb = xyes)
 AM_CONDITIONAL(DEBUG, test x$enable_debug = xyes)
 AM_CONDITIONAL(COMPAT_SCM, test x$enable_compat_scm = xyes)
 AM_CONDITIONAL(COMPAT_TABLE, test x$enable_compat_table = xyes)
@@ -684,6 +730,7 @@ Configure Result :
    FEP             : ${use_uim_fep}
    XIM             : ${use_xim}
    DICT            : ${use_dict}
+   EB              : ${use_eb}
    Default toolkit : ${default_toolkit}
 ])
 

@@ -34,6 +34,11 @@
 #include "uim-cand-win-gtk.h"
 #include <string.h>
 #include <uim/uim.h>
+#include <uim/uim-compat-scm.h>
+#include "uim/config.h"
+#if HAVE_EBLIB
+#include "uim-eb.h"
+#endif /* HAVE_EBLIB */
 
 #define NR_CANDIDATES 20 /* FIXME! not used yet */
 #define DEFAULT_MIN_WINDOW_WIDTH 80
@@ -341,9 +346,36 @@ tree_selection_changed(GtkTreeSelection *selection,
 
   if (gtk_tree_selection_get_selected(selection, &model, &iter)) {
     gchar *annotation = NULL;
+#if HAVE_EBLIB
+    /* FIXME! This is a ad-hoc solution to advance
+       annotation related discussion. */
+    if (uim_scm_symbol_value_bool("eb-enable?")) {
+      gchar *cand = NULL;
+
+      gtk_tree_model_get(model, &iter,
+			 COLUMN_CANDIDATE, &cand,
+			 -1);
+      if (cand && *cand) {
+	char *book;
+	uim_eb *ueb = NULL;
+
+	book = uim_scm_symbol_value_str("eb-dic-path");
+	if (book && *book)
+	  ueb = uim_eb_new(book);
+	if (ueb) {
+	  annotation = uim_eb_search_text(ueb, cand);
+	  uim_eb_destroy(ueb);
+	}
+	g_free(book);
+      }
+      g_free(cand);
+    }
+#else /* HAVE_EB_LIB */
     gtk_tree_model_get(model, &iter,
 		       COLUMN_ANNOTATION, &annotation,
 		       -1);
+#endif /* HAVE_EB_LIB */
+
     if (annotation && *annotation) {
       if (!cwin->sub_window.window)
 	uim_cand_win_gtk_create_sub_window(cwin);

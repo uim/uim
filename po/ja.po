@@ -13,9 +13,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 0.4.6-alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-08 02:49+0900\n"
-"PO-Revision-Date: 2005-02-08 02:58+0900\n"
-"Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
+"POT-Creation-Date: 2005-02-08 12:53+0900\n"
+"PO-Revision-Date: 2005-02-08 12:54+0900\n"
+"Last-Translator: Takuro Ashie <ashie@homa.ne.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=EUC-JP\n"
@@ -546,6 +546,7 @@ msgstr "文節区切りを表示する"
 #: scm/im-custom.lisp:101 scm/im-custom.lisp:112 scm/im-custom.lisp:122
 #: scm/im-custom.lisp:215 scm/im-custom.lisp:275 scm/im-custom.lisp:291
 #: scm/im-custom.lisp:297 scm/im-custom.lisp:303 scm/im-custom.lisp:310
+#: scm/im-custom.lisp:318 scm/im-custom.lisp:324 scm/im-custom.lisp:331
 #: scm/prime-custom.lisp:58 scm/prime-custom.lisp:64 scm/prime-custom.lisp:70
 #: scm/prime-custom.lisp:76 scm/prime-custom.lisp:82 scm/prime-custom.lisp:90
 #: scm/prime-custom.lisp:96 scm/prime-custom.lisp:102
@@ -1226,6 +1227,18 @@ msgstr "設定ツールの起動ボタンをツールバーに表示する"
 #: scm/im-custom.lisp:309
 msgid "Enable lazy input method loading for fast startup"
 msgstr "高速起動のための遅延ローディングを有効にする"
+
+#: scm/im-custom.lisp:317
+msgid "EB library settings"
+msgstr "EBライブラリ設定"
+
+#: scm/im-custom.lisp:323
+msgid "Use EB library to search annotations"
+msgstr "注釈の検索にEBライブラリを使用する"
+
+#: scm/im-custom.lisp:330
+msgid "The directory which contains EB dictionary file"
+msgstr "EB辞書ファイルを格納しているディレクトリ"
 
 #: scm/ipa.lisp:227 scm/ipa.lisp:228
 msgid "International Phonetic Alphabet (X-SAMPA)"
