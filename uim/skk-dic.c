@@ -69,7 +69,7 @@ struct skk_cand_array {
 
   /* this array was used and merged with okuri-nasi entry array */
   int is_used;
-  /* link to next entry in the list */
+  /* link to its parent line */
   struct skk_line *line;
 };
 
@@ -77,8 +77,8 @@ struct skk_cand_array {
 struct skk_line {
   /* line index. head part */
   char *head;
-  /* line index. okurigana part. value will be 0,
-     if it is okuri-nasi entry */
+  /* line index. okurigana part. value will be 0 if it is okuri-nasi
+     entry */
   char okuri_head;
   /* array of candidate array for different okuri-gana */
   int nr_cand_array;
@@ -103,6 +103,10 @@ static struct dic_info {
   struct skk_line head;
   /* timestamp of personal dictonary */
   time_t personal_dic_timestamp;
+  /* whether cached lines are modified or not */
+  int cache_modified;
+  /* length of cached lines */
+  int cache_len;
 } *skk_dic;
 
 /* completion */
@@ -197,10 +201,13 @@ open_dic(const char *fn)
   close(fd);
   di = (struct dic_info *)malloc(sizeof(struct dic_info));
   di->addr = addr;
-  di->size = success ? st.st_size : NULL;
-  di->first = success ? find_first_line(di) : NULL;
-  di->border = success ? find_border(di, st.st_size) : NULL;
+  di->size = success ? st.st_size : 0;
+  di->first = success ? find_first_line(di) : 0;
+  di->border = success ? find_border(di, st.st_size) : 0;
   di->head.next = NULL;
+  di->personal_dic_timestamp = 0;
+  di->cache_modified = 0;
+  di->cache_len = 0;
   return di;
 }
 
@@ -289,9 +296,23 @@ next_slash(char *str)
 }
 
 static char *
+okuri_in_bracket(char *str)
+{
+  char *p, *term;
+
+  if (!str)
+    return NULL;
+
+  p = strdup(str);
+  term = next_slash(p);
+  *term = '\0';
+  return p;
+}
+
+static char *
 nth_candidate(char *str, int nth)
 {
-  char *p , *term;
+  char *p, *term;
   int i;
 
   str = first_space(str);
@@ -421,7 +442,8 @@ compose_line_parts(struct dic_info *di, struct skk_line *sl,
     tmp = nth_candidate(line, nth);
     if (tmp && strlen(tmp)) {
       if (tmp[0] == '[') {
-	compose_line_parts(di, sl, nth_candidate(&tmp[1], -1), &tmp[1]);
+	tmp[0] = ' ';
+	compose_line_parts(di, sl, okuri_in_bracket(&tmp[1]), &tmp[0]);
       } else if (tmp[0] != ']') {
 	push_back_candidate_to_array(ca, tmp);
       }
@@ -431,7 +453,6 @@ compose_line_parts(struct dic_info *di, struct skk_line *sl,
       break;
     }
   } while (1);
-
 }
 
 static struct skk_line *
@@ -450,6 +471,39 @@ alloc_skk_line(char *word, char okuri_head)
   sl->cands[0].nr_real_cands = 0;
   sl->cands[0].is_used = 0;
   sl->cands[0].line = sl;
+  return sl;
+}
+
+static struct skk_line *
+copy_skk_line(struct skk_line *p)
+{
+  int i, j;
+  struct skk_line *sl;
+
+  if (!p)
+    return NULL;
+
+  sl = malloc(sizeof(struct skk_line));
+  sl->need_save = p->need_save;
+  sl->head = strdup(p->head);
+  sl->okuri_head = p->okuri_head;
+  sl->nr_cand_array = p->nr_cand_array;
+  sl->cands = malloc(sizeof(struct skk_cand_array) * sl->nr_cand_array);
+  for (i = 0; i < sl->nr_cand_array; i++) {
+    struct skk_cand_array *ca = &sl->cands[i];
+    struct skk_cand_array *q = &p->cands[i];
+
+    ca->okuri = q->okuri ? strdup(q->okuri) : NULL;
+    ca->nr_cands = q->nr_cands;
+    ca->nr_real_cands = q->nr_real_cands;
+    ca->cands = malloc(sizeof(char *) * ca->nr_cands);
+    for (j = 0; j < ca->nr_cands; j++) {
+      ca->cands[j] = strdup(q->cands[j]);
+    }
+    ca->is_used = q->is_used;
+    ca->line = sl;
+  }
+  sl->next = NULL;
   return sl;
 }
 
@@ -474,6 +528,8 @@ add_line_to_cache_head(struct dic_info *di, struct skk_line *sl)
 {
   sl->next = di->head.next;
   di->head.next = sl;
+
+  di->cache_len++;
 }
 
 static void
@@ -508,6 +564,8 @@ add_line_to_cache_last(struct dic_info *di, struct skk_line *sl)
     prev->next = sl;
   }
   sl->next = NULL;
+
+  di->cache_len++;
 }
 
 static struct skk_line *
@@ -1320,6 +1378,25 @@ reorder_candidate(struct skk_cand_array *ca, char *str)
   }
 }
 
+static void
+merge_real_candidate_array(struct skk_cand_array *src_ca,
+			   struct skk_cand_array *dst_ca)
+{
+  int i, j;
+  if (!src_ca || !dst_ca) {
+    return ;
+  }
+  for (i = 0; i < src_ca->nr_real_cands; i++) {
+    int dup = 0;
+    for (j = 0; j < dst_ca->nr_real_cands; j++) {
+      if (!strcmp(src_ca->cands[i], dst_ca->cands[j]))
+	dup = 1;
+    }
+    if (!dup)
+      reorder_candidate(dst_ca, src_ca->cands[i]);
+  }
+}
+
 static LISP
 skk_commit_candidate(LISP head_, LISP okuri_head_,
 		     LISP okuri_, LISP nth_, LISP numlst_)
@@ -1334,23 +1411,6 @@ skk_commit_candidate(LISP head_, LISP okuri_head_,
   int method_place = 0;
 
   nth = get_c_int(nth_);
-
-  if (nth == 0) {
-    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
-#if 1
-    /*
-     * Even with 0th candidate, save the word into personal
-     * dictionary.  Note that this entry will be saved at the timing
-     * of calling skk-prepare-commit-string with skk-context-nth > 0
-     * for now.
-     */
-    ca->line->need_save = 1;
-    str = ca->cands[nth];
-    reorder_candidate(ca, str);
-#endif
-    move_line_to_cache_head(skk_dic, ca->line);
-    return NIL;
-  }
 
   ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
   if (!ca) {
@@ -1398,15 +1458,28 @@ skk_commit_candidate(LISP head_, LISP okuri_head_,
   reorder_candidate(ca, str);
 
   if (okuri_ != NIL) {
-    ca = find_cand_array_lisp(head_, okuri_head_, NIL, 0);
-    if (!ca || nr_cands <= nth) {
-      return NIL;
+    struct skk_line *sl;
+    char *okuri;
+    int found = 0;
+
+    okuri = uim_get_c_string(okuri_);
+    sl = ca->line;
+    for (i = 1; i < sl->nr_cand_array; i++) {
+      if (!strcmp(okuri, sl->cands[i].okuri)) {
+	found = 1;
+	break;
+      }
     }
-    reorder_candidate(ca, str);
+    free(okuri);
+    if (!found) {
+      ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 1);
+      reorder_candidate(ca, str);
+    }
   }
 
   ca->line->need_save = 1;
   move_line_to_cache_head(skk_dic, ca->line);
+  skk_dic->cache_modified = 1;
 
   return NIL;
 }
@@ -1473,7 +1546,7 @@ skk_learn_word(LISP head_, LISP okuri_head_, LISP okuri_, LISP word_)
 }
 
 static void
-parse_dic_line(char *line)
+parse_dic_line(struct dic_info *di, char *line)
 {
   char *buf, *sep;
   struct skk_line *sl;
@@ -1492,9 +1565,9 @@ parse_dic_line(char *line)
   if (!islower(buf[0]) && islower(sep[-1])) { /* okuri-ari entry */
     char okuri_head = sep[-1];
     sep[-1] = 0;
-    sl = compose_line(skk_dic, buf, okuri_head, line);
+    sl = compose_line(di, buf, okuri_head, line);
   } else {
-    sl = compose_line(skk_dic, buf, 0, line);
+    sl = compose_line(di, buf, 0, line);
   }
   sl->need_save = 1;
   /**/
@@ -1502,7 +1575,7 @@ parse_dic_line(char *line)
     sl->cands[i].nr_real_cands = sl->cands[i].nr_cands;
   }
   /**/
-  add_line_to_cache_last(skk_dic, sl);
+  add_line_to_cache_last(di, sl);
 }
 
 static void
@@ -1541,49 +1614,29 @@ write_out_line(FILE *fp, struct skk_line *sl)
 }
 
 static LISP
-skk_lib_save_personal_dictionary(LISP fn_)
+skk_read_personal_dictionary(struct dic_info *di, char *fn)
 {
+  struct stat st;
   FILE *fp;
-  char *fn = uim_get_c_string(fn_);
-  struct skk_line *sl;
-
-  if (fn) {
-    fp = fopen(fn, "w");
-    free(fn);
-  } else {
-    fp = stdout;
-  }
-  if (!fp) {
-    return NIL;
-  }
-
-  for (sl = skk_dic->head.next; sl; sl = sl->next) {
-    if (sl->need_save) {
-      write_out_line(fp, sl);
-    }
-  }
-  fclose(fp);
-  return NIL;
-}
-
-static LISP
-skk_lib_read_personal_dictionary(LISP fn_)
-{
-  char *fn = get_c_string(fn_);
-  FILE *fp = fopen(fn, "r");
   char buf[4096];
   int err_flag = 0;
 
-  if (!fp) {
+  if (stat(fn, &st) == -1)
     return NIL;
-  }
+
+  fp = fopen(fn, "r");
+  if (!fp)
+    return NIL;
+
+  di->personal_dic_timestamp = st.st_mtime;
+
   while (fgets(buf, 4096, fp)) {
     int len = strlen(buf);
     if (buf[len-1] == '\n') {
       if (err_flag == 0) {
 	if (buf[0] != ';') {
 	  buf[len-1] = 0;
-	  parse_dic_line(buf);
+	  parse_dic_line(di, buf);
 	}
       } else {
 	/* erroneous line ends here */
@@ -1595,6 +1648,253 @@ skk_lib_read_personal_dictionary(LISP fn_)
   }
   fclose(fp);
   return siod_true_value();
+}
+
+static LISP
+skk_lib_read_personal_dictionary(LISP fn_)
+{
+  char *fn = get_c_string(fn_);
+  return skk_read_personal_dictionary(skk_dic, fn);
+}
+
+static void push_back_candidate_array_to_sl(struct skk_line *sl,
+				      struct skk_cand_array *src_ca)
+{
+  int i;
+  struct skk_cand_array *ca;
+
+  sl->nr_cand_array++;
+  sl->cands = realloc(sl->cands,
+		  sizeof(struct skk_cand_array) * sl->nr_cand_array);
+  ca = &sl->cands[sl->nr_cand_array - 1];
+  ca->is_used = src_ca->is_used;
+  ca->nr_cands = src_ca->nr_cands;
+  ca->cands = malloc(sizeof(char *) * src_ca->nr_cands);
+  for (i = 0; i < ca->nr_cands; i++) {
+    ca->cands[i] = strdup(src_ca->cands[i]);
+  }
+
+  ca->nr_real_cands = src_ca->nr_real_cands;
+  ca->okuri = strdup(src_ca->okuri);
+  ca->line = sl;
+}
+
+static void compare_and_merge_skk_line(struct skk_line *dst_sl,
+				       struct skk_line *src_sl)
+{
+  int i, j;
+  struct skk_cand_array *dst_ca, *src_ca;
+
+  if (dst_sl == NULL || src_sl == NULL)
+    return;
+
+  src_ca = &src_sl->cands[0];
+  dst_ca = &dst_sl->cands[0];
+  if (src_ca->nr_real_cands > dst_ca->nr_real_cands)
+    merge_real_candidate_array(src_ca, dst_ca);
+
+  for (i = 1; i < src_sl->nr_cand_array; i++) {
+    int dup = 0;
+    src_ca = &src_sl->cands[i];
+
+    for (j = 1; j < dst_sl->nr_cand_array; j++) {
+      dst_ca = &dst_sl->cands[j];
+      if (!strcmp(src_ca->okuri, dst_ca->okuri)) {
+	dup = 1;
+	if (src_ca->nr_real_cands > dst_ca->nr_real_cands)
+	  merge_real_candidate_array(src_ca, dst_ca);
+      }
+    }
+    if (!dup)
+      push_back_candidate_array_to_sl(dst_sl, src_ca);
+  }
+}
+
+/* for merge sort */
+static int
+compare_entry(struct skk_line *p, struct skk_line *q)
+{
+  int ret;
+  ret = strcmp(p->head, q->head);
+
+  if (ret != 0)
+    return ret;
+  else
+    return p->okuri_head - q->okuri_head;
+}
+
+/*
+ * Retern lines with differential "midashi-go" between two personal
+ * dictionaly caches.  Also merge candidate arrays for line with same
+ * "midashi-go".  p and q are needed to be sorted.
+ */
+static struct skk_line *
+cache_line_diffs(struct skk_line *p, struct skk_line *q)
+{
+  struct skk_line *r, *s, head;
+  int cmp;
+  
+  for (r = &head; p && q; ) {
+    cmp = compare_entry(p, q);
+    if (cmp < 0) {
+      p = p->next;
+    } else if (cmp > 0) {
+      s = copy_skk_line(q);
+      r->next = s;
+      r = s;
+      q = q->next;
+    } else {
+      compare_and_merge_skk_line(p, q);
+      p = p->next;
+      q = q->next;
+    }
+  }
+  while (q) {
+    s = copy_skk_line(q);
+    r->next = s;
+    r = s;
+    q = q->next;
+  }
+  r->next = NULL;
+  return head.next;
+}
+
+/* for merge sort */
+static struct skk_line *
+lmerge(struct skk_line *p, struct skk_line *q)
+{
+  struct skk_line *r, head;
+
+  for (r = &head; p && q; ) {
+    if (compare_entry(p, q) < 0) {
+      r->next = p;
+      r = p;
+      p = p->next;
+    } else {
+      r->next = q;
+      r = q;
+      q = q->next;
+    }
+  }
+  r->next = (p ? p : q);
+  return head.next;
+}
+
+/* merge sort */
+static struct skk_line *
+lsort(struct skk_line *p)
+{
+  struct skk_line *q, *r;
+
+  if (p) {
+    q = p;
+    for (r = q->next; r && (r = r->next) != NULL; r = r->next)
+      q = q->next;
+    r = q->next;
+    q->next = NULL;
+    if (r)
+      p = lmerge(lsort(r), lsort(p));
+  }
+  return p;
+}
+
+static void
+update_personal_dictionary_cache(char *fn)
+{
+  struct dic_info *di;
+  struct skk_line *sl, *tmp, *diff, **cache_array;
+  int i;
+
+  di = (struct dic_info *)malloc(sizeof(struct dic_info));
+  if (di == NULL)
+    return;
+  di->head.next = NULL;
+  skk_read_personal_dictionary(di, fn);
+  di->head.next = lsort(di->head.next);
+
+  /* keep original sequence of cache */
+  cache_array = (struct skk_line **)malloc(sizeof(struct skk_line *)
+		  * skk_dic->cache_len);
+  if (cache_array == NULL)
+    return;
+  i = 0;
+  sl = skk_dic->head.next;
+  while (sl) {
+    cache_array[i] = sl;
+    sl = sl->next;
+    i++;
+  }
+
+  skk_dic->head.next = lsort(skk_dic->head.next);
+
+  /* get differential lines and merge candidate */
+  diff = cache_line_diffs(skk_dic->head.next, di->head.next);
+
+  /* revert sequence of the cache */
+  if (cache_array[0]) {
+    sl = skk_dic->head.next = cache_array[0];
+    for (i = 0; i < skk_dic->cache_len - 2; i++) {
+      sl->next = cache_array[i + 1];
+      sl = sl->next;
+    }
+    sl->next = NULL;
+  }
+
+  /* add differential lines at the top of the cache */
+  if (diff != NULL) {
+    diff->next = skk_dic->head.next;
+    skk_dic->head.next = diff;
+  }
+  skk_dic->cache_modified = 1;
+
+  sl = di->head.next;
+  while (sl) {
+    tmp = sl;
+    sl = sl->next;
+    free_skk_line(tmp);
+  }
+  free(di);
+  free(cache_array);
+}
+
+static LISP
+skk_lib_save_personal_dictionary(LISP fn_)
+{
+  FILE *fp;
+  char *fn = uim_get_c_string(fn_);
+  struct skk_line *sl;
+  struct stat st;
+
+  if (fn) {
+    if (stat(fn, &st) != -1) {
+      if (st.st_mtime != skk_dic->personal_dic_timestamp)
+	update_personal_dictionary_cache(fn);
+    }
+    if (skk_dic->cache_modified == 0) {
+      free(fn);
+      return NIL;
+    }
+    fp = fopen(fn, "w");
+    free(fn);
+    if (!fp) {
+      return NIL;
+    }
+  } else {
+    fp = stdout;
+  }
+
+  for (sl = skk_dic->head.next; sl; sl = sl->next) {
+    if (sl->need_save) {
+      write_out_line(fp, sl);
+    }
+  }
+  fclose(fp);
+
+  if (stat(fn, &st) != -1)
+    skk_dic->personal_dic_timestamp = st.st_mtime;
+  skk_dic->cache_modified = 0;
+
+  return NIL;
 }
 
 static LISP
@@ -1654,7 +1954,7 @@ uim_quit_skk_dic(void)
 {
   struct skk_line *sl, *tmp;
 
-  if(!skk_dic)
+  if (!skk_dic)
     return;
 
   if (skk_dic->addr) {

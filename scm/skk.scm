@@ -1491,6 +1491,10 @@
       (update-style skk-style-spec (symbol-value skk-style))
       sc)))
 
+(define skk-release-handler
+  (lambda (sc)
+    (skk-save-personal-dictionary)))
+
 (define skk-press-key-handler
   (lambda (sc key state)
     (if (control-char? key)
@@ -1548,7 +1552,7 @@
  (N_ "Uim's SKK like input method")
  #f
  skk-init-handler
- #f
+ skk-release-handler
  context-mode-handler
  skk-press-key-handler
  skk-release-key-handler
