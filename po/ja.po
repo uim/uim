@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 2010\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-01-10 13:15+0900\n"
+"POT-Creation-Date: 2005-01-11 18:50+0900\n"
 "PO-Revision-Date: 2005-01-07 12:34+0900\n"
-"Last-Translator: Takuro Ashie <ashie@homa.ne.jp>\n"
+"Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=EUC-JP\n"
@@ -393,7 +393,7 @@ msgstr "日本語かな漢字変換エンジン例"
 msgid "Japanese Kana Kanji Conversion Engine, Anthy"
 msgstr "日本語かな漢字変換エンジンAnthy"
 
-#: scm/canna.lisp:826 scm/custom-vars.lisp:46
+#: scm/canna.lisp:826 scm/custom-vars.lisp:42
 msgid "Canna"
 msgstr "Canna"
 
@@ -436,215 +436,209 @@ msgstr "Canna"
 msgid "Direct"
 msgstr "直接入力"
 
-#: scm/custom-vars.lisp:41 scm/direct.lisp:131
-msgid "Direct input method mainly used for latin languages"
-msgstr "主にラテン語入力用の直接入力方式"
-
-#: scm/custom-vars.lisp:43
+#: scm/custom-vars.lisp:41
 msgid "Anthy"
 msgstr "Anthy"
 
-#: scm/custom-vars.lisp:44 scm/custom-vars.lisp:47 scm/custom-vars.lisp:50
-#: scm/custom-vars.lisp:53 scm/custom-vars.lisp:56 scm/custom-vars.lisp:59
-#: scm/custom-vars.lisp:62 scm/custom-vars.lisp:65 scm/custom-vars.lisp:68
-#: scm/custom-vars.lisp:71 scm/custom-vars.lisp:74 scm/custom-vars.lisp:77
-#: scm/custom-vars.lisp:80 scm/custom-vars.lisp:83 scm/custom-vars.lisp:86
-#: scm/custom-vars.lisp:90 scm/custom-vars.lisp:94 scm/custom-vars.lisp:102
-#: scm/custom-vars.lisp:111 scm/custom-vars.lisp:117 scm/custom-vars.lisp:137
-#: scm/custom-vars.lisp:196 scm/custom-vars.lisp:202 scm/custom-vars.lisp:220
-#: scm/custom-vars.lisp:234 scm/custom-vars.lisp:240 scm/custom-vars.lisp:246
-#: scm/custom-vars.lisp:252 scm/custom-vars.lisp:258 scm/custom-vars.lisp:264
-#: scm/custom-vars.lisp:278 scm/custom-vars.lisp:284 scm/custom-vars.lisp:290
-#: scm/custom-vars.lisp:296 scm/custom-vars.lisp:302 scm/custom-vars.lisp:309
-#: scm/custom-vars.lisp:315 scm/custom-vars.lisp:321 scm/custom-vars.lisp:327
-#: scm/custom-vars.lisp:377 scm/custom-vars.lisp:384 scm/custom-vars.lisp:391
-#: scm/custom-vars.lisp:397 scm/custom-vars.lisp:403 scm/custom-vars.lisp:409
-#: scm/custom-vars.lisp:415 scm/custom-vars.lisp:421 scm/custom-vars.lisp:427
-#: scm/custom-vars.lisp:435 scm/custom-vars.lisp:461 scm/custom-vars.lisp:467
-#: scm/custom-vars.lisp:473 scm/custom-vars.lisp:479 scm/custom-vars.lisp:485
-#: scm/custom-vars.lisp:492 scm/custom-vars.lisp:506 scm/custom-vars.lisp:512
-#: scm/custom-vars.lisp:518 scm/custom-vars.lisp:524 scm/custom-vars.lisp:538
-#: scm/custom-vars.lisp:544 scm/custom-vars.lisp:550 scm/custom-vars.lisp:556
-msgid "long description will be here."
-msgstr ""
-
-#: scm/custom-vars.lisp:49
+#: scm/custom-vars.lisp:43
 msgid "SKK"
 msgstr "SKK"
 
-#: scm/custom-vars.lisp:52
+#: scm/custom-vars.lisp:44
 msgid "PRIME"
 msgstr "PRIME"
 
-#: scm/custom-vars.lisp:55
+#: scm/custom-vars.lisp:45
 msgid "pyunihan"
 msgstr ""
 
-#: scm/custom-vars.lisp:58
+#: scm/custom-vars.lisp:46
 msgid "pinyin-big5"
 msgstr ""
 
-#: scm/custom-vars.lisp:61
+#: scm/custom-vars.lisp:47
 msgid "Pinyin"
 msgstr "Pinyin"
 
-#: scm/custom-vars.lisp:64 scm/ipa.lisp:103
+#: scm/custom-vars.lisp:48 scm/ipa.lisp:103
 msgid "International Phonetic Alphabet"
 msgstr "IPA (国際発声記号)"
 
-#: scm/custom-vars.lisp:67
-#, fuzzy
-msgid "Romaja"
-msgstr "ルーマニア語"
-
-#: scm/custom-vars.lisp:70
-msgid "Hangul3"
+#: scm/custom-vars.lisp:49
+msgid "Hangul (Romaja)"
 msgstr ""
 
-#: scm/custom-vars.lisp:73
-msgid "Hangul2"
-msgstr ""
+#: scm/custom-vars.lisp:50
+msgid "Hangul (3-bul)"
+msgstr "3ボル式ハングル"
 
-#: scm/custom-vars.lisp:76
+#: scm/custom-vars.lisp:51
+msgid "Hangul (2-bul)"
+msgstr "2ボル式ハングル"
+
+#: scm/custom-vars.lisp:52
 msgid "Viqr"
 msgstr ""
 
-#: scm/custom-vars.lisp:79 scm/tutcode.lisp:274
+#: scm/custom-vars.lisp:53 scm/tutcode.lisp:274
 msgid "TUT-Code"
 msgstr "TUT-Code"
 
-#: scm/custom-vars.lisp:82 scm/tcode.lisp:1725
+#: scm/custom-vars.lisp:54 scm/tcode.lisp:1725
 msgid "T-Code"
 msgstr "T-Code"
 
-#: scm/custom-vars.lisp:85 scm/spellcheck.lisp:558
+#: scm/custom-vars.lisp:55 scm/spellcheck.lisp:558
 msgid "Spellcheck"
 msgstr "スペルチェック"
 
-#: scm/custom-vars.lisp:89
+#: scm/custom-vars.lisp:58
 msgid "Global settings"
 msgstr "全体設定"
 
-#: scm/custom-vars.lisp:93
+#: scm/custom-vars.lisp:59 scm/custom-vars.lisp:63 scm/custom-vars.lisp:71
+#: scm/custom-vars.lisp:80 scm/custom-vars.lisp:86 scm/custom-vars.lisp:104
+#: scm/custom-vars.lisp:163 scm/custom-vars.lisp:169 scm/custom-vars.lisp:195
+#: scm/custom-vars.lisp:201 scm/custom-vars.lisp:207 scm/custom-vars.lisp:213
+#: scm/custom-vars.lisp:219 scm/custom-vars.lisp:225 scm/custom-vars.lisp:239
+#: scm/custom-vars.lisp:245 scm/custom-vars.lisp:251 scm/custom-vars.lisp:257
+#: scm/custom-vars.lisp:263 scm/custom-vars.lisp:270 scm/custom-vars.lisp:276
+#: scm/custom-vars.lisp:282 scm/custom-vars.lisp:348 scm/custom-vars.lisp:355
+#: scm/custom-vars.lisp:362 scm/custom-vars.lisp:368 scm/custom-vars.lisp:374
+#: scm/custom-vars.lisp:380 scm/custom-vars.lisp:386 scm/custom-vars.lisp:392
+#: scm/custom-vars.lisp:398 scm/custom-vars.lisp:406 scm/custom-vars.lisp:412
+#: scm/custom-vars.lisp:418 scm/custom-vars.lisp:444 scm/custom-vars.lisp:450
+#: scm/custom-vars.lisp:456 scm/custom-vars.lisp:462 scm/custom-vars.lisp:468
+#: scm/custom-vars.lisp:475 scm/custom-vars.lisp:489 scm/custom-vars.lisp:495
+#: scm/custom-vars.lisp:501 scm/custom-vars.lisp:507 scm/custom-vars.lisp:521
+#: scm/custom-vars.lisp:527 scm/custom-vars.lisp:533 scm/custom-vars.lisp:539
+msgid "long description will be here."
+msgstr ""
+
+#: scm/custom-vars.lisp:62
 msgid "Advanced settings"
 msgstr "上級設定"
 
-#: scm/custom-vars.lisp:101
+#: scm/custom-vars.lisp:70
 msgid "Preedit color"
 msgstr "プリエディット色"
 
-#: scm/custom-vars.lisp:110 scm/custom-vars.lisp:136
+#: scm/custom-vars.lisp:79 scm/custom-vars.lisp:103
 msgid "Default input method"
 msgstr "デフォルトの入力方式"
 
-#: scm/custom-vars.lisp:116
+#: scm/custom-vars.lisp:85
 msgid "Specify default IM"
 msgstr "デフォルトIMを指定する"
 
-#: scm/custom-vars.lisp:195
+#: scm/custom-vars.lisp:162
 msgid "Input method switching"
 msgstr "入力言語の切り替え"
 
-#: scm/custom-vars.lisp:201
+#: scm/custom-vars.lisp:168
 msgid "Enable IM switching by hotkey"
 msgstr "ホットキーでのIM切替えを有効にする"
 
-#: scm/custom-vars.lisp:219
-msgid "Candidate window position"
-msgstr "候補ウィンドウの位置"
-
-#: scm/custom-vars.lisp:233 scm/custom-vars.lisp:277 scm/custom-vars.lisp:396
-#: scm/custom-vars.lisp:511 scm/custom-vars.lisp:537
+#: scm/custom-vars.lisp:194 scm/custom-vars.lisp:238 scm/custom-vars.lisp:367
+#: scm/custom-vars.lisp:494 scm/custom-vars.lisp:520
 msgid "Use candidate window"
 msgstr "候補ウィンドウを使用する"
 
-#: scm/custom-vars.lisp:239 scm/custom-vars.lisp:283 scm/custom-vars.lisp:402
-#: scm/custom-vars.lisp:517 scm/custom-vars.lisp:543
+#: scm/custom-vars.lisp:200 scm/custom-vars.lisp:244 scm/custom-vars.lisp:373
+#: scm/custom-vars.lisp:500 scm/custom-vars.lisp:526
 msgid "Conversion key press count to show candidate window"
 msgstr "候補ウィンドウの表示を開始するまでの変換キー押下数"
 
-#: scm/custom-vars.lisp:245 scm/custom-vars.lisp:289 scm/custom-vars.lisp:408
-#: scm/custom-vars.lisp:460 scm/custom-vars.lisp:523
+#: scm/custom-vars.lisp:206 scm/custom-vars.lisp:250 scm/custom-vars.lisp:379
+#: scm/custom-vars.lisp:443 scm/custom-vars.lisp:506
 msgid "Number of candidates in candidate window at a time"
 msgstr "候補ウィンドウに表示する候補数"
 
-#: scm/custom-vars.lisp:251
+#: scm/custom-vars.lisp:212
 msgid "Select candidate by numeral keys"
 msgstr ""
 
-#: scm/custom-vars.lisp:257 scm/custom-vars.lisp:295
+#: scm/custom-vars.lisp:218 scm/custom-vars.lisp:256
 msgid "Show segment separator"
 msgstr "文節区切りを表示する"
 
-#: scm/custom-vars.lisp:263 scm/custom-vars.lisp:301
+#: scm/custom-vars.lisp:224 scm/custom-vars.lisp:262
 msgid "Segment separator"
 msgstr "文節区切り"
 
-#: scm/custom-vars.lisp:308
+#: scm/custom-vars.lisp:269
 msgid "Canna server"
 msgstr "Cannaサーバ"
 
-#: scm/custom-vars.lisp:314
+#: scm/custom-vars.lisp:275
 msgid "Use Canna server"
 msgstr "Cannaサーバを使用する"
 
-#: scm/custom-vars.lisp:320 scm/custom-vars.lisp:326
+#: scm/custom-vars.lisp:281
 msgid "Canna server name"
 msgstr "Cannaサーバ名"
 
-#: scm/custom-vars.lisp:376
+#: scm/custom-vars.lisp:347
 msgid "Dictionary file"
 msgstr "辞書ファイル"
 
-#: scm/custom-vars.lisp:383
+#: scm/custom-vars.lisp:354
 msgid "Personal dictionary file"
 msgstr "個人辞書ファイル"
 
-#: scm/custom-vars.lisp:390
+#: scm/custom-vars.lisp:361
 msgid "Personal dictionary file (dedicated to uim)"
 msgstr "個人辞書ファイル (uim専用)"
 
-#: scm/custom-vars.lisp:414
+#: scm/custom-vars.lisp:385
 msgid "Use recursive learning"
 msgstr "再帰学習を使用する"
 
-#: scm/custom-vars.lisp:420
+#: scm/custom-vars.lisp:391
 msgid "Use Enter key as just committing (egg-like operation)"
 msgstr "Enterキーをコミットにのみ使用する (egg風の操作)"
 
-#: scm/custom-vars.lisp:426
+#: scm/custom-vars.lisp:397
 msgid "Commit newline as ASCII string instead of native key-event"
 msgstr "新規行をネイティブキーイベントの代わりにASCII文字列としてコミットする"
 
-#: scm/custom-vars.lisp:434
+#: scm/custom-vars.lisp:405
 msgid "Visual style"
 msgstr "ビジュアルスタイル"
 
-#: scm/custom-vars.lisp:466 scm/custom-vars.lisp:555
+#: scm/custom-vars.lisp:411
+msgid "Use numeric conversion"
+msgstr ""
+
+#: scm/custom-vars.lisp:417
+msgid "Friendly for vi user"
+msgstr ""
+
+#: scm/custom-vars.lisp:449 scm/custom-vars.lisp:538
 msgid "Always showing candidate window"
 msgstr "候補ウィンドウを常に表示する"
 
-#: scm/custom-vars.lisp:472
+#: scm/custom-vars.lisp:455
 msgid "Enable auto register mode"
 msgstr ""
 
-#: scm/custom-vars.lisp:478
+#: scm/custom-vars.lisp:461
 msgid "Enable pseudo mode cursor"
 msgstr ""
 
-#: scm/custom-vars.lisp:484
+#: scm/custom-vars.lisp:467
 msgid "Show candidate annotations"
 msgstr ""
 
-#: scm/custom-vars.lisp:491
+#: scm/custom-vars.lisp:474
 msgid "Mask preedit strings (For tcode users)"
 msgstr ""
 
-#: scm/custom-vars.lisp:505
+#: scm/custom-vars.lisp:488
 msgid "Other input methods"
 msgstr "その他の入力方式"
 
-#: scm/custom-vars.lisp:549
+#: scm/custom-vars.lisp:532
 msgid "spellcheck-preedit-immediate-commit?"
 msgstr ""
 
@@ -655,6 +649,10 @@ msgstr "直接入力"
 #: scm/direct.lisp:54 scm/generic.lisp:68 scm/m17nlib.lisp:63
 msgid "Direct Input Mode"
 msgstr "直接入力モード"
+
+#: scm/direct.lisp:131
+msgid "Direct input method mainly used for latin languages"
+msgstr "主にラテン語入力用の直接入力方式"
 
 #: scm/generic.lisp:67 scm/m17nlib.lisp:62
 msgid "off"
@@ -669,22 +667,22 @@ msgid " Mode"
 msgstr ""
 
 #: scm/hangul.lisp:89
-msgid "hangul2"
-msgstr ""
+msgid "2-bul style hangul input method"
+msgstr "2ボル式ハングルインプットメソッド"
 
 #: scm/hangul.lisp:93
-msgid "hangul3"
-msgstr ""
+msgid "3-bul style hangul input method"
+msgstr "3ボル式ハングルインプットメソッド"
 
 #: scm/hangul.lisp:96
-msgid "romaja"
-msgstr ""
+msgid "Romaja input style hangul input method"
+msgstr "ローマ字入力式ハングルインプットメソッド"
 
 #: scm/latin.lisp:575
 msgid "euro"
 msgstr "ヨーロッパ"
 
-#: scm/m17nlib.lisp:297
+#: scm/m17nlib.lisp:312
 msgid "An input method provided by the m17n library"
 msgstr "m17nライブラリによって提供されるインプットメソッド"
 
@@ -704,7 +702,7 @@ msgstr "PinYin入力方式 (ユニコード)"
 msgid "PinYin input method (Big5 version)"
 msgstr "PinYin入力方式 (Big5)"
 
-#: scm/skk.lisp:1571
+#: scm/skk.lisp:1581
 msgid "Uim's SKK like input method"
 msgstr "UimのSKK風入力方式"
 
@@ -1031,7 +1029,7 @@ msgstr "キルギス語"
 
 #: uim/iso-639-1.def:110
 msgid "Kirundi (Rundi)"
-msgstr "<キルンディ語"
+msgstr "キルンディ語"
 
 #: uim/iso-639-1.def:111
 msgid "Konkani"
@@ -1040,7 +1038,7 @@ msgstr "コンカニ語"
 #. defined as "kok" in ISO 639-2
 #: uim/iso-639-1.def:112
 msgid "Korean"
-msgstr "朝鮮語"
+msgstr "ハングル"
 
 #: uim/iso-639-1.def:113
 msgid "Kurdish"
@@ -1277,7 +1275,7 @@ msgstr "トルクメニスタン語"
 
 #: uim/iso-639-1.def:171
 msgid "Twi"
-msgstr ""
+msgstr "チュイ語"
 
 #: uim/iso-639-1.def:172
 msgid "Uighur"
@@ -1322,6 +1320,9 @@ msgstr "ヨルバ語"
 #: uim/iso-639-1.def:182
 msgid "Zulu"
 msgstr "ズールー語"
+
+#~ msgid "Candidate window position"
+#~ msgstr "候補ウィンドウの位置"
 
 #~ msgid "tools menu"
 #~ msgstr "ツールメニュー"

@@ -38,52 +38,21 @@
 ;; Global
 
 (define direct-im-canonical-name (_ "Direct"))
-(define direct-im-desc (_ "Direct input method mainly used for latin languages"))
-
 (define anthy-im-canonical-name (_ "Anthy"))
-(define anthy-im-desc (_ "long description will be here."))
-
 (define canna-im-canonical-name (_ "Canna"))
-(define canna-im-desc (_ "long description will be here."))
-
 (define skk-im-canonical-name (_ "SKK"))
-(define skk-im-desc (_ "long description will be here."))
-
 (define prime-im-canonical-name (_ "PRIME"))
-(define prime-im-desc (_ "long description will be here."))
-
 (define pyunihan-im-canonical-name (_ "pyunihan"))
-(define pyunihan-im-desc (_ "long description will be here."))
-
 (define pinyin-big5-im-canonical-name (_ "pinyin-big5"))
-(define pinyin-big5-im-desc (_ "long description will be here."))
-
 (define py-im-canonical-name (_ "Pinyin"))
-(define py-im-desc (_ "long description will be here."))
-
 (define ipa-im-canonical-name (_ "International Phonetic Alphabet"))
-(define ipa-im-desc (_ "long description will be here."))
-
-(define romaja-im-canonical-name (_ "Romaja"))
-(define romaja-im-desc (_ "long description will be here."))
-
-(define hangul3-im-canonical-name (_ "Hangul3"))
-(define hangul3-im-desc (_ "long description will be here."))
-
-(define hangul2-im-canonical-name (_ "Hangul2"))
-(define hangul2-im-desc (_ "long description will be here."))
-
+(define romaja-im-canonical-name (_ "Hangul (Romaja)"))
+(define hangul3-im-canonical-name (_ "Hangul (3-bul)"))
+(define hangul2-im-canonical-name (_ "Hangul (2-bul)"))
 (define viqr-im-canonical-name (_ "Viqr"))
-(define viqr-im-desc (_ "long description will be here."))
-
 (define tutcode-im-canonical-name (_ "TUT-Code"))
-(define tutcode-im-desc (_ "long description will be here."))
-
 (define tcode-im-canonical-name (_ "T-Code"))
-(define tcode-im-desc (_ "long description will be here."))
-
 (define spellcheck-im-canonical-name (_ "Spellcheck"))
-(define spellcheck-im-desc (_ "long description will be here."))
 
 (define-custom-group 'global
 		     (_ "Global settings")
@@ -128,9 +97,7 @@
 					 (symbol-value cname-proc))
 				    (symbol->string sym)))
 			  (desc-proc (symbolconc sym '-im-desc))
-			  (desc (or (and (symbol-bound? desc-proc)
-					 (symbol-value desc-proc))
-				    (symbol->string sym))))
+			  (desc (im-short-desc im)))
 		     (list sym name desc)))
 		 im-list)))
   (_ "Default input method")

@@ -86,11 +86,11 @@
     (generic-context-new id im romaja-rule #t)))
 
 (hangul-register-im
- 'hangul2 "ko" "UTF-8" (N_ "hangul2") hangul2-init-handler)
+ 'hangul2 "ko" "UTF-8" (N_ "2-bul style hangul input method") hangul2-init-handler)
 
 ;; hangul3 IM does not require generic-keys disabled
 (generic-register-im
- 'hangul3 "ko" "UTF-8" (N_ "hangul3") hangul3-init-handler)
+ 'hangul3 "ko" "UTF-8" (N_ "3-bul style hangul input method") hangul3-init-handler)
 
 (hangul-register-im
- 'romaja "ko" "UTF-8" (N_ "romaja") romaja-init-handler)
+ 'romaja "ko" "UTF-8" (N_ "Romaja input style hangul input method") romaja-init-handler)
