@@ -238,10 +238,9 @@ void QUimInputContext::setFocus()
 
     m_HelperManager->checkHelperConnection();
 
+    uim_helper_client_focus_in( m_uc );
     uim_prop_list_update( m_uc );
     uim_prop_label_update( m_uc );
-
-    uim_helper_client_focus_in( m_uc );
 }
 
 void QUimInputContext::unsetFocus()
