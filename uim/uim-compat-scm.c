@@ -68,7 +68,8 @@ uim_scm_symbol_value_int(const char *symbol_str)
 }
 
 uim_lisp
-uim_scm_int_from_c_int(int integer) {
+uim_scm_int_from_c_int(int integer)
+{
   return uim_scm_make_int(integer);
 }
 
@@ -94,17 +95,20 @@ uim_scm_symbol_value_str(const char *symbol_str)
 
 /* backward compatibility */
 char *
-uim_symbol_value_str(const char *symbol_str) {
+uim_symbol_value_str(const char *symbol_str)
+{
   return uim_scm_symbol_value_str(symbol_str);
 }
 
 uim_lisp
-uim_scm_str_from_c_str(const char *str) {
+uim_scm_str_from_c_str(const char *str)
+{
   return uim_scm_make_str(str);
 }
 
 uim_lisp
-uim_scm_c_strs_into_list(int n_strs, const char *const *strs) {
+uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
+{
   LISP lst = NIL, str = NIL;
   const char *c_str;
   int i, unknown_strlen = -1;
@@ -143,12 +147,14 @@ uim_scm_qintern_c_str(const char *str)
 }
 
 uim_lisp
-uim_scm_quote(uim_lisp obj) {
+uim_scm_quote(uim_lisp obj)
+{
   return uim_scm_list2(quote_sym, obj);
 }
 
 uim_lisp
-uim_scm_nth(uim_lisp n, uim_lisp lst) {
+uim_scm_nth(uim_lisp n, uim_lisp lst)
+{
   uim_lisp form;
   form = uim_scm_list3(uim_scm_intern_c_str("nth"),
 		       n,
@@ -157,28 +163,32 @@ uim_scm_nth(uim_lisp n, uim_lisp lst) {
 }
 
 uim_lisp
-uim_scm_list1(uim_lisp elm1) {
+uim_scm_list1(uim_lisp elm1)
+{
   uim_lisp lst;
   lst = (uim_lisp)listn(1, (LISP)elm1);
   return lst;
 }
 
 uim_lisp
-uim_scm_list2(uim_lisp elm1, uim_lisp elm2) {
+uim_scm_list2(uim_lisp elm1, uim_lisp elm2)
+{
   uim_lisp lst;
   lst = (uim_lisp)listn(2, (LISP)elm1, (LISP)elm2);
   return lst;
 }
 
 uim_lisp
-uim_scm_list3(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3) {
+uim_scm_list3(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3)
+{
   uim_lisp lst;
   lst = (uim_lisp)listn(3, (LISP)elm1, (LISP)elm2, (LISP)elm3);
   return lst;
 }
 
 uim_lisp
-uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4) {
+uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4)
+{
   uim_lisp lst;
   lst = (uim_lisp)listn(4, (LISP)elm1, (LISP)elm2, (LISP)elm3, (LISP)elm4);
   return lst;

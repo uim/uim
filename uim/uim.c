@@ -66,12 +66,14 @@ static int uim_siod_fatal;
 static FILE *uim_output = NULL;
 
 FILE *
-uim_scm_get_output(void) {
+uim_scm_get_output(void)
+{
   return uim_output;
 }
 
 void
-uim_scm_set_output(FILE *fp) {
+uim_scm_set_output(FILE *fp)
+{
   uim_output = fp;
 }
 
@@ -216,7 +218,8 @@ uim_reset_context(uim_context uc)
 }
 
 void
-uim_switch_im(uim_context uc, const char *engine) {
+uim_switch_im(uim_context uc, const char *engine)
+{
   /* related to the commit log of r1400:
 
      We should not add the API uim_destroy_context(). We should move

@@ -178,32 +178,38 @@ uim_scm_load_file(const char *fn)
 }
 
 uim_lisp
-uim_scm_t(void) {
+uim_scm_t(void)
+{
   return (uim_lisp)true_sym;
 }
 
 uim_lisp
-uim_scm_f(void) {
+uim_scm_f(void)
+{
   return (uim_lisp)false_sym;
 }
 
 uim_lisp
-uim_scm_null_list(void) {
+uim_scm_null_list(void)
+{
   return (uim_lisp)NIL;
 }
 
 int
-uim_scm_nullp(uim_lisp obj) {
+uim_scm_nullp(uim_lisp obj)
+{
   return NULLP((LISP)obj);
 }
 
 int
-uim_scm_eq(uim_lisp a, uim_lisp b) {
+uim_scm_eq(uim_lisp a, uim_lisp b)
+{
   return EQ(a, b);
 }
 
 int
-uim_scm_string_equal(uim_lisp a, uim_lisp b) {
+uim_scm_string_equal(uim_lisp a, uim_lisp b)
+{
   uim_lisp form, p;
   protected_arg0 = form = uim_scm_list3(uim_scm_make_symbol("string=?"),
 					a,
@@ -213,7 +219,8 @@ uim_scm_string_equal(uim_lisp a, uim_lisp b) {
 }
 
 uim_lisp
-uim_scm_eval(uim_lisp obj) {
+uim_scm_eval(uim_lisp obj)
+{
   uim_lisp ret;  /* intentionally outside of next stack_start */
   uim_lisp stack_start;
 
@@ -225,7 +232,8 @@ uim_scm_eval(uim_lisp obj) {
 }
 
 uim_lisp
-uim_scm_eval_c_string(const char *str) {
+uim_scm_eval_c_string(const char *str)
+{
   repl_c_string((char *)str, 0, 0);
   return uim_scm_return_value();
 }
@@ -237,42 +245,50 @@ uim_scm_return_value(void)
 }
 
 uim_lisp
-uim_scm_car(uim_lisp cell) {
+uim_scm_car(uim_lisp cell)
+{
   return (uim_lisp)car((LISP)cell);
 }
 
 uim_lisp
-uim_scm_cdr(uim_lisp cell) {
+uim_scm_cdr(uim_lisp cell)
+{
   return (uim_lisp)cdr((LISP)cell);
 }
 
 uim_lisp
-uim_scm_cadr(uim_lisp cell) {
+uim_scm_cadr(uim_lisp cell)
+{
   return (uim_lisp)cadr((LISP)cell);
 }
 
 uim_lisp
-uim_scm_caar(uim_lisp cell) {
+uim_scm_caar(uim_lisp cell)
+{
   return (uim_lisp)caar((LISP)cell);
 }
 
 uim_lisp
-uim_scm_cdar(uim_lisp cell) {
+uim_scm_cdar(uim_lisp cell)
+{
   return (uim_lisp)cdar((LISP)cell);
 }
 
 uim_lisp
-uim_scm_cddr(uim_lisp cell) {
+uim_scm_cddr(uim_lisp cell)
+{
   return (uim_lisp)cddr((LISP)cell);
 }
 
 uim_lisp
-uim_scm_cons(uim_lisp car, uim_lisp cdr) {
+uim_scm_cons(uim_lisp car, uim_lisp cdr)
+{
   return (uim_lisp)cons((LISP)car, (LISP)cdr);
 }
 
 uim_bool
-uim_scm_require_file(const char *fn) {
+uim_scm_require_file(const char *fn)
+{
 #if 0
   /* This function directly call require() because using UIM_EVAL_FSTRING1
    * causes segv.

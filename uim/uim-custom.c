@@ -178,7 +178,8 @@ uim_custom_type_eq(const char *custom_sym, const char *custom_type)
 }
 
 static int
-uim_custom_type(const char *custom_sym) {
+uim_custom_type(const char *custom_sym)
+{
   if (uim_custom_type_eq(custom_sym, "boolean")) {
     return UCustom_Bool;
   } else if (uim_custom_type_eq(custom_sym, "integer")) {
