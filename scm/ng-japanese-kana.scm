@@ -238,26 +238,26 @@
     ((pkey_jp106_asciicircum pkey_jp106_bracketleft) ("ぺ" "ペ" ("ﾍ" "ﾟ")))
     ((pkey_jp106_minus       pkey_jp106_bracketleft) ("ぽ" "ポ" ("ﾎ" "ﾟ")))
 
-    ((pkey_jp106_3           mod_Shift)     ("ぁ" "ァ" "ｧ"))
-    ((pkey_jp106_e           mod_Shift)     ("ぃ" "ィ" "ｨ"))
-    ((pkey_jp106_4           mod_Shift)     ("ぅ" "ゥ" "ｩ"))
-    ((pkey_jp106_5           mod_Shift)     ("ぇ" "ェ" "ｪ"))
-    ((pkey_jp106_6           mod_Shift)     ("ぉ" "ォ" "ｫ"))
+    (((pkey_jp106_3            mod_Shift))  ("ぁ" "ァ" "ｧ"))
+    (((pkey_jp106_e            mod_Shift))  ("ぃ" "ィ" "ｨ"))
+    (((pkey_jp106_4            mod_Shift))  ("ぅ" "ゥ" "ｩ"))
+    (((pkey_jp106_5            mod_Shift))  ("ぇ" "ェ" "ｪ"))
+    (((pkey_jp106_6            mod_Shift))  ("ぉ" "ォ" "ｫ"))
 
-    ((pkey_jp106_7           mod_Shift)     ("ゃ" "ャ" "ｬ"))
-    ((pkey_jp106_8           mod_Shift)     ("ゅ" "ュ" "ｭ"))
-    ((pkey_jp106_9           mod_Shift)     ("ょ" "ョ" "ｮ"))
+    (((pkey_jp106_7            mod_Shift))  ("ゃ" "ャ" "ｬ"))
+    (((pkey_jp106_8            mod_Shift))  ("ゅ" "ュ" "ｭ"))
+    (((pkey_jp106_9            mod_Shift))  ("ょ" "ョ" "ｮ"))
 
-    ((pkey_jp106_z           mod_Shift)     ("っ" "ッ" "ｯ"))
+    (((pkey_jp106_z            mod_Shift))  ("っ" "ッ" "ｯ"))
 
     ((pkey_jp106_at)                        ("゛" "゛" "ﾞ"))
     ((pkey_jp106_bracketleft)               ("゜" "゜" "ﾟ"))
     ((pkey_jp106_yen)                       ("ー" "ー" "ｰ"))  ;; be careful
-    ((pkey_jp106_period       mod_Shift)    ("。" "。" "｡"))
-    ((pkey_jp106_comma        mod_Shift)    ("、" "、" "､"))
-    ((pkey_jp106_slash        mod_Shift)    ("・" "・" "･"))
-    ((pkey_jp106_bracketleft  mod_Shift)    ("「" "「" "｢"))
-    ((pkey_jp106_bracketright mod_Shift)    ("」" "」" "｣"))  ;; be careful
+    (((pkey_jp106_period       mod_Shift))  ("。" "。" "｡"))
+    (((pkey_jp106_comma        mod_Shift))  ("、" "、" "､"))
+    (((pkey_jp106_slash        mod_Shift))  ("・" "・" "･"))
+    (((pkey_jp106_bracketleft  mod_Shift))  ("「" "「" "｢"))
+    (((pkey_jp106_bracketright mod_Shift))  ("」" "」" "｣"))  ;; be careful
     ))
 
 (define ja-kana-ruleset-name-list
