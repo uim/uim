@@ -1927,6 +1927,53 @@ skk_lib_remove_annotation(LISP str_)
   return res;
 }
 
+static LISP
+skk_string_to_list(char *str, int type)
+{
+  unsigned char *cur = (unsigned char *)str;
+  LISP res = NIL;
+  while (*cur) {
+    unsigned char buf[3];
+    int len;
+    buf[2] = 0;
+    if (*cur > 127) {
+      /* 2 bytes */
+      buf[0] = cur[0];
+      if (type == 0) { /* to hiragana */
+	if (buf[0] == 0xa5)
+	  buf[0] = 0xa4;
+      } else if (type == 1) { /* to katakana */
+	if (buf[0] == 0xa4)
+	  buf[0] = 0xa5;
+      }
+      buf[1] = cur[1];
+      len = 2;
+      cur ++;
+    } else {
+      buf[0] = cur[0];
+      buf[1] = 0;
+      len = 1;
+    }
+    res = cons (strcons(len, (char *)buf), res);
+    cur ++;
+  }
+  return res;
+}
+
+static LISP
+skk_string_to_hira_list(LISP str_)
+{
+  char *str = get_c_string(str_);
+  return skk_string_to_list(str, 0);
+}
+
+static LISP
+skk_string_to_kata_list(LISP str_)
+{
+  char *str = get_c_string(str_);
+  return skk_string_to_list(str, 1);
+}
+
 void
 uim_init_skk_dic(void)
 {
@@ -1947,6 +1994,8 @@ uim_init_skk_dic(void)
   init_subr_2("skk-lib-get-nth-completion", skk_get_nth_completion);
   init_subr_1("skk-lib-get-nr-completions", skk_get_nr_completions);
   init_subr_1("skk-lib-clear-completions", skk_clear_completions);
+  init_subr_1("skk-lib-string-to-hiragana-list", skk_string_to_hira_list);
+  init_subr_1("skk-lib-string-to-katakana-list", skk_string_to_kata_list);
 }
 
 void

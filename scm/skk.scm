@@ -576,15 +576,6 @@
       sc
       (cons str (skk-context-okuri sc))))))
 
-(define skk-list-to-context-head
-  (lambda (sc lst len n)
-    (and
-     lst 
-     (> len n)
-     (skk-context-set-head! sc (cons (nthcdr n lst) (skk-context-head sc)))
-     (set! n (+ n 1))
-     (skk-list-to-context-head sc lst len n))))
-
 (define skk-append-residual-kana
   (lambda (sc)
     (let* ((rkc (skk-context-rk-context sc))
@@ -628,7 +619,7 @@
       ;;
       (set! res
 	    (skk-lib-get-completion
-	     (skk-make-string (skk-context-head sc) skk-type-hiragana)))
+	     (skk-make-string (skk-context-head sc) (skk-context-kana-mode sc))))
       (if res
 	  (begin
 	    (skk-context-set-completion-nth! sc 0)
@@ -1286,9 +1277,7 @@
 
 (define skk-proc-state-completion
   (lambda (c key key-state)
-    (let ((sc (skk-find-descendant-context c))
-	  (res)
-	  (len))
+    (let ((sc (skk-find-descendant-context c)))
       (and
        (if (skk-next-completion-key? key key-state)
 	   (skk-change-completion-index sc #t)
@@ -1303,16 +1292,15 @@
 	     (skk-context-set-state! sc 'skk-state-kanji)
 	     #f)
 	   #t)
-       (begin
-	 (set! res
-	       (reverse (string-to-list (skk-get-current-completion sc))))
+       (let ((hira (skk-lib-string-to-hiragana-list
+		    (skk-get-current-completion sc)))
+       	     (kata (skk-lib-string-to-katakana-list
+		    (skk-get-current-completion sc))))
 	 (skk-lib-clear-completions
-	   (skk-make-string (skk-context-head sc) skk-type-hiragana))
-	 (set! len (length res))
-	 (skk-context-set-head! sc '())
-	 (skk-list-to-context-head sc res len 0)
+	   (skk-make-string (skk-context-head sc) (skk-context-kana-mode sc)))
+	 (skk-context-set-head! sc (map list hira kata))
 	 (skk-context-set-state! sc 'skk-state-kanji)
-	 (set! res (skk-proc-state-kanji c key key-state))))
+	 (skk-proc-state-kanji c key key-state)))
       #f)))
 
 (define skk-proc-state-converting
