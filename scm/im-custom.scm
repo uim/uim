@@ -279,8 +279,8 @@
   '(global visual-preference)
   (list 'choice
 	(list 'caret
-	      (_ "Adjacent to caret")
-	      (_ "Adjacent to caret"))
+	      (_ "Adjacent to cursor")
+	      (_ "Adjacent to cursor"))
 	(list 'left
 	      (_ "Left end of preedit area")
 	      (_ "Left end of preedit area"))

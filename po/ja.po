@@ -3,12 +3,18 @@
 # This file is distributed under the same license as the uim package.
 #  TOKUNAGA Hiroyuki <tkng@xem.jp>.
 #
+# 日本語訳に使用する用語 (適宜追加お願いします):
+# input method → 入力方式
+# preedit      → 編集領域
+# commit       → 確定
+# use          → 使用
+# enable       → 有効
 msgid ""
 msgstr ""
 "Project-Id-Version: uim 0.4.6-alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-07 13:10+0900\n"
-"PO-Revision-Date: 2005-02-07 13:11+0900\n"
+"POT-Creation-Date: 2005-02-08 02:49+0900\n"
+"PO-Revision-Date: 2005-02-08 02:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -348,7 +354,7 @@ msgstr ""
 "設定が変更されています。\n"
 "本当に終了しますか?"
 
-#: helper/pref-gtk.c:214 qt/pref-qt.cpp:103
+#: helper/pref-gtk.c:214 qt/pref-qt.cpp:137
 msgid "Group"
 msgstr "グループ"
 
@@ -435,11 +441,12 @@ msgstr "学術"
 msgid "line"
 msgstr "線"
 
-#: qt/switcher-qt.cpp:116 qt/pref-qt.cpp:124 qt/pref-qt.cpp:262
+#: qt/switcher-qt.cpp:116 qt/pref-qt.cpp:158 qt/pref-qt.cpp:236
+#: qt/pref-qt.cpp:318
 msgid "OK"
 msgstr "OK"
 
-#: qt/switcher-qt.cpp:121 qt/pref-qt.cpp:131 qt/pref-qt.cpp:263
+#: qt/switcher-qt.cpp:121 qt/pref-qt.cpp:165 qt/pref-qt.cpp:237
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -452,11 +459,31 @@ msgstr "入力方式の切り替え"
 msgid "exec Preference Application"
 msgstr "設定ツールの起動"
 
-#: qt/pref-qt.cpp:121
+#: qt/pref-qt.cpp:106
+msgid ""
+"The user customize file \"~/.uim\" is found.\n"
+"This file will override all conflicted settings set by\n"
+"this tool (stored in ~/.uim.d/customs/*.scm).\n"
+"Please check the file if you find your settings aren't applied"
+msgstr ""
+"ユーザ設定ファイル \"~/.uim\" が存在します。\n"
+"このファイルの内容は、このツールで設定した設定内容\n"
+"(\"~/.uim.d/customs/*.scm\") よりも優先されます。\n"
+"設定が反映されない場合は、このファイルをチェックして下さい。"
+
+#: qt/pref-qt.cpp:113
+msgid "~/.uim exists!"
+msgstr ""
+
+#: qt/pref-qt.cpp:155
 msgid "Defaults"
 msgstr "デフォルト"
 
-#: qt/pref-qt.cpp:199
+#: qt/pref-qt.cpp:234
+msgid "Save Confirm"
+msgstr ""
+
+#: qt/pref-qt.cpp:235
 msgid ""
 "The value was changed.\n"
 "Save?"
@@ -464,11 +491,15 @@ msgstr ""
 "設定が変更されています。\n"
 "セーブしますか?"
 
+#: qt/pref-qt.cpp:313
+msgid "Show this dialog on startup"
+msgstr ""
+
 #: qt/pref-customwidgets.cpp:172
 msgid "File"
 msgstr "参照"
 
-#: qt/pref-customwidgets.cpp:309 qt/pref-customwidgets.cpp:589
+#: qt/pref-customwidgets.cpp:310 qt/pref-customwidgets.cpp:592
 msgid "Edit"
 msgstr "編集"
 
@@ -749,23 +780,23 @@ msgstr "[Anthy] 文節を短縮"
 
 # "全角英数確定"としないのは単語境界の認識を容易にするため  -- YamaKen  2005-02-02
 #: scm/anthy-key-custom.lisp:75
-msgid "[Anthy] commit preedit string as halfwidth alphanumeric"
+msgid "[Anthy] commit as halfwidth alphanumeric"
 msgstr "[Anthy] 半角英数として確定"
 
 #: scm/anthy-key-custom.lisp:81
-msgid "[Anthy] commit preedit string as fullwidth alphanumeric"
+msgid "[Anthy] commit as fullwidth alphanumeric"
 msgstr "[Anthy] 全角英数として確定"
 
 #: scm/anthy-key-custom.lisp:87
-msgid "[Anthy] commit preedit string as katakana"
+msgid "[Anthy] commit as katakana"
 msgstr "[Anthy] カタカナとして確定"
 
 #: scm/anthy-key-custom.lisp:93
-msgid "[Anthy] commit preedit string as halfwidth katakana"
+msgid "[Anthy] commit as halfwidth katakana"
 msgstr "[Anthy] 半角カタカナとして確定"
 
 #: scm/anthy-key-custom.lisp:99
-msgid "[Anthy] commit preedit string as transposed kana"
+msgid "[Anthy] commit as transposed kana"
 msgstr "[Anthy] かな/カナ反転確定"
 
 #: scm/anthy-key-custom.lisp:105
@@ -893,7 +924,7 @@ msgid "[Canna] shrink segment"
 msgstr "[Canna] 文節を短縮"
 
 #: scm/canna-key-custom.lisp:75
-msgid "[Canna] commit preedit string as transposed kana"
+msgid "[Canna] commit as transposed kana"
 msgstr "[Canna] かな/カナ反転確定"
 
 #: scm/canna-key-custom.lisp:81
@@ -1166,11 +1197,11 @@ msgstr "ATOK風"
 
 #: scm/im-custom.lisp:274
 msgid "Preedit color"
-msgstr "プリエディット色"
+msgstr "編集領域色"
 
 #: scm/im-custom.lisp:282 scm/im-custom.lisp:283
-msgid "Adjacent to caret"
-msgstr "キャレットに隣接"
+msgid "Adjacent to cursor"
+msgstr "カーソルに隣接"
 
 #: scm/im-custom.lisp:285 scm/im-custom.lisp:286
 msgid "Left end of preedit area"
@@ -1448,7 +1479,7 @@ msgstr "候補に註釈を表示する"
 
 #: scm/skk-custom.lisp:235
 msgid "Show annotation also in preedit area"
-msgstr "プリエディット内にも註釈を表示する"
+msgstr "編集領域内にも註釈を表示する"
 
 #: scm/skk-custom.lisp:256
 msgid "Friendly for vi user"
@@ -1456,11 +1487,11 @@ msgstr "viに適応した入力制御を使用する"
 
 #: scm/skk-custom.lisp:262
 msgid "Use Enter key as just committing (egg-like operation)"
-msgstr "Enterキーを単にコミットのために使う (egg風の操作)"
+msgstr "Enterキーを単に確定のために使う (egg風の操作)"
 
 #: scm/skk-custom.lisp:269
 msgid "Commit newline as ASCII string instead of native key-event"
-msgstr "新規行をネイティブキーイベントの代わりにASCII文字列としてコミットする"
+msgstr "新規行をネイティブキーイベントの代わりにASCII文字列として確定する"
 
 #: scm/skk-key-custom.lisp:64
 msgid "SKK key bindings 1"
@@ -1519,7 +1550,7 @@ msgid "[SKK] return"
 msgstr "[SKK] リターン"
 
 #: scm/skk-key-custom.lisp:148
-msgid "[SKK] commit preedit string as fullwidth alphanumeric"
+msgid "[SKK] commit as fullwidth alphanumeric"
 msgstr "[SKK] 全角英数として確定"
 
 #: scm/skk-key-custom.lisp:154

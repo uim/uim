@@ -72,7 +72,7 @@
 (define-custom 'canna-commit-as-opposite-kana-key '("<IgnoreCase><Shift>q")  ;; "Q"
                '(canna-keys1)
 	       '(key)
-	       (_ "[Canna] commit preedit string as transposed kana")
+	       (_ "[Canna] commit as transposed kana")
 	       (_ "long description will be here"))
 
 (define-custom 'canna-wide-latin-key '("<IgnoreCase><Shift>l")  ;; "L"

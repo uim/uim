@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-07 13:10+0900\n"
+"POT-Creation-Date: 2005-02-08 02:49+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -345,7 +345,7 @@ msgid ""
 "Do you realy quit this program?"
 msgstr ""
 
-#: helper/pref-gtk.c:214 qt/pref-qt.cpp:103
+#: helper/pref-gtk.c:214 qt/pref-qt.cpp:137
 msgid "Group"
 msgstr ""
 
@@ -428,11 +428,12 @@ msgstr ""
 msgid "line"
 msgstr ""
 
-#: qt/switcher-qt.cpp:116 qt/pref-qt.cpp:124 qt/pref-qt.cpp:262
+#: qt/switcher-qt.cpp:116 qt/pref-qt.cpp:158 qt/pref-qt.cpp:236
+#: qt/pref-qt.cpp:318
 msgid "OK"
 msgstr ""
 
-#: qt/switcher-qt.cpp:121 qt/pref-qt.cpp:131 qt/pref-qt.cpp:263
+#: qt/switcher-qt.cpp:121 qt/pref-qt.cpp:165 qt/pref-qt.cpp:237
 msgid "Cancel"
 msgstr ""
 
@@ -445,21 +446,41 @@ msgstr ""
 msgid "exec Preference Application"
 msgstr ""
 
-#: qt/pref-qt.cpp:121
+#: qt/pref-qt.cpp:106
+msgid ""
+"The user customize file \"~/.uim\" is found.\n"
+"This file will override all conflicted settings set by\n"
+"this tool (stored in ~/.uim.d/customs/*.scm).\n"
+"Please check the file if you find your settings aren't applied"
+msgstr ""
+
+#: qt/pref-qt.cpp:113
+msgid "~/.uim exists!"
+msgstr ""
+
+#: qt/pref-qt.cpp:155
 msgid "Defaults"
 msgstr ""
 
-#: qt/pref-qt.cpp:199
+#: qt/pref-qt.cpp:234
+msgid "Save Confirm"
+msgstr ""
+
+#: qt/pref-qt.cpp:235
 msgid ""
 "The value was changed.\n"
 "Save?"
+msgstr ""
+
+#: qt/pref-qt.cpp:313
+msgid "Show this dialog on startup"
 msgstr ""
 
 #: qt/pref-customwidgets.cpp:172
 msgid "File"
 msgstr ""
 
-#: qt/pref-customwidgets.cpp:309 qt/pref-customwidgets.cpp:589
+#: qt/pref-customwidgets.cpp:310 qt/pref-customwidgets.cpp:592
 msgid "Edit"
 msgstr ""
 
@@ -739,23 +760,23 @@ msgid "[Anthy] shrink segment"
 msgstr ""
 
 #: scm/anthy-key-custom.lisp:75
-msgid "[Anthy] commit preedit string as halfwidth alphanumeric"
+msgid "[Anthy] commit as halfwidth alphanumeric"
 msgstr ""
 
 #: scm/anthy-key-custom.lisp:81
-msgid "[Anthy] commit preedit string as fullwidth alphanumeric"
+msgid "[Anthy] commit as fullwidth alphanumeric"
 msgstr ""
 
 #: scm/anthy-key-custom.lisp:87
-msgid "[Anthy] commit preedit string as katakana"
+msgid "[Anthy] commit as katakana"
 msgstr ""
 
 #: scm/anthy-key-custom.lisp:93
-msgid "[Anthy] commit preedit string as halfwidth katakana"
+msgid "[Anthy] commit as halfwidth katakana"
 msgstr ""
 
 #: scm/anthy-key-custom.lisp:99
-msgid "[Anthy] commit preedit string as transposed kana"
+msgid "[Anthy] commit as transposed kana"
 msgstr ""
 
 #: scm/anthy-key-custom.lisp:105
@@ -883,7 +904,7 @@ msgid "[Canna] shrink segment"
 msgstr ""
 
 #: scm/canna-key-custom.lisp:75
-msgid "[Canna] commit preedit string as transposed kana"
+msgid "[Canna] commit as transposed kana"
 msgstr ""
 
 #: scm/canna-key-custom.lisp:81
@@ -1159,7 +1180,7 @@ msgid "Preedit color"
 msgstr ""
 
 #: scm/im-custom.lisp:282 scm/im-custom.lisp:283
-msgid "Adjacent to caret"
+msgid "Adjacent to cursor"
 msgstr ""
 
 #: scm/im-custom.lisp:285 scm/im-custom.lisp:286
@@ -1509,7 +1530,7 @@ msgid "[SKK] return"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:148
-msgid "[SKK] commit preedit string as fullwidth alphanumeric"
+msgid "[SKK] commit as fullwidth alphanumeric"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:154

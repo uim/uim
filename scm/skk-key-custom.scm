@@ -145,7 +145,7 @@
 (define-custom 'skk-conv-wide-latin-key '("<IgnoreCase><Control>q")
                '(skk-keys2)
 	       '(key)
-	       (_ "[SKK] commit preedit string as fullwidth alphanumeric")
+	       (_ "[SKK] commit as fullwidth alphanumeric")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-latin-conv-key '("/")
