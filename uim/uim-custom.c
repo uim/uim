@@ -64,7 +64,7 @@ static char *uim_custom_desc(const char *custom_sym);
 static struct uim_custom_choice *uim_custom_choice_get(const char *custom_sym, const char *choice_sym);
 static void uim_custom_choice_free(struct uim_custom_choice *custom_choice);
 static struct uim_custom_choice **uim_custom_choice_item_list(const char *custom_sym);
-void uim_custom_choice_list_free(struct uim_custom_choice **list);
+static void uim_custom_choice_list_free(struct uim_custom_choice **list);
 static union uim_custom_value *uim_custom_value_internal(const char *custom_sym, const char *getter_proc);
 
 static union uim_custom_value *uim_custom_value(const char *custom_sym);
@@ -93,11 +93,11 @@ static int helper_fd = -1;
 typedef void *(*uim_scm_c_list_conv_func)(uim_lisp elem);
 typedef void (*uim_scm_c_list_free_func)(void *elem);
 
-void **uim_scm_c_list(const char *list_repl, const char *mapper_proc,
-		      uim_scm_c_list_conv_func conv_func);
-char *uim_scm_c_str_failsafe(uim_lisp str);
-char **uim_scm_c_str_list(const char *list_repl, const char *mapper_proc);
-void uim_scm_c_list_free(void **list, uim_scm_c_list_free_func free_func);
+static void **uim_scm_c_list(const char *list_repl, const char *mapper_proc,
+			     uim_scm_c_list_conv_func conv_func);
+static char *uim_scm_c_str_failsafe(uim_lisp str);
+static char **uim_scm_c_str_list(const char *list_repl, const char *mapper_proc);
+static void uim_scm_c_list_free(void **list, uim_scm_c_list_free_func free_func);
 
 static uim_lisp return_val;
 
@@ -107,7 +107,7 @@ static uim_lisp return_val;
   - returns NULL terminated array. NULL will not appeared except terminator
   - non-string element such as #f is converted to ""
  */
-void **
+static void **
 uim_scm_c_list(const char *list_repl, const char *mapper_proc,
 	       uim_scm_c_list_conv_func conv_func)
 {
@@ -129,7 +129,7 @@ uim_scm_c_list(const char *list_repl, const char *mapper_proc,
   return result;
 }
 
-char *
+static char *
 uim_scm_c_str_failsafe(uim_lisp str)
 {
   char *c_str;
@@ -137,7 +137,7 @@ uim_scm_c_str_failsafe(uim_lisp str)
   return (c_str) ? c_str : strdup("");
 }
 
-char **
+static char **
 uim_scm_c_str_list(const char *list_repl, const char *mapper_proc)
 {
   void **list;
@@ -148,7 +148,7 @@ uim_scm_c_str_list(const char *list_repl, const char *mapper_proc)
   return (char **)list;
 }
 
-void
+static void
 uim_scm_c_list_free(void **list, uim_scm_c_list_free_func free_func)
 {
   void *elem;
@@ -277,7 +277,7 @@ uim_custom_choice_item_list(const char *custom_sym)
   return custom_choice_list;
 }
 
-void
+static void
 uim_custom_choice_list_free(struct uim_custom_choice **list)
 {
   uim_scm_c_list_free((void **)list,

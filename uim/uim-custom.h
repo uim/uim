@@ -104,13 +104,15 @@ uim_bool uim_custom_load(void);
 /* save customs into configuration files ~/.uim.d/customs/custom-*.scm */
 uim_bool uim_custom_save(void);
 
-/* broadcast via helper-server */
+/* broadcast customs via uim-helper-server */
 uim_bool uim_custom_broadcast(void);
 
 /* custom variable */
 struct uim_custom *uim_custom_get(const char *custom_sym);
 uim_bool uim_custom_set(const struct uim_custom *custom);
 void uim_custom_free(struct uim_custom *custom);
+
+/* literalization of custom variable */
 char *uim_custom_value_as_literal(const char *custom_sym);
 char *uim_custom_definition_as_literal(const char *custom_sym);
 
