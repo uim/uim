@@ -163,7 +163,7 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
 						    "text", COLUMN_HEADING,
 						    NULL);
   gtk_tree_view_append_column(GTK_TREE_VIEW(cwin->view), column);
-  //  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
 
   renderer = gtk_cell_renderer_text_new();
   column = gtk_tree_view_column_new_with_attributes("Text",
