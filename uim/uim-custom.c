@@ -32,8 +32,8 @@
 */
 
 /*
-  This implementation is still lacking error handlings. Be careful to use.
-    -- YamaKen 2004-12-30
+  static functions that have uim_custom_ prefix could be exported as API
+  function if needed.  -- YamaKen 2004-12-30
 */
 
 /*
@@ -118,6 +118,9 @@ uim_scm_c_list(const char *list_repl, const char *mapper_proc,
   list_len = uim_scm_c_int(return_val);
 
   result = (void **)malloc(sizeof(void *) * (list_len + 1));
+  if (!result)
+    return NULL;
+
   result[list_len] = NULL;
   for (i = 0; i < list_len; i++) {
     UIM_EVAL_FSTRING3(NULL, "(%s (nth %d %s))", mapper_proc, i, list_repl);
@@ -153,6 +156,9 @@ uim_scm_c_list_free(void **list, uim_scm_c_list_free_func free_func)
   void *elem;
   void **p;
 
+  if (!list)
+    return;
+
   for (p = list; elem = *p; p++) {
     free_func(elem);
   }
@@ -168,7 +174,7 @@ uim_custom_type_eq(const char *custom_sym, const char *custom_type)
   UIM_EVAL_FSTRING2(NULL, "(eq? (custom-type '%s) '%s)",
 		    custom_sym, custom_type);
 
-  return NFALSEP(uim_scm_return_value());
+  return uim_scm_c_bool(uim_scm_return_value());
 }
 
 static int
@@ -196,7 +202,7 @@ uim_custom_is_active(const char *custom_sym)
   UIM_EVAL_FSTRING1(NULL, "(custom-active? '%s)", custom_sym);
   return_val = uim_scm_return_value();
 
-  return NFALSEP(return_val);
+  return uim_scm_c_bool(return_val);
 }
 
 static char *
@@ -230,6 +236,9 @@ uim_custom_choice_get(const char *custom_sym, const char *choice_sym)
   struct uim_custom_choice *c_choice;
 
   c_choice = (struct uim_custom_choice *)malloc(sizeof(struct uim_custom_choice));
+  if (!c_choice)
+    return NULL;
+
   c_choice->symbol = strdup(choice_sym);
 
   UIM_EVAL_FSTRING2(NULL, "(custom-symbol-label '%s '%s)",
@@ -265,6 +274,8 @@ uim_custom_choice_item_list(const char *custom_sym)
   choice_sym_list =
     (char **)uim_scm_c_list(str_list_arg, "symbol->string",
 			    (uim_scm_c_list_conv_func)uim_scm_c_str);
+  if (!choice_sym_list)
+    return NULL;
 
   for (p = choice_sym_list; choice_sym = *p; p++) {
     custom_choice = uim_custom_choice_get(custom_sym, choice_sym);
@@ -290,15 +301,19 @@ uim_custom_value_internal(const char *custom_sym, const char *getter_proc)
   union uim_custom_value *value;
   char *custom_value_symbol;
 
-  value = (union uim_custom_value *)malloc(sizeof(union uim_custom_value));
+  if (!custom_sym || !getter_proc)
+    return NULL;
 
-  UIM_EVAL_FSTRING2(NULL, "(%s '%s)", getter_proc, custom_sym);
-  return_val = uim_scm_return_value();
+  value = (union uim_custom_value *)malloc(sizeof(union uim_custom_value));
+  if (!value)
+    return NULL;
 
   type = uim_custom_type(custom_sym);
+  UIM_EVAL_FSTRING2(NULL, "(%s '%s)", getter_proc, custom_sym);
+  return_val = uim_scm_return_value();
   switch (type) {
   case UCustom_Bool:
-    value->as_bool = NFALSEP(return_val);
+    value->as_bool = uim_scm_c_bool(return_val);
     break;
   case UCustom_Int:
     value->as_int = uim_scm_c_int(return_val);
@@ -341,6 +356,9 @@ uim_custom_default_value(const char *custom_sym)
 static void
 uim_custom_value_free(int custom_type, union uim_custom_value *custom_value)
 {
+  if (!custom_value)
+    return;
+
   switch (custom_type) {
   case UCustom_Str:
     free(custom_value->as_str);
@@ -380,6 +398,9 @@ uim_custom_range_get(const char *custom_sym)
   union uim_custom_range *range;
 
   range = (union uim_custom_range *)malloc(sizeof(union uim_custom_range));
+  if (!range)
+    return NULL;
+
   type = uim_custom_type(custom_sym);
   switch (type) {
   case UCustom_Int:
@@ -403,6 +424,9 @@ uim_custom_range_get(const char *custom_sym)
 static void
 uim_custom_range_free(int custom_type, union uim_custom_range *custom_range)
 {
+  if (!custom_range)
+    return;
+
   switch (custom_type) {
   case UCustom_Str:
     free(custom_range->as_str.regex);
@@ -492,7 +516,6 @@ custom_file_path(const char *group, pid_t pid)
 static uim_bool
 prepare_dir(const char *dir)
 {
-  int err;
   struct stat st;
 
   if (stat(dir, &st) < 0) {
@@ -500,22 +523,28 @@ prepare_dir(const char *dir)
   } else {
     mode_t mode = S_IFDIR | S_IRUSR | S_IWUSR | S_IXUSR;
 
-    return (st.st_mode & mode == mode) ? UIM_TRUE : UIM_FALSE;
+    return ((st.st_mode & mode) == mode) ? UIM_TRUE : UIM_FALSE;
   }
 }
 
 static uim_bool
 uim_conf_prepare_dir(const char *subdir)
 {
+  uim_bool succeeded;
   char *dir;
 
   dir = uim_conf_path(NULL);
-  prepare_dir(dir);
+  succeeded = prepare_dir(dir);
   free(dir);
+  if (!succeeded)
+    return UIM_FALSE;
+
   if (subdir) {
     dir = uim_conf_path(subdir);
-    prepare_dir(dir);
+    succeeded = prepare_dir(dir);
     free(dir);
+    if (!succeeded)
+      return UIM_FALSE;
   }
 
   return UIM_TRUE;
@@ -567,6 +596,7 @@ uim_custom_load(void)
 static uim_bool
 uim_custom_save_group(const char *group)
 {
+  uim_bool succeeded = UIM_FALSE;
   char **custom_syms, **sym;
   char *def_literal;
   pid_t pid;
@@ -583,8 +613,13 @@ uim_custom_save_group(const char *group)
   pid = getpid();
   tmp_file_path = custom_file_path(group, pid);
   file = fopen(tmp_file_path, "w");
+  if (!file)
+    goto error;
 
   custom_syms = uim_custom_collect_by_group(group);
+  if (!custom_syms)
+    goto error;
+
   for (sym = custom_syms; *sym; sym++) {
     def_literal = uim_custom_definition_as_literal(*sym);
     if (def_literal) {
@@ -595,14 +630,16 @@ uim_custom_save_group(const char *group)
   }
   uim_custom_symbol_list_free(custom_syms);
 
-  fclose(file);
+  if (fclose(file) < 0)
+    goto error;
   /* rename prepared temporary file to proper name */
   file_path = custom_file_path(group, 0);
-  rename(tmp_file_path, file_path);
-  free(tmp_file_path);
+  succeeded = (rename(tmp_file_path, file_path) == 0);
   free(file_path);
+ error:
+  free(tmp_file_path);
 
-  return UIM_TRUE;
+  return succeeded;
 }
 
 /**
@@ -649,6 +686,11 @@ uim_custom_broadcast(void)
     if (value) {
       msg_size = sizeof(custom_msg_tmpl) + strlen(*sym) + strlen(value);
       msg = (char *)malloc(msg_size);
+      if (!msg) {
+	free(value);
+	uim_custom_symbol_list_free(custom_syms);
+	return UIM_FALSE;
+      }
       sprintf(msg, custom_msg_tmpl, *sym, value);
       uim_helper_send_message(helper_fd, msg);
       free(msg);
@@ -677,7 +719,13 @@ uim_custom_get(const char *custom_sym)
 {
   struct uim_custom *custom;
 
+  if (!custom_sym)
+    return UIM_FALSE;
+
   custom = (struct uim_custom *)malloc(sizeof(struct uim_custom));
+  if (!custom)
+    return UIM_FALSE;
+
   custom->type = uim_custom_type(custom_sym);
   custom->is_active = uim_custom_is_active(custom_sym);
   custom->symbol = strdup(custom_sym);
@@ -707,6 +755,9 @@ uim_custom_get(const char *custom_sym)
 uim_bool
 uim_custom_set(const struct uim_custom *custom)
 {
+  if (!custom)
+    return UIM_FALSE;
+
   switch (custom->type) {
   case UCustom_Bool:
     UIM_EVAL_FSTRING2(NULL, "(custom-set! '%s #%s)",
@@ -737,7 +788,7 @@ uim_custom_set(const struct uim_custom *custom)
   default:
     return UIM_FALSE;
   }
-  return NFALSEP(uim_scm_return_value());
+  return uim_scm_c_bool(uim_scm_return_value());
 }
 
 /**
@@ -751,6 +802,9 @@ uim_custom_set(const struct uim_custom *custom)
 void
 uim_custom_free(struct uim_custom *custom)
 {
+  if (!custom)
+    return;
+
   free(custom->symbol);
   free(custom->label);
   free(custom->desc);
@@ -800,6 +854,9 @@ uim_custom_group_get(const char *group_sym)
   struct uim_custom_group *custom_group;
 
   custom_group = (struct uim_custom_group *)malloc(sizeof(struct uim_custom_group));
+  if (!custom_group)
+    return NULL;
+
   custom_group->symbol = strdup(group_sym);
   custom_group->label = uim_custom_get_str(group_sym, "custom-group-label");
   custom_group->desc = uim_custom_get_str(group_sym, "custom-group-desc");
@@ -816,6 +873,9 @@ uim_custom_group_get(const char *group_sym)
 void
 uim_custom_group_free(struct uim_custom_group *custom_group)
 {
+  if (!custom_group)
+    return;
+
   free(custom_group->symbol);
   free(custom_group->label);
   free(custom_group->desc);

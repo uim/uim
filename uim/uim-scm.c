@@ -78,7 +78,7 @@ uim_scm_make_bool(uim_bool val)
 int
 uim_scm_c_int(uim_lisp integer)
 {
-  protected_arg0 = (LISP)integer;
+  protected_arg0 = integer;
   return get_c_int((LISP)integer);
 }
 
@@ -91,7 +91,7 @@ uim_scm_make_int(int integer)
 char *
 uim_scm_c_str(uim_lisp str)
 {
-  protected_arg0 = (LISP)str;
+  protected_arg0 = str;
   return strdup(get_c_string((LISP)str));
 }
 
@@ -142,7 +142,7 @@ uim_scm_load_file(const char *fn)
     return UIM_FALSE;
 
   UIM_EVAL_FSTRING1(NULL, "(*catch 'errobj (load \"%s\" #f #f))", fn);
-  succeeded = FALSEP(uim_scm_return_value());
+  succeeded = FALSEP(uim_scm_return_value()); /* has not been caught */
 
   return succeeded;
 }
