@@ -468,7 +468,7 @@
 		   (skk-make-string head skk-type-hiragana)
 		   (skk-context-okuri-head sc)
 		   (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
-		   #f))))
+		   ()))))
       res)))
 
 (define skk-get-current-candidate
@@ -542,7 +542,7 @@
 	     (skk-context-okuri-head sc)
 	     (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
 	     (skk-context-nth sc)
-	     #f)))
+	     ())))
       (if (> (skk-context-nth sc) 0)
 	  (skk-save-personal-dictionary))
       (skk-reset-candidate-window sc)
@@ -1211,7 +1211,7 @@
 	       (skk-make-string head skk-type-hiragana)
 	       (skk-context-okuri-head sc)
 	       (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
-	       #f))
+	       ()))
 	     (im-activate-candidate-selector
 	      sc
 	      (skk-context-nr-candidates sc)
