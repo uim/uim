@@ -44,29 +44,11 @@ AC_ARG_WITH(m17nlib,
                  [Don't build against m17nlib]),
   [
   if test "x$with_m17nlib" = "xyes"; then
-    AC_CHECK_LIB(m17n, m17n_init, HAVE_M17NLIB=yes, HAVE_M17NLIB=no)
-    if test "x$HAVE_M17NLIB" = "xyes"; then
-      AC_CHECK_HEADER(m17n.h, HAVE_M17NLIB=yes, HAVE_M17NLIB=no)
-      if test "x$HAVE_M17NLIB" = "xyes"; then
-        AC_DEFINE(HAVE_M17NLIB, 1,
-           [Define to 1 if you have m17nlib library and header file])
-        M17NLIB_LIBS="-lm17n"
-        use_m17nlib="yes"
-      fi
-    fi
+    PKG_CHECK_MODULES(M17NLIB, m17n-core >= 1.2.0, use_m17nlib="yes",use_m17nlib="no")
   fi
   ],
   [
-  AC_CHECK_LIB(m17n, m17n_init, HAVE_M17NLIB=yes, HAVE_M17NLIB=no)
-  if test "x$HAVE_M17NLIB" = "xyes"; then
-    AC_CHECK_HEADER(m17n.h, HAVE_M17NLIB=yes, HAVE_M17NLIB=no)
-    if test "x$HAVE_M17NLIB" = "xyes"; then
-      AC_DEFINE(HAVE_M17NLIB, 1,
-         [Define to 1 if you have m17nlib library and header file])
-      M17NLIB_LIBS="-lm17n"
-      use_m17nlib="yes"
-    fi
-  fi
+    PKG_CHECK_MODULES(M17NLIB, m17n-core >= 1.2.0, use_m17nlib="yes",use_m17nlib="no")
 ])
 
 AC_SUBST(M17NLIB_LIBS)
