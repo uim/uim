@@ -158,7 +158,7 @@ uim_custom_type(const char *custom_sym)
     return UCustom_Str;
   } else if (uim_custom_type_eq(custom_sym, "pathname")) {
     return UCustom_Pathname;
-  } else if (uim_custom_type_eq(custom_sym, "symbol")) {
+  } else if (uim_custom_type_eq(custom_sym, "choice")) {
     return UCustom_Choice;
   } else if (uim_custom_type_eq(custom_sym, "ordered-list")) {
     return UCustom_OrderedList;
@@ -215,12 +215,12 @@ uim_custom_choice_get(const char *custom_sym, const char *choice_sym)
 
   c_choice->symbol = strdup(choice_sym);
 
-  UIM_EVAL_FSTRING2(NULL, "(custom-symbol-label '%s '%s)",
+  UIM_EVAL_FSTRING2(NULL, "(custom-choice-label '%s '%s)",
 		    custom_sym, choice_sym);
   return_val = uim_scm_return_value();
   c_choice->label = uim_scm_c_str(return_val);
 
-  UIM_EVAL_FSTRING2(NULL, "(custom-symbol-desc '%s '%s)",
+  UIM_EVAL_FSTRING2(NULL, "(custom-choice-desc '%s '%s)",
 		    custom_sym, choice_sym);
   return_val = uim_scm_return_value();
   c_choice->desc = uim_scm_c_str(return_val);
