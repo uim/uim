@@ -216,6 +216,28 @@ add_custom_type_string(GtkWidget *vbox, const struct uim_custom *custom)
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
 }
 
+static void
+custom_pathname_button_clicked_cb(GtkWidget *button, GtkWidget *entry)
+{
+  GtkWidget *dialog;
+  dialog = gtk_file_chooser_dialog_new ("Specify file",
+					NULL,
+					GTK_FILE_CHOOSER_ACTION_OPEN,
+					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+					GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+					NULL);
+  
+  if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
+    char *filename;    
+    filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+    if(filename) {
+      gtk_entry_set_text(entry, filename);
+      g_free (filename);
+    }
+  }
+
+  gtk_widget_destroy (dialog);
+}
 
 static void
 add_custom_type_pathname(GtkWidget *vbox, const struct uim_custom *custom)
@@ -236,6 +258,9 @@ add_custom_type_pathname(GtkWidget *vbox, const struct uim_custom *custom)
   gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
 
   button = gtk_button_new_with_label("File");
+
+  g_signal_connect(G_OBJECT(button), "clicked",
+		   G_CALLBACK(custom_pathname_button_clicked_cb), entry);
 
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
 
