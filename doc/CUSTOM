@@ -20,7 +20,7 @@ developers.
   management, but ordinary 'require' does not.
 
   "-custom" suffix of the filename is only a convention and not
-  required. But we recomment the naming convention to manage the files
+  required. But we recommend the naming convention to manage the files
   easily.
 
 * Control activity of a custom variable

@@ -694,4 +694,8 @@
 		     (_ "")
 		     (_ "Main settings of this group"))
 
+(define-custom-group 'hidden
+		     (_ "Hidden settings")
+		     (_ "Hidden settings of this group. This group is invisible from uim_custom clients. Exists for internal variable management."))
+
 (custom-reload-customs)

@@ -102,9 +102,8 @@
 (define custom-hook-set-default-im-name
   (lambda ()
     (set! default-im-name
-	  (if custom-activate-default-im-name?
-	      custom-preserved-default-im-name
-	      #f))))
+	  (and custom-activate-default-im-name?
+	       custom-preserved-default-im-name))))
 
 ;; encode #f into default-im-name
 (custom-add-hook 'custom-activate-default-im-name?
@@ -161,6 +160,18 @@
 							'direct))
 						 enabled-im-list))))
 
+;; value dependency
+(if custom-full-featured?
+    (custom-add-hook 'enabled-im-list
+		     'custom-set-hooks
+		     (lambda ()
+		       (custom-set-type-info!
+			'custom-preserved-default-im-name
+			(cons 'choice
+			      (custom-im-list-as-choice-rec
+			       (map retrieve-im
+				    enabled-im-list)))))))
+
 (define-custom 'enable-lazy-loading? #t
   '(global advanced)
   '(boolean)
@@ -170,27 +181,31 @@
 ;;
 ;; im-switching
 ;;
-(define-custom-group 'im-switching
-		     (_ "Input method switching")
-		     (_ "long description will be here."))
 
-(define-custom 'enable-im-switch #f
-  '(global im-switching advanced)
-  '(boolean)
-  (_ "Enable IM switching by hotkey")
-  (_ "long description will be here."))
+;; I think that current 'im-switching' feature is not useful. So
+;; commented out them to avoid confusion of users.  -- YamaKen 2005-02-01
 
-(define-custom 'switch-im-key '("<Control>Shift_key" "<Shift>Control_key")
-  '(global im-switching advanced)
-  '(key)
-  (_ "IM switching key")
-  (_ "long description will be here."))
-
-;; activity dependency
-(custom-add-hook 'switch-im-key?
-		 'custom-activity-hooks
-		 (lambda ()
-		   enable-im-switch))
+;;(define-custom-group 'im-switching
+;;		     (_ "Input method switching")
+;;		     (_ "long description will be here."))
+;;
+;;(define-custom 'enable-im-switch #f
+;;  '(global im-switching advanced)
+;;  '(boolean)
+;;  (_ "Enable IM switching by hotkey")
+;;  (_ "long description will be here."))
+;;
+;;(define-custom 'switch-im-key '("<Control>Shift_key" "<Shift>Control_key")
+;;  '(global im-switching advanced)
+;;  '(key)
+;;  (_ "IM switching key")
+;;  (_ "long description will be here."))
+;;
+;;;; activity dependency
+;;(custom-add-hook 'switch-im-key?
+;;		 'custom-activity-hooks
+;;		 (lambda ()
+;;		   enable-im-switch))
 
 (define-custom 'uim-color 'uim-color-uim
   '(global)
