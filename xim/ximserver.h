@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -249,6 +249,7 @@ private:
     char *mIMName;
     const char *mIMLang;
     std::list<InputContext *> ic_list;
+    bool mUsePreservedDefaultIM;
 };
 
 struct UIMInfo {

@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -122,6 +122,7 @@ XimServer::XimServer(Locale *lc, const char *name, const char *lang)
     mIMName = strdup(name);
     mIMLang = lang;
     mLocale = lc;
+    mUsePreservedDefaultIM = false;
 }
 
 InputContext *XimServer::createContext(XimIC *xic, const char *engine)
@@ -155,6 +156,19 @@ void XimServer::changeContext(const char *engine) {
 }
 
 void XimServer::customContext(const char *custom, const char *val) {
+    // Updated ximserver's global im with customized one.
+    // This is temporal hack.
+    if (!strcmp(custom, "custom-activate-default-im-name?")) {
+	if (!strcmp(val, "#t"))
+	    mUsePreservedDefaultIM = true;
+	else
+	    mUsePreservedDefaultIM = false;
+    }
+    if (!strcmp(custom, "custom-preserved-default-im-name") &&
+		    mUsePreservedDefaultIM == true) {
+	set_im(val);
+    }
+
     std::list<InputContext *>::iterator it;
     for (it = ic_list.begin(); it != ic_list.end(); it++) {
 	(*it)->customContext(custom, val);
