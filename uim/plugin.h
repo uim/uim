@@ -35,7 +35,14 @@
 #ifndef _uim_plugin_h_included_
 #define _uim_plugin_h_included_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void uim_plugin_instance_init(void);
 void uim_plugin_instance_quit(void);
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* _uim_plugin_h_included_ */

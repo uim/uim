@@ -33,6 +33,10 @@
 #ifndef _context_h_included_
 #define _context_h_included_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include "config.h"
 #include "gettext.h"
@@ -263,4 +267,7 @@ extern struct uim_im *uim_im_array;
 extern int uim_nr_im;
 extern char *uim_last_client_encoding;
 
+#ifdef __cplusplus
+}
+#endif
 #endif
