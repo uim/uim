@@ -72,7 +72,7 @@ void init_str(void)
     printf("locale not supported\n");
     exit(1);
   }
-  s_utf8 = (strcasecmp(get_enc(), "utf-8") == 0 || strcasecmp(get_enc(), "utf8") == 0);
+  s_utf8 = (strcasecmp(get_enc(), "UTF-8") == 0 || strcasecmp(get_enc(), "UTF8") == 0);
 }
 
 /*
@@ -82,18 +82,15 @@ void init_str(void)
 const char *get_enc(void)
 {
   const char *locale;
-  if ((locale = getenv("LC_ALL")) ||
-      (locale = getenv("LC_CTYPE")) ||
-      (locale = getenv("LANG")))
-  {
+  if ((locale = setlocale(LC_CTYPE, "")) != NULL) {
     if (strcasecmp(locale, "ja") == 0) {
-      return "euc-jp";
+      return "EUC-JP";
     } else {
       char *ptr = strstr(locale, ".");
-      return ptr != NULL ? ptr + 1 : "utf-8";
+      return ptr != NULL ? ptr + 1 : "UTF-8";
     }
   }
-  return "utf-8";
+  return "UTF-8";
 }
 
 /*
