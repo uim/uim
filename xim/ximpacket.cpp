@@ -410,7 +410,7 @@ RxPacket_impl::RxPacket_impl(unsigned char *b, int byte_order)
     rewind();
 }
 
-RxPacket_impl::RxPacket_impl(const RxPacket_impl& rhs)
+RxPacket_impl::RxPacket_impl(const RxPacket_impl& rhs) : RxPacket(rhs)
 {
     mLen = rhs.mLen;
     mBuf = (unsigned char *)malloc(mLen);

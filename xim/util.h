@@ -51,6 +51,7 @@ int asprintf(char **ptr, const char *format, ...);
 #endif
 
 #ifndef HAVE_VASPRINTF
+#include <stdarg.h>
 int vasprintf(char **ptr, const char *fmt, va_list ap);
 #endif
 
