@@ -234,9 +234,14 @@ AC_ARG_ENABLE(applet,
   ],
   [ PKG_CHECK_MODULES(APPLET, libpanelapplet-2.0, use_applet="yes",use_applet="no") ])
 
+
 AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug],
-                 [enable debugging]))
+                 [enable debugging]),
+  [],
+  [
+    enable_debug="no"
+  ])
 
 AC_ARG_ENABLE(compat-scm,
   AC_HELP_STRING([--disable-compat-scm],
@@ -250,9 +255,22 @@ AC_ARG_ENABLE(compat-scm,
     enable_compat_scm="yes"
   ])
 
+AC_ARG_ENABLE(compat-table,
+  AC_HELP_STRING([--enable-compat-table],
+                 [enable obsolete table API for hk.scm (broken)]),
+  [],
+  [
+    enable_compat_table="no"
+  ])
+
 AC_ARG_ENABLE(compat-custom,
   AC_HELP_STRING([--enable-compat-custom],
-                 [enable obsolete version of 'custom API' required by sumika. This exclusively disables new custom API]))
+                 [enable obsolete version of 'custom API' required by sumika. This exclusively disables new custom API]),
+  [],
+  [
+    enable_compat_custom="no"
+  ])
+
 
 AC_ARG_ENABLE(scm-nested-eval,
   AC_HELP_STRING([--disable-scm-nested-eval],
@@ -268,7 +286,11 @@ AC_ARG_ENABLE(scm-nested-eval,
 
 AC_ARG_ENABLE(callback-queue,
   AC_HELP_STRING([--enable-callback-queue],
-                 [enable callback queue (for developer, will be obsolete)]))
+                 [enable callback queue (for developer, will be obsolete)]),
+  [],
+  [
+    enable_callback_queue="no"
+  ])
 
 AC_ARG_ENABLE(fep,
   AC_HELP_STRING([--disable-fep],
@@ -337,6 +359,7 @@ AM_CONDITIONAL(SUMIKA, test x$use_sumika = xyes)
 AM_CONDITIONAL(DICT, test x$use_dict = xyes)
 AM_CONDITIONAL(DEBUG, test x$enable_debug = xyes)
 AM_CONDITIONAL(COMPAT_SCM, test x$enable_compat_scm = xyes)
+AM_CONDITIONAL(COMPAT_TABLE, test x$enable_compat_table = xyes)
 AM_CONDITIONAL(COMPAT_CUSTOM, test x$enable_compat_custom = xyes)
 AM_CONDITIONAL(SCM_NESTED_EVAL, test x$enable_scm_nested_eval = xyes)
 AM_CONDITIONAL(CALLBACK_QUEUE, test x$enable_callback_queue = xyes)
@@ -370,6 +393,11 @@ fi
 if test x$enable_compat_scm = xyes; then
   AC_DEFINE(UIM_COMPAT_SCM, 1,
             [Enable obsolete part of uim-scm API])
+fi
+
+if test x$enable_compat_table = xyes; then
+  AC_DEFINE(UIM_COMPAT_TABLE, 1,
+            [Enable obsolete table API for hk.scm (broken)])
 fi
 
 if test x$enable_compat_custom = xyes; then
@@ -449,3 +477,16 @@ Configure Result :
    SUMIKA       : ${use_sumika}
    DICT         : ${use_dict}
 ])
+
+if test x$enable_debug = xyes; then
+AC_MSG_RESULT([
+Configure Result for developers:
+
+   DEBUG           : ${enable_debug}
+   COMPAT_SCM      : ${enable_compat_scm}
+   COMPAT_TABLE    : ${enable_compat_table}
+   COMPAT_CUSTOM   : ${enable_compat_custom}
+   SCM_NESTED_EVAL : ${enable_scm_nested_eval}
+   CALLBACK_QUEUE  : ${enable_callback_queue}
+])
+fi

@@ -17,10 +17,14 @@ libuim_la_SOURCES = uim.c uim-scm.c uim-func.c uim-key.c uim-util.c \
 		skk-dic.c \
 		prime.c \
 		intl.c intl.h \
-		uim-ipc.c uim-table.c \
+		uim-ipc.c \
 		getpeereid.c \
 		setenv.c \
 		plugin.c
+
+if COMPAT_TABLE
+libuim_la_SOURCES += uim-table.c
+endif
 
 if COMPAT_SCM
   pkginclude_HEADERS += uim-compat-scm.h

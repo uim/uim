@@ -277,7 +277,9 @@ void uim_init_compat_scm_subrs(void);
 #endif
 void uim_init_key_subrs(void);
 void uim_init_util_subrs(void);
+#ifdef UIM_COMPAT_TABLE
 void uim_init_table_subrs(void);
+#endif
 void uim_init_im_subrs(void);
 
 /**/

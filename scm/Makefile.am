@@ -19,9 +19,12 @@ SCM_FILES = im.scm util.scm loader.scm\
  tutcode.scm\
  spellcheck.scm\
  latin.scm \
- hk.scm \
  zaurus.scm \
  romaja.scm pyunihan.scm pyload.scm m17nlib.scm \
  uim-sh.scm custom.scm custom-vars.scm \
  pinyin-big5.scm \
  plugin.scm
+
+if COMPAT_TABLE
+SCM_FILES += hk.scm
+endif

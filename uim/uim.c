@@ -640,7 +640,9 @@ uim_init_scm()
   uim_init_im_subrs();
   uim_init_util_subrs();
   uim_init_key_subrs();
+#ifdef UIM_COMPAT_TABLE
   uim_init_table_subrs();
+#endif
   uim_init_prime();
   uim_init_skk_dic();
 
