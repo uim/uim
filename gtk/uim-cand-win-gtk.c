@@ -349,7 +349,7 @@ tree_selection_changed(GtkTreeSelection *selection,
 #if HAVE_EBLIB
     /* FIXME! This is a ad-hoc solution to advance
        annotation related discussion. */
-    if (uim_scm_symbol_value_bool("eb-enable?")) {
+    if (uim_scm_symbol_value_bool("eb-enable-for-annotation?")) {
       gchar *cand = NULL;
 
       gtk_tree_model_get(model, &iter,

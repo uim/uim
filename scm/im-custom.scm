@@ -317,7 +317,7 @@
 		     (_ "EB library settings")
 		     (_ "long description will be here."))
 
-(define-custom 'eb-enable? #f
+(define-custom 'eb-enable-for-annotation? #f
   '(eb candwin)
   '(boolean)
   (_ "Use EB library to search annotations")
