@@ -85,9 +85,10 @@ hex_dump(unsigned char *buf, int len)
 int vasprintf(char **ret, const char *fmt, va_list ap)
 {
     int len;
+    char c;
 
-    len = vsnprintf(NULL, 0, fmt, ap);
-    if (len <= 0)
+    len = vsnprintf(&c, 0, fmt, ap);
+    if (len < 0)
 	return len;
 
     (*ret) = (char *)malloc(len + 1);

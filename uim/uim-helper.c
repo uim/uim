@@ -31,6 +31,8 @@
 
 */
 
+#include "config.h"
+
 #include <unistd.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -46,6 +48,10 @@
 #include <errno.h>
 #include "context.h"
 #include "uim-helper.h"
+
+#ifndef HAVE_SIG_T
+typedef void (*sig_t)(int);
+#endif
 
 enum RorW
   {

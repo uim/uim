@@ -45,7 +45,7 @@
  * If *stringp is NULL, strsep returns NULL.
  */
 char *
-strsep(char **stringp, const char *delim)
+uim_strsep(char **stringp, const char *delim)
 {
 	char *s;
 	const char *spanp;

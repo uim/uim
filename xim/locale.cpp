@@ -287,6 +287,9 @@ get_valid_locales(const char *locales)
     char *tmp, *tmpp;
     int len = 0;
 
+    if (locales == NULL)
+	return NULL;
+
     tmp = tmpp = strdup(locales);
     char *orig_locale = strdup(setlocale(LC_CTYPE, NULL));
 

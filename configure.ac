@@ -153,6 +153,9 @@ AC_CHECK_HEADERS([pty.h util.h libutil.h])
 AC_CHECK_HEADERS([curses.h stropts.h])
 AC_CHECK_HEADERS([sys/param.h strings.h])
 
+# Check for type
+AC_CHECK_TYPES(sig_t)
+
 # Checks for library
 AC_CHECK_LIB(dl,dlopen)
 AC_CHECK_LIB(socket,socket)
