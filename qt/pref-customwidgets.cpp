@@ -168,7 +168,7 @@ CustomPathnameEdit::CustomPathnameEdit( struct uim_custom *c, QWidget *parent, c
     QObject::connect( m_lineEdit, SIGNAL(textChanged(const QString &)),
                       this, SLOT(slotCustomTextChanged(const QString &)) );
 
-    m_fileButton = new QToolButton( this );
+    m_fileButton = new QPushButton( this );
     m_fileButton->setText( _("File") );
     QObject::connect( m_fileButton, SIGNAL(clicked()),
                       this, SLOT(slotPathnameButtonClicked()) );
@@ -306,7 +306,7 @@ CustomOrderedListEdit::CustomOrderedListEdit( struct uim_custom *c, QWidget *par
     m_lineEdit = new QLineEdit( this );
     m_lineEdit->setReadOnly( true );
 
-    m_editButton = new QToolButton( this );
+    m_editButton = new QPushButton( this );
     m_editButton->setText( _("Edit") );
     QObject::connect( m_editButton, SIGNAL(clicked()),
                       this, SLOT(slotEditButtonClicked()) );
@@ -588,7 +588,7 @@ CustomKeyEdit::CustomKeyEdit( struct uim_custom *c, QWidget *parent, const char 
     m_lineEdit = new QLineEdit( this );
     m_lineEdit->setReadOnly( true );
 
-    m_editButton = new QToolButton( this );
+    m_editButton = new QPushButton( this );
     m_editButton->setText( _("Edit") );
     QObject::connect( m_editButton, SIGNAL(clicked()),
                       this, SLOT(slotKeyButtonClicked()) );
@@ -776,8 +776,8 @@ const QStringList KeyEditForm::getKeyStrList()
 
 void KeyEditForm::slotAddClicked()
 {
-    KeyGrabForm *d = new KeyGrabForm( this );
-    if( d->exec() == KeyGrabForm::Accepted )
+    KeyGrabDialog *d = new KeyGrabDialog( this );
+    if( d->exec() == KeyGrabDialog::Accepted )
     {
         QString keystr = d->getKeyStr();
         if( !keystr.isEmpty() )
@@ -802,8 +802,8 @@ void KeyEditForm::slotEditClicked()
     QListViewItem *selectedItem = m_listView->selectedItem();
     if( selectedItem )
     {
-        KeyGrabForm *d = new KeyGrabForm( this );
-        if( d->exec() == KeyGrabForm::Accepted )
+        KeyGrabDialog *d = new KeyGrabDialog( this );
+        if( d->exec() == KeyGrabDialog::Accepted )
         {
             QString keystr = d->getKeyStr();
             if( !keystr.isEmpty() )
@@ -829,210 +829,158 @@ void KeyEditForm::slotSelectionChanged( QListViewItem *item )
     }
 }
 
-KeyGrabForm::KeyGrabForm( QWidget *parent, const char *name )
-    : KeyGrabFormBase( parent, name )
+KeyGrabDialog::KeyGrabDialog( QWidget *parent, const char *name )
+    : QDialog( parent, name ),
+      pressed_keyval( 0 ),
+      pressed_keystate( Qt::NoButton ),
+      m_keystr( 0 )
 {
-    m_shiftCheckBox->installEventFilter( this );
-    m_controlCheckBox->installEventFilter( this );
-    m_altCheckBox->installEventFilter( this );
-    m_keyLineEdit->installEventFilter( this );
-    m_okButton->installEventFilter( this );
-    m_cancelButton->installEventFilter( this );
+    QVBoxLayout *vboxLayout = new QVBoxLayout( this );
+    QLabel *l = new QLabel( _("Press keys to grab (e.g. <Control>a)"), this );
+    vboxLayout->addWidget( l );
 
-    m_keyLineEdit->setInputMethodEnabled( false );
+    setCaption( _("Key Grab Dialog") );
 }
 
-void KeyGrabForm::keyPressEvent( QKeyEvent *e )
+void KeyGrabDialog::keyPressEvent( QKeyEvent *e )
 {
-#if DEBUG_KEY_EDIT
-    qDebug( "key press!!! - %d:%d", e->key(), e->stateAfter() );
-#endif
+    pressed_keyval = e->key();
+    pressed_keystate = e->state();
+}
 
-    int qkey = e->key();
-    QString keystr = "";
+void KeyGrabDialog::keyReleaseEvent( QKeyEvent *e )
+{
+    // create keystr
+    setKeyStr();
+
+    // end this dialog
+    accept();
+}
+
+void KeyGrabDialog::setKeyStr()
+{
+    QString keystr = QString::null;
+    int keyval = pressed_keyval;
+    ButtonState mod = pressed_keystate;
+
     /*
      * Ignore Shift modifier for printable char keys for
      * easy-to-recognize key configuration.  uim-custom performs
      * implicit shift key encoding/decoding appropriately.
      */
-    if ( ((qkey >= 256 || !isgraph(qkey))) && (e->stateAfter() & Qt::ShiftButton) )
-    {
-        if( qkey != Qt::Key_Shift )
-            keystr.append( "<Shift>" );
-        m_shiftCheckBox->setChecked( true );
-    }
-    else
-    {
-        m_shiftCheckBox->setChecked( false );
-    }
+    if( ((keyval >= 256) || !isgraph(keyval)) &&
+        (mod & Qt::ShiftButton) )
+        keystr += "<Shift>";
+    if( mod & Qt::ControlButton )
+        keystr += "<Control>";
+    if( mod & Qt::AltButton )
+        keystr += "<Alt>";
 
-    if ( e->stateAfter() & Qt::ControlButton )
-    {
-        if( qkey != Qt::Key_Control )
-            keystr.append( "<Control>" );
-        m_controlCheckBox->setChecked( true );
-    }
-    else
-    {
-        m_controlCheckBox->setChecked( false );
-    }
-
-    if ( e->stateAfter() & Qt::AltButton )
-    {
-        if( qkey != Qt::Key_Alt )
-            keystr.append( "<Alt>" );
-        m_altCheckBox->setChecked( true );
-    }
-    else
-    {
-        m_altCheckBox->setChecked( false );
-    }
-
-    QString editString = "";
-    switch( qkey )
-    {
-        /* normal keys */
+    switch( keyval ) {
     case Qt::Key_Space:
-        /*
-         * "space" is not proper uim keysym and only exists for user
-         * convenience. It is converted to " " by uim-custom
-         */
-        editString.append( "space" );
+        keystr += "space";
         break;
     case Qt::Key_BackSpace:
-        editString.append( "backspace" );
+        keystr += "backspace";
         break;
     case Qt::Key_Delete:
-        editString.append( "delete" );
+        keystr += "delete";
         break;
     case Qt::Key_Insert:
-        editString.append( "insert" );
+        keystr += "insert";
         break;
     case Qt::Key_Escape:
-        editString.append( "escape" );
+        keystr += "escape";
         break;
     case Qt::Key_Tab:
-        editString.append( "tab" );
+        keystr += "tab";
         break;
     case Qt::Key_Return:
-        editString.append( "return" );
+        keystr += "return";
         break;
     case Qt::Key_Left:
-        editString.append( "left" );
+        keystr += "left";
         break;
     case Qt::Key_Up:
-        editString.append( "up" );
+        keystr += "up";
         break;
     case Qt::Key_Right:
-        editString.append( "right" );
+        keystr += "right";
         break;
     case Qt::Key_Down:
-        editString.append( "right" );
+        keystr += "down";
         break;
     case Qt::Key_Prior:
-        editString.append( "prior" );
+        keystr += "prior";
         break;
     case Qt::Key_Next:
-        editString.append( "next" );
+        keystr += "next";
         break;
     case Qt::Key_Home:
-        editString.append( "home" );
+        keystr += "home";
         break;
     case Qt::Key_End:
-        editString.append( "end" );
+        keystr += "end";
         break;
 #ifdef QT_IMMODULE
     case Qt::Key_Kanji:
     case Qt::Key_Zenkaku_Hankaku:
-        editString.append( "zenkaku-hankaku" );
+        keystr += "zenkaku-hankaku";
         break;
     case Qt::Key_Multi_key:
-        editString.append( "Multi_key" );
+        keystr += "Multi_key";
         break;
     case Qt::Key_Mode_switch:
-        editString.append( "Mode_switch" );
+        keystr += "Mode_switch";
         break;
     case Qt::Key_Henkan:
-        editString.append( "Henkan_Mode" );
+        keystr += "Henkan_Mode";
         break;
     case Qt::Key_Muhenkan:
-        editString.append( "Muhenkan" );
+        keystr += "Muhenkan";
         break;
 #endif /* Def: QT_IMMODULE */
     case Qt::Key_Shift:
-        m_shiftCheckBox->setChecked( true );
-        editString.append( "Shift_key" );
+        keystr += "Shift_key";
         break;
     case Qt::Key_Control:
-        m_controlCheckBox->setChecked( true );
-        editString.append( "Control_key" );
+        keystr += "Control_key";
         break;
     case Qt::Key_Alt:
-        m_altCheckBox->setChecked( true );
-        editString.append( "Alt_key" );
+        keystr += "Alt_key";
         break;
     case Qt::Key_Meta:
-        editString.append( "Meta_key" );
+        keystr += "Meta_key";
         break;
     case Qt::Key_Super_L:
     case Qt::Key_Super_R:
-        editString.append( "Super_key" );
+        keystr += "Super_key";
         break;
     case Qt::Key_Hyper_L:
     case Qt::Key_Hyper_R:
-        editString.append( "Hyper_key" );
+        keystr += "Hyper_key";
         break;
     default:
-        if( Qt::Key_F1 <= qkey && qkey <= Qt::Key_F35 ) {
-            int n = qkey - Qt::Key_F1 + 1;
-            editString.append( "F" );
-            editString.append( QString::number( n ) );
-        }
-        else if( isascii( qkey ) )
+        if( keyval >= Qt::Key_F1 && keyval <= Qt::Key_F35 )
         {
-            QString ch = QChar( qkey );
-            if( e->stateAfter() & Qt::ShiftButton )
-            {
+            keystr += "F" + QString::number( keyval - Qt::Key_F1 + 1 );
+            break;
+        }
+        else if( keyval < 256 )
+        {
+            QChar ch = QChar( keyval );
+            
+            if( mod & Qt::ShiftButton ) 
                 ch = ch.upper();
-            }
             else
-            {
                 ch = ch.lower();
-            }
-            editString.append( ch );
-        }
-        else
-        {
-            /* unknown key */
-            qDebug( "unknown key" );
-            return;
+
+            keystr += ch;
         }
     }
-
-    if( qkey == Qt::Key_Shift || qkey == Qt::Key_Control || qkey == Qt::Key_Alt )
-        m_keyLineEdit->setText( "" );
-    else
-        m_keyLineEdit->setText( editString );
-
-
-    keystr.append( editString );
-#if DEBUG_KEY_EDIT
-    qDebug( "keystr = %s", (const char *)keystr.local8Bit() );
-#endif
 
     m_keystr = keystr;
+        
 }
-
-bool KeyGrabForm::eventFilter( QObject * watched, QEvent * e )
-{
-    if( e->type() == QEvent::KeyPress )
-    {
-        keyPressEvent( (QKeyEvent*)e );
-        return true;
-    }
-
-    return false;
-}
-
 
 #include "pref-customwidgets.moc"

@@ -1,4 +1,4 @@
-EXTRA_DIST = pref-keyeditformbase.ui  pref-keygrabformbase.ui  pref-olisteditformbase.ui bushu.t
+EXTRA_DIST = pref-keyeditformbase.ui  pref-olisteditformbase.ui bushu.t
 
 if QT
 
@@ -45,10 +45,7 @@ UI_TMP_FILES = \
 	pref-olisteditformbase.moc \
 	pref-keyeditformbase.cpp \
 	pref-keyeditformbase.h \
-	pref-keyeditformbase.moc \
-	pref-keygrabformbase.cpp \
-	pref-keygrabformbase.h \
-	pref-keygrabformbase.moc
+	pref-keyeditformbase.moc
 
 noinst_HEADERS = $(HEADER_FILES)
 
@@ -124,8 +121,8 @@ switcher-qt.cpp: switcher-qt.moc
 
 # Pref
 uim_pref_qt_SOURCES = \
-	pref-olisteditformbase.cpp pref-keyeditformbase.cpp pref-keygrabformbase.cpp \
-	pref-olisteditformbase.h   pref-keyeditformbase.h   pref-keygrabformbase.h   \
+	pref-olisteditformbase.cpp pref-keyeditformbase.cpp \
+	pref-olisteditformbase.h   pref-keyeditformbase.h   \
 	pref-qt.cpp pref-customwidgets.cpp pref-kseparator.cpp qtgettext.h pref-qt.h \
 	pref-customwidgets.h pref-kseparator.h
 
@@ -133,8 +130,8 @@ uim_pref_qt_CXXFLAGS = $(QT_CXXFLAGS)
 uim_pref_qt_LDFLAGS  = $(QT_LDFLAGS)
 uim_pref_qt_LDADD    = $(top_builddir)/uim/libuim-custom.la $(top_builddir)/uim/libuim.la
 
-pref-customwidgets.h:pref-olisteditformbase.h pref-keyeditformbase.h pref-keygrabformbase.h
-pref-qt.h:pref-olisteditformbase.h pref-keyeditformbase.h pref-keygrabformbase.h
+pref-customwidgets.h:pref-olisteditformbase.h pref-keyeditformbase.h
+pref-qt.h:pref-olisteditformbase.h pref-keyeditformbase.h
 
 pref-qt.cpp: pref-qt.moc
 pref-customwidgets.cpp: pref-customwidgets.moc
@@ -153,13 +150,6 @@ pref-keyeditformbase.cpp: pref-keyeditformbase.h pref-keyeditformbase.moc
 	mv pref-keyeditformbase.cpp.tmp pref-keyeditformbase.cpp
 pref-keyeditformbase.h:
 	$(UIC) $(top_srcdir)/qt/pref-keyeditformbase.ui -o pref-keyeditformbase.h
-
-pref-keygrabformbase.cpp: pref-keygrabformbase.h pref-keygrabformbase.moc
-	$(UIC) $(top_srcdir)/qt/pref-keygrabformbase.ui -i pref-keygrabformbase.h > pref-keygrabformbase.cpp.tmp
-	echo '#include "pref-keygrabformbase.moc"' >> pref-keygrabformbase.cpp.tmp
-	mv pref-keygrabformbase.cpp.tmp pref-keygrabformbase.cpp
-pref-keygrabformbase.h:
-	$(UIC) $(top_srcdir)/qt/pref-keygrabformbase.ui -o pref-keygrabformbase.h
 
 uim_chardict_qt_SOURCES = \
 	chardict-qt.cpp chardict-qt.h \

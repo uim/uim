@@ -137,18 +137,4 @@ protected:
     QPtrList<UimCustomItemIface> m_customIfaceList;
 };
 
-#if 0
-class SubgroupData {
-public:
-    SubgroupData( QWidget *parentWidget, const char *parent_group_name );
-    ~SubgroupData();
-
-    QVGroupBox *searchGroupVBoxByCustomSym( const char *custom_sym ) const;
-
-protected:
-    QMap<QString, QVGroupBox*> gvboxMap;
-};
-#endif
-
-
 #endif /* Not def: _UIM_PREF_QT_H_ */

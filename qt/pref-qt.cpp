@@ -596,61 +596,6 @@ void GroupPageWidget::setDefault()
     }
 }
 
-#if 0
-//-----------------------------------------------------------------------------------
-SubgroupData::SubgroupData( QWidget*parentWidget, const char *parent_group_name )
-{
-    char **sub_groups = uim_custom_group_subgroups( parent_group_name );
-    char **sgrp;
-    for( sgrp = sub_groups; *sgrp; sgrp++ )
-    {
-        struct uim_custom_group *sgroup_custom =  uim_custom_group_get( *sgrp );
-        /*
-         * 2004-01-31 Kazuki Ohta <mover@hct.zaq.ne.jp>
-         *
-         * The subgroup "main" doesn't contain any contents.
-         * So, we need to create default QVGroupBox for it.
-         */
-        QVGroupBox *gvbox;
-        if( QString::compare( *sgrp, "main" ) == 0 )
-        {
-            gvbox = NULL;
-        }
-        else
-        {
-            gvbox = new QVGroupBox( _FU8(sgroup_custom->label), parentWidget );
-            parentWidget->layout()->add( gvbox );
-        }
-
-        char **custom_syms = uim_custom_collect_by_group( *sgrp );
-        if( !custom_syms )
-            continue;
-
-        for( char **custom_sym = custom_syms; *custom_sym; custom_sym++ )
-        {
-            gvboxMap[QString(*custom_sym)] = gvbox;
-        }
-        uim_custom_symbol_list_free( custom_syms );
-
-
-        uim_custom_group_free( sgroup_custom );
-    }
-    uim_custom_symbol_list_free( sub_groups );
-}
-
-SubgroupData::~SubgroupData()
-{
-    gvboxMap.clear();    
-}
-
-QVGroupBox * SubgroupData::searchGroupVBoxByCustomSym( const char *custom_sym ) const
-{
-    if (gvboxMap.find(custom_sym) == gvboxMap.end())
-        return NULL;
-    return gvboxMap[QString(custom_sym)];
-}
-#endif
-
 //--------------------------------------------------------------------------------------
 int main( int argc, char **argv )
 {

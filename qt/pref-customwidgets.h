@@ -58,7 +58,6 @@
 
 #include "pref-olisteditformbase.h"
 #include "pref-keyeditformbase.h"
-#include "pref-keygrabformbase.h"
 
 class UimCustomItemIface
 {
@@ -179,7 +178,7 @@ protected slots:
     void slotCustomTextChanged( const QString & text );
 private:
     QLineEdit *m_lineEdit;
-    QToolButton *m_fileButton;
+    QPushButton *m_fileButton;
 protected:
     void currentCustomValueChanged(){ emit customValueChanged(); }
 signals:
@@ -218,7 +217,7 @@ protected slots:
     void slotEditButtonClicked();
 private:
     QLineEdit *m_lineEdit;
-    QToolButton *m_editButton;
+    QPushButton *m_editButton;
 
     QPtrList<struct uim_custom_choice> m_validItemList;
     QPtrList<struct uim_custom_choice> m_itemList;
@@ -259,7 +258,7 @@ protected slots:
     void slotKeyButtonClicked();
 private:
     QLineEdit *m_lineEdit;
-    QToolButton *m_editButton;
+    QPushButton *m_editButton;
 protected:
     void currentCustomValueChanged(){ emit customValueChanged(); }
 signals:
@@ -281,20 +280,24 @@ protected slots:
     void slotSelectionChanged( QListViewItem * );
 };
 
-class KeyGrabForm : public KeyGrabFormBase {
+class KeyGrabDialog : public QDialog {
     Q_OBJECT
 
 public:
-    KeyGrabForm( QWidget *parent = 0, const char *name = 0 );
+    KeyGrabDialog( QWidget *parent = 0, const char *name = 0 );
 
     QString getKeyStr() const { return m_keystr; }
 
-protected:
     virtual void keyPressEvent( QKeyEvent *e );
-    virtual bool eventFilter( QObject * watched, QEvent * e );
+    virtual void keyReleaseEvent( QKeyEvent *e );
 
 protected:
-    QString m_keystr;
+    void setKeyStr();
+
+protected:
+    int pressed_keyval;
+    ButtonState pressed_keystate;
+    QString m_keystr; 
 };
 
 #endif /* Not def: _CUSTOMWIDGETS_H_ */
