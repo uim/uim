@@ -68,9 +68,11 @@ UimPrefDialog::UimPrefDialog( QWidget *parent, const char *name )
       m_isValueChanged( false )
 {
     uim_init();
-    uim_custom_enable();
-
-    setupWidgets();
+    if (uim_custom_enable()) {
+      setupWidgets();
+    } else {
+      qDebug("uim_custom_enable() failed.");
+    }
 }
 
 UimPrefDialog::~UimPrefDialog()

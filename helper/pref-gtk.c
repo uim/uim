@@ -1936,8 +1936,6 @@ create_pref_window(void)
 int 
 main (int argc, char *argv[])
 {
-  GtkWidget *pref;
-  
   setlocale(LC_ALL, "");
   bindtextdomain(PACKAGE, LOCALEDIR);
   textdomain(PACKAGE);
@@ -1947,14 +1945,24 @@ main (int argc, char *argv[])
   
   gtk_init(&argc, &argv);
 
-  uim_init();
-  uim_custom_enable();  
+  if (uim_init() < 0) {
+    fprintf(stderr, "uim_init() failed.\n");
+    return -1;
+  }
 
-  pref = create_pref_window();
+  if (uim_custom_enable()) {
+    GtkWidget *pref;
+  
+    pref = create_pref_window();
 
-  gtk_widget_show_all(pref);
+    gtk_widget_show_all(pref);
 
-  gtk_main();
+    gtk_main();
+  } else {
+    fprintf(stderr, "uim_custom_enable() failed.\n");
+    uim_quit();
+    return -1;
+  }
 
   uim_quit();
 
