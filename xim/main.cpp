@@ -139,9 +139,14 @@ void add_fd_watch(int fd, int mask, void (*fn)(int, int))
 static void main_loop()
 {
     fd_set rfds, wfds;
+    struct timeval tv;
+    
     while (1) {
 	FD_ZERO(&rfds);
 	FD_ZERO(&wfds);
+	tv.tv_sec = 0;
+	tv.tv_usec = 100000;
+
 	std::map<int, fd_watch_struct>::iterator it;
 	int  fd_max = 0;
 	for (it = fd_watch_stat.begin(); it != fd_watch_stat.end(); it++) {
@@ -153,7 +158,7 @@ static void main_loop()
 	    if (fd_max < fd)
 		fd_max = fd;
 	}
-	select(fd_max + 1, &rfds, &wfds, NULL, NULL);
+	select(fd_max + 1, &rfds, &wfds, NULL, &tv);
 	for (it = fd_watch_stat.begin(); it != fd_watch_stat.end(); it++) {
 	    int fd = it->first;
 	    if (FD_ISSET(fd, &rfds))
