@@ -347,7 +347,7 @@ uim_custom_choice_list_free(struct uim_custom_choice **list)
 
 /* ordered list */
 static struct uim_custom_choice **
-uim_custom_olist_get(const char *custom_sym, const char getter_proc)
+uim_custom_olist_get(const char *custom_sym, const char *getter_proc)
 {
   UIM_EVAL_FSTRING3(NULL, "(define %s (%s '%s))",
 		    str_list_arg, getter_proc, custom_sym);
