@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-02 01:50+0900\n"
+"POT-Creation-Date: 2005-02-03 10:27+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -332,83 +332,83 @@ msgstr ""
 msgid "Example"
 msgstr ""
 
-#: helper/pref-gtk.c:134
+#: helper/pref-gtk.c:127
 msgid ""
 "Some value(s) have been changed.\n"
 "Save?"
 msgstr ""
 
-#: helper/pref-gtk.c:203
+#: helper/pref-gtk.c:196
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you realy quit this program?"
 msgstr ""
 
-#: helper/pref-gtk.c:242
+#: helper/pref-gtk.c:235
 msgid "Group"
 msgstr ""
 
-#: helper/pref-gtk.c:499
+#: helper/pref-gtk.c:483
 msgid "Specify file"
 msgstr ""
 
-#: helper/pref-gtk.c:542
+#: helper/pref-gtk.c:526
 msgid "File"
 msgstr ""
 
-#: helper/pref-gtk.c:1128
+#: helper/pref-gtk.c:1109
 msgid "Enabled"
 msgstr ""
 
-#: helper/pref-gtk.c:1154
+#: helper/pref-gtk.c:1135
 msgid "Enabled items"
 msgstr ""
 
-#: helper/pref-gtk.c:1232
+#: helper/pref-gtk.c:1213
 msgid "Disabled"
 msgstr ""
 
-#: helper/pref-gtk.c:1258
+#: helper/pref-gtk.c:1239
 msgid "Disabled items"
 msgstr ""
 
-#: helper/pref-gtk.c:1292 helper/pref-gtk.c:1864
+#: helper/pref-gtk.c:1273 helper/pref-gtk.c:1838
 msgid "Choose..."
 msgstr ""
 
-#: helper/pref-gtk.c:1487
+#: helper/pref-gtk.c:1468
 msgid "Press any key to grab..."
 msgstr ""
 
-#: helper/pref-gtk.c:1730
+#: helper/pref-gtk.c:1704
 msgid "Key preference"
 msgstr ""
 
-#: helper/pref-gtk.c:1776
+#: helper/pref-gtk.c:1750
 msgid "_Shift"
 msgstr ""
 
-#: helper/pref-gtk.c:1781
+#: helper/pref-gtk.c:1755
 msgid "_Control"
 msgstr ""
 
-#: helper/pref-gtk.c:1786
+#: helper/pref-gtk.c:1760
 msgid "_Alt"
 msgstr ""
 
-#: helper/pref-gtk.c:1802
+#: helper/pref-gtk.c:1776
 msgid "..."
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:475 helper/toolbar-common-gtk.c:673
+#: helper/toolbar-common-gtk.c:484 helper/toolbar-common-gtk.c:686
 msgid "Execute uim's input method switcher"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:482 helper/toolbar-common-gtk.c:714
+#: helper/toolbar-common-gtk.c:491 helper/toolbar-common-gtk.c:731
 msgid "Execute uim's preference tool"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:489
+#: helper/toolbar-common-gtk.c:498
 msgid "Quit this toolbar"
 msgstr ""
 
@@ -448,165 +448,170 @@ msgstr ""
 msgid "Japanese Kana Kanji Conversion Engine, Anthy"
 msgstr ""
 
-#: scm/anthy-custom.lisp:45 scm/canna-custom.lisp:45
-#: scm/generic-custom.lisp:42 scm/skk-custom.lisp:45
+#: scm/anthy-custom.lisp:50 scm/canna-custom.lisp:54
+msgid "Show segment separator"
+msgstr ""
+
+#: scm/anthy-custom.lisp:51 scm/anthy-custom.lisp:57 scm/anthy-custom.lisp:72
+#: scm/anthy-custom.lisp:78 scm/anthy-custom.lisp:84 scm/anthy-custom.lisp:90
+#: scm/anthy-custom.lisp:173 scm/anthy-custom.lisp:192
+#: scm/anthy-custom.lisp:201 scm/anthy-custom.lisp:243
+#: scm/anthy-custom.lisp:252 scm/anthy-key-custom.lisp:37
+#: scm/anthy-key-custom.lisp:41 scm/anthy-key-custom.lisp:45
+#: scm/canna-custom.lisp:44 scm/canna-custom.lisp:55 scm/canna-custom.lisp:61
+#: scm/canna-custom.lisp:76 scm/canna-custom.lisp:82 scm/canna-custom.lisp:88
+#: scm/canna-custom.lisp:167 scm/canna-custom.lisp:186
+#: scm/canna-custom.lisp:195 scm/canna-custom.lisp:237
+#: scm/canna-custom.lisp:246 scm/canna-custom.lisp:295
+#: scm/canna-custom.lisp:301 scm/canna-key-custom.lisp:37
+#: scm/canna-key-custom.lisp:41 scm/canna-key-custom.lisp:45
+#: scm/generic-custom.lisp:37 scm/generic-custom.lisp:43
+#: scm/generic-custom.lisp:49 scm/generic-custom.lisp:55
+#: scm/generic-custom.lisp:61 scm/generic-key-custom.lisp:37
+#: scm/generic-key-custom.lisp:41 scm/im-custom.lisp:46 scm/im-custom.lisp:51
+#: scm/im-custom.lisp:56 scm/im-custom.lisp:61 scm/im-custom.lisp:66
+#: scm/im-custom.lisp:71 scm/im-custom.lisp:76 scm/im-custom.lisp:81
+#: scm/im-custom.lisp:86 scm/im-custom.lisp:94 scm/im-custom.lisp:101
+#: scm/im-custom.lisp:111 scm/im-custom.lisp:189 scm/im-custom.lisp:249
+#: scm/im-custom.lisp:265 scm/im-custom.lisp:271 scm/im-custom.lisp:277
+#: scm/im-custom.lisp:284 scm/prime-custom.lisp:58 scm/prime-custom.lisp:64
+#: scm/prime-custom.lisp:70 scm/prime-custom.lisp:76 scm/prime-custom.lisp:82
+#: scm/prime-custom.lisp:90 scm/prime-custom.lisp:96 scm/prime-custom.lisp:102
+#: scm/prime-custom.lisp:145 scm/prime-custom.lisp:154 scm/skk-custom.lisp:55
+#: scm/skk-custom.lisp:61 scm/skk-custom.lisp:67 scm/skk-custom.lisp:73
+#: scm/skk-custom.lisp:135 scm/skk-custom.lisp:144 scm/skk-custom.lisp:176
+#: scm/skk-custom.lisp:183 scm/skk-custom.lisp:190 scm/skk-custom.lisp:202
+#: scm/skk-custom.lisp:208 scm/skk-custom.lisp:214 scm/skk-custom.lisp:220
+#: scm/skk-custom.lisp:230 scm/skk-custom.lisp:236 scm/skk-custom.lisp:257
+#: scm/skk-custom.lisp:263 scm/skk-custom.lisp:270 scm/skk-key-custom.lisp:65
+#: scm/skk-key-custom.lisp:69 scm/skk-key-custom.lisp:73
+#: scm/skk-key-custom.lisp:78 scm/spellcheck-custom.lisp:48
+#: scm/spellcheck-custom.lisp:54 scm/spellcheck-custom.lisp:60
+#: scm/spellcheck-custom.lisp:66
+msgid "long description will be here."
+msgstr ""
+
+#: scm/anthy-custom.lisp:56 scm/canna-custom.lisp:60 scm/im-custom.lisp:75
+msgid "Segment separator"
+msgstr ""
+
+#: scm/anthy-custom.lisp:71 scm/canna-custom.lisp:75
+#: scm/generic-custom.lisp:42 scm/skk-custom.lisp:54
 #: scm/spellcheck-custom.lisp:47
 msgid "Use candidate window"
 msgstr ""
 
-#: scm/anthy-custom.lisp:46 scm/anthy-custom.lisp:52 scm/anthy-custom.lisp:58
-#: scm/anthy-custom.lisp:64 scm/anthy-custom.lisp:86 scm/anthy-custom.lisp:92
-#: scm/anthy-custom.lisp:164 scm/anthy-custom.lisp:183
-#: scm/anthy-custom.lisp:192 scm/anthy-custom.lisp:234
-#: scm/anthy-custom.lisp:243 scm/anthy-key-custom.lisp:37
-#: scm/anthy-key-custom.lisp:41 scm/anthy-key-custom.lisp:45
-#: scm/canna-custom.lisp:46 scm/canna-custom.lisp:52 scm/canna-custom.lisp:58
-#: scm/canna-custom.lisp:75 scm/canna-custom.lisp:81 scm/canna-custom.lisp:99
-#: scm/canna-custom.lisp:106 scm/canna-custom.lisp:112
-#: scm/canna-custom.lisp:231 scm/canna-custom.lisp:250
-#: scm/canna-custom.lisp:259 scm/canna-custom.lisp:301
-#: scm/canna-custom.lisp:310 scm/generic-custom.lisp:37
-#: scm/generic-custom.lisp:43 scm/generic-custom.lisp:49
-#: scm/generic-custom.lisp:55 scm/generic-custom.lisp:61
-#: scm/generic-key-custom.lisp:37 scm/generic-key-custom.lisp:41
-#: scm/im-custom.lisp:46 scm/im-custom.lisp:51 scm/im-custom.lisp:56
-#: scm/im-custom.lisp:61 scm/im-custom.lisp:68 scm/im-custom.lisp:75
-#: scm/im-custom.lisp:85 scm/im-custom.lisp:163 scm/im-custom.lisp:189
-#: scm/im-custom.lisp:227 scm/im-custom.lisp:243 scm/im-custom.lisp:249
-#: scm/im-custom.lisp:255 scm/prime-custom.lisp:58 scm/prime-custom.lisp:64
-#: scm/prime-custom.lisp:70 scm/prime-custom.lisp:76 scm/prime-custom.lisp:82
-#: scm/prime-custom.lisp:90 scm/prime-custom.lisp:96 scm/prime-custom.lisp:102
-#: scm/prime-custom.lisp:145 scm/prime-custom.lisp:154 scm/skk-custom.lisp:46
-#: scm/skk-custom.lisp:52 scm/skk-custom.lisp:58 scm/skk-custom.lisp:64
-#: scm/skk-custom.lisp:88 scm/skk-custom.lisp:94 scm/skk-custom.lisp:100
-#: scm/skk-custom.lisp:107 scm/skk-custom.lisp:113 scm/skk-custom.lisp:119
-#: scm/skk-custom.lisp:125 scm/skk-custom.lisp:131 scm/skk-custom.lisp:137
-#: scm/skk-custom.lisp:155 scm/skk-custom.lisp:162 scm/skk-custom.lisp:169
-#: scm/skk-custom.lisp:216 scm/skk-custom.lisp:225
-#: scm/spellcheck-custom.lisp:48 scm/spellcheck-custom.lisp:54
-#: scm/spellcheck-custom.lisp:60 scm/spellcheck-custom.lisp:66
-msgid "long description will be here."
-msgstr ""
-
-#: scm/anthy-custom.lisp:51 scm/canna-custom.lisp:51
-#: scm/generic-custom.lisp:48 scm/skk-custom.lisp:51
+#: scm/anthy-custom.lisp:77 scm/canna-custom.lisp:81
+#: scm/generic-custom.lisp:48 scm/skk-custom.lisp:60
 #: scm/spellcheck-custom.lisp:53
 msgid "Conversion key press count to show candidate window"
 msgstr ""
 
-#: scm/anthy-custom.lisp:57 scm/canna-custom.lisp:57
-#: scm/generic-custom.lisp:54 scm/prime-custom.lisp:57 scm/skk-custom.lisp:57
+#: scm/anthy-custom.lisp:83 scm/canna-custom.lisp:87
+#: scm/generic-custom.lisp:54 scm/prime-custom.lisp:57 scm/skk-custom.lisp:66
 msgid "Number of candidates in candidate window at a time"
 msgstr ""
 
-#: scm/anthy-custom.lisp:63 scm/generic-custom.lisp:60
+#: scm/anthy-custom.lisp:89 scm/generic-custom.lisp:60
 msgid "Select candidate by numeral keys"
 msgstr ""
 
-#: scm/anthy-custom.lisp:85 scm/canna-custom.lisp:74
-msgid "Show segment separator"
-msgstr ""
-
-#: scm/anthy-custom.lisp:91 scm/canna-custom.lisp:80
-msgid "Segment separator"
-msgstr ""
-
-#: scm/anthy-custom.lisp:110 scm/canna-custom.lisp:177
-#: scm/prime-custom.lisp:122 scm/skk-custom.lisp:183
+#: scm/anthy-custom.lisp:119 scm/canna-custom.lisp:113
+#: scm/prime-custom.lisp:122 scm/skk-custom.lisp:102
 msgid "Direct input"
 msgstr ""
 
-#: scm/anthy-custom.lisp:111 scm/canna-custom.lisp:178 scm/skk-custom.lisp:184
+#: scm/anthy-custom.lisp:120 scm/canna-custom.lisp:114 scm/skk-custom.lisp:103
 msgid "Direct input mode"
 msgstr ""
 
-#: scm/anthy-custom.lisp:115 scm/canna-custom.lisp:182 scm/skk-custom.lisp:188
+#: scm/anthy-custom.lisp:124 scm/canna-custom.lisp:118 scm/skk-custom.lisp:107
 msgid "Hiragana"
 msgstr ""
 
-#: scm/anthy-custom.lisp:116 scm/canna-custom.lisp:183 scm/skk-custom.lisp:189
+#: scm/anthy-custom.lisp:125 scm/canna-custom.lisp:119 scm/skk-custom.lisp:108
 msgid "Hiragana input mode"
 msgstr ""
 
-#: scm/anthy-custom.lisp:120 scm/canna-custom.lisp:187 scm/skk-custom.lisp:193
+#: scm/anthy-custom.lisp:129 scm/canna-custom.lisp:123 scm/skk-custom.lisp:112
 msgid "Katakana"
 msgstr ""
 
-#: scm/anthy-custom.lisp:121 scm/canna-custom.lisp:188 scm/skk-custom.lisp:194
+#: scm/anthy-custom.lisp:130 scm/canna-custom.lisp:124 scm/skk-custom.lisp:113
 msgid "Katakana input mode"
 msgstr ""
 
-#: scm/anthy-custom.lisp:125 scm/canna-custom.lisp:192 scm/skk-custom.lisp:198
+#: scm/anthy-custom.lisp:134 scm/canna-custom.lisp:128 scm/skk-custom.lisp:117
 msgid "Halfwidth Katakana"
 msgstr ""
 
-#: scm/anthy-custom.lisp:126 scm/canna-custom.lisp:193 scm/skk-custom.lisp:199
+#: scm/anthy-custom.lisp:135 scm/canna-custom.lisp:129 scm/skk-custom.lisp:118
 msgid "Halfwidth Katakana input mode"
 msgstr ""
 
-#: scm/anthy-custom.lisp:130 scm/canna-custom.lisp:197
-#: scm/prime-custom.lisp:132 scm/skk-custom.lisp:203
+#: scm/anthy-custom.lisp:139 scm/canna-custom.lisp:133
+#: scm/prime-custom.lisp:132 scm/skk-custom.lisp:122
 msgid "Fullwidth Alphanumeric"
 msgstr ""
 
-#: scm/anthy-custom.lisp:131 scm/canna-custom.lisp:198
-#: scm/prime-custom.lisp:133 scm/skk-custom.lisp:204
+#: scm/anthy-custom.lisp:140 scm/canna-custom.lisp:134
+#: scm/prime-custom.lisp:133 scm/skk-custom.lisp:123
 msgid "Fullwidth Alphanumeric input mode"
 msgstr ""
 
-#: scm/anthy-custom.lisp:138 scm/canna-custom.lisp:205
+#: scm/anthy-custom.lisp:147 scm/canna-custom.lisp:141
 msgid "Romaji"
 msgstr ""
 
-#: scm/anthy-custom.lisp:139 scm/canna-custom.lisp:206
+#: scm/anthy-custom.lisp:148 scm/canna-custom.lisp:142
 msgid "Romaji input mode"
 msgstr ""
 
-#: scm/anthy-custom.lisp:143 scm/canna-custom.lisp:210
+#: scm/anthy-custom.lisp:152 scm/canna-custom.lisp:146
 msgid "Kana"
 msgstr ""
 
-#: scm/anthy-custom.lisp:144 scm/canna-custom.lisp:211
+#: scm/anthy-custom.lisp:153 scm/canna-custom.lisp:147
 msgid "Kana input mode"
 msgstr ""
 
-#: scm/anthy-custom.lisp:148 scm/canna-custom.lisp:215
+#: scm/anthy-custom.lisp:157 scm/canna-custom.lisp:151
 msgid "AZIK"
 msgstr ""
 
-#: scm/anthy-custom.lisp:149 scm/canna-custom.lisp:216
+#: scm/anthy-custom.lisp:158 scm/canna-custom.lisp:152
 msgid "AZIK extended romaji input mode"
 msgstr ""
 
-#: scm/anthy-custom.lisp:158 scm/anthy-custom.lisp:159
-#: scm/canna-custom.lisp:225 scm/canna-custom.lisp:226
+#: scm/anthy-custom.lisp:167 scm/anthy-custom.lisp:168
+#: scm/canna-custom.lisp:161 scm/canna-custom.lisp:162
 msgid "Input mode"
 msgstr ""
 
-#: scm/anthy-custom.lisp:161 scm/anthy-custom.lisp:162
-#: scm/canna-custom.lisp:228 scm/canna-custom.lisp:229
+#: scm/anthy-custom.lisp:170 scm/anthy-custom.lisp:171
+#: scm/canna-custom.lisp:164 scm/canna-custom.lisp:165
 msgid "Kana input method"
 msgstr ""
 
-#: scm/anthy-custom.lisp:163 scm/canna-custom.lisp:230
+#: scm/anthy-custom.lisp:172 scm/canna-custom.lisp:166
 msgid "Enabled toolbar buttons"
 msgstr ""
 
-#: scm/anthy-custom.lisp:182 scm/canna-custom.lisp:249
-#: scm/prime-custom.lisp:144 scm/skk-custom.lisp:215
+#: scm/anthy-custom.lisp:191 scm/canna-custom.lisp:185
+#: scm/prime-custom.lisp:144 scm/skk-custom.lisp:134
 msgid "Default input mode"
 msgstr ""
 
-#: scm/anthy-custom.lisp:191 scm/canna-custom.lisp:258
-#: scm/prime-custom.lisp:153 scm/skk-custom.lisp:224
+#: scm/anthy-custom.lisp:200 scm/canna-custom.lisp:194
+#: scm/prime-custom.lisp:153 scm/skk-custom.lisp:143
 msgid "Input mode menu items"
 msgstr ""
 
-#: scm/anthy-custom.lisp:233 scm/canna-custom.lisp:300
+#: scm/anthy-custom.lisp:242 scm/canna-custom.lisp:236
 msgid "Default kana input method"
 msgstr ""
 
-#: scm/anthy-custom.lisp:242 scm/canna-custom.lisp:309
+#: scm/anthy-custom.lisp:251 scm/canna-custom.lisp:245
 msgid "Kana input method menu items"
 msgstr ""
 
@@ -640,16 +645,39 @@ msgstr ""
 #: scm/anthy-key-custom.lisp:194 scm/anthy-key-custom.lisp:200
 #: scm/anthy-key-custom.lisp:206 scm/anthy-key-custom.lisp:212
 #: scm/anthy-key-custom.lisp:218 scm/anthy-key-custom.lisp:224
-#: scm/anthy-key-custom.lisp:230 scm/generic-key-custom.lisp:48
-#: scm/generic-key-custom.lisp:54 scm/generic-key-custom.lisp:60
-#: scm/generic-key-custom.lisp:66 scm/generic-key-custom.lisp:72
-#: scm/generic-key-custom.lisp:78 scm/generic-key-custom.lisp:84
-#: scm/generic-key-custom.lisp:90 scm/generic-key-custom.lisp:96
-#: scm/generic-key-custom.lisp:106 scm/generic-key-custom.lisp:112
-#: scm/generic-key-custom.lisp:118 scm/generic-key-custom.lisp:124
-#: scm/generic-key-custom.lisp:130 scm/generic-key-custom.lisp:136
-#: scm/generic-key-custom.lisp:142 scm/generic-key-custom.lisp:148
-#: scm/generic-key-custom.lisp:154 scm/spellcheck-custom.lisp:72
+#: scm/anthy-key-custom.lisp:230 scm/canna-key-custom.lisp:52
+#: scm/canna-key-custom.lisp:58 scm/canna-key-custom.lisp:64
+#: scm/canna-key-custom.lisp:70 scm/canna-key-custom.lisp:76
+#: scm/canna-key-custom.lisp:82 scm/canna-key-custom.lisp:88
+#: scm/canna-key-custom.lisp:94 scm/canna-key-custom.lisp:103
+#: scm/canna-key-custom.lisp:110 scm/canna-key-custom.lisp:116
+#: scm/canna-key-custom.lisp:122 scm/canna-key-custom.lisp:128
+#: scm/canna-key-custom.lisp:134 scm/canna-key-custom.lisp:140
+#: scm/canna-key-custom.lisp:161 scm/canna-key-custom.lisp:167
+#: scm/canna-key-custom.lisp:185 scm/canna-key-custom.lisp:191
+#: scm/canna-key-custom.lisp:197 scm/canna-key-custom.lisp:203
+#: scm/generic-key-custom.lisp:48 scm/generic-key-custom.lisp:54
+#: scm/generic-key-custom.lisp:60 scm/generic-key-custom.lisp:66
+#: scm/generic-key-custom.lisp:72 scm/generic-key-custom.lisp:78
+#: scm/generic-key-custom.lisp:84 scm/generic-key-custom.lisp:90
+#: scm/generic-key-custom.lisp:96 scm/generic-key-custom.lisp:106
+#: scm/generic-key-custom.lisp:112 scm/generic-key-custom.lisp:118
+#: scm/generic-key-custom.lisp:124 scm/generic-key-custom.lisp:130
+#: scm/generic-key-custom.lisp:136 scm/generic-key-custom.lisp:142
+#: scm/generic-key-custom.lisp:148 scm/generic-key-custom.lisp:154
+#: scm/skk-key-custom.lisp:85 scm/skk-key-custom.lisp:92
+#: scm/skk-key-custom.lisp:98 scm/skk-key-custom.lisp:104
+#: scm/skk-key-custom.lisp:110 scm/skk-key-custom.lisp:116
+#: scm/skk-key-custom.lisp:122 scm/skk-key-custom.lisp:128
+#: scm/skk-key-custom.lisp:134 scm/skk-key-custom.lisp:144
+#: scm/skk-key-custom.lisp:150 scm/skk-key-custom.lisp:156
+#: scm/skk-key-custom.lisp:162 scm/skk-key-custom.lisp:168
+#: scm/skk-key-custom.lisp:174 scm/skk-key-custom.lisp:180
+#: scm/skk-key-custom.lisp:186 scm/skk-key-custom.lisp:192
+#: scm/skk-key-custom.lisp:210 scm/skk-key-custom.lisp:216
+#: scm/skk-key-custom.lisp:222 scm/skk-key-custom.lisp:228
+#: scm/skk-key-custom.lisp:234 scm/skk-key-custom.lisp:240
+#: scm/skk-key-custom.lisp:246 scm/spellcheck-custom.lisp:72
 msgid "long description will be here"
 msgstr ""
 
@@ -773,16 +801,112 @@ msgstr ""
 msgid "Japanese Kana Kanji Conversion Engine, Canna"
 msgstr ""
 
-#: scm/canna-custom.lisp:98
+#: scm/canna-custom.lisp:43
 msgid "Canna server"
 msgstr ""
 
-#: scm/canna-custom.lisp:105
+#: scm/canna-custom.lisp:294
 msgid "Use Canna server"
 msgstr ""
 
-#: scm/canna-custom.lisp:111
+#: scm/canna-custom.lisp:300
 msgid "Canna server name"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:36
+msgid "Canna key bindings"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:40
+msgid "Canna advanced key bindings (1)"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:44
+msgid "Canna advanced key bindings (2)"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:51
+msgid "[Canna] next segment"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:57
+msgid "[Canna] previous segment"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:63
+msgid "[Canna] extend segment"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:69
+msgid "[Canna] shrink segment"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:75
+msgid "[Canna] commit preedit string as transposed kana"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:81
+msgid "[Canna] fullwidth alphanumeric mode"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:87
+msgid "[Canna] halfwidth katakana mode"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:93
+msgid "[Canna] toggle hiragana/katakana mode"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:102
+msgid "[Canna] on"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:109
+msgid "[Canna] off"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:115
+msgid "[Canna] begin conversion"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:121
+msgid "[Canna] commit"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:127
+msgid "[Canna] cancel"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:133
+msgid "[Canna] next candidate"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:139
+msgid "[Canna] previous candidate"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:160
+msgid "[Canna] beginning of preedit"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:166
+msgid "[Canna] end of preedit"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:184
+msgid "[Canna] backspace"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:190
+msgid "[Canna] delete"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:196
+msgid "[Canna] go left"
+msgstr ""
+
+#: scm/canna-key-custom.lisp:202
+msgid "[Canna] go right"
 msgstr ""
 
 #: scm/direct.lisp:53
@@ -937,64 +1061,80 @@ msgstr ""
 msgid "Candidate window"
 msgstr ""
 
-#: scm/im-custom.lisp:67 scm/im-custom.lisp:84
+#: scm/im-custom.lisp:65
+msgid "Annotation"
+msgstr ""
+
+#: scm/im-custom.lisp:70
+msgid "Dictionary"
+msgstr ""
+
+#: scm/im-custom.lisp:80
+msgid "Mode transition"
+msgstr ""
+
+#: scm/im-custom.lisp:85
+msgid "Special operation"
+msgstr ""
+
+#: scm/im-custom.lisp:93 scm/im-custom.lisp:110
 msgid "Default input method"
 msgstr ""
 
-#: scm/im-custom.lisp:74
+#: scm/im-custom.lisp:100
 msgid "Specify default IM"
 msgstr ""
 
-#: scm/im-custom.lisp:162
+#: scm/im-custom.lisp:188
 msgid "Enabled input methods"
 msgstr ""
 
-#: scm/im-custom.lisp:188
-msgid "Enable lazy input method loading for fast startup"
-msgstr ""
-
-#: scm/im-custom.lisp:224 scm/skk-custom.lisp:86
+#: scm/im-custom.lisp:246 scm/skk-custom.lisp:200
 msgid "uim"
 msgstr ""
 
-#: scm/im-custom.lisp:224 scm/skk-custom.lisp:86
+#: scm/im-custom.lisp:246 scm/skk-custom.lisp:200
 msgid "uim native"
 msgstr ""
 
-#: scm/im-custom.lisp:225
+#: scm/im-custom.lisp:247
 msgid "ATOK like"
 msgstr ""
 
-#: scm/im-custom.lisp:225
+#: scm/im-custom.lisp:247
 msgid "Similar to ATOK"
 msgstr ""
 
-#: scm/im-custom.lisp:226
+#: scm/im-custom.lisp:248
 msgid "Preedit color"
 msgstr ""
 
-#: scm/im-custom.lisp:234 scm/im-custom.lisp:235
+#: scm/im-custom.lisp:256 scm/im-custom.lisp:257
 msgid "Adjacent to caret"
 msgstr ""
 
-#: scm/im-custom.lisp:237 scm/im-custom.lisp:238
+#: scm/im-custom.lisp:259 scm/im-custom.lisp:260
 msgid "Left end of preedit area"
 msgstr ""
 
-#: scm/im-custom.lisp:240 scm/im-custom.lisp:241
+#: scm/im-custom.lisp:262 scm/im-custom.lisp:263
 msgid "Right end of preedit area"
 msgstr ""
 
-#: scm/im-custom.lisp:242
+#: scm/im-custom.lisp:264
 msgid "Candidate window position"
 msgstr ""
 
-#: scm/im-custom.lisp:248
+#: scm/im-custom.lisp:270
 msgid "Show input method switcher button on toolbar"
 msgstr ""
 
-#: scm/im-custom.lisp:254
+#: scm/im-custom.lisp:276
 msgid "Show uim preference tool button on toolbar"
+msgstr ""
+
+#: scm/im-custom.lisp:283
+msgid "Enable lazy input method loading for fast startup"
 msgstr ""
 
 #: scm/ipa.lisp:228 scm/ipa.lisp:229
@@ -1095,64 +1235,188 @@ msgstr ""
 msgid "uim's SKK like input method"
 msgstr ""
 
-#: scm/skk-custom.lisp:63
+#: scm/skk-custom.lisp:43
+msgid "SKK (advanced)"
+msgstr ""
+
+#: scm/skk-custom.lisp:44
+msgid "Advanced settings for SKK"
+msgstr ""
+
+#: scm/skk-custom.lisp:72
 msgid "Commit candidate by heading label keys"
 msgstr ""
 
-#: scm/skk-custom.lisp:85
-msgid "ddskk"
-msgstr ""
-
-#: scm/skk-custom.lisp:85
-msgid "Similar to ddskk"
-msgstr ""
-
-#: scm/skk-custom.lisp:87
-msgid "Visual style"
-msgstr ""
-
-#: scm/skk-custom.lisp:93
-msgid "Use recursive learning"
-msgstr ""
-
-#: scm/skk-custom.lisp:99
-msgid "Use Enter key as just committing (egg-like operation)"
-msgstr ""
-
-#: scm/skk-custom.lisp:106
-msgid "Commit newline as ASCII string instead of native key-event"
-msgstr ""
-
-#: scm/skk-custom.lisp:112
-msgid "Use numeric conversion"
-msgstr ""
-
-#: scm/skk-custom.lisp:118
-msgid "Friendly for vi user"
-msgstr ""
-
-#: scm/skk-custom.lisp:124
-msgid "Enable auto conversion with punctuation marks"
-msgstr ""
-
-#: scm/skk-custom.lisp:130
-msgid "Show annotation of candidate word"
-msgstr ""
-
-#: scm/skk-custom.lisp:136
-msgid "Show annotation also in preedit area"
-msgstr ""
-
-#: scm/skk-custom.lisp:154
+#: scm/skk-custom.lisp:175
 msgid "Dictionary file"
 msgstr ""
 
-#: scm/skk-custom.lisp:161
+#: scm/skk-custom.lisp:182
 msgid "Personal dictionary file"
 msgstr ""
 
-#: scm/skk-custom.lisp:168
+#: scm/skk-custom.lisp:189
 msgid "Personal dictionary file (dedicated to uim)"
+msgstr ""
+
+#: scm/skk-custom.lisp:199
+msgid "ddskk"
+msgstr ""
+
+#: scm/skk-custom.lisp:199
+msgid "Similar to ddskk"
+msgstr ""
+
+#: scm/skk-custom.lisp:201
+msgid "Visual style"
+msgstr ""
+
+#: scm/skk-custom.lisp:207
+msgid "Use recursive learning"
+msgstr ""
+
+#: scm/skk-custom.lisp:213
+msgid "Use numeric conversion"
+msgstr ""
+
+#: scm/skk-custom.lisp:219
+msgid "Enable auto conversion with punctuation marks"
+msgstr ""
+
+#: scm/skk-custom.lisp:229
+msgid "Show annotation of candidate word"
+msgstr ""
+
+#: scm/skk-custom.lisp:235
+msgid "Show annotation also in preedit area"
+msgstr ""
+
+#: scm/skk-custom.lisp:256
+msgid "Friendly for vi user"
+msgstr ""
+
+#: scm/skk-custom.lisp:262
+msgid "Use Enter key as just committing (egg-like operation)"
+msgstr ""
+
+#: scm/skk-custom.lisp:269
+msgid "Commit newline as ASCII string instead of native key-event"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:64
+msgid "SKK key bindings"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:68
+msgid "SKK advanced key bindings (1)"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:72
+msgid "SKK advanced key bindings (2)"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:77
+msgid "Completion"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:84
+msgid "[SKK] on"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:91
+msgid "[SKK] latin mode"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:97
+msgid "[SKK] wide-latin mode"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:103
+msgid "[SKK] kanji mode"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:109
+msgid "[SKK] halfwidth katakana mode"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:115
+msgid "[SKK] toggle hiragana/katakana mode"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:121
+msgid "[SKK] begin conversion"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:127
+msgid "[SKK] commit"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:133
+msgid "[SKK] cancel"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:143
+msgid "[SKK] return"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:149
+msgid "[SKK] commit preedit string as fullwidth alphanumeric"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:155
+msgid "[SKK] begin latin conversion"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:161
+msgid "[SKK] begin completion"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:167
+msgid "[SKK] next completion candidate"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:173
+msgid "[SKK] previous completion candidate"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:179
+msgid "[SKK] skk-special-midashi-key?"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:185
+msgid "[SKK] skk-vi-escape-key?"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:191
+msgid "[SKK] skk-state-direct-no-preedit-nop-key?"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:209
+msgid "[SKK] next candidate"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:215
+msgid "[SKK] previous candidate"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:221
+msgid "[SKK] next page of candidate window"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:227
+msgid "[SKK] previous page of candidate window"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:233
+msgid "[SKK] backspace"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:239
+msgid "[SKK] go left"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:245
+msgid "[SKK] go right"
 msgstr ""
 
 #. spellcheck IM is not available yet
@@ -1186,7 +1450,7 @@ msgstr ""
 
 #.
 #.
-#. Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
+#. Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
 #.
 #. All rights reserved.
 #.
