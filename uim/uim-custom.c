@@ -629,7 +629,7 @@ helper_disconnect_cb(void)
 }
 
 /**
- * Initializes custom API. This function must be called before uim_custom_*()
+ * Enable full of custom API. This function must be called before uim_custom_*()
  * functions are called. uim_init() must be called before this function.
  *
  * @see uim_init()
@@ -637,7 +637,7 @@ helper_disconnect_cb(void)
  * @retval UIM_FALSE failed
  */
 uim_bool
-uim_custom_init(void)
+uim_custom_enable(void)
 {
   return_val = uim_scm_f();
 
@@ -656,7 +656,7 @@ uim_custom_init(void)
 }
 
 /**
- * Finalizes custom API. This function must be called before uim_quit().
+ * Finalizes custom API. This function called in uim_quit().
  *
  * @see uim_quit()
  * @retval UIM_TRUE succeeded

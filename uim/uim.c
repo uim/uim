@@ -708,6 +708,7 @@ uim_quit(void)
     }
   }
   /**/
+  uim_custom_quit();
   uim_quit_plugin();
   uim_scm_quit();
   uim_last_client_encoding = NULL;

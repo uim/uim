@@ -38,7 +38,7 @@ int
 main(int argc, char *argv[])
 {
   uim_init();
-  uim_custom_init();
+  uim_custom_enable();
 
   /* save custom variables into ~/.uim.d/customs/custom-*.scm */
   uim_custom_save();
@@ -49,7 +49,6 @@ main(int argc, char *argv[])
   */
   uim_custom_broadcast();
 
-  uim_custom_quit();
   uim_quit();
 
   return 0;

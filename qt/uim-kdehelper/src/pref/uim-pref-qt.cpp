@@ -68,7 +68,7 @@ UimPrefDialog::UimPrefDialog( QWidget *parent, const char *name )
       m_isValueChanged( false )
 {
     uim_init();
-    uim_custom_init();
+    uim_custom_enable();
 
     setupWidgets();
 }

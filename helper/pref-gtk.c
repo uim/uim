@@ -1856,7 +1856,7 @@ main (int argc, char *argv[])
   gtk_init(&argc, &argv);
 
   uim_init();
-  uim_custom_init();  
+  uim_custom_enable();  
 
   pref = create_pref_window();
 

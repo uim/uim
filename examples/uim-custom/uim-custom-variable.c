@@ -142,7 +142,7 @@ main(int argc, char *argv[])
   struct uim_custom *custom;
 
   uim_init();
-  uim_custom_init();
+  uim_custom_enable();
 
   custom = uim_custom_get("anthy-candidate-op-count");
   if (custom) {
@@ -172,7 +172,6 @@ main(int argc, char *argv[])
 
   uim_custom_save();  /* save updated custom value into ~/.uim.d/customs/ */
 
-  uim_custom_quit();
   uim_quit();
 
   return 0;

@@ -121,8 +121,7 @@ struct uim_custom_group {
 };
 
 
-uim_bool uim_custom_init(void);
-uim_bool uim_custom_quit(void);
+uim_bool uim_custom_enable(void);
 
 /* load & save */
 uim_bool uim_custom_load(void);

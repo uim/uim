@@ -89,7 +89,7 @@ main(int argc, char *argv[])
   char **primary_groups, **grp;
 
   uim_init();
-  uim_custom_init();
+  uim_custom_enable();
 
   primary_groups = uim_custom_primary_groups();
   for (grp = primary_groups; *grp; grp++) {
@@ -97,7 +97,6 @@ main(int argc, char *argv[])
   }
   uim_custom_symbol_list_free(primary_groups);
 
-  uim_custom_quit();
   uim_quit();
 
   return 0;
