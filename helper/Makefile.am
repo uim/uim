@@ -37,10 +37,14 @@ endif
 
 if GTK2
 
-bin_PROGRAMS = uim-candwin-gtk uim-toolbar-gtk uim-toolbar-gtk-systray uim-im-switcher uim-input-pad-ja uim-pref-gtk
+bin_PROGRAMS = uim-candwin-gtk uim-toolbar-gtk uim-toolbar-gtk-systray uim-im-switcher uim-input-pad-ja
 
 if DICT
 bin_PROGRAMS += uim-dict
+endif
+
+if GTK2_4
+bin_PROGRAMS += uim-pref-gtk
 endif
 
 uim_candwin_gtk_SOURCES  = helper-candwin-gtk.c
