@@ -174,7 +174,6 @@ plugin_unload(uim_lisp _name)
   uim_lisp stack_start;
   void *library;
   void (*plugin_instance_quit)(void);
-  uim_lisp form;
 
   uim_scm_gc_protect_stack(&stack_start);
 
@@ -221,7 +220,6 @@ void uim_quit_plugin(void)
       list_car = uim_scm_car(list_cdr), list_cdr = uim_scm_cdr(list_cdr))
   {
     uim_lisp name;
-    uim_lisp form;
 
     name = uim_scm_car(list_car);
 
