@@ -89,6 +89,12 @@
   (_ "Show usage examples of candidate words")
   (_ "long description will be here."))
 
+(define-custom 'prime-use-unixdomain? #f
+  '(prime)
+  '(boolean)
+  (_ "Use Unix Domain Socket to communicate with PRIME")
+  (_ "long description will be here."))
+
 (define-custom 'prime-mask-pending-preedit? #f
   '(prime)
   '(boolean)

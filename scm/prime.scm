@@ -466,10 +466,10 @@
   (lambda (command)
     (let ((result (prime-lib-send-command command)))
       (let loop ((res result))
-	(if (string=? res "")
-	    (loop (prime-lib-send-command ""))
+ 	(if (string=? res "")
+ 	    (loop (prime-lib-send-command ""))
 	    res
-	    )))))
+ 	    )))))
 
 (define prime-preedit-reset!
   (lambda (context)
@@ -560,17 +560,19 @@
 ;; The second argument separator must be a single character string.
 (define prime-util-string-split
   (lambda (string separator)
-    (let ((result (list))
-	  (node-string ""))
-      (map (lambda (target)
-	     (if (equal? target separator)
-		 (begin
-		   (set! result (cons node-string result))
-		   (set! node-string ""))
-		 (set! node-string (string-append node-string target))))
-	   (reverse (string-to-list string)))
-      (set! result (cons node-string result))
-      (reverse result))))
+    (if (string? string)
+	(let ((result (list))
+	      (node-string ""))
+	  (map (lambda (target)
+		 (if (equal? target separator)
+		     (begin
+		       (set! result (cons node-string result))
+		       (set! node-string ""))
+		     (set! node-string (string-append node-string target))))
+	       (reverse (string-to-list string)))
+	  (set! result (cons node-string result))
+	  (reverse result))
+	"")))
 
 ;;;; ------------------------------------------------------------
 ;;;; prime-uim:
@@ -588,12 +590,14 @@
 ;;;; prime-engine: Functions to connect with a prime server.
 ;;;; ------------------------------------------------------------
 
+;; Don't append "\n" to arg-list in this function. That will cause a
+;; problem with unix domain socket.
 (define prime-engine-send-command
   (lambda (arg-list)
     (cdr 
      (string-split
       (prime-send-command
-       (string-append (prime-util-string-concat arg-list "\t") "\n"))
+       (prime-util-string-concat arg-list "\t"))
       "\n"))))
 
 (define prime-engine-lookup
@@ -621,6 +625,7 @@
 (define prime-engine-session-start
   (lambda ()
     (car (prime-engine-send-command (list "session_start")))))
+
 (define prime-engine-session-end
   (lambda (prime-session)
     (prime-engine-send-command (list "session_end" prime-session))))
@@ -1524,10 +1529,11 @@
 
 (define prime-init-handler
   (lambda (id im arg)
-    (print "prime-init-handler")
-    (let ((context (prime-context-new id im)))
-      (prime-custom-init)
-      context)))
+    (if (prime-lib-init prime-use-unixdomain?)
+	(let ((context (prime-context-new id im)))
+	  (prime-custom-init)
+	  context)
+	#f)))
 
 (define prime-release-handler
   (lambda (context)
