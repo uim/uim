@@ -699,12 +699,13 @@ im_uim_send_im_list(void)
 {
   int nr, i;
   GString *msg;
-  const char *current_im_name = uim_get_current_im_name(focused_context->uc);
-  if(focused_context) {
-    nr = uim_get_nr_im(focused_context->uc);
-  } else {
+  const char *current_im_name;
+
+  if (!focused_context)
     return;
-  }
+
+  nr = uim_get_nr_im(focused_context->uc);
+  current_im_name = uim_get_current_im_name(focused_context->uc);
 
   msg = g_string_new("im_list\ncharset=UTF-8\n");
   for (i = 0; i < nr; i++) {
@@ -895,11 +896,15 @@ im_uim_parse_helper_str_im_change(const char *str)
   } else if(g_str_has_prefix(str, "im_change_whole_desktop") == TRUE) {
     for (cc = context_list.next; cc != &context_list; cc = cc->next) {
       uim_switch_im(cc->uc, im_name);
+      if (focused_context && cc == focused_context)
+	uim_prop_list_update(cc->uc);
     }
   } else if(g_str_has_prefix(str, "im_change_this_application_only") == TRUE) {
     if(focused_context) {    
       for (cc = context_list.next; cc != &context_list; cc = cc->next) {
 	uim_switch_im(cc->uc, im_name);
+	if (cc == focused_context)
+	  uim_prop_list_update(cc->uc);
       }
     }
   }
@@ -938,7 +943,7 @@ im_uim_parse_helper_str(const char *str)
       im_uim_send_im_list();
     } else if (g_str_has_prefix(str, "commit_string")) {
       lines = g_strsplit(str, "\n", 0);
-      if (focused_context && lines && lines[0] && lines[1])
+      if (lines && lines[0] && lines[1])
 	g_signal_emit_by_name(focused_context, "commit", lines[1]);
     } else if (g_str_has_prefix(str, "focus_in") == TRUE) {
       disable_focused_context = TRUE;
