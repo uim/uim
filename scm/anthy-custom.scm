@@ -40,28 +40,44 @@
                      (ugettext anthy-im-short-desc))
 
 (define-custom 'anthy-use-candidate-window? #t
-  '(anthy)
+  '(anthy candwin)
   '(boolean)
   (_ "Use candidate window")
   (_ "long description will be here."))
 
 (define-custom 'anthy-candidate-op-count 1
-  '(anthy)
+  '(anthy candwin)
   '(integer 0 99)
   (_ "Conversion key press count to show candidate window")
   (_ "long description will be here."))
 
 (define-custom 'anthy-nr-candidate-max 10
-  '(anthy)
+  '(anthy candwin)
   '(integer 1 20)
   (_ "Number of candidates in candidate window at a time")
   (_ "long description will be here."))
 
 (define-custom 'anthy-select-candidate-by-numeral-key? #f
-  '(anthy)
+  '(anthy candwin)
   '(boolean)
   (_ "Select candidate by numeral keys")
   (_ "long description will be here."))
+
+;; activity dependency
+(custom-add-hook 'anthy-candidate-op-count
+		 'custom-activity-hooks
+		 (lambda ()
+		   anthy-use-candidate-window?))
+
+(custom-add-hook 'anthy-nr-candidate-max
+		 'custom-activity-hooks
+		 (lambda ()
+		   anthy-use-candidate-window?))
+
+(custom-add-hook 'anthy-select-candidate-by-numeral-key?
+		 'custom-activity-hooks
+		 (lambda ()
+		   anthy-use-candidate-window?))
 
 (define-custom 'anthy-show-segment-separator? #f
   '(anthy advanced)

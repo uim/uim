@@ -55,6 +55,11 @@
 		     (_ "Toolbar")
 		     (_ "long description will be here."))
 
+;; subgroup
+(define-custom-group 'candwin
+		     (_ "Candidate window")
+		     (_ "long description will be here."))
+
 ;; 
 ;; default-im-name
 ;;

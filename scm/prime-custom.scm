@@ -40,25 +40,25 @@
                      (ugettext prime-im-short-desc))
 
 ;(define-custom 'prime-use-candidate-window? #t
-;  '(prime)
+;  '(prime candwin)
 ;  '(boolean)
 ;  "Use candidate window"
 ;  "long description will be here.")
 
 ;(define-custom 'prime-candidate-op-count 1
-;  '(prime)
+;  '(prime candwin)
 ;  '(integer 0 99)
 ;  "Conversion key press count to show candidate window"
 ;  "long description will be here.")
 
 (define-custom 'prime-nr-candidate-max 10
-  '(prime)
+  '(prime candwin)
   '(integer 1 20)
   (_ "Number of candidates in candidate window at a time")
   (_ "long description will be here."))
 
 (define-custom 'prime-always-show-window? #t
-  '(prime)
+  '(prime candwin)
   '(boolean)
   (_ "Always showing candidate window")
   (_ "long description will be here."))

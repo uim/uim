@@ -37,25 +37,41 @@
 		     (_ "long description will be here."))
 
 (define-custom 'generic-use-candidate-window? #t
-  '(other-ims)
+  '(other-ims candwin)
   '(boolean)
   (_ "Use candidate window")
   (_ "long description will be here."))
 
 (define-custom 'generic-candidate-op-count 1
-  '(other-ims)
+  '(other-ims candwin)
   '(integer 0 99)
   (_ "Conversion key press count to show candidate window")
   (_ "long description will be here."))
 
 (define-custom 'generic-nr-candidate-max 10
-  '(other-ims)
+  '(other-ims candwin)
   '(integer 1 20)
   (_ "Number of candidates in candidate window at a time")
   (_ "long description will be here."))
 
 (define-custom 'generic-commit-candidate-by-numeral-key? #t
-  '(other-ims)
+  '(other-ims candwin)
   '(boolean)
   (_ "Select candidate by numeral keys")
   (_ "long description will be here."))
+
+;; activity dependency
+(custom-add-hook 'generic-candidate-op-count
+		 'custom-activity-hooks
+		 (lambda ()
+		   generic-use-candidate-window?))
+
+(custom-add-hook 'generic-nr-candidate-max
+		 'custom-activity-hooks
+		 (lambda ()
+		   generic-use-candidate-window?))
+
+(custom-add-hook 'generic-commit-candidate-by-numeral-key?
+		 'custom-activity-hooks
+		 (lambda ()
+		   generic-use-candidate-window?))

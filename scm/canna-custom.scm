@@ -40,22 +40,33 @@
                      (ugettext canna-im-short-desc))
 
 (define-custom 'canna-use-candidate-window? #t
-  '(canna)
+  '(canna candwin)
   '(boolean)
   (_ "Use candidate window")
   (_ "long description will be here."))
 
 (define-custom 'canna-candidate-op-count 1
-  '(canna)
+  '(canna candwin)
   '(integer 0 99)
   (_ "Conversion key press count to show candidate window")
   (_ "long description will be here."))
 
 (define-custom 'canna-nr-candidate-max 10
-  '(canna)
+  '(canna candwin)
   '(integer 1 20)
   (_ "Number of candidates in candidate window at a time")
   (_ "long description will be here."))
+
+;; activity dependency
+(custom-add-hook 'canna-candidate-op-count
+		 'custom-activity-hooks
+		 (lambda ()
+		   canna-use-candidate-window?))
+
+(custom-add-hook 'canna-nr-candidate-max
+		 'custom-activity-hooks
+		 (lambda ()
+		   canna-use-candidate-window?))
 
 (define-custom 'canna-show-segment-separator? #f
   '(canna advanced)

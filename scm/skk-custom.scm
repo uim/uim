@@ -40,22 +40,44 @@
                      (ugettext skk-im-short-desc))
 
 (define-custom 'skk-use-candidate-window? #t
-  '(skk)
+  '(skk candwin)
   '(boolean)
   (_ "Use candidate window")
   (_ "long description will be here."))
 
 (define-custom 'skk-candidate-op-count 2
-  '(skk)
+  '(skk candwin)
   '(integer 0 99)
   (_ "Conversion key press count to show candidate window")
   (_ "long description will be here."))
 
 (define-custom 'skk-nr-candidate-max 10
-  '(skk)
+  '(skk candwin)
   '(integer 1 20)
   (_ "Number of candidates in candidate window at a time")
   (_ "long description will be here."))
+
+(define-custom 'skk-commit-candidate-by-label-key? #t
+  '(skk candwin advanced)
+  '(boolean)
+  (_ "Commit candidate by heading label keys")
+  (_ "long description will be here."))
+
+;; activity dependency
+(custom-add-hook 'skk-candidate-op-count
+		 'custom-activity-hooks
+		 (lambda ()
+		   skk-use-candidate-window?))
+
+(custom-add-hook 'skk-nr-candidate-max
+		 'custom-activity-hooks
+		 (lambda ()
+		   skk-use-candidate-window?))
+
+(custom-add-hook 'skk-commit-candidate-by-label-key?
+		 'custom-activity-hooks
+		 (lambda ()
+		   skk-use-candidate-window?))
 
 (define-custom 'skk-style 'skk-style-ddskk-like
   '(skk advanced)
@@ -94,12 +116,6 @@
   '(skk advanced)
   '(boolean)
   (_ "Friendly for vi user")
-  (_ "long description will be here."))
-
-(define-custom 'skk-commit-candidate-by-label-key? #t
-  '(skk advanced)
-  '(boolean)
-  (_ "Commit candidate by heading label keys")
   (_ "long description will be here."))
 
 (define-custom 'skk-auto-start-henkan? #t
