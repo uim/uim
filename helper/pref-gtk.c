@@ -384,13 +384,18 @@ static void create_sub_group_widgets(GtkWidget *parent_widget, const char *paren
     {
         struct uim_custom_group *sgrp =  uim_custom_group_get(*sgrp_sym);
 	char **custom_syms, **custom_sym;
+	GString *sgrp_str;
 	GtkWidget *frame;
 	GtkWidget *vbox;
 
 	if(!sgrp)
 	  continue;
 
-	custom_syms = uim_custom_collect_by_group(*sgrp_sym);
+	/* XXX quick hack to use AND expression of groups */
+	sgrp_str = g_string_new("");
+	g_string_printf(sgrp_str, "%s '%s", parent_group, *sgrp_sym);
+	custom_syms = uim_custom_collect_by_group(sgrp_str->str);
+	g_string_free(sgrp_str, TRUE);
 
 	if (!custom_syms)
 	  continue;

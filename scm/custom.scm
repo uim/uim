@@ -424,16 +424,19 @@
 		   custom-group-rec-alist)))
       (reverse groups))))
 
+;; TODO: rewrite test for 'AND' expression
 ;; API
 ;; #f means 'any group'
-;; TODO: support "AND" expression
 (define custom-collect-by-group
-  (lambda (group)
+  (lambda groups
     (reverse
      (filter-map (lambda (crec)
-		   (and (or (not group)
-			    (memq group (custom-rec-groups crec)))
-			(custom-rec-sym crec)))
+		   (let ((custom-groups (custom-rec-groups crec)))
+		     (and (or (not (car groups))
+			      (every (lambda (group)
+				       (memq group custom-groups))
+				     groups))
+			  (custom-rec-sym crec))))
 		 custom-rec-alist))))
 
 ;; API

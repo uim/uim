@@ -154,6 +154,7 @@ void uim_custom_group_free(struct uim_custom_group *custom_group);
 
 /* custom symbol list */
 char **uim_custom_collect_by_group(const char *group_sym);
+/* char **uim_custom_collect_by_groups(const char *const *group_syms); */
 
 /* group symbol list */
 char **uim_custom_groups(void);
