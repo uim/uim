@@ -149,7 +149,7 @@ load_configration(const char *filename)
   char *line;
   FILE *fp;
   if(filename == NULL) {
-    f = "/home/tkng/uim.d/im-switcher";/* FIXME:later get correct file path here */
+    return;/* FIXME:later get correct file path here */
   } else {
     f= filename;
   }
