@@ -1158,7 +1158,8 @@
 	 (and
 	  (if (and
 	       skk-auto-start-henkan?
-	       (string-find skk-auto-start-henkan-keyword-list (car res)))
+	       (string-find skk-auto-start-henkan-keyword-list (car res))
+	       (not (null? (skk-context-head sc))))
 	      (begin
 		(skk-context-set-appendix! sc (list res))
 		(skk-begin-conversion sc)

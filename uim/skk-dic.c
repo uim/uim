@@ -1652,7 +1652,7 @@ open_lock(const char *name, int type)
   struct flock fl;
   char *lock_fn;
 
-  lock_fn = malloc(sizeof(char *) * (strlen(name) + strlen(".lock") + 1));
+  lock_fn = malloc(sizeof(char) * (strlen(name) + strlen(".lock") + 1));
   if (lock_fn == NULL)
     return -1;
   sprintf(lock_fn, "%s.lock", name);
