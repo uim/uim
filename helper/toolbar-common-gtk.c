@@ -199,6 +199,19 @@ append_button(GtkWidget *hbox, GtkWidget *button)
   }
 }
 
+static gchar *
+convert_charset(const gchar *charset, const gchar *line)
+{
+  if(charset == NULL) {
+    return NULL;
+  }
+  return g_convert(line, strlen(line),
+		   "UTF-8", charset, 
+		   NULL, /* gsize *bytes_read */
+		   NULL, /*size *bytes_written */
+		   NULL); /* GError **error*/
+}
+
 static void
 helper_applet_prop_list_update(gchar **tmp)
 {
@@ -216,20 +229,16 @@ helper_applet_prop_list_update(gchar **tmp)
   }
 
   while(tmp[i] && strcmp("", tmp[i]) != 0) {
-    if (charset) {
-      gchar *utf8_str;
-      utf8_str = g_convert(tmp[i], strlen(tmp[i]),
-			   "UTF-8", charset, 
-			   NULL, /* gsize *bytes_read */
-			   NULL, /*size *bytes_written */
-			   NULL); /* GError **error*/
+    gchar *utf8_str;
+    utf8_str = convert_charset(charset, tmp[i]);
 
+    if(utf8_str != NULL) {
       tmp2 = g_strsplit(utf8_str, "\t", 0);
       g_free(utf8_str);
     } else {
       tmp2 = g_strsplit(tmp[i], "\t", 0);
     }
-
+    
     if(tmp2 && tmp2[0]) {
       if(strcmp("branch", tmp2[0]) == 0) {
 	if(tmp_button) {
