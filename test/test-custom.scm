@@ -97,19 +97,19 @@
    (assert-false (uim-bool '(custom-string? 10 ".*")))
    (assert-false (uim-bool '(custom-string? () ".*")))
    (assert-false (uim-bool '(custom-string? '(1 "2" 'three) ".*"))))
-  ("test pathname?"
-   (assert-false (uim-bool '(pathname? #f)))
-   (assert-false (uim-bool '(pathname? 'foo)))
-   (assert-false (uim-bool '(pathname? -1)))
-   (assert-false (uim-bool '(pathname? 0)))
-   (assert-false (uim-bool '(pathname? 1)))
-   (assert-false (uim-bool '(pathname? 10)))
-   (assert-false (uim-bool '(pathname? ())))
-   (assert-false (uim-bool '(pathname? '(1 "2" 'three))))
-   (assert-true  (uim-bool '(pathname? "/usr/share/uim/foo.scm")))
-   (assert-true  (uim-bool '(pathname? "~/.uim")))
-   (assert-true  (uim-bool '(pathname? "share/uim/bar.scm")))
-   (assert-true  (uim-bool '(pathname? "baz.scm"))))
+  ("test custom-pathname?"
+   (assert-false (uim-bool '(custom-pathname? #f)))
+   (assert-false (uim-bool '(custom-pathname? 'foo)))
+   (assert-false (uim-bool '(custom-pathname? -1)))
+   (assert-false (uim-bool '(custom-pathname? 0)))
+   (assert-false (uim-bool '(custom-pathname? 1)))
+   (assert-false (uim-bool '(custom-pathname? 10)))
+   (assert-false (uim-bool '(custom-pathname? ())))
+   (assert-false (uim-bool '(custom-pathname? '(1 "2" 'three))))
+   (assert-true  (uim-bool '(custom-pathname? "/usr/share/uim/foo.scm")))
+   (assert-true  (uim-bool '(custom-pathname? "~/.uim")))
+   (assert-true  (uim-bool '(custom-pathname? "share/uim/bar.scm")))
+   (assert-true  (uim-bool '(custom-pathname? "baz.scm"))))
   ("test custom-valid-choice?"
    (assert-false (uim-bool '(custom-valid-choice?
 			     #f

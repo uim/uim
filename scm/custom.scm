@@ -51,9 +51,9 @@
   '((boolean   . custom-boolean?)
     (integer   . custom-integer?)
     (string    . custom-string?)
-    (pathname  . pathname?)
+    (pathname  . custom-pathname?)
     (choice    . custom-valid-choice?)
-    (key       . key-definition?)))
+    (key       . custom-key?)))
 
 (define anything?
   (lambda (x)
@@ -73,7 +73,7 @@
   (lambda (x regex)
     (string? x)))
 
-(define pathname?
+(define custom-pathname?
   (lambda (str)
     (string? str)))
 
@@ -104,10 +104,9 @@
 	   (desc (custom-choice-rec-desc srec)))
       desc)))
 
-;; only accepts single strict-key-str (not or'ed, not a variable reference)
-(define key-definition?
+(define custom-key?
   (lambda (def)
-    (valid-strict-key-str? def)))
+    ))
 
 (define-record 'custom-group-rec
   '((sym   #f)
