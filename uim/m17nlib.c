@@ -134,7 +134,7 @@ pushback_input_method(MInputMethod *im,
   im_array = realloc(im_array, 
 		     sizeof(struct im_) * (nr_input_methods + 1));
 
-  if(lang != NULL) {
+  if (lang != NULL) {
     im_array[nr_input_methods].lang = strdup(lang);
   } else {
     im_array[nr_input_methods].lang = NULL;
@@ -268,10 +268,10 @@ compose_modep(uim_lisp id_)
   int id = uim_scm_c_int(id_);
   /* range check of id might need. */
   MInputContext *ic = ic_array[id].mic;
-  if(!ic) {
+  if (!ic) {
     return uim_scm_f();
   }
-  if(ic->candidate_from == ic->candidate_to ||
+  if (ic->candidate_from == ic->candidate_to ||
      ic->candidate_from > ic->candidate_to) {
     return uim_scm_f();
   } else {
@@ -285,10 +285,10 @@ preedit_changedp(uim_lisp id_)
   int id = uim_scm_c_int(id_);
   /* range check of id might need. */
   MInputContext *ic = ic_array[id].mic;
-  if(!ic) {
+  if (!ic) {
     return uim_scm_f();
   }
-  if(ic->preedit_changed == 1) {
+  if (ic->preedit_changed == 1) {
     return uim_scm_t();
   } else {
     return uim_scm_f();
@@ -308,13 +308,13 @@ get_left_of_cursor(uim_lisp id_)
   if (!ic) {
     return uim_scm_make_str("");
   }
-  if(ic->cursor_pos == 0) {
+  if (ic->cursor_pos == 0) {
     return uim_scm_make_str("");
   }
   buf = convert_mtext2str(ic->preedit);
   p = (char *)buf;
 
-  for(i=0; i<ic->cursor_pos ;i++) {
+  for (i=0; i<ic->cursor_pos ;i++) {
     p = m17nlib_utf8_find_next_char(p);
   }
   *p = 0;
@@ -341,7 +341,7 @@ get_right_of_cursor(uim_lisp id_)
   buf = convert_mtext2str(ic->preedit);
   p = buf;
 
-  for(i=0; i<ic->cursor_pos ;i++) {
+  for (i=0; i<ic->cursor_pos ;i++) {
     p = m17nlib_utf8_find_next_char(p);
   }
   buflen = strlen((char *)p);
@@ -362,13 +362,13 @@ get_left_of_candidate(uim_lisp id_)
   if (!ic) {
     return uim_scm_make_str("");
   }
-  if(ic->candidate_from == 0) {
+  if (ic->candidate_from == 0) {
     return uim_scm_make_str("");
   }
   buf = convert_mtext2str(ic->preedit);
   p = buf;
 
-  for(i=0; i<ic->candidate_from ;i++) {
+  for (i=0; i<ic->candidate_from ;i++) {
     p = m17nlib_utf8_find_next_char(p);
   }
   *p = 0;
@@ -395,16 +395,16 @@ get_selected_candidate(uim_lisp id_)
   buf = convert_mtext2str(ic->preedit);
   p = buf;
 
-  if(!p) {
+  if (!p) {
     return uim_scm_make_str("");
   }
 
-  for(i=0; i<ic->candidate_from ;i++) {
+  for (i=0; i<ic->candidate_from ;i++) {
     p = m17nlib_utf8_find_next_char(p);
   }
   start = p;
 
-  for(i=0; i<ic->candidate_to - ic->candidate_from ;i++) {
+  for (i=0; i<ic->candidate_to - ic->candidate_from ;i++) {
     p = m17nlib_utf8_find_next_char(p);
   }
   *p = 0;
@@ -431,7 +431,7 @@ get_right_of_candidate(uim_lisp id_)
   buf = convert_mtext2str(ic->preedit);
   p = buf;
 
-  for(i=0; i<ic->candidate_to ;i++) {
+  for (i=0; i<ic->candidate_to ;i++) {
     p = m17nlib_utf8_find_next_char(p);
   }
   buflen = strlen(p);
@@ -453,7 +453,7 @@ get_input_method_name(uim_lisp nth_)
   if (nth < nr_input_methods) {
     char *name = alloca(strlen(im_array[nth].name) + 20);
 
-    if(im_array[nth].lang != NULL)
+    if (im_array[nth].lang != NULL)
       sprintf(name, "m17n-%s-%s", im_array[nth].lang, im_array[nth].name);
     else
       sprintf(name, "m17n-%s", im_array[nth].name);
@@ -469,7 +469,7 @@ get_input_method_lang(uim_lisp nth_)
   int nth = uim_scm_c_int(nth_);
   if (nth < nr_input_methods) {
     char *lang = im_array[nth].lang;
-    if(lang != NULL) {
+    if (lang != NULL) {
       return uim_scm_make_str(lang);
     } else {
       return uim_scm_make_str("unknown");
@@ -488,7 +488,7 @@ find_im_by_name(char *name)
   name = &name[5];
   for (i = 0; i < nr_input_methods; i++) {
     char buf[100];
-    if(im_array[i].lang == NULL) {
+    if (im_array[i].lang == NULL) {
       snprintf(buf, 100, "%s", im_array[i].name);
     } else {
       snprintf(buf, 100, "%s-%s", im_array[i].lang, im_array[i].name);
@@ -593,7 +593,7 @@ get_result(uim_lisp id_)
 
   consumed  = minput_lookup(ic, NULL, NULL, produced);
 
-  if(consumed == -1) {
+  if (consumed == -1) {
     consumed_ = uim_scm_f();
   } else {
     consumed_ = uim_scm_t();
@@ -637,13 +637,13 @@ calc_cands_num(int id)
   MPlist *group; 
   MInputContext *ic = ic_array[id].mic;
 
-  if(!ic || !ic->candidate_list)
+  if (!ic || !ic->candidate_list)
     return 0;
 
   group = ic->candidate_list;
 
-  while(mplist_value(group) != Mnil) {
-    if(mplist_key(group) == Mtext) {
+  while (mplist_value(group) != Mnil) {
+    if (mplist_key(group) == Mtext) {
       for (; mplist_key(group) != Mnil; group = mplist_next(group)) {
         result += mtext_len(mplist_value(group));
       }
@@ -660,8 +660,8 @@ static void
 old_cands_free(char **old_cands)
 {
   int i = 0;
-  if(old_cands) {
-    for(i=0; old_cands[i]; i++) {
+  if (old_cands) {
+    for (i=0; old_cands[i]; i++) {
       free(old_cands[i]);
     }
     free(old_cands);
@@ -682,7 +682,7 @@ fill_new_candidates(uim_lisp id_)
   char **new_cands;
   uim_lisp buf_;
 
-  if(!ic || !ic->candidate_list)
+  if (!ic || !ic->candidate_list)
     return uim_scm_f();
 
   group = ic->candidate_list;
@@ -692,7 +692,7 @@ fill_new_candidates(uim_lisp id_)
 
   new_cands = malloc (cands_num * sizeof(char *) + 2);
 
-  if(mplist_key(group) == Mtext) {
+  if (mplist_key(group) == Mtext) {
 
     for (i=0; mplist_key(group) != Mnil; group = mplist_next(group)) {
       int j;
@@ -719,7 +719,7 @@ fill_new_candidates(uim_lisp id_)
   
   return uim_scm_t();
 
-  if(!buf) {
+  if (!buf) {
     return uim_scm_make_str("");
   } else {
     buf_ = uim_scm_make_str(buf);
@@ -732,11 +732,11 @@ static uim_bool
 same_candidatesp(const char **old, const char **new)
 {
   int i;
-  if(!old)
+  if (!old)
     return UIM_FALSE;
 
-  for(i=0; old[i] && new[i]; i++) {
-    if(strcmp(old[i], new[i]) != 0) {
+  for (i=0; old[i] && new[i]; i++) {
+    if (strcmp(old[i], new[i]) != 0) {
       return UIM_FALSE;
     }
   }
@@ -750,7 +750,7 @@ candidates_changedp(uim_lisp id_)
   char **old_cands = ic_array[id].old_candidates;
   char **new_cands = ic_array[id].new_candidates;
 
-  if(!same_candidatesp(old_cands, new_cands)) {
+  if (!same_candidatesp(old_cands, new_cands)) {
     return uim_scm_t();
   }
   return uim_scm_f();
@@ -770,7 +770,7 @@ get_nth_candidate(uim_lisp id_, uim_lisp nth_)
   int nth = uim_scm_c_int(nth_);
   int nr = ic_array[id].nr_candidates;
   
-  if(nr >= nth) {
+  if (nr >= nth) {
     return uim_scm_make_str(ic_array[id].new_candidates[nth]);
   } else {
     return uim_scm_make_str("");

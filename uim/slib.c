@@ -3356,7 +3356,7 @@ lapply (LISP fcn, LISP args)
 static LISP
 leval_setq (LISP args, LISP env)
 {
-  if(symbol_boundp( car(args), env) == sym_t) {
+  if (symbol_boundp( car(args), env) == sym_t) {
     return (setvar (car (args), leval (car (cdr (args)), env), env));
   } else {
     my_err ("unbound variable", car(args));
@@ -4860,9 +4860,9 @@ string2integer (LISP str)
   int i;
   int d = 1, num = 0;
 
-  for(i=len-1; i>=0; i--) {
+  for (i=len-1; i>=0; i--) {
     int n = s[i];
-    if(n < 48 || n > 57)
+    if (n < 48 || n > 57)
       return sym_f;
 
     num += d * (n - 48);

@@ -43,26 +43,26 @@ void word_append(uim_word **head, uim_word_type type,
 {
     uim_word *entry, *pos;
     entry = malloc(sizeof(uim_word));
-    if(entry != NULL) {
+    if (entry != NULL) {
 	/* If each arguments is NULL, allocate '\0' */
 	entry->type = type;
 
-	if(charset != NULL)
+	if (charset != NULL)
 	    entry->charset = strdup(charset);
 	else
 	    entry->charset = strdup("");
 
-	if(phon != NULL)
+	if (phon != NULL)
 	    entry->phon = strdup(phon);
 	else
 	    entry->phon = strdup("");
 
-	if(desc != NULL)
+	if (desc != NULL)
 	    entry->desc = strdup(desc);
 	else
 	    entry->desc = strdup("");
 
-	if(cclass_code != NULL) {
+	if (cclass_code != NULL) {
 	    entry->cclass_code = strdup(cclass_code);
 	} else
 	    entry->cclass_code = strdup("");
@@ -71,14 +71,14 @@ void word_append(uim_word **head, uim_word_type type,
 
 	/* SKK specific */
 	entry->okuri = okuri;
-	if(annotation != NULL)
+	if (annotation != NULL)
 	    entry->annotation = strdup(annotation);
 	else
 	    entry->annotation = strdup("");
 
 	entry->next = NULL;
 
-	if(*head == NULL) {
+	if (*head == NULL) {
 	    *head = entry;
 	} else {
 	    pos = word_last(*head);
@@ -89,16 +89,16 @@ void word_append(uim_word **head, uim_word_type type,
 
 void word_free_list(uim_word *head) {
     uim_word *pos, *pos_prev;
-    for(pos = head; pos != NULL; ) {
-	if(pos->charset != NULL)
+    for (pos = head; pos != NULL; ) {
+	if (pos->charset != NULL)
 	    free(pos->charset);
-	if(pos->phon != NULL)
+	if (pos->phon != NULL)
 	    free(pos->phon);
-	if(pos->desc != NULL)
+	if (pos->desc != NULL)
 	    free(pos->desc);
-	if(pos->cclass_code != NULL)
+	if (pos->cclass_code != NULL)
 	    free(pos->cclass_code);
-	if(pos->annotation != NULL)
+	if (pos->annotation != NULL)
 	    free(pos->annotation);
 
 	pos_prev = pos;
@@ -108,8 +108,8 @@ void word_free_list(uim_word *head) {
 }
 
 uim_word *word_last(uim_word *list) {
-    if(list != NULL) {
-	while(list->next) {
+    if (list != NULL) {
+	while (list->next) {
 	    list = list->next;
 	}
     }

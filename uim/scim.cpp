@@ -141,7 +141,7 @@ create_im_list()
     int num = be->get_factories_for_language( factories );
 
     std::vector<IMEngineFactoryPointer>::iterator it = factories.begin();
-    for( ; it != factories.end(); ++it )
+    for ( ; it != factories.end(); ++it )
     {
         SCIMInputMethod *scim_im = new SCIMInputMethod();
         scim_im->imname = (*it)->get_name();
@@ -157,39 +157,39 @@ static uim_lisp
 init_scim()
 {
     fprintf( stderr, "init_scm()\n" );
-    if( !initialized )
+    if ( !initialized )
     {
         context_list.clear();
 
         scim_get_imengine_module_list( engine_list );
-        if( std::find( engine_list.begin() , engine_list.end() , "socket") == engine_list.end() )
+        if ( std::find( engine_list.begin() , engine_list.end() , "socket") == engine_list.end() )
         {
             fprintf(stderr, "Could not find socket module.\n");
             return uim_scm_f();
         }
 
         config_module = new ConfigModule( "simple" );
-        if( !config_module )
+        if ( !config_module )
         {
             fprintf(stderr, "Could not create ConfigModule\n");
             return uim_scm_f();
         }
 
         config = config_module->create_config( "scim" );
-        if( config.null() )
+        if ( config.null() )
         {
             fprintf(stderr, "create_config failed\n");
             return uim_scm_f();
         }
 
         be = new CommonBackEnd( config, engine_list );
-        if( be.null() )
+        if ( be.null() )
         {
             fprintf(stderr, "create CommonBackEnd failed\n");
             return uim_scm_f();
         }
 
-        if( !check_socket_frontend() )
+        if ( !check_socket_frontend() )
         {
             /*
              * 2004-03-03 Kazuki Ohta <mover@hct.zaq.ne.jp> @ChinaOSS CodeFest
@@ -226,7 +226,7 @@ get_input_method_lang(uim_lisp nth_)
 {
     // FIXME
     int nth = uim_scm_c_int( nth_ );
-    if( nth < im_list.size() )
+    if ( nth < im_list.size() )
     {
         return uim_scm_make_str( im_list.at( nth )->lang.c_str() );
     }
@@ -251,7 +251,7 @@ static uim_lisp
 get_input_method_name(uim_lisp nth_)
 {
     int nth = uim_scm_c_int( nth_ );
-    if( nth < im_list.size() )
+    if ( nth < im_list.size() )
     {
         // remove space
         String imname = WideStr_to_String( im_list.at( nth )->imname );
@@ -260,7 +260,7 @@ get_input_method_name(uim_lisp nth_)
 
         // add "scim" as prefix
         char *name = (char *)alloca( strlen(orig_name) + 20 );
-        if( name )
+        if ( name )
         {
             sprintf(name, "scim-%s", orig_name);
             return uim_scm_make_str( name );
@@ -279,13 +279,13 @@ search_uuid_by_imname( String imname )
 
     
     std::vector<SCIMInputMethod*>::iterator it = im_list.begin();
-    for( ; it != im_list.end(); ++it )
+    for ( ; it != im_list.end(); ++it )
     {
         fprintf(stderr, "im = %s\n", WideStr_to_CStr( (*it)->imname));
 
         // remove "scim-" prefix
         String name = imname.substr( 5, imname.length() - 5 );
-        if( WideStr_to_String((*it)->imname) == name )
+        if ( WideStr_to_String((*it)->imname) == name )
         {
             return (*it)->uuid;
         }
@@ -304,7 +304,7 @@ alloc_id( uim_lisp name_ )
 
     // create factory by specifying the uuid
     String uuid = search_uuid_by_imname( imname );
-    if( uuid.empty() )
+    if ( uuid.empty() )
     {
         fprintf( stderr, "failed to search uuid\n" );
         return uim_scm_f();
@@ -316,7 +316,7 @@ alloc_id( uim_lisp name_ )
 
     // initialize context's member variable
     context->instance = context->factory->create_instance( "UTF-8", instance_count );
-    if( context->instance.null() )
+    if ( context->instance.null() )
     {
         fprintf(stderr, "failed to create IMEngineInstance\n");
         return uim_scm_f();
@@ -358,9 +358,9 @@ free_id(uim_lisp id_)
 static SCIMContext *get_context_from_id(int id)
 {
     std::vector<SCIMContext*>::iterator it = context_list.begin();
-    for( ; it != context_list.end(); ++it )
+    for ( ; it != context_list.end(); ++it )
     {
-        if( id == (*it)->id )
+        if ( id == (*it)->id )
         {
             return (*it);
         }
@@ -384,7 +384,7 @@ push_key(uim_lisp id_, uim_lisp key_, uim_lisp mod_)
     scim_key.mask = mod;
 
     SCIMContext *ic = get_context_from_id( id );
-    if( ic->instance->process_key_event( scim_key ) )
+    if ( ic->instance->process_key_event( scim_key ) )
     {
         return uim_scm_t();
     }
@@ -405,7 +405,7 @@ push_symbol_key(uim_lisp id_, uim_lisp key_, uim_lisp mod_)
     free( sym );
 
     SCIMContext *ic = get_context_from_id( id );
-    if( ic->instance->process_key_event( scim_key ) )
+    if ( ic->instance->process_key_event( scim_key ) )
     {
 
         return uim_scm_t();
@@ -421,7 +421,7 @@ get_nth_candidate( uim_lisp id_, uim_lisp idx_ )
     int idx = uim_scm_c_int( idx_ );
 
     SCIMContext *ic = get_context_from_id( id );
-    if( !ic )
+    if ( !ic )
     {
         return uim_scm_f();
     }
@@ -433,7 +433,7 @@ static void cb_commit( IMEngineInstanceBase *instance, const WideString &wstr )
 {
     fprintf(stdout, "cb_commit\n");
     SCIMContext *ic = static_cast<SCIMContext*>(instance->get_frontend_data());
-    if( !ic )
+    if ( !ic )
     {
         return;
     }
@@ -452,7 +452,7 @@ static void cb_preedit_update( IMEngineInstanceBase *instance, const WideString 
     fprintf(stdout, "cb_preedit_update : preedit_str = [%s]\n", WideStr_to_CStr(wstr));
 
     SCIMContext *ic = static_cast<SCIMContext*>(instance->get_frontend_data());
-    if( !ic )
+    if ( !ic )
     {
         return;
     }
@@ -469,7 +469,7 @@ static void cb_preedit_hide( IMEngineInstanceBase *instance )
     fprintf(stdout, "cb_preedit_hide\n");
 
     SCIMContext *ic = static_cast<SCIMContext*>(instance->get_frontend_data());
-    if( !ic )
+    if ( !ic )
     {
         return;
     }
@@ -484,7 +484,7 @@ static void cb_preedit_caret( IMEngineInstanceBase *instance, int caret )
     fprintf(stdout, "cb_preedit_caret\n");
 
     SCIMContext *ic = static_cast<SCIMContext*>(instance->get_frontend_data());
-    if( !ic )
+    if ( !ic )
     {
         return;
     }
@@ -500,7 +500,7 @@ static void cb_lookup_update( IMEngineInstanceBase *instance, const LookupTable 
     fprintf(stdout, "cb_lookup_update\n");
 
     SCIMContext *ic = static_cast<SCIMContext*>(instance->get_frontend_data());
-    if( !ic )
+    if ( !ic )
     {
         return;
     }
@@ -547,7 +547,7 @@ uim_eval_im_pushback_preedit(int id, int flag, const char *str)
 			 uim_scm_make_symbol("preedit-cursor"),
 			 uim_scm_make_str(""));
     uim_scm_eval(form);
-  } else if (flag & UIM_PREEDIT_FLAG_REVERSE)  {
+  } else if (flag & UIM_PREEDIT_FLAG_REVERSE) {
     form = uim_scm_list4(uim_scm_make_symbol("im-pushback-preedit"),
 			 uim_scm_make_int(id),
 			 uim_scm_make_symbol("preedit-reverse"),
@@ -641,9 +641,9 @@ uim_keysymbol_to_scim_keysymbol( const char *sym, KeyEvent *key )
     };
 
     struct keycode_map_ *l;
-    for( l = keycode_map; l->symbol; l++ )
+    for ( l = keycode_map; l->symbol; l++ )
     {
-        if( strcmp(sym, l->symbol) == 0 )
+        if ( strcmp(sym, l->symbol) == 0 )
         {
             fprintf(stderr, "keysymbol = %s\n", l->symbol);
             (*key).code = l->keycode;

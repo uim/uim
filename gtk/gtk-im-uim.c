@@ -466,7 +466,7 @@ focus_in(GtkIMContext *ic)
   disable_focused_context = FALSE;
 
   /* XXX:Use of key snooper is not recommended way!! */
-  if(snooper_installed == FALSE) {
+  if (snooper_installed == FALSE) {
     snooper_id = gtk_key_snooper_install((GtkKeySnoopFunc)uim_key_snoop, NULL );
     snooper_installed = TRUE;
   }
@@ -494,7 +494,7 @@ focus_out(GtkIMContext *ic)
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
 
-  if(snooper_installed == TRUE) {
+  if (snooper_installed == TRUE) {
     gtk_key_snooper_remove(snooper_id);
     snooper_installed = FALSE;
   }
@@ -760,11 +760,11 @@ im_uim_send_im_list(void)
 
     g_string_append(msg, name);
     g_string_append(msg, "\t");
-    if(lang) g_string_append(msg, lang);
+    if (lang) g_string_append(msg, lang);
     g_string_append(msg, "\t");
-    if(short_desc) g_string_append(msg, short_desc);
+    if (short_desc) g_string_append(msg, short_desc);
     g_string_append(msg, "\t");
-    if(strcmp(name, current_im_name) == 0) {
+    if (strcmp(name, current_im_name) == 0) {
       g_string_append(msg, "selected");
     }
     g_string_append(msg, "\n");
@@ -933,19 +933,19 @@ im_uim_parse_helper_str_im_change(const char *str)
   IMUIMContext *cc;
   gchar **lines = g_strsplit(str, "\n", -1);
   gchar *im_name = lines[1];
-  if(g_str_has_prefix(str, "im_change_this_text_area_only") == TRUE) {
-    if(focused_context) {
+  if (g_str_has_prefix(str, "im_change_this_text_area_only") == TRUE) {
+    if (focused_context) {
       uim_switch_im(focused_context->uc, im_name);
       uim_prop_list_update(focused_context->uc);
     }
-  } else if(g_str_has_prefix(str, "im_change_whole_desktop") == TRUE) {
+  } else if (g_str_has_prefix(str, "im_change_whole_desktop") == TRUE) {
     for (cc = context_list.next; cc != &context_list; cc = cc->next) {
       uim_switch_im(cc->uc, im_name);
       if (focused_context && cc == focused_context)
 	uim_prop_list_update(cc->uc);
     }
-  } else if(g_str_has_prefix(str, "im_change_this_application_only") == TRUE) {
-    if(focused_context) {    
+  } else if (g_str_has_prefix(str, "im_change_this_application_only") == TRUE) {
+    if (focused_context) {    
       for (cc = context_list.next; cc != &context_list; cc = cc->next) {
 	uim_switch_im(cc->uc, im_name);
 	if (cc == focused_context)
@@ -974,7 +974,7 @@ im_uim_parse_helper_str(const char *str)
       g_strfreev(lines);
     }
   } else if (focused_context && !disable_focused_context) {
-    if (g_str_has_prefix(str, "prop_list_get") == TRUE){
+    if (g_str_has_prefix(str, "prop_list_get") == TRUE) {
       uim_prop_list_update(focused_context->uc);
     } else if (g_str_has_prefix(str, "prop_label_get") == TRUE) {
       uim_prop_label_update(focused_context->uc);
@@ -1044,7 +1044,7 @@ uim_key_snoop(GtkWidget *grab_widget, GdkEventKey *key, gpointer data)
 void
 im_module_init(GTypeModule *type_module)
 {
-  if(uim_init() == -1) {
+  if (uim_init() == -1) {
     return;
   }
 

@@ -101,7 +101,7 @@ static int
 get_anthydic_api()
 {
     anthy_dic_lib = dlopen("libanthydic.so.0", RTLD_GLOBAL |RTLD_NOW);
-    if(anthy_dic_lib == NULL) {
+    if (anthy_dic_lib == NULL) {
 	return -1;
     }
 
@@ -121,7 +121,7 @@ get_anthydic_api()
 
     anthy_dic_api.priv_dic_add_entry = dlsym(anthy_dic_lib, "anthy_priv_dic_add_entry");
 
-    if(!anthy_dic_api.util_init && !anthy_dic_api.util_set_personality
+    if (!anthy_dic_api.util_init && !anthy_dic_api.util_set_personality
        && !anthy_dic_api.util_get_anthydir && !anthy_dic_api.priv_dic_delete
        && !anthy_dic_api.priv_dic_select_first_entry
        && !anthy_dic_api.priv_dic_select_next_entry
@@ -140,7 +140,7 @@ get_anthydic_api()
 static int
 dict_anthy_init(void)
 {
-    if(get_anthydic_api() == -1)
+    if (get_anthydic_api() == -1)
 	return -1;
     anthy_dic_api.util_init();
     return 0;
@@ -149,7 +149,7 @@ dict_anthy_init(void)
 static int
 dict_anthy_exit(void)
 {
-    if(anthy_dic_lib)
+    if (anthy_dic_lib)
 	return dlclose(anthy_dic_lib);
     else
 	return -1;
@@ -161,13 +161,13 @@ dict_anthy_read_priv_dic_list(uim_word **head)
     char phon[100], desc[100], cclass_code[100];
     int ret = 0;
 
-    if(anthy_dic_api.priv_dic_select_first_entry() == -1) {
+    if (anthy_dic_api.priv_dic_select_first_entry() == -1) {
 	*head = NULL;
 	return -1;
     }
 
-    while(ret == 0) {
-	if(anthy_dic_api.priv_dic_get_index(phon, sizeof(phon))
+    while (ret == 0) {
+	if (anthy_dic_api.priv_dic_get_index(phon, sizeof(phon))
 	   && anthy_dic_api.priv_dic_get_wtype(cclass_code, sizeof(cclass_code))
 	   && anthy_dic_api.priv_dic_get_word(desc, sizeof(desc))) {
 	    gint pos;
@@ -193,7 +193,7 @@ static int
 dict_anthy_add_priv_dic_with_flags(char *phon, char *desc,
 				   char *cclass_code, int freq)
 {
-    if((strlen(phon) == 0) ||
+    if ((strlen(phon) == 0) ||
        (strlen(desc) == 0) ||
        (strlen(cclass_code) == 0)) {
 	return -1;

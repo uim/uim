@@ -186,7 +186,7 @@ get_charset(gchar *line)
 
   splitted = g_strsplit(line, "=", 0);
 
-  if(splitted && splitted[0] && splitted[1]
+  if (splitted && splitted[0] && splitted[1]
      && strcmp("charset", splitted[0]) == 0) {
     gchar *charset = g_strdup(splitted[1]);
     g_strfreev(splitted);
@@ -249,7 +249,7 @@ static void
 append_button(GtkWidget *hbox, GtkWidget *button)
 {
   GList *menu_buttons;
-  if(button) {
+  if (button) {
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
 
     menu_buttons = g_object_get_data(G_OBJECT(hbox), OBJECT_DATA_MENU_BUTTONS);
@@ -261,7 +261,7 @@ append_button(GtkWidget *hbox, GtkWidget *button)
 static gchar *
 convert_charset(const gchar *charset, const gchar *line)
 {
-  if(charset == NULL) {
+  if (charset == NULL) {
     return NULL;
   }
   return g_convert(line, strlen(line),
@@ -286,13 +286,13 @@ toolbar_button_press_cb(GtkButton *prop_button, GdkEventButton *event, GtkWidget
 { 
   const gchar *command = g_object_get_data(G_OBJECT(prop_button), OBJECT_DATA_COMMAND);
   gint type =  GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), OBJECT_DATA_TOOLBAR_TYPE));
-  if(event->button == 3) {
-    if(type == TYPE_APPLET)
+  if (event->button == 3) {
+    if (type == TYPE_APPLET)
       gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
     else
       prop_right_button_pressed(prop_button, event, prop_menu);
     return TRUE;
-  } else if(event->button == 2) {
+  } else if (event->button == 2) {
     gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
     return TRUE;
   } else if (command && *command) {
@@ -317,30 +317,30 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **tmp)
   menu_buttons = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_MENU_BUTTONS);
   sg  = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_SIZE_GROUP);
 
-  if(menu_buttons) {
+  if (menu_buttons) {
     g_list_foreach(menu_buttons, button_destroy, NULL);
     g_list_free(menu_buttons);
     g_object_set_data(G_OBJECT(widget), OBJECT_DATA_MENU_BUTTONS, NULL);
   }
 
-  while(tmp[i] && strcmp("", tmp[i]) != 0) {
+  while (tmp[i] && strcmp("", tmp[i]) != 0) {
     gchar *utf8_str;
     utf8_str = convert_charset(charset, tmp[i]);
 
-    if(utf8_str != NULL) {
+    if (utf8_str != NULL) {
       tmp2 = g_strsplit(utf8_str, "\t", 0);
       g_free(utf8_str);
     } else {
       tmp2 = g_strsplit(tmp[i], "\t", 0);
     }
     
-    if(tmp2 && tmp2[0]) {
-      if(strcmp("branch", tmp2[0]) == 0) {
+    if (tmp2 && tmp2[0]) {
+      if (strcmp("branch", tmp2[0]) == 0) {
 
 	button = menu_button_create(widget, tmp2[1], tmp2[2]);
 	append_button(widget, button);
 	
-      } else if(strcmp("leaf", tmp2[0]) == 0) {
+      } else if (strcmp("leaf", tmp2[0]) == 0) {
 	menu_button_append_menu(button, tmp2[2], tmp2[3], tmp2[4], tmp2[5]);
       }
       g_strfreev(tmp2);
@@ -357,7 +357,7 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **tmp)
     uim_bool show_pref;
 
     show_pref = uim_scm_symbol_value_bool(command_entry[i].pref_button_show_symbol);
-    if(show_pref == UIM_FALSE)
+    if (show_pref == UIM_FALSE)
       continue;
 
     button = gtk_button_new();
@@ -385,7 +385,7 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **tmp)
 
   gtk_widget_show_all(widget);
 
-  if(charset)
+  if (charset)
     g_free(charset);
 }
 
@@ -400,20 +400,20 @@ helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
 
   charset = get_charset(lines[1]);
 
-  while(lines[i] && strcmp("", lines[i]) != 0) {
+  while (lines[i] && strcmp("", lines[i]) != 0) {
     i++;
   }
 
   menu_buttons = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_MENU_BUTTONS);
 
-  if(!menu_buttons || i - 2 != g_list_length(menu_buttons)) {
+  if (!menu_buttons || i - 2 != g_list_length(menu_buttons)) {
     uim_helper_client_get_prop_list();
     return;
   }
   
   i = 1; /* resetting temporary variable */
 
-  while(lines[i] && strcmp("", lines[i]) != 0) {
+  while (lines[i] && strcmp("", lines[i]) != 0) {
 
     if (charset) {
       gchar *utf8_str;
@@ -429,7 +429,7 @@ helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
       pair = g_strsplit(lines[i], "\t", 0);
     }
     
-    if(pair && pair[0] && pair[1])
+    if (pair && pair[0] && pair[1])
       {
 	button = g_list_nth_data(menu_buttons, i - 2 );
 	gtk_button_set_label(GTK_BUTTON(button), pair[0]);
@@ -438,7 +438,7 @@ helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
     i++;
   }
 
-  if(charset)
+  if (charset)
     g_free(charset);
 }
 
@@ -449,10 +449,10 @@ helper_toolbar_parse_helper_str(GtkWidget *widget, gchar *str)
   gchar **lines;
   lines = g_strsplit(str, "\n", 0);
 
-  if(lines && lines[0]) {
-    if( strcmp("prop_list_update", lines[0]) == 0) {
+  if (lines && lines[0]) {
+    if ( strcmp("prop_list_update", lines[0]) == 0) {
       helper_toolbar_prop_list_update(widget, lines);
-    } else if( strcmp("prop_label_update", lines[0]) == 0) {
+    } else if ( strcmp("prop_label_update", lines[0]) == 0) {
       helper_toolbar_prop_label_update(widget, lines);
     }
     g_strfreev(lines);
@@ -470,20 +470,20 @@ helper_icon_prop_list_update(GtkWidget *widget, gchar **tmp)
 
   charset = get_charset(tmp[1]);
 
-  while(tmp[i] && strcmp("", tmp[i]) != 0) {
+  while (tmp[i] && strcmp("", tmp[i]) != 0) {
     gchar *utf8_str;
     utf8_str = convert_charset(charset, tmp[i]);
 
-    if(utf8_str != NULL) {
+    if (utf8_str != NULL) {
       tmp2 = g_strsplit(utf8_str, "\t", 0);
       g_free(utf8_str);
     } else {
       tmp2 = g_strsplit(tmp[i], "\t", 0);
     }
     
-    if(tmp2 && tmp2[0]) {
-      if(strcmp("branch", tmp2[0]) == 0) {
-	if(updated) {
+    if (tmp2 && tmp2[0]) {
+      if (strcmp("branch", tmp2[0]) == 0) {
+	if (updated) {
 	  break;
 	} else {
 	  GtkWidget *child = gtk_bin_get_child(GTK_BIN(widget));
@@ -495,7 +495,7 @@ helper_icon_prop_list_update(GtkWidget *widget, gchar **tmp)
 	  prop_data_flush(widget);	  
 	  updated = TRUE;
 	}
-      } else if(strcmp("leaf", tmp2[0]) == 0) {
+      } else if (strcmp("leaf", tmp2[0]) == 0) {
 	menu_button_append_menu(widget, tmp2[2], tmp2[3], tmp2[4], tmp2[5]);
       }
       g_strfreev(tmp2);
@@ -505,7 +505,7 @@ helper_icon_prop_list_update(GtkWidget *widget, gchar **tmp)
   
   gtk_widget_show_all(widget);
 
-  if(charset)
+  if (charset)
     g_free(charset);
 }
 
@@ -515,8 +515,8 @@ helper_icon_parse_helper_str(GtkWidget *widget, gchar *str)
   gchar **lines;
   lines = g_strsplit(str, "\n", 0);
 
-  if(lines && lines[0]) {
-    if( strcmp("prop_list_update", lines[0]) == 0) {
+  if (lines && lines[0]) {
+    if ( strcmp("prop_list_update", lines[0]) == 0) {
       helper_icon_prop_list_update(widget, lines);
     }
     g_strfreev(lines);
@@ -532,7 +532,7 @@ fd_read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
 
   uim_helper_read_proc(fd);
 
-  if(g_object_get_data(G_OBJECT(widget), OBJECT_DATA_SIZE_GROUP))
+  if (g_object_get_data(G_OBJECT(widget), OBJECT_DATA_SIZE_GROUP))
     while ((tmp = uim_helper_get_message())) {
       helper_toolbar_parse_helper_str(widget, tmp);
       free(tmp); tmp = NULL;
@@ -608,12 +608,12 @@ static gboolean
 prop_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget)
 { 
   gint type =  GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), OBJECT_DATA_TOOLBAR_TYPE));
-  if(event->button == 3) {
-    if(type == TYPE_APPLET)
+  if (event->button == 3) {
+    if (type == TYPE_APPLET)
       gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
     else
       prop_right_button_pressed(prop_button, event, widget);
-  } else if(event->button == 2) {
+  } else if (event->button == 2) {
     gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
   }
   return FALSE;
@@ -622,9 +622,9 @@ prop_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *wi
 static void
 check_helper_connection(GtkWidget *widget)
 {
-  if(uim_fd < 0) {
+  if (uim_fd < 0) {
     uim_fd = uim_helper_init_client_fd(helper_disconnect_cb);
-    if(uim_fd > 0) {
+    if (uim_fd > 0) {
       GIOChannel *channel;
       channel = g_io_channel_unix_new(uim_fd);
       read_tag = g_io_add_watch(channel, G_IO_IN | G_IO_HUP | G_IO_ERR,
@@ -660,7 +660,7 @@ prop_button_released(GtkButton *prop_button, GdkEventButton *event, GtkWidget *w
 
   menu_item_list = gtk_container_get_children(GTK_CONTAINER(prop_menu));
 
-  while((menu_item = g_list_nth_data(menu_item_list, i)) != NULL) {    
+  while ((menu_item = g_list_nth_data(menu_item_list, i)) != NULL) {    
     gtk_container_remove(GTK_CONTAINER(prop_menu), menu_item);
     i++;
   }
@@ -733,13 +733,13 @@ calc_menu_position(GtkMenu *prop_menu, gint *x, gint *y, gboolean *push_in, GtkW
   menu_height =  requisition.height;
   
   
-  if(*y + button_height + menu_height < sc_height){
+  if (*y + button_height + menu_height < sc_height) {
     *y = *y + button_height;
   } else {
     *y = *y - menu_height;
   }
   
-  if(*x + menu_width > sc_width){
+  if (*x + menu_width > sc_width) {
     *x = sc_width - menu_width;
   }
 }

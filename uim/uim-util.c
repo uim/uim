@@ -330,7 +330,7 @@ uim_strsplit(const char *splittee, const char *splitter)
   int len;
   int i;
 
-  if(!splittee || !splitter)
+  if (!splittee || !splitter)
     return NULL;
 
 
@@ -391,12 +391,12 @@ uim_split_string(uim_lisp _splittee, uim_lisp _splitter)
   if (!uim_scm_stringp(_splittee) || !uim_scm_stringp(_splitter))
     return uim_scm_f();
 
-  if(splittee == NULL || splitter == NULL)
+  if (splittee == NULL || splitter == NULL)
     return uim_scm_f();
 
   strs = uim_strsplit(splittee, splitter);
 
-  if(!strs || !*strs)
+  if (!strs || !*strs)
     return uim_scm_f();
 
   for (n_strs = 0; strs[n_strs] != '\0'; n_strs++);
@@ -452,8 +452,8 @@ static const char *
 get_language_name_from_locale(const char *localename)
 {
   unsigned int i;
-  for(i = 0; i < NR_LOCALE_LANGUAGE; i++) {
-    if(strcmp(locale_language_table[i].locale, localename) == 0) {
+  for (i = 0; i < NR_LOCALE_LANGUAGE; i++) {
+    if (strcmp(locale_language_table[i].locale, localename) == 0) {
       return locale_language_table[i].language;
     }
   }
@@ -488,7 +488,7 @@ lang_code_to_lang_name_raw(uim_lisp code_)
 static uim_lisp
 is_setugidp(void)
 {
-  if(is_setugid()) {
+  if (is_setugid()) {
     return uim_scm_t();
   }
   return uim_scm_f();

@@ -389,7 +389,7 @@ custom_pathname_button_clicked_cb(GtkWidget *button, GtkWidget *entry)
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
     char *filename;    
     filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
-    if(filename) {
+    if (filename) {
       gtk_entry_set_text(GTK_ENTRY(entry), filename);
       g_free (filename);
     }
@@ -501,7 +501,7 @@ sync_value_choice(GtkComboBox *combobox)
   g_return_if_fail (custom && custom->type == UCustom_Choice);
 
   item = custom->range->as_choice.valid_items;
-  if(item == NULL || *item == NULL) {
+  if (item == NULL || *item == NULL) {
     uim_custom_free(custom);
     return;
   }
@@ -513,9 +513,9 @@ sync_value_choice(GtkComboBox *combobox)
   
   default_symbol = custom->value->as_choice->symbol;
 
-  while(*item) {
+  while (*item) {
     gtk_combo_box_append_text(GTK_COMBO_BOX(combobox), (*item)->label);
-    if(!strcmp(default_symbol, (*item)->symbol))
+    if (!strcmp(default_symbol, (*item)->symbol))
       default_index = i;    
     i++;
     item++;

@@ -94,7 +94,7 @@ uim_release_preedit_segments(uim_context uc)
 {
   int i;
 
-  if(!uc)
+  if (!uc)
     return;
 
   if (!uc->psegs) {
@@ -254,7 +254,7 @@ uim_iconv_code_conv(void *obj, const char *str)
   const char *inbuf;
 
   ic = (iconv_t)obj;
-  if(!str)
+  if (!str)
     return NULL;
 
   if (!ic)
@@ -439,7 +439,7 @@ im_set_encoding(uim_lisp id, uim_lisp enc)
   const char *e = uim_scm_refer_c_str(enc);
   uim_context uc = retrieve_uim_context(id);
 
-  if(!uc)
+  if (!uc)
     return uim_scm_f();
 
   if (uc->conv) {
@@ -459,7 +459,7 @@ im_clear_mode_list(uim_lisp id)
   int i;
   uim_context uc = retrieve_uim_context(id);
 
-  if(!uc)
+  if (!uc)
     return uim_scm_f();
 
   for (i = 0; i < uc->nr_modes; i++) {
@@ -482,7 +482,7 @@ im_pushback_mode_list(uim_lisp id, uim_lisp str)
   const char *s;
   uim_context uc = retrieve_uim_context(id);
 
-  if(!uc)
+  if (!uc)
     return uim_scm_f();
 
   uc->modes = realloc(uc->modes,
@@ -498,7 +498,7 @@ im_update_mode_list(uim_lisp id)
 {
   uim_context uc = retrieve_uim_context(id);
 
-  if(!uc)
+  if (!uc)
     return uim_scm_f();
 
   if (uc->mode_list_update_cb) {
@@ -516,7 +516,7 @@ im_update_prop_list(uim_lisp id, uim_lisp prop_)
   if (!uc)
     return uim_scm_f();
   
-  if(uc && uc->propstr)
+  if (uc && uc->propstr)
     free(uc->propstr);
       
   uc->propstr = uc->conv_if->convert(uc->conv, prop);
@@ -533,7 +533,7 @@ im_update_prop_label(uim_lisp id, uim_lisp prop_)
   if (!uc)
     return uim_scm_f();
 
-  if(uc && uc->proplabelstr)
+  if (uc && uc->proplabelstr)
     free(uc->proplabelstr);
   
   uc->proplabelstr = uc->conv_if->convert(uc->conv, prop);
@@ -546,7 +546,7 @@ im_update_mode(uim_lisp id, uim_lisp mode_)
   int mode = uim_scm_c_int(mode_);
   uim_context uc = retrieve_uim_context(id);
 
-  if(!uc)
+  if (!uc)
     return uim_scm_f();
 
   uc->mode = mode;
@@ -660,7 +660,7 @@ im_return_str_list(uim_lisp str_list_)
   int i;
 
   if (uim_return_str_list) {
-    for (i = 0; i < (int)UIM_RETURN_STR_LIST_SIZE; i++){
+    for (i = 0; i < (int)UIM_RETURN_STR_LIST_SIZE; i++) {
       if (uim_return_str_list[i]) {
 	free(uim_return_str_list[i]);
 	uim_return_str_list[i] = NULL;

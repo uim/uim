@@ -91,7 +91,7 @@ word_list_view_get_type(void)
 {
     static GType type = 0;
 
-    if(type == 0) {
+    if (type == 0) {
 	static const GTypeInfo info = {
 	    sizeof(WordListViewClass),
 	    NULL, /* base_init */
@@ -316,14 +316,14 @@ word_list_view_finalize(GObject *object)
 {
     WordListView *view = WORD_LIST_VIEW(object);
 
-    if(view->model != NULL) {
+    if (view->model != NULL) {
 	GObject *model = G_OBJECT(view->model);
 
 	view->model = NULL;
 	g_object_unref(model);
     }
 
-    if(G_OBJECT_CLASS(parent_class)->finalize)
+    if (G_OBJECT_CLASS(parent_class)->finalize)
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 
@@ -337,14 +337,14 @@ word_list_view_destroy(GtkObject *object)
       view->dict = NULL;
     }
 
-    if(GTK_OBJECT_CLASS(parent_class)->destroy) {
+    if (GTK_OBJECT_CLASS(parent_class)->destroy) {
 	GTK_OBJECT_CLASS(parent_class)->destroy(object);
     }
 }
 
 /*
 static void find_initial_path_helper(GtkTreeModel *model, GtkTreePath *path, GtkTreeIter iter, GtkTreePath **initial_path) {
-    if(*initial_path != NULL) {
+    if (*initial_path != NULL) {
 	return;
     }
 
@@ -357,20 +357,20 @@ static GtkTreePath *word_list_view_get_current_path(WordListView *view) {
     GtkTreeIter iter;
 
     gtk_tree_view_get_cursor(view->view, &path, NULL);
-    if(path != NULL) {
+    if (path != NULL) {
 	return path;
     }
     gtk_widget_grab_focus(GTK_WIDGET(view));
     gtk_tree_view_get_cursor(view->view, &path, NULL);
-    if(path != NULL) {
+    if (path != NULL) {
 	return path;
     }
 
     gtk_tree_selection_selected_foreach(view->selection, find_initial_path_helper, &path);
-	if(path != NULL) {
+	if (path != NULL) {
 	    return path;
 	}
-	if(!gtk_tree_model_get_iter_first(view->model, &iter)) {
+	if (!gtk_tree_model_get_iter_first(view->model, &iter)) {
 	    return NULL;
 	}
 
@@ -419,7 +419,7 @@ word_list_view_set_visible_cclass_code_column(WordListView *view,
 {
     g_return_if_fail(IS_WORD_LIST_VIEW(view));
 
-    if(view->cclass_code_show != show) {
+    if (view->cclass_code_show != show) {
 	view->cclass_code_show = show;
 	gtk_tree_view_column_set_visible(view->cclass_code_column, show);
 	g_object_notify(G_OBJECT(view), "cclass_code_show");
@@ -439,7 +439,7 @@ word_list_view_set_visible_freq_column(WordListView *view, gboolean show)
 {
     g_return_if_fail(IS_WORD_LIST_VIEW(view));
 
-    if(view->freq_show != show) {
+    if (view->freq_show != show) {
 	view->freq_show = show;
 	gtk_tree_view_column_set_visible(view->freq_column, show);
 	g_object_notify(G_OBJECT(view), "freq_show");
@@ -459,7 +459,7 @@ word_list_view_set_visible_okuri_column(WordListView *view, gboolean show)
 {
     g_return_if_fail(IS_WORD_LIST_VIEW(view));
 
-    if(view->okuri_show != show) {
+    if (view->okuri_show != show) {
 	view->okuri_show = show;
 	gtk_tree_view_column_set_visible(view->okuri_column, show);
 	g_object_notify(G_OBJECT(view), "okuri_show");
@@ -481,14 +481,14 @@ word_list_view_set_editable(WordListView *view,
     GtkTreeIter iter;
     g_return_if_fail(IS_WORD_LIST_VIEW(view));
 
-    if(view->editable != editable) {
+    if (view->editable != editable) {
 	view->editable = editable;
-	if(gtk_tree_model_get_iter_first(view->model, &iter)) {
+	if (gtk_tree_model_get_iter_first(view->model, &iter)) {
 	    do {
 		gtk_list_store_set(GTK_LIST_STORE(view->model), &iter,
 				   WORD_LIST_EDITABLE, editable,
 				   TERMINATOR);
-	    } while(gtk_tree_model_iter_next(view->model, &iter));
+	    } while (gtk_tree_model_iter_next(view->model, &iter));
 
 	    g_object_notify(G_OBJECT(view), "editable");
 	}
@@ -509,7 +509,7 @@ word_list_view_set_selection_mode(WordListView *view,
 {
     g_return_if_fail(IS_WORD_LIST_VIEW(view));
 
-    if(view->selection_mode != mode) {
+    if (view->selection_mode != mode) {
 	view->selection_mode = mode;
 	gtk_tree_selection_set_mode(view->selection, mode);
 	g_object_notify(G_OBJECT(view), "selection_mode");
@@ -532,7 +532,7 @@ word_list_view_set_property(GObject *object,
 {
     WordListView *view = WORD_LIST_VIEW(object);
 
-    switch(prop_id) {
+    switch (prop_id) {
     case PROP_CCLASS_CODE_SHOW:
 	word_list_view_set_visible_cclass_code_column(view, g_value_get_boolean(value));
 	break;
@@ -562,7 +562,7 @@ word_list_view_get_property(GObject *object,
 {
     WordListView *view = WORD_LIST_VIEW(object);
 
-    switch(prop_id) {
+    switch (prop_id) {
     case PROP_CCLASS_CODE_SHOW:
 	g_value_set_boolean(value, view->cclass_code_show);
 	break;
@@ -615,11 +615,11 @@ word_list_view_set_values(WordListView *view, uim_word *data)
     g_return_if_fail(data != NULL);
 
     for (w = data; w; w = w->next) {
-	if(w->phon == NULL)
+	if (w->phon == NULL)
 	    w->phon = g_strdup("");
-	if(w->desc == NULL)
+	if (w->desc == NULL)
 	    w->desc = g_strdup("");
-	if(w->cclass_code == NULL)
+	if (w->cclass_code == NULL)
 	    w->cclass_code = g_strdup("");
 
 	phonetic = charset_convert(w->phon, w->charset, "UTF-8");
@@ -677,11 +677,11 @@ word_list_view_get_all_data_list(WordListView *view)
 
     g_return_val_if_fail(IS_WORD_LIST_VIEW(view), NULL);
 
-    if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(view->model), &iter)) {
+    if (gtk_tree_model_get_iter_first(GTK_TREE_MODEL(view->model), &iter)) {
 	do {
 #if 0
 	    data = g_new0(word, 1);
-	    if(data != NULL) {
+	    if (data != NULL) {
 		gtk_tree_model_get(view->model, &iter,
 				   WORD_LIST_WORD_TYPE,   &data->type,
 				   WORD_LIST_PHON,        &data->phon,
@@ -691,7 +691,7 @@ word_list_view_get_all_data_list(WordListView *view)
 				   WORD_LIST_OKURI,       &data->okuri,
 				   TERMINATOR);
 
-		if(data->phon != NULL && data->desc != NULL &&
+		if (data->phon != NULL && data->desc != NULL &&
 		   data->cclass_code != NULL)
 		{
 		    list = g_list_append(list, data);
@@ -704,7 +704,7 @@ word_list_view_get_all_data_list(WordListView *view)
 	    if (data)
 	        list = g_list_append(list, data);
 #endif
-	} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(view->model), &iter));
+	} while (gtk_tree_model_iter_next(GTK_TREE_MODEL(view->model), &iter));
     }
     return list;
 }
@@ -720,18 +720,18 @@ word_list_view_get_selected_data_list(WordListView *view)
 
     list = gtk_tree_selection_get_selected_rows(view->selection, &view->model);
 
-    for(pos = g_list_first(list); pos != NULL; pos = g_list_next(pos)) {
+    for (pos = g_list_first(list); pos != NULL; pos = g_list_next(pos)) {
 	GtkTreePath *path = pos->data;
 
 	pos->data = gtk_tree_row_reference_new(view->model, path);
 	gtk_tree_path_free(path);
     }
 
-    for(pos = g_list_first(list); pos != NULL; pos = g_list_next(pos)) {
+    for (pos = g_list_first(list); pos != NULL; pos = g_list_next(pos)) {
 	GtkTreePath *path = gtk_tree_row_reference_get_path(pos->data);
 
-	if(path) {
-	    if(gtk_tree_model_get_iter(view->model, &iter, path)) {
+	if (path) {
+	    if (gtk_tree_model_get_iter(view->model, &iter, path)) {
 		uim_word *data;
 
 #if 0
@@ -773,18 +773,18 @@ word_list_view_remove_selected_data(WordListView *view)
 
     list = gtk_tree_selection_get_selected_rows(view->selection, &view->model);
 
-    for(pos = g_list_first(list); pos != NULL; pos = g_list_next(pos)) {
+    for (pos = g_list_first(list); pos != NULL; pos = g_list_next(pos)) {
 	GtkTreePath *path = pos->data;
 
 	pos->data = gtk_tree_row_reference_new(view->model, path);
 	gtk_tree_path_free(path);
     }
 
-    for(pos = g_list_first(list); pos != NULL; pos = g_list_next(pos)) {
+    for (pos = g_list_first(list); pos != NULL; pos = g_list_next(pos)) {
 	GtkTreePath *path = gtk_tree_row_reference_get_path(pos->data);
 
-	if(path) {
-	    if(gtk_tree_model_get_iter(view->model, &iter, path)) {
+	if (path) {
+	    if (gtk_tree_model_get_iter(view->model, &iter, path)) {
 		gtk_list_store_remove(GTK_LIST_STORE(view->model), &iter);
 		gtk_tree_row_reference_free(pos->data);
 		gtk_tree_path_free(path);
@@ -812,7 +812,7 @@ word_list_view_callback_cell_edited(GtkCellRendererText *renderer,
 
     gtk_tree_model_get_iter(model, &iter, path);
 
-    switch(GPOINTER_TO_INT(column)) {
+    switch (GPOINTER_TO_INT(column)) {
     case WORD_LIST_PHON:
     case WORD_LIST_DESC:
     case WORD_LIST_CCLASS_CODE:

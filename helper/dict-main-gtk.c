@@ -92,9 +92,9 @@ fd_read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
 static void
 check_helper_connection(void)
 {
-  if(uim_fd < 0) {
+  if (uim_fd < 0) {
     uim_fd = uim_helper_init_client_fd(helper_disconnect_cb);
-    if(uim_fd > 0) {
+    if (uim_fd > 0) {
       GIOChannel *channel;
       channel = g_io_channel_unix_new(uim_fd);
       read_tag = g_io_add_watch(channel, G_IO_IN | G_IO_HUP | G_IO_ERR,
@@ -118,9 +118,9 @@ parse_arg(int argc, char *argv[])
 
   ae_mode = MODE_EDIT;
 
-  while((ch = getopt(argc, argv, "aei:")) != -1)
+  while ((ch = getopt(argc, argv, "aei:")) != -1)
   {
-    switch(ch) {
+    switch (ch) {
     case 'a':
       ae_mode = MODE_ADD;
       break;
@@ -155,7 +155,7 @@ create_window_anthy(void)
   GtkWidget *window;
   uim_dict *dict;
 
-  if(ae_mode == MODE_EDIT) {
+  if (ae_mode == MODE_EDIT) {
     window = word_list_window_new();
   } else {
     dict = uim_dict_open(N_("Anthy private dictionary"));
@@ -179,7 +179,7 @@ create_window(void)
 {
   GtkWidget *window = NULL;
 
-  switch(input_method) {
+  switch (input_method) {
   case IM_ANTHY:
     window = create_window_anthy();
     break;
@@ -220,7 +220,7 @@ main(int argc, char *argv[])
 
   result = create_window();
 
-  if(result == -1) {
+  if (result == -1) {
     g_printerr(_("Error:%s\n"), get_error_msg());
     exit(-1);
   }

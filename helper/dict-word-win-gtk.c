@@ -84,7 +84,7 @@ GType
 word_window_get_type(void) {
   static GType type = 0;
 
-  if(type == 0) {
+  if (type == 0) {
     static const GTypeInfo info = {
       sizeof(WordWindowClass),
       NULL, /* base_init */
@@ -298,7 +298,7 @@ word_window_necessary_create(WordWindow *window)
     gtk_label_set_mnemonic_widget(GTK_LABEL(label), combobox_pos_broad);
     gtk_widget_show(combobox_pos_broad);
 
-    for(i = 0; i < pos_num; i++) {
+    for (i = 0; i < pos_num; i++) {
       gtk_combo_box_append_text(GTK_COMBO_BOX(combobox_pos_broad),
 				_(pos_broad[i]));
     }
@@ -480,7 +480,7 @@ word_window_add(WordWindow *window)
     ret = -1;
   }
 
-  if(ret == -1) {
+  if (ret == -1) {
     dialog = gtk_message_dialog_new(NULL,
 				    GTK_DIALOG_MODAL,
 				    GTK_MESSAGE_ERROR,

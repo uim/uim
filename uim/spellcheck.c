@@ -41,7 +41,7 @@ spellcheck_init(void)
 {
   spell_pid = uim_ipc_open_command(spell_pid, &spell_r,
 				   &spell_w, get_spell_command() );
-  if(spell_pid == 0) {
+  if (spell_pid == 0) {
     return NIL;
   }
   return siod_true_value();
@@ -56,7 +56,7 @@ spellcheck_send_command(LISP str_)
 
   result = uim_ipc_send_command(&spell_pid, &spell_r, &spell_w, get_spell_command(), str);
 
-  if(result == NULL)
+  if (result == NULL)
     {
       return NIL;
     }

@@ -309,13 +309,13 @@ char *find_desc_from_code(const char *code, int type) {
   };
 
   do {
-    for(j = 0; j < num[i]; j++) {
-      if(strcmp(code, (category[i])[j].code) == 0
+    for (j = 0; j < num[i]; j++) {
+      if (strcmp(code, (category[i])[j].code) == 0
 	 && ((category[i])[j].type & type) == type)
 	pos = strdup((category[i])[j].desc);
     }
     i++;
-  } while(category[i] != NULL);
+  } while (category[i] != NULL);
 
   return pos;
 }
@@ -342,13 +342,13 @@ char *find_code_from_desc(const char *pos, int type) {
     };
 
     do {
-      for(j = 0; j < num[i]; j++) {
-	if(strcmp(pos, (category[i])[j].desc) == 0
+      for (j = 0; j < num[i]; j++) {
+	if (strcmp(pos, (category[i])[j].desc) == 0
 	   && ((category[i])[j].type & type) == type)
 	  code = strdup((category[i])[j].code);
       }
       i++;
-    } while(category[i] != NULL);
+    } while (category[i] != NULL);
 
     return code;
 }

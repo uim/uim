@@ -127,7 +127,7 @@ gchar *cclass_dialog(gint pos_type, gint system) {
     gtk_tree_view_set_model(GTK_TREE_VIEW(treeview_pos),
 			    GTK_TREE_MODEL(store));
 
-    switch(pos_type) {
+    switch (pos_type) {
     case POS_SUBSTANTIVE:
 	narrow_size = nr_substantive_code;
 	code = substantive_code;
@@ -150,8 +150,8 @@ gchar *cclass_dialog(gint pos_type, gint system) {
 	break;
     }
 
-    for(i = 0; i < narrow_size; i++) {
-	if(code[i].type & system) {
+    for (i = 0; i < narrow_size; i++) {
+	if (code[i].type & system) {
 	    gtk_list_store_append(store, &iter);
 	    gtk_list_store_set(store, &iter,
 			       COLUMN_ID, i,
@@ -163,9 +163,9 @@ gchar *cclass_dialog(gint pos_type, gint system) {
 
     result = gtk_dialog_run(GTK_DIALOG(dialog));
 
-    switch(result) {
+    switch (result) {
     case GTK_RESPONSE_ACCEPT:
-	if(gtk_tree_selection_get_selected(selection, NULL, &iter)) {
+	if (gtk_tree_selection_get_selected(selection, NULL, &iter)) {
 	    gtk_tree_model_get(GTK_TREE_MODEL(store), &iter,
 			       COLUMN_ID, &id, -1);
 	    pos_utf8 = g_strdup(code[id].code);

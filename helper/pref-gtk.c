@@ -126,7 +126,7 @@ pref_tree_selection_changed(GtkTreeSelection *selection,
   }
 #endif
 
-  if(gtk_tree_selection_get_selected(selection, &model, &iter) == FALSE)
+  if (gtk_tree_selection_get_selected(selection, &model, &iter) == FALSE)
     return TRUE;
 
   store = GTK_TREE_STORE(model);
@@ -135,15 +135,15 @@ pref_tree_selection_changed(GtkTreeSelection *selection,
 		     GROUP_WIDGET, &group_widget,
 		     -1);
 
-  if(group_name == NULL)
+  if (group_name == NULL)
     return TRUE;
 
   /* hide current selected group's widget */
-  if(current_group_widget)
+  if (current_group_widget)
     gtk_widget_hide(current_group_widget);
 
   /* whether group_widget is already packed or not */
-  if(!gtk_widget_get_parent(group_widget))
+  if (!gtk_widget_get_parent(group_widget))
     gtk_box_pack_start (GTK_BOX (pref_hbox), group_widget, TRUE, TRUE, 0);
 
   /* show selected group's widget */
@@ -355,7 +355,7 @@ create_group_widget(const char *group_name)
 
   group = uim_custom_group_get(group_name);
 
-  if(group == NULL)
+  if (group == NULL)
     return NULL;
 
   group_label = gtk_label_new("");
@@ -381,7 +381,7 @@ static void create_sub_group_widgets(GtkWidget *parent_widget, const char *paren
     char **sgrp_syms = uim_custom_group_subgroups(parent_group);
     char **sgrp_sym;
 
-    for(sgrp_sym = sgrp_syms; *sgrp_sym; sgrp_sym++)
+    for (sgrp_sym = sgrp_syms; *sgrp_sym; sgrp_sym++)
     {
         struct uim_custom_group *sgrp =  uim_custom_group_get(*sgrp_sym);
 	char **custom_syms, **custom_sym;
@@ -389,7 +389,7 @@ static void create_sub_group_widgets(GtkWidget *parent_widget, const char *paren
 	GtkWidget *frame;
 	GtkWidget *vbox;
 
-	if(!sgrp)
+	if (!sgrp)
 	  continue;
 
 	/* XXX quick hack to use AND expression of groups */

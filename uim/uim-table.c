@@ -82,8 +82,8 @@ open_table_internal(const char *fn)
   table->size = st.st_size;
   table->filename = strdup(fn);
 
-  for(i=0;i<16;i++){
-    if(!tables[i]) {
+  for (i=0;i<16;i++) {
+    if (!tables[i]) {
       tables[i] = table;
       return i;
     }
@@ -102,9 +102,9 @@ close_table(struct table_info *table)
 static char *
 find_line_head(struct table_info *table, char *from)
 {
-  while(table->addr <= (void *)from){
+  while (table->addr <= (void *)from) {
 
-    if( *from == '\n') {
+    if ( *from == '\n') {
       from++;
       return from;
     }
@@ -117,8 +117,8 @@ static int
 find_table(const char *fn)
 {
   int i;
-  for(i=0;i<16;i++){
-    if(tables[i] && strcmp(tables[i]->filename, fn ) == 0)
+  for (i=0;i<16;i++) {
+    if (tables[i] && strcmp(tables[i]->filename, fn ) == 0)
       return i;
   }
   return -1;
@@ -127,9 +127,9 @@ find_table(const char *fn)
 static char *
 find_next_linefeed(struct table_info *table, char *from)
 {
-  while(((char *)(table->addr) + table->size) >= from){
+  while (((char *)(table->addr) + table->size) >= from) {
 
-    if( *from == '\n') {
+    if ( *from == '\n') {
       return from;
     }
     from++;
@@ -164,9 +164,9 @@ find_matched_lines_from_table_internal(int table_id, char *str, int flag)
   struct table_info *table = tables[table_id];
   char *p = table->addr;
   
-  while(*(p+ strlen(str))){
+  while (*(p+ strlen(str))) {
     
-    if(!strncmp(p, str, strlen(str))){     
+    if (!strncmp(p, str, strlen(str))) {     
       char *tmp = cut_off_line_from_table(table,
 					  find_line_head(table, p));
       LISP res = strcons(strlen(tmp), tmp);
@@ -174,7 +174,7 @@ find_matched_lines_from_table_internal(int table_id, char *str, int flag)
       return res;
     }
 
-    if(flag || *(p+ strlen(str)) == '\t') {
+    if (flag || *(p+ strlen(str)) == '\t') {
       p = find_next_linefeed(table, p);
     }
     p++;
@@ -215,7 +215,7 @@ open_table(LISP filename_)
   char *filename = get_c_string(filename_);
   int table_id;
 
-  if((table_id = find_table(filename))<0) {
+  if ((table_id = find_table(filename))<0) {
     table_id = open_table_internal(filename);
   }
   return intcons(table_id);
@@ -225,7 +225,7 @@ void
 uim_init_table_subrs()
 {
   int i;
-  for(i=0;i<16;i++){tables[i] = NULL;}
+  for (i=0;i<16;i++) {tables[i] = NULL;}
   init_subr_1("open-table", open_table);
   init_subr_2("find-entry-matched-complete", find_entry_matched_complete);
   init_subr_2("find-entry-matched-continual", find_entry_matched_continual);

@@ -95,9 +95,9 @@ init_serv_fd(char *path)
   chmod(path, S_IRUSR|S_IWUSR);
 
   logname = getenv("LOGNAME");
-  if(logname) {
+  if (logname) {
     pw = getpwnam(logname);
-    if(pw)
+    if (pw)
       chown(path, pw->pw_uid, -1);
   }
 
@@ -259,7 +259,7 @@ uim_helper_server_process_connection(int serv_fd)
       struct client *cl;
       new_fd = accept(serv_fd, (struct sockaddr *)&clientsoc, &len);
 
-      if(new_fd < 0) {
+      if (new_fd < 0) {
 	perror("accpet failed");
 	continue;
       }

@@ -76,7 +76,7 @@ plugin_load(uim_lisp _name)
   
   plugin_name = uim_scm_refer_c_str(_name);
   
-  if(plugin_name == NULL) {
+  if (plugin_name == NULL) {
     return uim_scm_f();
   }
 
@@ -93,7 +93,7 @@ plugin_load(uim_lisp _name)
     snprintf(plugin_lib_filename, len, "%s/%s%s%s",
 	     path, PLUGIN_PREFIX, plugin_name, PLUGIN_SUFFIX);
     fd = open(plugin_lib_filename, O_RDONLY);
-    if(fd >= 0) {
+    if (fd >= 0) {
       close(fd);
       break;
     }
@@ -113,7 +113,7 @@ plugin_load(uim_lisp _name)
     plugin_scm_filename = malloc(sizeof(char) * len);
     snprintf(plugin_scm_filename, len, "%s/%s.scm", path, plugin_name);
     fd = open(plugin_scm_filename, O_RDONLY);
-    if(fd >= 0) {
+    if (fd >= 0) {
       close(fd);
       break;
     }
@@ -121,7 +121,7 @@ plugin_load(uim_lisp _name)
     plugin_scm_filename = NULL;
   }
 
-  if(plugin_lib_filename == NULL) {
+  if (plugin_lib_filename == NULL) {
     free(plugin_scm_filename);
     return uim_scm_f();
   }
@@ -129,7 +129,7 @@ plugin_load(uim_lisp _name)
   library = dlopen(plugin_lib_filename, RTLD_NOW);
   free(plugin_lib_filename);
 
-  if(library == NULL) {
+  if (library == NULL) {
     fprintf(stderr, "load failed %s\n", dlerror());
     free(plugin_scm_filename);
     return uim_scm_f();
@@ -139,7 +139,7 @@ plugin_load(uim_lisp _name)
 						"uim_plugin_instance_init");
   plugin_instance_quit = (void (*)(void))dlfunc(library,
 						"uim_plugin_instance_quit");
-  if(!plugin_instance_init) {
+  if (!plugin_instance_init) {
     fprintf(stderr, "%s plugin init failed\n", plugin_name);
     free(plugin_scm_filename);
     return uim_scm_f();
@@ -219,7 +219,7 @@ void uim_quit_plugin(void)
 
   uim_scm_gc_protect_stack(&stack_start);
   alist = uim_scm_eval_c_string("plugin-alist");
-  for(rest = alist; !uim_scm_nullp(rest); rest = uim_scm_cdr(rest)) {
+  for (rest = alist; !uim_scm_nullp(rest); rest = uim_scm_cdr(rest)) {
     entry = uim_scm_car(rest);
     name = uim_scm_car(entry);
 

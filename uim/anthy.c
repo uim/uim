@@ -138,7 +138,7 @@ init_anthy_lib(void)
   }
   context_slot = malloc(sizeof(struct context) *
 			MAX_CONTEXT);
-  if(!context_slot) {
+  if (!context_slot) {
     return uim_scm_f();
   }
   for (i = 0; i < MAX_CONTEXT; i++) {
@@ -322,7 +322,7 @@ uim_plugin_instance_quit(void)
   }
 
   for (i = 0; i < MAX_CONTEXT; i++) {
-    if(context_slot[i].ac) {
+    if (context_slot[i].ac) {
       api.release_context(context_slot[i].ac);
     }
   }

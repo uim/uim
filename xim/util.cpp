@@ -227,7 +227,7 @@ static size_t dopr(char *buffer, size_t maxlen, const char *format, va_list args
 	if (ch == '\0') 
 	    state = DP_S_DONE;
 
-	switch(state) {
+	switch (state) {
 	case DP_S_DEFAULT:
 	    if (ch == '%') 
 		state = DP_S_FLAGS;
@@ -516,8 +516,8 @@ static void fmtint(char *buffer, size_t *currlen, size_t maxlen,
 
     uvalue = value;
 
-    if(!(flags & DP_F_UNSIGNED)) {
-	if( value < 0 ) {
+    if (!(flags & DP_F_UNSIGNED)) {
+	if ( value < 0 ) {
 	    signvalue = '-';
 	    uvalue = -value;
 	} else {
@@ -535,7 +535,7 @@ static void fmtint(char *buffer, size_t *currlen, size_t maxlen,
 		(caps? "0123456789ABCDEF":"0123456789abcdef")
 			[uvalue % (unsigned)base  ];
 	uvalue = (uvalue / (unsigned)base );
-    } while(uvalue && (place < 20));
+    } while (uvalue && (place < 20));
     if (place == 20) place--;
     convert[place] = 0;
 
@@ -746,7 +746,7 @@ static void fmtfp (char *buffer, size_t *currlen, size_t maxlen,
 	    /* printf ("%lf, %lf, %ld\n", temp, fracpart, index); */
 	    fconvert[fplace++] =
 		(caps? "0123456789ABCDEF":"0123456789abcdef")[index];
-	} while(fracpart && (fplace < 311));
+	} while (fracpart && (fplace < 311));
 	if (fplace == 311) fplace--;
     }
     fconvert[fplace] = 0;

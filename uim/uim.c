@@ -120,7 +120,7 @@ uim_create_context(void *ptr,
     return NULL;
   }
   get_context_id(uc);
-  if(uc->id == -1)
+  if (uc->id == -1)
     return NULL;
 
   uc->ptr = ptr;
@@ -250,7 +250,7 @@ uim_release_context(uim_context uc)
 {
   int i;
 
-  if(!uc)
+  if (!uc)
     return;
 
   UIM_EVAL_FSTRING1(uc, "(release-context %d)", uc->id);
@@ -319,7 +319,7 @@ uim_set_prop_label_update_cb(uim_context uc,
 void
 uim_prop_activate(uim_context uc, const char *str)
 {
-  if(!str)
+  if (!str)
     return;
       
   UIM_EVAL_FSTRING2(uc, "(prop-activate-handler %d \"%s\")",
@@ -336,7 +336,7 @@ uim_prop_activate(uim_context uc, const char *str)
 void
 uim_prop_update_custom(uim_context uc, const char *custom, const char *val)
 {
-  if(!custom || !val)
+  if (!custom || !val)
     return;
 
   UIM_EVAL_FSTRING3(uc, "(custom-set-handler %d '%s %s)",
@@ -366,14 +366,14 @@ uim_set_mode_cb(uim_context uc, void (*update_cb)(void *ptr,
 void
 uim_prop_list_update(uim_context uc)
 {
-  if(uc && uc->propstr)
+  if (uc && uc->propstr)
     uc->prop_list_update_cb(uc->ptr, uc->propstr);
 }
 
 void
 uim_prop_label_update(uim_context uc)
 {
-  if(uc && uc->proplabelstr)
+  if (uc && uc->proplabelstr)
     uc->prop_label_update_cb(uc->ptr, uc->proplabelstr);
 }
 
@@ -382,7 +382,7 @@ uim_get_nr_im(uim_context uc)
 {
   int i, nr = 0;
 
-  if(!uc)
+  if (!uc)
     return 0;
 
   for (i = 0; i < uim_nr_im; i++) {
@@ -411,7 +411,7 @@ get_nth_im(uim_context uc, int nth)
 const char *
 uim_get_current_im_name(uim_context uc)
 {
-  if(uc) {
+  if (uc) {
     return uc->current_im_name;
   }
   return NULL;
@@ -422,7 +422,7 @@ uim_get_im_name(uim_context uc, int nth)
 {
   struct uim_im *im = get_nth_im(uc, nth);
 
-  if(im) {
+  if (im) {
     return im->name;
   }
   return NULL;
@@ -433,7 +433,7 @@ uim_get_im_language(uim_context uc, int nth)
 {
   struct uim_im *im = get_nth_im(uc, nth);
 
-  if(im) {
+  if (im) {
     return im->lang;
   }
   return NULL;
@@ -460,7 +460,7 @@ uim_get_im_encoding(uim_context uc, int nth)
 {
   struct uim_im *im = get_nth_im(uc, nth);
 
-  if(im) {
+  if (im) {
     return im->encoding;
   }
   return NULL;
@@ -474,7 +474,7 @@ uim_check_im_exist(const char *im_engine_name)
   if (im_engine_name == NULL)
     return NULL;
 
-  for(i = 0; i < uim_nr_im; i++) {
+  for (i = 0; i < uim_nr_im; i++) {
     struct uim_im *im = &uim_im_array[i];
     if (strcmp(im_engine_name, im->name) == 0) {
       return im->name;
@@ -607,7 +607,7 @@ uim_init_scm()
   char *scm_files = NULL;
   char *env = NULL;
 
-  /*  if(is_setugid() == 0) {*/
+  /*  if (is_setugid() == 0) {*/
     env = getenv("LIBUIM_VERBOSE");
     /*  }*/
   uim_scm_init(env);  /* init Scheme interpreter */
@@ -625,7 +625,7 @@ uim_init_scm()
 #endif
 
   
-  if(is_setugid() == 0) {
+  if (is_setugid() == 0) {
     scm_files = getenv("LIBUIM_SCM_FILES");
   }
   uim_scm_set_lib_path((scm_files) ? scm_files : SCM_FILES);
@@ -633,7 +633,7 @@ uim_init_scm()
   uim_scm_require_file("init.scm");
 
   uim_return_str = NULL;
-  for (i = 0; i < (int)UIM_RETURN_STR_LIST_SIZE; i++){
+  for (i = 0; i < (int)UIM_RETURN_STR_LIST_SIZE; i++) {
     uim_return_str_list[i] = NULL;
   }
 

@@ -93,9 +93,9 @@ get_next_line(FILE *fp)
   GString *line = g_string_new("");
   /* I don't want to depend on glib, but GString is too convenience... */
 
-  while(fgets(buf, sizeof(buf), fp) != NULL) {
+  while (fgets(buf, sizeof(buf), fp) != NULL) {
     g_string_append(line, buf);
-    if(line->str[line->len - 1] == '\n') {
+    if (line->str[line->len - 1] == '\n') {
       return g_string_free(line, FALSE);
     }
   }
@@ -108,13 +108,13 @@ parse_config_line_history(const char *line)
   int i;
   char **splitted1 = g_strsplit(line, "=", -1);
   char **splitted2;
-  if(splitted1 && splitted1[1] ) {
+  if (splitted1 && splitted1[1] ) {
     splitted2 = g_strsplit(splitted1[1], ",", -1);
     g_strfreev(splitted1);
   } else {
     return;
   }
-  for(i = 0 ;splitted2[i] != NULL; i++) {
+  for (i = 0 ;splitted2[i] != NULL; i++) {
   g_print("%s", splitted2[i]);
   }
     g_strfreev(splitted2);
@@ -134,11 +134,11 @@ parse_config_line_sorting_way(const char *line)
 static void
 parse_config_line(const char *line)
 {
-  if(g_strrstr(line, "history=") == line) {
+  if (g_strrstr(line, "history=") == line) {
     parse_config_line_history(line);
-  } else if(g_strrstr(line, "grouped=") == line) {
+  } else if (g_strrstr(line, "grouped=") == line) {
     parse_config_line_grouped(line);
-  } else if(g_strrstr(line, "sorting_way=") == line) {
+  } else if (g_strrstr(line, "sorting_way=") == line) {
     parse_config_line_sorting_way(line);
   }
 }
@@ -149,20 +149,20 @@ load_configration(const char *filename)
   const char *f;
   char *line;
   FILE *fp;
-  if(filename == NULL) {
+  if (filename == NULL) {
     return;/* FIXME:later get correct file path here */
   } else {
     f= filename;
   }
 
   fp = fopen(f, "r");
-  if(fp == NULL) {
+  if (fp == NULL) {
     fprintf(stderr, "%s\n", strerror(errno));
     return;
   }
 
  /* XXX: I want you to write more beaftiful loop */
-  while((line = get_next_line(fp)) != NULL) {
+  while ((line = get_next_line(fp)) != NULL) {
     parse_config_line(line);
     free(line);
   }
@@ -186,7 +186,7 @@ get_selected_im_name(void)
   GtkTreeStore *store;
   GtkTreeIter iter;
   gchar *str_data;
-  if(gtk_tree_selection_get_selected (sel, &model, &iter) == TRUE) {
+  if (gtk_tree_selection_get_selected (sel, &model, &iter) == TRUE) {
     store = GTK_TREE_STORE(model);
     gtk_tree_model_get (model, &iter, 
 			NAME_COLUMN, &str_data,
@@ -201,7 +201,7 @@ send_message_im_change(const gchar *type)
 {
   GString *msg = g_string_new(type);
   gchar *im_name = get_selected_im_name();
-  if(im_name == NULL) {
+  if (im_name == NULL) {
     g_string_free(msg, TRUE);
     return; /* Or should pop-up alert window here? */
   }
@@ -411,7 +411,7 @@ reload_im_list(GtkWindow *window, gpointer user_data)
 static void
 parse_helper_str(const char *sent_str)
 {
-  if(g_str_has_prefix(sent_str, "im_list") == TRUE) {
+  if (g_str_has_prefix(sent_str, "im_list") == TRUE) {
     parse_helper_str_im_list(sent_str);
   }
 }
@@ -419,7 +419,7 @@ parse_helper_str(const char *sent_str)
 static char *
 get_text(const char *str)
 {
-  if(strcmp("", str) == 0)
+  if (strcmp("", str) == 0)
     return "-";
   else
     return gettext(str);
@@ -434,7 +434,7 @@ parse_helper_str_im_list(const char *im_list_str_new)
   GtkTreeStore *tree_store;
   GtkTreeIter iter;
   GtkTreePath *path = NULL;
-  if(im_list_str_old && strcmp(im_list_str_new, im_list_str_old) == 0) {
+  if (im_list_str_old && strcmp(im_list_str_new, im_list_str_old) == 0) {
     return; /* No need to update */
   }
 
@@ -444,20 +444,20 @@ parse_helper_str_im_list(const char *im_list_str_new)
 				   G_TYPE_STRING,
 				   G_TYPE_STRING);
 
-  for(i=2; lines[i] != NULL; i++) {
+  for (i=2; lines[i] != NULL; i++) {
 
-    if(!lines[i] || strcmp(lines[i], "") == 0) {
+    if (!lines[i] || strcmp(lines[i], "") == 0) {
       break;
     }
     info = g_strsplit(lines[i], "\t", -1);
-    if(info && info[0] && info[1] && info[2]) {
+    if (info && info[0] && info[1] && info[2]) {
       gtk_tree_store_append(tree_store, &iter, NULL/* parent iter */);
       gtk_tree_store_set(tree_store, &iter,
 			 NAME_COLUMN, info[0],
 			 LANG_COLUMN, get_text(info[1]),
 			 DESC_COLUMN, get_text(info[2]),
 			 -1);
-      if(info[3] && (strcmp(info[3], "") != 0)) {
+      if (info[3] && (strcmp(info[3], "") != 0)) {
 	path = gtk_tree_model_get_path(GTK_TREE_MODEL(tree_store),
 				       &iter);
 	
@@ -468,7 +468,7 @@ parse_helper_str_im_list(const char *im_list_str_new)
   gtk_tree_view_set_model(GTK_TREE_VIEW(switcher_tree_view), 
 			  GTK_TREE_MODEL(tree_store));
   
-  if(path != NULL) {
+  if (path != NULL) {
     gtk_tree_view_set_cursor(GTK_TREE_VIEW(switcher_tree_view),
 			     path, NULL, FALSE);
   }
@@ -503,9 +503,9 @@ fd_read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
 static void
 check_helper_connection(void)
 {
-  if(uim_fd < 0) {
+  if (uim_fd < 0) {
     uim_fd = uim_helper_init_client_fd(helper_disconnect_cb);
-    if(uim_fd > 0) {
+    if (uim_fd > 0) {
       GIOChannel *channel;
       channel = g_io_channel_unix_new(uim_fd);
       read_tag = g_io_add_watch(channel, G_IO_IN | G_IO_HUP | G_IO_ERR,
@@ -530,7 +530,7 @@ main(int argc, char *argv[])
 
   result = create_switcher();
 
-  if(result == -1) {
+  if (result == -1) {
     fprintf(stderr, "Error:%s\n", get_error_msg());
     exit(-1);
   }

@@ -75,7 +75,7 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   
   uim_fd = -1;
   
-  if(!path)
+  if (!path)
     return -1;
 
   bzero(&server, sizeof(server));
@@ -99,23 +99,23 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 #endif
 
 
-  if (connect(fd, (struct sockaddr *)&server,sizeof(server)) == -1){
+  if (connect(fd, (struct sockaddr *)&server,sizeof(server)) == -1) {
     int serv_pid = 0;
     FILE *serv_r = NULL, *serv_w = NULL;
     char buf[128];
     
     serv_pid = uim_ipc_open_command(serv_pid, &serv_r, &serv_w, get_server_command());
     
-    if(serv_pid == 0) {
+    if (serv_pid == 0) {
       return -1;
     }
     
     while (fgets (buf, sizeof(buf), serv_r ) != NULL ) {
-      if(strcmp( buf, "\n" ) == 0)
+      if (strcmp( buf, "\n" ) == 0)
 	break;
     }
     
-    if(connect(fd, (struct sockaddr *)&server,sizeof(server)) == -1){
+    if (connect(fd, (struct sockaddr *)&server,sizeof(server)) == -1) {
       return -1;
     }
   }
@@ -170,13 +170,13 @@ uim_helper_client_focus_out(uim_context uc)
 static void
 uim_helper_client_focus(uim_context uc, int flg)
 {
-  if(uim_fd < 0)
+  if (uim_fd < 0)
     return;
 
-  if(!uc)
+  if (!uc)
     return;
 
-  if(flg == 0)
+  if (flg == 0)
     snprintf(uim_help_buf, BUFFER_SIZE, "focus_in\n");
   else
     snprintf(uim_help_buf, BUFFER_SIZE, "focus_out\n");

@@ -1563,7 +1563,7 @@ quote_word(const char *word)
   for (p = word; *p; p++) {
     len = strlen(str);
 
-    switch(*p) {
+    switch (*p) {
     case '/':
 	    str = realloc(str, len + strlen("\\057") + 1);
 	    strcat(str, "\\057");
@@ -1620,7 +1620,7 @@ sanitize_word(const char *arg)
     return NULL;
   }
   for (p = arg; *p; p++) {
-    switch(*p) {
+    switch (*p) {
     case '/':
     case '[':
     case ']':

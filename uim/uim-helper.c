@@ -66,7 +66,7 @@ uim_helper_fd(int fd, enum RorW rw)
     fd_set fds;
     struct timeval tv;
 
-    /*   if(!fd || fd < 0)
+    /*   if (!fd || fd < 0)
 	 return -1;*/
 
     FD_ZERO(&fds);
@@ -167,7 +167,7 @@ uim_helper_get_pathname(void)
   char *login = NULL;
   struct passwd *pw = NULL;
  
-  if(is_setugid() == 0) {
+  if (is_setugid() == 0) {
     login = getenv("LOGNAME");
   }
 
@@ -197,10 +197,10 @@ int uim_helper_fd_writable(int fd)
 
 int uim_helper_str_terminated(const char *str)
 {
-  if(!str)
+  if (!str)
     return 0;
 
-  if(strlen(str) > 2&&
+  if (strlen(str) > 2&&
      str[strlen(str)-1] == '\n' &&
      str[strlen(str)-2] == '\n' )
     return 1;

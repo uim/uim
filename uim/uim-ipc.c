@@ -197,17 +197,17 @@ uim_ipc_open_command_with_option(int old_pid, FILE **read_fp,
       }
       *ap = NULL;
     }
-    if(is_setugid() != 0) {
+    if (is_setugid() != 0) {
       int cmd_len = strlen(command) + 30;
       char *fullpath_command = malloc(cmd_len);
       
-      /*if(setuid(getuid())!=0) abort();*/ /* discarding privilege */
+      /*if (setuid(getuid())!=0) abort();*/ /* discarding privilege */
       
       snprintf(fullpath_command, cmd_len, "/usr/local/bin/%s", command);
 
       result = execvp(fullpath_command, argv);
 
-      if(result == -1) {
+      if (result == -1) {
  	snprintf(fullpath_command, cmd_len, "/usr/bin/%s", command);
 	result = execvp(fullpath_command, argv);
       }
@@ -217,7 +217,7 @@ uim_ipc_open_command_with_option(int old_pid, FILE **read_fp,
     }
     free(str);
 
-    if(result == -1) {
+    if (result == -1) {
       write(1,"err",strlen("err"));
     }
     _exit(127);
@@ -244,7 +244,7 @@ uim_ipc_send_command(int *pid,
   if (*read_fp == NULL || *write_fp == NULL) {
     *pid = uim_ipc_open_command(*pid, read_fp, write_fp, command);
   }
-  if(*pid == 0) {
+  if (*pid == 0) {
     free(tmp);
     return NULL;
   }
@@ -271,7 +271,7 @@ uim_ipc_send_command(int *pid,
   }
 
   while (fgets (buf, sizeof(buf), *read_fp) != NULL) {
-    if(strcmp( buf, "\n" ) == 0) {
+    if (strcmp( buf, "\n" ) == 0) {
       break;
     }
 

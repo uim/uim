@@ -273,11 +273,11 @@ buttontable_create(gchar **table, int len)
   gtk_table_set_row_spacings(GTK_TABLE(_table), 3);
   gtk_table_set_col_spacings(GTK_TABLE(_table), 3);
 
-  for(i=0; i < rows; i++) {
-    for(j=0; j < BUTTON_H_ALIGN; j++) {
-      if(table[i*BUTTON_H_ALIGN + j] == NULL)
+  for (i=0; i < rows; i++) {
+    for (j=0; j < BUTTON_H_ALIGN; j++) {
+      if (table[i*BUTTON_H_ALIGN + j] == NULL)
 	goto out;
-      if(strcmp(table[i*BUTTON_H_ALIGN + j], "") == 0)
+      if (strcmp(table[i*BUTTON_H_ALIGN + j], "") == 0)
 	continue;
 
       button = gtk_button_new_with_label(table[i*BUTTON_H_ALIGN + j]);

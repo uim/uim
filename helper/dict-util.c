@@ -46,7 +46,7 @@ gchar *charset_convert(const gchar *in,
     g_return_val_if_fail(outcode && *outcode, g_strdup(in));
 
     out = g_convert(in, -1, outcode, incode, &rbytes, &wbytes, &error);
-    if(error != NULL) {
+    if (error != NULL) {
 	g_printerr("g_convert failed: %s\nin: %s out: %s\n",
 		   error->message, in, out);
 	g_error_free(error);
@@ -63,8 +63,8 @@ gchar *utf8_convert(const gchar *in) {
     g_return_val_if_fail(in, NULL);
 
     out = g_locale_to_utf8(in, -1, &rbytes, &wbytes, &error);
-    if(out == NULL && error != NULL) {
-	if(g_utf8_validate(in, -1, NULL)) {
+    if (out == NULL && error != NULL) {
+	if (g_utf8_validate(in, -1, NULL)) {
 	    out = g_strdup(in);
 	} else {
 	    g_printerr("g_locale_to_utf8 failed: %s\n", error->message);
@@ -79,7 +79,7 @@ gchar *utf8_to_eucjp(const gchar *utf8) {
     gchar *eucjp = NULL;
     g_return_val_if_fail(utf8, NULL);
 
-    if(g_utf8_validate(utf8, -1, NULL)) {
+    if (g_utf8_validate(utf8, -1, NULL)) {
 	eucjp = charset_convert(utf8, "UTF-8", "EUC-JP");
     }
 
