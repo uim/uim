@@ -162,7 +162,7 @@ uim_scm_c_list_free(void **list, uim_scm_c_list_free_func free_func)
   void *elem;
   void **p;
 
-  for (p = list; (elem = *p); p++) {
+  for (p = list; elem = *p; p++) {
     free_func(elem);
   }
   free(list);
@@ -275,7 +275,7 @@ uim_custom_choice_item_list(const char *custom_sym)
     (char **)uim_scm_c_list(str_list_arg, "custom-symbol-rec-sym",
 			    (uim_scm_c_list_conv_func)uim_scm_c_symbol);
 
-  for (p = choice_sym_list; (choice_sym = *p); p++) {
+  for (p = choice_sym_list; choice_sym = *p; p++) {
     custom_choice = uim_custom_choice_get(custom_sym, choice_sym);
     *p = (char *)custom_choice;  /* intentionally overwrite */
   }
