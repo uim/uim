@@ -689,8 +689,9 @@ uim_custom_init(void)
 uim_bool
 uim_custom_quit(void)
 {
-  /* TODO */
   uim_custom_cb_remove(NULL);
+  uim_custom_group_cb_remove(NULL);
+  uim_custom_global_cb_remove();
 
   return UIM_TRUE;
 }
