@@ -1559,7 +1559,8 @@
 	      (skk-context-set-state! sc 'skk-state-latin)))
       (cond
        ((skk-on-key? key key-state)
-	(skk-flush sc)  ; implicitly reset to 'skk-state-direct
+	(skk-flush sc)
+	(skk-context-set-state! sc 'skk-state-direct)
 	(skk-context-set-kana-mode! sc skk-type-hiragana))
        ((and (modifier-key-mask key-state)
 	     (not (shift-key-mask key-state)))
