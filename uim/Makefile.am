@@ -9,11 +9,13 @@ lib_LTLIBRARIES = libuim.la
 uim_plugin_LTLIBRARIES = 
 uim_plugindir = $(pkglibdir)/plugin
 
-pkginclude_HEADERS = uim.h uim-util.h uim-helper.h uim-im-switcher.h uim-scm.h plugin.h
+pkginclude_HEADERS = uim.h uim-util.h uim-helper.h uim-im-switcher.h \
+		uim-scm.h uim-custom.h plugin.h
 
 libuim_la_SOURCES = uim.c uim-scm.c uim-util.c uim-func.c uim-key.c \
 		siod.h context.h gettext.h \
 		uim-helper.c uim-helper-client.c \
+		uim-custom.c \
 		intl.c \
 		uim-ipc.c \
 		getpeereid.c \
@@ -32,14 +34,6 @@ endif
 
 if COMPAT_SCM
   pkginclude_HEADERS += uim-compat-scm.h
-endif
-
-if COMPAT_CUSTOM
-  pkginclude_HEADERS += uim-compat-custom.h
-  libuim_la_SOURCES += uim-compat-custom.c
-else
-  pkginclude_HEADERS += uim-custom.h
-  libuim_la_SOURCES += uim-custom.c
 endif
 
 if M17NLIB

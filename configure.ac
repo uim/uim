@@ -266,14 +266,6 @@ AC_ARG_ENABLE(compat-table,
     enable_compat_table="no"
   ])
 
-AC_ARG_ENABLE(compat-custom,
-  AC_HELP_STRING([--enable-compat-custom],
-                 [enable obsolete version of 'custom API' required by sumika. This exclusively disables new custom API]),
-  [],
-  [
-    enable_compat_custom="no"
-  ])
-
 
 AC_ARG_ENABLE(scm-nested-eval,
   AC_HELP_STRING([--disable-scm-nested-eval],
@@ -341,7 +333,6 @@ AM_CONDITIONAL(DICT, test x$use_dict = xyes)
 AM_CONDITIONAL(DEBUG, test x$enable_debug = xyes)
 AM_CONDITIONAL(COMPAT_SCM, test x$enable_compat_scm = xyes)
 AM_CONDITIONAL(COMPAT_TABLE, test x$enable_compat_table = xyes)
-AM_CONDITIONAL(COMPAT_CUSTOM, test x$enable_compat_custom = xyes)
 AM_CONDITIONAL(SCM_NESTED_EVAL, test x$enable_scm_nested_eval = xyes)
 AM_CONDITIONAL(CALLBACK_QUEUE, test x$enable_callback_queue = xyes)
 AM_CONDITIONAL(NEED_SETENV_C, test $ac_cv_func_setenv = no -o $ac_cv_func_unsetenv = no)
@@ -381,11 +372,6 @@ fi
 if test x$enable_compat_table = xyes; then
   AC_DEFINE(UIM_COMPAT_TABLE, 1,
             [Enable obsolete table API for hk.scm (broken)])
-fi
-
-if test x$enable_compat_custom = xyes; then
-  AC_DEFINE(UIM_COMPAT_CUSTOM, 1,
-            [Enable obsolete version of 'custom API' required by sumika])
 fi
 
 if test x$enable_scm_nested_eval = xyes; then
@@ -463,7 +449,6 @@ Configure Result for developers:
    DEBUG           : ${enable_debug}
    COMPAT_SCM      : ${enable_compat_scm}
    COMPAT_TABLE    : ${enable_compat_table}
-   COMPAT_CUSTOM   : ${enable_compat_custom}
    SCM_NESTED_EVAL : ${enable_scm_nested_eval}
    CALLBACK_QUEUE  : ${enable_callback_queue}
 ])

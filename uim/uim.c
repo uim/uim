@@ -41,9 +41,7 @@
 #include "uim.h"
 #include "uim-im-switcher.h"
 #include "uim-scm.h"
-#ifndef UIM_COMPAT_CUSTOM
 #include "uim-custom.h"
-#endif
 #include "context.h"
 #include "gettext.h"
 
