@@ -65,7 +65,12 @@ Requirement
 ===========
 
  * iconv
- * PRIME >= 0.6.6 (If you want to use PRIME)
+ * PRIME >= 0.8.5.2 (If you want to use with PRIME)
+ * Anthy            (If you want to use with Anthy)
+ * m17n-lib         (If you want to use with m17n-lib)
+ * canna            (If you want to use with canna)
+ * GTK+ >= 2.2      (If you want to use uim-toolbar-gtk, and so on)
+
 
 Acknowledgements
 ================
