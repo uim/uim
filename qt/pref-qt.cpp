@@ -98,6 +98,7 @@ void UimPrefDialog::createMainWidgets()
 
     QSplitter *mainSplitter = new QSplitter( this );
 
+    /* ListView */
     m_groupListView = new QListView( mainSplitter );
     m_groupListView->addColumn( _("Group") );
     m_groupListView->setSelectionMode( QListView::Single );
@@ -105,10 +106,15 @@ void UimPrefDialog::createMainWidgets()
     QObject::connect( m_groupListView, SIGNAL(selectionChanged( QListViewItem * )),
                       this, SLOT(slotSelectionChanged( QListViewItem * )) );
 
-    QWidget *leftSideWidget = new QWidget( mainSplitter );
-    QVBoxLayout *leftVLayout = new QVBoxLayout( leftSideWidget );
-    QWidget *buttonHWidget = new QWidget( leftSideWidget );
-    m_groupWidgetStack = new QWidgetStack( leftSideWidget );
+    /* Contents Frame */
+    QWidget *rightSideWidget = new QWidget( mainSplitter );
+    QVBoxLayout *rightVLayout = new QVBoxLayout( rightSideWidget );
+    m_groupWidgetStack = new QWidgetStack( rightSideWidget );
+    rightVLayout->setSpacing( 6 );
+    rightVLayout->addWidget( m_groupWidgetStack );
+
+    /* Buttons */
+    QWidget *buttonHWidget = new QWidget( this );
     QHBoxLayout *buttonHLayout = new QHBoxLayout( buttonHWidget );
     buttonHLayout->setMargin( 6 );
     buttonHLayout->setSpacing( 6 );
@@ -130,12 +136,10 @@ void UimPrefDialog::createMainWidgets()
     buttonHLayout->addWidget( okButton );
     buttonHLayout->addWidget( m_applyButton );
     buttonHLayout->addWidget( cancelButton );
-    leftVLayout->setSpacing( 6 );
-    leftVLayout->addWidget( m_groupWidgetStack );
-    leftVLayout->addWidget( new KSeparator( leftSideWidget ) );
-    leftVLayout->addWidget( buttonHWidget );
 
     mainVLayout->addWidget( mainSplitter );
+    mainVLayout->addWidget( new KSeparator( this ) );
+    mainVLayout->addWidget( buttonHWidget );
 }
 
 void UimPrefDialog::createGroupWidgets()
