@@ -59,16 +59,17 @@ if SCIM
 endif
 
 installed-modules.scm:
-	echo ";; The described order of input methods affects which IM is preferred" >$@
-	echo ";; at the default IM selection process for each locale. i.e. list" >>$@
-	echo ";; preferable IM first for each language" >>$@
-	echo -n "(define installed-im-module-list '(" >>$@
-	echo -n '$(module_names)' >>$@
+	echo ";; The described order of input methods affects which IM is preferred" >$@ && \
+	echo ";; at the default IM selection process for each locale. i.e. list" >>$@ && \
+	echo ";; preferable IM first for each language" >>$@ && \
+	echo -n "(define installed-im-module-list '(" >>$@ && \
+	echo -n '$(module_names)' >>$@ && \
 	echo '))' >>$@
 
-# TODO: resolve dependency to $(top_builddir)/uim/uim-sh
+# TODO: resolve dependency to $(top_builddir)/uim/uim-sh in proper way
 enabled-ims.scm: installed-modules.scm
-	echo ";; Don't edit this file manually" >$@
+	$(MAKE) -C $(top_builddir)/uim uim-sh && \
+	echo ";; Don't edit this file manually" >$@ && \
 	echo '(require "custom.scm") \
 	      (puts (custom-hook-literalize-enabled-im-list))' \
 	| LIBUIM_VERBOSE=1 LIBUIM_VANILLA=1 LIBUIM_SCM_FILES=${PWD} \
