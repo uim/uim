@@ -129,7 +129,9 @@ class SubgroupData {
 public:
     SubgroupData( QWidget *parentWidget, const char *parent_group_name );
     ~SubgroupData();
-    QVGroupBox *searchGroupVBoxByCustomSym( const char *custom_sym );
+
+    QVGroupBox *getMainSubgroupGroupVBox() const{ return m_defaultGVBox; }
+    QVGroupBox *searchGroupVBoxByCustomSym( const char *custom_sym ) const;
 
 protected:
     QVGroupBox *m_defaultGVBox;

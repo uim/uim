@@ -48,6 +48,9 @@ CustomCheckBox::CustomCheckBox( struct uim_custom *c, QWidget *parent, const cha
 
 void CustomCheckBox::update()
 {
+    if( !m_custom || m_custom->type != UCustom_Bool )
+        return;
+    
     setEnabled( m_custom->is_active );
 
     if( m_custom->is_active )
@@ -85,6 +88,9 @@ CustomSpinBox::CustomSpinBox( struct uim_custom *c, QWidget *parent, const char 
 
 void CustomSpinBox::update()
 {
+    if( !m_custom || m_custom->type != UCustom_Int )
+        return;
+
     setEnabled( m_custom->is_active );
 
     if( m_custom->is_active )
@@ -124,6 +130,9 @@ CustomLineEdit::CustomLineEdit( struct uim_custom *c, QWidget *parent, const cha
 
 void CustomLineEdit::update()
 {
+    if( !m_custom || m_custom->type != UCustom_Str )
+        return;
+    
     setEnabled( m_custom->is_active );
 
     if( m_custom->is_active )
@@ -171,6 +180,9 @@ CustomPathnameEdit::CustomPathnameEdit( struct uim_custom *c, QWidget *parent, c
 
 void CustomPathnameEdit::update()
 {
+    if( !m_custom || m_custom->type != UCustom_Pathname )
+        return;
+    
     m_lineEdit->setEnabled( m_custom->is_active );
     m_fileButton->setEnabled( m_custom->is_active );
 
@@ -214,7 +226,7 @@ void CustomPathnameEdit::slotCustomTextChanged( const QString & text )
 CustomChoiceCombo::CustomChoiceCombo( struct uim_custom *c, QWidget *parent, const char *name)
     : QComboBox( parent, name ),
       UimCustomItemIface( c )
-{
+{    
     QObject::connect( this, SIGNAL(activated(int)),
                       this, SLOT(slotActivated(int)) );
 
@@ -223,6 +235,9 @@ CustomChoiceCombo::CustomChoiceCombo( struct uim_custom *c, QWidget *parent, con
 
 void CustomChoiceCombo::update()
 {
+    if( !m_custom || m_custom->type != UCustom_Choice )
+        return;
+
     setEnabled( m_custom->is_active );
 
     clear();
@@ -307,6 +322,9 @@ CustomOrderedListEdit::CustomOrderedListEdit( struct uim_custom *c, QWidget *par
 
 void CustomOrderedListEdit::update()
 {
+    if( !m_custom || m_custom->type != UCustom_OrderedList )
+        return;
+    
     m_lineEdit->setEnabled( m_custom->is_active );
     m_editButton->setEnabled( m_custom->is_active );
 
@@ -587,6 +605,9 @@ CustomKeyEdit::CustomKeyEdit( struct uim_custom *c, QWidget *parent, const char 
 
 void CustomKeyEdit::update()
 {
+    if( !m_custom || m_custom->type != UCustom_Key )
+        return;
+
     m_lineEdit->setEnabled( m_custom->is_active );
     m_editButton->setEnabled( m_custom->is_active );
 

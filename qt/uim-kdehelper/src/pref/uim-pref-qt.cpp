@@ -52,6 +52,7 @@
 #include <qfiledialog.h>
 #include <qcombobox.h>
 #include <qlayout.h>
+#include <qobjectlist.h>
 
 /*
  * FIXME! : 2004-01-14 Kazuki Ohta <mover@hct.zaq.ne.jp>
@@ -147,6 +148,8 @@ void UimPrefDialog::createGroupWidgets()
     for( grp = primary_groups; *grp; grp++ )
     {
         struct uim_custom_group *group = uim_custom_group_get( *grp );
+        if( group == NULL )
+            continue;
 
         /* insert item in uim's order */
         QListViewItem *item = NULL;
@@ -308,6 +311,17 @@ void GroupPageWidget::setupWidgets( const char *group_name )
         }
 
         uim_custom_symbol_list_free( custom_syms );
+    }
+
+    /* 2004-02-02 Kazuki Ohta <mover@hct.zaq.ne.jp>
+     *
+     * This is very adhoc hack!!
+     * if "main" subgroup's gvbox dosn't have child, hides it!
+     */
+    QVGroupBox *mainSubgroupGroupVBox = sd->getMainSubgroupGroupVBox();
+    if( mainSubgroupGroupVBox && !mainSubgroupGroupVBox->children()->isEmpty() )
+    {
+        mainSubgroupGroupVBox->hide();
     }
 
     /* free */
@@ -519,7 +533,7 @@ SubgroupData::~SubgroupData()
     gvboxMap.clear();    
 }
 
-QVGroupBox * SubgroupData::searchGroupVBoxByCustomSym( const char *custom_sym )
+QVGroupBox * SubgroupData::searchGroupVBoxByCustomSym( const char *custom_sym ) const
 {
     QVGroupBox *b = gvboxMap[QString(custom_sym)];
     if( b == NULL )
