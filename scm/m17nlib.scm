@@ -28,7 +28,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(require "generic-key-custom.scm")
+(require-custom "generic-key-custom.scm")
 
 ;;; user configs
 
