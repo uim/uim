@@ -19,7 +19,7 @@ dnl    along with this library; see the file COPYING.LIB.  If not, write to
 dnl    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 dnl    Boston, MA 02111-1307, USA.
 
-AC_DEFUN(KDE_CHECK_MICO,
+AC_DEFUN([KDE_CHECK_MICO],
 [
 AC_REQUIRE([KDE_CHECK_LIBDL])
 AC_REQUIRE([KDE_MISC_TESTS])
@@ -128,7 +128,7 @@ AC_SUBST(idldir)
 
 ])
 
-AC_DEFUN(KDE_CHECK_MINI_STL,
+AC_DEFUN([KDE_CHECK_MINI_STL],
 [
 AC_REQUIRE([KDE_CHECK_MICO])
 
@@ -165,11 +165,11 @@ fi
 
 ])
 
-AC_DEFUN(KDE_CHECK_ANSI,
+AC_DEFUN([KDE_CHECK_ANSI],
 [
 ])
 
-AC_DEFUN(KDE_CHECK_INSURE,
+AC_DEFUN([KDE_CHECK_INSURE],
 [
   AC_ARG_ENABLE(insure, [  --enable-insure             use insure++ for debugging [default=no]],
   [
@@ -186,7 +186,7 @@ AC_DEFUN(KDE_CHECK_INSURE,
    fi
 ])
 
-AC_DEFUN(KDE_CHECK_NEWLIBS,
+AC_DEFUN([KDE_CHECK_NEWLIBS],
 [
 
 ])

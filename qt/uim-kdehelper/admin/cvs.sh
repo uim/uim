@@ -27,17 +27,18 @@ strip_makefile()
 
 check_autotool_versions()
 {
+required_autoconf_version="2.53 or newer"
 AUTOCONF_VERSION=`$AUTOCONF --version | head -n 1`
 case $AUTOCONF_VERSION in
   Autoconf*2.5* | autoconf*2.5* ) : ;;
   "" )
     echo "*** AUTOCONF NOT FOUND!."
-    echo "*** KDE requires autoconf >= 2.52"
+    echo "*** KDE requires autoconf $required_autoconf_version"
     exit 1
     ;;
   * )
     echo "*** YOU'RE USING $AUTOCONF_VERSION."
-    echo "*** KDE requires autoconf >= 2.52"
+    echo "*** KDE requires autoconf $required_autoconf_version"
     exit 1
     ;;
 esac
@@ -47,12 +48,12 @@ case $AUTOHEADER_VERSION in
   Autoconf*2.5* | autoheader*2.5* ) : ;;
   "" )
     echo "*** AUTOHEADER NOT FOUND!."
-    echo "*** KDE requires autoheader >= 2.52 (part of autoconf)"
+    echo "*** KDE requires autoheader $required_autoconf_version"
     exit 1
     ;;
   * )
     echo "*** YOU'RE USING $AUTOHEADER_VERSION."
-    echo "*** KDE requires autoheader >= 2.52 (part of autoconf)"
+    echo "*** KDE requires autoheader $required_autoconf_version"
     exit 1
     ;;
 esac
@@ -65,7 +66,7 @@ case $AUTOMAKE_STRING in
     echo "*** KDE requires automake $required_automake_version"
     exit 1
     ;;
-  automake*1.6.* | automake*1.7* | automake*1.8* ) : ;;
+  automake*1.6.* | automake*1.7* | automake*1.8* | automake*1.9*) : ;;
   "" )
     echo "*** AUTOMAKE NOT FOUND!."
     echo "*** KDE requires automake $required_automake_version"
@@ -232,12 +233,12 @@ echo "KDE_CREATE_SUBDIRSLIST" >> configure.in.new
 if test -f Makefile.am.in; then
   subdirs=`cat subdirs`
   for dir in $subdirs; do
-    dir=`echo $dir | sed -e "s,[-+.],_,g"`
-    echo "AM_CONDITIONAL($dir""_SUBDIR_included, test \"x\$$dir""_SUBDIR_included\" = xyes)" >> configure.in.new
-    if test -f $dir/configure.in; then
-	echo "if test \"x\$$dir""_SUBDIR_included\" = xyes; then " >> configure.in.new
-	echo "  AC_CONFIG_SUBDIRS($dir)" >> configure.in.new
-	echo "fi" >> configure.in.new
+    vdir=`echo $dir | sed -e 's,[-+.@],_,g'`
+    echo "AM_CONDITIONAL($vdir""_SUBDIR_included, test \"x\$$vdir""_SUBDIR_included\" = xyes)" >> configure.in.new
+    if test -f "$dir/configure.in"; then
+        echo "if test \"x\$$vdir""_SUBDIR_included\" = xyes; then " >> configure.in.new
+        echo "  AC_CONFIG_SUBDIRS($dir)" >> configure.in.new
+        echo "fi" >> configure.in.new
     fi
   done
 fi
@@ -267,7 +268,7 @@ for topleveldir in $topleveldirs; do
 	continue
   fi
 
-  mfs=`find $topleveldir -name Makefile.am -print | fgrep -v "/." | \
+  mfs=`find $topleveldir -follow -name Makefile.am -print | fgrep -v "/." | \
        sed -e 's#\./##; s#/Makefile.am$##' | sort | sed -e 's#$#/Makefile#'`
   for i in $mfs; do
      echo "AC_CONFIG_FILES([ $i ])" >> configure.in.new
@@ -308,7 +309,7 @@ if test -f configure.in.in; then
    fi
 fi
 if test -z "$VERSION" || test "$VERSION" = "@VERSION@"; then
-     VERSION="\"3.1.94\""
+     VERSION="\"3.3.0\""
 fi
 if test -z "$modulename" || test "$modulename" = "@MODULENAME@"; then
    modulename=`pwd`; 
@@ -347,11 +348,11 @@ if test -f inst-apps; then
    inst=`cat inst-apps`
    list=""
    for i in $inst; do
-      list="$list `find $i/ -name "configure.in.in" -o -name "configure.in.bot" -o -name "configure.in.mid" | \
+      list="$list `find $i/ -follow -name "configure.in.in" -o -name "configure.in.bot" -o -name "configure.in.mid" | \
 		sed -e "s,/configure,/aaaconfigure," | sort | sed -e "s,/aaaconfigure,/configure,"`"
    done
 else
-   list=`find . -name "configure.in.in" -o -name "configure.in.bot" -o -name "configure.in.mid" | \
+   list=`find . -follow -name "configure.in.in" -o -name "configure.in.bot" -o -name "configure.in.mid" | \
 		sed -e "s,/configure,/aaaconfigure," | sort | sed -e "s,/aaaconfigure,/configure,"`
 fi
 for i in $list; do if test -f $i && test `dirname $i` != "." ; then
@@ -359,6 +360,10 @@ for i in $list; do if test -f $i && test `dirname $i` != "." ; then
 fi; done
 test -f configure.in.mid && echo configure.in.mid >> configure.files
 test -f configure.in.bot && echo configure.in.bot >> configure.files
+if test ! -s configure.files; then
+   echo "There are no files to build a configure. Please check your checkout."
+   exit 1
+fi
 }
 
 create_subdirs()
@@ -454,8 +459,21 @@ if test -f Makefile.am.in; then
     esac
   done
 
+  adds=`fgrep '$(top_srcdir)/acinclude.m4:' Makefile.am.in | sed -e 's,^[^:]*: *,,; s,\$(top_srcdir)/,,g'`
+  if echo "$adds" | fgrep "*" >/dev/null ; then
+    adds=`ls -d -1 $adds 2>/dev/null`
+    fgrep -v  '$(top_srcdir)/acinclude.m4:' Makefile.am.in > Makefile.am.in.adds
+    str='$(top_srcdir)/acinclude.m4:'
+    for add in $adds; do 
+	str="$str \$(top_srcdir)/$add"
+    done
+    echo $str >> Makefile.am.in.adds
+  else
+    cat Makefile.am.in > Makefile.am.in.adds
+  fi
+
   if test -n "$UNSERMAKE"; then
-    cat Makefile.am.in > Makefile.am
+    cat Makefile.am.in.adds > Makefile.am
     topsubdirs=
     for i in $compilefirst $dirs $compilelast; do
        vari=`echo $i | sed -e "s,[-+],_,g"`
@@ -466,11 +484,12 @@ if test -f Makefile.am.in; then
     done
     echo "SUBDIRS=$topsubdirs" >> Makefile.am
   else
-    cat Makefile.am.in | \
+    cat Makefile.am.in.adds | \
         sed -e 's,^\s*\(COMPILE_BEFORE.*\),# \1,' | \
         sed -e 's,^\s*\(COMPILE_AFTER.*\),# \1,' > Makefile.am
     echo "SUBDIRS="'$(TOPSUBDIRS)' >> Makefile.am
   fi
+  rm Makefile.am.in.adds
 fi
 }
 
@@ -481,8 +500,12 @@ acinclude_m4()
   if grep '\$(top_srcdir)/acinclude.m4:' $makefile_am >/dev/null; then 
     strip_makefile
     rm -f acinclude.m4
-    $MAKE -f $makefile_wo top_srcdir=. ./acinclude.m4 || exit 1
     adds=`grep '\$(top_srcdir)/acinclude.m4:' $makefile_wo | sed -e 's,^[^:]*: *,,; s,\$(top_srcdir),.,g'`
+    if echo $adds | fgrep "*" >/dev/null ; then
+      adds=`ls -d -1 $adds 2>/dev/null`
+    else
+      $MAKE -f $makefile_wo top_srcdir=. ./acinclude.m4 || exit 1
+    fi
   else
     rm -f acinclude.m4
   fi
@@ -552,15 +575,16 @@ for subdir in $dirs; do
 	    echo "$subdir has *.rc, *.ui or *.kcfg files, but not correct messages line"
 	fi
    fi
-   if test -n "`grep -r KAboutData *.c* *.C* 2>/dev/null`"; then
+   if test -n "`find . -name \*.c\* -o -name \*.h\* | xargs grep -s KAboutData 2>/dev/null`"; then
 	echo -e 'i18n("_: NAME OF TRANSLATORS\\n"\n"Your names")\ni18n("_: EMAIL OF TRANSLATORS\\n"\n"Your emails")' > _translatorinfo.cpp
    else echo " " > _translatorinfo.cpp
    fi
    perl -e '$mes=0; while (<STDIN>) { next if (/^(if\s|else\s|endif)/); if (/^messages:/) { $mes=1; print $_; next; } if ($mes) { if (/$\\(XGETTEXT\)/ && / -o/) { s/ -o \$\(podir\)/ _translatorinfo.cpp -o \$\(podir\)/ } print $_; } else { print $_; } }' < Makefile.am | egrep -v '^include ' > _transMakefile
 
+   kdepotpath=${includedir:-${KDEDIR:-`kde-config --prefix`}/include}/kde.pot
+
    $MAKE -s -f _transMakefile podir=$podir EXTRACTRC="$EXTRACTRC" PREPARETIPS="$PREPARETIPS" \
-	XGETTEXT="${XGETTEXT:-xgettext} -C -ki18n -ktr2i18n -kI18N_NOOP -kaliasLocale -x ${includedir:-${KDEDIR:-/usr/local/kde}/include}/kde.pot" \
-	messages 
+	XGETTEXT="${XGETTEXT:-xgettext} -C -ki18n -ktr2i18n -kI18N_NOOP -kaliasLocale -x $kdepotpath" messages 
    exit_code=$?
    if test "$exit_code" != 0; then
        echo "make exit code: $exit_code"
@@ -576,10 +600,12 @@ for i in `ls -1 po.backup/*.pot 2>/dev/null | sed -e "s#po.backup/##" | egrep -v
   test -f po/$i || echo "disappeared: $i"
 done
 for i in `ls -1 po/*.pot 2>/dev/null | sed -e "s#po/##"`; do
+   sed -e 's,^"Content-Type: text/plain; charset=CHARSET\\n"$,"Content-Type: text/plain; charset=UTF-8\\n",' po/$i > po/$i.new && mv po/$i.new po/$i
    msgmerge -q -o po/$i po/$i po/$i
    egrep -v '^#([^:]|$)' po/$i | egrep '^.*[^ ]+.*$' | grep -v "\"POT-Creation" > temp.pot
   if test -f po.backup/$i && test -n "`diff temp.pot po.backup/$i`"; then
 	echo "will update $i"
+        sed -e 's,^"Content-Type: text/plain; charset=CHARSET\\n"$,"Content-Type: text/plain; charset=UTF-8\\n",' po.backup/backup_$i > po/$i.new && mv po/$i.new po.backup/backup_$i
 	msgmerge -q po.backup/backup_$i po/$i > temp.pot
 	mv temp.pot po/$i
   else
@@ -596,12 +622,12 @@ rm -f temp.pot
 rm -rf po.backup
 }
 
-unset LC_ALL
-unset LANG
-unset LC_CTYPE
-unset LANGUAGE
+unset LC_ALL || :
+unset LANG || :
+unset LC_CTYPE || :
+unset LANGUAGE || :
 
-unset CDPATH
+unset CDPATH || :
 admindir=`echo "$0" | sed 's%[\\/][^\\/][^\\/]*$%%'`
 test "x$admindir" = "x$0" && admindir=.
 
