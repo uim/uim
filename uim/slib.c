@@ -238,7 +238,7 @@ static struct user_type_hooks *user_types;
 static struct gc_protected *protected_registers;
 static jmp_buf save_regs_gc_mark;
 static double gc_rt;
-static long gc_cells_sweeped;
+static long gc_cells_swept;
 static long gc_cells_collected;
 static char *user_ch_readm;
 static char *user_te_readm;
@@ -2519,7 +2519,7 @@ gc_sweep (void)
 	    ++s;
 	  }
       }
-  gc_cells_sweeped = s;
+  gc_cells_swept = s;
   gc_cells_collected = n;
   freelist = nfreelist;
 }
@@ -2562,7 +2562,7 @@ gc_ms_stats_end (void)
     fprintf (siod_output, "[GC took %g cpu seconds, %ld / %ld cells collected in %ld / %ld heaps]\n",
 	     gc_rt,
 	     gc_cells_collected,
-	     gc_cells_sweeped,
+	     gc_cells_swept,
 	     n,
 	     nheaps);
 }
@@ -4703,7 +4703,7 @@ siod_init (int argc, char **argv, int warnflag, FILE *fp)
   user_types = NULL;
   protected_registers = NULL;
   gc_rt = 0;
-  gc_cells_sweeped = 0;
+  gc_cells_swept = 0;
   gc_cells_collected = 0;
   user_ch_readm = "";
   user_te_readm = "";
