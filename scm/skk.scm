@@ -194,13 +194,15 @@
 		     "ひらがな"
 		     "ひらがな入力モード"))
 		 (lambda (sc)
-		   (and (not (skk-latin-state? sc))
-			(= (skk-context-kana-mode sc)
-			   skk-type-hiragana)))
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (and (not (skk-latin-state? dsc))
+			  (= (skk-context-kana-mode dsc)
+			     skk-type-hiragana))))
 		 (lambda (sc)
-		   (skk-prepare-activation sc)
-		   (skk-context-set-state! sc 'skk-state-direct)
-		   (skk-context-set-kana-mode! sc skk-type-hiragana)))
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (skk-prepare-activation dsc)
+		     (skk-context-set-state! dsc 'skk-state-direct)
+		     (skk-context-set-kana-mode! dsc skk-type-hiragana))))
 
 (register-action 'action_skk_katakana
 		 (lambda (sc)
@@ -209,13 +211,15 @@
 		     "カタカナ"
 		     "カタカナ入力モード"))
 		 (lambda (sc)
-		   (and (not (skk-latin-state? sc))
-			(= (skk-context-kana-mode sc)
-			   skk-type-katakana)))
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (and (not (skk-latin-state? dsc))
+			  (= (skk-context-kana-mode dsc)
+			     skk-type-katakana))))
 		 (lambda (sc)
-		   (skk-prepare-activation sc)
-		   (skk-context-set-state! sc 'skk-state-direct)
-		   (skk-context-set-kana-mode! sc skk-type-katakana)))
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (skk-prepare-activation dsc)
+		     (skk-context-set-state! dsc 'skk-state-direct)
+		     (skk-context-set-kana-mode! dsc skk-type-katakana))))
 
 (register-action 'action_skk_hankana
 		 (lambda (sc)
@@ -224,13 +228,15 @@
 		     "半角カタカナ"
 		     "半角カタカナ入力モード"))
 		 (lambda (sc)
-		   (and (not (skk-latin-state? sc))
-			(= (skk-context-kana-mode sc)
-			   skk-type-hankana)))
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (and (not (skk-latin-state? dsc))
+			  (= (skk-context-kana-mode dsc)
+			     skk-type-hankana))))
 		 (lambda (sc)
-		   (skk-prepare-activation sc)
-		   (skk-context-set-state! sc 'skk-state-direct)
-		   (skk-context-set-kana-mode! sc skk-type-hankana)))
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (skk-prepare-activation dsc)
+		     (skk-context-set-state! dsc 'skk-state-direct)
+		     (skk-context-set-kana-mode! dsc skk-type-hankana))))
 
 (register-action 'action_skk_latin
 		 (lambda (sc)
@@ -239,11 +245,13 @@
 		     "直接入力"
 		     "直接(無変換)入力モード"))
 		 (lambda (sc)
-		   (= (skk-context-state sc)
-		      'skk-state-latin))
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (= (skk-context-state dsc)
+			'skk-state-latin)))
 		 (lambda (sc)
-		   (skk-prepare-activation sc)
-		   (skk-context-set-state! sc 'skk-state-latin)))
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (skk-prepare-activation dsc)
+		     (skk-context-set-state! dsc 'skk-state-latin))))
 
 (register-action 'action_skk_wide_latin
 		 (lambda (sc)
@@ -252,11 +260,13 @@
 		     "全角英数"
 		     "全角英数入力モード"))
 		 (lambda (sc)
-		   (= (skk-context-state sc)
-		      'skk-state-wide-latin))
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (= (skk-context-state dsc)
+			'skk-state-wide-latin)))
 		 (lambda (sc)
-		   (skk-prepare-activation sc)
-		   (skk-context-set-state! sc 'skk-state-wide-latin)))
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (skk-prepare-activation dsc)
+		     (skk-context-set-state! dsc 'skk-state-wide-latin))))
 
 ;; Update widget definitions based on action configurations. The
 ;; procedure is needed for on-the-fly reconfiguration involving the
