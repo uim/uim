@@ -247,6 +247,6 @@ void QHelperPopupMenu::slotMenuActivated( int id )
 {
     QString msg = *msgDict.find( id );
     msg.prepend( "prop_activate\n" );
-    msg.append( "\n\n" );
+    msg.append( "\n" );
     uim_helper_send_message( uim_fd, ( const char* ) msg );
 }
