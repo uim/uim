@@ -466,16 +466,29 @@
   (_ "Always showing candidate window")
   (_ "long description will be here."))
 
-(define-custom 'prime-preedit-immediate-commit? #f
+(define-custom 'prime-auto-register-mode? #t
   '(prime)
   '(boolean)
-  (_ "prime-preedit-immediate-commit?")
+  (_ "Enable auto register mode")
   (_ "long description will be here."))
+
+(define-custom 'prime-pseudo-mode-cursor? #f
+  '(prime)
+  '(boolean)
+  (_ "Enable psedo mode cursor")
+  (_ "long description will be here."))
+
+(define-custom 'prime-char-annotation? #t
+  '(prime)
+  '(boolean)
+  (_ "Show candidate annotations")
+  (_ "long description will be here."))
+
 
 (define-custom 'prime-mask-pending-preedit? #f
   '(prime)
   '(boolean)
-  (_ "prime-mask-pending-preedit?")
+  (_ "Mask preedit strings (For tcode users)")
   (_ "long description will be here."))
 
 ;(define-custom 'prime-use-numeral-key-to-select-cand? #t
