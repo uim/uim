@@ -524,11 +524,10 @@ im_clear_mode_list(uim_lisp id)
     return uim_scm_f();
 
   for (i = 0; i < uc->nr_modes; i++) {
-    if (!uc->modes[i])
-      break;
-
-    free(uc->modes[i]);
-    uc->modes[i] = NULL;
+    if (uc->modes[i]) {
+      free(uc->modes[i]);
+      uc->modes[i] = NULL;
+    }
   }
   if (uc->modes) {
     free(uc->modes);
