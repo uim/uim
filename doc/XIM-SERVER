@@ -17,36 +17,34 @@ the real way to go is to discard XIM itself.
 
 Main defects of uim-xim
 
-* It only support input method with language whose character is
-  convertible into working encoding of the client application.
+It only supports input method with language whose character is
+convertible into the working encoding of client application.
 
-  In short, if the client application (such as OpenOffice.org,
-  tgif...) is working with ja_JP.eucJP locale, you can use only
-  Japanese input methods (anthy, prime, skk...).
+In short, if the client application (such as OpenOffice.org, tgif...)
+is working with ja_JP.eucJP locale, you can use only Japanese input
+methods (anthy, prime, skk...).
 
-  But if you use these client applications with UTF-8 locale (such as
-  ja_JP.UTF-8), you can use all the available multi-linguistic input
-  methods, and switch them dynamically.
+But if you use these client applications with UTF-8 locale (such as
+ja_JP.UTF-8), you can use all the available multi-linguistic input
+methods, and switch them dynamically.
 
 
 
 How to use uim-xim
 
-(1) Invoke uim-xim.  You can choose default conversion engine with
-    --engine=ENGINE option (replace ENGINE with anthy, prime, skk,
-    tcode, tutcode...  You can get list of available engines with
-    invoking uim-xim --list).  Also you can specify default conversion
-    engine with writing ~/.uim as follows.
-
-     (define default-im-name 'prime)
+(1) Invoke uim-xim.  You can choose startup conversion engine (input
+    method) with --engine=ENGINE command line option (replace ENGINE
+    with anthy, prime, skk, tcode, tutcode...  You can get list of
+    available engines with invoking uim-xim --list).  Also you can
+    specify default conversion engine with uim-pref tool.
 
     Unless specifying with above two methods, preferred engine
-    corresponding to working locale is used automatically.
+    corresponding to startup locale of uim-xim is used automatically.
 
 (2) Set XMODIFIERS=@im=uim and invoke client.
 
 (3) If you want to use candidate helper program other than default
-    GTK+ one, set UIM_CANDWIN_PROG.
+    GTK+ one, set UIM_CANDWIN_PROG environmental variable.
 
      sh:  UIM_CANDWIN_PROG=uim-candwin-qt export UIM_CANDWIN_PROG
      csh: setenv UIM_CANDWIN_PROG uim-candwin-qt
@@ -56,7 +54,7 @@ How to use uim-xim
     enabling GTK+, candidate helper is not used.
 
 (4) To change back-end conversion engines dynamically, use
-    uim-im-switch application.
+    uim-im-switcher application.
 
 
 
@@ -82,28 +80,31 @@ operations. Try following steps to enable the feature.
 Bypassing uim temporarily
 
 uim has 'emergency key' feature to bypass uim temporarily.  This is
-useful with some applications.  Or you can choose "direct" conversion
-engine with uim-im-switch to bypass language conversion.
+useful with some applications.  Or you can choose "direct" input
+method using uim-im-switcher to bypass language conversion (but
+"direct" input method is not bypassing uim actually).
 
-(1) Set the environment variable as follows
-  LIBUIM_ENABLE_EMERGENCY_KEY=1
+* The way to use 'emergency key' 
+  (1) Set the environment variable as follows
+      LIBUIM_ENABLE_EMERGENCY_KEY=1
 
-(2) Press Shift + Backspace to disable/enable uim key processing. Key
-    inputs are directly passed to applications while uim key
-    processing is disabled by emergency key.
+  (2) Press Shift + Backspace to disable/enable uim key
+      processing. Key inputs are directly passed to applications while
+      uim key processing is disabled by emergency key.
 
 
 
 About XIM event flow
 
-uim-xim support two XIM event flow method, full-synchronous-method
+uim-xim supports two XIM event flow methods, full-synchronous-method
 (like kinput2, skkinput2...) and on-demand-synchronous method (like
-XIM server using IMdkit, such as SCIM).  Default behavior of uim-xim
-is set as using full-synchronous-method.  If you got XIM_ERROR with
-error_code = 13 with some XIM client applications frequently, try to
-use on-demand-synchronous method with adding '--async' command line
-option.  Warning: on-demand-synchronous method is known to not work
-with current XIM implementation of Tcl/Tk version 8.{3,4}.
+XIM server using IMdkit, such as SCIM's x11 frontend).  Default
+behavior of uim-xim is set to use full-synchronous-method.  If you get
+occasional XIM_ERROR with error_code = 13 while using some specific
+XIM client applications, please try to use on-demand-synchronous
+method with adding '--async' command line startup option (Warning:
+on-demand-synchronous method is known to not work with current XIM
+implementation of Tcl/Tk version 8.{3,4}).
 
 
 
