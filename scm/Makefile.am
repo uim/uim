@@ -68,7 +68,7 @@ installed-modules.scm: $(SCM_FILES)
 	echo "(define installed-im-module-list '(" '$(module_names)' ")) \
 	      (require \"manage-modules.scm\") \
 	      (generate-installed-modules-scm)" \
-	| LIBUIM_VERBOSE=1 LIBUIM_VANILLA=1 LIBUIM_SCM_FILES=$(top_srcdir)/scm \
+	| LIBUIM_VERBOSE=1 LIBUIM_VANILLA=1 LIBUIM_SCM_FILES=$(top_srcdir)/scm LIBUIM_PLUGIN_LIB_DIR=$(top_srcdir)/uim/.libs \
 	  $(top_builddir)/uim/uim-sh -B >>$@
 
 # TODO: resolve dependency to $(top_builddir)/uim/uim-sh in proper way
@@ -77,5 +77,5 @@ loader.scm: installed-modules.scm
 	echo -n >$@ && \
 	echo "(require \"manage-modules.scm\") \
 	      (generate-loader-scm)" \
-	| LIBUIM_VERBOSE=1 LIBUIM_VANILLA=1 LIBUIM_SCM_FILES=$(top_srcdir)/scm \
+	| LIBUIM_VERBOSE=1 LIBUIM_VANILLA=1 LIBUIM_SCM_FILES=$(top_srcdir)/scm LIBUIM_PLUGIN_LIB_DIR=$(top_srcdir)/uim/.libs \
 	  $(top_builddir)/uim/uim-sh -B >>$@
