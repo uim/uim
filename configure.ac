@@ -167,11 +167,11 @@ AC_ARG_WITH(gtk2,
         use_gtk2="no"
       ;;
       yes|*)
-        PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.2.0, use_gtk2="yes",use_gtk2="no")
+        PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.4.0, use_gtk2="yes",use_gtk2="no")
       ;;
     esac
   ],
-  [ PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.2.0, use_gtk2="yes",use_gtk2="no") ])
+  [ PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.4.0, use_gtk2="yes",use_gtk2="no") ])
 
 AC_ARG_WITH(gnome2,
   AC_HELP_STRING([--without-gnome2],
