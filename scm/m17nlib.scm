@@ -281,19 +281,26 @@
   (lambda (mc idx)
     #f))
 
-;; Developer specified IM rejection should be withdrawn after we got
-;; user-manageable enabled IM list feature. These redundant IMs should
-;; be "disabled by default, but can be enabled" under the feature.
-;;   -- YamaKen 2005-01-11
+;; Developer specified IM rejection should be completely withdrawn
+;; after we got flexible install-time IM preference list. These
+;; redundant IMs should be "disabled by default, but can be enabled"
+;; under the feature. But we should invest our time for more valuable
+;; issues.  -- YamaKen 2005-01-25
 (define duplicated-im-list
   '("m17n-ja-anthy"
     "m17n-ja-tcode"
     "m17n-zh-pinyin"
     "m17n-zh-py"))
 
+;; At now, simply enable all IMs. Although they are redundant and
+;; unconfortable, they can be disabled by uim-pref.
+;;   -- YamaKen 2005-01-25
 (define duplicated-im?
-  (lambda (name)
-    (member name duplicated-im-list)))
+  (if #t
+      (lambda (name)
+	#f)
+      (lambda (name)
+	(member name duplicated-im-list))))
 
 (define m17nlib-register
   (lambda (i nr-im)
