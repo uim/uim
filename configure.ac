@@ -415,13 +415,13 @@ if test x$use_qt = xyes ; then
     QT_VERSION_NUM=320
 
     # GUESS $QTDIR
-    if test -z "$QTDIR"; then
+    if test ! -d "$QTDIR"; then
       QTDIR="/usr/lib/qt3"
     fi
-    if test -z "$QTDIR"; then
+    if test ! -d "$QTDIR"; then
       QTDIR="/usr/lib/qt"
     fi
-    if test -z "$QTDIR"; then
+    if test ! -d "$QTDIR"; then
       QTDIR="/usr"
     fi
 
@@ -549,8 +549,8 @@ if test x$use_qt = xyes ; then
 fi
 
 if test x$use_qt = xyes ; then
-    AC_MSG_CHECKING(for qt-immodule patch)
     if test x$use_qtimmodule = xyes ; then
+        AC_MSG_CHECKING(for qt-immodule patch)
         # Check for immodule for Qt patch
         if test ! -e $QTINCDIR/qinputcontext.h -o ! -e $QTINCDIR/qinputcontextplugin.h; then
           AC_MSG_RESULT(no)
