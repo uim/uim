@@ -34,7 +34,7 @@
 #include "caret-state-indicator.h"
 
 #include <uim/uim.h>
-#include "uim/config.h"
+#include "config.h"
 #include "uim/uim-helper.h"
 #include "uim/gettext.h"
 
