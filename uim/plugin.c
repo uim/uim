@@ -48,7 +48,7 @@
 #include "config.h"
 #include "uim.h"
 #include "uim-scm.h"
-#ifdef UIM_SCM_NESTED_EVAL
+#ifndef UIM_SCM_NESTED_EVAL
 #include "uim-compat-scm.h"
 #endif
 #include "plugin.h"
@@ -207,9 +207,11 @@ void uim_quit_plugin(void)
     }
 }
 
+#if 0
 int
 uim_plugin_instance_query(struct _uim_plugin_info *info)
 {
   /* XXX: not implemented */
   return 0;
 }
+#endif
