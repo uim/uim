@@ -102,6 +102,11 @@ uim_create_context(void *ptr,
 {
   uim_context uc;
 
+  if (!uim_initialized) {
+    fprintf(stderr, "uim_create_context() before uim_init()\n");
+    return 0;
+  }
+
   if (!conv) {
     conv = uim_iconv;
   }

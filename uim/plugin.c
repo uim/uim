@@ -157,8 +157,18 @@ plugin_load(uim_lisp _name)
   }
 
   (plugin_instance_init)();
-  if (plugin_scm_filename)
-    uim_scm_require_file(plugin_scm_filename);
+  if (plugin_scm_filename) {
+    uim_bool succeeded;
+
+    succeeded = uim_scm_require_file(plugin_scm_filename);
+    if (!succeeded) {
+      fprintf(stderr, "%s plugin subsequent %s loading failed\n",
+	      plugin_name, plugin_scm_filename);
+      free(plugin_scm_filename);
+      free(plugin_name);
+      return uim_scm_f();
+    }
+  }
 
   {
     uim_lisp form;

@@ -171,7 +171,22 @@
 	  (orig-require require))
       (set! enabled-im-list ())  ;; enable all IMs
       ;; XXX temporary solution to register all IM in a file
-      (set! require load)
+      (set! require
+	    (lambda (file)
+	      (let* ((file-sym (string->symbol file))
+		     (loaded-sym (symbolconc '* file-sym '-loaded*))
+		     (reloaded-sym (symbolconc '* file-sym '-reloaded*)))
+		(cond
+		 ((symbol-bound? reloaded-sym)
+		  loaded-sym)
+		 ((try-load file)
+		  (eval (list 'define loaded-sym #t)
+			toplevel-env)
+		  (eval (list 'define reloaded-sym #t)
+			toplevel-env)
+		  loaded-sym)
+		 (else
+		  #f)))))
       (for-each require-module installed-im-module-list)
       (set! require orig-require)
       (set! enabled-im-list orig-enabled-im-list)
