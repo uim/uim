@@ -14,7 +14,6 @@ pkginclude_HEADERS = uim.h uim-util.h uim-helper.h uim-im-switcher.h uim-scm.h p
 libuim_la_SOURCES = uim.c uim-scm.c uim-util.c uim-func.c uim-key.c \
 		siod.h context.h gettext.h \
 		uim-helper.c uim-helper-client.c \
-		prime.c \
 		intl.c \
 		uim-ipc.c \
 		getpeereid.c \
@@ -22,6 +21,9 @@ libuim_la_SOURCES = uim.c uim-scm.c uim-util.c uim-func.c uim-key.c \
 
 if NEED_SETENV_C
 libuim_la_SOURCES += setenv.c
+endif
+if NEED_STRSEP_C
+libuim_la_SOURCES += strsep.c
 endif
 
 if COMPAT_TABLE

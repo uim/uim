@@ -367,6 +367,7 @@ AM_CONDITIONAL(COMPAT_CUSTOM, test x$enable_compat_custom = xyes)
 AM_CONDITIONAL(SCM_NESTED_EVAL, test x$enable_scm_nested_eval = xyes)
 AM_CONDITIONAL(CALLBACK_QUEUE, test x$enable_callback_queue = xyes)
 AM_CONDITIONAL(NEED_SETENV_C, test $ac_cv_func_setenv = no -o $ac_cv_func_unsetenv = no)
+AM_CONDITIONAL(NEED_STRSEP_C, test $ac_cv_func_strsep = no)
 
 GTK_BINARY_VERSION=`pkg-config gtk+-2.0 --variable=gtk_binary_version`
 AC_SUBST(GTK_BINARY_VERSION)

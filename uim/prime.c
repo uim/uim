@@ -56,7 +56,6 @@ static FILE *primer = NULL, *primew = NULL;
 static int prime_pid = 0;
 
 static char *prime_command = "prime";
-static char *prime_ud_command;
 static char *prime_ud_path;
 static int prime_fd;
 static int use_unix_domain_socket;
@@ -74,8 +73,6 @@ prime_init_ud(char *path)
   server.sun_family = PF_UNIX;
   strcpy(server.sun_path, path);
 
-  free(path);
-  
   fd = socket(PF_UNIX, SOCK_STREAM, 0);
   if (fd < 0) {
     perror("fail to create socket");
@@ -92,7 +89,7 @@ prime_init_ud(char *path)
 
   if(connect(fd, (struct sockaddr *)&server,sizeof(server)) == -1){
     close(fd);
-    printf("connect failed\n");
+    //fprintf(stderr, "connect failed\n");
     return -1;
   }
   
@@ -118,21 +115,11 @@ prime_get_ud_path(void)
   }
 
   path = (char *)malloc(strlen(login)+ 20);
-  sprintf(path, "/tmp/prime-%s",login);
+  sprintf(path, "/tmp/uim-prime-%s", login);
   if (pw) {
     free(login);
   }
   return path;
-}
-
-static char *
-prime_get_ud_command(void)
-{
-  char *command = (char *) malloc(strlen(prime_command)
-				  + strlen(prime_ud_path) + 5);
-
-  sprintf(command, "%s -u %s", prime_command, prime_ud_path);
-  return command;
 }
 
 static char *
@@ -208,6 +195,7 @@ prime_send_command(uim_lisp str_)
 static uim_lisp
 prime_lib_init(uim_lisp use_udp_)
 {
+  char *option;
 #ifdef UIM_SCM_NESTED_EVAL
   uim_bool use_udp = uim_scm_c_bool(use_udp_);
   if(use_udp == UIM_TRUE)
@@ -222,13 +210,12 @@ prime_lib_init(uim_lisp use_udp_)
       if(!prime_ud_path)
 	return uim_scm_f();
       
-      prime_ud_command = prime_get_ud_command();
-      if(!prime_ud_command)
-	return uim_scm_f();
-
       prime_fd = prime_init_ud(prime_ud_path);
       if(prime_fd == -1) {
-	prime_pid = uim_ipc_open_command_with_opt(prime_pid, &primer, &primew, prime_command, "-u /tmp/prime-tkng");
+	option = malloc(strlen("-u ") + strlen(prime_ud_path) + 1);
+	sprintf(option, "-u %s", prime_ud_path);
+	prime_pid = uim_ipc_open_command_with_option(prime_pid, &primer, &primew, prime_command, option);
+	free(option);
 	if(prime_pid == 0) {
 	  return uim_scm_f();
 	} else {

@@ -568,6 +568,8 @@ uim_set_surrounding_text(uim_context uc, const char *text,
 /* Utility functions */
 int
 uim_ipc_open_command(int old_pid, FILE **read_handler, FILE **write_handler, const char *command);
+int
+uim_ipc_open_command_with_option(int old_pid, FILE **read_handler, FILE **write_handler, const char *command, const char *option);
 char *
 uim_ipc_send_command(int *pid, FILE **read_handler,
 		     FILE **write_handler, const char *command, const char *str);

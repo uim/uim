@@ -46,6 +46,10 @@
 #include "context.h"
 #include "uim-helper.h"
 
+#ifndef HAVE_STRSEP
+char *strsep(char **stringp, const char *delim);
+#endif
+
 /* This function is come from the GNU C Library manual */
 static int
 set_cloexec(int fd)
@@ -142,10 +146,12 @@ open_pipe_rw(FILE **fr, FILE **fw)
 }
 
 int
-uim_ipc_open_command(int old_pid, FILE **read_fp,
-		     FILE **write_fp, const char *command)
+uim_ipc_open_command_with_option(int old_pid, FILE **read_fp,
+		     FILE **write_fp, const char *command, const char *option)
 {
   int new_pid, result;
+  char **ap, *argv[10];
+  char *p;
 
   if (*read_fp != NULL) {
     fclose(*read_fp);
@@ -177,8 +183,22 @@ uim_ipc_open_command(int old_pid, FILE **read_fp,
       set_cloexec(i);      
     }
 
-    result = execlp(command, command, NULL);
-    
+    if (!option) {
+      argv[0] = (char *)command;
+      argv[1] = NULL;
+    } else {
+      argv[0] = (char *)command;
+      p = (char *)option;
+      for (ap = &argv[1]; (*ap = strsep(&p, " ")) != NULL;) {
+	if (**ap != '\0')
+	  if (++ap >= &argv[10])
+	    break;
+      }
+      *ap = NULL;
+    }
+
+    result = execvp(command, argv);
+
     if(result == -1) {
       write(1,"err",strlen("err"));
     }
@@ -186,7 +206,13 @@ uim_ipc_open_command(int old_pid, FILE **read_fp,
   }
 
   return new_pid;
+}
 
+int
+uim_ipc_open_command(int old_pid, FILE **read_fp,
+		     FILE **write_fp, const char *command)
+{
+  return uim_ipc_open_command_with_option(old_pid, read_fp, write_fp, command, NULL);
 }
 
 char *
