@@ -128,13 +128,15 @@ pushback_input_method(MInputMethod *im,
 		      char *lib_lang, char *name)
 {
   char *lang = remap_lang_name(lib_lang);
-  if (!lang) {
-    return ;
-  }
 
   im_array = realloc(im_array, 
 		     sizeof(struct im_) * (nr_input_methods + 1));
-  im_array[nr_input_methods].lang = strdup(lang);
+
+  if(lang != NULL) {
+    im_array[nr_input_methods].lang = strdup(lang);
+  } else {
+    im_array[nr_input_methods].lang = NULL;
+  }
   im_array[nr_input_methods].name = strdup(name);
   im_array[nr_input_methods].im = im;
   nr_input_methods++;
@@ -452,7 +454,12 @@ get_input_method_name(uim_lisp nth_)
   int nth = uim_scm_c_int(nth_);
   if (nth < nr_input_methods) {
     char *name = alloca(strlen(im_array[nth].name) + 20);
-    sprintf(name, "m17n-%s-%s", im_array[nth].lang, im_array[nth].name);
+
+    if(im_array[nth].lang != NULL)
+      sprintf(name, "m17n-%s-%s", im_array[nth].lang, im_array[nth].name);
+    else
+      sprintf(name, "m17n-%s", im_array[nth].name);
+
     return uim_scm_make_str(name);
   }
   return uim_scm_f();
@@ -464,7 +471,11 @@ get_input_method_lang(uim_lisp nth_)
   int nth = uim_scm_c_int(nth_);
   if (nth < nr_input_methods) {
     char *lang = im_array[nth].lang;
-    return uim_scm_make_str(lang);
+    if(lang != NULL) {
+      return uim_scm_make_str(lang);
+    } else {
+      return uim_scm_make_str("unknown");
+    }
   }
   return uim_scm_f();
 }
