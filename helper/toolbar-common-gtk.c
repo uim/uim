@@ -125,6 +125,21 @@ helper_disconnect_cb(void)
   g_source_remove(read_tag);
 }
 
+static gchar *
+get_charset(gchar *line)
+{
+  gchar **splitted;
+
+  splitted = g_strsplit(line, "=", 0);
+
+  if(splitted && splitted[0] && strcmp("charset", splitted[0]) == 0) {
+    g_strfreev(splitted);
+    return g_strdup(splitted[1]);
+  } else {
+    g_strfreev(splitted);
+    return NULL;
+  }
+}
 
 static void
 helper_applet_prop_list_update(gchar **tmp)
@@ -135,15 +150,7 @@ helper_applet_prop_list_update(gchar **tmp)
   gchar **tmp2 = NULL;
   gchar *charset = NULL;
 
-  tmp2 = g_strsplit(tmp[1], "=", 0);
-
-  if(tmp2 && tmp2[0] && tmp2[1] && strcmp("charset", tmp2[0]) == 0) {
-    charset = g_strdup(tmp2[1]);
-    g_strfreev(tmp2);
-  } else {
-    g_strfreev(tmp2);
-    return;
-  }
+  charset = get_charset(tmp[1]);
 
   if(menu_buttons) {
     g_list_foreach(menu_buttons, button_destroy, NULL);
@@ -241,19 +248,7 @@ helper_applet_prop_label_update(gchar **lines)
   gchar **pair = NULL;
   gchar *charset = NULL;
 
-  if(lines && lines[1] ) {
-    pair = g_strsplit(lines[1], "=", 0);
-  } else {
-    return;
-  }
-
-  if(pair && pair[0] && pair[1] && strcmp("charset", pair[0]) == 0) {
-    charset = g_strdup(pair[1]);
-    g_strfreev(pair);
-  } else {
-    g_strfreev(pair);
-    return;
-  }
+  charset = get_charset(lines[1]);
 
   while(lines[i] && strcmp("", lines[i]) != 0) {
     i++;
