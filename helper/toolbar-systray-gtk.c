@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -35,28 +35,31 @@
 #  include <config.h>
 #endif
 
-#include <uim/gettext.h>
+#include "uim/gettext.h"
+#include "uim/uim.h"
 #include <gtk/gtk.h>
 #include "eggtrayicon.h"
 
-GtkWidget *uim_helper_toolbar_new(void);
+GtkWidget *uim_helper_trayicon_new(void);
 
 int 
 main (int argc, char *argv[])
 {
-  GtkWidget *toolbar;
-  EggTrayIcon *window;
+  GtkWidget *icon;
+  EggTrayIcon *tray;
 
   gtk_set_locale();
   
+  uim_init();
+
   gtk_init( &argc, &argv );
 
-  window = egg_tray_icon_new("uim");
-  
-  toolbar = (GtkWidget*)uim_helper_toolbar_new();
+  tray = egg_tray_icon_new("uim");
 
-  gtk_container_add(GTK_CONTAINER (window), toolbar);  
-  gtk_widget_show_all(GTK_WIDGET (window));
+  gtk_widget_show_all(icon);
+
+  gtk_container_add(GTK_CONTAINER(tray), icon);
+  gtk_widget_show(GTK_WIDGET (tray));
 
   gtk_main();
   return 0;
