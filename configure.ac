@@ -121,8 +121,9 @@ AC_ARG_WITH(canna,
 
 AC_PATH_XTRA
 
-if test x$with_x = xyes && test x$have_x = xyes; then
-   use_x="yes"
+use_xim="no"
+if test x$have_x != xdisabled && test x$have_x != xno; then
+   use_xim="yes"
 fi
 
 
@@ -392,7 +393,7 @@ AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test x$default_toolkit = xqt)
 AM_CONDITIONAL(GNOME2, test x$use_gnome2 = xyes)
 AM_CONDITIONAL(APPLET, test x$use_applet = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
-AM_CONDITIONAL(XIM, test x$use_x = xyes)
+AM_CONDITIONAL(XIM, test x$use_xim = xyes)
 AM_CONDITIONAL(DICT, test x$use_dict = xyes)
 AM_CONDITIONAL(DEBUG, test x$enable_debug = xyes)
 AM_CONDITIONAL(COMPAT_SCM, test x$enable_compat_scm = xyes)
@@ -661,6 +662,7 @@ Configure Result :
    Qt              : ${use_qt}
    Qt immodule     : ${use_qtimmodule}
    FEP             : ${use_uim_fep}
+   XIM             : ${use_xim}
    DICT            : ${use_dict}
    Default toolkit : ${default_toolkit}
 ])
