@@ -70,9 +70,7 @@
 	  (set! custom-required-custom-files
 		(cons filename custom-required-custom-files)))
       (let* ((post-groups (custom-list-primary-groups))
-	     (nr-new-groups (- (length post-groups)
-			       (length pre-groups)))
-	     (new-groups (list-head post-groups nr-new-groups)))
+	     (new-groups (list-tail post-groups (length pre-groups))))
 	(if (not (getenv "LIBUIM_VANILLA"))
 	    (for-each custom-load-group-conf
 		      (reverse new-groups)))))))
@@ -96,7 +94,7 @@
 ;; lightweight implementation
 (define custom-list-primary-groups
   (lambda ()
-    custom-rt-primary-groups))
+    (reverse custom-rt-primary-groups)))
 
 ;; lightweight implementation
 (define custom-add-hook
