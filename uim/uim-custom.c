@@ -335,7 +335,7 @@ uim_custom_key_get(const char *custom_sym)
   int *key_type_list, editor_type, list_len, i;
   struct uim_custom_key *custom_key, **custom_key_list;
 
-  UIM_EVAL_FSTRING3(NULL, "(define %s (custom-expand-key-references '%s (custom-range '%s))",
+  UIM_EVAL_FSTRING3(NULL, "(define %s (apply (if uim-custom-expand-key? custom-expand-key-references list) (custom-value '%s))",
 		    str_list_arg, custom_sym, custom_sym);
   key_literal_list =
     (char **)uim_scm_c_list(str_list_arg,
@@ -638,6 +638,9 @@ uim_custom_init(void)
   uim_scm_init_subr_3("custom-update-cb-gate", uim_custom_cb_update_cb_gate);
 
   uim_scm_require_file("custom.scm");
+
+  /* temporary solution to control key definition expantion */
+  UIM_EVAL_STRING(NULL, "(define uim-custom-expand-key? #t)");
 
   return UIM_TRUE;
 }

@@ -35,6 +35,7 @@
 
 (require "i18n.scm")
 (require "util.scm")
+(require "key.scm")
 
 ;; private
 (define custom-rec-alist ())
@@ -95,6 +96,28 @@
 		    (apply custom-valid-choice? (cons sym choice-rec-alist)))
 		  syms)))))
 
+(define custom-key?
+  (lambda (key-repls)
+    (and (list? key-repls)
+	 (every (lambda (key)
+		  (or (string? key)       ;; "<Control>a"
+		      (and (symbol? key)  ;; 'generic-cancel-key
+			   (custom-exist? key 'key))))
+		key-repls))))
+
+(define custom-expand-key-references
+  (lambda (key)
+    (cond
+     ((string? key)
+      (list key))
+     ((list? key)
+      (apply append (map custom-expand-key-references key)))
+     ((and (symbol? key)
+	   (custom-exist? key 'key))
+      (custom-expand-key-references (custom-value key)))
+     (else
+      ()))))
+
 (define-record 'custom-choice-rec
   '((sym   #f)
     (label "")
@@ -113,10 +136,6 @@
 	   (srec (assq val-sym sym-rec-alist))
 	   (desc (custom-choice-rec-desc srec)))
       desc)))
-
-(define custom-key?
-  (lambda (def)
-    ))
 
 (define-record 'custom-group-rec
   '((sym   #f)
@@ -245,7 +264,8 @@
 			     (list 'quote default)
 			     default)))
 	    (eval (list 'define sym default)
-		  toplevel-env)))
+		  toplevel-env)
+	    (custom-set-value! sym default)))  ;; to apply hooks
       (for-each (lambda (subgrp)
 		  (let ((registered (custom-group-subgroups primary-grp)))
 		    (if (not (memq subgrp registered))
@@ -253,6 +273,14 @@
 			      (cons (cons primary-grp subgrp)
 				    custom-subgroup-alist)))))
 		subgrps))))
+
+;; #f as type means 'any type'
+(define custom-exist?
+  (lambda (sym type)
+    (and (assq sym custom-rec-alist)
+	 (or (not type)
+	     (eq? type
+		  (custom-type sym))))))
 
 ;; API
 (define custom-valid?
@@ -279,6 +307,9 @@
 	 (let* ((custom-syms (custom-collect-by-group #f))
 		(pre-activities (map custom-active? custom-syms)))
 	   (set-symbol-value! sym val)
+	   (if (eq? (custom-type sym)
+		    'key)
+	       (define-key (symbolconc sym '?) val))
 	   (custom-call-hook-procs sym custom-set-hooks)
 	   (let ((post-activities (map custom-active? custom-syms)))
 	     (for-each (lambda (another-sym pre post)
@@ -348,16 +379,31 @@
   (lambda (sym)
     (custom-rec-desc (custom-rec sym))))
 
+(define custom-list-as-literal
+  (lambda (lst)
+    (let* ((padded-list (map (lambda (elem)
+			       (list " "
+				     (cond
+				      ((symbol? elem)
+				       (symbol->string elem))
+				      ((string? elem)
+				       (string-append "\"" elem "\""))
+				      (else
+				       ""))))
+			     lst))
+	   (literalized (if (null? padded-list)
+			    ""
+			    (apply string-append
+				   (cdr (apply append padded-list))))))
+      (string-append "'(" literalized ")"))))
+
 ;; API
 (define custom-value-as-literal
   (lambda (sym)
     (let ((val (custom-value sym))
 	  (type (custom-type sym))
 	  (as-string (lambda (s)
-		       (string-append
-			"\""
-			s
-			"\""))))
+		       (string-append "\"" s "\""))))
       (cond
        ((or (eq? val #f)
 	    (eq? type 'boolean))
@@ -372,17 +418,9 @@
 	(as-string val))
        ((eq? type 'choice)
 	(string-append "'" (symbol->string val)))
-       ((eq? type 'ordered-list)
-	(let* ((padded-list (map (lambda (item)
-				   (list " " (symbol->string item)))
-				 val))
-	       (literalized (if (null? padded-list)
-				""
-				(apply string-append
-				       (cdr (apply append padded-list))))))
-	  (string-append "'(" literalized ")")))
-       ((eq? type 'key)
-	"")))))  ;; TODO
+       ((or (eq? type 'ordered-list)
+	    (eq? type 'key))
+	(custom-list-as-literal val))))))
 
 ;; Don't invoke this from a literalize-hook. It will cause infinite loop
 (define custom-definition-as-literal
@@ -392,8 +430,13 @@
 	  (hooked (custom-call-hook-procs sym custom-literalize-hooks)))
       (if (not (null? hooked))
 	  (apply string-append hooked)
-	  (string-append
-	   "(define " var " " val ")")))))
+	  (apply string-append
+		 (append
+		  (list "(define " var " " val ")")
+		  (if (eq? (custom-type sym)
+			   'key)
+		      (list "\n(define-key " var "? " val ")")
+		      ())))))))
 
 ;; API
 ;; TODO: implement after uim 0.4.6 depending on scm-nested-eval
