@@ -203,7 +203,8 @@ plugin_unload(uim_lisp _name)
 }
 
 /* Called from uim_init */
-void uim_init_plugin(void)
+void
+uim_init_plugin(void)
 {
   uim_scm_init_subr_1("load-plugin", plugin_load);
   uim_scm_init_subr_1("unload-plugin", plugin_unload);
@@ -212,7 +213,8 @@ void uim_init_plugin(void)
 }
 
 /* Called from uim_quit */
-void uim_quit_plugin(void)
+void
+uim_quit_plugin(void)
 {
   uim_lisp stack_start;
   uim_lisp alist, rest, entry, name;
