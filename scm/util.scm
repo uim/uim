@@ -245,6 +245,8 @@
 	(and (pair? x)
 	     (list? (cdr x))))))
 
+(define number->string integer->string)
+(define string->number string->integer)
 (define string->symbol intern)
 
 (define map

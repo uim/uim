@@ -338,7 +338,6 @@ static struct func_frame *func_trace;
 static LISP dbg_pos = NIL;
 static LISP dbg_mod = NIL;
 
-static LISP orig_readtl (struct gen_readio * f);
 static int dbg_getc (struct gen_readio * f);
 static void dbg_ungetc (int c, struct gen_readio * f);
 static void dbg_readini (char *file);
@@ -1427,49 +1426,18 @@ dbg_copy_info (LISP x, LISP y)
   return (x->dbg_info = dbg_get_info (y));
 }
 
-static LISP
-integer2string (LISP args)
-{
-  char buf[sizeof (long)*CHAR_BIT];
-  char *p = buf + sizeof (buf);
-  unsigned long n, r;
-  LISP x, radix;
-  x = car (args);
-  radix = NNULLP (cdr (args)) ? CAR (CDR (args)) : intcons (10);
-  if NINTNUMP
-    (x)
-      my_err ("wta to integer2string", x);
-  if NINTNUMP
-    (radix)
-      my_err ("wta to integer2string", radix);
-  r = INTNM (radix);
-  if (r < 2 || 16 < r)
-    my_err ("invalid radix to integer2string", radix);
-  n = (r == 10) ? labs (INTNM (x)) : INTNM (x);
-  do
-    {
-      if (n % r > 9)
-	*--p = 'A' + n % r - 10;
-      else
-	*--p = '0' + n % r;
-    }
-  while (n /= r);
-  if (r == 10 && INTNM (x) < 0)
-    *--p = '-';
-  return strcons (sizeof(buf)-(p-buf), p);
-}
-
 static void
 init_dbg (void)
 {
   dbg_pos = NIL;
+  dbg_mod = NIL;
   gc_protect (&dbg_pos);
+  gc_protect (&dbg_mod);
   init_subr_1 ("dbg-get-info", dbg_get_info);
   init_subr_1 ("dbg-get-line", dbg_get_line);
   init_subr_1 ("dbg-get-file", dbg_get_file);
   init_subr_2 ("dbg-copy-info!", dbg_copy_info);
   init_subr_1 ("dbg-expand-file-name", dbg_expand_file_name);
-  init_lsubr ("number->string", integer2string);
   setvar (rintern ("dbg-closures"), NIL, NIL);
   provide (rintern ("debug"));
 }
@@ -4903,6 +4871,38 @@ string2integer (LISP str)
   return intcons(num);
 }
 
+static LISP
+integer2string (LISP args)
+{
+  char buf[sizeof (long)*CHAR_BIT];
+  char *p = buf + sizeof (buf);
+  unsigned long n, r;
+  LISP x, radix;
+  x = car (args);
+  radix = NNULLP (cdr (args)) ? CAR (CDR (args)) : intcons (10);
+  if NINTNUMP
+    (x)
+      my_err ("wta to integer2string", x);
+  if NINTNUMP
+    (radix)
+      my_err ("wta to integer2string", radix);
+  r = INTNM (radix);
+  if (r < 2 || 16 < r)
+    my_err ("invalid radix to integer2string", radix);
+  n = (r == 10) ? labs (INTNM (x)) : INTNM (x);
+  do
+    {
+      if (n % r > 9)
+	*--p = 'A' + n % r - 10;
+      else
+	*--p = '0' + n % r;
+    }
+  while (n /= r);
+  if (r == 10 && INTNM (x) < 0)
+    *--p = '-';
+  return strcons (sizeof(buf)-(p-buf), p);
+}
+
 static void
 init_subrs (void)
 {
@@ -4948,6 +4948,7 @@ init_subrs (void)
   init_subr_1 ("string-dimension", string_dim);
   init_lsubr ("string-append", string_append);
   init_subr_1 ("string->integer", string2integer);
+  init_lsubr ("integer->string", integer2string);
   init_subr_2 ("string=?", string_equal);
   init_subr_2 ("eval", leval);
   init_subr_2 ("apply", lapply);
