@@ -29,6 +29,49 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require "util.scm")
+(require "i18n.scm")
+
+(define indication-rec-spec
+  '((id           #f) ;; must be first member
+    (iconic-label "")
+    (label        "")
+    (short-desc   "")))
+(define-record 'indication indication-rec-spec)
+
+(define indication-alist-entry-extract-choice
+  (lambda (entry)
+    (let ((act-id (car entry))
+	  (indication (cdr entry)))
+      (list act-id
+	    (ugettext (indication-label indication))
+	    (ugettext (indication-short-desc indication))))))
+
+(define action-id-list->choice
+  (lambda (act-ids indication-alist)
+    (map (lambda (act)
+	   (indication-alist-entry-extract-choice
+	    (assq act indication-alist)))
+	 act-ids)))
+
+;; Unifying custom variable definitions and actions of toolbar button
+;; widgets is impossible at current libuim implementation. It requires
+;; library-wide default encoding configurability rather than per
+;; context encoding.  -- YamaKen 2005-01-31
+(define indication-alist-indicator
+  (lambda (act-id alist)
+    (let* ((indication (cdr (assq act-id alist)))
+	   (orig-codeset (bind-textdomain-codeset (gettext-package) #f))
+	   (cur-codeset (bind-textdomain-codeset (gettext-package) "EUC-JP"))
+	   (translated (list (indication-id indication)
+			     (indication-iconic-label indication)
+			     (ugettext (indication-label indication))
+			     (ugettext (indication-short-desc indication)))))
+      (bind-textdomain-codeset (gettext-package) (or orig-codeset
+						     "UTF-8"))
+      (lambda (owner)
+	translated))))
+
 (if enable-action?
     (require "action.scm")
     (begin

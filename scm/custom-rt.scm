@@ -86,6 +86,11 @@
 	       key))
 	 keys)))
 
+;; lightweight implementation
+(define custom-choice-range-reflect-olist-val
+  (lambda (dst-sym src-sym indication-alist)
+    #f))
+
 ;; full implementation
 (define custom-rt-add-primary-groups
   (lambda (gsym)

@@ -72,32 +72,6 @@
 (define-key anthy-next-segment-key? 'generic-go-right-key?)
 (define-key anthy-prev-segment-key? 'generic-go-left-key?)
 
-;; widgets and actions
-
-;; anthy-widgets which controls:
-;; - what widgets will be shown for user
-;; - shown in what order
-(define anthy-widgets '(widget_anthy_input_mode
-			widget_anthy_kana_input_method))
-
-;; default activity for each widgets
-(define default-widget_anthy_input_mode 'action_anthy_direct)
-(define default-widget_anthy_kana_input_method 'action_anthy_roma)
-
-;; actions of widget_anthy_input_mode
-(define anthy-input-mode-actions
-  '(action_anthy_direct
-    action_anthy_hiragana
-    action_anthy_katakana
-    action_anthy_hankana
-    action_anthy_zenkaku))
-
-;; actions of widget_anthy_kana_input_method
-(define anthy-kana-input-method-actions
-  '(action_anthy_roma
-    action_anthy_kana
-    action_anthy_azik))
-
 ;;; implementations
 
 (define anthy-lib-initialized? #f)
@@ -116,6 +90,8 @@
     (anthy-update-preedit ac)))
 
 (register-action 'action_anthy_hiragana
+;;		 (indication-alist-indicator 'action_anthy_hiragana
+;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac) ;; indication handler
 		   '(figure_ja_hiragana
 		     "дв"
@@ -133,6 +109,8 @@
 		   (anthy-context-set-kana-mode! ac anthy-type-hiragana)))
 
 (register-action 'action_anthy_katakana
+;;		 (indication-alist-indicator 'action_anthy_katakana
+;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac)
 		   '(figure_ja_katakana
 		     "ев"
@@ -153,6 +131,8 @@
 		   (anthy-context-set-kana-mode! ac anthy-type-katakana)))
 
 (register-action 'action_anthy_hankana
+;;		 (indication-alist-indicator 'action_anthy_hankana
+;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac)
 		   '(figure_ja_hankana
 		     "О▒"
@@ -168,6 +148,8 @@
 		   (anthy-context-set-kana-mode! ac anthy-type-hankana)))
 
 (register-action 'action_anthy_direct
+;;		 (indication-alist-indicator 'action_anthy_direct
+;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac)
 		   '(figure_ja_direct
 		     "a"
@@ -182,6 +164,8 @@
 		   (anthy-context-set-wide-latin! ac #f)))
 
 (register-action 'action_anthy_zenkaku
+;;		 (indication-alist-indicator 'action_anthy_zenkaku
+;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac)
 		   '(figure_ja_zenkaku
 		     "г┴"
@@ -196,6 +180,8 @@
 		   (anthy-context-set-wide-latin! ac #t)))
 
 (register-action 'action_anthy_roma
+;;		 (indication-alist-indicator 'action_anthy_roma
+;;					     anthy-kana-input-method-indication-alist)
 		 (lambda (ac)
 		   '(figure_ja_roma
 		     "г╥"
@@ -211,6 +197,8 @@
 		   (anthy-context-set-input-rule! ac anthy-input-rule-roma)))
 
 (register-action 'action_anthy_kana
+;;		 (indication-alist-indicator 'action_anthy_kana
+;;					     anthy-kana-input-method-indication-alist)
 		 (lambda (ac)
 		   '(figure_ja_kana
 		     "дл"
@@ -234,6 +222,8 @@
 		   ))
 
 (register-action 'action_anthy_azik
+;;		 (indication-alist-indicator 'action_anthy_azik
+;;					     anthy-kana-input-method-indication-alist)
 		 (lambda (ac)
 		   '(figure_ja_azik
 		     "г┴"

@@ -316,6 +316,14 @@
 	   (desc (custom-choice-rec-desc srec)))
       desc)))
 
+(define custom-choice-range-reflect-olist-val
+  (lambda (dst-sym src-sym indication-alist)
+    (custom-set-type-info!
+     dst-sym
+     (cons (custom-type dst-sym)
+	   (action-id-list->choice (custom-value src-sym)
+				   indication-alist)))))
+
 (define-record 'custom-group-rec
   '((sym   #f)
     (label "")
@@ -420,6 +428,13 @@
 	     (proc))
 	   procs))))
 
+;; TODO: write test
+(define custom-call-all-hook-procs
+  (lambda (hook)
+    (for-each (lambda (pair)
+		((cdr pair)))
+	      hook)))
+
 (define-record 'custom-rec
   '((sym     #f)
     (default #f)
@@ -483,6 +498,7 @@
 	  val
 	  (custom-default-value sym)))))
 
+;; TODO: rewrite test for (custom-call-hook-procs sym custom-update-hooks)
 ;; API
 (define custom-set-value!
   (lambda (sym val)
@@ -497,6 +513,7 @@
 			     (list 'make-key-predicate (list 'quote key-val)))
 		       toplevel-env)))
 	   (custom-call-hook-procs sym custom-set-hooks)
+	   (custom-call-hook-procs sym custom-update-hooks)
 	   (let ((post-activities (map custom-active? custom-syms)))
 	     (for-each (lambda (another-sym pre post)
 			 (if (or (eq? another-sym sym)
@@ -507,6 +524,12 @@
 		       pre-activities
 		       post-activities)
 	     #t)))))
+
+;; API
+(define custom-touch-value!
+  (lambda (sym)
+    (custom-set-value! sym
+		       (custom-value sym))))
 
 (define custom-active?
   (lambda (sym)
@@ -543,6 +566,20 @@
     (let* ((crec (custom-rec sym))
 	   (typedef (custom-rec-type crec)))
       (cdr typedef))))
+
+;; TODO: write test
+;; API for temporary solution
+(define custom-type-info
+  (lambda (sym)
+    (custom-rec-type (custom-rec sym))))
+
+;; TODO: write test
+;; API for temporary solution
+(define custom-set-type-info!
+  (lambda (sym info)
+    (custom-rec-set-type! (custom-rec sym)
+			  info)
+    (custom-call-hook-procs sym custom-update-hooks)))
 
 ;; API
 (define custom-range
@@ -650,6 +687,7 @@
 
 (define custom-reload-customs
   (lambda ()
-    (for-each load (reverse custom-required-custom-files))))
+    (for-each load (reverse custom-required-custom-files))
+    (custom-call-all-hook-procs custom-set-hooks)))
 
 (custom-reload-customs)

@@ -31,12 +31,13 @@
 
 (require "i18n.scm")
 
+;; ugettext should be performed higher layer
 (define custom-im-list-as-choice-rec
   (lambda (lst)
     (map (lambda (im)
 	   (let ((sym (im-name im))
-		 (name-label (im-name-label im))
-		 (desc (im-short-desc im)))
+		 (name-label (ugettext (im-name-label im)))
+		 (desc (ugettext (im-short-desc im))))
 	     (custom-choice-rec-new sym name-label desc)))
 	 lst)))
 
@@ -47,6 +48,11 @@
 ;; subgroup
 (define-custom-group 'advanced
 		     (_ "Advanced settings")
+		     (_ "long description will be here."))
+
+;; subgroup
+(define-custom-group 'toolbar
+		     (_ "Toolbar")
 		     (_ "long description will be here."))
 
 ;; 
@@ -211,13 +217,13 @@
   (_ "long description will be here."))
 
 (define-custom 'toolbar-show-switcher-button? #t
-  '(global)
+  '(global toolbar)
   '(boolean)
   (_ "Show input method switcher button on toolbar")
   (_ "long description will be here."))
 
 (define-custom 'toolbar-show-pref-button? #t
-  '(global)
+  '(global toolbar)
   '(boolean)
   (_ "Show uim preference tool button on toolbar")
   (_ "long description will be here."))

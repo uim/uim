@@ -68,13 +68,6 @@
 
 (require "util.scm")
 
-(define indication-rec-spec
-  '((id           #f) ;; must be first member
-    (iconic-label "")
-    (label        "")
-    (short-desc   "")))
-(define-record 'indication indication-rec-spec)
-
 ;;
 ;; action
 ;;
