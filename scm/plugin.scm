@@ -144,7 +144,6 @@
 	   (file "loader.scm")
 	   (user-file (string-append user-module-dir file)))
       (and (try-load file)
-	   (or 
-	    (if (is-set-ugid?) 
-		(try-load user-file)
-		#t))))))
+	   (or (and (not (is-set-ugid?))
+		    (try-load user-file))
+	       #t)))))
