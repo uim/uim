@@ -1,0 +1,87 @@
+User customization file
+
+You can customize uim settings by two alternative ways.
+
+  - by uim-pref GUI
+  - create the file ~/.uim and write configuration forms by hand
+
+This file describes the latter way.
+
+
+* Precedence of settings
+
+  - The ~/.uim overrides the settings configured by uim-pref. Remove
+    conflicting setting from ~/.uim if you prefer setting by GUI
+
+  - If ~/.uim does not exist, ${datadir}/uim/default.scm will be
+    loaded as default
+
+
+* Special settings that cannot be configured in ~/.uim
+
+  Overriding following variables in ~/.uim does not take
+  effect. Configure them in uim-pref or edit installed-modules.scm
+  directly.
+
+    enable-lazy-loading?
+    enabled-im-list
+    installed-im-module-list
+
+
+* Configuring key bindings
+
+  To configure key bindings in ~/.uim, write 'define-key' forms. See
+  also doc/KEY for further information
+
+  Be careful about following two issues.
+
+    - Meaning of the key expression such as "<Control>a" differs
+      between define-key and uim-pref.
+
+      "<Control>a" is interpreted as case sensitive and shift
+      insensitive by define-key. But uim-pref recognizes it as case
+      insensitive and shift sensitive. The different rule of uim-pref
+      is introduced to unifiy "<Control>a" and "<Control>A" regardless
+      of caps lock status.
+
+    - define-key written in ~/.uim will be ignored by uim 0.4.6 alpha1
+
+      We will resolve it.
+
+
+* Overriding lazy-loaded settings
+
+  The lazy-loading feature introduced in uim 0.4.6 has caused the
+  problem that the entity to be overridded is not loaded at loading
+  ~/.uim.
+
+  For example, following configuration causes the error because
+  japanese.scm is not loaded at loading ~/.uim.
+
+  (set! ja-rk-rule-basic (cons '(((" ") . ()) (" " " " " "))
+                               ja-rk-rule-basic))
+
+  To resolve it, require the file explicitly.
+
+  (require "japanese.scm")
+
+  (set! ja-rk-rule-basic (cons '(((" ") . ()) (" " " " " "))
+                               ja-rk-rule-basic))
+
+
+  If you need whole part of an input method, use 'require-module'
+  instead of ordinary 'require'. This is required for internal IM
+  management.
+
+  wrong:
+
+    (require "pyload.scm")
+    (require "viqr.scm")
+    (require "anthy.scm")
+    (load-plugin "anthy")
+
+  correct:
+
+    (require-module "pyload")
+    (require-module "viqr")
+    (require-module "anthy")
