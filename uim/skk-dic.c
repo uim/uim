@@ -47,7 +47,6 @@
 #include <ctype.h>
 
 #include "uim-scm.h"
-#include "uim-compat-scm.h"
 #include "context.h"
 #include "plugin.h"
 
@@ -283,18 +282,27 @@ first_space(char *str)
 }
 
 static char *
-next_slash(char *str)
+next_cand_slash(char *str)
 {
   int p = 0;
   while (*str && (*str != '/' || p == 1)) {
-    if (*str == '[') {
+    if (*str == '[' && (*(str - 1) == '\0' || *(str - 1) == '/')) {
       p = 1;
     }
-    if (p == 1 && *str == ']') {
+    if (p == 1 && *str == ']' && *(str + 1) == '/') {
       p = 0;
     }
-    str ++;
+    str++;
   }
+  return str;
+}
+
+static char *
+next_slash_in_bracket(char *str)
+{
+  while (*str && *str != '/')
+    str++;
+
   return str;
 }
 
@@ -307,7 +315,7 @@ okuri_in_bracket(char *str)
     return NULL;
 
   p = strdup(str);
-  term = next_slash(p);
+  term = next_slash_in_bracket(p);
   *term = '\0';
   return p;
 }
@@ -321,7 +329,7 @@ nth_candidate(char *str, int nth)
   str = first_space(str);
   
   for (i = 0; i <= nth; i++) {
-    str = next_slash(str);
+    str = next_cand_slash(str);
     if (*str == '/') {
       str++;
     }
@@ -333,8 +341,8 @@ nth_candidate(char *str, int nth)
     str++;
   }
   p = strdup(str);
-  term = next_slash(p);
-  *term = 0;
+  term = next_cand_slash(p);
+  *term = '\0';
   return p;
 }
 
@@ -445,7 +453,7 @@ compose_line_parts(struct dic_info *di, struct skk_line *sl,
     tmp = nth_candidate(line, nth);
     if (tmp && strlen(tmp)) {
       if (tmp[0] == '[') {
-	tmp[0] = ' ';
+	tmp[0] = ' '; /* create first_space */
 	compose_line_parts(di, sl, okuri_in_bracket(&tmp[1]), &tmp[0]);
       } else if (tmp[0] != ']') {
 	push_back_candidate_to_array(ca, tmp);
@@ -1509,6 +1517,9 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
     if (!found) {
       ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 1);
       reorder_candidate(ca, str);
+    } else {
+      /* also reorder base candidate array */
+      reorder_candidate(&sl->cands[0], str);
     }
   }
 
@@ -1535,17 +1546,88 @@ learn_word_to_cand_array(struct skk_cand_array *ca, char *word)
 }
 
 static char *
+quote_word(const char *word)
+{
+  char *str;
+  const char *tmp;
+  int len;
+
+  str= strdup("(concat \"");
+  for (tmp = word; *tmp; tmp++) {
+    len = strlen(str);
+
+    switch(*tmp) {
+    case '/':
+	    str = realloc(str, len + strlen("\\057") + 1);
+	    strcat(str, "\\057");
+	    break;
+    case '[':
+	    str = realloc(str, len + strlen("[") + 1);
+	    strcat(str, "[");
+	    break;
+    case ']':
+	    str = realloc(str, len + strlen("]") + 1);
+	    strcat(str, "]");
+	    break;
+    case '\n':
+	    str = realloc(str, len + strlen("\\n") + 1);
+	    strcat(str, "\\n");
+	    break;
+    case '\r':
+	    str = realloc(str, len + strlen("\\r") + 1);
+	    strcat(str, "\\r");
+	    break;
+    case '\\':
+	    str = realloc(str, len + strlen("\\\\") + 1);
+	    strcat(str, "\\\\");
+	    break;
+    case ';':
+	    str = realloc(str, len + strlen("\\073") + 1);
+	    strcat(str, "\\073");
+	    break;
+    default:
+	    str = realloc(str, len + 2);
+	    str[len] = *tmp;
+	    str[len + 1] = '\0';
+	    break;
+    }
+  }
+  len = strlen(str);
+  str = realloc(str, len + strlen("\")") + 1);
+  strcat(str, "\")");
+
+  return str;
+}
+
+static char *
 sanitize_word(const char *arg)
 {
   const char *tmp;
+  int is_space_only = 1;
+
   if (!arg || !strlen(arg)) {
     return NULL;
   }
   for (tmp = arg; *tmp; tmp++) {
-    if (strchr(" /[]()\n", *tmp)) {
-      return NULL;
+    switch(*tmp) {
+    case '/':
+    case '[':
+    case ']':
+    case '\n':
+    case '\r':
+    case '\\':
+    case ';':
+      return quote_word(arg);
+    case ' ':
+      break;
+    default:
+      is_space_only = 0;
+      break;
     }
   }
+  if (is_space_only)
+    return NULL;
+
   return strdup(arg);
 }
 
@@ -1594,7 +1676,7 @@ parse_dic_line(struct dic_info *di, char *line)
   if (sep == buf) {
     return ;
   }
-  *sep = 0;
+  *sep = '\0';
   if (!islower(buf[0]) && islower(sep[-1])) { /* okuri-ari entry */
     char okuri_head = sep[-1];
     sep[-1] = 0;
@@ -1633,6 +1715,7 @@ write_out_line(FILE *fp, struct skk_line *sl)
 {
   struct skk_cand_array *ca;
   int i;
+
   fprintf(fp, "%s", sl->head);
   if (sl->okuri_head) {
     fprintf(fp, "%c /", sl->okuri_head);
@@ -2007,8 +2090,7 @@ skk_lib_get_annotation(uim_lisp str_)
 
   str = uim_scm_refer_c_str(str_);
   sep = strrchr(str, ';');
-  if (sep) {
-    sep++;
+  if (sep && (*(++sep) != '\0')) {
     res = uim_scm_make_str(sep);
   } else {
     res = uim_scm_make_str("");
@@ -2027,13 +2109,67 @@ skk_lib_remove_annotation(uim_lisp str_)
 
   str = uim_scm_c_str(str_);
   sep = strrchr(str, ';');
-  if (sep) {
-    *sep = 0;
+  if (sep && (*(sep + 1) != '\0')) {
+    *sep = '\0';
   }
   res = uim_scm_make_str(str);
   free(str);
   return res;
 }
+
+static uim_lisp
+skk_eval_candidate(uim_lisp str_)
+{
+  const char *cand, *return_val;
+  char *p, *q, *str;
+  size_t len;
+  uim_lisp cand_;
+
+  if (str_ == uim_scm_null_list())
+    return uim_scm_null_list();
+
+  cand = uim_scm_refer_c_str(str_);
+
+  /* eval concat only for now */
+  if ((p = strstr(cand, "(concat")) == NULL)
+    return str_;
+
+  /* check close paren */
+  q = strrchr(p, ')');
+  if (!q)
+    return str_;
+
+  /* ignore make-string */
+  if (strstr(p, "make-string"))
+    return str_;
+
+  len = q - p + 1;
+  /* replace elisp's concat with string-append */
+  str = malloc(len + strlen("string-append") - strlen("concat") + 1);
+  strcpy(str, "(string-append");
+  strncat(str, p + strlen("(concat"), q - (p + strlen("(concat")) + 1);
+
+  UIM_EVAL_FSTRING1(NULL, "%s", str);
+  return_val = uim_scm_refer_c_str(uim_scm_return_value());
+
+  /* get evaluated candidate */
+  len = p - cand + strlen(return_val);
+  if (len > strlen(str))
+    str = realloc(str, len + 1);
+
+  if (p != cand) {
+    strncpy(str, cand, p - cand);
+    str[p - cand] = '\0';
+    strcat(str, return_val);
+  } else {
+    strcpy(str, return_val);
+  }
+
+  cand_ = uim_scm_make_str(str);
+  free(str);
+  return cand_;
+}
+
 
 void
 uim_plugin_instance_init(void)
@@ -2055,6 +2191,7 @@ uim_plugin_instance_init(void)
   uim_scm_init_subr_2("skk-lib-get-nth-completion", skk_get_nth_completion);
   uim_scm_init_subr_1("skk-lib-get-nr-completions", skk_get_nr_completions);
   uim_scm_init_subr_1("skk-lib-clear-completions", skk_clear_completions);
+  uim_scm_init_subr_1("skk-lib-eval-candidate", skk_eval_candidate);
 }
 
 void

@@ -513,7 +513,7 @@
 
 (define skk-prepare-commit-string
   (lambda (sc)
-    (let* ((cand (skk-lib-remove-annotation (skk-get-current-candidate sc)))
+    (let* ((cand (skk-lib-eval-candidate (skk-lib-remove-annotation (skk-get-current-candidate sc))))
 	   (okuri (skk-make-string (skk-context-okuri sc)
 				   (skk-context-kana-mode sc)))
 	   (appendix (skk-make-string (skk-context-appendix sc)
@@ -661,7 +661,9 @@
 	     sc
 	     (bit-or skk-preedit-attr-conv-body
 		     preedit-cursor)
-	     (skk-lib-remove-annotation (skk-get-current-candidate sc)))
+	     (if skk-show-annotation-in-preedit?
+	         (skk-lib-eval-candidate (skk-get-current-candidate sc))
+	         (skk-lib-eval-candidate (skk-lib-remove-annotation (skk-get-current-candidate sc)))))
 	    (im-pushback-preedit
 	     sc skk-preedit-attr-conv-okuri
 	     (skk-make-string (skk-context-okuri sc)
@@ -1601,7 +1603,7 @@
 (define skk-get-candidate-handler
   (lambda (sc idx)
     (let* ((dcsc (skk-find-descendant-context sc))
-	   (cand (skk-get-nth-candidate dcsc idx))
+	   (cand (skk-lib-eval-candidate (skk-get-nth-candidate dcsc idx)))
 	   (okuri (skk-context-okuri dcsc)))
       (list
        (if (and

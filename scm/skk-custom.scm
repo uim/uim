@@ -114,6 +114,13 @@
   (_ "Show annotation in candidate window")
   (_ "long description will be here."))
 
+(define-custom 'skk-show-annotation-in-preedit? #f
+  '(skk advanced)
+  '(boolean)
+  (_ "Show annotation in preedit area")
+  (_ "long description will be here."))
+
+
 (define-custom 'skk-dic-file-name (string-append (sys-datadir)
 						 "/skk/SKK-JISYO.L")
   '(skk)
