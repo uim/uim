@@ -100,15 +100,17 @@ endif
 
 # Toolbar Common
 noinst_LTLIBRARIES = libtoolbarcommon.la
-libtoolbarcommon_la_SOURCES  = toolbar-common-quimhelpertoolbar.cpp toolbar-common-uimstateindicator.cpp
+libtoolbarcommon_la_SOURCES  = toolbar-common-quimhelpertoolbar.cpp toolbar-common-uimstateindicator.cpp qtgettext.h
 libtoolbarcommon_la_CXXFLAGS = $(QT_CXXFLAGS)
 libtoolbarcommon_la_LDFLAGS  = $(QT_LDFLAGS) -avoid-version
 libtoolbarcommon_la_LIBADD   = $(top_builddir)/uim/libuim.la
 toolbar-common-quimhelpertoolbar.cpp: toolbar-common-quimhelpertoolbar.moc
 toolbar-common-uimstateindicator.cpp: toolbar-common-uimstateindicator.moc
+toolbar-common-quimhelpertoolbar.moc:
+	$(MOC) $(top_srcdir)/qt/toolbar-common-quimhelpertoolbar.h -o toolbar-common-quimhelpertoolbar.moc
 
 # Toolbar Standalone
-uim_toolbar_qt_SOURCES = toolbar-standalone-qt.cpp
+uim_toolbar_qt_SOURCES = toolbar-standalone-qt.cpp qtgettext.h
 uim_toolbar_qt_CXXFLAGS = $(QT_CXXFLAGS)
 uim_toolbar_qt_LDFLAGS  = $(QT_LDFLAGS)
 uim_toolbar_qt_LDADD    = $(top_builddir)/uim/libuim.la ./libtoolbarcommon.la
@@ -122,7 +124,7 @@ uim_candwin_qt_LDADD = $(top_builddir)/uim/libuim.la
 candwin-qt.cpp: candwin-qt.moc
 
 # Switcher
-uim_im_switcher_qt_SOURCES  = switcher-qt.cpp
+uim_im_switcher_qt_SOURCES  = switcher-qt.cpp qtgettext.h
 uim_im_switcher_qt_CXXFLAGS = $(QT_CXXFLAGS)
 uim_im_switcher_qt_LDFLAGS  = $(QT_LDFLAGS)
 uim_im_switcher_qt_LDADD    = $(top_builddir)/uim/libuim.la
@@ -131,7 +133,7 @@ switcher-qt.cpp: switcher-qt.moc
 # Pref
 uim_pref_qt_SOURCES = \
 	pref-olisteditformbase.cpp pref-keyeditformbase.cpp pref-keygrabformbase.cpp \
-	pref-qt.cpp pref-customwidgets.cpp pref-kseparator.cpp 
+	pref-qt.cpp pref-customwidgets.cpp pref-kseparator.cpp qtgettext.h
 
 uim_pref_qt_CXXFLAGS = $(QT_CXXFLAGS)
 uim_pref_qt_LDFLAGS  = $(QT_LDFLAGS)
@@ -173,7 +175,8 @@ uim_chardict_qt_SOURCES = \
 	chardict-bushuviewwidget.cpp \
 	chardict-chargridview.cpp \
 	chardict-kseparator.cpp \
-	chardict-unicodeviewwidget.cpp
+	chardict-unicodeviewwidget.cpp \
+	qtgettext.h
 uim_chardict_qt_CXXFLAGS = $(QT_CXXFLAGS) -DBUSHUDICT=\"$(datadir)/uim/helperdata/bushu.t\"
 uim_chardict_qt_LDFLAGS  = $(QT_LDFLAGS)
 uim_chardict_qt_LDADD    = $(top_builddir)/uim/libuim.la
