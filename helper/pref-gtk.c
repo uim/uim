@@ -672,7 +672,7 @@ olist_pref_entry_set_value(GtkEntry *entry)
     {
       if (i != 0)
 	g_string_append(str, ",");
-      g_string_append(str, item->symbol);
+      g_string_append(str, item->label);
     }
   } else {
     /* error message */
