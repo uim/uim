@@ -82,6 +82,7 @@ static uim_bool uim_conf_prepare_dir(const char *subdir);
 static uim_bool uim_custom_save_group(const char *group);
 
 static const char str_list_arg[] = "uim-custom-c-str-list-arg";
+static const char custom_subdir[] = "customs";
 static const char custom_msg_tmpl[] = "prop_update_custom\n%s\n%s\n";
 static int helper_fd = -1;
 
@@ -427,7 +428,7 @@ uim_bool
 uim_custom_init(void)
 {
   uim_scm_load_file("custom.scm");
-  uim_scm_gc_protect(return_val);
+  uim_scm_gc_protect(&return_val);
 
   return UIM_TRUE;
 }
@@ -460,7 +461,7 @@ custom_file_path(const char *group, pid_t pid)
 {
   char *custom_dir, *file_path;
 
-  custom_dir = uim_conf_path("custom");
+  custom_dir = uim_conf_path(custom_subdir);
   if (pid) {
     UIM_EVAL_FSTRING3(NULL, "\"%s/.custom-%s.scm.%d\"", custom_dir, group, pid);
   } else {
@@ -475,10 +476,12 @@ custom_file_path(const char *group, pid_t pid)
 static uim_bool
 prepare_dir(const char *dir)
 {
-  struct stat *sb;
-  /* TODO: stat, mkdir, chmod */
+  /* TODO: permission check and proper error handling */
+  int err;
 
-  return UIM_TRUE;
+  err = mkdir(dir, 0700);
+
+  return (err) ? UIM_FALSE : UIM_TRUE;
 }
 
 static uim_bool
@@ -490,7 +493,9 @@ uim_conf_prepare_dir(const char *subdir)
   prepare_dir(dir);
   free(dir);
   if (subdir) {
-    prepare_dir(subdir);
+    dir = uim_conf_path(subdir);
+    prepare_dir(dir);
+    free(dir);
   }
 
   return UIM_TRUE;
@@ -505,7 +510,7 @@ uim_custom_save_group(const char *group)
   char *tmp_file_path, *file_path;
   FILE *file;
 
-  if (!uim_conf_prepare_dir("customs"))
+  if (!uim_conf_prepare_dir(custom_subdir))
     return UIM_FALSE;
 
   /*
@@ -521,6 +526,7 @@ uim_custom_save_group(const char *group)
     def_literal = uim_custom_definition_as_literal(*sym);
     if (def_literal) {
       fprintf(file, def_literal);
+      fprintf(file, "\n");
       free(def_literal);
     }
   }
