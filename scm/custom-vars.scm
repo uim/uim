@@ -443,7 +443,7 @@
 (define-custom 'skk-use-with-vi? #f
   '(skk advanced)
   '(boolean)
-  (_ "Frendly for vi user")
+  (_ "Friendly for vi user")
   (_ "long description will be here."))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
