@@ -254,19 +254,22 @@
   (append
    ja-nicola-hiragana-core-ruleset
    ja-nicola-hiragana-postfixed-voiced-consonant-ruleset
-   ja-nicola-jp106-pseudo-thumb-shift-ruleset))
+   ;;ja-nicola-jp106-pseudo-thumb-shift-ruleset
+   ))
 
 (define ja-nicola-katakana-ruleset
   (append
    ja-nicola-katakana-core-ruleset
    ja-nicola-katakana-postfixed-voiced-consonant-ruleset
-   ja-nicola-jp106-pseudo-thumb-shift-ruleset))
+   ;;ja-nicola-jp106-pseudo-thumb-shift-ruleset
+   ))
 
 (define ja-nicola-halfkana-ruleset
   (append
    ja-nicola-halfkana-core-ruleset
    ja-nicola-halfkana-postfixed-voiced-consonant-ruleset
-   ja-nicola-jp106-pseudo-thumb-shift-ruleset))
+   ;;ja-nicola-jp106-pseudo-thumb-shift-ruleset
+   ))
 
 (define ja-nicola-hiragana-ruletree
   (evmap-parse-ruleset ja-nicola-hiragana-ruleset))

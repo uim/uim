@@ -303,8 +303,6 @@
     (lambda (ac)
       (let ((mod-state (bitwise-or (anthy-context-mod-state ac)
 				   mod)))
-	(puts "anthy-set-mod-state-handler: ")
-	(print mod-state)
 	(anthy-context-set-mod-state! ac mod-state)))))
 
 (define anthy-reset-mod-state-handler
@@ -312,8 +310,6 @@
     (lambda (ac)
       (let ((mod-state (bitwise-and (anthy-context-mod-state ac)
 				    (bitwise-not mod))))
-	(puts "anthy-reset-mod-state-handler: ")
-	(print mod-state)
 	(anthy-context-set-mod-state! ac mod-state)))))
 
 (define anthy-register-modifier-action
