@@ -1,3 +1,6 @@
-
-EXTRA_DIST = run-test.scm test-i18n.scm test-intl.scm test-slib.scm test-uim-util.scm uim-test-utils.scm\
-	test-custom.scm test-im.scm test-key.scm test-uim-test-utils.scm test-util.scm
+EXTRA_DIST = uim-test-utils.scm run-test.scm \
+        test-action.scm test-custom-rt.scm test-custom.scm \
+        test-i18n.scm test-im.scm test-intl.scm test-key.scm \
+        test-lazy-load.scm test-plugin.scm test-slib.scm \
+        test-uim-test-utils.scm test-uim-util.scm test-ustr.scm \
+        test-util.scm
