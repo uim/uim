@@ -907,7 +907,10 @@
     (let* ((preconv-ustr (anthy-context-preconv-ustr ac))
 	   (ruletree (anthy-transpose-idx->ruletree ac transpose-idx))
 	   (transposed (evmap-ustr-transpose preconv-ustr ruletree)))
-      (anthy-context-set-preconv-ustr! ac transposed))))
+      (anthy-context-set-preconv-ustr! ac transposed)
+      ;; ruletree has changed temporarily until commit to re-edit with
+      ;; transposed charset
+      (anthy-context-set-ruletree! ac ruletree))))
 
 (define anthy-commit-transposed-preconv!
   (lambda (ac transpose-idx)
@@ -975,8 +978,10 @@
 			      (evmap-ustr-input! preconv-ustr ruletree ev)))
 	       (post-preedit? (anthy-has-preedit? ac))
 	       (transit? (not (= preedit? post-preedit?))))
+	  ;; main ruletree must not be changed here to preserve
+	  ;; transposed one
 	  (if transit?
-	      (anthy-select-ruletree! ac))
+	      (anthy-select-actmap-ruletree! ac))
 	  consumed?))))))
 
 (define anthy-init-handler
@@ -997,7 +1002,7 @@
 	(im-deactivate-candidate-selector ac))
     (anthy-context-set-candidate-window! ac #f)
     (anthy-context-set-candidate-op-count! ac 0)
-    (anthy-select-actmap-ruletree! ac)
+    (anthy-select-ruletree! ac)  ;; to reset transposed ruletree
     (anthy-update-preedit ac)  ;; TODO: remove this
     ))
 
