@@ -133,16 +133,23 @@ void UimPrefDialog::createGroupWidgets()
 {
     char **primary_groups = uim_custom_primary_groups();
     char **grp = NULL;
+    QListViewItem *previousItem = NULL;
     for( grp = primary_groups; *grp; grp++ )
     {
         struct uim_custom_group *group = uim_custom_group_get( *grp );
-        
-        new QListViewItem( m_groupListView, *grp );
+
+        /* insert item in uim's order */
+        QListViewItem *item = NULL;
+        if( previousItem == NULL )
+            item = new QListViewItem( m_groupListView, *grp );
+        else
+            item = new QListViewItem( m_groupListView, previousItem, *grp );
 
         QWidget *w = createGroupWidget( *grp );
         m_groupWidgetsDict.insert( *grp, w );
         m_groupWidgetStack->addWidget( w );
-        
+
+        previousItem = item;
         uim_custom_group_free( group );
     }
 }
@@ -237,6 +244,7 @@ void UimPrefDialog::addCustomTypeInteger( QVBox *vbox, struct uim_custom *custom
     QHBox *hbox = new QHBox( vbox );
     hbox->setSpacing( 6 );
     QLabel *label = new QLabel( _FU8(custom->label), hbox );
+    hbox->setStretchFactor( new QWidget( hbox ), 1 );
     CustomSpinBox *spinBox = new CustomSpinBox( custom, hbox );
     spinBox->setValue( custom->value->as_int );
     spinBox->setMinValue( custom->range->as_int.min );
@@ -251,7 +259,7 @@ void UimPrefDialog::addCustomTypeString( QVBox *vbox, struct uim_custom *custom 
 {
     QHBox *hbox = new QHBox( vbox );
     hbox->setSpacing( 6 );
-    QLabel *label = new QLabel( _FU8(custom->label), hbox );
+    QLabel *label = new QLabel( _FU8(custom->label) + ":", hbox );
     CustomLineEdit *lineEdit = new CustomLineEdit( custom, hbox );
     lineEdit->setText( _FU8(custom->value->as_str) );
     label->setBuddy( lineEdit );
