@@ -520,6 +520,10 @@ im_update_prop_list(uim_lisp id, uim_lisp prop_)
     free(uc->propstr);
       
   uc->propstr = uc->conv_if->convert(uc->conv, prop);
+
+  if (uc->prop_list_update_cb)
+    uc->prop_list_update_cb(uc->ptr, uc->propstr);
+
   return uim_scm_f();
 }
 
@@ -537,6 +541,10 @@ im_update_prop_label(uim_lisp id, uim_lisp prop_)
     free(uc->proplabelstr);
   
   uc->proplabelstr = uc->conv_if->convert(uc->conv, prop);
+
+  if (uc->prop_label_update_cb)
+    uc->prop_label_update_cb(uc->ptr, uc->proplabelstr);
+
   return uim_scm_f();
 }
 
