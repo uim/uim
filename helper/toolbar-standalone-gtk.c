@@ -162,7 +162,14 @@ size_allocate_cb(GtkWidget *widget, GtkAllocation *allocation, gpointer user_dat
 static void
 size_request_cb(GtkWidget *widget, GtkRequisition *req, gpointer data)
 {
-  gtk_window_resize(GTK_WINDOW(widget), req->width, req->height);
+  if (GTK_WIDGET_MAPPED(widget)) {
+    gint width, height;
+    gtk_window_get_size(GTK_WINDOW(widget), &width, &height);
+    
+    if(width != req->width || height != req->height) {
+      gtk_window_resize(GTK_WINDOW(widget), req->width, req->height);
+    }
+  }
 }
 
 int 
