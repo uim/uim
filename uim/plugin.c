@@ -191,6 +191,10 @@ void uim_init_plugin(void)
 
   plugin_lib_dir_env = getenv("LIBUIM_PLUGIN_LIB_DIR");
   plugin_scm_dir_env = getenv("LIBUIM_SCM_FILES");
+  if (plugin_lib_dir_env == NULL) 
+    plugin_lib_dir_env = "";
+  if (plugin_scm_dir_env == NULL)
+    plugin_scm_dir_env = "";
 
   pw = getpwuid(getuid());
 

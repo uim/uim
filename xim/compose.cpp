@@ -61,7 +61,7 @@ static int mb_string_to_utf8(char *utf8, const char *str, int to_len, const char
 Compose::Compose(DefTree *top, XimIC *xic)
 {
     m_xic = xic;
-    m_composed = (DefTree *)NULL;
+    m_composed = NULL;
     m_top = top;
     m_context = top;
 }
@@ -74,7 +74,7 @@ bool Compose::handleKey(KeySym xkeysym, int xkeystate, bool is_push)
 {
     DefTree *p;
 
-    if ((is_push == false)  || m_top == (DefTree *)NULL)
+    if ((is_push == false)  || m_top == NULL)
 	return false;
 
     if (IsModifierKey(xkeysym))
@@ -111,13 +111,11 @@ bool Compose::handleKey(KeySym xkeysym, int xkeystate, bool is_push)
 void Compose::reset()
 {
     m_context = m_top;
-    m_composed = (DefTree *)NULL;
+    m_composed = NULL;
 }
 
 static int
-nextch(
-    FILE *fp,
-    int *lastch)
+nextch(FILE *fp, int *lastch)
 {
     int c;
 
@@ -140,9 +138,7 @@ nextch(
 }
 
 static void
-putbackch(
-    int c,
-    int *lastch)
+putbackch(int c, int *lastch)
 {
     *lastch = c;
 }
@@ -168,10 +164,7 @@ putbackch(
 #endif
 
 static int
-nexttoken(
-    FILE *fp,
-    char *tokenbuf,
-    int *lastch)
+nexttoken(FILE *fp, char *tokenbuf, int *lastch)
 {
     int c;
     int token;
@@ -181,28 +174,28 @@ nexttoken(
     while ((c = nextch(fp, lastch)) == ' ' || c == '\t') {
     }
     switch (c) {
-      case EOF:
+    case EOF:
 	token = ENDOFFILE;
 	break;
-      case '\n':
+    case '\n':
 	token = ENDOFLINE;
 	break;
-      case '<':
+    case '<':
 	token = LESS;
 	break;
-      case '>':
+    case '>':
 	token = GREATER;
 	break;
-      case ':':
+    case ':':
 	token = COLON;
 	break;
-      case '!':
+    case '!':
 	token = EXCLAM;
 	break;
-      case '~':
+    case '~':
 	token = TILDE;
 	break;
-      case '"':
+    case '"':
 	p = tokenbuf;
 	while ((c = nextch(fp, lastch)) != '"') {
 	    if (c == '\n' || c == EOF) {
@@ -212,27 +205,27 @@ nexttoken(
 	    } else if (c == '\\') {
 		c = nextch(fp, lastch);
 		switch (c) {
-		  case '\\':
-		  case '"':
+		case '\\':
+		case '"':
 		    *p++ = c;
 		    break;
-		  case 'n':
+		case 'n':
 		    *p++ = '\n';
 		    break;
-		  case 'r':
+		case 'r':
 		    *p++ = '\r';
 		    break;
-		  case 't':
+		case 't':
 		    *p++ = '\t';
 		    break;
-		  case '0':
-		  case '1':
-		  case '2':
-		  case '3':
-		  case '4':
-		  case '5':
-		  case '6':
-		  case '7':
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
 		    i = c - '0';
 		    c = nextch(fp, lastch);
 		    for (j = 0; j < 2 && c >= '0' && c <= '7'; j++) {
@@ -243,8 +236,8 @@ nexttoken(
 		    putbackch(c, lastch);
 		    *p++ = (char)i;
 		    break;
-		  case 'X':
-		  case 'x':
+		case 'X':
+		case 'x':
 		    i = 0;
 		    for (j = 0; j < 2; j++) {
 			c = nextch(fp, lastch);
@@ -267,11 +260,11 @@ nexttoken(
 		    }
 		    *p++ = (char)i;
 		    break;
-		  case EOF:
+		case EOF:
 		    putbackch(c, lastch);
 		    token = ERROR;
 		    goto string_error;
-		  default:
+		default:
 		    *p++ = c;
 		    break;
 		}
@@ -282,7 +275,7 @@ nexttoken(
 	*p = '\0';
 	token = STRING;
 	break;
-      case '#':
+    case '#':
 	while ((c = nextch(fp, lastch)) != '\n' && c != EOF) {
 	}
 	if (c == '\n') {
@@ -291,7 +284,7 @@ nexttoken(
 	    token = ENDOFFILE;
 	}
 	break;
-      default:
+    default:
 	if (isalnum(c) || c == '_' || c == '-') {
 	    p = tokenbuf;
 	    *p++ = c;
@@ -313,8 +306,7 @@ string_error:
 }
 
 static long
-modmask(
-    char *name)
+modmask(char *name)
 {
     long mask;
 
@@ -347,67 +339,66 @@ modmask(
 char *
 XimIM::TransFileName(char *name)
 {
-   char *home = NULL, *lcCompose = NULL;
-   char *i = name, *ret, *j;
-   int l = 0;
+    char *home = NULL, *lcCompose = NULL;
+    char *i = name, *ret, *j;
+    int l = 0;
 
-   while (*i) {
-      if (*i == '%') {
-	  i++;
-	  switch (*i) {
-	      case '%':
-		 l++;
-		 break;
-	      case 'H':
-		 home = getenv("HOME");
-		 if (home)
-		     l += strlen(home);
-		 break;
-	      case 'L':
-		 lcCompose = get_compose_filename();
-		 if (lcCompose)
-		     l += strlen(lcCompose);
-		 break;
+    while (*i) {
+	if (*i == '%') {
+	    i++;
+	    switch (*i) {
+	    case '%':
+		l++;
+		break;
+	    case 'H':
+		home = getenv("HOME");
+		if (home)
+		    l += strlen(home);
+		break;
+	    case 'L':
+		lcCompose = get_compose_filename();
+		if (lcCompose)
+		    l += strlen(lcCompose);
+		break;
+	    }
+	} else {
+	    l++;
+	}
+	i++;
+    }
 
-	  }
-      } else {
-	  l++;
-      }
-      i++;
-   }
-
-   j = ret = (char *)malloc(l+1);
-   if (ret == NULL)
-      return ret;
-   i = name;
-   while (*i) {
-      if (*i == '%') {
-	  i++;
-	  switch (*i) {
-	      case '%':
-		 *j++ = '%';
-		 break;
-	      case 'H':
-		 if (home) {
-		     strcpy(j, home);
-		     j += strlen(home);
-		 }
-		 break;
-	      case 'L':
-		 if (lcCompose) {
+    j = ret = (char *)malloc(l + 1);
+    if (ret == NULL)
+	return ret;
+    i = name;
+    while (*i) {
+	if (*i == '%') {
+	    i++;
+	    switch (*i) {
+	    case '%':
+		*j++ = '%';
+		break;
+	    case 'H':
+		if (home) {
+		    strcpy(j, home);
+		    j += strlen(home);
+		}
+		break;
+	    case 'L':
+		if (lcCompose) {
 		    strcpy(j, lcCompose);
 		    j += strlen(lcCompose);
 		    free(lcCompose);
-		 }
-		 break;
-	  }
-	  i++;
-      } else {
-	  *j++ = *i++;
-      }
-   }
-   *j = '\0';
-   return ret;
+		}
+		break;
+	    }
+	    i++;
+	} else {
+	    *j++ = *i++;
+	}
+    }
+    *j = '\0';
+    return ret;
 }
 
 #ifndef MB_LEN_MAX
@@ -443,9 +434,7 @@ XimIM::get_mb_string(char *buf, KeySym ks)
 #define SEQUENCE_MAX    10
 
 int
-XimIM::parseline(
-    FILE *fp,
-    char* tokenbuf)
+XimIM::parseline(FILE *fp, char* tokenbuf)
 {
     int token;
     unsigned modifier_mask;
@@ -493,7 +482,7 @@ XimIM::parseline(
 	    if ((filename = TransFileName(tokenbuf)) == NULL)
 		goto error;
 	    infp = fopen(filename, "r");
-		free(filename);
+	    free(filename);
 	    if (infp == NULL)
 		goto error;
 	    XimParseStringFile(infp);
@@ -558,7 +547,7 @@ XimIM::parseline(
 	buf[n].modifier = modifier;
 	buf[n].modifier_mask = modifier_mask;
 	n++;
-	if( n >= SEQUENCE_MAX )
+	if (n >= SEQUENCE_MAX)
 	    goto error;
 	token = nexttoken(fp, tokenbuf, &lastch);
     } while (token != COLON);
@@ -578,7 +567,6 @@ XimIM::parseline(
 	    token = nexttoken(fp, tokenbuf, &lastch);
 	}
 	if (token != ENDOFLINE && token != ENDOFFILE) {
-
 	    free(rhs_string_mb);
 	    goto error;
 	}
@@ -598,7 +586,7 @@ XimIM::parseline(
 	} else {
 	    rhs_string_mb = (char *)malloc(l + 1);
 	}
-	if( rhs_string_mb == NULL ) {
+	if (rhs_string_mb == NULL) {
 	    goto error;
 	}
 	memcpy(rhs_string_mb, local_mb_buf, l);
@@ -613,8 +601,8 @@ XimIM::parseline(
     }
     if( (rhs_string_wc = (wchar_t *)malloc((l + 1) * sizeof(wchar_t))) == NULL
 ) {
-	free( rhs_string_mb );
-	return( 0 );
+	free(rhs_string_mb);
+	return 0;
     }
 
     memcpy((char *)rhs_string_wc, (char *)local_wc_buf, (l + 1) * sizeof(wchar_t
@@ -624,17 +612,17 @@ XimIM::parseline(
     if (l == LOCAL_UTF8_BUFSIZE - 1) {
 	local_wc_buf[l] = '\0';
     }
-    if( (rhs_string_utf8 = (char *)malloc(l + 1)) == NULL ) {
-	free( rhs_string_wc );
-	free( rhs_string_mb );
-	return( 0 );
+    if ((rhs_string_utf8 = (char *)malloc(l + 1)) == NULL) {
+	free(rhs_string_wc);
+	free(rhs_string_mb);
+	return 0;
     }
     memcpy(rhs_string_utf8, local_utf8_buf, l + 1);
 
     for (i = 0; i < n; i++) {
 	for (p = *top; p; p = p->next) {
-	    if (buf[i].keysym	== p->keysym &&
-		buf[i].modifier      == p->modifier &&
+	    if (buf[i].keysym == p->keysym &&
+		buf[i].modifier == p->modifier &&
 		buf[i].modifier_mask == p->modifier_mask) {
 		break;
 	    }
@@ -642,40 +630,40 @@ XimIM::parseline(
 	if (p) {
 	    top = &p->succession;
 	} else {
-	    if( (p = (DefTree*)malloc(sizeof(DefTree))) == NULL ) {
-		free( rhs_string_mb );
+	    if ((p = (DefTree*)malloc(sizeof(DefTree))) == NULL) {
+		free(rhs_string_mb);
 		goto error;
 	    }
-	    p->keysym	= buf[i].keysym;
-	    p->modifier      = buf[i].modifier;
+	    p->keysym = buf[i].keysym;
+	    p->modifier = buf[i].modifier;
 	    p->modifier_mask = buf[i].modifier_mask;
-	    p->succession    = NULL;
-	    p->next	  = *top;
-	    p->mb	    = NULL;
-	    p->wc	    = NULL;
-	    p->utf8	  = NULL;
-	    p->ks	    = NoSymbol;
+	    p->succession = NULL;
+	    p->next = *top;
+	    p->mb = NULL;
+	    p->wc = NULL;
+	    p->utf8 = NULL;
+	    p->ks = NoSymbol;
 	    *top = p;
 	    top = &p->succession;
 	}
     }
 
-    if( p->mb != NULL )
-	free( p->mb );
+    if (p->mb != NULL)
+	free(p->mb);
     p->mb = rhs_string_mb;
-    if( p->wc != NULL )
-	free( p->wc );
+    if (p->wc != NULL)
+	free(p->wc);
     p->wc = rhs_string_wc;
-    if( p->utf8 != NULL )
-	free( p->utf8 );
+    if (p->utf8 != NULL)
+	free(p->utf8);
     p->utf8 = rhs_string_utf8;
     p->ks = rhs_keysym;
-    return(n);
+    return n;
 error:
     while (token != ENDOFLINE && token != ENDOFFILE) {
 	token = nexttoken(fp, tokenbuf, &lastch);
     }
-    return(0);
+    return 0;
 }
 
 void
@@ -700,11 +688,13 @@ XimIM::XimParseStringFile(FILE *fp)
 	if (size <= sizeof tb)
 	    tbp = tb;
 	else
-	    tbp = (char *)malloc (size);
+	    tbp = (char *)malloc(size);
 
 	if (tbp != NULL) {
-	    while (parseline(fp, tbp) >= 0) {}
-	    if (tbp != tb) free (tbp);
+	    while (parseline(fp, tbp) >= 0) {
+	    }
+	    if (tbp != tb)
+		free (tbp);
 	}
     }
 }
@@ -718,16 +708,16 @@ void XimIM::create_compose_tree()
 
     name = getenv("XCOMPOSEFILE");
 
-    if (name == (char *) NULL) {
+    if (name == NULL) {
 	char *home = getenv("HOME");
-	if (home != (char *) NULL) {
+	if (home != NULL) {
 	    int hl = strlen(home);
 	    tmpname = name = (char *)malloc(hl + 10 + 1);
-	    if (name != (char *) NULL) {
+	    if (name != NULL) {
 		strcpy(name, home);
 		strcpy(name + hl, "/.XCompose");
 		fp = fopen(name, "r");
-		if (fp == (FILE *) NULL) {
+		if (fp == NULL) {
 		    free(name);
 		    name = tmpname = NULL;
 		}
@@ -735,19 +725,19 @@ void XimIM::create_compose_tree()
 	}
     }
 
-    if (name == (char *) NULL) {
+    if (name == NULL) {
 	tmpname = name = get_compose_filename();
     }
 
-    if (name == (char *) NULL)
+    if (name == NULL)
 	return;
-    if (fp == (FILE *) NULL) {
+    if (fp == NULL) {
 	fp = fopen(name, "r");
     }
-    if (tmpname != (char *) NULL) {
+    if (tmpname != NULL) {
 	free(tmpname);
     }
-    if (fp == (FILE *) NULL)
+    if (fp == NULL)
 	return;
 
     orig_locale = strdup(setlocale(LC_CTYPE, NULL));
@@ -840,7 +830,7 @@ char *XimIM::get_compose_filename()
     if (name == NULL)
 	return NULL;
 
-    filename = (char *)malloc(sizeof(char *) * (strlen(XLIB_DIR) + strlen(XLOCALE_DIR) + strlen(name) + 3));
+    filename = (char *)malloc(sizeof(char) * (strlen(XLIB_DIR) + strlen(XLOCALE_DIR) + strlen(name) + 3));
     if (filename == NULL)
 	return NULL;
     sprintf(filename, "%s/%s/%s", XLIB_DIR, XLOCALE_DIR, name);
