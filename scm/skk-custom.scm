@@ -39,6 +39,15 @@
                      (ugettext skk-im-name-label)
                      (ugettext skk-im-short-desc))
 
+(define-custom-group 'skk-advanced
+                     (_ "SKK (advanced)")
+                     (_ "Advanced settings for SKK"))
+
+
+;;
+;; candidate window
+;;
+
 (define-custom 'skk-use-candidate-window? #t
   '(skk candwin)
   '(boolean)
@@ -58,7 +67,7 @@
   (_ "long description will be here."))
 
 (define-custom 'skk-commit-candidate-by-label-key? #t
-  '(skk candwin advanced)
+  '(skk candwin)
   '(boolean)
   (_ "Commit candidate by heading label keys")
   (_ "long description will be here."))
@@ -78,96 +87,6 @@
 		 'custom-activity-hooks
 		 (lambda ()
 		   skk-use-candidate-window?))
-
-(define-custom 'skk-style 'skk-style-ddskk-like
-  '(skk advanced)
-  (list 'choice
-	(list 'skk-style-ddskk-like (_ "ddskk") (_ "Similar to ddskk"))
-	(list 'skk-style-uim (_ "uim") (_ "uim native")))
-  (_ "Visual style")
-  (_ "long description will be here."))
-
-(define-custom 'skk-use-recursive-learning? #t
-  '(skk advanced)
-  '(boolean)
-  (_ "Use recursive learning")
-  (_ "long description will be here."))
-
-(define-custom 'skk-egg-like-newline? #f
-  '(skk advanced)
-  '(boolean)
-  (_ "Use Enter key as just committing (egg-like operation)")
-  (_ "long description will be here."))
-
-;; should be removed if there is no usage
-(define-custom 'skk-commit-newline-explicitly? #f
-  '(skk advanced)
-  '(boolean)
-  (_ "Commit newline as ASCII string instead of native key-event")
-  (_ "long description will be here."))
-
-(define-custom 'skk-use-numeric-conversion? #t
-  '(skk advanced)
-  '(boolean)
-  (_ "Use numeric conversion")
-  (_ "long description will be here."))
-
-(define-custom 'skk-use-with-vi? #f
-  '(skk advanced)
-  '(boolean)
-  (_ "Friendly for vi user")
-  (_ "long description will be here."))
-
-(define-custom 'skk-auto-start-henkan? #t
-  '(skk advanced)
-  '(boolean)
-  (_ "Enable auto conversion with punctuation marks")
-  (_ "long description will be here."))
-
-(define-custom 'skk-show-annotation? #t
-  '(skk advanced)
-  '(boolean)
-  (_ "Show annotation of candidate word")
-  (_ "long description will be here."))
-
-(define-custom 'skk-show-annotation-in-preedit? #f
-  '(skk advanced)
-  '(boolean)
-  (_ "Show annotation also in preedit area")
-  (_ "long description will be here."))
-
-(custom-add-hook 'skk-show-annotation-in-preedit?
-		 'custom-activity-hooks
-		 (lambda ()
-		   skk-show-annotation?))
-
-(custom-add-hook 'skk-show-annotation?
-		 'custom-get-hooks
-		 (lambda ()
-		   (if (not skk-show-annotation?)
-		       (set! skk-show-annotation-in-preedit? #f))))
-
-(define-custom 'skk-dic-file-name (string-append (sys-datadir)
-						 "/skk/SKK-JISYO.L")
-  '(skk)
-  '(pathname)
-  (_ "Dictionary file")
-  (_ "long description will be here."))
-
-(define-custom 'skk-personal-dic-filename
-  (string-append (getenv "HOME") "/.skk-jisyo")
-  '(skk)
-  '(pathname)
-  (_ "Personal dictionary file")
-  (_ "long description will be here."))
-
-(define-custom 'skk-uim-personal-dic-filename
-  (string-append (getenv "HOME") "/.skk-uim-jisyo")
-  '(skk)
-  '(pathname)
-  (_ "Personal dictionary file (dedicated to uim)")
-  (_ "long description will be here."))
-
 
 ;;
 ;; toolbar
@@ -245,3 +164,107 @@
 		 (lambda ()
 		   (skk-configure-widgets)))
 
+;;
+;; dictionary
+;;
+
+(define-custom 'skk-dic-file-name (string-append (sys-datadir)
+						 "/skk/SKK-JISYO.L")
+  '(skk dictionary)
+  '(pathname)
+  (_ "Dictionary file")
+  (_ "long description will be here."))
+
+(define-custom 'skk-personal-dic-filename
+  (string-append (getenv "HOME") "/.skk-jisyo")
+  '(skk dictionary)
+  '(pathname)
+  (_ "Personal dictionary file")
+  (_ "long description will be here."))
+
+(define-custom 'skk-uim-personal-dic-filename
+  (string-append (getenv "HOME") "/.skk-uim-jisyo")
+  '(skk dictionary)
+  '(pathname)
+  (_ "Personal dictionary file (dedicated to uim)")
+  (_ "long description will be here."))
+
+;;
+;; advanced
+;;
+
+(define-custom 'skk-style 'skk-style-ddskk-like
+  '(skk-advanced)
+  (list 'choice
+	(list 'skk-style-ddskk-like (_ "ddskk") (_ "Similar to ddskk"))
+	(list 'skk-style-uim (_ "uim") (_ "uim native")))
+  (_ "Visual style")
+  (_ "long description will be here."))
+
+(define-custom 'skk-use-recursive-learning? #t
+  '(skk-advanced)
+  '(boolean)
+  (_ "Use recursive learning")
+  (_ "long description will be here."))
+
+(define-custom 'skk-use-numeric-conversion? #t
+  '(skk-advanced)
+  '(boolean)
+  (_ "Use numeric conversion")
+  (_ "long description will be here."))
+
+(define-custom 'skk-auto-start-henkan? #t
+  '(skk-advanced)
+  '(boolean)
+  (_ "Enable auto conversion with punctuation marks")
+  (_ "long description will be here."))
+
+;;
+;; annotation
+;;
+
+(define-custom 'skk-show-annotation? #t
+  '(skk-advanced annotation)
+  '(boolean)
+  (_ "Show annotation of candidate word")
+  (_ "long description will be here."))
+
+(define-custom 'skk-show-annotation-in-preedit? #f
+  '(skk-advanced annotation)
+  '(boolean)
+  (_ "Show annotation also in preedit area")
+  (_ "long description will be here."))
+
+(custom-add-hook 'skk-show-annotation-in-preedit?
+		 'custom-activity-hooks
+		 (lambda ()
+		   skk-show-annotation?))
+
+(custom-add-hook 'skk-show-annotation?
+		 'custom-get-hooks
+		 (lambda ()
+		   (if (not skk-show-annotation?)
+		       (set! skk-show-annotation-in-preedit? #f))))
+
+;;
+;; special operations
+;;
+
+(define-custom 'skk-use-with-vi? #f
+  '(skk-advanced special-op)
+  '(boolean)
+  (_ "Friendly for vi user")
+  (_ "long description will be here."))
+
+(define-custom 'skk-egg-like-newline? #f
+  '(skk-advanced special-op)
+  '(boolean)
+  (_ "Use Enter key as just committing (egg-like operation)")
+  (_ "long description will be here."))
+
+;; should be removed if there is no usage
+(define-custom 'skk-commit-newline-explicitly? #f
+  '(skk-advanced special-op)
+  '(boolean)
+  (_ "Commit newline as ASCII string instead of native key-event")
+  (_ "long description will be here."))

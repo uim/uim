@@ -39,6 +39,32 @@
                      (ugettext anthy-im-name-label)
                      (ugettext anthy-im-short-desc))
 
+
+;;
+;; segment separator
+;;
+
+(define-custom 'anthy-show-segment-separator? #f
+  '(anthy segment-sep)
+  '(boolean)
+  (_ "Show segment separator")
+  (_ "long description will be here."))
+
+(define-custom 'anthy-segment-separator "|"
+  '(anthy segment-sep)
+  '(string ".*")
+  (_ "Segment separator")
+  (_ "long description will be here."))
+
+(custom-add-hook 'anthy-segment-separator
+		 'custom-activity-hooks
+		 (lambda ()
+		   anthy-show-segment-separator?))
+
+;;
+;; candidate window
+;;
+
 (define-custom 'anthy-use-candidate-window? #t
   '(anthy candwin)
   '(boolean)
@@ -78,23 +104,6 @@
 		 'custom-activity-hooks
 		 (lambda ()
 		   anthy-use-candidate-window?))
-
-(define-custom 'anthy-show-segment-separator? #f
-  '(anthy advanced)
-  '(boolean)
-  (_ "Show segment separator")
-  (_ "long description will be here."))
-
-(define-custom 'anthy-segment-separator "|"
-  '(anthy advanced)
-  '(string ".*")
-  (_ "Segment separator")
-  (_ "long description will be here."))
-
-(custom-add-hook 'anthy-segment-separator
-		 'custom-activity-hooks
-		 (lambda ()
-		   anthy-show-segment-separator?))
 
 ;;
 ;; toolbar

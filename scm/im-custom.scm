@@ -60,6 +60,27 @@
 		     (_ "Candidate window")
 		     (_ "long description will be here."))
 
+;; subgroup
+(define-custom-group 'annotation
+                     (_ "Annotation")
+                     (_ "long description will be here."))
+
+;; subgroup
+(define-custom-group 'dictionary
+                     (_ "Dictionary")
+                     (_ "long description will be here."))
+
+;; subgroup
+(define-custom-group 'segment-sep
+                     (_ "Segment separator")
+                     (_ "long description will be here."))
+
+;; subgroup
+(define-custom-group 'special-op
+                     (_ "Special operation")
+                     (_ "long description will be here."))
+
+
 ;; 
 ;; default-im-name
 ;;
@@ -217,6 +238,8 @@
 ;;		 'custom-activity-hooks
 ;;		 (lambda ()
 ;;		   enable-im-switch))
+
+(define-key switch-im-key? '())
 
 (define-custom 'uim-color 'uim-color-uim
   '(global)
