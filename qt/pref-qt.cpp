@@ -373,6 +373,7 @@ void GroupPageWidget::setupWidgets( const char *group_name )
     vLayout->addWidget( defaultGroupVBox );    
     defaultGroupVBox->hide();
 
+#if 0
     SubgroupData *sd = new SubgroupData( this, group_name );
 
     /* add various widgets to the vbox */
@@ -395,9 +396,48 @@ void GroupPageWidget::setupWidgets( const char *group_name )
 
         uim_custom_symbol_list_free( custom_syms );
     }
+#else
+    char **sub_groups = uim_custom_group_subgroups( group_name );
+    char **sgrp;
+    for( sgrp = sub_groups; *sgrp; sgrp++ )
+    {
+        struct uim_custom_group *sgroup_custom =  uim_custom_group_get( *sgrp );
+        QVGroupBox *vbox;
+        if( QString::compare( *sgrp, "main" ) == 0 )
+        {
+            vbox = defaultGroupVBox;
+	    vbox->show();
+        }
+        else
+        {
+            vbox = new QVGroupBox( _FU8(sgroup_custom->label), this );
+            layout()->add( vbox );
+        }
+
+	/* XXX quick hack to use AND expression of groups */
+	QString groups( group_name );
+	groups += " '";
+	groups += *sgrp;
+        char **custom_syms = uim_custom_collect_by_group( groups );
+        if( !custom_syms )
+            continue;
+
+        for( char **custom_sym = custom_syms; *custom_sym; custom_sym++ )
+        {
+            UimCustomItemIface *iface = addCustom( vbox, *custom_sym );
+            if( iface )
+                m_customIfaceList.append( iface );
+        }
+        uim_custom_symbol_list_free( custom_syms );
+
+
+        uim_custom_group_free( sgroup_custom );
+    }
+    uim_custom_symbol_list_free( sub_groups );
+#endif
 
     /* free */
-    delete sd;
+    //delete sd;
     uim_custom_group_free( group );
 
     /* bottom up */
@@ -555,6 +595,7 @@ void GroupPageWidget::setDefault()
     }
 }
 
+#if 0
 //-----------------------------------------------------------------------------------
 SubgroupData::SubgroupData( QWidget*parentWidget, const char *parent_group_name )
 {
@@ -607,6 +648,7 @@ QVGroupBox * SubgroupData::searchGroupVBoxByCustomSym( const char *custom_sym ) 
         return NULL;
     return gvboxMap[QString(custom_sym)];
 }
+#endif
 
 //--------------------------------------------------------------------------------------
 int main( int argc, char **argv )

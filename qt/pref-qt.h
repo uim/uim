@@ -137,6 +137,7 @@ protected:
     QPtrList<UimCustomItemIface> m_customIfaceList;
 };
 
+#if 0
 class SubgroupData {
 public:
     SubgroupData( QWidget *parentWidget, const char *parent_group_name );
@@ -147,6 +148,7 @@ public:
 protected:
     QMap<QString, QVGroupBox*> gvboxMap;
 };
+#endif
 
 
 #endif /* Not def: _UIM_PREF_QT_H_ */
