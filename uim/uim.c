@@ -54,11 +54,6 @@ extern char *uim_return_str_list[10];
 
 char *uim_last_client_encoding;
 
-#ifdef HAVE_CANNA_RK_H
-extern void uim_init_canna();
-extern void uim_quit_canna();
-#endif /* HAVE_CANNA_RK_H */
-
 #define CONTEXT_ARRAY_SIZE 512
 static uim_context context_array[CONTEXT_ARRAY_SIZE];
 struct uim_im *uim_im_array;
@@ -684,9 +679,6 @@ uim_init_scm()
   uim_init_anthy();
   uim_init_prime();
   uim_init_skk_dic();
-#ifdef HAVE_CANNA_RK_H
-  uim_init_canna();
-#endif /* HAVE_CANNA_RK_H */
   uim_init_plugin();
 
   scm_files = getenv("LIBUIM_SCM_FILES");
@@ -746,9 +738,6 @@ uim_quit(void)
   uim_quit_skk_dic();
   uim_quit_anthy();
   uim_quit_prime();
-#ifdef HAVE_CANNA_RK_H
-  uim_quit_canna();
-#endif /* HAVE_CANNA_RK_H */
   uim_quit_plugin();
   siod_quit();
   uim_last_client_encoding = NULL;
