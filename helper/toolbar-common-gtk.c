@@ -41,6 +41,7 @@
 #include <uim/uim.h>
 #include "uim/config.h"
 #include "uim/uim-helper.h"
+#include "uim-compat-scm.h"
 #include "uim/gettext.h"
 
 #define BUTTON_WIDTH  22
@@ -217,13 +218,15 @@ helper_applet_prop_list_update(gchar **tmp)
 
   /* create button for exec switcher */
   button = switcher_button_create();
-  gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
-  menu_buttons = g_list_append(menu_buttons, button);
-
+  if(button) {
+    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
+    menu_buttons = g_list_append(menu_buttons, button);
+  }
   button = pref_button_create();
-  gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
-  menu_buttons = g_list_append(menu_buttons, button);
-
+  if(button) {
+    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
+    menu_buttons = g_list_append(menu_buttons, button);
+  }
   gtk_widget_show_all(hbox);
 
   if(charset)
@@ -536,6 +539,12 @@ switcher_button_create(void)
   GtkTooltips *tooltip;
   GtkWidget *img;
   gchar *path;
+  uim_bool show_switcher;
+
+  show_switcher = uim_scm_symbol_value_bool("toolbar-show-switcher-button?");
+  if(show_switcher == UIM_FALSE)
+    return NULL;
+
   button = gtk_button_new();
   path = g_strconcat(UIM_PIXMAPSDIR, "/switcher-icon.png", NULL);
   img = gtk_image_new_from_file(path);
@@ -574,6 +583,12 @@ pref_button_create(void)
   GtkWidget *button;
   GtkTooltips *tooltip;
   GtkWidget *img;
+  uim_bool show_pref;
+
+  show_pref = uim_scm_symbol_value_bool("toolbar-show-pref-button?");
+  if(show_pref == UIM_FALSE)
+    return NULL;
+
   button = gtk_button_new();
   img = gtk_image_new_from_stock(GTK_STOCK_PREFERENCES, GTK_ICON_SIZE_MENU);
   gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
