@@ -930,6 +930,7 @@ void KeyGrabForm::keyPressEvent( QKeyEvent *e )
     case Qt::Key_End:
         editString.append( "end" );
         break;
+#ifdef QT_IMMODULE
     case Qt::Key_Kanji:
     case Qt::Key_Zenkaku_Hankaku:
         editString.append( "zenkaku-hankaku" );
@@ -943,6 +944,7 @@ void KeyGrabForm::keyPressEvent( QKeyEvent *e )
     case Qt::Key_Muhenkan:
         editString.append( "Muhenkan" );
         break;
+#endif /* Def: QT_IMMODULE */
     case Qt::Key_Shift:
         m_shiftCheckBox->setChecked( true );
         editString.append( "Shift_key" );

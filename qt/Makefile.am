@@ -1,6 +1,12 @@
+if QT
+
 INCLUDES        = -I$(top_srcdir) -I$(top_builddir)
 CXXFLAGS        += $(UIM_QT_CFLAGS)
 CFLAGS          += $(UIM_QT_CFLAGS)
+
+if QT_IMMODULE
+CXXFLAGS        += -DQT_IMMODULE
+endif
 
 HEADER_FILES = \
 	toolbar-common-quimhelpertoolbar.h \
@@ -41,7 +47,6 @@ bin_PROGRAMS = \
 	uim-candwin-qt \
 	uim-im-switcher-qt \
 	uim-pref-qt
-
 
 # Toolbar Common
 noinst_LTLIBRARIES = libtoolbarcommon.la
@@ -119,5 +124,4 @@ pref-keygrabformbase.cpp: pref-keygrabformbase.h
 	echo '#include "pref-keygrabformbase.moc"' >> pref-keygrabformbase.cpp.tmp
 	mv pref-keygrabformbase.cpp.tmp pref-keygrabformbase.cpp
 
-
-
+endif
