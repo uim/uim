@@ -1469,7 +1469,7 @@ choose_key_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 				  GTK_MESSAGE_INFO,
 				  GTK_BUTTONS_CANCEL,
 				  _("Press keys to grab (e.g. <Control>a)"));
-  gtk_window_set_title(GTK_WINDOW(dialog), "Grabbing a key");
+  gtk_window_set_title(GTK_WINDOW(dialog), _("Grabbing keys"));
   g_signal_connect(G_OBJECT(dialog), "key-press-event",
 		   G_CALLBACK(grab_win_key_press_cb), key_entry);
   g_signal_connect(G_OBJECT(dialog), "key-release-event",
@@ -1948,7 +1948,7 @@ uim_pref_gtk_set_default_value(GtkWidget *widget)
       free(value->as_olist[i]);
     }
     value->as_olist = realloc(value->as_olist,
-			      sizeof(struct uim_custom_choice) * (num + 1));
+			      sizeof(struct uim_custom_choice *) * (num + 1));
     for (i = 0; i < num; i++) {
       value->as_olist[i] = malloc(sizeof(struct uim_custom_choice));
       value->as_olist[i]->symbol = strdup(defval->as_olist[i]->symbol);
@@ -1966,7 +1966,7 @@ uim_pref_gtk_set_default_value(GtkWidget *widget)
       free(value->as_key[i]);
     }
     value->as_key = realloc(value->as_key,
-			    sizeof(struct uim_custom_key) * (num + 1));
+			    sizeof(struct uim_custom_key *) * (num + 1));
     for (i = 0; i < num; i++) {
       value->as_key[i] = malloc(sizeof(struct uim_custom_key));
       value->as_key[i] = defval->as_key[i];
