@@ -2239,9 +2239,22 @@ string_prin1 (LISP ptr, struct gen_printio *f)
 
 
 static LISP
+err_wta_str (LISP exp)
+{
+  return (my_err ("not a string", exp));
+}
+
+static LISP
 string_equal (LISP a, LISP b)
 {
   long len;
+  
+  if NTYPEP(a, tc_string)
+    return (err_wta_str(a));
+
+  if NTYPEP(b, tc_string)
+    return (err_wta_str(b));
+
   len = a->storage_as.string.dim;
   if (len != b->storage_as.string.dim)
     return (NIL);
@@ -3691,12 +3704,6 @@ pts_puts (char *from, void *cb)
   if (fitsize < fromlen)
     my_err ("print to string overflow", NIL);
   return (1);
-}
-
-static LISP
-err_wta_str (LISP exp)
-{
-  return (my_err ("not a string", exp));
 }
 
 
