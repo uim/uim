@@ -241,7 +241,7 @@ public:
 public slots:
     void slotHighlighted( int index )
     {
-        Q_ASSERT( m_custom->type == UCustom_Pathname );
+        Q_ASSERT( m_custom->type == UCustom_Choice );
 
         struct uim_custom_choice **valid_items = m_custom->range->as_choice.valid_items;
         struct uim_custom_choice *choice = NULL;
