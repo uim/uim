@@ -11,6 +11,8 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  uim-sh.scm custom.scm custom-rt.scm \
  manage-modules.scm \
  direct.scm \
+ ng-japanese.scm ng-japanese-romaji.scm ng-japanese-kana.scm \
+ japanese-nicola.scm ng-japanese-azik.scm \
  rk.scm \
  generic.scm generic-custom.scm generic-key-custom.scm \
  pyload.scm PY.scm pyunihan.scm pinyin-big5.scm \
