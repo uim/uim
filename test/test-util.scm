@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 142(new repository)
+;; This file is tested with revision 268 (new repository)
 
 (use test.unit)
 
@@ -316,7 +316,98 @@
 		 (uim 'alist))
    (uim '(set! alist (alist-replace '(second two "two") alist)))
    (assert-equal '((third 3 "3") (second two "two") (first 1 "1"))
-		 (uim 'alist))))
+		 (uim 'alist)))
+
+  ("test join"
+   (assert-equal ()
+		 (uim '(join () ())))
+   (assert-equal '(())
+		 (uim '(join () '(()))))
+   (assert-equal '(1)
+		 (uim '(join () '(1))))
+   (assert-equal '(() () ())
+		 (uim '(join () '(() ()))))
+   (assert-equal '(1 () 2)
+		 (uim '(join () '(1 2))))
+   (assert-equal '(1 () 2 () 3)
+		 (uim '(join () '(1 2 3))))
+   (assert-equal '(one () two () three)
+		 (uim '(join () '(one two three))))
+   (assert-equal '("1" () "2" () "3")
+		 (uim '(join () '("1" "2" "3"))))
+   (assert-equal '(() () () () ())
+		 (uim '(join () '(() () ()))))
+
+   (assert-equal ()
+		 (uim '(join "/" ())))
+   (assert-equal '(())
+		 (uim '(join "/" '(()))))
+   (assert-equal '(1)
+		 (uim '(join "/" '(1))))
+   (assert-equal '(() "/" ())
+		 (uim '(join "/" '(() ()))))
+   (assert-equal '(1 "/" 2)
+		 (uim '(join "/" '(1 2))))
+   (assert-equal '(1 "/" 2 "/" 3)
+		 (uim '(join "/" '(1 2 3))))
+   (assert-equal '(one "/" two "/" three)
+		 (uim '(join "/" '(one two three))))
+   (assert-equal '("1" "/" "2" "/" "3")
+		 (uim '(join "/" '("1" "2" "3"))))
+   (assert-equal '(() "/" () "/" ())
+		 (uim '(join "/" '(() () ())))))
+
+  ("test string-join"
+   (assert-equal ""
+		 (uim '(string-join () ())))
+   (assert-error (lambda ()
+		   (uim '(string-join () '(())))))
+   (assert-error (lambda ()
+		   (uim '(string-join () '(1)))))
+   (assert-error (lambda ()
+		   (uim '(string-join () '(() ())))))
+   (assert-error (lambda ()
+		   (uim '(string-join () '(1 2)))))
+   (assert-error (lambda ()
+		   (uim '(string-join () '(1 2 3)))))
+   (assert-error (lambda ()
+		   (uim '(string-join () '(one two three)))))
+   (assert-error (lambda ()
+		   (uim '(string-join () '("1" "2" "3")))))
+   (assert-error (lambda ()
+		   (uim '(string-join () '(() () ())))))
+
+   (assert-equal ""
+		 (uim '(string-join "/" ())))
+   (assert-equal ""
+		 (uim '(string-join "/" '(""))))
+   (assert-equal "1"
+		 (uim '(string-join "/" '("1"))))
+   (assert-equal "1/2"
+		 (uim '(string-join "/" '("1" "2"))))
+   (assert-equal "1/2/3"
+		 (uim '(string-join "/" '("1" "2" "3"))))
+
+   (assert-equal ""
+		 (uim '(string-join "-sep-" ())))
+   (assert-equal ""
+		 (uim '(string-join "-sep-" '(""))))
+   (assert-equal "1"
+		 (uim '(string-join "-sep-" '("1"))))
+   (assert-equal "1-sep-2"
+		 (uim '(string-join "-sep-" '("1" "2"))))
+   (assert-equal "1-sep-2-sep-3"
+		 (uim '(string-join "-sep-" '("1" "2" "3")))))
+
+  ("test string-append-map"
+   (assert-equal ""
+		 (uim '(string-append-map car ())))
+   (assert-equal "c"
+		 (uim '(string-append-map car '(("c" "C")))))
+   (assert-equal "ca"
+		 (uim '(string-append-map car '(("c" "C") ("a" "A")))))
+   (assert-equal "car"
+		 (uim '(string-append-map car '(("c" "C") ("a" "A") ("r" "R")))))))
 
 (define-uim-test-case "testcase util R5RS procedures"
   (setup
@@ -593,7 +684,35 @@
    (assert-equal '(0 1 2 3 4)
 		 (uim '(iota 5)))
    (assert-error (lambda ()
-		   (uim '(iota -1)))))
+		   (uim '(iota -1))))
+
+   (assert-equal ()
+		 (uim '(iota 0 0)))
+   (assert-equal '(0)
+		 (uim '(iota 1 0)))
+   (assert-equal '(0 1 2 3 4)
+		 (uim '(iota 5 0)))
+   (assert-error (lambda ()
+		   (uim '(iota -1 0))))
+
+   (assert-error (lambda ()
+		   (uim '(iota 0 1))))
+   (assert-equal '()
+		 (uim '(iota 1 1)))
+   (assert-equal '(1 2 3 4)
+		 (uim '(iota 5 1)))
+   (assert-error (lambda ()
+		   (uim '(iota -1 1))))
+
+   (assert-error (lambda ()
+		   (uim '(iota 1 3))))
+   (assert-equal '(3 4)
+		 (uim '(iota 5 3)))
+   (assert-error (lambda ()
+		   (uim '(iota -1 3))))
+
+   (assert-equal '()
+		 (uim '(iota 5 5))))
 
   ("test zip"
    (assert-equal '((1) (2) (3) (4) (5))
@@ -612,6 +731,17 @@
 			    '(one two three))))
    (assert-equal ()
 		 (uim '(zip ()))))
+
+  ("test append-map"
+   (assert-equal '()
+		 (uim '(append-map car ())))
+   (assert-equal '(c)
+		 (uim '(append-map car '(((c) (C))))))
+   (assert-equal '(c a)
+		 (uim '(append-map car '(((c) (C)) ((a) (A))))))
+   (assert-equal '(c a r)
+		 (uim '(append-map car '(((c) (C)) ((a) (A)) ((r) (R)))))))
+
   ("test append-reverse"
    (assert-equal '("5" "4" "3" "2" "1" six seven eight)
 		 (uim '(append-reverse '("1" "2" "3" "4" "5")

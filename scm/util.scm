@@ -1,6 +1,6 @@
 ;;; util.scm: Utility functions for uim.
 ;;;
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -133,7 +133,6 @@
 		new-state
 		(iterate-lists mapper new-state rests)))))))
 
-;; not yet tested -- YamaKen 2004-10-30
 (define alist-replace
   (lambda (kons alist)
     (let* ((id (car kons))
@@ -143,6 +142,22 @@
 	    (set-cdr! preexisting (cdr kons))
 	    alist)
 	  (cons kons alist)))))
+
+(define join
+  (lambda (sep list)
+    (let ((len (length list)))
+      (if (= len 0)
+	  ()
+	  (cdr (apply append (zip (make-list len sep)
+				  list)))))))
+
+(define string-join
+  (lambda (sep str-list)
+    (apply string-append (join sep str-list))))
+
+(define string-append-map
+  (lambda args
+    (apply string-append (apply map args))))
 
 ;;
 ;; R5RS procedures (don't expect 100% compatibility)
@@ -228,12 +243,16 @@
 		     fill))))
 
 ;; This procedure does not conform to the SRFI-1 specification. The
-;; optional arguments 'start' and 'step' is not supported.
+;; optional argument 'step' is not supported.
 (define iota
-  (lambda (count)
-    (list-tabulate count
-		   (lambda (i)
-		     i))))
+  (lambda args
+    (let ((count (car args))
+	  (start (if (not (null? (cdr args)))
+		     (cadr args)
+		     0)))
+      (list-tabulate (- count start)
+		     (lambda (i)
+		       (+ start i))))))
     
 (define zip
   (lambda lists
@@ -243,6 +262,10 @@
 	    (let* ((elms (map car lists))
 		   (rests (map cdr lists)))
 	      (cons elms (apply zip rests)))))))
+
+(define append-map
+  (lambda args
+    (apply append (apply map args))))
 
 (define append-reverse
   (lambda (rev-head tail)
