@@ -1337,6 +1337,9 @@ key_pref_set_value(guint keyval, GdkModifierType mod)
   case GDK_Delete:
     g_string_append(keystr, "delete");
     break;
+  case GDK_Insert:
+    g_string_append(keystr, "insert");
+    break;
   case GDK_Escape:
     g_string_append(keystr, "escape");
     break;
