@@ -2120,10 +2120,10 @@ skk_lib_remove_annotation(uim_lisp str_)
 static uim_lisp
 skk_eval_candidate(uim_lisp str_)
 {
-  const char *cand, *return_val;
+  const char *cand, *evaluated_str;
   char *p, *q, *str;
   size_t len;
-  uim_lisp cand_;
+  uim_lisp cand_, return_val;
 
   if (str_ == uim_scm_null_list())
     return uim_scm_null_list();
@@ -2150,19 +2150,24 @@ skk_eval_candidate(uim_lisp str_)
   strncat(str, p + strlen("(concat"), q - (p + strlen("(concat")) + 1);
 
   UIM_EVAL_FSTRING1(NULL, "%s", str);
-  return_val = uim_scm_refer_c_str(uim_scm_return_value());
+  return_val = uim_scm_return_value();
+  if (return_val == uim_scm_null_list()) {
+    free(str);
+    return str_;
+  }
+  evaluated_str = uim_scm_refer_c_str(return_val);
 
   /* get evaluated candidate */
-  len = p - cand + strlen(return_val);
+  len = p - cand + strlen(evaluated_str);
   if (len > strlen(str))
     str = realloc(str, len + 1);
 
   if (p != cand) {
     strncpy(str, cand, p - cand);
     str[p - cand] = '\0';
-    strcat(str, return_val);
+    strcat(str, evaluated_str);
   } else {
-    strcpy(str, return_val);
+    strcpy(str, evaluated_str);
   }
 
   cand_ = uim_scm_make_str(str);
