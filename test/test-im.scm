@@ -48,6 +48,7 @@
 (define-uim-test-case "testcase im im-management"
   (setup
    (lambda ()
+     (uim '(for-each require-module installed-im-module-list))
      (uim '(define prev-im #f))
      (uim '(define prev-nr-ims (length im-list)))
      (uim '(define test-im-init-args #f))
@@ -78,7 +79,7 @@
 		 (uim '(length im-list)))
    (assert-equal 'test-im
 		 (uim '(im-name (retrieve-im 'test-im #f))))
-   (assert-equal 15
+   (assert-equal 16
 		 (uim '(length (retrieve-im 'test-im #f))))
 
    ;; duplicate register will be rejected
@@ -501,6 +502,7 @@
 (define-uim-test-case "testcase im im-switching"
   (setup
    (lambda ()
+     (uim '(for-each require-module installed-im-module-list))
      (uim '(define test-im-anthy #f))
      (uim '(define test-im-skk #f))
      (uim '(define test-im-tcode #f))
@@ -556,6 +558,7 @@
 (define-uim-test-case "testcase im context management"
   (setup
    (lambda ()
+     (uim '(for-each require-module installed-im-module-list))
      ;; define as hand-made data to avoid that implementation of
      ;; register-context affect other tests
      (uim '(begin

@@ -31,14 +31,15 @@
 
 (require "i18n.scm")
 
+;; TODO: write test
 (define custom-im-list-as-choice-rec
   (lambda (lst)
-    (reverse (map (lambda (im)
-		    (let ((sym (im-name im))
-			  (label-name (im-label-name im))
-			  (desc (im-short-desc im)))
-		      (custom-choice-rec-new sym label-name desc)))
-		  lst))))
+    (map (lambda (im)
+	   (let ((sym (im-name im))
+		 (label-name (im-label-name im))
+		 (desc (im-short-desc im)))
+	     (custom-choice-rec-new sym label-name desc)))
+	 lst)))
 
 (define-custom-group 'global
 		     (_ "Global settings")
@@ -68,7 +69,7 @@
   '(global default-im-name)
   (cons
    'choice
-   (custom-im-list-as-choice-rec im-list))
+   (custom-im-list-as-choice-rec (reverse im-list)))
   (_ "Default input method")
   (_ "long description will be here."))
 
@@ -128,17 +129,40 @@
 ;; Enabled IM list
 ;;
 
-(define custom-default-enabled-im-list
-  (custom-im-list-as-choice-rec im-list))
+(define custom-installed-im-list
+  (begin
+    (if (symbol-bound? 'installed-im-module-list)
+	(for-each require-module installed-im-module-list))
+    (custom-im-list-as-choice-rec (reverse im-list))))
 
 (define-custom 'enabled-im-list
-               (map custom-choice-rec-sym custom-default-enabled-im-list)
+               (map custom-choice-rec-sym custom-installed-im-list)
   '(global)
   (cons
    'ordered-list
-   custom-default-enabled-im-list)
+   custom-installed-im-list)
   (_ "Enabled input methods")
   (_ "long description will be here."))
+
+;; bootstrap
+(if (and (symbol-bound? 'installed-im-module-list)
+	 (null? enabled-im-list))
+    (custom-set-value! 'enabled-im-list
+		       (map custom-choice-rec-sym custom-installed-im-list)))
+
+(define custom-hook-literalize-enabled-im-list
+  (lambda ()
+    (require "lazy-load.scm")
+    (string-append
+     "(define enabled-im-list "
+     (custom-value-as-literal 'enabled-im-list)
+     ")\n"
+     "(require \"lazy-load.scm\")\n\n"
+     (string-join "\n" (stub-im-generate-stub-im-list enabled-im-list)))))
+
+(custom-add-hook 'enabled-im-list
+		 'custom-literalize-hooks
+		 custom-hook-literalize-enabled-im-list)
 
 ;;
 ;; im-switching

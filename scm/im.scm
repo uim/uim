@@ -58,6 +58,7 @@
 ;;
 (define im-list ())
 
+;; TODO: rewrite test for module-name
 (define-record 'im
   (list
    (list 'name                        #f)  ;; must be first member
@@ -74,7 +75,8 @@
    (list 'reset-handler               list)
    (list 'get-candidate-handler       list)
    (list 'set-candidate-index-handler list)
-   (list 'prop-activate-handler       list)))
+   (list 'prop-activate-handler       list)
+   (list 'module-name                 "")))
 
 (define im-custom-set-handler
   (lambda (im)
@@ -82,6 +84,17 @@
 	custom-prop-update-custom-handler
 	list)))
 
+;; TODO: write test
+(define normalize-im-list
+  (lambda ()
+    (let ((ordinary-im-list (alist-delete 'direct im-list eq?))
+	  (direct-im (retrieve-im 'direct)))
+      (if direct-im
+	  (set! im-list (cons direct-im
+			      ordinary-im-list))))))
+
+;; TODO: rewrite test
+;; accepts overwrite register
 (define register-im
   (lambda (name lang encoding label-name short-desc init-arg init release
 		mode key-press key-release reset
@@ -89,10 +102,11 @@
     (let ((im (im-new name lang encoding label-name short-desc
 		      init-arg init release
 		      mode key-press key-release reset
-		      get-candidate set-candidate-index prop)))
-      (if (im-register-im name lang encoding short-desc)
-	  (set! im-list (cons im im-list))
-	  #f))))
+		      get-candidate set-candidate-index prop
+		      currently-loading-module-name)))
+      (set! im-list (alist-replace im im-list))
+      (normalize-im-list)
+      (im-register-im name lang encoding short-desc))))
 
 ;; called from C
 (define uim-get-im-short-desc

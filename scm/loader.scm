@@ -61,6 +61,6 @@
     ;;"scim"
     ))
 
-;; don't touch this. This code will be removed once the
-;; enabled-im-list feature is implemented
-(for-each require-module installed-im-module-list)
+;; don't touch this
+(if (not (symbol-bound? '*lazy-load.scm-loaded*))
+    (for-each require-module installed-im-module-list))

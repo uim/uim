@@ -92,26 +92,19 @@
 	   (plugin-entry-quit-proc entry)))))
 
 
-;; holds list of (module-name provided-im-name1 provided-im-name2 ...)
-;; e.g. '("pyload" py pyunihan pinyin-big5)
-(define required-modules-alist ())
-
-;; The name 'module' is imported from a post from Hiroyuki. If you
+;; The name 'module' is adopted from a post from Hiroyuki. If you
 ;; feel bad about the meaning of 'module', post your opinion to
 ;; uim@fdo.
+
+(define currently-loading-module-name #f)
+
 ;;
 ;; TODO: write test
-;; returns provided im-names
+;; returns whether initialization is succeeded
 (define require-module
   (lambda (module-name)
-    (let ((pre-im-list im-list))
-      (or (load-plugin module-name)
-	  (require (string-append module-name ".scm")))
-      (let* ((post-im-list im-list)
-	     (nr-new-ims (- (length post-im-list)
-			    (length pre-im-list)))
-	     (new-ims (list-head post-im-list nr-new-ims))
-	     (provided (reverse (map im-name new-ims))))
-	(set! required-modules-alist (cons (cons module-name provided)
-					   required-modules-alist))
-	provided))))
+    (set! currently-loading-module-name module-name)
+    (let ((succeeded (or (load-plugin module-name)
+			 (try-require (string-append module-name ".scm")))))
+      (set! currently-loading-module-name #f)
+      succeeded)))

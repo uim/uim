@@ -256,16 +256,15 @@
   (lambda (sym)
     (assq sym custom-rec-alist)))
 
+;; TODO: rewrite test for overwriting
 ;; API
 (define define-custom
   (lambda (sym default groups type label desc)
     (let ((crec (custom-rec-new sym default groups type label desc))
 	  (primary-grp (car groups))
 	  (subgrps (cons 'main (cdr groups))))
-      (if (not (custom-rec sym))
-	  (begin
-	    (set! custom-rec-alist (cons crec custom-rec-alist))
-	    (custom-call-hook-procs primary-grp custom-group-update-hooks)))
+      (set! custom-rec-alist (alist-replace crec custom-rec-alist))
+      (custom-call-hook-procs primary-grp custom-group-update-hooks)
       (if (not (symbol-bound? sym))
 	  (let ((quoted-default (if (or (symbol? default)
 					(list? default))
@@ -402,6 +401,7 @@
 			      lst)))
       (string-append "'(" (string-join " " canonicalized) ")"))))
 
+;; rewrite test for () as list
 ;; API
 (define custom-value-as-literal
   (lambda (sym)
@@ -410,11 +410,6 @@
 	  (as-string (lambda (s)
 		       (string-append "\"" s "\""))))
       (cond
-       ((or (eq? val #f)
-	    (eq? type 'boolean))
-	(if (eq? val #f)
-	    "#f"
-	    "#t"))
        ((eq? type 'integer)
 	(digit->string val))
        ((eq? type 'string)
@@ -425,7 +420,12 @@
 	(string-append "'" (symbol->string val)))
        ((or (eq? type 'ordered-list)
 	    (eq? type 'key))
-	(custom-list-as-literal val))))))
+	(custom-list-as-literal val))
+       ((or (eq? val #f)
+	    (eq? type 'boolean))
+	(if (eq? val #f)
+	    "#f"
+	    "#t"))))))
 
 ;; Don't invoke this from a literalize-hook. It will cause infinite loop
 (define custom-definition-as-literal

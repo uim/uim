@@ -364,11 +364,13 @@
 ;; uim-specific utilities
 ;;
 
+;; TODO: suppress error messages
 ;; returns succeeded or not
 (define try-load
   (lambda (file)
     (not (*catch 'errobj (load file)))))
 
+;; TODO: suppress error messages
 ;; returns succeeded or not
 (define try-require
   (lambda (file)
