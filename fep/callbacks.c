@@ -525,14 +525,14 @@ static void make_page_strs(void)
   for (index = 0; index < s_candidate.nr; index++) {
     int next = FALSE;
     /* "[10/20]" の幅 */
-    int index_width = 3 + numwidth(index + 1) + numwidth(s_candidate.nr);
+    int index_width = strlen("[/]") + numwidth(index + 1) + numwidth(s_candidate.nr);
 
     uim_candidate cand = uim_get_candidate(s_context, index, index_in_page);
     const char *cand_str_label = uim_candidate_get_heading_label(cand);
     char *cand_str_cand = tab2space(uim_candidate_get_cand_str(cand));
     int cand_label_width = strwidth(cand_str_label);
-    int cand_width = cand_label_width + 1 + strwidth(cand_str_cand) + 1;
-    int cand_byte = strlen(cand_str_label) + 1 + strlen(cand_str_cand) + 1;
+    int cand_width = cand_label_width + strlen(":") + strwidth(cand_str_cand) + strlen(" ");
+    int cand_byte = strlen(cand_str_label) + strlen(":") + strlen(cand_str_cand) + strlen(" ");
     char *cand_str = malloc(cand_byte + 1);
     sprintf(cand_str, "%s:%s ", cand_str_label, cand_str_cand);
     uim_candidate_free(cand);
@@ -547,13 +547,13 @@ static void make_page_strs(void)
     if (page_width + cand_width + index_width > max_width && index_in_page != 0) {
       /* はみ出たので次のページに移す */
       index--;
-      index_width = 3 + numwidth(index + 1) + numwidth(s_candidate.nr);
+      index_width = strlen("[/]") + numwidth(index + 1) + numwidth(s_candidate.nr);
       next = TRUE;
     } else {
       if (cand_width + index_width > max_width && index_in_page == 0) {
         assert(page_width == 0);
         /* はみ出たが、次に移さない */      /* スペースの幅の1 */
-        cand_width = max_width - index_width - 1;
+        cand_width = max_width - index_width - strlen(" ");
         cand_width = strhead(cand_str, cand_width);
         if (cand_label_width > cand_width) {
           cand_label_width = cand_width;
@@ -564,8 +564,8 @@ static void make_page_strs(void)
         cand_str[cand_byte] = '\0';
         next = TRUE;
       }
-                                                             /* ':' */
-      s_candidate.cand_col[index] = page_width + cand_label_width + 1;
+                                                                        /* ':' */
+      s_candidate.cand_col[index] = page_width + cand_label_width + strlen(":");
       page_width += cand_width;
       page_byte += cand_byte;
       page_str = realloc(page_str, page_byte + 1);
@@ -592,11 +592,11 @@ static void make_page_strs(void)
         index_width = strhead(index_str, index_width);
         index_byte = strlen(index_str);
       }
-      s_candidate.index_col[s_candidate.nr_pages] = page_width + 1;
+      s_candidate.index_col[s_candidate.nr_pages] = page_width + strlen("[");
       page_byte += index_byte;
       page_str = realloc(page_str, page_byte + 1);
       strcat(page_str, index_str);
-      s_candidate.page_strs = realloc(s_candidate.page_strs, (s_candidate.nr_pages + 1)* sizeof(char *));
+      s_candidate.page_strs = realloc(s_candidate.page_strs, (s_candidate.nr_pages + 1) * sizeof(char *));
       s_candidate.page_strs[s_candidate.nr_pages] = strdup(page_str);
       s_candidate.nr_pages++; 
 
@@ -685,7 +685,7 @@ static void get_candidate(void)
   int index_width;
   int max_width = g_win->ws_col;
   /* 右端の候補のインデックス */
-  int right_edge_cand_index = s_candidate.page + 1 == s_candidate.nr_pages ? s_candidate.nr : s_candidate.page2index[s_candidate.page + 1];
+  int right_edge_cand_index = s_candidate.page + 1 == s_candidate.nr_pages ? s_candidate.nr - 1 : s_candidate.page2index[s_candidate.page + 1] - 1;
   /* 右端の候補のインデックスの幅 */
   int right_edge_cand_index_width = numwidth(right_edge_cand_index + 1);
   /* 現在の候補のインデックスの幅 */
