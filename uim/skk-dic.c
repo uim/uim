@@ -1494,7 +1494,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
 
   if (okuri_ != uim_scm_null_list()) {
     struct skk_line *sl;
-    char *okuri;
+    const char *okuri;
     int found = 0;
 
     okuri = uim_scm_refer_c_str(okuri_);
@@ -1552,7 +1552,8 @@ static uim_lisp
 skk_learn_word(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp word_)
 {
   struct skk_cand_array *ca;
-  char *word, *tmp;
+  char *word;
+  const char *tmp;
 
   tmp = uim_scm_refer_c_str(word_);
   word = sanitize_word(tmp);
@@ -2012,13 +2013,14 @@ skk_lib_get_annotation(uim_lisp str_)
 static uim_lisp
 skk_lib_remove_annotation(uim_lisp str_)
 {
-  char *str = uim_scm_refer_c_str(str_);
+  char *str = uim_scm_c_str(str_);
   char *sep = strrchr(str, ';');
   uim_lisp res;
   if (sep) {
     *sep = 0;
   }
   res = uim_scm_make_str(str);
+  free(str);
   return res;
 }
 
