@@ -1905,10 +1905,12 @@ apply_button_clicked(GtkButton *button, gpointer user_data)
 
   if (value_changed) {
     uim_custom_save();
-    fprintf(stderr, "save done\n");
     uim_custom_broadcast();
-    fprintf(stderr, "broadcast done\n");
     value_changed = FALSE;
+    gtk_tree_model_foreach(
+      gtk_tree_view_get_model(GTK_TREE_VIEW(pref_tree_view)), 
+      pref_tree_model_foreach_unset_value_changed_fn,
+      NULL);
   }
 }
 

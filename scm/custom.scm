@@ -498,13 +498,17 @@
 	  val
 	  (custom-default-value sym)))))
 
-;; TODO: rewrite test for (custom-call-hook-procs sym custom-update-hooks)
+;; TODO: rewrite test
 ;; API
 (define custom-set-value!
   (lambda (sym val)
     (and (custom-valid? sym val)
 	 (let* ((custom-syms (custom-collect-by-group #f))
-		(pre-activities (map custom-active? custom-syms)))
+		(map-activities (lambda ()
+				  (map (lambda (pair)
+					 ((cdr pair)))
+				       custom-activity-hooks)))
+		(pre-activities (map-activities)))
 	   (set-symbol-value! sym val)
 	   (if (eq? (custom-type sym)
 		    'key)
@@ -513,14 +517,14 @@
 			     (list 'make-key-predicate (list 'quote key-val)))
 		       toplevel-env)))
 	   (custom-call-hook-procs sym custom-set-hooks)
-	   (custom-call-hook-procs sym custom-update-hooks)
-	   (let ((post-activities (map custom-active? custom-syms)))
+	   (let ((post-activities (map-activities)))
 	     (for-each (lambda (another-sym pre post)
 			 (if (or (eq? another-sym sym)
-				 (not (eq? pre post)))
+				 (not (eq? (not pre)     ;; normalize bool
+					   (not post)))) ;; normalize bool
 			     (custom-call-hook-procs another-sym
 						     custom-update-hooks)))
-		       custom-syms
+		       (map car custom-activity-hooks)
 		       pre-activities
 		       post-activities)
 	     #t)))))
