@@ -78,7 +78,7 @@ libquiminputcontextplugin_la_SOURCES = \
 	immodule-quiminputcontext.cpp immodule-quiminputcontext_with_slave.cpp \
 	immodule-subwindow.cpp
 libquiminputcontextplugin_la_CXXFLAGS = $(QT_CXXFLAGS)
-libquiminputcontextplugin_la_LDFLAGS  = $(QT_LDFLAGS)
+libquiminputcontextplugin_la_LDFLAGS  = $(QT_LDFLAGS) -avoid-version
 libquiminputcontextplugin_la_LIBADD   = $(top_builddir)/uim/libuim.la
 
 immodule-candidatewindow.cpp: immodule-candidatewindow.moc
@@ -102,7 +102,7 @@ endif
 noinst_LTLIBRARIES = libtoolbarcommon.la
 libtoolbarcommon_la_SOURCES  = toolbar-common-quimhelpertoolbar.cpp toolbar-common-uimstateindicator.cpp
 libtoolbarcommon_la_CXXFLAGS = $(QT_CXXFLAGS)
-libtoolbarcommon_la_LDFLAGS  = $(QT_LDFLAGS)
+libtoolbarcommon_la_LDFLAGS  = $(QT_LDFLAGS) -avoid-version
 libtoolbarcommon_la_LIBADD   = $(top_builddir)/uim/libuim.la
 toolbar-common-quimhelpertoolbar.cpp: toolbar-common-quimhelpertoolbar.moc
 toolbar-common-uimstateindicator.cpp: toolbar-common-uimstateindicator.moc

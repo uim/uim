@@ -97,7 +97,7 @@ UimToolbarDraggingHandler::UimToolbarDraggingHandler( QWidget *parent,
 void UimToolbarDraggingHandler::drawContents( QPainter* p )
 {
     const QStyle::SFlags flags = QStyle::Style_Default | QStyle::Style_Horizontal;
-    style().drawPrimitive( QStyle::PE_Splitter, p,
+    style().drawPrimitive( QStyle::PE_DockWindowSeparator, p,
                            contentsRect(), colorGroup(), flags );
 }
 
