@@ -44,7 +44,8 @@ How to use uim-xim
 (2) Set XMODIFIERS=@im=uim and invoke client.
 
 (3) If you want to use candidate helper program other than default
-    GTK+ one, set UIM_CANDWIN_PROG environmental variable.
+    GTK+ one, set UIM_CANDWIN_PROG environmental variable before
+    invoking uim-xim.
 
      sh:  UIM_CANDWIN_PROG=uim-candwin-qt export UIM_CANDWIN_PROG
      csh: setenv UIM_CANDWIN_PROG uim-candwin-qt
@@ -53,8 +54,8 @@ How to use uim-xim
     default.  Or if nothing specified and uim is not configured with
     enabling GTK+, candidate helper is not used.
 
-(4) To change back-end conversion engines dynamically, use
-    uim-im-switcher application.
+(4) To change conversion engines dynamically, use uim-im-switcher
+    tool.
 
 
 
@@ -80,12 +81,12 @@ operations. Try following steps to enable the feature.
 Bypassing uim temporarily
 
 uim has 'emergency key' feature to bypass uim temporarily.  This is
-useful with some applications.  Or you can choose "direct" input
-method using uim-im-switcher to bypass language conversion (but
-"direct" input method is not bypassing uim actually).
+useful with some applications.  Also another way to avoid language
+conversion is choosing "direct" input method using uim-im-switcher
+tool.
 
 * The way to use 'emergency key' 
-  (1) Set the environment variable as follows
+  (1) Set following environment variable before invoking uim-xim.
       LIBUIM_ENABLE_EMERGENCY_KEY=1
 
   (2) Press Shift + Backspace to disable/enable uim key
