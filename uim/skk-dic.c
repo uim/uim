@@ -568,6 +568,7 @@ move_line_to_cache_head(struct dic_info *di, struct skk_line *sl)
   di->cache_modified = 1;
 }
 
+#if 0
 static void
 add_line_to_cache_last(struct dic_info *di, struct skk_line *sl)
 {
@@ -587,6 +588,7 @@ add_line_to_cache_last(struct dic_info *di, struct skk_line *sl)
   di->cache_len++;
   di->cache_modified = 1;
 }
+#endif
 
 static struct skk_line *
 skk_search_line_from_file(struct dic_info *di, const char *s, char okuri_head)
@@ -1671,6 +1673,22 @@ skk_learn_word(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp w
 }
 
 static void
+reverse_cache(struct dic_info *di)
+{
+  struct skk_line *sl, *prev, *next;
+
+  prev= NULL;
+  sl = di->head.next;
+  while (sl) {
+    next = sl->next;
+    sl->next = prev;
+    prev = sl;
+    sl = next;
+  }
+  di->head.next = prev;
+}
+
+static void
 parse_dic_line(struct dic_info *di, char *line)
 {
   char *buf, *sep;
@@ -1700,7 +1718,7 @@ parse_dic_line(struct dic_info *di, char *line)
     sl->cands[i].nr_real_cands = sl->cands[i].nr_cands;
   }
   /**/
-  add_line_to_cache_last(di, sl);
+  add_line_to_cache_head(di, sl);
 }
 
 static void
@@ -1829,6 +1847,7 @@ skk_read_personal_dictionary(struct dic_info *di, const char *fn)
   }
   fclose(fp);
   close_lock(lock_fd);
+  reverse_cache(di);
   return uim_scm_t();
 }
 
