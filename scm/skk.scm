@@ -1105,8 +1105,18 @@
 				   (skk-opposite-kana
 				    (skk-context-kana-mode sc))))
 	     	   (skk-flush sc)))
-	    #f)
-	  #t)
+	     #f)
+	   #t)
+       (if (skk-hankaku-kana-key? key key-state)
+	   (begin
+	     (skk-append-residual-kana sc)
+	     (if (skk-context-head sc)
+		 (begin
+		   (skk-commit sc (skk-make-string (skk-context-head sc)
+						   skk-type-hankana))
+		   (skk-flush sc)))
+	     #f)
+	   #t)
        ;; Hack to handle "n1" sequence as "¤ó1".
        ;; This should be handled in rk.scm. -- ekato
        (if (and (not (alphabet-char? key))
@@ -1275,6 +1285,28 @@
 	       (- (skk-context-completion-nth sc) 1)))))
     #f))
 
+(define find-kana-list-from-rule
+  (lambda (rule str)
+    (if rule
+	(if (pair? (member str (car (cdr (car rule)))))
+	    (car (cdr (car rule)))
+	    (find-kana-list-from-rule (cdr rule) str))
+	(list str str str))))
+
+(define skk-append-list-to-context-head
+  (lambda (sc sl)
+     (skk-context-set-head! sc (append (skk-context-head sc) (list sl)))))
+
+(define skk-string-list-to-context-head
+  (lambda (sc sl)
+    (if sl
+	(begin
+	  (skk-append-list-to-context-head
+	   sc
+	   (find-kana-list-from-rule ja-rk-rule-basic (car sl)))
+	  (skk-string-list-to-context-head sc (cdr sl)))
+	#f)))
+
 (define skk-proc-state-completion
   (lambda (c key key-state)
     (let ((sc (skk-find-descendant-context c)))
@@ -1292,13 +1324,11 @@
 	     (skk-context-set-state! sc 'skk-state-kanji)
 	     #f)
 	   #t)
-       (let ((hira (skk-lib-string-to-hiragana-list
-		    (skk-get-current-completion sc)))
-       	     (kata (skk-lib-string-to-katakana-list
-		    (skk-get-current-completion sc))))
+       (let ((sl (string-to-list (skk-get-current-completion sc))))
 	 (skk-lib-clear-completions
 	   (skk-make-string (skk-context-head sc) (skk-context-kana-mode sc)))
-	 (skk-context-set-head! sc (map list hira kata))
+	 (skk-context-set-head! sc ())
+	 (skk-string-list-to-context-head sc sl)
 	 (skk-context-set-state! sc 'skk-state-kanji)
 	 (skk-proc-state-kanji c key key-state)))
       #f)))
