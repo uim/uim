@@ -34,19 +34,19 @@
 /*
  * uimのコールバック関数
  */
-#if HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 #ifndef DEBUG
 #define NDEBUG
 #endif
-#if HAVE_STDLIB_H
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#if HAVE_STRING_H
+#ifdef HAVE_STRING_H
 #include <string.h>
 #endif
-#if HAVE_ASSERT_H
+#ifdef HAVE_ASSERT_H
 #include <assert.h>
 #endif
 #include "uim-fep.h"
@@ -146,7 +146,7 @@ void init_callbacks(uim_context context, int status_type, int cursor_no_reverse,
 int press_key(int key, int key_state)
 {
   int raw;
-#if DEBUG > 2
+#if defined DEBUG && DEBUG > 2
   if (32 <= key && key <= 127) {
     debug2(("press key = %c key_state = %d\n", key, key_state));
   } else {

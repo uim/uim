@@ -31,33 +31,33 @@
 
 */
 
-#if HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 #ifndef DEBUG
 #define NDEBUG
 #endif
-#if HAVE_SYS_TIME_H
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
-#if HAVE_SYS_TYPES_H
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-#if HAVE_UNISTD_H
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#if HAVE_STRING_H
+#ifdef HAVE_STRING_H
 #include <string.h>
 #endif
-#if HAVE_STDLIB_H
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
 
 #include "uim-fep.h"
 #include "read.h"
 
-char *unget_buf = NULL;
-int buf_size = 0;
+static char *s_unget_buf = NULL;
+static int s_buf_size = 0;
 
 /*
  * select
@@ -65,9 +65,9 @@ int buf_size = 0;
  */
 int my_select(int n, fd_set *readfds, struct timeval *timeout)
 {
-  if (buf_size > 0) {
+  if (s_buf_size > 0) {
     FD_ZERO(readfds);
-    FD_SET(STDIN_FILENO, readfds);
+    FD_SET(g_win_in, readfds);
     return 1;
   }
   return select(n, readfds, NULL, NULL, timeout);
@@ -79,20 +79,20 @@ int my_select(int n, fd_set *readfds, struct timeval *timeout)
  */
 ssize_t read_stdin(void *buf, int count)
 {
-  if (buf_size > 0) {
-    if (buf_size > count) {
-      memcpy(buf, unget_buf, count);
-      buf_size -= count;
-      memmove(unget_buf, unget_buf + count, buf_size);
+  if (s_buf_size > 0) {
+    if (s_buf_size > count) {
+      memcpy(buf, s_unget_buf, count);
+      s_buf_size -= count;
+      memmove(s_unget_buf, s_unget_buf + count, s_buf_size);
       return count;
     } else {
-      int rval = buf_size;
-      memcpy(buf, unget_buf, buf_size);
-      buf_size = 0;
+      int rval = s_buf_size;
+      memcpy(buf, s_unget_buf, s_buf_size);
+      s_buf_size = 0;
       return rval;
     }
   }
-  return read(STDIN_FILENO, buf, count);
+  return read(g_win_in, buf, count);
 }
 
 /*
@@ -103,8 +103,8 @@ void unget_stdin(const char *str, int count)
   if (count <= 0) {
     return;
   }
-  debug(("unget count = %d buf_size = %d\n", count, buf_size));
-  unget_buf = realloc(unget_buf, buf_size + count);
-  memcpy(unget_buf + buf_size, str, count);
-  buf_size += count;
+  debug(("unget count = %d s_buf_size = %d\n", count, s_buf_size));
+  s_unget_buf = realloc(s_unget_buf, s_buf_size + count);
+  memcpy(s_unget_buf + s_buf_size, str, count);
+  s_buf_size += count;
 }

@@ -31,78 +31,76 @@
 
 */
 
-#if HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 #ifndef DEBUG
 #define NDEBUG
 #endif
 #include <stdio.h>
-#if HAVE_ASSERT_H
+#ifdef HAVE_ASSERT_H
 #include <assert.h>
 #endif
-#if HAVE_UNISTD_H
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#if HAVE_SYS_TYPES_H
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-#if HAVE_SIGNAL_H
+#ifdef HAVE_SIGNAL_H
 #include <signal.h>
 #endif
-#if HAVE_STDLIB_H
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#if HAVE_UIM_UIM_H
 #include <uim/uim.h>
-#endif
-#if HAVE_STRING_H
+#ifdef HAVE_STRING_H
 #include <string.h>
 #endif
-#if HAVE_STRINGS_H
+#ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif
-#if HAVE_CURSES_H
+#ifdef HAVE_CURSES_H
 #include <curses.h>
 #endif
-#if HAVE_TERM_H
+#ifdef HAVE_TERM_H
 #include <term.h>
 #endif
-#if HAVE_STDARG_H
+#ifdef HAVE_STDARG_H
 #include <stdarg.h>
 #endif
-#if HAVE_GETOPT_H
+#ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #endif
-#if HAVE_PWD_H
+#ifdef HAVE_PWD_H
 #include <pwd.h>
 #endif
-#if HAVE_FCNTL_H
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
-#if HAVE_CTYPE_H
+#ifdef HAVE_CTYPE_H
 #include <ctype.h>
 #endif
-#if HAVE_SYS_STAT_H
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
-#if HAVE_SYS_TIME_H
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
-#if HAVE_STROPTS_H
+#ifdef HAVE_STROPTS_H
 #include <stropts.h>
 #endif
-#if HAVE_SYS_PARAM_H
+#ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
 
-#if HAVE_PTY_H
+#ifdef HAVE_PTY_H
 #include <pty.h>
 #endif
-#if HAVE_UTIL_H
+#ifdef HAVE_UTIL_H
 #include <util.h>
 #endif
-#if HAVE_LIBUTIL_H
+#ifdef HAVE_LIBUTIL_H
 #include <libutil.h>
 #endif
 
@@ -123,8 +121,11 @@ struct winsize *g_win;
 static uim_context s_context;
 /* ステータスラインの種類 */
 static int s_status_type = DEFAULT_STATUS;
+static int s_gnu_screen = FALSE;
 /* 疑似端末のmasterのファイル記述子 */
 static int s_master;
+int g_win_in = STDIN_FILENO;
+int g_win_out = STDOUT_FILENO;
 /* 起動時の端末状態 */
 static struct termios s_save_tios;
 #ifndef MAXPATHLEN
@@ -135,7 +136,7 @@ static char s_path_getmode[MAXPATHLEN];
 static int s_setmode_fd = -1;
 static int s_timeout = 0;
 
-static void init_agent(const char *engine, const char *enc);
+static void init_agent(const char *engine);
 static const char *get_default_im_name(void);
 static int make_color_escseq(const char *instr, struct attribute_tag *attr);
 static int colorname2n(const char *name);
@@ -143,7 +144,7 @@ static int colorname2n(const char *name);
 static pid_t forkpty(int *amaster, char *name, struct termios *termp, struct winsize *winp);
 #endif
 static void main_loop(void);
-static void recover_loop();
+static void recover_loop(void);
 static struct winsize *get_winsize(void);
 static void set_signal_handler(void);
 static void recover(int sig_no);
@@ -157,9 +158,8 @@ static void version(void);
 /*
  * uimを初期化する
  * engine 変換エンジンの名前
- * enc エンコーディング
  */
-static void init_agent(const char *engine, const char *enc)
+static void init_agent(const char *engine)
 {
   int nr;
   int i;
@@ -219,60 +219,9 @@ int main(int argc, char **argv)
   tcflag_t save_iflag;
   int op;
 
-  /* exit if stdin is redirected */
-  if (!(isatty(STDIN_FILENO) && isatty(STDOUT_FILENO))) {
-    FILE *tty;
-    if ((tty = fopen("/dev/tty", "w")) != NULL) {
-      fprintf(tty, "stdin or stdout is not a terminal\n");
-    }
-    return EXIT_FAILURE;
-  }
-
   if (getenv("UIM_FEP_PID")) {
     puts("uim-fep is already running");
     return EXIT_FAILURE;
-  }
-
-  init_str();
-
-  tcgetattr(STDIN_FILENO, &s_save_tios);
-  setupterm(NULL, STDOUT_FILENO, NULL);
-
-  if (getenv("TMP")) {
-    struct passwd *pw = getpwuid(getuid());
-    /* Generate get mode filepath */
-    snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-%s-%d-getmode", getenv("TMP"), pw->pw_name, getpid());
-    /* Generate set mode filepath */
-    snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-%s-%d-setmode", getenv("TMP"), pw->pw_name, getpid());
-  } else {
-    struct passwd *pw = getpwuid(getuid());
-    /* Generate get mode filepath */
-    snprintf(s_path_getmode, sizeof(s_path_getmode), "/tmp/uim-fep-%s-%d-getmode", pw->pw_name, getpid());
-    /* Generate set mode filepath */
-    snprintf(s_path_setmode, sizeof(s_path_setmode), "/tmp/uim-fep-%s-%d-setmode", pw->pw_name, getpid());
-  }
-
-  env_buf = malloc(30);
-  snprintf(env_buf, 30, "UIM_FEP_PID=%d", getpid());
-  putenv(env_buf);
-
-  if (fopen(s_path_getmode, "wt") != NULL) {
-    unlink(s_path_getmode);
-    env_buf = malloc(strlen("UIM_FEP_GETMODE=") + strlen(s_path_getmode) + 1);
-    sprintf(env_buf, "UIM_FEP_GETMODE=%s", s_path_getmode);
-    putenv(env_buf);
-  } else {
-    s_path_getmode[0] = '\0';
-  }
-
-  if (mkfifo(s_path_setmode, 0600) != -1) {
-    unlink(s_path_setmode);
-    env_buf = malloc(strlen("UIM_FEP_SETMODE=") + strlen(s_path_setmode) + 1);
-    sprintf(env_buf, "UIM_FEP_SETMODE=%s", s_path_setmode);
-    putenv(env_buf);
-  } else {
-    s_path_setmode[0] = '\0';
-    s_setmode_fd = -1;
   }
 
   if ((command[0] = getenv("SHELL")) == NULL || *command[0] == '\0') {
@@ -285,7 +234,7 @@ int main(int argc, char **argv)
 
   engine = get_default_im_name();
 
-  while ((op = getopt(argc, argv, "e:s:u:b:w:t:C:ciovh")) != -1) {
+  while ((op = getopt(argc, argv, "e:s:u:b:w:t:C:Sciovh")) != -1) {
     int i;
     switch (op) {
       case 'e':
@@ -312,6 +261,10 @@ int main(int argc, char **argv)
           usage();
           return EXIT_FAILURE;
         }
+        break;
+
+      case 'S':
+        s_gnu_screen = TRUE;
         break;
 
       case 'u':
@@ -377,21 +330,81 @@ opt_end:
     return EXIT_FAILURE;
   }
 
-  g_win = get_winsize();
-  save_iflag = s_save_tios.c_iflag;
-  s_save_tios.c_iflag &= ~ISTRIP;
-  child = forkpty(&s_master, NULL, &s_save_tios, g_win);
-  s_save_tios.c_iflag = save_iflag;
+  if (s_gnu_screen) {
+    s_status_type = BACKTICK;
+    s_master = PROC_FILENO;
+    g_win_in = WIN_IN_FILENO;
+    g_win_out = WIN_OUT_FILENO;
+  }
 
-  if (child < 0) {
-    perror("fork");
+  /* exit if stdin is redirected */
+  if (!isatty(g_win_in)) {
+    FILE *tty;
+    if ((tty = fopen("/dev/tty", "w")) != NULL) {
+      fprintf(tty, "stdin is not a terminal\n");
+    }
     return EXIT_FAILURE;
   }
-  if (child == 0) {
-    /* 子プロセス */
-    execvp(command[0], (char *const *)command);
-    perror(command[0]);
-    done(EXIT_FAILURE);
+
+  init_str();
+
+  tcgetattr(g_win_in, &s_save_tios);
+  setupterm(NULL, g_win_out, NULL);
+
+  if (getenv("TMP")) {
+    struct passwd *pw = getpwuid(getuid());
+    /* Generate get mode filepath */
+    snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-%s-%d-getmode", getenv("TMP"), pw->pw_name, getpid());
+    /* Generate set mode filepath */
+    snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-%s-%d-setmode", getenv("TMP"), pw->pw_name, getpid());
+  } else {
+    struct passwd *pw = getpwuid(getuid());
+    /* Generate get mode filepath */
+    snprintf(s_path_getmode, sizeof(s_path_getmode), "/tmp/uim-fep-%s-%d-getmode", pw->pw_name, getpid());
+    /* Generate set mode filepath */
+    snprintf(s_path_setmode, sizeof(s_path_setmode), "/tmp/uim-fep-%s-%d-setmode", pw->pw_name, getpid());
+  }
+
+  env_buf = malloc(30);
+  snprintf(env_buf, 30, "UIM_FEP_PID=%d", getpid());
+  putenv(env_buf);
+
+  if (fopen(s_path_getmode, "wt") != NULL) {
+    unlink(s_path_getmode);
+    env_buf = malloc(strlen("UIM_FEP_GETMODE=") + strlen(s_path_getmode) + 1);
+    sprintf(env_buf, "UIM_FEP_GETMODE=%s", s_path_getmode);
+    putenv(env_buf);
+  } else {
+    s_path_getmode[0] = '\0';
+  }
+
+  if (mkfifo(s_path_setmode, 0600) != -1) {
+    unlink(s_path_setmode);
+    env_buf = malloc(strlen("UIM_FEP_SETMODE=") + strlen(s_path_setmode) + 1);
+    sprintf(env_buf, "UIM_FEP_SETMODE=%s", s_path_setmode);
+    putenv(env_buf);
+  } else {
+    s_path_setmode[0] = '\0';
+    s_setmode_fd = -1;
+  }
+
+  g_win = get_winsize();
+  if (!s_gnu_screen) {
+    save_iflag = s_save_tios.c_iflag;
+    s_save_tios.c_iflag &= ~ISTRIP;
+    child = forkpty(&s_master, NULL, &s_save_tios, g_win);
+    s_save_tios.c_iflag = save_iflag;
+
+    if (child < 0) {
+      perror("fork");
+      return EXIT_FAILURE;
+    }
+    if (child == 0) {
+      /* 子プロセス */
+      execvp(command[0], (char *const *)command);
+      perror(command[0]);
+      done(EXIT_FAILURE);
+    }
   }
 
   free(command);
@@ -400,14 +413,13 @@ opt_end:
     statusline_width = CANDSIZE / 2;
   }
 
-  setbuf(stdout, NULL);
   if (s_status_type == BACKTICK) {
     init_sendsocket(sock_path);
   }
-  init_agent(engine, get_enc());
+  init_agent(engine);
   init_callbacks(s_context, s_status_type, cursor_no_reverse, statusline_width);
-  init_draw(s_context, on_the_spot, s_status_type, s_master, s_path_getmode);
-  init_escseq(use_civis, on_the_spot, s_status_type, &attr_uim);
+  init_draw(s_context, on_the_spot, s_status_type, s_gnu_screen, s_master, s_path_getmode);
+  init_escseq(use_civis, on_the_spot, s_status_type, s_gnu_screen, &attr_uim);
   set_signal_handler();
 
   if (s_path_setmode[0] != '\0' && mkfifo(s_path_setmode, 0600) != -1) {
@@ -561,16 +573,31 @@ static void main_loop(void)
   char buf[BUFSIZE];
   ssize_t len;
   fd_set fds;
-  int nfd = (s_master > s_setmode_fd ? s_master : s_setmode_fd) + 1;
+  int nfd;
   char *_clear_screen = cut_padding(clear_screen);
   char *_clr_eos = cut_padding(clr_eos);
+
+  if (g_win_in > s_master) {
+    if (g_win_in > s_setmode_fd) {
+      nfd = g_win_in;
+    } else {
+      nfd = s_setmode_fd;
+    }
+  } else {
+    if (s_master > s_setmode_fd) {
+      nfd = s_master;
+    } else {
+      nfd = s_setmode_fd;
+    }
+  }
+  nfd++;
 
   while (TRUE) {
     /* コミットされたときにプリエディットがあるか */
     if (is_commit_and_preedit()) {
       struct timeval t;
       FD_ZERO(&fds);
-      FD_SET(STDIN_FILENO, &fds);
+      FD_SET(g_win_in, &fds);
       FD_SET(s_master, &fds);
       if (s_setmode_fd > 0) {
         FD_SET(s_setmode_fd, &fds);
@@ -585,7 +612,7 @@ static void main_loop(void)
       }
     }
     FD_ZERO(&fds);
-    FD_SET(STDIN_FILENO, &fds);
+    FD_SET(g_win_in, &fds);
     FD_SET(s_master, &fds);
     if (s_setmode_fd > 0) {
       FD_SET(s_setmode_fd, &fds);
@@ -599,7 +626,7 @@ static void main_loop(void)
     /* モードを変更する */
     if (s_setmode_fd > 0 && FD_ISSET(s_setmode_fd, &fds)) {
       int start, end;
-      if ((len = read(s_setmode_fd, buf, sizeof(buf))) <= 0) {
+      if ((len = read(s_setmode_fd, buf, sizeof(buf) - 1)) <= 0) {
         debug2(("pipe closed\n"));
         close(s_setmode_fd);
         s_setmode_fd = open(s_path_setmode, O_RDONLY | O_NONBLOCK);
@@ -622,14 +649,14 @@ static void main_loop(void)
 
 
     /* キーボード(stdin)からの入力 */
-    if (FD_ISSET(STDIN_FILENO, &fds)) {
+    if (FD_ISSET(g_win_in, &fds)) {
       int i;
       int key;
       int key_state = 0;
       int key_len;
       int raw;
 
-      if ((len = read_stdin(buf, sizeof(buf))) <= 0) {
+      if ((len = read_stdin(buf, sizeof(buf) - 1)) <= 0) {
         /* ここにはこないと思う */
         return;
       }
@@ -656,11 +683,11 @@ static void main_loop(void)
               } else if (s_timeout > 0) {
                 struct timeval t;
                 FD_ZERO(&fds);
-                FD_SET(STDIN_FILENO, &fds);
+                FD_SET(g_win_in, &fds);
                 t.tv_sec = 0;
                 t.tv_usec = s_timeout;
                 if (my_select(nfd, &fds, &t) > 0) {
-                  len += read_stdin(buf + len, sizeof(buf) - len);
+                  len += read_stdin(buf + len, sizeof(buf) - len - 1);
                   buf[len] = '\0';
                   debug(("read_again \"%s\"\n", buf));
                   i--;
@@ -691,41 +718,31 @@ static void main_loop(void)
 
     /* input from pty (child process) */
     if (FD_ISSET(s_master, &fds)) {
-      char *str1;
-      char *str2;
-      if ((len = read(s_master, buf, sizeof(buf))) <= 0) {
+      if ((len = read(s_master, buf, sizeof(buf) - 1)) <= 0) {
         /* 子プロセスが終了した */
         return;
       }
       buf[len] = '\0';
 
-      /* if (g_start_preedit) { */
-        /* プリエディット編集中 */
-        /* put_exit_standout_mode(); */
-        /* put_exit_underline_mode(); */
-      /* } */
-
       /* クリアされた時にモードを再描画する */
       if (s_status_type == LASTLINE) {
-        str1 = rstrstr(buf, _clear_screen);
-        str2 = rstrstr(buf, _clr_eos);
+        char *str1 = rstrstr_len(buf, _clear_screen, len);
+        char *str2 = rstrstr_len(buf, _clr_eos, len);
         if (str1 != NULL || str2 != NULL) {
-          char save_char;
+          int str1_len;
           if (str2 > str1) {
             str1 = str2;
           }
+          str1_len = len - (str1 - buf);
           /* str1はclear_screenかclr_eosの次の文字列を指している */
-          save_char = str1[0];
-          str1[0] = '\0';
-          put_pty_str(buf);
-          str1[0] = save_char;
+          put_pty_str(buf, len - str1_len);
           draw_statusline_force_restore();
-          put_pty_str(str1);
+          put_pty_str(str1, str1_len);
         } else {
-          put_pty_str(buf);
+          put_pty_str(buf, len);
         }
       } else {
-        put_pty_str(buf);
+        put_pty_str(buf, len);
       }
     }
   }
@@ -742,14 +759,14 @@ static void recover_loop(void)
 
   while (TRUE) {
     FD_ZERO(&fds);
-    FD_SET(STDIN_FILENO, &fds);
+    FD_SET(g_win_in, &fds);
     FD_SET(s_master, &fds);
     if (select(s_master + 1, &fds, NULL, NULL, NULL) <= 0) {
       /* signalで割り込まれたときにくる。selectの返り値は-1でerrno==EINTR */
       continue;
     }
-    if (FD_ISSET(STDIN_FILENO, &fds)) {
-      if ((len = read(STDIN_FILENO, buf, sizeof(buf))) <= 0) {
+    if (FD_ISSET(g_win_in, &fds)) {
+      if ((len = read(g_win_in, buf, sizeof(buf))) <= 0) {
         /* ここにはこないと思う */
         return;
       }
@@ -760,8 +777,7 @@ static void recover_loop(void)
         /* 子プロセスが終了した */
         return;
       }
-      buf[len] = '\0';
-      printf("%s", buf);
+      write(g_win_out, buf, len);
     }
   }
 }
@@ -773,7 +789,7 @@ static void recover_loop(void)
 static struct winsize *get_winsize(void)
 {
   struct winsize *win = malloc(sizeof(struct winsize));
-  ioctl(STDIN_FILENO, TIOCGWINSZ, win);
+  ioctl(g_win_in, TIOCGWINSZ, win);
   if (s_status_type == LASTLINE) {
     win->ws_row--;
   }
@@ -860,7 +876,7 @@ void done(int exit_value)
   if (s_status_type == BACKTICK) {
     clear_backtick();
   }
-  tcsetattr(STDIN_FILENO, TCSAFLUSH, &s_save_tios);
+  tcsetattr(g_win_in, TCSAFLUSH, &s_save_tios);
   if (s_setmode_fd > 0) {
     close(s_setmode_fd);
   }
@@ -917,7 +933,8 @@ static void usage(void)
       "-C [<foreground color>]:[<background color>]\n"
       "-c                                        reverse cursor\n"
       "-i                                        use cursor_invisible(civis)\n"
-      "-o                                        on the spot\n",
+      "-o                                        on the spot\n"
+      "-S                                        GNU screen mode\n",
       getenv("SHELL") != NULL ? getenv("SHELL") : "/bin/sh",
       "-h                                        display this help\n"
       "-v                                        display version\n"
@@ -972,7 +989,7 @@ static void version(void)
   printf("uim-fep %s\n", PACKAGE_VERSION);
 }
 
-#if DEBUG > 1
+#if defined(DEBUG) && DEBUG > 1
 void _debug(const char *fmt, ...)
 {
   static FILE *log = NULL;

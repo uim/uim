@@ -31,32 +31,32 @@
 
 */
 
-#if HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 #include <stdio.h>
 #ifndef DEBUG
 #define NDEBUG
 #endif
-#if HAVE_ASSERT_H
+#ifdef HAVE_ASSERT_H
 #include <assert.h>
 #endif
-#if HAVE_LOCALE_H
+#ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
-#if HAVE_WCHAR_H
+#ifdef HAVE_WCHAR_H
 #include <wchar.h>
 #endif
-#if HAVE_STRING_H
+#ifdef HAVE_STRING_H
 #include <string.h>
 #endif
-#if HAVE_STRINGS_H
+#ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif
-#if HAVE_CTYPE_H
+#ifdef HAVE_CTYPE_H
 #include <ctype.h>
 #endif
-#if HAVE_STDLIB_H
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
 #include "uim-fep.h"
@@ -614,10 +614,11 @@ int strhead(char *str, int n)
  * needleが空文字列の場合はNULLを返す
  * needleがNULLのときはNULLを返す
  */
-char *rstrstr(char *haystack, const char *needle)
+char *rstrstr_len(const char *haystack, const char *needle, int haystack_len)
 {
-  char *str = NULL;
+  const char *str = NULL;
   int needle_len;
+  const char *new_haystack = haystack;
   assert(haystack != NULL);
   if (needle == NULL) {
     return NULL;
@@ -626,11 +627,40 @@ char *rstrstr(char *haystack, const char *needle)
   if (needle_len <= 0) {
     return NULL;
   }
-  while ((haystack = strstr(haystack, needle)) != NULL) {
-    haystack += needle_len;
-    str = haystack;
+  while ((new_haystack = strstr_len(haystack, needle, haystack_len)) != NULL) {
+    new_haystack += needle_len;
+    haystack_len -= (new_haystack - haystack);
+    str = haystack = new_haystack;
   }
-  return str;
+  return (char *)str;
+}
+
+/*
+ * haystackに'\0'が含まれてもよいstrstr
+ * haystackの長さはhaystack_len
+ * haystackとneedleはNULLでない
+ * needleが""のときはhaystackを返す
+ */
+char *strstr_len(const char *haystack, const char *needle, int haystack_len)
+{
+  int needle_len;
+  int i, j;
+
+  assert(haystack != NULL && needle != NULL);
+
+  needle_len = strlen(needle);
+
+  for (i = 0; i < haystack_len - needle_len + 1; i++) {
+    for (j = 0; j < needle_len; j++) {
+      if (haystack[i + j] != needle[j]) {
+        break;
+      }
+    }
+    if (j == needle_len) {
+      return (char *)haystack + i;
+    }
+  }
+  return NULL;
 }
 
 static int min(int a, int b)

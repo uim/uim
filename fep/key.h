@@ -33,7 +33,6 @@
 
 #ifndef KEY_H
 #define KEY_H
-#define ESCAPE_CODE 27
 int tty2key(char key);
 int tty2key_state(char key);
 int *escape_sequence2key(const char *str);

@@ -34,10 +34,10 @@
 #ifndef UIM_FEP_H
 #define UIM_FEP_H
 
-#if HAVE_SYS_IOCTL_H
+#ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
-#if HAVE_TERMIOS_H
+#ifdef HAVE_TERMIOS_H
 #include <termios.h>
 #endif
 
@@ -47,26 +47,38 @@
 #define LASTLINE 3
 #define BACKTICK 4
 #define UNDEFINED -1729
+#define ESCAPE_CODE 27
+#define WIN_OUT_FILENO STDOUT_FILENO
+#define WIN_IN_FILENO  STDOUT_FILENO
+#define PROC_FILENO    STDIN_FILENO
 
+extern int g_win_in;
+extern int g_win_out;
 extern struct winsize *g_win;
 void done(int exit_value);
 
-#if DEBUG > 1
-#define debug(arg) _debug arg
-void _debug(const char *fmt, ...);
-#else
-#define debug(arg)
-#endif
+#ifdef DEBUG
 
 #if DEBUG > 2
 #define debug2(arg) _debug arg
+#define debug(arg) _debug arg
+void _debug(const char *fmt, ...);
+
+#elif DEBUG == 2
+#define debug2(arg)
+#define debug(arg) _debug arg
+
+void _debug(const char *fmt, ...);
 #else
 #define debug2(arg)
+#define debug(arg)
 #endif
 
-#ifdef DEBUG
 #define return_if_fail(arg) if (!(arg)) { printf("assertion failed %s %d", __FILE__, __LINE__); return; }
+
 #else
+#define debug2(arg)
+#define debug(arg)
 #define return_if_fail(arg) if (!(arg)) { return; }
 #endif
 

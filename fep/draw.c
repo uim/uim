@@ -34,19 +34,19 @@
 /*
  * プリエディットやステータスラインを描画する
  */
-#if HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#if HAVE_STRING_H
+#ifdef HAVE_STRING_H
 #include <string.h>
 #endif
-#if HAVE_UNISTD_H
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#if HAVE_STDLIB_H
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#if HAVE_ASSERT_H
+#ifdef HAVE_ASSERT_H
 #include <assert.h>
 #endif
 
@@ -94,6 +94,7 @@ static const char *s_path_getmode;
 /* 端末サイズが変換したときTRUE */
 static int s_winch = FALSE;
 static int s_on_the_spot = FALSE;
+static int s_gnu_screen = FALSE;
 
 static void init_backtick(void);
 static void update_backtick(void);
@@ -118,11 +119,11 @@ static struct point_tag width2point_col(int width);
 static int width2lineno_char(int width);
 static int width2lineno_col(int width);
 
-#if DEBUG > 2
+#if defined(DEBUG) && DEBUG > 2
 static void print_preedit(struct preedit_tag *p);
 #endif
 
-void init_draw(uim_context context, int on_the_spot, int status_type, int master, const char *path_getmode)
+void init_draw(uim_context context, int on_the_spot, int status_type, int gnu_screen, int master, const char *path_getmode)
 {
   s_context = context;
   s_status_type = status_type;
@@ -130,6 +131,7 @@ void init_draw(uim_context context, int on_the_spot, int status_type, int master
   s_path_getmode = path_getmode;
   s_preedit = create_preedit();
   s_on_the_spot = on_the_spot;
+  s_gnu_screen = gnu_screen;
   if (s_status_type == BACKTICK) {
     init_backtick();
     draw_statusline_no_restore();
@@ -214,7 +216,13 @@ void draw(void)
     /* プリエディットを消す必要があるか */
     if (prev_preedit->width > 0) {
       put_cursor_invisible();
-      erase_preedit();
+      if (s_gnu_screen) {
+        put_cursor_left(prev_preedit->cursor);
+        put_erase(prev_preedit->width);
+        put_cursor_left(prev_preedit->width);
+      } else {
+        erase_preedit();
+      }
       end_preedit();
     }
     write(s_master, commit_str, strlen(commit_str));
@@ -230,7 +238,7 @@ void draw(void)
         end_preedit();
       }
     }
-  } else {
+  } else { /* if (g_commit) */
     if (s_preedit->width > 0) {
       /* コミットされたときにプリエディットがあったので，後から出力す
        * るためにプリエディットを保存する  */
@@ -254,6 +262,11 @@ static void start_preedit(void)
 {
   if (!g_start_preedit) {
     debug2(("start_preedit()\n"));
+    g_start_preedit = TRUE;
+    if (s_gnu_screen) {
+      return;
+    }
+
     s_head = get_cursor_position();
     if (s_head.col == g_win->ws_col - 1) {
       s_head.col = 0;
@@ -267,7 +280,6 @@ static void start_preedit(void)
     s_line2width = malloc(sizeof(int));
     s_line2width[0] = s_head.col;
     s_preedit_lines = 1;
-    g_start_preedit = TRUE;
   }
 }
 
@@ -277,8 +289,13 @@ static void start_preedit(void)
  */
 static void end_preedit(void)
 {
+  debug2(("end_preedit()\n"));
   assert(g_start_preedit);
   g_start_preedit = FALSE;
+  if (s_gnu_screen) {
+    return;
+  }
+
   put_cursor_address_p(&s_head);
   s_preedit_lines = 0;
   if (s_line2width != NULL) {
@@ -289,7 +306,6 @@ static void end_preedit(void)
     free(s_prev_line2width);
     s_prev_line2width = NULL;
   }
-  debug2(("end_preedit()\n"));
 }
 
 /*
@@ -640,30 +656,53 @@ static void draw_preedit(struct preedit_tag *preedit, struct preedit_tag *prev_p
 
   /* preedit == prev_preeditのときは、カーソルの移動だけ */
   if (eq_width == preedit->width && eq_width == prev_preedit->width && eq_width > 0) {
-    goto_char(preedit->cursor);
+    if (s_gnu_screen) {
+      put_move_cur(prev_preedit->cursor, preedit->cursor);
+    } else {
+      goto_char(preedit->cursor);
+    }
     return;
   }
 
-  set_line2width(preedit);
+  if (!s_gnu_screen) {
+    set_line2width(preedit);
+  }
 
   /* 出力する位置に移動 */
-  goto_col(eq_width);
+  if (s_gnu_screen) {
+    put_move_cur(prev_preedit->cursor, eq_width);
+  } else {
+    goto_col(eq_width);
+  }
 
   /* 領域が変わっていないので変更部分だけ上書き */
-  if (is_eq_region()) {
+  if ((s_gnu_screen && preedit->width == prev_preedit->width) || (!s_gnu_screen && is_eq_region())) {
     int eq_width_rev = compare_preedit_rev(preedit, prev_preedit);
     debug2(("eq_width_rev = %d\n", eq_width_rev));
     draw_subpreedit(preedit, eq_width, preedit->width - eq_width_rev);
-    goto_char(preedit->cursor);
+    if (s_gnu_screen) {
+      put_move_cur(preedit->width - eq_width_rev, preedit->cursor);
+    } else {
+      goto_char(preedit->cursor);
+    }
     return;
   }
 
   draw_subpreedit(preedit, eq_width, preedit->width);
 
-  erase_prev_preedit();
+  if (s_gnu_screen) {
+    if (preedit->width > prev_preedit->width) {
+      put_cursor_left(preedit->width - preedit->cursor);
+    } else {
+      put_erase(prev_preedit->width - preedit->width);
+      put_cursor_left(prev_preedit->width - preedit->cursor);
+    }
+  } else {
+    erase_prev_preedit();
+    /* カーソルの位置に移動 */
+    goto_char(preedit->cursor);
+  }
 
-  /* カーソルの位置に移動 */
-  goto_char(preedit->cursor);
 }
 
 static int is_eq_region(void)
@@ -721,7 +760,12 @@ static void draw_subpreedit(struct preedit_tag *p, int start, int end)
     char *seg_str = p->pseg[i].str;
     int seg_w = strwidth(seg_str);
     if (w + seg_w <= width) {
-      draw_pseg(&(p->pseg[i]), start + w);
+      if (s_gnu_screen) {
+        change_attr(p->pseg[i].attr);
+        put_uim_str(seg_str);
+      } else {
+        draw_pseg(&(p->pseg[i]), start + w);
+      }
       w += seg_w;
       if (w == width) {
         break;
@@ -731,7 +775,12 @@ static void draw_subpreedit(struct preedit_tag *p, int start, int end)
       int byte = byte_width[0];
       int save_char = seg_str[byte];
       seg_str[byte] = '\0';
-      draw_pseg(&(p->pseg[i]), start + w);
+      if (s_gnu_screen) {
+        change_attr(p->pseg[i].attr);
+        put_uim_str(seg_str);
+      } else {
+        draw_pseg(&(p->pseg[i]), start + w);
+      }
       seg_str[byte] = save_char;
       w += byte_width[1];
       break;
@@ -1087,7 +1136,7 @@ void draw_winch(void)
   s_winch = TRUE;
 }
 
-#if DEBUG > 2
+#if defined(DEBUG) && DEBUG > 2
 static void print_preedit(struct preedit_tag *p)
 {
   int i;

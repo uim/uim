@@ -31,32 +31,32 @@
 
 */
 
-#if HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 #ifndef DEBUG
 #define NDEBUG
 #endif
 #include <stdio.h>
-#if HAVE_CURSES_H
+#ifdef HAVE_CURSES_H
 #include <curses.h>
 #endif
-#if HAVE_TERM_H
+#ifdef HAVE_TERM_H
 #include <term.h>
 #endif
-#if HAVE_UNISTD_H
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#if HAVE_ASSERT_H
+#ifdef HAVE_ASSERT_H
 #include <assert.h>
 #endif
-#if HAVE_STDLIB_H
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#if HAVE_CTYPE_H
+#ifdef HAVE_CTYPE_H
 #include <ctype.h>
 #endif
-#if HAVE_STRING_H
+#ifdef HAVE_STRING_H
 #include <string.h>
 #endif
 
@@ -66,10 +66,14 @@
 #include "str.h"
 #include "read.h"
 
+#define my_putp(str) tputs(str, 1, my_putchar);
+
 /* カーソルを消すか */
 static int s_use_civis = FALSE;
 /* ステータスラインの種類 */
 static int s_status_type;
+/* GNU screen モードか */
+static int s_gnu_screen;
 /* 初期化したらTRUE */
 static int s_init = FALSE;
 /* 現在のカーソル位置 */
@@ -143,25 +147,27 @@ static void fixtty(void);
 static char *escseq2n(const char *escseq);
 static void escseq2n2(const char *escseq, const char **first, const char **second);
 static const char *attr2escseq(const struct attribute_tag *attr);
-static void set_attr(const char *str);
+static void set_attr(const char *str, int len);
 static void put_enter_uim_mode(void);
 static void put_exit_uim_mode(void);
+static int my_putchar(int c);
 #ifndef HAVE_CFMAKERAW
 static int cfmakeraw(struct termios *termios_p);
 #endif
 
-#if DEBUG > 1
+#if defined(DEBUG) && DEBUG > 1
 static void print_attr(struct attribute_tag *attr);
 #endif
 
 /*
  * termcap/terminfoのエントリがあるか確認する
  */
-void init_escseq(int use_civis, int use_ins_del, int status_type, const struct attribute_tag *attr_uim)
+void init_escseq(int use_civis, int use_ins_del, int status_type, int gnu_screen, const struct attribute_tag *attr_uim)
 {
   s_use_civis = use_civis;
   s_status_type = status_type;
   s_attr_uim = *attr_uim;
+  s_gnu_screen = gnu_screen;
 
   if (enter_underline_mode == NULL) {
     printf("enter_underline_mode is not available\n");
@@ -194,6 +200,16 @@ void init_escseq(int use_civis, int use_ins_del, int status_type, const struct a
   if (s_status_type == LASTLINE) {
     if (change_scroll_region == NULL) {
       printf("change_scroll_region is not available\n");
+      done(EXIT_FAILURE);
+    }
+  }
+  if (s_gnu_screen) {
+    if (cursor_left == NULL) {
+      printf("cursor_left is not available\n");
+      done(EXIT_FAILURE);
+    }
+    if (cursor_right == NULL) {
+      printf("cursor_right is not available\n");
       done(EXIT_FAILURE);
     }
   }
@@ -303,7 +319,7 @@ void quit_escseq(void)
     put_save_cursor();
     put_change_scroll_region(0, g_win->ws_row);
     put_goto_lastline(0);
-    putp(clr_eol);
+    my_putp(clr_eol);
     put_restore_cursor();
   }
   put_restore_cursor();
@@ -320,13 +336,18 @@ static void fixtty(void)
   struct point_tag cursor2;
   static struct termios tios;
 
-  tcgetattr(STDIN_FILENO, &tios);
+  tcgetattr(g_win_in, &tios);
   cfmakeraw(&tios);
   /* read_stdinが戻るまでに読まなければならない最小の文字数 */
   tios.c_cc[VMIN] = 0;
   /* read_stdinが戻るまでのタイムアウト 0.1秒単位 */
   tios.c_cc[VTIME] = 3;
-  tcsetattr(STDIN_FILENO, TCSANOW, &tios);
+  tcsetattr(g_win_in, TCSANOW, &tios);
+
+  if (s_gnu_screen) {
+    return;
+  }
+
   /* 開始位置を保存 */
   start_cursor = get_cursor_position();
   if (start_cursor.row == UNDEFINED) {
@@ -336,7 +357,7 @@ static void fixtty(void)
   put_cursor_invisible();
   /* 最下行から開始したときのためにスクロール */
   if (s_status_type == LASTLINE) {
-    putchar('\n');
+    write(g_win_out, "\n", strlen("\n"));
   }
   /* 安全な位置に移動 */
   put_cursor_address(1, 1);
@@ -376,6 +397,33 @@ static int cfmakeraw(struct termios *termios_p)
   return 0;
 }
 #endif
+
+void put_move_cur(int from, int to)
+{
+  if (to < from) {
+    put_cursor_left(from - to);
+  } else if (from < to) {
+    put_cursor_right(to - from);
+  }
+}
+
+void put_cursor_left(int n)
+{
+  int i;
+  debug(("<left %d>", n));
+  for (i = 0; i < n; i++) {
+    my_putp(cursor_left);
+  }
+}
+
+void put_cursor_right(int n)
+{
+  int i;
+  debug(("<right %d>", n));
+  for (i = 0; i < n; i++) {
+    my_putp(cursor_right);
+  }
+}
 
 /*
  * カーソル位置を保存する
@@ -420,7 +468,7 @@ struct point_tag get_cursor_position(void)
   if (s_cursor.row != UNDEFINED) {
     return s_cursor;
   }
-  printf("\033[6n");
+  write(g_win_out, "\033[6n", strlen("\033[6n"));
 
   do {
     /* 10回ループしてもだめだったら終了 */
@@ -493,7 +541,7 @@ struct point_tag get_cursor_position(void)
   s_cursor.row -= s_cursor_diff.row;
   s_cursor.col -= s_cursor_diff.col;
 
-  /* screenではこうなることがある */
+  /* GNU screen ではこうなることがある */
   if (s_cursor.col > g_win->ws_col - 1) {
     put_crlf();
   }
@@ -508,7 +556,7 @@ void put_cursor_invisible(void)
 {
   if (s_use_civis && !s_cursor_invisible && cursor_invisible != NULL && cursor_normal != NULL) {
     s_cursor_invisible = TRUE;
-    putp(cursor_invisible);
+    my_putp(cursor_invisible);
     debug(("<invis>"));
   }
 }
@@ -520,7 +568,7 @@ void put_cursor_normal(void)
 {
   if (s_cursor_invisible) {
     s_cursor_invisible = FALSE;
-    putp(cursor_normal);
+    my_putp(cursor_normal);
     debug(("<norm>"));
   }
 }
@@ -533,7 +581,7 @@ void put_enter_underline_mode(void)
   put_enter_uim_mode();
   if (!s_attr.underline) {
     s_attr.underline = TRUE;
-    putp(enter_underline_mode);
+    my_putp(enter_underline_mode);
     debug(("<{_>"));
   }
 }
@@ -551,7 +599,7 @@ void put_exit_underline_mode(void)
     }
     put_exit_attribute_mode();
     if (s_enter_uim_mode != NULL) {
-      putp(s_enter_uim_mode);
+      my_putp(s_enter_uim_mode);
       debug(("%s", s_enter_uim_mode));
     }
     /* debug(("<_}>")); */
@@ -566,7 +614,7 @@ void put_enter_standout_mode(void)
   put_enter_uim_mode();
   if (!s_attr.standout) {
     s_attr.standout = TRUE;
-    putp(enter_standout_mode);
+    my_putp(enter_standout_mode);
     debug(("<{r>"));
   }
 }
@@ -584,7 +632,7 @@ void put_exit_standout_mode(void)
     }
     put_exit_attribute_mode();
     if (s_enter_uim_mode != NULL) {
-      putp(s_enter_uim_mode);
+      my_putp(s_enter_uim_mode);
       debug(("%s", s_enter_uim_mode));
       debug(("<{uim>"));
     }
@@ -599,7 +647,7 @@ void put_exit_standout_mode(void)
 void put_exit_attribute_mode(void)
 {
   s_attr = s_attr_none;
-  putp(exit_attribute_mode);
+  my_putp(exit_attribute_mode);
   debug(("<a}>"));
 }
 
@@ -641,7 +689,7 @@ static void change_attr(const struct attribute_tag *from, const struct attribute
     escseq = attr2escseq(&attr);
   }
   if (escseq != NULL) {
-    putp(escseq);
+    my_putp(escseq);
     debug(("change_attr %s\n", escseq));
   }
 }
@@ -740,28 +788,38 @@ static const char *attr2escseq(const struct attribute_tag *attr)
 
 /*
  * strから属性を変更するエスケープシーケンスを探す
+ * len > 0
  */
-static void set_attr(const char *str)
+static void set_attr(const char *str, int len)
 {
   /* エスケープシーケンスの開始 */
   const char *start;
   const char *free_str = NULL;
   /* TRUEのときfree_strをfreeする必要がある */
   int must_free = FALSE;
+  const char *end = str + len;
   /* 前回の途中のバッファがあるか */
   if (s_escseq_buf != NULL) {
     const char *tmp_str = str;
+    /* s_escseq_buf には'\0'は含まれない */
+    int escseq_buf_len = strlen(s_escseq_buf);
     must_free = TRUE;
-    free_str = str = malloc(strlen(s_escseq_buf) + strlen(tmp_str) + 1);
-    sprintf((char *)str, "%s%s", s_escseq_buf, tmp_str);
+    free_str = str = malloc(escseq_buf_len + len + 1);
+    memcpy((char *)str, s_escseq_buf, escseq_buf_len);
+    memcpy((char *)str + escseq_buf_len, tmp_str, len);
+    ((char *)str)[escseq_buf_len + len] = '\0';
     free(s_escseq_buf);
     s_escseq_buf = NULL;
+    end = str + escseq_buf_len + len;
   }
 
-  while ((start = str = strstr(str, "\033")) != NULL) {
+  while ((start = str = memchr(str, ESCAPE_CODE, end - str)) != NULL) {
     str++;
-    if (str[0] == '\0') {
-      s_escseq_buf = strdup(start);
+    if (str == end) {
+      int escseq_buf_len = end - start;
+      s_escseq_buf = malloc(escseq_buf_len + 1);
+      memcpy(s_escseq_buf, start, escseq_buf_len);
+      s_escseq_buf[escseq_buf_len] = '\0';
     }
 
     else if (str[0] == '[') {
@@ -788,8 +846,11 @@ static void set_attr(const char *str)
         }
       }
 
-      if (str[0] == '\0') {
-        s_escseq_buf = strdup(start);
+      if (str == end) {
+        int escseq_buf_len = end - start;
+        s_escseq_buf = malloc(escseq_buf_len + 1);
+        memcpy(s_escseq_buf, start, escseq_buf_len);
+        s_escseq_buf[escseq_buf_len] = '\0';
       }
 
       else if (str[0] == 'm') {
@@ -842,6 +903,7 @@ static void set_attr(const char *str)
  */
 void put_cursor_address(int row, int col)
 {
+  const char *tmp;
   if (row >= g_win->ws_row) {
     row = g_win->ws_row - 1;
   }
@@ -849,7 +911,8 @@ void put_cursor_address(int row, int col)
   if (row == s_cursor.row && col == s_cursor.col && col < g_win->ws_col - 2) {
     return;
   }
-  putp(tparm(cursor_address, row, col));
+  tmp = tparm(cursor_address, row, col);
+  my_putp(tmp);
   s_cursor.row = row;
   s_cursor.col = col;
   debug(("<go %d %d>", row, col));
@@ -865,10 +928,12 @@ void put_cursor_address_p(struct point_tag *p)
  */
 void put_insert(int n)
 {
+  const char *tmp;
   if (n <= 0) {
     return;
   }
-  putp(tparm(parm_ich, n));
+  tmp = tparm(parm_ich, n);
+  my_putp(tmp);
   debug(("<ins %d>", n));
 }
 
@@ -877,6 +942,7 @@ void put_insert(int n)
  */
 void put_delete(int n)
 {
+  const char *tmp;
   if (n <= 0) {
     return;
   }
@@ -884,7 +950,8 @@ void put_delete(int n)
     put_exit_underline_mode();
     put_exit_standout_mode();
   }
-  putp(tparm(parm_dch, n));
+  tmp = tparm(parm_dch, n);
+  my_putp(tmp);
   debug(("<del %d>", n));
 }
 
@@ -893,7 +960,7 @@ void put_delete(int n)
  */
 void put_crlf(void)
 {
-  printf("\r\n");
+  write(g_win_out, "\r\n", strlen("\r\n"));
   s_cursor.col = 0;
   s_cursor.row++;
   if (s_cursor.row >= g_win->ws_row) {
@@ -907,11 +974,13 @@ void put_crlf(void)
  */
 void put_goto_lastline(int col)
 {
+  const char *tmp;
   int row = g_win->ws_row;
   if (row == s_cursor.row && col == s_cursor.col) {
     return;
   }
-  putp(tparm(cursor_address, row, col));
+  tmp = tparm(cursor_address, row, col);
+  my_putp(tmp);
   s_cursor.row = row;
   s_cursor.col = col;
   debug(("<go %d %d>", row, col));
@@ -954,7 +1023,7 @@ void put_clear_to_end_of_line(int width)
     put_exit_standout_mode();
     put_exit_underline_mode();
   }
-  putp(clr_eol);
+  my_putp(clr_eol);
   debug(("<clear>"));
 }
 
@@ -963,7 +1032,8 @@ void put_clear_to_end_of_line(int width)
  */
 void put_change_scroll_region(int start, int end)
 {
-  putp(tparm(change_scroll_region, start, end));
+  const char *tmp = tparm(change_scroll_region, start, end);
+  my_putp(tmp);
   s_cursor.row = s_cursor.col = 0;
   debug(("<region %d %d>", start, end));
 }
@@ -985,7 +1055,7 @@ void put_uim_str(const char *str)
   put_enter_uim_mode();
   s_cursor.col += strwidth(str);
   assert(s_cursor.col <= g_win->ws_col);
-  printf("%s", str);
+  write(g_win_out, str, strlen(str));
   debug(("<put_uim_str \"%s\">", str));
 }
 
@@ -1005,14 +1075,14 @@ void put_uim_str_len(const char *str, int len)
  * ptyからの出力strを端末に出力する
  * エスケープシーケンスを含む場合がある
  */
-void put_pty_str(const char *str)
+void put_pty_str(const char *str, int len)
 {
-  if (str[0] == '\0') {
+  if (len == 0) {
     return;
   }
   put_exit_uim_mode();
-  printf("%s", str);
-  set_attr(str);
+  write(g_win_out, str, len);
+  set_attr(str, len);
   g_commit = FALSE;
   s_cursor.row = s_cursor.col = UNDEFINED;
   debug(("<put_pty_str \"%s\">", str));
@@ -1056,7 +1126,13 @@ void escseq_winch(void)
   s_cursor.row = s_cursor.col = UNDEFINED;
 }
 
-#if DEBUG > 1
+static int my_putchar(int c)
+{
+  write(g_win_out, &c, 1);
+  return c;
+}
+
+#if defined(DEBUG) && DEBUG > 1
 static void print_attr(struct attribute_tag *attr)
 {
   debug(("underline = %d standout = %d bold = %d blink = %d fore = %d back = %d\n",

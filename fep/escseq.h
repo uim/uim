@@ -49,9 +49,12 @@ struct attribute_tag {
 };
 
 
-void init_escseq(int use_civis, int use_ins_del, int status_type, const struct attribute_tag *attr_uim);
+void init_escseq(int use_civis, int use_ins_del, int status_type, int gnu_screen, const struct attribute_tag *attr_uim);
 void quit_escseq(void);
 struct point_tag get_cursor_position(void);
+void put_move_cur(int from, int to);
+void put_cursor_left(int n);
+void put_cursor_right(int n);
 void put_save_cursor(void);
 void put_restore_cursor(void);
 void put_cursor_invisible(void);
@@ -72,7 +75,7 @@ void put_clear_to_end_of_line(int width);
 void put_change_scroll_region(int start, int end);
 void put_uim_str(const char *str);
 void put_uim_str_len(const char *str, int len);
-void put_pty_str(const char *str);
+void put_pty_str(const char *str, int len);
 char *cut_padding(const char *escseq);
 void escseq_winch(void);
 #endif

@@ -43,7 +43,8 @@ int byte2width2(const char *str, int n);
 int *width2byte(const char *str, int n);
 int *width2byte2(const char *str, int n);
 int strhead(char *str, int n);
-char *rstrstr(char *haystack, const char *needle);
+char *rstrstr_len(const char *haystack, const char *needle, int haystack_len);
+char *strstr_len(const char *haystack, const char *needle, int haystack_len);
 char *tab2space(const char *tabstr);
 #endif
 

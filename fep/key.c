@@ -31,7 +31,7 @@
 
 */
 
-#if HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 #ifndef DEBUG
@@ -40,19 +40,20 @@
 
 #include <uim/uim.h>
 
-#if HAVE_CURSES_H
+#ifdef HAVE_CURSES_H
 #include <curses.h>
 #endif
-#if HAVE_TERM_H
+#ifdef HAVE_TERM_H
 #include <term.h>
 #endif
-#if HAVE_STRING_H
+#ifdef HAVE_STRING_H
 #include <string.h>
 #endif
-#if HAVE_ASSERT_H
+#ifdef HAVE_ASSERT_H
 #include <assert.h>
 #endif
 #include "key.h"
+#include "uim-fep.h"
 
 #define _KEY_UP    "\033[A"
 #define _KEY_DOWN  "\033[B"
