@@ -50,6 +50,53 @@
 #define OBJECT_DATA_MENU_BUTTONS "MENU_BUTTONS"
 #define OBJECT_DATA_SIZE_GROUP "SIZE_GROUP"
 #define OBJECT_DATA_TOOLBAR_TYPE "TOOLBAR_TYPE"
+#define OBJECT_DATA_COMMAND "COMMAND"
+
+/* FIXME! command menu and buttons should be customizable. */
+static struct _CommandEntry {
+  const gchar *desc;
+  const gchar *label;
+  const gchar *icon;
+  const gchar *command;
+  const gchar *pref_button_show_symbol;
+} command_entry[] = {
+  {N_("Execute uim's input method switcher"),
+   NULL,
+   "switcher-icon",
+   "uim-im-switcher-gtk &",
+   "toolbar-show-switcher-button?"},
+
+  {N_("Execute uim's preference tool"),
+   NULL,
+   GTK_STOCK_PREFERENCES,
+   "uim-pref-gtk &",
+   "toolbar-show-pref-button?"},
+
+  {N_("Execute uim's Japanese dictionary tool"),
+   "Dic",
+   NULL,
+   "uim-dict-gtk &",
+   "toolbar-show-dict-button?"},
+
+  {N_("Execute uim's input pad tool"),
+   "Pad",
+   NULL,
+   "uim-input-pad-ja &",
+   "toolbar-show-input-pad-button?"},
+
+  {N_("Execute uim's handwriting input pad tool"),
+   "Hand",
+   NULL,
+   "uim-tomoe-gtk &",
+   "toolbar-show-handwriting-input-pad-button?"},
+
+  {N_("Execute uim's help tool"),
+   NULL,
+   GTK_STOCK_HELP,
+   "uim-help &",
+   "toolbar-show-help-button?"},
+};
+static gint command_entry_len = sizeof(command_entry) / sizeof(struct _CommandEntry);
 
 static GtkWidget *prop_menu;
 static GtkWidget *right_click_menu;
@@ -67,16 +114,6 @@ static gboolean
 prop_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget);
 static gboolean
 prop_button_released(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget);
-
-static GtkWidget *
-switcher_button_create(GtkSizeGroup *sg, GtkWidget *widget);
-static void
-switcher_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget);
-
-static GtkWidget *
-pref_button_create(GtkSizeGroup *sg, GtkWidget *widget);
-static void
-pref_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget);
 
 static void
 calc_menu_position(GtkMenu *prop_menu, gint *x, gint *y, gboolean *push_in, GtkWidget *prop_button);
@@ -234,6 +271,37 @@ convert_charset(const gchar *charset, const gchar *line)
 		   NULL); /* GError **error*/
 }
 
+static gboolean
+prop_right_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer dummy)
+{
+  gtk_menu_popup(GTK_MENU(right_click_menu), NULL, NULL, 
+		 (GtkMenuPositionFunc) calc_menu_position,
+		 (gpointer)prop_button, event->button, 
+		 gtk_get_current_event_time());
+  return FALSE;
+}
+
+static gboolean
+toolbar_button_press_cb(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget)
+{ 
+  const gchar *command = g_object_get_data(G_OBJECT(prop_button), OBJECT_DATA_COMMAND);
+  gint type =  GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), OBJECT_DATA_TOOLBAR_TYPE));
+  if(event->button == 3) {
+    if(type == TYPE_APPLET)
+      gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
+    else
+      prop_right_button_pressed(prop_button, event, prop_menu);
+    return TRUE;
+  } else if(event->button == 2) {
+    gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
+    return TRUE;
+  } else if (command && *command) {
+    system(command);
+  }
+
+  return FALSE;
+}
+
 static void
 helper_toolbar_prop_list_update(GtkWidget *widget, gchar **tmp)
 {
@@ -280,11 +348,40 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **tmp)
     i++;
   }
   
-  button = switcher_button_create(sg, widget);
-  append_button(widget, button);
+  /* create tool buttons */
+  /* FIXME! command menu and buttons should be customizable. */
+  for (i = 0; i < command_entry_len; i++) {
+    GtkWidget *button;
+    GtkTooltips *tooltip;
+    GtkWidget *img;
+    uim_bool show_pref;
 
-  button = pref_button_create(sg, widget);
-  append_button(widget, button);
+    show_pref = uim_scm_symbol_value_bool(command_entry[i].pref_button_show_symbol);
+    if(show_pref == UIM_FALSE)
+      continue;
+
+    button = gtk_button_new();
+    g_object_set_data(G_OBJECT(button), OBJECT_DATA_COMMAND,
+		      (gpointer) command_entry[i].command);
+    if (command_entry[i].icon) {
+      img = gtk_image_new_from_stock(command_entry[i].icon, GTK_ICON_SIZE_MENU);
+    } else {
+      img = gtk_label_new("");
+      gtk_label_set_markup(GTK_LABEL(img), command_entry[i].label);
+    }
+    if (img)
+      gtk_container_add(GTK_CONTAINER(button), img);
+    gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
+    gtk_size_group_add_widget(sg, button);
+    g_signal_connect(G_OBJECT(button), "button_press_event",
+		     G_CALLBACK(toolbar_button_press_cb), widget);
+
+    /* tooltip */
+    tooltip = gtk_tooltips_new();
+    gtk_tooltips_set_tip(tooltip, button, _(command_entry[i].desc), NULL);
+
+    append_button(widget, button);
+  }
 
   gtk_widget_show_all(widget);
 
@@ -451,21 +548,18 @@ fd_read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
 }
 
 static void
-menu_switcher_activated(GtkMenu *menu_item, gpointer data)
-{
-  system("uim-im-switcher-gtk &");
-}
-
-static void
-menu_pref_activated(GtkMenu *menu_item, gpointer data)
-{
-  system("uim-pref-gtk &");
-}
-
-static void
 menu_quit_activated(GtkMenu *menu_item, gpointer data)
 {
   gtk_main_quit();
+}
+
+static void
+menu_activated(GtkMenu *menu_item, gpointer data)
+{
+  const char *command = data;
+
+  if (command && *command)
+    system(command);
 }
 
 static GtkWidget *
@@ -474,47 +568,39 @@ right_click_menu_create(void)
   GtkWidget *menu;
   GtkWidget *menu_item;
   GtkWidget *img;
-  gchar *path;
+
+  gint i;
 
   menu = gtk_menu_new();
-  path = g_strconcat(UIM_PIXMAPSDIR, "/switcher-icon.png", NULL);
-  img = gtk_image_new_from_file(path);
-  g_free(path);
 
-  menu_item = gtk_image_menu_item_new_with_label(_("Execute uim's input method switcher"));
-  gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
-  g_signal_connect(G_OBJECT(menu_item), "activate", 
-		   G_CALLBACK(menu_switcher_activated), NULL);
+  /* FIXME! command menu and buttons should be customizable. */
+  for (i = 0; i < command_entry_len; i++) {
+    menu_item = gtk_image_menu_item_new_with_label(_(command_entry[i].desc));
 
-  img = gtk_image_new_from_stock(GTK_STOCK_PREFERENCES, GTK_ICON_SIZE_MENU);
-  menu_item = gtk_image_menu_item_new_with_label(_("Execute uim's preference tool"));
-  gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
-  g_signal_connect(G_OBJECT(menu_item), "activate", 
-		   G_CALLBACK(menu_pref_activated), NULL);
+    if (command_entry[i].icon) {
+      img = gtk_image_new_from_stock(command_entry[i].icon, GTK_ICON_SIZE_MENU);
+      if (img)
+	gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
+    }
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
+    g_signal_connect(G_OBJECT(menu_item), "activate", 
+		     G_CALLBACK(menu_activated),
+		     (gpointer) command_entry[i].command);
+  }
 
-  img = gtk_image_new_from_stock(GTK_STOCK_QUIT, GTK_ICON_SIZE_MENU);
-  menu_item = gtk_image_menu_item_new_with_label(_("Quit this toolbar"));
-  gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
-  g_signal_connect(G_OBJECT(menu_item), "activate", 
-		   G_CALLBACK(menu_quit_activated), NULL);
+  {
+    img = gtk_image_new_from_stock(GTK_STOCK_QUIT, GTK_ICON_SIZE_MENU);
+    menu_item = gtk_image_menu_item_new_with_label(_("Quit this toolbar"));
+    gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
+    g_signal_connect(G_OBJECT(menu_item), "activate", 
+		     G_CALLBACK(menu_quit_activated), NULL);
+  }
 
 
   gtk_widget_show_all(menu);
 
   return menu;
-}
-
-static gboolean
-prop_right_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer dummy)
-{
-  gtk_menu_popup(GTK_MENU(right_click_menu), NULL, NULL, 
-		 (GtkMenuPositionFunc) calc_menu_position,
-		 (gpointer)prop_button, event->button, 
-		 gtk_get_current_event_time());
-  return FALSE;
 }
 
 
@@ -659,105 +745,28 @@ calc_menu_position(GtkMenu *prop_menu, gint *x, gint *y, gboolean *push_in, GtkW
 }
 
 static GtkWidget *
-switcher_button_create(GtkSizeGroup *sg, GtkWidget *widget)
-{
-  GtkWidget *button;
-  GtkTooltips *tooltip;
-  GtkWidget *img;
-  gchar *path;
-  uim_bool show_switcher;
-
-  show_switcher = uim_scm_symbol_value_bool("toolbar-show-switcher-button?");
-  if(show_switcher == UIM_FALSE)
-    return NULL;
-
-  button = gtk_button_new();
-  path = g_strconcat(UIM_PIXMAPSDIR, "/switcher-icon.png", NULL);
-  img = gtk_image_new_from_file(path);
-  g_free(path);
-  gtk_container_add(GTK_CONTAINER(button), img);
-  gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
-  gtk_size_group_add_widget(sg, button);
-  g_signal_connect(G_OBJECT(button), "button_press_event",
-		   G_CALLBACK(switcher_button_pressed), widget);
-  
-  /* tooltip */
-  tooltip = gtk_tooltips_new();
-  gtk_tooltips_set_tip(tooltip, button, _("Execute uim's input method switcher"), NULL);
-
-  return button;
-}
-
-static void
-switcher_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget)
-{ 
-  gint type =  GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), OBJECT_DATA_TOOLBAR_TYPE));
-  if(event->button == 3) {
-    if(type == TYPE_APPLET)
-      gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
-    else
-      prop_right_button_pressed(prop_button, event, prop_menu);
-  } else if(event->button == 2) {
-    gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
-  } else {
-    /* exec uim-im-switcher-gtk */
-    system("uim-im-switcher-gtk &");
-  }
-}
-
-static GtkWidget *
-pref_button_create(GtkSizeGroup *sg, GtkWidget *widget)
-{
-
-  GtkWidget *button;
-  GtkTooltips *tooltip;
-  GtkWidget *img;
-  uim_bool show_pref;
-
-  show_pref = uim_scm_symbol_value_bool("toolbar-show-pref-button?");
-  if(show_pref == UIM_FALSE)
-    return NULL;
-
-  button = gtk_button_new();
-  img = gtk_image_new_from_stock(GTK_STOCK_PREFERENCES, GTK_ICON_SIZE_MENU);
-  gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
-  gtk_size_group_add_widget(sg, button);
-  g_signal_connect(G_OBJECT(button), "button_press_event",
-		   G_CALLBACK(pref_button_pressed), widget);
-  gtk_container_add(GTK_CONTAINER(button), img);
-
-  /* tooltip */
-  tooltip = gtk_tooltips_new();
-  gtk_tooltips_set_tip(tooltip, button, _("Execute uim's preference tool"), NULL);
-
-  return button;
-}
-
-static void
-pref_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget)
-{ 
-  gint type =  GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), OBJECT_DATA_TOOLBAR_TYPE));
-  if(event->button == 3) {
-    if(type == TYPE_APPLET)
-      gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
-    else
-      prop_right_button_pressed(prop_button, event, prop_menu);
-  } else if(event->button == 2) {
-    gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
-  } else {
-    /* exec uim-pref */
-    system("uim-pref-gtk &");
-  }
-}
-
-static GtkWidget *
 toolbar_new(gint type)
 {
+  GtkIconFactory *factory;
+  GtkIconSet *icon_set;
+  GdkPixbuf *pixbuf;
   GtkWidget *button;
   GtkWidget *hbox;
   GList *menu_buttons = NULL;
   GtkSizeGroup *sg;
 
+  /* regist our icons */
+  factory = gtk_icon_factory_new();
+  gtk_icon_factory_add_default(factory);
+  pixbuf = gdk_pixbuf_new_from_file(UIM_PIXMAPSDIR "/switcher-icon.png", NULL);
+  icon_set = gtk_icon_set_new_from_pixbuf(pixbuf);
+  gtk_icon_factory_add(factory, "switcher-icon", icon_set);
+
+  gtk_icon_set_unref(icon_set);
+  g_object_unref(G_OBJECT(pixbuf));
+  g_object_unref(G_OBJECT (factory));
+
+  /* create widgets */
   hbox = gtk_hbox_new(FALSE, 0);
   prop_menu = gtk_menu_new();
   right_click_menu = right_click_menu_create();
