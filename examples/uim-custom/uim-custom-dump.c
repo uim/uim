@@ -86,16 +86,24 @@ dump_group(const char *group_sym)
 int
 main(int argc, char *argv[])
 {
-  char **primary_groups, **grp;
-
-  uim_init();
-  uim_custom_enable();
-
-  primary_groups = uim_custom_primary_groups();
-  for (grp = primary_groups; *grp; grp++) {
-    dump_group(*grp);
+  if (uim_init() < 0) {
+    fprintf(stderr, "uim_init() failed.\n");
+    return -1;
   }
-  uim_custom_symbol_list_free(primary_groups);
+
+  if (uim_custom_enable()) {
+    char **primary_groups, **grp;
+
+    primary_groups = uim_custom_primary_groups();
+    for (grp = primary_groups; *grp; grp++) {
+      dump_group(*grp);
+    }
+    uim_custom_symbol_list_free(primary_groups);
+  } else {
+    fprintf(stderr, "uim_custom_enable() failed.\n");
+    uim_quit();
+    return -1;
+  }
 
   uim_quit();
 

@@ -37,17 +37,24 @@
 int
 main(int argc, char *argv[])
 {
-  uim_init();
-  uim_custom_enable();
+  if (uim_init() < 0) {
+    fprintf(stderr, "uim_init() failed.\n");
+    return -1;
+  }
 
-  /* save custom variables into ~/.uim.d/customs/custom-*.scm */
-  uim_custom_save();
+  if (uim_custom_enable()) {
+    /* save custom variables into ~/.uim.d/customs/custom-*.scm */
+    uim_custom_save();
 
-  /*
-    broadcast updated custom variables to every uim client processes
-    via uim-helper-server
-  */
-  uim_custom_broadcast();
+    /*
+      broadcast updated custom variables to every uim client processes
+      via uim-helper-server
+    */
+  } else {
+    fprintf(stderr, "uim_custom_enable() failed.\n");
+    uim_quit();
+    return -1;
+  }
 
   uim_quit();
 

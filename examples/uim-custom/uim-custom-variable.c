@@ -138,39 +138,47 @@ inspect_custom(const struct uim_custom *custom)
 int
 main(int argc, char *argv[])
 {
-  uim_bool succeeded;
-  struct uim_custom *custom;
-
-  uim_init();
-  uim_custom_enable();
-
-  custom = uim_custom_get("anthy-candidate-op-count");
-  if (custom) {
-    inspect_custom(custom);
-
-    printf("\ntrying that modify the custom value to 100\n");
-    custom->value->as_int = 100;  /* out of range */
-    succeeded = uim_custom_set(custom);
-    printf("succeeded = %s\n", succeeded ? "true" : "false");
-
-    printf("\ncurrent status of struct uim_custom *custom\n");
-    inspect_custom(custom);  /* shows 100 as value */
-    uim_custom_free(custom);
-
-    printf("\ncurrent status of real custom value\n");
-    custom = uim_custom_get("anthy-candidate-op-count");
-    inspect_custom(custom);  /* shows real value */
-
-    printf("\ntrying that modify the custom value to 5\n");
-    custom->value->as_int = 5;  /* valid */
-    succeeded = uim_custom_set(custom);
-    printf("succeeded = %s\n\n", succeeded ? "true" : "false");
-    inspect_custom(custom);
-
-    uim_custom_free(custom);
+  if (uim_init() < 0) {
+    fprintf(stderr, "uim_init() failed.\n");
+    return -1;
   }
 
-  uim_custom_save();  /* save updated custom value into ~/.uim.d/customs/ */
+  if (uim_custom_enable()) {
+    uim_bool succeeded;
+    struct uim_custom *custom;
+
+    custom = uim_custom_get("anthy-candidate-op-count");
+    if (custom) {
+      inspect_custom(custom);
+
+      printf("\ntrying that modify the custom value to 100\n");
+      custom->value->as_int = 100;  /* out of range */
+      succeeded = uim_custom_set(custom);
+      printf("succeeded = %s\n", succeeded ? "true" : "false");
+
+      printf("\ncurrent status of struct uim_custom *custom\n");
+      inspect_custom(custom);  /* shows 100 as value */
+      uim_custom_free(custom);
+
+      printf("\ncurrent status of real custom value\n");
+      custom = uim_custom_get("anthy-candidate-op-count");
+      inspect_custom(custom);  /* shows real value */
+
+      printf("\ntrying that modify the custom value to 5\n");
+      custom->value->as_int = 5;  /* valid */
+      succeeded = uim_custom_set(custom);
+      printf("succeeded = %s\n\n", succeeded ? "true" : "false");
+      inspect_custom(custom);
+
+      uim_custom_free(custom);
+    }
+
+    uim_custom_save();  /* save updated custom value into ~/.uim.d/customs/ */
+  } else {
+    fprintf(stderr, "uim_custom_enable() failed.\n");
+    uim_quit();
+    return -1;
+  }
 
   uim_quit();
 
