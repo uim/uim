@@ -852,21 +852,21 @@
 (define anthy-input-state-no-preedit-action
   (lambda (ac act-id)
     (case act-id
-     ((action_anthy_zenkaku)
-      (anthy-flush ac)
-      (anthy-context-set-on! ac #f)
-      (anthy-context-set-wide-latin! ac #t))
+      ((action_anthy_zenkaku)
+       (anthy-flush ac)
+       (anthy-context-set-on! ac #f)
+       (anthy-context-set-wide-latin! ac #t))
 
-     ((action_anthy_direct)
-      (anthy-flush ac)
-      (anthy-context-set-on! ac #f)
-      (anthy-context-set-wide-latin! ac #f))
+      ((action_anthy_direct)
+       (anthy-flush ac)
+       (anthy-context-set-on! ac #f)
+       (anthy-context-set-wide-latin! ac #f))
 
-     ((action_anthy_hankana)
-      (anthy-switch-kana-mode! ac anthy-type-hankana))
+      ((action_anthy_hankana)
+       (anthy-switch-kana-mode! ac anthy-type-hankana))
 
-     ((action_anthy_toggle_kana)
-      (anthy-toggle-kana-mode! ac)))))
+      ((action_anthy_toggle_kana)
+       (anthy-toggle-kana-mode! ac)))))
 
 (define anthy-has-preedit?
   (lambda (ac)
@@ -880,61 +880,61 @@
 			 anthy-commit-transposed-preconv!
 			 anthy-transpose-preconv!))) ;; does not commit
       (case act-id
-       ((action_anthy_begin_conv)
-	(anthy-begin-conv ac))
+	((action_anthy_begin_conv)
+	 (anthy-begin-conv ac))
 
-       ((action_anthy_backspace)
-	(evmap-ustr-backspace! preconv-ustr))
+	((action_anthy_backspace)
+	 (evmap-ustr-backspace! preconv-ustr))
 
-       ((action_anthy_delete)
-	(ustr-cursor-delete-frontside! preconv-ustr))
+	((action_anthy_delete)
+	 (ustr-cursor-delete-frontside! preconv-ustr))
 
-       ((action_anthy_kill)
-	(ustr-clear-latter! preconv-ustr))
+	((action_anthy_kill)
+	 (ustr-clear-latter! preconv-ustr))
 
-       ((action_anthy_kill_backward)
-	(ustr-clear-former! preconv-ustr))
+	((action_anthy_kill_backward)
+	 (ustr-clear-former! preconv-ustr))
 
-       ((action_anthy_commit_as_opposite_kana)
-	(transpose ac (multi-segment-opposite-kana kana)))
+	((action_anthy_commit_as_opposite_kana)
+	 (transpose ac (multi-segment-opposite-kana kana)))
 
-       ((action_anthy_commit_as_hiragana)
-	(transpose ac anthy-type-hiragana))
+	((action_anthy_commit_as_hiragana)
+	 (transpose ac anthy-type-hiragana))
 
-       ((action_anthy_commit_as_katakana)
-	(transpose ac anthy-type-katakana))
+	((action_anthy_commit_as_katakana)
+	 (transpose ac anthy-type-katakana))
 
-       ((action_anthy_commit_as_halfkana)
-	(transpose ac anthy-type-hankana))
+	((action_anthy_commit_as_halfkana)
+	 (transpose ac anthy-type-hankana))
 
-       ((action_anthy_commit_as_half_alnum)
-	(transpose ac anthy-type-halfwidth))
+	((action_anthy_commit_as_half_alnum)
+	 (transpose ac anthy-type-halfwidth))
 
-       ((action_anthy_commit_as_full_alnum)
-	(transpose ac anthy-type-fullwidth))
+	((action_anthy_commit_as_full_alnum)
+	 (transpose ac anthy-type-fullwidth))
 
-       ;; commit current preedit string, then toggle hiragana/katakana mode.
-       ((action_anthy_toggle_kana)
-	(anthy-commit-preconv! ac)
-	(anthy-toggle-kana-mode! ac))
+	;; commit current preedit string, then toggle hiragana/katakana mode.
+	((action_anthy_toggle_kana)
+	 (anthy-commit-preconv! ac)
+	 (anthy-toggle-kana-mode! ac))
 
-       ((action_anthy_cancel_conv)
-	(anthy-flush ac))
+	((action_anthy_cancel_conv)
+	 (anthy-flush ac))
 
-       ((action_anthy_commit)
-	(anthy-commit-preconv! ac))
+	((action_anthy_commit)
+	 (anthy-commit-preconv! ac))
 
-       ((action_anthy_go_left)
-	(ustr-cursor-move-backward! preconv-ustr))
+	((action_anthy_go_left)
+	 (ustr-cursor-move-backward! preconv-ustr))
 
-       ((action_anthy_go_right)
-	(ustr-cursor-move-forward! preconv-ustr))
+	((action_anthy_go_right)
+	 (ustr-cursor-move-forward! preconv-ustr))
 
-       ((action_anthy_beginning_of_preedit)
-	(ustr-cursor-move-beginning! preconv-ustr))
+	((action_anthy_beginning_of_preedit)
+	 (ustr-cursor-move-beginning! preconv-ustr))
 
-       ((action_anthy_end_of_preedit)
-	(ustr-cursor-move-end! preconv-ustr))))))
+	((action_anthy_end_of_preedit)
+	 (ustr-cursor-move-end! preconv-ustr))))))
 
 (define anthy-separator
   (lambda (ac)
@@ -1166,83 +1166,83 @@
   (lambda (ac act-id)
     (let ((preconv-ustr (anthy-context-preconv-ustr ac))
 	  (segments (anthy-context-segments ac)))
-     (case act-id
-       ;; transpose current segment to opposite kana
-       ((action_anthy_commit_as_opposite_kana)
-	(anthy-set-candidate ac anthy-direct-convert-opposite-kana))
+      (case act-id
+	;; transpose current segment to opposite kana
+	((action_anthy_commit_as_opposite_kana)
+	 (anthy-set-candidate ac anthy-direct-convert-opposite-kana))
 
-       ;; transpose current segment to hiragana
-       ((action_anthy_commit_as_hiragana)
-	(anthy-set-candidate ac anthy-direct-convert-hiragana))
+	;; transpose current segment to hiragana
+	((action_anthy_commit_as_hiragana)
+	 (anthy-set-candidate ac anthy-direct-convert-hiragana))
 
-       ;; transpose current segment to katakana
-       ((action_anthy_commit_as_katakana)
-	(anthy-set-candidate ac anthy-direct-convert-katakana))
+	;; transpose current segment to katakana
+	((action_anthy_commit_as_katakana)
+	 (anthy-set-candidate ac anthy-direct-convert-katakana))
 
-       ;; transpose current segment to halfwidth katakana
-       ((action_anthy_commit_as_halfkana)
-	(anthy-set-candidate ac anthy-direct-convert-hankana))
+	;; transpose current segment to halfwidth katakana
+	((action_anthy_commit_as_halfkana)
+	 (anthy-set-candidate ac anthy-direct-convert-hankana))
 
-       ;; transpose current segment to halfwidth alphanumeric
-       ((action_anthy_commit_as_half_alnum)
-	(anthy-set-candidate ac anthy-direct-convert-latin))
+	;; transpose current segment to halfwidth alphanumeric
+	((action_anthy_commit_as_half_alnum)
+	 (anthy-set-candidate ac anthy-direct-convert-latin))
 
-       ;; transpose current segment to fullwidth alphanumeric
-       ((action_anthy_commit_as_full_alnum)
-	(anthy-set-candidate ac anthy-direct-convert-wide-latin))
+	;; transpose current segment to fullwidth alphanumeric
+	((action_anthy_commit_as_full_alnum)
+	 (anthy-set-candidate ac anthy-direct-convert-wide-latin))
 
-       ((action_anthy_prev_page)
-	(if (anthy-context-candidate-window ac)
-	    (im-shift-page-candidate ac #f)))
+	((action_anthy_prev_page)
+	 (if (anthy-context-candidate-window ac)
+	     (im-shift-page-candidate ac #f)))
 
-       ((action_anthy_next_page)
-	(if (anthy-context-candidate-window ac)
-	    (im-shift-page-candidate ac #t)))
+	((action_anthy_next_page)
+	 (if (anthy-context-candidate-window ac)
+	     (im-shift-page-candidate ac #t)))
 
-       ((action_anthy_commit)
-	(anthy-commit-converted! ac))
+	((action_anthy_commit)
+	 (anthy-commit-converted! ac))
 
-       ((action_anthy_extend_segment)
-	(anthy-resize-segment ac 1))
+	((action_anthy_extend_segment)
+	 (anthy-resize-segment ac 1))
 
-       ((action_anthy_shrink_segment)
-	(anthy-resize-segment ac -1))
+	((action_anthy_shrink_segment)
+	 (anthy-resize-segment ac -1))
 
-       ((action_anthy_next_segment)
-	(anthy-move-segment ac 1))
+	((action_anthy_next_segment)
+	 (anthy-move-segment ac 1))
 
-       ((action_anthy_prev_segment)
-	(anthy-move-segment ac -1))
+	((action_anthy_prev_segment)
+	 (anthy-move-segment ac -1))
 
-       ((action_anthy_beginning_of_preedit)
-	(ustr-cursor-move-beginning! segments)
-	(anthy-reset-candidate-window ac))
+	((action_anthy_beginning_of_preedit)
+	 (ustr-cursor-move-beginning! segments)
+	 (anthy-reset-candidate-window ac))
 
-       ((action_anthy_end_of_preedit)
-	(ustr-cursor-move-end! segments)
-	(anthy-correct-segment-cursor segments)
-	(anthy-reset-candidate-window ac))
+	((action_anthy_end_of_preedit)
+	 (ustr-cursor-move-end! segments)
+	 (anthy-correct-segment-cursor segments)
+	 (anthy-reset-candidate-window ac))
 
-       ((action_anthy_backspace)
-	(anthy-cancel-conv ac)
-	(ustr-cursor-delete-backside! preconv-ustr))
+	((action_anthy_backspace)
+	 (anthy-cancel-conv ac)
+	 (ustr-cursor-delete-backside! preconv-ustr))
 
-       ((action_anthy_next_candidate)
-	(anthy-move-candidate ac 1))
+	((action_anthy_next_candidate)
+	 (anthy-move-candidate ac 1))
 
-       ((action_anthy_prev_candidate)
-	(anthy-move-candidate ac -1))
+	((action_anthy_prev_candidate)
+	 (anthy-move-candidate ac -1))
 
-       ((action_anthy_cancel_conv)
-	(anthy-cancel-conv ac))))))
+	((action_anthy_cancel_conv)
+	 (anthy-cancel-conv ac))))))
 
 (define anthy-wide-latin-state-action
   (lambda (ac act-id)
     (case act-id
-     ((action_anthy_on)
-      (anthy-flush ac)
-      (anthy-context-set-on! ac #t)
-      (anthy-switch-kana-mode! ac (anthy-context-kana-mode ac))))))
+      ((action_anthy_on)
+       (anthy-flush ac)
+       (anthy-context-set-on! ac #t)
+       (anthy-switch-kana-mode! ac (anthy-context-kana-mode ac))))))
 
 (define anthy-key-handler
   (lambda (ac key key-state press?)
