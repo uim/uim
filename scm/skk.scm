@@ -131,25 +131,6 @@
     (skk-show-cursor-on-preedit?	   . #t)
     (skk-show-candidates-with-okuri?       . #f)))
 
-;; widgets and actions
-
-;; skk-widgets which controls:
-;; - what widgets will be shown for user
-;; - shown in what order
-(define skk-widgets '(widget_skk_input_mode))
-
-;; default activity for each widgets
-(define default-widget_skk_input_mode 'action_skk_latin)
-
-;; actions of widget_skk_input_mode
-(define skk-input-mode-actions
-  '(action_skk_latin
-    action_skk_hiragana
-    action_skk_katakana
-    action_skk_hankana
-    action_skk_wide_latin))
-
-
 ;;; implementations
 
 (define skk-type-hiragana 0)

@@ -141,3 +141,80 @@
   '(pathname)
   (_ "Personal dictionary file (dedicated to uim)")
   (_ "long description will be here."))
+
+
+;;
+;; toolbar
+;;
+
+;; Can't be unified with action definitions in skk.scm until uim
+;; 0.4.6.
+(define skk-input-mode-indication-alist
+  (list
+   (list 'action_skk_latin
+	 'figure_ja_latin
+	 "s"
+	 (N_ "Direct input")
+	 (N_ "Direct input mode"))
+   (list 'action_skk_hiragana
+	 'figure_ja_hiragana
+	 "¤¨"
+	 (N_ "Hiragana")
+	 (N_ "Hiragana input mode"))
+   (list 'action_skk_katakana
+	 'figure_ja_katakana
+	 "¥¨"
+	 (N_ "Katakana")
+	 (N_ "Katakana input mode"))
+   (list 'action_skk_hankana
+	 'figure_ja_hankana
+	 "Ž´"
+	 (N_ "Halfwidth Katakana")
+	 (N_ "Halfwidth Katakana input mode"))
+   (list 'action_skk_wide_latin
+	 'figure_ja_wide_latin
+	 "£Ó"
+	 (N_ "Fullwidth Alphanumeric")
+	 (N_ "Fullwidth Alphanumeric input mode"))))
+
+(define skk-widgets '(widget_skk_input_mode))
+
+;;; Input mode
+
+(define-custom 'default-widget_skk_input_mode 'action_skk_latin
+  '(skk toolbar)
+  (cons 'choice
+	(map indication-alist-entry-extract-choice
+	     skk-input-mode-indication-alist))
+  (_ "Default input mode")
+  (_ "long description will be here."))
+
+(define-custom 'skk-input-mode-actions
+               (map car skk-input-mode-indication-alist)
+  '(skk toolbar)
+  (cons 'ordered-list
+	(map indication-alist-entry-extract-choice
+	     skk-input-mode-indication-alist))
+  (_ "Input mode menu items")
+  (_ "long description will be here."))
+
+;; value dependency
+(custom-add-hook 'skk-input-mode-actions
+		 'custom-set-hooks
+		 (lambda ()
+		   (custom-choice-range-reflect-olist-val
+		    'default-widget_skk_input_mode
+		    'skk-input-mode-actions
+		    skk-input-mode-indication-alist)))
+
+;; dynamic reconfiguration
+(custom-add-hook 'default-widget_skk_input_mode
+		 'custom-set-hooks
+		 (lambda ()
+		   skk-configure-widgets))
+
+(custom-add-hook 'skk-input-mode-actions
+		 'custom-set-hooks
+		 (lambda ()
+		   skk-configure-widgets))
+
