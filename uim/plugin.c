@@ -164,7 +164,7 @@ plugin_load(uim_lisp _name) {
       break;
     }
     free(plugin_scm_filename);
-    plugin_lib_filename = NULL;
+    plugin_scm_filename = NULL;
   }
   
   if(plugin_lib_filename == NULL || plugin_scm_filename == NULL) {
