@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
+Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
 */
 #include "quiminputcontext.h"
 
@@ -33,7 +33,8 @@ QUimHelperManager * QUimInputContext::m_HelperManager = 0L;
 
 QUimInputContext::QUimInputContext( const char *imname, const char *lang )
         : QInputContext(), m_imname( imname ), m_lang( lang ), m_uc( 0 ),
-        candwinIsActive( false )
+        candwinIsActive( false ),
+        m_isComposing( false )
 {
     contextList.append( this );
 
@@ -137,14 +138,14 @@ bool QUimInputContext::filterEvent( const QEvent *event )
     }
 
     int modifier = 0;
-    if ( keyevent->state() & Qt::ShiftButton )
+    if ( keyevent->modifiers() & Qt::ShiftModifier )
         modifier |= UMod_Shift;
-    if ( keyevent->state() & Qt::ControlButton )
+    if ( keyevent->modifiers() & Qt::ControlModifier )
         modifier |= UMod_Control;
-    if ( keyevent->state() & Qt::AltButton )
+    if ( keyevent->modifiers() & Qt::AltModifier )
         modifier |= UMod_Alt;
 #if defined(_WS_X11_)
-    if ( keyevent->state() & Qt::MetaButton )
+    if ( keyevent->modifiers() & Qt::MetaModifier )
         modifier |= UMod_Meta;
 #endif
 
@@ -166,7 +167,7 @@ bool QUimInputContext::filterEvent( const QEvent *event )
         switch ( qkey )
         {
         case Qt::Key_Tab: key = UKey_Tab; break;
-        case Qt::Key_BackSpace: key = UKey_Backspace; break;
+        case Qt::Key_Backspace: key = UKey_Backspace; break;
         case Qt::Key_Escape: key = UKey_Escape; break;
         case Qt::Key_Delete: key = UKey_Delete; break;
         case Qt::Key_Return: key = UKey_Return; break;
@@ -174,8 +175,8 @@ bool QUimInputContext::filterEvent( const QEvent *event )
         case Qt::Key_Up: key = UKey_Up; break;
         case Qt::Key_Right: key = UKey_Right; break;
         case Qt::Key_Down: key = UKey_Down; break;
-        case Qt::Key_Prior: key = UKey_Prior; break;
-        case Qt::Key_Next: key = UKey_Next; break;
+            //        case Qt::Key_Prior: key = UKey_Prior; break;
+            //        case Qt::Key_Next: key = UKey_Next; break;
         case Qt::Key_Home: key = UKey_Home; break;
         case Qt::Key_End: key = UKey_End; break;
         case Qt::Key_Zenkaku_Hankaku: key = UKey_Zenkaku_Hankaku; break;
@@ -289,18 +290,16 @@ void QUimInputContext::setMicroFocus( int x, int y, int w, int h, QFont *f )
     cwin->layoutWindow( x, y, w, h );
 }
 
-void QUimInputContext::mouseHandler( int x, QEvent::Type type,
-                                     Qt::ButtonState button,
-                                     Qt::ButtonState state )
+void QUimInputContext::mouseHandler( int x, QMouseEvent *e )
 {
-    switch ( type )
+    switch ( e->type() )
     {
     case QEvent::MouseButtonPress:
     case QEvent::MouseButtonRelease:
     case QEvent::MouseButtonDblClick:
     case QEvent::MouseMove:
         qDebug( "QUimInputContext::mouseHandler: "
-                "x=%d, type=%d, button=%d, state=%d", x, type, button, state );
+                "x=%d, type=%d, button=%d ", x, e->type(), e->button() );
         break;
     default:
         break;
@@ -410,7 +409,8 @@ void QUimInputContext::commitString( const QString& str )
     if ( isComposing() )
     {
         preeditString = QString::null;
-        sendIMEvent( QEvent::IMEnd, str );
+        sendIMEvent( QEvent::InputMethodEnd, str );
+        m_isComposing = false;
         return ;
     }
 
@@ -419,8 +419,8 @@ void QUimInputContext::commitString( const QString& str )
     // directly.
     if ( ! str.isEmpty() )
     {
-        sendIMEvent( QEvent::IMStart );
-        sendIMEvent( QEvent::IMEnd, str );
+        sendIMEvent( QEvent::InputMethodStart );
+        sendIMEvent( QEvent::InputMethodEnd, str );
     }
 
 }
@@ -451,19 +451,25 @@ void QUimInputContext::updatePreedit()
 
     // Activating the IM
     if ( ! newString.isEmpty() && ! isComposing() )
-        sendIMEvent( QEvent::IMStart );
+    {
+        sendIMEvent( QEvent::InputMethodStart );
+        m_isComposing = true;
+    }
 
     if ( ! newString.isEmpty() )
     {
         qDebug( "cursor = %d, length = %d", cursor, newString.length() );
-        sendIMEvent( QEvent::IMCompose, newString, cursor, selLength );
+        sendIMEvent( QEvent::InputMethodCompose, newString, cursor, selLength );
     }
 
     // Preedit's length is Zero, we should deactivate IM and
     // cancel the inputting, that is, sending IMEnd event with
     // empty string.
     if ( newString.isEmpty() && isComposing() )
-        sendIMEvent( QEvent::IMEnd );
+    {
+        sendIMEvent( QEvent::InputMethodEnd );
+        m_isComposing = false;
+    }
 
     preeditString = newString;
 }
@@ -501,9 +507,9 @@ QString QUimInputContext::getPreeditString()
 
 int QUimInputContext::getPreeditCursorPosition()
 {
-    if( cwin->isAlwaysLeftPosition() )
+    if ( cwin->isAlwaysLeftPosition() )
         return 0;
-    
+
     int cursorPos = 0;
     QList<PreeditSegment*>::ConstIterator seg = psegs.begin();
     const QList<PreeditSegment*>::ConstIterator end = psegs.end();
@@ -610,10 +616,10 @@ void QUimInputContext::createUimInfo()
 
 void QUimInputContext::readIMConf()
 {
-    char *leftp = uim_symbol_value_str("candidate-window-position");
-    if( leftp && !strcmp(leftp, "left") )
-        cwin->setAlwaysLeftPostion( true );
+    char * leftp = uim_symbol_value_str( "candidate-window-position" );
+    if ( leftp && !strcmp( leftp, "left" ) )
+        cwin->setAlwaysLeftPosition( true );
     else
-        cwin->setAlwaysLeftPostion( false );
-    free(leftp);
+        cwin->setAlwaysLeftPosition( false );
+    free( leftp );
 }

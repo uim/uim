@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
+Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
 */
 #include "quiminputcontext_with_slave.h"
 
@@ -13,8 +13,10 @@ QUimInputContextWithSlave::QUimInputContextWithSlave( const char *imname, const 
     {
         slave->setParent( this );
 
+        /*
         QObject::connect( slave, SIGNAL( imEventGenerated( QObject *, QIMEvent * ) ),
                           this, SIGNAL( imEventGenerated( QObject *, QIMEvent * ) ) );
+        */
         QObject::connect( slave, SIGNAL( deletionRequested() ),
                           this, SLOT( destroyInputContext() ) );
     }
@@ -78,7 +80,7 @@ void QUimInputContextWithSlave::destroyInputContext()
         // manually resets the composing state of text widget
         if ( slave->focusWidget() )
         {
-            emit imEventGenerated( slave->focusWidget(), new QIMEvent( QEvent::IMEnd, QString::null, -1 ) );
+            //            emit imEventGenerated( slave->focusWidget(), new QIMEvent( QEvent::IMEnd, QString::null, -1 ) );
         }
         slave->deleteLater();
         slave = 0;

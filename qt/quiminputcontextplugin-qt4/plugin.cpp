@@ -34,7 +34,7 @@ QInputContext *UimInputContextPlugin::create( const QString & key )
         imname = key.mid( 4 );
 
     QStringList langs = createLanguageList( key );
-    QUimInputContext *uic = new QUimInputContextWithSlave( imname, langs[ 0 ] );
+    QUimInputContext *uic = new QUimInputContext( imname, langs[ 0 ] );
 
     return uic;
 }
@@ -100,8 +100,10 @@ QStringList UimInputContextPlugin::createImList() const
 
 QStringList UimInputContextPlugin::createLanguageList( const QString &key ) const
 {
+    /*
     if ( key == QString( "uim" ) )
         return "ja:ko:zh:*";
+    */
 
     uim_context tmp_uc = uim_create_context( NULL, "UTF-8",
                          NULL, NULL, uim_iconv, NULL );

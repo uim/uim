@@ -1,10 +1,11 @@
 /*
- Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
+Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
 */
 #ifndef _QUIMINPUT_CONTEXT_H_
 #define _QUIMINPUT_CONTEXT_H_
 
 #include <qinputcontext.h>
+#include <qevent.h>
 
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
@@ -41,21 +42,22 @@ public:
     virtual void setFocus();
     virtual void unsetFocus();
     virtual void setMicroFocus( int x, int y, int w, int h, QFont *f = 0 );
-    virtual void mouseHandler( int x, QEvent::Type type,
-                               Qt::ButtonState button, Qt::ButtonState state );
+    virtual void mouseHandler( int x, QMouseEvent *event );
+    virtual bool isComposing() const { return m_isComposing; }
+
     virtual bool isPreeditRelocationEnabled();
 
     uim_context uimContext() { return m_uc; }
 
     static QUimInputContext *focusedIC();
 
+    void readIMConf();
+
 protected:
     uim_context createUimContext( const char *imname );
     virtual bool isPreeditPreservationEnabled();  // not a QInputContext func
 
     void createUimInfo();
-
-    void readIMConf();
 private:
     QString getPreeditString();
     int getPreeditCursorPosition();
@@ -88,6 +90,7 @@ protected:
     QString m_lang;
     uim_context m_uc;
     bool candwinIsActive;
+    bool m_isComposing;
 
     QList<PreeditSegment*> psegs;
     QString preeditString;

@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
+Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
 */
 
 #ifndef _QUIMINPUT_CONTEXT_WITH_SLAVE_H_
@@ -28,8 +28,10 @@ public:
 
     virtual bool filterEvent( QEvent *event );
 
-signals:
-    void imEventGenerated( QWidget *, QIMEvent * );
+    /*
+    signals:
+    void imEventGenerated( QWidget *, QInputMethodEvent * );
+    */
 
 protected slots:
     virtual void destroyInputContext();

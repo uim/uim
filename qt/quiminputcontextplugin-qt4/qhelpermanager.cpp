@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
+Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
 */
 #include "qhelpermanager.h"
 
@@ -134,10 +134,11 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
     {
         for ( int i = 0; i < contextList.size(); ++i )
         {
-            uim_switch_im( contextList.at( i ) ->uimContext(), ( const char* ) im_name );
-            contextList.at( i )->readIMConf();
+            QUimInputContext *uic = contextList.at( i );
+            uim_switch_im( uic->uimContext(), ( const char* ) im_name );
+            uic->readIMConf();
         }
-        
+
     }
     else if ( str.startsWith( "im_change_this_application_only" ) )
     {
@@ -145,8 +146,9 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
         {
             for ( int i = 0; i < contextList.size(); ++i )
             {
-                uim_switch_im( contextList.at( i ) ->uimContext(), ( const char* ) im_name );
-                contextList.at( i )->readIMConf();
+                QUimInputContext *uic = contextList.at( i );
+                uim_switch_im( uic->uimContext(), ( const char* ) im_name );
+                uic->readIMConf();
             }
         }
     }

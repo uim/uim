@@ -11,12 +11,10 @@ LIBS += -luim
 # Input
 HEADERS += qhelpermanager.h \
            quiminputcontext.h \
-           quiminputcontext_with_slave.h \
            plugin.h \
            candidatewindow.h
 
 SOURCES += plugin.cpp \
            qhelpermanager.cpp \
            quiminputcontext.cpp \
-           quiminputcontext_with_slave.cpp \
            candidatewindow.cpp

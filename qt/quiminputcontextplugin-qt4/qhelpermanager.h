@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
+Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
 */
 #ifndef _UIM_HELPER_MANAGER_H_
 #define _UIM_HELPER_MANAGER_H_

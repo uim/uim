@@ -2,7 +2,7 @@
 #include <qlineedit.h>
 #include <qtextedit.h>
 #include <qsplitter.h>
-#include <qvbox.h>
+#include <qvboxwidget.h>
 #include <qlabel.h>
 
 int main(int argc, char *argv[])
@@ -10,11 +10,11 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     QSplitter page;
 
-    QVBox *linev = new QVBox(&page);
+    QVBoxWidget *linev = new QVBoxWidget(&page);
     new QLabel("lineedit", linev);
     new QLineEdit(linev);
 
-    QVBox *textv = new QVBox(&page);
+    QVBoxWidget *textv = new QVBoxWidget(&page);
     new QLabel("textedit", textv);
     new QTextEdit(textv);
 

@@ -4,6 +4,7 @@
 #include <qdesktopwidget.h>
 #include <qlabel.h>
 #include <qevent.h>
+#include <qlistwidget.h>
 
 #include "quiminputcontext.h"
 
@@ -18,12 +19,15 @@ const Qt::WFlags candidateFlag = ( Qt::WType_TopLevel
                                  );
 
 CandidateWindow::CandidateWindow( QWidget * parent )
-        : QVBox( parent, candidateFlag ),
-          ic( NULL ), nrCandidates( 0 ), candidateIndex( -1 ),
-          displayLimit( 0 ), pageIndex( -1 ), isAlwaysLeft( false )
+        : QVBoxWidget( parent, candidateFlag ),
+        ic( NULL ), nrCandidates( 0 ), candidateIndex( -1 ),
+        displayLimit( 0 ), pageIndex( -1 ), isAlwaysLeft( false )
 {
-    QLabel * test = new QLabel( this );
-    test->setText( "list isn't implemented yet" );
+    // setup CandidateList
+    cList = new QListWidget( this );
+    cList->setSelectionMode( QAbstractItemView::SingleSelection );
+    QObject::connect( cList, SIGNAL( clicked( QListWidgetItem * item, Qt::MouseButton button, Qt::KeyboardModifiers modifiers ) ),
+                      this, SLOT( slotCandidateSelected( QListWidgetItem * item ) ) );
 
     // setup NumberLabel
     numLabel = new QLabel( this );
@@ -103,7 +107,7 @@ void CandidateWindow::setPage( int page )
     qDebug( "setPage : page = %d", page );
 
     // clear items
-    //    cList->clear();
+    cList->clear();
 
     // calculate page
     int newpage, lastpage;
@@ -159,7 +163,7 @@ void CandidateWindow::setPage( int page )
         QString candString = QString::fromUtf8( ( const char * ) uim_candidate_get_cand_str( cand ) );
 
         // insert new item to the candidate list
-        //        new QListViewItem(cList, headString, candString);
+        new QListWidgetItem( candString, cList );
     }
 
     // set index
@@ -195,8 +199,8 @@ void CandidateWindow::setIndex( int totalindex )
         if ( displayLimit )
             pos = candidateIndex % displayLimit;
 
-        //        if (cList->itemAtIndex(pos) && ! (cList->itemAtIndex(pos)->isSelected()))
-        //            cList->setSelected(cList->itemAtIndex(pos), true);
+        if ( cList->item( pos ) && ! ( cList->isSelected( cList->item( pos ) ) ) )
+            cList->setSelected( cList->item( pos ), true );
     }
     else
     {
@@ -206,12 +210,10 @@ void CandidateWindow::setIndex( int totalindex )
 
 void CandidateWindow::setIndexInPage( int index )
 {
-    /*
-    QListViewItem* selectedItem = cList->itemAtIndex(index);
-    cList->setSelected(selectedItem, true);
+    QListWidgetItem * selectedItem = cList->item( index );
+    cList->setSelected( selectedItem, true );
 
-    slotCandidateSelected(selectedItem);
-    */
+    slotCandidateSelected( selectedItem );
 }
 
 void CandidateWindow::shiftPage( bool forward )
@@ -263,4 +265,12 @@ void CandidateWindow::updateLabel()
         indexString = "- / " + QString::number( nrCandidates );
 
     numLabel->setText( indexString );
+}
+
+void CandidateWindow::slotCandidateSelected( QListWidgetItem * item )
+{
+    candidateIndex = ( pageIndex * displayLimit ) + cList->row( item );
+    if ( ic && ic->uimContext() )
+        uim_set_candidate_index( ic->uimContext(), candidateIndex );
+    updateLabel();
 }

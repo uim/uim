@@ -5,13 +5,15 @@ class QUimInputContext;
 
 #include <uim/uim.h>
 
-#include <qvbox.h>
+#include <qvboxwidget.h>
 
 class QLabel;
+class QListWidget;
+class QListWidgetItem;
 
 class QUimInputContext;
 
-class CandidateWindow : public QVBox
+class CandidateWindow : public QVBoxWidget
 {
     Q_OBJECT
 
@@ -24,7 +26,7 @@ public:
     void clearCandidates();
     void popup();
 
-    void setAlwaysLeftPosition( bool left ){ isAlwaysLeft = left; }
+    void setAlwaysLeftPosition( bool left ) { isAlwaysLeft = left; }
     bool isAlwaysLeftPosition() const { return isAlwaysLeft; }
 
     void setCandidates( int displayLimit, const QList<uim_candidate> &candidates );
@@ -36,12 +38,16 @@ public:
 
     void setQUimInputContext( QUimInputContext* m_ic ) { ic = m_ic; }
 
+protected slots:
+    void slotCandidateSelected( QListWidgetItem * item );
+
 protected:
     void updateLabel();
 
 protected:
     QUimInputContext *ic;
 
+    QListWidget *cList;
     QLabel *numLabel;
 
     QList<uim_candidate> stores;
