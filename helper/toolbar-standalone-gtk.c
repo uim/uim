@@ -174,6 +174,11 @@ main (int argc, char *argv[])
   GtkWidget *handle;
   GtkWidget *frame;
 
+  setlocale(LC_ALL, "");
+  bindtextdomain( PACKAGE, LOCALEDIR );
+  textdomain( PACKAGE );
+  bind_textdomain_codeset( PACKAGE, "UTF-8");
+
   gtk_set_locale();
   
   gtk_init(&argc, &argv);
