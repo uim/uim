@@ -49,6 +49,7 @@
 
 #define OBJECT_DATA_MENU_BUTTONS "MENU_BUTTONS"
 #define OBJECT_DATA_SIZE_GROUP "SIZE_GROUP"
+#define OBJECT_DATA_TOOLBAR_TYPE "TOOLBAR_TYPE"
 
 static GtkWidget *prop_menu;
 static GtkWidget *right_click_menu;
@@ -56,20 +57,26 @@ static GtkWidget *right_click_menu;
 static unsigned int read_tag;
 static int uim_fd;
 
+enum {
+  TYPE_TOOLBAR,
+  TYPE_APPLET,
+  TYPE_ICON
+};
+
 static gboolean
 prop_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget);
 static gboolean
 prop_button_released(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget);
 
 static GtkWidget *
-switcher_button_create(GtkSizeGroup *sg);
+switcher_button_create(GtkSizeGroup *sg, GtkWidget *widget);
 static void
-switcher_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer user_data);
+switcher_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget);
 
 static GtkWidget *
-pref_button_create(GtkSizeGroup *sg);
+pref_button_create(GtkSizeGroup *sg, GtkWidget *widget);
 static void
-pref_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer user_data);
+pref_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget);
 
 static void
 calc_menu_position(GtkMenu *prop_menu, gint *x, gint *y, gboolean *push_in, GtkWidget *prop_button);
@@ -81,6 +88,8 @@ GtkWidget *
 uim_helper_toolbar_new(void);
 GtkWidget *
 uim_helper_trayicon_new(void);
+GtkWidget *
+uim_helper_applet_new(void);
 
 static void
 prop_menu_activate(GtkMenu *menu_item, gpointer data)
@@ -271,10 +280,10 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **tmp)
     i++;
   }
   
-  button = switcher_button_create(sg);
+  button = switcher_button_create(sg, widget);
   append_button(widget, button);
 
-  button = pref_button_create(sg);
+  button = pref_button_create(sg, widget);
   append_button(widget, button);
 
   gtk_widget_show_all(widget);
@@ -512,8 +521,12 @@ prop_right_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointe
 static gboolean
 prop_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget)
 { 
+  gint type =  GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), OBJECT_DATA_TOOLBAR_TYPE));
   if(event->button == 3) {
-    prop_right_button_pressed(prop_button, event, widget);
+    if(type == TYPE_APPLET)
+      gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
+    else
+      prop_right_button_pressed(prop_button, event, widget);
   } else if(event->button == 2) {
     gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
   }
@@ -646,7 +659,7 @@ calc_menu_position(GtkMenu *prop_menu, gint *x, gint *y, gboolean *push_in, GtkW
 }
 
 static GtkWidget *
-switcher_button_create(GtkSizeGroup *sg)
+switcher_button_create(GtkSizeGroup *sg, GtkWidget *widget)
 {
   GtkWidget *button;
   GtkTooltips *tooltip;
@@ -666,7 +679,7 @@ switcher_button_create(GtkSizeGroup *sg)
   gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
   gtk_size_group_add_widget(sg, button);
   g_signal_connect(G_OBJECT(button), "button_press_event",
-		   G_CALLBACK(switcher_button_pressed), NULL);
+		   G_CALLBACK(switcher_button_pressed), widget);
   
   /* tooltip */
   tooltip = gtk_tooltips_new();
@@ -676,10 +689,14 @@ switcher_button_create(GtkSizeGroup *sg)
 }
 
 static void
-switcher_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer user_data)
+switcher_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget)
 { 
+  gint type =  GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), OBJECT_DATA_TOOLBAR_TYPE));
   if(event->button == 3) {
-    prop_right_button_pressed(prop_button, event, prop_menu);
+    if(type == TYPE_APPLET)
+      gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
+    else
+      prop_right_button_pressed(prop_button, event, prop_menu);
   } else if(event->button == 2) {
     gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
   } else {
@@ -689,7 +706,7 @@ switcher_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer 
 }
 
 static GtkWidget *
-pref_button_create(GtkSizeGroup *sg)
+pref_button_create(GtkSizeGroup *sg, GtkWidget *widget)
 {
 
   GtkWidget *button;
@@ -706,7 +723,7 @@ pref_button_create(GtkSizeGroup *sg)
   gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
   gtk_size_group_add_widget(sg, button);
   g_signal_connect(G_OBJECT(button), "button_press_event",
-		   G_CALLBACK(pref_button_pressed), NULL);
+		   G_CALLBACK(pref_button_pressed), widget);
   gtk_container_add(GTK_CONTAINER(button), img);
 
   /* tooltip */
@@ -717,10 +734,14 @@ pref_button_create(GtkSizeGroup *sg)
 }
 
 static void
-pref_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer user_data)
+pref_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget)
 { 
+  gint type =  GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), OBJECT_DATA_TOOLBAR_TYPE));
   if(event->button == 3) {
-    prop_right_button_pressed(prop_button, event, prop_menu);
+    if(type == TYPE_APPLET)
+      gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
+    else
+      prop_right_button_pressed(prop_button, event, prop_menu);
   } else if(event->button == 2) {
     gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
   } else {
@@ -729,8 +750,8 @@ pref_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer user
   }
 }
 
-GtkWidget *
-uim_helper_toolbar_new(void)
+static GtkWidget *
+toolbar_new(gint type)
 {
   GtkWidget *button;
   GtkWidget *hbox;
@@ -754,13 +775,26 @@ uim_helper_toolbar_new(void)
 		    menu_buttons);
   g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_SIZE_GROUP,
 		    sg);
-
+  g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_TOOLBAR_TYPE,
+		    GINT_TO_POINTER(type));
   
   uim_fd = -1;
   check_helper_connection(hbox);
   uim_helper_client_get_prop_list();
 
   return hbox; 
+}
+
+GtkWidget *
+uim_helper_toolbar_new(void)
+{
+  return toolbar_new(TYPE_TOOLBAR);
+}
+
+GtkWidget *
+uim_helper_applet_new(void)
+{
+  return toolbar_new(TYPE_APPLET);
 }
 
 

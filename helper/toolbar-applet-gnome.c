@@ -44,17 +44,19 @@
 
 PanelApplet *uimapplet;
 
-
-static void 
-display_help_dialog (BonoboUIComponent *uic, gpointer data, const gchar *verbname);
+static void
+exec_switcher(BonoboUIComponent *uic, gpointer data, const gchar *verbname);
+static void
+exec_pref(BonoboUIComponent *uic, gpointer data, const gchar *verbname);
 static void
 display_about_dialog(BonoboUIComponent *uic, gpointer data, const gchar *verbname);
 
-GtkWidget *uim_helper_toolbar_new(void);
+GtkWidget *uim_helper_applet_new(void);
 
 
 static const BonoboUIVerb uim_menu_verbs [] = {
-  BONOBO_UI_VERB ("UimHelp",       display_help_dialog),
+  BONOBO_UI_VERB ("UimExecSwitcher",   exec_switcher),
+  BONOBO_UI_VERB ("UimExecPref",   exec_pref),
   BONOBO_UI_VERB ("UimAbout",      display_about_dialog),
   BONOBO_UI_VERB_END
 };
@@ -62,18 +64,34 @@ static const BonoboUIVerb uim_menu_verbs [] = {
 
 static const char uim_menu_xml [] =
         "<popup name=\"button3\">\n"
-        "   <menuitem name=\"Help Item\" verb=\"UimHelp\" _label=\"Help\"\n"
-        "             pixtype=\"stock\" pixname=\"gtk-help\"/>\n"
+        "   <menuitem name=\"Switcher Item\" verb=\"UimExecSwitcher\" _label=\"Execute uim's input method switcher\"\n"
+        "             pixtype=\"filename\" pixname=\""UIM_PIXMAPSDIR"/switcher-icon.png\"/>\n"
+        "   <menuitem name=\"Pref Item\" verb=\"UimExecPref\" _label=\"Execute uim's preference tool\"\n"
+        "             pixtype=\"stock\" pixname=\"preferences\"/>\n"
         "   <menuitem name=\"About Item\" verb=\"UimAbout\" _label=\"About ...\"\n"
         "             pixtype=\"stock\" pixname=\"gnome-stock-about\"/>\n"
         "</popup>\n";
 
 
 
+static void
+exec_switcher(BonoboUIComponent *uic, gpointer data, const gchar *verbname)
+{
+  system("uim-im-switcher &");
+}
+
+static void
+exec_pref(BonoboUIComponent *uic, gpointer data, const gchar *verbname)
+{
+  system("uim-pref-gtk &");
+}
+
+
 /* Opens gnome help application
  */
+#if 0
 static void 
-display_help_dialog (BonoboUIComponent *uic, gpointer data, const gchar *verbname)
+display_help_dialog(BonoboUIComponent *uic, gpointer data, const gchar *verbname)
 {
   GError *error = NULL;
   
@@ -92,6 +110,7 @@ display_help_dialog (BonoboUIComponent *uic, gpointer data, const gchar *verbnam
       error = NULL;
     }
 }
+#endif
 
 /* Just the about window... If it's already open, just focus it
  */
@@ -100,15 +119,14 @@ display_about_dialog(BonoboUIComponent *uic, gpointer data, const gchar *verbnam
 {
   /*	GdkPixbuf *icon;*/
   GtkWidget *dialog;
-  const char *authors[] = 
-    {"Yusuke TABATA <yusuke@cherubim.icw.co.jp> \nTOKUNAGA Hiroyuki <tkng@xem.jp>",NULL};
+  const char *authors[] = {"uim Project", NULL};
   
   /* Feel free to put your names here translators */
   char *translators = _("TRANSLATORS");
   
   /* icon = gdk_pixbuf_new_from_xpm_data(ICON_APPLET);*/
   
-  dialog = GTK_WIDGET(gnome_about_new (_("Uim Helper Applet"), VERSION, "Copyright 2003 TOKUNAGA Hiroyuki",
+  dialog = GTK_WIDGET(gnome_about_new (_("Uim Applet for GNOME"), VERSION, "Copyright 2003-2005 uim Project.",
 				       _("Applet for indicate uim's status"),
 				       (const char **) authors, NULL, 
 				       strcmp("TRANSLATORS", translators) ? translators : NULL, 
@@ -129,7 +147,9 @@ uim_applet_new(PanelApplet *applet,
   if (strcmp (iid, "OAFIID:GNOME_UimApplet") != 0)
     return FALSE;
 
-  toolbar = (GtkWidget*)uim_helper_toolbar_new();
+  uim_init();
+
+  toolbar = (GtkWidget*)uim_helper_applet_new();
 
   gtk_container_add (GTK_CONTAINER (applet), toolbar);  
   gtk_widget_show_all (GTK_WIDGET (applet));
@@ -146,7 +166,7 @@ uim_applet_new(PanelApplet *applet,
 
 PANEL_APPLET_BONOBO_FACTORY ("OAFIID:GNOME_UimApplet_Factory",
                              PANEL_TYPE_APPLET,
-                             "uim gnome2 Applet",
+                             "uim Applet for GNOME",
                              "0",
                              (PanelAppletFactoryCallback)uim_applet_new,
                              NULL)
