@@ -36,7 +36,7 @@
 
 (define uim-plugin-lib-load-path
   (filter string?
-	  (append (list (getenv "LIBUIM_PLUGIN_DIR")
+	  (append (list (getenv "LIBUIM_PLUGIN_LIB_DIR")
 			(string-append (getenv "HOME") "/.uim.d/plugin")
 			(string-append (sys-pkglibdir) "/plugin"))
 		  ;; XXX
