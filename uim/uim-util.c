@@ -1012,6 +1012,36 @@ lang_code_to_lang_name_raw(LISP code_)
 }
 
 void
+uim_init_subr_0 (char *name, uim_lisp (*fcn) (void))
+{
+  init_subr (name, tc_subr_0, (SUBR_FUNC) fcn);
+}
+
+void
+uim_init_subr_1 (char *name, uim_lisp (*fcn) (uim_lisp))
+{
+  init_subr (name, tc_subr_1, (SUBR_FUNC) fcn);
+}
+
+void
+uim_init_subr_2 (char *name, uim_lisp (*fcn) (uim_lisp, uim_lisp))
+{
+  init_subr (name, tc_subr_2, (SUBR_FUNC) fcn);
+}
+
+void
+uim_init_subr_3 (char *name, uim_lisp (*fcn) (uim_lisp, uim_lisp, uim_lisp))
+{
+  init_subr (name, tc_subr_3, (SUBR_FUNC) fcn);
+}
+
+void
+uim_init_subr_4 (char *name, uim_lisp (*fcn) (uim_lisp, uim_lisp, uim_lisp, uim_lisp))
+{
+  init_subr (name, tc_subr_4, (SUBR_FUNC) fcn);
+}
+
+void
 uim_init_util_subrs()
 {
   true_sym  = siod_true_value();
