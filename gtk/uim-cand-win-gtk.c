@@ -1,6 +1,6 @@
 /*
 
-  copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -123,8 +123,6 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
   GtkWidget *vbox;
   GtkTreeSelection *selection;
 
-  uim_init();
-
   /* init struct */
   cwin->scrolled_window = gtk_scrolled_window_new(NULL, NULL);
   cwin->view = gtk_tree_view_new();
@@ -165,7 +163,7 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
 						    "text", COLUMN_HEADING,
 						    NULL);
   gtk_tree_view_append_column(GTK_TREE_VIEW(cwin->view), column);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+  //  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
 
   renderer = gtk_cell_renderer_text_new();
   column = gtk_tree_view_column_new_with_attributes("Text",

@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -671,7 +671,7 @@ im_uim_class_init(GtkIMContextClass *class)
 static void
 im_uim_class_finalize(GtkIMContextClass *class)
 {
-  uim_quit();
+
 }
 
 static void
@@ -830,10 +830,6 @@ im_module_create(const gchar *context_id)
   obj = g_object_new(type_im_uim, NULL);
   uic = IM_UIM_CONTEXT(obj);
 
-  if(uim_init() == -1) {
-    parent_class->finalize(obj);
-    return NULL;
-  }
   im_name = uim_get_default_im_name(setlocale(LC_ALL, NULL));
   uic->uc = uim_create_context(uic, "UTF-8",
 			       NULL, im_name,
@@ -997,6 +993,10 @@ uim_key_snoop(GtkWidget *grab_widget, GdkEventKey *key, gpointer data)
 void
 im_module_init(GTypeModule *type_module)
 {
+  if(uim_init() == -1) {
+    return;
+  }
+
   context_list.next = (IMUIMContext *)&context_list;
   context_list.prev = (IMUIMContext *)&context_list;
   type_im_uim =
