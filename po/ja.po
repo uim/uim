@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 0.4.6-alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-04 17:06+0900\n"
-"PO-Revision-Date: 2005-02-04 08:17+0900\n"
+"POT-Creation-Date: 2005-02-05 09:48+0900\n"
+"PO-Revision-Date: 2005-02-05 09:48+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -332,7 +332,7 @@ msgstr "送り"
 msgid "Example"
 msgstr "例"
 
-#: helper/pref-gtk.c:127
+#: helper/pref-gtk.c:100
 msgid ""
 "Some value(s) have been changed.\n"
 "Save?"
@@ -340,7 +340,7 @@ msgstr ""
 "設定が変更されています。\n"
 "セーブしますか?"
 
-#: helper/pref-gtk.c:196
+#: helper/pref-gtk.c:169
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you realy quit this program?"
@@ -348,59 +348,56 @@ msgstr ""
 "設定が変更されています。\n"
 "本当に終了しますか?"
 
-#: helper/pref-gtk.c:235 qt/pref-qt.cpp:103
+#: helper/pref-gtk.c:208 qt/pref-qt.cpp:103
 msgid "Group"
 msgstr "グループ"
 
-#: helper/pref-gtk.c:560
+#. Defaults button
+#: helper/pref-gtk.c:298
+msgid "_Defaults"
+msgstr "デフォルト(_D)"
+
+#: helper/pref-gtk-custom-widgets.c:383
 msgid "Specify file"
 msgstr "ファイルの指定"
 
-#: helper/pref-gtk.c:597 qt/pref-customwidgets.cpp:168
+#: helper/pref-gtk-custom-widgets.c:420 qt/pref-customwidgets.cpp:168
 msgid "File"
 msgstr "参照"
 
-#: helper/pref-gtk.c:1271
+#: helper/pref-gtk-custom-widgets.c:1099
 msgid "Enabled"
 msgstr "有効"
 
-#: helper/pref-gtk.c:1297
+#: helper/pref-gtk-custom-widgets.c:1125
 msgid "Enabled items"
 msgstr "有効な項目"
 
-#: helper/pref-gtk.c:1375
+#: helper/pref-gtk-custom-widgets.c:1203
 msgid "Disabled"
 msgstr "無効"
 
-#: helper/pref-gtk.c:1401
+#: helper/pref-gtk-custom-widgets.c:1229
 msgid "Disabled items"
 msgstr "無効な項目"
 
-#: helper/pref-gtk.c:1433 helper/pref-gtk.c:2029
+#: helper/pref-gtk-custom-widgets.c:1261 helper/pref-gtk-custom-widgets.c:1851
 msgid "Choose..."
 msgstr "選択..."
 
-#: helper/pref-gtk.c:1634
+#: helper/pref-gtk-custom-widgets.c:1465
 msgid "Press any key to grab..."
 msgstr "取得するキーを押して下さい..."
 
-#: helper/pref-gtk.c:1894
+#: helper/pref-gtk-custom-widgets.c:1721
 msgid "Key preference"
 msgstr "キー設定"
 
-#: helper/pref-gtk.c:1940
-msgid "_Shift"
-msgstr "_Shift"
+#: helper/pref-gtk-custom-widgets.c:1767
+msgid "Key:"
+msgstr ""
 
-#: helper/pref-gtk.c:1945
-msgid "_Control"
-msgstr "_Control"
-
-#: helper/pref-gtk.c:1950
-msgid "_Alt"
-msgstr "_Alt"
-
-#: helper/pref-gtk.c:1966
+#: helper/pref-gtk-custom-widgets.c:1788
 msgid "..."
 msgstr "..."
 
@@ -2245,6 +2242,15 @@ msgstr "ヨルバ語"
 #: uim/iso-639-1.def:182
 msgid "Zulu"
 msgstr "ズールー語"
+
+#~ msgid "_Shift"
+#~ msgstr "_Shift"
+
+#~ msgid "_Control"
+#~ msgstr "_Control"
+
+#~ msgid "_Alt"
+#~ msgstr "_Alt"
 
 #~ msgid "Japanese Kana Kanji Conversion Engine, Anthy"
 #~ msgstr "日本語かな漢字変換エンジンAnthy"

@@ -159,19 +159,19 @@ add_custom_type_bool(GtkWidget *vbox, struct uim_custom *custom)
 
 
 static void
-custom_adjustment_value_changed(GtkAdjustment *adj, gpointer user_data)
+custom_spin_button_value_changed(GtkSpinButton *spin, gpointer user_data)
 {
   const char *custom_sym;
   struct uim_custom *custom;
   uim_bool rv;
 
-  custom_sym = g_object_get_data(G_OBJECT(adj), OBJECT_DATA_UIM_CUSTOM_SYM);
+  custom_sym = g_object_get_data(G_OBJECT(spin), OBJECT_DATA_UIM_CUSTOM_SYM);
   g_return_if_fail(custom_sym);
 
   custom = uim_custom_get(custom_sym);
   g_return_if_fail(custom && custom->type == UCustom_Int);
 
-  custom->value->as_int = adj->value;
+  custom->value->as_int = gtk_spin_button_get_value(spin);
   rv = uim_custom_set(custom);
 
   if (rv) {
@@ -185,39 +185,43 @@ custom_adjustment_value_changed(GtkAdjustment *adj, gpointer user_data)
 }
 
 static void
-sync_value_int(GtkAdjustment *adj)
+sync_value_int(GtkSpinButton *spin)
 {
   const char *custom_sym;
   struct uim_custom *custom;
+  GtkAdjustment *adj;
 
-  g_signal_handlers_block_by_func(G_OBJECT(adj),
-				  (gpointer) custom_adjustment_value_changed,
+  g_signal_handlers_block_by_func(G_OBJECT(spin),
+				  (gpointer) custom_spin_button_value_changed,
 				  NULL);
 
-  custom_sym = g_object_get_data(G_OBJECT(adj), OBJECT_DATA_UIM_CUSTOM_SYM);
+  adj = gtk_spin_button_get_adjustment(spin);
+
+  custom_sym = g_object_get_data(G_OBJECT(spin), OBJECT_DATA_UIM_CUSTOM_SYM);
   g_return_if_fail(custom_sym);
 
   custom = uim_custom_get(custom_sym);
   g_return_if_fail(custom && custom->type == UCustom_Int);
 
-  /* gtk_widget_set_sensitive(GTK_WIDGET(widget), custom->is_active); */
-
-  adj->value = custom->value->as_int;
-  adj->lower = custom->range->as_int.min;
-  adj->upper = custom->range->as_int.max;
-  gtk_adjustment_changed(adj);
+  gtk_widget_set_sensitive(GTK_WIDGET(spin), custom->is_active);
+  if (custom->range->as_int.min != (int) adj->lower &&
+      custom->range->as_int.max != (int) adj->upper)
+    gtk_spin_button_set_range(spin, custom->range->as_int.min, custom->range->as_int.max);
+  if (custom->value->as_int != (int) gtk_spin_button_get_value(spin)) {
+    gtk_spin_button_set_value(spin, custom->value->as_int);
+  }
 
   uim_custom_free(custom);
 
-  g_signal_handlers_unblock_by_func(G_OBJECT(adj),
-				    (gpointer) custom_adjustment_value_changed,
+  g_signal_handlers_unblock_by_func(G_OBJECT(spin),
+				    (gpointer) custom_spin_button_value_changed,
 				    NULL);
 }
 
 static void
 update_custom_type_int_cb(void *ptr, const char *custom_sym)
 {
-  sync_value_int(GTK_ADJUSTMENT(ptr));
+  sync_value_int(GTK_SPIN_BUTTON(ptr));
 }
 
 static void
@@ -251,12 +255,15 @@ add_custom_type_integer(GtkWidget *vbox, struct uim_custom *custom)
   g_object_set_data_full(G_OBJECT(adjustment),
 			 OBJECT_DATA_UIM_CUSTOM_SYM, g_strdup(custom->symbol),
 			 (GDestroyNotify) g_free);
+  g_object_set_data_full(G_OBJECT(spin),
+			 OBJECT_DATA_UIM_CUSTOM_SYM, g_strdup(custom->symbol),
+			 (GDestroyNotify) g_free);
 
-  sync_value_int(adjustment);
+  sync_value_int(GTK_SPIN_BUTTON(spin));
 
-  g_signal_connect(G_OBJECT(adjustment), "value-changed",
-		   G_CALLBACK(custom_adjustment_value_changed), NULL);
-  uim_custom_cb_add(custom->symbol, adjustment, update_custom_type_int_cb);
+  g_signal_connect(G_OBJECT(spin), "value-changed",
+		   G_CALLBACK(custom_spin_button_value_changed), NULL);
+  uim_custom_cb_add(custom->symbol, spin, update_custom_type_int_cb);
 }
 
 
@@ -1657,7 +1664,7 @@ key_pref_dialog_response_cb(GtkDialog *dialog, gint action, GtkEntry *key_entry)
 static void
 choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 {
-  GtkWidget *dialog, *scrwin, *view, *hbox, *vbox, *button, *entry;
+  GtkWidget *dialog, *scrwin, *view, *hbox, *vbox, *label, *button, *entry;
   GtkTreeSelection *selection;
   GtkListStore *store;
   GtkCellRenderer *renderer;
@@ -1757,6 +1764,10 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
   gtk_container_set_border_width(GTK_CONTAINER(hbox), 4);
   gtk_widget_show(hbox);
 
+  label = gtk_label_new(_("Key:"));
+  gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 4);
+  gtk_widget_show(label);
+
   entry = gtk_entry_new();
 
   /* XXX hack alert!  This modifies private part of gtk_entry */
@@ -1775,7 +1786,7 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
   gtk_widget_show(entry);
 
   button = gtk_button_new_with_label(_("..."));
-  gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 4);
+  gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 4);
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(choose_key_button_clicked_cb), key_entry);
   gtk_widget_show(button);
@@ -1887,4 +1898,122 @@ uim_pref_gtk_add_custom(GtkWidget *vbox, const char *custom_sym)
   }
 
   uim_custom_free(custom);
+}
+
+void
+uim_pref_gtk_set_default_value(GtkWidget *widget)
+{
+  const char *custom_sym;
+  struct uim_custom *custom;
+  union uim_custom_value *value, *defval;
+  uim_bool rv;
+  gint i, num;
+
+  custom_sym = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_UIM_CUSTOM_SYM);
+  if (!custom_sym) return;
+
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom);
+
+  value = custom->value;
+  defval = custom->default_value;
+
+  switch (custom->type) {
+  case UCustom_Bool:
+    value->as_bool = defval->as_bool;
+    break;
+  case UCustom_Int:
+    value->as_int = defval->as_int;
+    break;
+  case UCustom_Str:
+    g_free(value->as_str);
+    value->as_str = strdup(defval->as_str);
+    break;
+  case UCustom_Pathname:
+    g_free(value->as_pathname);
+    value->as_pathname = strdup(defval->as_pathname);
+    break;
+  case UCustom_Choice:
+    g_free(value->as_choice->symbol);
+    g_free(value->as_choice->label);
+    g_free(value->as_choice->desc);
+    value->as_choice->symbol = strdup(defval->as_choice->symbol);
+    value->as_choice->label  = strdup(defval->as_choice->label);
+    value->as_choice->desc   = strdup(defval->as_choice->desc);
+    break;
+  case UCustom_OrderedList:
+    for (num = 0; defval->as_olist[num]; num++);
+    for (i = 0; value->as_olist[i]; i++) {
+      free(value->as_olist[i]->symbol);
+      free(value->as_olist[i]->label);
+      free(value->as_olist[i]->desc);
+      free(value->as_olist[i]);
+    }
+    value->as_olist = realloc(value->as_olist,
+			      sizeof(struct uim_custom_choice) * (num + 1));
+    for (i = 0; i < num; i++) {
+      value->as_olist[i] = malloc(sizeof(struct uim_custom_choice));
+      value->as_olist[i]->symbol = strdup(defval->as_olist[i]->symbol);
+      value->as_olist[i]->label  = strdup(defval->as_olist[i]->label);
+      value->as_olist[i]->desc   = strdup(defval->as_olist[i]->desc);
+    }
+    value->as_olist[num] = NULL;
+    break;
+  case UCustom_Key:
+    for (num = 0; defval->as_key[num]; num++);
+    for (i = 0; value->as_key[i]; i++) {
+      free(value->as_key[i]->literal);
+      free(value->as_key[i]->label);
+      free(value->as_key[i]->desc);
+      free(value->as_key[i]);
+    }
+    value->as_key = realloc(value->as_key,
+			    sizeof(struct uim_custom_key) * (num + 1));
+    for (i = 0; i < num; i++) {
+      value->as_key[i] = malloc(sizeof(struct uim_custom_key));
+      value->as_key[i] = defval->as_key[i];
+      value->as_key[i]->literal = strdup(defval->as_key[i]->literal);
+      value->as_key[i]->label   = strdup(defval->as_key[i]->label);
+      value->as_key[i]->desc    = strdup(defval->as_key[i]->desc);
+    }
+    value->as_key[num] = NULL;
+    break;
+  default:
+    uim_custom_free(custom);
+    return;
+  }
+
+  rv = uim_custom_set(custom);
+
+  if (rv == UIM_FALSE) {
+    g_printerr("Faild to set value for \"%s\".\n", custom->symbol);
+    uim_custom_free(custom);
+    return;
+  }
+
+  switch (custom->type) {
+  case UCustom_Bool:
+    sync_value_bool(GTK_CHECK_BUTTON(widget));
+    break;
+  case UCustom_Int:
+    sync_value_int(GTK_SPIN_BUTTON(widget));
+    break;
+  case UCustom_Str:
+    sync_value_string(GTK_ENTRY(widget));
+    break;
+  case UCustom_Pathname:
+    sync_value_string(GTK_ENTRY(widget));
+    break;
+  case UCustom_Choice:
+    sync_value_choice(GTK_COMBO_BOX(widget));
+    break;
+  case UCustom_OrderedList:
+    olist_pref_entry_set_value(GTK_ENTRY(widget));
+    break;
+  case UCustom_Key:
+    key_pref_entry_set_value(GTK_ENTRY(widget));
+    break;
+  default:
+    return;
+  }
 }

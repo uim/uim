@@ -267,6 +267,23 @@ apply_button_clicked(GtkButton *button, gpointer user_data)
   }
 }
 
+static void
+set_to_default_cb(GtkWidget *widget, gpointer data)
+{
+  uim_pref_gtk_set_default_value(widget);
+
+  if (GTK_IS_CONTAINER(widget))
+    gtk_container_foreach(GTK_CONTAINER(widget),
+			  (GtkCallback) (set_to_default_cb), NULL);
+}
+
+static void
+defaults_button_clicked(GtkButton *button, gpointer user_data)
+{
+  gtk_container_foreach(GTK_CONTAINER(current_group_widget),
+			(GtkCallback) (set_to_default_cb), NULL);
+}
+
 static GtkWidget *
 create_setting_button_box(const char *group_name)
 {
@@ -276,6 +293,12 @@ create_setting_button_box(const char *group_name)
   setting_button_box = gtk_hbutton_box_new();
   gtk_button_box_set_layout(GTK_BUTTON_BOX(setting_button_box), GTK_BUTTONBOX_END);
   gtk_box_set_spacing(GTK_BOX(setting_button_box), 8);
+
+  /* Defaults button */
+  button = gtk_button_new_with_mnemonic(_("_Defaults"));
+  g_signal_connect(G_OBJECT(button), "clicked",
+		   G_CALLBACK(defaults_button_clicked), (gpointer) group_name);
+  gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 8);
 
   /* Apply button */
   button = gtk_button_new_from_stock(GTK_STOCK_APPLY);

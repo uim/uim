@@ -35,3 +35,4 @@
 #include <gtk/gtk.h>
 
 void uim_pref_gtk_add_custom(GtkWidget *vbox, const char *custom_sym);
+void uim_pref_gtk_set_default_value(GtkWidget *widget);
