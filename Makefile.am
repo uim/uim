@@ -14,7 +14,7 @@ desktopdir = $(datadir)/applications
 desktop_DATA = uim.desktop
 
 
-noinst_PROGRAMS = $(gtk_entry)
+noinst_PROGRAMS = $(gtk_entry) $(qedittest)
 
 if GTK2
 gtk_entry = gtk-entry
@@ -22,6 +22,13 @@ gtk_entry_SOURCES = entry.c
 gtk_entry_LDADD = @GTK2_LIBS@
 gtk_entry_CFLAGS = @GTK2_CFLAGS@
 else
+endif
+
+if QT
+qedittest = qedittest
+qedittest_SOURCES = qedittest.cpp
+qedittest_CXXFLAGS  = $(UIM_QT_CFLAGS)
+qedittest_LDFLAGS = $(UIM_QT_LDFLAGS)
 endif
 
 ACLOCAL_AMFLAGS = -I m4
