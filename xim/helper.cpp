@@ -143,57 +143,83 @@ static void
 helper_str_parse(char *str)
 {
     InputContext *focusedContext = InputContext::focusedContext();
-    
-    if (focusedContext) {
-	char *line = str;	
-	char *eol = strchr(line, '\n');
-	if (eol != NULL)
-	    *eol = '\0';
 
+    char *line = str;
+    char *eol = strchr(line, '\n');
+    if (eol != NULL)
+	*eol = '\0';
+    else
+	return;
+
+    if (focusedContext) {
 	if (strcmp("prop_list_get", line) == 0) {
 	    uim_prop_list_update(focusedContext->getUC());
+	    return;
 	} else if (strcmp("prop_label_get", line) == 0) {
 	    uim_prop_label_update(focusedContext->getUC());
+	    return;
 	} else if (strcmp("prop_activate", line) == 0) {
 	    line = eol + 1;
 	    eol = strchr(line, '\n');
-	    if (eol != NULL) {
+	    if (eol != NULL)
 		*eol = '\0';
-	    }
+	    else
+		return;
+
 	    uim_prop_activate(focusedContext->getUC(), line);
+	    return;
 	} else if (strncmp("focus_in", line, 8) == 0) {
 	    InputContext::deletefocusedContext();
 	    Canddisp *disp = canddisp_singleton();
 	    disp->hide();
+	    return;
  	} else if (strcmp("im_list_get", line) == 0) {
 	    send_im_list();
-	} else if (strncmp("im_change_", line, 10) == 0) {
-	    char *engine;
-	    engine = eol + 1;
-	    eol = strchr(engine, '\n');
-	    if (eol != NULL) {
+	    return;
+	} else if (strcmp("commit_string", line) == 0) {
+	    line = eol + 1;
+	    eol = strchr(line, '\n');
+	    if (eol != NULL)
 		*eol = '\0';
-	    }
-	    parse_helper_str_im_change(line, engine);
+	    else
+		return;
+	    focusedContext->extra_input(line);
+	    return;
 	}
-    } else {
-	char *line = str;	
-	char *eol = strchr(line, '\n');
-	if (eol != NULL) {
-	    *eol = '\0';
-	}
+    }
 
-	if (strncmp("im_change_", line, 10) == 0) {
-	    char *engine;
-	    engine = eol + 1;
-	    eol = strchr(engine, '\n');
-	    if (eol != NULL) {
-		*eol = '\0';
-	    }
-	    parse_helper_str_im_change(line, engine);
-	} else if (strcmp("prop_update_custom", line) == 0) {
-	    fprintf(stderr, "prop_update_custom is not implemented yet\n");
+    if (strncmp("im_change_", line, 10) == 0) {
+	char *engine;
+	engine = eol + 1;
+	eol = strchr(engine, '\n');
+	if (eol != NULL)
+	    *eol = '\0';
+	else
+	    return;
+
+	parse_helper_str_im_change(line, engine);
+	return;
+    } else if (strcmp("prop_update_custom", line) == 0) {
+	line = eol + 1;
+	eol = strchr(line, '\n');
+	if (eol != NULL)
+	    *eol = '\0';
+	else
+	    return;
+
+	char *custom = line;
+	char *val = eol + 1;
+	eol = strchr(val, '\n');
+	if (eol != NULL)
+	    *eol = '\0';
+	else
+	    return;
+
+	std::map<Window, XimServer *>::iterator it;
+	for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); it++) {
+	    (*it).second->customContext(custom, val);
 	}
+	return;
     }
 }
 

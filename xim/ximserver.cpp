@@ -154,6 +154,13 @@ void XimServer::changeContext(const char *engine) {
 	focusedContext->focusIn();
 }
 
+void XimServer::customContext(const char *custom, const char *val) {
+    std::list<InputContext *>::iterator it;
+    for (it = ic_list.begin(); it != ic_list.end(); it++) {
+	(*it)->customContext(custom, val);
+    }
+}
+
 struct input_style *
 XimServer::getInputStyles()
 {
@@ -424,6 +431,12 @@ InputContext::changeContext(const char *engine)
     }
 }
 
+void
+InputContext::customContext(const char *custom, const char *val)
+{
+    uim_prop_update_custom(mUc, custom, val);
+}
+
 InputContext *
 InputContext::focusedContext()
 {
@@ -626,9 +639,9 @@ void InputContext::commit_string(char *s)
     mXic->commit_string(s);
 }
 
-bool InputContext::extra_input(char *s)
+void InputContext::extra_input(char *s)
 {
-    return false;
+    mXic->extra_input(s);
 }
 
 XimIC *InputContext::get_ic()

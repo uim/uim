@@ -151,7 +151,7 @@ public:
     void focusOut();
     XimIC *get_ic();
     XimServer *getServer();
-    bool extra_input(char *s);
+    void extra_input(char *s);
     void clear_preedit();
     uString get_preedit_string();
     void pushback_preedit_string(int attr, const char *str);
@@ -167,6 +167,7 @@ public:
     const char *get_engine_name();
     const char *get_locale_name();
     void changeContext(const char *engine);
+    void customContext(const char *custom, const char *val);
 public:
     static void commit_cb(void *, const char *);
     static void clear_cb(void *);
@@ -235,6 +236,7 @@ public:
     const char *getIMLang();
     void set_im(const char *name);
     void changeContext(const char *engine);
+    void customContext(const char *custom, const char *val);
     Locale *getLocale();
 public:
     static XimServer *findServer(Window w);
