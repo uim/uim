@@ -1715,7 +1715,7 @@ msgstr "[SKK] Á°¤ÎÊä´°¸õÊä"
 
 #: scm/skk-key-custom.lisp:178
 msgid "[SKK] skk-special-midashi-key?"
-msgstr ""
+msgstr "[SKK] ÀÜÆ¬¼­¡¢ÀÜÈø¼­¤ÎÆşÎÏ"
 
 #: scm/skk-key-custom.lisp:184
 msgid "[SKK] skk-vi-escape-key?"
