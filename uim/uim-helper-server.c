@@ -128,16 +128,32 @@ static void
 parse_content(char *content, struct client *cl)
 {
   int i;
-  int ret;
+  int ret, content_len, out_len;
+  char *out;
+
+  content_len = strlen(content);
 
   for (i = 0; i < nr_client_slots; i++) {
     if (clients[i].fd != -1 && clients[i].fd != cl->fd &&
 		    (uim_helper_fd_writable(clients[i].fd) > 0)) {
-      ret = write(clients[i].fd, content, strlen(content));
+      out = content;
+      out_len = content_len;
+      while (out_len > 0) {
+	if ((ret = write(clients[i].fd, out, out_len)) < 0) {
+	  if (errno == EAGAIN || errno == EINTR)
+	    continue;
 
-      if (ret == -1 && errno == EPIPE) {
-	close(clients[i].fd);
-	free_client(&clients[i]);
+      	  if (errno == EPIPE) {
+	    close(clients[i].fd);
+	    free_client(&clients[i]);
+	  }
+	  break;
+        }
+	if (ret == 0)
+	  break;
+
+	out += ret;
+	out_len -= ret;
       }
     }
   }

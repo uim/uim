@@ -81,6 +81,7 @@ void
 uim_helper_send_message(int fd, const char *message)
 {
   int res;
+  int out_len;
 
   if (fd < 0)
     return;
@@ -95,10 +96,22 @@ uim_helper_send_message(int fd, const char *message)
     int len = strlen(message);
     char *buf = malloc(len + 2);
     snprintf(buf, len + 2,"%s\n", message);
-    res = write(fd, buf, len + 1);
+
+    out_len = len + 1;
+    while (out_len > 0) {
+      if ((res = write(fd, buf, out_len) < 0)) {
+	if (errno == EAGAIN || errno == EINTR)
+	  continue;
+	break;
+      }
+      if (res == 0)
+	break;
+
+      buf += res;
+      out_len -= res;
+    }
     free(buf);
   }
-
   return;
 }
 
