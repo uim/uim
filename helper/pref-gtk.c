@@ -231,7 +231,7 @@ custom_pathname_button_clicked_cb(GtkWidget *button, GtkWidget *entry)
     char *filename;    
     filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
     if(filename) {
-      gtk_entry_set_text(entry, filename);
+      gtk_entry_set_text(GTK_ENTRY(entry), filename);
       g_free (filename);
     }
   }
@@ -251,6 +251,7 @@ add_custom_type_pathname(GtkWidget *vbox, const struct uim_custom *custom)
  
   label = gtk_label_new(custom->label); 
   gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
   gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
 
   entry = gtk_entry_new();
