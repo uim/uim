@@ -400,7 +400,7 @@ find_candidate_array_from_line(struct skk_line *sl, const char *okuri,
 		      sizeof(struct skk_cand_array) * sl->nr_cand_array);
   ca = &sl->cands[sl->nr_cand_array - 1];
   ca->is_used = 0;
-  ca->cands = 0;
+  ca->cands = NULL;
   ca->nr_cands = 0;
   ca->nr_real_cands = 0;
   ca->okuri = strdup(okuri);
@@ -412,7 +412,10 @@ static void
 push_back_candidate_to_array(struct skk_cand_array *ca, char *cand)
 {
   ca->nr_cands++;
-  ca->cands = realloc(ca->cands, sizeof(char *) * ca->nr_cands);
+  if (ca->cands)
+    ca->cands = realloc(ca->cands, sizeof(char *) * ca->nr_cands);
+  else
+    ca->cands = malloc(sizeof(char *));
   ca->cands[ca->nr_cands - 1] = strdup(cand);
 }
 
