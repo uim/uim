@@ -40,13 +40,12 @@
 #include "uim-compat-scm.h"
 #include "context.h"
 
-/* valid-key-symbols in key.scm has also to be updated if you add new
- * key definition to key_tab
- */
-static struct {
+struct key_entry {
   int key;
-  char *str;
-} key_tab[] = {
+  const char *str;
+};
+
+static struct key_entry key_tab[] = {
   {UKey_Backspace, "backspace"},
   {UKey_Delete, "delete"},
   {UKey_Escape, "escape"},
@@ -158,11 +157,24 @@ uim_key_sym_to_int(uim_lisp sym_)
 }
 #endif
 
-static char *
+static void
+define_valid_key_symbols(void)
+{
+  int i;
+
+  UIM_EVAL_STRING(NULL, "(define valid-key-symbols ())");
+  for (i = 0; key_tab[i].key; i++) {
+    UIM_EVAL_FSTRING1(NULL,
+		      "(set! valid-key-symbols (cons '%s valid-key-symbols))",
+		      key_tab[i].str);
+  }
+}
+
+static const char *
 get_sym(int key)
 {
   int i;
-  char *res = NULL;
+  const char *res = NULL;
   for (i = 0; key_tab[i].key; i++) {
     if (key_tab[i].key == key) {
       res = key_tab[i].str;
@@ -174,7 +186,7 @@ get_sym(int key)
 static int
 keycode_to_sym(int key, char *buf)
 {
-  char *s = get_sym(key);
+  char *s = (char *)get_sym(key);
   if (!s) {
     if (key > 128) {
       return -1;
@@ -187,7 +199,7 @@ keycode_to_sym(int key, char *buf)
 }
 
 static void
-handle_key(uim_context uc, char *p, int key, int state)
+handle_key(uim_context uc, const char *p, int key, int state)
 {
   char keybuf[20];
   int rv;
@@ -259,5 +271,6 @@ define_key(uim_lisp args, uim_lisp env)
 void
 uim_init_key_subrs(void)
 {
-  uim_scm_init_fsubr("define-key", (uim_lisp (*)(uim_lisp, uim_lisp))define_key);
+  define_valid_key_symbols();
+  uim_scm_init_fsubr("define-key", define_key);
 }

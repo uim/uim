@@ -4544,8 +4544,8 @@ init_subrs (void)
   init_subr_1 ("string-length", string_length);
   init_subr_1 ("string-dimension", string_dim);
   init_lsubr ("string-append", string_append);
-  init_subr_1 ("string->integer",string2integer);
-  init_subr_2 ("string=?",string_equal);
+  init_subr_1 ("string->integer", string2integer);
+  init_subr_2 ("string=?", string_equal);
   init_subr_2 ("eval", leval);
   init_subr_2 ("apply", lapply);
   init_fsubr ("define", leval_define);

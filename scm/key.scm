@@ -33,97 +33,11 @@
 ;; config
 (define enable-emacs-like-key-prefix? #t)
 
-;;
-(define valid-key-symbols
-  '(backspace
-    delete
-    escape
-    return
-    tab
-    left
-    up
-    right
-    down
-    prior
-    next
-    home
-    end
-    zenkaku-hankaku
-    Multi_key
-    Mode_switch
-    Henkan_Mode
-    Muhenkan
-    F1
-    F2
-    F3
-    F4
-    F5
-    F6
-    F7
-    F8
-    F9
-    F10
-    F11
-    F12
-    F13
-    F14
-    F15
-    F16
-    F17
-    F18
-    F19
-    F20
-    F21
-    F22
-    F23
-    F24
-    F25
-    F26
-    F27
-    F28
-    F29
-    F30
-    F31
-    F32
-    F33
-    F34
-    F35
-    Private1
-    Private2
-    Private3
-    Private4
-    Private5
-    Private6
-    Private7
-    Private8
-    Private9
-    Private10
-    Private11
-    Private12
-    Private13
-    Private14
-    Private15
-    Private16
-    Private17
-    Private18
-    Private19
-    Private20
-    Private21
-    Private22
-    Private23
-    Private24
-    Private25
-    Private26
-    Private27
-    Private28
-    Private29
-    Private30
-    Shift_key
-    Alt_key
-    Control_key
-    Meta_key
-    Super_key
-    Hyper_key))
+;; valid-key-symbols is defined in uim-key.c
+
+(define key-symbol?
+  (lambda (sym)
+    (member sym valid-key-symbols)))
 
 (define intern-key-symbol
   (lambda (key-str)
@@ -424,16 +338,6 @@
 		       (not (= key -1)))))
       (set! enable-emacs-like-key-prefix? saved-enable-eprefix?)
       res)))
-
-;(define set-key-binding
-;  (lambda (im state flavor)
-;    #f
-;    ))
-
-;(define regist-key-binding 
-;  (lambda (bind-name bind-table)
-;    #f
-;))
 
 ;;
 (define-key left-key? "left")
