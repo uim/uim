@@ -946,7 +946,7 @@ void KeyGrabForm::keyPressEvent( QKeyEvent *e )
         if( Qt::Key_F1 <= qkey && qkey <= Qt::Key_F35 ) {
             int n = qkey - Qt::Key_F1 + 1;
             editString.append( "F" );
-            editString.append( n );
+            editString.append( QString::number( n ) );
         }
         else if( isascii( qkey ) )
         {
