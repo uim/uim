@@ -516,8 +516,7 @@
 
 ;; おお、おう (experimental, still broken)
 (define ja-romaji-hepburn-oh-ruleset
-  '(
-    (("o" "h"     (char-nonvowel press peek loopback)) (("お" "お")
+  '((("o" "h"     (char-nonvowel press peek loopback)) (("お" "お")
 							("オ" "オ")
 							("ｵ" "ｵ")))
     (("k" "o" "h" (char-nonvowel press peek loopback)) (("こ" "う")
@@ -566,6 +565,24 @@
 							("ロ" "ウ")
 							("ﾛ" "ｳ")))))
 
+(define ja-romaji-hepburn-oh-guide-ruleset
+  '((("o" "h")     (("お" "h") ("オ" "h") ("ｵ" "h")))
+    (("k" "o" "h") (("こ" "h") ("コ" "h") ("ｺ" "h")))
+    (("g" "o" "h") (("ご" "h") ("ゴ" "h") ("ｺ" "ﾞ" "h")))
+    (("s" "o" "h") (("そ" "h") ("ソ" "h") ("ｿ" "h")))
+    (("z" "o" "h") (("ぞ" "h") ("ゾ" "h") ("ｿ" "ﾞ" "h")))
+    (("j" "o" "h") (("じ" "ょ" "h") ("ジ" "ョ" "h") ("ｼ" "ﾞ" "ｮ" "h")))
+    (("t" "o" "h") (("と" "h") ("ト" "h") ("ﾄ" "h")))
+    (("d" "o" "h") (("ど" "h") ("ド" "h") ("ﾄ" "ﾞ" "h")))
+    (("n" "o" "h") (("の" "h") ("ノ" "h") ("ﾉ" "h")))
+    (("h" "o" "h") (("ほ" "h") ("ホ" "h") ("ﾎ" "h")))
+    (("f" "o" "h") (("ふ" "ぉ" "h") ("フ" "ォ" "h") ("ﾌ" "ｫ" "h")))
+    (("b" "o" "h") (("ぼ" "h") ("ボ" "h") ("ﾎ" "ﾞ" "h")))
+    (("p" "o" "h") (("ぽ" "h") ("ポ" "h") ("ﾎ" "ﾟ" "h")))
+    (("m" "o" "h") (("も" "h") ("モ" "h") ("ﾓ" "h")))
+    (("y" "o" "h") (("よ" "h") ("ヨ" "h") ("ﾖ" "h")))
+    (("r" "o" "h") (("ろ" "h") ("ロ" "h") ("ﾛ" "h")))))
+
 ;; 変則促音 変換中表示
 (define ja-romaji-hepburn-irregular-double-consonant-guide-ruleset
   '((("t" "c")         (("っ" "c") ("ッ" "c") ("ｯ" "c")))))
@@ -595,6 +612,7 @@
     hepburn-double-consonant
     hepburn-n
     hepburn-oh
+    hepburn-oh-guide
     hepburn-irregular-double-consonant-guide
     hepburn-irregular-double-consonant))
 
@@ -621,6 +639,7 @@
    ja-romaji-hiragana-hepburn-double-consonant-ruleset
    ja-romaji-hiragana-hepburn-n-ruleset
    ja-romaji-hiragana-hepburn-oh-ruleset
+   ja-romaji-hiragana-hepburn-oh-guide-ruleset
    ja-romaji-hiragana-hepburn-irregular-double-consonant-guide-ruleset
    ja-romaji-hiragana-hepburn-irregular-double-consonant-ruleset
    ja-romaji-hiragana-skk-like-symbol-ruleset))
@@ -644,6 +663,7 @@
    ja-romaji-katakana-hepburn-double-consonant-ruleset
    ja-romaji-katakana-hepburn-n-ruleset
    ja-romaji-katakana-hepburn-oh-ruleset
+   ja-romaji-katakana-hepburn-oh-guide-ruleset
    ja-romaji-katakana-hepburn-irregular-double-consonant-guide-ruleset
    ja-romaji-katakana-hepburn-irregular-double-consonant-ruleset
    ja-romaji-katakana-skk-like-symbol-ruleset))
@@ -668,6 +688,7 @@
    ja-romaji-halfkana-hepburn-double-consonant-ruleset
    ja-romaji-halfkana-hepburn-n-ruleset
    ja-romaji-halfkana-hepburn-oh-ruleset
+   ja-romaji-halfkana-hepburn-oh-guide-ruleset
    ja-romaji-halfkana-hepburn-irregular-double-consonant-guide-ruleset
    ja-romaji-halfkana-hepburn-irregular-double-consonant-ruleset
    ja-romaji-halfkana-skk-like-symbol-ruleset))
