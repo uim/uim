@@ -167,6 +167,48 @@ int uim_helper_str_terminated(const char *str)
   return 0;
 }
 
+char *
+uim_helper_buffer_append(char *buf, const char *fragment, size_t fragment_size)
+{
+  size_t buf_size, extended_size;
+
+  buf_size = strlen(buf);
+  extended_size = buf_size + fragment_size + 1;
+  buf = (char *)realloc(buf, extended_size);
+  if (buf) {
+    memcpy(&buf[buf_size], fragment, fragment_size);
+    buf[extended_size - 1] = '\0';
+  }
+
+  return buf;
+}
+
+void
+uim_helper_buffer_shift(char *buf, int count)
+{
+  int len = strlen(buf);
+  memmove(buf, &buf[count], len - count);
+  buf[len - count] = '\0';
+}
+
+char *
+uim_helper_buffer_get_message(char *buf)
+{
+  size_t msg_size;
+  char *msg, *msg_term;
+
+  msg_term = strstr(buf, "\n\n");
+  if (msg_term) {
+    msg_size = msg_term + 2 - buf;
+    msg = (char *)malloc(msg_size + 1);
+    memcpy(msg, buf, msg_size);
+    msg[msg_size] = '\0';
+    uim_helper_buffer_shift(buf, msg_size);
+    return msg;
+  }
+  return NULL;
+}
+
 int
 is_setugid(void)
 {

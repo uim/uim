@@ -52,7 +52,8 @@
 
 struct client {
   int fd;
-  char *write_queue;
+  char *rbuf;
+  char *wbuf;
 };
 
 #define MAX_CLIENT 32
@@ -143,64 +144,61 @@ get_unused_client()
   }
   nr_client_slots++;
   clients = realloc(clients, sizeof(struct client) * nr_client_slots);
-  clients[nr_client_slots - 1].write_queue = strdup("");
+  clients[nr_client_slots - 1].rbuf = strdup("");
+  clients[nr_client_slots - 1].wbuf = strdup("");
   return &clients[nr_client_slots - 1];
 }
 
 static void
 free_client(struct client *cl)
 {
-  if (cl->write_queue) {
-    free(cl->write_queue);
-    cl->write_queue = strdup("");
+  if (cl->rbuf) {
+    free(cl->rbuf);
+    cl->rbuf = strdup("");
+  }
+  if (cl->wbuf) {
+    free(cl->wbuf);
+    cl->wbuf = strdup("");
   }
   cl->fd = -1;
 }
 
 static void
-distribute_message_fragment(char *fragment, struct client *cl)
+distribute_message(char *msg, struct client *cl)
 {
   int i;
-  size_t fragment_len, extended_len;
-  char *write_queue;
+  size_t msg_len;
 
-  fragment_len = strlen(fragment);
+  msg_len = strlen(msg);
 
   for (i = 0; i < nr_client_slots; i++) {
     if (clients[i].fd != -1 && clients[i].fd != cl->fd) {
-      write_queue = clients[i].write_queue;
-      extended_len = strlen(write_queue) + fragment_len + 1;
-      clients[i].write_queue = (char *)realloc(write_queue, extended_len);
-      strcat(clients[i].write_queue, fragment);
+      clients[i].wbuf = uim_helper_buffer_append(clients[i].wbuf, msg, msg_len);
       FD_SET(clients[i].fd, &s_fdset_write);
     }
   }
-}
-
-static void
-shift_buffer(char *buf, int count)
-{
-  int len = strlen(buf);
-  memmove(buf, &buf[count], len - count);
-  buf[len - count] = '\0';
 }
 
 static int
 reflect_message_fragment(struct client *cl)
 {
   int rc;
+  char *msg;
 
   /* do read */
-  rc = read(cl->fd, read_buf, BUFFER_SIZE - 1);
+  rc = read(cl->fd, read_buf, sizeof(read_buf));
   if (rc <= 0) {
     if (rc < 0 && (errno == EAGAIN || errno == EINTR))
       return 0;
     return -1;
   }
 
-  read_buf[rc] = '\0';
-  distribute_message_fragment(read_buf, cl);
+  cl->rbuf = uim_helper_buffer_append(cl->rbuf, read_buf, rc);
 
+  while ((msg = uim_helper_buffer_get_message(cl->rbuf))) {
+    distribute_message(msg, cl);
+    free(msg);
+  }
   return 1;
 }
 
@@ -269,8 +267,8 @@ uim_helper_server_process_connection(int serv_fd)
 	  int ret, message_len, out_len;
 	  char *out;
 
-	  out = clients[i].write_queue;
-	  message_len = out_len = strlen(clients[i].write_queue);
+	  out = clients[i].wbuf;
+	  message_len = out_len = strlen(clients[i].wbuf);
 	  while (out_len > 0) {
 	    if ((ret = write(clients[i].fd, out, out_len)) < 0) {
 	      if (errno == EAGAIN) {
@@ -296,11 +294,11 @@ uim_helper_server_process_connection(int serv_fd)
 	    }
 	  }
 	  if (out_len == 0) {
-	    free(clients[i].write_queue);
-	    clients[i].write_queue = strdup("");
+	    free(clients[i].wbuf);
+	    clients[i].wbuf = strdup("");
 	    FD_CLR(clients[i].fd, &s_fdset_write);
 	  } else {
-	    shift_buffer(clients[i].write_queue, message_len - out_len);
+	    uim_helper_buffer_shift(clients[i].wbuf, message_len - out_len);
 	  }
 	}
 	if (clients[i].fd != -1 && FD_ISSET(clients[i].fd, &readfds)) {

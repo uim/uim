@@ -54,6 +54,10 @@ int uim_helper_str_terminated(const char *str);
 int uim_helper_check_connection_fd(int fd);
 int uim_helper_fd_readable(int fd);
 int uim_helper_fd_writable(int fd);
+char *uim_helper_buffer_append(char *buf,
+			       const char *fragment, size_t fragment_size);
+void uim_helper_buffer_shift(char *buf, int count);
+char *uim_helper_buffer_get_message(char *buf);
 
 #ifdef __cplusplus
 }

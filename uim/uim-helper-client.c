@@ -47,16 +47,11 @@
 #include "context.h"
 
 
-static void uim_helper_client_focus(uim_context uc, int flg);
-
-#define BUFFER_SIZE (32 * 1024)
 #define RECV_BUFFER_SIZE 1024
 
 /*Common buffer for some functions's temporary buffer.
   Pay attention for use.*/
-static char uim_help_buf[BUFFER_SIZE];
 static char uim_recv_buf[RECV_BUFFER_SIZE];
-static int uim_read_buf_size;
 static char *uim_read_buf;
 
 static int uim_fd = -1;
@@ -149,90 +144,40 @@ uim_helper_close_client_fd(int fd)
 void
 uim_helper_client_focus_in(uim_context uc)
 {
-  uim_helper_client_focus(uc, 0);
+  if (uc)
+    uim_helper_send_message(uim_fd, "focus_in\n");
 }
 
 void
 uim_helper_client_focus_out(uim_context uc)
 {
-  uim_helper_client_focus(uc, 1);
+  if (uc)
+    uim_helper_send_message(uim_fd, "focus_out\n");
 }
-
-static void
-uim_helper_client_focus(uim_context uc, int flg)
-{
-  if (uim_fd < 0)
-    return;
-
-  if (!uc)
-    return;
-
-  if (flg == 0)
-    snprintf(uim_help_buf, BUFFER_SIZE, "focus_in\n");
-  else
-    snprintf(uim_help_buf, BUFFER_SIZE, "focus_out\n");
-
-  uim_helper_send_message(uim_fd, uim_help_buf);
-}
-
-
 
 void
 uim_helper_client_get_prop_list(void)
 {
-  snprintf(uim_help_buf, BUFFER_SIZE, "prop_list_get\n");
-  uim_helper_send_message(uim_fd, uim_help_buf);
+  uim_helper_send_message(uim_fd, "prop_list_get\n");
 }
 
 void
 uim_helper_read_proc(int fd)
 {
   int rc;
-  size_t extended_read_buf_size;
 
   while (uim_helper_fd_readable(fd) > 0) {
-    
-    rc = read(fd, uim_recv_buf, sizeof(uim_recv_buf) - 1);
-    uim_recv_buf[rc] = '\0';
-    
+    rc = read(fd, uim_recv_buf, sizeof(uim_recv_buf));
     if (rc == 0 || (rc < 0 && errno != EAGAIN)) {
-      if (uim_disconnect_cb) {
-	uim_disconnect_cb();
-      }
-      uim_fd = -1;
+      uim_helper_close_client_fd(fd);
       return;
     }
-    extended_read_buf_size = strlen(uim_read_buf) + rc + 1;
-    uim_read_buf = (char *)realloc(uim_read_buf, extended_read_buf_size);
-    strcat(uim_read_buf, uim_recv_buf);
+    uim_read_buf = uim_helper_buffer_append(uim_read_buf, uim_recv_buf, rc);
   }
-  uim_read_buf_size = extended_read_buf_size;
-  return;
-}
-
-static void
-shift_read_buffer(int count)
-{
-  memmove(uim_read_buf, &uim_read_buf[count],
-	  uim_read_buf_size - count);
-  uim_read_buf_size -= count;
-  uim_read_buf[uim_read_buf_size] = '\0';
 }
 
 char *
 uim_helper_get_message(void)
 {
-  size_t msg_size;
-  char *msg, *msg_term;
-
-  msg_term = strstr(uim_read_buf, "\n\n");
-  if (msg_term) {
-    msg_size = msg_term + 1 - uim_read_buf;
-    msg = (char *)malloc(msg_size + 1);
-    memcpy(msg, uim_read_buf, msg_size);
-    msg[msg_size] = '\0';
-    shift_read_buffer(msg_size + 1);
-    return msg;
-  }
-  return NULL;
+  return uim_helper_buffer_get_message(uim_read_buf);
 }
