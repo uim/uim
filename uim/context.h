@@ -283,10 +283,6 @@ void uim_init_table_subrs(void);
 void uim_init_im_subrs(void);
 
 /**/
-void uim_init_skk_dic(void);
-void uim_quit_skk_dic(void);
-void uim_init_anthy(void);
-void uim_quit_anthy(void);
 void uim_init_prime(void);
 void uim_quit_prime(void);
 void uim_init_plugin(void);
