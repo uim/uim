@@ -35,6 +35,7 @@
 #  include <config.h>
 #endif
 
+#include <locale.h>
 #include "uim/gettext.h"
 #include "uim/uim.h"
 #include <gtk/gtk.h>
@@ -47,6 +48,11 @@ main (int argc, char *argv[])
 {
   GtkWidget *icon;
   EggTrayIcon *tray;
+
+  setlocale(LC_ALL, "");
+  bindtextdomain( PACKAGE, LOCALEDIR );
+  textdomain( PACKAGE );
+  bind_textdomain_codeset( PACKAGE, "UTF-8");
 
   gtk_set_locale();
   
