@@ -47,7 +47,7 @@ static char *prime_command = "prime";
 static uim_lisp
 prime_send_command(uim_lisp str_)
 {
-  char *str = uim_scm_c_str( str_ );
+  const char *str = uim_scm_refer_c_str(str_);
   char *result;
   uim_lisp ret;
 

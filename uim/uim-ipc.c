@@ -1,6 +1,8 @@
 /*
 
-  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  uim-ipc.c: Utility functions for inter process communication.
+
+  Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -141,7 +143,7 @@ open_pipe_rw(FILE **fr, FILE **fw)
 
 int
 uim_ipc_open_command(int old_pid, FILE **read_fp,
-		     FILE **write_fp, char *command)
+		     FILE **write_fp, const char *command)
 {
   int new_pid, result;
 
@@ -190,7 +192,7 @@ uim_ipc_open_command(int old_pid, FILE **read_fp,
 char *
 uim_ipc_send_command(int *pid,
 		     FILE **read_fp, FILE **write_fp,
-		     char *command, char *str)
+		     const char *command, const char *str)
 {
   char *tmp = strdup("");
   char buf[8192];

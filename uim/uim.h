@@ -567,10 +567,10 @@ uim_set_surrounding_text(uim_context uc, const char *text,
 
 /* Utility functions */
 int
-uim_ipc_open_command(int old_pid, FILE **read_handler, FILE **write_handler, char *command);
+uim_ipc_open_command(int old_pid, FILE **read_handler, FILE **write_handler, const char *command);
 char *
 uim_ipc_send_command(int *pid, FILE **read_handler,
-		     FILE **write_handler, char *command, char *str);
+		     FILE **write_handler, const char *command, const char *str);
 
 /* will be deprecated. use custom API (uim-custom.h) instead */
 char *uim_symbol_value_str(const char *symbol_str);
