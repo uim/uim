@@ -204,6 +204,22 @@
   (_ "Preedit color")
   (_ "long description will be here."))
 
+;; referred by some bridges
+(define-custom 'candidate-window-position 'caret
+  '(global)
+  (list 'choice
+	(list 'caret
+	      (_ "Adjacent to caret")
+	      (_ "Adjacent to caret"))
+	(list 'left
+	      (_ "Left end of preedit area")
+	      (_ "Left end of preedit area"))
+	(list 'right
+	      (_ "Right end of preedit area")
+	      (_ "Right end of preedit area")))
+  (_ "Candidate window position")
+  (_ "long description will be here."))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; global-keys

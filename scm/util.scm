@@ -446,6 +446,16 @@
       (if (not (null? (cdr style)))
 	  (update-style style-spec (cdr style))))))
 
+;; for backward compatibility
+(define uim-symbol-value-str
+  (lambda (sym)
+    (let ((val (if (symbol-bound? sym)
+		   (symbol-value sym)
+		   "")))
+      (if (symbol? val)
+	  (symbol->string val)
+	  val))))
+
 ;;
 ;; Preedit color related configurations and functions.
 ;;

@@ -115,7 +115,12 @@ uim_scm_symbol_value_str(const char *symbol_str)
 char *
 uim_symbol_value_str(const char *symbol_str)
 {
-  return uim_scm_symbol_value_str(symbol_str);
+  char *val;
+
+  UIM_EVAL_FSTRING1(NULL, "(uim-symbol-value-str '%s)", symbol_str);
+  val = uim_scm_c_str(uim_scm_return_value());
+
+  return val;
 }
 
 uim_lisp

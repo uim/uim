@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-01-12 06:34+0900\n"
+"POT-Creation-Date: 2005-01-13 18:36+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -388,7 +388,7 @@ msgstr ""
 msgid "Japanese Kana Kanji Conversion Engine, Example"
 msgstr ""
 
-#: scm/anthy.lisp:989
+#: scm/anthy.lisp:986
 msgid "Japanese Kana Kanji Conversion Engine, Anthy"
 msgstr ""
 
@@ -500,19 +500,20 @@ msgstr ""
 #: scm/custom-vars.lisp:59 scm/custom-vars.lisp:63 scm/custom-vars.lisp:70
 #: scm/custom-vars.lisp:76 scm/custom-vars.lisp:94 scm/custom-vars.lisp:172
 #: scm/custom-vars.lisp:179 scm/custom-vars.lisp:185 scm/custom-vars.lisp:191
-#: scm/custom-vars.lisp:205 scm/custom-vars.lisp:214 scm/custom-vars.lisp:218
-#: scm/custom-vars.lisp:340 scm/custom-vars.lisp:346 scm/custom-vars.lisp:352
-#: scm/custom-vars.lisp:358 scm/custom-vars.lisp:364 scm/custom-vars.lisp:370
-#: scm/custom-vars.lisp:384 scm/custom-vars.lisp:390 scm/custom-vars.lisp:396
-#: scm/custom-vars.lisp:402 scm/custom-vars.lisp:408 scm/custom-vars.lisp:415
-#: scm/custom-vars.lisp:421 scm/custom-vars.lisp:427 scm/custom-vars.lisp:493
-#: scm/custom-vars.lisp:500 scm/custom-vars.lisp:507 scm/custom-vars.lisp:513
-#: scm/custom-vars.lisp:519 scm/custom-vars.lisp:525 scm/custom-vars.lisp:533
-#: scm/custom-vars.lisp:539 scm/custom-vars.lisp:545 scm/custom-vars.lisp:551
-#: scm/custom-vars.lisp:557 scm/custom-vars.lisp:563 scm/custom-vars.lisp:589
-#: scm/custom-vars.lisp:595 scm/custom-vars.lisp:601 scm/custom-vars.lisp:607
-#: scm/custom-vars.lisp:613 scm/custom-vars.lisp:620 scm/custom-vars.lisp:634
-#: scm/custom-vars.lisp:640 scm/custom-vars.lisp:646 scm/custom-vars.lisp:652
+#: scm/custom-vars.lisp:205 scm/custom-vars.lisp:221 scm/custom-vars.lisp:230
+#: scm/custom-vars.lisp:234 scm/custom-vars.lisp:356 scm/custom-vars.lisp:362
+#: scm/custom-vars.lisp:368 scm/custom-vars.lisp:374 scm/custom-vars.lisp:380
+#: scm/custom-vars.lisp:386 scm/custom-vars.lisp:400 scm/custom-vars.lisp:406
+#: scm/custom-vars.lisp:412 scm/custom-vars.lisp:418 scm/custom-vars.lisp:424
+#: scm/custom-vars.lisp:431 scm/custom-vars.lisp:437 scm/custom-vars.lisp:443
+#: scm/custom-vars.lisp:508 scm/custom-vars.lisp:514 scm/custom-vars.lisp:520
+#: scm/custom-vars.lisp:528 scm/custom-vars.lisp:534 scm/custom-vars.lisp:540
+#: scm/custom-vars.lisp:546 scm/custom-vars.lisp:552 scm/custom-vars.lisp:558
+#: scm/custom-vars.lisp:564 scm/custom-vars.lisp:571 scm/custom-vars.lisp:578
+#: scm/custom-vars.lisp:585 scm/custom-vars.lisp:611 scm/custom-vars.lisp:617
+#: scm/custom-vars.lisp:623 scm/custom-vars.lisp:629 scm/custom-vars.lisp:635
+#: scm/custom-vars.lisp:642 scm/custom-vars.lisp:656 scm/custom-vars.lisp:662
+#: scm/custom-vars.lisp:668 scm/custom-vars.lisp:674
 msgid "long description will be here."
 msgstr ""
 
@@ -544,11 +545,11 @@ msgstr ""
 msgid "IM switching key"
 msgstr ""
 
-#: scm/custom-vars.lisp:202 scm/custom-vars.lisp:531
+#: scm/custom-vars.lisp:202 scm/custom-vars.lisp:526
 msgid "uim"
 msgstr ""
 
-#: scm/custom-vars.lisp:202 scm/custom-vars.lisp:531
+#: scm/custom-vars.lisp:202 scm/custom-vars.lisp:526
 msgid "uim native"
 msgstr ""
 
@@ -564,199 +565,219 @@ msgstr ""
 msgid "Preedit color"
 msgstr ""
 
-#: scm/custom-vars.lisp:213
-msgid "Key bindings"
+#: scm/custom-vars.lisp:212 scm/custom-vars.lisp:213
+msgid "Adjacent to caret"
 msgstr ""
 
-#: scm/custom-vars.lisp:217
-msgid "Global key bindings"
+#: scm/custom-vars.lisp:215 scm/custom-vars.lisp:216
+msgid "Left end of preedit area"
 msgstr ""
 
-#: scm/custom-vars.lisp:223
-msgid "[Global] on"
+#: scm/custom-vars.lisp:218 scm/custom-vars.lisp:219
+msgid "Right end of preedit area"
 msgstr ""
 
-#: scm/custom-vars.lisp:224 scm/custom-vars.lisp:230 scm/custom-vars.lisp:236
-#: scm/custom-vars.lisp:242 scm/custom-vars.lisp:248 scm/custom-vars.lisp:254
-#: scm/custom-vars.lisp:260 scm/custom-vars.lisp:266 scm/custom-vars.lisp:272
-#: scm/custom-vars.lisp:278 scm/custom-vars.lisp:284 scm/custom-vars.lisp:290
-#: scm/custom-vars.lisp:296 scm/custom-vars.lisp:302 scm/custom-vars.lisp:308
-#: scm/custom-vars.lisp:314 scm/custom-vars.lisp:320 scm/custom-vars.lisp:326
-msgid "long description will be here"
+#: scm/custom-vars.lisp:220
+msgid "Candidate window position"
 msgstr ""
 
 #: scm/custom-vars.lisp:229
+msgid "Key bindings"
+msgstr ""
+
+#: scm/custom-vars.lisp:233
+msgid "Global key bindings"
+msgstr ""
+
+#: scm/custom-vars.lisp:239
+msgid "[Global] on"
+msgstr ""
+
+#: scm/custom-vars.lisp:240 scm/custom-vars.lisp:246 scm/custom-vars.lisp:252
+#: scm/custom-vars.lisp:258 scm/custom-vars.lisp:264 scm/custom-vars.lisp:270
+#: scm/custom-vars.lisp:276 scm/custom-vars.lisp:282 scm/custom-vars.lisp:288
+#: scm/custom-vars.lisp:294 scm/custom-vars.lisp:300 scm/custom-vars.lisp:306
+#: scm/custom-vars.lisp:312 scm/custom-vars.lisp:318 scm/custom-vars.lisp:324
+#: scm/custom-vars.lisp:330 scm/custom-vars.lisp:336 scm/custom-vars.lisp:342
+msgid "long description will be here"
+msgstr ""
+
+#: scm/custom-vars.lisp:245
 msgid "[Global] off"
 msgstr ""
 
-#: scm/custom-vars.lisp:235
+#: scm/custom-vars.lisp:251
 msgid "[Global] begin conversion"
 msgstr ""
 
-#: scm/custom-vars.lisp:241
+#: scm/custom-vars.lisp:257
 msgid "[Global] commit"
 msgstr ""
 
-#: scm/custom-vars.lisp:247
+#: scm/custom-vars.lisp:263
 msgid "[Global] cancel"
 msgstr ""
 
-#: scm/custom-vars.lisp:253
+#: scm/custom-vars.lisp:269
 msgid "[Global] next candidate"
 msgstr ""
 
-#: scm/custom-vars.lisp:259
+#: scm/custom-vars.lisp:275
 msgid "[Global] previous candidate"
 msgstr ""
 
-#: scm/custom-vars.lisp:265
+#: scm/custom-vars.lisp:281
 msgid "[Global] next page of candidate window"
 msgstr ""
 
-#: scm/custom-vars.lisp:271
+#: scm/custom-vars.lisp:287
 msgid "[Global] previous page of candidate window"
 msgstr ""
 
-#: scm/custom-vars.lisp:277
+#: scm/custom-vars.lisp:293
 msgid "[Global] beginning of preedit"
 msgstr ""
 
-#: scm/custom-vars.lisp:283
+#: scm/custom-vars.lisp:299
 msgid "[Global] end of preedit"
 msgstr ""
 
-#: scm/custom-vars.lisp:289
+#: scm/custom-vars.lisp:305
 msgid "[Global] erase after cursor"
 msgstr ""
 
-#: scm/custom-vars.lisp:295
+#: scm/custom-vars.lisp:311
 msgid "[Global] erase before cursor"
 msgstr ""
 
-#: scm/custom-vars.lisp:301
+#: scm/custom-vars.lisp:317
 msgid "[Global] backspace"
 msgstr ""
 
-#: scm/custom-vars.lisp:307
+#: scm/custom-vars.lisp:323
 msgid "[Global] delete"
 msgstr ""
 
-#: scm/custom-vars.lisp:313
+#: scm/custom-vars.lisp:329
 msgid "[Global] left"
 msgstr ""
 
-#: scm/custom-vars.lisp:319
+#: scm/custom-vars.lisp:335
 msgid "[Global] right"
 msgstr ""
 
-#: scm/custom-vars.lisp:325
+#: scm/custom-vars.lisp:341
 msgid "[Global] return"
 msgstr ""
 
-#: scm/custom-vars.lisp:339 scm/custom-vars.lisp:383 scm/custom-vars.lisp:512
-#: scm/custom-vars.lisp:639
+#: scm/custom-vars.lisp:355 scm/custom-vars.lisp:399 scm/custom-vars.lisp:507
+#: scm/custom-vars.lisp:661
 msgid "Use candidate window"
 msgstr ""
 
-#: scm/custom-vars.lisp:345 scm/custom-vars.lisp:389 scm/custom-vars.lisp:518
-#: scm/custom-vars.lisp:645
+#: scm/custom-vars.lisp:361 scm/custom-vars.lisp:405 scm/custom-vars.lisp:513
+#: scm/custom-vars.lisp:667
 msgid "Conversion key press count to show candidate window"
 msgstr ""
 
-#: scm/custom-vars.lisp:351 scm/custom-vars.lisp:395 scm/custom-vars.lisp:524
-#: scm/custom-vars.lisp:588 scm/custom-vars.lisp:651
+#: scm/custom-vars.lisp:367 scm/custom-vars.lisp:411 scm/custom-vars.lisp:519
+#: scm/custom-vars.lisp:610 scm/custom-vars.lisp:673
 msgid "Number of candidates in candidate window at a time"
 msgstr ""
 
-#: scm/custom-vars.lisp:357
+#: scm/custom-vars.lisp:373
 msgid "Select candidate by numeral keys"
 msgstr ""
 
-#: scm/custom-vars.lisp:363 scm/custom-vars.lisp:401
+#: scm/custom-vars.lisp:379 scm/custom-vars.lisp:417
 msgid "Show segment separator"
 msgstr ""
 
-#: scm/custom-vars.lisp:369 scm/custom-vars.lisp:407
+#: scm/custom-vars.lisp:385 scm/custom-vars.lisp:423
 msgid "Segment separator"
 msgstr ""
 
-#: scm/custom-vars.lisp:414
+#: scm/custom-vars.lisp:430
 msgid "Canna server"
 msgstr ""
 
-#: scm/custom-vars.lisp:420
+#: scm/custom-vars.lisp:436
 msgid "Use Canna server"
 msgstr ""
 
-#: scm/custom-vars.lisp:426
+#: scm/custom-vars.lisp:442
 msgid "Canna server name"
 msgstr ""
 
-#: scm/custom-vars.lisp:492
-msgid "Dictionary file"
-msgstr ""
-
-#: scm/custom-vars.lisp:499
-msgid "Personal dictionary file"
-msgstr ""
-
-#: scm/custom-vars.lisp:506
-msgid "Personal dictionary file (dedicated to uim)"
-msgstr ""
-
-#: scm/custom-vars.lisp:530
+#: scm/custom-vars.lisp:525
 msgid "ddskk"
 msgstr ""
 
-#: scm/custom-vars.lisp:530
+#: scm/custom-vars.lisp:525
 msgid "Similar to ddskk"
 msgstr ""
 
-#: scm/custom-vars.lisp:532
+#: scm/custom-vars.lisp:527
 msgid "Visual style"
 msgstr ""
 
-#: scm/custom-vars.lisp:538
+#: scm/custom-vars.lisp:533
 msgid "Use recursive learning"
 msgstr ""
 
-#: scm/custom-vars.lisp:544
+#: scm/custom-vars.lisp:539
 msgid "Use Enter key as just committing (egg-like operation)"
 msgstr ""
 
-#: scm/custom-vars.lisp:550
+#: scm/custom-vars.lisp:545
 msgid "Commit newline as ASCII string instead of native key-event"
 msgstr ""
 
-#: scm/custom-vars.lisp:556
+#: scm/custom-vars.lisp:551
 msgid "Use numeric conversion"
 msgstr ""
 
-#: scm/custom-vars.lisp:562
+#: scm/custom-vars.lisp:557
 msgid "Friendly for vi user"
 msgstr ""
 
-#: scm/custom-vars.lisp:594
+#: scm/custom-vars.lisp:563
+msgid "Commit candidate by heading label keys"
+msgstr ""
+
+#: scm/custom-vars.lisp:570
+msgid "Dictionary file"
+msgstr ""
+
+#: scm/custom-vars.lisp:577
+msgid "Personal dictionary file"
+msgstr ""
+
+#: scm/custom-vars.lisp:584
+msgid "Personal dictionary file (dedicated to uim)"
+msgstr ""
+
+#: scm/custom-vars.lisp:616
 msgid "Always showing candidate window"
 msgstr ""
 
-#: scm/custom-vars.lisp:600
+#: scm/custom-vars.lisp:622
 msgid "Enable auto register mode"
 msgstr ""
 
-#: scm/custom-vars.lisp:606
+#: scm/custom-vars.lisp:628
 msgid "Enable pseudo mode cursor"
 msgstr ""
 
-#: scm/custom-vars.lisp:612
+#: scm/custom-vars.lisp:634
 msgid "Show candidate annotations"
 msgstr ""
 
-#: scm/custom-vars.lisp:619
+#: scm/custom-vars.lisp:641
 msgid "Mask preedit strings (For T-Code users)"
 msgstr ""
 
-#: scm/custom-vars.lisp:633
+#: scm/custom-vars.lisp:655
 msgid "Other input methods"
 msgstr ""
 
@@ -820,7 +841,7 @@ msgstr ""
 msgid "PinYin input method (Big5 version)"
 msgstr ""
 
-#: scm/skk.lisp:1582
+#: scm/skk.lisp:1608
 msgid "Uim's SKK like input method"
 msgstr ""
 
