@@ -456,6 +456,8 @@ focus_in(GtkIMContext *ic)
 
   check_helper_connection();
 
+  uim_helper_client_focus_in(uic->uc);
+
   uim_prop_list_update(uic->uc);
   uim_prop_label_update(uic->uc);
 
@@ -468,8 +470,6 @@ focus_in(GtkIMContext *ic)
   if (uic->cwin && uic->cwin_is_active) {
     gtk_widget_show(GTK_WIDGET(uic->cwin));
   }
-
-  uim_helper_client_focus_in(uic->uc);
 }
 
 static void
