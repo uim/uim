@@ -127,13 +127,13 @@
 (define-custom 'skk-show-annotation? #t
   '(skk advanced)
   '(boolean)
-  (_ "Show annotation in candidate window")
+  (_ "Show annotation of candidate word")
   (_ "long description will be here."))
 
 (define-custom 'skk-show-annotation-in-preedit? #f
   '(skk advanced)
   '(boolean)
-  (_ "Show annotation in preedit area")
+  (_ "Show annotation also in preedit area")
   (_ "long description will be here."))
 
 (custom-add-hook 'skk-show-annotation-in-preedit?
