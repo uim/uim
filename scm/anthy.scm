@@ -492,24 +492,53 @@
 		     (actions-new anthy-kana-input-method-actions))
     (context-list-replace-widgets! 'anthy anthy-widgets)))
 
-;; TODO: accept only for current state
-(define anthy-action-map-ruleset
-  (append
-   '(
-     (((mod_Control lkey_j))   (action_anthy_on))
-     (((mod_Control lkey_J))   (action_anthy_on))
-     (((mod_Shift lkey_space)) (action_anthy_on))  ;; generic
-     ((lkey_Zenkaku_Hankaku)   (action_anthy_on))  ;; generic
+(define anthy-direct-state-action-map-ruleset
+  '((((mod_Control lkey_j))   (action_anthy_on))
+    (((mod_Control lkey_J))   (action_anthy_on))
+    (((mod_Shift lkey_space)) (action_anthy_on))  ;; generic
+    ((lkey_Zenkaku_Hankaku)   (action_anthy_on))  ;; generic
+    ))
+
+(define anthy-wide-latin-state-action-map-ruleset
+  '((((mod_Control lkey_j))   (action_anthy_on))
+    (((mod_Control lkey_J))   (action_anthy_on))
+    (((mod_Shift lkey_space)) (action_anthy_on))  ;; generic
+    ((lkey_Zenkaku_Hankaku)   (action_anthy_on))  ;; generic
+    ))
+
+(define anthy-input-state-no-preedit-action-map-ruleset
+  '(
      ;;((lkey_q)                 (action_anthy_toggle_kana))
      ;;((lkey_Q)                 (action_anthy_toggle_kana))
-     ((lkey_space)             (action_anthy_begin_conv))  ;; generic
+    ;;(()                       (action_anthy_hiragana))
+    ;;(()                       (action_anthy_katakana))
+    ;;(((mod_Control lkey_q))   (action_anthy_hankana))
+    ;;(((mod_Control lkey_Q))   (action_anthy_hankana))
+    ;;((lkey_l)                 (action_anthy_direct))
+    ;;((lkey_L)                 (action_anthy_direct))
+    ;;((mod_Shift lkey_l)       (action_anthy_zenkaku))
+    ;;((mod_Shift lkey_L)       (action_anthy_zenkaku))
+    ;;(()                       (action_anthy_roma))
+    ;;(()                       (action_anthy_kana))
+    ;;(()                       (action_anthy_azik))
+    ;;(()                       (action_anthy_nicola))
+    ))
+
+(define anthy-input-state-with-preedit-action-map-ruleset
+  '(
+    ;;((lkey_q)                 (action_anthy_toggle_kana))
+    ;;((lkey_Q)                 (action_anthy_toggle_kana))
+    ((lkey_space)             (action_anthy_begin_conv))  ;; generic
+    (((mod_Control lkey_k))   (action_anthy_kill))  ;; generic
+    (((mod_Control lkey_K))   (action_anthy_kill))  ;; generic
+    (((mod_Control lkey_u))   (action_anthy_kill_backward))  ;; generic
+    (((mod_Control lkey_U))   (action_anthy_kill_backward))  ;; generic
      ((lkey_Delete)            (action_anthy_delete))  ;; generic
      (((mod_Control lkey_d))   (action_anthy_delete))  ;; generic
      (((mod_Control lkey_D))   (action_anthy_delete))  ;; generic
-     (((mod_Control lkey_k))   (action_anthy_kill))  ;; generic
-     (((mod_Control lkey_K))   (action_anthy_kill))  ;; generic
-     (((mod_Control lkey_u))   (action_anthy_kill_backward))  ;; generic
-     (((mod_Control lkey_U))   (action_anthy_kill_backward))  ;; generic
+     (((mod_Control lkey_h))   (action_anthy_backspace))  ;; generic
+     (((mod_Control lkey_H))   (action_anthy_backspace))  ;; generic
+     ((lkey_BackSpace)         (action_anthy_backspace))  ;; generic
      ((lkey_Left)              (action_anthy_go_left))  ;; generic
      (((mod_Control lkey_b))   (action_anthy_go_left))  ;; generic
      (((mod_Control lkey_B))   (action_anthy_go_left))  ;; generic
@@ -523,13 +552,29 @@
      ((lkey_F8)                (action_anthy_commit_as_halfkana))
      ((lkey_F9)                (action_anthy_commit_as_half_alnum))
      ((lkey_F10)               (action_anthy_commit_as_full_alnum))
-     ((lkey_Page_Up)           (action_anthy_prev_page))  ;; generic
-     ((lkey_Page_Down)         (action_anthy_next_page))  ;; generic
-     ;;(((mod_Control lkey_j))   (action_anthy_commit))  ;; generic
-     ;;(((mod_Control lkey_J))   (action_anthy_commit))  ;; generic
+     (((mod_Control lkey_j))   (action_anthy_commit))  ;; generic
+     (((mod_Control lkey_J))   (action_anthy_commit))  ;; generic
      (((mod_Control lkey_m))   (action_anthy_commit))  ;; generic-return
      (((mod_Control lkey_M))   (action_anthy_commit))  ;; generic-return
      ((lkey_Return)            (action_anthy_commit))  ;; generic-return
+     (((mod_Control lkey_a))   (action_anthy_beginning_of_preedit))  ;; generic
+     (((mod_Control lkey_A))   (action_anthy_beginning_of_preedit))  ;; generic
+     ((lkey_Home)              (action_anthy_beginning_of_preedit))  ;; generic
+     (((mod_Control lkey_e))   (action_anthy_end_of_preedit))  ;; generic
+     (((mod_Control lkey_E))   (action_anthy_end_of_preedit))  ;; generic
+     ((lkey_End)               (action_anthy_end_of_preedit))  ;; generic
+     ((lkey_Escape)            (action_anthy_cancel_conv))  ;; generic
+     (((mod_Control lkey_g))   (action_anthy_cancel_conv))  ;; generic
+     (((mod_Control lkey_G))   (action_anthy_cancel_conv))  ;; generic
+    ))
+
+(define anthy-converting-state-action-map-ruleset
+  (append
+   '(
+     ;;((lkey_q)                 (action_anthy_toggle_kana))
+     ;;((lkey_Q)                 (action_anthy_toggle_kana))
+     ((lkey_Page_Up)           (action_anthy_prev_page))  ;; generic
+     ((lkey_Page_Down)         (action_anthy_next_page))  ;; generic
      (((mod_Control lkey_o))   (action_anthy_extend_segment))
      (((mod_Control lkey_O))   (action_anthy_extend_segment))
      ((mod_Shift lkey_Right)   (action_anthy_extend_segment))
@@ -538,47 +583,64 @@
      ((mod_Shift lkey_Left)    (action_anthy_shrink_segment))
      (((mod_Control lkey_f))   (action_anthy_next_segment))
      (((mod_Control lkey_F))   (action_anthy_next_segment))
-     ((mod_Shift lkey_Right)   (action_anthy_next_segment))
+     ((lkey_Right)             (action_anthy_next_segment))
      (((mod_Control lkey_b))   (action_anthy_prev_segment))
      (((mod_Control lkey_B))   (action_anthy_prev_segment))
-     ((mod_Shift lkey_Left)    (action_anthy_prev_segment))
-     (((mod_Control lkey_a))   (action_anthy_beginning_of_preedit))  ;; generic
-     (((mod_Control lkey_A))   (action_anthy_beginning_of_preedit))  ;; generic
-     ((lkey_Home)              (action_anthy_beginning_of_preedit))  ;; generic
-     (((mod_Control lkey_e))   (action_anthy_end_of_preedit))  ;; generic
-     (((mod_Control lkey_E))   (action_anthy_end_of_preedit))  ;; generic
-     ((lkey_End)               (action_anthy_end_of_preedit))  ;; generic
-     (((mod_Control lkey_h))   (action_anthy_backspace))  ;; generic
-     (((mod_Control lkey_H))   (action_anthy_backspace))  ;; generic
-     ((lkey_BackSpace)         (action_anthy_backspace))  ;; generic
-     ;;((lkey_space)             (action_anthy_next_candidate))  ;; generic
+     ((lkey_Left)              (action_anthy_prev_segment))
+     ((lkey_space)             (action_anthy_next_candidate))  ;; generic
      ((lkey_Down)              (action_anthy_next_candidate))  ;; generic
      (((mod_Control lkey_n))   (action_anthy_next_candidate))  ;; generic
      (((mod_Control lkey_N))   (action_anthy_next_candidate))  ;; generic
      ((lkey_Up)                (action_anthy_prev_candidate))  ;; generic
      (((mod_Control lkey_p))   (action_anthy_prev_candidate))  ;; generic
      (((mod_Control lkey_P))   (action_anthy_prev_candidate))  ;; generic
+
+     ;;((lkey_Left)              (action_anthy_go_left))  ;; generic
+     ;;(((mod_Control lkey_b))   (action_anthy_go_left))  ;; generic
+     ;;(((mod_Control lkey_B))   (action_anthy_go_left))  ;; generic
+     ;;((lkey_Right)             (action_anthy_go_right))  ;; generic
+     ;;(((mod_Control lkey_f))   (action_anthy_go_right))  ;; generic
+     ;;(((mod_Control lkey_F))   (action_anthy_go_right))  ;; generic
+
+     ;;(((mod_Shift lkey_q))     (action_anthy_commit_as_opposite_kana))
+     ;;(((mod_Shift lkey_Q))     (action_anthy_commit_as_opposite_kana))
+     ((lkey_F6)                (action_anthy_commit_as_hiragana))
+     ((lkey_F7)                (action_anthy_commit_as_katakana))
+     ((lkey_F8)                (action_anthy_commit_as_halfkana))
+     ((lkey_F9)                (action_anthy_commit_as_half_alnum))
+     ((lkey_F10)               (action_anthy_commit_as_full_alnum))
+     (((mod_Control lkey_j))   (action_anthy_commit))  ;; generic
+     (((mod_Control lkey_J))   (action_anthy_commit))  ;; generic
+     (((mod_Control lkey_m))   (action_anthy_commit))  ;; generic-return
+     (((mod_Control lkey_M))   (action_anthy_commit))  ;; generic-return
+     ((lkey_Return)            (action_anthy_commit))  ;; generic-return
+     (((mod_Control lkey_a))   (action_anthy_beginning_of_preedit))  ;; generic
+     (((mod_Control lkey_A))   (action_anthy_beginning_of_preedit))  ;; generic
+     ((lkey_Home)              (action_anthy_beginning_of_preedit))  ;; generic
+     (((mod_Control lkey_e))   (action_anthy_end_of_preedit))  ;; generic
+     (((mod_Control lkey_E))   (action_anthy_end_of_preedit))  ;; generic
+     ((lkey_End)               (action_anthy_end_of_preedit))  ;; generic
      ((lkey_Escape)            (action_anthy_cancel_conv))  ;; generic
      (((mod_Control lkey_g))   (action_anthy_cancel_conv))  ;; generic
      (((mod_Control lkey_G))   (action_anthy_cancel_conv))  ;; generic
-     ;;(()                       (action_anthy_hiragana))
-     ;;(()                       (action_anthy_katakana))
-     ;;(((mod_Control lkey_q))   (action_anthy_hankana))
-     ;;(((mod_Control lkey_Q))   (action_anthy_hankana))
-     ;;((lkey_l)                 (action_anthy_direct))
-     ;;((lkey_L)                 (action_anthy_direct))
-     ;;((mod_Shift lkey_l)       (action_anthy_zenkaku))
-     ;;((mod_Shift lkey_L)       (action_anthy_zenkaku))
-     ;;(()                       (action_anthy_roma))
-     ;;(()                       (action_anthy_kana))
-     ;;(()                       (action_anthy_azik))
-     ;;(()                       (action_anthy_nicola))
      )
    anthy-candidate-action-map-ruleset   
    ))
 
-(define anthy-action-map-ruletree
-  (evmap-parse-ruleset anthy-action-map-ruleset))
+(define anthy-direct-state-action-map-ruletree
+  (evmap-parse-ruleset anthy-direct-state-action-map-ruleset))
+
+(define anthy-wide-latin-state-action-map-ruletree
+  (evmap-parse-ruleset anthy-wide-latin-state-action-map-ruleset))
+
+(define anthy-input-state-no-preedit-action-map-ruletree
+  (evmap-parse-ruleset anthy-input-state-no-preedit-action-map-ruleset))
+
+(define anthy-input-state-with-preedit-action-map-ruletree
+  (evmap-parse-ruleset anthy-input-state-with-preedit-action-map-ruleset))
+
+(define anthy-converting-state-action-map-ruletree
+  (evmap-parse-ruleset anthy-converting-state-action-map-ruleset))
 
 (define evmap-context-list-preedit-string
   (lambda (emc-list)
@@ -694,6 +756,22 @@
 		  (cons anthy-type-hankana   ja-nicola-halfkana-ruletree))
 		 alphanumeric-alist))))))))
 
+(define anthy-actmap-ruletree
+  (lambda (ac)
+    (cond
+     ((anthy-direct-mode? ac)
+      anthy-direct-state-action-map-ruletree)
+
+     ((anthy-wide-latin-mode? ac)
+      anthy-wide-latin-state-action-map-ruletree)
+
+     ((anthy-input-state? ac)
+      ;;anthy-input-state-no-preedit-action-map-ruletree
+      anthy-input-state-with-preedit-action-map-ruletree)
+
+     ((anthy-converting-state? ac)
+      anthy-converting-state-action-map-ruletree))))
+
 (define anthy-context-rec-spec
   (append
    context-rec-spec
@@ -728,8 +806,6 @@
      (anthy-context-set-preconv-ustr! ac (ustr-new))
      (anthy-context-set-segments! ac (ustr-new))
      (anthy-context-set-keytrans-emc! ac (key-event-translator-new))
-     (anthy-context-set-actmap-emc! ac (evmap-context-new
-					anthy-action-map-ruletree))
 
      ;; 2004-08-26 Takuro Ashie <ashie@homa.ne.jp>
      ;;   * I think load-kana-table should be marked as depracated.
@@ -746,10 +822,12 @@
 
 (define anthy-switch-ruletree!
   (lambda (ac input-rule kana-mode)
-    (let ((ruletree (anthy-ruletree input-rule kana-mode)))
+    (let ((ruletree (anthy-ruletree input-rule kana-mode))
+	  (actmap-ruletree (anthy-actmap-ruletree ac)))
       (anthy-context-set-input-rule! ac input-rule)
       (anthy-context-set-kana-mode! ac kana-mode)
-      (anthy-context-set-ruletree! ac ruletree))))
+      (anthy-context-set-ruletree! ac ruletree)
+      (anthy-context-set-actmap-emc! ac (evmap-context-new actmap-ruletree)))))
 
 (define anthy-switch-kana-mode!
   (lambda (ac kana-mode)
@@ -782,7 +860,11 @@
 
 (define anthy-input!
   (lambda (ac ev)
-    (let ((actmap-emc (anthy-context-actmap-emc ac)))
+    (let ((actmap-emc (if (and (anthy-input-state? ac)
+			       (not (anthy-has-preedit? ac)))
+			  (evmap-context-new
+			   anthy-input-state-no-preedit-action-map-ruletree)
+			  (anthy-context-actmap-emc ac))))
       (if (evmap-context-input! actmap-emc ev)
 	  (if (evmap-context-complete? actmap-emc)
 	      (begin
@@ -824,8 +906,9 @@
 	(if (and (eq? (event-type ev)
 		      'key)
 		 (char-printable? (key-event-char ev))
-		 (modifier-match? mod_ignore_Shift
-				  (key-event-modifier ev)))
+;;		 (modifier-match? mod_ignore_Shift
+;;				  (key-event-modifier ev))
+		 )
 	    (begin
 	      (anthy-cancel-conv ac)
 	      (anthy-input! ac ev))))
@@ -851,6 +934,8 @@
 	(im-deactivate-candidate-selector ac))
     (anthy-context-set-candidate-window! ac #f)
     (anthy-context-set-candidate-op-count! ac 0)
+    (anthy-context-set-actmap-emc! ac (evmap-context-new
+				       (anthy-actmap-ruletree ac)))
     (anthy-update-preedit ac)  ;; TODO: remove this
     ))
 
@@ -889,7 +974,10 @@
 	    (let ((nr-segments (anthy-lib-get-nr-segments ac-id)))
 	      (ustr-set-latter-seq! (anthy-context-segments ac)
 				    (make-list nr-segments 0))
-	      (anthy-context-set-converting! ac #t)))))))
+	      (anthy-context-set-converting! ac #t)
+	      (anthy-context-set-actmap-emc! ac (evmap-context-new
+						 (anthy-actmap-ruletree ac)))
+	      ))))))
 
 (define anthy-cancel-conv
   (lambda (ac)
@@ -904,6 +992,8 @@
       (anthy-context-set-converting! ac #f)
       (ustr-set-cursor-pos! preconv-ustr new-pos)
       (ustr-clear! segments)
+      (anthy-context-set-actmap-emc! ac (evmap-context-new
+					 (anthy-actmap-ruletree ac)))
       (anthy-update-preedit ac)  ;; TODO: remove this
       )))
 
