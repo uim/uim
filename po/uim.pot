@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-24 08:56+0900\n"
+"POT-Creation-Date: 2005-02-24 19:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -339,22 +339,22 @@ msgid ""
 "Save?"
 msgstr ""
 
-#: helper/pref-gtk.c:188
+#: helper/pref-gtk.c:190
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you realy quit this program?"
 msgstr ""
 
-#: helper/pref-gtk.c:227 qt/pref-qt.cpp:137
+#: helper/pref-gtk.c:229 qt/pref-qt.cpp:137
 msgid "Group"
 msgstr ""
 
 #. Defaults button
-#: helper/pref-gtk.c:317
+#: helper/pref-gtk.c:319
 msgid "_Defaults"
 msgstr ""
 
-#: helper/pref-gtk.c:479
+#: helper/pref-gtk.c:481
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -415,28 +415,28 @@ msgstr ""
 msgid "Grab..."
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:63 qt/toolbar-common-quimhelpertoolbar.cpp:55
-msgid "Execute uim's input method switcher"
+#: helper/toolbar-common-gtk.c:63
+msgid "Switch input method"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:69 qt/toolbar-common-quimhelpertoolbar.cpp:56
-msgid "Execute uim's preference tool"
+#: helper/toolbar-common-gtk.c:69
+msgid "Preference"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:75 qt/toolbar-common-quimhelpertoolbar.cpp:57
-msgid "Execute uim's Japanese dictionary tool"
+#: helper/toolbar-common-gtk.c:75
+msgid "Japanese dictionary editor"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:81 qt/toolbar-common-quimhelpertoolbar.cpp:58
-msgid "Execute uim's input pad tool"
+#: helper/toolbar-common-gtk.c:81
+msgid "Input pad"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:87 qt/toolbar-common-quimhelpertoolbar.cpp:59
-msgid "Execute uim's handwriting input pad tool"
+#: helper/toolbar-common-gtk.c:87
+msgid "Handwriting input pad"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:93 qt/toolbar-common-quimhelpertoolbar.cpp:60
-msgid "Execute uim's help tool"
+#: helper/toolbar-common-gtk.c:93
+msgid "Help"
 msgstr ""
 
 #: helper/toolbar-common-gtk.c:593 qt/toolbar-common-quimhelpertoolbar.cpp:61
@@ -502,6 +502,30 @@ msgstr ""
 
 #: qt/switcher-qt.cpp:121 qt/pref-qt.cpp:165 qt/pref-qt.cpp:237
 msgid "Cancel"
+msgstr ""
+
+#: qt/toolbar-common-quimhelpertoolbar.cpp:55
+msgid "Execute uim's input method switcher"
+msgstr ""
+
+#: qt/toolbar-common-quimhelpertoolbar.cpp:56
+msgid "Execute uim's preference tool"
+msgstr ""
+
+#: qt/toolbar-common-quimhelpertoolbar.cpp:57
+msgid "Execute uim's Japanese dictionary tool"
+msgstr ""
+
+#: qt/toolbar-common-quimhelpertoolbar.cpp:58
+msgid "Execute uim's input pad tool"
+msgstr ""
+
+#: qt/toolbar-common-quimhelpertoolbar.cpp:59
+msgid "Execute uim's handwriting input pad tool"
+msgstr ""
+
+#: qt/toolbar-common-quimhelpertoolbar.cpp:60
+msgid "Execute uim's help tool"
 msgstr ""
 
 #: qt/toolbar-common-quimhelpertoolbar.cpp:99 scm/action.lisp:531

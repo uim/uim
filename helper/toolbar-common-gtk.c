@@ -60,41 +60,41 @@ static struct _CommandEntry {
   const gchar *command;
   const gchar *pref_button_show_symbol;
 } command_entry[] = {
-  {N_("Execute uim's input method switcher"),
+  {N_("Switch input method"),
    NULL,
    "switcher-icon",
    "uim-im-switcher-gtk &",
    "toolbar-show-switcher-button?"},
 
-  {N_("Execute uim's preference tool"),
+  {N_("Preference"),
    NULL,
    GTK_STOCK_PREFERENCES,
    "uim-pref-gtk &",
    "toolbar-show-pref-button?"},
 
-  {N_("Execute uim's Japanese dictionary tool"),
+  {N_("Japanese dictionary editor"),
    "Dic",
    NULL,
    "uim-dict-gtk &",
    "toolbar-show-dict-button?"},
 
-  {N_("Execute uim's input pad tool"),
+  {N_("Input pad"),
    "Pad",
    NULL,
    "uim-input-pad-ja &",
    "toolbar-show-input-pad-button?"},
 
-  {N_("Execute uim's handwriting input pad tool"),
+  {N_("Handwriting input pad"),
    "Hand",
    NULL,
    "uim-tomoe-gtk &",
    "toolbar-show-handwriting-input-pad-button?"},
 
-  {N_("Execute uim's help tool"),
+  {N_("Help"),
    NULL,
    GTK_STOCK_HELP,
    "uim-help &",
-   "toolbar-show-help-button?"},
+   "toolbar-show-help-button?"}
 };
 static gint command_entry_len = sizeof(command_entry) / sizeof(struct _CommandEntry);
 
