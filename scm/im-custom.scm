@@ -85,17 +85,28 @@
                      (_ "Special operation")
                      (_ "long description will be here."))
 
-
-;; 
-;; default-im-name
-;;
+;; subgroup
 (define-custom-group 'default-im-name
 		     (_ "Default input method")
 		     (_ "long description will be here."))
 
+;; subgroup
+(define-custom-group 'im-deployment
+		     (_ "Input method deployment")
+		     (_ "long description will be here."))
+
+;; subgroup
+(define-custom-group 'visual-preference
+		     (_ "Visual preference")
+		     (_ "long description will be here."))
+
+;; 
+;; default-im-name
+;;
+
 ;; warning: must be defined before custom-preserved-default-im-name
 (define-custom 'custom-activate-default-im-name? #f
-  '(global default-im-name)
+  '(global im-deployment)
   '(boolean)
   (_ "Specify default IM")
   (_ "long description will be here."))
@@ -103,7 +114,7 @@
 (define-custom 'custom-preserved-default-im-name
   (and (not (null? im-list))
        (im-name (find-default-im #f)))
-  '(global default-im-name)
+  '(global im-deployment)
   (cons
    'choice
    (custom-im-list-as-choice-rec (reverse im-list)))
@@ -194,7 +205,7 @@
 				     (alist-delete 'direct im-list eq?))))))
 
 (define-custom 'enabled-im-list '(direct)
-  '(global)
+  '(global im-deployment)
   (cons
    'ordered-list
    (if custom-full-featured?
@@ -256,7 +267,7 @@
 (define-key switch-im-key? '())
 
 (define-custom 'uim-color 'uim-color-uim
-  '(global)
+  '(global visual-preference)
   (list 'choice
 	(list 'uim-color-uim (_ "uim") (_ "uim native"))
 	(list 'uim-color-atok (_ "ATOK like") (_ "Similar to ATOK")))
@@ -265,7 +276,7 @@
 
 ;; referred by some bridges
 (define-custom 'candidate-window-position 'caret
-  '(global)
+  '(global visual-preference)
   (list 'choice
 	(list 'caret
 	      (_ "Adjacent to caret")
