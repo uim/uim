@@ -64,7 +64,7 @@ void im_module_init(GTypeModule *type_module);
 #define DEFAULT_SEPARATOR_STR "|"
 
 static int im_uim_fd = -1;
-static int read_tag;
+static unsigned int read_tag;
 static guint snooper_id;
 
 struct preedit_segment {
@@ -110,7 +110,8 @@ static void im_uim_init(IMUIMContext *uic);
 static void show_preedit(GtkIMContext *ic, GtkWidget *preedit_label);
 
 static void im_uim_helper_disconnect_cb(void);
-static void helper_read_cb(gpointer p, int fd, GdkInputCondition c);
+/* #ifndef GDK_DISABLE_DEPRECATED */
+static gboolean helper_read_cb(GIOChannel *channel, GIOCondition c, gpointer p);
 static GdkFilterReturn
 toplevel_window_candidate_cb(GdkXEvent *xevent, GdkEvent *ev, gpointer data);
 
@@ -429,8 +430,11 @@ check_helper_connection()
   if (im_uim_fd < 0) {
     im_uim_fd = uim_helper_init_client_fd(im_uim_helper_disconnect_cb);
     if (im_uim_fd >= 0) {
-      read_tag = gdk_input_add(im_uim_fd, (GdkInputCondition)GDK_INPUT_READ,
-			       helper_read_cb, 0);
+      GIOChannel *channel;
+      channel = g_io_channel_unix_new(im_uim_fd);
+      read_tag = g_io_add_watch(channel, G_IO_IN | G_IO_HUP | G_IO_ERR,
+				helper_read_cb, NULL);
+      g_io_channel_unref(channel);
     }
   }
 }
@@ -948,22 +952,24 @@ im_uim_parse_helper_str(const char *str)
   }
 }
 
-static void
-helper_read_cb(gpointer p, int fd, GdkInputCondition c)
+static gboolean
+helper_read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
 {
   char *tmp;
+  int fd = g_io_channel_unix_get_fd(channel);
   uim_helper_read_proc(fd);
   while ((tmp = uim_helper_get_message())) {
     im_uim_parse_helper_str(tmp);
     free(tmp);
   }
+  return TRUE;
 }
 
 static void
 im_uim_helper_disconnect_cb(void)
 {
   im_uim_fd = -1;
-  gdk_input_remove(read_tag);
+  g_source_remove(read_tag);
 }
 
 /* XXX:This is not a recommended way!! */
