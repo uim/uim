@@ -171,8 +171,9 @@ uim_helper_read_proc(int fd)
     if (rc == 0 || (rc < 0 && errno != EAGAIN)) {
       uim_helper_close_client_fd(fd);
       return;
+    } else if (rc > 0) {
+      uim_read_buf = uim_helper_buffer_append(uim_read_buf, uim_recv_buf, rc);
     }
-    uim_read_buf = uim_helper_buffer_append(uim_read_buf, uim_recv_buf, rc);
   }
 }
 
