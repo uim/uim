@@ -130,6 +130,7 @@ plugin_load(uim_lisp _name)
   }
 
   if(plugin_lib_filename == NULL) {
+    free(plugin_scm_filename);
     free(plugin_name);
     return uim_scm_f();
   }
