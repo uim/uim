@@ -294,7 +294,7 @@
 
 (define duplicated-im?
   (lambda (name)
-    (let loop ((im-list deplicated-im-list))
+    (let loop ((im-list duplicated-im-list))
       (if (string=? name (car im-list))
 	  #t
 	  (if (null? (cdr im-list))
