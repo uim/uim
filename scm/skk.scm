@@ -48,7 +48,8 @@
 
 ;;; user configs
 
-(define skk-dic-file-name "/usr/share/skk/SKK-JISYO.L")
+(define skk-dic-file-name
+  (string-append (sys-datadir) "/skk/SKK-JISYO.L"))
 (define skk-personal-dic-filename
   (string-append (getenv "HOME") "/.skk-jisyo"))
 (define skk-uim-personal-dic-filename

@@ -362,7 +362,8 @@
 		     skk-im-canonical-name
 		     skk-im-desc)
 
-(define-custom 'skk-dic-file-name "/usr/share/skk/SKK-JISYO.L"
+(define-custom 'skk-dic-file-name (string-append (sys-datadir)
+						 "/skk/SKK-JISYO.L")
   '(skk)
   '(pathname)
   (_ "Dictionary file")
