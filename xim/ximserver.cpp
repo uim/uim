@@ -159,6 +159,7 @@ void XimServer::customContext(const char *custom, const char *val) {
 #if 1
     // Updated ximserver's global im with customized one.
     // This is temporal hack.
+    //fprintf(stderr, "custom %s, val %s\n", custom, val);
     if (!strcmp(custom, "custom-activate-default-im-name?")) {
 	if (!strcmp(val, "#t"))
 	    mUsePreservedDefaultIM = true;
@@ -551,13 +552,17 @@ void InputContext::candidate_deactivate_cb(void *ptr)
 void InputContext::update_prop_list_cb(void *ptr, const char *str)
 {
     InputContext *ic = (InputContext *)ptr;
-    ic->update_prop_list(str);
+    InputContext *focusedContext = InputContext::focusedContext();
+    if (ic == focusedContext)
+      ic->update_prop_list(str);
 }
 
 void InputContext::update_prop_label_cb(void *ptr, const char *str)
 {
     InputContext *ic = (InputContext *)ptr;
-    ic->update_prop_label(str);
+    InputContext *focusedContext = InputContext::focusedContext();
+    if (ic == focusedContext)
+      ic->update_prop_label(str);
 }
 
 void InputContext::clear_preedit()

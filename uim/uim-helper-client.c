@@ -90,16 +90,6 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
     return -1;
   }
   
-  if ((flag = fcntl(fd, F_GETFL)) == -1) {
-    close(fd);
-    return -1;
-  }
-
-  flag |= O_NONBLOCK;
-  if (fcntl(fd, F_SETFL, flag) == -1) {
-    close(fd);
-    return -1;
-  }
 #ifdef LOCAL_CREDS /* for NetBSD */
   /* Set the socket to receive credentials on the next message */
   {
@@ -131,6 +121,17 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   }
 
   if (uim_helper_check_connection_fd(fd)) {
+    close(fd);
+    return -1;
+  }
+
+  if ((flag = fcntl(fd, F_GETFL)) == -1) {
+    close(fd);
+    return -1;
+  }
+
+  flag |= O_NONBLOCK;
+  if (fcntl(fd, F_SETFL, flag) == -1) {
     close(fd);
     return -1;
   }

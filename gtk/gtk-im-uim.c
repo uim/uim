@@ -693,7 +693,13 @@ im_uim_class_finalize(GtkIMContextClass *class)
 static void
 update_prop_list_cb(void *ptr, const char *str)
 {
-  GString *tmp = g_string_new("");
+  IMUIMContext *uic = (IMUIMContext *)ptr;
+  GString *tmp;
+
+  if (uic != focused_context)
+    return;
+
+  tmp = g_string_new("");
   g_string_printf(tmp, "prop_list_update\ncharset=UTF-8\n%s", str);
 
   uim_helper_send_message(im_uim_fd, tmp->str);
@@ -703,7 +709,13 @@ update_prop_list_cb(void *ptr, const char *str)
 static void
 update_prop_label_cb(void *ptr, const char *str)
 {
-  GString *tmp = g_string_new("");
+  IMUIMContext *uic = (IMUIMContext *)ptr;
+  GString *tmp;
+
+  if (uic != focused_context)
+    return;
+
+  tmp = g_string_new("");
   g_string_printf(tmp, "prop_label_update\ncharset=UTF-8\n%s", str);
 
   uim_helper_send_message(im_uim_fd, tmp->str);
