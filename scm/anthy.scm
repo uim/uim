@@ -324,12 +324,15 @@
        (ja-raw-string-list-to-valid-roma
         (append left-str
                 (if (null? residual-kana)
-                    right-str
+		    (begin
+		      (if (null? right-str)
+			  (list pending)
+			  (append right-str (list pending))))
                     (begin
                       (rk-flush rkc)
                       (if (null? right-str)
                           (list pending)
-                          (append (list pending) right-str))))))
+			  (append right-str (list pending)))))))
        wide?))))
 
 (define anthy-init-handler

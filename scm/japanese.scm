@@ -678,8 +678,9 @@
                          (string=? "n" next-head))
                     "nn"
                     head-str)))
-            (if (null? next-str)
-                ja-default-small-tsu-roma
+            (if (or (null? next-str) (string=? next-str ""))
+                ;ja-default-small-tsu-roma
+                head-str
                 (if (ja-vowel? next-str)
                     ja-default-small-tsu-roma
                     (car (reverse (string-to-list next-str))))))
@@ -717,9 +718,9 @@
 ;; 
 (define ja-raw-string-list-to-valid-roma
   (lambda (raw-str-list)
-    (let* ((head-str (car raw-str-list))
+    (let ((head-str (car raw-str-list))
            (next-str (cadr raw-str-list)))
-      (if (null? next-str)
+      (if (or (null? next-str) (string=? next-str ""))
           (list (ja-raw-string-to-valid-roma head-str next-str))
           (cons (ja-raw-string-to-valid-roma head-str next-str)
                 (ja-raw-string-list-to-valid-roma (cdr raw-str-list)))))))
