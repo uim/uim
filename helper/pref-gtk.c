@@ -307,18 +307,20 @@ custom_check_button_toggled_cb(GtkToggleButton *button, gpointer user_data)
 static void
 update_custom_type_bool_cb(void *ptr, const char *custom_sym)
 {
-  struct uim_custom *custom;
+  struct uim_custom *custom = uim_custom_get(custom_sym);
   GtkWidget *check_button = GTK_WIDGET(ptr);
-  custom = g_object_get_data(G_OBJECT(check_button), OBJECT_DATA_UIM_CUSTOM);
   
   if (!custom || custom->type != UCustom_Bool)
     return;
+
+  g_object_set_data_full(G_OBJECT(check_button),
+			 OBJECT_DATA_UIM_CUSTOM, custom,
+			 (GDestroyNotify) uim_custom_free);
 
   gtk_widget_set_sensitive(check_button, custom->is_active);
 
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button),
 			       custom->value->as_bool);
-
 }
 
 static void
@@ -448,16 +450,16 @@ custom_entry_changed_cb(GtkEntry *entry, gpointer user_data)
 static void
 update_custom_type_string_cb(void *ptr, const char *custom_sym)
 {
- struct uim_custom *custom;
- GtkWidget *entry = GTK_WIDGET(ptr);
- custom = g_object_get_data(G_OBJECT(entry), OBJECT_DATA_UIM_CUSTOM);
-
+  struct uim_custom *custom = uim_custom_get(custom_sym);
+  GtkWidget *entry = GTK_WIDGET(ptr);
+  
   if (!custom || custom->type != UCustom_Str)
     return;
- 
+  
   gtk_widget_set_sensitive(entry, custom->is_active);
-
   gtk_entry_set_text(GTK_ENTRY(entry), custom->value->as_str);
+
+  uim_custom_free(custom);
 }
 
 static void
@@ -554,7 +556,7 @@ custom_combo_box_changed(GtkComboBox *combo_box, gpointer user_data)
   custom = g_object_get_data(G_OBJECT(combo_box), OBJECT_DATA_UIM_CUSTOM);
   g_return_if_fail(custom);
 
-  if (custom->type == UCustom_Choice) {
+  if (custom->type != UCustom_Choice) {
     gint i, num = gtk_combo_box_get_active(combo_box);
     struct uim_custom_choice *choice = NULL;
 
@@ -596,16 +598,41 @@ custom_combo_box_changed(GtkComboBox *combo_box, gpointer user_data)
 static void
 update_custom_type_choice_cb(void *ptr, const char *custom_sym)
 {
- struct uim_custom *custom;
- GtkWidget *combobox = GTK_WIDGET(ptr);
- custom = g_object_get_data(G_OBJECT(combobox), OBJECT_DATA_UIM_CUSTOM);
-
- g_print("update_custom_type_choice_cb called\n");
+  struct uim_custom *custom = uim_custom_get(custom_sym);
+  GtkWidget *combobox = GTK_WIDGET(ptr);
+  struct uim_custom_choice **item;
+  gint i = 0, default_index = 0;
+  gchar *default_symbol;
 
   if (!custom || custom->type != UCustom_Choice)
     return;
   
+  g_object_set_data_full(G_OBJECT(combobox),
+			 OBJECT_DATA_UIM_CUSTOM, custom,
+			 (GDestroyNotify) uim_custom_free);
   gtk_widget_set_sensitive(combobox, custom->is_active);
+
+  item = custom->range->as_choice.valid_items;
+
+  if(item == NULL || *item == NULL)
+    return;
+
+  g_signal_handlers_disconnect_by_func(G_OBJECT(combobox), (gpointer)custom_combo_box_changed, NULL);
+
+  gtk_cell_layout_clear(GTK_CELL_LAYOUT(combobox));
+  
+  default_symbol = custom->value->as_choice->symbol;
+  
+  while(*item) {
+    gtk_combo_box_append_text(GTK_COMBO_BOX(combobox), (*item)->label);
+    if(!strcmp(default_symbol, (*item)->symbol))
+      default_index = i;    
+    i++;
+    item++;
+  }
+  gtk_combo_box_set_active(GTK_COMBO_BOX(combobox), default_index);
+  g_signal_connect(G_OBJECT(combobox), "changed",
+		   G_CALLBACK(custom_combo_box_changed), NULL);
 }
 
 static void
@@ -1803,17 +1830,17 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 static void
 update_custom_type_key_cb(void *ptr, const char *custom_sym)
 {
-  struct uim_custom *custom;
+  struct uim_custom *custom = uim_custom_get(custom_sym);
   GtkWidget *entry = GTK_WIDGET(ptr);
-
-  custom = g_object_get_data(G_OBJECT(entry), OBJECT_DATA_UIM_CUSTOM);
 
   if (!custom || custom->type != UCustom_Key)
     return;
   
+  g_object_set_data_full(G_OBJECT(entry),
+			 OBJECT_DATA_UIM_CUSTOM, custom,
+			 (GDestroyNotify) uim_custom_free);
   gtk_widget_set_sensitive(entry, custom->is_active);
 }
-
 
 static void
 add_custom_type_key(GtkWidget *vbox, struct uim_custom *custom)
