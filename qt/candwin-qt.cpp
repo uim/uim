@@ -246,9 +246,9 @@ void CandidateWindow::deactivateCand()
 }
 void CandidateWindow::slotStdinActivated( int fd )
 {
-    char buf[ 1024 ];
+    char buf[ 4096 ];
     int n;
-    n = read( fd, buf, 1024 - 1 );
+    n = read( fd, buf, 4096 - 1 );
     if ( n == 0 )
     {
         close( fd );
