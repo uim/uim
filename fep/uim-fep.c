@@ -121,7 +121,6 @@ struct winsize *g_win;
 static uim_context s_context;
 /* ステータスラインの種類 */
 static int s_status_type = DEFAULT_STATUS;
-static int s_gnu_screen = FALSE;
 /* 疑似端末のmasterのファイル記述子 */
 static int s_master;
 int g_win_in = STDIN_FILENO;
@@ -206,6 +205,8 @@ int main(int argc, char **argv)
   int cursor_no_reverse = FALSE;
   int statusline_width = UNDEFINED;
   int on_the_spot = FALSE;
+  int gnu_screen = FALSE;
+  int no_report_cursor = FALSE;
   char *env_buf;
   struct attribute_tag attr_uim = {
     FALSE,     /* underline */
@@ -235,7 +236,7 @@ int main(int argc, char **argv)
   init_str();
   engine = get_default_im_name();
 
-  while ((op = getopt(argc, argv, "e:s:u:b:w:t:C:Sciovh")) != -1) {
+  while ((op = getopt(argc, argv, "e:s:u:b:w:t:C:ScioDvh")) != -1) {
     int i;
     switch (op) {
       case 'e':
@@ -265,7 +266,12 @@ int main(int argc, char **argv)
         break;
 
       case 'S':
-        s_gnu_screen = TRUE;
+        gnu_screen = TRUE;
+        no_report_cursor = TRUE;
+        break;
+
+      case 'D':
+        no_report_cursor = TRUE;
         break;
 
       case 'u':
@@ -338,7 +344,7 @@ opt_end:
     attr_uim.background = FALSE;
   }
 
-  if (s_gnu_screen) {
+  if (gnu_screen) {
     s_status_type = BACKTICK;
     s_master = PROC_FILENO;
     g_win_in = WIN_IN_FILENO;
@@ -395,7 +401,7 @@ opt_end:
   }
 
   g_win = get_winsize();
-  if (!s_gnu_screen) {
+  if (!gnu_screen) {
     save_iflag = s_save_tios.c_iflag;
     s_save_tios.c_iflag &= ~ISTRIP;
     child = forkpty(&s_master, NULL, &s_save_tios, g_win);
@@ -423,12 +429,12 @@ opt_end:
     init_sendsocket(sock_path);
   }
   init_agent(engine);
-  if (s_gnu_screen) {
+  if (gnu_screen) {
     uim_set_mode(s_context, 1);
   }
   init_callbacks(s_context, s_status_type, cursor_no_reverse, statusline_width);
-  init_draw(s_context, on_the_spot, s_status_type, s_gnu_screen, s_master, s_path_getmode);
-  init_escseq(use_civis, on_the_spot, s_status_type, s_gnu_screen, &attr_uim);
+  init_draw(on_the_spot, s_status_type, no_report_cursor, s_master, s_path_getmode);
+  init_escseq(use_civis, on_the_spot, s_status_type, no_report_cursor, &attr_uim);
   set_signal_handler();
 
   if (s_path_setmode[0] != '\0' && mkfifo(s_path_setmode, 0600) != -1) {
@@ -941,7 +947,8 @@ static void usage(void)
       "-c                                        reverse cursor\n"
       "-i                                        use cursor_invisible(civis)\n"
       "-o                                        on the spot\n"
-      "-S                                        GNU screen mode\n",
+      "-S                                        GNU screen mode\n"
+      "-D                                        for DOS prompt\n",
       getenv("SHELL") != NULL ? getenv("SHELL") : "/bin/sh",
       "-h                                        display this help\n"
       "-v                                        display version\n"

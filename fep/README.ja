@@ -156,6 +156,11 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのfepです。
         -sオプションにかかわらずモード表示には
         backtickが使われます。
 
+  o -D  uim-fepの起動に失敗して
+        Report Cursor Position is not available
+        Please try to use with -D option
+        と表示された場合は、起動時にこのオプションを指定してください。
+
   o -e command arg1 arg2 ...
     起動するコマンドを指定します。このオプション以降の引数は
     commandに渡されます。

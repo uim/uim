@@ -60,6 +60,7 @@ char *get_index_str(void);
 int get_index_col(void);
 struct preedit_tag *get_preedit(void);
 int get_mode(void);
+char *get_mode_str(void);
 void commit_cb(void *ptr, const char *commit_str);
 struct preedit_tag *create_preedit(void);
 void free_preedit(struct preedit_tag *p);

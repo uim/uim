@@ -58,6 +58,8 @@ static uim_context s_context;
 static int s_cursor_no_reverse;
 /* ステータスラインの幅 */
 static int s_statusline_width;
+/* ステータスラインの最大幅 */
+static int s_max_width;
 
 static char *s_commit_str;
 static char *s_statusline_str;
@@ -77,8 +79,6 @@ static void clear_cb(void *ptr);
 static void pushback_cb(void *ptr, int attr, const char *str);
 static void update_cb(void *ptr);
 static void mode_update_cb(void *ptr, int mode);
-static void property_update_cb(void *ptr, const char *str);
-static void property_list_update_cb(void *ptr, const char *str);
 static struct preedit_tag *dup_preedit(struct preedit_tag *p);
 static void make_page_strs(void);
 static int numwidth(int n);
@@ -127,6 +127,10 @@ void init_callbacks(uim_context context, int status_type, int cursor_no_reverse,
   s_context = context;
   s_cursor_no_reverse = cursor_no_reverse;
   s_statusline_width = statusline_width;
+  s_max_width = g_win->ws_col;
+  if (s_statusline_width != UNDEFINED && s_statusline_width <= s_max_width) {
+    s_max_width = s_statusline_width;
+  }
   s_commit_str = strdup("");
   s_candidate_str = strdup("");
   s_statusline_str = strdup("");
@@ -136,8 +140,6 @@ void init_callbacks(uim_context context, int status_type, int cursor_no_reverse,
   s_preedit = create_preedit();
   uim_set_preedit_cb(s_context, clear_cb, pushback_cb, update_cb);
   uim_set_mode_cb(s_context, mode_update_cb);
-  uim_set_prop_label_update_cb(s_context, property_update_cb);
-  uim_set_prop_list_update_cb(s_context, property_list_update_cb);
   if (status_type != NONE) {
     uim_set_candidate_selector_cb(s_context, activate_cb, select_cb, shift_page_cb, deactivate_cb);
   }
@@ -279,6 +281,13 @@ struct preedit_tag *get_preedit(void)
 int get_mode(void)
 {
   return s_mode;
+}
+
+char *get_mode_str(void)
+{
+  char *mode_str = strdup(uim_get_mode_name(s_context, s_mode));
+  strhead(mode_str, s_max_width);
+  return mode_str;
 }
 
 /*
@@ -434,15 +443,6 @@ static void mode_update_cb(void *ptr, int mode)
   s_mode = mode;
 }
 
-static void property_update_cb(void *ptr, const char *str)
-{
-  debug2(("prop(\"%s\")", str));
-}
-static void property_list_update_cb(void *ptr, const char *str)
-{
-  debug2(("proplist(\"%s\")", str));
-}
-
 /*
  * 新しいプリエディットを作り，ポインタを返す
  */
@@ -492,9 +492,9 @@ static struct preedit_tag *dup_preedit(struct preedit_tag *p)
 
 /*
  * s_candidate.page_strs = ページ文字列の配列
- * 文字列の幅がmax_widthを越えたときは、はみ出た候補を次のページに移す。
+ * 文字列の幅がs_max_widthを越えたときは、はみ出た候補を次のページに移す。
  * 1つしか候補がなくてはみ出たときは、移さない。
- * max_widthは端末の幅かオプションで指定された値
+ * s_max_widthは端末の幅かオプションで指定された値
  * s_candidate.page2index = ページの最初の候補のindex
  * s_candidate.cand_col = 候補の位置
  * s_candidate.nr_pages = ページの総数
@@ -509,12 +509,6 @@ static void make_page_strs(void)
   int index_in_page = 0;
 
   int index;
-
-  int max_width = g_win->ws_col;
-
-  if (s_statusline_width != UNDEFINED && s_statusline_width <= max_width) {
-    max_width = s_statusline_width;
-  }
 
   assert(s_candidate.nr != UNDEFINED);
   assert(s_candidate.limit != UNDEFINED);
@@ -544,28 +538,48 @@ static void make_page_strs(void)
       s_candidate.index_col = realloc(s_candidate.index_col, (s_candidate.nr_pages + 1) * sizeof(int));
     }
 
-    if (page_width + cand_width + index_width > max_width && index_in_page != 0) {
+    if (page_width + cand_width + index_width > s_max_width && index_in_page != 0) {
       /* はみ出たので次のページに移す */
       index--;
       index_width = strlen("[/]") + numwidth(index + 1) + numwidth(s_candidate.nr);
       next = TRUE;
     } else {
-      if (cand_width + index_width > max_width && index_in_page == 0) {
-        assert(page_width == 0);
-        /* はみ出たが、次に移さない */      /* スペースの幅の1 */
-        cand_width = max_width - index_width - strlen(" ");
-        cand_width = strhead(cand_str, cand_width);
-        if (cand_label_width > cand_width) {
-          cand_label_width = cand_width;
-        }
-        cand_width++;
-        cand_byte = strlen(cand_str);
-        cand_str[cand_byte++] = ' ';
-        cand_str[cand_byte] = '\0';
-        next = TRUE;
-      }
-                                                                        /* ':' */
+
       s_candidate.cand_col[index] = page_width + cand_label_width + strlen(":");
+
+      if (cand_width + index_width > s_max_width && index_in_page == 0) {
+        /* はみ出たが、次に移さない */
+        assert(page_width == 0);
+        next = TRUE;
+                                                  /* 全角1文字の幅 */
+        if (s_max_width >= cand_label_width + strlen(":") + 2 + strlen(" ") + index_width) {
+          /* 候補 + インデックス */
+
+          cand_width = s_max_width - index_width - strlen(" ");
+          cand_width = strhead(cand_str, cand_width);
+          assert(cand_width > cand_label_width);
+          cand_width += strwidth(" ");
+          cand_byte = strlen(cand_str);
+          cand_str[cand_byte++] = ' ';
+          cand_str[cand_byte] = '\0';
+        } else {
+          /* インデックスはなし */
+
+          index_width = UNDEFINED;
+          cand_width = s_max_width - strlen(" ");
+          cand_width = strhead(cand_str, cand_width);
+          if (cand_width <= cand_label_width + strlen(":")) {
+            cand_width = 1;
+            strcpy(cand_str, " ");
+            s_candidate.cand_col[index] = UNDEFINED;
+          } else {
+            cand_byte = strlen(cand_str);
+            cand_str[cand_byte++] = ' ';
+            cand_str[cand_byte] = '\0';
+          }
+        }
+      }
+
       page_width += cand_width;
       page_byte += cand_byte;
       page_str = realloc(page_str, page_byte + 1);
@@ -578,24 +592,24 @@ static void make_page_strs(void)
     }
 
     if (next) {
-      int index_byte = index_width;
-      char *index_str = malloc(index_byte + 1);
-      int i;
-      sprintf(index_str, "[%d/%d]", index + 1, s_candidate.nr);
-      for (i = 0; i < numwidth(index + 1); i++) {
-        index_str[1 + i] = ' ';
+      if (index_width == UNDEFINED) {
+        s_candidate.index_col[s_candidate.nr_pages] = UNDEFINED;
+      } else {
+        int index_byte = index_width;
+        char *index_str = malloc(index_byte + 1);
+        int i;
+        sprintf(index_str, "[%d/%d]", index + 1, s_candidate.nr);
+        for (i = 0; i < numwidth(index + 1); i++) {
+          index_str[1 + i] = ' ';
+        }
+        index_str[i] = '-';
+        assert(page_width + index_width <= s_max_width);
+        s_candidate.index_col[s_candidate.nr_pages] = page_width + strlen("[");
+        page_byte += index_byte;
+        page_str = realloc(page_str, page_byte + 1);
+        strcat(page_str, index_str);
+        free(index_str);
       }
-      index_str[i] = '-';
-      /* よほど端末の幅が狭くないかぎりはみ出ない */
-      if (page_width + index_width > max_width) {
-        index_width = max_width - page_width;
-        index_width = strhead(index_str, index_width);
-        index_byte = strlen(index_str);
-      }
-      s_candidate.index_col[s_candidate.nr_pages] = page_width + strlen("[");
-      page_byte += index_byte;
-      page_str = realloc(page_str, page_byte + 1);
-      strcat(page_str, index_str);
       s_candidate.page_strs = realloc(s_candidate.page_strs, (s_candidate.nr_pages + 1) * sizeof(char *));
       s_candidate.page_strs[s_candidate.nr_pages] = strdup(page_str);
       s_candidate.nr_pages++; 
@@ -603,7 +617,6 @@ static void make_page_strs(void)
       page_byte = 0;
       page_width = 0;
       index_in_page = 0;
-      free(index_str);
       free(page_str);
       page_str = strdup("");
     }
@@ -683,26 +696,33 @@ static void get_candidate(void)
   int cand_width;
   /* "[10/20]"の幅 */
   int index_width;
-  int max_width = g_win->ws_col;
-  /* 右端の候補のインデックス */
-  int right_edge_cand_index = s_candidate.page + 1 == s_candidate.nr_pages ? s_candidate.nr - 1 : s_candidate.page2index[s_candidate.page + 1] - 1;
-  /* 右端の候補のインデックスの幅 */
-  int right_edge_cand_index_width = numwidth(right_edge_cand_index + 1);
-  /* 現在の候補のインデックスの幅 */
-  int cand_index_width = numwidth(s_candidate.index + 1);
-  int i;
-  s_index_str = malloc(right_edge_cand_index_width + 1);
-  for (i = 0; i < right_edge_cand_index_width - cand_index_width; i++) {
-    s_index_str[i] = ' ';
-  }
-  s_index_str[i] = '\0';
-  sprintf(s_index_str, "%s%d", s_index_str, s_candidate.index + 1);
 
-  if (s_statusline_width != UNDEFINED && s_statusline_width <= max_width) {
-    max_width = s_statusline_width;
+  if (s_candidate.index_col[s_candidate.page] == UNDEFINED) {
+    s_index_str = strdup("");
+    index_width = 0;
+  } else {
+    /* 右端の候補のインデックス */
+    int right_edge_cand_index = s_candidate.page + 1 == s_candidate.nr_pages ? s_candidate.nr - 1 : s_candidate.page2index[s_candidate.page + 1] - 1;
+    /* 右端の候補のインデックスの幅 */
+    int right_edge_cand_index_width = numwidth(right_edge_cand_index + 1);
+    /* 現在の候補のインデックスの幅 */
+    int cand_index_width = numwidth(s_candidate.index + 1);
+    int i;
+    s_index_str = malloc(right_edge_cand_index_width + 1);
+    for (i = 0; i < right_edge_cand_index_width - cand_index_width; i++) {
+      s_index_str[i] = ' ';
+    }
+    s_index_str[i] = '\0';
+    sprintf(s_index_str, "%s%d", s_index_str, s_candidate.index + 1);
+    index_width = strlen("[/]") + numwidth(s_candidate.index + 1) + numwidth(s_candidate.nr);
   }
+
 
   s_candidate_col = s_candidate.cand_col[s_candidate.index];
+  if (s_candidate_col == UNDEFINED) {
+    s_candidate_str = strdup("");
+    return;
+  }
   cand = uim_get_candidate(s_context, s_candidate.index, 0);
   if (uim_candidate_get_cand_str(cand) == NULL) {
     s_candidate_str = strdup("");
@@ -712,16 +732,18 @@ static void get_candidate(void)
   }
   s_candidate_str = tab2space(uim_candidate_get_cand_str(cand));
   cand_width = strwidth(s_candidate_str);
-  index_width = 3 + numwidth(s_candidate.index + 1) + numwidth(s_candidate.nr);
-  /* よほど端末の幅が狭くないかぎりはみ出ない */
-  if (s_candidate_col + cand_width + index_width > max_width) {
-    strhead(s_candidate_str, max_width - s_candidate_col - index_width - 1);
+  if (s_candidate_col + cand_width + strlen(" ") + index_width > s_max_width) {
+    strhead(s_candidate_str, s_max_width - s_candidate_col - strlen(" ") - index_width);
   }
   uim_candidate_free(cand);
 }
 
 void callbacks_winch(void)
 {
+  s_max_width = g_win->ws_col;
+  if (s_statusline_width != UNDEFINED && s_statusline_width <= s_max_width) {
+    s_max_width = s_statusline_width;
+  }
   if (s_candidate.nr != UNDEFINED) {
     if (s_candidate.page_strs != NULL) {
       int i;

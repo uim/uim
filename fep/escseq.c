@@ -73,7 +73,7 @@ static int s_use_civis = FALSE;
 /* ステータスラインの種類 */
 static int s_status_type;
 /* GNU screen モードか */
-static int s_gnu_screen;
+static int s_no_report_cursor;
 /* 初期化したらTRUE */
 static int s_init = FALSE;
 /* 現在のカーソル位置 */
@@ -158,12 +158,12 @@ static void print_attr(struct attribute_tag *attr);
 /*
  * termcap/terminfoのエントリがあるか確認する
  */
-void init_escseq(int use_civis, int use_ins_del, int status_type, int gnu_screen, const struct attribute_tag *attr_uim)
+void init_escseq(int use_civis, int use_ins_del, int status_type, int no_report_cursor, const struct attribute_tag *attr_uim)
 {
   s_use_civis = use_civis;
   s_status_type = status_type;
   s_attr_uim = *attr_uim;
-  s_gnu_screen = gnu_screen;
+  s_no_report_cursor = no_report_cursor;
 
   if (enter_underline_mode == NULL) {
     printf("enter_underline_mode is not available\n");
@@ -198,8 +198,22 @@ void init_escseq(int use_civis, int use_ins_del, int status_type, int gnu_screen
       printf("change_scroll_region is not available\n");
       done(EXIT_FAILURE);
     }
+    if (s_no_report_cursor) {
+      if (save_cursor == NULL) {
+        printf("save_cursor is not available.\n");
+        done(EXIT_FAILURE);
+      }
+      if (restore_cursor == NULL) {
+        printf("restore_cursor is not available.\n");
+        done(EXIT_FAILURE);
+      }
+      if (cursor_up == NULL) {
+        printf("cursor_up is not available.\n");
+        done(EXIT_FAILURE);
+      }
+    }
   }
-  if (s_gnu_screen) {
+  if (s_no_report_cursor) {
     if (cursor_left == NULL) {
       printf("cursor_left is not available\n");
       done(EXIT_FAILURE);
@@ -340,7 +354,17 @@ static void fixtty(void)
   tios.c_cc[VTIME] = 3;
   tcsetattr(g_win_in, TCSANOW, &tios);
 
-  if (s_gnu_screen) {
+  if (s_no_report_cursor) {
+    if (s_status_type == LASTLINE) {
+      put_cursor_invisible();
+      put_crlf();
+      my_putp(cursor_up);
+      put_save_cursor();
+      put_change_scroll_region(0, g_win->ws_row - 1);
+      put_restore_cursor();
+      put_cursor_normal();
+    }
+    draw_statusline_restore();
     return;
   }
 
@@ -348,6 +372,7 @@ static void fixtty(void)
   start_cursor = get_cursor_position();
   if (start_cursor.row == UNDEFINED) {
     printf("Report Cursor Position is not available\r\n");
+    printf("Please try to use with -D option\r\n");
     done(EXIT_FAILURE);
   }
   put_cursor_invisible();
@@ -374,9 +399,7 @@ static void fixtty(void)
   if (s_status_type == LASTLINE) {
     put_change_scroll_region(0, g_win->ws_row - 1);
   }
-  if (s_status_type != BACKTICK) {
-    draw_statusline_no_restore();
-  }
+  draw_statusline_no_restore();
   /* 開始位置に戻る */
   put_cursor_address_p(&start_cursor);
   put_cursor_normal();
@@ -428,8 +451,13 @@ void put_save_cursor(void)
 {
   if (!s_save) {
     s_save = TRUE;
-    s_save_cursor = get_cursor_position();
     debug(("<put_save_cursor>"));
+    if (s_no_report_cursor) {
+      my_putp(save_cursor);
+      s_save_cursor = s_cursor;
+    } else {
+      s_save_cursor = get_cursor_position();
+    }
   }
 }
 
@@ -440,8 +468,15 @@ void put_restore_cursor(void)
 {
   if (s_save) {
     s_save = FALSE;
-    put_cursor_address_p(&s_save_cursor);
     debug(("<put_restore_cursor>"));
+    if (s_no_report_cursor) {
+      my_putp(restore_cursor);
+      /* DOSプロンプトでは1回のrestore_cursorでは戻らない */
+      my_putp(restore_cursor);
+      s_cursor = s_save_cursor;
+    } else {
+      put_cursor_address_p(&s_save_cursor);
+    }
   }
 }
 
@@ -971,7 +1006,7 @@ void put_uim_str(const char *str, int attr)
   change_attr(&s_attr, &s_attr_uim);
 
   s_cursor.col += strwidth(str);
-  assert(s_cursor.col <= g_win->ws_col);
+  assert(s_cursor.col <= g_win->ws_col || s_no_report_cursor);
   write(g_win_out, str, strlen(str));
   debug(("<put_uim_str \"%s\">", str));
 }
