@@ -75,6 +75,7 @@ scm/spellcheck-custom.scm
 scm/spellcheck.scm
 scm/tcode.scm
 scm/tutcode.scm
+scm/tutcode-key-custom.scm
 scm/uim-sh.scm
 scm/ustr.scm
 scm/util.scm
