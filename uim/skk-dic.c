@@ -143,7 +143,7 @@ is_okuri(const char *line_str)
   }
   /* check previous character */
   b--;
-  if (isalpha(*b)) {
+  if (isalpha((unsigned char)*b)) {
     return 1;
   }
   return 0;
@@ -731,7 +731,7 @@ skk_store_replaced_numeric_str(uim_lisp head_)
   len = strlen(str);
 
   for (i = 0; i < len; i++) {
-    if (isdigit(str[i])) {
+    if (isdigit((unsigned char)str[i])) {
       if (prev_is_num == 0) {
 	start = i;
 	numlen = 1;
@@ -1079,7 +1079,7 @@ skk_replace_numeric(uim_lisp head_)
   newlen = len;
 
   for (i = 0, j = 0; j < len; i++, j++) {
-    if (isdigit(str[i])) {
+    if (isdigit((unsigned char)str[i])) {
       if (prev_is_num == 0) {
 	str[i] = '#';
       } else {
@@ -1108,7 +1108,7 @@ find_numeric_conv_method4_mark(const char *cand, int *nth)
   p = strstr(cand, "#4");
   if (p) {
     for (i = 0; i < len; i++) {
-      if (cand[i] == '#' && isdigit(cand[i + 1])) {
+      if (cand[i] == '#' && isdigit((unsigned char)cand[i + 1])) {
 	(*nth)++;
 	if (cand[i + 1] == '4')
 	  break;
@@ -1705,7 +1705,7 @@ parse_dic_line(struct dic_info *di, char *line)
     return ;
   }
   *sep = '\0';
-  if (!islower(buf[0]) && islower(sep[-1])) { /* okuri-ari entry */
+  if (!isalpha((unsigned char)buf[0]) && islower((unsigned char)sep[-1])) { /* okuri-ari entry */
     char okuri_head = sep[-1];
     sep[-1] = 0;
     sl = compose_line(di, buf, okuri_head, line);
