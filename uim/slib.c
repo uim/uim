@@ -4059,8 +4059,7 @@ mapcar3 (LISP fcn, LISP in1, LISP in2, LISP in3)
   for (l1 = cdr (in1), l2 = cdr (in2), l3 = cdr(in3);
        CONSP (l1) && CONSP (l2) && CONSP(l3);
        l1 = CDR (l1), l2 = CDR (l2), l3 = CDR (l3))
-    ptr = CDR (ptr) = cons (lapply (fcn, cons (CDR (l1), cons (CDR (l2), cons (CDR (l3), NIL)))), CDR (ptr));
-  //    ptr = CDR (ptr) = cons (funcall3 (fcn, CAR (l1), CAR (l2), CAR (l3)),
+    ptr = CDR (ptr) = cons (lapply (fcn, cons (CAR (l1), cons (CAR (l2), cons (CAR (l3), NIL)))), CDR (ptr));
   return (res);
 }
 
