@@ -560,7 +560,7 @@ uim_cand_win_gtk_layout(UIMCandWinGtk *cwin, gint topwin_x, int topwin_y)
   sc_he = gdk_screen_get_height(gdk_screen_get_default ());
   sc_wi = gdk_screen_get_width (gdk_screen_get_default ());
 
-  if (sc_wi <  topwin_x + cwin->cursor.x + cw_he) {
+  if (sc_wi <  topwin_x + cwin->cursor.x + cw_wi) {
     x = topwin_x + cwin->cursor.x - cw_wi;
   } else {
     x = topwin_x + cwin->cursor.x;
