@@ -391,7 +391,7 @@
     (let* ((rkc (generic-context-rk-context pc))
 	   (cs (cadr (rk-current-seq rkc)))
 	   (cand (car (nthcdr idx cs))))
-      (list cand (digit->string (+ idx 1))))))
+      (list cand (digit->string (+ idx 1)) ""))))
 
 (define generic-set-candidate-index-handler
   (lambda (pc idx)

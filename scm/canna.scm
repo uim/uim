@@ -796,7 +796,7 @@
   (let* ((cc-id (canna-context-cc-id cc))
 	 (cand (canna-lib-get-nth-candidate
 		cc-id (canna-context-cur-seg cc) idx)))
-    (list cand (digit->string (+ idx 1)))))
+    (list cand (digit->string (+ idx 1)) "")))
 
 (define (canna-set-candidate-index-handler cc idx)
   (let* ((seg (canna-context-cur-seg cc))

@@ -1518,7 +1518,8 @@
 	   (string-append cand
 			  (skk-make-string okuri skk-type-hiragana))
 	   cand)
-       (digit->string (+ idx 1))))))
+       (digit->string (+ idx 1))
+       ""))))
 
 (define skk-set-candidate-index-handler
   (lambda (c idx)

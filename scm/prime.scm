@@ -1389,9 +1389,9 @@
 	   (annotation (assoc cand prime-char-annotation-alist)))
       (if (and prime-char-annotation? annotation)
 	  (list (string-append cand "  (" (cdr annotation) ")")
-		(digit->string (+ idx 1)))
+		(digit->string (+ idx 1)) "")
 	  (list cand
-		(digit->string (+ idx 1)))))))
+		(digit->string (+ idx 1)) "")))))
 
 (define prime-set-candidate-index-handler
   (lambda (sc selection-index)

@@ -970,7 +970,7 @@
     (let* ((ac-id (anthy-context-ac-id ac))
 	   (cur-seg (ustr-cursor-pos (anthy-context-segments ac)))
 	   (cand (anthy-lib-get-nth-candidate ac-id cur-seg idx)))
-      (list cand (digit->string (+ idx 1))))))
+      (list cand (digit->string (+ idx 1)) ""))))
 
 (define anthy-set-candidate-index-handler
   (lambda (ac idx)

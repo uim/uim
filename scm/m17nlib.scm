@@ -280,7 +280,7 @@
     (let* ((mid (m17nlib-context-mc-id mc))
 	   (cand (m17nlib-lib-get-nth-candidate
 		  mid idx)))
-      (list cand (digit->string (+ idx 1))))))
+      (list cand (digit->string (+ idx 1)) ""))))
 
 (define m17nlib-set-candidate-index-handler
   (lambda (mc idx)
