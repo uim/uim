@@ -133,65 +133,77 @@
    (assert-equal (list
 		  (string-append
 		   "(if (memq 'hangul2 enabled-im-list)\n"
-		   "    (register-stub-im\n"
-		   "     'hangul2\n"
-		   "     \"ko\"\n"
-		   "     \"UTF-8\"\n"
-		   "     \"Hangul (2-bul)\"\n"
-		   "     \"2-bul style hangul input method\"\n"
-		   "     \"hangul\"))\n"))
+		   "    (if enable-lazy-loading?\n"
+		   "        (register-stub-im\n"
+		   "         'hangul2\n"
+		   "         \"ko\"\n"
+		   "         \"UTF-8\"\n"
+		   "         \"Hangul (2-bul)\"\n"
+		   "         \"2-bul style hangul input method\"\n"
+		   "         \"hangul\")\n"
+		   "        (require-module \"hangul\")))\n"))
 		 (uim '(stub-im-generate-stub-im-list '(hangul2))))
    (assert-equal (list
 		  (string-append
 		   "(if (memq 'hangul3 enabled-im-list)\n"
-		   "    (register-stub-im\n"
-		   "     'hangul3\n"
-		   "     \"ko\"\n"
-		   "     \"UTF-8\"\n"
-		   "     \"Hangul (3-bul)\"\n"
-		   "     \"3-bul style hangul input method\"\n"
-		   "     \"hangul\"))\n"))
+		   "    (if enable-lazy-loading?\n"
+		   "        (register-stub-im\n"
+		   "         'hangul3\n"
+		   "         \"ko\"\n"
+		   "         \"UTF-8\"\n"
+		   "         \"Hangul (3-bul)\"\n"
+		   "         \"3-bul style hangul input method\"\n"
+		   "         \"hangul\")\n"
+		   "        (require-module \"hangul\")))\n"))
 		 (uim '(stub-im-generate-stub-im-list '(hangul3))))
    (assert-equal (list
 		  (string-append
 		   "(if (memq 'tcode enabled-im-list)\n"
-		   "    (register-stub-im\n"
-		   "     'tcode\n"
-		   "     \"ja\"\n"
-		   "     \"EUC-JP\"\n"
-		   "     \"T-Code\"\n"
-		   "     \"T-Code\"\n"
-		   "     \"tcode\"))\n"))
+		   "    (if enable-lazy-loading?\n"
+		   "        (register-stub-im\n"
+		   "         'tcode\n"
+		   "         \"ja\"\n"
+		   "         \"EUC-JP\"\n"
+		   "         \"T-Code\"\n"
+		   "         \"T-Code\"\n"
+		   "         \"tcode\")\n"
+		   "        (require-module \"tcode\")))\n"))
 		 (uim '(stub-im-generate-stub-im-list '(tcode))))
 
    (assert-equal (list
 		  (string-append
 		   "(if (memq 'hangul2 enabled-im-list)\n"
-		   "    (register-stub-im\n"
-		   "     'hangul2\n"
-		   "     \"ko\"\n"
-		   "     \"UTF-8\"\n"
-		   "     \"Hangul (2-bul)\"\n"
-		   "     \"2-bul style hangul input method\"\n"
-		   "     \"hangul\"))\n")
+		   "    (if enable-lazy-loading?\n"
+		   "        (register-stub-im\n"
+		   "         'hangul2\n"
+		   "         \"ko\"\n"
+		   "         \"UTF-8\"\n"
+		   "         \"Hangul (2-bul)\"\n"
+		   "         \"2-bul style hangul input method\"\n"
+		   "         \"hangul\")\n"
+		   "        (require-module \"hangul\")))\n")
 		  (string-append
 		   "(if (memq 'tcode enabled-im-list)\n"
-		   "    (register-stub-im\n"
-		   "     'tcode\n"
-		   "     \"ja\"\n"
-		   "     \"EUC-JP\"\n"
-		   "     \"T-Code\"\n"
-		   "     \"T-Code\"\n"
-		   "     \"tcode\"))\n")
+		   "    (if enable-lazy-loading?\n"
+		   "        (register-stub-im\n"
+		   "         'tcode\n"
+		   "         \"ja\"\n"
+		   "         \"EUC-JP\"\n"
+		   "         \"T-Code\"\n"
+		   "         \"T-Code\"\n"
+		   "         \"tcode\")\n"
+		   "        (require-module \"tcode\")))\n")
 		  (string-append
 		   "(if (memq 'hangul3 enabled-im-list)\n"
-		   "    (register-stub-im\n"
-		   "     'hangul3\n"
-		   "     \"ko\"\n"
-		   "     \"UTF-8\"\n"
-		   "     \"Hangul (3-bul)\"\n"
-		   "     \"3-bul style hangul input method\"\n"
-		   "     \"hangul\"))\n"))
+		   "    (if enable-lazy-loading?\n"
+		   "        (register-stub-im\n"
+		   "         'hangul3\n"
+		   "         \"ko\"\n"
+		   "         \"UTF-8\"\n"
+		   "         \"Hangul (3-bul)\"\n"
+		   "         \"3-bul style hangul input method\"\n"
+		   "         \"hangul\")\n"
+		   "        (require-module \"hangul\")))\n"))
 		 (uim '(stub-im-generate-stub-im-list '(hangul2 tcode hangul3)))))
 
   ("test stub-im-generate-all-stub-im-list"
@@ -200,40 +212,48 @@
    (assert-equal (list
 		  (string-append
 		   "(if (memq 'tcode enabled-im-list)\n"
-		   "    (register-stub-im\n"
-		   "     'tcode\n"
-		   "     \"ja\"\n"
-		   "     \"EUC-JP\"\n"
-		   "     \"T-Code\"\n"
-		   "     \"T-Code\"\n"
-		   "     \"tcode\"))\n")
+		   "    (if enable-lazy-loading?\n"
+		   "        (register-stub-im\n"
+		   "         'tcode\n"
+		   "         \"ja\"\n"
+		   "         \"EUC-JP\"\n"
+		   "         \"T-Code\"\n"
+		   "         \"T-Code\"\n"
+		   "         \"tcode\")\n"
+		   "        (require-module \"tcode\")))\n")
 		  (string-append
 		   "(if (memq 'hangul2 enabled-im-list)\n"
-		   "    (register-stub-im\n"
-		   "     'hangul2\n"
-		   "     \"ko\"\n"
-		   "     \"UTF-8\"\n"
-		   "     \"Hangul (2-bul)\"\n"
-		   "     \"2-bul style hangul input method\"\n"
-		   "     \"hangul\"))\n")
+		   "    (if enable-lazy-loading?\n"
+		   "        (register-stub-im\n"
+		   "         'hangul2\n"
+		   "         \"ko\"\n"
+		   "         \"UTF-8\"\n"
+		   "         \"Hangul (2-bul)\"\n"
+		   "         \"2-bul style hangul input method\"\n"
+		   "         \"hangul\")\n"
+		   "        (require-module \"hangul\")))\n")
 		  (string-append
 		   "(if (memq 'hangul3 enabled-im-list)\n"
-		   "    (register-stub-im\n"
-		   "     'hangul3\n"
-		   "     \"ko\"\n"
-		   "     \"UTF-8\"\n"
-		   "     \"Hangul (3-bul)\"\n"
-		   "     \"3-bul style hangul input method\"\n"
-		   "     \"hangul\"))\n")
+		   "    (if enable-lazy-loading?\n"
+		   "        (register-stub-im\n"
+		   "         'hangul3\n"
+		   "         \"ko\"\n"
+		   "         \"UTF-8\"\n"
+		   "         \"Hangul (3-bul)\"\n"
+		   "         \"3-bul style hangul input method\"\n"
+		   "         \"hangul\")\n"
+		   "        (require-module \"hangul\")))\n")
 		  (string-append
 		   "(if (memq 'romaja enabled-im-list)\n"
-		   "    (register-stub-im\n"
-		   "     'romaja\n"
-		   "     \"ko\"\n"
-		   "     \"UTF-8\"\n"
-		   "     \"Hangul (Romaja)\"\n"
-		   "     \"Romaja input style hangul input method\"\n"
-		   "     \"hangul\"))\n"))
+		   "    (if enable-lazy-loading?\n"
+		   "        (register-stub-im\n"
+		   "         'romaja\n"
+		   "         \"ko\"\n"
+		   "         \"UTF-8\"\n"
+		   "         \"Hangul (Romaja)\"\n"
+		   "         \"Romaja input style hangul input method\"\n"
+		   "         \"hangul\")\n"
+		   "        (require-module \"hangul\")))\n"))
 		 (uim '(stub-im-generate-all-stub-im-list)))
 
    (uim '(set! im-list ()))

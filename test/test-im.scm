@@ -858,7 +858,7 @@
 
   ("test custom-im-list-as-choice-rec"
    (assert-equal '((canna "Canna" "Japanese Kana Kanji Conversion Engine, Canna")
-		   (skk "SKK" "Uim's SKK like input method")
+		   (skk "SKK" "uim's SKK like input method")
 		   (anthy "Anthy" "Japanese Kana Kanji Conversion Engine, Anthy"))
 		 (uim '(custom-im-list-as-choice-rec
 			(map retrieve-im '(canna skk anthy)))))

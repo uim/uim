@@ -561,11 +561,12 @@
 			     (list 'make-key-predicate (list 'quote key-val)))
 		       toplevel-env)))
 	   (custom-call-hook-procs sym custom-set-hooks)
+	   (custom-call-hook-procs sym custom-update-hooks)
 	   (let ((post-activities (map-activities)))
 	     (for-each (lambda (another-sym pre post)
-			 (if (or (eq? another-sym sym)
-				 (not (eq? (not pre)     ;; normalize bool
-					   (not post)))) ;; normalize bool
+			 (if (and (not (eq? another-sym sym))
+				  (not (eq? (not pre)     ;; normalize bool
+					    (not post)))) ;; normalize bool
 			     (custom-call-hook-procs another-sym
 						     custom-update-hooks)))
 		       (map car custom-activity-hooks)

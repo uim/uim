@@ -28,8 +28,8 @@ developers.
   1. static storage protection
 
     You can allocate arbitrary static storage as for uim_lisp by
-    uim_scm_gc_protect(). The function must be invoked before the
-    using the variables.
+    uim_scm_gc_protect(). The function must be invoked before using
+    the variables.
 
 
     static uim_lisp foo;
