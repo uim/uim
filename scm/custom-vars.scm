@@ -95,7 +95,7 @@
 
 (define-custom 'uim-color 'uim-color-uim
   '(global)
-  '(symbol
+  '(choice
     (uim-color-uim "uim" "uim native")
     (uim-color-atok "ATOK like" "Similar to ATOK"))
   (_ "Preedit color")
@@ -120,7 +120,7 @@
 (define-custom 'custom-preserved-default-im-name (im-name (find-default-im #f))
   '(global default-im-name)
   (cons
-   'symbol
+   'choice
    (reverse (map (lambda (im)
 		   (let* ((sym (im-name im))
 			  (cname-proc (symbolconc sym '-im-canonical-name))
@@ -421,7 +421,7 @@
 
 (define-custom 'skk-style 'skk-style-ddskk-like
   '(skk advanced)
-  '(symbol
+  '(choice
     (skk-style-ddskk-like "ddskk" "Similar to ddskk")
     (skk-style-uim "uim" "uim native"))
   (_ "Visual style")

@@ -52,7 +52,7 @@
     (integer   . custom-integer?)
     (string    . custom-string?)
     (pathname  . pathname?)
-    (symbol    . custom-valid-symbol?)
+    (choice    . custom-valid-choice?)
     (key       . key-definition?)))
 
 (define anything?
@@ -77,31 +77,31 @@
   (lambda (str)
     (string? str)))
 
-(define custom-valid-symbol?
+(define custom-valid-choice?
   (lambda arg
     (let* ((sym (car arg))
-	   (symbol-rec-alist (cdr arg)))
+	   (choice-rec-alist (cdr arg)))
       (and (symbol? sym)
-	   (assq sym symbol-rec-alist)
+	   (assq sym choice-rec-alist)
 	   #t))))
 
-(define-record 'custom-symbol-rec
+(define-record 'custom-choice-rec
   '((sym   #f)
     (label "")
     (desc  "")))
 
-(define custom-symbol-label
+(define custom-choice-label
   (lambda (custom-sym val-sym)
     (let* ((sym-rec-alist (custom-type-attrs custom-sym))
 	   (srec (assq val-sym sym-rec-alist))
-	   (label (custom-symbol-rec-label srec)))
+	   (label (custom-choice-rec-label srec)))
       label)))
 
-(define custom-symbol-desc
+(define custom-choice-desc
   (lambda (custom-sym val-sym)
     (let* ((sym-rec-alist (custom-type-attrs custom-sym))
 	   (srec (assq val-sym sym-rec-alist))
-	   (desc (custom-symbol-rec-desc srec)))
+	   (desc (custom-choice-rec-desc srec)))
       desc)))
 
 ;; only accepts single strict-key-str (not or'ed, not a variable reference)
@@ -322,8 +322,8 @@
     (let* ((type (custom-type sym))
 	   (attrs (custom-type-attrs sym)))
       (cond
-       ((eq? type 'symbol)
-	(map custom-symbol-rec-sym attrs))
+       ((eq? type 'choice)
+	(map custom-choice-rec-sym attrs))
        (else
 	attrs)))))
 
@@ -359,7 +359,7 @@
 	(as-string val))
        ((eq? type 'pathname)
 	(as-string val))
-       ((eq? type 'symbol)
+       ((eq? type 'choice)
 	(string-append "'" (symbol->string val)))
        ((eq? type 'key)
 	"")))))  ;; TODO

@@ -110,44 +110,44 @@
    (assert-true  (uim-bool '(pathname? "~/.uim")))
    (assert-true  (uim-bool '(pathname? "share/uim/bar.scm")))
    (assert-true  (uim-bool '(pathname? "baz.scm"))))
-  ("test custom-valid-symbol?"
-   (assert-false (uim-bool '(custom-valid-symbol?
+  ("test custom-valid-choice?"
+   (assert-false (uim-bool '(custom-valid-choice?
 			     #f
 			     '(uim-color-uim "uim" "uim native")
 			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
-   (assert-false (uim-bool '(custom-valid-symbol?
+   (assert-false (uim-bool '(custom-valid-choice?
 			     "foo"
 			     '(uim-color-uim "uim" "uim native")
 			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
-   (assert-false (uim-bool '(custom-valid-symbol?
+   (assert-false (uim-bool '(custom-valid-choice?
 			     -1
 			     '(uim-color-uim "uim" "uim native")
 			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
-   (assert-false (uim-bool '(custom-valid-symbol?
+   (assert-false (uim-bool '(custom-valid-choice?
 			     0
 			     '(uim-color-uim "uim" "uim native")
 			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
-   (assert-false (uim-bool '(custom-valid-symbol?
+   (assert-false (uim-bool '(custom-valid-choice?
 			     1
 			     '(uim-color-uim "uim" "uim native")
 			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
-   (assert-false (uim-bool '(custom-valid-symbol?
+   (assert-false (uim-bool '(custom-valid-choice?
 			     10
 			     '(uim-color-uim "uim" "uim native")
 			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
-   (assert-false (uim-bool '(custom-valid-symbol?
+   (assert-false (uim-bool '(custom-valid-choice?
 			     ()
 			     '(uim-color-uim "uim" "uim native")
 			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
-   (assert-false (uim-bool '(custom-valid-symbol?
+   (assert-false (uim-bool '(custom-valid-choice?
 			     '(1 "2" 'three)
 			     '(uim-color-uim "uim" "uim native")
 			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
-   (assert-true  (uim-bool '(custom-valid-symbol?
+   (assert-true  (uim-bool '(custom-valid-choice?
 			     'uim-color-uim
 			     '(uim-color-uim "uim" "uim native")
 			     '(uim-color-atok "ATOK like" "Similar to ATOK"))))
-   (assert-false (uim-bool '(custom-valid-symbol?
+   (assert-false (uim-bool '(custom-valid-choice?
 			     'uim-color-nonexistent
 			     '(uim-color-uim "uim" "uim native")
 			     '(uim-color-atok "ATOK like" "Similar to ATOK")))))
@@ -179,29 +179,29 @@
    (lambda ()
      (uim '(require "custom.scm"))))
 
-  ("test custom-symbol-rec-new"
+  ("test custom-choice-rec-new"
    (assert-equal (uim '(list #f "" ""))
-		 (uim '(custom-symbol-rec-new))))
+		 (uim '(custom-choice-rec-new))))
 
-  ("test custom-symbol-label"
+  ("test custom-choice-label"
    (assert-equal "uim"
-		 (uim '(custom-symbol-label 'uim-color 'uim-color-uim)))
+		 (uim '(custom-choice-label 'uim-color 'uim-color-uim)))
    (assert-equal "ATOK like"
-		 (uim '(custom-symbol-label 'uim-color 'uim-color-atok)))
+		 (uim '(custom-choice-label 'uim-color 'uim-color-atok)))
    (assert-error (lambda ()
-                   (uim '(custom-symbol-label 'uim-color
+                   (uim '(custom-choice-label 'uim-color
                                               'uim-color-nonexistent))))
    (assert-error (lambda ()
-                   (uim '(custom-symbol-label 'uim-nonexistent
+                   (uim '(custom-choice-label 'uim-nonexistent
                                               'uim-nonexistent)))))
-  ("test custom-symbol-desc"
+  ("test custom-choice-desc"
    (assert-equal "uim native"
-		 (uim '(custom-symbol-desc 'uim-color 'uim-color-uim)))
+		 (uim '(custom-choice-desc 'uim-color 'uim-color-uim)))
    (assert-equal "Similar to ATOK"
-		 (uim '(custom-symbol-desc 'uim-color 'uim-color-atok)))
-   (assert-error (lambda () (uim '(custom-symbol-desc 'uim-color
+		 (uim '(custom-choice-desc 'uim-color 'uim-color-atok)))
+   (assert-error (lambda () (uim '(custom-choice-desc 'uim-color
                                                       'uim-color-nonexistent))))
-   (assert-error (lambda () (uim '(custom-symbol-desc 'uim-nonexistent
+   (assert-error (lambda () (uim '(custom-choice-desc 'uim-nonexistent
                                                       'uim-nonexistent))))))
 
 (define-uim-test-case "testcase custom custom-group"
@@ -374,7 +374,7 @@
      (uim '(define test-custom3-trace ()))
      (uim '(define-custom 'test-custom1 'test-custom1-ddskk
 	     '(global)
-	     '(symbol
+	     '(choice
 	       (test-custom1-uim "uim" "uim native")
 	       (test-custom1-ddskk "ddskk like" "Similar to ddskk")
 	       (test-custom1-canna "canna like" "Similar to canna"))
@@ -382,7 +382,7 @@
 	     "long description will be here."))
      (uim '(define-custom 'test-custom2 'test-custom2-ddskk
 	     '(global)
-	     '(symbol
+	     '(choice
 	       (test-custom2-uim "uim" "uim native")
 	       (test-custom2-ddskk "ddskk like" "Similar to ddskk")
 	       (test-custom2-canna "canna like" "Similar to canna"))
@@ -390,7 +390,7 @@
 	     "long description will be here."))
      (uim '(define-custom 'test-custom3 'test-custom3-ddskk
 	     '(global)
-	     '(symbol
+	     '(choice
 	       (test-custom3-uim "uim" "uim native")
 	       (test-custom3-ddskk "ddskk like" "Similar to ddskk")
 	       (test-custom3-canna "canna like" "Similar to canna"))
@@ -807,7 +807,7 @@
      (uim '(define test-custom3-trace ()))
      (uim '(define-custom 'test-custom1 'test-custom1-ddskk
 	     '(global)
-	     '(symbol
+	     '(choice
 	       (test-custom1-uim "uim" "uim native")
 	       (test-custom1-ddskk "ddskk like" "Similar to ddskk")
 	       (test-custom1-canna "canna like" "Similar to canna"))
@@ -918,7 +918,7 @@
 
    (uim '(define-custom 'test-style 'test-style-ddskk
 	   '(global)
-	   '(symbol
+	   '(choice
 	     (test-style-uim "uim" "uim native")
 	     (test-style-ddskk "ddskk like" "Similar to ddskk")
 	     (test-style-canna "canna like" "Similar to canna"))
@@ -933,7 +933,7 @@
      (uim '(require "custom.scm"))
      (uim '(define-custom 'test-style 'test-style-ddskk
 	     '(global)
-	     '(symbol
+	     '(choice
 	       (test-style-uim "uim" "uim native")
 	       (test-style-ddskk "ddskk like" "Similar to ddskk")
 	       (test-style-canna "canna like" "Similar to canna"))
@@ -961,7 +961,7 @@
 	     "long description will be here."))
      (uim '(define-custom 'test-modelist 'hiragana
 	     '(test)
-	     '(symbol
+	     '(choice
 	       (hiragana "hiragana" "hiragana")
 	       (katakana "katakana" "katakana")
 	       (latin "latin" "latin")
@@ -1190,7 +1190,7 @@
 		 (uim '(custom-groups 'test-dic-file-name))))
 
   ("test custom-type"
-   (assert-equal 'symbol
+   (assert-equal 'choice
 		 (uim '(custom-type 'test-style)))
    (assert-equal 'boolean
 		 (uim '(custom-type 'test-use-candidate-window?)))
