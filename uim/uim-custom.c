@@ -285,8 +285,10 @@ extract_choice_list(const char *list_repl, const char *custom_sym)
   for (p = choice_sym_list; *p; p++) {
     choice_sym = *p;
     custom_choice = uim_custom_choice_get(custom_sym, choice_sym);
+    free(choice_sym); /* free the old contents */
     *p = (char *)custom_choice;  /* intentionally overwrite */
   }
+
   /* reuse the list structure */
   custom_choice_list = (struct uim_custom_choice **)choice_sym_list;
 
@@ -1220,6 +1222,7 @@ uim_custom_cb_update_cb_gate(uim_lisp cb, uim_lisp ptr, uim_lisp custom_sym)
   c_ptr = uim_scm_c_ptr(ptr);
   c_custom_sym = uim_scm_c_symbol(custom_sym);
   (*update_cb)(c_ptr, c_custom_sym);
+  free(c_custom_sym);
 
   return uim_scm_f();
 }

@@ -103,6 +103,7 @@ plugin_load(uim_lisp _name)
       close(fd);
       break;
     }
+    free(path);
     free(plugin_lib_filename);
     plugin_lib_filename = NULL;
   }
@@ -121,6 +122,7 @@ plugin_load(uim_lisp _name)
       close(fd);
       break;
     }
+    free(path);
     free(plugin_scm_filename);
     plugin_scm_filename = NULL;
   }
