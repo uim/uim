@@ -95,22 +95,25 @@ pref-kseparator.cpp: pref-kseparator.moc
 pref-kseparator.moc: pref-kseparator.h
 	$(MOC) pref-kseparator.h -o pref-kseparator.moc
 
-pref-olisteditformbase.cpp: pref-olisteditformbase.h
+pref-olisteditformbase.h: pref-olisteditformbase.ui
 	$(UIC) pref-olisteditformbase.ui -o pref-olisteditformbase.h
+pref-olisteditformbase.cpp:pref-olisteditformbase.h
 	$(UIC) pref-olisteditformbase.ui -i pref-olisteditformbase.h > pref-olisteditformbase.cpp.tmp
 	$(MOC) pref-olisteditformbase.h -o pref-olisteditformbase.moc
 	echo '#include "pref-olisteditformbase.moc"' >> pref-olisteditformbase.cpp.tmp
 	mv pref-olisteditformbase.cpp.tmp pref-olisteditformbase.cpp
 
-pref-keyeditformbase.cpp: pref-keyeditformbase.h
+pref-keyeditformbase.h: pref-keyeditformbase.ui
 	$(UIC) pref-keyeditformbase.ui -o pref-keyeditformbase.h
+pref-keyeditformbase.cpp: pref-keyeditformbase.h
 	$(UIC) pref-keyeditformbase.ui -i pref-keyeditformbase.h > pref-keyeditformbase.cpp.tmp
 	$(MOC) pref-keyeditformbase.h -o pref-keyeditformbase.moc
 	echo '#include "pref-keyeditformbase.moc"' >> pref-keyeditformbase.cpp.tmp
 	mv pref-keyeditformbase.cpp.tmp pref-keyeditformbase.cpp
 
-pref-keygrabformbase.cpp: pref-keygrabformbase.h
+pref-keygrabformbase.h: pref-keygrabformbase.ui
 	$(UIC) pref-keygrabformbase.ui -o pref-keygrabformbase.h
+pref-keygrabformbase.cpp: pref-keygrabformbase.h
 	$(UIC) pref-keygrabformbase.ui -i pref-keygrabformbase.h > pref-keygrabformbase.cpp.tmp
 	$(MOC) pref-keygrabformbase.h -o pref-keygrabformbase.moc
 	echo '#include "pref-keygrabformbase.moc"' >> pref-keygrabformbase.cpp.tmp
