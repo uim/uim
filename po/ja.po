@@ -981,7 +981,7 @@ msgstr "候補ウィンドウ内に註釈を表示する"
 
 #: scm/skk-custom.lisp:120
 msgid "Show annotation in preedit area"
-msgstr "候補ウィンドウ内に註釈を表示する"
+msgstr "プリエディット内に註釈を表示する"
 
 #: scm/skk-custom.lisp:128
 msgid "Dictionary file"
