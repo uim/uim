@@ -297,12 +297,9 @@ void GroupPageWidget::setupWidgets( const char *group_name )
     /* default QVGroupBox */
     QVGroupBox *defaultGroupVBox = new QVGroupBox( this );
     vLayout->addWidget( defaultGroupVBox );    
+    defaultGroupVBox->hide();
 
-    /* 2004-02-03 Kazuki Ohta <mover@hct.zaq.ne.jp>
-     * subgrouping feature seems to unstable and cause the crash in some reason.
-     *
-     * SubgroupData *sd = new SubgroupData( this, group_name );
-     */
+    SubgroupData *sd = new SubgroupData( this, group_name );
 
     /* add various widgets to the vbox */
     char **custom_syms = uim_custom_collect_by_group( group_name );
@@ -310,15 +307,13 @@ void GroupPageWidget::setupWidgets( const char *group_name )
     {
         for( char **custom_sym = custom_syms; *custom_sym; custom_sym++ )
         {
-            /*
             QVGroupBox *vbox = sd->searchGroupVBoxByCustomSym( *custom_sym );
             if( vbox == NULL )
             {
                 vbox = defaultGroupVBox;
+                vbox->show();
             }
-            */
             
-            QVGroupBox *vbox = defaultGroupVBox;
             UimCustomItemIface *iface = addCustom( vbox, *custom_sym );
             if( iface )
                 m_customIfaceList.append( iface );
@@ -327,18 +322,8 @@ void GroupPageWidget::setupWidgets( const char *group_name )
         uim_custom_symbol_list_free( custom_syms );
     }
 
-    /* 2004-02-02 Kazuki Ohta <mover@hct.zaq.ne.jp>
-     *
-     * This is very adhoc hack!!
-     * if "main" subgroup's gvbox dosn't have child, hides it!
-     */
-    if( defaultGroupVBox && defaultGroupVBox->children()->isEmpty() )
-    {
-        defaultGroupVBox->hide();
-    }
-
     /* free */
-//    delete sd;
+    delete sd;
     uim_custom_group_free( group );
 
     /* bottom up */
@@ -510,15 +495,17 @@ SubgroupData::SubgroupData( QWidget*parentWidget, const char *parent_group_name 
          * The subgroup "main" doesn't contain any contents.
          * So, we need to create default QVGroupBox for it.
          */
+        QVGroupBox *gvbox;
         if( QString::compare( *sgrp, "main" ) == 0 )
         {
-            uim_custom_group_free( sgroup_custom );
-            continue;
+            gvbox = NULL;
+        }
+        else
+        {
+            gvbox = new QVGroupBox( _FU8(sgroup_custom->label), parentWidget );
+            parentWidget->layout()->add( gvbox );
         }
 
-        QVGroupBox *gvbox = new QVGroupBox( _FU8(sgroup_custom->label), parentWidget );
-        parentWidget->layout()->add( gvbox );
-        
         char **custom_syms = uim_custom_collect_by_group( *sgrp );
         if( !custom_syms )
             continue;
