@@ -43,6 +43,7 @@
 (define anthy-candidate-op-count 1)
 (define anthy-nr-candidate-max 10)
 (define anthy-show-segment-separator? #f)
+(define anthy-select-candidate-by-numeral-key? #f)
 (define anthy-segment-separator "|")
 
 ;; key defs
@@ -813,6 +814,31 @@
       (if (anthy-context-candidate-window ac)
 	  (im-select-candidate ac compensated-n)))))
 
+(define anthy-move-candidate-in-page
+  (lambda (ac numeralc)
+    (let* ((ac-id (anthy-context-ac-id ac))
+	   (segments (anthy-context-segments ac))
+	   (cur-seg (ustr-cursor-pos segments))
+	   (max (anthy-lib-get-nr-candidates ac-id cur-seg))
+	   (n (ustr-cursor-frontside segments))
+	   (cur-page (/ n anthy-nr-candidate-max))
+	   (pageidx (- (numeral-char->number numeralc) 1))
+	   (compensated-pageidx (cond
+				 ((< pageidx 0) ; pressing key_0
+				  (+ pageidx 10))
+				 (else
+				  pageidx)))
+	   (idx (+ (* cur-page anthy-nr-candidate-max) compensated-pageidx))
+	   (compensated-idx (cond
+			     ((>= idx max)
+			      (- max 1))
+			     (else
+			      idx)))
+	   (new-op-count (+ 1 (anthy-context-candidate-op-count ac))))
+      (ustr-cursor-set-frontside! segments compensated-idx)
+      (anthy-context-set-candidate-op-count! ac new-op-count)
+      (im-select-candidate ac compensated-idx))))
+
 (define anthy-reset-candidate-window
   (lambda (ac)
     (if (anthy-context-candidate-window ac)
@@ -869,6 +895,11 @@
 
      ((anthy-cancel-key? key key-state)
       (anthy-cancel-conv ac))
+
+     ((and anthy-select-candidate-by-numeral-key?
+	   (numeral-char? key)
+	   (anthy-context-candidate-window ac))
+      (anthy-move-candidate-in-page ac key))
 
      ;; don't discard shift-modified keys. Some of them ("?", "~",
      ;; etc) are used to implicit commit. Reported by [Anthy-dev 745]
