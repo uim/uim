@@ -1670,10 +1670,13 @@ skk_read_personal_dictionary(struct dic_info *di, char *fn)
   int err_flag = 0;
   int lock_fd;
 
-  if (stat(fn, &st) == -1)
-    return NIL;
-
   lock_fd = open_lock(fn, F_RDLCK);
+
+  if (stat(fn, &st) == -1) {
+    close_lock(lock_fd);
+    return NIL;
+  }
+
   fp = fopen(fn, "r");
   if (!fp) {
     close_lock(lock_fd);
@@ -1945,10 +1948,11 @@ skk_lib_save_personal_dictionary(LISP fn_)
     }
   }
   fclose(fp);
-  close_lock(lock_fd);
 
   if (stat(fn, &st) != -1)
     skk_dic->personal_dic_timestamp = st.st_mtime;
+
+  close_lock(lock_fd);
   skk_dic->cache_modified = 0;
 
   return NIL;
