@@ -45,7 +45,7 @@
 (define romaja-im-canonical-name (_ "Hangul (Romaja)"))
 (define hangul3-im-canonical-name (_ "Hangul (3-bul)"))
 (define hangul2-im-canonical-name (_ "Hangul (2-bul)"))
-(define viqr-im-canonical-name (_ "Viqr"))
+(define viqr-im-canonical-name (_ "VIQR"))
 (define tutcode-im-canonical-name (_ "TUT-Code"))
 (define tcode-im-canonical-name (_ "T-Code"))
 (define spellcheck-im-canonical-name (_ "Spellcheck"))
@@ -198,9 +198,9 @@
 
 (define-custom 'uim-color 'uim-color-uim
   '(global)
-  '(choice
-    (uim-color-uim "uim" "uim native")
-    (uim-color-atok "ATOK like" "Similar to ATOK"))
+  (list 'choice
+	(list 'uim-color-uim (_ "uim") (_ "uim native"))
+	(list 'uim-color-atok (_ "ATOK like") (_ "Similar to ATOK")))
   (_ "Preedit color")
   (_ "long description will be here."))
 
@@ -526,9 +526,9 @@
 
 (define-custom 'skk-style 'skk-style-ddskk-like
   '(skk advanced)
-  '(choice
-    (skk-style-ddskk-like "ddskk" "Similar to ddskk")
-    (skk-style-uim "uim" "uim native"))
+  (list 'choice
+	(list 'skk-style-ddskk-like (_ "ddskk") (_ "Similar to ddskk"))
+	(list 'skk-style-uim (_ "uim") (_ "uim native")))
   (_ "Visual style")
   (_ "long description will be here."))
 
@@ -616,7 +616,7 @@
 (define-custom 'prime-mask-pending-preedit? #f
   '(prime)
   '(boolean)
-  (_ "Mask preedit strings (For tcode users)")
+  (_ "Mask preedit strings (For T-Code users)")
   (_ "long description will be here."))
 
 ;(define-custom 'prime-use-numeral-key-to-select-cand? #t

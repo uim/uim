@@ -198,4 +198,4 @@
     (generic-context-new id im viqr-rule #f)))
 
 (generic-register-im
- 'viqr "vi" "UTF-8" (N_ "viqr") viqr-init-handler)
+ 'viqr "vi" "UTF-8" (N_ "VIetnamese Quoted-Readable") viqr-init-handler)

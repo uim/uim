@@ -823,7 +823,7 @@
        'canna
        "ja"
        "EUC-JP"
-       (N_ "Canna")
+       (N_ "Japanese Kana Kanji Conversion Engine, Canna")
        #f
        canna-init-handler
        canna-release-handler
