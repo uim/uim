@@ -64,8 +64,8 @@ static gboolean	pref_tree_selection_changed(GtkTreeSelection *selection,
 static GtkWidget *create_pref_treeview(void);
 static GtkWidget *create_group_widget(const char *group_name);
 #if USE_SUB_GROUP
-static void create_sub_group_widget(GtkWidget *parent_widget,
-				    const char *parent_group);
+static void create_sub_group_widgets(GtkWidget *parent_widget,
+				     const char *parent_group);
 #endif
 
 static void
@@ -352,7 +352,7 @@ create_group_widget(const char *group_name)
   gtk_box_pack_start (GTK_BOX(vbox), group_label, FALSE, TRUE, 8);
 
 #if USE_SUB_GROUP
-  create_sub_group_widget(vbox, group_name);
+  create_sub_group_widgets(vbox, group_name);
 #else
   {
     char **custom_syms, **custom_sym;
@@ -375,7 +375,7 @@ create_group_widget(const char *group_name)
 }
 
 #if USE_SUB_GROUP
-static void create_sub_group_widget(GtkWidget *parent_widget, const char *parent_group)
+static void create_sub_group_widgets(GtkWidget *parent_widget, const char *parent_group)
 {
     char **sgrp_syms = uim_custom_group_subgroups(parent_group);
     char **sgrp_sym;
@@ -387,8 +387,17 @@ static void create_sub_group_widget(GtkWidget *parent_widget, const char *parent
 	GtkWidget *frame;
 	GtkWidget *vbox;
 
-	if(sgrp == NULL)
+	if(!sgrp)
 	  continue;
+
+	custom_syms = uim_custom_collect_by_group(*sgrp_sym);
+
+	if (!custom_syms)
+	  continue;
+	if (!*custom_syms) {
+	  uim_custom_symbol_list_free(custom_syms);
+	  continue;
+	}
 
 	frame = gtk_frame_new(sgrp->label);
 	gtk_frame_set_label_align(GTK_FRAME(frame), 0.02, 0.5);
@@ -399,13 +408,10 @@ static void create_sub_group_widget(GtkWidget *parent_widget, const char *parent
 
 	gtk_container_set_border_width(GTK_CONTAINER(vbox), 6);
 
-	custom_syms = uim_custom_collect_by_group(*sgrp_sym);
-	if (custom_syms) {
-	  for (custom_sym = custom_syms; *custom_sym; custom_sym++) {
-	    uim_pref_gtk_add_custom(vbox, *custom_sym);
-	  }
-	  uim_custom_symbol_list_free(custom_syms);
+	for (custom_sym = custom_syms; *custom_sym; custom_sym++) {
+	  uim_pref_gtk_add_custom(vbox, *custom_sym);
 	}
+	uim_custom_symbol_list_free(custom_syms);
 
 	uim_custom_group_free(sgrp);
     }
