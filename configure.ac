@@ -673,6 +673,7 @@ Configure Result :
 
    Anthy           : ${use_anthy}
    Canna           : ${use_canna}
+   PRIME           : ${use_prime}
    m17n-lib        : ${use_m17nlib}
    SCIM            : ${use_scim}
    Gtk+            : ${use_gtk2}
