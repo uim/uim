@@ -621,12 +621,38 @@ candidate_showp(uim_lisp id_)
   return uim_scm_f();
 }
 
+static int
+calc_cands_num(int id)
+{
+  int result = 0;
+  MPlist *group; 
+  MInputContext *ic = ic_array[id].mic;
+
+  if(!ic || !ic->candidate_list)
+    return 0;
+
+  group = ic->candidate_list;
+
+  while(mplist_value(group) != Mnil) {
+    if(mplist_key(group) == Mtext) {
+      for (; mplist_key(group) != Mnil; group = mplist_next(group)) {
+        result += mtext_len(mplist_value(group));
+      }
+    } else {
+      for (; mplist_key(group) != Mnil; group = mplist_next(group)) {
+        result += mplist_length(mplist_value(group));
+      }
+    }
+  }
+  return result;
+}
+
 static void
 old_cands_free(char **old_cands)
 {
   int i = 0;
   if(old_cands) {
-    while(old_cands[i]){
+    for(i=0; old_cands[i]; i++) {
       free(old_cands[i]);
     }
     free(old_cands);
@@ -652,6 +678,7 @@ fill_new_candidates(uim_lisp id_)
 
   group = ic->candidate_list;
 
+  old_cands_free(ic_array[id].old_candidates);
   ic_array[id].old_candidates = ic_array[id].new_candidates;
 
   new_cands = malloc (cands_num * sizeof(char *) + 2);
@@ -719,33 +746,6 @@ candidates_changedp(uim_lisp id_)
   }
   return uim_scm_f();
 }
-
-int
-calc_cands_num(int id)
-{
-  int result = 0;
-  MPlist *group; 
-  MInputContext *ic = ic_array[id].mic;
-
-  if(!ic || !ic->candidate_list)
-    return 0;
-
-  group = ic->candidate_list;
-
-  while(mplist_value(group) != Mnil) {
-    if(mplist_key(group) == Mtext) {
-      for (; mplist_key(group) != Mnil; group = mplist_next(group)) {
-        result += mtext_len(mplist_value(group));
-      }
-    } else {
-      for (; mplist_key(group) != Mnil; group = mplist_next(group)) {
-        result += mplist_length(mplist_value(group));
-      }
-    }
-  }
-  return result;
-}
-
 
 static uim_lisp
 get_nr_candidates(uim_lisp id_)
