@@ -235,7 +235,7 @@ uim_quit(void);
  * Currently selected input method is used if you specify both as NULL.
  *
  * @param ptr cookie value which is passed as an argument of uim's callback functions.
- * @param enc name of client encoding, say "UTF-8"
+ * @param enc iconv-acceptable name of client encoding. Say "UTF-8" to use most of input methods.
  * @param lang name language you want to input
  * @param engine name of conversion engine you want to use
  * @param conv character code converter. Say "uim_iconv" or place your own platform-specific, preferable implementation. See struct uim_code_converter.

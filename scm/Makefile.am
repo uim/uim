@@ -61,21 +61,25 @@ if SCIM
 #  module_names += "scim"
 endif
 
+
+
 # TODO: resolve dependency to $(top_builddir)/uim/uim-sh in proper way
 installed-modules.scm: $(SCM_FILES)
 	$(MAKE) -C $(top_builddir)/uim uim-sh && \
 	$(ECHO) "(define installed-im-module-list '(" '$(module_names)' ")) \
-	      (require \"manage-modules.scm\") \
-	      (generate-installed-modules-scm)" \
-	| LIBUIM_VERBOSE=1 LIBUIM_VANILLA=1 LIBUIM_SCM_FILES=$(top_srcdir)/scm LIBUIM_PLUGIN_LIB_DIR=$(top_srcdir)/uim/.libs \
+	         (require \"manage-modules.scm\") \
+	         (generate-installed-modules-scm)" \
+	| LIBUIM_VERBOSE=1 LIBUIM_VANILLA=1 LIBUIM_SCM_FILES=`(cd $(top_srcdir) && pwd)`/scm LIBUIM_PLUGIN_LIB_DIR=$(top_builddir)/uim/.libs \
 	  $(top_builddir)/uim/uim-sh -B >$@
 
 # TODO: resolve dependency to $(top_builddir)/uim/uim-sh in proper way
 loader.scm: installed-modules.scm
 	$(MAKE) -C $(top_builddir)/uim uim-sh && \
 	$(ECHO) "(require \"manage-modules.scm\") \
-	      (generate-loader-scm)" \
-	| LIBUIM_VERBOSE=1 LIBUIM_VANILLA=1 LIBUIM_SCM_FILES=$(top_srcdir)/scm LIBUIM_PLUGIN_LIB_DIR=$(top_srcdir)/uim/.libs \
+	         (require (string-append (getenv \"PWD\") \
+	                                 \"/installed-modules.scm\")) \
+	         (generate-loader-scm)" \
+	| LIBUIM_VERBOSE=1 LIBUIM_VANILLA=1 LIBUIM_SCM_FILES=`(cd $(top_srcdir) && pwd)`/scm LIBUIM_PLUGIN_LIB_DIR=$(top_builddir)/uim/.libs \
 	  $(top_builddir)/uim/uim-sh -B >$@
 
 # $(ECHO) $(ECHO_N) >$@
