@@ -38,11 +38,13 @@ SUCH DAMAGE.
 #include <qvbox.h>
 #include <qlistview.h>
 #include <qvaluelist.h>
+#include <qevent.h>
 
 class QLabel;
 
 class QUimInputContext;
 class CandidateListView;
+class SubWindow;
 
 class CandidateWindow : public QVBox
 {
@@ -57,7 +59,7 @@ public:
     void clearCandidates();
     void popup();
 
-    void setAlwaysLeftPosition( bool left ){ isAlwaysLeft = left; }
+    void setAlwaysLeftPosition( bool left ) { isAlwaysLeft = left; }
     bool isAlwaysLeftPosition() const { return isAlwaysLeft; }
 
     void setCandidates( int displayLimit, const QValueList<uim_candidate> &candidates );
@@ -71,12 +73,17 @@ public:
 
 protected slots:
     void slotCandidateSelected( QListViewItem* );
+    void slotHookSubwindow( QListViewItem* );
 
 protected:
     void updateLabel();
 
     // not completed
     void adjustCandidateWindowSize();
+
+    // Moving and Resizing affects the positon of Subwindow
+    virtual void moveEvent( QMoveEvent * );
+    virtual void resizeEvent( QResizeEvent * );
 
     QUimInputContext *ic;
 
@@ -91,6 +98,8 @@ protected:
     int pageIndex;
 
     bool isAlwaysLeft;
+
+    SubWindow *subWin;
 };
 
 

@@ -515,9 +515,9 @@ QString QUimInputContext::getPreeditString()
 
 int QUimInputContext::getPreeditCursorPosition()
 {
-    if( cwin->isAlwaysLeftPosition() )
+    if ( cwin->isAlwaysLeftPosition() )
         return 0;
-    
+
     int cursorPos = 0;
     QPtrList<PreeditSegment>::ConstIterator seg = psegs.begin();
     const QPtrList<PreeditSegment>::ConstIterator end = psegs.end();
@@ -625,10 +625,10 @@ void QUimInputContext::createUimInfo()
 
 void QUimInputContext::readIMConf()
 {
-    char *leftp = uim_symbol_value_str("candidate-window-position");
-    if( leftp && !strcmp(leftp, "left") )
+    char * leftp = uim_symbol_value_str( "candidate-window-position" );
+    if ( leftp && !strcmp( leftp, "left" ) )
         cwin->setAlwaysLeftPosition( true );
     else
         cwin->setAlwaysLeftPosition( false );
-    free(leftp);
+    free( leftp );
 }

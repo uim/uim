@@ -39,8 +39,13 @@ SUCH DAMAGE.
 #include <qevent.h>
 
 #include "quiminputcontext.h"
+#include "subwindow.h"
 
 static const int MIN_CAND_WIDTH = 80;
+
+static const int HEADING_COLUMN = 0;
+static const int CANDIDATE_COLUMN = 1;
+static const int ANNOTATION_COLUMN = 2;
 
 const Qt::WFlags candidateFlag = ( Qt::WType_TopLevel
                                    | Qt::WStyle_Customize
@@ -63,9 +68,9 @@ CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
     cList = new CandidateListView( this, "candidateListView" );
     cList->setSorting( 0 );
     cList->setSelectionMode( QListView::Single );
-    cList->addColumn( "1" );
+    cList->addColumn( "0" );
     cList->setColumnWidthMode( 0, QListView::Maximum );
-    cList->addColumn( "2" );
+    cList->addColumn( "1" );
     cList->setColumnWidthMode( 1, QListView::Maximum );
     cList->header() ->hide();
     cList->setVScrollBarMode( QScrollView::AlwaysOff );
@@ -73,6 +78,8 @@ CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
     cList->setAllColumnsShowFocus( true );
     QObject::connect( cList, SIGNAL( clicked( QListViewItem * ) ),
                       this , SLOT( slotCandidateSelected( QListViewItem * ) ) );
+    QObject::connect( cList, SIGNAL( selectionChanged( QListViewItem * ) ),
+                      this , SLOT( slotHookSubwindow( QListViewItem * ) ) );
 
     //setup NumberLabel
     numLabel = new QLabel( this, "candidateLabel" );
@@ -85,6 +92,8 @@ CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
     pageIndex = -1;
 
     isAlwaysLeft = false;
+
+    subWin = new SubWindow( 0 );
 }
 
 CandidateWindow::~CandidateWindow()
@@ -112,6 +121,8 @@ void CandidateWindow::activateCandwin( int dLimit )
 
 void CandidateWindow::deactivateCandwin()
 {
+    subWin->cancelHook();
+
     hide();
     clearCandidates();
 }
@@ -215,8 +226,13 @@ void CandidateWindow::setPage( int page )
             headString.prepend( "0" );
         QString candString = QString::fromUtf8( ( const char * ) uim_candidate_get_cand_str( cand ) );
 
+        // 2004-12-13 Kazuki Ohta <mover@hct.zaq.ne.jp>
+        // Commented out for the next release.
+//        QString annotationString = QString::fromUtf8( ( const char * ) uim_candidate_get_annotation_str( cand ) );
+        QString annotationString = "";
+
         // insert new item to the candidate list
-        new QListViewItem( cList, headString, candString );
+        new QListViewItem( cList, headString, candString, annotationString );
     }
 
     // set index
@@ -276,10 +292,8 @@ void CandidateWindow::setIndexInPage( int index )
 void CandidateWindow::slotCandidateSelected( QListViewItem * item )
 {
     candidateIndex = ( pageIndex * displayLimit ) + cList->itemIndex( item );
-
     if ( ic && ic->uimContext() )
         uim_set_candidate_index( ic->uimContext(), candidateIndex );
-
     updateLabel();
 }
 
@@ -364,4 +378,30 @@ void CandidateWindow::updateLabel()
         indexString = "- / " + QString::number( nrCandidates );
 
     numLabel->setText( indexString );
+}
+
+void CandidateWindow::slotHookSubwindow( QListViewItem * item )
+{
+    // cancel previous hook
+    subWin->cancelHook();
+
+    // hook annotation
+    QString annotationString = item->text( 2 );
+    if ( !annotationString.isEmpty() )
+    {
+        subWin->hookPopup( "Annotation", annotationString );
+    }
+}
+
+// Moving and Resizing affects the position of Subwindow
+void CandidateWindow::moveEvent( QMoveEvent *e )
+{
+    // move subwindow
+    subWin->layoutWindow( e->pos().x() + width(), e->pos().y() );
+}
+
+void CandidateWindow::resizeEvent( QResizeEvent *e )
+{
+    // move subwindow
+    subWin->layoutWindow( pos().x() + e->size().width(), pos().y() );
 }
