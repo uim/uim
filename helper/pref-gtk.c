@@ -308,17 +308,21 @@ create_setting_button_box(const char *group_name)
   gtk_button_box_set_layout(GTK_BUTTON_BOX(setting_button_box), GTK_BUTTONBOX_END);
   gtk_box_set_spacing(GTK_BOX(setting_button_box), 8);
 
+  /* Apply button */
+  button = gtk_button_new_from_stock(GTK_STOCK_APPLY);
+  gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 8);
+
   /* Cancel button */
   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(gtk_main_quit), NULL);
-  gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 2);
+  gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 8);
 
-  /* Apply button */
+  /* OK button */
   button = gtk_button_new_from_stock(GTK_STOCK_OK);
   /*  g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(change_input_method), radio0);*/
-  gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 2);
+  gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 8);
   return setting_button_box;
 }
 
