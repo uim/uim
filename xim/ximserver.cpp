@@ -54,6 +54,7 @@ extern std::list<UIMInfo> uim_info;
 static int check_modifier(std::list<KeySym> list);
 static int gShiftMask, gLockMask, gControlMask, gMod1Mask,
 	   gMod2Mask, gMod3Mask, gMod4Mask, gMod5Mask;
+static int gXNumLockMask;
 
 
 // tables
@@ -140,6 +141,10 @@ void XimServer::changeContext(const char *engine) {
     for (it = ic_list.begin(); it != ic_list.end(); it++) {
 	(*it)->changeContext(engine);
     }
+    // make sure to update locale of focused context
+    InputContext *focusedContext = InputContext::focusedContext();
+    if (focusedContext)
+	focusedContext->focusIn();
 }
 
 struct input_style *
@@ -291,9 +296,9 @@ InputContext::InputContext(XimServer *svr, XimIC *ic, const char *engine)
     mServer = svr;
     mEngineName = NULL;
     mLocaleName = NULL;
+    mFocusedContext = this;
     mUc = createUimContext(engine);
     mCandwinActive = false;
-    mFocusedContext = this;
     mNumPage = 1;
     mDisplayLimit = 0;
 }
@@ -382,7 +387,8 @@ InputContext::createUimContext(const char *engine)
     uim_set_prop_label_update_cb(uc,
 				 InputContext::update_prop_label_cb);
 
-    uim_prop_list_update(uc);
+    if (mFocusedContext == this)
+	uim_prop_list_update(uc);
 
     return uc;
 }
@@ -757,6 +763,62 @@ keyState::~keyState()
 void keyState::check_key(keyEventX *x)
 {
     mModifier = 0;
+
+    if (x->press) {
+	m_bPush = true;
+
+	if (!(g_option_mask & OPT_ON_DEMAND_SYNC)) {
+	    // Only KeyPress is forwarded with full-synchronous
+	    // method.  So reset modifiers here.
+	    if (!(x->state) || x->state == LockMask || x->state == gXNumLockMask)
+		mAltOn = mMetaOn = mSuperOn = mHyperOn = false;
+	}
+
+	switch (x->key_sym) {
+	case XK_Alt_L:
+	case XK_Alt_R:
+	    mAltOn = true;
+	    break;
+	case XK_Meta_L:
+	case XK_Meta_R:
+	    mMetaOn = true;
+	    break;
+	case XK_Super_L:
+	case XK_Super_R:
+	    mSuperOn = true;
+	    break;
+	case XK_Hyper_L:
+	case XK_Hyper_R:
+	    mHyperOn = true;
+	    break;
+	default:
+	    break;
+	}
+    } else {
+	m_bPush = false;
+
+	switch (x->key_sym) {
+	case XK_Alt_L:
+	case XK_Alt_R:
+	    mAltOn = false;
+	    break;
+	case XK_Meta_L:
+	case XK_Meta_R:
+	    mMetaOn = false;
+	    break;
+	case XK_Super_L:
+	case XK_Super_R:
+	    mSuperOn = false;
+	    break;
+	case XK_Hyper_L:
+	case XK_Hyper_R:
+	    mHyperOn = false;
+	    break;
+	default:
+	    break;
+	}
+    }
+
     if (x->state & ShiftMask)
 	mModifier |= gShiftMask;
     if (x->state & LockMask)
@@ -812,54 +874,6 @@ void keyState::check_key(keyEventX *x)
 	case XK_Hyper_L: mKey = UKey_Hyper_key; break;
 	case XK_Hyper_R: mKey = UKey_Hyper_key; break;
 	default: mKey = UKey_Other;
-	}
-    }
-
-    if (x->press) {
-	m_bPush = true;
-
-	switch (x->key_sym) {
-	case XK_Alt_L:
-	case XK_Alt_R:
-	    mAltOn = true;
-	    break;
-	case XK_Meta_L:
-	case XK_Meta_R:
-	    mMetaOn = true;
-	    break;
-	case XK_Super_L:
-	case XK_Super_R:
-	    mSuperOn = true;
-	    break;
-	case XK_Hyper_L:
-	case XK_Hyper_R:
-	    mHyperOn = true;
-	    break;
-	default:
-	    break;
-	}
-    } else {
-	m_bPush = false;
-
-	switch (x->key_sym) {
-	case XK_Alt_L:
-	case XK_Alt_R:
-	    mAltOn = false;
-	    break;
-	case XK_Meta_L:
-	case XK_Meta_R:
-	    mMetaOn = false;
-	    break;
-	case XK_Super_L:
-	case XK_Super_R:
-	    mSuperOn = false;
-	    break;
-	case XK_Hyper_L:
-	case XK_Hyper_R:
-	    mHyperOn = false;
-	    break;
-	default:
-	    break;
 	}
     }
 }
@@ -956,9 +970,9 @@ void init_modifier_keys() {
 		KeySym ks;
 		int index = 0;
 		do {
-			ks = XKeycodeToKeysym(XimServer::gDpy,
-					map->modifiermap[k], index);
-			index++;
+		    ks = XKeycodeToKeysym(XimServer::gDpy,
+				    map->modifiermap[k], index);
+		    index++;
 		} while (!ks && index < keysyms_per_keycode);
 
 		switch (i) {
@@ -972,7 +986,11 @@ void init_modifier_keys() {
 		case Mod5MapIndex: Mod5MaskSyms.push_back(ks); break;
 		default: break;
 		}
-	    }k++;
+		// Check NumLock key
+		if (ks == XK_Num_Lock)
+		    gXNumLockMask |= (1 << i);
+	    }
+	    k++;
 	}
     }
     XFreeModifiermap(map);

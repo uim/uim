@@ -507,14 +507,16 @@ void Connection::xim_open(RxPacket *p)
     t = createTxPacket(XIM_SET_EVENT_MASK, 0);
     t->pushC16(imid);
     t->pushC16(0);
-    t->pushC32(KeyPressMask|KeyReleaseMask);
-    if (g_option_mask & OPT_ON_DEMAND_SYNC)
+    if (g_option_mask & OPT_ON_DEMAND_SYNC) {
+	t->pushC32(KeyPressMask|KeyReleaseMask);
 	t->pushC32(~(KeyPressMask|KeyReleaseMask)); // no need to send
 						    // XIM_SYNC_REPLY from
 						    // XIM server
-    else 
-	t->pushC32(KeyPressMask|KeyReleaseMask); // need to send XIM_SYNC_REPLY
-    						 // from XIM server
+    } else {
+	t->pushC32(KeyPressMask);
+	t->pushC32(KeyPressMask); // need to send XIM_SYNC_REPLY from XIM server
+    }
+
     push_packet(t);
 }
 

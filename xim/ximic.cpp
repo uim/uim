@@ -502,10 +502,11 @@ int XimIC::get_ic_atr(int id, TxPacket *t)
 	break;
     case ICA_FilterEvents:
 	if (g_option_mask & OPT_ON_DEMAND_SYNC)
-	  t->pushC32(KeyPressMask|KeyReleaseMask);
-	else
-	  t->pushC32(KeyPressMask); // sending KeyReleaseMask causes problem
-				    // on some clients (mozilla)
+	    t->pushC32(KeyPressMask|KeyReleaseMask);
+	else // Filtering KeyRelease event with full-synchronous method
+	     //	causes problem with mozilla (1.7.3) gtk2 on navigation
+	     //	toolbar's auto text completion...
+	    t->pushC32(KeyPressMask); 
 	break;
     case ICA_InputStyle:
 	t->pushC32(m_xatr.input_style);
