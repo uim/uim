@@ -1536,7 +1536,7 @@ learn_word_to_cand_array(struct skk_cand_array *ca, char *word)
 static char *
 sanitize_word(const char *arg)
 {
-  char *tmp;
+  const char *tmp;
   if (!arg || !strlen(arg)) {
     return NULL;
   }
@@ -1998,8 +1998,8 @@ skk_lib_save_personal_dictionary(uim_lisp fn_)
 static uim_lisp
 skk_lib_get_annotation(uim_lisp str_)
 {
-  char *str = uim_scm_refer_c_str(str_);
-  char *sep = strrchr(str, ';');
+  const char *str = uim_scm_refer_c_str(str_);
+  const char *sep = strrchr(str, ';');
   uim_lisp res;
   if (sep) {
     sep++;

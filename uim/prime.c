@@ -89,7 +89,7 @@ prime_init_ud(char *path)
 
   if(connect(fd, (struct sockaddr *)&server,sizeof(server)) == -1){
     close(fd);
-    //fprintf(stderr, "connect failed\n");
+    /* fprintf(stderr, "connect failed\n"); */
     return -1;
   }
   
