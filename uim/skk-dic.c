@@ -1380,12 +1380,12 @@ reorder_candidate(struct skk_cand_array *ca, char *str)
       ca->cands[i] = ca->cands[i - 1];
     }
     ca->cands[0] = tmp;
+    skk_dic->cache_modified = 1;
   }
   /**/
   if (nth >= ca->nr_real_cands) {
     ca->nr_real_cands ++;
   }
-  skk_dic->cache_modified = 1;
 }
 
 static void
