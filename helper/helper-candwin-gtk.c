@@ -67,6 +67,11 @@ struct _UIMCandidateWindow {
   gint candidate_index;
   gint page_index;
 
+  gint pos_x;
+  gint pos_y;
+  gint width;
+  gint height;
+
   gboolean is_active;
 };
 
@@ -86,6 +91,8 @@ UIMCandidateWindow *candidate_window_new(void);
 static gint uim_cand_win_gtk_get_index(UIMCandidateWindow *cwin);
 static void uim_cand_win_gtk_set_index(UIMCandidateWindow *cwin, gint index);
 static void uim_cand_win_gtk_set_page(UIMCandidateWindow *cwin, gint page);
+
+static void uim_cand_win_gtk_layout(void);
 
 #define NR_CANDIDATES 10 /* FIXME! not used */
 #define CANDWIN_DEFAULT_WIDTH	80
@@ -113,6 +120,7 @@ static gboolean tree_selection_changed(GtkTreeSelection *selection,
 #if 0
 static gboolean tree_view_button_press(GtkWidget *widget, GdkEventButton *event, gpointer data);
 #endif
+static gboolean configure_event_cb(GtkWidget *widget, GdkEventConfigure *event, gpointer data);
 
 static GType candidate_window_type = 0;
 static GTypeInfo const object_info = {
@@ -276,6 +284,8 @@ init_candidate_win(void) {
   cwin = candidate_window_new();
   g_signal_connect(G_OBJECT(cwin), "index-changed",
 		   G_CALLBACK(index_changed_cb), NULL);
+  g_signal_connect(G_OBJECT(cwin), "configure_event",
+		   G_CALLBACK(configure_event_cb), NULL);
 }
 
 static void
@@ -344,6 +354,8 @@ candidate_window_init(UIMCandidateWindow *cwin)
   		   G_CALLBACK(tree_view_button_press), cwin);
 #endif
 
+  cwin->pos_x = 0;
+  cwin->pos_y = 0;
   cwin->is_active = FALSE;
 
   gtk_widget_show(cwin->scrolled_window);
@@ -359,7 +371,6 @@ candwin_activate(gchar **str)
   gint i, nr_stores = 1;
   guint j = 1;
   gchar *utf8_str;
-  gint candwin_width, candwin_height;
   const gchar *charset;
   guint display_limit;
   GSList *candidates = NULL;
@@ -374,11 +385,6 @@ candwin_activate(gchar **str)
     g_object_unref(G_OBJECT(store));
   }
 
-  gtk_window_get_size(GTK_WINDOW(cwin), &candwin_width, &candwin_height);
-  if (candwin_width > CANDWIN_DEFAULT_WIDTH)
-    gtk_window_resize(GTK_WINDOW(cwin),
-		    CANDWIN_DEFAULT_WIDTH, candwin_height);
-  
   if (!strncmp(str[1], "charset=", 8))
     charset = str[1] + 8;
   else
@@ -464,32 +470,10 @@ candwin_update(gchar **str)
 static void
 candwin_move(char **str)
 {
-  int x, y;
-  int topwin_x, topwin_y;
-  int cw_wi, cw_he, sc_wi, sc_he;
+  sscanf(str[1], "%d", &cwin->pos_x);
+  sscanf(str[2], "%d", &cwin->pos_y);
 
-  sscanf(str[1], "%d", &topwin_x);
-  sscanf(str[2], "%d", &topwin_y);
-
-  gtk_window_get_size(GTK_WINDOW(cwin), &cw_wi, &cw_he);
-
-  sc_wi = gdk_screen_get_width(gdk_screen_get_default());
-  sc_he = gdk_screen_get_height(gdk_screen_get_default());
-
-  if (sc_wi < topwin_x + cw_wi) {
-    x = topwin_x - cw_wi;
-  } else {
-    x = topwin_x;
-  }
-
-  if (sc_he < topwin_y + cw_he) {
-    /* FIXME : How can I determine the preedit height? */
-    y = topwin_y - cw_he - 20;
-  } else {
-    y = topwin_y;
-  }
-
-  gtk_window_move(GTK_WINDOW(cwin), x, y);
+  uim_cand_win_gtk_layout();
 }
 
 static void
@@ -666,5 +650,42 @@ uim_cand_win_gtk_set_page(UIMCandidateWindow *cwin, gint page)
   if (new_index >= cwin->nr_candidates)
     new_index = cwin->nr_candidates - 1;
 
+ /* shrink the window */
+  gtk_window_resize(GTK_WINDOW(cwin), CANDWIN_DEFAULT_WIDTH, 1);
+
   uim_cand_win_gtk_set_index(cwin, new_index);
+}
+
+static void
+uim_cand_win_gtk_layout()
+{
+  int x, y;
+  int screen_width, screen_height;
+
+  screen_width = gdk_screen_get_width(gdk_screen_get_default());
+  screen_height = gdk_screen_get_height(gdk_screen_get_default());
+
+  if (screen_width < cwin->pos_x + cwin->width)
+    x = cwin->pos_x - cwin->width;
+  else
+    x = cwin->pos_x;
+
+  if (screen_height < cwin->pos_y + cwin->height)
+    y = cwin->pos_y - cwin->height - 20; /* FIXME: Preedit height is needed to
+					    be sent by uim-xim */
+  else
+    y = cwin->pos_y;
+
+  gtk_window_move(GTK_WINDOW(cwin), x, y);
+}
+
+static gboolean
+configure_event_cb(GtkWidget *widget, GdkEventConfigure *event, gpointer data)
+{
+  cwin->width = event->width;
+  cwin->height = event->height;
+
+  uim_cand_win_gtk_layout();
+
+  return FALSE;
 }
