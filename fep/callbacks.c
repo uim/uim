@@ -566,7 +566,10 @@ static void make_page_strs(void)
           /* インデックスはなし */
 
           index_width = UNDEFINED;
-          cand_width = s_max_width - strlen(" ");
+          if (cand_width > s_max_width) {
+            cand_width = s_max_width;
+          }
+          cand_width -= strlen(" ");
           cand_width = strhead(cand_str, cand_width);
           if (cand_width <= cand_label_width + strlen(":")) {
             cand_width = 1;

@@ -174,7 +174,7 @@ int strwidth(const char *str)
 {
   int width = 0;
   for (; *str != '\0'; str++) {
-    if (isascii(*str)) {
+    if (isascii((unsigned char)*str)) {
       width++;
     } else {
       if (s_utf8) {
@@ -265,7 +265,7 @@ int byte2width(const char *str, int n)
   }
 
   for (; *str != '\0'; str++) {
-    if (isascii(*str)) {
+    if (isascii((unsigned char)*str)) {
       char_width = 1;
       char_byte = 1;
     } else {
@@ -369,7 +369,7 @@ int byte2width2(const char *str, int n)
   }
 
   for (; *str != '\0'; str++) {
-    if (isascii(*str)) {
+    if (isascii((unsigned char)*str)) {
       char_width = 1;
       char_byte = 1;
     } else {
@@ -461,7 +461,7 @@ int *width2byte(const char *str, int n)
   static int rval[2];
 
   for (; *str != '\0'; str++) {
-    if (isascii(*str)) {
+    if (isascii((unsigned char)*str)) {
       char_width = 1;
       char_byte = 1;
     } else {
@@ -559,7 +559,7 @@ int *width2byte2(const char *str, int n)
   static int rval[2];
 
   for (; *str != '\0'; str++) {
-    if (isascii(*str)) {
+    if (isascii((unsigned char)*str)) {
       char_width = 1;
       char_byte = 1;
     } else {

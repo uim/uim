@@ -266,7 +266,7 @@ static char *escseq2n(const char *escseq)
     return NULL;
   }
   n2 = n += 2;
-  while (isdigit(n2[0])) {
+  while (isdigit((unsigned char)n2[0])) {
     n2++;
   }
   if (n2[0] == 'm') {
@@ -296,7 +296,7 @@ static void escseq2n2(const char *escseq, const char **first, const char **secon
     return;
   }
   n2 = n += 2;
-  while (isdigit(n2[0])) {
+  while (isdigit((unsigned char)n2[0])) {
     n2++;
   }
   if (n2[0] == ';') {
@@ -307,7 +307,7 @@ static void escseq2n2(const char *escseq, const char **first, const char **secon
     return;
   }
   n = ++n2;
-  while (isdigit(n2[0])) {
+  while (isdigit((unsigned char)n2[0])) {
     n2++;
   }
   if (n2[0] == 'm') {
@@ -487,96 +487,67 @@ void put_restore_cursor(void)
  */
 struct point_tag get_cursor_position(void)
 {
-  char ibuf[100];
-  char *ibuf_offset;
-  ssize_t len;
-  char *escseq = NULL;
-  int loop_count = 0;
-  char *unget_buf = NULL;
-  char *unget_buf2 = NULL;
-  int buf_size = 0;
-  int offset = 0;
+  char ibuf[BUFSIZ];
+  ssize_t len = 0;
+  char *escseq = ibuf - 1;
+  int loop_count;
+
+  assert(!s_no_report_cursor);
+
   if (s_cursor.row != UNDEFINED) {
     return s_cursor;
   }
+
   write(g_win_out, "\033[6n", strlen("\033[6n"));
 
-  do {
-    /* 10回ループしてもだめだったら終了 */
-    if (loop_count++ >= 10) {
-      break;
+  for (loop_count = 0; loop_count < 10; loop_count++) {
+    char *next_escseq;
+    len += read_stdin(ibuf + len, sizeof(ibuf) - len);
+    ibuf[len] = '\0';
+
+    debug2(("get = \""));
+    debug_write2(ibuf, len);
+    debug2(("\"\n"));
+
+    if (escseq != ibuf - 1) {
+      escseq--;
     }
-    ibuf_offset = ibuf + offset;
-    len = read_stdin(ibuf_offset, sizeof(ibuf) - offset);
-    if (len <= 0) {
-      continue;
-    }
-    ibuf_offset[len] = '\0';
-    debug2(("get = %s\n", ibuf));
-    escseq = strstr(ibuf, "\033");
-    if (escseq != NULL) {
+    while ((next_escseq = memchr(escseq + 1, ESCAPE_CODE, len - (escseq - ibuf) - 1)) != NULL) {
       int n;
-      unget_buf2 = malloc(offset + len);
-      /* unget_buf2[0] == 'R' */
-      n = sscanf(escseq, "\033[%d;%d%s", &(s_cursor.row), &(s_cursor.col), unget_buf2);
-      if (n < 3) {
-        /* ESCはあるが, エスケープシーケンスとしては不十分 */
-        offset += len;
-        s_cursor.row = s_cursor.col = UNDEFINED;
-      } else {
-        char *R = strchr(escseq, 'R');
-        /* Rは必ずある */
-        assert(R != NULL);
-        /* Rの次に文字があるか */
-        if (R[1] != '\0') {
-          strcpy(unget_buf2, R + 1);
-        } else {
-          free(unget_buf2);
-          unget_buf2 = NULL;
+      char R;
+      escseq = next_escseq;
+      n = sscanf(escseq, "\033[%d;%d%c", &(s_cursor.row), &(s_cursor.col), &R);
+      if (n == 3 && R == 'R') {
+        char *next_to_R = strchr(escseq, 'R') + 1;
+        /* エスケープシーケンスの前に文字列があるか */
+        if (escseq > ibuf) {
+          unget_stdin(ibuf, escseq - ibuf);
         }
+
+        /* エスケープシーケンスの後の文字列 */
+        unget_stdin(next_to_R, len - (next_to_R - ibuf));
+
+        s_cursor.row--;
+        s_cursor.col--;
+        s_cursor.row -= s_cursor_diff.row;
+        s_cursor.col -= s_cursor_diff.col;
+
+        /* GNU screen ではこうなることがある */
+        if (s_cursor.col > g_win->ws_col - 1) {
+          put_crlf();
+        }
+        debug(("<get row = %d col = %d>", s_cursor.row, s_cursor.col));
+        return s_cursor;
+
+      } else {
+        /* ESCはあるが, エスケープシーケンスとしては不十分 */
+        s_cursor.row = s_cursor.col = UNDEFINED;
       }
-    } else {
-      offset += len;
     }
-  } while (s_cursor.row == UNDEFINED);
-
-  /* エスケープシーケンスの前に文字列があるか */
-  if (escseq > ibuf) {
-    unget_buf = malloc(escseq - ibuf);
-    memcpy(unget_buf, ibuf, escseq - ibuf);
-    buf_size += (escseq - ibuf);
   }
 
-  /* エスケープシーケンスの後に文字列があるか */
-  if (unget_buf2 != NULL) {
-    int buf_size2 = strlen(unget_buf2);
-    unget_buf = realloc(unget_buf, buf_size + buf_size2);
-    memcpy(unget_buf + buf_size, unget_buf2, buf_size2);
-    buf_size += buf_size2;
-    free(unget_buf2);
-  }
-
-  if (buf_size > 0) {
-    unget_stdin(unget_buf, buf_size);
-    free(unget_buf);
-  }
-
-  if (s_cursor.row == UNDEFINED) {
-    /* 失敗 */
-    /* s_cursor.row = s_cursor.col = 0; */
-    return s_cursor;
-  }
-
-  s_cursor.row--;
-  s_cursor.col--;
-  s_cursor.row -= s_cursor_diff.row;
-  s_cursor.col -= s_cursor_diff.col;
-
-  /* GNU screen ではこうなることがある */
-  if (s_cursor.col > g_win->ws_col - 1) {
-    put_crlf();
-  }
-  debug(("<get row = %d col = %d>", s_cursor.row, s_cursor.col));
+  unget_stdin(ibuf, len);
+  /* 失敗 */
   return s_cursor;
 }
 
@@ -766,10 +737,10 @@ static void set_attr(const char *str, int len)
       params[0] = 0;
       str++;
 
-      while (isdigit(str[0]) || str[0] == ';') {
-        if (isdigit(str[0])) {
+      while (isdigit((unsigned char)str[0]) || str[0] == ';') {
+        if (isdigit((unsigned char)str[0])) {
           int n = 0;
-          while (isdigit(str[0])) {
+          while (isdigit((unsigned char)str[0])) {
             n = n * 10 + str[0] - '0';
             str++;
           }
@@ -1080,7 +1051,7 @@ char *cut_padding(const char *escseq)
   for (i = 0, j = 0; escseq[i] != '\0';) {
     if (escseq[i] == '$' && escseq[i + 1] == '<') {
       int i2 = i + 1;
-      while (isdigit(escseq[++i2]));
+      while (isdigit((unsigned char)escseq[++i2]));
       if (escseq[i2] == '>') {
         i = i2 + 1;
         if (escseq[i] == '\0') {

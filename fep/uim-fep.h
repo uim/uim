@@ -62,16 +62,22 @@ void done(int exit_value);
 #if DEBUG > 2
 #define debug2(arg) _debug arg
 #define debug(arg) _debug arg
+#define debug_write2(str, len) _debug_write(str, len)
+#define debug_write(str, len) _debug_write(str, len)
 void _debug(const char *fmt, ...);
 
 #elif DEBUG == 2
 #define debug2(arg)
 #define debug(arg) _debug arg
+#define debug_write2(str, len)
+#define debug_write(str, len) _debug_write(str, len)
 
 void _debug(const char *fmt, ...);
 #else
 #define debug2(arg)
 #define debug(arg)
+#define debug_write2(str, len)
+#define debug_write(str, len)
 #endif
 
 #define return_if_fail(arg) if (!(arg)) { printf("assertion failed %s %d", __FILE__, __LINE__); return; }
@@ -79,6 +85,8 @@ void _debug(const char *fmt, ...);
 #else
 #define debug2(arg)
 #define debug(arg)
+#define debug_write2(str, len)
+#define debug_write(str, len)
 #define return_if_fail(arg) if (!(arg)) { return; }
 #endif
 

@@ -646,11 +646,11 @@ static void main_loop(void)
         close(s_setmode_fd);
         s_setmode_fd = open(s_path_setmode, O_RDONLY | O_NONBLOCK);
       }
-      for (end = len - 1; end >= 0 && !isdigit(buf[end]); --end);
+      for (end = len - 1; end >= 0 && !isdigit((unsigned char)buf[end]); --end);
       /* プリエディットを編集中でなければモードを変更する */
       if (end >= 0 && !g_start_preedit) {
         int mode;
-        for (start = end; start > 0 && isdigit(buf[start - 1]); --start);
+        for (start = end; start > 0 && isdigit((unsigned char)buf[start - 1]); --start);
         buf[end + 1] = '\0';
         mode = atoi(&buf[start]);
         if (mode != uim_get_current_mode(s_context)) {
@@ -693,8 +693,10 @@ static void main_loop(void)
             if (key == UKey_Escape) {
               if (i + 1 < len) {
                 /* Alt+キー */
-                key_state = UMod_Alt;
-                continue;
+                if (key_state != UMod_Alt) {
+                  key_state = UMod_Alt;
+                  continue;
+                }
               } else if (s_timeout > 0) {
                 struct timeval t;
                 FD_ZERO(&fds);
@@ -1004,16 +1006,25 @@ static void version(void)
 }
 
 #if defined(DEBUG) && DEBUG > 1
+static FILE *_log = NULL;
 void _debug(const char *fmt, ...)
 {
-  static FILE *log = NULL;
   va_list ap;
-  if (log == NULL) {
-    log = fopen("uim-fep-log", "w");
+  if (_log == NULL) {
+    _log = fopen("uim-fep-log", "w");
   }
   va_start(ap, fmt);
-  vfprintf(log, fmt, ap);
+  vfprintf(_log, fmt, ap);
   va_end(ap);
-  fflush(log);
+  fflush(_log);
+}
+
+void _debug_write(const char *str, int len)
+{
+  if (_log == NULL) {
+    _log = fopen("uim-fep-log", "w");
+  }
+  fwrite(str, 1, len, _log);
+  fflush(_log);
 }
 #endif
