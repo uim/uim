@@ -291,6 +291,7 @@ public:
 
 protected:
     virtual void keyPressEvent( QKeyEvent *e );
+    virtual bool eventFilter( QObject * watched, QEvent * e );
 
 protected:
     QString m_keystr;
