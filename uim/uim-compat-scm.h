@@ -107,6 +107,19 @@ uim_scm_nreverse(uim_lisp cell);
 void
 uim_scm_init_fsubr(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp));
 
+/*
+  C representation of list: These interfaces are not yet stable and
+  may be altered in near future. Be careful to use.
+    -- YamaKen 2004-01-06
+*/
+typedef void *(*uim_scm_c_list_conv_func)(uim_lisp elem);
+typedef void (*uim_scm_c_list_free_func)(void *elem);
+
+void **uim_scm_c_list(const char *list_repl, const char *mapper_proc,
+		      uim_scm_c_list_conv_func conv_func);
+char *uim_scm_c_str_failsafe(uim_lisp str);
+char **uim_scm_c_str_list(const char *list_repl, const char *mapper_proc);
+void uim_scm_c_list_free(void **list, uim_scm_c_list_free_func free_func);
 
 /* function table for dynamic loading */
 struct uim_api_tbl {

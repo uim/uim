@@ -41,6 +41,7 @@
 #include "context.h"
 
 
+static uim_lisp return_val;
 static uim_lisp quote_sym;
 
 
@@ -239,9 +240,76 @@ uim_scm_init_fsubr(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp))
   init_fsubr(name, (LISP (*)(LISP, LISP))fcn);
 }
 
+/*
+  - list_repl must always returns same list for each evaluation
+  - returns NULL terminated array. NULL will not appeared except terminator
+  - non-string element such as #f is converted to ""
+ */
+void **
+uim_scm_c_list(const char *list_repl, const char *mapper_proc,
+	       uim_scm_c_list_conv_func conv_func)
+{
+  int list_len, i;
+  void **result;
+
+  UIM_EVAL_FSTRING1(NULL, "(length %s)", list_repl);
+  return_val = uim_scm_return_value();
+  list_len = uim_scm_c_int(return_val);
+
+  result = (void **)malloc(sizeof(void *) * (list_len + 1));
+  if (!result)
+    return NULL;
+
+  result[list_len] = NULL;
+  for (i = 0; i < list_len; i++) {
+    UIM_EVAL_FSTRING3(NULL, "(%s (nth %d %s))", mapper_proc, i, list_repl);
+    return_val = uim_scm_return_value();
+    result[i] = (*conv_func)(return_val);
+  }
+
+  return result;
+}
+
+char *
+uim_scm_c_str_failsafe(uim_lisp str)
+{
+  char *c_str;
+  c_str = uim_scm_c_str(str);
+  return (c_str) ? c_str : strdup("");
+}
+
+char **
+uim_scm_c_str_list(const char *list_repl, const char *mapper_proc)
+{
+  void **list;
+  
+  list = uim_scm_c_list(list_repl, mapper_proc,
+			(uim_scm_c_list_conv_func)uim_scm_c_str_failsafe);
+
+  return (char **)list;
+}
+
+void
+uim_scm_c_list_free(void **list, uim_scm_c_list_free_func free_func)
+{
+  void *elem;
+  void **p;
+
+  if (!list)
+    return;
+
+  for (p = list; elem = *p; p++) {
+    free_func(elem);
+  }
+  free(list);
+}
+
 void
 uim_init_compat_scm_subrs(void)
 {
+  return_val = uim_scm_f();
   quote_sym = uim_scm_intern_c_str("quote");
+
+  uim_scm_gc_protect(&return_val);
   uim_scm_gc_protect(&quote_sym);
 }
