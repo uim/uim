@@ -55,7 +55,7 @@ void CustomCheckBox::update()
 {
     if( !m_custom || m_custom->type != UCustom_Bool )
         return;
-    
+
     setText( _FU8(m_custom->label) );
     setChecked( m_custom->value->as_bool );
 
@@ -132,7 +132,7 @@ void CustomLineEdit::update()
 {
     if( !m_custom || m_custom->type != UCustom_Str )
         return;
-   
+
     setText( _FU8(m_custom->value->as_str) );
 
     /* sync with Label */
@@ -180,7 +180,7 @@ void CustomPathnameEdit::update()
 {
     if( !m_custom || m_custom->type != UCustom_Pathname )
         return;
-    
+
     m_lineEdit->setText( _FU8(m_custom->value->as_pathname) );
 
     /* sync with Label */
@@ -222,7 +222,7 @@ void CustomPathnameEdit::slotCustomTextChanged( const QString & text )
 CustomChoiceCombo::CustomChoiceCombo( struct uim_custom *c, QWidget *parent, const char *name)
     : QComboBox( parent, name ),
       UimCustomItemIface( c )
-{    
+{
     QObject::connect( this, SIGNAL(activated(int)),
                       this, SLOT(slotActivated(int)) );
 
@@ -243,10 +243,10 @@ void CustomChoiceCombo::update()
     {
         int count = this->count();
         insertItem( _FU8((*item)->label), count ); // insert item at last
-        
+
         if( QString::compare( default_symbol, (*item)->symbol ) == 0 )
             default_index = index;
-        
+
         index++;
         item++;
     }
@@ -318,7 +318,7 @@ void CustomOrderedListEdit::update()
 {
     if( !m_custom || m_custom->type != UCustom_OrderedList )
         return;
-    
+
     updateText();
 
     /* sync with Label */
@@ -854,7 +854,7 @@ void KeyGrabForm::keyPressEvent( QKeyEvent *e )
      * Ignore Shift modifier for printable char keys for
      * easy-to-recognize key configuration.  uim-custom performs
      * implicit shift key encoding/decoding appropriately.
-     */        
+     */
     if ( ((qkey >= 256 || !isgraph(qkey))) && (e->stateAfter() & Qt::ShiftButton) )
     {
         if( qkey != Qt::Key_Shift )
@@ -901,6 +901,12 @@ void KeyGrabForm::keyPressEvent( QKeyEvent *e )
         break;
     case Qt::Key_BackSpace:
         editString.append( "backspace" );
+        break;
+    case Qt::Key_Delete:
+        editString.append( "delete" );
+        break;
+    case Qt::Key_Insert:
+        editString.append( "insert" );
         break;
     case Qt::Key_Escape:
         editString.append( "escape" );
