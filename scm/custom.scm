@@ -383,6 +383,7 @@
        ((eq? type 'key)
 	"")))))  ;; TODO
 
+;; Don't invoke this from a literalize-hook. It will cause infinite loop
 (define custom-definition-as-literal
   (lambda (sym)
     (let ((var (symbol->string sym))
