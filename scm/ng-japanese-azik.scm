@@ -608,3 +608,12 @@
    ;;ja-romaji-halfkana-skk-like-symbol-ruleset
    ja-azik-halfkana-core-ruleset
    ))
+
+(define ja-azik-hiragana-ruletree
+  (evmap-parse-ruleset ja-azik-hiragana-ruleset))
+
+(define ja-azik-katakana-ruletree
+  (evmap-parse-ruleset ja-azik-katakana-ruleset))
+
+(define ja-azik-halfkana-ruletree
+  (evmap-parse-ruleset ja-azik-halfkana-ruleset))

@@ -267,3 +267,12 @@
    ja-nicola-halfkana-core-ruleset
    ja-nicola-halfkana-postfixed-voiced-consonant-ruleset
    ja-nicola-jp106-pseudo-thumb-shift-ruleset))
+
+(define ja-nicola-hiragana-ruletree
+  (evmap-parse-ruleset ja-nicola-hiragana-ruleset))
+
+(define ja-nicola-katakana-ruletree
+  (evmap-parse-ruleset ja-nicola-katakana-ruleset))
+
+(define ja-nicola-halfkana-ruletree
+  (evmap-parse-ruleset ja-nicola-halfkana-ruleset))

@@ -203,7 +203,7 @@
     ((pkey_jp106_backslash)    ("ろ" "ロ" "ﾛ"))  ;; be careful
 
     ((pkey_jp106_0)            ("わ" "ワ" "ﾜ"))
-    ((pkey_jp106_0 mod_shift)  ("を" "ヲ" "ｦ"))
+    ((pkey_jp106_0 mod_Shift)  ("を" "ヲ" "ｦ"))
     ((pkey_jp106_y)            ("ん" "ン" "ﾝ"))
 
     ((pkey_jp106_4           pkey_jp106_at) (("う" "゛") "ヴ" ("ｳ" "ﾞ")))
@@ -238,26 +238,26 @@
     ((pkey_jp106_asciicircum pkey_jp106_bracketleft) ("ぺ" "ペ" ("ﾍ" "ﾟ")))
     ((pkey_jp106_minus       pkey_jp106_bracketleft) ("ぽ" "ポ" ("ﾎ" "ﾟ")))
 
-    ((pkey_jp106_3           mod_shift)     ("ぁ" "ァ" "ｧ"))
-    ((pkey_jp106_e           mod_shift)     ("ぃ" "ィ" "ｨ"))
-    ((pkey_jp106_4           mod_shift)     ("ぅ" "ゥ" "ｩ"))
-    ((pkey_jp106_5           mod_shift)     ("ぇ" "ェ" "ｪ"))
-    ((pkey_jp106_6           mod_shift)     ("ぉ" "ォ" "ｫ"))
+    ((pkey_jp106_3           mod_Shift)     ("ぁ" "ァ" "ｧ"))
+    ((pkey_jp106_e           mod_Shift)     ("ぃ" "ィ" "ｨ"))
+    ((pkey_jp106_4           mod_Shift)     ("ぅ" "ゥ" "ｩ"))
+    ((pkey_jp106_5           mod_Shift)     ("ぇ" "ェ" "ｪ"))
+    ((pkey_jp106_6           mod_Shift)     ("ぉ" "ォ" "ｫ"))
 
-    ((pkey_jp106_7           mod_shift)     ("ゃ" "ャ" "ｬ"))
-    ((pkey_jp106_8           mod_shift)     ("ゅ" "ュ" "ｭ"))
-    ((pkey_jp106_9           mod_shift)     ("ょ" "ョ" "ｮ"))
+    ((pkey_jp106_7           mod_Shift)     ("ゃ" "ャ" "ｬ"))
+    ((pkey_jp106_8           mod_Shift)     ("ゅ" "ュ" "ｭ"))
+    ((pkey_jp106_9           mod_Shift)     ("ょ" "ョ" "ｮ"))
 
-    ((pkey_jp106_z           mod_shift)     ("っ" "ッ" "ｯ"))
+    ((pkey_jp106_z           mod_Shift)     ("っ" "ッ" "ｯ"))
 
     ((pkey_jp106_at)                        ("゛" "゛" "ﾞ"))
     ((pkey_jp106_bracketleft)               ("゜" "゜" "ﾟ"))
     ((pkey_jp106_yen)                       ("ー" "ー" "ｰ"))  ;; be careful
-    ((pkey_jp106_period       mod_shift)    ("。" "。" "｡"))
-    ((pkey_jp106_comma        mod_shift)    ("、" "、" "､"))
-    ((pkey_jp106_slash        mod_shift)    ("・" "・" "･"))
-    ((pkey_jp106_bracketleft  mod_shift)    ("「" "「" "｢"))
-    ((pkey_jp106_bracketright mod_shift)    ("」" "」" "｣"))  ;; be careful
+    ((pkey_jp106_period       mod_Shift)    ("。" "。" "｡"))
+    ((pkey_jp106_comma        mod_Shift)    ("、" "、" "､"))
+    ((pkey_jp106_slash        mod_Shift)    ("・" "・" "･"))
+    ((pkey_jp106_bracketleft  mod_Shift)    ("「" "「" "｢"))
+    ((pkey_jp106_bracketright mod_Shift)    ("」" "」" "｣"))  ;; be careful
     ))
 
 (define ja-kana-ruleset-name-list
@@ -269,3 +269,12 @@
 (define ja-kana-hiragana-ruleset ja-kana-hiragana-core-ruleset)
 (define ja-kana-katakana-ruleset ja-kana-katakana-core-ruleset)
 (define ja-kana-halfkana-ruleset ja-kana-halfkana-core-ruleset)
+
+(define ja-kana-hiragana-ruletree
+  (evmap-parse-ruleset ja-kana-hiragana-ruleset))
+
+(define ja-kana-katakana-ruletree
+  (evmap-parse-ruleset ja-kana-katakana-ruleset))
+
+(define ja-kana-halfkana-ruletree
+  (evmap-parse-ruleset ja-kana-halfkana-ruleset))

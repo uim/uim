@@ -62,9 +62,11 @@
 		    (filter-map (lambda (rule)
 				  (let* ((seq (evmap-rule-event-seq rule))
 					 (res (evmap-rule-action-seq rule))
-					 (listified (if (list? (car res))
-							res
-							(map list res))))
+					 (listified (map (lambda (elem)
+							   (if (list? elem)
+							       elem
+							       (list elem)))
+							 res)))
 				    (and (string=? letter
 						   (car seq))
 					 (list (cons letter seq)
@@ -673,3 +675,11 @@
    ja-romaji-halfkana-hepburn-irregular-double-consonant-ruleset
    ja-romaji-halfkana-skk-like-symbol-ruleset))
 
+(define ja-romaji-hiragana-ruletree
+  (evmap-parse-ruleset ja-romaji-hiragana-ruleset))
+
+(define ja-romaji-katakana-ruletree
+  (evmap-parse-ruleset ja-romaji-katakana-ruleset))
+
+(define ja-romaji-halfkana-ruletree
+  (evmap-parse-ruleset ja-romaji-halfkana-ruleset))

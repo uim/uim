@@ -429,6 +429,8 @@
     (("Y") ("£Ù"))
     (("Z") ("£Ú"))))
 
+(define ja-direct-ruleset '())
+
 ;; This ruleset will not be used in ordinary input method. Direct
 ;; input mode passes through almost of key events instead of using
 ;; this ruleset.
@@ -451,3 +453,12 @@
    ja-fullwidth-basic-symbol-ruleset
    ja-fullwidth-number-ruleset
    ja-fullwidth-alphabet-ruleset))
+
+(define ja-direct-ruletree
+  (evmap-parse-ruleset ja-direct-ruleset))
+
+(define ja-halfwidth-alphanumeric-ruletree
+  (evmap-parse-ruleset ja-halfwidth-alphanumeric-ruleset))
+
+(define ja-fullwidth-alphanumeric-ruletree
+  (evmap-parse-ruleset ja-fullwidth-alphanumeric-ruleset))
