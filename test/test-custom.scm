@@ -1949,7 +1949,7 @@
 		 (uim '(custom-definition-as-literal 'test-style)))
    (uim '(custom-add-hook 'test-style 'custom-literalize-hooks
 			  (lambda () "(define test-style 'hooked2)")))
-   (assert-equal "(define test-style 'hooked2)(define test-style 'hooked)"
+   (assert-equal "(define test-style 'hooked2)\n(define test-style 'hooked)"
 		 (uim '(custom-definition-as-literal 'test-style)))))
 
 (define-uim-test-case "testcase custom interfaces"

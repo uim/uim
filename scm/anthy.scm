@@ -699,22 +699,20 @@
 	   (segments (anthy-context-segments ac))
 	   (cur-seg (ustr-cursor-pos segments))
 	   (separator (anthy-separator ac)))
-      (apply
-       append
-       (map (lambda (seg-idx cand-idx)
-	      (let* ((attr (if (= seg-idx cur-seg)
-			       (bit-or preedit-reverse
-				       preedit-cursor)
-			       preedit-underline))
-		     (cand (anthy-lib-get-nth-candidate ac-id
-							seg-idx cand-idx))
-		     (seg (list (cons attr cand))))
-		(if (and separator
-			 (< 0 seg-idx))
-		    (cons separator seg)
-		    seg)))
-	    (iota (ustr-length segments))
-	    (ustr-whole-seq segments))))))
+      (append-map
+       (lambda (seg-idx cand-idx)
+	 (let* ((attr (if (= seg-idx cur-seg)
+			  (bit-or preedit-reverse
+				  preedit-cursor)
+			  preedit-underline))
+		(cand (anthy-lib-get-nth-candidate ac-id seg-idx cand-idx))
+		(seg (list (cons attr cand))))
+	   (if (and separator
+		    (< 0 seg-idx))
+	       (cons separator seg)
+	       seg)))
+       (iota (ustr-length segments))
+       (ustr-whole-seq segments)))))
 
 (define anthy-input-state-preedit
   (lambda (ac)
@@ -744,11 +742,10 @@
   (lambda (ac)
     (let ((ac-id (anthy-context-ac-id ac))
 	  (segments (anthy-context-segments ac)))
-      (apply string-append
-	     (map (lambda (seg-idx cand-idx)
-		    (anthy-lib-get-nth-candidate ac-id seg-idx cand-idx))
-		  (iota (ustr-length segments))
-		  (ustr-whole-seq segments))))))
+      (string-append-map (lambda (seg-idx cand-idx)
+			   (anthy-lib-get-nth-candidate ac-id seg-idx cand-idx))
+			 (iota (ustr-length segments))
+			 (ustr-whole-seq segments)))))
 
 (define anthy-commit-string
   (lambda (ac)

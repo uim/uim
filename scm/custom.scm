@@ -112,7 +112,7 @@
      ((string? key)
       (list key))
      ((list? key)
-      (apply append (map custom-expand-key-references key)))
+      (append-map custom-expand-key-references key))
      ((and (symbol? key)
 	   (custom-exist? key 'key))
       (custom-expand-key-references (custom-value key)))
@@ -388,21 +388,16 @@
 
 (define custom-list-as-literal
   (lambda (lst)
-    (let* ((padded-list (map (lambda (elem)
-			       (list " "
-				     (cond
-				      ((symbol? elem)
-				       (symbol->string elem))
-				      ((string? elem)
-				       (string-append "\"" elem "\""))
-				      (else
-				       ""))))
-			     lst))
-	   (literalized (if (null? padded-list)
-			    ""
-			    (apply string-append
-				   (cdr (apply append padded-list))))))
-      (string-append "'(" literalized ")"))))
+    (let ((canonicalized (map (lambda (elem)
+				(cond
+				 ((symbol? elem)
+				  (symbol->string elem))
+				 ((string? elem)
+				  (string-append "\"" elem "\""))
+				 (else
+				  "")))
+			      lst)))
+      (string-append "'(" (string-join " " canonicalized) ")"))))
 
 ;; API
 (define custom-value-as-literal
@@ -436,7 +431,7 @@
 	  (val (custom-value-as-literal sym))
 	  (hooked (custom-call-hook-procs sym custom-literalize-hooks)))
       (if (not (null? hooked))
-	  (apply string-append hooked)
+	  (string-join "\n" hooked)
 	  (apply string-append
 		 (append
 		  (list "(define " var " " val ")")
