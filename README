@@ -13,7 +13,7 @@ How to test
 
 You can test them simply doing
 $ ./configure; make
-$ GTK_IM_MODULE=uim-py sh test.sh
+$ GTK_IM_MODULE=uim sh test.sh
 at the source directory.
 
 Currently implemented language modules
@@ -49,7 +49,7 @@ Currently, following input method systems are available.
 *hangul2 (Korean)
 *hangul3 (Korean)
 *ipa (International Phonetic Alphabet)
-
+*m17n-lib input methods.
 
 Installation
 ============
