@@ -909,8 +909,12 @@
        ;; 2. commits " " as native space (such as Qt::Key_Space)
        (if (skk-plain-space-key? key key-state)
 	   (begin
-	     (set! res (rk-push-key-last! rkc))
-	     (skk-commit-raw-with-preedit-update sc key key-state)
+	     (set! res (rk-push-key! rkc key-str))
+	     ;; For special exception, don't commit native space if
+	     ;; this key sequcence produce zenkaku space.
+	     (if (not (and res
+		           (string=? (car res) "¡¡")))
+		 (skk-commit-raw-with-preedit-update sc key key-state))
 	     #f)
 	   #t)
        ;; bad strategy. see bug #528
