@@ -111,6 +111,7 @@ AC_ARG_WITH(canna,
 	if test "x$with_canna" = "xyes"; then
 		AC_CHECK_HEADERS([canna/RK.h], [use_canna="yes"],
 				 [use_canna="no"], [ #undef _WCHAR_T ])
+    		AC_CHECK_LIB(canna, RkInitialize, use_canna=yes, use_canna=no)
 	else
 		use_canna="no"
 	fi

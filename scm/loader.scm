@@ -37,8 +37,7 @@
 
 (load-plugin "anthy")
 
-;; broken at now  -- YamaKen 2005-01-08
-;;(load-plugin "canna")
+(load-plugin "canna")
 
 (require "prime.scm")
 (require "skk.scm")

@@ -55,7 +55,7 @@ if CANNA
   uim_plugin_LTLIBRARIES += libuim-canna.la
   libuim_canna_la_SOURCES = canna.c
   libuim_canna_la_LIBADD = @LIBINTL@ @LIBICONV@ libuim.la
-  libuim_canna_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+  libuim_canna_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module -lcanna
   libuim_canna_la_CPPFLAGS = -I$(top_srcdir)
 endif
 

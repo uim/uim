@@ -1,9 +1,9 @@
 /*
-  $Id$
+  $Id:$
 
   canna.c: Canna for uim.
 
-  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003,2004,2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -44,6 +44,7 @@
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "siod.h"
+#include "plugin.h"
 
 #define MAX_CONTEXT 256
 #define LIBCANNA_SO	"libcanna.so"
@@ -69,63 +70,6 @@ static int context_array_len;
 static int rk_initialized = -1;
 static char *cannaserver = NULL;
 
-static struct canna_api {
-  void *lib;
-  /*  struct rkfuncs Rk; */
-  int (*RkInitialize)(char *);
-  int (*RkCreateContext)(void);
-  int (*RkCloseContext)(int);
-  int (*RkBgnBun)(int, char *, int, int);
-  int (*RkEndBun)(int, int);
-  int (*RkFinalize)(void);
-  int (*RkGetDicList)(int, char *, int);
-  int (*RkMountDic)(int, char *, int);
-  int (*RkNfer)(int);
-  int (*RkXfer)(int, int);
-  int (*RkEnlarge)(int);
-  int (*RkShorten)(int);
-  int (*RkGetStat)(int, RkStat *);
-  int (*RkGoTo)(int, int);
-  int (*RkGetKanji)(int, char *, int);
-  int (*RkGetKanjiList)(int, char *, int);
-  int (*RkSetServerName)(char *);
-} api;
-
-static int
-get_canna_api(void)
-{
-  api.lib = dlopen(LIBCANNA_SO, RTLD_NOW);
-  if(!api.lib)
-    return -1;
-
-  *(int **)(&api.RkInitialize) = dlsym(api.lib, "RkInitialize");
-  *(int **)(&api.RkFinalize) = dlsym(api.lib, "RkFinalize");
-  *(int **)(&api.RkGetDicList) = dlsym(api.lib, "RkGetDicList");
-  *(int **)(&api.RkMountDic) = dlsym(api.lib, "RkMountDic");
-  *(int **)(&api.RkCreateContext) = dlsym(api.lib, "RkCreateContext");
-  *(int **)(&api.RkCloseContext) = dlsym(api.lib, "RkCloseContext");
-  *(int **)(&api.RkBgnBun) = dlsym(api.lib, "RkBgnBun");
-  *(int **)(&api.RkEndBun) = dlsym(api.lib, "RkEndBun");
-  *(int **)(&api.RkGoTo) = dlsym(api.lib, "RkGoTo");
-  *(int **)(&api.RkGetKanji) = dlsym(api.lib, "RkGetKanji");
-  *(int **)(&api.RkGetKanjiList) = dlsym(api.lib, "RkGetKanjiList");
-  *(int **)(&api.RkGetStat) = dlsym(api.lib, "RkGetStat");
-  *(int **)(&api.RkXfer) = dlsym(api.lib, "RkXfer");
-  *(int **)(&api.RkNfer) = dlsym(api.lib, "RkXfer");
-  *(int **)(&api.RkEnlarge) = dlsym(api.lib, "RkEnlarge");
-  *(int **)(&api.RkShorten) = dlsym(api.lib, "RkShorten");
-  if(api.RkInitialize && api.RkFinalize && api.RkGetDicList &&
-     api.RkMountDic && api.RkCreateContext && api.RkCloseContext &&
-     api.RkBgnBun && api.RkEndBun && api.RkGoTo && api.RkGetKanji &&
-     api.RkGetKanjiList && api.RkGetStat && api.RkXfer && api.RkNfer &&
-     api.RkEnlarge && api.RkShorten)
-  {
-    /* ok! */
-    return 0;
-  }
-  return -1;
-}
-
 static struct canna_context *
 get_canna_context(int id)
 {
@@ -144,23 +88,20 @@ get_canna_context(int id)
   return context;
 }
 
-static LISP
-init_canna_lib(LISP str_)
+static uim_lisp
+init_canna_lib(uim_lisp str_)
 {
   struct canna_context *context;
   int i;
 
-  if (get_canna_api() == -1)
-    return NIL;
-
-  if(str_ != NIL)
+  if(str_ != uim_scm_f())
     cannaserver = uim_scm_c_str(str_);
   else
     cannaserver = NULL;
 
   context_array = malloc(sizeof(struct canna_context) * MAX_CONTEXT);
   if(context_array == NULL)
-    return NIL;
+    return uim_scm_f();
 
   context = context_array;
 
@@ -178,10 +119,10 @@ init_canna_lib(LISP str_)
     context++;
   }
 
-  return true_sym;
+  return uim_scm_t();
 }
 
-static LISP
+static uim_lisp
 create_context() {
   int i;
   char *buf;
@@ -189,9 +130,9 @@ create_context() {
   struct canna_context *cc = context_array;
 
   if(rk_initialized == -1) {
-    if(api.RkInitialize(cannaserver) == -1) {
+    if(RkInitialize(cannaserver) == -1) {
       fprintf(stderr, "%s\n", strerror(errno));
-      return NIL;
+      return uim_scm_f();
     }
     rk_initialized = 1;
   }
@@ -199,48 +140,48 @@ create_context() {
   for(i = 0; i < MAX_CONTEXT; i++) {
      if(cc->rk_context_id == -1) {
 	int dic_num;
-	cc->rk_context_id = api.RkCreateContext();
-	dic_num = api.RkGetDicList(cc->rk_context_id,
+	cc->rk_context_id = RkCreateContext();
+	dic_num = RkGetDicList(cc->rk_context_id,
 				   cc->diclist, BUFSIZE);
 	if(dic_num == 0) {
-	    return NIL;
+	    return uim_scm_f();
 	} else if(dic_num == -1) {
 	    /* invalid context number */
-	    return NIL;
+	    return uim_scm_f();
 	} else {
 	    int j;
 	    /* buf[] = "dicname1\0dicname2\0dicname3\0...dicname_n\0\0" */
 	    buf = cc->diclist;
 	    for(j = 0; j < dic_num; j++) {
-		api.RkMountDic(cc->rk_context_id, buf, 0);
+		RkMountDic(cc->rk_context_id, buf, 0);
 		buflen = strlen(buf) + 1;
 		buf += buflen;
 	    }
 	}
-	return intcons(i);
+	return uim_scm_make_int(i);
      }
      cc++;
   }
-  return NIL;
+  return uim_scm_f();
 }
 
-static LISP
-release_context(LISP id_)
+static uim_lisp
+release_context(uim_lisp id_)
 {
   int id = uim_scm_c_int(id_);
   struct canna_context *cc = get_canna_context(id);
 
   if(cc == NULL)
-    return NIL;
+    return uim_scm_f();
 
   if(cc->rk_context_id == -1)
-    return NIL;
+    return uim_scm_f();
 
-  if(api.RkCloseContext(cc->rk_context_id) != -1) {
+  if(RkCloseContext(cc->rk_context_id) != -1) {
     cc->rk_context_id = -1;
-    return true_sym;
+    return uim_scm_t();
   } else {
-    return NIL;
+    return uim_scm_f();
   }
 }
 
@@ -253,7 +194,7 @@ _reset_conversion(int id)
 
   if(cc->segment_num >= 0) {
      cc->segment_num = -1;
-     api.RkEndBun(cc->rk_context_id, 0);
+     RkEndBun(cc->rk_context_id, 0);
   }
 }
 
@@ -268,7 +209,7 @@ _update_status(int id)
   if(cc->rk_context_id == -1)
      return;
 
-  if(api.RkGetStat(cc->rk_context_id, &stat) == 0)
+  if(RkGetStat(cc->rk_context_id, &stat) == 0)
   {
     cc->current_segment_num = stat.bunnum;
     cc->current_cand_num = stat.candnum;
@@ -297,17 +238,17 @@ _update_segment (const int id, const int segment_num)
 
   for(i = 0; i <= tmp_segment_num; i++) {
     int len;
-    api.RkGoTo(cc->rk_context_id, i);
-    len = api.RkGetKanji(cc->rk_context_id, buf, BUFSIZE);
+    RkGoTo(cc->rk_context_id, i);
+    len = RkGetKanji(cc->rk_context_id, buf, BUFSIZE);
 /*    printf("segment: %d, buf: %s\n", i, buf); */
   }
 
-  api.RkGoTo(cc->rk_context_id, tmp_segment_num);
+  RkGoTo(cc->rk_context_id, tmp_segment_num);
   _update_status(id);
 }
 
-static LISP
-begin_conversion(LISP id_, LISP str_)
+static uim_lisp
+begin_conversion(uim_lisp id_, uim_lisp str_)
 {
   int id = uim_scm_c_int(id_);
   char *str;
@@ -315,22 +256,22 @@ begin_conversion(LISP id_, LISP str_)
   struct canna_context *cc = get_canna_context(id);
 
   if(cc == NULL)
-    return NIL;
+    return uim_scm_f();
 
   if(cc->rk_context_id == -1)
-    return NIL;
+    return uim_scm_f();
 
   mode = cc->rk_mode;
   str = uim_scm_c_str(str_);
   len = strlen(str);
 
-  segment_num = api.RkBgnBun(cc->rk_context_id, str, len, mode);
+  segment_num = RkBgnBun(cc->rk_context_id, str, len, mode);
 
   if(segment_num == -1) {
      /* failed to conversion */
      if(str != NULL)
 	free(str);
-     return NIL;
+     return uim_scm_f();
   }
 
   cc->segment_num = segment_num;
@@ -339,11 +280,11 @@ begin_conversion(LISP id_, LISP str_)
   if(str != NULL)
      free(str);
 
-  return intcons(cc->segment_num);
+  return uim_scm_make_int(cc->segment_num);
 }
 
-static LISP
-get_nth_candidate(LISP id_, LISP seg_, LISP nth_)
+static uim_lisp
+get_nth_candidate(uim_lisp id_, uim_lisp seg_, uim_lisp nth_)
 {
   int id = uim_scm_c_int(id_);
   int seg = uim_scm_c_int(seg_);
@@ -353,37 +294,37 @@ get_nth_candidate(LISP id_, LISP seg_, LISP nth_)
   int len;
 
   if(cc == NULL)
-    return NIL;
+    return uim_scm_f();
 
   _update_segment(id, seg);
   if(nth > cc->max_current_cand_num)
     nth = 0;
 
-  api.RkXfer(cc->rk_context_id, nth);
-  len = api.RkGetKanji(cc->rk_context_id, buf, BUFSIZE);
+  RkXfer(cc->rk_context_id, nth);
+  len = RkGetKanji(cc->rk_context_id, buf, BUFSIZE);
 
 /*  printf("nth: %d, kanji: %s\n", nth, buf); */
-  return strcons(len, buf);
+  return uim_scm_make_str(buf);
 }
 
-static LISP
-get_nr_segments(LISP id_)
+static uim_lisp
+get_nr_segments(uim_lisp id_)
 {
   int id = uim_scm_c_int(id_);
-  RkStat stat;
+/*  RkStat stat; */
   struct canna_context *cc = get_canna_context(id);
 
   if(cc == NULL)
-     return NIL;
+     return uim_scm_f();
 
   if(cc->rk_context_id == -1)
-     return NIL;
+     return uim_scm_f();
 
-  return intcons(cc->segment_num);
+  return uim_scm_make_int(cc->segment_num);
 }
 
-static LISP
-get_nr_candidate(LISP id_, LISP nth_)
+static uim_lisp
+get_nr_candidate(uim_lisp id_, uim_lisp nth_)
 {
   int id = uim_scm_c_int(id_);
   int nth = uim_scm_c_int(nth_);
@@ -391,21 +332,21 @@ get_nr_candidate(LISP id_, LISP nth_)
   struct canna_context *cc = get_canna_context(id);
 
   if(cc == NULL)
-     return NIL;
+     return uim_scm_f();
 
   if(cc->rk_context_id == -1)
-     return NIL;
+     return uim_scm_f();
 
-  api.RkGoTo(cc->rk_context_id, nth);
+  RkGoTo(cc->rk_context_id, nth);
 
-  if(api.RkGetStat(cc->rk_context_id, &stat) == 0)
-    return intcons(stat.maxcand);
+  if(RkGetStat(cc->rk_context_id, &stat) == 0)
+    return uim_scm_make_int(stat.maxcand);
   else
-    return NIL;
+    return uim_scm_f();
 }
 
-static LISP
-resize_segment(LISP id_, LISP s_, LISP nth_)
+static uim_lisp
+resize_segment(uim_lisp id_, uim_lisp s_, uim_lisp nth_)
 {
   int id = uim_scm_c_int(id_);
   int s = uim_scm_c_int(s_);
@@ -413,26 +354,26 @@ resize_segment(LISP id_, LISP s_, LISP nth_)
   struct canna_context *cc = get_canna_context(id);
 
   if(cc == NULL)
-     return NIL;
+     return uim_scm_f();
 
   if(cc->rk_context_id == -1)
-     return NIL;
+     return uim_scm_f();
 
-  api.RkGoTo(cc->rk_context_id, s);
-  api.RkNfer(cc->rk_context_id);
+  RkGoTo(cc->rk_context_id, s);
+  RkNfer(cc->rk_context_id);
 
   if(nth > 0)
-      cc->segment_num = api.RkEnlarge(cc->rk_context_id);
+      cc->segment_num = RkEnlarge(cc->rk_context_id);
   else
-      cc->segment_num = api.RkShorten(cc->rk_context_id);
+      cc->segment_num = RkShorten(cc->rk_context_id);
 
   _update_segment(id, cc->current_segment_num);
 
-  return true_sym;
+  return uim_scm_t();
 }
 
-static LISP
-commit_segment(LISP id_, LISP s_, LISP nth_)
+static uim_lisp
+commit_segment(uim_lisp id_, uim_lisp s_, uim_lisp nth_)
 {
   int id = uim_scm_c_int(id_);
   int s = uim_scm_c_int(s_);
@@ -440,55 +381,54 @@ commit_segment(LISP id_, LISP s_, LISP nth_)
   struct canna_context *cc = get_canna_context(id);
 
   if(cc == NULL)
-     return NIL;
+     return uim_scm_f();
 
   if(cc->rk_context_id == -1)
-     return NIL;
+     return uim_scm_f();
 
-  api.RkEndBun(cc->rk_context_id, 1);
+  RkEndBun(cc->rk_context_id, 1);
   cc->segment_num = -1;
+
+  return uim_scm_t();
 }
 
-static LISP
-reset_conversion(LISP id_)
+static uim_lisp
+reset_conversion(uim_lisp id_)
 {
   int id = uim_scm_c_int(id_);
 
   _reset_conversion(id);
+
+  return uim_scm_t();
 }
 
 void
-uim_init_canna(void)
+uim_plugin_instance_init(void)
 {
-  init_subr_1("canna-lib-init", init_canna_lib);
+  uim_scm_init_subr_1("canna-lib-init", init_canna_lib);
 
-  init_subr_0("canna-lib-alloc-context", create_context);
-  init_subr_1("canna-lib-release-context", release_context);
-  init_subr_3("canna-lib-get-nth-candidate", get_nth_candidate);
-  init_subr_1("canna-lib-get-nr-segments",get_nr_segments);
-  init_subr_2("canna-lib-get-nr-candidates", get_nr_candidate);
-  init_subr_3("canna-lib-resize-segment", resize_segment);
-  init_subr_2("canna-lib-begin-conversion", begin_conversion);
-  init_subr_3("canna-lib-commit-segment", commit_segment);
-  init_subr_1("canna-lib-reset-conversion", reset_conversion);
+  uim_scm_init_subr_0("canna-lib-alloc-context", create_context);
+  uim_scm_init_subr_1("canna-lib-release-context", release_context);
+  uim_scm_init_subr_3("canna-lib-get-nth-candidate", get_nth_candidate);
+  uim_scm_init_subr_1("canna-lib-get-nr-segments",get_nr_segments);
+  uim_scm_init_subr_2("canna-lib-get-nr-candidates", get_nr_candidate);
+  uim_scm_init_subr_3("canna-lib-resize-segment", resize_segment);
+  uim_scm_init_subr_2("canna-lib-begin-conversion", begin_conversion);
+  uim_scm_init_subr_3("canna-lib-commit-segment", commit_segment);
+  uim_scm_init_subr_1("canna-lib-reset-conversion", reset_conversion);
 }
 
 void
-uim_quit_canna(void)
+uim_plugin_instance_quit(void)
 {
   if(cannaserver != NULL) {
      free(cannaserver);
      cannaserver = NULL;
   }
 
-  if(api.RkFinalize && rk_initialized == 1) {
-     api.RkFinalize();
+  if(RkFinalize && rk_initialized == 1) {
+     RkFinalize();
      rk_initialized = -1;
-  }
-
-  if(api.lib) {
-     dlclose(api.lib);
-     memset(&api, 0, sizeof(struct canna_api));
   }
 
   if(context_array != NULL) {
