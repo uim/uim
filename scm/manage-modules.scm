@@ -51,7 +51,7 @@
       "\n"))))
 
 ;; TODO: write test
-(define generate-stub-ims-scm
+(define generate-loader-scm
   (lambda ()
     (puts
      (string-append

@@ -1,6 +1,6 @@
 EXTRA_DIST = $(SCM_FILES)
 scmdir = $(datadir)/uim
-scm_DATA = $(SCM_FILES) installed-modules.scm stub-ims.scm
+scm_DATA = $(SCM_FILES) installed-modules.scm loader.scm
 SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  default.scm \
  util.scm key.scm ustr.scm action.scm load-action.scm i18n.scm \
@@ -69,10 +69,10 @@ installed-modules.scm: $(SCM_FILES)
 	  $(top_builddir)/uim/uim-sh -B >>$@
 
 # TODO: resolve dependency to $(top_builddir)/uim/uim-sh in proper way
-stub-ims.scm: installed-modules.scm
+loader.scm: installed-modules.scm
 	$(MAKE) -C $(top_builddir)/uim uim-sh && \
 	echo -n >$@ && \
 	echo "(require \"manage-modules.scm\") \
-	      (generate-stub-ims-scm)" \
+	      (generate-loader-scm)" \
 	| LIBUIM_VERBOSE=1 LIBUIM_VANILLA=1 LIBUIM_SCM_FILES=${PWD} \
 	  $(top_builddir)/uim/uim-sh -B >>$@

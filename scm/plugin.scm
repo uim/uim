@@ -136,7 +136,7 @@
 (define load-enabled-modules
   (lambda ()
     (let* ((user-module-dir (string-append (getenv "HOME") "/.uim.d/plugin/"))
-	   (file "stub-ims.scm")  ;; should be renamed
+	   (file "loader.scm")
 	   (user-file (string-append user-module-dir file)))
       (and (try-load file)
 	   (or (try-load user-file)
