@@ -1225,33 +1225,48 @@
 (define skk-change-candidate-index
   (lambda (sc incr)
     (let ((head (skk-context-head sc)))
-      (if incr
-	  (begin
-	    (skk-context-set-nth! sc
-				  (+ 1 (skk-context-nth sc)))
-	    (skk-context-set-candidate-op-count!
-	     sc
-	     (+ 1 (skk-context-candidate-op-count sc))))
-	  (begin
-	    (if (> (skk-context-nth sc) 0)
-		(skk-context-set-nth! sc (- (skk-context-nth sc) 1))
-		(skk-context-set-nth!
-		 sc
-		 (- (skk-context-nr-candidates sc) 1)))))
-      (if (null? (skk-get-current-candidate sc))
-	  (begin
-	    (skk-context-set-nth! sc 0)
-	    (if skk-use-recursive-learning?
-		(begin
-		  (skk-reset-candidate-window sc)
-		  (skk-setup-child-context sc)))))
-      (if (null? (skk-context-child-context sc))
-	  (begin
-	    ;; 候補Windowの表示を開始するか
-	    (skk-check-candidate-window-begin sc)
-	    ;;
-	    (if (skk-context-candidate-window sc)
-		(im-select-candidate sc (skk-context-nth sc)))))
+      (and
+       (if incr
+	   (begin
+	     (skk-context-set-nth! sc
+				   (+ 1 (skk-context-nth sc)))
+	     (skk-context-set-candidate-op-count!
+	      sc
+	      (+ 1 (skk-context-candidate-op-count sc)))
+	     #t)
+	   (begin
+	     (if (> (skk-context-nth sc) 0)
+		 (begin
+		   (skk-context-set-nth! sc (- (skk-context-nth sc) 1))
+		   #t)
+		 (begin
+		   (if (= (skk-context-nr-candidates sc) 0)
+		       (begin
+			 (skk-back-to-kanji-state sc)
+			 #f)
+		       (begin
+			 (skk-context-set-nth!
+			  sc
+			  (- (skk-context-nr-candidates sc) 1))
+			 #t))))))
+       (if (null? (skk-get-current-candidate sc))
+	   (begin
+	     (skk-context-set-nth! sc 0)
+	     (if skk-use-recursive-learning?
+		 (begin
+		   (skk-reset-candidate-window sc)
+		   (skk-setup-child-context sc)))
+	     #t)
+	   #t)
+       (if (null? (skk-context-child-context sc))
+	   (begin
+	     ;; 候補Windowの表示を開始するか
+	     (skk-check-candidate-window-begin sc)
+	     ;;
+	     (if (skk-context-candidate-window sc)
+		 (im-select-candidate sc (skk-context-nth sc)))
+	     #t)
+	   #t))
       #f)))
 
 (define skk-reset-candidate-window
