@@ -39,6 +39,8 @@
 
 #define _FU8(String) QString::fromUtf8(String)
 
+#define DEBUG_KEY_EDIT 0
+
 CustomCheckBox::CustomCheckBox( struct uim_custom *c, QWidget *parent, const char *name )
     : QCheckBox( parent, name ),
       UimCustomItemIface( c )
@@ -578,7 +580,7 @@ CustomKeyEdit::CustomKeyEdit( struct uim_custom *c, QWidget *parent, const char 
 {
     setSpacing( 3 );
     m_lineEdit = new QLineEdit( this );
-    m_lineEdit->setReadOnly( false );
+    m_lineEdit->setReadOnly( true );
 
     m_editButton = new QToolButton( this );
     m_editButton->setText( _("Edit") );
@@ -826,15 +828,24 @@ KeyGrabForm::KeyGrabForm( QWidget *parent, const char *name )
     m_keyLineEdit->installEventFilter( this );
     m_okButton->installEventFilter( this );
     m_cancelButton->installEventFilter( this );
+
+    m_keyLineEdit->setInputMethodEnabled( false );
 }
 
 void KeyGrabForm::keyPressEvent( QKeyEvent *e )
 {
+#if DEBUG_KEY_EDIT
     qDebug( "key press!!! - %d:%d", e->key(), e->stateAfter() );
+#endif
 
     int qkey = e->key();
     QString keystr = "";
-    if ( e->stateAfter() & Qt::ShiftButton )
+    /*
+     * Ignore Shift modifier for printable char keys for
+     * easy-to-recognize key configuration.  uim-custom performs
+     * implicit shift key encoding/decoding appropriately.
+     */        
+    if ( ((qkey >= 256 || !isgraph(qkey))) && (e->stateAfter() & Qt::ShiftButton) )
     {
         if( qkey != Qt::Key_Shift )
             keystr.append( "<Shift>" );
@@ -925,6 +936,9 @@ void KeyGrabForm::keyPressEvent( QKeyEvent *e )
     case Qt::Key_Mode_switch:
         editString.append( "Mode_switch" );
         break;
+    case Qt::Key_Henkan:
+        editString.append( "Henkan_Mode" );
+        break;
     case Qt::Key_Muhenkan:
         editString.append( "Muhenkan" );
         break;
@@ -960,14 +974,16 @@ void KeyGrabForm::keyPressEvent( QKeyEvent *e )
         }
         else if( isascii( qkey ) )
         {
-            int key = qkey;
-            if( isupper( qkey ) )
+            QString ch = QChar( qkey );
+            if( e->stateAfter() & Qt::ShiftButton )
             {
-                key = tolower( qkey );
+                ch = ch.upper();
             }
-
-            QString str =  QChar( key );
-            editString.append( str );
+            else
+            {
+                ch = ch.lower();
+            }
+            editString.append( ch );
         }
         else
         {
@@ -984,7 +1000,9 @@ void KeyGrabForm::keyPressEvent( QKeyEvent *e )
 
 
     keystr.append( editString );
+#if DEBUG_KEY_EDIT
     qDebug( "keystr = %s", (const char *)keystr.local8Bit() );
+#endif
 
     m_keystr = keystr;
 }

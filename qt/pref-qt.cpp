@@ -73,6 +73,8 @@ UimPrefDialog::UimPrefDialog( QWidget *parent, const char *name )
       uim_quit();
       QApplication::exit( -1 );
     }
+
+    setCaption( "uim-pref-qt" );
 }
 
 UimPrefDialog::~UimPrefDialog()
