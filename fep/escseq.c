@@ -326,7 +326,7 @@ static void fixtty(void)
   tios.c_cc[VMIN] = 0;
   /* read_stdinが戻るまでのタイムアウト 0.1秒単位 */
   tios.c_cc[VTIME] = 3;
-  tcsetattr(STDIN_FILENO, TCSAFLUSH, &tios);
+  tcsetattr(STDIN_FILENO, TCSANOW, &tios);
   /* 開始位置を保存 */
   start_cursor = get_cursor_position();
   if (start_cursor.row == UNDEFINED) {
