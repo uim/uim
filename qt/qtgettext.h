@@ -34,11 +34,11 @@
 #define _QT_GETTEXT_H_
 
 #include "uim/config.h"
+#include "uim/gettext.h"
 
 /* NLS can be disabled through the configure --disable-nls option.  */
 #if ENABLE_NLS
 
-#include "uim/gettext.h"
 /* undef original _(String) macro for handling encoding */
 #ifdef _
 #undef _
