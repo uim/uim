@@ -424,6 +424,9 @@ opt_end:
     init_sendsocket(sock_path);
   }
   init_agent(engine);
+  if (s_gnu_screen) {
+    uim_set_mode(s_context, 1);
+  }
   init_callbacks(s_context, s_status_type, cursor_no_reverse, statusline_width);
   init_draw(s_context, on_the_spot, s_status_type, s_gnu_screen, s_master, s_path_getmode);
   init_escseq(use_civis, on_the_spot, s_status_type, s_gnu_screen, &attr_uim);
