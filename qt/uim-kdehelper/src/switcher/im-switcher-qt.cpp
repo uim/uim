@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+ Copyright (c) 2003,2004,2005 uim Project http://uim.freedesktop.org/
 
  All rights reserved.
 
@@ -43,7 +43,7 @@
 #include <qlayout.h>
 #include <qsizepolicy.h>
 
-#include <klocale.h>
+#define i18n(string) (string)
 
 #define NAME_COLUMN 0
 

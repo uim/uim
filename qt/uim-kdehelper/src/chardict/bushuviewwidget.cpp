@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+Copyright (c) 2003,2004,2005 uim Project http://uim.freedesktop.org/
 
 All rights reserved.
 
@@ -44,7 +44,7 @@ SUCH DAMAGE.
 #include <qpainter.h>
 #include <qdrawutil.h>
 
-#include <klocale.h>
+#define i18n(string) (string)
 
 BushuViewWidget::BushuViewWidget( QWidget *parent, const char *name )
         : CharDictViewBase( parent, name )

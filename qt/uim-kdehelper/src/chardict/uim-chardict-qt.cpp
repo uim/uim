@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+Copyright (c) 2003,2004,2005 uim Project http://uim.freedesktop.org/
 
 All rights reserved.
 
@@ -47,7 +47,7 @@ SUCH DAMAGE.
 #include <qvbox.h>
 #include <qsettings.h>
 
-#include <klocale.h>
+#define i18n(string) (string)
 
 int main( int argc, char *argv[] )
 {
