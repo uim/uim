@@ -1906,6 +1906,7 @@ uim_pref_gtk_set_default_value(GtkWidget *widget)
   union uim_custom_value *value, *defval;
   uim_bool rv;
   gint i, num;
+  int type;
 
   custom_sym = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_UIM_CUSTOM_SYM);
   if (!custom_sym) return;
@@ -1915,8 +1916,9 @@ uim_pref_gtk_set_default_value(GtkWidget *widget)
 
   value = custom->value;
   defval = custom->default_value;
+  type = custom->type;
 
-  switch (custom->type) {
+  switch (type) {
   case UCustom_Bool:
     value->as_bool = defval->as_bool;
     break;
@@ -1924,17 +1926,17 @@ uim_pref_gtk_set_default_value(GtkWidget *widget)
     value->as_int = defval->as_int;
     break;
   case UCustom_Str:
-    g_free(value->as_str);
+    free(value->as_str);
     value->as_str = strdup(defval->as_str);
     break;
   case UCustom_Pathname:
-    g_free(value->as_pathname);
+    free(value->as_pathname);
     value->as_pathname = strdup(defval->as_pathname);
     break;
   case UCustom_Choice:
-    g_free(value->as_choice->symbol);
-    g_free(value->as_choice->label);
-    g_free(value->as_choice->desc);
+    free(value->as_choice->symbol);
+    free(value->as_choice->label);
+    free(value->as_choice->desc);
     value->as_choice->symbol = strdup(defval->as_choice->symbol);
     value->as_choice->label  = strdup(defval->as_choice->label);
     value->as_choice->desc   = strdup(defval->as_choice->desc);
@@ -1984,11 +1986,12 @@ uim_pref_gtk_set_default_value(GtkWidget *widget)
   rv = uim_custom_set(custom);
   if (rv == UIM_FALSE) {
     g_printerr("Failed to set value for \"%s\".\n", custom->symbol);
+    uim_custom_free(custom);
     return;
   }
   uim_custom_free(custom);
 
-  switch (custom->type) {
+  switch (type) {
   case UCustom_Bool:
     sync_value_bool(GTK_CHECK_BUTTON(widget));
     break;
@@ -2011,6 +2014,7 @@ uim_pref_gtk_set_default_value(GtkWidget *widget)
     sync_value_key(GTK_ENTRY(widget));
     break;
   default:
-    return;
+    break;
   }
+  return;
 }
