@@ -208,12 +208,6 @@
 			       (map retrieve-im
 				    enabled-im-list)))))))
 
-(define-custom 'enable-lazy-loading? #t
-  '(global advanced)
-  '(boolean)
-  (_ "Enable lazy input method loading for fast startup")
-  (_ "long description will be here."))
-
 ;;
 ;; im-switching
 ;;
@@ -227,13 +221,13 @@
 ;;		     (_ "long description will be here."))
 ;;
 ;;(define-custom 'enable-im-switch #f
-;;  '(global im-switching advanced)
+;;  '(global im-switching)
 ;;  '(boolean)
 ;;  (_ "Enable IM switching by hotkey")
 ;;  (_ "long description will be here."))
 ;;
 ;;(define-custom 'switch-im-key '("<Control>Shift_key" "<Shift>Control_key")
-;;  '(global im-switching advanced)
+;;  '(global im-switching)
 ;;  '(key)
 ;;  (_ "IM switching key")
 ;;  (_ "long description will be here."))
@@ -280,4 +274,11 @@
   '(global toolbar)
   '(boolean)
   (_ "Show uim preference tool button on toolbar")
+  (_ "long description will be here."))
+
+
+(define-custom 'enable-lazy-loading? #t
+  '(global advanced)
+  '(boolean)
+  (_ "Enable lazy input method loading for fast startup")
   (_ "long description will be here."))
