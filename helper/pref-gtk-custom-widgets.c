@@ -64,15 +64,12 @@ static struct KeyPrefWin {
   GtkWidget *tree_view;
   GtkWidget *add_button;
   GtkWidget *remove_button;
-  GtkWidget *shift_toggle;
-  GtkWidget *control_toggle;
-  GtkWidget *alt_toggle;
   GtkWidget *keycode_entry;
 
   guint           grabbed_key_val;
   GdkModifierType grabbed_key_state;
 } key_pref_win = {
-  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0,
+  NULL, NULL, NULL, NULL, NULL, 0, 0,
 };
 
 
@@ -1287,21 +1284,21 @@ key_pref_selection_changed(GtkTreeSelection *selection,
 static void
 key_pref_set_value(guint keyval, GdkModifierType mod)
 {
-  gchar keystr[256] = {0};
-  gint len = sizeof(keystr) / sizeof(gchar);
+  GString *keystr;
 
+  keystr = g_string_new("");
   /*
    * Ignore Shift modifier for printable char keys for
    * easy-to-recognize key configuration.  uim-custom performs
    * implicit shift key encoding/decoding appropriately.
    */
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(key_pref_win.shift_toggle),
-			       ((keyval >= 256) || !g_ascii_isgraph(keyval)) &&
-			       (mod & GDK_SHIFT_MASK));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(key_pref_win.control_toggle),
-			       mod & GDK_CONTROL_MASK);
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(key_pref_win.alt_toggle),
-			       mod & GDK_MOD1_MASK);
+  if (((keyval >= 256) || !g_ascii_isgraph(keyval)) &&
+		  (mod & GDK_SHIFT_MASK))
+    g_string_append(keystr, "<Shift>");
+  if (mod & GDK_CONTROL_MASK)
+    g_string_append(keystr, "<Control>");
+  if (mod & GDK_MOD1_MASK)
+    g_string_append(keystr, "<Alt>");
 
   switch (keyval) {
   case GDK_space:
@@ -1309,105 +1306,106 @@ key_pref_set_value(guint keyval, GdkModifierType mod)
      * "space" is not proper uim keysym and only exists for user
      * convenience. It is converted to " " by uim-custom
      */
-    g_snprintf(keystr, len, "space");
+    g_string_append(keystr, "space");
     break;
   case GDK_BackSpace:
-    g_snprintf(keystr, len, "backspace");
+    g_string_append(keystr, "backspace");
     break;
   case GDK_Delete:
-    g_snprintf(keystr, len, "delete");
+    g_string_append(keystr, "delete");
     break;
   case GDK_Escape:
-    g_snprintf(keystr, len, "escape");
+    g_string_append(keystr, "escape");
     break;
   case GDK_Tab:
-    g_snprintf(keystr, len, "tab");
+    g_string_append(keystr, "tab");
     break;
   case GDK_Return:
-    g_snprintf(keystr, len, "return");
+    g_string_append(keystr, "return");
     break;
   case GDK_Left:
-    g_snprintf(keystr, len, "left");
+    g_string_append(keystr, "left");
     break;
   case GDK_Up:
-    g_snprintf(keystr, len, "up");
+    g_string_append(keystr, "up");
     break;
   case GDK_Right:
-    g_snprintf(keystr, len, "right");
+    g_string_append(keystr, "right");
     break;
   case GDK_Down:
-    g_snprintf(keystr, len, "down");
+    g_string_append(keystr, "down");
     break;
   case GDK_Prior:
-    g_snprintf(keystr, len, "prior");
+    g_string_append(keystr, "prior");
     break;
   case GDK_Next:
-    g_snprintf(keystr, len, "next");
+    g_string_append(keystr, "next");
     break;
   case GDK_Home:
-    g_snprintf(keystr, len, "home");
+    g_string_append(keystr, "home");
     break;
   case GDK_End:
-    g_snprintf(keystr, len, "end");
+    g_string_append(keystr, "end");
     break;
   case GDK_Kanji:
   case GDK_Zenkaku_Hankaku:
-    g_snprintf(keystr, len, "zenkaku-hankaku");
+    g_string_append(keystr, "zenkaku-hankaku");
     break;
   case GDK_Multi_key:
-    g_snprintf(keystr, len, "Multi_key");
+    g_string_append(keystr, "Multi_key");
     break;
   case GDK_Mode_switch:
-    g_snprintf(keystr, len, "Mode_switch");
+    g_string_append(keystr, "Mode_switch");
     break;
   case GDK_Henkan_Mode:
-    g_snprintf(keystr, len, "Henkan_Mode");
+    g_string_append(keystr, "Henkan_Mode");
     break;
   case GDK_Muhenkan:
-    g_snprintf(keystr, len, "Muhenkan");
+    g_string_append(keystr, "Muhenkan");
     break;
   case GDK_Shift_L:
   case GDK_Shift_R:
-    g_snprintf(keystr, len, "Shift_key");
+    g_string_append(keystr, "Shift_key");
     break;
   case GDK_Control_L:
   case GDK_Control_R:
-    g_snprintf(keystr, len, "Control_key");
+    g_string_append(keystr, "Control_key");
     break;
   case GDK_Alt_L:
   case GDK_Alt_R:
-    g_snprintf(keystr, len, "Alt_key");
+    g_string_append(keystr, "Alt_key");
     break;
   case GDK_Meta_L:
   case GDK_Meta_R:
-    g_snprintf(keystr, len, "Meta_key");
+    g_string_append(keystr, "Meta_key");
     break;
   case GDK_Super_L:
   case GDK_Super_R:
-    g_snprintf(keystr, len, "Super_key");
+    g_string_append(keystr, "Super_key");
     break;
   case GDK_Hyper_L:
   case GDK_Hyper_R:
-    g_snprintf(keystr, len, "Hyper_key");
+    g_string_append(keystr, "Hyper_key");
     break;
   default:
     if (keyval >= GDK_F1 && keyval <= GDK_F35) {
-      g_snprintf(keystr, len, "F%d", keyval - GDK_F1 + 1);
+      g_string_append_printf(keystr, "F%d", keyval - GDK_F1 + 1);
     } else if (keyval >= GDK_F1 && keyval <= GDK_F35) {
-      g_snprintf(keystr, len, "%d", keyval - GDK_KP_0 + UKey_0);
+      g_string_append_printf(keystr, "%d", keyval - GDK_KP_0 + UKey_0);
     } else if (keyval < 256) {
-      keystr[0] = keyval;
-      keystr[1] = '\0';
+      g_string_append_printf(keystr, "%c", keyval);
     } else {
       /* UKey_Other */
     }
     break;
   }
 
-  gtk_entry_set_text(GTK_ENTRY(key_pref_win.keycode_entry), keystr);
+  gtk_entry_set_text(GTK_ENTRY(key_pref_win.keycode_entry), keystr->str);
 
   key_pref_win.grabbed_key_val   = 0;
   key_pref_win.grabbed_key_state = 0;
+
+  g_string_free(keystr, TRUE);
 }
 
 static gboolean
@@ -1539,13 +1537,6 @@ key_pref_add_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 
   str = g_string_new("");
 
-  if (GTK_TOGGLE_BUTTON(key_pref_win.shift_toggle)->active)
-    g_string_append(str, "<Shift>");
-  if (GTK_TOGGLE_BUTTON(key_pref_win.control_toggle)->active)
-    g_string_append(str, "<Control>");
-  if (GTK_TOGGLE_BUTTON(key_pref_win.alt_toggle)->active)
-    g_string_append(str, "<Alt>");
-
   g_string_append(str, key_code);
 
   for (num = 0; custom->value->as_key[num]; num++);
@@ -1675,6 +1666,7 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
   struct uim_custom *custom;
   struct uim_custom_key *key;
   gint i;
+  GtkIMContext *im_context;
 
   g_return_if_fail(GTK_IS_ENTRY(key_entry));
 
@@ -1765,22 +1757,13 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
   gtk_container_set_border_width(GTK_CONTAINER(hbox), 4);
   gtk_widget_show(hbox);
 
-  button = gtk_check_button_new_with_mnemonic(_("_Shift"));
-  key_pref_win.shift_toggle = button;
-  gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
-  gtk_widget_show(button);
-
-  button = gtk_check_button_new_with_mnemonic(_("_Control"));
-  key_pref_win.control_toggle = button;
-  gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
-  gtk_widget_show(button);
-
-  button = gtk_check_button_new_with_mnemonic(_("_Alt"));
-  key_pref_win.alt_toggle = button;
-  gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
-  gtk_widget_show(button);
-
   entry = gtk_entry_new();
+
+  /* XXX hack alert!  This modifies private part of gtk_entry */
+  im_context = gtk_im_context_simple_new();
+  g_object_unref(GTK_ENTRY(entry)->im_context);
+  GTK_ENTRY(entry)->im_context = im_context;
+
   gtk_entry_set_editable(GTK_ENTRY(entry), FALSE);
   key_pref_win.keycode_entry = entry;
   gtk_widget_set_size_request(GTK_WIDGET(entry), 100, -1);
