@@ -1,6 +1,6 @@
 #!/usr/bin/env gosh
 
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -79,3 +79,25 @@
 				      (else #f))))))
    (assert-false (uim-bool '(case 2
 			      ((2) #f))))))
+
+(define-uim-test-case "testcase procedures"
+  ("test precedure?"
+   (assert-true  (uim-bool '(procedure? eof-val)))            ;; 0
+   (assert-true  (uim-bool '(procedure? car)))                ;; 1
+   (assert-true  (uim-bool '(procedure? cons)))               ;; 2
+   (assert-true  (uim-bool '(procedure? set-symbol-value!)))  ;; 3
+   (assert-true  (uim-bool '(procedure? im-register-im)))     ;; 4
+   (assert-true  (uim-bool '(procedure? dcngettext)))         ;; 5
+   (assert-true  (uim-bool '(procedure? +)))                  ;; 2n
+   (assert-true  (uim-bool '(procedure? append)))             ;; lsubr
+   (assert-true  (uim-bool '(procedure? define)))             ;; fsubr
+   (assert-true  (uim-bool '(procedure? cond)))               ;; msubr
+   (assert-true  (uim-bool '(procedure? (lambda (x) x))))     ;; closure
+
+   (assert-false (uim-bool '(procedure? 0)))
+   (assert-false (uim-bool '(procedure? "str")))
+   (assert-false (uim-bool '(procedure? 'sym)))
+   (assert-false (uim-bool '(procedure? '(foo bar))))
+   (assert-false (uim-bool '(procedure? #t)))
+   (assert-false (uim-bool '(procedure? #f)))
+   (assert-false (uim-bool '(procedure? ())))))

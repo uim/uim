@@ -2018,6 +2018,28 @@ closure (LISP env, LISP code)
   return (z);
 }
 
+static LISP
+procedurep (LISP x)
+{
+  switch (TYPE (x))
+    {
+    case tc_subr_0:
+    case tc_subr_1:
+    case tc_subr_2:
+    case tc_subr_3:
+    case tc_lsubr:
+    case tc_fsubr:
+    case tc_msubr:
+    case tc_closure:
+    case tc_subr_4:
+    case tc_subr_5:
+    case tc_subr_2n:
+      return (sym_t);
+    default:
+      return (NIL);
+    }
+}
+
 static void
 gc_protect_n (LISP * location, long n)
 {
@@ -4629,6 +4651,7 @@ init_subrs (void)
   init_subr_1 ("pair?", consp);
   init_subr_1 ("symbol?", symbolp);
   init_subr_1 ("number?", numberp);
+  init_subr_1 ("procedure?", procedurep);
   init_msubr ("let-internal", leval_let);
   init_subr_1 ("let-internal-macro", let_macro);
   init_subr_1 ("let*-macro", letstar_macro);

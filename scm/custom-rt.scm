@@ -112,28 +112,53 @@
     (symbol-bound? sym)))
 
 ;; lightweight implementation
+(define custom-key-exist?
+  (lambda (sym)
+    (let ((key-sym (symbolconc sym '?)))
+      (and (symbol-bound? sym)
+	   (list? (symbol-value sym))
+	   (symbol-bound? key-sym)
+	   (procedure? (symbol-value key-sym))))))
+
+;; lightweight implementation
 (define custom-value
   (lambda (sym)
     (symbol-value sym)))
+
+;; lightweight implementation
+(define custom-set-value!
+  (lambda (sym val)
+    (cond
+     ((custom-key-exist? sym)
+      (set-symbol-value! sym val)
+      (define-key-internal (symbolconc sym '?)
+	                   (custom-modify-key-predicate-names val))
+      #t)
+     ((custom-exist? sym #f)
+      (set-symbol-value! sym val)
+      #t)
+     (else
+      #f))))
 
 ;; lightweight implementation
 (define define-custom
   (lambda (sym default groups type label desc)
     (custom-rt-add-primary-groups (car groups))
     (if (not (custom-exist? sym type))
-	(if (eq? (car type)
-		 'key)
-	    (define-key-internal (symbolconc sym '?)
-	                         (custom-modify-key-predicate-names default))
-	    (let ((quoted-default (if (or (symbol? default)
-					  (list? default))
-				      (list 'quote default)
-				      default)))
-	      (eval (list 'define sym quoted-default)
-		    toplevel-env))))))
+	(begin
+	  (let ((quoted-default (if (or (symbol? default)
+					(list? default))
+				    (list 'quote default)
+				    default)))
+	    (eval (list 'define sym quoted-default)
+		  toplevel-env))
+	  (if (eq? (car type)
+		   'key)
+	      (define-key-internal (symbolconc sym '?)
+		(custom-modify-key-predicate-names default)))))))
 
 ;; lightweight implementation
-;; TODO: implement
+;; warning: no validation performed
 (define custom-prop-update-custom-handler
   (lambda (context custom-sym val)
-    #f))
+    (custom-set-value! custom-sym val)))
