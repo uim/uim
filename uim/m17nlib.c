@@ -288,9 +288,9 @@ preedit_changedp(uim_lisp id_)
     return uim_scm_f();
   }
   if(ic->preedit_changed == 1) {
-    return uim_scm_f();
-  } else {
     return uim_scm_t();
+  } else {
+    return uim_scm_f();
   }
 }
 
@@ -341,7 +341,7 @@ get_right_of_cursor(uim_lisp id_)
   p = buf;
 
   for(i=0; i<ic->cursor_pos ;i++) {
-    p = (unsigned char *)uim_scm_make_str("");
+    p = m17nlib_utf8_find_next_char(p);
   }
   buflen = strlen((char *)p);
   buf_ = uim_scm_make_str((char *)p);
@@ -608,7 +608,6 @@ static uim_lisp
 get_nr_candidates(uim_lisp id_)
 {
   MPlist *group;
-  MPlist *elm;
   int result = 0;
   int id = uim_scm_c_int(id_);
   MInputContext *ic = ic_array[id].mic;
