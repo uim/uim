@@ -29,7 +29,7 @@ Each change consist of following fields. All fields are required.
 
     When freedesktop.org had been compromised, we had reset the
     repository. Because this had also reset revision number, we
-    describe such new revision numbers as 'ac-r40' to distinguish from
+    describe such new revision numbers as 'ac40' to distinguish from
     old one. 'ac' stands for 'after compromised'.
 
   - Date
@@ -58,11 +58,23 @@ Each change consist of following fields. All fields are required.
 The changes are described below in most recently updated order.
 
 ------------------------------------------------------------------------------
+Summary: 
+Affects: 
+Updates: Helper-candwin protocol
+Version: 0.4.7
+Revision: ac744
+Date: 
+Modifier: Etsushi Kato
+Related: 
+URL:
+Changes:
+Description:
+------------------------------------------------------------------------------
 Summary: A boolean type for uim
 Affects: Helper program developers, Bridge developers, uim developers
 Updates: C API
 Version: 0.4.6
-Revision: ac-r40, ac-r53, ac-r163
+Revision: ac40, ac53, ac163
 Date: 2004-12-17 - 2005-01-08
 Modifier: YamaKen
 Related: custom API
