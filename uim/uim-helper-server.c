@@ -49,6 +49,12 @@
 #include "uim.h"
 #include "uim-helper.h"
 
+
+struct client {
+  int fd;
+  char *write_queue;
+};
+
 #define MAX_CLIENT 32
 #define BUFFER_SIZE 1024
 
@@ -62,11 +68,9 @@ static fd_set s_fdset_write;
 static int s_max_fd;
 
 static int nr_client_slots;
-static struct client {
-  int fd;
-  char *rbuf;
-  char *write_queue;
-} *clients;
+static struct client *clients;
+
+static char read_buf[BUFFER_SIZE];
 
 /*
   prepare file descriptor.
@@ -139,7 +143,6 @@ get_unused_client()
   }
   nr_client_slots++;
   clients = realloc(clients, sizeof(struct client) * nr_client_slots);
-  clients[nr_client_slots - 1].rbuf = strdup("");
   clients[nr_client_slots - 1].write_queue = strdup("");
   return &clients[nr_client_slots - 1];
 }
@@ -147,10 +150,6 @@ get_unused_client()
 static void
 free_client(struct client *cl)
 {
-  if (cl->rbuf) {
-    free(cl->rbuf);
-    cl->rbuf = strdup("");
-  }
   if (cl->write_queue) {
     free(cl->write_queue);
     cl->write_queue = strdup("");
@@ -158,21 +157,21 @@ free_client(struct client *cl)
   cl->fd = -1;
 }
 
-
 static void
-parse_content(char *content, struct client *cl)
+distribute_message_fragment(char *fragment, struct client *cl)
 {
-  int i, content_len;
+  int i;
+  size_t fragment_len, extended_len;
+  char *write_queue;
 
-  content_len = strlen(content);
+  fragment_len = strlen(fragment);
 
   for (i = 0; i < nr_client_slots; i++) {
-    if (clients[i].fd == -1 || clients[i].fd == cl->fd) {
-      continue;
-    } else {
-      clients[i].write_queue = (char *)realloc(clients[i].write_queue,
-		      strlen(clients[i].write_queue) + content_len + 1);
-      strcat(clients[i].write_queue, content);
+    if (clients[i].fd != -1 && clients[i].fd != cl->fd) {
+      write_queue = clients[i].write_queue;
+      extended_len = strlen(write_queue) + fragment_len + 1;
+      clients[i].write_queue = (char *)realloc(write_queue, extended_len);
+      strcat(clients[i].write_queue, fragment);
       FD_SET(clients[i].fd, &s_fdset_write);
     }
   }
@@ -186,50 +185,22 @@ shift_buffer(char *buf, int count)
   buf[len - count] = '\0';
 }
 
-static char *
-uim_helper_server_get_message(char *buf)
-{
-  int i;
-  int len = strlen(buf);
-  char *ret;
-
-  for (i = 0; i < len - 1; i++) {
-    if (buf[i] == '\n' && buf[i + 1] == '\n') {
-      ret = (char *)malloc(i + 3);
-      memcpy(ret, buf, i + 2);
-      ret[i + 2] = '\0';
-      shift_buffer(buf, i + 2);
-      return ret;
-    }
-  }
-  return NULL;
-}
-
 static int
-proc_func(struct client *cl)
+reflect_message_fragment(struct client *cl)
 {
   int rc;
-  char buf[BUFFER_SIZE];
-  char *message;
 
   /* do read */
-  rc = read(cl->fd, buf, BUFFER_SIZE - 1);
+  rc = read(cl->fd, read_buf, BUFFER_SIZE - 1);
   if (rc <= 0) {
     if (rc < 0 && (errno == EAGAIN || errno == EINTR))
       return 0;
     return -1;
   }
 
-  buf[rc] = '\0';
+  read_buf[rc] = '\0';
+  distribute_message_fragment(read_buf, cl);
 
-  cl->rbuf = (char *)realloc(cl->rbuf, strlen(cl->rbuf) + strlen(buf) + 1);
-  strcat(cl->rbuf, buf);
-
-  while ((message = uim_helper_server_get_message(cl->rbuf))) {
-    /* process */
-    parse_content(message, cl);
-    free(message);
-  }
   return 1;
 }
 
@@ -335,7 +306,7 @@ uim_helper_server_process_connection(int serv_fd)
 	if (clients[i].fd != -1 && FD_ISSET(clients[i].fd, &readfds)) {
 	  int result;
 	  /* actual process */
-	  result = proc_func(&clients[i]);
+	  result = reflect_message_fragment(&clients[i]);
 
 	  if (result < 0) {
 	    FD_CLR(clients[i].fd, &s_fdset_read);

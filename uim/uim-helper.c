@@ -92,50 +92,22 @@ uim_helper_send_message(int fd, const char *message)
   sig_t old_sigpipe;
   char *buf, *bufp;
 
-  if (fd < 0)
+  if (fd < 0 || !message)
     return;
 
-  if (!message)
-    return;
-
-  /* readable and cannot read any character, means disconnected.
-     so we should read here and proc such condition. */
-
-  /*
-    The assumption described above is not correct. uim_helper_fd()
-    does only select(2), which only indicates whether system is busy
-    or not. i.e. select(2) exists for non-blocking IO. Not indicates
-    connection availability.
-
-    What we have to do is:
-
-    - Don't use uim_helper_fd() for testing connection availability
-
-    - Determine connection error by EPIPE error of write(2) or some
-      appropriate methods
-
-    - Write all data even if uim_helper_fd() has returned 0
-      (i.e. retry until written all data). (uim_helper_fd() == 0) only
-      indicates system is busy.
-
-    I think that we should remove uim_helper_fd() for
-    writing. Blocking write is sufficient for uim.
-    
-    -- YamaKen 2005-02-07
-  */
-
-  len = strlen(message);
-  buf = malloc(len + 2);
-  snprintf(buf, len + 2,"%s\n", message);
+  len = strlen(message) + 1;
+  buf = malloc(len + 1);
+  snprintf(buf, len + 1, "%s\n", message);
 
   old_sigpipe = signal(SIGPIPE, SIG_IGN);
 
-  out_len = len + 1;
+  out_len = len;
   bufp = buf;
   while (out_len > 0) {
     if ((res = write(fd, bufp, out_len)) < 0) {
       if (errno == EAGAIN || errno == EINTR)
 	continue;
+      fprintf(stderr, "uim_helper_send_message(): unknown error\n");
       break;
     }
 

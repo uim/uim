@@ -1,4 +1,3 @@
-
 /*
 
   Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
@@ -40,30 +39,35 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include "uim.h"
 #include "uim-helper.h"
 #include "context.h"
 
-static int uim_fd = -1;
-static void (*uim_disconnect_cb)(void);
 
 static void uim_helper_client_focus(uim_context uc, int flg);
 
 #define BUFFER_SIZE (32 * 1024)
+#define RECV_BUFFER_SIZE 1024
+
 /*Common buffer for some functions's temporary buffer.
   Pay attention for use.*/
 static char uim_help_buf[BUFFER_SIZE];
+static char uim_recv_buf[RECV_BUFFER_SIZE];
 static int uim_read_buf_size;
 static char *uim_read_buf;
+
+static int uim_fd = -1;
+static void (*uim_disconnect_cb)(void);
+
 
 static char *
 get_server_command(void)
 {
   return "uim-helper-server";
 }
-
 
 int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 {
@@ -183,25 +187,26 @@ uim_helper_client_get_prop_list(void)
 void
 uim_helper_read_proc(int fd)
 {
-  char buf[BUFFER_SIZE];
   int rc;
+  size_t extended_read_buf_size;
 
   while (uim_helper_fd_readable(fd) > 0) {
     
-    rc = read(fd, buf, sizeof(buf) - 1);
-    buf[rc] = '\0';
+    rc = read(fd, uim_recv_buf, sizeof(uim_recv_buf) - 1);
+    uim_recv_buf[rc] = '\0';
     
-    if (rc == 0) {
+    if (rc == 0 || (rc < 0 && errno != EAGAIN)) {
       if (uim_disconnect_cb) {
 	uim_disconnect_cb();
       }
       uim_fd = -1;
       return;
     }
-    uim_read_buf = (char *)realloc(uim_read_buf, strlen(uim_read_buf) + strlen(buf) + 1);
-    strcat(uim_read_buf, buf);
+    extended_read_buf_size = strlen(uim_read_buf) + rc + 1;
+    uim_read_buf = (char *)realloc(uim_read_buf, extended_read_buf_size);
+    strcat(uim_read_buf, uim_recv_buf);
   }
-  uim_read_buf_size = strlen(uim_read_buf);
+  uim_read_buf_size = extended_read_buf_size;
   return;
 }
 
@@ -217,18 +222,17 @@ shift_read_buffer(int count)
 char *
 uim_helper_get_message(void)
 {
-  int i;
-  char *buf;
+  size_t msg_size;
+  char *msg, *msg_term;
 
-  for (i = 0; i < uim_read_buf_size - 1; i++) {
-    if (uim_read_buf[i] == '\n' &&
-	uim_read_buf[i + 1] == '\n') {
-      buf = (char *)malloc(i + 2);
-      memcpy(buf, uim_read_buf, i + 1);
-      buf[i + 1] = '\0';
-      shift_read_buffer(i + 2);
-      return buf;
-    }
+  msg_term = strstr(uim_read_buf, "\n\n");
+  if (msg_term) {
+    msg_size = msg_term + 1 - uim_read_buf;
+    msg = (char *)malloc(msg_size + 1);
+    memcpy(msg, uim_read_buf, msg_size);
+    msg[msg_size] = '\0';
+    shift_read_buffer(msg_size + 1);
+    return msg;
   }
   return NULL;
 }
