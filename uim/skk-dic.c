@@ -405,7 +405,8 @@ push_back_candidate_to_array(struct skk_cand_array *ca, char *cand)
 }
 
 static void
-merge_candidate_array(struct skk_line *sl, struct skk_cand_array *dst_ca)
+merge_base_candidates_to_array(struct skk_line *sl,
+			       struct skk_cand_array *dst_ca)
 {
   int i, j;
   struct skk_cand_array *src_ca;
@@ -650,12 +651,11 @@ find_cand_array(struct dic_info *di, char *s,
   ca = find_candidate_array_from_line(sl, okuri, create_if_not_found);
 
   if (!ca->is_used) {
-    /* incorporate okuri-nasi entry */
-    merge_candidate_array(sl, ca);
+    merge_base_candidates_to_array(sl, ca);
     ca->is_used = 1;
     if (!from_file) {
       sl_file = skk_search_line_from_file(di, s, okuri_head);
-      merge_candidate_array(sl_file, ca);
+      merge_base_candidates_to_array(sl_file, ca);
       free_skk_line(sl_file);
     }
   }
@@ -1383,6 +1383,32 @@ reorder_candidate(struct skk_cand_array *ca, char *str)
 }
 
 static void
+merge_word_to_cand_array(struct skk_cand_array *ca, char *word)
+{
+  int i, nth = -1;
+  char *tmp;
+  for (i = 0; i < ca->nr_cands; i++) {
+    if (!strcmp(word, ca->cands[i])) {
+      nth = i;
+    }
+  }
+  if (nth == -1) {
+    push_back_candidate_to_array(ca, word);
+    nth = ca->nr_cands - 1;
+  }
+
+  /* move word at the end of real cand array */
+  tmp = ca->cands[nth];
+  if (nth >= ca->nr_real_cands) {
+    for (i = nth; i > ca->nr_real_cands; i--) {
+      ca->cands[i] = ca->cands[i - 1];
+    }
+    ca->cands[ca->nr_real_cands] = tmp;
+    ca->nr_real_cands++;
+  }
+}
+
+static void
 merge_real_candidate_array(struct skk_cand_array *src_ca,
 			   struct skk_cand_array *dst_ca)
 {
@@ -1397,7 +1423,7 @@ merge_real_candidate_array(struct skk_cand_array *src_ca,
 	dup = 1;
     }
     if (!dup)
-      reorder_candidate(dst_ca, src_ca->cands[i]);
+      merge_word_to_cand_array(dst_ca, src_ca->cands[i]);
   }
 }
 
@@ -1749,7 +1775,7 @@ static void compare_and_merge_skk_line(struct skk_line *dst_sl,
 
   src_ca = &src_sl->cands[0];
   dst_ca = &dst_sl->cands[0];
-  if (src_ca->nr_real_cands > dst_ca->nr_real_cands)
+  if (src_ca->nr_real_cands >= dst_ca->nr_real_cands)
     merge_real_candidate_array(src_ca, dst_ca);
 
   for (i = 1; i < src_sl->nr_cand_array; i++) {
@@ -1760,7 +1786,7 @@ static void compare_and_merge_skk_line(struct skk_line *dst_sl,
       dst_ca = &dst_sl->cands[j];
       if (!strcmp(src_ca->okuri, dst_ca->okuri)) {
 	dup = 1;
-	if (src_ca->nr_real_cands > dst_ca->nr_real_cands)
+	if (src_ca->nr_real_cands >= dst_ca->nr_real_cands)
 	  merge_real_candidate_array(src_ca, dst_ca);
       }
     }
