@@ -477,7 +477,7 @@ switcher_button_create(void)
   
   /* tooltip */
   tooltip = gtk_tooltips_new();
-  gtk_tooltips_set_tip(tooltip, button, _("Exec uim's input method switcher."), NULL);
+  gtk_tooltips_set_tip(tooltip, button, _("Execute uim's input method switcher."), NULL);
 
   return button;
 }
@@ -511,7 +511,7 @@ pref_button_create(void)
 
   /* tooltip */
   tooltip = gtk_tooltips_new();
-  gtk_tooltips_set_tip(tooltip, button, _("Exec uim's preference tool."), NULL);
+  gtk_tooltips_set_tip(tooltip, button, _("Execute uim's preference tool."), NULL);
 
   return button;
 }
@@ -523,7 +523,7 @@ pref_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer user
     if (helper_parent_widget)
       gtk_propagate_event(GTK_WIDGET(helper_parent_widget), (GdkEvent *) event);
     } else {
-      /* exec uim-im-pref */
+      /* exec uim-pref */
       system("uim-pref-gtk &");
     }
 }
