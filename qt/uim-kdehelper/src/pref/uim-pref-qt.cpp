@@ -136,19 +136,24 @@ void UimPrefDialog::createGroupWidgets()
 QWidget* UimPrefDialog::createGroupWidget( const char *group_name )
 {
     QVBox *vbox = new QVBox( m_groupWidgetStack );
-    struct uim_custom_group *group;
-    char **custom_syms, ** custom_sym;
 
-    group = uim_custom_group_get( group_name );
+    struct uim_custom_group *group = uim_custom_group_get( group_name );
     if( group == NULL )
         return NULL;
 
-    custom_syms = uim_custom_collect_by_group( group_name );
+    QLabel *groupLabel = new QLabel( group_name, vbox );
+    groupLabel->setAlignment( Qt::AlignHCenter );
+    QFont font;
+    font.setWeight( QFont::Bold );
+    font.setPixelSize( fontInfo().pixelSize() + 12 );
+    groupLabel->setFont( font );
+
+    /* add various widgets to the vbox */
+    char **custom_syms = uim_custom_collect_by_group( group_name );
     if( custom_syms )
     {
-        for( custom_sym = custom_syms; *custom_sym; custom_sym++ )
+        for( char **custom_sym = custom_syms; *custom_sym; custom_sym++ )
         {
-            /* add various widgets to the vbox */
             addCustom( vbox, *custom_sym );
         }
 
@@ -159,6 +164,7 @@ QWidget* UimPrefDialog::createGroupWidget( const char *group_name )
 
     /* buttom up all widgets */
     vbox->setStretchFactor( new QWidget( vbox ), 1 );
+
     return vbox;
 }
 
@@ -285,7 +291,11 @@ void UimPrefDialog::addCustomTypeKey( QVBox *vbox, struct uim_custom *custom )
 
 void UimPrefDialog::slotSelectionChanged( QListViewItem * item )
 {
-    // switch group widget
+    /* confirm if save the change */
+    if( m_isValueChanged )    
+        confirmChange();
+    
+    /* switch group widget */
     QString grpname = item->text( 0 );
     m_groupWidgetStack->raiseWidget( m_groupWidgetsDict[grpname] );
 }
@@ -293,6 +303,16 @@ void UimPrefDialog::slotSelectionChanged( QListViewItem * item )
 void UimPrefDialog::slotCustomValueChanged()
 {
     m_isValueChanged = true;    
+}
+
+void UimPrefDialog::confirmChange()
+{
+    QConfirmDialog *cDialog = new QConfirmDialog( "The value was changed.\nSave?",
+                                                  this );
+    if( cDialog->exec() == QDialog::Accepted )
+    {
+        slotApply();
+    }
 }
 
 int main( int argc, char **argv )
@@ -323,16 +343,32 @@ void UimPrefDialog::slotOK()
 {
     if( m_isValueChanged )
     {
-        // save
         slotApply();
     }
-
-    // quit
     accept();
 }
 
 void UimPrefDialog::slotCancel()
 {
-    // quit
+    confirmChange();
     reject();
+}
+
+QConfirmDialog::QConfirmDialog( const QString &msg, QWidget *parent, const char *name )
+    : QDialog( parent, name )
+{
+    QVBoxLayout *vLayout = new QVBoxLayout( this );
+    vLayout->setSpacing( 6 );
+    vLayout->setMargin( 10 );
+    QLabel *msgLabel = new QLabel( msg, this );
+    QHBox *buttonHBox = new QHBox( this );
+    QPushButton *okButton = new QPushButton( "OK", buttonHBox );
+    QPushButton *cancelButton = new QPushButton( "Cancel", buttonHBox );
+    vLayout->addWidget( msgLabel );
+    vLayout->addWidget( buttonHBox );
+
+    QObject::connect( okButton, SIGNAL(clicked()),
+                      this, SLOT(accept()) );
+    QObject::connect( cancelButton, SIGNAL(clicked()),
+                      this, SLOT(reject()) );
 }

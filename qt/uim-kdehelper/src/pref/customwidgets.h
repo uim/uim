@@ -98,8 +98,6 @@ public:
 protected slots:
     void slotCustomToggled( bool check )
     {
-        qDebug("toggled!!!!!!!");
-        
         Q_ASSERT( m_custom->type == UCustom_Bool );
 
         m_custom->value->as_bool = check;
@@ -128,7 +126,6 @@ public:
 public slots:
     void slotCustomValueChanged( int value )
     {
-        qDebug("value Changed!!!!!!!");
         Q_ASSERT( m_custom->type == UCustom_Int );
 
         m_custom->value->as_int = value;
@@ -157,7 +154,6 @@ public:
 public slots:
     void slotCustomTextChanged( const QString &text )
     {
-        qDebug("text changed!");
         Q_ASSERT( m_custom->type == UCustom_Str );
 
         free( m_custom->value->as_str );
@@ -211,7 +207,6 @@ protected slots:
 
     void slotCustomTextChanged( const QString & text )
     {
-        qDebug("path text changed!!!!!");
         Q_ASSERT( m_custom->type == UCustom_Pathname );
 
         free( m_custom->value->as_pathname );
@@ -246,7 +241,6 @@ public:
 public slots:
     void slotHighlighted( int index )
     {
-        qDebug("highlighted!!!!");
         Q_ASSERT( m_custom->type == UCustom_Pathname );
 
         struct uim_custom_choice **valid_items = m_custom->range->as_choice.valid_items;

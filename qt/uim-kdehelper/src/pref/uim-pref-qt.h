@@ -37,8 +37,12 @@
 #include <qdict.h>
 #include <qlistview.h>
 #include <qwidgetstack.h>
-#include <qvbox.h>
 #include <qcheckbox.h>
+#include <qlayout.h>
+#include <qlabel.h>
+#include <qpushbutton.h>
+#include <qvbox.h>
+#include <qhbox.h>
 
 #include <uim/uim.h>
 #include <uim/uim-custom.h>
@@ -65,6 +69,8 @@ protected:
     void addCustomTypeChoice( QVBox *vbox, struct uim_custom *custom );
     void addCustomTypeKey( QVBox *vbox, struct uim_custom *custom );
 
+    void confirmChange();
+
 protected slots:
     void slotApply();
     void slotOK();
@@ -82,5 +88,15 @@ private:
     QListView *m_groupListView;
     QWidgetStack *m_groupWidgetStack;
 };
+
+//---------------------------------------------------------------------------------
+class QConfirmDialog : public QDialog {
+    Q_OBJECT
+
+public:
+    QConfirmDialog( const QString &msg, QWidget *parent = 0, const char *name = 0 );
+};
+
+
 
 #endif /* Not def: _UIM_PREF_QT_H_ */
