@@ -486,7 +486,7 @@ if test x$use_qt = xyes ; then
 
     # GUESS plugins dir for immodule installation
     AC_MSG_CHECKING(for qt-immodule plugins dir)
-    if test -z "$QTDIR/plugins"; then
+    if test ! -d "$QTDIR/plugins"; then
       AC_MSG_RESULT(no)
     else
       QT_PLUGINSDIR=$QTDIR/plugins
