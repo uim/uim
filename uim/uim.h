@@ -56,7 +56,7 @@ typedef struct uim_context_ *uim_context;
 
 typedef struct uim_candidate_ *uim_candidate;
 
-/* This will be filled later, so ABI is unstable */
+/* FIXME: We need reorganize of key event handling...*/
 enum UKey {
   UKey_0 = 48,
   UKey_1 = 49,
@@ -160,6 +160,7 @@ enum UKey {
   UKey_Meta_key,
   UKey_Super_key,
   UKey_Hyper_key,
+  UKey_Insert,
   UKey_Other = 1000
 };
   

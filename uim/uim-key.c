@@ -59,6 +59,7 @@ static struct key_entry key_tab[] = {
   {UKey_Next, "next"},
   {UKey_Home, "home"},
   {UKey_End, "end"},
+  {UKey_Insert, "insert"},
   {UKey_Zenkaku_Hankaku, "zenkaku-hankaku"},
   {UKey_Multi_key, "Multi_key"},
   {UKey_Mode_switch, "Mode_switch"},
