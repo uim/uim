@@ -52,6 +52,7 @@
 #include "uim/config.h"
 #include "uim/gettext.h"
 #include "uim-cand-win-gtk.h"
+#include "uim-dict-win-gtk.h"
 
 /* exported symbols */
 GtkIMContext *im_module_create(const gchar *context_id);
@@ -79,6 +80,8 @@ typedef struct _IMUIMContext {
   uim_context uc;
   UIMCandWinGtk *cwin;
   gboolean cwin_is_active;
+  UIMDictWinGtk *dwin;
+  gboolean dwin_is_active;
   int nr_psegs;
   struct preedit_segment *pseg;
   /**/
@@ -121,6 +124,9 @@ static gboolean get_user_defined_color(PangoColor *color, const gchar *uim_symbo
 
 static gboolean
 uim_key_snoop(GtkWidget *grab_widget, GdkEventKey *key, gpointer data);
+
+static gchar *
+current_selected_segment (IMUIMContext *uic);
 
 static const GTypeInfo class_info = {
   sizeof(IMContextUIMClass),
@@ -176,6 +182,8 @@ static void
 pushback_cb(void *ptr, int attr, const char *str)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
+  gchar *cur_seg;
+
   g_return_if_fail(str);
 
   if (!strcmp(str, "")
@@ -188,6 +196,20 @@ pushback_cb(void *ptr, int attr, const char *str)
   uic->pseg[uic->nr_psegs].str = g_strdup(str);
   uic->pseg[uic->nr_psegs].attr = attr;
   uic->nr_psegs ++;
+
+  if (uic->cwin_is_active) {
+    cur_seg = current_selected_segment(uic);
+    if (cur_seg && *cur_seg) {
+      if (uim_dict_win_gtk_set_text(uic->dwin, cur_seg)) {
+	uic->dwin_is_active = TRUE;
+	gtk_widget_show(GTK_WIDGET(uic->dwin));
+      } else {
+	uic->dwin_is_active = FALSE;
+	gtk_widget_hide(GTK_WIDGET(uic->dwin));
+      }
+    }
+    g_free(cur_seg);
+  }
 }
 
 static void
@@ -458,11 +480,15 @@ focus_in(GtkIMContext *ic)
   for (cc = context_list.next; cc != &context_list; cc = cc->next) {
     if (cc != uic && cc->cwin) {
       gtk_widget_hide(GTK_WIDGET(cc->cwin));
-    }
+      gtk_widget_hide(GTK_WIDGET(cc->dwin));
+   }
   }
 
   if (uic->cwin && uic->cwin_is_active) {
     gtk_widget_show(GTK_WIDGET(uic->cwin));
+  }
+  if (uic->dwin && uic->dwin_is_active) {
+    gtk_widget_show(GTK_WIDGET(uic->dwin));
   }
 
   uim_helper_client_focus_in(uic->uc);
@@ -482,6 +508,7 @@ focus_out(GtkIMContext *ic)
 
   if (uic->cwin) {
     gtk_widget_hide(GTK_WIDGET(uic->cwin));
+    gtk_widget_hide(GTK_WIDGET(uic->dwin));
   }
 }
 
@@ -568,6 +595,12 @@ toplevel_window_candidate_cb(GdkXEvent *xevent, GdkEvent *ev, gpointer data)
 
     gdk_window_get_origin(uic->win, &topwin_x, &topwin_y);
     uim_cand_win_gtk_layout(uic->cwin, topwin_x, topwin_y);
+    if (GTK_WIDGET(uic->cwin)->window) {
+      gint x, y;
+      gdk_window_get_origin(GTK_WIDGET(uic->cwin)->window, &x, &y);
+      gtk_window_move(GTK_WINDOW(uic->dwin),
+		      x + GTK_WIDGET(uic->cwin)->allocation.width, y);
+    }
   }
   return GDK_FILTER_CONTINUE;
 }
@@ -608,6 +641,8 @@ im_uim_init(IMUIMContext *uic)
   uic->cwin_is_active = FALSE;
   g_signal_connect(G_OBJECT(uic->cwin), "index-changed",
 		   G_CALLBACK(index_changed_cb), uic);
+  uic->dwin = uim_dict_win_gtk_new();
+  uic->dwin_is_active = FALSE;
 }
 
 
@@ -629,6 +664,10 @@ im_uim_finalize(GObject *obj)
   if (uic->cwin) {
     gtk_widget_destroy(GTK_WIDGET(uic->cwin));
     uic->cwin = NULL;
+  }
+  if (uic->dwin) {
+    gtk_widget_destroy(GTK_WIDGET(uic->dwin));
+    uic->dwin = NULL;
   }
   uic->menu = NULL;
 
@@ -737,6 +776,7 @@ cand_activate_cb(void *ptr, int nr, int display_limit)
   GSList *list = NULL;
   uim_candidate cand;
   gint i;
+  gchar *cur_seg;
 
   uic->cwin_is_active = TRUE;
 
@@ -747,12 +787,28 @@ cand_activate_cb(void *ptr, int nr, int display_limit)
 
   uim_cand_win_gtk_set_candidates(uic->cwin, display_limit, list);
 
+  cur_seg = current_selected_segment(uic);
+  if (cur_seg && *cur_seg) {
+    if (uim_dict_win_gtk_set_text(uic->dwin, cur_seg)) {
+      uic->dwin_is_active = TRUE;
+    }
+  }
+  g_free(cur_seg);
+
   g_slist_foreach(list, (GFunc)uim_candidate_free, NULL);
   g_slist_free(list);
 
   gdk_window_get_origin(uic->win, &topwin_x, &topwin_y);
   uim_cand_win_gtk_layout(uic->cwin, topwin_x, topwin_y);
+  if (GTK_WIDGET(uic->cwin)->window) {
+    gint x, y;
+    gdk_window_get_origin(GTK_WIDGET(uic->cwin)->window, &x, &y);
+    gtk_window_move(GTK_WINDOW(uic->dwin),
+		    x + GTK_WIDGET(uic->cwin)->allocation.width, y);
+  }
   gtk_widget_show(GTK_WIDGET(uic->cwin));
+  if (uic->dwin_is_active)
+    gtk_widget_show(GTK_WIDGET(uic->dwin));
 
   if (uic->win) {
     GdkWindow *toplevel;
@@ -773,12 +829,32 @@ cand_select_cb(void *ptr, int index)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
   gint topwin_x, topwin_y;
+  gchar *cur_seg;
 
   gdk_window_get_origin(uic->win, &topwin_x, &topwin_y);
   uim_cand_win_gtk_layout(uic->cwin, topwin_x, topwin_y);
+  if (GTK_WIDGET(uic->cwin)->window) {
+    gint x, y;
+    gdk_window_get_origin(GTK_WIDGET(uic->cwin)->window, &x, &y);
+    gtk_window_move(GTK_WINDOW(uic->dwin),
+		    x + GTK_WIDGET(uic->cwin)->allocation.width, y);
+  }
+
   g_signal_handlers_block_by_func(uic->cwin, (gpointer)index_changed_cb, uic);
   uim_cand_win_gtk_set_index(uic->cwin, index);
   g_signal_handlers_unblock_by_func(uic->cwin, (gpointer)index_changed_cb, uic);
+
+  cur_seg = current_selected_segment(uic);
+  if (cur_seg && *cur_seg) {
+    if (uim_dict_win_gtk_set_text(uic->dwin, cur_seg)) {
+      uic->dwin_is_active = TRUE;
+      gtk_widget_show(GTK_WIDGET(uic->dwin));
+    } else {
+      uic->dwin_is_active = FALSE;
+      gtk_widget_hide(GTK_WIDGET(uic->dwin));
+    }
+  }
+  g_free(cur_seg);
 }
 
 static void
@@ -789,6 +865,12 @@ cand_shift_page_cb(void *ptr, int direction)
 
   gdk_window_get_origin(uic->win, &topwin_x, &topwin_y);
   uim_cand_win_gtk_layout(uic->cwin, topwin_x, topwin_y);
+  if (GTK_WIDGET(uic->cwin)->window) {
+    gint x, y;
+    gdk_window_get_origin(GTK_WIDGET(uic->cwin)->window, &x, &y);
+    gtk_window_move(GTK_WINDOW(uic->dwin),
+		    x + GTK_WIDGET(uic->cwin)->allocation.width, y);
+  }
   g_signal_handlers_block_by_func(uic->cwin, (gpointer)index_changed_cb, uic);
   uim_cand_win_gtk_shift_page(uic->cwin, direction);
   uim_set_candidate_index(uic->uc, uic->cwin->candidate_index);
@@ -801,6 +883,7 @@ cand_deactivate_cb(void *ptr)
   IMUIMContext *uic = (IMUIMContext *)ptr;
 
   uic->cwin_is_active = FALSE;
+  uic->dwin_is_active = FALSE;
 
   if (uic->cwin) {
     GdkWindow *toplevel;
@@ -809,6 +892,7 @@ cand_deactivate_cb(void *ptr)
     uim_cand_win_gtk_clear_candidates(uic->cwin);
     toplevel = gdk_window_get_toplevel(uic->win);
     gdk_window_remove_filter(toplevel, toplevel_window_candidate_cb, uic);
+    gtk_widget_hide(GTK_WIDGET(uic->dwin));
   }
 }
 
@@ -911,6 +995,10 @@ im_uim_parse_helper_str(const char *str)
 {
   gchar **lines;
 
+  while (str && *str && isspace(*str))
+    str++;
+  if (!str || !*str) return;
+
   if (g_str_has_prefix(str, "im_change") == TRUE) {
     im_uim_parse_helper_str_im_change(str);
   } else if (g_str_has_prefix(str, "prop_update_custom") == TRUE) {
@@ -999,6 +1087,7 @@ im_module_init(GTypeModule *type_module)
 				"GtkIMContextUIM",
 				&class_info, 0);
   uim_cand_win_gtk_register_type(type_module);
+  uim_dict_win_gtk_register_type(type_module);
 
   /* XXX:This is not recommended way!! */
   snooper_id = gtk_key_snooper_install((GtkKeySnoopFunc)uim_key_snoop, NULL );
@@ -1013,4 +1102,19 @@ im_module_exit(void)
   }
   gtk_key_snooper_remove(snooper_id);
   uim_quit();
+}
+
+static gchar *
+current_selected_segment (IMUIMContext *uic)
+{
+  int i;
+
+  for (i = 0; i < uic->nr_psegs; i++) {
+    if (uic->pseg[i].attr & UPreeditAttr_Cursor) {
+      gchar *tmp = g_strdup("");
+      return get_preedit_segment(&uic->pseg[i], NULL, tmp);
+    }
+  }
+
+  return NULL;
 }
