@@ -37,8 +37,8 @@
 #define MAX_CONTEXT 256
 
 #ifdef __APPLE__
-  #define LIBANTHY_SO    "/sw/lib/libanthy.dylib"
-  #define LIBANTHYDIC_SO "/sw/lib/libanthydic.dylib"
+  #define LIBANTHY_SO    "libanthy.dylib"
+  #define LIBANTHYDIC_SO "libanthydic.dylib"
 #else
   #define LIBANTHY_SO    "libanthy.so"
   #define LIBANTHYDIC_SO "libanthydic.so"
