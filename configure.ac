@@ -35,6 +35,7 @@ dnl *************************
 dnl *** Tests for m17nlib ***
 dnl *************************
 
+use_m17nlib="no"
 AC_ARG_WITH(m17nlib,
   AS_HELP_STRING([--without-m17nlib],
                  [Don't build against m17nlib]),
@@ -44,10 +45,10 @@ AC_ARG_WITH(m17nlib,
     if test "x$HAVE_M17NLIB" = "xyes"; then
       AC_CHECK_HEADER(m17n.h, HAVE_M17NLIB=yes, HAVE_M17NLIB=no)
       if test "x$HAVE_M17NLIB" = "xyes"; then
-      AC_DEFINE(HAVE_M17NLIB, 1,
-         [Define to 1 if you have m17nlib library and header file])
-      M17NLIB_LIBS="-lm17n"
-      use_m17nlib="yes"
+        AC_DEFINE(HAVE_M17NLIB, 1,
+           [Define to 1 if you have m17nlib library and header file])
+        M17NLIB_LIBS="-lm17n"
+        use_m17nlib="yes"
       fi
     fi
   fi
@@ -57,10 +58,10 @@ AC_ARG_WITH(m17nlib,
   if test "x$HAVE_M17NLIB" = "xyes"; then
     AC_CHECK_HEADER(m17n.h, HAVE_M17NLIB=yes, HAVE_M17NLIB=no)
     if test "x$HAVE_M17NLIB" = "xyes"; then
-    AC_DEFINE(HAVE_M17NLIB, 1,
-       [Define to 1 if you have m17nlib library and header file])
-    M17NLIB_LIBS="-lm17n"
-    use_m17nlib="yes"
+      AC_DEFINE(HAVE_M17NLIB, 1,
+         [Define to 1 if you have m17nlib library and header file])
+      M17NLIB_LIBS="-lm17n"
+      use_m17nlib="yes"
     fi
   fi
 ])
@@ -282,7 +283,6 @@ AM_CONDITIONAL(CANNA, test x$use_canna = xyes)
 AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
 AM_CONDITIONAL(GNOME2, test x$use_gnome2 = xyes)
 AM_CONDITIONAL(APPLET, test x$use_applet = xyes)
-AM_CONDITIONAL(XFCE4_PANEL, test x$use_xfce4_panel = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
 AM_CONDITIONAL(SUMIKA, test x$use_sumika = xyes)
 AM_CONDITIONAL(DICT, test x$use_dict = xyes)
