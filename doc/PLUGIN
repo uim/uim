@@ -1,0 +1,43 @@
+Plugin for uim
+
+From 0.4.6, uim supports plugin system which loads library and scheme
+definition. uim's plugin consist of both scheme and library.
+
+    ___________    (load-plugin "foo")
+   |           | ------------------+--->  libuim-foo.so
+   |  libuim   |                   |
+   |___________|                   +--->  foo.scm
+
+ When called (load-plugin "foo") from libuim scheme engine, libuim-foo.so
+ is loaded and call 'plugin_instance_init' in libuim-foo.so first. After
+ loading libuim-foo.so is succeeded, 'foo.scm' is loaded.
+
+* For end users
+ If you want to install 3rd party plugin, you have to place both the shared
+ object and scheme file to ~/.uim.d/plugin/.
+ For example, if you want to install "foo", you have to locate both libuim-foo.so
+ and foo.scm to ~/.uim.d/plugin. And you have to add to ~/.uim as follows,
+
+ (load-plugin "foo")
+
+* For system admins
+ If you want to install 3rd party plugin, you have to place the shared object
+ to ${libdatadir}/plugin/ and place the scheme library to ${datadir}/plugin.
+ For example, if you want to install "foo", you have to install libuim-foo.so
+ to ${libdatadir}/plugin and foo.scm to ${datadir}/plugin. If you want to enable
+ this for all users put it as follows in ${datadir}/loader.scm,
+
+ (load-plugin "foo")
+
+* For plugin developers
+ plugin_instance_init(void): Called when plugin is being loaded. In most case,
+                             initialize variables and bind scheme symbol and C
+                             functions.
+ plugin_instance_quit(void): Called when plugin is being unloaded.
+
+ - Plugin's loading scheme:
+  1. Plugin loading
+   dlopen(libuim-foo.so) -> call plugin_instance_init -> call "foo.scm"
+
+  2. Plugin unloading
+   call plugin_instance_quit -> dlclose(libuim-foo.so)
