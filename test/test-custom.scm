@@ -214,12 +214,12 @@
    (assert-equal (uim '(list #f "" ""))
 		 (uim '(custom-group-rec-new))))
 
-  ("test custom-define-group, custom-group-rec"
+  ("test define-custom-group, custom-group-rec"
    (uim '(set! test-group-recs-length
 	       (length custom-group-rec-alist)))
 
    (assert-false (uim-bool '(custom-group-rec 'test-group)))
-   (uim '(custom-define-group
+   (uim '(define-custom-group
 	  'test-group
 	  "test group"
 	  "long description of test group"))
@@ -232,7 +232,7 @@
 		 (uim '(length custom-group-rec-alist)))
 
    (assert-false (uim-bool '(custom-group-rec 'test-group2)))
-   (uim '(custom-define-group
+   (uim '(define-custom-group
 	  'test-group2
 	  "test group 2"
 	  "long description of test group 2"))
@@ -245,7 +245,7 @@
 		 (uim '(length custom-group-rec-alist)))
 
    (assert-false (uim-bool '(custom-group-rec 'test-group3)))
-   (uim '(custom-define-group
+   (uim '(define-custom-group
 	  'test-group3
 	  "test group 3"
 	  "long description of test group 3"))
@@ -300,19 +300,19 @@
   (setup
    (lambda ()
      ;;(uim '(load "custom.scm"))
-     (uim '(custom-define-group
+     (uim '(define-custom-group
 	    'test-group
 	    "test group"
 	    "long description of test group"))
-     (uim '(custom-define-group
+     (uim '(define-custom-group
 	    'test-group2
 	    "test group 2"
 	    "long description of test group 2"))
-     (uim '(custom-define-group
+     (uim '(define-custom-group
 	    'test-group3
 	    "test group 3"
 	    "long description of test group 3"))
-     (uim '(custom-define-group
+     (uim '(define-custom-group
 	    'test-group4
 	    "test group 4"
 	    "long description of test group 4"))

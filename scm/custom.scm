@@ -114,7 +114,7 @@
     (label "")
     (desc  "")))
 
-(define custom-define-group
+(define define-custom-group
   (lambda (gsym label desc)
     (let ((grec (custom-group-rec-new gsym label desc)))
       (if (not (custom-group-rec gsym))

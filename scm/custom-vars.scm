@@ -85,11 +85,11 @@
 (define spellcheck-im-canonical-name (_ "Spellcheck"))
 (define spellcheck-im-desc (_ "long description will be here."))
 
-(custom-define-group 'global
+(define-custom-group 'global
 		     (_ "Global settings")
 		     (_ "long description will be here."))
 
-(custom-define-group 'advanced
+(define-custom-group 'advanced
 		     (_ "Advanced settings")
 		     (_ "long description will be here."))
 
@@ -106,7 +106,7 @@
 ;; 
 ;; default-im-name
 ;;
-(custom-define-group 'default-im-name
+(define-custom-group 'default-im-name
 		     (_ "Default input method")
 		     (_ "long description will be here."))
 
@@ -190,7 +190,7 @@
 ;;
 ;; im-switching
 ;;
-(custom-define-group 'im-switching
+(define-custom-group 'im-switching
 		     (_ "Input method switching")
 		     (_ "long description will be here."))
 
@@ -222,7 +222,7 @@
 
 ;; anthy
 
-(custom-define-group 'anthy
+(define-custom-group 'anthy
 		     anthy-im-canonical-name
 		     anthy-im-desc)
 
@@ -260,7 +260,7 @@
 
 ;; canna
 
-(custom-define-group 'canna
+(define-custom-group 'canna
 		     canna-im-canonical-name
 		     canna-im-desc)
 
@@ -297,7 +297,7 @@
 ;;
 ;; canna-server-name
 ;;
-(custom-define-group 'cannaserver
+(define-custom-group 'cannaserver
 		     (_ "Canna server")
 		     (_ "long description will be here."))
 
@@ -358,7 +358,7 @@
 
 ;; skk
 
-(custom-define-group 'skk
+(define-custom-group 'skk
 		     skk-im-canonical-name
 		     skk-im-desc)
 
@@ -431,7 +431,7 @@
 
 ;; prime
 
-(custom-define-group 'prime
+(define-custom-group 'prime
 		     prime-im-canonical-name
 		     prime-im-desc)
 
@@ -481,7 +481,7 @@
 
 ;; Other IMs
 
-(custom-define-group 'other-ims
+(define-custom-group 'other-ims
 		     (_ "Other input methods")
 		     (_ "long description will be here."))
 
@@ -507,7 +507,7 @@
 
 ;; Spellcheck
 
-(custom-define-group 'spellcheck
+(define-custom-group 'spellcheck
 		     spellcheck-im-canonical-name
 		     spellcheck-im-desc)
 
