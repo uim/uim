@@ -65,29 +65,42 @@
 	   )
 	  (im-set-module-name! (retrieve-im name) module-name)))))
 
+;; TODO: rewrite test
 ;; side effect: invoke require-module for all installed IM modules
 (define stub-im-generate-stub-im-list
   (lambda (im-names)
-    (for-each require-module installed-im-module-list)
+    (let ((orig-enabled-im-list enabled-im-list))
+      (set! enabled-im-list ())  ;; enable all IMs
+      (for-each require-module installed-im-module-list)
+      (set! enabled-im-list orig-enabled-im-list))
     (map (lambda (name)
 	   (let* ((im (retrieve-im name))
 		  (name-str (symbol->string name)))
 	     (string-append
-	      "(if im-lazy-loading-enabled?\n"
-	      "  (begin\n"
-	      "    (require \"lazy-load.scm\")\n"
+	      "(if (memq '" name-str " enabled-im-list)\n"
 	      "    (register-stub-im\n"
 	      "     '" name-str "\n"
 	      "     \"" (im-lang im) "\"\n"
 	      "     \"" (im-encoding im) "\"\n"
 	      "     \"" (im-label-name im) "\"\n"
 	      "     \"" (im-short-desc im) "\"\n"
-	      "     \"" (im-module-name im) "\")))\n")))
+	      "     \"" (im-module-name im) "\"))\n")))
 	 im-names)))
 
 ;; side effect: invoke require-module for all IM listed in
 ;; installed-im-module-list
 (define stub-im-generate-all-stub-im-list
   (lambda ()
+    (for-each require-module installed-im-module-list)
     (stub-im-generate-stub-im-list (map im-name
 					(reverse im-list)))))
+
+;; TODO: write test
+(define load-stub-ims
+  (lambda ()
+    (let* ((user-module-dir (string-append (getenv "HOME") "/.uim.d/plugin/"))
+	   (file "stub-ims.scm")
+	   (user-file (string-append user-module-dir file)))
+      (and (try-load file)
+	   (or (try-load user-file)
+	       #t)))))

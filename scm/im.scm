@@ -102,15 +102,15 @@
 	  (set! im-list (cons direct-im
 			      ordinary-im-list))))))
 
+;; TODO: rewrite test
 ;; accepts overwrite register
 ;; returns initial register or not
 (define register-im
   (lambda (name lang encoding label-name short-desc init-arg init release
 		mode key-press key-release reset
 		get-candidate set-candidate-index prop)
-    (and (or (memq name enabled-im-list)
-	     (not (assq 'direct im-list))  ;; bootstrap
-	     custom-full-featured?)
+    (and (or (null? enabled-im-list)  ;; bootstrap
+	     (memq name enabled-im-list))
 	 (let ((im (im-new name lang encoding label-name short-desc
 			   init-arg init release
 			   mode key-press key-release reset
@@ -311,6 +311,3 @@
 (define set-candidate-index
   (lambda (id idx)
     (invoke-handler im-set-candidate-index-handler id idx)))
-
-(require "key.scm")
-(require-custom "im-custom.scm")

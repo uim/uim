@@ -129,41 +129,37 @@
 ;;
 
 (define custom-installed-im-list
-  (begin
-    (if (symbol-bound? 'installed-im-module-list)
-	(for-each require-module installed-im-module-list))
-    (custom-im-list-as-choice-rec (reverse
-				   (alist-delete 'direct im-list eq?)))))
+  (lambda ()
+    (let ((orig-enabled-im-list enabled-im-list))
+      (set! enabled-im-list ())  ;; enable all IMs
+      (for-each require-module installed-im-module-list)
+      (set! enabled-im-list orig-enabled-im-list)
+      (custom-im-list-as-choice-rec (reverse
+				     (alist-delete 'direct im-list eq?))))))
 
-(define-custom 'enabled-im-list
-               (map custom-choice-rec-sym custom-installed-im-list)
+(define-custom 'enabled-im-list '(direct)
   '(global)
   (cons
    'ordered-list
-   custom-installed-im-list)
+   (if custom-full-featured?
+       (custom-installed-im-list)
+       ()))
   (_ "Enabled input methods")
   (_ "long description will be here."))
 
-;; bootstrap
-(if (and (symbol-bound? 'installed-im-module-list)
-	 (null? enabled-im-list))
-    (custom-set-value! 'enabled-im-list
-		       (map custom-choice-rec-sym custom-installed-im-list)))
-
-(define custom-hook-literalize-enabled-im-list
-  (lambda ()
-    (require "lazy-load.scm")
-    (string-append
-     "(define enabled-im-list "
-     (custom-value-as-literal 'enabled-im-list)
-     ")\n"
-     "(define per-user-enabled-im-list-loaded? #t)\n"
-     "(define im-lazy-loading-enabled? #t)\n\n"
-     (string-join "\n" (stub-im-generate-stub-im-list enabled-im-list)))))
-
 (custom-add-hook 'enabled-im-list
-		 'custom-literalize-hooks
-		 custom-hook-literalize-enabled-im-list)
+		 'custom-get-hooks
+		 (lambda ()
+		   (set! enabled-im-list (remove (lambda (name)
+						   (eq? name
+							'direct))
+						 enabled-im-list))))
+
+(define-custom 'enable-lazy-loading? #t
+  '(global advanced)
+  '(boolean)
+  (_ "Enable lazy input method loading for fast startup")
+  (_ "long description will be here."))
 
 ;;
 ;; im-switching

@@ -1,5 +1,6 @@
+;;; manage-modules.scm: Generates input method module configurations
 ;;;
-;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -28,53 +29,31 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file initializes platform dependent execution
-;; environment. Following codes are written for ordinary UNIX desktop
-;; system. Modify this file with careful investigation to change uim
-;; configuration for special platforms such as embedded environments
-;;   -- YamaKen 2005-01-29
-
-(define enable-action? #t)
-
-(define load-user-conf
-  (lambda ()
-    (let ((orig-verbose (verbose))
-	  (file (or (getenv "LIBUIM_USER_SCM_FILE")
-		    (string-append (getenv "HOME") "/.uim"))))
-      (if (>= (verbose)
-	      1)
-	  (verbose 1))
-      (let ((succeeded (try-load file)))
-	(verbose orig-verbose)
-	succeeded))))
-
-(define load-modules
-  (lambda ()
-    (if (getenv "LIBUIM_VANILLA")
-	(set! enable-lazy-loading? #f))
-
-    (or (getenv "LIBUIM_VANILLA")
-	(and enable-lazy-loading?
-	     (require "lazy-load.scm")
-	     (load-stub-ims))
-	(for-each require-module installed-im-module-list))
-
-    (if (not (memq 'direct enabled-im-list))
-	(set! enabled-im-list (append enabled-im-list '(direct))))
-
-    ;; must be loaded at last of IMs
-    (if (not (retrieve-im 'direct))
-	(require-module "direct"))))
-
-(require "plugin.scm");
-(require "custom-rt.scm");
-(require "key.scm")
-(require "im.scm");
-
-(load-module-conf)
+(require "lazy-load.scm")
+(require "custom.scm")
 (require-custom "im-custom.scm")
-(load-modules)
 
-(or (getenv "LIBUIM_VANILLA")
-    (load-user-conf)
-    (load "default.scm"))
+;; TODO: write test
+;; define installed-im-module-list before invocation
+(define generate-installed-modules-scm
+  (lambda ()
+    (set! enabled-im-list
+	  (map custom-choice-rec-sym (custom-installed-im-list)))
+    (puts
+     (string-append
+      ";; The described order of input methods affects which IM is preferred\n"
+      ";; at the default IM selection process for each locale. i.e. list\n"
+      ";; preferable IM first for each language\n"
+      "(define installed-im-module-list "
+      (custom-list-as-literal installed-im-module-list)
+      ")\n"
+      (custom-definition-as-literal 'enabled-im-list)
+      "\n"))))
+
+;; TODO: write test
+(define generate-stub-ims-scm
+  (lambda ()
+    (puts
+     (string-append
+      ";; Don't edit this file manually\n"
+      (string-join "\n" (stub-im-generate-all-stub-im-list))))))

@@ -1,10 +1,11 @@
 EXTRA_DIST = $(SCM_FILES)
 scmdir = $(datadir)/uim
-scm_DATA = $(SCM_FILES) installed-modules.scm enabled-ims.scm
+scm_DATA = $(SCM_FILES) installed-modules.scm stub-ims.scm
 SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  default.scm \
  util.scm key.scm ustr.scm action.scm load-action.scm i18n.scm \
  uim-sh.scm custom.scm custom-rt.scm \
+ manage-modules.scm \
  direct.scm \
  rk.scm \
  generic.scm generic-custom.scm generic-key-custom.scm \
@@ -57,19 +58,21 @@ if SCIM
 #  module_names += "scim"
 endif
 
+# TODO: resolve dependency to $(top_builddir)/uim/uim-sh in proper way
 installed-modules.scm: $(SCM_FILES)
-	echo ";; The described order of input methods affects which IM is preferred" >$@ && \
-	echo ";; at the default IM selection process for each locale. i.e. list" >>$@ && \
-	echo ";; preferable IM first for each language" >>$@ && \
-	echo -n "(define installed-im-module-list '(" >>$@ && \
-	echo -n '$(module_names)' >>$@ && \
-	echo '))' >>$@
+	$(MAKE) -C $(top_builddir)/uim uim-sh && \
+	echo -n >$@ && \
+	echo "(define installed-im-module-list '(" '$(module_names)' ")) \
+	      (require \"manage-modules.scm\") \
+	      (generate-installed-modules-scm)" \
+	| LIBUIM_VERBOSE=1 LIBUIM_VANILLA=1 LIBUIM_SCM_FILES=${PWD} \
+	  $(top_builddir)/uim/uim-sh -B >>$@
 
 # TODO: resolve dependency to $(top_builddir)/uim/uim-sh in proper way
-enabled-ims.scm: installed-modules.scm
+stub-ims.scm: installed-modules.scm
 	$(MAKE) -C $(top_builddir)/uim uim-sh && \
-	echo ";; Don't edit this file manually" >$@ && \
-	echo '(require "custom.scm") \
-	      (puts (custom-hook-literalize-enabled-im-list))' \
+	echo -n >$@ && \
+	echo "(require \"manage-modules.scm\") \
+	      (generate-stub-ims-scm)" \
 	| LIBUIM_VERBOSE=1 LIBUIM_VANILLA=1 LIBUIM_SCM_FILES=${PWD} \
 	  $(top_builddir)/uim/uim-sh -B >>$@

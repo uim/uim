@@ -29,8 +29,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(if (and (symbol-bound? 'disable-action)
-	 disable-action)
+(if enable-action?
+    (require "action.scm")
     (begin
       (define do-nothing
 	(lambda args
@@ -43,5 +43,4 @@
       (define context-init-widgets do-nothing)
       (define context-update-widgets do-nothing)
       (define context-prop-activate-handler do-nothing)
-      (define context-mode-handler do-nothing))
-    (require "action.scm"))
+      (define context-mode-handler do-nothing)))

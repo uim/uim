@@ -101,6 +101,7 @@
 ;; feel bad about the meaning of 'module', post your opinion to
 ;; uim@fdo.
 
+(define installed-im-module-list ())
 (define currently-loading-module-name #f)
 
 ;;
@@ -113,3 +114,19 @@
 			 (try-require (string-append module-name ".scm")))))
       (set! currently-loading-module-name #f)
       succeeded)))
+
+;; TODO: write test
+(define load-module-conf
+  (lambda ()
+    (let* ((user-module-dir (string-append (getenv "HOME") "/.uim.d/plugin/"))
+	   (conf-file "installed-modules.scm")
+	   (user-conf-file (string-append user-module-dir conf-file)))
+      (try-load conf-file)
+      (if (not (getenv "LIBUIM_VANILLA"))
+	  (let ((orig-module-list installed-im-module-list)
+		(orig-enabled-list enabled-im-list))
+	    (and (try-load user-conf-file)
+		 (set! installed-im-module-list
+		       (append orig-module-list installed-im-module-list))
+		 (set! enabled-im-list
+		       (append orig-enabled-list enabled-im-list))))))))

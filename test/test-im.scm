@@ -49,6 +49,12 @@
   (setup
    (lambda ()
      (uim '(begin
+	     (require-module "anthy")
+	     (require-module "canna")
+	     (require-module "skk")
+	     (require-module "tcode")
+	     (set! enabled-im-list (append enabled-im-list
+					   '(test-im test-im2)))
 	     (for-each require-module installed-im-module-list)
 	     (define prev-im #f)
 	     (define prev-nr-ims (length im-list))
@@ -842,6 +848,14 @@
   )
 
 (define-uim-test-case "testcase im im-custom"
+  (setup
+   (lambda ()
+     (uim '(begin
+	     (require-module "anthy")
+	     (require-module "canna")
+	     (require-module "skk")
+	     (require-module "tcode")))))
+
   ("test custom-im-list-as-choice-rec"
    (assert-equal '((canna "Canna" "Japanese Kana Kanji Conversion Engine, Canna")
 		   (skk "SKK" "Uim's SKK like input method")

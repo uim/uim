@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 1648
+;; This file is tested with revision 389 of new repository
 
 (use test.unit)
 
@@ -43,6 +43,7 @@
 	 (require "load-action.scm")
 	 (require "rk.scm")
 	 (require "japanese.scm")
+	 (require-module "anthy")
 
 	 (set! widget-proto-list ())
 	 (set! action-list ())
