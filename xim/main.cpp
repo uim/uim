@@ -158,7 +158,9 @@ static void main_loop()
 	    if (fd_max < fd)
 		fd_max = fd;
 	}
-	select(fd_max + 1, &rfds, &wfds, NULL, &tv);
+	if ((select(fd_max + 1, &rfds, &wfds, NULL, &tv)) == 0)
+	    continue;
+
 	for (it = fd_watch_stat.begin(); it != fd_watch_stat.end(); it++) {
 	    int fd = it->first;
 	    if (FD_ISSET(fd, &rfds))
