@@ -1,6 +1,8 @@
 /*
 
-  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  toolbar-standalone-gtk.c: toolbar implementation with GTK+
+
+  Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -38,12 +40,23 @@
 #include <locale.h>
 #include <uim/gettext.h>
 #include <gtk/gtk.h>
+#include "uim/uim.h"
 
 extern GtkWidget *uim_helper_toolbar_new(void);
 
 static gboolean toolbar_dragging = FALSE;
 static gint window_drag_start_x = -1, window_drag_start_y = -1;
 static gint pointer_drag_start_x = -1, pointer_drag_start_y = -1;
+
+#if GLIB_CHECK_VERSION(2, 6, 0)
+
+static void
+parse_options(gint argc, gchar **argv)
+{
+
+}
+
+#endif
 
 static void
 delete_event(GtkWidget *widget, gpointer data)
@@ -187,6 +200,8 @@ main (int argc, char *argv[])
   textdomain( PACKAGE );
   bind_textdomain_codeset( PACKAGE, "UTF-8");
 
+  uim_init();
+
   gtk_set_locale();
   
   gtk_init(&argc, &argv);
@@ -235,7 +250,12 @@ main (int argc, char *argv[])
 
   if (argc > 1) {
     if (!gtk_window_parse_geometry(GTK_WINDOW (window), argv[1])) {
+
+#if GLIB_CHECK_VERSION(2, 6, 0)
+      parse_options(argc, argv);
+#else
       g_warning(_("Unable to parse the geometry string '%s'"), argv[1]);
+#endif
     }
   } else {
     gint x, y, w, h, sc_w, sc_h;
@@ -251,6 +271,8 @@ main (int argc, char *argv[])
   }
 
   gtk_main();
+
+  uim_quit();
 
   return 0;
 }
