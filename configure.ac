@@ -488,7 +488,7 @@ fi
 if test x$use_qt = xyes ; then
     # minimum version
     QT_VERSION=3.2.0
-    QT_VERSION_NUM=320
+    QT_VERSION_NUM=0x030200
 
     # GUESS $QTDIR
     if test ! -d "$QTDIR"; then
