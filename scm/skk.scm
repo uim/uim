@@ -1221,7 +1221,9 @@
 		(set! num 9) ; pressing key_0
 		(set! num (- num 1)))
 	    (if (< num skk-nr-candidate-max)
-		(set! idx (+ (* cur-page skk-nr-candidate-max) num))))
+		(set! idx (+ (* cur-page skk-nr-candidate-max) num)))
+	    (if (= skk-nr-candidate-max 0)
+	        (set! idx num)))
 	  ;; FIXME: add code to handle labels other than number here
 	  )
       (if (and (>= idx 0)
