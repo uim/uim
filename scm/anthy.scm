@@ -900,6 +900,25 @@
 	   (opposite-kana (multi-segment-opposite-kana kana)))
       (anthy-switch-kana-mode! ac opposite-kana))))
 
+;; experimental feature
+(define anthy-transpose-sub-preconv!
+  (lambda (ac transpose-idx start len)
+    (let* ((orig (ustr-dup (anthy-context-preconv-ustr ac)))
+	   (former (evmap-ustr-substr-visible orig 0 start))
+	   (cur-seg (evmap-ustr-substr-visible orig start len))
+	   (latter (begin
+		     (evmap-ustr-set-visible-pos! orig (+ start len))
+		     (ustr-clear-former! orig)
+		     orig))
+	   (ruletree (anthy-transpose-idx->ruletree ac transpose-idx))
+	   (transposed (evmap-ustr-transpose cur-seg ruletree)))
+      (ustr-prepend! transposed (ustr-whole-seq former))
+      (ustr-append! transposed (ustr-whole-seq latter))
+      (anthy-context-set-preconv-ustr! ac transposed)
+      ;; ruletree has changed temporarily until commit to re-edit with
+      ;; transposed charset
+      (anthy-context-set-ruletree! ac ruletree))))
+
 (define anthy-transpose-preconv!
   (lambda (ac transpose-idx)
     (let* ((preconv-ustr (anthy-context-preconv-ustr ac))
@@ -1117,7 +1136,6 @@
 	((action_anthy_transpose_to_full_alnum)
 	 (transpose ac anthy-transpose-idx-wide-latin))
 
-	;; commit current preedit string, then toggle hiragana/katakana mode.
 	((action_anthy_commit_and_toggle_kana)
 	 (anthy-commit-preconv! ac)
 	 (anthy-toggle-kana-mode! ac))
@@ -1187,6 +1205,8 @@
 						      seg-len))
 		 (cand-ruletree (anthy-transpose-idx->ruletree ac cand-idx))
 		 (cand-ustr (evmap-ustr-transpose seg-ustr cand-ruletree)))
+	    (if anthy-transpose-sub-preconv-with-segment?
+		(anthy-transpose-sub-preconv! ac cand-idx seg-pos seg-len))
 	    (evmap-ustr-preedit-string cand-ustr))))))
 
 (define anthy-converting-state-preedit

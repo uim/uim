@@ -39,11 +39,26 @@
                      (ugettext anthy-im-name-label)
                      (ugettext anthy-im-short-desc))
 
+(define-custom-group 'anthy-advanced
+                     (_ "Anthy (advanced)")
+                     (_ "Advanced settings for Anthy"))
+
+;; subgroup
+(define-custom-group 'transposition
+                     (_ "Preedit string transposition (character set conversion)")
+                     (_ "Preedit string transposition (character set conversion)"))
+
 
 (define-custom 'anthy-commit-transposed-preedit-immediately? #f
-  '(anthy)
+  '(anthy-advanced transposition)
   '(boolean)
-  (_ "Immediately commit after preedit transposition (character set conversion)")
+  (_ "Immediately commit after pre-convert transposition")
+  (_ "long description will be here."))
+
+(define-custom 'anthy-transpose-sub-preconv-with-segment? #t
+  '(anthy-advanced transposition)
+  '(boolean)
+  (_ "Transpose pre-convert string also when segment transposed")
   (_ "long description will be here."))
 
 ;;
