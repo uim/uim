@@ -341,11 +341,10 @@ nth_candidate(char *str, int nth)
 static uim_lisp
 skk_dic_open(uim_lisp fn_)
 {
-  char *fn = uim_scm_c_str(fn_);
+  const char *fn = uim_scm_refer_c_str(fn_);
   if (!skk_dic) {
     skk_dic = open_dic(fn);
   }
-  free(fn);
   return uim_scm_f();
 }
 
@@ -672,12 +671,12 @@ find_cand_array_lisp(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_,
 {
   char o;
   const char *hs;
-  char *okuri = NULL;
+  const char *okuri = NULL;
   struct skk_cand_array *ca;
 
   hs = uim_scm_refer_c_str(head_);
   if (okuri_ != uim_scm_f()) {
-    okuri = uim_scm_c_str(okuri_);
+    okuri = uim_scm_refer_c_str(okuri_);
   }
   if (okuri_head_ == uim_scm_f()) {
     o = 0;
@@ -687,7 +686,6 @@ find_cand_array_lisp(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_,
   }
 
   ca = find_cand_array(skk_dic, hs, o, okuri, create_if_not_found);
-  free(okuri);
   return ca;
 }
 
@@ -712,7 +710,7 @@ skk_store_replaced_numeric_str(uim_lisp head_)
   int prev_is_num = 0;
   int i, numlen = 0, start = 0;
   char *numstr = NULL;
-  uim_lisp lst = NIL;
+  uim_lisp lst = uim_scm_null_list();
 
   str = uim_scm_refer_c_str(head_);
   len = strlen(str);
@@ -1059,8 +1057,9 @@ skk_replace_numeric(uim_lisp head_)
   char *str;
   int prev_is_num = 0;
   int i, j, len, newlen;
+  uim_lisp result;
 
-  str = uim_scm_refer_c_str(head_);
+  str = uim_scm_c_str(head_);
   len = strlen(str);
   newlen = len;
 
@@ -1078,7 +1077,9 @@ skk_replace_numeric(uim_lisp head_)
       prev_is_num = 0;
     }
   }
-  return uim_scm_make_str(str);
+  result = uim_scm_make_str(str);
+  free(str);
+  return result;
 }
 
 static char *
@@ -1123,11 +1124,12 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
   struct skk_cand_array *ca, *subca;
   int i, j, k = 0;
   char *cands = NULL;
-  char *p, *numstr;
+  char *p;
+  const char *numstr;
   int method_place = 0;
   int sublen, newlen;
   int mark;
-  uim_lisp str_ = NIL;
+  uim_lisp str_ = uim_scm_null_list();
 
   n = uim_scm_c_int(nth_);
   ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
@@ -1440,7 +1442,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
   int i, j, k = 0;
   int nr_cands = 0;
   uim_lisp numstr_;
-  char *numstr;
+  const char *numstr;
   int method_place = 0;
 
   nth = uim_scm_c_int(nth_);
@@ -1465,7 +1467,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
 	    if (k == nth) {
 	      str = ca->cands[i];
 	      /* reorder sub candidate */
-	      skk_commit_candidate(numstr_, uim_scm_f(), uim_scm_f(), uim_scm_make_int(j), NIL);
+	      skk_commit_candidate(numstr_, uim_scm_f(), uim_scm_f(), uim_scm_make_int(j), uim_scm_null_list());
 	      break;
 	    }
 	    k++;
