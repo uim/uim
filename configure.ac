@@ -184,6 +184,9 @@ AC_DEFINE_UNQUOTED(XLIB_DIR, "$x_libraries", [X11 Library Directory])
 
 AC_DEFINE_UNQUOTED(UIM_PIXMAPSDIR, "${DATADIR}/${PACKAGE}/pixmaps", [pixmaps directory])
 
+dnl *****************************
+dnl *** Check for Gtk Library ***
+dnl *****************************
 AC_ARG_WITH(gtk2,
   AC_HELP_STRING([--without-gtk2],
                  [don't build against Gtk+2]),
@@ -239,6 +242,26 @@ AC_ARG_ENABLE(applet,
   ],
   [ PKG_CHECK_MODULES(APPLET, libpanelapplet-2.0, use_applet="yes",use_applet="no") ])
 
+dnl ****************************
+dnl *** Check for Qt Library ***
+dnl ****************************
+AC_ARG_ENABLE(qt,
+  AC_HELP_STRING([--enable-qt],
+                 [enable qt helper applications]),
+  [
+    case $enable_qt in
+      no)
+        use_qt="no"
+      ;;
+      yes|*)
+        use_qt="yes"
+      ;;
+    esac
+
+  ],
+  [
+    use_qt="no"
+  ])
 
 AC_ARG_ENABLE(dummy,
   AC_HELP_STRING([--default-toolkit],
@@ -344,6 +367,7 @@ AM_CONDITIONAL(GTK2_4, test x$use_gtk2_4 = xyes)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test x$default_toolkit = xgtk)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test x$default_toolkit = xqt)
 AM_CONDITIONAL(GNOME2, test x$use_gnome2 = xyes)
+AM_CONDITIONAL(QT, test x$use_qt = xyes)
 AM_CONDITIONAL(APPLET, test x$use_applet = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
 AM_CONDITIONAL(DICT, test x$use_dict = xyes)
@@ -365,6 +389,92 @@ fi
 #if test x$use_gnome2 = xyes ; then
 #AC_DEFINE(USE_GNOME2, 1, [use gnome2])
 #fi
+
+if test x$use_qt = xyes ; then
+    # minimum version
+    QT_VERSION=3.2.0
+    QT_VERSION_NUM=320
+
+    if test -z "$QTDIR"; then
+      QTDIR="/usr"
+    fi
+    QTINCDIR="/include/qt"
+    if test ! -d "$QTDIR$QTINCDIR"; then
+       QTINCDIR="/include/X11/qt"
+    fi
+    if test ! -d "$QTDIR$QTINCDIR"; then
+       QTINCDIR="/include"
+    fi
+
+    # Check For MOC
+    if test -x "$QTDIR/bin/moc"; then
+      HOST_MOC="$QTDIR/bin/moc"
+    else
+      AC_CHECK_PROGS(HOST_MOC, moc, "")
+    fi
+    if test -z "$HOST_MOC"; then
+      AC_MSG_ERROR([no acceptable moc( meta object compiler ) found])
+    fi
+    MOC=$HOST_MOC
+
+    # Check For UIC
+    if test -x "$QTDIR/bin/uic"; then
+      HOST_UIC="$QTDIR/bin/uic"
+    else
+      AC_CHECK_PROGS(HOST_UIC, uic, "")
+    fi
+    if test -z "$HOST_UIC"; then
+      AC_MSG_ERROR([no acceptable uic( user interface compiler ) found])
+    fi
+    UIC=$HOST_UIC
+
+    QT_CFLAGS="-I${QTDIR}${QTINCDIR} -DQT_GENUINE_STR -DQT_NO_STL"
+    if test -z "$enable_debug"; then
+      QT_CFLAGS="$QT_CFLAGS -DQT_NO_DEBUG -DNO_DEBUG"
+    fi
+    _SAVE_LDFLAGS=$LDFLAGS
+    QT_LDFLAGS=-L${QTDIR}/lib
+    LDFLAGS="$LDFLAGS $QT_LDFLAGS"
+    AC_LANG_SAVE
+    AC_LANG_CPLUSPLUS
+    AC_CHECK_LIB(qt, main, QT_LIB=-lqt,
+        AC_CHECK_LIB(qt-mt, main, QT_LIB=-lqt-mt,
+            AC_MSG_ERROR([Cannot find QT libraries.])))
+    LDFLAGS=$_SAVE_LDFLAGS
+    QT_LIBS="-L/usr/X11R6/lib $QT_LDFLAGS $QT_LIB -lXext -lX11"
+
+    UIM_QT_LDFLAGS=$QT_LIBS
+    UIM_QT_CFLAGS=$QT_CFLAGS
+
+    _SAVE_CXXFLAGS=$CXXFLAGS
+    _SAVE_LIBS=$LIBS
+
+    CXXFLAGS="$CXXFLAGS $QT_CFLAGS"
+    LIBS="$LIBS $QT_LIBS"
+    
+    AC_MSG_CHECKING(Qt - version >= $QT_VERSION)
+    AC_TRY_COMPILE([#include <qglobal.h>],
+    [
+        #if (QT_VERSION < $QT_VERSION_NUM)
+            #error  "QT_VERSION too old"
+        #endif
+    ],result="yes",result="no")
+
+    AC_MSG_RESULT("$result")
+    if test "$result" = "no"; then
+       AC_MSG_ERROR([Qt Helper requires at least version $QT_VERSION of Qt])
+    fi
+    CXXFLAGS=$_SAVE_CXXFLAGS
+    LIBS=$_SAVE_LIBS
+
+    AC_LANG_RESTORE
+
+    AC_SUBST(MOC)
+    AC_SUBST(UIC)
+    AC_SUBST(UIM_QT_CFLAGS)
+    AC_SUBST(UIM_QT_LDFLAGS)
+fi
+
 
 # add debugging flags to CFLAGS regardless of GCC=yes or not
 if test x$enable_debug = xyes; then
@@ -433,6 +543,7 @@ AC_CONFIG_FILES([test.sh
                  uim/Makefile
                  scm/Makefile
                  gtk/Makefile
+                 qt/Makefile
                  xim/Makefile
 		 fep/Makefile
 		 tables/Makefile
@@ -454,6 +565,7 @@ Configure Result :
    Gtk+            : ${use_gtk2}
    Gnome           : ${use_gnome2}
    Gnome Applet    : ${use_applet}
+   Qt              : ${use_qt}
    FEP             : ${use_uim_fep}
    DICT            : ${use_dict}
    Default toolkit : ${default_toolkit}
