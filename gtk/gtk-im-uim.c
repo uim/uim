@@ -423,14 +423,8 @@ im_uim_set_cursor_location(GtkIMContext *ic,
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
 
-  if (uic->cwin->left &&  uic->nr_psegs > 1) {
-    return;
-  }
-
+  uic->preedit_pos = *area;
   uim_cand_win_gtk_set_cursor_location(uic->cwin, area);
-
-  uic->preedit_pos.x = area->x;
-  uic->preedit_pos.y = area->y;
 }
 
 
@@ -589,10 +583,11 @@ toplevel_window_candidate_cb(GdkXEvent *xevent, GdkEvent *ev, gpointer data)
     return GDK_FILTER_CONTINUE;
 
   if (uic->cwin && uic->cwin_is_active) {
-    gint topwin_x, topwin_y;
+    gint x, y, width, height, depth;
 
-    gdk_window_get_origin(uic->win, &topwin_x, &topwin_y);
-    uim_cand_win_gtk_layout(uic->cwin, topwin_x, topwin_y);
+    gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
+    gdk_window_get_origin(uic->win, &x, &y);
+    uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
   }
   return GDK_FILTER_CONTINUE;
 }
@@ -758,7 +753,7 @@ static void
 cand_activate_cb(void *ptr, int nr, int display_limit)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
-  gint topwin_x, topwin_y;
+  gint x, y, width, height, depth;
   GSList *list = NULL;
   uim_candidate cand;
   gint i;
@@ -775,8 +770,9 @@ cand_activate_cb(void *ptr, int nr, int display_limit)
   g_slist_foreach(list, (GFunc)uim_candidate_free, NULL);
   g_slist_free(list);
 
-  gdk_window_get_origin(uic->win, &topwin_x, &topwin_y);
-  uim_cand_win_gtk_layout(uic->cwin, topwin_x, topwin_y);
+  gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
+  gdk_window_get_origin(uic->win, &x, &y);
+  uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
   gtk_widget_show(GTK_WIDGET(uic->cwin));
 
   if (uic->win) {
@@ -797,10 +793,11 @@ static void
 cand_select_cb(void *ptr, int index)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
-  gint topwin_x, topwin_y;
+  gint x, y, width, height, depth;
 
-  gdk_window_get_origin(uic->win, &topwin_x, &topwin_y);
-  uim_cand_win_gtk_layout(uic->cwin, topwin_x, topwin_y);
+  gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
+  gdk_window_get_origin(uic->win, &x, &y);
+  uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
   g_signal_handlers_block_by_func(uic->cwin, (gpointer)index_changed_cb, uic);
   uim_cand_win_gtk_set_index(uic->cwin, index);
   g_signal_handlers_unblock_by_func(uic->cwin, (gpointer)index_changed_cb, uic);
@@ -810,10 +807,11 @@ static void
 cand_shift_page_cb(void *ptr, int direction)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
-  gint topwin_x, topwin_y;
+  gint x, y, width, height, depth;
 
-  gdk_window_get_origin(uic->win, &topwin_x, &topwin_y);
-  uim_cand_win_gtk_layout(uic->cwin, topwin_x, topwin_y);
+  gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
+  gdk_window_get_origin(uic->win, &x, &y);
+  uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
   g_signal_handlers_block_by_func(uic->cwin, (gpointer)index_changed_cb, uic);
   uim_cand_win_gtk_shift_page(uic->cwin, direction);
   uim_set_candidate_index(uic->uc, uic->cwin->candidate_index);

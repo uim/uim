@@ -312,17 +312,19 @@ uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
 				GSList *candidates)
 {
   gint i, nr_stores = 1;
-  gchar *leftp;
+  gchar *win_pos;
 
   g_return_if_fail(UIM_IS_CAND_WIN_GTK(cwin));
 
-  leftp = uim_symbol_value_str("candidate-window-position");
-  if (leftp && !strcmp(leftp, "left")) {
-    cwin->left = TRUE;
+  win_pos = uim_symbol_value_str("candidate-window-position");
+  if (win_pos && !strcmp(win_pos, "left")) {
+    cwin->position = UIM_CAND_WIN_POS_LEFT;
+  } else if (win_pos && !strcmp(win_pos, "right")) {
+    cwin->position = UIM_CAND_WIN_POS_RIGHT;
   } else {
-    cwin->left = FALSE;
+    cwin->position = UIM_CAND_WIN_POS_CARET;
   }
-  g_free(leftp);
+  g_free(win_pos);
 
   if (cwin->stores == NULL)
     cwin->stores = g_ptr_array_new();
@@ -544,10 +546,13 @@ uim_cand_win_gtk_shift_page(UIMCandWinGtk *cwin, gboolean forward)
 }
 
 void
-uim_cand_win_gtk_layout(UIMCandWinGtk *cwin, gint topwin_x, int topwin_y)
+uim_cand_win_gtk_layout(UIMCandWinGtk *cwin,
+			gint topwin_x, gint topwin_y,
+			gint topwin_width, gint topwin_height)
 {
   GtkRequisition req;
   int  x, y;
+  int  cursor_x, cursor_y;
   int  sc_he, cw_he; /*screen height, candidate window height*/
   int  sc_wi, cw_wi;
 
@@ -560,16 +565,25 @@ uim_cand_win_gtk_layout(UIMCandWinGtk *cwin, gint topwin_x, int topwin_y)
   sc_he = gdk_screen_get_height(gdk_screen_get_default ());
   sc_wi = gdk_screen_get_width (gdk_screen_get_default ());
 
-  if (sc_wi <  topwin_x + cwin->cursor.x + cw_wi) {
-    x = topwin_x + cwin->cursor.x - cw_wi;
+  if (cwin->position == UIM_CAND_WIN_POS_LEFT) {
+    cursor_x = 0;
+  } else if (cwin->position == UIM_CAND_WIN_POS_RIGHT) {
+    cursor_x = topwin_width - cw_wi;
   } else {
-    x = topwin_x + cwin->cursor.x;
+    cursor_x = cwin->cursor.x;
+  }
+  cursor_y = cwin->cursor.y;
+
+  if (sc_wi <  topwin_x + cursor_x + cw_wi) {
+    x = topwin_x + cursor_x - cw_wi;
+  } else {
+    x = topwin_x + cursor_x;
   }
 
-  if (sc_he <  topwin_y + cwin->cursor.y +  cwin->cursor.height + cw_he ) {
-    y = topwin_y + cwin->cursor.y - cw_he;
+  if (sc_he <  topwin_y + cursor_y +  cwin->cursor.height + cw_he ) {
+    y = topwin_y + cursor_y - cw_he;
   } else {
-    y = topwin_y + cwin->cursor.y +  cwin->cursor.height;
+    y = topwin_y + cursor_y +  cwin->cursor.height;
   }
 
   gtk_window_move(GTK_WINDOW(cwin), x, y );

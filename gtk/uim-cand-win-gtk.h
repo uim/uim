@@ -48,6 +48,12 @@ G_BEGIN_DECLS
 typedef struct _UIMCandWinGtk      UIMCandWinGtk;
 typedef struct _UIMCandWinGtkClass UIMCandWinGtkClass;
 
+typedef enum {
+  UIM_CAND_WIN_POS_CARET,
+  UIM_CAND_WIN_POS_LEFT,
+  UIM_CAND_WIN_POS_RIGHT
+} UimCandWinPos;
+
 struct _UIMCandWinGtk {
   GtkWindow	 parent;
 
@@ -62,7 +68,7 @@ struct _UIMCandWinGtk {
   gint		 candidate_index;
   gint		 page_index;
 
-  gboolean	 left;
+  UimCandWinPos	 position;
 
   GdkRectangle	 cursor;
 };
@@ -100,7 +106,9 @@ void		uim_cand_win_gtk_set_scrollable		(UIMCandWinGtk *cwin,
 
 void		uim_cand_win_gtk_layout			(UIMCandWinGtk *cwin,
 							 gint topwin_x,
-							 gint topwin_y);
+							 gint topwin_y,
+							 gint topwin_width,
+							 gint topwin_height);
 void		uim_cand_win_gtk_set_cursor_location	(UIMCandWinGtk *cwin,
 							 GdkRectangle *area);
 
