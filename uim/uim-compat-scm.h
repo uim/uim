@@ -53,6 +53,7 @@
 #ifndef _uim_compat_scm_h_included_
 #define _uim_compat_scm_h_included_
 
+#include "uim.h"
 #include "uim-scm.h"
 
 #ifdef __cplusplus

@@ -47,21 +47,10 @@
 #define _uim_scm_h_included_
 
 #include <stdio.h>
+#include "uim.h"
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#if 1
-/*
-  I want a boolean type for uim to explicitly indicate intention about
-  values. It should be reorganized into uim.h after agreement with
-  other developers. -- YamaKen 2004-12-17
-*/
-typedef int uim_bool;
-
-#define UIM_FALSE 0
-#define UIM_TRUE 1
 #endif
 
 

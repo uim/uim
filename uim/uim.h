@@ -41,6 +41,13 @@ extern "C" {
 
 #include <stdio.h>
 
+/* a boolean type for uim to explicitly indicate intention about values */
+typedef int uim_bool;
+
+#define UIM_FALSE 0
+#define UIM_TRUE 1
+
+
 typedef struct uim_context_ *uim_context;
 
 typedef struct uim_candidate_ *uim_candidate;
