@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 0.4.6-alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-04 07:45+0900\n"
+"POT-Creation-Date: 2005-02-04 17:06+0900\n"
 "PO-Revision-Date: 2005-02-04 08:17+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
@@ -352,55 +352,55 @@ msgstr ""
 msgid "Group"
 msgstr "グループ"
 
-#: helper/pref-gtk.c:483
+#: helper/pref-gtk.c:560
 msgid "Specify file"
 msgstr "ファイルの指定"
 
-#: helper/pref-gtk.c:526 qt/pref-customwidgets.cpp:168
+#: helper/pref-gtk.c:597 qt/pref-customwidgets.cpp:168
 msgid "File"
 msgstr "参照"
 
-#: helper/pref-gtk.c:1109
+#: helper/pref-gtk.c:1271
 msgid "Enabled"
 msgstr "有効"
 
-#: helper/pref-gtk.c:1135
+#: helper/pref-gtk.c:1297
 msgid "Enabled items"
 msgstr "有効な項目"
 
-#: helper/pref-gtk.c:1213
+#: helper/pref-gtk.c:1375
 msgid "Disabled"
 msgstr "無効"
 
-#: helper/pref-gtk.c:1239
+#: helper/pref-gtk.c:1401
 msgid "Disabled items"
 msgstr "無効な項目"
 
-#: helper/pref-gtk.c:1273 helper/pref-gtk.c:1839
+#: helper/pref-gtk.c:1433 helper/pref-gtk.c:2029
 msgid "Choose..."
 msgstr "選択..."
 
-#: helper/pref-gtk.c:1469
+#: helper/pref-gtk.c:1634
 msgid "Press any key to grab..."
 msgstr "取得するキーを押して下さい..."
 
-#: helper/pref-gtk.c:1705
+#: helper/pref-gtk.c:1894
 msgid "Key preference"
 msgstr "キー設定"
 
-#: helper/pref-gtk.c:1751
+#: helper/pref-gtk.c:1940
 msgid "_Shift"
 msgstr "_Shift"
 
-#: helper/pref-gtk.c:1756
+#: helper/pref-gtk.c:1945
 msgid "_Control"
 msgstr "_Control"
 
-#: helper/pref-gtk.c:1761
+#: helper/pref-gtk.c:1950
 msgid "_Alt"
 msgstr "_Alt"
 
-#: helper/pref-gtk.c:1777
+#: helper/pref-gtk.c:1966
 msgid "..."
 msgstr "..."
 
@@ -418,21 +418,57 @@ msgstr "設定ツールの起動"
 msgid "Quit this toolbar"
 msgstr "このツールバーを閉じる"
 
-#: helper/input-pad-ja.c:272
+#: helper/input-pad-ja.c:371
 msgid "ja-pad"
 msgstr ""
 
-#: helper/input-pad-ja.c:293
+#: helper/input-pad-ja.c:393
 msgid "hiragana"
 msgstr "ひらがな"
 
-#: helper/input-pad-ja.c:296
+#: helper/input-pad-ja.c:396
 msgid "katakana"
 msgstr "カタカナ"
 
-#: helper/input-pad-ja.c:299
+#: helper/input-pad-ja.c:399
 msgid "eisu"
 msgstr "英数"
+
+#: helper/input-pad-ja.c:402
+msgid "symbol"
+msgstr "記号"
+
+#: helper/input-pad-ja.c:405
+msgid "bracket"
+msgstr "括弧"
+
+#: helper/input-pad-ja.c:408
+msgid "arrow"
+msgstr "矢印"
+
+#: helper/input-pad-ja.c:411
+msgid "omission"
+msgstr "省略記号"
+
+#: helper/input-pad-ja.c:414
+msgid "unit"
+msgstr "単位"
+
+#: helper/input-pad-ja.c:417
+msgid "dot"
+msgstr "点"
+
+#: helper/input-pad-ja.c:420
+msgid "number"
+msgstr "数字"
+
+#: helper/input-pad-ja.c:423
+msgid "academic"
+msgstr "学術"
+
+#: helper/input-pad-ja.c:426
+msgid "line"
+msgstr "線"
 
 #: qt/switcher-qt.cpp:115 qt/pref-qt.cpp:118 qt/pref-qt.cpp:258
 msgid "OK"
@@ -502,16 +538,17 @@ msgstr "文節区切りを表示する"
 #: scm/canna-key-custom.lisp:41 scm/canna-key-custom.lisp:45
 #: scm/generic-custom.lisp:37 scm/generic-custom.lisp:43
 #: scm/generic-custom.lisp:49 scm/generic-custom.lisp:55
-#: scm/generic-custom.lisp:61 scm/generic-key-custom.lisp:37
-#: scm/generic-key-custom.lisp:41 scm/im-custom.lisp:46 scm/im-custom.lisp:51
-#: scm/im-custom.lisp:56 scm/im-custom.lisp:61 scm/im-custom.lisp:66
-#: scm/im-custom.lisp:71 scm/im-custom.lisp:76 scm/im-custom.lisp:81
-#: scm/im-custom.lisp:86 scm/im-custom.lisp:94 scm/im-custom.lisp:101
-#: scm/im-custom.lisp:111 scm/im-custom.lisp:204 scm/im-custom.lisp:264
-#: scm/im-custom.lisp:280 scm/im-custom.lisp:286 scm/im-custom.lisp:292
-#: scm/im-custom.lisp:299 scm/prime-custom.lisp:58 scm/prime-custom.lisp:64
-#: scm/prime-custom.lisp:70 scm/prime-custom.lisp:76 scm/prime-custom.lisp:82
-#: scm/prime-custom.lisp:90 scm/prime-custom.lisp:96 scm/prime-custom.lisp:102
+#: scm/generic-custom.lisp:61 scm/generic-custom.lisp:67
+#: scm/generic-key-custom.lisp:37 scm/generic-key-custom.lisp:41
+#: scm/im-custom.lisp:46 scm/im-custom.lisp:51 scm/im-custom.lisp:56
+#: scm/im-custom.lisp:61 scm/im-custom.lisp:66 scm/im-custom.lisp:71
+#: scm/im-custom.lisp:76 scm/im-custom.lisp:81 scm/im-custom.lisp:86
+#: scm/im-custom.lisp:94 scm/im-custom.lisp:101 scm/im-custom.lisp:111
+#: scm/im-custom.lisp:204 scm/im-custom.lisp:264 scm/im-custom.lisp:280
+#: scm/im-custom.lisp:286 scm/im-custom.lisp:292 scm/im-custom.lisp:299
+#: scm/prime-custom.lisp:58 scm/prime-custom.lisp:64 scm/prime-custom.lisp:70
+#: scm/prime-custom.lisp:76 scm/prime-custom.lisp:82 scm/prime-custom.lisp:90
+#: scm/prime-custom.lisp:96 scm/prime-custom.lisp:102
 #: scm/prime-custom.lisp:145 scm/prime-custom.lisp:154
 #: scm/prime-key-custom.lisp:61 scm/prime-key-custom.lisp:65
 #: scm/prime-key-custom.lisp:69 scm/skk-custom.lisp:55 scm/skk-custom.lisp:61
@@ -973,6 +1010,11 @@ msgstr "全てのユーザ入力を素通し"
 #: scm/generic-custom.lisp:36
 msgid "Other input methods"
 msgstr "その他の入力方式"
+
+#: scm/generic-custom.lisp:66
+#, fuzzy
+msgid "Use dictionary search"
+msgstr "個人辞書ファイル"
 
 #: scm/generic-key-custom.lisp:36
 msgid "Global key bindings 1"
@@ -2233,33 +2275,6 @@ msgstr "ズールー語"
 
 #~ msgid "Edit dictionary"
 #~ msgstr "辞書を編集"
-
-#~ msgid "symbol"
-#~ msgstr "記号"
-
-#~ msgid "bracket"
-#~ msgstr "括弧"
-
-#~ msgid "arrow"
-#~ msgstr "矢印"
-
-#~ msgid "omission"
-#~ msgstr "省略記号"
-
-#~ msgid "unit"
-#~ msgstr "単位"
-
-#~ msgid "dot"
-#~ msgstr "点"
-
-#~ msgid "number"
-#~ msgstr "数字"
-
-#~ msgid "academic"
-#~ msgstr "学術"
-
-#~ msgid "line"
-#~ msgstr "線"
 
 #~ msgid "About Sumika"
 #~ msgstr "uim-dictについて"

@@ -127,6 +127,91 @@ gchar *hiragana[] = {
   NULL
 };
 
+gchar *kigou[] = {
+  "○", "●", "◎", "♂", "♀",
+  "☆", "★", "□", "■", "△",
+  "▲", "▽", "▼", "〒",
+  NULL
+};
+
+gchar *bracket[] = {
+  "‘", "’", "“", "”", "（",
+  "）", "〔", "〕", "［", "］",
+  "｛", "｝", "〈", "〉", "《",
+  "》", "「", "」", "『", "』",
+  "【", "】", "〝", "〟",
+  NULL
+};
+
+gchar *arrow[] = {
+  "→", "←", "↑", "↓",
+  NULL
+};
+
+gchar *omission[] = {
+  "㍻", "№", "㏍", "℡", "㊤",
+  "㊥", "㊦", "㊧", "㊨", "㈱",
+  "㈲", "㈹", "㍾", "㍽", "㍼",
+  "™", "©", "®",
+  NULL
+};
+
+gchar *unit[] = {
+  "℃", "￥", "＄", "£",
+  "％", "㍉", "㌔", "㌢", "㍍",
+  "㌘", "㌧", "㌃", "㌶", "㍑",
+  "㍗", "㌍", "㌦", "㌣", "㌫",
+  "㍊", "㌻", "㎜", "㎝", "㎞",
+  "㎎", "㎏", "㏄", "ℓ",  "㎟",
+  "㎠", "㎡", "㎢", "㎣", "㎤",
+  "㎥", "㎦", "Å", "‰",
+};
+
+gchar *dot[] = {
+  "、", "。", "，", "．", "・",
+  "：", "；", "？", "！", "゛",
+  "゜", "´", "｀", "¨", "＾",
+  "ヽ", "ヾ", "ゝ", "ゞ", "〃",
+  "…", "‥", "°", "′", "″",
+  NULL
+};
+
+gchar *academic[] = {
+  "＋", "－", "±", "×", "÷",
+  "＝", "≠", "＜", "＞", "≦",
+  "≧", "∞", "∴", "≒", "≡",
+  "∫", "∮", "∑", "√", "⊥",
+  "∠", "∟", "⊿", "∵", "∩",
+  "∪", "∈", "∋", "⊆", "⊇",
+  "⊂", "⊃", "∧", "∨", "￢",
+  "⇒", "⇔", "∀", "∃", "⌒",
+  "∂", "∇", "≪", "≫", "∽",
+  "∝", "∬",
+  NULL
+};
+
+gchar *number[] = {
+  "①", "②", "③", "④", "⑤",
+  "⑥", "⑦", "⑧", "⑨", "⑩",
+  "⑪", "⑫", "⑬", "⑭", "⑮",
+  "⑯", "⑰", "⑱", "⑲", "⑳",
+  "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ",
+  "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ", "ⅰ",
+  "ⅱ", "ⅲ", "ⅳ", "ⅴ", "ⅵ",
+  "ⅶ", "ⅷ", "ⅸ", "ⅹ",
+};
+
+gchar *line[] = {
+  "─", "│", "┌", "┐", "┘",
+  "└", "├", "┬", "┤", "┴",
+  "┴", "┼", "━", "┏", "┓",
+  "┛", "┗", "┣", "┳", "┫",
+  "┻", "╋", "┠", "┯", "┨",
+  "┷", "┿", "┝", "┰", "┥",
+  "┸", "╂",
+  NULL
+};
+
 static int uim_fd = -1;
 
 static GtkWidget *buttontable_create(char **table, int tablelen);
@@ -210,6 +295,20 @@ buttontable_create(gchar **table, int len)
 }
 
 static GtkWidget *
+create_tab(gchar *table[], guint len)
+{
+  GtkWidget *vbox;
+
+  vbox = gtk_vbox_new(FALSE, 10);
+
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     buttontable_create(table, len),
+		     FALSE, FALSE, 0);
+
+  return vbox;
+}
+
+static GtkWidget *
 create_hiragana_tab(void)
 {
   GtkWidget *vbox;
@@ -288,6 +387,7 @@ input_table_create(gchar *localename)
   GtkWidget *notebook;
   
   notebook = gtk_notebook_new();
+  gtk_notebook_set_scrollable(GTK_NOTEBOOK(notebook), TRUE);
   gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
 			   create_hiragana_tab(),
 			   gtk_label_new(_("hiragana")));
@@ -297,6 +397,33 @@ input_table_create(gchar *localename)
   gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
 			   create_eisu_tab(),
 			   gtk_label_new(_("eisu")));
+  gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
+			   create_tab(kigou, sizeof(kigou)/sizeof(gchar*)),
+			   gtk_label_new(_("symbol")));
+  gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
+			   create_tab(bracket, sizeof(bracket)/sizeof(gchar*)),
+			   gtk_label_new(_("bracket")));
+  gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
+			   create_tab(arrow, sizeof(arrow)/sizeof(gchar*)),
+			   gtk_label_new(_("arrow")));
+  gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
+			   create_tab(omission, sizeof(omission)/sizeof(gchar*)),
+			   gtk_label_new(_("omission")));
+  gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
+			   create_tab(unit, sizeof(unit)/sizeof(gchar*)),
+			   gtk_label_new(_("unit")));
+  gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
+			   create_tab(dot, sizeof(dot)/sizeof(gchar*)),
+			   gtk_label_new(_("dot")));
+  gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
+			   create_tab(number, sizeof(number)/sizeof(gchar*)),
+			   gtk_label_new(_("number")));
+  gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
+			   create_tab(academic, sizeof(academic)/sizeof(gchar*)),
+			   gtk_label_new(_("academic")));
+  gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
+			   create_tab(line, sizeof(line)/sizeof(gchar*)),
+			   gtk_label_new(_("line")));
   return notebook;
 }
 
