@@ -54,6 +54,7 @@
 #include <qfiledialog.h>
 #include <qcombobox.h>
 #include <qptrlist.h>
+#include <qevent.h>
 
 #include "olisteditformbase.h"
 #include "keyeditformbase.h"
@@ -271,8 +272,12 @@ class KeyEditForm : public KeyEditFormBase {
 public:
     KeyEditForm( QWidget *parent = 0, const char *name = 0 );
 
+    void addKeyItem( const QString &str );
+    const QStringList getKeyStrList();
 protected slots:
     void slotAddClicked();
+    void slotRemoveClicked();
+    void slotEditClicked();
     void slotSelectionChanged( QListViewItem * );
 };
 
@@ -281,6 +286,14 @@ class KeyGrabForm : public KeyGrabFormBase {
 
 public:
     KeyGrabForm( QWidget *parent = 0, const char *name = 0 );
+
+    QString getKeyStr() const { return m_keystr; }
+
+protected:
+    virtual void keyPressEvent( QKeyEvent *e );
+
+protected:
+    QString m_keystr;
 };
 
 #endif /* Not def: _CUSTOMWIDGETS_H_ */

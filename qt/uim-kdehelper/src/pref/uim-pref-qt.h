@@ -37,7 +37,6 @@
 #include <qdict.h>
 #include <qlistview.h>
 #include <qwidgetstack.h>
-#include <qcheckbox.h>
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qpushbutton.h>

@@ -489,7 +489,7 @@ SubgroupData::SubgroupData( QWidget*parentWidget, const char *parent_group_name 
         if( QString::compare( *sgrp, "main" ) == 0 )
         {
             // QVGroupBox for "main" subgroup
-            m_defaultGVBox = new QVGroupBox( _FU8(sgroup_custom->label), parentWidget );
+            m_defaultGVBox = new QVGroupBox( "main", parentWidget );
             parentWidget->layout()->add( m_defaultGVBox );
             uim_custom_group_free( sgroup_custom );
             continue;

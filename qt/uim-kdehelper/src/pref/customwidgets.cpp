@@ -32,6 +32,8 @@
 */
 #include "customwidgets.h"
 
+#include <ctype.h>
+
 #define _FU8(String) QString::fromUtf8(String)
 
 CustomCheckBox::CustomCheckBox( struct uim_custom *c, QWidget *parent, const char *name )
@@ -234,10 +236,10 @@ void CustomChoiceCombo::update()
         {
             int count = this->count();
             insertItem( _FU8((*item)->label), count ); // insert item at last
-            
+
             if( QString::compare( default_symbol, (*item)->symbol ) == 0 )
                 default_index = index;
-            
+
             index++;
             item++;
         }
@@ -294,7 +296,7 @@ CustomOrderedListEdit::CustomOrderedListEdit( struct uim_custom *c, QWidget *par
 
     m_lineEdit = new QLineEdit( this );
     m_lineEdit->setReadOnly( true );
-    
+
     m_editButton = new QToolButton( this );
     m_editButton->setText( "Edit" );
     QObject::connect( m_editButton, SIGNAL(clicked()),
@@ -310,7 +312,7 @@ void CustomOrderedListEdit::update()
 
     if( m_custom->is_active )
     {
-        updateText();        
+        updateText();
     }
 }
 
@@ -320,7 +322,7 @@ void CustomOrderedListEdit::setDefault()
     int num = 0;
     for( num = 0; m_custom->value->as_olist[num]; num++ )
         ;
-    
+
     for( int i = 0; i < num; i++ )
     {
         free( m_custom->value->as_olist[i]->symbol );
@@ -336,7 +338,7 @@ void CustomOrderedListEdit::setDefault()
 
     m_custom->value->as_olist = (struct uim_custom_choice **)realloc( m_custom->value->as_olist,
                                                                       sizeof(struct uim_custom_choice *) * (default_num + 1) );
-    
+
     for( int i = 0; i < default_num; i++ )
     {
         struct uim_custom_choice *default_item = m_custom->default_value->as_olist[i];
@@ -359,7 +361,7 @@ void CustomOrderedListEdit::initPtrList()
 {
     m_itemList.clear();
     m_validItemList.clear();
-    
+
     if( m_custom->value->as_olist )
     {
         struct uim_custom_choice *item = NULL;
@@ -574,7 +576,7 @@ CustomKeyEdit::CustomKeyEdit( struct uim_custom *c, QWidget *parent, const char 
     setSpacing( 3 );
     m_lineEdit = new QLineEdit( this );
     m_lineEdit->setReadOnly( false );
-    
+
     m_editButton = new QToolButton( this );
     m_editButton->setText( "Edit" );
     QObject::connect( m_editButton, SIGNAL(clicked()),
@@ -621,7 +623,7 @@ void CustomKeyEdit::setDefault()
     int num = 0;
     for( num = 0; m_custom->value->as_key[num]; num++ )
         ;
-    
+
     for( int i = 0; i < num; i++ )
     {
         free( m_custom->value->as_key[i]->literal );
@@ -637,7 +639,7 @@ void CustomKeyEdit::setDefault()
 
     m_custom->value->as_key = (struct uim_custom_key **)realloc( m_custom->value->as_key,
                                                                  sizeof(struct uim_custom_key *) * (default_num + 1) );
-    
+
     for( int i = 0; i < default_num; i++ )
     {
         struct uim_custom_key *default_item = m_custom->default_value->as_key[i];
@@ -660,22 +662,103 @@ void CustomKeyEdit::setDefault()
 void CustomKeyEdit::slotKeyButtonClicked()
 {
     KeyEditForm *d = new KeyEditForm( this );
+
+    /* add items */
+    QString str = QString::null;
+    if (m_custom->value->as_key) {
+        struct uim_custom_key *key = NULL;
+        int i = 0;
+        for (key = m_custom->value->as_key[0], i = 0;
+             key;
+             key = m_custom->value->as_key[++i])
+        {
+            d->addKeyItem( key->literal );
+        }
+    }
+
     if( d->exec() == KeyEditForm::Accepted )
     {
-        ;
+        const QStringList keyStrList = d->getKeyStrList();
+        if( keyStrList.isEmpty() )
+            return;
+
+        /* free old items */
+        int num = 0;
+        for( num = 0; m_custom->value->as_key[num]; num++ )
+            ;
+
+        for( int i = 0; i < num; i++ )
+        {
+            free( m_custom->value->as_key[i]->literal );
+            free( m_custom->value->as_key[i]->label );
+            free( m_custom->value->as_key[i]->desc );
+            free( m_custom->value->as_key[i] );
+        }
+
+
+        /* add new items */
+        num = keyStrList.count();
+        m_custom->value->as_key = (struct uim_custom_key **)realloc( m_custom->value->as_key,
+                                                                     sizeof(struct uim_custom_key *) * (num + 1) );
+
+        for( int i = 0; i < num; i++ )
+        {
+            const char *keystr = (const char *)keyStrList[i].ascii();
+
+            struct uim_custom_key *item = (struct uim_custom_key *)malloc(sizeof(struct uim_custom_key));
+            item->type        = UCustomKey_Regular;
+            item->editor_type = UCustomKeyEditor_Basic;
+            item->literal     = strdup( keystr );
+            item->label       = strdup( "" );
+            item->desc        = strdup( "" );
+
+            m_custom->value->as_key[i] = item;
+        }
+        m_custom->value->as_key[num] = NULL;
+
+        setCustom( m_custom );
+        update();
     }
 }
 
 KeyEditForm::KeyEditForm( QWidget *parent, const char *name )
     : KeyEditFormBase( parent, name )
 {
+    m_listView->setSorting( -1 );
+    m_removeButton->setEnabled( false );
     m_editButton->setEnabled( false );
 
     QObject::connect( m_addButton, SIGNAL(clicked()),
                       this, SLOT(slotAddClicked()) );
+    QObject::connect( m_removeButton, SIGNAL(clicked()),
+                      this, SLOT(slotRemoveClicked()) );
+    QObject::connect( m_editButton, SIGNAL(clicked()),
+                      this, SLOT(slotEditClicked()) );
 
     QObject::connect( m_listView, SIGNAL(selectionChanged(QListViewItem *)),
                       this, SLOT(slotSelectionChanged(QListViewItem*)) );
+}
+
+void KeyEditForm::addKeyItem( const QString &str )
+{
+    QListViewItem *lastItem = m_listView->lastItem();
+    if( lastItem )
+        new QListViewItem( m_listView, lastItem, str );
+    else
+        new QListViewItem( m_listView, str );
+}
+
+const QStringList KeyEditForm::getKeyStrList()
+{
+    QStringList keyStrList;
+    for( QListViewItem *item = m_listView->firstChild();
+         item;
+         item = item->nextSibling() )
+    {
+        keyStrList << item->text( 0 );
+    }
+
+    return keyStrList;
 }
 
 void KeyEditForm::slotAddClicked()
@@ -683,7 +766,37 @@ void KeyEditForm::slotAddClicked()
     KeyGrabForm *d = new KeyGrabForm( this );
     if( d->exec() == KeyGrabForm::Accepted )
     {
-        ;
+        QString keystr = d->getKeyStr();
+        if( !keystr.isEmpty() )
+        {
+            addKeyItem( keystr );
+        }
+    }
+}
+
+void KeyEditForm::slotRemoveClicked()
+{
+    QListViewItem *selectedItem = m_listView->selectedItem();
+    if( selectedItem )
+    {
+        m_listView->takeItem( selectedItem );
+    }
+}
+
+void KeyEditForm::slotEditClicked()
+{
+    QListViewItem *selectedItem = m_listView->selectedItem();
+    if( selectedItem )
+    {
+        KeyGrabForm *d = new KeyGrabForm( this );
+        if( d->exec() == KeyGrabForm::Accepted )
+        {
+            QString keystr = d->getKeyStr();
+            if( !keystr.isEmpty() )
+            {
+                selectedItem->setText( 0, keystr );
+            }
+        }
     }
 }
 
@@ -691,12 +804,177 @@ void KeyEditForm::slotSelectionChanged( QListViewItem *item )
 {
     if( item )
     {
+        m_removeButton->setEnabled( true );
         m_editButton->setEnabled( true );
+    }
+    else
+    {
+        m_removeButton->setEnabled( false );
+        m_editButton->setEnabled( false );
     }
 }
 
 KeyGrabForm::KeyGrabForm( QWidget *parent, const char *name )
     : KeyGrabFormBase( parent, name )
 {
-    
+
+}
+
+void KeyGrabForm::keyPressEvent( QKeyEvent *e )
+{
+    qDebug( "key press!!! - %d:%d", e->key(), e->stateAfter() );
+
+    int qkey = e->key();
+    QString keystr = "";
+    if ( e->stateAfter() & Qt::ShiftButton )
+    {
+        if( qkey != Qt::Key_Shift )
+            keystr.append( "<Shift>" );
+        m_shiftCheckBox->setChecked( true );
+    }
+    else
+    {
+        m_shiftCheckBox->setChecked( false );
+    }
+
+    if ( e->stateAfter() & Qt::ControlButton )
+    {
+        if( qkey != Qt::Key_Control )
+            keystr.append( "<Control>" );
+        m_controlCheckBox->setChecked( true );
+    }
+    else
+    {
+        m_controlCheckBox->setChecked( false );
+    }
+
+    if ( e->stateAfter() & Qt::AltButton )
+    {
+        if( qkey != Qt::Key_Alt )
+            keystr.append( "<Alt>" );
+        m_altCheckBox->setChecked( true );
+    }
+    else
+    {
+        m_altCheckBox->setChecked( false );
+    }
+
+    QString editString = "";
+    switch( qkey )
+    {
+        /* normal keys */
+    case Qt::Key_Space:
+        /*
+         * "space" is not proper uim keysym and only exists for user
+         * convenience. It is converted to " " by uim-custom
+         */
+        editString.append( "space" );
+        break;
+    case Qt::Key_BackSpace:
+        editString.append( "backspace" );
+        break;
+    case Qt::Key_Escape:
+        editString.append( "escape" );
+        break;
+    case Qt::Key_Tab:
+        editString.append( "tab" );
+        break;
+    case Qt::Key_Return:
+        editString.append( "return" );
+        break;
+    case Qt::Key_Left:
+        editString.append( "left" );
+        break;
+    case Qt::Key_Up:
+        editString.append( "up" );
+        break;
+    case Qt::Key_Right:
+        editString.append( "right" );
+        break;
+    case Qt::Key_Down:
+        editString.append( "right" );
+        break;
+    case Qt::Key_Prior:
+        editString.append( "prior" );
+        break;
+    case Qt::Key_Next:
+        editString.append( "next" );
+        break;
+    case Qt::Key_Home:
+        editString.append( "home" );
+        break;
+    case Qt::Key_End:
+        editString.append( "end" );
+        break;
+    case Qt::Key_Kanji:
+    case Qt::Key_Zenkaku_Hankaku:
+        editString.append( "zenkaku-hankaku" );
+        break;
+    case Qt::Key_Multi_key:
+        editString.append( "Multi_key" );
+        break;
+    case Qt::Key_Mode_switch:
+        editString.append( "Mode_switch" );
+        break;
+    case Qt::Key_Muhenkan:
+        editString.append( "Muhenkan" );
+        break;
+    case Qt::Key_Shift:
+        m_shiftCheckBox->setChecked( true );
+        editString.append( "Shift_key" );
+        break;
+    case Qt::Key_Control:
+        m_controlCheckBox->setChecked( true );
+        editString.append( "Control_key" );
+        break;
+    case Qt::Key_Alt:
+        m_altCheckBox->setChecked( true );
+        editString.append( "Alt_key" );
+        break;
+    case Qt::Key_Meta:
+        editString.append( "Meta_key" );
+        break;
+    case Qt::Key_Super_L:
+    case Qt::Key_Super_R:
+        editString.append( "Super_key" );
+        break;
+    case Qt::Key_Hyper_L:
+    case Qt::Key_Hyper_R:
+        editString.append( "Hyper_key" );
+        break;
+    default:
+        if( Qt::Key_F1 <= qkey && qkey <= Qt::Key_F35 ) {
+            int n = qkey - Qt::Key_F1 + 1;
+            editString.append( "F" );
+            editString.append( n );
+        }
+        else if( isascii( qkey ) )
+        {
+            int key = qkey;
+            if( isupper( qkey ) )
+            {
+                key = tolower( qkey );
+            }
+
+            QString str =  QChar( key );
+            editString.append( str );
+        }
+        else
+        {
+            /* unknown key */
+            qDebug( "unknown key" );
+            return;
+        }
+    }
+
+    if( qkey == Qt::Key_Shift || qkey == Qt::Key_Control || qkey == Qt::Key_Alt )
+        m_keyLineEdit->setText( "" );
+    else
+        m_keyLineEdit->setText( editString );
+
+
+    keystr.append( editString );
+    qDebug( "keystr = %s", (const char *)keystr.local8Bit() );
+
+    m_keystr = keystr;
 }
