@@ -139,23 +139,39 @@
 
 (define m17nlib-update-candidate
   (lambda (mc)
+    (m17nlib-lib-fill-new-candidates! (m17nlib-context-mc-id mc))
     (let* ((mid (m17nlib-context-mc-id mc))
 	   (max (m17nlib-lib-get-nr-candidates mid))
-	   (showing-candidate? (m17nlib-context-showing-candidate mc)))
-      (if showing-candidate?
-	  (if (m17nlib-lib-candidate-show? mid)
-	      (im-select-candidate mc (m17nlib-lib-get-candidate-index mid))
-	      (begin
-		(m17nlib-context-set-showing-candidate! mc #f)
-		(im-deactivate-candidate-selector mc mid))) ;end showing candidate
-	  (if (m17nlib-lib-candidate-show? mid)
-	      (begin
-		(im-activate-candidate-selector
-		 mc
-		 max m17nlib-candidate-max)
-		(im-select-candidate mc (m17nlib-lib-get-candidate-index mid))
-		(m17nlib-context-set-showing-candidate! mc #t)))
-	  ))));nothing to do
+	   (showing-candidate? (m17nlib-context-showing-candidate mc))
+	   (candidates-changed? (m17nlib-lib-candidates-changed? mid)))
+
+      ;; FIXME: Rewrite this seriese of if with cond.
+      ;; close candidate window
+      (if (or
+	   (and showing-candidate? candidates-changed?)
+	   (and showing-candidate? (not (m17nlib-lib-candidate-show? mid))))
+	  (begin
+	    (im-deactivate-candidate-selector mc mid)
+	    (m17nlib-context-set-showing-candidate! mc #f)))
+
+      (if (and
+	   (or
+	    candidates-changed?
+	    (and 
+	     (not showing-candidate?)
+	     (m17nlib-lib-candidate-show? mid)))
+	   (not (= max 0)))
+	  (begin
+	    (im-activate-candidate-selector
+	     mc max m17nlib-candidate-max)
+	    (im-select-candidate
+	     mc (m17nlib-lib-get-candidate-index mid))
+	    (m17nlib-context-set-showing-candidate! mc #t)))
+
+      (if (and showing-candidate?
+	       (m17nlib-lib-candidate-show? mid))
+	  (im-select-candidate mc (m17nlib-lib-get-candidate-index mid))))))
+
 
 (define m17nlib-append-modifiers
   (lambda (key key-state key-str)
