@@ -46,16 +46,27 @@ public:
     QUimHelperToolbar( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
     ~QUimHelperToolbar();
 
+
+protected:
+    // right click
+    virtual void contextMenuEvent ( QContextMenuEvent * e );
+
 protected:
     void addExecImSwitcherButton();
     void addExecPrefButton();
+    void addExecDictButton();
+    void addExecInputPadButton();
+    void addExecHandwritingInputPadButton();
+    void addExecHelpButton();    
 
-    // right click
-    virtual void contextMenuEvent ( QContextMenuEvent * e );
     
 protected slots:
-    void slotExecSwitcher();
+    void slotExecImSwitcher();
     void slotExecPref();
+    void slotExecDict();
+    void slotExecInputPad();
+    void slotExecHandwritingInputPad();
+    void slotExecHelp();    
 
 signals:
     void quitToolbar();

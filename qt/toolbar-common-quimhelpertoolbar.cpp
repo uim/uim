@@ -52,15 +52,21 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags 
     m_preficon = QPixmap( ICONDIR + "/configure-qt.png");
 
     m_contextMenu = new QPopupMenu( this );
-    m_contextMenu->insertItem( m_swicon, _("Execute uim's input method switcher"), this, SLOT(slotExecSwitcher()) );
+    m_contextMenu->insertItem( m_swicon,   _("Execute uim's input method switcher"), this, SLOT(slotExecImSwitcher()) );
     m_contextMenu->insertItem( m_preficon, _("Execute uim's preference tool"), this, SLOT(slotExecPref()) );
+    m_contextMenu->insertItem( _("Execute uim's japanese dictionary tool"), this, SLOT(slotExecDict()) );
+    m_contextMenu->insertItem( _("Execute uim's input pad tool"), this, SLOT(slotExecInputPad()) );
+    m_contextMenu->insertItem( _("Execute uim's handwriting input pad tool"), this, SLOT(slotExecHandwritingInputPad()) );
+    m_contextMenu->insertItem( _("Execute uim's help tool"), this, SLOT(slotExecHelp()) );
     m_contextMenu->insertItem( _("Quit this toolbar"), this, SIGNAL(quitToolbar()) );
 
-    // switcher exec button
+    // toolbar buttons    
     addExecImSwitcherButton();
-
-    // pref exec button
     addExecPrefButton();
+    addExecDictButton();
+    addExecInputPadButton();
+    addExecHandwritingInputPadButton();
+    addExecHelpButton();
 }
 
 QUimHelperToolbar::~QUimHelperToolbar()
@@ -86,15 +92,15 @@ void QUimHelperToolbar::addExecImSwitcherButton()
     if( !m_swicon.isNull() )
         swButton->setPixmap( m_swicon );
     else
-        swButton->setText( "sw" );
+        swButton->setText( "Sw" );
 
     QObject::connect( swButton, SIGNAL( clicked() ),
-                      this, SLOT( slotExecSwitcher() ) );
+                      this, SLOT( slotExecImSwitcher() ) );
     QToolTip::add( swButton, _( "exec im-switcher" ) );
 }
 
 
-void QUimHelperToolbar::slotExecSwitcher()
+void QUimHelperToolbar::slotExecImSwitcher()
 {
     /* exec uim-im-switcher */
     system( "uim-im-switcher-qt &" );
@@ -110,7 +116,7 @@ void QUimHelperToolbar::addExecPrefButton()
     if( !m_preficon.isNull() )
         prefButton->setPixmap( m_preficon );
     else
-        prefButton->setText( "pref" );
+        prefButton->setText( "Pref" );
 
     QObject::connect( prefButton, SIGNAL( clicked() ),
                       this, SLOT( slotExecPref() ) );
@@ -121,6 +127,84 @@ void QUimHelperToolbar::slotExecPref()
 {
     /* exec uim-pref-qt */
     system( "uim-pref-qt &" );
+}
+
+void QUimHelperToolbar::addExecDictButton()
+{
+    uim_bool isShowDict = uim_scm_symbol_value_bool("toolbar-show-dict-button?");
+    if( isShowDict == UIM_FALSE )
+        return;
+
+    QToolButton *dictButton = new QHelperToolbarButton( this );
+    dictButton->setText( "Dic" );
+
+    QObject::connect( dictButton, SIGNAL( clicked() ),
+                      this, SLOT( slotExecDict() ) );
+    QToolTip::add( dictButton, _( "exec Japanese dictionary Tool Application" ) );
+}
+
+void QUimHelperToolbar::slotExecDict()
+{
+    /* exec uim-dict */
+    system( "uim-dict-gtk&" );
+}
+
+void QUimHelperToolbar::addExecInputPadButton()
+{
+    uim_bool isShowInputPad = uim_scm_symbol_value_bool("toolbar-show-input-pad-button?");
+    if( isShowInputPad == UIM_FALSE )
+        return;
+
+    QToolButton *inputpadButton = new QHelperToolbarButton( this );
+    inputpadButton->setText( "Pad" );
+
+    QObject::connect( inputpadButton, SIGNAL( clicked() ),
+                      this, SLOT( slotExecInputPad() ) );
+    QToolTip::add( inputpadButton, _( "exec Input Pad Tool Application" ) );
+}
+
+void QUimHelperToolbar::slotExecInputPad()
+{
+    /* exec input pad */
+    system( "uim-chardict-qt &");
+}
+
+void QUimHelperToolbar::addExecHandwritingInputPadButton()
+{
+    uim_bool isShowHandwritingInputPad = uim_scm_symbol_value_bool("toolbar-show-handwriting-input-pad-button?");
+    if( isShowHandwritingInputPad == UIM_FALSE )
+        return;
+
+    QToolButton *inputpadButton = new QHelperToolbarButton( this );
+    inputpadButton->setText( "Hand" );
+
+    QObject::connect( inputpadButton, SIGNAL( clicked() ),
+                      this, SLOT( slotExecHandwritingInputPad() ) );
+    QToolTip::add( inputpadButton, _( "exec Handwriting Input Pad Tool Application" ) );
+}
+
+void QUimHelperToolbar::slotExecHandwritingInputPad()
+{
+    system( "uim-tomoe-gtk &" );
+}
+
+void QUimHelperToolbar::addExecHelpButton()
+{
+    uim_bool isShowHelp = uim_scm_symbol_value_bool("toolbar-show-help-button?");
+    if( isShowHelp == UIM_FALSE )
+        return;
+
+    QToolButton *helpButton = new QHelperToolbarButton( this );
+    helpButton->setText( "Help" );
+
+    QObject::connect( helpButton, SIGNAL( clicked() ),
+                      this, SLOT( slotExecHelp() ) );
+    QToolTip::add( helpButton, _( "exec Help Application" ) );
+}
+
+void QUimHelperToolbar::slotExecHelp()
+{
+    system( "uim-help &" );
 }
 
 #include "toolbar-common-quimhelpertoolbar.moc"
