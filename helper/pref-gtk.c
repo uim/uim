@@ -1568,9 +1568,9 @@ key_pref_add_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
   num++;
 
   custom->value->as_key = realloc(custom->value->as_key,
-				  sizeof(struct uim_custom *) * (num + 1));
+				  sizeof(struct uim_custom_key *) * (num + 1));
 
-  custom->value->as_key[num - 1] = malloc(sizeof(struct uim_custom));
+  custom->value->as_key[num - 1] = malloc(sizeof(struct uim_custom_key));
   custom->value->as_key[num - 1]->type = UCustomKey_Regular;
   custom->value->as_key[num - 1]->editor_type = UCustomKeyEditor_Basic;
   custom->value->as_key[num - 1]->literal = strdup(str->str);
