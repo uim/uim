@@ -286,6 +286,10 @@
   (lambda (mc idx)
     #f))
 
+;; Developer specified IM rejection should be withdrawn after we got
+;; user-manageable enabled IM list feature. These redundant IMs should
+;; be "disabled by default, but can be enabled" under the feature.
+;;   -- YamaKen 2005-01-11
 (define duplicated-im-list
   '("m17n-ja-anthy"
     "m17n-ja-tcode"
@@ -294,12 +298,7 @@
 
 (define duplicated-im?
   (lambda (name)
-    (let loop ((im-list duplicated-im-list))
-      (if (string=? name (car im-list))
-	  #t
-	  (if (null? (cdr im-list))
-	      #f
-	      (loop (cdr im-list)))))))
+    (member name duplicated-im-list)
 
 (define m17nlib-register
   (lambda (i nr-im)
