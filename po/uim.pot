@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-06 10:44+0900\n"
+"POT-Creation-Date: 2005-02-07 13:10+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -345,13 +345,21 @@ msgid ""
 "Do you realy quit this program?"
 msgstr ""
 
-#: helper/pref-gtk.c:214 qt/pref-qt.cpp:102
+#: helper/pref-gtk.c:214 qt/pref-qt.cpp:103
 msgid "Group"
 msgstr ""
 
 #. Defaults button
 #: helper/pref-gtk.c:304
 msgid "_Defaults"
+msgstr ""
+
+#: helper/pref-gtk.c:479
+msgid ""
+"The user customize file \"~/.uim\" is found.\n"
+"This file will override all conflicted settings set by\n"
+"this tool (stored in ~/.uim.d/customs/*.scm).\n"
+"Please check the file if you find your settings aren't applied."
 msgstr ""
 
 #: helper/toolbar-common-gtk.c:484 helper/toolbar-common-gtk.c:686
@@ -420,11 +428,11 @@ msgstr ""
 msgid "line"
 msgstr ""
 
-#: qt/switcher-qt.cpp:116 qt/pref-qt.cpp:118 qt/pref-qt.cpp:258
+#: qt/switcher-qt.cpp:116 qt/pref-qt.cpp:124 qt/pref-qt.cpp:262
 msgid "OK"
 msgstr ""
 
-#: qt/switcher-qt.cpp:121 qt/pref-qt.cpp:125 qt/pref-qt.cpp:259
+#: qt/switcher-qt.cpp:121 qt/pref-qt.cpp:131 qt/pref-qt.cpp:263
 msgid "Cancel"
 msgstr ""
 
@@ -437,21 +445,21 @@ msgstr ""
 msgid "exec Preference Application"
 msgstr ""
 
-#: qt/pref-qt.cpp:115
+#: qt/pref-qt.cpp:121
 msgid "Defaults"
 msgstr ""
 
-#: qt/pref-qt.cpp:195
+#: qt/pref-qt.cpp:199
 msgid ""
 "The value was changed.\n"
 "Save?"
 msgstr ""
 
-#: qt/pref-customwidgets.cpp:170
+#: qt/pref-customwidgets.cpp:172
 msgid "File"
 msgstr ""
 
-#: qt/pref-customwidgets.cpp:306 qt/pref-customwidgets.cpp:586
+#: qt/pref-customwidgets.cpp:309 qt/pref-customwidgets.cpp:589
 msgid "Edit"
 msgstr ""
 
@@ -1178,8 +1186,8 @@ msgstr ""
 msgid "Enable lazy input method loading for fast startup"
 msgstr ""
 
-#: scm/ipa.lisp:228 scm/ipa.lisp:229
-msgid "International Phonetic Alphabet"
+#: scm/ipa.lisp:227 scm/ipa.lisp:228
+msgid "International Phonetic Alphabet (X-SAMPA)"
 msgstr ""
 
 #. I think that the name "euro" is not appropriate since it

@@ -477,9 +477,9 @@ check_dot_uim_file(void)
   GtkWidget *dialog;
   const gchar *message =
     N_("The user customize file \"~/.uim\" is found.\n"
-       "This file will overrid all conflicted settings set by\n"
+       "This file will override all conflicted settings set by\n"
        "this tool (stored in ~/.uim.d/customs/*.scm).\n"
-       "Please check this file if you find settings aren't applied.");
+       "Please check the file if you find your settings aren't applied.");
 
   g_string_append(dot_uim, "/.uim");
 

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 0.4.6-alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-07 12:41+0900\n"
-"PO-Revision-Date: 2005-02-07 12:41+0900\n"
+"POT-Creation-Date: 2005-02-07 13:10+0900\n"
+"PO-Revision-Date: 2005-02-07 13:11+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -360,67 +360,14 @@ msgstr "デフォルト(_D)"
 #: helper/pref-gtk.c:479
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
-"This file will overrid all conflicted settings set by\n"
+"This file will override all conflicted settings set by\n"
 "this tool (stored in ~/.uim.d/customs/*.scm).\n"
-"Please check this file if you find settings aren't applied."
+"Please check the file if you find your settings aren't applied."
 msgstr ""
 "ユーザ設定ファイル \"~/.uim\" が存在します。\n"
 "このファイルの内容は、このツールで設定した設定内容\n"
 "(\"~/.uim.d/customs/*.scm\") よりも優先されます。\n"
 "設定が反映されない場合は、このファイルをチェックして下さい。"
-
-#: helper/pref-gtk-custom-widgets.c:382
-msgid "Specify file"
-msgstr "ファイルの指定"
-
-#: helper/pref-gtk-custom-widgets.c:419
-msgid "File..."
-msgstr "参照..."
-
-#: helper/pref-gtk-custom-widgets.c:1108
-msgid "Enabled"
-msgstr "有効"
-
-#: helper/pref-gtk-custom-widgets.c:1134
-msgid "Enabled items"
-msgstr "有効な項目"
-
-#: helper/pref-gtk-custom-widgets.c:1212
-msgid "Disabled"
-msgstr "無効"
-
-#: helper/pref-gtk-custom-widgets.c:1238
-msgid "Disabled items"
-msgstr "無効な項目"
-
-#: helper/pref-gtk-custom-widgets.c:1276 helper/pref-gtk-custom-widgets.c:1862
-msgid "Edit..."
-msgstr "編集..."
-
-#: helper/pref-gtk-custom-widgets.c:1481
-msgid "Press keys to grab (e.g. <Control>a)"
-msgstr "取得するキーを押して下さい (例:<Control>a)"
-
-#: helper/pref-gtk-custom-widgets.c:1482
-msgid "Grabbing keys"
-msgstr "キーを取得中"
-
-#: helper/pref-gtk-custom-widgets.c:1703
-#, c-format
-msgid "%s - key configuration"
-msgstr "%s - キー設定"
-
-#: helper/pref-gtk-custom-widgets.c:1740
-msgid "Key preference"
-msgstr "キー設定"
-
-#: helper/pref-gtk-custom-widgets.c:1786
-msgid "Key:"
-msgstr "キー:"
-
-#: helper/pref-gtk-custom-widgets.c:1807
-msgid "Grab..."
-msgstr "取得..."
 
 #: helper/toolbar-common-gtk.c:484 helper/toolbar-common-gtk.c:686
 #: qt/toolbar-common-quimhelpertoolbar.cpp:55
@@ -1250,9 +1197,8 @@ msgid "Enable lazy input method loading for fast startup"
 msgstr "高速起動のための遅延ローディングを有効にする"
 
 #: scm/ipa.lisp:227 scm/ipa.lisp:228
-#, fuzzy
 msgid "International Phonetic Alphabet (X-SAMPA)"
-msgstr "IPA (国際発声記号)"
+msgstr "IPA (国際発声記号 X-SAMPA版)"
 
 #. I think that the name "euro" is not appropriate since it
 #. represents nation or geographic region.  -- YamaKen 2005-01-29
@@ -2271,6 +2217,45 @@ msgstr "ヨルバ語"
 #: uim/iso-639-1.def:182
 msgid "Zulu"
 msgstr "ズールー語"
+
+#~ msgid "Specify file"
+#~ msgstr "ファイルの指定"
+
+#~ msgid "File..."
+#~ msgstr "参照..."
+
+#~ msgid "Enabled"
+#~ msgstr "有効"
+
+#~ msgid "Enabled items"
+#~ msgstr "有効な項目"
+
+#~ msgid "Disabled"
+#~ msgstr "無効"
+
+#~ msgid "Disabled items"
+#~ msgstr "無効な項目"
+
+#~ msgid "Edit..."
+#~ msgstr "編集..."
+
+#~ msgid "Press keys to grab (e.g. <Control>a)"
+#~ msgstr "取得するキーを押して下さい (例:<Control>a)"
+
+#~ msgid "Grabbing keys"
+#~ msgstr "キーを取得中"
+
+#~ msgid "%s - key configuration"
+#~ msgstr "%s - キー設定"
+
+#~ msgid "Key preference"
+#~ msgstr "キー設定"
+
+#~ msgid "Key:"
+#~ msgstr "キー:"
+
+#~ msgid "Grab..."
+#~ msgstr "取得..."
 
 #~ msgid "Choose..."
 #~ msgstr "選択..."
