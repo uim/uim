@@ -790,6 +790,10 @@
      ((symbol? key)
       (skk-commit-raw sc key key-state)
       #f)
+     ((and (modifier-key-mask key-state)
+	   (not (shift-key-mask key-state)))
+      (skk-commit-raw sc key key-state)
+      #f)
      (else
       #t))))
 

@@ -156,7 +156,7 @@ void XimServer::changeContext(const char *engine) {
 }
 
 void XimServer::customContext(const char *custom, const char *val) {
-#if 0
+#if 1
     // Updated ximserver's global im with customized one.
     // This is temporal hack.
     if (!strcmp(custom, "custom-activate-default-im-name?")) {
