@@ -42,7 +42,7 @@
 	     context)))))
 
 (define register-stub-im
-  (lambda (name lang encoding label-name short-desc module-name)
+  (lambda (name lang encoding name-label short-desc module-name)
     (if (or (not (retrieve-im name))
 	    (not (im-key-press-handler (retrieve-im name))))
 	(let ((init-handler (stub-im-generate-init-handler name module-name)))
@@ -50,7 +50,7 @@
 	   name
 	   lang
 	   encoding
-	   label-name
+	   name-label
 	   short-desc
 	   #f ;; arg
 	   init-handler
@@ -82,7 +82,7 @@
 	      "     '" name-str "\n"
 	      "     \"" (im-lang im) "\"\n"
 	      "     \"" (im-encoding im) "\"\n"
-	      "     \"" (im-label-name im) "\"\n"
+	      "     \"" (im-name-label im) "\"\n"
 	      "     \"" (im-short-desc im) "\"\n"
 	      "     \"" (im-module-name im) "\"))\n")))
 	 im-names)))

@@ -53,12 +53,12 @@
       (generic-key-press-handler-with-this-env gc key state))))
 
 (define hangul-register-im
-  (lambda (name lang code label-name short-desc init-arg)
+  (lambda (name lang code name-label short-desc init-arg)
     (register-im
      name
      lang
      code
-     label-name
+     name-label
      short-desc
      init-arg
      generic-init-handler

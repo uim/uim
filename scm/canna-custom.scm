@@ -32,11 +32,11 @@
 (require "i18n.scm")
 
 
-(define canna-im-label-name (N_ "Canna"))
+(define canna-im-name-label (N_ "Canna"))
 (define canna-im-short-desc (N_ "Japanese Kana Kanji Conversion Engine, Canna"))
 
 (define-custom-group 'canna
-                     (ugettext canna-im-label-name)
+                     (ugettext canna-im-name-label)
                      (ugettext canna-im-short-desc))
 
 (define-custom 'canna-use-candidate-window? #t

@@ -816,7 +816,7 @@
        'canna
        "ja"
        "EUC-JP"
-       canna-im-label-name
+       canna-im-name-label
        canna-im-short-desc
        #f
        canna-init-handler

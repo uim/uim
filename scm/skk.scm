@@ -1630,7 +1630,7 @@
  'skk
  "ja"
  "EUC-JP"
- skk-im-label-name
+ skk-im-name-label
  skk-im-short-desc
  #f
  skk-init-handler

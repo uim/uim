@@ -32,11 +32,11 @@
 (require "i18n.scm")
 
 
-(define skk-im-label-name (N_ "SKK"))
+(define skk-im-name-label (N_ "SKK"))
 (define skk-im-short-desc (N_ "Uim's SKK like input method"))
 
 (define-custom-group 'skk
-                     (ugettext skk-im-label-name)
+                     (ugettext skk-im-name-label)
                      (ugettext skk-im-short-desc))
 
 (define-custom 'skk-use-candidate-window? #t

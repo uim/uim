@@ -34,11 +34,11 @@
 
 ;; spellcheck IM is not available yet
 
-(define spell-im-label-name (N_ "Spellcheck"))
+(define spell-im-name-label (N_ "Spellcheck"))
 (define spell-im-short-desc (N_ "Spellcheck"))
 
 (define-custom-group 'spellcheck
-                     (ugettext spell-im-label-name)
+                     (ugettext spell-im-name-label)
                      (ugettext spell-im-short-desc))
 
 (define-custom 'spell-use-candidate-window? #t

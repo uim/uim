@@ -35,9 +35,9 @@
   (lambda (lst)
     (map (lambda (im)
 	   (let ((sym (im-name im))
-		 (label-name (im-label-name im))
+		 (name-label (im-name-label im))
 		 (desc (im-short-desc im)))
-	     (custom-choice-rec-new sym label-name desc)))
+	     (custom-choice-rec-new sym name-label desc)))
 	 lst)))
 
 (define-custom-group 'global

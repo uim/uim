@@ -32,11 +32,11 @@
 (require "i18n.scm")
 
 
-(define anthy-im-label-name (N_ "Anthy"))
+(define anthy-im-name-label (N_ "Anthy"))
 (define anthy-im-short-desc (N_ "Japanese Kana Kanji Conversion Engine, Anthy"))
 
 (define-custom-group 'anthy
-                     (ugettext anthy-im-label-name)
+                     (ugettext anthy-im-name-label)
                      (ugettext anthy-im-short-desc))
 
 (define-custom 'anthy-use-candidate-window? #t

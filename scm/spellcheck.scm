@@ -547,7 +547,7 @@
  'spell
  "ja"
  "EUC-JP"
- spell-im-label-name
+ spell-im-name-label
  spell-im-short-desc
  #f
  spell-init-handler

@@ -1596,7 +1596,7 @@
  'prime
  "ja"
  "EUC-JP"
- prime-im-label-name
+ prime-im-name-label
  prime-im-short-desc
  #f
  prime-init-handler

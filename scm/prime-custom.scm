@@ -32,11 +32,11 @@
 (require "i18n.scm")
 
 
-(define prime-im-label-name (N_ "PRIME"))
+(define prime-im-name-label (N_ "PRIME"))
 (define prime-im-short-desc (N_ "Japanese predictable input method"))
 
 (define-custom-group 'prime
-                     (ugettext prime-im-label-name)
+                     (ugettext prime-im-name-label)
                      (ugettext prime-im-short-desc))
 
 ;(define-custom 'prime-use-candidate-window? #t

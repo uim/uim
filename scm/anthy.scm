@@ -979,7 +979,7 @@
  'anthy
  "ja"
  "EUC-JP"
- anthy-im-label-name
+ anthy-im-name-label
  anthy-im-short-desc
  #f
  anthy-init-handler

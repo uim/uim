@@ -68,7 +68,7 @@
    (list 'name                        #f)  ;; must be first member
    (list 'lang                        "")
    (list 'encoding                    "")
-   (list 'label-name                  "")  ;; under discussion
+   (list 'name-label                  "")  ;; under discussion
    (list 'short-desc                  "")
    (list 'init-arg                    #f)
    (list 'init-handler                list)
@@ -106,12 +106,12 @@
 ;; accepts overwrite register
 ;; returns initial register or not
 (define register-im
-  (lambda (name lang encoding label-name short-desc init-arg init release
+  (lambda (name lang encoding name-label short-desc init-arg init release
 		mode key-press key-release reset
 		get-candidate set-candidate-index prop)
     (and (or (null? enabled-im-list)  ;; bootstrap
 	     (memq name enabled-im-list))
-	 (let ((im (im-new name lang encoding label-name short-desc
+	 (let ((im (im-new name lang encoding name-label short-desc
 			   init-arg init release
 			   mode key-press key-release reset
 			   get-candidate set-candidate-index prop
