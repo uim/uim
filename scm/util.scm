@@ -426,6 +426,18 @@
 	      (not (pred elm)))
 	    lst)))
 
+;; TODO: write test
+(define delete
+  (lambda args
+    (let ((x (car args))
+	  (lst (cadr args))
+	  (val=? (if (null? (cddr args))
+		     =
+		     (car (cddr args)))))
+      (filter (lambda (elm)
+		(not (val=? elm x)))
+	      lst))))
+
 (define alist-delete
   (lambda args
     (let ((key (car args))
