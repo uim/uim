@@ -466,14 +466,8 @@ void XimIC::extra_input(char *s)
 	return;
 
     commit_string(s);
-
-    XKeyEvent e;
-    e.type = KeyPress;
-    e.keycode = 0;
-    send_key_event(&e);
-
-    if (m_xatr.has_atr(ICA_FocusWindow))
-	force_event(m_xatr.focus_window);
+    onSendPacket();
+    force_send_packet();
 }
 
 void XimIC::force_send_packet(void) {
