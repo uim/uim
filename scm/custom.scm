@@ -38,10 +38,10 @@
 (require "key.scm")
 
 ;; config
-;;(define key-list->gui-key-list 'key-list-export-as-basic)
-;;(define gui-key-list->key-list 'key-list-import-as-basic)
-(define key-list->gui-key-list 'key-list-export-as-traditional)
-(define gui-key-list->key-list 'key-list-import-as-traditional)
+(define key-list->gui-key-list 'key-list-export-as-basic)
+(define gui-key-list->key-list 'key-list-import-as-basic)
+;;(define key-list->gui-key-list 'key-list-export-as-traditional)
+;;(define gui-key-list->key-list 'key-list-import-as-traditional)
 
 ;; public
 (define custom-activity-hooks ())
@@ -274,15 +274,13 @@
 
 ;; TODO: write test
 (define key-list-export-as-basic (compose key-list-visualize-space
-					  key-list-upcase
 					  key-list-decode-shift
 					  key-list-strip-translators))
 
 ;; TODO: write test
 (define key-list-import-as-basic (compose key-list-characterize-space
 					  key-list-ignore-case
-					  key-list-encode-shift
-					  key-list-downcase))
+					  key-list-decode-shift))
 
 ;; TODO: write test
 (define key-list-export-as-traditional (compose key-list-visualize-space
