@@ -238,11 +238,11 @@
                                                       ("¤Ý" "¥Ý" ("ŽÎ" "Žß")))
     ))
 
-(define ja-nicola-jp106-pseudo-thumb-shift-ruleset
-  '((((lkey_Henkan   press   peek)) (($1 lkey_Thumb_Shift_R loopback)))
-    (((lkey_Henkan   release peek)) (($1 lkey_Thumb_Shift_R loopback)))
-    (((lkey_Muhenkan press   peek)) (($1 lkey_Thumb_Shift_L loopback)))
-    (((lkey_Muhenkan release peek)) (($1 lkey_Thumb_Shift_L loopback)))))
+;;(define ja-nicola-jp106-pseudo-thumb-shift-ruleset
+;;  '((((lkey_Henkan   press   peek)) (($1 lkey_Thumb_Shift_R loopback)))
+;;    (((lkey_Henkan   release peek)) (($1 lkey_Thumb_Shift_R loopback)))
+;;    (((lkey_Muhenkan press   peek)) (($1 lkey_Thumb_Shift_L loopback)))
+;;    (((lkey_Muhenkan release peek)) (($1 lkey_Thumb_Shift_L loopback)))))
 
 (define ja-nicola-ruleset-name-list
   '(core

@@ -352,7 +352,8 @@
     (list 'wide-latin         #f)
     (list 'kana-mode          anthy-type-hiragana)
     (list 'input-rule         anthy-input-rule-roma)
-    (list 'ruletree           #f))))
+    (list 'ruletree           #f)
+    (list 'keytrans-emc      #f))))  ;; evmap-context for key-event translator
 (define-record 'anthy-context anthy-context-rec-spec)
 (define anthy-context-new-internal anthy-context-new)
 
@@ -366,6 +367,7 @@
      (anthy-context-set-widgets! ac anthy-widgets)
      (anthy-context-set-preconv-ustr! ac (ustr-new))
      (anthy-context-set-segments! ac (ustr-new))
+     (anthy-context-set-keytrans-emc! ac (key-event-translator-new))
 
      ;; 2004-08-26 Takuro Ashie <ashie@homa.ne.jp>
      ;;   * I think load-kana-table should be marked as depracated.
@@ -925,28 +927,10 @@
 (define anthy-key-handler
   (lambda (ac key key-state press?)
     (let ((ev (legacy-key->key-event key key-state press?))
-	  (debug? (and (symbol-bound? 'anthy-debug?)
-		       anthy-debug?)))
-
-      (if debug?
-	  (begin
-	    (puts "key-event:  ")
-	    (puts (key-event-inspect ev))))
-
-      ;; temporary workaround for NICOLA input
-      ;; TODO: replace with ja-nicola-jp106-pseudo-thumb-shift-ruleset
-      (if (eq? (key-event-lkey ev)
-	       'lkey_Henkan)
-	  (key-event-set-lkey! ev 'lkey_Thumb_Shift_R))
-      (if (eq? (key-event-lkey ev)
-	       'lkey_Muhenkan)
-	  (key-event-set-lkey! ev 'lkey_Thumb_Shift_L))
-
-      (if debug?
-	  (begin
-	    (puts "translated: ")
-	    (puts (key-event-inspect ev))))
-
+	  (keytrans-emc (anthy-context-keytrans-emc ac)))
+      (key-event-inspect "key-event:  " ev)
+      (key-event-translator-translate! keytrans-emc ev)
+      (key-event-inspect "translated: " ev)
       (if (anthy-context-on ac)
 	  (if (anthy-context-converting ac)
 	      (anthy-proc-converting-state ac ev key key-state)

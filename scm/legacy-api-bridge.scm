@@ -252,7 +252,6 @@
 	   (lkey (safe-cdr (assoc (or str
 				      key)
 				  legacy-key->lkey-alist)))
-	   (pkey (and (symbol-bound? 'lkey-jp106-qwerty->pkey-jp106-alist)
-		      (assq-cdr lkey lkey-jp106-qwerty->pkey-jp106-alist)))
+	   (pkey (lkey->pkey lkey))
 	   (modifier (legacy-modifier->modifier state)))
       (key-event-new str lkey pkey modifier press?))))

@@ -37,6 +37,8 @@
 
 (require "util.scm")
 (require "ng-key.scm")
+(require-custom "im-custom.scm")
+
 
 (define lkey-qwerty->pkey-qwerty-alist
   '(
@@ -538,6 +540,108 @@
     ;;(lkey_dead_horn             . pkey_jp106_horn)
     ))
 
+(define lkey-jp106-dvorak->pkey-jp106-alist
+  (append
+   '(;; ASCII keys
+     ;(lkey_space        . pkey_jp106_space)
+     ;(lkey_exclam       . pkey_jp106_1)
+     (lkey_quotedbl     . pkey_jp106_q)
+     ;(lkey_numbersign   . pkey_jp106_3)
+     ;(lkey_dollar       . pkey_jp106_4)
+     ;(lkey_percent      . pkey_jp106_5)
+     ;(lkey_ampersand    . pkey_jp106_7)
+     (lkey_apostrophe   . pkey_jp106_q)
+     ;(lkey_parenleft    . pkey_jp106_9)
+     ;(lkey_parenright   . pkey_jp106_0)
+     ;(lkey_asterisk     . pkey_jp106_8)
+     (lkey_plus         . pkey_jp106_bracketright)
+     (lkey_comma        . pkey_jp106_w)
+     (lkey_minus        . pkey_jp106_apostrophe)
+     (lkey_period       . pkey_jp106_e)
+     (lkey_slash        . pkey_jp106_bracketleft)
+     ;(lkey_0            . pkey_jp106_0)
+     ;(lkey_1            . pkey_jp106_1)
+     ;(lkey_2            . pkey_jp106_2)
+     ;(lkey_3            . pkey_jp106_3)
+     ;(lkey_4            . pkey_jp106_4)
+     ;(lkey_5            . pkey_jp106_5)
+     ;(lkey_6            . pkey_jp106_6)
+     ;(lkey_7            . pkey_jp106_7)
+     ;(lkey_8            . pkey_jp106_8)
+     ;(lkey_9            . pkey_jp106_9)
+     (lkey_colon        . pkey_jp106_z)
+     (lkey_semicolon    . pkey_jp106_z)
+     (lkey_less         . pkey_jp106_w)
+     (lkey_equal        . pkey_jp106_bracketright)
+     (lkey_greater      . pkey_jp106_e)
+     (lkey_question     . pkey_jp106_bracketleft)
+     ;(lkey_at           . pkey_jp106_2)
+     (lkey_A            . pkey_jp106_a)
+     (lkey_B            . pkey_jp106_n)
+     (lkey_C            . pkey_jp106_i)
+     (lkey_D            . pkey_jp106_h)
+     (lkey_E            . pkey_jp106_d)
+     (lkey_F            . pkey_jp106_y)
+     (lkey_G            . pkey_jp106_u)
+     (lkey_H            . pkey_jp106_j)
+     (lkey_I            . pkey_jp106_g)
+     (lkey_J            . pkey_jp106_c)
+     (lkey_K            . pkey_jp106_v)
+     (lkey_L            . pkey_jp106_p)
+     (lkey_M            . pkey_jp106_m)
+     (lkey_N            . pkey_jp106_l)
+     (lkey_O            . pkey_jp106_s)
+     (lkey_P            . pkey_jp106_r)
+     (lkey_Q            . pkey_jp106_x)
+     (lkey_R            . pkey_jp106_o)
+     (lkey_S            . pkey_jp106_semicolon)
+     (lkey_T            . pkey_jp106_k)
+     (lkey_U            . pkey_jp106_f)
+     (lkey_V            . pkey_jp106_period)
+     (lkey_W            . pkey_jp106_comma)
+     (lkey_X            . pkey_jp106_b)
+     (lkey_Y            . pkey_jp106_t)
+     (lkey_Z            . pkey_jp106_slash)
+     (lkey_bracketleft  . pkey_jp106_minus)
+     ;;(lkey_backslash    . pkey_jp106_backslash)
+     (lkey_bracketright . pkey_jp106_asciicircum)
+     ;;(lkey_asciicircum  . pkey_jp106_6)
+     (lkey_underscore   . pkey_jp106_colon)
+     ;;(lkey_grave        . pkey_jp106_grave)
+     (lkey_a            . pkey_jp106_a)    
+     (lkey_b            . pkey_jp106_n)    
+     (lkey_c            . pkey_jp106_i)    
+     (lkey_d            . pkey_jp106_h)    
+     (lkey_e            . pkey_jp106_d)    
+     (lkey_f            . pkey_jp106_y)    
+     (lkey_g            . pkey_jp106_u)    
+     (lkey_h            . pkey_jp106_j)    
+     (lkey_i            . pkey_jp106_g)    
+     (lkey_j            . pkey_jp106_c)    
+     (lkey_k            . pkey_jp106_v)    
+     (lkey_l            . pkey_jp106_p)    
+     (lkey_m            . pkey_jp106_m)    
+     (lkey_n            . pkey_jp106_l)    
+     (lkey_o            . pkey_jp106_s)    
+     (lkey_p            . pkey_jp106_r)    
+     (lkey_q            . pkey_jp106_x)    
+     (lkey_r            . pkey_jp106_o)    
+     (lkey_s            . pkey_jp106_semicolon)
+     (lkey_t            . pkey_jp106_k)    
+     (lkey_u            . pkey_jp106_f)    
+     (lkey_v            . pkey_jp106_period)
+     (lkey_w            . pkey_jp106_comma)
+     (lkey_x            . pkey_jp106_b)    
+     (lkey_y            . pkey_jp106_t)    
+     (lkey_z            . pkey_jp106_slash)
+     (lkey_braceleft    . pkey_jp106_minus)
+     ;;(lkey_bar          . pkey_jp106_backslash)
+     (lkey_braceright   . pkey_jp106_asciicircum)
+     ;;(lkey_asciitilde   . pkey_jp106_grave)
+     )
+   lkey-jp106-qwerty->pkey-jp106-alist
+   ))
+
 
 ;; register physical key symbols to valid-physical-keys
 (for-each (lambda (alist)
@@ -550,3 +654,20 @@
 	  (list lkey-qwerty->pkey-qwerty-alist
 		lkey-extended-qwerty->pkey-qwerty-alist
 		lkey-jp106-qwerty->pkey-jp106-alist))
+
+;; FIXME: bad procedure name
+(define lkey->pkey-alist
+  (lambda ()
+    (let ((alist-sym (symbolconc 'lkey-
+				 system-logical-key-mapping
+				 '->pkey-
+				 system-physical-keyboard-type
+				 '-alist)))
+      (or (and (symbol-bound? alist-sym)
+	       (symbol-value alist-sym))
+	  ()))))
+
+(define lkey->pkey
+  (lambda (lkey)
+    (let ((alist (lkey->pkey-alist)))
+      (assq-cdr lkey alist))))

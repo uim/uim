@@ -385,3 +385,9 @@
   (lambda (key)
     (and (symbol? key)
 	 (memq key valid-physical-keys))))
+
+;; API
+;; will be replaced with actual one when physical-key.scm loaded
+(define lkey->pkey
+  (lambda (lkey)
+    #f))

@@ -3032,3 +3032,25 @@
    (assert-equal '("KA")
 		 (uim '(evmap-context-preedit-string test-emc))))
   )
+
+(define-uim-test-case "testcase key-event translator"
+  (setup
+   (lambda ()
+     (uim '(begin
+	     (define enable-ja-nicola-jp106-pseudo-thumb-shift? #t)
+	     (require "evmap.scm")
+	     (define key-event-translator-ruletree
+	       (evmap-parse-ruleset key-event-translator-ruleset))
+	     (define test-ruletree (evmap-parse-ruleset
+				    ja-nicola-jp106-pseudo-thumb-shift-ruleset))))))
+
+  ("test key-event-translator-translate!"
+   (uim '(define test-emc (key-event-translator-new)))
+   (assert-equal (uim '(list 'key #f #f -1 #f 'lkey_Thumb_Shift_R #f
+			     mod_None #t #f))
+		 (uim '(key-event-translator-translate!
+			test-emc
+			(key-event-new #f 'lkey_Henkan))))
+   )
+)
+

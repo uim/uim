@@ -98,6 +98,8 @@
 	(assq-cdr sym event-exp-directive-alist))))
 
 ;; #f means "don't care"
+;; TODO: replace default value of modifier with #f to allow
+;; overwriting by mod_None
 (define-record 'event-exp-collector
   (list
    (list 'str        #f)        ;; precomposed string
@@ -754,6 +756,15 @@
     (filter-map key-event-extract-press-str
 		(evmap-context-event-seq emc))))
 
+;; TODO: write test
+(define evmap-context-action-seq
+  (lambda (emc)
+    (let* ((tree (evmap-context-current-tree emc))
+	   (ev (and tree
+		    (evmap-tree-event tree))))
+      (and tree
+	   (evmap-tree-action-seq tree)))))
+
 ;; returns string list
 ;; can be used as rk-peek-terminal-match
 (define evmap-context-composed-string
@@ -828,8 +839,10 @@
 	(undo seq))))))
 
 ;;
-;; fundamental rulesets
+;; key-event translator
 ;;
+
+;; should be moved into appropriate file
 
 (define combinational-shift-ruleset
   '((((char-alphabet press) (char-alphabet press))
@@ -848,3 +861,73 @@
 (define shift-lock-ruleset
   '(((lkey_Shift_L lkey_Shift_L) (action_toggle_shift_lock))
     ((lkey_Shift_R lkey_Shift_R) (action_toggle_shift_lock))))
+
+;; for functional test and demonstration
+(define qwerty-shift->space-ruleset
+  '((((lkey_Shift press))   (($1 " " lkey_space mod_None)))
+    (((lkey_Shift release)) (($1 " " lkey_space mod_None)))))
+
+(define jp106-henkan-muhenkan->shift-ruleset
+  '((((lkey_Henkan   press))   (($1 lkey_Shift_R)))
+    (((lkey_Henkan   release)) (($1 lkey_Shift_R)))
+    (((lkey_Muhenkan press))   (($1 lkey_Shift_L)))
+    (((lkey_Muhenkan release)) (($1 lkey_Shift_L)))))
+
+;; temporary workaround for dedicated key-event translator
+(define ja-nicola-jp106-pseudo-thumb-shift-ruleset
+  '((((lkey_Henkan   press))   (($1 lkey_Thumb_Shift_R)))
+    (((lkey_Henkan   release)) (($1 lkey_Thumb_Shift_R)))
+    (((lkey_Muhenkan press))   (($1 lkey_Thumb_Shift_L)))
+    (((lkey_Muhenkan release)) (($1 lkey_Thumb_Shift_L)))))
+
+
+(define key-event-translator-ruleset
+  (append
+   ;;qwerty->dvorak-ruleset
+   ;;combinational-shift-ruleset
+   ;;sticky-shift-ruleset
+   ;;shift-lock-ruleset
+   ;;(if qwerty-enable-pseudo-multi-key?
+   ;;    qwerty-enable-pseudo-multi-key-ruleset
+   ;;    ())
+   ;;(if qwerty-enable-pseudo-dead-keys?
+   ;;    qwerty-enable-pseudo-dead-keys-ruleset
+   ;;    ())
+   (if enable-jp106-henkan-muhenkan-shift?
+       jp106-henkan-muhenkan-shift-ruleset
+       ())
+   (if enable-ja-nicola-jp106-pseudo-thumb-shift?
+       ja-nicola-jp106-pseudo-thumb-shift-ruleset
+       ())
+   (if enable-qwerty-shift->space?
+       qwerty-shift->space-ruleset
+       ())
+   ))
+
+(define key-event-translator-ruletree
+  (evmap-parse-ruleset key-event-translator-ruleset))
+
+(define key-event-translator-new
+  (lambda ()
+    (evmap-context-new key-event-translator-ruletree)))
+
+(define key-event-inspect
+  (lambda (msg ev)
+    (if inspect-key-event-translation?
+	(puts (string-append msg
+			     (key-event-inspect ev))))))
+
+;; TODO: write test
+(define key-event-translator-translate!
+  (lambda (emc ev)
+    (if (evmap-context-input! emc ev)
+	(begin
+	  (event-set-consumed! ev #f)
+	  (event-set-loopback! ev #f)))
+    (if (evmap-context-complete? emc)
+	(let ((translated (safe-car (evmap-context-action-seq emc))))
+	  (evmap-context-flush! emc)
+	  (if (pair? translated)
+	      (list-copy! ev translated)
+	      ev))
+	ev)))
