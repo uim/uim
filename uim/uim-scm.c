@@ -419,9 +419,9 @@ uim_scm_init(const char *verbose_level)
   char *siod_argv[] =
     {
       "siod",
-      "-h100000:10",  /* heap_size(unit: lisp objects):nheaps */
-      "-o1000",       /* obarray_dim */
-      "-s200000",     /* stack_size (unit: bytes) */
+      "-h16384:64",   /* heap_size(unit: lisp objects):nheaps */
+      "-o1024",       /* obarray_dim (hash size of symbol table) */
+      "-s262144",     /* stack_size (unit: bytes) */
       "-n128",        /* inums_dim (preallocated fixnum objects) */
       "-v0"           /* siod_verbose_level */
     };
