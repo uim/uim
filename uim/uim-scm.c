@@ -261,6 +261,20 @@ uim_scm_cons(uim_lisp car, uim_lisp cdr) {
   return (uim_lisp)cons((LISP)car, (LISP)cdr);
 }
 
+uim_bool
+uim_scm_require_file(const char *fn) {
+  /* This function directly call require() because using UIM_EVAL_FSTRING1
+   * causes segv.
+   */
+  uim_lisp _fn;
+
+  if (!fn)
+    return UIM_FALSE;
+
+  _fn = uim_scm_make_str(fn);
+  return require((LISP)_fn);
+}
+
 void
 uim_scm_init_subr_0(char *name, uim_lisp (*fcn)(void))
 {

@@ -40,7 +40,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <errno.h>
+#include <pwd.h>
 
 #include "config.h"
 #include "uim.h"
@@ -52,49 +55,70 @@
 #define dlfunc dlsym
 #endif
 
+#ifdef __APPLE__
+  #define PLUGIN_SUFFIX ".dylib"
+#else
+  #define PLUGIN_SUFFIX ".so"
+#endif /* __APPLE__ */
+
 static uim_plugin_info_list *uim_plugin_list = NULL;
 static void plugin_list_append(uim_plugin_info_list *entry);
 
+static char **plugin_lib_path = NULL;
+static char **plugin_scm_path = NULL;
+
 static uim_lisp 
-plugin_load(uim_lisp _module_filename) {
+plugin_load(uim_lisp _name) {
   uim_plugin_info *info;
   uim_plugin_info_list *info_list_entry;
+  char *tmp;
   char *module_filename;
   char *module_filename_fullpath;
-  char *module_filename_suffix;
+  char *module_scm_filename;
+  char **libpath, **scmpath;
+
+  int i = 0;
   size_t len;
   
-  module_filename = uim_scm_c_str(_module_filename);
+  tmp = uim_scm_c_str(_name);
   
-  if(module_filename == NULL) {
+  if(tmp == NULL) {
     return uim_scm_f();
   }
 
-  len = strlen(module_filename);
-  module_filename_suffix = strrchr(module_filename, '.');
-  if(len < 3 || module_filename_suffix == NULL) {
-    free(module_filename);
-    return uim_scm_f();
-  }
-  
+  len = strlen(tmp) + strlen(PLUGIN_SUFFIX) + 1;
+  module_filename = malloc(sizeof(char) * len);
+  snprintf(module_filename, len, "%s%s", tmp, PLUGIN_SUFFIX);
+
+  libpath = plugin_lib_path;
+  scmpath = plugin_scm_path;
+
   if(module_filename[0] != '/') {
-    /* FIXME: Need clean up! */
-    char *plugindir_env = getenv("LIBUIM_PLUGIN_LIB_DIR");
-    if(plugindir_env != NULL) {
-      len = strlen(plugindir_env) + strlen(module_filename) + 2;
-      module_filename_fullpath = malloc(sizeof(char*) * len);
+    for(i = 2; i >= 0; i--, libpath--, scmpath--) {
+      int fd;
+
+      len = strlen(*libpath) + 1 + strlen(module_filename) + 1;
+      module_filename_fullpath = malloc(sizeof(char) * len);
       snprintf(module_filename_fullpath, len, "%s/%s",
-	       plugindir_env, module_filename);
-    } else {
-      len = strlen(UIM_SYS_PLUGIN_LIB_DIR) + strlen(module_filename) + 2;
-      module_filename_fullpath = malloc(sizeof(char*) * len);
-      snprintf(module_filename_fullpath, len, "%s/%s",
-	       UIM_SYS_PLUGIN_LIB_DIR, module_filename);
+	       *libpath, module_filename);
+      fd = open(module_filename_fullpath, O_RDONLY);
+      if(fd >= 0) {
+	close(fd);
+	break;
+      }
+
+      free(module_filename_fullpath);
+      module_filename_fullpath = NULL;
     }
   } else {
     module_filename_fullpath = strdup(module_filename);
   }
-  
+
+  if(module_filename_fullpath == NULL) {
+    free(tmp);  
+    return uim_scm_f();
+  }
+
   dlopen(module_filename_fullpath, RTLD_GLOBAL|RTLD_NOW);
   
   info_list_entry = malloc(sizeof(uim_plugin_info_list));
@@ -111,13 +135,19 @@ plugin_load(uim_lisp _module_filename) {
   free(module_filename);
 
   info->plugin_init = (void (*)(void))dlfunc(info->library, "plugin_init");
-    
+
   if(info->plugin_init) {
     fprintf(stderr, "plugin init\n");
     (info->plugin_init)();
   }
   /*	plugin_list_append(uim_plugin_entry); */
 
+  len = strlen(*scmpath) + 1 + strlen(tmp) + strlen(".scm") + 1;
+  module_scm_filename = malloc(sizeof(char) * len);
+  snprintf(module_scm_filename, len, "%s/%s.scm", *scmpath, tmp);
+  uim_scm_require_file(module_scm_filename); 
+
+  free(module_scm_filename);
   return uim_scm_t();
 }
 
@@ -137,15 +167,50 @@ static void plugin_list_append(uim_plugin_info_list *entry)
 static uim_lisp
 plugin_unload(uim_lisp _filename)
 {
-	/* XXX: Dynamic unloading is not supported yet*/
-	return uim_scm_f();
+  /* XXX: Dynamic unloading is not supported yet*/
+  return uim_scm_f();
 }
 
 /* Called from uim_init */
 void uim_init_plugin(void)
 {
+  /* This function is called before scheme files are loaded. Plugin's search 
+   * path(both .so(.dylib) and .scm) should be got from plugin.scm.
+   */
+  char *plugin_lib_dir_env;
+  char *plugin_scm_dir_env;
+  struct passwd *pw;
+  size_t len;
+
   uim_scm_init_subr_1("load-plugin", plugin_load);
   uim_scm_init_subr_1("unload-plugin", plugin_unload);
+
+  if(plugin_scm_path != NULL && plugin_scm_path != NULL) {
+    return;
+  }
+
+  plugin_lib_dir_env = getenv("LIBUIM_PLUGIN_LIB_DIR");
+  plugin_scm_dir_env = getenv("LIBUIM_SCM_FILES");
+
+  pw = getpwuid(getuid());
+
+  plugin_lib_path = malloc(sizeof(char *) * 3);
+  plugin_scm_path = malloc(sizeof(char *) * 3);
+  memset(plugin_lib_path, 0, sizeof(char *) * 3);
+  memset(plugin_scm_path, 0, sizeof(char *) * 3);
+
+  *plugin_lib_path++ = strdup(plugin_lib_dir_env);
+  *plugin_lib_path++ = strdup(UIM_SYS_PLUGIN_LIB_DIR);
+  *plugin_scm_path++ = strdup(plugin_scm_dir_env);
+  *plugin_scm_path++ = strdup(UIM_SYS_PLUGIN_SCM_DIR);
+
+  len = strlen(pw->pw_dir) + strlen("/.uim.d/plugin") + 1;
+  *plugin_lib_path = malloc(sizeof(char) * len);
+  *plugin_scm_path = malloc(sizeof(char) * len);
+  snprintf(*plugin_lib_path, len, "%s/.uim.d/plugin", pw->pw_dir);
+  snprintf(*plugin_scm_path, len, "%s/.uim.d/plugin", pw->pw_dir);
+
+  return;
 }
 
 /* Called from uim_quit */

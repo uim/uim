@@ -60,7 +60,7 @@ libuimincludedir =  $(includedir)/uim
 
 libuim_la_LDFLAGS = -version-info 0:1:0 -export-symbols-regex uim.\*
 libuim_la_LIBADD = @LIBINTL@ @LIBICONV@
-libuim_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DLIBDIR=\"$(libdir)\"
+libuim_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DLIBDIR=\"$(pkglibdir)\"
 
 if DEBUG
 libuim_la_CPPFLAGS += -DDEBUG -DDEBUG_SCM=1

@@ -1,5 +1,5 @@
 /*
-  $Id$
+  $Id:$
 
   plugin.h:
 
@@ -36,6 +36,7 @@
 #define _uim_plugin_h_included_
 
 #define UIM_SYS_PLUGIN_LIB_DIR LIBDIR
+#define UIM_SYS_PLUGIN_SCM_DIR SCM_FILES
 /* XXX */
 
 typedef struct _uim_plugin_info {
