@@ -53,6 +53,20 @@ void unsetenv(const char *);
 
 extern char *uim_return_str;
 
+/* define constants as procedure to ensure unmodifiable */
+static LISP
+sys_libdir()
+{
+  return uim_scm_make_str(LIBDIR);
+}
+
+static LISP
+sys_datadir()
+{
+  return uim_scm_make_str(DATADIR);
+}
+
+
 static uim_lisp
 string_equal(uim_lisp x, uim_lisp y)
 {
@@ -427,6 +441,8 @@ lang_code_to_lang_name_raw(uim_lisp code_)
 void
 uim_init_util_subrs()
 {
+  uim_scm_init_subr_0("sys-libdir", sys_libdir);
+  uim_scm_init_subr_0("sys-datadir", sys_datadir);
   uim_scm_init_subr_2("string=?", string_equal);
   uim_scm_init_subr_2("nthcdr", nthcdr);
   uim_scm_init_subr_1("charcode->string", charcode2string);

@@ -34,10 +34,10 @@
 
 (define uim-plugin-lib-load-path
   (list (string-append (getenv "HOME") "/.uim.d/plugin")
-	"/usr/lib/uim/plugin"))
+	(string-append (sys-libdir) "/uim/plugin")))
 (define uim-plugin-scm-load-path
   (list (string-append (getenv "HOME") "/.uim.d/plugin")
-	"/usr/share/uim/plugin"))
+	(string-append (sys-datadir) "/uim/plugin")))
 
 (if (getenv "LIBUIM_PLUGIN_DIR")
     (set! uim-plugin-lib-load-path

@@ -139,20 +139,22 @@ AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION(0.12)
 
 
-# XXX:Ugly localedir definition... need more beautiful way.
+# FIXME: Probably voilent way  -- YamaKen 2005-01-07
 if test x$prefix = xNONE; then
-   # I can't imagine when prefix does not exist -- YamaKen 2004-09-30
-   localedir="/usr/local/share/locale"
-else
-   #localedir="${prefix}/share/locale"
-
-   # I believe that locale data must be installed into $datadir rather
-   # than its default value $prefix/share -- YamaKen 2004-09-30
-   localedir="${datadir}/locale"
+   prefix=$ac_default_prefix
 fi
+if test x$exec_prefix = xNONE; then
+   exec_prefix=$prefix
+fi
+
+LIBDIR=`eval echo ${libdir}`
+AC_DEFINE_UNQUOTED(LIBDIR, "$LIBDIR", [libraries dir])
+DATADIR=`eval echo ${datadir}`
+AC_DEFINE_UNQUOTED(DATADIR, "$DATADIR", [read-only architecture-independent data dir])
 # we should use more safe macro such as AC_EXPAND_DIR
 LOCALEDIR=`eval echo ${datadir}/locale`
-AC_SUBST(localedir)
+# backward compatibility
+localedir=$LOCALEDIR
 AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR", [locale dir])
 AC_DEFINE_UNQUOTED(GNOMELOCALEDIR, "$LOCALEDIR", [locale dir for gnome])
 # define XLIB directory
