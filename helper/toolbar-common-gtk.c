@@ -556,13 +556,15 @@ switcher_button_create(void)
 static void
 switcher_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer user_data)
 { 
-  if (event->button == 2 || event->button == 3) {
+  if(event->button == 3) {
+    prop_right_button_pressed(prop_button, event, prop_menu);
+  } else if(event->button == 2) {
     if (helper_parent_widget)
       gtk_propagate_event(GTK_WIDGET(helper_parent_widget), (GdkEvent *) event);
-    } else {
-      /* exec uim-im-switcher */
-      system("uim-im-switcher &");
-    }
+  } else {
+    /* exec uim-im-switcher */
+    system("uim-im-switcher &");
+  }
 }
 
 static GtkWidget *
@@ -590,13 +592,15 @@ pref_button_create(void)
 static void
 pref_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer user_data)
 { 
-  if (event->button == 2 || event->button == 3) {
+  if(event->button == 3) {
+    prop_right_button_pressed(prop_button, event, prop_menu);
+  } else if(event->button == 2) {
     if (helper_parent_widget)
       gtk_propagate_event(GTK_WIDGET(helper_parent_widget), (GdkEvent *) event);
-    } else {
-      /* exec uim-pref */
-      system("uim-pref-gtk &");
-    }
+  } else {
+    /* exec uim-pref */
+    system("uim-pref-gtk &");
+  }
 }
 
 static void
