@@ -48,7 +48,6 @@
 
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
-#include "siod.h"
 #include "context.h"
 
 /*
@@ -675,10 +674,10 @@ find_cand_array_lisp(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_,
   struct skk_cand_array *ca;
 
   hs = uim_scm_refer_c_str(head_);
-  if (okuri_ != uim_scm_f()) {
+  if (okuri_ != uim_scm_null_list()) {
     okuri = uim_scm_refer_c_str(okuri_);
   }
-  if (okuri_head_ == uim_scm_f()) {
+  if (okuri_head_ == uim_scm_null_list()) {
     o = 0;
   } else {
     const char *os= uim_scm_refer_c_str(okuri_head_);
@@ -754,7 +753,7 @@ skk_store_replaced_numeric_str(uim_lisp head_)
   }
   free(numstr);
  
-  return reverse(lst);
+  return uim_scm_reverse(lst);
 }
 
 static char *wide_num_list[] =
@@ -1018,8 +1017,8 @@ skk_merge_replaced_numeric_str(uim_lisp str_, uim_lisp numlst_)
   char *convstr;
   uim_lisp merged_str;
 
-  if (str_ == uim_scm_f())
-    return uim_scm_f();
+  if (str_ == uim_scm_null_list())
+    return uim_scm_null_list();
 
   str = uim_scm_c_str(str_);
   len = strlen(str);
@@ -1109,7 +1108,7 @@ get_nth(int nth, uim_lisp lst_)
   int i;
   for (i = 1; i < nth; i++) {
     if (uim_scm_nullp(lst_)) {
-      return uim_scm_f();
+      return uim_scm_null_list();
     }
     lst_ = uim_scm_cdr(lst_);
   }
@@ -1307,7 +1306,7 @@ skk_get_nth_completion(uim_lisp nth_, uim_lisp head_)
     str = ca->comps[n];
     return uim_scm_make_str(str);
   }
-  return uim_scm_f();
+  return uim_scm_null_list();
 }
 
 static uim_lisp
@@ -1467,7 +1466,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
 	    if (k == nth) {
 	      str = ca->cands[i];
 	      /* reorder sub candidate */
-	      skk_commit_candidate(numstr_, uim_scm_f(), uim_scm_f(), uim_scm_make_int(j), uim_scm_null_list());
+	      skk_commit_candidate(numstr_, uim_scm_null_list(), uim_scm_null_list(), uim_scm_make_int(j), uim_scm_null_list());
 	      break;
 	    }
 	    k++;
@@ -1492,7 +1491,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
   }
   reorder_candidate(ca, str);
 
-  if (okuri_ != uim_scm_f()) {
+  if (okuri_ != uim_scm_null_list()) {
     struct skk_line *sl;
     char *okuri;
     int found = 0;
@@ -1569,7 +1568,7 @@ skk_learn_word(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp w
 
   tmp = uim_scm_c_str(okuri_);
   if (strlen(tmp)) {
-    ca = find_cand_array_lisp(head_, okuri_head_, uim_scm_f(), 1);
+    ca = find_cand_array_lisp(head_, okuri_head_, uim_scm_null_list(), 1);
     if (ca) {
       learn_word_to_cand_array(ca, word);
     }
