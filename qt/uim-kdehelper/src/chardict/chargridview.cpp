@@ -9,13 +9,13 @@ modification, are permitted provided that the following conditions
 are met:
 
 1. Redistributions of source code must retain the above copyright
- notice, this list of conditions and the following disclaimer.
+notice, this list of conditions and the following disclaimer.
 2. Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in the
- documentation and/or other materials provided with the distribution.
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
 3. Neither the name of authors nor the names of its contributors
- may be used to endorse or promote products derived from this software
- without specific prior written permission.
+may be used to endorse or promote products derived from this software
+without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -156,7 +156,12 @@ void CharGridView::setCharacters( const QStringList &charList )
     int total = m_charList.count();
 
     int cols = COLS;
-    int rows = ( total - total % COLS ) / COLS + 1;
+    int rows = total / COLS;
+    if ( total % COLS > 0 )
+    {
+        rows++;
+    }
+
     setNumCols( cols );
     setNumRows( rows );
 
