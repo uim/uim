@@ -96,6 +96,7 @@
    '((mc-id             #f)
      (on                #f)
      (showing-candidate #f))))
+
 (define-record 'm17nlib-context m17nlib-context-rec-spec)
 (define m17nlib-context-new-internal m17nlib-context-new)
 
@@ -268,12 +269,16 @@
       (if (m17nlib-context-on mc)
 	  (if (m17nlib-push-key mc key key-state)
 	      #f ;; Discard key event
-	      (let ((commit-str (m17nlib-lib-get-commit-string mid)))
+	      (let* ((result (m17nlib-lib-get-result mid))
+		     (consumed? (car result))
+		     (commit-str (cdr result)))
 		(if (string=? commit-str "")
 		    (im-commit-raw mc)
 		    (begin
 		      (im-commit mc commit-str)
-		      (m17nlib-lib-commit mid)))))
+		      (m17nlib-lib-commit mid)
+		      (if (not consumed?)
+			  (im-commit-raw mc))))))
 	  (m17nlib-proc-direct-state mc key key-state))
       (m17nlib-update-preedit mc)
       (m17nlib-update-candidate mc))))
