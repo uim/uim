@@ -680,8 +680,8 @@ olist_pref_entry_set_value(GtkEntry *entry)
 	 item = custom->value->as_olist[++i])
     {
       if (i != 0)
-	g_string_append(str, ",");
-      g_string_append(str, item->label);
+	g_string_append(str, ", ");
+      g_string_append_printf(str, "\"%s\"", item->label);
     }
   } else {
     /* error message */
@@ -1502,8 +1502,8 @@ key_pref_entry_set_value(GtkEntry *entry)
 	 key = custom->value->as_key[++i])
     {
       if (i != 0)
-	g_string_append(str, ",");
-      g_string_append(str, key->literal);
+	g_string_append(str, ", ");
+      g_string_append_printf(str, "\"%s\"", key->literal);
     }
   } else {
     /* error message */
