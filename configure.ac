@@ -182,6 +182,8 @@ AC_DEFINE_UNQUOTED(GNOMELOCALEDIR, "$LOCALEDIR", [locale dir for gnome])
 # define XLIB directory
 AC_DEFINE_UNQUOTED(XLIB_DIR, "$x_libraries", [X11 Library Directory])
 
+AC_DEFINE_UNQUOTED(UIM_PIXMAPSDIR, "${DATADIR}/${PACKAGE}/pixmaps", [pixmaps directory])
+
 AC_ARG_WITH(gtk2,
   AC_HELP_STRING([--without-gtk2],
                  [don't build against Gtk+2]),
@@ -439,6 +441,7 @@ AC_CONFIG_FILES([test.sh
                  data/icons/Makefile
 		 examples/Makefile
 		 examples/uim-custom/Makefile
+		 pixmaps/Makefile
 		 uim.pc])
 
 AC_OUTPUT

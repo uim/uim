@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -43,7 +43,7 @@
 #include "uim/uim-helper.h"
 #include "uim/gettext.h"
 
-#define BUTTON_WIDTH 22
+#define BUTTON_WIDTH  22
 #define BUTTON_HEIGHT 22
 
 static GtkWidget *hbox;
@@ -461,40 +461,23 @@ calc_menu_position(GtkMenu *prop_menu, gint *x, gint *y, gboolean *push_in, GtkW
 static GtkWidget *
 switcher_button_create(void)
 {
-
-  /*
-   * 2004-09-24 Kazuki Ohta <mover@hct.zaq.ne.jp>
-   *
-   * FIXME!:
-   *   Please create switcher.png to display the button with icon.
-   */
-  /*
-  gchar *path;
-  GtkWidget *image;
-  GtkWidget *event_box;
-  
-  path = g_strconcat(UIM_DATADIR, "/icons/", "swithcher.png", NULL);
-  image = gtk_image_new_from_file(path);  
-  event_box = gtk_event_box_new();
-  gtk_container_add(GTK_CONTAINER(event_box), image);
-  g_signal_connect(G_OBJECT(event_box), 
-		    "button_press_event",
-		    G_CALLBACK(switcher_button_pressed),
-		    NULL);
-  return event_box;
-  */
-
   GtkWidget *button;
   GtkTooltips *tooltip;
-  button = gtk_button_new_with_label(_("sw"));
+  GtkWidget *img;
+  gchar *path;
+  button = gtk_button_new();
+  path = g_strconcat(UIM_PIXMAPSDIR, "/switcher-icon.png", NULL);
+  img = gtk_image_new_from_file(path);
+  g_free(path);
+  gtk_container_add(GTK_CONTAINER(button), img);
   gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
   gtk_size_group_add_widget(button_size_group, button);
   g_signal_connect(G_OBJECT(button), "button_press_event",
 		   G_CALLBACK(switcher_button_pressed), NULL);
-
+  
   /* tooltip */
   tooltip = gtk_tooltips_new();
-  gtk_tooltips_set_tip(tooltip, button, _("exec im-switcher"), NULL);
+  gtk_tooltips_set_tip(tooltip, button, _("Exec uim's input method switcher."), NULL);
 
   return button;
 }
