@@ -69,6 +69,11 @@
      (set! plugin-alist
 	   (append plugin-alist (list entry))))))
 
+(define plugin-list-delete
+  (lambda (plugin-name)
+    (set! plugin-alist
+	  (alist-delete plugin-name plugin-alist string=?))))
+
 (define plugin-list-query
   (lambda (plugin-name)
     (assoc plugin-name plugin-alist)))
