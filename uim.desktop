@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=preference of uim
+Name[ja]=uimの設定
+Comment=
+Comment[ja]=
+Exec=uim-pref
+Icon=uim.png
+Terminal=false
+MimeType=text/plain
+Categories=Settings

@@ -10,6 +10,10 @@ DISTCLEANFILES = uim.pc intltool-extract\
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = uim.pc
 
+desktopdir = $(datadir)/applications
+desktop_DATA = uim.desktop
+
+
 noinst_PROGRAMS = $(gtk_entry)
 
 if GTK2
