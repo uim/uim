@@ -846,7 +846,7 @@
        ;; commits with flushing pending rk, and adds explicit newline. 
        (if (skk-return-key? key key-state)
 	   (begin
-	     (rk-flush rkc)
+	     (set! res (rk-push-key-last! rkc))
 	     (skk-commit-raw-with-preedit-update sc key key-state)
 	     #f)
 	   #t)
@@ -923,7 +923,8 @@
 	    (alt-key-mask key-state)
 	    (= key 32))  ;; "<Control> ", "<Alt> ", and so on
 	   (begin
-	     (skk-commit-raw sc key key-state)
+	     (skk-flush sc)
+	     (skk-commit-raw-with-preedit-update sc key key-state)
 	     #f)
 	   #t)
        ;; Should be fixed to look lower or upper rather than looking
