@@ -11,7 +11,7 @@ pkginclude_HEADERS = uim.h uim-util.h uim-helper.h uim-im-switcher.h uim-scm.h p
 libuim_la_SOURCES = uim.c uim-scm.c uim-func.c uim-key.c uim-util.c \
 		slib.c siod.h context.h gettext.h \
 		uim-helper.c uim-helper-client.c \
-		skk-dic.c anthy.c \
+		skk-dic.c \
 		prime.c \
 		intl.c intl.h \
 		uim-ipc.c uim-table.c \
@@ -55,6 +55,13 @@ if CANNA
   libuim_canna_la_LDFLAGS = -luim
   libuim_canna_la_CPPFLAGS = -I$(top_srcdir)
 endif
+
+lib_LTLIBRARIES += libuim-anthy.la
+libuim_anthy_la_SOURCES = anthy.c
+libuim_anthy_la_LIBADD = @LIBINTL@ @LIBICONV@ libuim.la
+libuim_anthy_la_LDFLAGS = -luim
+libuim_anthy_la_CPPFLAGS = -I$(top_srcdir)
+
 
 libuimincludedir =  $(includedir)/uim
 

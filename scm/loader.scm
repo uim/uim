@@ -35,9 +35,9 @@
 ;; Chinese input methods
 (require "pyload.scm")
 
-;; Janapese input methods
-(require "anthy.scm")
-(require "canna.scm")
+(load-plugin "anthy")
+(load-plugin "canna")
+
 (require "prime.scm")
 (require "skk.scm")
 (require "tcode.scm")

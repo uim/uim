@@ -123,7 +123,7 @@ get_anthy_context(int id)
   return context_slot[id].ac;
 }
 
-static LISP
+static uim_lisp
 init_anthy_lib(void)
 {
   int i;
@@ -147,7 +147,7 @@ init_anthy_lib(void)
   return uim_scm_t();
 }
 
-static LISP
+static uim_lisp
 create_context(void)
 {
   int i;
@@ -162,17 +162,17 @@ create_context(void)
 	return uim_scm_f();
       }
       context_slot[i].ac = ac;
-      return intcons(i);
+      return uim_scm_make_int(i);
     }
   }
   return uim_scm_f();
 }
 
 
-static LISP
-release_context(LISP id_)
+static uim_lisp
+release_context(uim_lisp id_)
 {
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   if (context_slot[id].ac) {
     api.release_context(context_slot[id].ac);
     context_slot[id].ac = NULL;
@@ -180,25 +180,25 @@ release_context(LISP id_)
   return uim_scm_f();
 }
 
-static LISP
-set_string(LISP id_, LISP str_)
+static uim_lisp
+set_string(uim_lisp id_, uim_lisp str_)
 {
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   char *str;
   struct anthy_context *ac = get_anthy_context(id);
   if (!ac) {
     return uim_scm_f();
   }
-  str = uim_get_c_string(str_);
+  str = uim_scm_c_str(str_);
   api.set_string(ac, str);
   free(str);
   return uim_scm_f();
 }
 
-static LISP
-get_nr_segments(LISP id_)
+static uim_lisp
+get_nr_segments(uim_lisp id_)
 {
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   struct anthy_conv_stat acs;
   struct anthy_context *ac = get_anthy_context(id);
   if (!ac) {
@@ -206,17 +206,17 @@ get_nr_segments(LISP id_)
   }
   api.get_stat(ac, &acs);
 
-  return intcons(acs.nr_segment);
+  return uim_scm_make_int(acs.nr_segment);
 }
 
-static LISP
-get_nr_candidates(LISP id_, LISP nth_)
+static uim_lisp
+get_nr_candidates(uim_lisp id_, uim_lisp nth_)
 {
   int id, nth;
   struct anthy_context *ac;
   struct anthy_conv_stat cs;
-  id = get_c_int(id_);
-  nth = get_c_int(nth_);
+  id = uim_scm_c_int(id_);
+  nth = uim_scm_c_int(nth_);
   ac = get_anthy_context(id);
   if (!ac) {
     return uim_scm_f();
@@ -225,20 +225,20 @@ get_nr_candidates(LISP id_, LISP nth_)
   if (nth < cs.nr_segment) {
     struct anthy_segment_stat ss;
     api.get_segment_stat(ac, nth, &ss);
-    return intcons(ss.nr_candidate);
+    return uim_scm_make_int(ss.nr_candidate);
   }
   return uim_scm_f();
 }
 
-static LISP
-get_nth_candidate(LISP id_, LISP seg_, LISP nth_)
+static uim_lisp
+get_nth_candidate(uim_lisp id_, uim_lisp seg_, uim_lisp nth_)
 {
-  int id = get_c_int(id_);
-  int seg = get_c_int(seg_);
-  int nth  = get_c_int(nth_);
+  int id = uim_scm_c_int(id_);
+  int seg = uim_scm_c_int(seg_);
+  int nth  = uim_scm_c_int(nth_);
   int buflen;
   char *buf;
-  LISP buf_;
+  uim_lisp buf_;
   struct anthy_context *ac = get_anthy_context(id);
   if (!ac) {
     return uim_scm_f();
@@ -249,51 +249,49 @@ get_nth_candidate(LISP id_, LISP seg_, LISP nth_)
   }
   buf = malloc(buflen+1);
   api.get_segment(ac, seg, nth, buf, buflen+1);
-  buf_ = strcons(buflen, buf);
+  buf_ = uim_scm_make_str(buf);
   free(buf);
   return buf_;
 }
 
-static LISP
-resize_segment(LISP id_, LISP seg_, LISP cnt_)
+static uim_lisp
+resize_segment(uim_lisp id_, uim_lisp seg_, uim_lisp cnt_)
 {
-  int id = get_c_int(id_);
-  int seg = get_c_int(seg_);
-  int cnt = get_c_int(cnt_);
+  int id = uim_scm_c_int(id_);
+  int seg = uim_scm_c_int(seg_);
+  int cnt = uim_scm_c_int(cnt_);
   struct anthy_context *ac = get_anthy_context(id);
   api.resize_segment(ac, seg, cnt);
   return uim_scm_f();
 }
 
-static LISP
-commit_segment(LISP id_, LISP s_, LISP nth_)
+static uim_lisp
+commit_segment(uim_lisp id_, uim_lisp s_, uim_lisp nth_)
 {
-  int id = get_c_int(id_);
-  int s = get_c_int(s_);
-  int nth = get_c_int(nth_);
+  int id = uim_scm_c_int(id_);
+  int s = uim_scm_c_int(s_);
+  int nth = uim_scm_c_int(nth_);
   struct anthy_context *ac = get_anthy_context(id);
   api.commit_segment(ac, s, nth);
   return uim_scm_f();
 }
 
 void
-uim_init_anthy(void)
+plugin_init(void)
 {
-  init_subr_0("anthy-lib-init", init_anthy_lib);
-
-  init_subr_0("anthy-lib-alloc-context", create_context);
-  init_subr_1("anthy-lib-free-context", release_context);
-
-  init_subr_2("anthy-lib-set-string", set_string);
-  init_subr_1("anthy-lib-get-nr-segments",get_nr_segments);
-  init_subr_2("anthy-lib-get-nr-candidates", get_nr_candidates);
-  init_subr_3("anthy-lib-get-nth-candidate", get_nth_candidate);
-  init_subr_3("anthy-lib-resize-segment", resize_segment);
-  init_subr_3("anthy-lib-commit-segment", commit_segment);
+  uim_scm_init_subr_0("anthy-lib-init", init_anthy_lib);
+  uim_scm_init_subr_0("anthy-lib-alloc-context", create_context);
+  uim_scm_init_subr_1("anthy-lib-free-context", release_context);
+  uim_scm_init_subr_2("anthy-lib-set-string", set_string);
+  uim_scm_init_subr_1("anthy-lib-get-nr-segments",get_nr_segments);
+  uim_scm_init_subr_2("anthy-lib-get-nr-candidates", get_nr_candidates);
+  uim_scm_init_subr_3("anthy-lib-get-nth-candidate", get_nth_candidate);
+  uim_scm_init_subr_3("anthy-lib-resize-segment", resize_segment);
+  uim_scm_init_subr_3("anthy-lib-commit-segment", commit_segment);
 }
 
 void
-uim_quit_anthy(void)
+plugin_quit(void)
 {
   int i;
 

@@ -642,7 +642,6 @@ uim_init_scm()
   uim_init_util_subrs();
   uim_init_key_subrs();
   uim_init_table_subrs();
-  uim_init_anthy();
   uim_init_prime();
   uim_init_skk_dic();
 
@@ -714,7 +713,6 @@ uim_quit(void)
   }
   /**/
   uim_quit_skk_dic();
-  uim_quit_anthy();
   uim_quit_prime();
   uim_quit_plugin();
   uim_scm_quit();
