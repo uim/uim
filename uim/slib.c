@@ -766,6 +766,7 @@ vload (char *fname, long cflag, long rflag)
 static long
 repl_driver (long want_init, struct repl_hooks *h)
 {
+  long ret;
   int k;
   struct repl_hooks hd;
   LISP stack_start;
@@ -777,8 +778,10 @@ repl_driver (long want_init, struct repl_hooks *h)
   stack_limit_ptr = STACK_LIMIT (stack_start_ptr, stack_size);
 #endif
   k = setjmp (errjmp);
-  if (k == 2)
-    return (2);
+  if (k == 2) {
+    ret = (2);
+    goto fin;
+  }
   catch_framep = (struct catch_frame *) NULL;
   errjmp_ok = 1;
   if (want_init && init_file && (k == 0))
@@ -789,10 +792,19 @@ repl_driver (long want_init, struct repl_hooks *h)
       hd.repl_read = repl_read;
       hd.repl_eval = repl_eval;
       hd.repl_print = repl_print;
-      return (repl (&hd));
+      ret = (repl (&hd));
+      goto fin;
     }
-  else
-    return (repl (h));
+  else {
+    ret = (repl (h));
+    goto fin;
+  }
+
+ fin:
+#if (NESTED_REPL_C_STRING)
+  siod_gc_unprotect_stack(&stack_start);
+#endif
+  return ret;
 }
 
 static void
