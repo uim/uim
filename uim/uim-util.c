@@ -436,6 +436,35 @@ eucjp_string_to_list(uim_lisp str_)
   return res;
 }
 
+static uim_lisp
+string_prefixp_internal(uim_lisp prefix_, uim_lisp str_,
+			int cmp(const char *, const char *, size_t))
+{
+  const char *prefix, *str;
+  size_t len;
+
+  if (!uim_scm_stringp(prefix_) || !uim_scm_stringp(str_))
+    return uim_scm_f();
+
+  prefix = uim_scm_refer_c_str(prefix_);
+  str = uim_scm_refer_c_str(str_);
+  len = strlen(prefix);
+
+  return cmp(prefix, str, len) ? uim_scm_f() : uim_scm_t();
+}
+
+static uim_lisp
+string_prefixp(uim_lisp prefix_, uim_lisp str_)
+{
+  return string_prefixp_internal(prefix_, str_, strncmp);
+}
+
+static uim_lisp
+string_prefix_cip(uim_lisp prefix_, uim_lisp str_)
+{
+  return string_prefixp_internal(prefix_, str_, strncasecmp);
+}
+
 /* Following is utility functions for C world */
 struct _locale_language_table {
   char *locale;
@@ -520,6 +549,8 @@ uim_init_util_subrs()
   uim_scm_init_subr_1("unsetenv", c_unsetenv);
   uim_scm_init_subr_2("string-split", uim_split_string);
   uim_scm_init_subr_1("string-to-list", eucjp_string_to_list);
+  uim_scm_init_subr_2("string-prefix?", string_prefixp);
+  uim_scm_init_subr_2("string-prefix-ci?", string_prefix_cip);
   uim_scm_init_subr_1("lang-code->lang-name-raw", lang_code_to_lang_name_raw);
   uim_scm_init_subr_0("is-set-ugid?", is_setugidp);
 }
