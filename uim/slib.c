@@ -4361,7 +4361,7 @@ ltypeof (LISP obj)
     }
 }
 
-LISP
+static LISP
 string2integer (LISP str)
 {
   char *s = get_c_string(str);
