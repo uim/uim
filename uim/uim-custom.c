@@ -57,17 +57,34 @@
 
 typedef void (*uim_custom_cb_update_cb_t)(void *ptr, const char *custom_sym);
 
+static char *c_list_to_str(const void *const *list, char *(*mapper)(const void *elem), const char *sep);
+
 static int uim_custom_type_eq(const char *custom_sym, const char *custom_type);
 static int uim_custom_type(const char *custom_sym);
 static int uim_custom_is_active(const char *custom_sym);
 static char *uim_custom_get_str(const char *custom_sym, const char *proc);
 static char *uim_custom_label(const char *custom_sym);
 static char *uim_custom_desc(const char *custom_sym);
-static struct uim_custom_choice *uim_custom_choice_get(const char *custom_sym, const char *choice_sym);
-static void uim_custom_choice_free(struct uim_custom_choice *custom_choice);
-static struct uim_custom_choice **uim_custom_choice_item_list(const char *custom_sym);
-static union uim_custom_value *uim_custom_value_internal(const char *custom_sym, const char *getter_proc);
 
+static struct uim_custom_choice *uim_custom_choice_get(const char *custom_sym, const char *choice_sym);
+static char *extract_choice_symbol(const struct uim_custom_choice *custom_choice);
+static char *choice_list_to_str(const struct uim_custom_choice *const *list, const char *sep);
+struct uim_custom_choice *uim_custom_choice_new(char *symbol, char *label, char *desc);
+static void uim_custom_choice_free(struct uim_custom_choice *custom_choice);
+static struct uim_custom_choice **extract_choice_list(const char *list_repl, const char *custom_sym);
+static struct uim_custom_choice **uim_custom_choice_item_list(const char *custom_sym);
+
+static struct uim_custom_choice **uim_custom_olist_get(const char *custom_sym);
+static struct uim_custom_choice **uim_custom_olist_item_list(const char *custom_sym);
+
+static struct uim_custom_key **uim_custom_key_get(const char *custom_sym);
+struct uim_custom_key *uim_custom_key_new(int type, char *literal, char *label, char *desc);
+static void uim_custom_key_free(struct uim_custom_key *custom_key);
+static char *extract_key_literal(const struct uim_custom_key *custom_key);
+static char *key_list_to_str(const struct uim_custom_key *const *list, const char *sep);
+void uim_custom_key_list_free(struct uim_custom_key **list);
+
+static union uim_custom_value *uim_custom_value_internal(const char *custom_sym, const char *getter_proc);
 static union uim_custom_value *uim_custom_value(const char *custom_sym);
 static union uim_custom_value *uim_custom_default_value(const char *custom_sym);
 static void uim_custom_value_free(int custom_type, union uim_custom_value *custom_value);
@@ -92,6 +109,37 @@ static int helper_fd = -1;
 static uim_lisp return_val;
 
 
+static char *
+c_list_to_str(const void *const *list, char *(*mapper)(const void *elem), const char *sep)
+{
+  size_t buf_size;
+  char *buf, *bufp, *str;
+  const void *const *elem;
+
+  buf_size = sizeof('\0');
+  for (elem = list; *elem; elem++) {
+    if (elem != list)
+      buf_size += strlen(sep);
+    str = (*mapper)(*elem);
+    buf_size += strlen(str);
+    free(str);
+  }
+  buf = (char *)malloc(buf_size);
+
+  for (bufp = buf, elem = list; *elem; elem++) {
+    if (elem != list) {
+      strcpy(bufp, sep);
+      bufp += strlen(sep);
+    }
+    str = (*mapper)(*elem);
+    strcpy(bufp, str);
+    bufp += strlen(str);
+    free(str);
+  }
+
+  return buf;
+}
+
 static int
 uim_custom_type_eq(const char *custom_sym, const char *custom_type)
 {
@@ -114,6 +162,8 @@ uim_custom_type(const char *custom_sym)
     return UCustom_Pathname;
   } else if (uim_custom_type_eq(custom_sym, "symbol")) {
     return UCustom_Choice;
+  } else if (uim_custom_type_eq(custom_sym, "ordered-list")) {
+    return UCustom_OrderedList;
   } else if (uim_custom_type_eq(custom_sym, "key")) {
     return UCustom_Key;
   } else {
@@ -155,12 +205,13 @@ uim_custom_desc(const char *custom_sym)
   return uim_custom_get_str(custom_sym, "custom-desc");
 }
 
+/* choice */
 static struct uim_custom_choice *
 uim_custom_choice_get(const char *custom_sym, const char *choice_sym)
 {
   struct uim_custom_choice *c_choice;
 
-  c_choice = (struct uim_custom_choice *)malloc(sizeof(struct uim_custom_choice));
+  c_choice = uim_custom_choice_new(NULL, NULL, NULL);
   if (!c_choice)
     return NULL;
 
@@ -179,9 +230,31 @@ uim_custom_choice_get(const char *custom_sym, const char *choice_sym)
   return c_choice;
 }
 
+/**
+ * TODO
+ */
+struct uim_custom_choice *
+uim_custom_choice_new(char *symbol, char *label, char *desc)
+{
+  struct uim_custom_choice *custom_choice;
+
+  custom_choice = (struct uim_custom_choice *)malloc(sizeof(struct uim_custom_choice));
+  if (!custom_choice)
+    return NULL;
+
+  custom_choice->symbol = symbol;
+  custom_choice->label = label;
+  custom_choice->desc = desc;
+
+  return custom_choice;
+}
+
 static void
 uim_custom_choice_free(struct uim_custom_choice *custom_choice)
 {
+  if (!custom_choice)
+    return;
+
   free(custom_choice->symbol);
   free(custom_choice->label);
   free(custom_choice->desc);
@@ -189,15 +262,13 @@ uim_custom_choice_free(struct uim_custom_choice *custom_choice)
 }
 
 static struct uim_custom_choice **
-uim_custom_choice_item_list(const char *custom_sym)
+extract_choice_list(const char *list_repl, const char *custom_sym)
 {
   char *choice_sym, **choice_sym_list, **p;
   struct uim_custom_choice *custom_choice, **custom_choice_list;
 
-  UIM_EVAL_FSTRING2(NULL, "(define %s (custom-range '%s))",
-		    str_list_arg, custom_sym);
   choice_sym_list =
-    (char **)uim_scm_c_list(str_list_arg, "symbol->string",
+    (char **)uim_scm_c_list(list_repl, "symbol->string",
 			    (uim_scm_c_list_conv_func)uim_scm_c_str);
   if (!choice_sym_list)
     return NULL;
@@ -212,11 +283,179 @@ uim_custom_choice_item_list(const char *custom_sym)
   return custom_choice_list;
 }
 
+static struct uim_custom_choice **
+uim_custom_choice_item_list(const char *custom_sym)
+{
+  UIM_EVAL_FSTRING2(NULL, "(define %s (custom-range '%s))",
+		    str_list_arg, custom_sym);
+  return extract_choice_list(str_list_arg, custom_sym);
+}
+
+static char *
+extract_choice_symbol(const struct uim_custom_choice *custom_choice)
+{
+  return strdup(custom_choice->symbol);
+}
+
+static char *
+choice_list_to_str(const struct uim_custom_choice *const *list, const char *sep)
+{
+  return c_list_to_str((const void *const *)list,
+		       (char *(*)(const void *))extract_choice_symbol, sep);
+}
+
+/**
+ * TODO
+ */
 void
 uim_custom_choice_list_free(struct uim_custom_choice **list)
 {
   uim_scm_c_list_free((void **)list,
 		      (uim_scm_c_list_free_func)uim_custom_choice_free);
+}
+
+/* ordered list */
+static struct uim_custom_choice **
+uim_custom_olist_get(const char *custom_sym)
+{
+  UIM_EVAL_FSTRING2(NULL, "(define %s (custom-value '%s))",
+		    str_list_arg, custom_sym);
+  return extract_choice_list(str_list_arg, custom_sym);
+}
+
+static struct uim_custom_choice **
+uim_custom_olist_item_list(const char *custom_sym)
+{
+  return uim_custom_choice_item_list(custom_sym);
+}
+
+/* key */
+static struct uim_custom_key **
+uim_custom_key_get(const char *custom_sym)
+{
+  char **key_literal_list, **key_label_list, **key_desc_list;
+  int *key_type_list, list_len, i;
+  struct uim_custom_key *custom_key, **custom_key_list;
+
+  UIM_EVAL_FSTRING3(NULL, "(define #%s (custom-expand-key-references '%s (custom-range '%s))",
+		    str_list_arg, custom_sym, custom_sym);
+  key_literal_list =
+    (char **)uim_scm_c_list(str_list_arg,
+			    "(lambda (key) (if (symbol? key) symbol->string key))",
+			    (uim_scm_c_list_conv_func)uim_scm_c_str);
+  key_type_list =
+    (int *)uim_scm_c_list(str_list_arg,
+			  "(lambda (key) (if (symbol? key) 1 0))",
+			  (uim_scm_c_list_conv_func)uim_scm_c_int);
+  key_label_list =
+    (char **)uim_scm_c_list(str_list_arg,
+			    "(lambda (key) (if (symbol? key) (custom-label key) #f))",
+			    (uim_scm_c_list_conv_func)uim_scm_c_str);
+  key_desc_list =
+    (char **)uim_scm_c_list(str_list_arg,
+			    "(lambda (key) (if (symbol? key) (custom-desc key) #f))",
+			    (uim_scm_c_list_conv_func)uim_scm_c_str);
+  if (!key_type_list || !key_literal_list || !key_label_list || !key_desc_list)
+  {
+    free(key_type_list);
+    uim_custom_symbol_list_free(key_literal_list);
+    uim_custom_symbol_list_free(key_label_list);
+    uim_custom_symbol_list_free(key_desc_list);
+    return NULL;
+  }
+
+  UIM_EVAL_FSTRING1(NULL, "(length %s)", str_list_arg);
+  return_val = uim_scm_return_value();
+  list_len = uim_scm_c_int(return_val);
+
+  for (i = 0; i < list_len; i++) {
+    char *literal, *label, *desc;
+    int type;
+    type = (key_type_list[i] == 1) ? UCustomKey_Reference : UCustomKey_Regular;
+    literal = key_literal_list[i];
+    label = key_label_list[i];
+    desc = key_desc_list[i];
+    custom_key = uim_custom_key_new(type, literal, label, desc);
+    key_literal_list[i] = (char *)custom_key;  /* intentionally overwrite */
+  }
+  /* reuse the list structure */
+  custom_key_list = (struct uim_custom_key **)key_literal_list;
+
+  /* ownership of elements had been transferred to custom_key_list */
+  free(key_type_list);
+  free(key_label_list);
+  free(key_desc_list);
+
+  return custom_key_list;
+}
+
+/**
+ * TODO
+ */
+struct uim_custom_key *
+uim_custom_key_new(int type, char *literal, char *label, char *desc)
+{
+  struct uim_custom_key *custom_key;
+
+  custom_key = (struct uim_custom_key *)malloc(sizeof(struct uim_custom_key));
+  if (!custom_key)
+    return NULL;
+
+  custom_key->type = type;
+  custom_key->literal = literal;
+  custom_key->label = label;
+  custom_key->desc = desc;
+
+  return custom_key;
+}
+
+static void
+uim_custom_key_free(struct uim_custom_key *custom_key)
+{
+  if (!custom_key)
+    return;
+
+  free(custom_key->literal);
+  free(custom_key->label);
+  free(custom_key->desc);
+  free(custom_key);
+}
+
+static char *
+extract_key_literal(const struct uim_custom_key *custom_key)
+{
+  char *literal;
+
+  switch (custom_key->type) {
+  case UCustomKey_Regular:
+    UIM_EVAL_FSTRING1(NULL, "\"%s\"", custom_key->literal);
+    literal = uim_scm_c_str(uim_scm_return_value());
+    break;
+  case UCustomKey_Reference:
+    literal = strdup(custom_key->literal);
+    break;
+  default:
+    literal = strdup("\"\"");
+  }
+
+  return literal;
+}
+
+static char *
+key_list_to_str(const struct uim_custom_key *const *list, const char *sep)
+{
+  return c_list_to_str((const void *const *)list,
+		       (char *(*)(const void *))extract_key_literal, sep);
+}
+
+/**
+ * TODO
+ */
+void
+uim_custom_key_list_free(struct uim_custom_key **list)
+{
+  uim_scm_c_list_free((void **)list,
+		      (uim_scm_c_list_free_func)uim_custom_key_free);
 }
 
 static union uim_custom_value *
@@ -254,11 +493,12 @@ uim_custom_value_internal(const char *custom_sym, const char *getter_proc)
     value->as_choice = uim_custom_choice_get(custom_sym, custom_value_symbol);
     free(custom_value_symbol);
     break;
-#if 0
-  case UCustom_Key:
-    value->as_key = uim_scm_c_str(return_val);
+  case UCustom_OrderedList:
+    value->as_olist = uim_custom_olist_get(custom_sym);
     break;
-#endif
+  case UCustom_Key:
+    value->as_key = uim_custom_key_get(custom_sym);
+    break;
   default:
     value = NULL;
   }
@@ -294,11 +534,12 @@ uim_custom_value_free(int custom_type, union uim_custom_value *custom_value)
   case UCustom_Choice:
     uim_custom_choice_free(custom_value->as_choice);
     break;
-#if 0
-  case UCustom_Key:
-    free(custom_value->as_key);
+  case UCustom_OrderedList:
+    uim_custom_choice_list_free(custom_value->as_olist);
     break;
-#endif
+  case UCustom_Key:
+    uim_custom_key_list_free(custom_value->as_key);
+    break;
   }
   free(custom_value);
 }
@@ -341,6 +582,9 @@ uim_custom_range_get(const char *custom_sym)
   case UCustom_Choice:
     range->as_choice.valid_items = uim_custom_choice_item_list(custom_sym);
     break;
+  case UCustom_OrderedList:
+    range->as_olist.valid_items = uim_custom_olist_item_list(custom_sym);
+    break;
   }
 
   return range;
@@ -359,11 +603,9 @@ uim_custom_range_free(int custom_type, union uim_custom_range *custom_range)
   case UCustom_Choice:
     uim_custom_choice_list_free(custom_range->as_choice.valid_items);
     break;
-#if 0
-  case UCustom_Key:
-    free(custom_value->as_key);
+  case UCustom_OrderedList:
+    uim_custom_choice_list_free(custom_range->as_olist.valid_items);
     break;
-#endif
   }
   free(custom_range);
 }
@@ -711,12 +953,22 @@ uim_custom_set(const struct uim_custom *custom)
     UIM_EVAL_FSTRING2(NULL, "(custom-set! '%s '%s)",
 		      custom->symbol, custom->value->as_choice->symbol);
     break;
-#if 0
-  case UCustom_Key:
-    UIM_EVAL_FSTRING2(NULL, "(custom-set! '%s %s)",
-		      custom->symbol, custom->value->as_key);
+  case UCustom_OrderedList:
+    {
+      char *val;
+      val = choice_list_to_str((const struct uim_custom_choice *const *)custom->value->as_olist, " ");
+      UIM_EVAL_FSTRING2(NULL, "(custom-set! '%s '(%s))", custom->symbol, val);
+      free(val);
+    }
     break;
-#endif
+  case UCustom_Key:
+    {
+      char *val;
+      val = key_list_to_str((const struct uim_custom_key *const *)custom->value->as_key, " ");
+      UIM_EVAL_FSTRING2(NULL, "(custom-set! '%s '(%s))", custom->symbol, val);
+      free(val);
+    }
+    break;
   default:
     return UIM_FALSE;
   }
@@ -951,7 +1203,7 @@ uim_custom_cb_add(const char *custom_sym, void *ptr,
 		       uim_scm_make_symbol(custom_sym),
 		       uim_scm_make_ptr(ptr),
 		       uim_scm_make_symbol("custom-update-cb-gate"),
-		       uim_scm_make_ptr(update_cb));
+		       uim_scm_make_ptr((void *)update_cb));
   succeeded = uim_scm_c_bool(uim_scm_eval(form));
   uim_scm_gc_unprotect_stack(&stack_start);
 

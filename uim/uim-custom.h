@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -153,16 +153,16 @@ char **uim_custom_group_subgroups(const char *group_sym);
 void uim_custom_symbol_list_free(char **symbol_list);
 
 /* custom choice (for ordered list) */
-struct uim_custom_choice *uim_custom_choice_new(const char *symbol,
-						const char *label,
-						const char *desc);
+struct uim_custom_choice *uim_custom_choice_new(char *symbol,
+						char *label,
+						char *desc);
 void uim_custom_choice_list_free(struct uim_custom_choice **list);
 
 /* custom key */
-struct uim_custom_choice *uim_custom_key_new(int type,
-					     const char *literal,
-					     const char *label,
-					     const char *desc);
+struct uim_custom_key *uim_custom_key_new(int type,
+					  char *literal,
+					  char *label,
+					  char *desc);
 void uim_custom_key_list_free(struct uim_custom_key **list);
 
 #ifdef __cplusplus
