@@ -707,6 +707,7 @@ same_candidatesp(const char **old, const char **new)
   return UIM_TRUE;
 }
 
+static uim_lisp
 candidates_changedp(uim_lisp id_)
 {
   int id = uim_scm_c_int(id_);
@@ -756,50 +757,14 @@ get_nr_candidates(uim_lisp id_)
 static uim_lisp
 get_nth_candidate(uim_lisp id_, uim_lisp nth_)
 {
-  MText *produced = NULL; /* Quiet gcc */
-  MPlist *group;
-  MPlist *elm;
-  int i;
-  char *buf = NULL; /* Quiet gcc */
   int id = uim_scm_c_int(id_);
   int nth = uim_scm_c_int(nth_);
-  MInputContext *ic = ic_array[id].mic;
-  uim_lisp buf_;
-
-  if(!ic || !ic->candidate_list)
-    return uim_scm_f();
-
-  group = ic->candidate_list;
-
-  if(mplist_key(group) == Mtext) {
-    for (i=0; mplist_key(group) != Mnil; group = mplist_next(group)) {
-      int j;
-      for (j=0; j < mtext_len(mplist_value(group)); j++, i++) {
-        if(i == nth) {
-          produced = mtext();
-          mtext_cat_char(produced, mtext_ref_char(mplist_value(group), j));
-          buf = convert_mtext2str(produced);
-          m17n_object_unref(produced);
-        }
-      }
-    }
+  int nr = ic_array[id].nr_candidates;
+  
+  if(nr >= nth) {
+    return uim_scm_make_str(ic_array[id].new_candidates[nth]);
   } else {
-    for (i=0; mplist_key(group) != Mnil; group = mplist_next(group)) {
-      for (elm = mplist_value(group); mplist_key(elm) != Mnil; elm = mplist_next(elm),i++) {
-        if(i == nth) {
-          produced = mplist_value(elm);
-          buf = convert_mtext2str(produced);
-        }
-      }
-    }
-  }
-
-  if(!buf) {
     return uim_scm_make_str("");
-  } else {
-    buf_ = uim_scm_make_str(buf);
-    free(buf);
-    return buf_;
   }
 }
 
