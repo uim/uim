@@ -43,20 +43,13 @@
 ;;    読み入力状態,単語入力状態
 ;;
 
-(require "japanese.scm")
-(require "generic-key.scm")
 (require "util.scm")
+(require "japanese.scm")
+(require-custom "generic-key-custom.scm")
+(require-custom "prime-custom.scm")
+;;(require-custom "prime-key-custom.scm")
 
 ;; configs
-(define prime-nr-candidate-max 10)
-(define prime-always-show-window? #t)
-(define prime-auto-register-mode? #t)
-(define prime-pseudo-mode-cursor? #f)
-(define prime-char-annotation?    #t)
-;; If #t a candidate window displays usage examples of candidate words.
-(define prime-custom-display-usage? #t)
-
-(define prime-mask-pending-preedit? #f)
 
 (define prime-engine-command-lookup     "lookup_compact")
 ;(define prime-engine-command-lookup-all "lookup_compact")
@@ -65,6 +58,7 @@
 ;(define prime-engine-command-lookup-all "lookup_prefix")
 
 ;; config function
+;; should be replaced with boolean custom variable  -- YamaKen 2005-01-15
 (define prime-dont-use-numeral-key-to-select-cand
   (lambda ()
     (set! prime-cand-select-key?
@@ -1596,8 +1590,8 @@
  'prime
  "ja"
  "EUC-JP"
- (N_ "PRIME")
- (N_ "Japanese predictable input method")
+ prime-im-label-name
+ prime-im-short-desc
  #f
  prime-init-handler
  #f

@@ -287,3 +287,4 @@
     (invoke-handler im-set-candidate-index-handler id idx)))
 
 (require "key.scm")
+(require-custom "im-custom.scm")

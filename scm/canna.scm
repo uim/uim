@@ -32,20 +32,13 @@
 (require "japanese.scm")
 (require "japanese-kana.scm")
 (require "japanese-azik.scm")
-(require "generic-key.scm")
+(require-custom "generic-key-custom.scm")
+(require-custom "canna-custom.scm")
+;;(require-custom "canna-key-custom.scm")
 
 ;;; user configs
 
 (define canna-init-lib-ok? #f)
-(define canna-use-candidate-window? #t)
-(define canna-candidate-op-count 1)
-(define canna-nr-candidate-max 10)
-(define canna-show-segment-separator? #f)
-(define canna-segment-separator "|")
-; TODO: support cannaserver on other host
-(define canna-server-name #f)
-;(define canna-server-name "localhost")
-;(define canna-server-name "127.0.0.1")
 
 ;;; Key definitions
 (define-key canna-on-key? '("<Control>\\" generic-on-key?))
@@ -823,8 +816,8 @@
        'canna
        "ja"
        "EUC-JP"
-       (N_ "Canna")
-       (N_ "Japanese Kana Kanji Conversion Engine, Canna")
+       canna-im-label-name
+       canna-im-short-desc
        #f
        canna-init-handler
        canna-release-handler

@@ -35,16 +35,10 @@
 (require "japanese.scm")
 (require "japanese-kana.scm")
 (require "japanese-azik.scm")
-(require "generic-key.scm")
+(require-custom "generic-key-custom.scm")
+(require-custom "anthy-custom.scm")
+;;(require-custom "anthy-key-custom.scm")
 
-;;; user configs
-
-(define anthy-use-candidate-window? #t)
-(define anthy-candidate-op-count 1)
-(define anthy-nr-candidate-max 10)
-(define anthy-show-segment-separator? #f)
-(define anthy-select-candidate-by-numeral-key? #f)
-(define anthy-segment-separator "|")
 
 ;; key defs
 (define-key anthy-on-key? '("<Control>j" "<Control>J" generic-on-key?))
@@ -985,8 +979,8 @@
  'anthy
  "ja"
  "EUC-JP"
- (N_ "Anthy")
- (N_ "Japanese Kana Kanji Conversion Engine, Anthy")
+ anthy-im-label-name
+ anthy-im-short-desc
  #f
  anthy-init-handler
  anthy-release-handler

@@ -44,28 +44,10 @@
 ;;
 ;;
 (require "japanese.scm")
-(require "generic-key.scm")
+(require-custom "generic-key-custom.scm")
+(require-custom "skk-custom.scm")
+;;(require-custom "skk-key-custom.scm")
 
-;;; user configs
-
-(define skk-dic-file-name
-  (string-append (sys-datadir) "/skk/SKK-JISYO.L"))
-(define skk-personal-dic-filename
-  (string-append (getenv "HOME") "/.skk-jisyo"))
-(define skk-uim-personal-dic-filename
-  (string-append (getenv "HOME") "/.skk-uim-jisyo"))
-(define skk-dic-init #f)
-;; configs
-(define skk-use-candidate-window? #t)
-(define skk-candidate-op-count 2)
-(define skk-nr-candidate-max 10)
-(define skk-use-recursive-learning? #t)
-(define skk-egg-like-newline? #f)
-(define skk-commit-newline-explicitly? #f)  ;; turn into #t provided safe behavior
-(define skk-style 'skk-style-ddskk-like)
-(define skk-use-with-vi? #f)
-(define skk-use-numeric-conversion? #t)
-(define skk-commit-candidate-by-label-key? #f)
 
 ;; key defs
 (define-key skk-latin-key? '("l" generic-off-key?))
@@ -183,6 +165,8 @@
 (define skk-child-context-end-mark #f)
 (define skk-show-cursor-on-preedit? #f)
 (define skk-show-candidates-with-okuri? #f)
+
+(define skk-dic-init #f)
 
 (define skk-prepare-activation
   (lambda (sc)
@@ -1595,8 +1579,8 @@
  'skk
  "ja"
  "EUC-JP"
- (N_ "SKK")
- (N_ "Uim's SKK like input method")
+ skk-im-label-name
+ skk-im-short-desc
  #f
  skk-init-handler
  skk-release-handler

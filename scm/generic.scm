@@ -30,14 +30,9 @@
 
 (require "util.scm")
 (require "rk.scm")
-(require "generic-key.scm")
+(require-custom "generic-key-custom.scm")
+(require-custom "generic-custom.scm")
 
-;;; user configs
-
-(define generic-use-candidate-window? #t)
-(define generic-candidate-op-count 1)
-(define generic-nr-candidate-max 10)
-(define generic-commit-candidate-by-numeral-key? #t)
 
 ;; widgets and actions
 

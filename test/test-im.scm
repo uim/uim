@@ -55,6 +55,7 @@
 	     (set! test-im-init-args (list 'test-im
 					   "ja"
 					   "UTF-8"
+					   "a label"
 					   "a short description"
 					   #f
 					   direct-init-handler
@@ -77,7 +78,7 @@
 		 (uim '(length im-list)))
    (assert-equal 'test-im
 		 (uim '(im-name (retrieve-im 'test-im #f))))
-   (assert-equal 14
+   (assert-equal 15
 		 (uim '(length (retrieve-im 'test-im #f))))
 
    ;; duplicate register will be rejected

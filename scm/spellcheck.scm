@@ -30,17 +30,9 @@
 
 ;;uim-spellcheck is dynamic spell checker.
 
-(require "generic-key.scm")
+(require-custom "generic-key-custom.scm")
+(require-custom "spellcheck-custom.scm")
 
-
-;; configs
-(define spell-use-candidate-window? #t)
-(define spell-candidate-op-count 1) ;;候補ウィンドウを表示するまでに何回スペースキーを押す必要があるか？
-(define spell-preedit-immididate-commit? #f)
-(define spell-always-show-window? #t)
-
-;; key
-(define-key spell-on-key? '("<Control>j" "<Control>J" generic-on-key?))
 
 (define spell-context-rec-spec
   (append
@@ -555,8 +547,8 @@
  'spell
  "ja"
  "EUC-JP"
- (N_ "Spellcheck")
- (N_ "Spellcheck")
+ spell-im-label-name
+ spell-im-short-desc
  #f
  spell-init-handler
  #f

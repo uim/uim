@@ -666,15 +666,9 @@ uim_init_scm()
   uim_scm_require_file("custom-rt.scm");
   uim_scm_require_file("im.scm");
   uim_scm_load_file("loader.scm");
-  uim_scm_require_file("direct.scm");  /* must be loaded at last of IMs */
+  /* must be loaded at last of IMs */
+  UIM_EVAL_STRING(NULL, "(require-module \"direct\")");
 
-#ifndef UIM_COMPAT_CUSTOM
-  /*
-    Remove this code once the definition of custom-vars.scm is
-    distributed into IM files  -- YamaKen 2005-01-08
-  */
-  UIM_EVAL_STRING(NULL, "(require-custom \"custom-vars.scm\")");
-#endif    
   if (getenv("LIBUIM_VANILLA") ||
       load_conf() == -1) {
     uim_scm_load_file("default.scm");
