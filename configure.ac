@@ -28,6 +28,9 @@ dnl
 dnl We do this before the gettext checks, to avoid distortion
 
 AM_ICONV
+if test "$am_cv_func_iconv" = no; then
+  AC_MSG_ERROR([Could not find iconv (required for uim)])
+fi
 
 AC_SUBST(LIBICONV)
 
@@ -159,7 +162,8 @@ AC_CHECK_HEADERS([curses.h stropts.h])
 AC_CHECK_HEADERS([sys/param.h strings.h])
 
 # Check for type
-AC_CHECK_TYPES(sig_t)
+AC_CHECK_TYPES(sig_t, , ,
+  [ #include <signal.h> ])
 
 # Checks for library
 AC_CHECK_LIB(dl,dlopen)
