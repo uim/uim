@@ -167,7 +167,7 @@ padbutton_clicked(GtkButton *button, gpointer user_data)
 
   tmp = g_string_new("commit_string\n");
   g_string_append(tmp, str);
-  g_string_append(tmp, "\n\n");
+  g_string_append(tmp, "\n");
 
   uim_helper_send_message(uim_fd, tmp->str);
 
