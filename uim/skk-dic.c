@@ -1335,6 +1335,17 @@ skk_commit_candidate(LISP head_, LISP okuri_head_,
 
   if (nth == 0) {
     ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
+#if 1
+    /*
+     * Even with 0th candidate, save the word into personal
+     * dictionary.  Note that this entry will be saved at the timing
+     * of calling skk-prepare-commit-string with skk-context-nth > 0
+     * for now.
+     */
+    ca->line->need_save = 1;
+    str = ca->cands[nth];
+    reorder_candidate(ca, str);
+#endif
     move_line_to_cache_head(skk_dic, ca->line);
     return NIL;
   }
