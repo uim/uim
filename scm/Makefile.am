@@ -3,7 +3,7 @@ scmdir = $(datadir)/uim
 scm_DATA = $(SCM_FILES)
 SCM_FILES = plugin.scm im.scm im-custom.scm loader.scm default.scm \
  util.scm key.scm ustr.scm action.scm load-action.scm i18n.scm \
- uim-sh.scm custom.scm custom-rt.scm custom-vars.scm \
+ uim-sh.scm custom.scm custom-rt.scm \
  rk.scm \
  direct.scm \
  generic.scm generic-custom.scm generic-key-custom.scm \
