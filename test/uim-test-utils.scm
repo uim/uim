@@ -6,6 +6,7 @@
 
 (sys-putenv "LIBUIM_SCM_FILES" "./scm")
 (sys-putenv "LIBUIM_VERBOSE" "1")  ;; must be 1
+(sys-putenv "LIBUIM_VANILLA" "1")
 
 (set! (port-buffering (current-output-port)) :none)
 

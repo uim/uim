@@ -669,7 +669,9 @@ uim_init_scm()
 #endif
 #ifndef UIM_COMPAT_CUSTOM
   /* must be loaded after IMs and before user conf */
-  uim_custom_load();
+  if (!getenv("LIBUIM_VANILLA")) {
+    uim_custom_load();
+  }
 #endif    
   if (getenv("LIBUIM_VANILLA") ||
       load_conf() == -1) {
