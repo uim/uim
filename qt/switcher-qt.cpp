@@ -95,6 +95,7 @@ void UimImSwitcher::createGUI()
     /* im list view */
     listview = new QListView( this );
     listview->setSelectionMode( QListView::Single );
+    listview->setAllColumnsShowFocus( true );
     listview->addColumn( _( "InputMethodName" ) );
     listview->addColumn( _( "Language" ) );
     listview->addColumn( _( "Description" ) );

@@ -41,7 +41,6 @@
 
 #include <locale.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -253,7 +252,7 @@ void CandidateWindow::slotStdinActivated( int fd )
     if ( n == 0 )
     {
         close( fd );
-        exit( -1 );
+        QApplication::exit( -1 );
     }
     if ( n == -1 )
         return ;

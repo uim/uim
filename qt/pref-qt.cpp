@@ -55,11 +55,8 @@
 #include <qobjectlist.h>
 
 #include "uim/config.h"
-
 #include "qtgettext.h"
 
-#include <unistd.h>
-#include <stdlib.h>
 #include <locale.h>
 
 #define _FU8(String) QString::fromUtf8(String)
@@ -74,7 +71,7 @@ UimPrefDialog::UimPrefDialog( QWidget *parent, const char *name )
     } else {
       qDebug("uim_custom_enable() failed.");
       uim_quit();
-      exit(-1);
+      QApplication::exit( -1 );
     }
 }
 
@@ -111,6 +108,7 @@ void UimPrefDialog::createMainWidgets()
     QWidget *buttonHWidget = new QWidget( leftSideWidget );
     m_groupWidgetStack = new QWidgetStack( leftSideWidget );
     QHBoxLayout *buttonHLayout = new QHBoxLayout( buttonHWidget );
+    buttonHLayout->setMargin( 6 );
     buttonHLayout->setSpacing( 6 );
     QPushButton *defaultButton = new QPushButton( _("Defaults"), buttonHWidget );
     QObject::connect( defaultButton, SIGNAL(clicked()),
@@ -280,6 +278,7 @@ GroupPageWidget::GroupPageWidget( QWidget *parent, const char *group_name )
 void GroupPageWidget::setupWidgets( const char *group_name )
 {
     QVBoxLayout *vLayout = new QVBoxLayout( this );
+    vLayout->setMargin( 6 );
     vLayout->setSpacing( 3 );
     
     struct uim_custom_group *group = uim_custom_group_get( group_name );

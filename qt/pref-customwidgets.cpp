@@ -497,7 +497,7 @@ void CustomOrderedListEdit::updateText()
              item = m_custom->value->as_olist[++i] )
         {
             if( i != 0 )
-                str.append(",");
+                str.append(", ");
             str.append( _FU8(item->label) );
         }
     }
@@ -610,7 +610,7 @@ void CustomKeyEdit::updateText()
              key = m_custom->value->as_key[++i])
         {
             if( i != 0 )
-                str.append(",");
+                str.append(", ");
             str.append( key->literal );
         }
     } else {
