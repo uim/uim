@@ -56,6 +56,9 @@ static struct im_ {
 static int max_input_contexts;
 static struct ic_ {
   MInputContext *mic;
+  char **old_candidates; /* FIXME: ugly hack for perfomance... */
+  char **new_candidates; /* FIXME: ugly hack for perfomance... */
+  int  nr_candidates;
 } *ic_array;
 
 static char *
@@ -507,6 +510,8 @@ alloc_id(uim_lisp name_)
   if (im) {
     ic_array[id].mic = minput_create_ic(im, NULL);
   }
+  ic_array[id].old_candidates = NULL;
+  ic_array[id].new_candidates = NULL;
   free(name);
   return uim_scm_make_int(id);
 }
@@ -616,17 +621,113 @@ candidate_showp(uim_lisp id_)
   return uim_scm_f();
 }
 
-static uim_lisp
-get_nr_candidates(uim_lisp id_)
+static void
+old_cands_free(char **old_cands)
 {
+  int i = 0;
+  if(old_cands) {
+    while(old_cands[i]){
+      free(old_cands[i]);
+    }
+    free(old_cands);
+  }
+}
+
+static uim_lisp
+fill_new_candidates(uim_lisp id_)
+{
+  MText *produced = NULL; /* Quiet gcc */
   MPlist *group;
-  int result = 0;
+  MPlist *elm;
+  int i;
+  char *buf = NULL; /* Quiet gcc */
   int id = uim_scm_c_int(id_);
   MInputContext *ic = ic_array[id].mic;
+  int cands_num = calc_cands_num(id);
+  char **new_cands;
+  uim_lisp buf_;
 
   if(!ic || !ic->candidate_list)
     return uim_scm_f();
 
+  group = ic->candidate_list;
+
+  ic_array[id].old_candidates = ic_array[id].new_candidates;
+
+  new_cands = malloc (cands_num * sizeof(char *) + 2);
+
+  if(mplist_key(group) == Mtext) {
+
+    for (i=0; mplist_key(group) != Mnil; group = mplist_next(group)) {
+      int j;
+      for (j=0; j < mtext_len(mplist_value(group)); j++, i++) {
+          produced = mtext();
+          mtext_cat_char(produced, mtext_ref_char(mplist_value(group), j));
+          new_cands[i] = convert_mtext2str(produced);
+          m17n_object_unref(produced);
+      }
+    }
+  } else {
+    for (i=0; mplist_key(group) != Mnil; group = mplist_next(group)) {
+
+      for (elm = mplist_value(group); mplist_key(elm) != Mnil; elm = mplist_next(elm),i++) {
+	produced = mplist_value(elm);
+	new_cands[i] = convert_mtext2str(produced);
+      }
+    }
+  }
+  new_cands[i] = NULL;
+
+  ic_array[id].new_candidates = new_cands;
+  ic_array[id].nr_candidates = i;
+  
+  return uim_scm_t();
+
+  if(!buf) {
+    return uim_scm_make_str("");
+  } else {
+    buf_ = uim_scm_make_str(buf);
+    free(buf);
+    return buf_;
+  }
+}
+
+static uim_bool
+same_candidatesp(const char **old, const char **new)
+{
+  int i;
+  if(!old)
+    return UIM_FALSE;
+
+  for(i=0; old[i] && new[i]; i++) {
+    if(strcmp(old[i], new[i]) != 0) {
+      return UIM_FALSE;
+    }
+  }
+  return UIM_TRUE;
+}
+
+candidates_changedp(uim_lisp id_)
+{
+  int id = uim_scm_c_int(id_);
+  char **old_cands = ic_array[id].old_candidates;
+  char **new_cands = ic_array[id].new_candidates;
+
+  if(!same_candidatesp(old_cands, new_cands)) {
+    return uim_scm_t();
+  }
+  return uim_scm_f();
+}
+
+int
+calc_cands_num(int id)
+{
+  int result = 0;
+  MPlist *group; 
+  MInputContext *ic = ic_array[id].mic;
+
+  if(!ic || !ic->candidate_list)
+    return 0;
 
   group = ic->candidate_list;
 
@@ -641,8 +742,15 @@ get_nr_candidates(uim_lisp id_)
       }
     }
   }
+  return result;
+}
 
-  return uim_scm_make_int(result);
+
+static uim_lisp
+get_nr_candidates(uim_lisp id_)
+{
+  int id = uim_scm_c_int(id_);
+  return uim_scm_make_int(calc_cands_num(id));
 }
 
 static uim_lisp
@@ -735,6 +843,8 @@ uim_plugin_instance_init(void)
   uim_scm_init_subr_1("m17nlib-lib-get-commit-string", get_commit_string);
   uim_scm_init_subr_1("m17nlib-lib-commit", commit);
   uim_scm_init_subr_1("m17nlib-lib-candidate-show?", candidate_showp);
+  uim_scm_init_subr_1("m17nlib-lib-fill-new-candidates!", fill_new_candidates);
+  uim_scm_init_subr_1("m17nlib-lib-candidates-changed?", candidates_changedp);
   uim_scm_init_subr_1("m17nlib-lib-get-nr-candidates", get_nr_candidates);
   uim_scm_init_subr_2("m17nlib-lib-get-nth-candidate", get_nth_candidate);
   uim_scm_init_subr_1("m17nlib-lib-get-candidate-index", get_candidate_index);
