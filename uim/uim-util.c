@@ -53,69 +53,69 @@ void unsetenv(const char *);
 
 extern char *uim_return_str;
 
-static LISP
-string_equal(LISP x, LISP y)
+static uim_lisp
+string_equal(uim_lisp x, uim_lisp y)
 {
   long xl, yl;
   char *xs, *ys;
-  xs = get_c_string_dim(x, &xl);
-  ys = get_c_string_dim(y, &yl);
+  xs = get_c_string_dim((LISP)x, &xl);
+  ys = get_c_string_dim((LISP)y, &yl);
   if (xl != yl) {
-    return false_sym;
+    return uim_scm_f();
   }
   if (!strncmp(xs, ys, xl)) {
-    return (true_sym);
+    return uim_scm_t();
   }
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-charcode2string(LISP x)
+static uim_lisp
+charcode2string(uim_lisp x)
 {
   char buf[2];
-  if (INTNUMP(x)) {
-    buf[0] = INTNM(x);
+  if (uim_scm_integerp(x)) {
+    buf[0] = uim_scm_c_int(x);
   } else {
     buf[0] = 0;
   }
   buf[1] = 0;
-  return strcons (1,buf);
+  return uim_scm_make_str(buf);
 }
 
-static LISP
-string2charcode(LISP x)
+static uim_lisp
+string2charcode(uim_lisp x)
 {
-  char *buf = get_c_string(x);
+  const char *buf = uim_scm_refer_c_str(x);
 
   if (buf) {
-    return intcons(*buf);
+    return uim_scm_make_int(*buf);
   }
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-digit2string(LISP x)
+static uim_lisp
+digit2string(uim_lisp x)
 {
   char buf[10];
   int i;
 
-  i = get_c_int(x);
+  i = uim_scm_c_int(x);
 
   sprintf(buf,"%d",i);
-  return strcons (strlen(buf),buf);
+  return uim_scm_make_str(buf);
 }
 
-static LISP
-nthcdr(LISP nth_, LISP lst)
+static uim_lisp
+nthcdr(uim_lisp nth_, uim_lisp lst)
 {
-  int nth = get_c_int(nth_);
+  int nth = uim_scm_c_int(nth_);
   int i;
   for (i = 0; i < nth; i++) {
-    if NULLP(lst) {
+    if (uim_scm_nullp(lst)) {
       /* something bad happened */
-      return false_sym;
+      return uim_scm_f();
     }
-    lst = CDR(lst);
+    lst = uim_scm_cdr(lst);
   }
   return lst;
 }
@@ -134,23 +134,23 @@ uim_get_c_string(LISP str)
   return buf;
 }
 
-static LISP
-str_seq_equal(LISP seq, LISP rule)
+static uim_lisp
+str_seq_equal(uim_lisp seq, uim_lisp rule)
 {
-  int sl = nlength(seq);
-  int rl = nlength(rule);
+  int sl = nlength((LISP)seq);
+  int rl = nlength((LISP)rule);
   int i;
   if (sl != rl) {
-    return false_sym;
+    return uim_scm_f();
   }
   for (i = 0; i < sl; i++) {
-    if FALSEP(string_equal(CAR(seq), CAR(rule))) {
-      return false_sym;
+    if FALSEP(string_equal(uim_scm_car(seq), uim_scm_car(rule))) {
+      return uim_scm_f();
     }
-    seq = CDR(seq);
-    rule = CDR(rule);
+    seq = uim_scm_cdr(seq);
+    rule = uim_scm_cdr(rule);
   }
-  return true_sym;
+  return uim_scm_t();
 }
 
 /*
@@ -159,124 +159,124 @@ str_seq_equal(LISP seq, LISP rule)
  * Not partial -> #f
  *
  */
-static LISP
-str_seq_partial(LISP seq, LISP rule)
+static uim_lisp
+str_seq_partial(uim_lisp seq, uim_lisp rule)
 {
-  int sl = nlength(seq);
-  int rl = nlength(rule);
+  int sl = nlength((LISP)seq);
+  int rl = nlength((LISP)rule);
   int i;
 
   if (sl >= rl) {
-    return false_sym;
+    return uim_scm_f();
   }
   /* Obviously. sl < rl */
   for (i = 0; i < sl; i++) {
-    if FALSEP(string_equal(CAR(seq), CAR(rule))) {
-      return false_sym;
+    if FALSEP(string_equal(uim_scm_car(seq), uim_scm_car(rule))) {
+      return uim_scm_f();
     }
-    seq = CDR(seq);
-    rule = CDR(rule);
+    seq = uim_scm_cdr(seq);
+    rule = uim_scm_cdr(rule);
   }
-  if (rule && CAR(rule)) {
-    return CAR(rule);
+  if (rule && uim_scm_car(rule)) {
+    return uim_scm_car(rule);
   }
   /* never reach here */
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-rk_find_seq(LISP seq, LISP rules)
+static uim_lisp
+rk_find_seq(uim_lisp seq, uim_lisp rules)
 {
-  for (; NNULLP(rules); rules = CDR(rules)) {
-    LISP rule = CAR(rules);
-    LISP key = CAR(CAR(rule));
+  for (; !uim_scm_nullp(rules); rules = uim_scm_cdr(rules)) {
+    uim_lisp rule = uim_scm_car(rules);
+    uim_lisp key = uim_scm_car(uim_scm_car(rule));
     if NFALSEP(str_seq_equal(seq, key)) {
       return rule;
     }
   }
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-rk_find_partial_seq(LISP seq, LISP rules)
+static uim_lisp
+rk_find_partial_seq(uim_lisp seq, uim_lisp rules)
 {
-  for (; NNULLP(rules); rules = CDR(rules)) {
-    LISP rule = CAR(rules);
-    LISP key = CAR(CAR(rule));
+  for (; !uim_scm_nullp(rules); rules = uim_scm_cdr(rules)) {
+    uim_lisp rule = uim_scm_car(rules);
+    uim_lisp key = uim_scm_car(uim_scm_car(rule));
     if NFALSEP(str_seq_partial(seq, key)) {
       return rule;
     }
   }
-  return false_sym;
+  return uim_scm_f();
 }
 
 /*
  * returns possible next characters
  * (rk-lib-expect-seq '("k" "y") ja-rk-rule) -> ("o" "e" "u" "i" "a")
  */
-static LISP
-rk_expect_seq(LISP seq, LISP rules)
+static uim_lisp
+rk_expect_seq(uim_lisp seq, uim_lisp rules)
 {
-  LISP cur, res = NIL;
-  for (cur = rules; NNULLP(cur); cur = CDR(cur)) {
-    LISP rule = CAR(cur);
-    LISP key = CAR(CAR(rule));
-    LISP e = str_seq_partial(seq, key);
+  uim_lisp cur, res = uim_scm_null_list();
+  for (cur = rules; !uim_scm_nullp(cur); cur = uim_scm_cdr(cur)) {
+    uim_lisp rule = uim_scm_car(cur);
+    uim_lisp key = uim_scm_caar(rule);
+    uim_lisp e = str_seq_partial(seq, key);
     if NFALSEP(e) {
-      res = cons(e, res);
+      res = uim_scm_cons(e, res);
     }
   }
-  return res;  /* don't return false_sym */
+  return res;  /* don't return uim_scm_f() */
 }
 
-static LISP
-c_getenv(LISP str_)
+static uim_lisp
+c_getenv(uim_lisp str_)
 {
-  char *str = get_c_string(str_);
+  const char *str = uim_scm_refer_c_str(str_);
   char *val;
 
   if (!str) {
-    return false_sym;
+    return uim_scm_f();
   }
   val = getenv(str);
   if (val) {
-    return strcons(strlen(val), val);
+    return uim_scm_make_str(val);
   } else {
-    return false_sym;
+    return uim_scm_f();
   }
 }
 
-static LISP
-c_setenv(LISP name_, LISP val_, LISP overwrite_)
+static uim_lisp
+c_setenv(uim_lisp name_, uim_lisp val_, uim_lisp overwrite_)
 {
-  char *name = get_c_string(name_);
-  char *val = get_c_string(val_);
+  const char *name = uim_scm_refer_c_str(name_);
+  const char *val = uim_scm_refer_c_str(val_);
   int overwrite = NFALSEP(overwrite_);
   int err;
 
   if (!name || !val) {
-    return false_sym;
+    return uim_scm_f();
   }
   err = setenv(name, val, overwrite);
-  return (err) ? false_sym : true_sym;
+  return (err) ? uim_scm_f() : uim_scm_t();
 }
 
-static LISP
-c_unsetenv(LISP name_)
+static uim_lisp
+c_unsetenv(uim_lisp name_)
 {
-  char *name = get_c_string(name_);
+  const char *name = uim_scm_refer_c_str(name_);
 
   if (!name) {
-    return false_sym;
+    return uim_scm_f();
   }
   unsetenv(name);
-  return true_sym;
+  return uim_scm_t();
 }
 
 static char **
-uim_strsplit(char *splittee, char *splitter)
+uim_strsplit(const char *splittee, const char *splitter)
 {
-  char *cur, *tmp;
+  const char *cur, *tmp;
   int nr_token = 0;
   int in_token = 0;
   char **res;
@@ -331,26 +331,26 @@ uim_strsplit(char *splittee, char *splitter)
   return res;
 }
 
-static LISP
-uim_split_string(LISP _splittee, LISP _splitter)
+static uim_lisp
+uim_split_string(uim_lisp _splittee, uim_lisp _splitter)
 {
-  char *splittee = get_c_string(_splittee);
-  char *splitter = get_c_string(_splitter);
+  const char *splittee = uim_scm_refer_c_str(_splittee);
+  const char *splitter = uim_scm_refer_c_str(_splitter);
   char **strs;
-  LISP l = NIL;
+  uim_lisp l = uim_scm_null_list();
   int i;
   int n_strs;
 
-  if(_splittee == NULL || _splitter == NULL)
-    return false_sym;
+  if (!uim_scm_stringp(_splittee) || !uim_scm_stringp(_splitter))
+    return uim_scm_f();
 
   if(splittee == NULL || splitter == NULL)
-    return false_sym;
+    return uim_scm_f();
 
   strs = uim_strsplit(splittee, splitter);
 
   if(!strs || !*strs)
-    return false_sym;
+    return uim_scm_f();
 
   for (n_strs = 0; strs[n_strs] != '\0'; n_strs++);
 
@@ -362,12 +362,12 @@ uim_split_string(LISP _splittee, LISP _splitter)
   return l;
 }
 
-static LISP
-eucjp_string_to_list(LISP str_)
+static uim_lisp
+eucjp_string_to_list(uim_lisp str_)
 {
-  char *str = get_c_string(str_);
-  unsigned char *cur = (unsigned char *)str;
-  LISP res = NIL;
+  const char *str = uim_scm_refer_c_str(str_);
+  const unsigned char *cur = (const unsigned char *)str;
+  uim_lisp res = uim_scm_null_list();
   while (*cur) {
     char buf[3];
     int len;
@@ -383,7 +383,7 @@ eucjp_string_to_list(LISP str_)
       buf[1] = 0;
       len = 1;
     }
-    res = cons (strcons(len, (char *)buf), res);
+    res = uim_scm_cons(uim_scm_make_str((char *)buf), res);
     cur ++;
   }
   return res;
@@ -426,36 +426,35 @@ uim_get_language_name_from_locale(const char *localename)
   return get_language_name_from_locale(localename);
 }
 
-static LISP
-lang_code_to_lang_name_raw(LISP code_)
+static uim_lisp
+lang_code_to_lang_name_raw(uim_lisp code_)
 {
-  const char *code = get_c_string(code_);
+  const char *code = uim_scm_refer_c_str(code_);
   const char *name;
-  int unknown_strlen = -1;
 
   if (!code)
-    return false_sym;
+    return uim_scm_f();
   name = get_language_name_from_locale(code);
-  return (name) ? strcons(unknown_strlen, name) : false_sym;
+  return (name) ? uim_scm_make_str(name) : uim_scm_f();
 }
 
 void
 uim_init_util_subrs()
 {
-  init_subr_2("string=?", string_equal);
-  init_subr_2("nthcdr", nthcdr);
-  init_subr_1("charcode->string", charcode2string);
-  init_subr_1("string->charcode", string2charcode);
-  init_subr_1("digit->string", digit2string);
-  init_subr_2("str-seq-equal?", str_seq_equal);
-  init_subr_2("str-seq-partial?", str_seq_partial);
-  init_subr_2("rk-lib-find-seq", rk_find_seq);
-  init_subr_2("rk-lib-find-partial-seq", rk_find_partial_seq);
-  init_subr_2("rk-lib-expect-seq", rk_expect_seq);
-  init_subr_1("getenv", c_getenv);
-  init_subr_3("setenv", c_setenv);
-  init_subr_1("unsetenv", c_unsetenv);
-  init_subr_2("string-split", uim_split_string);
-  init_subr_1("string-to-list", eucjp_string_to_list);
-  init_subr_1("lang-code->lang-name-raw", lang_code_to_lang_name_raw);
+  uim_scm_init_subr_2("string=?", string_equal);
+  uim_scm_init_subr_2("nthcdr", nthcdr);
+  uim_scm_init_subr_1("charcode->string", charcode2string);
+  uim_scm_init_subr_1("string->charcode", string2charcode);
+  uim_scm_init_subr_1("digit->string", digit2string);
+  uim_scm_init_subr_2("str-seq-equal?", str_seq_equal);
+  uim_scm_init_subr_2("str-seq-partial?", str_seq_partial);
+  uim_scm_init_subr_2("rk-lib-find-seq", rk_find_seq);
+  uim_scm_init_subr_2("rk-lib-find-partial-seq", rk_find_partial_seq);
+  uim_scm_init_subr_2("rk-lib-expect-seq", rk_expect_seq);
+  uim_scm_init_subr_1("getenv", c_getenv);
+  uim_scm_init_subr_3("setenv", c_setenv);
+  uim_scm_init_subr_1("unsetenv", c_unsetenv);
+  uim_scm_init_subr_2("string-split", uim_split_string);
+  uim_scm_init_subr_1("string-to-list", eucjp_string_to_list);
+  uim_scm_init_subr_1("lang-code->lang-name-raw", lang_code_to_lang_name_raw);
 }

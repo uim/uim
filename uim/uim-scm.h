@@ -131,6 +131,8 @@ uim_scm_make_int(int integer);
 
 char *
 uim_scm_c_str(uim_lisp str);
+const char *
+uim_scm_refer_c_str(uim_lisp str);
 uim_lisp
 uim_scm_make_str(const char *str);
 
@@ -170,6 +172,12 @@ uim_scm_null_list(void);
 /* predicates */
 uim_bool
 uim_scm_nullp(uim_lisp obj);
+uim_bool
+uim_scm_consp(uim_lisp obj);
+uim_bool
+uim_scm_integerp(uim_lisp obj);
+uim_bool
+uim_scm_stringp(uim_lisp obj);
 uim_bool
 uim_scm_eq(uim_lisp a, uim_lisp b);
 uim_bool

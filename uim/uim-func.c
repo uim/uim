@@ -38,6 +38,7 @@
 #include <stdarg.h>
 #include "context.h"
 #include "siod.h"
+#include "uim-scm.h"
 
 #define MAX_LENGTH_OF_INT_AS_STR (((sizeof(int) == 4) ? sizeof("-2147483648") : sizeof("-9223372036854775808")) - sizeof((char)'\0'))
 
@@ -374,18 +375,18 @@ uim_eval_string(uim_context uc, char *buf)
 
 /* this is not a uim API, so did not name as uim_retrieve_context() */
 static uim_context
-retrieve_uim_context(LISP id)
+retrieve_uim_context(uim_lisp id)
 {
   uim_context uc;
-  if CONSP(id) {  /* passed as Scheme-side input context */
-    id = car(id);
+  if (uim_scm_consp(id)) {  /* passed as Scheme-side input context */
+    id = uim_scm_car(id);
   }
-  uc = uim_find_context(get_c_int(id));
+  uc = uim_find_context(uim_scm_c_int(id));
   return uc;
 }
 
-static LISP
-im_clear_preedit(LISP id)
+static uim_lisp
+im_clear_preedit(uim_lisp id)
 {
   uim_context uc = retrieve_uim_context(id);
 #ifdef UIM_CALLBACK_QUEUE
@@ -393,17 +394,17 @@ im_clear_preedit(LISP id)
 #else
   uim_release_preedit_segments(uc);
 #endif
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-im_pushback_preedit(LISP id_, LISP attr_, LISP str_)
+static uim_lisp
+im_pushback_preedit(uim_lisp id_, uim_lisp attr_, uim_lisp str_)
 {
   uim_context uc = retrieve_uim_context(id_);
-  char *str = NULL;
-  int attr = get_c_int(attr_);
+  const char *str = NULL;
+  int attr = uim_scm_c_int(attr_);
   if (str_) {
-    str = uim_get_c_string(str_);
+    str = uim_scm_refer_c_str(str_);
   }
 #ifdef UIM_CALLBACK_QUEUE
   uim_schedule_cb(uc, PREEDIT_PUSHBACK_CB, str, attr, 0);
@@ -414,11 +415,11 @@ im_pushback_preedit(LISP id_, LISP attr_, LISP str_)
     pushback_preedit_segment(uc, attr, s);
   }
 #endif
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-im_update_preedit(LISP id)
+static uim_lisp
+im_update_preedit(uim_lisp id)
 {
   uim_context uc = retrieve_uim_context(id);
 #ifdef UIM_CALLBACK_QUEUE
@@ -426,17 +427,17 @@ im_update_preedit(LISP id)
 #else
   uim_update_preedit_segments(uc);
 #endif
-  return false_sym;
+  return uim_scm_f();
 }
 
 /* ID, STR */
-static LISP
-im_commit(LISP id, LISP str_)
+static uim_lisp
+im_commit(uim_lisp id, uim_lisp str_)
 {
   uim_context uc = retrieve_uim_context(id);
-  char *str = NULL;
-  if STRINGP(str_) {
-    str = uim_get_c_string(str_);
+  const char *str = NULL;
+  if (uim_scm_stringp(str_)) {
+    str = uim_scm_refer_c_str(str_);
 #ifdef UIM_CALLBACK_QUEUE
     uim_schedule_cb(uc, COMMIT_CB, str, 0, 0);
 #else
@@ -450,32 +451,32 @@ im_commit(LISP id, LISP str_)
     }
 #endif
   }
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-im_commit_raw(LISP id)
+static uim_lisp
+im_commit_raw(uim_lisp id)
 {
   uim_context uc = retrieve_uim_context(id);
   uc->commit_raw_flag = 1;
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-im_get_raw_key_str(LISP key_, LISP key_state_)
+static uim_lisp
+im_get_raw_key_str(uim_lisp key_, uim_lisp key_state_)
 {
   int key;
-  int key_state = get_c_int(key_state_);
+  int key_state = uim_scm_c_int(key_state_);
   char buf[2];
   
-  if (INTNUMP(key_)) {
-    key = get_c_int(key_);
+  if (uim_scm_integerp(key_)) {
+    key = uim_scm_c_int(key_);
   } else {
-    return false_sym;
+    return uim_scm_f();
   }
   if ((key_state != 0 && key_state != UMod_Shift) ||
       key > 255) {
-    return false_sym;
+    return uim_scm_f();
   }
   
   buf[0] = key;
@@ -487,39 +488,37 @@ im_get_raw_key_str(LISP key_, LISP key_state_)
   if (key_state == UMod_Shift) {
     buf[0] = toupper(buf[0]);
   }
-  return strcons(1, buf);
+  return uim_scm_make_str(buf);
 }
 
-static LISP
-im_set_encoding(LISP id, LISP enc)
+static uim_lisp
+im_set_encoding(uim_lisp id, uim_lisp enc)
 {
-  char *e = uim_get_c_string(enc);
+  const char *e = uim_scm_refer_c_str(enc);
   uim_context uc = retrieve_uim_context(id);
 
   if(!uc)
-    return false_sym;
+    return uim_scm_f();
 
   if (uc->conv) {
     uc->conv_if->release(uc->conv);
   }
   if (!strcmp(uc->encoding, e)) {
-    free(e);
     uc->conv = 0;
-    return false_sym;
+    return uim_scm_f();
   }
   uc->conv = uc->conv_if->create(uc->encoding, e);
-  free(e);
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-im_clear_mode_list(LISP id)
+static uim_lisp
+im_clear_mode_list(uim_lisp id)
 {
   int i;
   uim_context uc = retrieve_uim_context(id);
 
   if(!uc)
-    return false_sym;
+    return uim_scm_f();
 
   for (i = 0; i < uc->nr_modes; i++) {
     if (uc->modes[i]) {
@@ -531,34 +530,33 @@ im_clear_mode_list(LISP id)
     uc->modes = NULL;
   }
   uc->nr_modes = 0;
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-im_pushback_mode_list(LISP id, LISP str)
+static uim_lisp
+im_pushback_mode_list(uim_lisp id, uim_lisp str)
 {
-  char *s;
+  const char *s;
   uim_context uc = retrieve_uim_context(id);
 
   if(!uc)
-    return false_sym;
+    return uim_scm_f();
 
   uc->modes = realloc(uc->modes,
 		      sizeof(char *)*(uc->nr_modes+1));
-  s = uim_get_c_string(str);
+  s = uim_scm_refer_c_str(str);
   uc->modes[uc->nr_modes] = uc->conv_if->convert(uc->conv, s);
-  free(s);
   uc->nr_modes ++;
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-im_update_mode_list(LISP id)
+static uim_lisp
+im_update_mode_list(uim_lisp id)
 {
   uim_context uc = retrieve_uim_context(id);
 
   if(!uc)
-    return false_sym;
+    return uim_scm_f();
 
 #ifdef UIM_CALLBACK_QUEUE
   uim_schedule_cb(uc, MODE_LIST_UPDATE_CB, NULL, 0, 0);
@@ -567,29 +565,27 @@ im_update_mode_list(LISP id)
     uc->mode_list_update_cb(uc->ptr);
   }
 #endif
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-im_update_prop_list(LISP id, LISP prop_)
+static uim_lisp
+im_update_prop_list(uim_lisp id, uim_lisp prop_)
 {
   uim_context uc = retrieve_uim_context(id);
-  char *prop     = uim_get_c_string(prop_);
+  const char *prop = uim_scm_refer_c_str(prop_);
 
   if(uc) {
 #ifdef UIM_CALLBACK_QUEUE
     uim_schedule_cb(uc, PROP_LIST_UPDATE_CB, NULL, 0, 0);
 #endif
   } else {
-    return false_sym;
+    return uim_scm_f();
   }
   
   if(uc && uc->propstr)
     free(uc->propstr);
       
   uc->propstr = uc->conv_if->convert(uc->conv, prop);
-  
-  free(prop);
 
 #ifndef UIM_CALLBACK_QUEUE
     if (uc->prop_list_update_cb) {
@@ -597,30 +593,28 @@ im_update_prop_list(LISP id, LISP prop_)
     }
 #endif
 
-  return false_sym;
+  return uim_scm_f();
 }
 
 
-static LISP
-im_update_prop_label(LISP id, LISP prop_)
+static uim_lisp
+im_update_prop_label(uim_lisp id, uim_lisp prop_)
 {
   uim_context uc = retrieve_uim_context(id);
-  char *prop     = uim_get_c_string(prop_);
+  const char *prop = uim_scm_refer_c_str(prop_);
     
   if(uc) {
 #ifdef UIM_CALLBACK_QUEUE
     uim_schedule_cb(uc, PROP_LABEL_UPDATE_CB, NULL, 0, 0);
 #endif
   } else {
-    return false_sym;
+    return uim_scm_f();
   }
 
   if(uc && uc->proplabelstr)
     free(uc->proplabelstr);
   
   uc->proplabelstr = uc->conv_if->convert(uc->conv, prop);
-
-  free(prop);
   
 #ifndef UIM_CALLBACK_QUEUE
     if (uc->prop_label_update_cb) {
@@ -628,17 +622,17 @@ im_update_prop_label(LISP id, LISP prop_)
     }
 #endif
 
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-im_update_mode(LISP id, LISP mode_)
+static uim_lisp
+im_update_mode(uim_lisp id, uim_lisp mode_)
 {
-  int mode = get_c_int(mode_);
+  int mode = uim_scm_c_int(mode_);
   uim_context uc = retrieve_uim_context(id);
 
   if(!uc)
-    return false_sym;
+    return uim_scm_f();
 
   uc->mode = mode;
 #ifdef UIM_CALLBACK_QUEUE
@@ -648,11 +642,11 @@ im_update_mode(LISP id, LISP mode_)
     uc->mode_update_cb(uc->ptr, mode);
   }
 #endif
-  return false_sym;
+  return uim_scm_f();
 }
 
 static char *
-get_im_lang(char *name)
+get_im_lang(const char *name)
 {
   int i;
   for (i = 0; i < uim_nr_im; i++) {
@@ -664,34 +658,31 @@ get_im_lang(char *name)
   return NULL;
 }
 
-static LISP
-im_register_im(LISP name, LISP lang, LISP enc, LISP s_desc)
+static uim_lisp
+im_register_im(uim_lisp name, uim_lisp lang, uim_lisp enc, uim_lisp s_desc)
 {
-  char *im_name = get_c_string(name);
-  char *lang_name = get_c_string(lang);
-  char *encoding_name = get_c_string(enc);
-  char *short_desc = get_c_string(s_desc);
+  const char *im_name = uim_scm_refer_c_str(name);
   if (get_im_lang(im_name)) {
     /* avoid duplicate register */
-    return false_sym;
+    return uim_scm_f();
   }
   uim_im_array = realloc(uim_im_array,
 			 sizeof(struct uim_im) *
 			 (uim_nr_im + 1));
-  uim_im_array[uim_nr_im].lang = strdup(lang_name);
-  uim_im_array[uim_nr_im].name = strdup(im_name);
-  uim_im_array[uim_nr_im].encoding = strdup(encoding_name);
-  uim_im_array[uim_nr_im].short_desc = strdup(short_desc);
+  uim_im_array[uim_nr_im].lang = uim_scm_c_str(lang);
+  uim_im_array[uim_nr_im].name = uim_scm_c_str(name);
+  uim_im_array[uim_nr_im].encoding = uim_scm_c_str(enc);
+  uim_im_array[uim_nr_im].short_desc = uim_scm_c_str(s_desc);
   uim_nr_im ++;
-  return true_sym;
+  return uim_scm_t();
 }
 
-static LISP
-im_activate_candidate_selector(LISP id_, LISP nr_, LISP display_limit_)
+static uim_lisp
+im_activate_candidate_selector(uim_lisp id_, uim_lisp nr_, uim_lisp display_limit_)
 {
   uim_context uc = retrieve_uim_context(id_);
-  int display_limit = get_c_int(display_limit_);
-  int nr = get_c_int(nr_);
+  int display_limit = uim_scm_c_int(display_limit_);
+  int nr = uim_scm_c_int(nr_);
 #ifdef UIM_CALLBACK_QUEUE
   uim_schedule_cb(uc, CAND_ACTIVATE_CB, NULL, nr, display_limit);
 #else
@@ -699,14 +690,14 @@ im_activate_candidate_selector(LISP id_, LISP nr_, LISP display_limit_)
     uc->candidate_selector_activate_cb(uc->ptr, nr, display_limit);
   }
 #endif
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-im_select_candidate(LISP id_, LISP idx_)
+static uim_lisp
+im_select_candidate(uim_lisp id_, uim_lisp idx_)
 {
   uim_context uc = retrieve_uim_context(id_);
-  int idx = get_c_int(idx_);
+  int idx = uim_scm_c_int(idx_);
 #ifdef UIM_CALLBACK_QUEUE
   uim_schedule_cb(uc, CAND_SELECT_CB, NULL, idx, 0);
 #else
@@ -714,13 +705,13 @@ im_select_candidate(LISP id_, LISP idx_)
     uc->candidate_selector_select_cb(uc->ptr, idx);
   }
 #endif
-  return false_sym;
+  return uim_scm_f();
 }
 
 
 /* My naming sense seems bad... */
-static LISP
-im_shift_page_candidate(LISP id_, LISP dir_)
+static uim_lisp
+im_shift_page_candidate(uim_lisp id_, uim_lisp dir_)
 {
   uim_context uc = retrieve_uim_context(id_);
   int dir;
@@ -737,11 +728,11 @@ im_shift_page_candidate(LISP id_, LISP dir_)
     uc->candidate_selector_shift_page_cb(uc->ptr, dir);
   }
 #endif
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-im_deactivate_candidate_selector(LISP id_)
+static uim_lisp
+im_deactivate_candidate_selector(uim_lisp id_)
 {
   uim_context uc = retrieve_uim_context(id_);
 #ifdef UIM_CALLBACK_QUEUE
@@ -751,24 +742,24 @@ im_deactivate_candidate_selector(LISP id_)
     uc->candidate_selector_deactivate_cb(uc->ptr);
   }
 #endif
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-im_return_str(LISP str_)
+static uim_lisp
+im_return_str(uim_lisp str_)
 {
   if (uim_return_str) {
     free(uim_return_str);
     uim_return_str = NULL;
   }
-  if STRINGP(str_) {
-    uim_return_str = uim_get_c_string(str_);
+  if (uim_scm_stringp(str_)) {
+    uim_return_str = uim_scm_c_str(str_);
   }
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-im_return_str_list(LISP str_list_)
+static uim_lisp
+im_return_str_list(uim_lisp str_list_)
 {
   /*XXX: This fixed length array is negligence */
   int i;
@@ -786,25 +777,25 @@ im_return_str_list(LISP str_list_)
 
   i = 0;
 
-  while (NNULLP(str_list_) && i < (int)UIM_RETURN_STR_LIST_SIZE) {
-    LISP str_ = CAR(str_list_);
-    if STRINGP(str_) {
-      uim_return_str_list[i] = uim_get_c_string(str_);
+  while (!uim_scm_nullp(str_list_) && i < (int)UIM_RETURN_STR_LIST_SIZE) {
+    uim_lisp str_ = uim_scm_car(str_list_);
+    if (uim_scm_stringp(str_)) {
+      uim_return_str_list[i] = uim_scm_c_str(str_);
     }
 
     i++;
-    str_list_ = CDR(str_list_);
+    str_list_ = uim_scm_cdr(str_list_);
   }
   uim_return_str_list[i] = NULL;
-  return false_sym;
+  return uim_scm_f();
 }
 
-static LISP
-im_request_surrounding(LISP id_)
+static uim_lisp
+im_request_surrounding(uim_lisp id_)
 {
   uim_context uc = retrieve_uim_context(id_);
   if (!uc->request_surrounding_text_cb) {
-    return NIL;
+    return uim_scm_f();
   }
 #ifdef UIM_CALLBACK_QUEUE
   uim_schedule_cb(uc, REQUEST_SURROUNDING_CB, NULL, 0, 0);
@@ -813,17 +804,17 @@ im_request_surrounding(LISP id_)
     uc->request_surrounding_text_cb(uc->ptr);
   }
 #endif
-  return true_sym;
+  return uim_scm_t();
 }
 
-static LISP
-im_delete_surrounding(LISP id_, LISP offset_, LISP len_)
+static uim_lisp
+im_delete_surrounding(uim_lisp id_, uim_lisp offset_, uim_lisp len_)
 {
   uim_context uc = retrieve_uim_context(id_);
-  int offset = get_c_int(offset_);
-  int len = get_c_int(len_);
+  int offset = uim_scm_c_int(offset_);
+  int len = uim_scm_c_int(len_);
   if (!uc->delete_surrounding_text_cb) {
-    return NIL;
+    return uim_scm_f();
   }
 #ifdef UIM_CALLBACK_QUEUE
   uim_schedule_cb(uc, DELETE_SURROUNDING_CB, NULL, offset, len);
@@ -832,41 +823,41 @@ im_delete_surrounding(LISP id_, LISP offset_, LISP len_)
     uc->delete_surrounding_text_cb(uc->ptr, offset, len);
   }
 #endif
-  return true_sym;
+  return uim_scm_t();
 }
 
 void
 uim_init_im_subrs(void)
 {
   /**/
-  init_subr_1("im-return-str", im_return_str);
-  init_subr_1("im-return-str-list", im_return_str_list);
+  uim_scm_init_subr_1("im-return-str", im_return_str);
+  uim_scm_init_subr_1("im-return-str-list", im_return_str_list);
   /**/
-  init_subr_2("im-commit",       im_commit);
-  init_subr_1("im-commit-raw",   im_commit_raw);
-  init_subr_2("im-get-raw-key-str", im_get_raw_key_str);
-  init_subr_2("im-set-encoding", im_set_encoding);
+  uim_scm_init_subr_2("im-commit",       im_commit);
+  uim_scm_init_subr_1("im-commit-raw",   im_commit_raw);
+  uim_scm_init_subr_2("im-get-raw-key-str", im_get_raw_key_str);
+  uim_scm_init_subr_2("im-set-encoding", im_set_encoding);
   /**/
-  init_subr_4("im-register-im", im_register_im);
+  uim_scm_init_subr_4("im-register-im", im_register_im);
   /**/
-  init_subr_1("im-clear-preedit",    im_clear_preedit);
-  init_subr_3("im-pushback-preedit", im_pushback_preedit);
-  init_subr_1("im-update-preedit",   im_update_preedit);
+  uim_scm_init_subr_1("im-clear-preedit",    im_clear_preedit);
+  uim_scm_init_subr_3("im-pushback-preedit", im_pushback_preedit);
+  uim_scm_init_subr_1("im-update-preedit",   im_update_preedit);
   /**/
-  init_subr_1("im-clear-mode-list",    im_clear_mode_list);
-  init_subr_2("im-pushback-mode-list", im_pushback_mode_list);
-  init_subr_1("im-update-mode-list",   im_update_mode_list);
+  uim_scm_init_subr_1("im-clear-mode-list",    im_clear_mode_list);
+  uim_scm_init_subr_2("im-pushback-mode-list", im_pushback_mode_list);
+  uim_scm_init_subr_1("im-update-mode-list",   im_update_mode_list);
   /**/
-  init_subr_2("im-update-prop-label", im_update_prop_label);
-  init_subr_2("im-update-prop-list",  im_update_prop_list);
+  uim_scm_init_subr_2("im-update-prop-label", im_update_prop_label);
+  uim_scm_init_subr_2("im-update-prop-list",  im_update_prop_list);
   /**/
-  init_subr_2("im-update-mode", im_update_mode);
+  uim_scm_init_subr_2("im-update-mode", im_update_mode);
   /**/
-  init_subr_3("im-activate-candidate-selector",  im_activate_candidate_selector);
-  init_subr_2("im-select-candidate", im_select_candidate);
-  init_subr_2("im-shift-page-candidate", im_shift_page_candidate);
-  init_subr_1("im-deactivate-candidate-selector", im_deactivate_candidate_selector);
+  uim_scm_init_subr_3("im-activate-candidate-selector",  im_activate_candidate_selector);
+  uim_scm_init_subr_2("im-select-candidate", im_select_candidate);
+  uim_scm_init_subr_2("im-shift-page-candidate", im_shift_page_candidate);
+  uim_scm_init_subr_1("im-deactivate-candidate-selector", im_deactivate_candidate_selector);
   /**/
-  init_subr_1("im-request-surrounding", im_request_surrounding);
-  init_subr_3("im-delete-surrounding", im_delete_surrounding);
+  uim_scm_init_subr_1("im-request-surrounding", im_request_surrounding);
+  uim_scm_init_subr_3("im-delete-surrounding", im_delete_surrounding);
 }

@@ -98,6 +98,16 @@ uim_scm_make_int(int integer)
 char *
 uim_scm_c_str(uim_lisp str)
 {
+  const char *c_str;
+
+  c_str = uim_scm_refer_c_str(str);
+
+  return (c_str) ? strdup(c_str) : NULL;
+}
+
+const char *
+uim_scm_refer_c_str(uim_lisp str)
+{
   char *c_str;
   uim_lisp stack_start;
 
@@ -106,7 +116,7 @@ uim_scm_c_str(uim_lisp str)
   c_str = get_c_string((LISP)str);
   uim_scm_gc_unprotect_stack(&stack_start);
 
-  return (c_str) ? strdup(c_str) : NULL;
+  return c_str;
 }
 
 uim_lisp
@@ -211,6 +221,24 @@ int
 uim_scm_nullp(uim_lisp obj)
 {
   return NULLP((LISP)obj);
+}
+
+uim_bool
+uim_scm_consp(uim_lisp obj)
+{
+  return CONSP((LISP)obj);
+}
+
+uim_bool
+uim_scm_integerp(uim_lisp obj)
+{
+  return INTNUMP((LISP)obj);
+}
+
+uim_bool
+uim_scm_stringp(uim_lisp obj)
+{
+  return STRINGP((LISP)obj);
 }
 
 int
