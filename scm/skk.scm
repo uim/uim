@@ -268,22 +268,22 @@
   (append
    context-rec-spec
    (list
-    (list 'state              'skk-state-latin)
-    (list 'kana-mode          skk-type-hiragana)
-    (list 'head               "")
-    (list 'okuri-head         "")
-    (list 'okuri              "")
-    ;;(list 'candidates         '())
-    (list 'nth                0)
+    (list 'state	      'skk-state-latin)
+    (list 'kana-mode	      skk-type-hiragana)
+    (list 'head		      '())
+    (list 'okuri-head	      "")
+    (list 'okuri	      '())
+    ;(list 'candidates	      '())
+    (list 'nth		      0)
     (list 'nr-candidates      0)
-    (list 'rk-context         '())
+    (list 'rk-context	      '())
     (list 'candidate-op-count 0)
     (list 'candidate-window   #f)
     (list 'child-context      '())
     (list 'parent-context     '())
-    (list 'editor             '())
-    (list 'latin-conv         #f)
-    (list 'commit-raw         #f)
+    (list 'editor	      '())
+    (list 'latin-conv	      #f)
+    (list 'commit-raw	      #f)
     (list 'completion-nth     0))))
 (define-record 'skk-context skk-context-rec-spec)
 (define skk-context-new-internal skk-context-new)
@@ -627,7 +627,7 @@
 	   (= stat 'skk-state-converting))
 	  (im-pushback-preedit sc skk-preedit-attr-mode-mark "вз"))
       (if (and
-           (null? csc)
+	   (null? csc)
 	   (or
 	    (= stat 'skk-state-kanji)
 	    (= stat 'skk-state-okuri)))
@@ -793,12 +793,14 @@
       (skk-commit-raw sc key key-state)
       #f)
      ;; bad strategy. see bug #528
-     ((and (modifier-key-mask key-state)
-	   (not (and
-	         (shift-key-mask key-state)
-		 (alphabet-char? key))))
+     ((or
+       (control-key-mask key-state)
+       (alt-key-mask key-state)
+       (meta-key-mask key-state)
+       (super-key-mask key-state)
+       (hyper-key-mask key-state))
       (if (not (skk-state-direct-no-preedit-nop-key? key key-state))
-          (skk-commit-raw sc key key-state))
+	  (skk-commit-raw sc key key-state))
       #f)
      (else
       #t))))
@@ -907,21 +909,18 @@
 	   #t)
        ;; bad strategy. see bug #528
        ;; "<Control>a", "<Alt> ", "<Meta>b" and so on
-       (if (and
-	    (modifier-key-mask key-state)
-	    (not (and
-		  (shift-key-mask key-state)
-		  (alphabet-char? key))))
+       (if (or
+	    (control-key-mask key-state)
+	    (alt-key-mask key-state)
+	    (meta-key-mask key-state)
+	    (super-key-mask key-state)
+	    (hyper-key-mask key-state))
 	   (begin
 	     (skk-flush sc)
 	     (skk-commit-raw-with-preedit-update sc key key-state)
 	     #f)
 	   #t)
-       ;; Should be fixed to look lower or upper rather than looking
-       ;; shift-key-mask
-       (if (and
-	    (shift-key-mask key-state)
-	    (alphabet-char? key))
+       (if (skk-upper-char? key)
 	   (let* ((residual-kana (rk-push-key-last! rkc)))
 	     ;; handle preceding "n"
 	     (if residual-kana
@@ -967,6 +966,12 @@
 		    (not (string=? (car res) ""))))
 	      (skk-get-string sc res kana))
 	  #f))))
+
+(define skk-upper-char?
+  (lambda (c)
+    (and (integer? c)
+	 (or
+	  (and (>= c 65) (<= c 90))))))
 
 (define skk-sokuon-shiin-char?
   (lambda (c)
@@ -1073,8 +1078,7 @@
 	     (skk-begin-conversion sc)
 	     #f)
 	   #t)
-       (if (and (shift-key-mask key-state)
-       		(alphabet-char? key)
+       (if (and (skk-upper-char? key)
 		(not (null? (skk-context-head sc))))
 	   (begin
 	     (skk-context-set-state! sc 'skk-state-okuri)
@@ -1207,7 +1211,7 @@
   (lambda (sc key)
     (let ((nr (skk-context-nr-candidates sc))
 	  (cur-page (if (= skk-nr-candidate-max 0)
-	                0
+			0
 			(quotient (skk-context-nth sc) skk-nr-candidate-max)))
 	  (idx -1)
 	  (res #f))
@@ -1217,7 +1221,7 @@
 		(set! num 9) ; pressing key_0
 		(set! num (- num 1)))
 	    (if (or (< num skk-nr-candidate-max)
-	            (= skk-nr-candidate-max 0))
+		    (= skk-nr-candidate-max 0))
 		(set! idx (+ (* cur-page skk-nr-candidate-max) num))))
 	  ;; FIXME: add code to handle labels other than number here
 	  )
@@ -1432,7 +1436,7 @@
 	     #f)
 	   #t)
        (if (skk-backspace-key? key key-state)
-           (begin
+	   (begin
 	     (rk-backspace rkc)
 	     (skk-back-to-kanji-state sc)
 	     #f)
@@ -1575,8 +1579,8 @@
 	   cand)
        ;; FIXME make sure to enable lable other than number
        (if (= skk-nr-candidate-max 0)
-           (digit->string (+ idx 1))
-           (digit->string (+ (remainder idx skk-nr-candidate-max) 1)))
+	   (digit->string (+ idx 1))
+	   (digit->string (+ (remainder idx skk-nr-candidate-max) 1)))
        ""))))
 
 (define skk-set-candidate-index-handler
