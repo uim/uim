@@ -50,8 +50,11 @@ uim_scm_repl_c_string(char *str, long want_init, long want_print)
 int
 uim_scm_symbol_value_int(const char *symbol_str)
 {
+  uim_lisp stack_start;
   uim_lisp val_;
   int val;
+
+  uim_scm_gc_protect_stack(&stack_start);
   val_ = uim_scm_symbol_value(symbol_str);
 
   if NNULLP(val_) {
@@ -59,6 +62,8 @@ uim_scm_symbol_value_int(const char *symbol_str)
   } else {
     val = 0;
   }
+  uim_scm_gc_unprotect_stack(&stack_start);
+
   return val;
 }
 
@@ -70,15 +75,20 @@ uim_scm_int_from_c_int(int integer) {
 char *
 uim_scm_symbol_value_str(const char *symbol_str)
 {
-  uim_lisp val_;
+  uim_lisp stack_start;
+  uim_lisp val_ = false_sym;
   char *val;
+
+  uim_scm_gc_protect_stack(&stack_start);
   val_ = uim_scm_symbol_value(symbol_str);
 
-  if NNULLP(val_) {
+  if NFALSEP(val_) {
     val = uim_scm_c_str(val_);
   } else {
     val = NULL;
   }
+  uim_scm_gc_unprotect_stack(&stack_start);
+
   return val;
 }
 
