@@ -3,5 +3,6 @@ COMPATIBILITY       Tracks API/ABI compatibility change
 HELPER-CANDWIN      Protocol between candidatewindow apps and uim-xim
 HELPER-PROTOCOL     Description of the helper message protocol 
 KEY                 KEY customizationg guide
+PLUGIN              Description of the plugin
 UIM-SH              How to use uim-sh to debug interactively
 XIM-SERVER          Description of uim-xim
