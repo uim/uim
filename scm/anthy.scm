@@ -857,15 +857,6 @@
      (anthy-context-set-preconv-ustr! ac (ustr-new))
      (anthy-context-set-segments! ac (ustr-new))
      (anthy-context-set-keytrans-emc! ac (key-event-translator-new))
-
-     ;; 2004-08-26 Takuro Ashie <ashie@homa.ne.jp>
-     ;;   * I think load-kana-table should be marked as depracated.
-     ;;     Because it is a little violent (it overwrites ja-rk-rule table).
-     ;;     We should prepare a custom entry like "uim-default-input-rule"
-     ;;     instead of using-kana-table.
-     (if (and (symbol-bound? 'using-kana-table?)
-	      using-kana-table?)
-	 (anthy-context-set-input-rule! ac anthy-input-rule-kana))
      (anthy-select-ruletree! ac)
      ac)))
 
