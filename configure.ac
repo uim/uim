@@ -29,7 +29,7 @@ dnl We do this before the gettext checks, to avoid distortion
 
 AM_ICONV
 if test "$am_cv_func_iconv" != yes; then
-  AC_MSG_ERROR([Could not find iconv (required for uim)])
+  AC_MSG_ERROR([Could not find iconv(3) in libc or libiconv (required for uim)])
 fi
 
 AC_SUBST(LIBICONV)
