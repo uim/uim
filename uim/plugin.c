@@ -211,18 +211,13 @@ void uim_quit_plugin(void)
 {
 #ifdef UIM_SCM_NESTED_EVAL
   uim_lisp stack_start;
-  uim_lisp list_car, list_cdr;
-  uim_lisp alist;
+  uim_lisp alist, rest, entry, name;
 
   uim_scm_gc_protect_stack(&stack_start);
   alist = uim_scm_eval_c_string("plugin-alist");
-  for(list_car = uim_scm_car(alist), list_cdr = uim_scm_cdr(alist);
-      list_car != uim_scm_f();
-      list_car = uim_scm_car(list_cdr), list_cdr = uim_scm_cdr(list_cdr))
-  {
-    uim_lisp name;
-
-    name = uim_scm_car(list_car);
+  for(rest = alist; !uim_scm_nullp(rest); rest = uim_scm_cdr(rest)) {
+    entry = uim_scm_car(rest);
+    name = uim_scm_car(entry);
 
     plugin_unload(name);
   }
