@@ -479,7 +479,7 @@ uim_get_default_im_name(const char *localename)
   valid_default_im_name = uim_check_im_exist(uim_return_str);
 
   if (!valid_default_im_name)
-    valid_default_im_name = "default";  /* never happen */
+    valid_default_im_name = "direct";  /* never happen */
   return valid_default_im_name;
 }
 
@@ -491,7 +491,7 @@ uim_get_im_name_for_locale(const char *localename)
   valid_im_name = uim_check_im_exist(uim_return_str);
 
   if (!valid_im_name)
-    valid_im_name = "default";  /* never happen */
+    valid_im_name = "direct";  /* never happen */
   return valid_im_name;
 }
 
