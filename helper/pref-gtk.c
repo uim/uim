@@ -461,8 +461,8 @@ create_pref_window(void)
   {
   GdkScreen *scr = gtk_window_get_screen(GTK_WINDOW(window));
   gtk_window_set_default_size(GTK_WINDOW(window),
-			      gdk_screen_get_width(scr)  / 2,
-			      gdk_screen_get_height(scr) / 2);
+			      gdk_screen_get_width(scr)  * 0.7,
+			      gdk_screen_get_height(scr) * 0.7);
   gtk_window_set_position(GTK_WINDOW(window),
 			  GTK_WIN_POS_CENTER_ALWAYS);
   }
