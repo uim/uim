@@ -56,10 +56,6 @@
 ;; latin input method
 (require "latin.scm")
 
-(load-plugin "libuim-m17nlib")
-(if (symbol-bound? 'm17nlib-lib-init)
-    (require "m17nlib.scm"))
+(load-plugin "m17nlib")
 
-;(load-plugin "libuim-scim.so")
-;(if (symbol-bound? 'scim-lib-init)
-;    (require "scim.scm"))
+;(load-plugin "scim")

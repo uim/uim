@@ -55,6 +55,7 @@
 #define dlfunc dlsym
 #endif
 
+#define PLUGIN_PREFIX "libuim-"
 #ifdef __APPLE__
   #define PLUGIN_SUFFIX ".dylib"
 #else
@@ -86,9 +87,9 @@ plugin_load(uim_lisp _name) {
     return uim_scm_f();
   }
 
-  len = strlen(tmp) + strlen(PLUGIN_SUFFIX) + 1;
+  len = strlen(PLUGIN_PREFIX) + strlen(tmp) + strlen(PLUGIN_SUFFIX) + 1;
   module_filename = malloc(sizeof(char) * len);
-  snprintf(module_filename, len, "%s%s", tmp, PLUGIN_SUFFIX);
+  snprintf(module_filename, len, "%s%s%s", PLUGIN_PREFIX, tmp, PLUGIN_SUFFIX);
 
   libpath = plugin_lib_path;
   scmpath = plugin_scm_path;
