@@ -40,6 +40,12 @@
                      (ugettext anthy-im-short-desc))
 
 
+(define-custom 'anthy-commit-transposed-preedit-immediately? #f
+  '(anthy)
+  '(boolean)
+  (_ "Immediately commit after preedit transposition (character set conversion)")
+  (_ "long description will be here."))
+
 ;;
 ;; segment separator
 ;;

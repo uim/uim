@@ -1046,7 +1046,7 @@
   (lambda (ac act-id)
     (let ((preconv-ustr (anthy-context-preconv-ustr ac))
 	  (kana (anthy-context-kana-mode ac))
-	  (transpose (if #t
+	  (transpose (if anthy-commit-transposed-preedit-immediately?
 			 anthy-commit-transposed-preconv!
 			 anthy-transpose-preconv!))) ;; does not commit
       (case act-id
