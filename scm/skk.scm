@@ -75,6 +75,7 @@
 (define-key skk-conv-wide-latin-key? '("<Control>q" "<Control>Q"))
 (define-key skk-plain-space-key? " ")  ;; should not be changed
 (define-key skk-vi-escape-key? '("escape" "<Control>["))
+(define-key skk-state-direct-no-preedit-nop-key? '("<Control>j" "<Control>J"))
 
 ;; style specification
 (define skk-style-spec
@@ -787,10 +788,6 @@
      ((skk-kana-toggle-key? key key-state)
       (skk-context-kana-toggle sc)
       #f)
-     ;; Don't forward C-j as native event in direct-mode.  I think
-     ;; this should be configurable --ekato
-     ((skk-on-key? key key-state)
-      #f)
      ;; bad strategy. see bug #528
      ((symbol? key)
       (skk-commit-raw sc key key-state)
@@ -800,7 +797,8 @@
 	   (not (and
 	         (shift-key-mask key-state)
 		 (alphabet-char? key))))
-      (skk-commit-raw sc key key-state)
+      (if (not (skk-state-direct-no-preedit-nop-key? key key-state))
+          (skk-commit-raw sc key key-state))
       #f)
      (else
       #t))))
