@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003,2004,2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -38,6 +38,7 @@
 #include <m17n.h>
 #include "uim-scm.h"
 #include "context.h"
+#include "plugin.h"
 
 static int m17nlib_ok;
 static MConverter *converter;
@@ -743,9 +744,22 @@ uim_init_m17nlib(void)
   uim_scm_init_subr_1("m17nlib-lib-get-candidate-index", get_candidate_index);
 }
 
+
 void
+#ifndef NEW_UIM_PLUGIN
 plugin_init(void) {
+#else
+uim_plugin_instance_init(void)
+{
+#endif
   uim_init_m17nlib();
 }
 
+#ifndef NEW_UIM_PLUGIN
+void
+uim_plugin_instance_quit(void)
+{
+  return;
+}
+#endif
 #endif /* HAVE_M17NLIB */

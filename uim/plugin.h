@@ -3,7 +3,7 @@
 
   plugin.h:
 
-  Copyright (c) 2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2004,2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -35,17 +35,20 @@
 #ifndef _uim_plugin_h_included_
 #define _uim_plugin_h_included_
 
-#define UIM_SYS_PLUGIN_LIB_DIR LIBDIR
-#define UIM_SYS_PLUGIN_SCM_DIR SCM_FILES
-/* XXX */
+/* #define NEW_UIM_PLUGIN 1 */
 
 typedef struct _uim_plugin_info {
   char *name;        /* XXX: should have in scm? */
   char *description; /* XXX: should have in scm? */
   char *author;      /* XXX: should have in scm? */
   char *version;     /* XXX: should have in scm? */
+#ifndef NEW_UIM_PLUGIN
   void (*plugin_init)(void);
   void (*plugin_quit)(void);
+#else
+  void (*plugin_instance_init)(void);
+  void (*plugin_instance_quit)(void);
+#endif
   void *library;
   /*	void *plugin_unload; */
 /*	void *plugin_extra_funcs */

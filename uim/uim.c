@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003,2004,2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -656,6 +656,7 @@ uim_init_scm()
   uim_scm_load_file("custom-rt.scm");
 #endif
   uim_scm_load_file("im.scm");
+  uim_scm_load_file("plugin.scm");
   uim_scm_load_file("loader.scm");
   uim_scm_load_file("direct.scm");  /* must be loaded at last of IMs */
 #if 1
