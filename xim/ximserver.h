@@ -36,17 +36,13 @@
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
-#include <X11/keysymdef.h>
-#include <stdio.h>
+
 #include <list>
 #include <vector>
 #include <map>
+
 #include "uim/uim.h"
-#include "uim/uim-helper.h"
 
-
-int connection_setup();
-void check_helper_connection();
 
 // preedit ornament
 #define PE_NORMAL 0
@@ -83,12 +79,6 @@ void append_ustring(uString *d, uString *s);
 // user interfaces
 void init_convdisp();
 void init_modifier_keys();
-
-// misc
-int pad4(int);
-
-// debug functions
-void hex_dump(unsigned char *buf, int len);
 
 
 // for command line option
@@ -256,6 +246,7 @@ struct UIMInfo {
     Locale *locale;
     const char *desc;
 };
+extern std::list<UIMInfo> uim_info;
 
 const char *get_im_lang_from_engine(const char *engine);
 

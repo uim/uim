@@ -30,36 +30,16 @@
   SUCH DAMAGE.
 */
 
-#ifndef _connection_h_included_
-#define _connection_h_included_
+// -*- C++ -*-
+#ifndef _helper_included_
+#define _helper_h_included_
 
-#include "xim.h"
-#include "xdispatch.h"
-
-int connection_setup();
-
-class XConnection: public Connection, public WindowIf {
-public:
-    XConnection(XimServer *svr, Window clientWin, Window commWin);
-    virtual ~XConnection();
-    virtual void expose(Window) {};
-    virtual void destroy(Window);
-
-    void readProc(XClientMessageEvent *);
-    void writeProc();
-    bool isValid() {return mIsValid;};
-private:
-    bool readToBuf(XClientMessageEvent *);
-    bool checkByteorder();
-    void shiftBuffer(int);
-    void doSend(TxPacket *t, bool is_passive);
-
-    Window mClientWin, mCommWin;
-    bool mIsValid;
-    struct {
-	char *buf;
-	int len;
-    } mBuf;
-};
+void check_helper_connection();
 
 #endif
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ * End:
+ */

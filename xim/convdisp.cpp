@@ -42,6 +42,7 @@
 #include "convdisp.h"
 #include "canddisp.h"
 #include "xdispatch.h"
+#include "util.h"
 
 #define UNDERLINE_HEIGHT	2
 // Temporal hack for flashplayer plugin's broken over-the-spot XIM style

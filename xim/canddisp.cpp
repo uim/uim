@@ -30,25 +30,29 @@
   SUCH DAMAGE.
 */
 
-#include "config.h"
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include "uim/uim.h"
-#include "uim/uim-helper.h"
 
 #include "ximserver.h"
 #include "xim.h"
 #include "convdisp.h"
 #include "canddisp.h"
-#include <unistd.h>
+#include "util.h"
+
 
 static FILE *candwin_r = NULL, *candwin_w = NULL;
 static int candwin_pid = 0;
 static Canddisp *disp;
 static char *command;
 
-// fd dispatch
-#define READ_OK 1
-extern void add_fd_watch(int fd, int mask, void (*fn)(int, int));
-extern void remove_current_fd_watch(int fd);
 static void candwin_read_cb(int fd, int ev);
 
 static char *candwin_command(void)

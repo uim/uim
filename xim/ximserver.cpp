@@ -30,15 +30,22 @@
   SUCH DAMAGE.
 */
 
+#include <stdio.h>
 #include <ctype.h>
 #include <locale.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
+#include <X11/keysymdef.h>
+
 #include "xim.h"
 #include "convdisp.h"
 #include "canddisp.h"
 #include "ximserver.h"
+#include "util.h"
+#include "helper.h"
+
+#include "uim/uim-helper.h"
 
 #ifndef __GNUC__
 # ifdef HAVE_ALLOCA_H
@@ -49,7 +56,6 @@
 extern int lib_uim_fd;
 extern Atom xim_servers;
 InputContext *InputContext::mFocusedContext = NULL;
-extern std::list<UIMInfo> uim_info;
 
 static int check_modifier(std::list<KeySym> list);
 static int gShiftMask, gLockMask, gControlMask, gMod1Mask,

@@ -30,36 +30,85 @@
   SUCH DAMAGE.
 */
 
-#ifndef _connection_h_included_
-#define _connection_h_included_
+// miscellaneous functions
 
-#include "xim.h"
-#include "xdispatch.h"
-
-int connection_setup();
-
-class XConnection: public Connection, public WindowIf {
-public:
-    XConnection(XimServer *svr, Window clientWin, Window commWin);
-    virtual ~XConnection();
-    virtual void expose(Window) {};
-    virtual void destroy(Window);
-
-    void readProc(XClientMessageEvent *);
-    void writeProc();
-    bool isValid() {return mIsValid;};
-private:
-    bool readToBuf(XClientMessageEvent *);
-    bool checkByteorder();
-    void shiftBuffer(int);
-    void doSend(TxPacket *t, bool is_passive);
-
-    Window mClientWin, mCommWin;
-    bool mIsValid;
-    struct {
-	char *buf;
-	int len;
-    } mBuf;
-};
-
+#ifdef HAVE_CONFIG_H
+# include "config.h"
 #endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <ctype.h>
+#include <stdarg.h>
+
+#include "util.h"
+
+int
+pad4(int x)
+{
+    return (4 - (x % 4)) % 4;
+}
+
+void
+hex_dump(unsigned char *buf, int len)
+{
+    int i, j;
+    unsigned char c[16];
+    for (i = 0; i < len; i += 16) {
+	printf("%8.8x ", i);
+	for (j = 0; j < 16; j++) {
+	    if (i + j < len) {
+		c[j] = buf[i + j];
+		if (j == 7)
+		    printf("%2.2x-", c[j]);
+		else
+		    printf("%2.2x ", c[j]);
+	    } else {
+		c[j] = 0;
+		printf("-- ");
+	    }
+	}
+	printf(" ");
+	for (j = 0; j < 16; j++) {
+	    if (isprint(c[j]))
+		printf("%c", c[j]);
+	    else
+		printf(".");
+	}
+	printf("\n");
+    }
+}
+
+#ifndef HAVE_VASPRINTF
+int vasprintf(char **ret, const char *fmt, va_list ap)
+{
+    int len;
+
+    len = vsnprintf(NULL, 0, fmt, ap);
+    if (len <= 0)
+	return len;
+
+    (*ret) = (char *)malloc(len + 1);
+    if (*ret == NULL)
+	return -1;
+    len = vsnprintf(*ret, len + 1, fmt, ap);
+
+    return len;
+}
+#endif
+
+#ifndef HAVE_ASPRINTF
+int asprintf(char **ret, const char *fmt, ...)
+{
+    int len;
+    va_list ap;
+
+    va_start(ap, fmt);
+    len = vasprintf(ret, fmt, ap);
+    va_end(ap);
+
+    return len;
+}
+#endif
+

@@ -37,8 +37,10 @@
 #endif
 
 #include <stdio.h>
+#include <string.h>
 #include <X11/Xos.h>
 #include "xim.h"
+#include "util.h"
 
 #ifndef __GNUC__
 # ifdef HAVE_ALLOCA_H

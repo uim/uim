@@ -13,4 +13,6 @@ uim_xim_SOURCES = \
         locale.cpp connection.h \
 	convdisp.h ximserver.h \
 	xim.h xdispatch.h ximpn.h \
-	canddisp.cpp canddisp.h
+	canddisp.cpp canddisp.h \
+	util.cpp util.h \
+	helper.cpp helper.h

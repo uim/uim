@@ -36,7 +36,10 @@
 # include "config.h"
 #endif
 
+#include <string.h>
+#include <stdlib.h>
 #include <map>
+
 #include "xim.h"
 #include <X11/Xutil.h>
 #define NEED_EVENTS	// for declaration of xEvent

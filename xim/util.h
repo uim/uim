@@ -30,36 +30,28 @@
   SUCH DAMAGE.
 */
 
-#ifndef _connection_h_included_
-#define _connection_h_included_
+#ifndef _util_h_included_
+#define _util_h_included_
 
-#include "xim.h"
-#include "xdispatch.h"
+// fd dispatch
+#define READ_OK 1
+#define WRITE_OK 2
+void add_fd_watch(int fd, int mask, void (*fn)(int, int));
+void remove_current_fd_watch(int fd);
 
-int connection_setup();
+// misc
+int pad4(int);
 
-class XConnection: public Connection, public WindowIf {
-public:
-    XConnection(XimServer *svr, Window clientWin, Window commWin);
-    virtual ~XConnection();
-    virtual void expose(Window) {};
-    virtual void destroy(Window);
+// debug functions
+void hex_dump(unsigned char *buf, int len);
 
-    void readProc(XClientMessageEvent *);
-    void writeProc();
-    bool isValid() {return mIsValid;};
-private:
-    bool readToBuf(XClientMessageEvent *);
-    bool checkByteorder();
-    void shiftBuffer(int);
-    void doSend(TxPacket *t, bool is_passive);
+// misc replacement functions
+#ifndef HAV_ASPRINTF
+int asprintf(char **ptr, const char *format, ...);
+#endif
 
-    Window mClientWin, mCommWin;
-    bool mIsValid;
-    struct {
-	char *buf;
-	int len;
-    } mBuf;
-};
+#ifndef HAVE_VASPRINTF
+int vasprintf(char **ptr, const char *fmt, va_list ap);
+#endif
 
 #endif

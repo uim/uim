@@ -105,6 +105,8 @@ AC_CHECK_LIB([util], [forkpty])
 AC_CHECK_FUNCS([forkpty])
 AC_CHECK_FUNCS([cfmakeraw])
 AC_CHECK_FUNCS([wcswidth])
+AC_CHECK_FUNCS(getpeereid)
+AC_CHECK_FUNCS(asprintf vasprintf)
 
 
 GETTEXT_PACKAGE=uim
@@ -288,8 +290,6 @@ AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_FUNC_SELECT_ARGTYPES
 AC_TYPE_SIGNAL
-
-AC_CHECK_FUNCS(getpeereid)
 
 SRCDIR=$srcdir
 AC_SUBST(SRCDIR)

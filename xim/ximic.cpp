@@ -38,11 +38,15 @@
 #endif
  
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 #include <ctype.h>
+
 #include "xim.h"
 #include "convdisp.h"
 #include "ximserver.h"
 #include "connection.h"
+#include "util.h"
  
 #ifndef __GNUC__
 # ifdef HAVE_ALLOCA_H

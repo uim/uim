@@ -40,16 +40,18 @@
 #include <stdio.h>
 #include <string.h>
 #include <locale.h>
-#include <ctype.h>
 #include <stdlib.h>
-#include <pwd.h>
-#include <unistd.h>
 #include <signal.h>
-#include <sys/types.h>
+#include <sys/select.h>
+
 #include "xim.h"
 #include "xdispatch.h"
 #include "ximserver.h"
 #include "canddisp.h"
+#include "connection.h"
+#include "util.h"
+#include "helper.h"
+
 #include "uim/uim-util.h"
 #include "uim/uim-im-switcher.h"
 
@@ -60,8 +62,6 @@ std::map<Window, XimServer *> XimServer::gServerMap;
 int g_option_mask;
 int scr_width, scr_height;
 int host_byte_order;
-
-int lib_uim_fd = -1;
 
 #define VERSION_NAME "uim-xim under the way! Version "PACKAGE_VERSION"\n"
 const char *version_name=VERSION_NAME;
@@ -79,10 +79,6 @@ const char *default_engine;
 static Atom atom_locales;
 static Atom atom_transport;
 Atom xim_servers;
-
-// fd dispatch
-#define READ_OK 1
-#define WRITE_OK 2
 
 struct fd_watch_struct {
     int mask;
@@ -464,178 +460,6 @@ get_runtime_env()
 	host_byte_order = MSB_FIRST;
 }
 
-static void
-parse_helper_str_im_change(const char *level, const char *engine) {
-    InputContext *focusedContext = InputContext::focusedContext();
-
-    if (!strcmp(level, "im_change_whole_desktop")) {
-	std::map<Window, XimServer *>::iterator it;
-	for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); it++) {
-	    (*it).second->changeContext(engine);
-	}
-    }
-
-    if (focusedContext) {
-	if (!strcmp(level, "im_change_this_text_area_only"))
-	    focusedContext->changeContext(engine);
-	else if (!strcmp(level, "im_change_this_application_only"))
-	    get_im_by_id(focusedContext->get_ic()->get_imid())->changeContext(engine);
-    }
-}
-
-static void
-send_im_list(void)
-{
-    char *buf = NULL, *tmp = NULL;
-    int len;
-    InputContext *focusedContext = InputContext::focusedContext();
-    const char *current_im_name =
-	    uim_get_current_im_name(focusedContext->getUC());
-    const char *encoding = focusedContext->get_ic()->get_encoding();
-    const char *client_locale = NULL;
-    
-    if (strcmp(encoding, "UTF-8"))
-	client_locale = focusedContext->get_ic()->get_lang_region();
-
-    asprintf(&buf, "im_list\ncharset=UTF-8\n");
-    if (!buf)
-	return;
-
-    std::list<UIMInfo>::iterator it;
-    for (it = uim_info.begin(); it != uim_info.end(); it++) {
-	if (client_locale) { // context with legacy encodings
-	    const char *engine_locales =
-		    compose_localenames_from_im_lang(it->lang);
-	    if (!is_locale_included(engine_locales, client_locale))
-		continue;
-	}
-
-	const char *language;
-	language = uim_get_language_name_from_locale(it->lang);
-	asprintf(&tmp, "%s\t%s\t%s\t", it->name,
-				       language ? language : "",
-				       it->desc ? it->desc : "");
-	if (!tmp)
-	    return;
-	len = strlen(buf) + strlen(tmp);
-	buf = (char *)realloc(buf, sizeof(char) * len + 1);
-	if (!buf)
-	    return;
-	strcat(buf, tmp);
-	free(tmp);
-
-	if (!strcmp(it->name, current_im_name)) {
-	    asprintf(&tmp, "selected\n");
-	    if (!tmp)
-		return;
-	    len = strlen(buf) + strlen(tmp);
-	    buf = (char *)realloc(buf, sizeof(char) * len + 1);
-	    if (!buf)
-		return;
-	    strcat(buf, tmp);
-	    free(tmp);
-	} else {
-	    asprintf(&tmp, "\n");
-	    if (!tmp)
-		return;
-	    len = strlen(buf) + strlen(tmp);
-	    buf = (char *)realloc(buf, sizeof(char) * len + 1);
-	    if (!buf)
-		return;
-	    strcat(buf, tmp);
-	    free(tmp);
-	}
-    }
-    uim_helper_send_message(lib_uim_fd, buf);
-    free(buf);
-}
-
-static void
-helper_str_parse(char *str)
-{
-    InputContext *focusedContext = InputContext::focusedContext();
-    
-    if (focusedContext) {
-	char *line = str;	
-	char *eol = strchr(line, '\n');
-	if (eol != NULL)
-	    *eol = '\0';
-
-	if (strcmp("prop_list_get", line) == 0) {
-	    uim_prop_list_update(focusedContext->getUC());
-	} else if (strcmp("prop_label_get", line) == 0) {
-	    uim_prop_label_update(focusedContext->getUC());
-	} else if (strcmp("prop_activate", line) == 0) {
-	    line = eol + 1;
-	    eol = strchr(line, '\n');
-	    if (eol != NULL) {
-		*eol = '\0';
-	    }
-	    uim_prop_activate(focusedContext->getUC(), line);
-	} else if (strncmp("focus_in", line, 8) == 0) {
-	    InputContext::deletefocusedContext();
-	    Canddisp *disp = canddisp_singleton();
-	    disp->hide();
- 	} else if (strcmp("im_list_get", line) == 0) {
-	    send_im_list();
-	} else if (strncmp("im_change_", line, 10) == 0) {
-	    char *engine;
-	    engine = eol + 1;
-	    eol = strchr(engine, '\n');
-	    if (eol != NULL) {
-		*eol = '\0';
-	    }
-	    parse_helper_str_im_change(line, engine);
-	}
-    } else {
-	char *line = str;	
-	char *eol = strchr(line, '\n');
-	if (eol != NULL) {
-	    *eol = '\0';
-	}
-
-	if (strncmp("im_change_", line, 10) == 0) {
-	    char *engine;
-	    engine = eol + 1;
-	    eol = strchr(engine, '\n');
-	    if (eol != NULL) {
-		*eol = '\0';
-	    }
-	    parse_helper_str_im_change(line, engine);
-	} else if (strcmp("prop_update_custom", line) == 0) {
-	    fprintf(stderr, "prop_update_custom is not implemented yet\n");
-	}
-    }
-}
-
-static void
-helper_read_cb(int fd, int ev)
-{
-    uim_helper_read_proc(fd);
-    char *tmp;
-    while ((tmp = uim_helper_get_message())) {
-	helper_str_parse(tmp);
-	free(tmp);
-    }
-}
-
-static void
-helper_disconnect_cb(void)
-{
-    remove_current_fd_watch(lib_uim_fd);
-    lib_uim_fd = -1;
-}
-
-void
-check_helper_connection(void)
-{
-    if (lib_uim_fd < 0) {
-	lib_uim_fd = uim_helper_init_client_fd(helper_disconnect_cb);
-	if (lib_uim_fd >= 0)
-	    add_fd_watch(lib_uim_fd, READ_OK, helper_read_cb);
-    }
-}
-
 int
 main(int argc, char **argv)
 {
@@ -728,41 +552,6 @@ main(int argc, char **argv)
     return 0;
 }
 
-int
-pad4(int x)
-{
-    return (4 - (x % 4)) % 4;
-}
-
-void
-hex_dump(unsigned char *buf, int len)
-{
-    int i, j;
-    unsigned char c[16];
-    for (i = 0; i < len; i += 16) {
-	printf("%8.8x ", i);
-	for (j = 0; j < 16; j++) {
-	    if (i + j < len) {
-		c[j] = buf[i + j];
-		if (j == 7)
-		    printf("%2.2x-", c[j]);
-		else
-		    printf("%2.2x ", c[j]);
-	    } else {
-		c[j] = 0;
-		printf("-- ");
-	    }
-	}
-	printf(" ");
-	for (j = 0; j < 16; j++) {
-	    if (isprint(c[j]))
-		printf("%c", c[j]);
-	    else
-		printf(".");
-	}
-	printf("\n");
-    }
-}
 /*
  * Local variables:
  *  c-indent-level: 4
