@@ -580,21 +580,31 @@ push_key(uim_lisp id_, uim_lisp key_, uim_lisp mod_)
 }
 
 static uim_lisp
-get_commit_string(uim_lisp id_)
+get_result(uim_lisp id_)
 {
   MText *produced;
-  char *buf;
+  char *commit_string;
+  int consumed;
   int id = uim_scm_c_int(id_);
   MInputContext *ic = ic_array[id].mic;
-  uim_lisp buf_;
+  uim_lisp  consumed_, commit_string_;
 
-  produced = mtext();
-  minput_lookup(ic, NULL, NULL, produced);
-  buf = convert_mtext2str(produced);
+  produced  = mtext();
+
+  consumed  = minput_lookup(ic, NULL, NULL, produced);
+
+  if(consumed == -1) {
+    consumed_ = uim_scm_f();
+  } else {
+    consumed_ = uim_scm_t();
+  }
+
+  commit_string = convert_mtext2str(produced);
   m17n_object_unref(produced);
-  buf_ = uim_scm_make_str(buf);
-  free(buf);
-  return buf_;
+  commit_string_ = uim_scm_make_str(commit_string);
+  free(commit_string);
+
+  return uim_scm_cons(consumed_, commit_string_);
 }
 
 static uim_lisp
@@ -804,7 +814,7 @@ uim_plugin_instance_init(void)
   uim_scm_init_subr_1("m17nlib-lib-get-left-of-candidate",  get_left_of_candidate);
   uim_scm_init_subr_1("m17nlib-lib-get-selected-candidate", get_selected_candidate);
   uim_scm_init_subr_1("m17nlib-lib-get-right-of-candidate", get_right_of_candidate);
-  uim_scm_init_subr_1("m17nlib-lib-get-commit-string", get_commit_string);
+  uim_scm_init_subr_1("m17nlib-lib-get-result", get_result);
   uim_scm_init_subr_1("m17nlib-lib-commit", commit);
   uim_scm_init_subr_1("m17nlib-lib-candidate-show?", candidate_showp);
   uim_scm_init_subr_1("m17nlib-lib-fill-new-candidates!", fill_new_candidates);
