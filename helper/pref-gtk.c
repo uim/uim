@@ -303,6 +303,24 @@ custom_check_button_toggled_cb(GtkToggleButton *button, gpointer user_data)
   }
 }
 
+
+static void
+update_custom_type_bool_cb(void *ptr, const char *custom_sym)
+{
+  struct uim_custom *custom;
+  GtkWidget *check_button = GTK_WIDGET(ptr);
+  custom = g_object_get_data(G_OBJECT(check_button), OBJECT_DATA_UIM_CUSTOM);
+  
+  if (!custom || custom->type != UCustom_Bool)
+    return;
+
+  gtk_widget_set_sensitive(check_button, custom->is_active);
+
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button),
+			       custom->value->as_bool);
+
+}
+
 static void
 add_custom_type_bool(GtkWidget *vbox, struct uim_custom *custom)
 {
@@ -322,6 +340,8 @@ add_custom_type_bool(GtkWidget *vbox, struct uim_custom *custom)
 			       custom->value->as_bool);
   g_signal_connect(G_OBJECT(check_button), "toggled",
 		   G_CALLBACK(custom_check_button_toggled_cb), NULL);
+
+  uim_custom_cb_add(custom->symbol, check_button, update_custom_type_bool_cb);
 
   gtk_box_pack_start (GTK_BOX (hbox), check_button, FALSE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
@@ -424,6 +444,22 @@ custom_entry_changed_cb(GtkEntry *entry, gpointer user_data)
   }
 }
 
+
+static void
+update_custom_type_string_cb(void *ptr, const char *custom_sym)
+{
+ struct uim_custom *custom;
+ GtkWidget *entry = GTK_WIDGET(ptr);
+ custom = g_object_get_data(G_OBJECT(entry), OBJECT_DATA_UIM_CUSTOM);
+
+  if (!custom || custom->type != UCustom_Str)
+    return;
+ 
+  gtk_widget_set_sensitive(entry, custom->is_active);
+
+  gtk_entry_set_text(GTK_ENTRY(entry), custom->value->as_str);
+}
+
 static void
 add_custom_type_string(GtkWidget *vbox, struct uim_custom *custom)
 {
@@ -444,6 +480,10 @@ add_custom_type_string(GtkWidget *vbox, struct uim_custom *custom)
   gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
   g_signal_connect(G_OBJECT(entry), "changed",
 		   G_CALLBACK(custom_entry_changed_cb), NULL);
+
+  gtk_widget_set_sensitive(entry, custom->is_active);
+
+  uim_custom_cb_add(custom->symbol, entry, update_custom_type_string_cb);
 
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
 }
@@ -554,6 +594,21 @@ custom_combo_box_changed(GtkComboBox *combo_box, gpointer user_data)
 }
 
 static void
+update_custom_type_choice_cb(void *ptr, const char *custom_sym)
+{
+ struct uim_custom *custom;
+ GtkWidget *combobox = GTK_WIDGET(ptr);
+ custom = g_object_get_data(G_OBJECT(combobox), OBJECT_DATA_UIM_CUSTOM);
+
+ g_print("update_custom_type_choice_cb called\n");
+
+  if (!custom || custom->type != UCustom_Choice)
+    return;
+  
+  gtk_widget_set_sensitive(combobox, custom->is_active);
+}
+
+static void
 add_custom_type_choice(GtkWidget *vbox, struct uim_custom *custom)
 {
   GtkWidget *hbox;
@@ -584,6 +639,10 @@ add_custom_type_choice(GtkWidget *vbox, struct uim_custom *custom)
   gtk_box_pack_start (GTK_BOX (hbox), combobox, FALSE, TRUE, 0);
   g_signal_connect(G_OBJECT(combobox), "changed",
 		   G_CALLBACK(custom_combo_box_changed), NULL);
+
+  gtk_widget_set_sensitive(combobox, custom->is_active);
+  
+  uim_custom_cb_add(custom->symbol, combobox, update_custom_type_choice_cb);
 
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
 }
@@ -1727,6 +1786,21 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 }
 
 static void
+update_custom_type_key_cb(void *ptr, const char *custom_sym)
+{
+  struct uim_custom *custom;
+  GtkWidget *entry = GTK_WIDGET(ptr);
+
+  custom = g_object_get_data(G_OBJECT(entry), OBJECT_DATA_UIM_CUSTOM);
+
+  if (!custom || custom->type != UCustom_Key)
+    return;
+  
+  gtk_widget_set_sensitive(entry, custom->is_active);
+}
+
+
+static void
 add_custom_type_key(GtkWidget *vbox, struct uim_custom *custom)
 {
   GtkWidget *hbox;
@@ -1748,7 +1822,8 @@ add_custom_type_key(GtkWidget *vbox, struct uim_custom *custom)
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, FALSE, 0);
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(choose_key_clicked_cb), entry);
-
+  uim_custom_cb_add(custom->symbol, entry, update_custom_type_key_cb);
+  
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 }
 
@@ -1986,6 +2061,5 @@ main (int argc, char *argv[])
   }
 
   uim_quit();
-
   return 0;
 }
