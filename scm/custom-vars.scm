@@ -38,9 +38,9 @@
 (define canna-im-canonical-name (_ "Canna"))
 (define skk-im-canonical-name (_ "SKK"))
 (define prime-im-canonical-name (_ "PRIME"))
-(define pyunihan-im-canonical-name (_ "pyunihan"))
-(define pinyin-big5-im-canonical-name (_ "pinyin-big5"))
-(define py-im-canonical-name (_ "Pinyin"))
+(define pyunihan-im-canonical-name (_ "Pinyin (Unicode)"))
+(define pinyin-big5-im-canonical-name (_ "Pinyin (Traditional)"))
+(define py-im-canonical-name (_ "Pinyin (Simplified)"))
 (define ipa-im-canonical-name (_ "International Phonetic Alphabet"))
 (define romaja-im-canonical-name (_ "Hangul (Romaja)"))
 (define hangul3-im-canonical-name (_ "Hangul (3-bul)"))
@@ -75,7 +75,7 @@
   (_ "Specify default IM")
   (_ "long description will be here."))
 
-;; requires predefined *-im-canonical-name and *-im-desc
+;; requires predefined *-im-canonical-name
 (define-custom 'custom-preserved-default-im-name (im-name (find-default-im #f))
   '(global default-im-name)
   (cons
@@ -88,7 +88,7 @@
 				    (symbol->string sym)))
 			  (desc-proc (symbolconc sym '-im-desc))
 			  (desc (im-short-desc im)))
-		     (list sym name desc)))
+		     (custom-choice-rec-new sym name desc)))
 		 im-list)))
   (_ "Default input method")
   (_ "long description will be here."))
@@ -146,6 +146,32 @@
 		 custom-hook-literalize-preserved-default-im-name)
 
 ;;
+;; Enabled IM list
+;;
+
+;; requires predefined *-im-canonical-name
+(define custom-default-enabled-im-list
+  (reverse (map (lambda (im)
+		  (let* ((sym (im-name im))
+			 (cname-proc (symbolconc sym '-im-canonical-name))
+			 (name (or (and (symbol-bound? cname-proc)
+					(symbol-value cname-proc))
+				   (symbol->string sym)))
+			 (desc-proc (symbolconc sym '-im-desc))
+			 (desc (im-short-desc im)))
+		    (custom-choice-rec-new sym name desc)))
+		im-list)))
+
+(define-custom 'enabled-im-list
+               (map custom-choice-rec-sym custom-default-enabled-im-list)
+  '(global)
+  (cons
+   'ordered-list
+   custom-default-enabled-im-list)
+  (_ "Enabled input methods")
+  (_ "long description will be here."))
+
+;;
 ;; im-switching
 ;;
 (define-custom-group 'im-switching
@@ -177,6 +203,127 @@
     (uim-color-atok "ATOK like" "Similar to ATOK"))
   (_ "Preedit color")
   (_ "long description will be here."))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; global-keys
+
+;; subgroup 'key'
+(define-custom-group 'key
+		     (_ "Key bindings")
+		     (_ "long description will be here."))
+
+(define-custom-group 'global-keys
+		     (_ "Global key bindings")
+		     (_ "long description will be here."))
+
+(define-custom 'generic-on-key '("zenkaku-hankaku" "<Shift> ")
+               '(global-keys key)
+	       '(key)
+	       "[Global] on"
+	       "long description will be here")
+
+(define-custom 'generic-off-key '("zenkaku-hankaku" "<Shift> ")
+               '(global-keys key)
+	       '(key)
+	       "[Global] off"
+	       "long description will be here")
+
+(define-custom 'generic-begin-conv-key '(" ")
+               '(global-keys key)
+	       '(key)
+	       "[Global] begin conversion"
+	       "long description will be here")
+
+(define-custom 'generic-commit-key '("<Control>j" "<Control>J" generic-return-key)
+               '(global-keys key)
+	       '(key)
+	       "[Global] commit"
+	       "long description will be here")
+
+(define-custom 'generic-cancel-key '("escape" "<Control>g" "<Control>G")
+               '(global-keys key)
+	       '(key)
+	       "[Global] cancel"
+	       "long description will be here")
+
+(define-custom 'generic-next-candidate-key '(" " "down" "<Control>n" "<Control>N")
+               '(global-keys key)
+	       '(key)
+	       "[Global] next candidate"
+	       "long description will be here")
+
+(define-custom 'generic-prev-candidate-key '("up" "<Control>p" "<Control>P")
+               '(global-keys key)
+	       '(key)
+	       "[Global] previous candidate"
+	       "long description will be here")
+
+(define-custom 'generic-next-page-key '("next")
+               '(global-keys key)
+	       '(key)
+	       "[Global] next page of candidate window"
+	       "long description will be here")
+
+(define-custom 'generic-prev-page-key '("prior")
+               '(global-keys key)
+	       '(key)
+	       "[Global] previous page of candidate window"
+	       "long description will be here")
+
+(define-custom 'generic-beginning-of-preedit-key '("home" "<Control>a" "<Control>A")
+               '(global-keys key)
+	       '(key)
+	       "[Global] beginning of preedit"
+	       "long description will be here")
+
+(define-custom 'generic-end-of-preedit-key '("end" "<Control>e" "<Control>E")
+               '(global-keys key)
+	       '(key)
+	       "[Global] end of preedit"
+	       "long description will be here")
+
+(define-custom 'generic-kill-key '("<Control>k" "<Control>K")
+               '(global-keys key advanced)
+	       '(key)
+	       "[Global] erase after cursor"
+	       "long description will be here")
+
+(define-custom 'generic-kill-backward-key '("<Control>u" "<Control>U")
+               '(global-keys key advanced)
+	       '(key)
+	       "[Global] erase before cursor"
+	       "long description will be here")
+
+(define-custom 'generic-backspace-key '("backspace" "<Control>h" "<Control>H")
+               '(global-keys key advanced)
+	       '(key)
+	       "[Global] backspace"
+	       "long description will be here")
+
+(define-custom 'generic-delete-key '("delete" "<Control>d" "<Control>D")
+               '(global-keys key advanced)
+	       '(key)
+	       "[Global] delete"
+	       "long description will be here")
+
+(define-custom 'generic-go-left-key '("left" "<Control>b" "<Control>B")
+               '(global-keys key advanced)
+	       '(key)
+	       "[Global] left"
+	       "long description will be here")
+
+(define-custom 'generic-go-right-key '("right" "<Control>f" "<Control>F")
+               '(global-keys key advanced)
+	       '(key)
+	       "[Global] right"
+	       "long description will be here")
+
+(define-custom 'generic-return-key '("return" "<Control>m" "<Control>M")
+               '(global-keys key advanced)
+	       '(key)
+	       "[Global] return"
+	       "long description will be here")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

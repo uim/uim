@@ -1864,9 +1864,7 @@
   ("test custom-range"
    (assert-equal '(test-style-uim test-style-ddskk test-style-canna)
 		 (uim '(custom-range 'test-style)))
-   (assert-equal '((anthy "Anthy" "Anthy")
-		   (canna "Cannd" "Canna")
-		   (skk "SKK" "SKK"))
+   (assert-equal '(anthy canna skk)
 		 (uim '(custom-range 'test-available-ims)))
    (assert-equal ()
 		 (uim '(custom-range 'test-cancel-key)))

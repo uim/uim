@@ -561,6 +561,25 @@ add_custom_type_choice(GtkWidget *vbox, struct uim_custom *custom)
 }
 
 static void
+add_custom_type_orderedlist(GtkWidget *vbox, struct uim_custom *custom)
+{
+  GtkWidget *hbox;
+  GtkWidget *label;
+
+  hbox = gtk_hbox_new(FALSE, 8);
+  label = gtk_label_new(custom->label);
+  gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
+
+  /*
+  g_object_set_data_full(G_OBJECT(hoge),
+			 OBJECT_DATA_UIM_CUSTOM, custom,
+			 (GDestroyNotify) uim_custom_free);
+  */
+
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
+}
+
+static void
 add_custom_type_key(GtkWidget *vbox, struct uim_custom *custom)
 {
   GtkWidget *hbox;
@@ -602,6 +621,9 @@ add_custom(GtkWidget *vbox, const char *custom_sym)
       break;
     case UCustom_Choice:
       add_custom_type_choice(vbox, custom);
+      break;
+    case UCustom_OrderedList:
+      add_custom_type_orderedlist(vbox, custom);
       break;
     case UCustom_Key:
       add_custom_type_key(vbox, custom);

@@ -339,7 +339,7 @@ uim_custom_key_get(const char *custom_sym)
 		    str_list_arg, custom_sym);
   key_literal_list =
     (char **)uim_scm_c_list(str_list_arg,
-			    "(lambda (key) (if (symbol? key) symbol->string key))",
+			    "(lambda (key) (if (symbol? key) (symbol->string key) key))",
 			    (uim_scm_c_list_conv_func)uim_scm_c_str);
   key_type_list =
     (int *)uim_scm_c_list(str_list_arg,

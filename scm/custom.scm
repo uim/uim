@@ -119,6 +119,11 @@
      (else
       ()))))
 
+;; TODO
+(define custom-key-advanced-editor?
+  (lambda (custom-sym)
+    #f))
+
 (define-record 'custom-choice-rec
   '((sym   #f)
     (label "")
@@ -365,7 +370,8 @@
     (let* ((type (custom-type sym))
 	   (attrs (custom-type-attrs sym)))
       (cond
-       ((eq? type 'choice)
+       ((or (eq? type 'choice)
+	    (eq? type 'ordered-list))
 	(map custom-choice-rec-sym attrs))
        (else
 	attrs)))))
