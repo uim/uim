@@ -738,8 +738,8 @@ uim_plugin_instance_quit(void)
   if (m17nlib_ok) {
     M17N_FINI();
     m17nlib_ok = 0;
+    free(im_array);
+    free(ic_array);
   }
-  free(im_array);
-  free(ic_array);
 }
 #endif /* HAVE_M17NLIB */
