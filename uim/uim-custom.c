@@ -44,11 +44,15 @@
 
 #include "config.h"
 
+#include <sys/stat.h>
+#include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "uim-scm.h"
 #include "uim-custom.h"
 #include "context.h"
+#include "uim-helper.h"
 
 
 static int uim_custom_type_eq(const char *custom_sym, const char *custom_type);
@@ -70,7 +74,16 @@ static uim_lisp uim_custom_range_elem(const char *custom_sym, const char *access
 static union uim_custom_range *uim_custom_range_get(const char *custom_sym);
 static void uim_custom_range_free(int custom_type, union uim_custom_range *custom_range);
 
+static void helper_disconnect_cb(void);
+static char *uim_conf_path(const char *subpath);
+static char *custom_file_path(const char *group, pid_t pid);
+static uim_bool prepare_dir(const char *dir);
+static uim_bool uim_conf_prepare_dir(const char *subdir);
+static uim_bool uim_custom_save_group(const char *group);
+
 static const char str_list_arg[] = "uim-custom-c-str-list-arg";
+static const char custom_msg_tmpl[] = "prop_update_custom\n%s\n%s\n";
+static int helper_fd = -1;
 
 
 #if 1  /* should be reorganized into uim-scm.[hc] */
@@ -404,6 +417,12 @@ uim_custom_range_free(int custom_type, union uim_custom_range *custom_range)
   free(custom_range);
 }
 
+static void
+helper_disconnect_cb(void)
+{
+  helper_fd = -1;
+}
+
 uim_bool
 uim_custom_init(void)
 {
@@ -420,17 +439,147 @@ uim_custom_quit(void)
   return UIM_TRUE;
 }
 
+static char *
+uim_conf_path(const char *subpath)
+{
+  char *dir;
+
+  UIM_EVAL_STRING(NULL, "(string-append (getenv \"HOME\") \"/.uim.d\")");
+  dir = uim_scm_c_str(uim_scm_return_value());
+  if (subpath) {
+    UIM_EVAL_FSTRING2(NULL, "\"%s/%s\"", dir, subpath);
+    free(dir);
+    dir = uim_scm_c_str(uim_scm_return_value());
+  }
+
+  return dir;
+}
+
+static char *
+custom_file_path(const char *group, pid_t pid)
+{
+  char *custom_dir, *file_path;
+
+  custom_dir = uim_conf_path("custom");
+  if (pid) {
+    UIM_EVAL_FSTRING3(NULL, "\"%s/.custom-%s.scm.%d\"", custom_dir, group, pid);
+  } else {
+    UIM_EVAL_FSTRING2(NULL, "\"%s/custom-%s.scm\"", custom_dir, group);
+  }
+  file_path = uim_scm_c_str(uim_scm_return_value());
+  free(custom_dir);
+
+  return file_path;
+}
+
+static uim_bool
+prepare_dir(const char *dir)
+{
+  struct stat *sb;
+  /* TODO: stat, mkdir, chmod */
+
+  return UIM_TRUE;
+}
+
+static uim_bool
+uim_conf_prepare_dir(const char *subdir)
+{
+  char *dir;
+
+  dir = uim_conf_path(NULL);
+  prepare_dir(dir);
+  free(dir);
+  if (subdir) {
+    prepare_dir(subdir);
+  }
+
+  return UIM_TRUE;
+}
+
+static uim_bool
+uim_custom_save_group(const char *group)
+{
+  char **custom_syms, **sym;
+  char *def_literal;
+  pid_t pid;
+  char *tmp_file_path, *file_path;
+  FILE *file;
+
+  if (!uim_conf_prepare_dir("customs"))
+    return UIM_FALSE;
+
+  /*
+    to avoid write conflict and broken by accident, we write customs
+    to temporary file first
+  */
+  pid = getpid();
+  tmp_file_path = custom_file_path(group, pid);
+  file = fopen(tmp_file_path, "w");
+
+  custom_syms = uim_custom_collect_by_group(group);
+  for (sym = custom_syms; *sym; sym++) {
+    def_literal = uim_custom_definition_as_literal(*sym);
+    if (def_literal) {
+      fprintf(file, def_literal);
+      free(def_literal);
+    }
+  }
+  uim_custom_symbol_list_free(custom_syms);
+
+  fclose(file);
+  /* rename prepared temporary file to proper name */
+  file_path = custom_file_path(group, 0);
+  rename(tmp_file_path, file_path);
+  free(tmp_file_path);
+  free(file_path);
+
+  return UIM_TRUE;
+}
+
 uim_bool
 uim_custom_save(void)
 {
-  /* TODO */
-  return UIM_TRUE;
+  uim_bool succeeded = UIM_TRUE;
+  char **primary_groups, **grp;
+
+  primary_groups = uim_custom_primary_groups();
+  for (grp = primary_groups; *grp; grp++) {
+    succeeded = uim_custom_save_group(*grp) && succeeded;
+  }
+  uim_custom_symbol_list_free(primary_groups);
+
+  return succeeded;
 }
 
 uim_bool
 uim_custom_broadcast(void)
 {
-  /* TODO */
+  char **custom_syms, **sym;
+  char *value, *msg;
+  size_t msg_size;
+
+  if (helper_fd < 0) {
+    helper_fd = uim_helper_init_client_fd(helper_disconnect_cb);
+  }
+
+  custom_syms = uim_custom_collect_by_group(NULL);
+  for (sym = custom_syms; *sym; sym++) {
+    value = uim_custom_value_as_literal(*sym);
+    if (value) {
+      msg_size = sizeof(custom_msg_tmpl) + strlen(*sym) + strlen(value);
+      msg = (char *)malloc(msg_size);
+      sprintf(msg, custom_msg_tmpl, *sym, value);
+      uim_helper_send_message(helper_fd, msg);
+      free(msg);
+      free(value);
+    }
+  }
+  uim_custom_symbol_list_free(custom_syms);
+
+  if (helper_fd != -1) {
+    uim_helper_close_client_fd(helper_fd);
+  }
+
   return UIM_TRUE;
 }
 
@@ -588,9 +737,11 @@ uim_custom_symbol_list_free(char **symbol_list)
   uim_scm_c_list_free((void **)symbol_list, (uim_scm_c_list_free_func)free);
 }
 
-char *
-uim_custom_set_cb(void (*update_cb)(const char *custom_sym))
+/* returns succeeded or not */
+uim_bool
+uim_custom_cb_set(const char *custom_sym, void *ptr,
+		   void (*update_cb)(void *ptr, const char *custom_sym))
 {
   /* TODO */
-  return NULL;
+  return UIM_FALSE;
 }

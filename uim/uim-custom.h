@@ -125,8 +125,9 @@ char **uim_custom_group_subgroups(const char *group_sym);
 
 void uim_custom_symbol_list_free(char **symbol_list);
 
-/* the callback is invoked when a custom variable has been changed */
-char *uim_custom_set_cb(void (*update_cb)(const char *custom_sym));
+/* the callback is invoked when the custom variable has been changed */
+uim_bool uim_custom_cb_set(const char *custom_sym, void *ptr,
+			   void (*update_cb)(void *ptr, const char *custom_sym));
 
 #ifdef __cplusplus
 }

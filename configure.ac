@@ -123,6 +123,7 @@ AC_CHECK_FUNCS([forkpty])
 AC_CHECK_FUNCS([cfmakeraw])
 AC_CHECK_FUNCS([wcswidth])
 AC_CHECK_FUNCS(getpeereid asprintf vasprintf setenv unsetenv strsep)
+AC_CHECK_FUNCS(getpid stat mkdir chmod)
 AC_SEARCH_LIBS(dlfunc,dl,
   [
     AC_DEFINE(HAVE_DLFUNC, 1,
