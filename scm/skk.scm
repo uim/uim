@@ -935,7 +935,7 @@
 	     (skk-commit-raw-with-preedit-update sc key key-state)
 	     #f)
 	   #t)
-       (if (skk-upper-char? key)
+       (if (char-upper-case? key)
 	   (let* ((residual-kana (rk-push-key-last! rkc)))
 	     ;; handle preceding "n"
 	     (if residual-kana
@@ -981,12 +981,6 @@
 		    (not (string=? (car res) ""))))
 	      (skk-get-string sc res kana))
 	  #f))))
-
-(define skk-upper-char?
-  (lambda (c)
-    (and (integer? c)
-	 (or
-	  (and (>= c 65) (<= c 90))))))
 
 (define skk-sokuon-shiin-char?
   (lambda (c)
@@ -1093,7 +1087,7 @@
 	     (skk-begin-conversion sc)
 	     #f)
 	   #t)
-       (if (and (skk-upper-char? key)
+       (if (and (char-upper-case? key)
 		(not (null? (skk-context-head sc))))
 	   (begin
 	     (skk-context-set-state! sc 'skk-state-okuri)

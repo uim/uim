@@ -1385,6 +1385,7 @@ reorder_candidate(struct skk_cand_array *ca, char *str)
   if (nth >= ca->nr_real_cands) {
     ca->nr_real_cands ++;
   }
+  skk_dic->cache_modified = 1;
 }
 
 static void
