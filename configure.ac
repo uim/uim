@@ -172,7 +172,7 @@ AC_CHECK_LIB(socket,socket)
 # Checks for function
 AC_CHECK_FUNCS([cfmakeraw])
 AC_CHECK_FUNCS([wcswidth])
-AC_CHECK_FUNCS(getpeereid asprintf vasprintf setenv unsetenv strsep)
+AC_CHECK_FUNCS(getpeereid asprintf vasprintf vsnprintf setenv unsetenv strsep)
 AC_CHECK_FUNCS(getpid stat mkdir chmod)
 AC_CACHE_CHECK([for C99 vsnprintf], uim_cv_HAVE_C99_VSNPRINTF,[
 AC_TRY_RUN([
