@@ -168,6 +168,10 @@
 				 "Toggle hiragana/katakana mode"
 				 "Toggle hiragana/katakana mode")
 
+(anthy-register-per-state-action 'action_anthy_commit_and_toggle_kana
+				 "Commit and toggle hiragana/katakana mode"
+				 "Commit current preedit string, then toggle hiragana/katakana mode")
+
 (anthy-register-per-state-action 'action_anthy_begin_conv
 				 "Begin conversion"
 				 "Begin conversion")
@@ -348,16 +352,13 @@
 (anthy-register-action 'action_anthy_hiragana
 ;;		 (indication-alist-indicator 'action_anthy_hiragana
 ;;					     anthy-input-mode-indication-alist)
-		       (lambda (ac) ;; indication handler
+		       (lambda (ac)
 			 '(figure_ja_hiragana
 			   "あ"
 			   "ひらがな"
 			   "ひらがな入力モード"))
-
-		       anthy-hiragana-mode? ;; activity predicate
-
-		       (lambda (ac) ;; action handler
-			 (anthy-prepare-activation ac)
+		       anthy-hiragana-mode?
+		       (lambda (ac)
 			 (anthy-context-set-on! ac #t)
 			 (anthy-switch-kana-mode! ac anthy-type-hiragana)))
 
@@ -369,7 +370,6 @@
 			   "カタカナ入力モード"))
 		       anthy-katakana-mode?
 		       (lambda (ac)
-			 (anthy-prepare-activation ac)
 			 (anthy-context-set-on! ac #t)
 			 (anthy-switch-kana-mode! ac anthy-type-katakana)))
 
@@ -381,7 +381,6 @@
 			   "半角カタカナ入力モード"))
 		       anthy-hankana-mode?
 		       (lambda (ac)
-			 (anthy-prepare-activation ac)
 			 (anthy-context-set-on! ac #t)
 			 (anthy-switch-kana-mode! ac anthy-type-hankana)))
 
@@ -525,6 +524,8 @@
   '(
     ((lkey_q)                 (action_anthy_toggle_kana))
     ((lkey_Q)                 (action_anthy_toggle_kana))
+    (((mod_Control lkey_q))   (action_anthy_commit_and_toggle_kana))
+    (((mod_Control lkey_Q))   (action_anthy_commit_and_toggle_kana))
     ((lkey_space)             (action_anthy_begin_conv)) ;; generic
     (((mod_Control lkey_k))   (action_anthy_kill)) ;; generic
     (((mod_Control lkey_K))   (action_anthy_kill)) ;; generic
@@ -1061,20 +1062,16 @@
 (define anthy-input-state-no-preedit-action
   (lambda (ac act-id)
     (case act-id
-      ((action_anthy_zenkaku)
-       (anthy-flush ac)
-       (anthy-context-set-on! ac #f)
-       (anthy-context-set-wide-latin! ac #t)
-       (anthy-select-ruletree! ac))
-
-      ((action_anthy_direct)
-       (anthy-flush ac)
-       (anthy-context-set-on! ac #f)
-       (anthy-context-set-wide-latin! ac #f)
-       (anthy-select-ruletree! ac))
-
-      ((action_anthy_hankana)
-       (anthy-switch-kana-mode! ac anthy-type-hankana))
+      ((action_anthy_hiragana
+	action_anthy_katakana
+	action_anthy_hankana
+	action_anthy_direct
+	action_anthy_zenkaku
+	action_anthy_roma
+	action_anthy_kana
+	action_anthy_azik
+	action_anthy_nicola)
+       (anthy-activate-action! ac act-id))
 
       ((action_anthy_toggle_kana)
        (anthy-toggle-kana-mode! ac)))))
@@ -1124,8 +1121,11 @@
 	 (transpose ac anthy-direct-convert-wide-latin))
 
 	;; commit current preedit string, then toggle hiragana/katakana mode.
-	((action_anthy_toggle_kana)
+	((action_anthy_commit_and_toggle_kana)
 	 (anthy-commit-preconv! ac)
+	 (anthy-toggle-kana-mode! ac))
+
+	((action_anthy_toggle_kana)
 	 (anthy-toggle-kana-mode! ac))
 
 	((action_anthy_cancel_conv)
