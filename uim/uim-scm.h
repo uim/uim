@@ -105,6 +105,8 @@ uim_scm_gc_unprotect_stack(uim_lisp *stack_start);
 /* evaluations */
 uim_bool
 uim_scm_load_file(const char *fn);
+uim_bool
+uim_scm_require_file(const char *fn);
 uim_lisp
 uim_scm_eval(uim_lisp obj);
 uim_lisp

@@ -770,7 +770,9 @@ repl_driver (long want_init, struct repl_hooks *h)
   int k;
   struct repl_hooks hd;
   LISP stack_start;
+#if (!NESTED_REPL_C_STRING)
   func_trace = NULL;
+#endif
 #if (NESTED_REPL_C_STRING)
   siod_gc_protect_stack(&stack_start);
 #else
@@ -782,7 +784,9 @@ repl_driver (long want_init, struct repl_hooks *h)
     ret = (2);
     goto fin;
   }
+#if (!NESTED_REPL_C_STRING)
   catch_framep = (struct catch_frame *) NULL;
+#endif
   errjmp_ok = 1;
   if (want_init && init_file && (k == 0))
     vload (init_file, 0, 1);

@@ -263,16 +263,33 @@ uim_scm_cons(uim_lisp car, uim_lisp cdr) {
 
 uim_bool
 uim_scm_require_file(const char *fn) {
+#if 0
   /* This function directly call require() because using UIM_EVAL_FSTRING1
    * causes segv.
    */
+  uim_lisp stack_start;
   uim_lisp _fn;
+  uim_bool ret;
 
   if (!fn)
     return UIM_FALSE;
 
+  uim_scm_gc_protect_stack(&stack_start);
   _fn = uim_scm_make_str(fn);
-  return require((LISP)_fn);
+  ret = require((LISP)_fn);  /* meaningless result */
+  uim_scm_gc_unprotect_stack(&stack_start);
+  return ret;
+#else
+  uim_bool succeeded;
+
+  if (!fn)
+    return UIM_FALSE;
+
+  UIM_EVAL_FSTRING2(NULL, "(eq? '*%s-loaded* (*catch 'errobj (require \"%s\")))", fn, fn);
+  succeeded = uim_scm_c_bool(uim_scm_return_value());
+
+  return succeeded;
+#endif
 }
 
 void
