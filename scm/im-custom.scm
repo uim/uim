@@ -141,9 +141,13 @@
 
 (define custom-installed-im-list
   (lambda ()
-    (let ((orig-enabled-im-list enabled-im-list))
+    (let ((orig-enabled-im-list enabled-im-list)
+	  (orig-require require))
       (set! enabled-im-list ())  ;; enable all IMs
+      ;; XXX temporary solution to register all IM in a file
+      (set! require load)
       (for-each require-module installed-im-module-list)
+      (set! require orig-require)
       (set! enabled-im-list orig-enabled-im-list)
       (custom-im-list-as-choice-rec (reverse
 				     (alist-delete 'direct im-list eq?))))))
