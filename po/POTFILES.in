@@ -47,7 +47,7 @@ scm/hk.scm
 scm/i18n.scm
 scm/im-custom.scm
 scm/im.scm
-scm/ipa.scm
+scm/ipa-x-sampa.scm
 scm/japanese-azik.scm
 scm/japanese-kana.scm
 scm/japanese.scm
