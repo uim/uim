@@ -44,15 +44,15 @@ How to use uim-xim
 (2) Set XMODIFIERS=@im=uim and invoke client.
 
 (3) If you want to use candidate helper program other than default
-    GTK+ one, set UIM_CANDWIN_PROG environmental variable before
+    toolkit one, set UIM_CANDWIN_PROG environmental variable before
     invoking uim-xim.
 
      sh:  UIM_CANDWIN_PROG=uim-candwin-qt export UIM_CANDWIN_PROG
      csh: setenv UIM_CANDWIN_PROG uim-candwin-qt
 
-    If nothing specified and using GTK+, uim-candwin-gtk becomes
-    default.  Or if nothing specified and uim is not configured with
-    enabling GTK+, candidate helper is not used.
+    If nothing specified, uim-candwin-gtk or uim-candwin-qt becomes
+    default depending on the selected toolkit.  If uim is not
+    configured either with GTK+ or Qt, candidate helper is not used.
 
 (4) To change conversion engines dynamically, use uim-im-switcher
     tool.
