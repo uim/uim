@@ -566,9 +566,12 @@
 ((("\\" "~" "u" ))("ũ"))
 ))
 
+(define latin-im-rule
+  (append ascii-rule latin-compose-rule))
+
 (define latin-init-handler
   (lambda (id im arg)
-    (generic-context-new id im latin-compose-rule #f)))
+    (generic-context-new id im latin-im-rule #f)))
 
 (generic-register-im
  'latin

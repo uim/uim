@@ -28,6 +28,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require "generic.scm")
+
 (define viqr-rule
   '(
 ((("A" ))("A"))

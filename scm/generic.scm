@@ -50,6 +50,13 @@
 
 ;;; implementations
 
+(define ascii-rule
+  (map (compose (lambda (entry)
+		  (list (list entry) entry))
+		list
+		charcode->string)
+       (iota 127 32)))
+
 (define generic-prepare-activation
   (lambda (gc)
     (let ((rkc (generic-context-rk-context gc)))
