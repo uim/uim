@@ -54,5 +54,6 @@
 	  (append uim-plugin-lib-load-path
 		  (string-split (getenv "LD_LIBRARY_PATH") ":"))))
 
-(print uim-plugin-lib-load-path)
-(print uim-plugin-scm-load-path)
+;; 'print' prevents testing framework from normal run.
+;;(print uim-plugin-lib-load-path)
+;;(print uim-plugin-scm-load-path)

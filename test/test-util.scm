@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 1495
+;; This file is tested with revision 142(new repository)
 
 (use test.unit)
 
@@ -431,7 +431,52 @@
    (assert-equal '(5 7 9)
 		 (uim '(map +
 			    '(1 2 3)
-			    '(4 5 6)))))
+			    '(4 5 6))))
+   (assert-equal '()
+		 (uim '(map +
+			    '()
+			    '()
+			    '())))
+   (assert-equal '(12)
+		 (uim '(map +
+			    '(1)
+			    '(4)
+			    '(7))))
+   (assert-equal '(12 15)
+		 (uim '(map +
+			    '(1 2)
+			    '(4 5)
+			    '(7 8))))
+   (assert-equal '(12 15 18)
+		 (uim '(map +
+			    '(1 2 3)
+			    '(4 5 6)
+			    '(7 8 9))))
+   (assert-equal '()
+		 (uim '(map +
+			    '()
+			    '()
+			    '()
+			    '())))
+   (assert-equal '(22)
+		 (uim '(map +
+			    '(1)
+			    '(4)
+			    '(7)
+			    '(10))))
+   (assert-equal '(22 26)
+		 (uim '(map +
+			    '(1 2)
+			    '(4 5)
+			    '(7 8)
+			    '(10 11))))
+   (assert-equal '(22 26 30)
+		 (uim '(map +
+			    '(1 2 3)
+			    '(4 5 6)
+			    '(7 8 9)
+			    '(10 11 12)))))
+
   ("test for-each"
    (assert-equal 3
 		 (uim '(let ((i 0))

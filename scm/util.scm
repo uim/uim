@@ -121,17 +121,17 @@
 ;; local procedure. don't use in outside of util.scm
 (define iterate-lists
   (lambda (mapper state lists)
-    (let ((runs-out? (apply proc-or (map null? lists))))
+    (let ((runs-out? (apply proc-or (mapcar null? lists))))
       (if runs-out?
 	  (cdr (mapper state ()))
-	  (let* ((elms (map car lists))
-		 (rests (map cdr lists))
+	  (let* ((elms (mapcar car lists))
+		 (rests (mapcar cdr lists))
 		 (pair (mapper state elms))
 		 (terminate? (car pair))
 		 (new-state (cdr pair)))
 	    (if terminate?
 		new-state
-		(apply iterate-lists (list mapper new-state rests))))))))
+		(iterate-lists mapper new-state rests)))))))
 
 ;; not yet tested -- YamaKen 2004-10-30
 (define alist-replace
@@ -168,12 +168,20 @@
 
 (define string->symbol intern)
 
-;; accepts up to 2 lists
-(define map mapcar)
+(define map
+  (lambda args
+    (let ((f (car args))
+	  (lists (cdr args)))
+      (if (<= (length lists) 3)  ;; uim's siod accepts up to 3 lists
+	  (apply mapcar args)    ;; faster native processing
+	  (iterate-lists (lambda (state elms)
+			   (if (null? elms)
+			       (cons #t (reverse state))
+			       (let ((mapped (apply f elms)))
+				 (cons #f (cons mapped state)))))
+			 () lists)))))
 
-;; accepts up to 2 lists
-;; process order is guaranteed by siod's mapcar implementation
-(define for-each mapcar)
+(define for-each map)
 
 ;;(define list-tail
 ;;  (lambda (lst n)
