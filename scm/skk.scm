@@ -437,25 +437,31 @@
 
 (define skk-get-nth-candidate
   (lambda (sc n)
-    (let ((head (skk-context-head sc)))
-      (if skk-use-numeric-conversion?
-	  ;; store and restore numeric strings
-	  (let ((numlst (skk-lib-store-replaced-numstr
-			 (skk-make-string head skk-type-hiragana))))
-	    (skk-lib-merge-replaced-numstr
-	     (skk-lib-get-nth-candidate
-	      n
-	      (skk-lib-replace-numeric (skk-make-string head skk-type-hiragana))
-	      (skk-context-okuri-head sc)
-	      (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
-	      numlst)
-	     numlst))
-	  (skk-lib-get-nth-candidate
-	   n
-	   (skk-make-string head skk-type-hiragana)
-	   (skk-context-okuri-head sc)
-	   (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
-	   '())))))
+    (let* ((head (skk-context-head sc))
+    	   (cand (if skk-use-numeric-conversion?
+		     ;; store and restore numeric strings
+		     (let ((numlst (skk-lib-store-replaced-numstr
+				    (skk-make-string head skk-type-hiragana))))
+		       (skk-lib-merge-replaced-numstr
+			(skk-lib-get-nth-candidate
+			 n
+			 (skk-lib-replace-numeric (skk-make-string
+						   head skk-type-hiragana))
+			 (skk-context-okuri-head sc)
+			 (skk-make-string (skk-context-okuri sc)
+					  skk-type-hiragana)
+			 numlst)
+			numlst))
+		     (skk-lib-get-nth-candidate
+		      n
+		      (skk-make-string head skk-type-hiragana)
+		      (skk-context-okuri-head sc)
+		      (skk-make-string (skk-context-okuri sc)
+				       skk-type-hiragana)
+		      '()))))
+      (if skk-show-annotation?
+	  cand
+	  (skk-lib-remove-annotation cand)))))
 
 (define skk-get-current-candidate
   (lambda (sc)
@@ -655,7 +661,7 @@
 	     sc
 	     (bit-or skk-preedit-attr-conv-body
 		     preedit-cursor)
-	     (skk-get-current-candidate sc))
+	     (skk-lib-remove-annotation (skk-get-current-candidate sc)))
 	    (im-pushback-preedit
 	     sc skk-preedit-attr-conv-okuri
 	     (skk-make-string (skk-context-okuri sc)

@@ -108,6 +108,12 @@
   (_ "Enable auto conversion with punctuation marks")
   (_ "long description will be here."))
 
+(define-custom 'skk-show-annotation? #t
+  '(skk advanced)
+  '(boolean)
+  (_ "Show annotation in candidate window")
+  (_ "long description will be here."))
+
 (define-custom 'skk-dic-file-name (string-append (sys-datadir)
 						 "/skk/SKK-JISYO.L")
   '(skk)
