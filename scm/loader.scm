@@ -36,7 +36,9 @@
 (require "pyload.scm")
 
 (load-plugin "anthy")
-(load-plugin "canna")
+
+;; broken at now  -- YamaKen 2005-01-08
+;;(load-plugin "canna")
 
 (require "prime.scm")
 (require "skk.scm")
