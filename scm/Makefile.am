@@ -19,7 +19,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  prime.scm prime-custom.scm prime-key-custom.scm \
  skk.scm skk-editor.scm skk-custom.scm skk-key-custom.scm \
  tcode.scm \
- tutcode.scm \
+ tutcode.scm tutcode-key-custom.scm \
  hangul.scm hangul2.scm hangul3.scm romaja.scm \
  viqr.scm \
  ipa-x-sampa.scm \
