@@ -41,7 +41,11 @@ extern "C" {
 
 #include <stdio.h>
 
-/* a boolean type for uim to explicitly indicate intention about values */
+/*
+ * A boolean type for uim to explicitly indicate intention about values.  A
+ * true value is represented as (val != UIM_FALSE). i.e. Don't test a value
+ * with (val == UIM_TRUE).
+ */
 typedef int uim_bool;
 
 #define UIM_FALSE 0

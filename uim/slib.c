@@ -226,6 +226,9 @@ static LISP sym_features;
 static LISP unbound_marker;
 static LISP *obarray;
 static LISP repl_return_val;
+#if (!NESTED_REPL_C_STRING)
+static int repl_c_string_entered;
+#endif
 static long obarray_dim;
 static struct catch_frame *catch_framep;
 static void (*repl_puts) (char *);
@@ -774,6 +777,13 @@ repl_driver (long want_init, struct repl_hooks *h)
   struct repl_hooks hd;
   LISP stack_start;
 #if (!NESTED_REPL_C_STRING)
+  if (repl_c_string_entered)
+    {
+      my_err("nested repl_driver", NIL);
+      ret = 0;
+      goto fin;
+    }
+  repl_c_string_entered = 1;
   func_trace = NULL;
 #endif
 #if (NESTED_REPL_C_STRING)
@@ -810,6 +820,8 @@ repl_driver (long want_init, struct repl_hooks *h)
  fin:
 #if (NESTED_REPL_C_STRING)
   siod_gc_unprotect_stack(&stack_start);
+#else
+  repl_c_string_entered = 0;
 #endif
   return ret;
 }
@@ -4692,6 +4704,9 @@ siod_init (int argc, char **argv, int warnflag, FILE *fp)
   unbound_marker = NIL;
   obarray = NULL;
   repl_return_val = NIL;
+#if (!NESTED_REPL_C_STRING)
+  repl_c_string_entered = 0;
+#endif
   obarray_dim = 100;
   catch_framep = (struct catch_frame *) NULL;
   repl_puts = NULL;

@@ -359,12 +359,22 @@ uim_bool
 uim_scm_require_file(const char *fn)
 {
   uim_bool succeeded;
+#ifndef UIM_SCM_NESTED_EVAL
+  uim_lisp _fn;
+#endif
 
   if (!fn)
     return UIM_FALSE;
 
+#ifdef UIM_SCM_NESTED_EVAL
   UIM_EVAL_FSTRING2(NULL, "(eq? '*%s-loaded* (*catch 'errobj (require \"%s\")))", fn, fn);
   succeeded = uim_scm_c_bool(uim_scm_return_value());
+#else
+  /* broken: does not support direct call from C */
+  _fn = uim_scm_make_str(fn);
+  require((LISP)_fn);
+  succeeded = UIM_TRUE;  /* bogus result */
+#endif
 
   return succeeded;
 }

@@ -48,6 +48,9 @@
 #include "config.h"
 #include "uim.h"
 #include "uim-scm.h"
+#ifdef UIM_SCM_NESTED_EVAL
+#include "uim-compat-scm.h"
+#endif
 #include "plugin.h"
 #include "context.h"
 
@@ -67,8 +70,13 @@ plugin_load(uim_lisp _name) {
   uim_plugin_info_list *info_list_entry;
   char *tmp;
   char *plugin_lib_filename, *plugin_scm_filename;
+#ifdef UIM_SCM_NESTED_EVAL
   uim_lisp lib_path = uim_scm_eval_c_string("uim-plugin-lib-load-path");
   uim_lisp scm_path = uim_scm_eval_c_string("uim-plugin-scm-load-path");
+#else
+  uim_lisp lib_path = uim_scm_symbol_value("uim-plugin-lib-load-path");
+  uim_lisp scm_path = uim_scm_symbol_value("uim-plugin-scm-load-path");
+#endif
   uim_lisp path_car, path_cdr;
 
   size_t len;
