@@ -3039,6 +3039,7 @@
      (uim '(begin
 	     (define enable-ja-nicola-jp106-pseudo-thumb-shift? #t)
 	     (require "evmap.scm")
+	     (require "event-translator.scm")
 	     (define key-event-translator-ruletree
 	       (evmap-parse-ruleset key-event-translator-ruleset))
 	     (define test-ruletree (evmap-parse-ruleset
