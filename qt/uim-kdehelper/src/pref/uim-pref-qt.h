@@ -43,6 +43,8 @@
 #include <qpushbutton.h>
 #include <qvbox.h>
 #include <qhbox.h>
+#include <qvgroupbox.h>
+#include <qmap.h>
 
 #include <uim/uim.h>
 #include <uim/uim-custom.h>
@@ -61,14 +63,14 @@ protected:
     void createGroupWidgets();
     QWidget* createGroupWidget( const char *grpname );
 
-    void addCustom( QVBox *vbox, const char *custom_sym );
-    void addCustomTypeBool( QVBox *vbox, struct uim_custom *custom );
-    void addCustomTypeInteger( QVBox *vbox, struct uim_custom *custom );
-    void addCustomTypeString( QVBox *vbox, struct uim_custom *custom );
-    void addCustomTypePathname( QVBox *vbox, struct uim_custom *custom );
-    void addCustomTypeChoice( QVBox *vbox, struct uim_custom *custom );
-    void addCustomTypeOrderedList( QVBox *vbox, struct uim_custom *custom );
-    void addCustomTypeKey( QVBox *vbox, struct uim_custom *custom );
+    void addCustom( QVGroupBox *vbox, const char *custom_sym );
+    void addCustomTypeBool( QVGroupBox *vbox, struct uim_custom *custom );
+    void addCustomTypeInteger( QVGroupBox *vbox, struct uim_custom *custom );
+    void addCustomTypeString( QVGroupBox *vbox, struct uim_custom *custom );
+    void addCustomTypePathname( QVGroupBox *vbox, struct uim_custom *custom );
+    void addCustomTypeChoice( QVGroupBox *vbox, struct uim_custom *custom );
+    void addCustomTypeOrderedList( QVGroupBox *vbox, struct uim_custom *custom );
+    void addCustomTypeKey( QVGroupBox *vbox, struct uim_custom *custom );
 
     void confirmChange();
 
@@ -98,6 +100,17 @@ public:
     QConfirmDialog( const QString &msg, QWidget *parent = 0, const char *name = 0 );
 };
 
+//---------------------------------------------------------------------------------
+class SubgroupData {
+public:
+    SubgroupData( QWidget *parentWidget, const char *parent_group_name );
+
+    QVGroupBox *searchGroupVBoxByCustomSym( const char *custom_sym );
+
+protected:
+    QVGroupBox *m_defaultGVBox;
+    QMap<QString, QVGroupBox*> gvboxMap;
+};
 
 
 #endif /* Not def: _UIM_PREF_QT_H_ */

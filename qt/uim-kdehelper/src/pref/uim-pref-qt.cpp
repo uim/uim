@@ -51,6 +51,7 @@
 #include <qlineedit.h>
 #include <qfiledialog.h>
 #include <qcombobox.h>
+#include <qlayout.h>
 
 /*
  * FIXME! : 2004-01-14 Kazuki Ohta <mover@hct.zaq.ne.jp>
@@ -144,13 +145,12 @@ void UimPrefDialog::createGroupWidgets()
         QListViewItem *item = NULL;
         QListViewItem *lastItem = m_groupListView->lastItem();
         if( lastItem )
-            item = new QListViewItem( m_groupListView, lastItem, *grp );
+            item = new QListViewItem( m_groupListView, lastItem, _FU8(group->label) );
         else
-            item = new QListViewItem( m_groupListView, *grp );
-
+            item = new QListViewItem( m_groupListView, _FU8(group->label) );
 
         QWidget *w = createGroupWidget( *grp );
-        m_groupWidgetsDict.insert( *grp, w );
+        m_groupWidgetsDict.insert( _FU8(group->label), w );
         m_groupWidgetStack->addWidget( w );
 
         uim_custom_group_free( group );
@@ -159,22 +159,23 @@ void UimPrefDialog::createGroupWidgets()
 
 QWidget* UimPrefDialog::createGroupWidget( const char *group_name )
 {
-    QVBox *vbox = new QVBox( m_groupWidgetStack );
-    vbox->setSpacing( 3 );
+    QWidget *groupWidget = new QWidget( m_groupWidgetStack );
+    QVBoxLayout *vLayout = new QVBoxLayout( groupWidget );
+    vLayout->setSpacing( 3 );
 
     struct uim_custom_group *group = uim_custom_group_get( group_name );
     if( group == NULL )
         return NULL;
 
-    QLabel *groupLabel = new QLabel( group_name, vbox );
+    QLabel *groupLabel = new QLabel( _FU8(group->label), groupWidget );
     groupLabel->setAlignment( Qt::AlignLeft );
-    new KSeparator( vbox );
-    /*
-    QFont font;
-    font.setWeight( QFont::Bold );
-    font.setPixelSize( fontInfo().pixelSize() + 12 );
-    groupLabel->setFont( font );
-    */
+    vLayout->addWidget( groupLabel );
+    
+    KSeparator *separator = new KSeparator( groupWidget );
+    vLayout->addWidget( separator );
+
+    /* subgroup data */
+    SubgroupData *sd = new SubgroupData( groupWidget, group_name );
 
     /* add various widgets to the vbox */
     char **custom_syms = uim_custom_collect_by_group( group_name );
@@ -182,24 +183,27 @@ QWidget* UimPrefDialog::createGroupWidget( const char *group_name )
     {
         for( char **custom_sym = custom_syms; *custom_sym; custom_sym++ )
         {
+            QVGroupBox *vbox = sd->searchGroupVBoxByCustomSym( *custom_sym );
             addCustom( vbox, *custom_sym );
         }
 
         uim_custom_symbol_list_free( custom_syms );
     }
 
+    /* free */
+    delete sd;
     uim_custom_group_free( group );
 
-    /* buttom up all widgets */
-    vbox->setStretchFactor( new QWidget( vbox ), 1 );
-
-    return vbox;
+    /* bottom up */
+    vLayout->addStretch();
+    
+    return groupWidget;
 }
 
 /*
  * Building up GUI in accordance with Custom Type.
  */
-void UimPrefDialog::addCustom( QVBox *vbox, const char *custom_sym )
+void UimPrefDialog::addCustom( QVGroupBox *vbox, const char *custom_sym )
 {
     struct uim_custom *custom = uim_custom_get( custom_sym );
     if( custom )
@@ -237,14 +241,14 @@ void UimPrefDialog::addCustom( QVBox *vbox, const char *custom_sym )
     }
 }
 
-void UimPrefDialog::addCustomTypeBool( QVBox *vbox, struct uim_custom *custom )
+void UimPrefDialog::addCustomTypeBool( QVGroupBox *vbox, struct uim_custom *custom )
 {
     CustomCheckBox *checkBox = new CustomCheckBox( custom, vbox );
     QObject::connect( checkBox, SIGNAL(customValueChanged()),
                       this, SLOT(slotCustomValueChanged()) );
 }
 
-void UimPrefDialog::addCustomTypeInteger( QVBox *vbox, struct uim_custom *custom )
+void UimPrefDialog::addCustomTypeInteger( QVGroupBox *vbox, struct uim_custom *custom )
 {
     QHBox *hbox = new QHBox( vbox );
     hbox->setSpacing( 6 );
@@ -257,7 +261,7 @@ void UimPrefDialog::addCustomTypeInteger( QVBox *vbox, struct uim_custom *custom
                       this, SLOT(slotCustomValueChanged()) );
 }
 
-void UimPrefDialog::addCustomTypeString( QVBox *vbox, struct uim_custom *custom )
+void UimPrefDialog::addCustomTypeString( QVGroupBox *vbox, struct uim_custom *custom )
 {
     QHBox *hbox = new QHBox( vbox );
     hbox->setSpacing( 6 );
@@ -269,7 +273,7 @@ void UimPrefDialog::addCustomTypeString( QVBox *vbox, struct uim_custom *custom 
                       this, SLOT(slotCustomValueChanged()) );
 }
 
-void UimPrefDialog::addCustomTypePathname( QVBox *vbox, struct uim_custom *custom )
+void UimPrefDialog::addCustomTypePathname( QVGroupBox *vbox, struct uim_custom *custom )
 {
     QHBox *hbox = new QHBox( vbox );
     hbox->setSpacing( 6 );
@@ -281,7 +285,7 @@ void UimPrefDialog::addCustomTypePathname( QVBox *vbox, struct uim_custom *custo
                       this, SLOT(slotCustomValueChanged()) );
 }
 
-void UimPrefDialog::addCustomTypeChoice( QVBox *vbox, struct uim_custom *custom )
+void UimPrefDialog::addCustomTypeChoice( QVGroupBox *vbox, struct uim_custom *custom )
 {
     QHBox *hbox = new QHBox( vbox );
     hbox->setSpacing( 6 );
@@ -294,7 +298,7 @@ void UimPrefDialog::addCustomTypeChoice( QVBox *vbox, struct uim_custom *custom 
                       this, SLOT(slotCustomValueChanged()) );
 }
 
-void UimPrefDialog::addCustomTypeOrderedList( QVBox *vbox, struct uim_custom *custom )
+void UimPrefDialog::addCustomTypeOrderedList( QVGroupBox *vbox, struct uim_custom *custom )
 {
     QHBox *hbox = new QHBox( vbox );
     hbox->setSpacing( 6 );
@@ -306,7 +310,7 @@ void UimPrefDialog::addCustomTypeOrderedList( QVBox *vbox, struct uim_custom *cu
                       this, SLOT(slotCustomValueChanged()) );
 }
 
-void UimPrefDialog::addCustomTypeKey( QVBox *vbox, struct uim_custom *custom )
+void UimPrefDialog::addCustomTypeKey( QVGroupBox *vbox, struct uim_custom *custom )
 {
     // FIXME: not implemented yet
 }
@@ -395,6 +399,57 @@ QConfirmDialog::QConfirmDialog( const QString &msg, QWidget *parent, const char 
 }
 
 //--------------------------------------------------------------------------
+SubgroupData::SubgroupData( QWidget*parentWidget, const char *parent_group_name )
+{
+    // QVGroupBox for other subgroups
+    char **sub_groups = uim_custom_group_subgroups( parent_group_name );
+    char **sgrp;
+    for( sgrp = sub_groups; *sgrp; sgrp++ )
+    {
+        struct uim_custom_group *sgroup_custom =  uim_custom_group_get( *sgrp );
+        /*
+         * 2004-01-31 Kazuki Ohta <mover@hct.zaq.ne.jp>
+         *
+         * The subgroup "main" doesn't contain any contents.
+         * So, we need to create default QVGroupBox for it.
+         */
+        if( QString::compare( *sgrp, "main" ) == 0 )
+        {
+            // QVGroupBox for "main" subgroup
+            m_defaultGVBox = new QVGroupBox( _FU8(sgroup_custom->label), parentWidget );
+            parentWidget->layout()->add( m_defaultGVBox );
+            uim_custom_group_free( sgroup_custom );
+            continue;
+        }
+
+        QVGroupBox *gvbox = new QVGroupBox( _FU8(sgroup_custom->label), parentWidget );
+        parentWidget->layout()->add( gvbox );
+        
+        char **custom_syms = uim_custom_collect_by_group( *sgrp );
+        if( custom_syms )
+        {
+            for( char **custom_sym = custom_syms; *custom_sym; custom_sym++ )
+            {
+                gvboxMap[QString(*custom_sym)] = gvbox;
+            }
+        
+            uim_custom_symbol_list_free( custom_syms );
+        }
+
+        uim_custom_group_free( sgroup_custom );
+    }
+}
+
+QVGroupBox * SubgroupData::searchGroupVBoxByCustomSym( const char *custom_sym )
+{
+    QVGroupBox *b = gvboxMap[QString(custom_sym)];
+    if( b == NULL )
+        return m_defaultGVBox;        
+
+    return b;
+}
+
+//--------------------------------------------------------------------------------------
 int main( int argc, char **argv )
 {
     /*
