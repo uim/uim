@@ -1,6 +1,6 @@
 #!/usr/bin/env gosh
 
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -28,6 +28,13 @@
 ;;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ;;; SUCH DAMAGE.
 ;;;;
+
+;; This file is tested with revision 176 of new repository
+
+;; TODO:
+;;
+;; custom-broadcast-custom
+;; custom-broadcast-customs
 
 (use test.unit)
 
@@ -272,9 +279,9 @@
 		 (uim '(custom-list-primary-groups))))
   ("test custom-collect-by-group"
    ;; defined order have to be kept
-   (assert-equal '(spellcheck-always-show-window? spellcheck-preedit-immediate-commit? spellcheck-candidate-op-count spellcheck-use-candidate-window? generic-nr-candidate-max generic-candidate-op-count generic-use-candidate-window? prime-mask-pending-preedit? prime-preedit-immediate-commit? prime-always-show-window? prime-nr-candidate-max skk-style skk-commit-newline-explicitly? skk-egg-like-newline? skk-use-recursive-learning? skk-nr-candidate-max skk-candidate-op-count skk-use-candidate-window? skk-uim-personal-dic-filename skk-personal-dic-filename skk-dic-file-name canna-server-name custom-preserved-canna-server-name custom-activate-canna-server-name? canna-segment-separator canna-show-segment-separator? canna-nr-candidate-max canna-candidate-op-count canna-use-candidate-window? anthy-segment-separator anthy-show-segment-separator? anthy-nr-candidate-max anthy-candidate-op-count anthy-use-candidate-window? candidate-window-position switch-im-key? enable-im-switch custom-activate-default-im-name? custom-preserved-default-im-name uim-color)
+   (assert-equal '(spellcheck-always-show-window? spellcheck-preedit-immediate-commit? spellcheck-candidate-op-count spellcheck-use-candidate-window? generic-nr-candidate-max generic-candidate-op-count generic-use-candidate-window? prime-mask-pending-preedit? prime-preedit-immediate-commit? prime-always-show-window? prime-nr-candidate-max skk-style skk-commit-newline-explicitly? skk-egg-like-newline? skk-use-recursive-learning? skk-nr-candidate-max skk-candidate-op-count skk-use-candidate-window? skk-uim-personal-dic-filename skk-personal-dic-filename skk-dic-file-name canna-server-name custom-preserved-canna-server-name custom-activate-canna-server-name? canna-segment-separator canna-show-segment-separator? canna-nr-candidate-max canna-candidate-op-count canna-use-candidate-window? anthy-segment-separator anthy-show-segment-separator? anthy-nr-candidate-max anthy-candidate-op-count anthy-use-candidate-window? candidate-window-position enable-im-switch custom-preserved-default-im-name custom-activate-default-im-name? uim-color)
 		 (uim '(custom-collect-by-group #f)))  ;; any group
-   (assert-equal '(candidate-window-position switch-im-key? enable-im-switch custom-activate-default-im-name? custom-preserved-default-im-name uim-color)
+   (assert-equal '(candidate-window-position enable-im-switch custom-preserved-default-im-name custom-activate-default-im-name? uim-color)
 		 (uim '(custom-collect-by-group 'global)))
    (assert-equal '(anthy-segment-separator anthy-show-segment-separator? anthy-nr-candidate-max anthy-candidate-op-count anthy-use-candidate-window?)
 		 (uim '(custom-collect-by-group 'anthy)))
@@ -363,6 +370,7 @@
      (uim '(require "custom.scm"))
      (uim '(define test-hook ()))
      (uim '(define test-custom1-trace ()))
+     (uim '(define test-custom2-trace ()))
      (uim '(define test-custom3-trace ()))
      (uim '(define-custom 'test-custom1 'test-custom1-ddskk
 	     '(global)
@@ -481,6 +489,198 @@
    (assert-equal ()
 		 (uim '(custom-hook-procs 'test-custom2 test-hook))))
 
+  ("test custom-remove-hook"
+   ;; null
+   (assert-equal ()
+		 (uim 'test-hook))
+   (assert-equal ()
+		 (uim '(custom-hook-procs 'test-custom1 test-hook)))
+   (assert-false (uim-bool '(custom-remove-hook 'test-custom1 'test-hook)))
+   (assert-equal ()
+		 (uim '(custom-hook-procs 'test-custom1 test-hook)))
+   ;; null as 'any'
+   (assert-equal ()
+		 (uim 'test-hook))
+   (assert-equal ()
+		 (uim '(custom-hook-procs 'test-custom1 test-hook)))
+   (assert-false (uim-bool '(custom-remove-hook #f 'test-hook)))
+   (assert-equal ()
+		 (uim '(custom-hook-procs 'test-custom1 test-hook)))
+   ;; 1 proc
+   (assert-equal ()
+		 (uim 'test-hook))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 1)))
+   (assert-equal '(1)
+		 (uim '(map (lambda (f) (f))
+			    (custom-hook-procs 'test-custom1 test-hook))))
+   (assert-true  (uim-bool '(custom-remove-hook 'test-custom1 'test-hook)))
+   (assert-equal ()
+		 (uim '(custom-hook-procs 'test-custom1 test-hook)))
+   ;; 2 procs
+   (assert-equal ()
+		 (uim 'test-hook))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 1)))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 2)))
+   (assert-equal '(2 1)
+		 (uim '(map (lambda (f) (f))
+			    (custom-hook-procs 'test-custom1 test-hook))))
+   (assert-true  (uim-bool '(custom-remove-hook 'test-custom1 'test-hook)))
+   (assert-equal ()
+		 (uim '(custom-hook-procs 'test-custom1 test-hook)))
+   ;; 3 procs
+   (assert-equal ()
+		 (uim 'test-hook))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 1)))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 2)))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 3)))
+   (assert-equal '(3 2 1)
+		 (uim '(map (lambda (f) (f))
+			    (custom-hook-procs 'test-custom1 test-hook))))
+   (assert-true  (uim-bool '(custom-remove-hook 'test-custom1 'test-hook)))
+   (assert-equal ()
+		 (uim '(custom-hook-procs 'test-custom1 test-hook)))
+   ;; 3 procs as 'any'
+   (assert-equal ()
+		 (uim 'test-hook))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 1)))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 2)))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 3)))
+   (assert-equal '(3 2 1)
+		 (uim '(map (lambda (f) (f))
+			    (custom-hook-procs 'test-custom1 test-hook))))
+   (assert-true  (uim-bool '(custom-remove-hook #f 'test-hook)))
+   (assert-equal ()
+		 (uim '(custom-hook-procs 'test-custom1 test-hook)))
+   ;; 3 procs * 3 customs (1)
+   (uim '(set! test-hook ()))
+   (assert-equal ()
+		 (uim 'test-hook))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 11)))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 12)))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 13)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 21)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 22)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 23)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 31)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 32)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 33)))
+   (assert-equal '(13 12 11)
+		 (uim '(map (lambda (f) (f))
+			    (custom-hook-procs 'test-custom1 test-hook))))
+   (assert-true  (uim-bool '(custom-remove-hook 'test-custom1 'test-hook)))
+   (assert-equal ()
+		 (uim '(custom-hook-procs 'test-custom1 test-hook)))
+   (assert-equal '(33 32 31 23 22 21)
+		 (uim '(map (lambda (pair) ((cdr pair)))
+			    test-hook)))
+   ;; 3 procs * 3 customs (2)
+   (uim '(set! test-hook ()))
+   (assert-equal ()
+		 (uim 'test-hook))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 11)))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 12)))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 13)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 21)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 22)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 23)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 31)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 32)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 33)))
+   (assert-equal '(23 22 21)
+		 (uim '(map (lambda (f) (f))
+			    (custom-hook-procs 'test-custom2 test-hook))))
+   (assert-true  (uim-bool '(custom-remove-hook 'test-custom2 'test-hook)))
+   (assert-equal ()
+		 (uim '(custom-hook-procs 'test-custom2 test-hook)))
+   (assert-equal '(33 32 31 13 12 11)
+		 (uim '(map (lambda (pair) ((cdr pair)))
+			    test-hook)))
+   ;; 3 procs * 3 customs (3)
+   (uim '(set! test-hook ()))
+   (assert-equal ()
+		 (uim 'test-hook))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 11)))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 12)))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 13)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 21)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 22)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 23)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 31)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 32)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 33)))
+   (assert-equal '(33 32 31)
+		 (uim '(map (lambda (f) (f))
+			    (custom-hook-procs 'test-custom3 test-hook))))
+   (assert-true  (uim-bool '(custom-remove-hook 'test-custom3 'test-hook)))
+   (assert-equal ()
+		 (uim '(custom-hook-procs 'test-custom3 test-hook)))
+   (assert-equal '(23 22 21 13 12 11)
+		 (uim '(map (lambda (pair) ((cdr pair)))
+			    test-hook)))
+   ;; 3 procs * 3 customs (mixed)
+   (uim '(set! test-hook ()))
+   (assert-equal ()
+		 (uim 'test-hook))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 11)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 21)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 31)))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 12)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 22)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 32)))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 13)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 23)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 33)))
+   (assert-equal '(13 12 11)
+		 (uim '(map (lambda (f) (f))
+			    (custom-hook-procs 'test-custom1 test-hook))))
+   (assert-true  (uim-bool '(custom-remove-hook 'test-custom1 'test-hook)))
+   (assert-equal ()
+		 (uim '(custom-hook-procs 'test-custom1 test-hook)))
+   (assert-equal '(33 23 32 22 31 21)
+		 (uim '(map (lambda (pair) ((cdr pair)))
+			    test-hook)))
+   ;; 3 procs * 3 customs (mixed) as 'any'
+   (uim '(set! test-hook ()))
+   (assert-equal ()
+		 (uim 'test-hook))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 11)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 21)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 31)))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 12)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 22)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 32)))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 13)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 23)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 33)))
+   (assert-equal '(33 23 13 32 22 12 31 21 11)
+		 (uim '(map (lambda (pair) ((cdr pair)))
+			    test-hook)))
+   (assert-true  (uim-bool '(custom-remove-hook #f 'test-hook)))
+   (assert-equal ()
+		 (uim 'test-hook))
+   ;; 3 procs * 3 customs (mixed) as non-existent custom
+   (uim '(set! test-hook ()))
+   (assert-equal ()
+		 (uim 'test-hook))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 11)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 21)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 31)))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 12)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 22)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 32)))
+   (uim '(custom-add-hook 'test-custom1 'test-hook (lambda () 13)))
+   (uim '(custom-add-hook 'test-custom2 'test-hook (lambda () 23)))
+   (uim '(custom-add-hook 'test-custom3 'test-hook (lambda () 33)))
+   (assert-equal ()
+		 (uim '(map (lambda (f) (f))
+			    (custom-hook-procs 'test-custom4 test-hook))))
+   (assert-false (uim-bool '(custom-remove-hook 'test-custom4 'test-hook)))
+   (assert-equal ()
+		 (uim '(custom-hook-procs 'test-custom4 test-hook)))
+   (assert-equal '(33 23 13 32 22 12 31 21 11)
+		 (uim '(map (lambda (pair) ((cdr pair)))
+			    test-hook))))
+
   ("test custom-active?"
    (uim '(custom-add-hook 'test-custom1
 			  'custom-activity-hook
@@ -505,7 +705,99 @@
 			  'custom-activity-hook
 			  (lambda ()
 			    (symbol-bound? 'cons))))
-   (assert-false (uim-bool '(custom-active? 'test-custom1)))))
+   (assert-false (uim-bool '(custom-active? 'test-custom1))))
+
+  ("test custom-update-hook"
+   (uim '(custom-add-hook 'test-custom1
+			  'custom-activity-hook
+			  (lambda ()
+			    (eq? test-custom3 'test-custom3-uim))))
+   (uim '(custom-add-hook 'test-custom2
+			  'custom-activity-hook
+			  (lambda ()
+			    (eq? test-custom3 'test-custom3-uim))))
+   (uim '(custom-add-hook 'test-custom1
+			  'custom-update-hook
+			  (lambda ()
+			    (set! test-custom1-trace
+				  (cons 'updated test-custom1-trace)))))
+   (uim '(custom-add-hook 'test-custom2
+			  'custom-update-hook
+			  (lambda ()
+			    (set! test-custom2-trace
+				  (cons 'updated test-custom2-trace)))))
+   (assert-equal ()
+		 (uim 'test-custom1-trace))
+   (assert-equal ()
+		 (uim 'test-custom2-trace))
+   (assert-equal 'test-custom3-ddskk
+		 (uim 'test-custom3))
+   (assert-false (uim-bool '(custom-active? 'test-custom1)))
+   (assert-false (uim-bool '(custom-active? 'test-custom2)))
+   ;; update hook
+   (assert-true  (uim-bool '(custom-set! 'test-custom3 'test-custom3-uim)))
+   (assert-equal '(updated)
+		 (uim 'test-custom1-trace))
+   (assert-equal '(updated)
+		 (uim 'test-custom2-trace))
+   (assert-true  (uim-bool '(custom-active? 'test-custom1)))
+   (assert-true  (uim-bool '(custom-active? 'test-custom2))))
+  ("test custom-update-hook (self update)"
+   (uim '(custom-add-hook 'test-custom1
+			  'custom-activity-hook
+			  (lambda ()
+			    (eq? test-custom1 'test-custom1-uim))))
+   (uim '(custom-add-hook 'test-custom1
+			  'custom-update-hook
+			  (lambda ()
+			    (set! test-custom1-trace
+				  (cons 'updated test-custom1-trace)))))
+   (assert-equal ()
+		 (uim 'test-custom1-trace))
+   (assert-equal 'test-custom1-ddskk
+		 (uim 'test-custom1))
+   (assert-false (uim-bool '(custom-active? 'test-custom1)))
+   ;; update hook
+   (assert-true  (uim-bool '(custom-set! 'test-custom1 'test-custom1-uim)))
+   (assert-equal '(updated)
+		 (uim 'test-custom1-trace))
+   (assert-true  (uim-bool '(custom-active? 'test-custom1))))
+
+  ("test custom-register-update-cb"
+   (uim '(define test-update-gate (lambda (func ptr custom-sym)
+				    (set! test-custom1-trace
+					  (list func ptr custom-sym)))))
+   (uim '(custom-register-update-cb 'test-custom1
+				    'custom1-ptr
+				    test-update-gate 'custom1-func))
+   (assert-equal ()
+		 (uim 'test-custom1-trace))
+   (assert-equal 'test-custom1-ddskk
+		 (uim 'test-custom1))
+   ;; update hook
+   (assert-true  (uim-bool '(custom-set! 'test-custom1 'test-custom1-uim)))
+   (assert-equal '(custom1-func custom1-ptr test-custom1)
+		 (uim 'test-custom1-trace)))
+("test custom-register-update-cb (2 callbaks)"
+   (uim '(define test-update-gate (lambda (func ptr custom-sym)
+				    (set! test-custom1-trace
+					  (cons (list func ptr custom-sym)
+						test-custom1-trace)))))
+   (uim '(custom-register-update-cb 'test-custom1
+				    'custom1-ptr
+				    test-update-gate 'custom1-func))
+   (uim '(custom-register-update-cb 'test-custom1
+				    'custom1-ptr2
+				    test-update-gate 'custom1-func2))
+   (assert-equal ()
+		 (uim 'test-custom1-trace))
+   (assert-equal 'test-custom1-ddskk
+		 (uim 'test-custom1))
+   ;; update hook
+   (assert-true  (uim-bool '(custom-set! 'test-custom1 'test-custom1-uim)))
+   (assert-equal '((custom1-func custom1-ptr test-custom1)
+		   (custom1-func2 custom1-ptr2 test-custom1))
+		 (uim 'test-custom1-trace))))
 
 (define-uim-test-case "testcase custom get and set hooks"
   (setup
@@ -568,7 +860,7 @@
 		 (uim '(custom-value 'test-custom1)))
    (assert-equal '()
 		 (uim 'test-custom1-trace))
-   (uim '(custom-set! 'test-custom1 'test-custom1-uim))
+   (assert-true  (uim-bool '(custom-set! 'test-custom1 'test-custom1-uim)))
    (assert-equal 'test-custom1-uim
 		 (uim '(custom-value 'test-custom1)))
    (assert-equal '()
@@ -581,7 +873,7 @@
 					test-custom1-trace)))))
    (assert-equal '()
 		 (uim 'test-custom1-trace))
-   (uim '(custom-set! 'test-custom1 'test-custom1-canna))
+   (assert-true  (uim-bool '(custom-set! 'test-custom1 'test-custom1-canna)))
    (assert-equal '(second)
 		 (uim 'test-custom1-trace))
    (assert-equal 'test-custom1-canna
@@ -593,7 +885,7 @@
 		 (uim '(custom-value 'test-custom1)))
    (assert-equal '()
 		 (uim 'test-custom1-trace))
-   (uim '(custom-set! 'test-custom1 'test-custom1-uim))
+   (assert-true  (uim-bool '(custom-set! 'test-custom1 'test-custom1-uim)))
    (assert-equal 'test-custom1-uim
 		 (uim '(custom-value 'test-custom1)))
    (assert-equal '()
@@ -608,7 +900,7 @@
 					test-custom1-trace)))))
    (assert-equal '()
 		 (uim 'test-custom1-trace))
-   (uim '(custom-set! 'test-custom1 'test-custom1-ddskk))
+   (assert-true  (uim-bool '(custom-set! 'test-custom1 'test-custom1-ddskk)))
    (assert-equal '(second)
 		 (uim 'test-custom1-trace))
    (assert-equal 'test-custom1-canna
@@ -666,6 +958,15 @@
 	     '(test)
 	     '(pathname)
 	     "Dictionary file"
+	     "long description will be here."))
+     (uim '(define-custom 'test-modelist 'hiragana
+	     '(test)
+	     '(symbol
+	       (hiragana "hiragana" "hiragana")
+	       (katakana "katakana" "katakana")
+	       (latin "latin" "latin")
+	       (wide-latin "wide-latin" "wide-latin"))
+	     "Mode list"
 	     "long description will be here."))))
 
   ("test custom-valid?"
@@ -695,32 +996,32 @@
    (assert-equal 'test-style-ddskk
 		 (uim '(custom-value 'test-style)))
    ;; valid value
-   (uim '(custom-set! 'test-style 'test-style-uim))
+   (assert-true  (uim-bool '(custom-set! 'test-style 'test-style-uim)))
    (assert-equal 'test-style-uim
 		 (uim '(custom-value 'test-style)))
    ;; invalid value is ignored
-   (uim '(custom-set! 'test-style 'test-style-invalid))
+   (assert-false (uim-bool '(custom-set! 'test-style 'test-style-invalid)))
    (assert-equal 'test-style-uim
 		 (uim '(custom-value 'test-style)))
 
    ;; default value
    (assert-true  (uim-bool '(custom-value 'test-use-candidate-window?)))
    ;; valid value
-   (uim '(custom-set! 'test-use-candidate-window? #f))
+   (assert-true  (uim-bool '(custom-set! 'test-use-candidate-window? #f)))
    (assert-false (uim-bool '(custom-value 'test-use-candidate-window?)))
    ;; boolean regards all non-#f value as true
-   (uim '(custom-set! 'test-use-candidate-window? 10))
+   (assert-true (uim-bool '(custom-set! 'test-use-candidate-window? 10)))
    (assert-true (uim-bool '(custom-value 'test-use-candidate-window?)))
 
    ;; default value
    (assert-equal 10
 		 (uim '(custom-value 'test-nr-candidate-max)))
    ;; valid value
-   (uim '(custom-set! 'test-nr-candidate-max 5))
+   (assert-true  (uim-bool '(custom-set! 'test-nr-candidate-max 5)))
    (assert-equal 5
 		 (uim '(custom-value 'test-nr-candidate-max)))
    ;; invalid value is ignored
-   (uim '(custom-set! 'test-nr-candidate-max 25))
+   (assert-false (uim-bool '(custom-set! 'test-nr-candidate-max 25)))
    (assert-equal 5
 		 (uim '(custom-value 'test-nr-candidate-max)))
 
@@ -728,11 +1029,11 @@
    (assert-equal "a string"
 		 (uim '(custom-value 'test-string)))
    ;; valid value
-   (uim '(custom-set! 'test-string "a altered string"))
+   (assert-true  (uim-bool '(custom-set! 'test-string "a altered string")))
    (assert-equal "a altered string"
 		 (uim '(custom-value 'test-string)))
    ;; invalid value is ignored
-   (uim '(custom-set! 'test-string #f))
+   (assert-false (uim-bool '(custom-set! 'test-string #f)))
    (assert-equal "a altered string"
 		 (uim '(custom-value 'test-string)))
 
@@ -740,13 +1041,26 @@
    (assert-equal "/usr/share/skk/SKK-JISYO.L"
 		 (uim '(custom-value 'test-dic-file-name)))
    ;; valid value
-   (uim '(custom-set! 'test-dic-file-name "/usr/local/share/skk/SKK-JISYO.ML"))
+   (assert-true  (uim-bool '(custom-set! 'test-dic-file-name
+					 "/usr/local/share/skk/SKK-JISYO.ML")))
    (assert-equal "/usr/local/share/skk/SKK-JISYO.ML"
 		 (uim '(custom-value 'test-dic-file-name)))
    ;; invalid value is ignored
-   (uim '(custom-set! 'test-dic-file-name #f))
+   (assert-false (uim-bool '(custom-set! 'test-dic-file-name #f)))
    (assert-equal "/usr/local/share/skk/SKK-JISYO.ML"
-		 (uim '(custom-value 'test-dic-file-name))))
+		 (uim '(custom-value 'test-dic-file-name)))
+
+   ;; default value
+   (assert-equal 'hiragana
+		 (uim '(custom-value 'test-modelist)))
+   ;; valid value
+   (assert-true  (uim-bool '(custom-set! 'test-modelist 'latin)))
+   (assert-equal 'latin
+		 (uim '(custom-value 'test-modelist)))
+   ;; invalid value is ignored
+   (assert-false (uim-bool '(custom-set! 'test-modelist 'kanji)))
+   (assert-equal 'latin
+		 (uim '(custom-value 'test-modelist))))
 
   ("test custom-default?"
    ;; default value
@@ -754,20 +1068,20 @@
 		 (uim '(custom-value 'test-style)))
    (assert-true  (uim-bool '(custom-default? 'test-style)))
    ;; valid, but non-default value
-   (uim '(custom-set! 'test-style 'test-style-uim))
+   (assert-true  (uim-bool '(custom-set! 'test-style 'test-style-uim)))
    (assert-false (uim-bool '(custom-default? 'test-style)))
    ;; come back to default
-   (uim '(custom-set! 'test-style 'test-style-ddskk))
+   (assert-true  (uim-bool '(custom-set! 'test-style 'test-style-ddskk)))
    (assert-true  (uim-bool '(custom-default? 'test-style)))
 
    ;; default value
    (assert-true  (uim-bool '(custom-value 'test-use-candidate-window?)))
    (assert-true  (uim-bool '(custom-default? 'test-use-candidate-window?)))
    ;; valid, but non-default value
-   (uim '(custom-set! 'test-use-candidate-window? #f))
+   (assert-true  (uim-bool '(custom-set! 'test-use-candidate-window? #f)))
    (assert-false (uim-bool '(custom-default? 'test-use-candidate-window?)))
    ;; come back to default
-   (uim '(custom-set! 'test-use-candidate-window? #t))
+   (assert-true  (uim-bool '(custom-set! 'test-use-candidate-window? #t)))
    (assert-true  (uim-bool '(custom-default? 'test-use-candidate-window?)))
 
    ;; default value
@@ -775,10 +1089,10 @@
 		 (uim '(custom-value 'test-nr-candidate-max)))
    (assert-true  (uim-bool '(custom-default? 'test-nr-candidate-max)))
    ;; valid, but non-default value
-   (uim '(custom-set! 'test-nr-candidate-max 5))
+   (assert-true  (uim-bool '(custom-set! 'test-nr-candidate-max 5)))
    (assert-false (uim-bool '(custom-default? 'test-nr-candidate-max)))
    ;; come back to default
-   (uim '(custom-set! 'test-nr-candidate-max 10))
+   (assert-true  (uim-bool '(custom-set! 'test-nr-candidate-max 10)))
    (assert-true  (uim-bool '(custom-default? 'test-nr-candidate-max)))
 
    ;; default value
@@ -786,10 +1100,10 @@
 		 (uim '(custom-value 'test-string)))
    (assert-true  (uim-bool '(custom-default? 'test-string)))
    ;; valid, but non-default value
-   (uim '(custom-set! 'test-string "a altered string"))
+   (assert-true  (uim-bool '(custom-set! 'test-string "a altered string")))
    (assert-false (uim-bool '(custom-default? 'test-string)))
    ;; come back to default
-   (uim '(custom-set! 'test-string "a string"))
+   (assert-true  (uim-bool '(custom-set! 'test-string "a string")))
    (assert-true  (uim-bool '(custom-default? 'test-string)))
 
    ;; default value
@@ -797,10 +1111,12 @@
 		 (uim '(custom-value 'test-dic-file-name)))
    (assert-true  (uim-bool '(custom-default? 'test-dic-file-name)))
    ;; valid, but non-default value
-   (uim '(custom-set! 'test-dic-file-name "/usr/local/share/skk/SKK-JISYO.ML"))
+   (assert-true  (uim-bool '(custom-set! 'test-dic-file-name
+					 "/usr/local/share/skk/SKK-JISYO.ML")))
    (assert-false (uim-bool '(custom-default? 'test-dic-file-name)))
    ;; come back to default
-   (uim '(custom-set! 'test-dic-file-name "/usr/share/skk/SKK-JISYO.L"))
+   (assert-true  (uim-bool '(custom-set! 'test-dic-file-name
+					 "/usr/share/skk/SKK-JISYO.L")))
    (assert-true  (uim-bool '(custom-default? 'test-dic-file-name))))
 
   ("test custom-default-value"
@@ -810,7 +1126,7 @@
    (assert-equal 'test-style-ddskk
 		 (uim '(custom-default-value 'test-style)))
    ;; default value is not affected by current value
-   (uim '(custom-set! 'test-style 'test-style-uim))
+   (assert-true  (uim-bool '(custom-set! 'test-style 'test-style-uim)))
    (assert-equal 'test-style-uim
 		 (uim '(custom-value 'test-style)))
    (assert-equal 'test-style-ddskk
@@ -820,7 +1136,7 @@
    (assert-true  (uim-bool '(custom-value 'test-use-candidate-window?)))
    (assert-true  (uim-bool '(custom-default-value 'test-use-candidate-window?)))
    ;; default value is not affected by current value
-   (uim '(custom-set! 'test-use-candidate-window? #f))
+   (assert-true  (uim-bool '(custom-set! 'test-use-candidate-window? #f)))
    (assert-false (uim-bool '(custom-value 'test-use-candidate-window?)))
    (assert-true  (uim-bool '(custom-default-value 'test-use-candidate-window?)))
 
@@ -830,7 +1146,7 @@
    (assert-equal 10
 		 (uim '(custom-default-value 'test-nr-candidate-max)))
    ;; default value is not affected by current value
-   (uim '(custom-set! 'test-nr-candidate-max 5))
+   (assert-true  (uim-bool '(custom-set! 'test-nr-candidate-max 5)))
    (assert-equal 5
 		 (uim '(custom-value 'test-nr-candidate-max)))
    (assert-equal 10
@@ -842,7 +1158,7 @@
    (assert-equal "a string"
 		 (uim '(custom-default-value 'test-string)))
    ;; default value is not affected by current value
-   (uim '(custom-set! 'test-string "a altered string"))
+   (assert-true  (uim-bool '(custom-set! 'test-string "a altered string")))
    (assert-equal "a altered string"
 		 (uim '(custom-value 'test-string)))
    (assert-equal "a string"
@@ -854,7 +1170,8 @@
    (assert-equal "/usr/share/skk/SKK-JISYO.L"
 		 (uim '(custom-default-value 'test-dic-file-name)))
    ;; default value is not affected by current value
-   (uim '(custom-set! 'test-dic-file-name "/usr/local/share/skk/SKK-JISYO.ML"))
+   (assert-true  (uim-bool '(custom-set! 'test-dic-file-name
+					 "/usr/local/share/skk/SKK-JISYO.ML")))
    (assert-equal "/usr/local/share/skk/SKK-JISYO.ML"
 		 (uim '(custom-value 'test-dic-file-name)))
    (assert-equal "/usr/share/skk/SKK-JISYO.L"
@@ -955,7 +1272,46 @@
    (assert-equal "(define test-string \"a string\")"
 		 (uim '(custom-canonical-definition-as-string 'test-string)))
    (assert-equal "(define test-dic-file-name \"/usr/share/skk/SKK-JISYO.L\")"
-		 (uim '(custom-canonical-definition-as-string 'test-dic-file-name)))))
+		 (uim '(custom-canonical-definition-as-string 'test-dic-file-name))))
+
+  ("test custom-as-string"
+   (assert-equal "(define test-style 'test-style-ddskk)"
+		 (uim '(custom-as-string 'test-style)))
+   (uim '(custom-add-hook 'test-style 'custom-literalize-hook
+			  (lambda () "(define test-style 'hooked)")))
+   (assert-equal "(define test-style 'hooked)"
+		 (uim '(custom-as-string 'test-style)))
+   (uim '(custom-add-hook 'test-style 'custom-literalize-hook
+			  (lambda () "(define test-style 'hooked2)")))
+   (assert-equal "(define test-style 'hooked2)(define test-style 'hooked)"
+		 (uim '(custom-as-string 'test-style)))))
+
+(define-uim-test-case "testcase custom interfaces"
+  (setup
+   (lambda ()
+     (uim '(require "custom.scm"))
+     (uim '(define-custom 'test-nr-candidate-max 10
+	     '(test advanced ui)
+	     '(integer 1 20)
+	     "Number of candidates in candidate window at a time"
+	     "long description will be here."))))
+
+  ("test custom-prop-update-custom-handler"
+   (uim '(define test-context (context-new 1 (find-im 'direct #f))))
+   ;; default value
+   (assert-equal 10
+		 (uim '(custom-value 'test-nr-candidate-max)))
+   ;; valid value
+   (assert-true  (uim-bool '(custom-prop-update-custom-handler
+			     test-context 'test-nr-candidate-max 5)))
+   (assert-equal 5
+		 (uim '(custom-value 'test-nr-candidate-max)))
+   ;; invalid value is ignored
+   (assert-false (uim-bool '(custom-prop-update-custom-handler
+			     test-context 'test-nr-candidate-max 25)))
+   (assert-equal 5
+		 (uim '(custom-value 'test-nr-candidate-max)))))
+
 
 (define-uim-test-case "testcase custom canna-server-name"
   (setup
@@ -972,14 +1328,15 @@
    (assert-false (uim-bool 'canna-server-name))
    (assert-false (uim-bool '(custom-active? 'custom-preserved-canna-server-name)))
 
-   (uim '(custom-set! 'custom-preserved-canna-server-name "foo"))
+   (assert-true  (uim-bool '(custom-set! 'custom-preserved-canna-server-name
+					 "foo")))
    (assert-false (uim-bool 'custom-activate-canna-server-name?))
    (assert-equal "foo"
 		 (uim 'custom-preserved-canna-server-name))
    (assert-false (uim-bool 'canna-server-name))
    (assert-false (uim-bool '(custom-active? 'custom-preserved-canna-server-name)))
 
-   (uim '(custom-set! 'custom-activate-canna-server-name? #t))
+   (assert-true  (uim-bool '(custom-set! 'custom-activate-canna-server-name? #t)))
    (assert-true  (uim-bool 'custom-activate-canna-server-name?))
    (assert-equal "foo"
 		 (uim 'custom-preserved-canna-server-name))
@@ -987,7 +1344,7 @@
 		 (uim 'canna-server-name))
    (assert-true  (uim-bool '(custom-active? 'custom-preserved-canna-server-name)))
 
-   (uim '(custom-set! 'custom-activate-canna-server-name? #f))
+   (assert-true  (uim-bool '(custom-set! 'custom-activate-canna-server-name? #f)))
    (assert-false (uim-bool 'custom-activate-canna-server-name?))
    (assert-equal "foo"
 		 (uim 'custom-preserved-canna-server-name))

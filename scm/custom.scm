@@ -270,10 +270,11 @@
 	   (set-symbol-value! sym val)
 	   (custom-call-hook-procs sym custom-set-hook)
 	   (let ((post-activities (map custom-active? custom-syms)))
-	     (for-each (lambda (key pre post)
-			 (if (or (eq? key sym)
+	     (for-each (lambda (another-sym pre post)
+			 (if (or (eq? another-sym sym)
 				 (not (eq? pre post)))
-			     (custom-call-hook-procs sym custom-update-hook)))
+			     (custom-call-hook-procs another-sym
+						     custom-update-hook)))
 		       custom-syms
 		       pre-activities
 		       post-activities)
@@ -378,6 +379,7 @@
 	  (custom-canonical-definition-as-string sym)))))
 
 ;; API
+;; TODO: implement after uim 0.4.6 depending on scm-nested-eval
 (define custom-broadcast-custom
   (lambda (sym)
     ))
@@ -396,6 +398,6 @@
 
 (define custom-register-update-cb
   (lambda (custom-sym ptr gate-func func)
-    (and (custom-rec sym)
+    (and (custom-rec custom-sym)
 	 (let ((cb (lambda () (gate-func func ptr custom-sym))))
 	   (custom-add-hook custom-sym 'custom-update-hook cb)))))
