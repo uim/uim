@@ -86,7 +86,7 @@ libuim_skk_la_CPPFLAGS = -I$(top_srcdir)
 libuimincludedir =  $(includedir)/uim
 
 libuim_la_LDFLAGS = -version-info 0:1:0 -export-symbols-regex uim.\*
-libuim_la_LIBADD = @LIBINTL@ @LIBICONV@
+libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@
 libuim_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DPKGLIBDIR=\"$(pkglibdir)\" \
 		     -DPKGDATADIR=\"$(pkgdatadir)\"
 
@@ -115,10 +115,10 @@ uim_helper_server_SOURCES = uim-helper.c uim-helper-server.c
 uim_sh_LIBS =
 uim_sh_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
 uim_sh_CFLAGS =
-uim_sh_LDADD = libuim.la @LIBICONV@
+uim_sh_LDADD = libuim.la
 uim_sh_SOURCES = uim-sh.c
 
 noinst_PROGRAMS = uim-agent
 
 uim_agent_SOURCES = agent.c
-uim_agent_LDADD   = libuim.la @LIBICONV@
+uim_agent_LDADD   = libuim.la
