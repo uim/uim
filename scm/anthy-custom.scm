@@ -155,7 +155,12 @@
 	 'figure_ja_azik
 	 "£Á"
 	 (N_ "AZIK")
-	 (N_ "AZIK extended romaji input mode"))))
+	 (N_ "AZIK extended romaji input mode"))
+   (list 'action_anthy_nicola
+	 'figure_ja_nicola
+	 "¿Æ"
+	 (N_ "NICOLA")
+	 (N_ "NICOLA input mode"))))
 
 ;;; Buttons
 

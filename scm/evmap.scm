@@ -89,7 +89,8 @@
 (define event-exp-directive-alist
   (list
    (cons 'consume         (lambda (ev) (event-set-consumed! ev #t) #t))
-   (cons 'peek            (lambda (ev) (event-set-consumed! ev 'peek) #t))))
+   (cons 'peek            (lambda (ev) (event-set-consumed! ev 'peek) #t))
+   (cons 'loopback        (lambda (ev) (event-set-loopback! ev #t) #t))))
 
 (define event-exp-predicate
   (lambda (sym)
@@ -696,7 +697,7 @@
 
 (define-record 'evmap-context
   '((root #f)
-    (seq  #f)))  ;; list of evmap-tree
+    (seq  #f)))  ;; ustr of evmap-tree
 (define evmap-context-new-internal evmap-context-new)
 
 (define evmap-context-new
@@ -711,6 +712,11 @@
   (lambda (emc)
     (let ((seq (evmap-context-seq emc)))
       (ustr-end-elem seq))))
+
+;; TODO: write test
+(define evmap-context-initial?
+  (lambda (emc)
+    (ustr-empty? (evmap-context-seq emc))))
 
 (define evmap-context-complete?
   (lambda (emc)
@@ -783,11 +789,15 @@
 			  (ustr-cursor-backside seq)))
 	   (closer-tree (safe-car (evmap-tree-find-branches prev-tree ev))))
       (and closer-tree
-	   (let* ((branches (evmap-tree-branches closer-tree))
-		  (substituted (evmap-tree-new ev #f branches))
-		  (act-exps (evmap-tree-action-seq closer-tree))
-		  (peek (eq? (event-consumed ev)
-			     'peek)))
+	   (let* ((peek (eq? (event-consumed ev)
+			     'peek))
+		  (branches (evmap-tree-branches closer-tree))
+		  (substituted (evmap-tree-new (if peek
+						   (key-event-new) ;; dummy
+						   ev)
+					       #f
+					       branches))
+		  (act-exps (evmap-tree-action-seq closer-tree)))
 	     (ustr-insert-elem! seq substituted)
 	     (evmap-tree-set-action-seq! substituted
 					 (action-exp-seq-extract act-exps emc))

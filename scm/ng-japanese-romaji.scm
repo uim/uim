@@ -280,10 +280,12 @@
     (("v" "y" "o") (("う" "゛" "ょ") ("ヴ" "ョ") ("ｳ" "ﾞ" "ｮ")))
 
     ;; ん
+    (("n" (char-nonvowel press peek loopback)) ("ん" "ン" "ﾝ"))
+    ;; must be placed after above "nk" rule
     (("n" "n")                        ("ん" "ン" "ﾝ"))
-    (("n" (char-nonvowel press peek)) (("ん" ($3 loopback))
-				       ("ン" ($3 loopback))
-				       ("ﾝ"  ($3 loopback))))
+;;    (("n" (char-nonvowel press peek)) (("ん" ($3 loopback))
+;;				       ("ン" ($3 loopback))
+;;				       ("ﾝ"  ($3 loopback))))
 
     ;; 記号
     (("-")         ("ー" "ー" "ｰ"))
