@@ -56,11 +56,7 @@
 #endif
 
 #define PLUGIN_PREFIX "libuim-"
-#ifdef __APPLE__
-  #define PLUGIN_SUFFIX ".dylib"
-#else
-  #define PLUGIN_SUFFIX ".so"
-#endif /* __APPLE__ */
+#define PLUGIN_SUFFIX ".so"
 
 static uim_plugin_info_list *uim_plugin_list = NULL;
 static void plugin_list_append(uim_plugin_info_list *entry);
@@ -179,7 +175,7 @@ plugin_unload(uim_lisp _name)
 void uim_init_plugin(void)
 {
   /* This function is called before scheme files are loaded. Plugin's search 
-   * path(both .so(.dylib) and .scm) should be got from plugin.scm.
+   * path(both .so and .scm) should be got from plugin.scm.
    */
   char *plugin_lib_dir_env;
   char *plugin_scm_dir_env;

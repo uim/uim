@@ -39,7 +39,7 @@ if M17NLIB
   uim_plugin_LTLIBRARIES += libuim-m17nlib.la
   libuim_m17nlib_la_SOURCES = m17nlib.c
   libuim_m17nlib_la_LIBADD = @LIBINTL@ @LIBICONV@ @M17NLIB_LIBS@ libuim.la
-  libuim_m17nlib_la_LDFLAGS = -luim
+  libuim_m17nlib_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
   libuim_m17nlib_la_CPPFLAGS = -I$(top_srcdir)
 endif
 
@@ -47,7 +47,7 @@ if SCIM
   uim_plugin_LTLIBRARIES += libuim-scim.la
   libuim_scim_la_SOURCES = scim.cpp
   libuim_scim_la_LIBADD = @LIBINTL@ @LIBICONV@ @SCIM_LIBS@ libuim.la
-  libuim_scim_la_LDFLAGS = -luim
+  libuim_scim_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
   libuim_scim_la_CXXFLAGS = -I$(top_srcdir) @SCIM_CFLAGS@
 endif
 
@@ -55,7 +55,7 @@ if CANNA
   uim_plugin_LTLIBRARIES += libuim-canna.la
   libuim_canna_la_SOURCES = canna.c
   libuim_canna_la_LIBADD = @LIBINTL@ @LIBICONV@ libuim.la
-  libuim_canna_la_LDFLAGS = -luim
+  libuim_canna_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
   libuim_canna_la_CPPFLAGS = -I$(top_srcdir)
 endif
 
@@ -63,7 +63,7 @@ if ANTHY
   uim_plugin_LTLIBRARIES += libuim-anthy.la
   libuim_anthy_la_SOURCES = anthy.c
   libuim_anthy_la_LIBADD = @LIBINTL@ @LIBICONV@ libuim.la
-  libuim_anthy_la_LDFLAGS = -luim
+  libuim_anthy_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
   libuim_anthy_la_CPPFLAGS = -I$(top_srcdir)
 endif
 
