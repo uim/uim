@@ -910,14 +910,14 @@
        ;; behavior.
        ;; 1. commits "n" as kana according to kana-mode
        ;; 2. commits " " as native space (such as Qt::Key_Space)
+       ;;    unless expected rkc list includes " "
        (if (skk-plain-space-key? key key-state)
 	   (begin
-	     (set! res (rk-push-key! rkc key-str))
-	     ;; For special exception, don't commit native space if
-	     ;; this key sequcence produce zenkaku space.
-	     (if (not (and res
-			   (string=? (car res) "¡¡")))
-		 (skk-commit-raw-with-preedit-update sc key key-state))
+	     (if (string-find (rk-expect rkc) " ")
+		 (set! res (rk-push-key! rkc key-str))
+		 (begin
+		   (set! res (rk-push-key! rkc key-str))
+		   (skk-commit-raw-with-preedit-update sc key key-state)))
 	     #f)
 	   #t)
        ;; bad strategy. see bug #528
