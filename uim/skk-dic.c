@@ -101,6 +101,8 @@ static struct dic_info {
   int size;
   /* head of cached skk dictionary line list. LRU ordered */
   struct skk_line head;
+  /* timestamp of personal dictonary */
+  time_t personal_dic_timestamp;
 } *skk_dic;
 
 /* completion */
@@ -180,24 +182,24 @@ open_dic(const char *fn)
   struct dic_info *di;
   struct stat st;
   int fd;
-  void *addr;
+  void *addr = NULL;
+  int success = 0;
+
   fd = open(fn, O_RDONLY);
-  if (fd == -1) {
-    return NULL;
+  if (fd != -1) {
+    if (fstat(fd, &st) != -1) {
+      addr = mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+      if (addr != MAP_FAILED) {
+	success = 1;
+      }
+    }
   }
-  if(fstat(fd, &st) == -1) {
-    return NULL;
-  }
-  addr = mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
   close(fd);
-  if (addr == MAP_FAILED) {
-    return NULL;
-  }
   di = (struct dic_info *)malloc(sizeof(struct dic_info));
   di->addr = addr;
-  di->size = st.st_size;
-  di->first = find_first_line(di);
-  di->border = find_border(di, st.st_size);
+  di->size = success ? st.st_size : NULL;
+  di->first = success ? find_first_line(di) : NULL;
+  di->border = success ? find_border(di, st.st_size) : NULL;
   di->head.next = NULL;
   return di;
 }
@@ -518,7 +520,7 @@ skk_search_line_from_file(struct dic_info *di, char *s, char okuri_head)
   char *idx = alloca(strlen(s) + 2);
   struct skk_line *sl;
 
-  if (!di) {
+  if (!di->addr) {
     return NULL;
   }
   sprintf(idx, "%s%c",s, okuri_head);
@@ -569,9 +571,9 @@ find_cand_array(struct dic_info *di, char *s,
   struct skk_cand_array *ca;
   int from_file = 0;
 
-  sl = skk_search_line_from_cache(skk_dic, s, okuri_head);
+  sl = skk_search_line_from_cache(di, s, okuri_head);
   if (!sl) {
-    sl = skk_search_line_from_file(skk_dic, s, okuri_head);
+    sl = skk_search_line_from_file(di, s, okuri_head);
     if (!sl) {
       if (!create_if_not_found) {
 	return NULL;
@@ -590,7 +592,7 @@ find_cand_array(struct dic_info *di, char *s,
     merge_candidate_array(sl, ca);
     ca->is_used = 1;
     if (!from_file) {
-      sl_file = skk_search_line_from_file(skk_dic, s, okuri_head);
+      sl_file = skk_search_line_from_file(di, s, okuri_head);
       merge_candidate_array(sl_file, ca);
       free_skk_line(sl_file);
     }
@@ -1476,9 +1478,6 @@ parse_dic_line(char *line)
   char *buf, *sep;
   struct skk_line *sl;
   int i;
-  if (!skk_dic) {
-    return ;
-  }
 
   buf = alloca(strlen(line)+1);
   strcpy(buf, line);
@@ -1548,10 +1547,6 @@ skk_lib_save_personal_dictionary(LISP fn_)
   char *fn = uim_get_c_string(fn_);
   struct skk_line *sl;
 
-  if (!skk_dic) {
-    return NIL;
-  }
-
   if (fn) {
     fp = fopen(fn, "w");
     free(fn);
@@ -1603,6 +1598,22 @@ skk_lib_read_personal_dictionary(LISP fn_)
 }
 
 static LISP
+skk_lib_get_annotation(LISP str_)
+{
+  char *str = uim_get_c_string(str_);
+  char *sep = strrchr(str, ';');
+  LISP res;
+  if (sep) {
+    sep++;
+    res = strcons(strlen(sep), sep);
+  } else {
+    res = strcons(strlen(""), "");
+  }
+  free(str);
+  return res;
+}
+
+static LISP
 skk_lib_remove_annotation(LISP str_)
 {
   char *str = uim_get_c_string(str_);
@@ -1630,6 +1641,7 @@ uim_init_skk_dic(void)
   init_subr_4("skk-lib-get-nr-candidates", skk_get_nr_candidates);
   init_subr_5("skk-lib-commit-candidate", skk_commit_candidate);
   init_subr_4("skk-lib-learn-word", skk_learn_word);
+  init_subr_1("skk-lib-get-annotation", skk_lib_get_annotation);
   init_subr_1("skk-lib-remove-annotation", skk_lib_remove_annotation);
   init_subr_1("skk-lib-get-completion", skk_get_completion);
   init_subr_2("skk-lib-get-nth-completion", skk_get_nth_completion);
@@ -1641,10 +1653,9 @@ void
 uim_quit_skk_dic(void)
 {
   struct skk_line *sl, *tmp;
-  if (!skk_dic) {
-    return ;
+  if (skk_dic->addr) {
+    munmap(skk_dic->addr, skk_dic->size);
   }
-  munmap(skk_dic->addr, skk_dic->size);
   sl = skk_dic->head.next;
   while (sl) {
     tmp = sl;
