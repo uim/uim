@@ -65,13 +65,14 @@ pref_tree_selection_changed(GtkTreeSelection *selection,
   GtkTreeIter iter;
   GtkTreeModel *model;
   char *group_name;
+
   /* Preference save check should be here. */
 
   if(gtk_tree_selection_get_selected(selection, &model, &iter) == FALSE)
     return TRUE;
-  
+
   store = GTK_TREE_STORE(model);
-  gtk_tree_model_get(model, &iter, 
+  gtk_tree_model_get(model, &iter,
 		     GROUP_COLUMN, &group_name,
 		     -1);
 
@@ -125,10 +126,6 @@ create_pref_treeview(void)
   gtk_tree_view_set_model (GTK_TREE_VIEW(pref_tree_view), GTK_TREE_MODEL(tree_store));
   g_object_unref (tree_store);
   gtk_tree_view_set_rules_hint (GTK_TREE_VIEW(pref_tree_view), TRUE);
-  /* expand all rows after the treeview widget has been realized */
-  g_signal_connect (G_OBJECT(pref_tree_view), "realize",
-		    G_CALLBACK (gtk_tree_view_expand_all), NULL);
-  
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (pref_tree_view));
   gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
   g_signal_connect (G_OBJECT(selection), "changed",
@@ -301,12 +298,36 @@ add_custom(GtkWidget *vbox, const char *custom_sym)
   }
 }
 
+static GtkWidget *
+create_setting_button_box(const char *group_name)
+{
+  GtkWidget *setting_button_box;
+  GtkWidget *button;
+
+  setting_button_box = gtk_hbutton_box_new();
+  gtk_button_box_set_layout(GTK_BUTTON_BOX(setting_button_box), GTK_BUTTONBOX_END);
+  gtk_box_set_spacing(GTK_BOX(setting_button_box), 8);
+
+  /* Cancel button */
+  button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+  g_signal_connect(G_OBJECT(button), "clicked",
+		   G_CALLBACK(gtk_main_quit), NULL);
+  gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 2);
+
+  /* Apply button */
+  button = gtk_button_new_from_stock(GTK_STOCK_OK);
+  /*  g_signal_connect(G_OBJECT(button), "clicked",
+		   G_CALLBACK(change_input_method), radio0);*/
+  gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 2);
+  return setting_button_box;
+}
 
 static GtkWidget *
 create_pref_widget(const char *group_name)
 {
   GtkWidget *vbox;
   GtkWidget *group_label;
+  GtkWidget *setting_button_box;
   struct uim_custom_group *group;
   char **custom_syms, **custom_sym;
   char *label_text;
@@ -319,7 +340,7 @@ create_pref_widget(const char *group_name)
     return NULL;
 
   group_label = gtk_label_new("");
-  label_text  = g_markup_printf_escaped("<span size=\"x-large\">%s</span>",
+  label_text  = g_markup_printf_escaped("<span size=\"xx-large\">%s</span>",
 					group->label);
 					
   gtk_label_set_markup(group_label, label_text);
@@ -337,6 +358,9 @@ create_pref_widget(const char *group_name)
     }
     uim_custom_symbol_list_free(custom_syms);
   }
+  
+  setting_button_box = create_setting_button_box(group_name);
+  gtk_box_pack_end(GTK_BOX(vbox), setting_button_box, FALSE, FALSE, 8);
 
   g_object_unref(spin_button_sgroup);
   return vbox;
