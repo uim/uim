@@ -55,12 +55,13 @@
 (define anthy-input-rule-azik 2)
 (define anthy-input-rule-nicola 3)
 
-(define anthy-direct-convert-opposite-kana -1)
-(define anthy-direct-convert-hiragana -2)
-(define anthy-direct-convert-katakana -3)
-(define anthy-direct-convert-hankana -4)
-(define anthy-direct-convert-latin -5)
-(define anthy-direct-convert-wide-latin -6)
+(define anthy-transpose-idx-opposite-kana -1)
+(define anthy-transpose-idx-hiragana -2)
+(define anthy-transpose-idx-katakana -3)
+(define anthy-transpose-idx-hankana -4)
+(define anthy-transpose-idx-latin -5)
+(define anthy-transpose-idx-wide-latin -6)
+(define anthy-transpose-idx-end -6)
 
 (define anthy-hiragana-mode?
   (lambda (ac)
@@ -196,29 +197,29 @@
 				 "Go right"
 				 "Go right")
 
-(anthy-register-per-state-action 'action_anthy_commit_as_opposite_kana
-				 "Commit as opposite kana"
-				 "Commit as opposite kana")
+(anthy-register-per-state-action 'action_anthy_transpose_to_opposite_kana
+				 "Transpose to opposite kana"
+				 "Transpose to opposite kana")
 
-(anthy-register-per-state-action 'action_anthy_commit_as_hiragana
-				 "Commit as hiragana"
-				 "Commit as hiragana")
+(anthy-register-per-state-action 'action_anthy_transpose_to_hiragana
+				 "Transpose to hiragana"
+				 "Transpose to hiragana")
 
-(anthy-register-per-state-action 'action_anthy_commit_as_katakana
-				 "Commit as katakana"
-				 "Commit as katakana")
+(anthy-register-per-state-action 'action_anthy_transpose_to_katakana
+				 "Transpose to katakana"
+				 "Transpose to katakana")
 
-(anthy-register-per-state-action 'action_anthy_commit_as_halfkana
-				 "Commit as halfwidth kana"
-				 "Commit as halfwidth katakana")
+(anthy-register-per-state-action 'action_anthy_transpose_to_halfkana
+				 "Transpose to halfwidth kana"
+				 "Transpose to halfwidth katakana")
 
-(anthy-register-per-state-action 'action_anthy_commit_as_half_alnum
-				 "Commit as halfwidth alphanumeric"
-				 "Commit as halfwidth alphanumeric")
+(anthy-register-per-state-action 'action_anthy_transpose_to_half_alnum
+				 "Transpose to halfwidth alphanumeric"
+				 "Transpose to halfwidth alphanumeric")
 
-(anthy-register-per-state-action 'action_anthy_commit_as_full_alnum
-				 "Commit as fullwidth alphanumeric"
-				 "Commit as fullwidth alphanumeric")
+(anthy-register-per-state-action 'action_anthy_transpose_to_full_alnum
+				 "Transpose to fullwidth alphanumeric"
+				 "Transpose to fullwidth alphanumeric")
 
 (anthy-register-per-state-action 'action_anthy_prev_page
 				 "Previous page"
@@ -543,13 +544,13 @@
     ((lkey_Right)             (action_anthy_go_right)) ;; generic
     (((mod_Control lkey_f))   (action_anthy_go_right)) ;; generic
     (((mod_Control lkey_F))   (action_anthy_go_right)) ;; generic
-    (((mod_Shift lkey_q))     (action_anthy_commit_as_opposite_kana))
-    (((mod_Shift lkey_Q))     (action_anthy_commit_as_opposite_kana))
-    ((lkey_F6)                (action_anthy_commit_as_hiragana))
-    ((lkey_F7)                (action_anthy_commit_as_katakana))
-    ((lkey_F8)                (action_anthy_commit_as_halfkana))
-    ((lkey_F9)                (action_anthy_commit_as_half_alnum))
-    ((lkey_F10)               (action_anthy_commit_as_full_alnum))
+    (((mod_Shift lkey_q))     (action_anthy_transpose_to_opposite_kana))
+    (((mod_Shift lkey_Q))     (action_anthy_transpose_to_opposite_kana))
+    ((lkey_F6)                (action_anthy_transpose_to_hiragana))
+    ((lkey_F7)                (action_anthy_transpose_to_katakana))
+    ((lkey_F8)                (action_anthy_transpose_to_halfkana))
+    ((lkey_F9)                (action_anthy_transpose_to_half_alnum))
+    ((lkey_F10)               (action_anthy_transpose_to_full_alnum))
     (((mod_Control lkey_j))   (action_anthy_commit)) ;; generic
     (((mod_Control lkey_J))   (action_anthy_commit)) ;; generic
     (((mod_Control lkey_m))   (action_anthy_commit)) ;; generic-return
@@ -592,13 +593,13 @@
      ((lkey_Up)                (action_anthy_prev_candidate))  ;; generic
      (((mod_Control lkey_p))   (action_anthy_prev_candidate))  ;; generic
      (((mod_Control lkey_P))   (action_anthy_prev_candidate))  ;; generic
-     (((mod_Shift lkey_q))     (action_anthy_commit_as_opposite_kana))
-     (((mod_Shift lkey_Q))     (action_anthy_commit_as_opposite_kana))
-     ((lkey_F6)                (action_anthy_commit_as_hiragana))
-     ((lkey_F7)                (action_anthy_commit_as_katakana))
-     ((lkey_F8)                (action_anthy_commit_as_halfkana))
-     ((lkey_F9)                (action_anthy_commit_as_half_alnum))
-     ((lkey_F10)               (action_anthy_commit_as_full_alnum))
+     (((mod_Shift lkey_q))     (action_anthy_transpose_to_opposite_kana))
+     (((mod_Shift lkey_Q))     (action_anthy_transpose_to_opposite_kana))
+     ((lkey_F6)                (action_anthy_transpose_to_hiragana))
+     ((lkey_F7)                (action_anthy_transpose_to_katakana))
+     ((lkey_F8)                (action_anthy_transpose_to_halfkana))
+     ((lkey_F9)                (action_anthy_transpose_to_half_alnum))
+     ((lkey_F10)               (action_anthy_transpose_to_full_alnum))
      (((mod_Control lkey_j))   (action_anthy_commit))  ;; generic
      (((mod_Control lkey_J))   (action_anthy_commit))  ;; generic
      (((mod_Control lkey_m))   (action_anthy_commit))  ;; generic-return
@@ -1093,23 +1094,23 @@
 	((action_anthy_kill_backward)
 	 (ustr-clear-former! preconv-ustr))
 
-	((action_anthy_commit_as_opposite_kana)
-	 (transpose ac anthy-direct-convert-opposite-kana))
+	((action_anthy_transpose_to_opposite_kana)
+	 (transpose ac anthy-transpose-idx-opposite-kana))
 
-	((action_anthy_commit_as_hiragana)
-	 (transpose ac anthy-direct-convert-hiragana))
+	((action_anthy_transpose_to_hiragana)
+	 (transpose ac anthy-transpose-idx-hiragana))
 
-	((action_anthy_commit_as_katakana)
-	 (transpose ac anthy-direct-convert-katakana))
+	((action_anthy_transpose_to_katakana)
+	 (transpose ac anthy-transpose-idx-katakana))
 
-	((action_anthy_commit_as_halfkana)
-	 (transpose ac anthy-direct-convert-hankana))
+	((action_anthy_transpose_to_halfkana)
+	 (transpose ac anthy-transpose-idx-hankana))
 
-	((action_anthy_commit_as_half_alnum)
-	 (transpose ac anthy-direct-convert-latin))
+	((action_anthy_transpose_to_half_alnum)
+	 (transpose ac anthy-transpose-idx-latin))
 
-	((action_anthy_commit_as_full_alnum)
-	 (transpose ac anthy-direct-convert-wide-latin))
+	((action_anthy_transpose_to_full_alnum)
+	 (transpose ac anthy-transpose-idx-wide-latin))
 
 	;; commit current preedit string, then toggle hiragana/katakana mode.
 	((action_anthy_commit_and_toggle_kana)
@@ -1154,17 +1155,17 @@
 (define anthy-transpose-idx->ruletree
   (let ((idx->type-alist
 	 (list
-	  (cons anthy-direct-convert-hiragana anthy-type-hiragana)
-	  (cons anthy-direct-convert-katakana anthy-type-katakana)
-	  (cons anthy-direct-convert-hankana  anthy-type-hankana))))
+	  (cons anthy-transpose-idx-hiragana anthy-type-hiragana)
+	  (cons anthy-transpose-idx-katakana anthy-type-katakana)
+	  (cons anthy-transpose-idx-hankana  anthy-type-hankana))))
     (lambda (ac idx)
       (let* ((input-rule (anthy-context-input-rule ac))
 	     (kana-mode (anthy-context-kana-mode ac))
-	     (trans-kana (if (= idx anthy-direct-convert-opposite-kana)
+	     (trans-kana (if (= idx anthy-transpose-idx-opposite-kana)
 			     (multi-segment-opposite-kana kana-mode)
 			     (safe-cdr (assv idx idx->type-alist))))
 	     (on? trans-kana)
-	     (wide? (= idx anthy-direct-convert-wide-latin))
+	     (wide? (= idx anthy-transpose-idx-wide-latin))
 	     (has-preedit? #t))
 	(anthy-ruletree input-rule (or trans-kana kana-mode) on? wide? has-preedit?)))))
 
@@ -1277,7 +1278,7 @@
 	   (compensated-idx (cond
 			     ((>= idx max)
 			      0)
-			     ((< idx anthy-direct-convert-wide-latin)
+			     ((< idx anthy-transpose-idx-end)
 			      (- max 1))
 			     (else
 			      idx))))
@@ -1366,29 +1367,23 @@
     (let ((preconv-ustr (anthy-context-preconv-ustr ac))
 	  (segments (anthy-context-segments ac)))
       (case act-id
-	;; transpose current segment to opposite kana
-	((action_anthy_commit_as_opposite_kana)
-	 (anthy-set-candidate ac anthy-direct-convert-opposite-kana))
+	((action_anthy_transpose_to_opposite_kana)
+	 (anthy-set-candidate ac anthy-transpose-idx-opposite-kana))
 
-	;; transpose current segment to hiragana
-	((action_anthy_commit_as_hiragana)
-	 (anthy-set-candidate ac anthy-direct-convert-hiragana))
+	((action_anthy_transpose_to_hiragana)
+	 (anthy-set-candidate ac anthy-transpose-idx-hiragana))
 
-	;; transpose current segment to katakana
-	((action_anthy_commit_as_katakana)
-	 (anthy-set-candidate ac anthy-direct-convert-katakana))
+	((action_anthy_transpose_to_katakana)
+	 (anthy-set-candidate ac anthy-transpose-idx-katakana))
 
-	;; transpose current segment to halfwidth katakana
-	((action_anthy_commit_as_halfkana)
-	 (anthy-set-candidate ac anthy-direct-convert-hankana))
+	((action_anthy_transpose_to_halfkana)
+	 (anthy-set-candidate ac anthy-transpose-idx-hankana))
 
-	;; transpose current segment to halfwidth alphanumeric
-	((action_anthy_commit_as_half_alnum)
-	 (anthy-set-candidate ac anthy-direct-convert-latin))
+	((action_anthy_transpose_to_half_alnum)
+	 (anthy-set-candidate ac anthy-transpose-idx-latin))
 
-	;; transpose current segment to fullwidth alphanumeric
-	((action_anthy_commit_as_full_alnum)
-	 (anthy-set-candidate ac anthy-direct-convert-wide-latin))
+	((action_anthy_transpose_to_full_alnum)
+	 (anthy-set-candidate ac anthy-transpose-idx-wide-latin))
 
 	((action_anthy_prev_page)
 	 (if (anthy-context-candidate-window ac)
