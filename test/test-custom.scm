@@ -29,11 +29,12 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 254 of new repository
+;; This file is tested with revision 282 of new repository
 
 ;; TODO:
 ;;
-;; custom-broadcast-custom
+;; custom-reload-customs
+;; custom-broadcast-customs
 ;; custom-broadcast-customs
 
 (use test.unit)
@@ -345,7 +346,12 @@
   (setup
    (lambda ()
      (uim '(begin
-	     (load "custom.scm") ;; to reset previously defined groups
+	     (require "custom.scm")
+	     ;; to reset previously defined groups
+	     (define custom-rec-alist ())
+	     (define custom-group-rec-alist ())
+	     (define custom-subgroup-alist ())
+	     
 	     (define test-group-recs-length 0)
 	     (define-custom-group 'global
 	       (_ "Global settings")
@@ -694,7 +700,7 @@
 (define-uim-test-case "testcase custom custom-group methods"
   (setup
    (lambda ()
-     ;;(uim '(load "custom.scm"))
+     (uim '(require "custom.scm"))
      (uim '(define-custom-group
 	    'test-group
 	    "test group"
@@ -1453,6 +1459,7 @@
 		 (uim 'test-style)))
 
   ("test define-custom (key)"
+   ;; single key str
    (assert-false (uim-bool '(symbol-bound? 'test-foo-key)))
    (assert-false (uim-bool '(symbol-bound? 'test-foo-key?)))
 
@@ -1466,7 +1473,24 @@
    (assert-equal '("a")
 		 (uim 'test-foo-key))
    (assert-true  (uim-bool '(symbol-bound? 'test-foo-key?)))
-   (assert-true  (uim-bool '(test-foo-key? (string->charcode "a") 0))))
+   (assert-true  (uim-bool '(test-foo-key? (string->charcode "a") 0)))
+
+   ;; key reference + key str
+   (assert-false (uim-bool '(symbol-bound? 'test-bar-key)))
+   (assert-false (uim-bool '(symbol-bound? 'test-bar-key?)))
+
+   (uim '(define-custom 'test-bar-key '(test-foo-key "b")
+	   '(global)
+	   '(key)
+	   "test bar key"
+	   "long description will be here"))
+
+   (assert-true  (uim-bool '(symbol-bound? 'test-bar-key)))
+   (assert-equal '(test-foo-key "b")
+		 (uim 'test-bar-key))
+   (assert-true  (uim-bool '(symbol-bound? 'test-bar-key?)))
+   (assert-true  (uim-bool '(test-bar-key? (string->charcode "a") 0)))
+   (assert-true  (uim-bool '(test-bar-key? (string->charcode "b") 0))))
 
   ("test define-custom (key) #2"
    (uim '(define test-foo-key '("b")))

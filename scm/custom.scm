@@ -126,11 +126,6 @@
   (lambda (custom-sym)
     #f))
 
-(define-record 'custom-choice-rec
-  '((sym   #f)
-    (label "")
-    (desc  "")))
-
 (define custom-choice-label
   (lambda (custom-sym val-sym)
     (let* ((sym-rec-alist (custom-type-attrs custom-sym))
@@ -213,6 +208,7 @@
 			(custom-rec-sym crec)))
 		 custom-rec-alist))))
 
+;; API
 (define custom-add-hook
   (lambda (custom-sym hook-sym proc)
     (set-symbol-value! hook-sym (cons (cons custom-sym proc)
@@ -260,6 +256,7 @@
   (lambda (sym)
     (assq sym custom-rec-alist)))
 
+;; API
 (define define-custom
   (lambda (sym default groups type label desc)
     (let ((crec (custom-rec-new sym default groups type label desc))
@@ -320,7 +317,8 @@
 	   (set-symbol-value! sym val)
 	   (if (eq? (custom-type sym)
 		    'key)
-	       (define-key-internal (symbolconc sym '?) val))
+	       (define-key-internal (symbolconc sym '?)
+		                    (custom-modify-key-predicate-names val)))
 	   (custom-call-hook-procs sym custom-set-hooks)
 	   (let ((post-activities (map custom-active? custom-syms)))
 	     (for-each (lambda (another-sym pre post)
@@ -443,11 +441,8 @@
 		  (if (eq? (custom-type sym)
 			   'key)
 		      (let ((key-val (custom-list-as-literal
-				      (map (lambda (key)
-					     (if (symbol? key)
-						 (symbolconc key '?)
-						 key))
-					   (custom-value sym)))))
+				      (custom-modify-key-predicate-names
+				       (custom-value sym)))))
 			(list "\n(define-key " var "? " key-val ")"))
 		      ())))))))
 
@@ -474,3 +469,11 @@
     (and (valid? custom-sym)
 	 (let ((cb (lambda () (gate-func func ptr custom-sym))))
 	   (custom-add-hook custom-sym hook cb)))))
+
+(define custom-reload-customs
+  (lambda ()
+    (for-each (lambda (file)
+		(load file))
+	      (reverse custom-required-custom-files))))
+
+(custom-reload-customs)

@@ -663,28 +663,17 @@ uim_init_scm()
   uim_scm_set_lib_path((scm_files) ? scm_files : SCM_FILES);
 
   uim_scm_require_file("im.scm");
-#if 0
-  /* lightweight version of custom.scm - not yet implemented */
-  uim_scm_require_file("custom-rt.scm");
-#else
-  uim_scm_require_file("custom.scm");
-#endif
   uim_scm_require_file("plugin.scm");
+  uim_scm_require_file("custom-rt.scm");
   uim_scm_load_file("loader.scm");
   uim_scm_require_file("direct.scm");  /* must be loaded at last of IMs */
-#if 1
+
+#ifndef UIM_COMPAT_CUSTOM
   /*
     Remove this code once the definition of custom-vars.scm is
     distributed into IM files  -- YamaKen 2005-01-08
   */
-  uim_scm_require_file("custom-vars.scm");
-#endif
-
-#ifndef UIM_COMPAT_CUSTOM
-  /* must be loaded after IMs and before user conf */
-  if (!getenv("LIBUIM_VANILLA")) {
-    uim_custom_load();
-  }
+  UIM_EVAL_STRING(NULL, "(require-custom \"custom-vars.scm\")");
 #endif    
   if (getenv("LIBUIM_VANILLA") ||
       load_conf() == -1) {
