@@ -144,12 +144,7 @@
 	   (showing-candidate? (m17nlib-context-showing-candidate mc)))
       (if showing-candidate?
 	  (if (m17nlib-lib-candidate-show? mid)
-	      (begin
-		(im-activate-candidate-selector
-		 mc
-		 max m17nlib-candidate-max)
-		(im-select-candidate mc
-				     (m17nlib-lib-get-candidate-index mid)))
+	      (im-select-candidate mc (m17nlib-lib-get-candidate-index mid))
 	      (begin
 		(m17nlib-context-set-showing-candidate! mc #f)
 		(im-deactivate-candidate-selector mc mid))) ;end showing candidate
