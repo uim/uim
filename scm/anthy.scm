@@ -759,9 +759,9 @@
 
 (define anthy-do-commit
   (lambda (ac)
-    (anthy-reset-candidate-window ac)
     (im-commit ac (anthy-get-commit-string ac))
     (anthy-commit-string ac)
+    (anthy-reset-candidate-window ac)
     (anthy-flush ac)))
 
 (define anthy-correct-segment-cursor
