@@ -4049,6 +4049,22 @@ mapcar2 (LISP fcn, LISP in1, LISP in2)
 }
 
 static LISP
+mapcar3 (LISP fcn, LISP in1, LISP in2, LISP in3)
+{
+  LISP res, ptr, l1, l2, l3;
+  if (NULLP (in1) || NULLP (in2) || NULLP (in3))
+    return (NIL);
+  res = ptr = cons (lapply (fcn, cons (car (in1), cons (car (in2), cons (car (in3), NIL)))), NIL);
+
+  for (l1 = cdr (in1), l2 = cdr (in2), l3 = cdr(in3);
+       CONSP (l1) && CONSP (l2) && CONSP(l3);
+       l1 = CDR (l1), l2 = CDR (l2), l3 = CDR (l3))
+    ptr = CDR (ptr) = cons (lapply (fcn, cons (CDR (l1), cons (CDR (l2), cons (CDR (l3), NIL)))), CDR (ptr));
+  //    ptr = CDR (ptr) = cons (funcall3 (fcn, CAR (l1), CAR (l2), CAR (l3)),
+  return (res);
+}
+
+static LISP
 llength (LISP obj)
 {
   return (intcons (nlength (obj)));
@@ -4058,12 +4074,15 @@ static LISP
 mapcar (LISP l)
 {
   LISP fcn = car (l);
+
   switch (get_c_int (llength (l)))
     {
     case 2:
       return (mapcar1 (fcn, car (cdr (l))));
     case 3:
       return (mapcar2 (fcn, car (cdr (l)), car (cdr (cdr (l)))));
+    case 4:
+      return (mapcar3 (fcn, car (cdr (l)), car (cdr (cdr (l))), car (cdr (cdr (cdr (l))))));
     default:
       return (my_err ("mapcar case not handled", l));
     }
