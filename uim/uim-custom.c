@@ -938,30 +938,30 @@ uim_custom_set(const struct uim_custom *custom)
 
   switch (custom->type) {
   case UCustom_Bool:
-    UIM_EVAL_FSTRING2(NULL, "(custom-set! '%s #%s)",
+    UIM_EVAL_FSTRING2(NULL, "(custom-set-value! '%s #%s)",
 		      custom->symbol, (custom->value->as_bool) ? "t" : "f");
     break;
   case UCustom_Int:
-    UIM_EVAL_FSTRING2(NULL, "(custom-set! '%s %d)",
+    UIM_EVAL_FSTRING2(NULL, "(custom-set-value! '%s %d)",
 		      custom->symbol, custom->value->as_int);
     break;
   case UCustom_Str:
-    UIM_EVAL_FSTRING2(NULL, "(custom-set! '%s \"%s\")",
+    UIM_EVAL_FSTRING2(NULL, "(custom-set-value! '%s \"%s\")",
 		      custom->symbol, custom->value->as_str);
     break;
   case UCustom_Pathname:
-    UIM_EVAL_FSTRING2(NULL, "(custom-set! '%s \"%s\")",
+    UIM_EVAL_FSTRING2(NULL, "(custom-set-value! '%s \"%s\")",
 		      custom->symbol, custom->value->as_pathname);
     break;
   case UCustom_Choice:
-    UIM_EVAL_FSTRING2(NULL, "(custom-set! '%s '%s)",
+    UIM_EVAL_FSTRING2(NULL, "(custom-set-value! '%s '%s)",
 		      custom->symbol, custom->value->as_choice->symbol);
     break;
   case UCustom_OrderedList:
     {
       char *val;
       val = choice_list_to_str((const struct uim_custom_choice *const *)custom->value->as_olist, " ");
-      UIM_EVAL_FSTRING2(NULL, "(custom-set! '%s '(%s))", custom->symbol, val);
+      UIM_EVAL_FSTRING2(NULL, "(custom-set-value! '%s '(%s))", custom->symbol, val);
       free(val);
     }
     break;
@@ -969,7 +969,7 @@ uim_custom_set(const struct uim_custom *custom)
     {
       char *val;
       val = key_list_to_str((const struct uim_custom_key *const *)custom->value->as_key, " ");
-      UIM_EVAL_FSTRING2(NULL, "(custom-set! '%s '(%s))", custom->symbol, val);
+      UIM_EVAL_FSTRING2(NULL, "(custom-set-value! '%s '(%s))", custom->symbol, val);
       free(val);
     }
     break;

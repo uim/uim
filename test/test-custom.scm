@@ -735,7 +735,7 @@
    (assert-false (uim-bool '(custom-active? 'test-custom1)))
    (assert-false (uim-bool '(custom-active? 'test-custom2)))
    ;; update hook
-   (assert-true  (uim-bool '(custom-set! 'test-custom3 'test-custom3-uim)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-custom3 'test-custom3-uim)))
    (assert-equal '(updated)
 		 (uim 'test-custom1-trace))
    (assert-equal '(updated)
@@ -758,7 +758,7 @@
 		 (uim 'test-custom1))
    (assert-false (uim-bool '(custom-active? 'test-custom1)))
    ;; update hook
-   (assert-true  (uim-bool '(custom-set! 'test-custom1 'test-custom1-uim)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-custom1 'test-custom1-uim)))
    (assert-equal '(updated)
 		 (uim 'test-custom1-trace))
    (assert-true  (uim-bool '(custom-active? 'test-custom1))))
@@ -775,7 +775,7 @@
    (assert-equal 'test-custom1-ddskk
 		 (uim 'test-custom1))
    ;; update hook
-   (assert-true  (uim-bool '(custom-set! 'test-custom1 'test-custom1-uim)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-custom1 'test-custom1-uim)))
    (assert-equal '(custom1-func custom1-ptr test-custom1)
 		 (uim 'test-custom1-trace)))
 ("test custom-register-update-cb (2 callbaks)"
@@ -794,7 +794,7 @@
    (assert-equal 'test-custom1-ddskk
 		 (uim 'test-custom1))
    ;; update hook
-   (assert-true  (uim-bool '(custom-set! 'test-custom1 'test-custom1-uim)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-custom1 'test-custom1-uim)))
    (assert-equal '((custom1-func custom1-ptr test-custom1)
 		   (custom1-func2 custom1-ptr2 test-custom1))
 		 (uim 'test-custom1-trace))))
@@ -860,7 +860,7 @@
 		 (uim '(custom-value 'test-custom1)))
    (assert-equal '()
 		 (uim 'test-custom1-trace))
-   (assert-true  (uim-bool '(custom-set! 'test-custom1 'test-custom1-uim)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-custom1 'test-custom1-uim)))
    (assert-equal 'test-custom1-uim
 		 (uim '(custom-value 'test-custom1)))
    (assert-equal '()
@@ -873,7 +873,7 @@
 					test-custom1-trace)))))
    (assert-equal '()
 		 (uim 'test-custom1-trace))
-   (assert-true  (uim-bool '(custom-set! 'test-custom1 'test-custom1-canna)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-custom1 'test-custom1-canna)))
    (assert-equal '(second)
 		 (uim 'test-custom1-trace))
    (assert-equal 'test-custom1-canna
@@ -885,7 +885,7 @@
 		 (uim '(custom-value 'test-custom1)))
    (assert-equal '()
 		 (uim 'test-custom1-trace))
-   (assert-true  (uim-bool '(custom-set! 'test-custom1 'test-custom1-uim)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-custom1 'test-custom1-uim)))
    (assert-equal 'test-custom1-uim
 		 (uim '(custom-value 'test-custom1)))
    (assert-equal '()
@@ -900,7 +900,7 @@
 					test-custom1-trace)))))
    (assert-equal '()
 		 (uim 'test-custom1-trace))
-   (assert-true  (uim-bool '(custom-set! 'test-custom1 'test-custom1-ddskk)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-custom1 'test-custom1-ddskk)))
    (assert-equal '(second)
 		 (uim 'test-custom1-trace))
    (assert-equal 'test-custom1-canna
@@ -991,37 +991,37 @@
    (assert-equal "/usr/share/skk/SKK-JISYO.L"
 		 (uim '(custom-value 'test-dic-file-name))))
 
-  ("test custom-set!"
+  ("test custom-set-value!"
    ;; default value
    (assert-equal 'test-style-ddskk
 		 (uim '(custom-value 'test-style)))
    ;; valid value
-   (assert-true  (uim-bool '(custom-set! 'test-style 'test-style-uim)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-style 'test-style-uim)))
    (assert-equal 'test-style-uim
 		 (uim '(custom-value 'test-style)))
    ;; invalid value is ignored
-   (assert-false (uim-bool '(custom-set! 'test-style 'test-style-invalid)))
+   (assert-false (uim-bool '(custom-set-value! 'test-style 'test-style-invalid)))
    (assert-equal 'test-style-uim
 		 (uim '(custom-value 'test-style)))
 
    ;; default value
    (assert-true  (uim-bool '(custom-value 'test-use-candidate-window?)))
    ;; valid value
-   (assert-true  (uim-bool '(custom-set! 'test-use-candidate-window? #f)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-use-candidate-window? #f)))
    (assert-false (uim-bool '(custom-value 'test-use-candidate-window?)))
    ;; boolean regards all non-#f value as true
-   (assert-true (uim-bool '(custom-set! 'test-use-candidate-window? 10)))
+   (assert-true (uim-bool '(custom-set-value! 'test-use-candidate-window? 10)))
    (assert-true (uim-bool '(custom-value 'test-use-candidate-window?)))
 
    ;; default value
    (assert-equal 10
 		 (uim '(custom-value 'test-nr-candidate-max)))
    ;; valid value
-   (assert-true  (uim-bool '(custom-set! 'test-nr-candidate-max 5)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-nr-candidate-max 5)))
    (assert-equal 5
 		 (uim '(custom-value 'test-nr-candidate-max)))
    ;; invalid value is ignored
-   (assert-false (uim-bool '(custom-set! 'test-nr-candidate-max 25)))
+   (assert-false (uim-bool '(custom-set-value! 'test-nr-candidate-max 25)))
    (assert-equal 5
 		 (uim '(custom-value 'test-nr-candidate-max)))
 
@@ -1029,11 +1029,11 @@
    (assert-equal "a string"
 		 (uim '(custom-value 'test-string)))
    ;; valid value
-   (assert-true  (uim-bool '(custom-set! 'test-string "a altered string")))
+   (assert-true  (uim-bool '(custom-set-value! 'test-string "a altered string")))
    (assert-equal "a altered string"
 		 (uim '(custom-value 'test-string)))
    ;; invalid value is ignored
-   (assert-false (uim-bool '(custom-set! 'test-string #f)))
+   (assert-false (uim-bool '(custom-set-value! 'test-string #f)))
    (assert-equal "a altered string"
 		 (uim '(custom-value 'test-string)))
 
@@ -1041,12 +1041,12 @@
    (assert-equal "/usr/share/skk/SKK-JISYO.L"
 		 (uim '(custom-value 'test-dic-file-name)))
    ;; valid value
-   (assert-true  (uim-bool '(custom-set! 'test-dic-file-name
+   (assert-true  (uim-bool '(custom-set-value! 'test-dic-file-name
 					 "/usr/local/share/skk/SKK-JISYO.ML")))
    (assert-equal "/usr/local/share/skk/SKK-JISYO.ML"
 		 (uim '(custom-value 'test-dic-file-name)))
    ;; invalid value is ignored
-   (assert-false (uim-bool '(custom-set! 'test-dic-file-name #f)))
+   (assert-false (uim-bool '(custom-set-value! 'test-dic-file-name #f)))
    (assert-equal "/usr/local/share/skk/SKK-JISYO.ML"
 		 (uim '(custom-value 'test-dic-file-name)))
 
@@ -1054,11 +1054,11 @@
    (assert-equal 'hiragana
 		 (uim '(custom-value 'test-modelist)))
    ;; valid value
-   (assert-true  (uim-bool '(custom-set! 'test-modelist 'latin)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-modelist 'latin)))
    (assert-equal 'latin
 		 (uim '(custom-value 'test-modelist)))
    ;; invalid value is ignored
-   (assert-false (uim-bool '(custom-set! 'test-modelist 'kanji)))
+   (assert-false (uim-bool '(custom-set-value! 'test-modelist 'kanji)))
    (assert-equal 'latin
 		 (uim '(custom-value 'test-modelist))))
 
@@ -1068,20 +1068,20 @@
 		 (uim '(custom-value 'test-style)))
    (assert-true  (uim-bool '(custom-default? 'test-style)))
    ;; valid, but non-default value
-   (assert-true  (uim-bool '(custom-set! 'test-style 'test-style-uim)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-style 'test-style-uim)))
    (assert-false (uim-bool '(custom-default? 'test-style)))
    ;; come back to default
-   (assert-true  (uim-bool '(custom-set! 'test-style 'test-style-ddskk)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-style 'test-style-ddskk)))
    (assert-true  (uim-bool '(custom-default? 'test-style)))
 
    ;; default value
    (assert-true  (uim-bool '(custom-value 'test-use-candidate-window?)))
    (assert-true  (uim-bool '(custom-default? 'test-use-candidate-window?)))
    ;; valid, but non-default value
-   (assert-true  (uim-bool '(custom-set! 'test-use-candidate-window? #f)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-use-candidate-window? #f)))
    (assert-false (uim-bool '(custom-default? 'test-use-candidate-window?)))
    ;; come back to default
-   (assert-true  (uim-bool '(custom-set! 'test-use-candidate-window? #t)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-use-candidate-window? #t)))
    (assert-true  (uim-bool '(custom-default? 'test-use-candidate-window?)))
 
    ;; default value
@@ -1089,10 +1089,10 @@
 		 (uim '(custom-value 'test-nr-candidate-max)))
    (assert-true  (uim-bool '(custom-default? 'test-nr-candidate-max)))
    ;; valid, but non-default value
-   (assert-true  (uim-bool '(custom-set! 'test-nr-candidate-max 5)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-nr-candidate-max 5)))
    (assert-false (uim-bool '(custom-default? 'test-nr-candidate-max)))
    ;; come back to default
-   (assert-true  (uim-bool '(custom-set! 'test-nr-candidate-max 10)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-nr-candidate-max 10)))
    (assert-true  (uim-bool '(custom-default? 'test-nr-candidate-max)))
 
    ;; default value
@@ -1100,10 +1100,10 @@
 		 (uim '(custom-value 'test-string)))
    (assert-true  (uim-bool '(custom-default? 'test-string)))
    ;; valid, but non-default value
-   (assert-true  (uim-bool '(custom-set! 'test-string "a altered string")))
+   (assert-true  (uim-bool '(custom-set-value! 'test-string "a altered string")))
    (assert-false (uim-bool '(custom-default? 'test-string)))
    ;; come back to default
-   (assert-true  (uim-bool '(custom-set! 'test-string "a string")))
+   (assert-true  (uim-bool '(custom-set-value! 'test-string "a string")))
    (assert-true  (uim-bool '(custom-default? 'test-string)))
 
    ;; default value
@@ -1111,11 +1111,11 @@
 		 (uim '(custom-value 'test-dic-file-name)))
    (assert-true  (uim-bool '(custom-default? 'test-dic-file-name)))
    ;; valid, but non-default value
-   (assert-true  (uim-bool '(custom-set! 'test-dic-file-name
+   (assert-true  (uim-bool '(custom-set-value! 'test-dic-file-name
 					 "/usr/local/share/skk/SKK-JISYO.ML")))
    (assert-false (uim-bool '(custom-default? 'test-dic-file-name)))
    ;; come back to default
-   (assert-true  (uim-bool '(custom-set! 'test-dic-file-name
+   (assert-true  (uim-bool '(custom-set-value! 'test-dic-file-name
 					 "/usr/share/skk/SKK-JISYO.L")))
    (assert-true  (uim-bool '(custom-default? 'test-dic-file-name))))
 
@@ -1126,7 +1126,7 @@
    (assert-equal 'test-style-ddskk
 		 (uim '(custom-default-value 'test-style)))
    ;; default value is not affected by current value
-   (assert-true  (uim-bool '(custom-set! 'test-style 'test-style-uim)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-style 'test-style-uim)))
    (assert-equal 'test-style-uim
 		 (uim '(custom-value 'test-style)))
    (assert-equal 'test-style-ddskk
@@ -1136,7 +1136,7 @@
    (assert-true  (uim-bool '(custom-value 'test-use-candidate-window?)))
    (assert-true  (uim-bool '(custom-default-value 'test-use-candidate-window?)))
    ;; default value is not affected by current value
-   (assert-true  (uim-bool '(custom-set! 'test-use-candidate-window? #f)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-use-candidate-window? #f)))
    (assert-false (uim-bool '(custom-value 'test-use-candidate-window?)))
    (assert-true  (uim-bool '(custom-default-value 'test-use-candidate-window?)))
 
@@ -1146,7 +1146,7 @@
    (assert-equal 10
 		 (uim '(custom-default-value 'test-nr-candidate-max)))
    ;; default value is not affected by current value
-   (assert-true  (uim-bool '(custom-set! 'test-nr-candidate-max 5)))
+   (assert-true  (uim-bool '(custom-set-value! 'test-nr-candidate-max 5)))
    (assert-equal 5
 		 (uim '(custom-value 'test-nr-candidate-max)))
    (assert-equal 10
@@ -1158,7 +1158,7 @@
    (assert-equal "a string"
 		 (uim '(custom-default-value 'test-string)))
    ;; default value is not affected by current value
-   (assert-true  (uim-bool '(custom-set! 'test-string "a altered string")))
+   (assert-true  (uim-bool '(custom-set-value! 'test-string "a altered string")))
    (assert-equal "a altered string"
 		 (uim '(custom-value 'test-string)))
    (assert-equal "a string"
@@ -1170,7 +1170,7 @@
    (assert-equal "/usr/share/skk/SKK-JISYO.L"
 		 (uim '(custom-default-value 'test-dic-file-name)))
    ;; default value is not affected by current value
-   (assert-true  (uim-bool '(custom-set! 'test-dic-file-name
+   (assert-true  (uim-bool '(custom-set-value! 'test-dic-file-name
 					 "/usr/local/share/skk/SKK-JISYO.ML")))
    (assert-equal "/usr/local/share/skk/SKK-JISYO.ML"
 		 (uim '(custom-value 'test-dic-file-name)))
@@ -1328,7 +1328,7 @@
    (assert-false (uim-bool 'canna-server-name))
    (assert-false (uim-bool '(custom-active? 'custom-preserved-canna-server-name)))
 
-   (assert-true  (uim-bool '(custom-set! 'custom-preserved-canna-server-name
+   (assert-true  (uim-bool '(custom-set-value! 'custom-preserved-canna-server-name
 					 "foo")))
    (assert-false (uim-bool 'custom-activate-canna-server-name?))
    (assert-equal "foo"
@@ -1336,7 +1336,7 @@
    (assert-false (uim-bool 'canna-server-name))
    (assert-false (uim-bool '(custom-active? 'custom-preserved-canna-server-name)))
 
-   (assert-true  (uim-bool '(custom-set! 'custom-activate-canna-server-name? #t)))
+   (assert-true  (uim-bool '(custom-set-value! 'custom-activate-canna-server-name? #t)))
    (assert-true  (uim-bool 'custom-activate-canna-server-name?))
    (assert-equal "foo"
 		 (uim 'custom-preserved-canna-server-name))
@@ -1344,7 +1344,7 @@
 		 (uim 'canna-server-name))
    (assert-true  (uim-bool '(custom-active? 'custom-preserved-canna-server-name)))
 
-   (assert-true  (uim-bool '(custom-set! 'custom-activate-canna-server-name? #f)))
+   (assert-true  (uim-bool '(custom-set-value! 'custom-activate-canna-server-name? #f)))
    (assert-false (uim-bool 'custom-activate-canna-server-name?))
    (assert-equal "foo"
 		 (uim 'custom-preserved-canna-server-name))

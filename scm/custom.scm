@@ -262,7 +262,7 @@
 	  (custom-default-value sym)))))
 
 ;; API
-(define custom-set!
+(define custom-set-value!
   (lambda (sym val)
     (and (custom-valid? sym val)
 	 (let* ((custom-syms (custom-collect-by-group #f))
@@ -394,7 +394,7 @@
 
 (define custom-prop-update-custom-handler
   (lambda (context custom-sym val)
-    (custom-set! custom-sym val)))
+    (custom-set-value! custom-sym val)))
 
 (define custom-register-update-cb
   (lambda (custom-sym ptr gate-func func)
