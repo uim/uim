@@ -63,10 +63,3 @@
 ;(load-plugin "libuim-scim.so")
 ;(if (symbol-bound? 'scim-lib-init)
 ;    (require "scim.scm"))
-
-;; Uncomment following line to enable dynamic custom value update via
-;; uim-helper-server. This is temporary solution. custom.scm will be
-;; devided into three parts in future version of uim. custom.scm for
-;; configuration tools, custom-rt.scm for IM bridges (rt stands for
-;; 'runtime'), and per-IM-file 'define-custom's -- 2004-05-19 YamaKen
-;(require "custom.scm")

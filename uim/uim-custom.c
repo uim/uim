@@ -79,6 +79,8 @@ static char *uim_conf_path(const char *subpath);
 static char *custom_file_path(const char *group, pid_t pid);
 static uim_bool prepare_dir(const char *dir);
 static uim_bool uim_conf_prepare_dir(const char *subdir);
+static uim_bool for_each_primary_groups(uim_bool (*func)(const char *));
+static uim_bool uim_custom_load_group(const char *group);
 static uim_bool uim_custom_save_group(const char *group);
 
 static const char str_list_arg[] = "uim-custom-c-str-list-arg";
@@ -502,6 +504,40 @@ uim_conf_prepare_dir(const char *subdir)
 }
 
 static uim_bool
+for_each_primary_groups(uim_bool (*func)(const char *))
+{
+  uim_bool succeeded = UIM_TRUE;
+  char **primary_groups, **grp;
+
+  primary_groups = uim_custom_primary_groups();
+  for (grp = primary_groups; *grp; grp++) {
+    succeeded = (*func)(*grp) && succeeded;
+  }
+  uim_custom_symbol_list_free(primary_groups);
+
+  return succeeded;
+}
+
+static uim_bool
+uim_custom_load_group(const char *group)
+{
+  char *file_path;
+
+  file_path = custom_file_path(group, 0);
+  /* TODO: existence and readability check */
+  UIM_EVAL_FSTRING1(NULL, "(load \"%s\")", file_path);
+  free(file_path);
+
+  return UIM_TRUE;
+}
+
+uim_bool
+uim_custom_load(void)
+{
+  return for_each_primary_groups(uim_custom_load_group);
+}
+
+static uim_bool
 uim_custom_save_group(const char *group)
 {
   char **custom_syms, **sym;
@@ -545,16 +581,7 @@ uim_custom_save_group(const char *group)
 uim_bool
 uim_custom_save(void)
 {
-  uim_bool succeeded = UIM_TRUE;
-  char **primary_groups, **grp;
-
-  primary_groups = uim_custom_primary_groups();
-  for (grp = primary_groups; *grp; grp++) {
-    succeeded = uim_custom_save_group(*grp) && succeeded;
-  }
-  uim_custom_symbol_list_free(primary_groups);
-
-  return succeeded;
+  return for_each_primary_groups(uim_custom_save_group);
 }
 
 uim_bool

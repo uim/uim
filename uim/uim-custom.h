@@ -98,7 +98,10 @@ struct uim_custom_group {
 uim_bool uim_custom_init(void);
 uim_bool uim_custom_quit(void);
 
-/* save customs into the configuration file */
+/* load customs from configuration files ~/.uim.d/customs/custom-*.scm */
+uim_bool uim_custom_load(void);
+
+/* save customs into configuration files ~/.uim.d/customs/custom-*.scm */
 uim_bool uim_custom_save(void);
 
 /* broadcast via helper-server */

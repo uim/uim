@@ -42,6 +42,9 @@
 #include "uim.h"
 #include "uim-im-switcher.h"
 #include "uim-scm.h"
+#ifndef UIM_COMPAT_CUSTOM
+#include "uim-custom.h"
+#endif
 #include "context.h"
 #include "gettext.h"
 
@@ -692,9 +695,29 @@ uim_init_scm()
     siod_set_lib_path(SCM_FILES);
   }
 
+#if 0
+  /*
+    Enable this code for IM bridges once each define-customs have been
+    distributed into each IMs. 'rt' stands for 'runtime'.
+  */
+  uim_scm_load_file("custom-rt.scm");
+#endif
   uim_scm_load_file("im.scm");
   uim_scm_load_file("loader.scm");
   uim_scm_load_file("direct.scm");  /* must be loaded at last of IMs */
+#if 1
+  /*
+    Disable this code once the custom.scm has been divided into 3
+    parts. 'custom-rt.scm' for IM bridges, 'custom.scm' for
+    configuration tools, and define-customs in each IM implementation
+    files such as anthy.scm  -- YamaKen 2004-12-28
+  */
+  uim_scm_load_file("custom.scm");
+#endif
+#ifndef UIM_COMPAT_CUSTOM
+  /* must be loaded after IMs and before user conf */
+  uim_custom_load();
+#endif    
   if (getenv("LIBUIM_VANILLA") ||
       load_conf() == -1) {
     uim_scm_load_file("default.scm");
