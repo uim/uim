@@ -41,12 +41,12 @@
 
 (if (getenv "LIBUIM_PLUGIN_DIR")
     (set! uim-plugin-lib-load-path
-	  (append uim-plugin-lib-load-path
-		  (list (getenv "LIBUIM_PLUGIN_DIR")))))
+	  (append (list (getenv "LIBUIM_PLUGIN_DIR"))
+		  uim-plugin-lib-load-path)))
 (if (getenv "LIBUIM_SCM_FILES")
     (set! uim-plugin-scm-load-path
-	  (append uim-plugin-scm-load-path
-		  (list (getenv "LIBUIM_SCM_FILES")))))
+	  (append (list (getenv "LIBUIM_SCM_FILES"))
+		  uim-plugin-scm-load-path)))
 
 ;;; XXX
 (if (getenv "LD_LIBRARY_PATH")
