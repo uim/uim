@@ -171,11 +171,11 @@
 				    (list 'quote default)
 				    default)))
 	    (eval (list 'define sym quoted-default)
-		  toplevel-env))
-	  (if (eq? (car type)
-		   'key)
-	      (define-key-internal (symbolconc sym '?)
-		(custom-modify-key-predicate-names default)))))))
+		  toplevel-env)
+	    (if (eq? (car type)
+		     'key)
+		(eval (list 'define (symbolconc sym '?) list)))
+	    (custom-set-value! sym default))))))  ;; to apply hooks
 
 ;; lightweight implementation
 ;; warning: no validation performed
