@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 182 of new repository
+;; This file is tested with revision 190 of new repository
 
 ;; TODO:
 ;;
