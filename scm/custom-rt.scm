@@ -184,8 +184,10 @@
 		;; already define-key'ed in ~/.uim
 		(custom-call-hook-procs sym custom-set-hooks)
 		(begin
-		  (eval (list 'define (symbolconc sym '?) list)
-			toplevel-env)
+		  (if (eq? (car type)
+			   'key)
+		      (eval (list 'define (symbolconc sym '?) list)
+			    toplevel-env))
 		  (custom-set-value! sym default))))))))  ;; to apply hooks
 
 ;; lightweight implementation
