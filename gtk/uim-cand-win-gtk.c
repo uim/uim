@@ -259,15 +259,23 @@ tree_selection_changed(GtkTreeSelection *selection,
   idx = *indicies + cwin->display_limit * cwin->page_index;
 
   if (!path_currently_selected && cwin->candidate_index != idx) {
-    cwin->candidate_index = idx;
-    g_signal_emit(G_OBJECT(cwin),
-		  cand_win_gtk_signals[INDEX_CHANGED_SIGNAL], 0);
+    if (cwin->candidate_index >= 0) {
+      cwin->candidate_index = idx;
+      g_signal_emit(G_OBJECT(cwin),
+		    cand_win_gtk_signals[INDEX_CHANGED_SIGNAL], 0);
+    }
 
+    update_label(cwin);
+
+    if (cwin->candidate_index < 0)
+      return FALSE;
+    else
+      return TRUE;
+  } else {
+    update_label(cwin);
+
+    return TRUE;
   }
-
-  update_label(cwin);
-
-  return TRUE;
 }
 
 static gboolean
@@ -388,6 +396,8 @@ uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
   }
 
   uim_cand_win_gtk_set_page(cwin, 0);
+
+  update_label(cwin);
 }
 
 void
