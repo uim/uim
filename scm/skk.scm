@@ -153,10 +153,10 @@
 
 ;; actions of widget_skk_input_mode
 (define skk-input-mode-actions
-  '(action_skk_hiragana
+  '(action_skk_latin
+    action_skk_hiragana
     action_skk_katakana
     action_skk_hankana
-    action_skk_latin
     action_skk_wide_latin))
 
 

@@ -92,10 +92,10 @@
 
 ;; actions of widget_anthy_input_mode
 (define anthy-input-mode-actions
-  '(action_anthy_hiragana
+  '(action_anthy_direct
+    action_anthy_hiragana
     action_anthy_katakana
     action_anthy_hankana
-    action_anthy_direct
     action_anthy_zenkaku))
 
 ;; actions of widget_anthy_kana_input_method

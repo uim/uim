@@ -90,10 +90,10 @@
 
 ;; actions of widget_canna_input_mode
 (define canna-input-mode-actions
-  '(action_canna_hiragana
+  '(action_canna_direct
+    action_canna_hiragana
     action_canna_katakana
     action_canna_hankana
-    action_canna_direct
     action_canna_zenkaku))
 
 ;; actions of widget_canna_kana_input_method
