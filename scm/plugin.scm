@@ -51,10 +51,6 @@
 		(sys-pkgdatadir))))
 		
 
-;; 'print' prevents testing framework from normal run.
-;;(print uim-plugin-lib-load-path)
-;;(print uim-plugin-scm-load-path)
-
 (define plugin-alist ())
 (define plugin-func-alist ())
 
@@ -94,3 +90,28 @@
     (let ((entry (plugin-list-query plugin-name)))
       (and entry
 	   (plugin-entry-quit-proc entry)))))
+
+
+;; holds list of (module-name provided-im-name1 provided-im-name2 ...)
+;; e.g. '("pyload" py pyunihan pinyin-big5)
+(define required-modules-alist ())
+
+;; The name 'module' is imported from a post from Hiroyuki. If you
+;; feel bad about the meaning of 'module', post your opinion to
+;; uim@fdo.
+;;
+;; TODO: write test
+;; returns provided im-names
+(define require-module
+  (lambda (module-name)
+    (let ((pre-im-list im-list))
+      (or (load-plugin module-name)
+	  (require (string-append module-name ".scm")))
+      (let* ((post-im-list im-list)
+	     (nr-new-ims (- (length post-im-list)
+			    (length pre-im-list)))
+	     (new-ims (list-head post-im-list nr-new-ims))
+	     (provided (reverse (map im-name new-ims))))
+	(set! required-modules-alist (cons (cons module-name provided)
+					   required-modules-alist))
+	provided))))

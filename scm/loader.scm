@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -28,33 +28,39 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; the loading order of input methods affecs which IM is preferred at
-;; the default IM selection process for each locale. i.e. list
+;; The described order of input methods affects which IM is preferred
+;; at the default IM selection process for each locale. i.e. list
 ;; preferable IM first for each language
+(define installed-im-module-list
+  '(;; Chinese input methods
+    "pyload"
 
-;; Chinese input methods
-(require "pyload.scm")
+    ;; Japanese input methods
+    "anthy"
+    "canna"
+    "prime"
+    "skk"
+    "tcode"
+    "tutcode"
 
-(load-plugin "anthy")
-(load-plugin "canna")
-(load-plugin "prime")
-(load-plugin "skk")
-(require "tcode.scm")
-(require "tutcode.scm")
+    ;; Korean input methods
+    "hangul"
 
-;; Korean input methods
-(require "hangul.scm")
+    ;; Vietnamese input methods
+    "viqr"
 
-;; Vietnamese input methods
-(require "viqr.scm")
+    ;; other input methods
+    "ipa"
+    ;;"spellcheck"
 
-;; other input methods
-(require "ipa.scm")
-;(require "spellcheck.scm")
+    ;; latin input method
+    "latin"
 
-;; latin input method
-(require "latin.scm")
+    ;; other input method frameworks
+    "m17nlib"
+    ;;"scim"
+    ))
 
-(load-plugin "m17nlib")
-
-;(load-plugin "scim")
+;; don't touch this. This code will be removed once the
+;; enabled-im-list feature is implemented
+(for-each require-module installed-im-module-list)
