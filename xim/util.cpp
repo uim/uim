@@ -87,7 +87,7 @@ int vasprintf(char **ret, const char *fmt, va_list ap)
     int len;
     char c;
 
-    len = vsnprintf(&c, 0, fmt, ap);
+    len = vsnprintf(&c, 1, fmt, ap);
     if (len < 0)
 	return len;
 

@@ -36,6 +36,8 @@
 # include "config.h"
 #endif
 
+#define _GNU_SOURCE
+#include <stdio.h>
 #include <locale.h>
 #include <iconv.h>
 #include <errno.h>
@@ -286,9 +288,6 @@ get_valid_locales(const char *locales)
     char *locale;
     char *tmp, *tmpp;
     int len = 0;
-
-    if (locales == NULL)
-	return NULL;
 
     tmp = tmpp = strdup(locales);
     char *orig_locale = strdup(setlocale(LC_CTYPE, NULL));
