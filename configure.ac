@@ -691,7 +691,6 @@ AC_TYPE_SIGNAL
 SRCDIR=$srcdir
 AC_SUBST(SRCDIR)
 
-PKG_CHECK_MODULES(GLIB, glib-2.0,,)
 
 AC_CONFIG_FILES([test.sh
                  Makefile
