@@ -42,13 +42,13 @@
             <widget class="QListView">
                 <column>
                     <property name="text">
-                        <string>Column 1</string>
+                        <string>Available Items</string>
                     </property>
                     <property name="clickable">
-                        <bool>true</bool>
+                        <bool>false</bool>
                     </property>
                     <property name="resizable">
-                        <bool>false</bool>
+                        <bool>true</bool>
                     </property>
                 </column>
                 <property name="name">

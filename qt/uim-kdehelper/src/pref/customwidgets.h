@@ -176,6 +176,7 @@ private:
     QPtrList<struct uim_custom_choice> m_validItemList;
     QPtrList<struct uim_custom_choice> m_itemList;
 protected:
+    void updateText();
     void initPtrList();
     void currentCustomValueChanged(){ emit customValueChanged(); }
 signals:

@@ -164,23 +164,7 @@ CustomOrderedListEdit::CustomOrderedListEdit( struct uim_custom *c, QWidget *par
     m_editButton = new QToolButton( this );
     m_editButton->setText( "Edit" );
 
-    initPtrList();
-
-    QString str = QString::null;
-    if( m_custom->value->as_olist )
-    {
-        struct uim_custom_choice *item = NULL;
-        int i = 0;
-        for( item = m_custom->value->as_olist[0], i = 0;
-             item;
-             item = m_custom->value->as_olist[++i] )
-        {
-            if( i != 0 )
-                str.append(",");
-            str.append( _FU8(item->label) );
-        }
-    }
-    m_lineEdit->setText( str );
+    updateText();    
 
     QObject::connect( m_editButton, SIGNAL(clicked()),
                       this, SLOT(slotEditButtonClicked()) );
@@ -219,15 +203,25 @@ void CustomOrderedListEdit::initPtrList()
 void CustomOrderedListEdit::slotEditButtonClicked()
 {
     OListEditForm *d = new OListEditForm( this );
+    initPtrList();
 
     /*
-     * Adding items
-     * The item whose symbol doesn't match any valid_item's symbol is inactive.
+     * Adding Enabled Items
+     */
+    for( struct uim_custom_choice *item = m_itemList.first();
+         item;
+         item = m_itemList.next() )
+    {
+        d->addCheckItem( true, _FU8(item->label) );
+    }
+    /*
+     * Adding Disabled Items
      */
     for( struct uim_custom_choice *valid_item = m_validItemList.first();
          valid_item;
          valid_item = m_validItemList.next() )
     {
+        /* Exclude Enabled Item */
         bool isActive = false;
         for( struct uim_custom_choice *item = m_itemList.first();
              item;
@@ -240,7 +234,10 @@ void CustomOrderedListEdit::slotEditButtonClicked()
             }
         }
 
-        d->addCheckItem( isActive, _FU8(valid_item->label) );
+        if( isActive == false )
+        {
+            d->addCheckItem( false, _FU8(valid_item->label) );
+        }
     }
 
     /* Exec Dialog */
@@ -253,7 +250,6 @@ void CustomOrderedListEdit::slotEditButtonClicked()
         QStringList activeItemLabelList = d->activeItemLabels();
         for( unsigned int i = 0; i < activeItemLabelList.count(); i++ )
         {
-            qDebug("label = %s", (const char*)activeItemLabelList[i] );
             struct uim_custom_choice *item = NULL;
             int j = 0;
             for( item = m_custom->range->as_olist.valid_items[0], j = 0;
@@ -268,17 +264,12 @@ void CustomOrderedListEdit::slotEditButtonClicked()
                     activeItem->label  = item->label  ? strdup(item->label)  : NULL;
                     activeItem->desc   = item->desc   ? strdup(item->desc)   : NULL;
                     activeItemList.append( activeItem );
-
-                    qDebug("active sym2 = %s", (const char*)activeItemLabelList[i] );
-                    qDebug("active sym1 = %s", (const char*)_FU8(item->label) );
-                    qDebug("active sym  = %s", (const char*)_FU8(activeItem->symbol) );
-
                     break;
                 }
             }
         }
 
-        /* free old olist */
+        /* free old items */
         for( unsigned int i = 0; i < m_itemList.count(); i++ )
         {
             free( m_custom->value->as_olist[i]->symbol );
@@ -300,8 +291,27 @@ void CustomOrderedListEdit::slotEditButtonClicked()
         setCustom( m_custom );
 
         /* reload */
-        initPtrList();
+        updateText();
     }
+}
+
+void CustomOrderedListEdit::updateText()
+{
+    QString str = QString::null;
+    if( m_custom->value->as_olist )
+    {
+        struct uim_custom_choice *item = NULL;
+        int i = 0;
+        for( item = m_custom->value->as_olist[0], i = 0;
+             item;
+             item = m_custom->value->as_olist[++i] )
+        {
+            if( i != 0 )
+                str.append(",");
+            str.append( _FU8(item->label) );
+        }
+    }
+    m_lineEdit->setText( str );
 }
 
 OListEditForm::OListEditForm( QWidget *parent, const char *name )
