@@ -1497,7 +1497,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
     char *okuri;
     int found = 0;
 
-    okuri = uim_scm_c_str(okuri_);
+    okuri = uim_scm_refer_c_str(okuri_);
     sl = ca->line;
     for (i = 1; i < sl->nr_cand_array; i++) {
       if (!strcmp(okuri, sl->cands[i].okuri)) {
@@ -1505,7 +1505,6 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
 	break;
       }
     }
-    free(okuri);
     if (!found) {
       ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 1);
       reorder_candidate(ca, str);
@@ -1535,7 +1534,7 @@ learn_word_to_cand_array(struct skk_cand_array *ca, char *word)
 }
 
 static char *
-sanitize_word(char *arg)
+sanitize_word(const char *arg)
 {
   char *tmp;
   if (!arg || !strlen(arg)) {
@@ -1555,9 +1554,8 @@ skk_learn_word(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp w
   struct skk_cand_array *ca;
   char *word, *tmp;
 
-  tmp = uim_scm_c_str(word_);
+  tmp = uim_scm_refer_c_str(word_);
   word = sanitize_word(tmp);
-  free(tmp);
   if (!word) {
     return uim_scm_f();
   }
@@ -1567,14 +1565,13 @@ skk_learn_word(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp w
     learn_word_to_cand_array(ca, word);
   }
 
-  tmp = uim_scm_c_str(okuri_);
+  tmp = uim_scm_refer_c_str(okuri_);
   if (strlen(tmp)) {
     ca = find_cand_array_lisp(head_, okuri_head_, uim_scm_null_list(), 1);
     if (ca) {
       learn_word_to_cand_array(ca, word);
     }
   }
-  free(tmp);
   free(word);
   return uim_scm_f();
 }
@@ -1958,7 +1955,7 @@ static uim_lisp
 skk_lib_save_personal_dictionary(uim_lisp fn_)
 {
   FILE *fp;
-  char *fn = uim_scm_c_str(fn_);
+  const char *fn = uim_scm_refer_c_str(fn_);
   struct skk_line *sl;
   struct stat st;
   int lock_fd = -1;
@@ -1969,12 +1966,10 @@ skk_lib_save_personal_dictionary(uim_lisp fn_)
 	update_personal_dictionary_cache(fn);
     }
     if (skk_dic->cache_modified == 0) {
-      free(fn);
       return uim_scm_f();
     }
     lock_fd = open_lock(fn, F_WRLCK);
     fp = fopen(fn, "w");
-    free(fn);
     if (!fp) {
       close_lock(lock_fd);
       return uim_scm_f();
@@ -2002,7 +1997,7 @@ skk_lib_save_personal_dictionary(uim_lisp fn_)
 static uim_lisp
 skk_lib_get_annotation(uim_lisp str_)
 {
-  char *str = uim_scm_c_str(str_);
+  char *str = uim_scm_refer_c_str(str_);
   char *sep = strrchr(str, ';');
   uim_lisp res;
   if (sep) {
@@ -2011,21 +2006,19 @@ skk_lib_get_annotation(uim_lisp str_)
   } else {
     res = uim_scm_make_str("");
   }
-  free(str);
   return res;
 }
 
 static uim_lisp
 skk_lib_remove_annotation(uim_lisp str_)
 {
-  char *str = uim_scm_c_str(str_);
+  char *str = uim_scm_refer_c_str(str_);
   char *sep = strrchr(str, ';');
   uim_lisp res;
   if (sep) {
     *sep = 0;
   }
   res = uim_scm_make_str(str);
-  free(str);
   return res;
 }
 
