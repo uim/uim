@@ -256,6 +256,8 @@ create_pref_treeview(void)
 			-1);
     uim_custom_group_free(group);
   }
+  uim_custom_symbol_list_free( primary_groups );
+
   gtk_tree_view_set_model (GTK_TREE_VIEW(pref_tree_view),
 			   GTK_TREE_MODEL(tree_store));
   g_object_unref (tree_store);
