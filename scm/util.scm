@@ -31,86 +31,6 @@
 
 ;; Current uim implementation treats char as integer
 
-(define char-control?
-  (lambda (c)
-    (and (integer? c)
-	 (or (<= c 31)
-	     (= c 127)))))
-
-(define char-upper-case?
-  (lambda (c)
-    (and (integer? c)
-	 (>= c 65)
-	 (<= c 90))))
-
-(define char-lower-case?
-  (lambda (c)
-    (and (integer? c)
-	 (>= c 97)
-	 (<= c 122))))
-
-(define char-alphabetic?
-  (lambda (c)
-    (or (char-upper-case? c)
-	(char-lower-case? c))))
-
-(define char-numeric?
-  (lambda (c)
-    (and (integer? c)
-	 (>= c 48)
-	 (<= c 57))))
-
-(define char-printable?
-  (lambda (c)
-    (and (integer? c)
-	 (<= c 127)
-	 (not (char-control? c)))))
-
-(define char-graphic?
-  (lambda (c)
-    (and (char-printable? c)
-	 (not (= c 32)))))
-
-;; TODO: write test
-(define char-vowel?
-  (let ((vowel-chars (map string->char
-			  '("a" "i" "u" "e" "o"))))
-    (lambda (c)
-      (and (char-alphabetic? c)
-	   (member (char-downcase c)
-		   vowel-chars)))))
-
-;; TODO: write test
-(define char-consonant?
-  (lambda (c)
-    (and (char-alphabetic? c)
-	 (not (char-vowel? c)))))
-
-(define numeral-char->number
-  (lambda (c)
-    (if (char-numeric? c)
-	(- c 48)
-	c)))
-
-(define char-downcase
-  (lambda (c)
-    (if (char-upper-case? c)
-	(+ c 32)
-	c)))
-
-(define char-upcase
-  (lambda (c)
-    (if (char-lower-case? c)
-	(- c 32)
-	c)))
-
-;; backward compatibility
-(define control-char? char-control?)
-(define alphabet-char? char-alphabetic?)
-(define numeral-char? char-numeric?)
-(define usual-char? char-graphic?)
-(define to-lower-char char-downcase)
-
 ;; TODO: write test
 (define string-escape
   (lambda (s)
@@ -308,6 +228,90 @@
 	    (< n 0))
 	(error "out of range in list-tail")
 	(nthcdr n lst))))
+
+;;
+;; R5RS-like character procedures
+;;
+
+(define char-control?
+  (lambda (c)
+    (and (integer? c)
+	 (or (<= c 31)
+	     (= c 127)))))
+
+(define char-upper-case?
+  (lambda (c)
+    (and (integer? c)
+	 (>= c 65)
+	 (<= c 90))))
+
+(define char-lower-case?
+  (lambda (c)
+    (and (integer? c)
+	 (>= c 97)
+	 (<= c 122))))
+
+(define char-alphabetic?
+  (lambda (c)
+    (or (char-upper-case? c)
+	(char-lower-case? c))))
+
+(define char-numeric?
+  (lambda (c)
+    (and (integer? c)
+	 (>= c 48)
+	 (<= c 57))))
+
+(define char-printable?
+  (lambda (c)
+    (and (integer? c)
+	 (<= c 127)
+	 (not (char-control? c)))))
+
+(define char-graphic?
+  (lambda (c)
+    (and (char-printable? c)
+	 (not (= c 32)))))
+
+;; TODO: write test
+(define char-vowel?
+  (let ((vowel-chars (map string->char
+			  '("a" "i" "u" "e" "o"))))
+    (lambda (c)
+      (and (char-alphabetic? c)
+	   (member (char-downcase c)
+		   vowel-chars)))))
+
+;; TODO: write test
+(define char-consonant?
+  (lambda (c)
+    (and (char-alphabetic? c)
+	 (not (char-vowel? c)))))
+
+(define numeral-char->number
+  (lambda (c)
+    (if (char-numeric? c)
+	(- c 48)
+	c)))
+
+(define char-downcase
+  (lambda (c)
+    (if (char-upper-case? c)
+	(+ c 32)
+	c)))
+
+(define char-upcase
+  (lambda (c)
+    (if (char-lower-case? c)
+	(- c 32)
+	c)))
+
+;; backward compatibility
+(define control-char? char-control?)
+(define alphabet-char? char-alphabetic?)
+(define numeral-char? char-numeric?)
+(define usual-char? char-graphic?)
+(define to-lower-char char-downcase)
 
 ;;
 ;; SRFI procedures (don't expect 100% compatibility)
