@@ -1,0 +1,737 @@
+#!/usr/bin/env gosh
+
+;;; Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+;;;
+;;; All rights reserved.
+;;;
+;;; Redistribution and use in source and binary forms, with or without
+;;; modification, are permitted provided that the following conditions
+;;; are met:
+;;; 1. Redistributions of source code must retain the above copyright
+;;;    notice, this list of conditions and the following disclaimer.
+;;; 2. Redistributions in binary form must reproduce the above copyright
+;;;    notice, this list of conditions and the following disclaimer in the
+;;;    documentation and/or other materials provided with the distribution.
+;;; 3. Neither the name of authors nor the names of its contributors
+;;;    may be used to endorse or promote products derived from this software
+;;;    without specific prior written permission.
+;;;
+;;; THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+;;; ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+;;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+;;; ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+;;; FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+;;; DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+;;; OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+;;; HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+;;; LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+;;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+;;; SUCH DAMAGE.
+;;;;
+
+;; This file is tested with revision 1648
+
+(use test.unit)
+
+(require "test/uim-test-utils")
+
+(define-uim-test-case "test im misc definitions"
+  ("test preedit-attr?"
+   (assert-true  (uim-bool '(preedit-attr? preedit-none)))
+   (assert-true  (uim-bool '(preedit-attr? preedit-underline)))
+   (assert-true  (uim-bool '(preedit-attr? preedit-reverse)))
+   (assert-true  (uim-bool '(preedit-attr? preedit-cursor)))
+   (assert-true  (uim-bool '(preedit-attr? preedit-separator)))
+   (assert-false (uim-bool '(preedit-attr? #f)))
+   (assert-false (uim-bool '(preedit-attr? 2398)))))  ;; arbitrary integer
+
+(define-uim-test-case "testcase im im-management"
+  (setup
+   (lambda ()
+     (uim '(define prev-im #f))
+     (uim '(define prev-nr-ims (length im-list)))
+     (uim '(define test-im-init-args #f))
+     (uim '(begin
+	     (set! test-im-init-args (list 'test-im
+					   "ja"
+					   "UTF-8"
+					   "a short description"
+					   #f
+					   direct-init-handler
+					   direct-release-handler
+					   context-mode-handler
+					   direct-key-press-handler
+					   direct-key-release-handler
+					   direct-reset-handler
+					   direct-get-candidate-handler
+					   direct-set-candidate-index-handler
+					   context-prop-activate-handler))
+	     #t))))
+
+  ("test register-im"
+   (uim '(begin
+	   (apply register-im test-im-init-args)
+	   #t))
+
+   (assert-equal (+ (uim 'prev-nr-ims) 1)
+		 (uim '(length im-list)))
+   (assert-equal 'test-im
+		 (uim '(im-name (retrieve-im 'test-im #f))))
+   (assert-equal 14
+		 (uim '(length (retrieve-im 'test-im #f))))
+
+   ;; duplicate register will be rejected
+   (assert-false (uim-bool '(apply register-im test-im-init-args)))
+   (assert-equal (+ (uim 'prev-nr-ims) 1)
+		 (uim '(length im-list))))
+
+  ("test retrieve-im"
+   (assert-false (uim-bool '(retrieve-im 'nonexistent)))
+   (assert-equal 'direct
+		 (uim '(im-name (retrieve-im 'direct))))
+   (assert-equal 'anthy
+		 (uim '(im-name (retrieve-im 'anthy))))
+   (assert-equal 'ipa
+		 (uim '(im-name (retrieve-im 'ipa))))
+   (assert-false (uim-bool '(retrieve-im 'test-im)))
+   (uim '(begin
+	   (apply register-im test-im-init-args)
+	   #t))
+   (assert-equal 'test-im
+		 (uim '(im-name (retrieve-im 'test-im)))))
+
+  ("test default-im-for-debug"
+   ;; this test requires --enable-debug
+   (assert-true  (uim-bool '(feature? 'debug)))
+   (uim '(unsetenv "UIM_IM_ENGINE"))
+   (assert-false (uim-bool '(default-im-for-debug)))
+   (uim '(setenv "UIM_IM_ENGINE" "nonexistent" #t))
+   (assert-false (uim-bool '(default-im-for-debug)))
+   (uim '(setenv "UIM_IM_ENGINE" "test-im" #t))
+   (assert-false (uim-bool '(default-im-for-debug)))
+   (uim '(begin
+	   (apply register-im test-im-init-args)
+	   #t))
+   (assert-equal 'test-im
+		 (uim '(im-name (default-im-for-debug))))
+   (uim '(setenv "UIM_IM_ENGINE" "anthy" #t))
+   (assert-equal 'anthy
+		 (uim '(im-name (default-im-for-debug))))
+   ;; default-im-name does not affect default-im-for-debug
+   (uim '(set! default-im-name 'ipa))
+   (assert-equal 'anthy
+		 (uim '(im-name (default-im-for-debug)))))
+
+  ("test find-im-for-locale"
+   ;; IM existence test
+   (assert-false (uim-bool '(memq 'nonexistent (map car im-list))))
+   (assert-true  (uim-bool '(memq 'anthy (map car im-list))))
+   (assert-true  (uim-bool '(memq 'skk (map car im-list))))
+   (assert-true  (uim-bool '(memq 'tcode (map car im-list))))
+   (assert-true  (uim-bool '(memq 'tutcode (map car im-list))))
+   (assert-true  (uim-bool '(memq 'py (map car im-list))))
+   (assert-true  (uim-bool '(memq 'pyunihan (map car im-list))))
+   (assert-true  (uim-bool '(memq 'pinyin-big5 (map car im-list))))
+   (assert-true  (uim-bool '(memq 'hangul2 (map car im-list))))
+   (assert-true  (uim-bool '(memq 'hangul3 (map car im-list))))
+   (assert-true  (uim-bool '(memq 'romaja (map car im-list))))
+   (assert-true  (uim-bool '(memq 'viqr (map car im-list))))
+   (assert-true  (uim-bool '(memq 'ipa (map car im-list))))
+   (assert-true  (uim-bool '(memq 'direct (map car im-list))))
+   ;; unsupported or direct-input languages
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale "C"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale "POSIX"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale "en"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale "en_US"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale "en_US.US-ASCII"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale "en_US.UTF-8"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale "de"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale "fr"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale "de"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale "pt"))))
+   ;; non-existent language code
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale "xx"))))
+   ;; default-im-name does not affect find-im-for-locale
+   (uim '(set! default-im-name 'ipa))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale "pt"))))
+   ;; default-im-for-debug does not affect find-im-for-locale
+   (uim '(setenv "UIM_IM_ENGINE" "ipa" #t))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale "pt"))))
+   (uim '(unsetenv "UIM_IM_ENGINE"))
+   ;; Chinese
+   (assert-equal 'm17n-zh-py
+		 (uim '(im-name (find-im-for-locale "zh"))))
+   (assert-equal 'm17n-zh-py
+		 (uim '(im-name (find-im-for-locale "zh.GB18030"))))
+   (assert-equal 'm17n-zh-py
+		 (uim '(im-name (find-im-for-locale "zh.Big5"))))
+   (assert-equal 'm17n-zh-py
+		 (uim '(im-name (find-im-for-locale "zh.UTF-8"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale "zh_US"))))
+   (assert-equal 'py
+		 (uim '(im-name (find-im-for-locale "zh_CN"))))
+   (assert-equal 'py
+		 (uim '(im-name (find-im-for-locale "zh_CN.GB18030"))))
+   (assert-equal 'py
+		 (uim '(im-name (find-im-for-locale "zh_CN.UTF-8"))))
+   (assert-equal 'pinyin-big5
+		 (uim '(im-name (find-im-for-locale "zh_TW"))))
+   (assert-equal 'pinyin-big5
+		 (uim '(im-name (find-im-for-locale "zh_TW.Big5"))))
+   (assert-equal 'pinyin-big5
+		 (uim '(im-name (find-im-for-locale "zh_TW.UTF-8"))))
+   (assert-equal 'pinyin-big5
+		 (uim '(im-name (find-im-for-locale "zh_HK"))))
+   (assert-equal 'pinyin-big5
+		 (uim '(im-name (find-im-for-locale "zh_HK.Big5"))))
+   (assert-equal 'pinyin-big5
+		 (uim '(im-name (find-im-for-locale "zh_HK.UTF-8"))))
+   ;; Japanese
+   (assert-equal 'anthy
+		 (uim '(im-name (find-im-for-locale "ja"))))
+   (assert-equal 'anthy
+		 (uim '(im-name (find-im-for-locale "ja_JP"))))
+   (assert-equal 'anthy
+		 (uim '(im-name (find-im-for-locale "ja_JP.EUC-JP"))))
+   (assert-equal 'anthy
+		 (uim '(im-name (find-im-for-locale "ja_JP.UTF-8"))))
+   (assert-equal 'anthy
+		 (uim '(im-name (find-im-for-locale "ja.UTF-8"))))
+   ;; Korean
+   (assert-equal 'hangul2
+		 (uim '(im-name (find-im-for-locale "ko"))))
+   (assert-equal 'hangul2
+		 (uim '(im-name (find-im-for-locale "ko_KR"))))
+   (assert-equal 'hangul2
+		 (uim '(im-name (find-im-for-locale "ko_KR.EUC-KR"))))
+   (assert-equal 'hangul2
+		 (uim '(im-name (find-im-for-locale "ko_KR.UTF-8"))))
+   (assert-equal 'hangul2
+		 (uim '(im-name (find-im-for-locale "ko.UTF-8"))))
+   ;; Vietnamese
+   (assert-equal 'viqr
+		 (uim '(im-name (find-im-for-locale "vi"))))
+   (assert-equal 'viqr
+		 (uim '(im-name (find-im-for-locale "vi_VN"))))
+   (assert-equal 'viqr
+		 (uim '(im-name (find-im-for-locale "vi_VN.UTF-8"))))
+   (assert-equal 'viqr
+		 (uim '(im-name (find-im-for-locale "vi.UTF-8"))))
+   ;; native locale
+   (uim '(unsetenv "LC_ALL"))
+   (uim '(unsetenv "LANG"))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale ""))))
+   (uim '(setenv "LC_ALL" "C" #t))
+   (uim '(unsetenv "LANG"))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale ""))))
+   (uim '(unsetenv "LC_ALL"))
+   (uim '(setenv "LANG" "C" #t))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale ""))))
+   (uim '(setenv "LC_ALL" "ja_JP.EUC-JP" #t))
+   (uim '(unsetenv "LANG"))
+   (assert-equal 'anthy
+		 (uim '(im-name (find-im-for-locale ""))))
+   ;; nonexistent native locale
+   (uim '(setenv "LC_ALL" "xx" #t))
+   (uim '(unsetenv "LANG"))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im-for-locale "")))))
+
+  ("test find-default-im"
+   ;; find by find-im-for-locale
+   (uim '(unsetenv "UIM_IM_ENGINE"))
+   (uim '(set! default-im-name #f))
+   (assert-equal 'direct
+		 (uim '(im-name (find-default-im "C"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-default-im "en"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-default-im "pt"))))
+   (assert-equal 'anthy
+		 (uim '(im-name (find-default-im "ja_JP.EUC-JP"))))
+   ;; empty locale string can be specified as native locale
+   (uim '(unsetenv "UIM_IM_ENGINE"))
+   (uim '(set! default-im-name #f))
+   (uim '(unsetenv "LC_ALL"))
+   (uim '(unsetenv "LANG"))
+   (assert-equal 'direct
+		 (uim '(im-name (find-default-im ""))))
+   (uim '(setenv "LC_ALL" "C" #t))
+   (assert-equal 'direct
+		 (uim '(im-name (find-default-im ""))))
+   (uim '(setenv "LC_ALL" "ja_JP.EUC-JP" #t))
+   (assert-equal 'anthy
+		 (uim '(im-name (find-default-im ""))))
+   (uim '(unsetenv "LC_ALL"))
+   ;; default-im-name precedes the locale specified by arg
+   (uim '(unsetenv "UIM_IM_ENGINE"))
+   (uim '(set! default-im-name 'ipa))
+   (assert-equal 'ipa
+		 (uim '(im-name (find-default-im "en"))))
+   (assert-equal 'ipa
+		 (uim '(im-name (find-default-im "pt"))))
+   (assert-equal 'ipa
+		 (uim '(im-name (find-default-im "ja_JP.EUC-JP"))))
+   ;; default-im-for-debug precedes the locale specified by arg
+   (uim '(setenv "UIM_IM_ENGINE" "py" #t))
+   (uim '(set! default-im-name #f))
+   (assert-equal 'py
+		 (uim '(im-name (find-default-im "en"))))
+   (assert-equal 'py
+		 (uim '(im-name (find-default-im "pt"))))
+   (assert-equal 'py
+		 (uim '(im-name (find-default-im "ja_JP.EUC-JP"))))
+   ;; default-im-for-debug precedes default-im-name
+   (uim '(setenv "UIM_IM_ENGINE" "py" #t))
+   (uim '(set! default-im-name 'ipa))
+   (assert-equal 'py
+		 (uim '(im-name (find-default-im "en"))))
+   (assert-equal 'py
+		 (uim '(im-name (find-default-im "pt"))))
+   (assert-equal 'py
+		 (uim '(im-name (find-default-im "ja_JP.EUC-JP")))))
+
+  ("test find-im"
+   ;; explicit IM specification
+   (uim '(unsetenv "UIM_IM_ENGINE"))
+   (uim '(set! default-im-name #f))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im 'direct #f))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im 'nonexistent #f))))
+   (assert-equal 'anthy
+		 (uim '(im-name (find-im 'anthy #f))))
+   (assert-equal 'skk
+		 (uim '(im-name (find-im 'skk #f))))
+   (assert-equal 'tcode
+		 (uim '(im-name (find-im 'tcode #f))))
+   (assert-equal 'py
+		 (uim '(im-name (find-im 'py #f))))
+   (assert-equal 'pinyin-big5
+		 (uim '(im-name (find-im 'pinyin-big5 #f))))
+   (assert-equal 'hangul2
+		 (uim '(im-name (find-im 'hangul2 #f))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im 'pyunihan #f))))
+   ;; implicit selection by locale information
+   (assert-equal 'direct
+		 (uim '(im-name (find-im #f #f))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im #f ""))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im #f "C"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im #f "en"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im #f "pt"))))
+   (assert-equal 'anthy
+		 (uim '(im-name (find-im #f "ja_JP.EUC-JP"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im #f "xx"))))
+   ;; im-name always precedes locale
+   (assert-equal 'py
+		 (uim '(im-name (find-im 'py #f))))
+   (assert-equal 'py
+		 (uim '(im-name (find-im 'py ""))))
+   (assert-equal 'py
+		 (uim '(im-name (find-im 'py "C"))))
+   (assert-equal 'py
+		 (uim '(im-name (find-im 'py "en"))))
+   (assert-equal 'py
+		 (uim '(im-name (find-im 'py "pt"))))
+   (assert-equal 'py
+		 (uim '(im-name (find-im 'py "ja_JP.EUC-JP"))))
+   (assert-equal 'py
+		 (uim '(im-name (find-im 'py "zh_TW.Big5"))))
+   (assert-equal 'py
+		 (uim '(im-name (find-im 'py "xx"))))
+   (assert-equal 'anthy
+		 (uim '(im-name (find-im 'nonexistent "ja_JP.EUC-JP"))))
+   ;; explicit IM specification with default-im-name
+   (uim '(unsetenv "UIM_IM_ENGINE"))
+   (uim '(set! default-im-name 'pyunihan))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f #f))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "ja_JP.EUC-JP"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im 'direct #f))))
+   (assert-equal 'anthy
+		 (uim '(im-name (find-im 'anthy #f))))
+   (assert-equal 'skk
+		 (uim '(im-name (find-im 'skk #f))))
+   (assert-equal 'tcode
+		 (uim '(im-name (find-im 'tcode #f))))
+   (assert-equal 'py
+		 (uim '(im-name (find-im 'py #f))))
+   (assert-equal 'pinyin-big5
+		 (uim '(im-name (find-im 'pinyin-big5 #f))))
+   (assert-equal 'hangul2
+		 (uim '(im-name (find-im 'hangul2 #f))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im 'pyunihan #f))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im 'nonexistent #f))))
+   ;; implicit selection by locale information with default-im-name
+   (uim '(unsetenv "UIM_IM_ENGINE"))
+   (uim '(set! default-im-name 'pyunihan))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f #f))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f ""))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "C"))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "en"))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "pt"))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "ja_JP.EUC-JP"))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "zh_TW.Big5"))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "xx"))))
+   ;; explicit IM specification with UIM_IM_ENGINE
+   (uim '(setenv "UIM_IM_ENGINE" "pyunihan" #t))
+   (uim '(set! default-im-name #f))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f #f))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "ja_JP.EUC-JP"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im 'direct #f))))
+   (assert-equal 'anthy
+		 (uim '(im-name (find-im 'anthy #f))))
+   (assert-equal 'skk
+		 (uim '(im-name (find-im 'skk #f))))
+   (assert-equal 'tcode
+		 (uim '(im-name (find-im 'tcode #f))))
+   (assert-equal 'py
+		 (uim '(im-name (find-im 'py #f))))
+   (assert-equal 'pinyin-big5
+		 (uim '(im-name (find-im 'pinyin-big5 #f))))
+   (assert-equal 'hangul2
+		 (uim '(im-name (find-im 'hangul2 #f))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im 'pyunihan #f))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im 'nonexistent #f))))
+   ;; implicit selection by locale information with UIM_IM_ENGINE
+   (uim '(setenv "UIM_IM_ENGINE" "pyunihan" #t))
+   (uim '(set! default-im-name #f))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f #f))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f ""))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "C"))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "en"))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "pt"))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "ja_JP.EUC-JP"))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "zh_TW.Big5"))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "xx"))))
+   ;; UIM_IM_ENGINE precedes default-im-name (explicit im-name)
+   (uim '(setenv "UIM_IM_ENGINE" "pyunihan" #t))
+   (uim '(set! default-im-name 'py))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f #f))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "ja_JP.EUC-JP"))))
+   (assert-equal 'direct
+		 (uim '(im-name (find-im 'direct #f))))
+   (assert-equal 'anthy
+		 (uim '(im-name (find-im 'anthy #f))))
+   (assert-equal 'skk
+		 (uim '(im-name (find-im 'skk #f))))
+   (assert-equal 'tcode
+		 (uim '(im-name (find-im 'tcode #f))))
+   (assert-equal 'py
+		 (uim '(im-name (find-im 'py #f))))
+   (assert-equal 'pinyin-big5
+		 (uim '(im-name (find-im 'pinyin-big5 #f))))
+   (assert-equal 'hangul2
+		 (uim '(im-name (find-im 'hangul2 #f))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im 'pyunihan #f))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im 'nonexistent #f))))
+   ;; UIM_IM_ENGINE precedes default-im-name (implicit selection)
+   (uim '(setenv "UIM_IM_ENGINE" "pyunihan" #t))
+   (uim '(set! default-im-name 'py))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f #f))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f ""))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "C"))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "en"))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "pt"))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "ja_JP.EUC-JP"))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "zh_TW.Big5"))))
+   (assert-equal 'pyunihan
+		 (uim '(im-name (find-im #f "xx"))))))
+
+(define-uim-test-case "testcase im im-switching"
+  (setup
+   (lambda ()
+     (uim '(define test-im-anthy #f))
+     (uim '(define test-im-skk #f))
+     (uim '(define test-im-tcode #f))
+     (uim '(begin
+	     (set! test-im-anthy (assq 'anthy im-list))
+	     #t))
+     (uim '(begin
+	     (set! test-im-skk (assq 'skk im-list))
+	     #t))
+     (uim '(begin
+	     (set! test-im-tcode (assq 'tcode im-list))
+	     #t))
+     (uim '(begin
+	     (set! im-list (list test-im-anthy
+				 test-im-skk
+				 test-im-tcode))
+	     #t))))
+
+  ("test next-im"
+   (assert-equal 'skk
+		 (uim '(next-im 'anthy)))
+   (assert-equal 'tcode
+		 (uim '(next-im 'skk)))
+   (assert-equal 'anthy
+		 (uim '(next-im 'tcode)))
+   (assert-equal 'anthy
+		 (uim '(next-im 'non-existent))))
+
+  ;; TODO: enable this
+  ("test switch-im"
+;   (assert-equal ()
+;		 (uim 'context-list))
+;   ;; create-context from Scheme world fails because corresponding
+;   ;; object in C world is missing
+;   ;(uim '(create-context 0 #f 'anthy))
+;   ;(uim '(create-context 1 #f 'skk))
+;   ;(uim '(create-context 2 #f 'tcode))
+;   (assert-equal 'anthy
+;		 (uim '(im-name current-im)))
+;   ;; switch-im fails because create-context fails
+;   ;(uim '(switch-im 1 'tcode))
+;   (assert-equal 'tcode
+;		 (uim '(im-name current-im)))
+;   (assert-equal 'tcode
+;		 (uim '(im-name (context-im (find-context 1)))))
+;   ;(uim '(switch-im 1 'skk))
+;   (assert-equal 'skk
+;		 (uim '(im-name current-im)))
+;   (assert-equal 'skk
+;		 (uim '(im-name (context-im (find-context 1)))))
+   ))
+
+(define-uim-test-case "testcase im context management"
+  (setup
+   (lambda ()
+     ;; define as hand-made data to avoid that implementation of
+     ;; register-context affect other tests
+     (uim '(begin
+	     (set! context-list (list (im-new 1 (retrieve-im 'tcode))
+				      (im-new 2 (retrieve-im 'direct))
+				      (im-new 3 (retrieve-im 'skk))
+				      (im-new 4 (retrieve-im 'anthy))))
+	     #t))))
+     
+
+  ("test context-id"
+   (assert-equal 1
+		 (uim '(context-id (nth 0 context-list))))
+   (assert-equal 2
+		 (uim '(context-id (nth 1 context-list))))
+   (assert-equal 3
+		 (uim '(context-id (nth 2 context-list))))
+   (assert-equal 4
+		 (uim '(context-id (nth 3 context-list)))))
+
+  ("test context-im"
+   (assert-equal 'tcode
+		 (uim '(im-name (context-im (nth 0 context-list)))))
+   (assert-equal 'direct
+		 (uim '(im-name (context-im (nth 1 context-list)))))
+   (assert-equal 'skk
+		 (uim '(im-name (context-im (nth 2 context-list)))))
+   (assert-equal 'anthy
+		 (uim '(im-name (context-im (nth 3 context-list))))))
+   
+  ("test find-context"
+   (assert-equal 'tcode
+		 (uim '(im-name (context-im (find-context 1)))))
+   (assert-equal 'direct
+		 (uim '(im-name (context-im (find-context 2)))))
+   (assert-equal 'skk
+		 (uim '(im-name (context-im (find-context 3)))))
+   (assert-equal 'anthy
+		 (uim '(im-name (context-im (find-context 4))))))
+
+  ("test remove-context"
+   (assert-equal 4
+		 (uim '(length context-list)))
+
+   (uim '(begin (remove-context 3) #t))
+   (assert-equal 3
+		 (uim '(length context-list)))
+   (assert-equal 'tcode
+		 (uim '(im-name (context-im (find-context 1)))))
+   (assert-equal 'direct
+		 (uim '(im-name (context-im (find-context 2)))))
+   (assert-false (uim-bool '(find-context 3)))
+   (assert-equal 'anthy
+		 (uim '(im-name (context-im (find-context 4)))))
+
+   (uim '(begin (remove-context 1) #t))
+   (assert-equal 2
+		 (uim '(length context-list)))
+   (assert-false (uim-bool '(find-context 1)))
+   (assert-equal 'direct
+		 (uim '(im-name (context-im (find-context 2)))))
+   (assert-false (uim-bool '(find-context 3)))
+   (assert-equal 'anthy
+		 (uim '(im-name (context-im (find-context 4)))))
+
+   ;; test excessive removal
+   (uim '(begin (remove-context 1) #t))
+   (assert-equal 2
+		 (uim '(length context-list)))
+   (assert-false (uim-bool '(find-context 1)))
+   (assert-equal 'direct
+		 (uim '(im-name (context-im (find-context 2)))))
+   (assert-false (uim-bool '(find-context 3)))
+   (assert-equal 'anthy
+		 (uim '(im-name (context-im (find-context 4)))))
+
+   (uim '(begin (remove-context 4) #t))
+   (assert-equal 1
+		 (uim '(length context-list)))
+   (assert-false (uim-bool '(find-context 1)))
+   (assert-equal 'direct
+		 (uim '(im-name (context-im (find-context 2)))))
+   (assert-false (uim-bool '(find-context 3)))
+   (assert-false (uim-bool '(find-context 4)))
+
+   (uim '(begin (remove-context 2) #t))
+   (assert-true  (uim-bool '(null? context-list)))
+   (assert-false (uim-bool '(find-context 1)))
+   (assert-false (uim-bool '(find-context 2)))
+   (assert-false (uim-bool '(find-context 3)))
+   (assert-false (uim-bool '(find-context 4)))
+
+   ;; test exessive removal
+   (uim '(begin (remove-context 1)))
+   (assert-true  (uim-bool '(null? context-list)))
+   (assert-false (uim-bool '(find-context 1)))
+   (assert-false (uim-bool '(find-context 2)))
+   (assert-false (uim-bool '(find-context 3)))
+   (assert-false (uim-bool '(find-context 4))))
+
+  ("test register-context (add as new id)"
+   (assert-equal 4
+		 (uim '(length context-list)))
+   (uim '(begin
+	   (register-context (context-new 5 (find-im 'tutcode #f)))
+	   #t))
+   (assert-equal 5
+		 (uim '(length context-list)))
+   (assert-equal 'tcode
+		 (uim '(im-name (context-im (find-context 1)))))
+   (assert-equal 'tutcode
+		 (uim '(im-name (context-im (find-context 5)))))
+
+   ;; sparse id must be accepted
+   (uim '(begin
+	   (register-context (context-new 10 (find-im 'hangul2 #f)))
+	   #t))
+   (assert-equal 6
+		 (uim '(length context-list)))
+   (assert-equal 'hangul2
+		 (uim '(im-name (context-im (find-context 10)))))
+
+   ;; additional sparse id
+   (uim '(begin
+	   (register-context (context-new 8 (find-im 'hangul3 #f)))
+	   #t))
+   (assert-equal 7
+		 (uim '(length context-list)))
+   (assert-equal 'hangul3
+		 (uim '(im-name (context-im (find-context 8)))))
+
+   ;; decrimented id
+   (uim '(begin
+	   (register-context (context-new 0 (find-im 'romaja #f)))
+	   #t))
+   (assert-equal 8
+		 (uim '(length context-list)))
+   (assert-equal 'romaja
+		 (uim '(im-name (context-im (find-context 0))))))
+
+  ("test register-context (duplicate id)"
+   (assert-equal 4
+		 (uim '(length context-list)))
+   (uim '(begin
+	   (register-context (context-new 1 (find-im 'tutcode #f)))
+	   #t))
+   ;; register-context doesn't check duplicate id, so caller have to
+   ;; ensure no duplication. Result of duplicate context is undefined
+   (assert-equal 5
+		 (uim '(length context-list))))
+
+  ("test create-context"
+   ;; create-context from Scheme world fails because corresponding
+   ;; object in C world is missing
+   )
+
+  ("test release-context"
+   ;; release-context requires properly created context, so
+   ;; create-context from Scheme world is required
+   ))
+
+;; TODO
+(define-uim-test-case "test im handlers"
+  ("test invoke-handler"
+   )
+  ("test key-press-handler"
+   )
+  ("test key-release-handler"
+   )
+  ("test reset-handler"
+   )
+  ("test mode-handler"
+   )
+  ("test prop-handler"
+   )
+  ("test get-candidate"
+   )
+  ("test set-candidate-index"
+   )
+  )

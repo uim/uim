@@ -1,0 +1,64 @@
+#MIN_CONFIG(3.0.0)
+AM_INIT_AUTOMAKE(UimQt, 0.2.0)
+
+REQUIRED_UIM_VERSION=0.4.4
+
+PKG_CHECK_MODULES(uim, [uim >= $REQUIRED_UIM_VERSION],
+                        [HAS_UIM=yes],
+                        [HAS_UIM=no])
+
+if test ! -e $QTDIR/include/qinputcontext.h -o ! -e $QTDIR/include/qinputcontextplugin.h; then
+  AC_MSG_ERROR([
+    The Qt library was not compiled with the qt-immodule patch 
+    applied please download it from 
+    http://immodule-qt.freedesktop.org/Software/ImmoduleQtDownload and recompile Qt.])
+fi
+
+if test "$HAS_UIM" = "yes"; then
+  UIM_VERSION=`$PKG_CONFIG --modversion uim`
+  AC_DEFINE_UNQUOTED(UIM_VERSION, "$UIM_VERSION", [The version of UIM library.])
+  UIM_LIBDIR=`$PKG_CONFIG --variable=libdir uim`
+  AC_SUBST(UIM_LIBDIR)
+else
+  AC_MSG_ERROR([UIM library is not available or the version is too old!])
+fi
+
+all_libraries="$all_libraries"
+all_includes="$all_includes"
+AC_SUBST(all_includes)
+AC_SUBST(all_libraries)
+
+AC_C_BIGENDIAN
+AC_CHECK_KDEMAXPATHLEN
+
+##AM_INIT_AUTOMAKE(gettext, 0.12.1)
+AM_GNU_GETTEXT([external])
+
+GETTEXT_PACKAGE=UimQt
+AC_SUBST(GETTEXT_PACKAGE)
+
+kde_locale="$datadir"/locale
+AC_SUBST(kde_locale)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [The gettext domain])
+
+#AC_ARG_ENABLE(uimqt-debug,
+#              [  --enable-uim-debug            Turn on debugging],
+#              uimqt_debug=yes,
+#              uimqt_debug=no)
+
+#if test "$uimqt_debug" = "yes"; then
+#  AC_DEFINE(ENABLE_DEBUG,1,[Define this to enable the debug facility in UimQt])
+#  AC_DEFINE(QT_DEBUG,,[Enable QT debug output])
+#  CFLAGS="$CFLAGS -g"
+#  CXXFLAGS="$CXXFLAGS -g"
+#else
+#  AC_DEFINE(ENABLE_DEBUG,0)
+#fi
+
+INPUTMETHODSDIR=$QTROOTDIR/plugins/inputmethods
+AC_SUBST(INPUTMETHODSDIR)
+AC_MSG_RESULT([
+Build options:
+  Version                $VERSION
+  Install plugin to      $INPUTMETHODSDIR
+])

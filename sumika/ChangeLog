@@ -1,0 +1,88 @@
+2004-09-16(plan)  Masahito Omote <omote@utyuuzin.net>
+	* Release 0.13.
+	* Porting to GTK+ 2.4. You have to install GTK+ >= 2.4.0 before
+	  using sumika.
+	* Change COPYRIGHT from GPL to BSD License see README for more
+	  details.
+	* gtk2/uimcontainer.c, common/uimconfig.c
+	  - Drop hard coding into sumika and use uim custom API instead.
+	  - Not work yet.
+	
+2004-05-11  Masahito Omote <omote@utyuuzin.net>
+	* Release 0.12.
+	* Use GtkSpinButton on frequecy field.
+	* Use dynamic loding of libuim.so.0 and remove siod interface.
+	  Thanks to YamaKen-san <yamaken@bp.iij4u.or.jp>.
+	* Include config.h. By this change, most files are gettextized.
+	* gtk2/charset.c: use g_utf8_validate before conversion.
+	* include/cannadic.h: move #CN, #CNS, #JCN, #JNS, #JNM, #KK from
+	  etc_code to substantive_code.
+
+2004-04-10  Masahito Omote <omote@utyuuzin.net>
+	* Release 0.11
+	* Support NetBSD-current thanks to Yamashiro Jun.
+	* Disable DISABLE_DEPRECATED compile flags, sumika does not port to
+	  GTK+ 2.4 yet.
+	* Show dialogs at the center.
+	* gtk2/main.c
+	  - Add #include <locale.h>.
+	* gtk2/charset.c
+	  - Return NULL when g_convert fails.
+	* gtk2/topwin.c
+	  - Fix hardcode version in about dialog.
+	* gtk2/addwordpane.c
+	  - Fix memory leak.
+	  - Check NULL properly.
+	* gtk2/anthyaddwordpane.c
+	  - Fix conditional decision when registering word.
+	  - Fix memory leak.
+	  - Check NULL properly.
+	* dixchange/dixchange.c
+	  - Check NULL properly.
+2004-02-13  Masahito Omote <omote@utyuuzin.net>
+	* Release 0.10
+	* Support uim configuration.
+	  - Use siod for parsing ~/.uim. So this may makes sumika segv.
+	  - Only supports static configuration.
+	  - Dynamic configuraion is not implemented yet because uim does not
+	    implement configuration via uim-helper-server now.
+	* Change expression of verb example.
+	* Fix miscellaneous bugs.
+2004-01-02  Masahito Omote <omote@utyuuzin.net>
+	* Release 0.07
+	* Use Automake 1.7.
+	* New feature
+	  - Integrate mode(only adding words) support.
+	  - Searching word support(Anthy Only).
+	* Improve Option menu's handling.
+	* Improve cannadic parser.
+2003-11-27  Masahito Omote <omote@utyuuzin.net>
+	* Release 0.05
+	* Code cleanup.
+	  - gtk2/posdialog.[ch]: New file.
+	* New feature
+	  - Part of Speeach(POS) dialog shows examples. (not completed)
+	  - Show POS on Anthy/Canna View mode instead of POS Code.
+	  - cannadic.h: Add example field.
+2003-10-12  Masahito Omote <omote@utyuuzin.net>
+	* New feature.
+	  - Support exporting private dictionary to file in dixchange and
+	    cannadic type.
+	  - Support importing canna's dictionary.
+	* common/word.c: Fix segfault in word_free_list.
+	  Patch from Konosuke Watanabe <nosuke@am.ics.keio.ac.jp>.
+	* dixchange/dixchange.[ch], common/dixchange_dic.[ch]: New file.
+2003-10-06  Masahito Omote <omote@utyuuzin.net>
+	* Add conjection class codes from both Anthy and Canna.
+	* Anthy
+	  - Word deletion support.
+	  - Interface is turned to Canna's.
+2003-08-28  Masahito Omote <omote@utyuuzin.net>
+
+	* Release 0.02.
+	* Support Canna.
+
+2003-07-17  Masahito Omote <omote@utyuuzin.net>
+
+	* PreRelease 0.01.
+

@@ -1,0 +1,2 @@
+2002 10/20 Renamed im-scm -> im-uim
+           PLEASE REMOVE im-scm.o from /usr/local/lib/gtk-2.0/2.0.0/immodules/

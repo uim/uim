@@ -1,0 +1,337 @@
+To communicate between uim-related processes such as GUI applications and
+toolbar applets, uim uses the helper system. This file describes the helper
+protocol within uim.
+
+
+* Network topology and message passing
+
+  The message based helper protocol participants form a peer-to-peer star
+  topology network connected via central uim-helper-server using UNIX domain
+  socket.
+
+
+                  +-----------------+ ----- uim-toolbar-gtk
+   uim app1 ----- |uim-helper-server| ----- uim app2
+   uim app3 ----- +-----------------+ ----- uim configuration tool
+
+
+  Although uim-helper-server is named as 'server', it only means 'listen to
+  the connections'. The server is currently implemented as simple message
+  reflector, so the network always behaves as broadcasting.
+
+
+             msg  +-----------------+ ----> uim-toolbar-gtk
+   uim app1 ----> |uim-helper-server| ----> uim app2
+   uim app3 <---- +-----------------+ ----> uim configuration tool
+
+            All participants receives the message from uim app1
+
+
+  Since the broadcasting behavior, the protocol does not have the
+  specification about 'response message'. Any messages are delivered to all
+  participants and implicitly done. The sender cannot know any receiver
+  information such as 'properly received' or 'how many participants are
+  accepted the message'.
+
+  Although the message layer does not specifies neither response message nor
+  unicast, higher layer virtually provides it. Some messages behave as
+  'request' and 'response to the request' in semantic view (of course the 2
+  messages are not related in message layer). See 'prop_list_get' and
+  'prop_list_update' as example.
+
+  In another situation, the helper system can simulate unicast message by
+  following way.
+
+
+                  +-----------------+ ----> uim-toolbar-gtk
+   uim app1 <---- |uim-helper-server| ----> uim app2
+   uim app3 ----> +-----------------+ ----> uim configuration tool
+           focus_in
+
+    (1) uim app3 send focus_in message to declare that "I've activated"
+
+
+                                   prop_activate
+                  +-----------------+ <---- uim-toolbar-gtk
+   uim app1 <---- |uim-helper-server| ----> uim app2
+   uim app3 <---- +-----------------+ ----> uim configuration tool
+
+         (2) uim-toolbar-gtk send prop_activate
+
+
+                                   prop_activate
+                  +-----------------+ <---- uim-toolbar-gtk
+   uim app1 x---- |uim-helper-server| ----x uim app2
+   uim app3 <---- +-----------------+ ----x uim configuration tool
+
+         (3) inactive processes ignore the message
+
+
+  All messages in the protocol are defined as follows.
+
+
+
+* Message format in (extended) BNF
+
+  The protocol data consist of human readable messages on an IPC
+  connection. Each messages are consist of arbitrary lines of text and
+  delimited from another message by "\n\n".
+
+  session  = messages
+  messages = messages message | message
+  message  = (focus_in            |
+              focus_out           |
+              prop_activate       |
+              prop_label_get      |
+              prop_label_update   |
+              prop_list_get       |
+              prop_list_update    |
+              im_list             |
+              im_list_get         |
+              im_change_this_text_area_only   |
+              im_change_whole_desktop         |
+              im_change_this_application_only |
+              prop_update_custom  |
+              commit_string) "\n"
+
+  charset_specifier = "charset=" charset "\n"
+  charset = "UTF-8" | "EUC-JP" | "GB18030" |
+            <or any name that can be specified as iconv_open(3) argument>
+  str = str <any characters except for '\0', '\t' or '\n'> | ""
+
+* Focus notification messages
+
+  - focus_in
+
+    This message declares that the sender has gotten a focus. This means that
+    the focused context of this process has become 'active context' and any
+    other contexts have become 'inactive context'. It implies that only active
+    context can respond to some messages prop_list_get, prop_label_get,
+    prop_activate, im_list_get and commit_string. Contexts in other processes
+    have to become inactive by receiving focus_in message from another
+    process.
+
+    Invoke uim_helper_client_focus_in() to send this message.
+
+    focus_in = "focus_in\n"
+
+  - focus_out
+
+    This message notifies that the sender has been lost a focus. This message
+    is currently not received by official uim suites.
+
+    Invoke uim_helper_client_focus_out() to send this message.
+
+    focus_out = "focus_out\n"
+
+
+* Property messages
+
+    The concept 'property' in uim means 'properties of input method'. An input
+    method (in accurately, input context) can own arbitrary number of
+    properties. A property is ordinarily appeared for user as a popup menu
+    with an indicator. Such indicator will be appeared simultaneously for user
+    if the input method has 2 or more properties. One property controls one
+    variable state of the input method such as 'input mode' or 'keymap'.
+
+    menucommand_name = "prop_" /^[a-z0-9_]+$/
+
+  - prop_activate
+
+    This message notifies that a command named as menucommand_name has been
+    activated. This message is usually sent from toolbar applets in response
+    to an user selection and received by corresponding IM. Once received, the
+    prop-handler of current IM has been invoked with menucommand_name. Several
+    IMs use menucommand_name as 'input mode' such as 'hiragana', 'katakana',
+    'direct' and so on, and switches to activated input mode on receiving.
+
+    See also prop_list_update.
+
+    prop_activate = "prop_activate\n" menucommand_name "\n"
+
+  - prop_label_get
+
+    This message requests a prop_label_update. The request sender will receive
+    prop_label_update in response to this message. This message is currently
+    not used by official uim suites.
+
+    See also prop_label_update
+
+    prop_label_get = "prop_label_get\n"
+
+  - prop_label_update
+
+    This message notifies a subset of prop_list_update. This message had been
+    designed to reduce message passing overhead by replacing prop_list_update
+    by this.
+
+    iconic_label is a very short string typically 1 character to be used as
+    icon. For example, "a" means 'direct input'.
+
+    buttontooltip_string is a string for tooltip of the button.
+
+    Invoke im-update-prop-label to send this message.
+
+    See also prop_list_update.
+
+    prop_label_update = "prop_label_update\n" charset_specifier labels
+    labels = labels label | label
+    label = iconic_label "\t" buttontooltip_string "\n"
+
+    iconic_label = str
+    buttontooltip_string = str
+
+  - prop_list_get
+
+    This message requests a prop_list_update. The request sender will receive
+    prop_list_update in response to this message. This message is typically
+    used for active acquiring of prop_list by toolber applets at start up. If
+    this message has not been sent, the applet has to passively wait for
+    prop_list_update that will be notified by current IM to show correct
+    information.
+
+    Invoke uim_helper_client_get_prop_list() to send this message.
+
+    See also prop_list_update
+
+    prop_list_get = "prop_list_get\n"
+
+  - prop_list_update
+
+    This message notifies that a set of menu items typically for toolbar
+    applets. A message is consist of branches which contains arbitrary number
+    of leaves. A branch represents a property which is shown as (popup) menu
+    for user, and a leaf represents a menu item of the branch.
+
+    iconic_label is a very short string typically 1 character to be used as
+    icon. For example, "a" means 'direct input'.
+
+    buttontooltip_string is a string for tooltip of the button.
+
+    menulabel_string is a short string to be shown in the menu.
+
+    menutooltip_string is a string for tooltip of the menu.
+
+    menucommand_name is a symbolic identifier of the menu item. This will be
+    notified to other processes by prop_activate when this menu item has been
+    selected by user.
+
+    flag means that whether this menu item is selected. Only one menu item per
+    branch should be notified as "*" which means 'selected'.
+
+    Invoke im-update-prop-list to send this message.
+
+    See also prop_activate.
+
+    prop_list_update = "prop_list_update\n" charset_specifier parts
+    parts = parts part | part
+    part = branch leaves
+    branch = "branch\t" iconic_label "\t" buttontooltip_string "\n"
+    leaves = leaves leaf | leaf
+    leaf = "leaf\t" iconic_label "\t" menulabel_string "\t" menutooltip_string "\t" menucommand_name "\t" flag "\n"
+
+    iconic_label = str
+    buttontooltip_string = str
+    menulabel_string = str
+    menutooltip_string = str
+    flag = "*" | ""
+
+
+* IM management messages
+
+  imname is an identifier name of the input method written in ASCII.
+
+  imname = str
+
+  - im_list
+
+    This message notifies that the set of currently available input methods.
+
+    imlang is an i18n-ized free format human readable string such as
+    "Japanese".
+
+    imshort_description is a short description of the input method. This
+    string is currently not i18n-ized (i.e. written in English).
+
+    selectedflag specifies which input method of all available one is
+    currently selected. At most one input method has the value "selected".
+
+    See also im_list_get
+
+    im_list = "im_list\n" charset_specifier iminfos
+    iminfos = iminfos iminfo | iminfo
+    iminfo = imname "\t" imlang "\t" imshort_description "\t" selectedflag"\n"
+    imlang = human_readable_language_name
+    imshort_description = str
+    selectedflag = "selected" | ""
+    human_readable_language_name = str
+
+  - im_list_get
+
+    This message requests a im_list. The request sender will receive im_list
+    from currently focused input context in response to this message. This
+    message is typically used for active acquiring of im_list by im-switcher
+    application (such as uim-im-switcher) at start up.
+
+    See also im_list, focus_in
+
+    im_list_get = "im_list_get\n"
+
+  - im_change_this_text_area_only
+
+    This message notifies that currently focused input context must be
+    switched its input method to specified imname. All receivers must properly
+    accept or discard this message in accordance with focus management.
+
+    See also focus_in
+
+    im_change_this_text_area_only = "im_change_this_text_area_only\n" imname "\n"
+
+  - im_change_this_application_only
+
+    This message notifies that all input context of the application that has
+    currently focused input context must be switched its input method to
+    specified imname. All receiver processes must properly accept or discard
+    this message in accordance with focus management.
+
+    See also focus_in
+
+    im_change_this_application_only = "im_change_this_application_only\n" imname "\n"
+
+  - im_change_whole_desktop
+
+    This message notifies that all input contexts in local machine must be
+    switched its input method to specified imname. All receiver processes must
+    accept this message and switch all input context of the process.
+
+    im_change_whole_desktop = "im_change_whole_desktop\n" imname "\n"
+
+
+* Other messages
+
+  - prop_update_custom
+
+    Update a custom value of received process. The received message are
+    evaluated as (custom-set! custom_sym custom_value) and immediately affects
+    the running IMs. Both custom_sym and custom_value will be strictly
+    validated to prevent crashing or abuse. Invalid messages will be simply
+    ignored.
+
+    custom_sym and custom_value are delimited by "\n" instead of "\t" to allow
+    "\t" to be included in the value.
+
+    The command name 'prop_update_custom' is wrongly named by misunderstanding
+    about naming convention of the helper protocol. It should be renamed as
+    'custom_set'.
+
+    prop_update_custom = "prop_update_custom\n" custom_sym "\n" custom_value "\n"
+    custom_sym = /^[-\?a-zA-Z0-9]+$/
+    custom_value = <valid S-expression>
+
+  - commit_string
+
+    This message commits a string to currently focused context. See also
+    focus_in.
+    
+    commit_string = "commit_string\n" str_to_commit "\n"
+    str_to_commit = /^[^\n]+$/

@@ -1,0 +1,44 @@
+This document is written in Japanese.
+
+インストールの方法はINSTALLを読んでください。
+
+uimはSchemeで文字入力システムを作るためのコアライブラリである
+libuimと、文字入力システムであるSchemeのファイル(これらにはま
+だ名前がついていません)、及びlibuimを利用するためのgtk+-2.0用
+のimmoduleを同梱しています．簡単なInputMethodの場合はSchemeだ
+けで完結できますし、そうでない場合はC言語を利用して簡単に拡張
+可能になっています。
+
+
+現時点ではanthy,skk,prime,tcode,py(ピンイン),hangulなどを実装
+しています。
+
+gtk(2.0以降)で使うときはテキストフィールドで右クリックして
+tcode,skk,pyなどから選択してください．
+デフォルトを指定したい場合は
+環境変数 GTK_IM_MODULE=uim-skk のように
+指定してください。
+
+XIMサーバを使用するときは、
+・uim-ximを起動する。
+・環境変数XMODIFIERSをexport XMODIFIERS=@im=uimのようにして
+指定する。
+の二点を確認してからアプリケーションを立ち上げてください。
+変換エンジンは uim-xim の起動オプションとして
+uim-xim --engine=anthy のように指定できます。また
+helper-applet を用いて使用しているエンジンを動的に切り換えら
+れます。
+
+
+--
+gtk+のimmoduleとは入力システム(Input Method)のモジュールは
+*動的に入力システムを切替えることができる．
+*継承や集約(メンバ変数として他のモジュールを持つこと)によって
+ 柔軟にモジュールを作ることができる．
+などの優れた特徴があり，XIMやIIIMFなどのレガシーと比較して
+新世代の入力システムであると言えると思います．
+
+開発に関する議論はMLで行っています。MLに関する情報は以下のURLにあります。
+
+(日本語) http://lists.sourceforge.jp/mailman/listinfo/anthy-dev
+(英語)   http://freedesktop.org/cgi-bin/mailman/listinfo/uim

@@ -1,0 +1,74 @@
+What's uim
+==========
+
+Uim is a lightweight and full featured input method library.
+
+ Most of the functionalites in this library are implemented
+ with Scheme. Thus it is simple, secure and flexible.
+ Uim does not require you to setup and run network servers.
+
+
+How to test
+===========
+
+You can test them simply doing
+$ ./configure; make
+$ GTK_IM_MODULE=uim-py sh test.sh
+at the source directory.
+
+Currently implemented language modules
+======================================
+
+Currently, following input method systems are available.
+
+*default    do nothing.
+
+*py (Chinese)    Pin Yin
+        Tables are stolen from emacs leim
+
+*skk (Japanese)    SKK
+        SKK dictionary is required to use skk.
+        Otherwise you can type only phonetic symbols
+        in Japanese.
+
+*anthy (Japanese)
+        libanthy(Japanese Conversion) is required to use anthy.
+        Otherwise you can type only phonetic symbols
+        in Japanese.
+
+*PRIME (Japanese)
+        PRIME is Japanese predictive input method.
+
+*tcode (Japanese)    T-code
+        T-code is composition based Japanese input method
+
+*tutcode (Japanese)  TUT-code
+        TUT-code is composition based Japanese input method
+
+*viqr (Vietnamese)
+*hangul2 (Korean)
+*hangul3 (Korean)
+*ipa (International Phonetic Alphabet)
+
+
+Installation
+============
+
+If you want to install im-uim, please type as following
+$ ./configure --sysconfdir=/etc --prefix=/usr;make
+# make install
+
+For more details, you can see INSTALL.
+
+
+Requirement
+===========
+
+ * iconv
+ * PRIME >= 0.6.6 (If you want to use PRIME)
+
+Acknowledgements
+================
+
+ This software is hosted on freedesktop.org.
+ Part of this software is funded by IPA (http://www.ipa.go.jp/)

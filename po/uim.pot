@@ -1,0 +1,940 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-10-25 17:58+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: helper/GNOME_UimApplet.server.in.in.h:1
+msgid "Uim Applet"
+msgstr ""
+
+#: helper/GNOME_UimApplet.server.in.in.h:2
+msgid "Uim Applet Factory"
+msgstr ""
+
+#: helper/GNOME_UimApplet.server.in.in.h:3
+msgid "Uim applet factory"
+msgstr ""
+
+#: helper/GNOME_UimApplet.server.in.in.h:4
+msgid "Uim applet for the GNOME2 panel"
+msgstr ""
+
+#: helper/GNOME_UimApplet.server.in.in.h:5
+msgid "Utility"
+msgstr ""
+
+#: helper/im-switcher-gtk.c:270
+msgid "InputMethodName"
+msgstr ""
+
+#: helper/im-switcher-gtk.c:279
+msgid "Language"
+msgstr ""
+
+#: helper/im-switcher-gtk.c:288
+msgid "Description"
+msgstr ""
+
+#: helper/im-switcher-gtk.c:318
+msgid "uim input method switcher"
+msgstr ""
+
+#: helper/im-switcher-gtk.c:347
+msgid "Change whole desktop"
+msgstr ""
+
+#: helper/im-switcher-gtk.c:348
+msgid "Change this application only"
+msgstr ""
+
+#: helper/im-switcher-gtk.c:349
+msgid "Change this text area only"
+msgstr ""
+
+#: helper/dict-main-gtk.c:155 helper/dict-anthy.c:77
+#: helper/dict-word-list-win-gtk.c:255
+msgid "Anthy private dictionary"
+msgstr ""
+
+#: helper/dict-main-gtk.c:218
+#, c-format
+msgid "Error:%s\n"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:50
+msgid "Substantive"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:51
+msgid "Verb"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:52
+msgid "Adjective"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:53
+msgid "Adverb"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:54
+msgid "Etc"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:145
+msgid "Necessary infomation"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:165
+msgid "Additional infomation"
+msgstr ""
+
+#. action area
+#: helper/dict-word-win-gtk.c:179
+msgid "continuance"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:191
+msgid "Add"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:197
+msgid "Clear"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:204
+msgid "Add a word"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:243
+#, c-format
+msgid "Edit the word (%s)"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:246
+#, c-format
+msgid "Add a word (%s)"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:268
+msgid "_Phonetic:"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:278
+msgid "_Literal:"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:288
+msgid "Part of _Speech:"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:318
+msgid "_Frequency:"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:349
+msgid "Part of Speech(_narrow):"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:362
+msgid "_Browse..."
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:488
+msgid "Word registration failed."
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:495
+msgid "Word registration succeded."
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:523
+msgid "Phonetic is emtpy!"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:538
+msgid "Literal is emtpy!"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:556
+msgid "Part of speech is emtpy!"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:85
+msgid "_File"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:86
+msgid "_Edit"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:87
+msgid "_Option"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:88
+msgid "_Help"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:89
+msgid "_Quit"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:90
+msgid "Quit uim-dict"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:91
+msgid "A_dd..."
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:92
+msgid "Add a new word"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:93
+msgid "_Remove..."
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:94
+msgid "Remove the selected word"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:95
+msgid "_Edit..."
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:96
+msgid "Edit the selected word"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:97
+msgid "_Popup Menu"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:98
+msgid "Show popup menu"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:99
+msgid "_About"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:100 helper/dict-word-list-win-gtk.c:479
+msgid "About uim-dict"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:209
+msgid "Edit the dictionary"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:259
+#, c-format
+msgid "%s"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:373
+msgid "Are you sure to remove seleted words?"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:379
+msgid "Are you sure to remove the selected word?"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:407
+msgid "Word deletion succeded."
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:413
+msgid "Word deletion failed."
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:472
+msgid "<span size=\"20000\">uim-dict "
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:472
+msgid ""
+"</span>\n"
+"\n"
+"<span size=\"14000\">Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin."
+"net&gt;\n"
+"Copyright 2004 uim Project http://uim.freedesktop.org/\n"
+"All rights reserved.</span>\n"
+msgstr ""
+
+#: helper/dict-word-list-view-gtk.c:129
+msgid "Show conjection class code column"
+msgstr ""
+
+#: helper/dict-word-list-view-gtk.c:130 helper/dict-word-list-view-gtk.c:139
+#: helper/dict-word-list-view-gtk.c:147 helper/dict-word-list-view-gtk.c:154
+#: helper/dict-word-list-view-gtk.c:162 helper/dict-word-list-view-gtk.c:163
+msgid "to be written"
+msgstr ""
+
+#: helper/dict-word-list-view-gtk.c:138
+msgid "Show freq column"
+msgstr ""
+
+#: helper/dict-word-list-view-gtk.c:146
+msgid "Show okuri column"
+msgstr ""
+
+#: helper/dict-word-list-view-gtk.c:155
+msgid "to be written "
+msgstr ""
+
+#: helper/dict-word-list-view-gtk.c:199
+msgid "Word Type"
+msgstr ""
+
+#: helper/dict-word-list-view-gtk.c:217
+msgid "Phonetic"
+msgstr ""
+
+#: helper/dict-word-list-view-gtk.c:247
+msgid "Literal"
+msgstr ""
+
+#. construct dialog
+#: helper/dict-word-list-view-gtk.c:263 helper/dict-cclass-dialog.c:66
+#: helper/dict-cclass-dialog.c:103
+msgid "Part of Speech"
+msgstr ""
+
+#: helper/dict-word-list-view-gtk.c:279
+msgid "Frequency"
+msgstr ""
+
+#: helper/dict-word-list-view-gtk.c:290
+msgid "Okuri"
+msgstr ""
+
+#: helper/dict-cclass-dialog.c:112
+msgid "Example"
+msgstr ""
+
+#.
+#.
+#. Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+#.
+#. All rights reserved.
+#.
+#. Redistribution and use in source and binary forms, with or without
+#. modification, are permitted provided that the following conditions
+#. are met:
+#.
+#. 1. Redistributions of source code must retain the above copyright
+#. notice, this list of conditions and the following disclaimer.
+#. 2. Redistributions in binary form must reproduce the above copyright
+#. notice, this list of conditions and the following disclaimer in the
+#. documentation and/or other materials provided with the distribution.
+#. 3. Neither the name of authors nor the names of its contributors
+#. may be used to endorse or promote products derived from this software
+#. without specific prior written permission.
+#.
+#. THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+#. ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+#. IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+#. ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+#. FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+#. DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+#. OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#. HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#. LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+#. OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+#. SUCH DAMAGE.
+#.
+#.
+#.
+#. See following page for original code definitions
+#. http://www.loc.gov/standards/iso639-2/englangn.html
+#.
+#: uim/iso-639-1.def:39
+msgid "Abkhazian"
+msgstr ""
+
+#: uim/iso-639-1.def:40
+msgid "Afar"
+msgstr ""
+
+#: uim/iso-639-1.def:41
+msgid "Afrikaans"
+msgstr ""
+
+#: uim/iso-639-1.def:42
+msgid "Albanian"
+msgstr ""
+
+#: uim/iso-639-1.def:43
+msgid "Amharic"
+msgstr ""
+
+#: uim/iso-639-1.def:44
+msgid "Arabic"
+msgstr ""
+
+#: uim/iso-639-1.def:45
+msgid "Armenian"
+msgstr ""
+
+#: uim/iso-639-1.def:46
+msgid "Assamese"
+msgstr ""
+
+#: uim/iso-639-1.def:47
+msgid "Aymara"
+msgstr ""
+
+#: uim/iso-639-1.def:48
+msgid "Azerbaijani"
+msgstr ""
+
+#: uim/iso-639-1.def:49
+msgid "Bashkir"
+msgstr ""
+
+#: uim/iso-639-1.def:50
+msgid "Basque"
+msgstr ""
+
+#: uim/iso-639-1.def:51
+msgid "Bengali (Bangla)"
+msgstr ""
+
+#: uim/iso-639-1.def:52
+msgid "Bhutani"
+msgstr ""
+
+#: uim/iso-639-1.def:53
+msgid "Bihari"
+msgstr ""
+
+#: uim/iso-639-1.def:54
+msgid "Bislama"
+msgstr ""
+
+#: uim/iso-639-1.def:55
+msgid "Breton"
+msgstr ""
+
+#: uim/iso-639-1.def:56
+msgid "Bulgarian"
+msgstr ""
+
+#: uim/iso-639-1.def:57
+msgid "Burmese"
+msgstr ""
+
+#: uim/iso-639-1.def:58
+msgid "Byelorussian (Belarusian)"
+msgstr ""
+
+#: uim/iso-639-1.def:59
+msgid "Cambodian"
+msgstr ""
+
+#: uim/iso-639-1.def:60
+msgid "Catalan"
+msgstr ""
+
+#: uim/iso-639-1.def:61
+msgid "Chewa"
+msgstr ""
+
+#: uim/iso-639-1.def:62
+msgid "Chinese (Simplified)"
+msgstr ""
+
+#: uim/iso-639-1.def:63 uim/iso-639-1.def:64
+msgid "Chinese (Traditional)"
+msgstr ""
+
+#: uim/iso-639-1.def:65
+msgid "Chinese"
+msgstr ""
+
+#: uim/iso-639-1.def:66
+msgid "Corsican"
+msgstr ""
+
+#: uim/iso-639-1.def:67
+msgid "Croatian"
+msgstr ""
+
+#: uim/iso-639-1.def:68
+msgid "Czech"
+msgstr ""
+
+#: uim/iso-639-1.def:69
+msgid "Danish"
+msgstr ""
+
+#: uim/iso-639-1.def:70
+msgid "Divehi"
+msgstr ""
+
+#: uim/iso-639-1.def:71
+msgid "Dutch"
+msgstr ""
+
+#: uim/iso-639-1.def:72
+msgid "English"
+msgstr ""
+
+#: uim/iso-639-1.def:73
+msgid "Esperanto"
+msgstr ""
+
+#: uim/iso-639-1.def:74
+msgid "Estonian"
+msgstr ""
+
+#: uim/iso-639-1.def:75
+msgid "Faeroese"
+msgstr ""
+
+#: uim/iso-639-1.def:76
+msgid "Farsi"
+msgstr ""
+
+#: uim/iso-639-1.def:77
+msgid "Fiji"
+msgstr ""
+
+#: uim/iso-639-1.def:78
+msgid "Finnish"
+msgstr ""
+
+#: uim/iso-639-1.def:79
+msgid "Flemish"
+msgstr ""
+
+#. defined as "nl" in the source
+#: uim/iso-639-1.def:80
+msgid "French"
+msgstr ""
+
+#: uim/iso-639-1.def:81
+msgid "Frisian"
+msgstr ""
+
+#: uim/iso-639-1.def:82
+msgid "Galician"
+msgstr ""
+
+#: uim/iso-639-1.def:83
+msgid "Gaelic (Scottish)"
+msgstr ""
+
+#: uim/iso-639-1.def:84
+msgid "Gaelic (Manx)"
+msgstr ""
+
+#: uim/iso-639-1.def:85
+msgid "Georgian"
+msgstr ""
+
+#: uim/iso-639-1.def:86
+msgid "German"
+msgstr ""
+
+#: uim/iso-639-1.def:87
+msgid "Greek"
+msgstr ""
+
+#: uim/iso-639-1.def:88
+msgid "Greenlandic"
+msgstr ""
+
+#: uim/iso-639-1.def:89
+msgid "Guarani"
+msgstr ""
+
+#: uim/iso-639-1.def:90
+msgid "Gujarati"
+msgstr ""
+
+#: uim/iso-639-1.def:91
+msgid "Hausa"
+msgstr ""
+
+#: uim/iso-639-1.def:92
+msgid "Hebrew"
+msgstr ""
+
+#: uim/iso-639-1.def:93
+msgid "Hindi"
+msgstr ""
+
+#: uim/iso-639-1.def:94
+msgid "Hungarian"
+msgstr ""
+
+#: uim/iso-639-1.def:95
+msgid "Icelandic"
+msgstr ""
+
+#: uim/iso-639-1.def:96
+msgid "Indonesian"
+msgstr ""
+
+#: uim/iso-639-1.def:97
+msgid "Interlingua"
+msgstr ""
+
+#: uim/iso-639-1.def:98
+msgid "Interlingue"
+msgstr ""
+
+#: uim/iso-639-1.def:99
+msgid "Inuktitut"
+msgstr ""
+
+#: uim/iso-639-1.def:100
+msgid "Inupiak"
+msgstr ""
+
+#: uim/iso-639-1.def:101
+msgid "Irish"
+msgstr ""
+
+#: uim/iso-639-1.def:102
+msgid "Italian"
+msgstr ""
+
+#: uim/iso-639-1.def:103
+msgid "Japanese"
+msgstr ""
+
+#: uim/iso-639-1.def:104
+msgid "Javanese"
+msgstr ""
+
+#: uim/iso-639-1.def:105
+msgid "Kannada"
+msgstr ""
+
+#: uim/iso-639-1.def:106
+msgid "Kashmiri"
+msgstr ""
+
+#: uim/iso-639-1.def:107
+msgid "Kazakh"
+msgstr ""
+
+#: uim/iso-639-1.def:108
+msgid "Kinyarwanda (Ruanda)"
+msgstr ""
+
+#: uim/iso-639-1.def:109
+msgid "Kirghiz"
+msgstr ""
+
+#: uim/iso-639-1.def:110
+msgid "Kirundi (Rundi)"
+msgstr ""
+
+#: uim/iso-639-1.def:111
+msgid "Konkani"
+msgstr ""
+
+#. defined as "kok" in ISO 639-2
+#: uim/iso-639-1.def:112
+msgid "Korean"
+msgstr ""
+
+#: uim/iso-639-1.def:113
+msgid "Kurdish"
+msgstr ""
+
+#: uim/iso-639-1.def:114
+msgid "Laothian"
+msgstr ""
+
+#: uim/iso-639-1.def:115
+msgid "Latin"
+msgstr ""
+
+#: uim/iso-639-1.def:116
+msgid "Latvian (Lettish)"
+msgstr ""
+
+#: uim/iso-639-1.def:117
+msgid "Lingala"
+msgstr ""
+
+#: uim/iso-639-1.def:118
+msgid "Lithuanian"
+msgstr ""
+
+#: uim/iso-639-1.def:119
+msgid "Macedonian"
+msgstr ""
+
+#: uim/iso-639-1.def:120
+msgid "Malagasy"
+msgstr ""
+
+#: uim/iso-639-1.def:121
+msgid "Malay"
+msgstr ""
+
+#: uim/iso-639-1.def:122
+msgid "Malayalam"
+msgstr ""
+
+#: uim/iso-639-1.def:123
+msgid "Maltese"
+msgstr ""
+
+#: uim/iso-639-1.def:124
+msgid "Maori"
+msgstr ""
+
+#: uim/iso-639-1.def:125
+msgid "Marathi"
+msgstr ""
+
+#: uim/iso-639-1.def:126
+msgid "Moldavian"
+msgstr ""
+
+#: uim/iso-639-1.def:127
+msgid "Mongolian"
+msgstr ""
+
+#: uim/iso-639-1.def:128
+msgid "Nauru"
+msgstr ""
+
+#: uim/iso-639-1.def:129
+msgid "Nepali"
+msgstr ""
+
+#: uim/iso-639-1.def:130
+msgid "Norwegian"
+msgstr ""
+
+#: uim/iso-639-1.def:131
+msgid "Occitan"
+msgstr ""
+
+#: uim/iso-639-1.def:132
+msgid "Oriya"
+msgstr ""
+
+#: uim/iso-639-1.def:133
+msgid "Oromo (Afan, Galla)"
+msgstr ""
+
+#: uim/iso-639-1.def:134
+msgid "Pashto (Pushto)"
+msgstr ""
+
+#: uim/iso-639-1.def:135
+msgid "Polish"
+msgstr ""
+
+#: uim/iso-639-1.def:136
+msgid "Portuguese"
+msgstr ""
+
+#: uim/iso-639-1.def:137
+msgid "Punjabi"
+msgstr ""
+
+#: uim/iso-639-1.def:138
+msgid "Quechua"
+msgstr ""
+
+#: uim/iso-639-1.def:139
+msgid "Romanian"
+msgstr ""
+
+#: uim/iso-639-1.def:140
+msgid "Russian"
+msgstr ""
+
+#: uim/iso-639-1.def:141
+msgid "Samoan"
+msgstr ""
+
+#: uim/iso-639-1.def:142
+msgid "Sangro"
+msgstr ""
+
+#: uim/iso-639-1.def:143
+msgid "Sanskrit"
+msgstr ""
+
+#: uim/iso-639-1.def:144
+msgid "Serbian"
+msgstr ""
+
+#: uim/iso-639-1.def:145
+msgid "Sesotho"
+msgstr ""
+
+#: uim/iso-639-1.def:146
+msgid "Setswana"
+msgstr ""
+
+#: uim/iso-639-1.def:147
+msgid "Shona"
+msgstr ""
+
+#: uim/iso-639-1.def:148
+msgid "Sindhi"
+msgstr ""
+
+#: uim/iso-639-1.def:149
+msgid "Sinhalese"
+msgstr ""
+
+#: uim/iso-639-1.def:150
+msgid "Siswati"
+msgstr ""
+
+#: uim/iso-639-1.def:151
+msgid "Slovak"
+msgstr ""
+
+#: uim/iso-639-1.def:152
+msgid "Slovenian"
+msgstr ""
+
+#: uim/iso-639-1.def:153
+msgid "Somali"
+msgstr ""
+
+#: uim/iso-639-1.def:154
+msgid "Spanish"
+msgstr ""
+
+#: uim/iso-639-1.def:155
+msgid "Sundanese"
+msgstr ""
+
+#: uim/iso-639-1.def:156
+msgid "Swahili (Kiswahili)"
+msgstr ""
+
+#: uim/iso-639-1.def:157
+msgid "Swedish"
+msgstr ""
+
+#: uim/iso-639-1.def:158
+msgid "Syriac"
+msgstr ""
+
+#. defined as "syr" in ISO 639-2
+#: uim/iso-639-1.def:159
+msgid "Tagalog"
+msgstr ""
+
+#: uim/iso-639-1.def:160
+msgid "Tajik"
+msgstr ""
+
+#: uim/iso-639-1.def:161
+msgid "Tamil"
+msgstr ""
+
+#: uim/iso-639-1.def:162
+msgid "Tatar"
+msgstr ""
+
+#: uim/iso-639-1.def:163
+msgid "Telugu"
+msgstr ""
+
+#: uim/iso-639-1.def:164
+msgid "Thai"
+msgstr ""
+
+#: uim/iso-639-1.def:165
+msgid "Tibetan"
+msgstr ""
+
+#: uim/iso-639-1.def:166
+msgid "Tigrinya"
+msgstr ""
+
+#: uim/iso-639-1.def:167
+msgid "Tonga"
+msgstr ""
+
+#: uim/iso-639-1.def:168
+msgid "Tsonga"
+msgstr ""
+
+#: uim/iso-639-1.def:169
+msgid "Turkish"
+msgstr ""
+
+#: uim/iso-639-1.def:170
+msgid "Turkmen"
+msgstr ""
+
+#: uim/iso-639-1.def:171
+msgid "Twi"
+msgstr ""
+
+#: uim/iso-639-1.def:172
+msgid "Uighur"
+msgstr ""
+
+#: uim/iso-639-1.def:173
+msgid "Ukrainian"
+msgstr ""
+
+#: uim/iso-639-1.def:174
+msgid "Urdu"
+msgstr ""
+
+#: uim/iso-639-1.def:175
+msgid "Uzbek"
+msgstr ""
+
+#: uim/iso-639-1.def:176
+msgid "Vietnamese"
+msgstr ""
+
+#: uim/iso-639-1.def:177
+msgid "Welsh"
+msgstr ""
+
+#: uim/iso-639-1.def:178
+msgid "Wolof"
+msgstr ""
+
+#: uim/iso-639-1.def:179
+msgid "Xhosa"
+msgstr ""
+
+#: uim/iso-639-1.def:180
+msgid "Yiddish"
+msgstr ""
+
+#: uim/iso-639-1.def:181
+msgid "Yoruba"
+msgstr ""
+
+#: uim/iso-639-1.def:182
+msgid "Zulu"
+msgstr ""

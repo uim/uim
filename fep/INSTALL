@@ -1,0 +1,32 @@
+* 必要なライブラリ
+
+  o libncursesかlibcurses
+
+o コンパイル方法
+
+  基本的にはこれでOKです。/usr/local/binにインストールされます。
+  
+   $ ./configure
+   $ make
+   $ su
+   # make install
+
+
+* anthyのインストール
+  anthyを使うためにはanthyをインストールする必要があります。
+  http://sourceforge.jp/projects/anthy/
+
+
+* primeのインストール
+  primeを使うためにはprimeをインストールする必要があります。
+  http://taiyaki.org/prime/
+
+
+* skkのインストール
+  skkを使うためにはSKK-JISYO.Lを/usr/share/skkに置く必要があります。
+  http://openlab.ring.gr.jp/skk/dic-ja.html
+
+
+* cannaのインストール
+  cannaを使うためにはcannaをインストールしてcannaserverを起動する必要があります。
+  http://canna.sourceforge.jp/

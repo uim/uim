@@ -1,0 +1,5 @@
+Sample Program for test inputting
+
+ $ qmake
+ $ make
+ $ ./edittest

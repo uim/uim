@@ -1,0 +1,590 @@
+This document tracks API/ABI compatibility changes for convenience of
+developers.
+
+Each change consist of following fields. All fields are required.
+
+  - Summary
+    Short description of the change
+
+  - Affects
+    Who will be suffered
+    * IM developers
+    * Bridge developers
+    * Helper program developers
+    * uim developers
+
+  - Updates
+    What has been broken, added or removed
+    * libuim ABI
+    * C API
+    * Scheme API
+    * Helper protocol
+
+  - Version
+    Which version number of source release performs the change
+
+  - Revision
+    Which revision(s) performs the change. Enumerate as comma separated
+    revision numbers if performed by several commit
+
+  - Date
+    When the change committed into the repository
+
+  - Modifier
+    Who had applied the change
+
+  - Related
+    What issues are related to this change. Describe in free format. But if
+    you refer items in the bug tracking system, describe them as "bug #1450,
+    #1451"
+
+  - URL
+    Write URL(s). Use subsequent line(s) with 2 space prefix to describe
+    multiple URLs (i.e. describe one URL per line)
+
+  - Changes
+    Which functions or structs have been changed. Describe one item per line
+    with 2 space prefix for clear view
+
+  - Description
+    Detailed description of the change
+
+
+The changes are described below in most recently updated order.
+
+------------------------------------------------------------------------------
+Summary: New action handling framework
+Affects: IM developers
+Updates: Scheme API
+Version: 0.4.6
+Revision: 1427, 1433, 1516, 1558, 1577, 1580, 1583, 1584, 1586, 1587, 1588, 1589, 1590, 1592, 1593
+Date: 2004-10-08 - 2004-11-08
+Modifier: YamaKen
+Related: property.scm
+URL:
+  http://freedesktop.org/pipermail/uim/2004-October/000676.html
+  http://freedesktop.org/pipermail/uim/2004-October/000677.html
+  http://freedesktop.org/pipermail/uim/2004-October/000681.html
+  http://freedesktop.org/pipermail/uim/2004-October/000682.html
+  http://freedesktop.org/pipermail/uim/2004-October/000685.html
+  http://freedesktop.org/pipermail/uim/2004-October/000700.html
+  http://freedesktop.org/pipermail/uim/2004-October/000706.html
+  http://freedesktop.org/pipermail/uim/2004-October/000707.html
+  http://freedesktop.org/pipermail/uim/2004-October/000720.html
+  http://freedesktop.org/pipermail/uim/2004-October/000729.html
+  http://freedesktop.org/pipermail/uim/2004-October/000732.html
+  http://freedesktop.org/pipermail/uim/2004-November/000733.html
+  http://freedesktop.org/pipermail/uim/2004-November/000736.html
+Changes:
+  (new) register-action
+  (new) register-widget
+  (new) indicator-new
+  (new) activity-indicator-new
+  (new) actions-new
+  (new) context-prop-activate-handler
+  (new) context-mode-handler
+Description:
+  This user-operable action handling framework have eliminated all of
+  property related handlings such as im-update-prop-list or
+  im-update-prop-label from each input method. Input method developer
+  can forget about the property (and legacy 'mode') feature except for
+  context creation process.
+  
+  Users can configure widgets and actions as their preferable forms.
+  
+  The term 'widget' used in this framework is still under
+  discussion. It may be renamed in accordance with result of the
+  discussion.
+  http://freedesktop.org/pipermail/uim/2004-November/000736.html
+------------------------------------------------------------------------------
+Summary: rk-push-key-last! without side effect
+Affects: IM developers
+Updates: Scheme API
+Version: 0.4.6
+Revision: 1542
+Date: 2004-10-25
+Modifier: YamaKen
+Related:
+URL:
+  http://lists.sourceforge.jp/mailman/archives/anthy-dev/2004-October/001253.html (Japanese)
+  http://lists.sourceforge.jp/mailman/archives/anthy-dev/2004-October/001254.html (Japanese)
+  http://lists.sourceforge.jp/mailman/archives/anthy-dev/2004-October/001255.html (Japanese)
+Changes:
+  (new) rk-peek-terminal-match
+Description:
+  rk-peek-terminal-match returns the rule entry that exactly matches with
+  current pending key sequence. rkc will not be
+  altered. i.e. rk-push-key-last! without side effect
+------------------------------------------------------------------------------
+Summary: New logical order string API for Scheme (ustr)
+Affects: IM developers, uim developers
+Updates: Scheme API
+Version: 0.4.6
+Revision: 1483, 1496, 1520, 1539
+Date: 2004-10-14 - 2004-10-24
+Modifier: YamaKen
+Related:
+URL:
+  http://freedesktop.org/pipermail/uim/2004-October/000666.html
+  http://freedesktop.org/pipermail/uim/2004-October/000680.html
+Changes:
+  (new) ustr-rec-spec
+  (new) record ustr
+  (new) ustr-new
+  (new) ustr-whole-seq
+  (new) ustr-former-seq
+  (new) ustr-latter-seq
+  (new) ustr-set-whole-seq!
+  (new) ustr-set-former-seq!
+  (new) ustr-set-latter-seq!
+  (new) ustr-empty?
+  (new) ustr-clear!
+  (new) ustr-clear-former!
+  (new) ustr-clear-latter!
+  (new) ustr-copy!
+  (new) ustr=
+  (new) ustr-length
+  (new) ustr-nth
+  (new) ustr-set-nth!
+  (new) ustr-append!
+  (new) ustr-prepend!
+  (new) map-ustr-whole
+  (new) map-ustr-former
+  (new) map-ustr-latter
+  (new) append-map-ustr-whole
+  (new) append-map-ustr-former
+  (new) append-map-ustr-latter
+  (new) string-append-map-ustr-whole
+  (new) string-append-map-ustr-former
+  (new) string-append-map-ustr-latter
+  (new) ustr-cursor-at-beginning?,
+  (new) ustr-cursor-at-end?
+  (new) ustr-cursor-pos
+  (new) ustr-set-cursor-pos!
+  (new) ustr-cursor-move!
+  (new) ustr-cursor-move-backward!
+  (new) ustr-cursor-move-forward!
+  (new) ustr-cursor-move-beginning!
+  (new) ustr-cursor-move-end!
+  (new) ustr-cursor-frontside
+  (new) ustr-cursor-backside
+  (new) ustr-cursor-delete-frontside!
+  (new) ustr-cursor-delete-backside!
+  (new) ustr-insert-elem!
+  (new) ustr-insert-seq!
+Description:
+  'ustr' stands for 'universal (editable) string'. It represents a logical
+  order string of abstract elements for general purpose. Since it does not
+  assume any specific type of the elements, we can reuse it against several
+  generations of composition table architectures such as rk or hk. It should
+  be isolated from composition table architecture to keep flexibility,
+  reusability and simplicity. ustr provides only basic string operations.
+  
+  See test/test-ustr.scm to understand how it works.
+------------------------------------------------------------------------------
+Summary: New locale based IM-name retrieving API
+Affects: Bridge developers
+Updates: C API
+Version: 0.4.6
+Revision: 1522
+Date: 2004-10-21
+Modifier: YamaKen
+Related:
+URL:
+  http://freedesktop.org/pipermail/uim/2004-October/000692.html
+  http://freedesktop.org/pipermail/uim/2004-October/000695.html
+Changes:
+  (new) uim_get_im_name_for_locale()
+Description:
+  uim-xim requires that language of selected IM strictly match with
+  client locale when the client runs on other than UTF-8 locales. This
+  requirement needs the another im-name retrieving function to select
+  most suitable IM.
+------------------------------------------------------------------------------
+Summary: romaji-kana conversion table has been split into two parts
+Affects: IM developers
+Updates: Scheme API
+Version: 0.4.4
+Revision: 1299, 1370, 1439
+Date: 2004-09-27, 2004-09-30, 2004-10-10
+Modifier: OHASHI Hideya
+Related:
+URL:
+  http://lists.sourceforge.jp/mailman/archives/anthy-dev/2004-September/001100.html (Japanese)
+Changes:
+  (new) ja-rk-rule-basic
+  (new) ja-rk-rule-additional
+        ja-rk-rule
+Description:
+  The Japanese romaji-kana conversion table ja-rk-rule has been split into
+  ja-rk-rule-basic and ja-rk-rule-additional. This is required to support the
+  AZIK kana-input method properly. ja-rk-rule has been comprised of the 2
+  tables.
+------------------------------------------------------------------------------
+Summary: uim_helper_fd_readable() has been exported
+Affects: Bridge developers
+Updates: C API
+Version: 0.4.4
+Revision: 1436
+Date: 2004-10-10
+Modifier: YamaKen
+Related:
+URL:
+Changes:
+  (new) uim_helper_fd_readable()
+Description:
+------------------------------------------------------------------------------
+Summary: New IM-switching related API (still under discussion)
+Affects: Bridge developers
+Updates: C API
+Version: 0.4.4
+Revision: 1190, 1271, 1374
+Date: 2004-09-12 - 2004-10-09
+Modifier: TOKUNAGA Hiroyuki, YamaKen
+Related: bug #610
+URL:
+  http://freedesktop.org/pipermail/uim/2004-September/000646.html
+  http://freedesktop.org/pipermail/uim/2004-October/000648.html
+  http://freedesktop.org/pipermail/uim/2004-October/000655.html
+Changes:
+  (new) uim_switch_im()
+  (new) uim_get_current_im_name()
+Description:
+------------------------------------------------------------------------------
+Summary: New gettext API for Scheme
+Affects: uim developers, IM developers
+Updates: Scheme API
+Version: 0.4.4
+Revision: 1144, 1368, 1425
+Date: 2004-09-06 - 2004-10-08
+Modifier: Kouhei Sutou, YamaKen
+Related: bug #529
+URL:
+Changes:
+  (new) gettext-package
+  (new) textdomain
+  (new) bindtextdomain
+  (new) bind-textdomain-codeset
+  (new) gettext
+  (new) dgettext
+  (new) dcgettext
+  (new) ngettext
+  (new) dngettext
+  (new) dcngettext
+  (new) ugettext
+  (new) _
+  (new) N_
+Description:
+------------------------------------------------------------------------------
+Summary: New information retrival API
+Affects: Bridge developers, Helper program developers
+Updates: C API
+Version: 0.4.4
+Revision: 1190, 1199, 1201, 1348, 1368, 1420
+Date: 2004-09-12 - 2004-10-06
+Modifier: TOKUNAGA Hiroyuki, YamaKen
+Related: bug #627
+URL:
+  http://freedesktop.org/pipermail/uim/2004-October/000650.html
+  http://freedesktop.org/pipermail/uim/2004-October/000651.html
+  http://freedesktop.org/pipermail/uim/2004-October/000653.html
+Changes:
+  (new) uim_get_im_short_desc()
+  (new) uim_get_default_im_name()
+  (new) uim_get_language_name_from_locale()
+Description:
+------------------------------------------------------------------------------
+Summary: New i18n-related API for Scheme
+Affects: uim developers, IM developers
+Updates: Scheme API
+Version: 0.4.4
+Revision: 1368, 1404, 1420
+Date: 2004-09-30 - 2004-10-06
+Modifier: YamaKen
+Related:
+URL:
+Changes:
+  (new) locale-new
+  (new) locale-lang
+  (new) locale-set-lang!
+  (new) locale-territory
+  (new) locale-set-territory!
+  (new) locale-codeset
+  (new) locale-set-codeset!
+  (new) locale-lang-territory-str
+  (new) locale-str
+  (new) locale-zh-awared-lang
+  (new) langgroup-covers?
+  (new) lang-code->lang-name
+  (new) lang-code->lang-name-raw
+Description:
+------------------------------------------------------------------------------
+Summary: Format extension of language attribute of IM
+Affects: Bridge developers
+Updates: C API
+Version: 0.4.4
+Revision: 1404
+Date: 2004-10-05
+Modifier: YamaKen
+Related:
+URL:
+  http://lists.sourceforge.jp/mailman/archives/anthy-dev/2004-October/001117.html (Japanese)
+  http://lists.sourceforge.jp/mailman/archives/anthy-dev/2004-October/001120.html (Japanese)
+Changes:
+  uim_get_im_language()
+Description:
+  This change make uim "zh_TW:zh_HK:en:de:fr" style colon-separated language
+  acceptable. It may affect bridge implementations. Please check.
+------------------------------------------------------------------------------
+Summary: Deprecation of preliminary uim-scm API
+Affects: uim developers
+Updates: C API
+Version: 0.4.4
+Revision: 1389
+Date: 2004-10-03
+Modifier: YamaKen
+Related: bug #481
+URL:
+  http://lists.sourceforge.jp/mailman/archives/anthy-dev/2004-October/001112.html (Japanese)
+Changes:
+  Deprecates almost uim_scm_*() functions
+Description:
+------------------------------------------------------------------------------
+Summary: short-desc argument has been added to register-im
+Affects: IM developers
+Updates: Scheme API
+Version: 0.4.4
+Revision: 1190, 1230, 1377
+Date: 2004-09-12 - 2004-10-01
+Modifier: TOKUNAGA Hiroyuki, YamaKen
+Related:
+URL:
+  http://freedesktop.org/pipermail/uim/2004-September/000646.html
+Changes:
+  register-im
+Description:
+------------------------------------------------------------------------------
+Summary: New IM selection API for Scheme
+Affects: IM developers
+Updates: Scheme API
+Version: 0.4.4
+Revision: 1348, 1379
+Date: 2004-09-28
+Modifier: YamaKen
+Related:
+URL:
+Changes:
+  (removed) current-im
+  (removed) select-im
+      (new) retrieve-im
+      (new) default-im-for-debug
+      (new) find-im-for-locale
+      (new) find-default-im
+            find-im
+Description:
+------------------------------------------------------------------------------
+Summary: Context object integration
+Affects: IM developers
+Updates: Scheme API
+Version: 0.4.4
+Revision: 1304
+Date: 2004-09-27
+Modifier: YamaKen
+Related: bug #1450
+URL:
+  http://freedesktop.org/pipermail/uim/2004-September/000641.html
+Changes:
+  (removed) context-data
+  (removed) set-context-data!
+  im-commit
+  im-commit-raw
+  im-set-encoding
+  im-clear-preedit
+  im-pushback-preedit
+  im-update-preedit
+  im-clear-mode-list
+  im-pushback-mode-list
+  im-update-mode-list
+  im-update-prop-label
+  im-update-prop-list
+  im-update-mode
+  im-activate-candidate-selector
+  im-select-candidate
+  im-shift-page-candidate
+  im-deactivate-candidate-selector
+  im-request-surrounding
+  im-delete-surrounding
+  *-init-handler
+  *-release-handler
+  *-mode-handler
+  *-press-key-handler
+  *-release-key-handler
+  *-reset-handler
+  *-get-candidate-handler
+  *-set-candidate-index-handler
+  *-prop-handler
+Description:
+  This change integrates following 3 context objects into one.
+
+  - id
+  - context
+  - im-specific-context
+
+  Although some reasons to distinguish the objects exist for API implementor,
+  all 3 context objects semantically mean same 'this input context' for
+  IM-implementors. So we should show the context object as unified one for
+  IM-implementors to eliminate complexity and confusion.
+
+  Scheme procedures has been changed as follows.
+
+  - To generate the integrated context object, use define-record with pseudo
+    inheritance (i.e. concatenate context-rec-spec with your own context
+    rec-spec). See anthy.scm for example
+
+  - im-* procedures now accepts the integrated Scheme-side context object as
+    first argument. It also accepts 'id' as backward compatibility, but not
+    recommended
+
+  - *-init-handler (such as anthy-init-handler) now accepts additional 'im'
+    argument. And it must return an integrated context object. The object must
+    be initialized with 'id' and 'im' arguments which passed to this
+    handler. See anthy-init-handler for example
+
+  - All other *-*-handler has been changed to accept the integrated context
+    object as first argument instead of 'id'
+------------------------------------------------------------------------------
+Summary: Replace IM-specific context object definition by define-record
+Affects: IM developers
+Updates: Scheme API
+Version: 0.4.4
+Revision: 1228
+Date: 2004-09-20
+Modifier: YamaKen
+Related: 'Context object integration'
+URL: 
+Changes:
+  (removed) IM-specific context object accessors defined by hand
+    (added) IM-specific context object accessors defined by define-record
+  (removed) IM-specific context object creator (*-context-new) defined by hand
+    (added) IM-specific context object creator (*-context-new) defined by
+            define-record
+Description:
+  This change replaces boring context definitions in all IMs with
+  define-record procedure to make maintenance easy, avoid human errors and
+  know what members are defined at a glance.
+
+  Developers, remove unused members in define-record definitions which is
+  named as "unused-nth" if truely unused. They are temporarily existing as
+  comment to preserve original definition information
+
+  define-record performs safe definition of a list that has member accessors
+  and creator (*-new) with default value initialization.
+
+  Evaluating following S-exp will
+
+  (define-record 'foo
+    '((member1 ())     ;; second element means 'default value'
+      (member2 "2")
+      (member3 3)))
+
+  cause definition of following procedures.
+
+  foo-new
+  foo-member1
+  foo-set-member1!
+  foo-member2
+  foo-set-member2!
+  foo-member3
+  foo-set-member3!
+
+  See following example to understand what define-record does.
+
+  $ uim-sh
+  uim> (define-record 'foo
+         '((member1 ())
+           (member2 "2")
+           (member3 3)))
+  uim> (foo-new)
+  (() "2" 3)
+  uim> (foo-new 'one 'two 'three)
+  (one two three)
+  uim> (foo-new 1)
+  (1 "2" 3)
+  uim> (define foo-obj (foo-new))
+  (() "2" 3)
+  uim> (foo-member2 foo-obj)
+  "2"
+  uim> (foo-set-member2! foo-obj 'two)
+  two
+  uim> foo-obj
+  (() two 3)
+------------------------------------------------------------------------------
+Summary: Fix a typo of an API function name
+Affects: uim developers, Helper program developers
+Updates: C API, libuim ABI
+Version: 0.4.4
+Revision: 1223
+Date: 2004-09-19
+Modifier: YamaKen
+Related: 
+URL:
+Changes:
+  (removed) uim_helpler_fd_writable()
+    (added) uim_helper_fd_writable()
+Description:
+------------------------------------------------------------------------------
+Summary: New helper protocol messages for IM management
+Affects: Bridge developers, Helper program developers
+Updates: Helper protocol
+Version: 0.4.4
+Revision: 
+Date: 2004-09-12?
+Modifier: TOKUNAGA Hiroyuki
+Related:
+URL:
+Changes:
+  (new) im_list
+  (new) im_list_get
+  (new) im_change_this_text_area_only
+  (new) im_change_this_application_only
+  (new) im_change_whole_desktop
+Description:
+------------------------------------------------------------------------------
+Summary: New surrounding text API (still experimental)
+Affects: Bridge developers
+Updates: C API
+Version: 0.4.4
+Revision: 1187
+Date: 2004-09-12
+Modifier: Yusuke Tabata
+Related: bug #1450
+URL:
+Changes:
+  (new) uim_set_surrounding_text_cb()
+  (new) uim_set_surrounding_text()
+Description:
+------------------------------------------------------------------------------
+Summary: Flag field has been added to prop_list_update message
+Affects: IM developers, Bridge developers, Helper program developers
+Updates: Helper protocol, Scheme API
+Version: 0.4.4
+Revision: 1140, 1141, 1148, 1150
+Date: 2004-09-05 - 2004-09-07
+Modifier: Kazuki Ohta
+Related: should be recorded if open discussion exists
+URL:
+Changes:
+  prop_list_update
+  *-update-prop-list
+Description:
+  This changes role of prop_list_update from 'notifies whole configuration
+  information for properties' to 'notifies whole configuration information for
+  properties, and also notifies status update'. The status update feature
+  added makes the role of the message ambiguous. We should reorganize it in
+  accordance with existence of prop_label_update.
+------------------------------------------------------------------------------
+
+Local Variables:
+mode: indented-text
+fill-column: 78
+End:

@@ -1,0 +1,633 @@
+/*
+
+  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+  3. Neither the name of authors nor the names of its contributors
+     may be used to endorse or promote products derived from this software
+     without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  SUCH DAMAGE.
+
+*/
+
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
+#include <stdio.h>
+#ifndef DEBUG
+#define NDEBUG
+#endif
+#if HAVE_ASSERT_H
+#include <assert.h>
+#endif
+#if HAVE_LOCALE_H
+#include <locale.h>
+#endif
+#if HAVE_WCHAR_H
+#include <wchar.h>
+#endif
+#if HAVE_STRING_H
+#include <string.h>
+#endif
+#if HAVE_STRINGS_H
+#include <strings.h>
+#endif
+#if HAVE_CTYPE_H
+#include <ctype.h>
+#endif
+#if HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+#include "uim-fep.h"
+#include "str.h"
+
+static int s_utf8;
+
+static int min(int a, int b);
+
+void init_str(void)
+{
+  if (setlocale(LC_CTYPE, "") == NULL) {
+    printf("locale not supported\n");
+    exit(1);
+  }
+  s_utf8 = (strcasecmp(get_enc(), "utf-8") == 0 || strcasecmp(get_enc(), "utf8") == 0);
+}
+
+/*
+ * LC_ALLなどの環境変数で設定されているエンコーディングを返す
+ * 設定されていない場合は"utf-8"を返す
+ */
+const char *get_enc(void)
+{
+  const char *locale = setlocale(LC_CTYPE, NULL);
+  if (strcasecmp(locale, "ja") == 0) {
+    return "euc-jp";
+  } else {
+    char *ptr = strstr(locale, ".");
+    return ptr != NULL ? ptr + 1 : "utf-8";
+  }
+}
+
+/*
+ * str1とstr2の先頭からの共通部分文字列の幅を返す
+ * compare_str("a", "b") = 0
+ * compare_str("a", "ab") = 1
+ * compare_str("aあ", "aあ") = 3
+ * compare_str("い(0xa4a4)", "あ(0xa4a2)") = 0
+ */
+int compare_str(char *str1, char *str2)
+{
+  int i;
+  int len1 = strlen(str1);
+  int len2 = strlen(str2);
+
+  for (i = 0; i < min(len1, len2); i++) {
+    if (str1[i] != str2[i]) {
+      break;
+    }
+  }
+
+  return byte2width(str1, i);
+}
+
+/*
+ * str1とstr2の末尾からの共通部分文字列の幅を返す
+ * compare_str_rev("a", "b") = 0
+ * compare_str_rev("a", "ba") = 1
+ * compare_str_rev("aあ", "baあ") = 3
+ * compare_str_rev("□(0xa2a2)", "あ(0xa4a2)") = 0
+ */
+int compare_str_rev(const char *str1, const char *str2)
+{
+  int i;
+  int len1 = strlen(str1);
+  int len2 = strlen(str2);
+
+  for (i = 1; i <= min(len1, len2); i++) {
+    if (str1[len1 - i] != str2[len2 - i]) {
+      break;
+    }
+  }
+
+  if (len1 < len2) {
+    return strwidth(str1) - byte2width2(str1, len1 - i + 1);
+  } else {
+    return strwidth(str2) - byte2width2(str2, len2 - i + 1);
+  }
+}
+
+/*
+ * 文字列の幅を返す
+ * strwidth("abc") = 3
+ * strwidth("あa") = 3
+ * strwidth("")    = 0
+ */
+#ifdef HAVE_WCSWIDTH
+int strwidth(const char *str)
+{
+  int width;
+  int str_byte;
+  wchar_t *wcstr;
+  int nr_wchars;
+
+  assert(str != NULL);
+
+  str_byte = strlen(str);
+  if (str_byte <= 0) {
+    return 0;
+  }
+  wcstr = malloc(sizeof(wchar_t) * str_byte);
+  nr_wchars = mbstowcs(wcstr, str, str_byte);
+  assert(nr_wchars >= 0);
+  width = wcswidth(wcstr, nr_wchars);
+  assert(width >= 0);
+  free(wcstr);
+  return width;
+}
+#else
+int strwidth(const char *str)
+{
+  int width = 0;
+  for (; *str != '\0'; str++) {
+    if (isascii(*str)) {
+      width++;
+    } else {
+      if (s_utf8) {
+        width += 2;
+        str += 2;
+      } else {
+        /* euc-jp */
+        if ((unsigned char)*str == 0x8e) {
+          /* 半角カタカナ */
+          width++;
+        } else {
+          width += 2;
+        }
+        str++;
+      }
+    }
+  }
+  return width;
+}
+#endif
+
+/*
+ * substr = strのnバイト以下の先頭からの最長部分文字列として、
+ * strwidth(substr)を返す。
+ * byte2width("abc", 2)  = 2
+ * byte2width("ああ", 3) = 2 (euc)
+ * byte2width("ああ", 4) = 4 (euc)
+ * byte2width("ああ", 6) = 4 (euc)
+ * byte2width("ああ", 4) = 2 (utf8)
+ * byte2width("ああ", 5) = 2 (utf8)
+ * byte2width("ああ", 6) = 4 (utf8)
+ * const char *strとなっているが，一時的に書換えるのでstrを文字列定数
+ * にしてはいけない．
+ */
+#ifdef HAVE_WCSWIDTH
+int byte2width(const char *str, int n)
+{
+  int width;
+  int str_byte;
+  char save_char;
+  const char *save_str;
+  wchar_t *wcstr;
+  int nr_wchars;
+
+  assert(str != NULL);
+
+  if (n <= 0) {
+    return 0;
+  }
+
+  str_byte = strlen(str);
+  if (str_byte <= 0) {
+    return 0;
+  }
+  wcstr = malloc(sizeof(wchar_t) * str_byte);
+
+  if (n > str_byte) {
+    n = str_byte;
+  }
+
+  save_char = str[n];
+  save_str = str;
+  ((char *)str)[n] = '\0';
+  nr_wchars = mbsrtowcs(wcstr, &str, str_byte, NULL);
+  ((char *)save_str)[n] = save_char;
+  if (nr_wchars >= 0) {
+    width = wcswidth(wcstr, nr_wchars);
+  } else {
+    save_char = str[0];
+    ((char *)str)[0] = '\0';
+    width = strwidth(save_str);
+    ((char *)str)[0] = save_char;
+  }
+  free(wcstr);
+  assert(width >= 0);
+  return width;
+}
+#else
+int byte2width(const char *str, int n)
+{
+  int width = 0;
+  int byte = 0;
+  int char_width;
+  int char_byte;
+
+  if (n <= 0) {
+    return 0;
+  }
+
+  for (; *str != '\0'; str++) {
+    if (isascii(*str)) {
+      char_width = 1;
+      char_byte = 1;
+    } else {
+      if (s_utf8) {
+        char_byte = 3;
+        char_width = 2;
+      } else {
+        /* euc-jp */
+        if ((unsigned char)*str == 0x8e) {
+          char_width = 1;
+        } else {
+          char_width = 2;
+        }
+        char_byte = 2;
+      }
+    }
+    if (byte + char_byte == n) {
+      width += char_width;
+      break;
+    } else if (byte + char_byte > n) {
+      break;
+    }
+    width += char_width;
+    str += char_byte - 1;
+    byte += char_byte;
+  }
+  return width;
+}
+#endif
+
+/*
+ * substr = strのnバイト以上の先頭からの最短部分文字列として、
+ * strwidth(substr)を返す。
+ * n > strlen(str)の場合は substr = str
+ * byte2width2("abc", 2)  = 2
+ * byte2width2("ああ", 3) = 4 (euc)
+ * byte2width2("ああ", 4) = 4 (euc)
+ * byte2width2("ああ", 6) = 4 (euc)
+ * byte2width2("ああ", 4) = 4 (utf8)
+ * byte2width2("ああ", 5) = 4 (utf8)
+ * byte2width2("ああ", 6) = 4 (utf8)
+ * const char *strとなっているが，一時的に書換えるのでstrを文字列定数
+ * にしてはいけない．
+ */
+#ifdef HAVE_WCSWIDTH
+int byte2width2(const char *str, int n)
+{
+  int width;
+  int str_byte;
+  char save_char;
+  const char *save_str;
+  wchar_t *wcstr;
+  int nr_wchars;
+  
+  assert(str != NULL);
+
+  if (n <= 0) {
+    return 0;
+  }
+
+  str_byte = strlen(str);
+  if (str_byte <= 0) {
+    return 0;
+  }
+  wcstr = malloc(sizeof(wchar_t) * str_byte);
+
+  if (n > str_byte) {
+    n = str_byte;
+  }
+
+  save_char = str[n];
+  save_str = str;
+  ((char *)str)[n] = '\0';
+  nr_wchars = mbsrtowcs(wcstr, &str, str_byte, NULL);
+  ((char *)save_str)[n] = save_char;
+  if (nr_wchars >= 0) {
+    width = wcswidth(wcstr, nr_wchars);
+  } else {
+    mbsrtowcs(wcstr, &str, 1, NULL);
+    /* strを最後まで変換するとNULLになる */
+    assert(str != NULL);
+    save_char = str[0];
+    ((char *)str)[0] = '\0';
+    width = strwidth(save_str);
+    ((char *)str)[0] = save_char;
+  }
+  free(wcstr);
+  assert(width >= 0);
+  return width;
+}
+#else
+int byte2width2(const char *str, int n)
+{
+  int width = 0;
+  int byte = 0;
+  int char_width;
+  int char_byte;
+
+  if (n <= 0) {
+    return 0;
+  }
+
+  for (; *str != '\0'; str++) {
+    if (isascii(*str)) {
+      char_width = 1;
+      char_byte = 1;
+    } else {
+      if (s_utf8) {
+        char_byte = 3;
+        char_width = 2;
+      } else {
+        if ((unsigned char)*str == 0x8e) {
+          char_width = 1;
+        } else {
+          char_width = 2;
+        }
+        char_byte = 2;
+      }
+    }
+    if (byte + char_byte >= n) {
+      width += char_width;
+      break;
+    }
+    width += char_width;
+    str += char_byte - 1;
+    byte += char_byte;
+  }
+  return width;
+}
+#endif
+
+/*
+ * 返り値 rval[2]
+ * substr = strの幅n以下の先頭からの最長部分文字列として、
+ * rval[0] = substrのバイト
+ * rval[1] = substrの幅
+ * width2byte("ああ", 3) = [2, 2] (euc)
+ * width2byte("ああ", 4) = [4, 4] (euc)
+ * width2byte("ああ", 6) = [4, 4] (euc)
+ * width2byte("ああ", 3) = [3, 2] (utf8)
+ * width2byte("ああ", 4) = [6, 4] (utf8)
+ */
+#ifdef HAVE_WCSWIDTH
+int *width2byte(const char *str, int n)
+{
+  int width = 0;
+  int str_byte;
+  wchar_t *wcstr;
+  int nr_wchars;
+  static int rval[2];
+  int i;
+
+  assert(str != NULL);
+
+  if (n < 0) {
+    n = 0;
+  }
+
+  str_byte = strlen(str);
+  if (str_byte <= 0) {
+    rval[0] = rval[1] = 0;
+    return rval;
+  }
+  wcstr = malloc(sizeof(wchar_t) * (str_byte + 1));
+
+  if (n > str_byte) {
+    n = str_byte;
+  }
+
+  nr_wchars = mbstowcs(wcstr, str, str_byte);
+  assert(nr_wchars >= 0);
+  for (i = nr_wchars; i >= 0; i--) {
+    width = wcswidth(wcstr, i);
+    if (width <= n) {
+      wcstr[i] = '\0';
+      str_byte = wcstombs(NULL, wcstr, 0);
+      break;
+    }
+  }
+  assert(str_byte >= 0 && width >= 0);
+  rval[0] = str_byte;
+  rval[1] = width;
+  free(wcstr);
+  return rval;
+}
+#else
+int *width2byte(const char *str, int n)
+{
+  int width = 0;
+  int byte = 0;
+  int char_width;
+  int char_byte;
+  static int rval[2];
+
+  for (; *str != '\0'; str++) {
+    if (isascii(*str)) {
+      char_width = 1;
+      char_byte = 1;
+    } else {
+      if (s_utf8) {
+        char_byte = 3;
+        char_width = 2;
+      } else {
+        if ((unsigned char)*str == 0x8e) {
+          char_width = 1;
+        } else {
+          char_width = 2;
+        }
+        char_byte = 2;
+      }
+    }
+    if (width + char_width == n) {
+      width += char_width;
+      byte += char_byte;
+      break;
+    } else if (width + char_width > n) {
+      break;
+    }
+    width += char_width;
+    str += char_byte - 1;
+    byte += char_byte;
+  }
+  rval[0] = byte;
+  rval[1] = width;
+  return rval;
+}
+#endif
+
+/*
+ * 返り値 rval[2]
+ * substr = strの幅n以上の先頭からの最短部分文字列として、
+ * rval[0] = substrのバイト
+ * rval[1] = substrの幅
+ * n > strwidth(str)の場合は substr = str
+ * width2byte2("ああ", 1) = [2, 2] (euc)
+ * width2byte2("ああ", 3) = [4, 4] (euc)
+ * width2byte2("ああ", 6) = [4, 4] (euc)
+ * width2byte2("ああ", 1) = [3, 2] (utf8)
+ * width2byte2("ああ", 4) = [6, 4] (utf8)
+ */
+#ifdef HAVE_WCSWIDTH
+int *width2byte2(const char *str, int n)
+{
+  int width = 0;
+  int str_byte;
+  wchar_t *wcstr;
+  int nr_wchars;
+  static int rval[2];
+  int i;
+
+  assert(str != NULL);
+
+  if (n < 0) {
+    n = 0;
+  }
+
+  str_byte = strlen(str);
+  if (str_byte <= 0) {
+    rval[0] = rval[1] = 0;
+    return rval;
+  }
+  wcstr = malloc(sizeof(wchar_t) * (str_byte + 1));
+
+  if (n > str_byte) {
+    n = str_byte;
+  }
+
+  nr_wchars = mbstowcs(wcstr, str, str_byte);
+  assert(nr_wchars >= 0);
+  for (i = 0; i <= nr_wchars; i++) {
+    width = wcswidth(wcstr, i);
+    if (width >= n) {
+      wcstr[i] = '\0';
+      str_byte = wcstombs(NULL, wcstr, 0);
+      break;
+    }
+  }
+  assert(str_byte >= 0 && width >= 0);
+  rval[0] = str_byte;
+  rval[1] = width;
+  free(wcstr);
+  return rval;
+}
+#else
+int *width2byte2(const char *str, int n)
+{
+  int width = 0;
+  int byte = 0;
+  int char_width;
+  int char_byte;
+  static int rval[2];
+
+  for (; *str != '\0'; str++) {
+    if (isascii(*str)) {
+      char_width = 1;
+      char_byte = 1;
+    } else {
+      if (s_utf8) {
+        char_byte = 3;
+        char_width = 2;
+      } else {
+        if ((unsigned char)*str == 0x8e) {
+          char_width = 1;
+        } else {
+          char_width = 2;
+        }
+        char_byte = 2;
+      }
+    }
+    if (width + char_width >= n) {
+      width += char_width;
+      byte += char_byte;
+      break;
+    }
+    width += char_width;
+    str += char_byte - 1;
+    byte += char_byte;
+  }
+  rval[0] = byte;
+  rval[1] = width;
+  return rval;
+}
+#endif
+
+/*
+ * substr = strの幅n以下の先頭からの最長部分文字列として、
+ * str[strlne(substr)] = '\0'
+ * strwidth(substr)を返す。
+ * strhead("ああ", 3) = 2 , str = "あ"
+ * strhead("ああ", 4) = 4 , str = "ああ"
+ * strhead("ああ", 6) = 4 , str = "ああ"
+ */
+int strhead(char *str, int n)
+{
+  int *rval = width2byte(str, n);
+  assert(0 <= rval[0] && rval[0] <= (int)strlen(str));
+  str[rval[0]] = '\0';
+  return rval[1];
+}
+
+/*
+ * haystackの中で最も右に現われるneedleの次の文字列のポインタを返す
+ * needleが空文字列の場合はNULLを返す
+ * needleがNULLのときはNULLを返す
+ */
+char *rstrstr(char *haystack, const char *needle)
+{
+  char *str = NULL;
+  int needle_len;
+  assert(haystack != NULL);
+  if (needle == NULL) {
+    return NULL;
+  }
+  needle_len = strlen(needle);
+  if (needle_len <= 0) {
+    return NULL;
+  }
+  while ((haystack = strstr(haystack, needle)) != NULL) {
+    haystack += needle_len;
+    str = haystack;
+  }
+  return str;
+}
+
+static int min(int a, int b)
+{
+  return a < b ? a : b;
+}

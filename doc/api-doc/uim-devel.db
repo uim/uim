@@ -1,0 +1,328 @@
+<!doctype Book PUBLIC "-//OASIS//DTD DocBook V3.1//EN"> <book>
+  <bookinfo>
+    <title>Uim Developer's Document</title>
+    <author>
+        <firstname>Kazuki</firstname>
+        <surname>Ohta</surname>
+    </author>
+  </bookinfo>
+
+  <chapter>
+    <title>Introduction</title>
+    <para>
+      Uim is a multilingual input method library which does NOT adopt a Client/Server framework, in keeping with Uim's goal of being very "Simple and Secure".
+    </para>
+    <para>
+      This document aims to explain the use of Uim's API to the developer who wishes to engineer a bridge between the Uim library and an application (or GUI toolkit).
+      This is also the official reference document for the Uim library.
+      This document assumes the reader to have a good understanding of the C programming language, but does not require an intimate understanding of Uim internals.
+    </para>
+    <para>
+      This document is written based on Uim version 0.3.8.
+      If you wish to create an application using Uim while reading to this document, please install the Uim library version 0.3.8 (or higher) and C compiler on your system.
+    </para>
+    <para>
+      You can use, modify, distribute and sell this package under the terms of BSD license.
+      Please see the COPYING file included in the package for details.
+    </para>
+
+    <section>
+      <title>IM related technical vocabulary</title>
+
+      <para>
+        One needs to know some IM related jargon when using Uim library.
+        We present a few of the commonly used words here.
+      </para>
+
+        <variablelist>
+          <varlistentry>
+            <term>commit</term>
+            <listitem>
+              <para>The transferrence of a input string from an input method to the application.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>preedit</term>
+            <listitem>
+              <para>A string which is currently being inputted, but not yet committed</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>candidate</term>
+            <listitem>
+              <para>candidate for the conversion process</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>segment</term>
+            <listitem>
+              <para>basic block of characters withing a string</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>cb</term>
+            <listitem>
+              <para>An abbreviation for "callback"</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>property</term>
+            <listitem>
+              <para>a generic term describing a particular state of an input method</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Initializing and Finalizing library</title>
+    <para>
+      Starting in this chapter, the contents explain how to use Uim library.
+    </para>
+
+    <para>
+      You can initialize Uim library by calling uim_init() function.
+      To use this function, you need to include the &lt;uim/uim.h&gt; header.
+
+      <programlisting>
+        if (uim_init() != 0) {
+            printf("uim_init() failed\n");
+            exit(1);
+        }
+      </programlisting>
+
+      As well as initializing, you can finalize library by calling uim_quit() function.
+
+      <programlisting>
+        uim_quit();
+      </programlisting>
+
+    </para>
+  </chapter>
+
+  <chapter>
+    <title>Creating and Releasing Input Context</title>
+
+    <para>
+      In the Uim library, you must provide and instance of an Input Context structure when calling most of the functions.
+      The type of this Input Context object used in Uim is uim_context.
+    </para>
+    <para>
+      This chapter describes how to create and release a uim_context.
+    </para>
+    <para>
+      You can create Uim input context by calling uim_create_context() function.
+      A new input context needs to be created for each input method being used. For example, when switching from a "uim-anthy" input context to a "uim-prime" one, a new context needs to be created for the latter.
+      The 1st argument of this function is your private structure which is needed to handle IM management.
+    </para>
+    <para>
+      When you finish using the input context, you need to release input context by calling uim_release_context() function.
+    </para>
+    <para>
+      Below is an example of actual code (for uim-anthy).
+    </para>
+
+    <section>
+      <title>Sample Program</title>
+      <programlisting>
+        #include &lt;uim/uim.h&gt;
+        #include &lt;stdlib.h&gt;
+
+        typedef struct _IMUimContext {
+          uim_context uc;
+        } IMUimContext;
+
+        IMUimContext uic;
+
+        static void im_uim_commit_string(void *ptr, const char *str);
+
+        void init_im(void) {
+          if (uim_init() != 0) {
+            printf("uim_init() failed\n");
+            exit(1);
+          }
+
+          uic.uc = uim_create_context(&amp;uic, "UTF-8",
+              	                      NULL, "uim-anthy",
+                	              uim_iconv,
+                                      im_uim_commit_string);
+        }
+
+        static void im_uim_commit_string(void *ptr, const char *str) {
+          IMUimContext *uic = (IMUimContext*)ptr;
+
+          /* commit string */
+        }
+
+        void quit_im(void) {
+          uim_release_context(uic.uc);
+          uim_quit();
+        }
+      </programlisting>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Retrieving the names of available input methods</title>
+
+    <para>
+      Uim has many available input methods and you can get a list of names of these methods.
+      uim_get_nr_im() function returns the number of available input methods, and uim_get_im_name() returns the name of an input method indexed by a number between zero and the return value of uim_get_nr_im().
+      You can also discover an input method's language by calling the uim_get_im_language() function.
+    </para>
+    <para>
+       Here is some example code.
+    </para>
+
+    <programlisting>
+      int i = 0;
+
+      uim_context tmpuc = uim_create_context(NULL, enconding, NULL, NULL, NULL);
+      for (i = 0; i < uim_get_nr_im(tmpuc); i++) {
+        im[i].name = uim_get_im_name(tmpuc, i);
+        im[i].lang = uim_get_im_language(tmpuc, i);
+      }
+      uim_release_context(tmpuc);
+    </programlisting>
+  </chapter>
+
+  <chapter>
+    <title>Setting callbacks</title>
+
+    <section>
+      <title>Preedit related callbacks</title>
+
+      <para>
+        To handle preedit buffers, you need to implement three callbacks: clear_cb(), pushback_cb(),and  update_cb().
+        Once implemented, they can be configured using uim_set_preedit_cb().
+        pushback_cb() is called sequentially between the calls of clear_cb() and update_cb().
+      </para>
+      <para>
+        The preedit string comes as a segment with attributes, so you need to store the preedit string in update_cb() and commit this in commit_cb() which is set by uim_create_context().
+      </para>
+      <para>
+        Each callback's outline behavior is like this.
+      </para>
+
+        <variablelist>
+          <varlistentry>
+            <term>clear_cb</term>
+            <listitem>
+              <para>freeing all stored preedit segment</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>pushback_cb</term>
+            <listitem>
+              <para>store the string and attributes</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>update_cb</term>
+            <listitem>
+              <para>show stored preedit string (real process </para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+    </section>
+
+    <section>
+      <title>Candidate related callbacks and Candidate related function</title>
+
+      <para>
+      </para>
+
+      <para>
+        Some language like Chinese and Japanese require a conversion from phoenetic representation to written respresentation. This process requires the user to select from a list of conversion candidates.
+        The typical approach is to display a list of candidates in a small window.
+      </para>
+      <para>
+        Uim's candidate related API is constructed very carefully as not to repeat a mistake in the design XIM.
+        In terms of the index of the selected candidate, both user and input system should be able to handle the index of current candidate.
+      </para>
+      <para>
+        To handle candidate window behavior, Uim provides special callbacks.
+        You need to implement four callbacks activate_cb(), select_cb(), shift_page_cb(), deactivate_cb().
+        Next, set these callbacks by calling uim_set_candidate_selector_cb().
+      </para>
+      <para>
+        Each callback's outline behavior is like this.
+      </para>
+
+        <variablelist>
+          <varlistentry>
+            <term>activate_cb(void *ptr, int nr, int displayLimit)</term>
+            <listitem>
+              <para>show the candidate window. $nr is the number of candidates, and displayLimit is the max number of displayed candidates.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>select_cb(void *ptr, int index)</term>
+            <listitem>
+              <para>This callback communicates the index of the currently selected candidate</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>shift_page_cb(void *ptr, int direction)</term>
+            <listitem>
+              <para>
+                This callback is called when "generic-next-page-key" or "generic-prev-page-key" is pressed.
+                If next-page-key, $direction is 1. And if prev-page-key, $direction is 0.
+              </para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>deactivate_cb(void *ptr)</term>
+            <listitem>
+              <para>hide the candidate window.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+
+      <para>
+        Note that the activate_cb() is not necessarily called before the select_cb(), as the activation/deactivation of a candidate window and selection of a candidate are orthogonal operations. It is possible for the input method to specify a candidate selection in a hidden window, and then call the activate_cb() at a later time.
+      
+      </para>
+
+      <section>
+        <title>Candidate related functions</title>
+        <para>
+          You can access candidate data with the combination of uim_get_candidate(), uim_candidate_get_cand_str(), uim_candidate_get_heading_label(), uim_candidate_free().
+          First, you can get struct uim_candidate by calling uim_get_candidate() and then access candidate string and heading label by passing this struct as an argument into uim_candidate_get_cand_str(), uim_candidate_get_heading_label().
+          At last, you must free the struct by excuting uim_candidate_free().
+        </para>
+        <para>
+          The sample use is shown below.
+        </para>
+        <programlisting>
+          int i = 0;
+          uim_candidate cand = NULL;
+
+          for (i = 0; i < NR_CANDIDATES; i++) {
+            cand = uim_get_candidate(uc, i, i);
+
+            candidates[i].str = uim_candidate_get_cand_str(cand);
+            candidates[i].hlabel =
+            uim_candidate_get_heading_label(cand);
+
+            uim_candidate_free(cand);
+          }
+        </programlisting>
+        <para>
+          You should call uim_set_candidate_index() when specified index is selected by mouse clicking or key pressing etc.
+        </para>
+      </section>
+    </section>
+  </chapter>
+</book>

@@ -1,0 +1,42 @@
+Summary: UIM an input method library
+Name: uim
+Version: @VERSION@
+Release: 1
+URL: http://anthy.sourceforge.jp
+Source0: %{name}-%{version}.tar.gz
+License: GPL or BSD
+Group: 不明
+BuildRoot: %{_tmppath}/%{name}-root
+Requires: gtk2
+
+%description
+
+%prep
+%setup -q
+
+%build
+./configure --prefix=/usr --sysconfdir=/etc --without-canna
+make
+
+%install
+rm -rf $RPM_BUILD_ROOT
+%makeinstall
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%post
+gtk-query-immodules-2.0 > /etc/gtk-2.0/gtk.immodules
+
+%files
+%defattr(-,root,root)
+/usr/lib
+/usr/share/uim
+/usr/include/uim
+
+
+%changelog
+* Sat Dec  7 2002 TABATA Yusuke <yusuke@localhost.localdomain>
+- Initial build.
+
+

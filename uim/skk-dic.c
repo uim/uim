@@ -1,0 +1,1645 @@
+/*
+
+  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+  3. Neither the name of authors nor the names of its contributors
+     may be used to endorse or promote products derived from this software
+     without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  SUCH DAMAGE.
+
+*/
+
+/*
+ * SKK is a simple Japanese input method
+ *
+ * Many many things are to be implemented!
+ */
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
+
+#include "context.h"
+
+/*
+ * cand : candidate
+ */
+
+
+/* candidate array for each okurigana
+ *
+ * |C0|C1| .. |Cnr_real_cands| ..              |Cnr_cands|
+ * <-------should be saved --><-- cache of master dict -->
+ */
+struct skk_cand_array {
+  /* okurigana string */
+  char *okuri;
+
+  int nr_cands;/* length of cands array allocated */
+  int nr_real_cands;/* length of read from file part */
+  /* candidate string */
+  char **cands;
+
+  /* this array was used and merged with okuri-nasi entry array */
+  int is_used;
+  /* link to next entry in the list */
+  struct skk_line *line;
+};
+
+/* skk dictionary line */
+struct skk_line {
+  /* line index. head part */
+  char *head;
+  /* line index. okurigana part. value will be 0,
+     if it is okuri-nasi entry */
+  char okuri_head;
+  /* array of candidate array for different okuri-gana */
+  int nr_cand_array;
+  struct skk_cand_array *cands;
+  /* modified or read from file */
+  int need_save;
+  /* link to next entry in the list */
+  struct skk_line *next;
+};
+
+/* skk dictionary file */
+static struct dic_info {
+  /* address of mmap'ed dictionary file */
+  void *addr;
+  /* byte offset of first valid entry in mmap'ed region */
+  int first;
+  /* byte offset of first okuri-nasi entry */
+  int border;
+  /* size of dictionary file */
+  int size;
+  /* head of cached skk dictionary line list. LRU ordered */
+  struct skk_line head;
+} *skk_dic;
+
+/* completion */
+struct skk_comp_array {
+  /* index of completion */
+  char *head;
+  /* array of completion string */
+  int nr_comps;
+  char **comps;
+  /**/
+  int refcount;
+  /**/
+  struct skk_comp_array *next;
+} *skk_comp;
+
+static int
+calc_line_len(const char *s)
+{
+  int i;
+  for (i = 0; s[i] != '\n'; i++);
+  return i;
+}
+
+static int
+is_okuri(const char *line_str)
+{
+  const char *b;
+  /* find first white space */
+  b = strchr(line_str, ' ');
+  if (!b) {
+    return 0;
+  }
+  /* check previous character */
+  b--;
+  if (isalpha(*b)) {
+    return 1;
+  }
+  return 0;
+}
+
+
+static int
+find_first_line(struct dic_info *di)
+{
+  char *s = di->addr;
+  int off = 0;
+  while ( off < di->size && s[off] == ';' ) {
+    int l = calc_line_len(&s[off]);
+    off += l + 1;
+  }
+  return off;
+}
+
+static int
+find_border(struct dic_info *di, int size)
+{
+  char *s = di->addr;
+  int off = 0;
+  while (off < size) {
+    int l = calc_line_len(&s[off]);
+    if (s[off] == ';') {
+      off += l + 1;
+      continue;
+    }
+    if (!is_okuri(&s[off])) {
+      return off;
+    }
+    off += l + 1;
+  }
+  /* every entry is okuri-ari, it may not happen. */
+  return size - 1;
+}
+
+static struct dic_info *
+open_dic(const char *fn)
+{
+  struct dic_info *di;
+  struct stat st;
+  int fd;
+  void *addr;
+  fd = open(fn, O_RDONLY);
+  if (fd == -1) {
+    return NULL;
+  }
+  if(fstat(fd, &st) == -1) {
+    return NULL;
+  }
+  addr = mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+  close(fd);
+  if (addr == MAP_FAILED) {
+    return NULL;
+  }
+  di = (struct dic_info *)malloc(sizeof(struct dic_info));
+  di->addr = addr;
+  di->size = st.st_size;
+  di->first = find_first_line(di);
+  di->border = find_border(di, st.st_size);
+  di->head.next = NULL;
+  return di;
+}
+
+static char *
+find_line(struct dic_info *di, int off)
+{
+  char *ptr = di->addr;
+  while (off > 0 && (ptr[off] != '\n' || ptr[off+1] == ';')) {
+    off --;
+  }
+  if (off) {
+    off ++;
+  }
+  return &ptr[off];
+}
+
+static char *
+extract_line_index(struct dic_info *di, int off, char *buf, int len)
+{
+  char *p = find_line(di, off);
+  int i;
+  if (p[0] == ';') {
+    return NULL;
+  }
+  for (i = 0; i < len && p[i] != ' '; i++) {
+    buf[i] = p[i];
+  }
+  buf[i] = 0;
+  return buf;
+}
+
+static int
+do_search_line(struct dic_info *di, char *s, int min,
+	       int max, int d)
+{
+  char buf[256];
+  char *r;
+  int idx = (min + max)/2;
+  int c = 0;
+
+  if (abs(max-min) < 4) {
+    return -1;
+  }
+  r = extract_line_index(di, idx, buf, 256);
+  if (r) {
+    c = strcmp(s, r);
+  } else {
+    return -1;
+  }
+
+  if (!c) {
+    return idx;
+  }
+  if (c * d> 0) {
+    return do_search_line(di, s, idx, max, d);
+  } else {
+    return do_search_line(di, s, min, idx, d);
+  }
+  return -1;
+}
+
+/* This funciton name is temporary. I want a better name. */
+static char *
+first_space(char *str)
+{
+  while (*str && (*str != ' ')) {
+    str++;
+  }
+  return str;
+}
+
+static char *
+next_slash(char *str)
+{
+  int p = 0;
+  while (*str && (*str != '/' || p == 1)) {
+    if (*str == '[') {
+      p = 1;
+    }
+    if (p == 1 && *str == ']') {
+      p = 0;
+    }
+    str ++;
+  }
+  return str;
+}
+
+static char *
+nth_candidate(char *str, int nth)
+{
+  char *p , *term;
+  int i;
+
+  str = first_space(str);
+  
+  for (i = 0; i <= nth; i++) {
+    str = next_slash(str);
+    if (*str == '/') {
+      str++;
+    }
+  }
+  if (!str) {
+    return NULL;
+  }
+  if (*str == '/') {
+    str++;
+  }
+  p = strdup(str);
+  term = next_slash(p);
+  *term = 0;
+  return p;
+}
+
+static LISP
+skk_dic_open(LISP fn_)
+{
+  char *fn = uim_get_c_string(fn_);
+  if (!skk_dic) {
+    skk_dic = open_dic(fn);
+  }
+  free(fn);
+  return NIL;
+}
+
+static void
+free_skk_line(struct skk_line *sl)
+{
+  int i, j;
+  if (!sl) {
+    return ;
+  }
+  for (i = 0; i < sl->nr_cand_array; i++) {
+    struct skk_cand_array *ca = &sl->cands[i];
+    for (j = 0; j < ca->nr_cands; j++) {
+      free(ca->cands[j]);
+    }
+    free(ca->okuri);
+    free(ca->cands);
+  }
+  free(sl->head);
+  free(sl->cands);
+}
+
+static struct skk_cand_array *
+find_candidate_array_from_line(struct skk_line *sl, char *okuri,
+			       int create_if_notfound)
+{
+  int i;
+  struct skk_cand_array *ca;
+  if (!okuri || !strlen(okuri)) {
+    return &sl->cands[0];
+  }
+  for (i = 1; i < sl->nr_cand_array; i++) {
+    if (okuri && !strcmp(okuri, sl->cands[i].okuri)) {
+      return &sl->cands[i];
+    }
+  }
+  if (!create_if_notfound) {
+    return &sl->cands[0];
+  }
+  /* allocate now */
+  sl->nr_cand_array ++;
+  sl->cands = realloc(sl->cands,
+		      sizeof(struct skk_cand_array) * sl->nr_cand_array);
+  ca = &sl->cands[sl->nr_cand_array - 1];
+  ca->is_used = 0;
+  ca->cands = 0;
+  ca->nr_cands = 0;
+  ca->nr_real_cands = 0;
+  ca->okuri = strdup(okuri);
+  ca->line = sl;
+  return ca;
+}
+
+static void
+push_back_candidate_to_array(struct skk_cand_array *ca, char *cand)
+{
+  ca->nr_cands++;
+  ca->cands = realloc(ca->cands, sizeof(char *) * ca->nr_cands);
+  ca->cands[ca->nr_cands - 1] = strdup(cand);
+}
+
+static void
+merge_candidate_array(struct skk_line *sl, struct skk_cand_array *dst_ca)
+{
+  int i, j;
+  struct skk_cand_array *src_ca;
+  if (!sl) {
+    return ;
+  }
+  src_ca = &sl->cands[0];
+  if (src_ca == dst_ca) {
+    return ;
+  }
+  for (i = 0; i < src_ca->nr_cands; i++) {
+    int dup = 0;
+    for (j = 0; j < dst_ca->nr_cands; j++) {
+      if (!strcmp(src_ca->cands[i], dst_ca->cands[j])) {
+	dup = 1;
+      }
+    }
+    if (!dup) {
+      push_back_candidate_to_array(dst_ca, src_ca->cands[i]);
+    }
+  }
+}
+
+static void
+compose_line_parts(struct dic_info *di, struct skk_line *sl,
+		   char *okuri, char *line)
+{
+  int nth;
+  char *tmp;
+  struct skk_cand_array *ca = find_candidate_array_from_line(sl, okuri, 1);
+
+  nth = 0;
+  do {
+    tmp = nth_candidate(line, nth);
+    if (tmp && strlen(tmp)) {
+      if (tmp[0] == '[') {
+	compose_line_parts(di, sl, nth_candidate(&tmp[1], -1), &tmp[1]);
+      } else if (tmp[0] != ']') {
+	push_back_candidate_to_array(ca, tmp);
+      }
+      nth++;
+      free(tmp);
+    } else {
+      break;
+    }
+  } while (1);
+
+}
+
+static struct skk_line *
+alloc_skk_line(char *word, char okuri_head)
+{
+  struct skk_line *sl;
+  sl = malloc(sizeof(struct skk_line));
+  sl->need_save = 0;
+  sl->head = strdup(word);
+  sl->okuri_head = okuri_head;
+  sl->nr_cand_array = 1;
+  sl->cands = malloc(sizeof(struct skk_cand_array));
+  sl->cands[0].okuri = NULL;
+  sl->cands[0].cands = NULL;
+  sl->cands[0].nr_cands = 0;
+  sl->cands[0].nr_real_cands = 0;
+  sl->cands[0].is_used = 0;
+  sl->cands[0].line = sl;
+  return sl;
+}
+
+/*
+ * Compose skk line
+ */
+static struct skk_line *
+compose_line(struct dic_info *di, char *word, char okuri_head, char *entry)
+{
+  struct skk_line *sl;
+
+  sl = alloc_skk_line(word, okuri_head);
+
+  /* parse */
+  compose_line_parts(di, sl, NULL, entry);
+
+  return sl;
+}
+
+static void
+add_line_to_cache_head(struct dic_info *di, struct skk_line *sl)
+{
+  sl->next = di->head.next;
+  di->head.next = sl;
+}
+
+static void
+move_line_to_cache_head(struct dic_info *di, struct skk_line *sl)
+{
+  struct skk_line *prev;
+
+  if (di->head.next == sl)
+    return;
+
+  prev = di->head.next;
+  while (prev->next != sl) {
+    prev = prev->next;
+  }
+  prev->next = sl->next;
+  sl->next = di->head.next;
+  di->head.next = sl;
+}
+
+static void
+add_line_to_cache_last(struct dic_info *di, struct skk_line *sl)
+{
+  struct skk_line *prev;
+
+  if (di->head.next == NULL)
+    di->head.next = sl;
+  else {
+    prev = di->head.next;
+    while (prev->next) {
+      prev = prev->next;
+    }	
+    prev->next = sl;
+  }
+  sl->next = NULL;
+}
+
+static struct skk_line *
+skk_search_line_from_file(struct dic_info *di, char *s, char okuri_head)
+{
+  int n;
+  char *p;
+  int len;
+  char *line;
+  char *idx = alloca(strlen(s) + 2);
+  struct skk_line *sl;
+
+  if (!di) {
+    return NULL;
+  }
+  sprintf(idx, "%s%c",s, okuri_head);
+  if (okuri_head) {
+    n = do_search_line(di, idx, di->first, di->border - 1, -1);
+  } else {
+    n = do_search_line(di, idx, di->border, di->size - 1, 1);
+  }
+  if (n == -1) {
+    return NULL;
+  }
+
+  p = find_line(di, n);
+  len = calc_line_len(p);
+  line = malloc(len+1);
+  line[0] = 0;
+  strncat(line, p, len);
+  sl = compose_line(di, s, okuri_head, line);
+  free(line);
+  return sl;
+}
+
+static struct skk_line *
+skk_search_line_from_cache(struct dic_info *di, char *s, char okuri_head)
+{
+  struct skk_line *sl;
+
+  if (!di) {
+    return NULL;
+  }
+  /* search from cache */
+  for (sl = di->head.next; sl; sl = sl->next) {
+    if (!strcmp(sl->head, s) &&
+	sl->okuri_head == okuri_head) {
+      return sl;
+    }
+  }
+  return NULL;
+}
+
+
+static struct skk_cand_array *
+find_cand_array(struct dic_info *di, char *s,
+		char okuri_head, char *okuri,
+		int create_if_not_found)
+{
+  struct skk_line *sl, *sl_file;
+  struct skk_cand_array *ca;
+  int from_file = 0;
+
+  sl = skk_search_line_from_cache(skk_dic, s, okuri_head);
+  if (!sl) {
+    sl = skk_search_line_from_file(skk_dic, s, okuri_head);
+    if (!sl) {
+      if (!create_if_not_found) {
+	return NULL;
+      }
+      /**/
+      sl = alloc_skk_line(s, okuri_head);
+    }
+    from_file = 1;
+    add_line_to_cache_head(di, sl);
+  }
+
+  ca = find_candidate_array_from_line(sl, okuri, create_if_not_found);
+
+  if (!ca->is_used) {
+    /* incorporate okuri-nasi entry */
+    merge_candidate_array(sl, ca);
+    ca->is_used = 1;
+    if (!from_file) {
+      sl_file = skk_search_line_from_file(skk_dic, s, okuri_head);
+      merge_candidate_array(sl_file, ca);
+      free_skk_line(sl_file);
+    }
+  }
+
+  return ca;
+}
+
+static struct skk_cand_array *
+find_cand_array_lisp(LISP head_, LISP okuri_head_, LISP okuri_,
+		     int create_if_not_found)
+{
+  char o;
+  char *hs;
+  char *okuri = NULL;
+  struct skk_cand_array *ca;
+
+  hs = get_c_string(head_);
+  if (okuri_ != NIL) {
+    okuri = uim_get_c_string(okuri_);
+  }
+  if (okuri_head_ == NIL) {
+    o = 0;
+  } else {
+    char *os= get_c_string(okuri_head_);
+    o = os[0];
+  }
+
+  ca = find_cand_array(skk_dic, hs, o, okuri, create_if_not_found);
+  free(okuri);
+  return ca;
+}
+
+
+static LISP
+skk_get_entry(LISP head_, LISP okuri_head_, LISP okuri_)
+{
+  struct skk_cand_array *ca;
+  ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
+  if (ca) {
+    return siod_true_value();
+  }
+  return NIL;
+}
+
+static LISP
+skk_store_replaced_numeric_str(LISP head_)
+{
+  char *str;
+  int len;
+
+  int prev_is_num = 0;
+  int i, numlen = 0, start = 0;
+  char *numstr = NULL;
+  LISP lst = NIL;
+
+  str = get_c_string(head_);
+  len = strlen(str);
+
+  for (i = 0; i < len; i++) {
+    if (isdigit(str[i])) {
+      if (prev_is_num == 0) {
+	start = i;
+	numlen = 1;
+      } else {
+	numlen++;
+      }
+      prev_is_num = 1;
+    } else {
+      if (prev_is_num) {
+	/* add number into list */
+	if (!numstr)
+	  numstr = malloc(numlen + 1);
+	else
+	  numstr = realloc(numstr, numlen + 1);
+	strncpy(numstr, &str[start], numlen);
+	numstr[numlen] = '\0';
+	lst = cons(strcons(strlen(numstr), numstr), lst);
+      }
+      prev_is_num = 0;
+    }
+  }
+  
+  /*
+   * Add last number into list if string is ended with numeric
+   * character.
+   */
+  if (prev_is_num) {
+    if (!numstr)
+      numstr = malloc(numlen + 1);
+    else
+      numstr = realloc(numstr, numlen + 1);
+    strncpy(numstr, &str[start], numlen);
+    numstr[numlen] = '\0';
+    lst = cons(strcons(strlen(numstr), numstr), lst);
+  }
+  free(numstr);
+ 
+  return reverse(lst);
+}
+
+static char *wide_num_list[] =
+  {"£°", "£±", "£²", "£³", "£´", "£µ", "£¶", "£·", "£¸", "£¹"};
+static char *kanji_num_list[] =
+  {"¡»", "°ì", "Æó", "»°", "»Í", "¸Þ", "Ï»", "¼·", "È¬", "¶å"};
+static char *kanji_num_position_list[] =
+  {NULL, "½½", "É´", "Àé", "Ëü", NULL, NULL, NULL, "²¯", NULL,
+   NULL, NULL, "Ãû", NULL, NULL, NULL, "µþ", NULL, NULL, NULL};
+static char *kanji_check_num_list[] =
+  {"¡»", "°í", "Ð±", "»²", "»Í", "¸à", "Ï»", "¼·", "È¬", "¶å"};
+static char *kanji_check_num_position_list[] =
+  {NULL, "½¦", "É´", "ïô", "èß", NULL, NULL, NULL, "²¯", NULL,
+   NULL, NULL, "Ãû", NULL, NULL, NULL, "µþ", NULL, NULL, NULL};
+
+static char *
+numeric_wide_or_kanji_conv(char *numstr, int method)
+{
+  char *mbstr;
+  int i, len;
+
+  len = strlen(numstr);
+  mbstr = malloc(len * 2 + 1);
+
+  for (i = 0; i < len; i++) {
+    if (method == 1)
+      strcpy(&mbstr[i * 2], wide_num_list[numstr[i] - '0']);
+    else
+      strcpy(&mbstr[i * 2], kanji_num_list[numstr[i] - '0']);
+  }
+  mbstr[len * 2] = '\0';
+
+  return mbstr;
+}
+
+static char *
+numeric_kanji_with_position_conv(char *numstr)
+{
+  char *mbstr;
+  int i, j, len, mblen;
+  int position;
+  int head_is_zero = 0;
+
+  len = strlen(numstr);
+  if (len > 20) /* too big number */
+    return strdup(numstr);
+
+  mbstr = malloc(len * 2 + 1);
+  mblen = len * 2;
+
+  for (i = 0, j = 0; j < len; i++, j++) {
+    position = len - j - 1;
+    if (numstr[j] == '0') {
+      i--;
+      mblen -= 2;
+      /* check zero at the head */
+      if (j == 0) {
+	head_is_zero = 1; 
+      } else {
+	/* add Ëü, ²¯, Ãû, µþ for zero */
+	if (position >= 4) {
+	  if ((position % 4) == 0 && !head_is_zero) {
+	    i++;
+	    mblen += 2;
+	    if (mblen > len * 2)
+	      mbstr = realloc(mbstr, mblen + 2);
+	    strcpy(&mbstr[i * 2], kanji_num_position_list[position]);
+	  }
+	}
+      }
+    } else {
+      if (head_is_zero == 1)
+	head_is_zero = 0;
+
+      /* replace numstr[j] with kanji number */
+      if (numstr[j] == '1') {
+	/*
+	 * use "°ì" only for the one at the place of °ì, Ëü, ²¯, Ãû,
+	 * µþ or °ìÀéËü
+	 */
+	if (((position % 4) == 0) ||
+	    ((position >= 7) &&
+	     ((position % 4) == 3) &&
+	     (numstr[j + 1] == '0') &&
+	     (numstr[j + 2] == '0') &&
+	     (numstr[j + 3] == '0'))) {
+	  strcpy(&mbstr[i * 2], kanji_num_list[1]);
+	} else {
+	  i--;
+	  mblen -= 2;
+	}
+      } else {
+	strcpy(&mbstr[i * 2], kanji_num_list[numstr[j] - '0']);
+      }
+
+      /* add ½½, É´, Àé for number whose place is exceeded Ëü */
+      if (position > 4) {
+	if ((position % 4) != 0) {
+	  i++;
+	  mblen += 2;
+	  if (mblen > len * 2)
+	    mbstr = realloc(mbstr, mblen + 2);
+	  strcpy(&mbstr[i * 2], kanji_num_position_list[position % 4]);
+	}
+      }
+
+      /* add position */
+      if (kanji_num_position_list[position]) {
+	i++;
+	mblen += 2;
+	if (mblen > len * 2)
+	  mbstr = realloc(mbstr, mblen + 2);
+	strcpy(&mbstr[i * 2], kanji_num_position_list[position]);
+      }
+    }
+  }
+
+  /* in case of zero */
+  if (head_is_zero) {
+    strcpy(&mbstr[0], kanji_num_list[0]);
+    mblen = 2;
+  }
+
+  mbstr[mblen] = '\0';
+  return mbstr;
+}
+
+static char *
+numeric_kanji_for_check_conv(char *numstr)
+{
+  char *mbstr;
+  int i, j, len, mblen;
+  int position;
+  int head_is_zero = 0;
+
+  len = strlen(numstr);
+  if (len > 20) /* too big number */
+    return strdup(numstr);
+
+  mbstr = malloc(len * 2 + 1);
+  mblen = len * 2;
+
+  for (i = 0, j = 0; j < len; i++, j++) {
+    position = len - j - 1;
+    if (numstr[j] == '0') {
+      i--;
+      mblen -= 2;
+      /* check zero at the head */
+      if (j == 0) {
+	head_is_zero = 1; 
+      } else {
+	/* add èß, ²¯, Ãû, µþ for zero */
+	if (position >= 4) {
+	  if ((position % 4) == 0 && !head_is_zero) {
+	    i++;
+	    mblen += 2;
+	    if (mblen > len * 2)
+	      mbstr = realloc(mbstr, mblen + 2);
+	    strcpy(&mbstr[i * 2], kanji_check_num_position_list[position]);
+	  }
+	}
+      }
+    } else {
+      if (head_is_zero == 1)
+	head_is_zero = 0;
+
+      /* replace numstr[j] with kanji number */
+      strcpy(&mbstr[i * 2], kanji_check_num_list[numstr[j] - '0']);
+
+      /* add ½¦, É´, ïô for number whose place is exceeded èß */
+      if (position > 4) {
+	if ((position % 4) != 0) {
+	  i++;
+	  mblen += 2;
+	  if (mblen > len * 2)
+	    mbstr = realloc(mbstr, mblen + 2);
+	  strcpy(&mbstr[i * 2], kanji_check_num_position_list[position % 4]);
+	}
+      }
+
+      /* add position */
+      if (kanji_check_num_position_list[position]) {
+	i++;
+	mblen += 2;
+	if (mblen > len * 2)
+	  mbstr = realloc(mbstr, mblen + 2);
+	strcpy(&mbstr[i * 2], kanji_check_num_position_list[position]);
+      }
+    }
+  }
+
+  /* in case of zero */
+  if (head_is_zero) {
+    strcpy(&mbstr[0], kanji_check_num_list[0]);
+    mblen = 2;
+  }
+
+  mbstr[mblen] = '\0';
+  return mbstr;
+}
+
+static char *
+numeric_shogi_conv(char *numstr)
+{
+  char *mbstr;
+  int len;
+
+  len = strlen(numstr);
+  if (len != 2) /* allow two digit number only */
+    return strdup(numstr);
+    
+  mbstr = malloc(5);
+  strcpy(&mbstr[0], wide_num_list[numstr[0] - '0']);
+  strcpy(&mbstr[2], kanji_num_list[numstr[1] - '0']);
+  mbstr[4] = '\0';
+
+  return mbstr;
+}
+
+/* returns string with malloc() */
+static char *
+numeric_convert(char *numstr, int method)
+{
+  char *ret;
+
+  /*
+   *  method #4 is already handled in skk_get_nth_candidate()
+   */
+  switch (method) {
+  case 0:
+    ret = strdup(numstr);
+    break;
+  case 1: /* Á´³Ñ¿ô»ú */
+  case 2: /* ´Á¿ô»ú °Ì¼è¤êÌµ¤· */
+    ret = numeric_wide_or_kanji_conv(numstr, method);
+    break;
+  case 3: /* ´Á¿ô»ú °Ì¼è¤êÍ­¤ê */
+    ret = numeric_kanji_with_position_conv(numstr);
+    break;
+  case 5: /* ¾®ÀÚ¼êÉ½µ­ */
+    ret = numeric_kanji_for_check_conv(numstr);
+    break;
+  case 9: /* ¾­´ýÉ½µ­ */
+    ret = numeric_shogi_conv(numstr);
+    break;
+  default:
+    ret = strdup(numstr);
+    break;
+  }
+  return ret;
+}
+
+static LISP
+skk_merge_replaced_numeric_str(LISP str_, LISP numlst_)
+{
+  char *str;
+  int i, j, len, newlen;
+  int method;
+  int convlen;
+  char *numstr;
+  char *convstr;
+  LISP merged_str;
+
+  if NULLP(str_)
+    return NIL;
+
+  str = uim_get_c_string(str_); /* malloced */
+  len = strlen(str);
+  newlen = len;
+
+  for (i = 0, j = 0; j < len; i++, j++) {
+    if (str[i] == '#') {
+      method = str[i + 1] - '0';
+      if NULLP(numlst_)
+	 break;
+
+      numstr = get_c_string(CAR(numlst_));
+
+      convstr = numeric_convert(numstr, method);
+      convlen = strlen(convstr);
+
+      newlen = newlen - 2 + convlen;
+      str = realloc(str, newlen + 1);
+      memmove(&str[i + convlen], &str[i + 2], newlen - i - convlen + 1);
+      memcpy(&str[i], convstr, convlen);
+      i = i - 2 + convlen;
+
+      numlst_ = CDR(numlst_);
+    }
+  }
+
+  merged_str = strcons(strlen(str), str);
+  free(str);
+  return merged_str;
+}
+
+static LISP
+skk_replace_numeric(LISP head_)
+{
+  char *str;
+  int prev_is_num = 0;
+  int i, j, len, newlen;
+
+  str = get_c_string(head_);
+  len = strlen(str);
+  newlen = len;
+
+  for (i = 0, j = 0; j < len; i++, j++) {
+    if (isdigit(str[i])) {
+      if (prev_is_num == 0) {
+	str[i] = '#';
+      } else {
+	memmove(&str[i], &str[i + 1], newlen - i);
+	newlen--;
+	i--;
+      }
+      prev_is_num = 1;
+    } else {
+      prev_is_num = 0;
+    }
+  }
+  return strcons(strlen(str), str);
+}
+
+static char *
+find_numeric_conv_method4_mark(const char *cand, int *nth)
+{
+  int i, len;
+  char *p;
+
+  len = strlen(cand);
+
+  p = strstr(cand, "#4");
+  if (p) {
+    for (i = 0; i < len; i++) {
+      if (cand[i] == '#' && isdigit(cand[i + 1])) {
+	(*nth)++;
+	if (cand[i + 1] == '4')
+	  break;
+      }
+    }
+  }
+  return p;
+}
+
+static LISP
+get_nth(int nth, LISP lst_)
+{
+  int i;
+  for (i = 1; i < nth; i++) {
+    if NULLP(lst_) {
+      return NIL;
+    }
+    lst_ = CDR(lst_);
+  }
+  return CAR(lst_);
+}
+
+static LISP
+skk_get_nth_candidate(LISP nth_, LISP head_, LISP okuri_head_, LISP okuri_,
+		      LISP numlst_)
+{
+  int n;
+  struct skk_cand_array *ca, *subca;
+  int i, j, k = 0;
+  char *cands = NULL;
+  char *p, *numstr;
+  int method_place = 0;
+  int sublen, newlen;
+  int mark;
+  LISP str_ = NIL;
+
+  n = get_c_int(nth_);
+  ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
+
+  if (ca) {
+    /* handle #4 method of numeric conversion */
+    if NNULLP(numlst_) {
+      for (i = 0; i < ca->nr_cands; i++) {
+	if ((p = find_numeric_conv_method4_mark(ca->cands[i], &method_place))) {
+	  numstr = get_c_string(get_nth(method_place, numlst_)); 
+	  subca = find_cand_array(skk_dic, numstr, 0, NULL, 0);
+	  if (subca) {
+	    for (j = 0; j < subca->nr_cands; j++) {
+	      if (k == n) {
+		cands = strdup(ca->cands[i]);
+		sublen = strlen(subca->cands[j]);
+		newlen = strlen(ca->cands[i]) - 2 + sublen;
+		mark = p - ca->cands[i];
+
+		cands = realloc(cands, newlen + 1);
+		memmove(&cands[mark + sublen],
+			&cands[mark + 2],
+			newlen - mark - sublen + 1);
+		memcpy(&cands[mark], subca->cands[j], sublen);
+
+		str_ = strcons(strlen(cands), cands);
+		free(cands);
+		return str_;
+	      }
+	      k++;
+	    }
+	  }
+	} else {
+	   if (k == n) {
+	     cands = ca->cands[i];
+	     break;
+	   }
+	   k++;
+	}
+      }
+    } else {
+	if (ca->nr_cands > n)
+	  cands = ca->cands[n];
+    }
+
+  }
+
+  if (cands)
+    str_ = strcons(strlen(cands), cands);
+  return str_;
+}
+
+static LISP
+skk_get_nr_candidates(LISP head_, LISP okuri_head_, LISP okuri_, LISP numlst_)
+{
+  struct skk_cand_array *ca, *subca;
+  int n = 0;
+  int i, nr_cands = 0;
+  char *numstr;
+  int method_place = 0;
+
+  ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
+  if (ca) {
+    n = ca->nr_cands;
+  }
+  nr_cands = n;
+
+  /* handle #4 method of numeric conversion */
+  if NNULLP(numlst_) {
+    for (i = 0; i < n; i++) {
+      if (find_numeric_conv_method4_mark(ca->cands[i], &method_place)) {
+	numstr = get_c_string(get_nth(method_place, numlst_)); 
+	nr_cands--;
+	subca = find_cand_array(skk_dic, numstr, 0, NULL, 0);
+	if (subca)
+	  nr_cands += subca->nr_cands;
+	break;
+      }
+    }
+  }
+  return intcons(nr_cands);
+}
+
+static struct skk_comp_array *
+skk_make_comp_array_from_cache(struct dic_info *di, char *s)
+{
+  struct skk_line *sl;
+  struct skk_comp_array *ca;
+
+  if (!di) {
+    return NULL;
+  }
+  ca = malloc(sizeof(struct skk_comp_array));
+  ca->nr_comps = 0;
+  ca->refcount = 0;
+  ca->comps = NULL;
+  ca->head = NULL;
+  ca->next = NULL;
+
+  /* search from cache */
+  for (sl = di->head.next; sl; sl = sl->next) {
+    if (/* string 's' is part of sl->head */
+	!strncmp(sl->head, s, strlen(s)) && strcmp(sl->head, s) &&
+	/* and sl is okuri-nasi line */
+        (sl->okuri_head == '\0')) {
+      ca->nr_comps++;
+      ca->comps = realloc(ca->comps, sizeof(char *) * ca->nr_comps);
+      ca->comps[ca->nr_comps - 1] = strdup(sl->head);
+    }
+  }
+
+  if (ca->nr_comps == 0) {
+    free(ca);
+    ca = NULL;
+  } else {
+    ca->head = strdup(s);
+    ca->next = skk_comp;
+    skk_comp = ca;
+  }
+  return ca;
+}
+
+static struct skk_comp_array *
+find_comp_array(struct dic_info *di, char *s)
+{
+  struct skk_comp_array *ca;
+
+  if (strlen(s) == 0)
+    return NULL;
+
+  for (ca = skk_comp; ca; ca = ca->next) {
+    if (!strcmp(ca->head, s))
+      break;
+  }
+  if (ca == NULL) {
+    ca = skk_make_comp_array_from_cache(skk_dic, s);
+  }
+
+  return ca;
+}
+
+static struct skk_comp_array *
+find_comp_array_lisp(LISP head_)
+{
+  char *hs;
+  struct skk_comp_array *ca;
+  
+  hs = get_c_string(head_);
+  ca = find_comp_array(skk_dic, hs);
+  return ca;
+}
+
+static LISP
+skk_get_completion(LISP head_)
+{
+  struct skk_comp_array *ca;
+  ca = find_comp_array_lisp(head_);
+  if (ca) {
+    ca->refcount++;
+    return siod_true_value();
+  }
+  return NIL;
+}
+
+static LISP
+skk_get_nth_completion(LISP nth_, LISP head_)
+{
+  int n;
+  struct skk_comp_array *ca;
+  char *str;
+
+  ca = find_comp_array_lisp(head_);
+  n = get_c_int(nth_);
+  if (ca && ca->nr_comps > n) {
+    str = ca->comps[n];
+    return strcons(strlen(str), str);
+  }
+  return NIL;
+}
+
+static LISP
+skk_get_nr_completions(LISP head_)
+{
+  int n = 0;
+  struct skk_comp_array *ca;
+
+  ca = find_comp_array_lisp(head_);
+  if (ca) {
+    n = ca->nr_comps;
+  }
+  return intcons(n);
+}
+
+static LISP
+skk_clear_completions(LISP head_)
+{
+  int i;
+  struct skk_comp_array *ca, *ca_prev;
+  char *hs;
+
+  hs = get_c_string(head_);
+  for (ca = skk_comp; ca; ca = ca->next) {
+    if (!strcmp(ca->head, hs)) {
+      ca->refcount--;
+      break;
+    }
+  }
+
+  if (ca && ca->refcount == 0) {
+    for (i = 0; i < ca->nr_comps; i++) {
+      free(ca->comps[i]);
+    }
+    free(ca->comps);
+    free(ca->head);
+
+    if (ca == skk_comp) {
+      skk_comp = ca->next;
+      free(ca);
+    } else {
+      ca_prev = skk_comp;
+      while (ca_prev->next != ca) {
+        ca_prev = ca_prev->next;
+      }
+      ca_prev->next = ca->next;
+      free(ca);
+    }
+  }
+  return siod_true_value();
+}
+
+static void
+reorder_candidate(struct skk_cand_array *ca, char *str)
+{
+  int i;
+  int nth = 0;
+  char *tmp;
+  /* find index of the candidate */
+  for (i = 0; i < ca->nr_cands; i++) {
+    if (!strcmp(str, ca->cands[i])) {
+      nth = i;
+    }
+  }
+
+  /* shift array */
+  tmp = ca->cands[nth];
+  if (nth) {
+    for (i = nth; i > 0; i--) {
+      ca->cands[i] = ca->cands[i - 1];
+    }
+    ca->cands[0] = tmp;
+  }
+  /**/
+  if (nth >= ca->nr_real_cands) {
+    ca->nr_real_cands ++;
+  }
+}
+
+static LISP
+skk_commit_candidate(LISP head_, LISP okuri_head_,
+		     LISP okuri_, LISP nth_, LISP numlst_)
+{
+  int nth;
+  struct skk_cand_array *ca, *subca;
+  char *str = NULL;
+  int i, j, k = 0;
+  int nr_cands = 0;
+  LISP numstr_;
+  char *numstr;
+  int method_place = 0;
+
+  nth = get_c_int(nth_);
+
+  if (nth == 0) {
+    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
+    move_line_to_cache_head(skk_dic, ca->line);
+    return NIL;
+  }
+
+  ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
+  if (!ca) {
+    return NIL;
+  }
+
+  nr_cands = ca->nr_cands;
+
+  /* handle #4 method of numeric conversion */
+  if NNULLP(numlst_) {
+    for (i = 0; i < ca->nr_cands; i++) {
+      if (find_numeric_conv_method4_mark(ca->cands[i], &method_place)) {
+	numstr_ = get_nth(method_place, numlst_); 
+	numstr = get_c_string(numstr_);
+	subca = find_cand_array(skk_dic, numstr, 0, NULL, 0);
+	if (subca) {
+	  nr_cands += subca->nr_cands;
+	  for (j = 0; j < subca->nr_cands; j++) {
+	    if (k == nth) {
+	      str = ca->cands[i];
+	      /* reorder sub candidate */
+	      skk_commit_candidate(numstr_, NIL, NIL, intcons(j), NIL);
+	      break;
+	    }
+	    k++;
+	  }
+	}
+	if (str)
+	  break;
+      } else {
+	if (k == nth) {
+	   str = ca->cands[i];
+	   break;
+	}
+	k++;
+      }
+    }
+    if (!str)
+      return NIL;
+  } else {
+    if (nr_cands <= nth)
+      return NIL;
+    str = ca->cands[nth];
+  }
+  reorder_candidate(ca, str);
+
+  if (okuri_ != NIL) {
+    ca = find_cand_array_lisp(head_, okuri_head_, NIL, 0);
+    if (!ca || nr_cands <= nth) {
+      return NIL;
+    }
+    reorder_candidate(ca, str);
+  }
+
+  ca->line->need_save = 1;
+  move_line_to_cache_head(skk_dic, ca->line);
+
+  return NIL;
+}
+
+static void
+learn_word_to_cand_array(struct skk_cand_array *ca, char *word)
+{
+  int i, nth = -1;
+  for (i = 0; i < ca->nr_cands; i++) {
+    if (!strcmp(word, ca->cands[i])) {
+      nth = i;
+    }
+  }
+  if (nth == -1) {
+    push_back_candidate_to_array(ca, word);
+  }
+  reorder_candidate(ca, word);
+  ca->line->need_save = 1;
+}
+
+static char *
+sanitize_word(char *arg)
+{
+  char *tmp;
+  if (!arg || !strlen(arg)) {
+    return NULL;
+  }
+  for (tmp = arg; *tmp; tmp++) {
+    if (strchr(" /[]()\n", *tmp)) {
+      return NULL;
+    }
+  }
+  return strdup(arg);
+}
+
+static LISP
+skk_learn_word(LISP head_, LISP okuri_head_, LISP okuri_, LISP word_)
+{
+  struct skk_cand_array *ca;
+  char *word, *tmp;
+
+  tmp = uim_get_c_string(word_);
+  word = sanitize_word(tmp);
+  free(tmp);
+  if (!word) {
+    return NIL;
+  }
+
+  ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 1);
+  if (ca) {
+    learn_word_to_cand_array(ca, word);
+  }
+
+  tmp = uim_get_c_string(okuri_);
+  if (strlen(tmp)) {
+    ca = find_cand_array_lisp(head_, okuri_head_, NIL, 1);
+    if (ca) {
+      learn_word_to_cand_array(ca, word);
+    }
+  }
+  free(tmp);
+  free(word);
+  return NIL;
+}
+
+static void
+parse_dic_line(char *line)
+{
+  char *buf, *sep;
+  struct skk_line *sl;
+  int i;
+  if (!skk_dic) {
+    return ;
+  }
+
+  buf = alloca(strlen(line)+1);
+  strcpy(buf, line);
+  sep = strchr(buf, ' ');
+  if (!sep) {
+    return ;
+  }
+  if (sep == buf) {
+    return ;
+  }
+  *sep = 0;
+  if (!islower(buf[0]) && islower(sep[-1])) { /* okuri-ari entry */
+    char okuri_head = sep[-1];
+    sep[-1] = 0;
+    sl = compose_line(skk_dic, buf, okuri_head, line);
+  } else {
+    sl = compose_line(skk_dic, buf, 0, line);
+  }
+  sl->need_save = 1;
+  /**/
+  for (i = 0; i < sl->nr_cand_array; i++) {
+    sl->cands[i].nr_real_cands = sl->cands[i].nr_cands;
+  }
+  /**/
+  add_line_to_cache_last(skk_dic, sl);
+}
+
+static void
+write_out_array(FILE *fp, struct skk_cand_array *ca)
+{
+  int i;
+  if (ca->okuri) {
+    fprintf(fp, "[%s/", ca->okuri);
+    for (i = 0; i < ca->nr_real_cands; i++) {
+      fprintf(fp, "%s/", ca->cands[i]);
+    }
+    fprintf(fp, "]/");
+  } else {
+    for (i = 0; i < ca->nr_real_cands; i++) {
+      fprintf(fp, "%s/", ca->cands[i]);
+    }
+  }
+}
+
+static void
+write_out_line(FILE *fp, struct skk_line *sl)
+{
+  struct skk_cand_array *ca;
+  int i;
+  fprintf(fp, "%s", sl->head);
+  if (sl->okuri_head) {
+    fprintf(fp, "%c /", sl->okuri_head);
+  } else {
+    fprintf(fp, " /");
+  }
+  for (i = 0; i < sl->nr_cand_array; i++) {
+    ca = &sl->cands[i];
+    write_out_array(fp, ca);
+  }
+  fprintf(fp, "\n");
+}
+
+static LISP
+skk_lib_save_personal_dictionary(LISP fn_)
+{
+  FILE *fp;
+  char *fn = uim_get_c_string(fn_);
+  struct skk_line *sl;
+
+  if (!skk_dic) {
+    return NIL;
+  }
+
+  if (fn) {
+    fp = fopen(fn, "w");
+    free(fn);
+  } else {
+    fp = stdout;
+  }
+  if (!fp) {
+    return NIL;
+  }
+
+  for (sl = skk_dic->head.next; sl; sl = sl->next) {
+    if (sl->need_save) {
+      write_out_line(fp, sl);
+    }
+  }
+  fclose(fp);
+  return NIL;
+}
+
+static LISP
+skk_lib_read_personal_dictionary(LISP fn_)
+{
+  char *fn = get_c_string(fn_);
+  FILE *fp = fopen(fn, "r");
+  char buf[4096];
+  int err_flag = 0;
+
+  if (!fp) {
+    return NIL;
+  }
+  while (fgets(buf, 4096, fp)) {
+    int len = strlen(buf);
+    if (buf[len-1] == '\n') {
+      if (err_flag == 0) {
+	if (buf[0] != ';') {
+	  buf[len-1] = 0;
+	  parse_dic_line(buf);
+	}
+      } else {
+	/* erroneous line ends here */
+	err_flag = 0;
+      }
+    } else {
+      err_flag = 1;
+    }
+  }
+  fclose(fp);
+  return siod_true_value();
+}
+
+static LISP
+skk_lib_remove_annotation(LISP str_)
+{
+  char *str = uim_get_c_string(str_);
+  char *sep = strrchr(str, ';');
+  LISP res;
+  if (sep) {
+    *sep = 0;
+  }
+  res = strcons(strlen(str), str);
+  free(str);
+  return res;
+}
+
+void
+uim_init_skk_dic(void)
+{
+  init_subr_1("skk-lib-dic-open", skk_dic_open);
+  init_subr_1("skk-lib-read-personal-dictionary", skk_lib_read_personal_dictionary);
+  init_subr_1("skk-lib-save-personal-dictionary", skk_lib_save_personal_dictionary);
+  init_subr_3("skk-lib-get-entry", skk_get_entry);
+  init_subr_1("skk-lib-store-replaced-numstr", skk_store_replaced_numeric_str);
+  init_subr_2("skk-lib-merge-replaced-numstr", skk_merge_replaced_numeric_str);
+  init_subr_1("skk-lib-replace-numeric", skk_replace_numeric);
+  init_subr_5("skk-lib-get-nth-candidate", skk_get_nth_candidate);
+  init_subr_4("skk-lib-get-nr-candidates", skk_get_nr_candidates);
+  init_subr_5("skk-lib-commit-candidate", skk_commit_candidate);
+  init_subr_4("skk-lib-learn-word", skk_learn_word);
+  init_subr_1("skk-lib-remove-annotation", skk_lib_remove_annotation);
+  init_subr_1("skk-lib-get-completion", skk_get_completion);
+  init_subr_2("skk-lib-get-nth-completion", skk_get_nth_completion);
+  init_subr_1("skk-lib-get-nr-completions", skk_get_nr_completions);
+  init_subr_1("skk-lib-clear-completions", skk_clear_completions);
+}
+
+void
+uim_quit_skk_dic(void)
+{
+  struct skk_line *sl, *tmp;
+  if (!skk_dic) {
+    return ;
+  }
+  munmap(skk_dic->addr, skk_dic->size);
+  sl = skk_dic->head.next;
+  while (sl) {
+    tmp = sl;
+    sl = sl->next;
+    free_skk_line(tmp);
+  }
+  free(skk_dic);
+  skk_dic = NULL;
+}

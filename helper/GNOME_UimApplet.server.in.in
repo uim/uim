@@ -1,0 +1,28 @@
+<oaf_info>
+<oaf_server iid="OAFIID:GNOME_UimApplet_Factory"
+	 	type="exe"
+        	location="@LIBEXECDIR@/uim-toolbar-applet">
+
+        <oaf_attribute name="repo_ids" type="stringv">
+                <item value="IDL:Bonobo/GenericFactory:1.0"/>
+                <item value="IDL:Bonobo/Unknown:1.0"/>
+        </oaf_attribute>
+        <oaf_attribute name="name" type="string" _value="Uim Applet Factory"/>
+        <oaf_attribute name="description" type="string" _value="Uim applet factory"/>
+</oaf_server>
+
+<oaf_server iid="OAFIID:GNOME_UimApplet"
+		type="factory"
+		location="OAFIID:GNOME_UimApplet_Factory">
+
+        <oaf_attribute name="repo_ids" type="stringv">
+                <item value="IDL:GNOME/Vertigo/PanelAppletShell:1.0"/>
+                <item value="IDL:Bonobo/Control:1.0"/>
+                <item value="IDL:Bonobo/Unknown:1.0"/>
+        </oaf_attribute>
+        <oaf_attribute name="name" type="string" _value="Uim Applet"/>
+        <oaf_attribute name="description" type="string" _value="Uim applet for the GNOME2 panel"/>
+        <oaf_attribute name="panel:category" type="string" _value="Utility"/>
+        <oaf_attribute name="panel:icon" type="string" value="gnome-applets.png"/>
+</oaf_server>
+</oaf_info>

@@ -1,0 +1,7 @@
+this is the way to build this plugin.
+
+ $ ./configure
+ $ make
+ $ make install
+
+./tests is the sample program for test inputting.

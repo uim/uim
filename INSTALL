@@ -1,0 +1,37 @@
+You can install libuim(library), im-uim(gtk+-immodule)
+and other executables simply by typing
+$ configure; make
+# make install
+
+If your gtk+-2 is installed under /usr/ directory you
+may add --prefix=/usr and --sysconfdir=/etc option to
+configure script.
+
+Following components would be installed
+*Core library
+ libuim*
+*Gtk+2 immodule
+ im-uim.so
+*Helpers
+ uim-helper-candwin-gtk
+ uim-helper-toolbar-gtk
+ uim-helper-toolbar-gtk-systray
+*XIM server(only for Japanese)
+ uim-xim
+
+----
+If you simply want to test libuim and don't want to install,
+please execute test.sh script in the source directory.
+
+$ GTK_IM_MODULE=uim-py ./test.sh
+ You can type Chinese by Pin Yin
+
+$ GTK_IM_MODULE=uim-anthy ./test.sh
+ You can type Japanese by Anthy conversion system.
+ Unless libanthy(Japanese conversion system library),
+ You can type only Phonetic Symbols in Japanese.
+
+$ GTK_IM_MODULE=uim-skk ./test.sh
+ You can type Japanese by SKK conversion system.
+ this implementation assumes you have SKK dictionary
+ at /usr/share/skk/SKK-JISYO.L

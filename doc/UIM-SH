@@ -1,0 +1,32 @@
+uim-sh
+
+ There is uim interactive shell for debugging, batch processing and
+ serving as generic inferior process.
+
+Usage
+ uim-sh [options]
+  -b        batch mode. suppress shell prompts
+  -h        show help
+
+Examples
+ $ uim-sh
+ uim> (car '(foo bar))
+ foo
+ uim> #f
+ ()
+ uim> #t
+ 1
+ uim> (not #t)
+ ()
+ uim> ^D
+ $
+
+Debugging with Emacs
+ 1. Add following form to your .emacs
+
+  (setq scheme-program-name "uim-sh")
+
+ 2. M-x run-scheme
+
+ 3. You can edit and evaluate any sexps using libuim's Scheme
+    interpreter

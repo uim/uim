@@ -1,0 +1,80 @@
+Key-bindings
+
+ uim has a key-binding method called 'define-key'. You can use
+ define-key in ~/.uim to customize key-bindings. As rough
+ explanation, there are some basic rules.
+
+ 1. it accepts single ascii char
+    (define-key anthy-kana-toggle-key? "q")
+
+ 2. single ascii char is case sensitive
+    (define-key anthy-commit-as-opposite-kana-key? "Q")
+
+ 3. it also accepts keysyms (see uim-key.c for now)
+    (define-key generic-beginning-of-preedit-key? "home")
+
+ 4. it also accepts previously defined key
+    (define-key anthy-delete-key? 'generic-delete-key?)
+
+ 5. keys can be modified
+    (define-key my-delete-key? "<Control>d")
+    (define-key reset-key? "<Control><Alt>delete")
+
+ 6. <Shift> modifier is implied for single ascii char appropriately
+    (define-key foo-key? "<Control>A")  ;actually Control + Shift + a
+    (define-key foo2-key? "<Control>a") ;actually Control + a
+    (define-key bar-key? "<Alt>%")      ;actually Alt + Shift + 5
+    (define-key baz-key? "<Shift>home") ;non-ascii keys need explicit shift
+
+ 7. keys can be or'ed
+    (define-key anthy-hankaku-kana-key? '("<Control>q" "<Control>Q"))
+    (define-key anthy-on-key? '("<Control>j" "<Control>J" generic-on-key?))
+
+ And some advanced rules.
+
+ 8. it also accepts define-time dereference rather than runtime dereference
+    (define-key my-on-key? generic-on-key?)
+    ;after now, redefinition of generic-on-key? not affects my-on-key?
+
+    ;overriding preexisting definition
+    (define-key generic-on-key? (list "<Alt>`" generic-on-key?))
+
+    ;bad definition: causes infinite loop
+    (define-key generic-on-key? (list "<Alt>`" 'generic-on-key?))
+
+ 9. it also accepts emacs-like syntax
+    (define-key my-delete-key? "C-d")
+    (define-key reset-key? "C-A-delete")
+    (define-key baz-key? "S-home")
+    (define-key anthy-on-key? '("C-j" "C-J" generic-on-key?))
+
+
+Customization guide
+
+ We have no GUI-based customization tool yet. Try following
+ steps for now.
+
+ 1. Collect predefined key-bindings
+
+   $ fgrep -h '(define-key' /usr/share/uim/*.scm | grep -v zaurus >> ~/.uim
+
+   * '/usr/share/uim' is varied by your installation settings
+
+ 2. Edit your own .uim
+
+   Rewrite the collected definitions for you.
+
+
+Examples
+
+ To be described.
+
+
+FAQ
+
+  Q. "<Control>a" does not catch 'Control + Alt + a'. Is this a bug?
+  A. No. uim does exact match. Following 2 definitions are
+     distinguished.
+
+   (define-key foo-key? "<Control>a")
+   (define-key bar-key? "<Control><Alt>a")

@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+includedir=@includedir@
+libdir=@libdir@
+
+Name: uim
+Description: multilingual input method library
+Version: @VERSION@
+Cflags: -I${includedir}/uim
+Libs: -L${libdir} -luim @LIBINTL@ @LIBICONV@ @M17NLIB_LIBS@

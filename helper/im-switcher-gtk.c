@@ -1,0 +1,526 @@
+/*
+
+  Copyright (c) 2004 uim Project http://uim.freedesktop.org/
+
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+  3. Neither the name of authors nor the names of its contributors
+     may be used to endorse or promote products derived from this software
+     without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  SUCH DAMAGE.
+
+*/
+
+#include <gtk/gtk.h>
+
+#include <locale.h>
+#include <string.h>
+#include <stdlib.h>
+#include <errno.h>
+
+#include <uim/uim.h>
+#include <uim/uim-helper.h>
+#include "uim/config.h"
+#include "uim/gettext.h"
+
+
+static int read_tag;
+static int uim_fd; /* file descriptor to connect helper message bus */
+static gchar *im_list_str_old; /* To compare new im_list_str */
+static GtkWidget *switcher_tree_view;
+static gboolean grouped;
+
+static void
+reload_im_list(GtkWindow *window, gpointer user_data);
+static void
+parse_helper_str(const char *sent_str);
+static void
+parse_helper_str_im_list(const char *im_list_str_new);
+static void
+check_helper_connection(void);
+
+
+
+/* TreeItem structure */
+typedef struct _TreeItem TreeItem;
+struct _TreeItem
+{
+  gchar    *im_name;
+  gchar    *language;
+  gchar    *description;
+  gboolean usable;
+};
+
+enum
+{
+  NAME_COLUMN=0,
+  LANG_COLUMN,
+  DESC_COLUMN,
+  NUM_COLUMNS
+};
+
+/* Configration:
+   - History of used input method (for sorting by most recently used) (list of input method name)
+   - Grouped by language? (boolean)
+   - Sorting way (input method, language, most recently used) (string)
+ */
+
+static char *
+get_next_line(FILE *fp)
+{
+  char buf[1024];
+  GString *line = g_string_new("");
+  /* I don't want to depend on glib, but GString is too convenience... */
+
+  while(fgets(buf, sizeof(buf), fp) != NULL) {
+    g_string_append(line, buf);
+    if(line->str[line->len - 1] == '\n') {
+      return g_string_free(line, FALSE);
+    }
+  }
+  return NULL;
+}
+
+static void
+parse_config_line_history(const char *line)
+{
+  int i;
+  char **splitted1 = g_strsplit(line, "=", -1);
+  char **splitted2;
+  if(splitted1 && splitted1[1] ) {
+    splitted2 = g_strsplit(splitted1[1], ",", -1);
+    g_strfreev(splitted1);
+  } else {
+    return;
+  }
+  for(i = 0 ;splitted2[i] != NULL; i++) {
+  g_print("%s", splitted2[i]);
+  }
+    g_strfreev(splitted2);
+}
+
+static void
+parse_config_line_grouped(const char *line)
+{
+  /* set global variable gboolean grouped */
+}
+
+static void
+parse_config_line_sorting_way(const char *line)
+{
+  /* set global variable gchar * sorying_way */
+}
+static void
+parse_config_line(const char *line)
+{
+  if(g_strrstr(line, "history=") == line) {
+    parse_config_line_history(line);
+  } else if(g_strrstr(line, "grouped=") == line) {
+    parse_config_line_grouped(line);
+  } else if(g_strrstr(line, "sorting_way=") == line) {
+    parse_config_line_sorting_way(line);
+  }
+}
+
+static void
+load_configration(const char *filename)
+{
+  const char *f;
+  char *line;
+  FILE *fp;
+  if(filename == NULL) {
+    f = "/home/tkng/uim.d/im-switcher";/* FIXME:later get correct file path here */
+  } else {
+    f= filename;
+  }
+
+  fp = fopen(f, "r");
+  if(fp == NULL) {
+    fprintf(stderr, "%s\n", strerror(errno));
+    return;
+  }
+
+ /* XXX: I want you to write more beaftiful loop */
+  while((line = get_next_line(fp)) != NULL) {
+    parse_config_line(line);
+    free(line);
+  }
+
+  /* open file and load config */
+}
+
+static void
+save_configration(const char *filename)
+{
+  /* open file and save config */
+  /* make sure file permission, file owner, etc. */
+}
+
+/* Return value must be freed! */
+static char *
+get_selected_im_name(void)
+{
+  GtkTreeSelection *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(switcher_tree_view));
+  GtkTreeModel *model;
+  GtkTreeStore *store;
+  GtkTreeIter iter;
+  gchar *str_data;
+  if(gtk_tree_selection_get_selected (sel, &model, &iter) == TRUE) {
+    store = GTK_TREE_STORE(model);
+    gtk_tree_model_get (model, &iter, 
+			NAME_COLUMN, &str_data,
+			-1);
+    return str_data;
+  }
+  return NULL;
+}
+
+static void
+send_message_im_change(const gchar *type)
+{
+  GString *msg = g_string_new(type);
+  gchar *im_name = get_selected_im_name();
+  if(im_name == NULL) {
+    g_string_free(msg, TRUE);
+    return; /* Or should pop-up alert window here? */
+  }
+  check_helper_connection(); /* ensuring connected to message bus */
+  g_string_append(msg, im_name);
+  g_string_append(msg, "\n");
+  g_free(im_name);
+  uim_helper_send_message(uim_fd, msg->str);
+  g_string_free(msg, TRUE);
+}
+
+static void
+change_input_method(GtkButton *button, GtkWidget *radio)
+{
+  int i = 0;
+  GSList *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio));
+
+  while((group = g_slist_next(group)) != NULL) {
+    if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(group->data))) {
+      break;
+    }
+    i++;
+  }
+  printf("**%d**\n",i);
+  switch (i) {
+  case 1:
+    send_message_im_change("im_change_whole_desktop\n");
+    break;
+  case 0:
+    send_message_im_change("im_change_this_application_only\n");
+    break;
+  case 2:
+    send_message_im_change("im_change_this_text_area_only\n");
+    break;
+  }
+  gtk_main_quit();
+}
+
+static void
+parse_arg(int argc, char *argv[])
+{
+  /* Doing nothing yet. */
+}
+
+static char *
+get_error_msg(void)
+{
+  return "Dummy function";
+}
+
+static GtkWidget *
+create_switcher_treeview(void)
+{
+  GtkTreeStore *tree_store;
+  GtkCellRenderer *renderer;
+  GtkTreeViewColumn *column;
+
+  tree_store = gtk_tree_store_new (NUM_COLUMNS,
+				   G_TYPE_STRING,
+				   G_TYPE_STRING,
+				   G_TYPE_STRING);
+  
+  switcher_tree_view = gtk_tree_view_new();
+
+  /* column 0 */
+  renderer = gtk_cell_renderer_text_new();
+  column = gtk_tree_view_column_new_with_attributes(_("InputMethodName"),
+						    renderer,
+						    "text", NAME_COLUMN,
+						    NULL);
+  gtk_tree_view_column_set_sort_column_id(column, 0);
+  gtk_tree_view_append_column(GTK_TREE_VIEW(switcher_tree_view), column);
+
+  /* column 1 */  
+  renderer = gtk_cell_renderer_text_new();
+  column = gtk_tree_view_column_new_with_attributes(_("Language"),
+						    renderer,
+						    "text", LANG_COLUMN,
+						    NULL);
+  gtk_tree_view_column_set_sort_column_id(column, 1);
+  gtk_tree_view_append_column(GTK_TREE_VIEW(switcher_tree_view), column);
+  
+  /* column 2 */
+  renderer = gtk_cell_renderer_text_new();
+  column = gtk_tree_view_column_new_with_attributes(_("Description"),
+						    renderer,
+						    "text", DESC_COLUMN,
+						    NULL);
+  gtk_tree_view_column_set_sort_column_id(column, 2);
+  gtk_tree_view_append_column(GTK_TREE_VIEW(switcher_tree_view), column);
+  
+  gtk_tree_view_set_model(GTK_TREE_VIEW(switcher_tree_view), GTK_TREE_MODEL(tree_store));
+
+  g_object_unref (tree_store);
+  gtk_tree_view_set_rules_hint (GTK_TREE_VIEW(switcher_tree_view), TRUE);
+  /* expand all rows after the treeview widget has been realized */
+  g_signal_connect (G_OBJECT(switcher_tree_view), "realize",
+		    G_CALLBACK (gtk_tree_view_expand_all), NULL);
+  
+  return switcher_tree_view;
+}
+
+static int
+create_switcher(void)
+{
+  GtkWidget *switcher_win;
+  GtkWidget *scrolled_win; /* treeview container */
+  GtkWidget *hbox, *vbox1, *vbox2;
+  GtkWidget *setting_button_box;
+  GtkWidget *button;
+  GtkWidget *frame, *radio0, *radio1, *radio2;
+
+  switcher_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title(GTK_WINDOW(switcher_win),
+		       _("uim input method switcher"));
+
+  g_signal_connect(G_OBJECT(switcher_win), "destroy",
+		   G_CALLBACK(gtk_main_quit), NULL);
+
+  g_signal_connect(G_OBJECT(switcher_win), "focus-in-event",
+		   G_CALLBACK(reload_im_list), NULL);
+
+  vbox1 = gtk_vbox_new(FALSE, 8);
+  hbox = gtk_hbox_new(FALSE, 8);
+
+  scrolled_win = gtk_scrolled_window_new(NULL, NULL);
+  gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_win),
+				       GTK_SHADOW_ETCHED_IN);
+  gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win),
+				 GTK_POLICY_AUTOMATIC,
+				 GTK_POLICY_AUTOMATIC);
+  gtk_box_pack_start (GTK_BOX (hbox), scrolled_win, TRUE, TRUE, 0);
+
+  gtk_container_add(GTK_CONTAINER(scrolled_win), create_switcher_treeview());
+
+  gtk_box_pack_start (GTK_BOX (vbox1), hbox, TRUE, TRUE, 0);
+
+
+  frame = gtk_frame_new("Changing way");
+  gtk_box_pack_start(GTK_BOX(vbox1), frame, FALSE, FALSE, 3);
+  vbox2 = gtk_vbox_new(FALSE, 3);
+  gtk_container_add(GTK_CONTAINER(frame), vbox2);
+
+  radio0 = gtk_radio_button_new_with_label(NULL, _("Change whole desktop"));
+  radio1 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radio0), _("Change this application only"));
+  radio2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radio0), _("Change this text area only"));
+
+  gtk_box_pack_start(GTK_BOX(vbox2), radio0, FALSE, FALSE, 3);
+  gtk_box_pack_start(GTK_BOX(vbox2), radio1, FALSE, FALSE, 3);
+  gtk_box_pack_start(GTK_BOX(vbox2), radio2, FALSE, FALSE, 3);
+
+
+  setting_button_box = gtk_hbutton_box_new();
+  gtk_button_box_set_layout(GTK_BUTTON_BOX(setting_button_box), GTK_BUTTONBOX_END);
+  gtk_box_set_spacing(GTK_BOX(setting_button_box), 8);
+
+  /* Cancel button */
+  button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+  g_signal_connect(G_OBJECT(button), "clicked",
+		   G_CALLBACK(gtk_main_quit), NULL);
+  gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 2);
+
+  /* Apply button */
+  button = gtk_button_new_from_stock(GTK_STOCK_OK);
+  g_signal_connect(G_OBJECT(button), "clicked",
+		   G_CALLBACK(change_input_method), radio0);
+  gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 2);
+
+  gtk_box_pack_start(GTK_BOX(vbox1), setting_button_box, FALSE, FALSE, 2);
+  gtk_container_add(GTK_CONTAINER(switcher_win), vbox1);
+
+  {
+    GdkScreen *scr = gtk_window_get_screen(GTK_WINDOW(switcher_win));
+    gtk_window_set_default_size(GTK_WINDOW(switcher_win),
+				gdk_screen_get_width(scr)  / 2,
+				gdk_screen_get_height(scr) / 2);
+    
+    gtk_window_set_position(GTK_WINDOW(switcher_win),
+			    GTK_WIN_POS_CENTER_ALWAYS);
+  }
+  gtk_widget_show_all(switcher_win);
+  return 0;
+}
+
+static void
+reload_im_list(GtkWindow *window, gpointer user_data)
+{
+  check_helper_connection();
+  uim_helper_send_message(uim_fd, "im_list_get\n"); 
+}
+
+static void
+parse_helper_str(const char *sent_str)
+{
+  if(g_str_has_prefix(sent_str, "im_list") == TRUE) {
+    parse_helper_str_im_list(sent_str);
+  }
+}
+
+static char *
+get_text(const char *str)
+{
+  if(strcmp("", str) == 0)
+    return "-";
+  else
+    return gettext(str);
+}
+
+static void
+parse_helper_str_im_list(const char *im_list_str_new)
+{
+  gchar **lines;
+  int i = 2;
+  gchar **info;
+  GtkTreeStore *tree_store;
+  GtkTreeIter iter;
+  GtkTreePath *path = NULL;
+  if(im_list_str_old && strcmp(im_list_str_new, im_list_str_old) == 0) {
+    return; /* No need to update */
+  }
+
+  lines = g_strsplit(im_list_str_new, "\n", -1);
+  tree_store = gtk_tree_store_new (NUM_COLUMNS,
+				   G_TYPE_STRING,
+				   G_TYPE_STRING,
+				   G_TYPE_STRING);
+
+  for(i=2; lines[i] != NULL; i++) {
+
+    if(!lines[i] || strcmp(lines[i], "") == 0) {
+      break;
+    }
+    info = g_strsplit(lines[i], "\t", -1);
+    if(info && info[0] && info[1] && info[2]) {
+      gtk_tree_store_append(tree_store, &iter, NULL/* parent iter */);
+      gtk_tree_store_set(tree_store, &iter,
+			 NAME_COLUMN, info[0],
+			 LANG_COLUMN, get_text(info[1]),
+			 DESC_COLUMN, get_text(info[2]),
+			 -1);
+      if(info[3] && (strcmp(info[3], "") != 0)) {
+	path = gtk_tree_model_get_path(GTK_TREE_MODEL(tree_store),
+				       &iter);
+	
+      }
+    }
+    g_strfreev(info);
+  }
+  gtk_tree_view_set_model(GTK_TREE_VIEW(switcher_tree_view), 
+			  GTK_TREE_MODEL(tree_store));
+  
+  if(path != NULL) {
+    gtk_tree_view_set_cursor(GTK_TREE_VIEW(switcher_tree_view),
+			     path, NULL, FALSE);
+  }
+  
+  g_free(im_list_str_old); im_list_str_old = g_strdup(im_list_str_new);
+  g_strfreev(lines);
+}
+
+
+static void
+helper_disconnect_cb(void)
+{
+  uim_fd = -1;
+  gdk_input_remove(read_tag);
+}
+
+static void
+fd_read_cb(gpointer p, gint fd, GdkInputCondition c)
+{
+  char *tmp;
+  
+  uim_helper_read_proc(fd);
+  while ((tmp = uim_helper_get_message())) {
+    parse_helper_str(tmp);
+    g_free(tmp); tmp = NULL;
+  }
+}
+
+
+static void
+check_helper_connection(void)
+{
+  if(uim_fd < 0) {
+    uim_fd = uim_helper_init_client_fd(helper_disconnect_cb);
+    if(uim_fd > 0)
+      read_tag = gdk_input_add(uim_fd, (GdkInputCondition)GDK_INPUT_READ,
+			       fd_read_cb, NULL);
+  }
+}
+
+int
+main(int argc, char *argv[])
+{  
+  gint result;
+  setlocale(LC_ALL, "");
+  gtk_set_locale();
+  bindtextdomain( PACKAGE, LOCALEDIR );
+  textdomain( PACKAGE );
+  bind_textdomain_codeset( PACKAGE, "UTF-8"); 
+  parse_arg(argc, argv);
+
+  gtk_init(&argc, &argv);
+
+  result = create_switcher();
+
+  if(result == -1) {
+    fprintf(stderr, "Error:%s\n", get_error_msg());
+    exit(-1);
+  }
+
+  /* connect to uim helper message bus */
+  uim_fd = -1;
+  check_helper_connection();  
+
+  /* To load input method list */
+  uim_helper_send_message(uim_fd, "im_list_get\n");
+
+  load_configration(NULL);
+  gtk_main ();
+  return 0;
+}

@@ -1,0 +1,3 @@
+#!/bin/sh
+mkdir -p ${QTDIR}/plugins/inputmethods
+cp libquiminputcontextplugin.so ${QTDIR}/plugins/inputmethods/

@@ -1,0 +1,51 @@
+To separate GUI toolkit dependent part from independent part, uim-xim
+uses external helper program to show candidate selection window.  This
+file describes communication protocol between uim-xim and its helper
+program .
+
+uim-helper-candwin-[xaw|gtk|qt] is executed from uim-xim and
+receives/sends messages via pipe.
+
+
+Received message format:
+  "$command\n$messages\n\n"
+
+   $command: [ activate | select | move | show | hide | deactivate ]
+   $messages: see detailed below.
+ 
+  1. activate
+    purpose: activating the candidate window with display_limit value,
+           and add candidates to it. The order of candidates must be as is.
+    example: activate\ncharset=UTF-8\ndisplay_limit=$value\ncand1\ncand2\ncand3\n
+ 
+  2. select
+    purpose: selecting the specified candidate
+    example: select\n$num\n
+
+  3. move
+    purpose: moving to the Point (XPos, YPos)
+    example: move\n$XPos\n$YPos
+ 
+  4. show
+    purpose: showing the candidate window
+    example: show\n
+ 
+  5. hide
+    purpose: hiding the candidate window
+    example: hide\n
+
+  6. deactivate
+    purpose: deactivating the candidate window
+    example: deactivate\n
+
+
+Sending message format:
+  "$command\n$messages\n\n"
+
+   $command: [ index ]
+   $messages: [ $num ]
+ 
+  1. index
+    purpose: sending index of selected candidate with mouse pointer to uim-xim
+    example: index\n$num\n\n
+ 

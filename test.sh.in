@@ -1,0 +1,16 @@
+#!/bin/sh
+
+
+LIBUIM_VERBOSE=4; export LIBUIM_VERBOSE
+LD_LIBRARY_PATH=uim/.libs/:$LD_LIBRARY_PATH; export LD_LIBRARY_PATH
+# not to read ~/.uim
+LIBUIM_VANILLA=1; export LIBUIM_VANILLA
+# scheme files will be read from scm/
+LIBUIM_SCM_FILES=@SRCDIR@/scm/; export LIBUIM_SCM_FILES
+gtk-query-immodules-2.0 gtk/.libs/im*.so > immodules
+GTK_IM_MODULE_PATH=gtk/.libs/; export GTK_IM_MODULE_PATH
+GTK_IM_MODULE_FILE=./immodules; export GTK_IM_MODULE_FILE
+#LANG= gnome-character-map
+#LANG= gedit
+#gtk-demo
+LANG= ./gtk-entry

@@ -1,0 +1,355 @@
+                    ** uim-fep **
+
+Uim-fep is a FEP (Front End Processer). Front End Processer is as same as input
+method, in Japanese.
+
+INSTALL
+=======
+
+See INSTALL.
+
+How to USE
+==========
+
+ Set the environment variable LANG. You can use also LC_ALL or LC_CTYPE.
+
+ Ex.1 example using sh
+ $ LANG=ja_JP.eucjp ; export LANG
+ 
+ Ex.2 example using csh
+ % setenv LANG ja_JP.utf8
+
+ and exec uim-fep.
+
+ $ uim-fep
+
+ If you want yo know the key binds, see the manual of uim.
+
+
+* Environment variables
+  o TERM
+    Set the terminal name in terminfo/termcap.
+    You must set this variable correctly otherwise fail to use uim-fep.
+
+  o SHELL
+    Set the program name after uim-fep execed.
+    You can specify both relative path and absolute path.
+    
+  o UIM_FEP
+    Set the name of conversion engine. E.G. anthy, skk, ...
+
+  o LC_ALL LC_CTYPE LANG
+    Detecting the language and encoding in accordance with this order.
+
+  o TMP
+    uim-fep-tickと通信するためのsocketを置くディレクトリです。
+    If this variable not defined, /tmp will be used.
+
+  o WINDOW
+    backtickを使っているときに表示されます。
+
+  o UIM_FEP_PID
+    PID (Process ID) of uim-fep.
+
+  o UIM_FEP_GETMODE
+    uim-fepのモードが書き込まれるファイルです。
+
+  o UIM_FEP_SETMODE
+    このファイルにモードを書き込むとuim-fepのモードが変わります。
+    $ echo 0 > $UIM_FEP_SETMODE
+
+  o LIBUIM_USER_SCM_FILE
+    Set the path of the uim's configuration file.
+    In default, uim-fep uses ~/.uim
+
+* Options 
+  Options are given priority over environment variables if conflicted.
+
+  o -u [skk/anthy/canna/tcode/tutcode/prime]
+    You can set conversion engine name.
+
+  o -s [lastline/backtick/none]
+    Set the location where status line is displayed
+    Also you can use abbreviated opsions -sl, -sb, -sn.
+
+  o -b <file>
+    Set the socket path which is used by backtik.
+    When you set relative path, its base path is $TMP or /tmp
+
+  o -w <num>
+    Width of status line. This variable is used if it's in from 1 to width of terminal.
+  
+  o -t <seconds>
+    When you are using rsh,  you may not use some keys such as "F1",
+    "up", "<Alt>a". This problem is caused because escape-sequence
+    doesn't be committed at once.
+    You can solve this problem by setting the waiting time after
+    inputting escape.
+    In default, waiting time is zero second.
+
+    Example: Set the waiting time 0.1 second
+    $ uim-fep -t 0.1
+
+  o -c  This option make the character which is located at cursorposition look inverted.
+        kterm, aterm, rxvt, teraterm(カーソル点滅なしの状態)などの端末
+        では反転された文字にカーソルがあると反転が消えることがあります。
+        このような場合はこのオプションを付けると反転文字にカーソルが
+        あるときに反転されるようになります。
+
+  o -i  ステータスラインを描画しているときやプリエディット(未確定文字列)
+        の末尾以外を編集しているときにカーソルを一時的に消します。カー
+        ソルの残像が気になるときはこのオプションを付けてください。
+
+  o -e command arg1 arg2 ...
+    起動するコマンドを指定します。このオプション以降の引数は
+    commandに渡されます。
+
+  o -h This option show help messages.
+
+  o -v This option show version.
+
+
+How to use backtick
+===================
+  First, put your uim-fep-tick to the directory in the PATH list.
+  Second, in ~/.screenrc, write down following lines,
+
+    backtick 0 0 0 uim-fep-tick
+    hardstatus alwayslastline "%0`"
+
+  last, exec uim-fep in the window of screen with -s option,
+
+    $ uim-fep -s backtick
+
+  o Options of uim-fep-tick
+    * -s <file>
+      You can specify the socket path.
+      When you set relative path, its base path is $TMP or /tmp
+
+    * -h Display the help message
+
+    * -v Display the version info of uim-fep
+  
+  o uim-fepはscreen内の複数のウィンドウで起動できます。
+
+  o uim-fep-tickはscreenから起動されるため、screenの環境変数が引き継が
+    れます。
+
+
+* ~/.uimを書くときの注意点
+  a .. z                ->        "a" .. "z"
+  A .. Z                ->        "A" .. "Z" (or "<Shift>A" ..  "<Shift>Z")
+  C-a .. C-z            ->        "<Control>a" .. <Control>z"
+  M-a .. M-z            ->        "<Alt>a" .. "<Alt>z"
+  M-A .. M-Z            ->        "<Alt>A" ..  "<Alt>Z" (or "<Alt><Shift>A" .. "<Alt><Shift>Z")
+  M-C-a .. M-C-z        ->        "<Control><Alt>a" ..  "<Control><Alt>z"
+  return                ->        "<Control>m"
+  backspace(C-hのとき)  ->        "<Control>h"
+  backspace(C-?のとき)  ->        "<Control>?"
+  backspace(それ以外)   ->        "backspace"
+  tab                   ->        "<Control>i"
+  del, C-?              ->        "delete"
+  esc, C-[              ->        "escape"
+  C-\                   ->        "<Control>\\"
+  C-]                   ->        "<Control>]"
+  C-^                   ->        "<Control>^"
+  C-_                   ->        "<Control>_"
+  C-space               ->        "<Control> "
+  M-esc, M-C-[          ->        "<Alt>escape"
+  M-C-\                 ->        "<Alt><Control>\\"
+  M-C-]                 ->        "<Alt><Control>]"
+  M-C-^                 ->        "<Alt><Control>^"
+  M-C-_                 ->        "<Alt><Control>_"
+  M-C-space             ->        "<Alt><Control> "
+  ↑ ↓ → ←           ->        "up" "down" "right" "left"
+  F1 .. F12             ->        "F1" .. "F12"
+  Home                  ->        "home"
+  End                   ->        "end"
+  PageUp                ->        "prior"
+  PageDown              ->        "next"
+  Insert                ->        使えません
+
+  o If you want to use Alt key, you should 
+を使うにはAltを押しながら他のキーを押したときに、^[が出力さ
+  れるようにします。
+  mltermの場合は~/.mlterm/mainに次のように書きます。
+    mod_meta_mode=esc
+  ktermの場合は~/.Xresourceか~/.Xdefaultsに次のように書きます。
+    KTerm*EightBitInput: false
+
+  o Some terminals accept "<Alt>F1", "<Alt>right" correctly
+
+  o You cannot input "shift-space"
+
+  o prime-wide-latin-key?の"<Control>L"は入力できません。
+
+  o You cannot input "shift-backspace"
+
+  o If you set nr-candidate-max to 0, you can indcate many candidate
+    at one time.
+ 
+  Examples:
+    (define skk-nr-candidate-max 0)
+    (define anthy-nr-candidate-max 0)
+    (define prime-nr-candidate-max 0)
+
+
+* Issues
+  o プリエディット編集中に端末のサイズが変更されると表示が乱れることが
+    あります．
+
+  o screenの中でuim-fepを-s lastlineで使っているとき端末のサイズを変更
+    すると稀にscreenが暴走することがあります．
+
+  o 無反応になったり暴走したりしたら
+    $ kill -INT <uim-fepのpid>
+    このコマンドで直ると思います。ただし日本語入力はできなくなります。
+
+  o 色がおかしくなることがあるかもしれません。
+
+  o You cannot use uim-fep with Cygwin(aka DOS prompt).
+
+
+* Notes
+  中ボタンクリックやShift+Insertのペーストなどで一度に大量に入力された
+  ときは変換せずにそのまま出力されます。
+  プリエディットを入力中にペーストすると無効になります。
+
+  端末の右端でプリエディットを開始すると次の行に移ります. 
+
+
+* 履歴
+  o 2004/8/1  0.4.0
+    * -Cオプションを追加しました。
+
+  o 2004/7/29 0.3.9
+    * pyで落ちないようにしました。
+
+  o 2004/7/17 0.3.8
+    * Solarisでコンパイルできるようにしました。
+
+  o 2004/7/3 0.3.7
+    * wcswidthがなくてもコンパイルできるようにしました.
+    * 変換候補数の表示を変更しました. (日本語以外では"残り"が表示できないため)
+
+  o 2004/6/29 0.3.6
+    * -lオプションを廃止しました．環境変数LANGを使ってください．
+    * euc-jpで半角カナを2カラムとして扱っていたバグを修正しました．
+    * euc-jp, utf-8以外でも使えるようにしました．
+    * -tオプションを追加しました. 
+    * rsh先でも使えるようにしました. 
+    
+  o 2004/6/21 0.3.5
+    * 最下行で起動するとおかしくなるバグを修正しました．(0.3.4のバグ)
+
+  o 2004/6/20 0.3.4
+    * プリエディット描画の高速化しました．
+    * 行を跨いだ変換でゴミが残らないようにしました．
+    * -oオプションを廃止しました．
+
+  o 2004/6/17 0.3.3
+    * 致命的なバグを修正しました．(0.3.2で入ったバグです)
+    * ウィンドウサイズが変更されたときにステータスラインを再描画するようにしました．
+    * プリエディット編集中にウィンドウサイズが変更されたときにプリエディットを
+      上書きしてしまうバグを修正しました．
+
+  o 2004/6/13 0.3.2
+    * TERM=vt100などでモード表示が消えてしまうバグを修正しました。
+    * 開始時に画面をクリアしないようにしました。
+    * skkで高速に入力すると表示がおかしくなるバグを修正しました。
+
+  o 2004/6/7 0.3.1
+    * skkで"tt"と入力すると"つt"と出力するようにしました。
+    * 行を跨いだ変換をできるようにしました。
+    * -oオプションを追加しました。
+    * primeで表示が乱れるバグを修正しました。
+
+  o 2004/05/31 0.3.0
+    --mltermオプションを廃止しました。
+    -c, -iオプションを追加しました。
+
+  o 2004/05/29 0.2.9
+    ペーストで入力された長い文字列を変換しないようにしました。
+    ステータスラインを描画しているときやプリエディットの末尾以外を編集
+    しているときにカーソルを一時的に消すようにしました。(効果はあまりないです。)
+    terminfoのclearかedが空文字列のとき暴走するバグを修正しました。
+    
+  o 2004/05/18 0.2.8
+    --mltermオプションを追加しました。
+    vimで制御できるようにしました。(KoRoNさん)
+
+  o 2004/05/16 0.2.7
+    -s lastlineのuim-fepからscreenを起動しても表示が乱れないようにしました。
+    uim-fep -s lastline -e screen
+    
+  o 2004/05/15 0.2.6
+    落ちるバグを修正しました。
+    anthyで長い文字列を変換するときやのちらつきを少なくしました。
+    screenで(プレエディットの編集などで)右端から次の行の左端に移動できるようにしました。
+    jfbtermで最下行のステータスラインが白くならないようにしました。
+
+  o 2004/05/10
+    0.2.5 画面クリア時に最下行のステータスラインを再描画するようにした。(mattnさん)
+    終了時に最下行のステータスラインを消すようにした。(mattnさん)
+
+  o 2004/05/09
+    0.2.4 skkでC-j, /, C-j, /の順に押すと何も出力されなくなるバグを修正。
+
+  o 2004/05/06
+    0.2.3 uim-0.3.6に対応 (constを付けただけ)
+    -vオプションを追加
+    ステータスラインを消すときにclr_eolを使うようにした。
+
+  o 2004/05/04
+    0.2.2 ステータスラインから候補がはみ出ないようにした。
+    uim-fep-tickを-wオプションをuim-fepのオプションにした。
+    uim-fep-tickの-lオプションを廃止した。
+
+  o 2004/05/03
+    0.2.1 nr-candidate-maxを0以下にしていると落ちるバグを修正。
+
+  o 2004/05/01
+    0.2 最下行をステータスラインにしてウィンドウサイズを変更すると最下
+    行に移動できてしまうバグを修正。
+    同じソケットを使うuim-fep-tickのプロセスを2つ以上できないようにした。
+    はみ出た候補も強調するようにした。
+    configureのオプションでbacktickの幅を変えれるようにした。
+
+  o 2004/04/26
+    0.1.9 連続でcommitされるとおかしくなるのを修正。
+
+  o 2004/04/26
+    0.1.8 ステータスライン関係のバグ修正
+    uim-fep-tickに-lオプションを追加
+
+  o 2004/04/25
+    0.1.7 configureをつけた
+    <c-\>などを入力できるようにした。
+    ステータスラインの候補がはみ出ても表示が乱れないようにした。
+    暴走したときに止めれるようにした。
+          
+  o 2004/04/18
+    0.1.6 primeに対応
+
+  o 2004/04/17
+    0.1.5 utf-8(mattnさんのパッチ) backtick
+
+  o 2004/04/12
+    0.1.4 バグ修正
+
+  o 2004/04/11
+    0.1.3 ステータスライン
+
+  o 2004/04/11
+    0.1.2 バグ修正
+
+  o 2004/04/10
+    0.1.1 バグ修正
+
+  o 2004/04/09
+    0.1 属性とカーソル
+
+  o 2004/04/03
+    開発開始
+
+質問、バグ報告などは h013177b@ice.nuie.nagoya-u.ac.jp にお願いします。
