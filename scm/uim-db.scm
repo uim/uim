@@ -139,7 +139,7 @@
 	  (dbg-copy-info! (cdr code) '()) ; invalidate
 	  (dbg-copy-info! (cddr code) pos)
 	  (set-car! pos code))
-	(print "Invalid argument to uim-db-insert-code!\n"))))
+	(puts "Invalid argument to uim-db-insert-code!\n"))))
 
 (define uim-db-restore-code!
   (lambda (pos)
