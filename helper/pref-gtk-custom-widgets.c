@@ -204,7 +204,7 @@ sync_value_int(GtkSpinButton *spin)
   g_return_if_fail(custom && custom->type == UCustom_Int);
 
   gtk_widget_set_sensitive(GTK_WIDGET(spin), custom->is_active);
-  if (custom->range->as_int.min != (int) adj->lower &&
+  if (custom->range->as_int.min != (int) adj->lower ||
       custom->range->as_int.max != (int) adj->upper)
     gtk_spin_button_set_range(spin, custom->range->as_int.min, custom->range->as_int.max);
   if (custom->value->as_int != (int) gtk_spin_button_get_value(spin)) {
