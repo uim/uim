@@ -335,8 +335,8 @@ uim_custom_key_get(const char *custom_sym)
   int *key_type_list, editor_type, list_len, i;
   struct uim_custom_key *custom_key, **custom_key_list;
 
-  UIM_EVAL_FSTRING3(NULL, "(define %s (apply (if uim-custom-expand-key? custom-expand-key-references list) (custom-value '%s))",
-		    str_list_arg, custom_sym, custom_sym);
+  UIM_EVAL_FSTRING2(NULL, "(define %s (apply (if uim-custom-expand-key? custom-expand-key-references list) (custom-value '%s))",
+		    str_list_arg, custom_sym);
   key_literal_list =
     (char **)uim_scm_c_list(str_list_arg,
 			    "(lambda (key) (if (symbol? key) symbol->string key))",
