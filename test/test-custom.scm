@@ -278,8 +278,8 @@
    ;; null key is invalid
    (assert-false (uim-bool '(custom-key? '(""))))
    ;; custom-key cannot contain key with translator
-   (assert-false (uim-bool '(custom-key? '("<IgnoreShift>0"))))
-   (assert-false (uim-bool '(custom-key?
+   (assert-true  (uim-bool '(custom-key? '("<IgnoreShift>0"))))
+   (assert-true  (uim-bool '(custom-key?
 			     '("<IgnoreShift><IgnoreCase>return"))))
    ;; custom-key cannot contain raw closure
    (assert-false (uim-bool '(custom-key? (list test-cancel-key))))
@@ -1657,8 +1657,8 @@
    ;; siod interprets #f as ()
    ;;(assert-false (uim-bool '(custom-valid? 'test-cancel-key #f)))
    (assert-false (uim-bool '(custom-valid? 'test-cancel-key '(""))))
-   (assert-false (uim-bool '(custom-valid? 'test-cancel-key '("<IgnoreShift>0"))))
-   (assert-false (uim-bool '(custom-valid? 'test-cancel-key '("<IgnoreShift><IgnoreCase>return"))))
+   (assert-true  (uim-bool '(custom-valid? 'test-cancel-key '("<IgnoreShift>0"))))
+   (assert-true  (uim-bool '(custom-valid? 'test-cancel-key '("<IgnoreShift><IgnoreCase>return"))))
    (assert-false (uim-bool '(custom-valid? 'test-cancel-key (list test-cancel-key))))
    (assert-false (uim-bool '(custom-valid? 'test-cancel-key '(test-nonexistent-key))))
    (assert-false (uim-bool '(custom-valid? 'test-cancel-key '("nonexistent"))))
@@ -2116,9 +2116,9 @@
 		 (uim '(custom-definition-as-literal 'test-available-ims)))
    (assert-equal "(define test-null-ims '())"
 		 (uim '(custom-definition-as-literal 'test-null-ims)))
-   (assert-equal "(define test-cancel-key '(\"<Control>g\" \"escape\"))\n(define-key test-cancel-key? '(\"<Control>g\" \"escape\"))"
+   (assert-equal "(define test-cancel-key '(\"<Control>g\" \"escape\"))\n(define test-cancel-key? (make-key-predicate '(\"<Control>g\" \"escape\")))"
 		 (uim '(custom-definition-as-literal 'test-cancel-key)))
-   (assert-equal "(define test-null-key '())\n(define-key test-null-key? '())"
+   (assert-equal "(define test-null-key '())\n(define test-null-key? (make-key-predicate '()))"
 		 (uim '(custom-definition-as-literal 'test-null-key)))
    (assert-equal "(define test-use-candidate-window? #t)"
 		 (uim '(custom-definition-as-literal 'test-use-candidate-window?)))

@@ -1011,7 +1011,7 @@ uim_custom_set(const struct uim_custom *custom)
     {
       char *val;
       val = key_list_to_str((const struct uim_custom_key *const *)custom->value->as_key, " ");
-      UIM_EVAL_FSTRING2(NULL, "(custom-set-value! '%s '(%s))", custom->symbol, val);
+      UIM_EVAL_FSTRING2(NULL, "(custom-set-value! '%s (map gui-key-str->key-str '(%s)))", custom->symbol, val);
       free(val);
     }
     break;

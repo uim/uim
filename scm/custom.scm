@@ -37,7 +37,11 @@
 (require "util.scm")
 (require "key.scm")
 
-(define custom-full-featured? #t)
+;; config
+;;(define key-list->gui-key-list 'key-list-export-as-basic)
+;;(define gui-key-list->key-list 'key-list-import-as-basic)
+(define key-list->gui-key-list 'key-list-export-as-traditional)
+(define gui-key-list->key-list 'key-list-import-as-traditional)
 
 ;; public
 (define custom-activity-hooks ())
@@ -49,6 +53,7 @@
 (define custom-group-list-update-hooks ())
 
 ;; private
+(define custom-full-featured? #t)
 (define custom-rec-alist ())
 (define custom-group-rec-alist ())
 (define custom-subgroup-alist ())
@@ -106,7 +111,8 @@
     (and (list? key-repls)
 	 (every (lambda (key)
 		  (or (and (string? key)  ;; "<Control>a"
-			   (valid-strict-key-str? key))
+			   ;;(valid-strict-key-str? key)
+			   (valid-key-str? key))  ;; acceps translators
 		      (and (symbol? key)  ;; 'generic-cancel-key
 			   (custom-exist? key 'key))))
 		key-repls))))
@@ -115,7 +121,7 @@
   (lambda (key)
     (cond
      ((string? key)
-      (list key))
+      (list (key-str->gui-key-str key)))
      ((list? key)
       (append-map custom-expand-key-references key))
      ((and (symbol? key)
@@ -128,6 +134,175 @@
 (define custom-key-advanced-editor?
   (lambda (custom-sym)
     #f))
+
+(define reversed-tag-prefix-alist
+  (map (lambda (pair)
+	 (cons (cdr pair)
+	       (car pair)))
+       tag-prefix-alist))
+
+;; TODO: write test
+;; (key-str->key-list "<Control><Shift><IgnoreRegularShift>return")
+;;   -> (Control_key Shift_key IgnoreRegularShift "return")
+;; (key-str->key-list "C-M-a")
+;;   -> (Control_key Meta_key "a")
+(define key-str->key-list
+  (lambda (key-str)
+    (unfold (compose not car parse-key-prefix)
+	    (compose car parse-key-prefix)
+	    (compose cdr parse-key-prefix)
+	    key-str
+	    (compose list cdr parse-key-prefix))))
+
+;; TODO: write test
+(define key-list->key-str
+  (lambda (key-list)
+    (string-append-map
+     (lambda (elem)
+       (if (symbol? elem)
+	   (let ((mod (cdr (assq elem reversed-tag-prefix-alist))))
+	     (string-append "<" mod ">"))
+	   elem))
+     key-list)))
+
+;; TODO: write test
+(define map-key-list-body
+  (lambda (body-mapper key-list)
+    (map (lambda (elem)
+	   (if (string? elem)
+	       (body-mapper elem)
+	       elem))
+	 key-list)))
+
+;; TODO: write test
+(define map-key-list-letter
+  (lambda (letter-mapper key-list)
+    (let ((letter (string->letter (find string? key-list))))
+      (map-key-list-body (lambda (elem)
+			   (if letter
+			       (charcode->string (letter-mapper letter))
+			       elem))
+			 key-list))))
+
+;; TODO: write test
+(define map-key-str
+  (lambda (key-list-mapper key-str)
+    (if (string? key-str)
+	(let ((key-list (key-str->key-list key-str)))
+	  (key-list->key-str (key-list-mapper key-list)))
+	key-str)))
+
+;; TODO: write test
+(define key-list-upcase
+  (lambda (key-list)
+    (map-key-list-letter char-upcase key-list)))
+
+;; TODO: write test
+(define key-list-downcase
+  (lambda (key-list)
+    (map-key-list-letter char-downcase key-list)))
+
+;; TODO: write test
+(define key-list-visualize-space
+  (lambda (key-list)
+    (map-key-list-body (lambda (elem)
+			 (if (string=? elem " ")
+			     "space"
+			     elem))
+		      key-list)))
+
+;; TODO: write test
+(define key-list-characterize-space
+  (lambda (key-list)
+    (map-key-list-body (lambda (elem)
+			 (if (string=? elem "space")
+			     " "
+			     elem))
+		      key-list)))
+
+;; TODO: write test
+(define key-list-encode-shift
+  (lambda (key-list)
+    (let ((has-shift? (memq 'Shift_key key-list))
+	  (letter (string->letter (find string? key-list))))
+      (filter-map (lambda (elem)
+		    (cond
+		     ((and (eq? elem 'Shift_key)
+			   letter)
+		      #f)
+		     ((and (string? elem)
+			   has-shift?
+			   letter)
+		      (charcode->string (char-upcase letter)))
+		     (else
+		      elem)))
+		  key-list))))
+
+;; TODO: write test
+(define key-list-decode-shift
+  (lambda (key-list)
+    (let* ((letter (string->letter (find string? key-list)))
+	   (upper-case? (and letter
+			     (char-upper-case? letter)))
+	   (has-shift? (memq 'Shift_key key-list))
+	   (stripped (key-list-downcase key-list)))
+      (if (and (not has-shift?)
+	       upper-case?)
+	  (cons 'Shift_key stripped)
+	  stripped))))
+
+;; TODO: write test
+(define key-list-ignore-regular-shift
+  (lambda (key-list)
+    (let ((letter (string->letter (find string? key-list))))
+      (if letter
+	  (cons 'IgnoreShift key-list)
+	  key-list))))
+
+;; TODO: write test
+(define key-list-ignore-case
+  (lambda (key-list)
+    (let ((letter (string->letter (find string? key-list))))
+      (if letter
+	  (cons 'IgnoreCase key-list)
+	  key-list))))
+
+;; TODO: write test
+(define key-list-strip-translators
+  (lambda (key-list)
+    (remove translator-prefix? key-list)))
+
+;; TODO: write test
+(define key-list-export-as-basic (compose key-list-visualize-space
+					  key-list-upcase
+					  key-list-decode-shift
+					  key-list-strip-translators))
+
+;; TODO: write test
+(define key-list-import-as-basic (compose key-list-characterize-space
+					  key-list-ignore-case
+					  key-list-encode-shift
+					  key-list-downcase))
+
+;; TODO: write test
+(define key-list-export-as-traditional (compose key-list-visualize-space
+						key-list-strip-translators))
+
+;; TODO: write test
+(define key-list-import-as-traditional (compose key-list-characterize-space
+						key-list-ignore-regular-shift))
+
+;; TODO: write test
+(define key-str->gui-key-str
+  (lambda (key-str)
+    (map-key-str (symbol-value key-list->gui-key-list)
+		 key-str)))
+
+;; TODO: write test
+(define gui-key-str->key-str
+  (lambda (key-str)
+    (map-key-str (symbol-value gui-key-list->key-list)
+		 key-str)))
 
 (define custom-choice-label
   (lambda (custom-sym val-sym)
@@ -319,8 +494,10 @@
 	   (set-symbol-value! sym val)
 	   (if (eq? (custom-type sym)
 		    'key)
-	       (define-key-internal (symbolconc sym '?)
-		                    (custom-modify-key-predicate-names val)))
+	       (let ((key-val (custom-modify-key-predicate-names val)))
+		 (eval (list 'define (symbolconc sym '?)
+			     (list 'make-key-predicate (list 'quote key-val)))
+		       toplevel-env)))
 	   (custom-call-hook-procs sym custom-set-hooks)
 	   (let ((post-activities (map custom-active? custom-syms)))
 	     (for-each (lambda (another-sym pre post)
@@ -445,7 +622,8 @@
 		      (let ((key-val (custom-list-as-literal
 				      (custom-modify-key-predicate-names
 				       (custom-value sym)))))
-			(list "\n(define-key " var "? " key-val ")"))
+			(list "\n(define " var "? "
+			      "(make-key-predicate " key-val "))"))
 		      ())))))))
 
 ;; API

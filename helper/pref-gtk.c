@@ -31,6 +31,7 @@
 
 */
 
+#include <glib.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <string.h>
@@ -1223,6 +1224,13 @@ key_pref_set_value(guint keyval, GdkModifierType mod)
 			       mod & GDK_MOD1_MASK);
 
   switch (keyval) {
+  case GDK_space:
+    /*
+     * "space" is not proper uim keysym and only exists for user
+     * convenience. It is converted to " " by uim-custom
+     */
+    g_snprintf(keystr, len, "space");
+    break;
   case GDK_BackSpace:
     g_snprintf(keystr, len, "backspace");
     break;
@@ -1308,7 +1316,24 @@ key_pref_set_value(guint keyval, GdkModifierType mod)
     } else if (keyval >= GDK_F1 && keyval <= GDK_F35) {
       g_snprintf(keystr, len, "%d", keyval - GDK_KP_0 + UKey_0);
     } else if (keyval < 256) {
+#if 0
+      /*
+       * Capitalize alphabet keys for easy-to-recognize key
+       * configuration.  uim-custom performs implicit shift key
+       * encoding/decoding appropriately.
+       *
+       * To test this feature, configure variables in custom.scm as
+       * following.  -- YamaKen 2005-01-27
+       * 
+       * (define key-list->gui-key-list 'key-list-export-as-basic)
+       * (define gui-key-list->key-list 'key-list-import-as-basic)
+       * ;;(define key-list->gui-key-list 'key-list-export-as-traditional)
+       * ;;(define gui-key-list->key-list 'key-list-import-as-traditional)
+       */
+      keystr[0] = g_ascii_toupper(keyval);
+#else
       keystr[0] = keyval;
+#endif
       keystr[1] = '\0';
     } else {
       /* UKey_Other */
