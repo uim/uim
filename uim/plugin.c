@@ -48,6 +48,10 @@
 #include "plugin.h"
 #include "context.h"
 
+#ifndef HAVE_DLFUNC
+#define dlfunc dlsym
+#endif
+
 static uim_plugin_info_list *uim_plugin_list = NULL;
 static void plugin_list_append(uim_plugin_info_list *entry);
 
@@ -108,7 +112,7 @@ plugin_load(uim_lisp _module_filename) {
 	free(module_filename_fullpath);
 	free(module_filename);
 
-	info->plugin_init = dlsym(info->library, "plugin_init");
+	info->plugin_init = (void (*)(void))dlfunc(info->library, "plugin_init");
     
 	if(info->plugin_init) {
 	  printf("plugin init\n");

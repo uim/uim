@@ -123,7 +123,12 @@ AC_CHECK_FUNCS([forkpty])
 AC_CHECK_FUNCS([cfmakeraw])
 AC_CHECK_FUNCS([wcswidth])
 AC_CHECK_FUNCS(getpeereid asprintf vasprintf setenv unsetenv strsep)
-
+AC_SEARCH_LIBS(dlfunc,dl,
+  [
+    AC_DEFINE(HAVE_DLFUNC, 1,
+              [Define to 1 if you have the `dlfunc' function.])
+    
+  ])
 
 GETTEXT_PACKAGE=uim
 AC_SUBST(GETTEXT_PACKAGE)
