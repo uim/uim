@@ -59,11 +59,6 @@ extern void uim_init_canna();
 extern void uim_quit_canna();
 #endif /* HAVE_CANNA_RK_H */
 
-#ifdef HAVE_M17NLIB
-extern void uim_init_m17nlib();
-extern void uim_quit_m17nlib();
-#endif /* HAVE_M17NLIB */
-
 #define CONTEXT_ARRAY_SIZE 512
 static uim_context context_array[CONTEXT_ARRAY_SIZE];
 struct uim_im *uim_im_array;
@@ -680,9 +675,7 @@ uim_init_scm()
 #ifdef HAVE_CANNA_RK_H
   uim_init_canna();
 #endif /* HAVE_CANNA_RK_H */
-#ifdef HAVE_M17NLIB
-  uim_init_m17nlib();
-#endif /* HAVE_M17NLIB */
+  uim_init_plugin();
 
   scm_files = getenv("LIBUIM_SCM_FILES");
   if (scm_files) {
@@ -744,9 +737,7 @@ uim_quit(void)
 #ifdef HAVE_CANNA_RK_H
   uim_quit_canna();
 #endif /* HAVE_CANNA_RK_H */
-#ifdef HAVE_M17NLIB
-  uim_quit_m17nlib();
-#endif /* HAVE_M17NLIB */
+  uim_quit_plugin();
   siod_quit();
   uim_last_client_encoding = NULL;
   uim_output = NULL;

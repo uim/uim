@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <m17n.h>
+#include "uim-scm.h"
 #include "context.h"
 
 static int m17nlib_ok;
@@ -247,7 +248,7 @@ init_m17nlib()
     return NIL;
   }
   m17nlib_ok = 1;
-  return siod_true_value();
+  return uim_scm_t();
 }
 
 void
@@ -278,7 +279,7 @@ convert_mtext2str(MText *mtext)
 static LISP
 compose_modep(LISP id_)
 {
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   /* range check of id might need. */
   MInputContext *ic = ic_array[id].mic;
   if(!ic) {
@@ -287,30 +288,30 @@ compose_modep(LISP id_)
   if(ic->candidate_from == ic->candidate_to) {
     return NIL;
   } else {
-    return siod_true_value();
+    return uim_scm_t();
   }
 }
 
 static LISP
 preedit_changedp(LISP id_)
 {
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   /* range check of id might need. */
   MInputContext *ic = ic_array[id].mic;
   if(!ic) {
-    return siod_false_value();
+    return uim_scm_f();
   }
   if(ic->preedit_changed == 1) {
-    return siod_true_value();
+    return uim_scm_f();
   } else {
-    return siod_false_value();
+    return uim_scm_t();
   }
 }
 
 static LISP
 get_left_of_cursor(LISP id_)
 {
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   int buflen;
   int i;
   LISP buf_;
@@ -318,10 +319,10 @@ get_left_of_cursor(LISP id_)
   char *p;
   MInputContext *ic = ic_array[id].mic;
   if (!ic) {
-    return strcons(0, "");
+    return uim_scm_str_from_c_str("");
   }
   if(ic->cursor_pos == 0) {
-    return strcons(0, "");
+    return uim_scm_str_from_c_str("");
   }
   buf = convert_mtext2str(ic->preedit);
   p = (char *)buf;
@@ -332,14 +333,14 @@ get_left_of_cursor(LISP id_)
   *p = 0;
 
   buflen = strlen((char *)buf);
-  buf_ = strcons(buflen, (char *)buf);
+  buf_ = uim_scm_str_from_c_str((char *)buf);
   return buf_;
 }
 
 static LISP
 get_right_of_cursor(LISP id_)
 {
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   int buflen;
   int i;
   LISP buf_;
@@ -347,24 +348,24 @@ get_right_of_cursor(LISP id_)
   unsigned char *p;
   MInputContext *ic = ic_array[id].mic;
   if (!ic) {
-    return strcons(0, "");
+    return uim_scm_str_from_c_str("");
   }
 
   buf = convert_mtext2str(ic->preedit);
   p = buf;
 
   for(i=0; i<ic->cursor_pos ;i++) {
-    p = (unsigned char *)strcons(0, "");
+    p = (unsigned char *)uim_scm_str_from_c_str("");
   }
   buflen = strlen((char *)p);
-  buf_ = strcons(buflen, (char *)p);
+  buf_ = uim_scm_str_from_c_str((char *)p);
   return buf_;
 }
 
 static LISP
 get_left_of_candidate(LISP id_)
 {
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   int buflen;
   int i;
   LISP buf_;
@@ -372,10 +373,10 @@ get_left_of_candidate(LISP id_)
   char *p;
   MInputContext *ic = ic_array[id].mic;
   if (!ic) {
-    return strcons(0, "");
+    return uim_scm_str_from_c_str("");
   }
   if(ic->candidate_from == 0) {
-    return strcons(0, "");
+    return uim_scm_str_from_c_str("");
   }
   buf = convert_mtext2str(ic->preedit);
   p = (char *)buf;
@@ -385,7 +386,7 @@ get_left_of_candidate(LISP id_)
   }
   *p = 0;
   buflen = strlen((char *)buf);
-  buf_ = strcons(buflen, (char *)buf);
+  buf_ = uim_scm_str_from_c_str((char *)buf);
   free(buf);
   return buf_;
 }
@@ -393,7 +394,7 @@ get_left_of_candidate(LISP id_)
 static LISP
 get_selected_candidate(LISP id_)
 {
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   int buflen;
   int i;
   LISP buf_;
@@ -402,13 +403,13 @@ get_selected_candidate(LISP id_)
   unsigned char *start;
   MInputContext *ic = ic_array[id].mic;
   if (!ic) {
-    return strcons(0, "");
+    return uim_scm_str_from_c_str("");
   }
   buf = convert_mtext2str(ic->preedit);
   p = buf;
 
   if(!p) {
-    return strcons(0, "");
+    return uim_scm_str_from_c_str("");
   }
 
   for(i=0; i<ic->candidate_from ;i++) {
@@ -422,7 +423,7 @@ get_selected_candidate(LISP id_)
   *p = 0;
 
   buflen = strlen((char *)start);
-  buf_ = strcons(buflen, (char *)start);
+  buf_ = uim_scm_str_from_c_str((char *)start);
   free(buf);
   return buf_;
 }
@@ -430,7 +431,7 @@ get_selected_candidate(LISP id_)
 static LISP
 get_right_of_candidate(LISP id_)
 {
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   int buflen;
   int i;
   LISP buf_;
@@ -438,7 +439,7 @@ get_right_of_candidate(LISP id_)
   unsigned char *p;
   MInputContext *ic = ic_array[id].mic;
   if (!ic) {
-    return strcons(0, "");
+    return uim_scm_str_from_c_str("");
   }
   buf = convert_mtext2str(ic->preedit);
   p = buf;
@@ -447,7 +448,7 @@ get_right_of_candidate(LISP id_)
     p = (unsigned char *)m17nlib_utf8_find_next_char((char *)p);
   }
   buflen = strlen((char *)p);
-  buf_ = strcons(buflen, (char *)p);
+  buf_ = uim_scm_str_from_c_str((char *)p);
   free(buf);
   return buf_;
 }
@@ -455,17 +456,17 @@ get_right_of_candidate(LISP id_)
 static LISP
 get_nr_input_methods()
 {
-  return intcons(nr_input_methods);
+  return uim_scm_int_from_c_int(nr_input_methods);
 }
 
 static LISP
 get_input_method_name(LISP nth_)
 {
-  int nth = get_c_int(nth_);
+  int nth = uim_scm_c_int(nth_);
   if (nth < nr_input_methods) {
     char *name = alloca(strlen(im_array[nth].name) + 20);
     sprintf(name, "m17n-%s-%s", im_array[nth].lang, im_array[nth].name);
-    return strcons(-1, name);
+    return uim_scm_str_from_c_str(name);
   }
   return NIL;
 }
@@ -473,10 +474,10 @@ get_input_method_name(LISP nth_)
 static LISP
 get_input_method_lang(LISP nth_)
 {
-  int nth = get_c_int(nth_);
+  int nth = uim_scm_c_int(nth_);
   if (nth < nr_input_methods) {
     char *lang = im_array[nth].lang;
-    return strcons(strlen(lang), lang);
+    return uim_scm_str_from_c_str(lang);
   }
   return NIL;
 }
@@ -503,19 +504,19 @@ static LISP
 alloc_id(LISP name_)
 {
   int id = unused_ic_id();
-  char *name = uim_get_c_string(name_);
+  char *name = uim_scm_c_str(name_);
   MInputMethod *im = find_im_by_name(name);
   if (im) {
     ic_array[id].mic = minput_create_ic(im, NULL);
   }
   free(name);
-  return intcons(id);
+  return uim_scm_int_from_c_int(id);
 }
 
 static LISP
 free_id(LISP id_)
 {
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   if (id < max_input_contexts) {
     struct ic_ *ic = &ic_array[id];
     if (ic->mic) {
@@ -541,16 +542,16 @@ get_key_sym(int ch)
 static LISP
 push_symbol_key(LISP id_, LISP key_)
 {
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   MSymbol key;
   MInputContext *ic = ic_array[id].mic;
-  /*  printf("%s\n",get_c_string(key_)); */
-  key = msymbol(get_c_string(key_));
+  /*  printf("%s\n",uim_scm_c_str(key_)); */
+  key = msymbol(uim_scm_c_str(key_));
   if (key == Mnil) {
-    return siod_true_value();
+    return uim_scm_t();
   }
   if (minput_filter(ic, key, NULL) == 1) {
-    return siod_true_value();
+    return uim_scm_t();
   }
 
   return NIL;
@@ -559,18 +560,18 @@ push_symbol_key(LISP id_, LISP key_)
 static LISP
 push_key(LISP id_, LISP key_, LISP mod_)
 {
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   int ch;
   MSymbol key;
   MInputContext *ic = ic_array[id].mic;
 
-  ch = get_c_int(key_);
+  ch = uim_scm_c_int(key_);
   key = get_key_sym(ch);
   if (key == Mnil) {
-    return siod_true_value();
+    return uim_scm_t();
   }
   if (minput_filter(ic, key, NULL) == 1) {
-    return siod_true_value();
+    return uim_scm_t();
   }
 
   return NIL;
@@ -581,7 +582,7 @@ get_commit_string(LISP id_)
 {
   MText *produced;
   unsigned char *buf;
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   MInputContext *ic = ic_array[id].mic;
   LISP buf_;
 
@@ -589,7 +590,7 @@ get_commit_string(LISP id_)
   minput_lookup(ic, NULL, NULL, produced);
   buf = convert_mtext2str(produced);
   m17n_object_unref(produced);
-  buf_ = strcons(strlen(buf), buf);
+  buf_ = uim_scm_str_from_c_str(buf);
   free(buf);
   return buf_;
 }
@@ -597,7 +598,7 @@ get_commit_string(LISP id_)
 static LISP
 commit(LISP id_)
 {
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   MInputContext *ic = ic_array[id].mic;
 
 /* To avoid a bug of m17n-lib */
@@ -608,11 +609,11 @@ commit(LISP id_)
 static LISP
 candidate_showp(LISP id_)
 {
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   MInputContext *ic = ic_array[id].mic;
 
   if (ic->candidate_show == 1) {
-    return siod_true_value();
+    return uim_scm_t();
   }
   return NIL;
 }
@@ -623,11 +624,12 @@ get_nr_candidates(LISP id_)
   MPlist *group;
   MPlist *elm;
   int result = 0;
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   MInputContext *ic = ic_array[id].mic;
 
   if(!ic || !ic->candidate_list)
-    return siod_false_value();
+    return uim_scm_f();
+
 
   group = ic->candidate_list;
 
@@ -643,7 +645,7 @@ get_nr_candidates(LISP id_)
     }
   }
 
-  return intcons(result);
+  return uim_scm_int_from_c_int(result);
 }
 
 static LISP
@@ -654,8 +656,8 @@ get_nth_candidate(LISP id_, LISP nth_)
   MPlist *elm;
   int i;
   unsigned char *buf = NULL; /* Quiet gcc */
-  int id = get_c_int(id_);
-  int nth = get_c_int(nth_);
+  int id = uim_scm_c_int(id_);
+  int nth = uim_scm_c_int(nth_);
   MInputContext *ic = ic_array[id].mic;
   LISP buf_;
 
@@ -688,9 +690,9 @@ get_nth_candidate(LISP id_, LISP nth_)
   }
 
   if(!buf) {
-    return strcons(0, "");
+    return uim_scm_str_from_c_str("");
   } else {
-    buf_ = strcons(strlen(buf), buf);
+    buf_ = uim_scm_str_from_c_str(buf);
     free(buf);
     return buf_;
   }
@@ -699,9 +701,9 @@ get_nth_candidate(LISP id_, LISP nth_)
 static LISP
 get_candidate_index(LISP id_)
 {
-  int id = get_c_int(id_);
+  int id = uim_scm_c_int(id_);
   MInputContext *ic = ic_array[id].mic;
-  return intcons(ic->candidate_index);
+  return uim_scm_int_from_c_int(ic->candidate_index);
 }
 
 /* Utility function */
@@ -718,27 +720,27 @@ m17nlib_utf8_find_next_char(const char *p)
 void
 uim_init_m17nlib(void)
 {
-  init_subr_0("m17nlib-lib-init", init_m17nlib);
-  init_subr_0("m17nlib-lib-nr-input-methods", get_nr_input_methods);
-  init_subr_1("m17nlib-lib-nth-input-method-lang", get_input_method_lang);
-  init_subr_1("m17nlib-lib-nth-input-method-name", get_input_method_name);
-  init_subr_1("m17nlib-lib-alloc-context", alloc_id);
-  init_subr_1("m17nlib-lib-free-context", free_id);
-  init_subr_3("m17nlib-lib-push-key", push_key);
-  init_subr_2("m17nlib-lib-push-symbol-key", push_symbol_key);
-  init_subr_1("m17nlib-lib-compose-mode?", compose_modep);
-  init_subr_1("m17nlib-lib-preedit-changed?", preedit_changedp);
-  init_subr_1("m17nlib-lib-get-left-of-cursor",     get_left_of_cursor);
-  init_subr_1("m17nlib-lib-get-right-of-cursor",    get_right_of_cursor);
-  init_subr_1("m17nlib-lib-get-left-of-candidate",  get_left_of_candidate);
-  init_subr_1("m17nlib-lib-get-selected-candidate", get_selected_candidate);
-  init_subr_1("m17nlib-lib-get-right-of-candidate", get_right_of_candidate);
-  init_subr_1("m17nlib-lib-get-commit-string", get_commit_string);
-  init_subr_1("m17nlib-lib-commit", commit);
-  init_subr_1("m17nlib-lib-candidate-show?", candidate_showp);
-  init_subr_1("m17nlib-lib-get-nr-candidates", get_nr_candidates);
-  init_subr_2("m17nlib-lib-get-nth-candidate", get_nth_candidate);
-  init_subr_1("m17nlib-lib-get-candidate-index", get_candidate_index);
+  uim_init_subr_0("m17nlib-lib-init", init_m17nlib);
+  uim_init_subr_0("m17nlib-lib-nr-input-methods", get_nr_input_methods);
+  uim_init_subr_1("m17nlib-lib-nth-input-method-lang", get_input_method_lang);
+  uim_init_subr_1("m17nlib-lib-nth-input-method-name", get_input_method_name);
+  uim_init_subr_1("m17nlib-lib-alloc-context", alloc_id);
+  uim_init_subr_1("m17nlib-lib-free-context", free_id);
+  uim_init_subr_3("m17nlib-lib-push-key", push_key);
+  uim_init_subr_2("m17nlib-lib-push-symbol-key", push_symbol_key);
+  uim_init_subr_1("m17nlib-lib-compose-mode?", compose_modep);
+  uim_init_subr_1("m17nlib-lib-preedit-changed?", preedit_changedp);
+  uim_init_subr_1("m17nlib-lib-get-left-of-cursor",     get_left_of_cursor);
+  uim_init_subr_1("m17nlib-lib-get-right-of-cursor",    get_right_of_cursor);
+  uim_init_subr_1("m17nlib-lib-get-left-of-candidate",  get_left_of_candidate);
+  uim_init_subr_1("m17nlib-lib-get-selected-candidate", get_selected_candidate);
+  uim_init_subr_1("m17nlib-lib-get-right-of-candidate", get_right_of_candidate);
+  uim_init_subr_1("m17nlib-lib-get-commit-string", get_commit_string);
+  uim_init_subr_1("m17nlib-lib-commit", commit);
+  uim_init_subr_1("m17nlib-lib-candidate-show?", candidate_showp);
+  uim_init_subr_1("m17nlib-lib-get-nr-candidates", get_nr_candidates);
+  uim_init_subr_2("m17nlib-lib-get-nth-candidate", get_nth_candidate);
+  uim_init_subr_1("m17nlib-lib-get-candidate-index", get_candidate_index);
 }
 
 void

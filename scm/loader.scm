@@ -56,8 +56,13 @@
 ;; latin input method
 (require "latin.scm")
 
+(load-plugin "libuim-m17nlib.so")
 (if (symbol-bound? 'm17nlib-lib-init)
     (require "m17nlib.scm"))
+
+;(load-plugin "libuim-scim.so")
+;(if (symbol-bound? 'scim-lib-init)
+;    (require "scim.scm"))
 
 ;; Uncomment following line to enable dynamic custom value update via
 ;; uim-helper-server. This is temporary solution. custom.scm will be

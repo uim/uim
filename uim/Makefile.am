@@ -4,9 +4,9 @@ EXTRA_DIST = config.h.in iso-639-1.def
 
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 
-lib_LTLIBRARIES = libuim.la
+lib_LTLIBRARIES = libuim.la libuim-m17nlib.la libuim-scim.la
 
-pkginclude_HEADERS = uim.h uim-util.h uim-helper.h uim-im-switcher.h uim-scm.h
+pkginclude_HEADERS = uim.h uim-util.h uim-helper.h uim-im-switcher.h uim-scm.h plugin.h
 
 libuim_la_SOURCES = uim.c uim-func.c \
 		uim-key.c uim-util.c  uim-helper.c uim-helper-client.c \
@@ -16,21 +16,26 @@ libuim_la_SOURCES = uim.c uim-func.c \
 		intl.c intl.h \
 		uim-ipc.c uim-table.c \
 		getpeereid.c \
-		$(canna_source) $(m17nlib_source)
+		$(canna_source) \
+		plugin.c
 
 if CANNA
 canna_source = canna.c
 endif
+
 if M17NLIB
-m17nlib_source = m17nlib.c
+  libuim_m17nlib_la_SOURCES = m17nlib.c
+  libuim_m17nlib_la_LIBADD = @LIBINTL@ @LIBICONV@ @M17NLIB_LIBS@ libuim.la
+  libuim_m17nlib_la_LDFLAGS = -luim
+  libuim_m17nlib_la_CPPFLAGS = -I$(top_srcdir)
 endif
 
 libuimincludedir =  $(includedir)/uim
 
 libuim_la_LDFLAGS = -version-info 0:1:0 -export-symbols-regex uim.\*
-libuim_la_LIBADD = @LIBINTL@ @LIBICONV@ @M17NLIB_LIBS@
+libuim_la_LIBADD = @LIBINTL@ @LIBICONV@
 libuim_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
-libuim_la_CFLAGS =
+libuim_la_CFLAGS = -DLIBDIR=\"$(libdir)\"
 
 if DEBUG
 libuim_la_CPPFLAGS += -DDEBUG -DDEBUG_SCM=1
