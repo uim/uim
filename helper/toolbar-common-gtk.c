@@ -453,7 +453,7 @@ fd_read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
 static void
 menu_switcher_activated(GtkMenu *menu_item, gpointer data)
 {
-  system("uim-im-switcher &");
+  system("uim-im-switcher-gtk &");
 }
 
 static void
@@ -700,8 +700,8 @@ switcher_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget
   } else if(event->button == 2) {
     gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
   } else {
-    /* exec uim-im-switcher */
-    system("uim-im-switcher &");
+    /* exec uim-im-switcher-gtk */
+    system("uim-im-switcher-gtk &");
   }
 }
 

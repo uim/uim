@@ -77,7 +77,7 @@ static const char uim_menu_xml [] =
 static void
 exec_switcher(BonoboUIComponent *uic, gpointer data, const gchar *verbname)
 {
-  system("uim-im-switcher &");
+  system("uim-im-switcher-gtk &");
 }
 
 static void

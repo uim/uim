@@ -37,7 +37,7 @@ endif
 
 if GTK2
 
-bin_PROGRAMS = uim-candwin-gtk uim-toolbar-gtk uim-toolbar-gtk-systray uim-im-switcher uim-input-pad-ja
+bin_PROGRAMS = uim-candwin-gtk uim-toolbar-gtk uim-toolbar-gtk-systray uim-im-switcher-gtk uim-input-pad-ja
 
 if DICT
 bin_PROGRAMS += uim-dict
@@ -62,10 +62,10 @@ uim_toolbar_gtk_systray_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim.la
 uim_toolbar_gtk_systray_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
 uim_toolbar_gtk_systray_CFLAGS   = @GTK2_CFLAGS@  -Wall
 
-uim_im_switcher_SOURCES  = im-switcher-gtk.c
-uim_im_switcher_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim.la
-uim_im_switcher_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
-uim_im_switcher_CFLAGS   = @GTK2_CFLAGS@ -Wall
+uim_im_switcher_gtk_SOURCES  = im-switcher-gtk.c
+uim_im_switcher_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim.la
+uim_im_switcher_gtk_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
+uim_im_switcher_gtk_CFLAGS   = @GTK2_CFLAGS@ -Wall
 
 uim_input_pad_ja_SOURCES  = input-pad-ja.c
 uim_input_pad_ja_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim.la
