@@ -112,6 +112,7 @@ void UimPrefDialog::checkDotUimFile()
                                                 this );
         d->setCaption( _("~/.uim exists!") );
         d->exec();
+        // To avoid crashes... --ekato 2005.02.25
         //delete d;
     }
 }
