@@ -34,10 +34,8 @@
 #include <pwd.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include "config.h"
 #include "uim.h"
 #include "uim-im-switcher.h"
@@ -48,7 +46,6 @@
 #include "context.h"
 #include "gettext.h"
 
-extern long siod_verbose_level;
 extern char *uim_return_str;
 extern char *uim_return_str_list[10];
 /* duplicate definition */
@@ -62,20 +59,6 @@ static uim_context context_array[CONTEXT_ARRAY_SIZE];
 struct uim_im *uim_im_array;
 int uim_nr_im;
 static int uim_initialized;
-static int uim_siod_fatal;
-static FILE *uim_output = NULL;
-
-FILE *
-uim_scm_get_output(void)
-{
-  return uim_output;
-}
-
-void
-uim_scm_set_output(FILE *fp)
-{
-  uim_output = fp;
-}
 
 void
 uim_set_preedit_cb(uim_context uc,
@@ -123,7 +106,7 @@ uim_create_context(void *ptr,
     conv = uim_iconv;
   }
 
-  if (uim_siod_fatal || !conv) {
+  if (!uim_scm_is_alive() || !conv) {
     return NULL;
   }
 
@@ -517,12 +500,10 @@ static int
 load_conf()
 {
   struct passwd *pw;
-  char *fn, *cmd;
-  int cmd_size;
-  FILE *fp;
-  long svl = siod_verbose_level;
-  long ret;
+  char *fn;
+  long verbose, ret;
 
+  verbose = uim_scm_get_verbose_level();
   fn = getenv("LIBUIM_USER_SCM_FILE");
 
   if (!fn) {
@@ -533,22 +514,12 @@ load_conf()
     fn = strdup(fn);
   }
 
-  fp = fopen(fn, "r");
-  if (fp == NULL) {
-    return -1;
+  if (verbose < 1) {
+    uim_scm_set_verbose_level(1);  /* to show error message */
   }
-  fclose(fp);
-
-  if (siod_verbose_level < 1) {
-    siod_verbose_level = 1;	/* to show error message of SIOD */
-  }
-  cmd_size = uim_sizeof_sexp_str("(*catch 'errobj (load \"%s\" #f #f))", fn);
-  cmd = malloc(cmd_size);
-  sprintf(cmd, "(*catch 'errobj (load \"%s\" #f #f))", fn);
-  ret = repl_c_string(cmd, 0, 0);
-  siod_verbose_level = svl;
+  ret = uim_scm_load_file(fn) ? 0 : -1;
+  uim_scm_set_verbose_level(verbose);
   free(fn);
-  free(cmd);
   return ret;
 }
 
@@ -646,42 +617,15 @@ uim_set_surrounding_text(uim_context uc, const char *text,
 }
 
 static void
-exit_hook(void)
-{
-  uim_siod_fatal = 1;
-}
-
-static void
 uim_init_scm()
 {
   int i;
   char *scm_files;
-  char *siod_argv[] =
-    {
-      "siod",
-      "-h100000:10",  /* heap_size(unit: lisp objects):nheaps */
-      "-o1000",       /* obarray_dim */
-      "-s200000",     /* stack_size (unit: bytes) */
-      "-n128",        /* inums_dim (preallocated fixnum objects) */
-      "-v0",          /* siod_verbose_level */
-    };
-  char verbose_argv[4] = "-v4";
   char *env;
 
-  if ((env = getenv("LIBUIM_VERBOSE"))) {
-    if (isdigit(*env)) {
-      if (isdigit(*(env+1)))
-	verbose_argv[2] = '9';	/* SIOD's max verbose level is 5 */
-      else
-	verbose_argv[2] = *env;
-    }
-    siod_argv[5] = verbose_argv;
-  }
-  /* init siod */
-  siod_init (6, siod_argv, 1, uim_output);
-  set_fatal_exit_hook(exit_hook);
-  /**/
-  uim_init_scm_subrs();
+  env = getenv("LIBUIM_VERBOSE");
+  uim_scm_init(env);  /* init Scheme interpreter */
+
 #ifdef UIM_COMPAT_SCM
   uim_init_compat_scm_subrs();
 #endif
@@ -695,11 +639,7 @@ uim_init_scm()
   uim_init_skk_dic();
 
   scm_files = getenv("LIBUIM_SCM_FILES");
-  if (scm_files) {
-    siod_set_lib_path(scm_files);
-  } else {
-    siod_set_lib_path(SCM_FILES);
-  }
+  uim_scm_set_lib_path((scm_files) ? scm_files : SCM_FILES);
 
 #if 0
   /*
@@ -741,9 +681,6 @@ uim_init(void)
   if (uim_initialized) {
     return 0;
   }
-  if (!uim_output) {
-    uim_output = stderr;
-  }
   uim_last_client_encoding = NULL;
   uim_im_array = NULL;
   uim_nr_im = 0;
@@ -772,8 +709,7 @@ uim_quit(void)
   uim_quit_anthy();
   uim_quit_prime();
   uim_quit_plugin();
-  siod_quit();
+  uim_scm_quit();
   uim_last_client_encoding = NULL;
-  uim_output = NULL;
   uim_initialized = 0;
 }

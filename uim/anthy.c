@@ -32,6 +32,9 @@
 /**/
 #include <dlfcn.h>
 #include <stdlib.h>
+#include "uim-scm.h"
+#include "uim-compat-scm.h"
+#include "siod.h"
 #include "context.h"
 
 #define MAX_CONTEXT 256

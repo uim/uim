@@ -38,7 +38,6 @@
 #include "gettext.h"
 #include "uim.h"
 #include "uim-scm.h"
-#include "siod.h"
 
 struct uim_im {
   char *name;
@@ -177,7 +176,7 @@ struct cb {
       if (uc) \
         uim_eval_string(uc, sexp_str); \
       else \
-        repl_c_string(sexp_str, 0, 1); \
+        uim_scm_eval_c_string(sexp_str); \
 
 #define UIM_EVAL_STRING(uc, sexp_str) \
   { \
@@ -270,7 +269,9 @@ struct cb {
 /**/
 uim_context
 uim_find_context(int id);
-void uim_init_scm_subrs(void);
+void uim_scm_init(const char *verbose_level);
+void uim_scm_quit(void);
+
 #ifdef UIM_COMPAT_SCM
 void uim_init_compat_scm_subrs(void);
 #endif
@@ -286,14 +287,8 @@ void uim_init_anthy(void);
 void uim_quit_anthy(void);
 void uim_init_prime(void);
 void uim_quit_prime(void);
-void uim_init_m17nlib(void);
-void uim_quit_m17nlib(void);
 void uim_init_plugin(void);
 void uim_quit_plugin(void);
-
-/**/
-char *uim_get_c_string(LISP str);
-int uim_key_sym_to_int(LISP sym);
 
 int uim_iconv_is_convertible(const char *tocode, const char *fromcode);
 void *uim_iconv_create(const char *tocode, const char *fromcode);
@@ -302,7 +297,9 @@ void uim_iconv_release(void *obj);
 
 int uim_sizeof_sexp_str(const char *tmpl, ...);
 void uim_eval_string(uim_context, char *str);
+#ifdef UIM_CALLBACK_QUEUE
 void uim_schedule_cb(uim_context, int type, char *str, int n1, int n2);
+#endif
 void uim_release_preedit_segments(uim_context uc);
 void uim_update_preedit_segments(uim_context uc);
 

@@ -35,6 +35,9 @@
 #include <errno.h>
 #include <string.h>
 
+#include "uim-scm.h"
+#include "uim-compat-scm.h"
+#include "siod.h"
 #include "context.h"
 
 static FILE *primer = NULL, *primew = NULL;

@@ -59,6 +59,8 @@
 extern "C" {
 #endif
 
+char *uim_get_c_string(uim_lisp str);
+
 long
 uim_scm_repl_c_string(char *str, long want_init, long want_print);
 
@@ -101,6 +103,10 @@ uim_scm_reverse(uim_lisp cell);
 
 uim_lisp
 uim_scm_nreverse(uim_lisp cell);
+
+void
+uim_scm_init_fsubr(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp));
+
 
 /* function table for dynamic loading */
 struct uim_api_tbl {

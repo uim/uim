@@ -37,7 +37,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "context.h"
-#include "siod.h"
 #include "uim-scm.h"
 
 #define MAX_LENGTH_OF_INT_AS_STR (((sizeof(int) == 4) ? sizeof("-2147483648") : sizeof("-9223372036854775808")) - sizeof((char)'\0'))
@@ -359,7 +358,7 @@ void
 uim_eval_string(uim_context uc, char *buf)
 {
   /* Evaluate */
-  repl_c_string(buf, 0, 1);
+  uim_scm_eval_c_string(buf);
 
 #ifdef UIM_CALLBACK_QUEUE
   /* Flush callback requests queued during scheme evaluation 

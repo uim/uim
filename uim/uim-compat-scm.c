@@ -33,6 +33,9 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+#include <string.h>
+
 #include "siod.h"
 #include "uim-compat-scm.h"
 #include "context.h"
@@ -40,6 +43,20 @@
 
 static uim_lisp quote_sym;
 
+
+/* will be deprecated. use uim_scm_c_str() instead */
+char *
+uim_get_c_string(uim_lisp str)
+{
+  char *s;
+  long len;
+  char *buf;
+  s = get_c_string_dim((LISP)str, &len);
+  buf = (char *)malloc(sizeof(char)*(len + 1));
+  strncpy(buf, s, len);
+  buf[len] = 0;
+  return buf;
+}
 
 long
 uim_scm_repl_c_string(char *str, long want_init, long want_print)
@@ -214,6 +231,12 @@ uim_lisp
 uim_scm_nreverse(uim_lisp cell)
 {
   return (uim_lisp)nreverse((LISP)cell);
+}
+
+void
+uim_scm_init_fsubr(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp))
+{
+  init_fsubr(name, (LISP (*)(LISP, LISP))fcn);
 }
 
 void

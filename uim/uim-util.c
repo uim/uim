@@ -120,20 +120,6 @@ nthcdr(uim_lisp nth_, uim_lisp lst)
   return lst;
 }
 
-/* may be deprecated. use uim_scm_c_str() instead */
-char *
-uim_get_c_string(LISP str)
-{
-  char *s;
-  long len;
-  char *buf;
-  s = get_c_string_dim(str, &len);
-  buf = (char *)malloc(sizeof(char)*(len + 1));
-  strncpy(buf, s, len);
-  buf[len] = 0;
-  return buf;
-}
-
 static uim_lisp
 str_seq_equal(uim_lisp seq, uim_lisp rule)
 {

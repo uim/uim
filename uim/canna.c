@@ -43,6 +43,7 @@
 #include "context.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
+#include "siod.h"
 
 #define MAX_CONTEXT 256
 #define LIBCANNA_SO	"libcanna.so"

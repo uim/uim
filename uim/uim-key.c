@@ -35,6 +35,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "uim.h"
+#include "uim-scm.h"
+#include "uim-compat-scm.h"
 #include "context.h"
 
 /* valid-key-symbols in key.scm has also to be updated if you add new
@@ -137,10 +140,13 @@ static struct {
   {0,0}
 };
 
+#if 0
+int uim_key_sym_to_int(uim_lisp sym);
+
 int
-uim_key_sym_to_int(LISP sym_)
+uim_key_sym_to_int(uim_lisp sym_)
 {
-  char *sym = uim_get_c_string(sym_);
+  char *sym = uim_scm_refer_c_str(sym_);
   int res = 0;
   int i;
   for (i = 0; key_tab[i].key; i++) {
@@ -148,9 +154,9 @@ uim_key_sym_to_int(LISP sym_)
       res = key_tab[i].key;
     }
   }
-  free(sym);
   return res;
 }
+#endif
 
 static char *
 get_sym(int key)
@@ -236,21 +242,22 @@ uim_release_key(uim_context uc, int key, int state)
   return uc->commit_raw_flag;
 }
 
-static LISP
-define_key(LISP args, LISP env)
+static uim_lisp
+define_key(uim_lisp args, uim_lisp env)
 {
-  LISP define_key_internal, predicate_sym, sources;
+  uim_lisp form, predicate_sym, sources;
 
-  define_key_internal = leval(rintern("define-key-internal"), env);
-  predicate_sym = car(args);
-  sources = NULLP(args) ? NIL : car(CDR(args));
+  predicate_sym = uim_scm_car(args);
+  sources = uim_scm_nullp(args) ? uim_scm_null_list() : uim_scm_cadr(args);
+  form = uim_scm_list3(uim_scm_make_symbol("define-key-internal"),
+		       uim_scm_quote(predicate_sym),
+		       sources);
 
-  sources = leval(sources, env);
-  return funcall2(define_key_internal, predicate_sym, sources);
+  return uim_scm_eval(form);
 }
 
 void
 uim_init_key_subrs(void)
 {
-  init_fsubr("define-key",  define_key);
+  uim_scm_init_fsubr("define-key", (uim_lisp (*)(uim_lisp, uim_lisp))define_key);
 }

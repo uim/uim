@@ -33,8 +33,10 @@
 
 #include "config.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "siod.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
@@ -62,6 +64,21 @@ uim_lisp false_sym;
 static uim_lisp protected_arg0;
 #endif
 
+static int uim_siod_fatal;
+static FILE *uim_output = NULL;
+
+
+FILE *
+uim_scm_get_output(void)
+{
+  return uim_output;
+}
+
+void
+uim_scm_set_output(FILE *fp)
+{
+  uim_output = fp;
+}
 
 uim_bool
 uim_scm_c_bool(uim_lisp val)
@@ -173,6 +190,12 @@ uim_scm_gc_unprotect_stack(uim_lisp *stack_start)
 #endif
 }
 
+uim_bool
+uim_scm_is_alive(void)
+{
+  return (!uim_siod_fatal);
+}
+
 long
 uim_scm_get_verbose_level(void)
 {
@@ -183,6 +206,12 @@ void
 uim_scm_set_verbose_level(long new_value)
 {
   siod_verbose_level = new_value;
+}
+
+void
+uim_scm_set_lib_path(const char *path)
+{
+  siod_set_lib_path(path);
 }
 
 uim_bool
@@ -396,9 +425,45 @@ uim_scm_init_subr_5(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
   init_subr(name, tc_subr_5, (SUBR_FUNC)fcn);
 }
 
-void
-uim_init_scm_subrs()
+static void
+exit_hook(void)
 {
+  uim_siod_fatal = 1;
+}
+
+void
+uim_scm_init(const char *verbose_level)
+{
+  char *siod_argv[] =
+    {
+      "siod",
+      "-h100000:10",  /* heap_size(unit: lisp objects):nheaps */
+      "-o1000",       /* obarray_dim */
+      "-s200000",     /* stack_size (unit: bytes) */
+      "-n128",        /* inums_dim (preallocated fixnum objects) */
+      "-v0"           /* siod_verbose_level */
+    };
+  char verbose_argv[] = "-v4";
+  int siod_argc, warnflag = 1;
+
+  if (!uim_output) {
+    uim_output = stderr;
+  }
+
+  if (verbose_level) {
+    if (isdigit(verbose_level[0])) {
+      if (isdigit(verbose_level[1]))
+	verbose_argv[2] = '9';	/* SIOD's max verbose level is 5 */
+      else
+	verbose_argv[2] = verbose_level[0];
+    }
+    siod_argv[5] = verbose_argv;
+  }
+  /* init siod */
+  siod_argc = sizeof(siod_argv) / sizeof(char *);
+  siod_init(siod_argc, siod_argv, warnflag, uim_output);
+  set_fatal_exit_hook(exit_hook);
+
   true_sym  = (uim_lisp)siod_true_value();
 #if 0
   false_sym = (uim_lisp)siod_false_value();
@@ -413,4 +478,11 @@ uim_init_scm_subrs()
 
   protected_arg0 = uim_scm_f();
   uim_scm_gc_protect(&protected_arg0);
+}
+
+void
+uim_scm_quit(void)
+{
+  siod_quit();
+  uim_output = NULL;
 }
