@@ -214,7 +214,7 @@ open_dic(const char *fn)
   return di;
 }
 
-static char *
+static const char *
 find_line(struct dic_info *di, int off)
 {
   char *ptr = di->addr;
@@ -230,7 +230,7 @@ find_line(struct dic_info *di, int off)
 static char *
 extract_line_index(struct dic_info *di, int off, char *buf, int len)
 {
-  char *p = find_line(di, off);
+  const char *p = find_line(di, off);
   int i;
   if (p[0] == ';') {
     return NULL;
@@ -243,7 +243,7 @@ extract_line_index(struct dic_info *di, int off, char *buf, int len)
 }
 
 static int
-do_search_line(struct dic_info *di, char *s, int min,
+do_search_line(struct dic_info *di, const char *s, int min,
 	       int max, int d)
 {
   char buf[256];
@@ -341,7 +341,7 @@ nth_candidate(char *str, int nth)
 static uim_lisp
 skk_dic_open(uim_lisp fn_)
 {
-  char *fn = uim_get_c_string(fn_);
+  char *fn = uim_scm_c_str(fn_);
   if (!skk_dic) {
     skk_dic = open_dic(fn);
   }
@@ -369,7 +369,7 @@ free_skk_line(struct skk_line *sl)
 }
 
 static struct skk_cand_array *
-find_candidate_array_from_line(struct skk_line *sl, char *okuri,
+find_candidate_array_from_line(struct skk_line *sl, const char *okuri,
 			       int create_if_notfound)
 {
   int i;
@@ -460,7 +460,7 @@ compose_line_parts(struct dic_info *di, struct skk_line *sl,
 }
 
 static struct skk_line *
-alloc_skk_line(char *word, char okuri_head)
+alloc_skk_line(const char *word, char okuri_head)
 {
   struct skk_line *sl;
   sl = malloc(sizeof(struct skk_line));
@@ -515,7 +515,7 @@ copy_skk_line(struct skk_line *p)
  * Compose skk line
  */
 static struct skk_line *
-compose_line(struct dic_info *di, char *word, char okuri_head, char *entry)
+compose_line(struct dic_info *di, const char *word, char okuri_head, char *entry)
 {
   struct skk_line *sl;
 
@@ -577,10 +577,10 @@ add_line_to_cache_last(struct dic_info *di, struct skk_line *sl)
 }
 
 static struct skk_line *
-skk_search_line_from_file(struct dic_info *di, char *s, char okuri_head)
+skk_search_line_from_file(struct dic_info *di, const char *s, char okuri_head)
 {
   int n;
-  char *p;
+  const char *p;
   int len;
   char *line;
   char *idx = alloca(strlen(s) + 2);
@@ -610,7 +610,7 @@ skk_search_line_from_file(struct dic_info *di, char *s, char okuri_head)
 }
 
 static struct skk_line *
-skk_search_line_from_cache(struct dic_info *di, char *s, char okuri_head)
+skk_search_line_from_cache(struct dic_info *di, const char *s, char okuri_head)
 {
   struct skk_line *sl;
 
@@ -629,8 +629,8 @@ skk_search_line_from_cache(struct dic_info *di, char *s, char okuri_head)
 
 
 static struct skk_cand_array *
-find_cand_array(struct dic_info *di, char *s,
-		char okuri_head, char *okuri,
+find_cand_array(struct dic_info *di, const char *s,
+		char okuri_head, const char *okuri,
 		int create_if_not_found)
 {
   struct skk_line *sl, *sl_file;
@@ -671,18 +671,18 @@ find_cand_array_lisp(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_,
 		     int create_if_not_found)
 {
   char o;
-  char *hs;
+  const char *hs;
   char *okuri = NULL;
   struct skk_cand_array *ca;
 
-  hs = get_c_string(head_);
+  hs = uim_scm_refer_c_str(head_);
   if (okuri_ != uim_scm_f()) {
-    okuri = uim_get_c_string(okuri_);
+    okuri = uim_scm_c_str(okuri_);
   }
   if (okuri_head_ == uim_scm_f()) {
     o = 0;
   } else {
-    char *os= get_c_string(okuri_head_);
+    const char *os= uim_scm_refer_c_str(okuri_head_);
     o = os[0];
   }
 
@@ -698,7 +698,7 @@ skk_get_entry(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_)
   struct skk_cand_array *ca;
   ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
   if (ca) {
-    return siod_true_value();
+    return uim_scm_t();
   }
   return uim_scm_f();
 }
@@ -706,7 +706,7 @@ skk_get_entry(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_)
 static uim_lisp
 skk_store_replaced_numeric_str(uim_lisp head_)
 {
-  char *str;
+  const char *str;
   int len;
 
   int prev_is_num = 0;
@@ -714,7 +714,7 @@ skk_store_replaced_numeric_str(uim_lisp head_)
   char *numstr = NULL;
   uim_lisp lst = NIL;
 
-  str = get_c_string(head_);
+  str = uim_scm_refer_c_str(head_);
   len = strlen(str);
 
   for (i = 0; i < len; i++) {
@@ -735,7 +735,7 @@ skk_store_replaced_numeric_str(uim_lisp head_)
 	  numstr = realloc(numstr, numlen + 1);
 	strncpy(numstr, &str[start], numlen);
 	numstr[numlen] = '\0';
-	lst = cons(strcons(strlen(numstr), numstr), lst);
+	lst = uim_scm_cons(uim_scm_make_str(numstr), lst);
       }
       prev_is_num = 0;
     }
@@ -752,7 +752,7 @@ skk_store_replaced_numeric_str(uim_lisp head_)
       numstr = realloc(numstr, numlen + 1);
     strncpy(numstr, &str[start], numlen);
     numstr[numlen] = '\0';
-    lst = cons(strcons(strlen(numstr), numstr), lst);
+    lst = uim_scm_cons(uim_scm_make_str(numstr), lst);
   }
   free(numstr);
  
@@ -773,7 +773,7 @@ static char *kanji_check_num_position_list[] =
    NULL, NULL, "Ãû", NULL, NULL, NULL, "µþ", NULL, NULL, NULL};
 
 static char *
-numeric_wide_or_kanji_conv(char *numstr, int method)
+numeric_wide_or_kanji_conv(const char *numstr, int method)
 {
   char *mbstr;
   int i, len;
@@ -793,7 +793,7 @@ numeric_wide_or_kanji_conv(char *numstr, int method)
 }
 
 static char *
-numeric_kanji_with_position_conv(char *numstr)
+numeric_kanji_with_position_conv(const char *numstr)
 {
   char *mbstr;
   int i, j, len, mblen;
@@ -885,7 +885,7 @@ numeric_kanji_with_position_conv(char *numstr)
 }
 
 static char *
-numeric_kanji_for_check_conv(char *numstr)
+numeric_kanji_for_check_conv(const char *numstr)
 {
   char *mbstr;
   int i, j, len, mblen;
@@ -959,7 +959,7 @@ numeric_kanji_for_check_conv(char *numstr)
 }
 
 static char *
-numeric_shogi_conv(char *numstr)
+numeric_shogi_conv(const char *numstr)
 {
   char *mbstr;
   int len;
@@ -978,7 +978,7 @@ numeric_shogi_conv(char *numstr)
 
 /* returns string with malloc() */
 static char *
-numeric_convert(char *numstr, int method)
+numeric_convert(const char *numstr, int method)
 {
   char *ret;
 
@@ -1016,24 +1016,24 @@ skk_merge_replaced_numeric_str(uim_lisp str_, uim_lisp numlst_)
   int i, j, len, newlen;
   int method;
   int convlen;
-  char *numstr;
+  const char *numstr;
   char *convstr;
   uim_lisp merged_str;
 
-  if NULLP(str_)
+  if (str_ == uim_scm_f())
     return uim_scm_f();
 
-  str = uim_get_c_string(str_); /* malloced */
+  str = uim_scm_c_str(str_);
   len = strlen(str);
   newlen = len;
 
   for (i = 0, j = 0; j < len; i++, j++) {
     if (str[i] == '#') {
       method = str[i + 1] - '0';
-      if NULLP(numlst_)
+      if (uim_scm_nullp(numlst_))
 	 break;
 
-      numstr = get_c_string(uim_scm_car(numlst_));
+      numstr = uim_scm_refer_c_str(uim_scm_car(numlst_));
 
       convstr = numeric_convert(numstr, method);
       convlen = strlen(convstr);
@@ -1048,7 +1048,7 @@ skk_merge_replaced_numeric_str(uim_lisp str_, uim_lisp numlst_)
     }
   }
 
-  merged_str = strcons(strlen(str), str);
+  merged_str = uim_scm_make_str(str);
   free(str);
   return merged_str;
 }
@@ -1060,7 +1060,7 @@ skk_replace_numeric(uim_lisp head_)
   int prev_is_num = 0;
   int i, j, len, newlen;
 
-  str = get_c_string(head_);
+  str = uim_scm_refer_c_str(head_);
   len = strlen(str);
   newlen = len;
 
@@ -1078,7 +1078,7 @@ skk_replace_numeric(uim_lisp head_)
       prev_is_num = 0;
     }
   }
-  return strcons(strlen(str), str);
+  return uim_scm_make_str(str);
 }
 
 static char *
@@ -1107,7 +1107,7 @@ get_nth(int nth, uim_lisp lst_)
 {
   int i;
   for (i = 1; i < nth; i++) {
-    if NULLP(lst_) {
+    if (uim_scm_nullp(lst_)) {
       return uim_scm_f();
     }
     lst_ = uim_scm_cdr(lst_);
@@ -1134,10 +1134,10 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
 
   if (ca) {
     /* handle #4 method of numeric conversion */
-    if NNULLP(numlst_) {
+    if (!uim_scm_nullp(numlst_)) {
       for (i = 0; i < ca->nr_cands; i++) {
 	if ((p = find_numeric_conv_method4_mark(ca->cands[i], &method_place))) {
-	  numstr = get_c_string(get_nth(method_place, numlst_)); 
+	  numstr = uim_scm_refer_c_str(get_nth(method_place, numlst_)); 
 	  subca = find_cand_array(skk_dic, numstr, 0, NULL, 0);
 	  if (subca) {
 	    for (j = 0; j < subca->nr_cands; j++) {
@@ -1153,7 +1153,7 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
 			newlen - mark - sublen + 1);
 		memcpy(&cands[mark], subca->cands[j], sublen);
 
-		str_ = strcons(strlen(cands), cands);
+		str_ = uim_scm_make_str(cands);
 		free(cands);
 		return str_;
 	      }
@@ -1176,7 +1176,7 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
   }
 
   if (cands)
-    str_ = strcons(strlen(cands), cands);
+    str_ = uim_scm_make_str(cands);
   return str_;
 }
 
@@ -1186,7 +1186,7 @@ skk_get_nr_candidates(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim
   struct skk_cand_array *ca, *subca;
   int n = 0;
   int i, nr_cands = 0;
-  char *numstr;
+  const char *numstr;
   int method_place = 0;
 
   ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
@@ -1196,10 +1196,10 @@ skk_get_nr_candidates(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim
   nr_cands = n;
 
   /* handle #4 method of numeric conversion */
-  if NNULLP(numlst_) {
+  if (!uim_scm_nullp(numlst_)) {
     for (i = 0; i < n; i++) {
       if (find_numeric_conv_method4_mark(ca->cands[i], &method_place)) {
-	numstr = get_c_string(get_nth(method_place, numlst_)); 
+	numstr = uim_scm_refer_c_str(get_nth(method_place, numlst_)); 
 	nr_cands--;
 	subca = find_cand_array(skk_dic, numstr, 0, NULL, 0);
 	if (subca)
@@ -1212,7 +1212,7 @@ skk_get_nr_candidates(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim
 }
 
 static struct skk_comp_array *
-skk_make_comp_array_from_cache(struct dic_info *di, char *s)
+skk_make_comp_array_from_cache(struct dic_info *di, const char *s)
 {
   struct skk_line *sl;
   struct skk_comp_array *ca;
@@ -1251,7 +1251,7 @@ skk_make_comp_array_from_cache(struct dic_info *di, char *s)
 }
 
 static struct skk_comp_array *
-find_comp_array(struct dic_info *di, char *s)
+find_comp_array(struct dic_info *di, const char *s)
 {
   struct skk_comp_array *ca;
 
@@ -1272,10 +1272,10 @@ find_comp_array(struct dic_info *di, char *s)
 static struct skk_comp_array *
 find_comp_array_lisp(uim_lisp head_)
 {
-  char *hs;
+  const char *hs;
   struct skk_comp_array *ca;
   
-  hs = get_c_string(head_);
+  hs = uim_scm_refer_c_str(head_);
   ca = find_comp_array(skk_dic, hs);
   return ca;
 }
@@ -1287,7 +1287,7 @@ skk_get_completion(uim_lisp head_)
   ca = find_comp_array_lisp(head_);
   if (ca) {
     ca->refcount++;
-    return siod_true_value();
+    return uim_scm_t();
   }
   return uim_scm_f();
 }
@@ -1303,7 +1303,7 @@ skk_get_nth_completion(uim_lisp nth_, uim_lisp head_)
   n = uim_scm_c_int(nth_);
   if (ca && ca->nr_comps > n) {
     str = ca->comps[n];
-    return strcons(strlen(str), str);
+    return uim_scm_make_str(str);
   }
   return uim_scm_f();
 }
@@ -1326,9 +1326,9 @@ skk_clear_completions(uim_lisp head_)
 {
   int i;
   struct skk_comp_array *ca, *ca_prev;
-  char *hs;
+  const char *hs;
 
-  hs = get_c_string(head_);
+  hs = uim_scm_refer_c_str(head_);
   for (ca = skk_comp; ca; ca = ca->next) {
     if (!strcmp(ca->head, hs)) {
       ca->refcount--;
@@ -1355,7 +1355,7 @@ skk_clear_completions(uim_lisp head_)
       free(ca);
     }
   }
-  return siod_true_value();
+  return uim_scm_t();
 }
 
 static void
@@ -1453,11 +1453,11 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
   nr_cands = ca->nr_cands;
 
   /* handle #4 method of numeric conversion */
-  if NNULLP(numlst_) {
+  if (!uim_scm_nullp(numlst_)) {
     for (i = 0; i < ca->nr_cands; i++) {
       if (find_numeric_conv_method4_mark(ca->cands[i], &method_place)) {
 	numstr_ = get_nth(method_place, numlst_); 
-	numstr = get_c_string(numstr_);
+	numstr = uim_scm_refer_c_str(numstr_);
 	subca = find_cand_array(skk_dic, numstr, 0, NULL, 0);
 	if (subca) {
 	  nr_cands += subca->nr_cands;
@@ -1495,7 +1495,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
     char *okuri;
     int found = 0;
 
-    okuri = uim_get_c_string(okuri_);
+    okuri = uim_scm_c_str(okuri_);
     sl = ca->line;
     for (i = 1; i < sl->nr_cand_array; i++) {
       if (!strcmp(okuri, sl->cands[i].okuri)) {
@@ -1553,7 +1553,7 @@ skk_learn_word(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp w
   struct skk_cand_array *ca;
   char *word, *tmp;
 
-  tmp = uim_get_c_string(word_);
+  tmp = uim_scm_c_str(word_);
   word = sanitize_word(tmp);
   free(tmp);
   if (!word) {
@@ -1565,9 +1565,9 @@ skk_learn_word(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp w
     learn_word_to_cand_array(ca, word);
   }
 
-  tmp = uim_get_c_string(okuri_);
+  tmp = uim_scm_c_str(okuri_);
   if (strlen(tmp)) {
-    ca = find_cand_array_lisp(head_, okuri_head_, NIL, 1);
+    ca = find_cand_array_lisp(head_, okuri_head_, uim_scm_f(), 1);
     if (ca) {
       learn_word_to_cand_array(ca, word);
     }
@@ -1694,7 +1694,7 @@ close_lock(int fd)
 }
 
 static uim_lisp
-skk_read_personal_dictionary(struct dic_info *di, char *fn)
+skk_read_personal_dictionary(struct dic_info *di, const char *fn)
 {
   struct stat st;
   FILE *fp;
@@ -1735,13 +1735,13 @@ skk_read_personal_dictionary(struct dic_info *di, char *fn)
   }
   fclose(fp);
   close_lock(lock_fd);
-  return siod_true_value();
+  return uim_scm_t();
 }
 
 static uim_lisp
 skk_lib_read_personal_dictionary(uim_lisp fn_)
 {
-  char *fn = get_c_string(fn_);
+  const char *fn = uim_scm_refer_c_str(fn_);
   return skk_read_personal_dictionary(skk_dic, fn);
 }
 
@@ -1889,7 +1889,7 @@ lsort(struct skk_line *p)
 }
 
 static void
-update_personal_dictionary_cache(char *fn)
+update_personal_dictionary_cache(const char *fn)
 {
   struct dic_info *di;
   struct skk_line *sl, *tmp, *diff, **cache_array;
@@ -1956,7 +1956,7 @@ static uim_lisp
 skk_lib_save_personal_dictionary(uim_lisp fn_)
 {
   FILE *fp;
-  char *fn = uim_get_c_string(fn_);
+  char *fn = uim_scm_c_str(fn_);
   struct skk_line *sl;
   struct stat st;
   int lock_fd = -1;
@@ -2000,14 +2000,14 @@ skk_lib_save_personal_dictionary(uim_lisp fn_)
 static uim_lisp
 skk_lib_get_annotation(uim_lisp str_)
 {
-  char *str = uim_get_c_string(str_);
+  char *str = uim_scm_c_str(str_);
   char *sep = strrchr(str, ';');
   uim_lisp res;
   if (sep) {
     sep++;
-    res = strcons(strlen(sep), sep);
+    res = uim_scm_make_str(sep);
   } else {
-    res = strcons(strlen(""), "");
+    res = uim_scm_make_str("");
   }
   free(str);
   return res;
@@ -2016,13 +2016,13 @@ skk_lib_get_annotation(uim_lisp str_)
 static uim_lisp
 skk_lib_remove_annotation(uim_lisp str_)
 {
-  char *str = uim_get_c_string(str_);
+  char *str = uim_scm_c_str(str_);
   char *sep = strrchr(str, ';');
   uim_lisp res;
   if (sep) {
     *sep = 0;
   }
-  res = strcons(strlen(str), str);
+  res = uim_scm_make_str(str);
   free(str);
   return res;
 }
