@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 268 (new repository)
+;; This file is tested with revision 815 (new repository)
 
 (use test.unit)
 
@@ -434,16 +434,6 @@
 		   (uim '(list-head lst 10))))
    (assert-error (lambda ()
 		   (uim '(list-head lst -1)))))
-  ("test iterate-lists"
-   (assert-equal '(("o" . "O") ("l" . "L") ("l" . "L") ("e" . "E") ("h" . "H"))
-		 (uim '(iterate-lists (lambda (state elms)
-					(if (null? elms)
-					    (cons #t state)
-					    (cons #f (cons (apply cons elms)
-							   state))))
-				      ()
-				      '(("h" "e" "l" "l" "o")
-					("H" "E" "L" "L" "O" "!"))))))
 
   ("test alist-replace"
    (uim '(define alist ()))
@@ -639,7 +629,7 @@
    (assert-equal 0  (uim '(clamp 0  -5 5)))
    (assert-equal 1  (uim '(clamp 1  -5 5)))
    (assert-equal 2  (uim '(clamp 2  -5 5)))
-   (assert-equal 5  (uim '(clamp 10 -5 5))))
+   (assert-equal 5  (uim '(clamp 10 -5 5)))))
 
 (define-uim-test-case "testcase util R5RS procedures"
   (setup

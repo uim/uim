@@ -106,21 +106,6 @@
 	(or (truncate-list lst n)
 	    (error "out of range in list-head")))))
 
-;; local procedure. don't use in outside of util.scm
-(define iterate-lists
-  (lambda (mapper state lists)
-    (let ((runs-out? (apply proc-or (mapcar null? lists))))
-      (if runs-out?
-	  (cdr (mapper state ()))
-	  (let* ((elms (mapcar car lists))
-		 (rests (mapcar cdr lists))
-		 (pair (mapper state elms))
-		 (terminate? (car pair))
-		 (new-state (cdr pair)))
-	    (if terminate?
-		new-state
-		(iterate-lists mapper new-state rests)))))))
-
 (define alist-replace
   (lambda (kons alist)
     (let* ((id (car kons))

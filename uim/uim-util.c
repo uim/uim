@@ -465,6 +465,69 @@ string_prefix_cip(uim_lisp prefix_, uim_lisp str_)
   return string_prefixp_internal(prefix_, str_, strncasecmp);
 }
 
+static uim_lisp
+shift_elems(uim_lisp lists)
+{
+  uim_lisp elms, rests, list;
+
+  if (uim_scm_nullp(lists))
+    return uim_scm_f();
+
+  elms = rests = uim_scm_null_list();
+  for (; !uim_scm_nullp(lists); lists = uim_scm_cdr(lists)) {
+    list = uim_scm_car(lists);
+    if (uim_scm_nullp(list))
+      return uim_scm_f();
+
+    elms = uim_scm_cons(uim_scm_car(list), elms);
+    rests = uim_scm_cons(uim_scm_cdr(list), rests);
+  }
+
+  return uim_scm_cons(uim_scm_reverse(elms),
+		      uim_scm_reverse(rests));
+}
+
+static uim_lisp
+iterate_lists(uim_lisp mapper, uim_lisp seed, uim_lisp lists)
+{
+  uim_lisp sym_apply, form;
+  uim_lisp elms, rest, rests, mapped, res, termp, pair;
+  uim_bool single_listp;
+
+  single_listp = (uim_scm_length(lists) == 1) ? UIM_TRUE : UIM_FALSE;
+  sym_apply = uim_scm_make_symbol("apply");
+  res = seed;
+  if (single_listp) {
+    rest = uim_scm_car(lists);
+  } else {
+    rests = lists;
+  }
+  do {
+    if (single_listp) {
+      /* fast path */
+      elms = uim_scm_list1(uim_scm_car(rest));
+      rest = uim_scm_cdr(rest);
+    } else {
+      pair = shift_elems(rests);
+      if (FALSEP(pair)) {
+	elms = rests = uim_scm_null_list();
+      } else {
+	elms = uim_scm_car(pair);
+	rests = uim_scm_cdr(pair);
+      }
+    }
+
+    form = uim_scm_list3(sym_apply,
+			 mapper,
+			 uim_scm_quote(uim_scm_list2(res, elms)));
+    mapped = uim_scm_eval(form);
+    termp = uim_scm_car(mapped);
+    res = uim_scm_cdr(mapped);
+  } while (FALSEP(termp));
+
+  return res;
+}
+
 /* Following is utility functions for C world */
 struct _locale_language_table {
   char *locale;
@@ -551,6 +614,7 @@ uim_init_util_subrs()
   uim_scm_init_subr_1("string-to-list", eucjp_string_to_list);
   uim_scm_init_subr_2("string-prefix?", string_prefixp);
   uim_scm_init_subr_2("string-prefix-ci?", string_prefix_cip);
+  uim_scm_init_subr_3("iterate-lists", iterate_lists);
   uim_scm_init_subr_1("lang-code->lang-name-raw", lang_code_to_lang_name_raw);
   uim_scm_init_subr_0("is-set-ugid?", is_setugidp);
 }

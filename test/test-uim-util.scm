@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 362 of new repository
+;; This file is tested with revision 815 of new repository
 
 (use test.unit)
 
@@ -267,6 +267,17 @@
    (assert-equal "100"  (uim '(digit->string 100)))
    (assert-equal "1000" (uim '(digit->string 1000)))
    (assert-equal "2147483647" (uim '(digit->string 2147483647))))
+
+  ("test iterate-lists"
+   (assert-equal '(("o" . "O") ("l" . "L") ("l" . "L") ("e" . "E") ("h" . "H"))
+		 (uim '(iterate-lists (lambda (state elms)
+					(if (null? elms)
+					    (cons #t state)
+					    (cons #f (cons (apply cons elms)
+							   state))))
+				      ()
+				      '(("h" "e" "l" "l" "o")
+					("H" "E" "L" "L" "O" "!"))))))
 
   ;; compare string sequence
   ("test str-seq-equal?"

@@ -439,13 +439,13 @@
 
 ;; returns list of ev-exps
 (define event-exp-seq-parse
-  (lambda (ev-exp-seq)
-    (let ((expandeds (event-exp-list-expand-macro ev-exp-seq ())))
-      (map (lambda (expanded)
-	     (map (compose event-exp-collector-exp
-			   event-exp-collector-fold)
-		  expanded))
-	   expandeds))))
+  (let ((canonicalize (compose event-exp-collector-exp
+			       event-exp-collector-fold)))
+    (lambda (ev-exp-seq)
+      (let ((expandeds (event-exp-list-expand-macro ev-exp-seq ())))
+	(map (lambda (expanded)
+	       (map canonicalize expanded))
+	     expandeds)))))
 
 ;;
 ;; action expressions
