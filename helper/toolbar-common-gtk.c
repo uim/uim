@@ -47,28 +47,27 @@
 #define BUTTON_WIDTH  22
 #define BUTTON_HEIGHT 22
 
-static GtkWidget *hbox;
-static GtkWidget *tmp_button;
-static GList *menu_buttons;
+#define OBJECT_DATA_MENU_BUTTONS "MENU_BUTTONS"
+#define OBJECT_DATA_SIZE_GROUP "SIZE_GROUP"
+
 static GtkWidget *prop_menu;
 static GtkWidget *right_click_menu;
-static GtkSizeGroup *button_size_group;
 
 static unsigned int read_tag;
 static int uim_fd;
 
 static gboolean
-prop_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkMenuShell *prop_menu);
+prop_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget);
 static gboolean
-prop_button_released(GtkButton *prop_button, GdkEventButton *event, gpointer dummy);
+prop_button_released(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget);
 
 static GtkWidget *
-switcher_button_create(void);
+switcher_button_create(GtkSizeGroup *sg);
 static void
 switcher_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer user_data);
 
 static GtkWidget *
-pref_button_create(void);
+pref_button_create(GtkSizeGroup *sg);
 static void
 pref_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer user_data);
 
@@ -80,7 +79,8 @@ prop_menu_activate(GtkMenu *menu_item, gpointer data);
 
 GtkWidget *
 uim_helper_toolbar_new(void);
-
+GtkWidget *
+uim_helper_trayicon_new(void);
 
 static void
 prop_menu_activate(GtkMenu *menu_item, gpointer data)
@@ -93,24 +93,36 @@ prop_menu_activate(GtkMenu *menu_item, gpointer data)
 }
 
 static void
+list_data_free(GList *list)
+{
+  g_list_foreach(list, (GFunc)g_free, NULL);
+  g_list_free(list);
+}
+
+
+static void
+prop_data_flush(gpointer data)
+{
+  GList *list;
+  list = g_object_get_data(data, "prop_label");
+  list_data_free(list);
+  list = g_object_get_data(data, "prop_tooltip");
+  list_data_free(list);
+  list = g_object_get_data(data, "prop_name");
+  list_data_free(list);
+  list = g_object_get_data(data, "prop_state");
+  list_data_free(list);
+
+  g_object_set_data(G_OBJECT(data), "prop_label", NULL);
+  g_object_set_data(G_OBJECT(data), "prop_tooltip", NULL);
+  g_object_set_data(G_OBJECT(data), "prop_name", NULL);
+  g_object_set_data(G_OBJECT(data), "prop_state", NULL);  
+}
+
+static void
 button_destroy(gpointer data, gpointer user_data)
 {
-  GList *list = g_object_get_data(data, "prop_label");
-  g_list_foreach(list, (GFunc)g_free, NULL);
-  g_list_free(list);
-
-  list = g_object_get_data(data, "prop_tooltip");
-  g_list_foreach(list, (GFunc)g_free, NULL);
-  g_list_free(list);
-
-  list = g_object_get_data(data, "prop_name");
-  g_list_foreach(list, (GFunc)g_free, NULL);
-  g_list_free(list);
-
-  list = g_object_get_data(data, "prop_state");
-  g_list_foreach(list, (GFunc)g_free, NULL);
-  g_list_free(list);
-
+  prop_data_flush(data);
   gtk_widget_destroy(GTK_WIDGET(data));
 }
 
@@ -140,21 +152,22 @@ get_charset(gchar *line)
 }
 
 static GtkWidget *
-menu_button_create(const gchar *label, const gchar *tip_text)
+menu_button_create(GtkWidget *widget, const gchar *label, const gchar *tip_text)
 {
   GtkWidget *button;
   GtkTooltips *tooltip;
+  GtkSizeGroup *sg = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_SIZE_GROUP);
 
   button = gtk_button_new_with_label(label);
   gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
-  gtk_size_group_add_widget(button_size_group, button);
+  gtk_size_group_add_widget(sg, button);
   tooltip = gtk_tooltips_new();
   gtk_tooltips_set_tip(tooltip, button, tip_text, NULL);
 
   g_signal_connect(G_OBJECT(button), "button-press-event",
-		   G_CALLBACK(prop_button_pressed), NULL);
+		   G_CALLBACK(prop_button_pressed), widget);
   g_signal_connect(G_OBJECT(button), "button-release-event",
-		   G_CALLBACK(prop_button_released), NULL);
+		   G_CALLBACK(prop_button_released), widget);
   return button;
 }
 
@@ -177,7 +190,7 @@ menu_button_append_menu(GtkWidget *button,
 		    tooltip_list);
   g_object_set_data(G_OBJECT(button), "prop_name",
 		    name_list);
-  
+
   if (state) {
     GList *state_list = g_object_get_data(G_OBJECT(button), "prop_state");
     state_list = g_list_append(state_list, g_strdup(state));
@@ -189,9 +202,13 @@ menu_button_append_menu(GtkWidget *button,
 static void
 append_button(GtkWidget *hbox, GtkWidget *button)
 {
+  GList *menu_buttons;
   if(button) {
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
+
+    menu_buttons = g_object_get_data(G_OBJECT(hbox), OBJECT_DATA_MENU_BUTTONS);
     menu_buttons = g_list_append(menu_buttons, button);
+    g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_MENU_BUTTONS, menu_buttons);
   }
 }
 
@@ -209,19 +226,24 @@ convert_charset(const gchar *charset, const gchar *line)
 }
 
 static void
-helper_applet_prop_list_update(gchar **tmp)
+helper_toolbar_prop_list_update(GtkWidget *widget, gchar **tmp)
 {
   GtkWidget *button = NULL; /* quiet gcc */
   int i = 0;
   gchar **tmp2 = NULL;
   gchar *charset = NULL;
+  GList *menu_buttons;
+  GtkSizeGroup *sg;
 
   charset = get_charset(tmp[1]);
+
+  menu_buttons = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_MENU_BUTTONS);
+  sg  = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_SIZE_GROUP);
 
   if(menu_buttons) {
     g_list_foreach(menu_buttons, button_destroy, NULL);
     g_list_free(menu_buttons);
-    menu_buttons = NULL;
+    g_object_set_data(G_OBJECT(widget), OBJECT_DATA_MENU_BUTTONS, NULL);
   }
 
   while(tmp[i] && strcmp("", tmp[i]) != 0) {
@@ -237,11 +259,9 @@ helper_applet_prop_list_update(gchar **tmp)
     
     if(tmp2 && tmp2[0]) {
       if(strcmp("branch", tmp2[0]) == 0) {
-	if(tmp_button) {
-	  gtk_widget_destroy(tmp_button); tmp_button = NULL;
-	}
-	button = menu_button_create(tmp2[1], tmp2[2]);
-	append_button(hbox, button);
+
+	button = menu_button_create(widget, tmp2[1], tmp2[2]);
+	append_button(widget, button);
 	
       } else if(strcmp("leaf", tmp2[0]) == 0) {
 	menu_button_append_menu(button, tmp2[2], tmp2[3], tmp2[4], tmp2[5]);
@@ -251,31 +271,34 @@ helper_applet_prop_list_update(gchar **tmp)
     i++;
   }
   
-  button = switcher_button_create();
-  append_button(hbox, button);
+  button = switcher_button_create(sg);
+  append_button(widget, button);
 
-  button = pref_button_create();
-  append_button(hbox, button);
+  button = pref_button_create(sg);
+  append_button(widget, button);
 
-  gtk_widget_show_all(hbox);
+  gtk_widget_show_all(widget);
 
   if(charset)
     g_free(charset);
 }
 
 static void
-helper_applet_prop_label_update(gchar **lines)
+helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
 {
   GtkWidget *button;
   unsigned int i = 0;
   gchar **pair = NULL;
   gchar *charset = NULL;
+  GList *menu_buttons;
 
   charset = get_charset(lines[1]);
 
   while(lines[i] && strcmp("", lines[i]) != 0) {
     i++;
   }
+
+  menu_buttons = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_MENU_BUTTONS);
 
   if(!menu_buttons || i - 2 != g_list_length(menu_buttons)) {
     uim_helper_client_get_prop_list();
@@ -315,33 +338,106 @@ helper_applet_prop_label_update(gchar **lines)
 
 
 static void
-helper_applet_parse_helper_str(gchar *str)
+helper_toolbar_parse_helper_str(GtkWidget *widget, gchar *str)
 {
   gchar **lines;
   lines = g_strsplit(str, "\n", 0);
 
   if(lines && lines[0]) {
     if( strcmp("prop_list_update", lines[0]) == 0) {
-      helper_applet_prop_list_update(lines);
+      helper_toolbar_prop_list_update(widget, lines);
     } else if( strcmp("prop_label_update", lines[0]) == 0) {
-      helper_applet_prop_label_update(lines);
+      helper_toolbar_prop_label_update(widget, lines);
+    }
+    g_strfreev(lines);
+  }
+}
+
+
+static void
+helper_icon_prop_list_update(GtkWidget *widget, gchar **tmp)
+{
+  gint i = 0;
+  gchar **tmp2 = NULL;
+  gchar *charset = NULL;
+  gboolean updated = FALSE;
+
+  charset = get_charset(tmp[1]);
+
+  while(tmp[i] && strcmp("", tmp[i]) != 0) {
+    gchar *utf8_str;
+    utf8_str = convert_charset(charset, tmp[i]);
+
+    if(utf8_str != NULL) {
+      tmp2 = g_strsplit(utf8_str, "\t", 0);
+      g_free(utf8_str);
+    } else {
+      tmp2 = g_strsplit(tmp[i], "\t", 0);
+    }
+    
+    if(tmp2 && tmp2[0]) {
+      if(strcmp("branch", tmp2[0]) == 0) {
+	if(updated) {
+	  break;
+	} else {
+	  GtkWidget *child = gtk_bin_get_child(GTK_BIN(widget));
+	  GtkWidget *label = gtk_label_new(tmp2[1]);
+	  gtk_widget_destroy(child);
+	  
+	  gtk_container_add(GTK_CONTAINER(widget), label);
+	  gtk_widget_show(label);
+	  prop_data_flush(widget);	  
+	  updated = TRUE;
+	}
+      } else if(strcmp("leaf", tmp2[0]) == 0) {
+	menu_button_append_menu(widget, tmp2[2], tmp2[3], tmp2[4], tmp2[5]);
+      }
+      g_strfreev(tmp2);
+    }
+    i++;
+  }
+  
+  gtk_widget_show_all(widget);
+
+  if(charset)
+    g_free(charset);
+}
+
+static void
+helper_icon_parse_helper_str(GtkWidget *widget, gchar *str)
+{
+  gchar **lines;
+  lines = g_strsplit(str, "\n", 0);
+
+  if(lines && lines[0]) {
+    if( strcmp("prop_list_update", lines[0]) == 0) {
+      helper_icon_prop_list_update(widget, lines);
     }
     g_strfreev(lines);
   }
 }
 
 static gboolean
-uim_applet_fd_read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
+fd_read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
 {
   gchar *tmp;
   int fd = g_io_channel_unix_get_fd(channel);
-  
-  uim_helper_read_proc(fd);
-  while ((tmp = uim_helper_get_message())) {
+  GtkWidget *widget = GTK_WIDGET(p);
 
-    helper_applet_parse_helper_str(tmp);
-    free(tmp); tmp = NULL;
+  uim_helper_read_proc(fd);
+
+  if(g_object_get_data(G_OBJECT(widget), OBJECT_DATA_SIZE_GROUP))
+    while ((tmp = uim_helper_get_message())) {
+      helper_toolbar_parse_helper_str(widget, tmp);
+      free(tmp); tmp = NULL;
+    }
+  else {
+    while ((tmp = uim_helper_get_message())) {      
+      helper_icon_parse_helper_str(widget, tmp);
+      free(tmp); tmp = NULL;
+    }
   }
+
   return TRUE;
 }
 
@@ -414,10 +510,10 @@ prop_right_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointe
 
 
 static gboolean
-prop_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkMenuShell *prop_menu)
+prop_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget)
 { 
   if(event->button == 3) {
-    prop_right_button_pressed(prop_button, event, prop_menu);
+    prop_right_button_pressed(prop_button, event, widget);
   } else if(event->button == 2) {
     gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
   }
@@ -425,7 +521,7 @@ prop_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkMenuShell 
 }
 
 static void
-check_helper_connection(void)
+check_helper_connection(GtkWidget *widget)
 {
   if(uim_fd < 0) {
     uim_fd = uim_helper_init_client_fd(helper_disconnect_cb);
@@ -433,14 +529,14 @@ check_helper_connection(void)
       GIOChannel *channel;
       channel = g_io_channel_unix_new(uim_fd);
       read_tag = g_io_add_watch(channel, G_IO_IN | G_IO_HUP | G_IO_ERR,
-				uim_applet_fd_read_cb, NULL);
+				fd_read_cb, (gpointer)widget);
       g_io_channel_unref(channel);
     }
   }
 }
 
 static gboolean
-prop_button_released(GtkButton *prop_button, GdkEventButton *event, gpointer dummy)
+prop_button_released(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget)
 {
   GtkWidget *menu_item;
   GtkTooltips *tooltip;
@@ -454,7 +550,7 @@ prop_button_released(GtkButton *prop_button, GdkEventButton *event, gpointer dum
   int i = 0;
   gboolean is_radio = FALSE;
 
-  check_helper_connection();
+  check_helper_connection(widget);
   
   if (!event) {
     return FALSE;
@@ -464,7 +560,7 @@ prop_button_released(GtkButton *prop_button, GdkEventButton *event, gpointer dum
   }
 
   menu_item_list = gtk_container_get_children(GTK_CONTAINER(prop_menu));
- 
+
   while((menu_item = g_list_nth_data(menu_item_list, i)) != NULL) {    
     gtk_container_remove(GTK_CONTAINER(prop_menu), menu_item);
     i++;
@@ -500,6 +596,7 @@ prop_button_released(GtkButton *prop_button, GdkEventButton *event, gpointer dum
     
     /* add to the menu */
     gtk_menu_shell_append(GTK_MENU_SHELL(prop_menu), menu_item);
+
     gtk_widget_show(menu_item);
     g_signal_connect(G_OBJECT(menu_item), "activate", 
 		     G_CALLBACK(prop_menu_activate), prop_menu);
@@ -549,7 +646,7 @@ calc_menu_position(GtkMenu *prop_menu, gint *x, gint *y, gboolean *push_in, GtkW
 }
 
 static GtkWidget *
-switcher_button_create(void)
+switcher_button_create(GtkSizeGroup *sg)
 {
   GtkWidget *button;
   GtkTooltips *tooltip;
@@ -567,7 +664,7 @@ switcher_button_create(void)
   g_free(path);
   gtk_container_add(GTK_CONTAINER(button), img);
   gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
-  gtk_size_group_add_widget(button_size_group, button);
+  gtk_size_group_add_widget(sg, button);
   g_signal_connect(G_OBJECT(button), "button_press_event",
 		   G_CALLBACK(switcher_button_pressed), NULL);
   
@@ -592,7 +689,7 @@ switcher_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer 
 }
 
 static GtkWidget *
-pref_button_create(void)
+pref_button_create(GtkSizeGroup *sg)
 {
 
   GtkWidget *button;
@@ -607,7 +704,7 @@ pref_button_create(void)
   button = gtk_button_new();
   img = gtk_image_new_from_stock(GTK_STOCK_PREFERENCES, GTK_ICON_SIZE_MENU);
   gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
-  gtk_size_group_add_widget(button_size_group, button);
+  gtk_size_group_add_widget(sg, button);
   g_signal_connect(G_OBJECT(button), "button_press_event",
 		   G_CALLBACK(pref_button_pressed), NULL);
   gtk_container_add(GTK_CONTAINER(button), img);
@@ -635,24 +732,55 @@ pref_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer user
 GtkWidget *
 uim_helper_toolbar_new(void)
 {
+  GtkWidget *button;
+  GtkWidget *hbox;
+  GList *menu_buttons = NULL;
+  GtkSizeGroup *sg;
+
   hbox = gtk_hbox_new(FALSE, 0);
   prop_menu = gtk_menu_new();
   right_click_menu = right_click_menu_create();
-  button_size_group = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
- 
-  if(!menu_buttons){
-    tmp_button = gtk_button_new_with_label("?");
-    gtk_button_set_relief(GTK_BUTTON(tmp_button), GTK_RELIEF_NONE);
+  sg = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
   
-    g_signal_connect(G_OBJECT(tmp_button), "button_press_event",
-		     G_CALLBACK(prop_button_pressed), NULL);
-    
-    gtk_box_pack_start(GTK_BOX(hbox), tmp_button, FALSE, FALSE, 0);
+  button = gtk_button_new_with_label(" x");
+  gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
+  g_signal_connect(G_OBJECT(button), "button_press_event",
+		   G_CALLBACK(prop_button_pressed), NULL);
+  gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
+
+  menu_buttons = g_list_append(menu_buttons, button);
+
+  g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_MENU_BUTTONS,
+		    menu_buttons);
+  g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_SIZE_GROUP,
+		    sg);
+
   
-  }
   uim_fd = -1;
-  check_helper_connection();
+  check_helper_connection(hbox);
   uim_helper_client_get_prop_list();
 
   return hbox; 
+}
+
+
+GtkWidget *
+uim_helper_trayicon_new(void)
+{
+  GtkWidget *button;
+
+  prop_menu = gtk_menu_new();
+  right_click_menu = right_click_menu_create();
+  
+  button = gtk_button_new_with_label(" x");
+  gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
+  g_signal_connect(G_OBJECT(button), "button-press-event",
+		   G_CALLBACK(prop_button_pressed), button);
+  g_signal_connect(G_OBJECT(button), "button-release-event",
+		   G_CALLBACK(prop_button_released), button);
+  
+  uim_fd = -1;
+  check_helper_connection(button);
+  uim_helper_client_get_prop_list();
+  return button;
 }
