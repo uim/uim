@@ -14,7 +14,8 @@ This file describes the latter way.
     conflicting setting from ~/.uim if you prefer setting by GUI
 
   - If ~/.uim does not exist, ${datadir}/uim/default.scm will be
-    loaded as default
+    loaded as default. Since the default.scm is never modified by
+    uim, system integrator can modify it as they want.
 
 
 * Special settings that cannot be configured in ~/.uim
