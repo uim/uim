@@ -58,6 +58,8 @@
 /* will be deprecated. use uim_scm_t() and uim_scm_f() for new design */
 uim_lisp true_sym;
 uim_lisp false_sym;
+
+static uim_lisp protected_arg0;
 #endif
 
 
@@ -76,6 +78,7 @@ uim_scm_make_bool(uim_bool val)
 int
 uim_scm_c_int(uim_lisp integer)
 {
+  protected_arg0 = (LISP)integer;
   return get_c_int((LISP)integer);
 }
 
@@ -88,6 +91,7 @@ uim_scm_make_int(int integer)
 char *
 uim_scm_c_str(uim_lisp str)
 {
+  protected_arg0 = (LISP)str;
   return strdup(get_c_string((LISP)str));
 }
 
@@ -166,9 +170,9 @@ uim_scm_eq(uim_lisp a, uim_lisp b) {
 int
 uim_scm_string_equal(uim_lisp a, uim_lisp b) {
   uim_lisp form, p;
-  form = uim_scm_list3(uim_scm_make_symbol("string=?"),
-		       a,
-		       b);
+  protected_arg0 = form = uim_scm_list3(uim_scm_make_symbol("string=?"),
+					a,
+					b);
   p = uim_scm_eval(form);
   return TRUEP(p);
 }
@@ -268,6 +272,7 @@ uim_init_scm_subrs()
 {
   uim_scm_gc_protect(&true_sym);
   uim_scm_gc_protect(&false_sym);
+  uim_scm_gc_protect(&protected_arg0);
 
   true_sym  = (uim_lisp)siod_true_value();
 #if 0

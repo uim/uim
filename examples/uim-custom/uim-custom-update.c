@@ -30,12 +30,13 @@
 
 */
 
-#include <uim.h>
-#include <uim-custom.h>
+#include <uim/uim.h>
+#include <uim/uim-custom.h>
 
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
   uim_init();
   uim_custom_init();
 

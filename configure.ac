@@ -311,12 +311,15 @@ fi
 if test x$enable_debug = xyes; then
 	CFLAGS="$CFLAGS -g"
 	CXXFLAGS="$CXXFLAGS -g"
+else
+	CFLAGS="$CFLAGS -O2"
+	CXXFLAGS="$CXXFLAGS -O2"
 fi
 
 # add warning flags to CFLAGS if GCC=yes
 if test x$CC = xgcc; then
-	CFLAGS="$CFLAGS -O2 -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
-	CXXFLAGS="$CXXFLAGS -O2 -Wall"
+	CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
+	CXXFLAGS="$CXXFLAGS -Wall"
 fi
 
 if test x$enable_compat_scm = xyes; then
