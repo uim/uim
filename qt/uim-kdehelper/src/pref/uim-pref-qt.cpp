@@ -15,13 +15,15 @@
 UimPrefDialog::UimPrefDialog( QWidget *parent, const char *name )
     : QDialog( parent, name )
 {
+    uim_init();
+    uim_custom_init();
     char **g = uim_custom_primary_groups();
 //    setupWidgets();
 }
 
 UimPrefDialog::~UimPrefDialog()
 {
-
+    uim_quit();    
 }
 
 void UimPrefDialog::setupWidgets()
