@@ -110,7 +110,7 @@ void KUimCharDict::setupWidgets()
                       this, SLOT( changeMode( int ) ) );
     modeLabel->setBuddy( m_modeCombo );
 
-    m_fontselButton = new QToolButton( upperHWidget );
+    m_fontselButton = new QPushButton( upperHWidget );
     m_fontselButton->setText( _( "Select Font" ) );
     QObject::connect( m_fontselButton, SIGNAL( clicked() ),
                       this, SLOT( slotSelectFont() ) );

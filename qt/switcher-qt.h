@@ -39,7 +39,7 @@
 #include <qdialog.h>
 
 class QListView;
-class QToolButton;
+class QPushButton;
 class QButtonGroup;
 class QFocusEvent;
 
@@ -78,8 +78,8 @@ protected slots:
 protected:
     QListView *listview;
     QButtonGroup *vbGroup;
-    QToolButton *okButton;
-    QToolButton *cancelButton;
+    QPushButton *okButton;
+    QPushButton *cancelButton;
 };
 
 #endif /* Not def: _IM_SWITCHER_QT_H_ */

@@ -37,7 +37,7 @@
 #include <qvbuttongroup.h>
 #include <qradiobutton.h>
 #include <qsocketnotifier.h>
-#include <qtoolbutton.h>
+#include <qpushbutton.h>
 #include <qtextcodec.h>
 #include <qevent.h>
 #include <qlayout.h>
@@ -112,12 +112,12 @@ void UimImSwitcher::createGUI()
     vbGroup->insert( button, ID_CHANGE_THIS_TEXT_AREA_ONLY );
 
     /* cancel & ok button */
-    okButton = new QToolButton( this );
+    okButton = new QPushButton( this );
     okButton->setText( _( "OK" ) );
     okButton->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
     QObject::connect( okButton, SIGNAL( clicked() ),
                       this, SLOT( slotChangeInputMethod() ) );
-    cancelButton = new QToolButton( this );
+    cancelButton = new QPushButton( this );
     cancelButton->setText( _( "Cancel" ) );
     cancelButton->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
     QObject::connect( cancelButton, SIGNAL( clicked() ),

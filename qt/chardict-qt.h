@@ -41,7 +41,7 @@ SUCH DAMAGE.
 #include <qscrollview.h>
 #include <qgridview.h>
 #include <qstringlist.h>
-#include <qtoolbutton.h>
+#include <qpushbutton.h>
 
 class BushuViewWidget;
 class UnicodeViewWidget;
@@ -78,7 +78,7 @@ protected slots:
 
 protected:
     QComboBox *m_modeCombo;
-    QToolButton *m_fontselButton;
+    QPushButton *m_fontselButton;
     QLineEdit *m_charLineEdit;
 
     QWidgetStack *m_widgetStack;
