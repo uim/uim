@@ -51,6 +51,12 @@ static GtkWidget *pref_hbox = NULL;
 static GtkWidget *current_group_widget = NULL;
 static GtkSizeGroup *spin_button_sgroup = NULL;
 static gboolean value_changed = FALSE;
+static struct OListPrefWin {
+  GtkWidget *window;
+  GtkWidget *tree_view[2];
+} olist_pref_win = {
+  NULL, {NULL, NULL},
+};
 static struct KeyPrefWin {
   GtkWidget *window;
   GtkWidget *tree_view;
@@ -179,7 +185,7 @@ quit_confirm_dialog_response_cb(GtkDialog *dialog, gint arg, gpointer user_data)
 }
 
 static void
-quit_confirm (void)
+quit_confirm(void)
 {
   if (value_changed) {
     GtkWidget *dialog;
@@ -577,23 +583,22 @@ add_custom_type_choice(GtkWidget *vbox, struct uim_custom *custom)
 }
 
 static void
-add_custom_type_orderedlist(GtkWidget *vbox, struct uim_custom *custom)
+olist_pref_dialog_response_cb(GtkDialog *dialog, gint action, GtkEntry *key_entry)
 {
-  GtkWidget *hbox;
-  GtkWidget *label, *entry, *button;
+  gtk_widget_destroy(GTK_WIDGET(dialog));
+}
+
+static void
+olist_pref_entry_set_value(GtkEntry *entry)
+{
+  struct uim_custom *custom;
   struct uim_custom_choice *item;
-  GString *str = g_string_new("");
+  GString *str;
   gint i;
 
-  hbox = gtk_hbox_new(FALSE, 8);
-  label = gtk_label_new(custom->label);
-  gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
+  custom = g_object_get_data(G_OBJECT(entry), OBJECT_DATA_UIM_CUSTOM);
 
-  entry = gtk_entry_new();
-  gtk_entry_set_editable(GTK_ENTRY(entry), FALSE);
-  g_object_set_data_full(G_OBJECT(entry),
-			 OBJECT_DATA_UIM_CUSTOM, custom,
-			 (GDestroyNotify) uim_custom_free);
+  str = g_string_new("");
 
   if (custom->value->as_olist) {
     for (item = custom->value->as_olist[0], i = 0;
@@ -607,17 +612,485 @@ add_custom_type_orderedlist(GtkWidget *vbox, struct uim_custom *custom)
   } else {
     /* error message */
   }
-  gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
-  /*
-  g_signal_connect(G_OBJECT(entry), "changed",
-		   G_CALLBACK(custom_entry_changed_cb), NULL);
-  */
+
   gtk_entry_set_text(GTK_ENTRY(entry), str->str);
 
   g_string_free(str, TRUE);
+}
+
+static void
+olist_pref_tree_view_set_value(GtkEntry *olist_entry,
+			       gboolean left_view,
+			       gboolean right_view)
+{
+  struct uim_custom *custom;
+  struct uim_custom_choice *item;
+  GtkTreeView *view;
+  GtkListStore *store;
+  GtkTreeIter iter;
+  gint i;
+
+  custom = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM);
+
+  /* left tree view */
+  if (left_view) {
+    view = GTK_TREE_VIEW(olist_pref_win.tree_view[0]);
+    store = GTK_LIST_STORE(gtk_tree_view_get_model(view));
+    gtk_list_store_clear(store);
+
+    for (item = custom->value->as_olist[0], i = 0;
+	 item;
+	 item = custom->value->as_olist[++i])
+    {
+      gtk_list_store_append(store, &iter);
+      gtk_list_store_set(store, &iter,
+			 0, item->label,
+			 1, item,
+			 -1);
+    }
+  }
+
+  /* right tree view */
+  if (right_view) {
+    view = GTK_TREE_VIEW(olist_pref_win.tree_view[1]);
+    store = GTK_LIST_STORE(gtk_tree_view_get_model(view));
+    gtk_list_store_clear(store);
+
+    for (item = custom->range->as_olist.valid_items[0], i = 0;
+	 item;
+	 item = custom->range->as_olist.valid_items[++i])
+    {
+      struct uim_custom_choice *item2;
+      gint j;
+      gboolean enabled = FALSE;
+
+      for (item2 = custom->value->as_olist[0], j = 0;
+	   item2;
+	   item2 = custom->value->as_olist[++j])
+      {
+	if (!strcmp(item->symbol, item2->symbol)) {
+	  enabled = TRUE;
+	  break;
+	}
+      }
+
+      if (!enabled) {
+	gtk_list_store_append(store, &iter);
+	gtk_list_store_set(store, &iter,
+			   0, item->label,
+			   1, item,
+			   -1);
+      }
+    }
+  }
+}
+
+static void
+olist_pref_up_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
+{
+  struct uim_custom *custom;
+  struct uim_custom_choice *choice;
+  GtkWidget *view;
+  GtkTreeSelection *selection;
+  GtkTreeModel *model;
+  GtkTreeIter iter1, iter2;
+  GtkTreePath *path;
+  gboolean rv;
+  uim_bool urv;
+  gint *indices, idx;
+
+  custom = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM);
+  view = olist_pref_win.tree_view[0];
+
+  selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
+  rv = gtk_tree_selection_get_selected(selection, &model, &iter1);
+  if (!rv)
+    return;
+
+  path = gtk_tree_model_get_path(model, &iter1);
+  if (!path)
+    return;
+
+  indices = gtk_tree_path_get_indices(path);
+  if (!indices) {
+    gtk_tree_path_free(path);
+    return;
+  }
+  idx = *indices;
+
+  rv = gtk_tree_path_prev(path);
+  if (!rv) {
+    gtk_tree_path_free(path);
+    return;
+  }
+
+  /* real move */
+  choice = custom->value->as_olist[idx];
+  custom->value->as_olist[idx] = custom->value->as_olist[idx - 1];
+  custom->value->as_olist[idx - 1] = choice;
+  urv = uim_custom_set(custom);
+  if (urv == UIM_FALSE)
+    return;
+
+  value_changed = TRUE;
+
+  /* sync the view */
+  rv = gtk_tree_model_get_iter(model, &iter2, path);
+  gtk_tree_path_free(path);
+  if (!rv)
+    return;
+
+  gtk_list_store_swap(GTK_LIST_STORE(model), &iter1, &iter2);
+  olist_pref_entry_set_value(GTK_ENTRY(olist_entry));
+
+  /* FIXME! reset the selection */
+}
+
+static void
+olist_pref_down_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
+{
+  struct uim_custom *custom;
+  struct uim_custom_choice *choice;
+  GtkWidget *view;
+  GtkTreeSelection *selection;
+  GtkTreeModel *model;
+  GtkTreeIter iter1, iter2;
+  GtkTreePath *path;
+  gint *indices, idx;
+  gboolean rv;
+  uim_bool urv;
+
+  custom = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM);
+  view = olist_pref_win.tree_view[0];
+
+  selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
+  rv = gtk_tree_selection_get_selected(selection, &model, &iter1);
+  if (!rv)
+    return;
+
+  iter2 = iter1;
+
+  rv = gtk_tree_model_iter_next(model, &iter2);
+  if (!rv)
+    return;
+
+  /* real move */
+  path = gtk_tree_model_get_path(model, &iter1);
+  if (!path)
+    return;
+  indices = gtk_tree_path_get_indices(path);
+  if (!indices) {
+    gtk_tree_path_free(path);
+    return;
+  }
+  idx = *indices;
+  gtk_tree_path_free(path);
+  choice = custom->value->as_olist[idx];
+  custom->value->as_olist[idx] = custom->value->as_olist[idx + 1];
+  custom->value->as_olist[idx + 1] = choice;
+  urv = uim_custom_set(custom);
+  if (urv == UIM_FALSE)
+    return;
+
+  value_changed = TRUE;
+
+  /* sync the view */
+  gtk_list_store_swap(GTK_LIST_STORE(model), &iter1, &iter2);
+  olist_pref_entry_set_value(GTK_ENTRY(olist_entry));
+
+  /* FIXME! reset the selection */
+}
+
+static void
+olist_pref_left_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
+{
+  struct uim_custom *custom;
+  struct uim_custom_choice *choice = NULL;
+  GtkWidget *view;
+  GtkTreeSelection *selection;
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  GtkTreePath *path;
+  gint *indices, idx, num;
+  gboolean rv;
+  uim_bool urv;
+
+  custom = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM);
+  view = olist_pref_win.tree_view[1];
+
+  selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
+  rv = gtk_tree_selection_get_selected(selection, &model, &iter);
+  if (!rv)
+    return;
+
+  gtk_tree_model_get(model, &iter,
+		     1, &choice,
+		     -1);
+
+  path = gtk_tree_model_get_path(model, &iter);
+  indices = gtk_tree_path_get_indices(path);
+  if (!indices) {
+    gtk_tree_path_free(path);
+    return;
+  }
+  idx = *indices;
+  gtk_tree_path_free(path);
+
+  for (num = 0; custom->value->as_olist[num]; num++);
+  num++;
+
+  custom->value->as_olist = realloc(custom->value->as_olist,
+				    sizeof(struct uim_custom_choice *) * num);
+  custom->value->as_olist[num - 1] = malloc(sizeof(struct uim_custom_choice));
+  custom->value->as_olist[num - 1]->symbol = strdup(choice->symbol);
+  custom->value->as_olist[num - 1]->label  = strdup(choice->label);
+  custom->value->as_olist[num - 1]->desc   = strdup(choice->desc);
+  custom->value->as_olist[num] = NULL;
+
+  urv = uim_custom_set(custom);
+
+  if (urv != UIM_FALSE) {
+    gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+
+    olist_pref_entry_set_value(GTK_ENTRY(olist_entry));
+    olist_pref_tree_view_set_value(GTK_ENTRY(olist_entry), TRUE, FALSE);
+
+    /* FIXME! reset the selection */
+
+    value_changed = TRUE;
+  } else {
+    /* error message */
+  }
+}
+
+static void
+olist_pref_right_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
+{
+  struct uim_custom *custom;
+  struct uim_custom_choice *choice;
+  GtkWidget *view;
+  GtkTreeSelection *selection;
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  GtkTreePath *path;
+  gint *indices, idx, num;
+  gboolean rv;
+  uim_bool urv;
+
+  custom = g_object_get_data(G_OBJECT(olist_entry), OBJECT_DATA_UIM_CUSTOM);
+  view = olist_pref_win.tree_view[0];
+
+  selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
+  rv = gtk_tree_selection_get_selected(selection, &model, &iter);
+  if (!rv)
+    return;
+
+  path = gtk_tree_model_get_path(model, &iter);
+  indices = gtk_tree_path_get_indices(path);
+  if (!indices) {
+    gtk_tree_path_free(path);
+    return;
+  }
+  idx = *indices;
+  gtk_tree_path_free(path);
+
+  choice = custom->value->as_olist[idx];
+  free(choice->symbol);
+  free(choice->label);
+  free(choice->desc);
+  free(choice);
+
+  for (num = 0; custom->value->as_olist[num]; num++);
+
+  memmove(custom->value->as_olist + idx,
+	  custom->value->as_olist + idx + 1,
+	  sizeof(struct uim_custom_choice *) * (num - idx));
+  custom->value->as_olist = realloc(custom->value->as_olist,
+				    sizeof(struct uim_custom_choice *) * num);
+
+  urv = uim_custom_set(custom);
+
+  if (urv != UIM_FALSE) {
+    gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+
+    olist_pref_entry_set_value(GTK_ENTRY(olist_entry));
+    olist_pref_tree_view_set_value(GTK_ENTRY(olist_entry), FALSE, TRUE);
+
+    /* FIXME! reset the selection */
+
+    value_changed = TRUE;
+  } else {
+    /* error message */
+  }
+}
+
+static void
+choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
+{
+  GtkWidget *dialog, *hbox, *vbox, *scrwin, *tree_view, *button, *arrow, *label;
+  GtkListStore *store;
+  GtkCellRenderer *renderer;
+  GtkTreeViewColumn *column;
+
+  dialog = gtk_dialog_new_with_buttons("ordered list", GTK_WINDOW(pref_window),
+				       GTK_DIALOG_MODAL,
+				       GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
+				       NULL);
+  olist_pref_win.window = dialog;
+  gtk_window_set_default_size(GTK_WINDOW(dialog), 400, 250);
+  g_signal_connect(G_OBJECT(dialog), "response",
+		   G_CALLBACK(olist_pref_dialog_response_cb), olist_entry);
+
+  hbox = gtk_hbox_new(FALSE, 0);
+  gtk_container_set_border_width(GTK_CONTAINER(hbox), 4);
+  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox), hbox,
+		     TRUE, TRUE, 0);
+  gtk_widget_show(hbox);
+
+  /* left tree view */
+  vbox = gtk_vbox_new(FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(hbox), vbox,
+		     TRUE, TRUE, 0);
+  gtk_widget_show(vbox);
+
+  label = gtk_label_new(_("Enabled"));
+  gtk_box_pack_start(GTK_BOX(vbox), label,
+		     FALSE, FALSE, 4);
+  gtk_widget_show(label);
+
+  scrwin = gtk_scrolled_window_new(NULL, NULL);
+  gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrwin),
+				 GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+  gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrwin), GTK_SHADOW_IN);
+  gtk_box_pack_start(GTK_BOX(vbox), scrwin,
+		     TRUE, TRUE, 0);
+  gtk_widget_show(scrwin);
+
+  store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+  tree_view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
+  olist_pref_win.tree_view[0] = tree_view;
+  gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(tree_view), FALSE);
+  gtk_container_add(GTK_CONTAINER(scrwin), tree_view);
+  gtk_widget_show(tree_view);
+
+  renderer = gtk_cell_renderer_text_new();
+  column = gtk_tree_view_column_new_with_attributes(_("Enabled items"),
+						    renderer,
+						    "text", 0,
+						    NULL);
+  gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), column);
+
+  g_object_unref(store);
+
+  /* button area */
+  vbox = gtk_vbox_new(TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(hbox), vbox,
+		     FALSE, FALSE, 4);
+  gtk_widget_show(vbox);
+
+  /* up button */
+  button = gtk_button_new();
+  gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+  gtk_widget_show(button);
+  arrow = gtk_arrow_new(GTK_ARROW_UP, GTK_SHADOW_NONE);
+  gtk_container_add(GTK_CONTAINER(button), arrow);
+  gtk_widget_show(arrow);
+  g_signal_connect(G_OBJECT(button), "clicked",
+		   G_CALLBACK(olist_pref_up_button_clicked_cb), olist_entry);
+
+  /* down button */
+  button = gtk_button_new();
+  gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+  gtk_widget_show(button);
+  arrow = gtk_arrow_new(GTK_ARROW_DOWN, GTK_SHADOW_NONE);
+  gtk_container_add(GTK_CONTAINER(button), arrow);
+  gtk_widget_show(arrow);
+  g_signal_connect(G_OBJECT(button), "clicked",
+		   G_CALLBACK(olist_pref_down_button_clicked_cb), olist_entry);
+
+  /* left button */
+  button = gtk_button_new();
+  gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+  gtk_widget_show(button);
+  arrow = gtk_arrow_new(GTK_ARROW_LEFT, GTK_SHADOW_NONE);
+  gtk_container_add(GTK_CONTAINER(button), arrow);
+  gtk_widget_show(arrow);
+  g_signal_connect(G_OBJECT(button), "clicked",
+		   G_CALLBACK(olist_pref_left_button_clicked_cb), olist_entry);
+
+  /* right button */
+  button = gtk_button_new();
+  gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+  gtk_widget_show(button);
+  arrow = gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_NONE);
+  gtk_container_add(GTK_CONTAINER(button), arrow);
+  gtk_widget_show(arrow);
+  g_signal_connect(G_OBJECT(button), "clicked",
+		   G_CALLBACK(olist_pref_right_button_clicked_cb), olist_entry);
+
+  /* right tree view */
+  vbox = gtk_vbox_new(FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(hbox), vbox,
+		     TRUE, TRUE, 0);
+  gtk_widget_show(vbox);
+
+  label = gtk_label_new(_("Disabled"));
+  gtk_box_pack_start(GTK_BOX(vbox), label,
+		     FALSE, FALSE, 4);
+  gtk_widget_show(label);
+
+  scrwin = gtk_scrolled_window_new(NULL, NULL);
+  gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrwin),
+				 GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+  gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrwin), GTK_SHADOW_IN);
+  gtk_box_pack_start(GTK_BOX(vbox), scrwin,
+		     TRUE, TRUE, 0);
+  gtk_widget_show(scrwin);
+
+  store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+  tree_view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
+  olist_pref_win.tree_view[1] = tree_view;
+  gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(tree_view), FALSE);
+  gtk_container_add(GTK_CONTAINER(scrwin), tree_view);
+  gtk_widget_show(tree_view);
+
+  renderer = gtk_cell_renderer_text_new();
+  column = gtk_tree_view_column_new_with_attributes(_("Disabled items"),
+						    renderer,
+						    "text", 0,
+						    NULL);
+  gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), column);
+
+  g_object_unref(store);
+
+  olist_pref_tree_view_set_value(olist_entry, TRUE, TRUE);
+
+  /* show dialog */
+  gtk_widget_show(dialog);
+}
+
+static void
+add_custom_type_orderedlist(GtkWidget *vbox, struct uim_custom *custom)
+{
+  GtkWidget *hbox;
+  GtkWidget *label, *entry, *button;
+
+  hbox = gtk_hbox_new(FALSE, 8);
+  label = gtk_label_new(custom->label);
+  gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
+
+  entry = gtk_entry_new();
+  gtk_entry_set_editable(GTK_ENTRY(entry), FALSE);
+  g_object_set_data_full(G_OBJECT(entry),
+			 OBJECT_DATA_UIM_CUSTOM, custom,
+			 (GDestroyNotify) uim_custom_free);
+  olist_pref_entry_set_value(GTK_ENTRY(entry));
+  gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
 
   button = gtk_button_new_with_label(_("Choose..."));
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, FALSE, 0);
+  g_signal_connect(G_OBJECT(button), "clicked",
+		   G_CALLBACK(choose_olist_clicked_cb), entry);
 
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 }
@@ -984,6 +1457,12 @@ key_val_entry_changed_cb(GtkEntry *entry, GtkEntry *key_entry)
 }
 
 static void
+key_pref_dialog_response_cb(GtkDialog *dialog, gint action, GtkEntry *key_entry)
+{
+  gtk_widget_destroy(GTK_WIDGET(dialog));
+}
+
+static void
 choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 {
   GtkWidget *dialog, *scrwin, *view, *hbox, *vbox, *button, *entry;
@@ -1007,6 +1486,8 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 				       NULL);
   key_pref_win.window = dialog;
   gtk_window_set_default_size(GTK_WINDOW(dialog), 250, 200);
+  g_signal_connect(G_OBJECT(dialog), "response",
+		   G_CALLBACK(key_pref_dialog_response_cb), key_entry);
 
   hbox = gtk_hbox_new(FALSE, 0);
   gtk_container_set_border_width(GTK_CONTAINER(hbox), 4);
@@ -1126,10 +1607,9 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
   }
 
   /* show dialog */
-  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_show(dialog);
 
   /* clean */
-  gtk_widget_destroy(dialog);
   g_object_unref(G_OBJECT(store));
 }
 
