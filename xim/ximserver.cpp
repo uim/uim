@@ -627,8 +627,14 @@ int InputContext::pushKey(keyState *k)
     int rv = 1;
 
     if (key != UKey_Other) {
-	if (k->is_push())
+	if (k->is_push()) {
 	    rv = uim_press_key(mUc, key, k->modifier());
+	    if (!(g_option_mask & OPT_ON_DEMAND_SYNC)) {
+		// Call uim_release_key here since we don't filter key
+		// release event with full-synchronous-method for now.
+		uim_release_key(mUc, key, k->modifier());
+	    }
+	}
 	else
 	    rv = uim_release_key(mUc, key, k->modifier());
     }
