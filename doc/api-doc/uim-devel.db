@@ -1,12 +1,13 @@
-<!doctype Book PUBLIC "-//OASIS//DTD DocBook V3.1//EN"> <book>
+<!doctype Book PUBLIC "-//OASIS//DTD DocBook V3.1//EN">
+<book>
   <bookinfo>
     <title>Uim Developer's Document</title>
     <author>
-        <firstname>Kazuki</firstname>
-        <surname>Ohta</surname>
+      <firstname>Kazuki</firstname>
+      <surname>Ohta</surname>
     </author>
   </bookinfo>
-
+  
   <chapter>
     <title>Introduction</title>
     <para>
@@ -18,51 +19,53 @@
       This document assumes the reader to have a good understanding of the C programming language, but does not require an intimate understanding of Uim internals.
     </para>
     <para>
-      This document is written based on Uim version 0.3.8.
-      If you wish to create an application using Uim while reading to this document, please install the Uim library version 0.3.8 (or higher) and C compiler on your system.
+      This document is written based on Uim version 0.4.6. (Though 0.4.6 is
+      not released yet.) If you wish to create an application using Uim
+      while reading to this document, please install the Uim library
+      version 0.4.6 (or higher) and C compiler on your system.
     </para>
     <para>
       You can use, modify, distribute and sell this package under the terms of BSD license.
       Please see the COPYING file included in the package for details.
     </para>
-
+    
     <section>
       <title>IM related technical vocabulary</title>
-
+      
       <para>
         One needs to know some IM related jargon when using Uim library.
         We present a few of the commonly used words here.
       </para>
-
-        <variablelist>
-          <varlistentry>
-            <term>commit</term>
-            <listitem>
-              <para>The transferrence of a input string from an input method to the application.</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term>preedit</term>
-            <listitem>
-              <para>A string which is currently being inputted, but not yet committed</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term>candidate</term>
-            <listitem>
-              <para>candidate for the conversion process</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term>segment</term>
-            <listitem>
-              <para>basic block of characters withing a string</para>
-            </listitem>
-          </varlistentry>
-
+      
+      <variablelist>
+        <varlistentry>
+          <term>commit</term>
+          <listitem>
+            <para>The transferrence of a input string from an input method to the application.</para>
+          </listitem>
+        </varlistentry>
+	
+        <varlistentry>
+          <term>preedit</term>
+          <Listitem>
+            <Para>A string which is currently being inputted, but not yet committed</para>
+          </listitem>
+        </varlistentry>
+	
+        <varlistentry>
+          <term>candidate</term>
+          <listitem>
+            <para>candidate for the conversion process</para>
+          </listitem>
+        </varlistentry>
+	
+        <varlistentry>
+          <term>segment</term>
+          <listitem>
+            <para>basic block of characters withing a string</para>
+          </listitem>
+        </varlistentry>
+	
           <varlistentry>
             <term>cb</term>
             <listitem>
@@ -103,6 +106,18 @@
         uim_quit();
       </programlisting>
 
+    </para>
+  </chapter>
+
+  <chapter>
+    <title>How to write your own input method</title>
+    <para>
+      This chapter would describe a rough image of writing your own input method.
+    </para>
+    <para>
+      Currently, uim is tied to Scheme interpreter. Uim could be used as an
+      shared library from the application side. But if you want to write your
+      own input method, you have to treat some scheme code (for now).
     </para>
   </chapter>
 
@@ -156,7 +171,7 @@
 
         static void im_uim_commit_string(void *ptr, const char *str) {
           IMUimContext *uic = (IMUimContext*)ptr;
-
+	  printf("'%s' should be committed\n",str);
           /* commit string */
         }
 
@@ -264,14 +279,14 @@
               <para>show the candidate window. $nr is the number of candidates, and displayLimit is the max number of displayed candidates.</para>
             </listitem>
           </varlistentry>
-
+	  
           <varlistentry>
             <term>select_cb(void *ptr, int index)</term>
             <listitem>
               <para>This callback communicates the index of the currently selected candidate</para>
             </listitem>
           </varlistentry>
-
+	  
           <varlistentry>
             <term>shift_page_cb(void *ptr, int direction)</term>
             <listitem>
@@ -281,7 +296,7 @@
               </para>
             </listitem>
           </varlistentry>
-
+	  
           <varlistentry>
             <term>deactivate_cb(void *ptr)</term>
             <listitem>
@@ -324,5 +339,155 @@
         </para>
       </section>
     </section>
+
+    <section>
+      <title>Property related callbacks</title>
+
+      <para>
+	Property describes input method's various properties such as input mode.
+	There is one callback function for property. You can set the callback
+	function via uim_set_prop_list_update_cb, uim_set_prop_label_update_cb.
+	To tell the truth, the design of property functions is fault. If we
+	have a chance to break libuim's API, the property API will be refined
+	at first.
+      </para>
+
+      <programlisting>
+        int i = 0;
+        uim_candidate cand = NULL;
+	
+        for (i = 0; i < NR_CANDIDATES; i++) {
+	     cand = uim_get_candidate(uc, i, i);
+	     candidates[i].str = uim_candidate_get_cand_str(cand);
+	     candidates[i].hlabel = uim_candidate_get_heading_label(cand);
+             uim_candidate_free(cand);
+        }
+        </programlisting>
+    </section>
   </chapter>
-</book>
+
+  <chapter>
+    <title>Customization features</title>
+
+    <para>
+      Since 0.4.6, uim have a customization API named 'custom API'. All custom
+      API functions have a prefix uim_custom_ and defined in uim-custom.h.
+    </para>
+    <para>
+      Concept of custom API is similar to GLib's Key-value file parser,
+      but custom API has some convenience features. All settings are
+      automatically stored in ~/.uim.d/customs/group-name by the calling
+      of uim_save().
+    </para>
+    <para>
+      
+    </para>
+
+    <section>
+      <title>Initialize and finalize</title>
+      <para>
+	To use full of custom API, you must call uim_custom_enable()
+	after uim_init(). Finalization process is done in uim_quit,
+	so you should call uim_quit() before exit.
+      </para>
+    </section>
+
+    <section>
+      <title>Getting all groups</title>
+      <para>
+	Custom API has a concept of 'group'. Each customization item
+	belongs to a group. For example, anthy-nr-candidate-max
+	belongs to 'anthy' group. This sample code show all custom 
+	group label.
+      </para>
+
+      <programlisting>
+    char **primary_groups, **grp;
+
+    primary_groups = uim_custom_primary_groups();
+    for (grp = primary_groups; *grp; grp++) {
+      struct uim_custom_group *group;
+      group = uim_custom_group_get(*grp);
+      printf("Group:%s\n", group->label);
+    }
+    uim_custom_symbol_list_free(primary_groups);
+        </programlisting>
+
+    <para>
+      uim_custom_primary_groups returns NULL-terminated array of key
+      of custom group. uim_custom_group_get returns concrete custome
+      group struct from key string.
+    </para>
+    </section>
+
+  </chapter>
+  
+  <chapter>
+    <title>How to debug</title>
+    <para>
+      If you want to debug uim, there're some useful features. At first,
+      you should configure your uim with
+      <emphasis>./configure --enable-debug</emphasis> to enable debug features. 
+    </para>
+    
+    <para>
+      There are some useful enviroment variables to debug.
+    </para>
+
+    <variablelist>
+      
+      <varlistentry>
+        <term>LIBUIM_VERBOSE</term>
+        <listitem>
+          <para>
+	    This variable takes a number as a value. Range of number is 0-10. If LIBUIM_VERBOSE is
+	    greater than or equal 5, uim shows backtrace when error occured.
+	  </para>
+	</listitem>
+      </varlistentry>
+      
+      <varlistentry>
+	<term>UIM_IM_ENGINE</term>
+	<listitem>
+	  <para>
+	    This variable takes an input method name as a value. Unfortunately, there's no
+	    tool to know currently available input method names.
+	  </para>
+	</listitem>
+      </varlistentry>
+      
+      <varlistentry>
+	<term>LUBUIM_VANILLA</term>
+	<listitem>
+	  <para>
+	    This variable takes any values. Regardless of their value, if variable
+	    is defined, uim doesn't read any configuration files. (Note, even 'export
+	    LIBUIM_VANILLA=0' means uim doesn't read any configs.)
+	  </para>
+	</listitem>
+      </varlistentry>
+      
+      <varlistentry>
+	<term>LIBUIM_SCM_FILES</term>
+	<listitem>
+	  <para>
+	    This variable takes a directory path as a value. If this variable
+	    is defined, uim add the value to the search path of .scm files.
+	  </para>
+	</listitem>
+      </varlistentry>
+      
+      <varlistentry>
+	<term>LIBUIM_PLUGIN_LIB_DIR</term>
+	<listitem>
+	  <para>
+	    This variable takes a directory path as a value. If this variable
+	    is defined, uim add the value to the search path of plugin files.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+    
+  </chapter>
+			</book>
+			
