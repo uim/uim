@@ -170,8 +170,31 @@ plugin_load(uim_lisp _name) {
 static uim_lisp
 plugin_unload(uim_lisp _name)
 {
-  /* XXX: Dynamic unloading is not supported yet*/
-  return uim_scm_f();
+#ifdef UIM_SCM_NESTED_EVAL
+  uim_lisp stack_start;
+  void *library;
+  void (*plugin_instance_quit)(void);
+  uim_lisp form;
+
+  uim_scm_gc_protect_stack(&stack_start);
+
+  UIM_EVAL_FSTRING1(NULL, "(plugin-list-query-library \"%s\")",
+		    uim_scm_refer_c_str(_name));
+  library = uim_scm_c_ptr(uim_scm_return_value());
+
+  UIM_EVAL_FSTRING1(NULL, "(plugin-list-query-instance-quit \"%s\")",
+		    uim_scm_refer_c_str(_name));
+  plugin_instance_quit = (void (*)(void))uim_scm_c_ptr(uim_scm_return_value());
+
+  (plugin_instance_quit)();
+  dlclose(library);
+
+  /* XXX: plugin-list-delete is not implemented 
+    form = uim_scm_list2(uim_scm_make_symbol("plugin-list-delete"), _name);
+   */
+  uim_scm_gc_unprotect_stack(&stack_start);
+#endif
+  return uim_scm_t();
 }
 
 /* Called from uim_init */
@@ -198,21 +221,11 @@ void uim_quit_plugin(void)
       list_car = uim_scm_car(list_cdr), list_cdr = uim_scm_cdr(list_cdr))
   {
     uim_lisp name;
-    void *library;
-    void (*plugin_instance_quit)(void);
+    uim_lisp form;
 
     name = uim_scm_car(list_car);
 
-    UIM_EVAL_FSTRING1(NULL, "(plugin-list-query-library \"%s\")",
-		      uim_scm_refer_c_str(name));
-    library = uim_scm_c_ptr(uim_scm_return_value());
-
-    UIM_EVAL_FSTRING1(NULL, "(plugin-list-query-instance-quit \"%s\")",
-		      uim_scm_refer_c_str(name));
-    plugin_instance_quit = (void (*)(void))uim_scm_c_ptr(uim_scm_return_value());
-
-    (plugin_instance_quit)();
-    dlclose(library);
+    plugin_unload(name);
   }
   uim_scm_gc_unprotect_stack(&stack_start);
 #endif
