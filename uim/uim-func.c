@@ -38,8 +38,12 @@
 #include <stdarg.h>
 #include "context.h"
 #include "uim-scm.h"
+#include "uim-encoding.h"
 
 #define MAX_LENGTH_OF_INT_AS_STR (((sizeof(int) == 4) ? sizeof("-2147483648") : sizeof("-9223372036854775808")) - sizeof((char)'\0'))
+
+static const char **uim_get_encoding_alias(const char *encoding);
+static iconv_t uim_iconv_open(const char *tocode, const char *fromcode);
 
 char *uim_return_str;
 char *uim_return_str_list[10]; /* XXX */
@@ -223,16 +227,59 @@ uim_release_preedit_segments(uim_context uc)
   uc->nr_psegs = 0;
 }
 
+static int check_encoding_equivalence(const char *tocode, const char *fromcode)
+{
+  const char **alias_tocode;
+  const char **alias_fromcode;
+  int i, j;
+  int alias_tocode_alloced = 0;
+  int alias_fromcode_alloced = 0;
+  int found = 0;
+
+  alias_tocode = uim_get_encoding_alias(tocode);
+  alias_fromcode = uim_get_encoding_alias(fromcode);
+
+  if (!alias_tocode) {
+    alias_tocode = malloc(sizeof(char *) * 2);
+    alias_tocode[0] = tocode;
+    alias_tocode[1] = NULL;
+    alias_tocode_alloced = 1;
+  }
+  if (!alias_fromcode) {
+    alias_fromcode = malloc(sizeof(char *) * 2);
+    alias_fromcode[0] = fromcode;
+    alias_fromcode[1] = NULL;
+    alias_fromcode_alloced = 1;
+  }
+
+  for (i = 0; alias_tocode[i]; i++) {
+    for (j = 0; alias_fromcode[j]; j++) {
+      if (!strcmp(alias_tocode[i], alias_fromcode[j])) {
+        found = 1;
+	break;
+      }
+    }
+    if (found)
+      break;
+  }
+
+  if (alias_tocode_alloced)
+    free(alias_tocode);
+  if (alias_fromcode_alloced)
+    free(alias_fromcode);
+  return found;
+}
+
 int
 uim_iconv_is_convertible(const char *tocode, const char *fromcode)
 {
   iconv_t ic;
 
-  if (!strcmp("UTF-8", fromcode) || !strcmp(tocode, fromcode)) {
+  if (check_encoding_equivalence(tocode, fromcode))
     return 1;
-  }
+
   /* TODO cache the result */
-  ic = iconv_open(tocode, fromcode);
+  ic = uim_iconv_open(tocode, fromcode);
   if (ic == (iconv_t)-1) {
     return 0;
   }
@@ -240,15 +287,70 @@ uim_iconv_is_convertible(const char *tocode, const char *fromcode)
   return 1;
 }
 
+static const char**
+uim_get_encoding_alias(const char *encoding) {
+  int i, j;
+  const char **alias;
+
+  for (i = 0; (alias = uim_encoding_list[i]); i++) {
+    for (j = 0; alias[j]; j++) {
+      if (!strcmp(alias[j], encoding))
+        return alias;
+    }
+  }
+  return NULL;
+}
+
+static iconv_t
+uim_iconv_open(const char *tocode, const char *fromcode) {
+  iconv_t cd = (iconv_t)-1;
+  int i, j;
+  const char **alias_tocode, **alias_fromcode;
+  int alias_tocode_alloced = 0;
+  int alias_fromcode_alloced = 0;
+  int opened = 0;
+
+  alias_tocode = uim_get_encoding_alias(tocode);
+  alias_fromcode = uim_get_encoding_alias(fromcode);
+
+  if (!alias_tocode) {
+    alias_tocode = malloc(sizeof(char *) * 2);
+    alias_tocode[0] = tocode;
+    alias_tocode[1] = NULL;
+    alias_tocode_alloced = 1;
+  }
+  if (!alias_fromcode) {
+    alias_fromcode = malloc(sizeof(char *) * 2);
+    alias_fromcode[0] = fromcode;
+    alias_fromcode[1] = NULL;
+    alias_fromcode_alloced = 1;
+  }
+
+  for (i = 0; alias_tocode[i]; i++) {
+    for (j = 0; alias_fromcode[j]; j++) {
+      cd = iconv_open(alias_tocode[i], alias_fromcode[j]);
+      if (cd != (iconv_t)-1) {
+	opened = 1;
+	break;
+      }
+    }
+    if (opened)
+      break;
+  }
+
+  if (alias_tocode_alloced)
+    free(alias_tocode);
+  if (alias_fromcode_alloced)
+    free(alias_fromcode);
+  return cd;
+}
+
 void *
 uim_iconv_create(const char *tocode, const char *fromcode)
 {
   iconv_t ic;
 
-  if (!strcmp(tocode, fromcode))
-    return (void *) 0;
-
-  ic = iconv_open(tocode, fromcode);
+  ic = uim_iconv_open(tocode, fromcode);
   if (ic == (iconv_t)-1) {
     ic = (iconv_t)0;
   }
@@ -268,14 +370,15 @@ uim_iconv_code_conv(void *obj, const char *str)
   ic = (iconv_t)obj;
   if(!str)
     return NULL;
+
+  if (!ic)
+    return strdup(str);
+
   len = strlen(str);
   buflen = (len * 6)+3;
   realbuf = alloca(buflen);
   outbuf = realbuf;
   inbuf = str;
-  if (!ic) {
-    return strdup(str);
-  }
   bzero(realbuf, buflen);
   iconv(ic, (ICONV_CONST char **)&inbuf, &len, &outbuf, &buflen);
   return strdup(realbuf);
