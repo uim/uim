@@ -33,7 +33,7 @@
 
 
 (define anthy-im-name-label (N_ "Anthy"))
-(define anthy-im-short-desc (N_ "Japanese Kana Kanji Conversion Engine, Anthy"))
+(define anthy-im-short-desc (N_ "A multi-segment kana-kanji conversion engine"))
 
 (define-custom-group 'anthy
                      (ugettext anthy-im-name-label)

@@ -32,65 +32,65 @@
 (require "i18n.scm")
 
 
-(define-custom-group 'global-keys
-		     (_ "Global key bindings")
+(define-custom-group 'global-keys1
+		     (_ "Global key bindings 1")
 		     (_ "long description will be here."))
 
-(define-custom-group 'global-keys-advanced
-		     (_ "Global advanced key bindings")
+(define-custom-group 'global-keys2
+		     (_ "Global key bindings 2")
 		     (_ "long description will be here."))
 
 
 (define-custom 'generic-on-key '("zenkaku-hankaku" "<Shift> ")
-               '(global-keys)
+               '(global-keys1)
 	       '(key)
 	       (_ "[Global] on")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-off-key '("zenkaku-hankaku" "<Shift> ")
-               '(global-keys)
+               '(global-keys1)
 	       '(key)
 	       (_ "[Global] off")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-begin-conv-key '(" ")
-               '(global-keys)
+               '(global-keys1)
 	       '(key)
 	       (_ "[Global] begin conversion")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-commit-key '("<IgnoreCase><Control>j" generic-return-key)
-               '(global-keys)
+               '(global-keys1)
 	       '(key)
 	       (_ "[Global] commit")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-cancel-key '("escape" "<IgnoreCase><Control>g")
-               '(global-keys)
+               '(global-keys1)
 	       '(key)
 	       (_ "[Global] cancel")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-next-candidate-key '(" " "down" "<IgnoreCase><Control>n")
-               '(global-keys)
+               '(global-keys1)
 	       '(key)
 	       (_ "[Global] next candidate")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-prev-candidate-key '("up" "<IgnoreCase><Control>p")
-               '(global-keys)
+               '(global-keys1)
 	       '(key)
 	       (_ "[Global] previous candidate")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-next-page-key '("next")
-               '(global-keys)
+               '(global-keys1)
 	       '(key)
 	       (_ "[Global] next page of candidate window")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-prev-page-key '("prior")
-               '(global-keys)
+               '(global-keys1)
 	       '(key)
 	       (_ "[Global] previous page of candidate window")
 	       (_ "long description will be here"))
@@ -100,55 +100,55 @@
 ;;
 
 (define-custom 'generic-beginning-of-preedit-key '("home" "<IgnoreCase><Control>a")
-               '(global-keys-advanced)
+               '(global-keys2)
 	       '(key)
 	       (_ "[Global] beginning of preedit")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-end-of-preedit-key '("end" "<IgnoreCase><Control>e")
-               '(global-keys-advanced)
+               '(global-keys2)
 	       '(key)
 	       (_ "[Global] end of preedit")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-kill-key '("<IgnoreCase><Control>k")
-               '(global-keys-advanced)
+               '(global-keys2)
 	       '(key)
 	       (_ "[Global] erase after cursor")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-kill-backward-key '("<IgnoreCase><Control>u")
-               '(global-keys-advanced)
+               '(global-keys2)
 	       '(key)
 	       (_ "[Global] erase before cursor")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-backspace-key '("backspace" "<IgnoreCase><Control>h")
-               '(global-keys-advanced)
+               '(global-keys2)
 	       '(key)
 	       (_ "[Global] backspace")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-delete-key '("delete" "<IgnoreCase><Control>d")
-               '(global-keys-advanced)
+               '(global-keys2)
 	       '(key)
 	       (_ "[Global] delete")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-go-left-key '("left" "<IgnoreCase><Control>b")
-               '(global-keys-advanced)
+               '(global-keys2)
 	       '(key)
 	       (_ "[Global] go left")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-go-right-key '("right" "<IgnoreCase><Control>f")
-               '(global-keys-advanced)
+               '(global-keys2)
 	       '(key)
 	       (_ "[Global] go right")
 	       (_ "long description will be here"))
 
 (define-custom 'generic-return-key '("return" "<IgnoreCase><Control>m")
-               '(global-keys-advanced)
+               '(global-keys2)
 	       '(key)
 	       (_ "[Global] return")
 	       (_ "long description will be here"))

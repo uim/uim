@@ -60,16 +60,16 @@
 ;;(define-key skk-vi-escape-key? '("escape" "<Control>["))
 ;;(define-key skk-state-direct-no-preedit-nop-key? '("<Control>j" "<Control>J"))
 
-(define-custom-group 'skk-keys
-		     (_ "SKK key bindings")
+(define-custom-group 'skk-keys1
+		     (_ "SKK key bindings 1")
 		     (_ "long description will be here."))
 
-(define-custom-group 'skk-keys-advanced1
-		     (_ "SKK advanced key bindings (1)")
+(define-custom-group 'skk-keys2
+		     (_ "SKK key bindings 2")
 		     (_ "long description will be here."))
 
-(define-custom-group 'skk-keys-advanced2
-		     (_ "SKK advanced key bindings (2)")
+(define-custom-group 'skk-keys3
+		     (_ "SKK key bindings 3")
 		     (_ "long description will be here."))
 
 ;; subgroup
@@ -79,55 +79,55 @@
 
 
 (define-custom 'skk-on-key '("<IgnoreCase><Control>j" generic-on-key)
-               '(skk-keys mode-transition)
+               '(skk-keys1 mode-transition)
 	       '(key)
 	       (_ "[SKK] on")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-latin-key '("<IgnoreCase>l" generic-off-key)  ;; "l"
-               '(skk-keys mode-transition)
+               '(skk-keys1 mode-transition)
 	       '(key)
 	       (_ "[SKK] latin mode")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-wide-latin-key '("<IgnoreCase><Shift>l")  ;; "L"
-               '(skk-keys mode-transition)
+               '(skk-keys1 mode-transition)
 	       '(key)
 	       (_ "[SKK] wide-latin mode")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-kanji-mode-key '("<IgnoreCase><Shift>q")  ;; "Q"
-               '(skk-keys mode-transition)
+               '(skk-keys1 mode-transition)
 	       '(key)
 	       (_ "[SKK] kanji mode")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-hankaku-kana-key '("<IgnoreCase><Control>q")
-               '(skk-keys mode-transition)
+               '(skk-keys1 mode-transition)
 	       '(key)
 	       (_ "[SKK] halfwidth katakana mode")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-kana-toggle-key '("<IgnoreCase>q")  ;; "q"
-               '(skk-keys mode-transition)
+               '(skk-keys1 mode-transition)
 	       '(key)
 	       (_ "[SKK] toggle hiragana/katakana mode")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-begin-conv-key '(generic-begin-conv-key)
-               '(skk-keys)
+               '(skk-keys1)
 	       '(key)
 	       (_ "[SKK] begin conversion")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-commit-key '("<IgnoreCase><Control>j")
-               '(skk-keys)
+               '(skk-keys1)
 	       '(key)
 	       (_ "[SKK] commit")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-cancel-key '(generic-cancel-key)
-               '(skk-keys)
+               '(skk-keys1)
 	       '(key)
 	       (_ "[SKK] cancel")
 	       (_ "long description will be here"))
@@ -137,55 +137,55 @@
 ;;
 
 (define-custom 'skk-return-key '(generic-return-key)
-               '(skk-keys-advanced1)
+               '(skk-keys2)
 	       '(key)
 	       (_ "[SKK] return")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-conv-wide-latin-key '("<IgnoreCase><Control>q")
-               '(skk-keys-advanced1)
+               '(skk-keys2)
 	       '(key)
 	       (_ "[SKK] commit preedit string as fullwidth alphanumeric")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-latin-conv-key '("/")
-               '(skk-keys-advanced1)
+               '(skk-keys2)
 	       '(key)
 	       (_ "[SKK] begin latin conversion")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-begin-completion-key '("tab" "<IgnoreCase><Control>i")
-               '(skk-keys-advanced1 skk-keys-completion)
+               '(skk-keys2 skk-keys-completion)
 	       '(key)
 	       (_ "[SKK] begin completion")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-next-completion-key '("." skk-begin-completion-key)
-               '(skk-keys-advanced1 skk-keys-completion)
+               '(skk-keys2 skk-keys-completion)
 	       '(key)
 	       (_ "[SKK] next completion candidate")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-prev-completion-key '(",")
-               '(skk-keys-advanced1 skk-keys-completion)
+               '(skk-keys2 skk-keys-completion)
 	       '(key)
 	       (_ "[SKK] previous completion candidate")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-special-midashi-key '("<IgnoreShift>>" "<IgnoreShift><" "<IgnoreShift>?")
-               '(skk-keys-advanced1)
+               '(skk-keys2)
 	       '(key)
 	       (_ "[SKK] skk-special-midashi-key?")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-vi-escape-key '("escape" "<Control>[")
-               '(skk-keys-advanced1)
+               '(skk-keys2)
 	       '(key)
 	       (_ "[SKK] skk-vi-escape-key?")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-state-direct-no-preedit-nop-key '("<IgnoreCase><Control>j")
-               '(skk-keys-advanced1)
+               '(skk-keys2)
 	       '(key)
 	       (_ "[SKK] skk-state-direct-no-preedit-nop-key?")
 	       (_ "long description will be here"))
@@ -193,7 +193,7 @@
 ;; should not be changed
 (define-key skk-plain-space-key? '(" "))
 ;;(define-custom 'skk-plain-space-key '(" ")
-;;               '(skk-keys-advanced1)
+;;               '(skk-keys2)
 ;;	       '(key)
 ;;	       (_ "[SKK] plain space")
 ;;	       (_ "long description will be here"))
@@ -203,43 +203,43 @@
 ;;
 
 (define-custom 'skk-next-candidate-key '(generic-next-candidate-key)
-               '(skk-keys-advanced2)
+               '(skk-keys3)
 	       '(key)
 	       (_ "[SKK] next candidate")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-prev-candidate-key '("<IgnoreCase>x" generic-prev-candidate-key) ;; "x"
-               '(skk-keys-advanced2)
+               '(skk-keys3)
 	       '(key)
 	       (_ "[SKK] previous candidate")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-next-page-key '(generic-next-page-key)
-               '(skk-keys-advanced2)
+               '(skk-keys3)
 	       '(key)
 	       (_ "[SKK] next page of candidate window")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-prev-page-key '(generic-prev-page-key)
-               '(skk-keys-advanced2)
+               '(skk-keys3)
 	       '(key)
 	       (_ "[SKK] previous page of candidate window")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-backspace-key '(generic-backspace-key)
-               '(skk-keys-advanced2)
+               '(skk-keys3)
 	       '(key)
 	       (_ "[SKK] backspace")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-go-left-key '(generic-go-left-key)
-               '(skk-keys-advanced2)
+               '(skk-keys3)
 	       '(key)
 	       (_ "[SKK] go left")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-go-right-key '(generic-go-right-key)
-               '(skk-keys-advanced2)
+               '(skk-keys3)
 	       '(key)
 	       (_ "[SKK] go right")
 	       (_ "long description will be here"))

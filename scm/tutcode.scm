@@ -272,7 +272,7 @@
  "ja"
  "EUC-JP"
  (N_ "TUT-Code")
- (N_ "TUT-Code")
+ (N_ "A kanji direct input method")
  #f
  tutcode-init-handler
  #f

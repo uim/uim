@@ -5,11 +5,11 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: uim 2010\n"
+"Project-Id-Version: uim 0.4.6-alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-04 03:47+0900\n"
-"PO-Revision-Date: 2005-02-04 04:02+0900\n"
-"Last-Translator: Kazuki Ohta <mover@hct.zaq.ne.jp>\n"
+"POT-Creation-Date: 2005-02-04 07:45+0900\n"
+"PO-Revision-Date: 2005-02-04 08:17+0900\n"
+"Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=EUC-JP\n"
@@ -348,7 +348,7 @@ msgstr ""
 "設定が変更されています。\n"
 "本当に終了しますか?"
 
-#: helper/pref-gtk.c:235 qt/pref-qt.cpp:100
+#: helper/pref-gtk.c:235 qt/pref-qt.cpp:103
 msgid "Group"
 msgstr "グループ"
 
@@ -434,11 +434,11 @@ msgstr "カタカナ"
 msgid "eisu"
 msgstr "英数"
 
-#: qt/switcher-qt.cpp:115 qt/pref-qt.cpp:115 qt/pref-qt.cpp:255
+#: qt/switcher-qt.cpp:115 qt/pref-qt.cpp:118 qt/pref-qt.cpp:258
 msgid "OK"
 msgstr ""
 
-#: qt/switcher-qt.cpp:120 qt/pref-qt.cpp:122 qt/pref-qt.cpp:256
+#: qt/switcher-qt.cpp:120 qt/pref-qt.cpp:125 qt/pref-qt.cpp:259
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -451,11 +451,11 @@ msgstr "入力方式の切り替え"
 msgid "exec Preference Application"
 msgstr "設定ツールの起動"
 
-#: qt/pref-qt.cpp:112
+#: qt/pref-qt.cpp:115
 msgid "Defaults"
 msgstr "デフォルト"
 
-#: qt/pref-qt.cpp:192
+#: qt/pref-qt.cpp:195
 msgid ""
 "The value was changed.\n"
 "Save?"
@@ -479,9 +479,9 @@ msgstr "日本語かな漢字変換エンジン例"
 msgid "Anthy"
 msgstr "Anthy"
 
-#: scm/anthy-custom.lisp:36
-msgid "Japanese Kana Kanji Conversion Engine, Anthy"
-msgstr "日本語かな漢字変換エンジンAnthy"
+#: scm/anthy-custom.lisp:36 scm/canna-custom.lisp:36
+msgid "A multi-segment kana-kanji conversion engine"
+msgstr "連文節かな漢字変換エンジン"
 
 #: scm/anthy-custom.lisp:50 scm/canna-custom.lisp:54
 msgid "Show segment separator"
@@ -507,9 +507,9 @@ msgstr "文節区切りを表示する"
 #: scm/im-custom.lisp:56 scm/im-custom.lisp:61 scm/im-custom.lisp:66
 #: scm/im-custom.lisp:71 scm/im-custom.lisp:76 scm/im-custom.lisp:81
 #: scm/im-custom.lisp:86 scm/im-custom.lisp:94 scm/im-custom.lisp:101
-#: scm/im-custom.lisp:111 scm/im-custom.lisp:189 scm/im-custom.lisp:249
-#: scm/im-custom.lisp:265 scm/im-custom.lisp:271 scm/im-custom.lisp:277
-#: scm/im-custom.lisp:284 scm/prime-custom.lisp:58 scm/prime-custom.lisp:64
+#: scm/im-custom.lisp:111 scm/im-custom.lisp:204 scm/im-custom.lisp:264
+#: scm/im-custom.lisp:280 scm/im-custom.lisp:286 scm/im-custom.lisp:292
+#: scm/im-custom.lisp:299 scm/prime-custom.lisp:58 scm/prime-custom.lisp:64
 #: scm/prime-custom.lisp:70 scm/prime-custom.lisp:76 scm/prime-custom.lisp:82
 #: scm/prime-custom.lisp:90 scm/prime-custom.lisp:96 scm/prime-custom.lisp:102
 #: scm/prime-custom.lisp:145 scm/prime-custom.lisp:154
@@ -653,17 +653,16 @@ msgid "Kana input method menu items"
 msgstr "かな入力方式メニュー項目"
 
 #: scm/anthy-key-custom.lisp:36
-msgid "Anthy key bindings"
-msgstr "Anthyキー設定"
+msgid "Anthy key bindings 1"
+msgstr "Anthyキー設定 1"
 
-# (高度1)が変だというのは自覚してます。代案希望。  -- YamaKen  2005-02-02
 #: scm/anthy-key-custom.lisp:40
-msgid "Anthy advanced key bindings (1)"
-msgstr "Anthyキー設定 (高度1)"
+msgid "Anthy key bindings 2"
+msgstr "Anthyキー設定 2"
 
 #: scm/anthy-key-custom.lisp:44
-msgid "Anthy advanced key bindings (2)"
-msgstr "Anthyキー設定 (高度2)"
+msgid "Anthy key bindings 3"
+msgstr "Anthyキー設定 3"
 
 #: scm/anthy-key-custom.lisp:51
 msgid "[Anthy] next segment"
@@ -847,10 +846,6 @@ msgstr "[Anthy] 右に移動"
 msgid "Canna"
 msgstr "Canna"
 
-#: scm/canna-custom.lisp:36
-msgid "Japanese Kana Kanji Conversion Engine, Canna"
-msgstr "日本語かな漢字変換エンジンCanna"
-
 #: scm/canna-custom.lisp:43
 msgid "Canna server"
 msgstr "Cannaサーバ"
@@ -864,17 +859,16 @@ msgid "Canna server name"
 msgstr "Cannaサーバ名"
 
 #: scm/canna-key-custom.lisp:36
-msgid "Canna key bindings"
-msgstr "Cannaキー設定"
+msgid "Canna key bindings 1"
+msgstr "Cannaキー設定 1"
 
-# (高度1)が変だというのは自覚してます。代案希望。  -- YamaKen  2005-02-02
 #: scm/canna-key-custom.lisp:40
-msgid "Canna advanced key bindings (1)"
-msgstr "Cannaキー設定 (高度1)"
+msgid "Canna key bindings 2"
+msgstr "Cannaキー設定 2"
 
 #: scm/canna-key-custom.lisp:44
-msgid "Canna advanced key bindings (2)"
-msgstr "Cannaキー設定 (高度2)"
+msgid "Canna key bindings 3"
+msgstr "Cannaキー設定 3"
 
 #: scm/canna-key-custom.lisp:51
 msgid "[Canna] next segment"
@@ -973,20 +967,20 @@ msgid "Direct"
 msgstr "直接入力"
 
 #: scm/direct.lisp:132
-msgid "Direct input method mainly used for Latin and German languages"
-msgstr "主にラテン・ゲルマン諸語入力用の直接入力方式"
+msgid "Pass through all user input without any modification"
+msgstr "全てのユーザ入力を素通し"
 
 #: scm/generic-custom.lisp:36
 msgid "Other input methods"
 msgstr "その他の入力方式"
 
 #: scm/generic-key-custom.lisp:36
-msgid "Global key bindings"
-msgstr "全体キー設定"
+msgid "Global key bindings 1"
+msgstr "全体キー設定 1"
 
 #: scm/generic-key-custom.lisp:40
-msgid "Global advanced key bindings"
-msgstr "全体キー設定 (高度)"
+msgid "Global key bindings 2"
+msgstr "全体キー設定 2"
 
 #: scm/generic-key-custom.lisp:47
 msgid "[Global] on"
@@ -1136,55 +1130,55 @@ msgstr "デフォルトの入力方式"
 msgid "Specify default IM"
 msgstr "デフォルトの入力方式を指定する"
 
-#: scm/im-custom.lisp:188
+#: scm/im-custom.lisp:203
 msgid "Enabled input methods"
 msgstr "使用可能にする入力方式"
 
-#: scm/im-custom.lisp:246 scm/skk-custom.lisp:200
+#: scm/im-custom.lisp:261 scm/skk-custom.lisp:200
 msgid "uim"
 msgstr "uim"
 
-#: scm/im-custom.lisp:246 scm/skk-custom.lisp:200
+#: scm/im-custom.lisp:261 scm/skk-custom.lisp:200
 msgid "uim native"
 msgstr "uimネイティブ"
 
-#: scm/im-custom.lisp:247
+#: scm/im-custom.lisp:262
 msgid "ATOK like"
 msgstr "ATOK風"
 
-#: scm/im-custom.lisp:247
+#: scm/im-custom.lisp:262
 msgid "Similar to ATOK"
 msgstr "ATOK風"
 
-#: scm/im-custom.lisp:248
+#: scm/im-custom.lisp:263
 msgid "Preedit color"
 msgstr "プリエディット色"
 
-#: scm/im-custom.lisp:256 scm/im-custom.lisp:257
+#: scm/im-custom.lisp:271 scm/im-custom.lisp:272
 msgid "Adjacent to caret"
 msgstr "キャレットに隣接"
 
-#: scm/im-custom.lisp:259 scm/im-custom.lisp:260
+#: scm/im-custom.lisp:274 scm/im-custom.lisp:275
 msgid "Left end of preedit area"
 msgstr "編集領域の左端"
 
-#: scm/im-custom.lisp:262 scm/im-custom.lisp:263
+#: scm/im-custom.lisp:277 scm/im-custom.lisp:278
 msgid "Right end of preedit area"
 msgstr "編集領域の右端"
 
-#: scm/im-custom.lisp:264
+#: scm/im-custom.lisp:279
 msgid "Candidate window position"
 msgstr "候補ウィンドウ表示位置"
 
-#: scm/im-custom.lisp:270
+#: scm/im-custom.lisp:285
 msgid "Show input method switcher button on toolbar"
 msgstr "入力方式の切り替えボタンをツールバーに表示する"
 
-#: scm/im-custom.lisp:276
+#: scm/im-custom.lisp:291
 msgid "Show uim preference tool button on toolbar"
 msgstr "設定ツールの起動ボタンをツールバーに表示する"
 
-#: scm/im-custom.lisp:283
+#: scm/im-custom.lisp:298
 msgid "Enable lazy input method loading for fast startup"
 msgstr "高速起動のための遅延ローディングを有効にする"
 
@@ -1255,17 +1249,16 @@ msgid "PRIME on"
 msgstr "PRIME オン"
 
 #: scm/prime-key-custom.lisp:60
-msgid "PRIME key bindings"
-msgstr "PRIMEキー設定"
+msgid "PRIME key bindings 1"
+msgstr "PRIMEキー設定 1"
 
-# (高度1)が変だというのは自覚してます。代案希望。  -- YamaKen  2005-02-02
 #: scm/prime-key-custom.lisp:64
-msgid "PRIME advanced key bindings (1)"
-msgstr "PRIMEキー設定 (高度1)"
+msgid "PRIME key bindings 2)"
+msgstr "PRIMEキー設定 2"
 
 #: scm/prime-key-custom.lisp:68
-msgid "PRIME advanced key bindings (2)"
-msgstr "PRIMEキー設定 (高度2)"
+msgid "PRIME key bindings 3"
+msgstr "PRIMEキー設定 3"
 
 #: scm/prime-key-custom.lisp:75
 msgid "[PRIME] prime-register-key"
@@ -1384,8 +1377,8 @@ msgid "SKK"
 msgstr "SKK"
 
 #: scm/skk-custom.lisp:36
-msgid "uim's SKK like input method"
-msgstr "uimのSKK風入力方式"
+msgid "uim version of SKK input method"
+msgstr "uim版のSKK入力方式"
 
 #: scm/skk-custom.lisp:43
 msgid "SKK (advanced)"
@@ -1456,17 +1449,16 @@ msgid "Commit newline as ASCII string instead of native key-event"
 msgstr "新規行をネイティブキーイベントの代わりにASCII文字列としてコミットする"
 
 #: scm/skk-key-custom.lisp:64
-msgid "SKK key bindings"
-msgstr "SKKキー設定"
+msgid "SKK key bindings 1"
+msgstr "SKKキー設定 1"
 
-# (高度1)が変だというのは自覚してます。代案希望。  -- YamaKen  2005-02-02
 #: scm/skk-key-custom.lisp:68
-msgid "SKK advanced key bindings (1)"
-msgstr "SKKキー設定 (高度1)"
+msgid "SKK key bindings 2"
+msgstr "SKKキー設定 2"
 
 #: scm/skk-key-custom.lisp:72
-msgid "SKK advanced key bindings (2)"
-msgstr "SKKキー設定 (高度2)"
+msgid "SKK key bindings 3"
+msgstr "SKKキー設定 3"
 
 #: scm/skk-key-custom.lisp:77
 msgid "Completion"
@@ -1585,11 +1577,15 @@ msgstr ""
 msgid "[Spellcheck] on"
 msgstr ""
 
-#: scm/tcode.lisp:1725 scm/tcode.lisp:1726
+#: scm/tcode.lisp:1725
 msgid "T-Code"
 msgstr "T-Code"
 
-#: scm/tutcode.lisp:274 scm/tutcode.lisp:275
+#: scm/tcode.lisp:1726 scm/tutcode.lisp:275
+msgid "A kanji direct input method"
+msgstr "漢字直接入力方式"
+
+#: scm/tutcode.lisp:274
 msgid "TUT-Code"
 msgstr "TUT-Code"
 
@@ -2207,6 +2203,12 @@ msgstr "ヨルバ語"
 #: uim/iso-639-1.def:182
 msgid "Zulu"
 msgstr "ズールー語"
+
+#~ msgid "Japanese Kana Kanji Conversion Engine, Anthy"
+#~ msgstr "日本語かな漢字変換エンジンAnthy"
+
+#~ msgid "Global advanced key bindings"
+#~ msgstr "全体キー設定 (高度)"
 
 #~ msgid "Input method switching"
 #~ msgstr "入力言語の切り替え"

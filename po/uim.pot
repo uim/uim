@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-04 03:47+0900\n"
+"POT-Creation-Date: 2005-02-04 07:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -345,7 +345,7 @@ msgid ""
 "Do you realy quit this program?"
 msgstr ""
 
-#: helper/pref-gtk.c:235 qt/pref-qt.cpp:100
+#: helper/pref-gtk.c:235 qt/pref-qt.cpp:103
 msgid "Group"
 msgstr ""
 
@@ -431,11 +431,11 @@ msgstr ""
 msgid "eisu"
 msgstr ""
 
-#: qt/switcher-qt.cpp:115 qt/pref-qt.cpp:115 qt/pref-qt.cpp:255
+#: qt/switcher-qt.cpp:115 qt/pref-qt.cpp:118 qt/pref-qt.cpp:258
 msgid "OK"
 msgstr ""
 
-#: qt/switcher-qt.cpp:120 qt/pref-qt.cpp:122 qt/pref-qt.cpp:256
+#: qt/switcher-qt.cpp:120 qt/pref-qt.cpp:125 qt/pref-qt.cpp:259
 msgid "Cancel"
 msgstr ""
 
@@ -448,11 +448,11 @@ msgstr ""
 msgid "exec Preference Application"
 msgstr ""
 
-#: qt/pref-qt.cpp:112
+#: qt/pref-qt.cpp:115
 msgid "Defaults"
 msgstr ""
 
-#: qt/pref-qt.cpp:192
+#: qt/pref-qt.cpp:195
 msgid ""
 "The value was changed.\n"
 "Save?"
@@ -474,8 +474,8 @@ msgstr ""
 msgid "Anthy"
 msgstr ""
 
-#: scm/anthy-custom.lisp:36
-msgid "Japanese Kana Kanji Conversion Engine, Anthy"
+#: scm/anthy-custom.lisp:36 scm/canna-custom.lisp:36
+msgid "A multi-segment kana-kanji conversion engine"
 msgstr ""
 
 #: scm/anthy-custom.lisp:50 scm/canna-custom.lisp:54
@@ -502,9 +502,9 @@ msgstr ""
 #: scm/im-custom.lisp:56 scm/im-custom.lisp:61 scm/im-custom.lisp:66
 #: scm/im-custom.lisp:71 scm/im-custom.lisp:76 scm/im-custom.lisp:81
 #: scm/im-custom.lisp:86 scm/im-custom.lisp:94 scm/im-custom.lisp:101
-#: scm/im-custom.lisp:111 scm/im-custom.lisp:189 scm/im-custom.lisp:249
-#: scm/im-custom.lisp:265 scm/im-custom.lisp:271 scm/im-custom.lisp:277
-#: scm/im-custom.lisp:284 scm/prime-custom.lisp:58 scm/prime-custom.lisp:64
+#: scm/im-custom.lisp:111 scm/im-custom.lisp:204 scm/im-custom.lisp:264
+#: scm/im-custom.lisp:280 scm/im-custom.lisp:286 scm/im-custom.lisp:292
+#: scm/im-custom.lisp:299 scm/prime-custom.lisp:58 scm/prime-custom.lisp:64
 #: scm/prime-custom.lisp:70 scm/prime-custom.lisp:76 scm/prime-custom.lisp:82
 #: scm/prime-custom.lisp:90 scm/prime-custom.lisp:96 scm/prime-custom.lisp:102
 #: scm/prime-custom.lisp:145 scm/prime-custom.lisp:154
@@ -648,15 +648,15 @@ msgid "Kana input method menu items"
 msgstr ""
 
 #: scm/anthy-key-custom.lisp:36
-msgid "Anthy key bindings"
+msgid "Anthy key bindings 1"
 msgstr ""
 
 #: scm/anthy-key-custom.lisp:40
-msgid "Anthy advanced key bindings (1)"
+msgid "Anthy key bindings 2"
 msgstr ""
 
 #: scm/anthy-key-custom.lisp:44
-msgid "Anthy advanced key bindings (2)"
+msgid "Anthy key bindings 3"
 msgstr ""
 
 #: scm/anthy-key-custom.lisp:51
@@ -840,10 +840,6 @@ msgstr ""
 msgid "Canna"
 msgstr ""
 
-#: scm/canna-custom.lisp:36
-msgid "Japanese Kana Kanji Conversion Engine, Canna"
-msgstr ""
-
 #: scm/canna-custom.lisp:43
 msgid "Canna server"
 msgstr ""
@@ -857,15 +853,15 @@ msgid "Canna server name"
 msgstr ""
 
 #: scm/canna-key-custom.lisp:36
-msgid "Canna key bindings"
+msgid "Canna key bindings 1"
 msgstr ""
 
 #: scm/canna-key-custom.lisp:40
-msgid "Canna advanced key bindings (1)"
+msgid "Canna key bindings 2"
 msgstr ""
 
 #: scm/canna-key-custom.lisp:44
-msgid "Canna advanced key bindings (2)"
+msgid "Canna key bindings 3"
 msgstr ""
 
 #: scm/canna-key-custom.lisp:51
@@ -965,7 +961,7 @@ msgid "Direct"
 msgstr ""
 
 #: scm/direct.lisp:132
-msgid "Direct input method mainly used for Latin and German languages"
+msgid "Pass through all user input without any modification"
 msgstr ""
 
 #: scm/generic-custom.lisp:36
@@ -973,11 +969,11 @@ msgid "Other input methods"
 msgstr ""
 
 #: scm/generic-key-custom.lisp:36
-msgid "Global key bindings"
+msgid "Global key bindings 1"
 msgstr ""
 
 #: scm/generic-key-custom.lisp:40
-msgid "Global advanced key bindings"
+msgid "Global key bindings 2"
 msgstr ""
 
 #: scm/generic-key-custom.lisp:47
@@ -1128,55 +1124,55 @@ msgstr ""
 msgid "Specify default IM"
 msgstr ""
 
-#: scm/im-custom.lisp:188
+#: scm/im-custom.lisp:203
 msgid "Enabled input methods"
 msgstr ""
 
-#: scm/im-custom.lisp:246 scm/skk-custom.lisp:200
+#: scm/im-custom.lisp:261 scm/skk-custom.lisp:200
 msgid "uim"
 msgstr ""
 
-#: scm/im-custom.lisp:246 scm/skk-custom.lisp:200
+#: scm/im-custom.lisp:261 scm/skk-custom.lisp:200
 msgid "uim native"
 msgstr ""
 
-#: scm/im-custom.lisp:247
+#: scm/im-custom.lisp:262
 msgid "ATOK like"
 msgstr ""
 
-#: scm/im-custom.lisp:247
+#: scm/im-custom.lisp:262
 msgid "Similar to ATOK"
 msgstr ""
 
-#: scm/im-custom.lisp:248
+#: scm/im-custom.lisp:263
 msgid "Preedit color"
 msgstr ""
 
-#: scm/im-custom.lisp:256 scm/im-custom.lisp:257
+#: scm/im-custom.lisp:271 scm/im-custom.lisp:272
 msgid "Adjacent to caret"
 msgstr ""
 
-#: scm/im-custom.lisp:259 scm/im-custom.lisp:260
+#: scm/im-custom.lisp:274 scm/im-custom.lisp:275
 msgid "Left end of preedit area"
 msgstr ""
 
-#: scm/im-custom.lisp:262 scm/im-custom.lisp:263
+#: scm/im-custom.lisp:277 scm/im-custom.lisp:278
 msgid "Right end of preedit area"
 msgstr ""
 
-#: scm/im-custom.lisp:264
+#: scm/im-custom.lisp:279
 msgid "Candidate window position"
 msgstr ""
 
-#: scm/im-custom.lisp:270
+#: scm/im-custom.lisp:285
 msgid "Show input method switcher button on toolbar"
 msgstr ""
 
-#: scm/im-custom.lisp:276
+#: scm/im-custom.lisp:291
 msgid "Show uim preference tool button on toolbar"
 msgstr ""
 
-#: scm/im-custom.lisp:283
+#: scm/im-custom.lisp:298
 msgid "Enable lazy input method loading for fast startup"
 msgstr ""
 
@@ -1247,15 +1243,15 @@ msgid "PRIME on"
 msgstr ""
 
 #: scm/prime-key-custom.lisp:60
-msgid "PRIME key bindings"
+msgid "PRIME key bindings 1"
 msgstr ""
 
 #: scm/prime-key-custom.lisp:64
-msgid "PRIME advanced key bindings (1)"
+msgid "PRIME key bindings 2)"
 msgstr ""
 
 #: scm/prime-key-custom.lisp:68
-msgid "PRIME advanced key bindings (2)"
+msgid "PRIME key bindings 3"
 msgstr ""
 
 #: scm/prime-key-custom.lisp:75
@@ -1375,7 +1371,7 @@ msgid "SKK"
 msgstr ""
 
 #: scm/skk-custom.lisp:36
-msgid "uim's SKK like input method"
+msgid "uim version of SKK input method"
 msgstr ""
 
 #: scm/skk-custom.lisp:43
@@ -1447,15 +1443,15 @@ msgid "Commit newline as ASCII string instead of native key-event"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:64
-msgid "SKK key bindings"
+msgid "SKK key bindings 1"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:68
-msgid "SKK advanced key bindings (1)"
+msgid "SKK key bindings 2"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:72
-msgid "SKK advanced key bindings (2)"
+msgid "SKK key bindings 3"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:77
@@ -1575,11 +1571,15 @@ msgstr ""
 msgid "[Spellcheck] on"
 msgstr ""
 
-#: scm/tcode.lisp:1725 scm/tcode.lisp:1726
+#: scm/tcode.lisp:1725
 msgid "T-Code"
 msgstr ""
 
-#: scm/tutcode.lisp:274 scm/tutcode.lisp:275
+#: scm/tcode.lisp:1726 scm/tutcode.lisp:275
+msgid "A kanji direct input method"
+msgstr ""
+
+#: scm/tutcode.lisp:274
 msgid "TUT-Code"
 msgstr ""
 

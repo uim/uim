@@ -33,7 +33,7 @@
 
 
 (define canna-im-name-label (N_ "Canna"))
-(define canna-im-short-desc (N_ "Japanese Kana Kanji Conversion Engine, Canna"))
+(define canna-im-short-desc (N_ "A multi-segment kana-kanji conversion engine"))
 
 (define-custom-group 'canna
                      (ugettext canna-im-name-label)

@@ -1723,5 +1723,5 @@
  "ja"
  "EUC-JP"
  (N_ "T-Code")
- (N_ "T-Code")
+ (N_ "A kanji direct input method")
  tcode-init-handler)

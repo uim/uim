@@ -56,51 +56,51 @@
 ;;(define-key prime-typing-mode-wideascii-key?  "F9")
 ;;(define-key prime-typing-mode-ascii-key?      "F10")
 
-(define-custom-group 'prime-keys
-		     (_ "PRIME key bindings")
+(define-custom-group 'prime-keys1
+		     (_ "PRIME key bindings 1")
 		     (_ "long description will be here."))
 
-(define-custom-group 'prime-keys-advanced1
-		     (_ "PRIME advanced key bindings (1)")
+(define-custom-group 'prime-keys2
+		     (_ "PRIME key bindings 2)")
 		     (_ "long description will be here."))
 
-(define-custom-group 'prime-keys-advanced2
-		     (_ "PRIME advanced key bindings (2)")
+(define-custom-group 'prime-keys3
+		     (_ "PRIME key bindings 3")
 		     (_ "long description will be here."))
 
 
 (define-custom 'prime-register-key '("<Control>w")
-               '(prime-keys)
+               '(prime-keys1)
 	       '(key)
 	       (_ "[PRIME] prime-register-key")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-typing-mode-hiragana-key '("F6")
-               '(prime-keys mode-transition)
+               '(prime-keys1 mode-transition)
 	       '(key)
 	       (_ "[PRIME] prime-typing-mode-hiragana-key")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-typing-mode-katakana-key '("F7")
-               '(prime-keys mode-transition)
+               '(prime-keys1 mode-transition)
 	       '(key)
 	       (_ "[PRIME] prime-typing-mode-katakana-key")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-typing-mode-hankana-key '("F8")
-               '(prime-keys mode-transition)
+               '(prime-keys1 mode-transition)
 	       '(key)
 	       (_ "[PRIME] prime-typing-mode-hankana-key")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-typing-mode-wideascii-key '("F9")
-               '(prime-keys mode-transition)
+               '(prime-keys1 mode-transition)
 	       '(key)
 	       (_ "[PRIME] prime-typing-mode-wideascii-key")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-typing-mode-ascii-key '("F10")
-               '(prime-keys mode-transition)
+               '(prime-keys1 mode-transition)
 	       '(key)
 	       (_ "[PRIME] prime-typing-mode-ascii-key")
 	       (_ "long description will be here"))
@@ -109,61 +109,61 @@
 ;; advanced 1
 ;;
 (define-custom 'prime-on-key '("<IgnoreCase><Control>j" generic-on-key)
-               '(prime-keys-advanced1 mode-transition)
+               '(prime-keys2 mode-transition)
 	       '(key)
 	       (_ "[PRIME] on")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-latin-key '("<Control>l" generic-off-key)
-               '(prime-keys-advanced1 mode-transition)
+               '(prime-keys2 mode-transition)
 	       '(key)
 	       (_ "[PRIME] off")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-wide-latin-key '("<Control>L")
-               '(prime-keys-advanced1 mode-transition)
+               '(prime-keys2 mode-transition)
 	       '(key)
 	       (_ "[PRIME] fullwidth alphanumeric mode")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-begin-conv-key '(generic-begin-conv-key)
-               '(prime-keys-advanced1)
+               '(prime-keys2)
 	       '(key)
 	       (_ "[PRIME] begin conversion")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-commit-key '(generic-commit-key)
-               '(prime-keys-advanced1)
+               '(prime-keys2)
 	       '(key)
 	       (_ "[PRIME] commit")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-cancel-key '(generic-cancel-key)
-               '(prime-keys-advanced1)
+               '(prime-keys2)
 	       '(key)
 	       (_ "[PRIME] cancel")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-next-candidate-key '(generic-next-candidate-key)
-               '(prime-keys-advanced1)
+               '(prime-keys2)
 	       '(key)
 	       (_ "[PRIME] next candidate")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-prev-candidate-key '(generic-prev-candidate-key)
-               '(prime-keys-advanced1)
+               '(prime-keys2)
 	       '(key)
 	       (_ "[PRIME] previous candidate")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-next-page-key '(generic-next-page-key)
-               '(prime-keys-advanced1)
+               '(prime-keys2)
 	       '(key)
 	       (_ "[PRIME] next page of candidate window")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-prev-page-key '(generic-prev-page-key)
-               '(prime-keys-advanced1)
+               '(prime-keys2)
 	       '(key)
 	       (_ "[PRIME] previous page of candidate window")
 	       (_ "long description will be here"))
@@ -172,37 +172,37 @@
 ;; advanced 2
 ;;
 (define-custom 'prime-go-left-edge-key '("<IgnoreCase><Control>a" "<Control>left")
-               '(prime-keys-advanced2)
+               '(prime-keys3)
 	       '(key)
 	       (_ "[PRIME] beginning of preedit")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-go-right-edge-key '("<IgnoreCase><Control>e" "<Control>right")
-               '(prime-keys-advanced2)
+               '(prime-keys3)
 	       '(key)
 	       (_ "[PRIME] end of preedit")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-backspace-key '(generic-backspace-key)
-               '(prime-keys-advanced2)
+               '(prime-keys3)
 	       '(key)
 	       (_ "[PRIME] backspace")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-delete-key '(generic-delete-key)
-               '(prime-keys-advanced2)
+               '(prime-keys3)
 	       '(key)
 	       (_ "[PRIME] delete")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-go-left-key '(generic-go-left-key)
-               '(prime-keys-advanced2)
+               '(prime-keys3)
 	       '(key)
 	       (_ "[PRIME] go left")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-go-right-key '(generic-go-right-key)
-               '(prime-keys-advanced2)
+               '(prime-keys3)
 	       '(key)
 	       (_ "[PRIME] go right")
 	       (_ "long description will be here"))
