@@ -364,6 +364,17 @@
 ;; uim-specific utilities
 ;;
 
+;; returns succeeded or not
+(define try-load
+  (lambda (file)
+    (not (*catch 'errobj (load file)))))
+
+;; returns succeeded or not
+(define try-require
+  (lambda (file)
+    (eq? (symbolconc '* (string->symbol file) '-loaded*)
+	 (*catch 'errobj (require file)))))
+
 ;; for eval
 (define toplevel-env ())
 

@@ -59,7 +59,7 @@
 				"/.uim.d/customs/custom-"
 				group-name
 				".scm")))
-      (load path))))
+      (try-load path))))
 
 ;; full implementation
 (define require-custom
