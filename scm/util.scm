@@ -102,11 +102,18 @@
     (let ((buf (string-append "\"\"" s s)))
       (print-to-string s buf))))
 
-(define string->letter
+;; TODO: write test
+(define string->printable-char
   (lambda (str)
     (let ((c (and (= (string-length str)
 		     1)
 		  (string->charcode str))))
+      (and (char-printable? c)
+	   c))))
+
+(define string->letter
+  (lambda (str)
+    (let ((c (string->printable-char str)))
       (and (char-alphabetic? c)
 	   c))))
 

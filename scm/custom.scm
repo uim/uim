@@ -223,17 +223,23 @@
 ;; TODO: write test
 (define key-list-encode-shift
   (lambda (key-list)
-    (let ((has-shift? (memq 'Shift_key key-list))
-	  (letter (string->letter (find string? key-list))))
+    (let* ((has-shift? (memq 'Shift_key key-list))
+	   (str (find string? key-list))
+	   (printable (string->printable-char str))
+	   (letter (string->letter str)))
       (filter-map (lambda (elem)
 		    (cond
 		     ((and (eq? elem 'Shift_key)
-			   letter)
+			   (char-graphic? printable))
 		      #f)
 		     ((and (string? elem)
 			   has-shift?
 			   letter)
 		      (charcode->string (char-upcase letter)))
+		     ((and (string? elem)
+			   has-shift?
+			   (char-graphic? printable))
+		      str)
 		     (else
 		      elem)))
 		  key-list))))
@@ -254,8 +260,26 @@
 ;; TODO: write test
 (define key-list-ignore-regular-shift
   (lambda (key-list)
+    (let ((printable (string->printable-char (find string? key-list))))
+      (if (char-graphic? printable)
+	  (cons 'IgnoreRegularShift key-list)
+	  key-list))))
+
+;; TODO: write test
+(define key-list-ignore-letter-shift
+  (lambda (key-list)
     (let ((letter (string->letter (find string? key-list))))
       (if letter
+	  (cons 'IgnoreShift key-list)
+	  key-list))))
+
+;; TODO: write test
+(define key-list-ignore-punct-numeric-shift
+  (lambda (key-list)
+    (let* ((str (find string? key-list))
+	   (c (string->printable-char str)))
+      (if (and (char-graphic? c)
+	       (not (char-alphabetic? c)))
 	  (cons 'IgnoreShift key-list)
 	  key-list))))
 
@@ -265,6 +289,24 @@
     (let ((letter (string->letter (find string? key-list))))
       (if letter
 	  (cons 'IgnoreCase key-list)
+ 	  key-list))))
+
+;; TODO: write test
+(define key-list-strip-shift
+  (lambda (key-list)
+    (remove (lambda (key)
+	      (eq? key 'Shift_key))
+	    key-list)))
+
+;; TODO: write test
+(define key-list-strip-regular-shift
+  (lambda (key-list)
+    (let* ((str (find string? key-list))
+	   (printable (string->printable-char str)))
+      (if (char-graphic? printable)
+	  (remove (lambda (key)
+		    (eq? key 'Shift_key))
+		  key-list)
 	  key-list))))
 
 ;; TODO: write test
@@ -274,13 +316,15 @@
 
 ;; TODO: write test
 (define key-list-export-as-basic (compose key-list-visualize-space
-					  key-list-decode-shift
+					  key-list-encode-shift
 					  key-list-strip-translators))
 
 ;; TODO: write test
 (define key-list-import-as-basic (compose key-list-characterize-space
+					  key-list-ignore-punct-numeric-shift
 					  key-list-ignore-case
-					  key-list-decode-shift))
+					  key-list-decode-shift
+					  key-list-strip-regular-shift))
 
 ;; TODO: write test
 (define key-list-export-as-traditional (compose key-list-visualize-space

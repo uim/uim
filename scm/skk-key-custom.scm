@@ -173,7 +173,7 @@
 	       (_ "[SKK] previous completion candidate")
 	       (_ "long description will be here"))
 
-(define-custom 'skk-special-midashi-key '("<Shift>>" "<Shift><" "<Shift>?")
+(define-custom 'skk-special-midashi-key '("<IgnoreShift>>" "<IgnoreShift><" "<IgnoreShift>?")
                '(skk-keys-advanced1)
 	       '(key)
 	       (_ "[SKK] skk-special-midashi-key?")

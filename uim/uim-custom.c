@@ -63,6 +63,8 @@ typedef void (*uim_custom_global_cb_update_cb_t)(void *ptr);
 uim_bool uim_custom_init(void);
 uim_bool uim_custom_quit(void);
 
+static char *literalize_string(const char *str);
+
 static char *c_list_to_str(const void *const *list, char *(*mapper)(const void *elem), const char *sep);
 
 static int uim_custom_type_eq(const char *custom_sym, const char *custom_type);
@@ -117,6 +119,22 @@ static const char custom_msg_tmpl[] = "prop_update_custom\n%s\n%s\n";
 static int helper_fd = -1;
 static uim_lisp return_val;
 
+
+static char *
+literalize_string(const char *str)
+{
+  uim_lisp stack_start;
+  uim_lisp form;
+  char *escaped;
+
+  uim_scm_gc_protect_stack(&stack_start);
+  form = uim_scm_list2(uim_scm_make_symbol("string-escape"),
+		       uim_scm_make_str(str));
+  escaped = uim_scm_c_str(uim_scm_eval(form));
+  uim_scm_gc_unprotect_stack(&stack_start);
+
+  return escaped;
+}
 
 static char *
 c_list_to_str(const void *const *list, char *(*mapper)(const void *elem), const char *sep)
@@ -447,8 +465,7 @@ extract_key_literal(const struct uim_custom_key *custom_key)
 
   switch (custom_key->type) {
   case UCustomKey_Regular:
-    UIM_EVAL_FSTRING1(NULL, "\"\\\"%s\\\"\"", custom_key->literal);
-    literal = uim_scm_c_str(uim_scm_return_value());
+    literal = literalize_string(custom_key->literal);
     break;
   case UCustomKey_Reference:
     literal = strdup(custom_key->literal);
@@ -842,7 +859,7 @@ uim_custom_save_group(const char *group)
   for (sym = custom_syms; *sym; sym++) {
     def_literal = uim_custom_definition_as_literal(*sym);
     if (def_literal) {
-      fprintf(file, def_literal);
+      fputs(def_literal, file);
       fprintf(file, "\n");
       free(def_literal);
     }
@@ -978,6 +995,8 @@ uim_custom_get(const char *custom_sym)
 uim_bool
 uim_custom_set(const struct uim_custom *custom)
 {
+  char *literal;
+
   if (!custom)
     return UIM_FALSE;
 
@@ -991,12 +1010,16 @@ uim_custom_set(const struct uim_custom *custom)
 		      custom->symbol, custom->value->as_int);
     break;
   case UCustom_Str:
-    UIM_EVAL_FSTRING2(NULL, "(custom-set-value! '%s \"%s\")",
-		      custom->symbol, custom->value->as_str);
+    literal = literalize_string(custom->value->as_str);
+    UIM_EVAL_FSTRING2(NULL, "(custom-set-value! '%s %s)",
+		      custom->symbol, literal);
+    free(literal);
     break;
   case UCustom_Pathname:
-    UIM_EVAL_FSTRING2(NULL, "(custom-set-value! '%s \"%s\")",
-		      custom->symbol, custom->value->as_pathname);
+    literal = literalize_string(custom->value->as_pathname);
+    UIM_EVAL_FSTRING2(NULL, "(custom-set-value! '%s %s)",
+		      custom->symbol, literal);
+    free(literal);
     break;
   case UCustom_Choice:
     UIM_EVAL_FSTRING2(NULL, "(custom-set-value! '%s '%s)",

@@ -1299,8 +1299,14 @@ key_pref_set_value(guint keyval, GdkModifierType mod)
   gchar keystr[256] = {0};
   gint len = sizeof(keystr) / sizeof(gchar);
 
+  /*
+   * Ignore Shift modifier for printable char keys for
+   * easy-to-recognize key configuration.  uim-custom performs
+   * implicit shift key encoding/decoding appropriately.
+   */
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(key_pref_win.shift_toggle),
-			       mod & GDK_SHIFT_MASK);
+			       ((keyval >= 256) || !g_ascii_isgraph(keyval)) &&
+			       (mod & GDK_SHIFT_MASK));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(key_pref_win.control_toggle),
 			       mod & GDK_CONTROL_MASK);
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(key_pref_win.alt_toggle),
@@ -1399,12 +1405,7 @@ key_pref_set_value(guint keyval, GdkModifierType mod)
     } else if (keyval >= GDK_F1 && keyval <= GDK_F35) {
       g_snprintf(keystr, len, "%d", keyval - GDK_KP_0 + UKey_0);
     } else if (keyval < 256) {
-      /*
-       * Downcase alphabet keys for easy-to-recognize key
-       * configuration.  uim-custom performs implicit shift key
-       * encoding/decoding appropriately.
-       */
-      keystr[0] = g_ascii_tolower(keyval);
+      keystr[0] = keyval;
       keystr[1] = '\0';
     } else {
       /* UKey_Other */
