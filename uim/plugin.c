@@ -1,5 +1,5 @@
 /*
-  $Id$
+  $Id:$
 
   plugin.c:
 
@@ -57,70 +57,68 @@ static void plugin_list_append(uim_plugin_info_list *entry);
 
 static uim_lisp 
 plugin_load(uim_lisp _module_filename) {
-	uim_plugin_info *info;
-	uim_plugin_info_list *info_list_entry;
-	char *module_filename;
-	char *module_filename_fullpath;
-	char *module_filename_suffix;
-	size_t len;
+  uim_plugin_info *info;
+  uim_plugin_info_list *info_list_entry;
+  char *module_filename;
+  char *module_filename_fullpath;
+  char *module_filename_suffix;
+  size_t len;
+  
+  module_filename = uim_scm_c_str(_module_filename);
+  
+  if(module_filename == NULL) {
+    return uim_scm_f();
+  }
 
-	module_filename = uim_scm_c_str(_module_filename);
+  len = strlen(module_filename);
+  module_filename_suffix = strrchr(module_filename, '.');
+  if(len < 3 || module_filename_suffix == NULL) {
+    free(module_filename);
+    return uim_scm_f();
+  }
+  
+  if(module_filename[0] != '/') {
+    /* FIXME: Need clean up! */
+    char *plugindir_env = getenv("LIBUIM_PLUGIN_LIB_DIR");
+    if(plugindir_env != NULL) {
+      len = strlen(plugindir_env) + strlen(module_filename) + 2;
+      module_filename_fullpath = malloc(sizeof(char*) * len);
+      snprintf(module_filename_fullpath, len, "%s/%s",
+	       plugindir_env, module_filename);
+    } else {
+      len = strlen(UIM_SYS_PLUGIN_LIB_DIR) + strlen(module_filename) + 2;
+      module_filename_fullpath = malloc(sizeof(char*) * len);
+      snprintf(module_filename_fullpath, len, "%s/%s",
+	       UIM_SYS_PLUGIN_LIB_DIR, module_filename);
+    }
+  } else {
+    module_filename_fullpath = strdup(module_filename);
+  }
+  
+  dlopen(module_filename_fullpath, RTLD_GLOBAL|RTLD_NOW);
+  
+  info_list_entry = malloc(sizeof(uim_plugin_info_list));
+  info = malloc(sizeof(uim_plugin_info));
+  
+  fprintf(stderr, "load %s\n",module_filename_fullpath);
+  info->library = dlopen(module_filename_fullpath, RTLD_NOW);
+  if(info->library == NULL) {
+    fprintf(stderr, "load failed %s\n", dlerror());
+    return uim_scm_f();
+  }
 
-	if(module_filename == NULL) {
-	  return uim_scm_f();
-	}
+  free(module_filename_fullpath);
+  free(module_filename);
 
-	len = strlen(module_filename);
-	module_filename_suffix = strrchr(module_filename, '.');
-	if(len < 3 || module_filename_suffix == NULL) {
-	  free(module_filename);
-	  return uim_scm_f();
-	}
-
-	if( module_filename[0] != '/') {
-	  /* FIXME: Need clean up! */
-	  char *plugindir_env = getenv("LIBUIM_PLUGIN_LIB_DIR");
-       	  if(plugindir_env != NULL) {
-	    len = strlen(plugindir_env) + strlen(module_filename) + 2;
-	    module_filename_fullpath = malloc(sizeof(char*) * len);
-	    snprintf(module_filename_fullpath, len, "%s/%s",
-		     plugindir_env, module_filename);
-	  } else {
-	    len = strlen(UIM_SYS_PLUGIN_LIB_DIR) + strlen(module_filename) + 2;
-	    module_filename_fullpath = malloc(sizeof(char*) * len);
-	    snprintf(module_filename_fullpath, len, "%s/%s",
-		     UIM_SYS_PLUGIN_LIB_DIR, module_filename);
-	  }
-	} else {
-	  module_filename_fullpath = strdup(module_filename);
-	}
-
-	dlopen(module_filename_fullpath, RTLD_GLOBAL|RTLD_NOW);
-
-	info_list_entry = malloc(sizeof(uim_plugin_info_list));
-	info = malloc(sizeof(uim_plugin_info));
-
-	fprintf(stderr, "load %s\n",module_filename_fullpath);
-	info->library = dlopen(module_filename_fullpath,
-			      RTLD_NOW);
-	if(info->library == NULL) {
-	  
-	  fprintf(stderr, "load failed %s\n", dlerror());
-	  return uim_scm_f();
-	}
-
-	free(module_filename_fullpath);
-	free(module_filename);
-
-	info->plugin_init = (void (*)(void))dlfunc(info->library, "plugin_init");
+  info->plugin_init = (void (*)(void))dlfunc(info->library, "plugin_init");
     
-	if(info->plugin_init) {
-	  fprintf(stderr, "plugin init\n");
-	  (info->plugin_init)();
-	}
-	/*	plugin_list_append(uim_plugin_entry); */
+  if(info->plugin_init) {
+    fprintf(stderr, "plugin init\n");
+    (info->plugin_init)();
+  }
+  /*	plugin_list_append(uim_plugin_entry); */
 
-	return uim_scm_t();
+  return uim_scm_t();
 }
 
 static void plugin_list_append(uim_plugin_info_list *entry)
