@@ -613,20 +613,18 @@ update_custom_type_choice_cb(void *ptr, const char *custom_sym)
 			 OBJECT_DATA_UIM_CUSTOM, custom,
 			 (GDestroyNotify) uim_custom_free);
   gtk_widget_set_sensitive(combobox, custom->is_active);
-#if 0
-  item = custom->range->as_choice.valid_items;
 
+  item = custom->range->as_choice.valid_items;
   if(item == NULL || *item == NULL)
     return;
   
   g_signal_handlers_disconnect_by_func(G_OBJECT(combobox), (gpointer)custom_combo_box_changed, NULL);
 
-  gtk_cell_layout_clear(GTK_CELL_LAYOUT(combobox));
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(combobox))));
   
   default_symbol = custom->value->as_choice->symbol;
-  
+
   while(*item) {
-    fprintf(stderr, "item = %s\n", (*item)->symbol);
     gtk_combo_box_append_text(GTK_COMBO_BOX(combobox), (*item)->label);
     if(!strcmp(default_symbol, (*item)->symbol))
       default_index = i;    
@@ -636,7 +634,6 @@ update_custom_type_choice_cb(void *ptr, const char *custom_sym)
   gtk_combo_box_set_active(GTK_COMBO_BOX(combobox), default_index);
   g_signal_connect(G_OBJECT(combobox), "changed",
 		   G_CALLBACK(custom_combo_box_changed), NULL);
-#endif
 }
 
 static void
