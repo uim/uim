@@ -174,6 +174,15 @@
     (("d" "y" "e") (("ぢ" "ぇ") ("ヂ" "ェ") ("ﾁ" "ﾞ" "ｪ")))
     (("d" "y" "o") (("ぢ" "ょ") ("ヂ" "ョ") ("ﾁ" "ﾞ" "ｮ")))
 
+    ;; ん
+    ;; must be defined before "NA" row to take less precedence
+    (("n" (char-nonvowel press peek loopback)) ("ん" "ン" "ﾝ"))
+    ;; must be placed after above "nk" rule
+    (("n" "n")                        ("ん" "ン" "ﾝ"))
+;;    (("n" (char-nonvowel press peek)) (("ん" ($3 loopback))
+;;				       ("ン" ($3 loopback))
+;;				       ("ﾝ"  ($3 loopback))))
+
     ;; な行
     (("n" "a")     ("な" "ナ" "ﾅ"))
     (("n" "i")     ("に" "ニ" "ﾆ"))
@@ -279,14 +288,6 @@
     (("v" "y" "a") (("う" "゛" "ゃ") ("ヴ" "ャ") ("ｳ" "ﾞ" "ｬ")))
     (("v" "y" "u") (("う" "゛" "ゅ") ("ヴ" "ュ") ("ｳ" "ﾞ" "ｭ")))
     (("v" "y" "o") (("う" "゛" "ょ") ("ヴ" "ョ") ("ｳ" "ﾞ" "ｮ")))
-
-    ;; ん
-    (("n" (char-nonvowel press peek loopback)) ("ん" "ン" "ﾝ"))
-    ;; must be placed after above "nk" rule
-    (("n" "n")                        ("ん" "ン" "ﾝ"))
-;;    (("n" (char-nonvowel press peek)) (("ん" ($3 loopback))
-;;				       ("ン" ($3 loopback))
-;;				       ("ﾝ"  ($3 loopback))))
 
     ;; 記号
     (("-")         ("ー" "ー" "ｰ"))
