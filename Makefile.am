@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = m4 doc scm uim xim helper po gtk tables test fep sumika data examples
+SUBDIRS = m4 doc scm uim xim helper po gtk tables test fep data examples
 EXTRA_DIST = README.ja INSTALL.ja test.sh.in uim.spec.in \
 	intltool-extract.in intltool-merge.in intltool-update.in \
 	uim.pc.in

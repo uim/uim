@@ -310,27 +310,6 @@ AC_ARG_ENABLE(fep,
   ],
   [ use_uim_fep="yes" ])
 
-AC_ARG_ENABLE(sumika,
-  AC_HELP_STRING([--enable-sumika],
-                 [enable sumika (a dictionary utility for uim, obsolete)]),
-  [
-    case $enable_sumika in
-      no)
-        use_sumika="no"
-      ;;
-      yes|*)
-        if test "x$enable_compat_scm" != "xyes" \
-                -o "x$enable_compat_custom" != "xyes" ; then
-          AC_MSG_ERROR([Sumika requires --enable-compat-scm and --enable-compat-custom])
-        fi
-        PKG_CHECK_MODULES(SUMIKA, gtk+-2.0 >= 2.4.0,
-                           use_sumika="yes",
-                          AC_MSG_WARN([sumika needs Gtk+ 2.4 or higher. sumika disabled...]);use_sumika="no")
-      ;;
-    esac
-  ],
-  [ use_sumika="no" ])
-
 AC_ARG_ENABLE(dict,
   AC_HELP_STRING([--enable-dict],
                  [enable uim-dict (a dictionary utility for uim, broken)]),
@@ -358,7 +337,6 @@ AM_CONDITIONAL(GTK2_4, test x$use_gtk2_4 = xyes)
 AM_CONDITIONAL(GNOME2, test x$use_gnome2 = xyes)
 AM_CONDITIONAL(APPLET, test x$use_applet = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
-AM_CONDITIONAL(SUMIKA, test x$use_sumika = xyes)
 AM_CONDITIONAL(DICT, test x$use_dict = xyes)
 AM_CONDITIONAL(DEBUG, test x$enable_debug = xyes)
 AM_CONDITIONAL(COMPAT_SCM, test x$enable_compat_scm = xyes)
@@ -454,10 +432,6 @@ AC_CONFIG_FILES([test.sh
                  gtk/Makefile
                  xim/Makefile
 		 fep/Makefile
-		 sumika/Makefile
-		 sumika/common/Makefile
-		 sumika/gtk2/Makefile
-		 sumika/include/Makefile
 		 tables/Makefile
 		 test/Makefile
                  data/Makefile
@@ -479,7 +453,6 @@ Configure Result :
    Gnome        : ${use_gnome2}
    Gnome Applet : ${use_applet}
    FEP          : ${use_uim_fep}
-   SUMIKA       : ${use_sumika}
    DICT         : ${use_dict}
 ])
 
