@@ -53,7 +53,7 @@
 (define prime-nr-candidate-max 10)
 (define prime-always-show-window? #t)
 (define prime-auto-register-mode? #t)
-(define prime-pseude-mode-cursor? #f)
+(define prime-pseudo-mode-cursor? #f)
 (define prime-char-annotation?    #t)
 
 (define prime-mask-pending-preedit? #f)
@@ -1251,7 +1251,7 @@
 (define prime-display-preedit-format
   (list (cons 'committed        preedit-none)
 	(cons 'cursor           preedit-cursor)
-	(cons 'pseude-cursor    preedit-reverse)
+	(cons 'pseudo-cursor    preedit-reverse)
 	(cons 'preedit          preedit-underline)
 	(cons 'converting       preedit-reverse)
 	(cons 'register-border  preedit-reverse)
@@ -1278,11 +1278,11 @@
   (lambda (sc)
     (im-pushback-preedit
      sc (cdr (assoc 'cursor prime-display-preedit-format)) "")
-    (if (and prime-pseude-mode-cursor?
+    (if (and prime-pseudo-mode-cursor?
 	     (= (prime-context-mode sc) prime-mode-hiragana)
 	     (eq? (prime-context-state sc) 'prime-state-no-preedit))
 	(im-pushback-preedit
-	 sc (cdr (assoc 'pseude-cursor prime-display-preedit-format)) " "))
+	 sc (cdr (assoc 'pseudo-cursor prime-display-preedit-format)) " "))
     ))
 
 (define prime-update-prediction
