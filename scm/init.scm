@@ -76,10 +76,10 @@
     (if (not (retrieve-im 'direct))
 	(require-module "direct"))))
 
-(require "plugin.scm");
-(require "custom-rt.scm");
+(require "plugin.scm")
+(require "custom-rt.scm")
 (require "key.scm")
-(require "im.scm");
+(require "im.scm")
 
 (load-module-conf)
 (require-custom "im-custom.scm")
