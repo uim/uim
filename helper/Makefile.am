@@ -73,7 +73,7 @@ uim_input_pad_ja_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
 uim_input_pad_ja_CFLAGS   = @GTK2_CFLAGS@ -Wall
 
 if GTK2_4
-uim_pref_gtk_SOURCES  = pref-gtk.c
+uim_pref_gtk_SOURCES  = pref-gtk.c pref-gtk-custom-widgets.c pref-gtk-custom-widgets.h
 uim_pref_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim.la \
 			$(top_builddir)/uim/libuim-custom.la
 uim_pref_gtk_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
