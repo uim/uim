@@ -558,7 +558,7 @@ custom_combo_box_changed(GtkComboBox *combo_box, gpointer user_data)
   custom = g_object_get_data(G_OBJECT(combo_box), OBJECT_DATA_UIM_CUSTOM);
   g_return_if_fail(custom);
 
-  if (custom->type != UCustom_Choice) {
+  if (custom->type == UCustom_Choice) {
     gint i, num = gtk_combo_box_get_active(combo_box);
     struct uim_custom_choice *choice = NULL;
 
