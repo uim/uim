@@ -249,7 +249,7 @@ AC_ARG_WITH(qt,
   AC_HELP_STRING([--with-qt],
                  [build with qt helper applications]),
   [
-    case $enable_qt in
+    case $with_qt in
       no)
         use_qt="no"
       ;;
@@ -257,7 +257,6 @@ AC_ARG_WITH(qt,
         use_qt="yes"
       ;;
     esac
-
   ],
   [
     use_qt="no"
@@ -267,7 +266,7 @@ AC_ARG_WITH(qt-immodule,
   AC_HELP_STRING([--with-qt-immodule],
                  [Build qt-immodule extension]),
   [
-    case $enable_qtimmodule in
+    case $with_qtimmodule in
       no)
         use_qtimmodule="no"
       ;;
@@ -459,7 +458,7 @@ if test x$use_qt = xyes ; then
        QTLIBDIR="/usr/lib/qt"
     fi
     if test ! -d "$QTLIBDIR"; then
-       QTINCDIR="/usr/lib"
+       QTLIBDIR="/usr/lib"
     fi
 
     # Check For MOC
