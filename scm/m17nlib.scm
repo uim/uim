@@ -286,7 +286,7 @@
 ;; be "disabled by default, but can be enabled" under the feature.
 ;;   -- YamaKen 2005-01-11
 (define duplicated-im-list
-  '(;"m17n-ja-anthy"
+  '("m17n-ja-anthy"
     "m17n-ja-tcode"
     "m17n-zh-pinyin"
     "m17n-zh-py"))
