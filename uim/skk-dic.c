@@ -1613,6 +1613,54 @@ write_out_line(FILE *fp, struct skk_line *sl)
   fprintf(fp, "\n");
 }
 
+static int
+open_lock(const char *name, int type)
+{
+  int fd;
+  struct flock fl;
+  char *lock_fn;
+
+  lock_fn = malloc(sizeof(char *) * (strlen(name) + strlen(".lock") + 1));
+  if (lock_fn == NULL)
+    return -1;
+  sprintf(lock_fn, "%s.lock", name);
+
+  fd = open(lock_fn, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+  if (fd == -1) {
+    free(lock_fn);
+    return fd;
+  }
+
+  fl.l_type = type;
+  fl.l_whence = SEEK_SET;
+  fl.l_start = 0;
+  fl.l_len = 0;
+  if (fcntl(fd, F_SETLKW, &fl) == -1) {
+    close(fd);
+    fd = -1;
+  }
+
+  free(lock_fn);
+  return fd;
+}
+
+static void
+close_lock(int fd)
+{
+  struct flock fl;
+
+  if (fd < 0)
+    return;
+
+  fl.l_type = F_UNLCK;
+  fl.l_whence = SEEK_SET;
+  fl.l_start = 0;
+  fl.l_len = 0;
+
+  fcntl(fd, F_SETLKW, &fl);
+  close(fd);
+}
+
 static LISP
 skk_read_personal_dictionary(struct dic_info *di, char *fn)
 {
@@ -1620,13 +1668,17 @@ skk_read_personal_dictionary(struct dic_info *di, char *fn)
   FILE *fp;
   char buf[4096];
   int err_flag = 0;
+  int lock_fd;
 
   if (stat(fn, &st) == -1)
     return NIL;
 
+  lock_fd = open_lock(fn, F_RDLCK);
   fp = fopen(fn, "r");
-  if (!fp)
+  if (!fp) {
+    close_lock(lock_fd);
     return NIL;
+  }
 
   di->personal_dic_timestamp = st.st_mtime;
 
@@ -1647,6 +1699,7 @@ skk_read_personal_dictionary(struct dic_info *di, char *fn)
     }
   }
   fclose(fp);
+  close_lock(lock_fd);
   return siod_true_value();
 }
 
@@ -1864,6 +1917,7 @@ skk_lib_save_personal_dictionary(LISP fn_)
   char *fn = uim_get_c_string(fn_);
   struct skk_line *sl;
   struct stat st;
+  int lock_fd = -1;
 
   if (fn) {
     if (stat(fn, &st) != -1) {
@@ -1874,9 +1928,11 @@ skk_lib_save_personal_dictionary(LISP fn_)
       free(fn);
       return NIL;
     }
+    lock_fd = open_lock(fn, F_WRLCK);
     fp = fopen(fn, "w");
     free(fn);
     if (!fp) {
+      close_lock(lock_fd);
       return NIL;
     }
   } else {
@@ -1889,6 +1945,7 @@ skk_lib_save_personal_dictionary(LISP fn_)
     }
   }
   fclose(fp);
+  close_lock(lock_fd);
 
   if (stat(fn, &st) != -1)
     skk_dic->personal_dic_timestamp = st.st_mtime;
