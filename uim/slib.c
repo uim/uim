@@ -2148,6 +2148,33 @@ file_prin1 (LISP ptr, struct gen_printio *f)
   gput_st (f, ">");
 }
 
+void *get_c_pointer (LISP x)
+{
+  if POINTERP
+    (x) my_err ("not a C pointer", x);
+  return (x->storage_as.c_pointer.data);
+}
+
+LISP
+ptrcons (void *ptr)
+{
+  LISP x;
+  NEWCELL (x, tc_c_pointer);
+  (*x).storage_as.c_pointer.data = ptr;
+  return (x);
+}
+
+static void
+pointer_prin1 (LISP ptr, struct gen_printio *f)
+{
+  void *c_ptr;
+  c_ptr = ptr->storage_as.c_pointer.data;
+  gput_st (f, "#<PTR ");
+  sprintf (tkbuffer, " %p", c_ptr);
+  gput_st (f, tkbuffer);
+  gput_st (f, ">");
+}
+
 
 static void
 init_storage_1 (void)
@@ -2221,6 +2248,7 @@ init_storage (void)
   init_storage_a ();
   set_gc_hooks (tc_c_file, 0, file_gc_free);
   set_print_hooks (tc_c_file, file_prin1);
+  set_print_hooks (tc_c_pointer, pointer_prin1);
 }
 
 void
@@ -4400,6 +4428,8 @@ ltypeof (LISP obj)
       return (rintern ("tc_string"));
     case tc_c_file:
       return (rintern ("tc_c_file"));
+    case tc_c_pointer:
+      return (rintern ("tc_c_pointer"));
     default:
       return (intcons (x));
     }

@@ -124,6 +124,11 @@ struct obj
 	    char *name;
 	  }
 	c_file;
+	struct
+	  {
+	    void *data;
+	  }
+	c_pointer;
       }
     storage_as;
 #if DEBUG_SCM
@@ -179,6 +184,7 @@ struct obj
 #define tc_subr_5 20
 #define tc_subr_2n 21
 #define tc_user_min 50
+#define tc_c_pointer 50
 #define tc_user_max 100
 
 #define tc_table_dim 100
@@ -190,6 +196,7 @@ typedef LISP (*SUBR_FUNC) (void);
 #define INTNUMP(x) TYPEP(x,tc_intnum)
 #define SYMBOLP(x) TYPEP(x,tc_symbol)
 #define STRINGP(x) TYPEP(x,tc_string)
+#define POINTERP(x) TYPEP(x,tc_c_pointer)
 
 #define NCONSP(x)   NTYPEP(x,tc_cons)
 #define NINTNUMP(x) NTYPEP(x,tc_intnum)
@@ -209,6 +216,7 @@ char *get_c_string (LISP x);
 char *get_c_string_dim (LISP x, long *);
 int get_c_int (LISP x);
 long nlength(LISP x);
+void *get_c_pointer (LISP x);
 
 LISP cons (LISP x, LISP y);
 LISP car (LISP x);
@@ -222,6 +230,7 @@ LISP symbol_value (LISP x, LISP env);
 LISP symbol_to_string (LISP x, LISP env);
 LISP rintern (const char *name);
 LISP closure (LISP env, LISP code);
+LISP ptrcons (void *ptr);
 
 void init_subr (char *name, long type, SUBR_FUNC fcn);
 void init_subr_0 (char *name, LISP (*fcn) (void));

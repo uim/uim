@@ -111,6 +111,11 @@ struct uim_custom *uim_custom_get(const char *custom_sym);
 uim_bool uim_custom_set(const struct uim_custom *custom);
 void uim_custom_free(struct uim_custom *custom);
 
+/* callback function */
+uim_bool uim_custom_cb_add(const char *custom_sym, void *ptr,
+			   void (*update_cb)(void *ptr, const char *custom_sym));
+uim_bool uim_custom_cb_remove(const char *custom_sym);
+
 /* literalization */
 char *uim_custom_value_as_literal(const char *custom_sym);
 char *uim_custom_definition_as_literal(const char *custom_sym);
@@ -128,10 +133,6 @@ char **uim_custom_primary_groups(void);
 char **uim_custom_group_subgroups(const char *group_sym);
 
 void uim_custom_symbol_list_free(char **symbol_list);
-
-/* the callback is invoked when the custom variable has been changed */
-uim_bool uim_custom_cb_set(const char *custom_sym, void *ptr,
-			   void (*update_cb)(void *ptr, const char *custom_sym));
 
 #ifdef __cplusplus
 }

@@ -139,6 +139,11 @@ uim_scm_c_symbol(uim_lisp str);
 uim_lisp
 uim_scm_make_symbol(const char *str);
 
+void *
+uim_scm_c_ptr(uim_lisp ptr);
+uim_lisp
+uim_scm_make_ptr(void *ptr);
+
 void
 uim_scm_init_subr_0(char *name, uim_lisp (*fcn)(void));
 void

@@ -45,6 +45,7 @@
 (define custom-subgroup-alist ())
 
 (define custom-activity-hook ())
+(define custom-update-hook ())
 (define custom-get-hook ())
 (define custom-set-hook ())
 (define custom-literalize-hook ())
@@ -181,6 +182,18 @@
     (set-symbol-value! hook-sym (cons (cons custom-sym proc)
 				      (symbol-value hook-sym)))))
 
+;; #f for custom-sym means 'any entries'
+(define custom-remove-hook
+  (lambda (custom-sym hook-sym)
+    (let ((removed (if custom-sym
+		       (alist-delete custom-sym (symbol-value hook-sym) eq?)
+		       ()))
+	  (removed? (if custom-sym
+			(assq custom-sym (symbol-value hook-sym))
+			(not (null? (symbol-value hook-sym))))))
+      (set-symbol-value! hook-sym removed)
+      removed?)))
+
 (define custom-hook-procs
   (lambda (sym hook)
     (let* ((filter (lambda (pair)
@@ -254,12 +267,20 @@
 ;; API
 (define custom-set!
   (lambda (sym val)
-    (if (custom-valid? sym val)
-	(begin
-	  (set-symbol-value! sym val)
-	  (custom-call-hook-procs sym custom-set-hook)
-	  #t)
-	#f)))
+    (and (custom-valid? sym val)
+	 (let* ((custom-syms (custom-collect-by-group #f))
+		(pre-activities (map custom-active? custom-syms)))
+	   (set-symbol-value! sym val)
+	   (custom-call-hook-procs sym custom-set-hook)
+	   (let ((post-activities (map custom-active? custom-syms)))
+	     (for-each (lambda (key pre post)
+			 (if (or (eq? key sym)
+				 (not (eq? pre post)))
+			     (custom-call-hook-procs sym custom-update-hook)))
+		       custom-syms
+		       pre-activities
+		       post-activities)
+	     #t)))))
 
 (define custom-active?
   (lambda (sym)
@@ -375,6 +396,13 @@
 (define custom-prop-update-custom-handler
   (lambda (context custom-sym val)
     (custom-set! custom-sym val)))
+
+(define custom-register-update-cb
+  (lambda (custom-sym ptr gate-func func)
+    (and (custom-rec sym)
+	 (let ((cb (lambda () (gate-func func ptr custom-sym))))
+	   (custom-add-hook custom-sym 'custom-update-hook cb)))))
+
 
 ;;
 ;; Particular definitions: may be split into independent file(s)

@@ -129,6 +129,18 @@ uim_scm_make_symbol(const char *str)
   return (uim_lisp)rintern(str);
 }
 
+void *
+uim_scm_c_ptr(uim_lisp ptr)
+{
+  return get_c_pointer((LISP)ptr);
+}
+
+uim_lisp
+uim_scm_make_ptr(void *ptr)
+{
+  return (uim_lisp)ptrcons(ptr);
+}
+
 void
 uim_scm_gc_protect(uim_lisp *location)
 {

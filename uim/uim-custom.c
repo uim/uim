@@ -49,10 +49,13 @@
 #include <stdio.h>
 #include <string.h>
 #include "uim-scm.h"
+#include "uim-compat-scm.h"
 #include "uim-custom.h"
 #include "context.h"
 #include "uim-helper.h"
 
+
+typedef void (*uim_custom_cb_update_cb_t)(void *ptr, const char *custom_sym);
 
 static int uim_custom_type_eq(const char *custom_sym, const char *custom_type);
 static int uim_custom_type(const char *custom_sym);
@@ -72,6 +75,7 @@ static void uim_custom_value_free(int custom_type, union uim_custom_value *custo
 static uim_lisp uim_custom_range_elem(const char *custom_sym, const char *accessor_proc);
 static union uim_custom_range *uim_custom_range_get(const char *custom_sym);
 static void uim_custom_range_free(int custom_type, union uim_custom_range *custom_range);
+static uim_lisp uim_custom_cb_update_cb_gate(uim_lisp cb, uim_lisp ptr, uim_lisp custom_sym);
 
 static void helper_disconnect_cb(void);
 static char *uim_conf_path(const char *subpath);
@@ -465,6 +469,8 @@ uim_custom_init(void)
 
   uim_scm_gc_protect(&return_val);
 
+  uim_scm_init_subr_3("custom-update-cb-gate", uim_custom_cb_update_cb_gate);
+
   uim_scm_load_file("custom.scm");
 
   return UIM_TRUE;
@@ -481,6 +487,8 @@ uim_bool
 uim_custom_quit(void)
 {
   /* TODO */
+  uim_custom_cb_remove(NULL);
+
   return UIM_TRUE;
 }
 
@@ -983,10 +991,25 @@ uim_custom_symbol_list_free(char **symbol_list)
   uim_scm_c_list_free((void **)symbol_list, (uim_scm_c_list_free_func)free);
 }
 
+static uim_lisp
+uim_custom_cb_update_cb_gate(uim_lisp cb, uim_lisp ptr, uim_lisp custom_sym)
+{
+  uim_custom_cb_update_cb_t update_cb;
+  void *c_ptr;
+  char *c_custom_sym;
+
+  update_cb = (uim_custom_cb_update_cb_t)uim_scm_c_ptr(cb);
+  c_ptr = uim_scm_c_ptr(ptr);
+  c_custom_sym = uim_scm_c_symbol(custom_sym);
+  (*update_cb)(c_ptr, c_custom_sym);
+
+  return uim_scm_f();
+}
+
 /**
  * Set a callback function in a custom variable. The @a update_cb is called
- * back when the custom variable specified by @a custom_sym is updated. This
- * function is not implemented yet.
+ * back when the custom variable specified by @a custom_sym is
+ * updated. Multiple callbacks for one custom variable is allowed.
  *
  * @retval UIM_TRUE succeeded
  * @retval UIM_FALSE failed
@@ -996,9 +1019,41 @@ uim_custom_symbol_list_free(char **symbol_list)
  *        updated
  */
 uim_bool
-uim_custom_cb_set(const char *custom_sym, void *ptr,
-		   void (*update_cb)(void *ptr, const char *custom_sym))
+uim_custom_cb_add(const char *custom_sym, void *ptr,
+		  void (*update_cb)(void *ptr, const char *custom_sym))
 {
-  /* TODO */
-  return UIM_FALSE;
+  uim_bool succeeded;
+  uim_lisp stack_start;
+  uim_lisp form;
+
+  uim_scm_gc_protect_stack(&stack_start);
+  form = uim_scm_list5(uim_scm_make_symbol("custom-register-update-cb"),
+		       uim_scm_make_symbol(custom_sym),
+		       uim_scm_make_ptr(ptr),
+		       uim_scm_make_symbol("custom-update-cb-gate"),
+		       uim_scm_make_ptr(update_cb));
+  succeeded = uim_scm_c_bool(uim_scm_eval(form));
+  uim_scm_gc_unprotect_stack(&stack_start);
+
+  return succeeded;
+}
+
+/**
+ * Remove the callback functions in a custom variable. All functions set for @a
+ * custom_sym will be removed.
+ *
+ * @retval UIM_TRUE some functions are removed
+ * @retval UIM_FALSE no functions are removed
+ * @param custom_sym custom variable name. NULL instructs 'all callbacks'
+ */
+uim_bool
+uim_custom_cb_remove(const char *custom_sym)
+{
+  uim_bool removed;
+
+  UIM_EVAL_FSTRING1(NULL, "(custom-remove-hook '%s 'custom-update-hook)",
+		    (custom_sym) ? custom_sym : "#f");
+  removed = uim_scm_c_bool(uim_scm_return_value());
+
+  return removed;
 }
