@@ -43,7 +43,7 @@
 #include <stdlib.h>
 
 static int uim_fd;
-static QToolButton *fallbackButton = NULL;
+static QHelperToolbarButton *fallbackButton = NULL;
 static QSocketNotifier *notifier = NULL;
 
 UimStateIndicator::UimStateIndicator( QWidget *parent, const char *name, WFlags f )
@@ -51,7 +51,7 @@ UimStateIndicator::UimStateIndicator( QWidget *parent, const char *name, WFlags 
 {
     if ( !fallbackButton )
     {
-        fallbackButton = new QToolButton( this );
+        fallbackButton = new QHelperToolbarButton( this );
         fallbackButton->setText( "?" );
         fallbackButton->show();
     }
@@ -105,7 +105,7 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
     if ( !buttons.isEmpty() )
         buttons.clear();
 
-    QToolButton *button = NULL;
+    QHelperToolbarButton *button = NULL;
     QHelperPopupMenu *popupMenu = NULL;
 
     QStringList::ConstIterator it = lines.begin();
@@ -128,7 +128,7 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                 popupMenu->setCheckable( true );
 
                 // create button
-                button = new QToolButton( this );
+                button = new QHelperToolbarButton( this );
                 button->setText( fields[ 1 ] );
                 QToolTip::add( button, fields[ 2 ] );
                 button->setPopup( popupMenu );

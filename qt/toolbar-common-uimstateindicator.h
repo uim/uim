@@ -41,6 +41,9 @@
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
 
+#define BUTTON_SIZE 25
+
+class QHelperToolbarButton;
 class QHelperPopupMenu;
 
 class UimStateIndicator : public QHBox
@@ -64,7 +67,19 @@ public slots:
     void slotStdinActivated( int socket );
 
 protected:
-    QPtrList<QToolButton> buttons;
+    QPtrList<QHelperToolbarButton> buttons;
+};
+
+class QHelperToolbarButton : public QToolButton
+{
+public:
+    QHelperToolbarButton( QWidget *parent = 0, const char *name = 0 )
+        : QToolButton( parent, name ){}
+
+    QSize sizeHint() const
+    {
+        return QSize( BUTTON_SIZE, BUTTON_SIZE );
+    }
 };
 
 class QHelperPopupMenu : public QPopupMenu

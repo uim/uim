@@ -36,12 +36,23 @@
 #include <qframe.h>
 #include <qevent.h>
 #include <qpoint.h>
+#include <qhbox.h>
+
+class UimStandaloneToolbar : public QHBox
+{
+    Q_OBJECT
+
+public:
+    UimStandaloneToolbar( QWidget *paret = 0, const char *name = 0 );
+    ~UimStandaloneToolbar();
+};
 
 class UimToolbarDraggingHandler : public QFrame
 {
     Q_OBJECT
+    
 public:
-    UimToolbarDraggingHandler( QWidget *parent, const char* name = 0 );
+    UimToolbarDraggingHandler( QWidget *parent, const char *name = 0 );
 
     QSize sizeHint() const;
     QSizePolicy sizePolicy() const;

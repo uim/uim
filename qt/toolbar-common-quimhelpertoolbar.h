@@ -34,6 +34,9 @@
 #define _QUIM_HELPER_TOOLBAR_H_
 
 #include <qhbox.h>
+#include <qevent.h>
+#include <qpopupmenu.h>
+#include <qpixmap.h>
 
 class QUimHelperToolbar : public QHBox
 {
@@ -45,11 +48,22 @@ public:
 
 protected:
     void addExecImSwitcherButton();
-    void addExecKasumiButton(); // configure option
+    void addExecPrefButton();
 
+    // right click
+    virtual void contextMenuEvent ( QContextMenuEvent * e );
+    
 protected slots:
     void slotExecSwitcher();
-    void slotExecKasumi(); // configure option
+    void slotExecPref();
+
+signals:
+    void quitToolbar();
+
+protected:
+    QPixmap m_swicon;
+    QPixmap m_preficon;
+    QPopupMenu *m_contextMenu;
 };
 
 

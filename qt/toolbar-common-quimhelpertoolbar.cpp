@@ -38,30 +38,59 @@
 
 #include <stdlib.h>
 
+#include "uim-compat-scm.h"
 #include "qtgettext.h"
 
+static const QString ICONDIR = UIM_PIXMAPSDIR;
+
 QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags f )
-        : QHBox( parent, name, f )
+    : QHBox( parent, name, f )
 {
     new UimStateIndicator( this );
+
+    m_swicon = QPixmap( ICONDIR + "/switcher-icon.png" );
+    m_preficon = QPixmap( ICONDIR + "/configure-qt.png");
+
+    m_contextMenu = new QPopupMenu( this );
+    m_contextMenu->insertItem( m_swicon, _("Execute uim's input method switcher"), this, SLOT(slotExecSwitcher()) );
+    m_contextMenu->insertItem( m_preficon, _("Execute uim's preference tool"), this, SLOT(slotExecPref()) );
+    m_contextMenu->insertItem( _("Quit this toolbar"), this, SIGNAL(quitToolbar()) );
 
     // switcher exec button
     addExecImSwitcherButton();
 
-    // kasumi exec button (configure option)
-    addExecKasumiButton();
+    // pref exec button
+    addExecPrefButton();
 }
 
 QUimHelperToolbar::~QUimHelperToolbar()
-{}
+{
+}
+
+void QUimHelperToolbar::contextMenuEvent( QContextMenuEvent * e )
+{
+    if( !m_contextMenu->isShown() )
+    {
+        m_contextMenu->move( e->globalPos() );
+        m_contextMenu->exec();
+    }
+}
 
 void QUimHelperToolbar::addExecImSwitcherButton()
 {
-    QToolButton * swbutton = new QToolButton( this );
-    swbutton->setText( _( "sw" ) );
-    QObject::connect( swbutton, SIGNAL( clicked() ),
+    uim_bool isShowSwitcher = uim_scm_symbol_value_bool("toolbar-show-switcher-button?");
+    if( isShowSwitcher == UIM_FALSE )
+        return;
+
+    QToolButton * swButton = new QHelperToolbarButton( this );
+    if( !m_swicon.isNull() )
+        swButton->setPixmap( m_swicon );
+    else
+        swButton->setText( "sw" );
+
+    QObject::connect( swButton, SIGNAL( clicked() ),
                       this, SLOT( slotExecSwitcher() ) );
-    QToolTip::add( swbutton, _( "exec im-switcher" ) );
+    QToolTip::add( swButton, _( "exec im-switcher" ) );
 }
 
 
@@ -71,23 +100,27 @@ void QUimHelperToolbar::slotExecSwitcher()
     system( "uim-im-switcher-qt &" );
 }
 
-void QUimHelperToolbar::addExecKasumiButton()
+void QUimHelperToolbar::addExecPrefButton()
 {
-#ifdef USE_KASUMI
-    QToolButton * kasumiButton = new QToolButton( this );
-    kasumiButton->setText( _( "Kasumi" ) );
-    QObject::connect( kasumiButton, SIGNAL( clicked() ),
-                      this, SLOT( slotExecKasumi() ) );
-    QToolTip::add( kasumiButton, _( "exec Kasumi" ) );
-#endif
+    uim_bool isShowPref = uim_scm_symbol_value_bool("toolbar-show-pref-button?");
+    if( isShowPref == UIM_FALSE )
+        return;
+    
+    QToolButton * prefButton = new QHelperToolbarButton( this );
+    if( !m_preficon.isNull() )
+        prefButton->setPixmap( m_preficon );
+    else
+        prefButton->setText( "pref" );
+
+    QObject::connect( prefButton, SIGNAL( clicked() ),
+                      this, SLOT( slotExecPref() ) );
+    QToolTip::add( prefButton, _( "exec Preference Application" ) );
 }
 
-void QUimHelperToolbar::slotExecKasumi()
+void QUimHelperToolbar::slotExecPref()
 {
-#ifdef USE_KASUMI
-    /* exec kasumi */
-    system( "kasumi &" );
-#endif
+    /* exec uim-pref-qt */
+    system( "uim-pref-qt &" );
 }
 
 #include "toolbar-common-quimhelpertoolbar.moc"

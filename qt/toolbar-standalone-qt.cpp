@@ -41,8 +41,45 @@
 
 #include <locale.h>
 
+#include "uim/uim.h"
 #include "uim/config.h"
 #include "qtgettext.h"
+
+UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent, const char *name )
+    : QHBox( parent, name, Qt::WStyle_NoBorder | Qt::WX11BypassWM )
+{
+    uim_init();
+
+    adjustSize();
+    UimToolbarDraggingHandler *h = new UimToolbarDraggingHandler( this );
+    h->adjustSize();
+    h->show();
+    
+    QUimHelperToolbar *b = new QUimHelperToolbar( this );
+    b->adjustSize();
+    b->show();
+
+    // Move
+    int panelHeight = 64; // FIXME!
+    int screenwidth = QApplication::desktop() ->screenGeometry().width();
+    int screenheight = QApplication::desktop() ->screenGeometry().height();
+    QPoint p( screenwidth - width() - panelHeight, screenheight - height() - panelHeight );
+    move( p );
+
+    // Enable Dragging Feature
+    QObject::connect( h, SIGNAL( moveTo( const QPoint & ) ),
+                      this, SLOT( move( const QPoint & ) ) );
+
+    // Quit
+    QObject::connect( b, SIGNAL( quitToolbar() ),
+                      qApp, SLOT( quit() ) );
+
+    show();
+}
+UimStandaloneToolbar::~UimStandaloneToolbar()
+{
+    uim_quit();
+}
 
 UimToolbarDraggingHandler::UimToolbarDraggingHandler( QWidget *parent,
         const char* name )
@@ -99,29 +136,10 @@ int main( int argc, char *argv[] )
     bind_textdomain_codeset(PACKAGE, "UTF-8"); // ensure code encoding is UTF8-
     
     QApplication a( argc, argv );
+    UimStandaloneToolbar *toolbar = new UimStandaloneToolbar( 0, 0 );
+    toolbar->show();
+    a.setMainWidget( toolbar );
 
-    QHBox toolbar( 0, 0, Qt::WStyle_NoBorder | Qt::WX11BypassWM );
-    toolbar.adjustSize();
-    UimToolbarDraggingHandler h( &toolbar );
-    h.adjustSize();
-    QUimHelperToolbar b( &toolbar );
-    b.adjustSize();
-
-    a.setMainWidget( &toolbar );
-
-    // Move : FIXME!
-    int panelHeight = 64; /* FIXME! */
-    int screenwidth = QApplication::desktop() ->screenGeometry().width();
-    int screenheight = QApplication::desktop() ->screenGeometry().height();
-    QPoint p( screenwidth - toolbar.width() - panelHeight, screenheight - toolbar.height() - panelHeight );
-    toolbar.move( p );
-
-    // Enable Dragging Feature
-    QObject::connect( &h, SIGNAL( moveTo( const QPoint & ) ),
-                      &toolbar, SLOT( move( const QPoint & ) ) );
-
-    // Show
-    toolbar.show();
     return a.exec();
 }
 
