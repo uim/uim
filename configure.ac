@@ -254,20 +254,20 @@ AC_ARG_ENABLE(compat-custom,
                  [enable obsolete version of 'custom API' required by sumika. This exclusively disables new custom API]))
 
 AC_ARG_ENABLE(scm-nested-eval,
-  AC_HELP_STRING([--enable-scm-nested-eval],
-                 [enable nested Scheme evaluation from C (i.e. C -> Scheme -> C -> Scheme) (for developer, experimental)]))
-
-AC_ARG_ENABLE(callback-queue,
-  AC_HELP_STRING([--disable-callback-queue],
-                 [disable callback queue (for developer, experimental)]),
+  AC_HELP_STRING([--disable-scm-nested-eval],
+                 [disable nested Scheme evaluation from C (i.e. C -> Scheme -> C -> Scheme) (for developer, will be obsolete)]),
   [
-    if test "$enable_callback_queue" != "no" ;then
-      enable_callback_queue="yes"
+    if test "$enable_scm_nested_eval" != "no" ;then
+      enable_scm_nested_eval="yes"
     fi
   ],
   [
-    enable_callback_queue="yes"
+    enable_scm_nested_eval="yes"
   ])
+
+AC_ARG_ENABLE(callback-queue,
+  AC_HELP_STRING([--enable-callback-queue],
+                 [enable callback queue (for developer, will be obsolete)]))
 
 AC_ARG_ENABLE(fep,
   AC_HELP_STRING([--disable-fep],
@@ -286,7 +286,7 @@ AC_ARG_ENABLE(fep,
 
 AC_ARG_ENABLE(sumika,
   AC_HELP_STRING([--enable-sumika],
-                 [enable sumika (a dictionary utility for uim, experimental)]),
+                 [enable sumika (a dictionary utility for uim, obsolete)]),
   [
     case $enable_sumika in
       no)
