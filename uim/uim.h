@@ -459,7 +459,7 @@ const char *uim_candidate_get_heading_label(uim_candidate cand);
  * Get the string of candidate's annotation.
  *
  * @warning You must not free the result. All datas are freed by calling uim_candidate_free.
- * @warning This string can be "NULL".
+ * @warning If no data is available, return string is "" (empty string).
  *
  * @param cand the data you got by uim_get_candidate
  *
