@@ -986,8 +986,9 @@ bool ConvdispOv::check_atr()
 	if (!m_initial_fontset && !m_lang_changed)
 	    m_initial_fontset = m_atr->font_set;
     }
-    if (!m_atr->has_atr(ICA_LineSpace))
-	m_atr->line_space = 14;
+    if (!m_atr->has_atr(ICA_LineSpace)) {
+	m_atr->line_space = 16;
+    }
 
     if (!m_atr->has_atr(ICA_Foreground))
 	m_atr->foreground_pixel = BlackPixel(XimServer::gDpy,

@@ -159,6 +159,7 @@ icxatr::icxatr()
     m_locale = NULL;
     foreground_pixel = BlackPixel(XimServer::gDpy, DefaultScreen(XimServer::gDpy));
     background_pixel = WhitePixel(XimServer::gDpy, DefaultScreen(XimServer::gDpy));
+    line_space = 0;
 }
 
 icxatr::~icxatr()
