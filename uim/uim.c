@@ -31,13 +31,13 @@
 
 */
 
+#include "config.h"
 #include <pwd.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
-#include "config.h"
 #include "uim.h"
 #include "uim-im-switcher.h"
 #include "uim-scm.h"
@@ -632,6 +632,25 @@ uim_init_scm()
   for (i = 0; i < (int)UIM_RETURN_STR_LIST_SIZE; i++){
     uim_return_str_list[i] = NULL;
   }
+
+#if 0
+  /*
+    Current libuim implementation has the gettext encoding problem. It
+    requires library-wide default encoding configurability rather than
+    per context encoding.  -- YamaKen 2005-01-31
+  */
+#ifdef ENABLE_NLS
+ {
+   const char *client_enc;
+
+   /* portable equivalent of nl_langinfo(CODESET) */
+   UIM_EVAL_FSTRING1(NULL, "(locale-lang (locale-new \"%s\"))",
+		     setlocale(LC_CTYPE, NULL));
+   client_enc = uim_scm_refer_c_str(uim_scm_return_value());
+   uim_last_client_encoding = strdup(client_enc);
+ }
+#endif
+#endif
 }
 
 int

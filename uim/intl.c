@@ -92,8 +92,23 @@ intl_bindtextdomain(uim_lisp domainname, uim_lisp dirname)
 static uim_lisp
 intl_bind_textdomain_codeset(uim_lisp domainname, uim_lisp codeset)
 {
-  return uim_scm_make_str(bind_textdomain_codeset(uim_scm_refer_c_str(domainname),
-						  uim_scm_refer_c_str(codeset)));
+  const char *c_current_codeset, *c_codeset;
+  uim_lisp current_codeset;
+
+  if (!uim_scm_stringp(domainname)
+      || !(uim_scm_stringp(codeset) || FALSEP(codeset)))
+    return uim_scm_f();
+
+  c_codeset = (FALSEP(codeset)) ? NULL : uim_scm_refer_c_str(codeset);
+  c_current_codeset = bind_textdomain_codeset(uim_scm_refer_c_str(domainname),
+					      c_codeset);
+  if (c_current_codeset) {
+    current_codeset = uim_scm_make_str(c_current_codeset);
+  } else {
+    current_codeset = uim_scm_f();
+  }
+
+  return current_codeset;
 }
 
 static uim_lisp
@@ -105,8 +120,15 @@ intl_gettext(uim_lisp msgid)
 static uim_lisp
 intl_dgettext(uim_lisp domainname, uim_lisp msgid)
 {
-  return uim_scm_make_str(dgettext(uim_scm_refer_c_str(domainname),
-				   uim_scm_refer_c_str(msgid)));
+  const char *translated;
+
+  if (!uim_scm_stringp(domainname) || !uim_scm_stringp(msgid))
+    return uim_scm_f();
+
+  translated = dgettext(uim_scm_refer_c_str(domainname),
+			uim_scm_refer_c_str(msgid));
+
+  return uim_scm_make_str(translated);
 }
 
 static uim_lisp
