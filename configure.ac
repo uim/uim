@@ -150,7 +150,7 @@ AC_SEARCH_LIBS(dlfunc,dl,
   [
     AC_DEFINE(HAVE_DLFUNC, 1,
               [Define to 1 if you have the `dlfunc' function.])
-    
+
   ])
 
 GETTEXT_PACKAGE=uim
@@ -465,6 +465,17 @@ if test x$use_qt = xyes ; then
     fi
     UIC=$HOST_UIC
 
+    # GUESS plugins dir for immodule installation
+    AC_MSG_CHECKING(for qt-immodule plugins dir)
+    if test -z "$QTDIR/plugins"; then
+      AC_MSG_RESULT(no)
+    else
+      QT_PLUGINSDIR=$QTDIR/plugins
+      AC_MSG_RESULT($QT_PLUGINSDIR)
+      AC_SUBST(QT_PLUGINSDIR)
+    fi
+
+
     # Process for compiler & linker flags
     QT_CFLAGS="-I${QTDIR}${QTINCDIR} -DQT_GENUINE_STR -DQT_NO_STL"
     if test -z "$enable_debug"; then
@@ -478,6 +489,11 @@ if test x$use_qt = xyes ; then
     AC_CHECK_LIB(qt, main, QT_LIB=-lqt,
         AC_CHECK_LIB(qt-mt, main, QT_LIB=-lqt-mt,
             AC_MSG_ERROR([Cannot find QT libraries.])))
+
+    if test "$QT_LIB" = "-lqt-mt"; then
+      QT_CFLAGS="$QT_CFLAGS -DQT_THREAD_SUPPORT"
+    fi
+
     LDFLAGS=$_SAVE_LDFLAGS
     QT_LIBS="-L/usr/X11R6/lib $QT_LDFLAGS $QT_LIB -lXext -lX11"
 
@@ -489,7 +505,7 @@ if test x$use_qt = xyes ; then
 
     CXXFLAGS="$CXXFLAGS $QT_CFLAGS"
     LIBS="$LIBS $QT_LIBS"
-    
+
     AC_MSG_CHECKING(Qt - version >= $QT_VERSION)
     AC_TRY_COMPILE([#include <qglobal.h>],
     [
@@ -514,7 +530,7 @@ if test x$use_qt = xyes ; then
 fi
 
 if test x$use_qt = xyes ; then
-    AC_MSG_CHECKING(for qt-immodue patch)
+    AC_MSG_CHECKING(for qt-immodule patch)
     if test x$use_qtimmodule = xyes ; then
         # Check for immodule for Qt patch
         if test ! -e $QTDIR$QTINCDIR/qinputcontext.h -o ! -e $QTDIR$QTINCDIR/qinputcontextplugin.h; then
@@ -522,8 +538,6 @@ if test x$use_qt = xyes ; then
           $use_qtimmodule="cannot"
         else
 	  AC_MSG_RESULT(yes)
-          AC_DEFINE(USE_QTIMMODULE, 1,
-                [use qt-immmodule])
         fi
     fi
 fi

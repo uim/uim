@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = m4 doc scm uim xim helper po gtk tables test fep examples pixmaps
+SUBDIRS = m4 doc scm uim xim helper po gtk tables test fep examples pixmaps qt
 EXTRA_DIST = README.ja INSTALL.ja test.sh.in uim.spec.in \
 	intltool-extract.in intltool-merge.in intltool-update.in \
 	uim.pc.in
