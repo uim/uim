@@ -647,26 +647,24 @@ uim_init_scm()
   scm_files = getenv("LIBUIM_SCM_FILES");
   uim_scm_set_lib_path((scm_files) ? scm_files : SCM_FILES);
 
+  uim_scm_require_file("im.scm");
 #if 0
-  /*
-    Enable this code for IM bridges once each define-customs have been
-    distributed into each IMs. 'rt' stands for 'runtime'.
-  */
-  uim_scm_load_file("custom-rt.scm");
+  /* lightweight version of custom.scm - not yet implemented */
+  uim_scm_require_file("custom-rt.scm");
+#else
+  uim_scm_require_file("custom.scm");
 #endif
-  uim_scm_load_file("im.scm");
-  uim_scm_load_file("plugin.scm");
+  uim_scm_require_file("plugin.scm");
   uim_scm_load_file("loader.scm");
-  uim_scm_load_file("direct.scm");  /* must be loaded at last of IMs */
+  uim_scm_require_file("direct.scm");  /* must be loaded at last of IMs */
 #if 1
   /*
-    Disable this code once the custom.scm has been divided into 3
-    parts. 'custom-rt.scm' for IM bridges, 'custom.scm' for
-    configuration tools, and define-customs in each IM implementation
-    files such as anthy.scm  -- YamaKen 2004-12-28
+    Remove this code once the definition of custom-vars.scm is
+    distributed into IM files  -- YamaKen 2005-01-08
   */
-  uim_scm_load_file("custom.scm");
+  uim_scm_require_file("custom-vars.scm");
 #endif
+
 #ifndef UIM_COMPAT_CUSTOM
   /* must be loaded after IMs and before user conf */
   if (!getenv("LIBUIM_VANILLA")) {

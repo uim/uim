@@ -200,7 +200,7 @@
 (define-uim-test-case "testcase custom custom-group"
   (setup
    (lambda ()
-     (uim '(load "custom.scm"))
+     ;;(uim '(load "custom.scm"))
      (uim '(define test-group-recs-length 0))))
 
   ("test custom-group-rec-new"
@@ -292,7 +292,7 @@
 (define-uim-test-case "testcase custom custom-group methods"
   (setup
    (lambda ()
-     (uim '(load "custom.scm"))
+     ;;(uim '(load "custom.scm"))
      (uim '(custom-define-group
 	    'test-group
 	    "test group"

@@ -1299,6 +1299,14 @@ repl_c_string (const char *str,
     return (2);
 }
 
+#if (!NESTED_REPL_C_STRING)
+int
+siod_repl_c_string_entered (void)
+{
+  return repl_c_string_entered;
+}
+#endif
+
 void
 set_repl_hooks (void (*puts_f) (char *),
 		LISP (*read_f) (void),

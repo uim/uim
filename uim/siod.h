@@ -261,6 +261,8 @@ void gc_protect (LISP * location); /* exported as temporary solution for custom 
 #if (NESTED_REPL_C_STRING)
 void siod_gc_protect_stack(LISP *stack_start);
 void siod_gc_unprotect_stack(LISP *stack_start);
+#else
+int siod_repl_c_string_entered (void);
 #endif
 long repl_c_string (const char *, long want_init, long want_print);
 LISP siod_return_value (void);

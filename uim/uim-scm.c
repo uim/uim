@@ -370,10 +370,14 @@ uim_scm_require_file(const char *fn)
   UIM_EVAL_FSTRING2(NULL, "(eq? '*%s-loaded* (*catch 'errobj (require \"%s\")))", fn, fn);
   succeeded = uim_scm_c_bool(uim_scm_return_value());
 #else
-  /* broken: does not support direct call from C */
-  _fn = uim_scm_make_str(fn);
-  require((LISP)_fn);
-  succeeded = UIM_TRUE;  /* bogus result */
+  if (siod_repl_c_string_entered()) {
+    _fn = uim_scm_make_str(fn);
+    require((LISP)_fn);
+    succeeded = UIM_TRUE;  /* bogus result */
+  } else {
+    UIM_EVAL_FSTRING2(NULL, "(eq? '*%s-loaded* (*catch 'errobj (require \"%s\")))", fn, fn);
+    succeeded = uim_scm_c_bool(uim_scm_return_value());
+  }
 #endif
 
   return succeeded;
