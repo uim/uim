@@ -37,6 +37,10 @@
 
 (define-uim-test-case "testcase util character predicates"
   ("test char-control?"
+   (assert-false (uim-bool '(char-control? 'symbol)))
+   (assert-false (uim-bool '(char-control? "string")))
+   (assert-false (uim-bool '(char-control? '(0 1 2))))
+   (assert-false (uim-bool '(char-control? car)))
    (assert-true  (uim-bool '(char-control? 0)))    ; NUL
    (assert-true  (uim-bool '(char-control? 1)))    ; SOH
    (assert-true  (uim-bool '(char-control? 31)))   ; US
@@ -57,6 +61,10 @@
    (assert-false (uim-bool '(char-control? 126)))  ; ~
    (assert-true  (uim-bool '(char-control? 127)))) ; DEL
   ("test char-upper-case?"
+   (assert-false (uim-bool '(char-upper-case? 'symbol)))
+   (assert-false (uim-bool '(char-upper-case? "string")))
+   (assert-false (uim-bool '(char-upper-case? '(0 1 2))))
+   (assert-false (uim-bool '(char-upper-case? car)))
    (assert-false (uim-bool '(char-upper-case? 0)))    ; NUL
    (assert-false (uim-bool '(char-upper-case? 1)))    ; SOH
    (assert-false (uim-bool '(char-upper-case? 31)))   ; US
@@ -77,6 +85,10 @@
    (assert-false (uim-bool '(char-upper-case? 126)))  ; ~
    (assert-false (uim-bool '(char-upper-case? 127)))) ; DEL
   ("test char-lower-case?"
+   (assert-false (uim-bool '(char-lower-case? 'symbol)))
+   (assert-false (uim-bool '(char-lower-case? "string")))
+   (assert-false (uim-bool '(char-lower-case? '(0 1 2))))
+   (assert-false (uim-bool '(char-lower-case? car)))
    (assert-false (uim-bool '(char-lower-case? 0)))    ; NUL
    (assert-false (uim-bool '(char-lower-case? 1)))    ; SOH
    (assert-false (uim-bool '(char-lower-case? 31)))   ; US
@@ -97,6 +109,10 @@
    (assert-false (uim-bool '(char-lower-case? 126)))  ; ~
    (assert-false (uim-bool '(char-lower-case? 127)))) ; DEL
   ("test char-alphabetic?"
+   (assert-false (uim-bool '(char-alphabetic? 'symbol)))
+   (assert-false (uim-bool '(char-alphabetic? "string")))
+   (assert-false (uim-bool '(char-alphabetic? '(0 1 2))))
+   (assert-false (uim-bool '(char-alphabetic? car)))
    (assert-false (uim-bool '(char-alphabetic? 0)))    ; NUL
    (assert-false (uim-bool '(char-alphabetic? 1)))    ; SOH
    (assert-false (uim-bool '(char-alphabetic? 31)))   ; US
@@ -117,6 +133,10 @@
    (assert-false (uim-bool '(char-alphabetic? 126)))  ; ~
    (assert-false (uim-bool '(char-alphabetic? 127)))) ; DEL
   ("test char-numeric?"
+   (assert-false (uim-bool '(char-numeric? 'symbol)))
+   (assert-false (uim-bool '(char-numeric? "string")))
+   (assert-false (uim-bool '(char-numeric? '(0 1 2))))
+   (assert-false (uim-bool '(char-numeric? car)))
    (assert-false (uim-bool '(char-numeric? 0)))     ; NUL
    (assert-false (uim-bool '(char-numeric? 1)))     ; SOH
    (assert-false (uim-bool '(char-numeric? 31)))    ; US
@@ -137,6 +157,10 @@
    (assert-false (uim-bool '(char-numeric? 126)))   ; ~
    (assert-false (uim-bool '(char-numeric? 127)))) ; DEL
   ("test char-printable?"
+   (assert-false (uim-bool '(char-printable? 'symbol)))
+   (assert-false (uim-bool '(char-printable? "string")))
+   (assert-false (uim-bool '(char-printable? '(0 1 2))))
+   (assert-false (uim-bool '(char-printable? car)))
    (assert-false (uim-bool '(char-printable? 0)))    ; NUL
    (assert-false (uim-bool '(char-printable? 1)))    ; SOH
    (assert-false (uim-bool '(char-printable? 31)))   ; US
@@ -157,6 +181,10 @@
    (assert-true  (uim-bool '(char-printable? 126)))  ; ~
    (assert-false (uim-bool '(char-printable? 127)))) ; DEL
   ("test char-graphic?"
+   (assert-false (uim-bool '(char-graphic? 'symbol)))
+   (assert-false (uim-bool '(char-graphic? "string")))
+   (assert-false (uim-bool '(char-graphic? '(0 1 2))))
+   (assert-false (uim-bool '(char-graphic? car)))
    (assert-false (uim-bool '(char-graphic? 0)))    ; NUL
    (assert-false (uim-bool '(char-graphic? 1)))    ; SOH
    (assert-false (uim-bool '(char-graphic? 31)))   ; US
@@ -254,6 +282,30 @@
    (assert-equal 123 (uim '(char-upcase 123)))   ; {
    (assert-equal 126 (uim '(char-upcase 126)))   ; ~
    (assert-equal 127 (uim '(char-upcase 127))))  ; DEL
+  ("test string->letter"
+   (assert-false (uim-bool '(string->letter "")))    ; NUL
+   (assert-false (uim-bool '(string->letter "")))  ; SOH
+   (assert-false (uim-bool '(string->letter "")))  ; US
+   (assert-false (uim-bool '(string->letter " ")))   ; SPACE
+   (assert-false (uim-bool '(string->letter "!")))   ; !
+   (assert-false (uim-bool '(string->letter "/")))   ; /
+   (assert-false (uim-bool '(string->letter "0")))   ; 0
+   (assert-false (uim-bool '(string->letter "9")))   ; 9
+   (assert-false (uim-bool '(string->letter ":")))   ; :
+   (assert-false (uim-bool '(string->letter "@")))   ; @
+   (assert-false (uim-bool '(string->letter "AA")))  ; AA
+   (assert-equal 65   (uim '(string->letter "A")))   ; A
+   (assert-equal 90   (uim '(string->letter "Z")))   ; Z
+   (assert-false (uim-bool '(string->letter "ZZ")))  ; ZZ
+   (assert-false (uim-bool '(string->letter "[")))   ; [
+   (assert-false (uim-bool '(string->letter "`")))   ; `
+   (assert-false (uim-bool '(string->letter "aa")))  ; aa
+   (assert-equal 97   (uim '(string->letter "a")))   ; a
+   (assert-equal 122  (uim '(string->letter "z")))   ; z
+   (assert-false (uim-bool '(string->letter "zz")))  ; zz
+   (assert-false (uim-bool '(string->letter "{")))   ; {
+   (assert-false (uim-bool '(string->letter "~")))   ; ~
+   (assert-false (uim-bool '(string->letter "")))) ; DEL
   ("test to-lower-char"
    (assert-true  (uim-bool '(eq? to-lower-char char-downcase)))))
 

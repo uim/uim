@@ -62,7 +62,9 @@
 
 (define char-printable?
   (lambda (c)
-    (not (char-control? c))))
+    (and (integer? c)
+	 (<= c 127)
+	 (not (char-control? c)))))
 
 (define char-graphic?
   (lambda (c)
@@ -94,17 +96,22 @@
 (define usual-char? char-graphic?)
 (define to-lower-char char-downcase)
 
-;;
+(define string->letter
+  (lambda (str)
+    (let ((c (and (= (string-length str)
+		     1)
+		  (string->charcode str))))
+      (and (char-alphabetic? c)
+	   c))))
+
 (define string-list-concat
   (lambda (lst)
     (apply string-append (reverse lst))))
 
-;;
 (define string-find
   (lambda (lst str)
     (member str lst)))
 
-;;
 (define truncate-list
   (lambda (lst n)
     (if (or (< (length lst)
