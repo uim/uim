@@ -61,6 +61,8 @@ public:
     ~UimPrefDialog();
 
 protected:
+    void checkDotUimFile();
+    
     void setupWidgets();
     void createMainWidgets();
     void createGroupWidgets();
@@ -93,7 +95,16 @@ class QConfirmDialog : public QDialog {
     Q_OBJECT
 
 public:
-    QConfirmDialog( const QString &msg, QWidget *parent = 0, const char *name = 0 );
+    QConfirmDialog( const QString &msg, const QString &confname, QWidget *parent, const char *name = 0 );
+
+protected:
+    void setupWidgets( const QString& msg );
+
+protected slots:
+    void showOnStart( bool isShowOnStart );
+
+protected:
+    QString m_confname;
 };
 
 //---------------------------------------------------------------------------------

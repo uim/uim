@@ -205,6 +205,7 @@ void CustomPathnameEdit::slotPathnameButtonClicked()
         QString fileName = fd->selectedFile();
         m_lineEdit->setText( fileName );
     }
+    delete fd;
 }
 
 void CustomPathnameEdit::slotCustomTextChanged( const QString & text )
@@ -488,6 +489,8 @@ void CustomOrderedListEdit::slotEditButtonClicked()
         /* reload */
         update();
     }
+
+    delete d;
 }
 
 void CustomOrderedListEdit::updateText()
@@ -727,6 +730,8 @@ void CustomKeyEdit::slotKeyButtonClicked()
         setCustom( m_custom );
         update();
     }
+
+    delete d;
 }
 
 KeyEditForm::KeyEditForm( QWidget *parent, const char *name )
@@ -780,6 +785,7 @@ void KeyEditForm::slotAddClicked()
             addKeyItem( keystr );
         }
     }
+    delete d;
 }
 
 void KeyEditForm::slotRemoveClicked()
@@ -805,6 +811,7 @@ void KeyEditForm::slotEditClicked()
                 selectedItem->setText( 0, keystr );
             }
         }
+        delete d;
     }
 }
 

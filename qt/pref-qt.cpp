@@ -53,10 +53,14 @@
 #include <qcombobox.h>
 #include <qlayout.h>
 #include <qobjectlist.h>
+#include <qfile.h>
+#include <qmessagebox.h>
+#include <qsettings.h>
 
 #include "uim/config.h"
 #include "qtgettext.h"
 
+#include <stdlib.h>
 #include <locale.h>
 
 #define _FU8(String) QString::fromUtf8(String)
@@ -67,11 +71,12 @@ UimPrefDialog::UimPrefDialog( QWidget *parent, const char *name )
 {
     uim_init();
     if (uim_custom_enable()) {
-      setupWidgets();
+        checkDotUimFile();        
+        setupWidgets();
     } else {
-      qDebug("uim_custom_enable() failed.");
-      uim_quit();
-      QApplication::exit( -1 );
+        qDebug("uim_custom_enable() failed.");
+        uim_quit();
+        QApplication::exit( -1 );
     }
 
     setCaption( "uim-pref-qt" );
@@ -80,6 +85,35 @@ UimPrefDialog::UimPrefDialog( QWidget *parent, const char *name )
 UimPrefDialog::~UimPrefDialog()
 {
     uim_quit();
+}
+
+void UimPrefDialog::checkDotUimFile()
+{
+    /* Check Config */
+    QSettings settings;
+    bool isShowOnStartup = settings.readBoolEntry( "/uim/qt/warnDotUim", true );
+    if( !isShowOnStartup )
+        return;
+
+    /* Check File Existance */
+    QString homeDir = getenv( "HOME" );
+    if( homeDir.isEmpty() )
+        return;
+
+    QString dotUim = homeDir + "/.uim";
+    if( QFile::exists( dotUim ) )
+    {
+        QString msg = N_("The user customize file \"~/.uim\" is found.\n"
+                         "This file will override all conflicted settings set by\n"
+                         "this tool (stored in ~/.uim.d/customs/*.scm).\n"
+                         "Please check the file if you find your settings aren't applied");
+        QConfirmDialog *d = new QConfirmDialog( msg,
+                                                "/uim/qt/warnDotUim",
+                                                this );
+        d->setCaption( _("~/.uim exists!") );
+        d->exec();
+        delete d;
+    }
 }
 
 /*
@@ -196,15 +230,19 @@ void UimPrefDialog::slotCustomValueChanged()
 
 void UimPrefDialog::confirmChange()
 {
-    QConfirmDialog *cDialog = new QConfirmDialog( _("The value was changed.\nSave?"),
-                                                  this );
-    if( cDialog->exec() == QDialog::Accepted )
+    int result = QMessageBox::question( this,
+                                        _("Save Confirm"),
+                                        _("The value was changed.\nSave?"),
+                                        _("OK"),
+                                        _("Cancel") );
+    switch(result)
     {
+    case 0:
         slotApply();
-    }
-    else
-    {
+        break;
+    case 1:
         m_isValueChanged = false;
+        break;
     }
 }
 
@@ -251,24 +289,56 @@ void UimPrefDialog::slotCancel()
 }
 
 //-------------------------------------------------------------------------------------
-QConfirmDialog::QConfirmDialog( const QString &msg, QWidget *parent, const char *name )
-    : QDialog( parent, name )
+QConfirmDialog::QConfirmDialog( const QString &msg, const QString &confname, QWidget *parent, const char *name )
+    : QDialog( parent, name ),
+      m_confname( confname )
 {
-    QVBoxLayout *vLayout = new QVBoxLayout( this );
-    vLayout->setSpacing( 6 );
-    vLayout->setMargin( 10 );
-    QLabel *msgLabel = new QLabel( msg, this );
-    QHBox *buttonHBox = new QHBox( this );
-    QPushButton *okButton = new QPushButton( _("OK"), buttonHBox );
-    QPushButton *cancelButton = new QPushButton( _("Cancel"), buttonHBox );
-    vLayout->addWidget( msgLabel );
-    vLayout->addWidget( buttonHBox );
-
-    QObject::connect( okButton, SIGNAL(clicked()),
-                      this, SLOT(accept()) );
-    QObject::connect( cancelButton, SIGNAL(clicked()),
-                      this, SLOT(reject()) );
+    QSettings settings;
+    bool isShowOnStartup = settings.readBoolEntry( m_confname, true );
+    if( isShowOnStartup )
+        setupWidgets( msg );
 }
+
+void QConfirmDialog::setupWidgets( const QString&msg )
+{
+    QVBoxLayout *vbox = new QVBoxLayout( this );
+    vbox->setSpacing( 6 );
+    vbox->setMargin( 6 );
+
+    QLabel *msgLabel = new QLabel( msg, this );
+    KSeparator *sep = new KSeparator( this );
+
+    QHBoxLayout *buttonHBox = new QHBoxLayout(vbox, 4);
+
+    QCheckBox *checkBox = new QCheckBox( _("Show this dialog on startup"), this );
+    QSettings settings;
+    bool isWarnDotUim = settings.readBoolEntry( m_confname, true );
+    checkBox->setChecked( isWarnDotUim );
+
+    QPushButton *ok = new QPushButton( _("OK"), this );
+    ok->setDefault(true);
+    buttonHBox->addWidget( checkBox );
+    buttonHBox->addStretch();
+    buttonHBox->addWidget( ok );
+
+    vbox->addWidget( msgLabel );
+    vbox->addWidget( sep );
+    vbox->addLayout( buttonHBox );
+
+    QObject::connect( ok, SIGNAL(clicked()),
+                      this, SLOT(accept()) );
+    QObject::connect( checkBox, SIGNAL(toggled(bool)),
+                      this, SLOT(showOnStart(bool)) );
+}
+
+void QConfirmDialog::showOnStart( bool isShowOnStart )
+{
+    QSettings settings;
+    settings.writeEntry( m_confname, isShowOnStart );
+
+    qDebug("show on start = %d", isShowOnStart );
+}
+
 
 //-----------------------------------------------------------------------------------
 
