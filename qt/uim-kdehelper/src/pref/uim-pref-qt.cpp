@@ -62,6 +62,7 @@
  * #include "uim/gettext.h"
  */
 #include <libintl.h>
+#include <unistd.h>
 
 #define _FU8(String) QString::fromUtf8(String)
 
@@ -74,6 +75,8 @@ UimPrefDialog::UimPrefDialog( QWidget *parent, const char *name )
       setupWidgets();
     } else {
       qDebug("uim_custom_enable() failed.");
+      uim_quit();
+      exit(-1);
     }
 }
 
@@ -114,19 +117,20 @@ void UimPrefDialog::createMainWidgets()
     QPushButton *defaultButton = new QPushButton( "Defaults", buttonHWidget );
     QObject::connect( defaultButton, SIGNAL(clicked()),
                       this, SLOT(slotSetDefault()) );
-    QPushButton *applyButton = new QPushButton( "Apply" , buttonHWidget );
-    QObject::connect( applyButton, SIGNAL(clicked()),
-                      this, SLOT(slotApply()) );
-    QPushButton *okButton = new QPushButton( "OK"    , buttonHWidget );
+    QPushButton *okButton = new QPushButton( "OK", buttonHWidget );
     QObject::connect( okButton, SIGNAL(clicked()),
                       this, SLOT(slotOK()) );
+    m_applyButton = new QPushButton( "Apply", buttonHWidget );
+    m_applyButton->setEnabled( false );
+    QObject::connect( m_applyButton, SIGNAL(clicked()),
+                      this, SLOT(slotApply()) );
     QPushButton *cancelButton = new QPushButton( "Cancel", buttonHWidget );
     QObject::connect( cancelButton, SIGNAL(clicked()),
                       this, SLOT(slotCancel()) );
     buttonHLayout->addWidget( defaultButton );
     buttonHLayout->addStretch();
-    buttonHLayout->addWidget( applyButton );
     buttonHLayout->addWidget( okButton );
+    buttonHLayout->addWidget( m_applyButton );
     buttonHLayout->addWidget( cancelButton );
     leftVLayout->setSpacing( 6 );
     leftVLayout->addWidget( m_groupWidgetStack );
@@ -176,11 +180,14 @@ void UimPrefDialog::slotSelectionChanged( QListViewItem * item )
     /* switch group widget */
     QString grpname = item->text( 0 );
     m_groupWidgetStack->raiseWidget( m_groupWidgetsDict[grpname] );
+
+    m_applyButton->setEnabled( false );
 }
 
 void UimPrefDialog::slotCustomValueChanged()
 {
-    m_isValueChanged = true;    
+    m_isValueChanged = true;
+    m_applyButton->setEnabled( true );
 }
 
 void UimPrefDialog::confirmChange()
@@ -217,6 +224,7 @@ void UimPrefDialog::slotApply()
     uim_custom_broadcast();
 
     m_isValueChanged = false;
+    m_applyButton->setEnabled( false );
 }
 
 void UimPrefDialog::slotOK()

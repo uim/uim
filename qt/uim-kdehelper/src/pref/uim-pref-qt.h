@@ -84,6 +84,8 @@ private:
 
     QListView *m_groupListView;
     QWidgetStack *m_groupWidgetStack;
+
+    QPushButton *m_applyButton;
 };
 
 //---------------------------------------------------------------------------------
