@@ -2131,12 +2131,12 @@ skk_eval_candidate(uim_lisp str_)
   cand = uim_scm_refer_c_str(str_);
 
   /* eval concat only for now */
-  if ((p = strstr(cand, "(concat")) == NULL)
+  if ((p = strstr(cand, "(concat \"")) == NULL)
     return str_;
 
   /* check close paren */
   q = strrchr(p, ')');
-  if (!q)
+  if (!q || (strstr(p, "\")") == NULL))
     return str_;
 
   /* ignore make-string */
