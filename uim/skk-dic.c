@@ -1653,6 +1653,10 @@ void
 uim_quit_skk_dic(void)
 {
   struct skk_line *sl, *tmp;
+
+  if(!skk_dic)
+    return;
+
   if (skk_dic->addr) {
     munmap(skk_dic->addr, skk_dic->size);
   }
