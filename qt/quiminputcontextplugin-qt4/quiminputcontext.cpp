@@ -120,23 +120,6 @@ bool QUimInputContext::filterEvent( const QEvent *event )
     QKeyEvent *keyevent = ( QKeyEvent * ) event;
     int qkey = keyevent->key();
 
-    /* Handle Candwin Specific Key */
-    if ( candwinIsActive && type == QEvent::KeyPress )
-    {
-        // Candidate Selection
-        if ( Qt::Key_0 <= qkey && qkey <= Qt::Key_9 )
-        {
-            int selectedIndex = 0;
-            if ( qkey == Qt::Key_0 )
-                selectedIndex = 9;
-            else
-                selectedIndex = qkey - Qt::Key_0 - 1;
-
-            cwin->setIndexInPage( selectedIndex );
-            return TRUE;
-        }
-    }
-
     int modifier = 0;
     if ( keyevent->modifiers() & Qt::ShiftModifier )
         modifier |= UMod_Shift;
@@ -570,7 +553,7 @@ void QUimInputContext::candidateActivate( int nr, int displayLimit )
     uim_candidate cand;
     for ( int i = 0; i < nr; i++ )
     {
-        cand = uim_get_candidate( m_uc, i, i % displayLimit );
+        cand = uim_get_candidate( m_uc, i, displayLimit ? i % displayLimit : i );
         list.append( cand );
     }
     cwin->setCandidates( displayLimit, list );
