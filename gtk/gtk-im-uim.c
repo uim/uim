@@ -745,7 +745,7 @@ cand_activate_cb(void *ptr, int nr, int display_limit)
   uic->cwin_is_active = TRUE;
 
   for (i = 0; i < nr; i++) {
-    cand = uim_get_candidate(uic->uc, i, i % display_limit);
+    cand = uim_get_candidate(uic->uc, i, display_limit ? i % display_limit : i);
     list = g_slist_append(list, cand);
   }
 

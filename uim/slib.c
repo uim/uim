@@ -1598,12 +1598,15 @@ Quotient (LISP x, LISP y)
     (x) my_err ("wta(1st) to quotient", x);
   if NULLP
     (y)
-      return (intcons (1 / INTNM (x))); /* XXX divided by 0 actually */
+      return (intcons (1 / INTNM (x))); /* XXX wrong number of arguments actually */
   else
     {
       if NINTNUMP
 	(y) my_err ("wta(2nd) to quotient", y);
-      return (intcons (INTNM (x) / INTNM (y)));
+      if (INTNM(y) == 0)
+        return (intcons (0)); /* divided by 0 actually */
+      else
+        return (intcons (INTNM (x) / INTNM (y)));
     }
 }
 
@@ -1614,12 +1617,15 @@ Remainder (LISP x, LISP y)
     (x) my_err ("wta(1st) to remainder", x);
   if NULLP
     (y)
-      return (intcons (1 % INTNM (x))); /* XXX divided by 0 actually */
+      return (intcons (1 % INTNM (x))); /* XXX wrong number of arguments actually */
   else
     {
       if NINTNUMP
 	(y) my_err ("wta(2nd) to remainder", y);
-      return (intcons (INTNM (x) % INTNM (y)));
+      if (INTNM(y) == 0)
+        return (intcons (INTNM (x))); /* divided by 0 actually */
+      else
+        return (intcons (INTNM (x) % INTNM (y)));
     }
 }
 

@@ -164,7 +164,9 @@
     (let* ((rkc (generic-context-rk-context pc))
 	   (cs (rk-current-seq rkc))
 	   (n (generic-context-rk-nth pc) (cadr cs))
-	   (cur-page (/ n generic-nr-candidate-max))
+	   (cur-page (if (= generic-nr-candidate-max 0)
+			 0
+			 (quotient n generic-nr-candidate-max)))
 	   (pageidx (- (numeral-char->number key) 1))
 	   (compensated-pageidx (cond
 				 ((< pageidx 0) ; pressing key_0

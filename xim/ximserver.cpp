@@ -675,7 +675,8 @@ void InputContext::candidate_activate(int nr, int display_limit)
     Canddisp *disp = canddisp_singleton();
 
     for (i = 0; i < nr; i++) {
-	cand[i] = uim_get_candidate(mUc, i, i % display_limit);
+	cand[i] = uim_get_candidate(mUc, i,
+			display_limit ? i % display_limit : i);
 	cand_str = uim_candidate_get_cand_str(cand[i]);
 	heading_label = uim_candidate_get_heading_label(cand[i]);
 	//annotation_str = uim_candidate_get_annotation(cand[i]);

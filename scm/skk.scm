@@ -1210,7 +1210,9 @@
 (define skk-commit-by-label-key
   (lambda (sc key)
     (let ((nr (skk-context-nr-candidates sc))
-	  (cur-page (quotient (skk-context-nth sc) skk-nr-candidate-max))
+	  (cur-page (if (= skk-nr-candidate-max 0)
+	                0
+			(quotient (skk-context-nth sc) skk-nr-candidate-max)))
 	  (idx -1)
 	  (res #f))
       (if (numeral-char? key)
@@ -1573,7 +1575,9 @@
 			  (skk-make-string okuri skk-type-hiragana))
 	   cand)
        ;; FIXME make sure to enable lable other than number
-       (digit->string (+ (remainder idx skk-nr-candidate-max) 1))
+       (if (= skk-nr-candidate-max 0)
+           (digit->string (+ idx 1))
+           (digit->string (+ (remainder idx skk-nr-candidate-max) 1)))
        ""))))
 
 (define skk-set-candidate-index-handler

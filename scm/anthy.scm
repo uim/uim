@@ -820,7 +820,9 @@
 	   (cur-seg (ustr-cursor-pos segments))
 	   (max (anthy-lib-get-nr-candidates ac-id cur-seg))
 	   (n (ustr-cursor-frontside segments))
-	   (cur-page (/ n anthy-nr-candidate-max))
+	   (cur-page (if (= anthy-nr-candidate-max 0)
+	   		 0
+			 (quotient n anthy-nr-candidate-max)))
 	   (pageidx (- (numeral-char->number numeralc) 1))
 	   (compensated-pageidx (cond
 				 ((< pageidx 0) ; pressing key_0
