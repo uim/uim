@@ -56,7 +56,7 @@ int vasprintf(char **ptr, const char *fmt, va_list ap);
 #endif
 
 #ifndef HAVE_STRSEP
-#ifdef ___cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 char *uim_strsep(char **stringp, const char *delim);
