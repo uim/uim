@@ -48,6 +48,7 @@
 #include "config.h"
 #include "uim.h"
 #include "uim-scm.h"
+#include "uim-compat-scm.h"
 #ifndef UIM_SCM_NESTED_EVAL
 #include "uim-compat-scm.h"
 #endif
@@ -61,13 +62,8 @@
 #define PLUGIN_PREFIX "libuim-"
 #define PLUGIN_SUFFIX ".so"
 
-static uim_plugin_info_list *uim_plugin_list = NULL;
-static void plugin_list_append(uim_plugin_info_list *entry);
-
 static uim_lisp 
 plugin_load(uim_lisp _name) {
-  uim_plugin_info *info;
-  uim_plugin_info_list *info_list_entry;
   char *plugin_name;
   char *plugin_lib_filename, *plugin_scm_filename;
 #ifdef UIM_SCM_NESTED_EVAL
@@ -78,6 +74,9 @@ plugin_load(uim_lisp _name) {
   uim_lisp scm_path = uim_scm_symbol_value("uim-plugin-scm-load-path");
 #endif
   uim_lisp path_car, path_cdr;
+  void *library;
+  void (*plugin_instance_init)(void);
+  void (*plugin_instance_quit)(void);
 
   size_t len;
   
@@ -129,45 +128,45 @@ plugin_load(uim_lisp _name) {
     return uim_scm_f();
   }
   
-  info_list_entry = malloc(sizeof(uim_plugin_info_list));
-  info = malloc(sizeof(uim_plugin_info));
-  
-  info->library = dlopen(plugin_lib_filename, RTLD_NOW);
+  library = dlopen(plugin_lib_filename, RTLD_NOW);
   free(plugin_lib_filename);
 
-  if(info->library == NULL) {
+  if(library == NULL) {
     fprintf(stderr, "load failed %s\n", dlerror());
+    free(plugin_scm_filename);
+    free(plugin_name);
     return uim_scm_f();
   }
 
-  info->plugin_instance_init = (void (*)(void))dlfunc(info->library,
-						      "uim_plugin_instance_init");
-  info->plugin_instance_quit = (void (*)(void))dlfunc(info->library,
-						      "uim_plugin_instance_quit");
-  if(info->plugin_instance_init) {
-    (info->plugin_instance_init)();
-  } else {
+  plugin_instance_init = (void (*)(void))dlfunc(library,
+						"uim_plugin_instance_init");
+  plugin_instance_quit = (void (*)(void))dlfunc(library,
+						"uim_plugin_instance_quit");
+  if(!plugin_instance_init) {
     fprintf(stderr, "%s plugin init failed\n", plugin_name);
+    free(plugin_scm_filename);
+    free(plugin_name);
+    return uim_scm_f();
   }
-  /*	plugin_list_append(uim_plugin_entry); */
 
+  (plugin_instance_init)();
   uim_scm_require_file(plugin_scm_filename);
+
+  {
+    uim_lisp form, stack_start;
+    uim_scm_gc_protect_stack(&stack_start);
+    form = uim_scm_list5(uim_scm_make_symbol("plugin-list-append"),
+		         _name,
+		         uim_scm_make_ptr(library),
+			 uim_scm_make_ptr((void *)plugin_instance_init),
+			 uim_scm_make_ptr((void *)plugin_instance_quit));
+    uim_scm_eval(form);
+    uim_scm_gc_unprotect_stack(&stack_start);
+  }
   free(plugin_scm_filename);
   free(plugin_name);
-  return uim_scm_t();
-}
 
-static void plugin_list_append(uim_plugin_info_list *entry)
-{
-  uim_plugin_info_list *cur;
-  
-  if(uim_plugin_list != NULL) {
-    for(cur = uim_plugin_list; cur->next != NULL; cur = cur->next)
-      ;
-    cur->next = entry;
-  } else {
-    uim_plugin_list = entry;
-  }
+  return uim_scm_t();
 }
 
 static uim_lisp
@@ -180,14 +179,6 @@ plugin_unload(uim_lisp _name)
 /* Called from uim_init */
 void uim_init_plugin(void)
 {
-  /* This function is called before scheme files are loaded. Plugin's search 
-   * path(both .so and .scm) should be got from plugin.scm.
-   */
-  char *plugin_lib_dir_env;
-  char *plugin_scm_dir_env;
-  struct passwd *pw;
-  size_t len;
-
   uim_scm_init_subr_1("load-plugin", plugin_load);
   uim_scm_init_subr_1("unload-plugin", plugin_unload);
 
@@ -197,19 +188,29 @@ void uim_init_plugin(void)
 /* Called from uim_quit */
 void uim_quit_plugin(void)
 {
-  uim_plugin_info_list *cur;
-  for(cur = uim_plugin_list; cur != NULL; cur = cur->next)
-    {
-      (*((cur->plugin)->plugin_instance_quit))();
-      dlclose((cur->plugin)->library);
-    }
-}
-
 #if 0
-int
-uim_plugin_instance_query(struct _uim_plugin_info *info)
-{
-  /* XXX: not implemented */
-  return 0;
-}
+  /* XXX: This code does not work well */
+  uim_lisp list_car, list_cdr;
+  uim_lisp alist = uim_scm_eval_c_string("plugin-alist");
+
+  for(list_car = uim_scm_car(alist), list_cdr = uim_scm_cdr(alist);
+      list_car != uim_scm_f();
+      list_car = uim_scm_car(list_cdr), list_cdr = uim_scm_cdr(list_cdr))
+  {
+    uim_lisp name;
+    void *library;
+    void (*plugin_instance_quit)(void);
+
+    name = uim_scm_car(list_car);
+
+    UIM_EVAL_FSTRING1(NULL, "(plugin-list-query-library \"%s\")", uim_scm_c_str(name));
+    library = uim_scm_c_ptr(uim_scm_return_value());
+
+    UIM_EVAL_FSTRING1(NULL, "(plugin-list-query-instance-quit \"%s\")", uim_scm_c_str(name));
+    plugin_instance_quit = (void (*)(void))uim_scm_c_ptr(uim_scm_return_value());
+
+    (plugin_instance_quit)();
+    dlclose(library);
+  }
 #endif
+}

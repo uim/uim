@@ -57,3 +57,34 @@
 ;; 'print' prevents testing framework from normal run.
 ;;(print uim-plugin-lib-load-path)
 ;;(print uim-plugin-scm-load-path)
+(define plugin-alist ())
+(define plugin-func-alist ())
+
+(define plugin-list-append
+  (lambda (plugin-name library init quit)
+   (let
+     ((funcs (list init quit)))
+     (set! plugin-alist
+       (append plugin-alist
+	       (list (list plugin-name library funcs)))))))
+
+(define plugin-list-query
+  (lambda (plugin-name)
+    (assoc plugin-name plugin-alist)))
+
+(define plugin-list-query-library
+  (lambda (plugin-name)
+    (let ((plugin-entry (plugin-list-query plugin-name)))
+      (nth 1 plugin-entry))))
+
+(define plugin-list-query-instance-init
+  (lambda (plugin-name)
+    (let* ((plugin-entry (plugin-list-query plugin-name))
+	   (plugin-funcs (nth 2 plugin-entry)))
+      (car plugin-funcs))))
+
+(define plugin-list-query-instance-quit
+  (lambda (plugin-name)
+    (let* ((plugin-entry (plugin-list-query plugin-name))
+	   (plugin-funcs (nth 2 plugin-entry)))
+      (nth 1 plugin-funcs))))
