@@ -337,6 +337,11 @@
   (_ "Show uim help button on toolbar")
   (_ "long description will be here."))
 
+(define-custom 'bridge-show-input-state? #f
+  '(global visual-preference)
+  '(boolean)
+  (_ "Show input state nearby the caret")
+  (_ "long description will be here."))
 
 ;; EB Library support
 ;; 2005-02-08 Takuro Ashie <ashie@homa.ne.jp>

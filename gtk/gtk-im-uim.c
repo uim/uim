@@ -52,6 +52,7 @@
 #include "uim/config.h"
 #include "uim/gettext.h"
 #include "uim-cand-win-gtk.h"
+#include "caret-state-indicator.h"
 
 /* exported symbols */
 GtkIMContext *im_module_create(const gchar *context_id);
@@ -85,6 +86,7 @@ typedef struct _IMUIMContext {
   GtkWidget *menu;
   GdkWindow *win;
   GdkWindow *toplevel;
+  GtkWidget *caret_state_indicator;
   GdkRectangle preedit_pos; /* preedit_pos not always point the cursor location */
   /**/
   struct _IMUIMContext *prev, *next;
@@ -425,6 +427,7 @@ im_uim_set_cursor_location(GtkIMContext *ic,
 
   uic->preedit_pos = *area;
   uim_cand_win_gtk_set_cursor_location(uic->cwin, area);
+  caret_state_indicator_set_cursor_location(uic->caret_state_indicator, area);
 }
 
 
@@ -711,6 +714,7 @@ update_prop_label_cb(void *ptr, const char *str)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
   GString *tmp;
+  gint x, y;
 
   if (uic != focused_context)
     return;
@@ -720,6 +724,9 @@ update_prop_label_cb(void *ptr, const char *str)
 
   uim_helper_send_message(im_uim_fd, tmp->str);
   g_string_free(tmp, TRUE);
+
+  gdk_window_get_origin(uic->win, &x, &y);
+  caret_state_indicator_update(uic->caret_state_indicator, x, y, str);
 }
 
 static void
@@ -896,6 +903,8 @@ im_module_create(const gchar *context_id)
 			    NULL);
   g_signal_connect(G_OBJECT(uic->slave), "commit",
 		   G_CALLBACK(im_uim_commit_cb), uic);
+  
+  uic->caret_state_indicator = caret_state_indicator_new();
 
   /**/
   uic->next = context_list.next;
