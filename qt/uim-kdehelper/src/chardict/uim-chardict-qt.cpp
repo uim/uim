@@ -161,13 +161,15 @@ void KUimCharDict::readConfig()
     QString str;
 
     // font
-    QFont font( font() );
     str = settings.readEntry( "/uim-kdehelper/chardict/font" );
     if ( !str.isEmpty() )
     {
+        QFont font;
         font.fromString( str );
 
         setCharDictFont( font );
+    } else {
+        setCharDictFont( font() );        
     }
 }
 
