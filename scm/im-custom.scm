@@ -290,6 +290,7 @@
   (_ "Candidate window position")
   (_ "long description will be here."))
 
+;; toolbar buttons
 (define-custom 'toolbar-show-switcher-button? #t
   '(global toolbar)
   '(boolean)
@@ -302,6 +303,29 @@
   (_ "Show uim preference tool button on toolbar")
   (_ "long description will be here."))
 
+(define-custom 'toolbar-show-dict-button? #f
+  '(global toolbar)
+  '(boolean)
+  (_ "Show uim japanese dictionary tool button on toolbar")
+  (_ "long description will be here."))
+
+(define-custom 'toolbar-show-input-pad-button? #f
+  '(global toolbar)
+  '(boolean)
+  (_ "Show uim input pad button on toolbar")
+  (_ "long description will be here."))
+
+(define-custom 'toolbar-show-handwriting-input-pad-button? #f
+  '(global toolbar)
+  '(boolean)
+  (_ "Show uim handwriting-input pad button on toolbar")
+  (_ "long description will be here."))
+
+(define-custom 'toolbar-show-help-button? #f
+  '(global toolbar)
+  '(boolean)
+  (_ "Show uim help button on toolbar")
+  (_ "long description will be here."))
 
 (define-custom 'enable-lazy-loading? #t
   '(global advanced)
