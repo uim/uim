@@ -519,6 +519,3 @@
       multi-segment-type-hiragana)
      ((= kana multi-segment-type-hankana)
       multi-segment-type-hiragana))))
-
-
-(define candidate-window-position "caret")

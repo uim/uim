@@ -213,12 +213,6 @@
 		 (lambda ()
 		   enable-im-switch))
 
-(define-custom 'candidate-window-position "caret"
-  '(global)
-  '(string "^(caret|left|right)$")
-  (_ "Candidate window position")
-  (_ "long description will be here."))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; anthy
@@ -320,12 +314,6 @@
   (_ "Canna server name")
   (_ "long description will be here."))
 
-(define-custom 'canna-server-name ""
-  '(canna cannaserver)
-  '(string ".*")
-  (_ "Canna server name")
-  (_ "long description will be here."))
-
 ;; activity dependency
 (custom-add-hook 'custom-preserved-canna-server-name
 		 'custom-activity-hooks
@@ -360,6 +348,22 @@
 (custom-add-hook 'custom-preserved-canna-server-name
 		 'custom-set-hooks
 		 custom-hook-set-canna-server-name)
+
+(define custom-hook-literalize-preserved-canna-server-name
+  (lambda ()
+    (string-append
+     "(define custom-preserved-canna-server-name "
+     (custom-value-as-literal 'custom-preserved-canna-server-name)
+     ")\n"
+     "(define canna-server-name "
+     (if canna-server-name
+	 (string-append "\"" canna-server-name "\"")
+	 "#f")
+     ")")))
+
+(custom-add-hook 'custom-preserved-canna-server-name
+		 'custom-literalize-hooks
+		 custom-hook-literalize-preserved-canna-server-name)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
