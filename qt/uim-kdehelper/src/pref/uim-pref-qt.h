@@ -45,6 +45,9 @@
 #include <qhbox.h>
 #include <qvgroupbox.h>
 #include <qmap.h>
+#include <qptrlist.h>
+
+#include "customwidgets.h"
 
 #include <uim/uim.h>
 #include <uim/uim-custom.h>
@@ -61,20 +64,11 @@ protected:
     void setupWidgets();
     void createMainWidgets();
     void createGroupWidgets();
-    QWidget* createGroupWidget( const char *grpname );
-
-    void addCustom( QVGroupBox *vbox, const char *custom_sym );
-    void addCustomTypeBool( QVGroupBox *vbox, struct uim_custom *custom );
-    void addCustomTypeInteger( QVGroupBox *vbox, struct uim_custom *custom );
-    void addCustomTypeString( QVGroupBox *vbox, struct uim_custom *custom );
-    void addCustomTypePathname( QVGroupBox *vbox, struct uim_custom *custom );
-    void addCustomTypeChoice( QVGroupBox *vbox, struct uim_custom *custom );
-    void addCustomTypeOrderedList( QVGroupBox *vbox, struct uim_custom *custom );
-    void addCustomTypeKey( QVGroupBox *vbox, struct uim_custom *custom );
 
     void confirmChange();
-
+    
 protected slots:
+    void slotSetDefault();
     void slotApply();
     void slotOK();
     void slotCancel();
@@ -101,10 +95,38 @@ public:
 };
 
 //---------------------------------------------------------------------------------
+class GroupPageWidget : public QWidget {
+    Q_OBJECT
+    
+public:
+    GroupPageWidget( QWidget *parent, const char *group_name );
+
+    void setDefault();
+
+protected:
+    void setupWidgets( const char *group_name );
+
+    UimCustomItemIface *addCustom( QVGroupBox *vbox, const char *custom_sym );
+    UimCustomItemIface *addCustomTypeBool( QVGroupBox *vbox, struct uim_custom *custom );
+    UimCustomItemIface *addCustomTypeInteger( QVGroupBox *vbox, struct uim_custom *custom );
+    UimCustomItemIface *addCustomTypeString( QVGroupBox *vbox, struct uim_custom *custom );
+    UimCustomItemIface *addCustomTypePathname( QVGroupBox *vbox, struct uim_custom *custom );
+    UimCustomItemIface *addCustomTypeChoice( QVGroupBox *vbox, struct uim_custom *custom );
+    UimCustomItemIface *addCustomTypeOrderedList( QVGroupBox *vbox, struct uim_custom *custom );
+    UimCustomItemIface *addCustomTypeKey( QVGroupBox *vbox, struct uim_custom *custom );
+
+protected slots:
+    void slotCustomValueChanged(){ emit customValueChanged(); }
+signals:
+    void customValueChanged();
+
+protected:
+    QPtrList<UimCustomItemIface> m_customIfaceList;
+};
+
 class SubgroupData {
 public:
     SubgroupData( QWidget *parentWidget, const char *parent_group_name );
-
     QVGroupBox *searchGroupVBoxByCustomSym( const char *custom_sym );
 
 protected:

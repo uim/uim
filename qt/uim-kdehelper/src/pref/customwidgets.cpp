@@ -55,6 +55,14 @@ void CustomCheckBox::update()
     }
 }
 
+void CustomCheckBox::setDefault()
+{
+    m_custom->value->as_bool = m_custom->default_value->as_bool;
+
+    setCustom( m_custom );
+    update();
+}
+
 void CustomCheckBox::slotCustomToggled( bool check )
 {
     Q_ASSERT( m_custom->type == UCustom_Bool );
@@ -84,6 +92,14 @@ void CustomSpinBox::update()
     }
 }
 
+void CustomSpinBox::setDefault()
+{
+    m_custom->value->as_int = m_custom->default_value->as_int;
+
+    setCustom( m_custom );
+    update();
+}
+
 void CustomSpinBox::slotCustomValueChanged( int value )
 {
     Q_ASSERT( m_custom->type == UCustom_Int );
@@ -110,6 +126,15 @@ void CustomLineEdit::update()
     {
         setText( _FU8(m_custom->value->as_str) );
     }
+}
+
+void CustomLineEdit::setDefault()
+{
+    free( m_custom->value->as_str );
+    m_custom->value->as_str = strdup( m_custom->default_value->as_str );
+
+    setCustom( m_custom );
+    update();
 }
 
 void CustomLineEdit::slotCustomTextChanged( const QString &text )
@@ -150,6 +175,15 @@ void CustomPathnameEdit::update()
     }
 }
 
+void CustomPathnameEdit::setDefault()
+{
+    free( m_custom->value->as_pathname );
+    m_custom->value->as_pathname = strdup( m_custom->default_value->as_pathname );
+
+    setCustom( m_custom );
+    update();
+}
+
 void CustomPathnameEdit::slotPathnameButtonClicked()
 {
     QFileDialog* fd = new QFileDialog( this, "file dialog" );
@@ -175,8 +209,8 @@ CustomChoiceCombo::CustomChoiceCombo( struct uim_custom *c, QWidget *parent, con
     : QComboBox( parent, name ),
       UimCustomItemIface( c )
 {
-    QObject::connect( this, SIGNAL(highlighted(int)),
-                      this, SLOT(slotHighlighted(int)) );
+    QObject::connect( this, SIGNAL(activated(int)),
+                      this, SLOT(slotActivated(int)) );
 
     update();
 }
@@ -185,6 +219,7 @@ void CustomChoiceCombo::update()
 {
     setEnabled( m_custom->is_active );
 
+    clear();
     if( m_custom->is_active )
     {
         char *default_symbol = m_custom->value->as_choice->symbol;
@@ -206,7 +241,21 @@ void CustomChoiceCombo::update()
     }
 }
 
-void CustomChoiceCombo::slotHighlighted( int index )
+void CustomChoiceCombo::setDefault()
+{
+    free( m_custom->value->as_choice->symbol );
+    free( m_custom->value->as_choice->label );
+    free( m_custom->value->as_choice->desc );
+
+    m_custom->value->as_choice->symbol = strdup( m_custom->default_value->as_choice->symbol );
+    m_custom->value->as_choice->label  = strdup( m_custom->default_value->as_choice->label );
+    m_custom->value->as_choice->desc   = strdup( m_custom->default_value->as_choice->desc );
+
+    setCustom( m_custom );
+    update();
+}
+
+void CustomChoiceCombo::slotActivated( int index )
 {
     Q_ASSERT( m_custom->type == UCustom_Choice );
 
@@ -259,6 +308,47 @@ void CustomOrderedListEdit::update()
     {
         updateText();        
     }
+}
+
+void CustomOrderedListEdit::setDefault()
+{
+    /* free old items */
+    int num = 0;
+    for( num = 0; m_custom->value->as_olist[num]; num++ )
+        ;
+    
+    for( int i = 0; i < num; i++ )
+    {
+        free( m_custom->value->as_olist[i]->symbol );
+        free( m_custom->value->as_olist[i]->label );
+        free( m_custom->value->as_olist[i]->desc );
+        free( m_custom->value->as_olist[i] );
+    }
+
+    /* copy default_value to value */
+    int default_num = 0;
+    for( default_num = 0; m_custom->default_value->as_olist[default_num]; default_num++ )
+        ;
+
+    m_custom->value->as_olist = (struct uim_custom_choice **)realloc( m_custom->value->as_olist,
+                                                                      sizeof(struct uim_custom_choice *) * (default_num + 1) );
+    
+    for( int i = 0; i < default_num; i++ )
+    {
+        struct uim_custom_choice *default_item = m_custom->default_value->as_olist[i];
+        struct uim_custom_choice *item = (struct uim_custom_choice *)malloc(sizeof(struct uim_custom_choice));
+
+        item->symbol = default_item->symbol ? strdup(default_item->symbol) : NULL;
+        item->label  = default_item->label  ? strdup(default_item->label)  : NULL;
+        item->desc   = default_item->desc   ? strdup(default_item->desc)   : NULL;
+
+        m_custom->value->as_olist[i] = item;
+    }
+    m_custom->value->as_olist[default_num] = NULL; /* NULL-terminated */
+
+    setCustom( m_custom );
+    initPtrList();
+    update();
 }
 
 void CustomOrderedListEdit::initPtrList()

@@ -66,8 +66,6 @@ public:
 
         // callback
         uim_custom_cb_add( m_custom->symbol, this, UimCustomItemIface::update_cb );
-
-//        update();
     }
     virtual ~UimCustomItemIface()
     {
@@ -83,6 +81,8 @@ public:
     }
     virtual void update() = 0;
 
+    /* Set to default */
+    virtual void setDefault() = 0;    
 
 protected:
     void setCustom( struct uim_custom *custom )
@@ -113,7 +113,9 @@ class CustomCheckBox : public QCheckBox, public UimCustomItemIface
 
 public:
     CustomCheckBox( struct uim_custom *c, QWidget *parent, const char *name = 0);
+
     virtual void update();
+    virtual void setDefault();
 protected slots:
     void slotCustomToggled( bool check );
 protected:
@@ -128,7 +130,9 @@ class CustomSpinBox : public QSpinBox, public UimCustomItemIface
 
 public:
     CustomSpinBox( struct uim_custom *c, QWidget *parent, const char *name = 0 );
+    
     virtual void update();
+    virtual void setDefault();
 public slots:
     void slotCustomValueChanged( int value );
 protected:
@@ -143,7 +147,9 @@ class CustomLineEdit : public QLineEdit, public UimCustomItemIface
 
 public:
     CustomLineEdit( struct uim_custom *c, QWidget *parent, const char *name = 0 );
+
     virtual void update();
+    virtual void setDefault();
 public slots:
     void slotCustomTextChanged( const QString &text );
 protected:
@@ -158,8 +164,9 @@ class CustomPathnameEdit : public QHBox, public UimCustomItemIface
 
 public:
     CustomPathnameEdit( struct uim_custom *c, QWidget *parent, const char *name = 0 );
+
     virtual void update();
-    
+    virtual void setDefault();
 protected slots:
     void slotPathnameButtonClicked();
     void slotCustomTextChanged( const QString & text );
@@ -178,9 +185,11 @@ class CustomChoiceCombo : public QComboBox, public UimCustomItemIface
 
 public:
     CustomChoiceCombo( struct uim_custom *c, QWidget *parent, const char *name = 0 );
+
     virtual void update();
+    virtual void setDefault();
 public slots:
-    void slotHighlighted( int index );
+    void slotActivated( int index );
 protected:
     void currentCustomValueChanged(){ emit customValueChanged(); }
 signals:
@@ -193,7 +202,9 @@ class CustomOrderedListEdit : public QHBox, public UimCustomItemIface
 
 public:
     CustomOrderedListEdit( struct uim_custom *c, QWidget *parent, const char *name = 0 );
+    
     virtual void update();
+    virtual void setDefault();
 public slots:
     void slotEditButtonClicked();
 private:

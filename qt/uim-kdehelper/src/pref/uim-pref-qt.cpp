@@ -32,7 +32,7 @@
 */
 #include "uim-pref-qt.h"
 #include "customwidgets.h"
-#include <kseparator.h>
+#include "kseparator.h"
 
 #include <qvbox.h>
 #include <qhbox.h>
@@ -94,6 +94,7 @@ void UimPrefDialog::setupWidgets()
 void UimPrefDialog::createMainWidgets()
 {
     QVBoxLayout *mainVLayout = new QVBoxLayout( this );
+    mainVLayout->setMargin( 6 );
 
     QSplitter *mainSplitter = new QSplitter( this );
 
@@ -109,25 +110,27 @@ void UimPrefDialog::createMainWidgets()
     QWidget *buttonHWidget = new QWidget( leftSideWidget );
     m_groupWidgetStack = new QWidgetStack( leftSideWidget );
     QHBoxLayout *buttonHLayout = new QHBoxLayout( buttonHWidget );
-    buttonHLayout->insertStretch( 0 );
-    buttonHLayout->setMargin( 10 );
     buttonHLayout->setSpacing( 6 );
-    QPushButton *applyButton  = new QPushButton( "Apply" , buttonHWidget );
+    QPushButton *defaultButton = new QPushButton( "Defaults", buttonHWidget );
+    QObject::connect( defaultButton, SIGNAL(clicked()),
+                      this, SLOT(slotSetDefault()) );
+    QPushButton *applyButton = new QPushButton( "Apply" , buttonHWidget );
     QObject::connect( applyButton, SIGNAL(clicked()),
                       this, SLOT(slotApply()) );
-    QPushButton *okButton     = new QPushButton( "OK"    , buttonHWidget );
+    QPushButton *okButton = new QPushButton( "OK"    , buttonHWidget );
     QObject::connect( okButton, SIGNAL(clicked()),
                       this, SLOT(slotOK()) );
     QPushButton *cancelButton = new QPushButton( "Cancel", buttonHWidget );
     QObject::connect( cancelButton, SIGNAL(clicked()),
                       this, SLOT(slotCancel()) );
+    buttonHLayout->addWidget( defaultButton );
+    buttonHLayout->addStretch();
     buttonHLayout->addWidget( applyButton );
     buttonHLayout->addWidget( okButton );
     buttonHLayout->addWidget( cancelButton );
-    leftVLayout->setMargin( 10 );
     leftVLayout->setSpacing( 6 );
     leftVLayout->addWidget( m_groupWidgetStack );
-    leftVLayout->insertStretch( 1 );
+    leftVLayout->addWidget( new KSeparator( leftSideWidget ) );
     leftVLayout->addWidget( buttonHWidget );
 
     mainVLayout->addWidget( mainSplitter );
@@ -149,170 +152,16 @@ void UimPrefDialog::createGroupWidgets()
         else
             item = new QListViewItem( m_groupListView, _FU8(group->label) );
 
-        QWidget *w = createGroupWidget( *grp );
+        GroupPageWidget *w = new GroupPageWidget( m_groupWidgetStack, *grp );
+        QObject::connect( w, SIGNAL(customValueChanged()),
+                          this, SLOT(slotCustomValueChanged()) );
+
         m_groupWidgetsDict.insert( _FU8(group->label), w );
         m_groupWidgetStack->addWidget( w );
 
         uim_custom_group_free( group );
     }
-}
-
-QWidget* UimPrefDialog::createGroupWidget( const char *group_name )
-{
-    QWidget *groupWidget = new QWidget( m_groupWidgetStack );
-    QVBoxLayout *vLayout = new QVBoxLayout( groupWidget );
-    vLayout->setSpacing( 3 );
-
-    struct uim_custom_group *group = uim_custom_group_get( group_name );
-    if( group == NULL )
-        return NULL;
-
-    QLabel *groupLabel = new QLabel( _FU8(group->label), groupWidget );
-    groupLabel->setAlignment( Qt::AlignLeft );
-    vLayout->addWidget( groupLabel );
-    
-    KSeparator *separator = new KSeparator( groupWidget );
-    vLayout->addWidget( separator );
-
-    /* subgroup data */
-    SubgroupData *sd = new SubgroupData( groupWidget, group_name );
-
-    /* add various widgets to the vbox */
-    char **custom_syms = uim_custom_collect_by_group( group_name );
-    if( custom_syms )
-    {
-        for( char **custom_sym = custom_syms; *custom_sym; custom_sym++ )
-        {
-            QVGroupBox *vbox = sd->searchGroupVBoxByCustomSym( *custom_sym );
-            addCustom( vbox, *custom_sym );
-        }
-
-        uim_custom_symbol_list_free( custom_syms );
-    }
-
-    /* free */
-    delete sd;
-    uim_custom_group_free( group );
-
-    /* bottom up */
-    vLayout->addStretch();
-    
-    return groupWidget;
-}
-
-/*
- * Building up GUI in accordance with Custom Type.
- */
-void UimPrefDialog::addCustom( QVGroupBox *vbox, const char *custom_sym )
-{
-    struct uim_custom *custom = uim_custom_get( custom_sym );
-    if( custom )
-    {
-        switch( custom->type )
-        {
-        case UCustom_Bool:
-            addCustomTypeBool( vbox, custom );
-            break;
-        case UCustom_Int:
-            addCustomTypeInteger( vbox, custom );
-            break;
-        case UCustom_Str:
-            addCustomTypeString( vbox, custom );
-            break;
-        case UCustom_Pathname:
-            addCustomTypePathname( vbox, custom );
-            break;
-        case UCustom_Choice:
-            addCustomTypeChoice( vbox, custom );
-            break;
-        case UCustom_OrderedList:
-            addCustomTypeOrderedList( vbox, custom );
-            break;
-        case UCustom_Key:
-            addCustomTypeKey( vbox, custom );
-            break;
-        default:
-            qWarning( "Invalid custom type: %d\n", custom->type );
-            uim_custom_free( custom );
-            break;
-        }
-    } else {
-        qWarning( "Failed to get uim_custom object for %s.", custom_sym );
-    }
-}
-
-void UimPrefDialog::addCustomTypeBool( QVGroupBox *vbox, struct uim_custom *custom )
-{
-    CustomCheckBox *checkBox = new CustomCheckBox( custom, vbox );
-    QObject::connect( checkBox, SIGNAL(customValueChanged()),
-                      this, SLOT(slotCustomValueChanged()) );
-}
-
-void UimPrefDialog::addCustomTypeInteger( QVGroupBox *vbox, struct uim_custom *custom )
-{
-    QHBox *hbox = new QHBox( vbox );
-    hbox->setSpacing( 6 );
-    QLabel *label = new QLabel( _FU8(custom->label), hbox );
-    hbox->setStretchFactor( new QWidget( hbox ), 1 );
-    CustomSpinBox *spinBox = new CustomSpinBox( custom, hbox );
-    label->setBuddy( spinBox );
-
-    QObject::connect( spinBox, SIGNAL(customValueChanged()),
-                      this, SLOT(slotCustomValueChanged()) );
-}
-
-void UimPrefDialog::addCustomTypeString( QVGroupBox *vbox, struct uim_custom *custom )
-{
-    QHBox *hbox = new QHBox( vbox );
-    hbox->setSpacing( 6 );
-    QLabel *label = new QLabel( _FU8(custom->label) + ":", hbox );
-    CustomLineEdit *lineEdit = new CustomLineEdit( custom, hbox );
-    label->setBuddy( lineEdit );
-
-    QObject::connect( lineEdit, SIGNAL(customValueChanged()),
-                      this, SLOT(slotCustomValueChanged()) );
-}
-
-void UimPrefDialog::addCustomTypePathname( QVGroupBox *vbox, struct uim_custom *custom )
-{
-    QHBox *hbox = new QHBox( vbox );
-    hbox->setSpacing( 6 );
-    QLabel *label = new QLabel( _FU8(custom->label), hbox );
-    CustomPathnameEdit *pathnameEdit = new CustomPathnameEdit( custom, hbox );
-    label->setBuddy( pathnameEdit );
-
-    QObject::connect( pathnameEdit, SIGNAL(customValueChanged()),
-                      this, SLOT(slotCustomValueChanged()) );
-}
-
-void UimPrefDialog::addCustomTypeChoice( QVGroupBox *vbox, struct uim_custom *custom )
-{
-    QHBox *hbox = new QHBox( vbox );
-    hbox->setSpacing( 6 );
-    QLabel *label = new QLabel( _FU8(custom->label), hbox );
-
-    CustomChoiceCombo *choiceCombo = new CustomChoiceCombo( custom, hbox );
-    label->setBuddy( choiceCombo );
-
-    QObject::connect( choiceCombo, SIGNAL(customValueChanged()),
-                      this, SLOT(slotCustomValueChanged()) );
-}
-
-void UimPrefDialog::addCustomTypeOrderedList( QVGroupBox *vbox, struct uim_custom *custom )
-{
-    QHBox *hbox = new QHBox( vbox );
-    hbox->setSpacing( 6 );
-    QLabel *label = new QLabel( _FU8(custom->label), hbox );
-    CustomOrderedListEdit *olistEditBox = new CustomOrderedListEdit( custom, hbox );
-    label->setBuddy( olistEditBox );
-
-    QObject::connect( olistEditBox, SIGNAL(customValueChanged()),
-                      this, SLOT(slotCustomValueChanged()) );
-}
-
-void UimPrefDialog::addCustomTypeKey( QVGroupBox *vbox, struct uim_custom *custom )
-{
-    // FIXME: not implemented yet
+    uim_custom_symbol_list_free( primary_groups );
 }
 
 /*
@@ -348,6 +197,15 @@ void UimPrefDialog::confirmChange()
     }
 }
 
+void UimPrefDialog::slotSetDefault()
+{
+    QWidget *w = m_groupWidgetStack->visibleWidget();
+    if( w )
+    {
+        ((GroupPageWidget*)w)->setDefault();
+    }
+}
+
 void UimPrefDialog::slotApply()
 {
     if( !m_isValueChanged )
@@ -372,8 +230,10 @@ void UimPrefDialog::slotOK()
 
 void UimPrefDialog::slotCancel()
 {
+    /*
     if( m_isValueChanged )
         confirmChange();
+    */
 
     reject();
 }
@@ -398,7 +258,203 @@ QConfirmDialog::QConfirmDialog( const QString &msg, QWidget *parent, const char 
                       this, SLOT(reject()) );
 }
 
-//--------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------
+
+GroupPageWidget::GroupPageWidget( QWidget *parent, const char *group_name )
+    : QWidget( parent )
+{
+    m_customIfaceList.clear();
+    m_customIfaceList.setAutoDelete( false );
+    
+    setupWidgets( group_name );
+}
+
+void GroupPageWidget::setupWidgets( const char *group_name )
+{
+    QVBoxLayout *vLayout = new QVBoxLayout( this );
+    vLayout->setSpacing( 3 );
+    
+    struct uim_custom_group *group = uim_custom_group_get( group_name );
+    if( group == NULL )
+        return;
+
+    QLabel *groupLabel = new QLabel( _FU8(group->label), this );
+    groupLabel->setAlignment( Qt::AlignLeft );
+    vLayout->addWidget( groupLabel );
+    
+    KSeparator *separator = new KSeparator( this );
+    vLayout->addWidget( separator );
+
+    /* subgroup data */
+    SubgroupData *sd = new SubgroupData( this, group_name );
+
+    /* add various widgets to the vbox */
+    char **custom_syms = uim_custom_collect_by_group( group_name );
+    if( custom_syms )
+    {
+        for( char **custom_sym = custom_syms; *custom_sym; custom_sym++ )
+        {
+            QVGroupBox *vbox = sd->searchGroupVBoxByCustomSym( *custom_sym );
+            UimCustomItemIface *iface = addCustom( vbox, *custom_sym );
+            m_customIfaceList.append( iface );
+        }
+
+        uim_custom_symbol_list_free( custom_syms );
+    }
+
+    /* free */
+    delete sd;
+    uim_custom_group_free( group );
+
+    /* bottom up */
+    vLayout->addStretch();    
+}
+
+/*
+ * Building up GUI in accordance with Custom Type.
+ */
+UimCustomItemIface *GroupPageWidget::addCustom( QVGroupBox *vbox, const char *custom_sym )
+{
+    UimCustomItemIface *w = NULL;
+    struct uim_custom *custom = uim_custom_get( custom_sym );
+    if( custom )
+    {
+        switch( custom->type )
+        {
+        case UCustom_Bool:
+            w = addCustomTypeBool( vbox, custom );
+            break;
+        case UCustom_Int:
+            w = addCustomTypeInteger( vbox, custom );
+            break;
+        case UCustom_Str:
+            w = addCustomTypeString( vbox, custom );
+            break;
+        case UCustom_Pathname:
+            w = addCustomTypePathname( vbox, custom );
+            break;
+        case UCustom_Choice:
+            w = addCustomTypeChoice( vbox, custom );
+            break;
+        case UCustom_OrderedList:
+            w = addCustomTypeOrderedList( vbox, custom );
+            break;
+        case UCustom_Key:
+            w = addCustomTypeKey( vbox, custom );
+            break;
+        default:
+            w = NULL;
+            qWarning( "Invalid custom type: %d\n", custom->type );
+            uim_custom_free( custom );
+            break;
+        }
+    } else {
+        qWarning( "Failed to get uim_custom object for %s.", custom_sym );
+    }
+
+    /* custom is freed by UimCustomItemIface's destructor */
+
+    return w;
+}
+
+UimCustomItemIface *GroupPageWidget::addCustomTypeBool( QVGroupBox *vbox, struct uim_custom *custom )
+{
+    CustomCheckBox *checkBox = new CustomCheckBox( custom, vbox );
+    QObject::connect( checkBox, SIGNAL(customValueChanged()),
+                      this, SLOT(slotCustomValueChanged()) );
+
+    return checkBox;
+}
+
+UimCustomItemIface *GroupPageWidget::addCustomTypeInteger( QVGroupBox *vbox, struct uim_custom *custom )
+{
+    QHBox *hbox = new QHBox( vbox );
+    hbox->setSpacing( 6 );
+    QLabel *label = new QLabel( _FU8(custom->label), hbox );
+    hbox->setStretchFactor( new QWidget( hbox ), 1 );
+    CustomSpinBox *spinBox = new CustomSpinBox( custom, hbox );
+    label->setBuddy( spinBox );
+
+    QObject::connect( spinBox, SIGNAL(customValueChanged()),
+                      this, SLOT(slotCustomValueChanged()) );
+
+    return spinBox;
+}
+
+UimCustomItemIface *GroupPageWidget::addCustomTypeString( QVGroupBox *vbox, struct uim_custom *custom )
+{
+    QHBox *hbox = new QHBox( vbox );
+    hbox->setSpacing( 6 );
+    QLabel *label = new QLabel( _FU8(custom->label) + ":", hbox );
+    CustomLineEdit *lineEdit = new CustomLineEdit( custom, hbox );
+    label->setBuddy( lineEdit );
+
+    QObject::connect( lineEdit, SIGNAL(customValueChanged()),
+                      this, SLOT(slotCustomValueChanged()) );
+
+    return lineEdit;
+}
+
+UimCustomItemIface *GroupPageWidget::addCustomTypePathname( QVGroupBox *vbox, struct uim_custom *custom )
+{
+    QHBox *hbox = new QHBox( vbox );
+    hbox->setSpacing( 6 );
+    QLabel *label = new QLabel( _FU8(custom->label), hbox );
+    CustomPathnameEdit *pathnameEdit = new CustomPathnameEdit( custom, hbox );
+    label->setBuddy( pathnameEdit );
+
+    QObject::connect( pathnameEdit, SIGNAL(customValueChanged()),
+                      this, SLOT(slotCustomValueChanged()) );
+
+    return pathnameEdit;
+}
+
+UimCustomItemIface *GroupPageWidget::addCustomTypeChoice( QVGroupBox *vbox, struct uim_custom *custom )
+{
+    QHBox *hbox = new QHBox( vbox );
+    hbox->setSpacing( 6 );
+    QLabel *label = new QLabel( _FU8(custom->label), hbox );
+
+    CustomChoiceCombo *choiceCombo = new CustomChoiceCombo( custom, hbox );
+    label->setBuddy( choiceCombo );
+
+    QObject::connect( choiceCombo, SIGNAL(customValueChanged()),
+                      this, SLOT(slotCustomValueChanged()) );
+
+    return choiceCombo;
+}
+
+UimCustomItemIface *GroupPageWidget::addCustomTypeOrderedList( QVGroupBox *vbox, struct uim_custom *custom )
+{
+    QHBox *hbox = new QHBox( vbox );
+    hbox->setSpacing( 6 );
+    QLabel *label = new QLabel( _FU8(custom->label), hbox );
+    CustomOrderedListEdit *olistEditBox = new CustomOrderedListEdit( custom, hbox );
+    label->setBuddy( olistEditBox );
+
+    QObject::connect( olistEditBox, SIGNAL(customValueChanged()),
+                      this, SLOT(slotCustomValueChanged()) );
+
+    return olistEditBox;
+}
+
+UimCustomItemIface *GroupPageWidget::addCustomTypeKey( QVGroupBox *vbox, struct uim_custom *custom )
+{
+    // FIXME: not implemented yet
+    return NULL;
+}
+
+void GroupPageWidget::setDefault()
+{
+    for( UimCustomItemIface *iface = m_customIfaceList.first();
+         iface;
+         iface = m_customIfaceList.next() )
+    {
+        iface->setDefault();
+    }
+}
+
+//-----------------------------------------------------------------------------------
 SubgroupData::SubgroupData( QWidget*parentWidget, const char *parent_group_name )
 {
     // QVGroupBox for other subgroups
@@ -438,6 +494,7 @@ SubgroupData::SubgroupData( QWidget*parentWidget, const char *parent_group_name 
 
         uim_custom_group_free( sgroup_custom );
     }
+    uim_custom_symbol_list_free( sub_groups );
 }
 
 QVGroupBox * SubgroupData::searchGroupVBoxByCustomSym( const char *custom_sym )
