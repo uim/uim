@@ -65,8 +65,11 @@ typedef int uim_bool;
 #endif
 
 
-/* uim companion tools should treat lisp object as opaque */
-typedef void * uim_lisp;
+/*
+  uim companion tools should treat lisp object as opaque. struct
+  uim_opaque exists only for type check and has no actual definition.
+*/
+typedef struct uim_opaque * uim_lisp;
 
 #if 1
 /* will be deprecated. use uim_scm_t() and uim_scm_f() for new design */

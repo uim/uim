@@ -155,7 +155,7 @@ uim_scm_null_list(void) {
 
 int
 uim_scm_nullp(uim_lisp obj) {
-  return NULLP(obj);
+  return NULLP((LISP)obj);
 }
 
 int
@@ -269,13 +269,13 @@ uim_init_scm_subrs()
   uim_scm_gc_protect(&true_sym);
   uim_scm_gc_protect(&false_sym);
 
-  true_sym  = siod_true_value();
+  true_sym  = (uim_lisp)siod_true_value();
 #if 0
-  false_sym = siod_false_value();
+  false_sym = (uim_lisp)siod_false_value();
 #else
   /* false_sym has to be NIL until bug #617 and #642 are fixed
    * -- YamaKen
    */
-  false_sym = NIL;
+  false_sym = (uim_lisp)NIL;
 #endif
 }
