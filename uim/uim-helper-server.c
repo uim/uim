@@ -144,21 +144,23 @@ parse_content(char *content, struct client *cl)
   content_len = strlen(content);
 
   for (i = 0; i < nr_client_slots; i++) {
-    if (clients[i].fd != -1 && clients[i].fd != cl->fd &&
-		    (uim_helper_fd_writable(clients[i].fd) > 0)) {
+    if (clients[i].fd == -1 || clients[i].fd == cl->fd) {
+      continue;
+    } else {
       out = content;
       out_len = content_len;
       while (out_len > 0) {
 	if ((ret = write(clients[i].fd, out, out_len)) < 0) {
-	  if (errno == EAGAIN || errno == EINTR)
+	  if (errno == EAGAIN || errno == EINTR) {
 	    continue;
+	  }
 
       	  if (errno == EPIPE) {
 	    close(clients[i].fd);
 	    free_client(&clients[i]);
 	  }
 	  break;
-        }
+	}
 
 	out += ret;
 	out_len -= ret;
@@ -175,18 +177,13 @@ proc_func(struct client *cl)
 
   /* do read */
   rc = read(cl->fd, buf, BUFFER_SIZE - 1);
-  if (rc == 0) {
-    close(cl->fd);
-    return -1;
-  }
-
-  if (rc < 0) {
+  if (rc <= 0) {
     return -1;
   }
 
   buf[rc] = '\0';
 
-  cl->rbuf = (char *)realloc(cl->rbuf, strlen(cl->rbuf) + strlen(buf)+1);
+  cl->rbuf = (char *)realloc(cl->rbuf, strlen(cl->rbuf) + strlen(buf) + 1);
   strcat(cl->rbuf, buf);
 
   if (uim_helper_str_terminated(cl->rbuf)) {
@@ -212,7 +209,7 @@ uim_helper_server_process_connection(int serv_fd)
     /* setup readfds */
     FD_ZERO(&readfds);
     FD_SET(serv_fd, &readfds);  
-    for (i = 0; i < nr_client_slots; i ++) {
+    for (i = 0; i < nr_client_slots; i++) {
       int fd = clients[i].fd;
       if (fd == -1) {
 	continue;
@@ -224,7 +221,7 @@ uim_helper_server_process_connection(int serv_fd)
     }
 
     /* call select(), waiting until a file descriptor readable */
-    if (select(fd_biggest+1, &readfds, NULL, NULL, NULL) < 0) {
+    if (select(fd_biggest + 1, &readfds, NULL, NULL, NULL) < 0) {
       perror("select faild");
     }
 
@@ -253,19 +250,20 @@ uim_helper_server_process_connection(int serv_fd)
 	write(cl->fd, buf, 1);
       }
 #endif
-    }    
-    
-    /* check data from clients reached */
-    for (i = 0; i < nr_client_slots; i ++) {
-      if (clients[i].fd != -1 &&
+    } else {
+      /* check data from clients reached */
+      for (i = 0; i < nr_client_slots; i++) {
+	if (clients[i].fd != -1 &&
 	  FD_ISSET(clients[i].fd, &readfds)) {
-	int result;
-	/* actual process */
-	result = proc_func(&clients[i]);
+	  int result;
+	  /* actual process */
+	  result = proc_func(&clients[i]);
 
-	if (result < 0) {
-	  close(clients[i].fd);
-	  free_client(&clients[i]);
+	  if (result < 0) {
+	    FD_CLR(clients[i].fd, &readfds);
+	    close(clients[i].fd);
+	    free_client(&clients[i]);
+	  }
 	}
       }
     }

@@ -42,6 +42,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include "uim.h"
 #include "uim-helper.h"
 #include "context.h"
@@ -70,6 +71,7 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   int fd;
   struct sockaddr_un server;
   char *path = uim_helper_get_pathname();
+  int flag;
   
   uim_fd = -1;
   
@@ -88,6 +90,16 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
     return -1;
   }
   
+  if ((flag = fcntl(fd, F_GETFL)) == -1) {
+    close(fd);
+    return -1;
+  }
+
+  flag |= O_NONBLOCK;
+  if (fcntl(fd, F_SETFL, flag) == -1) {
+    close(fd);
+    return -1;
+  }
 #ifdef LOCAL_CREDS /* for NetBSD */
   /* Set the socket to receive credentials on the next message */
   {
@@ -97,7 +109,7 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 #endif
 
 
-  if(connect(fd, (struct sockaddr *)&server,sizeof(server)) == -1){
+  if (connect(fd, (struct sockaddr *)&server,sizeof(server)) == -1){
     int serv_pid = 0;
     FILE *serv_r = NULL, *serv_w = NULL;
     char buf[128];
@@ -188,7 +200,7 @@ uim_helper_read_proc(int fd)
 
   while (uim_helper_fd_readable(fd) > 0) {
     
-    rc = read(fd, buf, sizeof(buf)-1);
+    rc = read(fd, buf, sizeof(buf) - 1);
     buf[rc] = '\0';
     
     if (rc == 0) {

@@ -128,8 +128,12 @@ uim_helper_send_message(int fd, const char *message)
   bufp = buf;
   while (out_len > 0) {
     if ((res = write(fd, bufp, out_len)) < 0) {
-      if (errno == EAGAIN || errno == EINTR)
+      if (errno == EAGAIN || errno == EINTR) {
+	//while (uim_helper_fd_writable(fd) == 0) {
+	  usleep((rand() % getpid()) * 10);
+	//}
 	continue;
+      }
       break;
     }
 
