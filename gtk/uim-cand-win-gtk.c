@@ -135,7 +135,7 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
   cwin->nr_candidates = 0;
   cwin->display_limit = 0;
   cwin->candidate_index = -1;
-  cwin->page_index = -1;
+  cwin->page_index = 0;
 
   cwin->cursor.x = cwin->cursor.y = 0;
   cwin->cursor.width = cwin->cursor.height = 0;
@@ -322,7 +322,7 @@ uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
     cwin->stores = g_ptr_array_new();
 
   /* remove old data */
-  if (cwin->page_index >= 0 && cwin->page_index < cwin->stores->len) {
+  if (cwin->page_index >= 0 && cwin->page_index < (int) cwin->stores->len) {
     /* Remove data from current page to shrink the window */
     gtk_list_store_clear(cwin->stores->pdata[cwin->page_index]);
   }
@@ -415,19 +415,19 @@ uim_cand_win_gtk_get_index(UIMCandWinGtk *cwin)
 void
 uim_cand_win_gtk_set_index(UIMCandWinGtk *cwin, gint index)
 {
-  gint new_page = 0;
+  gint new_page;
 
   g_return_if_fail(UIM_IS_CAND_WIN_GTK(cwin));
 
-  if (index < 0)
-    cwin->candidate_index = cwin->nr_candidates - 1;
-  else if ((guint) index >= cwin->nr_candidates)
+  if (index >= (gint) cwin->nr_candidates)
     cwin->candidate_index = 0;
   else
     cwin->candidate_index = index;
 
-  if (cwin->display_limit)
+  if (cwin->candidate_index >= 0 && cwin->display_limit)
     new_page = cwin->candidate_index / cwin->display_limit;
+  else
+    new_page = cwin->page_index;
 
   if (cwin->page_index != new_page)
     uim_cand_win_gtk_set_page(cwin, new_page);
@@ -472,7 +472,7 @@ void
 uim_cand_win_gtk_set_page(UIMCandWinGtk *cwin, gint page)
 {
   guint len, new_page;
-  guint new_index;
+  gint new_index;
 
   g_return_if_fail(UIM_IS_CAND_WIN_GTK(cwin));
   g_return_if_fail(cwin->stores);
@@ -501,12 +501,12 @@ uim_cand_win_gtk_set_page(UIMCandWinGtk *cwin, gint page)
       new_index
         = (new_page * cwin->display_limit) + (cwin->candidate_index % cwin->display_limit);
     else
-      new_index = new_page * cwin->display_limit;
+      new_index = -1;
   } else {
     new_index = cwin->candidate_index;
   }
 
-  if (new_index >= cwin->nr_candidates)
+  if (new_index >= (gint) cwin->nr_candidates)
     new_index = cwin->nr_candidates - 1;
 
   uim_cand_win_gtk_set_index(cwin, new_index);
