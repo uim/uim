@@ -271,7 +271,8 @@ compose_modep(uim_lisp id_)
   if(!ic) {
     return uim_scm_f();
   }
-  if(ic->candidate_from == ic->candidate_to) {
+  if(ic->candidate_from == ic->candidate_to ||
+     ic->candidate_from > ic->candidate_to) {
     return uim_scm_f();
   } else {
     return uim_scm_t();
