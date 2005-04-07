@@ -57,24 +57,22 @@
 
 (define ja-romaji-generate-double-consonant-ruleset
   (lambda (romaji-ruleset)
-    (append-map (lambda (entry)
-		  (let ((letter (car entry))
-			(kana (cdr entry)))
-		    (filter-map (lambda (rule)
-				  (let* ((seq (evmap-rule-event-seq rule))
-					 (res (evmap-rule-action-seq rule))
-					 (listified (map (lambda (elem)
-							   (if (pair? elem)
-							       elem
-							       (list elem)))
-							 res)))
-				    (and (string? (car seq))
-					 (string=? letter
-						   (car seq))
-					 (list (cons letter seq)
-					       (map cons kana listified)))))
-				romaji-ruleset)))
-		ja-romaji-double-consonant-alist)))
+    (filter-map (lambda (rule)
+		  (let* ((seq (evmap-rule-event-seq rule))
+			 (entry (assoc (car seq)
+				       ja-romaji-double-consonant-alist)))
+		    (and entry
+			 (let* ((res (evmap-rule-action-seq rule))
+				(listified (map (lambda (elem)
+						  (if (pair? elem)
+						      elem
+						      (list elem)))
+						res))
+				(letter (car entry))
+				(kana (cdr entry)))
+			   (list (cons letter seq)
+				 (map cons kana listified))))))
+		romaji-ruleset)))
 
 (define ja-romaji-double-consonant-guide-ruleset
   (map (lambda (entry)
