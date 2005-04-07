@@ -65,6 +65,13 @@
 (require "ng-key.scm")
 
 
+(define action-symbol?
+  (lambda (sym)
+    (and (symbol? sym)
+	 (string-prefix? "action_"
+			 (symbol->string sym))
+	 sym)))
+
 (define event-exp-list?
   (lambda (x)
     (or (pair? x)
@@ -145,17 +152,19 @@
 	   (normalized (or ;; fast path
 			   (and (= (length predicates)
 				   1)
-				(find-tail (lambda (pair)
-					     (eq? (car predicates)
-						  (cdr pair)))
-					   pred-alist)
 				predicates)
 			   ;; ordinary path
-			   (filter-map (lambda (pair)
-					 (let ((pred (cdr pair)))
-					   (and (memq pred predicates)
-						pred)))
-				       pred-alist))))
+			   (let* ((std-preds
+				   (filter-map (lambda (pair)
+						 (let ((pred (cdr pair)))
+						   (and (memq pred predicates)
+							pred)))
+					       pred-alist))
+				  (custom-preds
+				   (remove (lambda (pred)
+					     (memq pred std-preds))
+					   predicates)))
+			     (append! std-preds custom-preds)))))
       (event-exp-collector-set-predicates! evc normalized))))
 
 ;; returns normalized event-exp expression
@@ -205,6 +214,8 @@
 	    (event-exp-collector-set-pkey! evc exp))
 	   (else
 	    (evc-error (string-append "unknown symbol '" exp))))))
+       ((procedure? exp)
+	(event-exp-collector-add-predicate! evc exp))
        ((pair? exp)
 	(evc-error "invalid nested list"))
        (else
@@ -419,6 +430,28 @@
 			     release-seqs))
 		      (event-exp-expand-macro-set presses))))))
 
+;; 'ext-true' macro
+;; Tests if specified external states are true
+(define event-exp-expand-macro-ext-true
+  (lambda (exp-list)
+    (list
+     (list
+      (lambda (ev)
+	(every (lambda (state-id)
+		 (event-external-state ev state-id))
+	       exp-list))))))
+
+;; 'ext-false' macro
+;; Tests if specified external states are false
+(define event-exp-expand-macro-ext-false
+  (lambda (exp-list)
+    (list
+     (list
+      (lambda (ev)
+	(every (lambda (state-id)
+		 (not (event-external-state ev state-id)))
+	       exp-list))))))
+
 ;; press-release, set, and ordered-chord are very bad name. should be
 ;; replaced with short and meaningful names.
 (define event-exp-macro-alist
@@ -428,7 +461,8 @@
    (cons 'ordered-chord event-exp-expand-macro-ordered-chord)
    (cons 'chord         event-exp-expand-macro-chord)
    ;;(cons 'interval      event-exp-expand-macro-interval)
-   ))
+   (cons 'ext-true      event-exp-expand-macro-ext-true)
+   (cons 'ext-false     event-exp-expand-macro-ext-false)))
 
 ;;
 ;; event expression sequence
@@ -443,13 +477,11 @@
 	      (rest (cdr ev-exps)))
 	  (cond
 	   ;; fast path for implicit macro
-	   ((event-exp-implicit-macro? exp)
-	    (let ((expanded (list exp)  ;; for key-release dropper
-			    ;;(car (event-exp-expand-macro-press-release exp))
-			    ))
-	      (event-exp-list-expand-macro
-	       rest
-	       (cons expanded parsed))))
+;;	   ((event-exp-implicit-macro? exp)
+;;	    (let ((expanded (list exp)  ;; for key-release dropper
+;;			    ;;(car (event-exp-expand-macro-press-release exp))
+;;			    ))
+;;	      (event-exp-list-expand-macro rest (cons expanded parsed))))
 	   ;; ordinary macros
 	   ((event-exp-formal-macro? exp)
 	    (let* ((macro-sym (car exp))
@@ -462,7 +494,14 @@
 			  (macro macro-args))))
 	   ;; AND expression, other simple elements
 	   (else
-	    (event-exp-list-expand-macro rest (cons (list exp) parsed))))))))
+	    (if (pair? exp)
+		(append-map (lambda (expanded)
+			      (event-exp-list-expand-macro
+			       rest
+			       (cons (list expanded) parsed)))
+			    (event-exp-list-expand-macro exp ()))
+		(begin
+		  (event-exp-list-expand-macro rest (cons (list exp) parsed))))))))))
 
 ;; returns list of ev-exps
 (define event-exp-seq-parse
@@ -487,10 +526,12 @@
 			  (else
 			   (list-canonicalize exp))))))
     (lambda (ev-exp-seq)
-      (let ((expandeds (event-exp-list-expand-macro ev-exp-seq ())))
-	(map (lambda (expanded)
-	       (map canonicalize expanded))
-	     expandeds)))))
+      (if (find-tail pair? ev-exp-seq)
+	  (let ((expandeds (event-exp-list-expand-macro ev-exp-seq ())))
+	    (map (lambda (expanded)
+		   (map canonicalize expanded))
+		 expandeds))
+	  (list ev-exp-seq)))))  ;; fast path
 
 ;;
 ;; action expressions
@@ -571,12 +612,7 @@
     (event-exp-collector-fold-internal exp action-exp-collector-new)))
 
 (define action-exp-seq-parse
-  (let ((action-symbol? (lambda (sym)
-			  (and (symbol? sym)
-			       (string-prefix? "action_"
-					       (symbol->string sym))
-			       sym)))
-	(canonicalize (compose event-exp-collector-exp
+  (let ((canonicalize (compose event-exp-collector-exp
 			       action-exp-collector-fold)))
     (lambda (act-exps)
       (map (lambda (exp)
@@ -585,6 +621,12 @@
 		 (action-symbol? exp)
 		 (canonicalize exp)))
 	   act-exps))))
+
+(define action-exp-seq-extract-guard-exp
+  (lambda (act-exps)
+    (let ((act-id (find action-symbol? act-exps)))
+      (and act-id
+	   (list 'ext-true act-id)))))
 
 ;; presumes normalized
 ;; TODO:
@@ -704,7 +746,9 @@
 							      ev-exp
 							      equal?))
 			  (evmap-tree-insert-node! tree
-						   (evmap-tree-new ev-exp)))))
+						   (evmap-tree-new ev-exp
+								   #f
+								   ())))))
 	  (if (null? rest)
 	      (evmap-tree-set-action-seq! child act-exps)
 	      (evmap-tree-insert-rule! child rest act-exps))))))
@@ -729,13 +773,18 @@
   (lambda (ruleset)
     (let ((tree (evmap-tree-new)))
       (for-each (lambda (rule)
-		  (let ((ev-seq-list (event-exp-seq-parse
-				      (evmap-rule-event-seq rule)))
-			(act-seq (action-exp-seq-parse
-				  (evmap-rule-action-seq rule))))
+		  (let* ((raw-act-seq (evmap-rule-action-seq rule))
+			 (raw-ev-seq (evmap-rule-event-seq rule))
+			 (guard (action-exp-seq-extract-guard-exp raw-act-seq))
+			 (guarded-ev-seq (if guard
+					     (event-exp-list-add-elem
+					      raw-ev-seq guard)
+					     raw-ev-seq))
+			 (ev-seq-set (event-exp-seq-parse guarded-ev-seq))
+			 (act-seq (action-exp-seq-parse raw-act-seq)))
 		    (for-each (lambda (ev-seq)
 				(evmap-tree-insert-rule! tree ev-seq act-seq))
-			      ev-seq-list)))
+			      ev-seq-set)))
 		ruleset)
       tree)))
 

@@ -78,7 +78,8 @@
   '((id                 #f)
     (indication-handler #f)
     (activity-pred      #f)
-    (handler            #f)))
+    (handler            #f)
+    (availability-pred  #f)))
 (define-record 'action action-rec-spec)
 
 ;; indicator is restricted version of action
@@ -106,6 +107,13 @@
     (let ((active? (action-activity-pred action)))
       (and active?
 	   (active? owner)))))
+
+(define action-available?
+  (lambda (action owner)
+    (let ((available? (action-availability-pred action)))
+      (or (not available?)  ;; #f means always available
+	  (and (procedure? available?)
+	       (available? owner))))))
 
 (define action-indicate
   (lambda (action owner)
@@ -206,6 +214,7 @@
 	   (handler (and action
 			 (action-handler action))))
       (and handler
+	   (action-available? action (widget-owner widget))
 	   (begin
 	     (handler (widget-owner widget))
 	     #t)))))

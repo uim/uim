@@ -71,8 +71,15 @@
   '((type      unknown)
     (consumed  #f)
     (loopback  #f)    ;; instructs re-injection into local composer
-    (timestamp -1)))  ;; placeholder
+    (timestamp -1)    ;; placeholder
+    (ext-state #f)))
 (define-record 'event event-rec-spec)
+
+(define event-external-state
+  (lambda (ev state-id)
+    (let ((state-reader (event-ext-state ev)))
+      (and (procedure? state-reader)
+	   (state-reader state-id)))))
 
 (define-record 'timer-event
   event-rec-spec)
@@ -119,7 +126,7 @@
 (define key-event-new
   (lambda args
     (apply key-event-new-internal
-	   (append '(key #f #f -1) args))))
+	   (append (event-new 'key) args))))
 
 (define key-release-event-new
   (lambda args
