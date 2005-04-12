@@ -43,6 +43,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "uim/config.h"
 
@@ -247,23 +248,30 @@ void CandidateWindow::deactivateCand()
 void CandidateWindow::slotStdinActivated( int fd )
 {
     char buf[ 4096 ];
+    char *read_buf = strdup( "" );
     int n;
-    n = read( fd, buf, 4096 - 1 );
-    if ( n == 0 )
-    {
-        close( fd );
-        QApplication::exit( -1 );
-    }
-    if ( n == -1 )
-        return ;
-    buf[ n ] = '\0';
 
-    QStringList msgList = QStringList::split( "\n\n", QString( buf ) );
+    while (uim_helper_fd_readable( fd ) > 0) {
+        n = read( fd, buf, 4096 - 1 );
+        if ( n == 0 )
+        {
+            close( fd );
+            QApplication::exit( -1 );
+        }
+        if ( n == -1 )
+            return ;
+        buf[ n ] = '\0';
+	read_buf = (char *)realloc( read_buf, strlen( read_buf ) + n + 1 );
+	strcat( read_buf, buf );
+    }
+
+    QStringList msgList = QStringList::split( "\n\n", QString( read_buf ) );
 
     QStringList::Iterator it = msgList.begin();
     const QStringList::Iterator end = msgList.end();
     for ( ; it != end; ++it )
         strParse( ( *it ) );
+    free( read_buf );
 }
 
 void CandidateWindow::strParse( const QString& str )

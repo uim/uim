@@ -554,27 +554,33 @@ static gboolean
 read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
 {
   char buf[CANDIDATE_BUFFER_SIZE];
+  char *read_buf = strdup("");
   int i = 0;
   int n;
   gchar **tmp;
   int fd = g_io_channel_unix_get_fd(channel);
 
-  n = read(fd, buf, CANDIDATE_BUFFER_SIZE - 1);
-  if (n == 0) {
-    close(fd);
-    exit(-1);
+  while (uim_helper_fd_readable(fd) > 0) {
+    n = read(fd, buf, CANDIDATE_BUFFER_SIZE - 1);
+    if (n == 0) {
+      close(fd);
+      exit(-1);
+    }
+    if (n == -1)
+      return TRUE;
+    buf[n] = '\0';
+    read_buf = realloc(read_buf, strlen(read_buf) + n + 1);
+    strcat(read_buf, buf);
   }
-  if (n == -1)
-    return TRUE;
 
-  buf[n] = '\0';
-  tmp = g_strsplit(buf, "\n\n", 0);
+  tmp = g_strsplit(read_buf, "\n\n", 0);
 
   while (tmp[i]) {
     str_parse(tmp[i]);
     i++;
   }
   g_strfreev(tmp);
+  free(read_buf);
   return TRUE;
 }
 
