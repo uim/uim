@@ -719,7 +719,7 @@ void InputContext::candidate_activate(int nr, int display_limit)
     active_candidates = candidates;
     mDisplayLimit = display_limit;
     if (display_limit)
-	mNumPage = nr / display_limit + 1;
+	mNumPage = (nr - 1) / display_limit + 1;
 }
 
 void InputContext::candidate_update()
