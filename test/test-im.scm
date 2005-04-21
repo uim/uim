@@ -200,8 +200,8 @@
 		 (uim '(im-name (retrieve-im 'direct))))
    (assert-equal 'anthy
 		 (uim '(im-name (retrieve-im 'anthy))))
-   (assert-equal 'ipa
-		 (uim '(im-name (retrieve-im 'ipa))))
+   (assert-equal 'ipa-x-sampa
+		 (uim '(im-name (retrieve-im 'ipa-x-sampa))))
    (assert-false (uim-bool '(retrieve-im 'test-im)))
    (uim '(begin
 	   (apply register-im test-im-init-args)
@@ -227,7 +227,7 @@
    (assert-equal 'anthy
 		 (uim '(im-name (default-im-for-debug))))
    ;; default-im-name does not affect default-im-for-debug
-   (uim '(set! default-im-name 'ipa))
+   (uim '(set! default-im-name 'ipa-x-sampa))
    (assert-equal 'anthy
 		 (uim '(im-name (default-im-for-debug)))))
 
@@ -245,7 +245,7 @@
    (assert-true  (uim-bool '(memq 'hangul3 (map car im-list))))
    (assert-true  (uim-bool '(memq 'romaja (map car im-list))))
    (assert-true  (uim-bool '(memq 'viqr (map car im-list))))
-   (assert-true  (uim-bool '(memq 'ipa (map car im-list))))
+   (assert-true  (uim-bool '(memq 'ipa-x-sampa (map car im-list))))
    (assert-true  (uim-bool '(memq 'direct (map car im-list))))
    ;; unsupported or direct-input languages
    (assert-equal 'direct
@@ -272,11 +272,11 @@
    (assert-equal 'direct
 		 (uim '(im-name (find-im-for-locale "xx"))))
    ;; default-im-name does not affect find-im-for-locale
-   (uim '(set! default-im-name 'ipa))
+   (uim '(set! default-im-name 'ipa-x-sampa))
    (assert-equal 'direct
 		 (uim '(im-name (find-im-for-locale "pt"))))
    ;; default-im-for-debug does not affect find-im-for-locale
-   (uim '(setenv "UIM_IM_ENGINE" "ipa" #t))
+   (uim '(setenv "UIM_IM_ENGINE" "ipa-x-sampa" #t))
    (assert-equal 'direct
 		 (uim '(im-name (find-im-for-locale "pt"))))
    (uim '(unsetenv "UIM_IM_ENGINE"))
@@ -391,12 +391,12 @@
    (uim '(unsetenv "LC_ALL"))
    ;; default-im-name precedes the locale specified by arg
    (uim '(unsetenv "UIM_IM_ENGINE"))
-   (uim '(set! default-im-name 'ipa))
-   (assert-equal 'ipa
+   (uim '(set! default-im-name 'ipa-x-sampa))
+   (assert-equal 'ipa-x-sampa
 		 (uim '(im-name (find-default-im "en"))))
-   (assert-equal 'ipa
+   (assert-equal 'ipa-x-sampa
 		 (uim '(im-name (find-default-im "pt"))))
-   (assert-equal 'ipa
+   (assert-equal 'ipa-x-sampa
 		 (uim '(im-name (find-default-im "ja_JP.EUC-JP"))))
    ;; default-im-for-debug precedes the locale specified by arg
    (uim '(setenv "UIM_IM_ENGINE" "py" #t))
@@ -409,7 +409,7 @@
 		 (uim '(im-name (find-default-im "ja_JP.EUC-JP"))))
    ;; default-im-for-debug precedes default-im-name
    (uim '(setenv "UIM_IM_ENGINE" "py" #t))
-   (uim '(set! default-im-name 'ipa))
+   (uim '(set! default-im-name 'ipa-x-sampa))
    (assert-equal 'py
 		 (uim '(im-name (find-default-im "en"))))
    (assert-equal 'py
