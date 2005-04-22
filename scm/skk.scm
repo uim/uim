@@ -348,7 +348,8 @@
 	  (set! skk-dic-init #t)
 	  (if skk-use-recursive-learning?
 	   (require "skk-editor.scm"))
-	  (skk-lib-dic-open skk-dic-file-name)
+	   (skk-lib-dic-open
+	     skk-dic-file-name skk-use-skkserv? skk-skkserv-portnum)
 	  (skk-read-personal-dictionary)))
     (let ((sc (skk-context-new-internal id im))
 	  (rkc (rk-context-new ja-rk-rule #t #f)))
@@ -1632,7 +1633,7 @@
     (skk-flush sc)))
 
 (define skk-get-candidate-handler
-  (lambda (sc idx)
+  (lambda (sc idx accel-enum-hint)
     (let* ((dcsc (skk-find-descendant-context sc))
 	   (cand (skk-lib-eval-candidate (skk-get-nth-candidate dcsc idx)))
 	   (okuri (skk-context-okuri dcsc)))

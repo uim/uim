@@ -45,10 +45,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <signal.h>
+#include <errno.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
 
 #include "uim-scm.h"
 #include "context.h"
 #include "plugin.h"
+#include "uim-helper.h"
 
 /*
  * cand : candidate
@@ -109,6 +115,10 @@ static struct dic_info {
   int cache_modified;
   /* length of cached lines */
   int cache_len;
+  /* skkserv is initialized */
+  int skkserv_ok;
+  /* skkserv port number */
+  int skkserv_portnum;
 } *skk_dic;
 
 /* completion */
@@ -123,6 +133,17 @@ struct skk_comp_array {
   /**/
   struct skk_comp_array *next;
 } *skk_comp;
+
+/* skkserv connection */
+#define SKK_SERVICENAME	"skkserv"
+#define SKK_SERVER_HOST	"localhost"
+
+static int skkservsock = -1;
+static FILE *rserv, *wserv;
+static char *SKKServerHost = NULL;
+/* prototype */
+static int skk_open_skkserv(int portnum);
+static void skk_close_skkserv(void);
 
 static int
 calc_line_len(const char *s)
@@ -163,11 +184,11 @@ find_first_line(struct dic_info *di)
 }
 
 static int
-find_border(struct dic_info *di, int size)
+find_border(struct dic_info *di)
 {
   char *s = di->addr;
   int off = 0;
-  while (off < size) {
+  while (off < di->size) {
     int l = calc_line_len(&s[off]);
     if (s[off] == ';') {
       off += l + 1;
@@ -179,37 +200,48 @@ find_border(struct dic_info *di, int size)
     off += l + 1;
   }
   /* every entry is okuri-ari, it may not happen. */
-  return size - 1;
+  return di->size - 1;
 }
 
 static struct dic_info *
-open_dic(const char *fn)
+open_dic(const char *fn, uim_bool use_skkserv, int skkserv_portnum)
 {
   struct dic_info *di;
   struct stat st;
   int fd;
   void *addr = NULL;
-  int success = 0;
+  int mmap_done = 0;
 
-  fd = open(fn, O_RDONLY);
-  if (fd != -1) {
-    if (fstat(fd, &st) != -1) {
-      addr = mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
-      if (addr != MAP_FAILED) {
-	success = 1;
+  if (!(di = (struct dic_info *)malloc(sizeof(struct dic_info))))
+    return NULL;
+
+  di->skkserv_portnum = skkserv_portnum;
+  if (use_skkserv)
+    di->skkserv_ok = skk_open_skkserv(skkserv_portnum);
+  else {
+    di->skkserv_ok = 0;
+    fd = open(fn, O_RDONLY);
+    if (fd != -1) {
+      if (fstat(fd, &st) != -1) {
+	addr = mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+	if (addr != MAP_FAILED) {
+	  mmap_done = 1;
+	}
       }
     }
+    close(fd);
   }
-  close(fd);
-  di = (struct dic_info *)malloc(sizeof(struct dic_info));
-  di->addr = success ? addr : NULL;
-  di->size = success ? st.st_size : 0;
-  di->first = success ? find_first_line(di) : 0;
-  di->border = success ? find_border(di, st.st_size) : 0;
+
+  di->addr = mmap_done ? addr : NULL;
+  di->size = mmap_done ? st.st_size : 0;
+  di->first = mmap_done ? find_first_line(di) : 0;
+  di->border = mmap_done ? find_border(di) : 0;
+
   di->head.next = NULL;
   di->personal_dic_timestamp = 0;
   di->cache_modified = 0;
   di->cache_len = 0;
+  
   return di;
 }
 
@@ -218,10 +250,10 @@ find_line(struct dic_info *di, int off)
 {
   char *ptr = di->addr;
   while (off > 0 && (ptr[off] != '\n' || ptr[off+1] == ';')) {
-    off --;
+    off--;
   }
   if (off) {
-    off ++;
+    off++;
   }
   return &ptr[off];
 }
@@ -247,10 +279,10 @@ do_search_line(struct dic_info *di, const char *s, int min,
 {
   char buf[256];
   char *r;
-  int idx = (min + max)/2;
+  int idx = (min + max) / 2;
   int c = 0;
 
-  if (abs(max-min) < 4) {
+  if (abs(max - min) < 4) {
     return -1;
   }
   r = extract_line_index(di, idx, buf, 256);
@@ -349,11 +381,14 @@ nth_candidate(char *str, int nth)
 }
 
 static uim_lisp
-skk_dic_open(uim_lisp fn_)
+skk_dic_open(uim_lisp fn_, uim_lisp use_skkserv_, uim_lisp skkserv_portnum_)
 {
   const char *fn = uim_scm_refer_c_str(fn_);
+  uim_bool use_skkserv = uim_scm_c_bool(use_skkserv_);
+  int skkserv_portnum = uim_scm_c_int(skkserv_portnum_);
+  
   if (!skk_dic) {
-    skk_dic = open_dic(fn);
+    skk_dic = open_dic(fn, use_skkserv, skkserv_portnum);
   }
   return uim_scm_f();
 }
@@ -591,6 +626,49 @@ add_line_to_cache_last(struct dic_info *di, struct skk_line *sl)
 #endif
 
 static struct skk_line *
+skk_search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
+{
+  char r;
+  struct skk_line *sl;
+  int n, len, ret;
+  char buf[4096];
+  char *line;
+  char *idx = alloca(strlen(s) + 2);
+
+  sprintf(idx, "%s%c", s, okuri_head);
+
+  fprintf(wserv,"1%s \n",idx);
+  ret = fflush(wserv);
+  if (ret != 0 && errno == EPIPE) {
+    di->skkserv_ok = skk_open_skkserv(di->skkserv_portnum);
+    return NULL;
+  }
+
+  line = malloc(strlen(idx) + 2);
+  sprintf(line, "%s ", idx);
+  read(skkservsock, &r, 1);
+  if (r == '1') {  /* succeeded */
+    while (uim_helper_fd_readable(skkservsock) > 0) {
+      n = read(skkservsock, buf, 4096 - 1);
+      if (n == 0)
+	return NULL;
+
+      buf[n] = '\0';
+      line = realloc(line, strlen(line) + n + 1);
+      strcat(line, buf);
+    }
+    len = calc_line_len(line);
+    line[len] = '\0';
+    sl = compose_line(di, s, okuri_head, line);
+    free(line);
+    return sl;
+  } else {
+    while (read(skkservsock, &r, 1) > 0 && r != '\n');
+    return NULL;
+  }
+}
+	
+static struct skk_line *
 skk_search_line_from_file(struct dic_info *di, const char *s, char okuri_head)
 {
   int n;
@@ -651,9 +729,15 @@ find_cand_array(struct dic_info *di, const char *s,
   struct skk_cand_array *ca;
   int from_file = 0;
 
+  if (!di)
+    return NULL;
+
   sl = skk_search_line_from_cache(di, s, okuri_head);
   if (!sl) {
-    sl = skk_search_line_from_file(di, s, okuri_head);
+    if (di->skkserv_ok)
+      sl = skk_search_line_from_server(di, s, okuri_head);
+    else
+      sl = skk_search_line_from_file(di, s, okuri_head);
     if (!sl) {
       if (!create_if_not_found) {
 	return NULL;
@@ -671,7 +755,10 @@ find_cand_array(struct dic_info *di, const char *s,
     merge_base_candidates_to_array(sl, ca);
     ca->is_used = 1;
     if (!from_file) {
-      sl_file = skk_search_line_from_file(di, s, okuri_head);
+      if (di->skkserv_ok)
+	sl_file = skk_search_line_from_server(di, s, okuri_head);
+      else
+	sl_file = skk_search_line_from_file(di, s, okuri_head);
       merge_base_candidates_to_array(sl_file, ca);
       free_skk_line(sl_file);
     }
@@ -1132,8 +1219,7 @@ get_nth(int nth, uim_lisp lst_)
 }
 
 static uim_lisp
-skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_,
-		      uim_lisp numlst_)
+skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp numlst_)
 {
   int n;
   struct skk_cand_array *ca, *subca;
@@ -1249,7 +1335,7 @@ skk_make_comp_array_from_cache(struct dic_info *di, const char *s)
     if (/* string 's' is part of sl->head */
 	!strncmp(sl->head, s, strlen(s)) && strcmp(sl->head, s) &&
 	/* and sl is okuri-nasi line */
-        (sl->okuri_head == '\0')) {
+	(sl->okuri_head == '\0')) {
       ca->nr_comps++;
       ca->comps = realloc(ca->comps, sizeof(char *) * ca->nr_comps);
       ca->comps[ca->nr_comps - 1] = strdup(sl->head);
@@ -1280,7 +1366,7 @@ find_comp_array(struct dic_info *di, const char *s)
       break;
   }
   if (ca == NULL) {
-    ca = skk_make_comp_array_from_cache(skk_dic, s);
+    ca = skk_make_comp_array_from_cache(di, s);
   }
 
   return ca;
@@ -1366,7 +1452,7 @@ skk_clear_completions(uim_lisp head_)
     } else {
       ca_prev = skk_comp;
       while (ca_prev->next != ca) {
-        ca_prev = ca_prev->next;
+	ca_prev = ca_prev->next;
       }
       ca_prev->next = ca->next;
       free(ca);
@@ -1814,6 +1900,9 @@ skk_read_personal_dictionary(struct dic_info *di, const char *fn)
   int err_flag = 0;
   int lock_fd;
 
+  if (!di)
+    return uim_scm_f();
+
   lock_fd = open_lock(fn, F_RDLCK);
 
   if (stat(fn, &st) == -1) {
@@ -2074,6 +2163,9 @@ skk_lib_save_personal_dictionary(uim_lisp fn_)
   struct stat st;
   int lock_fd = -1;
 
+  if (!skk_dic)
+    return uim_scm_f();
+
   if (fn) {
     if (stat(fn, &st) != -1) {
       if (st.st_mtime != skk_dic->personal_dic_timestamp)
@@ -2208,7 +2300,7 @@ skk_eval_candidate(uim_lisp str_)
 void
 uim_plugin_instance_init(void)
 {
-  uim_scm_init_subr_1("skk-lib-dic-open", skk_dic_open);
+  uim_scm_init_subr_3("skk-lib-dic-open", skk_dic_open);
   uim_scm_init_subr_1("skk-lib-read-personal-dictionary", skk_lib_read_personal_dictionary);
   uim_scm_init_subr_1("skk-lib-save-personal-dictionary", skk_lib_save_personal_dictionary);
   uim_scm_init_subr_3("skk-lib-get-entry", skk_get_entry);
@@ -2245,6 +2337,77 @@ uim_plugin_instance_quit(void)
     sl = sl->next;
     free_skk_line(tmp);
   }
+
+  if (skk_dic->skkserv_ok)
+    skk_close_skkserv();
+
   free(skk_dic);
   skk_dic = NULL;
+}
+
+/* skkserv related */
+static int
+skk_open_skkserv(int portnum)
+{
+  int sock;
+  struct sockaddr_in hostaddr;
+  struct hostent *entry;
+  /* struct servent *serv; */
+  struct protoent *proto;
+  int a1, a2, a3, a4;
+  char *hostname;
+
+  signal(SIGPIPE, SIG_IGN);
+
+  /* serv = getservbyname(SKK_SERVICENAME, "tcp"); */
+  memset((char*)&hostaddr, 0, sizeof(struct sockaddr_in));
+  if ((proto = getprotobyname("tcp")) == NULL) {
+    return 0;
+  }
+
+  if ((sock = socket(AF_INET, SOCK_STREAM, proto->p_proto)) < 0) {
+    return 0;
+  }
+
+  if (SKKServerHost)
+    hostname = SKKServerHost;
+  else if ((hostname = getenv("SKKSERVER")) == NULL) {
+#ifdef SKK_SERVER_HOST
+    hostname = SKK_SERVER_HOST;
+#else
+    return 0;
+#endif
+  }
+  if ('0' <= *hostname && *hostname <= '9') {
+    if (sscanf(hostname,"%d.%d.%d.%d", &a1, &a2, &a3, &a4) != 4) {
+      return 0;
+    }
+    a1 = (a1 << 24) | (a2 << 16) | (a3 << 8) | a4;
+    hostaddr.sin_addr.s_addr = htonl(a1);
+  } else {
+    if ((entry = gethostbyname(hostname)) == NULL) {
+      return 0;
+    }
+    memcpy(&hostaddr.sin_addr, entry->h_addr, entry->h_length);
+  }
+  hostaddr.sin_family = AF_INET;
+  /* hostaddr.sin_port = serv ? serv->s_port : htons(portnum); */
+  hostaddr.sin_port = htons(portnum);
+  if (connect(sock, (struct sockaddr *)&hostaddr, sizeof(struct sockaddr_in)) < 0) {
+    return 0;
+  }
+  printf("SKKSERVER=%s\r\n",hostname);
+  skkservsock = sock;
+  rserv = fdopen(sock, "r");
+  wserv = fdopen(sock, "w");
+  return 1;
+}
+
+static void
+skk_close_skkserv()
+{
+  if (skkservsock >= 0) {
+    fprintf(wserv, "0\n");
+    fflush(wserv);
+  }
 }

@@ -259,6 +259,23 @@
 ;; dictionary
 ;;
 
+(define-custom 'skk-use-skkserv? #f
+  '(skk-dict)
+  '(boolean)
+  (_ "Use skkserv instead of SKK-JISYO")
+  (_ "long description will be here."))
+
+(define-custom 'skk-skkserv-portnum 1178
+  '(skk-dict)
+  '(integer 0 65535)
+  (_ "Port number of skkserv")
+  (_ "long description will be here."))
+
+(custom-add-hook 'skk-skkserv-portnum
+		 'custom-activity-hooks
+		 (lambda ()
+		   skk-use-skkserv?))
+
 (define-custom 'skk-dic-file-name (string-append (sys-datadir)
 						 "/skk/SKK-JISYO.L")
   '(skk-dict)
