@@ -206,7 +206,7 @@ char *utf8_to_native_str(char *utf8, const char *enc) {
     size_t inbytesleft, outbytesleft;
     size_t ret_val;
     
-    cd = iconv_open(enc, "UTF-8");
+    cd = (iconv_t)uim_iconv_open(enc, "UTF-8");
     if (cd == (iconv_t)-1) {
 	perror("error in iconv_open");
 	return NULL;

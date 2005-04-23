@@ -1162,7 +1162,7 @@ mb_string_to_utf8(char *utf8, const char *str, int len, const char *enc) {
     size_t ret_val;
     iconv_t cd;
 
-    cd = iconv_open("UTF-8", enc);
+    cd = (iconv_t)uim_iconv_open("UTF-8", enc);
     if (cd == (iconv_t)-1) {
 	perror("error in iconv_open");
 	utf8[0] = '\0';

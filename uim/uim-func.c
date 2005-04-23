@@ -43,7 +43,6 @@
 #define MAX_LENGTH_OF_INT_AS_STR (((sizeof(int) == 4) ? sizeof("-2147483648") : sizeof("-9223372036854775808")) - sizeof((char)'\0'))
 
 static const char **uim_get_encoding_alias(const char *encoding);
-static iconv_t uim_iconv_open(const char *tocode, const char *fromcode);
 
 char *uim_return_str;
 char *uim_return_str_list[10]; /* XXX */
@@ -161,7 +160,7 @@ uim_iconv_is_convertible(const char *tocode, const char *fromcode)
     return 1;
 
   /* TODO cache the result */
-  ic = uim_iconv_open(tocode, fromcode);
+  ic = (iconv_t)uim_iconv_open(tocode, fromcode);
   if (ic == (iconv_t)-1) {
     return 0;
   }
@@ -183,7 +182,7 @@ uim_get_encoding_alias(const char *encoding) {
   return NULL;
 }
 
-static iconv_t
+void *
 uim_iconv_open(const char *tocode, const char *fromcode) {
   iconv_t cd = (iconv_t)-1;
   int i, j;
@@ -224,7 +223,7 @@ uim_iconv_open(const char *tocode, const char *fromcode) {
     free(alias_tocode);
   if (alias_fromcode_alloced)
     free(alias_fromcode);
-  return cd;
+  return (void *)cd;
 }
 
 void *
@@ -235,7 +234,7 @@ uim_iconv_create(const char *tocode, const char *fromcode)
   if (check_encoding_equivalence(tocode, fromcode))
     return NULL;
 
-  ic = uim_iconv_open(tocode, fromcode);
+  ic = (iconv_t)uim_iconv_open(tocode, fromcode);
   if (ic == (iconv_t)-1) {
     /* since iconv_t is not explicit pointer, use 0 instead of NULL */
     ic = (iconv_t)0;

@@ -581,6 +581,9 @@ char *uim_symbol_value_str(const char *symbol_str);
 /* an uim_code_converter implementation using iconv */
 extern struct uim_code_converter *uim_iconv;
 
+/* uim's iconv_open wrapper */
+void *uim_iconv_open(const char *tocode, const char *fromcode);
+
 #ifdef __cplusplus
 }
 #endif
