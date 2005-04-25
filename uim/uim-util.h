@@ -55,6 +55,9 @@ uim_get_language_name_from_locale(const char *localename);
 int
 is_setugid(void);
 
+/* uim's iconv_open wrapper */
+void *uim_iconv_open(const char *tocode, const char *fromcode);
+
 #ifdef __cplusplus
 }
 #endif

@@ -47,6 +47,7 @@
 #include "xim.h"
 #include "ximserver.h"
 #include "compose.h"
+#include "uim/uim-util.h"
 
 #define COMPOSE_FILE	"Compose"
 #define COMPOSE_DIR_FILE	"X11/locale/compose.dir"

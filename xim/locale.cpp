@@ -47,6 +47,7 @@
 #include <X11/Xutil.h>
 #include "ximserver.h"
 #include "util.h"
+#include "uim/uim-util.h"
 #ifndef __GNUC__
 # ifdef HAVE_ALLOCA_H
 #  include <alloca.h>
