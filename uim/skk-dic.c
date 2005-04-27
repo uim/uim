@@ -137,6 +137,7 @@ struct skk_comp_array {
 /* skkserv connection */
 #define SKK_SERVICENAME	"skkserv"
 #define SKK_SERVER_HOST	"localhost"
+#define SKK_SERV_BUFSIZ	1024
 
 static int skkservsock = -1;
 static FILE *rserv, *wserv;
@@ -630,8 +631,8 @@ skk_search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
 {
   char r;
   struct skk_line *sl;
-  int n, len, ret;
-  char buf[4096];
+  int n = 0, ret;
+  char buf[SKK_SERV_BUFSIZ];
   char *line;
   char *idx = alloca(strlen(s) + 2);
 
@@ -648,17 +649,28 @@ skk_search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
   sprintf(line, "%s ", idx);
   read(skkservsock, &r, 1);
   if (r == '1') {  /* succeeded */
-    while (uim_helper_fd_readable(skkservsock) > 0) {
-      n = read(skkservsock, buf, 4096 - 1);
-      if (n == 0)
+    while (1) {
+      ret = read(skkservsock, &r, 1);
+      if (ret <= 0) {
+	fprintf(stderr, "skkserv connection closed\n");
 	return NULL;
+      }
 
-      buf[n] = '\0';
-      line = realloc(line, strlen(line) + n + 1);
-      strcat(line, buf);
+      if (r == '\n') {
+	line = realloc(line, strlen(line) + n + 1);
+	strncat(line, buf, n);
+	break;
+      }
+
+      buf[n] = r; 
+      if (n == SKK_SERV_BUFSIZ - 1) {
+	line = realloc(line, strlen(line) + n + 2);
+	strncat(line, buf, n + 1);
+	n = 0;
+      } else {
+	n++;
+      }
     }
-    len = calc_line_len(line);
-    line[len] = '\0';
     sl = compose_line(di, s, okuri_head, line);
     free(line);
     return sl;
@@ -2396,7 +2408,7 @@ skk_open_skkserv(int portnum)
   if (connect(sock, (struct sockaddr *)&hostaddr, sizeof(struct sockaddr_in)) < 0) {
     return 0;
   }
-  printf("SKKSERVER=%s\r\n",hostname);
+  fprintf(stderr, "SKKSERVER=%s\n",hostname);
   skkservsock = sock;
   rserv = fdopen(sock, "r");
   wserv = fdopen(sock, "w");
