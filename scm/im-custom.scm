@@ -340,7 +340,7 @@
 (define-custom 'bridge-show-input-state? #f
   '(global visual-preference)
   '(boolean)
-  (_ "Show input state nearby the caret")
+  (_ "Show input mode nearby cursor")
   (_ "long description will be here."))
 
 ;; EB Library support
