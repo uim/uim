@@ -76,6 +76,14 @@
   (_ "Commit candidate by heading label keys")
   (_ "long description will be here."))
 
+(define-custom 'skk-candidate-selection-style 'uim
+  '(skk candwin)
+  (list 'choice
+	(list 'uim (_ "uim") (_ "uim native"))
+	(list 'ddskk-like (_ "ddskk-like") (_ "Similar to ddskk")))
+  (_ "Candidate selection style")
+  (_ "long description will be here."))
+
 ;; activity dependency
 (custom-add-hook 'skk-candidate-op-count
 		 'custom-activity-hooks

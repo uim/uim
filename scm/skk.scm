@@ -55,6 +55,9 @@
 ;; encoding conversion problem.  -- YamaKen 2005-02-02
 (define skk-auto-start-henkan-keyword-list '("¤ò" "¡¢" "¡£" "¡¥" "¡¤" "¡©" "¡×" "¡ª" "¡¨" "¡§" ")" ";" ":" "¡Ë" "¡É" "¡Û" "¡Ù" "¡Õ" "¡Ó" "¡Ñ" "¡Ï" "¡Í" "}" "]" "?" "." "," "!"))
 
+(define skk-ddskk-like-heading-label-char-list '("a" "s" "d" "f" "j" "k" "l"))
+(define skk-uim-heading-label-char-list '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
+
 ;; style specification
 (define skk-style-spec
   '(;; (style-element-name . validator)
@@ -674,8 +677,9 @@
 	     (bit-or skk-preedit-attr-conv-body
 		     preedit-cursor)
 	     (if skk-show-annotation-in-preedit?
-	         (skk-lib-eval-candidate (skk-get-current-candidate sc))
-	         (skk-lib-eval-candidate (skk-lib-remove-annotation (skk-get-current-candidate sc)))))
+		 (skk-lib-eval-candidate (skk-get-current-candidate sc))
+		 (skk-lib-eval-candidate
+		  (skk-lib-remove-annotation (skk-get-current-candidate sc)))))
 	    (im-pushback-preedit
 	     sc skk-preedit-attr-conv-okuri
 	     (skk-make-string (skk-context-okuri sc)
@@ -1219,14 +1223,10 @@
     (let ((head (skk-context-head sc)))
       (if
        (and
-	(not
-	 (skk-context-candidate-window sc))
+	(not (skk-context-candidate-window sc))
 	skk-use-candidate-window?
-	;; XXX skk-context-candidate-op-count start from 0 with
-	;; the first entry of the candidates
-	(> (skk-context-candidate-op-count sc)
-	   (- skk-candidate-op-count 2)))
-	(begin
+	(> (skk-context-nth sc) (- skk-candidate-op-count 2)))
+       (begin
 	 (skk-context-set-candidate-window! sc #t)
 	 (if skk-use-numeric-conversion?
 	   ;; store numeric strings to check #4
@@ -1242,7 +1242,12 @@
 		numlst))
 	     (im-activate-candidate-selector
 	      sc
-	      (skk-context-nr-candidates sc)
+	      (cond
+	       ((= skk-candidate-selection-style 'uim)
+		(skk-context-nr-candidates sc))
+	       ((= skk-candidate-selection-style 'ddskk-like)
+		(- (skk-context-nr-candidates sc)
+		   (- skk-candidate-op-count 1))))
 	      skk-nr-candidate-max))
 	   (begin
 	     (skk-context-set-nr-candidates!
@@ -1254,7 +1259,12 @@
 	       '()))
 	     (im-activate-candidate-selector
 	      sc
-	      (skk-context-nr-candidates sc)
+	      (cond
+	       ((= skk-candidate-selection-style 'uim)
+		  (skk-context-nr-candidates sc))
+	       ((= skk-candidate-selection-style 'ddskk-like)
+		  (- (skk-context-nr-candidates sc)
+		     (- skk-candidate-op-count 1))))
 	      skk-nr-candidate-max))))))))
 
 (define skk-commit-by-label-key
@@ -1262,53 +1272,105 @@
     (let ((nr (skk-context-nr-candidates sc))
 	  (cur-page (if (= skk-nr-candidate-max 0)
 			0
-			(quotient (skk-context-nth sc) skk-nr-candidate-max)))
+			(cond
+			 ((= skk-candidate-selection-style 'uim)
+			    (quotient (skk-context-nth sc)
+				      skk-nr-candidate-max))
+			 ((= skk-candidate-selection-style 'ddskk-like)
+			    (quotient (- (skk-context-nth sc)
+					 (- skk-candidate-op-count 1))
+				      skk-nr-candidate-max)))))
 	  (idx -1)
 	  (res #f))
-      (if (numeral-char? key)
-	  (let ((num (numeral-char->number key)))
-	    (if (= num 0)
-		(set! num 9) ; pressing key_0
-		(set! num (- num 1)))
-	    (if (or (< num skk-nr-candidate-max)
-		    (= skk-nr-candidate-max 0))
-		(set! idx (+ (* cur-page skk-nr-candidate-max) num))))
-	  ;; FIXME: add code to handle labels other than number here
-	  )
+      (cond
+       ((= skk-candidate-selection-style 'uim)
+	(let ((num (numeral-char->number key)))
+	  (if (= num 0)
+	      (set! num 9) ; pressing key_0
+	      (set! num (- num 1)))
+	  (if (or (< num skk-nr-candidate-max)
+		  (= skk-nr-candidate-max 0))
+	      (set! idx (+ (* cur-page skk-nr-candidate-max) num)))))
+       ((= skk-candidate-selection-style 'ddskk-like)
+	(let ((num (- (length skk-ddskk-like-heading-label-char-list)
+		      (length
+		       (member (charcode->string key)
+			       skk-ddskk-like-heading-label-char-list)))))
+	  (if (or (< num skk-nr-candidate-max)
+		  (= skk-nr-candidate-max 0))
+	      (set! idx (+ (* cur-page skk-nr-candidate-max)
+			   num (- skk-candidate-op-count 1)))))))
       (if (and (>= idx 0)
 	       (< idx nr))
 	  (begin
 	    (skk-context-set-nth! sc idx)
 	    (set! res (skk-prepare-commit-string sc))))
       res)))
+      
+(define skk-incr-candidate-index
+  (lambda (sc)
+    (cond
+     ((= skk-candidate-selection-style 'uim)
+      (skk-context-set-nth! sc (+ 1 (skk-context-nth sc))))
+     ((= skk-candidate-selection-style 'ddskk-like)
+      (if (> (+ (skk-context-nth sc) 1) (- skk-candidate-op-count 1))
+	  (if (> (+ (skk-context-nth sc) skk-nr-candidate-max)
+		 (- (skk-context-nr-candidates sc) 1))
+	      ;; go into recursive learning state
+	      (skk-context-set-nth! sc (skk-context-nr-candidates sc))
+	      ;; just shift to next page
+	      (im-shift-page-candidate sc #t))
+	  ;; just increment index unless candidate window exist
+	  (skk-context-set-nth! sc (+ 1 (skk-context-nth sc))))))
+    (skk-context-set-candidate-op-count!
+     sc
+     (+ 1 (skk-context-candidate-op-count sc)))
+    #t))
+
+(define skk-decr-candidate-index
+  (lambda (sc)
+    (cond
+     ((= skk-candidate-selection-style 'uim)
+      (if (> (skk-context-nth sc) 0)
+	  (begin
+	    (skk-context-set-nth! sc (- (skk-context-nth sc) 1))
+	    #t)
+	  (begin
+	    (if (= (skk-context-nr-candidates sc) 0)
+		(begin
+		  (skk-back-to-kanji-state sc)
+		  #f)
+		(begin
+		  (skk-context-set-nth!
+		   sc
+		   (- (skk-context-nr-candidates sc) 1))
+		  #t)))))
+     ((= skk-candidate-selection-style 'ddskk-like)
+      (if (> (skk-context-nth sc)
+	     (+ skk-nr-candidate-max (- skk-candidate-op-count 2)))
+	  (begin
+	    (im-shift-page-candidate sc #f)
+	    #t)
+	  (if (= (skk-context-nth sc) 0)
+	      (begin
+		(skk-back-to-kanji-state sc)
+		#f)
+	      (begin
+		(if (> (skk-context-nth sc) (- skk-candidate-op-count 2))
+		    (begin
+		      (skk-reset-candidate-window sc)
+		      (skk-context-set-nth! sc
+					    (- skk-candidate-op-count 1))))
+		(skk-context-set-nth! sc (- (skk-context-nth sc) 1))
+		#t)))))))
 
 (define skk-change-candidate-index
   (lambda (sc incr)
     (let ((head (skk-context-head sc)))
       (and
        (if incr
-	   (begin
-	     (skk-context-set-nth! sc
-				   (+ 1 (skk-context-nth sc)))
-	     (skk-context-set-candidate-op-count!
-	      sc
-	      (+ 1 (skk-context-candidate-op-count sc)))
-	     #t)
-	   (begin
-	     (if (> (skk-context-nth sc) 0)
-		 (begin
-		   (skk-context-set-nth! sc (- (skk-context-nth sc) 1))
-		   #t)
-		 (begin
-		   (if (= (skk-context-nr-candidates sc) 0)
-		       (begin
-			 (skk-back-to-kanji-state sc)
-			 #f)
-		       (begin
-			 (skk-context-set-nth!
-			  sc
-			  (- (skk-context-nr-candidates sc) 1))
-			 #t))))))
+	   (skk-incr-candidate-index sc)
+	   (skk-decr-candidate-index sc))
        (if (null? (skk-get-current-candidate sc))
 	   (begin
 	     (skk-context-set-nth! sc 0)
@@ -1324,7 +1386,13 @@
 	     (skk-check-candidate-window-begin sc)
 	     ;;
 	     (if (skk-context-candidate-window sc)
-		 (im-select-candidate sc (skk-context-nth sc)))
+		 (cond
+		  ((= skk-candidate-selection-style 'uim)
+		   (im-select-candidate sc (skk-context-nth sc)))
+		  ((= skk-candidate-selection-style 'ddskk-like)
+		   (im-select-candidate
+		    sc
+		    (- (skk-context-nth sc) (- skk-candidate-op-count 1))))))
 	     #t)
 	   #t))
       #f)))
@@ -1420,9 +1488,16 @@
 
 (define skk-heading-label-char?
   (lambda (key)
-    (if (numeral-char? key) ;; FIXME: should handle key other than number
-	#t
-	#f)))
+    (cond
+     ((= skk-candidate-selection-style 'uim)
+      (if (member (charcode->string key) skk-uim-heading-label-char-list)
+	  #t
+	  #f))
+     ((= skk-candidate-selection-style 'ddskk-like)
+      (if (member (charcode->string key)
+		  skk-ddskk-like-heading-label-char-list)
+	  #t
+	  #f)))))
 
 (define skk-proc-state-converting
   (lambda (c key key-state)
@@ -1635,7 +1710,14 @@
 (define skk-get-candidate-handler
   (lambda (sc idx accel-enum-hint)
     (let* ((dcsc (skk-find-descendant-context sc))
-	   (cand (skk-lib-eval-candidate (skk-get-nth-candidate dcsc idx)))
+	   (cand (skk-lib-eval-candidate
+		  (skk-get-nth-candidate
+		   dcsc
+		   (cond
+		    ((= skk-candidate-selection-style 'uim)
+		       idx)
+		    ((= skk-candidate-selection-style 'ddskk-like)
+		       (+ idx (- skk-candidate-op-count 1)))))))
 	   (okuri (skk-context-okuri dcsc)))
       (list
        (if (and
@@ -1644,10 +1726,17 @@
 	   (string-append cand
 			  (skk-make-string okuri skk-type-hiragana))
 	   cand)
-       ;; FIXME make sure to enable lable other than number
-       (if (= skk-nr-candidate-max 0)
-	   (digit->string (+ idx 1))
-	   (digit->string (+ (remainder idx skk-nr-candidate-max) 1)))
+       (cond
+	((= skk-candidate-selection-style 'uim)
+	 (if (= skk-nr-candidate-max 0)
+	     (digit->string (+ idx 1))
+	     (digit->string (+ (remainder idx skk-nr-candidate-max) 1))))
+	((= skk-candidate-selection-style 'ddskk-like)
+	 (if (> skk-nr-candidate-max 0)
+	     (set! idx (remainder idx skk-nr-candidate-max)))
+	 (if (< idx (length skk-ddskk-like-heading-label-char-list))
+	     (nth idx skk-ddskk-like-heading-label-char-list)
+	     "")))
        ""))))
 
 (define skk-set-candidate-index-handler
@@ -1655,7 +1744,11 @@
     (let ((sc (skk-find-descendant-context c)))
       (if (skk-context-candidate-window sc)
 	  (begin
-	    (skk-context-set-nth! sc idx)
+	    (cond
+	     ((= skk-candidate-selection-style 'uim)
+	      (skk-context-set-nth! sc idx))
+	     ((= skk-candidate-selection-style 'ddskk-like)
+	      (skk-context-set-nth! sc (+ idx (- skk-candidate-op-count 1)))))
 	    (skk-update-preedit sc))))))
 
 (skk-configure-widgets)
