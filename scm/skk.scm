@@ -1292,10 +1292,10 @@
 	  (res #f))
       (cond
        ((= skk-candidate-selection-style 'uim)
-	(let ((num (numeral-char->number key)))
-	  (if (= num 0)
-	      (set! num 9) ; pressing key_0
-	      (set! num (- num 1)))
+	(let ((num (- (length skk-uim-heading-label-char-list)
+		      (length
+		       (member (charcode->string key)
+			       skk-uim-heading-label-char-list)))))
 	  (if (or (< num skk-nr-candidate-max)
 		  (= skk-nr-candidate-max 0))
 	      (set! idx (+ (* cur-page skk-nr-candidate-max) num)))))
@@ -1513,7 +1513,8 @@
   (lambda (key)
     (cond
      ((= skk-candidate-selection-style 'uim)
-      (if (member (charcode->string key) skk-uim-heading-label-char-list)
+      (if (member (charcode->string key)
+      		  skk-uim-heading-label-char-list)
 	  #t
 	  #f))
      ((= skk-candidate-selection-style 'ddskk-like)
@@ -1753,7 +1754,14 @@
 	((= skk-candidate-selection-style 'uim)
 	 (if (= skk-nr-candidate-max 0)
 	     (digit->string (+ idx 1))
-	     (digit->string (+ (remainder idx skk-nr-candidate-max) 1))))
+	     (begin
+	       (set! idx (remainder idx skk-nr-candidate-max))
+	       (if (< idx (length skk-uim-heading-label-char-list))
+		   (charcode->string
+		    (char-upcase
+		     (string->charcode
+		      (nth idx skk-uim-heading-label-char-list))))
+		   ""))))
 	((= skk-candidate-selection-style 'ddskk-like)
 	 (if (> skk-nr-candidate-max 0)
 	     (set! idx (remainder idx skk-nr-candidate-max)))
