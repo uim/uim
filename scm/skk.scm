@@ -342,6 +342,7 @@
     (skk-context-set-okuri! sc '())
     (skk-context-set-appendix! sc '())
     (skk-reset-candidate-window sc)
+    (skk-context-set-nr-candidates! sc 0)
     (skk-context-set-latin-conv! sc #f)))
 
 (define skk-context-new
@@ -500,9 +501,7 @@
   (lambda (sc key key-state)
     (let ((psc (skk-context-parent-context sc)))
       (if (not (null? psc))
-	  (skk-editor-commit-raw
-	   (skk-context-editor psc)
-	   key key-state)
+	  (skk-editor-commit-raw (skk-context-editor psc) key key-state)
 	  (begin
 	    (skk-context-set-commit-raw! sc #t)
 	    (im-commit-raw sc))))))
@@ -618,8 +617,7 @@
 	    (skk-check-candidate-window-begin sc)
 	    (if (skk-context-candidate-window sc)
 		(im-select-candidate sc 0))
-	    (skk-context-set-state!
-	     sc 'skk-state-converting))
+	    (skk-context-set-state! sc 'skk-state-converting))
 	  (if skk-use-recursive-learning?
 	      (skk-setup-child-context sc)
 	      (skk-flush sc))))))
@@ -1429,7 +1427,22 @@
 			       (append (skk-context-appendix sc)
 				       (skk-context-head sc))))
     (skk-context-set-okuri! sc '())
-    (skk-context-set-appendix! sc '())))
+    (skk-context-set-appendix! sc '())
+    (skk-context-set-nr-candidates! sc 0)))
+
+(define skk-back-to-converting-state
+  (lambda (sc)
+    (skk-context-set-nth! sc (- (skk-context-nr-candidates sc) 1))
+    (skk-check-candidate-window-begin sc)
+    (if (skk-context-candidate-window sc)
+	(cond
+	 ((= skk-candidate-selection-style 'uim)
+	  (im-select-candidate sc (skk-context-nth sc)))
+	 ((= skk-candidate-selection-style 'ddskk-like)
+	  (im-select-candidate
+	   sc
+	   (- (skk-context-nth sc) (- skk-candidate-op-count 1))))))
+    (skk-context-set-state! sc 'skk-state-converting)))
 
 (define skk-change-completion-index
   (lambda (sc incr)
