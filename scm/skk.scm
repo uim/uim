@@ -671,23 +671,33 @@
       (if (and
 	   (= stat 'skk-state-converting)
 	   (null? csc))
-	  (begin
-	    (im-pushback-preedit
-	     sc
-	     (bit-or skk-preedit-attr-conv-body
-		     preedit-cursor)
-	     (if skk-show-annotation-in-preedit?
-		 (skk-lib-eval-candidate (skk-get-current-candidate sc))
-		 (skk-lib-eval-candidate
-		  (skk-lib-remove-annotation (skk-get-current-candidate sc)))))
-	    (im-pushback-preedit
-	     sc skk-preedit-attr-conv-okuri
-	     (skk-make-string (skk-context-okuri sc)
-			      (skk-context-kana-mode sc)))
-	    (im-pushback-preedit
-	     sc skk-preedit-attr-conv-appendix
-	     (skk-make-string (skk-context-appendix sc)
-			      (skk-context-kana-mode sc)))))
+	  (if (or
+	       (= skk-candidate-selection-style 'uim)
+	       (and
+		(= skk-candidate-selection-style 'ddskk-like)
+		(not (skk-context-candidate-window sc))))
+	      (begin
+		(im-pushback-preedit
+		 sc
+		 (bit-or skk-preedit-attr-conv-body
+			 preedit-cursor)
+		 (if skk-show-annotation-in-preedit?
+		     (skk-lib-eval-candidate (skk-get-current-candidate sc))
+		     (skk-lib-eval-candidate
+		      (skk-lib-remove-annotation
+		       (skk-get-current-candidate sc)))))
+		(im-pushback-preedit
+		 sc skk-preedit-attr-conv-okuri
+		 (skk-make-string (skk-context-okuri sc)
+				  (skk-context-kana-mode sc)))
+		(im-pushback-preedit
+		 sc skk-preedit-attr-conv-appendix
+		 (skk-make-string (skk-context-appendix sc)
+				  (skk-context-kana-mode sc))))
+	      (im-pushback-preedit
+	       sc
+	       (bit-or skk-preedit-attr-conv-body preedit-cursor)
+	       "")))
       (if (and
 	   (not (null? csc))
 	    (or
@@ -1735,7 +1745,10 @@
 	 (if (> skk-nr-candidate-max 0)
 	     (set! idx (remainder idx skk-nr-candidate-max)))
 	 (if (< idx (length skk-ddskk-like-heading-label-char-list))
-	     (nth idx skk-ddskk-like-heading-label-char-list)
+	     (charcode->string
+	      (char-upcase
+	       (string->charcode
+		(nth idx skk-ddskk-like-heading-label-char-list))))
 	     "")))
        ""))))
 
