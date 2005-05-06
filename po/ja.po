@@ -1584,7 +1584,7 @@ msgstr "uim版のSKK入力方式"
 
 #: scm/skk-custom.lisp:43
 msgid "SKK dictionaries"
-msgstr "SKK辞書ファイル"
+msgstr "SKK辞書"
 
 #: scm/skk-custom.lisp:44
 msgid "Dictionary settings for SKK"
@@ -1616,7 +1616,7 @@ msgstr "候補選択のスタイル"
 
 #: scm/skk-custom.lisp:273
 msgid "Use skkserv instead of SKK-JISYO"
-msgstr "SKK辞書ファイルの代わりにSKKサーバを使用"
+msgstr "辞書ファイルの代わりにSKKサーバを使用"
 
 #: scm/skk-custom.lisp:279
 msgid "Port number of skkserv"
