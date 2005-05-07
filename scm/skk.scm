@@ -669,33 +669,32 @@
       (if (and
 	   (= stat 'skk-state-converting)
 	   (null? csc))
-	  (if (or
-	       (= skk-candidate-selection-style 'uim)
-	       (and
-		(= skk-candidate-selection-style 'ddskk-like)
-		(not (skk-context-candidate-window sc))))
-	      (begin
+	  (begin
+	    (if (or
+		 (= skk-candidate-selection-style 'uim)
+		 (and
+		  (= skk-candidate-selection-style 'ddskk-like)
+		  (not (skk-context-candidate-window sc))))
 		(im-pushback-preedit
 		 sc
-		 (bit-or skk-preedit-attr-conv-body
-			 preedit-cursor)
+		 (bit-or skk-preedit-attr-conv-body preedit-cursor)
 		 (if skk-show-annotation-in-preedit?
 		     (skk-lib-eval-candidate (skk-get-current-candidate sc))
 		     (skk-lib-eval-candidate
 		      (skk-lib-remove-annotation
 		       (skk-get-current-candidate sc)))))
 		(im-pushback-preedit
-		 sc skk-preedit-attr-conv-okuri
-		 (skk-make-string (skk-context-okuri sc)
-				  (skk-context-kana-mode sc)))
-		(im-pushback-preedit
-		 sc skk-preedit-attr-conv-appendix
-		 (skk-make-string (skk-context-appendix sc)
-				  (skk-context-kana-mode sc))))
-	      (im-pushback-preedit
-	       sc
-	       (bit-or skk-preedit-attr-conv-body preedit-cursor)
-	       "")))
+		 sc
+		 (bit-or skk-preedit-attr-conv-body preedit-cursor)
+		 ""))
+	    (im-pushback-preedit
+	     sc skk-preedit-attr-conv-okuri
+	     (skk-make-string (skk-context-okuri sc)
+			      (skk-context-kana-mode sc)))
+	    (im-pushback-preedit
+	     sc skk-preedit-attr-conv-appendix
+	     (skk-make-string (skk-context-appendix sc)
+			      (skk-context-kana-mode sc)))))
       (if (and
 	   (not (null? csc))
 	    (or
