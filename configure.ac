@@ -590,7 +590,7 @@ if test x$use_qt = xyes ; then
     fi
 
     LDFLAGS=$_SAVE_LDFLAGS
-    QT_LIBS="-L/usr/X11R6/lib $QT_LDFLAGS $QT_LIB -lXext -lX11"
+    QT_LIBS="$X_LIBS $QT_LDFLAGS $QT_LIB -lXext -lX11"
 
     _SAVE_CXXFLAGS=$CXXFLAGS
     _SAVE_LIBS=$LIBS
