@@ -63,6 +63,9 @@
 #ifdef HAVE_CURSES_H
 #include <curses.h>
 #endif
+#ifdef HAVE_NCURSES_TERM_H
+#include <ncurses/term.h>
+#endif
 #ifdef HAVE_TERM_H
 #include <term.h>
 #endif
@@ -113,18 +116,26 @@
 #include "key.h"
 #include "read.h"
 
-/* global variables */
-struct winsize *g_win;
 #define DEFAULT_STATUS LASTLINE
-#define DEFAULT_BACKTICK_WIDTH 70
 
-static uim_context s_context;
-/* ステータスラインの種類 */
-static int s_status_type = DEFAULT_STATUS;
-/* 疑似端末のmasterのファイル記述子 */
-static int s_master;
+/* global variables */
+struct opt_tag g_opt = {
+  DEFAULT_STATUS, /* status_type       */
+  FALSE,          /* ddskk             */
+  FALSE,          /* cursor_no_reverse */
+  FALSE,          /* use_civis         */
+  FALSE,          /* on_the_spot       */
+  UNDEFINED,      /* statusline_width  */
+  0,              /* timeout           */
+  FALSE           /* no_report_cursor  */
+};
 int g_win_in = STDIN_FILENO;
 int g_win_out = STDOUT_FILENO;
+struct winsize *g_win;
+
+static uim_context s_context;
+/* 疑似端末のmasterのファイル記述子 */
+static int s_master;
 /* 起動時の端末状態 */
 static struct termios s_save_tios;
 #ifndef MAXPATHLEN
@@ -133,7 +144,6 @@ static struct termios s_save_tios;
 static char s_path_setmode[MAXPATHLEN];
 static char s_path_getmode[MAXPATHLEN];
 static int s_setmode_fd = -1;
-static int s_timeout = 0;
 
 static void init_agent(const char *engine);
 static const char *get_default_im_name(void);
@@ -201,12 +211,7 @@ int main(int argc, char **argv)
   const char *engine;
   char *sock_path = NULL; /* Socket for backtick */
   pid_t child;
-  int use_civis = FALSE;
-  int cursor_no_reverse = FALSE;
-  int statusline_width = UNDEFINED;
-  int on_the_spot = FALSE;
   int gnu_screen = FALSE;
-  int no_report_cursor = FALSE;
   char *env_buf;
   struct attribute_tag attr_uim = {
     FALSE,     /* underline */
@@ -236,7 +241,7 @@ int main(int argc, char **argv)
   init_str();
   engine = get_default_im_name();
 
-  while ((op = getopt(argc, argv, "e:s:u:b:w:t:C:ScioDvh")) != -1) {
+  while ((op = getopt(argc, argv, "e:s:u:b:w:t:C:Sciodvh")) != -1) {
     int i;
     switch (op) {
       case 'e':
@@ -251,13 +256,13 @@ int main(int argc, char **argv)
 
       case 's':
         if (strncmp(optarg, "none", strlen(optarg)) == 0) {
-          s_status_type = NONE;
+          g_opt.status_type = NONE;
         }
         else if (strncmp(optarg, "backtick", strlen(optarg)) == 0) {
-          s_status_type = BACKTICK;
+          g_opt.status_type = BACKTICK;
         }
         else if (strncmp(optarg, "lastline", strlen(optarg)) == 0) {
-          s_status_type = LASTLINE;
+          g_opt.status_type = LASTLINE;
         }
         else {
           usage();
@@ -267,11 +272,11 @@ int main(int argc, char **argv)
 
       case 'S':
         gnu_screen = TRUE;
-        no_report_cursor = TRUE;
+        g_opt.no_report_cursor = TRUE;
         break;
 
-      case 'D':
-        no_report_cursor = TRUE;
+      case 'd':
+        g_opt.ddskk = TRUE;
         break;
 
       case 'u':
@@ -279,15 +284,15 @@ int main(int argc, char **argv)
         break;
 
       case 'c':
-        cursor_no_reverse = TRUE;
+        g_opt.cursor_no_reverse = TRUE;
         break;
 
       case 'i':
-        use_civis = TRUE;
+        g_opt.use_civis = TRUE;
         break;
 
       case 'o':
-        on_the_spot = TRUE;
+        g_opt.on_the_spot = TRUE;
         break;
 
       case 'b':
@@ -295,16 +300,16 @@ int main(int argc, char **argv)
         break;
 
       case 'w':
-        statusline_width = atoi(optarg);
-        if (statusline_width <= 0) {
+        g_opt.statusline_width = atoi(optarg);
+        if (g_opt.statusline_width <= 0) {
           usage();
           return EXIT_FAILURE;
         }
         break;
 
       case 't':
-        s_timeout = atof(optarg) * 1000000;
-        if (s_timeout <= 0) {
+        g_opt.timeout = atof(optarg) * 1000000;
+        if (g_opt.timeout <= 0) {
           usage();
           return EXIT_FAILURE;
         }
@@ -345,7 +350,7 @@ opt_end:
   }
 
   if (gnu_screen) {
-    s_status_type = BACKTICK;
+    g_opt.status_type = BACKTICK;
     s_master = PROC_FILENO;
     g_win_in = WIN_IN_FILENO;
     g_win_out = WIN_OUT_FILENO;
@@ -421,24 +426,27 @@ opt_end:
 
   free(command);
 
-  if (s_status_type == BACKTICK && statusline_width > CANDSIZE / 2) {
-    statusline_width = CANDSIZE / 2;
+  if (g_opt.status_type == BACKTICK && g_opt.statusline_width > CANDSIZE / 2) {
+    g_opt.statusline_width = CANDSIZE / 2;
   }
 
-  if (s_status_type == BACKTICK) {
+  if (g_opt.status_type == BACKTICK) {
     init_sendsocket(sock_path);
   }
   init_agent(engine);
   if (gnu_screen) {
     uim_set_mode(s_context, 1);
   }
-  init_callbacks(s_context, s_status_type, cursor_no_reverse, statusline_width);
-  init_draw(on_the_spot, s_status_type, no_report_cursor, s_master, s_path_getmode);
-  init_escseq(use_civis, on_the_spot, s_status_type, no_report_cursor, &attr_uim);
+  init_callbacks(s_context);
+  init_draw(s_master, s_path_getmode);
+  init_escseq(&attr_uim);
   set_signal_handler();
 
   if (s_path_setmode[0] != '\0' && mkfifo(s_path_setmode, 0600) != -1) {
     s_setmode_fd = open(s_path_setmode, O_RDONLY | O_NONBLOCK);
+#ifndef __CYGWIN32__
+    open(s_path_setmode, O_WRONLY);
+#endif
   } else {
     s_path_setmode[0] = '\0';
     s_setmode_fd = -1;
@@ -641,11 +649,15 @@ static void main_loop(void)
     /* モードを変更する */
     if (s_setmode_fd > 0 && FD_ISSET(s_setmode_fd, &fds)) {
       int start, end;
+#ifdef __CYGWIN32__
       if ((len = read(s_setmode_fd, buf, sizeof(buf) - 1)) <= 0) {
         debug2(("pipe closed\n"));
         close(s_setmode_fd);
         s_setmode_fd = open(s_path_setmode, O_RDONLY | O_NONBLOCK);
       }
+#else
+      len = read(s_setmode_fd, buf, sizeof(buf) - 1);
+#endif
       for (end = len - 1; end >= 0 && !isdigit((unsigned char)buf[end]); --end);
       /* プリエディットを編集中でなければモードを変更する */
       if (end >= 0 && !g_start_preedit) {
@@ -697,12 +709,12 @@ static void main_loop(void)
                   key_state = UMod_Alt;
                   continue;
                 }
-              } else if (s_timeout > 0) {
+              } else if (g_opt.timeout > 0) {
                 struct timeval t;
                 FD_ZERO(&fds);
                 FD_SET(g_win_in, &fds);
                 t.tv_sec = 0;
-                t.tv_usec = s_timeout;
+                t.tv_usec = g_opt.timeout;
                 if (my_select(nfd, &fds, &t) > 0) {
                   len += read_stdin(buf + len, sizeof(buf) - len - 1);
                   buf[len] = '\0';
@@ -742,7 +754,7 @@ static void main_loop(void)
       buf[len] = '\0';
 
       /* クリアされた時にモードを再描画する */
-      if (s_status_type == LASTLINE) {
+      if (g_opt.status_type == LASTLINE) {
         char *str1 = rstrstr_len(buf, _clear_screen, len);
         char *str2 = rstrstr_len(buf, _clr_eos, len);
         if (str1 != NULL || str2 != NULL) {
@@ -807,7 +819,7 @@ static struct winsize *get_winsize(void)
 {
   struct winsize *win = malloc(sizeof(struct winsize));
   ioctl(g_win_in, TIOCGWINSZ, win);
-  if (s_status_type == LASTLINE) {
+  if (g_opt.status_type == LASTLINE) {
     win->ws_row--;
   }
   return win;
@@ -866,7 +878,7 @@ static void sigwinch_handler(int sig_no)
   escseq_winch();
   callbacks_winch();
   draw_winch();
-  if (s_status_type == LASTLINE) {
+  if (g_opt.status_type == LASTLINE) {
     put_save_cursor();
     put_cursor_invisible();
     if (g_win->ws_row > prev_win->ws_row) {
@@ -888,7 +900,7 @@ void done(int exit_value)
 {
   uim_quit();
   quit_escseq();
-  if (s_status_type == BACKTICK) {
+  if (g_opt.status_type == BACKTICK) {
     clear_backtick();
   }
   tcsetattr(g_win_in, TCSAFLUSH, &s_save_tios);
@@ -935,7 +947,7 @@ static void usage(void)
       "-u <input method>                         input method      [default=%s]\n"
       "-s <lastline/backtick/none>               statusline type   [default=%s]\n"
       "-b <file>                                 socket file       [default=%s]\n"
-      "-w <width>                                statusline width  [default=%d]\n"
+      "-w <width>                                statusline width\n"
       "%s"
       "-e command arg1 arg2 ...                  executed command  [default=%s]\n"
       "%s",
@@ -943,14 +955,13 @@ static void usage(void)
       DEFAULT_STATUS == LASTLINE ? "lastline" :
       DEFAULT_STATUS == BACKTICK ? "backtick" : "none",
       usersockname(NULL),
-      DEFAULT_BACKTICK_WIDTH,
       "-t <sec>                                  key timeout\n"
       "-C [<foreground color>]:[<background color>]\n"
       "-c                                        reverse cursor\n"
       "-i                                        use cursor_invisible(civis)\n"
       "-o                                        on the spot\n"
       "-S                                        GNU screen mode\n"
-      "-D                                        for DOS prompt\n",
+      "-d                                        ddskk like candidate style\n",
       getenv("SHELL") != NULL ? getenv("SHELL") : "/bin/sh",
       "-h                                        display this help\n"
       "-v                                        display version\n"

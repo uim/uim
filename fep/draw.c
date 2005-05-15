@@ -37,6 +37,9 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+#ifndef DEBUG
+#define NDEBUG
+#endif
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
@@ -78,8 +81,6 @@ static int *s_prev_line2width = NULL;
 static int s_preedit_lines = 0;
 static int s_prev_preedit_lines = 0;
 
-/* ステータスラインの種類 */
-static int s_status_type;
 /* 疑似端末マスタのファイル記述子 */
 static int s_master;
 /* モード状態文字列 */
@@ -92,8 +93,6 @@ static char s_win_no[WINNOSIZE];
 static const char *s_path_getmode;
 /* 端末サイズが変換したときTRUE */
 static int s_winch = FALSE;
-static int s_on_the_spot = FALSE;
-static int s_no_report_cursor = FALSE;
 
 static void init_backtick(void);
 static void update_backtick(void);
@@ -101,8 +100,8 @@ static void start_preedit(void);
 static void end_preedit(void);
 static void draw_statusline(int force, int restore, int visible, int draw_background);
 static void draw_preedit(struct preedit_tag *preedit, struct preedit_tag *prev_preedit);
-static void draw_subpreedit(struct preedit_tag *p, int start, int end);
 static int is_eq_region(void);
+static void draw_subpreedit(struct preedit_tag *p, int start, int end);
 static void draw_pseg(struct preedit_segment_tag *pseg, int start_width);
 static int compare_preedit(struct preedit_tag *p1, struct preedit_tag *p2);
 static int compare_preedit_rev(struct preedit_tag *p1, struct preedit_tag *p2);
@@ -121,15 +120,12 @@ static int width2lineno_col(int width);
 static void print_preedit(struct preedit_tag *p);
 #endif
 
-void init_draw(int on_the_spot, int status_type, int no_report_cursor, int master, const char *path_getmode)
+void init_draw(int master, const char *path_getmode)
 {
-  s_status_type = status_type;
   s_master = master;
   s_path_getmode = path_getmode;
   s_preedit = create_preedit();
-  s_on_the_spot = on_the_spot;
-  s_no_report_cursor = no_report_cursor;
-  if (s_status_type == BACKTICK) {
+  if (g_opt.status_type == BACKTICK) {
     init_backtick();
   }
 }
@@ -167,7 +163,7 @@ void draw(void)
 
   /* 端末サイズが変更されたときはs_headを変更する */
   if (s_winch && g_start_preedit) {
-    if (s_no_report_cursor) {
+    if (g_opt.no_report_cursor) {
       s_preedit->cursor = 0;
     } else {
       s_head = get_cursor_position();
@@ -189,7 +185,7 @@ void draw(void)
   s_save_preedit.width = s_save_preedit.cursor = s_save_preedit.nr_psegs = 0;
 
   /* プリエディットが無ければカーソルを戻す */
-  draw_statusline(FALSE, !g_start_preedit || s_no_report_cursor, FALSE, FALSE);
+  draw_statusline(FALSE, !g_start_preedit || g_opt.no_report_cursor, FALSE, FALSE);
 
   /* コミットされたか */
   if (commit_str[0] != '\0') {
@@ -197,9 +193,9 @@ void draw(void)
     /* プリエディットを消す必要があるか */
     if (prev_preedit->width > 0) {
       put_cursor_invisible();
-      if (s_no_report_cursor) {
+      if (g_opt.no_report_cursor) {
         put_cursor_left(prev_preedit->cursor);
-        if (s_on_the_spot) {
+        if (g_opt.on_the_spot) {
           put_delete(prev_preedit->width);
         } else {
           put_erase(prev_preedit->width);
@@ -248,7 +244,7 @@ static void start_preedit(void)
   if (!g_start_preedit) {
     debug2(("start_preedit()\n"));
     g_start_preedit = TRUE;
-    if (s_no_report_cursor) {
+    if (g_opt.no_report_cursor) {
       return;
     }
 
@@ -277,7 +273,7 @@ static void end_preedit(void)
   debug2(("end_preedit()\n"));
   assert(g_start_preedit);
   g_start_preedit = FALSE;
-  if (s_no_report_cursor) {
+  if (g_opt.no_report_cursor) {
     return;
   }
 
@@ -381,16 +377,10 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
 
   /* 候補一覧を消去 */
   if (statusline_str[0] == '\0' && prev_statusline_str[0] != '\0') {
-    if (s_status_type == LASTLINE) {
-      if (restore) {
-        put_save_cursor();
-      }
-      put_cursor_invisible();
-      put_goto_lastline(0);
-      put_clear_to_end_of_line();
+    if (g_opt.status_type == LASTLINE) {
       /* 候補一覧を消した後はモードを描画する必要がある */
       force = TRUE;
-    } else if (s_status_type == BACKTICK) {
+    } else if (g_opt.status_type == BACKTICK) {
       s_candbuf[0] = '\0';
     }
   } else {
@@ -399,7 +389,7 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
       /* 新しい候補一覧なので前回の候補はない */
       prev_candidate_col = UNDEFINED;
       prev_index_col = UNDEFINED;
-      if (s_status_type == LASTLINE) {
+      if (g_opt.status_type == LASTLINE) {
         if (restore) {
           put_save_cursor();
         }
@@ -409,52 +399,58 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
         if (candidate_col != UNDEFINED) {
           int byte_cand = (width2byte(statusline_str, candidate_col))[0];
           int byte_index;
-          put_uim_str_no_color_len(statusline_str, UPreeditAttr_None, byte_cand);
-          put_uim_str_no_color(candidate_str, UPreeditAttr_Reverse);
+          put_uim_str_len(statusline_str, UPreeditAttr_None, byte_cand);
+          put_uim_str(candidate_str, UPreeditAttr_Reverse);
           if (index_col == UNDEFINED) {
-            put_uim_str_no_color(statusline_str + byte_cand + strlen(candidate_str), UPreeditAttr_None);
+            put_uim_str(statusline_str + byte_cand + strlen(candidate_str), UPreeditAttr_None);
           } else {
-            byte_index = (width2byte(statusline_str, index_col))[0];
-            put_uim_str_no_color_len(statusline_str + byte_cand + strlen(candidate_str),
-                UPreeditAttr_None,
-                byte_index - byte_cand - strlen(candidate_str));
-            put_uim_str_no_color(index_str, UPreeditAttr_None);
-            put_uim_str_no_color(statusline_str + byte_index + strlen(index_str), UPreeditAttr_None);
+            if (g_opt.ddskk) {
+              put_uim_str(statusline_str + byte_cand + strlen(candidate_str), UPreeditAttr_None);
+            } else {
+              byte_index = (width2byte(statusline_str, index_col))[0];
+              put_uim_str_len(statusline_str + byte_cand + strlen(candidate_str),
+                  UPreeditAttr_None,
+                  byte_index - byte_cand - strlen(candidate_str));
+              put_uim_str(index_str, UPreeditAttr_None);
+              put_uim_str(statusline_str + byte_index + strlen(index_str), UPreeditAttr_None);
+            }
           }
         } else {
-          put_uim_str_no_color(statusline_str, UPreeditAttr_None);
+          put_uim_str(statusline_str, UPreeditAttr_None);
         }
         statusline_str_width = strwidth(statusline_str);
-        if (draw_background || statusline_str_width < prev_statusline_str_width) {
-          put_clear_to_end_of_line();
+        if (draw_background) {
+          put_clear_to_end_of_line(g_win->ws_col - statusline_str_width);
+        } else if (statusline_str_width < prev_statusline_str_width) {
+          put_clear_to_end_of_line(prev_statusline_str_width - statusline_str_width);
         }
         goto end_candidate;
-      } else if (s_status_type == BACKTICK) {
+      } else if (g_opt.status_type == BACKTICK) {
         strncpy(s_candbuf, statusline_str, CANDSIZE - 1);
       }
     }
     if (prev_candidate_col != candidate_col) {
       /* 前回の候補の反転を戻す */
       if (prev_candidate_col != UNDEFINED) {
-        if (s_status_type == LASTLINE) {
+        if (g_opt.status_type == LASTLINE) {
           if (restore) {
             put_save_cursor();
           }
           put_cursor_invisible();
           put_goto_lastline(prev_candidate_col);
-          put_uim_str_no_color(prev_candidate_str, UPreeditAttr_None);
+          put_uim_str(prev_candidate_str, UPreeditAttr_None);
         }
       }
       /* 選択された候補を反転する */
       if (candidate_col != UNDEFINED) {
-        if (s_status_type == LASTLINE) {
+        if (g_opt.status_type == LASTLINE) {
           if (restore) {
             put_save_cursor();
           }
           put_cursor_invisible();
           put_goto_lastline(candidate_col);
-          put_uim_str_no_color(candidate_str, UPreeditAttr_Reverse);
-        } else if (s_status_type == BACKTICK) {
+          put_uim_str(candidate_str, UPreeditAttr_Reverse);
+        } else if (g_opt.status_type == BACKTICK) {
           int byte;
           strncpy(s_candbuf, statusline_str, CANDSIZE - 1);
           byte = (width2byte(statusline_str, candidate_col))[0] + strlen(candidate_str);
@@ -468,8 +464,8 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
         }
       }
     }
-    if (index_col != UNDEFINED) {
-      if (s_status_type == LASTLINE) {
+    if (index_col != UNDEFINED && !g_opt.ddskk) {
+      if (g_opt.status_type == LASTLINE) {
         int i = 0;
         if (restore) {
           put_save_cursor();
@@ -485,9 +481,9 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
         }
         if (i < (int)strlen(index_str)) {
           put_goto_lastline(index_col + i);
-          put_uim_str_no_color(index_str + i, UPreeditAttr_None);
+          put_uim_str(index_str + i, UPreeditAttr_None);
         }
-      } else if (s_status_type == BACKTICK) {
+      } else if (g_opt.status_type == BACKTICK) {
         memcpy(s_candbuf + (width2byte(statusline_str, index_col))[0], index_str, strlen(index_str));
       }
     }
@@ -505,21 +501,23 @@ end_candidate:
       }
     }
 
-    if (s_status_type != NONE && statusline_str[0] == '\0') {
+    if (g_opt.status_type != NONE && statusline_str[0] == '\0') {
       char *mode_str = get_mode_str();
       return_if_fail(mode_str != NULL);
-      if (s_status_type == LASTLINE) {
+      if (g_opt.status_type == LASTLINE) {
         if (restore) {
           put_save_cursor();
         }
         put_cursor_invisible();
         put_goto_lastline(0);
-        put_uim_str_no_color(mode_str, UPreeditAttr_None);
+        put_uim_str(mode_str, UPreeditAttr_None);
         statusline_str_width = strwidth(mode_str);
-        if (draw_background || prev_statusline_str_width > statusline_str_width) {
-          put_clear_to_end_of_line();
+        if (draw_background) {
+          put_clear_to_end_of_line(g_win->ws_col - statusline_str_width);
+        } else if (statusline_str_width < prev_statusline_str_width) {
+          put_clear_to_end_of_line(prev_statusline_str_width - statusline_str_width);
         }
-      } else if (s_status_type == BACKTICK) {
+      } else if (g_opt.status_type == BACKTICK) {
         strncpy(s_modebuf, mode_str, MODESIZE - 1);
       }
       free(mode_str);
@@ -531,7 +529,7 @@ end_candidate:
   if (restore) {
     put_restore_cursor();
   }
-  if (s_status_type == BACKTICK) {
+  if (g_opt.status_type == BACKTICK) {
     update_backtick();
   }
   if (visible) {
@@ -550,21 +548,11 @@ void draw_statusline_restore(void)
 }
 
 /*
- * ステータスラインのモード表示をmodeにする
- * カーソルは最下行に移動する
- */
-void draw_statusline_no_restore(void)
-{
-  draw_statusline(FALSE, FALSE, FALSE, TRUE);
-}
-
-/*
  * 最下行を再描画する
  * カーソルは最下行に移動する
  */
 void draw_statusline_force_no_restore(void)
 {
-  assert(s_status_type == LASTLINE);
   draw_statusline(TRUE, FALSE, FALSE, TRUE);
 }
 
@@ -574,7 +562,6 @@ void draw_statusline_force_no_restore(void)
  */
 void draw_statusline_force_restore(void)
 {
-  assert(s_status_type == LASTLINE);
   draw_statusline(TRUE, TRUE, TRUE, TRUE);
 }
 
@@ -584,9 +571,9 @@ void draw_statusline_force_restore(void)
  */
 void clear_lastline(void)
 {
-  assert(s_status_type == LASTLINE);
+  assert(g_opt.status_type == LASTLINE);
   put_goto_lastline(0);
-  put_clear_to_end_of_line();
+  put_clear_to_end_of_line(g_win->ws_col);
 }
 
 /*
@@ -594,7 +581,7 @@ void clear_lastline(void)
  */
 void clear_backtick(void)
 {
-  assert(s_status_type == BACKTICK);
+  assert(g_opt.status_type == BACKTICK);
   sendline("");
 }
 
@@ -627,7 +614,7 @@ static void draw_preedit(struct preedit_tag *preedit, struct preedit_tag *prev_p
 
   /* preedit == prev_preeditのときは、カーソルの移動だけ */
   if (eq_width == preedit->width && eq_width == prev_preedit->width && eq_width > 0) {
-    if (s_no_report_cursor) {
+    if (g_opt.no_report_cursor) {
       put_move_cur(prev_preedit->cursor, preedit->cursor);
     } else {
       goto_char(preedit->cursor);
@@ -635,23 +622,23 @@ static void draw_preedit(struct preedit_tag *preedit, struct preedit_tag *prev_p
     return;
   }
 
-  if (!s_no_report_cursor) {
+  if (!g_opt.no_report_cursor) {
     set_line2width(preedit);
   }
 
   /* 出力する位置に移動 */
-  if (s_no_report_cursor) {
+  if (g_opt.no_report_cursor) {
     put_move_cur(prev_preedit->cursor, eq_width);
   } else {
     goto_col(eq_width);
   }
 
   /* 領域が変わっていないので変更部分だけ上書き */
-  if ((s_no_report_cursor && preedit->width == prev_preedit->width) || (!s_no_report_cursor && is_eq_region())) {
+  if ((g_opt.no_report_cursor && preedit->width == prev_preedit->width) || (!g_opt.no_report_cursor && is_eq_region())) {
     int eq_width_rev = compare_preedit_rev(preedit, prev_preedit);
     debug2(("eq_width_rev = %d\n", eq_width_rev));
     draw_subpreedit(preedit, eq_width, preedit->width - eq_width_rev);
-    if (s_no_report_cursor) {
+    if (g_opt.no_report_cursor) {
       put_move_cur(preedit->width - eq_width_rev, preedit->cursor);
     } else {
       goto_char(preedit->cursor);
@@ -659,16 +646,16 @@ static void draw_preedit(struct preedit_tag *preedit, struct preedit_tag *prev_p
     return;
   }
 
-  if (s_no_report_cursor && s_on_the_spot && preedit->width > prev_preedit->width) {
+  if (g_opt.no_report_cursor && g_opt.on_the_spot && preedit->width > prev_preedit->width) {
     put_insert(preedit->width - prev_preedit->width);
   }
   draw_subpreedit(preedit, eq_width, preedit->width);
 
-  if (s_no_report_cursor) {
+  if (g_opt.no_report_cursor) {
     if (preedit->width > prev_preedit->width) {
       put_cursor_left(preedit->width - preedit->cursor);
     } else {
-      if (s_on_the_spot) {
+      if (g_opt.on_the_spot) {
         put_delete(prev_preedit->width - preedit->width);
         put_cursor_left(preedit->width - preedit->cursor);
       } else {
@@ -739,7 +726,7 @@ static void draw_subpreedit(struct preedit_tag *p, int start, int end)
     char *seg_str = p->pseg[i].str;
     int seg_w = strwidth(seg_str);
     if (w + seg_w <= width) {
-      if (s_no_report_cursor) {
+      if (g_opt.no_report_cursor) {
         put_uim_str(seg_str, p->pseg[i].attr);
       } else {
         draw_pseg(&(p->pseg[i]), start + w);
@@ -753,7 +740,7 @@ static void draw_subpreedit(struct preedit_tag *p, int start, int end)
       int byte = byte_width[0];
       int save_char = seg_str[byte];
       seg_str[byte] = '\0';
-      if (s_no_report_cursor) {
+      if (g_opt.no_report_cursor) {
         put_uim_str(seg_str, p->pseg[i].attr);
       } else {
         draw_pseg(&(p->pseg[i]), start + w);
@@ -785,7 +772,7 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
     int byte;
     int width;
 
-    if (s_on_the_spot && s_line2width[lineno] > s_prev_line2width[lineno]) {
+    if (g_opt.on_the_spot && s_line2width[lineno] > s_prev_line2width[lineno]) {
       int margin2 = margin - g_win->ws_col - s_prev_line2width[lineno];
       if (seg_w >= margin2) {
         byte_width = width2byte(seg_str, margin2);
@@ -821,7 +808,7 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
 
     /* 右端の文字を消す必要があるか */
     if (s_line2width[lineno] < s_prev_line2width[lineno]) {
-      if (s_on_the_spot) {
+      if (g_opt.on_the_spot) {
         put_delete(s_prev_line2width[lineno] - s_line2width[lineno]);
       } else {
         put_erase(s_prev_line2width[lineno] - s_line2width[lineno]);
@@ -903,10 +890,10 @@ static void erase_prev_preedit(void)
 {
   int lineno;
   for (lineno = 0; lineno < s_preedit_lines; lineno++) {
-    assert(!s_on_the_spot || s_line2width[lineno] <= s_prev_line2width[lineno]);
+    assert(!g_opt.on_the_spot || s_line2width[lineno] <= s_prev_line2width[lineno]);
     if (s_prev_line2width[lineno] > s_line2width[lineno]) {
       put_cursor_address(s_head.row + lineno, s_line2width[lineno]);
-      if (s_on_the_spot) {
+      if (g_opt.on_the_spot) {
         put_delete(s_prev_line2width[lineno] - s_line2width[lineno]);
       } else {
         put_erase(s_prev_line2width[lineno] - s_line2width[lineno]);
@@ -916,7 +903,7 @@ static void erase_prev_preedit(void)
   for (; lineno < s_prev_preedit_lines; lineno++) {
     if (s_prev_line2width[lineno] > 0) {
       put_cursor_address(s_head.row + lineno, 0);
-      if (s_on_the_spot) {
+      if (g_opt.on_the_spot) {
         put_delete(s_prev_line2width[lineno]);
       } else {
         put_erase(s_prev_line2width[lineno]);

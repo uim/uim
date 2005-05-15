@@ -43,6 +43,9 @@
 #ifdef HAVE_CURSES_H
 #include <curses.h>
 #endif
+#ifdef HAVE_NCURSES_TERM_H
+#include <ncurses/term.h>
+#endif
 #ifdef HAVE_TERM_H
 #include <term.h>
 #endif
@@ -64,6 +67,23 @@ static int strcmp_prefix(const char *str, const char *prefix);
 
 int tty2key(char key)
 {
+  switch (key) {
+  /* c-space */
+  case 0:
+    return ' ';
+  case '\b':
+    return UKey_Backspace;
+  case '\t':
+    return UKey_Tab;
+  case '\r':
+    return UKey_Return;
+  /* c-[ */
+  case ESCAPE_CODE:
+    return UKey_Escape;
+  /* c-? */
+  case 0x7f:
+    return UKey_Delete;
+  }
   /* c-a ¤«¤é c-z */
   if (key >= 1 && key <= 26) {
     return key + ('a' - 1);
@@ -72,27 +92,23 @@ int tty2key(char key)
   if (key >= 28 && key <= 31) {
     return key + ('A' - 1);
   }
-  switch (key) {
-  /* c-space */
-  case 0:
-    return ' ';
-  /* c-? */
-  case 0x7f:
-    return UKey_Delete;
-  /* c-[ */
-  case ESCAPE_CODE:
-    return UKey_Escape;
-  }
   return key;
 }
 
 int tty2key_state(char key)
 {
   int key_state = 0;
+  if (key == '\b' ||
+      key == '\t' ||
+      key == '\r' ||
+      key == ESCAPE_CODE ||
+      key == 0x7f) {
+    return 0;
+  }
   if (key >= 'A' && key <= 'Z') {
     key_state += UMod_Shift;
   }
-  if (key >= 0 && key <= 31 && key != ESCAPE_CODE) {
+  if (key >= 0 && key <= 31) {
     key_state +=  UMod_Control;
   }
   return key_state;
@@ -134,6 +150,8 @@ int *escape_sequence2key(const char *str)
     rval[0] = UKey_Home;
   } else if (key_end != NULL && (len = strcmp_prefix(str, key_end)) > 0) {
     rval[0] = UKey_End;
+  } else if (key_ic != NULL && (len = strcmp_prefix(str, key_ic)) > 0) {
+    rval[0] = UKey_Insert;
   } else if (key_f1 != NULL && (len = strcmp_prefix(str, key_f1)) > 0) {
     rval[0] = UKey_F1;
   } else if (key_f2 != NULL && (len = strcmp_prefix(str, key_f2)) > 0) {

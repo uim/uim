@@ -41,6 +41,9 @@
 #ifdef HAVE_CURSES_H
 #include <curses.h>
 #endif
+#ifdef HAVE_NCURSES_TERM_H
+#include <ncurses/term.h>
+#endif
 #ifdef HAVE_TERM_H
 #include <term.h>
 #endif
@@ -68,12 +71,7 @@
 
 #define my_putp(str) tputs(str, 1, my_putchar);
 
-/* カーソルを消すか */
-static int s_use_civis = FALSE;
-/* ステータスラインの種類 */
-static int s_status_type;
-/* GNU screen モードか */
-static int s_no_report_cursor;
+
 /* 初期化したらTRUE */
 static int s_init = FALSE;
 /* 現在のカーソル位置 */
@@ -141,30 +139,49 @@ static struct attribute_tag s_attr = {
   FALSE      /* background */
 };
 
-static void fixtty(void);
+static void check_escseq(void);
 static char *escseq2n(const char *escseq);
 static void escseq2n2(const char *escseq, const char **first, const char **second);
-static const char *attr2escseq(const struct attribute_tag *attr);
-static void set_attr(const char *str, int len);
-static int my_putchar(int c);
+static void fixtty(void);
 #ifndef HAVE_CFMAKERAW
 static int cfmakeraw(struct termios *termios_p);
 #endif
+static void change_background_attr(struct attribute_tag *from, struct attribute_tag to);
+static const char *attr2escseq(const struct attribute_tag *attr);
+static void set_attr(const char *str, int len);
+static int my_putchar(int c);
 
 #if defined(DEBUG) && DEBUG > 1
 static void print_attr(struct attribute_tag *attr);
 #endif
 
+void init_escseq(const struct attribute_tag *attr_uim)
+{
+  s_attr_uim = *attr_uim;
+
+  s_enter_underline_num = escseq2n(enter_underline_mode);
+  s_exit_underline_num = escseq2n(exit_underline_mode);
+  s_enter_standout_num = escseq2n(enter_standout_mode);
+  s_exit_standout_num = escseq2n(exit_standout_mode);
+  s_bold_num = escseq2n(enter_bold_mode);
+  s_blink_num = escseq2n(enter_blink_mode);
+  s_orig_pair_num = escseq2n(orig_pair);
+  escseq2n2(orig_pair, &s_orig_fore_num, &s_orig_back_num);
+  s_enter_uim_mode = attr2escseq(&s_attr_uim);
+  if (s_enter_uim_mode != NULL) {
+    s_enter_uim_mode = strdup(s_enter_uim_mode);
+  }
+
+  fixtty();
+  check_escseq();
+  s_init = TRUE;
+}
+
 /*
  * termcap/terminfoのエントリがあるか確認する
  */
-void init_escseq(int use_civis, int use_ins_del, int status_type, int no_report_cursor, const struct attribute_tag *attr_uim)
+static void check_escseq(void)
 {
-  s_use_civis = use_civis;
-  s_status_type = status_type;
-  s_attr_uim = *attr_uim;
-  s_no_report_cursor = no_report_cursor;
-
   if (enter_underline_mode == NULL) {
     printf("enter_underline_mode is not available\n");
     done(EXIT_FAILURE);
@@ -193,12 +210,12 @@ void init_escseq(int use_civis, int use_ins_del, int status_type, int no_report_
     printf("cursor_address is not available\n");
     done(EXIT_FAILURE);
   }
-  if (s_status_type == LASTLINE) {
+  if (g_opt.status_type == LASTLINE) {
     if (change_scroll_region == NULL) {
       printf("change_scroll_region is not available\n");
       done(EXIT_FAILURE);
     }
-    if (s_no_report_cursor) {
+    if (g_opt.no_report_cursor) {
       if (save_cursor == NULL) {
         printf("save_cursor is not available.\n");
         done(EXIT_FAILURE);
@@ -213,7 +230,7 @@ void init_escseq(int use_civis, int use_ins_del, int status_type, int no_report_
       }
     }
   }
-  if (s_no_report_cursor) {
+  if (g_opt.no_report_cursor) {
     if (cursor_left == NULL) {
       printf("cursor_left is not available\n");
       done(EXIT_FAILURE);
@@ -223,7 +240,7 @@ void init_escseq(int use_civis, int use_ins_del, int status_type, int no_report_
       done(EXIT_FAILURE);
     }
   }
-  if (use_ins_del) {
+  if (g_opt.on_the_spot) {
     if (parm_ich == NULL) {
       printf("parm_ich is not available\n");
       done(EXIT_FAILURE);
@@ -233,20 +250,6 @@ void init_escseq(int use_civis, int use_ins_del, int status_type, int no_report_
       done(EXIT_FAILURE);
     }
   }
-  s_enter_underline_num = escseq2n(enter_underline_mode);
-  s_exit_underline_num = escseq2n(exit_underline_mode);
-  s_enter_standout_num = escseq2n(enter_standout_mode);
-  s_exit_standout_num = escseq2n(exit_standout_mode);
-  s_bold_num = escseq2n(enter_bold_mode);
-  s_blink_num = escseq2n(enter_blink_mode);
-  s_orig_pair_num = escseq2n(orig_pair);
-  escseq2n2(orig_pair, &s_orig_fore_num, &s_orig_back_num);
-  s_enter_uim_mode = attr2escseq(&s_attr_uim);
-  if (s_enter_uim_mode != NULL) {
-    s_enter_uim_mode = strdup(s_enter_uim_mode);
-  }
-  fixtty();
-  s_init = TRUE;
 }
 
 /*
@@ -325,7 +328,7 @@ void quit_escseq(void)
     return;
   }
   put_exit_attribute_mode();
-  if (s_status_type == LASTLINE) {
+  if (g_opt.status_type == LASTLINE) {
     put_save_cursor();
     put_change_scroll_region(0, g_win->ws_row);
     put_goto_lastline(0);
@@ -354,8 +357,16 @@ static void fixtty(void)
   tios.c_cc[VTIME] = 3;
   tcsetattr(g_win_in, TCSANOW, &tios);
 
-  if (s_no_report_cursor) {
-    if (s_status_type == LASTLINE) {
+  if (!g_opt.no_report_cursor) {
+    /* 開始位置を保存 */
+    start_cursor = get_cursor_position();
+    if (start_cursor.row == UNDEFINED) {
+      g_opt.no_report_cursor = TRUE;
+    }
+  }
+
+  if (g_opt.no_report_cursor) {
+    if (g_opt.status_type == LASTLINE) {
       put_cursor_invisible();
       put_crlf();
       my_putp(cursor_up);
@@ -364,20 +375,13 @@ static void fixtty(void)
       put_restore_cursor();
       put_cursor_normal();
     }
-    draw_statusline_restore();
+    draw_statusline_force_restore();
     return;
   }
 
-  /* 開始位置を保存 */
-  start_cursor = get_cursor_position();
-  if (start_cursor.row == UNDEFINED) {
-    printf("Report Cursor Position is not available\r\n");
-    printf("Please try to use with -D option\r\n");
-    done(EXIT_FAILURE);
-  }
   put_cursor_invisible();
   /* 最下行から開始したときのためにスクロール */
-  if (s_status_type == LASTLINE) {
+  if (g_opt.status_type == LASTLINE) {
     write(g_win_out, "\n", strlen("\n"));
   }
   /* 安全な位置に移動 */
@@ -396,10 +400,10 @@ static void fixtty(void)
   s_cursor_diff.col = cursor2.col - cursor.col;
   start_cursor.row -= s_cursor_diff.row;
   start_cursor.col -= s_cursor_diff.col;
-  if (s_status_type == LASTLINE) {
+  if (g_opt.status_type == LASTLINE) {
     put_change_scroll_region(0, g_win->ws_row - 1);
   }
-  draw_statusline_no_restore();
+  draw_statusline_force_no_restore();
   /* 開始位置に戻る */
   put_cursor_address_p(&start_cursor);
   put_cursor_normal();
@@ -452,7 +456,7 @@ void put_save_cursor(void)
   if (!s_save) {
     s_save = TRUE;
     debug(("<put_save_cursor>"));
-    if (s_no_report_cursor) {
+    if (g_opt.no_report_cursor) {
       my_putp(save_cursor);
       s_save_cursor = s_cursor;
     } else {
@@ -469,7 +473,7 @@ void put_restore_cursor(void)
   if (s_save) {
     s_save = FALSE;
     debug(("<put_restore_cursor>"));
-    if (s_no_report_cursor) {
+    if (g_opt.no_report_cursor) {
       my_putp(restore_cursor);
       /* DOSプロンプトでは1回のrestore_cursorでは戻らない */
       my_putp(restore_cursor);
@@ -489,10 +493,10 @@ struct point_tag get_cursor_position(void)
 {
   char ibuf[BUFSIZ];
   ssize_t len = 0;
+  ssize_t read_len = 0;
   char *escseq = ibuf - 1;
-  int loop_count;
 
-  assert(!s_no_report_cursor);
+  assert(!g_opt.no_report_cursor);
 
   if (s_cursor.row != UNDEFINED) {
     return s_cursor;
@@ -500,9 +504,12 @@ struct point_tag get_cursor_position(void)
 
   write(g_win_out, "\033[6n", strlen("\033[6n"));
 
-  for (loop_count = 0; loop_count < 10; loop_count++) {
+  while (TRUE) {
     char *next_escseq;
-    len += read_stdin(ibuf + len, sizeof(ibuf) - len);
+    len += (read_len = read_stdin(ibuf + len, sizeof(ibuf) - len));
+    if (read_len == 0) {
+      break;
+    }
     ibuf[len] = '\0';
 
     debug2(("get = \""));
@@ -556,7 +563,7 @@ struct point_tag get_cursor_position(void)
  */
 void put_cursor_invisible(void)
 {
-  if (s_use_civis && !s_cursor_invisible && cursor_invisible != NULL && cursor_normal != NULL) {
+  if (g_opt.use_civis && !s_cursor_invisible && cursor_invisible != NULL && cursor_normal != NULL) {
     s_cursor_invisible = TRUE;
     my_putp(cursor_invisible);
     debug(("<invis>"));
@@ -593,12 +600,12 @@ static void change_attr(struct attribute_tag *from, const struct attribute_tag *
 {
   const char *escseq;
 
-  if (   (from->underline           && !to->underline)
-      || (from->standout            && !to->standout)
-      || (from->bold                && !to->bold)
-      || (from->blink               && !to->blink)
-      || (from->foreground != FALSE && to->foreground == FALSE)
-      || (from->background != FALSE && to->background == FALSE)
+  if (   (from->underline           && !to->underline          )
+      || (from->standout            && !to->standout           )
+      || (from->bold                && !to->bold               )
+      || (from->blink               && !to->blink              )
+      || (from->foreground != FALSE &&  to->foreground == FALSE)
+      || (from->background != FALSE &&  to->background == FALSE)
       ) {
     put_exit_attribute_mode();
     escseq = attr2escseq(to);
@@ -629,6 +636,23 @@ static void change_attr(struct attribute_tag *from, const struct attribute_tag *
     *from = *to;
     debug(("change_attr %s\n", escseq));
   }
+}
+
+/*
+ * 背景属性をfromからtoに変更し、from <= to
+ * 文字色は変わらないかもしれない
+ */
+static void change_background_attr(struct attribute_tag *from, struct attribute_tag to)
+{
+  if (!(    (from->underline           && !to.underline          )
+        ||  (from->standout            && !to.standout           )
+        ||  (from->blink               && !to.blink              )
+        ||  (from->background != FALSE &&  to.background == FALSE)
+      )) {
+    to.bold = from->bold;
+    to.foreground = from->foreground;
+  }
+  change_attr(from, &to);
 }
 
 /*
@@ -858,12 +882,9 @@ void put_delete(int n)
   }
 
   if (back_color_erase) {
-    struct attribute_tag no_background_attr = s_attr_none;
-    if (!(s_attr.underline || s_attr.standout || s_attr.blink || s_attr.background)) {
-      no_background_attr.bold       = s_attr.bold;
-      no_background_attr.foreground = s_attr.foreground;
-    }
-    change_attr(&s_attr, &no_background_attr);
+    s_attr_uim.standout = FALSE;
+    s_attr_uim.underline = FALSE;
+    change_background_attr(&s_attr, s_attr_uim);
   }
 
   tmp = tparm(parm_dch, n);
@@ -921,7 +942,18 @@ void put_erase(int n)
   }
   spaces[n] = '\0';
 
-  put_uim_str(spaces, UPreeditAttr_None);
+  if (s_escseq_buf != NULL) {
+    free(s_escseq_buf);
+    s_escseq_buf = NULL;
+  }
+
+  s_attr_uim.standout = FALSE;
+  s_attr_uim.underline = FALSE;
+  change_background_attr(&s_attr, s_attr_uim);
+
+  s_cursor.col += n;
+  assert(s_cursor.col <= g_win->ws_col || g_opt.no_report_cursor);
+  write(g_win_out, spaces, n);
 
   free(spaces);
   debug(("<put erase %d>", n));
@@ -931,15 +963,16 @@ void put_erase(int n)
  * underlineモードとstandoutモードを終了して行末まで消去
  * カーソル位置は変わらない
  */
-void put_clear_to_end_of_line(void)
+void put_clear_to_end_of_line(int width)
 {
+  if (s_attr_uim.background != FALSE && !back_color_erase) {
+    put_erase(width);
+    return;
+  }
   if (back_color_erase) {
-    struct attribute_tag no_background_attr = s_attr_none;
-    if (!(s_attr.underline || s_attr.standout || s_attr.blink || s_attr.background)) {
-      no_background_attr.bold       = s_attr.bold;
-      no_background_attr.foreground = s_attr.foreground;
-    }
-    change_attr(&s_attr, &no_background_attr);
+    s_attr_uim.standout = FALSE;
+    s_attr_uim.underline = FALSE;
+    change_background_attr(&s_attr, s_attr_uim);
   }
   my_putp(clr_eol);
   debug(("<clear>"));
@@ -977,7 +1010,7 @@ void put_uim_str(const char *str, int attr)
   change_attr(&s_attr, &s_attr_uim);
 
   s_cursor.col += strwidth(str);
-  assert(s_cursor.col <= g_win->ws_col || s_no_report_cursor);
+  assert(s_cursor.col <= g_win->ws_col || g_opt.no_report_cursor);
   write(g_win_out, str, strlen(str));
   debug(("<put_uim_str \"%s\">", str));
 }

@@ -44,10 +44,9 @@
 extern int g_start_preedit;
 extern int g_commit;
 
-void init_draw(int on_the_spot, int status_type, int gnu_screen, int master, const char *path_getmode);
+void init_draw(int master, const char *path_getmode);
 void draw(void);
 void draw_statusline_restore(void);
-void draw_statusline_no_restore(void);
 void draw_statusline_force_no_restore(void);
 void draw_statusline_force_restore(void);
 void clear_lastline(void);

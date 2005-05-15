@@ -49,18 +49,15 @@
 #ifdef HAVE_ASSERT_H
 #include <assert.h>
 #endif
+#include <iconv.h>
+#include <uim/uim-util.h>
 #include "uim-fep.h"
 #include "str.h"
 #include "callbacks.h"
 
 static uim_context s_context;
-/* TRUEならカーソル位置を反転しない */
-static int s_cursor_no_reverse;
-/* ステータスラインの幅 */
-static int s_statusline_width;
 /* ステータスラインの最大幅 */
 static int s_max_width;
-
 static char *s_commit_str;
 static char *s_statusline_str;
 static char *s_candidate_str;
@@ -68,6 +65,7 @@ static int s_candidate_col;
 static char *s_index_str;
 static struct preedit_tag *s_preedit;
 static int s_mode;
+static char *s_nokori_str;
 
 static void start_callbacks(void);
 static void end_callbacks(void);
@@ -122,14 +120,12 @@ static struct candidate_tag s_candidate = {
 /*
  * 初期化
  */
-void init_callbacks(uim_context context, int status_type, int cursor_no_reverse, int statusline_width)
+void init_callbacks(uim_context context)
 {
   s_context = context;
-  s_cursor_no_reverse = cursor_no_reverse;
-  s_statusline_width = statusline_width;
   s_max_width = g_win->ws_col;
-  if (s_statusline_width != UNDEFINED && s_statusline_width <= s_max_width) {
-    s_max_width = s_statusline_width;
+  if (g_opt.statusline_width != UNDEFINED && g_opt.statusline_width <= s_max_width) {
+    s_max_width = g_opt.statusline_width;
   }
   s_commit_str = strdup("");
   s_candidate_str = strdup("");
@@ -140,8 +136,35 @@ void init_callbacks(uim_context context, int status_type, int cursor_no_reverse,
   s_preedit = create_preedit();
   uim_set_preedit_cb(s_context, clear_cb, pushback_cb, update_cb);
   uim_set_mode_cb(s_context, mode_update_cb);
-  if (status_type != NONE) {
+  if (g_opt.status_type != NONE) {
     uim_set_candidate_selector_cb(s_context, activate_cb, select_cb, shift_page_cb, deactivate_cb);
+  }
+
+  if (g_opt.ddskk) {
+    iconv_t cd;
+    char *nokori_str = "残り";
+    size_t inbytesleft = strlen("残り");
+    size_t outbytesleft = 6;
+    const char *enc;
+
+    s_nokori_str = malloc(outbytesleft + 1);
+    strcpy(s_nokori_str, "残り");
+    if (strcmp(enc = get_enc(), "EUC-JP") != 0) {
+      cd = uim_iconv_open(enc, "EUC-JP");
+      if (cd == (iconv_t)-1) {
+        perror("error in iconv_open");
+        puts("-d option is not available");
+        done(EXIT_FAILURE);
+      }
+      if (iconv(cd, &nokori_str, &inbytesleft, &s_nokori_str, &outbytesleft) == (size_t)-1) {
+        perror("error in iconv");
+        puts("-d option is not available");
+        done(EXIT_FAILURE);
+      }
+      s_nokori_str[0] = '\0';
+      s_nokori_str -= (6 - outbytesleft);
+      iconv_close(cd);
+    }
   }
 }
 
@@ -394,7 +417,7 @@ static void pushback_cb(void *ptr, int attr, const char *str)
   /* 空文字列は無視 */
   if (width > 0) {
     /* カーソル位置の文字を反転させない */
-    if (s_cursor_no_reverse && cursor && attr & UPreeditAttr_Reverse && s_preedit->cursor != UNDEFINED) {
+    if (g_opt.cursor_no_reverse && cursor && attr & UPreeditAttr_Reverse && s_preedit->cursor != UNDEFINED) {
       int *rval = width2byte2(str, 1);
       int first_char_byte = rval[0];
       int first_char_width = rval[1];
@@ -517,10 +540,10 @@ static void make_page_strs(void)
   s_candidate.nr_pages = 0;
 
   for (index = 0; index < s_candidate.nr; index++) {
+    /* A:工  S:広  D:向  F:考  J:構  K:敲  L:後  [残り 227] */
     int next = FALSE;
     /* "[10/20]" の幅 */
-    int index_width = strlen("[/]") + numwidth(index + 1) + numwidth(s_candidate.nr);
-
+    int index_width;
     uim_candidate cand = uim_get_candidate(s_context, index, index_in_page);
     const char *cand_str_label = uim_candidate_get_heading_label(cand);
     char *cand_str_cand = tab2space(uim_candidate_get_cand_str(cand));
@@ -528,6 +551,13 @@ static void make_page_strs(void)
     int cand_width = cand_label_width + strlen(":") + strwidth(cand_str_cand) + strlen(" ");
     int cand_byte = strlen(cand_str_label) + strlen(":") + strlen(cand_str_cand) + strlen(" ");
     char *cand_str = malloc(cand_byte + 1);
+
+    if (g_opt.ddskk) {
+      index_width = strlen("[xxxx ]") + numwidth(s_candidate.nr - index - 1);
+    } else {
+      index_width = strlen("[/]") + numwidth(index + 1) + numwidth(s_candidate.nr);
+    }
+
     sprintf(cand_str, "%s:%s ", cand_str_label, cand_str_cand);
     uim_candidate_free(cand);
     free(cand_str_cand);
@@ -541,7 +571,11 @@ static void make_page_strs(void)
     if (page_width + cand_width + index_width > s_max_width && index_in_page != 0) {
       /* はみ出たので次のページに移す */
       index--;
-      index_width = strlen("[/]") + numwidth(index + 1) + numwidth(s_candidate.nr);
+      if (g_opt.ddskk) {
+        index_width = strlen("[xxxx ]") + numwidth(s_candidate.nr - index - 1);
+      } else {
+        index_width = strlen("[/]") + numwidth(index + 1) + numwidth(s_candidate.nr);
+      }
       next = TRUE;
     } else {
 
@@ -598,14 +632,18 @@ static void make_page_strs(void)
       if (index_width == UNDEFINED) {
         s_candidate.index_col[s_candidate.nr_pages] = UNDEFINED;
       } else {
-        int index_byte = index_width;
+        int index_byte = index_width + 2/* utf-8 */;
         char *index_str = malloc(index_byte + 1);
         int i;
-        sprintf(index_str, "[%d/%d]", index + 1, s_candidate.nr);
-        for (i = 0; i < numwidth(index + 1); i++) {
-          index_str[1 + i] = ' ';
+        if (g_opt.ddskk) {
+          sprintf(index_str, "[%s %d]", s_nokori_str, s_candidate.nr - index - 1);
+        } else {
+          sprintf(index_str, "[%d/%d]", index + 1, s_candidate.nr);
+          for (i = 0; i < numwidth(index + 1); i++) {
+            index_str[1 + i] = ' ';
+          }
+          index_str[i] = '-';
         }
-        index_str[i] = '-';
         assert(page_width + index_width <= s_max_width);
         s_candidate.index_col[s_candidate.nr_pages] = page_width + strlen("[");
         page_byte += index_byte;
@@ -744,8 +782,8 @@ static void get_candidate(void)
 void callbacks_winch(void)
 {
   s_max_width = g_win->ws_col;
-  if (s_statusline_width != UNDEFINED && s_statusline_width <= s_max_width) {
-    s_max_width = s_statusline_width;
+  if (g_opt.statusline_width != UNDEFINED && g_opt.statusline_width <= s_max_width) {
+    s_max_width = g_opt.statusline_width;
   }
   if (s_candidate.nr != UNDEFINED) {
     if (s_candidate.page_strs != NULL) {

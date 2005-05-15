@@ -50,7 +50,7 @@ struct preedit_tag {
   } *pseg;
 };
 
-void init_callbacks(uim_context context, int status_type, int cursor_no_reverse, int statusline_width);
+void init_callbacks(uim_context context);
 int press_key(int key, int key_state);
 char *get_commit_str(void);
 char *get_statusline_str(void);

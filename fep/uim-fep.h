@@ -52,9 +52,30 @@
 #define WIN_IN_FILENO  STDOUT_FILENO
 #define PROC_FILENO    STDIN_FILENO
 
+struct opt_tag {
+  /* ステータスラインの種類 */
+  int status_type;
+  /* ddskkに似た候補の表示 */
+  int ddskk;
+  /* TRUEならカーソル位置を反転しない */
+  int cursor_no_reverse;
+  /* カーソルを消すか */
+  int use_civis;
+  /* プリエディットを挿入するか */
+  int on_the_spot;
+  /* ステータスラインの幅 */
+  int statusline_width;
+  /* ESCの後に何秒待つか */
+  int timeout;
+  /* レポートカーソル機能がないか */
+  int no_report_cursor;
+};
+
+extern struct opt_tag g_opt;
 extern int g_win_in;
 extern int g_win_out;
 extern struct winsize *g_win;
+
 void done(int exit_value);
 
 #ifdef DEBUG

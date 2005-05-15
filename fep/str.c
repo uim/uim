@@ -81,6 +81,9 @@ void init_str(void)
  */
 const char *get_enc(void)
 {
+#ifdef __CYGWIN32__
+  return "EUC-JP";
+#else
   const char *locale = setlocale(LC_CTYPE, NULL);
   assert(locale != NULL);
 
@@ -91,6 +94,7 @@ const char *get_enc(void)
     return ptr != NULL ? ptr + 1 : "UTF-8";
   }
   return "UTF-8";
+#endif
 }
 
 /*
@@ -147,7 +151,7 @@ int compare_str_rev(const char *str1, const char *str2)
  * strwidth("あa") = 3
  * strwidth("")    = 0
  */
-#ifdef HAVE_WCSWIDTH
+#if defined(HAVE_WCSWIDTH) && !defined(__CYGWIN32__)
 int strwidth(const char *str)
 {
   int width;
@@ -209,7 +213,7 @@ int strwidth(const char *str)
  * const char *strとなっているが，一時的に書換えるのでstrを文字列定数
  * にしてはいけない．
  */
-#ifdef HAVE_WCSWIDTH
+#if defined(HAVE_WCSWIDTH) && !defined(__CYGWIN32__)
 int byte2width(const char *str, int n)
 {
   int width;
@@ -310,7 +314,7 @@ int byte2width(const char *str, int n)
  * const char *strとなっているが，一時的に書換えるのでstrを文字列定数
  * にしてはいけない．
  */
-#ifdef HAVE_WCSWIDTH
+#if defined(HAVE_WCSWIDTH) && !defined(__CYGWIN32__)
 int byte2width2(const char *str, int n)
 {
   int width;
@@ -408,7 +412,7 @@ int byte2width2(const char *str, int n)
  * width2byte("ああ", 3) = [3, 2] (utf8)
  * width2byte("ああ", 4) = [6, 4] (utf8)
  */
-#ifdef HAVE_WCSWIDTH
+#if defined(HAVE_WCSWIDTH) && !defined(__CYGWIN32__)
 int *width2byte(const char *str, int n)
 {
   int width = 0;
@@ -506,7 +510,7 @@ int *width2byte(const char *str, int n)
  * width2byte2("ああ", 1) = [3, 2] (utf8)
  * width2byte2("ああ", 4) = [6, 4] (utf8)
  */
-#ifdef HAVE_WCSWIDTH
+#if defined(HAVE_WCSWIDTH) && !defined(__CYGWIN32__)
 int *width2byte2(const char *str, int n)
 {
   int width = 0;

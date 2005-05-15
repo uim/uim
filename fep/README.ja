@@ -156,10 +156,7 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのfepです。
         -sオプションにかかわらずモード表示には
         backtickが使われます。
 
-  o -D  uim-fepの起動に失敗して
-        Report Cursor Position is not available
-        Please try to use with -D option
-        と表示された場合は、起動時にこのオプションを指定してください。
+  o -d  候補一覧の表示スタイルをddskkのようにします。
 
   o -e command arg1 arg2 ...
     起動するコマンドを指定します。このオプション以降の引数は
@@ -206,37 +203,7 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのfepです。
 
 
 * ~/.uimを書くときの注意点
-  a .. z                ->        "a" .. "z"
-  A .. Z                ->        "A" .. "Z" (または "<Shift>A" ..  "<Shift>Z")
-  C-a .. C-z            ->        "<Control>a" .. <Control>z"
-  M-a .. M-z            ->        "<Alt>a" .. "<Alt>z"
-  M-A .. M-Z            ->        "<Alt>A" ..  "<Alt>Z" (または "<Alt><Shift>A" .. "<Alt><Shift>Z")
-  M-C-a .. M-C-z        ->        "<Control><Alt>a" ..  "<Control><Alt>z"
-  return                ->        "<Control>m"
-  backspace(C-hのとき)  ->        "<Control>h"
-  backspace(C-?のとき)  ->        "delete"
-  backspace(それ以外)   ->        "backspace"
-  tab                   ->        "<Control>i"
-  del, C-?              ->        "delete"
-  esc, C-[              ->        "escape"
-  C-\                   ->        "<Control>\\"
-  C-]                   ->        "<Control>]"
-  C-^                   ->        "<Control>^"
-  C-_                   ->        "<Control>_"
-  C-space               ->        "<Control> "
-  M-esc, M-C-[          ->        "<Alt>escape"
-  M-C-\                 ->        "<Alt><Control>\\"
-  M-C-]                 ->        "<Alt><Control>]"
-  M-C-^                 ->        "<Alt><Control>^"
-  M-C-_                 ->        "<Alt><Control>_"
-  M-C-space             ->        "<Alt><Control> "
-  ↑ ↓ → ←           ->        "up" "down" "right" "left"
-  F1 .. F12             ->        "F1" .. "F12"
-  Home                  ->        "home"
-  End                   ->        "end"
-  PageUp                ->        "prior"
-  PageDown              ->        "next"
-  Insert                ->        使えません
+  o キーの表記法についてはREADME.keyを参照してください。
 
   o Altキーを使うにはAltを押しながら他のキーを押したときに、^[が出力さ
   れるようにします。
@@ -265,8 +232,6 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのfepです。
     $ kill -INT <uim-fepのpid>
     このコマンドで直ると思います。ただし変換はできなくなります。
 
-  o Cygwin(DOSプロンプト、コマンドプロンプト)で動きません。
-
 
 * 注意
   中ボタンクリックやShift+Insertのペーストなどで一度に大量に入力された
@@ -277,6 +242,14 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのfepです。
 
 
 * 履歴
+  o 2005/5/15
+    * -dオプションを追加しました。
+    * Cygwinで動くようにしました。(EUC-JPのみ対応)
+    * DOSプロンプトで動くようにしました。
+    * キーの表記を一部変更しました。
+      Ctrl + mを"<Control>m"から"return" など
+      README.keyを参照してください。
+
   o 2005/2/11
     * -Sオプションを追加しました。
 
