@@ -755,7 +755,11 @@ static void get_candidate(void)
     }
     s_index_str[i] = '\0';
     sprintf(s_index_str, "%s%d", s_index_str, s_candidate.index + 1);
-    index_width = strlen("[/]") + numwidth(s_candidate.index + 1) + numwidth(s_candidate.nr);
+    if (g_opt.ddskk) {
+      index_width = strlen("[xxxx ]") + numwidth(s_candidate.nr - s_candidate.index - 1);
+    } else {
+      index_width = strlen("[/]") + numwidth(s_candidate.index + 1) + numwidth(s_candidate.nr);
+    }
   }
 
 
