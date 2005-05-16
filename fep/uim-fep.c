@@ -699,16 +699,15 @@ static void main_loop(void)
 
         for (i = 0; i < len; i++) {
           key = tty2key(buf[i]);
-          if (key == UKey_Escape) {
+          key_state += tty2key_state(buf[i]);
+          if (key == UKey_Escape && key_state == 0) {
             int *key_and_key_len = escape_sequence2key(buf + i);
             key = key_and_key_len[0];
             if (key == UKey_Escape) {
               if (i + 1 < len) {
                 /* Alt+¥­¡¼ */
-                if (key_state != UMod_Alt) {
-                  key_state = UMod_Alt;
-                  continue;
-                }
+                key_state = UMod_Alt;
+                continue;
               } else if (g_opt.timeout > 0) {
                 struct timeval t;
                 FD_ZERO(&fds);
@@ -720,13 +719,13 @@ static void main_loop(void)
                   buf[len] = '\0';
                   debug(("read_again \"%s\"\n", buf));
                   i--;
+                  key_state = 0;
                   continue;
                 }
               }
             }
             key_len = key_and_key_len[1];
           } else {
-            key_state += tty2key_state(buf[i]);
             key_len = 1;
           }
           raw = press_key(key, key_state);

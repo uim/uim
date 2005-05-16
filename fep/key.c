@@ -67,6 +67,7 @@ static int strcmp_prefix(const char *str, const char *prefix);
 
 int tty2key(char key)
 {
+  key &= 0x7f;
   switch (key) {
   /* c-space */
   case 0:
@@ -97,13 +98,14 @@ int tty2key(char key)
 
 int tty2key_state(char key)
 {
-  int key_state = 0;
+  int key_state = (key & 0x80) ? UMod_Meta : 0;
+  key &= 0x7f;
   if (key == '\b' ||
       key == '\t' ||
       key == '\r' ||
       key == ESCAPE_CODE ||
       key == 0x7f) {
-    return 0;
+    return key_state;
   }
   if (key >= 'A' && key <= 'Z') {
     key_state += UMod_Shift;
