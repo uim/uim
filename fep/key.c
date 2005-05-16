@@ -52,6 +52,9 @@
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
 #ifdef HAVE_ASSERT_H
 #include <assert.h>
 #endif
@@ -118,69 +121,44 @@ int tty2key_state(char key)
 
 /*
  * strに対応するキーコードとエスケープシーケンスの長さを返す
- * 見つからなかったらUKey_Escapeと1を返す
+ * 見つからなかったらUKey_Escapeと、途中まで一致しているエスケープシー
+ * ケンスがある場合はTRUEない場合はFALSEを返す
  */
 int *escape_sequence2key(const char *str)
 {
   static int rval[2];
   int len;
-  if ((len = strcmp_prefix(str, _KEY_UP)) > 0) {
-    rval[0] = UKey_Up;
-  } else if ((len = strcmp_prefix(str, _KEY_DOWN)) > 0) {
-    rval[0] = UKey_Down;
-  } else if ((len = strcmp_prefix(str, _KEY_RIGHT)) > 0) {
-    rval[0] = UKey_Right;
-  } else if ((len = strcmp_prefix(str, _KEY_LEFT)) > 0) {
-    rval[0] = UKey_Left;
-  } else if (key_backspace != NULL && (len = strcmp_prefix(str, key_backspace)) > 0) {
-    rval[0] = UKey_Backspace;
-  } else if (key_dc != NULL && (len = strcmp_prefix(str, key_dc)) > 0) {
-    rval[0] = UKey_Delete;
-  } else if (key_left != NULL && (len = strcmp_prefix(str, key_left)) > 0) {
-    rval[0] = UKey_Left;
-  } else if (key_up != NULL && (len = strcmp_prefix(str, key_up)) > 0) {
-    rval[0] = UKey_Up;
-  } else if (key_right != NULL && (len = strcmp_prefix(str, key_right)) > 0) {
-    rval[0] = UKey_Right;
-  } else if (key_down != NULL && (len = strcmp_prefix(str, key_down)) > 0) {
-    rval[0] = UKey_Down;
-  } else if (key_ppage != NULL && (len = strcmp_prefix(str, key_ppage)) > 0) {
-    rval[0] = UKey_Prior;
-  } else if (key_npage != NULL && (len = strcmp_prefix(str, key_npage)) > 0) {
-    rval[0] = UKey_Next;
-  } else if (key_home != NULL && (len = strcmp_prefix(str, key_home)) > 0) {
-    rval[0] = UKey_Home;
-  } else if (key_end != NULL && (len = strcmp_prefix(str, key_end)) > 0) {
-    rval[0] = UKey_End;
-  } else if (key_ic != NULL && (len = strcmp_prefix(str, key_ic)) > 0) {
-    rval[0] = UKey_Insert;
-  } else if (key_f1 != NULL && (len = strcmp_prefix(str, key_f1)) > 0) {
-    rval[0] = UKey_F1;
-  } else if (key_f2 != NULL && (len = strcmp_prefix(str, key_f2)) > 0) {
-    rval[0] = UKey_F2;
-  } else if (key_f3 != NULL && (len = strcmp_prefix(str, key_f3)) > 0) {
-    rval[0] = UKey_F3;
-  } else if (key_f4 != NULL && (len = strcmp_prefix(str, key_f4)) > 0) {
-    rval[0] = UKey_F4;
-  } else if (key_f5 != NULL && (len = strcmp_prefix(str, key_f5)) > 0) {
-    rval[0] = UKey_F5;
-  } else if (key_f6 != NULL && (len = strcmp_prefix(str, key_f6)) > 0) {
-    rval[0] = UKey_F6;
-  } else if (key_f7 != NULL && (len = strcmp_prefix(str, key_f7)) > 0) {
-    rval[0] = UKey_F7;
-  } else if (key_f8 != NULL && (len = strcmp_prefix(str, key_f8)) > 0) {
-    rval[0] = UKey_F8;
-  } else if (key_f9 != NULL && (len = strcmp_prefix(str, key_f9)) > 0) {
-    rval[0] = UKey_F9;
-  } else if (key_f10 != NULL && (len = strcmp_prefix(str, key_f10)) > 0) {
-    rval[0] = UKey_F10;
-  } else if (key_f11 != NULL && (len = strcmp_prefix(str, key_f11)) > 0) {
-    rval[0] = UKey_F11;
-  } else if (key_f12 != NULL && (len = strcmp_prefix(str, key_f12)) > 0) {
-    rval[0] = UKey_F12;
+  int not_enough = 0;
+  if        (                         (not_enough += len = strcmp_prefix(str, _KEY_UP      )), len > 0) { rval[0] = UKey_Up;
+  } else if (                         (not_enough += len = strcmp_prefix(str, _KEY_DOWN    )), len > 0) { rval[0] = UKey_Down;
+  } else if (                         (not_enough += len = strcmp_prefix(str, _KEY_RIGHT   )), len > 0) { rval[0] = UKey_Right;
+  } else if (                         (not_enough += len = strcmp_prefix(str, _KEY_LEFT    )), len > 0) { rval[0] = UKey_Left;
+  } else if (key_backspace != NULL && (not_enough += len = strcmp_prefix(str, key_backspace)), len > 0) { rval[0] = UKey_Backspace;
+  } else if (key_dc        != NULL && (not_enough += len = strcmp_prefix(str, key_dc       )), len > 0) { rval[0] = UKey_Delete;    
+  } else if (key_left      != NULL && (not_enough += len = strcmp_prefix(str, key_left     )), len > 0) { rval[0] = UKey_Left;
+  } else if (key_up        != NULL && (not_enough += len = strcmp_prefix(str, key_up       )), len > 0) { rval[0] = UKey_Up;
+  } else if (key_right     != NULL && (not_enough += len = strcmp_prefix(str, key_right    )), len > 0) { rval[0] = UKey_Right;
+  } else if (key_down      != NULL && (not_enough += len = strcmp_prefix(str, key_down     )), len > 0) { rval[0] = UKey_Down;
+  } else if (key_ppage     != NULL && (not_enough += len = strcmp_prefix(str, key_ppage    )), len > 0) { rval[0] = UKey_Prior;
+  } else if (key_npage     != NULL && (not_enough += len = strcmp_prefix(str, key_npage    )), len > 0) { rval[0] = UKey_Next;
+  } else if (key_home      != NULL && (not_enough += len = strcmp_prefix(str, key_home     )), len > 0) { rval[0] = UKey_Home;
+  } else if (key_end       != NULL && (not_enough += len = strcmp_prefix(str, key_end      )), len > 0) { rval[0] = UKey_End;
+  } else if (key_ic        != NULL && (not_enough += len = strcmp_prefix(str, key_ic       )), len > 0) { rval[0] = UKey_Insert;    
+  } else if (key_f1        != NULL && (not_enough += len = strcmp_prefix(str, key_f1       )), len > 0) { rval[0] = UKey_F1;
+  } else if (key_f2        != NULL && (not_enough += len = strcmp_prefix(str, key_f2       )), len > 0) { rval[0] = UKey_F2;
+  } else if (key_f3        != NULL && (not_enough += len = strcmp_prefix(str, key_f3       )), len > 0) { rval[0] = UKey_F3;
+  } else if (key_f4        != NULL && (not_enough += len = strcmp_prefix(str, key_f4       )), len > 0) { rval[0] = UKey_F4;
+  } else if (key_f5        != NULL && (not_enough += len = strcmp_prefix(str, key_f5       )), len > 0) { rval[0] = UKey_F5;
+  } else if (key_f6        != NULL && (not_enough += len = strcmp_prefix(str, key_f6       )), len > 0) { rval[0] = UKey_F6;
+  } else if (key_f7        != NULL && (not_enough += len = strcmp_prefix(str, key_f7       )), len > 0) { rval[0] = UKey_F7;
+  } else if (key_f8        != NULL && (not_enough += len = strcmp_prefix(str, key_f8       )), len > 0) { rval[0] = UKey_F8;
+  } else if (key_f9        != NULL && (not_enough += len = strcmp_prefix(str, key_f9       )), len > 0) { rval[0] = UKey_F9;
+  } else if (key_f10       != NULL && (not_enough += len = strcmp_prefix(str, key_f10      )), len > 0) { rval[0] = UKey_F10;
+  } else if (key_f11       != NULL && (not_enough += len = strcmp_prefix(str, key_f11      )), len > 0) { rval[0] = UKey_F11;
+  } else if (key_f12       != NULL && (not_enough += len = strcmp_prefix(str, key_f12      )), len > 0) { rval[0] = UKey_F12;
   } else {
     rval[0] = UKey_Escape;
-    len = 1;
+    len = not_enough < 0 ? TRUE : FALSE;
   }
   rval[1] = len;
   return rval;
@@ -188,6 +166,7 @@ int *escape_sequence2key(const char *str)
 
 /*
  * prefixがstrの語頭のときstrlen(prefix)を返す
+ * strがprefixの語頭のとき-strlen(str)を返す
  * それ以外は0を返す
  */
 static int strcmp_prefix(const char *str, const char *prefix)
@@ -202,5 +181,307 @@ static int strcmp_prefix(const char *str, const char *prefix)
   if (prefix[i] == '\0') {
     return i;
   }
+  if (str[i] == '\0') {
+    return -i;
+  }
   return 0;
 }
+
+
+void print_key(int key, int key_state)
+{
+  if (key == 'q' && key_state == 0) {
+    done(EXIT_SUCCESS);
+  }
+  printf("\"");
+  if (key_state & UMod_Alt) {
+    printf("<Alt>");
+  }
+  if (key_state & UMod_Meta) {
+    printf("<Meta>");
+  }
+  if (key_state & UMod_Control) {
+    printf("<Control>");
+  }
+
+  if (key == '"' || key == '\\') {
+    printf("\\%c", key);
+  } else if (key >= ' ' && key <= 127) {
+    printf("%c", key);
+  } else {
+    switch (key) {
+    case UKey_Escape:
+      printf("escape");
+      break;
+    case UKey_Tab:
+      printf("tab");
+      break;
+    case UKey_Backspace:
+      printf("backspace");
+      break;
+    case UKey_Delete:
+      printf("delete");
+      break;
+    case UKey_Return:
+      printf("return");
+      break;
+    case UKey_Left:
+      printf("left");
+      break;
+    case UKey_Up:
+      printf("up");
+      break;
+    case UKey_Right:
+      printf("right");
+      break;
+    case UKey_Down:
+      printf("down");
+      break;
+    case UKey_Prior:
+      printf("prior");
+      break;
+    case UKey_Next:
+      printf("next");
+      break;
+    case UKey_Home:
+      printf("home");
+      break;
+    case UKey_End:
+      printf("end");
+      break;
+    case UKey_Insert:
+      printf("insert");
+      break;
+    case UKey_Zenkaku_Hankaku:
+      printf("zenkaku-hankaku");
+      break;
+    case UKey_Multi_key:
+      printf("Multi_key");
+      break;
+    case UKey_Mode_switch:
+      printf("Mode_switch");
+      break;
+    case UKey_Henkan_Mode:
+      printf("Henkan_Mode");
+      break;
+    case UKey_Muhenkan:
+      printf("Muhenkan");
+      break;
+    case UKey_F1:
+      printf("F1");
+      break;
+    case UKey_F2:
+      printf("F2");
+      break;
+    case UKey_F3:
+      printf("F3");
+      break;
+    case UKey_F4:
+      printf("F4");
+      break;
+    case UKey_F5:
+      printf("F5");
+      break;
+    case UKey_F6:
+      printf("F6");
+      break;
+    case UKey_F7:
+      printf("F7");
+      break;
+    case UKey_F8:
+      printf("F8");
+      break;
+    case UKey_F9:
+      printf("F9");
+      break;
+    case UKey_F10:
+      printf("F10");
+      break;
+    case UKey_F11:
+      printf("F11");
+      break;
+    case UKey_F12:
+      printf("F12");
+      break;
+    case UKey_F13:
+      printf("F13");
+      break;
+    case UKey_F14:
+      printf("F14");
+      break;
+    case UKey_F15:
+      printf("F15");
+      break;
+    case UKey_F16:
+      printf("F16");
+      break;
+    case UKey_F17:
+      printf("F17");
+      break;
+    case UKey_F18:
+      printf("F18");
+      break;
+    case UKey_F19:
+      printf("F19");
+      break;
+    case UKey_F20:
+      printf("F20");
+      break;
+    case UKey_F21:
+      printf("F21");
+      break;
+    case UKey_F22:
+      printf("F22");
+      break;
+    case UKey_F23:
+      printf("F23");
+      break;
+    case UKey_F24:
+      printf("F24");
+      break;
+    case UKey_F25:
+      printf("F25");
+      break;
+    case UKey_F26:
+      printf("F26");
+      break;
+    case UKey_F27:
+      printf("F27");
+      break;
+    case UKey_F28:
+      printf("F28");
+      break;
+    case UKey_F29:
+      printf("F29");
+      break;
+    case UKey_F30:
+      printf("F30");
+      break;
+    case UKey_F31:
+      printf("F31");
+      break;
+    case UKey_F32:
+      printf("F32");
+      break;
+    case UKey_F33:
+      printf("F33");
+      break;
+    case UKey_F34:
+      printf("F34");
+      break;
+    case UKey_F35:
+      printf("F35");
+      break;
+    case UKey_Private1:
+      printf("Private1");
+      break;
+    case UKey_Private2:
+      printf("Private2");
+      break;
+    case UKey_Private3:
+      printf("Private3");
+      break;
+    case UKey_Private4:
+      printf("Private4");
+      break;
+    case UKey_Private5:
+      printf("Private5");
+      break;
+    case UKey_Private6:
+      printf("Private6");
+      break;
+    case UKey_Private7:
+      printf("Private7");
+      break;
+    case UKey_Private8:
+      printf("Private8");
+      break;
+    case UKey_Private9:
+      printf("Private9");
+      break;
+    case UKey_Private10:
+      printf("Private10");
+      break;
+    case UKey_Private11:
+      printf("Private11");
+      break;
+    case UKey_Private12:
+      printf("Private12");
+      break;
+    case UKey_Private13:
+      printf("Private13");
+      break;
+    case UKey_Private14:
+      printf("Private14");
+      break;
+    case UKey_Private15:
+      printf("Private15");
+      break;
+    case UKey_Private16:
+      printf("Private16");
+      break;
+    case UKey_Private17:
+      printf("Private17");
+      break;
+    case UKey_Private18:
+      printf("Private18");
+      break;
+    case UKey_Private19:
+      printf("Private19");
+      break;
+    case UKey_Private20:
+      printf("Private20");
+      break;
+    case UKey_Private21:
+      printf("Private21");
+      break;
+    case UKey_Private22:
+      printf("Private22");
+      break;
+    case UKey_Private23:
+      printf("Private23");
+      break;
+    case UKey_Private24:
+      printf("Private24");
+      break;
+    case UKey_Private25:
+      printf("Private25");
+      break;
+    case UKey_Private26:
+      printf("Private26");
+      break;
+    case UKey_Private27:
+      printf("Private27");
+      break;
+    case UKey_Private28:
+      printf("Private28");
+      break;
+    case UKey_Private29:
+      printf("Private29");
+      break;
+    case UKey_Private30:
+      printf("Private30");
+      break;
+    case UKey_Shift_key:
+      printf("Shift_key");
+      break;
+    case UKey_Control_key:
+      printf("Control_key");
+      break;
+    case UKey_Alt_key:
+      printf("Alt_key");
+      break;
+    case UKey_Meta_key:
+      printf("Meta_key");
+      break;
+    case UKey_Super_key:
+      printf("Super_key");
+      break;
+    case UKey_Hyper_key:
+      printf("Hyper_key");
+      break;
+    }
+  }
+  printf("\"\r\n");
+}
+

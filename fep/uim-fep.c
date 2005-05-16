@@ -127,7 +127,8 @@ struct opt_tag g_opt = {
   FALSE,          /* on_the_spot       */
   UNDEFINED,      /* statusline_width  */
   0,              /* timeout           */
-  FALSE           /* no_report_cursor  */
+  FALSE,          /* no_report_cursor  */
+  FALSE           /* print_key        */
 };
 int g_win_in = STDIN_FILENO;
 int g_win_out = STDOUT_FILENO;
@@ -241,7 +242,7 @@ int main(int argc, char **argv)
   init_str();
   engine = get_default_im_name();
 
-  while ((op = getopt(argc, argv, "e:s:u:b:w:t:C:Sciodvh")) != -1) {
+  while ((op = getopt(argc, argv, "e:s:u:b:w:t:C:SciodKvh")) != -1) {
     int i;
     switch (op) {
       case 'e':
@@ -277,6 +278,11 @@ int main(int argc, char **argv)
 
       case 'd':
         g_opt.ddskk = TRUE;
+        break;
+
+      case 'K':
+        g_opt.print_key = TRUE;
+        g_opt.status_type = NONE;
         break;
 
       case 'u':
@@ -406,7 +412,7 @@ opt_end:
   }
 
   g_win = get_winsize();
-  if (!gnu_screen) {
+  if (!gnu_screen && !g_opt.print_key) {
     save_iflag = s_save_tios.c_iflag;
     s_save_tios.c_iflag &= ~ISTRIP;
     child = forkpty(&s_master, NULL, &s_save_tios, g_win);
@@ -452,6 +458,10 @@ opt_end:
     s_setmode_fd = -1;
   }
 
+  if (g_opt.print_key) {
+    printf("Press any key.\r\n");
+    printf("To exit the program, press 'q' key.\r\n");
+  }
   main_loop();
   done(EXIT_SUCCESS);
   return EXIT_SUCCESS;
@@ -681,7 +691,6 @@ static void main_loop(void)
       int key;
       int key_state = 0;
       int key_len;
-      int raw;
 
       if ((len = read_stdin(buf, sizeof(buf) - 1)) <= 0) {
         /* ここにはこないと思う */
@@ -690,7 +699,7 @@ static void main_loop(void)
       buf[len] = '\0';
       debug(("read \"%s\"\n", buf));
 
-      if (len >= 10) {
+      if (len >= 10 && !g_opt.print_key) {
         /* ペーストなどで大量に入力されたときは変換しない */
         if (!g_start_preedit) {
           write(s_master, buf, len);
@@ -699,16 +708,15 @@ static void main_loop(void)
 
         for (i = 0; i < len; i++) {
           key = tty2key(buf[i]);
-          key_state += tty2key_state(buf[i]);
-          if (key == UKey_Escape && key_state == 0) {
+          key_state |= tty2key_state(buf[i]);
+          if (key == UKey_Escape && (key_state & UMod_Meta) == 0) {
+
             int *key_and_key_len = escape_sequence2key(buf + i);
             key = key_and_key_len[0];
+
             if (key == UKey_Escape) {
-              if (i + 1 < len) {
-                /* Alt+キー */
-                key_state = UMod_Alt;
-                continue;
-              } else if (g_opt.timeout > 0) {
+              int not_enough = key_and_key_len[1];
+              if (not_enough && g_opt.timeout > 0) {
                 struct timeval t;
                 FD_ZERO(&fds);
                 FD_SET(g_win_in, &fds);
@@ -719,22 +727,31 @@ static void main_loop(void)
                   buf[len] = '\0';
                   debug(("read_again \"%s\"\n", buf));
                   i--;
-                  key_state = 0;
                   continue;
                 }
               }
+              if (i + 1 < len && key_state != UMod_Alt) {
+                key_state = UMod_Alt;
+                continue;
+              }
+              key_len = 1;
+            } else {
+              key_len = key_and_key_len[1];
             }
-            key_len = key_and_key_len[1];
           } else {
             key_len = 1;
           }
-          raw = press_key(key, key_state);
-          draw();
-          if (raw && !g_start_preedit) {
-            if (key_state & UMod_Alt) {
-              write(s_master, buf + i - 1, key_len + 1);
-            } else {
-              write(s_master, buf + i, key_len);
+          if (g_opt.print_key) {
+            print_key(key, key_state);
+          } else {
+            int raw = press_key(key, key_state);
+            draw();
+            if (raw && !g_start_preedit) {
+              if (key_state & UMod_Alt) {
+                write(s_master, buf + i - 1, key_len + 1);
+              } else {
+                write(s_master, buf + i, key_len);
+              }
             }
           }
           key_state = 0;
@@ -745,7 +762,7 @@ static void main_loop(void)
 
 
     /* input from pty (child process) */
-    if (FD_ISSET(s_master, &fds)) {
+    if (!g_opt.print_key && FD_ISSET(s_master, &fds)) {
       if ((len = read(s_master, buf, sizeof(buf) - 1)) <= 0) {
         /* 子プロセスが終了した */
         return;
@@ -960,7 +977,8 @@ static void usage(void)
       "-i                                        use cursor_invisible(civis)\n"
       "-o                                        on the spot\n"
       "-S                                        GNU screen mode\n"
-      "-d                                        ddskk like candidate style\n",
+      "-d                                        ddskk like candidate style\n"
+      "-K                                        show key code\n",
       getenv("SHELL") != NULL ? getenv("SHELL") : "/bin/sh",
       "-h                                        display this help\n"
       "-v                                        display version\n"

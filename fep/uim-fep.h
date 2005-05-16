@@ -69,6 +69,7 @@ struct opt_tag {
   int timeout;
   /* レポートカーソル機能がないか */
   int no_report_cursor;
+  int print_key;
 };
 
 extern struct opt_tag g_opt;
