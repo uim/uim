@@ -384,6 +384,7 @@ static void fixtty(void)
   if (g_opt.status_type == LASTLINE) {
     write(g_win_out, "\n", strlen("\n"));
   }
+  s_cursor.row = s_cursor.col = UNDEFINED;
   /* 安全な位置に移動 */
   put_cursor_address(1, 1);
   s_cursor.row = s_cursor.col = UNDEFINED;
@@ -495,6 +496,7 @@ struct point_tag get_cursor_position(void)
   ssize_t len = 0;
   ssize_t read_len = 0;
   char *escseq = ibuf - 1;
+  int loop_count = 0;
 
   assert(!g_opt.no_report_cursor);
 
@@ -508,7 +510,10 @@ struct point_tag get_cursor_position(void)
     char *next_escseq;
     len += (read_len = read_stdin(ibuf + len, sizeof(ibuf) - len));
     if (read_len == 0) {
-      break;
+      debug(("loop = %d\n", loop_count + 1));
+      if (++loop_count == 5) {
+        break;
+      }
     }
     ibuf[len] = '\0';
 

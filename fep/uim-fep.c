@@ -283,6 +283,7 @@ int main(int argc, char **argv)
       case 'K':
         g_opt.print_key = TRUE;
         g_opt.status_type = NONE;
+        g_opt.no_report_cursor = TRUE;
         break;
 
       case 'u':
