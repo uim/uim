@@ -150,13 +150,13 @@ void init_callbacks(uim_context context)
     s_nokori_str = malloc(outbytesleft + 1);
     strcpy(s_nokori_str, "»Ä¤ê");
     if (strcmp(enc = get_enc(), "EUC-JP") != 0) {
-      cd = uim_iconv_open(enc, "EUC-JP");
+      cd = (iconv_t)uim_iconv_open(enc, "EUC-JP");
       if (cd == (iconv_t)-1) {
         perror("error in iconv_open");
         puts("-d option is not available");
         done(EXIT_FAILURE);
       }
-      if (iconv(cd, &nokori_str, &inbytesleft, &s_nokori_str, &outbytesleft) == (size_t)-1) {
+      if (iconv(cd, (ICONV_CONST char**)&nokori_str, &inbytesleft, &s_nokori_str, &outbytesleft) == (size_t)-1) {
         perror("error in iconv");
         puts("-d option is not available");
         done(EXIT_FAILURE);
