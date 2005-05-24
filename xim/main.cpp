@@ -365,10 +365,7 @@ get_uim_info()
     for (int i = 0; i < nr; i++) {
 	ui.name = strdup(uim_get_im_name(uc, i));
 	ui.lang = strdup(uim_get_im_language(uc, i));
-	ui.locale = createLocale(ui.lang);
 	ui.desc = strdup(uim_get_im_short_desc(uc, i));
-	if (!ui.locale)
-	    continue;
 	uim_info.push_back(ui);
     }
     uim_release_context(uc);
@@ -526,7 +523,7 @@ main(int argc, char **argv)
     // "default-im-name" on ~/.uim.
     for (it = uim_info.begin(); it != uim_info.end(); it++) {
 	if (strcmp(it->name, default_engine) == 0) {
-	    XimServer *xs = new XimServer(it->locale, it->name, it->lang);
+	    XimServer *xs = new XimServer(it->name, it->lang);
 	    res = xs->setupConnection(true);
 	    if (res)
 		printf("XMODIFIERS=@im=uim registered, selecting %s (%s) as default conversion engine\n", it->name, it->lang);

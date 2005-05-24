@@ -613,7 +613,7 @@ void Connection::xim_get_im_values(RxPacket *p)
 
     // XIMATTRIBUTE
     int nr_style;
-    struct input_style *is = mServer->getInputStyles();
+    struct input_style *is = get_im_by_id(imid)->getInputStyles();
     for (nr_style = 0; is[nr_style].style; nr_style++);
 
     t->pushC16(0); // attribute id

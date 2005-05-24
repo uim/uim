@@ -51,6 +51,31 @@
 
 static std::map<int, XimIM *> g_ims;
 
+// tables
+static input_style input_style_tab_with_over_the_spot[] = {
+    {XIMPreeditNothing|XIMStatusNothing, IS_ROOT_WINDOW},
+    //{XIMPreeditPosition|XIMStatusArea, IS_OVER_THE_SPOT},// emacs
+    {XIMPreeditPosition|XIMStatusNothing, IS_OVER_THE_SPOT},
+    //{XIMPreeditCallbacks|XIMStatusCallbacks, IS_ON_THE_SPOT},// OOo
+    //{XIMPreeditArea|XIMStatusArea, IS_ROOT_WINDOW},
+    {XIMPreeditCallbacks|XIMStatusNothing, IS_ON_THE_SPOT},
+    {0, 0},
+};
+static input_style input_style_tab_without_over_the_spot[] = {
+    {XIMPreeditNothing|XIMStatusNothing, IS_ROOT_WINDOW},
+    //{XIMPreeditPosition|XIMStatusArea, IS_OVER_THE_SPOT},// emacs
+    //{XIMPreeditPosition|XIMStatusNothing, IS_OVER_THE_SPOT},
+    //{XIMPreeditCallbacks|XIMStatusCallbacks, IS_ON_THE_SPOT},// OOo
+    //{XIMPreeditArea|XIMStatusArea, IS_ROOT_WINDOW},
+    {XIMPreeditCallbacks|XIMStatusNothing, IS_ON_THE_SPOT},
+    {0, 0},
+};
+// XIMPreeditArea,XIMPreeditCallbacks,XIMPreeditPosition
+// XIMPreeditNothing,XIMPreeditNone
+// XIMStatusArea,XIMStatusCallbacks
+// XIMStatusNothing,XIMStatusNone
+
+
 class XimIM_impl : public XimIM {
 public:
     XimIM_impl(Connection *c, int id);
@@ -353,6 +378,7 @@ XimIM::XimIM(Connection *c, int id)
     mEncoding = NULL;
     mLangRegion = NULL;
     mTreeTop = NULL;
+    mLocale = NULL;
 }
 
 XimIM::~XimIM()
@@ -360,6 +386,7 @@ XimIM::~XimIM()
     free(mEncoding);
     free(mLangRegion);
     FreeComposeTree(mTreeTop);
+    delete mLocale;
 }
 
 void XimIM::FreeComposeTree(DefTree *top)
@@ -379,6 +406,11 @@ void XimIM::set_encoding(const char *encoding)
     if (mEncoding)
 	free(mEncoding);
     mEncoding = strdup(encoding);
+
+    // set iconv environment
+    if (mLocale)
+      delete mLocale;
+    mLocale = createLocale(mEncoding);
 }
 
 const char *XimIM::get_encoding()
@@ -396,6 +428,32 @@ void XimIM::set_lang_region(const char *lang_and_region)
 const char *XimIM::get_lang_region()
 {
     return mLangRegion;
+}
+
+struct input_style *XimIM::getInputStyles()
+{
+    if (mLocale && mLocale->supportOverTheSpot())
+	return input_style_tab_with_over_the_spot;
+
+    return input_style_tab_without_over_the_spot;
+}
+
+char *XimIM::uStringToCtext(uString *us)
+{
+    char *ret = NULL;
+    if (mLocale)
+	ret = mLocale->uStringToCtext(us);
+
+    return ret;
+}
+
+char *XimIM::utf8_to_native_str(char *str)
+{
+    char *ret = NULL;
+    if (mLocale)
+	ret = mLocale->utf8_to_native_str(str);
+
+    return ret;
 }
 
 int unused_im_id()

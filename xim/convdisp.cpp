@@ -114,7 +114,7 @@ struct char_ent {
 // Preedit Window
 class PeWin : public WindowIf {
 public:
-    PeWin(Window pw, const char *im_lang, const char *encoding, const char *locale);
+    PeWin(Window pw, const char *im_lang, const char *encoding, const char *locale, Convdisp *cd);
     virtual ~PeWin();
 
     virtual void release();
@@ -146,12 +146,13 @@ protected:
     const char *mEncoding;
     int mWidth, mHeight;
     bool mIsMapped;
+    Convdisp *mConvdisp;
 };
 
 // one line preedit window for RootWindowStyle
 class PeLineWin : public PeWin {
 public:
-    PeLineWin(Window w, const char *im_lang, const char *encoding, const char *locale);
+    PeLineWin(Window w, const char *im_lang, const char *encoding, const char *locale, Convdisp *cd);
     virtual ~PeLineWin();
 
     void draw_pe(pe_stat *p);
@@ -167,7 +168,7 @@ private:
 // window for over the spot style
 class PeOvWin : public PeWin {
 public:
-    PeOvWin(Window w, const char *im_lang, const char *encoding, const char *locale);
+    PeOvWin(Window w, const char *im_lang, const char *encoding, const char *locale, Convdisp *cd);
     
     void draw_ce(char_ent *ce, int len);
     virtual void set_size(int w, int h);
@@ -261,9 +262,10 @@ Convdisp *create_convdisp(int style, InputContext *k,
 //
 // PeWin(PreEdit Window)
 //
-PeWin::PeWin(Window pw, const char *im_lang, const char *encoding, const char *locale)
+PeWin::PeWin(Window pw, const char *im_lang, const char *encoding, const char *locale, Convdisp *cd)
 {
     mParentWin = pw;
+    mConvdisp = cd;
     int scr_num = DefaultScreen(XimServer::gDpy);
     // tentative
     mWidth = 1;
@@ -352,8 +354,9 @@ void PeWin::draw_char(int x, int y, uchar ch, int stat)
 			gc, x, y, &ch, 1);
     else {
 	char *native_str;
+	XimIM *im = get_im_by_id(mConvdisp->get_context()->get_ic()->get_imid());
 	
-	native_str = utf8_to_native_str(utf8, mEncoding);
+	native_str = im->utf8_to_native_str(utf8);
 	if (!native_str)
 	    return;
 	int len = strlen(native_str);
@@ -439,7 +442,7 @@ void PeWin::unmap()
 //
 // PeLineWin
 //
-PeLineWin::PeLineWin(Window w, const char *im_lang, const char *encoding, const char *locale) : PeWin(w, im_lang, encoding, locale)
+PeLineWin::PeLineWin(Window w, const char *im_lang, const char *encoding, const char *locale, Convdisp *cd) : PeWin(w, im_lang, encoding, locale, cd)
 {
     set_size(400, 28); // set window height wider than its font height 16
     clear();
@@ -487,7 +490,7 @@ void PeLineWin::calc_extent(pe_stat *p)
 //
 // PeOvWin
 //
-PeOvWin::PeOvWin(Window w, const char *im_lang, const char *encoding, const char *locale) : PeWin(w, im_lang, encoding, locale)
+PeOvWin::PeOvWin(Window w, const char *im_lang, const char *encoding, const char *locale, Convdisp *cd) : PeWin(w, im_lang, encoding, locale, cd)
 {
     m_mask_pix = 0;
     m_mask_pix_gc = 0;
@@ -606,6 +609,10 @@ void Convdisp::unset_focus()
     disp->hide();
 }
 
+InputContext *Convdisp::get_context()
+{
+    return mKkContext;
+}
 
 // Root window style
 ConvdispRw::ConvdispRw(InputContext *k, icxatr *a) : Convdisp(k, a)
@@ -631,7 +638,7 @@ void ConvdispRw::update_preedit()
 
     // preedit string exists
     if (!mPeWin)
-	mPeWin = new PeLineWin(DefaultRootWindow(XimServer::gDpy), mIMLang, mEncoding, mLocaleName);
+	mPeWin = new PeLineWin(DefaultRootWindow(XimServer::gDpy), mIMLang, mEncoding, mLocaleName, this);
     
     if (m_atr->has_atr(ICA_ClientWindow)) {
     	int x, y;
@@ -960,7 +967,7 @@ bool ConvdispOv::check_win()
     else
 	w = m_atr->client_window;
 
-    m_ov_win = new PeOvWin(w, mIMLang, mEncoding, mLocaleName);
+    m_ov_win = new PeOvWin(w, mIMLang, mEncoding, mLocaleName, this);
     m_ov_win->set_size(m_atr->area.width, m_atr->area.height);
     m_ov_win->set_fore(m_atr->foreground_pixel);
     m_ov_win->set_back(m_atr->background_pixel);
@@ -1042,8 +1049,8 @@ void ConvdispOv::layoutCharEnt()
 	    char utf8[6];
 	    int len = utf8_wctomb((unsigned char *)utf8, ch);
 	    utf8[len] = '\0';
-	    char *str;
-	    str = utf8_to_native_str(utf8, mEncoding);
+	    XimIM *im = get_im_by_id(mKkContext->get_ic()->get_imid());
+	    char *str = im->utf8_to_native_str(utf8);
 	    if (!str) {
 		logical.width = 0;
 		logical.height = (i > 0) ? m_ce[i - 1].height : 0;
@@ -1226,7 +1233,8 @@ void ConvdispOs::compose_preedit_array(TxPacket *t)
 	append_ustring(&s, &(*it).s);
     }
 
-    char *c = mKkContext->getServer()->uStringToCtext(&s, mEncoding);
+    XimIM *im = get_im_by_id(mKkContext->get_ic()->get_imid());
+    char *c = im->uStringToCtext(&s);
     int i, len = 0;
     if (c)
 	len = strlen(c);

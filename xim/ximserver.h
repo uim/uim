@@ -204,26 +204,23 @@ private:
 class Locale {
 public:
     virtual ~Locale();
-    virtual char *uStringToCtext(uString *us, const char *encoding) = 0;
+    virtual char *uStringToCtext(uString *us) = 0;
+    virtual char *utf8_to_native_str(char *str) = 0;
     virtual bool supportOverTheSpot();
-    virtual void set_localename_from_im_lang(const char *im_lang) = 0;
-private:
-    char *mLocaleName;
 };
 
-Locale *createLocale(const char *im_lang);
+Locale *createLocale(const char *encoding);
 const char *compose_localenames_from_im_lang(const char *im_lang);
 bool is_locale_included(const char *locales, const char *locale);
 // Sring returned by get_first_locale() is allocated with strdup().
 char *get_prefered_locale(const char *locales);
 const char *find_localename_from_encoding(const char *encoding);
-char *utf8_to_native_str(char *utf8, const char *encoding);
 int utf8_mbtowc(uchar *wc, const unsigned char *src, int src_len);
 int utf8_wctomb(unsigned char *dest, uchar wc); // dest must have size 6
 
 class XimServer {
 public:
-    XimServer(Locale *lc, const char *name, const char *lang);
+    XimServer(const char *name, const char *lang);
     ~XimServer() {};
     InputContext *createContext(XimIC *, const char *engine);
     void deleteContext(InputContext *);
@@ -232,19 +229,16 @@ public:
     void setupNewConnection(XClientMessageEvent *ev);
     char *uStringToCtext(uString *js, const char *encoding);
     void strToUstring(uString *d, const char *s);
-    struct input_style *getInputStyles();
     const char *getIMName();
     const char *getIMLang();
     void set_im(const char *name);
     void changeContext(const char *engine);
     void customContext(const char *custom, const char *val);
-    Locale *getLocale();
 public:
     static XimServer *findServer(Window w);
     static Display *gDpy;
     static std::map<Window, XimServer *> gServerMap;
 private:
-    Locale *mLocale;
     Window mSelectionWin;
     Atom mServerAtom;
     char *mIMName;
@@ -256,7 +250,6 @@ private:
 struct UIMInfo {
     const char *lang;
     const char *name;
-    Locale *locale;
     const char *desc;
 };
 extern std::list<UIMInfo> uim_info;

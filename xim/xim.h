@@ -188,12 +188,16 @@ public:
     const char *get_encoding();
     void set_lang_region(const char *name);
     const char *get_lang_region();
+    char *uStringToCtext(uString *us);
+    char *utf8_to_native_str(char *str);
+    struct input_style *getInputStyles();
     // for Compose
     void create_compose_tree();
     DefTree *get_compose_tree();
 
 protected:
     Connection *mConn;
+    Locale *mLocale;
     int mID;
     char *mEncoding;
     char *mLangRegion;

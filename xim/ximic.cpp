@@ -538,7 +538,7 @@ int XimIC::get_ic_atr(int id, TxPacket *t)
 int XimIC::lookup_style(unsigned long s)
 {
     int i;
-    struct input_style *is = mConn->getXimServer()->getInputStyles();
+    struct input_style *is = get_im_by_id(mIMid)->getInputStyles();
     for (i = 0; is[i].x_style; i++) {
 	if (is[i].x_style == (int)s)
 	    return is[i].style;
@@ -575,7 +575,6 @@ void XimIC::reset_ic()
     t->pushC16(mICid);
 
     uString s;
-    const char *encoding = get_encoding();
 
     // m_kkContext->get_preedit_string() returns uncommitted preedit
     // strings, which will be committed in client applications.
@@ -583,7 +582,7 @@ void XimIC::reset_ic()
     if (s.size()) {
 	char *p;
 	int i, len = 0;
-	p = mConn->getXimServer()->uStringToCtext(&s, encoding);
+	p = get_im_by_id(mIMid)->uStringToCtext(&s);
 	if (p) {
 	    len = strlen(p);
 	    t->pushC16(len); // length of committed strings
@@ -625,8 +624,7 @@ void XimIC::onSendPacket()
 	return;
 
     char *p;
-    const char *encoding = get_encoding();
-    p = mConn->getXimServer()->uStringToCtext(&mPending, encoding);
+    p = get_im_by_id(mIMid)->uStringToCtext(&mPending);
 
     if (!p) {
 	erase_ustring(&mPending);

@@ -53,6 +53,7 @@ public:
     virtual void move_candwin() = 0;
     virtual void set_im_lang(const char *im_lang);
     virtual void set_locale_name(const char *locale);
+    virtual InputContext *get_context();
 
 protected:
     // Owner of mKkContext is XimIC. This is set at the time of

@@ -419,7 +419,7 @@ XimIM::get_mb_string(char *buf, KeySym ks)
     ucs = KeySymToUcs4(ks);
     len = utf8_wctomb((unsigned char *)local_buf, ucs);
     local_buf[len] = '\0';
-    mb = utf8_to_native_str(local_buf, encoding);
+    mb = utf8_to_native_str(local_buf);
     if (!mb)
 	return 0;
     len = strlen(mb);

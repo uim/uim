@@ -198,71 +198,23 @@ Locale::supportOverTheSpot()
     return false;
 }
 
-char *utf8_to_native_str(char *utf8, const char *enc) {
-    iconv_t cd;
-    size_t outbufsize = BUFSIZ;
-    char *inbuf, *outbuf, *convstr = NULL;
-    char *inchar;
-    char *outchar;
-    size_t inbytesleft, outbytesleft;
-    size_t ret_val;
-    
-    cd = (iconv_t)uim_iconv_open(enc, "UTF-8");
-    if (cd == (iconv_t)-1) {
-	perror("error in iconv_open");
-	return NULL;
-    }
-
-    inbuf = utf8;
-    if (!inbuf) {
-	iconv_close(cd);
-	return NULL;
-    }
-    outbuf = (char *)malloc(outbufsize);
-    if (!outbuf) {
-	iconv_close(cd);
-	return NULL;
-    }
-    inchar = inbuf;
-    outchar = outbuf;
-    inbytesleft = strlen(inbuf);
-    outbytesleft = outbufsize;
-    ret_val = iconv(cd, (ICONV_CONST char **)&inchar, &inbytesleft, &outchar, &outbytesleft);
-
-    if (ret_val == (size_t)-1 && errno != E2BIG) {
-	//perror("error in iconv");
-	iconv_close(cd);
-	free(outbuf);
-	return NULL;
-    }
-    iconv_close(cd);
-    convstr = (char *)malloc(outbufsize - outbytesleft + 1);
-    if (!convstr) {
-	free(outbuf);
-	return NULL;
-    }
-    strncpy(convstr, outbuf, outbufsize - outbytesleft);
-    convstr[outbufsize - outbytesleft] = '\0';
-    free(outbuf);
-    return convstr;
-}
-
 class UTF8_Locale : public Locale {
 public:
-    UTF8_Locale(const char *lang);
+    UTF8_Locale(const char *encoding);
     virtual ~UTF8_Locale();
-    virtual char *uStringToCtext(uString *us, const char *encoding) {
+    virtual char *utf8_to_native_str(char *str);
+    virtual char *uStringToCtext(uString *us) {
 	char *str = ustring_to_utf8_str(us);
 	XTextProperty prop;
 
-	if (!strcmp(encoding, "UTF-8")) {
+	if (!strcmp(mEncoding, "UTF-8")) {
 	    XmbTextListToTextProperty(XimServer::gDpy, &str, 1,
 			    XCompoundTextStyle, &prop);
 	    free(str);
 	} else {
 	    char *native_str;
 	    
-	    native_str = utf8_to_native_str(str, encoding);
+	    native_str = utf8_to_native_str(str);
 	    free(str);
 	    if (!native_str)
 		return NULL;
@@ -278,20 +230,67 @@ public:
     virtual bool supportOverTheSpot() {
 	return true;
     }
-    virtual void set_localename_from_im_lang(const char *im_lang);
 private:
-    char *mLocaleName;
+    char *mEncoding;
+    iconv_t m_iconv_cd;
 };
 
-UTF8_Locale::UTF8_Locale(const char *im_lang)
+UTF8_Locale::UTF8_Locale(const char *encoding)
 {
-    mLocaleName = strdup(compose_localenames_from_im_lang(im_lang));
+    mEncoding = strdup(encoding);
+    m_iconv_cd = (iconv_t)uim_iconv_open(encoding, "UTF-8");
 }
 
 UTF8_Locale::~UTF8_Locale()
 {
-    free(mLocaleName);
+    free(mEncoding);
+    if (m_iconv_cd != (iconv_t)-1)
+        iconv_close(m_iconv_cd);
 }
+
+char *UTF8_Locale::utf8_to_native_str(char *utf8) {
+    size_t outbufsize = BUFSIZ;
+    char *inbuf, *outbuf, *convstr = NULL;
+    char *inchar;
+    char *outchar;
+    size_t inbytesleft, outbytesleft;
+    size_t ret_val;
+    
+    if (m_iconv_cd == (iconv_t)-1)
+	return NULL;
+
+    inbuf = utf8;
+    if (!inbuf)
+	return NULL;
+
+    outbuf = (char *)malloc(outbufsize);
+    if (!outbuf)
+	return NULL;
+
+    inchar = inbuf;
+    outchar = outbuf;
+    inbytesleft = strlen(inbuf);
+    outbytesleft = outbufsize;
+    ret_val = iconv(m_iconv_cd, (ICONV_CONST char **)&inchar, &inbytesleft, &outchar, &outbytesleft);
+
+    if (ret_val == (size_t)-1 && errno != E2BIG) {
+	//perror("error in iconv");
+	free(outbuf);
+	return NULL;
+    }
+
+    convstr = (char *)malloc(outbufsize - outbytesleft + 1);
+    if (!convstr) {
+	free(outbuf);
+	return NULL;
+    }
+
+    strncpy(convstr, outbuf, outbufsize - outbytesleft);
+    convstr[outbufsize - outbytesleft] = '\0';
+    free(outbuf);
+    return convstr;
+}
+
 
 static const char *
 get_valid_locales(const char *locales)
@@ -488,20 +487,9 @@ get_prefered_locale(const char *locales)
     return locale;
 }
 
-void
-UTF8_Locale::set_localename_from_im_lang(const char *im_lang)
+Locale *createLocale(const char *encoding)
 {
-    const char *name;
-    name = compose_localenames_from_im_lang(im_lang);
-    
-    if (mLocaleName)
-	free(mLocaleName);
-    mLocaleName = strdup(name);
-}
-
-Locale *createLocale(const char *im_lang)
-{
-    return new UTF8_Locale(im_lang);
+    return new UTF8_Locale(encoding);
 }
 
 int

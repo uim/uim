@@ -72,30 +72,6 @@ static int gShiftMask, gLockMask, gControlMask, gMod1Mask,
 static int gXNumLockMask;
 
 
-// tables
-static input_style input_style_tab_with_over_the_spot[] = {
-    {XIMPreeditNothing|XIMStatusNothing, IS_ROOT_WINDOW},
-    //{XIMPreeditPosition|XIMStatusArea, IS_OVER_THE_SPOT},// emacs
-    {XIMPreeditPosition|XIMStatusNothing, IS_OVER_THE_SPOT},
-    //{XIMPreeditCallbacks|XIMStatusCallbacks, IS_ON_THE_SPOT},// OOo
-    //{XIMPreeditArea|XIMStatusArea, IS_ROOT_WINDOW},
-    {XIMPreeditCallbacks|XIMStatusNothing, IS_ON_THE_SPOT},
-    {0, 0},
-};
-static input_style input_style_tab_without_over_the_spot[] = {
-    {XIMPreeditNothing|XIMStatusNothing, IS_ROOT_WINDOW},
-    //{XIMPreeditPosition|XIMStatusArea, IS_OVER_THE_SPOT},// emacs
-    //{XIMPreeditPosition|XIMStatusNothing, IS_OVER_THE_SPOT},
-    //{XIMPreeditCallbacks|XIMStatusCallbacks, IS_ON_THE_SPOT},// OOo
-    //{XIMPreeditArea|XIMStatusArea, IS_ROOT_WINDOW},
-    {XIMPreeditCallbacks|XIMStatusNothing, IS_ON_THE_SPOT},
-    {0, 0},
-};
-// XIMPreeditArea,XIMPreeditCallbacks,XIMPreeditPosition
-// XIMPreeditNothing,XIMPreeditNone
-// XIMStatusArea,XIMStatusCallbacks
-// XIMStatusNothing,XIMStatusNone
-
 void print_ustring(uString *s)
 {
     uString::iterator i;
@@ -125,11 +101,10 @@ void append_ustring(uString *d, uString *s)
     }
 }
 
-XimServer::XimServer(Locale *lc, const char *name, const char *lang)
+XimServer::XimServer(const char *name, const char *lang)
 {
     mIMName = strdup(name);
     mIMLang = lang;
-    mLocale = lc;
     mUsePreservedDefaultIM = false;
 }
 
@@ -185,15 +160,6 @@ void XimServer::customContext(const char *custom, const char *val) {
     for (it = ic_list.begin(); it != ic_list.end(); it++) {
 	(*it)->customContext(custom, val);
     }
-}
-
-struct input_style *
-XimServer::getInputStyles()
-{
-    if (mLocale->supportOverTheSpot())
-	return input_style_tab_with_over_the_spot;
-
-    return input_style_tab_without_over_the_spot;
 }
 
 bool
@@ -258,12 +224,6 @@ XimServer::setupConnection(bool useDefaultIM)
     return true;
 }
 
-char *
-XimServer::uStringToCtext(uString *us, const char *encoding)
-{
-    return mLocale->uStringToCtext(us, encoding);
-}
-
 void
 XimServer::strToUstring(uString *d, const char *s)
 {
@@ -300,11 +260,6 @@ const char *XimServer::getIMLang()
     return mIMLang;
 }
 
-Locale *XimServer::getLocale()
-{
-    return mLocale;
-}
-
 void XimServer::set_im(const char *engine)
 {
     if (mIMName)
@@ -312,7 +267,6 @@ void XimServer::set_im(const char *engine)
 
     mIMName = strdup(engine);
     mIMLang = get_im_lang_from_engine(engine);
-    mLocale->set_localename_from_im_lang(mIMLang);
 }
 
 const char *get_im_lang_from_engine(const char *engine)
