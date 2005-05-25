@@ -411,7 +411,6 @@ int
 XimIM::get_mb_string(char *buf, KeySym ks)
 {
     int len;
-    const char *encoding = get_encoding();
     char local_buf[MB_LEN_MAX];
     char *mb;
     unsigned int ucs;

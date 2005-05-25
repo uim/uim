@@ -43,11 +43,10 @@
 #ifdef HAVE_CURSES_H
 #include <curses.h>
 #endif
-#ifdef HAVE_NCURSES_TERM_H
-#include <ncurses/term.h>
-#endif
 #ifdef HAVE_TERM_H
 #include <term.h>
+#elif HAVE_NCURSES_TERM_H
+#include <ncurses/term.h>
 #endif
 #ifdef HAVE_STRING_H
 #include <string.h>
