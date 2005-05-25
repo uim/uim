@@ -44,9 +44,11 @@
 
 (define anthy-lib-initialized? #f)
 
-(define anthy-type-hiragana 0)
-(define anthy-type-katakana 1)
-(define anthy-type-hankana 2)
+(define anthy-type-hiragana   0)
+(define anthy-type-katakana   1)
+(define anthy-type-hankana    2)
+(define anthy-type-latin      3)
+(define anthy-type-wide-latin 4)
 
 (define anthy-input-rule-roma 0)
 (define anthy-input-rule-kana 1)
@@ -226,6 +228,8 @@
    (list
     (list 'on                 #f)
     (list 'converting         #f)
+    (list 'transposing        #f)
+    (list 'transposing-type    0)
     (list 'ac-id              #f) ;; anthy-context-id
     (list 'preconv-ustr       #f) ;; preedit strings
     (list 'rkc                #f)
@@ -366,9 +370,11 @@
   (lambda (ac)
     (if (not (anthy-context-commit-raw ac))
 	(let ((segments (if (anthy-context-on ac)
-			    (if (anthy-context-converting ac)
-				(anthy-converting-state-preedit ac)
-				(anthy-input-state-preedit ac))
+			    (if (anthy-context-transposing ac)
+				(anthy-context-transposing-state-preedit ac)
+				(if (anthy-context-converting ac)
+				    (anthy-converting-state-preedit ac)
+				    (anthy-input-state-preedit ac)))
 			    ())))
 	  (context-update-preedit ac segments))
 	(anthy-context-set-commit-raw! ac #f))))
@@ -465,6 +471,31 @@
     (or (not (ustr-empty? (anthy-context-preconv-ustr ac)))
 	(> (length (rk-pending (anthy-context-rkc ac))) 0))))
 
+(define anthy-proc-transposing-state
+  (lambda (ac key key-state)
+    (cond
+     ((anthy-transpose-as-katakana-key? key key-state)
+      (anthy-context-set-transposing-type! ac anthy-type-katakana))
+
+     ((anthy-transpose-as-hankana-key? key key-state)
+      (anthy-context-set-transposing-type! ac anthy-type-hankana))
+
+     ((anthy-transpose-as-latin-key? key key-state)
+      (anthy-context-set-transposing-type! ac anthy-type-latin))
+
+     ((anthy-transpose-as-wide-latin-key? key key-state)
+      (anthy-context-set-transposing-type! ac anthy-type-wide-latin))
+
+     ((anthy-commit-key? key key-state)
+      (begin
+	(im-commit ac (anthy-transposing-text ac))
+	(anthy-flush ac)))
+
+     (else
+      (begin
+	(anthy-context-set-transposing! ac #f)
+	(anthy-proc-input-state-with-preedit ac key key-state))))))
+
 (define anthy-proc-input-state-with-preedit
   (lambda (ac key key-state)
     (let ((preconv-str (anthy-context-preconv-ustr ac))
@@ -473,7 +504,7 @@
 	  (kana (anthy-context-kana-mode ac))
 	  (rule (anthy-context-input-rule ac)))
       (cond
-       
+
        ;; begin conversion
        ((anthy-begin-conv-key? key key-state)
 	(anthy-begin-conv ac))
@@ -510,37 +541,14 @@
 	   (anthy-make-whole-string ac #t (multi-segment-opposite-kana kana)))
 	  (anthy-flush ac)))
 
-       ;; カタカナモードでかなを確定する
-       ((anthy-commit-as-katakana-key? key key-state)
+       ;; Transposing状態へ移行
+       ((or (anthy-transpose-as-katakana-key?   key key-state)
+	    (anthy-transpose-as-hankana-key?    key key-state)
+	    (anthy-transpose-as-latin-key?      key key-state)
+	    (anthy-transpose-as-wide-latin-key? key key-state))
 	(begin
-	  (im-commit
-	   ac
-	   (anthy-make-whole-string ac #t multi-segment-type-katakana))
-	  (anthy-flush ac)))
-
-       ;; 半角カタカナモードでかなを確定する
-       ((anthy-commit-as-hankana-key? key key-state)
-	(begin
-	  (im-commit
-	   ac
-	   (anthy-make-whole-string ac #t multi-segment-type-hankana))
-	  (anthy-flush ac)))
-
-       ;; かなを英数字に戻して確定する
-       ((anthy-commit-as-latin-key? key key-state)
-	(begin
-	  (im-commit
-	   ac
-           (anthy-make-whole-raw-string ac #f))
-	  (anthy-flush ac)))
-
-       ;; かなを全角英数字に戻して確定する
-       ((anthy-commit-as-wide-latin-key? key key-state)
-	(begin
-	  (im-commit
-	   ac
-           (anthy-make-whole-raw-string ac #t))
-	  (anthy-flush ac)))
+	  (anthy-context-set-transposing! ac #t)
+	  (anthy-proc-transposing-state ac key key-state)))
 
        ;; Commit current preedit string, then toggle hiragana/katakana mode.
        ((anthy-kana-toggle-key? key key-state)
@@ -648,6 +656,29 @@
       (if anthy-show-segment-separator?
 	  (cons attr anthy-segment-separator)
 	  #f))))
+
+(define anthy-context-transposing-state-preedit
+  (lambda (ac)
+    (let* ((transposing-text (anthy-transposing-text ac)))
+      (list (cons preedit-underline transposing-text)
+	    (cons preedit-cursor "")))))
+
+(define anthy-transposing-text
+  (lambda (ac)
+    (let* ((transposing-type (anthy-context-transposing-type ac)))
+      (cond
+       ((= transposing-type anthy-type-katakana)
+	(anthy-make-whole-string ac #t multi-segment-type-katakana))
+
+       ((= transposing-type anthy-type-hankana)
+	(anthy-make-whole-string ac #t multi-segment-type-hankana))
+
+       ((= transposing-type anthy-type-latin)
+	(anthy-make-whole-raw-string ac #f))
+
+       ((= transposing-type anthy-type-wide-latin)
+	(anthy-make-whole-raw-string ac #t))
+       ))))
 
 (define anthy-converting-state-preedit
   (lambda (ac)
@@ -896,14 +927,17 @@
     (if (control-char? key)
 	(im-commit-raw ac)
 	(if (anthy-context-on ac)
-	    (if (anthy-context-converting ac)
-		(anthy-proc-converting-state ac key key-state)
-		(anthy-proc-input-state ac key key-state))
+	    (if (anthy-context-transposing ac)
+		(anthy-proc-transposing-state ac key key-state)
+		(if (anthy-context-converting ac)
+		    (anthy-proc-converting-state ac key key-state)
+		    (anthy-proc-input-state ac key key-state)))
 	    (if (anthy-context-wide-latin ac)
 		(anthy-proc-wide-latin ac key key-state)
 		(anthy-proc-raw-state ac key key-state))))
     ;; preedit
-    (anthy-update-preedit ac)))
+    (anthy-update-preedit ac)
+))
 
 
 (define anthy-release-key-handler
