@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 0.4.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-05-06 18:44+0900\n"
+"POT-Creation-Date: 2005-05-31 12:25+0900\n"
 "PO-Revision-Date: 2005-02-24 19:28+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
@@ -901,20 +901,20 @@ msgstr "[Anthy] 文節を短縮"
 
 # "全角英数確定"としないのは単語境界の認識を容易にするため  -- YamaKen  2005-02-02
 #: scm/anthy-key-custom.lisp:75
-msgid "[Anthy] commit as halfwidth alphanumeric"
-msgstr "[Anthy] 半角英数として確定"
+msgid "[Anthy] convert to halfwidth alphanumeric"
+msgstr "[Anthy] 半角英数に変換"
 
 #: scm/anthy-key-custom.lisp:81
-msgid "[Anthy] commit as fullwidth alphanumeric"
-msgstr "[Anthy] 全角英数として確定"
+msgid "[Anthy] convert to fullwidth alphanumeric"
+msgstr "[Anthy] 全角英数に変換"
 
 #: scm/anthy-key-custom.lisp:87
-msgid "[Anthy] commit as katakana"
-msgstr "[Anthy] カタカナとして確定"
+msgid "[Anthy] convert to katakana"
+msgstr "[Anthy] カタカナに変換"
 
 #: scm/anthy-key-custom.lisp:93
-msgid "[Anthy] commit as halfwidth katakana"
-msgstr "[Anthy] 半角カタカナとして確定"
+msgid "[Anthy] convert to halfwidth katakana"
+msgstr "[Anthy] 半角カタカナに変換"
 
 #: scm/anthy-key-custom.lisp:99
 msgid "[Anthy] commit as transposed kana"

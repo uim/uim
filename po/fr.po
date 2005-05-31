@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-05-06 18:44+0900\n"
+"POT-Creation-Date: 2005-05-31 12:25+0900\n"
 "PO-Revision-Date: 2005-02-21 15:52+0100\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -885,19 +885,19 @@ msgid "[Anthy] shrink segment"
 msgstr ""
 
 #: scm/anthy-key-custom.lisp:75
-msgid "[Anthy] commit as halfwidth alphanumeric"
+msgid "[Anthy] convert to halfwidth alphanumeric"
 msgstr ""
 
 #: scm/anthy-key-custom.lisp:81
-msgid "[Anthy] commit as fullwidth alphanumeric"
+msgid "[Anthy] convert to fullwidth alphanumeric"
 msgstr ""
 
 #: scm/anthy-key-custom.lisp:87
-msgid "[Anthy] commit as katakana"
+msgid "[Anthy] convert to katakana"
 msgstr ""
 
 #: scm/anthy-key-custom.lisp:93
-msgid "[Anthy] commit as halfwidth katakana"
+msgid "[Anthy] convert to halfwidth katakana"
 msgstr ""
 
 #: scm/anthy-key-custom.lisp:99
