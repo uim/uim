@@ -75,7 +75,7 @@ static int gXNumLockMask;
 void print_ustring(uString *s)
 {
     uString::iterator i;
-    printf("length=%d : ", s->size());
+    printf("length=%d : ", (int)s->size());
     uchar ch;
     char utf8[6];
     int nbyte;

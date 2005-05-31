@@ -135,7 +135,7 @@ protected:
     bool mIsCloseWait; // true when the last packet has handled
 private:
     void xim_connect(RxPacket *);
-    void xim_disconnect(RxPacket *);
+    void xim_disconnect();
     void xim_open(RxPacket *);
     void xim_query_extension(RxPacket *);
     void xim_encoding_negotiation(RxPacket *);
@@ -152,7 +152,7 @@ private:
     void xim_reset_ic(RxPacket *);
 
     void xim_forward_event(RxPacket *);
-    void xim_sync_reply(RxPacket *);
+    void xim_sync_reply();
     void xim_preedit_start_reply(RxPacket *);
     void xim_error(RxPacket *);
 
@@ -234,7 +234,7 @@ class icxatr {
 public:
     icxatr();
     ~icxatr();
-    void set_atr(int id, C8 *v, int len, int byte_order);
+    void set_atr(int id, C8 *v, int byte_order);
     bool has_atr(int id);
     bool is_changed(int id);
     void unset_change_mask(int id);

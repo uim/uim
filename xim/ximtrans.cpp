@@ -267,7 +267,7 @@ void Connection::OnRecv()
 	    xim_close(p);
 	    break;
 	case XIM_DISCONNECT:
-	    xim_disconnect(p);
+	    xim_disconnect();
 	    break;
 	case XIM_GET_IM_VALUES:
 	    xim_get_im_values(p);
@@ -297,7 +297,7 @@ void Connection::OnRecv()
 	    xim_forward_event(p);
 	    break;
 	case XIM_SYNC_REPLY:
-	    xim_sync_reply(p);
+	    xim_sync_reply();
 	    break;
 	case XIM_RESET_IC:
 	    xim_reset_ic(p);
@@ -463,7 +463,7 @@ void Connection::xim_connect(RxPacket *p)
 	printf("accept xim connection.\n");
 }
 
-void Connection::xim_disconnect(RxPacket *p)
+void Connection::xim_disconnect()
 {
     TxPacket *t;
     t = createTxPacket(XIM_DISCONNECT_REPLY, 0);
@@ -715,7 +715,7 @@ void Connection::xim_forward_event(RxPacket *p)
 	im->forward_event(p);
 }
 
-void Connection::xim_sync_reply(RxPacket *p)
+void Connection::xim_sync_reply()
 {
     if (hasSyncFlag()) {
 	unsetSyncFlag();

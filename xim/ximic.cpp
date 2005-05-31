@@ -175,7 +175,7 @@ bool icxatr::has_atr(int id)
     return atr_mask & (1 << id);
 }
 
-void icxatr::set_atr(int id, C8 *val, int len, int o)
+void icxatr::set_atr(int id, C8 *val, int o)
 {
     switch (id) {
     case ICA_InputStyle:
@@ -201,7 +201,7 @@ void icxatr::set_atr(int id, C8 *val, int len, int o)
     {
 	int len = readC16(val, o);
 	char *new_fsn = (char *)alloca(len + 1);
-	new_fsn[len] = 0;
+	new_fsn[len] = '\0';
 	memcpy(new_fsn, &val[2], len);
 	if (font_set_name && !strcmp(font_set_name, new_fsn))
 	    break;
@@ -551,7 +551,7 @@ void XimIC::set_ic_attr(int id, C8 *val, int len)
     if (id == ICA_PreeditAttribute || id == ICA_StatusAttributes)
 	setICAttrs(val, len); // list of attribute
     else
-	m_xatr.set_atr(id, val, len, mConn->byte_order());
+	m_xatr.set_atr(id, val, mConn->byte_order());
 
     if (mConvdisp)
 	mConvdisp->update_icxatr();

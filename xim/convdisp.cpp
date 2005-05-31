@@ -68,7 +68,7 @@ const char *fontset_ko = "-sony-fixed-medium-r-normal--16-*-*-*-c-80-iso8859-1, 
 
 
 static XFontSet
-create_default_fontset(const char *im_lang, const char *encoding, const char *locale) {
+create_default_fontset(const char *im_lang, const char *locale) {
     char *orig_locale;
     const char *name;
     XFontSet ret;
@@ -99,8 +99,8 @@ create_default_fontset(const char *im_lang, const char *encoding, const char *lo
 }
 
 static XFontSet
-choose_default_fontset(const char *im_lang, const char *encoding, const char *locale) {
-    return create_default_fontset(im_lang, encoding, locale);
+choose_default_fontset(const char *im_lang, const char *locale) {
+    return create_default_fontset(im_lang, locale);
 }
 
 struct char_ent {
@@ -294,7 +294,7 @@ PeWin::PeWin(Window pw, const char *im_lang, const char *encoding, const char *l
     add_window_watch(mWin, this, EXPOSE_MASK|STRUCTURE_NOTIFY_MASK);
     mIsMapped = false; //not mapped now
     
-    mFontset = choose_default_fontset(im_lang, encoding, locale);
+    mFontset = choose_default_fontset(im_lang, locale);
     mEncoding = encoding;
     
     XFlush(XimServer::gDpy);
@@ -329,7 +329,7 @@ void PeWin::destroy(Window w)
 
 void PeWin::expose(Window w)
 {
-    XCopyArea(XimServer::gDpy, mPixmap, mWin, mGC,
+    XCopyArea(XimServer::gDpy, mPixmap, w, mGC,
 	      0, 0, mWidth, mHeight, 0, 0);
 
     XFlush(XimServer::gDpy);
@@ -994,7 +994,7 @@ bool ConvdispOv::check_atr()
 	m_atr->area.y = 0;
     }
     if (!m_atr->has_atr(ICA_FontSet))
-	m_atr->font_set = choose_default_fontset(mIMLang, mEncoding, mLocaleName);
+	m_atr->font_set = choose_default_fontset(mIMLang, mLocaleName);
     else {
 	if (!m_initial_fontset && !m_lang_changed)
 	    m_initial_fontset = m_atr->font_set;

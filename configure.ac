@@ -232,7 +232,7 @@ AC_ARG_WITH(gtk2,
       ;;
       yes|*)
         PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.2.0, use_gtk2="yes",use_gtk2="no")
-        PKG_CHECK_MODULES(GTK2_4, gtk+-2.0 >= 2.4.0, use_gtk2.4="yes",use_gtk2.4="no")
+        PKG_CHECK_MODULES(GTK2_4, gtk+-2.0 >= 2.4.0, use_gtk2_4="yes",use_gtk2_4="no")
       ;;
     esac
   ],

@@ -214,8 +214,13 @@ findWindowIf(Window w)
 static int
 X_ErrorHandler(Display *d, XErrorEvent *e)
 {
-    if (g_option_mask & OPT_TRACE)
-	printf("X error occured.\n");
+    if (g_option_mask & OPT_TRACE) {
+	if (e->error_code) {
+	    char buf[64];
+	    XGetErrorText(d, e->error_code, buf, 63);
+	    printf("X error occured. %s\n", buf);
+	}
+    }
 
     return 0;
 }
@@ -223,6 +228,7 @@ X_ErrorHandler(Display *d, XErrorEvent *e)
 static int
 X_IOErrorHandler(Display *d)
 {
+    fprintf(stderr, "%s: X IO error.\n", DisplayString(d));
     return 0;
 }
 
@@ -409,8 +415,8 @@ init_supported_locales()
     supported_locales = (char *)realloc(supported_locales,
 		    sizeof(char) * len + 1);
     if (!supported_locales) {
-        fprintf(stderr, "Error: failed to register supported_locales. Aborting....");
-        exit(1);
+	fprintf(stderr, "Error: failed to register supported_locales. Aborting....");
+	exit(1);
     }
 
     strcat(supported_locales, locales);
