@@ -354,6 +354,7 @@
     (ustr-clear! (anthy-context-preconv-ustr ac))
     (ustr-clear! (anthy-context-raw-ustr ac))
     (ustr-clear! (anthy-context-segments ac))
+    (anthy-context-set-transposing! ac #f)
     (anthy-context-set-converting! ac #f)
     (if (anthy-context-candidate-window ac)
 	  (im-deactivate-candidate-selector ac))
