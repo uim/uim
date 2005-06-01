@@ -35,6 +35,7 @@
 #define _helper_h_included_
 
 void check_helper_connection();
+void helper_disconnect_cb();
 
 #endif
 /*

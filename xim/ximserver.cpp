@@ -290,7 +290,7 @@ InputContext::InputContext(XimServer *svr, XimIC *ic, const char *engine)
     mEngineName = NULL;
     mLocaleName = NULL;
     mFocusedContext = this;
-    mUc = createUimContext(engine);
+    createUimContext(engine);
     mCandwinActive = false;
     mNumPage = 1;
     mDisplayLimit = 0;
@@ -311,7 +311,7 @@ InputContext::~InputContext()
     free(mLocaleName);
 }
 
-uim_context
+void
 InputContext::createUimContext(const char *engine)
 {
     char *locale;
@@ -354,12 +354,10 @@ InputContext::createUimContext(const char *engine)
 
     setlocale(LC_CTYPE, locale);
 
-    if (mLocaleName)
-	free(mLocaleName);
+    free(mLocaleName);
     mLocaleName = locale;
 
-    if (mEngineName)
-	free(mEngineName);
+    free(mEngineName);
     mEngineName = strdup(real_im);
 
     uim_context uc = uim_create_context((void *) this, "UTF-8",
@@ -383,7 +381,7 @@ InputContext::createUimContext(const char *engine)
     if (mFocusedContext == this)
 	uim_prop_list_update(uc);
 
-    return uc;
+    mUc = uc;
 }
 
 void
@@ -403,7 +401,7 @@ InputContext::changeContext(const char *engine)
 
     clear();
     uim_release_context(mUc);
-    mUc = createUimContext(engine); // mEngineName and locale will be set here.
+    createUimContext(engine); // mUc, mEngineName, and locale will be set here.
     if (mConvdisp) {
 	mConvdisp->set_im_lang(get_im_lang_from_engine(mEngineName));
 	mConvdisp->set_locale_name(mLocaleName);

@@ -108,6 +108,7 @@ void Canddisp::activate(std::vector<const char *> candidates, int display_limit)
     }
     fprintf(candwin_w, "\n");
     fflush(candwin_w);
+    check_connection();
 }
 
 void Canddisp::select(int index)
@@ -117,6 +118,7 @@ void Canddisp::select(int index)
     fprintf(candwin_w, "select\n");
     fprintf(candwin_w, "%d\n\n", index);
     fflush(candwin_w);
+    check_connection();
 }
 
 void Canddisp::deactivate()
@@ -125,6 +127,7 @@ void Canddisp::deactivate()
 	return;
     fprintf(candwin_w, "deactivate\n\n");
     fflush(candwin_w);
+    check_connection();
 }
 
 void Canddisp::show()
@@ -133,6 +136,7 @@ void Canddisp::show()
 	return;
     fprintf(candwin_w, "show\n\n");
     fflush(candwin_w);
+    check_connection();
 }
 
 void Canddisp::hide()
@@ -141,6 +145,7 @@ void Canddisp::hide()
 	return;
     fprintf(candwin_w, "hide\n\n");
     fflush(candwin_w);
+    check_connection();
 }
 
 void Canddisp::move(int x, int y)
@@ -152,6 +157,7 @@ void Canddisp::move(int x, int y)
     fprintf(candwin_w, "%d\n", y);
     fprintf(candwin_w, "\n");
     fflush(candwin_w);
+    check_connection();
 }
 
 void Canddisp::show_caret_state(const char *str)
@@ -162,6 +168,17 @@ void Canddisp::show_caret_state(const char *str)
     fprintf(candwin_w, "%s", str);
     fprintf(candwin_w, "\n");
     fflush(candwin_w);
+    check_connection();
+}
+
+void Canddisp::check_connection()
+{
+    if (errno == EBADF || errno == EPIPE) {
+	disp = NULL;
+	int fd = fileno(candwin_r);
+	remove_current_fd_watch(fd);
+	delete this;
+    }
 }
 
 static void candwin_read_cb(int fd, int ev)
@@ -212,5 +229,24 @@ static void candwin_read_cb(int fd, int ev)
 	    focusedContext->get_ic()->force_send_packet();
 	}
     }
+    return;
+}
+
+void terminate_canddisp_connection()
+{
+    int fd_r, fd_w;
+
+    if (candwin_r) {
+	fd_r = fileno(candwin_r);
+	close(fd_r);
+	remove_current_fd_watch(fd_r);
+    }
+    if (candwin_w) {
+	fd_w = fileno(candwin_w);
+	close(fd_w);
+    }
+
+    disp = NULL;
+
     return;
 }

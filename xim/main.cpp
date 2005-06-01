@@ -327,11 +327,16 @@ xEventRead(int fd, int ev)
     check_pending_xevent();
 }
 
-static int
-pretrans_setup()
+static void
+error_handler_setup()
 {
     XSetErrorHandler(X_ErrorHandler);
     XSetIOErrorHandler(X_IOErrorHandler);
+}
+
+static int
+pretrans_setup()
+{
     int fd = XConnectionNumber(XimServer::gDpy);
 
     add_fd_watch(fd, READ_OK, xEventRead);
@@ -481,6 +486,47 @@ get_runtime_env()
 	host_byte_order = MSB_FIRST;
 }
 
+static void
+terminate_x_connection()
+{
+    int fd = XConnectionNumber(XimServer::gDpy);
+
+    remove_current_fd_watch(fd);
+}
+
+static void
+reload_uim(int x)
+{
+    fprintf(stderr, "\nReloading uim...\n\n");
+
+    terminate_canddisp_connection();
+    helper_disconnect_cb();
+    terminate_x_connection();
+
+    std::map<Window, XimServer *>::iterator it;
+    std::list<InputContext *>::iterator it_c;
+
+    for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); it++) {
+	XimServer *xs = it->second;
+	for (it_c = xs->ic_list.begin(); it_c != xs->ic_list.end(); it_c++)
+	    (*it_c)->clear();
+    }
+
+    uim_quit();
+    uim_info.clear();
+    get_uim_info();
+    print_uim_info();
+
+    for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); it++) {
+	XimServer *xs = it->second;
+	for (it_c = xs->ic_list.begin(); it_c != xs->ic_list.end(); it_c++) {
+	    const char *engine = (*it_c)->get_engine_name();
+	    (*it_c)->createUimContext(engine);
+	}
+    }
+    pretrans_setup();
+}
+
 int
 main(int argc, char **argv)
 {
@@ -498,6 +544,7 @@ main(int argc, char **argv)
 	printf("Using full-synchronous XIM event flow\n");
 
     signal(SIGPIPE, SIG_IGN);
+    signal(SIGINT, reload_uim);
 
     check_helper_connection();
 
@@ -545,6 +592,7 @@ main(int argc, char **argv)
     }
 
     connection_setup();
+    error_handler_setup();
     if (pretrans_setup() == -1)
 	return 0;
 

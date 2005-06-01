@@ -47,9 +47,12 @@ public:
     void hide();
     void move(int x, int y);
     void show_caret_state(const char *str);
+private:
+    void check_connection();
 };
 
 Canddisp *canddisp_singleton();
+void terminate_canddisp_connection();
 
 #endif
 /*

@@ -168,6 +168,7 @@ public:
     const char *get_locale_name();
     void changeContext(const char *engine);
     void customContext(const char *custom, const char *val);
+    void createUimContext(const char *engine);
 public:
     static void commit_cb(void *, const char *);
     static void clear_cb(void *);
@@ -189,7 +190,6 @@ protected:
     Convdisp *mConvdisp;
     uim_context mUc;
 private:
-    uim_context createUimContext(const char *engine);
     static InputContext *mFocusedContext;
     bool mCandwinActive;
     int mDisplayLimit;
@@ -234,6 +234,7 @@ public:
     void set_im(const char *name);
     void changeContext(const char *engine);
     void customContext(const char *custom, const char *val);
+    std::list<InputContext *> ic_list;
 public:
     static XimServer *findServer(Window w);
     static Display *gDpy;
@@ -243,7 +244,6 @@ private:
     Atom mServerAtom;
     char *mIMName;
     const char *mIMLang;
-    std::list<InputContext *> ic_list;
     bool mUsePreservedDefaultIM;
 };
 

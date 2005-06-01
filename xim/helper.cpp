@@ -237,10 +237,11 @@ helper_read_cb(int fd, int ev)
     }
 }
 
-static void
+void
 helper_disconnect_cb(void)
 {
     remove_current_fd_watch(lib_uim_fd);
+    close(lib_uim_fd);
     lib_uim_fd = -1;
 }
 
