@@ -39,6 +39,9 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/extensions/shape.h>
+#if HAVE_XFT_UTF8_STRING
+#include <X11/Xft/Xft.h>
+#endif
 #include <stdlib.h>
 #include <locale.h>
 #include "xim.h"
@@ -48,7 +51,10 @@
 #include "xdispatch.h"
 #include "util.h"
 
+#include "uim/uim-compat-scm.h"
+
 #define UNDERLINE_HEIGHT	2
+#define DEFAULT_FONT_SIZE	16
 // Temporal hack for flashplayer plugin's broken over-the-spot XIM style
 #define FLASHPLAYER_WORKAROUND
 
@@ -66,6 +72,65 @@ const char *fontset_zhTW = "-sony-fixed-medium-r-normal--16-*-*-*-c-80-iso8859-1
 const char *fontset_ja = "-sony-fixed-medium-r-normal--16-*-*-*-c-80-iso8859-1, -jis-fixed-medium-r-normal--16-*-75-75-c-160-jisx0208.1983-0, -sony-fixed-medium-r-normal--16-*-*-*-c-80-jisx0201.1976-0";
 const char *fontset_ko = "-sony-fixed-medium-r-normal--16-*-*-*-c-80-iso8859-1, -daewoo-gothic-medium-r-normal--16-120-100-100-c-160-ksc5601.1987-0";
 
+
+#if HAVE_XFT_UTF8_STRING
+XftFont *gXftFont;
+char *gXftFontName;
+
+void
+init_default_xftfont() {
+    char *fontname = uim_scm_symbol_value_str("uim-xim-xft-font-name");
+    gXftFontName = fontname;
+
+    gXftFont = XftFontOpen(XimServer::gDpy, DefaultScreen(XimServer::gDpy),
+		    XFT_FAMILY, XftTypeString, fontname,
+		    XFT_PIXEL_SIZE, XftTypeDouble, (double)DEFAULT_FONT_SIZE,
+		    NULL);
+    // maybe not needed, but in case it return NULL...
+    if (!gXftFont) {
+	gXftFont = XftFontOpen(XimServer::gDpy, DefaultScreen(XimServer::gDpy),
+			XFT_FAMILY, XftTypeString, "Sans",
+			XFT_PIXEL_SIZE, XftTypeDouble, (double)DEFAULT_FONT_SIZE,
+			NULL);
+    }
+}
+
+static char *
+dequote(const char *str)
+{
+   char *ret = NULL;
+
+   if (str) {
+	int len = strlen(str);
+	if (str[0] == '"' && str[len - 1] == '"') {
+	    ret = strdup(++str);
+	    ret[len - 2] = '\0';
+	} else
+	    ret = strdup(str);
+   }
+
+   return ret;
+}
+
+void
+update_default_xftfont(const char *s) {
+    char *fontname = dequote(s);
+
+    if (fontname) {
+	XftFont *xftfont = XftFontOpen(XimServer::gDpy,
+			DefaultScreen(XimServer::gDpy),
+			XFT_FAMILY, XftTypeString, fontname,
+			XFT_PIXEL_SIZE, XftTypeDouble, (double)DEFAULT_FONT_SIZE,
+			NULL);
+	if (xftfont) {
+	    XftFontClose(XimServer::gDpy, gXftFont);
+	    free(gXftFontName);
+	    gXftFont = xftfont;
+	    gXftFontName = fontname;
+	}
+    }
+}
+#endif
 
 static XFontSet
 create_default_fontset(const char *im_lang, const char *locale) {
@@ -125,6 +190,9 @@ public:
     void draw_char(int x, int y, uchar ch, int stat);
     void set_back(unsigned long p);
     void set_fore(unsigned long p);
+#if HAVE_XFT_UTF8_STRING
+    void set_xftfont(const char *xfld);
+#endif
     void set_fontset(XFontSet f);
     
     virtual void set_size(int w, int h);
@@ -135,13 +203,27 @@ public:
     void clear();
     void draw();
     void unmap();
+
+#if HAVE_XFT_UTF8_STRING
+    XftFont *mXftFont;
+    int mXftFontSize;
+    char *mXftFontName;
+#endif
 protected:
+#if HAVE_XFT_UTF8_STRING
+    int get_fontsize(const char *xfld);
+#endif
     Window mParentWin;
     Window mWin;
     Pixmap mPixmap;
     GC mGC, mClearGC;
-    GC mHilitGC;
     unsigned int mFore, mBack;
+#if HAVE_XFT_UTF8_STRING
+    XftDraw *mXftDraw;
+    XftColor mXftColorFg;
+    XftColor mXftColorFgRev;
+    int mGlyphWidth;
+#endif
     XFontSet mFontset;
     const char *mEncoding;
     int mWidth, mHeight;
@@ -188,6 +270,7 @@ public:
     virtual void update_icxatr();
     virtual void move_candwin();
     virtual void set_im_lang(const char *im_lang);
+    virtual bool use_xft();
 private:
     bool check_win();
     bool check_atr();
@@ -206,9 +289,6 @@ private:
     char_ent *m_ce;
     int m_ce_len;
     PeOvWin *m_ov_win;
-    XFontSet m_initial_fontset;
-    char *m_initial_lang;
-    bool m_lang_changed;
 };
 
 // Preedit window for RootWindowStyle
@@ -221,6 +301,7 @@ public:
     virtual void clear_preedit();
     virtual void update_icxatr();
     virtual void move_candwin();
+    virtual bool use_xft();
 private:
     PeLineWin *mPeWin;
 };
@@ -233,6 +314,7 @@ public:
     virtual void clear_preedit();
     virtual void update_icxatr();
     virtual void move_candwin();
+    virtual bool use_xft();
 
 private:
     void compose_preedit_array(TxPacket *);
@@ -284,7 +366,6 @@ PeWin::PeWin(Window pw, const char *im_lang, const char *encoding, const char *l
     
     mGC = XCreateGC(XimServer::gDpy, mPixmap, 0, 0);
     mClearGC = XCreateGC(XimServer::gDpy, mPixmap, 0, 0);
-    mHilitGC = XCreateGC(XimServer::gDpy, mPixmap, 0, 0);
     
     XSetBackground(XimServer::gDpy, mGC, WhitePixel(XimServer::gDpy, scr_num));
     XSetForeground(XimServer::gDpy, mGC, BlackPixel(XimServer::gDpy, scr_num));
@@ -294,7 +375,33 @@ PeWin::PeWin(Window pw, const char *im_lang, const char *encoding, const char *l
     add_window_watch(mWin, this, EXPOSE_MASK|STRUCTURE_NOTIFY_MASK);
     mIsMapped = false; //not mapped now
     
-    mFontset = choose_default_fontset(im_lang, locale);
+    if (mConvdisp->use_xft() == true) {
+#if HAVE_XFT_UTF8_STRING
+	mXftFontSize = DEFAULT_FONT_SIZE;
+	mXftFont = gXftFont;
+	mXftFontName = gXftFontName;
+	mXftDraw = XftDrawCreate(XimServer::gDpy, mPixmap,
+			DefaultVisual(XimServer::gDpy, scr_num),
+			DefaultColormap(XimServer::gDpy, scr_num));
+	XColor dummyc, fg;
+	XAllocNamedColor(XimServer::gDpy, DefaultColormap(XimServer::gDpy, scr_num),"black", &fg, &dummyc);
+	mXftColorFg.color.red = dummyc.red;
+	mXftColorFg.color.green = dummyc.green;
+	mXftColorFg.color.blue = dummyc.blue;
+	mXftColorFg.color.alpha = 0xffff;
+	mXftColorFg.pixel = fg.pixel;
+
+	XAllocNamedColor(XimServer::gDpy, DefaultColormap(XimServer::gDpy, scr_num),"white", &fg, &dummyc);
+	mXftColorFgRev.color.red = dummyc.red;
+	mXftColorFgRev.color.green = dummyc.green;
+	mXftColorFgRev.color.blue = dummyc.blue;
+	mXftColorFgRev.color.alpha = 0xffff;
+	mXftColorFgRev.pixel = fg.pixel;
+#endif
+    } else {
+	mFontset = choose_default_fontset(im_lang, locale);
+    }
+
     mEncoding = encoding;
     
     XFlush(XimServer::gDpy);
@@ -309,7 +416,13 @@ PeWin::~PeWin()
     
     XFreeGC(XimServer::gDpy, mGC);
     XFreeGC(XimServer::gDpy, mClearGC);
-    XFreeGC(XimServer::gDpy, mHilitGC);
+#if HAVE_XFT_UTF8_STRING 
+    if (mConvdisp->use_xft() == true) {
+	XftDrawDestroy(mXftDraw);
+	if (mXftFont != gXftFont)
+	    XftFontClose(XimServer::gDpy, mXftFont);
+    }
+#endif
 
     XFlush(XimServer::gDpy);
 }
@@ -341,28 +454,38 @@ void PeWin::draw_char(int x, int y, uchar ch, int stat)
     if (stat & PE_REVERSE)
 	gc = mClearGC;
 
-#if 0
-    if (stat & PE_HILIGHT)
-	gc = mHilitGC;
-#endif
     char utf8[6];
     int len = utf8_wctomb((unsigned char *)utf8, ch);
     utf8[len] = '\0';
 
-    if (!strcmp(mEncoding, "UTF-8"))
-    	XwcDrawImageString(XimServer::gDpy, mPixmap, mFontset,
+    if (mConvdisp->use_xft() == true) {
+#ifdef HAVE_XFT_UTF8_STRING
+	XGlyphInfo ginfo;
+	XftTextExtentsUtf8(XimServer::gDpy, mXftFont, (unsigned char *)utf8, len, &ginfo);
+	mGlyphWidth = ginfo.xOff;
+	if (stat & PE_REVERSE) {
+	    XftDrawRect(mXftDraw, &mXftColorFg, x, y - (mXftFontSize - 2), ginfo.xOff, mXftFontSize);
+	    XftDrawStringUtf8(mXftDraw, &mXftColorFgRev, mXftFont, x, y, (unsigned char *)utf8, len);
+	} else {
+	    XftDrawStringUtf8(mXftDraw, &mXftColorFg, mXftFont, x, y, (unsigned char *)utf8, len);
+	}
+#endif
+    } else {
+	if (!strcmp(mEncoding, "UTF-8")) {
+    	    XwcDrawImageString(XimServer::gDpy, mPixmap, mFontset,
 			gc, x, y, &ch, 1);
-    else {
-	char *native_str;
-	XimIM *im = get_im_by_id(mConvdisp->get_context()->get_ic()->get_imid());
+	} else {
+	    char *native_str;
+	    XimIM *im = get_im_by_id(mConvdisp->get_context()->get_ic()->get_imid());
 	
-	native_str = im->utf8_to_native_str(utf8);
-	if (!native_str)
-	    return;
-	int len = strlen(native_str);
-	XmbDrawImageString(XimServer::gDpy, mPixmap, mFontset,
+	    native_str = im->utf8_to_native_str(utf8);
+	    if (!native_str)
+		return;
+	    len = strlen(native_str);
+	    XmbDrawImageString(XimServer::gDpy, mPixmap, mFontset,
 			   gc, x, y, native_str, len);
-	free(native_str);
+	    free(native_str);
+	}
     }
 }
 
@@ -371,6 +494,18 @@ void PeWin::set_back(unsigned long p)
     mBack = p;
     XSetBackground(XimServer::gDpy, mGC, p);
     XSetForeground(XimServer::gDpy, mClearGC, p);
+#if HAVE_XFT_UTF8_STRING
+    if (mConvdisp->use_xft() == true) {
+	XColor xcolor;
+	xcolor.pixel = p;
+	XQueryColor(XimServer::gDpy, DefaultColormap(XimServer::gDpy, DefaultScreen(XimServer::gDpy)), &xcolor);
+	mXftColorFgRev.pixel = p;
+	mXftColorFgRev.color.red = xcolor.red;
+	mXftColorFgRev.color.green = xcolor.green;
+	mXftColorFgRev.color.blue = xcolor.blue;
+	mXftColorFgRev.color.alpha = 0xffff;
+    }
+#endif
 }
 
 void PeWin::set_fore(unsigned long p)
@@ -378,12 +513,71 @@ void PeWin::set_fore(unsigned long p)
     mFore = p;
     XSetForeground(XimServer::gDpy, mGC, p);
     XSetBackground(XimServer::gDpy, mClearGC, p);
+#if HAVE_XFT_UTF8_STRING
+    if (mConvdisp->use_xft() == true) {
+	XColor xcolor;
+	xcolor.pixel = p;
+	XQueryColor(XimServer::gDpy, DefaultColormap(XimServer::gDpy, DefaultScreen(XimServer::gDpy)), &xcolor);
+	mXftColorFg.pixel = p;
+	mXftColorFg.color.red = xcolor.red;
+	mXftColorFg.color.green = xcolor.green;
+	mXftColorFg.color.blue = xcolor.blue;
+	mXftColorFg.color.alpha = 0xffff;
+    }
+#endif
 }
 
 void PeWin::set_fontset(XFontSet f)
 {
-    mFontset = f;
+    if (f)
+	mFontset = f;
 }
+
+#if HAVE_XFT_UTF8_STRING
+void PeWin::set_xftfont(const char *xfld)
+{
+	int size = get_fontsize(xfld);
+	if (size != -1 && (mXftFontSize != size || strcmp(mXftFontName, gXftFontName))) {
+	    if (mXftFont != gXftFont)
+		XftFontClose(XimServer::gDpy, mXftFont);
+
+	    mXftFont = XftFontOpen(XimServer::gDpy,
+			    DefaultScreen(XimServer::gDpy),
+			    XFT_FAMILY, XftTypeString, gXftFontName,
+			    XFT_SIZE, XftTypeDouble, (double)size,
+			    NULL);
+	    mXftFontSize = size;
+	    mXftFontName = gXftFontName;
+	}
+}
+
+int PeWin::get_fontsize(const char *xfld)
+{
+    int size;
+    char str[3];
+    const char *p = xfld;
+    int count = 0;
+    int i, j = 0;
+
+    for (i = 0; i < (int)strlen(xfld); i++) {
+	if (p[i] == '-')
+	    count++;
+	if (count == 7) {
+	    i++;
+	    while (p[i] != '-' && p[i] != '\0') {
+		str[j] = p[i];
+		i++;
+		j++;
+	    }
+	    str[j] = '\0';
+	    break;
+	}
+    }
+    if (!sscanf(str, "%d", &size))
+	return -1;
+    return size;
+}
+#endif
 
 void PeWin::set_size(int w, int h)
 {
@@ -394,6 +588,10 @@ void PeWin::set_size(int w, int h)
     XFreePixmap(XimServer::gDpy, mPixmap);
     mPixmap = XCreatePixmap(XimServer::gDpy, DefaultRootWindow(XimServer::gDpy), w, h,
 			    DefaultDepth(XimServer::gDpy, DefaultScreen(XimServer::gDpy)));
+#if HAVE_XFT_UTF8_STRING 
+    if (mConvdisp->use_xft() == true)
+	XftDrawChange(mXftDraw, mPixmap);
+#endif
     mWidth = w;
     mHeight = h;
     clear();
@@ -469,13 +667,22 @@ void PeLineWin::draw_segment(pe_ustring *s)
     for (i = s->s.begin(); i != s->s.end(); i++) {
 	uchar ch = *i;
 	draw_char(m_x, 20, ch, s->stat);
+
+	int width;
+
+#if HAVE_XFT_UTF8_STRING
+	if (mConvdisp->use_xft() == true)
+	    width = mGlyphWidth;
+	else
+#endif
+	    width = 16;
+
 	if (s->stat & PE_UNDERLINE) {
 	    XDrawLine(XimServer::gDpy, mPixmap, mGC,
 			    m_x, 20 + UNDERLINE_HEIGHT,
-			    m_x + 16, 20 + UNDERLINE_HEIGHT);
-
+			    m_x + width, 20 + UNDERLINE_HEIGHT);
 	}
-	m_x += 16; // XXX font width
+	m_x += width;
     }
 }
 
@@ -685,13 +892,15 @@ void ConvdispRw::move_candwin()
     }
 }
 
+bool ConvdispRw::use_xft()
+{
+    return m_atr->use_xft();
+}
+
 // Over the spot style
 ConvdispOv::ConvdispOv(InputContext *k, icxatr *a) : Convdisp(k, a)
 {
     m_ov_win = 0;
-    m_initial_lang = strdup(mIMLang);
-    m_initial_fontset = NULL;
-    m_lang_changed = false;
 #ifdef FLASHPLAYER_WORKAROUND
     revised_spot_y = -1;
 #endif
@@ -701,27 +910,11 @@ ConvdispOv::~ConvdispOv()
 {
     if (m_ov_win)
 	delete m_ov_win;
-
-    free(m_initial_lang);
 }
 
 void ConvdispOv::set_im_lang(const char *im_lang)
 {
     mIMLang = im_lang;
-
-    if (!strcmp(m_initial_lang, im_lang)) {
-#if 0
-	if (m_initial_fontset)
-	    m_atr->font_set = m_initial_fontset;
-	else
-	    m_atr->font_set = choose_default_fontset(mLang);
-#endif
-    } else {
-#if 0
-	m_atr->font_set = choose_default_fontset(mLang);
-#endif
-	m_lang_changed = true;
-    }
 }
 
 
@@ -834,7 +1027,13 @@ void ConvdispOv::update_icxatr()
 	m_atr->unset_change_mask(ICA_Background);
     }
     if (m_atr->is_changed(ICA_FontSet)) {
-	m_ov_win->set_fontset(m_atr->font_set);
+	if (use_xft() == true) {
+#if HAVE_XFT_UTF8_STRING
+	    m_ov_win->set_xftfont(m_atr->font_set_name);
+#endif
+	} else {
+	    m_ov_win->set_fontset(m_atr->font_set);
+	}
 	m_atr->unset_change_mask(ICA_FontSet);
     }
   
@@ -971,7 +1170,13 @@ bool ConvdispOv::check_win()
     m_ov_win->set_size(m_atr->area.width, m_atr->area.height);
     m_ov_win->set_fore(m_atr->foreground_pixel);
     m_ov_win->set_back(m_atr->background_pixel);
-    m_ov_win->set_fontset(m_atr->font_set);
+    if (use_xft() == true) {
+#if HAVE_XFT_UTF8_STRING
+	m_ov_win->set_xftfont(m_atr->font_set_name);
+#endif
+    } else {
+	m_ov_win->set_fontset(m_atr->font_set);
+    }
   
     return true;
 }
@@ -993,11 +1198,9 @@ bool ConvdispOv::check_atr()
 	m_atr->area.x = 0;
 	m_atr->area.y = 0;
     }
-    if (!m_atr->has_atr(ICA_FontSet))
-	m_atr->font_set = choose_default_fontset(mIMLang, mLocaleName);
-    else {
-	if (!m_initial_fontset && !m_lang_changed)
-	    m_initial_fontset = m_atr->font_set;
+    if (!m_atr->has_atr(ICA_FontSet)) {
+	if (use_xft() == false)
+	    m_atr->font_set = choose_default_fontset(mIMLang, mLocaleName);
     }
     if (!m_atr->has_atr(ICA_LineSpace)) {
 	m_atr->line_space = 16;
@@ -1041,28 +1244,44 @@ void ConvdispOv::layoutCharEnt()
 
     for (i = 0; i < m_ce_len; i++) {
 	uchar ch = m_ce[i].c;
-	XRectangle ink, logical;
 
-	if (!strcmp(mEncoding, "UTF-8"))
-	    XwcTextExtents(m_atr->font_set, &ch, 1, &ink, &logical);
-	else {
-	    char utf8[6];
-	    int len = utf8_wctomb((unsigned char *)utf8, ch);
+	char utf8[6];
+	int len;
+	if (use_xft() == true) {
+#if HAVE_XFT_UTF8_STRING
+	    len = utf8_wctomb((unsigned char *)utf8, ch);
 	    utf8[len] = '\0';
-	    XimIM *im = get_im_by_id(mKkContext->get_ic()->get_imid());
-	    char *str = im->utf8_to_native_str(utf8);
-	    if (!str) {
-		logical.width = 0;
-		logical.height = (i > 0) ? m_ce[i - 1].height : 0;
+
+	    XGlyphInfo ginfo;
+	    XftTextExtentsUtf8(XimServer::gDpy, m_ov_win->mXftFont, (unsigned char *)utf8, len, &ginfo);
+	    m_ce[i].width = ginfo.xOff;
+	    m_ce[i].height = m_ov_win->mXftFontSize;
+#endif
+	} else {
+	    XRectangle ink, logical;
+
+	    if (!strcmp(mEncoding, "UTF-8")) {
+		XwcTextExtents(m_atr->font_set, &ch, 1, &ink, &logical);
+		m_ce[i].width = logical.width;
+		m_ce[i].height = logical.height;
 	    } else {
-		len = strlen(str);
-		XmbTextExtents(m_atr->font_set, str, len, &ink, &logical);
-		free(str);
+		len = utf8_wctomb((unsigned char *)utf8, ch);
+		utf8[len] = '\0';
+		XimIM *im = get_im_by_id(mKkContext->get_ic()->get_imid());
+		char *str = im->utf8_to_native_str(utf8);
+		if (!str) {
+		    logical.width = 0;
+		    logical.height = (i > 0) ? m_ce[i - 1].height : 0;
+		} else {
+		    len = strlen(str);
+		    XmbTextExtents(m_atr->font_set, str, len, &ink, &logical);
+		    free(str);
+		}
+		m_ce[i].width = logical.width;
+		m_ce[i].height = logical.height;
 	    }
 	}
 
-	m_ce[i].width = logical.width;
-	m_ce[i].height = logical.height;
 	int right_limit = m_atr->area.width;
 	if (m_atr->has_atr(ICA_Area))
 	    right_limit += m_atr->area.x;
@@ -1110,6 +1329,11 @@ int ConvdispOv::get_ce_font_height(char_ent *ce, int len)
     return h;
 }
 #endif
+
+bool ConvdispOv::use_xft()
+{
+    return m_atr->use_xft();
+}
 
 // On the spot style
 ConvdispOs::ConvdispOs(InputContext *k, icxatr *a, Connection *c)
@@ -1274,6 +1498,11 @@ void ConvdispOs::compose_feedback_array(TxPacket *t)
 	    t->pushC32(xstat);
 	}
     }
+}
+
+bool ConvdispOs::use_xft()
+{
+    return true;
 }
 
 #ifdef FLASHPLAYER_WORKAROUND

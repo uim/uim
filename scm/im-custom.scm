@@ -362,3 +362,26 @@
   '(pathname)
   (_ "The directory which contains EB dictionary file")
   (_ "long description will be here."))
+
+
+;; uim-xim specific custom
+(define-custom-group 'xim
+		     (_ "XIM settings")
+		     (_ "long description will be here."))
+
+(define-custom 'uim-xim-use-xft-font? #f
+  '(xim preedit)
+  '(boolean)
+  (_ "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit")
+  (_ "long description will be here."))
+
+(define-custom 'uim-xim-xft-font-name "Sans"
+  '(xim preedit)
+  '(string ".*")
+  (_ "Font name for preedit area (anti-aliased)")
+  (_ "long description will be here."))
+
+(custom-add-hook 'uim-xim-xft-font-name
+		 'custom-activity-hooks
+		 (lambda ()
+		   uim-xim-use-xft-font?))

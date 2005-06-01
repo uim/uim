@@ -47,6 +47,8 @@
 #include "ximserver.h"
 #include "connection.h"
 #include "util.h"
+
+#include "uim-compat-scm.h"
  
 #ifdef HAVE_ALLOCA_H
 # include <alloca.h>
@@ -84,6 +86,11 @@ get_font_set(const char *name, const char *locale)
 			   &missing, &nr_missing, &def);
     if (missing)
 	XFreeStringList(missing);
+
+    if (fc.fs == NULL) {
+	fprintf(stderr, "Critical: XCreateFontSet failed!\n");
+	return NULL;
+    }
 
     fc.refc = 1;
     fc.name = strdup(name);
@@ -158,16 +165,21 @@ icxatr::icxatr()
     foreground_pixel = BlackPixel(XimServer::gDpy, DefaultScreen(XimServer::gDpy));
     background_pixel = WhitePixel(XimServer::gDpy, DefaultScreen(XimServer::gDpy));
     line_space = 0;
+#if HAVE_XFT_UTF8_STRING
+    m_use_xft = uim_scm_symbol_value_bool("uim-xim-use-xft-font?");
+#else
+    m_use_xft = false;
+#endif
 }
 
 icxatr::~icxatr()
 {
     if (font_set_name) {
-	release_font_set(font_set_name, m_locale);
+	if (use_xft() == false)
+	    release_font_set(font_set_name, m_locale);
 	free((void *)font_set_name);
     }
-    if (m_locale)
-	free(m_locale);
+    free(m_locale);
 }
 
 bool icxatr::has_atr(int id)
@@ -206,11 +218,10 @@ void icxatr::set_atr(int id, C8 *val, int o)
 	if (font_set_name && !strcmp(font_set_name, new_fsn))
 	    break;
 
-	if (font_set_name)
-	    free(font_set_name);
-
+	free(font_set_name);
 	font_set_name = strdup(new_fsn);
-	font_set = get_font_set(font_set_name, m_locale);
+	if (use_xft() == false)
+	    font_set = get_font_set(font_set_name, m_locale);
     }
     break;
     case ICA_Area:
@@ -315,6 +326,10 @@ void icxatr::set_locale_name(const char *locale)
     if (m_locale)
 	free(m_locale);
     m_locale = strdup(locale);
+}
+
+bool icxatr::use_xft() {
+    return m_use_xft;
 }
 
 XimIC::XimIC(Connection *c, int imid, int icid, const char *engine)

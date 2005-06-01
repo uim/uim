@@ -57,6 +57,7 @@
 
 #include "uim/uim-util.h"
 #include "uim/uim-im-switcher.h"
+#include "uim/uim-compat-scm.h"
 
 Display *XimServer::gDpy;
 std::map<Window, XimServer *> XimServer::gServerMap;
@@ -397,6 +398,18 @@ print_uim_info()
 }
 
 static void
+clear_uim_info()
+{
+    std::list<UIMInfo>::iterator it;
+    for (it = uim_info.begin(); it != uim_info.end(); it++) {
+	free(it->name);
+	free(it->lang);
+	free(it->desc);
+    }
+    uim_info.clear();
+}
+
+static void
 init_supported_locales()
 {
     std::list<char *> locale_list;
@@ -513,7 +526,7 @@ reload_uim(int x)
     }
 
     uim_quit();
-    uim_info.clear();
+    clear_uim_info();
     get_uim_info();
     print_uim_info();
 
@@ -595,6 +608,11 @@ main(int argc, char **argv)
     error_handler_setup();
     if (pretrans_setup() == -1)
 	return 0;
+
+#if HAVE_XFT_UTF8_STRING
+    if (uim_scm_symbol_value_bool("uim-xim-use-xft-font?"))
+	init_default_xftfont(); // setup Xft fonts for Ov/Rw preedit
+#endif
 
     // Handle pending events to prevent hang just after startup
     check_pending_xevent();

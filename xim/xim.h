@@ -241,6 +241,7 @@ public:
     void print();
     int getSize(int id);
     void set_locale_name(const char *locale);
+    bool use_xft();
 
     unsigned long input_style;
     Window client_window;
@@ -253,13 +254,14 @@ public:
     XRectangle area;
 
     XFontSet font_set;
+    char *font_set_name;
     C16 line_space;
 
 private:
-    char *font_set_name;
     char *m_locale;
     int atr_mask;
     int change_mask;
+    bool m_use_xft;
 };
 
 // definition of IC

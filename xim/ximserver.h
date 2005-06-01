@@ -80,6 +80,10 @@ void append_ustring(uString *d, uString *s);
 // user interfaces
 void init_convdisp();
 void init_modifier_keys();
+#if HAVE_XFT_UTF8_STRING
+void init_default_xftfont();
+void update_default_xftfont(const char *s);
+#endif
 
 
 // for command line option
@@ -248,9 +252,9 @@ private:
 };
 
 struct UIMInfo {
-    const char *lang;
-    const char *name;
-    const char *desc;
+    char *lang;
+    char *name;
+    char *desc;
 };
 extern std::list<UIMInfo> uim_info;
 

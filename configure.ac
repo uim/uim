@@ -130,6 +130,37 @@ if test x$have_x != xdisabled && test x$have_x != xno; then
    if test $ac_cv_cxx_have_stl = no; then
      use_xim="no"
    fi
+   AC_MSG_CHECKING([whether to have Xft support])
+   AM_PATH_XFT(yes, XFT=true, XFT=false)
+   if test x"$XFT" = "xtrue" ; then
+     saved_CFLAGS=$CFLAGS
+     saved_LIBS=$LIBS
+     CFLAGS="$CFLAGS $XFT_CFLAGS"
+     LIBS="$LIBS $XFT_LIBS"
+     AC_TRY_LINK([
+#include <X11/Xft/Xft.h>], [ XftFontClose(0, 0); return 1; ], 
+       [
+         AC_DEFINE(WITH_XFT, 1, [font antialiasing support])
+         AC_MSG_CHECKING([Xft UTF-8 support])
+         AC_TRY_LINK([
+#include <X11/Xft/Xft.h>
+           ], [ 
+XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0; 
+           ],
+             AC_DEFINE(HAVE_XFT_UTF8_STRING, 1, "Xft UTF8 support")
+             AC_MSG_RESULT(yes),
+             AC_MSG_RESULT(no)) 
+       ],
+       [
+         AC_MSG_RESULT([***Could not link with Xft. Install Xft if you want support for it***])
+         XFT=false
+         XFT_CFLAGS=
+         XFT_LIBS=
+       ])
+     CFLAGS=$saved_CFLAGS
+     LIBS=$saved_LIBS
+   fi
+   AM_CONDITIONAL(WITH_XFT, test x"$XFT" = "xtrue")
 fi
 
 

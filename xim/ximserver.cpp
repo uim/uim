@@ -154,6 +154,10 @@ void XimServer::customContext(const char *custom, const char *val) {
 	val++;
 	set_im(val);
     }
+#if HAVE_XFT_UTF8_STRING
+    if (!strcmp(custom, "uim-xim-xft-font-name"))
+	update_default_xftfont(val);
+#endif
 #endif
 
     std::list<InputContext *>::iterator it;

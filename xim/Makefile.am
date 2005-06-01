@@ -14,6 +14,12 @@ if DEFAULT_TOOLKIT_QT
 uim_xim_CPPFLAGS += -DUSE_QT_CANDWIN
 endif
 
+if WITH_XFT
+uim_xim_CFLAGS += @XFT_CFLAGS@
+uim_xim_CXXFLAGS += @XFT_CFLAGS@
+uim_xim_LDADD += @XFT_LIBS@
+endif
+
 uim_xim_SOURCES = \
 	main.cpp convdisp.cpp \
         connection.cpp ximic.cpp \
