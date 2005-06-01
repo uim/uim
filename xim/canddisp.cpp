@@ -38,6 +38,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "uim/uim.h"
 
