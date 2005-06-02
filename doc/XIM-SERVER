@@ -57,6 +57,11 @@ How to use uim-xim
 (4) To change conversion engines dynamically, use uim-im-switcher
     tool.
 
+(5) Many settings of working input contexts are dynamically
+    configurable by uim-pref-{gtk,qt} except for "enabled input
+    methods" and user configuration in ~/.uim.  To handle these
+    exceptions, we provide a mechanism for reloading uim setting by
+    sending a SIGUSR1 to uim-xim (i.e. killall -USR1 uim-xim).
 
 
 How to use extra modifier keys
