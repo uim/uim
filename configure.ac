@@ -123,7 +123,7 @@ AC_ARG_WITH(prime,
 AC_PATH_XTRA
 
 use_xim="no"
-if test x$have_x != xdisabled && test x$have_x != xno; then
+if test x"$have_x" != "xdisabled" && test x"$have_x" != "xno"; then
    use_xim="yes"
    AC_CXX_NAMESPACES
    AC_CXX_HAVE_STL
@@ -160,8 +160,8 @@ XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0;
      CFLAGS=$saved_CFLAGS
      LIBS=$saved_LIBS
    fi
-   AM_CONDITIONAL(WITH_XFT, test x"$XFT" = "xtrue")
 fi
+AM_CONDITIONAL(WITH_XFT, test x"$XFT" = "xtrue")
 
 
 # Checks for header files.
