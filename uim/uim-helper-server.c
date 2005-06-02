@@ -202,6 +202,20 @@ reflect_message_fragment(struct client *cl)
   return 1;
 }
 
+static uim_bool
+check_session_alive(void)
+{
+  /* If there's no connection, we can assume user logged out. */
+  int i;
+  for (i = 0; i < nr_client_slots; i++) {
+    if (clients[i].fd != -1) {
+      return UIM_TRUE;
+    }
+  }
+  return UIM_FALSE; /* User already logged out */
+}
+
+
 /* FIXME: This function is too long to read... */
 static void
 uim_helper_server_process_connection(int serv_fd)
@@ -317,6 +331,10 @@ uim_helper_server_process_connection(int serv_fd)
 	  }
 	}
       }
+    }
+
+    if(check_session_alive() == UIM_FALSE) {
+      return;
     }
   }
 }
