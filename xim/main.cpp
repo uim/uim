@@ -557,7 +557,7 @@ main(int argc, char **argv)
 	printf("Using full-synchronous XIM event flow\n");
 
     signal(SIGPIPE, SIG_IGN);
-    signal(SIGINT, reload_uim);
+    signal(SIGUSR1, reload_uim);
 
     check_helper_connection();
 
