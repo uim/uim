@@ -134,7 +134,7 @@ init_serv_fd(char *path)
 }
 
 static struct client *
-get_unused_client()
+get_unused_client(void)
 {
   int i;
   for (i = 0; i < nr_client_slots; i++) {
@@ -202,6 +202,7 @@ reflect_message_fragment(struct client *cl)
   return 1;
 }
 
+/* FIXME: This function is too long to read... */
 static void
 uim_helper_server_process_connection(int serv_fd)
 {
