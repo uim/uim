@@ -537,11 +537,12 @@ reload_uim(int x)
 	    (*it_c)->createUimContext(engine);
 	}
     }
-    pretrans_setup();
 
     InputContext *focusedContext = InputContext::focusedContext();
     if (focusedContext)
 	focusedContext->focusIn();
+
+    pretrans_setup();
 }
 
 int
