@@ -35,9 +35,6 @@
 (define skk-im-name-label (N_ "SKK"))
 (define skk-im-short-desc (N_ "uim version of SKK input method"))
 
-(define skk-ddskk-like-heading-label-char-list '("a" "s" "d" "f" "j" "k" "l"))
-(define skk-uim-heading-label-char-list '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
-
 (define-custom-group 'skk
                      (ugettext skk-im-name-label)
                      (ugettext skk-im-short-desc))
