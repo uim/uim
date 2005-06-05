@@ -153,6 +153,7 @@ void XimServer::customContext(const char *custom, const char *val) {
 		    mUsePreservedDefaultIM == true) {
 	val++;
 	set_im(val);
+	val--;
     }
 #if HAVE_XFT_UTF8_STRING
     if (!strcmp(custom, "uim-xim-xft-font-name"))
