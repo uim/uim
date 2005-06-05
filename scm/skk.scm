@@ -55,6 +55,9 @@
 ;; encoding conversion problem.  -- YamaKen 2005-02-02
 (define skk-auto-start-henkan-keyword-list '("¤ò" "¡¢" "¡£" "¡¥" "¡¤" "¡©" "¡×" "¡ª" "¡¨" "¡§" ")" ";" ":" "¡Ë" "¡É" "¡Û" "¡Ù" "¡Õ" "¡Ó" "¡Ñ" "¡Ï" "¡Í" "}" "]" "?" "." "," "!"))
 
+(define skk-ddskk-like-heading-label-char-list '("a" "s" "d" "f" "j" "k" "l"))
+(define skk-uim-heading-label-char-list '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
+
 ;; style specification
 (define skk-style-spec
   '(;; (style-element-name . validator)

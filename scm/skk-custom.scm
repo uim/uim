@@ -87,20 +87,21 @@
   (_ "Candidate selection style")
   (_ "long description will be here."))
 
-(custom-add-hook 'skk-candidate-selection-style
-		 'custom-set-hooks
-		 (lambda ()
-		   (if (= skk-candidate-selection-style 'ddskk-like)
-		       (begin
-			 (custom-set-value! 'skk-candidate-op-count 4)
-			 (custom-set-value!
-			  'skk-nr-candidate-max
-			  (length skk-ddskk-like-heading-label-char-list)))
-		       (begin	
-			 (custom-set-value! 'skk-candidate-op-count 2)
-			 (custom-set-value!
-			  'skk-nr-candidate-max
-			  (length skk-uim-heading-label-char-list))))))
+; disabled since it has a side effect --ekato
+;(custom-add-hook 'skk-candidate-selection-style
+;		 'custom-set-hooks
+;		 (lambda ()
+;		   (if (= skk-candidate-selection-style 'ddskk-like)
+;		       (begin
+;			 (custom-set-value! 'skk-candidate-op-count 4)
+;			 (custom-set-value!
+;			  'skk-nr-candidate-max
+;			  (length skk-ddskk-like-heading-label-char-list)))
+;		       (begin	
+;			 (custom-set-value! 'skk-candidate-op-count 2)
+;			 (custom-set-value!
+;			  'skk-nr-candidate-max
+;			  (length skk-uim-heading-label-char-list))))))
 
 ;; activity dependency
 (custom-add-hook 'skk-candidate-op-count
