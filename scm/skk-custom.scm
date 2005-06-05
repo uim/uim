@@ -35,6 +35,9 @@
 (define skk-im-name-label (N_ "SKK"))
 (define skk-im-short-desc (N_ "uim version of SKK input method"))
 
+(define skk-ddskk-like-heading-label-char-list '("a" "s" "d" "f" "j" "k" "l"))
+(define skk-uim-heading-label-char-list '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
+
 (define-custom-group 'skk
                      (ugettext skk-im-name-label)
                      (ugettext skk-im-short-desc))
@@ -83,6 +86,21 @@
 	(list 'ddskk-like (_ "ddskk-like") (_ "Similar to ddskk")))
   (_ "Candidate selection style")
   (_ "long description will be here."))
+
+(custom-add-hook 'skk-candidate-selection-style
+		 'custom-set-hooks
+		 (lambda ()
+		   (if (= skk-candidate-selection-style 'ddskk-like)
+		       (begin
+			 (custom-set-value! 'skk-candidate-op-count 4)
+			 (custom-set-value!
+			  'skk-nr-candidate-max
+			  (length skk-ddskk-like-heading-label-char-list)))
+		       (begin	
+			 (custom-set-value! 'skk-candidate-op-count 2)
+			 (custom-set-value!
+			  'skk-nr-candidate-max
+			  (length skk-uim-heading-label-char-list))))))
 
 ;; activity dependency
 (custom-add-hook 'skk-candidate-op-count
