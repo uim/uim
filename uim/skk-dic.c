@@ -2205,7 +2205,7 @@ skk_lib_save_personal_dictionary(uim_lisp fn_)
   if (fclose(fp) != 0)
     goto error;
 
-  if (remove(fn) != 0 || rename(tmp_fn, fn) != 0)
+  if (rename(tmp_fn, fn) != 0)
     goto error;
 
   if (stat(fn, &st) != -1) {
