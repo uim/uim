@@ -54,7 +54,6 @@
 #include "uim-scm.h"
 #include "context.h"
 #include "plugin.h"
-#include "uim-helper.h"
 
 /*
  * cand : candidate
@@ -2171,11 +2170,12 @@ skk_lib_save_personal_dictionary(uim_lisp fn_)
 {
   FILE *fp;
   const char *fn = uim_scm_refer_c_str(fn_);
+  char *tmp_fn = NULL;
   struct skk_line *sl;
   struct stat st;
   int lock_fd = -1;
 
-  if (!skk_dic)
+  if (!skk_dic || skk_dic->cache_modified == 0)
     return uim_scm_f();
 
   if (fn) {
@@ -2183,32 +2183,39 @@ skk_lib_save_personal_dictionary(uim_lisp fn_)
       if (st.st_mtime != skk_dic->personal_dic_timestamp)
 	update_personal_dictionary_cache(fn);
     }
-    if (skk_dic->cache_modified == 0) {
-      return uim_scm_f();
-    }
+
     lock_fd = open_lock(fn, F_WRLCK);
-    fp = fopen(fn, "w");
-    if (!fp) {
-      close_lock(lock_fd);
-      return uim_scm_f();
-    }
+    if (!(tmp_fn = malloc(strlen(fn) + 5)))
+      goto error;
+
+    sprintf(tmp_fn, "%s.tmp", fn);
+    fp = fopen(tmp_fn, "w");
+    if (!fp)
+      goto error;
+
   } else {
     fp = stdout;
   }
 
   for (sl = skk_dic->head.next; sl; sl = sl->next) {
-    if (sl->need_save) {
+    if (sl->need_save)
       write_out_line(fp, sl);
-    }
   }
-  fclose(fp);
 
-  if (stat(fn, &st) != -1)
+  if (fclose(fp) != 0)
+    goto error;
+
+  if (remove(fn) != 0 || rename(tmp_fn, fn) != 0)
+    goto error;
+
+  if (stat(fn, &st) != -1) {
     skk_dic->personal_dic_timestamp = st.st_mtime;
+    skk_dic->cache_modified = 0;
+  }
 
+error:
   close_lock(lock_fd);
-  skk_dic->cache_modified = 0;
-
+  free(tmp_fn);
   return uim_scm_f();
 }
 
