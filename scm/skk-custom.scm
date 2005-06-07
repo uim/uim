@@ -58,18 +58,6 @@
   (_ "Use candidate window")
   (_ "long description will be here."))
 
-(define-custom 'skk-candidate-op-count 2
-  '(skk candwin)
-  '(integer 0 99)
-  (_ "Conversion key press count to show candidate window")
-  (_ "long description will be here."))
-
-(define-custom 'skk-nr-candidate-max 10
-  '(skk candwin)
-  '(integer 1 20)
-  (_ "Number of candidates in candidate window at a time")
-  (_ "long description will be here."))
-
 (define-custom 'skk-commit-candidate-by-label-key? #t
   '(skk candwin)
   '(boolean)
@@ -84,23 +72,40 @@
   (_ "Candidate selection style")
   (_ "long description will be here."))
 
-; disabled since it has a side effect --ekato
-;(custom-add-hook 'skk-candidate-selection-style
-;		 'custom-set-hooks
-;		 (lambda ()
-;		   (if (= skk-candidate-selection-style 'ddskk-like)
-;		       (begin
-;			 (custom-set-value! 'skk-candidate-op-count 4)
-;			 (custom-set-value!
-;			  'skk-nr-candidate-max
-;			  (length skk-ddskk-like-heading-label-char-list)))
-;		       (begin	
-;			 (custom-set-value! 'skk-candidate-op-count 2)
-;			 (custom-set-value!
-;			  'skk-nr-candidate-max
-;			  (length skk-uim-heading-label-char-list))))))
+(define-custom 'skk-use-manual-candwin-setting? #f
+  '(skk candwin)
+  '(boolean)
+  (_ "Set candidate window behavior manually")
+  (_ "long description will be here."))
+
+(define-custom 'skk-candidate-op-count 2
+  '(skk candwin)
+  '(integer 0 99)
+  (_ "Conversion key press count to show candidate window")
+  (_ "long description will be here."))
+
+(define-custom 'skk-nr-candidate-max 10
+  '(skk candwin)
+  '(integer 1 20)
+  (_ "Number of candidates in candidate window at a time")
+  (_ "long description will be here."))
 
 ;; activity dependency
+(custom-add-hook 'skk-commit-candidate-by-label-key?
+		 'custom-activity-hooks
+		 (lambda ()
+		   skk-use-candidate-window?))
+
+(custom-add-hook 'skk-candidate-selection-style
+		 'custom-activity-hooks
+		 (lambda ()
+		   skk-use-candidate-window?))
+
+(custom-add-hook 'skk-use-manual-candwin-setting?
+		 'custom-activity-hooks
+		 (lambda ()
+		   skk-use-candidate-window?))
+
 (custom-add-hook 'skk-candidate-op-count
 		 'custom-activity-hooks
 		 (lambda ()
@@ -111,10 +116,44 @@
 		 (lambda ()
 		   skk-use-candidate-window?))
 
-(custom-add-hook 'skk-commit-candidate-by-label-key?
+(custom-add-hook 'skk-use-candidate-window?
+		 'custom-get-hooks
+		 (lambda ()
+		   (if (not skk-use-candidate-window?)
+		       (begin
+		         (set! skk-commit-candidate-by-label-key? #f)
+		         (set! skk-candidate-selection-style 'uim)
+			 (set! skk-use-manual-candwin-setting? #f)))))
+
+(custom-add-hook 'skk-candidate-op-count
 		 'custom-activity-hooks
 		 (lambda ()
-		   skk-use-candidate-window?))
+		   skk-use-manual-candwin-setting?))
+
+(custom-add-hook 'skk-nr-candidate-max
+		 'custom-activity-hooks
+		 (lambda ()
+		   skk-use-manual-candwin-setting?))
+		   
+(custom-add-hook 'skk-candidate-selection-style
+		 'custom-set-hooks
+		 (lambda ()
+		   (if (not skk-use-manual-candwin-setting?)
+		       (cond
+			((= skk-candidate-selection-style 'ddskk-like)
+			    (custom-set-value! 'skk-candidate-op-count 4)
+			    (custom-set-value! 'skk-nr-candidate-max 7))
+		        ((= skk-candidate-selection-style 'uim)
+			    (custom-set-value! 'skk-candidate-op-count 2)
+			    (custom-set-value! 'skk-nr-candidate-max 10))))))
+
+(custom-add-hook 'skk-use-manual-candwin-setting?
+		 'custom-set-hooks
+		 (lambda ()
+		   (if (not skk-use-manual-candwin-setting?)
+		       (custom-set-value!
+		        'skk-candidate-selection-style
+		        skk-candidate-selection-style))))
 
 ;;
 ;; toolbar

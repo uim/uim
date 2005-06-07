@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-05-31 12:25+0900\n"
+"POT-Creation-Date: 2005-06-07 18:18+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -641,20 +641,21 @@ msgstr ""
 #: scm/im-custom.lisp:314 scm/im-custom.lisp:320 scm/im-custom.lisp:326
 #: scm/im-custom.lisp:332 scm/im-custom.lisp:338 scm/im-custom.lisp:344
 #: scm/im-custom.lisp:351 scm/im-custom.lisp:357 scm/im-custom.lisp:364
+#: scm/im-custom.lisp:370 scm/im-custom.lisp:376 scm/im-custom.lisp:382
 #: scm/prime-custom.lisp:58 scm/prime-custom.lisp:64 scm/prime-custom.lisp:70
 #: scm/prime-custom.lisp:76 scm/prime-custom.lisp:82 scm/prime-custom.lisp:90
 #: scm/prime-custom.lisp:96 scm/prime-custom.lisp:102
 #: scm/prime-custom.lisp:145 scm/prime-custom.lisp:154
 #: scm/prime-key-custom.lisp:61 scm/prime-key-custom.lisp:65
 #: scm/prime-key-custom.lisp:69 scm/skk-custom.lisp:59 scm/skk-custom.lisp:65
-#: scm/skk-custom.lisp:71 scm/skk-custom.lisp:77 scm/skk-custom.lisp:85
-#: scm/skk-custom.lisp:163 scm/skk-custom.lisp:182 scm/skk-custom.lisp:191
-#: scm/skk-custom.lisp:222 scm/skk-custom.lisp:231 scm/skk-custom.lisp:274
-#: scm/skk-custom.lisp:280 scm/skk-custom.lisp:292 scm/skk-custom.lisp:299
-#: scm/skk-custom.lisp:306 scm/skk-custom.lisp:318 scm/skk-custom.lisp:324
-#: scm/skk-custom.lisp:330 scm/skk-custom.lisp:336 scm/skk-custom.lisp:346
-#: scm/skk-custom.lisp:352 scm/skk-custom.lisp:373 scm/skk-custom.lisp:379
-#: scm/skk-custom.lisp:386 scm/skk-key-custom.lisp:65
+#: scm/skk-custom.lisp:73 scm/skk-custom.lisp:79 scm/skk-custom.lisp:85
+#: scm/skk-custom.lisp:91 scm/skk-custom.lisp:218 scm/skk-custom.lisp:237
+#: scm/skk-custom.lisp:246 scm/skk-custom.lisp:277 scm/skk-custom.lisp:286
+#: scm/skk-custom.lisp:329 scm/skk-custom.lisp:335 scm/skk-custom.lisp:347
+#: scm/skk-custom.lisp:354 scm/skk-custom.lisp:361 scm/skk-custom.lisp:373
+#: scm/skk-custom.lisp:379 scm/skk-custom.lisp:385 scm/skk-custom.lisp:391
+#: scm/skk-custom.lisp:401 scm/skk-custom.lisp:407 scm/skk-custom.lisp:428
+#: scm/skk-custom.lisp:434 scm/skk-custom.lisp:441 scm/skk-key-custom.lisp:65
 #: scm/skk-key-custom.lisp:69 scm/skk-key-custom.lisp:73
 #: scm/skk-key-custom.lisp:78 scm/spellcheck-custom.lisp:48
 #: scm/spellcheck-custom.lisp:54 scm/spellcheck-custom.lisp:60
@@ -674,13 +675,13 @@ msgid "Use candidate window"
 msgstr ""
 
 #: scm/anthy-custom.lisp:77 scm/canna-custom.lisp:81
-#: scm/generic-custom.lisp:48 scm/skk-custom.lisp:64
+#: scm/generic-custom.lisp:48 scm/skk-custom.lisp:84
 #: scm/spellcheck-custom.lisp:53
 msgid "Conversion key press count to show candidate window"
 msgstr ""
 
 #: scm/anthy-custom.lisp:83 scm/canna-custom.lisp:87
-#: scm/generic-custom.lisp:54 scm/prime-custom.lisp:57 scm/skk-custom.lisp:70
+#: scm/generic-custom.lisp:54 scm/prime-custom.lisp:57 scm/skk-custom.lisp:90
 msgid "Number of candidates in candidate window at a time"
 msgstr ""
 
@@ -689,53 +690,53 @@ msgid "Select candidate by numeral keys"
 msgstr ""
 
 #: scm/anthy-custom.lisp:119 scm/canna-custom.lisp:113
-#: scm/prime-custom.lisp:122 scm/skk-custom.lisp:114
+#: scm/prime-custom.lisp:122 scm/skk-custom.lisp:169
 msgid "Direct input"
 msgstr ""
 
-#: scm/anthy-custom.lisp:120 scm/canna-custom.lisp:114 scm/skk-custom.lisp:115
+#: scm/anthy-custom.lisp:120 scm/canna-custom.lisp:114 scm/skk-custom.lisp:170
 msgid "Direct input mode"
 msgstr ""
 
-#: scm/anthy-custom.lisp:124 scm/canna-custom.lisp:118 scm/skk-custom.lisp:119
+#: scm/anthy-custom.lisp:124 scm/canna-custom.lisp:118 scm/skk-custom.lisp:174
 msgid "Hiragana"
 msgstr ""
 
-#: scm/anthy-custom.lisp:125 scm/canna-custom.lisp:119 scm/skk-custom.lisp:120
+#: scm/anthy-custom.lisp:125 scm/canna-custom.lisp:119 scm/skk-custom.lisp:175
 msgid "Hiragana input mode"
 msgstr ""
 
-#: scm/anthy-custom.lisp:129 scm/canna-custom.lisp:123 scm/skk-custom.lisp:124
+#: scm/anthy-custom.lisp:129 scm/canna-custom.lisp:123 scm/skk-custom.lisp:179
 msgid "Katakana"
 msgstr ""
 
-#: scm/anthy-custom.lisp:130 scm/canna-custom.lisp:124 scm/skk-custom.lisp:125
+#: scm/anthy-custom.lisp:130 scm/canna-custom.lisp:124 scm/skk-custom.lisp:180
 msgid "Katakana input mode"
 msgstr ""
 
-#: scm/anthy-custom.lisp:134 scm/canna-custom.lisp:128 scm/skk-custom.lisp:129
+#: scm/anthy-custom.lisp:134 scm/canna-custom.lisp:128 scm/skk-custom.lisp:184
 msgid "Halfwidth Katakana"
 msgstr ""
 
-#: scm/anthy-custom.lisp:135 scm/canna-custom.lisp:129 scm/skk-custom.lisp:130
+#: scm/anthy-custom.lisp:135 scm/canna-custom.lisp:129 scm/skk-custom.lisp:185
 msgid "Halfwidth Katakana input mode"
 msgstr ""
 
 #: scm/anthy-custom.lisp:139 scm/canna-custom.lisp:133
-#: scm/prime-custom.lisp:132 scm/skk-custom.lisp:134
+#: scm/prime-custom.lisp:132 scm/skk-custom.lisp:189
 msgid "Fullwidth Alphanumeric"
 msgstr ""
 
 #: scm/anthy-custom.lisp:140 scm/canna-custom.lisp:134
-#: scm/prime-custom.lisp:133 scm/skk-custom.lisp:135
+#: scm/prime-custom.lisp:133 scm/skk-custom.lisp:190
 msgid "Fullwidth Alphanumeric input mode"
 msgstr ""
 
-#: scm/anthy-custom.lisp:147 scm/canna-custom.lisp:141 scm/skk-custom.lisp:142
+#: scm/anthy-custom.lisp:147 scm/canna-custom.lisp:141 scm/skk-custom.lisp:197
 msgid "Romaji"
 msgstr ""
 
-#: scm/anthy-custom.lisp:148 scm/canna-custom.lisp:142 scm/skk-custom.lisp:143
+#: scm/anthy-custom.lisp:148 scm/canna-custom.lisp:142 scm/skk-custom.lisp:198
 msgid "Romaji input mode"
 msgstr ""
 
@@ -747,45 +748,45 @@ msgstr ""
 msgid "Kana input mode"
 msgstr ""
 
-#: scm/anthy-custom.lisp:157 scm/canna-custom.lisp:151 scm/skk-custom.lisp:147
+#: scm/anthy-custom.lisp:157 scm/canna-custom.lisp:151 scm/skk-custom.lisp:202
 msgid "AZIK"
 msgstr ""
 
-#: scm/anthy-custom.lisp:158 scm/canna-custom.lisp:152 scm/skk-custom.lisp:148
+#: scm/anthy-custom.lisp:158 scm/canna-custom.lisp:152 scm/skk-custom.lisp:203
 msgid "AZIK extended romaji input mode"
 msgstr ""
 
 #: scm/anthy-custom.lisp:167 scm/anthy-custom.lisp:168
-#: scm/canna-custom.lisp:161 scm/canna-custom.lisp:162 scm/skk-custom.lisp:157
-#: scm/skk-custom.lisp:158
+#: scm/canna-custom.lisp:161 scm/canna-custom.lisp:162 scm/skk-custom.lisp:212
+#: scm/skk-custom.lisp:213
 msgid "Input mode"
 msgstr ""
 
 #: scm/anthy-custom.lisp:170 scm/anthy-custom.lisp:171
-#: scm/canna-custom.lisp:164 scm/canna-custom.lisp:165 scm/skk-custom.lisp:160
-#: scm/skk-custom.lisp:161
+#: scm/canna-custom.lisp:164 scm/canna-custom.lisp:165 scm/skk-custom.lisp:215
+#: scm/skk-custom.lisp:216
 msgid "Kana input method"
 msgstr ""
 
-#: scm/anthy-custom.lisp:172 scm/canna-custom.lisp:166 scm/skk-custom.lisp:162
+#: scm/anthy-custom.lisp:172 scm/canna-custom.lisp:166 scm/skk-custom.lisp:217
 msgid "Enabled toolbar buttons"
 msgstr ""
 
 #: scm/anthy-custom.lisp:191 scm/canna-custom.lisp:185
-#: scm/prime-custom.lisp:144 scm/skk-custom.lisp:181
+#: scm/prime-custom.lisp:144 scm/skk-custom.lisp:236
 msgid "Default input mode"
 msgstr ""
 
 #: scm/anthy-custom.lisp:200 scm/canna-custom.lisp:194
-#: scm/prime-custom.lisp:153 scm/skk-custom.lisp:190
+#: scm/prime-custom.lisp:153 scm/skk-custom.lisp:245
 msgid "Input mode menu items"
 msgstr ""
 
-#: scm/anthy-custom.lisp:242 scm/canna-custom.lisp:236 scm/skk-custom.lisp:221
+#: scm/anthy-custom.lisp:242 scm/canna-custom.lisp:236 scm/skk-custom.lisp:276
 msgid "Default kana input method"
 msgstr ""
 
-#: scm/anthy-custom.lisp:251 scm/canna-custom.lisp:245 scm/skk-custom.lisp:230
+#: scm/anthy-custom.lisp:251 scm/canna-custom.lisp:245 scm/skk-custom.lisp:285
 msgid "Kana input method menu items"
 msgstr ""
 
@@ -1284,11 +1285,11 @@ msgstr ""
 msgid "Enabled input methods"
 msgstr ""
 
-#: scm/im-custom.lisp:276 scm/skk-custom.lisp:82 scm/skk-custom.lisp:316
+#: scm/im-custom.lisp:276 scm/skk-custom.lisp:70 scm/skk-custom.lisp:371
 msgid "uim"
 msgstr ""
 
-#: scm/im-custom.lisp:276 scm/skk-custom.lisp:82 scm/skk-custom.lisp:316
+#: scm/im-custom.lisp:276 scm/skk-custom.lisp:70 scm/skk-custom.lisp:371
 msgid "uim native"
 msgstr ""
 
@@ -1362,6 +1363,18 @@ msgstr ""
 
 #: scm/im-custom.lisp:363
 msgid "The directory which contains EB dictionary file"
+msgstr ""
+
+#: scm/im-custom.lisp:369
+msgid "XIM settings"
+msgstr ""
+
+#: scm/im-custom.lisp:375
+msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
+msgstr ""
+
+#: scm/im-custom.lisp:381
+msgid "Font name for preedit area (anti-aliased)"
 msgstr ""
 
 #: scm/ipa-x-sampa.lisp:227 scm/ipa-x-sampa.lisp:228
@@ -1578,79 +1591,83 @@ msgstr ""
 msgid "Advanced settings for SKK"
 msgstr ""
 
-#: scm/skk-custom.lisp:76
+#: scm/skk-custom.lisp:64
 msgid "Commit candidate by heading label keys"
 msgstr ""
 
-#: scm/skk-custom.lisp:83
+#: scm/skk-custom.lisp:71
 msgid "ddskk-like"
 msgstr ""
 
-#: scm/skk-custom.lisp:83 scm/skk-custom.lisp:315
+#: scm/skk-custom.lisp:71 scm/skk-custom.lisp:370
 msgid "Similar to ddskk"
 msgstr ""
 
-#: scm/skk-custom.lisp:84
+#: scm/skk-custom.lisp:72
 msgid "Candidate selection style"
 msgstr ""
 
-#: scm/skk-custom.lisp:273
+#: scm/skk-custom.lisp:78
+msgid "Set candidate window behavior manually"
+msgstr ""
+
+#: scm/skk-custom.lisp:328
 msgid "Use skkserv instead of SKK-JISYO"
 msgstr ""
 
-#: scm/skk-custom.lisp:279
+#: scm/skk-custom.lisp:334
 msgid "Port number of skkserv"
 msgstr ""
 
-#: scm/skk-custom.lisp:291
+#: scm/skk-custom.lisp:346
 msgid "Dictionary file"
 msgstr ""
 
-#: scm/skk-custom.lisp:298
+#: scm/skk-custom.lisp:353
 msgid "Personal dictionary file"
 msgstr ""
 
-#: scm/skk-custom.lisp:305
+#: scm/skk-custom.lisp:360
 msgid "Personal dictionary file (dedicated to uim)"
 msgstr ""
 
-#: scm/skk-custom.lisp:315
+#: scm/skk-custom.lisp:370
 msgid "ddskk"
 msgstr ""
 
-#: scm/skk-custom.lisp:317
+#: scm/skk-custom.lisp:372
 msgid "Visual style"
 msgstr ""
 
-#: scm/skk-custom.lisp:323
+#: scm/skk-custom.lisp:378
 msgid "Use recursive learning"
 msgstr ""
 
-#: scm/skk-custom.lisp:329
+#: scm/skk-custom.lisp:384
 msgid "Use numeric conversion"
 msgstr ""
 
-#: scm/skk-custom.lisp:335
+#: scm/skk-custom.lisp:390
 msgid "Enable auto conversion with punctuation marks"
 msgstr ""
 
-#: scm/skk-custom.lisp:345
+#: scm/skk-custom.lisp:400
 msgid "Show annotation of candidate word"
 msgstr ""
 
-#: scm/skk-custom.lisp:351
+#: scm/skk-custom.lisp:406
 msgid "Show annotation also in preedit area"
 msgstr ""
 
-#: scm/skk-custom.lisp:372
+#: scm/skk-custom.lisp:427
 msgid "Friendly for vi user"
 msgstr ""
 
-#: scm/skk-custom.lisp:378
+#: scm/skk-custom.lisp:433
 msgid "Use Enter key as just committing (egg-like operation)"
 msgstr ""
 
-#: scm/skk-custom.lisp:385
+#: scm/skk-custom.lisp:440
 msgid "Commit newline as ASCII string instead of native key-event"
 msgstr ""
 
