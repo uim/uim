@@ -121,7 +121,6 @@
 		 (lambda ()
 		   (if (not skk-use-candidate-window?)
 		       (begin
-		         (set! skk-commit-candidate-by-label-key? #f)
 		         (set! skk-candidate-selection-style 'uim)
 			 (set! skk-use-manual-candwin-setting? #f)))))
 
