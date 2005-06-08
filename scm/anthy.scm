@@ -644,7 +644,7 @@
     (((mod_Control lkey_g))   (action_anthy_cancel_conv)) ;; generic
     (((mod_Control lkey_G))   (action_anthy_cancel_conv)) ;; generic
 
-    ;; converting-state-action-map-ruleset
+    ;; converting-state
     ((lkey_q)                 (action_anthy_toggle_kana))
     ((lkey_Q)                 (action_anthy_toggle_kana))
     ((lkey_Page_Up)           (action_anthy_prev_page))	;; generic
@@ -1596,8 +1596,7 @@
 
 (define anthy-get-candidate-handler
   (lambda (ac idx accel-enum-hint)
-    (let* ((ac-id (anthy-context-ac-id ac))
-	   (cur-seg (ustr-cursor-pos (anthy-context-segments ac)))
+    (let* ((cur-seg (ustr-cursor-pos (anthy-context-segments ac)))
 	   (cand (anthy-get-nth-candidate ac cur-seg idx)))
       (list cand (digit->string (+ idx 1)) ""))))
 

@@ -55,6 +55,18 @@
 	 ;;"m"  ;; rk contains this rule
 	 "y" "r" "v" "w")))
 
+(define ja-romaji-double-consonant-guide-alist
+  (map (lambda (c)
+	 (cons c ja-kana-xtsu))
+       '(("c" "h")
+	 ("s" "h")
+	 ("t" "y")
+	 ("z" "y")
+	 ("j" "y")
+	 "k" "g" "s" "z" "j" "t" "c" "d" "h" "f" "b" "p"
+	 ;;"m"  ;; rk contains this rule
+	 "y" "r" "v" "w")))
+
 (define ja-romaji-generate-double-consonant-ruleset
   (lambda (romaji-ruleset)
     (filter-map (lambda (rule)
