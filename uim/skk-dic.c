@@ -295,7 +295,7 @@ do_search_line(struct dic_info *di, const char *s, int min,
   if (!c) {
     return idx;
   }
-  if (c * d> 0) {
+  if (c * d > 0) {
     return do_search_line(di, s, idx, max, d);
   } else {
     return do_search_line(di, s, min, idx, d);
@@ -637,7 +637,7 @@ skk_search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
 
   sprintf(idx, "%s%c", s, okuri_head);
 
-  fprintf(wserv,"1%s \n",idx);
+  fprintf(wserv, "1%s \n", idx);
   ret = fflush(wserv);
   if (ret != 0 && errno == EPIPE) {
     di->skkserv_ok = skk_open_skkserv(di->skkserv_portnum);
@@ -692,7 +692,7 @@ skk_search_line_from_file(struct dic_info *di, const char *s, char okuri_head)
   if (!di->addr) {
     return NULL;
   }
-  sprintf(idx, "%s%c",s, okuri_head);
+  sprintf(idx, "%s%c", s, okuri_head);
   if (okuri_head) {
     n = do_search_line(di, idx, di->first, di->border - 1, -1);
   } else {
@@ -704,8 +704,8 @@ skk_search_line_from_file(struct dic_info *di, const char *s, char okuri_head)
 
   p = find_line(di, n);
   len = calc_line_len(p);
-  line = malloc(len+1);
-  line[0] = 0;
+  line = malloc(len + 1);
+  line[0] = '\0';
   strncat(line, p, len);
   sl = compose_line(di, s, okuri_head, line);
   free(line);
@@ -722,8 +722,7 @@ skk_search_line_from_cache(struct dic_info *di, const char *s, char okuri_head)
   }
   /* search from cache */
   for (sl = di->head.next; sl; sl = sl->next) {
-    if (!strcmp(sl->head, s) &&
-	sl->okuri_head == okuri_head) {
+    if (!strcmp(sl->head, s) && sl->okuri_head == okuri_head) {
       return sl;
     }
   }
@@ -794,7 +793,7 @@ find_cand_array_lisp(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_,
   if (okuri_head_ == uim_scm_null_list()) {
     o = 0;
   } else {
-    const char *os= uim_scm_refer_c_str(okuri_head_);
+    const char *os = uim_scm_refer_c_str(okuri_head_);
     o = os[0];
   }
 
@@ -1331,9 +1330,9 @@ skk_make_comp_array_from_cache(struct dic_info *di, const char *s)
   struct skk_line *sl;
   struct skk_comp_array *ca;
 
-  if (!di) {
+  if (!di)
     return NULL;
-  }
+
   ca = malloc(sizeof(struct skk_comp_array));
   ca->nr_comps = 0;
   ca->refcount = 0;
@@ -1796,10 +1795,10 @@ parse_dic_line(struct dic_info *di, char *line)
   strcpy(buf, line);
   sep = strchr(buf, ' ');
   if (!sep) {
-    return ;
+    return;
   }
   if (sep == buf) {
-    return ;
+    return;
   }
   *sep = '\0';
   if (!isalnum((unsigned char)buf[0]) && islower((unsigned char)sep[-1])) { /* okuri-ari entry */
@@ -2415,7 +2414,7 @@ skk_open_skkserv(int portnum)
   if (connect(sock, (struct sockaddr *)&hostaddr, sizeof(struct sockaddr_in)) < 0) {
     return 0;
   }
-  fprintf(stderr, "SKKSERVER=%s\n",hostname);
+  fprintf(stderr, "SKKSERVER=%s\n", hostname);
   skkservsock = sock;
   rserv = fdopen(sock, "r");
   wserv = fdopen(sock, "w");
