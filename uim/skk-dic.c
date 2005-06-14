@@ -55,7 +55,7 @@
 #include "context.h"
 #include "plugin.h"
 
-#define skk_isalpha(ch)	(skk_islower((unsigned char)ch) || skk_isupper((unsigned char)ch))
+#define skk_isalpha(ch)	(skk_islower(ch) || skk_isupper(ch))
 #define skk_islower(ch)	((((unsigned char)ch) >= 'a') && (((unsigned char)ch) <= 'z'))
 #define skk_isupper(ch)	((((unsigned char)ch) >= 'A') && (((unsigned char)ch) <= 'Z'))
 #define skk_isascii(ch)	((((unsigned char)ch) & ~0x7f) == 0)
