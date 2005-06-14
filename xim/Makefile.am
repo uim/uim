@@ -7,6 +7,7 @@ uim_xim_CPPFLAGS = -I$(top_srcdir)
 uim_xim_CFLAGS = @X_CFLAGS@ -Wall
 uim_xim_CXXFLAGS = @X_CFLAGS@ -Wall
 man1_MANS = uim-xim.1
+EXTRA_DIST = uim-xim.1
 
 if DEFAULT_TOOLKIT_GTK
 uim_xim_CPPFLAGS += -DUSE_GTK_CANDWIN
