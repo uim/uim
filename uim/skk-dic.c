@@ -55,6 +55,11 @@
 #include "context.h"
 #include "plugin.h"
 
+#define skk_isalpha(ch)	(skk_islower((unsigned char)ch) || skk_isupper((unsigned char)ch))
+#define skk_islower(ch)	((((unsigned char)ch) >= 'a') && (((unsigned char)ch) <= 'z'))
+#define skk_isupper(ch)	((((unsigned char)ch) >= 'A') && (((unsigned char)ch) <= 'Z'))
+#define skk_isascii(ch)	((((unsigned char)ch) & ~0x7f) == 0)
+
 /*
  * cand : candidate
  */
@@ -164,7 +169,7 @@ is_okuri(const char *line_str)
   }
   /* check previous character */
   b--;
-  if (isalpha((unsigned char)*b)) {
+  if (skk_isalpha(*b)) {
     return 1;
   }
   return 0;
@@ -249,7 +254,7 @@ static const char *
 find_line(struct dic_info *di, int off)
 {
   char *ptr = di->addr;
-  while (off > 0 && (ptr[off] != '\n' || ptr[off+1] == ';')) {
+  while (off > 0 && (ptr[off] != '\n' || ptr[off + 1] == ';')) {
     off--;
   }
   if (off) {
@@ -269,7 +274,7 @@ extract_line_index(struct dic_info *di, int off, char *buf, int len)
   for (i = 0; i < len && p[i] != ' '; i++) {
     buf[i] = p[i];
   }
-  buf[i] = 0;
+  buf[i] = '\0';
   return buf;
 }
 
@@ -791,7 +796,7 @@ find_cand_array_lisp(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_,
     okuri = uim_scm_refer_c_str(okuri_);
   }
   if (okuri_head_ == uim_scm_null_list()) {
-    o = 0;
+    o = '\0';
   } else {
     const char *os = uim_scm_refer_c_str(okuri_head_);
     o = os[0];
@@ -1791,7 +1796,7 @@ parse_dic_line(struct dic_info *di, char *line)
   struct skk_line *sl;
   int i;
 
-  buf = alloca(strlen(line)+1);
+  buf = alloca(strlen(line) + 1);
   strcpy(buf, line);
   sep = strchr(buf, ' ');
   if (!sep) {
@@ -1801,9 +1806,9 @@ parse_dic_line(struct dic_info *di, char *line)
     return;
   }
   *sep = '\0';
-  if (!isalnum((unsigned char)buf[0]) && islower((unsigned char)sep[-1])) { /* okuri-ari entry */
+  if (!skk_isascii(buf[0]) && skk_islower(sep[-1])) { /* okuri-ari entry */
     char okuri_head = sep[-1];
-    sep[-1] = 0;
+    sep[-1] = '\0';
     sl = compose_line(di, buf, okuri_head, line);
   } else {
     sl = compose_line(di, buf, 0, line);
@@ -1930,10 +1935,10 @@ skk_read_personal_dictionary(struct dic_info *di, const char *fn)
 
   while (fgets(buf, 4096, fp)) {
     int len = strlen(buf);
-    if (buf[len-1] == '\n') {
+    if (buf[len - 1] == '\n') {
       if (err_flag == 0) {
 	if (buf[0] != ';') {
-	  buf[len-1] = 0;
+	  buf[len - 1] = '\0';
 	  parse_dic_line(di, buf);
 	}
       } else {
