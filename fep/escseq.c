@@ -141,7 +141,6 @@ static struct attribute_tag s_attr = {
 static void check_escseq(void);
 static char *escseq2n(const char *escseq);
 static void escseq2n2(const char *escseq, const char **first, const char **second);
-static void fixtty(void);
 #ifndef HAVE_CFMAKERAW
 static int cfmakeraw(struct termios *termios_p);
 #endif
@@ -323,7 +322,7 @@ static void escseq2n2(const char *escseq, const char **first, const char **secon
 
 void quit_escseq(void)
 {
-  if (s_init == FALSE) {
+  if (!s_init) {
     return;
   }
   put_exit_attribute_mode();
@@ -341,7 +340,7 @@ void quit_escseq(void)
 /*
  * 端末をrawモードにする
  */
-static void fixtty(void)
+void fixtty(void)
 {
   struct point_tag start_cursor;
   struct point_tag cursor;
@@ -355,6 +354,12 @@ static void fixtty(void)
   /* read_stdinが戻るまでのタイムアウト 0.1秒単位 */
   tios.c_cc[VTIME] = 3;
   tcsetattr(g_win_in, TCSANOW, &tios);
+
+  if (s_init) {
+    s_cursor.row = s_cursor.col = UNDEFINED;
+    /* 前回終了時の位置に戻る */
+    put_restore_cursor();
+  }
 
   if (!g_opt.no_report_cursor) {
     /* 開始位置を保存 */
@@ -383,23 +388,27 @@ static void fixtty(void)
   if (g_opt.status_type == LASTLINE) {
     write(g_win_out, "\n", strlen("\n"));
   }
-  s_cursor.row = s_cursor.col = UNDEFINED;
-  /* 安全な位置に移動 */
-  put_cursor_address(1, 1);
-  s_cursor.row = s_cursor.col = UNDEFINED;
-  /* カーソル位置を取得 */
-  cursor = get_cursor_position();
-  s_cursor.row = s_cursor.col = UNDEFINED;
-  /* 取得したカーソル位置に移動 */
-  put_cursor_address_p(&cursor);
-  s_cursor.row = s_cursor.col = UNDEFINED;
-  /* 同じカーソル位置が得られるか */
-  cursor2 = get_cursor_position();
-  /* 得られなかったら差分を調べる */
-  s_cursor_diff.row = cursor2.row - cursor.row;
-  s_cursor_diff.col = cursor2.col - cursor.col;
-  start_cursor.row -= s_cursor_diff.row;
-  start_cursor.col -= s_cursor_diff.col;
+
+  if (!s_init) {
+    s_cursor.row = s_cursor.col = UNDEFINED;
+    /* 安全な位置に移動 */
+    put_cursor_address(1, 1);
+    s_cursor.row = s_cursor.col = UNDEFINED;
+    /* カーソル位置を取得 */
+    cursor = get_cursor_position();
+    s_cursor.row = s_cursor.col = UNDEFINED;
+    /* 取得したカーソル位置に移動 */
+    put_cursor_address_p(&cursor);
+    s_cursor.row = s_cursor.col = UNDEFINED;
+    /* 同じカーソル位置が得られるか */
+    cursor2 = get_cursor_position();
+    /* 得られなかったら差分を調べる */
+    s_cursor_diff.row = cursor2.row - cursor.row;
+    s_cursor_diff.col = cursor2.col - cursor.col;
+    start_cursor.row -= s_cursor_diff.row;
+    start_cursor.col -= s_cursor_diff.col;
+  }
+
   if (g_opt.status_type == LASTLINE) {
     put_change_scroll_region(0, g_win->ws_row - 1);
   }

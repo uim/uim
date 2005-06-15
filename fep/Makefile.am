@@ -1,5 +1,5 @@
 
-EXTRA_DIST = README.ja
+EXTRA_DIST = README.ja README.key
 
 if UIM_FEP
 

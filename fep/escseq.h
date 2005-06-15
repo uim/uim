@@ -51,6 +51,7 @@ struct attribute_tag {
 
 void init_escseq(const struct attribute_tag *attr_uim);
 void quit_escseq(void);
+void fixtty(void);
 struct point_tag get_cursor_position(void);
 void put_move_cur(int from, int to);
 void put_cursor_left(int n);

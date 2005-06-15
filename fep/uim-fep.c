@@ -149,14 +149,14 @@ static void init_agent(const char *engine);
 static const char *get_default_im_name(void);
 static int make_color_escseq(const char *instr, struct attribute_tag *attr);
 static int colorname2n(const char *name);
-#ifndef HAVE_FORKPTY
-static pid_t forkpty(int *amaster, char *name, struct termios *termp, struct winsize *winp);
-#endif
+static pid_t my_forkpty(int *amaster, struct termios *termp, struct winsize *winp);
 static void main_loop(void);
 static void recover_loop(void);
 static struct winsize *get_winsize(void);
 static void set_signal_handler(void);
 static void recover(int sig_no);
+static void sigtstp_handler(int sig_no);
+static void sigcont_handler(int sig_no);
 static void sigwinch_handler(int sig_no);
 static void sigusr1_handler(int sig_no);
 static void sigusr2_handler(int sig_no);
@@ -210,7 +210,6 @@ int main(int argc, char **argv)
   const char **command = malloc(sizeof(const char *) * (argc + 1));
   const char *engine;
   char *sock_path = NULL; /* Socket for backtick */
-  pid_t child;
   int gnu_screen = FALSE;
   char *env_buf;
   struct attribute_tag attr_uim = {
@@ -222,7 +221,6 @@ int main(int argc, char **argv)
     UNDEFINED  /* background */
   };
 
-  tcflag_t save_iflag;
   int op;
 
   if (getenv("UIM_FEP_PID")) {
@@ -364,11 +362,7 @@ opt_end:
 
   /* exit if stdin is redirected */
   if (!isatty(g_win_in)) {
-    FILE *tty;
-    if ((tty = fopen("/dev/tty", "w")) != NULL) {
-      fprintf(tty, "stdin is not a terminal\n");
-    }
-    return EXIT_FAILURE;
+    g_win_in = open("/dev/tty", O_RDONLY);
   }
 
   tcgetattr(g_win_in, &s_save_tios);
@@ -413,10 +407,7 @@ opt_end:
 
   g_win = get_winsize();
   if (!gnu_screen && !g_opt.print_key) {
-    save_iflag = s_save_tios.c_iflag;
-    s_save_tios.c_iflag &= ~ISTRIP;
-    child = forkpty(&s_master, NULL, &s_save_tios, g_win);
-    s_save_tios.c_iflag = save_iflag;
+    pid_t child = my_forkpty(&s_master, &s_save_tios, g_win);
 
     if (child < 0) {
       perror("fork");
@@ -555,8 +546,46 @@ static int colorname2n(const char *name)
   return UNDEFINED;
 }
 
-#ifndef HAVE_FORKPTY
-static pid_t forkpty(int *amaster, char *name, struct termios *termp, struct winsize *winp)
+#if defined(HAVE_FORKPTY)
+static pid_t my_forkpty(int *amaster, struct termios *termp, struct winsize *winp)
+{
+  pid_t pid;
+  int slave;
+
+  tcflag_t save_iflag = termp->c_iflag;
+  termp->c_iflag &= ~ISTRIP;
+
+  if (openpty(amaster, &slave, NULL, termp, g_win) == -1) {
+    perror("openpty");
+    return -1;
+  }
+
+  termp->c_iflag = save_iflag;
+
+  if ((pid = fork()) < 0) {
+    return -2;
+  }
+  if (pid == 0) {
+    /* 子プロセス */
+    setsid();
+    /* man tty_ioctl */
+    ioctl(slave, TIOCSCTTY, 0);
+
+    close(*amaster);
+    if (g_win_in == STDIN_FILENO) {
+      dup2(slave, STDIN_FILENO);
+    }
+    dup2(slave, STDOUT_FILENO);
+    dup2(slave, STDERR_FILENO);
+    close(slave);
+    return 0;
+  } else {
+    close(slave);
+    return pid;
+  }
+}
+#elif defined(__svr4__) 
+static pid_t my_forkpty(int *amaster, struct termios *termp, struct winsize *winp)
 {
   pid_t pid;
   int slave;
@@ -589,7 +618,9 @@ static pid_t forkpty(int *amaster, char *name, struct termios *termp, struct win
       ioctl(slave, TIOCSWINSZ, winp);
     }
     close(*amaster);
-    dup2(slave, STDIN_FILENO);
+    if (g_win_in == STDIN_FILENO) {
+      dup2(slave, STDIN_FILENO);
+    }
     dup2(slave, STDOUT_FILENO);
     dup2(slave, STDERR_FILENO);
     close(slave);
@@ -872,6 +903,12 @@ static void set_signal_handler(void)
 
   act.sa_handler = sigusr2_handler;
   sigaction(SIGUSR2, &act, NULL);
+
+  act.sa_handler = sigtstp_handler;
+  sigaction(SIGTSTP, &act, NULL);
+
+  act.sa_handler = sigcont_handler;
+  sigaction(SIGCONT, &act, NULL);
 }
 
 static void recover(int sig_no)
@@ -881,6 +918,35 @@ static void recover(int sig_no)
   put_cursor_normal();
   recover_loop();
   done(EXIT_SUCCESS);
+}
+
+static void sigtstp_handler(int sig_no)
+{
+  struct sigaction act;
+  sigset_t mask;
+
+  quit_escseq();
+  put_save_cursor();
+  tcsetattr(g_win_in, TCSAFLUSH, &s_save_tios);
+
+  sigemptyset(&act.sa_mask);
+  act.sa_flags = 0;
+  act.sa_handler = SIG_DFL;
+
+  sigemptyset(&mask);
+  sigaddset(&mask, SIGTSTP);
+  sigprocmask(SIG_UNBLOCK, &mask, NULL);
+
+  sigaction(SIGTSTP, &act, NULL);
+  kill(getpid(), SIGTSTP);
+  
+  act.sa_handler = sigtstp_handler;
+  sigaction(SIGTSTP, &act, NULL);
+}
+
+static void sigcont_handler(int sig_no)
+{
+  fixtty();
 }
 
 /*
