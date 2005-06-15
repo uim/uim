@@ -1,0 +1,56 @@
+Release manual for uim
+======================
+
+As of this moment, uim have three types of release on the same version.
+They are alpha, beta and final. Alpha may be unstable release, may be
+untested. After alpha release, new big features must not be committed.
+
+Beta release must tested partially by the maintainer. Ideally well
+tested by the maintainer. If beta1 is too unstable, beta2 should be
+release to ensure the quality of final release. After beta release, new
+features must not be committed.
+
+Final release is really final release. Must be tested well.
+
+In each release, following steps should be filled. To make final
+release, you have to repeat following procedure at least three times.
+
+
+1. Declare 'I will make new release' to the mailing list.
+
+Committers must not add a new unstable feature if the declaration came.
+
+2. Gather up brief of the release from each committers.
+
+ChangeLog of uim is very long, so making release note from the ChangeLog
+is a hard work. Therefore committer should send brief of their commit. Maybe
+we sould prepare better way.
+
+3. Checkout fresh version from svn.
+
+ svn co svn+ssh://freedesktop.org/srv/uim.freedesktop.org/svn/trunk
+
+4. Do build test with make releasetest
+
+   This test is not enough, but worth. Especially it's useful when a
+   new file is added. As a TODO, we should do unit test at this point.
+
+5. Do test
+
+   This item needs many many description... I must fill this item
+   later.
+
+6. Increment the version in configure.ac, then commit it.
+
+7. make dist
+
+8. Copy the source tarball to http://uim.freedesktop.org/releases
+
+9. Tag to tags/uim-x.y.z
+
+  svn copy svn+ssh://freedesktop.org/srv/uim.freedesktop.org/svn/trunk\
+  svn+ssh://freedesktop.org/srv/uim.freedesktop.org/svn/tags/uim-x.y.z
+
+10. Send a message to uim@freedesktop.org.
+
+11. Update web page.
