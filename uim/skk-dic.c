@@ -666,7 +666,7 @@ skk_search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
 	break;
       }
 
-      buf[n] = r; 
+      buf[n] = r;
       if (n == SKK_SERV_BUFSIZ - 1) {
 	line = realloc(line, strlen(line) + n + 2);
 	strncat(line, buf, n + 1);
@@ -929,11 +929,23 @@ numeric_kanji_with_position_conv(const char *numstr)
       mblen -= 2;
       /* check zero at the head */
       if (j == 0) {
-	head_is_zero = 1; 
+	head_is_zero = 1;
       } else {
 	/* add Ëü, ²¯, Ãû, µþ for zero */
-	if (position >= 4) {
-	  if ((position % 4) == 0 && !head_is_zero) {
+	if ((position >= 4) && ((position % 4) == 0) && !head_is_zero) {
+	  int use_position = 0;
+	  if (j >= 3) {
+	    if (!((numstr[j - 1] == '0') && (numstr[j - 2] == '0') &&
+				    (numstr[j - 3] == '0')))
+	      use_position = 1;
+	  } else if (j == 2) {
+	    if (!((numstr[j - 1] == '0') && (numstr[j - 2] == '0')))
+	      use_position = 1;
+	  } else if (j == 1) {
+	    if (!(numstr[j - 1] == '0'))
+	      use_position = 1;
+	  }
+	  if (use_position) {
 	    i++;
 	    mblen += 2;
 	    if (mblen > len * 2)
@@ -1021,11 +1033,23 @@ numeric_kanji_for_check_conv(const char *numstr)
       mblen -= 2;
       /* check zero at the head */
       if (j == 0) {
-	head_is_zero = 1; 
+	head_is_zero = 1;
       } else {
 	/* add èß, ²¯, Ãû, µþ for zero */
-	if (position >= 4) {
-	  if ((position % 4) == 0 && !head_is_zero) {
+	if ((position >= 4) && ((position % 4) == 0) && !head_is_zero) {
+	  int use_position = 0;
+	  if (j >= 3) {
+	    if (!((numstr[j - 1] == '0') && (numstr[j - 2] == '0') &&
+				    (numstr[j - 3] == '0')))
+	      use_position = 1;
+	  } else if (j == 2) {
+	    if (!((numstr[j - 1] == '0') && (numstr[j - 2] == '0')))
+	      use_position = 1;
+	  } else if (j == 1) {
+	    if (!((numstr[j - 1] == '0')))
+	      use_position = 1;
+	  }
+	  if (use_position) {
 	    i++;
 	    mblen += 2;
 	    if (mblen > len * 2)
@@ -1255,7 +1279,7 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
     if (!uim_scm_nullp(numlst_)) {
       for (i = 0; i < ca->nr_cands; i++) {
 	if ((p = find_numeric_conv_method4_mark(ca->cands[i], &method_place))) {
-	  numstr = uim_scm_refer_c_str(get_nth(method_place, numlst_)); 
+	  numstr = uim_scm_refer_c_str(get_nth(method_place, numlst_));
 	  subca = find_cand_array(skk_dic, numstr, 0, NULL, 0);
 	  if (subca) {
 	    for (j = 0; j < subca->nr_cands; j++) {
@@ -1317,7 +1341,7 @@ skk_get_nr_candidates(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim
   if (!uim_scm_nullp(numlst_)) {
     for (i = 0; i < n; i++) {
       if (find_numeric_conv_method4_mark(ca->cands[i], &method_place)) {
-	numstr = uim_scm_refer_c_str(get_nth(method_place, numlst_)); 
+	numstr = uim_scm_refer_c_str(get_nth(method_place, numlst_));
 	nr_cands--;
 	subca = find_cand_array(skk_dic, numstr, 0, NULL, 0);
 	if (subca)
@@ -1575,7 +1599,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
   if (!uim_scm_nullp(numlst_)) {
     for (i = 0; i < ca->nr_cands; i++) {
       if (find_numeric_conv_method4_mark(ca->cands[i], &method_place)) {
-	numstr_ = get_nth(method_place, numlst_); 
+	numstr_ = get_nth(method_place, numlst_);
 	numstr = uim_scm_refer_c_str(numstr_);
 	subca = find_cand_array(skk_dic, numstr, 0, NULL, 0);
 	if (subca) {
