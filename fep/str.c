@@ -59,6 +59,9 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+#ifdef HAVE_LANGINFO_H
+#include <langinfo.h>
+#endif
 #include "uim-fep.h"
 #include "str.h"
 
@@ -84,16 +87,7 @@ const char *get_enc(void)
 #ifdef __CYGWIN32__
   return "EUC-JP";
 #else
-  const char *locale = setlocale(LC_CTYPE, NULL);
-  assert(locale != NULL);
-
-  if (strcasecmp(locale, "ja") == 0) {
-    return "EUC-JP";
-  } else {
-    char *ptr = strstr(locale, ".");
-    return ptr != NULL ? ptr + 1 : "UTF-8";
-  }
-  return "UTF-8";
+  return nl_langinfo(CODESET);
 #endif
 }
 

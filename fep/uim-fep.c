@@ -99,6 +99,9 @@
 #ifdef HAVE_PTY_H
 #include <pty.h>
 #endif
+#ifdef HAVE_UTMP_H
+#include <utmp.h>
+#endif
 #ifdef HAVE_UTIL_H
 #include <util.h>
 #endif
@@ -220,6 +223,7 @@ int main(int argc, char **argv)
     UNDEFINED, /* foreground */
     UNDEFINED  /* background */
   };
+  FILE *fp;
 
   int op;
 
@@ -360,7 +364,6 @@ opt_end:
     g_win_out = WIN_OUT_FILENO;
   }
 
-  /* exit if stdin is redirected */
   if (!isatty(g_win_in)) {
     g_win_in = open("/dev/tty", O_RDONLY);
   }
@@ -386,7 +389,8 @@ opt_end:
   snprintf(env_buf, 30, "UIM_FEP_PID=%d", getpid());
   putenv(env_buf);
 
-  if (fopen(s_path_getmode, "wt") != NULL) {
+  if ((fp = fopen(s_path_getmode, "wt")) != NULL) {
+    fclose(fp);
     unlink(s_path_getmode);
     env_buf = malloc(strlen("UIM_FEP_GETMODE=") + strlen(s_path_getmode) + 1);
     sprintf(env_buf, "UIM_FEP_GETMODE=%s", s_path_getmode);
@@ -415,6 +419,9 @@ opt_end:
     }
     if (child == 0) {
       /* 子プロセス */
+      if (g_win_in != STDIN_FILENO) {
+        close(g_win_in);
+      }
       execvp(command[0], (char *const *)command);
       perror(command[0]);
       done(EXIT_FAILURE);
@@ -567,17 +574,13 @@ static pid_t my_forkpty(int *amaster, struct termios *termp, struct winsize *win
   }
   if (pid == 0) {
     /* 子プロセス */
-    setsid();
-    /* man tty_ioctl */
-    ioctl(slave, TIOCSCTTY, 0);
-
+    int redirected_stdin = dup(STDIN_FILENO);
     close(*amaster);
-    if (g_win_in == STDIN_FILENO) {
-      dup2(slave, STDIN_FILENO);
+    login_tty(slave);
+    if (g_win_in != STDIN_FILENO) {
+      dup2(redirected_stdin, STDIN_FILENO);
     }
-    dup2(slave, STDOUT_FILENO);
-    dup2(slave, STDERR_FILENO);
-    close(slave);
+    close(redirected_stdin);
     return 0;
   } else {
     close(slave);
