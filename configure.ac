@@ -162,13 +162,15 @@ XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0;
 fi
 AM_CONDITIONAL(WITH_XFT, test x"$XFT" = "xtrue")
 
+# for uim-fep
+AM_LANGINFO_CODESET
 
 # Checks for header files.
 AC_FUNC_ALLOCA
 AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h locale.h stdlib.h unistd.h])
-AC_CHECK_HEADERS([langinfo.h stdlib.h string.h sys/ioctl.h sys/socket.h termios.h unistd.h wchar.h])
-AC_CHECK_HEADERS([sys/time.h sys/stat.h sys/un.h getopt.h assert.h signal.h term.h ncurses/term.h ctype.h pwd.h stdarg.h fcntl.h])
+AC_CHECK_HEADERS([string.h sys/ioctl.h sys/socket.h termios.h wchar.h])
+AC_CHECK_HEADERS([sys/time.h sys/stat.h sys/un.h getopt.h assert.h signal.h term.h ncurses/term.h ctype.h pwd.h stdarg.h])
 AC_CHECK_HEADERS([pty.h utmp.h util.h libutil.h])
 AC_CHECK_HEADERS([curses.h stropts.h])
 AC_CHECK_HEADERS([sys/param.h strings.h])
