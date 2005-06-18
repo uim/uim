@@ -487,15 +487,15 @@
      ((anthy-transpose-as-wide-latin-key? key key-state)
       (anthy-context-set-transposing-type! ac anthy-type-wide-latin))
 
-     ((anthy-commit-key? key key-state)
-      (begin
-	(im-commit ac (anthy-transposing-text ac))
-	(anthy-flush ac)))
-
      (else
       (begin
-	(anthy-context-set-transposing! ac #f)
-	(anthy-proc-input-state-with-preedit ac key key-state))))))
+	; commit
+	(im-commit ac (anthy-transposing-text ac))
+	(anthy-flush ac)
+	(if (not (anthy-commit-key? key key-state))
+	    (begin 
+	      (anthy-context-set-transposing! ac #f)
+	      (anthy-proc-input-state ac key key-state))))))))
 
 (define anthy-proc-input-state-with-preedit
   (lambda (ac key key-state)
