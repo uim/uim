@@ -544,7 +544,7 @@ void PeWin::set_xftfont(const char *xfld)
 	    mXftFont = XftFontOpen(XimServer::gDpy,
 			    DefaultScreen(XimServer::gDpy),
 			    XFT_FAMILY, XftTypeString, gXftFontName,
-			    XFT_SIZE, XftTypeDouble, (double)size,
+			    XFT_PIXEL_SIZE, XftTypeDouble, (double)size,
 			    NULL);
 	    mXftFontSize = size;
 	    mXftFontName = gXftFontName;
