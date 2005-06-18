@@ -76,6 +76,7 @@ const char *fontset_ko = "-sony-fixed-medium-r-normal--16-*-*-*-c-80-iso8859-1, 
 #if HAVE_XFT_UTF8_STRING
 XftFont *gXftFont;
 char *gXftFontName;
+char *gXftFontLocale;
 
 void
 init_default_xftfont() {
@@ -86,6 +87,7 @@ init_default_xftfont() {
 		    XFT_FAMILY, XftTypeString, fontname,
 		    XFT_PIXEL_SIZE, XftTypeDouble, (double)DEFAULT_FONT_SIZE,
 		    NULL);
+    gXftFontLocale = strdup(setlocale(LC_CTYPE, NULL));
     // maybe not needed, but in case it return NULL...
     if (!gXftFont) {
 	gXftFont = XftFontOpen(XimServer::gDpy, DefaultScreen(XimServer::gDpy),
@@ -125,8 +127,10 @@ update_default_xftfont(const char *s) {
 	if (xftfont) {
 	    XftFontClose(XimServer::gDpy, gXftFont);
 	    free(gXftFontName);
+	    free(gXftFontLocale);
 	    gXftFont = xftfont;
 	    gXftFontName = fontname;
+	    gXftFontLocale = strdup(setlocale(LC_CTYPE, NULL));
 	}
     }
 }
@@ -207,7 +211,6 @@ public:
 #if HAVE_XFT_UTF8_STRING
     XftFont *mXftFont;
     int mXftFontSize;
-    char *mXftFontName;
 #endif
 protected:
 #if HAVE_XFT_UTF8_STRING
@@ -378,8 +381,15 @@ PeWin::PeWin(Window pw, const char *im_lang, const char *encoding, const char *l
     if (mConvdisp->use_xft() == true) {
 #if HAVE_XFT_UTF8_STRING
 	mXftFontSize = DEFAULT_FONT_SIZE;
-	mXftFont = gXftFont;
-	mXftFontName = gXftFontName;
+	if (!strcmp(gXftFontLocale, locale)) {
+	    mXftFont = gXftFont;
+	} else {
+	    mXftFont = XftFontOpen(XimServer::gDpy,
+			    DefaultScreen(XimServer::gDpy),
+			    XFT_FAMILY, XftTypeString, gXftFontName,
+			    XFT_PIXEL_SIZE, XftTypeDouble, (double)mXftFontSize,
+			    NULL);
+	}
 	mXftDraw = XftDrawCreate(XimServer::gDpy, mPixmap,
 			DefaultVisual(XimServer::gDpy, scr_num),
 			DefaultColormap(XimServer::gDpy, scr_num));
@@ -537,7 +547,8 @@ void PeWin::set_fontset(XFontSet f)
 void PeWin::set_xftfont(const char *xfld)
 {
 	int size = get_fontsize(xfld);
-	if (size != -1 && (mXftFontSize != size || strcmp(mXftFontName, gXftFontName))) {
+	const char *locale = mConvdisp->get_locale_name();
+	if (size != -1 && (mXftFontSize != size || strcmp(locale, gXftFontLocale))) {
 	    if (mXftFont != gXftFont)
 		XftFontClose(XimServer::gDpy, mXftFont);
 
@@ -547,7 +558,6 @@ void PeWin::set_xftfont(const char *xfld)
 			    XFT_PIXEL_SIZE, XftTypeDouble, (double)size,
 			    NULL);
 	    mXftFontSize = size;
-	    mXftFontName = gXftFontName;
 	}
 }
 
@@ -787,6 +797,11 @@ void Convdisp::set_im_lang(const char *im_lang)
 void Convdisp::set_locale_name(const char *locale)
 {
     mLocaleName = locale;
+}
+
+const char *Convdisp::get_locale_name()
+{
+    return mLocaleName;
 }
 
 void Convdisp::set_pe(pe_stat *p)

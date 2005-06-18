@@ -53,6 +53,7 @@ public:
     virtual void move_candwin() = 0;
     virtual void set_im_lang(const char *im_lang);
     virtual void set_locale_name(const char *locale);
+    virtual const char *get_locale_name();
     virtual InputContext *get_context();
     virtual bool use_xft() = 0;
 
