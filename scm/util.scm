@@ -434,7 +434,7 @@
     (let ((x (car args))
 	  (lst (cadr args))
 	  (val=? (if (null? (cddr args))
-		     =
+		     equal?
 		     (car (cddr args)))))
       (filter (lambda (elm)
 		(not (val=? elm x)))
@@ -445,7 +445,7 @@
     (let ((key (car args))
 	  (alist (cadr args))
 	  (key=? (if (null? (cddr args))
-		     =
+		     equal?
 		     (car (cddr args)))))
     (remove (lambda (elm)
 	      (key=? (car elm)

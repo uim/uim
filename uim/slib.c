@@ -82,6 +82,7 @@
   added NESTED_REPL_C_STRING feature (Dec-31-2004) YamaKen
   added heap_alloc_threshold and make configurable (Jan-07-2005) YamaKen
   added support for interactive debugging (Feb-09-2005) Jun Inoue
+  added inteql for "=" predicate (Jun-19-2005) YamaKen
  */
 
 #include "config.h"
@@ -175,6 +176,7 @@ static LISP cdr (LISP x);
 static LISP setcar (LISP cell, LISP value);
 static LISP intcons (int x);
 static LISP eql (LISP x, LISP y);
+static LISP inteql (LISP x, LISP y);
 static LISP symcons (char *pname, LISP vcell);
 static LISP symbol_boundp (LISP x, LISP env);
 static LISP symbol_value (LISP x, LISP env);
@@ -1991,6 +1993,20 @@ eql (LISP x, LISP y)
     (x) return (NIL);
   else if NINTNUMP
     (y) return (NIL);
+  else if (INTNM (x) == INTNM (y))
+    return (sym_t);
+  return (NIL);
+}
+
+static LISP
+inteql (LISP x, LISP y)
+{
+  if NINTNUMP
+    (x) my_err ("number required", x);
+  else if NINTNUMP
+    (y) my_err ("number required", y);
+  else if EQ
+    (x, y) return (sym_t);
   else if (INTNM (x) == INTNM (y))
     return (sym_t);
   return (NIL);
@@ -4932,7 +4948,11 @@ init_subrs (void)
   init_subr_2 ("equal?", equal);
   init_subr_2 ("eq?", eq);
   init_subr_2 ("eqv?", eql);
-  init_subr_2 ("=", eql);
+#if 0
+  init_subr_2 ("=", inteql);  /* R5RS compatible */
+#else
+  init_subr_2 ("=", eql);     /* loosely accepts non-number objects */
+#endif
   init_subr_2 ("assq", assq);
   init_msubr ("cond", leval_cond);
   init_msubr ("case", leval_case);
