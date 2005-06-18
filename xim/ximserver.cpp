@@ -362,8 +362,10 @@ InputContext::createUimContext(const char *engine)
     free(mLocaleName);
     mLocaleName = locale;
 
-    free(mEngineName);
-    mEngineName = strdup(real_im);
+    if (mEngineName != real_im) {
+      free(mEngineName);
+      mEngineName = strdup(real_im);
+    }
 
     uim_context uc = uim_create_context((void *) this, "UTF-8",
 					NULL, real_im, uim_iconv,
