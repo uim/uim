@@ -64,13 +64,14 @@
   (lambda ()
     (if (not (memq 'direct enabled-im-list))
 	(set! enabled-im-list (append enabled-im-list '(direct))))
-
+    
     (if (getenv "LIBUIM_VANILLA")
-	(set! enable-lazy-loading? #f)
-	(begin
-	  (if enable-lazy-loading?
-	      (require "lazy-load.scm"))
-	  (load-enabled-modules)))
+	(set! enable-lazy-loading? #f))
+
+    (if enable-lazy-loading?
+	(require "lazy-load.scm"))
+
+    (load-enabled-modules)
 
     ;; must be loaded at last of IMs
     (if (not (retrieve-im 'direct))
