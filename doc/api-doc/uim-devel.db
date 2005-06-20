@@ -457,12 +457,23 @@
       </varlistentry>
       
       <varlistentry>
-	<term>LUBUIM_VANILLA</term>
+	<term>LIBUIM_VANILLA</term>
 	<listitem>
 	  <para>
-	    This variable takes any values. Regardless of their value, if variable
-	    is defined, uim doesn't read any configuration files. (Note, even 'export
-	    LIBUIM_VANILLA=0' means uim doesn't read any configs.)
+	    This variable takes an integer value. uim changes its
+	    behavior as follows if variable is defined.
+	  <programlisting>
+	LIBUIM_VANILLA=2 : vanilla + toppings
+       ;; disable ~/.uim, user customs and lazy loading, but enable loading
+       ;; modules
+
+	LIBUIM_VANILLA=1 : pure vanilla
+       ;; disable ~/.uim, user customs, lazy loading, loading modules
+
+	undefined : fully flavored
+       ;; enable ~/.uim, user customs, lazy loading if required, and loading
+       ;; modules
+	  </programlisting>
 	  </para>
 	</listitem>
       </varlistentry>

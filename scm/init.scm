@@ -64,14 +64,28 @@
   (lambda ()
     (if (not (memq 'direct enabled-im-list))
 	(set! enabled-im-list (append enabled-im-list '(direct))))
-    
-    (if (getenv "LIBUIM_VANILLA")
+
+    (let ((vanilla (getenv "LIBUIM_VANILLA")))
+      (cond
+       ;; vanilla + toppings:
+       ;; disable ~/.uim, user customs and lazy loading, but enable loading
+       ;; modules
+       ((equal? vanilla "2")
+	(set! enable-lazy-loading? #f)
+	(load-enabled-modules))
+
+       ;; pure vanilla:
+       ;; disable ~/.uim, user customs, lazy loading, loading modules
+       (vanilla	;; "1", legacy "0", and so on
 	(set! enable-lazy-loading? #f))
 
-    (if enable-lazy-loading?
-	(require "lazy-load.scm"))
-
-    (load-enabled-modules)
+       ;; fully flavored:
+       ;; enable ~/.uim, user customs, lazy loading if required, and loading
+       ;; modules
+       (else
+	(if enable-lazy-loading?
+	    (require "lazy-load.scm"))
+	(load-enabled-modules))))
 
     ;; must be loaded at last of IMs
     (if (not (retrieve-im 'direct))
