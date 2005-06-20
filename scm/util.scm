@@ -670,3 +670,18 @@
       multi-segment-type-hiragana)
      ((= kana multi-segment-type-hankana)
       multi-segment-type-hiragana))))
+
+
+;; FIXME: write test.
+(define (ucs-to-utf8-string ucs)
+  (let ((utf-8
+	 (if (< ucs 128)
+	     (list ucs)		; ASCII
+	     (let enc ((to-be-split ucs)
+		       (threshold 64))
+	       (if (< to-be-split threshold)
+		   (list (bit-or to-be-split
+				 (bit-xor 255 (- (* 2 threshold) 1))))
+		   (cons (bit-or 128 (bit-and 63 to-be-split))
+			 (enc (/ to-be-split 64) (/ threshold 2))))))))
+    (string-append-map charcode->string (reverse utf-8))))
