@@ -685,4 +685,4 @@
 				   (bit-xor 255 (- (* 2 threshold) 1))))
 		     (cons (bit-or 128 (bit-and 63 to-be-split))
 			   (enc (/ to-be-split 64) (/ threshold 2))))))))
-      (string-append-map charcode->string (reverse utf-8))))
+      (string-append-map charcode->string (reverse utf-8)))))
