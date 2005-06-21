@@ -108,7 +108,6 @@ public:
     void OnRecv();
     void OnSend();
     void OnClose();
-    virtual void OnPushPacket() {}; // Called when packet is pushed into sending queue.  But doesn't do anything for now.
     void push_packet(TxPacket *); // for normal packet for reply
     void push_passive_packet(TxPacket *); // for preceding packet for reply
     int byte_order() {return mByteorder;};
@@ -125,12 +124,14 @@ protected:
     virtual void setPreeditStartSyncFlag();
     virtual void unsetPreeditStartSyncFlag();
     virtual bool hasPreeditStartSyncFlag();
+    virtual void setPreeditCaretSyncFlag();
+    virtual void unsetPreeditCaretSyncFlag();
+    virtual bool hasPreeditCaretSyncFlag();
 
     std::list<RxPacket *> mRxQ;
-    std::list<RxPacket *> mPendingRxQ; // pending queue for XIM_FORWARD Rx event
     std::list<TxPacket *> mTxQ;
     std::list<TxPacket *> mPTxQ;
-    std::list<TxPacket *> mPendingTxQ; // pending queue for mTxQ
+    std::list<TxPacket *> mPendingTxQ; // pending queue for mTxQ and mPTxQ
     int mByteorder;
     bool mIsCloseWait; // true when the last packet has handled
 private:
@@ -153,17 +154,19 @@ private:
 
     void xim_forward_event(RxPacket *);
     void xim_sync_reply();
-    void xim_preedit_start_reply(RxPacket *);
+    void xim_preedit_start_reply();
+    void xim_preedit_caret_reply();
     void xim_error(RxPacket *);
 
     bool is_xim_sync_reply_timeout();
-    void clear_pending_rx();
+    void clear_pending_queue();
 private:
     XimIC *get_ic(RxPacket *);
     std::list<int> mCreatedIm;
     XimServer *mServer;
     bool mSyncFlag;
     bool mPreeditStartSyncFlag;
+    bool mPreeditCaretSyncFlag;
     struct timeval mSyncStartTime;
 };
 

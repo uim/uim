@@ -1410,15 +1410,16 @@ void ConvdispOs::update_preedit()
 	mConn->push_passive_packet(t);
     }
     mPrevLen = len;
-    /*
-      t = createTxPacket(XIM_PREEDIT_CARET,0);
-      t->pushC16(mImid);
-      t->pushC16(mIcid);
-      t->pushC32(pos);
-      t->pushC32(dir);
-      t->pushC32(style);
-      mConn->push_packet(t);
-      */
+
+    if (len) {
+	t = createTxPacket(XIM_PREEDIT_CARET, 0);
+	t->pushC16(mImid);
+	t->pushC16(mIcid);
+	t->pushC32(caret_pos);
+	t->pushC32(XIMAbsolutePosition);
+	t->pushC32(XIMIsPrimary);
+	mConn->push_passive_packet(t);
+    }
 }
       
 void ConvdispOs::move_candwin()

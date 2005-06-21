@@ -47,6 +47,9 @@ public:
 
     void readProc(XClientMessageEvent *);
     void writeProc();
+    void writePendingPacket();
+    void writePassivePacket();
+    void writeNormalPacket();
     bool isValid() {return mIsValid;};
 private:
     bool readToBuf(XClientMessageEvent *);

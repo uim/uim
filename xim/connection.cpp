@@ -245,28 +245,100 @@ bool XConnection::readToBuf(XClientMessageEvent *ev)
     return true;
 }
 
-void XConnection::writeProc()
+void XConnection::writePendingPacket()
 {
     std::list<TxPacket *>::iterator i, j;
-    std::list<TxPacket *> tmp;
+    bool sent_preedit_done = false;
     int major;
 
-    if (!mTxQ.size() && !mPTxQ.size())
-	return;
+    while (mPendingTxQ.size()) {
+	if (hasSyncFlag() || hasPreeditStartSyncFlag() ||
+			hasPreeditCaretSyncFlag())
+	    break;
 
-    OnSend(); // add XIM_COMMIT packet to passive queue
-
-    // handle passive (i.e. precedent) packets
-    bool sent_preedit_done = false;
-    while (mPTxQ.size()) {
-	i = mPTxQ.begin();
+	i = mPendingTxQ.begin();
 	major = (*i)->get_major();
 
-	if (major == XIM_COMMIT)
+	switch (major) {
+	case XIM_COMMIT:
+	case XIM_FORWARD_EVENT:
 	    setSyncFlag();
-
-	if (major == XIM_PREEDIT_DONE)
+	    break;
+	case XIM_PREEDIT_START:
+	    setPreeditStartSyncFlag();
+	    break;
+	case XIM_PREEDIT_CARET:
+	    setPreeditCaretSyncFlag();
+	    break;
+	case XIM_PREEDIT_DONE:
 	    sent_preedit_done = true;
+	default:
+	    break;
+	}
+
+	doSend(*i, true);
+	delete *i;
+	mPendingTxQ.pop_front();
+
+ 	// XIM_PREEDIT_START/DRAW just after XIM_PREEDIT_DONE maybe
+	// need to wait XIM_COMMIT and its XIM_SYNC_REPLY
+	if (sent_preedit_done == true) {
+	    // push first XIM_COMMIT into the head of the queue
+	    std::list<TxPacket *> tmp;
+	    bool first = true;
+	    while (mPendingTxQ.size()) {
+		j = mPendingTxQ.begin();
+		major = (*j)->get_major();
+		if (major == XIM_COMMIT && first == true) {
+		    tmp.push_front(*j);
+		    first = false;
+		} else
+		    tmp.push_back(*j);
+
+		mPendingTxQ.pop_front();
+	    }
+	    mPendingTxQ = tmp;
+	    sent_preedit_done = false;
+	}
+    }
+}
+
+void XConnection::writePassivePacket()
+{
+    std::list<TxPacket *>::iterator i, j;
+    bool sent_preedit_done = false;
+    int major;
+
+    while (mPTxQ.size()) {
+	if (mPendingTxQ.size())
+	    break;
+
+	i = mPTxQ.begin();
+
+	if (hasSyncFlag() || hasPreeditStartSyncFlag() ||
+			hasPreeditCaretSyncFlag()) {
+	    mPendingTxQ.push_back(*i);
+	    mPTxQ.pop_front();
+	    break;
+	}
+
+	major = (*i)->get_major();
+	switch (major) {
+	case XIM_COMMIT:
+	    setSyncFlag();
+	    break;
+	case XIM_PREEDIT_START:
+	    setPreeditStartSyncFlag();
+	    break;
+	case XIM_PREEDIT_CARET:
+	    setPreeditCaretSyncFlag();
+	    break;
+	case XIM_PREEDIT_DONE:
+	    sent_preedit_done = true;
+	    break;
+	default:
+	    break;
+	}
 
 	doSend(*i, true);
 	delete *i;
@@ -276,6 +348,7 @@ void XConnection::writeProc()
 	// need to wait XIM_COMMIT and its XIM_SYNC_REPLY
 	if (sent_preedit_done == true) {
 	    // push first XIM_COMMIT into the head of passive queue
+	    std::list<TxPacket *> tmp;
 	    bool first = true;
 	    while (mPTxQ.size()) {
 		j = mPTxQ.begin();
@@ -292,8 +365,13 @@ void XConnection::writeProc()
 	    sent_preedit_done = false;
 	}
     }
+}
 
-    // handle normal packets
+void XConnection::writeNormalPacket()
+{
+    std::list<TxPacket *>::iterator i;
+    int major;
+
     while (mTxQ.size()) {
 	i = mTxQ.begin();
 	major = (*i)->get_major();
@@ -310,6 +388,15 @@ void XConnection::writeProc()
 	delete *i;
 	mTxQ.pop_front();
     }
+}
+
+void XConnection::writeProc()
+{
+    OnSend(); // add XIM_COMMIT packet to passive queue
+
+    writePendingPacket();
+    writePassivePacket();
+    writeNormalPacket();
 
     XFlush(XimServer::gDpy);
     if (mIsCloseWait) {

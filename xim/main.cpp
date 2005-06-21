@@ -181,7 +181,7 @@ add_window_watch(Window id, WindowIf *w, int mask)
     std::pair<unsigned int, WindowIf *> p(id, w);
     window_watch_stat.insert(p);
 
-    // Event mash has same value defined in X,
+    // Event mask is the same value defined in X,
     // but do not depend on.
     int emask = 0;
     if (mask & EXPOSE_MASK)

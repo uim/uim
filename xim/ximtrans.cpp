@@ -203,6 +203,7 @@ Connection::Connection(XimServer *svr)
     mServer = svr;
     mSyncFlag = false;
     mPreeditStartSyncFlag = false;
+    mPreeditCaretSyncFlag = false;
 }
 
 Connection::~Connection()
@@ -215,9 +216,6 @@ Connection::~Connection()
     //
     std::list<RxPacket *>::iterator ir;
     for (ir = mRxQ.begin(); ir != mRxQ.end(); ir++) {
-	delete *ir;
-    }
-    for (ir = mPendingRxQ.begin(); ir != mPendingRxQ.end(); ir++) {
 	delete *ir;
     }
     std::list<TxPacket *>::iterator it;
@@ -303,10 +301,10 @@ void Connection::OnRecv()
 	    xim_reset_ic(p);
 	    break;
 	case XIM_PREEDIT_START_REPLY:
-	    xim_preedit_start_reply(p);
+	    xim_preedit_start_reply();
 	    break;
 	case XIM_PREEDIT_CARET_REPLY:
-	    // do nothing
+	    xim_preedit_caret_reply();
 	    break;
 	case XIM_ERROR:
 	    xim_error(p);
@@ -437,6 +435,21 @@ void Connection::unsetPreeditStartSyncFlag()
 bool Connection::hasPreeditStartSyncFlag()
 {
     return mPreeditStartSyncFlag;
+}
+
+void Connection::setPreeditCaretSyncFlag()
+{
+    mPreeditCaretSyncFlag = true;
+}
+
+void Connection::unsetPreeditCaretSyncFlag()
+{
+    mPreeditCaretSyncFlag = false;
+}
+
+bool Connection::hasPreeditCaretSyncFlag()
+{
+    return mPreeditCaretSyncFlag;
 }
 
 //
@@ -701,49 +714,16 @@ void Connection::xim_forward_event(RxPacket *p)
 	if (is_xim_sync_reply_timeout()) {
 	    // XIM protocol error?
 	    push_error_packet(imid, icid, ERR_BadProtocol, "Bad Protocol");
-	    clear_pending_rx();
+	    clear_pending_queue();
 	    unsetSyncFlag();
-	    im->forward_event(p);
-	} else {
-	    // Copy this packet since it will soon be deleted, then
-	    // add to pending queue.
-	    RxPacket *packet = copyRxPacket(p);
-	    mPendingRxQ.push_back(packet);
 	}
     }
-    else
-	im->forward_event(p);
+    im->forward_event(p);
 }
 
 void Connection::xim_sync_reply()
 {
-    if (hasSyncFlag()) {
-	unsetSyncFlag();
-
-	// send consecutive XIM_FORWARD event just after XIM_COMMIT
-	std::list<TxPacket *>::iterator i;
-	while (mPendingTxQ.size()) {
-	    i = mPendingTxQ.begin();
-	    mTxQ.push_back(*i);
-	    mPendingTxQ.pop_front();
-	}
-
-	// process pending Rx queue
-	int imid, icid;
-	XimIM *im;
-	std::list<RxPacket *>::iterator j;
-	while (mPendingRxQ.size()) {
-	    j = mPendingRxQ.begin();
-	    imid = (*j)->getC16();
-	    icid = (*j)->getC16();
-	    (*j)->rewind();
-	    im = get_im_by_id(imid);
-	    im->forward_event(*j);
-	    delete *j;
-	    mPendingRxQ.pop_front();
-	    break; // handle only one pending event is safe...
-	}
-    }
+    unsetSyncFlag();
 }
 
 void Connection::xim_reset_ic(RxPacket *p)
@@ -753,19 +733,14 @@ void Connection::xim_reset_ic(RxPacket *p)
 	ic->reset_ic();
 }
 
-void Connection::xim_preedit_start_reply(RxPacket *p)
+void Connection::xim_preedit_start_reply()
 {
-    std::list<TxPacket *>::iterator i;
-
     unsetPreeditStartSyncFlag();
-#if 0
-    // not used for now
-    while (mPPendingTxQ.size()) {
-	i = mPPendingTxQ.begin();
-	mPTxQ.push_back(*i);
-	mPPendingTxQ.pop_front();
-    }
-#endif
+}
+
+void Connection::xim_preedit_caret_reply()
+{
+    unsetPreeditCaretSyncFlag();
 }
 
 void Connection::xim_error(RxPacket *p)
@@ -822,11 +797,11 @@ bool Connection::is_xim_sync_reply_timeout(void)
 	return false;
 }
 
-void Connection::clear_pending_rx() {
-    std::list<RxPacket *>::iterator i;
-    while (mPendingRxQ.size()) {
-	i = mPendingRxQ.begin();
-	mPendingRxQ.pop_front();
+void Connection::clear_pending_queue() {
+    std::list<TxPacket *>::iterator i;
+    while (mPendingTxQ.size()) {
+	i = mPendingTxQ.begin();
+	mPendingTxQ.pop_front();
 	delete *i;
     }
 }
