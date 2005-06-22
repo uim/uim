@@ -498,8 +498,10 @@ compose_line_parts(struct dic_info *di, struct skk_line *sl,
     tmp = nth_candidate(line, nth);
     if (tmp) {
       if (tmp[0] == '[') {
+	char *str = okuri_in_bracket(&tmp[1]);
 	tmp[0] = ' '; /* create first_space */
-	compose_line_parts(di, sl, okuri_in_bracket(&tmp[1]), &tmp[0]);
+	compose_line_parts(di, sl, str, &tmp[0]);
+	free(str);
       } else if (tmp[0] != ']') {
 	push_back_candidate_to_array(ca, tmp);
       }
