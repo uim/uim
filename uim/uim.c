@@ -268,6 +268,7 @@ uim_release_context(uim_context uc)
   free(uc->modes);
   free(uc->short_desc);
   free(uc->encoding);
+  free(uc->current_im_name);
   free(uc);
 }
 
@@ -689,6 +690,7 @@ uim_quit(void)
   /**/
   uim_quit_plugin();
   uim_scm_quit();
+  free(uim_last_client_encoding);
   uim_last_client_encoding = NULL;
   uim_initialized = 0;
 }

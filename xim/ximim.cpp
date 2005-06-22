@@ -398,6 +398,8 @@ void XimIM::FreeComposeTree(DefTree *top)
 	FreeComposeTree(top->succession);
    if (top->next)
 	FreeComposeTree(top->next);
+   free(top->mb);
+   free(top->utf8);
    free(top);
 }
 
