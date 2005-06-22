@@ -373,7 +373,7 @@ nth_candidate(char *str, int nth)
       str++;
     }
   }
-  if (!str) {
+  if (*str == '\0') {
     return NULL;
   }
   if (*str == '/') {
@@ -496,7 +496,7 @@ compose_line_parts(struct dic_info *di, struct skk_line *sl,
   nth = 0;
   do {
     tmp = nth_candidate(line, nth);
-    if (tmp && strlen(tmp)) {
+    if (tmp) {
       if (tmp[0] == '[') {
 	tmp[0] = ' '; /* create first_space */
 	compose_line_parts(di, sl, okuri_in_bracket(&tmp[1]), &tmp[0]);
