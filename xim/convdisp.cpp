@@ -563,8 +563,9 @@ void PeWin::set_xftfont(const char *xfld)
 
 int PeWin::get_fontsize(const char *xfld)
 {
+#define MAX_DIGIT_OF_PIXEL_SIZE	3
     int size;
-    char str[3];
+    char str[MAX_DIGIT_OF_PIXEL_SIZE + 1];
     const char *p = xfld;
     int count = 0;
     int i, j = 0;
@@ -578,6 +579,8 @@ int PeWin::get_fontsize(const char *xfld)
 		str[j] = p[i];
 		i++;
 		j++;
+		if (j > MAX_DIGIT_OF_PIXEL_SIZE)
+		    return -1;
 	    }
 	    str[j] = '\0';
 	    break;
