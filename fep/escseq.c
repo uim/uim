@@ -200,35 +200,37 @@ static void check_escseq(void)
     printf("exit_attribute_mode is not available\n");
     done(EXIT_FAILURE);
   }
-  if (clr_eol == NULL) {
-    printf("clr_eol is not available\n");
-    done(EXIT_FAILURE);
-  }
-  if (cursor_address == NULL) {
-    printf("cursor_address is not available\n");
-    done(EXIT_FAILURE);
-  }
+
   if (g_opt.status_type == LASTLINE) {
+    if (cursor_address == NULL) {
+      printf("cursor_address is not available\n");
+      done(EXIT_FAILURE);
+    }
+    if (clr_eol == NULL) {
+      printf("clr_eol is not available\n");
+      done(EXIT_FAILURE);
+    }
     if (change_scroll_region == NULL) {
       printf("change_scroll_region is not available\n");
       done(EXIT_FAILURE);
     }
     if (g_opt.no_report_cursor) {
-      if (save_cursor == NULL) {
-        printf("save_cursor is not available.\n");
-        done(EXIT_FAILURE);
-      }
-      if (restore_cursor == NULL) {
-        printf("restore_cursor is not available.\n");
-        done(EXIT_FAILURE);
-      }
       if (cursor_up == NULL) {
         printf("cursor_up is not available.\n");
         done(EXIT_FAILURE);
       }
     }
   }
+
   if (g_opt.no_report_cursor) {
+    if (save_cursor == NULL) {
+      printf("save_cursor is not available.\n");
+      done(EXIT_FAILURE);
+    }
+    if (restore_cursor == NULL) {
+      printf("restore_cursor is not available.\n");
+      done(EXIT_FAILURE);
+    }
     if (cursor_left == NULL) {
       printf("cursor_left is not available\n");
       done(EXIT_FAILURE);
@@ -237,7 +239,13 @@ static void check_escseq(void)
       printf("cursor_right is not available\n");
       done(EXIT_FAILURE);
     }
+  } else {
+    if (cursor_address == NULL) {
+      printf("cursor_address is not available\n");
+      done(EXIT_FAILURE);
+    }
   }
+
   if (g_opt.on_the_spot) {
     if (parm_ich == NULL) {
       printf("parm_ich is not available\n");
