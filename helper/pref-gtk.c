@@ -439,9 +439,13 @@ create_pref_window(void)
 {
   GtkWidget *window;
   GtkWidget *scrolled_win; /* treeview container */
+  GdkPixbuf *icon;
 
   pref_window = window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   
+  icon = gdk_pixbuf_new_from_file(UIM_DATADIR "/pixmaps/uim-icon.png", NULL);
+  gtk_window_set_icon(GTK_WINDOW(pref_window), icon);
+
   g_signal_connect(G_OBJECT (window), "delete_event",
 		   G_CALLBACK (delete_event_cb), NULL);
 
