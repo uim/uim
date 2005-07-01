@@ -16,10 +16,10 @@
 ;;;    may be used to endorse or promote products derived from this software
 ;;;    without specific prior written permission.
 ;;;
-;;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS'' AND
+;;; THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
 ;;; ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 ;;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-;;; ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+;;; ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
 ;;; FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
 ;;; DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
 ;;; OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
@@ -72,37 +72,37 @@
 (define-custom 'prime-register-key '("<Control>w")
                '(prime-keys1)
 	       '(key)
-	       (_ "[PRIME] regist a word")
+	       (_ "[PRIME] prime-register-key")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-typing-mode-hiragana-key '("F6")
                '(prime-keys1 mode-transition)
 	       '(key)
-	       (_ "[PRIME] hiragana typing mode")
+	       (_ "[PRIME] prime-typing-mode-hiragana-key")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-typing-mode-katakana-key '("F7")
                '(prime-keys1 mode-transition)
 	       '(key)
-	       (_ "[PRIME] katakana typing mode")
+	       (_ "[PRIME] prime-typing-mode-katakana-key")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-typing-mode-hankana-key '("F8")
                '(prime-keys1 mode-transition)
 	       '(key)
-	       (_ "[PRIME] halfwidth katakana typing mode")
+	       (_ "[PRIME] prime-typing-mode-hankana-key")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-typing-mode-wideascii-key '("F9")
                '(prime-keys1 mode-transition)
 	       '(key)
-	       (_ "[PRIME] wide ascii typing mode")
+	       (_ "[PRIME] prime-typing-mode-wideascii-key")
 	       (_ "long description will be here"))
 
 (define-custom 'prime-typing-mode-ascii-key '("F10")
                '(prime-keys1 mode-transition)
 	       '(key)
-	       (_ "[PRIME] ascii typing mode")
+	       (_ "[PRIME] prime-typing-mode-ascii-key")
 	       (_ "long description will be here"))
 
 ;;
