@@ -443,7 +443,7 @@ create_pref_window(void)
 
   pref_window = window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   
-  icon = gdk_pixbuf_new_from_file(UIM_DATADIR "/pixmaps/uim-icon.png", NULL);
+  icon = gdk_pixbuf_new_from_file(UIM_PIXMAPSDIR "/uim-icon.png", NULL);
   gtk_window_set_icon(GTK_WINDOW(pref_window), icon);
 
   g_signal_connect(G_OBJECT (window), "delete_event",
