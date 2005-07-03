@@ -43,6 +43,8 @@
 #include "uim-compat-scm.h"
 
 #define MODULE_LIST_FILENAME UIM_DATADIR"/modules"
+#define LOADER_SCM_FILENAME  UIM_DATADIR"/loader.scm"
+#define INSTALLED_MODULES_SCM_FILENAME  UIM_DATADIR"/loader.scm"
 
 static void
 print_usage(void)
@@ -109,6 +111,40 @@ write_module_list(uim_lisp new_module, uim_lisp module_list)
   return uim_scm_t();
 }
 
+static uim_lisp
+write_loader_scm(uim_lisp str)
+{
+  FILE *fp = fopen(LOADER_SCM_FILENAME, "w");
+
+  if(!fp) {
+    perror("Failed to open loader.scm");
+    return uim_scm_f();
+  }
+
+  fputs("# This is an automatically generated file. DO NOT EDIT.\n\n", fp);
+
+  fputs(uim_scm_refer_c_str(str), fp);
+  fclose(fp);
+  return uim_scm_t();
+}
+
+static uim_lisp
+write_installed_modules_scm(uim_lisp str)
+{
+  FILE *fp = fopen(INSTALLED_MODULES_SCM_FILENAME, "w");
+
+  if(!fp) {
+    perror("Failed to open loader.scm");
+    return uim_scm_f();
+  }
+
+  fputs("# This is an automatically generated file. DO NOT EDIT.\n\n", fp);
+
+  fputs(uim_scm_refer_c_str(str), fp);
+  fclose(fp);
+  return uim_scm_t();
+}
+
 int
 main(int argc, char *argv[]) {
   int registerp;
@@ -143,6 +179,10 @@ main(int argc, char *argv[]) {
 
   uim_scm_init_subr_0("read-module-list", read_module_list);
   uim_scm_init_subr_2("write-module-list", write_module_list);
+
+  uim_scm_init_subr_1("write-loader.scm", write_loader_scm);
+  uim_scm_init_subr_1("write-installed-modules.scm", write_installed_modules_scm);
+
   uim_scm_require_file("uim-module-manager.scm");
 
   if(registerp == 1) {
