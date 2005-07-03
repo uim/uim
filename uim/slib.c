@@ -4517,6 +4517,20 @@ nth (LISP x, LISP li)
 }
 
 static LISP
+list_ref (LISP list, LISP k)
+{
+  LISP l;
+  long j, n = get_c_int (k);
+  for (j = 0, l = list; (j < n) && CONSP (l); ++j)
+    l = CDR (l);
+  if CONSP
+    (l)
+      return (CAR (l));
+  else
+    return (my_err ("bad arg to list-ref", k));
+}
+
+static LISP
 llist (LISP l)
 {
   return (l);
@@ -5054,6 +5068,8 @@ init_subrs (void)
   init_subr_3 ("ass", ass);
   init_subr_2 ("nth", nth);
   init_subr_1 ("butlast", butlast);
+
+  init_subr_2 ("list-ref", list_ref);
 
   init_subr_2 ("assv", assv);
   init_subr_2 ("strcmp", lstrcmp);
