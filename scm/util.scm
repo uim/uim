@@ -504,12 +504,18 @@
 			 (default  (nth 1 spec))
 			 (getter-sym (symbolconc rec-sym '- elem-sym))
 			 (getter (lambda (rec)
-				   (nth index rec)))
+				   (if rec
+				       (nth index rec)
+				       (begin ;; This error message is not need?
+					 (print (string-append "Error in " getter-sym))
+					 #f))))
 			 (setter-sym (symbolconc rec-sym '-set- elem-sym '!))
 			 (setter (lambda (rec val)
-				   (set-car!
-				    (nthcdr index rec)
-				    val))))
+				   (if rec
+				       (set-car! (nthcdr index rec) val)
+				       ;; This error message is not need?
+				       (print (string-append "Error in " setter-sym))
+				       #f))))
 		    (eval (list 'define getter-sym getter)
 			  toplevel-env)
 		    (eval (list 'define setter-sym setter)
