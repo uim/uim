@@ -4530,6 +4530,21 @@ list_ref (LISP list, LISP k)
     return (my_err ("bad arg to list-ref", k));
 }
 
+static uim_lisp
+list_tail(uim_lisp lst, uim_lisp nth_)
+{
+  int nth = uim_scm_c_int(nth_);
+  int i;
+  for (i = 0; i < nth; i++) {
+    if (uim_scm_nullp(lst)) {
+      /* something bad happened */
+      return uim_scm_f();
+    }
+    lst = uim_scm_cdr(lst);
+  }
+  return lst;
+}
+
 static LISP
 llist (LISP l)
 {
@@ -5070,6 +5085,7 @@ init_subrs (void)
   init_subr_1 ("butlast", butlast);
 
   init_subr_2 ("list-ref", list_ref);
+  init_subr_2 ("list-tail", list_tail);
 
   init_subr_2 ("assv", assv);
   init_subr_2 ("strcmp", lstrcmp);
