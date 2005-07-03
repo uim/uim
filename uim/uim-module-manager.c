@@ -133,6 +133,10 @@ main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
 
+  /* FIXME: To generate loader.scm, we need this setenv for now.
+     But it's a dirty hack, not appropriate. I guess we need entirely new module system. */
+  setenv("LIBUIM_VANILLA", "1", 1);
+
   uim_init();
 
   uim_scm_set_verbose_level(1);
