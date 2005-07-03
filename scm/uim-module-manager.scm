@@ -29,9 +29,6 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; FIXME: Using of intern to pass string to print is not good.
-;; Proper way is probividing a new message print function.
-
 (require "im.scm")
 (require "lazy-load.scm")
 
@@ -39,12 +36,12 @@
 (define (register-module module-name)
   (let ((module-list (read-module-list)))
     (if (memq module-name module-list)
-	(print (intern (string-append "Error : Module " module-name " already registered")))
+	(puts (string-append "Error : Module " module-name " already registered\n"))
 	(if (register-module-to-file module-name module-list)
 	    (begin
-	      (print (intern (string-append "Module " module-name " registered.")))
+	      (puts (string-append "Module " module-name " registered.\n"))
 	      (update-loader-scm (cons module-name module-list)))
-	    (print (intern (string-append "Error: Module " module-name " does not registered.")))))))
+	    (puts (string-append "Error: Module " module-name " does not registered.\n"))))))
 
 ;; This function will call when $ uim-module-manager --unregister
 (define (unregister-module module-name)
@@ -52,11 +49,11 @@
     (if (memq module-name module-list)
 	(begin
 	  (write-module-list #f
-			     (map (lambda (x) (symbol->string x))
+			     (map symbol->string
 				  (remove (lambda (x) (eq? module-name x))
 					  (reverse module-list))))
-	  (print (intern (string-append "Module " module-name " unregistered."))))
-	(print (intern (string-append "Error to remove " module-name ". No such module."))))))
+	  (puts (string-append "Module " module-name " unregistered.\n")))
+	(puts (string-append "Error to remove " module-name ". No such module.\n")))))
 
 
 (define (register-module-to-file new-module module-list)
@@ -64,11 +61,11 @@
       (begin
 	(if (list? module-list)
 	    (write-module-list (symbol->string new-module)
-			       (map (lambda (x) (symbol->string x))
+			       (map symbol->string
 				    (reverse module-list)))
 	    (write-module-list (symbol->string new-module)
 			       #f)))
-      (print (intern (string-append "Error: Module " new-module " is not a correct module.")))))
+      (puts (string-append "Error: Module " new-module " is not a correct module.\n"))))
 
 
 ;; FIXME: Current implementation is heavy.
@@ -76,3 +73,5 @@
 (define (update-loader-scm module-list)
   (set! installed-im-module-list (map symbol->string module-list))
   (puts (string-join "\n" (stub-im-generate-all-stub-im-list))))
+
+(prealloc-heaps-for-heavy-job)
