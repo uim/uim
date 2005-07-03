@@ -116,7 +116,7 @@ main(int argc, char *argv[]) {
 
   if(argc <= 2) {
     print_usage();
-    exit(EXIT_FAILURE); /* FIXME: investigave correct return value. */
+    exit(EXIT_FAILURE);
   }
 
   if(strcmp(argv[1], "--register") == 0) {
@@ -125,12 +125,12 @@ main(int argc, char *argv[]) {
     registerp = 2;
   } else {
     print_usage();
-    exit(1); /* FIXME: investigave correct return value. */
+    exit(EXIT_FAILURE);
   }
 
   if(!argv[2]) {
     print_usage();
-    exit(1); /* FIXME: investigave correct return value. */
+    exit(EXIT_FAILURE);
   }
 
   uim_init();
