@@ -70,24 +70,9 @@
 			       #f)))
       (print (intern (string-append "Error: Module " new-module " is not a correct module.")))))
 
+
+;; FIXME: Current implementation is heavy.
+;; Redefine register-im and then call all of modules.
 (define (update-loader-scm module-list)
-  (print module-list)
-  (print (map require-module (map symbol->string module-list)))
-  (map (lambda (name)
-	 (let* ((im (retrieve-im name))
-		(name-str (symbol->string name)))
-	   (if (not im)
-	       (print (string-append name-str " not found."))
-	       (puts
-	       (string-append
-		"(if (memq '" name-str " enabled-im-list)\n"
-		"    (if enable-lazy-loading?\n"
-		"        (register-stub-im\n"
-		"         '" name-str "\n"
-		"         \"" (im-lang im) "\"\n"
-		"         \"" (im-encoding im) "\"\n"
-		"         \"" (im-name-label im) "\"\n"
-		"         \"" (im-short-desc im) "\"\n"
-		"         \"" (im-module-name im) "\")\n"
-		"        (require-module \"" (im-module-name im) "\")))\n")))))
-       module-list))
+  (set! installed-im-module-list (map symbol->string module-list))
+  (puts (string-join "\n" (stub-im-generate-all-stub-im-list))))
