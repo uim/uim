@@ -5085,7 +5085,15 @@ init_subrs (void)
   init_subr_1 ("butlast", butlast);
 
   init_subr_2 ("list-ref", list_ref);
+#if 0
+  /*
+   * list-tail is already existing in util.scm. To replace it with
+   * this, implement equivalent error handling and validate with
+   * test/test-util.scm. Please don't forget existence of util.scm.
+   *   -- YamaKen 2005-07-03
+   */
   init_subr_2 ("list-tail", list_tail);
+#endif
 
   init_subr_2 ("assv", assv);
   init_subr_2 ("strcmp", lstrcmp);
