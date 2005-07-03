@@ -44,7 +44,7 @@
 
 #define MODULE_LIST_FILENAME UIM_DATADIR"/modules"
 #define LOADER_SCM_FILENAME  UIM_DATADIR"/loader.scm"
-#define INSTALLED_MODULES_SCM_FILENAME  UIM_DATADIR"/loader.scm"
+#define INSTALLED_MODULES_SCM_FILENAME  UIM_DATADIR"/installed-modules.scm"
 
 static void
 print_usage(void)
@@ -134,7 +134,7 @@ write_installed_modules_scm(uim_lisp str)
   FILE *fp = fopen(INSTALLED_MODULES_SCM_FILENAME, "w");
 
   if(!fp) {
-    perror("Failed to open loader.scm");
+    perror("Failed to open installed-modules.scm");
     return uim_scm_f();
   }
 
