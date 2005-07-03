@@ -291,7 +291,7 @@
 	   (extract-kana
 	    (if (= rule anthy-input-rule-kana)
 		(lambda (entry) (car entry))
-		(lambda (entry) (nth kana entry)))))
+		(lambda (entry) (list-ref entry kana)))))
 
       (string-append
        (string-append-map-ustr-former extract-kana preconv-str)
@@ -712,7 +712,7 @@
 	   (extract-kana
 	    (if (= rule anthy-input-rule-kana)
 		(lambda (entry) (car entry))
-		(lambda (entry) (nth kana entry)))))
+		(lambda (entry) (list-ref entry kana)))))
 
       (list
        (and (not (ustr-cursor-at-beginning? preconv-str))
