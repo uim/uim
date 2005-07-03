@@ -52,6 +52,8 @@
 			     (map symbol->string
 				  (remove (lambda (x) (eq? module-name x))
 					  (reverse module-list))))
+	  (update-loader-scm (remove (lambda (x) (eq? module-name x))
+				     (reverse module-list)))
 	  (puts (string-append "Module " module-name " unregistered.\n")))
 	(puts (string-append "Error to remove " module-name ". No such module.\n")))))
 
@@ -69,9 +71,8 @@
 
 
 ;; FIXME: Current implementation is heavy.
-;; Redefine register-im and then call all of modules.
 (define (update-loader-scm module-list)
   (set! installed-im-module-list (map symbol->string module-list))
-  (puts (string-join "\n" (stub-im-generate-all-stub-im-list))))
+  (write-loader.scm (string-join "\n" (stub-im-generate-all-stub-im-list))))
 
 (prealloc-heaps-for-heavy-job)
