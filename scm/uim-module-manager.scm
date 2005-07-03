@@ -40,7 +40,7 @@
 	(if (register-module-to-file module-name module-list)
 	    (begin
 	      (puts (string-append "Module " module-name " registered.\n"))
-	      (update-loader-scm (cons module-name module-list)))
+	      (update-installed-modules&loader (cons module-name module-list)))
 	    (puts (string-append "Error: Module " module-name " does not registered.\n"))))))
 
 ;; This function will call when $ uim-module-manager --unregister
@@ -52,8 +52,8 @@
 			     (map symbol->string
 				  (remove (lambda (x) (eq? module-name x))
 					  (reverse module-list))))
-	  (update-loader-scm (remove (lambda (x) (eq? module-name x))
-				     (reverse module-list)))
+	  (update-installed-modules&loader (remove (lambda (x) (eq? module-name x))
+						   (reverse module-list)))
 	  (puts (string-append "Module " module-name " unregistered.\n")))
 	(puts (string-append "Error to remove " module-name ". No such module.\n")))))
 
@@ -70,9 +70,27 @@
       (puts (string-append "Error: Module " new-module " is not a correct module.\n"))))
 
 
+(define (update-installed-modules&loader module-list)
+  (update-installed-modules-scm module-list)
+  (update-loader-scm module-list))
+
 ;; FIXME: Current implementation is heavy.
 (define (update-loader-scm module-list)
   (set! installed-im-module-list (map symbol->string module-list))
   (write-loader.scm (string-join "\n" (stub-im-generate-all-stub-im-list))))
+
+(define (update-installed-modules-scm module-list)
+  (set! installed-im-module-list (map symbol->string module-list))
+  (try-require "manage-modules.scm")
+  (set! enabled-im-list
+	(map custom-choice-rec-sym (custom-installed-im-list)))
+  (write-installed-modules.scm
+   (string-append
+    (custom-list-as-literal installed-im-module-list)
+    ")\n"
+    (custom-definition-as-literal 'enabled-im-list)
+    "\n")))
+
+;(generate-installed-modules-scm))
 
 (prealloc-heaps-for-heavy-job)
