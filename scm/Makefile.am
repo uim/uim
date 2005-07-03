@@ -27,7 +27,8 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  m17nlib.scm \
  spellcheck.scm spellcheck-custom.scm \
  zaurus.scm \
- scim.scm
+ scim.scm \
+ uim-module-manager.scm
 
 if COMPAT_TABLE
 SCM_FILES += hk.scm
