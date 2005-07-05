@@ -81,11 +81,12 @@
 
 (define (update-installed-modules-scm module-list)
   (set! installed-im-module-list (map symbol->string module-list))
-  (try-require "manage-modules.scm")
+  (try-require "custom.scm")
   (set! enabled-im-list
 	(map custom-choice-rec-sym (custom-installed-im-list)))
   (write-installed-modules.scm
    (string-append
+    "(define installed-im-module-list "
     (custom-list-as-literal installed-im-module-list)
     ")\n"
     (custom-definition-as-literal 'enabled-im-list)
