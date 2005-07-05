@@ -121,7 +121,7 @@ write_loader_scm(uim_lisp str)
     return uim_scm_f();
   }
 
-  fputs("# This is an automatically generated file. DO NOT EDIT.\n\n", fp);
+  fputs(";; This is an automatically generated file. DO NOT EDIT.\n\n", fp);
 
   fputs(uim_scm_refer_c_str(str), fp);
   fclose(fp);
@@ -138,7 +138,7 @@ write_installed_modules_scm(uim_lisp str)
     return uim_scm_f();
   }
 
-  fputs("# This is an automatically generated file. DO NOT EDIT.\n\n", fp);
+  fputs(";; This is an automatically generated file. DO NOT EDIT.\n\n", fp);
 
   fputs(uim_scm_refer_c_str(str), fp);
   fclose(fp);
