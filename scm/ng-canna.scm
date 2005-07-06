@@ -1,5 +1,4 @@
-;;; segmental-converter.scm: Abstraction for Japanese multi-segment conversion
-;;; engines
+;;; ng-canna.scm: A Japanese multi-segment converter Canna (next generation)
 ;;;
 ;;; Copyright (c) 2005 uim Project http://uim.freedesktop.org/
 ;;;
@@ -30,251 +29,10 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(require "util.scm")
-(require "composer.scm")
-
-
-;;
-;; segmental-converter
-;;
-
-;;
-;; segconv-segment
-;;
-
-;;
-;; segconv-engine
-;;
-
-(define segconv-engine-method-table-rec-spec
-  '((finalize!             #f)
-    (reset!                #f)
-    (set-source-str!       #f)
-    (commit!               #f)
-    (nr-segments           #f)
-    (segment-source-length #f)
-    (resize-segment!       #f)
-    (nr-candidates         #f)
-    (candidate-index       #f)
-    (set-candidate-index!  #f)
-    (candidate             #f)))
-(define-record 'segconv-engine-method-table segconv-engine-method-table-rec-spec)
-
-(define segconv-engine-rec-spec
-  '((methods #f)))
-
-(define segconv-engine-finalize!
-  (lambda (self)
-    ((segconv-engine-method-table-finalize! self) self)))
-
-(define segconv-engine-reset!
-  (lambda (self)
-    ((segconv-engine-method-table-reset! self) self)))
-
-(define segconv-engine-set-source-str!
-  (lambda (self utexts)
-    ((segconv-engine-method-table-set-source-str! self) self utexts)))
-
-;; .returns Commit string as utext-list
-(define segconv-engine-commit!
-  (lambda (self)
-    ((segconv-engine-method-table-commit! self) self)))
-
-(define segconv-engine-nr-segments
-  (lambda (self)
-    ((segconv-engine-method-table-nr-segments self) self)))
-
-;; segment length counted in source string
-(define segconv-engine-segment-source-length
-  (lambda (self seg-idx)
-    ((segconv-engine-method-table-segment-source-length self) self seg-idx)))
-
-;; side effect: invalidates nr-segments and all segment info
-(define segconv-engine-resize-segment!
-  (lambda (self seg-idx offset)
-    ((segconv-engine-method-table-resize-segment! self) self seg-idx offset)))
-
-(define segconv-engine-nr-candidates
-  (lambda (self seg-idx)
-    ((segconv-engine-method-table-nr-candidates self) self seg-idx)))
-
-(define segconv-engine-candidate-index
-  (lambda (self seg-idx)
-    ((segconv-engine-method-table-candidate-index self) self seg-idx)))
-
-;; side effect: invalidates nr-segments and all segment info
-;; .parameter commit Instructs partial (sequencial) commit if #t
-;; .returns Commit string as utext-list if commit is #t
-(define segconv-engine-set-candidate-index!
-  (lambda (self seg-idx cand-idx commit)
-    ((segconv-engine-method-table-set-candidate-index! self) self seg-idx cand-idx commit)))
-
-;; .returns Converted segment string as utext-list
-(define segconv-engine-candidate
-  (lambda (self seg-idx cand-idx)
-    ((segconv-engine-method-table-candidate self) self seg-idx cand-idx)))
-
-
-;;
-;; anthy-engine
-;;
-
-;; TODO: move into ng-anthy.scm
-
 (require "i18n.scm")
 (require "ustr.scm")
-
-(define anthy-lib-initialized? #f)
-(define anthy-default-locale (locale-new "ja_JP.EUC-JP"))
-(define anthy-intrinsic-transposition-hiragana? #f) ;; NTH_UNCONVERTED_CANDIDATE
-(define anthy-intrinsic-transposition-katakana? #f)
-(define anthy-intrinsic-transposition-halfkana? #f)
-(define anthy-intrinsic-transposition-half-alnum? #f)
-(define anthy-intrinsic-transposition-full-alnum? #f)
-
-(define anthy-engine-finalize!
-  (lambda (self)
-    (anthy-lib-free-context (anthy-engine-ac-id self))
-    (anthy-engine-set-ac-id! -1)
-    (ustr-clear! (anthy-engine-cand-indices self))))
-
-;; TODO: rewrite with anthy_reset_context()
-(define anthy-engine-reset!
-  (lambda (self)
-    ;;(anthy-lib-reset-context (anthy-engine-ac-id self))
-    (anthy-lib-free-context (anthy-engine-ac-id self))
-    (anthy-engine-set-ac-id! (or (anthy-lib-alloc-context)
-				 -1))
-    (ustr-clear! (anthy-engine-cand-indices self))))
-
-(define anthy-engine-set-source-str!
-  (lambda (self utexts)
-    (anthy-lib-set-string (anthy-engine-ac-id self)
-			  (string-append-map utext-str
-					     utexts))
-    (let ((nsegs (segconv-engine-nr-segments self))
-	  (cands (anthy-engine-cand-indices self)))
-      (ustr-clear! cands)
-      (ustr-set-latter-seq! cands (make-list nsegs 0)))))
-
-(define anthy-engine-commit!
-  (lambda (self)
-    (append-map
-     (lambda (seg-idx)
-       (let ((cand-idx (segconv-engine-candidate-index seg-idx)))
-	 (segconv-engine-set-candidate-index! self seg-idx cand-idx #t)))
-     (iota (segconv-engine-nr-segments self)))))
-
-(define anthy-engine-nr-segments
-  (lambda (self)
-    (- (anthy-lib-get-nr-segments (anthy-engine-ac-id self))
-       (anthy-engine-nr-committed-segments self))))
-
-(define anthy-engine-segment-source-length
-  (lambda (self seg-idx)
-    (let ((iseg-idx (anthy-engine-internal-seg-idx self seg-idx)))
-      (anthy-lib-get-segment-length (anthy-engine-ac-id self) iseg-idx))))
-
-(define anthy-engine-resize-segment!
-  (lambda (self seg-idx offset)
-    (let ((iseg-idx (anthy-engine-internal-seg-idx self seg-idx)))
-      (anthy-lib-resize-segment (anthy-engine-ac-id self) iseg-idx offset)
-      (let* ((new-nseg (anthy-lib-get-nr-segments ac-id))
-	     (latter-nseg (- new-nseg iseg-idx))
-	     (cands (anthy-engine-cand-indices self))
-	     (orig-pos (ustr-cursor-pos cands)))
-	(ustr-set-cursor-pos! cands iseg-idx)
-	(ustr-set-latter-seq! cands (make-list latter-nseg 0))
-	(ustr-set-cursor-pos! cands orig-pos)))))
-
-(define anthy-engine-nr-candidates
-  (lambda (self seg-idx)
-    (let ((iseg-idx (anthy-engine-internal-seg-idx self seg-idx)))
-      (anthy-lib-get-nr-candidates (anthy-engine-ac-id self) iseg-idx))))
-
-(define anthy-engine-candidate-index
-  (lambda (self seg-idx)
-    (ustr-nth (anthy-engine-internal-seg-idx self seg-idx)
-	      (anthy-engine-cand-indices self))))
-
-(define anthy-engine-set-candidate-index!
-  (lambda (self seg-idx cand-idx commit)
-    (let ((ac-id (anthy-engine-ac-id self))
-	  (iseg-idx (anthy-engine-internal-seg-idx self seg-idx))
-	  (cands (anthy-engine-cand-indices self)))
-      (ustr-set-nth! cands iseg-idx cand-idx)
-      (and commit
-	   (let ((committer
-		  (lambda (i)
-		    (let ((iseg-idx (anthy-engine-internal-seg-idx self i))
-			  (cand-idx (anthy-engine-candidate-index self i)))
-		      (anthy-lib-commit-segment ac-id iseg-idx cand-idx)
-		      (segconv-engine-candidate self i cand-idx))))
-		 (utexts (append-map committer (iota (+ seg-idx 1)))))
-	     (ustr-set-cursor-pos! cands iseg-idx)
-	     (and (ustr-cursor-at-end? cands)
-		  (ustr-clear! cands))
-	     utexts)))))
-
-(define anthy-engine-candidate
-  (lambda (self seg-idx cand-idx)
-    (let ((ac-id (anthy-engine-ac-id self))
-	  (iseg-idx (anthy-engine-internal-seg-idx self seg-idx))
-	  (str (anthy-lib-get-nth-candidate ac-id iseg-idx cand-idx)))
-      (list (utext-new str anthy-default-locale ;;'((ruby . "ふりがな"))
-		       )))))
-
-;; for partial commission feature
-(define anthy-engine-nr-committed-segments
-  (lambda (self)
-    (ustr-cursor-pos (anthy-engine-cand-indices self))))
-
-;; for partial commission feature
-(define anthy-engine-internal-seg-idx
-  (lambda (self seg-idx)
-    (+ (anthy-engine-nr-committed-segments self)
-       seg-idx)))
-
-(define anthy-engine-method-table
-  (segconv-engine-method-table-new
-   anthy-engine-finalize!
-   anthy-engine-reset!
-   anthy-engine-set-source-str!
-   anthy-engine-commit!
-   anthy-engine-nr-segments
-   anthy-engine-segment-source-length
-   anthy-engine-resize-segment!
-   anthy-engine-nr-candidates
-   anthy-engine-candidate-index
-   anthy-engine-set-candidate-index!
-   anthy-engine-candidate))
-
-(define anthy-engine-rec-spec
-  (append
-   segconv-engine-rec-spec
-   '((ac-id        -1)  ;; anthy-context-id
-     (cand-indices #f))))
-(define-record 'anthy-engine anthy-engine-rec-spec)
-(define anthy-engine-new-internal anthy-engine-new)
-
-(define anthy-engine-new
-  (lambda ()
-    (if (not anthy-lib-initialized?)
-	(set! anthy-lib-initialized? (and (symbol-bound? 'anthy-lib-init)
-					  (anthy-lib-init))))
-    (let ((ac-id (and anthy-lib-initialized?
-		      (anthy-lib-alloc-context))))
-      (and ac-id
-	   (anthy-engine-new anthy-engine-methods ac-id (ustr-new))))))
-
-
-;;
-;; canna-engine
-;;
-
-;; TODO: move into ng-canna.scm
-
-(require "i18n.scm")
+(require "utext.scm")
+(require "segmental-converter.scm")
 
 (define canna-lib-initialized? #f)
 (define canna-default-locale (locale-new "ja_JP.EUC-JP"))
@@ -283,6 +41,11 @@
 ;;(define canna-intrinsic-transposition-halfkana? #f)
 (define canna-intrinsic-transposition-half-alnum? #f)  ;; RK_HFER
 (define canna-intrinsic-transposition-full-alnum? #f)  ;; RK_ZFER
+
+
+;;
+;; canna-engine
+;;
 
 (define canna-engine-finalize!
   (lambda (self)
