@@ -154,7 +154,8 @@
 		       (skk-commit-editor-context sc str))
 		     (begin
 		       (skk-editor-flush ec)
-		       (skk-context-set-child-context! sc #f)
+		       (skk-context-set-child-context! sc '())
+		       (skk-context-set-child-type! sc '())
 		       (if (> (skk-context-nr-candidates sc) 0)
 			   (skk-back-to-converting-state sc)
 			   (skk-back-to-kanji-state sc))))
@@ -163,7 +164,8 @@
 	   (if (skk-cancel-key? key key-state)
 	       (begin
 		 (skk-editor-flush ec)
-		 (skk-context-set-child-context! sc #f)
+		 (skk-context-set-child-context! sc '())
+		 (skk-context-set-child-type! sc '())
 		 (if (> (skk-context-nr-candidates sc) 0)
 		     (skk-back-to-converting-state sc)
 		     (skk-back-to-kanji-state sc))

@@ -72,6 +72,7 @@
     (skk-preedit-attr-child-beginning-mark . preedit-attr?)
     (skk-preedit-attr-child-end-mark       . preedit-attr?)
     (skk-preedit-attr-child-committed      . preedit-attr?)
+    (skk-preedit-attr-child-dialog	   . preedit-attr?)
     (skk-child-context-beginning-mark      . string?)
     (skk-child-context-end-mark		   . string?)
     (skk-show-cursor-on-preedit?	   . boolean?)
@@ -89,6 +90,7 @@
     (skk-preedit-attr-child-beginning-mark . preedit-reverse)
     (skk-preedit-attr-child-end-mark       . preedit-reverse)
     (skk-preedit-attr-child-committed      . preedit-reverse)
+    (skk-preedit-attr-child-dialog	   . preedit-none)
     (skk-child-context-beginning-mark      . "[")
     (skk-child-context-end-mark		   . "]")
     (skk-show-cursor-on-preedit?	   . #f)
@@ -105,6 +107,7 @@
     (skk-preedit-attr-child-beginning-mark . preedit-underline)
     (skk-preedit-attr-child-end-mark       . preedit-underline)
     (skk-preedit-attr-child-committed      . preedit-underline)
+    (skk-preedit-attr-child-dialog	   . preedit-none)
     (skk-child-context-beginning-mark      . "¡Ú")
     (skk-child-context-end-mark		   . "¡Û")
     (skk-show-cursor-on-preedit?	   . #t)
@@ -119,6 +122,9 @@
 (define skk-input-rule-roma 0)
 (define skk-input-rule-azik 1)
 
+(define skk-child-type-editor 0)
+(define skk-child-type-dialog 1)
+
 ;; style elements
 (define skk-preedit-attr-mode-mark #f)
 (define skk-preedit-attr-head #f)
@@ -130,6 +136,7 @@
 (define skk-preedit-attr-child-beginning-mark #f)
 (define skk-preedit-attr-child-end-mark #f)
 (define skk-preedit-attr-child-committed #f)
+(define skk-preedit-attr-child-dialog #f)
 (define skk-child-context-beginning-mark #f)
 (define skk-child-context-end-mark #f)
 (define skk-show-cursor-on-preedit? #f)
@@ -285,8 +292,10 @@
     (list 'candidate-op-count 0)
     (list 'candidate-window   #f)
     (list 'child-context      '())
+    (list 'child-type	      '())
     (list 'parent-context     '())
     (list 'editor	      '())
+    (list 'dialog	      '())
     (list 'latin-conv	      #f)
     (list 'commit-raw	      #f)
     (list 'completion-nth     0))))
@@ -335,6 +344,7 @@
     (rk-flush (skk-context-rk-context sc))
     (if skk-use-recursive-learning?
 	(skk-editor-flush (skk-context-editor sc)))
+    (skk-dialog-flush (skk-context-dialog sc))
     (if (not (skk-latin-state? sc))
 	(skk-context-set-state! sc 'skk-state-direct))
     (skk-context-set-head! sc '())
@@ -351,8 +361,9 @@
 	(begin
 	  (set! skk-dic-init #t)
 	  (if skk-use-recursive-learning?
-	   (require "skk-editor.scm"))
-	   (skk-lib-dic-open
+	      (require "skk-editor.scm"))
+	  (require "skk-dialog.scm")
+	  (skk-lib-dic-open
 	     skk-dic-file-name skk-use-skkserv? skk-skkserv-portnum)
 	  (skk-read-personal-dictionary)))
     (let ((sc (skk-context-new-internal id im))
@@ -364,6 +375,7 @@
       (skk-context-set-parent-context! sc '())
       (if skk-use-recursive-learning?
 	  (skk-context-set-editor! sc (skk-editor-new sc)))
+      (skk-context-set-dialog! sc (skk-dialog-new sc))
       (skk-flush sc)
       (skk-context-set-state! sc 'skk-state-latin)
       sc)))
@@ -501,7 +513,11 @@
   (lambda (sc key key-state)
     (let ((psc (skk-context-parent-context sc)))
       (if (not (null? psc))
-	  (skk-editor-commit-raw (skk-context-editor psc) key key-state)
+	  (begin
+	    (if (= (skk-context-child-type psc)
+		   skk-child-type-editor)
+		(skk-editor-commit-raw (skk-context-editor psc) key key-state)
+		(skk-dialog-commit-raw (skk-context-dialog psc) key key-state)))
 	  (begin
 	    (skk-context-set-commit-raw! sc #t)
 	    (im-commit-raw sc))))))
@@ -510,9 +526,11 @@
   (lambda (sc key key-state)
     (let ((psc (skk-context-parent-context sc)))
       (if (not (null? psc))
-	  (skk-editor-commit-raw
-	   (skk-context-editor psc)
-	   key key-state)
+	  (begin
+	    (if (= (skk-context-child-type psc)
+	    	   skk-child-type-editor)
+		(skk-editor-commit-raw (skk-context-editor psc) key key-state)
+		(skk-dialog-commit-raw (skk-context-dialog psc) key key-state)))
 	  (begin
 	    (skk-context-set-commit-raw! sc #f)
 	    (im-commit-raw sc))))))
@@ -522,7 +540,11 @@
   (lambda (sc str)
     (let ((psc (skk-context-parent-context sc)))
       (if (not (null? psc))
-	  (skk-editor-commit (skk-context-editor psc) str)
+	  (begin
+	    (if (= (skk-context-child-type psc)
+	    	   skk-child-type-editor)
+		(skk-editor-commit (skk-context-editor psc) str)
+		(skk-dialog-commit (skk-context-dialog psc) str)))
 	  (im-commit sc str)))))
 
 (define skk-prepare-commit-string
@@ -532,7 +554,7 @@
 				   (skk-context-kana-mode sc)))
 	   (appendix (skk-make-string (skk-context-appendix sc)
 				   (skk-context-kana-mode sc)))
-	   (res (string-append (string-append cand okuri) appendix))
+	   (res (string-append cand okuri appendix))
 	   (head (skk-context-head sc)))
       (if skk-use-numeric-conversion?
 	  ;; store original number for numeric conversion #4
@@ -544,19 +566,49 @@
 	     (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
 	     (skk-context-nth sc)
 	     numlst))
-	  (begin
-	    (skk-lib-commit-candidate
-	     (skk-make-string head skk-type-hiragana)
-	     (skk-context-okuri-head sc)
-	     (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
-	     (skk-context-nth sc)
-	     '())))
+	  (skk-lib-commit-candidate
+	   (skk-make-string head skk-type-hiragana)
+	   (skk-context-okuri-head sc)
+	   (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
+	   (skk-context-nth sc)
+	   '()))
       (if (> (skk-context-nth sc) 0)
 	  (skk-save-personal-dictionary))
       (skk-reset-candidate-window sc)
       (skk-flush sc)
       res)))
 
+(define skk-purge-candidate
+  (lambda (sc)
+    (let* ((okuri (skk-make-string (skk-context-okuri sc)
+				   (skk-context-kana-mode sc)))
+	   (appendix (skk-make-string (skk-context-appendix sc)
+				   (skk-context-kana-mode sc)))
+	   (head (skk-context-head sc))
+	   (res #f))
+      (if skk-use-numeric-conversion?
+	  ;; store original number for numeric conversion #4
+	  (let ((numlst (skk-lib-store-replaced-numstr
+			 (skk-make-string head skk-type-hiragana))))
+	    (set! res (skk-lib-purge-candidate
+		       (skk-lib-replace-numeric
+			(skk-make-string head skk-type-hiragana))
+		       (skk-context-okuri-head sc)
+		       (skk-make-string (skk-context-okuri sc)
+					skk-type-hiragana)
+		       (skk-context-nth sc)
+		       numlst)))
+	  (set! res (skk-lib-purge-candidate
+		     (skk-make-string head skk-type-hiragana)
+		     (skk-context-okuri-head sc)
+		     (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
+		     (skk-context-nth sc)
+		     '())))
+      (if res
+	  (skk-save-personal-dictionary))
+      (skk-reset-candidate-window sc)
+      (skk-flush sc)
+      res)))
 
 (define skk-append-string
   (lambda (sc str)
@@ -619,7 +671,7 @@
 		(im-select-candidate sc 0))
 	    (skk-context-set-state! sc 'skk-state-converting))
 	  (if skk-use-recursive-learning?
-	      (skk-setup-child-context sc)
+	      (skk-setup-child-context sc skk-child-type-editor)
 	      (skk-flush sc))))))
 
 (define skk-begin-completion
@@ -668,7 +720,11 @@
 		 h))))
       (if (and
 	   (= stat 'skk-state-converting)
-	   (null? csc))
+	   (or
+	    (null? csc)
+	    (and
+	     (not (null? csc))
+	     (= (skk-context-child-type sc) skk-child-type-dialog))))
 	  (begin
 	    (if (or
 		 (= skk-candidate-selection-style 'uim)
@@ -697,10 +753,12 @@
 			      (skk-context-kana-mode sc)))))
       (if (and
 	   (not (null? csc))
-	    (or
+	   (or
 	     (= stat 'skk-state-kanji)
 	     (= stat 'skk-state-okuri)
-	     (= stat 'skk-state-converting)))
+	     (and
+	      (= stat 'skk-state-converting)
+	      (= (skk-context-child-type sc) skk-child-type-editor))))
 	  (let ((h '()))
 	    (if skk-use-numeric-conversion?
 	      ;; replace numeric string with #
@@ -728,7 +786,8 @@
 	   (and
 	    (not (null? csc))
 	    (= stat 'skk-state-converting)
-	    (skk-context-okuri sc)))
+	    (skk-context-okuri sc)
+	    (= (skk-context-child-type sc) skk-child-type-editor)))
 	  (begin
 	    (im-pushback-preedit 
 	     sc skk-preedit-attr-okuri
@@ -757,17 +816,40 @@
 
       ;; child context's preedit
       (if (not (null? csc))
-	  (let ((editor (skk-context-editor sc)))
-	    (im-pushback-preedit sc skk-preedit-attr-child-beginning-mark
-				 skk-child-context-beginning-mark)
-	    (im-pushback-preedit sc skk-preedit-attr-child-committed
-				 (skk-editor-get-left-string editor))
+	  (let ((editor (skk-context-editor sc))
+		(dialog (skk-context-dialog sc)))
+	    (if (= (skk-context-child-type sc) skk-child-type-editor)
+		(begin
+		  (im-pushback-preedit sc
+		  		       skk-preedit-attr-child-beginning-mark
+				       skk-child-context-beginning-mark)
+		  (im-pushback-preedit sc
+				       skk-preedit-attr-child-committed
+				       (skk-editor-get-left-string editor)))
+		(begin
+		  (im-pushback-preedit sc
+				       skk-preedit-attr-child-dialog
+				       skk-child-context-beginning-mark)
+		  (im-pushback-preedit sc
+		  		       skk-preedit-attr-child-dialog
+				       (skk-dialog-get-left-string dialog))))
 	    (skk-do-update-preedit csc)
-	    (im-pushback-preedit sc skk-preedit-attr-child-committed
-				 (skk-editor-get-right-string editor))
-	    (im-pushback-preedit sc skk-preedit-attr-child-end-mark
-				 skk-child-context-end-mark)
-	    )))))
+	    (if (= (skk-context-child-type sc) skk-child-type-editor)
+	    	(begin
+		  (im-pushback-preedit sc
+				     skk-preedit-attr-child-committed
+				     (skk-editor-get-right-string editor))
+		  (im-pushback-preedit sc
+		  		       skk-preedit-attr-child-end-mark
+				       skk-child-context-end-mark))
+		(begin
+		  (im-pushback-preedit sc
+				       skk-preedit-attr-child-dialog
+				       (skk-dialog-get-right-string dialog))
+		  (im-pushback-preedit sc
+		  		       skk-preedit-attr-child-dialog
+				       skk-child-context-end-mark)))))
+	    )))
 
 (define skk-update-preedit
   (lambda (sc)
@@ -789,9 +871,25 @@
 				   (skk-context-kana-mode sc)))
 	   (str (if (not (null? psc))
 		    str
-		    (string-append (string-append str okuri) appendix))))
+		    (string-append str okuri appendix))))
       (skk-flush sc)
-      (skk-context-set-child-context! sc #f)
+      (skk-context-set-child-context! sc '())
+      (skk-context-set-child-type! sc '())
+      (skk-commit sc str))))
+
+(define skk-commit-dialog-context
+  (lambda (sc str)
+    (let* ((psc (skk-context-parent-context sc))
+	   (okuri (skk-make-string (skk-context-okuri sc)
+				   (skk-context-kana-mode sc)))
+	   (appendix (skk-make-string (skk-context-appendix sc)
+				   (skk-context-kana-mode sc)))
+	   (str (if (not (null? psc))
+		    str
+		    (string-append str okuri appendix))))
+      (skk-flush sc)
+      (skk-context-set-child-context! sc '())
+      (skk-context-set-child-type! sc '())
       (skk-commit sc str))))
 
 ;; experimental coding style. discussions are welcome -- YamaKen
@@ -1216,13 +1314,16 @@
       #f)))
 
 (define skk-setup-child-context
-  (lambda (sc)
+  (lambda (sc type)
     (let ((csc (skk-context-new (skk-context-id sc)
 				(skk-context-im sc)))
 	  (input-rule (skk-context-input-rule sc)))
       (skk-context-set-child-context! sc csc)
+      (skk-context-set-child-type! sc type)
       (skk-context-set-parent-context! csc sc)
-      (skk-context-set-state! csc 'skk-state-direct)
+      (if (= type skk-child-type-editor)
+	  (skk-context-set-state! csc 'skk-state-direct)
+	  (skk-context-set-state! csc 'skk-state-latin))
       (skk-set-rule! csc input-rule))))
 
 (define skk-check-candidate-window-begin
@@ -1384,7 +1485,7 @@
 	     (if skk-use-recursive-learning?
 		 (begin
 		   (skk-reset-candidate-window sc)
-		   (skk-setup-child-context sc)))
+		   (skk-setup-child-context sc skk-child-type-editor)))
 	     #t)
 	   #t)
        (if (null? (skk-context-child-context sc))
@@ -1576,6 +1677,15 @@
 	     (if res
 		 #f
 		 #t))
+	   #t)
+       (if (skk-purge-candidate-key? key key-state)
+	   (if (not
+		(and (= skk-candidate-selection-style 'ddskk-like)
+		     (skk-context-candidate-window sc)))
+	       (begin
+		 (skk-reset-candidate-window sc)
+		 (skk-setup-child-context sc skk-child-type-dialog)
+		 #f))
 	   #t)
        (begin
 	 (skk-context-set-state! sc 'skk-state-direct)

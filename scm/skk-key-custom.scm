@@ -190,6 +190,12 @@
 	       (_ "[SKK] skk-state-direct-no-preedit-nop-key?")
 	       (_ "long description will be here"))
 
+(define-custom 'skk-purge-candidate-key '("<IgnoreCase><Shift>x")  ;; "X"
+	       '(skk-keys2)
+	       '(key)
+	       (_ "[SKK] skk-purge-candidate-key?")
+	       (_ "long description will be here"))
+
 ;; should not be changed
 (define-key skk-plain-space-key? '(" "))
 ;;(define-custom 'skk-plain-space-key '(" ")
