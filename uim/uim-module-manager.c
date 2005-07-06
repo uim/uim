@@ -56,7 +56,7 @@ concat(const char *a, const char *b)
   char *dest;
   if(!a || !b)
     return NULL;
-  len = strlen(a)+strlen(b);
+  len = strlen(a) + strlen(b) + 1;
   dest = malloc(len);
   dest = strcpy(dest, a);
   strcat(dest, b);
