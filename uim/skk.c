@@ -2127,12 +2127,14 @@ static void purge_candidate(struct skk_cand_array *ca, int nth)
       remove_candidate_from_array(ca, nth);
     }
     
+#if 0
     if (ca->okuri) {
       /* also purge the word in the base cand array */
       int index = index_in_real_cands(&ca->line->cands[0], str);
       if (index != -1)
 	purge_candidate(&ca->line->cands[0], index);
     }
+#endif
     free(str);
 }
 
