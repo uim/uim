@@ -42,9 +42,26 @@
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 
+static char *path;
+
 #define MODULE_LIST_FILENAME UIM_DATADIR"/modules"
 #define LOADER_SCM_FILENAME  UIM_DATADIR"/loader.scm"
 #define INSTALLED_MODULES_SCM_FILENAME  UIM_DATADIR"/installed-modules.scm"
+
+/* Utility function */
+static char *
+concat(const char *a, const char *b)
+{
+  int len;
+  char *dest;
+  if(!a || !b)
+    return NULL;
+  len = strlen(a)+strlen(b);
+  dest = malloc(len);
+  dest = strcpy(dest, a);
+  strcat(dest, b);
+  return dest;
+}
 
 static void
 print_usage(void)
@@ -55,12 +72,20 @@ print_usage(void)
 static uim_lisp
 read_module_list(void)
 {
-  FILE *fp = fopen(MODULE_LIST_FILENAME, "r");
+  FILE *fp;
   char buf[1024];
   uim_lisp module_list = uim_scm_null_list();
-  
+
+  if(path) {
+    char *p = concat(path, "/modules");
+    fp = fopen(p, "r");
+    free(p);
+  } else {
+    fp = fopen(MODULE_LIST_FILENAME, "r");
+  }
+
   if(!fp) {
-    perror("Failed to read module list");
+    perror("Failed to read module list.");
     return uim_scm_f();
   }
   while (fgets (buf, sizeof(buf), fp) != NULL) {
@@ -79,7 +104,14 @@ read_module_list(void)
 static uim_lisp
 write_module_list(uim_lisp new_module, uim_lisp module_list)
 {
-  FILE *fp = fopen(MODULE_LIST_FILENAME, "w");
+  FILE *fp;
+  if(path) {
+    char *p = concat(path, "/modules");
+    fp = fopen(p, "w");
+    free(p);
+  } else {
+    fp = fopen(MODULE_LIST_FILENAME, "w");
+  }
 
   if(!fp) {
     perror("Failed to write module list");
@@ -114,7 +146,14 @@ write_module_list(uim_lisp new_module, uim_lisp module_list)
 static uim_lisp
 write_loader_scm(uim_lisp str)
 {
-  FILE *fp = fopen(LOADER_SCM_FILENAME, "w");
+  FILE *fp;
+  if(path) {
+    char *p = concat(path, "/loader.scm");
+    fp = fopen(p, "w");
+    free(p);
+  } else {
+    fp = fopen(LOADER_SCM_FILENAME, "w");
+  }
 
   if(!fp) {
     perror("Failed to open loader.scm");
@@ -131,7 +170,14 @@ write_loader_scm(uim_lisp str)
 static uim_lisp
 write_installed_modules_scm(uim_lisp str)
 {
-  FILE *fp = fopen(INSTALLED_MODULES_SCM_FILENAME, "w");
+  FILE *fp;
+  if(path) {
+    char *p = concat(path, "/installed-modules.scm");
+    fp = fopen(p, "w");
+    free(p);
+  } else {
+    fp = fopen(INSTALLED_MODULES_SCM_FILENAME, "w");
+  }
 
   if(!fp) {
     perror("Failed to open installed-modules.scm");
