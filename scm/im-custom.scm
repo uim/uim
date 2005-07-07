@@ -34,15 +34,13 @@
 ;; ugettext should be performed higher layer
 (define custom-im-list-as-choice-rec
   (lambda (lst)
-    (filter list?
-     (map (lambda (im)
-	    (if im
-		(let ((sym (im-name im))
-		      (name-label (ugettext (im-name-label im)))
-		      (desc (ugettext (im-short-desc im))))
-		  (custom-choice-rec-new sym name-label desc))
-		#f))
-	  lst))))
+     (filter-map (lambda (im)
+		   (and im
+			(let ((sym (im-name im))
+			      (name-label (ugettext (im-name-label im)))
+			      (desc (ugettext (im-short-desc im))))
+			  (custom-choice-rec-new sym name-label desc))))
+		 lst)))
   
 (define-custom-group 'global
 		     (_ "Global settings")
