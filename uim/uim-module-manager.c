@@ -48,6 +48,8 @@ static char *path;
 #define LOADER_SCM_FILENAME  UIM_DATADIR"/loader.scm"
 #define INSTALLED_MODULES_SCM_FILENAME  UIM_DATADIR"/installed-modules.scm"
 
+static uim_lisp modulenames; /* FIXME: Provide a way to pass a list as an argument. */
+
 /* Utility function */
 static char *
 concat(const char *a, const char *b)
@@ -61,6 +63,13 @@ concat(const char *a, const char *b)
   dest = strcpy(dest, a);
   strcat(dest, b);
   return dest;
+}
+
+ /* FIXME: Provide a way to pass a list as an argument. */
+static uim_lisp
+get_arguments(void)
+{
+  return modulenames;
 }
 
 static void
@@ -193,38 +202,62 @@ write_installed_modules_scm(uim_lisp str)
 
 int
 main(int argc, char *argv[]) {
-  int registerp;
+  int i;
+  int registerp = 0;
   uim_lisp form;
 
   if(argc <= 2) {
     print_usage();
     exit(EXIT_FAILURE);
   }
+    
+  /* FIXME: To generate loader.scm, we need this setenv for now.
+     But it's a dirty hack, not appropriate. I guess we need entirely new module system. */
+  setenv("LIBUIM_VANILLA", "1", 1);
+  
+  uim_init();
+  uim_scm_set_verbose_level(1);
+  modulenames = uim_scm_null_list();
 
-  if(strcmp(argv[1], "--register") == 0) {
-    registerp = 1;
-  } else if(strcmp(argv[1], "--unregister") == 0) {
-    registerp = 2;
-  } else {
-    print_usage();
-    exit(EXIT_FAILURE);
+  for(i=0; i<argc; i++) {
+    if(strcmp(argv[i], "--register") == 0) {
+      if(registerp == 2) {
+	printf("Regqistering and unregistering couldn't used at the same time.\n\n");
+	exit(EXIT_FAILURE);
+      }
+      registerp = 1; i++;
+      while(argv[i] && strncmp(argv[i], "--", 2)) {
+	modulenames = uim_scm_cons(uim_scm_intern_c_str(argv[i]), modulenames);
+	i++;
+      }
+      i--;
+    } else if(strcmp(argv[i], "--unregister") == 0) {
+      if(registerp == 1) {
+	printf("Registering and unregistering couldn't used at the same time.\n\n");
+	exit(EXIT_FAILURE);
+      }
+      registerp = 2; i++;
+      while(argv[i] && strncmp(argv[i], "--", 2)) {
+	modulenames = uim_scm_cons(uim_scm_intern_c_str(argv[i]), modulenames);
+	i++;
+      }
+      i--;
+    } else if(strcmp(argv[i], "--path") == 0) {
+      if(argv[i+1]) {
+	path = argv[i+1];
+      }
+    }
   }
-
+  
   if(!argv[2]) {
     print_usage();
     exit(EXIT_FAILURE);
   }
 
-  /* FIXME: To generate loader.scm, we need this setenv for now.
-     But it's a dirty hack, not appropriate. I guess we need entirely new module system. */
-  setenv("LIBUIM_VANILLA", "1", 1);
-
-  uim_init();
-
-  uim_scm_set_verbose_level(1);
-
   uim_scm_init_subr_0("read-module-list", read_module_list);
   uim_scm_init_subr_2("write-module-list", write_module_list);
+
+  uim_scm_init_subr_0("get-arguments", get_arguments);
 
   uim_scm_init_subr_1("write-loader.scm", write_loader_scm);
   uim_scm_init_subr_1("write-installed-modules.scm", write_installed_modules_scm);
@@ -232,12 +265,10 @@ main(int argc, char *argv[]) {
   uim_scm_require_file("uim-module-manager.scm");
 
   if(registerp == 1) {
-    form = uim_scm_list2(uim_scm_intern_c_str("register-module"),
-			 uim_scm_qintern_c_str(argv[2]));
+    form = uim_scm_list1(uim_scm_intern_c_str("register-modules"));
   }
   if(registerp == 2) {
-    form = uim_scm_list2(uim_scm_intern_c_str("unregister-module"),
-			 uim_scm_qintern_c_str(argv[2]));
+    form = uim_scm_list1(uim_scm_intern_c_str("unregister-modules"));
   }
 
   uim_scm_eval(form);
