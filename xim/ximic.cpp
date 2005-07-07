@@ -490,7 +490,14 @@ void XimIC::extra_input(char *s)
 
     commit_string(s);
     onSendPacket();
+    send_sync();
     force_send_packet();
+}
+
+void XimIC::send_sync() {
+
+    XimIM *im = get_im_by_id(mIMid);
+    im->send_sync(mICid);
 }
 
 void XimIC::force_send_packet(void) {
