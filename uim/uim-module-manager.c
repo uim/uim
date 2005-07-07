@@ -65,6 +65,7 @@ concat(const char *a, const char *b)
   return dest;
 }
 
+/* Utility function */
  /* FIXME: Provide a way to pass a list as an argument. */
 static uim_lisp
 get_arguments(void)
@@ -75,7 +76,16 @@ get_arguments(void)
 static void
 print_usage(void)
 {
-  printf("FIXME: write usage\n");
+  printf("Usage:\n");
+  printf("  uim-module-manager [OPTION] modulenames...\n\n");
+  printf("Options:\n");
+  printf("  --register\n");
+  printf("  --unregister\n");
+  printf("  --path path to modules/loader.scm/installed-modules.scm\n");
+  printf("    **  --path option may be removed in the future. **\n\n");
+  printf("Example:\n");
+  printf("  uim-module-manager --register anthy skk\n");
+  printf("  uim-module-manager --register prime --path /usr/local/share/uim\n\n");
 }
 
 static uim_lisp
