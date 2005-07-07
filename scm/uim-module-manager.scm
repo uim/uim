@@ -32,41 +32,22 @@
 (require "im.scm")
 (require "lazy-load.scm")
 
-;; This function will call when $ uim-module-manager --register
-;; TODO: Refactoring
-(define (register-module module-names)
-  (let ((module-list (read-module-list)))
-    (write-modules
-     (filter (lambda (x)
-	       (if (try-require x)
-		   #t
-		   (begin (puts (string-append "Error: Module " new-module " is not a correct module.\n"))
-			  #f)))
-	     (remove (lambda (x) 
-		       (if (memq x module-list)			
-			   (begin (puts (string-append "Error : Module " module-name " already registered\n"))
-				  #t)
-			   #f))
-		     module-list))
-     module-list)     
-    (update-installed-modules&loader (cons module-name module-list)))
-    (puts (string-append "Error: Module " module-name " does not registered.\n")))
 
 ;; FIXME: This function works fine, but too hard to read.
 (define (get-new-registered-module-list modules old-module-list)
   (filter
-   (lambda (x)
+   (lambda (x) ;; Test for valid module
       (if (require-module (symbol->string x))
 	  #t
 	  (begin (puts (string-append "Error: Module " x " is not a correct module.\n"))
 		 #f)))
-    (remove (lambda (x)
-	      (if (memq x old-module-list)
-		  (begin (puts (string-append "Error : Module " x " already registered\n"))
-			 #t)
-		  (begin ;(puts (string-append "Module " x " not registered\n"))
-			 #f)))
-	    modules)))
+   (remove (lambda (x) ;; Test 
+	     (if (memq x old-module-list)
+		 (begin (puts (string-append "Error : Module " x " already registered\n"))
+			#t)
+		 (begin ;(puts (string-append "Module " x " not registered\n"))
+		   #f)))
+	   modules)))
 
 (define (remove-unregistered-modules modules old-module-list)
   (remove (lambda (x)
@@ -77,40 +58,17 @@
 		       #f)))
 	    old-module-list))
 
+;; This function will call when $ uim-module-manager --register
 (define (register-modules)
   (let* ((old-module-list (read-module-list))
 	 (new-module-list (get-new-registered-module-list (get-arguments) old-module-list)))
     (update-modules-installed-modules.scm-loader.scm (append new-module-list old-module-list))))
 
+;; This function will call when $ uim-module-manager --unregister
 (define (unregister-modules)
   (let* ((old-module-list (read-module-list))
 	 (new-module-list (remove-unregistered-modules (get-arguments) old-module-list)))
     (update-modules-installed-modules.scm-loader.scm new-module-list)))
-
-;; This function will call when $ uim-module-manager --unregister
-(define (unregister-module module-name)
-  (let ((module-list (read-module-list)))
-    (if (memq module-name module-list)
-	(begin
-	  (write-module-list #f
-			     (map symbol->string
-				  (remove (lambda (x) (eq? module-name x))
-					  (reverse module-list))))
-	  (update-installed-modules&loader (remove (lambda (x) (eq? module-name x))
-						   (reverse module-list)))
-	  (puts (string-append "Module " module-name " unregistered.\n")))
-	(puts (string-append "Error to remove " module-name ". No such module.\n")))))
-
-(define (register-module-to-file new-module module-list)
-  (if (require-module (symbol->string new-module))
-      (begin
-	(if (list? module-list)
-	    (write-module-list (symbol->string new-module)
-			       (map symbol->string
-				    (reverse module-list)))
-	    (write-module-list (symbol->string new-module)
-			       #f)))
-      (puts (string-append "Error: Module " new-module " is not a correct module.\n"))))
 
 (define (update-modules-installed-modules.scm-loader.scm module-list)
   (update-modules module-list)
