@@ -195,15 +195,6 @@
   (lambda (utext other)
     (every uchar=? utext other)))
 
-(define utext-subtext
-  (lambda (utext start end)
-    (list-tail (list-head utext (+ end 1))
-	       start)))
-
-(define utext-subtext-rel
-  (lambda (utext start len)
-    (utext-subtext start (+ start len))))
-
 ;; .returns List of utext aggregated by uchar-props=?
 (define utext-aggregate
   (lambda (utext)

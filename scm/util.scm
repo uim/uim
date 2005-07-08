@@ -106,6 +106,17 @@
 	(or (truncate-list lst n)
 	    (error "out of range in list-head")))))
 
+;; TODO: write test
+(define sublist
+  (lambda (lst start end)
+    (list-tail (list-head lst (+ end 1))
+	       start)))
+
+;; TODO: write test
+(define sublist-rel
+  (lambda (lst start len)
+    (sublist lst start (+ start len))))
+
 (define alist-replace
   (lambda (kons alist)
     (let* ((id (car kons))
