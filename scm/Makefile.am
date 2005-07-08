@@ -6,7 +6,7 @@ scm_DATA = $(SCM_FILES) $(GENERATED_SCM_FILES)
 GENERATED_SCM_FILES = installed-modules.scm loader.scm
 SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  default.scm \
- util.scm key.scm ustr.scm action.scm load-action.scm i18n.scm \
+ util.scm key.scm ustr.scm ng-action.scm action.scm load-action.scm i18n.scm \
  ng-key.scm physical-key.scm event.scm evmap.scm evmap-csv.scm \
  event-translator.scm \
  key-custom.scm \
@@ -21,8 +21,8 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  generic.scm generic-custom.scm generic-key-custom.scm \
  pyload.scm PY.scm pyunihan.scm pinyin-big5.scm \
  japanese.scm japanese-azik.scm japanese-kana.scm \
- anthy.scm anthy-custom.scm anthy-key-custom.scm \
- canna.scm canna-custom.scm canna-key-custom.scm \
+ anthy.scm ng-anthy.scm anthy-custom.scm anthy-key-custom.scm \
+ canna.scm ng-canna.scm canna-custom.scm canna-key-custom.scm \
  prime.scm prime-custom.scm prime-key-custom.scm \
  skk.scm skk-editor.scm skk-custom.scm skk-key-custom.scm \
  tcode.scm \
