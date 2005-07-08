@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 816 (new repository)
+;; This file is tested with revision 952 (new repository)
 
 (use test.unit)
 
@@ -1286,15 +1286,18 @@
 		 (uim '(alist-delete "3" alist-int)))
    (assert-equal '(("23" 23 twentythree)
 		   ("1" 1 one)
-		   ("5" 5 five)
 		   ("3" 3 three))
 		 (uim '(alist-delete "5" alist-str)))
    (assert-equal '(("23" 23 twentythree)
 		   ("1" 1 one)
+		   ("5" 5 five)
+		   ("3" 3 three))
+		 (uim '(alist-delete "5" alist-str =)))
+   (assert-equal '(("23" 23 twentythree)
+		   ("1" 1 one)
 		   ("3" 3 three))
 		 (uim '(alist-delete "5" alist-str string=?)))
-   (assert-equal '((("23") 23 twentythree)
-		   (("1") 1 one)
+   (assert-equal '((("1") 1 one)
 		   (("5") 5 five)
 		   (("3") 3 three))
 		 (uim '(alist-delete '("23") alist-lst)))
