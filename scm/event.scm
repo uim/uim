@@ -35,45 +35,50 @@
 ;; on loose relationships.  -- YamaKen 2005-02-18
 
 (require "util.scm")
+(require "utext.scm")
 (require "ng-key.scm")
-
-
-;;
-;; utext
-;;
-
-;; The name 'utext' is inspired by Mtext of the m17n library
-(define-record 'utext
-  '((str      "")
-    (language "")
-    (encoding "")
-    (props    ())))  ;; arbitrary properties alist
-
-;; TODO:
-;; - character encoding conversion
-;; - encoding-aware string split
-;; - encoding name canonicalization
-;; - comparison
 
 ;;
 ;; event definitions
 ;;
 
 (define valid-event-types
-  '(timer
+  '(unknown
+    client-info
     reset
-    action
-    commit
+    focus-in
+    focus-out
+    key
     insert
-    key))
+
+    commit
+    preedit-updated
+
+    timer
+    timer-set
+
+    action
+    chooser
+    chooser-update-req
+    chooser-update
+    ))
 
 (define event-rec-spec
-  '((type      unknown)
+  '((type unknown)))
+
+(define upward-event-rec-spec event-rec-spec)
+(define-record 'upward-event upward-event-rec-spec)
+
+(define downward-event-rec-spec
+  (append
+   event-rec-spec
+  '(;;(context-id -1)
     (consumed  #f)
     (loopback  #f)    ;; instructs re-injection into local composer
     (timestamp -1)    ;; placeholder
-    (ext-state #f)))
-(define-record 'event event-rec-spec)
+    (ext-state #f))))
+;; use 'event' instead of 'downward-event' as record name for convenient use
+(define-record 'event downward-event-rec-spec)
 
 (define event-external-state
   (lambda (ev state-id)
@@ -82,123 +87,85 @@
 	   (state-reader state-id)))))
 
 (define-record 'timer-event
-  event-rec-spec)
+  downward-event-rec-spec)
 
 (define-record 'reset-event
-  event-rec-spec)
+  downward-event-rec-spec)
+
+(define-record 'focus-in-event
+  downward-event-rec-spec)
+
+(define-record 'focus-out-event
+  downward-event-rec-spec)
+
+(define-record 'client-info-event
+  (append
+   downward-event-rec-spec
+   '((locale      #f)
+     (bridge      "")     ;; "gtk", "uim-xim", "macuim", "scim-uim", ...
+     (application "")     ;; acquire via bridge-dependent methods such as basename `echo $0`
+     (expected    ""))))  ;; "direct", "number", "upper-alphabet", "ja-hiragana", ...
+
+;; inserts a text into active IM context
+;; For example, this can be used to insert a kanji word via clipboard
+;; to register new dictionary entry
+(define-record 'insert-event
+  (append
+   downward-event-rec-spec
+   '((utext ()))))
 
 (define-record 'commit-event
   (append
-   event-rec-spec
-   '((utexts        ())
-     (clear-preedit #t))))
+   upward-event-rec-spec
+   '((utext         ())
+     (preedit-utext ()))))  ;; can also update preedit as atomic event
 
-;; insert a text into preedit
-(define-record 'insert-event
+(define-record 'preedit-updated-event
   (append
-   event-rec-spec
-   '((utext #f))))
-
-
-;; action, chooser, and indicator events may be canged drastically
-;; -- YamaKen 2005-06-09
-
-;; action
+   upward-event-rec-spec))
 
 (define-record 'action-event
   (append
-   event-rec-spec
+   downward-event-rec-spec
    '((action-id #f))))  ;; 'action_input_mode_direct
-
-(define-record 'action-groups-req-event
-  event-rec-spec)
-
-(define-record 'action-groups-export-event
-  (append
-   event-rec-spec
-   '((action-groups ()))))  ;; list of action-group-id
-
-(define-record 'actions-req-event
-  (append
-   event-rec-spec
-   '((action-group-id #f))))  ;; 'action_group_input_mode
-
-(define-record 'actions-export-event
-  (append
-   event-rec-spec
-   '((action-group-id #f)
-     (actions         ()))))  ;; list of action objects (!= action-id)
-
-;; chooser  
 
 (define-record 'chooser-event
   (append
-   event-rec-spec
+   downward-event-rec-spec
    '((chooser-id #f)  ;; 'chooser_candidate_selector
-     (index      -1)  ;; negative value means no spot
-     (scope-top  -1)
-     (finish     #t))))
+     (chosen     -1)  ;; negative value means that nothing is chosen
+     (confirm    #t)  ;; finish current choice transaction
+     (scope-top  -1))))
 
-(define-record 'chooser-req-event
+(define-record 'chooser-update-req-event
   (append
-   event-rec-spec
+   downward-event-rec-spec
    '((chooser-id   #f)  ;; 'chooser_candidate_selector 'chooser_all etc.
-     (config       #f)
+     (initialize   #f)
      (items-top    -1)
-     (items-length -1))))
-
-(define-record 'chooser-config-event
-  (append
-   event-rec-spec
-   '((chooser-id      #f)
-     (label           "")
-     (desc            "")
-     (scope-size-hint 10)  ;; number of items displayable at a time
-     (scope-top       0)   ;; initial position of scope
-     (nr-items        0)
-     ;;(spot-pos        -1)
-     ;;(initial-items-top -1)
-     ;;(initial-items     ())
-     )))
+     (nr-items     -1))))
 
 (define-record 'chooser-update-event
   (append
-   event-rec-spec
-   '((chooser-id        #f)
-     (transition        'none)  ;; 'activate 'deactivate 'none
-     (scope-top         -1)
-     (spot-pos          -1)
-     (updated-items-top -1)
-     (updated-items     ()))))
-
-;; indicator
-
-(define-record 'indicator-req-event
-  (append
-   event-rec-spec
-   '((indicator-id #f)  ;; 'indicator_candidate_selector 'indicator_all etc.
-     (config       #f))))
-
-(define-record 'indicator-config-event
-  (append
-   event-rec-spec
-   '((indicator-id #f)             ;; 'indicator_input_mode
-     (indicator-indication #f)     ;; indication object for indicator itself
-     (state-indication     #f))))  ;; indication object for the content
-
-(define-record 'indicator-update-event
-  (append
-   event-rec-spec
-   '((indicator-id     #f)
-     (state-indication #f))))
-
+   upward-event-rec-spec
+   '((chooser-id          #f)
+     (initialize          #f)  ;; invalidate all cached info about the chooser
+     (transition          #f)  ;; 'activate 'deactivate #f
+     (chooser-size        -1)  ;; number of items including hidden ones
+     (chosen              -1)  ;; item index currently chosen
+     (scope-top           -1)  ;; 
+     (scope-size-hint     -1)  ;; number of items displayable at a time
+     (title               #f)  ;; indication
+     (status              #f)  ;; indication
+     (updated-items-top   -1)
+     (updated-items       ()))))  ;; list of indications
 
 ;; #f means "don't care" for lkey, pkey, str, press and autorepeat
 ;; when comparing with other key-event. But modifiers require exact
 ;; match.
 (define-record 'key-event
   (append
-   event-rec-spec
+   downward-event-rec-spec
    (list
     ;;(list text       #f)        ;; replace raw string with utext in future
     (list 'str        #f)        ;; precomposed string

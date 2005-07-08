@@ -36,6 +36,7 @@
 
 (define canna-lib-initialized? #f)
 (define canna-default-locale (locale-new "ja_JP.EUC-JP"))
+(define canna-default-utext-props (list (cons 'locale anthy-default-locale)))
 (define canna-intrinsic-transposition-hiragana? #f)    ;; RK_XFER
 (define canna-intrinsic-transposition-katakana? #f)    ;; RK_KFER
 ;;(define canna-intrinsic-transposition-halfkana? #f)
@@ -57,9 +58,9 @@
     (canna-lib-reset-context (canna-engine-cc-id self))))
 
 (define canna-engine-set-source-str!
-  (lambda (self utexts)
+  (lambda (self utext)
     (canna-lib-begin-conversion (canna-engine-cc-id self)
-				(string-append-map utext-str utexts))))
+				(utext->eucjp-string utext))))
 
 (define canna-engine-commit!
   (lambda (self)
@@ -78,7 +79,8 @@
 ;; TODO: support other than -1 and 1 for offset
 (define canna-engine-resize-segment!
   (lambda (self seg-idx offset)
-    (canna-lib-resize-segment (canna-engine-cc-id self) seg-idx offset)))
+    (canna-lib-resize-segment (canna-engine-cc-id self) seg-idx offset)
+    seg-idx))
 
 (define canna-engine-nr-candidates
   (lambda (self seg-idx)
@@ -101,7 +103,7 @@
   (lambda (self seg-idx cand-idx)
     (let ((cc-id (canna-engine-cc-id self))
 	  (str (canna-lib-get-nth-candidate cc-id seg-idx cand-idx)))
-      (list (utext-new str canna-default-locale)))))
+      (eucjp-string->utext str))))
 
 
 (define canna-engine-method-table

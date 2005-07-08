@@ -29,6 +29,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+;; FIXME: write test
+
 (require "util.scm")
 (require "i18n.scm")
 (require "event.scm")

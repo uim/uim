@@ -75,9 +75,6 @@
 (if enable-action?
     (require "action.scm")
     (begin
-      (define do-nothing
-	(lambda args
-	  #f))
       (define register-widget do-nothing)
       (define register-action do-nothing)
       (define indicator-new do-nothing)

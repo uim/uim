@@ -145,6 +145,13 @@
 	    (car (reverse funcs))
 	    (cdr (reverse funcs))))))
 
+(define method-delegator-new
+  (lambda (dest-getter method)
+    (lambda args
+      (let* ((self (car args))
+	     (dest (dest-getter self)))
+	(apply method (cons dest (cdr args)))))))
+
 ;; TODO: write test
 (define safe-car
   (lambda (pair)
@@ -182,6 +189,11 @@
 (define integer?
   (lambda (x)
     (number? x)))
+
+;; Siod doesn't support char
+(define char?
+  (lambda (x)
+    #f))
 
 (define list?
   (lambda (x)
@@ -541,6 +553,8 @@
 ;;
 ;; uim-specific utilities
 ;;
+
+(define do-nothing (lambda args #f))
 
 ;; TODO: write test
 (define make-scm-pathname

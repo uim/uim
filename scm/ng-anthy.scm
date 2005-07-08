@@ -36,6 +36,7 @@
 
 (define anthy-lib-initialized? #f)
 (define anthy-default-locale (locale-new "ja_JP.EUC-JP"))
+(define anthy-default-utext-props (list (cons 'locale anthy-default-locale)))
 (define anthy-intrinsic-transposition-hiragana? #f) ;; NTH_UNCONVERTED_CANDIDATE
 (define anthy-intrinsic-transposition-katakana? #f)
 (define anthy-intrinsic-transposition-halfkana? #f)
@@ -62,10 +63,9 @@
     (ustr-clear! (anthy-engine-cand-indices self))))
 
 (define anthy-engine-set-source-str!
-  (lambda (self utexts)
+  (lambda (self utext)
     (anthy-lib-set-string (anthy-engine-ac-id self)
-			  (string-append-map utext-str
-					     utexts))
+			  (utext->eucjp-string utext))
     (let ((nsegs (segconv-engine-nr-segments self))
 	  (cands (anthy-engine-cand-indices self)))
       (ustr-clear! cands)
@@ -99,7 +99,8 @@
 	     (orig-pos (ustr-cursor-pos cands)))
 	(ustr-set-cursor-pos! cands iseg-idx)
 	(ustr-set-latter-seq! cands (make-list latter-nseg 0))
-	(ustr-set-cursor-pos! cands orig-pos)))))
+	(ustr-set-cursor-pos! cands orig-pos)
+	seg-idx))))  ;; seg-idx..last-idx have been invalidated
 
 (define anthy-engine-nr-candidates
   (lambda (self seg-idx)
@@ -124,19 +125,18 @@
 			  (cand-idx (anthy-engine-candidate-index self i)))
 		      (anthy-lib-commit-segment ac-id iseg-idx cand-idx)
 		      (segconv-engine-candidate self i cand-idx))))
-		 (utexts (append-map committer (iota (+ seg-idx 1)))))
+		 (utext (append-map committer (iota (+ seg-idx 1)))))
 	     (ustr-set-cursor-pos! cands iseg-idx)
 	     (and (ustr-cursor-at-end? cands)
 		  (ustr-clear! cands))
-	     utexts)))))
+	     utext)))))
 
 (define anthy-engine-candidate
   (lambda (self seg-idx cand-idx)
     (let ((ac-id (anthy-engine-ac-id self))
 	  (iseg-idx (anthy-engine-internal-seg-idx self seg-idx))
 	  (str (anthy-lib-get-nth-candidate ac-id iseg-idx cand-idx)))
-      (list (utext-new str anthy-default-locale ;;'((ruby . "ふりがな"))
-		       )))))
+      (eucjp-string->utext str))))
 
 ;; for partial commission feature
 (define anthy-engine-nr-committed-segments

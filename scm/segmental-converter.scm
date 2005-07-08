@@ -31,7 +31,10 @@
 ;;;;
 
 (require "util.scm")
+(require "utext.scm")
 (require "composer.scm")
+(require "ng-action.scm")
+(require "chooser.scm")
 
 
 ;;
@@ -72,10 +75,10 @@
     ((segconv-engine-method-table-reset! self) self)))
 
 (define segconv-engine-set-source-str!
-  (lambda (self utexts)
-    ((segconv-engine-method-table-set-source-str! self) self utexts)))
+  (lambda (self utext)
+    ((segconv-engine-method-table-set-source-str! self) self utext)))
 
-;; .returns Commit string as utext-list
+;; .returns Commit string as utext
 (define segconv-engine-commit!
   (lambda (self)
     ((segconv-engine-method-table-commit! self) self)))
@@ -89,7 +92,9 @@
   (lambda (self seg-idx)
     ((segconv-engine-method-table-segment-source-length self) self seg-idx)))
 
-;; side effect: invalidates nr-segments and all segment info
+;; side effect: invalidates nr-segments and segment info
+;; .returns first segment index to be invalidated. ret..last-idx have
+;; been invalidated
 (define segconv-engine-resize-segment!
   (lambda (self seg-idx offset)
     ((segconv-engine-method-table-resize-segment! self) self seg-idx offset)))
@@ -104,12 +109,12 @@
 
 ;; side effect: invalidates nr-segments and all segment info
 ;; .parameter commit Instructs partial (sequencial) commit if #t
-;; .returns Commit string as utext-list if commit is #t
+;; .returns Commit string as utext if commit is #t
 (define segconv-engine-set-candidate-index!
   (lambda (self seg-idx cand-idx commit)
     ((segconv-engine-method-table-set-candidate-index! self) self seg-idx cand-idx commit)))
 
-;; .returns Converted segment string as utext-list
+;; .returns Converted segment string as utext
 (define segconv-engine-candidate
   (lambda (self seg-idx cand-idx)
     ((segconv-engine-method-table-candidate self) self seg-idx cand-idx)))
