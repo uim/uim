@@ -82,6 +82,7 @@
   added NESTED_REPL_C_STRING feature (Dec-31-2004) YamaKen
   added heap_alloc_threshold and make configurable (Jan-07-2005) YamaKen
   added support for interactive debugging (Feb-09-2005) Jun Inoue
+  renamed 'last' to 'last-pair' to conform to SRFI-1 (Apr-04-2005) YamaKen
   added inteql for "=" predicate (Jun-19-2005) YamaKen
  */
 
@@ -1555,7 +1556,7 @@ set_fatal_exit_hook (void (*fcn) (void))
 }
 
 static LISP
-last (LISP l)
+last_pair (LISP l)
 {
   LISP v1, v2;
   v1 = l;
@@ -1575,7 +1576,7 @@ nconc (LISP a, LISP b)
   if NULLP
     (a)
       return (b);
-  setcdr (last (a), b);
+  setcdr (last_pair (a), b);
   return (a);
 }
 
@@ -4960,7 +4961,7 @@ init_subrs (void)
   init_subr_1 ("cdr", cdr);
   init_subr_2 ("set-car!", setcar);
   init_subr_2 ("set-cdr!", setcdr);
-  init_subr_1 ("last", last);
+  init_subr_1 ("last-pair", last_pair);
   init_subr_2n ("+", plus);
   init_subr_2n ("-", difference);
   init_subr_2n ("*", ltimes);

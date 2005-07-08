@@ -31,71 +31,6 @@
 
 ;; Current uim implementation treats char as integer
 
-(define char-control?
-  (lambda (c)
-    (and (integer? c)
-	 (or (<= c 31)
-	     (= c 127)))))
-
-(define char-upper-case?
-  (lambda (c)
-    (and (integer? c)
-	 (>= c 65)
-	 (<= c 90))))
-
-(define char-lower-case?
-  (lambda (c)
-    (and (integer? c)
-	 (>= c 97)
-	 (<= c 122))))
-
-(define char-alphabetic?
-  (lambda (c)
-    (or (char-upper-case? c)
-	(char-lower-case? c))))
-
-(define char-numeric?
-  (lambda (c)
-    (and (integer? c)
-	 (>= c 48)
-	 (<= c 57))))
-
-(define char-printable?
-  (lambda (c)
-    (and (integer? c)
-	 (<= c 127)
-	 (not (char-control? c)))))
-
-(define char-graphic?
-  (lambda (c)
-    (and (char-printable? c)
-	 (not (= c 32)))))
-
-(define numeral-char->number
-  (lambda (c)
-    (if (char-numeric? c)
-	(- c 48)
-	c)))
-
-(define char-downcase
-  (lambda (c)
-    (if (char-upper-case? c)
-	(+ c 32)
-	c)))
-
-(define char-upcase
-  (lambda (c)
-    (if (char-lower-case? c)
-	(- c 32)
-	c)))
-
-;; backward compatibility
-(define control-char? char-control?)
-(define alphabet-char? char-alphabetic?)
-(define numeral-char? char-numeric?)
-(define usual-char? char-graphic?)
-(define to-lower-char char-downcase)
-
 ;; TODO: write test
 (define string-escape
   (lambda (s)
@@ -171,20 +106,16 @@
 	(or (truncate-list lst n)
 	    (error "out of range in list-head")))))
 
-;; local procedure. don't use in outside of util.scm
-(define iterate-lists
-  (lambda (mapper state lists)
-    (let ((runs-out? (apply proc-or (mapcar null? lists))))
-      (if runs-out?
-	  (cdr (mapper state ()))
-	  (let* ((elms (mapcar car lists))
-		 (rests (mapcar cdr lists))
-		 (pair (mapper state elms))
-		 (terminate? (car pair))
-		 (new-state (cdr pair)))
-	    (if terminate?
-		new-state
-		(iterate-lists mapper new-state rests)))))))
+;; TODO: write test
+(define sublist
+  (lambda (lst start end)
+    (list-tail (list-head lst (+ end 1))
+	       start)))
+
+;; TODO: write test
+(define sublist-rel
+  (lambda (lst start len)
+    (sublist lst start (+ start len))))
 
 (define alist-replace
   (lambda (kons alist)
@@ -215,13 +146,44 @@
 ;; only accepts single-arg functions
 ;; (define caddr (compose car cdr cdr))
 (define compose
-  (lambda funcs
-    (fold (lambda (f g)
-	    (lambda (arg)
-	      (f (g arg))))
-	  (lambda (arg)
-	    arg)
-	  (reverse funcs))))
+  (lambda args
+    (let ((funcs (if (null? args)
+		     (list (lambda (x) x))
+		     args)))
+      (fold (lambda (f g)
+	      (lambda (arg)
+		(f (g arg))))
+	    (car (reverse funcs))
+	    (cdr (reverse funcs))))))
+
+(define method-delegator-new
+  (lambda (dest-getter method)
+    (lambda args
+      (let* ((self (car args))
+	     (dest (dest-getter self)))
+	(apply method (cons dest (cdr args)))))))
+
+;; TODO: write test
+(define safe-car
+  (lambda (pair)
+    (and (pair? pair)
+	 (car pair))))
+
+;; TODO: write test
+(define safe-cdr
+  (lambda (pair)
+    (and (pair? pair)
+	 (cdr pair))))
+
+;; TODO: write test
+(define assq-cdr
+  (lambda (key alist)
+    (safe-cdr (assq key alist))))
+
+(define clamp
+  (lambda (x bottom ceiling)
+    (max bottom
+	 (min x ceiling))))
 
 ;;
 ;; R5RS procedures (don't expect 100% compatibility)
@@ -239,11 +201,30 @@
   (lambda (x)
     (number? x)))
 
+;; Siod doesn't support char
+(define char?
+  (lambda (x)
+    #f))
+
 (define list?
   (lambda (x)
     (or (null? x)
 	(and (pair? x)
 	     (list? (cdr x))))))
+
+(define zero?
+  (lambda (x)
+    (if (integer? x)
+	(= x 0)
+	(error "non-numeric value for zero?"))))
+
+(define positive?
+  (lambda (x)
+    (> x 0)))
+
+(define negative?
+  (lambda (x)
+    (< x 0)))
 
 (define number->string integer->string)
 (define string->number string->integer)
@@ -280,6 +261,90 @@
 	(nthcdr n lst))))
 
 ;;
+;; R5RS-like character procedures
+;;
+
+(define char-control?
+  (lambda (c)
+    (and (integer? c)
+	 (or (<= c 31)
+	     (= c 127)))))
+
+(define char-upper-case?
+  (lambda (c)
+    (and (integer? c)
+	 (>= c 65)
+	 (<= c 90))))
+
+(define char-lower-case?
+  (lambda (c)
+    (and (integer? c)
+	 (>= c 97)
+	 (<= c 122))))
+
+(define char-alphabetic?
+  (lambda (c)
+    (or (char-upper-case? c)
+	(char-lower-case? c))))
+
+(define char-numeric?
+  (lambda (c)
+    (and (integer? c)
+	 (>= c 48)
+	 (<= c 57))))
+
+(define char-printable?
+  (lambda (c)
+    (and (integer? c)
+	 (<= c 127)
+	 (not (char-control? c)))))
+
+(define char-graphic?
+  (lambda (c)
+    (and (char-printable? c)
+	 (not (= c 32)))))
+
+;; TODO: write test
+(define char-vowel?
+  (let ((vowel-chars (map string->char
+			  '("a" "i" "u" "e" "o"))))
+    (lambda (c)
+      (and (char-alphabetic? c)
+	   (member (char-downcase c)
+		   vowel-chars)))))
+
+;; TODO: write test
+(define char-consonant?
+  (lambda (c)
+    (and (char-alphabetic? c)
+	 (not (char-vowel? c)))))
+
+(define numeral-char->number
+  (lambda (c)
+    (if (char-numeric? c)
+	(- c 48)
+	c)))
+
+(define char-downcase
+  (lambda (c)
+    (if (char-upper-case? c)
+	(+ c 32)
+	c)))
+
+(define char-upcase
+  (lambda (c)
+    (if (char-lower-case? c)
+	(- c 32)
+	c)))
+
+;; backward compatibility
+(define control-char? char-control?)
+(define alphabet-char? char-alphabetic?)
+(define numeral-char? char-numeric?)
+(define usual-char? char-graphic?)
+(define to-lower-char char-downcase)
+
+;;
 ;; SRFI procedures (don't expect 100% compatibility)
 ;;
 
@@ -288,7 +353,6 @@
 ;;(define take-right)
 ;;(define drop-right)
 ;;(define split-at)
-;;(define last)
 
 (define list-tabulate
   (lambda (n init-proc)
@@ -320,7 +384,25 @@
       (list-tabulate (- count start)
 		     (lambda (i)
 		       (+ start i))))))
+
+;; TODO: write test
+(define last
+  (lambda (lst)
+    (car (last-pair lst))))
+
+;; only accepts 2 lists
+;; TODO: write test
+(define append! nconc)
     
+(define concatenate
+  (lambda (lists)
+    (apply append lists)))
+
+(define concatenate!
+  (lambda (lists)
+    ;;(fold-right append! () lists)
+    (fold append! () (reverse lists))))
+
 (define zip
   (lambda lists
       (let ((runs-out? (apply proc-or (map null? lists))))
@@ -332,7 +414,7 @@
 
 (define append-map
   (lambda args
-    (apply append (apply map args))))
+    (concatenate! (apply map args))))
 
 (define append-reverse
   (lambda (rev-head tail)
@@ -347,6 +429,18 @@
       (car lst))
      (else
       (find f (cdr lst))))))
+
+;; TODO: write test
+;; replaced with faster C version
+;;(define find-tail
+;;  (lambda (pred lst)
+;;    (cond
+;;     ((null? lst)
+;;      #f)
+;;     ((pred (car lst))
+;;      lst)
+;;     (else
+;;      (find-tail pred (cdr lst))))))
 
 (define any
   (lambda args
@@ -452,9 +546,28 @@
 		     key))
 	    alist))))
 
+;; SRFI-60 procedures
+;; Siod's bit operation procedures take only two arguments
+;; TODO: write tests
+(define bitwise-not bit-not)
+
+(define bitwise-and
+  (lambda xs
+    (fold bit-and (bitwise-not 0) xs)))
+
+(define bitwise-or
+  (lambda xs
+    (fold bit-or 0 xs)))
+
+(define bitwise-xor
+  (lambda xs
+    (fold bit-xor 0 xs)))
+
 ;;
 ;; uim-specific utilities
 ;;
+
+(define do-nothing (lambda args #f))
 
 ;; TODO: write test
 (define make-scm-pathname
@@ -497,33 +610,35 @@
 ;; extensibility (e.g. (nth 2 spec) and so on may be used)
 (define define-record
   (lambda (rec-sym rec-spec)
-    (let ((i 0))
-      (for-each (lambda (spec)
-		  (let* ((index i)
-			 (elem-sym (nth 0 spec))
-			 (default  (nth 1 spec))
-			 (getter-sym (symbolconc rec-sym '- elem-sym))
-			 (getter (lambda (rec)
-				   (nth index rec)))
-			 (setter-sym (symbolconc rec-sym '-set- elem-sym '!))
-			 (setter (lambda (rec val)
-				   (set-car!
-				    (nthcdr index rec)
-				    val))))
-		    (eval (list 'define getter-sym getter)
-			  toplevel-env)
-		    (eval (list 'define setter-sym setter)
-			  toplevel-env)
-		    (set! i (+ i 1))))
-		rec-spec))
+    (for-each (lambda (spec index)
+		(let* ((elem-sym (nth 0 spec))
+		       (default  (nth 1 spec))
+		       (getter-sym (symbolconc rec-sym '- elem-sym))
+		       (getter (lambda (rec)
+				 (nth index rec)))
+		       (setter-sym (symbolconc rec-sym '-set- elem-sym '!))
+		       (setter (lambda (rec val)
+				 (set-car! (nthcdr index rec)
+					   val))))
+		  (eval (list 'define getter-sym getter)
+			toplevel-env)
+		  (eval (list 'define setter-sym setter)
+			toplevel-env)))
+	      rec-spec
+	      (iota (length rec-spec)))
     (let ((creator-sym (symbolconc rec-sym '-new))
-	  (creator (lambda init-lst
-		     (let ((defaults (map cadr rec-spec)))
+	  (creator (let ((defaults (map cadr rec-spec)))
+		     (lambda init-lst
 		       (cond
 			((null? init-lst)
 			 (copy-list defaults))
-			((<= (length init-lst)
-			     (length defaults))
+			;; fast path
+			((= (length init-lst)
+			    (length defaults))
+			 (copy-list init-lst))
+			;; others
+			((< (length init-lst)
+			    (length defaults))
 			 (let* ((rest-defaults (nthcdr (length init-lst)
 						       defaults))
 				(complemented-init-lst (append init-lst

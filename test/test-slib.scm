@@ -41,7 +41,7 @@
                              (c '(c))
                              (d 'd))
                          (list a b c d))))
-   (assert-equal '() (uim '(let (a) a))))
+   (assert-equal '() (uim '(let ((a)) a))))
   ("test named-let"
    (assert-equal -1 (uim '(let - ((x -)) (x 1))))
    (assert-equal '(4 3 2 1 0)

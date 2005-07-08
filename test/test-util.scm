@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 268 (new repository)
+;; This file is tested with revision 816 (new repository)
 
 (use test.unit)
 
@@ -434,16 +434,6 @@
 		   (uim '(list-head lst 10))))
    (assert-error (lambda ()
 		   (uim '(list-head lst -1)))))
-  ("test iterate-lists"
-   (assert-equal '(("o" . "O") ("l" . "L") ("l" . "L") ("e" . "E") ("h" . "H"))
-		 (uim '(iterate-lists (lambda (state elms)
-					(if (null? elms)
-					    (cons #t state)
-					    (cons #f (cons (apply cons elms)
-							   state))))
-				      ()
-				      '(("h" "e" "l" "l" "o")
-					("H" "E" "L" "L" "O" "!"))))))
 
   ("test alist-replace"
    (uim '(define alist ()))
@@ -569,7 +559,77 @@
    (assert-equal 4
 		 (uim '((compose car cdr reverse) test-list)))
    (assert-equal 3
-		 (uim '((compose car cdr cdr reverse) test-list)))))
+		 (uim '((compose car cdr cdr reverse) test-list))))
+  ("test clamp"
+   (assert-equal 0 (uim '(clamp -2 0 -1)))
+   (assert-equal 0 (uim '(clamp -1 0 -1)))
+   (assert-equal 0 (uim '(clamp 0  0 -1)))
+   (assert-equal 0 (uim '(clamp 1  0 -1)))
+   (assert-equal 0 (uim '(clamp 2  0 -1)))
+   (assert-equal 0 (uim '(clamp 10 0 -1)))
+
+   (assert-equal -2 (uim '(clamp -2 -2 0)))
+   (assert-equal -1 (uim '(clamp -1 -2 0)))
+   (assert-equal 0  (uim '(clamp 0  -2 0)))
+   (assert-equal 0  (uim '(clamp 1  -2 0)))
+   (assert-equal 0  (uim '(clamp 2  -2 0)))
+   (assert-equal 0  (uim '(clamp 10 -2 0)))
+
+   (assert-equal -1 (uim '(clamp -2 -1 0)))
+   (assert-equal -1 (uim '(clamp -1 -1 0)))
+   (assert-equal 0  (uim '(clamp 0  -1 0)))
+   (assert-equal 0  (uim '(clamp 1  -1 0)))
+   (assert-equal 0  (uim '(clamp 2  -1 0)))
+   (assert-equal 0  (uim '(clamp 10 -1 0)))
+
+   (assert-equal 0 (uim '(clamp -2 0 0)))
+   (assert-equal 0 (uim '(clamp -1 0 0)))
+   (assert-equal 0 (uim '(clamp 0  0 0)))
+   (assert-equal 0 (uim '(clamp 1  0 0)))
+   (assert-equal 0 (uim '(clamp 2  0 0)))
+   (assert-equal 0 (uim '(clamp 10 0 0)))
+
+   (assert-equal 0 (uim '(clamp -2 0 1)))
+   (assert-equal 0 (uim '(clamp -1 0 1)))
+   (assert-equal 0 (uim '(clamp 0  0 1)))
+   (assert-equal 1 (uim '(clamp 1  0 1)))
+   (assert-equal 1 (uim '(clamp 2  0 1)))
+   (assert-equal 1 (uim '(clamp 10 0 1)))
+
+   (assert-equal 0 (uim '(clamp -2 0 2)))
+   (assert-equal 0 (uim '(clamp -1 0 2)))
+   (assert-equal 0 (uim '(clamp 0  0 2)))
+   (assert-equal 1 (uim '(clamp 1  0 2)))
+   (assert-equal 2 (uim '(clamp 2  0 2)))
+   (assert-equal 2 (uim '(clamp 10 0 2)))
+
+   (assert-equal 0 (uim '(clamp -2 0 3)))
+   (assert-equal 0 (uim '(clamp -1 0 3)))
+   (assert-equal 0 (uim '(clamp 0  0 3)))
+   (assert-equal 1 (uim '(clamp 1  0 3)))
+   (assert-equal 2 (uim '(clamp 2  0 3)))
+   (assert-equal 3 (uim '(clamp 10 0 3)))
+
+   (assert-equal 1 (uim '(clamp -2 1 3)))
+   (assert-equal 1 (uim '(clamp -1 1 3)))
+   (assert-equal 1 (uim '(clamp 0  1 3)))
+   (assert-equal 1 (uim '(clamp 1  1 3)))
+   (assert-equal 2 (uim '(clamp 2  1 3)))
+   (assert-equal 3 (uim '(clamp 10 1 3)))
+
+   (assert-equal -1 (uim '(clamp -2 -1 3)))
+   (assert-equal -1 (uim '(clamp -1 -1 3)))
+   (assert-equal 0  (uim '(clamp 0  -1 3)))
+   (assert-equal 1  (uim '(clamp 1  -1 3)))
+   (assert-equal 2  (uim '(clamp 2  -1 3)))
+   (assert-equal 3  (uim '(clamp 10 -1 3)))
+
+   (assert-equal -2 (uim '(clamp -2 -5 5)))
+   (assert-equal -1 (uim '(clamp -1 -5 5)))
+   (assert-equal 0  (uim '(clamp 0  -5 5)))
+   (assert-equal 1  (uim '(clamp 1  -5 5)))
+   (assert-equal 2  (uim '(clamp 2  -5 5)))
+   (assert-equal 5  (uim '(clamp 10 -5 5)))))
 
 (define-uim-test-case "testcase util R5RS procedures"
   (setup
@@ -643,6 +703,48 @@
    (assert-true  (uim-bool '(list? '(1))))
    (assert-true  (uim-bool '(list? '(1 "2"))))
    (assert-true  (uim-bool '(list? '(1 "2" 'three)))))
+  ("test zero?"
+   (assert-error (lambda () (uim-bool '(zero? #f))))
+   (assert-error (lambda () (uim-bool '(zero? "foo"))))
+   (assert-error (lambda () (uim-bool '(zero? 'foo))))
+   (assert-false (uim-bool '(zero? -2)))
+   (assert-false (uim-bool '(zero? -1)))
+   (assert-true  (uim-bool '(zero? 0)))
+   (assert-false (uim-bool '(zero? 1)))
+   (assert-false (uim-bool '(zero? 2)))
+   (assert-false (uim-bool '(zero? 10)))
+   (assert-error (lambda () (uim-bool '(zero? ()))))
+   (assert-error (lambda () (uim-bool '(zero? '(1)))))
+   (assert-error (lambda () (uim-bool '(zero? '(1 "2")))))
+   (assert-error (lambda () (uim-bool '(zero? '(1 "2" 'three))))))
+  ("test positive?"
+   (assert-error (lambda () (uim-bool '(positive? #f))))
+   (assert-error (lambda () (uim-bool '(positive? "foo"))))
+   (assert-error (lambda () (uim-bool '(positive? 'foo))))
+   (assert-false (uim-bool '(positive? -2)))
+   (assert-false (uim-bool '(positive? -1)))
+   (assert-false (uim-bool '(positive? 0)))
+   (assert-true  (uim-bool '(positive? 1)))
+   (assert-true  (uim-bool '(positive? 2)))
+   (assert-true  (uim-bool '(positive? 10)))
+   (assert-error (lambda () (uim-bool '(positive? ()))))
+   (assert-error (lambda () (uim-bool '(positive? '(1)))))
+   (assert-error (lambda () (uim-bool '(positive? '(1 "2")))))
+   (assert-error (lambda () (uim-bool '(positive? '(1 "2" 'three))))))
+  ("test negative?"
+   (assert-error (lambda () (uim-bool '(negative? #f))))
+   (assert-error (lambda () (uim-bool '(negative? "foo"))))
+   (assert-error (lambda () (uim-bool '(negative? 'foo))))
+   (assert-true  (uim-bool '(negative? -2)))
+   (assert-true  (uim-bool '(negative? -1)))
+   (assert-false (uim-bool '(negative? 0)))
+   (assert-false (uim-bool '(negative? 1)))
+   (assert-false (uim-bool '(negative? 2)))
+   (assert-false (uim-bool '(negative? 10)))
+   (assert-error (lambda () (uim-bool '(negative? ()))))
+   (assert-error (lambda () (uim-bool '(negative? '(1)))))
+   (assert-error (lambda () (uim-bool '(negative? '(1 "2")))))
+   (assert-error (lambda () (uim-bool '(negative? '(1 "2" 'three))))))
   ("test string->symbol"
    (assert-equal 'foo1
 		 (uim '(string->symbol "foo1")))

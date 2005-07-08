@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 362 of new repository
+;; This file is tested with revision 816 of new repository
 
 (use test.unit)
 
@@ -123,6 +123,52 @@
 ;   (assert-equal '("c" "語" "本" "b" "日" "a")
 ;		 (uim '(string-to-list "a日b本語c")))
    )
+
+  ("test string-prefix?"
+   (assert-true  (uim-bool '(string-prefix? ""         "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix? "f"        "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix? "fo"       "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix? "foo"      "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix? "foo_"     "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix? "foo_b"    "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix? "foo_ba"   "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix? "foo_bar"  "foo_bar")))
+   (assert-false (uim-bool '(string-prefix? "foo_bar_" "foo_bar")))
+   (assert-false (uim-bool '(string-prefix? #f         "foo_bar")))
+   (assert-false (uim-bool '(string-prefix? "foo_bar"  #f)))
+   (assert-false (uim-bool '(string-prefix? "Foo"      "foo_bar")))
+   (assert-false (uim-bool '(string-prefix? "oo_"      "foo_bar")))
+   (assert-false (uim-bool '(string-prefix? "bar"      "foo_bar")))
+
+   (assert-true  (uim-bool '(string-prefix? ""    "")))
+   (assert-false (uim-bool '(string-prefix? "foo" "")))
+   (assert-false (uim-bool '(string-prefix? #f    "")))
+   (assert-false (uim-bool '(string-prefix? ""    #f))))
+
+  ("test string-prefix-ci?"
+   (assert-true  (uim-bool '(string-prefix-ci? ""         "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix-ci? "f"        "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix-ci? "fo"       "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix-ci? "foo"      "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix-ci? "foo_"     "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix-ci? "foo_b"    "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix-ci? "foo_ba"   "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix-ci? "foo_bar"  "foo_bar")))
+   (assert-false (uim-bool '(string-prefix-ci? "foo_bar_" "foo_bar")))
+   (assert-false (uim-bool '(string-prefix-ci? #f         "foo_bar")))
+   (assert-false (uim-bool '(string-prefix-ci? "foo_bar"  #f)))
+   (assert-true  (uim-bool '(string-prefix-ci? "Foo"      "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix-ci? "fOo"      "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix-ci? "fOO"      "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix-ci? "FOO"      "foo_bar")))
+   (assert-true  (uim-bool '(string-prefix-ci? "FOO_bar"  "foo_bar")))
+   (assert-false (uim-bool '(string-prefix-ci? "oo_"      "foo_bar")))
+   (assert-false (uim-bool '(string-prefix-ci? "bar"      "foo_bar")))
+
+   (assert-true  (uim-bool '(string-prefix-ci? ""    "")))
+   (assert-false (uim-bool '(string-prefix-ci? "foo" "")))
+   (assert-false (uim-bool '(string-prefix-ci? #f    "")))
+   (assert-false (uim-bool '(string-prefix-ci? ""    #f))))
 
   ("test string=?"
    (assert-true  (uim-bool '(string=? "foo1" "foo1")))
@@ -221,6 +267,17 @@
    (assert-equal "100"  (uim '(digit->string 100)))
    (assert-equal "1000" (uim '(digit->string 1000)))
    (assert-equal "2147483647" (uim '(digit->string 2147483647))))
+
+  ("test iterate-lists"
+   (assert-equal '(("o" . "O") ("l" . "L") ("l" . "L") ("e" . "E") ("h" . "H"))
+		 (uim '(iterate-lists (lambda (state elms)
+					(if (null? elms)
+					    (cons #t state)
+					    (cons #f (cons (apply cons elms)
+							   state))))
+				      ()
+				      '(("h" "e" "l" "l" "o")
+					("H" "E" "L" "L" "O" "!"))))))
 
   ;; compare string sequence
   ("test str-seq-equal?"
