@@ -814,7 +814,7 @@ skk_get_entry(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_)
 {
   struct skk_cand_array *ca;
   ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
-  if (ca) {
+  if (ca && ca->nr_cands > 0) {
     return uim_scm_t();
   }
   return uim_scm_f();
