@@ -97,27 +97,15 @@ init_default_xftfont() {
     }
 }
 
-static char *
-dequote(const char *str)
-{
-   char *ret = NULL;
-
-   if (str) {
-	int len = strlen(str);
-	if (str[0] == '"' && str[len - 1] == '"') {
-	    ret = strdup(++str);
-	    ret[len - 2] = '\0';
-	} else
-	    ret = strdup(str);
-   }
-
-   return ret;
-}
-
 void
-update_default_xftfont(const char *s) {
-    char *fontname = dequote(s);
+update_default_xftfont() {
+    const char *fontname;
+    
+    if (!uim_scm_symbol_value_bool("uim-xim-use-xft-font?"))
+      return;
 
+    fontname = uim_scm_symbol_value_str("uim-xim-xft-font-name");
+    
     if (fontname) {
 	XftFont *xftfont = XftFontOpen(XimServer::gDpy,
 			DefaultScreen(XimServer::gDpy),
@@ -125,11 +113,12 @@ update_default_xftfont(const char *s) {
 			XFT_PIXEL_SIZE, XftTypeDouble, (double)DEFAULT_FONT_SIZE,
 			NULL);
 	if (xftfont) {
-	    XftFontClose(XimServer::gDpy, gXftFont);
+	    if (gXftFont)
+	      XftFontClose(XimServer::gDpy, gXftFont);
 	    free(gXftFontName);
 	    free(gXftFontLocale);
 	    gXftFont = xftfont;
-	    gXftFontName = fontname;
+	    gXftFontName = strdup(fontname);
 	    gXftFontLocale = strdup(setlocale(LC_CTYPE, NULL));
 	}
     }

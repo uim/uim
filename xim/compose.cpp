@@ -104,7 +104,7 @@ bool Compose::handleKey(KeySym xkeysym, int xkeystate, bool is_push)
     } else { // Unmatched
 	if (m_context == m_top)
 	    return false;
-	// Error (Sequence Unmatch occured)
+	// Error (Sequence Unmatch occurred)
 	m_context = m_top;
 	return true;
     }
