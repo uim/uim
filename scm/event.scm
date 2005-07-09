@@ -42,6 +42,7 @@
 ;; event definitions
 ;;
 
+;; TODO: register by define-event
 (define valid-event-types
   '(unknown
     client-info
@@ -80,6 +81,11 @@
 ;; use 'event' instead of 'downward-event' as record name for convenient use
 (define-record 'event downward-event-rec-spec)
 
+;; TODO
+;;(define define-event
+;;  (lambda (name spec)
+;;    ))
+
 (define event-external-state
   (lambda (ev state-id)
     (let ((state-reader (event-ext-state ev)))
@@ -112,13 +118,15 @@
 (define-record 'insert-event
   (append
    downward-event-rec-spec
-   '((utext ()))))
+   '((utext ()))))  ;; can include cursor position info
 
 (define-record 'commit-event
   (append
    upward-event-rec-spec
-   '((utext         ())
-     (preedit-utext ()))))  ;; can also update preedit as atomic event
+   '((utext           ())    ;; can include cursor position info
+     (preedit-updated #t)    ;; can also update preedit as atomic event
+     (former-del-len  0)     ;; for surrounding text operation
+     (latter-del-len  0))))  ;; for surrounding text operation
 
 (define-record 'preedit-updated-event
   (append
