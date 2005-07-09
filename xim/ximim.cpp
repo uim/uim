@@ -88,6 +88,7 @@ public:
     virtual void unset_ic_focus(int icid);
     virtual void forward_event(RxPacket *);
     virtual void send_sync_reply(int icid);
+    virtual void send_sync(int icid);
     virtual XimIC *get_ic_by_id(int id);
     virtual void onSendPacket();
     virtual void changeContext(const char *);
@@ -358,6 +359,14 @@ void XimIM_impl::delete_ic(XimIC *ic)
 void XimIM_impl::send_sync_reply(int icid)
 {
     TxPacket *t = createTxPacket(XIM_SYNC_REPLY, 0);
+    t->pushC16(mID);
+    t->pushC16(icid);
+    mConn->push_packet(t);
+}
+
+void XimIM_impl::send_sync(int icid)
+{
+    TxPacket *t = createTxPacket(XIM_SYNC, 0);
     t->pushC16(mID);
     t->pushC16(icid);
     mConn->push_packet(t);

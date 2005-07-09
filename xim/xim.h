@@ -184,6 +184,7 @@ public:
     virtual void unset_ic_focus(int icid) = 0;
     virtual void forward_event(RxPacket *) = 0;
     virtual void send_sync_reply(int icid) = 0;
+    virtual void send_sync(int icid) = 0;
     virtual XimIC *get_ic_by_id(int icid) = 0;
     virtual void onSendPacket() = 0;
     virtual void changeContext(const char *engine) = 0;
@@ -304,6 +305,7 @@ private:
     void send_key_event(XKeyEvent *k);
     int lookup_style(unsigned long);
     void set_ic_attr(int, C8 *, int );
+    void send_sync();
     
     Connection *mConn;
     // mConvdisp is 0 until getting enough icxatr.  Need to delete
