@@ -654,15 +654,6 @@ XimIM::ParseComposeStringFile(FILE *fp)
     char* tbp;
     struct stat st;
 
-    if (mTreeTop == NULL) {
-	mTreeTop = (DefTree *)malloc(sizeof(DefTree));
-	mTreeTop->succession = NULL;
-	mTreeTop->next = NULL;
-	mTreeTop->mb = NULL;
-	mTreeTop->utf8 = NULL;
-	mTreeTop->ks = NoSymbol;
-    }
-
     if (fstat(fileno(fp), &st) != -1) {
 	unsigned long size = (unsigned long)st.st_size;
 	if (size <= sizeof tb)
