@@ -82,7 +82,7 @@ void init_convdisp();
 void init_modifier_keys();
 #if HAVE_XFT_UTF8_STRING
 void init_default_xftfont();
-void update_default_xftfont(const char *s);
+void update_default_xftfont();
 #endif
 
 
@@ -248,7 +248,6 @@ private:
     Atom mServerAtom;
     char *mIMName;
     const char *mIMLang;
-    bool mUsePreservedDefaultIM;
 };
 
 struct UIMInfo {

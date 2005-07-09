@@ -105,7 +105,6 @@ XimServer::XimServer(const char *name, const char *lang)
 {
     mIMName = strdup(name);
     mIMLang = lang;
-    mUsePreservedDefaultIM = false;
 }
 
 InputContext *XimServer::createContext(XimIC *xic, const char *engine)
@@ -139,32 +138,21 @@ void XimServer::changeContext(const char *engine) {
 }
 
 void XimServer::customContext(const char *custom, const char *val) {
-#if 1
-    // Updated ximserver's global im with customized one.
-    // This is temporal hack.
-    //fprintf(stderr, "custom %s, val %s\n", custom, val);
-    if (!strcmp(custom, "custom-activate-default-im-name?")) {
-	if (!strcmp(val, "#t"))
-	    mUsePreservedDefaultIM = true;
-	else
-	    mUsePreservedDefaultIM = false;
-    }
-    if (!strcmp(custom, "custom-preserved-default-im-name") &&
-		    mUsePreservedDefaultIM == true) {
-	val++;
-	set_im(val);
-	val--;
-    }
-#if HAVE_XFT_UTF8_STRING
-    if (!strcmp(custom, "uim-xim-xft-font-name"))
-	update_default_xftfont(val);
-#endif
-#endif
-
     std::list<InputContext *>::iterator it;
     for (it = ic_list.begin(); it != ic_list.end(); it++) {
 	(*it)->customContext(custom, val);
+	break;
     }
+
+    // Updated global IM of XimServer
+    if (!strcmp(custom, "custom-preserved-default-im-name") &&
+		    uim_scm_symbol_value_bool("custom-activate-default-im-name?"))
+	set_im(++val);
+
+#if HAVE_XFT_UTF8_STRING
+    if (!strcmp(custom, "uim-xim-xft-font-name"))
+	update_default_xftfont();
+#endif
 }
 
 bool

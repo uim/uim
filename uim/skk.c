@@ -113,7 +113,7 @@ static struct dic_info {
   int size;
   /* head of cached skk dictionary line list. LRU ordered */
   struct skk_line head;
-  /* timestamp of personal dictonary */
+  /* timestamp of personal dictionary */
   time_t personal_dic_timestamp;
   /* whether cached lines are modified or not */
   int cache_modified;
@@ -311,7 +311,7 @@ do_search_line(struct dic_info *di, const char *s, int min,
   return -1;
 }
 
-/* This funciton name is temporary. I want a better name. */
+/* This function name is temporary. I want a better name. */
 static char *
 first_space(char *str)
 {
@@ -409,14 +409,14 @@ static void
 free_skk_line(struct skk_line *sl)
 {
   int i, j;
-  if (!sl) {
+
+  if (!sl)
     return ;
-  }
+
   for (i = 0; i < sl->nr_cand_array; i++) {
     struct skk_cand_array *ca = &sl->cands[i];
-    for (j = 0; j < ca->nr_cands; j++) {
+    for (j = 0; j < ca->nr_cands; j++)
       free(ca->cands[j]);
-    }
     free(ca->okuri);
     free(ca->cands);
   }
@@ -986,10 +986,9 @@ skk_get_entry(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_)
 {
   struct skk_cand_array *ca;
   ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
-  if (ca) {
-    if (!is_purged_only(ca))
+  if (ca && ca->nr_cands > 0 && !is_purged_only(ca))
       return uim_scm_t();
-  }
+
   return uim_scm_f();
 }
 
