@@ -46,19 +46,24 @@
 ;; private accessors for use in ustr.scm. Users of ustr should use
 ;; ustr-former-seq, ustr-set-former-seq!, ustr-latter-seq and
 ;; ustr-set-latter-seq! instead.
-(define ustr-rec-spec
-  '((former ())  ;; reversed order
-    (latter ())))
-(define-record 'ustr ustr-rec-spec)
-(define ustr-new-internal ustr-new)
+
+;;(define ustr-rec-spec
+;;  '((former ())  ;; reversed order
+;;    (latter ())))
+;;(define-record 'ustr ustr-rec-spec)
+;;(define ustr-new-internal ustr-new)
+(define ustr-former car)
+(define ustr-set-former! set-car!)
+(define ustr-latter cdr)
+(define ustr-set-latter! set-cdr!)
 
 (define ustr-new
   (lambda args
-    (let* ((former-seq (and (not (null? args))
-			    (car args)))
-	   (latter-seq (and (not (null? (cdr args)))
-			    (cadr args)))
-	   (ustr (ustr-new-internal)))
+    (let ((former-seq (and (not (null? args))
+			   (car args)))
+	  (latter-seq (and (not (null? (cdr args)))
+			   (cadr args)))
+	  (ustr (cons () ())))
       (and former-seq
 	   (ustr-set-former-seq! ustr former-seq))
       (and latter-seq
