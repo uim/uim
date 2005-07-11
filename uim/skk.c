@@ -60,6 +60,8 @@
 #define skk_isupper(ch)	((((unsigned char)ch) >= 'A') && (((unsigned char)ch) <= 'Z'))
 #define skk_isascii(ch)	((((unsigned char)ch) & ~0x7f) == 0)
 
+#define IGNORING_WORD_MAX	63
+
 /*
  * cand : candidate
  */
@@ -1465,6 +1467,8 @@ get_ignoring_indices(struct skk_cand_array *ca, int indices[])
     k++;
 
     for (i = ca->nr_real_cands; i < ca->nr_cands; i++) {
+      if (k >= IGNORING_WORD_MAX)
+	break;
       for (j = 0; j < nr_purged; j++) {
 	if (!strcmp(ca->cands[i], purged_words[j])) {
 	  indices[k] = i;
@@ -1494,7 +1498,7 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
   int mark;
   uim_lisp str_ = uim_scm_null_list();
 
-  int ignoring_indices[64]; /* XXX is it enough? */
+  int ignoring_indices[IGNORING_WORD_MAX + 1];
 
   n = uim_scm_c_int(nth_);
   ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
@@ -1566,7 +1570,7 @@ skk_get_nr_candidates(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim
   const char *numstr;
   int method_place = 0;
 
-  int ignoring_indices[64]; /* XXX is it enough? */
+  int ignoring_indices[IGNORING_WORD_MAX + 1];
 
   ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
   if (ca)
@@ -2022,7 +2026,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
   const char *numstr;
   int method_place = 0;
 
-  int ignoring_indices[64]; /* XXX is it enough? */
+  int ignoring_indices[IGNORING_WORD_MAX + 1];
 
   nth = uim_scm_c_int(nth_);
   ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
@@ -2149,7 +2153,7 @@ skk_purge_candidate(uim_lisp head_, uim_lisp okuri_head_,
   const char *numstr;
   int method_place = 0;
 
-  int ignoring_indices[64]; /* XXX is it enough? */
+  int ignoring_indices[IGNORING_WORD_MAX + 1];
 
   ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
   if (!ca)
