@@ -113,9 +113,12 @@
 	       start)))
 
 ;; TODO: write test
+;; .parameter len Length to get. -1 means end of original lst
 (define sublist-rel
   (lambda (lst start len)
-    (sublist lst start (+ start len))))
+    (if (negative? len)
+	(list-tail lst start)
+	(sublist lst start (+ start len)))))
 
 (define alist-replace
   (lambda (kons alist)
@@ -348,9 +351,14 @@
 
 ;;(define take)
 ;;(define drop)
-;;(define take-right)
 ;;(define drop-right)
 ;;(define split-at)
+
+;; TODO: write test, make efficient
+(define take-right
+  (lambda (lst i)
+    (let ((ndrop (- (length lst) i)))
+      (list-tail lst ndrop))))
 
 (define list-tabulate
   (lambda (n init-proc)

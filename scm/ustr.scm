@@ -118,7 +118,8 @@
 ;; TODO: write test 
 (define ustr-dup
   (lambda (ustr)
-    (copy-list ustr)))
+    (cons (ustr-former ustr)
+	  (ustr-latter ustr))))
 
 ;; ignores cursor position
 (define ustr=

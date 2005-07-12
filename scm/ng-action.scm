@@ -156,7 +156,8 @@
 
 (define actionset-fetch-action-skeleton
   (lambda (actset act-id)
-    ((actionset-fetcher actset) act-id (actionset-opaque actset))))
+    (and actset
+	 ((actionset-fetcher actset) act-id (actionset-opaque actset)))))
 
 (define actionset-fetch-action
   (lambda (actset owner act-id)
@@ -166,15 +167,16 @@
 
 (define actionset-handle-event
   (lambda (actset owner ev)
-    (case (event-type ev)
-      ((action)
-       (let* ((act-id (action-event-action-id ev))
-	      (act (actionset-fetch-action actset owner act-id)))
-	 (and act
-	      (action-activate! act))))
+    (and actset
+	 (case (event-type ev)
+	   ((action)
+	    (let* ((act-id (action-event-action-id ev))
+		   (act (actionset-fetch-action actset owner act-id)))
+	      (and act
+		   (action-activate! act))))
 
-      (else
-       #f))))
+	   (else
+	    #f)))))
 
 
 ;;
