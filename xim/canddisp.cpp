@@ -41,6 +41,9 @@
 #include <errno.h>
 
 #include "uim/uim.h"
+#ifdef UIM_COMPAT_SCM
+#include "uim/uim-compat-scm.h"
+#endif /* UIM_COMPAT_SCM */
 
 #include "ximserver.h"
 #include "xim.h"
@@ -60,8 +63,23 @@ static const char *candwin_command(void)
 {
     char *candwin_prog = NULL;
 
+    /*
+      XXX: We should drop uim-compat-scm API. -- omote 07/12/2005
+
+      Search order of candwin_command be summarized as follows
+      if UIM_COMPAT_SCM is defined.
+	 1. UIM_CANDWIN_PROG -- mainly for debugging purpose
+	 2. value in 'uim-candwin-prog' symbol
+	 3. default toolkit's candwin program determined by ./configure
+     */
+
     candwin_prog = getenv("UIM_CANDWIN_PROG");
     if (candwin_prog == NULL) {
+#ifdef UIM_COMPAT_SCM
+	candwin_prog = uim_scm_symbol_value_str("uim-candwin-prog");
+	if(candwin_prog != NULL)
+	    return candwin_prog;
+#endif /* UIM_COMPAT_SCM */
 #if defined(USE_QT_CANDWIN)
 	return "uim-candwin-qt";
 #elif defined(USE_GTK_CANDWIN) && defined(USE_GTK2)
