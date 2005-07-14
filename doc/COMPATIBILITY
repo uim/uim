@@ -58,6 +58,24 @@ Each change consist of following fields. All fields are required.
 The changes are described below in most recently updated order.
 
 ------------------------------------------------------------------------------
+Summary: default IM switching responsibility separation from uim_switch_im()
+Affects: Bridge developers
+Updates: C API
+Version: 0.4.8
+Revision: 971
+Date: 2005-07-14
+Modifier: YamaKen
+Related: IM switcher
+URL:
+  http://lists.sourceforge.jp/mailman/archives/anthy-dev/2005-July/002130.html (Japanese)
+  http://lists.sourceforge.jp/mailman/archives/anthy-dev/2005-July/002135.html (Japanese)
+Changes:
+  uim_switch_im()
+Description:
+  The responsibility about switching default IM has been separated
+  from uim_switch_im() and moved into each bridges. This is required
+  to handle im_change_this_text_area_only message properly.
+------------------------------------------------------------------------------
 Summary: New helper-candwin protocol about showing input state
 Affects: Helper program developers
 Updates: Helper-candwin protocol

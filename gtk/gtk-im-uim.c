@@ -933,27 +933,34 @@ im_uim_parse_helper_str_im_change(const char *str)
   IMUIMContext *cc;
   gchar **lines = g_strsplit(str, "\n", -1);
   gchar *im_name = lines[1];
+  GString *im_name_sym = g_string_new(im_name);
+  g_string_prepend_c(im_name_sym, '\'');
   if (g_str_has_prefix(str, "im_change_this_text_area_only") == TRUE) {
-    if (focused_context) {
+    if (focused_context && disable_focused_context == FALSE) {
       uim_switch_im(focused_context->uc, im_name);
       uim_prop_list_update(focused_context->uc);
     }
   } else if (g_str_has_prefix(str, "im_change_whole_desktop") == TRUE) {
     for (cc = context_list.next; cc != &context_list; cc = cc->next) {
       uim_switch_im(cc->uc, im_name);
+      uim_prop_update_custom(cc->uc, "custom-preserved-default-im-name",
+			     im_name_sym->str);
       if (focused_context && cc == focused_context)
 	uim_prop_list_update(cc->uc);
     }
   } else if (g_str_has_prefix(str, "im_change_this_application_only") == TRUE) {
-    if (focused_context) {    
+    if (focused_context && disable_focused_context == FALSE) {
       for (cc = context_list.next; cc != &context_list; cc = cc->next) {
 	uim_switch_im(cc->uc, im_name);
+	uim_prop_update_custom(cc->uc, "custom-preserved-default-im-name",
+			       im_name_sym->str);
 	if (cc == focused_context)
 	  uim_prop_list_update(cc->uc);
       }
     }
   }
   g_strfreev(lines);
+  g_string_free(im_name_sym, TRUE);
 }
 
 static void

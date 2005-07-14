@@ -236,13 +236,6 @@ uim_switch_im(uim_context uc, const char *engine)
   uc->short_desc = uim_return_str;
   uim_return_str = NULL;  /* ownership has been transferred */
 #endif
-
-  /*
-     To remember the IM selected by uim-toolbar, we record the latest
-     IM to default-im-name. This makes subsequent contexts the
-     selected one. -- YamaKen 2004-11-15
-  */
-  UIM_EVAL_FSTRING1(uc, "(set! default-im-name '%s)", engine);
 }
 
 void
