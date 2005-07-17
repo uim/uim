@@ -1,0 +1,15 @@
+(define vec (vector 'a 'b 'c 'd))
+
+(print vec)
+(print (vector? vec))
+(print (vector-length vec))
+(print (vector-ref vec 3))
+(vector-set! vec 3 #t)
+(print vec)
+(print (vector->list vec))
+(print (list->vector (vector->list vec)))
+(vector-fill! vec #f)
+(print vec)
+
+(print (make-vector 3))
+(print (make-vector 3 #f))

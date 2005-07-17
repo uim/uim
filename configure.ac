@@ -731,6 +731,7 @@ AC_CONFIG_FILES([test.sh
                  helper/Makefile
                  doc/Makefile
                  uim/Makefile
+		 sigscheme/Makefile
                  scm/Makefile
                  gtk/Makefile
                  qt/Makefile
