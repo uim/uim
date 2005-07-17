@@ -130,7 +130,9 @@ ScmObj ScmExp_case(ScmObj arg, ScmObj env);
 ScmObj ScmExp_and(ScmObj arg, ScmObj env);
 ScmObj ScmExp_or(ScmObj arg, ScmObj env);
 ScmObj ScmExp_let(ScmObj arg, ScmObj env);
+ScmObj ScmExp_let_star(ScmObj arg, ScmObj env);
 ScmObj ScmExp_begin(ScmObj arg, ScmObj env);
+ScmObj ScmExp_do(ScmObj arg, ScmObj env);
 ScmObj ScmOp_delay(ScmObj arg, ScmObj env);
 ScmObj ScmOp_quasiquote(ScmObj temp);
 ScmObj ScmOp_unquote(ScmObj exp);
@@ -138,7 +140,6 @@ ScmObj ScmOp_unquote_splicint(ScmObj exp);
 ScmObj ScmExp_define(ScmObj arg, ScmObj env);
 ScmObj ScmOp_scheme_report_environment(ScmObj version);
 ScmObj ScmOp_null_environment(ScmObj version);
-
 
 /* operations.c */
 ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2);

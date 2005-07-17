@@ -58,6 +58,7 @@
 =======================================*/
 static ScmObj list_gettail(ScmObj head);
 static ScmObj ScmOp_listtail_internal(ScmObj obj, int k);
+static ScmObj ScmOp_append_internal(ScmObj head, ScmObj tail);
 
 /*=======================================
   Function Implementations
@@ -764,7 +765,7 @@ ScmObj ScmOp_length(ScmObj obj)
     return Scm_NewInt(length);
 }
 
-ScmObj ScmOp_append(ScmObj head, ScmObj tail)
+ScmObj ScmOp_append_internal(ScmObj head, ScmObj tail)
 {
     ScmObj head_tail = SCM_NIL;
 
@@ -785,6 +786,18 @@ ScmObj ScmOp_append(ScmObj head, ScmObj tail)
     }
 
     return head;
+}
+
+ScmObj ScmOp_append(ScmObj args, ScmObj env)
+{
+    ScmObj ret = SCM_NIL;
+    ScmObj obj = SCM_NIL;
+    for (; !SCM_NULLP(args); args = SCM_CDR(args)) {
+	obj = SCM_CAR(args);
+	ret = ScmOp_append_internal(ret, obj);
+    }
+
+    return ret;
 }
 
 ScmObj ScmOp_reverse(ScmObj list)

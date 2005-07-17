@@ -111,8 +111,10 @@ void SigScm_Initialize(void)
     Scm_InitSubrR("and"                  , ScmExp_and);
     Scm_InitSubrR("or"                   , ScmExp_or);
     Scm_InitSubrR("let"                  , ScmExp_let);
-    Scm_InitSubrR("let*"                 , ScmExp_let);
+    Scm_InitSubrR("let*"                 , ScmExp_let_star);
+    Scm_InitSubrR("letrec"               , ScmExp_let);
     Scm_InitSubrR("begin"                , ScmExp_begin);
+    Scm_InitSubrR("do"                   , ScmExp_do);
     Scm_InitSubrR("delay"                , ScmOp_delay);
     Scm_InitSubrR("define"               , ScmExp_define);
     Scm_InitSubr1("scheme-report-environment", ScmOp_scheme_report_environment);
@@ -182,6 +184,7 @@ void SigScm_Initialize(void)
     Scm_InitSubr1("list?"                , ScmOp_listp);
     Scm_InitSubrL("list"                 , ScmOp_list);
     Scm_InitSubr1("length"               , ScmOp_length);
+    Scm_InitSubrL("append"               , ScmOp_append);
     Scm_InitSubr1("reverse"              , ScmOp_reverse);
     Scm_InitSubr2("list-tail"            , ScmOp_listtail);
     Scm_InitSubr2("list-ref"             , ScmOp_listref);

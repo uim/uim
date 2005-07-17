@@ -788,6 +788,44 @@ ScmObj ScmExp_let(ScmObj arg, ScmObj env)
     return SCM_UNDEF;
 }
 
+ScmObj ScmExp_let_star(ScmObj arg, ScmObj env)
+{
+    ScmObj bindings = SCM_NIL;
+    ScmObj body     = SCM_NIL;
+
+    /* sanity check */
+    if CHECK_2_ARGS(arg)
+	SigScm_Error("let : syntax error\n");
+
+    /* get bindings and body */
+    bindings = SCM_CAR(arg);
+    body     = SCM_CDR(arg);
+
+    /*========================================================================
+      (let <bindings> <body>)
+      <bindings> == ((<variable1> <init1>)
+                     (<variable2> <init2>)
+                     ...)
+    ========================================================================*/
+    if (SCM_CONSP(bindings)) {
+	ScmObj vars = SCM_NIL;
+	ScmObj vals = SCM_NIL;
+	ScmObj binding = SCM_NIL;
+	for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
+	    binding = SCM_CAR(bindings);
+	    vars = Scm_NewCons(SCM_CAR(binding), SCM_NIL);
+	    vals = Scm_NewCons(ScmOp_eval(SCM_CAR(SCM_CDR(binding)), env), SCM_NIL);
+
+	    /* add env to each time!*/
+	    env = extend_environment(vars, vals, env);
+	}
+
+	return ScmExp_begin(body, env);
+    }
+
+    return SCM_UNDEF;
+}
+
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.3 Sequencing
 ===========================================================================*/
@@ -822,51 +860,68 @@ ScmObj ScmExp_begin(ScmObj arg, ScmObj env)
 ScmObj ScmExp_do(ScmObj arg, ScmObj env)
 {
     /*
+     * (do ((<variable1> <init1> <step1>)
+     *      (<variable2> <init2> <step2>)
+     *      ...)
+     *     (<test> <expression> ...)
+     *   <command> ...)
+     */
+
+    ScmObj bindings   = SCM_CAR(arg);
+    ScmObj vars       = SCM_NIL;
+    ScmObj vals       = SCM_NIL;
+    ScmObj steps      = SCM_NIL;
+    ScmObj binding    = SCM_NIL;
+    ScmObj step       = SCM_NIL;
+    ScmObj testframe  = SCM_NIL;
+    ScmObj test       = SCM_NIL;
+    ScmObj expression = SCM_NIL;
+    ScmObj commands   = SCM_NIL;
+    ScmObj tmp_steps  = SCM_NIL;
+
+    /* sanity check */
     if (SCM_INT_VALUE(ScmOp_length(arg)) < 2)
 	SigScm_Error("do : syntax error\n");
 
-    // (do ((<variable1> <init1> <step1>)
-    //      (<variable2> <init2> <step2>)
-    //      ...)
-    //     (<test> <expression> ...)
-    //   <command> ...)
-
-    // Construct Environment and steps
-    ScmObj steps    = SCM_NIL;
-    ScmObj bindings = SCM_CAR(arg);
+    /* construct Environment and steps */
     for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
-	// TODO : creating new frame for each binding is heavy?
-	// may be able to optimize this process.
-	ScmObj binding = SCM_CAR(bindings);
-	ScmObj vars = Scm_NewCons(SCM_CAR(binding), SCM_NIL);
-	ScmObj vals = Scm_NewCons(ScmOp_eval(SCM_CAR(SCM_CDR(binding)), env), SCM_NIL);
-	env = extend_environment(vars, vals, env);
+	binding = SCM_CAR(bindings);
+	vars = Scm_NewCons(SCM_CAR(binding), vars);
+	vals = Scm_NewCons(ScmOp_eval(SCM_CAR(SCM_CDR(binding)), env), vals);
 
-	ScmObj step = SCM_CAR(SCM_CAR(SCM_CDR(binding)));
+	step = SCM_CDR(SCM_CDR(binding));
 	if (!SCM_NULLP(step)) {
-	    ScmOp_append(steps, step);
+	    step = SCM_CAR(step);
+
+	    /* append (<var> <step>) to steps */
+	    steps = Scm_NewCons(Scm_NewCons(SCM_CAR(binding),
+					    Scm_NewCons(step, SCM_NIL)),
+				steps);
 	}
     }
 
-    // Construct test
-    ScmObj testframe  = SCM_CAR(SCM_CDR(arg));
-    ScmObj test       = SCM_CAR(testframe);
-    ScmObj expression = SCM_CAR(SCM_CDR(testframe));
+    /* now extend environment */
+    env = extend_environment(vars, vals, env);
 
-    // Construct commands
-    ScmObj commands = SCM_CDR(SCM_CDR(arg));
+    /* construct test */
+    testframe  = SCM_CAR(SCM_CDR(arg));
+    test       = SCM_CAR(testframe);
+    expression = SCM_CDR(testframe);
 
-    SigScm_PrintScmObj(steps);
-    SigScm_PrintScmObj(env);
-    SigScm_PrintScmObj(test);
-    SigScm_PrintScmObj(expression);
-    SigScm_PrintScmObj(commands);
+    /* construct commands */
+    commands = SCM_CDR(SCM_CDR(arg));
 
+    /* now excution phase! */
+    while (!SCM_EQ(ScmOp_eval(test, env), SCM_TRUE)) {
+	ScmExp_begin(commands, env);
+	
+	tmp_steps = steps;
+	for (; !SCM_NULLP(tmp_steps); tmp_steps = SCM_CDR(tmp_steps)) {
+	    ScmExp_set(SCM_CAR(tmp_steps), env);
+	}
+    }
 
-    return SCM_NIL;
-    */
-
-    return SCM_NIL;
+    return ScmExp_begin(expression, env);
 }
 
 /*===========================================================================
