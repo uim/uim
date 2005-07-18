@@ -59,8 +59,7 @@
 (assert "mixed 3 string-append check" (string=? "あiう" (string-append "あ" "i" "う")))
 
 ;; string->list
-; TODO : cannot write test now
-;(assert "string->list check" (string->list "あiうeお"))
+(assert "string->list check" (equal? '(#\あ #\i #\う #\e #\お) (string->list "あiうeお")))
 
 
 ;; list->string

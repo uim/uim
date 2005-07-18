@@ -134,6 +134,111 @@ ScmObj ScmOp_eqp(ScmObj obj1, ScmObj obj2)
     return ScmOp_eqvp(obj1, obj2);
 }
 
+ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
+{
+    int  i = 0;
+    enum ScmObjType type = (enum ScmObjType)SCM_GETTYPE(obj1);
+
+    /* different type */
+    if (type != SCM_GETTYPE(obj2))
+        return SCM_FALSE;
+
+    /* same type */
+    switch (type) {
+        case ScmInt:
+            /* both numbers, are numerically equal */
+            if ((SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2)))
+            {
+                return SCM_TRUE;
+            }
+            break;
+        case ScmSymbol:
+            /* symbols which have same name */
+            if (strcmp(SCM_SYMBOL_NAME(obj1), SCM_SYMBOL_NAME(obj2)) == 0)
+            {
+                return SCM_TRUE;
+            }
+            break;
+        case ScmChar:
+            /* chars and are the same character according to the char=? */
+            if (EQ(ScmOp_char_equal(obj1, obj2), SCM_TRUE))
+	    {
+                return SCM_TRUE;
+            }
+            break;
+        case ScmCons:
+	    for (; !SCM_NULLP(obj1); obj1 = SCM_CDR(obj1), obj2 = SCM_CDR(obj2))
+	    {
+		/* check contents */
+		if (EQ(ScmOp_equalp(SCM_CAR(obj1), SCM_CAR(obj2)), SCM_FALSE))
+		{
+		    return SCM_FALSE;
+		}
+
+		/* check next cdr's type */
+		if (SCM_GETTYPE(SCM_CDR(obj1)) != SCM_GETTYPE(SCM_CDR(obj2)))
+		{
+		    return SCM_FALSE;
+		}
+		
+		/* check dot pair */
+		if (!SCM_CONSP(SCM_CDR(obj1)))
+		{
+		    if(EQ(ScmOp_equalp(SCM_CDR(obj1), SCM_CDR(obj2)), SCM_FALSE))
+			return SCM_FALSE;
+		    else
+			return SCM_TRUE;
+		}
+	    }
+	    return SCM_TRUE;
+        case ScmVector:
+	    /* check len */
+	    if (SCM_VECTOR_LEN(obj1) != SCM_VECTOR_LEN(obj2))
+	    {
+		return SCM_FALSE;
+	    }
+	    /* check contents */
+	    for (i = 0; i < SCM_VECTOR_LEN(obj1); i++)
+	    {
+		if (EQ(ScmOp_equalp(SCM_VECTOR_CREF(obj1, i), SCM_VECTOR_CREF(obj2, i)), SCM_FALSE))
+		    return SCM_FALSE;
+	    }
+	    return SCM_TRUE;
+        case ScmString:
+	    /* check string data */
+	    if (strcmp(SCM_STRING_STR(obj1), SCM_STRING_STR(obj2)) == 0)
+	    {
+		return SCM_TRUE;
+	    }
+	    break;
+        case ScmFunc:
+        case ScmClosure:
+	case ScmPort:
+            {
+                return SCM_UNSPECIFIED;
+            }
+            break;
+        case ScmEtc:
+            /* obj1 and obj2 are both #t or both #f */
+            if (((EQ(obj1, SCM_TRUE) && EQ(obj2, SCM_TRUE)))
+                || (EQ(obj1, SCM_FALSE) && EQ(obj2, SCM_FALSE)))
+            {
+                return SCM_TRUE;
+            }
+            /* both obj1 and obj2 are the empty list */
+            if (SCM_NULLP(obj1) && SCM_NULLP(obj2))
+            {
+                return SCM_TRUE;
+            }
+            break;
+        case ScmFreeCell:
+            SigScm_Error("equal? : cannnot compare freecell, gc broken?\n");
+            break;
+    }
+
+    return SCM_FALSE;
+}
+
 /*==============================================================================
   R5RS : 6.2 Numbers
 ==============================================================================*/
@@ -500,7 +605,7 @@ ScmObj ScmOp_modulo(ScmObj scm_n1, ScmObj scm_n2)
     return Scm_NewInt(rem);
 }
 
-ScmObj ScmOp_reminder(ScmObj scm_n1, ScmObj scm_n2)
+ScmObj ScmOp_remainder(ScmObj scm_n1, ScmObj scm_n2)
 {
     int n1  = 0;
     int n2  = 0;
@@ -1409,7 +1514,7 @@ ScmObj ScmOp_make_vector(ScmObj arg, ScmObj env )
         vec[i] = fill;
     }
 
-    return Scm_NewVector(vec, scm_k);
+    return Scm_NewVector(vec, c_k);
 }
 
 ScmObj ScmOp_vector(ScmObj arg, ScmObj env )
@@ -1425,7 +1530,7 @@ ScmObj ScmOp_vector(ScmObj arg, ScmObj env )
         arg = SCM_CDR(arg);
     }
 
-    return Scm_NewVector(vec, scm_len);
+    return Scm_NewVector(vec, c_len);
 }
 
 ScmObj ScmOp_vector_length(ScmObj vec)
@@ -1433,7 +1538,7 @@ ScmObj ScmOp_vector_length(ScmObj vec)
     if (!SCM_VECTORP(vec))
         SigScm_Error("vector-length : vector required\n");
 
-    return SCM_VECTOR_LEN(vec);
+    return Scm_NewInt(SCM_VECTOR_LEN(vec));
 }
 
 ScmObj ScmOp_vector_ref(ScmObj vec, ScmObj scm_k)
@@ -1471,7 +1576,7 @@ ScmObj ScmOp_vector_to_list(ScmObj vec)
         SigScm_Error("vector->list : vector required\n");
 
     v = SCM_VECTOR_VEC(vec);
-    c_len = SCM_INT_VALUE(SCM_VECTOR_LEN(vec));
+    c_len = SCM_VECTOR_LEN(vec);
     if (c_len == 0)
         return SCM_NIL;
 
@@ -1509,7 +1614,7 @@ ScmObj ScmOp_list_to_vector(ScmObj list)
         list = SCM_CDR(list);
     }
 
-    return Scm_NewVector(v, scm_len);
+    return Scm_NewVector(v, c_len);
 }
 
 ScmObj ScmOp_vector_fill(ScmObj vec, ScmObj fill)
@@ -1520,7 +1625,7 @@ ScmObj ScmOp_vector_fill(ScmObj vec, ScmObj fill)
     if (!SCM_VECTORP(vec))
         SigScm_Error("vector->list : vector required\n");
 
-    c_len = SCM_INT_VALUE(SCM_VECTOR_LEN(vec));
+    c_len = SCM_VECTOR_LEN(vec);
     for (i = 0; i < c_len; i++) {
         SCM_VECTOR_VEC(vec)[i] = fill;
     }
@@ -1581,7 +1686,7 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
 
     /* 1proc and many args case */
     arg_vector = ScmOp_list_to_vector(SCM_CDR(map_arg));
-    vector_len = SCM_INT_VALUE(SCM_VECTOR_LEN(arg_vector));
+    vector_len = SCM_VECTOR_LEN(arg_vector);
     while (1) {
         /* create arg */
         arg1 = SCM_NIL;

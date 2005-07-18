@@ -175,7 +175,7 @@ static void print_list(FILE *f, ScmObj list)
 static void print_vector(FILE *f, ScmObj vec)
 {
     ScmObj *v = SCM_VECTOR_VEC(vec); 
-    int c_len = SCM_INT_VALUE(SCM_VECTOR_LEN(vec));
+    int c_len = SCM_VECTOR_LEN(vec);
     int i     = 0;
 
     /* print left parenthesis with '#' */

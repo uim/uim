@@ -39,7 +39,7 @@
  *
  * [1] Mark phase : gc_mark()
  *   - gc_mark_protected_obj()
- *       marking protected Scheme object which are protected by calling gc_protect().
+ *       marking protected Scheme object which are protected by calling SigScm_gc_protect().
  *
  *   - gc_mark_stack()
  *       marking the Scheme object which are pushed to the stack, so we need to
@@ -109,9 +109,6 @@ static void *malloc_aligned(size_t size);
 static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmObj *freelist);
 static void add_heap(ScmObjHeap **heaps, int *num_heap, int HEAP_SIZE, ScmObj *freelist);
 static void finalize_heap(void);
-
-static void gc_protect(ScmObj obj);
-
 
 static void gc_preprocess(void);
 static void gc_mark_and_sweep(void);
@@ -313,18 +310,16 @@ mark_loop:
 	    goto mark_loop;
 	    break;
 	case ScmVector:
-	    for (i = 0; i < SCM_INT_VALUE(SCM_VECTOR_LEN(obj)); i++) {
+	    for (i = 0; i < SCM_VECTOR_LEN(obj); i++) {
 		mark_obj(SCM_VECTOR_VEC(obj)[i]);
 	    }
-	    obj = SCM_VECTOR_LEN(obj);
-	    goto mark_loop;
 	    break;
 	default:
 	    break;
     }
 }
 
-static void gc_protect(ScmObj obj)
+void SigScm_gc_protect(ScmObj obj)
 {
     gc_protected_obj *item = (gc_protected_obj*)malloc(sizeof(gc_protected_obj));
     item->obj = obj;
@@ -584,7 +579,7 @@ ScmObj Scm_NewClosure(ScmObj exp, ScmObj env)
     return obj;
 }
 
-ScmObj Scm_NewVector(ScmObj *vec, ScmObj len)
+ScmObj Scm_NewVector(ScmObj *vec, int len)
 {
     ScmObj obj = SCM_NIL;
     SCM_NEW_OBJ_INTERNAL(obj);

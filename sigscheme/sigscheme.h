@@ -106,6 +106,7 @@ void Scm_InitSubr2N(char *name, ScmObj (*func) (ScmObj, ScmObj));
 /* datas.c */
 void   SigScm_InitStorage(void);
 void   SigScm_FinalizeStorage(void);
+void   SigScm_gc_protect(ScmObj obj);
 ScmObj Scm_NewCons(ScmObj a, ScmObj b);
 ScmObj Scm_NewInt(int val);
 ScmObj Scm_NewSymbol(char *name, ScmObj v_cell);
@@ -114,7 +115,7 @@ ScmObj Scm_NewString(char *str);
 ScmObj Scm_NewString_With_StrLen(char *str, int len);
 ScmObj Scm_NewFunc(enum ScmFuncArgNum num_arg, ScmFuncType func);
 ScmObj Scm_NewClosure(ScmObj exp, ScmObj env);
-ScmObj Scm_NewVector(ScmObj *vec, ScmObj len);
+ScmObj Scm_NewVector(ScmObj *vec, int len);
 ScmObj Scm_NewPort(FILE *file, enum ScmPortType ptype);
 ScmObj Scm_Intern(const char *name);
 
@@ -143,7 +144,8 @@ ScmObj ScmOp_null_environment(ScmObj version);
 
 /* operations.c */
 ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2);
-ScmObj ScmOp_eqp(ScmObj Obj1, ScmObj obj2);
+ScmObj ScmOp_eqp(ScmObj obj1, ScmObj obj2);
+ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2);
 ScmObj ScmOp_numberp(ScmObj obj);
 ScmObj ScmOp_equal(ScmObj list, ScmObj env);
 ScmObj ScmOp_bigger(ScmObj list, ScmObj env);
@@ -164,7 +166,7 @@ ScmObj ScmOp_divide2n(ScmObj obj1, ScmObj obj2);
 ScmObj ScmOp_abs(ScmObj num);
 ScmObj ScmOp_quotient(ScmObj n1, ScmObj n2);
 ScmObj ScmOp_modulo(ScmObj n1, ScmObj n2);
-ScmObj ScmOp_reminder(ScmObj n1, ScmObj n2);
+ScmObj ScmOp_remainder(ScmObj n1, ScmObj n2);
 ScmObj ScmOp_not(ScmObj obj);
 ScmObj ScmOp_booleanp(ScmObj obj);
 ScmObj ScmOp_pairp(ScmObj obj);

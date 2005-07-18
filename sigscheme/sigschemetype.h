@@ -162,7 +162,7 @@ struct ScmObjInternal_ {
 
         struct ScmVector {
             ScmObj *vec;
-            ScmObj len;
+            int len;
         } vector;
 
         struct ScmPort {            

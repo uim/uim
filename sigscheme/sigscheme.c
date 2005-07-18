@@ -123,6 +123,7 @@ void SigScm_Initialize(void)
     Scm_InitSubr1("quote"                , ScmOp_quote);
     Scm_InitSubr2("eqv?"                 , ScmOp_eqvp);
     Scm_InitSubr2("eq?"                  , ScmOp_eqp);
+    Scm_InitSubr2("equal?"               , ScmOp_equalp);
     Scm_InitSubr1("number?"              , ScmOp_numberp);
     Scm_InitSubrL("="                    , ScmOp_equal);
     Scm_InitSubrL("<"                    , ScmOp_bigger);
@@ -143,7 +144,7 @@ void SigScm_Initialize(void)
     Scm_InitSubr1("abs"                  , ScmOp_abs);
     Scm_InitSubr2("quotient"             , ScmOp_quotient);
     Scm_InitSubr2("modulo"               , ScmOp_modulo);
-    Scm_InitSubr2("reminder"             , ScmOp_reminder);
+    Scm_InitSubr2("remainder"            , ScmOp_remainder);
     Scm_InitSubr1("not"                  , ScmOp_not);
     Scm_InitSubr1("boolean?"             , ScmOp_booleanp);
     Scm_InitSubr1("pairp?"               , ScmOp_pairp);
@@ -255,7 +256,9 @@ void SigScm_Initialize(void)
       Current Input & Output Initialization
     =======================================================================*/
     current_input_port  = Scm_NewPort(stdin,  PORT_INPUT);
+    SigScm_gc_protect(current_input_port);
     current_output_port = Scm_NewPort(stdout, PORT_OUTPUT);
+    SigScm_gc_protect(current_output_port);
 
     stack_start_pointer = NULL;
 }
