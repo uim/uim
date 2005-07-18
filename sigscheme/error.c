@@ -65,6 +65,17 @@ int SigScm_Die(const char *msg, const char *filename, int line) {
 
 void SigScm_Error(const char *msg)
 {
-    fprintf(stderr, "%s\n", msg);
+    fprintf(SCM_PORTINFO_FILE(current_output_port), "%s\n", msg);
+    exit(-1);
+}
+
+void SigScm_ErrorObj(const char *msg, ScmObj obj)
+{
+    /* print msg */
+    fprintf(SCM_PORTINFO_FILE(current_output_port), "%s", msg);
+
+    /* print obj */
+    SigScm_Display(obj);
+    
     exit(-1);
 }

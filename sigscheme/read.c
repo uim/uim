@@ -92,7 +92,7 @@ static ScmObj read_quote(ScmObj port, ScmObj quoter);
 ScmObj SigScm_Read(ScmObj port)
 {
     if (!SCM_PORTP(port))
-        SigScm_Error("invalid port\n");
+        SigScm_ErrorObj("SigScm_Read : port required but got ", port);
 
     return read_sexpression(port);
 }
@@ -100,7 +100,7 @@ ScmObj SigScm_Read(ScmObj port)
 ScmObj SigScm_Read_Char(ScmObj port)
 {
     if (!SCM_PORTP(port))
-        SigScm_Error("invalid port\n");
+        SigScm_ErrorObj("SigScm_Read_Char : port required but got ", port);
 
     return read_char(port);
 }
@@ -163,7 +163,7 @@ static ScmObj read_sexpression(ScmObj port)
 		{
 		    SCM_PORT_GETC(port, c1);
 		    if (c1 == EOF) {
-			SigScm_Error("eof in unquote\n");
+			SigScm_Error("EOF in unquote\n");
 		    } else if (c1 == '@') {
 			return read_quote(port, SCM_UNQUOTE_SPLICING);
 		    } else {

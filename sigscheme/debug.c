@@ -72,8 +72,6 @@ void SigScm_Display(ScmObj obj)
 void SigScm_DisplayToPort(ScmObj port, ScmObj obj)
 {
     FILE *f = SCM_PORTINFO_FILE(port);
-
-
     print_ScmObj_internal(f, obj);
 }
 

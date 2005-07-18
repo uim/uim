@@ -176,8 +176,8 @@ static ScmObj lookup_frame(ScmObj var, ScmObj frame)
         SigScm_Error("Broken frame.\n");
 
     /* lookup in frame */
-    vals = SCM_CDR(frame);
     vars = SCM_CAR(frame);
+    vals = SCM_CDR(frame);
     for (; !SCM_NULLP(vars) && !SCM_NULLP(vals); vars = SCM_CDR(vars), vals = SCM_CDR(vals)) {
         if (SCM_EQ(SCM_CAR(vars), var)) {
             return vals;
@@ -211,11 +211,11 @@ ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
                 switch (SCM_GETTYPE(tmp)) {
 		    case ScmFunc:
 			break;
+		    case ScmClosure:
+			break;
                     case ScmSymbol:
                         tmp = symbol_value(tmp, env);
                         break;
-		    case ScmClosure:
-			break;
                     case ScmCons:
                         tmp = ScmOp_eval(tmp, env);
                         break;
@@ -369,7 +369,7 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 			    obj = SCM_FUNC_EXEC_SUBR2N(proc,
 						       obj,
 						       ScmOp_eval(SCM_CAR(args), env));
-			}	
+			}
 			return obj;
 		    }
 		case ARGNUM_0:
@@ -439,10 +439,10 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 static ScmObj symbol_value(ScmObj var, ScmObj env)
 {
     ScmObj val = SCM_NIL;
-    
+
     /* sanity check */
     if (!SCM_SYMBOLP(var))
-	SigScm_Error("not symbol.\n");
+	SigScm_ErrorObj("symbol_value : not symbol : ", var);
 
     /* First, lookup the Environment */
     val = lookup_environment(var, env);
@@ -454,7 +454,7 @@ static ScmObj symbol_value(ScmObj var, ScmObj env)
     /* Next, look at the VCELL */
     val = SCM_SYMBOL_VCELL(var);
     if (EQ(val, SCM_UNBOUND)) {
-        SigScm_Error("symbol_value : unbound variable.\n");
+        SigScm_ErrorObj("symbol_value : unbound variable ", var);
     }
 
     return val;
@@ -471,11 +471,11 @@ ScmObj map_eval(ScmObj args, ScmObj env)
         return SCM_NIL;
 
     /* eval each element of args */
-    result  = Scm_NewCons( ScmOp_eval(SCM_CAR(args), env), SCM_NIL );
+    result  = Scm_NewCons(ScmOp_eval(SCM_CAR(args), env), SCM_NIL);
     tail    = result;
     newtail = SCM_NIL;
     for (args = SCM_CDR(args); !SCM_NULLP(args); args = SCM_CDR(args)) {
-	newtail = Scm_NewCons( ScmOp_eval(SCM_CAR(args), env), SCM_NIL );
+	newtail = Scm_NewCons(ScmOp_eval(SCM_CAR(args), env), SCM_NIL);
 	SCM_SETCDR(tail, newtail);
 	tail = newtail;
     }
@@ -538,7 +538,7 @@ static ScmObj ScmOp_last_pair(ScmObj list)
     if (SCM_NULLP(list))
 	return SCM_NIL;
     if (!SCM_CONSP(list))
-	SigScm_Error("last_pair : require list\n");
+	SigScm_ErrorObj("last_pair : list required but got ", list);
 
     while (1) {
         if (!SCM_CONSP(list) || SCM_NULLP(SCM_CDR(list)))
@@ -569,7 +569,7 @@ ScmObj ScmOp_quote(ScmObj obj)
 ScmObj ScmExp_lambda(ScmObj exp, ScmObj env)
 {
     if CHECK_2_ARGS(exp)
-	SigScm_Error("lambda : few argument\n");
+	SigScm_Error("lambda : too few argument\n");
 
     return Scm_NewClosure(exp, env);
 }
@@ -622,7 +622,7 @@ ScmObj ScmExp_set(ScmObj arg, ScmObj env)
 	 * if symbol is not bounded, error occurs
 	 */
 	if (EQ(ScmOp_boundp(sym), SCM_FALSE))
-	    SigScm_Error("set! : unbound variable\n");
+	    SigScm_ErrorObj("set! : unbound variable ", sym);
 
 	SCM_SETSYMBOL_VCELL(sym, ret);
     } else {
@@ -702,7 +702,7 @@ ScmObj ScmExp_and(ScmObj arg, ScmObj env)
     if (SCM_NULLP(arg))
 	return SCM_TRUE;
     if (EQ(ScmOp_listp(arg), SCM_FALSE))
-	SigScm_Error("and : cannot evaluate improper list\n");
+	SigScm_ErrorObj("and : list required but got ", arg);
 
     /* check recursively */
     for (; !SCM_NULLP(arg); arg = SCM_CDR(arg)) {
@@ -729,7 +729,7 @@ ScmObj ScmExp_or(ScmObj arg, ScmObj env)
     if (SCM_NULLP(arg))
 	return SCM_FALSE;
     if (EQ(ScmOp_listp(arg), SCM_FALSE))
-	SigScm_Error("or : cannot evaluate improper list\n");
+	SigScm_ErrorObj("or : list required but got ", arg);
 
     /* check recursively */
     for (; !SCM_NULLP(arg); arg = SCM_CDR(arg)) {
@@ -838,7 +838,7 @@ ScmObj ScmExp_begin(ScmObj arg, ScmObj env)
     if (SCM_NULLP(arg))
 	return SCM_UNDEF;
     if (EQ(ScmOp_listp(arg), SCM_FALSE))
-	SigScm_Error("begin : improper list\n");       	
+	SigScm_ErrorObj("begin : list required but got ", arg);
 
     /* eval recursively */
     for (; !SCM_NULLP(arg); arg = SCM_CDR(arg)) {
@@ -914,7 +914,7 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj env)
     /* now excution phase! */
     while (!SCM_EQ(ScmOp_eval(test, env), SCM_TRUE)) {
 	ScmExp_begin(commands, env);
-	
+
 	tmp_steps = steps;
 	for (; !SCM_NULLP(tmp_steps); tmp_steps = SCM_CDR(tmp_steps)) {
 	    ScmExp_set(SCM_CAR(tmp_steps), env);
