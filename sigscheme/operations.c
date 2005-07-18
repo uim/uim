@@ -945,7 +945,7 @@ ScmObj ScmOp_listtail(ScmObj list, ScmObj scm_k)
 {
     if (EQ(ScmOp_listp(list), SCM_FALSE))
         SigScm_ErrorObj("list-tail : list required but got ", list);
-    if (SCM_INTP(scm_k))
+    if (EQ(ScmOp_numberp(scm_k), SCM_FALSE))
         SigScm_ErrorObj("list-tail : number required but got ", scm_k);
 
     return ScmOp_listtail_internal(list, SCM_INT_VALUE(scm_k));
@@ -957,7 +957,7 @@ ScmObj ScmOp_listref(ScmObj list, ScmObj scm_k)
 
     if (EQ(ScmOp_listp(list), SCM_FALSE))
         SigScm_ErrorObj("list-ref : list required but got ", list);
-    if (SCM_INTP(scm_k))
+    if (EQ(ScmOp_numberp(scm_k), SCM_FALSE))
         SigScm_ErrorObj("list-ref : int required but got ", scm_k);
 
     list_tail = ScmOp_listtail_internal(list, SCM_INT_VALUE(scm_k));
@@ -996,6 +996,20 @@ ScmObj ScmOp_memv(ScmObj obj, ScmObj list)
     return SCM_FALSE;
 }
 
+ScmObj ScmOp_member(ScmObj obj, ScmObj list)
+{
+    ScmObj tmplist = SCM_NIL;
+    ScmObj tmpobj  = SCM_NIL;
+    for (tmplist = list; SCM_CONSP(tmplist); tmplist = SCM_CDR(tmplist)) {
+        tmpobj = SCM_CAR(tmplist);
+        if (EQ(ScmOp_equalp(obj, tmpobj), SCM_TRUE)) {
+            return tmplist;
+        }
+    }
+
+    return SCM_FALSE;
+}
+
 ScmObj ScmOp_assq(ScmObj obj, ScmObj alist)
 {
     ScmObj tmplist = SCM_NIL;
@@ -1021,6 +1035,20 @@ ScmObj ScmOp_assv(ScmObj obj, ScmObj alist)
 
     return SCM_FALSE;
 }
+
+ScmObj ScmOp_assoc(ScmObj obj, ScmObj alist)
+{
+    ScmObj tmplist = SCM_NIL;
+    ScmObj tmpobj  = SCM_NIL;
+    for (tmplist = alist; SCM_CONSP(tmplist); tmplist = SCM_CDR(tmplist)) {
+        tmpobj = SCM_CAR(tmplist);
+        if (SCM_CONSP(tmpobj) && EQ(ScmOp_equalp(SCM_CAR(tmpobj), obj), SCM_TRUE))
+            return tmpobj;
+    }
+
+    return SCM_FALSE;
+}
+
 
 /*==============================================================================
   R5RS : 6.3 Other data types : 6.3.3 Symbols

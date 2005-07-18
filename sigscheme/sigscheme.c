@@ -147,7 +147,7 @@ void SigScm_Initialize(void)
     Scm_InitSubr2("remainder"            , ScmOp_remainder);
     Scm_InitSubr1("not"                  , ScmOp_not);
     Scm_InitSubr1("boolean?"             , ScmOp_booleanp);
-    Scm_InitSubr1("pairp?"               , ScmOp_pairp);
+    Scm_InitSubr1("pair?"                , ScmOp_pairp);
     Scm_InitSubr2("cons"                 , ScmOp_cons);
     Scm_InitSubr1("car"                  , ScmOp_car);
     Scm_InitSubr1("cdr"                  , ScmOp_cdr);
@@ -191,8 +191,10 @@ void SigScm_Initialize(void)
     Scm_InitSubr2("list-ref"             , ScmOp_listref);
     Scm_InitSubr2("memq"                 , ScmOp_memq);
     Scm_InitSubr2("memv"                 , ScmOp_memv);
+    Scm_InitSubr2("member"               , ScmOp_member);
     Scm_InitSubr2("assq"                 , ScmOp_assq);
     Scm_InitSubr2("assv"                 , ScmOp_assv);
+    Scm_InitSubr2("assoc"                , ScmOp_assoc);
     Scm_InitSubr1("symbol?"              , ScmOp_symbolp);
     Scm_InitSubr1("symbol->string"       , ScmOp_symbol_to_string);
     Scm_InitSubr1("string->symbol"       , ScmOp_string_to_symbol);
