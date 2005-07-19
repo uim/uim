@@ -746,29 +746,20 @@
       (canna-begin-input cc)
       (im-commit-raw cc)))
 
-(if (and
-     (symbol-bound? 'canna-lib-init)
-     (canna-lib-init canna-server-name))
-    (set! canna-init-lib-ok? #t))
-
-(if (and
-     (symbol-bound? 'canna-lib-init)
-     (= canna-init-lib-ok? #t))
-    (begin
-      (canna-configure-widgets)
-      (register-im
-       'canna
-       "ja"
-       "EUC-JP"
-       canna-im-name-label
-       canna-im-short-desc
-       #f
-       canna-init-handler
-       canna-release-handler
-       context-mode-handler
-       canna-press-key-handler
-       canna-release-key-handler
-       canna-reset-handler
-       canna-get-candidate-handler
-       canna-set-candidate-index-handler
-       context-prop-activate-handler)))
+(canna-configure-widgets)
+(register-im
+ 'canna
+ "ja"
+ "EUC-JP"
+ canna-im-name-label
+ canna-im-short-desc
+ #f
+ canna-init-handler
+ canna-release-handler
+ context-mode-handler
+ canna-press-key-handler
+ canna-release-key-handler
+ canna-reset-handler
+ canna-get-candidate-handler
+ canna-set-candidate-index-handler
+ context-prop-activate-handler)
