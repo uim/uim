@@ -52,6 +52,28 @@
   File Local Function Declarations
 =======================================*/
 
+/* Very simple repl, please rewrite. */
+static void repl(void)
+{
+  ScmObj stdin_port  = Scm_NewPort(stdin, PORT_INPUT);
+  ScmObj stdout_port = Scm_NewPort(stdout, PORT_INPUT);
+  ScmObj s_exp, result;
+
+  printf("sscm>");
+
+  for( s_exp = SigScm_Read(stdin_port);
+       !EQ(s_exp, SCM_EOF);
+       s_exp = SigScm_Read(stdin_port))
+  { 
+    result = ScmOp_eval(s_exp, SCM_NIL);
+    SigScm_DisplayToPort(stdout_port, result);
+    printf("\nsscm>");
+  }
+
+  ScmOp_close_input_port(stdin_port);
+  ScmOp_close_input_port(stdout_port);
+}
+
 /*=======================================
   Function Implementations
 =======================================*/
@@ -61,13 +83,14 @@ int main(int argc, char **argv)
 
     SigScm_Initialize();
 
-    if (argc < 2)
-	SigScm_Error("usage : sscm <filename>\n");
-
-    SigScm_load(filename);
+    if (argc < 2) {
+      repl();
+      /*	SigScm_Error("usage : sscm <filename>\n"); */
+    } else {
+      SigScm_load(filename);
+    }
 
     SigScm_Finalize();
-
     return 0;
 }
 
