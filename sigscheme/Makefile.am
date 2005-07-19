@@ -7,11 +7,9 @@ libsscm_la_SOURCES = \
 		read.c sigscheme.c  \
 		sigscheme.h sigschemetype.h
  
-libsscm_la_CFLAGS   = @X_CFLAGS@ -Wall
-libsscm_la_CXXFLAGS = @X_CFLAGS@ -Wall
+libsscm_la_CFLAGS   = -Wall
 
 bin_PROGRAMS  = sscm
 sscm_SOURCES  = main.c
-sscm_CFLAGS   = @X_CFLAGS@ -Wall
-sscm_CXXFLAGS = @X_CFLAGS@ -Wall
-sscm_LDADD    = libsscm.la
+sscm_CFLAGS   = -Wall
+sscm_LDADD    = $(top_builddir)/sigscheme/libsscm.la
