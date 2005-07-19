@@ -23,4 +23,12 @@
 (assert-eq? "remainder test3" 1 (remainder 13 -4))
 (assert-eq? "remainder test4" -1 (remainder -13 -4))
 
+(assert-equal? "number->string test1" "1" (number->string 1))
+(assert-equal? "number->string test2" "10" (number->string 10))
+(assert-equal? "number->string test3" "100" (number->string 100))
+
+(assert-eq? "string->number test1" 1   (string->number "1"))
+(assert-eq? "string->number test2" 10  (string->number "10"))
+(assert-eq? "string->number test2" 100 (string->number "100"))
+
 (total-report)

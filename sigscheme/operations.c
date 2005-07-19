@@ -35,6 +35,7 @@
   System Include
 =======================================*/
 #include <string.h>
+#include <stdlib.h>
 
 /*=======================================
   Local Include
@@ -239,8 +240,11 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
     return SCM_FALSE;
 }
 
-/*==============================================================================
+/*=======================================
   R5RS : 6.2 Numbers
+=======================================*/
+/*==============================================================================
+  R5RS : 6.2 Numbers : 6.2.5 Numerical Operations
 ==============================================================================*/
 ScmObj ScmOp_plus2n(ScmObj obj1, ScmObj obj2)
 {
@@ -631,6 +635,50 @@ ScmObj ScmOp_remainder(ScmObj scm_n1, ScmObj scm_n2)
     n2 = SCM_INT_VALUE(scm_n2);
 
     return Scm_NewInt(n1 % n2);
+}
+
+/*==============================================================================
+  R5RS : 6.2 Numbers : 6.2.6 Numerical input and output
+==============================================================================*/
+/* TODO : support radix */
+ScmObj ScmOp_number_to_string(ScmObj z)
+{
+    int n = 0;
+    int i = 0;
+    int size = 0;
+    char *str = NULL;
+
+    if (EQ(ScmOp_numberp(z), SCM_FALSE))
+	SigScm_ErrorObj("number->string : number required but got ", z);
+
+    /* get value */
+    n = SCM_INT_VALUE(z);
+
+    /* get size */
+    for (size = 1; (int)(n / 10) != 0; size++)
+	n /= 10;
+
+    /* allocate str */
+    str = (char *)malloc(sizeof(char) * size + 1);
+
+    /* fill str */
+    n = SCM_INT_VALUE(z);
+    str[size] = '\0';
+    for (i = size; 0 < i; i--) {
+	str[i - 1] = '0' + (n % 10);
+	n /= 10;
+    }
+
+    return Scm_NewString(str);
+}
+
+/* TODO : support radix */
+ScmObj ScmOp_string_to_number(ScmObj string)
+{
+    if (!SCM_STRINGP(string))
+	SigScm_ErrorObj("string->number : string required but got ", string);
+
+    return Scm_NewInt((int)atof(SCM_STRING_STR(string)));
 }
 
 /*===================================

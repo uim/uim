@@ -167,6 +167,8 @@ ScmObj ScmOp_abs(ScmObj num);
 ScmObj ScmOp_quotient(ScmObj n1, ScmObj n2);
 ScmObj ScmOp_modulo(ScmObj n1, ScmObj n2);
 ScmObj ScmOp_remainder(ScmObj n1, ScmObj n2);
+ScmObj ScmOp_number_to_string(ScmObj z);
+ScmObj ScmOp_string_to_number(ScmObj string);
 ScmObj ScmOp_not(ScmObj obj);
 ScmObj ScmOp_booleanp(ScmObj obj);
 ScmObj ScmOp_pairp(ScmObj obj);

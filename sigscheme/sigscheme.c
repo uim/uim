@@ -145,6 +145,8 @@ void SigScm_Initialize(void)
     Scm_InitSubr2("quotient"             , ScmOp_quotient);
     Scm_InitSubr2("modulo"               , ScmOp_modulo);
     Scm_InitSubr2("remainder"            , ScmOp_remainder);
+    Scm_InitSubr1("number->string"       , ScmOp_number_to_string);
+    Scm_InitSubr1("string->number"       , ScmOp_string_to_number);
     Scm_InitSubr1("not"                  , ScmOp_not);
     Scm_InitSubr1("boolean?"             , ScmOp_booleanp);
     Scm_InitSubr1("pair?"                , ScmOp_pairp);
