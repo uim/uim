@@ -34,8 +34,20 @@
 
 (define assert-eq?
   (lambda (msg a b)
-    (assert msg (eq? a b))))
+    (if (not (assert msg (eq? a b)))
+	(begin
+	  (print "assert-eq? : we expect ")
+	  (print a)
+	  (print " but got ")
+	  (print b)
+	  (print "\n")))))
 
 (define assert-equal?
   (lambda (msg a b)
-    (assert msg (equal? a b))))
+    (if (not (assert msg (equal? a b)))
+	(begin
+	  (print "assert-equal? : we expect ")
+	  (print a)
+	  (print " but got ")
+	  (print b)
+	  (print "\n")))))
