@@ -59,10 +59,10 @@ int main(int argc, char **argv)
 {
     char *filename = argv[1];
 
+    SigScm_Initialize();
+
     if (argc < 2)
 	SigScm_Error("usage : sscm <filename>\n");
-
-    SigScm_Initialize();
 
     SigScm_load(filename);
 
