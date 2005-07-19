@@ -107,6 +107,8 @@ void Scm_InitSubr2N(char *name, ScmObj (*func) (ScmObj, ScmObj));
 void   SigScm_InitStorage(void);
 void   SigScm_FinalizeStorage(void);
 void   SigScm_gc_protect(ScmObj obj);
+void   SigScm_gc_protect_stack(ScmObj *stack_start);
+void   SigScm_gc_unprotect_stack(ScmObj *stack_start);
 ScmObj Scm_NewCons(ScmObj a, ScmObj b);
 ScmObj Scm_NewInt(int val);
 ScmObj Scm_NewSymbol(char *name, ScmObj v_cell);

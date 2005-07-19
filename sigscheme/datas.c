@@ -473,6 +473,17 @@ static void gc_sweep(void)
     scm_freelist = scm_new_freelist;
 }
 
+void SigScm_gc_protect_stack(ScmObj *stack_start)
+{
+    if (!stack_start_pointer)
+	stack_start_pointer = stack_start;
+}
+
+void SigScm_gc_unprotect_stack(ScmObj *stack_start)
+{
+    if (stack_start_pointer == stack_start)
+	stack_start_pointer = NULL;
+}
 
 /*===========================================================================
   Allocate Structure Functions
