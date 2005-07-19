@@ -482,6 +482,47 @@ AC_ARG_WITH(eb,
 ])
 
 AC_SUBST(EBLIB_LIBS)
+dnl This code was taken from librep-0.17
+
+dnl Save in case test with directory specified fails
+_cppflags=${CPPFLAGS}
+_ldflags=${LDFLAGS}
+
+AC_ARG_WITH(readline-prefix,
+        [  --with-readline-prefix=DIR path to readline],
+        [ if test "$withval" != "no" -a "$withval" != "yes"; then
+
+          CPPFLAGS="${CPPFLAGS} -I$withval/include"
+          LDFLAGS="${LDFLAGS} -L$withval/lib"
+        fi ])
+
+dnl check for terminal library
+dnl this is a very cool solution from octave's configure.in
+unset tcap
+for termlib in ncurses curses termcap terminfo termlib; do
+        AC_CHECK_LIB(${termlib}, tputs, [tcap="$tcap -l$termlib"])
+        case "$tcap" in
+             *-l${termlib}*)
+             break
+             ;;
+        esac
+done
+
+AC_CHECK_HEADER(readline/readline.h,
+        AC_CHECK_LIB(readline, readline,[
+                               READLINE_LIBS="-lreadline $tcap"; AC_DEFINE(USE_READLINE, 1, [use readline])], , $tcap))
+
+if test -z "$READLINE_LIBS"; then
+   if test "$with_readline_prefix" = "yes"; then
+      AC_MSG_ERROR([Can't find readline libraries])
+   else
+        CPPFLAGS=${_cppflags}
+        LDFLAGS=${_ldflags}
+   fi
+fi
+
+AC_SUBST(READLINE_LIBS)
+
 
 
 AM_CONDITIONAL(M17NLIB, test x$use_m17nlib = xyes)
