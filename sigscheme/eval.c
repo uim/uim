@@ -802,7 +802,7 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj env)
     body     = SCM_CDR(arg);
 
     /*========================================================================
-      (let <bindings> <body>)
+      (let* <bindings> <body>)
       <bindings> == ((<variable1> <init1>)
                      (<variable2> <init2>)
                      ...)
@@ -825,6 +825,51 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj env)
 
     return SCM_UNDEF;
 }
+
+ScmObj ScmExp_letrec(ScmObj arg, ScmObj env)
+{
+    ScmObj bindings = SCM_NIL;
+    ScmObj body     = SCM_NIL;
+
+    /* sanity check */
+    if CHECK_2_ARGS(arg)
+	SigScm_Error("let : syntax error\n");
+
+    /* get bindings and body */
+    bindings = SCM_CAR(arg);
+    body     = SCM_CDR(arg);
+
+    /*========================================================================
+      (letrec <bindings> <body>)
+      <bindings> == ((<variable1> <init1>)
+                     (<variable2> <init2>)
+                     ...)
+    ========================================================================*/
+    if (SCM_CONSP(bindings)) {
+	ScmObj vars = SCM_NIL;
+	ScmObj vals = SCM_NIL;
+	ScmObj binding = SCM_NIL;
+	for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
+	    binding = SCM_CAR(bindings);
+
+
+	    /* first, temporally add symbol to the env*/
+	    vars = Scm_NewCons(SCM_CAR(binding), SCM_NIL);
+	    vals = Scm_NewCons(SCM_NIL, SCM_NIL);
+	    env  = extend_environment(vars, vals, env);
+
+	    /* then, evaluate <init> val and (set! var val) */
+	    ScmExp_set(Scm_NewCons(SCM_CAR(binding),
+				   Scm_NewCons(ScmOp_eval(SCM_CAR(SCM_CDR(binding)), env), SCM_NIL)),
+		       env);
+	}
+
+	return ScmExp_begin(body, env);
+    }
+
+    return SCM_UNDEF;
+}
+
 
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.3 Sequencing

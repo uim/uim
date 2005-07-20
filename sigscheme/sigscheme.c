@@ -112,7 +112,7 @@ void SigScm_Initialize(void)
     Scm_InitSubrR("or"                   , ScmExp_or);
     Scm_InitSubrR("let"                  , ScmExp_let);
     Scm_InitSubrR("let*"                 , ScmExp_let_star);
-    Scm_InitSubrR("letrec"               , ScmExp_let);
+    Scm_InitSubrR("letrec"               , ScmExp_letrec);
     Scm_InitSubrR("begin"                , ScmExp_begin);
     Scm_InitSubrR("do"                   , ScmExp_do);
     Scm_InitSubrR("delay"                , ScmOp_delay);
