@@ -20,6 +20,8 @@ libuim_la_SOURCES = uim.c uim-scm.c uim-util.c uim-func.c uim-key.c \
 		getpeereid.c \
 		plugin.c
 
+libuim_la_LIBADD = $(top_builddir)/sigscheme/libsscm.la
+
 if NEED_SETENV_C
 libuim_la_SOURCES += setenv.c
 endif
