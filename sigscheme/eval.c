@@ -64,6 +64,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+ScmObj continuation_thrown_obj = NULL;
 
 /*=======================================
   File Local Function Declarations
@@ -311,6 +312,18 @@ ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
 						     SCM_CLOSURE_ENV(tmp));
 			    return ScmOp_eval(SCM_CAR(SCM_CDR(SCM_CLOSURE_EXP(tmp))), env);
 			}
+		    case ScmContinuation:
+			{
+                           /*
+                            * - eval 1st arg
+                            * - store it to global variable "continuation_thrown_obj"
+                            * - then longjmp
+			    */
+			    obj = SCM_CAR(SCM_CDR(obj));
+			    continuation_thrown_obj = ScmOp_eval(obj, env);
+			    longjmp(SCM_CONTINUATION_JMPENV(tmp), 1);
+			}
+			break;
 		    case ScmEtc:
 			if (EQ(tmp, SCM_QUOTE)) {
 			    return SCM_CDR(obj);
@@ -754,6 +767,9 @@ ScmObj ScmExp_let(ScmObj arg, ScmObj env)
 {
     ScmObj bindings = SCM_NIL;
     ScmObj body     = SCM_NIL;
+    ScmObj vars     = SCM_NIL;
+    ScmObj vals     = SCM_NIL;
+    ScmObj binding  = SCM_NIL;
 
     /* sanity check */
     if CHECK_2_ARGS(arg)
@@ -770,9 +786,6 @@ ScmObj ScmExp_let(ScmObj arg, ScmObj env)
                      ...)
     ========================================================================*/
     if (SCM_CONSP(bindings)) {
-	ScmObj vars = SCM_NIL;
-	ScmObj vals = SCM_NIL;
-	ScmObj binding = SCM_NIL;
 	for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
 	    binding = SCM_CAR(bindings);
 	    vars = Scm_NewCons(SCM_CAR(binding), vars);
@@ -792,6 +805,9 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj env)
 {
     ScmObj bindings = SCM_NIL;
     ScmObj body     = SCM_NIL;
+    ScmObj vars     = SCM_NIL;
+    ScmObj vals     = SCM_NIL;
+    ScmObj binding  = SCM_NIL;
 
     /* sanity check */
     if CHECK_2_ARGS(arg)
@@ -808,9 +824,6 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj env)
                      ...)
     ========================================================================*/
     if (SCM_CONSP(bindings)) {
-	ScmObj vars = SCM_NIL;
-	ScmObj vals = SCM_NIL;
-	ScmObj binding = SCM_NIL;
 	for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
 	    binding = SCM_CAR(bindings);
 	    vars = Scm_NewCons(SCM_CAR(binding), SCM_NIL);
@@ -830,6 +843,9 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj env)
 {
     ScmObj bindings = SCM_NIL;
     ScmObj body     = SCM_NIL;
+    ScmObj vars     = SCM_NIL;
+    ScmObj vals     = SCM_NIL;
+    ScmObj binding  = SCM_NIL;
 
     /* sanity check */
     if CHECK_2_ARGS(arg)
@@ -846,12 +862,8 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj env)
                      ...)
     ========================================================================*/
     if (SCM_CONSP(bindings)) {
-	ScmObj vars = SCM_NIL;
-	ScmObj vals = SCM_NIL;
-	ScmObj binding = SCM_NIL;
 	for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
 	    binding = SCM_CAR(bindings);
-
 
 	    /* first, temporally add symbol to the env*/
 	    vars = Scm_NewCons(SCM_CAR(binding), SCM_NIL);

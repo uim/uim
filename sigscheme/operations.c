@@ -53,6 +53,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+extern ScmObj continuation_thrown_obj;
 
 /*=======================================
   File Local Function Declarations
@@ -104,6 +105,7 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
         case ScmFunc:
         case ScmClosure:
 	case ScmPort:
+	case ScmContinuation:
             if (EQ(obj1, obj2))
             {
                 return SCM_TRUE;
@@ -215,6 +217,7 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
         case ScmFunc:
         case ScmClosure:
 	case ScmPort:
+	case ScmContinuation:
             {
                 return SCM_UNSPECIFIED;
             }
@@ -1825,3 +1828,26 @@ ScmObj ScmOp_force(ScmObj arg, ScmObj env)
     return ScmOp_eval(Scm_NewCons(SCM_CAR(arg), SCM_NIL), env);
 }
 
+ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env)
+{
+    int jmpret  = 0;
+    ScmObj proc = SCM_CAR(arg);
+    ScmObj cont = SCM_NIL;
+
+    if (!SCM_CLOSUREP(proc))
+	SigScm_ErrorObj("call-with-current-continuation : closure required but got ", proc);
+    
+    cont = Scm_NewContinuation();
+ 
+    /* setjmp and check result */
+    jmpret = setjmp(SCM_CONTINUATION_JMPENV(cont));
+    if (jmpret) {
+	/* return by calling longjmp */
+	return continuation_thrown_obj;
+    }
+
+    /* execute (proc cont) */
+    SCM_SETCDR(arg, Scm_NewCons(cont, SCM_NIL));
+
+    return ScmOp_eval(arg, env);
+}

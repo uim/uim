@@ -119,6 +119,7 @@ ScmObj Scm_NewFunc(enum ScmFuncArgNum num_arg, ScmFuncType func);
 ScmObj Scm_NewClosure(ScmObj exp, ScmObj env);
 ScmObj Scm_NewVector(ScmObj *vec, int len);
 ScmObj Scm_NewPort(FILE *file, enum ScmPortType ptype);
+ScmObj Scm_NewContinuation(void);
 ScmObj Scm_Intern(const char *name);
 
 /* eval.c */
@@ -264,6 +265,7 @@ ScmObj ScmOp_procedurep(ScmObj obj);
 ScmObj ScmOp_map(ScmObj arg, ScmObj env);
 ScmObj ScmOp_for_each(ScmObj arg, ScmObj env);
 ScmObj ScmOp_force(ScmObj arg, ScmObj env);
+ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env);
 
 /* io.c */
 ScmObj ScmOp_call_with_input_file(ScmObj filepath, ScmObj proc);

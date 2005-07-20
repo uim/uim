@@ -38,6 +38,7 @@
    System Include
 =======================================*/
 #include <stdio.h>
+#include <setjmp.h>
 
 /*=======================================
    Local Include
@@ -48,17 +49,18 @@
 =======================================*/
 /* Scheme Object Type */
 enum ScmObjType {
-    ScmInt      = 0,
-    ScmCons     = 1,
-    ScmSymbol   = 2,
-    ScmChar     = 3,
-    ScmString   = 4,
-    ScmFunc     = 5,
-    ScmClosure  = 6,
-    ScmVector   = 7,
-    ScmPort     = 8,
-    ScmFreeCell = 9,
-    ScmEtc      = 10
+    ScmInt          = 0,
+    ScmCons         = 1,
+    ScmSymbol       = 2,
+    ScmChar         = 3,
+    ScmString       = 4,
+    ScmFunc         = 5,
+    ScmClosure      = 6,
+    ScmVector       = 7,
+    ScmPort         = 8,
+    ScmContinuation = 9,
+    ScmFreeCell     = 10,
+    ScmEtc          = 11
 };
 
 /* Function Type by argnuments */
@@ -91,6 +93,11 @@ typedef struct _ScmPortInfo ScmPortInfo;
 struct _ScmPortInfo {
     FILE *file;
     char ungottenchar;
+};
+
+typedef struct _ScmContInfo ScmContInfo;
+struct _ScmContInfo {
+    jmp_buf jmp_env;
 };
 
 
@@ -165,10 +172,14 @@ struct ScmObjInternal_ {
             int len;
         } vector;
 
-        struct ScmPort {            
+        struct ScmPort {
             enum ScmPortType port_type;
             ScmPortInfo     *port_info;
         } port;
+
+        struct ScmContinuation {
+            ScmContInfo *cont_info;
+        } continuation;
 
         struct ScmEtc {
             int type;
@@ -276,6 +287,13 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_SETPORT_PORTINFO(a, pinfo) (SCM_PORT_PORTINFO(a) = pinfo)
 #define SCM_PORTINFO_FILE(a) (SCM_PORT_PORTINFO(a)->file)
 #define SCM_PORTINFO_UNGOTTENCHAR(a) (SCM_PORT_PORTINFO(a)->ungottenchar)
+
+#define SCM_CONTINUATIONP(a) (SCM_GETTYPE(a) == ScmContinuation)
+#define SCM_CONTINUATION(a)  (sigassert(SCM_CONTINUATIONP(a)), a)
+#define SCM_CONTINUATION_CONTINFO(a) (SCM_CONTINUATION(a)->obj.continuation.cont_info)
+#define SCM_CONTINUATION_JMPENV(a) (SCM_CONTINUATION(a)->obj.continuation.cont_info->jmp_env)
+#define SCM_SETCONTINUATION(a) (SCM_SETTYPE(a, ScmContinuation))
+#define SCM_SETCONTINUATION_CONTINFO(a, cinfo) (SCM_CONTINUATION_CONTINFO(a) = cinfo)
 
 /*============================================================================
   Etcetra variables (Special Symbols like NIL)

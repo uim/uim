@@ -233,6 +233,7 @@ void SigScm_Initialize(void)
     Scm_InitSubrL("map"                  , ScmOp_map);
     Scm_InitSubrL("for-each"             , ScmOp_for_each);
     Scm_InitSubrL("force"                , ScmOp_force);
+    Scm_InitSubrL("call-with-current-continuation", ScmOp_call_with_current_continuation);
     /* io.c */
     Scm_InitSubr2("call-with-input-file" , ScmOp_call_with_input_file);
     Scm_InitSubr2("call-with-output-file", ScmOp_call_with_output_file);

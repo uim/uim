@@ -59,7 +59,7 @@ static void repl(void)
   ScmObj stdout_port = Scm_NewPort(stdout, PORT_INPUT);
   ScmObj s_exp, result;
 
-  printf("sscm>");
+  printf("sscm> ");
 
   for( s_exp = SigScm_Read(stdin_port);
        !EQ(s_exp, SCM_EOF);
@@ -67,7 +67,7 @@ static void repl(void)
   { 
     result = ScmOp_eval(s_exp, SCM_NIL);
     SigScm_DisplayToPort(stdout_port, result);
-    printf("\nsscm>");
+    printf("\nsscm> ");
   }
 
   ScmOp_close_input_port(stdin_port);

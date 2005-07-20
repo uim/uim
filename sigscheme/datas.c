@@ -435,6 +435,10 @@ static void sweep_obj(ScmObj obj)
 		free(SCM_PORT_PORTINFO(obj));
 	    }
 	    break;
+	case ScmContinuation:
+	    if (SCM_CONTINUATION_CONTINFO(obj)) {
+		free(SCM_CONTINUATION_CONTINFO(obj));
+	    }
 	default:
 	    break;
     }
@@ -615,6 +619,20 @@ ScmObj Scm_NewPort(FILE *file, enum ScmPortType ptype)
     pinfo->ungottenchar = 0;
     SCM_SETPORT_PORTINFO(obj, pinfo);
     SCM_SETPORT_PORTTYPE(obj, ptype);
+
+    return obj;
+}
+
+ScmObj Scm_NewContinuation(void)
+{
+    ScmObj obj = SCM_NIL;
+    ScmContInfo *cinfo = NULL;
+
+    SCM_NEW_OBJ_INTERNAL(obj);
+
+    SCM_SETCONTINUATION(obj);
+    cinfo = (ScmContInfo *)malloc(sizeof(ScmContInfo));
+    SCM_SETCONTINUATION_CONTINFO(obj, cinfo);
 
     return obj;
 }

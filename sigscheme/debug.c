@@ -102,6 +102,10 @@ static void print_ScmObj_internal(FILE *f, ScmObj obj)
 	print_vector(f, obj);
     } else if (SCM_FREECELLP(obj)) {
 	fprintf(f, "[ FreeCell ] \n");
+    } else if (SCM_PORTP(obj)) {
+	fprintf(f, "(port)");
+    } else if (SCM_CONTINUATIONP(obj)) {
+	fprintf(f, "(continuation)");
     } else {
         if (EQ(obj, SCM_NIL)) {
             fprintf(f, "()");
