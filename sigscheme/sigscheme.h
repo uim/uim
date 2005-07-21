@@ -317,7 +317,7 @@ ScmObj SigScm_Read(ScmObj port);
 ScmObj SigScm_Read_Char(ScmObj port);
 
 /* error.c */
-void SigScm_Error(const char *msg);
+void SigScm_Error(const char *msg, ...);
 void SigScm_ErrorObj(const char *msg, ScmObj obj);
 
 /* debug.c */

@@ -35,6 +35,7 @@
   System Include
 =======================================*/
 #include <stdio.h>
+#include <stdarg.h>
 
 /*=======================================
   Local Include
@@ -63,9 +64,13 @@ int SigScm_Die(const char *msg, const char *filename, int line) {
     return -1;
 }
 
-void SigScm_Error(const char *msg)
+void SigScm_Error(const char *msg, ...)
 {
-    fprintf(SCM_PORTINFO_FILE(current_output_port), "%s\n", msg);
+    va_list va;
+    va_start(va, msg);
+    vfprintf(SCM_PORTINFO_FILE(current_output_port), msg, va);
+    va_end(va);
+
     exit(-1);
 }
 
