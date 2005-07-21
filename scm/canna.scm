@@ -574,6 +574,11 @@
     (canna-flush cc))
 
 (define (canna-init-handler id im arg)
+  (if (not canna-init-lib-ok?)
+      (begin
+	(canna-lib-init canna-server-name)
+	(set! canna-init-lib-ok?)))
+
   (canna-context-new id im))
 
 (define (canna-release-handler cc)
