@@ -34,6 +34,10 @@
 #ifndef __SIGSCHEME_H
 #define __SIGSCHEME_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*=======================================
    System Include
 =======================================*/
@@ -311,5 +315,8 @@ void SigScm_ErrorObj(const char *msg, ScmObj obj);
 void SigScm_Display(ScmObj obj);
 void SigScm_DisplayToPort(ScmObj port, ScmObj obj);
 
+#ifdef __cplusplus
+}
+#endifx
 
 #endif /* __SIGSCHEME_H */
