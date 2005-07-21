@@ -431,7 +431,7 @@ get_nth_candidate( uim_lisp id_, uim_lisp idx_ )
 
 static void cb_commit( IMEngineInstanceBase *instance, const WideString &wstr )
 {
-    fprintf(stdout, "cb_commit\n");
+    fprintf(stderr, "cb_commit\n");
     SCIMContext *ic = static_cast<SCIMContext*>(instance->get_frontend_data());
     if ( !ic )
     {
@@ -449,7 +449,7 @@ static void cb_commit( IMEngineInstanceBase *instance, const WideString &wstr )
 
 static void cb_preedit_update( IMEngineInstanceBase *instance, const WideString &wstr, const AttributeList &attr )
 {    
-    fprintf(stdout, "cb_preedit_update : preedit_str = [%s]\n", WideStr_to_CStr(wstr));
+    fprintf(stderr, "cb_preedit_update : preedit_str = [%s]\n", WideStr_to_CStr(wstr));
 
     SCIMContext *ic = static_cast<SCIMContext*>(instance->get_frontend_data());
     if ( !ic )
@@ -466,7 +466,7 @@ static void cb_preedit_update( IMEngineInstanceBase *instance, const WideString 
 }
 static void cb_preedit_hide( IMEngineInstanceBase *instance )
 {
-    fprintf(stdout, "cb_preedit_hide\n");
+    fprintf(stderr, "cb_preedit_hide\n");
 
     SCIMContext *ic = static_cast<SCIMContext*>(instance->get_frontend_data());
     if ( !ic )
@@ -481,7 +481,7 @@ static void cb_preedit_hide( IMEngineInstanceBase *instance )
 }
 static void cb_preedit_caret( IMEngineInstanceBase *instance, int caret )
 {
-    fprintf(stdout, "cb_preedit_caret\n");
+    fprintf(stderr, "cb_preedit_caret\n");
 
     SCIMContext *ic = static_cast<SCIMContext*>(instance->get_frontend_data());
     if ( !ic )
@@ -497,7 +497,7 @@ static void cb_preedit_caret( IMEngineInstanceBase *instance, int caret )
 }
 static void cb_lookup_update( IMEngineInstanceBase *instance, const LookupTable &table )
 {
-    fprintf(stdout, "cb_lookup_update\n");
+    fprintf(stderr, "cb_lookup_update\n");
 
     SCIMContext *ic = static_cast<SCIMContext*>(instance->get_frontend_data());
     if ( !ic )
@@ -508,11 +508,11 @@ static void cb_lookup_update( IMEngineInstanceBase *instance, const LookupTable 
 }
 static void cb_lookup_show( IMEngineInstanceBase *instance )
 {
-    fprintf(stdout, "cb_lookup_show\n");
+    fprintf(stderr, "cb_lookup_show\n");
 }
 static void cb_lookup_hide( IMEngineInstanceBase *instance )
 {
-    fprintf(stdout, "cb_lookup_hide\n");
+    fprintf(stderr, "cb_lookup_hide\n");
 }
 
 static void
