@@ -194,7 +194,7 @@ struct ScmObjInternal_ {
         } c_pointer;
 
         struct ScmCFuncPointer {
-            void (*func)(void);            
+            C_FUNC func;            
         } c_func_pointer;
     } obj;
 };

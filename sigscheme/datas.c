@@ -416,7 +416,7 @@ static void gc_mark_stack(ScmObj *start, ScmObj *end)
     /* get size */
     size = end - start;
 
-	printf("gc_mark_stack() size = %p\n", start);
+    printf("gc_mark_stack() size = %p\n", (void*)start);
 
     /* mark stack */
     for (i = 0; i < size; i++) {
@@ -606,6 +606,20 @@ ScmObj Scm_NewString(char *str)
     return obj;
 }
 
+ScmObj Scm_NewStringCopying(char *str)
+{
+    ScmObj obj = SCM_NIL;
+
+    SCM_NEW_OBJ_INTERNAL(obj);
+
+    SCM_SETSTRING(obj);
+    SCM_STRING_STR(obj) = (char *)malloc(sizeof(char) * strlen(str) + 1);
+    strcpy(SCM_STRING_STR(obj), str);
+    SCM_SETSTRING_LEN(obj, SigScm_default_encoding_strlen(str));
+
+    return obj;
+}
+
 ScmObj Scm_NewString_With_StrLen(char *str, int len)
 {
     ScmObj obj = SCM_NIL;
@@ -697,7 +711,7 @@ ScmObj Scm_NewCPointer(void *data)
     return obj;
 }
 
-ScmObj Scm_NewCFuncPointer(void (*func)(void))
+ScmObj Scm_NewCFuncPointer(C_FUNC func)
 {
     ScmObj obj = SCM_NIL;
     SCM_NEW_OBJ_INTERNAL(obj);
@@ -774,4 +788,45 @@ ScmObj Scm_Intern(const char *name)
     symbol_hash[n] = sym_list;
 
     return sym;
+}
+
+int Scm_GetInt(ScmObj num)
+{
+    if (EQ(ScmOp_numberp(num), SCM_FALSE))
+	SigScm_ErrorObj("Scm_GetInt : number required but got ", num);
+
+    return SCM_INT_VALUE(num);
+}
+
+char* Scm_GetString(ScmObj str)
+{
+    char *ret = NULL;
+    switch (SCM_GETTYPE(str)) {
+	case ScmString:
+	    ret = SCM_STRING_STR(str);
+	    break;
+	case ScmSymbol:
+	    ret = SCM_SYMBOL_NAME(str);
+	    break;
+	default:
+	    SigScm_Error("Scm_GetString : cannot get string of not string nor symbol\n");
+    }
+
+    return ret;
+}
+
+void* Scm_GetCPointer(ScmObj c_ptr)
+{
+    if (!SCM_C_POINTERP(c_ptr))
+	SigScm_ErrorObj("Scm_GetCPointer : c_ptr required but got ", c_ptr);
+
+    return SCM_C_POINTER_DATA(c_ptr);
+}
+
+C_FUNC Scm_GetCFuncPointer(ScmObj c_funcptr)
+{
+    if (!SCM_C_FUNCPOINTERP(c_funcptr))
+	SigScm_ErrorObj("Scm_GetCFuncPointer : c_funcptr required but got ", c_funcptr);
+
+    return SCM_C_FUNCPOINTER_FUNC(c_funcptr);
 }

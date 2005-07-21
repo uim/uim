@@ -53,6 +53,8 @@ extern "C" {
 /*=======================================
    Struct Declarations
 =======================================*/
+typedef void (*C_FUNC) (void);
+
 #include "sigschemetype.h"
 
 /*=======================================
@@ -118,6 +120,7 @@ ScmObj Scm_NewInt(int val);
 ScmObj Scm_NewSymbol(char *name, ScmObj v_cell);
 ScmObj Scm_NewChar(char *ch);
 ScmObj Scm_NewString(char *str);
+ScmObj Scm_NewStringCopying(char *str);
 ScmObj Scm_NewString_With_StrLen(char *str, int len);
 ScmObj Scm_NewFunc(enum ScmFuncArgNum num_arg, ScmFuncType func);
 ScmObj Scm_NewClosure(ScmObj exp, ScmObj env);
@@ -125,8 +128,12 @@ ScmObj Scm_NewVector(ScmObj *vec, int len);
 ScmObj Scm_NewPort(FILE *file, enum ScmPortType ptype);
 ScmObj Scm_NewContinuation(void);
 ScmObj Scm_NewCPointer(void *data);
-ScmObj Scm_NewCFuncPointer(void (*func)(void));
+ScmObj Scm_NewCFuncPointer(C_FUNC func);
 ScmObj Scm_Intern(const char *name);
+int    Scm_GetInt(ScmObj num);
+char*  Scm_GetString(ScmObj str);
+void*  Scm_GetCPointer(ScmObj c_ptr);
+C_FUNC Scm_GetCFuncPointer(ScmObj c_funcptr);
 
 /* eval.c */
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env);
