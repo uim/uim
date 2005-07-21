@@ -116,10 +116,16 @@ static int skip_comment_and_space(ScmObj port)
         } else if(c == ';') {
             while (1) {
 		SCM_PORT_GETC(port, c);
-                if (c == '\n') break;
+                if (c == '\n') {
+	           SCM_PORT_PORTINFO(port)->line++;
+		   break;
+		}
                 if (c == EOF ) return c;
             }
             continue;
+        } else if(c == '\n') {
+	  SCM_PORT_PORTINFO(port)->line++;
+	  continue;
         } else if(isspace(c)) {
             continue;
         }
@@ -214,6 +220,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
     ScmObj list_head = SCM_NIL;
     ScmObj list_tail = SCM_NIL;
     ScmObj item = SCM_NIL;
+    int line = SCM_PORT_PORTINFO(port)->line;
 
     int c = 0;
     while (1) {
@@ -224,7 +231,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
 #endif
 
         if (c == EOF) {
-            SigScm_Error("EOF inside list.\n");
+ 	    SigScm_Error("EOF inside list. (starting from line %d)\n", line + 1);
         } else if (c == closeParen) {
             return list_head;
         } else if (c == '.') {
