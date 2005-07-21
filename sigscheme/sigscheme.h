@@ -317,6 +317,6 @@ void SigScm_DisplayToPort(ScmObj port, ScmObj obj);
 
 #ifdef __cplusplus
 }
-#endifx
+#endif
 
 #endif /* __SIGSCHEME_H */
