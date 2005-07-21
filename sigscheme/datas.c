@@ -59,6 +59,10 @@
 #include <stdlib.h>
 #include <malloc.h>
 
+#ifdef USE_BOEHM_GC
+  #include <gc/gc.h>
+#endif
+
 /*=======================================
   Local Include
 =======================================*/
@@ -81,11 +85,20 @@ struct gc_protected_obj_ {
 =======================================*/
 #define NAMEHASH_SIZE 1024
 
+#ifdef USE_BOEHM_GC
+
+#define SCM_NEW_OBJ_INTERNAL(VALNAME)                                   \
+  VALNAME = GC_MALLOC(sizeof(ScmObjInternal));
+
+#else
+
 #define SCM_NEW_OBJ_INTERNAL(VALNAME)                                   \
     if (EQ(scm_freelist, SCM_NIL))					\
 	gc_mark_and_sweep();						\
     VALNAME = scm_freelist;						\
     scm_freelist = SCM_FREECELL_CDR(scm_freelist);			\
+
+#endif
 
 /*=======================================
   Variable Declarations
@@ -132,24 +145,41 @@ static int  symbol_name_hash(const char *name);
 /*=======================================
   Function Implementations
 =======================================*/
-void SigScm_InitStorage()
+void SigScm_InitStorage(void)
 {
-    allocate_heap(&scm_heaps, scm_heap_num, SCM_HEAP_SIZE, &scm_freelist);
-    initialize_symbol_hash();
+#ifdef USE_BOEHM_GC
+  GC_enable_incremental();
+#endif
+
+  allocate_heap(&scm_heaps, scm_heap_num, SCM_HEAP_SIZE, &scm_freelist);
+  initialize_symbol_hash();
 }
 
-void SigScm_FinalizeStorage()
+void SigScm_FinalizeStorage(void)
 {
+#ifdef USE_BOEHM_GC
+  /*    GC_invoke_finalizers(); */
+#else 
     finalize_heap();
     finalize_symbol_hash();
+#endif
 }
 
 static void *malloc_aligned(size_t size)
 {
+
+#ifdef USE_BOEHM_GC
+  return  GC_MALLOC(size);
+
+#else
+
     /* TODO : Need to reserch System Dependency! */
     void *p;
     posix_memalign(&p, 16, size);
     return p;
+
+#endif
+
 }
 
 
@@ -160,8 +190,12 @@ static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmOb
     ScmObj prev = NULL;
     ScmObj next = NULL;
 
+#ifdef USE_BOEHM_GC
+    return;
+#endif
+
 #if DEBUG_GC
-    printf("allocate_heap\n");
+    printf("allocate_heap num:%d size:%d\n", num_heap, HEAP_SIZE);
 #endif
 
     /* allocate heap */
@@ -205,7 +239,7 @@ static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, int HEAP_SIZE, ScmO
     ScmObj next     = NULL;
 
 #if DEBUG_GC
-    printf("add_heap\n");
+    printf("add_heap current num of heaps:%d\n", *orig_num_heap);
 #endif
 
     /* increment num_heap */
@@ -217,7 +251,8 @@ static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, int HEAP_SIZE, ScmO
 
     /* allocate heap */
     (*heaps)[num_heap - 1] = (ScmObj)malloc_aligned(sizeof(ScmObjInternal) * HEAP_SIZE);
-
+    memset((*heaps)[num_heap - 1], 0, sizeof(ScmObjInternal) * HEAP_SIZE);
+    
     /* link in order */
     for (i = 0; i < HEAP_SIZE; i++) {
         next = &(*heaps)[num_heap - 1][i];
@@ -268,14 +303,22 @@ static void gc_mark_and_sweep(void)
     printf("[ gc start ]\n");
 #endif
 
-    gc_preprocess();
+#ifdef USE_BOEHM_GC
 
+    return;
+#endif
+
+    gc_preprocess();
     gc_mark();
     gc_sweep();
-
+    
     /* we cannot sweep the object, so let's add new heap */
-    if (SCM_NULLP(scm_freelist))
+    if (SCM_NULLP(scm_freelist)) {
+#if DEBUG_GC
+      printf("Cannot sweeped the object, allocating new heap.\n");
+#endif
         add_heap(&scm_heaps, &scm_heap_num, SCM_HEAP_SIZE, &scm_freelist);
+    }
 }
 
 static void mark_obj(ScmObj obj)
@@ -373,9 +416,7 @@ static void gc_mark_stack(ScmObj *start, ScmObj *end)
     /* get size */
     size = end - start;
 
-#if DEBUG_GC
-	printf("gc_mark_stack() size = %d\n", size);
-#endif
+	printf("gc_mark_stack() size = %p\n", start);
 
     /* mark stack */
     for (i = 0; i < size; i++) {
@@ -410,6 +451,13 @@ static void sweep_obj(ScmObj obj)
 {
     /* if the type has the pointer to free, then free it! */
     switch (SCM_GETTYPE(obj)) {
+        case ScmInt:
+        case ScmCons:
+        case ScmFunc:
+        case ScmClosure:
+        case ScmFreeCell:
+        case ScmEtc:
+	  break;
 	case ScmChar:
 	    if (SCM_CHAR_CH(obj)) {
 		free(SCM_CHAR_CH(obj));
@@ -471,7 +519,7 @@ static void gc_sweep(void)
 	}
 	
 #if DEBUG_GC
-	printf("scm[%d] corrected = %d\n", i, corrected_obj_num);
+	printf("scm[%d] sweeped = %d\n", i, corrected_obj_num);
 #endif
     }
     scm_freelist = scm_new_freelist;
@@ -616,6 +664,7 @@ ScmObj Scm_NewPort(FILE *file, enum ScmPortType ptype)
     SCM_SETPORT(obj);
     pinfo  = (ScmPortInfo *)malloc(sizeof(ScmPortInfo));
     pinfo->file         = file;
+    pinfo->line         = 0;
     pinfo->ungottenchar = 0;
     SCM_SETPORT_PORTINFO(obj, pinfo);
     SCM_SETPORT_PORTTYPE(obj, ptype);

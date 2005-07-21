@@ -95,6 +95,7 @@ enum ScmPortType {
 typedef struct _ScmPortInfo ScmPortInfo;
 struct _ScmPortInfo {
     FILE *file;
+    int line;
     char ungottenchar;
 };
 
@@ -297,6 +298,7 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_SETPORT_PORTTYPE(a, ptype) (SCM_PORT_PORTTYPE(a) = ptype)
 #define SCM_SETPORT_PORTINFO(a, pinfo) (SCM_PORT_PORTINFO(a) = pinfo)
 #define SCM_PORTINFO_FILE(a) (SCM_PORT_PORTINFO(a)->file)
+#define SCM_PORTINFO_LINE(a) (SCM_PORT_PORTINFO(a)->line)
 #define SCM_PORTINFO_UNGOTTENCHAR(a) (SCM_PORT_PORTINFO(a)->ungottenchar)
 
 #define SCM_CONTINUATIONP(a) (SCM_GETTYPE(a) == ScmContinuation)
