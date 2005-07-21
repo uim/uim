@@ -20,8 +20,13 @@ Gauche uses dynamic-load to load shared library.
 Vector will be very important data structure. Sorted vector data will
 make uim faster. In addition, it would reduce memory consumption.
 
+In Gauche, find, map, for-each, and remove are applyicable to vector.
+This feature need generic function,  I think generic function is not 
+need for SigScheme. So I'll propose 'vector-' prefix to impelement
+map, for-each, remove for vector. i.e. vector-map is map for vector.
+
+
 * define-record-type
 
 Defined as SRFI-9, define-record-tipe should be implemented to replace
 current define-record.
-
