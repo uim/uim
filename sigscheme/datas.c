@@ -668,35 +668,40 @@ ScmObj Scm_NewVector(ScmObj *vec, int len)
     return obj;
 }
 
-ScmObj Scm_NewPort(FILE *file, enum ScmPortDirection pdirection, enum ScmPortType ptype)
+ScmObj Scm_NewFilePort(FILE *file, enum ScmPortDirection pdirection)
 {
     ScmObj obj = SCM_NIL;
-    ScmPortInfo *pinfo = (ScmPortInfo *)malloc(sizeof(ScmPortInfo));;
+    ScmPortInfo *pinfo = (ScmPortInfo *)malloc(sizeof(ScmPortInfo));
 
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_SETPORT(obj);
     SCM_SETPORT_PORTDIRECTION(obj, pdirection);
-    switch (ptype) {
-	case PORT_FILE:
-	    {
-
-		pinfo->file         = file;
-		pinfo->line         = 0;
-		pinfo->ungottenchar = 0;
-	    }
-	    break;
-	case PORT_STRING:
-	    {
-		/* TODO : implemented this immediately! */
-	    }
-	    break;
-	default:
-	    SigScm_Error("Scm_NewPort : invalid port type\n");
-	    break;
-    }
+    SCM_SETPORT_PORTTYPE(obj, PORT_FILE);
+    pinfo->info.file_port.file = file;
+    pinfo->info.file_port.line = 0;
+    pinfo->ungottenchar = 0;
     SCM_SETPORT_PORTINFO(obj, pinfo);
+    
+    return obj;
+}
 
+ScmObj Scm_NewStringPort(const char *str)
+{
+    ScmObj obj = SCM_NIL;
+    ScmPortInfo *pinfo = (ScmPortInfo *)malloc(sizeof(ScmPortInfo));
+
+    SCM_NEW_OBJ_INTERNAL(obj);
+
+    SCM_SETPORT(obj);
+    SCM_SETPORT_PORTDIRECTION(obj, PORT_INPUT);
+    SCM_SETPORT_PORTTYPE(obj, PORT_STRING);
+    pinfo->info.str_port.port_str = (char *)malloc(strlen(str) + 1);
+    strcpy(pinfo->info.str_port.port_str, str);
+    pinfo->info.str_port.str_current = pinfo->info.str_port.port_str;
+    pinfo->ungottenchar = 0;
+    SCM_SETPORT_PORTINFO(obj, pinfo);
+    
     return obj;
 }
 
@@ -843,4 +848,15 @@ C_FUNC Scm_GetCFuncPointer(ScmObj c_funcptr)
 	SigScm_ErrorObj("Scm_GetCFuncPointer : c_funcptr required but got ", c_funcptr);
 
     return SCM_C_FUNCPOINTER_FUNC(c_funcptr);
+}
+
+ScmObj Scm_eval_c_string(const char *exp)
+{
+    ScmObj str_port = Scm_NewStringPort(exp);
+    ScmObj ret = SCM_NIL;
+
+    ret = SigScm_Read(str_port);
+    ret = ScmOp_eval(ret, SCM_NIL);
+
+    return ret;
 }

@@ -125,7 +125,8 @@ ScmObj Scm_NewString_With_StrLen(char *str, int len);
 ScmObj Scm_NewFunc(enum ScmFuncArgNum num_arg, ScmFuncType func);
 ScmObj Scm_NewClosure(ScmObj exp, ScmObj env);
 ScmObj Scm_NewVector(ScmObj *vec, int len);
-ScmObj Scm_NewPort(FILE *file, enum ScmPortDirection pdireciton, enum ScmPortType ptype);
+ScmObj Scm_NewFilePort(FILE *file, enum ScmPortDirection pdireciton);
+ScmObj Scm_NewStringPort(const char *str);  /* input only? */
 ScmObj Scm_NewContinuation(void);
 ScmObj Scm_NewCPointer(void *data);
 ScmObj Scm_NewCFuncPointer(C_FUNC func);
@@ -134,6 +135,8 @@ int    Scm_GetInt(ScmObj num);
 char*  Scm_GetString(ScmObj str);
 void*  Scm_GetCPointer(ScmObj c_ptr);
 C_FUNC Scm_GetCFuncPointer(ScmObj c_funcptr);
+ScmObj Scm_eval_c_string(const char *exp);
+
 
 /* eval.c */
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env);

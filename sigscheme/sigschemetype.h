@@ -100,8 +100,18 @@ enum ScmPortType {
 /* ScmPort Info */
 typedef struct _ScmPortInfo ScmPortInfo;
 struct _ScmPortInfo {
-    FILE *file;
-    int line;
+    union {
+        struct {
+            FILE *file;
+            int line;
+        } file_port;
+        
+        struct {
+            char *port_str;
+            const char *str_current;
+        } str_port;
+    } info;
+    
     char ungottenchar;
 };
 
@@ -300,12 +310,16 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_PORTP(a) (SCM_GETTYPE(a) == ScmPort)
 #define SCM_PORT(a)  (sigassert(SCM_PORTP(a)), a)
 #define SCM_PORT_PORTDIRECTION(a) (SCM_PORT(a)->obj.port.port_direction)
+#define SCM_PORT_PORTTYPE(a) (SCM_PORT(a)->obj.port.port_type)
 #define SCM_PORT_PORTINFO(a) (SCM_PORT(a)->obj.port.port_info)
 #define SCM_SETPORT(a) (SCM_SETTYPE(a, ScmPort))
 #define SCM_SETPORT_PORTDIRECTION(a, pdirection) (SCM_PORT_PORTDIRECTION(a) = pdirection)
+#define SCM_SETPORT_PORTTYPE(a, ptype) (SCM_PORT_PORTTYPE(a) = ptype)
 #define SCM_SETPORT_PORTINFO(a, pinfo) (SCM_PORT_PORTINFO(a) = pinfo)
-#define SCM_PORTINFO_FILE(a) (SCM_PORT_PORTINFO(a)->file)
-#define SCM_PORTINFO_LINE(a) (SCM_PORT_PORTINFO(a)->line)
+#define SCM_PORTINFO_FILE(a) (SCM_PORT_PORTINFO(a)->info.file_port.file)
+#define SCM_PORTINFO_LINE(a) (SCM_PORT_PORTINFO(a)->info.file_port.line)
+#define SCM_PORTINFO_STR(a) (SCM_PORT_PORTINFO(a)->info.str_port.port_str)
+#define SCM_PORTINFO_STR_CURRENT(a) (SCM_PORT_PORTINFO(a)->info.str_port.str_current)
 #define SCM_PORTINFO_UNGOTTENCHAR(a) (SCM_PORT_PORTINFO(a)->ungottenchar)
 
 #define SCM_CONTINUATIONP(a) (SCM_GETTYPE(a) == ScmContinuation)

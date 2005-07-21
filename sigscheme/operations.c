@@ -1143,17 +1143,10 @@ ScmObj ScmOp_boundp(ScmObj obj)
 
 ScmObj ScmOp_symbol_to_string(ScmObj obj)
 {
-    int   size = 0;
-    char *name = NULL;
-
     if (!SCM_SYMBOLP(obj))
         return SCM_FALSE;
 
-    size = strlen(SCM_SYMBOL_NAME(obj));
-    name = (char*)malloc(sizeof(char) * size + 1);
-    strcpy(name, SCM_SYMBOL_NAME(obj));
-
-    return Scm_NewString(name);
+    return Scm_NewStringCopying(SCM_SYMBOL_NAME(obj));
 }
 
 ScmObj ScmOp_string_to_symbol(ScmObj str)
@@ -1547,17 +1540,10 @@ ScmObj ScmOp_list_to_string(ScmObj list)
 
 ScmObj ScmOp_string_copy(ScmObj string)
 {
-    char *orig_str = NULL;
-    char *dest_str = NULL;
-
     if (!SCM_STRINGP(string))
         SigScm_ErrorObj("string-copy : string required but got ", string);
 
-    orig_str = SCM_STRING_STR(string);
-    dest_str = (char*)malloc(sizeof(char) * (strlen(orig_str) + 1));
-    strcpy(dest_str, orig_str);
-
-    return Scm_NewString(dest_str);
+    return Scm_NewStringCopying(SCM_STRING_STR(string));
 }
 
 ScmObj ScmOp_string_fill(ScmObj string, ScmObj ch)

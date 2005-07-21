@@ -203,7 +203,7 @@ ScmObj ScmOp_open_input_file(ScmObj filepath)
         SigScm_ErrorObj("open-input-file : cannot open file ", filepath);
 
     /* Allocate ScmPort */
-    return Scm_NewPort(f, PORT_INPUT, PORT_FILE);
+    return Scm_NewFilePort(f, PORT_INPUT);
 }
 
 ScmObj ScmOp_open_output_file(ScmObj filepath)
@@ -219,7 +219,7 @@ ScmObj ScmOp_open_output_file(ScmObj filepath)
         SigScm_ErrorObj("open-output-file : cannot open file ", filepath);
 
     /* Return new ScmPort */
-    return Scm_NewPort(f, PORT_OUTPUT, PORT_FILE);
+    return Scm_NewFilePort(f, PORT_OUTPUT);
 }
 
 ScmObj ScmOp_close_input_port(ScmObj port)

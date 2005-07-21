@@ -51,15 +51,23 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define SCM_PORT_GETC(port, c) 				\
-    do {						\
-	if (SCM_PORTINFO_UNGOTTENCHAR(port)) {		\
-	    c = SCM_PORTINFO_UNGOTTENCHAR(port);	\
-	    SCM_PORTINFO_UNGOTTENCHAR(port) = 0;	\
-	} else {					\
-	    c = getc(SCM_PORTINFO_FILE(port));		\
-	    SCM_PORTINFO_UNGOTTENCHAR(port) = 0;	\
-	}						\
+#define SCM_PORT_GETC(port, c) 							\
+    do {									\
+	if (SCM_PORTINFO_UNGOTTENCHAR(port)) {					\
+	    c = SCM_PORTINFO_UNGOTTENCHAR(port);				\
+	    SCM_PORTINFO_UNGOTTENCHAR(port) = 0;				\
+	} else {								\
+	    switch (SCM_PORT_PORTTYPE(port)) {					\
+		case PORT_FILE:							\
+		    c = getc(SCM_PORTINFO_FILE(port));				\
+		    break;							\
+		case PORT_STRING:						\
+		    c = (*SCM_PORTINFO_STR_CURRENT(port));			\
+		    SCM_PORTINFO_STR_CURRENT(port)++;				\
+		    break;							\
+	    }									\
+	    SCM_PORTINFO_UNGOTTENCHAR(port) = 0;				\
+	}									\
     } while (0);
 
 #define SCM_PORT_UNGETC(port,c )	\
@@ -117,15 +125,19 @@ static int skip_comment_and_space(ScmObj port)
             while (1) {
 		SCM_PORT_GETC(port, c);
                 if (c == '\n') {
-	           SCM_PORT_PORTINFO(port)->line++;
-		   break;
+		    if (SCM_PORT_PORTTYPE(port) == PORT_FILE) {
+			SCM_PORTINFO_LINE(port)++;
+		    }
+		    break;
 		}
                 if (c == EOF ) return c;
             }
             continue;
         } else if(c == '\n') {
-	  SCM_PORT_PORTINFO(port)->line++;
-	  continue;
+	    if (SCM_PORT_PORTTYPE(port) == PORT_FILE) {
+		SCM_PORTINFO_LINE(port)++;
+	    }
+	    continue;
         } else if(isspace(c)) {
             continue;
         }
@@ -220,7 +232,6 @@ static ScmObj read_list(ScmObj port, int closeParen)
     ScmObj list_head = SCM_NIL;
     ScmObj list_tail = SCM_NIL;
     ScmObj item = SCM_NIL;
-    int line = SCM_PORT_PORTINFO(port)->line;
 
     int c = 0;
     while (1) {
@@ -231,7 +242,10 @@ static ScmObj read_list(ScmObj port, int closeParen)
 #endif
 
         if (c == EOF) {
- 	    SigScm_Error("EOF inside list. (starting from line %d)\n", line + 1);
+	    if (SCM_PORT_PORTTYPE(port) == PORT_FILE)
+		SigScm_Error("EOF inside list. (starting from line %d)\n", SCM_PORTINFO_LINE(port) + 1);
+	    else
+		SigScm_Error("EOF inside list.\n");
         } else if (c == closeParen) {
             return list_head;
         } else if (c == '.') {
@@ -298,7 +312,6 @@ static ScmObj read_string(ScmObj port)
 {
     char  stringbuf[1024];
     int   stringlen = 0;
-    char *dst = NULL;
     int   c = 0;
 
 #if DEBUG_PARSER
@@ -319,9 +332,7 @@ static ScmObj read_string(ScmObj port)
             case '\"':
                 {
                     stringbuf[stringlen] = '\0';
-                    dst = (char *)malloc(strlen(stringbuf) + 1);
-                    strcpy(dst, stringbuf);
-                    return Scm_NewString(dst);
+                    return Scm_NewStringCopying(stringbuf);
                 }
             case '\\':
                 {
