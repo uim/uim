@@ -637,6 +637,28 @@ ScmObj Scm_NewContinuation(void)
     return obj;
 }
 
+ScmObj Scm_NewCPointer(void *data)
+{
+    ScmObj obj = SCM_NIL;
+    SCM_NEW_OBJ_INTERNAL(obj);
+
+    SCM_SETC_POINTER(obj);
+    SCM_SETC_POINTER_DATA(obj, data);
+
+    return obj;
+}
+
+ScmObj Scm_NewCFuncPointer(void (*func)(void))
+{
+    ScmObj obj = SCM_NIL;
+    SCM_NEW_OBJ_INTERNAL(obj);
+
+    SCM_SETC_FUNCPOINTER(obj);
+    SCM_SETC_FUNCPOINTER_FUNC(obj, func);
+
+    return obj;
+}
+
 /*
  * Symbol Name Hash Related Functions
  *

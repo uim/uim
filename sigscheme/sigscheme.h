@@ -124,6 +124,8 @@ ScmObj Scm_NewClosure(ScmObj exp, ScmObj env);
 ScmObj Scm_NewVector(ScmObj *vec, int len);
 ScmObj Scm_NewPort(FILE *file, enum ScmPortType ptype);
 ScmObj Scm_NewContinuation(void);
+ScmObj Scm_NewCPointer(void *data);
+ScmObj Scm_NewCFuncPointer(void (*func)(void));
 ScmObj Scm_Intern(const char *name);
 
 /* eval.c */

@@ -60,7 +60,10 @@ enum ScmObjType {
     ScmPort         = 8,
     ScmContinuation = 9,
     ScmFreeCell     = 10,
-    ScmEtc          = 11
+    ScmEtc          = 11,
+
+    ScmCPointer     = 20,
+    ScmCFuncPointer = 21
 };
 
 /* Function Type by argnuments */
@@ -184,6 +187,14 @@ struct ScmObjInternal_ {
         struct ScmEtc {
             int type;
         } etc;
+
+        struct ScmCPointer {
+            void *data;            
+        } c_pointer;
+
+        struct ScmCFuncPointer {
+            void (*func)(void);            
+        } c_func_pointer;
     } obj;
 };
 
@@ -306,6 +317,21 @@ typedef ScmObj (*ScmFuncType) (void);
     a = &impl;\
     SCM_SETTYPE(a, ScmEtc);\
     SCM_SETETC_TYPE(a, etctype);
+
+/*============================================================================
+  For C-Interface
+============================================================================*/
+#define SCM_C_POINTERP(a) (SCM_GETTYPE(a) == ScmCPointer)
+#define SCM_C_POINTER(a)  (sigassert(SCM_C_POINTERP(a)), a)
+#define SCM_C_POINTER_DATA(a) (SCM_C_POINTER(a)->obj.c_pointer.data)
+#define SCM_SETC_POINTER(a) (SCM_SETTYPE(a, ScmCPointer))
+#define SCM_SETC_POINTER_DATA(a, ptr) (SCM_C_POINTER_DATA(a) = ptr)
+
+#define SCM_C_FUNCPOINTERP(a) (SCM_GETTYPE(a) == ScmCFuncPointer)
+#define SCM_C_FUNCPOINTER(a)  (sigassert(SCM_C_FUNCPOINTERP(a)), a)
+#define SCM_C_FUNCPOINTER_FUNC(a) (SCM_C_POINTER(a)->obj.c_func_pointer.func)
+#define SCM_SETC_FUNCPOINTER(a) (SCM_SETTYPE(a, ScmCFuncPointer))
+#define SCM_SETC_FUNCPOINTER_FUNC(a, funcptr) (SCM_C_FUNCPOINTER_FUNC(a) = funcptr)
 
 extern ScmObj SigScm_nil, SigScm_true, SigScm_false, SigScm_eof;
 extern ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote, SigScm_unquote_splicing;

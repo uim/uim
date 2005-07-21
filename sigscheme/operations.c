@@ -127,6 +127,12 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
         case ScmFreeCell:
             SigScm_Error("eqv? : cannnot compare freecell, gc broken?\n");
             break;
+	case ScmCPointer:
+	case ScmCFuncPointer:
+	    if (EQ(obj1, obj2))
+	    {
+		return SCM_TRUE;
+	    }
     }
 
     return SCM_FALSE;
@@ -238,6 +244,18 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
         case ScmFreeCell:
             SigScm_Error("equal? : cannnot compare freecell, gc broken?\n");
             break;
+	case ScmCPointer:
+	    if (SCM_C_POINTER_DATA(obj1) == SCM_C_POINTER_DATA(obj2))
+	    {
+		return SCM_TRUE;
+	    }
+	    break;
+	case ScmCFuncPointer:
+	    if (SCM_C_FUNCPOINTER_FUNC(obj1) == SCM_C_FUNCPOINTER_FUNC(obj2))
+	    {
+		return SCM_TRUE;
+	    }
+	    break;
     }
 
     return SCM_FALSE;
