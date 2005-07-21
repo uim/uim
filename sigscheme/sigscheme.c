@@ -260,9 +260,9 @@ void SigScm_Initialize(void)
     /*=======================================================================
       Current Input & Output Initialization
     =======================================================================*/
-    current_input_port  = Scm_NewPort(stdin,  PORT_INPUT);
+    current_input_port  = Scm_NewPort(stdin,  PORT_INPUT,  PORT_FILE);
     SigScm_gc_protect(current_input_port);
-    current_output_port = Scm_NewPort(stdout, PORT_OUTPUT);
+    current_output_port = Scm_NewPort(stdout, PORT_OUTPUT, PORT_FILE);
     SigScm_gc_protect(current_output_port);
 
     stack_start_pointer = NULL;

@@ -416,7 +416,7 @@ static void gc_mark_stack(ScmObj *start, ScmObj *end)
     /* get size */
     size = end - start;
 
-    printf("gc_mark_stack() size = %p\n", (void*)start);
+    printf("gc_mark_stack() : size = %d\n", size);
 
     /* mark stack */
     for (i = 0; i < size; i++) {
@@ -668,20 +668,34 @@ ScmObj Scm_NewVector(ScmObj *vec, int len)
     return obj;
 }
 
-ScmObj Scm_NewPort(FILE *file, enum ScmPortType ptype)
+ScmObj Scm_NewPort(FILE *file, enum ScmPortDirection pdirection, enum ScmPortType ptype)
 {
     ScmObj obj = SCM_NIL;
-    ScmPortInfo *pinfo = NULL;
+    ScmPortInfo *pinfo = (ScmPortInfo *)malloc(sizeof(ScmPortInfo));;
 
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_SETPORT(obj);
-    pinfo  = (ScmPortInfo *)malloc(sizeof(ScmPortInfo));
-    pinfo->file         = file;
-    pinfo->line         = 0;
-    pinfo->ungottenchar = 0;
+    SCM_SETPORT_PORTDIRECTION(obj, pdirection);
+    switch (ptype) {
+	case PORT_FILE:
+	    {
+
+		pinfo->file         = file;
+		pinfo->line         = 0;
+		pinfo->ungottenchar = 0;
+	    }
+	    break;
+	case PORT_STRING:
+	    {
+		/* TODO : implemented this immediately! */
+	    }
+	    break;
+	default:
+	    SigScm_Error("Scm_NewPort : invalid port type\n");
+	    break;
+    }
     SCM_SETPORT_PORTINFO(obj, pinfo);
-    SCM_SETPORT_PORTTYPE(obj, ptype);
 
     return obj;
 }

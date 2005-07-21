@@ -114,7 +114,7 @@ ScmObj ScmOp_call_with_output_file(ScmObj filepath, ScmObj proc)
 
 ScmObj ScmOp_input_portp(ScmObj obj)
 {
-    if (SCM_PORTP(obj) && SCM_PORT_PORTTYPE(obj) == PORT_INPUT)
+    if (SCM_PORTP(obj) && SCM_PORT_PORTDIRECTION(obj) == PORT_INPUT)
 	return SCM_TRUE;
 
     return SCM_FALSE;
@@ -122,7 +122,7 @@ ScmObj ScmOp_input_portp(ScmObj obj)
 
 ScmObj ScmOp_output_portp(ScmObj obj)
 {
-    if (SCM_PORTP(obj) && SCM_PORT_PORTTYPE(obj) == PORT_OUTPUT)
+    if (SCM_PORTP(obj) && SCM_PORT_PORTDIRECTION(obj) == PORT_OUTPUT)
 	return SCM_TRUE;
 
     return SCM_FALSE;
@@ -203,7 +203,7 @@ ScmObj ScmOp_open_input_file(ScmObj filepath)
         SigScm_ErrorObj("open-input-file : cannot open file ", filepath);
 
     /* Allocate ScmPort */
-    return Scm_NewPort(f, PORT_INPUT);
+    return Scm_NewPort(f, PORT_INPUT, PORT_FILE);
 }
 
 ScmObj ScmOp_open_output_file(ScmObj filepath)
@@ -219,7 +219,7 @@ ScmObj ScmOp_open_output_file(ScmObj filepath)
         SigScm_ErrorObj("open-output-file : cannot open file ", filepath);
 
     /* Return new ScmPort */
-    return Scm_NewPort(f, PORT_OUTPUT);
+    return Scm_NewPort(f, PORT_OUTPUT, PORT_FILE);
 }
 
 ScmObj ScmOp_close_input_port(ScmObj port)
