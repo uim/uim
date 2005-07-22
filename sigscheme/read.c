@@ -264,7 +264,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
 		    SigScm_Error("bad dot syntax\n");
 
                 SCM_SETCDR(list_tail, cdr);
-		return list_tail;
+		return list_head;
             }
         } else {
             SCM_PORT_UNGETC(port, c);
