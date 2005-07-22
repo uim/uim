@@ -811,7 +811,7 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj env)
 
     /* sanity check */
     if CHECK_2_ARGS(arg)
-	SigScm_Error("let : syntax error\n");
+	SigScm_Error("let* : syntax error\n");
 
     /* get bindings and body */
     bindings = SCM_CAR(arg);
@@ -849,7 +849,7 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj env)
 
     /* sanity check */
     if CHECK_2_ARGS(arg)
-	SigScm_Error("let : syntax error\n");
+	SigScm_Error("letrec : syntax error\n");
 
     /* get bindings and body */
     bindings = SCM_CAR(arg);
