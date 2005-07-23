@@ -414,7 +414,7 @@ ScmObj ScmOp_write_char(ScmObj arg, ScmObj env)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.4 System Interface
 ===========================================================================*/
-ScmObj SigScm_load(char *c_filename)
+ScmObj SigScm_load(const char *c_filename)
 {
     ScmObj stack_start;
     ScmObj port         = SCM_NIL;
@@ -424,7 +424,7 @@ ScmObj SigScm_load(char *c_filename)
     stack_start_pointer = &stack_start;
 
     /* open port */
-    port = ScmOp_open_input_file(Scm_NewString(c_filename));
+    port = ScmOp_open_input_file(Scm_NewStringCopying(c_filename));
     s_expression = SCM_NIL;
 
 

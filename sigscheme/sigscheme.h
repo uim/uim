@@ -307,7 +307,7 @@ ScmObj ScmOp_display(ScmObj arg, ScmObj env);
 ScmObj ScmOp_newline(ScmObj arg, ScmObj env);
 ScmObj ScmOp_write_char(ScmObj arg, ScmObj env);
 
-ScmObj SigScm_load(char *c_filename);
+ScmObj SigScm_load(const char *c_filename);
 ScmObj ScmOp_load(ScmObj filename);
 
 /* encoding.c */
