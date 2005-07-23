@@ -59,10 +59,6 @@
 #include <stdlib.h>
 #include <malloc.h>
 
-#ifdef USE_BOEHM_GC
-  #include <gc/gc.h>
-#endif
-
 /*=======================================
   Local Include
 =======================================*/
@@ -85,20 +81,11 @@ struct gc_protected_obj_ {
 =======================================*/
 #define NAMEHASH_SIZE 1024
 
-#ifdef USE_BOEHM_GC
-
-#define SCM_NEW_OBJ_INTERNAL(VALNAME)                                   \
-  VALNAME = GC_MALLOC(sizeof(ScmObjInternal));
-
-#else
-
 #define SCM_NEW_OBJ_INTERNAL(VALNAME)                                   \
     if (EQ(scm_freelist, SCM_NIL))					\
 	gc_mark_and_sweep();						\
     VALNAME = scm_freelist;						\
     scm_freelist = SCM_FREECELL_CDR(scm_freelist);			\
-
-#endif
 
 /*=======================================
   Variable Declarations
@@ -147,39 +134,22 @@ static int  symbol_name_hash(const char *name);
 =======================================*/
 void SigScm_InitStorage(void)
 {
-#ifdef USE_BOEHM_GC
-  GC_enable_incremental();
-#endif
-
   allocate_heap(&scm_heaps, scm_heap_num, SCM_HEAP_SIZE, &scm_freelist);
   initialize_symbol_hash();
 }
 
 void SigScm_FinalizeStorage(void)
 {
-#ifdef USE_BOEHM_GC
-  /*    GC_invoke_finalizers(); */
-#else 
     finalize_heap();
     finalize_symbol_hash();
-#endif
 }
 
 static void *malloc_aligned(size_t size)
 {
-
-#ifdef USE_BOEHM_GC
-  return  GC_MALLOC(size);
-
-#else
-
     /* TODO : Need to reserch System Dependency! */
     void *p;
     posix_memalign(&p, 16, size);
     return p;
-
-#endif
-
 }
 
 
@@ -189,10 +159,6 @@ static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmOb
     int j = 0;
     ScmObj prev = NULL;
     ScmObj next = NULL;
-
-#ifdef USE_BOEHM_GC
-    return;
-#endif
 
 #if DEBUG_GC
     printf("allocate_heap num:%d size:%d\n", num_heap, HEAP_SIZE);
@@ -301,11 +267,6 @@ static void gc_mark_and_sweep(void)
 {
 #if DEBUG_GC
     printf("[ gc start ]\n");
-#endif
-
-#ifdef USE_BOEHM_GC
-
-    return;
 #endif
 
     gc_preprocess();
@@ -794,7 +755,6 @@ ScmObj Scm_Intern(const char *name)
         sym = SCM_CAR(list);
 
         if (strcmp(SCM_SYMBOL_NAME(sym), name) == 0) {
-            free(symname);
             return sym;
         }
     }
