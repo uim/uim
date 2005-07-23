@@ -744,10 +744,7 @@ ScmObj Scm_Intern(const char *name)
     ScmObj sym      = SCM_NIL;
     ScmObj list     = SCM_NIL;
     ScmObj sym_list = symbol_hash[n];
-    char  *symname  = (char*)malloc(strlen(name) + 1);
-
-    /* copy string */
-    strcpy(symname, name);
+    char  *symname;
 
     /* Search Symbol by name */
     list = sym_list;
@@ -760,6 +757,8 @@ ScmObj Scm_Intern(const char *name)
     }
 
     /* If not in the sym_list, allocate new Symbol */
+    symname  = (char*)malloc(strlen(name) + 1);
+    strcpy(symname, name);
     sym = Scm_NewSymbol(symname, SCM_UNBOUND);
 
     /* And Append it to the head of symbol_hash */
