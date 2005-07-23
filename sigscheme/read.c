@@ -232,6 +232,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
     ScmObj list_head = SCM_NIL;
     ScmObj list_tail = SCM_NIL;
     ScmObj item = SCM_NIL;
+    int line = SCM_PORTINFO_LINE(port);
 
     int c = 0;
     while (1) {
@@ -243,7 +244,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
 
         if (c == EOF) {
 	    if (SCM_PORT_PORTTYPE(port) == PORT_FILE)
-		SigScm_Error("EOF inside list. (starting from line %d)\n", SCM_PORTINFO_LINE(port) + 1);
+		SigScm_Error("EOF inside list. (starting from line %d)\n", line + 1);
 	    else
 		SigScm_Error("EOF inside list.\n");
         } else if (c == closeParen) {
