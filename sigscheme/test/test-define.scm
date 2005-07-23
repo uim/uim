@@ -10,9 +10,11 @@
 
 ; define lambda
 (define (what? x)
-  "DEAFBEEF" x)
+  "DEADBEEF" x)
 (assert-eq? "func define" 10 (what? 10))
 
 (define (add x y)
   (+ x y))
 (assert-eq? "func define" 10 (add 2 8))
+
+(total-report)
