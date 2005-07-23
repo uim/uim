@@ -71,6 +71,7 @@ extern ScmObj current_output_port;
 #define DEBUG_PARSER  0
 #define DEBUG_GC      0
 #define USE_EUCJP     1
+#define USE_SRFI1     1
 
 #define CHECK_1_ARG(arg) \
     (SCM_NULLP(arg))
@@ -120,7 +121,7 @@ ScmObj Scm_NewInt(int val);
 ScmObj Scm_NewSymbol(char *name, ScmObj v_cell);
 ScmObj Scm_NewChar(char *ch);
 ScmObj Scm_NewString(char *str);
-ScmObj Scm_NewStringCopying(char *str);
+ScmObj Scm_NewStringCopying(const char *str);
 ScmObj Scm_NewString_With_StrLen(char *str, int len);
 ScmObj Scm_NewFunc(enum ScmFuncArgNum num_arg, ScmFuncType func);
 ScmObj Scm_NewClosure(ScmObj exp, ScmObj env);
@@ -136,7 +137,6 @@ char*  Scm_GetString(ScmObj str);
 void*  Scm_GetCPointer(ScmObj c_ptr);
 C_FUNC Scm_GetCFuncPointer(ScmObj c_funcptr);
 ScmObj Scm_eval_c_string(const char *exp);
-
 
 /* eval.c */
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env);
@@ -326,6 +326,16 @@ void SigScm_ErrorObj(const char *msg, ScmObj obj);
 /* debug.c */
 void SigScm_Display(ScmObj obj);
 void SigScm_DisplayToPort(ScmObj port, ScmObj obj);
+
+#if USE_SRFI1
+ScmObj ScmOp_SRFI_1_xcons(ScmObj a, ScmObj b);
+ScmObj ScmOp_SRFI_1_cons_star(ScmObj obj, ScmObj env);
+ScmObj ScmOp_SRFI_1_make_list(ScmObj obj, ScmObj env);
+ScmObj ScmOp_SRFI_1_list_tabulate(ScmObj arg, ScmObj env);
+ScmObj ScmOp_SRFI_1_list_copy(ScmObj list);
+ScmObj ScmOp_SRFI_1_circular_list(ScmObj list, ScmObj env);
+ScmObj ScmOp_SRFI_1_iota(ScmObj args, ScmObj env);
+#endif
 
 #ifdef __cplusplus
 }

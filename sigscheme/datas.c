@@ -606,7 +606,7 @@ ScmObj Scm_NewString(char *str)
     return obj;
 }
 
-ScmObj Scm_NewStringCopying(char *str)
+ScmObj Scm_NewStringCopying(const char *str)
 {
     ScmObj obj = SCM_NIL;
 

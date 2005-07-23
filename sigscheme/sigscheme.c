@@ -256,7 +256,6 @@ void SigScm_Initialize(void)
     Scm_InitSubrL("newline"              , ScmOp_newline);
     Scm_InitSubrL("write-char"           , ScmOp_write_char);
     Scm_InitSubr1("load"                 , ScmOp_load);
-
     /*=======================================================================
       Current Input & Output Initialization
     =======================================================================*/
@@ -264,6 +263,19 @@ void SigScm_Initialize(void)
     SigScm_gc_protect(current_input_port);
     current_output_port = Scm_NewFilePort(stdout, PORT_OUTPUT);
     SigScm_gc_protect(current_output_port);
+
+#if USE_SRFI1
+    /*=======================================================================
+      SRFI-1 Procedures
+    =======================================================================*/
+    Scm_InitSubr2("xcons"                , ScmOp_SRFI_1_xcons);
+    Scm_InitSubrL("cons*"                , ScmOp_SRFI_1_cons_star);
+    Scm_InitSubrL("make-list"            , ScmOp_SRFI_1_make_list);
+    Scm_InitSubrL("list-tabulate"        , ScmOp_SRFI_1_list_tabulate);
+    Scm_InitSubr1("list-copy"            , ScmOp_SRFI_1_list_copy);
+    Scm_InitSubrL("circular-list"        , ScmOp_SRFI_1_circular_list);
+    Scm_InitSubrL("iota"                 , ScmOp_SRFI_1_iota);
+#endif
 
     stack_start_pointer = NULL;
 }

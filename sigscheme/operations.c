@@ -893,7 +893,7 @@ ScmObj ScmOp_cddddr(ScmObj pair)
     return ScmOp_cdr( ScmOp_cdr( ScmOp_cdr( ScmOp_cdr(pair) )));
 }
 
-ScmObj ScmOp_list(ScmObj obj, ScmObj env )
+ScmObj ScmOp_list(ScmObj obj, ScmObj env)
 {
     return obj;
 }
@@ -1757,7 +1757,6 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
     if (arg_len < 2)
         SigScm_Error("map : Wrong number of arguments\n");
 
-
     /* 1proc and 1arg case */
     if (arg_len == 2) {
         /* apply func to each item */
@@ -1855,3 +1854,7 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env)
 
     return ScmOp_eval(arg, env);
 }
+
+#if USE_SRFI1
+#include "operations-srfi1.c"
+#endif
