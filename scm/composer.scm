@@ -91,13 +91,15 @@
 ;;
 ;; Finalize the object appropriately including constructs outside Scheme. All
 ;; chidlren must also be finalized and should be orphaned (i.e. make
-;; (composer-children self) empty).
+;; (composer-children self) empty). reset-event is not issued before invoking
+;; this.
 ;;
 ;; .parameter self Abstract composer object
 (define composer-finalize!
   (lambda (self)
     ((composer-method-table-finalize! (composer-methods self)) self)))
 
+;; FIXME: describe naming rule
 ;; Get a symbol for programs that uniquely identifies the composer
 ;; .parameter self Abstract composer object
 ;; .returns A symbol such as 'anthy
@@ -130,7 +132,7 @@
 ;; conveniently.
 ;;
 ;; .parameter self Abstract composer object
-;; .returns An ustr of child composers
+;; .returns An ustr of child composers. empty ustr if no children
 (define composer-children
   (lambda (self)
     ((composer-method-table-children (composer-methods self)) self)))
@@ -266,6 +268,13 @@
       (and (not (ustr-cursor-at-beginning? children))
 	   (- (ustr-cursor-pos children) 1)))))
 
+;; Get entire text of active child
+;; .parameter self Abstract composer object
+;; .returns utext
+(define composer-active-text
+  (lambda (self)
+    (composer-text (composer-active-child self) 0 -1)))
+
 ;; Get texts around active child
 ;;
 ;; Since the interface is compatible with supply-surrounding-text, this method
@@ -280,10 +289,11 @@
 ;; .parameter latter-len Length of latter part of the text counted in logical
 ;; character. -1 or longer than available text indicates that as long as
 ;; possible
-;; .returns ustr of uchar (editable utext)
+;; .returns ustr of uchar (editable utext). ownership of the ustr is
+;; transferred to caller and freely mutable
 ;; FIXME: add range clamping
 ;; TODO: make efficient
-(define composer-inactive-text
+(define composer-inactive-texts
   (lambda (self former-len latter-len)
     (let* ((children (ustr-dup (composer-children self)))
 	   (sur (ustr-cursor-delete-backside! children)))  ;; remove active
@@ -369,7 +379,21 @@
 	  (children (cadr args))
 	  (actset (and (not (null? (cddr args)))
 		       (car (cddr args)))))
-      (composer-base-new-internal methods #f (ustr-new children) actset))))
+      (composer-base-new-internal methods #f children actset))))
+
+;; (Re)initialize composer-base part of derived object
+;; Parent is kept untouched
+(define composer-base-initialize!
+  (lambda args
+    (let ((self (car args))
+	  (methods (cadr args))
+	  (children (car (cddr args)))
+	  (actset (and (not (null? (cdr (cddr args))))
+		       (cadr (cddr args)))))
+      (composer-base-set-methods! self methods)
+      (composer-base-set-private-children! self children)
+      (composer-base-set-actset! self actset)
+      self)))
 
 (define composer-base-parent-internal composer-base-private-parent)
 (define composer-base-set-parent! composer-base-set-private-parent!)
@@ -456,8 +480,10 @@
 ;; change of composer-method-table definition about ordering or new
 ;; member.
 ;;
-;;(define foo-composer-method-table (copy-list composer-base-method-table))
-;;(composer-method-table-set-text!         foo-composer-text)
-;;(composer-method-table-set-filter-event! foo-composer-filter-event!)
+;;(define foo-composer-method-table
+;;  (let ((m (copy-list composer-base-method-table)))
+;;    (composer-method-table-set-text!         m foo-composer-text)
+;;    (composer-method-table-set-filter-event! m foo-composer-filter-event!)
+;;    m))
 ;;
 ;;(composer-base-new foo-composer-method-table ())

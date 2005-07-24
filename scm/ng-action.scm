@@ -29,7 +29,9 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; FIXME: write test
+;; TODO:
+;; - write test
+;; - describe naming conventions and standard actions such as act_std_commit
 
 (require "util.scm")
 (require "i18n.scm")
@@ -46,12 +48,18 @@
 
 ;; keep same as load-action.scm until legacy action.scm has been obsoleted
 (define indication-rec-spec
-  '((id           #f)  ;; must be first field
-    (iconic-label "")
-    (label        "")
-    (short-desc   "")))
+  '((id           #f)    ;; must be first field
+    (iconic-label #f)    ;; utext or #f
+    (label        #f)    ;; utext or #f
+    (short-desc   #f)))  ;; utext or #f
 (define-record 'indication indication-rec-spec)
 
+(define label-indication-new
+  (lambda (utext)
+    (list 'none  ;; id
+	  #f     ;; iconic-label
+	  utext  ;; label
+	  #f)))  ;; short-desc
 
 ;;
 ;; action
@@ -105,7 +113,7 @@
 	  (proc act)
 	  std-indication-fallback))))
 
-;; Provide useful status information about an action for human
+;; Provide visual status information for human about an action
 ;; intended to be used via chooser UI and so on.
 ;;
 ;; .returns A symbol indicates status of the action 'selected 'checked
