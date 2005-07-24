@@ -25,7 +25,7 @@
   (lambda (msg exp)
     (begin
       (set! total-test-num (+ total-test-num 1))
-      (if (exp)
+      (if exp
 	  #t
 	  (begin
 	    (set! total-err-num (+ total-err-num 1))
