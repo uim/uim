@@ -15,6 +15,9 @@ should be so. Instead of require, load actually works at execution time.
 
 Gauche uses dynamic-load to load shared library. 
 
+If the implementation cost is low, impelmenting autoloading feature would
+be a good idea.
+
 * vector
 
 Vector will be very important data structure. Sorted vector data will
@@ -30,3 +33,9 @@ map, for-each, remove for vector. i.e. vector-map is map for vector.
 
 Defined as SRFI-9, define-record-tipe should be implemented to replace
 current define-record.
+
+* error handling
+
+Though I don't so much about error handling for Scheme, but current implementation
+is obviously inadequate from the point of view of error recovery. i.e. error function
+should not call exit().
