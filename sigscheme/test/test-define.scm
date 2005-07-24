@@ -46,4 +46,12 @@
   c)
 (assert-equal? "dot arg test 6" '(3 4) (dotarg5 1 2 3 4))
 
+; test for internal define
+(define (idefine-o a)
+  (define (idefine-i c)
+    (+ c 3))
+  (idefine-i a))
+
+(assert-eq? "internal define" 5 (idefine-o 2))
+
 (total-report)
