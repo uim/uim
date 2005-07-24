@@ -37,27 +37,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "siod.h"
+#include "../sigscheme/sigscheme.h"
+#include "../sigscheme/sigschemetype.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "context.h"
-
-/*
-  To avoid namespace pollution, all siod functions are defined as
-  static and wrapped into uim-scm.c by direct inclusion rather than
-  linked via public symbols. After elaboration of uim-scm API, the
-  Scheme interpreter implementation can be switched to another one
-  such as uim-scm-tinyscheme.c or uim-scm-gauche.c. But *.[hc] under
-  uim/ and *.scm are still depending on siod in several ways. At least
-  full test suite for *.scm files are required to migrate to another
-  Scheme implementation.  -- YamaKen 2004-12-21, 2005-01-10
-*/
-#include "slib.c"
-#ifdef UIM_COMPAT_SCM
-#include "uim-compat-scm.c"
-#endif
-
-static void siod_init_subr(char *name, long type, SUBR_FUNC fcn);
 
 static uim_lisp true_sym;
 static uim_lisp false_sym;
@@ -98,8 +82,9 @@ uim_scm_c_int(uim_lisp integer)
   uim_lisp stack_start;
 
   uim_scm_gc_protect_stack(&stack_start);  /* required for my_err() */
+
   protected_arg0 = integer;
-  c_int = get_c_int((LISP)integer);
+  c_int = Scm_GetInt((ScmObj)integer);
   uim_scm_gc_unprotect_stack(&stack_start);
 
   return c_int;
@@ -108,7 +93,7 @@ uim_scm_c_int(uim_lisp integer)
 uim_lisp
 uim_scm_make_int(int integer)
 {
-  return (uim_lisp)intcons(integer);
+  return (uim_lisp)Scm_NewInt(integer);
 }
 
 char *
@@ -129,7 +114,8 @@ uim_scm_refer_c_str(uim_lisp str)
 
   uim_scm_gc_protect_stack(&stack_start);  /* required for my_err() */
   protected_arg0 = str;
-  c_str = get_c_string((LISP)str);
+  /* FIXME: return value of this function must be freed somewhere... */
+  c_str = Scm_GetString((ScmObj)str);
   uim_scm_gc_unprotect_stack(&stack_start);
 
   return c_str;
@@ -138,39 +124,39 @@ uim_scm_refer_c_str(uim_lisp str)
 uim_lisp
 uim_scm_make_str(const char *str)
 {
-  int unknown_strlen = -1;
-  return (uim_lisp)strcons(unknown_strlen, str);
+  Scm_NewStringCopying(str);
 }
 
 char *
 uim_scm_c_symbol(uim_lisp symbol)
 {
-  /* siod dependent */
-  return uim_scm_c_str(symbol);
+  Scm_GetString(ScmOp_symbol_to_string((ScmObj)symbol));
 }
 
 uim_lisp
-uim_scm_make_symbol(const char *str)
+uim_scm_make_symbol(const char *name)
 {
-  return (uim_lisp)rintern(str);
+  /* FIXME: name must be copied.
+     return (uim_lisp)Scm_NewSymbol(strdup(name), NULL); */
+  return (uim_lisp)Scm_NewSymbol(name, NULL);
 }
 
 void *
 uim_scm_c_ptr(uim_lisp ptr)
 {
-  return get_c_pointer((LISP)ptr);
+  Scm_GetCPointer((ScmObj)ptr);
 }
 
 uim_lisp
 uim_scm_make_ptr(void *ptr)
 {
-  return (uim_lisp)ptrcons(ptr);
+  return Scm_NewCPointer(ptr);
 }
 
 uim_func_ptr
 uim_scm_c_func_ptr(uim_lisp func_ptr)
 {
-  return get_c_func_pointer((LISP)func_ptr);
+  return get_c_func_pointer((ScmObj)func_ptr);
 }
 
 uim_lisp
@@ -182,19 +168,19 @@ uim_scm_make_func_ptr(uim_func_ptr func_ptr)
 void
 uim_scm_gc_protect(uim_lisp *location)
 {
-  gc_protect((LISP *)location);
+  gc_protect((ScmObj *)location);
 }
 
 void
 uim_scm_gc_protect_stack(uim_lisp *stack_start)
 {
-  siod_gc_protect_stack((LISP *)stack_start);
+  siod_gc_protect_stack((ScmObj *)stack_start);
 }
 
 void
 uim_scm_gc_unprotect_stack(uim_lisp *stack_start)
 {
-  siod_gc_unprotect_stack((LISP *)stack_start);
+  siod_gc_unprotect_stack((ScmObj *)stack_start);
 }
 
 uim_bool
@@ -206,19 +192,26 @@ uim_scm_is_alive(void)
 long
 uim_scm_get_verbose_level(void)
 {
+#if 0
   return siod_verbose_level;
+#endif
+  return 0;
 }
 
 void
 uim_scm_set_verbose_level(long new_value)
 {
+#if 0
   siod_verbose_level = new_value;
+#endif
 }
 
 void
 uim_scm_set_lib_path(const char *path)
 {
+#if 0
   siod_set_lib_path(path);
+#endif
 }
 
 uim_bool
@@ -238,43 +231,43 @@ uim_scm_load_file(const char *fn)
 uim_lisp
 uim_scm_t(void)
 {
-  return (uim_lisp)true_sym;
+  return (uim_lisp)SigScm_true;
 }
 
 uim_lisp
 uim_scm_f(void)
 {
-  return (uim_lisp)false_sym;
+  return (uim_lisp)SigScm_true;
 }
 
 uim_lisp
 uim_scm_null_list(void)
 {
-  return (uim_lisp)NIL;
+  return (uim_lisp)SigScm_nil;
 }
 
 uim_bool
 uim_scm_nullp(uim_lisp obj)
 {
-  return NULLP((LISP)obj);
+  return SCM_NULLP((ScmObj)obj);
 }
 
 uim_bool
 uim_scm_consp(uim_lisp obj)
 {
-  return CONSP((LISP)obj);
+  return SCM_CONSP(SCM_CONS(obj));
 }
 
 uim_bool
 uim_scm_integerp(uim_lisp obj)
 {
-  return INTNUMP((LISP)obj);
+  return INTNUMP((ScmObj)obj);
 }
 
 uim_bool
 uim_scm_stringp(uim_lisp obj)
 {
-  return STRINGP((LISP)obj);
+  return STRINGP((ScmObj)obj);
 }
 
 uim_bool
@@ -286,7 +279,7 @@ uim_scm_eq(uim_lisp a, uim_lisp b)
 uim_bool
 uim_scm_string_equal(uim_lisp a, uim_lisp b)
 {
-  return NFALSEP((uim_lisp)string_equal((LISP)a, (LISP)b));
+  return NFALSEP((uim_lisp)string_equal((ScmObj)a, (ScmObj)b));
 }
 
 uim_lisp
@@ -296,9 +289,8 @@ uim_scm_eval(uim_lisp obj)
   uim_lisp stack_start;
 
   uim_scm_gc_protect_stack(&stack_start);
-  ret = (uim_lisp)leval((LISP)obj, NIL);
+  ret = (uim_lisp)ScmOp_eval((ScmObj)obj, NULL);
   uim_scm_gc_unprotect_stack(&stack_start);
-
   return ret;
 }
 
@@ -318,59 +310,55 @@ uim_scm_return_value(void)
 uim_lisp
 uim_scm_car(uim_lisp cell)
 {
-  return (uim_lisp)car((LISP)cell);
+  return (uim_lisp)car((ScmObj)cell);
 }
 
 uim_lisp
 uim_scm_cdr(uim_lisp cell)
 {
-  return (uim_lisp)cdr((LISP)cell);
+  return (uim_lisp)cdr((ScmObj)cell);
 }
 
 uim_lisp
 uim_scm_cadr(uim_lisp cell)
 {
-  return (uim_lisp)cadr((LISP)cell);
+  return (uim_lisp)cadr((ScmObj)cell);
 }
 
 uim_lisp
 uim_scm_caar(uim_lisp cell)
 {
-  return (uim_lisp)caar((LISP)cell);
+  return (uim_lisp)caar((ScmObj)cell);
 }
 
 uim_lisp
 uim_scm_cdar(uim_lisp cell)
 {
-  return (uim_lisp)cdar((LISP)cell);
+  return (uim_lisp)cdar((ScmObj)cell);
 }
 
 uim_lisp
 uim_scm_cddr(uim_lisp cell)
 {
-  return (uim_lisp)cddr((LISP)cell);
+  return (uim_lisp)cddr((ScmObj)cell);
 }
 
 uim_lisp
 uim_scm_cons(uim_lisp car, uim_lisp cdr)
 {
-  return (uim_lisp)cons((LISP)car, (LISP)cdr);
+  return (uim_lisp)cons((ScmObj)car, (ScmObj)cdr);
 }
 
 uim_lisp
 uim_scm_length(uim_lisp list)
 {
-  /*
-    although nlength() of siod returns length of anything, this
-    function should be called only for list
-  */
-  return (uim_lisp)uim_scm_make_int(nlength((LISP)list));
+  return ScmOp_length(list);
 }
 
 uim_lisp
-uim_scm_reverse(uim_lisp cell)
+uim_scm_reverse(uim_lisp list)
 {
-  return (uim_lisp)reverse((LISP)cell);
+  return ScmOp_reverse(list);
 }
 
 uim_bool
@@ -387,7 +375,7 @@ uim_scm_require_file(const char *fn)
   return succeeded;
 }
 
-static void
+#if 0
 siod_init_subr(char *name, long type, SUBR_FUNC fcn)
 {
   uim_lisp stack_start;
@@ -396,43 +384,44 @@ siod_init_subr(char *name, long type, SUBR_FUNC fcn)
   init_subr(name, type, fcn);
   uim_scm_gc_unprotect_stack(&stack_start);
 }
+#endif
 
 void
-uim_scm_init_subr_0(char *name, uim_lisp (*fcn)(void))
+uim_scm_init_subr_0(char *name, uim_lisp (*func)(void))
 {
-  siod_init_subr(name, tc_subr_0, (SUBR_FUNC)fcn);
+  Scm_InitSubr0(name, func);
 }
 
 void
-uim_scm_init_subr_1(char *name, uim_lisp (*fcn)(uim_lisp))
+uim_scm_init_subr_1(char *name, uim_lisp (*func)(uim_lisp))
 {
-  siod_init_subr(name, tc_subr_1, (SUBR_FUNC)fcn);
+  Scm_InitSubr1(name, func);
 }
 
 void
-uim_scm_init_subr_2(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp))
+uim_scm_init_subr_2(char *name, uim_lisp (*func)(uim_lisp, uim_lisp))
 {
-  siod_init_subr(name, tc_subr_2, (SUBR_FUNC)fcn);
+  Scm_InitSubr2(name, func);
 }
 
 void
-uim_scm_init_subr_3(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp))
+uim_scm_init_subr_3(char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp))
 {
-  siod_init_subr(name, tc_subr_3, (SUBR_FUNC)fcn);
+  Scm_InitSubr3(name, func);
 }
 
 void
-uim_scm_init_subr_4(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
+uim_scm_init_subr_4(char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
 						uim_lisp))
 {
-  siod_init_subr(name, tc_subr_4, (SUBR_FUNC)fcn);
+  Scm_InitSubr4(name, func);
 }
 
 void
-uim_scm_init_subr_5(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
+uim_scm_init_subr_5(char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
 						uim_lisp, uim_lisp))
 {
-  siod_init_subr(name, tc_subr_5, (SUBR_FUNC)fcn);
+  Scm_InitSubr5(name, func);
 }
 
 static void
@@ -444,46 +433,14 @@ exit_hook(void)
 void
 uim_scm_init(const char *verbose_level)
 {
-  char *siod_argv[] =
-    {
-      "siod",
-      "-v0",          /* siod_verbose_level */
-      "-h16384:64",   /* heap_size(unit: lisp objects):nheaps */
-      "-t16384",      /* heap_alloc_threshold (unit: lisp objects) */
-      "-o1024",       /* obarray_dim (hash size of symbol table) */
-      "-s262144",     /* stack_size (unit: bytes) */
-      "-n128"         /* inums_dim (preallocated fixnum objects) */
-    };
-  char verbose_argv[] = "-v4";
-  int siod_argc, warnflag = 1;
-
   if (!uim_output) {
     uim_output = stderr;
   }
 
-  if (verbose_level) {
-    if (isdigit(verbose_level[0])) {
-      if (isdigit(verbose_level[1]))
-	verbose_argv[2] = '9';	/* SIOD's max verbose level is 5 */
-      else
-	verbose_argv[2] = verbose_level[0];
-    }
-    siod_argv[1] = verbose_argv;
-  }
-  /* init siod */
-  siod_argc = sizeof(siod_argv) / sizeof(char *);
-  siod_init(siod_argc, siod_argv, warnflag, uim_output);
-  set_fatal_exit_hook(exit_hook);
+  SigScm_Initialize();
+  true_sym  = (uim_lisp)SigScm_true;
+  false_sym = (uim_lisp)SigScm_false;
 
-  true_sym  = (uim_lisp)siod_true_value();
-#if 0
-  false_sym = (uim_lisp)siod_false_value();
-#else
-  /* false_sym has to be NIL until bug #617 and #642 are fixed
-   * -- YamaKen
-   */
-  false_sym = (uim_lisp)NIL;
-#endif
   uim_scm_gc_protect(&true_sym);
   uim_scm_gc_protect(&false_sym);
 
@@ -494,6 +451,6 @@ uim_scm_init(const char *verbose_level)
 void
 uim_scm_quit(void)
 {
-  siod_quit();
+  void SigScm_Finalize();
   uim_output = NULL;
 }
