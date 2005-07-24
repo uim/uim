@@ -83,6 +83,7 @@ static ScmObj ScmOp_last_pair(ScmObj list);
 /*=======================================
   Function Implementations
 =======================================*/
+
 static ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
 {
     ScmObj frame = SCM_NIL;
@@ -91,6 +92,33 @@ static ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
     if (SCM_NULLP(vars) && SCM_NULLP(vals))
 	return env;
 
+
+    /* FIXME: Rewrite this arcane code. */
+    if (SCM_NULLP(SCM_CAR(vars))) {
+      vars = Scm_NewCons(SCM_CDR(vars), SCM_NIL);
+      vals = Scm_NewCons(vals, SCM_NIL);
+    } else if (!SCM_CONSP(ScmOp_last_pair(vars))) {
+
+      if(!SCM_CONSP(SCM_CDR(vars))) {
+	SCM_SETCDR(vars, Scm_NewCons(SCM_CDR(vars), SCM_NIL));
+	SCM_SETCDR(vals, Scm_NewCons(SCM_CDR(vals), SCM_NIL));
+      } else {
+	ScmObj vars_tmp, vals_tmp;
+	for(vars_tmp = vars, vals_tmp = vals;
+	    SCM_CONSP(SCM_CDR(vars_tmp)); 
+	    vars_tmp = SCM_CDR(vars_tmp), vals_tmp = SCM_CDR(vals_tmp)) {
+	}
+	SCM_SETCDR(vars_tmp, Scm_NewCons(SCM_CDR(vars_tmp), SCM_NIL));
+	SCM_SETCDR(vals_tmp, Scm_NewCons(SCM_CDR(vals_tmp), SCM_NIL));
+
+#if 0
+	printf("========\n");
+	SigScm_Display(vars);
+	printf("-------\n");
+	SigScm_Display(vals);
+#endif
+      }
+    }
     /* create new frame */
     frame   = Scm_NewCons(vars, vals);
 
@@ -1074,7 +1102,18 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj env)
       TODO : implement this
     ========================================================================*/
 
+    if (EQ(ScmOp_pairp(var), SCM_TRUE)) {
+	val     = SCM_CAR(var);
+	formals = SCM_CDR(var);
+	body    = SCM_CDR(arg);
+	if (!SCM_CONSP(formals))
+	  formals = Scm_NewCons(SCM_NIL, formals);
 
+	/* (val (lambda (formals) body))  */
+	return ScmExp_define(Scm_NewCons(val, Scm_NewCons(ScmExp_lambda(Scm_NewCons(formals, body), env),
+							  SCM_NIL)), env);
+       
+    }
     return SCM_NIL;
 }
 
