@@ -310,7 +310,7 @@ ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
 			    env = extend_environment(SCM_CAR(SCM_CLOSURE_EXP(tmp)),
 						     map_eval(SCM_CDR(obj), env),
 						     SCM_CLOSURE_ENV(tmp));
-			    return ScmOp_eval(SCM_CAR(SCM_CDR(SCM_CLOSURE_EXP(tmp))), env);
+			    return ScmExp_begin(SCM_CDR(SCM_CLOSURE_EXP(tmp)), env);
 			}
 		    case ScmContinuation:
 			{
@@ -431,7 +431,7 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 		env = extend_environment(SCM_CAR(SCM_CLOSURE_EXP(proc)),
 					 SCM_CAR(SCM_CDR(args)),
 					 SCM_CLOSURE_ENV(proc));
-		return ScmOp_eval(SCM_CAR(SCM_CDR(SCM_CLOSURE_EXP(proc))), env);
+		return ScmExp_begin(SCM_CDR(SCM_CLOSURE_EXP(proc)), env);
 	    }
 	case ScmEtc:
 	    if (EQ(proc, SCM_QUOTE)) {
@@ -1060,16 +1060,13 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj env)
     if (EQ(ScmOp_listp(var), SCM_TRUE)) {
 	val     = SCM_CAR(var);
 	formals = SCM_CDR(var);
+	body    = SCM_CDR(arg);
 	if (!SCM_CONSP(formals))
-	    formals = Scm_NewCons(formals, SCM_NIL);
+           formals = Scm_NewCons(formals, SCM_NIL);
 
 	/* (val (lambda (formals) body))  */
-	return ScmExp_define(Scm_NewCons(val,
-					 Scm_NewCons(ScmExp_lambda(Scm_NewCons(formals,
-									       Scm_NewCons(body, SCM_NIL)),
-								   env),
-						     SCM_NIL)),
-			     env);
+	return ScmExp_define(Scm_NewCons(val, Scm_NewCons(ScmExp_lambda(Scm_NewCons(formals, body), env),
+							  SCM_NIL)), env);
     }
 
     /*========================================================================
