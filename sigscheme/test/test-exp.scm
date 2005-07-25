@@ -1,5 +1,18 @@
 (load "test/unittest.scm")
 
+;; lambda
+(assert-eq? "basic lambda test1" 8 ((lambda (x) (+ x x)) 4))
+(define reverse-subtract
+  (lambda (x y) (- y x)))
+(assert-eq? "basic lambda test2" 3 (reverse-subtract 7 10))
+(define add4
+  (let ((x 4))
+    (lambda (y) (+ x y))))
+(assert-eq? "basic lambda test3" 10 (add4 6))
+(assert-equal? "basic lambda test4" '(3 4 5 6) ((lambda x x) 3 4 5 6))
+(assert-equal? "basic lambda test5" '(5) ((lambda (x y . z) z) 3 4 5))
+(assert-equal? "basic lambda test6" '(5 6) ((lambda (x y . z) z) 3 4 5 6))
+
 ;; let
 (assert-eq? "basic let test1" 0 (let ((n 0))
 				 n))
