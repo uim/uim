@@ -92,33 +92,6 @@ static ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
     if (SCM_NULLP(vars) && SCM_NULLP(vals))
 	return env;
 
-
-    /* FIXME: Rewrite this arcane code. */
-    if (SCM_NULLP(SCM_CAR(vars))) {
-      vars = Scm_NewCons(SCM_CDR(vars), SCM_NIL);
-      vals = Scm_NewCons(vals, SCM_NIL);
-    } else if (!SCM_CONSP(ScmOp_last_pair(vars))) {
-
-      if(!SCM_CONSP(SCM_CDR(vars))) {
-	SCM_SETCDR(vars, Scm_NewCons(SCM_CDR(vars), SCM_NIL));
-	SCM_SETCDR(vals, Scm_NewCons(SCM_CDR(vals), SCM_NIL));
-      } else {
-	ScmObj vars_tmp, vals_tmp;
-	for(vars_tmp = vars, vals_tmp = vals;
-	    SCM_CONSP(SCM_CDR(vars_tmp)); 
-	    vars_tmp = SCM_CDR(vars_tmp), vals_tmp = SCM_CDR(vals_tmp)) {
-	}
-	SCM_SETCDR(vars_tmp, Scm_NewCons(SCM_CDR(vars_tmp), SCM_NIL));
-	SCM_SETCDR(vals_tmp, Scm_NewCons(SCM_CDR(vals_tmp), SCM_NIL));
-
-#if 0
-	printf("========\n");
-	SigScm_Display(vars);
-	printf("-------\n");
-	SigScm_Display(vals);
-#endif
-      }
-    }
     /* create new frame */
     frame   = Scm_NewCons(vars, vals);
 
@@ -207,9 +180,15 @@ static ScmObj lookup_frame(ScmObj var, ScmObj frame)
     /* lookup in frame */
     vars = SCM_CAR(frame);
     vals = SCM_CDR(frame);
+
     for (; !SCM_NULLP(vars) && !SCM_NULLP(vals); vars = SCM_CDR(vars), vals = SCM_CDR(vals)) {
-        if (SCM_EQ(SCM_CAR(vars), var)) {
-            return vals;
+	/* handle dot list */
+	if (SCM_CONSP(vars)) {
+	    if (SCM_EQ(SCM_CAR(vars), var))
+		return vals;
+	} else {
+	    if (SCM_EQ(vars, var))
+		return Scm_NewCons(vals, SCM_NIL);
 	}
     }
 
@@ -335,9 +314,37 @@ ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
                         break;
 		    case ScmClosure:
 			{
-			    env = extend_environment(SCM_CAR(SCM_CLOSURE_EXP(tmp)),
-						     map_eval(SCM_CDR(obj), env),
-						     SCM_CLOSURE_ENV(tmp));
+			    /*
+			     * (lambda <formals> <body>)
+			     *
+			     * <formals> should have 3 forms.
+			     *
+			     *   (1) : <variable>
+			     *   (2) : (<variable1> <variable2> ...)
+			     *   (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
+			     */
+			    arg = SCM_CAR(SCM_CLOSURE_EXP(tmp)); /* arg is <formals> */
+
+			    if (SCM_SYMBOLP(arg)) {
+				/* (1) : <variable> */
+				env = extend_environment(Scm_NewCons(arg, SCM_NIL),
+							 Scm_NewCons(map_eval(SCM_CDR(obj), env),
+								     SCM_NIL),
+							 SCM_CLOSURE_ENV(tmp));
+			    } else if (SCM_NULLP(arg) || SCM_CONSP(arg)) {
+				/*
+				 * (2) : (<variable1> <variable2> ...)
+				 * (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
+				 *
+				 *  - dot list is handled in lookup_frame().
+				 */
+				env = extend_environment(arg,
+							 map_eval(SCM_CDR(obj), env),
+							 SCM_CLOSURE_ENV(tmp));
+			    } else {
+				SigScm_ErrorObj("lambda : bad syntax with ", arg);
+			    }
+			    
 			    return ScmExp_begin(SCM_CDR(SCM_CLOSURE_EXP(tmp)), env);
 			}
 		    case ScmContinuation:
@@ -1082,38 +1089,26 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj env)
 
       => (define <val>
              (lambda (<formals>) <body>))
-
-      (define <val> <expression>)
     ========================================================================*/
-    if (EQ(ScmOp_listp(var), SCM_TRUE)) {
-	val     = SCM_CAR(var);
-	formals = SCM_CDR(var);
-	body    = SCM_CDR(arg);
-	if (!SCM_CONSP(formals))
-           formals = Scm_NewCons(formals, SCM_NIL);
-
-	/* (val (lambda (formals) body))  */
-	return ScmExp_define(Scm_NewCons(val, Scm_NewCons(ScmExp_lambda(Scm_NewCons(formals, body), env),
-							  SCM_NIL)), env);
-    }
-
     /*========================================================================
       (define (<variable> . <formals>) <body>)
-      TODO : implement this
-    ========================================================================*/
 
-    if (EQ(ScmOp_pairp(var), SCM_TRUE)) {
+      => (define <variable>
+             (lambda <formals> <body>))
+    ========================================================================*/
+    if (SCM_CONSP(var)) {
 	val     = SCM_CAR(var);
 	formals = SCM_CDR(var);
 	body    = SCM_CDR(arg);
-	if (!SCM_CONSP(formals))
-	  formals = Scm_NewCons(SCM_NIL, formals);
 
-	/* (val (lambda (formals) body))  */
-	return ScmExp_define(Scm_NewCons(val, Scm_NewCons(ScmExp_lambda(Scm_NewCons(formals, body), env),
-							  SCM_NIL)), env);
-       
+	/* (val (lambda formals body))  */
+	arg = Scm_NewCons(val, Scm_NewCons(ScmExp_lambda(Scm_NewCons(formals, body), env),
+					   SCM_NIL));
+
+	return ScmExp_define(arg, env);
     }
+
+    SigScm_Error("define : syntax error\n");
     return SCM_NIL;
 }
 
