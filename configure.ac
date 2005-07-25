@@ -489,28 +489,44 @@ _cppflags=${CPPFLAGS}
 _ldflags=${LDFLAGS}
 
 AC_ARG_WITH(readline-prefix,
-        [  --with-readline-prefix=DIR path to readline],
+        [  --with-readline-prefix=DIR path to readline compatible library],
         [ if test "$withval" != "no" -a "$withval" != "yes"; then
 
           CPPFLAGS="${CPPFLAGS} -I$withval/include"
           LDFLAGS="${LDFLAGS} -L$withval/lib"
         fi ])
 
-dnl check for terminal library
-dnl this is a very cool solution from octave's configure.in
-unset tcap
-for termlib in ncurses curses termcap terminfo termlib; do
-        AC_CHECK_LIB(${termlib}, tputs, [tcap="$tcap -l$termlib"])
-        case "$tcap" in
-             *-l${termlib}*)
-             break
-             ;;
-        esac
-done
+ORIG_LIBS="$LIBS"
+unset ac_lib_readline
+AC_CACHE_CHECK([for a readline compatible library], ac_lib_readline, [
+   for readline_lib in readline edit editline; do
+      for termcap_lib in "" termcap terminfo termlib curses ncurses; do
+         if test -z "$termcap_lib"; then
+            TRY_LIB="-l$readline_lib"
+         else
+            TRY_LIB="-l$readline_lib -l$termcap_lib"
+         fi
+         LIBS="$TRY_LIB"
+         AC_TRY_LINK_FUNC(readline, ac_lib_readline="$readline_lib $tcap")
+         if test -n "$ac_lib_readline"; then
+            break
+         fi
+      done
+      if test -n "$ac_lib_readline"; then
+         break
+      fi
+   done
+   if test -z "$ac_lib_readline"; then
+      ac_lib_readline="no"
+   fi
+])
 
-AC_CHECK_HEADER(readline/readline.h,
-        AC_CHECK_LIB(readline, readline,[
-                               READLINE_LIBS="-lreadline $tcap"; AC_DEFINE(USE_READLINE, 1, [use readline])], , $tcap))
+if test -n "$ac_lib_readline"; then
+   READLINE_LIBS="$LIBS"
+else
+   READLINE_LIBS=""
+fi
+LIBS="$ORIG_LIBS"
 
 if test -z "$READLINE_LIBS"; then
    if test "$with_readline_prefix" = "yes"; then
