@@ -58,6 +58,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include <setjmp.h>
 
 /*=======================================
   Local Include
@@ -95,8 +96,8 @@ static int           scm_heap_num  = 8;
 static ScmObjHeap   *scm_heaps     = NULL;
 static ScmObj        scm_freelist  = NULL;
 
+static jmp_buf save_regs_buf;
 ScmObj *stack_start_pointer = NULL;
-
 
 static ScmObj *symbol_hash = NULL;
 static gc_protected_obj *protected_obj_list = NULL;
@@ -118,7 +119,8 @@ static void mark_obj(ScmObj obj);
 static int  is_pointer_to_heap(ScmObj obj);
 
 static void gc_mark_protected_obj();
-static void gc_mark_stack(ScmObj *start, ScmObj *end);
+static void gc_mark_locations_n(ScmObj *start, int n);
+static void gc_mark_locations(ScmObj *start, ScmObj *end);
 static void gc_mark(void);
 
 /* GC Sweep Related Functions */
@@ -361,9 +363,24 @@ static void gc_mark_protected_obj(void)
     }
 }
 
-static void gc_mark_stack(ScmObj *start, ScmObj *end)
+static void gc_mark_locations_n(ScmObj *start, int n)
 {
-    int i    = 0;
+    int i = 0;
+    ScmObj obj = SCM_NIL;
+    
+    /* mark stack */
+    for (i = 0; i < n; i++) {
+	obj = start[i];
+
+        if (is_pointer_to_heap(obj)) {
+            mark_obj(obj);
+        }
+    }
+
+}
+
+static void gc_mark_locations(ScmObj *start, ScmObj *end)
+{
     int size = 0;
     ScmObj *tmp = NULL;
 
@@ -378,15 +395,10 @@ static void gc_mark_stack(ScmObj *start, ScmObj *end)
     size = end - start;
 
 #if DEBUG_GC
-    printf("gc_mark_stack() : size = %d\n", size);
+    printf("gc_mark_locations() : size = %d\n", size);
 #endif
 
-    /* mark stack */
-    for (i = 0; i < size; i++) {
-        if (is_pointer_to_heap(start[i])) {
-            mark_obj(start[i]);
-        }
-    }
+    gc_mark_locations_n(start, size);
 }
 
 static void gc_mark_symbol_hash(void)
@@ -405,8 +417,12 @@ static void gc_mark(void)
     printf("gc_mark\n");
 #endif
 
+    setjmp(save_regs_buf);
+    gc_mark_locations((ScmObj*)save_regs_buf,
+		      (ScmObj*)(((char*)save_regs_buf) + sizeof(save_regs_buf)));
+    
     gc_mark_protected_obj();
-    gc_mark_stack(stack_start_pointer, &obj);
+    gc_mark_locations(stack_start_pointer, &obj);
     gc_mark_symbol_hash();
 }
 
