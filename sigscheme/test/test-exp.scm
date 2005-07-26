@@ -1,4 +1,4 @@
-(load "test/unittest.scm")
+(load "./test/unittest.scm")
 
 ;; lambda
 (assert-eq? "basic lambda test1" 8 ((lambda (x) (+ x x)) 4))
@@ -51,7 +51,8 @@
   (let ((a 1))
     (assert-eq? "lexical scope test3" 1 a)
     (let* ((a 2))
-      (assert-eq? "lexical scope test4" 2 a))))
+      (assert-eq? "lexical scope test4" 2 a))
+    (assert-eq? "lexical scope test5" 1 a)))
 (lexical-test)
 
 ;; begin
