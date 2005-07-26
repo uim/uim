@@ -46,6 +46,14 @@
 (assert-eq? "lexical scope test1" 1 (count))
 (assert-eq? "lexical scope test2" 2 (count))
 
+(define a 3)
+(define (lexical-test)
+  (let ((a 1))
+    (assert-eq? "lexical scope test3" 1 a)
+    (let* ((a 2))
+      (assert-eq? "lexical scope test4" 2 a))))
+(lexical-test)
+
 ;; begin
 (assert-eq? "basic begin test1" 0 (begin
 				    0))
