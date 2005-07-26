@@ -123,16 +123,13 @@ static ScmObj add_environment(ScmObj var, ScmObj val, ScmObj env)
     } else if (SCM_CONSP(env)) {
 	newest_frame = SCM_CAR(env);
 	new_varlist  = Scm_NewCons(var, SCM_CAR(newest_frame));
+	new_vallist  = Scm_NewCons(val, SCM_CDR(newest_frame));
 
-	tmp = SCM_CDR(newest_frame);
-	tmp = SCM_CAR(tmp);
-
-	new_vallist  = Scm_NewCons(val, tmp);
-	env = Scm_NewCons(Scm_NewCons(new_varlist, new_vallist), SCM_CDR(newest_frame));
+	tmp = Scm_NewCons(Scm_NewCons(new_varlist, new_vallist), SCM_CDR(env));
+	*env = *tmp;
     } else {
 	SigScm_Error("broken environment\n");
     }
-
     return env;
 }
 
