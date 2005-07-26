@@ -79,7 +79,7 @@ struct gc_protected_obj_ {
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define NAMEHASH_SIZE 1024
+#define NAMEHASH_SIZE 128
 
 #define SCM_NEW_OBJ_INTERNAL(VALNAME)                                   \
     if (EQ(scm_freelist, SCM_NIL))					\
@@ -90,8 +90,8 @@ struct gc_protected_obj_ {
 /*=======================================
   Variable Declarations
 =======================================*/
-static int           SCM_HEAP_SIZE = 4096;  /* For times of SCM_HEAP_SIZE will actually be alloccated. */
-static int           scm_heap_num  = 64;
+static int           SCM_HEAP_SIZE = 1024;
+static int           scm_heap_num  = 8;
 static ScmObjHeap   *scm_heaps     = NULL;
 static ScmObj        scm_freelist  = NULL;
 
@@ -159,10 +159,9 @@ static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmOb
     int j = 0;
     ScmObj prev = NULL;
     ScmObj next = NULL;
-    int heap_size_local = HEAP_SIZE * 4;
 
 #if DEBUG_GC
-    printf("allocate_heap num:%d size:%d\n", num_heap, heap_size_local);
+    printf("allocate_heap num:%d size:%d\n", num_heap, HEAP_SIZE);
 #endif
 
     /* allocate heap */
@@ -172,13 +171,13 @@ static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmOb
     /* fill with zero and construct free_list */
     for (i = 0; i < num_heap; i++) {
         /* Initialize Heap */
-        (*heaps)[i] = (ScmObj)malloc_aligned(sizeof(ScmObjInternal) * heap_size_local);
-        memset((*heaps)[i], 0, sizeof(ScmObjInternal) * heap_size_local);
+        (*heaps)[i] = (ScmObj)malloc_aligned(sizeof(ScmObjInternal) * HEAP_SIZE);
+        memset((*heaps)[i], 0, sizeof(ScmObjInternal) * HEAP_SIZE);
 
         /* link in order */
         prev = NULL;
         next = NULL;
-        for (j = 0; j < heap_size_local; j++) {
+        for (j = 0; j < HEAP_SIZE; j++) {
             next = &(*heaps)[i][j];
 	    SCM_SETFREECELL(next);
 
@@ -187,7 +186,7 @@ static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmOb
 		SCM_SETFREECELL_CDR(prev, next);
 
             /* the last cons' cdr is freelist */
-            if (j ==  heap_size_local - 1)
+            if (j == HEAP_SIZE - 1)
 		SCM_SETFREECELL_CDR(next, (*freelist));
 
             prev = next;
@@ -204,7 +203,6 @@ static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, int HEAP_SIZE, ScmO
     int    num_heap = 0;
     ScmObj prev     = NULL;
     ScmObj next     = NULL;
-    int heap_size_local = HEAP_SIZE * 4;
 
 #if DEBUG_GC
     printf("add_heap current num of heaps:%d\n", *orig_num_heap);
@@ -218,11 +216,11 @@ static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, int HEAP_SIZE, ScmO
     (*heaps) = (ScmObj*)realloc((*heaps), sizeof(ScmObj) * num_heap);
 
     /* allocate heap */
-    (*heaps)[num_heap - 1] = (ScmObj)malloc_aligned(sizeof(ScmObjInternal) * heap_size_local);
-    memset((*heaps)[num_heap - 1], 0, sizeof(ScmObjInternal) * heap_size_local);
+    (*heaps)[num_heap - 1] = (ScmObj)malloc_aligned(sizeof(ScmObjInternal) * HEAP_SIZE);
+    memset((*heaps)[num_heap - 1], 0, sizeof(ScmObjInternal) * HEAP_SIZE);
     
     /* link in order */
-    for (i = 0; i < heap_size_local ; i++) {
+    for (i = 0; i < HEAP_SIZE; i++) {
         next = &(*heaps)[num_heap - 1][i];
 	SCM_SETFREECELL(next);
 
@@ -230,7 +228,7 @@ static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, int HEAP_SIZE, ScmO
 	    SCM_SETFREECELL_CDR(prev, next);
 
         /* the last cons' cdr is freelist */
-        if (i == heap_size_local - 1)
+        if (i == HEAP_SIZE - 1)
 	    SCM_SETFREECELL_CDR(next, (*freelist));
 
         prev = next;
@@ -241,13 +239,11 @@ static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, int HEAP_SIZE, ScmO
 
 static void finalize_heap(void)
 {
-    unsigned int i = 0;
-    unsigned int j = 0;
-    unsigned int heap_num_local = scm_heap_num;
-    unsigned int heap_size_local = SCM_HEAP_SIZE*4;
+    int i = 0;
+    int j = 0;
 
-    for (i = 0; i < heap_num_local; i++) {
-	for (j = 0; j < heap_size_local; j++) {
+    for (i = 0; i < scm_heap_num; i++) {
+	for (j = 0; j < SCM_HEAP_SIZE; j++) {
 	    sweep_obj(&scm_heaps[i][j]);
 	}
 	free(scm_heaps[i]);
@@ -258,17 +254,11 @@ static void finalize_heap(void)
 static void gc_preprocess(void)
 {
     /* Initialize Mark Table */
-    unsigned int i = 0;
-    unsigned int j = 0;
-    unsigned int heap_num_local = scm_heap_num;
-    unsigned int heap_size_local = SCM_HEAP_SIZE;
-
-    for (i = 0; i < heap_num_local; i++) {
-	for (j = 0; j < heap_size_local; j++) {
+    int  i = 0;
+    long j = 0;
+    for (i = 0; i < scm_heap_num; i++) {
+	for (j = 0; j < SCM_HEAP_SIZE; j++) {
 	    SCM_DO_UNMARK(&scm_heaps[i][j]);
-	    SCM_DO_UNMARK(&scm_heaps[i][j+1]);
-	    SCM_DO_UNMARK(&scm_heaps[i][j+2]);
-	    SCM_DO_UNMARK(&scm_heaps[i][j+3]);
 	}
     }
 }
@@ -350,14 +340,12 @@ void SigScm_gc_protect(ScmObj obj)
 static int is_pointer_to_heap(ScmObj obj)
 {
     /* The core part of Conservative GC */
-    unsigned int i;
+    int i;
     ScmObj head = SCM_NIL;
-    unsigned int heap_num_local = scm_heap_num;
-    unsigned int heap_size_local = SCM_HEAP_SIZE * 4;
-    for (i = 0; i < heap_num_local; i++) {
+    for (i = 0; i < scm_heap_num; i++) {
 	if ((head = scm_heaps[i])
 	    && (head <= obj)
-	    && (obj  <  head + heap_size_local)
+	    && (obj  <  head + SCM_HEAP_SIZE)
 	    && ((((char*)obj - (char*)head) % sizeof(ScmObj)) == 0))
 	    return 1;
     }
@@ -392,6 +380,7 @@ static void gc_mark_stack(ScmObj *start, ScmObj *end)
 #if DEBUG_GC
     printf("gc_mark_stack() : size = %d\n", size);
 #endif
+
     /* mark stack */
     for (i = 0; i < size; i++) {
         if (is_pointer_to_heap(start[i])) {
@@ -468,20 +457,18 @@ static void sweep_obj(ScmObj obj)
 
 static void gc_sweep(void)
 {
-    unsigned int i = 0;
-    unsigned int j = 0;
+    int i = 0;
+    int j = 0;
     int corrected_obj_num = 0;
-    unsigned int heap_num_local = scm_heap_num;
-    unsigned int heap_size_local = SCM_HEAP_SIZE * 4;
 
     ScmObj obj = SCM_NIL;
     ScmObj scm_new_freelist = SCM_NIL;
     /* iterate heaps */
-    for (i = 0; i < heap_num_local ; i++) {
+    for (i = 0; i < scm_heap_num; i++) {
 	corrected_obj_num = 0;
 	
 	/* iterate in heap */
-	for (j = 0; j < heap_size_local; j++) {
+	for (j = 0; j < SCM_HEAP_SIZE; j++) {
 	    obj = &scm_heaps[i][j];
 	    if (!SCM_IS_MARKED(obj)) {
 		sweep_obj(obj);
