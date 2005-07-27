@@ -52,8 +52,8 @@
 #include "util.h"
 
 
-static FILE *candwin_r = NULL, *candwin_w = NULL;
-static int candwin_pid = 0;
+static FILE *candwin_r, *candwin_w;
+static int candwin_pid;
 static Canddisp *disp;
 static const char *command;
 
@@ -74,10 +74,10 @@ static const char *candwin_command(void)
      */
 
     candwin_prog = getenv("UIM_CANDWIN_PROG");
-    if (candwin_prog == NULL) {
+    if (!candwin_prog) {
 #ifdef UIM_COMPAT_SCM
 	candwin_prog = uim_scm_symbol_value_str("uim-candwin-prog");
-	if(candwin_prog != NULL)
+	if (candwin_prog)
 	    return candwin_prog;
 #endif /* UIM_COMPAT_SCM */
 #if defined(USE_QT_CANDWIN)
@@ -93,10 +93,10 @@ static const char *candwin_command(void)
 
 Canddisp *canddisp_singleton()
 {
-    if (command == NULL)
-	  command = candwin_command();
+    if (!command)
+	command = candwin_command();
 
-    if (disp == NULL && command) {
+    if (!disp && command) {
 	candwin_pid = uim_ipc_open_command(candwin_pid, &candwin_r, &candwin_w, command);
 	disp = new Canddisp();
 	int fd = fileno(candwin_r);
@@ -117,14 +117,13 @@ void Canddisp::activate(std::vector<const char *> candidates, int display_limit)
 {
     std::vector<const char *>::iterator i;
 
-    if (candwin_w == NULL)
+    if (!candwin_w)
 	return;
 
     fprintf(candwin_w, "activate\ncharset=UTF-8\ndisplay_limit=%d\n",
 		    display_limit);
-    for (i = candidates.begin(); i != candidates.end(); i++) {
+    for (i = candidates.begin(); i != candidates.end(); i++)
 	fprintf(candwin_w, "%s\n", *i);
-    }
     fprintf(candwin_w, "\n");
     fflush(candwin_w);
     check_connection();
@@ -132,7 +131,7 @@ void Canddisp::activate(std::vector<const char *> candidates, int display_limit)
 
 void Canddisp::select(int index)
 {
-    if (candwin_w == NULL)
+    if (!candwin_w)
 	return;
     fprintf(candwin_w, "select\n");
     fprintf(candwin_w, "%d\n\n", index);
@@ -142,7 +141,7 @@ void Canddisp::select(int index)
 
 void Canddisp::deactivate()
 {
-    if (candwin_w == NULL)
+    if (!candwin_w)
 	return;
     fprintf(candwin_w, "deactivate\n\n");
     fflush(candwin_w);
@@ -151,7 +150,7 @@ void Canddisp::deactivate()
 
 void Canddisp::show()
 {
-    if (candwin_w == NULL)
+    if (!candwin_w)
 	return;
     fprintf(candwin_w, "show\n\n");
     fflush(candwin_w);
@@ -160,7 +159,7 @@ void Canddisp::show()
 
 void Canddisp::hide()
 {
-    if (candwin_w == NULL)
+    if (!candwin_w)
 	return;
     fprintf(candwin_w, "hide\n\n");
     fflush(candwin_w);
@@ -169,7 +168,7 @@ void Canddisp::hide()
 
 void Canddisp::move(int x, int y)
 {
-    if (candwin_w == NULL)
+    if (!candwin_w)
 	return;
     fprintf(candwin_w, "move\n");
     fprintf(candwin_w, "%d\n", x);
@@ -181,7 +180,7 @@ void Canddisp::move(int x, int y)
 
 void Canddisp::show_caret_state(const char *str)
 {
-    if (candwin_w == NULL)
+    if (!candwin_w)
 	return;
     fprintf(candwin_w, "show_caret_state\n");
     fprintf(candwin_w, "%s", str);
@@ -266,6 +265,5 @@ void terminate_canddisp_connection()
     }
 
     disp = NULL;
-
     return;
 }

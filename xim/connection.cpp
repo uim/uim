@@ -101,7 +101,7 @@ reapOldConnection()
 void
 procXClientMessage(XClientMessageEvent *ev)
 {
-    //  check connection request
+    // check connection request
     XimServer *xs = XimServer::findServer(ev->window);
     if (xs && ev->message_type == xim_xconnect) {
 	xs->setupNewConnection(ev);

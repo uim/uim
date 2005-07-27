@@ -46,6 +46,9 @@
 # include <alloca.h>
 #endif
 
+/* XIM Error Code */
+#define XIM_BadSomething	999
+
 const char *xim_packet_name[] = {
     // 0
     0, "XIM_CONNECT", "XIM_CONNECT_REPLY",
@@ -757,14 +760,23 @@ void Connection::xim_error(RxPacket *p)
     buf[len] = 0;
     p->getStr(buf);
   
-    printf("XIM_ERROR received.\n");
+    fprintf(stderr, "XIM_ERROR received.\n");
     if (mask & 1)
-	printf(" imid = %d\n", imid);
+	fprintf(stderr, " imid = %d\n", imid);
     if (mask & 2)
-	printf(" icid = %d\n", icid);
+	fprintf(stderr, " icid = %d\n", icid);
 
-    printf(" error_code = %d\n", ecode);
-    printf(" message=(%s)\n", buf);
+    fprintf(stderr, " error_code = %d\n", ecode);
+    fprintf(stderr, " message=(%s)\n", buf);
+
+    switch (ecode) {
+    case XIM_BadSomething:
+	unsetPreeditStartSyncFlag();
+	unsetPreeditCaretSyncFlag();
+	break;
+    default:
+	break;
+    }
 }
 
 XimIC *Connection::get_ic(RxPacket *p)
