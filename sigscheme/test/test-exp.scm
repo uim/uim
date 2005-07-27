@@ -14,13 +14,22 @@
 (assert-equal? "basic lambda test6" '(5 6) ((lambda (x y . z) z) 3 4 5 6))
 (assert-equal? "basic lambda test7" 1 ((lambda (x . y) x) 1))
 (assert-equal? "basic lambda test8" '() ((lambda (x . y) y) 1))
+(assert-equal? "basic lambda test9" 1 ((lambda (x y . z) x) 1 2))
+(assert-equal? "basic lambda test10" 2 ((lambda (x y . z) y) 1 2))
+(assert-equal? "basic lambda test11" '() ((lambda (x y . z) z) 1 2))
 
 ;; cond
 (assert-equal? "basic cond test1" 'greater (cond ((> 3 2) 'greater)
 						 ((< 3 2) 'less)))
-(assert-equal? "basic cond test1" 'equal (cond ((> 3 3) 'greater)
+(assert-equal? "basic cond test2" 'equal (cond ((> 3 3) 'greater)
 					       ((< 3 3) 'less)
 					       (else 'equal)))
+(assert-equal? "basic cond test3" #t (cond ((> 3 2))
+					   ((< 3 4) 'less)
+					   (else 'equal)))
+(assert-equal? "basic cond test4" 2 (cond ((assv 'b '((a 1) (b 2))) => cadr)
+					  (else #f)))
+
 
 ;; let
 (assert-eq? "basic let test1" 0 (let ((n 0))
