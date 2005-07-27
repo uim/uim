@@ -293,7 +293,19 @@ eval_loop:
 			    case ARGNUM_2N:
 				{
 				    obj = SCM_CDR(obj);
+
+				    /* check 1st arg */
+				    if (SCM_NULLP(obj))
+					return SCM_FUNC_EXEC_SUBR2N(tmp, SCM_NIL, SCM_NIL);
+
+				    /* eval 1st arg */
 				    arg = ScmOp_eval(SCM_CAR(obj), env);
+
+				    /* check 2nd arg  */
+				    if (SCM_NULLP(SCM_CDR(obj)))
+					return SCM_FUNC_EXEC_SUBR2N(tmp, arg, SCM_NIL);
+
+				    /* call proc with each 2 objs */
 				    for (obj = SCM_CDR(obj); !SCM_NULLP(obj); obj = SCM_CDR(obj)) {
 					arg = SCM_FUNC_EXEC_SUBR2N(tmp,
 								   arg,
@@ -462,7 +474,19 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 		case ARGNUM_2N:
 		    {
 			args = obj;
+
+			/* check 1st arg */
+			if (SCM_NULLP(args))
+			    return SCM_FUNC_EXEC_SUBR2N(proc, SCM_NIL, SCM_NIL);
+
+			/* eval 1st arg */
 			obj  = SCM_CAR(args);
+
+			/* check 2nd arg */
+			if (SCM_NULLP(SCM_CDR(args)))
+			    return SCM_FUNC_EXEC_SUBR2N(proc, obj, SCM_NIL);
+
+			/* call proc with each 2 objs */
 			for (args = SCM_CDR(args); !SCM_NULLP(args); args = SCM_CDR(args)) {
 			    obj = SCM_FUNC_EXEC_SUBR2N(proc,
 						       obj,

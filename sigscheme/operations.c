@@ -269,8 +269,15 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
 ==============================================================================*/
 ScmObj ScmOp_plus2n(ScmObj obj1, ScmObj obj2)
 {
+    if (SCM_NULLP(obj1) && SCM_NULLP(obj2))
+	return Scm_NewInt(0);
+
     if (!SCM_INTP(obj1))
         SigScm_ErrorObj("+ : integer required but got ", obj1);
+
+    if (SCM_NULLP(obj2))
+	return Scm_NewInt(SCM_INT_VALUE(obj1));
+
     if (!SCM_INTP(obj2))
 	SigScm_ErrorObj("+ : integer required but got ", obj2);
     
@@ -281,17 +288,27 @@ ScmObj ScmOp_minus2n(ScmObj obj1, ScmObj obj2)
 {
     if (!SCM_INTP(obj1))
         SigScm_ErrorObj("- : integer required but got ", obj1);
+
+    if (SCM_NULLP(obj2))
+	return Scm_NewInt(-(SCM_INT_VALUE(obj1)));
+
     if (!SCM_INTP(obj2))
         SigScm_ErrorObj("- : integer required but got ", obj2);
 	
-
     return Scm_NewInt(SCM_INT_VALUE(obj1) - SCM_INT_VALUE(obj2));
 }
 
 ScmObj ScmOp_multi2n(ScmObj obj1, ScmObj obj2)
 {
+    if (SCM_NULLP(obj1) && SCM_NULLP(obj2))
+	return Scm_NewInt(1);
+
     if (!SCM_INTP(obj1))
         SigScm_ErrorObj("* : integer required but got ", obj1);
+
+    if (SCM_NULLP(obj2))
+	return Scm_NewInt(SCM_INT_VALUE(obj1));
+
     if (!SCM_INTP(obj2))
         SigScm_ErrorObj("* : integer required but got ", obj2);
 
