@@ -237,6 +237,31 @@ eval_loop:
 		============================================================*/
                 switch (SCM_GETTYPE(tmp)) {
                     case ScmFunc:
+			/*
+			 * Description of ARGNUM handling.
+			 *
+			 * - ARGNUM_L
+			 *     - evaluate all the args and pass it to func
+			 *
+			 * - ARGNUM_R_NotEval
+			 *     - not evaluate all the arguments
+			 *     - not evaluate the result of function
+			 *
+			 * - ARGNUM_R_Eval (for tail-recursion)
+			 *     - not evaluate all the arguments
+			 *     - evaluate the result of function
+			 *
+			 * - ARGNUM_2N
+			 *     - call the function with each 2 objs
+			 *
+			 * - ARGNUM_0
+			 * - ARGNUM_1
+			 * - ARGNUM_2
+			 * - ARGNUM_3
+			 * - ARGNUM_4
+			 * - ARGNUM_5
+			 *     - call the function with 0-5 arguments
+			 */
                         switch (SCM_FUNC_NUMARG(tmp)) {
                             case ARGNUM_L:
                                 {
@@ -255,6 +280,14 @@ eval_loop:
 				    obj = SCM_FUNC_EXEC_SUBRR(tmp,
 							      SCM_CDR(obj),
 							      &env);
+
+				    /*
+				     * The core point of tail-recursion
+				     *
+				     * The return obj of ARGNUM_R_Eval func is the raw S-expression.
+				     * So we need to evaluate it! This is for not to consume stack,
+				     * that is, tail-recursion optimization.
+				     */
 				    goto eval_loop;
 				}
 			    case ARGNUM_2N:
@@ -318,7 +351,9 @@ eval_loop:
                         break;
 		    case ScmClosure:
 			{
-			    /*
+			    /*	
+			     * Description of the ScmClosure handling
+			     *
 			     * (lambda <formals> <body>)
 			     *
 			     * <formals> should have 3 forms.
@@ -349,15 +384,29 @@ eval_loop:
 				SigScm_ErrorObj("lambda : bad syntax with ", arg);
 			    }
 
+			    /*
+			     * Notice
+			     *
+			     * The return obj of ScmExp_begin is the raw S-expression.
+			     * Because it is defined as ARGNUM_R_Eval function. So we
+			     * need to evaluate this!.
+			     */
 			    obj = ScmExp_begin(SCM_CDR(SCM_CLOSURE_EXP(tmp)), &env);
 			    goto eval_loop;
 			}
 		    case ScmContinuation:
 			{
                            /*
-                            * - eval 1st arg
-                            * - store it to global variable "continuation_thrown_obj"
-                            * - then longjmp
+			    * Description of ScmContinuation handling
+			    *
+                            * (1) eval 1st arg
+                            * (2) store it to global variable "continuation_thrown_obj"
+                            * (3) then longjmp
+			    *
+			    * PROBLEM : setjmp/longjmp is stack based operation, so we
+			    * cannot jump from the bottom of the stack to the top of
+			    * the stack. Is there any efficient way to implement first
+			    * class continuation? (TODO).
 			    */
 			    obj = SCM_CAR(SCM_CDR(obj));
 			    continuation_thrown_obj = ScmOp_eval(obj, env);
@@ -467,6 +516,8 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 	case ScmClosure:
 	    {
 		/*
+		 * Description of the ScmClosure handling
+		 *
 		 * (lambda <formals> <body>)
 		 *
 		 * <formals> should have 3 forms.
@@ -497,6 +548,14 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 		    SigScm_ErrorObj("lambda : bad syntax with ", obj);
 		}
 		
+
+		/*
+		 * Notice
+		 *
+		 * The return obj of ScmExp_begin is the raw S-expression.
+		 * Because it is defined as ARGNUM_R_Eval function. So we
+		 * need to evaluate this!.
+		 */
 		obj = ScmExp_begin(SCM_CDR(SCM_CLOSURE_EXP(proc)), &env);
 		return ScmOp_eval(obj, env);
 	    }
@@ -666,14 +725,17 @@ ScmObj ScmExp_if(ScmObj exp, ScmObj *envp)
     pred = ScmOp_eval(SCM_CAR(exp), env);
 
     /* if pred is SCM_TRUE */
-    if (EQ(pred, SCM_TRUE))
+    if (EQ(pred, SCM_TRUE)) {
+	/* doesn't evaluate now for tail-recursion. */
 	return SCM_CAR(SCM_CDR(exp));
+    }
 
     /* if pred is SCM_FALSE */
     false_exp = SCM_CDR(SCM_CDR(exp));
     if (SCM_NULLP(false_exp))
 	return SCM_UNDEF;
 
+    /* doesn't evaluate now for tail-recursion. */
     return SCM_CAR(false_exp);
 }
 
@@ -982,7 +1044,9 @@ ScmObj ScmExp_begin(ScmObj arg, ScmObj *envp)
 	/* return last expression's result */
 	if (EQ(SCM_CDR(arg), SCM_NIL)) {
 	    *envp = env;
-	    return exp;
+
+	    /* doesn't evaluate exp now for tail-recursion. */
+	    return exp; 
 	}
 
 	ScmOp_eval(exp, env);
