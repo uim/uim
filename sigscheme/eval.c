@@ -387,7 +387,124 @@ eval_loop:
 
 ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 {
-    SigScm_Error("apply is now broken\n");
+    ScmObj proc  = SCM_NIL;
+    ScmObj obj   = SCM_NIL;
+
+    /* sanity check */
+    if CHECK_2_ARGS(args)
+	SigScm_Error("apply : Wrong number of arguments\n");
+
+    /* 1st elem of list is proc */
+    proc = SCM_CAR(args);
+
+    /* 2nd elem of list is obj */
+    obj  = SCM_CAR(SCM_CDR(args));
+
+    /* apply proc */
+    switch (SCM_GETTYPE(proc)) {
+	case ScmFunc:
+	    switch (SCM_FUNC_NUMARG(proc)) {
+		case ARGNUM_L:
+		    {
+			return SCM_FUNC_EXEC_SUBRL(proc,
+						   map_eval(obj, env),
+						   env);
+		    }
+		case ARGNUM_2N:
+		    {
+			args = obj;
+			obj  = SCM_CAR(args);
+			for (args = SCM_CDR(args); !SCM_NULLP(args); args = SCM_CDR(args)) {
+			    obj = SCM_FUNC_EXEC_SUBR2N(proc,
+						       obj,
+						       ScmOp_eval(SCM_CAR(args), env));
+			}
+			return obj;
+		    }
+		case ARGNUM_0:
+		    {
+			return SCM_FUNC_EXEC_SUBR0(proc);
+		    }
+		case ARGNUM_1:
+		    {
+			return SCM_FUNC_EXEC_SUBR1(proc,
+						   obj);
+		    }
+		case ARGNUM_2:
+		    {
+			return SCM_FUNC_EXEC_SUBR2(proc,
+						   obj,
+						   SCM_CAR(SCM_CDR(SCM_CDR(args))));
+		    }
+		case ARGNUM_3:
+		    {
+			return SCM_FUNC_EXEC_SUBR3(proc,
+						   obj,
+						   SCM_CAR(SCM_CDR(SCM_CDR(args))),
+						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(args)))));
+		    }
+		case ARGNUM_4:
+		    {
+			return SCM_FUNC_EXEC_SUBR4(proc,
+						   obj,
+						   SCM_CAR(SCM_CDR(SCM_CDR(args))),
+						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(args)))),
+						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(args))))));
+		    }
+		case ARGNUM_5:
+		    {
+			return SCM_FUNC_EXEC_SUBR5(proc,
+						   obj,
+						   SCM_CAR(SCM_CDR(SCM_CDR(args))),
+						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(args)))),
+						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(args))))),
+						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(args)))))));
+		    }
+		default:
+		    SigScm_ErrorObj("apply : invalid applycation ", args);
+	    }
+	    break;
+	case ScmClosure:
+	    {
+		/*
+		 * (lambda <formals> <body>)
+		 *
+		 * <formals> should have 3 forms.
+		 *
+		 *   (1) : <variable>
+		 *   (2) : (<variable1> <variable2> ...)
+		 *   (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
+		 */
+		obj = SCM_CAR(SCM_CLOSURE_EXP(proc)); /* arg is <formals> */
+
+		if (SCM_SYMBOLP(obj)) {
+		    /* (1) : <variable> */
+		    env = extend_environment(Scm_NewCons(obj, SCM_NIL),
+					     Scm_NewCons(SCM_CDR(args),
+							 SCM_NIL),
+					     SCM_CLOSURE_ENV(proc));
+		} else if (SCM_NULLP(obj) || SCM_CONSP(obj)) {
+		    /*
+		     * (2) : (<variable1> <variable2> ...)
+		     * (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
+		     *
+		     *  - dot list is handled in lookup_frame().
+		     */
+		    env = extend_environment(obj,
+					     SCM_CAR(SCM_CDR(args)),
+					     SCM_CLOSURE_ENV(proc));
+		} else {
+		    SigScm_ErrorObj("lambda : bad syntax with ", obj);
+		}
+		
+		obj = ScmExp_begin(SCM_CDR(SCM_CLOSURE_EXP(proc)), &env);
+		return ScmOp_eval(obj, env);
+	    }
+	default:
+	    SigScm_ErrorObj("apply : invalid applycation ", args);
+    }
+
+    /* never reaches here */
     return SCM_NIL;
 }
 
