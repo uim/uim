@@ -38,10 +38,13 @@
  * Our GC uses Mark-and-Sweep algorithm. So, we have MARK phase and SWEEP phase.
  *
  * [1] Mark phase : gc_mark()
- *   - gc_mark_protected_obj()
- *       marking protected Scheme object which are protected by calling SigScm_gc_protect().
+ *   - gc_mark_locations()
+ *       marking the Scheme object which are stored in the registers.
  *
- *   - gc_mark_stack()
+ *   - gc_mark_protected_obj()
+ *       marking the protected Scheme object which are protected by calling SigScm_gc_protect().
+ *
+ *   - gc_mark_locations()
  *       marking the Scheme object which are pushed to the stack, so we need to
  *       traverse the stack for marking the objects.
  *

@@ -200,6 +200,7 @@ ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
     ScmObj tmp  = SCM_NIL;
     ScmObj arg  = SCM_NIL;
 
+eval_loop:
     switch (SCM_GETTYPE(obj)) {
         case ScmSymbol:
             return symbol_value(obj, env);
@@ -228,8 +229,7 @@ ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
 			/* QUOTE case */
 			break;
 		    default:
-			SigScm_Display(tmp);
-			SigScm_Error("eval : invalid operation\n");
+			SigScm_ErrorObj("eval : invalid operation ", tmp);
 			break;
                 }
 		/*============================================================
@@ -244,11 +244,18 @@ ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
                                                                map_eval(SCM_CDR(obj), env),
 							       env);
                                 }
-			    case ARGNUM_R:
+			    case ARGNUM_R_NotEval:
 				{
                                     return SCM_FUNC_EXEC_SUBRR(tmp,
                                                                SCM_CDR(obj),
-							       env);
+							       &env);
+				}
+			    case ARGNUM_R_Eval:
+				{
+				    obj = SCM_FUNC_EXEC_SUBRR(tmp,
+							      SCM_CDR(obj),
+							      &env);
+				    goto eval_loop;
 				}
 			    case ARGNUM_2N:
 				{
@@ -341,8 +348,9 @@ ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
 			    } else {
 				SigScm_ErrorObj("lambda : bad syntax with ", arg);
 			    }
-			    
-			    return ScmExp_begin(SCM_CDR(SCM_CLOSURE_EXP(tmp)), env);
+
+			    obj = ScmExp_begin(SCM_CDR(SCM_CLOSURE_EXP(tmp)), &env);
+			    goto eval_loop;
 			}
 		    case ScmContinuation:
 			{
@@ -365,9 +373,8 @@ ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
 			}
 			return tmp;
                     default:
-			SigScm_Display(tmp);
                         /* What? */
-                        SigScm_Error("eval : What type of function?\n");
+                        SigScm_Error("eval : What type of function? ", tmp);
                 }
 
             }
@@ -380,106 +387,10 @@ ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
 
 ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 {
-    ScmObj proc = SCM_NIL;
-    ScmObj obj  = SCM_NIL;
-
-    /* sanity check */
-    if CHECK_2_ARGS(args)
-	SigScm_Error("apply : Wrong number of arguments\n");
-
-    /* 1st elem of list is proc */
-    proc = SCM_CAR(args);
-
-    /* apply proc */
-    switch (SCM_GETTYPE(proc)) {
-	case ScmFunc:
-	    switch (SCM_FUNC_NUMARG(proc)) {
-		case ARGNUM_L:
-		    {
-			return SCM_FUNC_EXEC_SUBRL(proc,
-						   map_eval(SCM_CAR(SCM_CDR(args)), env),
-						   env);
-		    }
-		case ARGNUM_R:
-		    {
-			return SCM_FUNC_EXEC_SUBRR(proc,
-						   SCM_CAR(SCM_CDR(args)),
-						   env);
-		    }
-		case ARGNUM_2N:
-		    {
-			args = SCM_CAR(SCM_CDR(args));
-			obj  = SCM_CAR(args);
-			for (args = SCM_CDR(args); !SCM_NULLP(args); args = SCM_CDR(args)) {
-			    obj = SCM_FUNC_EXEC_SUBR2N(proc,
-						       obj,
-						       ScmOp_eval(SCM_CAR(args), env));
-			}
-			return obj;
-		    }
-		case ARGNUM_0:
-		    {
-			return SCM_FUNC_EXEC_SUBR0(proc);
-		    }
-		case ARGNUM_1:
-		    {
-			return SCM_FUNC_EXEC_SUBR1(proc,
-						   SCM_CAR(SCM_CDR(args)));
-		    }
-		case ARGNUM_2:
-		    {
-			return SCM_FUNC_EXEC_SUBR2(proc,
-						   SCM_CAR(SCM_CDR(args)),
-						   SCM_CAR(SCM_CDR(SCM_CDR(args))));
-		    }
-		case ARGNUM_3:
-		    {
-			return SCM_FUNC_EXEC_SUBR3(proc,
-						   SCM_CAR(SCM_CDR(args)),
-						   SCM_CAR(SCM_CDR(SCM_CDR(args))),
-						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(args)))));
-		    }
-		case ARGNUM_4:
-		    {
-			return SCM_FUNC_EXEC_SUBR4(proc,
-						   SCM_CAR(SCM_CDR(args)),
-						   SCM_CAR(SCM_CDR(SCM_CDR(args))),
-						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(args)))),
-						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(args))))));
-		    }
-		case ARGNUM_5:
-		    {
-			return SCM_FUNC_EXEC_SUBR5(proc,
-						   SCM_CAR(SCM_CDR(args)),
-						   SCM_CAR(SCM_CDR(SCM_CDR(args))),
-						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(args)))),
-						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(args))))),
-						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(args)))))));
-		    }
-	    }
-	    break;
-	case ScmClosure:
-	    {
-		env = extend_environment(SCM_CAR(SCM_CLOSURE_EXP(proc)),
-					 SCM_CAR(SCM_CDR(args)),
-					 SCM_CLOSURE_ENV(proc));
-		return ScmExp_begin(SCM_CDR(SCM_CLOSURE_EXP(proc)), env);
-	    }
-	case ScmEtc:
-	    if (EQ(proc, SCM_QUOTE)) {
-		return SCM_CDR(args);
-	    }
-	    if (EQ(proc, SCM_QUASIQUOTE)) {
-		return eval_unquote(SCM_CDR(args), env);
-	    }
-	default:
-	    SigScm_Display(proc);
-	    SigScm_Error("apply : What type of function?\n");
-    }
-
-    /* never reaches here */
+    SigScm_Error("apply is now broken\n");
     return SCM_NIL;
 }
+
 
 static ScmObj symbol_value(ScmObj var, ScmObj env)
 {
@@ -611,8 +522,10 @@ ScmObj ScmOp_quote(ScmObj obj)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.4 Procedures
 ===========================================================================*/
-ScmObj ScmExp_lambda(ScmObj exp, ScmObj env)
+ScmObj ScmExp_lambda(ScmObj exp, ScmObj *envp)
 {
+    ScmObj env = *envp;
+
     if CHECK_2_ARGS(exp)
 	SigScm_Error("lambda : too few argument\n");
 
@@ -622,8 +535,9 @@ ScmObj ScmExp_lambda(ScmObj exp, ScmObj env)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.5 Conditionals
 ===========================================================================*/
-ScmObj ScmExp_if(ScmObj exp, ScmObj env)
+ScmObj ScmExp_if(ScmObj exp, ScmObj *envp)
 {
+    ScmObj env       = *envp;
     ScmObj pred      = SCM_NIL;
     ScmObj false_exp = SCM_NIL;
 
@@ -636,21 +550,22 @@ ScmObj ScmExp_if(ScmObj exp, ScmObj env)
 
     /* if pred is SCM_TRUE */
     if (EQ(pred, SCM_TRUE))
-	return ScmOp_eval(SCM_CAR(SCM_CDR(exp)), env);
+	return SCM_CAR(SCM_CDR(exp));
 
     /* if pred is SCM_FALSE */
     false_exp = SCM_CDR(SCM_CDR(exp));
     if (SCM_NULLP(false_exp))
 	return SCM_UNDEF;
 
-    return ScmOp_eval(SCM_CAR(false_exp), env);
+    return SCM_CAR(false_exp);
 }
 
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.6 Assignment
 ===========================================================================*/
-ScmObj ScmExp_set(ScmObj arg, ScmObj env)
+ScmObj ScmExp_set(ScmObj arg, ScmObj *envp)
 {
+    ScmObj env = *envp;
     ScmObj sym = SCM_CAR(arg);
     ScmObj val = SCM_CAR(SCM_CDR(arg));
     ScmObj ret = SCM_NIL;
@@ -685,8 +600,9 @@ ScmObj ScmExp_set(ScmObj arg, ScmObj env)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.1 Conditionals
 ===========================================================================*/
-ScmObj ScmExp_cond(ScmObj arg, ScmObj env)
+ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp)
 {
+    ScmObj env    = *envp;
     ScmObj clause = SCM_NIL;
     ScmObj test   = SCM_NIL;
     ScmObj exps   = SCM_NIL;
@@ -700,7 +616,7 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj env)
 
 	/* evaluate test and check the result */
 	if (SCM_EQ(ScmOp_eval(test, env), SCM_TRUE)) {
-	    return ScmExp_begin(exps, env);
+	    return ScmExp_begin(exps, &env);
 	}
     }
 
@@ -708,8 +624,9 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj env)
     return SCM_NIL;
 }
 
-ScmObj ScmExp_case(ScmObj arg, ScmObj env)
+ScmObj ScmExp_case(ScmObj arg, ScmObj *envp)
 {
+    ScmObj env    = *envp;
     ScmObj key    = ScmOp_eval(SCM_CAR(arg), env);
     ScmObj clause = SCM_NIL;
     ScmObj datums = SCM_NIL;
@@ -725,12 +642,12 @@ ScmObj ScmExp_case(ScmObj arg, ScmObj env)
 
 	/* check "else" symbol */
 	if (SCM_NULLP(SCM_CDR(arg)) && !SCM_CONSP(datums) && EQ(SCM_SYMBOL_VCELL(datums), SCM_TRUE))
-	    return ScmExp_begin(exps, env);
+	    return ScmExp_begin(exps, &env);
 
 	/* evaluate datums and compare to key by eqv? */
 	for (; !SCM_NULLP(datums); datums = SCM_CDR(datums)) {
 	    if (EQ(ScmOp_eqvp(ScmOp_eval(SCM_CAR(datums), env), key), SCM_TRUE)) {
-		return ScmExp_begin(exps, env);
+		return ScmExp_begin(exps, &env);;
 	    }
 	}
     }
@@ -738,8 +655,9 @@ ScmObj ScmExp_case(ScmObj arg, ScmObj env)
     return SCM_UNSPECIFIED;
 }
 
-ScmObj ScmExp_and(ScmObj arg, ScmObj env)
+ScmObj ScmExp_and(ScmObj arg, ScmObj *envp)
 {
+    ScmObj env = *envp;
     ScmObj obj = SCM_NIL;
     ScmObj ret = SCM_NIL;
 
@@ -765,8 +683,9 @@ ScmObj ScmExp_and(ScmObj arg, ScmObj env)
     return SCM_NIL;
 }
 
-ScmObj ScmExp_or(ScmObj arg, ScmObj env)
+ScmObj ScmExp_or(ScmObj arg, ScmObj *envp)
 {
+    ScmObj env = *envp;
     ScmObj obj = SCM_NIL;
     ScmObj ret = SCM_NIL;
 
@@ -795,8 +714,9 @@ ScmObj ScmExp_or(ScmObj arg, ScmObj env)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.2 Binding constructs
 ===========================================================================*/
-ScmObj ScmExp_let(ScmObj arg, ScmObj env)
+ScmObj ScmExp_let(ScmObj arg, ScmObj *envp)
 {
+    ScmObj env      = *envp;
     ScmObj bindings = SCM_NIL;
     ScmObj body     = SCM_NIL;
     ScmObj vars     = SCM_NIL;
@@ -826,15 +746,17 @@ ScmObj ScmExp_let(ScmObj arg, ScmObj env)
 
 	/* create new environment for */
 	env = extend_environment(vars, vals, env);
+	*envp = env;
 
-	return ScmExp_begin(body, env);
+	return ScmExp_begin(body, &env);
     }
 
     return SCM_UNDEF;
 }
 
-ScmObj ScmExp_let_star(ScmObj arg, ScmObj env)
+ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp)
 {
+    ScmObj env      = *envp;
     ScmObj bindings = SCM_NIL;
     ScmObj body     = SCM_NIL;
     ScmObj vars     = SCM_NIL;
@@ -865,14 +787,18 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj env)
 	    env = extend_environment(vars, vals, env);
 	}
 
-	return ScmExp_begin(body, env);
+	/* set new env */
+	*envp = env;
+	
+	return ScmExp_begin(body, &env);;
     }
 
     return SCM_UNDEF;
 }
 
-ScmObj ScmExp_letrec(ScmObj arg, ScmObj env)
+ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp)
 {
+    ScmObj env      = *envp;
     ScmObj bindings = SCM_NIL;
     ScmObj body     = SCM_NIL;
     ScmObj vars     = SCM_NIL;
@@ -905,10 +831,13 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj env)
 	    /* then, evaluate <init> val and (set! var val) */
 	    ScmExp_set(Scm_NewCons(SCM_CAR(binding),
 				   Scm_NewCons(ScmOp_eval(SCM_CAR(SCM_CDR(binding)), env), SCM_NIL)),
-		       env);
+		       &env);
 	}
 
-	return ScmExp_begin(body, env);
+	/* set new env */
+	*envp = env;
+
+	return ScmExp_begin(body, &env);
     }
 
     return SCM_UNDEF;
@@ -918,10 +847,10 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj env)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.3 Sequencing
 ===========================================================================*/
-ScmObj ScmExp_begin(ScmObj arg, ScmObj env)
+ScmObj ScmExp_begin(ScmObj arg, ScmObj *envp)
 {
+    ScmObj env = *envp;
     ScmObj exp = SCM_NIL;
-    ScmObj ret = SCM_NIL;
 
     /* sanity check */
     if (SCM_NULLP(arg))
@@ -932,12 +861,14 @@ ScmObj ScmExp_begin(ScmObj arg, ScmObj env)
     /* eval recursively */
     for (; !SCM_NULLP(arg); arg = SCM_CDR(arg)) {
 	exp = SCM_CAR(arg);
-	ret = ScmOp_eval(exp, env);
 
 	/* return last expression's result */
 	if (EQ(SCM_CDR(arg), SCM_NIL)) {
-	    return ret;
+	    *envp = env;
+	    return exp;
 	}
+
+	ScmOp_eval(exp, env);
     }
 
     return SCM_UNDEF;
@@ -946,7 +877,7 @@ ScmObj ScmExp_begin(ScmObj arg, ScmObj env)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.4 Iteration
 ===========================================================================*/
-ScmObj ScmExp_do(ScmObj arg, ScmObj env)
+ScmObj ScmExp_do(ScmObj arg, ScmObj *envp)
 {
     /*
      * (do ((<variable1> <init1> <step1>)
@@ -955,7 +886,7 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj env)
      *     (<test> <expression> ...)
      *   <command> ...)
      */
-
+    ScmObj env        = *envp;
     ScmObj bindings   = SCM_CAR(arg);
     ScmObj vars       = SCM_NIL;
     ScmObj vals       = SCM_NIL;
@@ -1002,22 +933,27 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj env)
 
     /* now excution phase! */
     while (!SCM_EQ(ScmOp_eval(test, env), SCM_TRUE)) {
-	ScmExp_begin(commands, env);
+	ScmOp_eval(ScmExp_begin(commands, &env), env);
 
 	tmp_steps = steps;
 	for (; !SCM_NULLP(tmp_steps); tmp_steps = SCM_CDR(tmp_steps)) {
-	    ScmExp_set(SCM_CAR(tmp_steps), env);
+	    ScmExp_set(SCM_CAR(tmp_steps), &env);
 	}
     }
 
-    return ScmExp_begin(expression, env);
+    /* set new env */
+    *envp = env;
+
+    return ScmExp_begin(expression, &env);
 }
 
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.5 Delayed evaluation
 ===========================================================================*/
-ScmObj ScmOp_delay(ScmObj arg, ScmObj env)
+ScmObj ScmOp_delay(ScmObj arg, ScmObj *envp)
 {
+    ScmObj env = *envp;
+
     if (SCM_INT_VALUE(ScmOp_length(arg)) != 1)
         SigScm_Error("delay : Wrong number of arguments\n");
 
@@ -1047,8 +983,9 @@ ScmObj ScmOp_unquote_splicint(ScmObj exp)
 /*=======================================
   R5RS : 5.2 Definitions
 =======================================*/
-ScmObj ScmExp_define(ScmObj arg, ScmObj env)
+ScmObj ScmExp_define(ScmObj arg, ScmObj *envp)
 {
+    ScmObj env     = *envp;
     ScmObj var     = SCM_CAR(arg);
     ScmObj body    = SCM_CAR(SCM_CDR(arg));
     ScmObj val     = SCM_NIL;
@@ -1078,6 +1015,9 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj env)
 	    }
 	}
 
+	/* set new env */
+	*envp = env;
+
 	return var;
     }
 
@@ -1099,10 +1039,10 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj env)
 	body    = SCM_CDR(arg);
 
 	/* (val (lambda formals body))  */
-	arg = Scm_NewCons(val, Scm_NewCons(ScmExp_lambda(Scm_NewCons(formals, body), env),
+	arg = Scm_NewCons(val, Scm_NewCons(ScmExp_lambda(Scm_NewCons(formals, body), &env),
 					   SCM_NIL));
 
-	return ScmExp_define(arg, env);
+	return ScmExp_define(arg, &env);
     }
 
     SigScm_Error("define : syntax error\n");

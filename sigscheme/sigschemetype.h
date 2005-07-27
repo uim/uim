@@ -68,15 +68,16 @@ enum ScmObjType {
 
 /* Function Type by argnuments */
 enum ScmFuncArgNum {
-    ARGNUM_0  = 0,
-    ARGNUM_1  = 1,
-    ARGNUM_2  = 2,
-    ARGNUM_3  = 3,
-    ARGNUM_4  = 4,
-    ARGNUM_5  = 5,
-    ARGNUM_L  = 6, /* all args are already evaluated */
-    ARGNUM_R  = 7, /* all args are "not" evaluated yet */
-    ARGNUM_2N = 8  /* all args are evaluated each 2 objs */
+    ARGNUM_0         = 0, /* no arg */
+    ARGNUM_1         = 1, /* require 1 arg  */
+    ARGNUM_2         = 2, /* require 2 args */
+    ARGNUM_3         = 3, /* require 3 args */
+    ARGNUM_4         = 4, /* require 4 args */
+    ARGNUM_5         = 5, /* require 5 args */
+    ARGNUM_L         = 6, /* all args are already evaluated, and pass the arg-list to the func*/
+    ARGNUM_R_NotEval = 7, /* all args are "not" evaluated yet, and return obj is not evaluated */
+    ARGNUM_R_Eval    = 8, /* all args are "not" evaluated yet, and return obj is evaluated */
+    ARGNUM_2N        = 9  /* all args are evaluated with each 2 objs */
 };
 
 /* GC Mark Flag */
@@ -177,6 +178,11 @@ struct ScmObjInternal_ {
                 struct {
                     ScmObj (*func) (ScmObj, ScmObj, ScmObj, ScmObj, ScmObj);
                 } subr5;
+                
+                struct {
+                    ScmObj (*func) (ScmObj, ScmObj*);
+                } subrm;
+                
             } subrs;
 
             enum ScmFuncArgNum num_arg;
@@ -283,7 +289,7 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_FUNC_EXEC_SUBR4(a, arg1, arg2, arg3, arg4)       ((*a->obj.func.subrs.subr4.func) (arg1, arg2, arg3, arg4))
 #define SCM_FUNC_EXEC_SUBR5(a, arg1, arg2, arg3, arg4, arg5) ((*a->obj.func.subrs.subr5.func) (arg1, arg2, arg3, arg4, arg5))
 #define SCM_FUNC_EXEC_SUBRL(a, arg1, arg2)                   ((*a->obj.func.subrs.subr2.func) (arg1, arg2))
-#define SCM_FUNC_EXEC_SUBRR(a, arg1, arg2)                   ((*a->obj.func.subrs.subr2.func) (arg1, arg2))
+#define SCM_FUNC_EXEC_SUBRR(a, arg1, arg2)                   ((*a->obj.func.subrs.subrm.func) (arg1, arg2))
 #define SCM_FUNC_EXEC_SUBR2N(a, arg1, arg2)                  ((*a->obj.func.subrs.subr2.func) (arg1, arg2))
 
 #define SCM_CLOSUREP(a) (SCM_GETTYPE(a) == ScmClosure)
