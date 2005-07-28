@@ -46,7 +46,7 @@
 # include <alloca.h>
 #endif
 
-/* XIM Error Code */
+// XIM Error Code
 #define XIM_BadSomething	999
 
 const char *xim_packet_name[] = {
@@ -90,13 +90,13 @@ const char *xim_packet_name[] = {
     "XIM_STATUS_DRAW", "XIM_STATUS_DONE", "XIM_PREEDITSTATE"
 };
 
-static struct XIMATTRIBUTE{
+static struct XIMATTRIBUTE {
     XIMATTRIBUTE(const char *n, int t);
     static void write_imattr_to_packet(TxPacket *p);
 
     const char *name;
     int type;
-}xim_attributes[]={
+} xim_attributes[] = {
     XIMATTRIBUTE(XNQueryInputStyle, TYPE_XIMSTYLE),
 };
 
@@ -130,12 +130,12 @@ void XIMATTRIBUTE::write_imattr_to_packet(TxPacket *p)
     }
 }
 
-static struct XICATTRIBUTE{
+static struct XICATTRIBUTE {
     XICATTRIBUTE(const char *n, int t);
     static void write_icattr_to_packet(TxPacket *p);
     const char *name;
     int type;
-}xic_attributes[]={
+} xic_attributes[] = {
     // the sequence is required to be same as the order of
     // ICATTTRIBUTE defined in ximpn.h
     XICATTRIBUTE(XNInputStyle, TYPE_LONG),
@@ -313,7 +313,7 @@ void Connection::OnRecv()
 	    xim_error(p);
 	    break;
 	default:
-	    printf("Unknown(or not implemented.) packet from xim connection.\n");
+	    printf("Unknown (or not implemented) packet from xim connection.\n");
 	    (*i)->dump();
 	    break;
 	}
@@ -760,21 +760,19 @@ void Connection::xim_error(RxPacket *p)
     buf[len] = 0;
     p->getStr(buf);
   
-    fprintf(stderr, "XIM_ERROR received.\n");
-    if (mask & 1)
-	fprintf(stderr, " imid = %d\n", imid);
-    if (mask & 2)
-	fprintf(stderr, " icid = %d\n", icid);
-
-    fprintf(stderr, " error_code = %d\n", ecode);
-    fprintf(stderr, " message=(%s)\n", buf);
-
     switch (ecode) {
     case XIM_BadSomething:
 	unsetPreeditStartSyncFlag();
 	unsetPreeditCaretSyncFlag();
 	break;
     default:
+	fprintf(stderr, "XIM_ERROR received.\n");
+	if (mask & 1)
+	    fprintf(stderr, " imid = %d\n", imid);
+	if (mask & 2)
+	    fprintf(stderr, " icid = %d\n", icid);
+	fprintf(stderr, " error_code = %d\n", ecode);
+	fprintf(stderr, " message = (%s)\n", buf);
 	break;
     }
 }
