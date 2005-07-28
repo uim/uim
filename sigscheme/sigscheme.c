@@ -96,6 +96,7 @@ void SigScm_Initialize(void)
     SCM_SYMBOL_VCELL(Scm_Intern("#t"))   = SCM_TRUE;
     SCM_SYMBOL_VCELL(Scm_Intern("#f"))   = SCM_FALSE;
     SCM_SYMBOL_VCELL(Scm_Intern("else")) = SCM_TRUE;
+    SCM_SYMBOL_VCELL(Scm_Intern("=>"))   = SCM_TRUE;
 
     /*=======================================================================
       Export Scheme Functions

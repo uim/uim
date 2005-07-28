@@ -27,8 +27,8 @@
 (assert-equal? "basic cond test3" #t (cond ((> 3 2))
 					   ((< 3 4) 'less)
 					   (else 'equal)))
-;(assert-equal? "basic cond test4" 2 (cond ((assv 'b '((a 1) (b 2))) => cadr)
-;					  (else #f)))
+(assert-equal? "basic cond test4" 2 (cond ((assv 'b '((a 1) (b 2))) => cadr)
+					  (else #f)))
 
 ;; case
 (assert-eq? "basic case check1" 'case1 (case 1

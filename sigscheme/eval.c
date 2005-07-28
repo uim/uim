@@ -178,7 +178,7 @@ static ScmObj lookup_frame(ScmObj var, ScmObj frame)
     vars = SCM_CAR(frame);
     vals = SCM_CDR(frame);
 
-    for (; !SCM_NULLP(vars) && !SCM_NULLP(vals); vars = SCM_CDR(vars), vals = SCM_CDR(vals)) {
+    for (; !SCM_NULLP(vars); vars = SCM_CDR(vars), vals = SCM_CDR(vals)) {
 	/* handle dot list */
 	if (SCM_CONSP(vars)) {
 	    if (SCM_EQ(SCM_CAR(vars), var))
@@ -534,7 +534,7 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(args)))))));
 		    }
 		default:
-		    SigScm_ErrorObj("apply : invalid applycation ", args);
+		    SigScm_ErrorObj("apply : invalid application ", args);
 	    }
 	    break;
 	case ScmClosure:
@@ -584,7 +584,7 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 		return ScmOp_eval(obj, env);
 	    }
 	default:
-	    SigScm_ErrorObj("apply : invalid applycation ", args);
+	    SigScm_ErrorObj("apply : invalid application ", args);
     }
 
     /* never reaches here */
@@ -749,7 +749,7 @@ ScmObj ScmExp_if(ScmObj exp, ScmObj *envp)
     pred = ScmOp_eval(SCM_CAR(exp), env);
 
     /* if pred is SCM_TRUE */
-    if (EQ(pred, SCM_TRUE)) {
+    if (!EQ(pred, SCM_FALSE)) {
 	/* doesn't evaluate now for tail-recursion. */
 	return SCM_CAR(SCM_CDR(exp));
     }
@@ -805,25 +805,63 @@ ScmObj ScmExp_set(ScmObj arg, ScmObj *envp)
 ===========================================================================*/
 ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp)
 {
+    /*
+     * (cond <clause1> <clause2> ...)
+     *
+     * <clause> should be the form:
+     *     (<test> <expression1> <expression2> ...)
+     *
+     * <clause> may be of the form
+     *     (<test> => <expression)
+     */
     ScmObj env    = *envp;
     ScmObj clause = SCM_NIL;
     ScmObj test   = SCM_NIL;
     ScmObj exps   = SCM_NIL;
+    ScmObj proc   = SCM_NIL;
+
     /* looping in each clause */
     for (; !SCM_NULLP(arg); arg = SCM_CDR(arg)) {
 	clause = SCM_CAR(arg);
 	test   = SCM_CAR(clause);
 	exps   = SCM_CDR(clause);
-	if (SCM_NULLP(clause) || SCM_NULLP(test) || SCM_NULLP(exps))
+
+	if (SCM_NULLP(clause) || SCM_NULLP(test))
 	    SigScm_Error("cond : syntax error\n");
 
-	/* evaluate test and check the result */
-	if (SCM_EQ(ScmOp_eval(test, env), SCM_TRUE)) {
+	/* evaluate test */
+	test = ScmOp_eval(test, env);
+
+	/* check the result */
+	if (!SCM_EQ(test, SCM_FALSE)) {
+	    /*
+	     * if the selected <clause> contains only the <test> and no <expression>s,
+	     * then the value of the <test> is returned as the result.
+	     */
+	    if (SCM_NULLP(exps))
+		return test;
+
+	    /*
+	     * If the selected <clause> uses the => alternate form, then the <expression>
+	     * is evaluated. Its value must be a procedure that accepts one argument;
+	     * this procedure is then called on the value of the <test> and the value
+	     * returned by this procedure is returned by the cond expression.
+	     */
+	    if (SCM_EQ(Scm_Intern("=>"), SCM_CAR(exps))) {
+		proc = ScmOp_eval(SCM_CAR(SCM_CDR(exps)), env);
+		if (EQ(ScmOp_procedurep(proc), SCM_FALSE))
+		    SigScm_Error("cond : the value of exp after => must be the procedure but got ", proc);
+		
+		return ScmOp_apply(Scm_NewCons(proc,
+					       Scm_NewCons(test,
+							   SCM_NIL)),
+				   env);
+	    }
+	    
 	    return ScmExp_begin(exps, &env);
 	}
     }
 
-    SigScm_Error("cond : invalid expression\n");
     return SCM_NIL;
 }
 
@@ -841,7 +879,7 @@ ScmObj ScmExp_case(ScmObj arg, ScmObj *envp)
 	datums = SCM_CAR(clause);
 	exps   = SCM_CDR(clause);
 	if (SCM_NULLP(clause) || SCM_NULLP(datums) || SCM_NULLP(exps))
-	    SigScm_Error("cond : syntax error\n");
+	    SigScm_Error("case : syntax error\n");
 
 	/* check "else" symbol */
 	if (SCM_NULLP(SCM_CDR(arg)) && !SCM_CONSP(datums) && EQ(SCM_SYMBOL_VCELL(datums), SCM_TRUE))
@@ -902,8 +940,8 @@ ScmObj ScmExp_or(ScmObj arg, ScmObj *envp)
     for (; !SCM_NULLP(arg); arg = SCM_CDR(arg)) {
 	obj = SCM_CAR(arg);
 	ret = ScmOp_eval(obj, env);
-	if (EQ(ret, SCM_TRUE))
-	    return SCM_TRUE;
+	if (!EQ(ret, SCM_FALSE))
+	    return ret;
 
 	/* return last item */
 	if (SCM_NULLP(SCM_CDR(arg))) {
