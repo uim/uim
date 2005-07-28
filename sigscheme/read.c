@@ -460,7 +460,14 @@ static char *read_char_sequence(ScmObj port)
                 SigScm_Error("EOF in the char sequence.\n");
                 break;
 
-            case '(':  case ')':  case ' ':  case ';':
+	    case ' ':
+		/* pass through the first ' ' for handling space (#\ ) */
+		if (stringlen == 0) {
+		    stringbuf[stringlen] = (char)c;
+		    stringlen++;
+		    break;
+		}
+            case '(':  case ')':  case ';':
             case '\n': case '\t': case '\"': case '\'':
                 SCM_PORT_UNGETC(port, c);
                 stringbuf[stringlen] = '\0';
