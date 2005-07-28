@@ -27,64 +27,8 @@
 (assert-equal? "basic cond test3" #t (cond ((> 3 2))
 					   ((< 3 4) 'less)
 					   (else 'equal)))
-(assert-equal? "basic cond test4" 2 (cond ((assv 'b '((a 1) (b 2))) => cadr)
-					  (else #f)))
-
-
-;; let
-(assert-eq? "basic let test1" 0 (let ((n 0))
-				 n))
-(assert-eq? "basic let test2" 1 (let ((n 0))
-				  (set! n 1)))
-(assert-eq? "basic let test3" 1 (let ((n 0))
-				  (set! n (+ n 1))))
-(assert-eq? "basic let test4" 3 (let ((n1 2)
-				      (n2 1))
-				  (+ n1 n2)))
-(assert-eq? "basic let* test1" 70 (let ((x 2) (y 3))
-				    (let* ((x 7)
-					   (z (+ x y)))
-				      (* z x))))
-(assert-eq? "basic letrec test1" #t (let ((even?
-					   (lambda (n)
-					     (if (zero? n)
-						 #t
-						 (odd? (- n 1)))))
-					  (odd?
-					   (lambda (n)
-					     (if (zero? n)
-						 #f
-						 (even? (- n 1))))))
-				      (even? 88)))
-(define count
-  (let ((n 0))
-    (lambda ()
-      (set! n (+ n 1)))))
-
-(assert-eq? "lexical scope test1" 1 (count))
-(assert-eq? "lexical scope test2" 2 (count))
-
-(define a 3)
-(define (lexical-test)
-  (let ((a 1))
-    (assert-eq? "lexical scope test3" 1 a)
-    (let* ((a 2))
-      (assert-eq? "lexical scope test4" 2 a))
-    (assert-eq? "lexical scope test5" 1 a)))
-(lexical-test)
-
-;; begin
-(assert-eq? "basic begin test1" 0 (begin
-				    0))
-(assert-eq? "basic begin test1" 1 (begin
-				    0
-				    1))
-(assert-eq? "basic begin test1" 1 (begin
-				    (define n 0)
-				    (set! n 1)))
-
-
-
+;(assert-equal? "basic cond test4" 2 (cond ((assv 'b '((a 1) (b 2))) => cadr)
+;					  (else #f)))
 
 ;; case
 (assert-eq? "basic case check1" 'case1 (case 1
@@ -105,16 +49,93 @@
 					   (else
 					    'caseelse)))
 
+;; and
+(assert-eq? "and test 1" #t (and (= 2 2) (> 2 1)))
+(assert-eq? "and test 2" #f (and (= 2 2) (< 2 1)))
+(assert-equal? "and test 3" '(f g) (and 1 2 'c '(f g)))
+(assert-equal? "and test 4" #t (and))
 
+;; or
+(assert-eq? "or test1" #t (or (= 2 2) (> 2 1)))
+(assert-eq? "or test2" #t (or (= 2 2) (< 2 1)))
+(assert-eq? "or test3" #f (or #f #f #f))
+(assert-equal? "or test4" '(b c) (or (memq 'b '(a b c))
+				     (/ 3 0)))
 
+;; let
+(assert-eq? "basic let test1" 0 (let ((n 0))
+				 n))
+(assert-eq? "basic let test2" 1 (let ((n 0))
+				  (set! n 1)))
+(assert-eq? "basic let test3" 1 (let ((n 0))
+				  (set! n (+ n 1))))
+(assert-eq? "basic let test4" 3 (let ((n1 2)
+				      (n2 1))
+				  (+ n1 n2)))
+(define count
+  (let ((n 0))
+    (lambda ()
+      (set! n (+ n 1)))))
+
+(assert-eq? "lexical scope test1" 1 (count))
+(assert-eq? "lexical scope test2" 2 (count))
+
+(define a 3)
+(define (lexical-test)
+  (let ((a 1))
+    (assert-eq? "lexical scope test3" 1 a)
+    (let* ((a 2))
+      (assert-eq? "lexical scope test4" 2 a))
+    (assert-eq? "lexical scope test5" 1 a)))
+(lexical-test)
+
+;; let*
+(assert-eq? "basic let* test1" 70 (let ((x 2) (y 3))
+				    (let* ((x 7)
+					   (z (+ x y)))
+				      (* z x))))
+
+;; letrec
+(assert-eq? "basic letrec test1" #t (let ((even?
+					   (lambda (n)
+					     (if (zero? n)
+						 #t
+						 (odd? (- n 1)))))
+					  (odd?
+					   (lambda (n)
+					     (if (zero? n)
+						 #f
+						 (even? (- n 1))))))
+				      (even? 88)))
+
+;; begin
+(define x 0)
+(assert-eq? "basic begin test1" 6 (begin
+				    (set! x 5)
+				    (+ x 1)))
+(assert-eq? "basic begin test2" 0 (begin
+				    0))
+(assert-eq? "basic begin test3" 1 (begin
+				    0
+				    1))
+(assert-eq? "basic begin test4" 1 (begin
+				    (define n 0)
+				    (set! n 1)))
 ;; do
+(assert-equal? "do test1" '#(0 1 2 3 4) (do ((vec (make-vector 5))
+					     (i 0 (+ i 1)))
+					    ((= i 5) vec)
+					  (vector-set! vec i i)))
+(assert-equal? "do test2" 25 (let ((x '(1 3 5 7 9)))
+			       (do ((x x (cdr x))
+				    (sum 0 (+ sum (car x))))
+				   ((null? x) sum))))
+
 (define (expt-do x n)
   (do ((i 0 (+ i 1))
        (y 1))
       ((= i n) y)
     (set! y (* x y))))
-
-(assert-eq? "expt-do test" 1024 (expt-do 2 10))
-
+(assert-eq? "do test3" 1024 (expt-do 2 10))
 
 (total-report)
