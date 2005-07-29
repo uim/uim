@@ -195,7 +195,7 @@ candidates_draw_cb(MInputContext *ic, MSymbol command)
 static void 
 candidates_done_cb(MInputContext *ic, MSymbol command)
 {
-  fprintf(stderr,"candidate done\n");
+  /*  fprintf(stderr,"candidate done\n"); */
 }
 
 static void
@@ -529,54 +529,22 @@ free_id(uim_lisp id_)
   return uim_scm_f();
 }
 
-static MSymbol
-get_key_sym(int ch)
-{
-  if (ch < 127) {
-    char buf[2];
-    buf[0] = ch;
-    buf[1] = 0;
-    return msymbol(buf);
-  }
-  return Mnil;
-}
-
 static uim_lisp
 push_symbol_key(uim_lisp id_, uim_lisp key_)
 {
   int id = uim_scm_c_int(id_);
   MSymbol key;
   MInputContext *ic = ic_array[id].mic;
-  /*  printf("%s\n",uim_scm_c_str(key_)); */
   key = msymbol(uim_scm_c_str(key_));
   if (key == Mnil) {
     return uim_scm_t();
   }
-  if (minput_filter(ic, key, NULL) == 1) {
+
+  if(minput_filter(ic, key, NULL)== 1) {
     return uim_scm_t();
+  } else {
+    return uim_scm_f();
   }
-
-  return uim_scm_f();
-}
-
-static uim_lisp
-push_key(uim_lisp id_, uim_lisp key_, uim_lisp mod_)
-{
-  int id = uim_scm_c_int(id_);
-  int ch;
-  MSymbol key;
-  MInputContext *ic = ic_array[id].mic;
-
-  ch = uim_scm_c_int(key_);
-  key = get_key_sym(ch);
-  if (key == Mnil) {
-    return uim_scm_t();
-  }
-  if (minput_filter(ic, key, NULL) == 1) {
-    return uim_scm_t();
-  }
-
-  return uim_scm_f();
 }
 
 static uim_lisp
@@ -805,7 +773,6 @@ uim_plugin_instance_init(void)
   uim_scm_init_subr_1("m17nlib-lib-nth-input-method-name", get_input_method_name);
   uim_scm_init_subr_1("m17nlib-lib-alloc-context", alloc_id);
   uim_scm_init_subr_1("m17nlib-lib-free-context", free_id);
-  uim_scm_init_subr_3("m17nlib-lib-push-key", push_key);
   uim_scm_init_subr_2("m17nlib-lib-push-symbol-key", push_symbol_key);
   uim_scm_init_subr_1("m17nlib-lib-compose-mode?", compose_modep);
   uim_scm_init_subr_1("m17nlib-lib-preedit-changed?", preedit_changedp);
