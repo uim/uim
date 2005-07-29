@@ -257,7 +257,7 @@ ScmObj ScmOp_read(ScmObj arg, ScmObj env)
 	/* (read port) */
 	port = SCM_CAR(SCM_CDR(arg));
     } else {
-	SigScm_ErrorObj("read : invalid paramter", arg);
+	SigScm_ErrorObj("read : invalid parameter", arg);
     }
 
     return SigScm_Read(port);
@@ -273,7 +273,7 @@ ScmObj ScmOp_read_char(ScmObj arg, ScmObj env)
 	/* (read-char port) */
 	port = SCM_CAR(SCM_CDR(arg));
     } else {
-	SigScm_ErrorObj("read-char : invalid paramter", arg);
+	SigScm_ErrorObj("read-char : invalid parameter", arg);
     }
 
     return SigScm_Read_Char(port);
@@ -310,23 +310,16 @@ ScmObj ScmOp_write(ScmObj arg, ScmObj env)
     ScmObj port = SCM_NIL;
 
     if CHECK_1_ARG(arg)
-	SigScm_Error("write : invalid paramter\n");
+	SigScm_Error("write : invalid parameter\n");
 
     /* get obj */
     obj = SCM_CAR(arg);
     arg = SCM_CDR(arg);
 
     /* get port */
-    port = SCM_NIL;
-    if (SCM_NULLP(arg)) {
-	/* (write obj) */
-	port = current_input_port;
-    } else if (!SCM_NULLP(SCM_CDR(arg)) && SCM_PORTP(SCM_CAR(SCM_CDR(arg)))) {
-	/* (write obj port) */
-	port = SCM_CAR(SCM_CDR(arg));
-    } else {
-	SigScm_ErrorObj("write : invalid paramter ", arg);
-    }
+    port = current_input_port;
+    if (!SCM_NULLP(arg) && !SCM_NULLP(SCM_CAR(arg)) && SCM_PORTP(SCM_CAR(arg)))
+	port = SCM_CAR(arg);
 
     SigScm_DisplayToPort(port, obj);
     return SCM_UNDEF;
@@ -341,23 +334,18 @@ ScmObj ScmOp_display(ScmObj arg, ScmObj env)
     ScmObj port = SCM_NIL;
 
     if CHECK_1_ARG(arg)
-	SigScm_Error("display : invalid paramter\n");
+	SigScm_Error("display : invalid parameter\n");
 
     /* get obj */
     obj = SCM_CAR(arg);
     arg = SCM_CDR(arg);
 
     /* get port */
-    port = SCM_NIL;
-    if (SCM_NULLP(arg)) {
-	/* (write obj) */
-	port = current_output_port;
-    } else if (!SCM_NULLP(SCM_CDR(arg)) && SCM_PORTP(SCM_CAR(SCM_CDR(arg)))) {
-	/* (write obj port) */
-	port = SCM_CAR(SCM_CDR(arg));
-    } else {
-	SigScm_ErrorObj("display : invalid paramter ", arg);
-    }
+    port = current_output_port;
+    
+    /* (display obj port) */
+    if (!SCM_NULLP(arg) && SCM_PORTP(SCM_CAR(arg)))
+	port = SCM_CAR(arg);
 
     SigScm_DisplayToPort(port, obj);
     return SCM_UNDEF;
@@ -366,18 +354,14 @@ ScmObj ScmOp_display(ScmObj arg, ScmObj env)
 ScmObj ScmOp_newline(ScmObj arg, ScmObj env)
 {
     /* get port */
-    ScmObj port = SCM_NIL;
-    if (SCM_NULLP(arg)) {
-	/* (write obj) */
-	port = current_output_port;
-    } else if (!SCM_NULLP(SCM_CDR(arg)) && SCM_PORTP(SCM_CAR(SCM_CDR(arg)))) {
-	/* (write obj port) */
-	port = SCM_CAR(SCM_CDR(arg));
-    } else {
-	SigScm_ErrorObj("newline : invalid paramter ", arg);
+    ScmObj port = current_output_port;
+
+    /* (newline port) */
+    if (!SCM_NULLP(arg) && !SCM_NULLP(SCM_CAR(arg)) && SCM_PORTP(SCM_CAR(arg))) {
+	port = SCM_CAR(arg);
     }
 
-    fprintf(SCM_PORTINFO_FILE(port), "\n");
+    SigScm_DisplayToPort(port, Scm_NewString("\n"));
     return SCM_UNDEF;
 }
 
@@ -387,7 +371,7 @@ ScmObj ScmOp_write_char(ScmObj arg, ScmObj env)
     ScmObj port = SCM_NIL;
 
     if CHECK_1_ARG(arg)
-	SigScm_Error("write-char : invalid paramter\n");
+	SigScm_Error("write-char : invalid parameter\n");
 
     /* get obj */
     obj = SCM_CAR(arg);
@@ -396,16 +380,11 @@ ScmObj ScmOp_write_char(ScmObj arg, ScmObj env)
 	SigScm_ErrorObj("write-char : char required but got ", obj);
 
     /* get port */
-    port = SCM_NIL;
-    if (SCM_NULLP(arg)) {
-	/* (write obj) */
-	port = current_input_port;
-    } else if (!SCM_NULLP(SCM_CDR(arg)) && SCM_PORTP(SCM_CAR(SCM_CDR(arg)))) {
-	/* (write obj port) */
-	port = SCM_CAR(SCM_CDR(arg));
-    } else {
-	SigScm_ErrorObj("write : invalid paramter ", arg);
-    }
+    port = current_output_port;
+    
+    /* (write-char obj port) */
+    if (!SCM_NULLP(arg) && SCM_PORTP(SCM_CAR(arg)))
+	port = SCM_CAR(arg);
 
     SigScm_DisplayToPort(port, obj);
     return SCM_UNDEF;

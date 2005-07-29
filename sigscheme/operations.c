@@ -757,9 +757,9 @@ ScmObj ScmOp_car(ScmObj obj)
 ScmObj ScmOp_cdr(ScmObj obj)
 {
     if (SCM_NULLP(obj))
-        SigScm_Error("car : empty list");
+        SigScm_Error("cdr : empty list\n");
     if (!SCM_CONSP(obj))
-        SigScm_ErrorObj("car : list required but got ", obj);
+        SigScm_ErrorObj("cdr : list required but got ", obj);
 
     return SCM_CDR(obj);
 }
@@ -1780,16 +1780,11 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
         for (args = SCM_CAR(SCM_CDR(map_arg)); !SCM_NULLP(args); args = SCM_CDR(args)) {
             /* create proc's arg */
             tmp = SCM_CAR(args);
-            if (!SCM_CONSP(tmp)) {
-                /* arg must be the list */
-                tmp = Scm_NewCons(tmp, SCM_NIL);
-            }
 
             /* create list for "apply" op */
             tmp = Scm_NewCons(proc,
-                              Scm_NewCons(tmp,
+                              Scm_NewCons(Scm_NewCons(tmp, SCM_NIL),
                                           SCM_NIL));
-
             /* apply proc */
             ret = Scm_NewCons(ScmOp_apply(tmp, env), ret);
         }

@@ -501,40 +501,40 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 		case ARGNUM_1:
 		    {
 			return SCM_FUNC_EXEC_SUBR1(proc,
-						   obj);
+						   SCM_CAR(obj));
 		    }
 		case ARGNUM_2:
 		    {
 			return SCM_FUNC_EXEC_SUBR2(proc,
-						   obj,
-						   SCM_CAR(SCM_CDR(SCM_CDR(args))));
+						   SCM_CAR(obj),
+						   SCM_CAR(SCM_CDR(obj)));
 		    }
 		case ARGNUM_3:
 		    {
 			return SCM_FUNC_EXEC_SUBR3(proc,
-						   obj,
-						   SCM_CAR(SCM_CDR(SCM_CDR(args))),
-						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(args)))));
+						   SCM_CAR(obj),
+						   SCM_CAR(SCM_CDR(obj)),
+						   SCM_CAR(SCM_CDR(SCM_CDR(obj))));
 		    }
 		case ARGNUM_4:
 		    {
 			return SCM_FUNC_EXEC_SUBR4(proc,
-						   obj,
-						   SCM_CAR(SCM_CDR(SCM_CDR(args))),
-						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(args)))),
-						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(args))))));
+						   SCM_CAR(obj),
+						   SCM_CAR(SCM_CDR(obj)),
+						   SCM_CAR(SCM_CDR(SCM_CDR(obj))),
+						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(obj)))));
 		    }
 		case ARGNUM_5:
 		    {
 			return SCM_FUNC_EXEC_SUBR5(proc,
-						   obj,
-						   SCM_CAR(SCM_CDR(SCM_CDR(args))),
-						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(args)))),
-						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(args))))),
-						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(args)))))));
+						   SCM_CAR(obj),
+						   SCM_CAR(SCM_CDR(obj)),
+						   SCM_CAR(SCM_CDR(SCM_CDR(obj))),
+						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(obj)))),
+						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(obj))))));
 		    }
 		default:
-		    SigScm_ErrorObj("apply : invalid application ", args);
+		    SigScm_ErrorObj("apply : invalid application ", proc);
 	    }
 	    break;
 	case ScmClosure:
@@ -550,28 +550,26 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 		 *   (2) : (<variable1> <variable2> ...)
 		 *   (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
 		 */
-		obj = SCM_CAR(SCM_CLOSURE_EXP(proc)); /* arg is <formals> */
+		args = SCM_CAR(SCM_CLOSURE_EXP(proc)); /* arg is <formals> */
 
-		if (SCM_SYMBOLP(obj)) {
+		if (SCM_SYMBOLP(args)) {
 		    /* (1) : <variable> */
-		    env = extend_environment(Scm_NewCons(obj, SCM_NIL),
-					     Scm_NewCons(SCM_CDR(args),
-							 SCM_NIL),
+		    env = extend_environment(Scm_NewCons(args, SCM_NIL),
+					     Scm_NewCons(obj, SCM_NIL),
 					     SCM_CLOSURE_ENV(proc));
-		} else if (SCM_NULLP(obj) || SCM_CONSP(obj)) {
+		} else if (SCM_NULLP(args) || SCM_CONSP(args)) {
 		    /*
 		     * (2) : (<variable1> <variable2> ...)
 		     * (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
 		     *
 		     *  - dot list is handled in lookup_frame().
 		     */
-		    env = extend_environment(obj,
-					     SCM_CAR(SCM_CDR(args)),
+		    env = extend_environment(args,
+					     obj,
 					     SCM_CLOSURE_ENV(proc));
 		} else {
-		    SigScm_ErrorObj("lambda : bad syntax with ", obj);
+		    SigScm_ErrorObj("lambda : bad syntax with ", args);
 		}
-		
 
 		/*
 		 * Notice
@@ -853,7 +851,7 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp)
 		    SigScm_Error("cond : the value of exp after => must be the procedure but got ", proc);
 		
 		return ScmOp_apply(Scm_NewCons(proc,
-					       Scm_NewCons(test,
+					       Scm_NewCons(Scm_NewCons(test, SCM_NIL),
 							   SCM_NIL)),
 				   env);
 	    }
