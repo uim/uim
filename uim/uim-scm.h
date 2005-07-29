@@ -203,6 +203,19 @@ uim_scm_length(uim_lisp list);
 uim_lisp
 uim_scm_reverse(uim_lisp cell);
 
+uim_lisp
+uim_scm_list1(uim_lisp elm1);
+uim_lisp
+uim_scm_list2(uim_lisp elm1, uim_lisp elm2);
+uim_lisp
+uim_scm_list3(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3);
+uim_lisp
+uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4);
+uim_lisp
+uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
+              uim_lisp elm5);
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -36,7 +36,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "siod.h"
 #include "uim-compat-scm.h"
 #include "context.h"
 
@@ -198,48 +197,6 @@ uim_scm_nth(uim_lisp n, uim_lisp lst)
 		       n,
 		       lst);
   return uim_scm_eval(form);
-}
-
-uim_lisp
-uim_scm_list1(uim_lisp elm1)
-{
-  uim_lisp lst;
-  lst = (uim_lisp)listn(1, (LISP)elm1);
-  return lst;
-}
-
-uim_lisp
-uim_scm_list2(uim_lisp elm1, uim_lisp elm2)
-{
-  uim_lisp lst;
-  lst = (uim_lisp)listn(2, (LISP)elm1, (LISP)elm2);
-  return lst;
-}
-
-uim_lisp
-uim_scm_list3(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3)
-{
-  uim_lisp lst;
-  lst = (uim_lisp)listn(3, (LISP)elm1, (LISP)elm2, (LISP)elm3);
-  return lst;
-}
-
-uim_lisp
-uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4)
-{
-  uim_lisp lst;
-  lst = (uim_lisp)listn(4, (LISP)elm1, (LISP)elm2, (LISP)elm3, (LISP)elm4);
-  return lst;
-}
-
-uim_lisp
-uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
-              uim_lisp elm5)
-{
-  uim_lisp lst;
-  lst = (uim_lisp)listn(5, (LISP)elm1, (LISP)elm2, (LISP)elm3, (LISP)elm4,
-			(LISP)elm5);
-  return lst;
 }
 
 uim_lisp
