@@ -295,6 +295,7 @@ uim_scm_eval(uim_lisp obj)
   return ret;
 }
 
+#ifdef UIM_SCM_EXTENDED_API
 uim_lisp
 uim_scm_apply(uim_lisp proc, uim_lisp args)
 {
@@ -306,6 +307,7 @@ uim_scm_quote(uim_lisp obj)
 {
   return ScmOp_quote(obj);
 }
+#endif  /* UIM_SCM_EXTENDED_API */
 
 uim_lisp
 uim_scm_eval_c_string(const char *str)
@@ -320,39 +322,39 @@ uim_scm_return_value(void)
 }
 
 uim_lisp
-uim_scm_car(uim_lisp list)
+uim_scm_car(uim_lisp pair)
 {
-  return ScmOp_car(list);
+  return ScmOp_car(pair);
 }
 
 uim_lisp
-uim_scm_cdr(uim_lisp list)
+uim_scm_cdr(uim_lisp pair)
 {
-  return ScmOp_cdr(list);
+  return ScmOp_cdr(pair);
 }
 
 uim_lisp
-uim_scm_cadr(uim_lisp list)
+uim_scm_cadr(uim_lisp lst)
 {
-  return ScmOp_cadr(list);
+  return ScmOp_cadr(lst);
 }
 
 uim_lisp
-uim_scm_caar(uim_lisp list)
+uim_scm_caar(uim_lisp lst)
 {
-  return ScmOp_caar(list);
+  return ScmOp_caar(lst);
 }
 
 uim_lisp
-uim_scm_cdar(uim_lisp list)
+uim_scm_cdar(uim_lisp lst)
 {
-  return ScmOp_cdar(list);
+  return ScmOp_cdar(lst);
 }
 
 uim_lisp
-uim_scm_cddr(uim_lisp list)
+uim_scm_cddr(uim_lisp lst)
 {
-  return ScmOp_cddr(list);
+  return ScmOp_cddr(lst);
 }
 
 uim_lisp
@@ -362,17 +364,18 @@ uim_scm_cons(uim_lisp car, uim_lisp cdr)
 }
 
 uim_lisp
-uim_scm_length(uim_lisp list)
+uim_scm_length(uim_lisp lst)
 {
-  return ScmOp_length(list);
+  return ScmOp_length(lst);
 }
 
 uim_lisp
-uim_scm_reverse(uim_lisp list)
+uim_scm_reverse(uim_lisp lst)
 {
-  return ScmOp_reverse(list);
+  return ScmOp_reverse(lst);
 }
 
+#ifdef UIM_SCM_EXTENDED_API
 uim_lisp
 uim_scm_list1(uim_lisp elm1)
 {
@@ -413,6 +416,7 @@ uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
   lst = uim_scm_cons(elm1, uim_scm_cons(elm2, uim_scm_list3(elm3, elm4, elm5)));
   return lst;
 }
+#endif  /* UIM_SCM_EXTENDED_API */
 
 uim_bool
 uim_scm_require_file(const char *fn)

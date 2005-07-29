@@ -58,6 +58,16 @@
 extern "C" {
 #endif
 
+/*
+  UIM_SCM_EXTENDED_API indicates that the interfaces are extended in
+  the r5rs barnch. Some of interfaces are re-adopted from
+  uim-compat-scm.h. Since it contradicts with the "core interface
+  policy" described above (2005-01-10 YamaKen), it must be
+  distinguished from original ones for now. A discussion may be
+  required to make the new API standard before next stable series
+  has been released.  -- YamaKen 2005-07-29
+*/
+#define UIM_SCM_EXTENDED_API
 
 /*
   uim companion tools should treat lisp object as opaque. struct
@@ -102,10 +112,12 @@ uim_bool
 uim_scm_require_file(const char *fn);
 uim_lisp
 uim_scm_eval(uim_lisp obj);
+#ifdef UIM_SCM_EXTENDED_API
 uim_lisp
 uim_scm_apply(uim_lisp proc, uim_lisp args);
 uim_lisp
 uim_scm_quote(uim_lisp obj);
+#endif  /* UIM_SCM_EXTENDED_API */
 
 uim_lisp
 uim_scm_eval_c_string(const char *str);
@@ -190,21 +202,22 @@ uim_scm_string_equal(uim_lisp a, uim_lisp b);
 uim_lisp
 uim_scm_cons(uim_lisp car, uim_lisp cdr);
 uim_lisp
-uim_scm_car(uim_lisp cell);
+uim_scm_car(uim_lisp pair);
 uim_lisp
-uim_scm_cdr(uim_lisp cell);
+uim_scm_cdr(uim_lisp pair);
 uim_lisp
-uim_scm_cadr(uim_lisp cell);
+uim_scm_cadr(uim_lisp lst);
 uim_lisp
-uim_scm_caar(uim_lisp cell);
+uim_scm_caar(uim_lisp lst);
 uim_lisp
-uim_scm_cdar(uim_lisp cell);
+uim_scm_cdar(uim_lisp lst);
 uim_lisp
-uim_scm_cddr(uim_lisp cell);
+uim_scm_cddr(uim_lisp lst);
 uim_lisp
-uim_scm_length(uim_lisp list);
+uim_scm_length(uim_lisp lst);
 uim_lisp
-uim_scm_reverse(uim_lisp cell);
+uim_scm_reverse(uim_lisp lst);
+#ifdef UIM_SCM_EXTENDED_API
 uim_lisp
 uim_scm_list1(uim_lisp elm1);
 uim_lisp
@@ -216,6 +229,7 @@ uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4);
 uim_lisp
 uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
               uim_lisp elm5);
+#endif  /* UIM_SCM_EXTENDED_API */
 
 
 #ifdef __cplusplus
