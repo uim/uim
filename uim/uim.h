@@ -584,4 +584,5 @@ extern struct uim_code_converter *uim_iconv;
 #ifdef __cplusplus
 }
 #endif
-#endif
+
+#endif /* _uim_h_included_ */
