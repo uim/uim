@@ -48,20 +48,14 @@ static uim_lisp quote_sym;
 char *
 uim_get_c_string(uim_lisp str)
 {
-  char *s;
-  long len;
-  char *buf;
-  s = get_c_string_dim((LISP)str, &len);
-  buf = (char *)malloc(sizeof(char)*(len + 1));
-  strncpy(buf, s, len);
-  buf[len] = 0;
-  return buf;
+  return uim_scm_c_str(str);
 }
 
 long
 uim_scm_repl_c_string(char *str, long want_init, long want_print)
 {
-  return repl_c_string(str, want_init, want_print);
+  uim_lisp r = Scm_eval_c_string(str);
+  ScmOp_display(r, NULL);
 }
 
 int
@@ -131,8 +125,7 @@ uim_scm_symbol_value_bool(const char *symbol_str)
   if (!symbol_str)
     return UIM_FALSE;
 
-  UIM_EVAL_FSTRING1(NULL, "(symbol-value '%s)", symbol_str);
-  val = uim_scm_c_bool(uim_scm_return_value());
+  val = uim_scm_c_bool(ScmOp_eval(symbol_str, NULL));
 
   return val;
 }
@@ -146,14 +139,14 @@ uim_scm_str_from_c_str(const char *str)
 uim_lisp
 uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
 {
-  LISP lst = NIL, str = NIL;
+  uim_lisp lst = SCM_NIL, str = SCM_NIL;
   const char *c_str;
-  int i, unknown_strlen = -1;
+  int i;
 
   for (i = n_strs - 1; 0 <= i; i--) {
     c_str = strs[i];
-    str = strcons(unknown_strlen, c_str);
-    lst = cons(str, lst);
+    str = Scm_NewString(c_str);
+    lst = Scm_NewCons(str, lst);
   }
 
   return (uim_lisp)lst;
@@ -162,13 +155,7 @@ uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
 uim_lisp
 uim_scm_symbol_value(const char *symbol_str)
 {
-  LISP symbol_str_ = rintern(symbol_str);
-  
-  if TRUEP((uim_lisp)symbol_boundp(symbol_str_, NIL)) {
-    return (uim_lisp)symbol_value(symbol_str_, NIL);         
-  } else {
-    return uim_scm_f();
-  }
+  return Scm_eval_c_string(symbol_str);
 }
 
 uim_lisp
@@ -193,22 +180,29 @@ uim_scm_nth(uim_lisp n, uim_lisp lst)
   return uim_scm_eval(form);
 }
 
+/* Is this function used from somewhere? I think this function could be removed. */
 uim_lisp
 uim_scm_nreverse(uim_lisp cell)
 {
-  return (uim_lisp)nreverse((LISP)cell);
+  fprintf(stderr, "Not implemented yet.");
+#if 0
+  return (uim_lisp)nreverse((uim_lisp)cell);
+#endif
 }
 
 void
 uim_scm_init_fsubr(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp))
 {
-  init_fsubr(name, (LISP (*)(LISP, LISP))fcn);
+  Scm_InitSubrR_NotEval(name, fcn);
 }
 
 void
 uim_scm_provide(const char *feature)
 {
+  fprintf(stderr, "Not implemented yet.");
+#if 0
   siod_c_provide(feature);
+#endif
 }
 
 
