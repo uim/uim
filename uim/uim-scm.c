@@ -261,13 +261,13 @@ uim_scm_consp(uim_lisp obj)
 uim_bool
 uim_scm_integerp(uim_lisp obj)
 {
-  return INTNUMP((ScmObj)obj);
+  return SCM_INTP(obj);
 }
 
 uim_bool
 uim_scm_stringp(uim_lisp obj)
 {
-  return STRINGP((ScmObj)obj);
+  return SCM_STRINGP(obj);
 }
 
 uim_bool
@@ -295,6 +295,12 @@ uim_scm_eval(uim_lisp obj)
 }
 
 uim_lisp
+uim_scm_apply(uim_lisp proc, uim_lisp args)
+{
+  return ScmOp_apply(Scm_NewCons(proc, Scm_NewCons(args, SCM_NIL)), NULL);
+}
+
+uim_lisp
 uim_scm_eval_c_string(const char *str)
 {
   repl_c_string((char *)str, 0, 0);
@@ -308,45 +314,45 @@ uim_scm_return_value(void)
 }
 
 uim_lisp
-uim_scm_car(uim_lisp cell)
+uim_scm_car(uim_lisp list)
 {
-  return (uim_lisp)car((ScmObj)cell);
+  return ScmOp_car(list);
 }
 
 uim_lisp
-uim_scm_cdr(uim_lisp cell)
+uim_scm_cdr(uim_lisp list)
 {
-  return (uim_lisp)cdr((ScmObj)cell);
+  return ScmOp_cdr(list);
 }
 
 uim_lisp
-uim_scm_cadr(uim_lisp cell)
+uim_scm_cadr(uim_lisp list)
 {
-  return (uim_lisp)cadr((ScmObj)cell);
+  return ScmOp_cadr(list);
 }
 
 uim_lisp
-uim_scm_caar(uim_lisp cell)
+uim_scm_caar(uim_lisp list)
 {
-  return (uim_lisp)caar((ScmObj)cell);
+  return ScmOp_caar(list);
 }
 
 uim_lisp
-uim_scm_cdar(uim_lisp cell)
+uim_scm_cdar(uim_lisp list)
 {
-  return (uim_lisp)cdar((ScmObj)cell);
+  return ScmOp_cdar(list);
 }
 
 uim_lisp
-uim_scm_cddr(uim_lisp cell)
+uim_scm_cddr(uim_lisp list)
 {
-  return (uim_lisp)cddr((ScmObj)cell);
+  return ScmOp_cddr(list);
 }
 
 uim_lisp
 uim_scm_cons(uim_lisp car, uim_lisp cdr)
 {
-  return (uim_lisp)cons((ScmObj)car, (ScmObj)cdr);
+  return SigScm_NewCons(car, cdr);
 }
 
 uim_lisp
