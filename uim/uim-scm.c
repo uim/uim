@@ -279,7 +279,10 @@ uim_scm_eq(uim_lisp a, uim_lisp b)
 uim_bool
 uim_scm_string_equal(uim_lisp a, uim_lisp b)
 {
-  return NFALSEP((uim_lisp)string_equal((ScmObj)a, (ScmObj)b));
+  if(ScmOp_string_equal(a, b) == SigScm_true)
+    return UIM_TRUE;
+  else
+    return UIM_FALSE;
 }
 
 uim_lisp
@@ -303,8 +306,7 @@ uim_scm_apply(uim_lisp proc, uim_lisp args)
 uim_lisp
 uim_scm_eval_c_string(const char *str)
 {
-  repl_c_string((char *)str, 0, 0);
-  return uim_scm_return_value();
+  return Scm_eval_c_string(exp);
 }
 
 uim_lisp
