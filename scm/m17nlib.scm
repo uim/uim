@@ -257,11 +257,12 @@
        ((m17nlib-off-key? key key-state)
 	(m17nlib-context-set-on! mc #f)
 	#t) ;; #t means key event was consumed.
-       ((symbol? key)
-	(let ((mkey (m17nlib-translate-ukey-to-mkey key key-state)))
-	  (m17nlib-lib-push-symbol-key mid mkey)))
        (else
-	(m17nlib-lib-push-key mid key key-state))))))
+	(if (symbol? key)
+	    (let ((mkey (m17nlib-translate-ukey-to-mkey key key-state)))
+	      (m17nlib-lib-push-symbol-key mid mkey))
+	    (let ((mkey (m17nlib-append-modifiers key key-state (charcode->string key))))
+	      (m17nlib-lib-push-symbol-key mid mkey))))))))
 
 (define m17nlib-press-key-handler
   (lambda (mc key key-state)
