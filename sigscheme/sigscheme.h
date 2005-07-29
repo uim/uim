@@ -64,6 +64,7 @@ extern ScmObj *stack_start_pointer;
 
 extern ScmObj current_input_port;
 extern ScmObj current_output_port;
+extern ScmObj current_error_port;
 
 /*=======================================
    Macro Declarations
@@ -310,6 +311,9 @@ ScmObj ScmOp_write_char(ScmObj arg, ScmObj env);
 
 ScmObj SigScm_load(const char *c_filename);
 ScmObj ScmOp_load(ScmObj filename);
+
+ScmObj ScmOp_file_existsp(ScmObj filepath);
+ScmObj ScmOp_delete_file(ScmObj filepath);
 
 /* encoding.c */
 int SigScm_default_encoding_strlen(const char *str);

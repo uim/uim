@@ -81,8 +81,11 @@ ScmObj ScmOp_call_with_input_file(ScmObj filepath, ScmObj proc)
     /* open port */
     port = ScmOp_open_input_file(filepath);
     
-    /* (eval '(proc port) '())*/
-    ret = ScmOp_eval(Scm_NewCons(proc, Scm_NewCons(port, SCM_NIL)), SCM_NIL);
+    /* (apply proc (port)) */
+    ret = ScmOp_apply(Scm_NewCons(proc,
+				  Scm_NewCons(Scm_NewCons(port, SCM_NIL),
+					      SCM_NIL)),
+		      SCM_NIL);
 
     /* close port */
     ScmOp_close_input_port(port);
@@ -103,8 +106,11 @@ ScmObj ScmOp_call_with_output_file(ScmObj filepath, ScmObj proc)
     /* open port */
     port = ScmOp_open_output_file(filepath);
     
-    /* (eval '(proc port) '())*/
-    ret = ScmOp_eval(Scm_NewCons(proc, Scm_NewCons(port, SCM_NIL)), SCM_NIL);
+    /* (apply proc (port)) */
+    ret = ScmOp_apply(Scm_NewCons(proc,
+				  Scm_NewCons(Scm_NewCons(port, SCM_NIL),
+					      SCM_NIL)),
+		      SCM_NIL);
 
     /* close port */
     ScmOp_close_output_port(port);
@@ -152,8 +158,11 @@ ScmObj ScmOp_with_input_from_file(ScmObj filepath, ScmObj thunk)
     tmp_port = current_input_port;
     current_input_port = ScmOp_open_input_file(filepath);
     
-    /* (eval '(thunk) '())*/
-    ret = ScmOp_eval(Scm_NewCons(thunk, SCM_NIL), SCM_NIL);
+    /* (apply thunk ())*/
+    ret = ScmOp_apply(Scm_NewCons(thunk,
+				  Scm_NewCons(Scm_NewCons(SCM_NIL, SCM_NIL),
+					      SCM_NIL)),
+		      SCM_NIL);
 
     /* close port */
     ScmOp_close_input_port(current_input_port);
@@ -178,8 +187,11 @@ ScmObj ScmOp_with_output_to_file(ScmObj filepath, ScmObj thunk)
     tmp_port = current_output_port;
     current_output_port = ScmOp_open_output_file(filepath);
     
-    /* (eval '(thunk) '())*/
-    ret = ScmOp_eval(Scm_NewCons(thunk, SCM_NIL), SCM_NIL);
+    /* (apply thunk ())*/
+    ret = ScmOp_apply(Scm_NewCons(thunk,
+				  Scm_NewCons(Scm_NewCons(SCM_NIL, SCM_NIL),
+					      SCM_NIL)),
+		      SCM_NIL);
 
     /* close port */
     ScmOp_close_output_port(current_output_port);
@@ -253,9 +265,9 @@ ScmObj ScmOp_read(ScmObj arg, ScmObj env)
     if (SCM_NULLP(arg)) {
 	/* (read) */
 	port = current_input_port;
-    } else if (!SCM_NULLP(SCM_CDR(arg)) && SCM_PORTP(SCM_CAR(SCM_CDR(arg)))) {
+    } else if (SCM_PORTP(SCM_CAR(arg))) {
 	/* (read port) */
-	port = SCM_CAR(SCM_CDR(arg));
+	port = SCM_CAR(arg);
     } else {
 	SigScm_ErrorObj("read : invalid parameter", arg);
     }
@@ -317,7 +329,7 @@ ScmObj ScmOp_write(ScmObj arg, ScmObj env)
     arg = SCM_CDR(arg);
 
     /* get port */
-    port = current_input_port;
+    port = current_output_port;
     if (!SCM_NULLP(arg) && !SCM_NULLP(SCM_CAR(arg)) && SCM_PORTP(SCM_CAR(arg)))
 	port = SCM_CAR(arg);
 
@@ -348,6 +360,7 @@ ScmObj ScmOp_display(ScmObj arg, ScmObj env)
 	port = SCM_CAR(arg);
 
     SigScm_DisplayToPort(port, obj);
+
     return SCM_UNDEF;
 }
 
@@ -361,7 +374,7 @@ ScmObj ScmOp_newline(ScmObj arg, ScmObj env)
 	port = SCM_CAR(arg);
     }
 
-    SigScm_DisplayToPort(port, Scm_NewString("\n"));
+    SigScm_DisplayToPort(port, Scm_NewStringCopying("\n"));
     return SCM_UNDEF;
 }
 
@@ -429,6 +442,31 @@ ScmObj ScmOp_load(ScmObj filename)
     SigScm_load(c_filename);
 
     /* TODO : investigate */
-    return SCM_NIL;
+    return SCM_TRUE;
 }
 
+
+ScmObj ScmOp_file_existsp(ScmObj filepath)
+{
+    FILE *f = NULL;
+
+    if (!SCM_STRINGP(filepath))
+	SigScm_ErrorObj("file-exists? : string requred but got ", filepath);
+
+    f = fopen(SCM_STRING_STR(filepath), "r");
+    if (!f)
+	return SCM_FALSE;
+
+    return SCM_TRUE;
+}
+
+ScmObj ScmOp_delete_file(ScmObj filepath)
+{
+    if (!SCM_STRINGP(filepath))
+	SigScm_ErrorObj("delete-file : string requred but got ", filepath);
+
+    if (remove(SCM_STRING_STR(filepath)) == -1)
+	SigScm_ErrorObj("delete-file : delete failed. file = ", filepath);
+    
+    return SCM_TRUE;
+}

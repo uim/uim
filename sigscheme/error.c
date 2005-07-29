@@ -51,6 +51,11 @@
 =======================================*/
 
 /*=======================================
+  Variable Declarations
+=======================================*/
+ScmObj current_error_port  = NULL;
+
+/*=======================================
   File Local Function Declarations
 =======================================*/
 
@@ -68,7 +73,7 @@ void SigScm_Error(const char *msg, ...)
 {
     va_list va;
     va_start(va, msg);
-    vfprintf(SCM_PORTINFO_FILE(current_output_port), msg, va);
+    vfprintf(SCM_PORTINFO_FILE(current_error_port), msg, va);
     va_end(va);
 
     exit(-1);
@@ -77,7 +82,7 @@ void SigScm_Error(const char *msg, ...)
 void SigScm_ErrorObj(const char *msg, ScmObj obj)
 {
     /* print msg */
-    fprintf(SCM_PORTINFO_FILE(current_output_port), "%s", msg);
+    fprintf(SCM_PORTINFO_FILE(current_error_port), "%s", msg);
 
     /* print obj */
     SigScm_Display(obj);

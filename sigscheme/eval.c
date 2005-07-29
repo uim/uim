@@ -150,7 +150,7 @@ static ScmObj lookup_environment(ScmObj var, ScmObj env)
     if (SCM_NULLP(env))
         return SCM_NIL;
     if (!SCM_CONSP(env))
-        SigScm_Error("Broken environent.\n");
+        SigScm_ErrorObj("Broken environent : ", env);
 
     /* lookup frames */
     for (; !SCM_NULLP(env); env = SCM_CDR(env)) {
@@ -172,7 +172,7 @@ static ScmObj lookup_frame(ScmObj var, ScmObj frame)
     if (SCM_NULLP(frame))
         return SCM_NIL;
     else if (!SCM_CONSP(frame))
-        SigScm_Error("Broken frame.\n");
+        SigScm_ErrorObj("Broken frame : ", frame);
 
     /* lookup in frame */
     vars = SCM_CAR(frame);
@@ -186,6 +186,8 @@ static ScmObj lookup_frame(ScmObj var, ScmObj frame)
 	} else {
 	    if (SCM_EQ(vars, var))
 		return Scm_NewCons(vals, SCM_NIL);
+	    else
+		return SCM_NIL;
 	}
     }
 
@@ -468,7 +470,7 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 		case ARGNUM_L:
 		    {
 			return SCM_FUNC_EXEC_SUBRL(proc,
-						   map_eval(obj, env),
+						   obj,
 						   env);
 		    }
 		case ARGNUM_2N:
@@ -490,7 +492,7 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 			for (args = SCM_CDR(args); !SCM_NULLP(args); args = SCM_CDR(args)) {
 			    obj = SCM_FUNC_EXEC_SUBR2N(proc,
 						       obj,
-						       ScmOp_eval(SCM_CAR(args), env));
+						       SCM_CAR(args));
 			}
 			return obj;
 		    }

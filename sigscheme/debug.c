@@ -103,7 +103,18 @@ static void print_ScmObj_internal(FILE *f, ScmObj obj)
     } else if (SCM_FREECELLP(obj)) {
 	fprintf(f, "[ FreeCell ] \n");
     } else if (SCM_PORTP(obj)) {
-	fprintf(f, "(port)");
+	fprintf(f, "#<");
+	if (SCM_PORT_PORTDIRECTION(obj) == PORT_INPUT)
+	    fprintf(f, "i");
+	else
+	    fprintf(f, "o");
+	fprintf(f, "port ");
+	if (SCM_PORT_PORTTYPE(obj) == PORT_FILE) {
+	    fprintf(f, "file");
+	} else if (SCM_PORT_PORTTYPE(obj) == PORT_STRING) {
+	    fprintf(f, "string");
+	}
+	fprintf(f, ">");
     } else if (SCM_CONTINUATIONP(obj)) {
 	fprintf(f, "(continuation)");
     } else {

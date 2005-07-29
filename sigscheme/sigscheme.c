@@ -257,6 +257,9 @@ void SigScm_Initialize(void)
     Scm_InitSubrL("newline"              , ScmOp_newline);
     Scm_InitSubrL("write-char"           , ScmOp_write_char);
     Scm_InitSubr1("load"                 , ScmOp_load);
+    Scm_InitSubr1("file-exists?"         , ScmOp_file_existsp);
+    Scm_InitSubr1("delete-file"          , ScmOp_delete_file);
+
     /*=======================================================================
       Current Input & Output Initialization
     =======================================================================*/
@@ -264,6 +267,8 @@ void SigScm_Initialize(void)
     SigScm_gc_protect(current_input_port);
     current_output_port = Scm_NewFilePort(stdout, PORT_OUTPUT);
     SigScm_gc_protect(current_output_port);
+    current_error_port  = Scm_NewFilePort(stderr, PORT_OUTPUT);
+    SigScm_gc_protect(current_error_port);
 
 #if USE_SRFI1
     /*=======================================================================
