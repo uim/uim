@@ -124,27 +124,25 @@ uim_scm_refer_c_str(uim_lisp str)
 uim_lisp
 uim_scm_make_str(const char *str)
 {
-  Scm_NewStringCopying(str);
+  return Scm_NewStringCopying(str);
 }
 
 char *
 uim_scm_c_symbol(uim_lisp symbol)
 {
-  Scm_GetString(ScmOp_symbol_to_string((ScmObj)symbol));
+  return Scm_GetString(ScmOp_symbol_to_string((ScmObj)symbol));
 }
 
 uim_lisp
 uim_scm_make_symbol(const char *name)
 {
-  /* FIXME: name must be copied.
-     return (uim_lisp)Scm_NewSymbol(strdup(name), NULL); */
-  return (uim_lisp)Scm_NewSymbol(name, NULL);
+  return (uim_lisp)Scm_NewSymbol(strdup(name), NULL);
 }
 
 void *
 uim_scm_c_ptr(uim_lisp ptr)
 {
-  Scm_GetCPointer((ScmObj)ptr);
+  return Scm_GetCPointer(ptr);
 }
 
 uim_lisp
@@ -156,31 +154,31 @@ uim_scm_make_ptr(void *ptr)
 uim_func_ptr
 uim_scm_c_func_ptr(uim_lisp func_ptr)
 {
-  return get_c_func_pointer((ScmObj)func_ptr);
+  return Scm_GetCFuncPointer(func_ptr);
 }
 
 uim_lisp
 uim_scm_make_func_ptr(uim_func_ptr func_ptr)
 {
-  return (uim_lisp)funcptrcons(func_ptr);
+  return Scm_NewCFuncPointer((C_FUNC)func_ptr);
 }
 
 void
 uim_scm_gc_protect(uim_lisp *location)
 {
-  gc_protect((ScmObj *)location);
+  SigScm_gc_protect(location);
 }
 
 void
 uim_scm_gc_protect_stack(uim_lisp *stack_start)
 {
-  siod_gc_protect_stack((ScmObj *)stack_start);
+  SigScm_gc_protect_stack(stack_start);
 }
 
 void
 uim_scm_gc_unprotect_stack(uim_lisp *stack_start)
 {
-  siod_gc_unprotect_stack((ScmObj *)stack_start);
+  SigScm_gc_unprotect_stack(stack_start);
 }
 
 uim_bool
@@ -217,14 +215,14 @@ uim_scm_set_lib_path(const char *path)
 uim_bool
 uim_scm_load_file(const char *fn)
 {
+  uim_lisp result;
   uim_bool succeeded;
 
   if (!fn)
     return UIM_FALSE;
 
-  UIM_EVAL_FSTRING1(NULL, "(*catch 'errobj (load \"%s\" #f #f))", fn);
-  succeeded = FALSEP(uim_scm_return_value()); /* has not been caught */
-
+  result = SigScm_load(fn);
+  succeeded = FALSEP(result);
   return succeeded;
 }
 
@@ -482,7 +480,9 @@ uim_scm_init_subr_5(char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
 static void
 exit_hook(void)
 {
+#if 0
   uim_siod_fatal = 1;
+#endif
 }
 
 void
@@ -506,6 +506,6 @@ uim_scm_init(const char *verbose_level)
 void
 uim_scm_quit(void)
 {
-  void SigScm_Finalize();
+  SigScm_Finalize();
   uim_output = NULL;
 }
