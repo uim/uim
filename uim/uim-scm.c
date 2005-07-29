@@ -306,13 +306,13 @@ uim_scm_apply(uim_lisp proc, uim_lisp args)
 uim_lisp
 uim_scm_eval_c_string(const char *str)
 {
-  return Scm_eval_c_string(exp);
+  return Scm_eval_c_string(str);
 }
 
 uim_lisp
 uim_scm_return_value(void)
 {
-  return (uim_lisp)siod_return_value();
+  /* FIXME: This function should be removed. */
 }
 
 uim_lisp
@@ -354,7 +354,7 @@ uim_scm_cddr(uim_lisp list)
 uim_lisp
 uim_scm_cons(uim_lisp car, uim_lisp cdr)
 {
-  return SigScm_NewCons(car, cdr);
+  return Scm_NewCons(car, cdr);
 }
 
 uim_lisp
