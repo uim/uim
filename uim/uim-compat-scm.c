@@ -184,12 +184,6 @@ uim_scm_qintern_c_str(const char *str)
 }
 
 uim_lisp
-uim_scm_quote(uim_lisp obj)
-{
-  return uim_scm_list2(quote_sym, obj);
-}
-
-uim_lisp
 uim_scm_nth(uim_lisp n, uim_lisp lst)
 {
   uim_lisp form;

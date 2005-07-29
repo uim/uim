@@ -304,6 +304,12 @@ uim_scm_apply(uim_lisp proc, uim_lisp args)
 }
 
 uim_lisp
+uim_scm_quote(uim_lisp obj)
+{
+  return ScmOp_quote(obj);
+}
+
+uim_lisp
 uim_scm_eval_c_string(const char *str)
 {
   return Scm_eval_c_string(str);

@@ -105,6 +105,11 @@ uim_scm_require_file(const char *fn);
 uim_lisp
 uim_scm_eval(uim_lisp obj);
 uim_lisp
+uim_scm_apply(uim_lisp proc, uim_lisp args);
+uim_lisp
+uim_scm_quote(uim_lisp obj);
+
+uim_lisp
 uim_scm_eval_c_string(const char *str);
 uim_lisp
 uim_scm_return_value(void);
@@ -202,7 +207,6 @@ uim_lisp
 uim_scm_length(uim_lisp list);
 uim_lisp
 uim_scm_reverse(uim_lisp cell);
-
 uim_lisp
 uim_scm_list1(uim_lisp elm1);
 uim_lisp

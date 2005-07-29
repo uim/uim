@@ -88,8 +88,6 @@ uim_lisp
 uim_scm_qintern_c_str(const char *str);
 
 uim_lisp
-uim_scm_quote(uim_lisp obj);
-uim_lisp
 uim_scm_nth(uim_lisp n, uim_lisp lst);
 
 uim_lisp
