@@ -120,6 +120,23 @@ struct uim_context_ {
 };
 
 
+/*
+  Most of following definitions should be separated into another file such as
+  private.h since they are not relevant to input contexts. I'm not having
+  enough time to do and validate it. Anyone?  -- YamaKen 2005-07-30
+*/
+
+#if 0
+/*
+  Evaluating a S-expression in C involves the two problems, performance and
+  sourcecode-simpleness. Traditional UIM_EVAL_FSTRINGn() satisfies the latter,
+  but loses former. Manual sexp construction and evaluation by a sequence of
+  function calling is an opponent. The two should co-exist until better
+  solution has been implemented as a uim-scm API.  -- YamaKen 2005-07-30
+ */
+#define UIM_EVAL_SEXP_AS_STRING
+#endif
+
 #ifdef ENABLE_NLS
 #define UIM_PREPARE_SAVING_TEXTDOMAIN_CODESET() \
     char *enc, *orig_encoding = NULL; \

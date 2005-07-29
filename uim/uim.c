@@ -189,6 +189,9 @@ uim_create_context(void *ptr,
     uim_last_client_encoding = strdup(enc);
   }
 
+#ifdef UIM_EVAL_SEXP_AS_STRING
+  UIM_EVAL_FSTRING3(uc, "(create-context %d '%s '%s)", uc->id, lang, engine);
+#else
   {
     uim_lisp id_     = uim_scm_make_int(uc->id);
     uim_lisp lang_   = uim_scm_make_str(lang);
@@ -199,6 +202,7 @@ uim_create_context(void *ptr,
     uim_scm_apply(proc, args);
       
   }
+#ifdef  /* UIM_EVAL_SEXP_AS_STRING */
   return uc;
 }
 
