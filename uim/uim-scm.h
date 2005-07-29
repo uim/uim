@@ -53,8 +53,6 @@
 
 #include <stdio.h>
 #include "uim.h"
-#include "sigscheme/sigscheme.h"
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -65,7 +63,7 @@ extern "C" {
   uim companion tools should treat lisp object as opaque. struct
   uim_opaque exists only for type check and has no actual definition.
 */
-typedef ScmObj uim_lisp;
+typedef struct uim_opaque * uim_lisp;
 typedef void (*uim_func_ptr)(void);
 
 #define TRUEP(x) (uim_scm_eq(x, uim_scm_t()))
