@@ -29,6 +29,8 @@
 					   (else 'equal)))
 (assert-equal? "basic cond test4" 2 (cond ((assv 'b '((a 1) (b 2))) => cadr)
 					  (else #f)))
+(assert-equal? "basic cond test5" 'greater1 (cond ((> 3 2) 'greater0 'greater1)
+						  (else #f)))
 
 ;; case
 (assert-eq? "basic case check1" 'case1 (case 1

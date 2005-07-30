@@ -263,11 +263,11 @@ void SigScm_Initialize(void)
     /*=======================================================================
       Current Input & Output Initialization
     =======================================================================*/
-    current_input_port  = Scm_NewFilePort(stdin,  PORT_INPUT);
+    current_input_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
     SigScm_gc_protect(current_input_port);
-    current_output_port = Scm_NewFilePort(stdout, PORT_OUTPUT);
+    current_output_port = Scm_NewFilePort(stdout, "stdout", PORT_OUTPUT);
     SigScm_gc_protect(current_output_port);
-    current_error_port  = Scm_NewFilePort(stderr, PORT_OUTPUT);
+    current_error_port  = Scm_NewFilePort(stderr, "stderr", PORT_OUTPUT);
     SigScm_gc_protect(current_error_port);
 
 #if USE_SRFI1

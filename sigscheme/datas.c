@@ -650,7 +650,7 @@ ScmObj Scm_NewVector(ScmObj *vec, int len)
     return obj;
 }
 
-ScmObj Scm_NewFilePort(FILE *file, enum ScmPortDirection pdirection)
+ScmObj Scm_NewFilePort(FILE *file, const char *filename, enum ScmPortDirection pdirection)
 {
     ScmObj obj = SCM_NIL;
     ScmPortInfo *pinfo = (ScmPortInfo *)malloc(sizeof(ScmPortInfo));
@@ -661,6 +661,8 @@ ScmObj Scm_NewFilePort(FILE *file, enum ScmPortDirection pdirection)
     SCM_SETPORT_PORTDIRECTION(obj, pdirection);
     SCM_SETPORT_PORTTYPE(obj, PORT_FILE);
     pinfo->info.file_port.file = file;
+    pinfo->info.file_port.filename = (char*)malloc(sizeof(char) * strlen(filename) + 1);
+    strcpy(pinfo->info.file_port.filename, filename);
     pinfo->info.file_port.line = 0;
     pinfo->ungottenchar = 0;
     SCM_SETPORT_PORTINFO(obj, pinfo);

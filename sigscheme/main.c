@@ -55,8 +55,8 @@
 /* Very simple repl, please rewrite. */
 static void repl(void)
 {
-    ScmObj stdin_port  = Scm_NewFilePort(stdin,  PORT_INPUT);
-    ScmObj stdout_port = Scm_NewFilePort(stdout, PORT_INPUT);
+    ScmObj stdin_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
+    ScmObj stdout_port = Scm_NewFilePort(stdout, "stdout", PORT_INPUT);
     ScmObj s_exp, result;
 
     printf("sscm> ");

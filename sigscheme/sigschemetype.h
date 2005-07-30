@@ -104,6 +104,7 @@ struct _ScmPortInfo {
     union {
         struct {
             FILE *file;
+            char *filename;            
             int line;
         } file_port;
         
@@ -323,6 +324,7 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_SETPORT_PORTTYPE(a, ptype) (SCM_PORT_PORTTYPE(a) = ptype)
 #define SCM_SETPORT_PORTINFO(a, pinfo) (SCM_PORT_PORTINFO(a) = pinfo)
 #define SCM_PORTINFO_FILE(a) (SCM_PORT_PORTINFO(a)->info.file_port.file)
+#define SCM_PORTINFO_FILENAME(a) (SCM_PORT_PORTINFO(a)->info.file_port.filename)
 #define SCM_PORTINFO_LINE(a) (SCM_PORT_PORTINFO(a)->info.file_port.line)
 #define SCM_PORTINFO_STR(a) (SCM_PORT_PORTINFO(a)->info.str_port.port_str)
 #define SCM_PORTINFO_STR_CURRENT(a) (SCM_PORT_PORTINFO(a)->info.str_port.str_current)

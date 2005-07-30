@@ -215,7 +215,7 @@ ScmObj ScmOp_open_input_file(ScmObj filepath)
         SigScm_ErrorObj("open-input-file : cannot open file ", filepath);
 
     /* Allocate ScmPort */
-    return Scm_NewFilePort(f, PORT_INPUT);
+    return Scm_NewFilePort(f, SCM_STRING_STR(filepath), PORT_INPUT);
 }
 
 ScmObj ScmOp_open_output_file(ScmObj filepath)
@@ -231,7 +231,7 @@ ScmObj ScmOp_open_output_file(ScmObj filepath)
         SigScm_ErrorObj("open-output-file : cannot open file ", filepath);
 
     /* Return new ScmPort */
-    return Scm_NewFilePort(f, PORT_OUTPUT);
+    return Scm_NewFilePort(f, SCM_STRING_STR(filepath), PORT_OUTPUT);
 }
 
 ScmObj ScmOp_close_input_port(ScmObj port)
@@ -278,6 +278,7 @@ ScmObj ScmOp_read(ScmObj arg, ScmObj env)
 ScmObj ScmOp_read_char(ScmObj arg, ScmObj env)
 {
     ScmObj port = SCM_NIL;
+    char  *buf  = NULL;
     if (SCM_NULLP(arg)) {
 	/* (read-char) */
 	port = current_input_port;
@@ -288,7 +289,11 @@ ScmObj ScmOp_read_char(ScmObj arg, ScmObj env)
 	SigScm_ErrorObj("read-char : invalid parameter", arg);
     }
 
-    return SigScm_Read_Char(port);
+    /* TODO : implement this multibyte-char awareness */
+    buf = (char *)malloc(sizeof(char) * 2);
+    buf[0] = getc(SCM_PORTINFO_FILE(port));
+    buf[1] = '\0';
+    return Scm_NewChar(buf);
 }
 
 ScmObj ScmOp_peek_char(ScmObj arg, ScmObj env)
@@ -360,7 +365,6 @@ ScmObj ScmOp_display(ScmObj arg, ScmObj env)
 	port = SCM_CAR(arg);
 
     SigScm_DisplayToPort(port, obj);
-
     return SCM_UNDEF;
 }
 
@@ -456,6 +460,8 @@ ScmObj ScmOp_file_existsp(ScmObj filepath)
     f = fopen(SCM_STRING_STR(filepath), "r");
     if (!f)
 	return SCM_FALSE;
+
+    fclose(f);
 
     return SCM_TRUE;
 }

@@ -13,6 +13,8 @@
 (assert-equal? "apply check9" 1 (apply (lambda (x) x) '(1)))
 (assert-equal? "apply check10" '(1) (apply (lambda x x) '(1)))
 
+(assert-equal? "apply check11" 2 (apply (lambda x x 2) '(1)))
+
 (define compose
   (lambda (f g)
     (lambda args
