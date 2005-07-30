@@ -128,7 +128,7 @@ ScmObj Scm_NewString_With_StrLen(char *str, int len);
 ScmObj Scm_NewFunc(enum ScmFuncArgNum num_arg, ScmFuncType func);
 ScmObj Scm_NewClosure(ScmObj exp, ScmObj env);
 ScmObj Scm_NewVector(ScmObj *vec, int len);
-ScmObj Scm_NewFilePort(FILE *file, enum ScmPortDirection pdireciton);
+ScmObj Scm_NewFilePort(FILE *file, const char *filename, enum ScmPortDirection pdireciton);
 ScmObj Scm_NewStringPort(const char *str);  /* input only? */
 ScmObj Scm_NewContinuation(void);
 ScmObj Scm_NewCPointer(void *data);

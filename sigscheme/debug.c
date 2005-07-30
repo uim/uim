@@ -65,8 +65,8 @@ static void print_vector(FILE *f, ScmObj vec);
 =======================================*/
 void SigScm_Display(ScmObj obj)
 {
-    print_ScmObj_internal(stdout, obj);
-    fprintf(stdout, "\n");
+    print_ScmObj_internal(SCM_PORTINFO_FILE(current_output_port), obj);
+    fprintf(SCM_PORTINFO_FILE(current_output_port), "\n");
 }
 
 void SigScm_DisplayToPort(ScmObj port, ScmObj obj)
@@ -104,13 +104,15 @@ static void print_ScmObj_internal(FILE *f, ScmObj obj)
 	fprintf(f, "[ FreeCell ] \n");
     } else if (SCM_PORTP(obj)) {
 	fprintf(f, "#<");
+	/* input or output */
 	if (SCM_PORT_PORTDIRECTION(obj) == PORT_INPUT)
 	    fprintf(f, "i");
 	else
 	    fprintf(f, "o");
 	fprintf(f, "port ");
+	/* file or string */
 	if (SCM_PORT_PORTTYPE(obj) == PORT_FILE) {
-	    fprintf(f, "file");
+	    fprintf(f, "file %s", SCM_PORTINFO_FILENAME(obj));
 	} else if (SCM_PORT_PORTTYPE(obj) == PORT_STRING) {
 	    fprintf(f, "string");
 	}
