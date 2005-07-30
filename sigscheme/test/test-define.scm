@@ -19,6 +19,10 @@
     "DEADBEEF" x))
 (assert-eq? "func define" 10 (what2? 10))
 
+(define (nullarg)
+  "nullarg")
+(assert-equal? "nullarg test" "nullarg" (nullarg))
+
 (define (add x y)
   (+ x y))
 (assert-eq? "func define" 10 (add 2 8))

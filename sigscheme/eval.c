@@ -384,7 +384,7 @@ eval_loop:
 							 Scm_NewCons(map_eval(SCM_CDR(obj), env),
 								     SCM_NIL),
 							 SCM_CLOSURE_ENV(tmp));
-			    } else if (SCM_NULLP(arg) || SCM_CONSP(arg)) {
+			    } else if (SCM_CONSP(arg)) {
 				/*
 				 * (2) : (<variable1> <variable2> ...)
 				 * (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
@@ -394,6 +394,11 @@ eval_loop:
 				env = extend_environment(arg,
 							 map_eval(SCM_CDR(obj), env),
 							 SCM_CLOSURE_ENV(tmp));
+			    } else if (SCM_NULLP(arg)) {
+				/*
+				 * (2') : <variable> is '()
+				 */
+				env = SCM_CLOSURE_ENV(tmp);
 			    } else {
 				SigScm_ErrorObj("lambda : bad syntax with ", arg);
 			    }
@@ -559,7 +564,7 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 		    env = extend_environment(Scm_NewCons(args, SCM_NIL),
 					     Scm_NewCons(obj, SCM_NIL),
 					     SCM_CLOSURE_ENV(proc));
-		} else if (SCM_NULLP(args) || SCM_CONSP(args)) {
+		} else if (SCM_CONSP(args)) {
 		    /*
 		     * (2) : (<variable1> <variable2> ...)
 		     * (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
@@ -569,6 +574,11 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 		    env = extend_environment(args,
 					     obj,
 					     SCM_CLOSURE_ENV(proc));
+		} else if (SCM_NULLP(args)) {
+		    /*
+		     * (2') : <variable> is '()
+		     */
+		    env = SCM_CLOSURE_ENV(proc);
 		} else {
 		    SigScm_ErrorObj("lambda : bad syntax with ", args);
 		}
