@@ -317,10 +317,6 @@ ScmObj ScmOp_char_readyp(ScmObj arg, ScmObj env)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.3 Output
 ===========================================================================*/
-
-/*
- * TODO : implement this properly!!!
- */
 ScmObj ScmOp_write(ScmObj arg, ScmObj env)
 {
     ScmObj obj  = SCM_NIL;
@@ -338,13 +334,10 @@ ScmObj ScmOp_write(ScmObj arg, ScmObj env)
     if (!SCM_NULLP(arg) && !SCM_NULLP(SCM_CAR(arg)) && SCM_PORTP(SCM_CAR(arg)))
 	port = SCM_CAR(arg);
 
-    SigScm_DisplayToPort(port, obj);
+    SigScm_WriteToPort(port, obj);
     return SCM_UNDEF;
 }
 
-/*
- * TODO : implement this properly!!!
- */
 ScmObj ScmOp_display(ScmObj arg, ScmObj env)
 {
     ScmObj obj  = SCM_NIL;
@@ -366,6 +359,31 @@ ScmObj ScmOp_display(ScmObj arg, ScmObj env)
 
     SigScm_DisplayToPort(port, obj);
     return SCM_UNDEF;
+}
+
+ScmObj ScmOp_print(ScmObj arg, ScmObj env)
+{
+    ScmObj obj  = SCM_NIL;
+    ScmObj port = SCM_NIL;
+
+    if CHECK_1_ARG(arg)
+	SigScm_Error("print : invalid parameter\n");
+
+    /* get obj */
+    obj = SCM_CAR(arg);
+    arg = SCM_CDR(arg);
+
+    /* get port */
+    port = current_output_port;
+    
+    /* (display obj port) */
+    if (!SCM_NULLP(arg) && SCM_PORTP(SCM_CAR(arg)))
+	port = SCM_CAR(arg);
+
+    SigScm_DisplayToPort(port, obj);
+    SigScm_DisplayToPort(port, Scm_NewStringCopying("\n"));
+    return SCM_UNDEF;
+
 }
 
 ScmObj ScmOp_newline(ScmObj arg, ScmObj env)
@@ -422,8 +440,7 @@ ScmObj SigScm_load(const char *c_filename)
     /* open port */
     port = ScmOp_open_input_file(Scm_NewStringCopying(c_filename));
     s_expression = SCM_NIL;
-
-
+    
     /* read & eval cycle */
     for (s_expression = SigScm_Read(port);
 	 !EQ(s_expression, SCM_EOF);

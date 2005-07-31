@@ -57,7 +57,7 @@
 	    c = SCM_PORTINFO_UNGOTTENCHAR(port);				\
 	    SCM_PORTINFO_UNGOTTENCHAR(port) = 0;				\
 	} else {								\
-	    switch (SCM_PORT_PORTTYPE(port)) {					\
+	    switch (SCM_PORTINFO_PORTTYPE(port)) {			       	\
 		case PORT_FILE:							\
 		    c = getc(SCM_PORTINFO_FILE(port));				\
 		    break;							\
@@ -125,7 +125,7 @@ static int skip_comment_and_space(ScmObj port)
             while (1) {
 		SCM_PORT_GETC(port, c);
                 if (c == '\n') {
-		    if (SCM_PORT_PORTTYPE(port) == PORT_FILE) {
+		    if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE) {
 			SCM_PORTINFO_LINE(port)++;
 		    }
 		    break;
@@ -134,7 +134,7 @@ static int skip_comment_and_space(ScmObj port)
             }
             continue;
         } else if(c == '\n') {
-	    if (SCM_PORT_PORTTYPE(port) == PORT_FILE) {
+	    if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE) {
 		SCM_PORTINFO_LINE(port)++;
 	    }
 	    continue;
@@ -243,7 +243,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
 #endif
 
         if (c == EOF) {
-	    if (SCM_PORT_PORTTYPE(port) == PORT_FILE)
+	    if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE)
 		SigScm_Error("EOF inside list. (starting from line %d)\n", line + 1);
 	    else
 		SigScm_Error("EOF inside list.\n");
@@ -344,15 +344,11 @@ static ScmObj read_string(ScmObj port)
 		     */
 		    SCM_PORT_GETC(port, c);
 		    switch (c) {
-			case '\"':
-			    stringbuf[stringlen] = c;
-			    break;
-			case 'n':
-			    stringbuf[stringlen] = '\n';
-			    break;
-			case 't':
-			    stringbuf[stringlen] = '\t';
-			    break;
+			case '\"': stringbuf[stringlen] = c;    break;
+			case 'n':  stringbuf[stringlen] = '\n'; break;
+			case 'r':  stringbuf[stringlen] = '\r'; break;
+			case 'f':  stringbuf[stringlen] = '\f'; break;
+			case 't':  stringbuf[stringlen] = '\t'; break;
 			default:
 			    stringbuf[stringlen] = '\\';
 			    stringbuf[++stringlen] = c;

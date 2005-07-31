@@ -44,6 +44,11 @@
 /*=======================================
   File Local Struct Declarations
 =======================================*/
+enum OutputType {
+    AS_WRITE,   /* string is enclosed by ", char is written using #\ notation. */
+    AS_DISPLAY, /* string and char is written as-is */
+    UNKNOWN
+};
 
 /*=======================================
   File Local Macro Declarations
@@ -56,97 +61,164 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static void print_ScmObj_internal(FILE *f, ScmObj obj);
-static void print_list(FILE *f, ScmObj list);
-static void print_vector(FILE *f, ScmObj vec);
+static void print_ScmObj_internal(FILE *f, ScmObj obj, enum OutputType otype);
+static void print_char(FILE *f, ScmObj obj, enum OutputType otype);
+static void print_string(FILE *f, ScmObj obj, enum OutputType otype);
+static void print_list(FILE *f, ScmObj list, enum OutputType otype);
+static void print_vector(FILE *f, ScmObj vec, enum OutputType otype);
+static void print_port(FILE *f, ScmObj port, enum OutputType otype);
+static void print_etc(FILE *f, ScmObj obj, enum  OutputType otype);
 
 /*=======================================
    Function Implementations
 =======================================*/
 void SigScm_Display(ScmObj obj)
 {
-    print_ScmObj_internal(SCM_PORTINFO_FILE(current_output_port), obj);
+    print_ScmObj_internal(SCM_PORTINFO_FILE(current_output_port), obj, AS_WRITE);
     fprintf(SCM_PORTINFO_FILE(current_output_port), "\n");
+}
+
+void SigScm_WriteToPort(ScmObj port, ScmObj obj)
+{
+    FILE *f = NULL;
+
+    if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE) {
+	f = SCM_PORTINFO_FILE(port);
+	print_ScmObj_internal(f, obj, AS_WRITE);
+	return;
+    }
+
+    SigScm_Error("SigScm_WriteToPort : support write only for file port.");
 }
 
 void SigScm_DisplayToPort(ScmObj port, ScmObj obj)
 {
-    FILE *f = SCM_PORTINFO_FILE(port);
-    print_ScmObj_internal(f, obj);
+    FILE *f = NULL;
+
+    if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE) {
+	f = SCM_PORTINFO_FILE(port);
+	print_ScmObj_internal(f, obj, AS_DISPLAY);
+	return;
+    }
+
+    SigScm_Error("SigScm_DisplayToPort : support display only for file port.");
 }
 
-static void print_ScmObj_internal(FILE *f, ScmObj obj)
+static void print_ScmObj_internal(FILE *f, ScmObj obj, enum OutputType otype)
 {
-    if (SCM_CONSP(obj)) {
-	print_list(f, obj);
-    } else if (SCM_INTP(obj)) {
-	fprintf(f, "%d", SCM_INT_VALUE(obj));
-    } else if (SCM_SYMBOLP(obj)) {
-	fprintf(f, "%s", SCM_SYMBOL_NAME(obj));
-    } else if (SCM_CHARP(obj)) {
-	if (strcmp(SCM_CHAR_CH(obj), " ") == 0)
-	    fprintf(f, "#\\space");
-	else if(strcmp(SCM_CHAR_CH(obj), "\n") == 0)
-	    fprintf(f, "#\\newline");
-	else
-	    fprintf(f, "#\\%s", SCM_CHAR_CH(obj));
-    } else if (SCM_STRINGP(obj)) {
-	fprintf(f, "%s", SCM_STRING_STR(obj));
-    } else if (SCM_FUNCP(obj)) {
-	fprintf(f, "[ Func ]");
-    } else if (SCM_CLOSUREP(obj)) {
-	fprintf(f, "#<closure:");
-	print_ScmObj_internal(f, SCM_CLOSURE_EXP(obj));
-	fprintf(f, ">");
-    } else if (SCM_VECTORP(obj)) {
-	print_vector(f, obj);
-    } else if (SCM_FREECELLP(obj)) {
-	fprintf(f, "[ FreeCell ] \n");
-    } else if (SCM_PORTP(obj)) {
-	fprintf(f, "#<");
-	/* input or output */
-	if (SCM_PORT_PORTDIRECTION(obj) == PORT_INPUT)
-	    fprintf(f, "i");
-	else
-	    fprintf(f, "o");
-	fprintf(f, "port ");
-	/* file or string */
-	if (SCM_PORT_PORTTYPE(obj) == PORT_FILE) {
-	    fprintf(f, "file %s", SCM_PORTINFO_FILENAME(obj));
-	} else if (SCM_PORT_PORTTYPE(obj) == PORT_STRING) {
-	    fprintf(f, "string");
-	}
-	fprintf(f, ">");
-    } else if (SCM_CONTINUATIONP(obj)) {
-	fprintf(f, "(continuation)");
-    } else {
-        if (EQ(obj, SCM_NIL)) {
-            fprintf(f, "()");
-        } else if (EQ(obj, SCM_TRUE)) {
-            fprintf(f, "#t");
-        } else if (EQ(obj, SCM_FALSE)) {
-            fprintf(f, "#f");
-	} else if (EQ(obj, SCM_EOF)) {
-	    fprintf(f, "EOF");
-        } else if (EQ(obj, SCM_QUOTE)) {
-            fprintf(f, "QUOTE");
-        } else if (EQ(obj, SCM_QUASIQUOTE)) {
-            fprintf(f, "QUASIQUOTE");
-        } else if (EQ(obj, SCM_UNQUOTE)) {
-            fprintf(f, "UNQUOTE");
-        } else if (EQ(obj, SCM_UNQUOTE_SPLICING)) {
-            fprintf(f, "UNQUOTE_SPLICING");
-        } else if (EQ(obj, SCM_UNBOUND)) {
-	    fprintf(f, "UNBOUND");
-	} else if (EQ(obj, SCM_UNSPECIFIED)) {
-	    fprintf(f, "UNSPECIFIED");
-	} else if (EQ(obj, SCM_UNDEF)) {
-	    fprintf(f, "UNDEF");
-	}
+    switch (SCM_GETTYPE(obj)) {
+	case ScmInt:
+	    fprintf(f, "%d", SCM_INT_VALUE(obj));
+	    break;
+	case ScmCons:
+	    print_list(f, obj, otype);	    
+	    break;
+	case ScmSymbol:
+	    fprintf(f, "%s", SCM_SYMBOL_NAME(obj));	    
+	    break;
+	case ScmChar:
+	    print_char(f, obj, otype);
+	    break;
+	case ScmString:
+	    print_string(f, obj, otype);
+	    break;
+	case ScmFunc:
+	    fprintf(f, "#<subr>");
+	    break;
+	case ScmClosure:
+	    fprintf(f, "#<closure:");
+	    print_ScmObj_internal(f, SCM_CLOSURE_EXP(obj), otype);
+	    fprintf(f, ">");
+	    break;
+	case ScmVector:
+	    print_vector(f, obj, otype);
+	    break;
+	case ScmPort:
+	    print_port(f, obj, otype);
+	    break;
+	case ScmContinuation:
+	    fprintf(f, "#<subr continuation>");	    
+	    break;
+	case ScmEtc:
+	    print_etc(f, obj, otype);
+	    break;
+	case ScmCPointer:
+	    fprintf(f, "#<c_pointer %p>", SCM_C_POINTER_DATA(obj));
+	    break;
+	case ScmCFuncPointer:
+	    fprintf(f, "#<c_func_pointer %p>", (void*)SCM_C_FUNCPOINTER_FUNC(obj));
+	    break;
+	case ScmFreeCell:
+	    SigScm_Error("You cannot print ScmFreeCell, may be GC bug.\n");
+	    break;
+    }	
+}
+
+static void print_char(FILE *f, ScmObj obj, enum OutputType otype)
+{
+    switch (otype) {
+	case AS_WRITE:
+	    /*
+	     * in write, character objects are written using the #\ notation.
+	     */ 
+	    if (strcmp(SCM_CHAR_CH(obj), " ") == 0) {
+		fprintf(f, "#\\space");
+	    } else if(strcmp(SCM_CHAR_CH(obj), "\n") == 0) {
+		fprintf(f, "#\\newline");
+	    } else {
+		fprintf(f, "#\\%s", SCM_CHAR_CH(obj));
+	    }
+	    break;
+	case AS_DISPLAY:
+	    /*
+	     * in display, character objects appear in the reqpresentation as
+	     * if writen by write-char instead of by write.
+	     */
+	    fprintf(f, "%s", SCM_CHAR_CH(obj));
+	    break;
+	default:
+	    SigScm_Error("print_char : unknown output type\n");
     }
 }
 
-static void print_list(FILE *f, ScmObj list)
+static void print_string(FILE *f, ScmObj obj, enum OutputType otype)
+{
+    const char *str = SCM_STRING_STR(obj);
+    int  size = strlen(str);
+    int  i = 0;
+    char c = 0;
+
+    switch (otype) {
+	case AS_WRITE:
+	    /*
+	     * in write, strings that appear in the written representation are
+	     * enclosed in doublequotes, and within those strings backslash and
+	     * doublequote characters are escaped by backslashes.
+	     */
+	    fprintf(f, "\""); /* first doublequote */
+	    for (i = 0; i < size; i++) {
+		c = str[i];
+		switch (c) {
+		    case '\"': fprintf(f, "\\\""); break;
+		    case '\n': fprintf(f, "\\n"); break;
+		    case '\r': fprintf(f, "\\r"); break;
+		    case '\f': fprintf(f, "\\f"); break;
+		    case '\t': fprintf(f, "\\t"); break;
+		    default:
+			fprintf(f, "%c", str[i]); break;
+		}
+	    }
+	    fprintf(f, "\""); /* last doublequote */
+	    break;
+	case AS_DISPLAY:
+	    fprintf(f, "%s", SCM_STRING_STR(obj));
+	    break;
+	default:
+	    SigScm_Error("print_string : unknown output type\n");
+    }
+}
+
+static void print_list(FILE *f, ScmObj list, enum OutputType otype)
 {
     ScmObj car = SCM_NIL;
     ScmObj cdr = SCM_NIL;
@@ -160,14 +232,14 @@ static void print_list(FILE *f, ScmObj list)
     cdr = SCM_CDR(list);
     
     /* print car */
-    print_ScmObj_internal(f, car);
+    print_ScmObj_internal(f, car, otype);
     if (!SCM_NULLP(cdr))
 	fprintf(f, " ");
 
     /* print else for-each */
     for (tmp = cdr; ; tmp = SCM_CDR(tmp)) {
 	if (SCM_CONSP(tmp)) {
-	    print_ScmObj_internal(f, SCM_CAR(tmp));
+	    print_ScmObj_internal(f, SCM_CAR(tmp), otype);
 	    if (SCM_NULLP(SCM_CDR(tmp))) {
 		fprintf(f, ")");
 		return;
@@ -178,7 +250,7 @@ static void print_list(FILE *f, ScmObj list)
 	} else {
 	    if (!SCM_NULLP(tmp)) {
 		fprintf(f, ". ");
-		print_ScmObj_internal(f, tmp);
+		print_ScmObj_internal(f, tmp, otype);
 	    }
 
 	    fprintf(f, ")");
@@ -187,7 +259,7 @@ static void print_list(FILE *f, ScmObj list)
     }
 }
 
-static void print_vector(FILE *f, ScmObj vec)
+static void print_vector(FILE *f, ScmObj vec, enum OutputType otype)
 {
     ScmObj *v = SCM_VECTOR_VEC(vec); 
     int c_len = SCM_VECTOR_LEN(vec);
@@ -198,11 +270,61 @@ static void print_vector(FILE *f, ScmObj vec)
 
     /* print each element */
     for (i = 0; i < c_len; i++) {
-	print_ScmObj_internal(f, v[i]);
+	print_ScmObj_internal(f, v[i], otype);
 
 	if (i != c_len - 1)
 	    fprintf(f, " ");
     }
 
     fprintf(f, ")");
+}
+
+static void print_port(FILE *f, ScmObj port, enum OutputType otype)
+{
+    fprintf(f, "#<");
+
+    /* input or output */
+    if (SCM_PORT_PORTDIRECTION(port) == PORT_INPUT) {
+	fprintf(f, "i");
+    } else {
+	fprintf(f, "o");
+    }
+
+    fprintf(f, "port ");
+
+    /* file or string */
+    if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE) {
+	fprintf(f, "file %s", SCM_PORTINFO_FILENAME(port));
+    } else if (SCM_PORTINFO_PORTTYPE(port) == PORT_STRING) {
+	fprintf(f, "string");
+    }
+
+    fprintf(f, ">");
+}
+
+static void print_etc(FILE *f, ScmObj obj, enum  OutputType otype)
+{
+    if (EQ(obj, SCM_NIL)) {
+	fprintf(f, "()");
+    } else if (EQ(obj, SCM_TRUE)) {
+	fprintf(f, "#t");
+    } else if (EQ(obj, SCM_FALSE)) {
+	fprintf(f, "#f");
+    } else if (EQ(obj, SCM_EOF)) {
+	fprintf(f, "#<eof>");
+    } else if (EQ(obj, SCM_QUOTE)) {
+	fprintf(f, "#<quote>");
+    } else if (EQ(obj, SCM_QUASIQUOTE)) {
+	fprintf(f, "#<quasiquote>");
+    } else if (EQ(obj, SCM_UNQUOTE)) {
+	fprintf(f, "#<unquote>");
+    } else if (EQ(obj, SCM_UNQUOTE_SPLICING)) {
+	fprintf(f, "#<unquote_splicing>");
+    } else if (EQ(obj, SCM_UNBOUND)) {
+	fprintf(f, "#<unbound>");
+    } else if (EQ(obj, SCM_UNSPECIFIED)) {
+	fprintf(f, "#<unspecified>");
+    } else if (EQ(obj, SCM_UNDEF)) {
+	fprintf(f, "#<undef>");
+    }
 }

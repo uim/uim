@@ -101,6 +101,8 @@ enum ScmPortType {
 /* ScmPort Info */
 typedef struct _ScmPortInfo ScmPortInfo;
 struct _ScmPortInfo {
+    enum ScmPortType port_type; /* (PORT_FILE  | PORT_STRING) */
+    
     union {
         struct {
             FILE *file;
@@ -201,7 +203,6 @@ struct ScmObjInternal_ {
 
         struct ScmPort {
             enum ScmPortDirection port_direction; /* (PORT_INPUT | PORT_OUTPUT) */
-            enum ScmPortType      port_type;      /* (PORT_FILE  | PORT_STRING) */
             ScmPortInfo *port_info;
         } port;
 
@@ -317,12 +318,11 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_PORTP(a) (SCM_GETTYPE(a) == ScmPort)
 #define SCM_PORT(a)  (sigassert(SCM_PORTP(a)), a)
 #define SCM_PORT_PORTDIRECTION(a) (SCM_PORT(a)->obj.port.port_direction)
-#define SCM_PORT_PORTTYPE(a) (SCM_PORT(a)->obj.port.port_type)
 #define SCM_PORT_PORTINFO(a) (SCM_PORT(a)->obj.port.port_info)
 #define SCM_SETPORT(a) (SCM_SETTYPE(a, ScmPort))
 #define SCM_SETPORT_PORTDIRECTION(a, pdirection) (SCM_PORT_PORTDIRECTION(a) = pdirection)
-#define SCM_SETPORT_PORTTYPE(a, ptype) (SCM_PORT_PORTTYPE(a) = ptype)
 #define SCM_SETPORT_PORTINFO(a, pinfo) (SCM_PORT_PORTINFO(a) = pinfo)
+#define SCM_PORTINFO_PORTTYPE(a) (SCM_PORT_PORTINFO(a)->port_type)
 #define SCM_PORTINFO_FILE(a) (SCM_PORT_PORTINFO(a)->info.file_port.file)
 #define SCM_PORTINFO_FILENAME(a) (SCM_PORT_PORTINFO(a)->info.file_port.filename)
 #define SCM_PORTINFO_LINE(a) (SCM_PORT_PORTINFO(a)->info.file_port.line)

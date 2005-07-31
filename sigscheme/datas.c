@@ -360,7 +360,7 @@ static int is_pointer_to_heap(ScmObj obj)
 
 static void gc_mark_protected_obj(void)
 {
-    gc_protected_obj *item;
+    gc_protected_obj *item = NULL;
     for (item = protected_obj_list; item; item = item->next_obj) {
         mark_obj(item->obj);
     }
@@ -659,7 +659,7 @@ ScmObj Scm_NewFilePort(FILE *file, const char *filename, enum ScmPortDirection p
 
     SCM_SETPORT(obj);
     SCM_SETPORT_PORTDIRECTION(obj, pdirection);
-    SCM_SETPORT_PORTTYPE(obj, PORT_FILE);
+    pinfo->port_type = PORT_FILE;
     pinfo->info.file_port.file = file;
     pinfo->info.file_port.filename = (char*)malloc(sizeof(char) * strlen(filename) + 1);
     strcpy(pinfo->info.file_port.filename, filename);
@@ -679,7 +679,7 @@ ScmObj Scm_NewStringPort(const char *str)
 
     SCM_SETPORT(obj);
     SCM_SETPORT_PORTDIRECTION(obj, PORT_INPUT);
-    SCM_SETPORT_PORTTYPE(obj, PORT_STRING);
+    pinfo->port_type = PORT_STRING;
     pinfo->info.str_port.port_str = (char *)malloc(strlen(str) + 1);
     strcpy(pinfo->info.str_port.port_str, str);
     pinfo->info.str_port.str_current = pinfo->info.str_port.port_str;

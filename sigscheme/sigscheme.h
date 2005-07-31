@@ -306,6 +306,7 @@ ScmObj ScmOp_eof_objectp(ScmObj obj);
 ScmObj ScmOp_char_readyp(ScmObj arg, ScmObj env);
 ScmObj ScmOp_write(ScmObj arg, ScmObj env);
 ScmObj ScmOp_display(ScmObj arg, ScmObj env);
+ScmObj ScmOp_print(ScmObj arg, ScmObj env);
 ScmObj ScmOp_newline(ScmObj arg, ScmObj env);
 ScmObj ScmOp_write_char(ScmObj arg, ScmObj env);
 
@@ -330,6 +331,7 @@ void SigScm_ErrorObj(const char *msg, ScmObj obj);
 
 /* debug.c */
 void SigScm_Display(ScmObj obj);
+void SigScm_WriteToPort(ScmObj port, ScmObj obj);
 void SigScm_DisplayToPort(ScmObj port, ScmObj obj);
 
 #if USE_SRFI1

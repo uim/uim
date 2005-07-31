@@ -253,7 +253,7 @@ void SigScm_Initialize(void)
     Scm_InitSubr1("eof-object?"          , ScmOp_eof_objectp);
     Scm_InitSubrL("write"                , ScmOp_write);
     Scm_InitSubrL("display"              , ScmOp_display);
-    Scm_InitSubrL("print"                , ScmOp_display);
+    Scm_InitSubrL("print"                , ScmOp_print);
     Scm_InitSubrL("newline"              , ScmOp_newline);
     Scm_InitSubrL("write-char"           , ScmOp_write_char);
     Scm_InitSubr1("load"                 , ScmOp_load);

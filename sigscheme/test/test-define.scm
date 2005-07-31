@@ -56,6 +56,15 @@
     (+ c 3))
   (idefine-i a))
 
-(assert-eq? "internal define" 5 (idefine-o 2))
+(assert-eq? "internal define1" 5 (idefine-o 2))
+
+(define (idefine0 a)
+  (define (idefine1 . args)
+    (apply +  args))
+  (define (idefine2 c)
+    (+ c 2))
+  (+ (idefine1 1 2 3 4 5) (idefine2 a)))
+
+(assert-eq? "internal define2" 17 (idefine0 0))
 
 (total-report)
