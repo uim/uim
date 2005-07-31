@@ -220,7 +220,6 @@ protected:
     int mWidth, mHeight;
     bool mIsMapped;
     Convdisp *mConvdisp;
-    int mCharPos;
 };
 
 // one line preedit window for RootWindowStyle
@@ -239,6 +238,8 @@ private:
     int get_char_width(uchar ch);
 
     int m_x;
+    int mCharPos;
+    int mCursorX;
 };
 
 // window for over the spot style
@@ -668,30 +669,22 @@ void PeLineWin::draw_pe(pe_stat *p)
     clear();
     calc_extent(p);
     m_x = PE_LINE_WIN_MARGIN_X;
+    mCursorX = m_x;
     mCharPos = 0;
     std::list<pe_ustring>::iterator i;
     for (i = p->ustrings.begin(); i != p->ustrings.end(); i++) {
 	draw_segment(&(*i));
     }
+    draw_cursor();
 }
 
 void PeLineWin::draw_cursor()
 {
-    int x;
-    int caret_pos = mConvdisp->get_caret_pos();
-
-    if (mCharPos == caret_pos || (mCharPos == 1 && caret_pos == 0)) {
-	if (caret_pos == 0)
-	    x = PE_LINE_WIN_MARGIN_X - 1;
-	else
-	    x = m_x - 1;
-
-	XDrawLine(XimServer::gDpy, mPixmap, mGC,
-			x,
-			(PE_LINE_WIN_HEIGHT - PE_LINE_WIN_FONT_POS_Y) / 2 + 1,
-			x,
-			PE_LINE_WIN_FONT_POS_Y + 1);
-    }
+    XDrawLine(XimServer::gDpy, mPixmap, mGC,
+		    mCursorX,
+		    (PE_LINE_WIN_HEIGHT - PE_LINE_WIN_FONT_POS_Y) / 2 + 1,
+		    mCursorX,
+		    PE_LINE_WIN_FONT_POS_Y + 1);
 }
 
 int PeLineWin::get_char_width(uchar ch)
@@ -734,6 +727,8 @@ int PeLineWin::get_char_width(uchar ch)
 void PeLineWin::draw_segment(pe_ustring *s)
 {
     uString::iterator i;
+    int caret_pos = mConvdisp->get_caret_pos();
+
     for (i = s->s.begin(); i != s->s.end(); i++) {
 	uchar ch = *i;
 	int width = get_char_width(ch);
@@ -746,7 +741,8 @@ void PeLineWin::draw_segment(pe_ustring *s)
 			    m_x + width, PE_LINE_WIN_FONT_POS_Y + UNDERLINE_HEIGHT);
 	}
 	m_x += width;
-	draw_cursor();
+	if (mCharPos == caret_pos)
+	    mCursorX= m_x;
     }
 }
 
@@ -825,45 +821,47 @@ void PeOvWin::draw_ce(char_ent *ce, int len)
 		   WhitePixel(XimServer::gDpy,
 			      DefaultScreen(XimServer::gDpy)));
     int i;
-    mCharPos = 0;
     for (i = 0; i < len; i++) {
 	draw_a_ce(&ce[i]);
     }
+    draw_cursor(ce);
     XShapeCombineMask(XimServer::gDpy, mWin, ShapeBounding,
 		      0, 0, m_mask_pix, ShapeSet);
     do_map();
 }
 
+#define CURSOR_WIDTH	1
 void PeOvWin::draw_a_ce(char_ent *ce)
 {
     draw_char(ce->x, ce->y, ce->c, ce->stat);
-    mCharPos++;
 
     XFillRectangle(XimServer::gDpy, m_mask_pix, m_mask_pix_gc,
 		   ce->x, ce->y - ce->height + 2,
-		   ce->width, ce->height + UNDERLINE_HEIGHT - 1);
+		   ce->width + CURSOR_WIDTH, ce->height + UNDERLINE_HEIGHT - 1);
     if (ce->stat & PE_UNDERLINE) {
 	XDrawLine(XimServer::gDpy, mPixmap, mGC,
 		  ce->x, ce->y + UNDERLINE_HEIGHT,
 		  ce->x + ce->width, ce->y + UNDERLINE_HEIGHT);
     }
-    draw_cursor(ce);
 }
 
 void PeOvWin::draw_cursor(char_ent *ce)
 {
     int x;
     int caret_pos = mConvdisp->get_caret_pos();
+    char_ent *caret_ce;
 
-    if (mCharPos == caret_pos || (mCharPos == 1 && caret_pos == 0)) {
-	if (caret_pos == 0)
-	    x = ce->x;
-	else
-	    x = ce->x + ce->width - 1;
-	XDrawLine(XimServer::gDpy, mPixmap, mGC,
-			x, ce->y - ce->height,
-			x, ce->y);
+    if (caret_pos == 0) {
+	caret_ce = &ce[caret_pos];
+	x = caret_ce->x;
+    } else {
+	caret_ce = &ce[caret_pos - 1];
+	x = caret_ce->x + caret_ce->width;
     }
+
+    XDrawLine(XimServer::gDpy, mPixmap, mGC,
+		    x, caret_ce->y - caret_ce->height,
+		    x, caret_ce->y);
 }
 
 //
