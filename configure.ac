@@ -250,6 +250,8 @@ AC_DEFINE_UNQUOTED(GNOMELOCALEDIR, "$LOCALEDIR", [locale dir for gnome])
 AC_DEFINE_UNQUOTED(XLIB_DIR, "$x_libraries", [X11 Library Directory])
 
 AC_DEFINE_UNQUOTED(UIM_PIXMAPSDIR, "${DATADIR}/${PACKAGE}/pixmaps", [pixmaps directory])
+uim_pixmapsdir="${DATADIR}/${PACKAGE}/pixmaps"
+AC_SUBST(uim_pixmapsdir)
 
 dnl *****************************
 dnl *** Check for Gtk Library ***
