@@ -256,14 +256,15 @@
 
 (define m17nlib-push-key
   (lambda (mc key key-state)
-    (let* ((mid (m17nlib-context-mc-id mc)))
-      (cond
-       ((m17nlib-off-key? key key-state)
-	(m17nlib-context-set-on! mc #f)
-	#t) ;; #t means key event was consumed.
-       (else
-	(let ((mkey (m17nlib-translate-ukey-to-mkey key key-state)))
-	  (m17nlib-lib-push-symbol-key mid mkey)))))))
+    (let* ((mid (m17nlib-context-mc-id mc))
+	   (mkey (m17nlib-translate-ukey-to-mkey key key-state)))
+      (if (m17nlib-lib-push-symbol-key mid mkey)
+	  #t
+	  (if (m17nlib-off-key? key key-state)
+	      (begin
+		(m17nlib-context-set-on! mc #f)
+		#f)
+	      #f)))))
 
 (define m17nlib-press-key-handler
   (lambda (mc key key-state)
@@ -275,12 +276,12 @@
 		     (consumed? (car result))
 		     (commit-str (cdr result)))
 		(if (string=? commit-str "")
-		    (im-commit-raw mc)
+		    (if (m17nlib-off-key? key key-state)
+			#f
+			(im-commit-raw mc))
 		    (begin
 		      (im-commit mc commit-str)
-		      (m17nlib-lib-commit mid)
-		      (if (not consumed?)
-			  (im-commit-raw mc))))))
+		      (m17nlib-lib-commit mid)))))
 	  (m17nlib-proc-direct-state mc key key-state))
       (m17nlib-update-preedit mc)
       (m17nlib-update-candidate mc))))
