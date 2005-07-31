@@ -148,12 +148,13 @@ static int skip_comment_and_space(ScmObj port)
 
 static ScmObj read_sexpression(ScmObj port)
 {
+    int c  = 0;
+    int c1 = 0;
+
 #if DEBUG_PARSER
     printf("read_sexpression\n");
 #endif
 
-    int c  = 0;
-    int c1 = 0;
     while (1) {
         c = skip_comment_and_space(port);
 
@@ -225,16 +226,16 @@ static ScmObj read_sexpression(ScmObj port)
 
 static ScmObj read_list(ScmObj port, int closeParen)
 {
-#if DEBUG_PARSER
-    printf("read_list\n");
-#endif
-
     ScmObj list_head = SCM_NIL;
     ScmObj list_tail = SCM_NIL;
     ScmObj item = SCM_NIL;
     int line = SCM_PORTINFO_LINE(port);
-
     int c = 0;
+
+#if DEBUG_PARSER
+    printf("read_list\n");
+#endif
+
     while (1) {
         c = skip_comment_and_space(port);
 
@@ -286,15 +287,11 @@ static ScmObj read_list(ScmObj port, int closeParen)
 }
 
 static ScmObj read_char(ScmObj port)
-{
-#if DEBUG_PARSER
-    printf("read_char\n");
-#endif
-   
+{   
     char *ch = read_char_sequence(port);
 
 #if DEBUG_PARSER
-    printf("ch = %s\n", ch);
+    printf("read_char : ch = %s\n", ch);
 #endif
 
     /* check special sequence "space" and "newline" */
@@ -396,6 +393,8 @@ static ScmObj read_number_or_symbol(ScmObj port)
 
     /* read char sequence */
     str = read_char_sequence(port);
+    str_len = strlen(str);
+
     if (strlen(str) == 1
 	&& (strcmp(str, "+") == 0 || strcmp(str, "-") == 0))
     {
