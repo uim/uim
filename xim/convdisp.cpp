@@ -114,7 +114,7 @@ update_default_xftfont() {
 			NULL);
 	if (xftfont) {
 	    if (gXftFont)
-	      XftFontClose(XimServer::gDpy, gXftFont);
+		XftFontClose(XimServer::gDpy, gXftFont);
 	    free(gXftFontName);
 	    free(gXftFontLocale);
 	    gXftFont = xftfont;

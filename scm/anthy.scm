@@ -610,7 +610,7 @@
        ;; modifiers (except shift) => ignore
        ((and (modifier-key-mask key-state)
 	     (not (shift-key-mask key-state)))
-	(anthy-commit-raw ac))
+	  #f)
 
        (else	
 	(let* ((key-str (charcode->string 

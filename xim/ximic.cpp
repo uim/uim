@@ -254,7 +254,7 @@ bool icxatr::is_changed(int id)
 
 void icxatr::unset_change_mask(int id)
 {
-    change_mask &=(~(1 << id));
+    change_mask &= (~(1 << id));
 }
 
 void icxatr::print()
@@ -506,7 +506,7 @@ void XimIC::force_send_packet(void) {
 
 void XimIC::setICAttrs(void *val, int len)
 {
-    unsigned char *p=(unsigned char *)val;
+    unsigned char *p = (unsigned char *)val;
     int byte_order = mConn->byte_order();
     int i;
     for (i = 0; i < len;) {
