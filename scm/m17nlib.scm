@@ -258,13 +258,7 @@
   (lambda (mc key key-state)
     (let* ((mid (m17nlib-context-mc-id mc))
 	   (mkey (m17nlib-translate-ukey-to-mkey key key-state)))
-      (if (m17nlib-lib-push-symbol-key mid mkey)
-	  #t
-	  (if (m17nlib-off-key? key key-state)
-	      (begin
-		(m17nlib-context-set-on! mc #f)
-		#f)
-	      #f)))))
+      (m17nlib-lib-push-symbol-key mid mkey))))
 
 (define m17nlib-press-key-handler
   (lambda (mc key key-state)
@@ -277,7 +271,7 @@
 		     (commit-str (cdr result)))
 		(if (string=? commit-str "")
 		    (if (m17nlib-off-key? key key-state)
-			#f
+			(m17nlib-context-set-on! mc #f)
 			(im-commit-raw mc))
 		    (begin
 		      (im-commit mc commit-str)
