@@ -273,7 +273,6 @@ private:
     void make_ce_array();
     void draw_preedit();
     void do_draw_preedit();
-    int calc_ce_width(int b, int e);
 #ifdef FLASHPLAYER_WORKAROUND
     int get_ce_font_height(char_ent *ce, int len);
     int revised_spot_y;
@@ -1423,15 +1422,6 @@ void ConvdispOv::layoutCharEnt()
 #endif
 	}
     }
-}
-
-int ConvdispOv::calc_ce_width(int b, int e)
-{
-    int i, w = 0;
-    for (i = b; i < e; i++) {
-	w += m_ce[i].width;
-    }
-    return w;
 }
 
 #ifdef FLASHPLAYER_WORKAROUND
