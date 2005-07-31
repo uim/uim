@@ -1055,6 +1055,8 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp)
     ScmObj vars     = SCM_NIL;
     ScmObj vals     = SCM_NIL;
     ScmObj binding  = SCM_NIL;
+    ScmObj var      = SCM_NIL;
+    ScmObj val      = SCM_NIL;
 
     /* sanity check */
     if CHECK_2_ARGS(arg)
@@ -1073,15 +1075,18 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp)
     if (SCM_CONSP(bindings)) {
 	for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
 	    binding = SCM_CAR(bindings);
+	    var = SCM_CAR(binding);
+	    val = SCM_CAR(SCM_CDR(binding));
 
-	    /* first, temporally add symbol to the env*/
-	    vars = Scm_NewCons(SCM_CAR(binding), SCM_NIL);
-	    vals = Scm_NewCons(SCM_NIL, SCM_NIL);
+	    /* first, temporally add symbol to the env. Initial var is #<undef> */
+	    vars = Scm_NewCons(var,       SCM_NIL);
+	    vals = Scm_NewCons(SCM_UNDEF, SCM_NIL);
 	    env  = extend_environment(vars, vals, env);
 
 	    /* then, evaluate <init> val and (set! var val) */
-	    ScmExp_set(Scm_NewCons(SCM_CAR(binding),
-				   Scm_NewCons(ScmOp_eval(SCM_CAR(SCM_CDR(binding)), env), SCM_NIL)),
+	    ScmExp_set(Scm_NewCons(var,
+				   Scm_NewCons(val,
+					       SCM_NIL)),
 		       &env);
 	}
 
@@ -1246,7 +1251,7 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj *envp)
 
     /* sanity check */
     if (SCM_NULLP(var))
-	SigScm_Error("define : syntax error\n");
+	SigScm_ErrorObj("define : syntax error ", arg);
 
     /*========================================================================
       (define <variable> <expression>)
@@ -1298,7 +1303,7 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj *envp)
 	return ScmExp_define(arg, &env);
     }
 
-    SigScm_Error("define : syntax error\n");
+    SigScm_ErrorObj("define : syntax error ", arg);
     return SCM_NIL;
 }
 
