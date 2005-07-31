@@ -45,16 +45,17 @@ public:
     virtual ~Convdisp();
     void set_pe(pe_stat *);
     uString get_pe();
+    void set_focus();
+    void unset_focus();
+    InputContext *get_context();
+    int get_caret_pos();
     virtual void update_preedit() = 0;
     virtual void clear_preedit() = 0;
     virtual void update_icxatr() = 0;
-    virtual void set_focus();
-    virtual void unset_focus();
     virtual void move_candwin() = 0;
     virtual void set_im_lang(const char *im_lang);
     virtual void set_locale_name(const char *locale);
     virtual const char *get_locale_name();
-    virtual InputContext *get_context();
     virtual bool use_xft() = 0;
 
 protected:
