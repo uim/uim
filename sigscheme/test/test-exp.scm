@@ -98,7 +98,7 @@
 				      (* z x))))
 
 ;; letrec
-(assert-eq? "basic letrec test1" #t (let ((even?
+(assert-eq? "basic letrec test1" #t (letrec ((even?
 					   (lambda (n)
 					     (if (zero? n)
 						 #t
@@ -109,6 +109,10 @@
 						 #f
 						 (even? (- n 1))))))
 				      (even? 88)))
+
+(assert-equal? "basic letrec test2" "aiueo" (letrec ((a (lambda () b))
+						     (b "aiueo"))
+					      (a)))
 
 ;; begin
 (define x 0)

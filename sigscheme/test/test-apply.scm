@@ -15,6 +15,9 @@
 
 (assert-equal? "apply check11" 2 (apply (lambda x x 2) '(1)))
 
+(assert-equal? "apply check12" '() (apply (lambda (a . b) b) '(1)))
+(assert-equal? "apply check13" '() (apply (lambda (a b . c) c) '(1 2)))
+
 (define compose
   (lambda (f g)
     (lambda args
