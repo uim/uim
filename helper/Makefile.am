@@ -25,10 +25,10 @@ install-exec-hook-applet:
 	  $(LN_S) uim-toolbar-applet uim-helper-applet
 
 $(server_in_files): $(server_in_in_files) Makefile
-	sed s,@LIBEXECDIR@,$(libexecdir),g <$< >$@
-	sed s,@UIM_PIXMAPSDIR@,$(uim_pixmapsdir),g <$< >$@
+	sed s,@LIBEXECDIR@,$(libexecdir),g <$< >$<.tmp
+	sed s,@UIM_PIXMAPSDIR@,$(uim_pixmapsdir),g <$<.tmp >$@
 
-DISTCLEANFILES = GNOME_UimApplet.server.in GNOME_UimApplet.server
+DISTCLEANFILES = GNOME_UimApplet.server.in GNOME_UimApplet.server GNOME_UimApplet.server.in.in.tmp
 
 else
 install-exec-hook-applet:
