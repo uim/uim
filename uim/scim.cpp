@@ -175,7 +175,7 @@ init_scim()
             return uim_scm_f();
         }
 
-        config = config_module->create_config();
+        config = config_module->create_config("scim");
         if ( config.null() )
         {
             fprintf(stderr, "create_config failed\n");
