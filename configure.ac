@@ -482,64 +482,23 @@ AC_ARG_WITH(eb,
 ])
 
 AC_SUBST(EBLIB_LIBS)
-dnl This code was taken from librep-0.17
 
-dnl Save in case test with directory specified fails
-_cppflags=${CPPFLAGS}
-_ldflags=${LDFLAGS}
+dnl Check whether user wants libedit support
+dnl This code was based on openssh-4.1p1
+AC_ARG_WITH(libedit,
+        [  --with-libedit[[=DIR]] Enable libedit support],
+        [ if test "x$withval" != "xno" -a "x$withval" != "xyes"; then
+		CPPFLAGS="${CPPFLAGS} -I$withval/include"
+		LDFLAGS="${LDFLAGS} -L$withval/lib"
+	  fi ])
 
-AC_ARG_WITH(readline-prefix,
-        [  --with-readline-prefix=DIR path to readline compatible library],
-        [ if test "$withval" != "no" -a "$withval" != "yes"; then
-
-          CPPFLAGS="${CPPFLAGS} -I$withval/include"
-          LDFLAGS="${LDFLAGS} -L$withval/lib"
-        fi ])
-
-ORIG_LIBS="$LIBS"
-unset ac_lib_readline
-AC_CACHE_CHECK([for a readline compatible library], ac_lib_readline, [
-   for readline_lib in readline edit editline; do
-      for termcap_lib in "" termcap terminfo termlib curses ncurses; do
-         if test -z "$termcap_lib"; then
-            TRY_LIB="-l$readline_lib"
-         else
-            TRY_LIB="-l$readline_lib -l$termcap_lib"
-         fi
-         LIBS="$TRY_LIB"
-         AC_TRY_LINK_FUNC(readline, ac_lib_readline="$readline_lib $tcap")
-         if test -n "$ac_lib_readline"; then
-            break
-         fi
-      done
-      if test -n "$ac_lib_readline"; then
-         break
-      fi
-   done
-   if test -z "$ac_lib_readline"; then
-      ac_lib_readline="no"
-   fi
-])
-
-if test -n "$ac_lib_readline"; then
-   READLINE_LIBS="$LIBS"
-else
-   READLINE_LIBS=""
-fi
-LIBS="$ORIG_LIBS"
-
-if test -z "$READLINE_LIBS"; then
-   if test "$with_readline_prefix" = "yes"; then
-      AC_MSG_ERROR([Can't find readline libraries])
-   else
-        CPPFLAGS=${_cppflags}
-        LDFLAGS=${_ldflags}
-   fi
-fi
-
-AC_SUBST(READLINE_LIBS)
-
-
+AC_CHECK_LIB(edit, el_init,
+		[
+		    LIBEDIT_LIBS="-ledit -lcurses"
+		    AC_SUBST(LIBEDIT_LIBS)
+		], [ AC_MSG_ERROR(libedit not found) ],
+		[ -lcurses ]
+)
 
 AM_CONDITIONAL(M17NLIB, test x$use_m17nlib = xyes)
 AM_CONDITIONAL(SCIM, test x$use_scim = xyes)
