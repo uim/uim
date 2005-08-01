@@ -156,7 +156,7 @@ create_im_list()
 static uim_lisp
 init_scim()
 {
-    fprintf( stderr, "init_scm()\n" );
+    fprintf( stderr, "init_scim()\n" );
     if ( !initialized )
     {
         context_list.clear();
@@ -175,7 +175,7 @@ init_scim()
             return uim_scm_f();
         }
 
-        config = config_module->create_config( "scim" );
+        config = config_module->create_config();
         if ( config.null() )
         {
             fprintf(stderr, "create_config failed\n");
@@ -369,19 +369,39 @@ static SCIMContext *get_context_from_id(int id)
     return NULL;
 }
 
+static int
+ukey_mod_to_skey_mod(int mod)
+{
+  int rv = 0;
+  if (mod & UMod_Shift) {
+    rv |= SCIM_KEY_ShiftMask;
+  }
+  if (mod & UMod_Control) {
+    rv |= SCIM_KEY_ControlMask;
+  }
+  if (mod & UMod_Alt) {
+    rv |= SCIM_KEY_AltMask;
+  }
+  if (mod & UMod_Super) {  /* assuming mod3 */
+    rv |= SCIM_KEY_Mod3Mask;
+  }
+  if (mod & UMod_Hyper) {  /* assuming mod4 */
+    rv |= SCIM_KEY_Mod3Mask;
+  }
+  return rv;
+}
+
 static uim_lisp
 push_key(uim_lisp id_, uim_lisp key_, uim_lisp mod_)
 {
-    fprintf(stderr, "push_key!!!!!\n");
+    fprintf(stderr, "push_key\n");
     int id = uim_scm_c_int( id_ );
     int code = uim_scm_c_int( key_ );
     int mod = uim_scm_c_int( mod_ );
 
-    // FIXME
-    // adhoc
     KeyEvent scim_key;
     scim_key.code = code;
-    scim_key.mask = mod;
+    scim_key.mask = ukey_mod_to_skey_mod(mod);
 
     SCIMContext *ic = get_context_from_id( id );
     if ( ic->instance->process_key_event( scim_key ) )
@@ -395,14 +415,13 @@ push_key(uim_lisp id_, uim_lisp key_, uim_lisp mod_)
 static uim_lisp
 push_symbol_key(uim_lisp id_, uim_lisp key_, uim_lisp mod_)
 {
-    int id = uim_scm_c_int( id_ );
-    char *sym = uim_scm_c_str( key_ );
+    int id = uim_scm_c_int(id_);
+    const char *sym = uim_scm_refer_c_str(key_);
 
     fprintf(stderr, "push_symbol_key = %s\n", sym);
 
     KeyEvent scim_key;
     uim_keysymbol_to_scim_keysymbol(sym, &scim_key);
-    free( sym );
 
     SCIMContext *ic = get_context_from_id( id );
     if ( ic->instance->process_key_event( scim_key ) )
