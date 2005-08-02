@@ -416,18 +416,17 @@ static uim_lisp
 push_symbol_key(uim_lisp id_, uim_lisp key_, uim_lisp mod_)
 {
     int id = uim_scm_c_int(id_);
+    int mod = uim_scm_c_int(mod_);
     const char *sym = uim_scm_refer_c_str(key_);
-
     fprintf(stderr, "push_symbol_key = %s\n", sym);
 
     KeyEvent scim_key;
     uim_keysymbol_to_scim_keysymbol(sym, &scim_key);
+    scim_key.mask = ukey_mod_to_skey_mod(mod);
 
     SCIMContext *ic = get_context_from_id( id );
-    if ( ic->instance->process_key_event( scim_key ) )
-    {
-
-        return uim_scm_t();
+    if (ic->instance->process_key_event( scim_key )) {
+      return uim_scm_t();
     }
 
     return uim_scm_f();
