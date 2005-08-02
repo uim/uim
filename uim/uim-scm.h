@@ -145,18 +145,18 @@ uim_lisp
 uim_scm_make_func_ptr(uim_func_ptr func_ptr);
 
 void
-uim_scm_init_subr_0(char *name, uim_lisp (*fcn)(void));
+uim_scm_init_subr_0(const char *name, uim_lisp (*fcn)(void));
+void 
+uim_scm_init_subr_1(const char *name, uim_lisp (*fcn)(uim_lisp));
 void
-uim_scm_init_subr_1(char *name, uim_lisp (*fcn)(uim_lisp));
+uim_scm_init_subr_2(const char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp));
 void
-uim_scm_init_subr_2(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp));
+uim_scm_init_subr_3(const char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp));
 void
-uim_scm_init_subr_3(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp));
-void
-uim_scm_init_subr_4(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
+uim_scm_init_subr_4(const char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
 		   				 uim_lisp));
 void
-uim_scm_init_subr_5(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
+uim_scm_init_subr_5(const char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
 						uim_lisp, uim_lisp));
 
 /* constants */

@@ -188,17 +188,17 @@ static LISP ptrcons (void *ptr);
 static LISP funcptrcons (C_FUNC ptr);
 static LISP assoc (LISP x, LISP alist);
 
-static void init_subr (char *name, long type, SUBR_FUNC fcn);
-static void init_subr_0 (char *name, LISP (*fcn) (void));
-static void init_subr_1 (char *name, LISP (*fcn) (LISP));
-static void init_subr_2 (char *name, LISP (*fcn) (LISP, LISP));
-static void init_subr_2n (char *name, LISP (*fcn) (LISP, LISP));
-static void init_subr_3 (char *name, LISP (*fcn) (LISP, LISP, LISP));
-static void init_subr_4 (char *name, LISP (*fcn) (LISP, LISP, LISP, LISP));
-static void init_subr_5 (char *name, LISP (*fcn) (LISP, LISP, LISP, LISP, LISP));
-static void init_lsubr (char *name, LISP (*fcn) (LISP));
-static void init_fsubr (char *name, LISP (*fcn) (LISP, LISP));
-static void init_msubr (char *name, LISP (*fcn) (LISP *, LISP *));
+static void init_subr (const char *name, long type, SUBR_FUNC fcn);
+static void init_subr_0 (const char *name, LISP (*fcn) (void));
+static void init_subr_1 (const char *name, LISP (*fcn) (LISP));
+static void init_subr_2 (const char *name, LISP (*fcn) (LISP, LISP));
+static void init_subr_2n (const char *name, LISP (*fcn) (LISP, LISP));
+static void init_subr_3 (const char *name, LISP (*fcn) (LISP, LISP, LISP));
+static void init_subr_4 (const char *name, LISP (*fcn) (LISP, LISP, LISP, LISP));
+static void init_subr_5 (const char *name, LISP (*fcn) (LISP, LISP, LISP, LISP, LISP));
+static void init_lsubr (const char *name, LISP (*fcn) (LISP));
+static void init_fsubr (const char *name, LISP (*fcn) (LISP, LISP));
+static void init_msubr (const char *name, LISP (*fcn) (LISP *, LISP *));
 
 static LISP delq (LISP elem, LISP l);
 static void set_eval_hooks (long type, LISP (*fcn) (LISP, LISP *, LISP *));
@@ -472,7 +472,7 @@ my_err (char *message, LISP x)
       fprintf (siod_output, "%s\n", siod_err_msg);
       fflush (siod_output);
     }
-  if (siod_verbose_level >= 5)
+  if (siod_verbose_level >= 1)
     show_backtrace();
   if (errjmp_ok == 1)
     {
@@ -2595,67 +2595,67 @@ init_storage (void)
 }
 
 static void
-init_subr (char *name, long type, SUBR_FUNC fcn)
+init_subr (const char *name, long type, SUBR_FUNC fcn)
 {
   setvar (rintern (name), subrcons (type, name, fcn), NIL);
 }
 
 static void
-init_subr_0 (char *name, LISP (*fcn) (void))
+init_subr_0 (const char *name, LISP (*fcn) (void))
 {
   init_subr (name, tc_subr_0, (SUBR_FUNC) fcn);
 }
 
 static void
-init_subr_1 (char *name, LISP (*fcn) (LISP))
+init_subr_1 (const char *name, LISP (*fcn) (LISP))
 {
   init_subr (name, tc_subr_1, (SUBR_FUNC) fcn);
 }
 
 static void
-init_subr_2 (char *name, LISP (*fcn) (LISP, LISP))
+init_subr_2 (const char *name, LISP (*fcn) (LISP, LISP))
 {
   init_subr (name, tc_subr_2, (SUBR_FUNC) fcn);
 }
 
 static void
-init_subr_2n (char *name, LISP (*fcn) (LISP, LISP))
+init_subr_2n (const char *name, LISP (*fcn) (LISP, LISP))
 {
   init_subr (name, tc_subr_2n, (SUBR_FUNC) fcn);
 }
 
 static void
-init_subr_3 (char *name, LISP (*fcn) (LISP, LISP, LISP))
+init_subr_3 (const char *name, LISP (*fcn) (LISP, LISP, LISP))
 {
   init_subr (name, tc_subr_3, (SUBR_FUNC) fcn);
 }
 
 static void
-init_subr_4 (char *name, LISP (*fcn) (LISP, LISP, LISP, LISP))
+init_subr_4 (const char *name, LISP (*fcn) (LISP, LISP, LISP, LISP))
 {
   init_subr (name, tc_subr_4, (SUBR_FUNC) fcn);
 }
 
 static void
-init_subr_5 (char *name, LISP (*fcn) (LISP, LISP, LISP, LISP, LISP))
+init_subr_5 (const char *name, LISP (*fcn) (LISP, LISP, LISP, LISP, LISP))
 {
   init_subr (name, tc_subr_5, (SUBR_FUNC) fcn);
 }
 
 static void
-init_lsubr (char *name, LISP (*fcn) (LISP))
+init_lsubr (const char *name, LISP (*fcn) (LISP))
 {
   init_subr (name, tc_lsubr, (SUBR_FUNC) fcn);
 }
 
 static void
-init_fsubr (char *name, LISP (*fcn) (LISP, LISP))
+init_fsubr (const char *name, LISP (*fcn) (LISP, LISP))
 {
   init_subr (name, tc_fsubr, (SUBR_FUNC) fcn);
 }
 
 static void
-init_msubr (char *name, LISP (*fcn) (LISP *, LISP *))
+init_msubr (const char *name, LISP (*fcn) (LISP *, LISP *))
 {
   init_subr (name, tc_msubr, (SUBR_FUNC) fcn);
 }
