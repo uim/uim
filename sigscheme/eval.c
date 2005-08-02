@@ -65,6 +65,7 @@
   Variable Declarations
 =======================================*/
 ScmObj continuation_thrown_obj = NULL;
+ScmObj letrec_env = NULL;
 
 /*=======================================
   File Local Function Declarations
@@ -610,14 +611,21 @@ static ScmObj symbol_value(ScmObj var, ScmObj env)
     if (!SCM_SYMBOLP(var))
 	SigScm_ErrorObj("symbol_value : not symbol : ", var);
 
-    /* First, lookup the Environment */
+    /* first, lookup the environment */
     val = lookup_environment(var, env);
     if (!SCM_NULLP(val)) {
-        /* Variable is found in Environment, so returns its value */
+        /* variable is found in environment, so returns its value */
         return SCM_CAR(val);
     }
 
-    /* Next, look at the VCELL */
+    /* next, lookup the special environment for letrec */
+    val = lookup_environment(var, letrec_env);
+    if (!SCM_NULLP(val)) {
+        /* variable is found in letrec environment, so returns its value */
+        return SCM_CAR(val);
+    }
+
+    /* finally, look at the VCELL */
     val = SCM_SYMBOL_VCELL(var);
     if (EQ(val, SCM_UNBOUND)) {
         SigScm_ErrorObj("symbol_value : unbound variable ", var);
@@ -1049,14 +1057,15 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp)
 
 ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp)
 {
-    ScmObj env      = *envp;
-    ScmObj bindings = SCM_NIL;
-    ScmObj body     = SCM_NIL;
-    ScmObj vars     = SCM_NIL;
-    ScmObj vals     = SCM_NIL;
-    ScmObj binding  = SCM_NIL;
-    ScmObj var      = SCM_NIL;
-    ScmObj val      = SCM_NIL;
+    ScmObj env       = *envp;
+    ScmObj bindings  = SCM_NIL;
+    ScmObj body      = SCM_NIL;
+    ScmObj vars      = SCM_NIL;
+    ScmObj vals      = SCM_NIL;
+    ScmObj binding   = SCM_NIL;
+    ScmObj var       = SCM_NIL;
+    ScmObj val       = SCM_NIL;
+    ScmObj frame     = SCM_NIL;
 
     /* sanity check */
     if CHECK_2_ARGS(arg)
@@ -1078,24 +1087,34 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp)
 	    var = SCM_CAR(binding);
 	    val = SCM_CAR(SCM_CDR(binding));
 
-	    /* first, temporally add symbol to the env. Initial var is #<undef> */
-	    vars = Scm_NewCons(var,       SCM_NIL);
-	    vals = Scm_NewCons(SCM_UNDEF, SCM_NIL);
-	    env  = extend_environment(vars, vals, env);
-
-	    /* then, evaluate <init> val and (set! var val) */
-	    ScmExp_set(Scm_NewCons(var,
-				   Scm_NewCons(val,
-					       SCM_NIL)),
-		       &env);
+	    /* construct vars and vals list */
+	    vars = Scm_NewCons(var, vars);
+	    vals = Scm_NewCons(val, vals);
 	}
+
+	/* construct new frame for letrec_env */
+	frame = Scm_NewCons(vars, vals);
+	letrec_env = Scm_NewCons(frame, letrec_env);
+
+	/* extend environment by letrec_env */
+	env = extend_environment(SCM_CAR(frame), SCM_CDR(frame), env);
+
+	/* ok, vars of letrec is extended to env */
+	letrec_env = SCM_NIL;
 
 	/* set new env */
 	*envp = env;
 
+	/* evaluate vals */
+	for (; !SCM_NULLP(vals); vals = SCM_CDR(vals)) {
+	    SCM_SETCAR(vals, ScmOp_eval(SCM_CAR(vals), env));
+	}
+	
+	/* evaluate body */
 	return ScmExp_begin(body, &env);
     }
 
+    SigScm_Error("letrec : syntax error\n");
     return SCM_UNDEF;
 }
 

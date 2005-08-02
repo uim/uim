@@ -55,9 +55,18 @@
 /* Very simple repl, please rewrite. */
 static void repl(void)
 {
-    ScmObj stdin_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
-    ScmObj stdout_port = Scm_NewFilePort(stdout, "stdout", PORT_INPUT);
-    ScmObj s_exp, result;
+    ScmObj stack_start;
+    ScmObj stdin_port  = SCM_NIL;
+    ScmObj stdout_port = SCM_NIL;
+    ScmObj s_exp  = SCM_NIL;
+    ScmObj result = SCM_NIL;
+
+    /* start protecting stack */
+    SigScm_gc_protect_stack(&stack_start);
+
+    /* init variable */
+    stdin_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
+    stdout_port = Scm_NewFilePort(stdout, "stdout", PORT_OUTPUT); 
 
     printf("sscm> ");
 
@@ -72,6 +81,9 @@ static void repl(void)
     
     ScmOp_close_input_port(stdin_port);
     ScmOp_close_input_port(stdout_port);
+
+    /* now no need to protect stack */
+    SigScm_gc_unprotect_stack(&stack_start);
 }
 
 /*=======================================

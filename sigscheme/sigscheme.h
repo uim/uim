@@ -72,7 +72,7 @@ extern ScmObj current_error_port;
 #define DEBUG_PARSER  0
 #define DEBUG_GC      0
 #define USE_EUCJP     1
-#define USE_SRFI1     1
+#define USE_SRFI1     0
 
 #define CHECK_1_ARG(arg) \
     (SCM_NULLP(arg))

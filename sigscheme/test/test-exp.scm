@@ -114,6 +114,18 @@
 						     (b "aiueo"))
 					      (a)))
 
+(define mularg-apply
+  (letrec ((apply-2 apply)
+	   (append-to-last
+	    (lambda (lst)
+	      (if (null? (cdr lst))
+		  (car lst)
+		  (cons (car lst) (append-to-last (cdr lst)))))))
+    (lambda args
+      (apply-2 (car args) (append-to-last (cdr args))))))
+(assert-equal? "basic letrec test3" '((1) . 2) (mularg-apply cons '(1) '(2)))
+(assert-equal? "basic letrec test4" '(1 2) (mularg-apply cons 1 '((2))))
+
 ;; begin
 (define x 0)
 (assert-eq? "basic begin test1" 6 (begin

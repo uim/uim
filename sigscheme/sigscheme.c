@@ -64,6 +64,8 @@ ScmObjInternal SigScm_nil_impl, SigScm_true_impl, SigScm_false_impl, SigScm_eof_
 ScmObjInternal SigScm_quote_impl, SigScm_quasiquote_impl, SigScm_unquote_impl, SigScm_unquote_splicing_impl;
 ScmObjInternal SigScm_unbound_impl, SigScm_unspecified_impl, SigScm_undef_impl;
 
+extern ScmObj continuation_thrown_obj, letrec_env;
+
 /*=======================================
   Function Implementations
 =======================================*/
@@ -87,6 +89,11 @@ void SigScm_Initialize(void)
     SCM_NEW_ETC(SigScm_unspecified,      SigScm_unspecified_impl,      10);
     SCM_NEW_ETC(SigScm_undef,            SigScm_undef_impl,            11);
     /*=======================================================================
+      Externed Variable Initialization
+    =======================================================================*/
+    continuation_thrown_obj = SCM_NIL;
+    letrec_env              = SCM_NIL;
+    /*=======================================================================
       Storage Initialization
     =======================================================================*/
     SigScm_InitStorage();
@@ -97,7 +104,6 @@ void SigScm_Initialize(void)
     SCM_SYMBOL_VCELL(Scm_Intern("#f"))   = SCM_FALSE;
     SCM_SYMBOL_VCELL(Scm_Intern("else")) = SCM_TRUE;
     SCM_SYMBOL_VCELL(Scm_Intern("=>"))   = SCM_TRUE;
-
     /*=======================================================================
       Export Scheme Functions
     =======================================================================*/
@@ -259,7 +265,6 @@ void SigScm_Initialize(void)
     Scm_InitSubr1("load"                 , ScmOp_load);
     Scm_InitSubr1("file-exists?"         , ScmOp_file_existsp);
     Scm_InitSubr1("delete-file"          , ScmOp_delete_file);
-
     /*=======================================================================
       Current Input & Output Initialization
     =======================================================================*/
