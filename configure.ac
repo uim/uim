@@ -66,7 +66,7 @@ AC_ARG_WITH(scim,
       ;;
     esac
   ],
-  [ PKG_CHECK_MODULES(SCIM, scim >= 1.2.0, use_scim="yes",use_scim="no") ])
+  [use_scim="no"] )
 
 # ***********************
 # *** Tests for Anthy ***
