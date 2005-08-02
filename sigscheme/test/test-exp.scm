@@ -91,6 +91,19 @@
     (assert-eq? "lexical scope test5" 1 a)))
 (lexical-test)
 
+(assert-equal? "named let test" '((6 1 3) (-5 -2)) (let loop ((numbers '(3 -2 1 6 -5))
+							      (nonneg '())
+							      (neg '()))
+						     (cond ((null? numbers) (list nonneg neg))
+							   ((>= (car numbers) 0)
+							    (loop (cdr numbers)
+								  (cons (car numbers) nonneg)
+								  neg))
+							   ((< (car numbers) 0)
+							    (loop (cdr numbers)
+								  nonneg
+								  (cons (car numbers) neg))))))
+
 ;; let*
 (assert-eq? "basic let* test1" 70 (let ((x 2) (y 3))
 				    (let* ((x 7)

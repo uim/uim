@@ -119,7 +119,9 @@ static ScmObj add_environment(ScmObj var, ScmObj val, ScmObj env)
 
     /* add (var val) pair to the newest frame in env */
     if (SCM_NULLP(env)) {
-	env = Scm_NewCons(Scm_NewCons(var, val),
+	newest_frame = Scm_NewCons(Scm_NewCons(var, SCM_NIL),
+				   Scm_NewCons(val, SCM_NIL));
+	env = Scm_NewCons(newest_frame,
 			  SCM_NIL);
     } else if (SCM_CONSP(env)) {
 	newest_frame = SCM_CAR(env);
@@ -232,7 +234,7 @@ eval_loop:
 			/* QUOTE case */
 			break;
 		    default:
-			SigScm_ErrorObj("eval : invalid operation ", tmp);
+			SigScm_ErrorObj("eval : invalid operation ", obj);
 			break;
                 }
 		/*============================================================
@@ -986,6 +988,10 @@ ScmObj ScmExp_let(ScmObj arg, ScmObj *envp)
     if CHECK_2_ARGS(arg)
 	SigScm_Error("let : syntax error\n");
 
+    /* guess whether syntax is "Named let" */
+    if (SCM_SYMBOLP(SCM_CAR(arg)))
+	goto named_let;
+
     /* get bindings and body */
     bindings = SCM_CAR(arg);
     body     = SCM_CDR(arg);
@@ -1010,7 +1016,32 @@ ScmObj ScmExp_let(ScmObj arg, ScmObj *envp)
 	return ScmExp_begin(body, &env);
     }
 
-    return SCM_UNDEF;
+named_let:
+    /*========================================================================
+      (let <variable> <bindings> <body>)
+      <bindings> == ((<variable1> <init1>)
+                     (<variable2> <init2>)
+                     ...)
+    ========================================================================*/
+    bindings = SCM_CAR(SCM_CDR(arg));
+    body     = SCM_CDR(SCM_CDR(arg));
+    for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
+	binding = SCM_CAR(bindings);
+	vars = Scm_NewCons(SCM_CAR(binding), vars);
+	vals = Scm_NewCons(SCM_CAR(SCM_CDR(binding)), vals);
+    }
+
+    vars = ScmOp_reverse(vars);
+    vals = ScmOp_reverse(vals);
+
+    /* (define (<variable> <variable1> <variable2> ...>) <body>) */
+    ScmExp_define(Scm_NewCons(Scm_NewCons(SCM_CAR(arg),
+					  vars),
+			      body),
+		  &env);
+
+    /* (func <init1> <init2> ...) */
+    return Scm_NewCons(SCM_CAR(arg), vals);
 }
 
 ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp)
@@ -1288,7 +1319,7 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj *envp)
 		SCM_SETCAR(val, ScmOp_eval(body, env));
 	    } else {
 		/* add to environment (not create new frame) */
-		add_environment(var, ScmOp_eval(body, env), env);
+		env = add_environment(var, ScmOp_eval(body, env), env);
 	    }
 	}
 
