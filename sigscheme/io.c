@@ -434,8 +434,8 @@ ScmObj SigScm_load(const char *c_filename)
     ScmObj port         = SCM_NIL;
     ScmObj s_expression = SCM_NIL;
 
-    /* set stack start */
-    stack_start_pointer = &stack_start;
+    /* start protecting stack */
+    SigScm_gc_protect_stack(&stack_start);
 
     /* open port */
     port = ScmOp_open_input_file(Scm_NewStringCopying(c_filename));
@@ -452,7 +452,8 @@ ScmObj SigScm_load(const char *c_filename)
     /* close port */
     ScmOp_close_input_port(port);
 
-    stack_start_pointer = NULL;
+    /* now no need to protect stack */
+    SigScm_gc_unprotect_stack(&stack_start);
 
     return SCM_UNSPECIFIED;
 }
