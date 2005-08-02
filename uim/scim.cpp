@@ -618,15 +618,15 @@ static void uim_eval_im_deactivate_candidate_selector(int id)
 extern "C" void
 uim_plugin_instance_init(void)
 {
-    uim_scm_init_subr_0((char*)"scim-lib-init", init_scim);
-    uim_scm_init_subr_0((char*)"scim-lib-nr-input-methods", get_nr_input_methods);
-    uim_scm_init_subr_1((char*)"scim-lib-nth-input-method-lang", get_input_method_lang);
-    uim_scm_init_subr_1((char*)"scim-lib-nth-input-method-name", get_input_method_name);
-    uim_scm_init_subr_1((char*)"scim-lib-alloc-context", alloc_id);
-    uim_scm_init_subr_1((char*)"scim-lib-free-context", free_id);
-    uim_scm_init_subr_3((char*)"scim-lib-push-key", push_key);
-    uim_scm_init_subr_3((char*)"scim-lib-push-symbol-key", push_symbol_key);
-    uim_scm_init_subr_2((char*)"sicm-lib-nth-candidate", get_nth_candidate);
+    uim_scm_init_subr_0("scim-lib-init", init_scim);
+    uim_scm_init_subr_0("scim-lib-nr-input-methods", get_nr_input_methods);
+    uim_scm_init_subr_1("scim-lib-nth-input-method-lang", get_input_method_lang);
+    uim_scm_init_subr_1("scim-lib-nth-input-method-name", get_input_method_name);
+    uim_scm_init_subr_1("scim-lib-alloc-context", alloc_id);
+    uim_scm_init_subr_1("scim-lib-free-context", free_id);
+    uim_scm_init_subr_3("scim-lib-push-key", push_key);
+    uim_scm_init_subr_3("scim-lib-push-symbol-key", push_symbol_key);
+    uim_scm_init_subr_2("sicm-lib-nth-candidate", get_nth_candidate);
 }
 
 extern "C" void
