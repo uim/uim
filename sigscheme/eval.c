@@ -113,7 +113,7 @@ static ScmObj add_environment(ScmObj var, ScmObj val, ScmObj env)
     ScmObj new_varlist, new_vallist;
 
     /* sanity check */
-    if (SCM_NULLP(var) && SCM_NULLP(val))
+    if (SCM_NULLP(var))
 	return env;
 
     /* add (var val) pair to the newest frame in env */
@@ -442,7 +442,7 @@ eval_loop:
 			return tmp;
                     default:
                         /* What? */
-                        SigScm_Error("eval : What type of function? ", tmp);
+                        SigScm_ErrorObj("eval : What type of function? ", tmp);
                 }
 
             }
@@ -860,7 +860,7 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp)
 	    if (SCM_EQ(Scm_Intern("=>"), SCM_CAR(exps))) {
 		proc = ScmOp_eval(SCM_CAR(SCM_CDR(exps)), env);
 		if (EQ(ScmOp_procedurep(proc), SCM_FALSE))
-		    SigScm_Error("cond : the value of exp after => must be the procedure but got ", proc);
+		    SigScm_ErrorObj("cond : the value of exp after => must be the procedure but got ", proc);
 		
 		return ScmOp_apply(Scm_NewCons(proc,
 					       Scm_NewCons(Scm_NewCons(test, SCM_NIL),
