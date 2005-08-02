@@ -169,4 +169,16 @@
     (set! y (* x y))))
 (assert-eq? "do test3" 1024 (expt-do 2 10))
 
+(define (nreverse rev-it)
+  (do ((reved '() rev-it)
+       (rev-cdr (cdr rev-it) (cdr rev-cdr))
+       (rev-it rev-it rev-cdr))
+      ((begin
+	 (set-cdr! rev-it reved)
+	 (null? rev-cdr))
+       rev-it)))
+(assert-equal? "do test4" '(c b a) (nreverse '(a b c)))
+(assert-equal? "do test5" '((5 6) (3 4) (1 2)) (nreverse '((1 2) (3 4) (5 6))))
+
+
 (total-report)

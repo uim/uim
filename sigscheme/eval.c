@@ -445,7 +445,7 @@ eval_loop:
 			return tmp;
                     default:
                         /* What? */
-                        SigScm_ErrorObj("eval : What type of function? ", tmp);
+                        SigScm_ErrorObj("eval : What type of function? ", arg);
                 }
 
             }
@@ -1205,7 +1205,9 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp)
     ScmObj test       = SCM_NIL;
     ScmObj expression = SCM_NIL;
     ScmObj commands   = SCM_NIL;
+    ScmObj tmp_vars   = SCM_NIL;
     ScmObj tmp_steps  = SCM_NIL;
+    ScmObj obj        = SCM_NIL;
 
     /* sanity check */
     if (SCM_INT_VALUE(ScmOp_length(arg)) < 2)
@@ -1217,15 +1219,12 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp)
 	vars = Scm_NewCons(SCM_CAR(binding), vars);
 	vals = Scm_NewCons(ScmOp_eval(SCM_CAR(SCM_CDR(binding)), env), vals);
 
+	/* append <step> to steps */
 	step = SCM_CDR(SCM_CDR(binding));
-	if (!SCM_NULLP(step)) {
-	    step = SCM_CAR(step);
-
-	    /* append (<var> <step>) to steps */
-	    steps = Scm_NewCons(Scm_NewCons(SCM_CAR(binding),
-					    Scm_NewCons(step, SCM_NIL)),
-				steps);
-	}
+	if (SCM_NULLP(step))
+	    steps = Scm_NewCons(SCM_CAR(binding), steps);	
+	else
+	    steps = Scm_NewCons(SCM_CAR(step), steps);
     }
 
     /* now extend environment */
@@ -1240,12 +1239,31 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp)
     commands = SCM_CDR(SCM_CDR(arg));
 
     /* now excution phase! */
-    while (!SCM_EQ(ScmOp_eval(test, env), SCM_TRUE)) {
+    while (SCM_EQ(ScmOp_eval(test, env), SCM_FALSE)) {
+	/* execute commands */
 	ScmOp_eval(ScmExp_begin(commands, &env), env);
 
-	tmp_steps = steps;
-	for (; !SCM_NULLP(tmp_steps); tmp_steps = SCM_CDR(tmp_steps)) {
-	    ScmExp_set(SCM_CAR(tmp_steps), &env);
+	/*
+	 * Notice
+	 *
+	 * the result of the execution of <step>s must not depend on each other's
+	 * results. each excution must be done independently. So, we store the
+	 * results to the "vals" variable and set it in hand.
+	 */
+	vals = SCM_NIL;
+	for (tmp_steps = steps; !SCM_NULLP(tmp_steps); tmp_steps = SCM_CDR(tmp_steps)) {
+	    vals = Scm_NewCons(ScmOp_eval(SCM_CAR(tmp_steps), env), vals);
+	}
+	vals = ScmOp_reverse(vals);
+
+	/* set it */
+	for (tmp_vars = vars; !SCM_NULLP(tmp_vars) && !SCM_NULLP(vals); tmp_vars = SCM_CDR(tmp_vars), vals = SCM_CDR(vals)) {
+	    obj = lookup_environment(SCM_CAR(tmp_vars), env);
+	    if (!SCM_NULLP(obj)) {
+		SCM_SETCAR(obj, SCM_CAR(vals));
+	    } else {
+		SigScm_Error("do : broken env\n");
+	    }
 	}
     }
 
