@@ -23,6 +23,6 @@
         <oaf_attribute name="name" type="string" _value="uim Applet"/>
         <oaf_attribute name="description" type="string" _value="uim applet for the GNOME2 panel"/>
         <oaf_attribute name="panel:category" type="string" _value="Utility"/>
-        <oaf_attribute name="panel:icon" type="string" value="gnome-applets.png"/>
+        <oaf_attribute name="panel:icon" type="string" value="@UIM_PIXMAPSDIR@/uim-icon.png"/>
 </oaf_server>
 </oaf_info>

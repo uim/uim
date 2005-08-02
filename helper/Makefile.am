@@ -25,9 +25,10 @@ install-exec-hook-applet:
 	  $(LN_S) uim-toolbar-applet uim-helper-applet
 
 $(server_in_files): $(server_in_in_files) Makefile
-	sed s,@LIBEXECDIR@,$(libexecdir),g <$< >$@
+	sed s,@LIBEXECDIR@,$(libexecdir),g <$< >$<.tmp
+	sed s,@UIM_PIXMAPSDIR@,$(uim_pixmapsdir),g <$<.tmp >$@
 
-DISTCLEANFILES = GNOME_UimApplet.server.in GNOME_UimApplet.server
+DISTCLEANFILES = GNOME_UimApplet.server.in GNOME_UimApplet.server GNOME_UimApplet.server.in.in.tmp
 
 else
 install-exec-hook-applet:
@@ -78,7 +79,7 @@ if GTK2_4
 uim_pref_gtk_SOURCES  = pref-gtk.c pref-gtk-custom-widgets.c pref-gtk-custom-widgets.h
 uim_pref_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim-custom.la \
 			$(top_builddir)/uim/libuim.la
-uim_pref_gtk_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
+uim_pref_gtk_CPPFLAGS = $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
 uim_pref_gtk_CFLAGS   = @GTK2_CFLAGS@ -Wall
 endif
 

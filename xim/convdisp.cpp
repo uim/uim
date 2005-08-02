@@ -214,7 +214,6 @@ protected:
     XftDraw *mXftDraw;
     XftColor mXftColorFg;
     XftColor mXftColorFgRev;
-    int mGlyphWidth;
 #endif
     XFontSet mFontset;
     const char *mEncoding;
@@ -231,12 +230,16 @@ public:
 
     void draw_pe(pe_stat *p);
 
-    void draw_segment(pe_ustring *s);
-
 private:
     void calc_extent(pe_stat *p);
+    int calc_segment_extent(pe_ustring *s);
+    void draw_segment(pe_ustring *s);
+    void draw_cursor();
+    int get_char_width(uchar ch);
 
     int m_x;
+    int mCharPos;
+    int mCursorX;
 };
 
 // window for over the spot style
@@ -249,6 +252,7 @@ public:
     virtual ~PeOvWin();
 private:
     void draw_a_ce(char_ent *ce);
+    void draw_cursor(char_ent *ce);
     Pixmap m_mask_pix;
     GC m_mask_pix_gc;
 };
@@ -270,7 +274,6 @@ private:
     void make_ce_array();
     void draw_preedit();
     void do_draw_preedit();
-    int calc_ce_width(int b, int e);
 #ifdef FLASHPLAYER_WORKAROUND
     int get_ce_font_height(char_ent *ce, int len);
     int revised_spot_y;
@@ -370,6 +373,8 @@ PeWin::PeWin(Window pw, const char *im_lang, const char *encoding, const char *l
     if (mConvdisp->use_xft() == true) {
 #if HAVE_XFT_UTF8_STRING
 	mXftFontSize = DEFAULT_FONT_SIZE;
+	if (!gXftFont)
+	    init_default_xftfont();
 	if (!strcmp(gXftFontLocale, locale)) {
 	    mXftFont = gXftFont;
 	} else {
@@ -461,7 +466,6 @@ void PeWin::draw_char(int x, int y, uchar ch, int stat)
 #ifdef HAVE_XFT_UTF8_STRING
 	XGlyphInfo ginfo;
 	XftTextExtentsUtf8(XimServer::gDpy, mXftFont, (unsigned char *)utf8, len, &ginfo);
-	mGlyphWidth = ginfo.xOff;
 	if (stat & PE_REVERSE) {
 	    XftDrawRect(mXftDraw, &mXftColorFg, x, y - (mXftFontSize - 2), ginfo.xOff, mXftFontSize);
 	    XftDrawStringUtf8(mXftDraw, &mXftColorFgRev, mXftFont, x, y, (unsigned char *)utf8, len);
@@ -537,6 +541,9 @@ void PeWin::set_xftfont(const char *xfld)
 {
 	int size = get_fontsize(xfld);
 	const char *locale = mConvdisp->get_locale_name();
+
+	if (!gXftFont)
+	    init_default_xftfont();
 	if (size != -1 && (mXftFontSize != size || strcmp(locale, gXftFontLocale))) {
 	    if (mXftFont != gXftFont)
 		XftFontClose(XimServer::gDpy, mXftFont);
@@ -642,9 +649,14 @@ void PeWin::unmap()
 //
 // PeLineWin
 //
+#define PE_LINE_WIN_WIDTH	400
+#define PE_LINE_WIN_HEIGHT	28
+#define PE_LINE_WIN_FONT_POS_Y	20
+#define PE_LINE_WIN_MARGIN_X	2
+
 PeLineWin::PeLineWin(Window w, const char *im_lang, const char *encoding, const char *locale, Convdisp *cd) : PeWin(w, im_lang, encoding, locale, cd)
 {
-    set_size(400, 28); // set window height wider than its font height 16
+    set_size(PE_LINE_WIN_WIDTH, PE_LINE_WIN_HEIGHT);
     clear();
 }
 
@@ -656,43 +668,108 @@ void PeLineWin::draw_pe(pe_stat *p)
 {
     clear();
     calc_extent(p);
-    m_x = 0;
+    m_x = PE_LINE_WIN_MARGIN_X;
+    mCursorX = m_x;
+    mCharPos = 0;
     std::list<pe_ustring>::iterator i;
     for (i = p->ustrings.begin(); i != p->ustrings.end(); i++) {
 	draw_segment(&(*i));
     }
+    draw_cursor();
+}
+
+void PeLineWin::draw_cursor()
+{
+    XDrawLine(XimServer::gDpy, mPixmap, mGC,
+		    mCursorX,
+		    (PE_LINE_WIN_HEIGHT - PE_LINE_WIN_FONT_POS_Y) / 2 + 1,
+		    mCursorX,
+		    PE_LINE_WIN_FONT_POS_Y + 1);
+}
+
+int PeLineWin::get_char_width(uchar ch)
+{
+    int width = 0;
+    char utf8[6];
+
+    int len = utf8_wctomb((unsigned char *)utf8, ch);
+    utf8[len] = '\0';
+
+    if (mConvdisp->use_xft() == true) {
+#ifdef HAVE_XFT_UTF8_STRING
+	XGlyphInfo ginfo;
+	XftTextExtentsUtf8(XimServer::gDpy, mXftFont, (unsigned char *)utf8,
+			len, &ginfo);
+	width = ginfo.xOff;
+#endif
+    } else {
+	XRectangle ink, logical;
+
+	if (!strcmp(mEncoding, "UTF-8")) {
+	    XwcTextExtents(mFontset, &ch, 1, &ink, &logical);
+	} else {
+	    char *native_str;
+	    XimIM *im = get_im_by_id(mConvdisp->get_context()->get_ic()->get_imid());
+
+	    native_str = im->utf8_to_native_str(utf8);
+	    if (!native_str)
+		return 0;
+	    len = strlen(native_str);
+	    XmbTextExtents(mFontset, native_str, len, &ink, &logical);
+	    free(native_str);
+	}
+	width = logical.width;
+    }
+
+    return width;
 }
 
 void PeLineWin::draw_segment(pe_ustring *s)
 {
     uString::iterator i;
+    int caret_pos = mConvdisp->get_caret_pos();
+
     for (i = s->s.begin(); i != s->s.end(); i++) {
 	uchar ch = *i;
-	draw_char(m_x, 20, ch, s->stat);
-
-	int width;
-
-#if HAVE_XFT_UTF8_STRING
-	if (mConvdisp->use_xft() == true)
-	    width = mGlyphWidth;
-	else
-#endif
-	    width = 16;
+	int width = get_char_width(ch);
+	draw_char(m_x, PE_LINE_WIN_FONT_POS_Y, ch, s->stat);
+	mCharPos++;
 
 	if (s->stat & PE_UNDERLINE) {
 	    XDrawLine(XimServer::gDpy, mPixmap, mGC,
-			    m_x, 20 + UNDERLINE_HEIGHT,
-			    m_x + width, 20 + UNDERLINE_HEIGHT);
+			    m_x, PE_LINE_WIN_FONT_POS_Y + UNDERLINE_HEIGHT,
+			    m_x + width, PE_LINE_WIN_FONT_POS_Y + UNDERLINE_HEIGHT);
 	}
 	m_x += width;
+	if (mCharPos == caret_pos)
+	    mCursorX= m_x;
     }
+}
+
+int PeLineWin::calc_segment_extent(pe_ustring *s)
+{
+    int width = 0;
+    uString::iterator i;
+
+    for (i = s->s.begin(); i != s->s.end(); i++) {
+	uchar ch = *i;
+	width += get_char_width(ch);
+    }
+    return width;
 }
 
 void PeLineWin::calc_extent(pe_stat *p)
 {
-    int c;
-    c = p->get_char_count();
-    set_size(400, 28); // XXX need to extent
+    int width = 0;
+    std::list<pe_ustring>::iterator i;
+
+    for (i = p->ustrings.begin(); i != p->ustrings.end(); i++)
+	width += calc_segment_extent(&(*i));	
+
+    if (width < PE_LINE_WIN_WIDTH)
+	set_size(PE_LINE_WIN_WIDTH, PE_LINE_WIN_HEIGHT);
+    else
+	set_size(width + PE_LINE_WIN_MARGIN_X * 2, PE_LINE_WIN_HEIGHT);
 }
 
 
@@ -747,22 +824,44 @@ void PeOvWin::draw_ce(char_ent *ce, int len)
     for (i = 0; i < len; i++) {
 	draw_a_ce(&ce[i]);
     }
+    draw_cursor(ce);
     XShapeCombineMask(XimServer::gDpy, mWin, ShapeBounding,
 		      0, 0, m_mask_pix, ShapeSet);
     do_map();
 }
 
+#define CURSOR_WIDTH	1
 void PeOvWin::draw_a_ce(char_ent *ce)
 {
     draw_char(ce->x, ce->y, ce->c, ce->stat);
+
     XFillRectangle(XimServer::gDpy, m_mask_pix, m_mask_pix_gc,
 		   ce->x, ce->y - ce->height + 2,
-		   ce->width, ce->height + UNDERLINE_HEIGHT - 1);
+		   ce->width + CURSOR_WIDTH, ce->height + UNDERLINE_HEIGHT - 1);
     if (ce->stat & PE_UNDERLINE) {
 	XDrawLine(XimServer::gDpy, mPixmap, mGC,
 		  ce->x, ce->y + UNDERLINE_HEIGHT,
 		  ce->x + ce->width, ce->y + UNDERLINE_HEIGHT);
     }
+}
+
+void PeOvWin::draw_cursor(char_ent *ce)
+{
+    int x;
+    int caret_pos = mConvdisp->get_caret_pos();
+    char_ent *caret_ce;
+
+    if (caret_pos == 0) {
+	caret_ce = &ce[caret_pos];
+	x = caret_ce->x;
+    } else {
+	caret_ce = &ce[caret_pos - 1];
+	x = caret_ce->x + caret_ce->width;
+    }
+
+    XDrawLine(XimServer::gDpy, mPixmap, mGC,
+		    x, caret_ce->y - caret_ce->height,
+		    x, caret_ce->y);
 }
 
 //
@@ -826,6 +925,13 @@ void Convdisp::unset_focus()
 InputContext *Convdisp::get_context()
 {
     return mKkContext;
+}
+
+int Convdisp::get_caret_pos()
+{
+    if (!m_pe)
+	return 0;
+    return m_pe->caret_pos;
 }
 
 // Root window style
@@ -1061,7 +1167,7 @@ void ConvdispOv::draw_preedit()
     if (!check_win())
 	return;
 
-    m_ce = (char_ent *)malloc(sizeof(char_ent)*m_ce_len);
+    m_ce = (char_ent *)malloc(sizeof(char_ent) * m_ce_len);
     make_ce_array();
     layoutCharEnt();
     do_draw_preedit();
@@ -1210,7 +1316,7 @@ bool ConvdispOv::check_atr()
 	    m_atr->font_set = choose_default_fontset(mIMLang, mLocaleName);
     }
     if (!m_atr->has_atr(ICA_LineSpace)) {
-	m_atr->line_space = 16;
+	m_atr->line_space = DEFAULT_FONT_SIZE;
     }
 
     if (!m_atr->has_atr(ICA_Foreground))
@@ -1314,15 +1420,6 @@ void ConvdispOv::layoutCharEnt()
 #endif
 	}
     }
-}
-
-int ConvdispOv::calc_ce_width(int b, int e)
-{
-    int i, w = 0;
-    for (i = b; i < e; i++) {
-	w += m_ce[i].width;
-    }
-    return w;
 }
 
 #ifdef FLASHPLAYER_WORKAROUND

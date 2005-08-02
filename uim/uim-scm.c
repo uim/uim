@@ -43,6 +43,23 @@
 #include "uim-compat-scm.h"
 #include "context.h"
 
+/*
+  To avoid namespace pollution, all siod functions are defined as
+  static and wrapped into uim-scm.c by direct inclusion rather than
+  linked via public symbols. After elaboration of uim-scm API, the
+  Scheme interpreter implementation can be switched to another one
+  such as uim-scm-tinyscheme.c or uim-scm-gauche.c. But *.[hc] under
+  uim/ and *.scm are still depending on siod in several ways. At least
+  full test suite for *.scm files are required to migrate to another
+  Scheme implementation.  -- YamaKen 2004-12-21, 2005-01-10
+*/
+#include "slib.c"
+#ifdef UIM_COMPAT_SCM
+#include "uim-compat-scm.c"
+#endif
+
+static void siod_init_subr(const char *name, long type, SUBR_FUNC fcn);
+
 static uim_lisp true_sym;
 static uim_lisp false_sym;
 static uim_lisp protected_arg0;
@@ -433,7 +450,7 @@ uim_scm_require_file(const char *fn)
 }
 
 #if 0
-siod_init_subr(char *name, long type, SUBR_FUNC fcn)
+siod_init_subr(const char *name, long type, SUBR_FUNC fcn)
 {
   uim_lisp stack_start;
 
@@ -444,38 +461,38 @@ siod_init_subr(char *name, long type, SUBR_FUNC fcn)
 #endif
 
 void
-uim_scm_init_subr_0(char *name, uim_lisp (*func)(void))
+uim_scm_init_subr_0(const char *name, uim_lisp (*fcn)(void))
 {
   Scm_InitSubr0(name, func);
 }
 
 void
-uim_scm_init_subr_1(char *name, uim_lisp (*func)(uim_lisp))
+uim_scm_init_subr_1(const char *name, uim_lisp (*fcn)(uim_lisp))
 {
   Scm_InitSubr1(name, func);
 }
 
 void
-uim_scm_init_subr_2(char *name, uim_lisp (*func)(uim_lisp, uim_lisp))
+uim_scm_init_subr_2(const char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp))
 {
   Scm_InitSubr2(name, func);
 }
 
 void
-uim_scm_init_subr_3(char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp))
+uim_scm_init_subr_3(const char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp))
 {
   Scm_InitSubr3(name, func);
 }
 
 void
-uim_scm_init_subr_4(char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
+uim_scm_init_subr_4(const char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
 						uim_lisp))
 {
   Scm_InitSubr4(name, func);
 }
 
 void
-uim_scm_init_subr_5(char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
+uim_scm_init_subr_5(const char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
 						uim_lisp, uim_lisp))
 {
   Scm_InitSubr5(name, func);
