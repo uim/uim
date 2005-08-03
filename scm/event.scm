@@ -42,27 +42,7 @@
 ;; event definitions
 ;;
 
-;; TODO: register by define-event
-(define valid-event-types
-  '(unknown
-    client-info
-    reset
-    focus-in
-    focus-out
-    key
-    insert
-
-    commit
-    preedit-updated
-
-    timer
-    timer-set
-
-    action
-    chooser
-    chooser-update-req
-    chooser-update
-    ))
+(define valid-event-types ())
 
 (define event-rec-spec
   '((type unknown)))
@@ -81,10 +61,36 @@
 ;; use 'event' instead of 'downward-event' as record name for convenient use
 (define-record 'event downward-event-rec-spec)
 
-;; TODO
-;;(define define-event
-;;  (lambda (name spec)
-;;    ))
+;; Define an uim event
+;;
+;; define-event defines event-creator (foo-event-new) and accessors
+;; (foo-event-bar, foo-event-set-bar!) as same as define-record does. The
+;; difference is convenient definition and better performance of creator proc.
+;;
+;; Base part spec of event record and extended one are passed to define-event
+;; as separated. Be careful about the difference from define-record.
+;;
+;; .parameter name Event name as symbol (e.g. 'key)
+;; .parameter base-spec upward-event-rec-spec or downward-event-rec-spec
+;; .parameter ext-spec Additional field definitions as same as record-spec for
+;; define-record
+;; TODO: write test
+(define define-event
+  (lambda args
+    (let* ((name (car args))
+           (base-spec (alist-replace (cons 'type name)
+                                     (cadr args)))
+           (ext-spec (cddr args))
+           (base-defaults (map cadr base-spec))
+           (ext-defaults (map cadr ext-spec))
+           (creator (lambda args
+                      (append base-defaults
+                              args
+                              (list-tail ext-defaults (length args))))))
+      (define-record (symbolconc name '-event) (append base-spec ext-spec))
+      (eval (list 'define (symbolconc name '-event-new) creator)
+	    toplevel-env)
+      (set! valid-event-types (cons name valid-event-types)))))
 
 (define event-external-state
   (lambda (ev state-id)
@@ -92,102 +98,98 @@
       (and (procedure? state-reader)
 	   (state-reader state-id)))))
 
-(define-record 'timer-event
+(define-event 'timer
   downward-event-rec-spec)
 
-(define-record 'reset-event
+(define-event 'reset
   downward-event-rec-spec)
 
-(define-record 'focus-in-event
+(define-event 'focus-in
   downward-event-rec-spec)
 
-(define-record 'focus-out-event
+(define-event 'focus-out
   downward-event-rec-spec)
 
-(define-record 'client-info-event
-  (append
-   downward-event-rec-spec
-   '((locale      #f)
-     (bridge      "")     ;; "gtk", "uim-xim", "macuim", "scim-uim", ...
-     (application "")     ;; acquire via bridge-dependent methods such as basename `echo $0`
-     (expected    ""))))  ;; "direct", "number", "upper-alphabet", "ja-hiragana", ...
+(define-event 'client-info
+  downward-event-rec-spec
+  '((locale      #f)
+    (bridge      "")    ;; "gtk", "uim-xim", "macuim", "scim-uim", ...
+    (application "")    ;; acquire via bridge-dependent methods such as basename `echo $0`
+    (expected    "")))  ;; "direct", "number", "upper-alphabet", "ja-hiragana", ...
 
 ;; inserts a text into active IM context
 ;; For example, this can be used to insert a kanji word via clipboard
 ;; to register new dictionary entry
-(define-record 'insert-event
-  (append
-   downward-event-rec-spec
-   '((utext ()))))  ;; can include cursor position info
+(define-event 'insert
+  downward-event-rec-spec
+  '((utext ())))  ;; can include cursor position info
 
-(define-record 'commit-event
-  (append
-   upward-event-rec-spec
-   '((utext           ())    ;; can include cursor position info
-     (preedit-updated #t)    ;; can also update preedit as atomic event
-     (former-del-len  0)     ;; for surrounding text operation
-     (latter-del-len  0))))  ;; for surrounding text operation
+(define-event 'commit
+  upward-event-rec-spec
+  '((utext           ())   ;; can include cursor position info
+    (preedit-updated #t)   ;; can also update preedit as atomic event
+    (former-del-len  0)    ;; for surrounding text operation
+    (latter-del-len  0)))  ;; for surrounding text operation
 
-(define-record 'preedit-updated-event
-  (append
-   upward-event-rec-spec))
+(define-event 'preedit-updated
+  upward-event-rec-spec)
 
-(define-record 'action-event
-  (append
-   downward-event-rec-spec
-   '((action-id #f))))  ;; 'action_input_mode_direct
+(define-event 'action
+  downward-event-rec-spec
+  '((action-id #f)))  ;; 'action_input_mode_direct
 
-(define-record 'chooser-event
-  (append
-   downward-event-rec-spec
-   '((chooser-id #f)  ;; 'chooser_candidate_selector
-     (chosen     -1)  ;; negative value means that nothing is chosen
-     (confirm    #t)  ;; finish current choice transaction
-     (scope-top  -1))))
+(define-event 'choosable-updated
+  upward-event-rec-spec
+  '((choosable-id #f)    ;; 'chbl_candidates 'chbl_input_modes
+    (sender       #f)))  ;; originator choosable object of this event
 
-(define-record 'chooser-update-req-event
-  (append
-   downward-event-rec-spec
-   '((chooser-id   #f)  ;; 'chooser_candidate_selector 'chooser_all etc.
-     (initialize   #f)
-     (items-top    -1)
-     (nr-items     -1))))
+(define-event 'choosable-deactivated
+  upward-event-rec-spec
+  '((choosable-id #f)    ;; 'chbl_candidates 'chbl_input_modes
+    (sender       #f)))  ;; originator choosable object of this event
 
-(define-record 'chooser-update-event
-  (append
-   upward-event-rec-spec
-   '((chooser-id          #f)
-     (initialize          #f)  ;; invalidate all cached info about the chooser
-     (transition          #f)  ;; 'activate 'deactivate #f
-     (chooser-size        -1)  ;; number of items including hidden ones
-     (chosen              -1)  ;; item index currently chosen
-     (scope-top           -1)  ;; 
-     (scope-size-hint     -1)  ;; number of items displayable at a time
-     (title               #f)  ;; indication
-     (status              #f)  ;; indication
-     (updated-items-top   -1)
-     (updated-items       ()))))  ;; list of indications
+(define-event 'chooser
+  downward-event-rec-spec
+  '((widget-id  #f)  ;; 'chsr_floating_window0 'chsr_toolbar0
+    (chosen     -1)  ;; negative value means that nothing is chosen
+    (finish     #t)  ;; finish current choice transaction
+    (scope-top  -1)
+    (scope-size -1)))
+
+(define-event 'chooser-update-req
+  downward-event-rec-spec
+  '((widget-id  #f)  ;; 'chsr_floating_window0 'chsr_toolbar0
+    (initialize #f)
+    (items-top  -1)
+    (nr-items   -1)))
+
+(define-event 'chooser-update
+  upward-event-rec-spec
+  '((widget-id           #f)
+    (initialize          #f)    ;; invalidate all cached info about the chooser
+    (transition          #f)    ;; 'activate 'deactivate 'update
+    (chooser-size        -1)    ;; number of items including hidden ones
+    (chosen              -1)    ;; item index currently chosen
+    (scope-top           -1)    ;; 
+    (scope-size-hint     -1)    ;; number of items displayable at a time
+    (title               #f)    ;; indication
+    (status              #f)    ;; indication
+    (updated-items-top   -1)
+    (updated-items       ())))  ;; list of indications
 
 ;; #f means "don't care" for lkey, pkey, str, press and autorepeat
 ;; when comparing with other key-event. But modifiers require exact
 ;; match.
-(define-record 'key-event
-  (append
-   downward-event-rec-spec
-   (list
-    ;;(list text       #f)        ;; replace raw string with utext in future
-    (list 'str        #f)        ;; precomposed string
-    (list 'lkey       #f)        ;; logical keysym
-    (list 'pkey       #f)        ;; physical keysym
-    (list 'modifier   mod_None)  ;; set of modifiers
-    (list 'press      #t)        ;; indicates press/release
-    (list 'autorepeat #f))))     ;; whether generated by autorepeat or not
-(define key-event-new-internal key-event-new)
-
-(define key-event-new
-  (lambda args
-    (apply key-event-new-internal
-	   (append (event-new 'key) args))))
+(define-event 'key
+  downward-event-rec-spec
+  (list
+   ;;(list text       #f)         ;; replace raw string with utext in future
+   (list 'str        #f)        ;; precomposed string
+   (list 'lkey       #f)        ;; logical keysym
+   (list 'pkey       #f)        ;; physical keysym
+   (list 'modifier   mod_None)  ;; set of modifiers
+   (list 'press      #t)        ;; indicates press/release
+   (list 'autorepeat #f)))      ;; whether generated by autorepeat or not
 
 (define key-release-event-new
   (lambda args
