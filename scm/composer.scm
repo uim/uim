@@ -76,7 +76,7 @@
 ;; .returns Parent composer
 (define composer-parent-internal
   (lambda (self)
-    ((composer-method-table-parent-internal (composer-methods self)) self)))
+    ((composer-mtbl-parent-internal (composer-methods self)) self)))
 
 ;; Set a composer as parent of the composer
 ;; .parameter self Abstract composer object
@@ -84,8 +84,7 @@
 ;; .returns self
 (define composer-set-parent!
   (lambda (self)
-    ((composer-method-table-set-parent! (composer-methods self)) self)
-    self))
+    ((composer-mtbl-set-parent! (composer-methods self)) self) self))
 
 ;; Finalize composer object
 ;;
@@ -97,7 +96,7 @@
 ;; .parameter self Abstract composer object
 (define composer-finalize!
   (lambda (self)
-    ((composer-method-table-finalize! (composer-methods self)) self)))
+    ((composer-mtbl-finalize! (composer-methods self)) self)))
 
 ;; FIXME: describe naming rule
 ;; Get a symbol for programs that uniquely identifies the composer
@@ -105,14 +104,14 @@
 ;; .returns A symbol such as 'anthy
 (define composer-idname
   (lambda (self)
-    ((composer-method-table-idname (composer-methods self)) self)))
+    ((composer-mtbl-idname (composer-methods self)) self)))
 
 ;; Get a indication object providing information about the composer for human
 ;; .parameter self Abstract composer object
 ;; .returns An indication object
 (define composer-indication
   (lambda (self)
-    ((composer-method-table-indication (composer-methods self)) self)))
+    ((composer-mtbl-indication (composer-methods self)) self)))
 
 ;; Get a locale object that indicates what is currently composing
 ;;
@@ -122,7 +121,7 @@
 ;; .returns A locale object
 (define composer-current-locale
   (lambda (self)
-    ((composer-method-table-current-locale (composer-methods self)) self)))
+    ((composer-mtbl-current-locale (composer-methods self)) self)))
 
 ;; Get an ustr of child composers
 ;;
@@ -135,7 +134,7 @@
 ;; .returns An ustr of child composers. empty ustr if no children
 (define composer-children
   (lambda (self)
-    ((composer-method-table-children (composer-methods self)) self)))
+    ((composer-mtbl-children (composer-methods self)) self)))
 
 ;; Filter an event sent from parent
 ;;
@@ -147,7 +146,7 @@
 ;; .returns #f if not filtered. Otherwise filtered
 (define composer-filter-event!
   (lambda (self ev)
-    ((composer-method-table-filter-event! (composer-methods self)) self ev)))
+    ((composer-mtbl-filter-event! (composer-methods self)) self ev)))
 
 ;; Filter an event sent from a child
 ;;
@@ -161,7 +160,7 @@
 ;; .returns #f if not filtered. Otherwise filtered
 (define composer-filter-upward-event!
   (lambda (self sender ev)
-    ((composer-method-table-filter-upward-event! (composer-methods self)) self sender ev)))
+    ((composer-mtbl-filter-upward-event! (composer-methods self)) self sender ev)))
 
 ;; Get length of preedit text of composer
 ;;
@@ -171,7 +170,7 @@
 ;; .returns Preedit length counted in logical char
 (define composer-text-length
   (lambda (self)
-    ((composer-method-table-text-length (composer-methods self)) self)))
+    ((composer-mtbl-text-length (composer-methods self)) self)))
 
 ;; Get preedit text of composer
 ;; .parameter self Abstract composer object
@@ -181,7 +180,7 @@
 ;; .returns utext
 (define composer-text
   (lambda (self start len)
-    ((composer-method-table-text (composer-methods self)) self start len)))
+    ((composer-mtbl-text (composer-methods self)) self start len)))
 
 ;; Returns surrounding text in response to request from a child
 ;;
@@ -201,7 +200,7 @@
 ;; .returns ustr of uchar (editable utext)
 (define composer-supply-surrounding-text
   (lambda (self former-len latter-len)
-    ((composer-method-table-supply-surrounding-text (composer-methods self)) self former-len latter-len)))
+    ((composer-mtbl-supply-surrounding-text (composer-methods self)) self former-len latter-len)))
 
 ;; Get source event sequence of preedit text of composer
 ;;
@@ -222,7 +221,7 @@
 ;; .returns List of event
 (define composer-held-events
   (lambda (self start len)
-    ((composer-method-table-held-events (composer-methods self)) self start len)))
+    ((composer-mtbl-held-events (composer-methods self)) self start len)))
 
 ;; Fetch a blessed action of the composer or descendants
 ;; .parameter self Abstract composer object
@@ -230,7 +229,7 @@
 ;; .returns concrete action object or #f if not found
 (define composer-action
   (lambda (self act-id)
-    ((composer-method-table-action (composer-methods self)) self act-id)))
+    ((composer-mtbl-action (composer-methods self)) self act-id)))
 
 ;; Fetch a choosable object of the composer or descendants
 ;; .parameter self Abstract composer object
@@ -238,7 +237,7 @@
 ;; .returns choosable object or #f if not found
 (define composer-choosable
   (lambda (self cho-id)
-    ((composer-method-table-choosable (composer-methods self)) self cho-id)))
+    ((composer-mtbl-choosable (composer-methods self)) self cho-id)))
 
 ;; non-polymorphic methods
 
@@ -320,6 +319,13 @@
   (lambda (self former-len latter-len)
     (composer-supply-surrounding-text (composer-parent-internal self) former-len latter-len)))
 
+;; Activate an action by name
+;; .parameter self Abstract composer object
+;; .parameter act-id A symbol as action ID
+(define composer-action-activate!
+  (lambda (self act-id)
+    (composer-filter-event! self (action-event-new act-id))))
+
 ;; Forward a method invocation to active child
 ;; .parameter method A polymorphic method of composer
 ;; .parameter self Abstract composer object
@@ -337,7 +343,7 @@
 ;; CAUTION: The field order WILL sometimes be changed without notification to
 ;; be optimized. Don't rely on current layout. See also the comment at end of
 ;; this file.
-(define composer-method-table-rec-spec
+(define composer-mtbl-rec-spec
   '(;; object structure maintenance
     (parent-internal         #f)    ;; don't invoke this directly
     (set-parent!             #f)    ;; store parent by composer specific way
@@ -357,7 +363,7 @@
     ;; manipulator exportations
     (action                  #f)    ;; fetch a blessed action
     (choosable               #f)))  ;; fetch a choosable object
-(define-record 'composer-method-table composer-method-table-rec-spec)
+(define-record 'composer-mtbl composer-mtbl-rec-spec)
 
 
 ;;
@@ -460,7 +466,7 @@
     (composer-delegate-method composer-choosable self cho-id)))
 
 (define composer-base-method-table
-  (composer-method-table-new
+  (composer-mtbl-new
    composer-base-finalize!
    composer-base-idname
    composer-base-indication
@@ -477,13 +483,13 @@
 
 ;; To make your own method table, perform as follows. The copy-list
 ;; and setter combination is recommended to avoid being affected by
-;; change of composer-method-table definition about ordering or new
+;; change of composer-mtbl definition about ordering or new
 ;; member.
 ;;
-;;(define foo-composer-method-table
+;;(define foo-composer-mtbl
 ;;  (let ((m (copy-list composer-base-method-table)))
-;;    (composer-method-table-set-text!         m foo-composer-text)
-;;    (composer-method-table-set-filter-event! m foo-composer-filter-event!)
+;;    (composer-mtbl-set-text!         m foo-composer-text)
+;;    (composer-mtbl-set-filter-event! m foo-composer-filter-event!)
 ;;    m))
 ;;
-;;(composer-base-new foo-composer-method-table ())
+;;(composer-base-new foo-composer-mtbl ())
