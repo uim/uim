@@ -316,10 +316,14 @@ create_switcher(void)
   GtkWidget *setting_button_box;
   GtkWidget *button;
   GtkWidget *frame;
+  GdkPixbuf *icon;
 
   switcher_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(switcher_win),
 		       _("uim input method switcher"));
+
+  icon = gdk_pixbuf_new_from_file(UIM_PIXMAPSDIR"/uim-icon.png", NULL);
+  gtk_window_set_icon(GTK_WINDOW(switcher_win), icon);
 
   g_signal_connect(G_OBJECT(switcher_win), "destroy",
 		   G_CALLBACK(gtk_main_quit), NULL);
