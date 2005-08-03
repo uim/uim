@@ -65,6 +65,10 @@
   (lambda (lst str)
     (member str lst)))
 
+;; TODO: write test
+(define number->symbol
+  (compose string->symbol number->string))
+
 (define truncate-list
   (lambda (lst n)
     (if (or (< (length lst)
@@ -187,6 +191,14 @@
   (lambda (x bottom ceiling)
     (max bottom
 	 (min x ceiling))))
+
+(define inc
+  (lambda (n)
+    (+ n 1)))
+
+(define dec
+  (lambda (n)
+    (- n 1)))
 
 ;;
 ;; R5RS procedures (don't expect 100% compatibility)
@@ -666,6 +678,17 @@
       (- n 1))
      (else
       n))))
+
+;; TODO: write test
+;; Compensates an index number for an enumerable container
+;; .parameter idx Item index. Negative value instructs (abs idx)
+;; items before from last item
+;; .parameter size Size of the enumerable container
+(define compensate-index
+  (lambda (idx size)
+    (if (negative? idx)
+        (max 0 (+ size idx))
+        (clamp idx 0 (dec size)))))
 
 ;; update style-element vars
 ;; style-spec requires list of (style-element-name . validator)

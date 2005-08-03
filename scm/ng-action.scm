@@ -48,11 +48,13 @@
 
 ;; keep same as load-action.scm until legacy action.scm has been obsoleted
 (define indication-rec-spec
-  '((id           #f)    ;; must be first field
+  '((id           #f)    ;; must be first field. will be renamed to figure-id
     (iconic-label #f)    ;; utext or #f
     (label        #f)    ;; utext or #f
     (short-desc   #f)))  ;; utext or #f
 (define-record 'indication indication-rec-spec)
+(define indication-figure-id indication-id)
+(define indication-set-figure-id! indication-set-id!)
 
 (define label-indication-new
   (lambda (utext)
@@ -60,6 +62,13 @@
 	  #f     ;; iconic-label
 	  utext  ;; label
 	  #f)))  ;; short-desc
+
+(define internal-construct-indication-new
+  (lambda (label)
+    (indication-new 'null
+		    ""
+		    label
+		    (N_ "*An internal construct*"))))
 
 ;;
 ;; action
@@ -191,6 +200,17 @@
 ;; standard definitions
 ;;
 
+(define std-action-skeleton-new
+  (lambda (act-id label short-desc activate! ready?)
+    (action-skeleton-new act-id
+			 (lambda (act)
+			   (indication-new 'none
+					   ""
+					   label
+					   short-desc))
+			 activate!
+			 ready?)))
+
 (define std-indication-null
   (indication-new 'null
 		  ""
@@ -204,7 +224,7 @@
 		  (N_ "unknown")))
 
 ;; any UI should replace an indication that has 'separator as
-;; indication-id with real separator rather than label and icon
+;; indication-figure-id with real separator rather than label and icon
 (define std-indication-separator
   (indication-new 'separator
 		  (N_ "--")
