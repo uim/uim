@@ -882,7 +882,7 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp)
 	}
     }
 
-    return SCM_NIL;
+    return SCM_UNSPECIFIED;
 }
 
 ScmObj ScmExp_case(ScmObj arg, ScmObj *envp)
