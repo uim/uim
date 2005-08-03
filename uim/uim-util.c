@@ -600,7 +600,7 @@ is_setugidp(void)
 }
 
 void
-uim_init_util_subrs()
+uim_init_util_subrs(void)
 {
   uim_scm_init_subr_0("sys-libdir", sys_libdir);
   uim_scm_init_subr_0("sys-pkglibdir", sys_pkglibdir);
