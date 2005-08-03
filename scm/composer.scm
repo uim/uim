@@ -486,10 +486,10 @@
 ;; change of composer-mtbl definition about ordering or new
 ;; member.
 ;;
-;;(define foo-composer-mtbl
+;;(define foo-composer-method-table
 ;;  (let ((m (copy-list composer-base-method-table)))
 ;;    (composer-mtbl-set-text!         m foo-composer-text)
 ;;    (composer-mtbl-set-filter-event! m foo-composer-filter-event!)
 ;;    m))
 ;;
-;;(composer-base-new foo-composer-mtbl ())
+;;(composer-base-new foo-composer-method-table ())
