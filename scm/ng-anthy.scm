@@ -150,7 +150,7 @@
        seg-idx)))
 
 (define anthy-engine-method-table
-  (segconv-engine-method-table-new
+  (segconv-engine-mtbl-new
    anthy-engine-finalize!
    anthy-engine-reset!
    anthy-engine-set-source-str!

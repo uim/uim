@@ -107,7 +107,7 @@
 
 
 (define canna-engine-method-table
-  (segconv-engine-method-table-new
+  (segconv-engine-mtbl-new
    canna-engine-finalize!
    canna-engine-reset!
    canna-engine-set-source-str!
