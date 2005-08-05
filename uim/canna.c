@@ -156,7 +156,7 @@ create_context() {
 	dic_num = RkGetDicList(cc->rk_context_id,
 				   cc->diclist, BUFSIZE);
 	if (dic_num == 0) {
-	    return uim_scm_f();
+	    return uim_scm_make_int(i);
 	} else if (dic_num == -1) {
 	    /* invalid context number */
 	    return uim_scm_f();

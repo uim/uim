@@ -49,7 +49,6 @@
 #ifdef HAVE_ASSERT_H
 #include <assert.h>
 #endif
-#include <iconv.h>
 #include <uim/uim-util.h>
 #include "uim-fep.h"
 #include "str.h"
@@ -141,29 +140,20 @@ void init_callbacks(uim_context context)
   }
 
   if (g_opt.ddskk) {
-    iconv_t cd;
-    char *nokori_str = "残り";
-    size_t inbytesleft = strlen("残り");
-    size_t outbytesleft = 6;
+    void *cd;
+    const char *nokori_str = "残り";
     const char *enc;
 
-    s_nokori_str = malloc(outbytesleft + 1);
-    strcpy(s_nokori_str, "残り");
-    if (strcmp(enc = get_enc(), "EUC-JP") != 0) {
-      cd = (iconv_t)uim_iconv_open(enc, "EUC-JP");
-      if (cd == (iconv_t)-1) {
-        perror("error in iconv_open");
-        puts("-d option is not available");
-        done(EXIT_FAILURE);
+    if (uim_iconv->is_convertible(enc = get_enc(), "EUC-JP")) {
+      cd = uim_iconv->create(enc, "EUC-JP");
+      s_nokori_str = uim_iconv->convert(cd, nokori_str);
+      if (cd) {
+        uim_iconv->release(cd);
       }
-      if (iconv(cd, (ICONV_CONST char**)&nokori_str, &inbytesleft, &s_nokori_str, &outbytesleft) == (size_t)-1) {
-        perror("error in iconv");
-        puts("-d option is not available");
-        done(EXIT_FAILURE);
-      }
-      s_nokori_str[0] = '\0';
-      s_nokori_str -= (6 - outbytesleft);
-      iconv_close(cd);
+    } else {
+      perror("error in iconv_open");
+      puts("-d option is not available");
+      done(EXIT_FAILURE);
     }
   }
 }

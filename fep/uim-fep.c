@@ -721,10 +721,7 @@ static void main_loop(void)
 
     /* キーボード(stdin)からの入力 */
     if (FD_ISSET(g_win_in, &fds)) {
-      int i;
-      int key;
       int key_state = 0;
-      int key_len;
 
       if ((len = read_stdin(buf, sizeof(buf) - 1)) <= 0) {
         /* ここにはこないと思う */
@@ -740,41 +737,50 @@ static void main_loop(void)
         }
       } else {
 
+        int i;
         for (i = 0; i < len; i++) {
-          key = tty2key(buf[i]);
-          key_state |= tty2key_state(buf[i]);
-          if (key == UKey_Escape && (key_state & UMod_Meta) == 0) {
+          int key_len;
+          int *key_and_key_len = escape_sequence2key(buf + i, len - i);
+          int key = key_and_key_len[0];
 
-            int *key_and_key_len = escape_sequence2key(buf + i);
-            key = key_and_key_len[0];
+          if (key == UKey_Other) {
 
-            if (key == UKey_Escape) {
-              int not_enough = key_and_key_len[1];
-              if (not_enough && g_opt.timeout > 0) {
-                struct timeval t;
-                FD_ZERO(&fds);
-                FD_SET(g_win_in, &fds);
-                t.tv_sec = 0;
-                t.tv_usec = g_opt.timeout;
-                if (my_select(nfd, &fds, &t) > 0) {
-                  len += read_stdin(buf + len, sizeof(buf) - len - 1);
-                  buf[len] = '\0';
-                  debug(("read_again \"%s\"\n", buf));
-                  i--;
-                  continue;
-                }
-              }
-              if (i + 1 < len && key_state != UMod_Alt) {
-                key_state = UMod_Alt;
+            int not_enough;
+            key = tty2key(buf[i]);
+            key_state |= tty2key_state(buf[i]);
+            not_enough = key_and_key_len[1];
+
+            if (buf[i] == ESCAPE_CODE && i == len - 1) {
+              not_enough = TRUE;
+            }
+
+            if (not_enough && g_opt.timeout > 0) {
+              /* 入力が足らないので再び読み出す */
+              struct timeval t;
+              fd_set fds;
+              FD_ZERO(&fds);
+              FD_SET(g_win_in, &fds);
+              t.tv_sec = 0;
+              t.tv_usec = g_opt.timeout;
+              if (my_select(g_win_in + 1, &fds, &t) > 0) {
+                len += read_stdin(buf + len, sizeof(buf) - len - 1);
+                buf[len] = '\0';
+                debug(("read_again \"%s\"\n", buf));
+                i--;
                 continue;
               }
-              key_len = 1;
-            } else {
-              key_len = key_and_key_len[1];
             }
-          } else {
+
+            if (buf[i] == ESCAPE_CODE && i < len - 1) {
+              key_state = UMod_Alt;
+              continue;
+            }
             key_len = 1;
+
+          } else { /* key != UKey_Other */
+            key_len = key_and_key_len[1];
           }
+
           if (g_opt.print_key) {
             print_key(key, key_state);
           } else {
@@ -788,6 +794,7 @@ static void main_loop(void)
               }
             }
           }
+
           key_state = 0;
           i += (key_len - 1);
         }

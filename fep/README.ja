@@ -30,16 +30,23 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのfepです。
   のように書きます。
 
   注意
-  デフォルトのキーバインドでは、uim-fepでanthyのカタカナモードなどへの
-  モード変更ができません。primeでは全角英数モードへのモード変更ができ
-  ません。これらのモード変更を行うためには次のように
-  ~/.uimに書きます。
+  デフォルトのキーバインドでは、uim-fepでは以下の操作が行えません。
+  anthy
+  文節を縮める
+  prime
+  全角英数モードにモード変更
+  canna
+  文節を縮める
+
+  これらの操作を行うためにはuim-prefでキーバインドを設定するか~/.uimに次のように書きます。
 
   例
-  (define-key anthy-wide-latin-key? "L")
-  (define-key anthy-hankaku-kana-key? "<Control>q")
-  (define-key anthy-kana-toggle-key? "q")
+  (require-module "anthy")
+  (define-key anthy-shrink-segment-key? '("tab" "<IgnoreCase><Control>i" "<Shift>left"))
+  (require-module "prime")
   (define-key prime-wide-latin-key? '("<Control><Alt>l" "<Control>L"))
+  (require-module "canna")
+  (define-key canna-shrink-segment-key? '("tab" "<IgnoreCase><Control>i" "<Shift>left"))
 
 
 * 環境変数
