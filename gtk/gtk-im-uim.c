@@ -159,8 +159,17 @@ static void
 im_uim_commit_string(void *ptr, const char *str)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
+  uim_bool show_state;
+  gint x, y;
+
   g_return_if_fail(str);
   g_signal_emit_by_name(uic, "commit", str);
+
+  show_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
+  if (show_state == UIM_TRUE) {
+    gdk_window_get_origin(uic->win, &x, &y);
+    caret_state_indicator_update(uic->caret_state_indicator, x, y, NULL);
+  }
 }
 
 static void
@@ -729,8 +738,13 @@ update_prop_label_cb(void *ptr, const char *str)
 
   show_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
   if (show_state == UIM_TRUE) {
+    gint timeout;
     gdk_window_get_origin(uic->win, &x, &y);
     caret_state_indicator_update(uic->caret_state_indicator, x, y, str);
+    timeout = uim_scm_symbol_value_int("bridge-show-input-state-time-length");
+    if(timeout != 0)
+      caret_state_indicator_set_timeout(uic->caret_state_indicator, timeout * 1000);
+    gtk_widget_show_all(uic->caret_state_indicator);
   }
 }
 

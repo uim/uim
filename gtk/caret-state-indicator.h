@@ -40,3 +40,6 @@ caret_state_indicator_update(GtkWidget *window, gint topwin_x, gint topwin_y, co
 
 void
 caret_state_indicator_set_cursor_location(GtkWidget *window, GdkRectangle *cursor_location);
+
+void
+caret_state_indicator_set_timeout(GtkWidget *window, gint timeout);

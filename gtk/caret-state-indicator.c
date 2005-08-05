@@ -67,14 +67,16 @@ caret_state_indicator_update(GtkWidget *window, gint topwin_x, gint topwin_y, co
   GtkWidget *label = g_object_get_data(G_OBJECT(window), "label");
   gint cursor_x = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), "cursor_x"));
   gint cursor_y = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), "cursor_y"));
-  gchar **labels;
 
-  labels = g_strsplit(str, "\t", 2);
+  if(str) {
+    gchar **labels;
+    
+    labels = g_strsplit(str, "\t", 2);
+
+    gtk_label_set_text(GTK_LABEL(label), labels[0]);
+    g_strfreev(labels);
+  }
   gtk_window_move(GTK_WINDOW(window), topwin_x + cursor_x, topwin_y + cursor_y + 3);
-  gtk_label_set_text(GTK_LABEL(label), labels[0]);
-  g_strfreev(labels);
-  gtk_widget_show_all(window);
-  g_timeout_add(2000, caret_state_indicator_timeout, (gpointer)window);
 }
 
 void
@@ -84,6 +86,13 @@ caret_state_indicator_set_cursor_location(GtkWidget *window, GdkRectangle *curso
 		    GINT_TO_POINTER(cursor_location->x));
   g_object_set_data(G_OBJECT(window), "cursor_y",
 		    GINT_TO_POINTER(cursor_location->y+cursor_location->height));
+}
+
+
+void
+caret_state_indicator_set_timeout(GtkWidget *window, gint timeout)
+{
+  g_timeout_add(timeout, caret_state_indicator_timeout, (gpointer)window);
 }
 
 static gint
