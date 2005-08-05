@@ -376,6 +376,10 @@
 		     (_ "XIM settings")
 		     (_ "long description will be here."))
 
+(define-custom-group 'preedit
+		     (_ "Preedit settings of XIM")
+		     (_ "long description will be here."))
+
 (define-custom 'uim-xim-use-xft-font? #f
   '(xim preedit)
   '(boolean)
