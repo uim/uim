@@ -1,12 +1,12 @@
 [Desktop Entry]
 Type=Application
 Encoding=UTF-8
-Name=preference of uim
+Name=Preference of uim
 Name[ja]=uimの設定
 Comment=
 Comment[ja]=
 Exec=uim-pref-gtk
-Icon=uim.png
+Icon=@uim_pixmapsdir@/uim-icon.png
 Terminal=false
 MimeType=text/plain
 Categories=Settings

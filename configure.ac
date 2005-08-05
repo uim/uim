@@ -743,7 +743,9 @@ AC_CONFIG_FILES([test.sh
 		 examples/Makefile
 		 examples/uim-custom/Makefile
 		 pixmaps/Makefile
-		 uim.pc])
+		 uim.pc
+		 uim.desktop
+                 ])
 
 AC_OUTPUT
 
