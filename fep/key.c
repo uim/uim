@@ -65,7 +65,7 @@
 #define _KEY_RIGHT "\033[C"
 #define _KEY_LEFT  "\033[D"
 
-static int strcmp_prefix(const char *str, const char *prefix);
+static int strcmp_prefix(const char *str, int str_len, const char *prefix);
 
 int tty2key(char key)
 {
@@ -74,8 +74,6 @@ int tty2key(char key)
   /* c-space */
   case 0:
     return ' ';
-  case '\b':
-    return UKey_Backspace;
   case '\t':
     return UKey_Tab;
   case '\r':
@@ -102,8 +100,7 @@ int tty2key_state(char key)
 {
   int key_state = (key & 0x80) ? UMod_Meta : 0;
   key &= 0x7f;
-  if (key == '\b' ||
-      key == '\t' ||
+  if (key == '\t' ||
       key == '\r' ||
       key == ESCAPE_CODE ||
       key == 0x7f) {
@@ -123,40 +120,40 @@ int tty2key_state(char key)
  * 見つからなかったらUKey_Escapeと、途中まで一致しているエスケープシー
  * ケンスがある場合はTRUEない場合はFALSEを返す
  */
-int *escape_sequence2key(const char *str)
+int *escape_sequence2key(const char *str, int str_len)
 {
   static int rval[2];
   int len;
   int not_enough = 0;
-  if        (                         (not_enough += len = strcmp_prefix(str, _KEY_UP      )), len > 0) { rval[0] = UKey_Up;
-  } else if (                         (not_enough += len = strcmp_prefix(str, _KEY_DOWN    )), len > 0) { rval[0] = UKey_Down;
-  } else if (                         (not_enough += len = strcmp_prefix(str, _KEY_RIGHT   )), len > 0) { rval[0] = UKey_Right;
-  } else if (                         (not_enough += len = strcmp_prefix(str, _KEY_LEFT    )), len > 0) { rval[0] = UKey_Left;
-  } else if (key_backspace != NULL && (not_enough += len = strcmp_prefix(str, key_backspace)), len > 0) { rval[0] = UKey_Backspace;
-  } else if (key_dc        != NULL && (not_enough += len = strcmp_prefix(str, key_dc       )), len > 0) { rval[0] = UKey_Delete;    
-  } else if (key_left      != NULL && (not_enough += len = strcmp_prefix(str, key_left     )), len > 0) { rval[0] = UKey_Left;
-  } else if (key_up        != NULL && (not_enough += len = strcmp_prefix(str, key_up       )), len > 0) { rval[0] = UKey_Up;
-  } else if (key_right     != NULL && (not_enough += len = strcmp_prefix(str, key_right    )), len > 0) { rval[0] = UKey_Right;
-  } else if (key_down      != NULL && (not_enough += len = strcmp_prefix(str, key_down     )), len > 0) { rval[0] = UKey_Down;
-  } else if (key_ppage     != NULL && (not_enough += len = strcmp_prefix(str, key_ppage    )), len > 0) { rval[0] = UKey_Prior;
-  } else if (key_npage     != NULL && (not_enough += len = strcmp_prefix(str, key_npage    )), len > 0) { rval[0] = UKey_Next;
-  } else if (key_home      != NULL && (not_enough += len = strcmp_prefix(str, key_home     )), len > 0) { rval[0] = UKey_Home;
-  } else if (key_end       != NULL && (not_enough += len = strcmp_prefix(str, key_end      )), len > 0) { rval[0] = UKey_End;
-  } else if (key_ic        != NULL && (not_enough += len = strcmp_prefix(str, key_ic       )), len > 0) { rval[0] = UKey_Insert;    
-  } else if (key_f1        != NULL && (not_enough += len = strcmp_prefix(str, key_f1       )), len > 0) { rval[0] = UKey_F1;
-  } else if (key_f2        != NULL && (not_enough += len = strcmp_prefix(str, key_f2       )), len > 0) { rval[0] = UKey_F2;
-  } else if (key_f3        != NULL && (not_enough += len = strcmp_prefix(str, key_f3       )), len > 0) { rval[0] = UKey_F3;
-  } else if (key_f4        != NULL && (not_enough += len = strcmp_prefix(str, key_f4       )), len > 0) { rval[0] = UKey_F4;
-  } else if (key_f5        != NULL && (not_enough += len = strcmp_prefix(str, key_f5       )), len > 0) { rval[0] = UKey_F5;
-  } else if (key_f6        != NULL && (not_enough += len = strcmp_prefix(str, key_f6       )), len > 0) { rval[0] = UKey_F6;
-  } else if (key_f7        != NULL && (not_enough += len = strcmp_prefix(str, key_f7       )), len > 0) { rval[0] = UKey_F7;
-  } else if (key_f8        != NULL && (not_enough += len = strcmp_prefix(str, key_f8       )), len > 0) { rval[0] = UKey_F8;
-  } else if (key_f9        != NULL && (not_enough += len = strcmp_prefix(str, key_f9       )), len > 0) { rval[0] = UKey_F9;
-  } else if (key_f10       != NULL && (not_enough += len = strcmp_prefix(str, key_f10      )), len > 0) { rval[0] = UKey_F10;
-  } else if (key_f11       != NULL && (not_enough += len = strcmp_prefix(str, key_f11      )), len > 0) { rval[0] = UKey_F11;
-  } else if (key_f12       != NULL && (not_enough += len = strcmp_prefix(str, key_f12      )), len > 0) { rval[0] = UKey_F12;
+  if        (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_UP      )), len > 0) { rval[0] = UKey_Up;
+  } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_DOWN    )), len > 0) { rval[0] = UKey_Down;
+  } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_RIGHT   )), len > 0) { rval[0] = UKey_Right;
+  } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_LEFT    )), len > 0) { rval[0] = UKey_Left;
+  } else if (key_backspace != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_backspace)), len > 0) { rval[0] = UKey_Backspace;
+  } else if (key_dc        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_dc       )), len > 0) { rval[0] = UKey_Delete;    
+  } else if (key_left      != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_left     )), len > 0) { rval[0] = UKey_Left;
+  } else if (key_up        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_up       )), len > 0) { rval[0] = UKey_Up;
+  } else if (key_right     != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_right    )), len > 0) { rval[0] = UKey_Right;
+  } else if (key_down      != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_down     )), len > 0) { rval[0] = UKey_Down;
+  } else if (key_ppage     != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_ppage    )), len > 0) { rval[0] = UKey_Prior;
+  } else if (key_npage     != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_npage    )), len > 0) { rval[0] = UKey_Next;
+  } else if (key_home      != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_home     )), len > 0) { rval[0] = UKey_Home;
+  } else if (key_end       != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_end      )), len > 0) { rval[0] = UKey_End;
+  } else if (key_ic        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_ic       )), len > 0) { rval[0] = UKey_Insert;    
+  } else if (key_f1        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f1       )), len > 0) { rval[0] = UKey_F1;
+  } else if (key_f2        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f2       )), len > 0) { rval[0] = UKey_F2;
+  } else if (key_f3        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f3       )), len > 0) { rval[0] = UKey_F3;
+  } else if (key_f4        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f4       )), len > 0) { rval[0] = UKey_F4;
+  } else if (key_f5        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f5       )), len > 0) { rval[0] = UKey_F5;
+  } else if (key_f6        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f6       )), len > 0) { rval[0] = UKey_F6;
+  } else if (key_f7        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f7       )), len > 0) { rval[0] = UKey_F7;
+  } else if (key_f8        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f8       )), len > 0) { rval[0] = UKey_F8;
+  } else if (key_f9        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f9       )), len > 0) { rval[0] = UKey_F9;
+  } else if (key_f10       != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f10      )), len > 0) { rval[0] = UKey_F10;
+  } else if (key_f11       != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f11      )), len > 0) { rval[0] = UKey_F11;
+  } else if (key_f12       != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f12      )), len > 0) { rval[0] = UKey_F12;
   } else {
-    rval[0] = UKey_Escape;
+    rval[0] = UKey_Other;
     len = not_enough < 0 ? TRUE : FALSE;
   }
   rval[1] = len;
@@ -168,11 +165,11 @@ int *escape_sequence2key(const char *str)
  * strがprefixの語頭のとき-strlen(str)を返す
  * それ以外は0を返す
  */
-static int strcmp_prefix(const char *str, const char *prefix)
+static int strcmp_prefix(const char *str, int str_len, const char *prefix)
 {
   int i;
   assert(str != NULL && prefix != NULL);
-  for (i = 0; str[i] != '\0' && prefix[i] != '\0'; i++) {
+  for (i = 0; i < str_len && prefix[i] != '\0'; i++) {
     if (str[i] != prefix[i]) {
       break;
     }
@@ -180,7 +177,7 @@ static int strcmp_prefix(const char *str, const char *prefix)
   if (prefix[i] == '\0') {
     return i;
   }
-  if (str[i] == '\0') {
+  if (i == str_len) {
     return -i;
   }
   return 0;
