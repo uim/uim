@@ -344,6 +344,12 @@
   (_ "Show input mode nearby cursor")
   (_ "long description will be here."))
 
+(define-custom 'bridge-show-input-state-time-length 3
+  '(global visual-preference)
+  '(integer 0 100)
+  (_ "Time length for showing input mode nearby the cursor")
+  (_ "long description will be here."))
+
 ;; EB Library support
 ;; 2005-02-08 Takuro Ashie <ashie@homa.ne.jp>
 ;; FIXME! Here isn't suitable position for EB support preference
