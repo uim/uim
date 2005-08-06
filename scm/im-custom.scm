@@ -348,7 +348,7 @@
   '(global visual-preference)
   '(integer 0 100)
   (_ "Time length for showing input mode nearby the cursor")
-  (_ "long description will be here."))
+  (_ "Set 0 to show indicator always."))
 
 ;; EB Library support
 ;; 2005-02-08 Takuro Ashie <ashie@homa.ne.jp>
