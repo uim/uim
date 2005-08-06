@@ -178,13 +178,22 @@ void Canddisp::move(int x, int y)
     check_connection();
 }
 
-void Canddisp::show_caret_state(const char *str)
+void Canddisp::show_caret_state(const char *str, int timeout)
 {
     if (!candwin_w)
 	return;
     fprintf(candwin_w, "show_caret_state\n");
+    fprintf(candwin_w, "%d\n", timeout);
     fprintf(candwin_w, "%s", str);
-    fprintf(candwin_w, "\n");
+    fflush(candwin_w);
+    check_connection();
+}
+
+void Canddisp::update_caret_state()
+{
+    if (!candwin_w)
+	return;
+    fprintf(candwin_w, "update_caret_state\n\n");
     fflush(candwin_w);
     check_connection();
 }

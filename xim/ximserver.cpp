@@ -675,6 +675,7 @@ void InputContext::candidate_update()
 
     disp->activate(active_candidates, mDisplayLimit);
     disp->select(current_cand_selection);
+    disp->show();
 }
 
 void InputContext::candidate_select(int index)
@@ -753,8 +754,9 @@ void InputContext::update_prop_label(const char *str)
     free(buf);
     
     if (show_caret_state == UIM_TRUE) {
+	int timeout = uim_scm_symbol_value_int("bridge-show-input-state-time-length");
 	Canddisp *disp = canddisp_singleton();
-	disp->show_caret_state(str);
+	disp->show_caret_state(str, timeout);
     }
 }
 
