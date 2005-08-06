@@ -48,6 +48,7 @@ public:
     void move(int x, int y);
     void show_caret_state(const char *str, int timeout);
     void update_caret_state();
+    void hide_caret_state();
 private:
     void check_connection();
 };

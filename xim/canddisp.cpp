@@ -199,6 +199,15 @@ void Canddisp::update_caret_state()
     check_connection();
 }
 
+void Canddisp::hide_caret_state()
+{
+    if (!candwin_w)
+	return;
+    fprintf(candwin_w, "hide_caret_state\n\n");
+    fflush(candwin_w);
+    check_connection();
+}
+
 void Canddisp::check_connection()
 {
     if (errno == EBADF || errno == EPIPE) {

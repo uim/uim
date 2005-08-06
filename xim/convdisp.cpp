@@ -1135,7 +1135,9 @@ void ConvdispOv::update_icxatr()
 {
 
     if (m_atr->is_changed(ICA_SpotLocation)) {
-	update_caret_state();
+	uim_bool  show_caret_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
+	if (show_caret_state == UIM_TRUE)
+	    update_caret_state();
 	m_atr->unset_change_mask(ICA_SpotLocation);
     }
 

@@ -531,6 +531,12 @@ caret_state_update()
   caret_state_indicator_update(cwin->caret_state_indicator, cwin->pos_x, cwin->pos_y, NULL);
 }
 
+static void
+caret_state_hide()
+{
+  gtk_widget_hide(cwin->caret_state_indicator);
+}
+
 static void str_parse(gchar *str)
 {
   gchar **tmp;
@@ -556,6 +562,8 @@ static void str_parse(gchar *str)
       caret_state_show(tmp);
     } else if (strcmp("update_caret_state", command) == 0) {
       caret_state_update();
+    } else if (strcmp("hide_caret_state", command) == 0) {
+      caret_state_hide();
     }
   }
   g_strfreev(tmp);

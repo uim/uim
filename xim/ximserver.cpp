@@ -153,6 +153,13 @@ void XimServer::customContext(const char *custom, const char *val) {
     if (!strcmp(custom, "uim-xim-xft-font-name"))
 	update_default_xftfont();
 #endif
+
+    if (!strcmp(custom, "bridge-show-input-state?") &&
+		    !uim_scm_symbol_value_bool("bridge-show-input-state?")) {
+	    Canddisp *disp = canddisp_singleton();
+	    disp->hide_caret_state();
+    }
+
 }
 
 bool
