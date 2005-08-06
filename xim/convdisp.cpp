@@ -1052,6 +1052,7 @@ void ConvdispOv::update_caret_state()
     if (focusedContext && focusedContext == mKkContext) {
 	move_candwin();
 	disp->update_caret_state();
+	m_atr->unset_change_mask(ICA_SpotLocation);
     }
 }
 
@@ -1138,7 +1139,6 @@ void ConvdispOv::update_icxatr()
 	uim_bool  show_caret_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
 	if (show_caret_state == UIM_TRUE)
 	    update_caret_state();
-	m_atr->unset_change_mask(ICA_SpotLocation);
     }
 
     if (!m_ov_win)
@@ -1176,6 +1176,10 @@ void ConvdispOv::update_icxatr()
 	m_atr->unset_change_mask(ICA_FontSet);
     }
   
+    if (m_atr->is_changed(ICA_SpotLocation)) {
+	move_candwin();
+	m_atr->unset_change_mask(ICA_SpotLocation);
+    }
     draw_preedit();
 }
 
