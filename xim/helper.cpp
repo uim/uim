@@ -175,6 +175,7 @@ helper_str_parse(char *str)
 	    InputContext::deletefocusedContext();
 	    Canddisp *disp = canddisp_singleton();
 	    disp->hide();
+	    disp->hide_caret_state();
 	    return;
  	} else if (strcmp("im_list_get", line) == 0) {
 	    send_im_list();

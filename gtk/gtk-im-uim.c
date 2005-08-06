@@ -1013,6 +1013,7 @@ im_uim_parse_helper_str(const char *str)
 	g_signal_emit_by_name(focused_context, "commit", lines[1]);
     } else if (g_str_has_prefix(str, "focus_in") == TRUE) {
       disable_focused_context = TRUE;
+      gtk_widget_hide(focused_context->caret_state_indicator);
       /* We shouldn't do "focused_context = NULL" here, because some
 	 window manager has some focus related bugs. */
     }
