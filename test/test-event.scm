@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 707 of new repository
+;; This file is tested with revision 1142 of new repository
 
 (use test.unit)
 
@@ -41,14 +41,15 @@
      (uim '(require "event.scm"))))
 
   ("test key-event-new"
-   (assert-equal (uim '(list 'key #f #f -1 #f #f #f 0 #t #f))
+   (assert-equal (uim '(list 'key #f #f -1 #f #f #f #f 0 #t #f))
 		 (uim '(key-event-new)))
-   (assert-equal (uim '(list 'key #f #f -1 "a" #f #f 0 #t #f))
+   (assert-equal (uim '(list 'key #f #f -1 #f "a" #f #f 0 #t #f))
 		 (uim '(key-event-new "a")))
    (assert-equal (uim '(list 'key
 			     #f
 			     #f
 			     -1
+			     #f
 			     "a"
 			     'lkey_bracketleft
 			     'pkey_qwerty_bracketleft

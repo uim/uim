@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 816 of new repository
+;; This file is tested with revision 1142 of new repository
 
 (use test.unit)
 
@@ -1134,29 +1134,31 @@
    ;; 'press-release' macro
    (assert-equal '(((press "a") (release "a")))
 		 (uim '(event-exp-list-expand-macro
-			'("a")
+			'((press-release "a"))
 			())))
    (assert-equal '(((press "a") (release "a")
 		    (press "b") (release "b")))
 		 (uim '(event-exp-list-expand-macro
-			'("a" "b")
+			'((press-release "a") (press-release "b"))
 			())))
    (assert-equal '(((press "a") (release "a")
 		    (press "b") (release "b")
 		    (press "c") (release "c")))
 		 (uim '(event-exp-list-expand-macro
-			'("a" "b" "c")
+			'((press-release "a")
+			  (press-release "b")
+			  (press-release "c"))
 			())))
    (assert-equal '(((press "a") (release "a")
 		    ("b" press)))
 		 (uim '(event-exp-list-expand-macro
-			'("a" ("b" press))
+			'((press-release "a") ("b" press))
 			())))
    (assert-equal '(((press "a") (release "a")
 		    ("b" press)
 		    (press "c") (release "c")))
 		 (uim '(event-exp-list-expand-macro
-			'("a" ("b" press) "c")
+			'((press-release "a") ("b" press) (press-release "c"))
 			())))
    (assert-equal '(((press "a") (release "a")))
 		 (uim '(event-exp-list-expand-macro
@@ -1252,7 +1254,7 @@
 				   (event-exp-predicate 'release)
 				   (event-exp-predicate 'peek))))
 			   (event-exp-seq-parse
-			    '(("a" peek))))))
+			    '((press-release "a" peek))))))
    ;; 'press-release' macro
    (assert-true  (uim-bool
 		  '(equal? (list
@@ -1260,7 +1262,7 @@
 			     (list "a" (event-exp-predicate 'press))
 			     (list "a" (event-exp-predicate 'release))))
 			   (event-exp-seq-parse
-			    '("a")))))
+			    '((press-release "a"))))))
    (assert-true  (uim-bool
 		  '(equal? (list
 			    (list
@@ -1269,7 +1271,7 @@
 			     (list "b" (event-exp-predicate 'press))
 			     (list "b" (event-exp-predicate 'release))))
 			   (event-exp-seq-parse
-			    '("a" "b")))))
+			    '((press-release "a") (press-release "b"))))))
    (assert-true  (uim-bool
 		  '(equal? (list
 			    (list
@@ -1280,7 +1282,9 @@
 			     (list "c" (event-exp-predicate 'press))
 			     (list "c" (event-exp-predicate 'release))))
 			   (event-exp-seq-parse
-			    '("a" "b" "c")))))
+			    '((press-release "a")
+			      (press-release "b")
+			      (press-release "c"))))))
    (assert-true  (uim-bool
 		  '(equal? (list
 			    (list
@@ -1288,7 +1292,7 @@
 			     (list "a" (event-exp-predicate 'release))
 			     (list "b" (event-exp-predicate 'press))))
 			   (event-exp-seq-parse
-			    '("a" ("b" press))))))
+			    '((press-release "a") ("b" press))))))
    (assert-true  (uim-bool
 		  '(equal? (list
 			    (list
@@ -1298,7 +1302,9 @@
 			     (list "c" (event-exp-predicate 'press))
 			     (list "c" (event-exp-predicate 'release))))
 			   (event-exp-seq-parse
-			    '("a" ("b" press) "c")))))
+			    '((press-release "a")
+			      ("b" press)
+			      (press-release "c"))))))
    (assert-true  (uim-bool
 		  '(equal? (list
 			    (list
@@ -1508,13 +1514,13 @@
    (assert-equal '("k")
 		 (uim '(evmap-context-preedit-string test-emc)))
    ;; positional var keeps all matched event information
-   (assert-equal (uim '(list 'key #t #f -1
+   (assert-equal (uim '(list 'key 'drop-release #f -1 #f
 			     "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f))
 		 (uim '(evmap-context-positional-var test-emc 1)))
    (assert-error (lambda ()
 		   (uim '(evmap-context-positional-var test-emc 2))))
    (assert-true  (uim-bool '(test-pos1 test-emc test-ev)))
-   (assert-equal (uim '(list 'key #t #f -1
+   (assert-equal (uim '(list 'key 'drop-release #f -1 #f
 			     "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f))
 		 (uim 'test-ev))
    ;; action-exp-directive-positional-var returns equivalent to
@@ -1529,20 +1535,27 @@
 		   (uim '(test-pos2 test-emc test-ev))))
 
    ;;; second type
+;;   (assert-true  (uim-bool '(evmap-context-input!
+;;			     test-emc
+;;			     (key-release-event-new "k"))))
+;;   (assert-equal '("k")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
+
    (assert-true  (uim-bool '(evmap-context-input!
 			     test-emc
-			     (key-release-event-new "k"))))
-   (assert-equal '("k")
+			     (key-event-new "k"))))
+   (assert-equal '("KK")
 		 (uim '(evmap-context-preedit-string test-emc)))
-   (assert-equal (uim '(list 'key #t #f -1
+   (assert-equal (uim '(list 'key 'drop-release #f -1 #f
 			     "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f))
 		 (uim '(evmap-context-positional-var test-emc 1)))
-   (assert-equal (uim '(list 'key #t #f -1 "k" #f #f mod_None #f #f))
+   (assert-equal (uim '(list 'key 'drop-release #f -1 #f
+			     "k" #f #f mod_None #t #f))
 		 (uim '(evmap-context-positional-var test-emc 2)))
    (assert-error (lambda ()
 		   (uim '(evmap-context-positional-var test-emc 3))))
    (assert-true  (uim-bool '(test-pos1 test-emc test-ev)))
-   (assert-equal (uim '(list 'key #t #f -1
+   (assert-equal (uim '(list 'key 'drop-release #f -1 #f
 			     "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f))
 		 (uim 'test-ev))
    (assert-true  (uim-bool '(equal? (evmap-context-positional-var test-emc 1)
@@ -1550,7 +1563,8 @@
    (assert-false (uim-bool '(eq? (evmap-context-positional-var test-emc 1)
 				 test-ev)))
    (assert-true  (uim-bool '(test-pos2 test-emc test-ev)))
-   (assert-equal (uim '(list 'key #t #f -1 "k" #f #f mod_None #f #f))
+   (assert-equal (uim '(list 'key 'drop-release #f -1 #f
+			     "k" #f #f mod_None #t #f))
 		 (uim 'test-ev))
    (assert-true  (uim-bool '(equal? (evmap-context-positional-var test-emc 2)
 				    test-ev)))
@@ -1896,21 +1910,21 @@
    (assert-true  (uim-bool '(evmap-context-input!
 			     test-emc
 			     (key-event-new "k" 'lkey_k 'pkey_qwerty_k))))
-   (assert-true  (uim-bool '(evmap-context-input!
-			     test-emc
-			     (key-release-event-new "k"))))
+;;   (assert-true  (uim-bool '(evmap-context-input!
+;;			     test-emc
+;;			     (key-release-event-new "k"))))
    (assert-true  (uim-bool '(evmap-context-input!
 			     test-emc
 			     (key-event-new "k"))))
-   (assert-true  (uim-bool '(evmap-context-input!
-			     test-emc
-			     (key-release-event-new "k"))))
+;;   (assert-true  (uim-bool '(evmap-context-input!
+;;			     test-emc
+;;			     (key-release-event-new "k"))))
    (assert-true  (uim-bool '(evmap-context-input!
 			     test-emc
 			     (key-event-new "u"))))
-   (assert-true  (uim-bool '(evmap-context-input!
-			     test-emc
-			     (key-release-event-new "u" 'lkey_u 'pkey_qwerty_u))))
+;;   (assert-true  (uim-bool '(evmap-context-input!
+;;			     test-emc
+;;			     (key-release-event-new "u" 'lkey_u 'pkey_qwerty_u))))
    ;; null expression
    (assert-false (uim-bool '(action-exp-seq-extract ()
 						    test-emc)))
@@ -1957,16 +1971,16 @@
 		 (uim '(action-exp-seq-extract (list "kkU" 'lkey_s mod_Shift "s")
 					       test-emc)))
    ;; complex expressions
-   (assert-equal (uim '(list (list 'key #f #f -1
+   (assert-equal (uim '(list (list 'key #f #f -1 #f
 				   "kkU" 'lkey_a #f mod_None #t #f)))
 		 (uim '(action-exp-seq-extract '(("kkU" lkey_a))
 					       test-emc)))
-   (assert-equal (uim '(list (list 'key #f #f -1
+   (assert-equal (uim '(list (list 'key #f #f -1 #f
 				   "kkU" 'lkey_a #f mod_Shift #t #f)))
 		 (uim '(action-exp-seq-extract (list
 						(list "kkU" 'lkey_a mod_Shift))
 					       test-emc)))
-   (assert-equal (uim '(list (list 'key #f #f -1
+   (assert-equal (uim '(list (list 'key #f #f -1 #f
 				   "kkU" 'lkey_a #f mod_None #t #f)))
 		 (uim '(action-exp-seq-extract (list
 						(list "kkU"
@@ -1974,7 +1988,7 @@
 						      (action-exp-directive
 						       'press)))
 					       test-emc)))
-   (assert-equal (uim '(list (list 'key #f #f -1
+   (assert-equal (uim '(list (list 'key #f #f -1 #f
 				   "kkU" 'lkey_a #f mod_None #f #f)))
 		 (uim '(action-exp-seq-extract (list
 						(list "kkU"
@@ -1982,7 +1996,7 @@
 						      (action-exp-directive
 						       'release)))
 					       test-emc)))
-   (assert-equal (uim '(list (list 'key #f #t -1
+   (assert-equal (uim '(list (list 'key #f #t -1 #f
 				   "kkU" 'lkey_a #f mod_None #t #f)))
 		 (uim '(action-exp-seq-extract (list
 						(list "kkU"
@@ -1990,7 +2004,7 @@
 						      (action-exp-directive
 						       'loopback)))
 					       test-emc)))
-   (assert-equal (uim '(list (list 'key #f #f -1
+   (assert-equal (uim '(list (list 'key #f #f -1 #f
 				   "kkU" 'lkey_a #f mod_None #t #f)))
 		 (uim '(action-exp-seq-extract (list
 						(list "kkU"
@@ -1998,7 +2012,7 @@
 						      (action-exp-directive
 						       'return)))
 					       test-emc)))
-   (assert-equal (uim '(list (list 'key #f #f -1
+   (assert-equal (uim '(list (list 'key #f #f -1 #f
 				   "S" 'lkey_s #f mod_None #t #f)))
 		 (uim '(action-exp-seq-extract (list
 						(list "s"
@@ -2006,7 +2020,7 @@
 						      (action-exp-directive
 						       'char-upcase)))
 					       test-emc)))
-   (assert-equal (uim '(list (list 'key #f #f -1
+   (assert-equal (uim '(list (list 'key #f #f -1 #f
 				   "s" 'lkey_s #f mod_None #t #f)))
 		 (uim '(action-exp-seq-extract (list
 						(list "S"
@@ -2016,10 +2030,10 @@
 					       test-emc)))
    ;; sequence of actions
    (assert-equal (uim '(list "a"
-			     (list 'key #f #f -1
+			     (list 'key #f #f -1 #f
 				   "kkU" 'lkey_a #f mod_None #f #f)
 			     'lkey_s
-			     (list 'key #f #f -1
+			     (list 'key #f #f -1 #f
 				   "A" #f 'pkey_qwerty_a
 				   (bitwise-or mod_Shift
 					       mod_Control_L)
@@ -2038,87 +2052,87 @@
 						       mod_Control_L)))
 					       test-emc)))
    ;; positional variables
-   (assert-equal (uim '(list (list 'key #t #f -1
+   (assert-equal (uim '(list (list 'key 'drop-release #f -1 #f
 				   "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f)))
 		 (uim '(action-exp-seq-extract (list
 						(action-exp-directive '$1))
 					       test-emc)))
-   (assert-equal (uim '(list (list 'key #t #f -1
-				   "k" #f #f mod_None #f #f)))
+;;   (assert-equal (uim '(list (list 'key 'drop-release #f -1 #f
+;;				   "k" #f #f mod_None #f #f)))
+;;		 (uim '(action-exp-seq-extract (list
+;;						(action-exp-directive '$2))
+;;					       test-emc)))
+   (assert-equal (uim '(list (list 'key 'drop-release #f -1 #f
+				   "k" #f #f mod_None #t #f)))
 		 (uim '(action-exp-seq-extract (list
 						(action-exp-directive '$2))
 					       test-emc)))
-   (assert-equal (uim '(list (list 'key #t #f -1
-				   "k" #f #f mod_None #t #f)))
+;;   (assert-equal (uim '(list (list 'key 'drop-release #f -1 #f
+;;				   "k" #f #f mod_None #f #f)))
+;;		 (uim '(action-exp-seq-extract (list
+;;						(action-exp-directive '$4))
+;;					       test-emc)))
+   (assert-equal (uim '(list (list 'key 'drop-release #f -1 #f
+				   "u" #f #f mod_None #t #f)))
 		 (uim '(action-exp-seq-extract (list
 						(action-exp-directive '$3))
 					       test-emc)))
-   (assert-equal (uim '(list (list 'key #t #f -1
-				   "k" #f #f mod_None #f #f)))
-		 (uim '(action-exp-seq-extract (list
-						(action-exp-directive '$4))
-					       test-emc)))
-   (assert-equal (uim '(list (list 'key #t #f -1
-				   "u" #f #f mod_None #t #f)))
-		 (uim '(action-exp-seq-extract (list
-						(action-exp-directive '$5))
-					       test-emc)))
-   (assert-equal (uim '(list (list 'key #t #f -1
-				   "u" 'lkey_u 'pkey_qwerty_u mod_None #f #f)))
-		 (uim '(action-exp-seq-extract (list
-						(action-exp-directive '$6))
-					       test-emc)))
+;;   (assert-equal (uim '(list (list 'key 'drop-release #f -1 #f
+;;				   "u" 'lkey_u 'pkey_qwerty_u mod_None #f #f)))
+;;		 (uim '(action-exp-seq-extract (list
+;;						(action-exp-directive '$6))
+;;					       test-emc)))
    (assert-error (lambda ()
 		   (uim '(action-exp-seq-extract (list
-						  (action-exp-directive '$7))
+						  (action-exp-directive '$4))
 						 test-emc))))
 
    ;; multiple positional variables
-   (assert-equal (uim '(list (list 'key #t #f -1
+   (assert-equal (uim '(list (list 'key 'drop-release #f -1 #f
 				   "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f)
-			     (list 'key #t #f -1
-				   "k" #f #f mod_None #f #f)))
+			     (list 'key 'drop-release #f -1 #f
+				   "k" #f #f mod_None #t #f)))
 		 (uim '(action-exp-seq-extract (list
 						(action-exp-directive '$1)
-						(action-exp-directive '$4))
+						(action-exp-directive '$2))
 					       test-emc)))
-   (assert-equal (uim '(list (list 'key #t #f -1
+   (assert-equal (uim '(list (list 'key 'drop-release #f -1 #f
 				   "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f)
 			     "a"
 			     'lkey_d
-			     (list 'key #t #f -1
-				   "k" #f #f mod_None #f #f)))
+			     (list 'key 'drop-release #f -1 #f
+				   "k" #f #f mod_None #t #f)))
 		 (uim '(action-exp-seq-extract (list
 						(action-exp-directive '$1)
 						"a"
 						'lkey_d
-						(action-exp-directive '$4))
+						(action-exp-directive '$2))
 					       test-emc)))
    ;; transposed
-   (assert-equal (uim '(list (list 'key #t #f -1
-				   "k" #f #f mod_None #f #f)
-			     (list 'key #t #f -1
+   (assert-equal (uim '(list (list 'key 'drop-release #f -1 #f
+				   "k" #f #f mod_None #t #f)
+			     (list 'key 'drop-release #f -1 #f
 				   "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f)))
 		 (uim '(action-exp-seq-extract (list
-						(action-exp-directive '$4)
+						(action-exp-directive '$2)
 						(action-exp-directive '$1))
 					       test-emc)))
    ;; duplicated
-   (assert-equal (uim '(list (list 'key #t #f -1
-				   "k" #f #f mod_None #f #f)
-			     (list 'key #t #f -1
+   (assert-equal (uim '(list (list 'key 'drop-release #f -1 #f
+				   "k" #f #f mod_None #t #f)
+			     (list 'key 'drop-release #f -1 #f
 				   "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f)
-			     (list 'key #t #f -1
+			     (list 'key 'drop-release #f -1 #f
 				   "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f)))
 		 (uim '(action-exp-seq-extract (list
-						(action-exp-directive '$4)
+						(action-exp-directive '$2)
 						(action-exp-directive '$1)
 						(action-exp-directive '$1))
 					       test-emc)))
    ;; overwrite some elements
-   (assert-equal (uim '(list (list 'key #t #t -1
+   (assert-equal (uim '(list (list 'key 'drop-release #t -1 #f
 				   "k" 'lkey_a 'pkey_qwerty_k mod_Shift #t #f)
-			     (list 'key #t #f -1
+			     (list 'key 'drop-release #f -1 #f
 				   "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f)))
 		 (uim '(action-exp-seq-extract (list
 						(list
@@ -2129,7 +2143,7 @@
 						  'loopback))
 						(action-exp-directive '$1))
 					       test-emc)))
-   (assert-equal (uim '(list (list 'key #t #f -1
+   (assert-equal (uim '(list (list 'key 'drop-release #f -1 #f
 				   "K" 'lkey_k 'pkey_qwerty_k mod_None #t #f)))
 		 (uim '(action-exp-seq-extract (list
 						(list
@@ -2142,20 +2156,22 @@
    (assert-true  (uim-bool '(evmap-context-input!
 			     test-emc
 			     (key-event-new "n" 'lkey_n))))
-   (assert-true  (uim-bool '(evmap-context-input!
-			     test-emc
-			     (key-release-event-new "n" 'lkey_n))))
-   (assert-equal (uim '(list (list 'key #f #f -1
-				   "n" 'lkey_n #f mod_None #t #f)))
+;;   (assert-true  (uim-bool '(evmap-context-input!
+;;			     test-emc
+;;			     (key-release-event-new "n" 'lkey_n))))
+   ;; peek match stores a dummy event to the result. so the positional
+   ;; var don't contain "n" and 'lkey_n
+   (assert-equal (uim '(list (list 'key #f #f -1 #f
+				   #f #f #f mod_None #t #f)))
 		 (uim '(action-exp-seq-extract (list
 						(action-exp-directive '$1))
 					       test-emc)))
-   (assert-equal (uim '(list (list 'key #f #t -1
-				   "N" 'lkey_n #f mod_None #f #f)))
+   (assert-equal (uim '(list (list 'key #f #t -1 #f
+				   "N" #f #f mod_None #t #f)))
 		 (uim '(action-exp-seq-extract (list
 						(list
 						 "N"
-						 (action-exp-directive '$2)
+						 (action-exp-directive '$1)
 						 (action-exp-directive
 						  'loopback)))
 					       test-emc)))
@@ -2441,14 +2457,19 @@
    (uim '(define test-press (event-exp-predicate 'press)))
    (uim '(define test-release (event-exp-predicate 'release)))
 
+;;   (assert-true  (uim-bool '(equal?
+;;			     (list #f #f
+;;				      (list
+;;				       (list
+;;					(list "k" test-press) #f
+;;				                              (list
+;;							       (list
+;;								(list "k" test-release) '("K") ())))))
+;;			     test-ruletree1)))
    (assert-true  (uim-bool '(equal?
 			     (list #f #f
 				      (list
-				       (list
-					(list "k" test-press) #f
-				                              (list
-							       (list
-								(list "k" test-release) '("K") ())))))
+				       (list "k" '("K") ())))
 			     test-ruletree1)))
 
 ;;   (assert-true  (uim-bool (equal? (#f #f
@@ -2489,24 +2510,24 @@
 						  (key-event-new "k"))))
    (assert-false (uim-bool '(evmap-context-complete? test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
-   (assert-false (uim-bool '(evmap-context-complete? test-emc)))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
+;;   (assert-false (uim-bool '(evmap-context-complete? test-emc)))
 
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "k"))))
    (assert-false (uim-bool '(evmap-context-complete? test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
-   (assert-false (uim-bool '(evmap-context-complete? test-emc)))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
+;;   (assert-false (uim-bool '(evmap-context-complete? test-emc)))
 
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "i"))))
-   (assert-false (uim-bool '(evmap-context-complete? test-emc)))
+;;   (assert-false (uim-bool '(evmap-context-complete? test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "i"))))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "i"))))
    (assert-true  (uim-bool '(evmap-context-complete? test-emc)))
 
    (assert-false (uim-bool '(evmap-context-input! test-emc
@@ -2521,25 +2542,25 @@
 						  (key-event-new "k"))))
    (assert-false (uim-bool '(evmap-context-partial? test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
-   (assert-false (uim-bool '(evmap-context-partial? test-emc)))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
+;;   (assert-false (uim-bool '(evmap-context-partial? test-emc)))
 
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "k"))))
-   (assert-false (uim-bool '(evmap-context-partial? test-emc)))
+;;   (assert-false (uim-bool '(evmap-context-partial? test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
    (assert-true  (uim-bool '(evmap-context-partial? test-emc)))
 
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "i"))))
    (assert-false (uim-bool '(evmap-context-partial? test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "i"))))
-   (assert-false (uim-bool '(evmap-context-partial? test-emc)))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "i"))))
+;;   (assert-false (uim-bool '(evmap-context-partial? test-emc)))
 
    (assert-false (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "k"))))
@@ -2555,30 +2576,30 @@
    (assert-equal '("k")
 		 (uim '(evmap-context-event-seq-string test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
-   (assert-equal '("k")
-		 (uim '(evmap-context-event-seq-string test-emc)))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
+;;   (assert-equal '("k")
+;;		 (uim '(evmap-context-event-seq-string test-emc)))
 
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "k"))))
    (assert-equal '("k" "k")
 		 (uim '(evmap-context-event-seq-string test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
-   (assert-equal '("k" "k")
-		 (uim '(evmap-context-event-seq-string test-emc)))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
+;;   (assert-equal '("k" "k")
+;;		 (uim '(evmap-context-event-seq-string test-emc)))
 
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "i"))))
    (assert-equal '("k" "k" "i")
 		 (uim '(evmap-context-event-seq-string test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "i"))))
-   (assert-equal '("k" "k" "i")
-		 (uim '(evmap-context-event-seq-string test-emc)))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "i"))))
+;;   (assert-equal '("k" "k" "i")
+;;		 (uim '(evmap-context-event-seq-string test-emc)))
 
    (assert-false (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "k"))))
@@ -2593,32 +2614,32 @@
 						  (key-event-new "k"))))
    (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
-   (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
+;;   (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
 
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "k"))))
-   ;; current implementation cannot compose on pressing key
-;;   (assert-equal '("KK")
-;;		 (uim '(evmap-context-composed-string test-emc)))
-   (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
-
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
    (assert-equal '("KK")
 		 (uim '(evmap-context-composed-string test-emc)))
+   ;; previous implementation cannot compose on pressing key
+;;   (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
+
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
+;;   (assert-equal '("KK")
+;;		 (uim '(evmap-context-composed-string test-emc)))
 
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "i"))))
-;;   (assert-equal '("KKI")
-;;		 (uim '(evmap-context-composed-string test-emc)))
-   (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
-
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "i"))))
    (assert-equal '("KKI")
 		 (uim '(evmap-context-composed-string test-emc)))
+;;   (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
+
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "i"))))
+;;   (assert-equal '("KKI")
+;;		 (uim '(evmap-context-composed-string test-emc)))
 
    (assert-false (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "k"))))
@@ -2634,36 +2655,36 @@
    (assert-equal '("k")
 		 (uim '(evmap-context-preedit-string test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
-   (assert-equal '("k")
-		 (uim '(evmap-context-preedit-string test-emc)))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
+;;   (assert-equal '("k")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
 
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "k"))))
-   ;; current implementation cannot compose on pressing key
-;;   (assert-equal '("KK")
-;;		 (uim '(evmap-context-preedit-string test-emc)))
-   (assert-equal '("k" "k")
-		 (uim '(evmap-context-preedit-string test-emc)))
-
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
    (assert-equal '("KK")
 		 (uim '(evmap-context-preedit-string test-emc)))
+   ;; previous implementation cannot compose on pressing key
+;;   (assert-equal '("k" "k")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
+
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
+;;   (assert-equal '("KK")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
 
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "i"))))
-   ;; current implementation cannot compose on pressing key
-;;   (assert-equal '("KKI")
-;;		 (uim '(evmap-context-preedit-string test-emc)))
-   (assert-equal '("k" "k" "i")
-		 (uim '(evmap-context-preedit-string test-emc)))
-
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "i"))))
    (assert-equal '("KKI")
 		 (uim '(evmap-context-preedit-string test-emc)))
+   ;; current implementation cannot compose on pressing key
+;;   (assert-equal '("k" "k" "i")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
+
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "i"))))
+;;   (assert-equal '("KKI")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
 
    (assert-false (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "k"))))
@@ -2690,65 +2711,79 @@
    (assert-error (lambda ()
 		   (uim-bool '(evmap-context-positional-var test-emc 0))))
    ;; positional var keeps all matched event information
-   (assert-equal (uim '(list 'key #t #f -1
+   (assert-equal (uim '(list 'key 'drop-release #f -1 #f
 			     "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f))
 		 (uim '(evmap-context-positional-var test-emc 1)))
    (assert-error (lambda ()
 		   (uim-bool '(evmap-context-positional-var test-emc 2))))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
-   (assert-equal '("k")
-		 (uim '(evmap-context-preedit-string test-emc)))
-   (assert-equal (uim '(list 'key #t #f -1
-			     "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f))
-		 (uim '(evmap-context-positional-var test-emc 1)))
-   (assert-equal (uim '(list 'key #t #f -1 "k" #f #f mod_None #f #f))
-		 (uim '(evmap-context-positional-var test-emc 2)))
-   (assert-error (lambda ()
-		   (uim-bool '(evmap-context-positional-var test-emc 3))))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
+;;   (assert-equal '("k")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
+;;   (assert-equal (uim '(list 'key #t #f -1 #f
+;;			     "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f))
+;;		 (uim '(evmap-context-positional-var test-emc 1)))
+;;   (assert-equal (uim '(list 'key #t #f -1 #f "k" #f #f mod_None #f #f))
+;;		 (uim '(evmap-context-positional-var test-emc 2)))
+;;   (assert-error (lambda ()
+;;		   (uim-bool '(evmap-context-positional-var test-emc 3))))
 
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "u"))))
-   ;; current implementation cannot compose on pressing key
-   (assert-equal '("k" "u")
-		 (uim '(evmap-context-preedit-string test-emc)))
-   (assert-equal (uim '(list 'key #t #f -1
-			     "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f))
-		 (uim '(evmap-context-positional-var test-emc 1)))
-   (assert-equal (uim '(list 'key #t #f -1 "k" #f #f mod_None #f #f))
-		 (uim '(evmap-context-positional-var test-emc 2)))
-   (assert-equal (uim '(list 'key #t #f -1 "u" #f #f mod_None #t #f))
-		 (uim '(evmap-context-positional-var test-emc 3)))
-   (assert-error (lambda ()
-		   (uim-bool '(evmap-context-positional-var test-emc 4))))
-
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "u"))))
    (assert-equal '("KU")
 		 (uim '(evmap-context-preedit-string test-emc)))
    ;; matched events and composed string are independent
-   (assert-equal (uim '(list 'key #t #f -1
+   (assert-equal (uim '(list 'key 'drop-release #f -1 #f
 			     "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f))
 		 (uim '(evmap-context-positional-var test-emc 1)))
-   (assert-equal (uim '(list 'key #t #f -1 "k" #f #f mod_None #f #f))
+   (assert-equal (uim '(list 'key 'drop-release #f -1 #f "u" #f #f mod_None #t #f))
 		 (uim '(evmap-context-positional-var test-emc 2)))
-   (assert-equal (uim '(list 'key #t #f -1 "u" #f #f mod_None #t #f))
-		 (uim '(evmap-context-positional-var test-emc 3)))
-   (assert-equal (uim '(list 'key #t #f -1 "u" #f #f mod_None #f #f))
-		 (uim '(evmap-context-positional-var test-emc 4)))
    (assert-error (lambda ()
-		   (uim-bool '(evmap-context-positional-var test-emc 5))))
+		   (uim-bool '(evmap-context-positional-var test-emc 3))))
+   ;; previous implementation cannot compose on pressing key
+;;   (assert-equal '("k" "u")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
+;;   (assert-equal (uim '(list 'key #t #f -1 #f
+;;			     "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f))
+;;		 (uim '(evmap-context-positional-var test-emc 1)))
+;;   (assert-equal (uim '(list 'key #t #f -1 #f "k" #f #f mod_None #f #f))
+;;		 (uim '(evmap-context-positional-var test-emc 2)))
+;;   (assert-equal (uim '(list 'key #t #f -1 #f "u" #f #f mod_None #t #f))
+;;		 (uim '(evmap-context-positional-var test-emc 3)))
+;;   (assert-error (lambda ()
+;;		   (uim-bool '(evmap-context-positional-var test-emc 4))))
+
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "u"))))
+;;   (assert-equal '("KU")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
+;;   ;; matched events and composed string are independent
+;;   (assert-equal (uim '(list 'key #t #f -1 #f
+;;			     "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f))
+;;		 (uim '(evmap-context-positional-var test-emc 1)))
+;;   (assert-equal (uim '(list 'key #t #f -1 #f "k" #f #f mod_None #f #f))
+;;		 (uim '(evmap-context-positional-var test-emc 2)))
+;;   (assert-equal (uim '(list 'key #t #f -1 #f "u" #f #f mod_None #t #f))
+;;		 (uim '(evmap-context-positional-var test-emc 3)))
+;;   (assert-equal (uim '(list 'key #t #f -1 #f "u" #f #f mod_None #f #f))
+;;		 (uim '(evmap-context-positional-var test-emc 4)))
+;;   (assert-error (lambda ()
+;;		   (uim-bool '(evmap-context-positional-var test-emc 5))))
 
    ;; undo to remove "u"
    (assert-true (uim-bool '(evmap-context-undo! test-emc)))
-   (assert-equal (uim '(list 'key #t #f -1
+   (assert-equal (uim '(list 'key 'drop-release #f -1 #f
 			     "k" 'lkey_k 'pkey_qwerty_k mod_None #t #f))
 		 (uim '(evmap-context-positional-var test-emc 1)))
-   (assert-equal (uim '(list 'key #t #f -1 "k" #f #f mod_None #f #f))
-		 (uim '(evmap-context-positional-var test-emc 2)))
+;;   (assert-equal (uim '(list 'key 'drop-release #f -1 #f
+;;			     "k" #f #f mod_None #f #f))
+;;		 (uim '(evmap-context-positional-var test-emc 2)))
+;;   (assert-error (lambda ()
+;;		   (uim-bool '(evmap-context-positional-var test-emc 3))))
    (assert-error (lambda ()
-		   (uim-bool '(evmap-context-positional-var test-emc 3)))))
+		   (uim-bool '(evmap-context-positional-var test-emc 2))))
+   )
 
   ("test evmap-context-input!"
    ;;; inputting non-existent mapping at first
@@ -2776,21 +2811,21 @@
 						  (key-event-new "k"))))
    (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
-   (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
+;;   (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
 
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "u"))))
-   ;; current implementation cannot compose on pressing key
-;;   (assert-equal '("KU")
-;;		 (uim '(evmap-context-composed-string test-emc)))
-   (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
-
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "u"))))
    (assert-equal '("KU")
 		 (uim '(evmap-context-composed-string test-emc)))
+   ;; previous implementation cannot compose on pressing key
+;;   (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
+
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "u"))))
+;;   (assert-equal '("KU")
+;;		 (uim '(evmap-context-composed-string test-emc)))
 
    ;;; exceeded input
    (assert-false (uim-bool '(evmap-context-input! test-emc
@@ -2806,32 +2841,32 @@
 						  (key-event-new "k"))))
    (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
-   (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
+;;   (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
 
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "k"))))
-   ;; current implementation cannot compose on pressing key
-;;   (assert-equal '("KK")
-;;		 (uim '(evmap-context-composed-string test-emc)))
-   (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
+   (assert-equal '("KK")
+		 (uim '(evmap-context-composed-string test-emc)))
+   ;; previous implementation cannot compose on pressing key
+;;   (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
    (assert-equal '("KK")
 		 (uim '(evmap-context-composed-string test-emc)))
 
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "i"))))
-;;   (assert-equal '("KKI")
-;;		 (uim '(evmap-context-composed-string test-emc)))
-   (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
-
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "i"))))
    (assert-equal '("KKI")
 		 (uim '(evmap-context-composed-string test-emc)))
+;;   (assert-false (uim-bool '(evmap-context-composed-string test-emc)))
+
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "i"))))
+;;   (assert-equal '("KKI")
+;;		 (uim '(evmap-context-composed-string test-emc)))
 
    ;;; exceeded input
    (assert-false (uim-bool '(evmap-context-input! test-emc
@@ -2869,10 +2904,10 @@
    (assert-equal '("k")
 		 (uim '(evmap-context-preedit-string test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
-   (assert-equal '("k")
-		 (uim '(evmap-context-preedit-string test-emc)))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
+;;   (assert-equal '("k")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
 
    ;; undo removes both press and release of "k"
    (assert-true  (uim-bool '(evmap-context-undo! test-emc)))
@@ -2887,10 +2922,10 @@
    (assert-equal '("k")
 		 (uim '(evmap-context-preedit-string test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
-   (assert-equal '("k")
-		 (uim '(evmap-context-preedit-string test-emc)))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
+;;   (assert-equal '("k")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
 
    (assert-false (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "z"))))
@@ -2910,10 +2945,10 @@
    (assert-equal '("k")
 		 (uim '(evmap-context-preedit-string test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
-   (assert-equal '("k")
-		 (uim '(evmap-context-preedit-string test-emc)))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
+;;   (assert-equal '("k")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
 
    ;; undo to remove "k"
    (assert-true (uim-bool '(evmap-context-undo! test-emc)))
@@ -2925,19 +2960,19 @@
    (assert-equal '("k")
 		 (uim '(evmap-context-preedit-string test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
    (assert-equal '("k")
 		 (uim '(evmap-context-preedit-string test-emc)))
 
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "u"))))
-   ;; current implementation cannot compose on pressing key
-   (assert-equal '("k" "u")
-		 (uim '(evmap-context-preedit-string test-emc)))
+   ;; previous implementation cannot compose on pressing key
+;;   (assert-equal '("k" "u")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "u"))))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "u"))))
    (assert-equal '("KU")
 		 (uim '(evmap-context-preedit-string test-emc)))
 
@@ -2949,12 +2984,12 @@
    ;; input again
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "u"))))
-   ;; current implementation cannot compose on pressing key
-   (assert-equal '("k" "u")
-		 (uim '(evmap-context-preedit-string test-emc)))
+   ;; previous implementation cannot compose on pressing key
+;;   (assert-equal '("k" "u")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "u"))))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "u"))))
    (assert-equal '("KU")
 		 (uim '(evmap-context-preedit-string test-emc)))
 
@@ -2977,36 +3012,36 @@
    (assert-equal '("k")
 		 (uim '(evmap-context-preedit-string test-emc)))
 
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
-   (assert-equal '("k")
-		 (uim '(evmap-context-preedit-string test-emc)))
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
+;;   (assert-equal '("k")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
 
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "k"))))
-   ;; current implementation cannot compose on pressing key
-;;   (assert-equal '("KK")
-;;		 (uim '(evmap-context-preedit-string test-emc)))
-   (assert-equal '("k" "k")
-		 (uim '(evmap-context-preedit-string test-emc)))
-
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "k"))))
    (assert-equal '("KK")
 		 (uim '(evmap-context-preedit-string test-emc)))
+   ;; previous implementation cannot compose on pressing key
+;;   (assert-equal '("k" "k")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
+
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "k"))))
+;;   (assert-equal '("KK")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
 
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "i"))))
-   ;; current implementation cannot compose on pressing key
-;;   (assert-equal '("KKI")
-;;		 (uim '(evmap-context-preedit-string test-emc)))
-   (assert-equal '("k" "k" "i")
-		 (uim '(evmap-context-preedit-string test-emc)))
-
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "i"))))
    (assert-equal '("KKI")
 		 (uim '(evmap-context-preedit-string test-emc)))
+   ;; previous implementation cannot compose on pressing key
+;;   (assert-equal '("k" "k" "i")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
+
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "i"))))
+;;   (assert-equal '("KKI")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
 
    ;; undo removes "i"
    (assert-true (uim-bool '(evmap-context-undo! test-emc)))
@@ -3021,17 +3056,17 @@
    ;; input "a" to compose "KA"
    (assert-true  (uim-bool '(evmap-context-input! test-emc
 						  (key-event-new "a"))))
-   ;; current implementation cannot compose on pressing key
+   (assert-equal '("KA")
+		 (uim '(evmap-context-preedit-string test-emc)))
+   ;; previous implementation cannot compose on pressing key
+;;   (assert-equal '("k" "a")
+;;		 (uim '(evmap-context-preedit-string test-emc)))
+
+;;   (assert-true  (uim-bool '(evmap-context-input! test-emc
+;;						  (key-release-event-new "a"))))
 ;;   (assert-equal '("KA")
 ;;		 (uim '(evmap-context-preedit-string test-emc)))
-   (assert-equal '("k" "a")
-		 (uim '(evmap-context-preedit-string test-emc)))
-
-   (assert-true  (uim-bool '(evmap-context-input! test-emc
-						  (key-release-event-new "a"))))
-   (assert-equal '("KA")
-		 (uim '(evmap-context-preedit-string test-emc))))
-  )
+   ))
 
 (define-uim-test-case "testcase key-event translator"
   (setup
@@ -3047,11 +3082,12 @@
 
   ("test key-event-translator-translate!"
    (uim '(define test-emc (key-event-translator-new)))
-   (assert-equal (uim '(list 'key #f #f -1 #f 'lkey_Thumb_Shift_R #f
-			     mod_None #t #f))
-		 (uim '(key-event-translator-translate!
-			test-emc
-			(key-event-new #f 'lkey_Henkan))))
+   (uim '(define test-ev (key-event-new #f 'lkey_Henkan)))
+   (assert-equal ()
+		 (uim '(key-event-translator-translate! test-emc test-ev)))
+   (assert-equal (uim '(list 'key #f #f -1 #f
+			     #f 'lkey_Thumb_Shift_R #f mod_None #t #f))
+		 (uim 'test-ev))
    )
 )
 
