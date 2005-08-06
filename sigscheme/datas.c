@@ -60,8 +60,28 @@
 =======================================*/
 #include <string.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <setjmp.h>
+
+/*=======================================
+  Portability Coordination
+=======================================*/
+#if 0
+/* malloc.h is obsoleted by stdlib.h. At least FreeBSD generates an error. */
+#include <malloc.h>
+#endif
+
+#ifndef posix_memalign
+/*
+ * Cited from manpage of posix_memalign(3) of glibc:
+ * 
+ * CONFORMING TO
+ *     The  function  valloc()  appeared in 3.0 BSD. It is documented as being
+ *     obsolete in BSD 4.3, and as legacy in SUSv2. It  no  longer  occurs  in
+ *     SUSv3.   The  function memalign() appears in SunOS 4.1.3 but not in BSD
+ *     4.4.  The function posix_memalign() comes from POSIX 1003.1d.
+ */
+#error "posix_memalign(3) is not available in this system"
+#endif
 
 /*=======================================
   Local Include
