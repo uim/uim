@@ -24,11 +24,11 @@
 ;;  PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR
 ;;  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
 ;;  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-;;  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
-;;  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-;;  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
-;;  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-;;  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+;;  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+;;  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+;;  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+;;  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ;; FILE HISTORY:
 ;; 2005-08-07 contributed by YamaKen (yamaken AT bp.iij4u.or.jp)
@@ -46,13 +46,13 @@
 
 (load "test/unittest.scm")
 
-(define test-and?          #t)  ;; #t is required by R5RS
-(define test-or?           #t)  ;; #t is required by R5RS
-(define test-improper-and? #f)  ;; 
-(define test-improper-or?  #f)
+(define test-and?          #t)  ;; #t is required to conform to R5RS
+(define test-or?           #t)  ;; #t is required to conform to R5RS
+(define test-improper-and? #f)  ;; R5RS compliant implementation explodes if #t
+(define test-improper-or?  #f)  ;; R5RS compliant implementation explodes if #t
 
 (define KB 1024)
-(define heap-limit (* 2048 KB))  ;; specify this as ulimit -d
+(define heap-limit (* 2048 KB))  ;; specify this by ulimit -d
 (define cell-size 8)  ;; 16 is actual size of current SigScheme implementation
 (define explosive-count (/ heap-limit cell-size))
 
