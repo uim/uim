@@ -615,7 +615,10 @@ static pid_t my_forkpty(int *amaster, struct termios *termp, struct winsize *win
       return -6;
     }
     if (termp != NULL) {
+      tcflag_t save_iflag = termp->c_iflag;
+      termp->c_iflag &= ~ISTRIP;
       tcsetattr(slave, TCSAFLUSH, termp);
+      termp->c_iflag = save_iflag;
     }
     if (winp != NULL) {
       ioctl(slave, TIOCSWINSZ, winp);
