@@ -123,6 +123,9 @@ uim_module_manager_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DUIM_DATADIR=\""$(dat
 uim_module_manager_CFLAGS =
 uim_module_manager_LDADD = libuim.la
 uim_module_manager_SOURCES = uim-module-manager.c
+if NEED_SETENV_C
+uim_module_manager_SOURCES += setenv.c
+endif
 
 noinst_PROGRAMS = uim-agent
 
