@@ -1049,7 +1049,7 @@ void ConvdispOv::update_caret_state()
     Canddisp *disp = canddisp_singleton();
     InputContext *focusedContext = InputContext::focusedContext();
 
-    if (focusedContext && !focusedContext->hasActiveCandwin()) {
+    if (focusedContext && focusedContext == mKkContext) {
 	move_candwin();
 	disp->update_caret_state();
     }
