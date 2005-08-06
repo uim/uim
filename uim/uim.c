@@ -202,7 +202,7 @@ uim_create_context(void *ptr,
     uim_scm_apply(proc, args);
       
   }
-#ifdef  /* UIM_EVAL_SEXP_AS_STRING */
+#endif  /* UIM_EVAL_SEXP_AS_STRING */
   return uc;
 }
 
