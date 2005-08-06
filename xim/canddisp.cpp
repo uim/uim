@@ -185,6 +185,7 @@ void Canddisp::show_caret_state(const char *str, int timeout)
     fprintf(candwin_w, "show_caret_state\n");
     fprintf(candwin_w, "%d\n", timeout);
     fprintf(candwin_w, "%s", str);
+    fprintf(candwin_w, "\n");
     fflush(candwin_w);
     check_connection();
 }
