@@ -476,7 +476,7 @@ void put_save_cursor(void)
     if (g_opt.no_report_cursor) {
       my_putp(save_cursor);
       s_save_cursor = s_cursor;
-      put_exit_attribute_mode();
+      /* put_exit_attribute_mode(); */
     } else {
       s_save_cursor = get_cursor_position();
     }
@@ -496,7 +496,8 @@ void put_restore_cursor(void)
       /* DOSプロンプトでは1回のrestore_cursorでは戻らない */
       my_putp(restore_cursor);
       s_cursor = s_save_cursor;
-      put_exit_attribute_mode();
+      /* DOSプロンプトでは属性を保存しない */
+      /* put_exit_attribute_mode(); */
     } else {
       put_cursor_address_p(&s_save_cursor);
     }
