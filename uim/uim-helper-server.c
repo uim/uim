@@ -77,7 +77,7 @@ static char read_buf[BUFFER_SIZE];
   prepare file descriptor.
 */
 static int
-init_serv_fd(char *path)
+init_server_fd(char *path)
 {
   int foo;
   int fd;
@@ -218,7 +218,7 @@ check_session_alive(void)
 
 /* FIXME: This function is too long to read... */
 static void
-uim_helper_server_process_connection(int serv_fd)
+uim_helper_server_process_connection(int server_fd)
 {
   int i;
   fd_set readfds;
@@ -236,13 +236,13 @@ uim_helper_server_process_connection(int serv_fd)
     }
 
     /* for accept new connection */
-    if (FD_ISSET(serv_fd, &readfds)) {
+    if (FD_ISSET(server_fd, &readfds)) {
       struct sockaddr_un clientsoc;
       socklen_t len = sizeof(clientsoc);
       int new_fd;
       int flag;
       struct client *cl;
-      new_fd = accept(serv_fd, (struct sockaddr *)&clientsoc, &len);
+      new_fd = accept(server_fd, (struct sockaddr *)&clientsoc, &len);
 
       if (new_fd < 0) {
 	perror("accpet failed");
@@ -343,7 +343,7 @@ int
 main(int argc, char **argv)
 {
   char *path = uim_helper_get_pathname();
-  int serv_fd;
+  int server_fd;
   unlink(path);
 
   clients = NULL;
@@ -352,7 +352,7 @@ main(int argc, char **argv)
   FD_ZERO(&s_fdset_read);
   FD_ZERO(&s_fdset_write);
   s_max_fd = 0;
-  serv_fd = init_serv_fd(path);
+  server_fd = init_server_fd(path);
 
   printf("waiting\n\n");
   fflush(stdout);
@@ -360,7 +360,7 @@ main(int argc, char **argv)
   fclose(stdin);
   fclose(stdout);
 
-  if (serv_fd < 0) {
+  if (server_fd < 0) {
     return 0;
   }
   /*  fprintf(stderr,"Waiting for connection at %s\n", path);*/
@@ -369,7 +369,7 @@ main(int argc, char **argv)
 
   signal(SIGPIPE, SIG_IGN);
 
-  uim_helper_server_process_connection(serv_fd);
+  uim_helper_server_process_connection(server_fd);
 
   return 0;
 }
