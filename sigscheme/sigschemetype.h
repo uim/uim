@@ -335,10 +335,12 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_ETC(a) (sigassert(SCM_ETCP(a)), (a))
 #define SCM_ETC_TYPE(a) (SCM_ETC(a)->obj.etc.type)
 #define SCM_SETETC_TYPE(a, etctype) (SCM_ETC_TYPE(a) = (etctype))
-#define SCM_NEW_ETC(a, impl, etctype) \
-    (a) = &(impl);\
-    SCM_SETTYPE((a), ScmEtc);\
-    SCM_SETETC_TYPE((a), (etctype));
+#define SCM_NEW_ETC(a, impl, etctype)     \
+    do {                                  \
+        (a) = &(impl);                    \
+        SCM_SETTYPE((a), ScmEtc);         \
+        SCM_SETETC_TYPE((a), (etctype));  \
+    } while(0)
 
 /*============================================================================
   For C-Interface
