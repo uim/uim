@@ -1,6 +1,6 @@
 AC_PREREQ(2.57)
 
-AC_INIT([uim], 0.4.8beta1, [tkng@xem.jp])
+AC_INIT([uim], 0.4.8, [tkng@xem.jp])
 AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION)
 
 AC_CONFIG_SRCDIR([COPYING])
