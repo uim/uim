@@ -21,11 +21,12 @@ Recieving Message format BNF
 	      show       |
 	      hide       |
 	      deactivate |
-	      show_caret_state) "\n" "\n"
+	      show_caret_state |
+	      update_caret_state) "\n"
   charset_specifier = "charset=" charset "\n"
   charset = "UTF-8" | "EUC-JP" | "GB18030" |
             <or any name that can be specified as iconv_open(3) argument>
-  str = str <any characters except for '\0', '\t' or '\n'> | ""
+  str = str <any characters except for '\0', '\t', or '\n'> | ""
   num = /[0-9]+/
 
   1. activate
@@ -45,12 +46,12 @@ Recieving Message format BNF
   2. select
     Selecting the specified candidate in helper-candwin window.
 
-    select = "select" "\n" num
+    select = "select" "\n" num "\n"
 
   3. move
     Moving the helper-candwin window.
 
-    move = "move" "\n" XPos "\n" YPos
+    move = "move" "\n" XPos "\n" YPos "\n"
     XPos = num
     YPos = num
 
@@ -72,8 +73,14 @@ Recieving Message format BNF
   7. show_caret_state
     Show caret state of the input mode
 
-    show_caret_state = "show_caret_state" "\n" caret_state
-    caret_state = "\n" str
+    show_caret_state = "show_caret_state" "\n" timeout "\n" caret_state "\n"
+    timeout = num
+    caret_state = str
+
+  8. update_caret_state
+    Update caret state of the input mode
+
+    update_caret_state = "update_caret_state" "\n"
 
 Sending Message format BNF
   session  = messages
@@ -88,4 +95,4 @@ Sending Message format BNF
   1. index
     Sending index of selected candidate with mouse pointer to uim-xim.
 
-    index = "index" "\n" num "\n\n"
+    index = "index" "\n" num "\n"

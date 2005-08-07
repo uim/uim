@@ -515,6 +515,7 @@ focus_out(GtkIMContext *ic)
   if (uic->cwin) {
     gtk_widget_hide(GTK_WIDGET(uic->cwin));
   }
+  gtk_widget_hide(uic->caret_state_indicator);
 }
 
 static void

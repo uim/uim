@@ -1,6 +1,6 @@
 AC_PREREQ(2.57)
 
-AC_INIT([uim], 0.4.8beta1, [tkng@xem.jp])
+AC_INIT([uim], 0.4.8, [tkng@xem.jp])
 AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION)
 
 AC_CONFIG_SRCDIR([COPYING])
@@ -774,7 +774,9 @@ AC_CONFIG_FILES([test.sh
 		 examples/Makefile
 		 examples/uim-custom/Makefile
 		 pixmaps/Makefile
-		 uim.pc])
+		 uim.pc
+		 uim.desktop
+                 ])
 
 AC_OUTPUT
 

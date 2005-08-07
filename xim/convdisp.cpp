@@ -265,6 +265,7 @@ public:
     virtual void clear_preedit();
     virtual void update_icxatr();
     virtual void move_candwin();
+    virtual void update_caret_state();
     virtual void set_im_lang(const char *im_lang);
     virtual bool use_xft();
 private:
@@ -296,6 +297,7 @@ public:
     virtual void clear_preedit();
     virtual void update_icxatr();
     virtual void move_candwin();
+    virtual void update_caret_state();
     virtual bool use_xft();
 private:
     PeLineWin *mPeWin;
@@ -309,6 +311,7 @@ public:
     virtual void clear_preedit();
     virtual void update_icxatr();
     virtual void move_candwin();
+    virtual void update_caret_state();
     virtual bool use_xft();
 
 private:
@@ -987,6 +990,10 @@ void ConvdispRw::update_icxatr()
 {
 }
 
+void ConvdispRw::update_caret_state()
+{
+}
+
 void ConvdispRw::move_candwin()
 {
     if (m_atr->has_atr(ICA_ClientWindow)) {
@@ -1035,6 +1042,18 @@ void ConvdispOv::update_preedit()
 {
     draw_preedit();
     move_candwin();
+}
+
+void ConvdispOv::update_caret_state()
+{
+    Canddisp *disp = canddisp_singleton();
+    InputContext *focusedContext = InputContext::focusedContext();
+
+    if (focusedContext && focusedContext == mKkContext) {
+	move_candwin();
+	disp->update_caret_state();
+	m_atr->unset_change_mask(ICA_SpotLocation);
+    }
 }
 
 void ConvdispOv::move_candwin()
@@ -1115,6 +1134,13 @@ void ConvdispOv::validate_area()
 
 void ConvdispOv::update_icxatr()
 {
+
+    if (m_atr->is_changed(ICA_SpotLocation)) {
+	uim_bool  show_caret_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
+	if (show_caret_state == UIM_TRUE)
+	    update_caret_state();
+    }
+
     if (!m_ov_win)
 	return;
     
@@ -1150,7 +1176,11 @@ void ConvdispOv::update_icxatr()
 	m_atr->unset_change_mask(ICA_FontSet);
     }
   
-    update_preedit();
+    if (m_atr->is_changed(ICA_SpotLocation)) {
+	move_candwin();
+	m_atr->unset_change_mask(ICA_SpotLocation);
+    }
+    draw_preedit();
 }
 
 void ConvdispOv::draw_preedit()
@@ -1510,7 +1540,11 @@ void ConvdispOs::update_preedit()
 	mConn->push_passive_packet(t);
     }
 }
-      
+
+void ConvdispOs::update_caret_state()
+{
+}
+
 void ConvdispOs::move_candwin()
 {
     if (m_atr->has_atr(ICA_ClientWindow)) {

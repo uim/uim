@@ -307,6 +307,7 @@ candidate_window_init(UIMCandidateWindow *cwin)
   GtkTreeViewColumn *column; 
   GtkWidget *vbox;
   GtkTreeSelection *selection;
+  GdkRectangle cursor_location;
   
   vbox = gtk_vbox_new(FALSE, 0);
 
@@ -370,6 +371,11 @@ candidate_window_init(UIMCandidateWindow *cwin)
   cwin->pos_y = 0;
   cwin->is_active = FALSE;
   cwin->caret_state_indicator = caret_state_indicator_new();
+
+  cursor_location.x = 0;
+  cursor_location.y = 0;
+  cursor_location.height = 0;
+  caret_state_indicator_set_cursor_location(cwin->caret_state_indicator, &cursor_location);
 
   gtk_widget_show(cwin->scrolled_window);
   gtk_widget_show(cwin->view);
@@ -487,17 +493,10 @@ candwin_update(gchar **str)
 static void
 candwin_move(char **str)
 {
-  GdkRectangle cursor_location;
-
   sscanf(str[1], "%d", &cwin->pos_x);
   sscanf(str[2], "%d", &cwin->pos_y);
 
-  cursor_location.x = 0;
-  cursor_location.y = 0;
-  cursor_location.height = 0;
-
   uim_cand_win_gtk_layout();
-  caret_state_indicator_set_cursor_location(cwin->caret_state_indicator, &cursor_location);
 }
 
 static void
@@ -517,8 +516,25 @@ candwin_deactivate(void)
 static void
 caret_state_show(gchar **str)
 {
-  caret_state_indicator_update(cwin->caret_state_indicator, cwin->pos_x, cwin->pos_y, str[1]);
-  gtk_widget_show(GTK_WIDGET(cwin->caret_state_indicator));
+  int timeout;
+
+  sscanf(str[1], "%d", &timeout);
+  caret_state_indicator_update(cwin->caret_state_indicator, cwin->pos_x, cwin->pos_y, str[2]);
+  if (timeout != 0)
+    caret_state_indicator_set_timeout(cwin->caret_state_indicator, timeout * 1000);
+  gtk_widget_show_all(GTK_WIDGET(cwin->caret_state_indicator));
+}
+
+static void
+caret_state_update()
+{
+  caret_state_indicator_update(cwin->caret_state_indicator, cwin->pos_x, cwin->pos_y, NULL);
+}
+
+static void
+caret_state_hide()
+{
+  gtk_widget_hide(cwin->caret_state_indicator);
 }
 
 static void str_parse(gchar *str)
@@ -544,6 +560,10 @@ static void str_parse(gchar *str)
       candwin_deactivate();
     } else if (strcmp("show_caret_state", command) == 0) {
       caret_state_show(tmp);
+    } else if (strcmp("update_caret_state", command) == 0) {
+      caret_state_update();
+    } else if (strcmp("hide_caret_state", command) == 0) {
+      caret_state_hide();
     }
   }
   g_strfreev(tmp);

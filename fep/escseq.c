@@ -476,6 +476,7 @@ void put_save_cursor(void)
     if (g_opt.no_report_cursor) {
       my_putp(save_cursor);
       s_save_cursor = s_cursor;
+      /* put_exit_attribute_mode(); */
     } else {
       s_save_cursor = get_cursor_position();
     }
@@ -495,11 +496,19 @@ void put_restore_cursor(void)
       /* DOSプロンプトでは1回のrestore_cursorでは戻らない */
       my_putp(restore_cursor);
       s_cursor = s_save_cursor;
+      /* DOSプロンプトでは属性を保存しない */
+      /* put_exit_attribute_mode(); */
     } else {
       put_cursor_address_p(&s_save_cursor);
     }
   }
 }
+
+#define range_check(i) do { \
+  if ((i) > escseq_len - 1) { \
+    goto retry; \
+  } \
+} while(FALSE)
 
 /*
  * 現在のカーソル位置を返す
@@ -508,7 +517,7 @@ void put_restore_cursor(void)
  */
 struct point_tag get_cursor_position(void)
 {
-  char ibuf[BUFSIZ];
+  char ibuf[300];
   ssize_t len = 0;
   ssize_t read_len = 0;
   char *escseq = ibuf - 1;
@@ -524,6 +533,7 @@ struct point_tag get_cursor_position(void)
 
   while (TRUE) {
     char *next_escseq;
+    retry:
     len += (read_len = read_stdin(ibuf + len, sizeof(ibuf) - len));
     if (read_len == 0) {
       debug(("loop = %d\n", loop_count + 1));
@@ -531,7 +541,6 @@ struct point_tag get_cursor_position(void)
         break;
       }
     }
-    ibuf[len] = '\0';
 
     debug2(("get = \""));
     debug_write2(ibuf, len);
@@ -540,37 +549,126 @@ struct point_tag get_cursor_position(void)
     if (escseq != ibuf - 1) {
       escseq--;
     }
+
+    /* NULが入っているかもしれないので strchr ではなく memchr */
     while ((next_escseq = memchr(escseq + 1, ESCAPE_CODE, len - (escseq - ibuf) - 1)) != NULL) {
-      int n;
-      char R;
+      int i = 1;
+      int row = UNDEFINED;
+      int col = UNDEFINED;
+      char unget_buf[300];
+      int unget_count = 0;
+      int escseq_len;
+
       escseq = next_escseq;
-      n = sscanf(escseq, "\033[%d;%d%c", &(s_cursor.row), &(s_cursor.col), &R);
-      if (n == 3 && R == 'R') {
-        char *next_to_R = strchr(escseq, 'R') + 1;
-        /* エスケープシーケンスの前に文字列があるか */
-        if (escseq > ibuf) {
-          unget_stdin(ibuf, escseq - ibuf);
-        }
+      escseq_len = len - (escseq - ibuf);
 
-        /* エスケープシーケンスの後の文字列 */
-        unget_stdin(next_to_R, len - (next_to_R - ibuf));
-
-        s_cursor.row--;
-        s_cursor.col--;
-        s_cursor.row -= s_cursor_diff.row;
-        s_cursor.col -= s_cursor_diff.col;
-
-        /* GNU screen ではこうなることがある */
-        if (s_cursor.col > g_win->ws_col - 1) {
-          put_crlf();
-        }
-        debug(("<get row = %d col = %d>", s_cursor.row, s_cursor.col));
-        return s_cursor;
-
-      } else {
-        /* ESCはあるが, エスケープシーケンスとしては不十分 */
-        s_cursor.row = s_cursor.col = UNDEFINED;
+      if (strlen("\033[0;0R") > escseq_len) {
+        break; /* goto retry */
       }
+
+      /* n = sscanf(escseq, "\033[%d;%d%c", &(s_cursor.row), &(s_cursor.col), &R); */
+
+      if (escseq[i] != '[') {
+        unget_buf[unget_count++] = escseq[i++];
+        if (escseq[i] != '[') {
+          break; /* goto retry */
+        }
+      }
+      
+      if (escseq[i + 1] == '[') {
+        unget_buf[unget_count++] = escseq[i++];
+      }
+
+      while (TRUE) {
+        i++;
+        range_check(i);
+        if (!isdigit((unsigned char)escseq[i])) {
+          if (row != UNDEFINED && escseq[i] == ';') {
+            break;
+          }
+          unget_buf[unget_count++] = escseq[i++];
+          range_check(i);
+        }
+        if (isdigit((unsigned char)escseq[i])) {
+          if (row == UNDEFINED) {
+            row = 0;
+          }
+          row = row * 10 + escseq[i] - '0';
+        } else {
+          break;
+        }
+      }
+
+      if (row == UNDEFINED) {
+        break; /* goto retry */
+      }
+
+      if (escseq[i] != ';') {
+        break; /* goto retry */
+      }
+
+      range_check(i + 1);
+      if (escseq[i + 1] == ';') {
+        unget_buf[unget_count++] = escseq[i++];
+      }
+
+      while (TRUE) {
+        i++;
+        range_check(i);
+        if (!isdigit((unsigned char)escseq[i])) {
+          if (col != UNDEFINED && escseq[i] == 'R') {
+            break;
+          }
+          unget_buf[unget_count++] = escseq[i++];
+          range_check(i);
+        }
+        if (isdigit((unsigned char)escseq[i])) {
+          if (col == UNDEFINED) {
+            col = 0;
+          }
+          col = col * 10 + escseq[i] - '0';
+        } else {
+          break;
+        }
+      }
+
+      if (col == UNDEFINED) {
+        break; /* goto retry */
+      }
+
+      if (escseq[i] != 'R') {
+        break; /* goto retry */
+      }
+
+      /* エスケープシーケンスの前に文字列があるか */
+      if (escseq > ibuf) {
+        unget_stdin(ibuf, escseq - ibuf);
+      }
+
+      /* エスケープシーケンスの中の文字列 */
+      if (unget_count > 0) {
+        unget_stdin(unget_buf, unget_count);
+      }
+
+      /* エスケープシーケンスの後の文字列 */
+      if (i < escseq_len - 1) {
+        unget_stdin(&escseq[i + 1], escseq_len - 1 - i);
+      }
+
+      row--;
+      col--;
+      row -= s_cursor_diff.row;
+      col -= s_cursor_diff.col;
+
+      s_cursor.row = row;
+      s_cursor.col = col;
+
+      /* GNU screen ではこうなることがある */
+      if (s_cursor.col > g_win->ws_col - 1) {
+        put_crlf();
+      }
+      debug(("<get row = %d col = %d>", s_cursor.row, s_cursor.col));
+      return s_cursor;
     }
   }
 

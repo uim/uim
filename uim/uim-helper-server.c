@@ -74,10 +74,10 @@ static struct client *clients;
 static char read_buf[BUFFER_SIZE];
 
 /*
-  prepare file descriptor.
+  initialize server's file descriptor.
 */
 static int
-init_serv_fd(char *path)
+init_server_fd(char *path)
 {
   int foo;
   int fd;
@@ -216,15 +216,61 @@ check_session_alive(void)
 }
 
 
+static uim_bool
+accept_new_connection(int server_fd)
+{
+  struct sockaddr_un clientsoc;
+  socklen_t len = sizeof(clientsoc);
+  int new_fd;
+  int flag;
+  struct client *cl;
+  new_fd = accept(server_fd, (struct sockaddr *)&clientsoc, &len);
+  
+  if (new_fd < 0) {
+    perror("accpet failed");
+    return UIM_FALSE;
+  }
+
+  if ((flag = fcntl(new_fd, F_GETFL)) == -1) {
+    close(new_fd);
+    return UIM_FALSE;
+  }
+
+  flag |= O_NONBLOCK;
+  if (fcntl(new_fd, F_SETFL, flag) == -1) {
+    close(new_fd);
+    return UIM_FALSE;
+  }
+
+  cl = get_unused_client();
+  if (!cl) {
+    close(new_fd);
+    return UIM_FALSE;
+  }
+  cl->fd = new_fd;
+#ifdef LOCAL_CREDS	/* for NetBSD */
+  {
+    char buf[1] = { '\0' };
+    write(cl->fd, buf, 1);
+  }
+#endif
+  FD_SET(cl->fd, &s_fdset_read);
+  if (cl->fd > s_max_fd)
+    s_max_fd = cl->fd;
+
+  return UIM_TRUE;
+}
+
 /* FIXME: This function is too long to read... */
 static void
-uim_helper_server_process_connection(int serv_fd)
+uim_helper_server_process_connection(int server_fd)
 {
   int i;
   fd_set readfds;
   fd_set writefds;
 
   while (1) {
+    /* Could we replace this memcpy with direct assignment? */
     memcpy(&readfds, &s_fdset_read, sizeof(fd_set));
     memcpy(&writefds, &s_fdset_write, sizeof(fd_set));
 
@@ -236,45 +282,12 @@ uim_helper_server_process_connection(int serv_fd)
     }
 
     /* for accept new connection */
-    if (FD_ISSET(serv_fd, &readfds)) {
-      struct sockaddr_un clientsoc;
-      socklen_t len = sizeof(clientsoc);
-      int new_fd;
-      int flag;
-      struct client *cl;
-      new_fd = accept(serv_fd, (struct sockaddr *)&clientsoc, &len);
-
-      if (new_fd < 0) {
-	perror("accpet failed");
-	continue;
+    if (FD_ISSET(server_fd, &readfds)) {
+      uim_bool accepted;
+      accepted = accept_new_connection(server_fd);
+      if(accepted == UIM_FALSE) {
+	continue; /* acception failed, go next loop without message processing. */
       }
-
-      if ((flag = fcntl(new_fd, F_GETFL)) == -1) {
-	close(new_fd);
-	continue;
-      }
-
-      flag |= O_NONBLOCK;
-      if (fcntl(new_fd, F_SETFL, flag) == -1) {
-	close(new_fd);
-	continue;
-      }
-
-      cl = get_unused_client();
-      if (!cl) {
-	close(new_fd);
-	continue;
-      }
-      cl->fd = new_fd;
-#ifdef LOCAL_CREDS	/* for NetBSD */
-      {
-	char buf[1] = { '\0' };
-	write(cl->fd, buf, 1);
-      }
-#endif
-      FD_SET(cl->fd, &s_fdset_read);
-      if (cl->fd > s_max_fd)
-	s_max_fd = cl->fd;
     } else {
       /* check data to write and from clients reached */
       for (i = 0; i < nr_client_slots; i++) {
@@ -343,7 +356,7 @@ int
 main(int argc, char **argv)
 {
   char *path = uim_helper_get_pathname();
-  int serv_fd;
+  int server_fd;
   unlink(path);
 
   clients = NULL;
@@ -352,7 +365,7 @@ main(int argc, char **argv)
   FD_ZERO(&s_fdset_read);
   FD_ZERO(&s_fdset_write);
   s_max_fd = 0;
-  serv_fd = init_serv_fd(path);
+  server_fd = init_server_fd(path);
 
   printf("waiting\n\n");
   fflush(stdout);
@@ -360,7 +373,7 @@ main(int argc, char **argv)
   fclose(stdin);
   fclose(stdout);
 
-  if (serv_fd < 0) {
+  if (server_fd < 0) {
     return 0;
   }
   /*  fprintf(stderr,"Waiting for connection at %s\n", path);*/
@@ -369,7 +382,7 @@ main(int argc, char **argv)
 
   signal(SIGPIPE, SIG_IGN);
 
-  uim_helper_server_process_connection(serv_fd);
+  uim_helper_server_process_connection(server_fd);
 
   return 0;
 }

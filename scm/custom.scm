@@ -391,12 +391,16 @@
 ;; API
 (define custom-group-label
   (lambda (gsym)
-    (custom-group-rec-label (custom-group-rec gsym))))
+    (if (custom-group-rec gsym)
+	(custom-group-rec-label (custom-group-rec gsym))
+	(string-append "Error: " gsym " not found."))))
 
 ;; API
 (define custom-group-desc
   (lambda (gsym)
-    (custom-group-rec-desc (custom-group-rec gsym))))
+    (if (custom-group-rec gsym)
+	(custom-group-rec-desc (custom-group-rec gsym))
+	(string-append "Error: " gsym " not found."))))
 
 ;; API
 (define custom-group-subgroups
