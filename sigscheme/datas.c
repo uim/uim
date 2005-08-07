@@ -70,8 +70,8 @@
 #include <malloc.h>
 #endif
 
-#ifndef posix_memalign
 /*
+#ifndef posix_memalign
  * Cited from manpage of posix_memalign(3) of glibc:
  * 
  * CONFORMING TO
@@ -79,9 +79,9 @@
  *     obsolete in BSD 4.3, and as legacy in SUSv2. It  no  longer  occurs  in
  *     SUSv3.   The  function memalign() appears in SunOS 4.1.3 but not in BSD
  *     4.4.  The function posix_memalign() comes from POSIX 1003.1d.
- */
 #error "posix_memalign(3) is not available in this system"
 #endif
+ */
 
 /*=======================================
   Local Include
@@ -111,6 +111,14 @@ struct gc_protected_obj_ {
     VALNAME = scm_freelist;						\
     scm_freelist = SCM_FREECELL_CDR(scm_freelist);			\
 
+#define SCM_UNMARKER        0
+#define SCM_INITIAL_MARKER  (SCM_UNMARKER + 1)
+#define SCM_IS_MARKED(a)    (SCM_MARK(a) == scm_cur_marker)
+#define SCM_IS_UNMARKED(a)  (!SCM_IS_MARKED)
+#define SCM_DO_MARK(a)      (SCM_MARK(a) = scm_cur_marker)
+#define SCM_DO_UNMARK(a)    (SCM_MARK(a) = SCM_UNMARKER)
+#define SCM_MARK_CORRUPT(a) ((unsigned)SCM_MARK(a) > (unsigned)scm_cur_marker)
+
 /*=======================================
   Variable Declarations
 =======================================*/
@@ -118,6 +126,8 @@ static int           SCM_HEAP_SIZE = 1024;
 static int           scm_heap_num  = 8;
 static ScmObjHeap   *scm_heaps     = NULL;
 static ScmObj        scm_freelist  = NULL;
+
+static int           scm_cur_marker = SCM_INITIAL_MARKER;
 
 static jmp_buf save_regs_buf;
 ScmObj *stack_start_pointer = NULL;
@@ -171,9 +181,13 @@ void SigScm_FinalizeStorage(void)
 
 static void *malloc_aligned(size_t size)
 {
-    /* TODO : Need to reserch System Dependency! */
     void *p;
-    posix_memalign(&p, 16, size);
+    /* 2005/08/08  Kazuki Ohta  <mover@hct.zaq.ne.jp>
+     * commented out "posix_memalign"
+     *
+     * posix_memalign(&p, 16, size);
+     */
+    p = malloc(size);
     return p;
 }
 
@@ -278,12 +292,21 @@ static void finalize_heap(void)
 
 static void gc_preprocess(void)
 {
-    /* Initialize Mark Table */
-    int  i = 0;
-    long j = 0;
-    for (i = 0; i < scm_heap_num; i++) {
-	for (j = 0; j < SCM_HEAP_SIZE; j++) {
-	    SCM_DO_UNMARK(&scm_heaps[i][j]);
+    ++scm_cur_marker;		/* make everything unmarked */
+
+    if (scm_cur_marker == SCM_UNMARKER) {
+	/* We've been running long enough to do
+	 * (1 << (sizeof(int)*8)) - 1 GCs, yay! */
+	int  i = 0;
+	long j = 0;
+
+	scm_cur_marker = SCM_INITIAL_MARKER;
+
+	/* unmark everything */
+	for (i = 0; i < scm_heap_num; i++) {
+	    for (j = 0; j < SCM_HEAP_SIZE; j++) {
+		SCM_DO_UNMARK(&scm_heaps[i][j]);
+	    }
 	}
     }
 }
@@ -509,6 +532,7 @@ static void gc_sweep(void)
 	/* iterate in heap */
 	for (j = 0; j < SCM_HEAP_SIZE; j++) {
 	    obj = &scm_heaps[i][j];
+	    sigassert (!SCM_MARK_CORRUPT (obj));
 	    if (!SCM_IS_MARKED(obj)) {
 		sweep_obj(obj);
 

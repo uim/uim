@@ -80,12 +80,6 @@ enum ScmFuncArgNum {
     ARGNUM_2N        = 9  /* all args are evaluated with each 2 objs */
 };
 
-/* GC Mark Flag */
-enum GCMark {
-    GC_Unmarked = 0,
-    GC_Marked = 1
-};
-
 /* ScmPort direction */
 enum ScmPortDirection {
     PORT_INPUT  = 0,
@@ -130,7 +124,7 @@ typedef struct ScmObjInternal_ ScmObjInternal;
 typedef ScmObjInternal *ScmObj;
 struct ScmObjInternal_ {
     enum ScmObjType type;
-    enum GCMark gcmark;
+    int gcmark;
 
     union {
         struct {
@@ -227,9 +221,6 @@ struct ScmObjInternal_ {
 #define SCM_GETTYPE(a)       ((a)->type)
 #define SCM_SETTYPE(a, objtype) ((a)->type = (objtype))
 #define SCM_MARK(a) ((a)->gcmark)
-#define SCM_DO_MARK(a) (SCM_MARK(a) = GC_Marked)
-#define SCM_DO_UNMARK(a) (SCM_MARK(a) = GC_Unmarked)
-#define SCM_IS_MARKED(a) (SCM_MARK(a) == GC_Marked)
 
 #define SCM_INTP(a)  (SCM_GETTYPE(a) == ScmInt)
 #define SCM_INT(a)   (sigassert(SCM_INTP(a)), (a))
