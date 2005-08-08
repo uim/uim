@@ -127,6 +127,7 @@ uim_bool uim_custom_enable(void);
 uim_bool uim_custom_load(void);
 uim_bool uim_custom_save(void);
 uim_bool uim_custom_broadcast(void);
+uim_bool uim_custom_broadcast_reload_request(void);
 
 /* custom variable */
 struct uim_custom *uim_custom_get(const char *custom_sym);

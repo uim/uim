@@ -204,7 +204,26 @@ helper_str_parse(char *str)
 	parse_helper_str_im_change(line, engine);
 	return;
     } else if (strcmp("prop_update_custom", line) == 0) {
-	uim_prop_reload_configs();
+	line = eol + 1;
+	eol = strchr(line, '\n');
+	if (eol != NULL)
+	    *eol = '\0';
+	else
+	    return;
+
+	char *custom = line;
+	char *val = eol + 1;
+	eol = strchr(val, '\n');
+	if (eol != NULL)
+	    *eol = '\0';
+	else
+	    return;
+
+	std::map<Window, XimServer *>::iterator it;
+	for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); it++) {
+	    (*it).second->customContext(custom, val);
+	}
+	return;
     } else if (strcmp("custom_reload_notify", line) == 0) {
 	uim_prop_reload_configs();
     }
