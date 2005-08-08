@@ -523,6 +523,8 @@ void
 uim_prop_activate(uim_context uc, const char *str);
 void
 uim_prop_update_custom(uim_context uc, const char *custom, const char *val);
+uim_bool
+uim_prop_reload_configs(void);
 
 /* mode is obsoleted by property, so please use property API instead of mode API */
 int

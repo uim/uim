@@ -916,24 +916,7 @@ uim_custom_broadcast(void)
     helper_fd = uim_helper_init_client_fd(helper_disconnect_cb);
   }
 
-  custom_syms = uim_custom_collect_by_group(NULL);
-  for (sym = custom_syms; *sym; sym++) {
-    value = uim_custom_value_as_literal(*sym);
-    if (value) {
-      msg_size = sizeof(custom_msg_tmpl) + strlen(*sym) + strlen(value);
-      msg = (char *)malloc(msg_size);
-      if (!msg) {
-	free(value);
-	uim_custom_symbol_list_free(custom_syms);
-	return UIM_FALSE;
-      }
-      sprintf(msg, custom_msg_tmpl, *sym, value);
-      uim_helper_send_message(helper_fd, msg);
-      free(msg);
-      free(value);
-    }
-  }
-  uim_custom_symbol_list_free(custom_syms);
+  uim_helper_send_message(helper_fd, "custom_reload_notify\n");
 
   if (helper_fd != -1) {
     uim_helper_close_client_fd(helper_fd);
