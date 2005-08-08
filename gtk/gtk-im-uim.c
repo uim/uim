@@ -986,15 +986,9 @@ im_uim_parse_helper_str(const char *str)
   if (g_str_has_prefix(str, "im_change") == TRUE) {
     im_uim_parse_helper_str_im_change(str);
   } else if (g_str_has_prefix(str, "prop_update_custom") == TRUE) {
-    IMUIMContext *cc;
-    lines = g_strsplit(str, "\n", 0);
-    if (lines && lines[0] && lines[1] && lines[2]) {
-      for (cc = context_list.next; cc != &context_list; cc = cc->next) {
-	uim_prop_update_custom(cc->uc, lines[1], lines[2]);
-	break;  /* all custom variables are global */
-      }
-      g_strfreev(lines);
-    }
+    uim_prop_reload_configs();
+  } else if (g_str_has_prefix(str, "custom_reload_notify") == TRUE) {
+    uim_prop_reload_configs();
   } else if (focused_context && !disable_focused_context) {
     if (g_str_has_prefix(str, "prop_list_get") == TRUE) {
       uim_prop_list_update(focused_context->uc);
