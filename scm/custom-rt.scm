@@ -51,12 +51,16 @@
     (desc  "")))
 
 (define custom-required-custom-files ())
+(define custom-reload-group-syms ())
 (define custom-rt-primary-groups ())
 (define custom-set-hooks ())
 
 ;; full implementation
 (define custom-load-group-conf
   (lambda (gsym)
+    (if (not (memq gsym custom-reload-group-syms))
+	(set! custom-reload-group-syms
+	      (cons gsym custom-reload-group-syms)))
     (let* ((group-name (symbol->string gsym))
 	   (path (string-append (getenv "HOME")
 				"/.uim.d/customs/custom-"
@@ -75,7 +79,7 @@
       (let* ((post-groups (custom-list-primary-groups))
 	     (new-groups (list-tail post-groups (length pre-groups))))
 	(if (not (getenv "LIBUIM_VANILLA"))
-	    (for-each custom-load-group-conf
+	    (for-each custom-load-group-conf		      
 		      (reverse new-groups)))))))
 
 ;; full implementation
@@ -195,3 +199,10 @@
 (define custom-prop-update-custom-handler
   (lambda (context custom-sym val)
     (custom-set-value! custom-sym val)))
+
+(define custom-reload-configs
+  (lambda ()
+    (if (null? custom-reload-group-syms)
+	#f ; No file should be loaded.
+	(begin
+	  (for-each custom-load-group-conf (reverse custom-reload-group-syms))))))
