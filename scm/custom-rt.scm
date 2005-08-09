@@ -72,7 +72,7 @@
 (define update-gsym-mtime
   (lambda (gsym path)
     (set-cdr! (assq gsym custom-reload-group-syms)
-	      (get-file-mtime path))
+	      (file-mtime path))
 	      #t))
 
 (define custom-load-updated-group-conf
@@ -80,7 +80,7 @@
     (let ((path (custom-file-path gsym)))
       (if (not (memq gsym (map (lambda (x) (car x)) custom-reload-group-syms)))
 	  (prepend-new-reload-group-syms gsym path))
-      (if (= (get-file-mtime path)
+      (if (= (file-mtime path)
 	     (cdr (assq gsym custom-reload-group-syms)))
 	  #t ; File isn't modified, no need to reload. 
 	  (if (try-load path)

@@ -128,6 +128,20 @@ file_directoryp(uim_lisp filename)
 }
 
 static uim_lisp
+file_mtime(uim_lisp f)
+{
+  const char *filename = uim_scm_refer_c_str(f);
+  struct stat buf;
+
+  if(stat(filename, &buf) == 0) {
+    return uim_scm_make_int(buf.st_mtime);
+  } else {
+    /* FIXME: Write error handling code. */
+    return uim_scm_make_int(0);
+  }
+}
+
+static uim_lisp
 charcode2string(uim_lisp x)
 {
   char buf[2];
@@ -600,20 +614,6 @@ is_setugidp(void)
   return uim_scm_f();
 }
 
-static uim_lisp
-get_file_mtime(uim_lisp f)
-{
-  const char *filename = uim_scm_refer_c_str(f);
-  struct stat buf;
-
-  if(stat(filename, &buf) == 0) {
-    return uim_scm_make_int(buf.st_mtime);
-  } else {
-    /* FIXME: Write error handling code. */
-    return uim_scm_make_int(0);
-  }
-}
-
 void
 uim_init_util_subrs(void)
 {
@@ -626,6 +626,7 @@ uim_init_util_subrs(void)
   uim_scm_init_subr_1("file-executable?", file_executablep);
   uim_scm_init_subr_1("file-regular?", file_regularp);
   uim_scm_init_subr_1("file-directory?", file_directoryp);
+  uim_scm_init_subr_1("file-mtime", file_mtime);
   uim_scm_init_subr_2("nthcdr", nthcdr);
   uim_scm_init_subr_1("charcode->string", charcode2string);
   uim_scm_init_subr_1("string->charcode", string2charcode);
@@ -646,5 +647,4 @@ uim_init_util_subrs(void)
   uim_scm_init_subr_2("find-tail", find_tail);
   uim_scm_init_subr_1("lang-code->lang-name-raw", lang_code_to_lang_name_raw);
   uim_scm_init_subr_0("is-set-ugid?", is_setugidp);
-  uim_scm_init_subr_1("get-file-mtime", get_file_mtime);
 }
