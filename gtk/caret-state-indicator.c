@@ -46,13 +46,29 @@
 #define DEFAULT_WINDOW_HEIGHT 20
 
 static gint
+get_current_time(void);
+static gint
 caret_state_indicator_timeout(gpointer data);
+
+/* This function is not correct, size of tv_sec is glong, not gint */
+static gint
+get_current_time(void)
+{
+  GTimeVal result;
+  g_get_current_time(&result);
+  return result.tv_sec;
+}
 
 static gint
 caret_state_indicator_timeout(gpointer data)
 {
   GtkWidget *window = GTK_WIDGET(data);
-  gtk_widget_hide(window);
+  gint timeout      = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), "timeout"));
+  gint called_time  = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), "called_time"));
+  gint current_time = get_current_time();
+  if((current_time - called_time)*1000 >= timeout) {
+    gtk_widget_hide(window);
+  }
   return 0;
 }
 
@@ -127,5 +143,10 @@ caret_state_indicator_set_cursor_location(GtkWidget *window, GdkRectangle *curso
 void
 caret_state_indicator_set_timeout(GtkWidget *window, gint timeout)
 {
+  gint current_time = get_current_time();
+
   g_timeout_add(timeout, caret_state_indicator_timeout, (gpointer)window);
+  g_object_set_data(G_OBJECT(window), "timeout", GINT_TO_POINTER(timeout));
+  g_object_set_data(G_OBJECT(window), "called_time", GINT_TO_POINTER(current_time));
+  /* "called_time" stores the time of last calling of this function */
 }
