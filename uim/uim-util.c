@@ -35,6 +35,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
@@ -599,6 +600,20 @@ is_setugidp(void)
   return uim_scm_f();
 }
 
+static uim_lisp
+get_file_mtime(uim_lisp f)
+{
+  const char *filename = uim_scm_refer_c_str(f);
+  struct stat buf;
+
+  if(stat(filename, &buf) == 0) {
+    return uim_scm_make_int(buf.st_mtime);
+  } else {
+    /* FIXME: Write error handling code. */
+    return uim_scm_make_int(0);
+  }
+}
+
 void
 uim_init_util_subrs(void)
 {
@@ -631,4 +646,5 @@ uim_init_util_subrs(void)
   uim_scm_init_subr_2("find-tail", find_tail);
   uim_scm_init_subr_1("lang-code->lang-name-raw", lang_code_to_lang_name_raw);
   uim_scm_init_subr_0("is-set-ugid?", is_setugidp);
+  uim_scm_init_subr_1("get-file-mtime", get_file_mtime);
 }
