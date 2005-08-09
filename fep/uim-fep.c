@@ -224,6 +224,9 @@ int main(int argc, char **argv)
     UNDEFINED  /* background */
   };
   FILE *fp;
+  const char *tmp_dir;
+  const char *sty_str;
+  const char *win_str;
 
   int op;
 
@@ -371,18 +374,24 @@ opt_end:
   tcgetattr(g_win_in, &s_save_tios);
   setupterm(NULL, g_win_out, NULL);
 
-  if (getenv("TMP")) {
-    struct passwd *pw = getpwuid(getuid());
-    /* Generate get mode filepath */
-    snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-%s-%d-getmode", getenv("TMP"), pw->pw_name, getpid());
-    /* Generate set mode filepath */
-    snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-%s-%d-setmode", getenv("TMP"), pw->pw_name, getpid());
+  if ((tmp_dir = getenv("TMP")) == NULL) {
+    tmp_dir = "/tmp";
+  }
+
+  if (gnu_screen && (sty_str = getenv("STY")) != NULL && (win_str = getenv("WINDOW")) != NULL) {
+    snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s-%s", tmp_dir, sty_str, win_str);
+    snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s-%s", tmp_dir, sty_str, win_str);
   } else {
-    struct passwd *pw = getpwuid(getuid());
-    /* Generate get mode filepath */
-    snprintf(s_path_getmode, sizeof(s_path_getmode), "/tmp/uim-fep-%s-%d-getmode", pw->pw_name, getpid());
-    /* Generate set mode filepath */
-    snprintf(s_path_setmode, sizeof(s_path_setmode), "/tmp/uim-fep-%s-%d-setmode", pw->pw_name, getpid());
+    struct stat stat_buf;
+    int file_suffix = 1;
+
+    snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%d", tmp_dir, getpid());
+    snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%d", tmp_dir, getpid());
+    while (stat(s_path_getmode, &stat_buf) == 0 && stat(s_path_setmode, &stat_buf) == 0) {
+      snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%d-%d", tmp_dir, getpid(), file_suffix);
+      snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%d-%d", tmp_dir, getpid(), file_suffix);
+      file_suffix++;
+    }
   }
 
   env_buf = malloc(30);
@@ -882,6 +891,10 @@ static struct winsize *get_winsize(void)
   if (g_opt.status_type == LASTLINE) {
     win->ws_row--;
   }
+#ifdef PTY_TEST
+  win->ws_col = 140;
+  win->ws_row = 50;
+#endif
   return win;
 }
 
