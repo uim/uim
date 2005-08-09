@@ -55,6 +55,15 @@
 (define custom-rt-primary-groups ())
 (define custom-set-hooks ())
 
+(define custom-file-path
+  (lambda (gsym)
+    (let* ((group-name (symbol->string gsym))
+	   (path (string-append (getenv "HOME")
+				"/.uim.d/customs/custom-"
+				group-name
+				".scm")))
+      path)))
+
 (define prepend-new-reload-group-syms
   (lambda (gsym path)
     (set! custom-reload-group-syms
@@ -66,22 +75,27 @@
 	      (get-file-mtime path))
 	      #t))
 
-;; full implementation
-(define custom-load-group-conf
+(define custom-load-updated-group-conf
   (lambda (gsym)
-    (let* ((group-name (symbol->string gsym))
-	   (path (string-append (getenv "HOME")
-				"/.uim.d/customs/custom-"
-				group-name
-				".scm")))
+    (let ((path (custom-file-path gsym)))
       (if (not (memq gsym (map (lambda (x) (car x)) custom-reload-group-syms)))
 	  (prepend-new-reload-group-syms gsym path))
       (if (= (get-file-mtime path)
 	     (cdr (assq gsym custom-reload-group-syms)))
-	    #t ; File isn't modified, no need to reload. 
+	  #t ; File isn't modified, no need to reload. 
 	  (if (try-load path)
 	      (update-gsym-mtime gsym path)
 	      #f)))))
+
+;; full implementation
+;; This proc is existing for DUMB loading. No more processing such as
+;; mtime comparation or history recording must not be added. Please
+;; keep in mind responsibility separation, and don't alter an API
+;; specification previously stabilized without discussion.
+;;   -- YamaKen 2005-08-09
+(define custom-load-group-conf
+  (lambda (gsym)
+    (try-load (custom-file-path gsym))))
 
 ;; full implementation
 (define require-custom
@@ -94,8 +108,14 @@
       (let* ((post-groups (custom-list-primary-groups))
 	     (new-groups (list-tail post-groups (length pre-groups))))
 	(if (not (getenv "LIBUIM_VANILLA"))
-	    (for-each custom-load-group-conf		      
+	    (for-each custom-load-group-conf
 		      (reverse new-groups)))))))
+
+;; full implementation
+(define custom-reload-customs
+  (lambda ()
+    (for-each load (reverse custom-required-custom-files))
+    (custom-call-all-hook-procs custom-set-hooks)))
 
 ;; full implementation
 (define custom-modify-key-predicate-names
@@ -140,6 +160,14 @@
     (let ((proc (assq sym hook)))
       (if proc
 	  ((cdr proc))))))
+
+;; TODO: write test
+;; full implementation
+(define custom-call-all-hook-procs
+  (lambda (hook)
+    (for-each (lambda (pair)
+		((cdr pair)))
+	      hook)))
 
 ;; lightweight implementation
 (define define-custom-group
@@ -215,9 +243,25 @@
   (lambda (context custom-sym val)
     (custom-set-value! custom-sym val)))
 
+;; custom-reload-configs can switch its procedure definition from 2
+;; implementations. custom-reload-customs is selectable since the
+;; latter new code breaks the semantics of custom variable
+;; broadcasting.
+;;
+;; For example, an arbitrary uim-enabled process can update a custom
+;; variable by its own code without any helper message passing. In
+;; such case, the previously defined broadcasting behavior overwrites
+;; the variable locally modified even if the corresponding custom file
+;; is not updated.
+;;
+;; To make the latter code default, a discussion is required.
+;;   -- YamaKen 2005-08-09
 (define custom-reload-configs
-  (lambda ()
-    (let ((group-syms (map (lambda (x) (car x)) custom-reload-group-syms)))
-      (if (null? group-syms)
-	  #f ; No file should be loaded.
-	  (for-each custom-load-group-conf (reverse group-syms))))))
+  (if #f
+      custom-reload-customs  ;; original behavior
+      (lambda ()
+	(let ((group-syms (map (lambda (x) (car x)) custom-reload-group-syms)))
+	  (if (null? group-syms)
+	      #f ;; No file should be loaded.
+	      (for-each custom-load-updated-group-conf
+			(reverse group-syms)))))))
