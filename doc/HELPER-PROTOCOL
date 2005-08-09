@@ -331,9 +331,9 @@ protocol within uim.
 
   - custom_reload_notify
 
-    This is a notification message to reload configrations. If a process receive
-    this message, the process should reload configrations somehow. This message
-    maybe needless in the future.
+    This is a notification message to reload configrations. If a process
+    receive this message, the process should reload configrations
+    somehow. This message maybe needless in the future.
 
     custom_reload_notify = "custom_release_notify\n"
 
@@ -344,3 +344,9 @@ protocol within uim.
     
     commit_string = "commit_string\n" str_to_commit "\n"
     str_to_commit = /^[^\n]+$/
+
+
+Local Variables:
+mode: indented-text
+fill-column: 78
+End:

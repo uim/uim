@@ -978,6 +978,8 @@ uim_custom_broadcast(void)
 }
 
 /**
+ * Broadcasts a request to reload custom files to other uim-enabled
+ * application processes via uim-helper-server.
  *
  * @retval UIM_TRUE succeeded
  * @retval UIM_FALSE failed
