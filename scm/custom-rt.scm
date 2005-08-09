@@ -55,18 +55,33 @@
 (define custom-rt-primary-groups ())
 (define custom-set-hooks ())
 
+(define prepend-new-reload-group-syms
+  (lambda (gsym path)
+    (set! custom-reload-group-syms
+	  (cons (cons gsym 0) custom-reload-group-syms))))
+
+(define update-gsym-mtime
+  (lambda (gsym path)
+    (set-cdr! (assq gsym custom-reload-group-syms)
+	      (get-file-mtime path))
+	      #t))
+
 ;; full implementation
 (define custom-load-group-conf
   (lambda (gsym)
-    (if (not (memq gsym custom-reload-group-syms))
-	(set! custom-reload-group-syms
-	      (cons gsym custom-reload-group-syms)))
     (let* ((group-name (symbol->string gsym))
 	   (path (string-append (getenv "HOME")
 				"/.uim.d/customs/custom-"
 				group-name
 				".scm")))
-      (try-load path))))
+      (if (not (memq gsym (map (lambda (x) (car x)) custom-reload-group-syms)))
+	  (prepend-new-reload-group-syms gsym path))
+      (if (= (get-file-mtime path)
+	     (cdr (assq gsym custom-reload-group-syms)))
+	    #t ; File isn't modified, no need to reload. 
+	  (if (try-load path)
+	      (update-gsym-mtime gsym path)
+	      #f)))))
 
 ;; full implementation
 (define require-custom
@@ -202,7 +217,7 @@
 
 (define custom-reload-configs
   (lambda ()
-    (if (null? custom-reload-group-syms)
-	#f ; No file should be loaded.
-	(begin
-	  (for-each custom-load-group-conf (reverse custom-reload-group-syms))))))
+    (let ((group-syms (map (lambda (x) (car x)) custom-reload-group-syms)))
+      (if (null? group-syms)
+	  #f ; No file should be loaded.
+	  (for-each custom-load-group-conf (reverse group-syms))))))
