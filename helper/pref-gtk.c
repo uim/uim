@@ -269,7 +269,7 @@ ok_button_clicked(GtkButton *button, gpointer user_data)
 
   if (uim_pref_gtk_value_changed) {
     uim_custom_save();
-    uim_custom_broadcast();
+    uim_custom_broadcast_reload_request();
     uim_pref_gtk_value_changed = FALSE;
   }
 
@@ -283,7 +283,7 @@ apply_button_clicked(GtkButton *button, gpointer user_data)
 
   if (uim_pref_gtk_value_changed) {
     uim_custom_save();
-    uim_custom_broadcast();
+    uim_custom_broadcast_reload_request();
     uim_pref_gtk_value_changed = FALSE;
   }
 }
@@ -443,7 +443,7 @@ create_pref_window(void)
 
   pref_window = window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   
-  icon = gdk_pixbuf_new_from_file(UIM_PIXMAPSDIR "/uim-icon.png", NULL);
+  icon = gdk_pixbuf_new_from_file(UIM_PIXMAPSDIR"/uim-icon.png", NULL);
   gtk_window_set_icon(GTK_WINDOW(pref_window), icon);
 
   g_signal_connect(G_OBJECT (window), "delete_event",
