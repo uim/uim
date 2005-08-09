@@ -335,7 +335,7 @@ protocol within uim.
     receive this message, the process should reload configrations
     somehow. This message maybe needless in the future.
 
-    custom_reload_notify = "custom_release_notify\n"
+    custom_reload_notify = "custom_reload_notify\n"
 
   - commit_string
 
