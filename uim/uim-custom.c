@@ -55,6 +55,10 @@
 #include "context.h"
 #include "uim-helper.h"
 
+#if 1
+/* TODO: make stable */
+#define UIM_CUSTOM_EXPERIMENTAL_MTIME_SENSING
+#endif
 
 typedef void (*uim_custom_cb_update_cb_t)(void *ptr, const char *custom_sym);
 typedef void (*uim_custom_global_cb_update_cb_t)(void *ptr);
@@ -829,7 +833,7 @@ uim_custom_load(void)
   return for_each_primary_groups(uim_custom_load_group);
 }
 
-
+#ifdef UIM_CUSTOM_EXPERIMENTAL_MTIME_SENSING
 static uim_bool
 file_content_is_same(const char *a_path, const char *b_path)
 {
@@ -855,7 +859,7 @@ file_content_is_same(const char *a_path, const char *b_path)
 
   return UIM_TRUE;
 }
-
+#endif
 
 static uim_bool
 uim_custom_save_group(const char *group)
@@ -896,15 +900,24 @@ uim_custom_save_group(const char *group)
 
   if (fclose(file) < 0)
     goto error;
-  /* rename prepared temporary file to proper name */
 
+  /* rename prepared temporary file to proper name */
   file_path = custom_file_path(group, 0);
+#ifdef UIM_CUSTOM_EXPERIMENTAL_MTIME_SENSING
+  /*
+   * Avoiding a file saving at here by such method is a layer
+   * violation. Observing updated group is recommended way.
+   *   -- YamaKen 2005-08-09
+   */
   if(file_content_is_same(tmp_file_path, file_path)) {
     succeeded = UIM_TRUE;
     remove(tmp_file_path);
   } else {
     succeeded = (rename(tmp_file_path, file_path) == 0);
   }
+#else
+  succeeded = (rename(tmp_file_path, file_path) == 0);
+#endif
   free(file_path);
 
  error:
