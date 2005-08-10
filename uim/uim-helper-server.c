@@ -150,8 +150,9 @@ get_unused_client(void)
 }
 
 static void
-free_client(struct client *cl)
+close_client(struct client *cl)
 {
+  close(cl->fd);
   if (cl->rbuf) {
     free(cl->rbuf);
     cl->rbuf = strdup("");
@@ -261,20 +262,77 @@ accept_new_connection(int server_fd)
   return UIM_TRUE;
 }
 
-/* FIXME: This function is too long to read... */
+static void
+write_message(struct client *cl)
+{
+  int ret, message_len, out_len;
+  char *out;
+  
+  out = cl->wbuf;
+  message_len = out_len = strlen(cl->wbuf);
+  while (out_len > 0) {
+    if ((ret = write(cl->fd, out, out_len)) < 0) {
+      if (errno == EAGAIN) {
+#if 0
+	fprintf(stderr, "EAGAIN: fd = %d\n", cl->fd);
+#endif
+      } else {
+	perror("uim-helper_server write(2) failed");
+	if (errno == EPIPE) {
+	  fprintf(stderr, "fd = %d\n", cl->fd);
+	  FD_CLR(cl->fd, &s_fdset_read);
+	  FD_CLR(cl->fd, &s_fdset_write);
+	  if (cl->fd == s_max_fd)
+	    s_max_fd--;
+	  close_client(cl);
+	}
+      }
+      break;
+    } else {
+      out += ret;
+      out_len -= ret;
+    }
+  }
+  if (out_len == 0) {
+    free(cl->wbuf);
+    cl->wbuf = strdup("");
+    FD_CLR(cl->fd, &s_fdset_write);    
+  } else {
+    uim_helper_buffer_shift(cl->wbuf, message_len - out_len);
+  }
+}
+
+
+static void
+read_message(struct client *cl)
+{
+  int result;
+  result = reflect_message_fragment(cl);
+  
+  if (result < 0) {
+    FD_CLR(cl->fd, &s_fdset_read);
+    FD_CLR(cl->fd, &s_fdset_write);
+    if (cl->fd == s_max_fd)
+      s_max_fd--;
+    close_client(cl);
+  }
+}
+
+
 static void
 uim_helper_server_process_connection(int server_fd)
 {
   int i;
-  fd_set readfds;
-  fd_set writefds;
+  fd_set readfds, writefds;
 
   while (1) {
     /* Could we replace this memcpy with direct assignment? */
+    /* Copy readfds from s_fdset_read/s_fdset_write because select removes
+       readble/writable fd from readfds/writefds */
     memcpy(&readfds, &s_fdset_read, sizeof(fd_set));
     memcpy(&writefds, &s_fdset_write, sizeof(fd_set));
 
-    /* call select(), waiting until a file descriptor readable */
+    /* call select(), waiting until a file descriptor became readable */
     if (select(s_max_fd + 1, &readfds, &writefds, NULL, NULL) <= 0) {
       perror("uim-helper_server select(2) failed");
       sleep(3);
@@ -292,56 +350,10 @@ uim_helper_server_process_connection(int server_fd)
       /* check data to write and from clients reached */
       for (i = 0; i < nr_client_slots; i++) {
 	if (clients[i].fd != -1 && FD_ISSET(clients[i].fd, &writefds)) {
-	  int ret, message_len, out_len;
-	  char *out;
-
-	  out = clients[i].wbuf;
-	  message_len = out_len = strlen(clients[i].wbuf);
-	  while (out_len > 0) {
-	    if ((ret = write(clients[i].fd, out, out_len)) < 0) {
-	      if (errno == EAGAIN) {
-#if 0
-		fprintf(stderr, "EAGAIN: fd = %d\n", clients[i].fd);
-#endif
-	      } else {
-		perror("uim-helper_server write(2) failed");
-		if (errno == EPIPE) {
-		  fprintf(stderr, "fd = %d\n", clients[i].fd);
-		  FD_CLR(clients[i].fd, &s_fdset_read);
-		  FD_CLR(clients[i].fd, &s_fdset_write);
-		  if (clients[i].fd == s_max_fd)
-		    s_max_fd--;
-		  close(clients[i].fd);
-		  free_client(&clients[i]);
-		}
-	      }
-	      break;
-	    } else {
-	      out += ret;
-	      out_len -= ret;
-	    }
-	  }
-	  if (out_len == 0) {
-	    free(clients[i].wbuf);
-	    clients[i].wbuf = strdup("");
-	    FD_CLR(clients[i].fd, &s_fdset_write);
-	  } else {
-	    uim_helper_buffer_shift(clients[i].wbuf, message_len - out_len);
-	  }
+	  write_message(&clients[i]);
 	}
 	if (clients[i].fd != -1 && FD_ISSET(clients[i].fd, &readfds)) {
-	  int result;
-	  /* actual process */
-	  result = reflect_message_fragment(&clients[i]);
-
-	  if (result < 0) {
-	    FD_CLR(clients[i].fd, &s_fdset_read);
-	    FD_CLR(clients[i].fd, &s_fdset_write);
-	    if (clients[i].fd == s_max_fd)
-	      s_max_fd--;
-	    close(clients[i].fd);
-	    free_client(&clients[i]);
-	  }
+	  read_message(&clients[i]);
 	}
       }
     }
@@ -351,6 +363,7 @@ uim_helper_server_process_connection(int server_fd)
     }
   }
 }
+
 
 int
 main(int argc, char **argv)

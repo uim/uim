@@ -995,6 +995,8 @@ im_uim_parse_helper_str(const char *str)
       }
       g_strfreev(lines);
     }
+  } else if (g_str_has_prefix(str, "custom_reload_notify") == TRUE) {
+    uim_prop_reload_configs();
   } else if (focused_context && !disable_focused_context) {
     if (g_str_has_prefix(str, "prop_list_get") == TRUE) {
       uim_prop_list_update(focused_context->uc);

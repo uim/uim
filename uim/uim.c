@@ -350,6 +350,17 @@ uim_prop_update_custom(uim_context uc, const char *custom, const char *val)
 		    uc->id, custom, val);
 }
 
+
+/* Tentative name. I followed above uim_prop_update_custom, but prop 
+would not be proper to this function. */
+uim_bool
+uim_prop_reload_configs(void)
+{
+  /* FIXME: proces return value properly. */
+  uim_scm_eval_c_string("(custom-reload-configs)");
+  return UIM_TRUE;
+}
+
 int
 uim_get_current_mode(uim_context uc)
 {

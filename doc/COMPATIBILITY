@@ -58,6 +58,19 @@ Each change consist of following fields. All fields are required.
 The changes are described below in most recently updated order.
 
 ------------------------------------------------------------------------------
+Summary: An experimental custom variable reloading API
+Affects: Helper program developers, Bridge developers
+Updates: C API, Helper protocol
+Version: 0.5
+Revision: ac1160, ac1161, ac1162
+Date: 2005-08-09
+Modifier: TOKUNAGA Hiroyuki, YamaKen
+Related: bug #3620
+URL:
+Changes:
+  (new) uim_custom_broadcast_reload_request()
+Description:
+------------------------------------------------------------------------------
 Summary: default IM switching responsibility separation from uim_switch_im()
 Affects: Bridge developers
 Updates: C API

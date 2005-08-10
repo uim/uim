@@ -55,6 +55,10 @@
 #include "context.h"
 #include "uim-helper.h"
 
+#if 1
+/* TODO: make stable */
+#define UIM_CUSTOM_EXPERIMENTAL_MTIME_SENSING
+#endif
 
 typedef void (*uim_custom_cb_update_cb_t)(void *ptr, const char *custom_sym);
 typedef void (*uim_custom_global_cb_update_cb_t)(void *ptr);
@@ -829,6 +833,34 @@ uim_custom_load(void)
   return for_each_primary_groups(uim_custom_load_group);
 }
 
+#ifdef UIM_CUSTOM_EXPERIMENTAL_MTIME_SENSING
+static uim_bool
+file_content_is_same(const char *a_path, const char *b_path)
+{
+  FILE *a, *b;
+  char a_buf[4096], b_buf[4096];
+
+  a = fopen(a_path, "r");
+  b = fopen(b_path, "r");
+
+  while(1) {
+    char *a_eof, *b_eof;
+    a_eof = fgets(a_buf, sizeof(a_buf), a);
+    b_eof = fgets(b_buf, sizeof(b_buf), b);
+
+    if(!a_eof && !b_eof)
+      break;
+    if((!a_eof && b_eof) || (a_eof && !b_eof))
+      return UIM_FALSE;
+
+    if(strcmp(a_buf, b_buf) != 0)
+      return UIM_FALSE;
+  }
+
+  return UIM_TRUE;
+}
+#endif
+
 static uim_bool
 uim_custom_save_group(const char *group)
 {
@@ -868,10 +900,26 @@ uim_custom_save_group(const char *group)
 
   if (fclose(file) < 0)
     goto error;
+
   /* rename prepared temporary file to proper name */
   file_path = custom_file_path(group, 0);
+#ifdef UIM_CUSTOM_EXPERIMENTAL_MTIME_SENSING
+  /*
+   * Avoiding a file saving at here by such method is a layer
+   * violation. Observing updated group is recommended way.
+   *   -- YamaKen 2005-08-09
+   */
+  if(file_content_is_same(tmp_file_path, file_path)) {
+    succeeded = UIM_TRUE;
+    remove(tmp_file_path);
+  } else {
+    succeeded = (rename(tmp_file_path, file_path) == 0);
+  }
+#else
   succeeded = (rename(tmp_file_path, file_path) == 0);
+#endif
   free(file_path);
+
  error:
   free(tmp_file_path);
 
@@ -934,6 +982,29 @@ uim_custom_broadcast(void)
     }
   }
   uim_custom_symbol_list_free(custom_syms);
+
+  if (helper_fd != -1) {
+    uim_helper_close_client_fd(helper_fd);
+  }
+
+  return UIM_TRUE;
+}
+
+/**
+ * Broadcasts a request to reload custom files to other uim-enabled
+ * application processes via uim-helper-server.
+ *
+ * @retval UIM_TRUE succeeded
+ * @retval UIM_FALSE failed
+ */
+uim_bool
+uim_custom_broadcast_reload_request(void)
+{
+  if (helper_fd < 0) {
+    helper_fd = uim_helper_init_client_fd(helper_disconnect_cb);
+  }
+
+  uim_helper_send_message(helper_fd, "custom_reload_notify\n");
 
   if (helper_fd != -1) {
     uim_helper_close_client_fd(helper_fd);

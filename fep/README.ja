@@ -159,12 +159,22 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのfepです。
   o -S
     GNU screenでフィルタとして使えるようにします。(GNU screen 4.0.2以降)
     例えば、~/.screenrcに
+
     bind J exec | uim-fep -S
     bind K eval 'exec cat' kill redisplay
+
     このように書けば、C-a Jでuim-fepをフィルタとして起動し、C-a K
     で終了できるようになります。
+
     -sオプションにかかわらずモード表示には
     backtickが使われます。
+
+    UIM_FEP_SETMODE, UIM_FEP_GETMODEの値は
+    $TMP/uim-fep-setmode-$STY-$WINDOW
+    $TMP/uim-fep-getmode-$STY-$WINDOW
+    になります。
+    ($TMPが定義されていない場合は/tmpが使われる)
+
 
   o -d
     候補一覧の表示スタイルをddskkのようにします。

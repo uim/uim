@@ -33,8 +33,6 @@
 
 ;; TODO:
 ;;
-;; custom-reload-customs
-;; custom-broadcast-customs
 ;; custom-broadcast-customs
 
 (use test.unit)

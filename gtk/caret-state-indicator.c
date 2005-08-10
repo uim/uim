@@ -42,8 +42,49 @@
  * caret state indicator is a state indicator nearby the caret.
  */
 
+#define DEFAULT_WINDOW_WIDTH  20
+#define DEFAULT_WINDOW_HEIGHT 20
+
+static gint
+get_current_time(void);
 static gint
 caret_state_indicator_timeout(gpointer data);
+
+/* This function is not correct, size of tv_sec is glong, not gint */
+static gint
+get_current_time(void)
+{
+  GTimeVal result;
+  g_get_current_time(&result);
+  return result.tv_sec;
+}
+
+static gint
+caret_state_indicator_timeout(gpointer data)
+{
+  GtkWidget *window = GTK_WIDGET(data);
+  gint timeout      = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), "timeout"));
+  gint called_time  = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), "called_time"));
+  gint current_time = get_current_time();
+  if((current_time - called_time)*1000 >= timeout) {
+    gtk_widget_hide(window);
+  }
+  return 0;
+}
+
+static gint
+caret_state_indicator_paint_window (GtkWidget *window)
+{
+  GtkRequisition req;
+
+  gtk_widget_size_request (window, &req);
+  gtk_paint_flat_box (window->style, window->window,
+		      GTK_STATE_NORMAL, GTK_SHADOW_OUT,
+		      NULL, GTK_WIDGET(window), "tooltip",
+		      0, 0, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+
+  return FALSE;
+}
 
 GtkWidget *
 caret_state_indicator_new(void)
@@ -55,9 +96,19 @@ caret_state_indicator_new(void)
   label  = gtk_label_new("");
   gtk_container_add(GTK_CONTAINER(window), label);
 
-  gtk_window_set_default_size(GTK_WINDOW(window), 20, 20);
+  gtk_window_set_default_size(GTK_WINDOW(window),
+			      DEFAULT_WINDOW_WIDTH,
+			      DEFAULT_WINDOW_HEIGHT);
+    gtk_widget_set_app_paintable (window, TRUE);
+
+    g_signal_connect(window, "expose_event",
+		     G_CALLBACK (caret_state_indicator_paint_window), 
+		     NULL);
+
+  gtk_misc_set_alignment (GTK_MISC (label), 0.5, 0.5);
 
   g_object_set_data(G_OBJECT(window), "label", label);
+
   return window;
 }
 
@@ -92,13 +143,10 @@ caret_state_indicator_set_cursor_location(GtkWidget *window, GdkRectangle *curso
 void
 caret_state_indicator_set_timeout(GtkWidget *window, gint timeout)
 {
-  g_timeout_add(timeout, caret_state_indicator_timeout, (gpointer)window);
-}
+  gint current_time = get_current_time();
 
-static gint
-caret_state_indicator_timeout(gpointer data)
-{
-  GtkWidget *window = GTK_WIDGET(data);
-  gtk_widget_hide(window);
-  return 0;
+  g_timeout_add(timeout, caret_state_indicator_timeout, (gpointer)window);
+  g_object_set_data(G_OBJECT(window), "timeout", GINT_TO_POINTER(timeout));
+  g_object_set_data(G_OBJECT(window), "called_time", GINT_TO_POINTER(current_time));
+  /* "called_time" stores the time of last calling of this function */
 }

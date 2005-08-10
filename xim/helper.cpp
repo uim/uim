@@ -224,6 +224,8 @@ helper_str_parse(char *str)
 	    (*it).second->customContext(custom, val);
 	}
 	return;
+    } else if (strcmp("custom_reload_notify", line) == 0) {
+	uim_prop_reload_configs();
     }
 }
 

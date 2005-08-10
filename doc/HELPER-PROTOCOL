@@ -92,6 +92,7 @@ protocol within uim.
               im_change_whole_desktop         |
               im_change_this_application_only |
               prop_update_custom  |
+              custom_reload_notify |
               commit_string) "\n"
 
   charset_specifier = "charset=" charset "\n"
@@ -328,6 +329,14 @@ protocol within uim.
     custom_sym = /^[-\?a-zA-Z0-9]+$/
     custom_value = <valid S-expression>
 
+  - custom_reload_notify
+
+    This is a notification message to reload configrations. If a process
+    receive this message, the process should reload configrations
+    somehow. This message maybe needless in the future.
+
+    custom_reload_notify = "custom_reload_notify\n"
+
   - commit_string
 
     This message commits a string to currently focused context. See also
@@ -335,3 +344,9 @@ protocol within uim.
     
     commit_string = "commit_string\n" str_to_commit "\n"
     str_to_commit = /^[^\n]+$/
+
+
+Local Variables:
+mode: indented-text
+fill-column: 78
+End:

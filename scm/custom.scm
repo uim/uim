@@ -481,13 +481,6 @@
 	     (proc))
 	   procs))))
 
-;; TODO: write test
-(define custom-call-all-hook-procs
-  (lambda (hook)
-    (for-each (lambda (pair)
-		((cdr pair)))
-	      hook)))
-
 (define-record 'custom-rec
   '((sym     #f)
     (default #f)
@@ -743,11 +736,6 @@
     (and (valid? custom-sym)
 	 (let ((cb (lambda () (gate-func func ptr custom-sym))))
 	   (custom-add-hook custom-sym hook cb)))))
-
-(define custom-reload-customs
-  (lambda ()
-    (for-each load (reverse custom-required-custom-files))
-    (custom-call-all-hook-procs custom-set-hooks)))
 
 (define-custom-group 'main
 		     (_ "-")
