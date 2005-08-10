@@ -190,6 +190,7 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
 		    G_CALLBACK(tree_selection_changed), cwin);
 
   renderer = gtk_cell_renderer_text_new();
+  g_object_set(renderer, "scale", 1.2, NULL);
 
   column = gtk_tree_view_column_new_with_attributes("No",
 						    renderer,
@@ -199,6 +200,8 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
 
   renderer = gtk_cell_renderer_text_new();
+  g_object_set(renderer, "scale", 1.2, NULL);
+  /*  g_object_set(renderer, "size-points", 20.0, NULL); */
   column = gtk_tree_view_column_new_with_attributes("Text",
 						    renderer,
 						    "text", COLUMN_CANDIDATE,
