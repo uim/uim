@@ -1,6 +1,4 @@
 /*
-  uim-sh.c: uim interactive shell for debugging, batch processing and
-            serving as generic inferior process
 
   Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 
@@ -30,70 +28,72 @@
   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
   SUCH DAMAGE.
-
 */
 
-#include "uim.h"
-#include "uim-scm.h"
-#include "uim-compat-scm.h"
+#include <uim/uim.h>
+#include <uim/uim-scm.h>
+#include <uim/plugin.h>
 
-#ifdef LIBEDIT
-#include "editline.h"
-#endif
+#include <histedit.h>
 
-#ifdef UIM_SH_USE_EXIT_HOOK
-extern int uim_siod_fatal;
-#endif
+static EditLine *el;
+static History *hist;
+static HistEvent hev;
+static uim_lisp uim_editline_readline(void);
+static char *prompt(EditLine *e);
 
-int
-main(int argc, char *argv[]) {
-  long verbose;
-  uim_lisp args, form;
+void
+editline_init(void)
+{
+  el = el_init("uim", stdin, stdout, stderr);
+  el_set(el, EL_PROMPT, &prompt);
+  el_set(el, EL_EDITOR, "emacs");
 
-  uim_scm_set_output(stdout);
-  
-  /* TODO: be able to suppress ordinary initialization process */
-  uim_init();
+  hist = history_init();
+  history(hist, &hev, H_SETSIZE, 100);
+  el_set(el, EL_HIST, history, hist);
+  el_source(el, NULL);
 
-#ifdef LIBEDIT
-  editline_init();
-#endif
+  uim_scm_init_subr_0("uim-editline-readline", uim_editline_readline);
+}
 
-  verbose = uim_scm_get_verbose_level();
-  uim_scm_set_verbose_level(1);
-  uim_scm_require_file("uim-sh.scm");
-#ifdef UIM_SH_USE_EXIT_HOOK
-  /*
-     is not working even if uim_siod_fatal is accessible. outermost
-     *catch affects me?
-  */
-  if (uim_siod_fatal)
-    return 1;
-#endif
+void
+editline_quit(void)
+{
+    history_end(hist);
+    el_end(el);
+}
 
-  /*
-    verbose level must be greater than or equal to 1 to print anything
-  */
-  if (verbose < 1)
-    verbose = 1;
-  uim_scm_set_verbose_level(verbose);
+static uim_lisp
+uim_editline_readline(void)
+{
+    const char *line;
+    int count = 0;
+    uim_lisp ret, stack_start;
 
-  args = uim_scm_c_strs_into_list(argc, (const char *const *)argv);
-  form = uim_scm_list2(uim_scm_intern_c_str("uim-sh"),
-		       uim_scm_quote(args));
-  uim_scm_eval(form);
+    uim_scm_gc_protect_stack(&stack_start);
 
-#ifdef UIM_SH_USE_EXIT_HOOK
-  /* is not working even if uim_siod_fatal is accessible. outermost
-   * *catch affects me?
-   */
-  if (uim_siod_fatal)
-    return 1;
-#endif
+    line = el_gets(el, &count);
 
-  editline_quit();
+    if(count > 0 && line) {
+	history(hist, &hev, H_ENTER, line);
+	ret = uim_scm_make_str(line);
+    } else {
+	ret = uim_scm_make_str("");
+    }
 
-  uim_quit();
+    uim_scm_gc_unprotect_stack(&stack_start);
 
-  return 0;
+    return ret;
+}
+
+static char *prompt(EditLine *e) {
+    char *p;
+
+    p = uim_scm_symbol_value_str("uim-sh-prompt"); /* XXX */
+
+    if(!p)
+	return "uim-sh> ";
+    else
+	return p;
 }

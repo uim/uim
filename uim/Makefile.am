@@ -117,6 +117,11 @@ uim_sh_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
 uim_sh_CFLAGS =
 uim_sh_LDADD = libuim.la
 uim_sh_SOURCES = uim-sh.c
+if LIBEDIT
+  uim_sh_CFLAGS += -DLIBEDIT
+  uim_sh_SOURCES += editline.c
+  uim_sh_LDADD += -ledit -lcurses
+endif
 
 uim_module_manager_LIBS =
 uim_module_manager_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DUIM_DATADIR=\""$(datadir)/uim"\"

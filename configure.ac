@@ -485,6 +485,35 @@ AC_ARG_WITH(eb,
 
 AC_SUBST(EBLIB_LIBS)
 
+# Check whether user wants libedit support
+# This code was based on openssh-4.1p1
+
+AC_ARG_WITH(libedit,
+AC_HELP_STRING([--with-libedit[=DIR], Enable libedit support]),
+  [
+   if test "x$with_libedit" != "xno"; then
+        use_libedit="yes"
+	libedit_path="$withval"
+   fi
+  ],
+  [use_libedit="yes"])
+
+ if test "x$use_libedit" != "xno"; then
+     saved_CPPFLAGS=$CPPFLAGS
+     saved_LDFLAGS=$LDFLAGS
+     CPPFLAGS="${CPPFLAGS} -I$libedit_path/include"
+     LDFLAGS="${LDFLAGS} -L$libedit_path/lib"
+     AC_CHECK_LIB(edit, el_init,	
+     		[
+		   LIBEDIT_LIBS="-ledit -lcurses -l$libedit_path/lib"
+		   AC_SUBST(LIBEDIT_LIBS)
+		], [ 
+                   AC_MSG_WARN("libedit not found. Disabled...")
+                   use_libedit="no"
+                ])
+     CPPFLAGS=$saved_CPPFLAGS
+     LDFLAGS=$saved_LDFLAGS
+fi
 
 AM_CONDITIONAL(M17NLIB, test x$use_m17nlib = xyes)
 AM_CONDITIONAL(SCIM, test x$use_scim = xyes)
@@ -502,6 +531,7 @@ AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
 AM_CONDITIONAL(XIM, test x$use_xim = xyes)
 AM_CONDITIONAL(DICT, test x$use_dict = xyes)
 AM_CONDITIONAL(EB, test x$use_eb = xyes)
+AM_CONDITIONAL(LIBEDIT, test x$use_libedit = xyes)
 AM_CONDITIONAL(DEBUG, test x$enable_debug = xyes)
 AM_CONDITIONAL(COMPAT_SCM, test x$enable_compat_scm = xyes)
 AM_CONDITIONAL(COMPAT_TABLE, test x$enable_compat_table = xyes)
@@ -766,6 +796,7 @@ Configure Result :
    XIM             : ${use_xim}
    DICT            : ${use_dict}
    EB              : ${use_eb}
+   libedit         : ${use_libedit}
    Default toolkit : ${default_toolkit}
 ])
 
