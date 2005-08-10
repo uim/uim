@@ -139,6 +139,7 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
 {
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
+  GtkWidget *frame;
   GtkWidget *vbox;
   GtkTreeSelection *selection;
 
@@ -173,8 +174,11 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
   gtk_container_add(GTK_CONTAINER(cwin->scrolled_window), cwin->view);
   gtk_box_pack_start(GTK_BOX(vbox), cwin->num_label, FALSE, FALSE, 0);
 
-  gtk_container_add(GTK_CONTAINER(cwin), vbox);
-  gtk_container_set_border_width(GTK_CONTAINER(cwin), 1);
+  frame = gtk_frame_new(NULL);
+
+  gtk_container_add(GTK_CONTAINER(frame), vbox);
+  gtk_container_add(GTK_CONTAINER(cwin), frame);
+  gtk_container_set_border_width(GTK_CONTAINER(cwin), 0);
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(cwin->view));
 
@@ -186,6 +190,7 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
 		    G_CALLBACK(tree_selection_changed), cwin);
 
   renderer = gtk_cell_renderer_text_new();
+
   column = gtk_tree_view_column_new_with_attributes("No",
 						    renderer,
 						    "text", COLUMN_HEADING,
@@ -214,6 +219,7 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
   gtk_widget_show(cwin->view);
   gtk_widget_show(cwin->num_label);
   gtk_widget_show(vbox);
+  gtk_widget_show(frame);
 
   gtk_widget_set_size_request(cwin->num_label, DEFAULT_MIN_WINDOW_WIDTH, -1);
   gtk_window_set_default_size(GTK_WINDOW(cwin), DEFAULT_MIN_WINDOW_WIDTH, -1);
