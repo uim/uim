@@ -91,7 +91,9 @@ main(int argc, char *argv[]) {
     return 1;
 #endif
 
+#ifdef LIBEDIT
   editline_quit();
+#endif
 
   uim_quit();
 
