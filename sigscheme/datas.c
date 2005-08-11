@@ -660,7 +660,7 @@ ScmObj Scm_NewString_With_StrLen(char *str, int len)
     return obj;
 }
 
-ScmObj Scm_NewFunc(enum ScmFuncArgNum num_arg, ScmFuncType func)
+ScmObj Scm_NewFunc(enum ScmFuncArgType num_arg, ScmFuncType func)
 {
     ScmObj obj = SCM_NIL;
     SCM_NEW_OBJ_INTERNAL(obj);

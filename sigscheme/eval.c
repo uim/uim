@@ -244,33 +244,33 @@ eval_loop:
                 switch (SCM_GETTYPE(tmp)) {
                     case ScmFunc:
 			/*
-			 * Description of ARGNUM handling.
+			 * Description of FUNCTYPE handling.
 			 *
-			 * - ARGNUM_L
+			 * - FUNCTYPE_L
 			 *     - evaluate all the args and pass it to func
 			 *
-			 * - ARGNUM_R
+			 * - FUNCTYPE_R
 			 *     - not evaluate all the arguments
 			 *
-			 * - ARGNUM_2N
+			 * - FUNCTYPE_2N
 			 *     - call the function with each 2 objs
 			 *
-			 * - ARGNUM_0
-			 * - ARGNUM_1
-			 * - ARGNUM_2
-			 * - ARGNUM_3
-			 * - ARGNUM_4
-			 * - ARGNUM_5
+			 * - FUNCTYPE_0
+			 * - FUNCTYPE_1
+			 * - FUNCTYPE_2
+			 * - FUNCTYPE_3
+			 * - FUNCTYPE_4
+			 * - FUNCTYPE_5
 			 *     - call the function with 0-5 arguments
 			 */
                         switch (SCM_FUNC_NUMARG(tmp)) {
-                            case ARGNUM_L:
+                            case FUNCTYPE_L:
                                 {
                                     return SCM_FUNC_EXEC_SUBRL(tmp,
                                                                map_eval(SCM_CDR(obj), env),
 							       env);
                                 }
-			    case ARGNUM_R:
+			    case FUNCTYPE_R:
 				{
 				    obj = SCM_FUNC_EXEC_SUBRR(tmp,
 							      SCM_CDR(obj),
@@ -289,7 +289,7 @@ eval_loop:
 				    else
 					return obj;
 				}
-			    case ARGNUM_2N:
+			    case FUNCTYPE_2N:
 				{
 				    obj = SCM_CDR(obj);
 
@@ -312,11 +312,11 @@ eval_loop:
 				    }
 				    return arg;
 				}
-                            case ARGNUM_0:
+                            case FUNCTYPE_0:
                                 return SCM_FUNC_EXEC_SUBR0(tmp);
-                            case ARGNUM_1:
+                            case FUNCTYPE_1:
                                 return SCM_FUNC_EXEC_SUBR1(tmp, ScmOp_eval(SCM_CAR(SCM_CDR(obj)),env));
-                            case ARGNUM_2:
+                            case FUNCTYPE_2:
                                 {
                                     obj = SCM_CDR(obj);
                                     arg = ScmOp_eval(SCM_CAR(obj), env); /* 1st arg */
@@ -324,7 +324,7 @@ eval_loop:
                                                                arg,
                                                                ScmOp_eval(SCM_CAR(SCM_CDR(obj)), env)); /* 2nd arg */
                                 }
-			    case ARGNUM_3:
+			    case FUNCTYPE_3:
 				{
 				    obj = SCM_CDR(obj);
 				    arg = ScmOp_eval(SCM_CAR(obj), env); /* 1st arg */
@@ -334,7 +334,7 @@ eval_loop:
 							       ScmOp_eval(SCM_CAR(obj), env), /* 2nd arg */
 							       ScmOp_eval(SCM_CAR(SCM_CDR(obj)), env)); /* 3rd arg */
 				}
-			    case ARGNUM_4:
+			    case FUNCTYPE_4:
 				{
 				    obj = SCM_CDR(obj);
 				    arg = ScmOp_eval(SCM_CAR(obj), env); /* 1st arg */
@@ -345,7 +345,7 @@ eval_loop:
 							       ScmOp_eval(SCM_CAR(SCM_CDR(obj)), env), /* 3rd arg */
 							       ScmOp_eval(SCM_CAR(SCM_CDR(SCM_CDR(obj))), env)); /* 4th arg */
 				}
-			    case ARGNUM_5:
+			    case FUNCTYPE_5:
 				{
 				    obj = SCM_CDR(obj);
 				    arg = ScmOp_eval(SCM_CAR(obj), env); /* 1st arg */
@@ -469,13 +469,13 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
     switch (SCM_GETTYPE(proc)) {
 	case ScmFunc:
 	    switch (SCM_FUNC_NUMARG(proc)) {
-		case ARGNUM_L:
+		case FUNCTYPE_L:
 		    {
 			return SCM_FUNC_EXEC_SUBRL(proc,
 						   obj,
 						   env);
 		    }
-		case ARGNUM_2N:
+		case FUNCTYPE_2N:
 		    {
 			args = obj;
 
@@ -498,29 +498,29 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 			}
 			return obj;
 		    }
-		case ARGNUM_0:
+		case FUNCTYPE_0:
 		    {
 			return SCM_FUNC_EXEC_SUBR0(proc);
 		    }
-		case ARGNUM_1:
+		case FUNCTYPE_1:
 		    {
 			return SCM_FUNC_EXEC_SUBR1(proc,
 						   SCM_CAR(obj));
 		    }
-		case ARGNUM_2:
+		case FUNCTYPE_2:
 		    {
 			return SCM_FUNC_EXEC_SUBR2(proc,
 						   SCM_CAR(obj),
 						   SCM_CAR(SCM_CDR(obj)));
 		    }
-		case ARGNUM_3:
+		case FUNCTYPE_3:
 		    {
 			return SCM_FUNC_EXEC_SUBR3(proc,
 						   SCM_CAR(obj),
 						   SCM_CAR(SCM_CDR(obj)),
 						   SCM_CAR(SCM_CDR(SCM_CDR(obj))));
 		    }
-		case ARGNUM_4:
+		case FUNCTYPE_4:
 		    {
 			return SCM_FUNC_EXEC_SUBR4(proc,
 						   SCM_CAR(obj),
@@ -528,7 +528,7 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 						   SCM_CAR(SCM_CDR(SCM_CDR(obj))),
 						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(obj)))));
 		    }
-		case ARGNUM_5:
+		case FUNCTYPE_5:
 		    {
 			return SCM_FUNC_EXEC_SUBR5(proc,
 						   SCM_CAR(obj),

@@ -101,15 +101,15 @@ int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
 /* sigscheme.c */
 void SigScm_Initialize(void);
 void SigScm_Finalize(void);
-void Scm_InitSubr0(const char *name, ScmObj (*func) (void));
-void Scm_InitSubr1(const char *name, ScmObj (*func) (ScmObj));
-void Scm_InitSubr2(const char *name, ScmObj (*func) (ScmObj, ScmObj));
-void Scm_InitSubr3(const char *name, ScmObj (*func) (ScmObj, ScmObj, ScmObj));
-void Scm_InitSubr4(const char *name, ScmObj (*func) (ScmObj, ScmObj, ScmObj, ScmObj));
-void Scm_InitSubr5(const char *name, ScmObj (*func) (ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
-void Scm_InitSubrL(const char *name, ScmObj (*func) (ScmObj, ScmObj env));
-void Scm_InitSubr2N(const char *name, ScmObj (*func) (ScmObj, ScmObj));
-void Scm_InitSubrR(const char *name, ScmObj (*func) (ScmObj, ScmObj *envp, int *tail_flag));
+void Scm_RegisterFunc0(const char *name, ScmObj (*func) (void));
+void Scm_RegisterFunc1(const char *name, ScmObj (*func) (ScmObj));
+void Scm_RegisterFunc2(const char *name, ScmObj (*func) (ScmObj, ScmObj));
+void Scm_RegisterFunc3(const char *name, ScmObj (*func) (ScmObj, ScmObj, ScmObj));
+void Scm_RegisterFunc4(const char *name, ScmObj (*func) (ScmObj, ScmObj, ScmObj, ScmObj));
+void Scm_RegisterFunc5(const char *name, ScmObj (*func) (ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+void Scm_RegisterFuncL(const char *name, ScmObj (*func) (ScmObj, ScmObj env));
+void Scm_RegisterFunc2N(const char *name, ScmObj (*func) (ScmObj, ScmObj));
+void Scm_RegisterFuncR(const char *name, ScmObj (*func) (ScmObj, ScmObj *envp, int *tail_flag));
 
 /* datas.c */
 void   SigScm_InitStorage(void);
@@ -124,7 +124,7 @@ ScmObj Scm_NewChar(char *ch);
 ScmObj Scm_NewString(char *str);
 ScmObj Scm_NewStringCopying(const char *str);
 ScmObj Scm_NewString_With_StrLen(char *str, int len);
-ScmObj Scm_NewFunc(enum ScmFuncArgNum num_arg, ScmFuncType func);
+ScmObj Scm_NewFunc(enum ScmFuncArgType num_arg, ScmFuncType func);
 ScmObj Scm_NewClosure(ScmObj exp, ScmObj env);
 ScmObj Scm_NewVector(ScmObj *vec, int len);
 ScmObj Scm_NewFilePort(FILE *file, const char *filename, enum ScmPortDirection pdireciton);

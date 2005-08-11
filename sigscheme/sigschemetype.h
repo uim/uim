@@ -67,16 +67,16 @@ enum ScmObjType {
 };
 
 /* Function Type by argnuments */
-enum ScmFuncArgNum {
-    ARGNUM_0         = 0, /* no arg */
-    ARGNUM_1         = 1, /* require 1 arg  */
-    ARGNUM_2         = 2, /* require 2 args */
-    ARGNUM_3         = 3, /* require 3 args */
-    ARGNUM_4         = 4, /* require 4 args */
-    ARGNUM_5         = 5, /* require 5 args */
-    ARGNUM_L         = 6, /* all args are already evaluated, and pass the arg-list to the func*/
-    ARGNUM_R         = 7, /* all args are "not" evaluated */
-    ARGNUM_2N        = 9  /* all args are evaluated with each 2 objs */
+enum ScmFuncArgType {
+    FUNCTYPE_0  = 0, /* no arg */
+    FUNCTYPE_1  = 1, /* require 1 arg  */
+    FUNCTYPE_2  = 2, /* require 2 args */
+    FUNCTYPE_3  = 3, /* require 3 args */
+    FUNCTYPE_4  = 4, /* require 4 args */
+    FUNCTYPE_5  = 5, /* require 5 args */
+    FUNCTYPE_L  = 6, /* all args are already evaluated, and pass the arg-list to the func*/
+    FUNCTYPE_R  = 7, /* all args are "not" evaluated */
+    FUNCTYPE_2N = 9  /* all args are evaluated with each 2 objs */
 };
 
 /* ScmPort direction */
@@ -181,7 +181,7 @@ struct ScmObjInternal_ {
                 
             } subrs;
 
-            enum ScmFuncArgNum num_arg;
+            enum ScmFuncArgType num_arg;
         } func;
 
         struct ScmClosure {

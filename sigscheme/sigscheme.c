@@ -55,7 +55,7 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static void Scm_InitSubr(const char *name, enum ScmFuncArgNum argnum, ScmFuncType func);
+static void Scm_RegisterFunc(const char *name, enum ScmFuncArgType argnum, ScmFuncType func);
 
 ScmObj SigScm_nil, SigScm_true, SigScm_false, SigScm_eof;
 ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote, SigScm_unquote_splicing;
@@ -108,163 +108,163 @@ void SigScm_Initialize(void)
       Export Scheme Functions
     =======================================================================*/
     /* eval.c */
-    Scm_InitSubr2("eval"                 , ScmOp_eval);
-    Scm_InitSubrL("apply"                , ScmOp_apply);
-    Scm_InitSubrR("lambda"               , ScmExp_lambda);
-    Scm_InitSubrR("if"                   , ScmExp_if);
-    Scm_InitSubrR("set!"                 , ScmExp_set);
-    Scm_InitSubrR("cond"                 , ScmExp_cond);
-    Scm_InitSubrR("case"                 , ScmExp_case);
-    Scm_InitSubrR("and"                  , ScmExp_and);
-    Scm_InitSubrR("or"                   , ScmExp_or);
-    Scm_InitSubrR("let"                  , ScmExp_let);
-    Scm_InitSubrR("let*"                 , ScmExp_let_star);
-    Scm_InitSubrR("letrec"               , ScmExp_letrec);
-    Scm_InitSubrR("begin"                , ScmExp_begin);
-    Scm_InitSubrR("do"                   , ScmExp_do);
-    Scm_InitSubrR("delay"                , ScmOp_delay);
-    Scm_InitSubrR("define"               , ScmExp_define);
-    Scm_InitSubr1("scheme-report-environment", ScmOp_scheme_report_environment);
-    Scm_InitSubr1("null-environment"         , ScmOp_null_environment);
+    Scm_RegisterFunc2("eval"                 , ScmOp_eval);
+    Scm_RegisterFuncL("apply"                , ScmOp_apply);
+    Scm_RegisterFuncR("lambda"               , ScmExp_lambda);
+    Scm_RegisterFuncR("if"                   , ScmExp_if);
+    Scm_RegisterFuncR("set!"                 , ScmExp_set);
+    Scm_RegisterFuncR("cond"                 , ScmExp_cond);
+    Scm_RegisterFuncR("case"                 , ScmExp_case);
+    Scm_RegisterFuncR("and"                  , ScmExp_and);
+    Scm_RegisterFuncR("or"                   , ScmExp_or);
+    Scm_RegisterFuncR("let"                  , ScmExp_let);
+    Scm_RegisterFuncR("let*"                 , ScmExp_let_star);
+    Scm_RegisterFuncR("letrec"               , ScmExp_letrec);
+    Scm_RegisterFuncR("begin"                , ScmExp_begin);
+    Scm_RegisterFuncR("do"                   , ScmExp_do);
+    Scm_RegisterFuncR("delay"                , ScmOp_delay);
+    Scm_RegisterFuncR("define"               , ScmExp_define);
+    Scm_RegisterFunc1("scheme-report-environment", ScmOp_scheme_report_environment);
+    Scm_RegisterFunc1("null-environment"         , ScmOp_null_environment);
     /* operations.c */
-    Scm_InitSubr1("quote"                , ScmOp_quote);
-    Scm_InitSubr2("eqv?"                 , ScmOp_eqvp);
-    Scm_InitSubr2("eq?"                  , ScmOp_eqp);
-    Scm_InitSubr2("equal?"               , ScmOp_equalp);
-    Scm_InitSubr1("number?"              , ScmOp_numberp);
-    Scm_InitSubrL("="                    , ScmOp_equal);
-    Scm_InitSubrL("<"                    , ScmOp_bigger);
-    Scm_InitSubrL(">"                    , ScmOp_smaller);
-    Scm_InitSubrL("<="                   , ScmOp_biggerEq);
-    Scm_InitSubrL(">="                   , ScmOp_smallerEq);
-    Scm_InitSubr1("zero?"                , ScmOp_zerop);
-    Scm_InitSubr1("positive?"            , ScmOp_positivep);
-    Scm_InitSubr1("negative?"            , ScmOp_negativep);
-    Scm_InitSubr1("odd?"                 , ScmOp_oddp);
-    Scm_InitSubr1("even?"                , ScmOp_evenp);
-    Scm_InitSubrL("max"                  , ScmOp_max);
-    Scm_InitSubrL("min"                  , ScmOp_min);
-    Scm_InitSubr2N("+"                   , ScmOp_plus2n);
-    Scm_InitSubr2N("*"                   , ScmOp_multi2n);
-    Scm_InitSubr2N("-"                   , ScmOp_minus2n);
-    Scm_InitSubr2N("/"                   , ScmOp_divide2n);
-    Scm_InitSubr1("abs"                  , ScmOp_abs);
-    Scm_InitSubr2("quotient"             , ScmOp_quotient);
-    Scm_InitSubr2("modulo"               , ScmOp_modulo);
-    Scm_InitSubr2("remainder"            , ScmOp_remainder);
-    Scm_InitSubr1("number->string"       , ScmOp_number_to_string);
-    Scm_InitSubr1("string->number"       , ScmOp_string_to_number);
-    Scm_InitSubr1("not"                  , ScmOp_not);
-    Scm_InitSubr1("boolean?"             , ScmOp_booleanp);
-    Scm_InitSubr1("pair?"                , ScmOp_pairp);
-    Scm_InitSubr2("cons"                 , ScmOp_cons);
-    Scm_InitSubr1("car"                  , ScmOp_car);
-    Scm_InitSubr1("cdr"                  , ScmOp_cdr);
-    Scm_InitSubr2("set-car!"             , ScmOp_setcar);
-    Scm_InitSubr2("set-cdr!"             , ScmOp_setcdr);
-    Scm_InitSubr1("caar"                 , ScmOp_caar);
-    Scm_InitSubr1("cadr"                 , ScmOp_cadr);
-    Scm_InitSubr1("cdar"                 , ScmOp_cdar);
-    Scm_InitSubr1("cddr"                 , ScmOp_cddr);
-    Scm_InitSubr1("caaar"                , ScmOp_caaar);
-    Scm_InitSubr1("caadr"                , ScmOp_caadr);
-    Scm_InitSubr1("cadar"                , ScmOp_cadar);
-    Scm_InitSubr1("caddr"                , ScmOp_caddr);
-    Scm_InitSubr1("cdaar"                , ScmOp_cdaar);
-    Scm_InitSubr1("cdadr"                , ScmOp_cdadr);
-    Scm_InitSubr1("cddar"                , ScmOp_cddar);
-    Scm_InitSubr1("cdddr"                , ScmOp_cdddr);
-    Scm_InitSubr1("caaaar"               , ScmOp_caaaar);
-    Scm_InitSubr1("caaadr"               , ScmOp_caaadr);
-    Scm_InitSubr1("caadar"               , ScmOp_caadar);
-    Scm_InitSubr1("caaddr"               , ScmOp_caaddr);
-    Scm_InitSubr1("cadaar"               , ScmOp_cadaar);
-    Scm_InitSubr1("cadadr"               , ScmOp_cadadr);
-    Scm_InitSubr1("caddar"               , ScmOp_caddar);
-    Scm_InitSubr1("cadddr"               , ScmOp_cadddr);
-    Scm_InitSubr1("cdaaar"               , ScmOp_cdaaar);
-    Scm_InitSubr1("cdaadr"               , ScmOp_cdaadr);
-    Scm_InitSubr1("cdadar"               , ScmOp_cdadar);
-    Scm_InitSubr1("cdaddr"               , ScmOp_cdaddr);
-    Scm_InitSubr1("cddaar"               , ScmOp_cddaar);
-    Scm_InitSubr1("cddadr"               , ScmOp_cddadr);
-    Scm_InitSubr1("cdddar"               , ScmOp_cdddar);
-    Scm_InitSubr1("cddddr"               , ScmOp_cddddr);
-    Scm_InitSubr1("null?"                , ScmOp_nullp);
-    Scm_InitSubr1("list?"                , ScmOp_listp);
-    Scm_InitSubrL("list"                 , ScmOp_list);
-    Scm_InitSubr1("length"               , ScmOp_length);
-    Scm_InitSubrL("append"               , ScmOp_append);
-    Scm_InitSubr1("reverse"              , ScmOp_reverse);
-    Scm_InitSubr2("list-tail"            , ScmOp_listtail);
-    Scm_InitSubr2("list-ref"             , ScmOp_listref);
-    Scm_InitSubr2("memq"                 , ScmOp_memq);
-    Scm_InitSubr2("memv"                 , ScmOp_memv);
-    Scm_InitSubr2("member"               , ScmOp_member);
-    Scm_InitSubr2("assq"                 , ScmOp_assq);
-    Scm_InitSubr2("assv"                 , ScmOp_assv);
-    Scm_InitSubr2("assoc"                , ScmOp_assoc);
-    Scm_InitSubr1("symbol?"              , ScmOp_symbolp);
-    Scm_InitSubr1("symbol->string"       , ScmOp_symbol_to_string);
-    Scm_InitSubr1("string->symbol"       , ScmOp_string_to_symbol);
-    Scm_InitSubr1("char?"                , ScmOp_charp);
-    Scm_InitSubr2("char=?"               , ScmOp_char_equal);
-    Scm_InitSubr1("char-alphabetic?"     , ScmOp_char_alphabeticp);
-    Scm_InitSubr1("char-numeric?"        , ScmOp_char_numericp);
-    Scm_InitSubr1("char-whitespace?"     , ScmOp_char_whitespacep);
-    Scm_InitSubr1("char-upper-case?"     , ScmOp_char_upper_casep);
-    Scm_InitSubr1("char-lower-case?"     , ScmOp_char_lower_casep);
-    Scm_InitSubr1("string?"              , ScmOp_stringp);
-    Scm_InitSubrL("make-string"          , ScmOp_make_string);
-    Scm_InitSubrL("string"               , ScmOp_string);
-    Scm_InitSubr2("string-ref"           , ScmOp_string_ref);
-    Scm_InitSubr3("string-set!"          , ScmOp_string_set);
-    Scm_InitSubr1("string-length"        , ScmOp_string_length);
-    Scm_InitSubr2("string=?"             , ScmOp_string_equal);
-    Scm_InitSubr3("substring"            , ScmOp_string_substring);
-    Scm_InitSubrL("string-append"        , ScmOp_string_append);
-    Scm_InitSubr1("string->list"         , ScmOp_string_to_list);
-    Scm_InitSubr1("list->string"         , ScmOp_list_to_string);
-    Scm_InitSubr1("string-copy"          , ScmOp_string_copy);
-    Scm_InitSubr2("string-fill!"         , ScmOp_string_fill);
-    Scm_InitSubr1("vector?"              , ScmOp_vectorp);
-    Scm_InitSubrL("make-vector"          , ScmOp_make_vector);
-    Scm_InitSubrL("vector"               , ScmOp_vector);
-    Scm_InitSubr1("vector-length"        , ScmOp_vector_length);
-    Scm_InitSubr2("vector-ref"           , ScmOp_vector_ref);
-    Scm_InitSubr3("vector-set!"          , ScmOp_vector_set);
-    Scm_InitSubr1("vector->list"         , ScmOp_vector_to_list);
-    Scm_InitSubr1("list->vector"         , ScmOp_list_to_vector);
-    Scm_InitSubr2("vector-fill!"         , ScmOp_vector_fill);
-    Scm_InitSubr1("procedure?"           , ScmOp_procedurep);
-    Scm_InitSubrL("map"                  , ScmOp_map);
-    Scm_InitSubrL("for-each"             , ScmOp_for_each);
-    Scm_InitSubrL("force"                , ScmOp_force);
-    Scm_InitSubrL("call-with-current-continuation", ScmOp_call_with_current_continuation);
+    Scm_RegisterFunc1("quote"                , ScmOp_quote);
+    Scm_RegisterFunc2("eqv?"                 , ScmOp_eqvp);
+    Scm_RegisterFunc2("eq?"                  , ScmOp_eqp);
+    Scm_RegisterFunc2("equal?"               , ScmOp_equalp);
+    Scm_RegisterFunc1("number?"              , ScmOp_numberp);
+    Scm_RegisterFuncL("="                    , ScmOp_equal);
+    Scm_RegisterFuncL("<"                    , ScmOp_bigger);
+    Scm_RegisterFuncL(">"                    , ScmOp_smaller);
+    Scm_RegisterFuncL("<="                   , ScmOp_biggerEq);
+    Scm_RegisterFuncL(">="                   , ScmOp_smallerEq);
+    Scm_RegisterFunc1("zero?"                , ScmOp_zerop);
+    Scm_RegisterFunc1("positive?"            , ScmOp_positivep);
+    Scm_RegisterFunc1("negative?"            , ScmOp_negativep);
+    Scm_RegisterFunc1("odd?"                 , ScmOp_oddp);
+    Scm_RegisterFunc1("even?"                , ScmOp_evenp);
+    Scm_RegisterFuncL("max"                  , ScmOp_max);
+    Scm_RegisterFuncL("min"                  , ScmOp_min);
+    Scm_RegisterFunc2N("+"                   , ScmOp_plus2n);
+    Scm_RegisterFunc2N("*"                   , ScmOp_multi2n);
+    Scm_RegisterFunc2N("-"                   , ScmOp_minus2n);
+    Scm_RegisterFunc2N("/"                   , ScmOp_divide2n);
+    Scm_RegisterFunc1("abs"                  , ScmOp_abs);
+    Scm_RegisterFunc2("quotient"             , ScmOp_quotient);
+    Scm_RegisterFunc2("modulo"               , ScmOp_modulo);
+    Scm_RegisterFunc2("remainder"            , ScmOp_remainder);
+    Scm_RegisterFunc1("number->string"       , ScmOp_number_to_string);
+    Scm_RegisterFunc1("string->number"       , ScmOp_string_to_number);
+    Scm_RegisterFunc1("not"                  , ScmOp_not);
+    Scm_RegisterFunc1("boolean?"             , ScmOp_booleanp);
+    Scm_RegisterFunc1("pair?"                , ScmOp_pairp);
+    Scm_RegisterFunc2("cons"                 , ScmOp_cons);
+    Scm_RegisterFunc1("car"                  , ScmOp_car);
+    Scm_RegisterFunc1("cdr"                  , ScmOp_cdr);
+    Scm_RegisterFunc2("set-car!"             , ScmOp_setcar);
+    Scm_RegisterFunc2("set-cdr!"             , ScmOp_setcdr);
+    Scm_RegisterFunc1("caar"                 , ScmOp_caar);
+    Scm_RegisterFunc1("cadr"                 , ScmOp_cadr);
+    Scm_RegisterFunc1("cdar"                 , ScmOp_cdar);
+    Scm_RegisterFunc1("cddr"                 , ScmOp_cddr);
+    Scm_RegisterFunc1("caaar"                , ScmOp_caaar);
+    Scm_RegisterFunc1("caadr"                , ScmOp_caadr);
+    Scm_RegisterFunc1("cadar"                , ScmOp_cadar);
+    Scm_RegisterFunc1("caddr"                , ScmOp_caddr);
+    Scm_RegisterFunc1("cdaar"                , ScmOp_cdaar);
+    Scm_RegisterFunc1("cdadr"                , ScmOp_cdadr);
+    Scm_RegisterFunc1("cddar"                , ScmOp_cddar);
+    Scm_RegisterFunc1("cdddr"                , ScmOp_cdddr);
+    Scm_RegisterFunc1("caaaar"               , ScmOp_caaaar);
+    Scm_RegisterFunc1("caaadr"               , ScmOp_caaadr);
+    Scm_RegisterFunc1("caadar"               , ScmOp_caadar);
+    Scm_RegisterFunc1("caaddr"               , ScmOp_caaddr);
+    Scm_RegisterFunc1("cadaar"               , ScmOp_cadaar);
+    Scm_RegisterFunc1("cadadr"               , ScmOp_cadadr);
+    Scm_RegisterFunc1("caddar"               , ScmOp_caddar);
+    Scm_RegisterFunc1("cadddr"               , ScmOp_cadddr);
+    Scm_RegisterFunc1("cdaaar"               , ScmOp_cdaaar);
+    Scm_RegisterFunc1("cdaadr"               , ScmOp_cdaadr);
+    Scm_RegisterFunc1("cdadar"               , ScmOp_cdadar);
+    Scm_RegisterFunc1("cdaddr"               , ScmOp_cdaddr);
+    Scm_RegisterFunc1("cddaar"               , ScmOp_cddaar);
+    Scm_RegisterFunc1("cddadr"               , ScmOp_cddadr);
+    Scm_RegisterFunc1("cdddar"               , ScmOp_cdddar);
+    Scm_RegisterFunc1("cddddr"               , ScmOp_cddddr);
+    Scm_RegisterFunc1("null?"                , ScmOp_nullp);
+    Scm_RegisterFunc1("list?"                , ScmOp_listp);
+    Scm_RegisterFuncL("list"                 , ScmOp_list);
+    Scm_RegisterFunc1("length"               , ScmOp_length);
+    Scm_RegisterFuncL("append"               , ScmOp_append);
+    Scm_RegisterFunc1("reverse"              , ScmOp_reverse);
+    Scm_RegisterFunc2("list-tail"            , ScmOp_listtail);
+    Scm_RegisterFunc2("list-ref"             , ScmOp_listref);
+    Scm_RegisterFunc2("memq"                 , ScmOp_memq);
+    Scm_RegisterFunc2("memv"                 , ScmOp_memv);
+    Scm_RegisterFunc2("member"               , ScmOp_member);
+    Scm_RegisterFunc2("assq"                 , ScmOp_assq);
+    Scm_RegisterFunc2("assv"                 , ScmOp_assv);
+    Scm_RegisterFunc2("assoc"                , ScmOp_assoc);
+    Scm_RegisterFunc1("symbol?"              , ScmOp_symbolp);
+    Scm_RegisterFunc1("symbol->string"       , ScmOp_symbol_to_string);
+    Scm_RegisterFunc1("string->symbol"       , ScmOp_string_to_symbol);
+    Scm_RegisterFunc1("char?"                , ScmOp_charp);
+    Scm_RegisterFunc2("char=?"               , ScmOp_char_equal);
+    Scm_RegisterFunc1("char-alphabetic?"     , ScmOp_char_alphabeticp);
+    Scm_RegisterFunc1("char-numeric?"        , ScmOp_char_numericp);
+    Scm_RegisterFunc1("char-whitespace?"     , ScmOp_char_whitespacep);
+    Scm_RegisterFunc1("char-upper-case?"     , ScmOp_char_upper_casep);
+    Scm_RegisterFunc1("char-lower-case?"     , ScmOp_char_lower_casep);
+    Scm_RegisterFunc1("string?"              , ScmOp_stringp);
+    Scm_RegisterFuncL("make-string"          , ScmOp_make_string);
+    Scm_RegisterFuncL("string"               , ScmOp_string);
+    Scm_RegisterFunc2("string-ref"           , ScmOp_string_ref);
+    Scm_RegisterFunc3("string-set!"          , ScmOp_string_set);
+    Scm_RegisterFunc1("string-length"        , ScmOp_string_length);
+    Scm_RegisterFunc2("string=?"             , ScmOp_string_equal);
+    Scm_RegisterFunc3("substring"            , ScmOp_string_substring);
+    Scm_RegisterFuncL("string-append"        , ScmOp_string_append);
+    Scm_RegisterFunc1("string->list"         , ScmOp_string_to_list);
+    Scm_RegisterFunc1("list->string"         , ScmOp_list_to_string);
+    Scm_RegisterFunc1("string-copy"          , ScmOp_string_copy);
+    Scm_RegisterFunc2("string-fill!"         , ScmOp_string_fill);
+    Scm_RegisterFunc1("vector?"              , ScmOp_vectorp);
+    Scm_RegisterFuncL("make-vector"          , ScmOp_make_vector);
+    Scm_RegisterFuncL("vector"               , ScmOp_vector);
+    Scm_RegisterFunc1("vector-length"        , ScmOp_vector_length);
+    Scm_RegisterFunc2("vector-ref"           , ScmOp_vector_ref);
+    Scm_RegisterFunc3("vector-set!"          , ScmOp_vector_set);
+    Scm_RegisterFunc1("vector->list"         , ScmOp_vector_to_list);
+    Scm_RegisterFunc1("list->vector"         , ScmOp_list_to_vector);
+    Scm_RegisterFunc2("vector-fill!"         , ScmOp_vector_fill);
+    Scm_RegisterFunc1("procedure?"           , ScmOp_procedurep);
+    Scm_RegisterFuncL("map"                  , ScmOp_map);
+    Scm_RegisterFuncL("for-each"             , ScmOp_for_each);
+    Scm_RegisterFuncL("force"                , ScmOp_force);
+    Scm_RegisterFuncL("call-with-current-continuation", ScmOp_call_with_current_continuation);
     /* io.c */
-    Scm_InitSubr2("call-with-input-file" , ScmOp_call_with_input_file);
-    Scm_InitSubr2("call-with-output-file", ScmOp_call_with_output_file);
-    Scm_InitSubr1("input-port?"          , ScmOp_input_portp);
-    Scm_InitSubr1("output-port?"         , ScmOp_output_portp);
-    Scm_InitSubr0("current-input-port"   , ScmOp_current_input_port);
-    Scm_InitSubr0("current-output-port"  , ScmOp_current_output_port);
-    Scm_InitSubr2("with-input-from-file" , ScmOp_with_input_from_file);
-    Scm_InitSubr2("with-output-to-file"  , ScmOp_with_output_to_file);
-    Scm_InitSubr1("open-input-file"      , ScmOp_open_input_file);
-    Scm_InitSubr1("open-output-file"     , ScmOp_open_output_file);
-    Scm_InitSubr1("close-input-port"     , ScmOp_close_input_port);
-    Scm_InitSubr1("close-output-port"    , ScmOp_close_output_port);
-    Scm_InitSubrL("read"                 , ScmOp_read);
-    Scm_InitSubrL("read-char"            , ScmOp_read_char);
-    Scm_InitSubr1("eof-object?"          , ScmOp_eof_objectp);
-    Scm_InitSubrL("write"                , ScmOp_write);
-    Scm_InitSubrL("display"              , ScmOp_display);
-    Scm_InitSubrL("print"                , ScmOp_print);
-    Scm_InitSubrL("newline"              , ScmOp_newline);
-    Scm_InitSubrL("write-char"           , ScmOp_write_char);
-    Scm_InitSubr1("load"                 , ScmOp_load);
-    Scm_InitSubr1("file-exists?"         , ScmOp_file_existsp);
-    Scm_InitSubr1("delete-file"          , ScmOp_delete_file);
+    Scm_RegisterFunc2("call-with-input-file" , ScmOp_call_with_input_file);
+    Scm_RegisterFunc2("call-with-output-file", ScmOp_call_with_output_file);
+    Scm_RegisterFunc1("input-port?"          , ScmOp_input_portp);
+    Scm_RegisterFunc1("output-port?"         , ScmOp_output_portp);
+    Scm_RegisterFunc0("current-input-port"   , ScmOp_current_input_port);
+    Scm_RegisterFunc0("current-output-port"  , ScmOp_current_output_port);
+    Scm_RegisterFunc2("with-input-from-file" , ScmOp_with_input_from_file);
+    Scm_RegisterFunc2("with-output-to-file"  , ScmOp_with_output_to_file);
+    Scm_RegisterFunc1("open-input-file"      , ScmOp_open_input_file);
+    Scm_RegisterFunc1("open-output-file"     , ScmOp_open_output_file);
+    Scm_RegisterFunc1("close-input-port"     , ScmOp_close_input_port);
+    Scm_RegisterFunc1("close-output-port"    , ScmOp_close_output_port);
+    Scm_RegisterFuncL("read"                 , ScmOp_read);
+    Scm_RegisterFuncL("read-char"            , ScmOp_read_char);
+    Scm_RegisterFunc1("eof-object?"          , ScmOp_eof_objectp);
+    Scm_RegisterFuncL("write"                , ScmOp_write);
+    Scm_RegisterFuncL("display"              , ScmOp_display);
+    Scm_RegisterFuncL("print"                , ScmOp_print);
+    Scm_RegisterFuncL("newline"              , ScmOp_newline);
+    Scm_RegisterFuncL("write-char"           , ScmOp_write_char);
+    Scm_RegisterFunc1("load"                 , ScmOp_load);
+    Scm_RegisterFunc1("file-exists?"         , ScmOp_file_existsp);
+    Scm_RegisterFunc1("delete-file"          , ScmOp_delete_file);
     /*=======================================================================
       Current Input & Output Initialization
     =======================================================================*/
@@ -279,13 +279,13 @@ void SigScm_Initialize(void)
     /*=======================================================================
       SRFI-1 Procedures
     =======================================================================*/
-    Scm_InitSubr2("xcons"                , ScmOp_SRFI_1_xcons);
-    Scm_InitSubrL("cons*"                , ScmOp_SRFI_1_cons_star);
-    Scm_InitSubrL("make-list"            , ScmOp_SRFI_1_make_list);
-    Scm_InitSubrL("list-tabulate"        , ScmOp_SRFI_1_list_tabulate);
-    Scm_InitSubr1("list-copy"            , ScmOp_SRFI_1_list_copy);
-    Scm_InitSubrL("circular-list"        , ScmOp_SRFI_1_circular_list);
-    Scm_InitSubrL("iota"                 , ScmOp_SRFI_1_iota);
+    Scm_RegisterFunc2("xcons"                , ScmOp_SRFI_1_xcons);
+    Scm_RegisterFuncL("cons*"                , ScmOp_SRFI_1_cons_star);
+    Scm_RegisterFuncL("make-list"            , ScmOp_SRFI_1_make_list);
+    Scm_RegisterFuncL("list-tabulate"        , ScmOp_SRFI_1_list_tabulate);
+    Scm_RegisterFunc1("list-copy"            , ScmOp_SRFI_1_list_copy);
+    Scm_RegisterFuncL("circular-list"        , ScmOp_SRFI_1_circular_list);
+    Scm_RegisterFuncL("iota"                 , ScmOp_SRFI_1_iota);
 #endif
 
     stack_start_pointer = NULL;
@@ -299,7 +299,7 @@ void SigScm_Finalize()
 /*===========================================================================
   Scheme Function Export Related Functions
 ===========================================================================*/
-static void Scm_InitSubr(const char *name, enum ScmFuncArgNum argnum, ScmFuncType c_func)
+static void Scm_RegisterFunc(const char *name, enum ScmFuncArgType argnum, ScmFuncType c_func)
 {
     ScmObj sym  = Scm_Intern(name);
     ScmObj func = Scm_NewFunc(argnum, c_func);
@@ -307,47 +307,47 @@ static void Scm_InitSubr(const char *name, enum ScmFuncArgNum argnum, ScmFuncTyp
     SCM_SYMBOL_VCELL(sym) = func;
 }
 
-void Scm_InitSubr0(const char *name, ScmObj (*func) (void))
+void Scm_RegisterFunc0(const char *name, ScmObj (*func) (void))
 {
-    Scm_InitSubr(name, ARGNUM_0, (ScmFuncType)func);
+    Scm_RegisterFunc(name, FUNCTYPE_0, (ScmFuncType)func);
 }
 
-void Scm_InitSubr1(const char *name, ScmObj (*func) (ScmObj))
+void Scm_RegisterFunc1(const char *name, ScmObj (*func) (ScmObj))
 {
-    Scm_InitSubr(name, ARGNUM_1, (ScmFuncType)func);
+    Scm_RegisterFunc(name, FUNCTYPE_1, (ScmFuncType)func);
 }
 
-void Scm_InitSubr2(const char *name, ScmObj (*func) (ScmObj, ScmObj))
+void Scm_RegisterFunc2(const char *name, ScmObj (*func) (ScmObj, ScmObj))
 {
-    Scm_InitSubr(name, ARGNUM_2, (ScmFuncType)func);
+    Scm_RegisterFunc(name, FUNCTYPE_2, (ScmFuncType)func);
 }
 
-void Scm_InitSubr3(const char *name, ScmObj (*func) (ScmObj, ScmObj, ScmObj))
+void Scm_RegisterFunc3(const char *name, ScmObj (*func) (ScmObj, ScmObj, ScmObj))
 {
-    Scm_InitSubr(name, ARGNUM_3, (ScmFuncType)func);
+    Scm_RegisterFunc(name, FUNCTYPE_3, (ScmFuncType)func);
 }
 
-void Scm_InitSubr4(const char *name, ScmObj (*func) (ScmObj, ScmObj, ScmObj, ScmObj))
+void Scm_RegisterFunc4(const char *name, ScmObj (*func) (ScmObj, ScmObj, ScmObj, ScmObj))
 {
-    Scm_InitSubr(name, ARGNUM_4, (ScmFuncType)func);
+    Scm_RegisterFunc(name, FUNCTYPE_4, (ScmFuncType)func);
 }
 
-void Scm_InitSubr5(const char *name, ScmObj (*func) (ScmObj, ScmObj, ScmObj, ScmObj, ScmObj))
+void Scm_RegisterFunc5(const char *name, ScmObj (*func) (ScmObj, ScmObj, ScmObj, ScmObj, ScmObj))
 {
-    Scm_InitSubr(name, ARGNUM_5, (ScmFuncType)func);
+    Scm_RegisterFunc(name, FUNCTYPE_5, (ScmFuncType)func);
 }
 
-void Scm_InitSubrL(const char *name, ScmObj (*func) (ScmObj, ScmObj))
+void Scm_RegisterFuncL(const char *name, ScmObj (*func) (ScmObj, ScmObj))
 {
-    Scm_InitSubr(name, ARGNUM_L, (ScmFuncType)func);
+    Scm_RegisterFunc(name, FUNCTYPE_L, (ScmFuncType)func);
 }
 
-void Scm_InitSubrR(const char *name, ScmObj (*func) (ScmObj, ScmObj*, int *))
+void Scm_RegisterFuncR(const char *name, ScmObj (*func) (ScmObj, ScmObj*, int *))
 {
-    Scm_InitSubr(name, ARGNUM_R, (ScmFuncType)func);
+    Scm_RegisterFunc(name, FUNCTYPE_R, (ScmFuncType)func);
 }
 
-void Scm_InitSubr2N(const char *name, ScmObj (*func) (ScmObj, ScmObj))
+void Scm_RegisterFunc2N(const char *name, ScmObj (*func) (ScmObj, ScmObj))
 {
-    Scm_InitSubr(name, ARGNUM_2N, (ScmFuncType)func);
+    Scm_RegisterFunc(name, FUNCTYPE_2N, (ScmFuncType)func);
 }
