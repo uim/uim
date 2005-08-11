@@ -110,20 +110,20 @@ void SigScm_Initialize(void)
     /* eval.c */
     Scm_InitSubr2("eval"                 , ScmOp_eval);
     Scm_InitSubrL("apply"                , ScmOp_apply);
-    Scm_InitSubrR_NotEval("lambda"       , ScmExp_lambda);
-    Scm_InitSubrR_Eval   ("if"           , ScmExp_if);
-    Scm_InitSubrR_NotEval("set!"         , ScmExp_set);
-    Scm_InitSubrR_Eval   ("cond"         , ScmExp_cond);
-    Scm_InitSubrR_Eval   ("case"         , ScmExp_case);
-    Scm_InitSubrR_NotEval("and"          , ScmExp_and);
-    Scm_InitSubrR_NotEval("or"           , ScmExp_or);
-    Scm_InitSubrR_Eval   ("let"          , ScmExp_let);
-    Scm_InitSubrR_Eval   ("let*"         , ScmExp_let_star);
-    Scm_InitSubrR_Eval   ("letrec"       , ScmExp_letrec);
-    Scm_InitSubrR_Eval   ("begin"        , ScmExp_begin);
-    Scm_InitSubrR_Eval   ("do"           , ScmExp_do);
-    Scm_InitSubrR_NotEval("delay"        , ScmOp_delay);
-    Scm_InitSubrR_NotEval("define"       , ScmExp_define);
+    Scm_InitSubrR("lambda"               , ScmExp_lambda);
+    Scm_InitSubrR("if"                   , ScmExp_if);
+    Scm_InitSubrR("set!"                 , ScmExp_set);
+    Scm_InitSubrR("cond"                 , ScmExp_cond);
+    Scm_InitSubrR("case"                 , ScmExp_case);
+    Scm_InitSubrR("and"                  , ScmExp_and);
+    Scm_InitSubrR("or"                   , ScmExp_or);
+    Scm_InitSubrR("let"                  , ScmExp_let);
+    Scm_InitSubrR("let*"                 , ScmExp_let_star);
+    Scm_InitSubrR("letrec"               , ScmExp_letrec);
+    Scm_InitSubrR("begin"                , ScmExp_begin);
+    Scm_InitSubrR("do"                   , ScmExp_do);
+    Scm_InitSubrR("delay"                , ScmOp_delay);
+    Scm_InitSubrR("define"               , ScmExp_define);
     Scm_InitSubr1("scheme-report-environment", ScmOp_scheme_report_environment);
     Scm_InitSubr1("null-environment"         , ScmOp_null_environment);
     /* operations.c */
@@ -342,14 +342,9 @@ void Scm_InitSubrL(const char *name, ScmObj (*func) (ScmObj, ScmObj))
     Scm_InitSubr(name, ARGNUM_L, (ScmFuncType)func);
 }
 
-void Scm_InitSubrR_NotEval(const char *name, ScmObj (*func) (ScmObj, ScmObj*))
+void Scm_InitSubrR(const char *name, ScmObj (*func) (ScmObj, ScmObj*, int *))
 {
-    Scm_InitSubr(name, ARGNUM_R_NotEval, (ScmFuncType)func);
-}
-
-void Scm_InitSubrR_Eval(const char *name, ScmObj (*func) (ScmObj, ScmObj*))
-{
-    Scm_InitSubr(name, ARGNUM_R_Eval, (ScmFuncType)func);
+    Scm_InitSubr(name, ARGNUM_R, (ScmFuncType)func);
 }
 
 void Scm_InitSubr2N(const char *name, ScmObj (*func) (ScmObj, ScmObj))
