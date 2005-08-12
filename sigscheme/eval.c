@@ -90,7 +90,7 @@ static ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
     ScmObj frame = SCM_NIL;
 
     /* create new frame */
-    frame   = Scm_NewCons(vars, vals);
+    frame = Scm_NewCons(vars, vals);
 
     /* add to env */
     if (SCM_NULLP(env))
@@ -111,23 +111,23 @@ static ScmObj add_environment(ScmObj var, ScmObj val, ScmObj env)
 
     /* sanity check */
     if (SCM_NULLP(var))
-	return env;
+        return env;
 
     /* add (var val) pair to the newest frame in env */
     if (SCM_NULLP(env)) {
-	newest_frame = Scm_NewCons(Scm_NewCons(var, SCM_NIL),
-				   Scm_NewCons(val, SCM_NIL));
-	env = Scm_NewCons(newest_frame,
-			  SCM_NIL);
+        newest_frame = Scm_NewCons(Scm_NewCons(var, SCM_NIL),
+                                   Scm_NewCons(val, SCM_NIL));
+        env = Scm_NewCons(newest_frame,
+                          SCM_NIL);
     } else if (SCM_CONSP(env)) {
-	newest_frame = SCM_CAR(env);
-	new_varlist  = Scm_NewCons(var, SCM_CAR(newest_frame));
-	new_vallist  = Scm_NewCons(val, SCM_CDR(newest_frame));
+        newest_frame = SCM_CAR(env);
+        new_varlist  = Scm_NewCons(var, SCM_CAR(newest_frame));
+        new_vallist  = Scm_NewCons(val, SCM_CDR(newest_frame));
 
-	tmp = Scm_NewCons(Scm_NewCons(new_varlist, new_vallist), SCM_CDR(env));
-	*env = *tmp;
+        tmp = Scm_NewCons(Scm_NewCons(new_varlist, new_vallist), SCM_CDR(env));
+        *env = *tmp;
     } else {
-	SigScm_Error("broken environment\n");
+        SigScm_Error("broken environment\n");
     }
     return env;
 }
@@ -178,16 +178,16 @@ static ScmObj lookup_frame(ScmObj var, ScmObj frame)
     vals = SCM_CDR(frame);
 
     for (; !SCM_NULLP(vars); vars = SCM_CDR(vars), vals = SCM_CDR(vals)) {
-	/* handle dot list */
-	if (SCM_CONSP(vars)) {
-	    if (SCM_EQ(SCM_CAR(vars), var))
-		return vals;
-	} else {
-	    if (SCM_EQ(vars, var))
-		return Scm_NewCons(vals, SCM_NIL);
-	    else
-		return SCM_NIL;
-	}
+        /* handle dot list */
+        if (SCM_CONSP(vars)) {
+            if (SCM_EQ(SCM_CAR(vars), var))
+                return vals;
+        } else {
+            if (SCM_EQ(vars, var))
+                return Scm_NewCons(vals, SCM_NIL);
+            else
+                return SCM_NIL;
+        }
     }
 
     return SCM_NIL;
@@ -207,107 +207,107 @@ eval_loop:
         case ScmSymbol:
             return symbol_value(obj, env);
 
-	/*====================================================================
-	  Evaluating Expression
-	====================================================================*/
+        /*====================================================================
+          Evaluating Expression
+        ====================================================================*/
         case ScmCons:
             {
-		/*============================================================
-		  Evaluating CAR
-		============================================================*/
+                /*============================================================
+                  Evaluating CAR
+                ============================================================*/
                 tmp = SCM_CAR(obj);
                 switch (SCM_GETTYPE(tmp)) {
-		    case ScmFunc:
-			break;
-		    case ScmClosure:
-			break;
+                    case ScmFunc:
+                        break;
+                    case ScmClosure:
+                        break;
                     case ScmSymbol:
                         tmp = symbol_value(tmp, env);
                         break;
                     case ScmCons:
                         tmp = ScmOp_eval(tmp, env);
                         break;
-		    case ScmEtc:
-			/* QUOTE case */
-			break;
-		    default:
-			SigScm_ErrorObj("eval : invalid operation ", obj);
-			break;
+                    case ScmEtc:
+                        /* QUOTE case */
+                        break;
+                    default:
+                        SigScm_ErrorObj("eval : invalid operation ", obj);
+                        break;
                 }
-		/*============================================================
-		  Evaluating the rest of the List by the type of CAR
-		============================================================*/
+                /*============================================================
+                  Evaluating the rest of the List by the type of CAR
+                ============================================================*/
                 switch (SCM_GETTYPE(tmp)) {
                     case ScmFunc:
-			/*
-			 * Description of FUNCTYPE handling.
-			 *
-			 * - FUNCTYPE_L
-			 *     - evaluate all the args and pass it to func
-			 *
-			 * - FUNCTYPE_R
-			 *     - not evaluate all the arguments
-			 *
-			 * - FUNCTYPE_2N
-			 *     - call the function with each 2 objs
-			 *
-			 * - FUNCTYPE_0
-			 * - FUNCTYPE_1
-			 * - FUNCTYPE_2
-			 * - FUNCTYPE_3
-			 * - FUNCTYPE_4
-			 * - FUNCTYPE_5
-			 *     - call the function with 0-5 arguments
-			 */
+                        /*
+                         * Description of FUNCTYPE handling.
+                         *
+                         * - FUNCTYPE_L
+                         *     - evaluate all the args and pass it to func
+                         *
+                         * - FUNCTYPE_R
+                         *     - not evaluate all the arguments
+                         *
+                         * - FUNCTYPE_2N
+                         *     - call the function with each 2 objs
+                         *
+                         * - FUNCTYPE_0
+                         * - FUNCTYPE_1
+                         * - FUNCTYPE_2
+                         * - FUNCTYPE_3
+                         * - FUNCTYPE_4
+                         * - FUNCTYPE_5
+                         *     - call the function with 0-5 arguments
+                         */
                         switch (SCM_FUNC_NUMARG(tmp)) {
                             case FUNCTYPE_L:
                                 {
                                     return SCM_FUNC_EXEC_SUBRL(tmp,
                                                                map_eval(SCM_CDR(obj), env),
-							       env);
+                                                               env);
                                 }
-			    case FUNCTYPE_R:
-				{
-				    obj = SCM_FUNC_EXEC_SUBRR(tmp,
-							      SCM_CDR(obj),
-							      &env,
-							      &tail_flag);
+                            case FUNCTYPE_R:
+                                {
+                                    obj = SCM_FUNC_EXEC_SUBRR(tmp,
+                                                              SCM_CDR(obj),
+                                                              &env,
+                                                              &tail_flag);
 
-				    /*
-				     * The core point of tail-recursion
-				     *
-				     * if tail_flag == 1, SCM_FUNC_EXEC_SUBRR returns raw S-expression.
-				     * So we need to evaluate it! This is for not to consume stack,
-				     * that is, tail-recursion optimization.
-				     */
-				    if (tail_flag == 1)
-					goto eval_loop;
-				    else
-					return obj;
-				}
-			    case FUNCTYPE_2N:
-				{
-				    obj = SCM_CDR(obj);
+                                    /*
+                                     * The core point of tail-recursion
+                                     *
+                                     * if tail_flag == 1, SCM_FUNC_EXEC_SUBRR returns raw S-expression.
+                                     * So we need to evaluate it! This is for not to consume stack,
+                                     * that is, tail-recursion optimization.
+                                     */
+                                    if (tail_flag == 1)
+                                        goto eval_loop;
+                                    else
+                                        return obj;
+                                }
+                            case FUNCTYPE_2N:
+                                {
+                                    obj = SCM_CDR(obj);
 
-				    /* check 1st arg */
-				    if (SCM_NULLP(obj))
-					return SCM_FUNC_EXEC_SUBR2N(tmp, SCM_NIL, SCM_NIL);
+                                    /* check 1st arg */
+                                    if (SCM_NULLP(obj))
+                                        return SCM_FUNC_EXEC_SUBR2N(tmp, SCM_NIL, SCM_NIL);
 
-				    /* eval 1st arg */
-				    arg = ScmOp_eval(SCM_CAR(obj), env);
+                                    /* eval 1st arg */
+                                    arg = ScmOp_eval(SCM_CAR(obj), env);
 
-				    /* check 2nd arg  */
-				    if (SCM_NULLP(SCM_CDR(obj)))
-					return SCM_FUNC_EXEC_SUBR2N(tmp, arg, SCM_NIL);
+                                    /* check 2nd arg  */
+                                    if (SCM_NULLP(SCM_CDR(obj)))
+                                        return SCM_FUNC_EXEC_SUBR2N(tmp, arg, SCM_NIL);
 
-				    /* call proc with each 2 objs */
-				    for (obj = SCM_CDR(obj); !SCM_NULLP(obj); obj = SCM_CDR(obj)) {
-					arg = SCM_FUNC_EXEC_SUBR2N(tmp,
-								   arg,
-								   ScmOp_eval(SCM_CAR(obj), env));
-				    }
-				    return arg;
-				}
+                                    /* call proc with each 2 objs */
+                                    for (obj = SCM_CDR(obj); !SCM_NULLP(obj); obj = SCM_CDR(obj)) {
+                                        arg = SCM_FUNC_EXEC_SUBR2N(tmp,
+                                                                   arg,
+                                                                   ScmOp_eval(SCM_CAR(obj), env));
+                                    }
+                                    return arg;
+                                }
                             case FUNCTYPE_0:
                                 return SCM_FUNC_EXEC_SUBR0(tmp);
                             case FUNCTYPE_1:
@@ -320,118 +320,120 @@ eval_loop:
                                                                arg,
                                                                ScmOp_eval(SCM_CAR(SCM_CDR(obj)), env)); /* 2nd arg */
                                 }
-			    case FUNCTYPE_3:
-				{
-				    obj = SCM_CDR(obj);
-				    arg = ScmOp_eval(SCM_CAR(obj), env); /* 1st arg */
-				    obj = SCM_CDR(obj);
-				    return SCM_FUNC_EXEC_SUBR3(tmp,
-							       arg,
-							       ScmOp_eval(SCM_CAR(obj), env), /* 2nd arg */
-							       ScmOp_eval(SCM_CAR(SCM_CDR(obj)), env)); /* 3rd arg */
-				}
-			    case FUNCTYPE_4:
-				{
-				    obj = SCM_CDR(obj);
-				    arg = ScmOp_eval(SCM_CAR(obj), env); /* 1st arg */
-				    obj = SCM_CDR(obj);
-				    return SCM_FUNC_EXEC_SUBR4(tmp,
-							       arg,
-							       ScmOp_eval(SCM_CAR(obj), env), /* 2nd arg */
-							       ScmOp_eval(SCM_CAR(SCM_CDR(obj)), env), /* 3rd arg */
-							       ScmOp_eval(SCM_CAR(SCM_CDR(SCM_CDR(obj))), env)); /* 4th arg */
-				}
-			    case FUNCTYPE_5:
-				{
-				    obj = SCM_CDR(obj);
-				    arg = ScmOp_eval(SCM_CAR(obj), env); /* 1st arg */
-				    obj = SCM_CDR(obj);
-				    return SCM_FUNC_EXEC_SUBR5(tmp,
-							       arg,
-							       ScmOp_eval(SCM_CAR(obj), env), /* 2nd arg */
-							       ScmOp_eval(SCM_CAR(SCM_CDR(obj)), env), /* 3rd arg */
-							       ScmOp_eval(SCM_CAR(SCM_CDR(SCM_CDR(obj))), env), /* 4th arg */
-							       ScmOp_eval(SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(obj)))), env)); /* 5th arg */
+                            case FUNCTYPE_3:
+                                {
+                                    obj = SCM_CDR(obj);
+                                    arg = ScmOp_eval(SCM_CAR(obj), env); /* 1st arg */
+                                    obj = SCM_CDR(obj);
+                                    return SCM_FUNC_EXEC_SUBR3(tmp,
+                                                               arg,
+                                                               ScmOp_eval(SCM_CAR(obj), env), /* 2nd arg */
+                                                               ScmOp_eval(SCM_CAR(SCM_CDR(obj)), env)); /* 3rd arg */
+                                }
+                            case FUNCTYPE_4:
+                                {
+                                    obj = SCM_CDR(obj);
+                                    arg = ScmOp_eval(SCM_CAR(obj), env); /* 1st arg */
+                                    obj = SCM_CDR(obj);
+                                    return SCM_FUNC_EXEC_SUBR4(tmp,
+                                                               arg,
+                                                               ScmOp_eval(SCM_CAR(obj), env), /* 2nd arg */
+                                                               ScmOp_eval(SCM_CAR(SCM_CDR(obj)), env), /* 3rd arg */
+                                                               ScmOp_eval(SCM_CAR(SCM_CDR(SCM_CDR(obj))), env)); /* 4th arg */
+                                }
+                            case FUNCTYPE_5:
+                                {
+                                    obj = SCM_CDR(obj);
+                                    arg = ScmOp_eval(SCM_CAR(obj), env); /* 1st arg */
+                                    obj = SCM_CDR(obj);
+                                    return SCM_FUNC_EXEC_SUBR5(tmp,
+                                                               arg,
+                                                               ScmOp_eval(SCM_CAR(obj), env), /* 2nd arg */
+                                                               ScmOp_eval(SCM_CAR(SCM_CDR(obj)), env), /* 3rd arg */
+                                                               ScmOp_eval(SCM_CAR(SCM_CDR(SCM_CDR(obj))), env), /* 4th arg */
+                                                               ScmOp_eval(SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(obj)))), env)); /* 5th arg */
 
-				}
+                                }
                         }
                         break;
-		    case ScmClosure:
-			{
-			    /*	
-			     * Description of the ScmClosure handling
-			     *
-			     * (lambda <formals> <body>)
-			     *
-			     * <formals> should have 3 forms.
-			     *
-			     *   (1) : <variable>
-			     *   (2) : (<variable1> <variable2> ...)
-			     *   (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
-			     */
-			    arg = SCM_CAR(SCM_CLOSURE_EXP(tmp)); /* arg is <formals> */
+                    case ScmClosure:
+                        {
+                            /*  
+                             * Description of the ScmClosure handling
+                             *
+                             * (lambda <formals> <body>)
+                             *
+                             * <formals> should have 3 forms.
+                             *
+                             *   (1) : <variable>
+                             *   (2) : (<variable1> <variable2> ...)
+                             *   (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
+                             */
+                            arg = SCM_CAR(SCM_CLOSURE_EXP(tmp)); /* arg is <formals> */
 
-			    if (SCM_SYMBOLP(arg)) {
-				/* (1) : <variable> */
-				env = extend_environment(Scm_NewCons(arg, SCM_NIL),
-							 Scm_NewCons(map_eval(SCM_CDR(obj), env),
-								     SCM_NIL),
-							 SCM_CLOSURE_ENV(tmp));
-			    } else if (SCM_CONSP(arg)) {
-				/*
-				 * (2) : (<variable1> <variable2> ...)
-				 * (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
-				 *
-				 *  - dot list is handled in lookup_frame().
-				 */
-				env = extend_environment(arg,
-							 map_eval(SCM_CDR(obj), env),
-							 SCM_CLOSURE_ENV(tmp));
-			    } else if (SCM_NULLP(arg)) {
-				/*
-				 * (2') : <variable> is '()
-				 */
-				env = SCM_CLOSURE_ENV(tmp);
-			    } else {
-				SigScm_ErrorObj("lambda : bad syntax with ", arg);
-			    }
+                            if (SCM_SYMBOLP(arg)) {
+                                /* (1) : <variable> */
+                                env = extend_environment(Scm_NewCons(arg, SCM_NIL),
+                                                         Scm_NewCons(map_eval(SCM_CDR(obj), env),
+                                                                     SCM_NIL),
+                                                         SCM_CLOSURE_ENV(tmp));
+                            } else if (SCM_CONSP(arg)) {
+                                /*
+                                 * (2) : (<variable1> <variable2> ...)
+                                 * (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
+                                 *
+                                 *  - dot list is handled in lookup_frame().
+                                 */
+                                env = extend_environment(arg,
+                                                         map_eval(SCM_CDR(obj), env),
+                                                         SCM_CLOSURE_ENV(tmp));
+                            } else if (SCM_NULLP(arg)) {
+                                /*
+                                 * (2') : <variable> is '()
+                                 */
+                                env = extend_environment(SCM_NIL,
+                                                         SCM_NIL,
+                                                         SCM_CLOSURE_ENV(tmp));
+                            } else {
+                                SigScm_ErrorObj("lambda : bad syntax with ", arg);
+                            }
 
-			    /*
-			     * Notice
-			     *
-			     * The return obj of ScmExp_begin is the raw S-expression.
-			     * So we need to re-evaluate this!.
-			     */
-			    obj = ScmExp_begin(SCM_CDR(SCM_CLOSURE_EXP(tmp)), &env, &tail_flag);
-			    goto eval_loop;
-			}
-		    case ScmContinuation:
-			{
+                            /*
+                             * Notice
+                             *
+                             * The return obj of ScmExp_begin is the raw S-expression.
+                             * So we need to re-evaluate this!.
+                             */
+                            obj = ScmExp_begin(SCM_CDR(SCM_CLOSURE_EXP(tmp)), &env, &tail_flag);
+                            goto eval_loop;
+                        }
+                    case ScmContinuation:
+                        {
                            /*
-			    * Description of ScmContinuation handling
-			    *
+                            * Description of ScmContinuation handling
+                            *
                             * (1) eval 1st arg
                             * (2) store it to global variable "continuation_thrown_obj"
                             * (3) then longjmp
-			    *
-			    * PROBLEM : setjmp/longjmp is stack based operation, so we
-			    * cannot jump from the bottom of the stack to the top of
-			    * the stack. Is there any efficient way to implement first
-			    * class continuation? (TODO).
-			    */
-			    obj = SCM_CAR(SCM_CDR(obj));
-			    continuation_thrown_obj = ScmOp_eval(obj, env);
-			    longjmp(SCM_CONTINUATION_JMPENV(tmp), 1);
-			}
-			break;
-		    case ScmEtc:
-			if (EQ(tmp, SCM_QUOTE)) {
-			    return SCM_CDR(obj);
-			}
-			if (EQ(tmp, SCM_QUASIQUOTE)) {
-			    return eval_unquote(SCM_CDR(obj), env);
-			}
-			return tmp;
+                            *
+                            * PROBLEM : setjmp/longjmp is stack based operation, so we
+                            * cannot jump from the bottom of the stack to the top of
+                            * the stack. Is there any efficient way to implement first
+                            * class continuation? (TODO).
+                            */
+                            obj = SCM_CAR(SCM_CDR(obj));
+                            continuation_thrown_obj = ScmOp_eval(obj, env);
+                            longjmp(SCM_CONTINUATION_JMPENV(tmp), 1);
+                        }
+                        break;
+                    case ScmEtc:
+                        if (EQ(tmp, SCM_QUOTE)) {
+                            return SCM_CDR(obj);
+                        }
+                        if (EQ(tmp, SCM_QUASIQUOTE)) {
+                            return eval_unquote(SCM_CDR(obj), env);
+                        }
+                        return tmp;
                     default:
                         /* What? */
                         SigScm_ErrorObj("eval : What type of function? ", arg);
@@ -453,7 +455,7 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 
     /* sanity check */
     if CHECK_2_ARGS(args)
-	SigScm_Error("apply : Wrong number of arguments\n");
+        SigScm_Error("apply : Wrong number of arguments\n");
 
     /* 1st elem of list is proc */
     proc = SCM_CAR(args);
@@ -463,130 +465,132 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 
     /* apply proc */
     switch (SCM_GETTYPE(proc)) {
-	case ScmFunc:
-	    switch (SCM_FUNC_NUMARG(proc)) {
-		case FUNCTYPE_L:
-		    {
-			return SCM_FUNC_EXEC_SUBRL(proc,
-						   obj,
-						   env);
-		    }
-		case FUNCTYPE_2N:
-		    {
-			args = obj;
+        case ScmFunc:
+            switch (SCM_FUNC_NUMARG(proc)) {
+                case FUNCTYPE_L:
+                    {
+                        return SCM_FUNC_EXEC_SUBRL(proc,
+                                                   obj,
+                                                   env);
+                    }
+                case FUNCTYPE_2N:
+                    {
+                        args = obj;
 
-			/* check 1st arg */
-			if (SCM_NULLP(args))
-			    return SCM_FUNC_EXEC_SUBR2N(proc, SCM_NIL, SCM_NIL);
+                        /* check 1st arg */
+                        if (SCM_NULLP(args))
+                            return SCM_FUNC_EXEC_SUBR2N(proc, SCM_NIL, SCM_NIL);
 
-			/* eval 1st arg */
-			obj  = SCM_CAR(args);
+                        /* eval 1st arg */
+                        obj  = SCM_CAR(args);
 
-			/* check 2nd arg */
-			if (SCM_NULLP(SCM_CDR(args)))
-			    return SCM_FUNC_EXEC_SUBR2N(proc, obj, SCM_NIL);
+                        /* check 2nd arg */
+                        if (SCM_NULLP(SCM_CDR(args)))
+                            return SCM_FUNC_EXEC_SUBR2N(proc, obj, SCM_NIL);
 
-			/* call proc with each 2 objs */
-			for (args = SCM_CDR(args); !SCM_NULLP(args); args = SCM_CDR(args)) {
-			    obj = SCM_FUNC_EXEC_SUBR2N(proc,
-						       obj,
-						       SCM_CAR(args));
-			}
-			return obj;
-		    }
-		case FUNCTYPE_0:
-		    {
-			return SCM_FUNC_EXEC_SUBR0(proc);
-		    }
-		case FUNCTYPE_1:
-		    {
-			return SCM_FUNC_EXEC_SUBR1(proc,
-						   SCM_CAR(obj));
-		    }
-		case FUNCTYPE_2:
-		    {
-			return SCM_FUNC_EXEC_SUBR2(proc,
-						   SCM_CAR(obj),
-						   SCM_CAR(SCM_CDR(obj)));
-		    }
-		case FUNCTYPE_3:
-		    {
-			return SCM_FUNC_EXEC_SUBR3(proc,
-						   SCM_CAR(obj),
-						   SCM_CAR(SCM_CDR(obj)),
-						   SCM_CAR(SCM_CDR(SCM_CDR(obj))));
-		    }
-		case FUNCTYPE_4:
-		    {
-			return SCM_FUNC_EXEC_SUBR4(proc,
-						   SCM_CAR(obj),
-						   SCM_CAR(SCM_CDR(obj)),
-						   SCM_CAR(SCM_CDR(SCM_CDR(obj))),
-						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(obj)))));
-		    }
-		case FUNCTYPE_5:
-		    {
-			return SCM_FUNC_EXEC_SUBR5(proc,
-						   SCM_CAR(obj),
-						   SCM_CAR(SCM_CDR(obj)),
-						   SCM_CAR(SCM_CDR(SCM_CDR(obj))),
-						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(obj)))),
-						   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(obj))))));
-		    }
-		default:
-		    SigScm_ErrorObj("apply : invalid application ", proc);
-	    }
-	    break;
-	case ScmClosure:
-	    {
-		/*
-		 * Description of the ScmClosure handling
-		 *
-		 * (lambda <formals> <body>)
-		 *
-		 * <formals> should have 3 forms.
-		 *
-		 *   (1) : <variable>
-		 *   (2) : (<variable1> <variable2> ...)
-		 *   (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
-		 */
-		args = SCM_CAR(SCM_CLOSURE_EXP(proc)); /* arg is <formals> */
+                        /* call proc with each 2 objs */
+                        for (args = SCM_CDR(args); !SCM_NULLP(args); args = SCM_CDR(args)) {
+                            obj = SCM_FUNC_EXEC_SUBR2N(proc,
+                                                       obj,
+                                                       SCM_CAR(args));
+                        }
+                        return obj;
+                    }
+                case FUNCTYPE_0:
+                    {
+                        return SCM_FUNC_EXEC_SUBR0(proc);
+                    }
+                case FUNCTYPE_1:
+                    {
+                        return SCM_FUNC_EXEC_SUBR1(proc,
+                                                   SCM_CAR(obj));
+                    }
+                case FUNCTYPE_2:
+                    {
+                        return SCM_FUNC_EXEC_SUBR2(proc,
+                                                   SCM_CAR(obj),
+                                                   SCM_CAR(SCM_CDR(obj)));
+                    }
+                case FUNCTYPE_3:
+                    {
+                        return SCM_FUNC_EXEC_SUBR3(proc,
+                                                   SCM_CAR(obj),
+                                                   SCM_CAR(SCM_CDR(obj)),
+                                                   SCM_CAR(SCM_CDR(SCM_CDR(obj))));
+                    }
+                case FUNCTYPE_4:
+                    {
+                        return SCM_FUNC_EXEC_SUBR4(proc,
+                                                   SCM_CAR(obj),
+                                                   SCM_CAR(SCM_CDR(obj)),
+                                                   SCM_CAR(SCM_CDR(SCM_CDR(obj))),
+                                                   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(obj)))));
+                    }
+                case FUNCTYPE_5:
+                    {
+                        return SCM_FUNC_EXEC_SUBR5(proc,
+                                                   SCM_CAR(obj),
+                                                   SCM_CAR(SCM_CDR(obj)),
+                                                   SCM_CAR(SCM_CDR(SCM_CDR(obj))),
+                                                   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(obj)))),
+                                                   SCM_CAR(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(obj))))));
+                    }
+                default:
+                    SigScm_ErrorObj("apply : invalid application ", proc);
+            }
+            break;
+        case ScmClosure:
+            {
+                /*
+                 * Description of the ScmClosure handling
+                 *
+                 * (lambda <formals> <body>)
+                 *
+                 * <formals> should have 3 forms.
+                 *
+                 *   (1) : <variable>
+                 *   (2) : (<variable1> <variable2> ...)
+                 *   (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
+                 */
+                args = SCM_CAR(SCM_CLOSURE_EXP(proc)); /* arg is <formals> */
 
-		if (SCM_SYMBOLP(args)) {
-		    /* (1) : <variable> */
-		    env = extend_environment(Scm_NewCons(args, SCM_NIL),
-					     Scm_NewCons(obj, SCM_NIL),
-					     SCM_CLOSURE_ENV(proc));
-		} else if (SCM_CONSP(args)) {
-		    /*
-		     * (2) : (<variable1> <variable2> ...)
-		     * (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
-		     *
-		     *  - dot list is handled in lookup_frame().
-		     */
-		    env = extend_environment(args,
-					     obj,
-					     SCM_CLOSURE_ENV(proc));
-		} else if (SCM_NULLP(args)) {
-		    /*
-		     * (2') : <variable> is '()
-		     */
-		    env = SCM_CLOSURE_ENV(proc);
-		} else {
-		    SigScm_ErrorObj("lambda : bad syntax with ", args);
-		}
+                if (SCM_SYMBOLP(args)) {
+                    /* (1) : <variable> */
+                    env = extend_environment(Scm_NewCons(args, SCM_NIL),
+                                             Scm_NewCons(obj, SCM_NIL),
+                                             SCM_CLOSURE_ENV(proc));
+                } else if (SCM_CONSP(args)) {
+                    /*
+                     * (2) : (<variable1> <variable2> ...)
+                     * (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
+                     *
+                     *  - dot list is handled in lookup_frame().
+                     */
+                    env = extend_environment(args,
+                                             obj,
+                                             SCM_CLOSURE_ENV(proc));
+                } else if (SCM_NULLP(args)) {
+                    /*
+                     * (2') : <variable> is '()
+                     */
+                    env = extend_environment(SCM_NIL,
+                                             SCM_NIL,
+                                             SCM_CLOSURE_ENV(proc));
+                } else {
+                    SigScm_ErrorObj("lambda : bad syntax with ", args);
+                }
 
-		/*
-		 * Notice
-		 *
-		 * The return obj of ScmExp_begin is the raw S-expression.
-		 * So we need to re-evaluate this!.
-		 */
-		obj = ScmExp_begin(SCM_CDR(SCM_CLOSURE_EXP(proc)), &env, &tail_flag);
-		return ScmOp_eval(obj, env);
-	    }
-	default:
-	    SigScm_ErrorObj("apply : invalid application ", args);
+                /*
+                 * Notice
+                 *
+                 * The return obj of ScmExp_begin is the raw S-expression.
+                 * So we need to re-evaluate this!.
+                 */
+                obj = ScmExp_begin(SCM_CDR(SCM_CLOSURE_EXP(proc)), &env, &tail_flag);
+                return ScmOp_eval(obj, env);
+            }
+        default:
+            SigScm_ErrorObj("apply : invalid application ", args);
     }
 
     /* never reaches here */
@@ -600,7 +604,7 @@ static ScmObj symbol_value(ScmObj var, ScmObj env)
 
     /* sanity check */
     if (!SCM_SYMBOLP(var))
-	SigScm_ErrorObj("symbol_value : not symbol : ", var);
+        SigScm_ErrorObj("symbol_value : not symbol : ", var);
 
     /* first, lookup the environment */
     val = lookup_environment(var, env);
@@ -640,9 +644,9 @@ ScmObj map_eval(ScmObj args, ScmObj env)
     tail    = result;
     newtail = SCM_NIL;
     for (args = SCM_CDR(args); !SCM_NULLP(args); args = SCM_CDR(args)) {
-	newtail = Scm_NewCons(ScmOp_eval(SCM_CAR(args), env), SCM_NIL);
-	SCM_SETCDR(tail, newtail);
-	tail = newtail;
+        newtail = Scm_NewCons(ScmOp_eval(SCM_CAR(args), env), SCM_NIL);
+        SCM_SETCDR(tail, newtail);
+        tail = newtail;
     }
 
     return result;
@@ -666,38 +670,38 @@ static ScmObj eval_unquote(ScmObj args, ScmObj env)
     /* scanning list */
     for (; !SCM_NULLP(list); list = SCM_CDR(list))
     {
-	obj = SCM_CAR(list);
+        obj = SCM_CAR(list);
 
-	/* handle quotes */
-	if (SCM_CONSP(obj)) {
-	    /* handle nested SCM_QUASIQUOTE(`) */
-	    if (EQ(SCM_CDR(obj), SCM_QUASIQUOTE)) {
-		continue; /* left untouched */
-	    }
+        /* handle quotes */
+        if (SCM_CONSP(obj)) {
+            /* handle nested SCM_QUASIQUOTE(`) */
+            if (EQ(SCM_CDR(obj), SCM_QUASIQUOTE)) {
+                continue; /* left untouched */
+            }
 
-	    /* handle SCM_UNQUOTE(,) */
-	    if (EQ(SCM_CAR(obj), SCM_UNQUOTE)) {
-		SCM_SETCAR(list, ScmOp_eval(SCM_CDR(obj), env));
-	    }
+            /* handle SCM_UNQUOTE(,) */
+            if (EQ(SCM_CAR(obj), SCM_UNQUOTE)) {
+                SCM_SETCAR(list, ScmOp_eval(SCM_CDR(obj), env));
+            }
 
-	    /* handle SCM_UNQUOTE_SPLICING(,@) */
-	    if (EQ(SCM_CAR(obj), SCM_UNQUOTE_SPLICING)) {
-		obj = ScmOp_eval(SCM_CDR(obj), env);
+            /* handle SCM_UNQUOTE_SPLICING(,@) */
+            if (EQ(SCM_CAR(obj), SCM_UNQUOTE_SPLICING)) {
+                obj = ScmOp_eval(SCM_CDR(obj), env);
 
-		if (SCM_NULLP(obj)) {
-		    SCM_SETCDR(prev, SCM_CDR(SCM_CDR(prev)));
-		    continue;
-		}
+                if (SCM_NULLP(obj)) {
+                    SCM_SETCDR(prev, SCM_CDR(SCM_CDR(prev)));
+                    continue;
+                }
 
-		if (!SCM_CONSP(obj))
-		    SigScm_Error("invalid unquote-splicing (,@)\n");
+                if (!SCM_CONSP(obj))
+                    SigScm_Error("invalid unquote-splicing (,@)\n");
 
-		SCM_SETCDR(ScmOp_last_pair(obj), SCM_CDR(SCM_CDR(prev)));
-		SCM_SETCDR(prev, obj);
-	    }
-	}
+                SCM_SETCDR(ScmOp_last_pair(obj), SCM_CDR(SCM_CDR(prev)));
+                SCM_SETCDR(prev, obj);
+            }
+        }
 
-	prev = list;
+        prev = list;
     }
 
     return args;
@@ -707,9 +711,9 @@ static ScmObj ScmOp_last_pair(ScmObj list)
 {
     /* sanity check */
     if (SCM_NULLP(list))
-	return SCM_NIL;
+        return SCM_NIL;
     if (!SCM_CONSP(list))
-	SigScm_ErrorObj("last_pair : list required but got ", list);
+        SigScm_ErrorObj("last_pair : list required but got ", list);
 
     while (1) {
         if (!SCM_CONSP(list) || SCM_NULLP(SCM_CDR(list)))
@@ -745,7 +749,7 @@ ScmObj ScmExp_lambda(ScmObj exp, ScmObj *envp, int *tail_flag)
     (*tail_flag) = 0;
 
     if CHECK_2_ARGS(exp)
-	SigScm_Error("lambda : too few argument\n");
+        SigScm_Error("lambda : too few argument\n");
 
     return Scm_NewClosure(exp, env);
 }
@@ -764,21 +768,21 @@ ScmObj ScmExp_if(ScmObj exp, ScmObj *envp, int *tail_flag)
 
     /* sanity check */
     if (SCM_NULLP(exp) || SCM_NULLP(SCM_CDR(exp)))
-	SigScm_Error("if : syntax error\n");
+        SigScm_Error("if : syntax error\n");
 
     /* eval predicates */
     pred = ScmOp_eval(SCM_CAR(exp), env);
 
     /* if pred is SCM_TRUE */
     if (!EQ(pred, SCM_FALSE)) {
-	/* doesn't evaluate now for tail-recursion. */
-	return SCM_CAR(SCM_CDR(exp));
+        /* doesn't evaluate now for tail-recursion. */
+        return SCM_CAR(SCM_CDR(exp));
     }
 
     /* if pred is SCM_FALSE */
     false_exp = SCM_CDR(SCM_CDR(exp));
     if (SCM_NULLP(false_exp))
-	return SCM_UNDEF;
+        return SCM_UNDEF;
 
     /* doesn't evaluate now for tail-recursion. */
     return SCM_CAR(false_exp);
@@ -799,22 +803,22 @@ ScmObj ScmExp_set(ScmObj arg, ScmObj *envp, int *tail_flag)
     (*tail_flag) = 0;
 
     if (SCM_NULLP(val))
-	SigScm_Error("set! : syntax error\n");
+        SigScm_Error("set! : syntax error\n");
 
     ret = ScmOp_eval(val, env);
     tmp = lookup_environment(sym, env);
     if (SCM_NULLP(tmp)) {
-	/*
-	 * not found in the environment
-	 * if symbol is not bounded, error occurs
-	 */
-	if (EQ(ScmOp_boundp(sym), SCM_FALSE))
-	    SigScm_ErrorObj("set! : unbound variable ", sym);
+        /*
+         * not found in the environment
+         * if symbol is not bounded, error occurs
+         */
+        if (EQ(ScmOp_boundp(sym), SCM_FALSE))
+            SigScm_ErrorObj("set! : unbound variable ", sym);
 
-	SCM_SETSYMBOL_VCELL(sym, ret);
+        SCM_SETSYMBOL_VCELL(sym, ret);
     } else {
-	/* found in the environment*/
-	SCM_SETCAR(tmp, ret);
+        /* found in the environment*/
+        SCM_SETCAR(tmp, ret);
     }
 
     return ret;
@@ -849,44 +853,44 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp, int *tail_flag)
 
     /* looping in each clause */
     for (; !SCM_NULLP(arg); arg = SCM_CDR(arg)) {
-	clause = SCM_CAR(arg);
-	test   = SCM_CAR(clause);
-	exps   = SCM_CDR(clause);
+        clause = SCM_CAR(arg);
+        test   = SCM_CAR(clause);
+        exps   = SCM_CDR(clause);
 
-	if (SCM_NULLP(clause) || SCM_NULLP(test))
-	    SigScm_Error("cond : syntax error\n");
+        if (SCM_NULLP(clause) || SCM_NULLP(test))
+            SigScm_Error("cond : syntax error\n");
 
-	/* evaluate test */
-	test = ScmOp_eval(test, env);
+        /* evaluate test */
+        test = ScmOp_eval(test, env);
 
-	/* check the result */
-	if (!SCM_EQ(test, SCM_FALSE)) {
-	    /*
-	     * if the selected <clause> contains only the <test> and no <expression>s,
-	     * then the value of the <test> is returned as the result.
-	     */
-	    if (SCM_NULLP(exps))
-		return test;
+        /* check the result */
+        if (!SCM_EQ(test, SCM_FALSE)) {
+            /*
+             * if the selected <clause> contains only the <test> and no <expression>s,
+             * then the value of the <test> is returned as the result.
+             */
+            if (SCM_NULLP(exps))
+                return test;
 
-	    /*
-	     * If the selected <clause> uses the => alternate form, then the <expression>
-	     * is evaluated. Its value must be a procedure that accepts one argument;
-	     * this procedure is then called on the value of the <test> and the value
-	     * returned by this procedure is returned by the cond expression.
-	     */
-	    if (SCM_EQ(Scm_Intern("=>"), SCM_CAR(exps))) {
-		proc = ScmOp_eval(SCM_CAR(SCM_CDR(exps)), env);
-		if (EQ(ScmOp_procedurep(proc), SCM_FALSE))
-		    SigScm_ErrorObj("cond : the value of exp after => must be the procedure but got ", proc);
-		
-		return ScmOp_apply(Scm_NewCons(proc,
-					       Scm_NewCons(Scm_NewCons(test, SCM_NIL),
-							   SCM_NIL)),
-				   env);
-	    }
-	    
-	    return ScmExp_begin(exps, &env, tail_flag);
-	}
+            /*
+             * If the selected <clause> uses the => alternate form, then the <expression>
+             * is evaluated. Its value must be a procedure that accepts one argument;
+             * this procedure is then called on the value of the <test> and the value
+             * returned by this procedure is returned by the cond expression.
+             */
+            if (SCM_EQ(Scm_Intern("=>"), SCM_CAR(exps))) {
+                proc = ScmOp_eval(SCM_CAR(SCM_CDR(exps)), env);
+                if (EQ(ScmOp_procedurep(proc), SCM_FALSE))
+                    SigScm_ErrorObj("cond : the value of exp after => must be the procedure but got ", proc);
+                
+                return ScmOp_apply(Scm_NewCons(proc,
+                                               Scm_NewCons(Scm_NewCons(test, SCM_NIL),
+                                                           SCM_NIL)),
+                                   env);
+            }
+            
+            return ScmExp_begin(exps, &env, tail_flag);
+        }
     }
 
     return SCM_UNSPECIFIED;
@@ -902,22 +906,22 @@ ScmObj ScmExp_case(ScmObj arg, ScmObj *envp, int *tail_flag)
 
     /* looping in each clause */
     for (arg = SCM_CDR(arg); !SCM_NULLP(arg); arg = SCM_CDR(arg)) {
-	clause = SCM_CAR(arg);
-	datums = SCM_CAR(clause);
-	exps   = SCM_CDR(clause);
-	if (SCM_NULLP(clause) || SCM_NULLP(datums) || SCM_NULLP(exps))
-	    SigScm_Error("case : syntax error\n");
+        clause = SCM_CAR(arg);
+        datums = SCM_CAR(clause);
+        exps   = SCM_CDR(clause);
+        if (SCM_NULLP(clause) || SCM_NULLP(datums) || SCM_NULLP(exps))
+            SigScm_Error("case : syntax error\n");
 
-	/* check "else" symbol */
-	if (SCM_NULLP(SCM_CDR(arg)) && !SCM_CONSP(datums) && EQ(SCM_SYMBOL_VCELL(datums), SCM_TRUE))
-	    return ScmExp_begin(exps, &env, tail_flag);
+        /* check "else" symbol */
+        if (SCM_NULLP(SCM_CDR(arg)) && !SCM_CONSP(datums) && EQ(SCM_SYMBOL_VCELL(datums), SCM_TRUE))
+            return ScmExp_begin(exps, &env, tail_flag);
 
-	/* evaluate datums and compare to key by eqv? */
-	for (; !SCM_NULLP(datums); datums = SCM_CDR(datums)) {
-	    if (EQ(ScmOp_eqvp(SCM_CAR(datums), key), SCM_TRUE)) {
-		return ScmExp_begin(exps, &env, tail_flag);
-	    }
-	}
+        /* evaluate datums and compare to key by eqv? */
+        for (; !SCM_NULLP(datums); datums = SCM_CDR(datums)) {
+            if (EQ(ScmOp_eqvp(SCM_CAR(datums), key), SCM_TRUE)) {
+                return ScmExp_begin(exps, &env, tail_flag);
+            }
+        }
     }
 
     return SCM_UNSPECIFIED;
@@ -930,30 +934,30 @@ ScmObj ScmExp_and(ScmObj arg, ScmObj *envp, int *tail_flag)
 
     /* sanity check */
     if (SCM_NULLP(arg))
-	return SCM_TRUE;
+        return SCM_TRUE;
     if (EQ(ScmOp_listp(arg), SCM_FALSE))
-	SigScm_ErrorObj("and : list required but got ", arg);
+        SigScm_ErrorObj("and : list required but got ", arg);
 
     /* check recursively */
     for (; !SCM_NULLP(arg); arg = SCM_CDR(arg)) {
-	obj = SCM_CAR(arg);
+        obj = SCM_CAR(arg);
 
-	/* return last item */
-	if (SCM_NULLP(SCM_CDR(arg))) {
-	    /* set tail_flag */
-	    (*tail_flag) = 1;
+        /* return last item */
+        if (SCM_NULLP(SCM_CDR(arg))) {
+            /* set tail_flag */
+            (*tail_flag) = 1;
 
-	    return obj;
-	}
+            return obj;
+        }
 
-	/* evaluate obj */
-	obj = ScmOp_eval(obj, env);
-	if (EQ(obj, SCM_FALSE)) {
-	    /* set tail_flag */
-	    (*tail_flag) = 0;
+        /* evaluate obj */
+        obj = ScmOp_eval(obj, env);
+        if (EQ(obj, SCM_FALSE)) {
+            /* set tail_flag */
+            (*tail_flag) = 0;
 
-	    return SCM_FALSE;
-	}
+            return SCM_FALSE;
+        }
     }
 
     return SCM_NIL;
@@ -966,29 +970,29 @@ ScmObj ScmExp_or(ScmObj arg, ScmObj *envp, int *tail_flag)
 
     /* sanity check */
     if (SCM_NULLP(arg))
-	return SCM_FALSE;
+        return SCM_FALSE;
     if (EQ(ScmOp_listp(arg), SCM_FALSE))
-	SigScm_ErrorObj("or : list required but got ", arg);
+        SigScm_ErrorObj("or : list required but got ", arg);
 
     /* check recursively */
     for (; !SCM_NULLP(arg); arg = SCM_CDR(arg)) {
-	obj = SCM_CAR(arg);
+        obj = SCM_CAR(arg);
 
-	/* return last item */
-	if (SCM_NULLP(SCM_CDR(arg))) {
-	    /* set tail_flag */
-	    (*tail_flag) = 1;
+        /* return last item */
+        if (SCM_NULLP(SCM_CDR(arg))) {
+            /* set tail_flag */
+            (*tail_flag) = 1;
 
-	    return obj;
-	}
+            return obj;
+        }
 
-	obj = ScmOp_eval(obj, env);
-	if (!EQ(obj, SCM_FALSE)) {
-	    /* set tail_flag */
-	    (*tail_flag) = 0;
+        obj = ScmOp_eval(obj, env);
+        if (!EQ(obj, SCM_FALSE)) {
+            /* set tail_flag */
+            (*tail_flag) = 0;
 
-	    return obj;
-	}
+            return obj;
+        }
 
     }
 
@@ -1009,11 +1013,11 @@ ScmObj ScmExp_let(ScmObj arg, ScmObj *envp, int *tail_flag)
 
     /* sanity check */
     if CHECK_2_ARGS(arg)
-	SigScm_Error("let : syntax error\n");
+        SigScm_Error("let : syntax error\n");
 
     /* guess whether syntax is "Named let" */
     if (SCM_SYMBOLP(SCM_CAR(arg)))
-	goto named_let;
+        goto named_let;
 
     /* get bindings and body */
     bindings = SCM_CAR(arg);
@@ -1026,17 +1030,17 @@ ScmObj ScmExp_let(ScmObj arg, ScmObj *envp, int *tail_flag)
                      ...)
     ========================================================================*/
     if (SCM_CONSP(bindings) || SCM_NULLP(bindings)) {
-	for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
-	    binding = SCM_CAR(bindings);
-	    vars = Scm_NewCons(SCM_CAR(binding), vars);
-	    vals = Scm_NewCons(ScmOp_eval(SCM_CAR(SCM_CDR(binding)), env), vals);
-	}
+        for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
+            binding = SCM_CAR(bindings);
+            vars = Scm_NewCons(SCM_CAR(binding), vars);
+            vals = Scm_NewCons(ScmOp_eval(SCM_CAR(SCM_CDR(binding)), env), vals);
+        }
 
-	/* create new environment for */
-	env = extend_environment(vars, vals, env);
-	*envp = env;
+        /* create new environment for */
+        env = extend_environment(vars, vals, env);
+        *envp = env;
 
-	return ScmExp_begin(body, &env, tail_flag);
+        return ScmExp_begin(body, &env, tail_flag);
     }
 
     return ScmExp_begin(body, &env, tail_flag);
@@ -1051,9 +1055,9 @@ named_let:
     bindings = SCM_CAR(SCM_CDR(arg));
     body     = SCM_CDR(SCM_CDR(arg));
     for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
-	binding = SCM_CAR(bindings);
-	vars = Scm_NewCons(SCM_CAR(binding), vars);
-	vals = Scm_NewCons(SCM_CAR(SCM_CDR(binding)), vals);
+        binding = SCM_CAR(bindings);
+        vars = Scm_NewCons(SCM_CAR(binding), vars);
+        vals = Scm_NewCons(SCM_CAR(SCM_CDR(binding)), vals);
     }
 
     vars = ScmOp_reverse(vars);
@@ -1061,9 +1065,9 @@ named_let:
 
     /* (define (<variable> <variable1> <variable2> ...>) <body>) */
     ScmExp_define(Scm_NewCons(Scm_NewCons(SCM_CAR(arg),
-					  vars),
-			      body),
-		  &env, tail_flag);
+                                          vars),
+                              body),
+                  &env, tail_flag);
 
     /* set tail_flag */
     (*tail_flag) = 1;
@@ -1083,7 +1087,7 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp, int *tail_flag)
 
     /* sanity check */
     if CHECK_2_ARGS(arg)
-	SigScm_Error("let* : syntax error\n");
+        SigScm_Error("let* : syntax error\n");
 
     /* get bindings and body */
     bindings = SCM_CAR(arg);
@@ -1096,28 +1100,28 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp, int *tail_flag)
                      ...)
     ========================================================================*/
     if (SCM_CONSP(bindings)) {
-	for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
-	    binding = SCM_CAR(bindings);
-	    vars = Scm_NewCons(SCM_CAR(binding), SCM_NIL);
-	    vals = Scm_NewCons(ScmOp_eval(SCM_CAR(SCM_CDR(binding)), env), SCM_NIL);
+        for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
+            binding = SCM_CAR(bindings);
+            vars = Scm_NewCons(SCM_CAR(binding), SCM_NIL);
+            vals = Scm_NewCons(ScmOp_eval(SCM_CAR(SCM_CDR(binding)), env), SCM_NIL);
 
-	    /* add env to each time!*/
-	    env = extend_environment(vars, vals, env);
-	}
-	/* set new env */
-	*envp = env;
-	/* evaluate */
-	return ScmExp_begin(body, &env, tail_flag);
+            /* add env to each time!*/
+            env = extend_environment(vars, vals, env);
+        }
+        /* set new env */
+        *envp = env;
+        /* evaluate */
+        return ScmExp_begin(body, &env, tail_flag);
     } else if (SCM_NULLP(bindings)) {
-	/* extend null environment */
-	env = extend_environment(Scm_NewCons(SCM_NIL, SCM_NIL),
-				 Scm_NewCons(SCM_NIL, SCM_NIL),
-				 env);
+        /* extend null environment */
+        env = extend_environment(SCM_NIL,
+                                 SCM_NIL,
+                                 env);
 
-	/* set new env */
-	*envp = env;
-	/* evaluate */
-	return ScmExp_begin(body, &env, tail_flag);
+        /* set new env */
+        *envp = env;
+        /* evaluate */
+        return ScmExp_begin(body, &env, tail_flag);
     }
 
     /* set tail_flag */
@@ -1140,7 +1144,7 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp, int *tail_flag)
 
     /* sanity check */
     if (SCM_NULLP(arg) || SCM_NULLP(SCM_CDR(arg)))
-	SigScm_Error("letrec : syntax error\n");
+        SigScm_Error("letrec : syntax error\n");
 
     /* get bindings and body */
     bindings = SCM_CAR(arg);
@@ -1153,36 +1157,36 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp, int *tail_flag)
                      ...)
     ========================================================================*/
     if (SCM_CONSP(bindings) || SCM_NULLP(bindings)) {
-	for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
-	    binding = SCM_CAR(bindings);
-	    var = SCM_CAR(binding);
-	    val = SCM_CAR(SCM_CDR(binding));
+        for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
+            binding = SCM_CAR(bindings);
+            var = SCM_CAR(binding);
+            val = SCM_CAR(SCM_CDR(binding));
 
-	    /* construct vars and vals list */
-	    vars = Scm_NewCons(var, vars);
-	    vals = Scm_NewCons(val, vals);
-	}
+            /* construct vars and vals list */
+            vars = Scm_NewCons(var, vars);
+            vals = Scm_NewCons(val, vals);
+        }
 
-	/* construct new frame for letrec_env */
-	frame = Scm_NewCons(vars, vals);
-	letrec_env = Scm_NewCons(frame, letrec_env);
+        /* construct new frame for letrec_env */
+        frame = Scm_NewCons(vars, vals);
+        letrec_env = Scm_NewCons(frame, letrec_env);
 
-	/* extend environment by letrec_env */
-	env = extend_environment(SCM_CAR(frame), SCM_CDR(frame), env);
+        /* extend environment by letrec_env */
+        env = extend_environment(SCM_CAR(frame), SCM_CDR(frame), env);
 
-	/* ok, vars of letrec is extended to env */
-	letrec_env = SCM_NIL;
+        /* ok, vars of letrec is extended to env */
+        letrec_env = SCM_NIL;
 
-	/* set new env */
-	*envp = env;
+        /* set new env */
+        *envp = env;
 
-	/* evaluate vals */
-	for (; !SCM_NULLP(vals); vals = SCM_CDR(vals)) {
-	    SCM_SETCAR(vals, ScmOp_eval(SCM_CAR(vals), env));
-	}
-	
-	/* evaluate body */
-	return ScmExp_begin(body, &env, tail_flag);
+        /* evaluate vals */
+        for (; !SCM_NULLP(vals); vals = SCM_CDR(vals)) {
+            SCM_SETCAR(vals, ScmOp_eval(SCM_CAR(vals), env));
+        }
+        
+        /* evaluate body */
+        return ScmExp_begin(body, &env, tail_flag);
     }
 
     /* set tail_flag */
@@ -1200,29 +1204,31 @@ ScmObj ScmExp_begin(ScmObj arg, ScmObj *envp, int *tail_flag)
 {
     ScmObj env = *envp;
     ScmObj exp = SCM_NIL;
-
+    
     /* set tail_flag */
     (*tail_flag) = 1;
 
     /* sanity check */
     if (SCM_NULLP(arg))
-	return SCM_UNDEF;
+        return SCM_UNDEF;
     if (EQ(ScmOp_listp(arg), SCM_FALSE))
-	SigScm_ErrorObj("begin : list required but got ", arg);
+        SigScm_ErrorObj("begin : list required but got ", arg);
 
     /* eval recursively */
     for (; !SCM_NULLP(arg); arg = SCM_CDR(arg)) {
-	exp = SCM_CAR(arg);
+        exp = SCM_CAR(arg);
 
-	/* return last expression's result */
-	if (EQ(SCM_CDR(arg), SCM_NIL)) {
-	    *envp = env;
+        /* return last expression's result */
+        if (EQ(SCM_CDR(arg), SCM_NIL)) {
+            /* doesn't evaluate exp now for tail-recursion. */
+            return exp; 
+        }
 
-	    /* doesn't evaluate exp now for tail-recursion. */
-	    return exp; 
-	}
+        /* evaluate exp */
+        ScmOp_eval(exp, env);
 
-	ScmOp_eval(exp, env);
+        /* set new env */
+        *envp = env;    
     }
 
     /* set tail_flag */
@@ -1260,20 +1266,20 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp, int *tail_flag)
 
     /* sanity check */
     if (SCM_INT_VALUE(ScmOp_length(arg)) < 2)
-	SigScm_Error("do : syntax error\n");
+        SigScm_Error("do : syntax error\n");
 
     /* construct Environment and steps */
     for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
-	binding = SCM_CAR(bindings);
-	vars = Scm_NewCons(SCM_CAR(binding), vars);
-	vals = Scm_NewCons(ScmOp_eval(SCM_CAR(SCM_CDR(binding)), env), vals);
+        binding = SCM_CAR(bindings);
+        vars = Scm_NewCons(SCM_CAR(binding), vars);
+        vals = Scm_NewCons(ScmOp_eval(SCM_CAR(SCM_CDR(binding)), env), vals);
 
-	/* append <step> to steps */
-	step = SCM_CDR(SCM_CDR(binding));
-	if (SCM_NULLP(step))
-	    steps = Scm_NewCons(SCM_CAR(binding), steps);	
-	else
-	    steps = Scm_NewCons(SCM_CAR(step), steps);
+        /* append <step> to steps */
+        step = SCM_CDR(SCM_CDR(binding));
+        if (SCM_NULLP(step))
+            steps = Scm_NewCons(SCM_CAR(binding), steps);       
+        else
+            steps = Scm_NewCons(SCM_CAR(step), steps);
     }
 
     /* now extend environment */
@@ -1289,31 +1295,31 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp, int *tail_flag)
 
     /* now excution phase! */
     while (SCM_EQ(ScmOp_eval(test, env), SCM_FALSE)) {
-	/* execute commands */
-	ScmOp_eval(ScmExp_begin(commands, &env, tail_flag), env);
+        /* execute commands */
+        ScmOp_eval(ScmExp_begin(commands, &env, tail_flag), env);
 
-	/*
-	 * Notice
-	 *
-	 * the result of the execution of <step>s must not depend on each other's
-	 * results. each excution must be done independently. So, we store the
-	 * results to the "vals" variable and set it in hand.
-	 */
-	vals = SCM_NIL;
-	for (tmp_steps = steps; !SCM_NULLP(tmp_steps); tmp_steps = SCM_CDR(tmp_steps)) {
-	    vals = Scm_NewCons(ScmOp_eval(SCM_CAR(tmp_steps), env), vals);
-	}
-	vals = ScmOp_reverse(vals);
+        /*
+         * Notice
+         *
+         * the result of the execution of <step>s must not depend on each other's
+         * results. each excution must be done independently. So, we store the
+         * results to the "vals" variable and set it in hand.
+         */
+        vals = SCM_NIL;
+        for (tmp_steps = steps; !SCM_NULLP(tmp_steps); tmp_steps = SCM_CDR(tmp_steps)) {
+            vals = Scm_NewCons(ScmOp_eval(SCM_CAR(tmp_steps), env), vals);
+        }
+        vals = ScmOp_reverse(vals);
 
-	/* set it */
-	for (tmp_vars = vars; !SCM_NULLP(tmp_vars) && !SCM_NULLP(vals); tmp_vars = SCM_CDR(tmp_vars), vals = SCM_CDR(vals)) {
-	    obj = lookup_environment(SCM_CAR(tmp_vars), env);
-	    if (!SCM_NULLP(obj)) {
-		SCM_SETCAR(obj, SCM_CAR(vals));
-	    } else {
-		SigScm_Error("do : broken env\n");
-	    }
-	}
+        /* set it */
+        for (tmp_vars = vars; !SCM_NULLP(tmp_vars) && !SCM_NULLP(vals); tmp_vars = SCM_CDR(tmp_vars), vals = SCM_CDR(vals)) {
+            obj = lookup_environment(SCM_CAR(tmp_vars), env);
+            if (!SCM_NULLP(obj)) {
+                SCM_SETCAR(obj, SCM_CAR(vals));
+            } else {
+                SigScm_Error("do : broken env\n");
+            }
+        }
     }
 
     /* set new env */
@@ -1374,32 +1380,24 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj *envp, int *tail_flag)
 
     /* sanity check */
     if (SCM_NULLP(var))
-	SigScm_ErrorObj("define : syntax error ", arg);
+        SigScm_ErrorObj("define : syntax error ", arg);
 
     /*========================================================================
       (define <variable> <expression>)
     ========================================================================*/
     if (SCM_SYMBOLP(var)) {
-	if (SCM_NULLP(env)) {
-	    /* given NIL environment */
-	    SCM_SETSYMBOL_VCELL(var, ScmOp_eval(body, env));
-	} else {
-	    /* lookup environment */
-	    val = lookup_environment(var, env);
+        if (SCM_NULLP(env)) {
+            /* given NIL environment */
+            SCM_SETSYMBOL_VCELL(var, ScmOp_eval(body, env));
+        } else {
+            /* add val to the environment */
+            env = add_environment(var, ScmOp_eval(body, env), env);
+        }
 
-	    if (!SCM_NULLP(val)) {
-		/* found in the environment. set the new variable in env. */
-		SCM_SETCAR(val, ScmOp_eval(body, env));
-	    } else {
-		/* add to environment (not create new frame) */
-		env = add_environment(var, ScmOp_eval(body, env), env);
-	    }
-	}
+        /* set new env */
+        *envp = env;
 
-	/* set new env */
-	*envp = env;
-
-	return var;
+        return var;
     }
 
     /*========================================================================
@@ -1415,15 +1413,15 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj *envp, int *tail_flag)
              (lambda <formals> <body>))
     ========================================================================*/
     if (SCM_CONSP(var)) {
-	val     = SCM_CAR(var);
-	formals = SCM_CDR(var);
-	body    = SCM_CDR(arg);
+        val     = SCM_CAR(var);
+        formals = SCM_CDR(var);
+        body    = SCM_CDR(arg);
 
-	/* (val (lambda formals body))  */
-	arg = Scm_NewCons(val, Scm_NewCons(ScmExp_lambda(Scm_NewCons(formals, body), &env, tail_flag),
-					   SCM_NIL));
+        /* (val (lambda formals body))  */
+        arg = Scm_NewCons(val, Scm_NewCons(ScmExp_lambda(Scm_NewCons(formals, body), &env, tail_flag),
+                                           SCM_NIL));
 
-	return ScmExp_define(arg, &env, tail_flag);
+        return ScmExp_define(arg, &env, tail_flag);
     }
 
     SigScm_ErrorObj("define : syntax error ", arg);
