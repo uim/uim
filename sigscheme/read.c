@@ -228,9 +228,13 @@ static ScmObj read_list(ScmObj port, int closeParen)
 {
     ScmObj list_head = SCM_NIL;
     ScmObj list_tail = SCM_NIL;
-    ScmObj item = SCM_NIL;
-    int line = SCM_PORTINFO_LINE(port);
-    int c = 0;
+    ScmObj item   = SCM_NIL;
+    ScmObj cdr    = SCM_NIL;
+    int    line   = SCM_PORTINFO_LINE(port);
+    int    c      = 0;
+    int    c2     = 0;
+    char  *token  = NULL;
+    char  *dotsym = NULL;
 
 #if DEBUG_PARSER
     printf("read_list\n");
@@ -251,13 +255,14 @@ static ScmObj read_list(ScmObj port, int closeParen)
         } else if (c == closeParen) {
             return list_head;
         } else if (c == '.') {
-	    int c2 = 0;
+	    c2 = 0;
 	    SCM_PORT_GETC(port, c2);
+
 #if DEBUG_PARSER
-        printf("read_list process_dot c2 = [%c]\n", c2);
+	    printf("read_list process_dot c2 = [%c]\n", c2);
 #endif
-            if (isspace(c2)) {
-                ScmObj cdr = read_sexpression(port);
+            if (isspace(c2) || c2 == '(' || c2 == '"' || c2 == ';') {
+                cdr = read_sexpression(port);
                 if (SCM_NULLP(list_tail))
                     SigScm_Error(".(dot) at the start of the list.\n");
 
@@ -268,6 +273,20 @@ static ScmObj read_list(ScmObj port, int closeParen)
                 SCM_SETCDR(list_tail, cdr);
 		return list_head;
             }
+
+	    /*
+	     * This dirty hack here picks up the current token as a
+	     * symbol beginning with the dot (that's how Guile and
+	     * Gauche behave).
+	     */
+	    SCM_PORT_UNGETC(port, c2);
+	    token  = read_char_sequence(port);
+	    dotsym = (char*)malloc(sizeof(char) * (strlen(token) + 1 + 1));
+	    memmove (dotsym + 1, token, strlen(token)+1);
+	    dotsym[0] = '.';
+	    item = Scm_Intern(dotsym);
+	    free(dotsym);
+	    free(token);
         } else {
             SCM_PORT_UNGETC(port, c);
             item = read_sexpression(port);

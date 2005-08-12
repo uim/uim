@@ -171,7 +171,6 @@
 			  (odd?
 			   (lambda (n) (if (zero? n) #f (even? (- n 1))))))
 		   (even? 88)))
-(print "fefefe")
 (define x 34)
 (test 5 'let (let ((x 3)) (define x 5) x))
 (test 34 'let x)

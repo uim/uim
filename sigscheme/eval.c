@@ -687,6 +687,12 @@ static ScmObj eval_unquote(ScmObj args, ScmObj env)
 	    /* handle SCM_UNQUOTE_SPLICING(,@) */
 	    if (EQ(SCM_CAR(obj), SCM_UNQUOTE_SPLICING)) {
 		obj = ScmOp_eval(SCM_CDR(obj), env);
+
+		if (SCM_NULLP(obj)) {
+		    SCM_SETCDR(prev, SCM_CDR(SCM_CDR(prev)));
+		    continue;
+		}
+
 		if (!SCM_CONSP(obj))
 		    SigScm_Error("invalid unquote-splicing (,@)\n");
 
@@ -912,7 +918,7 @@ ScmObj ScmExp_case(ScmObj arg, ScmObj *envp, int *tail_flag)
 
 	/* evaluate datums and compare to key by eqv? */
 	for (; !SCM_NULLP(datums); datums = SCM_CDR(datums)) {
-	    if (EQ(ScmOp_eqvp(ScmOp_eval(SCM_CAR(datums), env), key), SCM_TRUE)) {
+	    if (EQ(ScmOp_eqvp(SCM_CAR(datums), key), SCM_TRUE)) {
 		return ScmExp_begin(exps, &env, tail_flag);
 	    }
 	}
@@ -1023,7 +1029,7 @@ ScmObj ScmExp_let(ScmObj arg, ScmObj *envp, int *tail_flag)
                      (<variable2> <init2>)
                      ...)
     ========================================================================*/
-    if (SCM_CONSP(bindings)) {
+    if (SCM_CONSP(bindings) || SCM_NULLP(bindings)) {
 	for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
 	    binding = SCM_CAR(bindings);
 	    vars = Scm_NewCons(SCM_CAR(binding), vars);
@@ -1036,6 +1042,8 @@ ScmObj ScmExp_let(ScmObj arg, ScmObj *envp, int *tail_flag)
 
 	return ScmExp_begin(body, &env, tail_flag);
     }
+
+    return ScmExp_begin(body, &env, tail_flag);
 
 named_let:
     /*========================================================================
@@ -1091,7 +1099,7 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp, int *tail_flag)
                      (<variable2> <init2>)
                      ...)
     ========================================================================*/
-    if (SCM_CONSP(bindings)) {
+    if (SCM_CONSP(bindings) || SCM_NULLP(bindings)) {
 	for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
 	    binding = SCM_CAR(bindings);
 	    vars = Scm_NewCons(SCM_CAR(binding), SCM_NIL);
@@ -1115,18 +1123,18 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp, int *tail_flag)
 
 ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp, int *tail_flag)
 {
-    ScmObj env       = *envp;
-    ScmObj bindings  = SCM_NIL;
-    ScmObj body      = SCM_NIL;
-    ScmObj vars      = SCM_NIL;
-    ScmObj vals      = SCM_NIL;
-    ScmObj binding   = SCM_NIL;
-    ScmObj var       = SCM_NIL;
-    ScmObj val       = SCM_NIL;
-    ScmObj frame     = SCM_NIL;
+    ScmObj env      = *envp;
+    ScmObj bindings = SCM_NIL;
+    ScmObj body     = SCM_NIL;
+    ScmObj vars     = SCM_NIL;
+    ScmObj vals     = SCM_NIL;
+    ScmObj binding  = SCM_NIL;
+    ScmObj var      = SCM_NIL;
+    ScmObj val      = SCM_NIL;
+    ScmObj frame    = SCM_NIL;
 
     /* sanity check */
-    if CHECK_2_ARGS(arg)
+    if (SCM_NULLP(arg) || SCM_NULLP(SCM_CDR(arg)))
 	SigScm_Error("letrec : syntax error\n");
 
     /* get bindings and body */
@@ -1139,7 +1147,7 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp, int *tail_flag)
                      (<variable2> <init2>)
                      ...)
     ========================================================================*/
-    if (SCM_CONSP(bindings)) {
+    if (SCM_CONSP(bindings) || SCM_NULLP(bindings)) {
 	for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
 	    binding = SCM_CAR(bindings);
 	    var = SCM_CAR(binding);
