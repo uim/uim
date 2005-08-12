@@ -89,10 +89,6 @@ static ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
 {
     ScmObj frame = SCM_NIL;
 
-    /* sanity check */
-    if (SCM_NULLP(vars) && SCM_NULLP(vals))
-	return env;
-
     /* create new frame */
     frame   = Scm_NewCons(vars, vals);
 

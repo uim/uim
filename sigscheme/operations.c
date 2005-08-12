@@ -59,6 +59,7 @@ extern ScmObj continuation_thrown_obj;
   File Local Function Declarations
 =======================================*/
 static ScmObj list_gettail(ScmObj head);
+static int ScmOp_c_length(ScmObj list);
 static ScmObj ScmOp_listtail_internal(ScmObj obj, int k);
 static ScmObj ScmOp_append_internal(ScmObj head, ScmObj tail);
 
@@ -925,11 +926,16 @@ ScmObj ScmOp_nullp(ScmObj obj)
 
 ScmObj ScmOp_listp(ScmObj obj)
 {
-    for (; !SCM_NULLP(obj); obj = SCM_CDR(obj)) {
-        /* check if valid list */
-        if (!SCM_CONSP(obj))
-            return SCM_FALSE;
-    }
+    int len = 0;
+
+    if (SCM_NULLP(obj))
+	return SCM_TRUE;
+    if (!SCM_CONSP(obj))
+	return SCM_FALSE;
+
+    len = ScmOp_c_length(obj);
+    if (len == -1)
+	return SCM_FALSE;
 
     return SCM_TRUE;
 }
@@ -950,18 +956,40 @@ static ScmObj list_gettail(ScmObj head)
     return SCM_NIL;
 }
 
-ScmObj ScmOp_length(ScmObj obj)
+/*
+ * Notice
+ *
+ * This function is ported from Gauche, by Shiro Kawai(shiro@acm.org)
+ */
+int ScmOp_c_length(ScmObj obj)
 {
-    int length = 0;
-    for (; !SCM_NULLP(obj); obj = SCM_CDR(obj)) {
-        /* check if valid list */
-        if (!SCM_NULLP(obj) && !SCM_CONSP(obj))
-            SigScm_ErrorObj("length : bad list. given obj contains ", obj);
+    ScmObj slow = obj;
+    int len = 0;
 
-        length++;
+    if (SCM_NULLP(obj)) return 0;
+
+    for (;;) {
+        if (SCM_NULLP(obj)) break;
+        if (!SCM_CONSP(obj)) return -1;
+	if (len != 0 && obj == slow) return -1; /* circular */
+	
+	obj = SCM_CDR(obj);
+	len++;
+        if (SCM_NULLP(obj)) break;
+        if (!SCM_CONSP(obj)) return -1;
+	if (obj == slow) return -1; /* circular */
+
+	obj = SCM_CDR(obj);
+	slow = SCM_CDR(slow);
+	len++;
     }
 
-    return Scm_NewInt(length);
+    return len;
+}
+
+ScmObj ScmOp_length(ScmObj obj)
+{
+    return Scm_NewInt(ScmOp_c_length(obj));
 }
 
 ScmObj ScmOp_append_internal(ScmObj head, ScmObj tail)
