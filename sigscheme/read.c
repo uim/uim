@@ -81,6 +81,7 @@
   File Local Function Declarations
 =======================================*/
 static int    skip_comment_and_space(ScmObj port);
+static char*  read_word(ScmObj port);
 static char*  read_char_sequence(ScmObj port);
 
 static ScmObj read_sexpression(ScmObj port);
@@ -280,7 +281,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
 	     * Gauche behave).
 	     */
 	    SCM_PORT_UNGETC(port, c2);
-	    token  = read_char_sequence(port);
+	    token  = read_word(port);
 	    dotsym = (char*)malloc(sizeof(char) * (strlen(token) + 1 + 1));
 	    memmove (dotsym + 1, token, strlen(token)+1);
 	    dotsym[0] = '.';
@@ -306,7 +307,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
 }
 
 static ScmObj read_char(ScmObj port)
-{   
+{
     char *ch = read_char_sequence(port);
 
 #if DEBUG_PARSER
@@ -315,6 +316,9 @@ static ScmObj read_char(ScmObj port)
 
     /* check special sequence "space" and "newline" */
     if (strcmp(ch, "space") == 0) {
+	ch[0] = ' ';
+	ch[1] = '\0';
+    } else if (strcmp(ch, "Space") == 0) {
 	ch[0] = ' ';
 	ch[1] = '\0';
     } else if (strcmp(ch, "newline") == 0) {
@@ -368,7 +372,7 @@ static ScmObj read_string(ScmObj port)
 			default:
 			    stringbuf[stringlen] = '\\';
 			    stringbuf[++stringlen] = c;
-			    break;			    
+			    break;
 		    }
 		    stringlen++;
 
@@ -387,7 +391,7 @@ static ScmObj read_string(ScmObj port)
 
 static ScmObj read_symbol(ScmObj port)
 {
-    char  *sym_name = read_char_sequence(port);
+    char  *sym_name = read_word(port);
     ScmObj sym = Scm_Intern(sym_name);
     free(sym_name);
 
@@ -411,7 +415,7 @@ static ScmObj read_number_or_symbol(ScmObj port)
 #endif
 
     /* read char sequence */
-    str = read_char_sequence(port);
+    str = read_word(port);
     str_len = strlen(str);
 
     if (strlen(str) == 1
@@ -455,7 +459,7 @@ static ScmObj read_number_or_symbol(ScmObj port)
 }
 
 
-static char *read_char_sequence(ScmObj port)
+static char *read_word(ScmObj port)
 {
     char  stringbuf[1024];
     int   stringlen = 0;
@@ -475,14 +479,50 @@ static char *read_char_sequence(ScmObj port)
                 break;
 
 	    case ' ':
-		/* pass through the first ' ' for handling space (#\ ) */
+            case '(':  case ')':  case ';':
+            case '\n': case '\t': case '\"': case '\'':
+                SCM_PORT_UNGETC(port, c);
+                stringbuf[stringlen] = '\0';
+		dst = (char *)malloc(strlen(stringbuf) + 1);
+                strcpy(dst, stringbuf);
+                return dst;
+
+            default:
+                stringbuf[stringlen] = (char)c;
+                stringlen++;
+                break;
+        }
+    }
+}
+
+static char *read_char_sequence(ScmObj port)
+{
+    char  stringbuf[1024];
+    int   stringlen = 0;
+    int   c = 0;
+    char *dst = NULL;
+
+    while (1) {
+	SCM_PORT_GETC(port, c);
+
+#if DEBUG_PARSER
+	printf("c = %c\n", c);
+#endif
+
+        switch (c) {
+            case EOF:
+                SigScm_Error("EOF in the char sequence.\n");
+                break;
+
+	    /* pass through first char */
+	    case ' ': case '\"': case '\'':
+            case '(': case ')': case ';':
 		if (stringlen == 0) {
 		    stringbuf[stringlen] = (char)c;
 		    stringlen++;
 		    break;
 		}
-            case '(':  case ')':  case ';':
-            case '\n': case '\t': case '\"': case '\'':
+            case '\n': case '\t':
                 SCM_PORT_UNGETC(port, c);
                 stringbuf[stringlen] = '\0';
 		dst = (char *)malloc(strlen(stringbuf) + 1);

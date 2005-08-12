@@ -1337,9 +1337,10 @@ ScmObj ScmOp_make_string(ScmObj arg, ScmObj env)
         SigScm_ErrorObj("make-string : character required but got ", SCM_CAR(SCM_CDR(arg)));
 
     len = SCM_INT_VALUE(SCM_CAR(arg));
-    if (argc == 1) {
+    if (len == 0)
+	return Scm_NewStringCopying("");
+    if (argc == 1)
         return Scm_NewString_With_StrLen(NULL, len);
-    }
 
     str = Scm_NewString_With_StrLen(NULL, len);
     ch  = SCM_CAR(SCM_CDR(arg));
@@ -1462,9 +1463,15 @@ ScmObj ScmOp_string_substring(ScmObj str, ScmObj start, ScmObj end)
     /* get start_ptr and end_ptr */
     c_start_index = SCM_INT_VALUE(start);
     c_end_index   = SCM_INT_VALUE(end);
+
+    /* sanity check */
+    if (c_start_index == c_end_index)
+	return Scm_NewStringCopying("");
+
+    /* get str */
     string_str    = SCM_STRING_STR(str);
     ch_start_ptr  = SigScm_default_encoding_str_startpos(string_str, c_start_index);
-    ch_end_ptr    = SigScm_default_encoding_str_endpos(string_str, c_end_index);
+    ch_end_ptr    = SigScm_default_encoding_str_startpos(string_str, c_end_index);
 
     /* copy from start_ptr to end_ptr */
     new_str = (char*)malloc(sizeof(char) * (ch_end_ptr - ch_start_ptr) + 1);
@@ -1482,6 +1489,10 @@ ScmObj ScmOp_string_append(ScmObj arg, ScmObj env)
     ScmObj obj     = SCM_NIL;
     char  *new_str = NULL;
     char  *p       = NULL;
+
+    /* sanity check */
+    if (SCM_NULLP(arg))
+	return Scm_NewStringCopying("");
 
     /* count total size of the new string */
     for (strings = arg; !SCM_NULLP(strings); strings = SCM_CDR(strings)) {
@@ -1558,6 +1569,9 @@ ScmObj ScmOp_list_to_string(ScmObj list)
 
     if (EQ(ScmOp_listp(list), SCM_FALSE))
         SigScm_ErrorObj("list->string : list required but got ", list);
+
+    if (SCM_NULLP(list))
+	return Scm_NewStringCopying("");
 
     /* count total size of the string */
     for (chars = list; !SCM_NULLP(chars); chars = SCM_CDR(chars)) {

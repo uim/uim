@@ -8,7 +8,7 @@
 ;      (print "total")
 ;      (print total-test-num)
       (if (= total-err-num 0)
-	  (print "OK\n")
+	  (print "OK")
 	  (begin
 	    (print "[ ERROR NUM ]\n")
 	    (print total-err-num)

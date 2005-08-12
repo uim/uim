@@ -1095,7 +1095,7 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp, int *tail_flag)
                      (<variable2> <init2>)
                      ...)
     ========================================================================*/
-    if (SCM_CONSP(bindings) || SCM_NULLP(bindings)) {
+    if (SCM_CONSP(bindings)) {
 	for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
 	    binding = SCM_CAR(bindings);
 	    vars = Scm_NewCons(SCM_CAR(binding), SCM_NIL);
@@ -1104,10 +1104,19 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp, int *tail_flag)
 	    /* add env to each time!*/
 	    env = extend_environment(vars, vals, env);
 	}
+	/* set new env */
+	*envp = env;
+	/* evaluate */
+	return ScmExp_begin(body, &env, tail_flag);
+    } else if (SCM_NULLP(bindings)) {
+	/* extend null environment */
+	env = extend_environment(Scm_NewCons(SCM_NIL, SCM_NIL),
+				 Scm_NewCons(SCM_NIL, SCM_NIL),
+				 env);
 
 	/* set new env */
 	*envp = env;
-	
+	/* evaluate */
 	return ScmExp_begin(body, &env, tail_flag);
     }
 

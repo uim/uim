@@ -1,4 +1,4 @@
-(load "test/unittest.scm")
+(load "./test/unittest.scm")
 
 ;; check string?
 (assert "string? check" (string? "aiueo"))
@@ -43,9 +43,9 @@
 
 
 ;; substring check
-(assert "alphabet substring check" (string=? "iue"    (substring "aiueo" 1 3)))
-(assert "hiragana substring check" (string=? "いうえ" (substring "あいうえお" 1 3)))
-(assert "mixed substring check"    (string=? "いuえ"  (substring "aいuえo" 1 3)))
+(assert "alphabet substring check" (string=? "iu"   (substring "aiueo" 1 3)))
+(assert "hiragana substring check" (string=? "いう" (substring "あいうえお" 1 3)))
+(assert "mixed substring check"    (string=? "いu"  (substring "aいuえo" 1 3)))
 
 
 ;; string-append check
