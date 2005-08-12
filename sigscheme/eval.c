@@ -733,9 +733,7 @@ static ScmObj ScmOp_last_pair(ScmObj list)
 ===========================================================================*/
 ScmObj ScmOp_quote(ScmObj obj)
 {
-    ScmObj quotedObj = Scm_NewCons(SCM_QUOTE, obj);
-
-    return quotedObj;
+    return Scm_NewCons(SCM_QUOTE, obj);
 }
 
 /*===========================================================================
@@ -1348,19 +1346,19 @@ ScmObj ScmOp_delay(ScmObj arg, ScmObj *envp, int *tail_flag)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.6 Quasiquotation
 ===========================================================================*/
-ScmObj ScmOp_quasiquote(ScmObj temp)
+ScmObj ScmOp_quasiquote(ScmObj obj)
 {
-    return SCM_FALSE;
+    return Scm_NewCons(SCM_QUASIQUOTE, obj);
 }
 
-ScmObj ScmOp_unquote(ScmObj exp)
+ScmObj ScmOp_unquote(ScmObj obj)
 {
-    return SCM_FALSE;
+    return Scm_NewCons(SCM_UNQUOTE, obj);
 }
 
-ScmObj ScmOp_unquote_splicint(ScmObj exp)
+ScmObj ScmOp_unquote_splicing(ScmObj obj)
 {
-    return SCM_FALSE;
+    return Scm_NewCons(SCM_UNQUOTE_SPLICING, obj);
 }
 
 

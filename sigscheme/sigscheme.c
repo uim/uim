@@ -110,6 +110,7 @@ void SigScm_Initialize(void)
     /* eval.c */
     Scm_RegisterFunc2("eval"                 , ScmOp_eval);
     Scm_RegisterFuncL("apply"                , ScmOp_apply);
+    Scm_RegisterFunc1("quote"                , ScmOp_quote);
     Scm_RegisterFuncR("lambda"               , ScmExp_lambda);
     Scm_RegisterFuncR("if"                   , ScmExp_if);
     Scm_RegisterFuncR("set!"                 , ScmExp_set);
@@ -123,11 +124,13 @@ void SigScm_Initialize(void)
     Scm_RegisterFuncR("begin"                , ScmExp_begin);
     Scm_RegisterFuncR("do"                   , ScmExp_do);
     Scm_RegisterFuncR("delay"                , ScmOp_delay);
+    Scm_RegisterFunc1("quasiquote"           , ScmOp_quasiquote);
+    Scm_RegisterFunc1("unquote"              , ScmOp_unquote);
+    Scm_RegisterFunc1("unquote-splicing"     , ScmOp_unquote_splicing);
     Scm_RegisterFuncR("define"               , ScmExp_define);
     Scm_RegisterFunc1("scheme-report-environment", ScmOp_scheme_report_environment);
     Scm_RegisterFunc1("null-environment"         , ScmOp_null_environment);
     /* operations.c */
-    Scm_RegisterFunc1("quote"                , ScmOp_quote);
     Scm_RegisterFunc2("eqv?"                 , ScmOp_eqvp);
     Scm_RegisterFunc2("eq?"                  , ScmOp_eqp);
     Scm_RegisterFunc2("equal?"               , ScmOp_equalp);
