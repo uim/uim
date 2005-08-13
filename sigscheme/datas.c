@@ -166,6 +166,8 @@ static void initialize_symbol_hash(void);
 static void finalize_symbol_hash(void);
 static int  symbol_name_hash(const char *name);
 
+static void finalize_protected_obj(void);
+
 /*=======================================
   Function Implementations
 =======================================*/
@@ -179,6 +181,7 @@ void SigScm_FinalizeStorage(void)
 {
     finalize_heap();
     finalize_symbol_hash();
+    finalize_protected_obj();
 }
 
 static void *malloc_aligned(size_t size)
@@ -387,10 +390,21 @@ void SigScm_gc_protect(ScmObj obj)
     }
 }
 
+static void finalize_protected_obj(void)
+{
+    gc_protected_obj *item = protected_obj_list;
+    gc_protected_obj *tmp  = NULL;
+    while (item) {
+	tmp  = item;
+	item = item->next_obj;
+	free(tmp);
+    }
+}
+
 static int is_pointer_to_heap(ScmObj obj)
 {
     /* The core part of Conservative GC */
-    int i;
+    int i = 0;
     ScmObj head = SCM_NIL;
     for (i = 0; i < scm_heap_num; i++) {
 	if ((head = scm_heaps[i])
@@ -486,34 +500,34 @@ static void sweep_obj(ScmObj obj)
         case ScmEtc:
 	  break;
 	case ScmChar:
-	    if (SCM_CHAR_CH(obj)) {
-		free(SCM_CHAR_CH(obj));
-	    }
+	    if (SCM_CHAR_CH(obj)) free(SCM_CHAR_CH(obj));
 	    break;
         case ScmString:
-	    if (SCM_STRING_STR(obj)){
-		free(SCM_STRING_STR(obj));
-	    }
+	    if (SCM_STRING_STR(obj)) free(SCM_STRING_STR(obj));
             break;
 	case ScmVector:
-	    if (SCM_VECTOR_VEC(obj)) {
-		free(SCM_VECTOR_VEC(obj));
-	    }
+	    if (SCM_VECTOR_VEC(obj)) free(SCM_VECTOR_VEC(obj));
 	    break;
 	case ScmSymbol:
-	    if (SCM_SYMBOL_NAME(obj)) {
-		free(SCM_SYMBOL_NAME(obj));
-	    }
+	    if (SCM_SYMBOL_NAME(obj)) free(SCM_SYMBOL_NAME(obj));
 	    break;
 	case ScmPort:
-	    if (SCM_PORT_PORTINFO(obj)) {
-		free(SCM_PORT_PORTINFO(obj));
+	    switch (SCM_PORTINFO_PORTTYPE(obj)) {
+		case PORT_FILE:
+		    if (SCM_PORTINFO_FILENAME(obj)) free(SCM_PORTINFO_FILENAME(obj));
+		    break;
+		case PORT_STRING:
+		    if (SCM_PORTINFO_STR(obj)) free(SCM_PORTINFO_STR(obj));
+		    break;
+		default:
+		    break;
 	    }
+
+	    if (SCM_PORT_PORTINFO(obj)) free(SCM_PORT_PORTINFO(obj));
 	    break;
 	case ScmContinuation:
-	    if (SCM_CONTINUATION_CONTINFO(obj)) {
-		free(SCM_CONTINUATION_CONTINFO(obj));
-	    }
+	    if (SCM_CONTINUATION_CONTINFO(obj)) free(SCM_CONTINUATION_CONTINFO(obj));
+	    break;
 	default:
 	    break;
     }
