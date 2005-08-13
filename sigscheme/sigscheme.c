@@ -217,6 +217,8 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc1("char-whitespace?"     , ScmOp_char_whitespacep);
     Scm_RegisterFunc1("char-upper-case?"     , ScmOp_char_upper_casep);
     Scm_RegisterFunc1("char-lower-case?"     , ScmOp_char_lower_casep);
+    Scm_RegisterFunc1("char-upcase"          , ScmOp_char_upcase);
+    Scm_RegisterFunc1("char-downcase"        , ScmOp_char_downcase);
     Scm_RegisterFunc1("string?"              , ScmOp_stringp);
     Scm_RegisterFuncL("make-string"          , ScmOp_make_string);
     Scm_RegisterFuncL("string"               , ScmOp_string);

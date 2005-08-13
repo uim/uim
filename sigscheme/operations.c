@@ -190,7 +190,7 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
 		{
 		    return SCM_FALSE;
 		}
-		
+
 		/* check dot pair */
 		if (!SCM_CONSP(SCM_CDR(obj1)))
 		{
@@ -274,14 +274,14 @@ ScmObj ScmOp_plus2n(ScmObj obj1, ScmObj obj2)
 	return Scm_NewInt(0);
 
     if (!SCM_INTP(obj1))
-        SigScm_ErrorObj("+ : integer required but got ", obj1);
+	SigScm_ErrorObj("+ : integer required but got ", obj1);
 
     if (SCM_NULLP(obj2))
 	return Scm_NewInt(SCM_INT_VALUE(obj1));
 
     if (!SCM_INTP(obj2))
 	SigScm_ErrorObj("+ : integer required but got ", obj2);
-    
+
     return Scm_NewInt(SCM_INT_VALUE(obj1) + SCM_INT_VALUE(obj2));
 }
 
@@ -295,7 +295,7 @@ ScmObj ScmOp_minus2n(ScmObj obj1, ScmObj obj2)
 
     if (!SCM_INTP(obj2))
         SigScm_ErrorObj("- : integer required but got ", obj2);
-	
+
     return Scm_NewInt(SCM_INT_VALUE(obj1) - SCM_INT_VALUE(obj2));
 }
 
@@ -714,8 +714,19 @@ ScmObj ScmOp_number_to_string(ScmObj z)
 /* TODO : support radix */
 ScmObj ScmOp_string_to_number(ScmObj string)
 {
+    char  *str = NULL;
+    char  *p   = NULL;
+    size_t len = 0;
+
     if (!SCM_STRINGP(string))
 	SigScm_ErrorObj("string->number : string required but got ", string);
+
+    str = SCM_STRING_STR(string);
+    len = strlen(str);
+    for (p = str; p < str + len; p++) {
+	if (isdigit(*p) == 0)
+	    return SCM_FALSE;
+    }
 
     return Scm_NewInt((int)atof(SCM_STRING_STR(string)));
 }
@@ -972,7 +983,7 @@ int ScmOp_c_length(ScmObj obj)
         if (SCM_NULLP(obj)) break;
         if (!SCM_CONSP(obj)) return -1;
 	if (len != 0 && obj == slow) return -1; /* circular */
-	
+
 	obj = SCM_CDR(obj);
 	len++;
         if (SCM_NULLP(obj)) break;
@@ -1311,6 +1322,36 @@ ScmObj ScmOp_char_lower_casep(ScmObj obj)
     return SCM_FALSE;
 }
 
+ScmObj ScmOp_char_upcase(ScmObj obj)
+{
+    if (!SCM_CHARP(obj))
+	SigScm_ErrorObj("char-upcase : char required but got ", obj);
+
+    /* check multibyte */
+    if (strlen(SCM_CHAR_CH(obj)) != 1)
+	return obj;
+
+    /* to upcase */
+    SCM_CHAR_CH(obj)[0] = toupper(SCM_CHAR_CH(obj)[0]);
+
+    return obj;
+}
+
+ScmObj ScmOp_char_downcase(ScmObj obj)
+{
+    if (!SCM_CHARP(obj))
+	SigScm_ErrorObj("char-upcase : char required but got ", obj);
+
+    /* check multibyte */
+    if (strlen(SCM_CHAR_CH(obj)) != 1)
+	return obj;
+
+    /* to upcase */
+    SCM_CHAR_CH(obj)[0] = tolower(SCM_CHAR_CH(obj)[0]);
+
+    return obj;
+}
+
 /*==============================================================================
   R5RS : 6.3 Other data types : 6.3.5 Strings
 ==============================================================================*/
@@ -1326,9 +1367,11 @@ ScmObj ScmOp_make_string(ScmObj arg, ScmObj env)
 {
     int argc = SCM_INT_VALUE(ScmOp_length(arg));
     int len  = 0;
+    char  *tmp = NULL;
     ScmObj str = SCM_NIL;
     ScmObj ch  = SCM_NIL;
 
+    /* sanity check */
     if (argc != 1 && argc != 2)
         SigScm_Error("make-string : invalid use\n");
     if (!SCM_INTP(SCM_CAR(arg)))
@@ -1336,14 +1379,27 @@ ScmObj ScmOp_make_string(ScmObj arg, ScmObj env)
     if (argc == 2 && !SCM_CHARP(SCM_CAR(SCM_CDR(arg))))
         SigScm_ErrorObj("make-string : character required but got ", SCM_CAR(SCM_CDR(arg)));
 
+    /* get length */
     len = SCM_INT_VALUE(SCM_CAR(arg));
     if (len == 0)
 	return Scm_NewStringCopying("");
-    if (argc == 1)
-        return Scm_NewString_With_StrLen(NULL, len);
 
+    /* specify filler */
+    if (argc == 1) {
+	/* specify length only, so fill string with space(' ') */
+        tmp = (char*)malloc(sizeof(char) * (1 + 1));
+	tmp[0] = ' ';
+	tmp[1] = '\0';
+	ch = Scm_NewChar(tmp);
+    } else {
+	/* also specify filler char */
+	ch = SCM_CAR(SCM_CDR(arg));
+    }
+
+    /* make string */
     str = Scm_NewString_With_StrLen(NULL, len);
-    ch  = SCM_CAR(SCM_CDR(arg));
+
+    /* and fill! */
     ScmOp_string_fill(str, ch);
 
     return str;
@@ -1893,9 +1949,9 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env)
 
     if (!SCM_CLOSUREP(proc))
 	SigScm_ErrorObj("call-with-current-continuation : closure required but got ", proc);
-    
+
     cont = Scm_NewContinuation();
- 
+
     /* setjmp and check result */
     jmpret = setjmp(SCM_CONTINUATION_JMPENV(cont));
     if (jmpret) {
