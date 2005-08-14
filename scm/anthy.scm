@@ -476,6 +476,9 @@
 (define anthy-proc-transposing-state
   (lambda (ac key key-state)
     (cond
+     ((anthy-transpose-as-hiragana-key? key key-state)
+      (anthy-context-set-transposing-type! ac anthy-type-hiragana))
+
      ((anthy-transpose-as-katakana-key? key key-state)
       (anthy-context-set-transposing-type! ac anthy-type-katakana))
 
@@ -496,7 +499,8 @@
 	(if (not (anthy-commit-key? key key-state))
 	    (begin 
 	      (anthy-context-set-transposing! ac #f)
-	      (anthy-proc-input-state ac key key-state))))))))
+	      (anthy-proc-input-state ac key key-state)
+              (anthy-context-set-commit-raw! ac #f))))))))
 
 (define anthy-proc-input-state-with-preedit
   (lambda (ac key key-state)
@@ -544,7 +548,8 @@
 	  (anthy-flush ac)))
 
        ;; Transposing状態へ移行
-       ((or (anthy-transpose-as-katakana-key?   key key-state)
+       ((or (anthy-transpose-as-hiragana-key?   key key-state)
+	    (anthy-transpose-as-katakana-key?   key key-state)
 	    (anthy-transpose-as-hankana-key?    key key-state)
 	    (anthy-transpose-as-latin-key?      key key-state)
 	    (anthy-transpose-as-wide-latin-key? key key-state))
@@ -669,6 +674,9 @@
   (lambda (ac)
     (let* ((transposing-type (anthy-context-transposing-type ac)))
       (cond
+       ((= transposing-type anthy-type-hiragana)
+	(anthy-make-whole-string ac #t multi-segment-type-hiragana))
+
        ((= transposing-type anthy-type-katakana)
 	(anthy-make-whole-string ac #t multi-segment-type-katakana))
 

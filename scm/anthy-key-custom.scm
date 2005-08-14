@@ -93,6 +93,12 @@
 	       (_ "[Anthy] convert to halfwidth katakana")
 	       (_ "long description will be here"))
 
+(define-custom 'anthy-transpose-as-hiragana-key '("F6")
+               '(anthy-keys1)
+	       '(key)
+	       (_ "[Anthy] convert to hiragana")
+	       (_ "long description will be here"))
+
 (define-custom 'anthy-commit-as-opposite-kana-key '()
                '(anthy-keys1)
 	       '(key)
