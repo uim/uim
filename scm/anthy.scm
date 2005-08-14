@@ -417,6 +417,14 @@
 	  (direct (ja-direct (charcode->string key)))
 	  (rule (anthy-context-input-rule ac)))
       (cond
+       ((and anthy-use-with-vi?
+             (anthy-vi-escape-key? key key-state))
+	(begin
+	  (anthy-flush ac)
+	  (anthy-context-set-on! ac #f)
+	  (anthy-context-set-wide-latin! ac #f)
+          (anthy-commit-raw ac)))
+
        ((anthy-wide-latin-key? key key-state)
 	(begin
 	  (anthy-flush ac)
@@ -920,6 +928,13 @@
 	   (w (or (ja-direct char)
 		  (ja-wide char))))
       (cond
+       ((and anthy-use-with-vi?
+             (anthy-vi-escape-key? key key-state))
+	(begin
+	  (anthy-flush ac)
+	  (anthy-context-set-wide-latin! ac #f)
+          (anthy-commit-raw ac)))
+
        ((anthy-on-key? key key-state)
 	(anthy-flush ac)
 	(anthy-context-set-on! ac #t))
@@ -946,8 +961,7 @@
 		(anthy-proc-wide-latin ac key key-state)
 		(anthy-proc-raw-state ac key key-state))))
     ;; preedit
-    (anthy-update-preedit ac)
-))
+    (anthy-update-preedit ac)))
 
 
 (define anthy-release-key-handler

@@ -282,3 +282,9 @@
 		 'custom-set-hooks
 		 (lambda ()
 		   (anthy-configure-widgets)))
+
+(define-custom 'anthy-use-with-vi? #f
+  '(anthy special-op)
+  '(boolean)
+  (_ "Friendly for vi user")
+  (_ "long description will be here."))

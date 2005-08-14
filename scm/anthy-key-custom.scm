@@ -234,3 +234,9 @@
 	       '(key)
 	       (_ "[Anthy] go right")
 	       (_ "long description will be here"))
+
+(define-custom 'anthy-vi-escape-key '("escape" "<Control>[")
+               '(anthy-keys3)
+	       '(key)
+	       (_ "[Anthy] anthy-vi-escape-key?")
+	       (_ "long description will be here"))

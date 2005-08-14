@@ -65,7 +65,7 @@
 	       (_ "[Global] commit")
 	       (_ "long description will be here"))
 
-(define-custom 'generic-cancel-key '("escape" "<IgnoreCase><Control>g")
+(define-custom 'generic-cancel-key '("escape" "<Control>[" "<IgnoreCase><Control>g")
                '(global-keys1)
 	       '(key)
 	       (_ "[Global] cancel")
