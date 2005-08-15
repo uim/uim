@@ -324,7 +324,7 @@
      (lambda (x)
        (case (typeof x)
 	 ((tc_string tc_symbol) (puts x))
-	 ((tc_intnum) (puts (integer->string x)))
+	 ((tc_intnum) (puts (number->string x)))
 	 (else (print x))))
      args)))
 

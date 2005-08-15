@@ -186,81 +186,6 @@
 	 (min x ceiling))))
 
 ;;
-;; R5RS procedures (don't expect 100% compatibility)
-;;
-
-;; definition of 'else' has been moved into slib.c
-;(define else #t)
-
-(define boolean?
-  (lambda (x)
-    (or (eq? x #t)
-        (eq? x #f))))
-
-(define integer?
-  (lambda (x)
-    (number? x)))
-
-;; Siod doesn't support char
-(define char?
-  (lambda (x)
-    #f))
-
-(define list?
-  (lambda (x)
-    (or (null? x)
-	(and (pair? x)
-	     (list? (cdr x))))))
-
-(define zero?
-  (lambda (x)
-    (if (integer? x)
-	(= x 0)
-	(error "non-numeric value for zero?"))))
-
-(define positive?
-  (lambda (x)
-    (> x 0)))
-
-(define negative?
-  (lambda (x)
-    (< x 0)))
-
-(define number->string integer->string)
-(define string->number string->integer)
-(define string->symbol intern)
-
-(define map
-  (lambda args
-    (let ((f (car args))
-	  (lists (cdr args)))
-      (if (<= (length lists) 3)  ;; uim's siod accepts up to 3 lists
-	  (apply mapcar args)    ;; faster native processing
-	  (iterate-lists (lambda (state elms)
-			   (if (null? elms)
-			       (cons #t (reverse state))
-			       (let ((mapped (apply f elms)))
-				 (cons #f (cons mapped state)))))
-			 () lists)))))
-
-(define for-each map)
-
-(define quotient /)	;; / in siod is quotient actually
-
-;;(define list-tail
-;;  (lambda (lst n)
-;;    (if (= n 0)
-;;	lst
-;;	(list-tail (cdr lst) (- n 1)))))
-(define list-tail
-  (lambda (lst n)
-    (if (or (< (length lst)
-	       n)
-	    (< n 0))
-	(error "out of range in list-tail")
-	(nthcdr n lst))))
-
-;;
 ;; R5RS-like character procedures
 ;;
 
@@ -269,29 +194,6 @@
     (and (integer? c)
 	 (or (<= c 31)
 	     (= c 127)))))
-
-(define char-upper-case?
-  (lambda (c)
-    (and (integer? c)
-	 (>= c 65)
-	 (<= c 90))))
-
-(define char-lower-case?
-  (lambda (c)
-    (and (integer? c)
-	 (>= c 97)
-	 (<= c 122))))
-
-(define char-alphabetic?
-  (lambda (c)
-    (or (char-upper-case? c)
-	(char-lower-case? c))))
-
-(define char-numeric?
-  (lambda (c)
-    (and (integer? c)
-	 (>= c 48)
-	 (<= c 57))))
 
 (define char-printable?
   (lambda (c)
@@ -323,18 +225,6 @@
   (lambda (c)
     (if (char-numeric? c)
 	(- c 48)
-	c)))
-
-(define char-downcase
-  (lambda (c)
-    (if (char-upper-case? c)
-	(+ c 32)
-	c)))
-
-(define char-upcase
-  (lambda (c)
-    (if (char-lower-case? c)
-	(- c 32)
 	c)))
 
 ;; backward compatibility
@@ -384,6 +274,18 @@
       (list-tabulate (- count start)
 		     (lambda (i)
 		       (+ start i))))))
+
+(define last-pair
+  (lambda (lst)
+    (if (pair? (cdr lst))
+	(last-pair (cdr lst))
+	lst)))
+
+(define nconc
+  (lambda (lst obj)
+    (if (null? lst)
+	obj
+	(set-cdr! (last-pair lst) obj))))
 
 ;; TODO: write test
 (define last
@@ -477,13 +379,13 @@
 
 (define unfold
   (lambda args
-    (let ((term? (nth 0 args))
-	  (kar (nth 1 args))
-	  (kdr (nth 2 args))
-	  (seed (nth 3 args))
+    (let ((term? (list-ref args 0))
+	  (kar   (list-ref args 1))
+	  (kdr   (list-ref args 2))
+	  (seed  (list-ref args 3))
 	  (tail-gen (if (= (length args)
 			   5)
-			(nth 4 args)
+			(list-ref args 4)
 			(lambda (x) ()))))
       (if (term? seed)
 	  (tail-gen seed)
@@ -549,19 +451,16 @@
 ;; SRFI-60 procedures
 ;; Siod's bit operation procedures take only two arguments
 ;; TODO: write tests
-(define bitwise-not bit-not)
-
-(define bitwise-and
-  (lambda xs
-    (fold bit-and (bitwise-not 0) xs)))
-
-(define bitwise-or
-  (lambda xs
-    (fold bit-or 0 xs)))
-
-(define bitwise-xor
-  (lambda xs
-    (fold bit-xor 0 xs)))
+;(define bitwise-not bit-not)
+;(define bitwise-and
+;  (lambda xs
+;    (fold bit-and (bitwise-not 0) xs)))
+;(define bitwise-or
+;  (lambda xs
+;    (fold bit-or 0 xs)))
+;(define bitwise-xor
+;  (lambda xs
+;    (fold bit-xor 0 xs)))
 
 ;;
 ;; uim-specific utilities
@@ -584,6 +483,16 @@
     (and (file-readable? (make-scm-pathname file))
 	 (not (*catch 'errobj (begin (load file)
 				     #f))))))
+
+(define (symbolconc . args)
+  (let* ((ret-sym "")
+	 (append-to-ret (lambda (str)
+			  (set! ret-sym
+				(string-append ret-sym str)))))
+    (for-each append-to-ret
+	      (map symbol->string
+		   args))
+    (string->symbol ret-sym)))
 
 ;; TODO: write test
 ;; returns succeeded or not
@@ -611,11 +520,11 @@
 (define define-record
   (lambda (rec-sym rec-spec)
     (for-each (lambda (spec index)
-		(let* ((elem-sym (nth 0 spec))
-		       (default  (nth 1 spec))
+		(let* ((elem-sym (list-ref spec 0))
+		       (default  (list-ref spec 1))
 		       (getter-sym (symbolconc rec-sym '- elem-sym))
 		       (getter (lambda (rec)
-				 (nth index rec)))
+				 (list-ref rec index)))
 		       (setter-sym (symbolconc rec-sym '-set- elem-sym '!))
 		       (setter (lambda (rec val)
 				 (set-car! (nthcdr index rec)
