@@ -268,6 +268,7 @@ void SigScm_Initialize(void)
     Scm_RegisterFuncL("newline"              , ScmOp_newline);
     Scm_RegisterFuncL("write-char"           , ScmOp_write_char);
     Scm_RegisterFunc1("load"                 , ScmOp_load);
+    Scm_RegisterFunc1("require"              , ScmOp_require);
     Scm_RegisterFunc1("file-exists?"         , ScmOp_file_existsp);
     Scm_RegisterFunc1("delete-file"          , ScmOp_delete_file);
     /*=======================================================================
@@ -279,7 +280,11 @@ void SigScm_Initialize(void)
     SigScm_gc_protect(current_output_port);
     current_error_port  = Scm_NewFilePort(stderr, "stderr", PORT_OUTPUT);
     SigScm_gc_protect(current_error_port);
-
+    /*=======================================================================
+      Other Variables To Protect From GC
+    =======================================================================*/
+    provided_feature = SCM_NIL;
+    SigScm_gc_protect(provided_feature);
 #if USE_SRFI1
     /*=======================================================================
       SRFI-1 Procedures

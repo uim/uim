@@ -66,6 +66,8 @@ extern ScmObj current_input_port;
 extern ScmObj current_output_port;
 extern ScmObj current_error_port;
 
+extern ScmObj provided_feature;
+
 /*=======================================
    Macro Declarations
 =======================================*/
@@ -313,7 +315,7 @@ ScmObj ScmOp_write_char(ScmObj arg, ScmObj env);
 
 ScmObj SigScm_load(const char *c_filename);
 ScmObj ScmOp_load(ScmObj filename);
-
+ScmObj ScmOp_require(ScmObj filename);
 ScmObj ScmOp_file_existsp(ScmObj filepath);
 ScmObj ScmOp_delete_file(ScmObj filepath);
 

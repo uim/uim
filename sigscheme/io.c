@@ -52,12 +52,15 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+ScmObj current_input_port  = NULL;
+ScmObj current_output_port = NULL;
+
+ScmObj provided_feature    = NULL;
 
 /*=======================================
   File Local Function Declarations
 =======================================*/
-ScmObj current_input_port  = NULL;
-ScmObj current_output_port = NULL;
+static ScmObj create_loaded_str(ScmObj filename);
 
 /*=======================================
   Function Implementations
@@ -467,6 +470,42 @@ ScmObj ScmOp_load(ScmObj filename)
     return SCM_TRUE;
 }
 
+ScmObj ScmOp_require(ScmObj filename)
+{
+    ScmObj loaded_str = SCM_NIL;
+
+    if (!SCM_STRINGP(filename))
+	SigScm_ErrorObj("require : string required but got ", filename);
+
+    if (EQ(ScmOp_file_existsp(filename), SCM_FALSE))
+	SigScm_ErrorObj("require : file not found. path = ", filename);
+
+    /* construct loaded_str */
+    loaded_str = create_loaded_str(filename);
+
+    if (EQ(ScmOp_member(loaded_str, provided_feature), SCM_FALSE)) {
+	/* not provided, so load it! */
+	ScmOp_load(filename);
+
+	/* record to provided_feature */
+	provided_feature = Scm_NewCons(loaded_str, provided_feature);
+    }
+
+    return SCM_TRUE;
+}
+
+static ScmObj create_loaded_str(ScmObj filename)
+{
+    char  *loaded_str = NULL;
+    int    size = 0;
+
+    /* generate loaded_str, contents is filename-loaded* */
+    size = (strlen(SCM_STRING_STR(filename)) + strlen("-loaded*") + 1);
+    loaded_str = (char*)malloc(sizeof(char) * size);
+    snprintf(loaded_str, size, "%s-loaded*", SCM_STRING_STR(filename));
+    
+    return Scm_NewString(loaded_str);
+}
 
 ScmObj ScmOp_file_existsp(ScmObj filepath)
 {
