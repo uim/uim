@@ -31,6 +31,10 @@
 
 ;; Current uim implementation treats char as integer
 
+;;
+;; generic utilities
+;;
+
 ;; TODO: write test
 (define string-escape
   (lambda (s)
@@ -143,6 +147,11 @@
   (lambda args
     (apply string-append (apply map args))))
 
+;; symbol-append is a de facto standard procedure name
+(define symbol-append
+  (lambda args
+    (string->symbol (string-append-map symbol->string args))))
+
 ;; only accepts single-arg functions
 ;; (define caddr (compose car cdr cdr))
 (define compose
@@ -184,6 +193,15 @@
   (lambda (x bottom ceiling)
     (max bottom
 	 (min x ceiling))))
+
+(define nconc
+  (lambda (lst obj)
+    (if (null? lst)
+	obj
+	(set-cdr! (last-pair lst) obj))))
+
+;; backward compatibility: should be obsoleted
+(define symbolconc symbol-append)
 
 ;;
 ;; R5RS-like character procedures
@@ -227,7 +245,7 @@
 	(- c 48)
 	c)))
 
-;; backward compatibility
+;; backward compatibility: should be obsoleted
 (define control-char? char-control?)
 (define alphabet-char? char-alphabetic?)
 (define numeral-char? char-numeric?)
@@ -280,12 +298,6 @@
     (if (pair? (cdr lst))
 	(last-pair (cdr lst))
 	lst)))
-
-(define nconc
-  (lambda (lst obj)
-    (if (null? lst)
-	obj
-	(set-cdr! (last-pair lst) obj))))
 
 ;; TODO: write test
 (define last
@@ -483,16 +495,6 @@
     (and (file-readable? (make-scm-pathname file))
 	 (not (*catch 'errobj (begin (load file)
 				     #f))))))
-
-(define (symbolconc . args)
-  (let* ((ret-sym "")
-	 (append-to-ret (lambda (str)
-			  (set! ret-sym
-				(string-append ret-sym str)))))
-    (for-each append-to-ret
-	      (map symbol->string
-		   args))
-    (string->symbol ret-sym)))
 
 ;; TODO: write test
 ;; returns succeeded or not
