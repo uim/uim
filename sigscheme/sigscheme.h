@@ -289,6 +289,8 @@ ScmObj ScmOp_force(ScmObj arg, ScmObj env);
 ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env);
 
 /* io.c */
+void   SigScm_set_lib_path(const char *path);
+
 ScmObj ScmOp_call_with_input_file(ScmObj filepath, ScmObj proc);
 ScmObj ScmOp_call_with_output_file(ScmObj filepath, ScmObj proc);
 ScmObj ScmOp_input_portp(ScmObj obj);

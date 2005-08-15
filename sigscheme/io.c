@@ -52,10 +52,12 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-ScmObj current_input_port  = NULL;
-ScmObj current_output_port = NULL;
+ScmObj current_input_port   = NULL;
+ScmObj current_output_port  = NULL;
 
-ScmObj provided_feature    = NULL;
+ScmObj provided_feature     = NULL;
+
+static const char *lib_path = NULL;
 
 /*=======================================
   File Local Function Declarations
@@ -65,6 +67,11 @@ static ScmObj create_loaded_str(ScmObj filename);
 /*=======================================
   Function Implementations
 =======================================*/
+void SigScm_set_lib_path(const char *path)
+{
+    lib_path = path;
+}
+
 /*=======================================
   R5RS : 6.6 Input and Output
 =======================================*/
@@ -436,12 +443,26 @@ ScmObj SigScm_load(const char *c_filename)
     ScmObj stack_start;
     ScmObj port         = SCM_NIL;
     ScmObj s_expression = SCM_NIL;
+    char  *filepath = NULL;
 
     /* start protecting stack */
     SigScm_gc_protect_stack(&stack_start);
 
+    /* construct filepath */
+    if (lib_path) {
+	filepath = alloca(strlen(lib_path) + strlen(c_filename) + 2);
+	strcpy(filepath, lib_path);
+	strcat(filepath, "/");
+	strcat(filepath, c_filename);
+    } else {
+	filepath = alloca(strlen(c_filename) + 1);
+	strcpy(filepath, c_filename);
+    }
+
+    printf("path = %s\n", filepath);
+
     /* open port */
-    port = ScmOp_open_input_file(Scm_NewStringCopying(c_filename));
+    port = ScmOp_open_input_file(Scm_NewStringCopying(filepath));
     s_expression = SCM_NIL;
     
     /* read & eval cycle */
@@ -476,9 +497,6 @@ ScmObj ScmOp_require(ScmObj filename)
 
     if (!SCM_STRINGP(filename))
 	SigScm_ErrorObj("require : string required but got ", filename);
-
-    if (EQ(ScmOp_file_existsp(filename), SCM_FALSE))
-	SigScm_ErrorObj("require : file not found. path = ", filename);
 
     /* construct loaded_str */
     loaded_str = create_loaded_str(filename);
