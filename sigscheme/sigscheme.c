@@ -269,6 +269,8 @@ void SigScm_Initialize(void)
     Scm_RegisterFuncL("write-char"           , ScmOp_write_char);
     Scm_RegisterFunc1("load"                 , ScmOp_load);
     Scm_RegisterFunc1("require"              , ScmOp_require);
+    Scm_RegisterFunc1("provide"              , ScmOp_provide);
+    Scm_RegisterFunc1("provided?"            , ScmOp_providedp);
     Scm_RegisterFunc1("file-exists?"         , ScmOp_file_existsp);
     Scm_RegisterFunc1("delete-file"          , ScmOp_delete_file);
     /*=======================================================================

@@ -318,6 +318,8 @@ ScmObj ScmOp_write_char(ScmObj arg, ScmObj env);
 ScmObj SigScm_load(const char *c_filename);
 ScmObj ScmOp_load(ScmObj filename);
 ScmObj ScmOp_require(ScmObj filename);
+ScmObj ScmOp_provide(ScmObj feature);
+ScmObj ScmOp_providedp(ScmObj feature);
 ScmObj ScmOp_file_existsp(ScmObj filepath);
 ScmObj ScmOp_delete_file(ScmObj filepath);
 

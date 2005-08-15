@@ -525,6 +525,28 @@ static ScmObj create_loaded_str(ScmObj filename)
     return Scm_NewString(loaded_str);
 }
 
+ScmObj ScmOp_provide(ScmObj feature)
+{
+    if (!SCM_STRINGP(feature))
+	SigScm_ErrorObj("provide : string required but got ", feature);
+
+    /* record to provided_feature */
+    provided_feature = Scm_NewCons(feature, provided_feature);
+
+    return SCM_TRUE;
+}
+
+ScmObj ScmOp_providedp(ScmObj feature)
+{
+    if (!SCM_STRINGP(feature))
+	SigScm_ErrorObj("provide : string required but got ", feature);
+
+    if (EQ(ScmOp_member(feature, provided_feature), SCM_TRUE))
+	return SCM_TRUE;
+
+    return SCM_FALSE;
+}
+
 ScmObj ScmOp_file_existsp(ScmObj filepath)
 {
     FILE *f = NULL;
