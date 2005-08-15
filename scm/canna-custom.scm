@@ -87,6 +87,12 @@
   (_ "Number of candidates in candidate window at a time")
   (_ "long description will be here."))
 
+(define-custom 'canna-select-candidate-by-numeral-key? #f
+  '(canna candwin)
+  '(boolean)
+  (_ "Select candidate by numeral keys")
+  (_ "long description will be here."))
+
 ;; activity dependency
 (custom-add-hook 'canna-candidate-op-count
 		 'custom-activity-hooks
@@ -350,3 +356,9 @@
 (custom-add-hook 'custom-preserved-canna-server-name
 		 'custom-literalize-hooks
 		 custom-hook-literalize-preserved-canna-server-name)
+
+(define-custom 'canna-use-with-vi? #f
+  '(canna special-op)
+  '(boolean)
+  (_ "Friendly for vi user")
+  (_ "long description will be here."))

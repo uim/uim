@@ -1076,6 +1076,7 @@ static void usage(void)
   uim_init();
   context = uim_create_context(NULL, get_enc(), NULL, NULL, uim_iconv, commit_cb);
 
+  printf("uim-fep %s\n", PACKAGE_VERSION);
   printf("usage: uim-fep [OPTIONS]\n"
       "\n"
       "-u <input method>                         input method      [default=%s]\n"
