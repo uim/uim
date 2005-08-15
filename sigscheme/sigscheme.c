@@ -199,8 +199,8 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc1("length"               , ScmOp_length);
     Scm_RegisterFuncL("append"               , ScmOp_append);
     Scm_RegisterFunc1("reverse"              , ScmOp_reverse);
-    Scm_RegisterFunc2("list-tail"            , ScmOp_listtail);
-    Scm_RegisterFunc2("list-ref"             , ScmOp_listref);
+    Scm_RegisterFunc2("list-tail"            , ScmOp_list_tail);
+    Scm_RegisterFunc2("list-ref"             , ScmOp_list_ref);
     Scm_RegisterFunc2("memq"                 , ScmOp_memq);
     Scm_RegisterFunc2("memv"                 , ScmOp_memv);
     Scm_RegisterFunc2("member"               , ScmOp_member);

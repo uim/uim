@@ -1066,7 +1066,7 @@ ScmObj ScmOp_listtail_internal(ScmObj obj, int k)
     return ScmOp_listtail_internal(SCM_CDR(obj), k - 1);
 }
 
-ScmObj ScmOp_listtail(ScmObj list, ScmObj scm_k)
+ScmObj ScmOp_list_tail(ScmObj list, ScmObj scm_k)
 {
     if (EQ(ScmOp_listp(list), SCM_FALSE))
         SigScm_ErrorObj("list-tail : list required but got ", list);
@@ -1076,7 +1076,7 @@ ScmObj ScmOp_listtail(ScmObj list, ScmObj scm_k)
     return ScmOp_listtail_internal(list, SCM_INT_VALUE(scm_k));
 }
 
-ScmObj ScmOp_listref(ScmObj list, ScmObj scm_k)
+ScmObj ScmOp_list_ref(ScmObj list, ScmObj scm_k)
 {
     ScmObj list_tail = SCM_NIL;
 
