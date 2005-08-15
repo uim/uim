@@ -20,8 +20,6 @@ libuim_la_SOURCES = uim.c uim-scm.c uim-util.c uim-func.c uim-key.c \
 		getpeereid.c \
 		plugin.c
 
-libuim_la_LIBADD = $(top_builddir)/sigscheme/libsscm.la
-
 if NEED_SETENV_C
 libuim_la_SOURCES += setenv.c
 endif
@@ -88,7 +86,7 @@ libuim_skk_la_CPPFLAGS = -I$(top_srcdir)
 libuimincludedir =  $(includedir)/uim
 
 libuim_la_LDFLAGS = -version-info 0:1:0 -export-symbols-regex uim.\*
-libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@
+libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@ $(top_builddir)/sigscheme/libsscm.la
 libuim_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DPKGLIBDIR=\"$(pkglibdir)\" \
 		     -DPKGDATADIR=\"$(pkgdatadir)\"
 

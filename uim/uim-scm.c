@@ -50,6 +50,10 @@ static uim_lisp protected_arg0;
 static int uim_siod_fatal;
 static FILE *uim_output = NULL;
 
+#ifdef UIM_COMPAT_SCM
+#include "uim-compat-scm.c"
+#endif
+
 
 FILE *
 uim_scm_get_output(void)
@@ -124,7 +128,7 @@ uim_scm_refer_c_str(uim_lisp str)
 uim_lisp
 uim_scm_make_str(const char *str)
 {
-  return Scm_NewStringCopying(str);
+  return (uim_lisp)Scm_NewStringCopying(str);
 }
 
 char *
@@ -142,37 +146,37 @@ uim_scm_make_symbol(const char *name)
 void *
 uim_scm_c_ptr(uim_lisp ptr)
 {
-  return Scm_GetCPointer(ptr);
+  return Scm_GetCPointer((ScmObj)ptr);
 }
 
 uim_lisp
 uim_scm_make_ptr(void *ptr)
 {
-  return Scm_NewCPointer(ptr);
+  return (uim_lisp)Scm_NewCPointer(ptr);
 }
 
 uim_func_ptr
 uim_scm_c_func_ptr(uim_lisp func_ptr)
 {
-  return Scm_GetCFuncPointer(func_ptr);
+  return (uim_func_ptr)Scm_GetCFuncPointer((ScmObj)func_ptr);
 }
 
 uim_lisp
 uim_scm_make_func_ptr(uim_func_ptr func_ptr)
 {
-  return Scm_NewCFuncPointer((C_FUNC)func_ptr);
+  return (uim_lisp)Scm_NewCFuncPointer((C_FUNC)func_ptr);
 }
 
 void
 uim_scm_gc_protect(uim_lisp *location)
 {
-  SigScm_gc_protect(location);
+  SigScm_gc_protect((ScmObj*)location);
 }
 
 void
 uim_scm_gc_protect_stack(uim_lisp *stack_start)
 {
-  SigScm_gc_protect_stack(stack_start);
+  SigScm_gc_protect_stack((ScmObj*)stack_start);
 }
 
 void
@@ -207,23 +211,19 @@ uim_scm_set_verbose_level(long new_value)
 void
 uim_scm_set_lib_path(const char *path)
 {
-#if 0
-  siod_set_lib_path(path);
-#endif
+  SigScm_set_lib_path(path);
 }
 
 uim_bool
 uim_scm_load_file(const char *fn)
 {
-  uim_lisp result;
-  uim_bool succeeded;
-
   if (!fn)
     return UIM_FALSE;
 
-  result = SigScm_load(fn);
-  succeeded = FALSEP(result);
-  return succeeded;
+  /* TODO: fixme! */
+  SigScm_load(fn);
+
+  return UIM_TRUE;
 }
 
 uim_lisp
@@ -247,40 +247,55 @@ uim_scm_null_list(void)
 uim_bool
 uim_scm_nullp(uim_lisp obj)
 {
-  return SCM_NULLP((ScmObj)obj);
+  if (SCM_NULLP((ScmObj)obj))
+    return UIM_TRUE;
+
+  return UIM_FALSE;
 }
 
 uim_bool
 uim_scm_consp(uim_lisp obj)
 {
-  return SCM_CONSP(obj);
+  if (SCM_CONSP((ScmObj)obj))
+    return UIM_TRUE;
+
+  return UIM_FALSE;  
 }
 
 uim_bool
 uim_scm_integerp(uim_lisp obj)
 {
-  return SCM_INTP(obj);
+  if (SCM_INTP((ScmObj)obj))
+    return UIM_TRUE;
+
+  return UIM_FALSE;  
 }
 
 uim_bool
 uim_scm_stringp(uim_lisp obj)
 {
-  return SCM_STRINGP(obj);
+  if (SCM_STRINGP((ScmObj)obj))
+    return UIM_TRUE;
+
+  return UIM_FALSE;  
 }
 
 uim_bool
 uim_scm_eq(uim_lisp a, uim_lisp b)
 {
-  return EQ(a, b);
+  if (EQ(ScmOp_eqp((ScmObj) a, (ScmObj) b), SigScm_true))
+    return UIM_TRUE;
+
+  return UIM_FALSE;
 }
 
 uim_bool
 uim_scm_string_equal(uim_lisp a, uim_lisp b)
 {
-  if(ScmOp_string_equal(a, b) == SigScm_true)
+  if(EQ(ScmOp_string_equal(a, b), SigScm_true))
     return UIM_TRUE;
-  else
-    return UIM_FALSE;
+
+  return UIM_FALSE;
 }
 
 uim_lisp
@@ -299,20 +314,22 @@ uim_scm_eval(uim_lisp obj)
 uim_lisp
 uim_scm_apply(uim_lisp proc, uim_lisp args)
 {
-  return ScmOp_apply(Scm_NewCons(proc, Scm_NewCons(args, SCM_NIL)), NULL);
+  return (uim_lisp)ScmOp_apply(Scm_NewCons((ScmObj)proc,
+					   Scm_NewCons((ScmObj)args, SigScm_nil)),	
+			       NULL);
 }
 
 uim_lisp
 uim_scm_quote(uim_lisp obj)
 {
-  return ScmOp_quote(obj);
+  return (uim_lisp)ScmOp_quote((ScmObj)obj);
 }
 #endif  /* UIM_SCM_EXTENDED_API */
 
 uim_lisp
 uim_scm_eval_c_string(const char *str)
 {
-  return Scm_eval_c_string(str);
+  return (uim_lisp)Scm_eval_c_string(str);
 }
 
 uim_lisp
@@ -324,55 +341,55 @@ uim_scm_return_value(void)
 uim_lisp
 uim_scm_car(uim_lisp pair)
 {
-  return ScmOp_car(pair);
+  return (uim_lisp)ScmOp_car((ScmObj)pair);
 }
 
 uim_lisp
 uim_scm_cdr(uim_lisp pair)
 {
-  return ScmOp_cdr(pair);
+  return (uim_lisp)ScmOp_cdr((ScmObj)pair);
 }
 
 uim_lisp
 uim_scm_cadr(uim_lisp lst)
 {
-  return ScmOp_cadr(lst);
+  return (uim_lisp)ScmOp_cadr((ScmObj)lst);
 }
 
 uim_lisp
 uim_scm_caar(uim_lisp lst)
 {
-  return ScmOp_caar(lst);
+  return (uim_lisp)ScmOp_caar((ScmObj)lst);
 }
 
 uim_lisp
 uim_scm_cdar(uim_lisp lst)
 {
-  return ScmOp_cdar(lst);
+  return (uim_lisp)ScmOp_cdar((ScmObj)lst);
 }
 
 uim_lisp
 uim_scm_cddr(uim_lisp lst)
 {
-  return ScmOp_cddr(lst);
+  return (uim_lisp)ScmOp_cddr((ScmObj)lst);
 }
 
 uim_lisp
 uim_scm_cons(uim_lisp car, uim_lisp cdr)
 {
-  return Scm_NewCons(car, cdr);
+  return (uim_lisp)Scm_NewCons((ScmObj)car, (ScmObj)cdr);
 }
 
 uim_lisp
 uim_scm_length(uim_lisp lst)
 {
-  return ScmOp_length(lst);
+  return (uim_lisp)ScmOp_length((ScmObj)lst);
 }
 
 uim_lisp
 uim_scm_reverse(uim_lisp lst)
 {
-  return ScmOp_reverse(lst);
+  return (uim_lisp)ScmOp_reverse((ScmObj)lst);
 }
 
 #ifdef UIM_SCM_EXTENDED_API
@@ -426,10 +443,10 @@ uim_scm_require_file(const char *fn)
   if (!fn)
     return UIM_FALSE;
 
-  UIM_EVAL_FSTRING2(NULL, "(eq? '*%s-loaded* (*catch 'errobj (require \"%s\")))", fn, fn);
-  succeeded = uim_scm_c_bool(uim_scm_return_value());
+  UIM_EVAL_FSTRING1(NULL, "(require \"%s\")", fn);
 
-  return succeeded;
+  /* TODO: fixme */
+  return UIM_TRUE;
 }
 
 #if 0
@@ -446,39 +463,39 @@ siod_init_subr(const char *name, long type, SUBR_FUNC fcn)
 void
 uim_scm_init_subr_0(const char *name, uim_lisp (*func)(void))
 {
-  Scm_InitSubr0(name, func);
+  Scm_RegisterFunc0(name, func);
 }
 
 void
 uim_scm_init_subr_1(const char *name, uim_lisp (*func)(uim_lisp))
 {
-  Scm_InitSubr1(name, func);
+  Scm_RegisterFunc1(name, func);
 }
 
 void
 uim_scm_init_subr_2(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp))
 {
-  Scm_InitSubr2(name, func);
+  Scm_RegisterFunc2(name, func);
 }
 
 void
 uim_scm_init_subr_3(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp))
 {
-  Scm_InitSubr3(name, func);
+  Scm_RegisterFunc3(name, func);
 }
 
 void
 uim_scm_init_subr_4(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
 						uim_lisp))
 {
-  Scm_InitSubr4(name, func);
+  Scm_RegisterFunc4(name, func);
 }
 
 void
 uim_scm_init_subr_5(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
 						uim_lisp, uim_lisp))
 {
-  Scm_InitSubr5(name, func);
+  Scm_RegisterFunc5(name, func);
 }
 
 static void

@@ -54,8 +54,7 @@ uim_get_c_string(uim_lisp str)
 long
 uim_scm_repl_c_string(char *str, long want_init, long want_print)
 {
-  uim_lisp r = Scm_eval_c_string(str);
-  ScmOp_display(r, NULL);
+  ScmOp_display(Scm_eval_c_string(str), NULL);
 }
 
 int
@@ -125,7 +124,7 @@ uim_scm_symbol_value_bool(const char *symbol_str)
   if (!symbol_str)
     return UIM_FALSE;
 
-  val = uim_scm_c_bool(ScmOp_eval(symbol_str, NULL));
+  val = uim_scm_c_bool((uim_lisp)Scm_eval_c_string(symbol_str));
 
   return val;
 }
@@ -139,14 +138,15 @@ uim_scm_str_from_c_str(const char *str)
 uim_lisp
 uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
 {
-  uim_lisp lst = SCM_NIL, str = SCM_NIL;
+  uim_lisp lst = (uim_lisp)SCM_NIL;
+  uim_lisp str = (uim_lisp)SCM_NIL;
   const char *c_str;
   int i;
 
   for (i = n_strs - 1; 0 <= i; i--) {
     c_str = strs[i];
-    str = Scm_NewString(c_str);
-    lst = Scm_NewCons(str, lst);
+    str = (uim_lisp)Scm_NewStringCopying(c_str);
+    lst = (uim_lisp)Scm_NewCons((ScmObj)str, (ScmObj)lst);
   }
 
   return (uim_lisp)lst;
@@ -155,7 +155,7 @@ uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
 uim_lisp
 uim_scm_symbol_value(const char *symbol_str)
 {
-  return Scm_eval_c_string(symbol_str);
+  return (uim_lisp)Scm_eval_c_string(symbol_str);
 }
 
 uim_lisp
@@ -184,7 +184,7 @@ uim_scm_nth(uim_lisp n, uim_lisp lst)
 uim_lisp
 uim_scm_nreverse(uim_lisp cell)
 {
-  fprintf(stderr, "Not implemented yet.");
+  fprintf(stderr, "uim_scm_nreverse : not implemented yet.\n");
 #if 0
   return (uim_lisp)nreverse((uim_lisp)cell);
 #endif
@@ -193,13 +193,13 @@ uim_scm_nreverse(uim_lisp cell)
 void
 uim_scm_init_fsubr(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp))
 {
-  Scm_InitSubrR_NotEval(name, fcn);
+  Scm_RegisterFuncR(name, fcn);
 }
 
 void
 uim_scm_provide(const char *feature)
 {
-  fprintf(stderr, "Not implemented yet.");
+  fprintf(stderr, "uim_scm_provide : not implemented yet.\n");
 #if 0
   siod_c_provide(feature);
 #endif
