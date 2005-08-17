@@ -10,27 +10,24 @@
       (if (= total-err-num 0)
 	  (print "OK")
 	  (begin
-	    (print "[ ERROR NUM ]\n")
-	    (print total-err-num)
-	    (print "\n"))))))
+	    (print "[ ERROR NUM ]")
+	    (print total-err-num))))))
 
 (define report-error
   (lambda (errmsg)
     (begin
       (print "error : ")
-      (print errmsg)
-      (print "\n"))))
+      (print errmsg))))
 
 (define assert
   (lambda (msg exp)
-    (begin
-      (set! total-test-num (+ total-test-num 1))
-      (if exp
-	  #t
-	  (begin
-	    (set! total-err-num (+ total-err-num 1))
-	    (report-error msg)
-	    #f)))))
+    (set! total-test-num (+ total-test-num 1))
+    (if exp
+	#t
+	(begin
+	  (set! total-err-num (+ total-err-num 1))
+	  (report-error msg)
+	  #f))))
 
 (define assert-eq?
   (lambda (msg a b)
@@ -39,8 +36,7 @@
 	  (print "assert-eq? : we expect ")
 	  (print a)
 	  (print " but got ")
-	  (print b)
-	  (print "\n")))))
+	  (print b)))))
 
 (define assert-equal?
   (lambda (msg a b)
@@ -49,5 +45,4 @@
 	  (print "assert-equal? : we expect ")
 	  (print a)
 	  (print " but got ")
-	  (print b)
-	  (print "\n")))))
+	  (print b)))))

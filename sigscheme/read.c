@@ -206,7 +206,7 @@ static ScmObj read_sexpression(ScmObj port)
                         case EOF:
                             SigScm_Error("end in #\n");
                         default:
-                            SigScm_Error("Unsupported #\n");
+                            SigScm_Error("Unsupported # : %c\n", c1);
                     }
                 }
 		break;

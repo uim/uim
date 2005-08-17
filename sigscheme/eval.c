@@ -456,6 +456,8 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
     /* sanity check */
     if CHECK_2_ARGS(args)
         SigScm_Error("apply : Wrong number of arguments\n");
+    if (!SCM_NULLP(SCM_CDR(SCM_CDR(args))))
+	SigScm_Error("apply : Doesn't support multiarg apply\n");
 
     /* 1st elem of list is proc */
     proc = SCM_CAR(args);
