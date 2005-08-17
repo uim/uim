@@ -529,7 +529,8 @@ ScmObj ScmOp_oddp(ScmObj scm_num)
     if (EQ(ScmOp_numberp(scm_num), SCM_FALSE))
         SigScm_ErrorObj("odd? : number required but got ", scm_num);
 
-    if (SCM_INT_VALUE(scm_num) % 2 == 1)
+    if (SCM_INT_VALUE(scm_num) % 2 == 1
+	|| SCM_INT_VALUE(scm_num) % 2 == -1)
         return SCM_TRUE;
     else
         return SCM_FALSE;
