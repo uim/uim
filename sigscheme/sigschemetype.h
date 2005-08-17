@@ -293,8 +293,8 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_CLOSURE_EXP(a) (SCM_CLOSURE(a)->obj.closure.exp)
 #define SCM_CLOSURE_ENV(a) (SCM_CLOSURE(a)->obj.closure.env)
 #define SCM_SETCLOSURE(a) (SCM_SETTYPE((a), ScmClosure))
-#define SCM_SETCLOSURE_EXP(a, formals) (SCM_CLOSURE_EXP(a) = exp)
-#define SCM_SETCLOSURE_ENV(a, body) (SCM_CLOSURE_ENV(a) = env)
+#define SCM_SETCLOSURE_EXP(a, exp) (SCM_CLOSURE_EXP(a) = exp)
+#define SCM_SETCLOSURE_ENV(a, env) (SCM_CLOSURE_ENV(a) = env)
 
 #define SCM_VECTORP(a) (SCM_GETTYPE(a) == ScmVector)
 #define SCM_VECTOR(a)  (sigassert(SCM_VECTORP(a)), (a))
