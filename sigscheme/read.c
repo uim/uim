@@ -539,6 +539,6 @@ static char *read_char_sequence(ScmObj port)
 
 static ScmObj read_quote(ScmObj port, ScmObj quoter)
 {
-    return Scm_NewCons(quoter, read_sexpression(port));
+    return Scm_NewCons(quoter, Scm_NewCons(read_sexpression(port), SCM_NIL));
 }
 

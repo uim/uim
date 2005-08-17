@@ -459,8 +459,6 @@ ScmObj SigScm_load(const char *c_filename)
 	strcpy(filepath, c_filename);
     }
 
-    printf("path = %s\n", filepath);
-
     /* open port */
     port = ScmOp_open_input_file(Scm_NewStringCopying(filepath));
     s_expression = SCM_NIL;

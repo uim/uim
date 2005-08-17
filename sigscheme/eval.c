@@ -60,6 +60,12 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+#define SCM_INVALID NULL	/* TODO: make a more appropriate choice */
+
+#define IS_LIST_LEN_1(args)  (SCM_CONSP(args) && SCM_NULLP(SCM_CDR(args)))
+/* for the quasiquote family */
+#define QQUOTE_SET_VERBATIM(x) ((x) = SCM_INVALID)
+#define QQUOTE_IS_VERBATIM(x)  (EQ((x), SCM_INVALID))
 
 /*=======================================
   Variable Declarations
@@ -78,8 +84,8 @@ static ScmObj lookup_frame(ScmObj var, ScmObj frame);
 static ScmObj symbol_value(ScmObj var, ScmObj env);
 
 static ScmObj map_eval(ScmObj args, ScmObj env);
-static ScmObj eval_unquote(ScmObj args, ScmObj env);
-static ScmObj ScmOp_last_pair(ScmObj list);
+static ScmObj qquote_internal(ScmObj expr, ScmObj env, int nest);
+static ScmObj qquote_vector(ScmObj vec, ScmObj env, int nest);
 
 /*=======================================
   Function Implementations
@@ -427,13 +433,7 @@ eval_loop:
                         }
                         break;
                     case ScmEtc:
-                        if (EQ(tmp, SCM_QUOTE)) {
-                            return SCM_CDR(obj);
-                        }
-                        if (EQ(tmp, SCM_QUASIQUOTE)) {
-                            return eval_unquote(SCM_CDR(obj), env);
-                        }
-                        return tmp;
+                        SigScm_ErrorObj("invalid application: ", obj);
                     default:
                         /* What? */
                         SigScm_ErrorObj("eval : What type of function? ", arg);
@@ -652,77 +652,243 @@ ScmObj map_eval(ScmObj args, ScmObj env)
     return result;
 }
 
-/*
- * TODO : implement this properly as defined in R5RS!!
+
+/**
+ * The big bad full-implementation of quasiquote.
+ * 
+ * @param qexpr The expression given to quasiquote.
+ * @param env The effective environment.
+ * @param nest Nesting level of quasiquote.  This function is recursive.
+ * 
+ * @return If qexpr or any of its subexpressions was evaluated, then
+ * (do-unquotes qexpr) is returned.  Otherwise, the return
+ * value will test true for QQUOTE_IS_VERBATIM().
  *
- * Quasiquote forms may be nested. Substitutions are made only
- * for unquoted components appearing at the same nesting level
- * as the outermost backquote. The nesting level increases by
- * one inside each successive quasiquotation, and decreases by
- * one inside each unquotation.
+ * @see qquote_vector()
  */
-static ScmObj eval_unquote(ScmObj args, ScmObj env)
+static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
 {
-    ScmObj list = args;
-    ScmObj prev = list;
-    ScmObj obj  = SCM_NIL;
+    ScmObj ls;
+    ScmObj obj;
+    ScmObj car;
+    ScmObj args;
+    ScmObj leftover;
+    ScmObj result;
+    ScmObj ret_list;
+    ScmObj *ret_tail = NULL;
+    int splice_flag;
 
-    /* scanning list */
-    for (; !SCM_NULLP(list); list = SCM_CDR(list))
-    {
-        obj = SCM_CAR(list);
+    /* local "functions" */
+#define qquote_copy_delayed()   (QQUOTE_IS_VERBATIM(ret_list))
+#define qquote_force_copy_upto(end) \
+    do { \
+	ScmObj src = qexpr; \
+	ret_tail = &ret_list; \
+	while (!EQ(src, end)) { \
+	    *ret_tail = Scm_NewCons(SCM_CAR(src), SCM_NIL); \
+	    ret_tail = &SCM_CDR(*ret_tail); \
+	    src = SCM_CDR(src); \
+	} \
+    } while (0)
 
-        /* handle quotes */
-        if (SCM_CONSP(obj)) {
-            /* handle nested SCM_QUASIQUOTE(`) */
-            if (EQ(SCM_CDR(obj), SCM_QUASIQUOTE)) {
-                continue; /* left untouched */
-            }
 
-            /* handle SCM_UNQUOTE(,) */
-            if (EQ(SCM_CAR(obj), SCM_UNQUOTE)) {
-                SCM_SETCAR(list, ScmOp_eval(SCM_CDR(obj), env));
-            }
+    QQUOTE_SET_VERBATIM(ret_list); /* default return value */
 
-            /* handle SCM_UNQUOTE_SPLICING(,@) */
-            if (EQ(SCM_CAR(obj), SCM_UNQUOTE_SPLICING)) {
-                obj = ScmOp_eval(SCM_CDR(obj), env);
+    if (SCM_CONSP(qexpr)) {
+	car = SCM_CAR(qexpr);
+	args = SCM_CDR(qexpr);
 
-                if (SCM_NULLP(obj)) {
-                    SCM_SETCDR(prev, SCM_CDR(SCM_CDR(prev)));
-                    continue;
-                }
-
-                if (!SCM_CONSP(obj))
-                    SigScm_Error("invalid unquote-splicing (,@)\n");
-
-                SCM_SETCDR(ScmOp_last_pair(obj), SCM_CDR(SCM_CDR(prev)));
-                SCM_SETCDR(prev, obj);
-            }
-        }
-
-        prev = list;
+	if (EQ(car, SCM_UNQUOTE_SPLICING)) {
+	    if (!IS_LIST_LEN_1(args))
+		SigScm_ErrorObj("syntax error: ", qexpr);
+	    if (--nest == 0)
+		return ScmOp_eval(SCM_CAR(args), env);
+	}
+	else if (EQ(car, SCM_QUASIQUOTE)) {
+	    if (!IS_LIST_LEN_1(args))
+		SigScm_ErrorObj("syntax error: ", qexpr);
+	    if (++nest <= 0)
+		SigScm_Error("quasiquote: nesting too deep (circular list?)");
+	}
     }
 
-    return args;
+    for (ls = qexpr; SCM_CONSP(ls); ls = SCM_CDR(ls)) {
+	obj = SCM_CAR(ls);
+	splice_flag = 0;
+
+	if (SCM_CONSP(obj)) {
+	    result = qquote_internal(obj, env, nest);
+
+	    if (EQ(SCM_CAR(obj), SCM_UNQUOTE_SPLICING) && nest == 1) {
+		/* ,x or ,@x */
+		splice_flag = 1;
+	    }
+	} else if (SCM_VECTORP(obj)) {
+	    /* #(x) */
+	    result = qquote_vector(obj, env, nest);
+	} else if (EQ(obj, SCM_UNQUOTE) && IS_LIST_LEN_1(SCM_CDR(ls))) {
+	    /* we're at the comma in (x . ,y) or qexpr was ,z */
+	    if (--nest == 0) {
+		result = ScmOp_eval(SCM_CADR(ls), env);
+		goto append_last_item;
+	    }
+	    QQUOTE_SET_VERBATIM(result);
+	} else {
+	    /* atom */
+	    QQUOTE_SET_VERBATIM(result);
+	}
+
+	if (QQUOTE_IS_VERBATIM(result)) {
+	    if (!qquote_copy_delayed()) {
+		*ret_tail = Scm_NewCons(obj, SCM_NIL);
+		ret_tail = &SCM_CDR(*ret_tail);
+	    }
+	} else {
+	    if (qquote_copy_delayed())
+		qquote_force_copy_upto(ls);
+
+	    if (splice_flag) {
+		*ret_tail = result;
+		/* find the new tail (which may be the current pos) */
+		while (SCM_CONSP(*ret_tail))
+		    ret_tail = &SCM_CDR(*ret_tail);
+		if (!SCM_NULLP(*ret_tail))
+		    SigScm_ErrorObj("unquote-splicing: bad list: ",
+				    result);
+	    } else {
+		*ret_tail = Scm_NewCons(result, SCM_NIL);
+		ret_tail = &SCM_CDR(*ret_tail);
+	    }
+	}
+    } /* foreach ls in qexpr */
+
+    /* Handle the leftover of an improper list; if qexpr is a proper
+     * list, all the following will be a no-op. */
+    
+    if (SCM_VECTORP(ls))
+	result = qquote_vector(ls, env, nest);
+    else
+	QQUOTE_SET_VERBATIM(result);
+
+  append_last_item:
+    if (QQUOTE_IS_VERBATIM(result)) {
+	if (!qquote_copy_delayed())
+	    *ret_tail = ls;
+    } else {
+	if (qquote_copy_delayed())
+	    qquote_force_copy_upto(ls);
+	*ret_tail = result;
+    }
+
+    return ret_list;
+#undef qquote_is_spliced
+#undef qquote_copy_delayed
+#undef qquote_force_copy_upto
 }
 
-static ScmObj ScmOp_last_pair(ScmObj list)
+/**
+ * The semantics are the same as qquote_internal, except the first
+ * argument should be a vector.  Adapted some ideas from Gauche,
+ * another Scheme implementation by Shiro Kawai.
+ *
+ * @see qquote_internal()
+ */
+static ScmObj qquote_vector(ScmObj src, ScmObj env, int nest)
 {
-    /* sanity check */
-    if (SCM_NULLP(list))
-        return SCM_NIL;
-    if (!SCM_CONSP(list))
-        SigScm_ErrorObj("last_pair : list required but got ", list);
+    ScmObj splices = SCM_NIL;
+    ScmObj expr;
+    ScmObj ret;
+    ScmObj *copy_buf;
+    ScmObj result;
+    ScmObj splice_len;
+    int len = SCM_VECTOR_LEN(src);
+    int growth = 0;
+    int next_splice_index = -1;
+    int i, j;
 
-    while (1) {
-        if (!SCM_CONSP(list) || SCM_NULLP(SCM_CDR(list)))
-            return list;
+    /* local "functions" */
+#define qquote_copy_delayed() (copy_buf == NULL)
+#define qquote_is_spliced(o)  \
+    (SCM_CONSP(o) && EQ(SCM_CAR(o), SCM_UNQUOTE_SPLICING))
+#define qquote_force_copy_upto(n) \
+    do { \
+	int k; \
+	copy_buf = (ScmObj*)malloc((len + growth) * sizeof(ScmObj)); \
+	memcpy(copy_buf, SCM_VECTOR_VEC(src), n*sizeof(ScmObj)); \
+	/* wrap it now, or a cont invocation can leak it */ \
+	ret = Scm_NewVector(copy_buf, len + growth); \
+	/* fill with something the garbage collector recognizes */ \
+	for (k=n; k < len + growth; k++) \
+	    copy_buf[k] = SCM_NIL; \
+    } while(0)
 
-        list = SCM_CDR(list);
+    QQUOTE_SET_VERBATIM(ret);
+    copy_buf = NULL;
+
+    if (nest == 1) {
+	/* Evaluate all the splices first, in reverse order, and store
+	 * them in a list ((ls . index) (ls . index)...). */
+	for (i = len - 1; i >= 0; i--) {
+	    expr = SCM_VECTOR_CREF(src, i);
+	    if (qquote_is_spliced(expr)) {
+		if (!IS_LIST_LEN_1(SCM_CDR(expr)))
+		    SigScm_ErrorObj("syntax error: ", expr);
+
+		result = ScmOp_eval(SCM_CADR(expr), env);
+
+		splice_len = ScmOp_length(result);
+		if (SCM_INT_VALUE(splice_len) < 0)
+		    SigScm_Error("unquote-splicing: bad list");
+
+		growth += SCM_INT_VALUE(splice_len) - 1;
+		splices = Scm_NewCons(Scm_NewCons(result, Scm_NewInt(i)),
+				      splices);
+	    }
+	}
+	if (!SCM_NULLP(splices)) {
+	    next_splice_index = SCM_INT_VALUE(SCM_CDAR(splices));
+	    qquote_force_copy_upto(0);
+	}
     }
 
-    return SCM_NIL;
+    for (i = j = 0; i < len; i++) {
+	/* j will be the index for copy_buf */
+	if (i == next_splice_index) {
+	    /* spliced */
+	    for (expr=SCM_CAAR(splices); !SCM_NULLP(expr); expr=SCM_CDR(expr))
+		copy_buf[j++] = SCM_CAR(expr);
+	    splices = SCM_CDR(splices);
+
+	    if (SCM_NULLP(splices))
+		next_splice_index = -1;
+	    else
+		next_splice_index = SCM_INT_VALUE(SCM_CDAR(splices));
+	    /* continue; */
+	} else {
+	    expr = SCM_VECTOR_CREF(src, i);
+	    if (SCM_CONSP(expr))
+		result = qquote_internal(expr, env, nest);
+	    else if (SCM_VECTORP(expr))
+		result = qquote_vector(expr, env, nest);
+	    else
+		QQUOTE_SET_VERBATIM(result);
+
+	    if (!QQUOTE_IS_VERBATIM(result)) {
+		if (qquote_copy_delayed())
+		    qquote_force_copy_upto(i);
+
+		copy_buf[j] = result;
+	    } else if (!qquote_copy_delayed()) {
+		copy_buf[j] = expr;
+	    }
+
+	    j++;
+	}
+    }
+
+    return ret;
+#undef qquote_copy_delayed
+#undef qquote_force_copy_upto
 }
 
 /*=======================================
@@ -731,9 +897,12 @@ static ScmObj ScmOp_last_pair(ScmObj list)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.2 Literal expressions
 ===========================================================================*/
-ScmObj ScmOp_quote(ScmObj obj)
+ScmObj ScmOp_quote(ScmObj obj, ScmObj *envp, int *tail_flag)
 {
-    return Scm_NewCons(SCM_QUOTE, obj);
+    if (!SCM_CONSP(obj) || !SCM_NULLP(SCM_CDR(obj)))
+	SigScm_ErrorObj("quote: bad argument list: ", obj);
+    *tail_flag = 0;
+    return SCM_CAR(obj);
 }
 
 /*===========================================================================
@@ -1346,19 +1515,34 @@ ScmObj ScmOp_delay(ScmObj arg, ScmObj *envp, int *tail_flag)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.6 Quasiquotation
 ===========================================================================*/
-ScmObj ScmOp_quasiquote(ScmObj obj)
+ScmObj ScmOp_quasiquote(ScmObj obj, ScmObj *envp, int *tail_flag)
 {
-    return Scm_NewCons(SCM_QUASIQUOTE, obj);
+    ScmObj ret;
+    if (!IS_LIST_LEN_1(obj))
+	SigScm_ErrorObj("quasiquote: bad argument list: ", obj);
+    obj = SCM_CAR(obj);
+    ret = qquote_internal(obj, *envp, 1);
+
+    *tail_flag = 0;
+    if (QQUOTE_IS_VERBATIM(ret))
+	return obj;
+    return ret;
 }
 
-ScmObj ScmOp_unquote(ScmObj obj)
+ScmObj ScmOp_unquote(ScmObj obj, ScmObj *envp, int *tail_flag)
 {
-    return Scm_NewCons(SCM_UNQUOTE, obj);
+    if (!SCM_CONSP(obj) || !SCM_NULLP(SCM_CDR(obj)))
+	SigScm_ErrorObj("unquote: bad argument list: ", obj);
+    SigScm_Error("unquote outside quasiquote");
+    return SCM_NIL;
 }
 
-ScmObj ScmOp_unquote_splicing(ScmObj obj)
+ScmObj ScmOp_unquote_splicing(ScmObj obj, ScmObj *envp, int *tail_flag)
 {
-    return Scm_NewCons(SCM_UNQUOTE_SPLICING, obj);
+    if (!SCM_CONSP(obj) || !SCM_NULLP(SCM_CDR(obj)))
+	SigScm_ErrorObj("unquote-splicing: bad argument list: ", obj);
+    SigScm_Error("unquote-splicing outside quasiquote");
+    return SCM_NIL;
 }
 
 

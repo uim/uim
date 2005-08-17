@@ -230,17 +230,8 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
             }
             break;
         case ScmEtc:
-            /* obj1 and obj2 are both #t or both #f */
-            if (((EQ(obj1, SCM_TRUE) && EQ(obj2, SCM_TRUE)))
-                || (EQ(obj1, SCM_FALSE) && EQ(obj2, SCM_FALSE)))
-            {
-                return SCM_TRUE;
-            }
-            /* both obj1 and obj2 are the empty list */
-            if (SCM_NULLP(obj1) && SCM_NULLP(obj2))
-            {
-                return SCM_TRUE;
-            }
+	    if (EQ(obj1, obj2))
+		return SCM_TRUE;
             break;
         case ScmFreeCell:
             SigScm_Error("equal? : cannnot compare freecell, gc broken?\n");

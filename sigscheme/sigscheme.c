@@ -81,10 +81,6 @@ void SigScm_Initialize(void)
     SCM_NEW_ETC(SigScm_true,             SigScm_true_impl,             2);
     SCM_NEW_ETC(SigScm_false,            SigScm_false_impl,            3);
     SCM_NEW_ETC(SigScm_eof,              SigScm_eof_impl,              4);
-    SCM_NEW_ETC(SigScm_quote,            SigScm_quote_impl,            5);
-    SCM_NEW_ETC(SigScm_quasiquote,       SigScm_quasiquote_impl,       6);
-    SCM_NEW_ETC(SigScm_unquote,          SigScm_unquote_impl,          7);
-    SCM_NEW_ETC(SigScm_unquote_splicing, SigScm_unquote_splicing_impl, 8);
     SCM_NEW_ETC(SigScm_unbound,          SigScm_unbound_impl,          9);
     SCM_NEW_ETC(SigScm_unspecified,      SigScm_unspecified_impl,      10);
     SCM_NEW_ETC(SigScm_undef,            SigScm_undef_impl,            11);
@@ -98,6 +94,13 @@ void SigScm_Initialize(void)
     =======================================================================*/
     SigScm_InitStorage();
     /*=======================================================================
+      Interned Variable Initialization
+    =======================================================================*/
+    SigScm_quote            = Scm_Intern("quote");
+    SigScm_quasiquote       = Scm_Intern("quasiquote");
+    SigScm_unquote          = Scm_Intern("unquote");
+    SigScm_unquote_splicing = Scm_Intern("unquote-splicing");
+    /*=======================================================================
       Export Scheme Special Symbols
     =======================================================================*/
     SCM_SYMBOL_VCELL(Scm_Intern("#t"))   = SCM_TRUE;
@@ -110,7 +113,7 @@ void SigScm_Initialize(void)
     /* eval.c */
     Scm_RegisterFunc2("eval"                 , ScmOp_eval);
     Scm_RegisterFuncL("apply"                , ScmOp_apply);
-    Scm_RegisterFunc1("quote"                , ScmOp_quote);
+    Scm_RegisterFuncR("quote"                , ScmOp_quote);
     Scm_RegisterFuncR("lambda"               , ScmExp_lambda);
     Scm_RegisterFuncR("if"                   , ScmExp_if);
     Scm_RegisterFuncR("set!"                 , ScmExp_set);
@@ -124,9 +127,9 @@ void SigScm_Initialize(void)
     Scm_RegisterFuncR("begin"                , ScmExp_begin);
     Scm_RegisterFuncR("do"                   , ScmExp_do);
     Scm_RegisterFuncR("delay"                , ScmOp_delay);
-    Scm_RegisterFunc1("quasiquote"           , ScmOp_quasiquote);
-    Scm_RegisterFunc1("unquote"              , ScmOp_unquote);
-    Scm_RegisterFunc1("unquote-splicing"     , ScmOp_unquote_splicing);
+    Scm_RegisterFuncR("quasiquote"           , ScmOp_quasiquote);
+    Scm_RegisterFuncR("unquote"              , ScmOp_unquote);
+    Scm_RegisterFuncR("unquote-splicing"     , ScmOp_unquote_splicing);
     Scm_RegisterFuncR("define"               , ScmExp_define);
     Scm_RegisterFunc1("scheme-report-environment", ScmOp_scheme_report_environment);
     Scm_RegisterFunc1("null-environment"         , ScmOp_null_environment);
