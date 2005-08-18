@@ -721,7 +721,7 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
 	    result = qquote_internal(obj, env, nest);
 
 	    if (EQ(SCM_CAR(obj), SCM_UNQUOTE_SPLICING) && nest == 1) {
-		/* ,x or ,@x */
+		/* ,@x */
 		splice_flag = 1;
 	    }
 	} else if (SCM_VECTORP(obj)) {
@@ -764,8 +764,7 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
     } /* foreach ls in qexpr */
 
     /* Handle the leftover of an improper list; if qexpr is a proper
-     * list, all the following will be a no-op. */
-    
+     * list, all the following will be a no-op. */    
     if (SCM_VECTORP(ls))
 	result = qquote_vector(ls, env, nest);
     else

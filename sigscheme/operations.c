@@ -130,6 +130,7 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
             break;
 	case ScmCPointer:
 	case ScmCFuncPointer:
+	case ScmValuePacket:
 	    if (EQ(obj1, obj2))
 	    {
 		return SCM_TRUE;
@@ -248,6 +249,12 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
 		return SCM_TRUE;
 	    }
 	    break;
+        case ScmValuePacket:
+            if (EQ(SCM_VALUEPACKET_VALUES(obj1), SCM_VALUEPACKET_VALUES(obj2)))
+            {
+                return SCM_TRUE;
+            }
+            break;
     }
 
     return SCM_FALSE;
@@ -1944,6 +1951,47 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env)
     SCM_SETCDR(arg, Scm_NewCons(cont, SCM_NIL));
 
     return ScmOp_eval(arg, env);
+}
+
+ScmObj ScmOp_values(ScmObj argl, ScmObj env)
+{
+    /* Values with one arg must return something that fits an ordinary
+     * continuation. */
+    if (SCM_CONSP(argl) && SCM_NULLP(SCM_CDR(argl)))
+	return SCM_CAR(argl);
+
+    /* Otherwise, we'll return the values in a packet. */
+    return Scm_NewValuePacket(argl);
+}
+
+ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp, int *tail_flag)
+{
+    ScmObj vals;
+    ScmObj cons_wrapper;
+
+    /* This should go away when we reorganize function types. */
+    if (CHECK_2_ARGS(argl))
+	SigScm_ErrorObj("call-with-values: too few arguments: ", argl);
+
+    /* make the list (producer) and evaluate it */
+    cons_wrapper = Scm_NewCons(SCM_CAR(argl), SCM_NIL);
+    vals = ScmOp_eval(cons_wrapper, *envp);
+
+    if (!SCM_VALUEPACKETP(vals)) {
+	/* got back a single value */
+	vals = Scm_NewCons(vals, SCM_NIL);
+    } else {
+	/* extract */
+	vals = SCM_VALUEPACKET_VALUES(vals);
+    }
+    
+    *tail_flag = 1;
+
+    /* cons_wrapper would have no chance of being referenced from
+     * anywhere else, so we'll reuse that object. */
+    SCM_SETCAR(cons_wrapper, SCM_CADR(argl));
+    SCM_SETCDR(cons_wrapper, vals);
+    return cons_wrapper;
 }
 
 #if USE_SRFI1

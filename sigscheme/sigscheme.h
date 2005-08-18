@@ -132,6 +132,7 @@ ScmObj Scm_NewVector(ScmObj *vec, int len);
 ScmObj Scm_NewFilePort(FILE *file, const char *filename, enum ScmPortDirection pdireciton);
 ScmObj Scm_NewStringPort(const char *str);  /* input only? */
 ScmObj Scm_NewContinuation(void);
+ScmObj Scm_NewValuePacket(ScmObj values);
 ScmObj Scm_NewCPointer(void *data);
 ScmObj Scm_NewCFuncPointer(C_FUNC func);
 ScmObj Scm_Intern(const char *name);
@@ -289,6 +290,8 @@ ScmObj ScmOp_map(ScmObj arg, ScmObj env);
 ScmObj ScmOp_for_each(ScmObj arg, ScmObj env);
 ScmObj ScmOp_force(ScmObj arg, ScmObj env);
 ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env);
+ScmObj ScmOp_values(ScmObj argl, ScmObj env);
+ScmObj ScmOp_call_with_values(ScmObj args, ScmObj *envp, int *tail_flag);
 
 /* io.c */
 void   SigScm_set_lib_path(const char *path);

@@ -254,6 +254,8 @@ void SigScm_Initialize(void)
     Scm_RegisterFuncL("for-each"             , ScmOp_for_each);
     Scm_RegisterFuncL("force"                , ScmOp_force);
     Scm_RegisterFuncL("call-with-current-continuation", ScmOp_call_with_current_continuation);
+    Scm_RegisterFuncL("values"               , ScmOp_values);
+    Scm_RegisterFuncR("call-with-values"     , ScmOp_call_with_values);
     /* io.c */
     Scm_RegisterFunc2("call-with-input-file" , ScmOp_call_with_input_file);
     Scm_RegisterFunc2("call-with-output-file", ScmOp_call_with_output_file);

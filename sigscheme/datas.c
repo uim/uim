@@ -366,6 +366,9 @@ mark_loop:
 	    obj = SCM_CLOSURE_ENV(obj);
 	    goto mark_loop;
 	    break;
+	case ScmValuePacket:
+	    obj = SCM_VALUEPACKET_VALUES(obj);
+	    goto mark_loop;
 	case ScmVector:
 	    for (i = 0; i < SCM_VECTOR_LEN(obj); i++) {
 		mark_obj(SCM_VECTOR_VEC(obj)[i]);
@@ -761,6 +764,16 @@ ScmObj Scm_NewContinuation(void)
     SCM_SETCONTINUATION_CONTINFO(obj, cinfo);
 
     return obj;
+}
+
+ScmObj Scm_NewValuePacket(ScmObj values)
+{
+    ScmObj packet = SCM_NIL;
+    SCM_NEW_OBJ_INTERNAL(packet);
+
+    SCM_SETVALUEPACKET(packet);
+    SCM_SETVALUEPACKET_VALUES(packet, values);
+    return packet;
 }
 
 ScmObj Scm_NewCPointer(void *data)

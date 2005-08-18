@@ -135,10 +135,10 @@
 ;      (lambda ()  (receive x (values 1 2 3) x)))
 ;(test "receive" 1
 ;      (lambda ()  (receive (a) 1 a)))
-;(test "call-with-values" '(1 2 3)
-;      (lambda ()  (call-with-values (lambda () (values 1 2 3)) list)))
-;(test "call-with-values" '()
-;      (lambda ()  (call-with-values (lambda () (values)) list)))
+(test "call-with-values" '(1 2 3)
+      (lambda ()  (call-with-values (lambda () (values 1 2 3)) list)))
+(test "call-with-values" '()
+      (lambda ()  (call-with-values (lambda () (values)) list)))
 
 (total-report)
 

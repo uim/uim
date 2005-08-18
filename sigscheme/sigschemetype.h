@@ -63,7 +63,8 @@ enum ScmObjType {
     ScmEtc          = 11,
 
     ScmCPointer     = 20,
-    ScmCFuncPointer = 21
+    ScmCFuncPointer = 21,
+    ScmValuePacket  = 22
 };
 
 /* Function Type by argnuments */
@@ -203,6 +204,10 @@ struct ScmObjInternal_ {
             ScmContInfo *cont_info;
         } continuation;
 
+	struct ScmValuePacket {
+	    ScmObj values;
+	} value_pack;
+
         struct ScmEtc {
             int type;
         } etc;
@@ -330,6 +335,12 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_CONTINUATION_JMPENV(a) (SCM_CONTINUATION(a)->obj.continuation.cont_info->jmp_env)
 #define SCM_SETCONTINUATION(a) (SCM_SETTYPE((a), ScmContinuation))
 #define SCM_SETCONTINUATION_CONTINFO(a, cinfo) (SCM_CONTINUATION_CONTINFO(a) = (cinfo))
+
+#define SCM_VALUEPACKETP(a)          (SCM_GETTYPE(a) == ScmValuePacket)
+#define SCM_VALUEPACKET(a)           (sigassert(SCM_VALUEPACKETP(a)), (a))
+#define SCM_VALUEPACKET_VALUES(a)    (SCM_VALUEPACKET(a)->obj.value_pack.values)
+#define SCM_SETVALUEPACKET(a)        (SCM_SETTYPE((a), ScmValuePacket))
+#define SCM_SETVALUEPACKET_VALUES(a, v) (SCM_VALUEPACKET_VALUES(a) = (v))
 
 /*============================================================================
   Etcetra variables (Special Symbols like NIL)

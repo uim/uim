@@ -180,5 +180,14 @@
 (assert-equal? "do test4" '(c b a) (nreverse '(a b c)))
 (assert-equal? "do test5" '((5 6) (3 4) (1 2)) (nreverse '((1 2) (3 4) (5 6))))
 
+;; from R5RS
+(assert-equal? "values test1" 5
+	       (call-with-values (lambda () (values 4 5))
+		 (lambda (a b) b)))
+
+(assert-equal? "values test2" -1 (call-with-values * -))
+(assert "values test3" (number? (values 5)))
+(begin (values 1 2 3) 'ignore) ; not asserted, just make sure we don't blow up
+
 
 (total-report)

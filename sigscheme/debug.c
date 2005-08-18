@@ -139,6 +139,11 @@ static void print_ScmObj_internal(FILE *f, ScmObj obj, enum OutputType otype)
 	case ScmContinuation:
 	    fprintf(f, "#<subr continuation>");	    
 	    break;
+	case ScmValuePacket:
+	    fputs("#<values ", f);
+	    print_list(f, SCM_VALUEPACKET_VALUES(obj), otype);
+	    putc('>', f);
+	    break;
 	case ScmEtc:
 	    print_etc(f, obj, otype);
 	    break;
