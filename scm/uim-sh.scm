@@ -38,15 +38,15 @@
 (define uim-sh-loop
   (lambda ()
     (if (not uim-sh-opt-batch)
-	(puts uim-sh-prompt))
+	(display uim-sh-prompt))
     (let* ((expr (read))
-	   (eof (eq? (eof-val) expr)))
+	   (eof  (eof-object? expr)))
       (if (not eof)
 	  (begin
 	    ((if  uim-sh-opt-strict-batch
 		  (lambda () #f)
 		  print)
-	     (eval expr))
+	     (eval expr '()))
 	    (uim-sh-loop))
 	  #f))))
 
@@ -64,7 +64,7 @@
 
 (define uim-sh-usage
   (lambda ()
-    (puts "Usage: uim-sh [options]
+    (print "Usage: uim-sh [options]
   -b        batch mode. suppress shell prompts
   -B        strict batch mode, implies -b. suppress shell prompts and
             evaluated results
@@ -76,7 +76,8 @@
     (uim-sh-parse-args args)
     (if uim-sh-opt-help
 	(uim-sh-usage)
-	(if (*catch
-	     'all
-	     (uim-sh-loop))
-	    (uim-sh args)))))
+;	(if (*catch
+;	     'all
+;	     (uim-sh-loop))
+;	    (uim-sh args)))))
+	(uim-sh-loop))))
