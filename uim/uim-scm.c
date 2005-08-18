@@ -140,7 +140,7 @@ uim_scm_c_symbol(uim_lisp symbol)
 uim_lisp
 uim_scm_make_symbol(const char *name)
 {
-  return (uim_lisp)Scm_NewSymbol(strdup(name), NULL);
+  return (uim_lisp)Scm_Intern(name);
 }
 
 void *
@@ -170,7 +170,7 @@ uim_scm_make_func_ptr(uim_func_ptr func_ptr)
 void
 uim_scm_gc_protect(uim_lisp *location)
 {
-  SigScm_gc_protect((ScmObj*)location);
+  SigScm_gc_protect((ScmObj)(*location));
 }
 
 void
@@ -182,7 +182,7 @@ uim_scm_gc_protect_stack(uim_lisp *stack_start)
 void
 uim_scm_gc_unprotect_stack(uim_lisp *stack_start)
 {
-  SigScm_gc_unprotect_stack(stack_start);
+  SigScm_gc_unprotect_stack((ScmObj*)stack_start);
 }
 
 uim_bool
@@ -292,7 +292,7 @@ uim_scm_eq(uim_lisp a, uim_lisp b)
 uim_bool
 uim_scm_string_equal(uim_lisp a, uim_lisp b)
 {
-  if(EQ(ScmOp_string_equal(a, b), SigScm_true))
+  if(EQ(ScmOp_string_equal((ScmObj)a, (ScmObj)b), SigScm_true))
     return UIM_TRUE;
 
   return UIM_FALSE;
@@ -322,7 +322,8 @@ uim_scm_apply(uim_lisp proc, uim_lisp args)
 uim_lisp
 uim_scm_quote(uim_lisp obj)
 {
-  return (uim_lisp)ScmOp_quote((ScmObj)obj);
+  int flag;
+  return (uim_lisp)ScmOp_quote(Scm_NewCons((ScmObj)obj, SigScm_nil), &SigScm_nil, &flag);
 }
 #endif  /* UIM_SCM_EXTENDED_API */
 
@@ -336,6 +337,7 @@ uim_lisp
 uim_scm_return_value(void)
 {
   /* FIXME: This function should be removed. */
+  SigScm_Error("uim_scm_return_value is not implemented\n");
 }
 
 uim_lisp
@@ -438,8 +440,6 @@ uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
 uim_bool
 uim_scm_require_file(const char *fn)
 {
-  uim_bool succeeded;
-
   if (!fn)
     return UIM_FALSE;
 
@@ -516,12 +516,7 @@ uim_scm_init(const char *verbose_level)
   SigScm_Initialize();
   true_sym  = (uim_lisp)SigScm_true;
   false_sym = (uim_lisp)SigScm_false;
-
-  uim_scm_gc_protect(&true_sym);
-  uim_scm_gc_protect(&false_sym);
-
   protected_arg0 = uim_scm_f();
-  uim_scm_gc_protect(&protected_arg0);
 }
 
 void

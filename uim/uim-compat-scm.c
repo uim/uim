@@ -39,10 +39,7 @@
 #include "uim-compat-scm.h"
 #include "context.h"
 
-
 static uim_lisp return_val;
-static uim_lisp quote_sym;
-
 
 /* will be deprecated. use uim_scm_c_str() instead */
 char *
@@ -54,7 +51,10 @@ uim_get_c_string(uim_lisp str)
 long
 uim_scm_repl_c_string(char *str, long want_init, long want_print)
 {
-  ScmOp_display(Scm_eval_c_string(str), NULL);
+  /* TODO: fix return value */
+  Scm_eval_c_string(str);
+
+  return 0;
 }
 
 int
@@ -173,11 +173,8 @@ uim_scm_qintern_c_str(const char *str)
 uim_lisp
 uim_scm_nth(uim_lisp n, uim_lisp lst)
 {
-  uim_lisp form;
-  form = uim_scm_list3(uim_scm_intern_c_str("nth"),
-		       n,
-		       lst);
-  return uim_scm_eval(form);
+  return (uim_lisp)ScmOp_list_ref((ScmObj)lst,
+				  (ScmObj)n);
 }
 
 /* Is this function used from somewhere? I think this function could be removed. */
@@ -199,10 +196,7 @@ uim_scm_init_fsubr(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp))
 void
 uim_scm_provide(const char *feature)
 {
-  fprintf(stderr, "uim_scm_provide : not implemented yet.\n");
-#if 0
-  siod_c_provide(feature);
-#endif
+  ScmOp_provide(Scm_NewStringCopying(feature));
 }
 
 
@@ -272,9 +266,4 @@ uim_scm_c_list_free(void **list, uim_scm_c_list_free_func free_func)
 void
 uim_init_compat_scm_subrs(void)
 {
-  return_val = uim_scm_f();
-  quote_sym = uim_scm_intern_c_str("quote");
-
-  uim_scm_gc_protect(&return_val);
-  uim_scm_gc_protect(&quote_sym);
 }
