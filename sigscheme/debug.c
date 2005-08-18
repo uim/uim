@@ -301,7 +301,7 @@ static void print_port(FILE *f, ScmObj port, enum OutputType otype)
     if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE) {
 	fprintf(f, "file %s", SCM_PORTINFO_FILENAME(port));
     } else if (SCM_PORTINFO_PORTTYPE(port) == PORT_STRING) {
-	fprintf(f, "string");
+	fprintf(f, "string %s", SCM_PORTINFO_STR(port));
     }
 
     fprintf(f, ">");

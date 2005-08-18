@@ -907,11 +907,18 @@ C_FUNC Scm_GetCFuncPointer(ScmObj c_funcptr)
 
 ScmObj Scm_eval_c_string(const char *exp)
 {
+    ScmObj stack_start;
     ScmObj str_port = Scm_NewStringPort(exp);
     ScmObj ret = SCM_NIL;
 
+    /* start protecting stack */
+    SigScm_gc_protect_stack(&stack_start);
+
     ret = SigScm_Read(str_port);
     ret = ScmOp_eval(ret, SCM_NIL);
+
+    /* now no need to protect stack */
+    SigScm_gc_unprotect_stack(&stack_start);
 
     return ret;
 }

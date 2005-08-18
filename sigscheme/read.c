@@ -474,10 +474,11 @@ static char *read_word(ScmObj port)
 #endif
 
         switch (c) {
-            case EOF:
-                SigScm_Error("EOF in the char sequence.\n");
-                break;
 
+	    case EOF: /*
+		       * don't became an error for handling c-eval.
+		       * Scm_eval_c_string("some-symbol");
+                       */
 	    case ' ':
             case '(':  case ')':  case ';':
             case '\n': case '\t': case '\"': case '\'':
