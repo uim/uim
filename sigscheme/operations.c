@@ -533,25 +533,18 @@ ScmObj ScmOp_negativep(ScmObj scm_num)
 
 ScmObj ScmOp_oddp(ScmObj scm_num)
 {
-    if (EQ(ScmOp_numberp(scm_num), SCM_FALSE))
+    if (SCM_FALSEP(ScmOp_numberp(scm_num)))
         SigScm_ErrorObj("odd? : number required but got ", scm_num);
 
-    if (SCM_INT_VALUE(scm_num) % 2 == 1
-	|| SCM_INT_VALUE(scm_num) % 2 == -1)
-        return SCM_TRUE;
-    else
-        return SCM_FALSE;
+    return (SCM_INT_VALUE(scm_num) & 0x1) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_evenp(ScmObj scm_num)
 {
-    if (EQ(ScmOp_numberp(scm_num), SCM_FALSE))
+    if (SCM_FALSEP(ScmOp_numberp(scm_num)))
         SigScm_ErrorObj("even? : number required but got ", scm_num);
 
-    if (SCM_INT_VALUE(scm_num) % 2 == 0)
-        return SCM_TRUE;
-    else
-        return SCM_FALSE;
+    return (SCM_INT_VALUE(scm_num) & 0x1) ? SCM_FALSE : SCM_TRUE;
 }
 
 ScmObj ScmOp_max(ScmObj args, ScmObj env )
