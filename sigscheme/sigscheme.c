@@ -288,7 +288,7 @@ void SigScm_Initialize(void)
     /*=======================================================================
       Other Variables To Protect From GC
     =======================================================================*/
-    provided_feature = SCM_NIL;
+    provided_feature = Scm_Intern("*features*");
     SigScm_gc_protect(provided_feature);
 #if USE_SRFI1
     /*=======================================================================

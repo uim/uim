@@ -84,18 +84,18 @@ ScmObj ScmOp_call_with_input_file(ScmObj filepath, ScmObj proc)
     ScmObj ret  = SCM_NIL;
 
     if (!SCM_STRINGP(filepath))
-	SigScm_ErrorObj("call-with-input-file : string required but got", filepath);
+        SigScm_ErrorObj("call-with-input-file : string required but got", filepath);
     if (!SCM_FUNCP(proc) && !SCM_CLOSUREP(proc))
-	SigScm_ErrorObj("call-with-input-file : proc required but got ", proc);
+        SigScm_ErrorObj("call-with-input-file : proc required but got ", proc);
     
     /* open port */
     port = ScmOp_open_input_file(filepath);
     
     /* (apply proc (port)) */
     ret = ScmOp_apply(Scm_NewCons(proc,
-				  Scm_NewCons(Scm_NewCons(port, SCM_NIL),
-					      SCM_NIL)),
-		      SCM_NIL);
+                                  Scm_NewCons(Scm_NewCons(port, SCM_NIL),
+                                              SCM_NIL)),
+                      SCM_NIL);
 
     /* close port */
     ScmOp_close_input_port(port);
@@ -109,18 +109,18 @@ ScmObj ScmOp_call_with_output_file(ScmObj filepath, ScmObj proc)
     ScmObj ret  = SCM_NIL;
 
     if (!SCM_STRINGP(filepath))
-	SigScm_ErrorObj("call-with-output-file : string required but got ", filepath);
+        SigScm_ErrorObj("call-with-output-file : string required but got ", filepath);
     if (!SCM_FUNCP(proc) && !SCM_CLOSUREP(proc))
-	SigScm_ErrorObj("call-with-output-file : proc required but got ", proc);
+        SigScm_ErrorObj("call-with-output-file : proc required but got ", proc);
     
     /* open port */
     port = ScmOp_open_output_file(filepath);
     
     /* (apply proc (port)) */
     ret = ScmOp_apply(Scm_NewCons(proc,
-				  Scm_NewCons(Scm_NewCons(port, SCM_NIL),
-					      SCM_NIL)),
-		      SCM_NIL);
+                                  Scm_NewCons(Scm_NewCons(port, SCM_NIL),
+                                              SCM_NIL)),
+                      SCM_NIL);
 
     /* close port */
     ScmOp_close_output_port(port);
@@ -131,7 +131,7 @@ ScmObj ScmOp_call_with_output_file(ScmObj filepath, ScmObj proc)
 ScmObj ScmOp_input_portp(ScmObj obj)
 {
     if (SCM_PORTP(obj) && SCM_PORT_PORTDIRECTION(obj) == PORT_INPUT)
-	return SCM_TRUE;
+        return SCM_TRUE;
 
     return SCM_FALSE;
 }
@@ -139,7 +139,7 @@ ScmObj ScmOp_input_portp(ScmObj obj)
 ScmObj ScmOp_output_portp(ScmObj obj)
 {
     if (SCM_PORTP(obj) && SCM_PORT_PORTDIRECTION(obj) == PORT_OUTPUT)
-	return SCM_TRUE;
+        return SCM_TRUE;
 
     return SCM_FALSE;
 }
@@ -160,9 +160,9 @@ ScmObj ScmOp_with_input_from_file(ScmObj filepath, ScmObj thunk)
     ScmObj ret      = SCM_NIL;
 
     if (!SCM_STRINGP(filepath))
-	SigScm_ErrorObj("with-input-from-file : string required but got ", filepath);
+        SigScm_ErrorObj("with-input-from-file : string required but got ", filepath);
     if (!SCM_FUNCP(thunk) && !SCM_CLOSUREP(thunk))
-	SigScm_ErrorObj("with-input-from-file : proc required but got ", thunk);
+        SigScm_ErrorObj("with-input-from-file : proc required but got ", thunk);
     
     /* set current_input_port */
     tmp_port = current_input_port;
@@ -170,9 +170,9 @@ ScmObj ScmOp_with_input_from_file(ScmObj filepath, ScmObj thunk)
     
     /* (apply thunk ())*/
     ret = ScmOp_apply(Scm_NewCons(thunk,
-				  Scm_NewCons(Scm_NewCons(SCM_NIL, SCM_NIL),
-					      SCM_NIL)),
-		      SCM_NIL);
+                                  Scm_NewCons(Scm_NewCons(SCM_NIL, SCM_NIL),
+                                              SCM_NIL)),
+                      SCM_NIL);
 
     /* close port */
     ScmOp_close_input_port(current_input_port);
@@ -189,9 +189,9 @@ ScmObj ScmOp_with_output_to_file(ScmObj filepath, ScmObj thunk)
     ScmObj ret      = SCM_NIL;
 
     if (!SCM_STRINGP(filepath))
-	SigScm_ErrorObj("with-output-to-file : string required but got ", filepath);
+        SigScm_ErrorObj("with-output-to-file : string required but got ", filepath);
     if (!SCM_FUNCP(thunk) && !SCM_CLOSUREP(thunk))
-	SigScm_ErrorObj("with-output-to-file : proc required but got ", thunk);
+        SigScm_ErrorObj("with-output-to-file : proc required but got ", thunk);
     
     /* set current_output_port */
     tmp_port = current_output_port;
@@ -199,9 +199,9 @@ ScmObj ScmOp_with_output_to_file(ScmObj filepath, ScmObj thunk)
     
     /* (apply thunk ())*/
     ret = ScmOp_apply(Scm_NewCons(thunk,
-				  Scm_NewCons(Scm_NewCons(SCM_NIL, SCM_NIL),
-					      SCM_NIL)),
-		      SCM_NIL);
+                                  Scm_NewCons(Scm_NewCons(SCM_NIL, SCM_NIL),
+                                              SCM_NIL)),
+                      SCM_NIL);
 
     /* close port */
     ScmOp_close_output_port(current_output_port);
@@ -217,7 +217,7 @@ ScmObj ScmOp_open_input_file(ScmObj filepath)
     FILE *f = NULL;
 
     if (!SCM_STRINGP(filepath))
-	SigScm_ErrorObj("open-input-file : string requred but got ", filepath);
+        SigScm_ErrorObj("open-input-file : string requred but got ", filepath);
 
     /* Open File */
     f = fopen(SCM_STRING_STR(filepath), "r");
@@ -233,7 +233,7 @@ ScmObj ScmOp_open_output_file(ScmObj filepath)
     FILE *f = NULL;
 
     if (!SCM_STRINGP(filepath))
-	SigScm_ErrorObj("open-output-file : string requred but got ", filepath);
+        SigScm_ErrorObj("open-output-file : string requred but got ", filepath);
 
     /* Open File */
     f = fopen(SCM_STRING_STR(filepath), "w");
@@ -247,10 +247,10 @@ ScmObj ScmOp_open_output_file(ScmObj filepath)
 ScmObj ScmOp_close_input_port(ScmObj port)
 {
     if (!SCM_PORTP(port))
-	SigScm_ErrorObj("close-input-port : port requred but got ", port);
+        SigScm_ErrorObj("close-input-port : port requred but got ", port);
 
     if (SCM_PORTINFO_FILE(port))
-	fclose(SCM_PORTINFO_FILE(port));
+        fclose(SCM_PORTINFO_FILE(port));
 
     return SCM_UNDEF;
 }
@@ -258,10 +258,10 @@ ScmObj ScmOp_close_input_port(ScmObj port)
 ScmObj ScmOp_close_output_port(ScmObj port)
 {
     if (!SCM_PORTP(port))
-	SigScm_ErrorObj("close-output-port : port requred but got ", port);
+        SigScm_ErrorObj("close-output-port : port requred but got ", port);
     
     if (SCM_PORTINFO_FILE(port))
-	fclose(SCM_PORTINFO_FILE(port));
+        fclose(SCM_PORTINFO_FILE(port));
 
     return SCM_UNDEF;
 }
@@ -273,13 +273,13 @@ ScmObj ScmOp_read(ScmObj arg, ScmObj env)
 {
     ScmObj port = SCM_NIL;
     if (SCM_NULLP(arg)) {
-	/* (read) */
-	port = current_input_port;
+        /* (read) */
+        port = current_input_port;
     } else if (SCM_PORTP(SCM_CAR(arg))) {
-	/* (read port) */
-	port = SCM_CAR(arg);
+        /* (read port) */
+        port = SCM_CAR(arg);
     } else {
-	SigScm_ErrorObj("read : invalid parameter", arg);
+        SigScm_ErrorObj("read : invalid parameter", arg);
     }
 
     return SigScm_Read(port);
@@ -290,13 +290,13 @@ ScmObj ScmOp_read_char(ScmObj arg, ScmObj env)
     ScmObj port = SCM_NIL;
     char  *buf  = NULL;
     if (SCM_NULLP(arg)) {
-	/* (read-char) */
-	port = current_input_port;
+        /* (read-char) */
+        port = current_input_port;
     } else if (!SCM_NULLP(SCM_CDR(arg)) && SCM_PORTP(SCM_CAR(SCM_CDR(arg)))) {
-	/* (read-char port) */
-	port = SCM_CAR(SCM_CDR(arg));
+        /* (read-char port) */
+        port = SCM_CAR(SCM_CDR(arg));
     } else {
-	SigScm_ErrorObj("read-char : invalid parameter", arg);
+        SigScm_ErrorObj("read-char : invalid parameter", arg);
     }
 
     /* TODO : implement this multibyte-char awareness */
@@ -314,7 +314,7 @@ ScmObj ScmOp_peek_char(ScmObj arg, ScmObj env)
 ScmObj ScmOp_eof_objectp(ScmObj obj)
 {
     if(EQ(obj, SCM_EOF))
-	return SCM_TRUE;
+        return SCM_TRUE;
 
     return SCM_FALSE;
 }
@@ -333,7 +333,7 @@ ScmObj ScmOp_write(ScmObj arg, ScmObj env)
     ScmObj port = SCM_NIL;
 
     if CHECK_1_ARG(arg)
-	SigScm_Error("write : invalid parameter\n");
+        SigScm_Error("write : invalid parameter\n");
 
     /* get obj */
     obj = SCM_CAR(arg);
@@ -342,7 +342,7 @@ ScmObj ScmOp_write(ScmObj arg, ScmObj env)
     /* get port */
     port = current_output_port;
     if (!SCM_NULLP(arg) && !SCM_NULLP(SCM_CAR(arg)) && SCM_PORTP(SCM_CAR(arg)))
-	port = SCM_CAR(arg);
+        port = SCM_CAR(arg);
 
     SigScm_WriteToPort(port, obj);
     return SCM_UNDEF;
@@ -354,7 +354,7 @@ ScmObj ScmOp_display(ScmObj arg, ScmObj env)
     ScmObj port = SCM_NIL;
 
     if CHECK_1_ARG(arg)
-	SigScm_Error("display : invalid parameter\n");
+        SigScm_Error("display : invalid parameter\n");
 
     /* get obj */
     obj = SCM_CAR(arg);
@@ -365,7 +365,7 @@ ScmObj ScmOp_display(ScmObj arg, ScmObj env)
     
     /* (display obj port) */
     if (!SCM_NULLP(arg) && SCM_PORTP(SCM_CAR(arg)))
-	port = SCM_CAR(arg);
+        port = SCM_CAR(arg);
 
     SigScm_DisplayToPort(port, obj);
     return SCM_UNDEF;
@@ -377,7 +377,7 @@ ScmObj ScmOp_print(ScmObj arg, ScmObj env)
     ScmObj port = SCM_NIL;
 
     if CHECK_1_ARG(arg)
-	SigScm_Error("print : invalid parameter\n");
+        SigScm_Error("print : invalid parameter\n");
 
     /* get obj */
     obj = SCM_CAR(arg);
@@ -388,7 +388,7 @@ ScmObj ScmOp_print(ScmObj arg, ScmObj env)
     
     /* (display obj port) */
     if (!SCM_NULLP(arg) && SCM_PORTP(SCM_CAR(arg)))
-	port = SCM_CAR(arg);
+        port = SCM_CAR(arg);
 
     SigScm_DisplayToPort(port, obj);
     SigScm_DisplayToPort(port, Scm_NewStringCopying("\n"));
@@ -403,7 +403,7 @@ ScmObj ScmOp_newline(ScmObj arg, ScmObj env)
 
     /* (newline port) */
     if (!SCM_NULLP(arg) && !SCM_NULLP(SCM_CAR(arg)) && SCM_PORTP(SCM_CAR(arg))) {
-	port = SCM_CAR(arg);
+        port = SCM_CAR(arg);
     }
 
     SigScm_DisplayToPort(port, Scm_NewStringCopying("\n"));
@@ -416,20 +416,20 @@ ScmObj ScmOp_write_char(ScmObj arg, ScmObj env)
     ScmObj port = SCM_NIL;
 
     if CHECK_1_ARG(arg)
-	SigScm_Error("write-char : invalid parameter\n");
+        SigScm_Error("write-char : invalid parameter\n");
 
     /* get obj */
     obj = SCM_CAR(arg);
     arg = SCM_CDR(arg);
     if (!SCM_CHARP(obj))
-	SigScm_ErrorObj("write-char : char required but got ", obj);
+        SigScm_ErrorObj("write-char : char required but got ", obj);
 
     /* get port */
     port = current_output_port;
     
     /* (write-char obj port) */
     if (!SCM_NULLP(arg) && SCM_PORTP(SCM_CAR(arg)))
-	port = SCM_CAR(arg);
+        port = SCM_CAR(arg);
 
     SigScm_DisplayToPort(port, obj);
     return SCM_UNDEF;
@@ -450,13 +450,13 @@ ScmObj SigScm_load(const char *c_filename)
 
     /* construct filepath */
     if (lib_path) {
-	filepath = alloca(strlen(lib_path) + strlen(c_filename) + 2);
-	strcpy(filepath, lib_path);
-	strcat(filepath, "/");
-	strcat(filepath, c_filename);
+        filepath = alloca(strlen(lib_path) + strlen(c_filename) + 2);
+        strcpy(filepath, lib_path);
+        strcat(filepath, "/");
+        strcat(filepath, c_filename);
     } else {
-	filepath = alloca(strlen(c_filename) + 1);
-	strcpy(filepath, c_filename);
+        filepath = alloca(strlen(c_filename) + 1);
+        strcpy(filepath, c_filename);
     }
 
     /* open port */
@@ -465,10 +465,10 @@ ScmObj SigScm_load(const char *c_filename)
     
     /* read & eval cycle */
     for (s_expression = SigScm_Read(port);
-	 !EQ(s_expression, SCM_EOF);
-	 s_expression = SigScm_Read(port))
+         !EQ(s_expression, SCM_EOF);
+         s_expression = SigScm_Read(port))
     {
-	ScmOp_eval(s_expression, SCM_NIL);
+        ScmOp_eval(s_expression, SCM_NIL);
     }
 
     /* close port */
@@ -494,17 +494,17 @@ ScmObj ScmOp_require(ScmObj filename)
     ScmObj loaded_str = SCM_NIL;
 
     if (!SCM_STRINGP(filename))
-	SigScm_ErrorObj("require : string required but got ", filename);
+        SigScm_ErrorObj("require : string required but got ", filename);
 
     /* construct loaded_str */
     loaded_str = create_loaded_str(filename);
 
-    if (EQ(ScmOp_member(loaded_str, provided_feature), SCM_FALSE)) {
-	/* not provided, so load it! */
-	ScmOp_load(filename);
+    if (EQ(ScmOp_member(loaded_str, SCM_SYMBOL_VCELL(provided_feature)), SCM_FALSE)) {
+        /* not provided, so load it! */
+        ScmOp_load(filename);
 
-	/* record to provided_feature */
-	provided_feature = Scm_NewCons(loaded_str, provided_feature);
+        /* record to provided_feature */
+        SCM_SYMBOL_VCELL(provided_feature) = Scm_NewCons(loaded_str, SCM_SYMBOL_VCELL(provided_feature));
     }
 
     return SCM_TRUE;
@@ -526,10 +526,10 @@ static ScmObj create_loaded_str(ScmObj filename)
 ScmObj ScmOp_provide(ScmObj feature)
 {
     if (!SCM_STRINGP(feature))
-	SigScm_ErrorObj("provide : string required but got ", feature);
+        SigScm_ErrorObj("provide : string required but got ", feature);
 
     /* record to provided_feature */
-    provided_feature = Scm_NewCons(feature, provided_feature);
+    SCM_SYMBOL_VCELL(provided_feature) = Scm_NewCons(feature, SCM_SYMBOL_VCELL(provided_feature));
 
     return SCM_TRUE;
 }
@@ -537,10 +537,10 @@ ScmObj ScmOp_provide(ScmObj feature)
 ScmObj ScmOp_providedp(ScmObj feature)
 {
     if (!SCM_STRINGP(feature))
-	SigScm_ErrorObj("provide : string required but got ", feature);
+        SigScm_ErrorObj("provide : string required but got ", feature);
 
     if (EQ(ScmOp_member(feature, provided_feature), SCM_TRUE))
-	return SCM_TRUE;
+        return SCM_TRUE;
 
     return SCM_FALSE;
 }
@@ -550,11 +550,11 @@ ScmObj ScmOp_file_existsp(ScmObj filepath)
     FILE *f = NULL;
 
     if (!SCM_STRINGP(filepath))
-	SigScm_ErrorObj("file-exists? : string requred but got ", filepath);
+        SigScm_ErrorObj("file-exists? : string requred but got ", filepath);
 
     f = fopen(SCM_STRING_STR(filepath), "r");
     if (!f)
-	return SCM_FALSE;
+        return SCM_FALSE;
 
     fclose(f);
 
@@ -564,10 +564,10 @@ ScmObj ScmOp_file_existsp(ScmObj filepath)
 ScmObj ScmOp_delete_file(ScmObj filepath)
 {
     if (!SCM_STRINGP(filepath))
-	SigScm_ErrorObj("delete-file : string requred but got ", filepath);
+        SigScm_ErrorObj("delete-file : string requred but got ", filepath);
 
     if (remove(SCM_STRING_STR(filepath)) == -1)
-	SigScm_ErrorObj("delete-file : delete failed. file = ", filepath);
+        SigScm_ErrorObj("delete-file : delete failed. file = ", filepath);
     
     return SCM_TRUE;
 }
