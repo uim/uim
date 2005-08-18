@@ -66,7 +66,7 @@ extern ScmObj current_input_port;
 extern ScmObj current_output_port;
 extern ScmObj current_error_port;
 
-extern ScmObj provided_feature;
+extern ScmObj SigScm_features;
 
 /*=======================================
    Macro Declarations
@@ -164,6 +164,9 @@ ScmObj ScmOp_unquote_splicing(ScmObj obj, ScmObj *envp, int *tail_flag);
 ScmObj ScmExp_define(ScmObj arg, ScmObj *envp, int *tail_flag);
 ScmObj ScmOp_scheme_report_environment(ScmObj version);
 ScmObj ScmOp_null_environment(ScmObj version);
+ScmObj ScmOp_symbol_boundp(ScmObj obj);
+ScmObj ScmOp_symbol_value(ScmObj var, ScmObj env);
+ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj env);
 
 /* operations.c */
 ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2);
@@ -243,7 +246,6 @@ ScmObj ScmOp_assq(ScmObj obj, ScmObj alist);
 ScmObj ScmOp_assv(ScmObj obj, ScmObj alist);
 ScmObj ScmOp_assoc(ScmObj obj, ScmObj alist);
 ScmObj ScmOp_symbolp(ScmObj obj);
-ScmObj ScmOp_boundp(ScmObj obj);
 ScmObj ScmOp_symbol_to_string(ScmObj obj);
 ScmObj ScmOp_string_to_symbol(ScmObj str);
 

@@ -100,6 +100,7 @@ void SigScm_Initialize(void)
     SigScm_quasiquote       = Scm_Intern("quasiquote");
     SigScm_unquote          = Scm_Intern("unquote");
     SigScm_unquote_splicing = Scm_Intern("unquote-splicing");
+    SigScm_features         = Scm_Intern("*features*");
     /*=======================================================================
       Export Scheme Special Symbols
     =======================================================================*/
@@ -133,6 +134,9 @@ void SigScm_Initialize(void)
     Scm_RegisterFuncR("define"               , ScmExp_define);
     Scm_RegisterFunc1("scheme-report-environment", ScmOp_scheme_report_environment);
     Scm_RegisterFunc1("null-environment"         , ScmOp_null_environment);
+    Scm_RegisterFunc1("symbol-bound?"        , ScmOp_symbol_boundp);
+    Scm_RegisterFuncL("symbol-value"         , ScmOp_symbol_value);
+    Scm_RegisterFuncL("set-symbol-value!"    , ScmOp_set_symbol_value);
     /* operations.c */
     Scm_RegisterFunc2("eqv?"                 , ScmOp_eqvp);
     Scm_RegisterFunc2("eq?"                  , ScmOp_eqp);
@@ -285,11 +289,7 @@ void SigScm_Initialize(void)
     SigScm_gc_protect(current_output_port);
     current_error_port  = Scm_NewFilePort(stderr, "stderr", PORT_OUTPUT);
     SigScm_gc_protect(current_error_port);
-    /*=======================================================================
-      Other Variables To Protect From GC
-    =======================================================================*/
-    provided_feature = Scm_Intern("*features*");
-    SigScm_gc_protect(provided_feature);
+
 #if USE_SRFI1
     /*=======================================================================
       SRFI-1 Procedures

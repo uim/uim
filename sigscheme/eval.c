@@ -670,15 +670,14 @@ ScmObj map_eval(ScmObj args, ScmObj env)
  */
 static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
 {
-    ScmObj ls;
-    ScmObj obj;
-    ScmObj car;
-    ScmObj args;
-    ScmObj leftover;
-    ScmObj result;
-    ScmObj ret_list;
+    ScmObj ls        = SCM_NIL;
+    ScmObj obj       = SCM_NIL;
+    ScmObj car       = SCM_NIL;
+    ScmObj args      = SCM_NIL;
+    ScmObj result    = SCM_NIL;
+    ScmObj ret_list  = SCM_NIL;
     ScmObj *ret_tail = NULL;
-    int splice_flag;
+    int splice_flag  = 0;
 
     /* local "functions" */
 #define qquote_copy_delayed()   (QQUOTE_IS_VERBATIM(ret_list))
@@ -797,16 +796,17 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
  */
 static ScmObj qquote_vector(ScmObj src, ScmObj env, int nest)
 {
-    ScmObj splices = SCM_NIL;
-    ScmObj expr;
-    ScmObj ret;
-    ScmObj *copy_buf;
-    ScmObj result;
-    ScmObj splice_len;
+    ScmObj splices    = SCM_NIL;
+    ScmObj expr       = SCM_NIL;
+    ScmObj ret        = SCM_NIL;
+    ScmObj *copy_buf  = NULL;
+    ScmObj result     = SCM_NIL;
+    ScmObj splice_len = SCM_NIL;
     int len = SCM_VECTOR_LEN(src);
     int growth = 0;
     int next_splice_index = -1;
-    int i, j;
+    int i = 0;
+    int j = 0;
 
     /* local "functions" */
 #define qquote_copy_delayed() (copy_buf == NULL)
@@ -981,7 +981,7 @@ ScmObj ScmExp_set(ScmObj arg, ScmObj *envp, int *tail_flag)
          * not found in the environment
          * if symbol is not bounded, error occurs
          */
-        if (EQ(ScmOp_boundp(sym), SCM_FALSE))
+        if (EQ(ScmOp_symbol_boundp(sym), SCM_FALSE))
             SigScm_ErrorObj("set! : unbound variable ", sym);
 
         SCM_SETSYMBOL_VCELL(sym, ret);
@@ -1623,4 +1623,39 @@ ScmObj ScmOp_scheme_report_environment(ScmObj version)
 ScmObj ScmOp_null_environment(ScmObj version)
 {
     return SCM_NIL;
+}
+
+/*=======================================
+  SIOD compatible procedures
+
+  TODO : remove these functions!
+=======================================*/
+ScmObj ScmOp_symbol_boundp(ScmObj obj)
+{
+    if (SCM_SYMBOLP(obj)
+        && !SCM_EQ(SCM_SYMBOL_VCELL(obj), SCM_UNBOUND))
+    {
+        return SCM_TRUE;
+    }
+
+    return SCM_FALSE;
+}
+
+ScmObj ScmOp_symbol_value(ScmObj arg, ScmObj env)
+{
+    ScmObj var = SCM_CAR(arg);
+
+    if (!SCM_SYMBOLP(var))
+	SigScm_ErrorObj("symbol-value : require symbol but got ", var);
+
+    return symbol_value(var, env);
+}
+
+ScmObj ScmOp_set_symbol_value(ScmObj arg, ScmObj env)
+{
+    int flag = 0;
+
+    return ScmExp_set(arg,
+		      &env,
+		      &flag);
 }

@@ -55,7 +55,7 @@
 ScmObj current_input_port   = NULL;
 ScmObj current_output_port  = NULL;
 
-ScmObj provided_feature     = NULL;
+ScmObj SigScm_features      = NULL;
 
 static const char *lib_path = NULL;
 
@@ -499,12 +499,12 @@ ScmObj ScmOp_require(ScmObj filename)
     /* construct loaded_str */
     loaded_str = create_loaded_str(filename);
 
-    if (EQ(ScmOp_member(loaded_str, SCM_SYMBOL_VCELL(provided_feature)), SCM_FALSE)) {
+    if (EQ(ScmOp_member(loaded_str, SCM_SYMBOL_VCELL(SigScm_features)), SCM_FALSE)) {
         /* not provided, so load it! */
         ScmOp_load(filename);
 
-        /* record to provided_feature */
-        SCM_SYMBOL_VCELL(provided_feature) = Scm_NewCons(loaded_str, SCM_SYMBOL_VCELL(provided_feature));
+        /* record to SigScm_features */
+        SCM_SYMBOL_VCELL(SigScm_features) = Scm_NewCons(loaded_str, SCM_SYMBOL_VCELL(SigScm_features));
     }
 
     return SCM_TRUE;
@@ -528,8 +528,8 @@ ScmObj ScmOp_provide(ScmObj feature)
     if (!SCM_STRINGP(feature))
         SigScm_ErrorObj("provide : string required but got ", feature);
 
-    /* record to provided_feature */
-    SCM_SYMBOL_VCELL(provided_feature) = Scm_NewCons(feature, SCM_SYMBOL_VCELL(provided_feature));
+    /* record to SigScm_features */
+    SCM_SYMBOL_VCELL(SigScm_features) = Scm_NewCons(feature, SCM_SYMBOL_VCELL(SigScm_features));
 
     return SCM_TRUE;
 }
@@ -539,7 +539,7 @@ ScmObj ScmOp_providedp(ScmObj feature)
     if (!SCM_STRINGP(feature))
         SigScm_ErrorObj("provide : string required but got ", feature);
 
-    if (EQ(ScmOp_member(feature, provided_feature), SCM_TRUE))
+    if (EQ(ScmOp_member(feature, SigScm_features), SCM_TRUE))
         return SCM_TRUE;
 
     return SCM_FALSE;

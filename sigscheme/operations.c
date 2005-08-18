@@ -1178,17 +1178,6 @@ ScmObj ScmOp_symbolp(ScmObj obj)
     return SCM_FALSE;
 }
 
-ScmObj ScmOp_boundp(ScmObj obj)
-{
-    if (SCM_SYMBOLP(obj)
-        && !SCM_EQ(SCM_SYMBOL_VCELL(obj), SCM_UNBOUND))
-    {
-        return SCM_TRUE;
-    }
-
-    return SCM_FALSE;
-}
-
 ScmObj ScmOp_symbol_to_string(ScmObj obj)
 {
     if (!SCM_SYMBOLP(obj))

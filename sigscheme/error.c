@@ -85,7 +85,8 @@ void SigScm_ErrorObj(const char *msg, ScmObj obj)
     fprintf(SCM_PORTINFO_FILE(current_error_port), "%s", msg);
 
     /* print obj */
-    SigScm_Display(obj);
+    SigScm_DisplayToPort(current_error_port, obj);
+    SigScm_DisplayToPort(current_error_port, Scm_NewStringCopying("\n"));
     
     exit(-1);
 }
