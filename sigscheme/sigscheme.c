@@ -142,6 +142,7 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc2("eq?"                  , ScmOp_eqp);
     Scm_RegisterFunc2("equal?"               , ScmOp_equalp);
     Scm_RegisterFunc1("number?"              , ScmOp_numberp);
+    Scm_RegisterFunc1("integer?"             , ScmOp_numberp);
     Scm_RegisterFuncL("="                    , ScmOp_equal);
     Scm_RegisterFuncL("<"                    , ScmOp_bigger);
     Scm_RegisterFuncL(">"                    , ScmOp_smaller);
