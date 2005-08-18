@@ -717,7 +717,7 @@
 ;; TODO: implement after uim 0.4.6 depending on scm-nested-eval
 (define custom-broadcast-custom
   (lambda (sym)
-    ))
+  #f))
 
 ;; API
 ;; #f means 'any group'

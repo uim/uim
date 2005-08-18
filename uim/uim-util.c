@@ -508,7 +508,7 @@ iterate_lists(uim_lisp mapper, uim_lisp seed, uim_lisp lists)
   uim_lisp elms, rest, rests, mapped, res, termp, pair, form;
   uim_bool single_listp;
 
-  single_listp = (uim_scm_length(lists) == 1) ? UIM_TRUE : UIM_FALSE;
+  single_listp = (uim_scm_c_int(uim_scm_length(lists)) == 1) ? UIM_TRUE : UIM_FALSE;
   res = seed;
   if (single_listp) {
     rest = uim_scm_car(lists);
