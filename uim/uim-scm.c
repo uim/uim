@@ -305,7 +305,7 @@ uim_scm_eval(uim_lisp obj)
   uim_lisp stack_start;
 
   uim_scm_gc_protect_stack(&stack_start);
-  ret = (uim_lisp)ScmOp_eval((ScmObj)obj, NULL);
+  ret = (uim_lisp)ScmOp_eval((ScmObj)obj, SigScm_nil);
   uim_scm_gc_unprotect_stack(&stack_start);
   return ret;
 }
@@ -316,7 +316,7 @@ uim_scm_apply(uim_lisp proc, uim_lisp args)
 {
   return (uim_lisp)ScmOp_apply(Scm_NewCons((ScmObj)proc,
 					   Scm_NewCons((ScmObj)args, SigScm_nil)),	
-			       NULL);
+			       SigScm_nil);
 }
 
 uim_lisp
@@ -330,7 +330,7 @@ uim_scm_quote(uim_lisp obj)
 uim_lisp
 uim_scm_eval_c_string(const char *str)
 {
-  return (uim_lisp)Scm_eval_c_string(str);
+  return (uim_lisp)Scm_eval_c_string(strdup(str));
 }
 
 uim_lisp
@@ -443,7 +443,7 @@ uim_scm_require_file(const char *fn)
   if (!fn)
     return UIM_FALSE;
 
-  UIM_EVAL_FSTRING1(NULL, "(require \"%s\")", fn);
+  ScmOp_require(Scm_NewStringCopying(fn));
 
   /* TODO: fixme */
   return UIM_TRUE;
