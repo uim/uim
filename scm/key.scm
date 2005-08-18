@@ -340,6 +340,6 @@
       res)))
 
 ;;
-(define-key left-key? "left")
-(define-key right-key? "right")
-(define-key switch-im-key? '("<Control>Shift_key" "<Shift>Control_key"))
+;(define-key left-key? "left")
+;(define-key right-key? "right")
+;(define-key switch-im-key? '("<Control>Shift_key" "<Shift>Control_key"))
