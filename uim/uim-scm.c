@@ -322,8 +322,10 @@ uim_scm_apply(uim_lisp proc, uim_lisp args)
 uim_lisp
 uim_scm_quote(uim_lisp obj)
 {
-  int flag;
-  return (uim_lisp)ScmOp_quote(Scm_NewCons((ScmObj)obj, SigScm_nil), &SigScm_nil, &flag);
+  /* TODO : fixme Kazuki Ohta <mover@hct.zaq.ne.jp> */
+  return (uim_lisp)Scm_NewCons(SigScm_quote,
+			       Scm_NewCons((ScmObj)obj,
+					   SigScm_nil));
 }
 #endif  /* UIM_SCM_EXTENDED_API */
 
