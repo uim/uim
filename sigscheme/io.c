@@ -438,11 +438,12 @@ ScmObj ScmOp_write_char(ScmObj arg, ScmObj env)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.4 System Interface
 ===========================================================================*/
-ScmObj SigScm_load(const char *c_filename)
+ScmObj SigScm_load(const char *filename)
 {
     ScmObj stack_start;
     ScmObj port         = SCM_NIL;
     ScmObj s_expression = SCM_NIL;
+    char  *c_filename = strdup(filename);
     char  *filepath = NULL;
 
     /* start protecting stack */
@@ -476,6 +477,9 @@ ScmObj SigScm_load(const char *c_filename)
 
     /* now no need to protect stack */
     SigScm_gc_unprotect_stack(&stack_start);
+
+    /* free str */
+    free(c_filename);
 
     return SCM_UNSPECIFIED;
 }

@@ -917,7 +917,7 @@ ScmObj ScmExp_lambda(ScmObj exp, ScmObj *envp, int *tail_flag)
     (*tail_flag) = 0;
 
     if CHECK_2_ARGS(exp)
-        SigScm_Error("lambda : too few argument\n");
+        SigScm_ErrorObj("lambda : too few argument ", exp);
 
     return Scm_NewClosure(exp, env);
 }
@@ -969,9 +969,6 @@ ScmObj ScmExp_set(ScmObj arg, ScmObj *envp, int *tail_flag)
 
     /* set tail_flag */
     (*tail_flag) = 0;
-
-    if (SCM_NULLP(val))
-        SigScm_Error("set! : syntax error\n");
 
     ret = ScmOp_eval(val, env);
     tmp = lookup_environment(sym, env);
