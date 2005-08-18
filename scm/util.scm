@@ -206,19 +206,19 @@
 
 (define char-control?
   (lambda (c)
-    (and (number? c)
+    (and (integer? c)
 	 (or (<= c 31)
 	     (= c 127)))))
 
 (define char-upper-case?
   (lambda (c)
-    (and (number? c)
+    (and (integer? c)
 	 (>= c 65)
 	 (<= c 90))))
 
 (define char-lower-case?
   (lambda (c)
-    (and (number? c)
+    (and (integer? c)
 	 (>= c 97)
 	 (<= c 122))))
 
@@ -229,13 +229,13 @@
 
 (define char-numeric?
   (lambda (c)
-    (and (number? c)
+    (and (integer? c)
 	 (>= c 48)
 	 (<= c 57))))
 
 (define char-printable?
   (lambda (c)
-    (and (number? c)
+    (and (integer? c)
 	 (<= c 127)
 	 (not (char-control? c)))))
 
