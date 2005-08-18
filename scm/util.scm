@@ -200,9 +200,6 @@
 	obj
 	(set-cdr! (last-pair lst) obj))))
 
-;; backward compatibility: should be obsoleted
-(define symbolconc symbol-append)
-
 ;;
 ;; R5RS-like character procedures
 ;;
@@ -268,15 +265,27 @@
 	(- c 48)
 	c)))
 
+;;
 ;; backward compatibility: should be obsoleted
+;;
+
 (define control-char? char-control?)
 (define alphabet-char? char-alphabetic?)
 (define numeral-char? char-numeric?)
 (define usual-char? char-graphic?)
 (define to-lower-char char-downcase)
+
+(define symbolconc symbol-append)
+
+;; should be obsoleted by list-ref
 (define nth
   (lambda (k lst)
     (list-ref lst k)))
+
+;; should be obsoleted by list-copy of SRFI-1
+(define copy-list
+  (lambda (lst)
+    (append lst '())))
 
 ;;
 ;; SRFI procedures (don't expect 100% compatibility)
@@ -287,8 +296,6 @@
 ;;(define take-right)
 ;;(define drop-right)
 ;;(define split-at)
-
-(define (copy-list lst) (append lst '()))
 
 (define list-tabulate
   (lambda (n init-proc)
