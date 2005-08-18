@@ -44,7 +44,7 @@
       (if (not eof)
 	  (begin
 	    ((if  uim-sh-opt-strict-batch
-		  (lambda () #f)
+		  (lambda (obj) #f)
 		  print)
 	     (eval expr '()))
 	    (uim-sh-loop))
