@@ -209,13 +209,36 @@
 
 (define char-control?
   (lambda (c)
-    (and (integer? c)
+    (and (number? c)
 	 (or (<= c 31)
 	     (= c 127)))))
 
+(define char-upper-case?
+  (lambda (c)
+    (and (number? c)
+	 (>= c 65)
+	 (<= c 90))))
+
+(define char-lower-case?
+  (lambda (c)
+    (and (number? c)
+	 (>= c 97)
+	 (<= c 122))))
+
+(define char-alphabetic?
+  (lambda (c)
+    (or (char-upper-case? c)
+	(char-lower-case? c))))
+
+(define char-numeric?
+  (lambda (c)
+    (and (number? c)
+	 (>= c 48)
+	 (<= c 57))))
+
 (define char-printable?
   (lambda (c)
-    (and (integer? c)
+    (and (number? c)
 	 (<= c 127)
 	 (not (char-control? c)))))
 
@@ -251,6 +274,9 @@
 (define numeral-char? char-numeric?)
 (define usual-char? char-graphic?)
 (define to-lower-char char-downcase)
+(define nth
+  (lambda (k lst)
+    (list-ref lst k)))
 
 ;;
 ;; SRFI procedures (don't expect 100% compatibility)
@@ -261,6 +287,8 @@
 ;;(define take-right)
 ;;(define drop-right)
 ;;(define split-at)
+
+(define (copy-list lst) (append lst '()))
 
 (define list-tabulate
   (lambda (n init-proc)
@@ -492,17 +520,21 @@
 ;; returns succeeded or not
 (define try-load
   (lambda (file)
-    (and (file-readable? (make-scm-pathname file))
-	 (not (*catch 'errobj (begin (load file)
-				     #f))))))
+    (load file)))
+;  (lambda (file)
+;    (and (file-readable? (make-scm-pathname file))
+;	 (not (*catch 'errobj (begin (load file)
+;				     #f))))))
 
 ;; TODO: write test
 ;; returns succeeded or not
 (define try-require
   (lambda (file)
-    (and (file-readable? (make-scm-pathname file))
-	 (eq? (symbolconc '* (string->symbol file) '-loaded*)
-	      (*catch 'errobj (require file))))))
+    (require file)))
+;  (lambda (file)
+;    (and (file-readable? (make-scm-pathname file))
+;	 (eq? (symbolconc '* (string->symbol file) '-loaded*)
+;	      (*catch 'errobj (require file))))))
 
 ;; for eval
 (define toplevel-env ())
@@ -712,3 +744,4 @@
 		     (cons (bit-or 128 (bit-and 63 to-be-split))
 			   (enc (/ to-be-split 64) (/ threshold 2))))))))
       (string-append-map charcode->string (reverse utf-8)))))
+

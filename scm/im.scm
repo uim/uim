@@ -138,7 +138,7 @@
 
 (define default-im-for-debug
   (lambda ()
-    (and (feature? 'debug)
+    (and (provided? "debug")
 	 (let* ((str (getenv "UIM_IM_ENGINE"))
 		(sym (and str
 			  (string->symbol str))))
