@@ -161,7 +161,10 @@ uim_key_sym_to_int(uim_lisp sym_)
 static void
 define_valid_key_symbols(void)
 {
+  uim_lisp stack_start;
   int i;
+
+  uim_scm_gc_protect_stack(&stack_start);
 
   UIM_EVAL_STRING(NULL, "(define valid-key-symbols ())");
   for (i = 0; key_tab[i].key; i++) {
@@ -169,6 +172,8 @@ define_valid_key_symbols(void)
 		      "(set! valid-key-symbols (cons '%s valid-key-symbols))",
 		      key_tab[i].str);
   }
+
+  uim_scm_gc_unprotect_stack(&stack_start);
 }
 
 static const char *

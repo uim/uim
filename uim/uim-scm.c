@@ -332,7 +332,7 @@ uim_scm_quote(uim_lisp obj)
 uim_lisp
 uim_scm_eval_c_string(const char *str)
 {
-  return (uim_lisp)Scm_eval_c_string(strdup(str));
+  return (uim_lisp)Scm_eval_c_string(str);
 }
 
 uim_lisp

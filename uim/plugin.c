@@ -65,15 +65,15 @@ plugin_load(uim_lisp _name)
 {
   const char *plugin_name;
   char *plugin_lib_filename, *plugin_scm_filename;
-  uim_lisp lib_path = uim_scm_eval_c_string("uim-plugin-lib-load-path");
-  uim_lisp scm_path = uim_scm_eval_c_string("uim-plugin-scm-load-path");
+  uim_lisp lib_path = uim_scm_symbol_value("uim-plugin-lib-load-path");
+  uim_lisp scm_path = uim_scm_symbol_value("uim-plugin-scm-load-path");
   uim_lisp path_car, path_cdr;
   void *library;
   void (*plugin_instance_init)(void);
   void (*plugin_instance_quit)(void);
 
   size_t len;
-  
+
   plugin_name = uim_scm_refer_c_str(_name);
   
   if (plugin_name == NULL) {
@@ -220,7 +220,7 @@ uim_quit_plugin(void)
   uim_lisp alist, rest, entry, name;
 
   uim_scm_gc_protect_stack(&stack_start);
-  alist = uim_scm_eval_c_string("plugin-alist");
+  alist = uim_scm_symbol_value("plugin-alist");
   for (rest = alist; !uim_scm_nullp(rest); rest = uim_scm_cdr(rest)) {
     entry = uim_scm_car(rest);
     name = uim_scm_car(entry);

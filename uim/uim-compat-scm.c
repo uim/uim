@@ -124,7 +124,7 @@ uim_scm_symbol_value_bool(const char *symbol_str)
   if (!symbol_str)
     return UIM_FALSE;
 
-  val = uim_scm_c_bool((uim_lisp)Scm_eval_c_string(symbol_str));
+  val = uim_scm_c_bool(uim_scm_symbol_value(symbol_str));
 
   return val;
 }
@@ -155,7 +155,9 @@ uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
 uim_lisp
 uim_scm_symbol_value(const char *symbol_str)
 {
-  return (uim_lisp)Scm_eval_c_string(symbol_str);
+  return (uim_lisp)ScmOp_symbol_value(Scm_NewCons(Scm_Intern(symbol_str),
+						  SigScm_nil),
+				      SigScm_nil);
 }
 
 uim_lisp
