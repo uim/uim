@@ -1990,3 +1990,6 @@ ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp, int *tail_flag)
 #if USE_SRFI1
 #include "operations-srfi1.c"
 #endif
+#if USE_SRFI8
+#include "operations-srfi8.c"
+#endif

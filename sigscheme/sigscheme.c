@@ -305,6 +305,9 @@ void SigScm_Initialize(void)
     Scm_RegisterFuncL("circular-list"        , ScmOp_SRFI_1_circular_list);
     Scm_RegisterFuncL("iota"                 , ScmOp_SRFI_1_iota);
 #endif
+#if USE_SRFI8
+    Scm_RegisterFuncR("receive"              , ScmOp_SRFI_8_receive);
+#endif
 
     stack_start_pointer = NULL;
 }

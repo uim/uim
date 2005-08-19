@@ -127,14 +127,14 @@
 
 ;;----------------------------------------------------------------
 ;(test-section "multiple values")
-;(test "receive" '(1 2 3)
-;      (lambda ()  (receive (a b c) (values 1 2 3) (list a b c))))
-;(test "receive" '(1 2 3)
-;      (lambda ()  (receive (a . r) (values 1 2 3) (cons a r))))
-;(test "receive" '(1 2 3)
-;      (lambda ()  (receive x (values 1 2 3) x)))
-;(test "receive" 1
-;      (lambda ()  (receive (a) 1 a)))
+(test "receive" '(1 2 3)
+      (lambda ()  (receive (a b c) (values 1 2 3) (list a b c))))
+(test "receive" '(1 2 3)
+      (lambda ()  (receive (a . r) (values 1 2 3) (cons a r))))
+(test "receive" '(1 2 3)
+      (lambda ()  (receive x (values 1 2 3) x)))
+(test "receive" 1
+      (lambda ()  (receive (a) 1 a)))
 (test "call-with-values" '(1 2 3)
       (lambda ()  (call-with-values (lambda () (values 1 2 3)) list)))
 (test "call-with-values" '()

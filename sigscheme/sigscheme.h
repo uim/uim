@@ -75,6 +75,7 @@ extern ScmObj SigScm_features;
 #define DEBUG_GC      0
 #define USE_EUCJP     1
 #define USE_SRFI1     0
+#define USE_SRFI8     1
 
 #define CHECK_1_ARG(arg) \
     (SCM_NULLP(arg))
@@ -354,6 +355,9 @@ ScmObj ScmOp_SRFI_1_list_tabulate(ScmObj arg, ScmObj env);
 ScmObj ScmOp_SRFI_1_list_copy(ScmObj list);
 ScmObj ScmOp_SRFI_1_circular_list(ScmObj list, ScmObj env);
 ScmObj ScmOp_SRFI_1_iota(ScmObj args, ScmObj env);
+#endif
+#if USE_SRFI8
+ScmObj ScmOp_SRFI_8_receive(ScmObj args, ScmObj *envp, int *tail_flag);
 #endif
 
 #ifdef __cplusplus
