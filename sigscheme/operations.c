@@ -750,8 +750,20 @@ ScmObj ScmOp_booleanp(ScmObj obj)
 ==============================================================================*/
 ScmObj ScmOp_car(ScmObj obj)
 {
+    /*
+     * TODO: fixme! : Kazuki Ohta <mover@hct.zaq.ne.jp>
+     *
+     * In R5RS (car '()) becomes an error, but current uim assumes (car '()) == ()
+     * in many places. So, I decided to change ScmOp_car to SIOD like behavior.
+     * 
+     */
+    /*
     if (SCM_NULLP(obj))
         SigScm_Error("car : empty list\n");
+    */
+    if (SCM_NULLP(obj))
+	return SCM_NIL;
+
     if (!SCM_CONSP(obj))
         SigScm_ErrorObj("car : list required but got ", obj);
 
@@ -760,8 +772,20 @@ ScmObj ScmOp_car(ScmObj obj)
 
 ScmObj ScmOp_cdr(ScmObj obj)
 {
+    /*
+     * TODO: fixme! : Kazuki Ohta <mover@hct.zaq.ne.jp>
+     *
+     * In R5RS (car '()) becomes an error, but current uim assumes (car '()) == ()
+     * in many places. So, I decided to change ScmOp_car to SIOD like behavior.
+     * 
+     */
+    /*
     if (SCM_NULLP(obj))
         SigScm_Error("cdr : empty list\n");
+    */
+    if (SCM_NULLP(obj))
+	return SCM_NIL;
+
     if (!SCM_CONSP(obj))
         SigScm_ErrorObj("cdr : list required but got ", obj);
 
@@ -1078,9 +1102,8 @@ ScmObj ScmOp_list_ref(ScmObj list, ScmObj scm_k)
         SigScm_ErrorObj("list-ref : int required but got ", scm_k);
 
     list_tail = ScmOp_listtail_internal(list, SCM_INT_VALUE(scm_k));
-    if (SCM_NULLP(list_tail)) {
-        SigScm_Error("list-ref : out of range\n");
-    }
+    if (SCM_NULLP(list_tail))
+        SigScm_ErrorObj("list-ref : out of range ", scm_k);
 
     return SCM_CAR(list_tail);
 }

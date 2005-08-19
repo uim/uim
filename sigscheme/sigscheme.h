@@ -55,17 +55,30 @@ extern "C" {
 =======================================*/
 typedef void (*C_FUNC) (void);
 
+/* type declaration */    
 #include "sigschemetype.h"
+
+/* for debugging */
+struct trace_frame {
+    struct trace_frame *prev;
+    ScmObj obj;
+};
 
 /*=======================================
    Variable Declarations
 =======================================*/
+/* datas.c */
 extern ScmObj *stack_start_pointer;
 
-extern ScmObj current_input_port;
-extern ScmObj current_output_port;
+/* error.c*/
 extern ScmObj current_error_port;
 
+/* eval.c */
+extern struct trace_frame *trace_root;
+
+/* io.c */
+extern ScmObj current_input_port;
+extern ScmObj current_output_port;
 extern ScmObj SigScm_features;
 
 /*=======================================
@@ -341,6 +354,7 @@ ScmObj SigScm_Read_Char(ScmObj port);
 /* error.c */
 void SigScm_Error(const char *msg, ...);
 void SigScm_ErrorObj(const char *msg, ScmObj obj);
+void SigScm_ShowBacktrace(void);
 
 /* debug.c */
 void SigScm_Display(ScmObj obj);

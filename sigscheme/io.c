@@ -495,10 +495,14 @@ ScmObj ScmOp_load(ScmObj filename)
 
 ScmObj ScmOp_require(ScmObj filename)
 {
+    ScmObj stack_start;
     ScmObj loaded_str = SCM_NIL;
 
     if (!SCM_STRINGP(filename))
         SigScm_ErrorObj("require : string required but got ", filename);
+
+    /* start protecting stack */
+    SigScm_gc_protect_stack(&stack_start);
 
     /* construct loaded_str */
     loaded_str = create_loaded_str(filename);
@@ -510,6 +514,9 @@ ScmObj ScmOp_require(ScmObj filename)
         /* record to SigScm_features */
         SCM_SYMBOL_VCELL(SigScm_features) = Scm_NewCons(loaded_str, SCM_SYMBOL_VCELL(SigScm_features));
     }
+
+    /* now no need to protect stack */
+    SigScm_gc_unprotect_stack(&stack_start);
 
     return SCM_TRUE;
 }

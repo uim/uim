@@ -63,7 +63,13 @@ ScmObj current_error_port  = NULL;
   Function Implementations
 =======================================*/
 int SigScm_Die(const char *msg, const char *filename, int line) {
+    /* show message */
     printf("SigScheme Died : %s (file : %s, line : %d)\n", msg, filename, line);
+
+    /* show backtrace */
+    SigScm_ShowBacktrace();
+
+    /* TODO: doesn't exit here */
     exit(-1);
 
     return -1;
@@ -72,10 +78,16 @@ int SigScm_Die(const char *msg, const char *filename, int line) {
 void SigScm_Error(const char *msg, ...)
 {
     va_list va;
+
+    /* show message */
     va_start(va, msg);
     vfprintf(SCM_PORTINFO_FILE(current_error_port), msg, va);
     va_end(va);
 
+    /* show backtrace */
+    SigScm_ShowBacktrace();
+
+    /* TODO: doesn't exit here */
     exit(-1);
 }
 
@@ -85,8 +97,27 @@ void SigScm_ErrorObj(const char *msg, ScmObj obj)
     fprintf(SCM_PORTINFO_FILE(current_error_port), "%s", msg);
 
     /* print obj */
-    SigScm_DisplayToPort(current_error_port, obj);
-    SigScm_DisplayToPort(current_error_port, Scm_NewStringCopying("\n"));
-    
+    SigScm_WriteToPort(current_error_port, obj);
+    fprintf(SCM_PORTINFO_FILE(current_error_port), "\n");
+   
+    /* show backtrace */
+    SigScm_ShowBacktrace();
+ 
+    /* TODO: doesn't exit here*/
     exit(-1);
+}
+
+void SigScm_ShowBacktrace(void)
+{
+    struct trace_frame *f;
+
+    /* show title */
+    fprintf(SCM_PORTINFO_FILE(current_error_port), "**** BACKTRACE ****\n");
+
+    /* show each frame's obj */
+    for (f = trace_root; f; f = f->prev) {
+	SigScm_WriteToPort(current_error_port, f->obj);
+	
+	fprintf(SCM_PORTINFO_FILE(current_error_port), "\n");
+    }
 }
