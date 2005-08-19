@@ -1677,11 +1677,49 @@ ScmObj ScmOp_symbol_value(ScmObj arg, ScmObj env)
     return symbol_value(var, env);
 }
 
-ScmObj ScmOp_set_symbol_value(ScmObj arg, ScmObj env)
+ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val)
 {
-    int flag = 0;
+    /* sanity check */
+    if (!SCM_SYMBOLP(var))
+	SigScm_ErrorObj("set-symbol-value! : require symbol but got ", var);
 
-    return ScmExp_set(arg,
-		      &env,
-		      &flag);
+    return SCM_SYMBOL_VCELL(var);
+}
+
+ScmObj ScmOp_bit_and(ScmObj obj1, ScmObj obj2)
+{
+    if (!SCM_INTP(obj1))
+	SigScm_ErrorObj("bit-and : number required but got ", obj1);
+    if (!SCM_INTP(obj2))
+	SigScm_ErrorObj("bit-and : number required but got ", obj2);
+
+    return Scm_NewInt(SCM_INT_VALUE(obj1) & SCM_INT_VALUE(obj2));
+}
+
+ScmObj ScmOp_bit_or(ScmObj obj1, ScmObj obj2)
+{
+    if (!SCM_INTP(obj1))
+	SigScm_ErrorObj("bit-or : number required but got ", obj1);
+    if (!SCM_INTP(obj2))
+	SigScm_ErrorObj("bit-or : number required but got ", obj2);
+
+    return Scm_NewInt(SCM_INT_VALUE(obj1) | SCM_INT_VALUE(obj2));
+}
+
+ScmObj ScmOp_bit_xor(ScmObj obj1, ScmObj obj2)
+{
+    if (!SCM_INTP(obj1))
+	SigScm_ErrorObj("bit-xor : number required but got ", obj1);
+    if (!SCM_INTP(obj2))
+	SigScm_ErrorObj("bit-xor : number required but got ", obj2);
+
+    return Scm_NewInt(SCM_INT_VALUE(obj1) ^ SCM_INT_VALUE(obj2));
+}
+
+ScmObj ScmOp_bit_not(ScmObj obj)
+{
+    if (!SCM_INTP(obj))
+	SigScm_ErrorObj("bit-not : number required but got ", obj);
+
+    return Scm_NewInt(~SCM_INT_VALUE(obj));
 }

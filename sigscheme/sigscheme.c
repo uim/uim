@@ -134,9 +134,14 @@ void SigScm_Initialize(void)
     Scm_RegisterFuncR("define"               , ScmExp_define);
     Scm_RegisterFunc1("scheme-report-environment", ScmOp_scheme_report_environment);
     Scm_RegisterFunc1("null-environment"         , ScmOp_null_environment);
+    /* SIOD compatible functions */
     Scm_RegisterFunc1("symbol-bound?"        , ScmOp_symbol_boundp);
     Scm_RegisterFuncL("symbol-value"         , ScmOp_symbol_value);
-    Scm_RegisterFuncL("set-symbol-value!"    , ScmOp_set_symbol_value);
+    Scm_RegisterFunc2("set-symbol-value!"    , ScmOp_set_symbol_value);
+    Scm_RegisterFunc2("bit-and"              , ScmOp_bit_and);
+    Scm_RegisterFunc2("bit-or"               , ScmOp_bit_or);
+    Scm_RegisterFunc2("bit-xor"              , ScmOp_bit_xor);
+    Scm_RegisterFunc1("bit-not"              , ScmOp_bit_not);
     /* operations.c */
     Scm_RegisterFunc2("eqv?"                 , ScmOp_eqvp);
     Scm_RegisterFunc2("eq?"                  , ScmOp_eqp);

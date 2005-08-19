@@ -179,9 +179,14 @@ ScmObj ScmOp_unquote_splicing(ScmObj obj, ScmObj *envp, int *tail_flag);
 ScmObj ScmExp_define(ScmObj arg, ScmObj *envp, int *tail_flag);
 ScmObj ScmOp_scheme_report_environment(ScmObj version);
 ScmObj ScmOp_null_environment(ScmObj version);
+/* SIOD compatible functions */
 ScmObj ScmOp_symbol_boundp(ScmObj obj);
 ScmObj ScmOp_symbol_value(ScmObj var, ScmObj env);
-ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj env);
+ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val);
+ScmObj ScmOp_bit_and(ScmObj obj1, ScmObj obj2);
+ScmObj ScmOp_bit_or(ScmObj obj1, ScmObj obj2);
+ScmObj ScmOp_bit_xor(ScmObj obj1, ScmObj obj2);
+ScmObj ScmOp_bit_not(ScmObj obj);
 
 /* operations.c */
 ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2);

@@ -62,7 +62,9 @@ static const char *lib_path = NULL;
 /*=======================================
   File Local Function Declarations
 =======================================*/
+static char*  create_valid_path(const char *c_filename);
 static ScmObj create_loaded_str(ScmObj filename);
+static int    file_existsp(const char *filepath);
 
 /*=======================================
   Function Implementations
@@ -443,22 +445,14 @@ ScmObj SigScm_load(const char *filename)
     ScmObj stack_start;
     ScmObj port         = SCM_NIL;
     ScmObj s_expression = SCM_NIL;
-    char  *c_filename = strdup(filename);
-    char  *filepath = NULL;
+    char  *filepath     = create_valid_path(filename);
 
     /* start protecting stack */
     SigScm_gc_protect_stack(&stack_start);
 
-    /* construct filepath */
-    if (lib_path) {
-        filepath = alloca(strlen(lib_path) + strlen(c_filename) + 2);
-        strcpy(filepath, lib_path);
-        strcat(filepath, "/");
-        strcat(filepath, c_filename);
-    } else {
-        filepath = alloca(strlen(c_filename) + 1);
-        strcpy(filepath, c_filename);
-    }
+    /* sanity check */
+    if (!filepath)
+	SigScm_Error("SigScm_load : no such file = %s\n", filepath);
 
     /* open port */
     port = ScmOp_open_input_file(Scm_NewStringCopying(filepath));
@@ -479,9 +473,48 @@ ScmObj SigScm_load(const char *filename)
     SigScm_gc_unprotect_stack(&stack_start);
 
     /* free str */
-    free(c_filename);
+    free(filepath);
 
     return SCM_UNSPECIFIED;
+}
+
+static char* create_valid_path(const char *filename)
+{
+    char *c_filename = strdup(filename);
+    char *filepath   = NULL;
+
+    /* construct filepath */
+    if (lib_path) {
+	/* try absolute path */
+	if (file_existsp(c_filename))
+	    return c_filename;
+
+	/* use lib_path */
+        filepath = (char*)malloc(strlen(lib_path) + strlen(c_filename) + 2);
+        strcpy(filepath, lib_path);
+        strcat(filepath, "/");
+        strcat(filepath, c_filename);
+	if (file_existsp(filepath)) {
+	    free(c_filename);
+	    return filepath;
+	}
+    }
+    
+    /* clear */
+    if (filepath)
+	free(filepath);
+
+    /* fallback */
+    filepath = (char*)malloc(strlen(c_filename) + 1);
+    strcpy(filepath, c_filename);
+    if (file_existsp(filepath)) {
+	free(c_filename);
+	return filepath;
+    }
+
+    free(c_filename);
+    free(filepath);
+    return NULL;
 }
 
 ScmObj ScmOp_load(ScmObj filename)
@@ -558,18 +591,13 @@ ScmObj ScmOp_providedp(ScmObj feature)
 
 ScmObj ScmOp_file_existsp(ScmObj filepath)
 {
-    FILE *f = NULL;
-
     if (!SCM_STRINGP(filepath))
         SigScm_ErrorObj("file-exists? : string requred but got ", filepath);
 
-    f = fopen(SCM_STRING_STR(filepath), "r");
-    if (!f)
-        return SCM_FALSE;
+    if (file_existsp(SCM_STRING_STR(filepath)))
+	return SCM_TRUE;
 
-    fclose(f);
-
-    return SCM_TRUE;
+    return SCM_FALSE;
 }
 
 ScmObj ScmOp_delete_file(ScmObj filepath)
@@ -581,4 +609,14 @@ ScmObj ScmOp_delete_file(ScmObj filepath)
         SigScm_ErrorObj("delete-file : delete failed. file = ", filepath);
     
     return SCM_TRUE;
+}
+
+static int file_existsp(const char *c_filepath)
+{
+    FILE *f = fopen(c_filepath, "r");
+    if (!f)
+        return 0;
+
+    fclose(f);
+    return 1;
 }
