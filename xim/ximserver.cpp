@@ -156,10 +156,32 @@ void XimServer::customContext(const char *custom, const char *val) {
 
     if (!strcmp(custom, "bridge-show-input-state?") &&
 		    !uim_scm_symbol_value_bool("bridge-show-input-state?")) {
-	    Canddisp *disp = canddisp_singleton();
-	    disp->hide_caret_state();
+	Canddisp *disp = canddisp_singleton();
+	disp->hide_caret_state();
     }
+}
 
+void XimServer::reloadConfigs() {
+#if 0
+    // uim_prop_reload_configs() seems broken... --ekato Aug 19 2005
+    uim_prop_reload_configs();
+#else
+    reload_uim(0);
+#endif
+
+    // Updated global IM of XimServer
+    char *im = uim_scm_symbol_value_str("default-im-name");
+    set_im(im);
+    free(im);
+
+#if HAVE_XFT_UTF8_STRING
+    update_default_xftfont();
+#endif
+
+    if (!uim_scm_symbol_value_bool("bridge-show-input-state?")) {
+	Canddisp *disp = canddisp_singleton();
+	disp->hide_caret_state();
+    }
 }
 
 bool

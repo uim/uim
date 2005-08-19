@@ -210,12 +210,8 @@ void Canddisp::hide_caret_state()
 
 void Canddisp::check_connection()
 {
-    if (errno == EBADF || errno == EPIPE) {
-	disp = NULL;
-	int fd = fileno(candwin_r);
-	remove_current_fd_watch(fd);
-	delete this;
-    }
+    if (errno == EBADF || errno == EPIPE)
+	terminate_canddisp_connection();
 }
 
 static void candwin_read_cb(int fd, int ev)
@@ -225,11 +221,7 @@ static void candwin_read_cb(int fd, int ev)
 
     n = read(fd, buf, 1024 - 1);
     if (n == 0) {
-	int fd_w = fileno(candwin_w);
-	if (fd != -1)
-	    close(fd_w);
-	close(fd);
-	remove_current_fd_watch(fd);
+	terminate_canddisp_connection();
 	return;
     }
     if (n == -1)
@@ -237,11 +229,7 @@ static void candwin_read_cb(int fd, int ev)
     buf[n] = '\0';
 
     if (!strcmp(buf, "err")) {
-	int fd_w = fileno(candwin_w);
-	if (fd != -1)
-	    close(fd_w);
-	close(fd);
-	remove_current_fd_watch(fd);
+	terminate_canddisp_connection();
 	return;
     }
 
@@ -283,6 +271,8 @@ void terminate_canddisp_connection()
 	close(fd_w);
     }
 
+    candwin_w = candwin_r = NULL;
+    delete disp;
     disp = NULL;
     return;
 }

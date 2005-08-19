@@ -58,7 +58,6 @@ typedef struct _UIMCandidateWindowClass	UIMCandidateWindowClass;
 struct _UIMCandidateWindow {
   GtkWindow parent;
 
-  GtkWidget *scrolled_window;
   GtkWidget *view;
   GtkWidget *num_label;
 
@@ -305,33 +304,37 @@ candidate_window_init(UIMCandidateWindow *cwin)
 {
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column; 
+  GtkWidget *scrolled_window;
   GtkWidget *vbox;
+  GtkWidget *frame;
   GtkTreeSelection *selection;
   GdkRectangle cursor_location;
   
   vbox = gtk_vbox_new(FALSE, 0);
+  frame = gtk_frame_new(NULL);
 
   cwin->stores = g_ptr_array_new();
   
-  gtk_container_set_border_width(GTK_CONTAINER(cwin), 1);
   gtk_window_set_default_size(GTK_WINDOW(cwin),
 		  CANDWIN_DEFAULT_WIDTH, -1);
   
 
-  cwin->scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-  gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(cwin->scrolled_window),
+  scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+  gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				 GTK_POLICY_NEVER,
 				 GTK_POLICY_NEVER);
-  gtk_box_pack_start(GTK_BOX(vbox), cwin->scrolled_window, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox), scrolled_window, TRUE, TRUE, 0);
   
   cwin->view = gtk_tree_view_new();
   g_signal_connect(G_OBJECT(cwin->view), "destroy", 
   		   G_CALLBACK(cb_tree_view_destroy), cwin->stores);
   gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(cwin->view), TRUE);
   gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(cwin->view), FALSE);
-  gtk_container_add(GTK_CONTAINER(cwin->scrolled_window), cwin->view);
+  gtk_container_add(GTK_CONTAINER(scrolled_window), cwin->view);
 
-  gtk_container_add(GTK_CONTAINER(cwin), vbox);
+  gtk_container_add(GTK_CONTAINER(frame), vbox);
+  gtk_container_add(GTK_CONTAINER(cwin), frame);
+  gtk_container_set_border_width(GTK_CONTAINER(frame), 0);
     
   selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(cwin->view));
 
@@ -376,11 +379,6 @@ candidate_window_init(UIMCandidateWindow *cwin)
   cursor_location.y = 0;
   cursor_location.height = 0;
   caret_state_indicator_set_cursor_location(cwin->caret_state_indicator, &cursor_location);
-
-  gtk_widget_show(cwin->scrolled_window);
-  gtk_widget_show(cwin->view);
-  gtk_widget_show(cwin->num_label);
-  gtk_widget_show_all(vbox);
 }
 
 static void

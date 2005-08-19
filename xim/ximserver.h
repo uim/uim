@@ -84,6 +84,7 @@ void init_modifier_keys();
 void init_default_xftfont();
 void update_default_xftfont();
 #endif
+void reload_uim(int x);
 
 
 // for command line option
@@ -238,6 +239,7 @@ public:
     void set_im(const char *name);
     void changeContext(const char *engine);
     void customContext(const char *custom, const char *val);
+    void reloadConfigs();
     std::list<InputContext *> ic_list;
 public:
     static XimServer *findServer(Window w);

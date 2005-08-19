@@ -507,7 +507,7 @@ terminate_x_connection()
     remove_current_fd_watch(fd);
 }
 
-static void
+void
 reload_uim(int x)
 {
     fprintf(stderr, "\nReloading uim...\n\n");
