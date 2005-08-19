@@ -344,6 +344,8 @@ candidate_window_init(UIMCandidateWindow *cwin)
 					 NULL);
 
   renderer = gtk_cell_renderer_text_new();
+  g_object_set(renderer, "scale", 1.2, NULL);
+
   column = gtk_tree_view_column_new_with_attributes("No",
 						    renderer,
 						    "text",
@@ -353,6 +355,8 @@ candidate_window_init(UIMCandidateWindow *cwin)
   gtk_tree_view_append_column(GTK_TREE_VIEW(cwin->view), column);
   
   renderer = gtk_cell_renderer_text_new();
+  g_object_set(renderer, "scale", 1.2, NULL);
+  /* g_object_set(renderer, "size-points", 20.0, NULL); */
   column = gtk_tree_view_column_new_with_attributes("Text",
 						    renderer,
 						    "text",
