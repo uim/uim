@@ -73,12 +73,12 @@
 (define modifier-key?
   (lambda (key key-state)
     (or
-     (= key 'Shift_key)
-     (= key 'Control_key)
-     (= key 'Alt_key)
-     (= key 'Meta_key)
-     (= key 'Super_key)
-     (= key 'Hyper_key))))
+     (eq? key 'Shift_key)
+     (eq? key 'Control_key)
+     (eq? key 'Alt_key)
+     (eq? key 'Meta_key)
+     (eq? key 'Super_key)
+     (eq? key 'Hyper_key))))
 
 (define key-state-alist
   '((Shift_key   . 1)
@@ -112,9 +112,9 @@
 
 (define translator-prefix?
   (lambda (symbol)
-    (or (= symbol 'IgnoreCase)
-	(= symbol 'IgnoreShift)
-	(= symbol 'IgnoreRegularShift))))
+    (or (eq? symbol 'IgnoreCase)
+	(eq? symbol 'IgnoreShift)
+	(eq? symbol 'IgnoreRegularShift))))
 
 ;;
 (define intern-key-prefix
@@ -199,16 +199,16 @@
 	   ((translator-prefix? prefix)
 	    (let* ((translator
 		    (cond
-		     ((= prefix 'IgnoreCase)
+		     ((eq? prefix 'IgnoreCase)
 		      (lambda (key key-state)
 			(let ((translated-key (to-lower-char key)))
 			  (list translated-key key-state))))
-		     ((= prefix 'IgnoreShift)
+		     ((eq? prefix 'IgnoreShift)
 		      (lambda (key key-state)
 			(let ((translated-key-state (bit-and key-state
                                                              (bit-not 1))))
 			  (list key translated-key-state))))
-		     ((= prefix 'IgnoreRegularShift)
+		     ((eq? prefix 'IgnoreRegularShift)
 		      (lambda (key key-state)
 			(let ((translated-key-state (if (usual-char? key)
 							(bit-and key-state
@@ -257,8 +257,8 @@
 	  (let* ((translated (apply-translators translators key key-state))
 		 (key       (nth 1 translated))
 		 (key-state (nth 2 translated)))
-	    (and (= key target-key)
-		 (= key-state target-state))))))
+	    (and (eq? key target-key)
+		 (eq? key-state target-state))))))
      ((symbol? source)
       (let ((predicate-sym source))
 	(lambda (key key-state)
