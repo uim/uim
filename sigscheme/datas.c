@@ -137,7 +137,9 @@ ScmObj *stack_start_pointer = NULL;
 static ScmObj *symbol_hash = NULL;
 static gc_protected_obj *protected_obj_list = NULL;
 
+#if SCM_COMPAT_SIOD
 ScmObj scm_return_value    = NULL;
+#endif
 
 /*=======================================
   File Local Function Declarations
@@ -778,6 +780,7 @@ ScmObj Scm_NewValuePacket(ScmObj values)
     return packet;
 }
 
+#if SCM_USE_NONSTD_FEATURES
 ScmObj Scm_NewCPointer(void *data)
 {
     ScmObj obj = SCM_NIL;
@@ -799,6 +802,7 @@ ScmObj Scm_NewCFuncPointer(C_FUNC func)
 
     return obj;
 }
+#endif
 
 /*
  * Symbol Name Hash Related Functions
@@ -891,6 +895,7 @@ char* Scm_GetString(ScmObj str)
     return ret;
 }
 
+#if SCM_USE_NONSTD_FEATURES
 void* Scm_GetCPointer(ScmObj c_ptr)
 {
     if (!SCM_C_POINTERP(c_ptr))
@@ -906,6 +911,7 @@ C_FUNC Scm_GetCFuncPointer(ScmObj c_funcptr)
 
     return SCM_C_FUNCPOINTER_FUNC(c_funcptr);
 }
+#endif
 
 ScmObj Scm_eval_c_string(const char *exp)
 {
@@ -921,7 +927,9 @@ ScmObj Scm_eval_c_string(const char *exp)
     ret = SigScm_Read(str_port);
     ret = ScmOp_eval(ret, SCM_NIL);
 
+#if SCM_COMPAT_SIOD
     scm_return_value = ret;
+#endif
 
     /* now no need to protect stack */
     SigScm_gc_unprotect_stack(&stack_start);
@@ -929,7 +937,9 @@ ScmObj Scm_eval_c_string(const char *exp)
     return ret;
 }
 
+#if SCM_COMPAT_SIOD
 ScmObj Scm_return_value(void)
 {
     return scm_return_value;
 }
+#endif

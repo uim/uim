@@ -1679,6 +1679,7 @@ ScmObj ScmOp_null_environment(ScmObj version)
     return SCM_NIL;
 }
 
+#if SCM_COMPAT_SIOD
 /*=======================================
   SIOD compatible procedures
 
@@ -1762,3 +1763,4 @@ ScmObj ScmOp_closure_code(ScmObj closure)
 
     return SCM_CLOSURE_EXP(closure);
 }
+#endif

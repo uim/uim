@@ -63,8 +63,10 @@ static const char *lib_path = NULL;
   File Local Function Declarations
 =======================================*/
 static char*  create_valid_path(const char *c_filename);
+#if SCM_USE_NONSTD_FEATURES
 static ScmObj create_loaded_str(ScmObj filename);
 static int    file_existsp(const char *filepath);
+#endif
 
 /*=======================================
   Function Implementations
@@ -373,6 +375,7 @@ ScmObj ScmOp_display(ScmObj arg, ScmObj env)
     return SCM_UNDEF;
 }
 
+#if SCM_USE_NONSTD_FEATURES
 ScmObj ScmOp_print(ScmObj arg, ScmObj env)
 {
     ScmObj obj  = SCM_NIL;
@@ -397,6 +400,7 @@ ScmObj ScmOp_print(ScmObj arg, ScmObj env)
     return SCM_UNDEF;
 
 }
+#endif
 
 ScmObj ScmOp_newline(ScmObj arg, ScmObj env)
 {
@@ -526,6 +530,7 @@ ScmObj ScmOp_load(ScmObj filename)
     return SCM_TRUE;
 }
 
+#if SCM_USE_NONSTD_FEATURES
 ScmObj ScmOp_require(ScmObj filename)
 {
     ScmObj stack_start;
@@ -620,3 +625,4 @@ static int file_existsp(const char *c_filepath)
     fclose(f);
     return 1;
 }
+#endif

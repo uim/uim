@@ -100,7 +100,9 @@ void SigScm_Initialize(void)
     SigScm_quasiquote       = Scm_Intern("quasiquote");
     SigScm_unquote          = Scm_Intern("unquote");
     SigScm_unquote_splicing = Scm_Intern("unquote-splicing");
+#if SCM_USE_NONSTD_FEATURES
     SigScm_features         = Scm_Intern("*features*");
+#endif
     /*=======================================================================
       Export Scheme Special Symbols
     =======================================================================*/
@@ -271,15 +273,19 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc1("eof-object?"          , ScmOp_eof_objectp);
     Scm_RegisterFuncL("write"                , ScmOp_write);
     Scm_RegisterFuncL("display"              , ScmOp_display);
+#if SCM_USE_NONSTD_FEATURES
     Scm_RegisterFuncL("print"                , ScmOp_print);
+#endif
     Scm_RegisterFuncL("newline"              , ScmOp_newline);
     Scm_RegisterFuncL("write-char"           , ScmOp_write_char);
     Scm_RegisterFunc1("load"                 , ScmOp_load);
+#if SCM_USE_NONSTD_FEATURES
     Scm_RegisterFunc1("require"              , ScmOp_require);
     Scm_RegisterFunc1("provide"              , ScmOp_provide);
     Scm_RegisterFunc1("provided?"            , ScmOp_providedp);
     Scm_RegisterFunc1("file-exists?"         , ScmOp_file_existsp);
     Scm_RegisterFunc1("delete-file"          , ScmOp_delete_file);
+#endif
     /*=======================================================================
       Current Input & Output Initialization
     =======================================================================*/
@@ -309,6 +315,7 @@ void SigScm_Initialize(void)
     Scm_RegisterFuncR("receive"              , ScmOp_SRFI_8_receive);
 #endif
 
+#if SCM_COMPAT_SIOD
     /*=======================================================================
       SIOD Compatible Variables and Procedures
     =======================================================================*/
@@ -325,6 +332,7 @@ void SigScm_Initialize(void)
     /* datas.c */
     extern ScmObj scm_return_value;
     scm_return_value = SCM_NIL;
+#endif
 
     stack_start_pointer = NULL;
 }

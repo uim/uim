@@ -89,6 +89,9 @@ extern ScmObj SigScm_features;
 #define USE_EUCJP     1
 #define USE_SRFI1     0
 #define USE_SRFI8     1
+#define SCM_USE_NONSTD_FEATURES 1
+#define SCM_COMPAT_SIOD         1
+#define SCM_STRICT_R5RS         0
 
 #define CHECK_1_ARG(arg) \
     (SCM_NULLP(arg))
@@ -147,15 +150,21 @@ ScmObj Scm_NewFilePort(FILE *file, const char *filename, enum ScmPortDirection p
 ScmObj Scm_NewStringPort(const char *str);  /* input only? */
 ScmObj Scm_NewContinuation(void);
 ScmObj Scm_NewValuePacket(ScmObj values);
+#if SCM_USE_NONSTD_FEATURES
 ScmObj Scm_NewCPointer(void *data);
 ScmObj Scm_NewCFuncPointer(C_FUNC func);
+#endif
 ScmObj Scm_Intern(const char *name);
 int    Scm_GetInt(ScmObj num);
 char*  Scm_GetString(ScmObj str);
+#if SCM_USE_NONSTD_FEATURES
 void*  Scm_GetCPointer(ScmObj c_ptr);
 C_FUNC Scm_GetCFuncPointer(ScmObj c_funcptr);
+#endif
 ScmObj Scm_eval_c_string(const char *exp);
+#if SCM_COMPAT_SIOD
 ScmObj Scm_return_value(void);
+#endif
 
 /* eval.c */
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env);
@@ -180,6 +189,7 @@ ScmObj ScmOp_unquote_splicing(ScmObj obj, ScmObj *envp, int *tail_flag);
 ScmObj ScmExp_define(ScmObj arg, ScmObj *envp, int *tail_flag);
 ScmObj ScmOp_scheme_report_environment(ScmObj version);
 ScmObj ScmOp_null_environment(ScmObj version);
+#if SCM_COMPAT_SIOD
 /* SIOD compatible functions */
 ScmObj ScmOp_symbol_boundp(ScmObj obj);
 ScmObj ScmOp_symbol_value(ScmObj var);
@@ -190,6 +200,7 @@ ScmObj ScmOp_bit_xor(ScmObj obj1, ScmObj obj2);
 ScmObj ScmOp_bit_not(ScmObj obj);
 ScmObj ScmOp_the_environment(ScmObj arg, ScmObj env);
 ScmObj ScmOp_closure_code(ScmObj closure);
+#endif
 
 /* operations.c */
 ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2);
@@ -338,17 +349,21 @@ ScmObj ScmOp_eof_objectp(ScmObj obj);
 ScmObj ScmOp_char_readyp(ScmObj arg, ScmObj env);
 ScmObj ScmOp_write(ScmObj arg, ScmObj env);
 ScmObj ScmOp_display(ScmObj arg, ScmObj env);
+#if SCM_USE_NONSTD_FEATURES
 ScmObj ScmOp_print(ScmObj arg, ScmObj env);
+#endif
 ScmObj ScmOp_newline(ScmObj arg, ScmObj env);
 ScmObj ScmOp_write_char(ScmObj arg, ScmObj env);
 
 ScmObj SigScm_load(const char *c_filename);
 ScmObj ScmOp_load(ScmObj filename);
+#if SCM_USE_NONSTD_FEATURES
 ScmObj ScmOp_require(ScmObj filename);
 ScmObj ScmOp_provide(ScmObj feature);
 ScmObj ScmOp_providedp(ScmObj feature);
 ScmObj ScmOp_file_existsp(ScmObj filepath);
 ScmObj ScmOp_delete_file(ScmObj filepath);
+#endif
 
 /* encoding.c */
 int SigScm_default_encoding_strlen(const char *str);
