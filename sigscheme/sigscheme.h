@@ -181,7 +181,7 @@ ScmObj ScmOp_scheme_report_environment(ScmObj version);
 ScmObj ScmOp_null_environment(ScmObj version);
 /* SIOD compatible functions */
 ScmObj ScmOp_symbol_boundp(ScmObj obj);
-ScmObj ScmOp_symbol_value(ScmObj var, ScmObj env);
+ScmObj ScmOp_symbol_value(ScmObj var);
 ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val);
 ScmObj ScmOp_bit_and(ScmObj obj1, ScmObj obj2);
 ScmObj ScmOp_bit_or(ScmObj obj1, ScmObj obj2);

@@ -1,4 +1,3 @@
-
 (load "./test/unittest.scm")
 
 ; basic define
@@ -68,3 +67,11 @@
 (assert-eq? "internal define2" 17 (idefine0 0))
 
 (total-report)
+
+
+; set!
+(define (set-dot a . b)
+  (set! b '(1 2))
+  b)
+
+(assert-equal? "set dot test" '(1 2) (set-dot '()))

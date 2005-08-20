@@ -95,8 +95,26 @@ static ScmObj qquote_vector(ScmObj vec, ScmObj env, int nest);
 
 static ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
 {
-    ScmObj frame = SCM_NIL;
+    ScmObj frame    = SCM_NIL;
+    ScmObj tmp_vars = vars;
+    ScmObj tmp_vals = vals;
 
+    /* handle dot list */
+    while (1) {
+	if (SCM_NULLP(tmp_vars) || !SCM_CONSP(tmp_vars))
+	    break;
+
+	/* dot list appears */
+	if (!SCM_NULLP(SCM_CDR(tmp_vars)) && !SCM_CONSP(SCM_CDR(tmp_vars))) {
+	    /* create new value */
+	    SCM_SETCDR(tmp_vals, Scm_NewCons(SCM_CDR(tmp_vals),
+					     SCM_NIL));
+	}
+
+	tmp_vars = SCM_CDR(tmp_vars);
+	tmp_vals = SCM_CDR(tmp_vals);
+    }
+    
     /* create new frame */
     frame = Scm_NewCons(vars, vals);
 
@@ -185,17 +203,24 @@ static ScmObj lookup_frame(ScmObj var, ScmObj frame)
     vars = SCM_CAR(frame);
     vals = SCM_CDR(frame);
 
-    for (; !SCM_NULLP(vars); vars = SCM_CDR(vars), vals = SCM_CDR(vals)) {
-        /* handle dot list */
-        if (SCM_CONSP(vars)) {
-            if (SCM_EQ(SCM_CAR(vars), var))
-                return vals;
-        } else {
-            if (SCM_EQ(vars, var))
-                return Scm_NewCons(vals, SCM_NIL);
-            else
-                return SCM_NIL;
-        }
+    while (1) {
+	if (SCM_NULLP(vars))
+	    break;
+
+	if (!SCM_CONSP(vars)) {
+	    /* handle dot list */
+	    if (SCM_EQ(vars, var))
+		return vals;
+
+	    break;
+	} else {
+	    /* normal binding */
+	    if (SCM_EQ(SCM_CAR(vars), var))
+		return vals;
+	}
+
+	vars = SCM_CDR(vars);
+	vals = SCM_CDR(vals);
     }
 
     return SCM_NIL;
@@ -1016,6 +1041,9 @@ ScmObj ScmExp_set(ScmObj arg, ScmObj *envp, int *tail_flag)
         SCM_SETCAR(tmp, ret);
     }
 
+    /* set new env */
+    *envp = env;
+
     return ret;
 }
 
@@ -1667,14 +1695,12 @@ ScmObj ScmOp_symbol_boundp(ScmObj obj)
     return SCM_FALSE;
 }
 
-ScmObj ScmOp_symbol_value(ScmObj arg, ScmObj env)
+ScmObj ScmOp_symbol_value(ScmObj var)
 {
-    ScmObj var = SCM_CAR(arg);
-
     if (!SCM_SYMBOLP(var))
 	SigScm_ErrorObj("symbol-value : require symbol but got ", var);
 
-    return symbol_value(var, env);
+    return symbol_value(var, SCM_NIL);
 }
 
 ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val)

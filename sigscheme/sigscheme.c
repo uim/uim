@@ -136,7 +136,7 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc1("null-environment"         , ScmOp_null_environment);
     /* SIOD compatible functions */
     Scm_RegisterFunc1("symbol-bound?"        , ScmOp_symbol_boundp);
-    Scm_RegisterFuncL("symbol-value"         , ScmOp_symbol_value);
+    Scm_RegisterFunc1("symbol-value"         , ScmOp_symbol_value);
     Scm_RegisterFunc2("set-symbol-value!"    , ScmOp_set_symbol_value);
     Scm_RegisterFunc2("bit-and"              , ScmOp_bit_and);
     Scm_RegisterFunc2("bit-or"               , ScmOp_bit_or);
