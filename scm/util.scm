@@ -311,6 +311,17 @@
   (lambda (lst)
     (append lst '())))
 
+;; Siod compatibility
+(define puts display)
+
+;; TODO: Rename to more appropriate name such as 'inspect' (the name
+;; came from debugging terms) or simply 'writeln'. But since I don't
+;; know Scheme culture enough, I can't determine what is appropriate.
+(define siod-print
+  (lambda (obj)
+    (write obj)
+    (newline)))
+
 ;;
 ;; SRFI procedures (don't expect 100% compatibility)
 ;;
