@@ -37,6 +37,17 @@
 ;; generic utilities
 ;;
 
+;; FIXME: Properly escape all special chars in s such as "\"", "\\" as
+;; original siod based one does.
+;;
+;;$ uim-sh
+;;uim> (string-escape "\"")
+;;"\"\\\"\""
+;;uim> (string-escape "\\")
+;;"\"\\\\\""
+;;uim> (string-escape "\n")
+;;"\"\\n\""
+;;
 ;; TODO: write test
 (define string-escape
   (lambda (s)
