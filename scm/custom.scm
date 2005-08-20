@@ -664,7 +664,7 @@
 				 ((symbol? elem)
 				  (symbol->string elem))
 				 ((string? elem)
-				  (string-escape elem))
+				  (set! elem (string-escape elem)))
 				 (else
 				  "")))
 			      lst)))
@@ -679,9 +679,9 @@
        ((eq? type 'integer)
 	(digit->string val))
        ((eq? type 'string)
-	(string-escape val))
+	(set! val (string-escape val)))
        ((eq? type 'pathname)
-	(string-escape val))
+	(set! val (string-escape val)))
        ((eq? type 'choice)
 	(string-append "'" (symbol->string val)))
        ((or (eq? type 'ordered-list)
@@ -745,5 +745,5 @@
 		     (_ "Hidden settings")
 		     (_ "Hidden settings of this group. This group is invisible from uim_custom clients. Exists for internal variable management."))
 
-(prealloc-heaps-for-heavy-job)
+;(prealloc-heaps-for-heavy-job)
 (custom-reload-customs)

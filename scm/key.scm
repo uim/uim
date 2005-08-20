@@ -318,7 +318,7 @@
 	   (key-state   (nth 3 parsed)))
       (and (string? key-str)
 	   (string=? rest "")
-	   (not (= key -1))))))
+	   (not (eqv? key -1))))))
 
 ;; 'strict-key-str' stands for key-str without translator-prefixes and
 ;; emacs like prefix
@@ -335,11 +335,11 @@
 	(set! res (and (string? key-str)
 		       (string=? rest "")
 		       (null? translators)
-		       (not (= key -1)))))
+		       (not (eqv? key -1)))))
       (set! enable-emacs-like-key-prefix? saved-enable-eprefix?)
       res)))
 
 ;;
-;(define-key left-key? "left")
-;(define-key right-key? "right")
-;(define-key switch-im-key? '("<Control>Shift_key" "<Shift>Control_key"))
+(define-key left-key? "left")
+(define-key right-key? "right")
+(define-key switch-im-key? '("<Control>Shift_key" "<Shift>Control_key"))
