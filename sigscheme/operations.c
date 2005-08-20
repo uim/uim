@@ -71,7 +71,12 @@ static ScmObj ScmOp_append_internal(ScmObj head, ScmObj tail);
 ==============================================================================*/
 ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
 {
-    enum ScmObjType type = (enum ScmObjType)SCM_GETTYPE(obj1);
+    enum ScmObjType type;
+
+    if (SCM_EQ(obj1, obj2))
+        return SCM_TRUE;
+
+    type = (enum ScmObjType)SCM_GETTYPE(obj1);
 
     /* different type */
     if (type != SCM_GETTYPE(obj2))
@@ -82,13 +87,6 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
         case ScmInt:
             /* both numbers, are numerically equal */
             if ((SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2)))
-            {
-                return SCM_TRUE;
-            }
-            break;
-        case ScmSymbol:
-            /* symbols which have same name */
-            if (strcmp(SCM_SYMBOL_NAME(obj1), SCM_SYMBOL_NAME(obj2)) == 0)
             {
                 return SCM_TRUE;
             }
@@ -100,6 +98,7 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
                 return SCM_TRUE;
             }
             break;
+        case ScmSymbol:  /* equivalent symbols must already be true on eq? */
         case ScmCons:
         case ScmVector:
         case ScmString:
@@ -107,23 +106,7 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
         case ScmClosure:
 	case ScmPort:
 	case ScmContinuation:
-            if (EQ(obj1, obj2))
-            {
-                return SCM_TRUE;
-            }
-            break;
         case ScmEtc:
-            /* obj1 and obj2 are both #t or both #f */
-            if (((EQ(obj1, SCM_TRUE) && EQ(obj2, SCM_TRUE)))
-                || (EQ(obj1, SCM_FALSE) && EQ(obj2, SCM_FALSE)))
-            {
-                return SCM_TRUE;
-            }
-            /* both obj1 and obj2 are the empty list */
-            if (SCM_NULLP(obj1) && SCM_NULLP(obj2))
-            {
-                return SCM_TRUE;
-            }
             break;
         case ScmFreeCell:
             SigScm_Error("eqv? : cannnot compare freecell, gc broken?\n");
@@ -131,10 +114,7 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
 	case ScmCPointer:
 	case ScmCFuncPointer:
 	case ScmValuePacket:
-	    if (EQ(obj1, obj2))
-	    {
-		return SCM_TRUE;
-	    }
+            break;
     }
 
     return SCM_FALSE;
@@ -142,13 +122,18 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
 
 ScmObj ScmOp_eqp(ScmObj obj1, ScmObj obj2)
 {
-    return ScmOp_eqvp(obj1, obj2);
+    return (SCM_EQ(obj1, obj2)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
 {
     int  i = 0;
-    enum ScmObjType type = (enum ScmObjType)SCM_GETTYPE(obj1);
+    enum ScmObjType type;
+
+    if (SCM_EQ(obj1, obj2))
+        return SCM_TRUE;
+
+    type = (enum ScmObjType)SCM_GETTYPE(obj1);
 
     /* different type */
     if (type != SCM_GETTYPE(obj2))
@@ -159,13 +144,6 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
         case ScmInt:
             /* both numbers, are numerically equal */
             if ((SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2)))
-            {
-                return SCM_TRUE;
-            }
-            break;
-        case ScmSymbol:
-            /* symbols which have same name */
-            if (strcmp(SCM_SYMBOL_NAME(obj1), SCM_SYMBOL_NAME(obj2)) == 0)
             {
                 return SCM_TRUE;
             }
@@ -230,9 +208,8 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
                 return SCM_UNSPECIFIED;
             }
             break;
+        case ScmSymbol:  /* equivalent symbols must already be true on eq? */
         case ScmEtc:
-	    if (EQ(obj1, obj2))
-		return SCM_TRUE;
             break;
         case ScmFreeCell:
             SigScm_Error("equal? : cannnot compare freecell, gc broken?\n");
