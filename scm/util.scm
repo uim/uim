@@ -40,7 +40,7 @@
 ;; TODO: write test
 (define string-escape
   (lambda (s)
-    (string-append "\"\"" s s)))
+    (string-append "\"" s "\"")))
 
 ;; TODO: write test
 (define string->char

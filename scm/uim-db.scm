@@ -40,7 +40,7 @@
 
 (define uim-db-print
   (lambda (x)
-    (puts "\n>>> ")
+    (print "\n>>> ")
     (print (dbg-get-info x))
     (print x)))
 
@@ -90,7 +90,7 @@
      (lambda (l)
        (uim-db-puts "Display " (car l) ": ")
        (print (cdr l))
-       (puts " ==> ")
+       (print " ==> ")
        (*catch 'all (print (eval (cdr l) env))))
      uim-db-display)
     #t))
@@ -139,7 +139,7 @@
 	  (dbg-copy-info! (cdr code) '()) ; invalidate
 	  (dbg-copy-info! (cddr code) pos)
 	  (set-car! pos code))
-	(puts "Invalid argument to uim-db-insert-code!\n"))))
+	(print "Invalid argument to uim-db-insert-code!\n"))))
 
 (define uim-db-restore-code!
   (lambda (pos)
@@ -172,7 +172,7 @@
 	  (uim-db-breakpoint-set-next-hook-id!
 	   bp
 	   (+ 1 (uim-db-breakpoint-next-hook-id bp))))
-	(puts "Invalid argument to uim-db-add-hook!\n"))))
+	(print "Invalid argument to uim-db-add-hook!\n"))))
 
 (define uim-db-del-hook!
   (lambda (break-id hook-id)
@@ -192,8 +192,8 @@
 			     " of breakpoint "
 			     break-id
 			     "\n"))
-	      (puts "Invalid hook ID.\n"))
-	  (puts "Invalid breakpoint ID.\n")))))
+	      (print "Invalid hook ID.\n"))
+	  (print "Invalid breakpoint ID.\n")))))
 
 (define uim-db-set-break!
   (lambda criteria
@@ -221,9 +221,9 @@
 			  uim-db-breakpoint-alist))
 	      (set! uim-db-next-id (+ uim-db-next-id 1))
 	      (set! uim-db-current-file (car criteria)))
-	    (puts "Error: specified code not found\n"))))
+	    (print "Error: specified code not found\n"))))
      (else
-      (puts "Usage: (uim-db-set-break! file-name line-number)\n")))))
+      (print "Usage: (uim-db-set-break! file-name line-number)\n")))))
 
 (define uim-db-del-break!
   (lambda (id)
@@ -242,7 +242,7 @@
 			 ":"
 			 (dbg-get-line (uim-db-breakpoint-pos bp))
 			 "\n"))
-	  (puts "Invalid breakpoint ID.\n")))))
+	  (print "Invalid breakpoint ID.\n")))))
 
 (define uim-db-break
   (lambda (env id)
@@ -261,11 +261,11 @@
 			  "Type (uim-db-help 'shell) if you don't "
 			  "know what to do.\n")
 	     (uim-db-shell env bp)
-	     (puts "Continuing execution.\n"))))))
+	     (print "Continuing execution.\n"))))))
 
 (define uim-db-shell
   (lambda args
-    (puts uim-db-prompt)
+    (print uim-db-prompt)
     (let ((env (if (>= (length args) 1) (car args) ()))
 	  (bp (if (>= (length args) 2) (cadr args) #f))
 	  (expr (*catch 'all (read))))
@@ -287,7 +287,7 @@
 		  (uim-db-del-break! (eval (read))))
 		 ((@expression @expr @exp @e)
 		  (if (null? bp)
-		      (puts "You can't do that in a manually-invoked shell.\n")
+		      (print "You can't do that in a manually-invoked shell.\n")
 		      (uim-db-puts
 		       "This breakpoint is set on the expression:\n"
 		       (uim-db-breakpoint-expr bp)
@@ -304,12 +304,12 @@
 		  (uim-db-del-display! (eval (read))))
 		 ((@hook)
 		  (if (null? bp)
-		      (puts "You can't do that in a manually-invoked shell.\n")
+		      (print "You can't do that in a manually-invoked shell.\n")
 		      (uim-db-add-hook! (uim-db-breakpoint-id bp)
 					(eval (read)))))
 		 ((@unhook @delhook)
 		  (if (null? bp)
-		      (puts "You can't do that in a manually-invoked shell.\n")
+		      (print "You can't do that in a manually-invoked shell.\n")
 		      (uim-db-del-hook! (uim-db-breakpoint-id bp)
 					(eval (read)))))
 		 (else
@@ -323,8 +323,8 @@
     (uim-db-for-each
      (lambda (x)
        (case (typeof x)
-	 ((tc_string tc_symbol) (puts x))
-	 ((tc_intnum) (puts (number->string x)))
+	 ((tc_string tc_symbol) (print x))
+	 ((tc_intnum) (print (number->string x)))
 	 (else (print x))))
      args)))
 
@@ -367,12 +367,12 @@
 	       (database uim-db-help-database))
       (cond
        ((not database)
-	(puts "Sorry, that topic isn't available."))
+	(print "Sorry, that topic isn't available."))
        ((null? topics)
 	(apply uim-db-puts (cadr database))
 	(if (pair? (cddr database))
 	    (begin
-	      (puts "\nSubtopics:\n")
+	      (print "\nSubtopics:\n")
 	      (uim-db-for-each
 	       (lambda (db)
 		 (print (car db)))

@@ -39,7 +39,7 @@
   (lambda ()
     (set! enabled-im-list
 	  (map custom-choice-rec-sym (custom-installed-im-list)))
-    (puts
+    (print
      (string-append
       ";; The described order of input methods affects which IM is preferred\n"
       ";; at the default IM selection process for each locale. i.e. list\n"
@@ -53,7 +53,7 @@
 ;; TODO: write test
 (define generate-loader-scm
   (lambda ()
-    (puts
+    (print
      (string-append
       ";; Don't edit this file manually\n"
       (string-join "\n" (stub-im-generate-all-stub-im-list))))))
