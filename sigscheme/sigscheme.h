@@ -155,6 +155,7 @@ char*  Scm_GetString(ScmObj str);
 void*  Scm_GetCPointer(ScmObj c_ptr);
 C_FUNC Scm_GetCFuncPointer(ScmObj c_funcptr);
 ScmObj Scm_eval_c_string(const char *exp);
+ScmObj Scm_return_value(void);
 
 /* eval.c */
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env);
@@ -187,6 +188,8 @@ ScmObj ScmOp_bit_and(ScmObj obj1, ScmObj obj2);
 ScmObj ScmOp_bit_or(ScmObj obj1, ScmObj obj2);
 ScmObj ScmOp_bit_xor(ScmObj obj1, ScmObj obj2);
 ScmObj ScmOp_bit_not(ScmObj obj);
+ScmObj ScmOp_the_environment(ScmObj arg, ScmObj env);
+ScmObj ScmOp_closure_code(ScmObj closure);
 
 /* operations.c */
 ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2);

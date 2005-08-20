@@ -1749,3 +1749,16 @@ ScmObj ScmOp_bit_not(ScmObj obj)
 
     return Scm_NewInt(~SCM_INT_VALUE(obj));
 }
+
+ScmObj ScmOp_the_environment(ScmObj arg, ScmObj env)
+{
+    return env;
+}
+
+ScmObj ScmOp_closure_code(ScmObj closure)
+{
+    if (!SCM_CLOSUREP(closure))
+	SigScm_ErrorObj("%%closure-code : closure required but got ", closure);
+
+    return SCM_CLOSURE_EXP(closure);
+}

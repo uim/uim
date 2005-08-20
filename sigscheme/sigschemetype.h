@@ -367,7 +367,7 @@ typedef ScmObj (*ScmFuncType) (void);
 
 #define SCM_C_FUNCPOINTERP(a) (SCM_GETTYPE(a) == ScmCFuncPointer)
 #define SCM_C_FUNCPOINTER(a)  (sigassert(SCM_C_FUNCPOINTERP(a)), (a))
-#define SCM_C_FUNCPOINTER_FUNC(a) (SCM_C_POINTER(a)->obj.c_func_pointer.func)
+#define SCM_C_FUNCPOINTER_FUNC(a) (SCM_C_FUNCPOINTER(a)->obj.c_func_pointer.func)
 #define SCM_SETC_FUNCPOINTER(a) (SCM_SETTYPE((a), ScmCFuncPointer))
 #define SCM_SETC_FUNCPOINTER_FUNC(a, funcptr) (SCM_C_FUNCPOINTER_FUNC(a) = funcptr)
 

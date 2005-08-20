@@ -116,21 +116,15 @@
   (_ "Specify default IM")
   (_ "long description will be here."))
 
-;
-; TODO : fix me! Kazuki Ohta <mover@hct.zaq.ne.jp>
-;
-; This code becomes an error for some reason.
-; May be SigScheme's bug.
-;
-;(define-custom 'custom-preserved-default-im-name
-;  (and (not (null? im-list))
-;       (im-name (find-default-im #f)))
-;  '(global im-deployment)
-;  (cons
-;   'choice
-;   (custom-im-list-as-choice-rec (reverse im-list)))
-;  (_ "Default input method")
-;  (_ "long description will be here."))
+(define-custom 'custom-preserved-default-im-name
+  (and (not (null? im-list))
+       (im-name (find-default-im #f)))
+  '(global im-deployment)
+  (cons
+   'choice
+   (custom-im-list-as-choice-rec (reverse im-list)))
+  (_ "Default input method")
+  (_ "long description will be here."))
 
 ;; activity dependency
 (custom-add-hook 'custom-preserved-default-im-name
@@ -293,20 +287,20 @@
 ; May be SigScheme's bug.
 ;
 ; referred by some bridges
-;(define-custom 'candidate-window-position 'caret
-;  '(global visual-preference)
-;  (list 'choice
-;	(list 'caret
-;	      (_ "Adjacent to cursor")
-;	      (_ "Adjacent to cursor"))
-;	(list 'left
-;	      (_ "Left end of preedit area")
-;	      (_ "Left end of preedit area"))
-;	(list 'right
-;	      (_ "Right end of preedit area")
-;	      (_ "Right end of preedit area")))
-; (_ "Candidate window position")
-; (_ "long description will be here."))
+(define-custom 'candidate-window-position 'caret
+  '(global visual-preference)
+  (list 'choice
+	(list 'caret
+	      (_ "Adjacent to cursor")
+	      (_ "Adjacent to cursor"))
+	(list 'left
+	      (_ "Left end of preedit area")
+	      (_ "Left end of preedit area"))
+	(list 'right
+	      (_ "Right end of preedit area")
+	      (_ "Right end of preedit area")))
+ (_ "Candidate window position")
+ (_ "long description will be here."))
 
 (define-custom 'enable-lazy-loading? #t
   '(global advanced)

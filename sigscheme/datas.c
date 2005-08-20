@@ -105,7 +105,7 @@ struct gc_protected_obj_ {
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define NAMEHASH_SIZE 128
+#define NAMEHASH_SIZE 1024
 
 #define SCM_NEW_OBJ_INTERNAL(VALNAME)                                   \
     if (EQ(scm_freelist, SCM_NIL))					\
@@ -124,8 +124,8 @@ struct gc_protected_obj_ {
 /*=======================================
   Variable Declarations
 =======================================*/
-static int           SCM_HEAP_SIZE = 1024;
-static int           scm_heap_num  = 8;
+static int           SCM_HEAP_SIZE = 16384;
+static int           scm_heap_num  = 64;
 static ScmObjHeap   *scm_heaps     = NULL;
 static ScmObj        scm_freelist  = NULL;
 
@@ -136,6 +136,8 @@ ScmObj *stack_start_pointer = NULL;
 
 static ScmObj *symbol_hash = NULL;
 static gc_protected_obj *protected_obj_list = NULL;
+
+ScmObj scm_return_value    = NULL;
 
 /*=======================================
   File Local Function Declarations
@@ -919,8 +921,15 @@ ScmObj Scm_eval_c_string(const char *exp)
     ret = SigScm_Read(str_port);
     ret = ScmOp_eval(ret, SCM_NIL);
 
+    scm_return_value = ret;
+
     /* now no need to protect stack */
     SigScm_gc_unprotect_stack(&stack_start);
 
     return ret;
+}
+
+ScmObj Scm_return_value(void)
+{
+    return scm_return_value;
 }

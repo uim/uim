@@ -134,14 +134,6 @@ void SigScm_Initialize(void)
     Scm_RegisterFuncR("define"               , ScmExp_define);
     Scm_RegisterFunc1("scheme-report-environment", ScmOp_scheme_report_environment);
     Scm_RegisterFunc1("null-environment"         , ScmOp_null_environment);
-    /* SIOD compatible functions */
-    Scm_RegisterFunc1("symbol-bound?"        , ScmOp_symbol_boundp);
-    Scm_RegisterFunc1("symbol-value"         , ScmOp_symbol_value);
-    Scm_RegisterFunc2("set-symbol-value!"    , ScmOp_set_symbol_value);
-    Scm_RegisterFunc2("bit-and"              , ScmOp_bit_and);
-    Scm_RegisterFunc2("bit-or"               , ScmOp_bit_or);
-    Scm_RegisterFunc2("bit-xor"              , ScmOp_bit_xor);
-    Scm_RegisterFunc1("bit-not"              , ScmOp_bit_not);
     /* operations.c */
     Scm_RegisterFunc2("eqv?"                 , ScmOp_eqvp);
     Scm_RegisterFunc2("eq?"                  , ScmOp_eqp);
@@ -311,8 +303,28 @@ void SigScm_Initialize(void)
     Scm_RegisterFuncL("iota"                 , ScmOp_SRFI_1_iota);
 #endif
 #if USE_SRFI8
+    /*=======================================================================
+      SRFI-8 Procedure
+    =======================================================================*/
     Scm_RegisterFuncR("receive"              , ScmOp_SRFI_8_receive);
 #endif
+
+    /*=======================================================================
+      SIOD Compatible Variables and Procedures
+    =======================================================================*/
+    /* eval.c */
+    Scm_RegisterFunc1("symbol-bound?"        , ScmOp_symbol_boundp);
+    Scm_RegisterFunc1("symbol-value"         , ScmOp_symbol_value);
+    Scm_RegisterFunc2("set-symbol-value!"    , ScmOp_set_symbol_value);
+    Scm_RegisterFunc2("bit-and"              , ScmOp_bit_and);
+    Scm_RegisterFunc2("bit-or"               , ScmOp_bit_or);
+    Scm_RegisterFunc2("bit-xor"              , ScmOp_bit_xor);
+    Scm_RegisterFunc1("bit-not"              , ScmOp_bit_not);
+    Scm_RegisterFuncL("the-environment"      , ScmOp_the_environment);
+    Scm_RegisterFunc1("%%closure-code"       , ScmOp_closure_code);
+    /* datas.c */
+    extern ScmObj scm_return_value;
+    scm_return_value = SCM_NIL;
 
     stack_start_pointer = NULL;
 }

@@ -235,7 +235,7 @@ uim_scm_t(void)
 uim_lisp
 uim_scm_f(void)
 {
-  return (uim_lisp)SigScm_true;
+  return (uim_lisp)SigScm_false;
 }
 
 uim_lisp
@@ -339,7 +339,7 @@ uim_lisp
 uim_scm_return_value(void)
 {
   /* FIXME: This function should be removed. */
-  SigScm_Error("uim_scm_return_value is not implemented\n");
+  return (uim_lisp)Scm_return_value();
 }
 
 uim_lisp
