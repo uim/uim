@@ -171,7 +171,8 @@ void XimServer::reloadConfigs() {
 
     // Updated global IM of XimServer
     char *im = uim_scm_symbol_value_str("default-im-name");
-    set_im(im);
+    if (im)
+	set_im(im);
     free(im);
 
 #if HAVE_XFT_UTF8_STRING
