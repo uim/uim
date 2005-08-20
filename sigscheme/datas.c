@@ -413,7 +413,7 @@ static int is_pointer_to_heap(ScmObj obj)
 	if ((head = scm_heaps[i])
 	    && (head <= obj)
 	    && (obj  <  head + SCM_HEAP_SIZE)
-	    && ((((char*)obj - (char*)head) % sizeof(ScmObj)) == 0))
+	    && ((((char*)obj - (char*)head) % sizeof(ScmObjInternal)) == 0))
 	    return 1;
     }
 
