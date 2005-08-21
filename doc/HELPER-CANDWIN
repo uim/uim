@@ -22,7 +22,8 @@ Recieving Message format BNF
 	      hide       |
 	      deactivate |
 	      show_caret_state |
-	      update_caret_state) "\n"
+	      update_caret_state |
+	      hide_caret_state) "\n"
   charset_specifier = "charset=" charset "\n"
   charset = "UTF-8" | "EUC-JP" | "GB18030" |
             <or any name that can be specified as iconv_open(3) argument>
@@ -81,6 +82,11 @@ Recieving Message format BNF
     Update caret state of the input mode
 
     update_caret_state = "update_caret_state" "\n"
+
+  9. hide_caret_state
+    Hide caret state of the input mode
+
+    hide_caret_state = "hide_caret_state" "\n"
 
 Sending Message format BNF
   session  = messages
