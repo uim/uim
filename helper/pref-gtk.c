@@ -47,6 +47,7 @@
 
 #define DEFAULT_WINDOW_WIDTH_MAX 800
 #define DEFAULT_WINDOW_HEIGHT_MAX 600
+#define USE_CHANGES_SENSITIVE_OK_BUTTON 0
 
 static GtkWidget *pref_window = NULL;
 static GtkWidget *pref_tree_view = NULL;
@@ -54,8 +55,8 @@ static GtkWidget *pref_hbox = NULL;
 static GtkWidget *current_group_widget = NULL;
 
 gboolean uim_pref_gtk_value_changed = FALSE;
-GtkWidget *pref_apply_button = NULL;
-GtkWidget *pref_ok_button = NULL;
+static GtkWidget *pref_apply_button = NULL;
+static GtkWidget *pref_ok_button = NULL;
 
 enum
 {
@@ -64,12 +65,35 @@ enum
   NUM_COLUMNS
 };
 
+void uim_pref_gtk_mark_value_changed(void);
+void uim_pref_gtk_unmark_value_changed(void);
+
 static gboolean	pref_tree_selection_changed(GtkTreeSelection *selection,
 					     gpointer data);
 static GtkWidget *create_pref_treeview(void);
 static GtkWidget *create_group_widget(const char *group_name);
 static void create_sub_group_widgets(GtkWidget *parent_widget,
 				     const char *parent_group);
+
+void
+uim_pref_gtk_mark_value_changed(void)
+{
+  uim_pref_gtk_value_changed = TRUE;
+  gtk_widget_set_sensitive(pref_apply_button, TRUE);
+#if USE_CHANGES_SENSITIVE_OK_BUTTON
+  gtk_widget_set_sensitive(pref_ok_button, TRUE);
+#endif
+}
+
+void
+uim_pref_gtk_unmark_value_changed(void)
+{
+  uim_pref_gtk_value_changed = FALSE;
+  gtk_widget_set_sensitive(pref_apply_button, FALSE);
+#if USE_CHANGES_SENSITIVE_OK_BUTTON
+  gtk_widget_set_sensitive(pref_ok_button, FALSE);
+#endif
+}
 
 /*
  *  2005-02-10 Takuro Ashie <ashie@homa.ne.jp>
@@ -272,7 +296,7 @@ ok_button_clicked(GtkButton *button, gpointer user_data)
   if (uim_pref_gtk_value_changed) {
     uim_custom_save();
     uim_custom_broadcast_reload_request();
-    uim_pref_gtk_value_changed = FALSE;
+    uim_pref_gtk_unmark_value_changed();
   }
 
   gtk_main_quit();
@@ -286,9 +310,7 @@ apply_button_clicked(GtkButton *button, gpointer user_data)
   if (uim_pref_gtk_value_changed) {
     uim_custom_save();
     uim_custom_broadcast_reload_request();
-    uim_pref_gtk_value_changed = FALSE;
-    gtk_widget_set_sensitive(pref_apply_button, TRUE);
-    gtk_widget_set_sensitive(pref_ok_button, TRUE);
+    uim_pref_gtk_unmark_value_changed();
   }
 }
 
@@ -300,12 +322,7 @@ set_to_default_cb(GtkWidget *widget, gpointer data)
   if (GTK_IS_CONTAINER(widget))
     gtk_container_foreach(GTK_CONTAINER(widget),
 			  (GtkCallback) (set_to_default_cb), NULL);
-
-  if (uim_pref_gtk_value_changed) {
-    gtk_widget_set_sensitive(pref_apply_button, TRUE);
-    gtk_widget_set_sensitive(pref_ok_button, TRUE);
-  }
-
+  uim_pref_gtk_mark_value_changed();
 }
 
 static void
@@ -333,7 +350,7 @@ create_setting_button_box(const char *group_name)
   gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 8);
   tooltip = gtk_tooltips_new();
   gtk_tooltips_set_tip(tooltip, button, _("Revert all changes to default"), NULL);
-  
+
 
   /* Apply button */
   pref_apply_button = gtk_button_new_from_stock(GTK_STOCK_APPLY);
@@ -342,7 +359,7 @@ create_setting_button_box(const char *group_name)
   gtk_widget_set_sensitive(pref_apply_button, FALSE);
   gtk_box_pack_start(GTK_BOX(setting_button_box), pref_apply_button, TRUE, TRUE, 8);
   tooltip = gtk_tooltips_new();
-  gtk_tooltips_set_tip(tooltip, pref_apply_button, _("Apply all new setting"), NULL);
+  gtk_tooltips_set_tip(tooltip, pref_apply_button, _("Apply all changes"), NULL);
 
   /* Cancel button */
   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
@@ -350,16 +367,18 @@ create_setting_button_box(const char *group_name)
 		   G_CALLBACK(quit_confirm), NULL);
   gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 8);
   tooltip = gtk_tooltips_new();
-  gtk_tooltips_set_tip(tooltip, button, _("Quit this application without new preference applying"), NULL);   
+  gtk_tooltips_set_tip(tooltip, button, _("Quit this application without applying changes"), NULL);
 
   /* OK button */
   pref_ok_button = gtk_button_new_from_stock(GTK_STOCK_OK);
   g_signal_connect(G_OBJECT(pref_ok_button), "clicked",
 		   G_CALLBACK(ok_button_clicked), (gpointer) group_name);
   gtk_box_pack_start(GTK_BOX(setting_button_box), pref_ok_button, TRUE, TRUE, 8);
+#if USE_CHANGES_SENSITIVE_OK_BUTTON
   gtk_widget_set_sensitive(pref_ok_button, FALSE);
+#endif
   tooltip = gtk_tooltips_new();
-  gtk_tooltips_set_tip(tooltip, pref_ok_button, _("Quit this application with new preference applying"), NULL);
+  gtk_tooltips_set_tip(tooltip, pref_ok_button, _("Quit this application with applying changes"), NULL);
 
   return setting_button_box;
 }
