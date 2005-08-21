@@ -710,7 +710,7 @@ update_prop_list_cb(void *ptr, const char *str)
   IMUIMContext *uic = (IMUIMContext *)ptr;
   GString *tmp;
 
-  if (uic != focused_context)
+  if (uic != focused_context || disable_focused_context)
     return;
 
   tmp = g_string_new("");
@@ -728,7 +728,7 @@ update_prop_label_cb(void *ptr, const char *str)
   gint x, y;
   uim_bool show_state;
 
-  if (uic != focused_context)
+  if (uic != focused_context || disable_focused_context)
     return;
 
   tmp = g_string_new("");
