@@ -54,6 +54,8 @@ static GtkWidget *pref_hbox = NULL;
 static GtkWidget *current_group_widget = NULL;
 
 gboolean uim_pref_gtk_value_changed = FALSE;
+GtkWidget *pref_apply_button = NULL;
+GtkWidget *pref_ok_button = NULL;
 
 enum
 {
@@ -285,6 +287,8 @@ apply_button_clicked(GtkButton *button, gpointer user_data)
     uim_custom_save();
     uim_custom_broadcast_reload_request();
     uim_pref_gtk_value_changed = FALSE;
+    gtk_widget_set_sensitive(pref_apply_button, TRUE);
+    gtk_widget_set_sensitive(pref_ok_button, TRUE);
   }
 }
 
@@ -296,6 +300,12 @@ set_to_default_cb(GtkWidget *widget, gpointer data)
   if (GTK_IS_CONTAINER(widget))
     gtk_container_foreach(GTK_CONTAINER(widget),
 			  (GtkCallback) (set_to_default_cb), NULL);
+
+  if (uim_pref_gtk_value_changed) {
+    gtk_widget_set_sensitive(pref_apply_button, TRUE);
+    gtk_widget_set_sensitive(pref_ok_button, TRUE);
+  }
+
 }
 
 static void
@@ -320,24 +330,27 @@ create_setting_button_box(const char *group_name)
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(defaults_button_clicked), (gpointer) group_name);
   gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 8);
-
+  
   /* Apply button */
-  button = gtk_button_new_from_stock(GTK_STOCK_APPLY);
-  g_signal_connect(G_OBJECT(button), "clicked",
+  pref_apply_button = gtk_button_new_from_stock(GTK_STOCK_APPLY);
+  g_signal_connect(G_OBJECT(pref_apply_button), "clicked",
 		   G_CALLBACK(apply_button_clicked), (gpointer) group_name);
-  gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 8);
+  gtk_widget_set_sensitive(pref_apply_button, FALSE);
+  gtk_box_pack_start(GTK_BOX(setting_button_box), pref_apply_button, TRUE, TRUE, 8);
 
   /* Cancel button */
   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(quit_confirm), NULL);
   gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 8);
-
+   
   /* OK button */
-  button = gtk_button_new_from_stock(GTK_STOCK_OK);
-  g_signal_connect(G_OBJECT(button), "clicked",
+  pref_ok_button = gtk_button_new_from_stock(GTK_STOCK_OK);
+  g_signal_connect(G_OBJECT(pref_ok_button), "clicked",
 		   G_CALLBACK(ok_button_clicked), (gpointer) group_name);
-  gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 8);
+  gtk_box_pack_start(GTK_BOX(setting_button_box), pref_ok_button, TRUE, TRUE, 8);
+  gtk_widget_set_sensitive(pref_ok_button, FALSE);
+
   return setting_button_box;
 }
 
@@ -346,7 +359,6 @@ create_group_widget(const char *group_name)
 {
   GtkWidget *vbox;
   GtkWidget *group_label;
-  GtkWidget *setting_button_box;
   struct uim_custom_group *group;
   char *label_text;
   vbox = gtk_vbox_new(FALSE, 8);
@@ -369,9 +381,6 @@ create_group_widget(const char *group_name)
   create_sub_group_widgets(vbox, group_name);
 
   uim_custom_group_free(group);
-
-  setting_button_box = create_setting_button_box(group_name);
-  gtk_box_pack_end(GTK_BOX(vbox), setting_button_box, FALSE, FALSE, 8);
 
   return vbox;
 }
@@ -439,6 +448,7 @@ create_pref_window(void)
 {
   GtkWidget *window;
   GtkWidget *scrolled_win; /* treeview container */
+  GtkWidget *vbox;
   GdkPixbuf *icon;
 
   pref_window = window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -448,6 +458,7 @@ create_pref_window(void)
 
   g_signal_connect(G_OBJECT (window), "delete_event",
 		   G_CALLBACK (delete_event_cb), NULL);
+
 
   pref_hbox = gtk_hbox_new(FALSE, 8);
 
@@ -460,7 +471,12 @@ create_pref_window(void)
   gtk_box_pack_start(GTK_BOX(pref_hbox), scrolled_win, FALSE, TRUE, 0);
 
   gtk_container_add(GTK_CONTAINER(scrolled_win), create_pref_treeview());
-  gtk_container_add(GTK_CONTAINER(window), pref_hbox);
+
+  vbox = gtk_vbox_new(FALSE, 8);
+  gtk_container_set_border_width(vbox, 8);
+  gtk_box_pack_start(GTK_BOX(vbox), pref_hbox, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox), create_setting_button_box("dummy-group-name"), FALSE, TRUE, 0);
+  gtk_container_add(GTK_CONTAINER(window), vbox);
 
   {
     GdkScreen *scr;
