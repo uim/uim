@@ -951,6 +951,9 @@ int Convdisp::get_caret_pos()
 
 void Convdisp::update_caret_state()
 {
+    if (!uim_scm_symbol_value_bool("bridge-show-input-state?"))
+	return;
+
     Canddisp *disp = canddisp_singleton();
     InputContext *focusedContext = InputContext::focusedContext();
 
@@ -982,6 +985,7 @@ void ConvdispRw::update_preedit()
     if (!m_pe->get_char_count()) {
 	clear_preedit();
 	move_candwin(); // reset candwin position
+	update_caret_state();
 	return;
     }
 
@@ -1004,6 +1008,7 @@ void ConvdispRw::update_preedit()
     mPeWin->draw();
 
     move_candwin();
+    update_caret_state();
 }
 
 void ConvdispRw::clear_preedit()
@@ -1067,6 +1072,7 @@ void ConvdispOv::update_preedit()
 {
     draw_preedit();
     move_candwin();
+    update_caret_state();
 }
 
 void ConvdispOv::move_candwin()
@@ -1160,9 +1166,7 @@ void ConvdispOv::update_icxatr()
 
     if (m_atr->is_changed(ICA_SpotLocation)) {
 	move_candwin();
-	uim_bool  show_caret_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
-	if (show_caret_state == UIM_TRUE)
-	    update_caret_state();
+	update_caret_state();
     }
 
     if (!m_ov_win)
