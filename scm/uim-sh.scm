@@ -75,8 +75,8 @@
   -B        strict batch mode, implies -b. suppress shell prompts and
             evaluated results\n")
     (if (symbol-bound? 'uim-editline-readline)
-	(puts "  -r [module] Load and import module.\n"))
-    (puts "  -h        show this help\n")))
+	(display "  -r [module] Load and import module.\n"))
+    (display "  -h        show this help\n")))
 
 (define uim-sh
   (lambda (args)
@@ -87,10 +87,11 @@
 	  (if (and uim-editline-enabled
 		   (symbol-bound? 'uim-editline-readline))
 	      (activate-editline))
-	  (if (*catch
-	       'all
-	       (uim-sh-loop))
-	      (uim-sh args))))))
+;	  (if (*catch
+;	       'all
+;	       (uim-sh-loop))
+;	      (uim-sh args))))))
+	       (uim-sh-loop)))))
 
 (if (symbol-bound? 'uim-editline-readline)
     (begin
