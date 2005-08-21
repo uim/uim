@@ -227,6 +227,7 @@ int main(int argc, char **argv)
   const char *tmp_dir;
   const char *sty_str;
   const char *win_str;
+  struct stat stat_buf;
 
   int op;
 
@@ -378,19 +379,44 @@ opt_end:
     tmp_dir = "/tmp";
   }
 
-  if (gnu_screen && (sty_str = getenv("STY")) != NULL && (win_str = getenv("WINDOW")) != NULL) {
+  sty_str = getenv("STY");
+  win_str = getenv("WINDOW");
+  if (gnu_screen) {
+    if (!(sty_str != NULL && win_str != NULL)) {
+      puts("STY and WINDOW are not defined");
+      return EXIT_FAILURE;
+    }
     snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s-%s", tmp_dir, sty_str, win_str);
     snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s-%s", tmp_dir, sty_str, win_str);
+    if (stat(s_path_getmode, &stat_buf) == 0 || stat(s_path_setmode, &stat_buf) == 0) {
+      char msg[100];
+      init_sendsocket(sock_path);
+      snprintf(msg, 100, "uim-fep is already running on window %s", win_str);
+      sendline(msg);
+      return EXIT_FAILURE;
+    }
+    snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s-%s-screen", tmp_dir, sty_str, win_str);
+    snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s-%s-screen", tmp_dir, sty_str, win_str);
   } else {
-    struct stat stat_buf;
-    int file_suffix = 1;
+    if (sty_str != NULL && win_str != NULL) {
+      snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s-%s-screen", tmp_dir, sty_str, win_str);
+      snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s-%s-screen", tmp_dir, sty_str, win_str);
+      if (stat(s_path_getmode, &stat_buf) == 0 || stat(s_path_setmode, &stat_buf) == 0) {
+        printf("uim-fep is already running on window %s as filter\n", win_str);
+        return EXIT_FAILURE;
+      }
+      snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s-%s", tmp_dir, sty_str, win_str);
+      snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s-%s", tmp_dir, sty_str, win_str);
+    } else {
+      int file_suffix = 1;
 
-    snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%d", tmp_dir, getpid());
-    snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%d", tmp_dir, getpid());
-    while (stat(s_path_getmode, &stat_buf) == 0 && stat(s_path_setmode, &stat_buf) == 0) {
-      snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%d-%d", tmp_dir, getpid(), file_suffix);
-      snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%d-%d", tmp_dir, getpid(), file_suffix);
-      file_suffix++;
+      snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%d", tmp_dir, getpid());
+      snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%d", tmp_dir, getpid());
+      while (stat(s_path_getmode, &stat_buf) == 0 || stat(s_path_setmode, &stat_buf) == 0) {
+        snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%d-%d", tmp_dir, getpid(), file_suffix);
+        snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%d-%d", tmp_dir, getpid(), file_suffix);
+        file_suffix++;
+      }
     }
   }
 
@@ -1050,6 +1076,7 @@ static void usage(void)
   uim_init();
   context = uim_create_context(NULL, get_enc(), NULL, NULL, uim_iconv, commit_cb);
 
+  printf("uim-fep %s\n", PACKAGE_VERSION);
   printf("usage: uim-fep [OPTIONS]\n"
       "\n"
       "-u <input method>                         input method      [default=%s]\n"

@@ -81,6 +81,12 @@
 	       (_ "[Anthy] convert to fullwidth alphanumeric")
 	       (_ "long description will be here"))
 
+(define-custom 'anthy-transpose-as-hiragana-key '("F6")
+               '(anthy-keys1)
+	       '(key)
+	       (_ "[Anthy] convert to hiragana")
+	       (_ "long description will be here"))
+
 (define-custom 'anthy-transpose-as-katakana-key '("F7")
                '(anthy-keys1)
 	       '(key)
@@ -227,4 +233,10 @@
                '(anthy-keys3)
 	       '(key)
 	       (_ "[Anthy] go right")
+	       (_ "long description will be here"))
+
+(define-custom 'anthy-vi-escape-key '("escape" "<Control>[")
+               '(anthy-keys3)
+	       '(key)
+	       (_ "[Anthy] anthy-vi-escape-key?")
 	       (_ "long description will be here"))

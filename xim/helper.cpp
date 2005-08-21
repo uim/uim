@@ -225,7 +225,11 @@ helper_str_parse(char *str)
 	}
 	return;
     } else if (strcmp("custom_reload_notify", line) == 0) {
-	uim_prop_reload_configs();
+	std::map<Window, XimServer *>::iterator it;
+	for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); it++) {
+	    (*it).second->reloadConfigs();
+	}
+	return;
     }
 }
 

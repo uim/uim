@@ -35,6 +35,8 @@
 (define uim-sh-opt-strict-batch #f)
 (define uim-sh-opt-help #f)
 
+(define uim-editline-enabled #f)
+
 (define uim-sh-loop
   (lambda ()
     (if (not uim-sh-opt-batch)
@@ -60,24 +62,55 @@
 			       strict-batch?))
     (set! uim-sh-opt-strict-batch strict-batch?)
     (set! uim-sh-opt-help (or (member "-h" args)
-			      (member "--help" args))))))
+			      (member "--help" args)))
+    (if (symbol-bound? 'uim-editline-readline)
+	(set! uim-editline-enabled (or (and (member "-r" args)
+					    (member "editline" args))
+				       (member "--editline" args)))))))
 
 (define uim-sh-usage
   (lambda ()
     (print "Usage: uim-sh [options]
   -b        batch mode. suppress shell prompts
   -B        strict batch mode, implies -b. suppress shell prompts and
-            evaluated results
-  -h        show this help
-")))
+            evaluated results\n")
+    (if (symbol-bound? 'uim-editline-readline)
+	(puts "  -r [module] Load and import module.\n"))
+    (puts "  -h        show this help\n")))
 
 (define uim-sh
   (lambda (args)
     (uim-sh-parse-args args)
     (if uim-sh-opt-help
 	(uim-sh-usage)
-;	(if (*catch
-;	     'all
-;	     (uim-sh-loop))
-;	    (uim-sh args)))))
-	(uim-sh-loop))))
+	(begin
+	  (if (and uim-editline-enabled
+		   (symbol-bound? 'uim-editline-readline))
+	      (activate-editline))
+	  (if (*catch
+	       'all
+	       (uim-sh-loop))
+	      (uim-sh args))))))
+
+(if (symbol-bound? 'uim-editline-readline)
+    (begin
+      (define uim-sh-loop-orig ())
+      (define activate-editline
+	(lambda ()
+	  (set! uim-sh-loop-orig uim-sh-loop)
+	  (set! uim-sh-loop
+		(lambda ()
+		  (if uim-sh-opt-batch
+		      (uim-sh-loop-orig)
+		      (let* ((line (uim-editline-readline))
+			     (expr (read-from-string line))
+			     (eof (eq? (eof-val) expr)))
+			(if (not eof)
+			    (begin
+			      ((if uim-sh-opt-strict-batch
+				   (lambda () #f)
+				   print)
+			       (eval expr))
+			      (uim-sh-loop))
+			    #f)))))
+	#t))))

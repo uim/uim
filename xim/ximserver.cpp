@@ -156,10 +156,38 @@ void XimServer::customContext(const char *custom, const char *val) {
 
     if (!strcmp(custom, "bridge-show-input-state?") &&
 		    !uim_scm_symbol_value_bool("bridge-show-input-state?")) {
-	    Canddisp *disp = canddisp_singleton();
-	    disp->hide_caret_state();
+	Canddisp *disp = canddisp_singleton();
+	disp->hide_caret_state();
     }
 
+    if (!strcmp(custom, "candidate-window-position"))
+	check_candwin_pos_type();
+}
+
+void XimServer::reloadConfigs() {
+#if 0
+    // uim_prop_reload_configs() seems broken... --ekato Aug 19 2005
+    uim_prop_reload_configs();
+#else
+    reload_uim(0);
+#endif
+
+    // Updated global IM of XimServer
+    char *im = uim_scm_symbol_value_str("default-im-name");
+    if (im)
+	set_im(im);
+    free(im);
+
+#if HAVE_XFT_UTF8_STRING
+    update_default_xftfont();
+#endif
+
+    if (!uim_scm_symbol_value_bool("bridge-show-input-state?")) {
+	Canddisp *disp = canddisp_singleton();
+	disp->hide_caret_state();
+    }
+
+    check_candwin_pos_type();
 }
 
 bool
@@ -285,7 +313,7 @@ InputContext::InputContext(XimServer *svr, XimIC *ic, const char *engine)
 {
     mXic = ic;
     m_pe = new pe_stat(this);
-    mConvdisp = 0;
+    mConvdisp = NULL;
     mServer = svr;
     mEngineName = NULL;
     mLocaleName = NULL;
@@ -294,6 +322,7 @@ InputContext::InputContext(XimServer *svr, XimIC *ic, const char *engine)
     mCandwinActive = false;
     mNumPage = 1;
     mDisplayLimit = 0;
+    mCaretStateShown = false;
 }
 
 InputContext::~InputContext()
@@ -436,6 +465,10 @@ InputContext::focusIn()
     check_helper_connection();
     uim_helper_client_focus_in(mUc);
     mFocusedContext = this;
+    if (mConvdisp) {
+	mConvdisp->move_candwin();
+	mConvdisp->update_caret_state();
+    }
     uim_prop_list_update(mUc);	
     uim_prop_label_update(mUc);	
 }
@@ -764,6 +797,7 @@ void InputContext::update_prop_label(const char *str)
 	int timeout = uim_scm_symbol_value_int("bridge-show-input-state-time-length");
 	Canddisp *disp = canddisp_singleton();
 	disp->show_caret_state(str, timeout);
+	mCaretStateShown = true;
     }
 }
 
@@ -775,6 +809,11 @@ const char *InputContext::get_engine_name()
 const char *InputContext::get_locale_name()
 {
     return mLocaleName;
+}
+
+bool InputContext::isCaretStateShown()
+{
+    return mCaretStateShown;
 }
 
 keyState::keyState(XimIC *ic)
@@ -1070,6 +1109,22 @@ void init_modifier_keys() {
     gMod3Mask = check_modifier(Mod3MaskSyms);
     gMod4Mask = check_modifier(Mod4MaskSyms);
     gMod5Mask = check_modifier(Mod5MaskSyms);
+}
+
+
+void
+check_candwin_pos_type()
+{
+    char *candwin_pos_type = uim_scm_symbol_value_str("candidate-window-position");
+
+    if (candwin_pos_type && !strcmp(candwin_pos_type, "left"))
+	XimServer::gCandWinPosType = Left;
+    else if (candwin_pos_type && !strcmp(candwin_pos_type, "right"))
+	XimServer::gCandWinPosType = Right;
+    else
+	XimServer::gCandWinPosType = Caret;
+
+    free(candwin_pos_type);
 }
 
 /*

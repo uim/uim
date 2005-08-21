@@ -229,6 +229,7 @@ public:
     virtual ~PeLineWin();
 
     void draw_pe(pe_stat *p);
+    int mCandWinXOff;
 
 private:
     void calc_extent(pe_stat *p);
@@ -265,8 +266,6 @@ public:
     virtual void clear_preedit();
     virtual void update_icxatr();
     virtual void move_candwin();
-    virtual void update_caret_state();
-    virtual void set_im_lang(const char *im_lang);
     virtual bool use_xft();
 private:
     bool check_win();
@@ -284,6 +283,8 @@ private:
 
     char_ent *m_ce;
     int m_ce_len;
+    int m_candwin_x_off;
+    int m_candwin_y_off;
     PeOvWin *m_ov_win;
 };
 
@@ -297,7 +298,6 @@ public:
     virtual void clear_preedit();
     virtual void update_icxatr();
     virtual void move_candwin();
-    virtual void update_caret_state();
     virtual bool use_xft();
 private:
     PeLineWin *mPeWin;
@@ -311,7 +311,6 @@ public:
     virtual void clear_preedit();
     virtual void update_icxatr();
     virtual void move_candwin();
-    virtual void update_caret_state();
     virtual bool use_xft();
 
 private:
@@ -747,6 +746,19 @@ void PeLineWin::draw_segment(pe_ustring *s)
 	if (mCharPos == caret_pos)
 	    mCursorX= m_x;
     }
+
+    switch (XimServer::gCandWinPosType) {
+    case Caret:
+	mCandWinXOff = mCursorX;
+	break;
+    case Right:
+	mCandWinXOff = m_x;
+	break;
+    case Left:
+    default:
+	mCandWinXOff = 0;
+	break;
+    }
 }
 
 int PeLineWin::calc_segment_extent(pe_ustring *s)
@@ -937,6 +949,22 @@ int Convdisp::get_caret_pos()
     return m_pe->caret_pos;
 }
 
+void Convdisp::update_caret_state()
+{
+    if (!uim_scm_symbol_value_bool("bridge-show-input-state?"))
+	return;
+
+    Canddisp *disp = canddisp_singleton();
+    InputContext *focusedContext = InputContext::focusedContext();
+
+    if (focusedContext && focusedContext == mKkContext) {
+	if (mKkContext->isCaretStateShown())
+	    disp->update_caret_state();
+	else
+	    disp->hide_caret_state();
+    }
+}
+
 // Root window style
 ConvdispRw::ConvdispRw(InputContext *k, icxatr *a) : Convdisp(k, a)
 {
@@ -956,6 +984,8 @@ void ConvdispRw::update_preedit()
 
     if (!m_pe->get_char_count()) {
 	clear_preedit();
+	move_candwin(); // reset candwin position
+	update_caret_state();
 	return;
     }
 
@@ -978,6 +1008,7 @@ void ConvdispRw::update_preedit()
     mPeWin->draw();
 
     move_candwin();
+    update_caret_state();
 }
 
 void ConvdispRw::clear_preedit()
@@ -990,12 +1021,12 @@ void ConvdispRw::update_icxatr()
 {
 }
 
-void ConvdispRw::update_caret_state()
-{
-}
-
 void ConvdispRw::move_candwin()
 {
+    InputContext *focusedContext = InputContext::focusedContext();
+    if (!focusedContext || focusedContext != mKkContext)
+	return;
+
     if (m_atr->has_atr(ICA_ClientWindow)) {
 	int x, y;
 	Window win;
@@ -1008,6 +1039,9 @@ void ConvdispRw::move_candwin()
 	Canddisp *disp = canddisp_singleton();
 
 	XGetWindowAttributes(XimServer::gDpy, m_atr->client_window, &xattr);
+
+	if (mPeWin)
+	    x += mPeWin->mCandWinXOff;
 	disp->move(x, y + xattr.height + 28); // lower-left side under the preedit window
     }
 }
@@ -1021,6 +1055,8 @@ bool ConvdispRw::use_xft()
 ConvdispOv::ConvdispOv(InputContext *k, icxatr *a) : Convdisp(k, a)
 {
     m_ov_win = 0;
+    m_candwin_x_off = 0;
+    m_candwin_y_off = 0;
 #ifdef FLASHPLAYER_WORKAROUND
     revised_spot_y = -1;
 #endif
@@ -1032,32 +1068,19 @@ ConvdispOv::~ConvdispOv()
 	delete m_ov_win;
 }
 
-void ConvdispOv::set_im_lang(const char *im_lang)
-{
-    mIMLang = im_lang;
-}
-
-
 void ConvdispOv::update_preedit()
 {
     draw_preedit();
     move_candwin();
-}
-
-void ConvdispOv::update_caret_state()
-{
-    Canddisp *disp = canddisp_singleton();
-    InputContext *focusedContext = InputContext::focusedContext();
-
-    if (focusedContext && focusedContext == mKkContext) {
-	move_candwin();
-	disp->update_caret_state();
-	m_atr->unset_change_mask(ICA_SpotLocation);
-    }
+    update_caret_state();
 }
 
 void ConvdispOv::move_candwin()
 {
+    InputContext *focusedContext = InputContext::focusedContext();
+    if (!focusedContext || focusedContext != mKkContext)
+	return;
+
     if (m_atr->has_atr(ICA_SpotLocation) ) {
 	int x = -1, y = -1;
 	Window win;
@@ -1089,8 +1112,12 @@ void ConvdispOv::move_candwin()
 	}
 #endif
 	if (x > -1 && y > -1) {
+	    x += m_candwin_x_off;
+	    y += m_candwin_y_off;
+
 	    Canddisp *disp = canddisp_singleton();
 	    disp->move(x, y + UNDERLINE_HEIGHT + 1);
+	    m_atr->unset_change_mask(ICA_SpotLocation);
 	}
 #if 0
     } else if (m_atr->has_atr(ICA_SpotLocation)) {
@@ -1113,6 +1140,8 @@ void ConvdispOv::clear_preedit()
 {
     delete m_ov_win;
     m_ov_win = NULL;
+    m_candwin_x_off = 0;
+    m_candwin_y_off = 0;
 }
 
 void ConvdispOv::validate_area()
@@ -1136,9 +1165,8 @@ void ConvdispOv::update_icxatr()
 {
 
     if (m_atr->is_changed(ICA_SpotLocation)) {
-	uim_bool  show_caret_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
-	if (show_caret_state == UIM_TRUE)
-	    update_caret_state();
+	move_candwin();
+	update_caret_state();
     }
 
     if (!m_ov_win)
@@ -1176,10 +1204,9 @@ void ConvdispOv::update_icxatr()
 	m_atr->unset_change_mask(ICA_FontSet);
     }
   
-    if (m_atr->is_changed(ICA_SpotLocation)) {
+    if (m_atr->is_changed(ICA_SpotLocation))
 	move_candwin();
-	m_atr->unset_change_mask(ICA_SpotLocation);
-    }
+
     draw_preedit();
 }
 
@@ -1381,6 +1408,8 @@ void ConvdispOv::layoutCharEnt()
 {
     int i;
     int x, y;
+    int caret_pos = get_caret_pos();
+    int right_limit = m_atr->area.width + m_atr->area.x;
 
     x = m_atr->spot_location.x;
     y = m_atr->spot_location.y;
@@ -1425,30 +1454,38 @@ void ConvdispOv::layoutCharEnt()
 	    }
 	}
 
-	int right_limit = m_atr->area.width;
-	if (m_atr->has_atr(ICA_Area))
-	    right_limit += m_atr->area.x;
-
-	if (m_ce[i].width + x >
-	    right_limit) {
+	if (m_ce[i].width + x > right_limit) {
 	    // goto next line
 	    x = m_atr->area.x;
-	    y += m_atr->line_space;
+	    y += (m_atr->line_space + UNDERLINE_HEIGHT);
 	}
-	m_ce[i].x = x;
-	m_ce[i].y = y;
+	m_ce[i].x = x - m_atr->area.x;
+	m_ce[i].y = y - m_atr->area.y;
+#ifdef FLASHPLAYER_WORKAROUND
+	// workaround for brain damaged flash player plugin
+	if (m_ce[i].y == 0)
+	    m_ce[i].y += m_ce[i].height;
+#endif
 	x += m_ce[i].width;
     }
-    if (m_atr->has_atr(ICA_Area)) {
-	for (i = 0; i < m_ce_len; i++) {
-	    m_ce[i].x -= m_atr->area.x;
-	    m_ce[i].y -= m_atr->area.y;
-#ifdef FLASHPLAYER_WORKAROUND
-	    // workaround for brain damaged flash player plugin
-	    if (m_ce[i].y == 0)
-		m_ce[i].y += m_ce[i].height;
-#endif
+
+    switch (XimServer::gCandWinPosType) {
+    case Caret:
+	if (caret_pos == 0) {
+	    m_candwin_x_off = m_ce[caret_pos].x - m_atr->spot_location.x;
+	    m_candwin_y_off = m_ce[caret_pos].y - m_atr->spot_location.y;
+	} else {
+	    m_candwin_x_off = m_ce[caret_pos - 1].x + m_ce[caret_pos - 1].width - m_atr->spot_location.x;
+	    m_candwin_y_off = m_ce[caret_pos - 1].y - m_atr->spot_location.y;
 	}
+	break;
+    case Right:
+	m_candwin_x_off = m_ce[m_ce_len - 1].x + m_ce[m_ce_len - 1].width - m_atr->spot_location.x;
+	m_candwin_y_off = m_ce[m_ce_len - 1].y - m_atr->spot_location.y;
+	break;
+    case Left:
+    default:
+	break;
     }
 }
 
@@ -1541,12 +1578,12 @@ void ConvdispOs::update_preedit()
     }
 }
 
-void ConvdispOs::update_caret_state()
-{
-}
-
 void ConvdispOs::move_candwin()
 {
+    InputContext *focusedContext = InputContext::focusedContext();
+    if (!focusedContext || focusedContext != mKkContext)
+	return;
+
     if (m_atr->has_atr(ICA_ClientWindow)) {
 	int x, y;
 	Window win;

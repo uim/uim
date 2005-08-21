@@ -837,6 +837,7 @@ uim_custom_load(void)
 static uim_bool
 file_content_is_same(const char *a_path, const char *b_path)
 {
+  uim_bool ret;
   FILE *a, *b;
   char a_buf[4096], b_buf[4096];
 
@@ -845,19 +846,36 @@ file_content_is_same(const char *a_path, const char *b_path)
 
   while(1) {
     char *a_eof, *b_eof;
+
+    if (!a || !b) {
+      ret = UIM_FALSE;
+      break;
+    }
+
     a_eof = fgets(a_buf, sizeof(a_buf), a);
     b_eof = fgets(b_buf, sizeof(b_buf), b);
 
-    if(!a_eof && !b_eof)
+    if (!a_eof && !b_eof) {
+      ret = UIM_TRUE;
       break;
-    if((!a_eof && b_eof) || (a_eof && !b_eof))
-      return UIM_FALSE;
+    }
 
-    if(strcmp(a_buf, b_buf) != 0)
-      return UIM_FALSE;
+    if ((!a_eof && b_eof) || (a_eof && !b_eof)) {
+      ret = UIM_FALSE;
+      break;
+    }
+
+    if (strcmp(a_buf, b_buf) != 0) {
+      ret = UIM_FALSE;
+      break;
+    }
   }
 
-  return UIM_TRUE;
+  if (a)
+    fclose(a);
+  if (b)
+    fclose(b);
+  return ret;
 }
 #endif
 
@@ -909,7 +927,7 @@ uim_custom_save_group(const char *group)
    * violation. Observing updated group is recommended way.
    *   -- YamaKen 2005-08-09
    */
-  if(file_content_is_same(tmp_file_path, file_path)) {
+  if (file_content_is_same(tmp_file_path, file_path)) {
     succeeded = UIM_TRUE;
     remove(tmp_file_path);
   } else {

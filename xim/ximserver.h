@@ -57,6 +57,11 @@ struct pe_ustring {
     uString s;
     int stat;
 };
+typedef enum {
+    Caret,
+    Left,
+    Right
+} CandWinPosType;
 
 // state of preedit.
 // created in the constructor of InputContext, and deleted in the
@@ -84,6 +89,8 @@ void init_modifier_keys();
 void init_default_xftfont();
 void update_default_xftfont();
 #endif
+void reload_uim(int x);
+void check_candwin_pos_type();
 
 
 // for command line option
@@ -168,6 +175,7 @@ public:
     void update_prop_list(const char *str);
     void update_prop_label(const char *str);
     bool hasActiveCandwin();
+    bool isCaretStateShown();
     const char *get_engine_name();
     const char *get_locale_name();
     void changeContext(const char *engine);
@@ -203,6 +211,7 @@ private:
     std::vector<const char *> active_candidates;
     char *mEngineName;
     char *mLocaleName;
+    bool mCaretStateShown;
 };
 
 class Locale {
@@ -238,11 +247,13 @@ public:
     void set_im(const char *name);
     void changeContext(const char *engine);
     void customContext(const char *custom, const char *val);
+    void reloadConfigs();
     std::list<InputContext *> ic_list;
 public:
     static XimServer *findServer(Window w);
     static Display *gDpy;
     static std::map<Window, XimServer *> gServerMap;
+    static CandWinPosType gCandWinPosType;
 private:
     Window mSelectionWin;
     Atom mServerAtom;

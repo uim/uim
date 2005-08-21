@@ -12,7 +12,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  direct.scm \
  rk.scm \
  generic.scm generic-custom.scm generic-key-custom.scm \
- pyload.scm PY.scm pyunihan.scm pinyin-big5.scm \
+ pyload.scm py.scm pyunihan.scm pinyin-big5.scm \
  japanese.scm japanese-azik.scm japanese-kana.scm \
  anthy.scm anthy-custom.scm anthy-key-custom.scm \
  canna.scm canna-custom.scm canna-key-custom.scm \

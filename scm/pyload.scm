@@ -32,14 +32,14 @@
 ;;
 (define py-init-handler
   (lambda (id im arg)
-    (require "PY.scm")
+    (require "py.scm")
     (generic-context-new id im py-rule #f)))
 
 (generic-register-im
  'py
  "zh_CN"
- "GB18030"
- (N_ "Pinyin (Simplified)")
+ "UTF-8"
+ (N_ "New Pinyin (Simplified)")
  (N_ "Pinyin input method (Simplified Chinese version)")
  py-init-handler)
 

@@ -49,11 +49,11 @@ public:
     void unset_focus();
     InputContext *get_context();
     int get_caret_pos();
+    void update_caret_state();
     virtual void update_preedit() = 0;
     virtual void clear_preedit() = 0;
     virtual void update_icxatr() = 0;
     virtual void move_candwin() = 0;
-    virtual void update_caret_state() = 0;
     virtual void set_im_lang(const char *im_lang);
     virtual void set_locale_name(const char *locale);
     virtual const char *get_locale_name();

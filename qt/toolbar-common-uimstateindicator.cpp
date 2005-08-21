@@ -212,6 +212,7 @@ void UimStateIndicator::slotStdinActivated( int /*socket*/ )
         }
 
         parseHelperStr( tmp );
+	free( s );
     }
 }
 

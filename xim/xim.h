@@ -291,7 +291,6 @@ public:
     void changeContext(const char *engine);
     const char *get_encoding();
     const char *get_lang_region();
-    void move_candwin();
 
 public:
     static XimIC *get_current_ic();
@@ -308,7 +307,7 @@ private:
     void send_sync();
     
     Connection *mConn;
-    // mConvdisp is 0 until getting enough icxatr.  Need to delete
+    // mConvdisp is NULL until getting enough icxatr.  Need to delete
     // this after deletion of m_kkContext since it is also refered by
     // m_kkContext.
     Convdisp *mConvdisp;
