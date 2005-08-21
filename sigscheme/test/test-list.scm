@@ -3,8 +3,8 @@
 ; pair?
 (assert "pair? test1" (pair? '(a . b)))
 (assert "pair? test2" (pair? '(a b c)))
-(assert-eq? "pair? test3" #f (pair? '()))
-(assert-eq? "pair? test4" #f (pair? '#(a b)))
+(assert-equal? "pair? test3" #f (pair? '()))
+(assert-equal? "pair? test4" #f (pair? '#(a b)))
 
 ; cons
 (assert-equal? "cons test1" '(a) (cons 'a '()))
@@ -13,24 +13,24 @@
 (assert-equal? "cons test4" '((a b) . c) (cons '(a b) 'c))
 
 ; car
-(assert-eq? "car test1" 'a (car '(a b c)))
+(assert-equal? "car test1" 'a (car '(a b c)))
 (assert-equal? "car test2" '(a) (car '((a) b c)))
-(assert-eq? "car test3" 1 (car '(1 . 2)))
+(assert-equal? "car test3" 1 (car '(1 . 2)))
 
 ; cdr
 (assert-equal? "cdr test1" '(b c d) (cdr '((a) b c d)))
-(assert-eq? "cdr test2" 2 (cdr '(1 . 2)))
+(assert-equal? "cdr test2" 2 (cdr '(1 . 2)))
 
 ; null?
 (assert "null? test1" (null? '()))
-(assert-eq? "null? test2" #f (null? "aiueo"))
+(assert-equal? "null? test2" #f (null? "aiueo"))
 
 ; list?
 (assert "list? test1" (list? '(a b c)))
 (assert "list? test2" (list? '()))
-(assert-eq? "list? test3" #f (list? '(a . b)))
+(assert-equal? "list? test3" #f (list? '(a . b)))
 ; TODO : check finite length of the list!
-;(assert-eq? "list? test4" #f (let ((x (list 'a)))
+;(assert-equal? "list? test4" #f (let ((x (list 'a)))
 ;			       (set-cdr! x x)
 ;			       (list? x)))
 
@@ -39,14 +39,21 @@
 (assert-equal? "list test2" '() (list))
 
 ; length
-(assert-eq? "length test1" 3 (length '(a b c)))
-(assert-eq? "length test2" 3 (length '(a (b) (c d e))))
-(assert-eq? "length test2" 0 (length '()))
+(assert-equal? "length test1" 3 (length '(a b c)))
+(assert-equal? "length test2" 3 (length '(a (b) (c d e))))
+(assert-equal? "length test2" 0 (length '()))
 
 ; append
 (assert-equal? "append test1" '(x y) (append '(x) '(y)))
 (assert-equal? "append test2" '(a b c d) (append '(a) '(b c d)))
 (assert-equal? "append test3" '(a (b) (c)) (append '(a (b)) '((c))))
+(define w '(n o))
+(define x '(d o))
+(define y '(car))
+(define z '(why))
+(assert-equal? "append test4" '(n o d o car why . ta) (append w x y () z 'ta))
+(assert-equal? "append test5" '(n o) w)	; test non-destructiveness
+(assert-equal? "append test6" x (cdr (append '((Calpis hosi-)) x))) ; share last
 
 ; reverse
 (assert-equal? "reverse test1" '(c b a) (reverse '(a b c)))
@@ -59,7 +66,7 @@
 (assert-equal? "list-tail test4" '() (list-tail '(a b c) 3))
 
 ; list-ref
-(assert-eq? "list-ref test1" 'c (list-ref '(a b c d) 2))
+(assert-equal? "list-ref test1" 'c (list-ref '(a b c d) 2))
 
 ; memq
 (assert-equal? "memq test1" '(a b c) (memq 'a '(a b c)))

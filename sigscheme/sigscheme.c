@@ -66,6 +66,10 @@ ScmObjInternal SigScm_unbound_impl, SigScm_unspecified_impl, SigScm_undef_impl;
 
 extern ScmObj continuation_thrown_obj, letrec_env;
 
+#if SCM_COMPAT_SIOD
+extern ScmObj scm_return_value;
+#endif
+
 /*=======================================
   Function Implementations
 =======================================*/
@@ -143,10 +147,10 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc1("number?"              , ScmOp_numberp);
     Scm_RegisterFunc1("integer?"             , ScmOp_numberp);
     Scm_RegisterFuncL("="                    , ScmOp_equal);
-    Scm_RegisterFuncL("<"                    , ScmOp_bigger);
-    Scm_RegisterFuncL(">"                    , ScmOp_smaller);
-    Scm_RegisterFuncL("<="                   , ScmOp_biggerEq);
-    Scm_RegisterFuncL(">="                   , ScmOp_smallerEq);
+    Scm_RegisterFuncL("<"                    , ScmOp_less);
+    Scm_RegisterFuncL(">"                    , ScmOp_greater);
+    Scm_RegisterFuncL("<="                   , ScmOp_lessEq);
+    Scm_RegisterFuncL(">="                   , ScmOp_greaterEq);
     Scm_RegisterFunc1("zero?"                , ScmOp_zerop);
     Scm_RegisterFunc1("positive?"            , ScmOp_positivep);
     Scm_RegisterFunc1("negative?"            , ScmOp_negativep);
@@ -154,15 +158,15 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc1("even?"                , ScmOp_evenp);
     Scm_RegisterFuncL("max"                  , ScmOp_max);
     Scm_RegisterFuncL("min"                  , ScmOp_min);
-    Scm_RegisterFunc2N("+"                   , ScmOp_plus2n);
-    Scm_RegisterFunc2N("*"                   , ScmOp_multi2n);
-    Scm_RegisterFunc2N("-"                   , ScmOp_minus2n);
-    Scm_RegisterFunc2N("/"                   , ScmOp_divide2n);
+    Scm_RegisterFuncL("+"                    , ScmOp_plus);
+    Scm_RegisterFuncL("*"                    , ScmOp_times);
+    Scm_RegisterFuncL("-"                    , ScmOp_minus);
+    Scm_RegisterFuncL("/"                    , ScmOp_divide);
     Scm_RegisterFunc1("abs"                  , ScmOp_abs);
     Scm_RegisterFunc2("quotient"             , ScmOp_quotient);
     Scm_RegisterFunc2("modulo"               , ScmOp_modulo);
     Scm_RegisterFunc2("remainder"            , ScmOp_remainder);
-    Scm_RegisterFunc1("number->string"       , ScmOp_number_to_string);
+    Scm_RegisterFuncL("number->string"       , ScmOp_number_to_string);
     Scm_RegisterFunc1("string->number"       , ScmOp_string_to_number);
     Scm_RegisterFunc1("not"                  , ScmOp_not);
     Scm_RegisterFunc1("boolean?"             , ScmOp_booleanp);
@@ -330,7 +334,6 @@ void SigScm_Initialize(void)
     Scm_RegisterFuncL("the-environment"      , ScmOp_the_environment);
     Scm_RegisterFunc1("%%closure-code"       , ScmOp_closure_code);
     /* datas.c */
-    extern ScmObj scm_return_value;
     scm_return_value = SCM_NIL;
 #endif
 

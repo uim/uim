@@ -124,8 +124,8 @@ struct gc_protected_obj_ {
 /*=======================================
   Variable Declarations
 =======================================*/
-static int           SCM_HEAP_SIZE = 16384;
-static int           scm_heap_num  = 64;
+static int           SCM_HEAP_SIZE = 10240;
+static int           scm_heap_num  = 8;
 static ScmObjHeap   *scm_heaps     = NULL;
 static ScmObj        scm_freelist  = NULL;
 
@@ -204,9 +204,7 @@ static void *malloc_aligned(size_t size)
 static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmObj *freelist)
 {
     int i = 0;
-    int j = 0;
-    ScmObj prev = NULL;
-    ScmObj next = NULL;
+    ScmObj heap, cell;
 
 #if DEBUG_GC
     printf("allocate_heap num:%d size:%d\n", num_heap, HEAP_SIZE);
@@ -219,27 +217,17 @@ static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmOb
     /* fill with zero and construct free_list */
     for (i = 0; i < num_heap; i++) {
         /* Initialize Heap */
-        (*heaps)[i] = (ScmObj)malloc_aligned(sizeof(ScmObjInternal) * HEAP_SIZE);
-        memset((*heaps)[i], 0, sizeof(ScmObjInternal) * HEAP_SIZE);
+	heap = (ScmObj)malloc_aligned(sizeof(ScmObjInternal) * HEAP_SIZE);
+        (*heaps)[i] = heap;
 
         /* link in order */
-        prev = NULL;
-        next = NULL;
-        for (j = 0; j < HEAP_SIZE; j++) {
-            next = &(*heaps)[i][j];
-	    SCM_SETFREECELL(next);
-
-	    /* prev's cdr is next */
-	    if (prev)
-		SCM_SETFREECELL_CDR(prev, next);
-
-            /* the last cons' cdr is freelist */
-            if (j == HEAP_SIZE - 1)
-		SCM_SETFREECELL_CDR(next, (*freelist));
-
-            prev = next;
+        for (cell=heap; cell-heap < HEAP_SIZE; cell++) {
+	    SCM_SETFREECELL(cell);
+	    SCM_DO_UNMARK(cell);
+	    SCM_SETFREECELL_CDR(cell, cell+1);
         }
 
+	SCM_SETFREECELL_CDR(cell-1, (*freelist));
 	/* and freelist is head of the heap */
 	(*freelist) = (*heaps)[i];
     }
@@ -247,10 +235,8 @@ static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmOb
 
 static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, int HEAP_SIZE, ScmObj *freelist)
 {
-    int    i = 0;
     int    num_heap = 0;
-    ScmObj prev     = NULL;
-    ScmObj next     = NULL;
+    ScmObj heap, cell;
 
 #if DEBUG_GC
     printf("add_heap current num of heaps:%d\n", *orig_num_heap);
@@ -264,24 +250,17 @@ static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, int HEAP_SIZE, ScmO
     (*heaps) = (ScmObj*)realloc((*heaps), sizeof(ScmObj) * num_heap);
 
     /* allocate heap */
-    (*heaps)[num_heap - 1] = (ScmObj)malloc_aligned(sizeof(ScmObjInternal) * HEAP_SIZE);
-    memset((*heaps)[num_heap - 1], 0, sizeof(ScmObjInternal) * HEAP_SIZE);
+    heap = (ScmObj)malloc_aligned(sizeof(ScmObjInternal) * HEAP_SIZE);
+    (*heaps)[num_heap - 1] = heap;
     
     /* link in order */
-    for (i = 0; i < HEAP_SIZE; i++) {
-        next = &(*heaps)[num_heap - 1][i];
-	SCM_SETFREECELL(next);
-
-        if (prev)
-	    SCM_SETFREECELL_CDR(prev, next);
-
-        /* the last cons' cdr is freelist */
-        if (i == HEAP_SIZE - 1)
-	    SCM_SETFREECELL_CDR(next, (*freelist));
-
-        prev = next;
+    for (cell=heap; cell-heap < HEAP_SIZE; cell++) {
+	SCM_SETFREECELL(cell);
+	SCM_DO_UNMARK(cell);
+	SCM_SETFREECELL_CDR(cell, cell+1);
     }
 
+    SCM_SETFREECELL_CDR(cell-1, *freelist);
     (*freelist) = (*heaps)[num_heap - 1];
 }
 

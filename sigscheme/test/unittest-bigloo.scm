@@ -3,7 +3,8 @@
 ;*---------------------------------------------------------------------*/
 ;* For Bigloo Test                                                     */
 ;*---------------------------------------------------------------------*/
-(define test assert-equal?)
+(define (test name val expected-val)
+  (assert-equal? name expected-val val))
 (define (foo1 x)
    x)
 (define (foo2 . x)

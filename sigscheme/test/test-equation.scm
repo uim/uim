@@ -31,17 +31,17 @@
 			          )))
 
 ;; check eq?
-(assert-eq? "eq? check empty list" '() '())
+(assert-equal? "eq? check empty list" '() '())
 
 (define pair1 (cons 'a 'b))
 (define pair2 pair1)
-(assert-eq? "eq? check cons" pair1 pair2)
+(assert-equal? "eq? check cons" pair1 pair2)
 
 (define str1 (string #\a))
 (define str2 str1)
-(assert-eq? "eq? check cons" str1 str2)
+(assert-equal? "eq? check cons" str1 str2)
 
-(assert-eq? "eq? check func" + +)
+(assert-equal? "eq? check func" + +)
 
 ;; check equal?
 (assert "basic equal? test1" (equal? 'a 'a))

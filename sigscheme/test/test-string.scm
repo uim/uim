@@ -9,11 +9,11 @@
 (assert "hiragana make-string check" (string=? "あああ" (make-string 3 #\あ)))
 
 ;; check string-ref
-(assert-eq? "alphabet string-ref check" #\o  (string-ref "aiueo" 4))
-(assert-eq? "hiragena string-ref check" #\お (string-ref "あいうえお" 4))
-(assert-eq? "mixed string-ref check"    #\お (string-ref "あiueお" 4))
-(assert-eq? "alphabet string-ref 0 check" #\a  (string-ref "aiueo" 0))
-(assert-eq? "hiragena string-ref 0 check" #\あ (string-ref "あいうえお" 0))
+(assert-equal? "alphabet string-ref check" #\o  (string-ref "aiueo" 4))
+(assert-equal? "hiragena string-ref check" #\お (string-ref "あいうえお" 4))
+(assert-equal? "mixed string-ref check"    #\お (string-ref "あiueお" 4))
+(assert-equal? "alphabet string-ref 0 check" #\a  (string-ref "aiueo" 0))
+(assert-equal? "hiragena string-ref 0 check" #\あ (string-ref "あいうえお" 0))
 
 ;; check string-set!
 (assert "alphabet string-set! check" (string=? "aikeo"
@@ -33,13 +33,13 @@
 					      str)))
 
 ;; check string-length
-(assert-eq? "alphabet string-length check" 5 (string-length "aiueo"))
-(assert-eq? "hiragana string-length check" 5 (string-length "あいうえお"))
+(assert-equal? "alphabet string-length check" 5 (string-length "aiueo"))
+(assert-equal? "hiragana string-length check" 5 (string-length "あいうえお"))
 
 ;; string=? check
-(assert-eq? "alphabet string=? check" #t (string=? "aiueo" "aiueo"))
-(assert-eq? "hiragana string=? check" #t (string=? "あいうえお" "あいうえお"))
-(assert-eq? "mixed string=? check"    #t (string=? "aいうえo" "aいうえo"))
+(assert-equal? "alphabet string=? check" #t (string=? "aiueo" "aiueo"))
+(assert-equal? "hiragana string=? check" #t (string=? "あいうえお" "あいうえお"))
+(assert-equal? "mixed string=? check"    #t (string=? "aいうえo" "aいうえo"))
 
 
 ;; substring check

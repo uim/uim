@@ -1,6 +1,6 @@
 (load "test/unittest.scm")
 
-(assert-eq? "call/cc test1" -3  (call-with-current-continuation
+(assert-equal? "call/cc test1" -3  (call-with-current-continuation
 				 (lambda (exit)
 				   (for-each (lambda (x)
 					       (if (negative? x)
@@ -21,7 +21,7 @@
 			  (return #f))))))
       (re obj))))))
 
-(assert-eq? "call/cc test2" 4  (list-length '(1 2 3 4)))
-(assert-eq? "call/cc test3" #f (list-length '(a b . c)))
+(assert-equal? "call/cc test2" 4  (list-length '(1 2 3 4)))
+(assert-equal? "call/cc test3" #f (list-length '(a b . c)))
 
 (total-report)
