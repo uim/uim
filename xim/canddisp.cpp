@@ -39,6 +39,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
+#include <fcntl.h>
 
 #include "uim/uim.h"
 #ifdef UIM_COMPAT_SCM
@@ -56,6 +57,7 @@ static FILE *candwin_r, *candwin_w;
 static int candwin_pid;
 static Canddisp *disp;
 static const char *command;
+static bool candwin_inited = false;
 
 static void candwin_read_cb(int fd, int ev);
 
@@ -96,12 +98,21 @@ Canddisp *canddisp_singleton()
     if (!command)
 	command = candwin_command();
 
-    if (!disp && command) {
+    if (!candwin_inited && command) {
 	candwin_pid = uim_ipc_open_command(candwin_pid, &candwin_r, &candwin_w, command);
+	if (disp)
+	    delete disp;
 	disp = new Canddisp();
 	int fd = fileno(candwin_r);
-	if (fd != -1)
-	    add_fd_watch(fd, READ_OK, candwin_read_cb);
+	if (fd != -1) {
+	    int flag = fcntl(fd, F_GETFL);
+	    if (flag != -1) {
+		flag |= O_NONBLOCK;
+		if (fcntl(fd, F_SETFL, flag) != -1)
+		    add_fd_watch(fd, READ_OK, candwin_read_cb);
+	    }
+	}
+	candwin_inited = true;
     }
     return disp;
 }
@@ -210,12 +221,8 @@ void Canddisp::hide_caret_state()
 
 void Canddisp::check_connection()
 {
-    if (errno == EBADF || errno == EPIPE) {
-	disp = NULL;
-	int fd = fileno(candwin_r);
-	remove_current_fd_watch(fd);
-	delete this;
-    }
+    if (errno == EBADF || errno == EPIPE)
+	terminate_canddisp_connection();
 }
 
 static void candwin_read_cb(int fd, int ev)
@@ -225,11 +232,7 @@ static void candwin_read_cb(int fd, int ev)
 
     n = read(fd, buf, 1024 - 1);
     if (n == 0) {
-	int fd_w = fileno(candwin_w);
-	if (fd != -1)
-	    close(fd_w);
-	close(fd);
-	remove_current_fd_watch(fd);
+	terminate_canddisp_connection();
 	return;
     }
     if (n == -1)
@@ -237,11 +240,7 @@ static void candwin_read_cb(int fd, int ev)
     buf[n] = '\0';
 
     if (!strcmp(buf, "err")) {
-	int fd_w = fileno(candwin_w);
-	if (fd != -1)
-	    close(fd_w);
-	close(fd);
-	remove_current_fd_watch(fd);
+	terminate_canddisp_connection();
 	return;
     }
 
@@ -283,6 +282,7 @@ void terminate_canddisp_connection()
 	close(fd_w);
     }
 
-    disp = NULL;
+    candwin_w = candwin_r = NULL;
+    candwin_inited = false;
     return;
 }

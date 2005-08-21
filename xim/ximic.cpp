@@ -345,7 +345,7 @@ XimIC::XimIC(Connection *c, int imid, int icid, const char *engine)
     const char *locale = m_kkContext->get_locale_name();
     m_xatr.set_locale_name(locale);
 
-    mConvdisp = 0;
+    mConvdisp = NULL;
     m_keyState = new keyState(this);
     if (g_option_mask & OPT_TRACE)
 	printf("imid=%d, icid=%d ic created.\n", mIMid, mICid);
@@ -382,12 +382,6 @@ int XimIC::get_imid()
     return mIMid;
 }
 
-void XimIC::move_candwin()
-{
-    if (mConvdisp)
-	mConvdisp->move_candwin();
-}
-
 void XimIC::setFocus()
 {
     if (!mIsActive)
@@ -403,7 +397,6 @@ void XimIC::setFocus()
 	mConvdisp->unset_focus();
     }
 
-    mConvdisp->move_candwin();
     m_kkContext->focusIn();
 
     if (mConvdisp && is_candwin_active == true) {
