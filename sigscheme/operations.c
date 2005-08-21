@@ -734,7 +734,7 @@ ScmObj ScmOp_car(ScmObj obj)
      * in many places. So, I decided to change ScmOp_car to SIOD like behavior.
      * 
      */
-#if !SCM_COMPAT_SIOD
+#if !SCM_COMPAT_SIOD_BUGS
     if (SCM_NULLP(obj))
         SigScm_Error("car : empty list\n");
 #endif
@@ -756,7 +756,7 @@ ScmObj ScmOp_cdr(ScmObj obj)
      * in many places. So, I decided to change ScmOp_car to SIOD like behavior.
      * 
      */
-#if !SCM_COMPAT_SIOD
+#if !SCM_COMPAT_SIOD_BUGS
     if (SCM_NULLP(obj))
         SigScm_Error("cdr : empty list\n");
 #endif

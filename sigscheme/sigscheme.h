@@ -91,6 +91,7 @@ extern ScmObj SigScm_features;
 #define USE_SRFI8     1
 #define SCM_USE_NONSTD_FEATURES 1
 #define SCM_COMPAT_SIOD         1
+#define SCM_COMPAT_SIOD_BUGS    1
 #define SCM_STRICT_R5RS         0
 
 #define CHECK_1_ARG(arg) \
