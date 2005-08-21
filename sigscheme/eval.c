@@ -1255,6 +1255,9 @@ ScmObj ScmExp_let(ScmObj arg, ScmObj *envp, int *tail_flag)
     if (SCM_CONSP(bindings) || SCM_NULLP(bindings)) {
         for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
             binding = SCM_CAR(bindings);
+	    if (SCM_NULLP(binding) || SCM_NULLP(SCM_CDR(binding)))
+		SigScm_ErrorObj("let : invalid binding form : ", binding);
+
             vars = Scm_NewCons(SCM_CAR(binding), vars);
             vals = Scm_NewCons(ScmOp_eval(SCM_CAR(SCM_CDR(binding)), env), vals);
         }
@@ -1325,6 +1328,9 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp, int *tail_flag)
     if (SCM_CONSP(bindings)) {
         for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
             binding = SCM_CAR(bindings);
+	    if (SCM_NULLP(binding) || SCM_NULLP(SCM_CDR(binding)))
+		SigScm_ErrorObj("let* : invalid binding form : ", binding);
+	    
             vars = Scm_NewCons(SCM_CAR(binding), SCM_NIL);
             vals = Scm_NewCons(ScmOp_eval(SCM_CAR(SCM_CDR(binding)), env), SCM_NIL);
 
@@ -1382,6 +1388,9 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp, int *tail_flag)
     if (SCM_CONSP(bindings) || SCM_NULLP(bindings)) {
         for (; !SCM_NULLP(bindings); bindings = SCM_CDR(bindings)) {
             binding = SCM_CAR(bindings);
+	    if (SCM_NULLP(binding) || SCM_NULLP(SCM_CDR(binding)))
+		SigScm_ErrorObj("letrec : invalid binding form : ", binding);
+
             var = SCM_CAR(binding);
             val = SCM_CAR(SCM_CDR(binding));
 

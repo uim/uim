@@ -197,10 +197,9 @@ uim_create_context(void *ptr,
     uim_lisp lang_   = uim_scm_make_str(lang);
     uim_lisp engine_ = uim_scm_make_str(engine);
     uim_lisp proc    = uim_scm_make_symbol("create-context");
-    uim_lisp args    = uim_scm_list3(id_, lang_, engine_);
+    uim_lisp form    = uim_scm_list4(proc, id_, lang_, engine_);
 
-    uim_scm_apply(proc, args);
-      
+    uim_scm_eval(form);
   }
 #endif  /* UIM_EVAL_SEXP_AS_STRING */
   return uc;

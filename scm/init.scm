@@ -101,5 +101,5 @@
 (load-modules)
 
 (or (getenv "LIBUIM_VANILLA")
-    (load-user-conf)
+;    (load-user-conf)
     (load "default.scm"))

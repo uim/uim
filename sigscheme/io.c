@@ -455,8 +455,13 @@ ScmObj SigScm_load(const char *filename)
     SigScm_gc_protect_stack(&stack_start);
 
     /* sanity check */
+    /*
+      TODO : FIXME! Kazuki Ohta <mover@hct.zaq.ne.jp>
+      This should be an error, but we don't have enough error handling
+      feature.
+    */
     if (!filepath)
-	SigScm_Error("SigScm_load : no such file = %s\n", filepath);
+	return SCM_FALSE;
 
     /* open port */
     port = ScmOp_open_input_file(Scm_NewStringCopying(filepath));
@@ -479,7 +484,7 @@ ScmObj SigScm_load(const char *filename)
     /* free str */
     free(filepath);
 
-    return SCM_UNSPECIFIED;
+    return SCM_TRUE;
 }
 
 static char* create_valid_path(const char *filename)

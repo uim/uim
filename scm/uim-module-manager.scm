@@ -39,22 +39,22 @@
    (lambda (x) ;; Test for valid module
       (if (require-module (symbol->string x))
 	  #t
-	  (begin (print (string-append "Error: Module " x " is not a correct module.\n"))
+	  (begin (puts (string-append "Error: Module " x " is not a correct module.\n"))
 		 #f)))
    (remove (lambda (x) ;; Test 
 	     (if (memq x old-module-list)
-		 (begin (print (string-append "Error : Module " x " already registered\n"))
+		 (begin (puts (string-append "Error : Module " x " already registered\n"))
 			#t)
-		 (begin ;(print (string-append "Module " x " not registered\n"))
+		 (begin ;(puts (string-append "Module " x " not registered\n"))
 		   #f)))
 	   modules)))
 
 (define (remove-unregistered-modules modules old-module-list)
   (remove (lambda (x)
 	    (if (memq x modules)
-		(begin ;(print (string-append "Error : Module " x " already registered\n"))
+		(begin ;(puts (string-append "Error : Module " x " already registered\n"))
 		       #t)
-		(begin ;(print (string-append "Module " x " not registered\n"))
+		(begin ;(puts (string-append "Module " x " not registered\n"))
 		       #f)))
 	    old-module-list))
 
