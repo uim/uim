@@ -61,6 +61,7 @@
 
 Display *XimServer::gDpy;
 std::map<Window, XimServer *> XimServer::gServerMap;
+CandWinPosType XimServer::gCandWinPosType;
 
 // Configuration
 int g_option_mask;
@@ -538,10 +539,6 @@ reload_uim(int x)
 	}
     }
 
-    InputContext *focusedContext = InputContext::focusedContext();
-    if (focusedContext)
-	focusedContext->focusIn();
-
     pretrans_setup();
 }
 
@@ -618,6 +615,7 @@ main(int argc, char **argv)
     if (uim_scm_symbol_value_bool("uim-xim-use-xft-font?"))
 	init_default_xftfont(); // setup Xft fonts for Ov/Rw preedit
 #endif
+    check_candwin_pos_type();
 
     // Handle pending events to prevent hang just after startup
     check_pending_xevent();

@@ -39,6 +39,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
+#include <fcntl.h>
 
 #include "uim/uim.h"
 #ifdef UIM_COMPAT_SCM
@@ -56,6 +57,7 @@ static FILE *candwin_r, *candwin_w;
 static int candwin_pid;
 static Canddisp *disp;
 static const char *command;
+static bool candwin_inited = false;
 
 static void candwin_read_cb(int fd, int ev);
 
@@ -96,12 +98,21 @@ Canddisp *canddisp_singleton()
     if (!command)
 	command = candwin_command();
 
-    if (!disp && command) {
+    if (!candwin_inited && command) {
 	candwin_pid = uim_ipc_open_command(candwin_pid, &candwin_r, &candwin_w, command);
+	if (disp)
+	    delete disp;
 	disp = new Canddisp();
 	int fd = fileno(candwin_r);
-	if (fd != -1)
-	    add_fd_watch(fd, READ_OK, candwin_read_cb);
+	if (fd != -1) {
+	    int flag = fcntl(fd, F_GETFL);
+	    if (flag != -1) {
+		flag |= O_NONBLOCK;
+		if (fcntl(fd, F_SETFL, flag) != -1)
+		    add_fd_watch(fd, READ_OK, candwin_read_cb);
+	    }
+	}
+	candwin_inited = true;
     }
     return disp;
 }
@@ -272,7 +283,6 @@ void terminate_canddisp_connection()
     }
 
     candwin_w = candwin_r = NULL;
-    delete disp;
-    disp = NULL;
+    candwin_inited = false;
     return;
 }
