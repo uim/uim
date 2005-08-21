@@ -60,6 +60,13 @@
 #define PLUGIN_PREFIX "libuim-"
 #define PLUGIN_SUFFIX ".so"
 
+#ifdef DEBUG_SCM
+static int debug_scm = DEBUG_SCM;
+#define DPRINTFN(n,x)  if (debug_scm>(n)) fprintf x;
+#else
+#define DPRINTFN(n,x)
+#endif
+
 static uim_lisp 
 plugin_load(uim_lisp _name)
 {
@@ -80,6 +87,8 @@ plugin_load(uim_lisp _name)
     return uim_scm_f();
   }
 
+  DPRINTFN(0, (stderr, "Searching libuim-%s.so.\n", plugin_name));
+
   for (path_cdr = lib_path;
        !uim_scm_nullp(path_cdr);
        path_cdr = uim_scm_cdr(path_cdr))
@@ -95,12 +104,14 @@ plugin_load(uim_lisp _name)
     fd = open(plugin_lib_filename, O_RDONLY);
     if (fd >= 0) {
       close(fd);
+      DPRINTFN(0, (stderr, "Found %s.\n", plugin_lib_filename));
       break;
     }
     free(plugin_lib_filename);
     plugin_lib_filename = NULL;
   }
 
+  DPRINTFN(0, (stderr, "Searching %s.scm.\n", plugin_name));
   for (path_cdr = scm_path;
        !uim_scm_nullp(path_cdr);
        path_cdr = uim_scm_cdr(path_cdr))
@@ -115,6 +126,7 @@ plugin_load(uim_lisp _name)
     fd = open(plugin_scm_filename, O_RDONLY);
     if (fd >= 0) {
       close(fd);
+      DPRINTFN(0, (stderr, "Found %s.\n", plugin_scm_filename));
       break;
     }
     free(plugin_scm_filename);
@@ -125,7 +137,8 @@ plugin_load(uim_lisp _name)
     free(plugin_scm_filename);
     return uim_scm_f();
   }
-    
+
+  DPRINTFN(0, (stderr, "Loading libuim-%s.so.\n", plugin_name));
   library = dlopen(plugin_lib_filename, RTLD_NOW);
   free(plugin_lib_filename);
 
@@ -145,6 +158,7 @@ plugin_load(uim_lisp _name)
     return uim_scm_f();
   }
 
+  DPRINTFN(0, (stderr, "Calling plugin_instance_init().\n", plugin_name));
   (plugin_instance_init)();
   if (plugin_scm_filename) {
     uim_bool succeeded;
