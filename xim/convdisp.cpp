@@ -99,7 +99,7 @@ init_default_xftfont() {
 
 void
 update_default_xftfont() {
-    const char *fontname;
+    char *fontname;
     
     if (!uim_scm_symbol_value_bool("uim-xim-use-xft-font?"))
       return;
@@ -118,8 +118,10 @@ update_default_xftfont() {
 	    free(gXftFontName);
 	    free(gXftFontLocale);
 	    gXftFont = xftfont;
-	    gXftFontName = strdup(fontname);
+	    gXftFontName = fontname;
 	    gXftFontLocale = strdup(setlocale(LC_CTYPE, NULL));
+	} else {
+	    free(fontname);
 	}
     }
 }
