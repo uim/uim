@@ -341,19 +341,25 @@
 
 (define skk-flush
   (lambda (sc)
-    (rk-flush (skk-context-rk-context sc))
-    (if skk-use-recursive-learning?
-	(skk-editor-flush (skk-context-editor sc)))
-    (skk-dialog-flush (skk-context-dialog sc))
-    (if (not (skk-latin-state? sc))
-	(skk-context-set-state! sc 'skk-state-direct))
-    (skk-context-set-head! sc '())
-    (skk-context-set-okuri-head! sc "")
-    (skk-context-set-okuri! sc '())
-    (skk-context-set-appendix! sc '())
-    (skk-reset-candidate-window sc)
-    (skk-context-set-nr-candidates! sc 0)
-    (skk-context-set-latin-conv! sc #f)))
+    (let ((csc (skk-context-child-context sc)))
+      (rk-flush (skk-context-rk-context sc))
+      (if skk-use-recursive-learning?
+	  (skk-editor-flush (skk-context-editor sc)))
+      (skk-dialog-flush (skk-context-dialog sc))
+      (if (not (skk-latin-state? sc))
+	  (skk-context-set-state! sc 'skk-state-direct))
+      (skk-context-set-head! sc '())
+      (skk-context-set-okuri-head! sc "")
+      (skk-context-set-okuri! sc '())
+      (skk-context-set-appendix! sc '())
+      (skk-reset-candidate-window sc)
+      (skk-context-set-nr-candidates! sc 0)
+      (skk-context-set-latin-conv! sc #f)
+      (if (not (null? csc))
+	  (begin
+	    (skk-flush csc)
+	    (skk-context-set-child-context! sc '())
+	    (skk-context-set-child-type! sc '()))))))
 
 (define skk-context-new
   (lambda (id im)
@@ -676,7 +682,7 @@
 
 (define skk-begin-completion
   (lambda (sc)
-    (let ((res))
+    (let ((res #f))
       ;; get residual 'n'
       (if (= (skk-context-state sc) 'skk-state-kanji)
 	  (skk-append-residual-kana sc))
@@ -1705,7 +1711,7 @@
   (lambda (c key key-state)
     (let* ((sc (skk-find-descendant-context c))
 	   (rkc (skk-context-rk-context sc))
-	   (res))
+	   (res #f))
       (and
        (if (skk-cancel-key? key key-state)
 	   (begin
@@ -1838,7 +1844,9 @@
 
 (define skk-reset-handler
   (lambda (sc)
-    (skk-flush sc)))
+    (skk-flush sc)
+    (im-clear-preedit sc)
+    (im-update-preedit sc)))
 
 (define skk-get-candidate-handler
   (lambda (sc idx accel-enum-hint)

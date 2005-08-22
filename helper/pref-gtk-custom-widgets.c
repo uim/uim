@@ -46,8 +46,8 @@
 #define OBJECT_DATA_UIM_CUSTOM_SYM    "uim-pref-gtk::uim-custom-sym"
 
 extern gboolean uim_pref_gtk_value_changed;
-extern GtkWidget *pref_apply_button;
-extern GtkWidget *pref_ok_button;
+
+extern void uim_pref_gtk_mark_value_changed(void);
 
 static GtkSizeGroup *spin_button_sgroup = NULL;
 
@@ -95,9 +95,7 @@ custom_check_button_toggled_cb(GtkToggleButton *button, gpointer user_data)
   rv = uim_custom_set(custom);
 
   if (rv) {
-    uim_pref_gtk_value_changed = TRUE;
-    gtk_widget_set_sensitive(pref_apply_button, TRUE);
-    gtk_widget_set_sensitive(pref_ok_button, TRUE);
+    uim_pref_gtk_mark_value_changed();
   } else {
     g_printerr("Failed to set bool value for \"%s\".\n", custom->symbol);
     /* FIXME! reset the widget */
@@ -179,9 +177,7 @@ custom_spin_button_value_changed(GtkSpinButton *spin, gpointer user_data)
   rv = uim_custom_set(custom);
 
   if (rv) {
-    uim_pref_gtk_value_changed = TRUE;
-    gtk_widget_set_sensitive(pref_apply_button, TRUE);
-    gtk_widget_set_sensitive(pref_ok_button, TRUE);
+    uim_pref_gtk_mark_value_changed();
   } else {
     g_printerr("Failed to set int value for \"%s\".\n", custom->symbol);
     /* FIXME! reset the widget */
@@ -305,9 +301,7 @@ custom_entry_changed_cb(GtkEntry *entry, gpointer user_data)
   }
 
   if (rv) {
-    uim_pref_gtk_value_changed = TRUE;
-    gtk_widget_set_sensitive(pref_apply_button, TRUE);
-    gtk_widget_set_sensitive(pref_ok_button, TRUE);
+    uim_pref_gtk_mark_value_changed();
   } else {
     g_printerr("Failed to set str value for \"%s\".\n", custom->symbol);
     /* FIXME! reset the widget */
@@ -484,9 +478,7 @@ custom_combo_box_changed(GtkComboBox *combo_box, gpointer user_data)
   rv = uim_custom_set(custom);
 
   if (rv) {
-    uim_pref_gtk_value_changed = TRUE;
-    gtk_widget_set_sensitive(pref_apply_button, TRUE);
-    gtk_widget_set_sensitive(pref_ok_button, TRUE);
+    uim_pref_gtk_mark_value_changed();
   } else {
     g_printerr("Failed to set str value for \"%s\".\n", custom->symbol);
     /* FIXME! reset the widget */
@@ -813,9 +805,7 @@ olist_pref_up_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   if (urv == UIM_FALSE)
     return;
 
-  uim_pref_gtk_value_changed = TRUE;
-  gtk_widget_set_sensitive(pref_apply_button, TRUE);
-  gtk_widget_set_sensitive(pref_ok_button, TRUE);
+  uim_pref_gtk_mark_value_changed();
 
   /* sync the view */
   rv = gtk_tree_model_get_iter(model, &iter2, path);
@@ -898,9 +888,7 @@ olist_pref_down_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   if (urv == UIM_FALSE)
     goto ERROR;
 
-  uim_pref_gtk_value_changed = TRUE;
-  gtk_widget_set_sensitive(pref_apply_button, TRUE);
-  gtk_widget_set_sensitive(pref_ok_button, TRUE);
+  uim_pref_gtk_mark_value_changed();
 
   /* sync the view */
   gtk_list_store_swap(GTK_LIST_STORE(model), &iter1, &iter2);
@@ -990,9 +978,7 @@ olist_pref_left_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   if (urv != UIM_FALSE) {
     sync_value_olist(GTK_ENTRY(olist_entry));
     olist_pref_tree_view_set_value(GTK_ENTRY(olist_entry), TRUE, TRUE);
-    uim_pref_gtk_value_changed = TRUE;
-    gtk_widget_set_sensitive(pref_apply_button, TRUE);
-    gtk_widget_set_sensitive(pref_ok_button, TRUE);
+    uim_pref_gtk_mark_value_changed();
   } else {
     /* error message */
   }
@@ -1059,9 +1045,7 @@ olist_pref_right_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   if (urv != UIM_FALSE) {
     sync_value_olist(GTK_ENTRY(olist_entry));
     olist_pref_tree_view_set_value(GTK_ENTRY(olist_entry), TRUE, TRUE);
-    uim_pref_gtk_value_changed = TRUE;
-    gtk_widget_set_sensitive(pref_apply_button, TRUE);
-    gtk_widget_set_sensitive(pref_ok_button, TRUE);
+    uim_pref_gtk_mark_value_changed();
     /* FIXME! reset the selection */
   } else {
     /* error message */
@@ -1600,9 +1584,7 @@ key_pref_add_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
   rv = uim_custom_set(custom);
 
   if (rv != UIM_FALSE) {
-    uim_pref_gtk_value_changed = TRUE;
-    gtk_widget_set_sensitive(pref_apply_button, TRUE);
-    gtk_widget_set_sensitive(pref_ok_button, TRUE);
+    uim_pref_gtk_mark_value_changed();
     model = gtk_tree_view_get_model(GTK_TREE_VIEW(key_pref_win.tree_view));
     gtk_list_store_append(GTK_LIST_STORE(model), &iter);
     gtk_list_store_set(GTK_LIST_STORE(model), &iter,
@@ -1666,9 +1648,7 @@ key_pref_remove_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
     rv = uim_custom_set(custom);
 
     if (rv != UIM_FALSE) {
-      uim_pref_gtk_value_changed = TRUE;
-      gtk_widget_set_sensitive(pref_apply_button, TRUE);
-      gtk_widget_set_sensitive(pref_ok_button, TRUE);
+      uim_pref_gtk_mark_value_changed();
       gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
 
       sync_value_key(key_entry);
