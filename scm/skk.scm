@@ -356,7 +356,10 @@
       (skk-context-set-nr-candidates! sc 0)
       (skk-context-set-latin-conv! sc #f)
       (if (not (null? csc))
-	  (skk-flush csc)))))
+	  (begin
+	    (skk-flush csc)
+	    (skk-context-set-child-context! sc '())
+	    (skk-context-set-child-type! sc '()))))))
 
 (define skk-context-new
   (lambda (id im)
