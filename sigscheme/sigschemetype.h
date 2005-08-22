@@ -59,12 +59,12 @@ enum ScmObjType {
     ScmVector       = 7,
     ScmPort         = 8,
     ScmContinuation = 9,
-    ScmFreeCell     = 10,
-    ScmEtc          = 11,
+    ScmEtc          = 10,
+    ScmValuePacket  = 11,
+    ScmFreeCell     = 12,
 
     ScmCPointer     = 20,
-    ScmCFuncPointer = 21,
-    ScmValuePacket  = 22
+    ScmCFuncPointer = 21
 };
 
 /* Function Type by argnuments */
@@ -204,9 +204,9 @@ struct ScmObjInternal_ {
             ScmContInfo *cont_info;
         } continuation;
 
-	struct ScmValuePacket {
-	    ScmObj values;
-	} value_pack;
+        struct ScmValuePacket {
+            ScmObj values;
+        } value_pack;
 
         struct ScmEtc {
             int type;

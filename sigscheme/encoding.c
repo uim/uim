@@ -88,13 +88,13 @@ static int eucjp_strlen(const char *str)
     int len = 0;
     const unsigned char *cur = (const unsigned char *)str;
     while (*cur) {
-	if (*cur > 127) {
-	    /* 2 bytes */
-	    cur++;
-	}
+        if (*cur > 127) {
+            /* 2 bytes */
+            cur++;
+        }
 
-	cur++;
-	len++;
+        cur++;
+        len++;
     }
 
     return len;
@@ -105,16 +105,16 @@ static const char* eucjp_str_startpos(const char *str, int k)
     int len = 0;
     const unsigned char *cur = (const unsigned char *)str;
     while (*cur) {
-	if (len == k)
-	    return (const char *)cur;
+        if (len == k)
+            return (const char *)cur;
 
-	if (*cur > 127) {
-	    /* 2 bytes */
-	    cur++;
-	}
+        if (*cur > 127) {
+            /* 2 bytes */
+            cur++;
+        }
 
-	cur++;
-	len++;
+        cur++;
+        len++;
     }
 
     return (const char*)cur;
@@ -125,20 +125,20 @@ static const char* eucjp_str_endpos(const char *str, int k)
     int len = 0;
     const unsigned char *cur = (const unsigned char *)str;
     while (*cur) {
-	if (*cur > 127) {
-	    /* 2 bytes */
-	    cur++;
-	}
+        if (*cur > 127) {
+            /* 2 bytes */
+            cur++;
+        }
 
-	cur++;
-	len++;
+        cur++;
+        len++;
 
-	if (len == k + 1)
-	    return (const char *)cur;
+        if (len == k + 1)
+            return (const char *)cur;
     }
     
     if (len == k + 1)
-	return (const char *)cur;
+        return (const char *)cur;
 
     SigScm_Error("eucjp_str_startpos : unreachable point\n");
     return NULL;

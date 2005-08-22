@@ -77,7 +77,7 @@ ScmObj ScmOp_SRFI_8_receive(ScmObj args, ScmObj *envp, int *tail_flag)
 
     /* sanity check */
     if (CHECK_3_ARGS(args))
-	SigScm_ErrorObj("receive: bad argument list: ", args);
+        SigScm_ErrorObj("receive: bad argument list: ", args);
 
     /* set tail_flag */
     (*tail_flag) = 1;
@@ -91,9 +91,9 @@ ScmObj ScmOp_SRFI_8_receive(ScmObj args, ScmObj *envp, int *tail_flag)
     actuals = ScmOp_eval(expr, env);
 
     if (SCM_VALUEPACKETP(actuals))
-	actuals = SCM_VALUEPACKET_VALUES(actuals);
+        actuals = SCM_VALUEPACKET_VALUES(actuals);
     else
-	actuals = Scm_NewCons(actuals, SCM_NIL);
+        actuals = Scm_NewCons(actuals, SCM_NIL);
 
     closure = Scm_NewClosure(Scm_NewCons(formals, body), env);
 

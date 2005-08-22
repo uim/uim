@@ -72,12 +72,12 @@ static void repl(void)
     printf("sscm> ");
 
     for( s_exp = SigScm_Read(stdin_port);
-	 !EQ(s_exp, SCM_EOF);
-	 s_exp = SigScm_Read(stdin_port))
+         !EQ(s_exp, SCM_EOF);
+         s_exp = SigScm_Read(stdin_port))
     {
-	result = ScmOp_eval(s_exp, SCM_NIL);
-	SigScm_DisplayToPort(stdout_port, result);
-	printf("\nsscm> ");
+        result = ScmOp_eval(s_exp, SCM_NIL);
+        SigScm_DisplayToPort(stdout_port, result);
+        printf("\nsscm> ");
     }
     
     ScmOp_close_input_port(stdin_port);
@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 
     if (argc < 2) {
       repl();
-      /*	SigScm_Error("usage : sscm <filename>\n"); */
+      /*        SigScm_Error("usage : sscm <filename>\n"); */
     } else {
       SigScm_load(filename);
     }
@@ -106,4 +106,3 @@ int main(int argc, char **argv)
     SigScm_Finalize();
     return 0;
 }
-

@@ -461,7 +461,7 @@ ScmObj SigScm_load(const char *filename)
       feature.
     */
     if (!filepath)
-	return SCM_FALSE;
+        return SCM_FALSE;
 
     /* open port */
     port = ScmOp_open_input_file(Scm_NewStringCopying(filepath));
@@ -494,31 +494,31 @@ static char* create_valid_path(const char *filename)
 
     /* construct filepath */
     if (lib_path) {
-	/* try absolute path */
-	if (file_existsp(c_filename))
-	    return c_filename;
+        /* try absolute path */
+        if (file_existsp(c_filename))
+            return c_filename;
 
-	/* use lib_path */
+        /* use lib_path */
         filepath = (char*)malloc(strlen(lib_path) + strlen(c_filename) + 2);
         strcpy(filepath, lib_path);
         strcat(filepath, "/");
         strcat(filepath, c_filename);
-	if (file_existsp(filepath)) {
-	    free(c_filename);
-	    return filepath;
-	}
+        if (file_existsp(filepath)) {
+            free(c_filename);
+            return filepath;
+        }
     }
     
     /* clear */
     if (filepath)
-	free(filepath);
+        free(filepath);
 
     /* fallback */
     filepath = (char*)malloc(strlen(c_filename) + 1);
     strcpy(filepath, c_filename);
     if (file_existsp(filepath)) {
-	free(c_filename);
-	return filepath;
+        free(c_filename);
+        return filepath;
     }
 
     free(c_filename);
@@ -605,7 +605,7 @@ ScmObj ScmOp_file_existsp(ScmObj filepath)
         SigScm_ErrorObj("file-exists? : string requred but got ", filepath);
 
     if (file_existsp(SCM_STRING_STR(filepath)))
-	return SCM_TRUE;
+        return SCM_TRUE;
 
     return SCM_FALSE;
 }

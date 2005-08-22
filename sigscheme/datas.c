@@ -108,10 +108,10 @@ struct gc_protected_obj_ {
 #define NAMEHASH_SIZE 1024
 
 #define SCM_NEW_OBJ_INTERNAL(VALNAME)                                   \
-    if (EQ(scm_freelist, SCM_NIL))					\
-	gc_mark_and_sweep();						\
-    VALNAME = scm_freelist;						\
-    scm_freelist = SCM_FREECELL_CDR(scm_freelist);			\
+    if (EQ(scm_freelist, SCM_NIL))                                      \
+        gc_mark_and_sweep();                                            \
+    VALNAME = scm_freelist;                                             \
+    scm_freelist = SCM_FREECELL_CDR(scm_freelist);                      \
 
 #define SCM_UNMARKER        0
 #define SCM_INITIAL_MARKER  (SCM_UNMARKER + 1)
@@ -217,19 +217,19 @@ static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmOb
     /* fill with zero and construct free_list */
     for (i = 0; i < num_heap; i++) {
         /* Initialize Heap */
-	heap = (ScmObj)malloc_aligned(sizeof(ScmObjInternal) * HEAP_SIZE);
+        heap = (ScmObj)malloc_aligned(sizeof(ScmObjInternal) * HEAP_SIZE);
         (*heaps)[i] = heap;
 
         /* link in order */
         for (cell=heap; cell-heap < HEAP_SIZE; cell++) {
-	    SCM_SETFREECELL(cell);
-	    SCM_DO_UNMARK(cell);
-	    SCM_SETFREECELL_CDR(cell, cell+1);
+            SCM_SETFREECELL(cell);
+            SCM_DO_UNMARK(cell);
+            SCM_SETFREECELL_CDR(cell, cell+1);
         }
 
-	SCM_SETFREECELL_CDR(cell-1, (*freelist));
-	/* and freelist is head of the heap */
-	(*freelist) = (*heaps)[i];
+        SCM_SETFREECELL_CDR(cell-1, (*freelist));
+        /* and freelist is head of the heap */
+        (*freelist) = (*heaps)[i];
     }
 }
 
@@ -255,9 +255,9 @@ static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, int HEAP_SIZE, ScmO
     
     /* link in order */
     for (cell=heap; cell-heap < HEAP_SIZE; cell++) {
-	SCM_SETFREECELL(cell);
-	SCM_DO_UNMARK(cell);
-	SCM_SETFREECELL_CDR(cell, cell+1);
+        SCM_SETFREECELL(cell);
+        SCM_DO_UNMARK(cell);
+        SCM_SETFREECELL_CDR(cell, cell+1);
     }
 
     SCM_SETFREECELL_CDR(cell-1, *freelist);
@@ -270,32 +270,32 @@ static void finalize_heap(void)
     int j = 0;
 
     for (i = 0; i < scm_heap_num; i++) {
-	for (j = 0; j < SCM_HEAP_SIZE; j++) {
-	    sweep_obj(&scm_heaps[i][j]);
-	}
-	free(scm_heaps[i]);
+        for (j = 0; j < SCM_HEAP_SIZE; j++) {
+            sweep_obj(&scm_heaps[i][j]);
+        }
+        free(scm_heaps[i]);
     }
     free(scm_heaps);
 }
 
 static void gc_preprocess(void)
 {
-    ++scm_cur_marker;		/* make everything unmarked */
+    ++scm_cur_marker;           /* make everything unmarked */
 
     if (scm_cur_marker == SCM_UNMARKER) {
-	/* We've been running long enough to do
-	 * (1 << (sizeof(int)*8)) - 1 GCs, yay! */
-	int  i = 0;
-	long j = 0;
+        /* We've been running long enough to do
+         * (1 << (sizeof(int)*8)) - 1 GCs, yay! */
+        int  i = 0;
+        long j = 0;
 
-	scm_cur_marker = SCM_INITIAL_MARKER;
+        scm_cur_marker = SCM_INITIAL_MARKER;
 
-	/* unmark everything */
-	for (i = 0; i < scm_heap_num; i++) {
-	    for (j = 0; j < SCM_HEAP_SIZE; j++) {
-		SCM_DO_UNMARK(&scm_heaps[i][j]);
-	    }
-	}
+        /* unmark everything */
+        for (i = 0; i < scm_heap_num; i++) {
+            for (j = 0; j < SCM_HEAP_SIZE; j++) {
+                SCM_DO_UNMARK(&scm_heaps[i][j]);
+            }
+        }
     }
 }
 
@@ -336,29 +336,29 @@ mark_loop:
 
     /* mark recursively */
     switch (SCM_GETTYPE(obj)) {
-        case ScmCons:
-            mark_obj(SCM_CAR(obj));
-	    obj = SCM_CDR(obj);
-	    goto mark_loop;
-            break;
-        case ScmSymbol:
-            mark_obj(SCM_SYMBOL_VCELL(obj));
-            break;
-        case ScmClosure:
-            mark_obj(SCM_CLOSURE_EXP(obj));
-	    obj = SCM_CLOSURE_ENV(obj);
-	    goto mark_loop;
-	    break;
-	case ScmValuePacket:
-	    obj = SCM_VALUEPACKET_VALUES(obj);
-	    goto mark_loop;
-	case ScmVector:
-	    for (i = 0; i < SCM_VECTOR_LEN(obj); i++) {
-		mark_obj(SCM_VECTOR_VEC(obj)[i]);
-	    }
-	    break;
-	default:
-	    break;
+    case ScmCons:
+        mark_obj(SCM_CAR(obj));
+        obj = SCM_CDR(obj);
+        goto mark_loop;
+        break;
+    case ScmSymbol:
+        mark_obj(SCM_SYMBOL_VCELL(obj));
+        break;
+    case ScmClosure:
+        mark_obj(SCM_CLOSURE_EXP(obj));
+        obj = SCM_CLOSURE_ENV(obj);
+        goto mark_loop;
+        break;
+    case ScmValuePacket:
+        obj = SCM_VALUEPACKET_VALUES(obj);
+        goto mark_loop;
+    case ScmVector:
+        for (i = 0; i < SCM_VECTOR_LEN(obj); i++) {
+            mark_obj(SCM_VECTOR_VEC(obj)[i]);
+        }
+        break;
+    default:
+        break;
     }
 }
 
@@ -381,9 +381,9 @@ static void finalize_protected_obj(void)
     gc_protected_obj *item = protected_obj_list;
     gc_protected_obj *tmp  = NULL;
     while (item) {
-	tmp  = item;
-	item = item->next_obj;
-	free(tmp);
+        tmp  = item;
+        item = item->next_obj;
+        free(tmp);
     }
 }
 
@@ -393,11 +393,11 @@ static int is_pointer_to_heap(ScmObj obj)
     int i = 0;
     ScmObj head = SCM_NIL;
     for (i = 0; i < scm_heap_num; i++) {
-	if ((head = scm_heaps[i])
-	    && (head <= obj)
-	    && (obj  <  head + SCM_HEAP_SIZE)
-	    && ((((char*)obj - (char*)head) % sizeof(ScmObjInternal)) == 0))
-	    return 1;
+        if ((head = scm_heaps[i])
+            && (head <= obj)
+            && (obj  <  head + SCM_HEAP_SIZE)
+            && ((((char*)obj - (char*)head) % sizeof(ScmObjInternal)) == 0))
+            return 1;
     }
 
     return 0;
@@ -418,7 +418,7 @@ static void gc_mark_locations_n(ScmObj *start, int n)
     
     /* mark stack */
     for (i = 0; i < n; i++) {
-	obj = start[i];
+        obj = start[i];
 
         if (is_pointer_to_heap(obj)) {
             mark_obj(obj);
@@ -467,7 +467,7 @@ static void gc_mark(void)
 
     setjmp(save_regs_buf);
     gc_mark_locations((ScmObj*)save_regs_buf,
-		      (ScmObj*)(((char*)save_regs_buf) + sizeof(save_regs_buf)));
+                      (ScmObj*)(((char*)save_regs_buf) + sizeof(save_regs_buf)));
     
     gc_mark_protected_obj();
     gc_mark_locations(stack_start_pointer, &obj);
@@ -478,44 +478,49 @@ static void sweep_obj(ScmObj obj)
 {
     /* if the type has the pointer to free, then free it! */
     switch (SCM_GETTYPE(obj)) {
-        case ScmInt:
-        case ScmCons:
-        case ScmFunc:
-        case ScmClosure:
-        case ScmFreeCell:
-        case ScmEtc:
-	  break;
-	case ScmChar:
-	    if (SCM_CHAR_CH(obj)) free(SCM_CHAR_CH(obj));
-	    break;
-        case ScmString:
-	    if (SCM_STRING_STR(obj)) free(SCM_STRING_STR(obj));
+    case ScmInt:
+    case ScmCons:
+    case ScmFunc:
+    case ScmClosure:
+    case ScmFreeCell:
+    case ScmEtc:
+        break;
+    case ScmChar:
+        if (SCM_CHAR_CH(obj)) free(SCM_CHAR_CH(obj));
+        break;
+    case ScmString:
+        if (SCM_STRING_STR(obj)) free(SCM_STRING_STR(obj));
+        break;
+    case ScmVector:
+        if (SCM_VECTOR_VEC(obj)) free(SCM_VECTOR_VEC(obj));
+        break;
+    case ScmSymbol:
+        if (SCM_SYMBOL_NAME(obj)) free(SCM_SYMBOL_NAME(obj));
+        break;
+    case ScmPort:
+    {
+        switch (SCM_PORTINFO_PORTTYPE(obj)) {
+        case PORT_FILE:
+            if (SCM_PORTINFO_FILENAME(obj))
+                free(SCM_PORTINFO_FILENAME(obj));
             break;
-	case ScmVector:
-	    if (SCM_VECTOR_VEC(obj)) free(SCM_VECTOR_VEC(obj));
-	    break;
-	case ScmSymbol:
-	    if (SCM_SYMBOL_NAME(obj)) free(SCM_SYMBOL_NAME(obj));
-	    break;
-	case ScmPort:
-	    switch (SCM_PORTINFO_PORTTYPE(obj)) {
-		case PORT_FILE:
-		    if (SCM_PORTINFO_FILENAME(obj)) free(SCM_PORTINFO_FILENAME(obj));
-		    break;
-		case PORT_STRING:
-		    if (SCM_PORTINFO_STR(obj)) free(SCM_PORTINFO_STR(obj));
-		    break;
-		default:
-		    break;
-	    }
-
-	    if (SCM_PORT_PORTINFO(obj)) free(SCM_PORT_PORTINFO(obj));
-	    break;
-	case ScmContinuation:
-	    if (SCM_CONTINUATION_CONTINFO(obj)) free(SCM_CONTINUATION_CONTINFO(obj));
-	    break;
-	default:
-	    break;
+        case PORT_STRING:
+            if (SCM_PORTINFO_STR(obj))
+                free(SCM_PORTINFO_STR(obj));
+            break;
+        default:
+            break;
+        }
+        
+        if (SCM_PORT_PORTINFO(obj))
+            free(SCM_PORT_PORTINFO(obj));
+        break;
+    }
+    case ScmContinuation:
+        if (SCM_CONTINUATION_CONTINFO(obj)) free(SCM_CONTINUATION_CONTINFO(obj));
+        break;
+    default:
+        break;
     }
 }
 
@@ -529,25 +534,25 @@ static void gc_sweep(void)
     ScmObj scm_new_freelist = SCM_NIL;
     /* iterate heaps */
     for (i = 0; i < scm_heap_num; i++) {
-	corrected_obj_num = 0;
-	
-	/* iterate in heap */
-	for (j = 0; j < SCM_HEAP_SIZE; j++) {
-	    obj = &scm_heaps[i][j];
-	    sigassert (!SCM_MARK_CORRUPT (obj));
-	    if (!SCM_IS_MARKED(obj)) {
-		sweep_obj(obj);
+        corrected_obj_num = 0;
+        
+        /* iterate in heap */
+        for (j = 0; j < SCM_HEAP_SIZE; j++) {
+            obj = &scm_heaps[i][j];
+            sigassert (!SCM_MARK_CORRUPT (obj));
+            if (!SCM_IS_MARKED(obj)) {
+                sweep_obj(obj);
 
-		SCM_SETFREECELL(obj);
-		SCM_SETFREECELL_CAR(obj, SCM_NIL);
-		SCM_SETFREECELL_CDR(obj, scm_new_freelist);
-		scm_new_freelist = obj;
-		corrected_obj_num++;
-	    }
-	}
-	
+                SCM_SETFREECELL(obj);
+                SCM_SETFREECELL_CAR(obj, SCM_NIL);
+                SCM_SETFREECELL_CDR(obj, scm_new_freelist);
+                scm_new_freelist = obj;
+                corrected_obj_num++;
+            }
+        }
+        
 #if DEBUG_GC
-	printf("scm[%d] sweeped = %d\n", i, corrected_obj_num);
+        printf("scm[%d] sweeped = %d\n", i, corrected_obj_num);
 #endif
     }
     scm_freelist = scm_new_freelist;
@@ -556,13 +561,13 @@ static void gc_sweep(void)
 void SigScm_gc_protect_stack(ScmObj *stack_start)
 {
     if (!stack_start_pointer)
-	stack_start_pointer = stack_start;
+        stack_start_pointer = stack_start;
 }
 
 void SigScm_gc_unprotect_stack(ScmObj *stack_start)
 {
     if (stack_start_pointer == stack_start)
-	stack_start_pointer = NULL;
+        stack_start_pointer = NULL;
 }
 
 /*===========================================================================
@@ -609,8 +614,8 @@ ScmObj Scm_NewChar(char *ch)
 
     /* check length */
     if (SigScm_default_encoding_strlen(ch) != 1) {
-	printf("ch = [%s], len = %d\n", ch, SigScm_default_encoding_strlen(ch));
-	SigScm_Error("invalid character\n");
+        printf("ch = [%s], len = %d\n", ch, SigScm_default_encoding_strlen(ch));
+        SigScm_Error("invalid character\n");
     }
 
     SCM_NEW_OBJ_INTERNAL(obj);
@@ -814,7 +819,7 @@ static int symbol_name_hash(const char *name)
     int c;
     char *cname = (char *)name;
     while ((c = *cname++)) {
-	hash = ((hash * 17) ^ c) % NAMEHASH_SIZE;
+        hash = ((hash * 17) ^ c) % NAMEHASH_SIZE;
     }
     return hash;
 }
@@ -852,7 +857,7 @@ ScmObj Scm_Intern(const char *name)
 int Scm_GetInt(ScmObj num)
 {
     if (EQ(ScmOp_numberp(num), SCM_FALSE))
-	SigScm_ErrorObj("Scm_GetInt : number required but got ", num);
+        SigScm_ErrorObj("Scm_GetInt : number required but got ", num);
 
     return SCM_INT_VALUE(num);
 }
@@ -861,14 +866,14 @@ char* Scm_GetString(ScmObj str)
 {
     char *ret = NULL;
     switch (SCM_GETTYPE(str)) {
-	case ScmString:
-	    ret = SCM_STRING_STR(str);
-	    break;
-	case ScmSymbol:
-	    ret = SCM_SYMBOL_NAME(str);
-	    break;
-	default:
-	    SigScm_Error("Scm_GetString : cannot get string of not string nor symbol\n");
+    case ScmString:
+        ret = SCM_STRING_STR(str);
+        break;
+    case ScmSymbol:
+        ret = SCM_SYMBOL_NAME(str);
+        break;
+    default:
+        SigScm_Error("Scm_GetString : cannot get string of not string nor symbol\n");
     }
 
     return ret;
@@ -878,7 +883,7 @@ char* Scm_GetString(ScmObj str)
 void* Scm_GetCPointer(ScmObj c_ptr)
 {
     if (!SCM_C_POINTERP(c_ptr))
-	SigScm_ErrorObj("Scm_GetCPointer : c_ptr required but got ", c_ptr);
+        SigScm_ErrorObj("Scm_GetCPointer : c_ptr required but got ", c_ptr);
 
     return SCM_C_POINTER_DATA(c_ptr);
 }
@@ -886,7 +891,7 @@ void* Scm_GetCPointer(ScmObj c_ptr)
 C_FUNC Scm_GetCFuncPointer(ScmObj c_funcptr)
 {
     if (!SCM_C_FUNCPOINTERP(c_funcptr))
-	SigScm_ErrorObj("Scm_GetCFuncPointer : c_funcptr required but got ", c_funcptr);
+        SigScm_ErrorObj("Scm_GetCFuncPointer : c_funcptr required but got ", c_funcptr);
 
     return SCM_C_FUNCPOINTER_FUNC(c_funcptr);
 }

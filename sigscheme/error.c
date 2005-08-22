@@ -116,8 +116,8 @@ void SigScm_ShowBacktrace(void)
 
     /* show each frame's obj */
     for (f = trace_root; f; f = f->prev) {
-	SigScm_WriteToPort(current_error_port, f->obj);
-	
-	fprintf(SCM_PORTINFO_FILE(current_error_port), "\n");
+        SigScm_WriteToPort(current_error_port, f->obj);
+        
+        fprintf(SCM_PORTINFO_FILE(current_error_port), "\n");
     }
 }

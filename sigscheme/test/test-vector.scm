@@ -4,8 +4,8 @@
 
 (assert "vector test"  (equal? '#(a b c d) vec))
 (assert "vector? test" (vector? vec))
-(assert-eq? "vector-length test" 4 (vector-length vec))
-(assert-eq? "vector-ref test" 'd (vector-ref vec 3))
+(assert-equal? "vector-length test" 4 (vector-length vec))
+(assert-equal? "vector-ref test" 'd (vector-ref vec 3))
 (assert "vector-set! test" (equal? '#(1 a "aiue" #t) (begin
 							(define tmpvec (vector 1 'a "aiue" #f))
 							(vector-set! tmpvec 3 #t)
