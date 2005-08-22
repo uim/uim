@@ -90,7 +90,7 @@ ScmObj ScmOp_SRFI_8_receive(ScmObj args, ScmObj *envp, int *tail_flag)
      * document contradicts itself on this part. */
     actuals = ScmOp_eval(expr, env);
 
-    if (SCM_VALUEPACKETP(actuals))
+    if (VALUEPACKETP(actuals))
         actuals = SCM_VALUEPACKET_VALUES(actuals);
     else
         actuals = Scm_NewCons(actuals, SCM_NIL);

@@ -40,6 +40,7 @@
   Local Include
 =======================================*/
 #include "sigscheme.h"
+#include "sigschemeinternal.h"
 
 /*=======================================
   File Local Struct Declarations
@@ -72,7 +73,7 @@ static void repl(void)
     printf("sscm> ");
 
     for( s_exp = SigScm_Read(stdin_port);
-         !EQ(s_exp, SCM_EOF);
+         !EOFP(s_exp);
          s_exp = SigScm_Read(stdin_port))
     {
         result = ScmOp_eval(s_exp, SCM_NIL);

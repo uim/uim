@@ -64,21 +64,21 @@ static const char* eucjp_str_endpos(const char *p, int k);
 =======================================*/
 int SigScm_default_encoding_strlen(const char *str)
 {
-#if USE_EUCJP
+#if SCM_USE_EUCJP
     return eucjp_strlen(str);
 #endif
 }
 
 const char* SigScm_default_encoding_str_startpos(const char *str, int k)
 {
-#if USE_EUCJP
+#if SCM_USE_EUCJP
     return eucjp_str_startpos(str, k);
 #endif    
 }
 
 const char* SigScm_default_encoding_str_endpos(const char *str, int k)
 {
-#if USE_EUCJP
+#if SCM_USE_EUCJP
     return eucjp_str_endpos(str, k);
 #endif    
 }

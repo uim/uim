@@ -42,6 +42,7 @@
   Local Include
 =======================================*/
 #include "sigscheme.h"
+#include "sigschemeinternal.h"
 
 /*=======================================
   File Local Struct Declarations
@@ -73,7 +74,7 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
 {
     enum ScmObjType type;
 
-    if (SCM_EQ(obj1, obj2))
+    if (EQ(obj1, obj2))
         return SCM_TRUE;
 
     type = (enum ScmObjType)SCM_TYPE(obj1);
@@ -91,7 +92,7 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
 
     case ScmChar:
         /* chars and are the same character according to the char=? */
-        if (SCM_NFALSEP(ScmOp_char_equal(obj1, obj2))) return SCM_TRUE;
+        if (NFALSEP(ScmOp_char_equal(obj1, obj2))) return SCM_TRUE;
         break;
 
     case ScmSymbol:  /* equivalent symbols must already be true on eq? */
@@ -120,7 +121,7 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
 
 ScmObj ScmOp_eqp(ScmObj obj1, ScmObj obj2)
 {
-    return (SCM_EQ(obj1, obj2)) ? SCM_TRUE : SCM_FALSE;
+    return (EQ(obj1, obj2)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
@@ -128,7 +129,7 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
     int  i = 0;
     enum ScmObjType type;
 
-    if (SCM_EQ(obj1, obj2))
+    if (EQ(obj1, obj2))
         return SCM_TRUE;
 
     type = (enum ScmObjType)SCM_TYPE(obj1);
@@ -146,22 +147,22 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
 
     case ScmChar:
         /* chars and are the same character according to the char=? */
-        if (SCM_NFALSEP(ScmOp_char_equal(obj1, obj2))) return SCM_TRUE;
+        if (NFALSEP(ScmOp_char_equal(obj1, obj2))) return SCM_TRUE;
         break;
 
     case ScmCons:
-        for (; !SCM_NULLP(obj1); obj1 = SCM_CDR(obj1), obj2 = SCM_CDR(obj2)) {
+        for (; !NULLP(obj1); obj1 = CDR(obj1), obj2 = CDR(obj2)) {
             /* check contents */
-            if (SCM_FALSEP(ScmOp_equalp(SCM_CAR(obj1), SCM_CAR(obj2))))
+            if (FALSEP(ScmOp_equalp(CAR(obj1), CAR(obj2))))
                 return SCM_FALSE;
 
             /* check next cdr's type */
-            if (SCM_TYPE(SCM_CDR(obj1)) != SCM_TYPE(SCM_CDR(obj2)))
+            if (SCM_TYPE(CDR(obj1)) != SCM_TYPE(CDR(obj2)))
                 return SCM_FALSE;
 
             /* check dot pair */
-            if (!SCM_CONSP(SCM_CDR(obj1))) {
-                if (SCM_FALSEP(ScmOp_equalp(SCM_CDR(obj1), SCM_CDR(obj2))))
+            if (!CONSP(CDR(obj1))) {
+                if (FALSEP(ScmOp_equalp(CDR(obj1), CDR(obj2))))
                     return SCM_FALSE;
                 else
                     return SCM_TRUE;
@@ -176,7 +177,7 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
 
         /* check contents */
         for (i = 0; i < SCM_VECTOR_LEN(obj1); i++) {
-            if (SCM_FALSEP(ScmOp_equalp(SCM_VECTOR_CREF(obj1, i), SCM_VECTOR_CREF(obj2, i))))
+            if (FALSEP(ScmOp_equalp(SCM_VECTOR_CREF(obj1, i), SCM_VECTOR_CREF(obj2, i))))
                 return SCM_FALSE;
         }
         return SCM_TRUE;
@@ -244,9 +245,9 @@ ScmObj ScmOp_plus(ScmObj args, ScmObj env)
     ScmObj ls;
     ScmObj operand;
 
-    for (ls = args; !SCM_NULLP(ls); ls = SCM_CDR(ls)) {
-        operand = SCM_CAR(ls);
-        if (!SCM_INTP(operand))
+    for (ls = args; !NULLP(ls); ls = CDR(ls)) {
+        operand = CAR(ls);
+        if (!INTP(operand))
             SigScm_ErrorObj("+ : integer required but got ", operand);
         result += SCM_INT_VALUE(operand);
     }
@@ -260,9 +261,9 @@ ScmObj ScmOp_times(ScmObj args, ScmObj env)
     ScmObj operand;
     ScmObj ls;
 
-    for (ls=args; !SCM_NULLP(ls); ls = SCM_CDR(ls)) {
-        operand = SCM_CAR(ls);
-        if (!SCM_INTP(operand))
+    for (ls=args; !NULLP(ls); ls = CDR(ls)) {
+        operand = CAR(ls);
+        if (!INTP(operand))
             SigScm_ErrorObj("* : integer required but got ", operand);
         result *= SCM_INT_VALUE(operand);
     }
@@ -277,19 +278,19 @@ ScmObj ScmOp_minus(ScmObj args, ScmObj env)
     ScmObj ls;
 
     ls = args;
-    if (SCM_NULLP(ls))
+    if (NULLP(ls))
         SigScm_Error("- : at least 1 argument required");
 
-    result = SCM_INT_VALUE(SCM_CAR(ls));
-    ls = SCM_CDR(ls);
+    result = SCM_INT_VALUE(CAR(ls));
+    ls = CDR(ls);
 
     /* single arg */
-    if (SCM_NULLP(ls))
+    if (NULLP(ls))
         return Scm_NewInt(-result);
 
-    for (; !SCM_NULLP(ls); ls = SCM_CDR(ls)) {
-        operand = SCM_CAR(ls);
-        if (!SCM_INTP(operand))
+    for (; !NULLP(ls); ls = CDR(ls)) {
+        operand = CAR(ls);
+        if (!INTP(operand))
             SigScm_ErrorObj("- : integer required but got ", operand);
         result -= SCM_INT_VALUE(operand);
     }
@@ -303,19 +304,19 @@ ScmObj ScmOp_divide(ScmObj args, ScmObj env)
     ScmObj operand;
     ScmObj ls;
 
-    if (SCM_NULLP(args))
+    if (NULLP(args))
         SigScm_Error("/ : at least 1 argument required");
 
-    result = SCM_INT_VALUE(SCM_CAR(args));
-    ls = SCM_CDR(args);
+    result = SCM_INT_VALUE(CAR(args));
+    ls = CDR(args);
 
     /* single arg */
-    if (SCM_NULLP(ls))
+    if (NULLP(ls))
         return Scm_NewInt(1 / result);
 
-    for (; !SCM_NULLP(ls); ls = SCM_CDR(ls)) {
-        operand = SCM_CAR(ls);
-        if (!SCM_INTP(operand))
+    for (; !NULLP(ls); ls = CDR(ls)) {
+        operand = CAR(ls);
+        if (!INTP(operand))
             SigScm_ErrorObj("/ : integer required but got ", operand);
 
         if (SCM_INT_VALUE(operand) == 0)
@@ -328,7 +329,7 @@ ScmObj ScmOp_divide(ScmObj args, ScmObj env)
 
 ScmObj ScmOp_numberp(ScmObj obj)
 {
-    if (SCM_INTP(obj))
+    if (INTP(obj))
         return SCM_TRUE;
 
     return SCM_FALSE;
@@ -344,16 +345,16 @@ ScmObj ScmOp_equal(ScmObj args, ScmObj env)
         SigScm_Error("= : Wrong number of arguments\n");
 
     /* type check */
-    if (SCM_FALSEP(ScmOp_numberp(SCM_CAR(args))))
-        SigScm_ErrorObj("= : number required but got ", SCM_CAR(args));
+    if (FALSEP(ScmOp_numberp(CAR(args))))
+        SigScm_ErrorObj("= : number required but got ", CAR(args));
 
     /* Get first value */
-    val = SCM_INT_VALUE(SCM_CAR(args));
+    val = SCM_INT_VALUE(CAR(args));
 
     /* compare following value */
-    for (args = SCM_CDR(args); !SCM_NULLP(args); args = SCM_CDR(args)) {
-        obj = SCM_CAR(args);
-        if (SCM_FALSEP(ScmOp_numberp(obj)))
+    for (args = CDR(args); !NULLP(args); args = CDR(args)) {
+        obj = CAR(args);
+        if (FALSEP(ScmOp_numberp(obj)))
             SigScm_ErrorObj("= : number required but got ", obj);
 
         if (SCM_INT_VALUE(obj) != val)
@@ -371,20 +372,20 @@ ScmObj ScmOp_less(ScmObj args, ScmObj env )
     int    car_val = 0;
     ScmObj obj     = SCM_NIL;
 
-    if (SCM_NULLP(args) || SCM_NULLP(SCM_CDR(args)))
+    if (NULLP(args) || NULLP(CDR(args)))
         SigScm_Error("< : Wrong number of arguments\n");
 
     /* type check */
-    if (SCM_FALSEP(ScmOp_numberp(SCM_CAR(args))))
-        SigScm_ErrorObj("< : number required but got ", SCM_CAR(args));
+    if (FALSEP(ScmOp_numberp(CAR(args))))
+        SigScm_ErrorObj("< : number required but got ", CAR(args));
 
     /* Get first value */
-    val = SCM_INT_VALUE(SCM_CAR(args));
+    val = SCM_INT_VALUE(CAR(args));
 
     /* compare following value */
-    for (args = SCM_CDR(args); !SCM_NULLP(args); args = SCM_CDR(args)) {
-        obj = SCM_CAR(args);
-        if (SCM_FALSEP(ScmOp_numberp(obj)))
+    for (args = CDR(args); !NULLP(args); args = CDR(args)) {
+        obj = CAR(args);
+        if (FALSEP(ScmOp_numberp(obj)))
             SigScm_ErrorObj("< : number required but got ", obj);
 
         car_val = SCM_INT_VALUE(obj);
@@ -404,20 +405,20 @@ ScmObj ScmOp_greater(ScmObj args, ScmObj env )
     ScmObj obj     = SCM_NIL;
 
     /* type check */
-    if (SCM_FALSEP(ScmOp_numberp(SCM_CAR(args))))
-        SigScm_ErrorObj("> : number required but got ", SCM_CAR(args));
+    if (FALSEP(ScmOp_numberp(CAR(args))))
+        SigScm_ErrorObj("> : number required but got ", CAR(args));
 
     /* arglen check */
     if CHECK_2_ARGS(args)
         SigScm_Error("> : Wrong number of arguments\n");
 
     /* Get first value */
-    val = SCM_INT_VALUE(SCM_CAR(args));
+    val = SCM_INT_VALUE(CAR(args));
 
     /* compare following value */
-    for (args = SCM_CDR(args); !SCM_NULLP(args); args = SCM_CDR(args)) {
-        obj = SCM_CAR(args);
-        if (SCM_FALSEP(ScmOp_numberp(obj)))
+    for (args = CDR(args); !NULLP(args); args = CDR(args)) {
+        obj = CAR(args);
+        if (FALSEP(ScmOp_numberp(obj)))
             SigScm_ErrorObj("> : number required but got ", obj);
 
         car_val = SCM_INT_VALUE(obj);
@@ -437,21 +438,21 @@ ScmObj ScmOp_lessEq(ScmObj args, ScmObj env )
     ScmObj obj     = SCM_NIL;
 
     /* type check */
-    if (SCM_FALSEP(ScmOp_numberp(SCM_CAR(args))))
-        SigScm_ErrorObj("<= : number required but got ", SCM_CAR(args));
+    if (FALSEP(ScmOp_numberp(CAR(args))))
+        SigScm_ErrorObj("<= : number required but got ", CAR(args));
 
     /* arglen check */
     if CHECK_2_ARGS(args)
         SigScm_Error("<= : Wrong number of arguments\n");
 
     /* Get first value */
-    val = SCM_INT_VALUE(SCM_CAR(args));
+    val = SCM_INT_VALUE(CAR(args));
 
     /* compare following value */
     obj = SCM_NIL;
-    for (args = SCM_CDR(args); !SCM_NULLP(args); args = SCM_CDR(args)) {
-        obj = SCM_CAR(args);
-        if (SCM_FALSEP(ScmOp_numberp(obj)))
+    for (args = CDR(args); !NULLP(args); args = CDR(args)) {
+        obj = CAR(args);
+        if (FALSEP(ScmOp_numberp(obj)))
             SigScm_ErrorObj("<= : number required but got ", obj);
 
         car_val = SCM_INT_VALUE(obj);
@@ -471,21 +472,21 @@ ScmObj ScmOp_greaterEq(ScmObj args, ScmObj env )
     ScmObj obj     = SCM_NIL;
 
     /* type check */
-    if (SCM_FALSEP(ScmOp_numberp(SCM_CAR(args))))
-        SigScm_ErrorObj(">= : number required but got ", SCM_CAR(args));
+    if (FALSEP(ScmOp_numberp(CAR(args))))
+        SigScm_ErrorObj(">= : number required but got ", CAR(args));
 
     /* arglen check */
     if CHECK_2_ARGS(args)
         SigScm_Error(">= : Wrong number of arguments\n");
 
     /* Get first value */
-    val = SCM_INT_VALUE(SCM_CAR(args));
+    val = SCM_INT_VALUE(CAR(args));
 
     /* compare following value */
     obj = SCM_NIL;
-    for (args = SCM_CDR(args); !SCM_NULLP(args); args = SCM_CDR(args)) {
-        obj = SCM_CAR(args);
-        if (SCM_FALSEP(ScmOp_numberp(obj)))
+    for (args = CDR(args); !NULLP(args); args = CDR(args)) {
+        obj = CAR(args);
+        if (FALSEP(ScmOp_numberp(obj)))
             SigScm_ErrorObj(">= : number required but got ", obj);
 
         car_val = SCM_INT_VALUE(obj);
@@ -500,7 +501,7 @@ ScmObj ScmOp_greaterEq(ScmObj args, ScmObj env )
 
 ScmObj ScmOp_zerop(ScmObj scm_num)
 {
-    if (SCM_FALSEP(ScmOp_numberp(scm_num)))
+    if (FALSEP(ScmOp_numberp(scm_num)))
         SigScm_ErrorObj("zero? : number required but got ", scm_num);
 
     return (SCM_INT_VALUE(scm_num) == 0) ? SCM_TRUE : SCM_FALSE;
@@ -508,7 +509,7 @@ ScmObj ScmOp_zerop(ScmObj scm_num)
 
 ScmObj ScmOp_positivep(ScmObj scm_num)
 {
-    if (SCM_FALSEP(ScmOp_numberp(scm_num)))
+    if (FALSEP(ScmOp_numberp(scm_num)))
         SigScm_ErrorObj("positive? : number required but got", scm_num);
 
     return (SCM_INT_VALUE(scm_num) > 0) ? SCM_TRUE : SCM_FALSE;
@@ -516,7 +517,7 @@ ScmObj ScmOp_positivep(ScmObj scm_num)
 
 ScmObj ScmOp_negativep(ScmObj scm_num)
 {
-    if (SCM_FALSEP(ScmOp_numberp(scm_num)))
+    if (FALSEP(ScmOp_numberp(scm_num)))
         SigScm_ErrorObj("negative? : number required but got ", scm_num);
 
     return (SCM_INT_VALUE(scm_num) < 0) ? SCM_TRUE : SCM_FALSE;
@@ -524,7 +525,7 @@ ScmObj ScmOp_negativep(ScmObj scm_num)
 
 ScmObj ScmOp_oddp(ScmObj scm_num)
 {
-    if (SCM_FALSEP(ScmOp_numberp(scm_num)))
+    if (FALSEP(ScmOp_numberp(scm_num)))
         SigScm_ErrorObj("odd? : number required but got ", scm_num);
 
     return (SCM_INT_VALUE(scm_num) & 0x1) ? SCM_TRUE : SCM_FALSE;
@@ -532,7 +533,7 @@ ScmObj ScmOp_oddp(ScmObj scm_num)
 
 ScmObj ScmOp_evenp(ScmObj scm_num)
 {
-    if (SCM_FALSEP(ScmOp_numberp(scm_num)))
+    if (FALSEP(ScmOp_numberp(scm_num)))
         SigScm_ErrorObj("even? : number required but got ", scm_num);
 
     return (SCM_INT_VALUE(scm_num) & 0x1) ? SCM_FALSE : SCM_TRUE;
@@ -545,12 +546,12 @@ ScmObj ScmOp_max(ScmObj args, ScmObj env )
     ScmObj car     = SCM_NIL;
     ScmObj maxobj  = SCM_NIL;
 
-    if (SCM_NULLP(args))
+    if (NULLP(args))
         SigScm_Error("max : at least 1 number required\n");
 
-    for (; !SCM_NULLP(args); args = SCM_CDR(args)) {
-        car = SCM_CAR(args);
-        if (SCM_FALSEP(ScmOp_numberp(car)))
+    for (; !NULLP(args); args = CDR(args)) {
+        car = CAR(args);
+        if (FALSEP(ScmOp_numberp(car)))
             SigScm_ErrorObj("max : number required but got ", car);
 
         car_val = SCM_INT_VALUE(car);
@@ -570,12 +571,12 @@ ScmObj ScmOp_min(ScmObj args, ScmObj env )
     ScmObj car     = SCM_NIL;
     ScmObj minobj  = SCM_NIL;
 
-    if (SCM_NULLP(args))
+    if (NULLP(args))
         SigScm_Error("min : at least 1 number required\n");
 
-    for (; !SCM_NULLP(args); args = SCM_CDR(args)) {
-        car = SCM_CAR(args);
-        if (SCM_FALSEP(ScmOp_numberp(car)))
+    for (; !NULLP(args); args = CDR(args)) {
+        car = CAR(args);
+        if (FALSEP(ScmOp_numberp(car)))
             SigScm_ErrorObj("min : number required but got ", car);
 
         car_val = SCM_INT_VALUE(car);
@@ -593,7 +594,7 @@ ScmObj ScmOp_abs(ScmObj scm_num)
 {
     int num = 0;
 
-    if (SCM_FALSEP(ScmOp_numberp(scm_num)))
+    if (FALSEP(ScmOp_numberp(scm_num)))
         SigScm_ErrorObj("abs : number required but got ", scm_num);
 
     num = SCM_INT_VALUE(scm_num);
@@ -606,11 +607,11 @@ ScmObj ScmOp_quotient(ScmObj scm_n1, ScmObj scm_n2)
     int n1 = 0;
     int n2 = 0;
 
-    if (SCM_FALSEP(ScmOp_numberp(scm_n1)))
+    if (FALSEP(ScmOp_numberp(scm_n1)))
         SigScm_ErrorObj("quotient : number required but got ", scm_n1);
-    if (SCM_FALSEP(ScmOp_numberp(scm_n2)))
+    if (FALSEP(ScmOp_numberp(scm_n2)))
         SigScm_ErrorObj("quotient : number required but got ", scm_n2);
-    if (SCM_NFALSEP(ScmOp_zerop(scm_n2)))
+    if (NFALSEP(ScmOp_zerop(scm_n2)))
         SigScm_Error("quotient : divide by zero\n");
 
     n1 = SCM_INT_VALUE(scm_n1);
@@ -625,11 +626,11 @@ ScmObj ScmOp_modulo(ScmObj scm_n1, ScmObj scm_n2)
     int n2  = 0;
     int rem = 0;
 
-    if (SCM_FALSEP(ScmOp_numberp(scm_n1)))
+    if (FALSEP(ScmOp_numberp(scm_n1)))
         SigScm_ErrorObj("modulo : number required but got ", scm_n1);
-    if (SCM_FALSEP(ScmOp_numberp(scm_n2)))
+    if (FALSEP(ScmOp_numberp(scm_n2)))
         SigScm_ErrorObj("modulo : number required but got ", scm_n2);
-    if (SCM_NFALSEP(ScmOp_zerop(scm_n2)))
+    if (NFALSEP(ScmOp_zerop(scm_n2)))
         SigScm_Error("modulo : divide by zero\n");
 
     n1 = SCM_INT_VALUE(scm_n1);
@@ -650,11 +651,11 @@ ScmObj ScmOp_remainder(ScmObj scm_n1, ScmObj scm_n2)
     int n1  = 0;
     int n2  = 0;
 
-    if (SCM_FALSEP(ScmOp_numberp(scm_n1)))
+    if (FALSEP(ScmOp_numberp(scm_n1)))
         SigScm_ErrorObj("remainder : number required but got ", scm_n1);
-    if (SCM_FALSEP(ScmOp_numberp(scm_n2)))
+    if (FALSEP(ScmOp_numberp(scm_n2)))
         SigScm_ErrorObj("remainder : number required but got ", scm_n2);
-    if (SCM_NFALSEP(ScmOp_zerop(scm_n2)))
+    if (NFALSEP(ScmOp_zerop(scm_n2)))
         SigScm_Error("remainder : divide by zero\n");
 
     n1 = SCM_INT_VALUE(scm_n1);
@@ -676,22 +677,22 @@ ScmObj ScmOp_number2string (ScmObj args, ScmObj env)
   if (CHECK_1_ARG(args))
       SigScm_ErrorObj("number->string: requires 1 or 2 arguments: ", args);
 
-  number = SCM_CAR(args);
-  if (!SCM_INTP(number))
+  number = CAR(args);
+  if (!INTP(number))
       SigScm_ErrorObj("number->string: integer required but got ", number);
 
   n = SCM_INT_VALUE(number);
 
   /* r = radix */
-  if (SCM_NULLP(SCM_CDR(args)))
+  if (NULLP(CDR(args)))
       r = 10;
   else {
 #ifdef SCM_STRICT_ARGCHECK
-      if (!SCM_NULLP(SCM_CDDR(args)))
+      if (!NULLP(SCM_CDDR(args)))
           SigScm_ErrorObj("number->string: too many arguments: ", args);
 #endif
       radix = SCM_CADR(args);
-      if (!SCM_INTP(radix))
+      if (!INTP(radix))
           SigScm_ErrorObj("number->string: integer required but got ", radix);
       r = SCM_INT_VALUE(radix);
 
@@ -729,7 +730,7 @@ ScmObj ScmOp_string2number(ScmObj string)
     char  *p   = NULL;
     size_t len = 0;
 
-    if (!SCM_STRINGP(string))
+    if (!STRINGP(string))
         SigScm_ErrorObj("string->number : string required but got ", string);
 
     str = SCM_STRING_STR(string);
@@ -750,7 +751,7 @@ ScmObj ScmOp_string2number(ScmObj string)
 ==============================================================================*/
 ScmObj ScmOp_not(ScmObj obj)
 {
-    return (SCM_FALSEP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return (FALSEP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_booleanp(ScmObj obj)
@@ -771,16 +772,16 @@ ScmObj ScmOp_car(ScmObj obj)
      * 
      */
 #if !SCM_COMPAT_SIOD_BUGS
-    if (SCM_NULLP(obj))
+    if (NULLP(obj))
         SigScm_Error("car : empty list\n");
 #endif
-    if (SCM_NULLP(obj))
+    if (NULLP(obj))
         return SCM_NIL;
 
-    if (!SCM_CONSP(obj))
+    if (!CONSP(obj))
         SigScm_ErrorObj("car : list required but got ", obj);
 
-    return SCM_CAR(obj);
+    return CAR(obj);
 }
 
 ScmObj ScmOp_cdr(ScmObj obj)
@@ -793,21 +794,21 @@ ScmObj ScmOp_cdr(ScmObj obj)
      * 
      */
 #if !SCM_COMPAT_SIOD_BUGS
-    if (SCM_NULLP(obj))
+    if (NULLP(obj))
         SigScm_Error("cdr : empty list\n");
 #endif
-    if (SCM_NULLP(obj))
+    if (NULLP(obj))
         return SCM_NIL;
 
-    if (!SCM_CONSP(obj))
+    if (!CONSP(obj))
         SigScm_ErrorObj("cdr : list required but got ", obj);
 
-    return SCM_CDR(obj);
+    return CDR(obj);
 }
 
 ScmObj ScmOp_pairp(ScmObj obj)
 {
-    return (SCM_CONSP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return (CONSP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_cons(ScmObj car, ScmObj cdr)
@@ -817,7 +818,7 @@ ScmObj ScmOp_cons(ScmObj car, ScmObj cdr)
 
 ScmObj ScmOp_setcar(ScmObj pair, ScmObj car)
 {
-    if (SCM_CONSP(pair))
+    if (CONSP(pair))
         SCM_SETCAR(pair, car);
     else
         SigScm_ErrorObj("set-car! : pair required but got ", pair);
@@ -827,7 +828,7 @@ ScmObj ScmOp_setcar(ScmObj pair, ScmObj car)
 
 ScmObj ScmOp_setcdr(ScmObj pair, ScmObj cdr)
 {
-    if (SCM_CONSP(pair))
+    if (CONSP(pair))
         SCM_SETCDR(pair, cdr);
     else
         SigScm_ErrorObj("set-cdr! : pair required but got ", pair);
@@ -955,16 +956,16 @@ ScmObj ScmOp_list(ScmObj obj, ScmObj env)
 
 ScmObj ScmOp_nullp(ScmObj obj)
 {
-    return (SCM_NULLP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return (NULLP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_listp(ScmObj obj)
 {
     int len = 0;
 
-    if (SCM_NULLP(obj))
+    if (NULLP(obj))
         return SCM_TRUE;
-    if (!SCM_CONSP(obj))
+    if (!CONSP(obj))
         return SCM_FALSE;
 
     len = ScmOp_c_length(obj);
@@ -983,18 +984,18 @@ static int ScmOp_c_length(ScmObj obj)
     int len = 0;
 
     for (;;) {
-        if (SCM_NULLP(obj)) break;
-        if (!SCM_CONSP(obj)) return -1;
+        if (NULLP(obj)) break;
+        if (!CONSP(obj)) return -1;
         if (len != 0 && obj == slow) return -1; /* circular */
 
-        obj = SCM_CDR(obj);
+        obj = CDR(obj);
         len++;
-        if (SCM_NULLP(obj)) break;
-        if (!SCM_CONSP(obj)) return -1;
+        if (NULLP(obj)) break;
+        if (!CONSP(obj)) return -1;
         if (obj == slow) return -1; /* circular */
 
-        obj = SCM_CDR(obj);
-        slow = SCM_CDR(slow);
+        obj = CDR(obj);
+        slow = CDR(slow);
         len++;
     }
 
@@ -1014,23 +1015,23 @@ ScmObj ScmOp_append(ScmObj args, ScmObj env)
     ScmObj ls;
     ScmObj obj = SCM_NIL;
 
-    if (SCM_NULLP(args))
+    if (NULLP(args))
         return SCM_NIL;
 
     /* duplicate and merge all but the last argument */
-    for (; !SCM_NULLP(SCM_CDR(args)); args = SCM_CDR(args)) {
-        for (ls = SCM_CAR(args); SCM_CONSP(ls); ls = SCM_CDR(ls)) {
-            obj = SCM_CAR(ls);
+    for (; !NULLP(CDR(args)); args = CDR(args)) {
+        for (ls = CAR(args); CONSP(ls); ls = CDR(ls)) {
+            obj = CAR(ls);
             *ret_tail = Scm_NewCons(obj, SCM_NIL);
-            ret_tail = &SCM_CDR(*ret_tail);
+            ret_tail = &CDR(*ret_tail);
         }
-        if (!SCM_NULLP(ls))
+        if (!NULLP(ls))
             SigScm_ErrorObj("append: proper list required but got: ",
-                            SCM_CAR(args));
+                            CAR(args));
     }
 
     /* append the last argument */
-    *ret_tail = SCM_CAR(args);
+    *ret_tail = CAR(args);
 
     return ret_list;
 }
@@ -1039,10 +1040,10 @@ ScmObj ScmOp_reverse(ScmObj list)
 {
     ScmObj ret_list  = SCM_NIL;
 
-    for (; SCM_CONSP(list); list = SCM_CDR(list))
-        ret_list = Scm_NewCons(SCM_CAR(list), ret_list);
+    for (; CONSP(list); list = CDR(list))
+        ret_list = Scm_NewCons(CAR(list), ret_list);
 
-    if (!SCM_NULLP(list))
+    if (!NULLP(list))
         SigScm_ErrorObj("reverse: got improper list: ", list);
 
     return ret_list;
@@ -1051,9 +1052,9 @@ ScmObj ScmOp_reverse(ScmObj list)
 static ScmObj ScmOp_listtail_internal(ScmObj list, int k)
 {
     while (k--) {
-        if (!SCM_CONSP(list))
+        if (!CONSP(list))
             return SCM_INVALID;
-        list = SCM_CDR(list);
+        list = CDR(list);
     }
 
     return list;
@@ -1063,7 +1064,7 @@ ScmObj ScmOp_list_tail(ScmObj list, ScmObj scm_k)
 {
     ScmObj ret;
 
-    if (SCM_FALSEP(ScmOp_numberp(scm_k)))
+    if (FALSEP(ScmOp_numberp(scm_k)))
         SigScm_ErrorObj("list-tail: number required but got ", scm_k);
 
     ret = ScmOp_listtail_internal(list, SCM_INT_VALUE(scm_k));
@@ -1078,7 +1079,7 @@ ScmObj ScmOp_list_ref(ScmObj list, ScmObj scm_k)
 {
     ScmObj list_tail = SCM_NIL;
 
-    if (SCM_FALSEP(ScmOp_numberp(scm_k)))
+    if (FALSEP(ScmOp_numberp(scm_k)))
         SigScm_ErrorObj("list-ref : int required but got ", scm_k);
 
     list_tail = ScmOp_listtail_internal(list, SCM_INT_VALUE(scm_k));
@@ -1086,14 +1087,14 @@ ScmObj ScmOp_list_ref(ScmObj list, ScmObj scm_k)
         SigScm_ErrorObj("list-ref : out of range or bad list, arglist is: ",
                         Scm_NewCons(list, scm_k));
 
-    return SCM_CAR(list_tail);
+    return CAR(list_tail);
 }
 
 ScmObj ScmOp_memq(ScmObj obj, ScmObj list)
 {
     ScmObj tmplist = SCM_NIL;
-    for (tmplist = list; SCM_CONSP(tmplist); tmplist = SCM_CDR(tmplist)) {
-        if (EQ(obj, SCM_CAR(tmplist))) {
+    for (tmplist = list; CONSP(tmplist); tmplist = CDR(tmplist)) {
+        if (EQ(obj, CAR(tmplist))) {
             return tmplist;
         }
     }
@@ -1105,9 +1106,9 @@ ScmObj ScmOp_memv(ScmObj obj, ScmObj list)
 {
     ScmObj tmplist = SCM_NIL;
     ScmObj tmpobj  = SCM_NIL;
-    for (tmplist = list; SCM_CONSP(tmplist); tmplist = SCM_CDR(tmplist)) {
-        tmpobj = SCM_CAR(tmplist);
-        if (SCM_NFALSEP(ScmOp_eqvp(obj, tmpobj))) {
+    for (tmplist = list; CONSP(tmplist); tmplist = CDR(tmplist)) {
+        tmpobj = CAR(tmplist);
+        if (NFALSEP(ScmOp_eqvp(obj, tmpobj))) {
             return tmplist;
         }
     }
@@ -1119,9 +1120,9 @@ ScmObj ScmOp_member(ScmObj obj, ScmObj list)
 {
     ScmObj tmplist = SCM_NIL;
     ScmObj tmpobj  = SCM_NIL;
-    for (tmplist = list; SCM_CONSP(tmplist); tmplist = SCM_CDR(tmplist)) {
-        tmpobj = SCM_CAR(tmplist);
-        if (SCM_NFALSEP(ScmOp_equalp(obj, tmpobj))) {
+    for (tmplist = list; CONSP(tmplist); tmplist = CDR(tmplist)) {
+        tmpobj = CAR(tmplist);
+        if (NFALSEP(ScmOp_equalp(obj, tmpobj))) {
             return tmplist;
         }
     }
@@ -1135,16 +1136,16 @@ ScmObj ScmOp_assq(ScmObj obj, ScmObj alist)
     ScmObj tmpobj  = SCM_NIL;
     ScmObj car;
 
-    for (tmplist = alist; SCM_CONSP(tmplist); tmplist = SCM_CDR(tmplist)) {
-        tmpobj = SCM_CAR(tmplist);
-        car = SCM_CAR(tmpobj);
+    for (tmplist = alist; CONSP(tmplist); tmplist = CDR(tmplist)) {
+        tmpobj = CAR(tmplist);
+        car = CAR(tmpobj);
 #if SCM_STRICT_R5RS
-        if (!SCM_CONSP(tmpobj))
+        if (!CONSP(tmpobj))
             SigScm_ErrorObj("assq: invalid alist: ", alist);
-        if (EQ(SCM_CAR(tmpobj), obj))
+        if (EQ(CAR(tmpobj), obj))
             return tmpobj;
 #else
-        if (SCM_CONSP(tmpobj) && EQ(SCM_CAR(tmpobj), obj))
+        if (CONSP(tmpobj) && EQ(CAR(tmpobj), obj))
             return tmpobj;
 #endif
     }
@@ -1158,16 +1159,16 @@ ScmObj ScmOp_assv(ScmObj obj, ScmObj alist)
     ScmObj tmpobj  = SCM_NIL;
     ScmObj car;
 
-    for (tmplist = alist; SCM_CONSP(tmplist); tmplist = SCM_CDR(tmplist)) {
-        tmpobj = SCM_CAR(tmplist);
-        car = SCM_CAR(tmpobj);
+    for (tmplist = alist; CONSP(tmplist); tmplist = CDR(tmplist)) {
+        tmpobj = CAR(tmplist);
+        car = CAR(tmpobj);
 #if SCM_STRICT_R5RS
-        if (!SCM_CONSP(tmpobj))
+        if (!CONSP(tmpobj))
             SigScm_ErrorObj("assv: invalid alist: ", alist);
-        if (SCM_NFALSEP(ScmOp_eqvp(car, obj)))
+        if (NFALSEP(ScmOp_eqvp(car, obj)))
             return tmpobj;
 #else
-        if (SCM_CONSP(tmpobj) && SCM_NFALSEP(ScmOp_eqvp(car, obj)))
+        if (CONSP(tmpobj) && NFALSEP(ScmOp_eqvp(car, obj)))
             return tmpobj;
 #endif
     }
@@ -1181,16 +1182,16 @@ ScmObj ScmOp_assoc(ScmObj obj, ScmObj alist)
     ScmObj tmpobj  = SCM_NIL;
     ScmObj car;
 
-    for (tmplist = alist; SCM_CONSP(tmplist); tmplist = SCM_CDR(tmplist)) {
-        tmpobj = SCM_CAR(tmplist);
-        car = SCM_CAR(tmpobj);
+    for (tmplist = alist; CONSP(tmplist); tmplist = CDR(tmplist)) {
+        tmpobj = CAR(tmplist);
+        car = CAR(tmpobj);
 #if SCM_STRICT_R5RS
-        if (!SCM_CONSP(tmpobj))
+        if (!CONSP(tmpobj))
             SigScm_ErrorObj("assoc: invalid alist: ", alist);
-        if (SCM_NFALSEP(ScmOp_equalp(car, obj)))
+        if (NFALSEP(ScmOp_equalp(car, obj)))
             return tmpobj;
 #else
-        if (SCM_CONSP(tmpobj) && SCM_NFALSEP(ScmOp_equalp(car, obj)))
+        if (CONSP(tmpobj) && NFALSEP(ScmOp_equalp(car, obj)))
             return tmpobj;
 #endif
     }
@@ -1204,12 +1205,12 @@ ScmObj ScmOp_assoc(ScmObj obj, ScmObj alist)
 ==============================================================================*/
 ScmObj ScmOp_symbolp(ScmObj obj)
 {
-    return (SCM_SYMBOLP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return (SYMBOLP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_symbol2string(ScmObj obj)
 {
-    if (!SCM_SYMBOLP(obj))
+    if (!SYMBOLP(obj))
         SigScm_ErrorObj("symbol->string: symbol required, but got ", obj);
 
     return Scm_NewStringCopying(SCM_SYMBOL_NAME(obj));
@@ -1217,7 +1218,7 @@ ScmObj ScmOp_symbol2string(ScmObj obj)
 
 ScmObj ScmOp_string2symbol(ScmObj str)
 {
-    if(!SCM_STRINGP(str))
+    if(!STRINGP(str))
         SigScm_ErrorObj("string->symbol: string required, but got ", str);
 
     return Scm_Intern(SCM_STRING_STR(str));
@@ -1228,14 +1229,14 @@ ScmObj ScmOp_string2symbol(ScmObj str)
 ==============================================================================*/
 ScmObj ScmOp_charp(ScmObj obj)
 {
-    return (SCM_CHARP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return (CHARP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_char_equal(ScmObj ch1, ScmObj ch2)
 {
-    if (!SCM_CHARP(ch1))
+    if (!CHARP(ch1))
         SigScm_ErrorObj("char=? : char required but got ", ch1);
-    if (!SCM_CHARP(ch2))
+    if (!CHARP(ch2))
         SigScm_ErrorObj("char=? : char required but got ", ch2);
 
     if (strcmp(SCM_CHAR_CH(ch1), SCM_CHAR_CH(ch2)) == 0)
@@ -1246,7 +1247,7 @@ ScmObj ScmOp_char_equal(ScmObj ch1, ScmObj ch2)
 
 ScmObj ScmOp_char_alphabeticp(ScmObj obj)
 {
-    if (!SCM_CHARP(obj))
+    if (!CHARP(obj))
         SigScm_ErrorObj("char-alphabetic? : char required but got ", obj);
 
     /* check multibyte */
@@ -1262,7 +1263,7 @@ ScmObj ScmOp_char_alphabeticp(ScmObj obj)
 
 ScmObj ScmOp_char_numericp(ScmObj obj)
 {
-    if (!SCM_CHARP(obj))
+    if (!CHARP(obj))
         SigScm_ErrorObj("char-alphabetic? : char required but got ", obj);
 
     /* check multibyte */
@@ -1278,7 +1279,7 @@ ScmObj ScmOp_char_numericp(ScmObj obj)
 
 ScmObj ScmOp_char_whitespacep(ScmObj obj)
 {
-    if (!SCM_CHARP(obj))
+    if (!CHARP(obj))
         SigScm_ErrorObj("char-alphabetic? : char required but got ", obj);
 
     /* check multibyte */
@@ -1294,7 +1295,7 @@ ScmObj ScmOp_char_whitespacep(ScmObj obj)
 
 ScmObj ScmOp_char_upper_casep(ScmObj obj)
 {
-    if (!SCM_CHARP(obj))
+    if (!CHARP(obj))
         SigScm_ErrorObj("char-alphabetic? : char required but got ", obj);
 
     /* check multibyte */
@@ -1310,7 +1311,7 @@ ScmObj ScmOp_char_upper_casep(ScmObj obj)
 
 ScmObj ScmOp_char_lower_casep(ScmObj obj)
 {
-    if (!SCM_CHARP(obj))
+    if (!CHARP(obj))
         SigScm_ErrorObj("char-alphabetic? : char required but got ", obj);
 
     /* check multibyte */
@@ -1326,7 +1327,7 @@ ScmObj ScmOp_char_lower_casep(ScmObj obj)
 
 ScmObj ScmOp_char_upcase(ScmObj obj)
 {
-    if (!SCM_CHARP(obj))
+    if (!CHARP(obj))
         SigScm_ErrorObj("char-upcase : char required but got ", obj);
 
     /* check multibyte */
@@ -1341,7 +1342,7 @@ ScmObj ScmOp_char_upcase(ScmObj obj)
 
 ScmObj ScmOp_char_downcase(ScmObj obj)
 {
-    if (!SCM_CHARP(obj))
+    if (!CHARP(obj))
         SigScm_ErrorObj("char-upcase : char required but got ", obj);
 
     /* check multibyte */
@@ -1359,7 +1360,7 @@ ScmObj ScmOp_char_downcase(ScmObj obj)
 ==============================================================================*/
 ScmObj ScmOp_stringp(ScmObj obj)
 {
-    return (SCM_STRINGP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return (STRINGP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_make_string(ScmObj arg, ScmObj env)
@@ -1373,13 +1374,13 @@ ScmObj ScmOp_make_string(ScmObj arg, ScmObj env)
     /* sanity check */
     if (argc != 1 && argc != 2)
         SigScm_Error("make-string : invalid use\n");
-    if (!SCM_INTP(SCM_CAR(arg)))
-        SigScm_ErrorObj("make-string : integer required but got ", SCM_CAR(arg));
-    if (argc == 2 && !SCM_CHARP(SCM_CAR(SCM_CDR(arg))))
-        SigScm_ErrorObj("make-string : character required but got ", SCM_CAR(SCM_CDR(arg)));
+    if (!INTP(CAR(arg)))
+        SigScm_ErrorObj("make-string : integer required but got ", CAR(arg));
+    if (argc == 2 && !CHARP(CAR(CDR(arg))))
+        SigScm_ErrorObj("make-string : character required but got ", CAR(CDR(arg)));
 
     /* get length */
-    len = SCM_INT_VALUE(SCM_CAR(arg));
+    len = SCM_INT_VALUE(CAR(arg));
     if (len == 0)
         return Scm_NewStringCopying("");
 
@@ -1392,7 +1393,7 @@ ScmObj ScmOp_make_string(ScmObj arg, ScmObj env)
         ch = Scm_NewChar(tmp);
     } else {
         /* also specify filler char */
-        ch = SCM_CAR(SCM_CDR(arg));
+        ch = CAR(CDR(arg));
     }
 
     /* make string */
@@ -1411,7 +1412,7 @@ ScmObj ScmOp_string(ScmObj arg, ScmObj env)
 
 ScmObj ScmOp_string_length(ScmObj str)
 {
-    if (!SCM_STRINGP(str))
+    if (!STRINGP(str))
         SigScm_ErrorObj("string-length : string required but got ", str);
 
     return Scm_NewInt(SigScm_default_encoding_strlen(SCM_STRING_STR(str)));
@@ -1425,9 +1426,9 @@ ScmObj ScmOp_string_ref(ScmObj str, ScmObj k)
     const char *ch_start_ptr = NULL;
     const char *ch_end_ptr   = NULL;
 
-    if (!SCM_STRINGP(str))
+    if (!STRINGP(str))
         SigScm_ErrorObj("string-ref : string required but got ", str);
-    if (!SCM_INTP(k))
+    if (!INTP(k))
         SigScm_ErrorObj("string-ref : number required but got ", k);
 
     /* get start_ptr and end_ptr */
@@ -1456,11 +1457,11 @@ ScmObj ScmOp_string_set(ScmObj str, ScmObj k, ScmObj ch)
     const char *ch_start_ptr = NULL;
     const char *ch_end_ptr   = NULL;
 
-    if (!SCM_STRINGP(str))
+    if (!STRINGP(str))
         SigScm_ErrorObj("string-set! : string required but got ", str);
-    if (!SCM_INTP(k))
+    if (!INTP(k))
         SigScm_ErrorObj("string-set! : number required but got ", k);
-    if (!SCM_CHARP(ch))
+    if (!CHARP(ch))
         SigScm_ErrorObj("string-set! : character required but got ", ch);
 
     /* get indexes */
@@ -1508,11 +1509,11 @@ ScmObj ScmOp_string_substring(ScmObj str, ScmObj start, ScmObj end)
     const char *ch_start_ptr = NULL;
     const char *ch_end_ptr   = NULL;
 
-    if (!SCM_STRINGP(str))
+    if (!STRINGP(str))
         SigScm_ErrorObj("string-ref : string required but got ", str);
-    if (!SCM_INTP(start))
+    if (!INTP(start))
         SigScm_ErrorObj("string-ref : number required but got ", start);
-    if (!SCM_INTP(end))
+    if (!INTP(end))
         SigScm_ErrorObj("string-ref : number required but got ", end);
 
     /* get start_ptr and end_ptr */
@@ -1546,13 +1547,13 @@ ScmObj ScmOp_string_append(ScmObj arg, ScmObj env)
     char  *p       = NULL;
 
     /* sanity check */
-    if (SCM_NULLP(arg))
+    if (NULLP(arg))
         return Scm_NewStringCopying("");
 
     /* count total size of the new string */
-    for (strings = arg; !SCM_NULLP(strings); strings = SCM_CDR(strings)) {
-        obj = SCM_CAR(strings);
-        if (!SCM_STRINGP(obj))
+    for (strings = arg; !NULLP(strings); strings = CDR(strings)) {
+        obj = CAR(strings);
+        if (!STRINGP(obj))
             SigScm_ErrorObj("string-append : list required but got ", obj);
 
         total_size += strlen(SCM_STRING_STR(obj));
@@ -1564,8 +1565,8 @@ ScmObj ScmOp_string_append(ScmObj arg, ScmObj env)
 
     /* copy string by string */
     p = new_str;
-    for (strings = arg; !SCM_NULLP(strings); strings = SCM_CDR(strings)) {
-        obj = SCM_CAR(strings);
+    for (strings = arg; !NULLP(strings); strings = CDR(strings)) {
+        obj = CAR(strings);
 
         strcpy(p, SCM_STRING_STR(obj));
         p += strlen(SCM_STRING_STR(obj));
@@ -1586,7 +1587,7 @@ ScmObj ScmOp_string2list(ScmObj string)
     const char *ch_end_ptr   = NULL;
     char *new_ch = NULL;
 
-    if (!SCM_STRINGP(string))
+    if (!STRINGP(string))
         SigScm_ErrorObj("string->list : string required but got ", string);
 
     string_str = SCM_STRING_STR(string);
@@ -1622,16 +1623,16 @@ ScmObj ScmOp_list2string(ScmObj list)
     char  *new_str = NULL;
     char  *p       = NULL;
 
-    if (SCM_FALSEP(ScmOp_listp(list)))
+    if (FALSEP(ScmOp_listp(list)))
         SigScm_ErrorObj("list->string : list required but got ", list);
 
-    if (SCM_NULLP(list))
+    if (NULLP(list))
         return Scm_NewStringCopying("");
 
     /* count total size of the string */
-    for (chars = list; !SCM_NULLP(chars); chars = SCM_CDR(chars)) {
-        obj = SCM_CAR(chars);
-        if (!SCM_CHARP(obj))
+    for (chars = list; !NULLP(chars); chars = CDR(chars)) {
+        obj = CAR(chars);
+        if (!CHARP(obj))
             SigScm_ErrorObj("list->string : char required but got ", obj);
 
         total_size += strlen(SCM_CHAR_CH(obj));
@@ -1642,8 +1643,8 @@ ScmObj ScmOp_list2string(ScmObj list)
 
     /* copy char by char */
     p = new_str;
-    for (chars = list; !SCM_NULLP(chars); chars = SCM_CDR(chars)) {
-        obj = SCM_CAR(chars);
+    for (chars = list; !NULLP(chars); chars = CDR(chars)) {
+        obj = CAR(chars);
 
         strcpy(p, SCM_CHAR_CH(obj));
         p += strlen(SCM_CHAR_CH(obj));
@@ -1654,7 +1655,7 @@ ScmObj ScmOp_list2string(ScmObj list)
 
 ScmObj ScmOp_string_copy(ScmObj string)
 {
-    if (!SCM_STRINGP(string))
+    if (!STRINGP(string))
         SigScm_ErrorObj("string-copy : string required but got ", string);
 
     return Scm_NewStringCopying(SCM_STRING_STR(string));
@@ -1668,9 +1669,9 @@ ScmObj ScmOp_string_fill(ScmObj string, ScmObj ch)
     char *p        = NULL;
     int   i        = 0;
 
-    if (!SCM_STRINGP(string))
+    if (!STRINGP(string))
         SigScm_ErrorObj("string-fill! : string required but got ", string);
-    if (!SCM_CHARP(ch))
+    if (!CHARP(ch))
         SigScm_ErrorObj("string-fill! : character required but got ", ch);
 
     /* create new str */
@@ -1694,18 +1695,18 @@ ScmObj ScmOp_string_fill(ScmObj string, ScmObj ch)
 ==============================================================================*/
 ScmObj ScmOp_vectorp(ScmObj obj)
 {
-    return (SCM_VECTORP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return (VECTORP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_make_vector(ScmObj arg, ScmObj env )
 {
     ScmObj *vec   = NULL;
-    ScmObj  scm_k = SCM_CAR(arg);
+    ScmObj  scm_k = CAR(arg);
     ScmObj  fill  = SCM_NIL;
     int c_k = 0;
     int i   = 0;
 
-    if (!SCM_INTP(scm_k))
+    if (!INTP(scm_k))
         SigScm_ErrorObj("make-vector : integer required but got ", scm_k);
 
     /* allocate vector */
@@ -1714,8 +1715,8 @@ ScmObj ScmOp_make_vector(ScmObj arg, ScmObj env )
 
     /* fill vector */
     fill = SCM_UNDEF;
-    if (!SCM_NULLP(SCM_CDR(arg)) && !SCM_NULLP(SCM_CAR(SCM_CDR(arg))))
-        fill = SCM_CAR(SCM_CDR(arg));
+    if (!NULLP(CDR(arg)) && !NULLP(CAR(CDR(arg))))
+        fill = CAR(CDR(arg));
 
     for (i = 0; i < c_k; i++) {
         vec[i] = fill;
@@ -1733,8 +1734,8 @@ ScmObj ScmOp_vector(ScmObj arg, ScmObj env )
     /* set item */
     int i = 0;
     for (i = 0; i < c_len; i++) {
-        vec[i] = SCM_CAR(arg);
-        arg = SCM_CDR(arg);
+        vec[i] = CAR(arg);
+        arg = CDR(arg);
     }
 
     return Scm_NewVector(vec, c_len);
@@ -1742,7 +1743,7 @@ ScmObj ScmOp_vector(ScmObj arg, ScmObj env )
 
 ScmObj ScmOp_vector_length(ScmObj vec)
 {
-    if (!SCM_VECTORP(vec))
+    if (!VECTORP(vec))
         SigScm_ErrorObj("vector-length : vector required but got ", vec);
 
     return Scm_NewInt(SCM_VECTOR_LEN(vec));
@@ -1750,9 +1751,9 @@ ScmObj ScmOp_vector_length(ScmObj vec)
 
 ScmObj ScmOp_vector_ref(ScmObj vec, ScmObj scm_k)
 {
-    if (!SCM_VECTORP(vec))
+    if (!VECTORP(vec))
         SigScm_ErrorObj("vector-ref : vector required but got ", vec);
-    if (!SCM_INTP(scm_k))
+    if (!INTP(scm_k))
         SigScm_ErrorObj("vector-ref : number required but got ", scm_k);
 
     return SCM_VECTOR_REF(vec, scm_k);
@@ -1760,9 +1761,9 @@ ScmObj ScmOp_vector_ref(ScmObj vec, ScmObj scm_k)
 
 ScmObj ScmOp_vector_set(ScmObj vec, ScmObj scm_k, ScmObj obj)
 {
-    if (!SCM_VECTORP(vec))
+    if (!VECTORP(vec))
         SigScm_ErrorObj("vector-set! : vector required but got ", vec);
-    if (!SCM_INTP(scm_k))
+    if (!INTP(scm_k))
         SigScm_ErrorObj("vector-set! : number required but got ", scm_k);
 
     SCM_SETVECTOR_REF(vec, scm_k, obj);
@@ -1779,7 +1780,7 @@ ScmObj ScmOp_vector2list(ScmObj vec)
     int c_len = 0;
     int i = 0;
 
-    if (!SCM_VECTORP(vec))
+    if (!VECTORP(vec))
         SigScm_ErrorObj("vector->list : vector required but got ", vec);
 
     v = SCM_VECTOR_VEC(vec);
@@ -1810,15 +1811,15 @@ ScmObj ScmOp_list2vector(ScmObj list)
     int i = 0;
 
     /* TOOD : canbe optimized. scanning list many times */
-    if (SCM_FALSEP(ScmOp_listp(list)))
+    if (FALSEP(ScmOp_listp(list)))
         SigScm_ErrorObj("list->vector : list required but got ", list);
 
     scm_len = ScmOp_length(list);
     c_len   = SCM_INT_VALUE(scm_len);
     v       = (ScmObj*)malloc(sizeof(ScmObj) * c_len);
     for (i = 0; i < c_len; i++) {
-        v[i] = SCM_CAR(list);
-        list = SCM_CDR(list);
+        v[i] = CAR(list);
+        list = CDR(list);
     }
 
     return Scm_NewVector(v, c_len);
@@ -1829,7 +1830,7 @@ ScmObj ScmOp_vector_fill(ScmObj vec, ScmObj fill)
     int c_len = 0;
     int i = 0;
 
-    if (!SCM_VECTORP(vec))
+    if (!VECTORP(vec))
         SigScm_ErrorObj("vector->list : vector required but got ", vec);
 
     c_len = SCM_VECTOR_LEN(vec);
@@ -1845,7 +1846,7 @@ ScmObj ScmOp_vector_fill(ScmObj vec, ScmObj fill)
 =======================================*/
 ScmObj ScmOp_procedurep(ScmObj obj)
 {
-    if (SCM_FUNCP(obj) || SCM_CLOSUREP(obj))
+    if (FUNCP(obj) || CLOSUREP(obj))
         return SCM_TRUE;
 
     return SCM_FALSE;
@@ -1854,7 +1855,7 @@ ScmObj ScmOp_procedurep(ScmObj obj)
 ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
 {
     int arg_len = SCM_INT_VALUE(ScmOp_length(map_arg));
-    ScmObj proc = SCM_CAR(map_arg);
+    ScmObj proc = CAR(map_arg);
     ScmObj args = SCM_NIL;
     ScmObj ret  = SCM_NIL;
     ScmObj tmp  = SCM_NIL;
@@ -1871,9 +1872,9 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
     /* 1proc and 1arg case */
     if (arg_len == 2) {
         /* apply func to each item */
-        for (args = SCM_CAR(SCM_CDR(map_arg)); !SCM_NULLP(args); args = SCM_CDR(args)) {
+        for (args = CAR(CDR(map_arg)); !NULLP(args); args = CDR(args)) {
             /* create proc's arg */
-            tmp = SCM_CAR(args);
+            tmp = CAR(args);
 
             /* create list for "apply" op */
             tmp = Scm_NewCons(proc,
@@ -1886,7 +1887,7 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
     }
 
     /* 1proc and many args case */
-    arg_vector = ScmOp_list2vector(SCM_CDR(map_arg));
+    arg_vector = ScmOp_list2vector(CDR(map_arg));
     vector_len = SCM_VECTOR_LEN(arg_vector);
     while (1) {
         /* create arg */
@@ -1894,13 +1895,13 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
         for (i = 0; i < vector_len; i++) {
             tmp  = SCM_VECTOR_CREF(arg_vector, i);
             /* check if we can continue next loop */
-            if (SCM_NULLP(tmp)) {
+            if (NULLP(tmp)) {
                 /* if next item is SCM_NIL, let's return! */
                 return ScmOp_reverse(ret);
             }
 
-            arg1 = Scm_NewCons(SCM_CAR(tmp), arg1);
-            SCM_SETVECTOR_CREF(arg_vector, i, SCM_CDR(tmp));
+            arg1 = Scm_NewCons(CAR(tmp), arg1);
+            SCM_SETVECTOR_CREF(arg_vector, i, CDR(tmp));
         }
 
         /* reverse arg */
@@ -1930,20 +1931,20 @@ ScmObj ScmOp_force(ScmObj arg, ScmObj env)
 {
     if (SCM_INT_VALUE(ScmOp_length(arg)) != 1)
         SigScm_Error("force : Wrong number of arguments\n");
-    if (!SCM_CLOSUREP(SCM_CAR(arg)))
+    if (!CLOSUREP(CAR(arg)))
         SigScm_Error("force : not proper delayed object\n");
 
-    /* evaluated exp = ( SCM_CAR(arg) ) */
-    return ScmOp_eval(Scm_NewCons(SCM_CAR(arg), SCM_NIL), env);
+    /* evaluated exp = ( CAR(arg) ) */
+    return ScmOp_eval(Scm_NewCons(CAR(arg), SCM_NIL), env);
 }
 
 ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env)
 {
     int jmpret  = 0;
-    ScmObj proc = SCM_CAR(arg);
+    ScmObj proc = CAR(arg);
     ScmObj cont = SCM_NIL;
 
-    if (!SCM_CLOSUREP(proc))
+    if (!CLOSUREP(proc))
         SigScm_ErrorObj("call-with-current-continuation : closure required but got ", proc);
 
     cont = Scm_NewContinuation();
@@ -1965,8 +1966,8 @@ ScmObj ScmOp_values(ScmObj argl, ScmObj env)
 {
     /* Values with one arg must return something that fits an ordinary
      * continuation. */
-    if (SCM_CONSP(argl) && SCM_NULLP(SCM_CDR(argl)))
-        return SCM_CAR(argl);
+    if (CONSP(argl) && NULLP(CDR(argl)))
+        return CAR(argl);
 
     /* Otherwise, we'll return the values in a packet. */
     return Scm_NewValuePacket(argl);
@@ -1982,10 +1983,10 @@ ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp, int *tail_flag)
         SigScm_ErrorObj("call-with-values: too few arguments: ", argl);
 
     /* make the list (producer) and evaluate it */
-    cons_wrapper = Scm_NewCons(SCM_CAR(argl), SCM_NIL);
+    cons_wrapper = Scm_NewCons(CAR(argl), SCM_NIL);
     vals = ScmOp_eval(cons_wrapper, *envp);
 
-    if (!SCM_VALUEPACKETP(vals)) {
+    if (!VALUEPACKETP(vals)) {
         /* got back a single value */
         vals = Scm_NewCons(vals, SCM_NIL);
     } else {
@@ -1993,7 +1994,7 @@ ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp, int *tail_flag)
         vals = SCM_VALUEPACKET_VALUES(vals);
     }
     
-    *tail_flag = 1;
+    (*tail_flag) = 1;
 
     /* cons_wrapper would have no chance of being referenced from
      * anywhere else, so we'll reuse that object. */
@@ -2002,9 +2003,9 @@ ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp, int *tail_flag)
     return cons_wrapper;
 }
 
-#if USE_SRFI1
+#if SCM_USE_SRFI1
 #include "operations-srfi1.c"
 #endif
-#if USE_SRFI8
+#if SCM_USE_SRFI8
 #include "operations-srfi8.c"
 #endif

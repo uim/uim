@@ -40,6 +40,7 @@
   Local Include
 =======================================*/
 #include "sigscheme.h"
+#include "sigschemeinternal.h"
 
 /*=======================================
   File Local Struct Declarations
@@ -235,27 +236,27 @@ static void print_list(FILE *f, ScmObj list, enum OutputType otype)
     fprintf(f, "(");
 
     /* get car and cdr */
-    car = SCM_CAR(list);
-    cdr = SCM_CDR(list);
+    car = CAR(list);
+    cdr = CDR(list);
     
     /* print car */
     print_ScmObj_internal(f, car, otype);
-    if (!SCM_NULLP(cdr))
+    if (!NULLP(cdr))
         fprintf(f, " ");
 
     /* print else for-each */
-    for (tmp = cdr; ; tmp = SCM_CDR(tmp)) {
-        if (SCM_CONSP(tmp)) {
-            print_ScmObj_internal(f, SCM_CAR(tmp), otype);
-            if (SCM_NULLP(SCM_CDR(tmp))) {
+    for (tmp = cdr; ; tmp = CDR(tmp)) {
+        if (CONSP(tmp)) {
+            print_ScmObj_internal(f, CAR(tmp), otype);
+            if (NULLP(CDR(tmp))) {
                 fprintf(f, ")");
                 return;
             } else {
-                if (!SCM_NULLP(SCM_CDR(tmp)))
+                if (!NULLP(CDR(tmp)))
                     fprintf(f, " ");
             }
         } else {
-            if (!SCM_NULLP(tmp)) {
+            if (!NULLP(tmp)) {
                 fprintf(f, ". ");
                 print_ScmObj_internal(f, tmp, otype);
             }

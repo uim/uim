@@ -244,14 +244,6 @@ struct ScmObjInternal_ {
 #define SCM_SETCAR(a,car)   (SCM_CAR(a) = car)
 #define SCM_SETCDR(a,cdr)   (SCM_CDR(a) = cdr)
 
-#define SCM_FREECELLP(a)     (SCM_TYPE(a) == ScmFreeCell)
-#define SCM_FREECELL(a)      (sigassert(SCM_FREECELLP(a)), (a))
-#define SCM_FREECELL_CAR(a)  (SCM_FREECELL(a)->obj.cons.car)
-#define SCM_FREECELL_CDR(a)  (SCM_FREECELL(a)->obj.cons.cdr)
-#define SCM_SETFREECELL(a)    (SCM_SETTYPE((a), ScmFreeCell))
-#define SCM_SETFREECELL_CAR(a,car) (SCM_FREECELL_CAR(a) = car)
-#define SCM_SETFREECELL_CDR(a,cdr) (SCM_FREECELL_CDR(a) = cdr)
-
 #define SCM_SYMBOLP(a)      (SCM_TYPE(a) == ScmSymbol)
 #define SCM_SYMBOL(a)       (sigassert(SCM_SYMBOLP(a)), (a))
 #define SCM_SYMBOL_NAME(a)  (SCM_SYMBOL(a)->obj.symbol.sym_name)
@@ -386,14 +378,12 @@ extern ScmObj SigScm_unbound, SigScm_undef;
 #define SCM_UNBOUND          SigScm_unbound
 #define SCM_UNDEF            SigScm_undef
 
-#define EQ(a, b) ((a) == (b))
-#define NEQ(a, b) !(EQ((a), (b)))
-
-#define SCM_EQ(a, b)  (EQ((a), (b)))
-#define SCM_NEQ(a, b) (NEQ((a), (b)))
-#define SCM_NULLP(a)  (EQ((a), SCM_NIL))
-#define SCM_FALSEP(a) (EQ((a), SCM_FALSE))
-#define SCM_NFALSEP(a) (!EQ((a), SCM_FALSE))
-#define SCM_EOFP(a)   (EQ((a), SCM_EOF))
+#define SCM_EQ(a, b)   ((a) == (b))
+#define SCM_NEQ(a, b)  ((a) != (b))
+#define SCM_NULLP(a)   (SCM_EQ((a),  SCM_NIL))
+#define SCM_NNULLP(a)  (SCM_NEQ((a), SCM_NIL))
+#define SCM_FALSEP(a)  (SCM_EQ((a),  SCM_FALSE))
+#define SCM_NFALSEP(a) (SCM_NEQ((a), SCM_FALSE))
+#define SCM_EOFP(a)    (SCM_EQ((a),  SCM_EOF))
 
 #endif /* __SIGSCMTYPE_H */

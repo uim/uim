@@ -58,58 +58,20 @@ typedef void (*C_FUNC) (void);
 /* type declaration */    
 #include "sigschemetype.h"
 
-/* for debugging */
-struct trace_frame {
-    struct trace_frame *prev;
-    ScmObj obj;
-};
-
 /*=======================================
    Variable Declarations
 =======================================*/
-/* datas.c */
-extern ScmObj *stack_start_pointer;
-
-/* error.c*/
-extern ScmObj current_error_port;
-
-/* eval.c */
-extern struct trace_frame *trace_root;
-
-/* io.c */
-extern ScmObj current_input_port;
-extern ScmObj current_output_port;
-extern ScmObj SigScm_features;
 
 /*=======================================
    Macro Declarations
 =======================================*/
-#define DEBUG_PARSER  0
-#define DEBUG_GC      0
-#define USE_EUCJP     1
-#define USE_SRFI1     0
-#define USE_SRFI8     1
-#define SCM_USE_NONSTD_FEATURES 1
-#define SCM_COMPAT_SIOD         1
-#define SCM_COMPAT_SIOD_BUGS    1
-#define SCM_STRICT_R5RS         0
-
-#define CHECK_1_ARG(arg) \
-    (SCM_NULLP(arg))
-
-#define CHECK_2_ARGS(arg) \
-    (SCM_NULLP(arg) || SCM_NULLP(SCM_CDR(arg)))
-
-#define CHECK_3_ARGS(arg) \
-    (SCM_NULLP(arg) || SCM_NULLP(SCM_CDR(arg)) || SCM_NULLP(SCM_CDR(SCM_CDR(arg))))
-
-#define CHECK_4_ARGS(arg) \
-    (SCM_NULLP(arg) || SCM_NULLP(SCM_CDR(arg)) || SCM_NULLP(SCM_CDR(SCM_CDR(arg))) \
-     || SCM_NULLP(SCM_CDR(SCM_CDR(SCM_CDR(arg)))))
-
-#define CHECK_5_ARGS(arg) \
-    (SCM_NULLP(arg) || SCM_NULLP(SCM_CDR(arg)) || SCM_NULLP(SCM_CDR(SCM_CDR(arg))) \
-     || SCM_NULLP(SCM_CDR(SCM_CDR(SCM_CDR(arg)))) || SCM_NULLP(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(arg))))))
+#define SCM_USE_EUCJP           1  /* use EUC-JP as internal encoding */
+#define SCM_USE_SRFI1           0  /* use SRFI-1 procedures writtein in C */
+#define SCM_USE_SRFI8           1  /* use SRFI-8 receive procedure writtein in C */
+#define SCM_USE_NONSTD_FEATURES 1  /* use Non-R5RS standard features */
+#define SCM_COMPAT_SIOD         1  /* use SIOD compatible features */
+#define SCM_COMPAT_SIOD_BUGS    1  /* enable SIOD buggy features */
+#define SCM_STRICT_R5RS         0  /* use strict R5RS check */
 
 int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
 #define sigassert(cond) \
@@ -385,7 +347,7 @@ void SigScm_Display(ScmObj obj);
 void SigScm_WriteToPort(ScmObj port, ScmObj obj);
 void SigScm_DisplayToPort(ScmObj port, ScmObj obj);
 
-#if USE_SRFI1
+#if SCM_USE_SRFI1
 ScmObj ScmOp_SRFI1_xcons(ScmObj a, ScmObj b);
 ScmObj ScmOp_SRFI1_cons_star(ScmObj obj, ScmObj env);
 ScmObj ScmOp_SRFI1_make_list(ScmObj obj, ScmObj env);
@@ -394,7 +356,7 @@ ScmObj ScmOp_SRFI1_list_copy(ScmObj list);
 ScmObj ScmOp_SRFI1_circular_list(ScmObj list, ScmObj env);
 ScmObj ScmOp_SRFI1_iota(ScmObj args, ScmObj env);
 #endif
-#if USE_SRFI8
+#if SCM_USE_SRFI8
 ScmObj ScmOp_SRFI_8_receive(ScmObj args, ScmObj *envp, int *tail_flag);
 #endif
 

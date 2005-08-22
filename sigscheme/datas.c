@@ -89,6 +89,7 @@
   Local Include
 =======================================*/
 #include "sigscheme.h"
+#include "sigschemeinternal.h"
 
 /*=======================================
   File Local Struct Declarations
@@ -310,7 +311,7 @@ static void gc_mark_and_sweep(void)
     gc_sweep();
 
     /* we cannot sweep the object, so let's add new heap */
-    if (SCM_NULLP(scm_freelist)) {
+    if (NULLP(scm_freelist)) {
 #if DEBUG_GC
       printf("Cannot sweeped the object, allocating new heap.\n");
 #endif
@@ -324,7 +325,7 @@ static void mark_obj(ScmObj obj)
 
 mark_loop:
     /* no need to mark SCM_NIL */
-    if (SCM_NULLP(obj))
+    if (NULLP(obj))
         return;
 
     /* avoid cyclic marking */
@@ -337,8 +338,8 @@ mark_loop:
     /* mark recursively */
     switch (SCM_TYPE(obj)) {
     case ScmCons:
-        mark_obj(SCM_CAR(obj));
-        obj = SCM_CDR(obj);
+        mark_obj(CAR(obj));
+        obj = CDR(obj);
         goto mark_loop;
         break;
 
@@ -840,8 +841,8 @@ ScmObj Scm_Intern(const char *name)
 
     /* Search Symbol by name */
     list = sym_list;
-    for (; !SCM_NULLP(list); list = SCM_CDR(list)) {
-        sym = SCM_CAR(list);
+    for (; !NULLP(list); list = CDR(list)) {
+        sym = CAR(list);
 
         if (strcmp(SCM_SYMBOL_NAME(sym), name) == 0) {
             return sym;
@@ -862,7 +863,7 @@ ScmObj Scm_Intern(const char *name)
 
 int Scm_GetInt(ScmObj num)
 {
-    if (SCM_FALSEP(ScmOp_numberp(num)))
+    if (FALSEP(ScmOp_numberp(num)))
         SigScm_ErrorObj("Scm_GetInt : number required but got ", num);
 
     return SCM_INT_VALUE(num);
@@ -888,7 +889,7 @@ char* Scm_GetString(ScmObj str)
 #if SCM_USE_NONSTD_FEATURES
 void* Scm_GetCPointer(ScmObj c_ptr)
 {
-    if (!SCM_C_POINTERP(c_ptr))
+    if (!C_POINTERP(c_ptr))
         SigScm_ErrorObj("Scm_GetCPointer : c_ptr required but got ", c_ptr);
 
     return SCM_C_POINTER_DATA(c_ptr);
@@ -896,7 +897,7 @@ void* Scm_GetCPointer(ScmObj c_ptr)
 
 C_FUNC Scm_GetCFuncPointer(ScmObj c_funcptr)
 {
-    if (!SCM_C_FUNCPOINTERP(c_funcptr))
+    if (!C_FUNCPOINTERP(c_funcptr))
         SigScm_ErrorObj("Scm_GetCFuncPointer : c_funcptr required but got ", c_funcptr);
 
     return SCM_C_FUNCPOINTER_FUNC(c_funcptr);

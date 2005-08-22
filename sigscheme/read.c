@@ -43,6 +43,7 @@
   Local Include
 =======================================*/
 #include "sigscheme.h"
+#include "sigschemeinternal.h"
 
 /*=======================================
   File Local Struct Declarations
@@ -100,7 +101,7 @@ static ScmObj read_quote(ScmObj port, ScmObj quoter);
 ===========================================================================*/
 ScmObj SigScm_Read(ScmObj port)
 {
-    if (!SCM_PORTP(port))
+    if (!PORTP(port))
         SigScm_ErrorObj("SigScm_Read : port required but got ", port);
 
     return read_sexpression(port);
@@ -108,7 +109,7 @@ ScmObj SigScm_Read(ScmObj port)
 
 ScmObj SigScm_Read_Char(ScmObj port)
 {
-    if (!SCM_PORTP(port))
+    if (!PORTP(port))
         SigScm_ErrorObj("SigScm_Read_Char : port required but got ", port);
 
     return read_char(port);
@@ -259,7 +260,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
 #endif
             if (isspace(c2) || c2 == '(' || c2 == '"' || c2 == ';') {
                 cdr = read_sexpression(port);
-                if (SCM_NULLP(list_tail))
+                if (NULLP(list_tail))
                     SigScm_Error(".(dot) at the start of the list.\n");
 
                 c = skip_comment_and_space(port);
@@ -289,14 +290,14 @@ static ScmObj read_list(ScmObj port, int closeParen)
         }
 
         /* Append item to the list_tail. */
-        if (SCM_NULLP(list_tail)) {
+        if (NULLP(list_tail)) {
             /* create new list */
             list_head = Scm_NewCons(item, SCM_NIL);
             list_tail = list_head;
         } else {
             /* update list_tail */
             SCM_SETCDR(list_tail, Scm_NewCons(item, SCM_NIL));
-            list_tail = SCM_CDR(list_tail);
+            list_tail = CDR(list_tail);
         }
     }
 }

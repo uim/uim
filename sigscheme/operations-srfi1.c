@@ -57,13 +57,13 @@
 =======================================*/
 static ScmObj list_gettailcons(ScmObj head)
 {
-    if (SCM_NULLP(head))
+    if (NULLP(head))
         return SCM_NIL;
-    if (SCM_NULLP(SCM_CDR(head)))
+    if (NULLP(CDR(head)))
         return head;
 
-    for (; !SCM_NULLP(head); head = SCM_CDR(head)) {
-        if (SCM_NULLP(SCM_CDR(head)))
+    for (; !NULLP(head); head = CDR(head)) {
+        if (NULLP(CDR(head)))
             return head;
     }
 
@@ -87,13 +87,13 @@ ScmObj ScmOp_SRFI1_cons_star(ScmObj obj, ScmObj env)
     ScmObj tail_cons = SCM_NIL;
     ScmObj prev_tail = obj;
 
-    if (SCM_NULLP(SCM_CDR(obj)))
-        return SCM_CAR(obj);
+    if (NULLP(CDR(obj)))
+        return CAR(obj);
 
-    for (tail_cons = SCM_CDR(obj); !SCM_NULLP(tail_cons); tail_cons = SCM_CDR(tail_cons)) {
+    for (tail_cons = CDR(obj); !NULLP(tail_cons); tail_cons = CDR(tail_cons)) {
         /* check tail cons cell */
-        if (SCM_NULLP(SCM_CDR(tail_cons))) {
-            SCM_SETCDR(prev_tail, SCM_CAR(tail_cons));
+        if (NULLP(CDR(tail_cons))) {
+            SCM_SETCDR(prev_tail, CAR(tail_cons));
         }
 
         prev_tail = tail_cons;
@@ -112,19 +112,19 @@ ScmObj ScmOp_SRFI1_make_list(ScmObj args, ScmObj env)
     /* sanity check */
     if CHECK_1_ARG(args)
         SigScm_Error("make-llist : require at least 1 arg\n");
-    if (SCM_FALSEP(ScmOp_numberp(SCM_CAR(args))))
-        SigScm_ErrorObj("make-list : number required but got ", SCM_CAR(args));
+    if (FALSEP(ScmOp_numberp(CAR(args))))
+        SigScm_ErrorObj("make-list : number required but got ", CAR(args));
 
     /* get n */
-    n = SCM_INT_VALUE(SCM_CAR(args));
+    n = SCM_INT_VALUE(CAR(args));
 
     /* get filler if available */
-    if (!SCM_NULLP(SCM_CDR(args)))
-        fill = SCM_CAR(SCM_CDR(args));
+    if (!NULLP(CDR(args)))
+        fill = CAR(CDR(args));
 
     /* then create list */
     for (i = n; 0 < i; i--) {
-        if (!SCM_NULLP(fill))
+        if (!NULLP(fill))
             head = Scm_NewCons(fill, head);
         else
             head = Scm_NewCons(Scm_NewInt(i), head);
@@ -135,7 +135,7 @@ ScmObj ScmOp_SRFI1_make_list(ScmObj args, ScmObj env)
 
 ScmObj ScmOp_SRFI1_list_tabulate(ScmObj args, ScmObj env)
 {
-    ScmObj scm_n = SCM_CAR(args);
+    ScmObj scm_n = CAR(args);
     ScmObj proc  = SCM_NIL;
     ScmObj head  = SCM_NIL;
     ScmObj num   = SCM_NIL;
@@ -143,21 +143,21 @@ ScmObj ScmOp_SRFI1_list_tabulate(ScmObj args, ScmObj env)
     int i = 0;
 
     /* sanity check */
-    if (SCM_FALSEP(ScmOp_numberp(scm_n)))
+    if (FALSEP(ScmOp_numberp(scm_n)))
         SigScm_ErrorObj("list-tabulate : number required but got ", scm_n);
 
     /* get n */
     n = SCM_INT_VALUE(scm_n);
 
     /* get init_proc if available */
-    if (!SCM_NULLP(SCM_CDR(args)))
-        proc = SCM_CAR(SCM_CDR(args));
+    if (!NULLP(CDR(args)))
+        proc = CAR(CDR(args));
 
     /* then create list */
     for (i = n; 0 < i; i--) {
         num = Scm_NewInt(i - 1);
 
-        if (!SCM_NULLP(proc)) {
+        if (!NULLP(proc)) {
             /* evaluate (proc num) */
             num = ScmOp_eval(Scm_NewCons(proc,
                                          Scm_NewCons(num, SCM_NIL)),
@@ -176,19 +176,19 @@ ScmObj ScmOp_SRFI1_list_copy(ScmObj list)
     ScmObj tail = SCM_NIL;
     ScmObj obj  = SCM_NIL;
 
-    if (SCM_FALSEP(ScmOp_listp(list)))
+    if (FALSEP(ScmOp_listp(list)))
         SigScm_ErrorObj("list-copy : list required but got ", list);
 
-    for (; !SCM_NULLP(list); list = SCM_CDR(list)) {
-        obj = SCM_CAR(list);
+    for (; !NULLP(list); list = CDR(list)) {
+        obj = CAR(list);
 
         /* further copy */
-        if (SCM_CONSP(obj))
+        if (CONSP(obj))
             obj = ScmOp_SRFI1_list_copy(obj);
 
         /* then create new cons */
         obj = Scm_NewCons(obj, SCM_NIL);
-        if (!SCM_NULLP(tail)) {
+        if (!NULLP(tail)) {
             SCM_SETCDR(tail, obj);
             tail = obj;
         } else {
@@ -204,7 +204,7 @@ ScmObj ScmOp_SRFI1_circular_list(ScmObj list, ScmObj env)
 {
     ScmObj tailcons = SCM_NIL;
 
-    if (SCM_FALSEP(ScmOp_listp(list)))
+    if (FALSEP(ScmOp_listp(list)))
         SigScm_ErrorObj("circular-list : list required but got ", list);
 
     tailcons = list_gettailcons(list);
@@ -229,28 +229,28 @@ ScmObj ScmOp_SRFI1_iota(ScmObj args, ScmObj env)
         SigScm_Error("iota : required at least 1 arg\n");
 
     /* get params */
-    scm_count = SCM_CAR(args);
+    scm_count = CAR(args);
 
-    if (!SCM_NULLP(SCM_CDR(args)))
-        scm_start = SCM_CAR(SCM_CDR(args));
+    if (!NULLP(CDR(args)))
+        scm_start = CAR(CDR(args));
 
-    if (!SCM_NULLP(scm_start) && !SCM_NULLP(SCM_CDR(SCM_CDR(args))))
-        scm_step = SCM_CAR(SCM_CDR(SCM_CDR(args)));
+    if (!NULLP(scm_start) && !NULLP(CDR(CDR(args))))
+        scm_step = CAR(CDR(CDR(args)));
 
     /* param type check */
-    if (SCM_FALSEP(ScmOp_numberp(scm_count)))
+    if (FALSEP(ScmOp_numberp(scm_count)))
         SigScm_ErrorObj("iota : number required but got ", scm_count);
 
-    if (!SCM_NULLP(scm_start) && SCM_FALSEP(ScmOp_numberp(scm_start)))
+    if (!NULLP(scm_start) && FALSEP(ScmOp_numberp(scm_start)))
         SigScm_ErrorObj("iota : number required but got ", scm_start);
 
-    if (!SCM_NULLP(scm_step)  && SCM_FALSEP(ScmOp_numberp(scm_step)))
+    if (!NULLP(scm_step)  && FALSEP(ScmOp_numberp(scm_step)))
         SigScm_ErrorObj("iota : number required but got ", scm_step);
 
     /* now create list */
     count = SCM_INT_VALUE(scm_count);
-    start = SCM_NULLP(scm_start) ? 0 : SCM_INT_VALUE(scm_start);
-    step  = SCM_NULLP(scm_step)  ? 1 : SCM_INT_VALUE(scm_step);
+    start = NULLP(scm_start) ? 0 : SCM_INT_VALUE(scm_start);
+    step  = NULLP(scm_step)  ? 1 : SCM_INT_VALUE(scm_step);
     for (i = count - 1; 0 <= i; i--) {
         head = Scm_NewCons(Scm_NewInt(start + i*step), head);
     }

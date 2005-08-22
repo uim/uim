@@ -39,6 +39,7 @@
   Local Include
 =======================================*/
 #include "sigscheme.h"
+#include "sigschemeinternal.h"
 
 /*=======================================
   File Local Struct Declarations
@@ -299,19 +300,19 @@ void SigScm_Initialize(void)
     current_error_port  = Scm_NewFilePort(stderr, "stderr", PORT_OUTPUT);
     SigScm_gc_protect(current_error_port);
 
-#if USE_SRFI1
+#if SCM_USE_SRFI1
     /*=======================================================================
       SRFI-1 Procedures
     =======================================================================*/
-    Scm_RegisterFunc2("xcons"                , ScmOp_SRFI_1_xcons);
-    Scm_RegisterFuncL("cons*"                , ScmOp_SRFI_1_cons_star);
-    Scm_RegisterFuncL("make-list"            , ScmOp_SRFI_1_make_list);
-    Scm_RegisterFuncL("list-tabulate"        , ScmOp_SRFI_1_list_tabulate);
-    Scm_RegisterFunc1("list-copy"            , ScmOp_SRFI_1_list_copy);
-    Scm_RegisterFuncL("circular-list"        , ScmOp_SRFI_1_circular_list);
-    Scm_RegisterFuncL("iota"                 , ScmOp_SRFI_1_iota);
+    Scm_RegisterFunc2("xcons"                , ScmOp_SRFI1_xcons);
+    Scm_RegisterFuncL("cons*"                , ScmOp_SRFI1_cons_star);
+    Scm_RegisterFuncL("make-list"            , ScmOp_SRFI1_make_list);
+    Scm_RegisterFuncL("list-tabulate"        , ScmOp_SRFI1_list_tabulate);
+    Scm_RegisterFunc1("list-copy"            , ScmOp_SRFI1_list_copy);
+    Scm_RegisterFuncL("circular-list"        , ScmOp_SRFI1_circular_list);
+    Scm_RegisterFuncL("iota"                 , ScmOp_SRFI1_iota);
 #endif
-#if USE_SRFI8
+#if SCM_USE_SRFI8
     /*=======================================================================
       SRFI-8 Procedure
     =======================================================================*/
