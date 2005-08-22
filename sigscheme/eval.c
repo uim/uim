@@ -998,8 +998,8 @@ ScmObj ScmExp_if(ScmObj exp, ScmObj *envp, int *tail_flag)
     /* eval predicates */
     pred = ScmOp_eval(SCM_CAR(exp), env);
 
-    /* if pred is SCM_TRUE */
-    if (!EQ(pred, SCM_FALSE)) {
+    /* if pred is true value */
+    if (SCM_NFALSEP(pred)) {
         /* doesn't evaluate now for tail-recursion. */
         return SCM_CAR(SCM_CDR(exp));
     }
@@ -1034,7 +1034,7 @@ ScmObj ScmExp_set(ScmObj arg, ScmObj *envp, int *tail_flag)
          * not found in the environment
          * if symbol is not bounded, error occurs
          */
-        if (EQ(ScmOp_symbol_boundp(sym), SCM_FALSE))
+        if (SCM_FALSEP(ScmOp_symbol_boundp(sym)))
             SigScm_ErrorObj("set! : unbound variable ", sym);
 
         SCM_SETSYMBOL_VCELL(sym, ret);
@@ -1089,7 +1089,7 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp, int *tail_flag)
         test = ScmOp_eval(test, env);
 
         /* check the result */
-        if (!SCM_EQ(test, SCM_FALSE)) {
+        if (SCM_NFALSEP(test)) {
             /*
              * if the selected <clause> contains only the <test> and no <expression>s,
              * then the value of the <test> is returned as the result.
@@ -1105,7 +1105,7 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp, int *tail_flag)
              */
             if (SCM_EQ(Scm_Intern("=>"), SCM_CAR(exps))) {
                 proc = ScmOp_eval(SCM_CAR(SCM_CDR(exps)), env);
-                if (EQ(ScmOp_procedurep(proc), SCM_FALSE))
+                if (SCM_FALSEP(ScmOp_procedurep(proc)))
                     SigScm_ErrorObj("cond : the value of exp after => must be the procedure but got ", proc);
 
                 return ScmOp_apply(Scm_NewCons(proc,
@@ -1138,12 +1138,12 @@ ScmObj ScmExp_case(ScmObj arg, ScmObj *envp, int *tail_flag)
             SigScm_Error("case : syntax error\n");
 
         /* check "else" symbol */
-        if (SCM_NULLP(SCM_CDR(arg)) && !SCM_CONSP(datums) && EQ(SCM_SYMBOL_VCELL(datums), SCM_TRUE))
+        if (SCM_NULLP(SCM_CDR(arg)) && !SCM_CONSP(datums) && SCM_NFALSEP(SCM_SYMBOL_VCELL(datums)))
             return ScmExp_begin(exps, &env, tail_flag);
 
         /* evaluate datums and compare to key by eqv? */
         for (; !SCM_NULLP(datums); datums = SCM_CDR(datums)) {
-            if (EQ(ScmOp_eqvp(SCM_CAR(datums), key), SCM_TRUE)) {
+            if (SCM_NFALSEP(ScmOp_eqvp(SCM_CAR(datums), key))) {
                 return ScmExp_begin(exps, &env, tail_flag);
             }
         }
@@ -1160,7 +1160,7 @@ ScmObj ScmExp_and(ScmObj arg, ScmObj *envp, int *tail_flag)
     /* sanity check */
     if (SCM_NULLP(arg))
         return SCM_TRUE;
-    if (EQ(ScmOp_listp(arg), SCM_FALSE))
+    if (SCM_FALSEP(ScmOp_listp(arg)))
         SigScm_ErrorObj("and : list required but got ", arg);
 
     /* check recursively */
@@ -1177,7 +1177,7 @@ ScmObj ScmExp_and(ScmObj arg, ScmObj *envp, int *tail_flag)
 
         /* evaluate obj */
         obj = ScmOp_eval(obj, env);
-        if (EQ(obj, SCM_FALSE)) {
+        if (SCM_FALSEP(obj)) {
             /* set tail_flag */
             (*tail_flag) = 0;
 
@@ -1196,7 +1196,7 @@ ScmObj ScmExp_or(ScmObj arg, ScmObj *envp, int *tail_flag)
     /* sanity check */
     if (SCM_NULLP(arg))
         return SCM_FALSE;
-    if (EQ(ScmOp_listp(arg), SCM_FALSE))
+    if (SCM_FALSEP(ScmOp_listp(arg)))
         SigScm_ErrorObj("or : list required but got ", arg);
 
     /* check recursively */
@@ -1212,7 +1212,7 @@ ScmObj ScmExp_or(ScmObj arg, ScmObj *envp, int *tail_flag)
         }
 
         obj = ScmOp_eval(obj, env);
-        if (!EQ(obj, SCM_FALSE)) {
+        if (SCM_NFALSEP(obj)) {
             /* set tail_flag */
             (*tail_flag) = 0;
 
@@ -1445,7 +1445,7 @@ ScmObj ScmExp_begin(ScmObj arg, ScmObj *envp, int *tail_flag)
     /* sanity check */
     if (SCM_NULLP(arg))
         return SCM_UNDEF;
-    if (EQ(ScmOp_listp(arg), SCM_FALSE))
+    if (SCM_FALSEP(ScmOp_listp(arg)))
         SigScm_ErrorObj("begin : list required but got ", arg);
 
     /* eval recursively */
@@ -1528,7 +1528,7 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp, int *tail_flag)
     commands = SCM_CDR(SCM_CDR(arg));
 
     /* now excution phase! */
-    while (SCM_EQ(ScmOp_eval(test, env), SCM_FALSE)) {
+    while (SCM_FALSEP(ScmOp_eval(test, env))) {
         /* execute commands */
         ScmOp_eval(ScmExp_begin(commands, &env, tail_flag), env);
 

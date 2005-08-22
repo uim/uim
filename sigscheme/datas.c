@@ -862,7 +862,7 @@ ScmObj Scm_Intern(const char *name)
 
 int Scm_GetInt(ScmObj num)
 {
-    if (EQ(ScmOp_numberp(num), SCM_FALSE))
+    if (SCM_FALSEP(ScmOp_numberp(num)))
         SigScm_ErrorObj("Scm_GetInt : number required but got ", num);
 
     return SCM_INT_VALUE(num);

@@ -550,7 +550,7 @@ ScmObj ScmOp_require(ScmObj filename)
     /* construct loaded_str */
     loaded_str = create_loaded_str(filename);
 
-    if (EQ(ScmOp_member(loaded_str, SCM_SYMBOL_VCELL(SigScm_features)), SCM_FALSE)) {
+    if (SCM_FALSEP(ScmOp_member(loaded_str, SCM_SYMBOL_VCELL(SigScm_features)))) {
         /* not provided, so load it! */
         ScmOp_load(filename);
 
@@ -593,10 +593,7 @@ ScmObj ScmOp_providedp(ScmObj feature)
     if (!SCM_STRINGP(feature))
         SigScm_ErrorObj("provide : string required but got ", feature);
 
-    if (EQ(ScmOp_member(feature, SigScm_features), SCM_TRUE))
-        return SCM_TRUE;
-
-    return SCM_FALSE;
+    return (SCM_FALSEP(ScmOp_member(feature, SigScm_features))) ? SCM_FALSE : SCM_TRUE;
 }
 
 ScmObj ScmOp_file_existsp(ScmObj filepath)
@@ -604,10 +601,7 @@ ScmObj ScmOp_file_existsp(ScmObj filepath)
     if (!SCM_STRINGP(filepath))
         SigScm_ErrorObj("file-exists? : string requred but got ", filepath);
 
-    if (file_existsp(SCM_STRING_STR(filepath)))
-        return SCM_TRUE;
-
-    return SCM_FALSE;
+    return (file_existsp(SCM_STRING_STR(filepath))) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_delete_file(ScmObj filepath)

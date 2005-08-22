@@ -393,6 +393,7 @@ extern ScmObj SigScm_unbound, SigScm_undef;
 #define SCM_NEQ(a, b) (NEQ((a), (b)))
 #define SCM_NULLP(a)  (EQ((a), SCM_NIL))
 #define SCM_FALSEP(a) (EQ((a), SCM_FALSE))
+#define SCM_NFALSEP(a) (!EQ((a), SCM_FALSE))
 #define SCM_EOFP(a)   (EQ((a), SCM_EOF))
 
 #endif /* __SIGSCMTYPE_H */

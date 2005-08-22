@@ -112,7 +112,7 @@ ScmObj ScmOp_SRFI1_make_list(ScmObj args, ScmObj env)
     /* sanity check */
     if CHECK_1_ARG(args)
         SigScm_Error("make-llist : require at least 1 arg\n");
-    if (EQ(ScmOp_numberp(SCM_CAR(args)), SCM_FALSE))
+    if (SCM_FALSEP(ScmOp_numberp(SCM_CAR(args))))
         SigScm_ErrorObj("make-list : number required but got ", SCM_CAR(args));
 
     /* get n */
@@ -143,7 +143,7 @@ ScmObj ScmOp_SRFI1_list_tabulate(ScmObj args, ScmObj env)
     int i = 0;
 
     /* sanity check */
-    if (EQ(ScmOp_numberp(scm_n), SCM_FALSE))
+    if (SCM_FALSEP(ScmOp_numberp(scm_n)))
         SigScm_ErrorObj("list-tabulate : number required but got ", scm_n);
 
     /* get n */
@@ -176,7 +176,7 @@ ScmObj ScmOp_SRFI1_list_copy(ScmObj list)
     ScmObj tail = SCM_NIL;
     ScmObj obj  = SCM_NIL;
 
-    if (EQ(ScmOp_listp(list), SCM_FALSE))
+    if (SCM_FALSEP(ScmOp_listp(list)))
         SigScm_ErrorObj("list-copy : list required but got ", list);
 
     for (; !SCM_NULLP(list); list = SCM_CDR(list)) {
@@ -204,7 +204,7 @@ ScmObj ScmOp_SRFI1_circular_list(ScmObj list, ScmObj env)
 {
     ScmObj tailcons = SCM_NIL;
 
-    if (EQ(ScmOp_listp(list), SCM_FALSE))
+    if (SCM_FALSEP(ScmOp_listp(list)))
         SigScm_ErrorObj("circular-list : list required but got ", list);
 
     tailcons = list_gettailcons(list);
@@ -238,13 +238,13 @@ ScmObj ScmOp_SRFI1_iota(ScmObj args, ScmObj env)
         scm_step = SCM_CAR(SCM_CDR(SCM_CDR(args)));
 
     /* param type check */
-    if (EQ(ScmOp_numberp(scm_count), SCM_FALSE))
+    if (SCM_FALSEP(ScmOp_numberp(scm_count)))
         SigScm_ErrorObj("iota : number required but got ", scm_count);
 
-    if (!SCM_NULLP(scm_start) && EQ(ScmOp_numberp(scm_start), SCM_FALSE))
+    if (!SCM_NULLP(scm_start) && SCM_FALSEP(ScmOp_numberp(scm_start)))
         SigScm_ErrorObj("iota : number required but got ", scm_start);
 
-    if (!SCM_NULLP(scm_step)  && EQ(ScmOp_numberp(scm_step), SCM_FALSE))
+    if (!SCM_NULLP(scm_step)  && SCM_FALSEP(ScmOp_numberp(scm_step)))
         SigScm_ErrorObj("iota : number required but got ", scm_step);
 
     /* now create list */
