@@ -373,7 +373,7 @@ typedef ScmObj (*ScmFuncType) (void);
 
 extern ScmObj SigScm_nil, SigScm_true, SigScm_false, SigScm_eof;
 extern ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote, SigScm_unquote_splicing;
-extern ScmObj SigScm_unbound, SigScm_unspecified, SigScm_undef;
+extern ScmObj SigScm_unbound, SigScm_undef;
 
 #define SCM_NIL              SigScm_nil
 #define SCM_TRUE             SigScm_true
@@ -384,7 +384,6 @@ extern ScmObj SigScm_unbound, SigScm_unspecified, SigScm_undef;
 #define SCM_UNQUOTE          SigScm_unquote
 #define SCM_UNQUOTE_SPLICING SigScm_unquote_splicing
 #define SCM_UNBOUND          SigScm_unbound
-#define SCM_UNSPECIFIED      SigScm_unspecified
 #define SCM_UNDEF            SigScm_undef
 
 #define EQ(a, b) ((a) == (b))
@@ -393,7 +392,6 @@ extern ScmObj SigScm_unbound, SigScm_unspecified, SigScm_undef;
 #define SCM_EQ(a, b)  (EQ((a), (b)))
 #define SCM_NEQ(a, b) (NEQ((a), (b)))
 #define SCM_NULLP(a)  (EQ((a), SCM_NIL))
-#define SCM_TRUEP(a)  (EQ((a), SCM_TRUE))
 #define SCM_FALSEP(a) (EQ((a), SCM_FALSE))
 #define SCM_EOFP(a)   (EQ((a), SCM_EOF))
 

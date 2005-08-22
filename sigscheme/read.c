@@ -180,44 +180,39 @@ static ScmObj read_sexpression(ScmObj port)
         case '`':
             return read_quote(port, SCM_QUASIQUOTE);
         case ',':
-            {
-                SCM_PORT_GETC(port, c1);
-                if (c1 == EOF) {
-                    SigScm_Error("EOF in unquote\n");
-                } else if (c1 == '@') {
-                    return read_quote(port, SCM_UNQUOTE_SPLICING);
-                } else {
-                    SCM_PORT_UNGETC(port, c1);
-                    return read_quote(port, SCM_UNQUOTE);
-                }
-            }
-        case '#':
-            {
-                SCM_PORT_GETC(port, c1);
-                switch (c1) {
-                case 't': case 'T':
-                    return SCM_TRUE;
-                case 'f': case 'F':
-                    return SCM_FALSE;
-                case '(':
-                    return ScmOp_list_to_vector(read_list(port, ')'));
-                case '\\':
-                    return read_char(port);
-                case EOF:
-                    SigScm_Error("end in #\n");
-                default:
-                    SigScm_Error("Unsupported # : %c\n", c1);
-                }
+            SCM_PORT_GETC(port, c1);
+            if (c1 == EOF) {
+                SigScm_Error("EOF in unquote\n");
+            } else if (c1 == '@') {
+                return read_quote(port, SCM_UNQUOTE_SPLICING);
+            } else {
+                SCM_PORT_UNGETC(port, c1);
+                return read_quote(port, SCM_UNQUOTE);
             }
             break;
-
+        case '#':
+            SCM_PORT_GETC(port, c1);
+            switch (c1) {
+            case 't': case 'T':
+                return SCM_TRUE;
+            case 'f': case 'F':
+                return SCM_FALSE;
+            case '(':
+                return ScmOp_list2vector(read_list(port, ')'));
+            case '\\':
+                return read_char(port);
+            case EOF:
+                SigScm_Error("end in #\n");
+            default:
+                SigScm_Error("Unsupported # : %c\n", c1);
+            }
+            break;
         /* Error sequence */
         case ')':
             SigScm_Error("invalid close parenthesis\n");
             break;
         case EOF:
             return SCM_EOF;
-
         default:
             SCM_PORT_UNGETC(port, c);
             return read_symbol(port);
@@ -350,37 +345,32 @@ static ScmObj read_string(ScmObj port)
         case EOF:
             SigScm_Error("EOF in the string\n");
             break;
-        case '\"':
-            {
-                stringbuf[stringlen] = '\0';
-                return Scm_NewStringCopying(stringbuf);
-            }
-        case '\\':
-            {
-                /*
-                 * (R5RS) 6.3.5 String
-                 * A double quote can be written inside a string only by
-                 * escaping it with a backslash (\).
-                 */
-                SCM_PORT_GETC(port, c);
-                switch (c) {
-                case '\"': stringbuf[stringlen] = c;    break;
-                case 'n':  stringbuf[stringlen] = '\n'; break;
-                case 'r':  stringbuf[stringlen] = '\r'; break;
-                case 'f':  stringbuf[stringlen] = '\f'; break;
-                case 't':  stringbuf[stringlen] = '\t'; break;
-                default:
-                    stringbuf[stringlen] = '\\';
-                    stringbuf[++stringlen] = c;
-                    break;
-                }
-                stringlen++;
 
-#if DEBUG_PARSER
-                printf("read_string following \\ : c = %c\n", c);
-#endif
+        case '\"':
+            stringbuf[stringlen] = '\0';
+            return Scm_NewStringCopying(stringbuf);
+
+        case '\\':
+            /*
+             * (R5RS) 6.3.5 String
+             * A double quote can be written inside a string only by
+             * escaping it with a backslash (\).
+             */
+            SCM_PORT_GETC(port, c);
+            switch (c) {
+            case '\"': stringbuf[stringlen] = c;    break;
+            case 'n':  stringbuf[stringlen] = '\n'; break;
+            case 'r':  stringbuf[stringlen] = '\r'; break;
+            case 'f':  stringbuf[stringlen] = '\f'; break;
+            case 't':  stringbuf[stringlen] = '\t'; break;
+            default:
+                stringbuf[stringlen] = '\\';
+                stringbuf[++stringlen] = c;
+                break;
             }
+            stringlen++;
             break;
+
         default:
             stringbuf[stringlen] = c;
             stringlen++;
@@ -474,18 +464,15 @@ static char *read_word(ScmObj port)
 #endif
 
         switch (c) {
-        case EOF: /*
-                   * don't became an error for handling c-eval.
-                   * Scm_eval_c_string("some-symbol");
-                   */
-        case ' ':
-        case '(':  case ')':  case ';':
+        case EOF: /* don't became an error for handling c-eval, like Scm_eval_c_string("some-symbol"); */
+        case ' ':  case '(':  case ')':  case ';':
         case '\n': case '\t': case '\"': case '\'':
             SCM_PORT_UNGETC(port, c);
             stringbuf[stringlen] = '\0';
             dst = (char *)malloc(strlen(stringbuf) + 1);
             strcpy(dst, stringbuf);
             return dst;
+
         default:
             stringbuf[stringlen] = (char)c;
             stringlen++;
@@ -521,6 +508,7 @@ static char *read_char_sequence(ScmObj port)
                 stringlen++;
                 break;
             }
+            /* doesn't break */
         case '\n': case '\t':
             SCM_PORT_UNGETC(port, c);
             stringbuf[stringlen] = '\0';

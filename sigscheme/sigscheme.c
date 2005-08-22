@@ -59,10 +59,10 @@ static void Scm_RegisterFunc(const char *name, enum ScmFuncArgType argnum, ScmFu
 
 ScmObj SigScm_nil, SigScm_true, SigScm_false, SigScm_eof;
 ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote, SigScm_unquote_splicing;
-ScmObj SigScm_unbound, SigScm_unspecified, SigScm_undef;
+ScmObj SigScm_unbound, SigScm_undef;
 ScmObjInternal SigScm_nil_impl, SigScm_true_impl, SigScm_false_impl, SigScm_eof_impl;
 ScmObjInternal SigScm_quote_impl, SigScm_quasiquote_impl, SigScm_unquote_impl, SigScm_unquote_splicing_impl;
-ScmObjInternal SigScm_unbound_impl, SigScm_unspecified_impl, SigScm_undef_impl;
+ScmObjInternal SigScm_unbound_impl, SigScm_undef_impl;
 
 extern ScmObj continuation_thrown_obj, letrec_env;
 
@@ -86,8 +86,7 @@ void SigScm_Initialize(void)
     SCM_NEW_ETC(SigScm_false,            SigScm_false_impl,            3);
     SCM_NEW_ETC(SigScm_eof,              SigScm_eof_impl,              4);
     SCM_NEW_ETC(SigScm_unbound,          SigScm_unbound_impl,          9);
-    SCM_NEW_ETC(SigScm_unspecified,      SigScm_unspecified_impl,      10);
-    SCM_NEW_ETC(SigScm_undef,            SigScm_undef_impl,            11);
+    SCM_NEW_ETC(SigScm_undef,            SigScm_undef_impl,            10);
     /*=======================================================================
       Externed Variable Initialization
     =======================================================================*/
@@ -166,8 +165,8 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc2("quotient"             , ScmOp_quotient);
     Scm_RegisterFunc2("modulo"               , ScmOp_modulo);
     Scm_RegisterFunc2("remainder"            , ScmOp_remainder);
-    Scm_RegisterFuncL("number->string"       , ScmOp_number_to_string);
-    Scm_RegisterFunc1("string->number"       , ScmOp_string_to_number);
+    Scm_RegisterFuncL("number->string"       , ScmOp_number2string);
+    Scm_RegisterFunc1("string->number"       , ScmOp_string2number);
     Scm_RegisterFunc1("not"                  , ScmOp_not);
     Scm_RegisterFunc1("boolean?"             , ScmOp_booleanp);
     Scm_RegisterFunc1("pair?"                , ScmOp_pairp);
@@ -219,8 +218,8 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc2("assv"                 , ScmOp_assv);
     Scm_RegisterFunc2("assoc"                , ScmOp_assoc);
     Scm_RegisterFunc1("symbol?"              , ScmOp_symbolp);
-    Scm_RegisterFunc1("symbol->string"       , ScmOp_symbol_to_string);
-    Scm_RegisterFunc1("string->symbol"       , ScmOp_string_to_symbol);
+    Scm_RegisterFunc1("symbol->string"       , ScmOp_symbol2string);
+    Scm_RegisterFunc1("string->symbol"       , ScmOp_string2symbol);
     Scm_RegisterFunc1("char?"                , ScmOp_charp);
     Scm_RegisterFunc2("char=?"               , ScmOp_char_equal);
     Scm_RegisterFunc1("char-alphabetic?"     , ScmOp_char_alphabeticp);
@@ -239,8 +238,8 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc2("string=?"             , ScmOp_string_equal);
     Scm_RegisterFunc3("substring"            , ScmOp_string_substring);
     Scm_RegisterFuncL("string-append"        , ScmOp_string_append);
-    Scm_RegisterFunc1("string->list"         , ScmOp_string_to_list);
-    Scm_RegisterFunc1("list->string"         , ScmOp_list_to_string);
+    Scm_RegisterFunc1("string->list"         , ScmOp_string2list);
+    Scm_RegisterFunc1("list->string"         , ScmOp_list2string);
     Scm_RegisterFunc1("string-copy"          , ScmOp_string_copy);
     Scm_RegisterFunc2("string-fill!"         , ScmOp_string_fill);
     Scm_RegisterFunc1("vector?"              , ScmOp_vectorp);
@@ -249,8 +248,8 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc1("vector-length"        , ScmOp_vector_length);
     Scm_RegisterFunc2("vector-ref"           , ScmOp_vector_ref);
     Scm_RegisterFunc3("vector-set!"          , ScmOp_vector_set);
-    Scm_RegisterFunc1("vector->list"         , ScmOp_vector_to_list);
-    Scm_RegisterFunc1("list->vector"         , ScmOp_list_to_vector);
+    Scm_RegisterFunc1("vector->list"         , ScmOp_vector2list);
+    Scm_RegisterFunc1("list->vector"         , ScmOp_list2vector);
     Scm_RegisterFunc2("vector-fill!"         , ScmOp_vector_fill);
     Scm_RegisterFunc1("procedure?"           , ScmOp_procedurep);
     Scm_RegisterFuncL("map"                  , ScmOp_map);

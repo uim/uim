@@ -150,7 +150,6 @@ static void print_ScmObj_internal(FILE *f, ScmObj obj, enum OutputType otype)
     case ScmFreeCell:
         SigScm_Error("You cannot print ScmFreeCell, may be GC bug.\n");
         break;
-
     case ScmCPointer:
         fprintf(f, "#<c_pointer %p>", SCM_C_POINTER_DATA(obj));
         break;
@@ -328,8 +327,6 @@ static void print_etc(FILE *f, ScmObj obj, enum  OutputType otype)
         fprintf(f, "#<unquote_splicing>");
     else if (EQ(obj, SCM_UNBOUND))
         fprintf(f, "#<unbound>");
-    else if (EQ(obj, SCM_UNSPECIFIED))
-        fprintf(f, "#<unspecified>");
     else if (EQ(obj, SCM_UNDEF))
         fprintf(f, "#<undef>");
 }

@@ -485,12 +485,13 @@ eval_loop:
             obj = SCM_CAR(SCM_CDR(obj));
             continuation_thrown_obj = ScmOp_eval(obj, env);
             longjmp(SCM_CONTINUATION_JMPENV(tmp), 1);
+            break;
         }
-        break;
         case ScmEtc:
-            SigScm_ErrorObj("invalid application: ", obj);
+        {
+            SigScm_ErrorObj("eval : invalid application: ", obj);
+        }
         default:
-            /* What? */
             SigScm_ErrorObj("eval : What type of function? ", arg);
         }
     }
@@ -1117,7 +1118,7 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp, int *tail_flag)
         }
     }
 
-    return SCM_UNSPECIFIED;
+    return SCM_UNDEF;
 }
 
 ScmObj ScmExp_case(ScmObj arg, ScmObj *envp, int *tail_flag)
@@ -1148,7 +1149,7 @@ ScmObj ScmExp_case(ScmObj arg, ScmObj *envp, int *tail_flag)
         }
     }
 
-    return SCM_UNSPECIFIED;
+    return SCM_UNDEF;
 }
 
 ScmObj ScmExp_and(ScmObj arg, ScmObj *envp, int *tail_flag)

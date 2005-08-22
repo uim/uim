@@ -88,10 +88,12 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
         /* both numbers, are numerically equal */
         if ((SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2))) return SCM_TRUE;
         break;
+
     case ScmChar:
         /* chars and are the same character according to the char=? */
         if (EQ(ScmOp_char_equal(obj1, obj2), SCM_TRUE)) return SCM_TRUE;
         break;
+
     case ScmSymbol:  /* equivalent symbols must already be true on eq? */
     case ScmCons:
     case ScmVector:
@@ -101,9 +103,9 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
     case ScmPort:
     case ScmContinuation:
     case ScmValuePacket:
-        break;
     case ScmEtc:
         break;
+
     case ScmFreeCell:
         SigScm_Error("eqv? : cannnot compare freecell, gc broken?\n");
         break;
@@ -187,17 +189,29 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
 
     case ScmSymbol:  /* equivalent symbols must already be true on eq? */
         break;
+
+    /* ScmFunc, ScmClosure, ScmPort, ScmContinuation comparison is not unspecified in R5RS */
     case ScmFunc:
+        SigScm_ErrorObj("equal? : cannot compare function : ", Scm_NewCons(obj1, obj2));
+        break;
     case ScmClosure:
+        SigScm_ErrorObj("equal? : cannot compare function : ", Scm_NewCons(obj1, obj2));
+        break;
     case ScmPort:
+        SigScm_ErrorObj("equal? : cannot compare function : ", Scm_NewCons(obj1, obj2));
+        break;
     case ScmContinuation:
-        return SCM_UNSPECIFIED;
+        SigScm_ErrorObj("equal? : cannot compare function : ", Scm_NewCons(obj1, obj2));
+        break;
+
     case ScmValuePacket:
         if (EQ(SCM_VALUEPACKET_VALUES(obj1), SCM_VALUEPACKET_VALUES(obj2)))
             return SCM_TRUE;
         break;
+
     case ScmEtc:
         break;
+
     case ScmFreeCell:
         SigScm_Error("equal? : cannnot compare freecell, gc broken?\n");
         break;
@@ -206,6 +220,7 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
         if (SCM_C_POINTER_DATA(obj1) == SCM_C_POINTER_DATA(obj2))
             return SCM_TRUE;
         break;
+
     case ScmCFuncPointer:
         if (SCM_C_FUNCPOINTER_FUNC(obj1) == SCM_C_FUNCPOINTER_FUNC(obj2))
             return SCM_TRUE;
@@ -651,7 +666,7 @@ ScmObj ScmOp_remainder(ScmObj scm_n1, ScmObj scm_n2)
 /*==============================================================================
   R5RS : 6.2 Numbers : 6.2.6 Numerical input and output
 ==============================================================================*/
-ScmObj ScmOp_number_to_string (ScmObj args, ScmObj env)
+ScmObj ScmOp_number2string (ScmObj args, ScmObj env)
 {
   char buf[sizeof(int)*CHAR_BIT + 1];
   char *p;
@@ -708,7 +723,7 @@ ScmObj ScmOp_number_to_string (ScmObj args, ScmObj env)
 }
 
 /* TODO : support radix */
-ScmObj ScmOp_string_to_number(ScmObj string)
+ScmObj ScmOp_string2number(ScmObj string)
 {
     char  *str = NULL;
     char  *p   = NULL;
@@ -807,7 +822,7 @@ ScmObj ScmOp_setcar(ScmObj pair, ScmObj car)
     else
         SigScm_ErrorObj("set-car! : pair required but got ", pair);
 
-    return SCM_UNSPECIFIED;
+    return SCM_TRUE;
 }
 
 ScmObj ScmOp_setcdr(ScmObj pair, ScmObj cdr)
@@ -817,7 +832,7 @@ ScmObj ScmOp_setcdr(ScmObj pair, ScmObj cdr)
     else
         SigScm_ErrorObj("set-cdr! : pair required but got ", pair);
 
-    return SCM_UNSPECIFIED;
+    return SCM_TRUE;
 }
 
 ScmObj ScmOp_caar(ScmObj pair)
@@ -1192,7 +1207,7 @@ ScmObj ScmOp_symbolp(ScmObj obj)
     return (SCM_SYMBOLP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj ScmOp_symbol_to_string(ScmObj obj)
+ScmObj ScmOp_symbol2string(ScmObj obj)
 {
     if (!SCM_SYMBOLP(obj))
         SigScm_ErrorObj("symbol->string: symbol required, but got ", obj);
@@ -1200,7 +1215,7 @@ ScmObj ScmOp_symbol_to_string(ScmObj obj)
     return Scm_NewStringCopying(SCM_SYMBOL_NAME(obj));
 }
 
-ScmObj ScmOp_string_to_symbol(ScmObj str)
+ScmObj ScmOp_string2symbol(ScmObj str)
 {
     if(!SCM_STRINGP(str))
         SigScm_ErrorObj("string->symbol: string required, but got ", str);
@@ -1391,7 +1406,7 @@ ScmObj ScmOp_make_string(ScmObj arg, ScmObj env)
 
 ScmObj ScmOp_string(ScmObj arg, ScmObj env)
 {
-    return ScmOp_list_to_string(arg);
+    return ScmOp_list2string(arg);
 }
 
 ScmObj ScmOp_string_length(ScmObj str)
@@ -1473,7 +1488,7 @@ ScmObj ScmOp_string_set(ScmObj str, ScmObj k, ScmObj ch)
 
     SCM_SETSTRING_STR(str, new_str);
 
-    return SCM_UNSPECIFIED;
+    return str;
 }
 
 ScmObj ScmOp_string_equal(ScmObj str1, ScmObj str2)
@@ -1559,7 +1574,7 @@ ScmObj ScmOp_string_append(ScmObj arg, ScmObj env)
     return Scm_NewString_With_StrLen(new_str, total_len);
 }
 
-ScmObj ScmOp_string_to_list(ScmObj string)
+ScmObj ScmOp_string2list(ScmObj string)
 {
     char *string_str = NULL;
     int   str_len    = 0;
@@ -1599,7 +1614,7 @@ ScmObj ScmOp_string_to_list(ScmObj string)
     return head;
 }
 
-ScmObj ScmOp_list_to_string(ScmObj list)
+ScmObj ScmOp_list2string(ScmObj list)
 {
     int total_size = 0;
     ScmObj chars   = SCM_NIL;
@@ -1671,7 +1686,7 @@ ScmObj ScmOp_string_fill(ScmObj string, ScmObj ch)
 
     SCM_SETSTRING_STR(string, new_str);
 
-    return SCM_UNSPECIFIED;
+    return string;
 }
 
 /*==============================================================================
@@ -1698,7 +1713,7 @@ ScmObj ScmOp_make_vector(ScmObj arg, ScmObj env )
     vec = (ScmObj*)malloc(sizeof(ScmObj) * c_k);
 
     /* fill vector */
-    fill = SCM_UNSPECIFIED;
+    fill = SCM_UNDEF;
     if (!SCM_NULLP(SCM_CDR(arg)) && !SCM_NULLP(SCM_CAR(SCM_CDR(arg))))
         fill = SCM_CAR(SCM_CDR(arg));
 
@@ -1752,10 +1767,10 @@ ScmObj ScmOp_vector_set(ScmObj vec, ScmObj scm_k, ScmObj obj)
 
     SCM_SETVECTOR_REF(vec, scm_k, obj);
 
-    return SCM_UNSPECIFIED;
+    return vec;
 }
 
-ScmObj ScmOp_vector_to_list(ScmObj vec)
+ScmObj ScmOp_vector2list(ScmObj vec)
 {
     ScmObj *v    = NULL;
     ScmObj  prev = NULL;
@@ -1787,7 +1802,7 @@ ScmObj ScmOp_vector_to_list(ScmObj vec)
     return head;
 }
 
-ScmObj ScmOp_list_to_vector(ScmObj list)
+ScmObj ScmOp_list2vector(ScmObj list)
 {
     ScmObj  scm_len = SCM_NIL;
     ScmObj *v       = NULL;
@@ -1822,7 +1837,7 @@ ScmObj ScmOp_vector_fill(ScmObj vec, ScmObj fill)
         SCM_VECTOR_VEC(vec)[i] = fill;
     }
 
-    return SCM_UNSPECIFIED;
+    return vec;
 }
 
 /*=======================================
@@ -1871,7 +1886,7 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
     }
 
     /* 1proc and many args case */
-    arg_vector = ScmOp_list_to_vector(SCM_CDR(map_arg));
+    arg_vector = ScmOp_list2vector(SCM_CDR(map_arg));
     vector_len = SCM_VECTOR_LEN(arg_vector);
     while (1) {
         /* create arg */
@@ -1908,7 +1923,7 @@ ScmObj ScmOp_for_each(ScmObj arg, ScmObj env)
 {
     ScmOp_map(arg, env);
 
-    return SCM_UNSPECIFIED;
+    return SCM_UNDEF;
 }
 
 ScmObj ScmOp_force(ScmObj arg, ScmObj env)

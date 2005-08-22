@@ -228,8 +228,8 @@ ScmObj ScmOp_abs(ScmObj num);
 ScmObj ScmOp_quotient(ScmObj n1, ScmObj n2);
 ScmObj ScmOp_modulo(ScmObj n1, ScmObj n2);
 ScmObj ScmOp_remainder(ScmObj n1, ScmObj n2);
-ScmObj ScmOp_number_to_string(ScmObj args, ScmObj env);
-ScmObj ScmOp_string_to_number(ScmObj string);
+ScmObj ScmOp_number2string(ScmObj args, ScmObj env);
+ScmObj ScmOp_string2number(ScmObj string);
 ScmObj ScmOp_not(ScmObj obj);
 ScmObj ScmOp_booleanp(ScmObj obj);
 ScmObj ScmOp_pairp(ScmObj obj);
@@ -281,8 +281,8 @@ ScmObj ScmOp_assq(ScmObj obj, ScmObj alist);
 ScmObj ScmOp_assv(ScmObj obj, ScmObj alist);
 ScmObj ScmOp_assoc(ScmObj obj, ScmObj alist);
 ScmObj ScmOp_symbolp(ScmObj obj);
-ScmObj ScmOp_symbol_to_string(ScmObj obj);
-ScmObj ScmOp_string_to_symbol(ScmObj str);
+ScmObj ScmOp_symbol2string(ScmObj obj);
+ScmObj ScmOp_string2symbol(ScmObj str);
 
 ScmObj ScmOp_charp(ScmObj obj);
 ScmObj ScmOp_char_equal(ScmObj ch1, ScmObj ch2);
@@ -305,8 +305,8 @@ ScmObj ScmOp_string_equal(ScmObj str1, ScmObj str2);
 /* TODO : many comparing functions around string is unimplemented */
 ScmObj ScmOp_string_substring(ScmObj str, ScmObj start, ScmObj end);
 ScmObj ScmOp_string_append(ScmObj arg, ScmObj env);
-ScmObj ScmOp_string_to_list(ScmObj string);
-ScmObj ScmOp_list_to_string(ScmObj list);
+ScmObj ScmOp_string2list(ScmObj string);
+ScmObj ScmOp_list2string(ScmObj list);
 ScmObj ScmOp_string_copy(ScmObj string);
 ScmObj ScmOp_string_fill(ScmObj string, ScmObj ch);
 
@@ -316,8 +316,8 @@ ScmObj ScmOp_vector(ScmObj obj, ScmObj env);
 ScmObj ScmOp_vector_length(ScmObj vector);
 ScmObj ScmOp_vector_ref(ScmObj vec, ScmObj k);
 ScmObj ScmOp_vector_set(ScmObj vec, ScmObj k, ScmObj obj);
-ScmObj ScmOp_vector_to_list(ScmObj vec);
-ScmObj ScmOp_list_to_vector(ScmObj list);
+ScmObj ScmOp_vector2list(ScmObj vec);
+ScmObj ScmOp_list2vector(ScmObj list);
 ScmObj ScmOp_vector_fill(ScmObj vec, ScmObj fill);
 ScmObj ScmOp_procedurep(ScmObj obj);
 ScmObj ScmOp_map(ScmObj arg, ScmObj env);
@@ -386,13 +386,13 @@ void SigScm_WriteToPort(ScmObj port, ScmObj obj);
 void SigScm_DisplayToPort(ScmObj port, ScmObj obj);
 
 #if USE_SRFI1
-ScmObj ScmOp_SRFI_1_xcons(ScmObj a, ScmObj b);
-ScmObj ScmOp_SRFI_1_cons_star(ScmObj obj, ScmObj env);
-ScmObj ScmOp_SRFI_1_make_list(ScmObj obj, ScmObj env);
-ScmObj ScmOp_SRFI_1_list_tabulate(ScmObj arg, ScmObj env);
-ScmObj ScmOp_SRFI_1_list_copy(ScmObj list);
-ScmObj ScmOp_SRFI_1_circular_list(ScmObj list, ScmObj env);
-ScmObj ScmOp_SRFI_1_iota(ScmObj args, ScmObj env);
+ScmObj ScmOp_SRFI1_xcons(ScmObj a, ScmObj b);
+ScmObj ScmOp_SRFI1_cons_star(ScmObj obj, ScmObj env);
+ScmObj ScmOp_SRFI1_make_list(ScmObj obj, ScmObj env);
+ScmObj ScmOp_SRFI1_list_tabulate(ScmObj arg, ScmObj env);
+ScmObj ScmOp_SRFI1_list_copy(ScmObj list);
+ScmObj ScmOp_SRFI1_circular_list(ScmObj list, ScmObj env);
+ScmObj ScmOp_SRFI1_iota(ScmObj args, ScmObj env);
 #endif
 #if USE_SRFI8
 ScmObj ScmOp_SRFI_8_receive(ScmObj args, ScmObj *envp, int *tail_flag);

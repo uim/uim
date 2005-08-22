@@ -74,7 +74,7 @@
 #ifndef posix_memalign
 /*
  * Cited from manpage of posix_memalign(3) of glibc:
- * 
+ *
  * CONFORMING TO
  *     The  function  valloc()  appeared in 3.0 BSD. It is documented as being
  *     obsolete in BSD 4.3, and as legacy in SUSv2. It  no  longer  occurs  in
@@ -252,7 +252,7 @@ static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, int HEAP_SIZE, ScmO
     /* allocate heap */
     heap = (ScmObj)malloc_aligned(sizeof(ScmObjInternal) * HEAP_SIZE);
     (*heaps)[num_heap - 1] = heap;
-    
+
     /* link in order */
     for (cell=heap; cell-heap < HEAP_SIZE; cell++) {
         SCM_SETFREECELL(cell);
@@ -308,7 +308,7 @@ static void gc_mark_and_sweep(void)
     gc_preprocess();
     gc_mark();
     gc_sweep();
-    
+
     /* we cannot sweep the object, so let's add new heap */
     if (SCM_NULLP(scm_freelist)) {
 #if DEBUG_GC
@@ -341,22 +341,27 @@ mark_loop:
         obj = SCM_CDR(obj);
         goto mark_loop;
         break;
+
     case ScmSymbol:
         mark_obj(SCM_SYMBOL_VCELL(obj));
         break;
+
     case ScmClosure:
         mark_obj(SCM_CLOSURE_EXP(obj));
         obj = SCM_CLOSURE_ENV(obj);
         goto mark_loop;
         break;
+
     case ScmValuePacket:
         obj = SCM_VALUEPACKET_VALUES(obj);
         goto mark_loop;
+
     case ScmVector:
         for (i = 0; i < SCM_VECTOR_LEN(obj); i++) {
             mark_obj(SCM_VECTOR_VEC(obj)[i]);
         }
         break;
+
     default:
         break;
     }
@@ -415,7 +420,7 @@ static void gc_mark_locations_n(ScmObj *start, int n)
 {
     int i = 0;
     ScmObj obj = SCM_NIL;
-    
+
     /* mark stack */
     for (i = 0; i < n; i++) {
         obj = start[i];
@@ -468,7 +473,7 @@ static void gc_mark(void)
     setjmp(save_regs_buf);
     gc_mark_locations((ScmObj*)save_regs_buf,
                       (ScmObj*)(((char*)save_regs_buf) + sizeof(save_regs_buf)));
-    
+
     gc_mark_protected_obj();
     gc_mark_locations(stack_start_pointer, &obj);
     gc_mark_symbol_hash();
@@ -485,40 +490,42 @@ static void sweep_obj(ScmObj obj)
     case ScmFreeCell:
     case ScmEtc:
         break;
+
     case ScmChar:
         if (SCM_CHAR_CH(obj)) free(SCM_CHAR_CH(obj));
         break;
+
     case ScmString:
         if (SCM_STRING_STR(obj)) free(SCM_STRING_STR(obj));
         break;
+
     case ScmVector:
         if (SCM_VECTOR_VEC(obj)) free(SCM_VECTOR_VEC(obj));
         break;
+
     case ScmSymbol:
         if (SCM_SYMBOL_NAME(obj)) free(SCM_SYMBOL_NAME(obj));
         break;
+
     case ScmPort:
-    {
+        /* handle each port type */
         switch (SCM_PORTINFO_PORTTYPE(obj)) {
         case PORT_FILE:
-            if (SCM_PORTINFO_FILENAME(obj))
-                free(SCM_PORTINFO_FILENAME(obj));
+            if (SCM_PORTINFO_FILENAME(obj)) free(SCM_PORTINFO_FILENAME(obj));
             break;
         case PORT_STRING:
-            if (SCM_PORTINFO_STR(obj))
-                free(SCM_PORTINFO_STR(obj));
-            break;
-        default:
+            if (SCM_PORTINFO_STR(obj)) free(SCM_PORTINFO_STR(obj));
             break;
         }
-        
-        if (SCM_PORT_PORTINFO(obj))
-            free(SCM_PORT_PORTINFO(obj));
+        /* free port info */
+        if (SCM_PORT_PORTINFO(obj)) free(SCM_PORT_PORTINFO(obj));
         break;
-    }
+
     case ScmContinuation:
+        /* free continuation info */
         if (SCM_CONTINUATION_CONTINFO(obj)) free(SCM_CONTINUATION_CONTINFO(obj));
         break;
+
     default:
         break;
     }
@@ -535,7 +542,7 @@ static void gc_sweep(void)
     /* iterate heaps */
     for (i = 0; i < scm_heap_num; i++) {
         corrected_obj_num = 0;
-        
+
         /* iterate in heap */
         for (j = 0; j < SCM_HEAP_SIZE; j++) {
             obj = &scm_heaps[i][j];
@@ -550,7 +557,7 @@ static void gc_sweep(void)
                 corrected_obj_num++;
             }
         }
-        
+
 #if DEBUG_GC
         printf("scm[%d] sweeped = %d\n", i, corrected_obj_num);
 #endif
@@ -693,7 +700,7 @@ ScmObj Scm_NewVector(ScmObj *vec, int len)
 {
     ScmObj obj = SCM_NIL;
     SCM_NEW_OBJ_INTERNAL(obj);
-    
+
     SCM_SETVECTOR(obj);
     SCM_SETVECTOR_VEC(obj, vec);
     SCM_SETVECTOR_LEN(obj, len);
@@ -717,7 +724,7 @@ ScmObj Scm_NewFilePort(FILE *file, const char *filename, enum ScmPortDirection p
     pinfo->info.file_port.line = 0;
     pinfo->ungottenchar = 0;
     SCM_SETPORT_PORTINFO(obj, pinfo);
-    
+
     return obj;
 }
 
@@ -736,7 +743,7 @@ ScmObj Scm_NewStringPort(const char *str)
     pinfo->info.str_port.str_current = pinfo->info.str_port.port_str;
     pinfo->ungottenchar = 0;
     SCM_SETPORT_PORTINFO(obj, pinfo);
-    
+
     return obj;
 }
 
@@ -804,7 +811,6 @@ static void initialize_symbol_hash(void)
     symbol_hash = (ScmObj*)malloc(sizeof(ScmObj) * NAMEHASH_SIZE);
     for (i = 0; i < NAMEHASH_SIZE; i++) {
         symbol_hash[i] = SCM_NIL;
-    
     }
 }
 

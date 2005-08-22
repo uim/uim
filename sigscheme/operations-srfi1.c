@@ -77,12 +77,12 @@ static ScmObj list_gettailcons(ScmObj head)
 /*==============================================================================
   SRFI1 : The procedures : Constructors
 ==============================================================================*/
-ScmObj ScmOp_SRFI_1_xcons(ScmObj a, ScmObj b)
+ScmObj ScmOp_SRFI1_xcons(ScmObj a, ScmObj b)
 {
     return Scm_NewCons(b, a);
 }
 
-ScmObj ScmOp_SRFI_1_cons_star(ScmObj obj, ScmObj env)
+ScmObj ScmOp_SRFI1_cons_star(ScmObj obj, ScmObj env)
 {
     ScmObj tail_cons = SCM_NIL;
     ScmObj prev_tail = obj;
@@ -102,7 +102,7 @@ ScmObj ScmOp_SRFI_1_cons_star(ScmObj obj, ScmObj env)
     return obj;
 }
 
-ScmObj ScmOp_SRFI_1_make_list(ScmObj args, ScmObj env)
+ScmObj ScmOp_SRFI1_make_list(ScmObj args, ScmObj env)
 {
     ScmObj fill  = SCM_NIL;
     ScmObj head  = SCM_NIL;
@@ -133,7 +133,7 @@ ScmObj ScmOp_SRFI_1_make_list(ScmObj args, ScmObj env)
     return head;
 }
 
-ScmObj ScmOp_SRFI_1_list_tabulate(ScmObj args, ScmObj env)
+ScmObj ScmOp_SRFI1_list_tabulate(ScmObj args, ScmObj env)
 {
     ScmObj scm_n = SCM_CAR(args);
     ScmObj proc  = SCM_NIL;
@@ -170,7 +170,7 @@ ScmObj ScmOp_SRFI_1_list_tabulate(ScmObj args, ScmObj env)
     return head;
 }
 
-ScmObj ScmOp_SRFI_1_list_copy(ScmObj list)
+ScmObj ScmOp_SRFI1_list_copy(ScmObj list)
 {
     ScmObj head = SCM_NIL;
     ScmObj tail = SCM_NIL;
@@ -184,7 +184,7 @@ ScmObj ScmOp_SRFI_1_list_copy(ScmObj list)
 
         /* further copy */
         if (SCM_CONSP(obj))
-            obj = ScmOp_SRFI_1_list_copy(obj);
+            obj = ScmOp_SRFI1_list_copy(obj);
 
         /* then create new cons */
         obj = Scm_NewCons(obj, SCM_NIL);
@@ -200,7 +200,7 @@ ScmObj ScmOp_SRFI_1_list_copy(ScmObj list)
     return head;
 }
 
-ScmObj ScmOp_SRFI_1_circular_list(ScmObj list, ScmObj env)
+ScmObj ScmOp_SRFI1_circular_list(ScmObj list, ScmObj env)
 {
     ScmObj tailcons = SCM_NIL;
 
@@ -213,7 +213,7 @@ ScmObj ScmOp_SRFI_1_circular_list(ScmObj list, ScmObj env)
     return list;
 }
 
-ScmObj ScmOp_SRFI_1_iota(ScmObj args, ScmObj env)
+ScmObj ScmOp_SRFI1_iota(ScmObj args, ScmObj env)
 {
     ScmObj scm_count = SCM_NIL;
     ScmObj scm_start = SCM_NIL;
