@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 816 of new repository
+;; This file is tested with revision 1274 of new repository
 
 (use test.unit)
 
@@ -269,6 +269,32 @@
    (assert-equal "2147483647" (uim '(digit->string 2147483647))))
 
   ("test iterate-lists"
+   ;; single list cases (fast path)
+   (assert-equal '(4 3 2 1 0)
+		 (uim '(iterate-lists (lambda (state elms)
+					(if (null? elms)
+					    (cons #t state)
+					    (cons #f (cons (car elms)
+							   state))))
+				      ()
+				      '((0 1 2 3 4)))))
+   (assert-equal '()
+		 (uim '(iterate-lists (lambda (state elms)
+					(if (null? elms)
+					    (cons #t state)
+					    (cons #f (cons (car elms)
+							   state))))
+				      ()
+				      '(()))))
+   (assert-equal 'empty
+		 (uim '(iterate-lists (lambda (state elms)
+					(if (null? elms)
+					    (cons #t state)
+					    (cons #f (cons (car elms)
+							   state))))
+				      'empty
+				      '(()))))
+   ;; multiple lists cases (normal path)
    (assert-equal '(("o" . "O") ("l" . "L") ("l" . "L") ("e" . "E") ("h" . "H"))
 		 (uim '(iterate-lists (lambda (state elms)
 					(if (null? elms)
@@ -277,7 +303,34 @@
 							   state))))
 				      ()
 				      '(("h" "e" "l" "l" "o")
-					("H" "E" "L" "L" "O" "!"))))))
+					("H" "E" "L" "L" "O" "!")))))
+   (assert-equal '(("o" "O" 4) ("l" "L" 3) ("l" "L" 2) ("e" "E" 1) ("h" "H" 0))
+		 (uim '(iterate-lists (lambda (state elms)
+					(if (null? elms)
+					    (cons #t state)
+					    (cons #f (cons elms state))))
+				      ()
+				      '(("h" "e" "l" "l" "o")
+					("H" "E" "L" "L" "O" "!")
+					(0 1 2 3 4)))))
+   (assert-equal ()
+		 (uim '(iterate-lists (lambda (state elms)
+					(if (null? elms)
+					    (cons #t state)
+					    (cons #f (cons elms state))))
+				      ()
+				      '(("h" "e" "l" "l" "o")
+					()
+					(0 1 2 3 4)))))
+   (assert-equal 'empty
+		 (uim '(iterate-lists (lambda (state elms)
+					(if (null? elms)
+					    (cons #t state)
+					    (cons #f (cons elms state))))
+				      'empty
+				      '(("h" "e" "l" "l" "o")
+					()
+					(0 1 2 3 4))))))
 
   ;; compare string sequence
   ("test str-seq-equal?"
