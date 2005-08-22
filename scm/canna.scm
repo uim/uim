@@ -249,6 +249,8 @@
   (canna-context-set-state! cc #f)
   (canna-context-set-index-list! cc ())
   (canna-context-set-transposing! cc #f)
+  (if (canna-context-candidate-window cc)
+        (im-deactivate-candidate-selector cc))
   (canna-context-set-candidate-window! cc #f)
   (canna-context-set-candidate-op-count! cc 0))
 
@@ -872,8 +874,14 @@
       (canna-commit-raw cc)))
 ;;;
 (define (canna-reset-handler cc)
-  (let ((cc-id (canna-context-cc-id cc)))
-    (canna-lib-reset-conversion cc-id)))
+  (if (canna-context-on cc)
+      (begin
+        (canna-flush cc)
+        (im-clear-preedit cc)
+        (im-update-preedit cc)
+        (if (canna-context-state cc)
+          (let ((cc-id (canna-context-cc-id cc)))
+            (canna-lib-reset-conversion cc-id))))))
 
 ;;;
 (define (canna-get-candidate-handler cc idx accel-enum-hint)

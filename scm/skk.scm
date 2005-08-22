@@ -1838,7 +1838,9 @@
 
 (define skk-reset-handler
   (lambda (sc)
-    (skk-flush sc)))
+    (skk-flush sc)
+    (im-clear-preedit sc)
+    (im-update-preedit sc)))
 
 (define skk-get-candidate-handler
   (lambda (sc idx accel-enum-hint)
