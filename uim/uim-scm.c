@@ -134,7 +134,7 @@ uim_scm_make_str(const char *str)
 char *
 uim_scm_c_symbol(uim_lisp symbol)
 {
-  return Scm_GetString(ScmOp_symbol_to_string((ScmObj)symbol));
+  return strdup((char*)SCM_SYMBOL_NAME((ScmObj)symbol));
 }
 
 uim_lisp
@@ -283,7 +283,7 @@ uim_scm_stringp(uim_lisp obj)
 uim_bool
 uim_scm_eq(uim_lisp a, uim_lisp b)
 {
-  if (EQ(ScmOp_eqp((ScmObj) a, (ScmObj) b), SigScm_true))
+  if (SCM_EQ(ScmOp_eqp((ScmObj) a, (ScmObj) b), SigScm_true))
     return UIM_TRUE;
 
   return UIM_FALSE;
@@ -292,7 +292,7 @@ uim_scm_eq(uim_lisp a, uim_lisp b)
 uim_bool
 uim_scm_string_equal(uim_lisp a, uim_lisp b)
 {
-  if(EQ(ScmOp_string_equal((ScmObj)a, (ScmObj)b), SigScm_true))
+  if(SCM_EQ(ScmOp_string_equal((ScmObj)a, (ScmObj)b), SigScm_true))
     return UIM_TRUE;
 
   return UIM_FALSE;

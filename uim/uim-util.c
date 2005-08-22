@@ -508,7 +508,7 @@ iterate_lists(uim_lisp mapper, uim_lisp seed, uim_lisp lists)
   uim_lisp elms, rest, rests, mapped, res, termp, pair, form;
   uim_bool single_listp;
 
-  single_listp = (uim_scm_c_int(uim_scm_length(lists)) == 1) ? UIM_TRUE : UIM_FALSE;
+  single_listp = uim_scm_nullp(uim_scm_cdr(lists));
   res = seed;
   if (single_listp) {
     rest = uim_scm_car(lists);
@@ -518,8 +518,12 @@ iterate_lists(uim_lisp mapper, uim_lisp seed, uim_lisp lists)
   do {
     if (single_listp) {
       /* fast path */
-      elms = uim_scm_list1(uim_scm_car(rest));
-      rest = uim_scm_cdr(rest);
+      if (uim_scm_nullp(rest)) {
+	elms = uim_scm_null_list();
+      } else {
+	elms = uim_scm_list1(uim_scm_car(rest));
+	rest = uim_scm_cdr(rest);
+      }
     } else {
       pair = shift_elems(rests);
       if (FALSEP(pair)) {

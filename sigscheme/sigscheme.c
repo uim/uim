@@ -88,6 +88,11 @@ void SigScm_Initialize(void)
     SCM_NEW_ETC(SigScm_eof,              SigScm_eof_impl,              4);
     SCM_NEW_ETC(SigScm_unbound,          SigScm_unbound_impl,          9);
     SCM_NEW_ETC(SigScm_undef,            SigScm_undef_impl,            10);
+
+#if SCM_COMPAT_SIOD_BUGS
+    SigScm_false = SigScm_nil;
+#endif
+
     /*=======================================================================
       Externed Variable Initialization
     =======================================================================*/

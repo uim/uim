@@ -72,6 +72,7 @@ typedef void (*C_FUNC) (void);
 #define SCM_COMPAT_SIOD         1  /* use SIOD compatible features */
 #define SCM_COMPAT_SIOD_BUGS    1  /* enable SIOD buggy features */
 #define SCM_STRICT_R5RS         0  /* use strict R5RS check */
+#define SCM_STRICT_ARGCHECK     0  /* enable strict argument check */
 
 int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
 #define sigassert(cond) \

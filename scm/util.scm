@@ -28,8 +28,8 @@
 ;;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ;;; SUCH DAMAGE.
 ;;;;
-(require "slib-mulapply.scm")
-(require "slib-srfi-1.scm")
+;(require "slib-mulapply.scm")
+;(require "slib-srfi-1.scm")
 
 ;; Current uim implementation treats char as integer
 
@@ -325,6 +325,64 @@
 ;;
 ;; SRFI procedures (don't expect 100% compatibility)
 ;;
+(define list-tabulate
+  (lambda (n init-proc)
+    (if (< n 0)
+	(error "bad length for list-tabulate")
+	(let self ((i (- n 1))
+		   (res ()))
+	  (if (< i 0)
+	      res
+	      (self (- i 1)
+		    (cons (init-proc i) res)))))))
+
+;; This procedure does not conform to the SRFI-1 specification. The
+;; argument 'fill' is required.
+(define make-list
+  (lambda (n fill)
+    (list-tabulate n
+		   (lambda (i)
+		     fill))))
+
+;; This procedure does not conform to the SRFI-1 specification. The
+;; optional argument 'step' is not supported.
+(define iota
+  (lambda args
+    (let ((count (car args))
+	  (start (if (not (null? (cdr args)))
+		     (cadr args)
+		     0)))
+      (list-tabulate (- count start)
+		     (lambda (i)
+		       (+ start i))))))
+
+;; TODO: write test
+(define last
+  (lambda (lst)
+    (car (last-pair lst))))
+
+;; only accepts 2 lists
+;; TODO: write test
+(define append! nconc)
+    
+(define concatenate
+  (lambda (lists)
+    (apply append lists)))
+
+(define concatenate!
+  (lambda (lists)
+    ;;(fold-right append! () lists)
+    (fold append! () (reverse lists))))
+
+(define zip
+  (lambda lists
+      (let ((runs-out? (apply proc-or (map null? lists))))
+	(if runs-out?
+	    ()
+	    (let* ((elms (map car lists))
+		   (rests (map cdr lists)))
+	      (cons elms (apply zip rests)))))))
+
 (define last-pair
   (lambda (lst)
     (if (pair? (cdr lst))
@@ -334,6 +392,137 @@
 (define append-map
   (lambda args
     (concatenate! (apply map args))))
+
+(define append-reverse
+  (lambda (rev-head tail)
+    (fold cons tail rev-head)))
+
+(define find
+  (lambda (f lst)
+    (cond
+     ((null? lst)
+      #f)
+     ((f (car lst))
+      (car lst))
+     (else
+      (find f (cdr lst))))))
+
+;; TODO: write test
+;; replaced with faster C version
+;;(define find-tail
+;;  (lambda (pred lst)
+;;    (cond
+;;     ((null? lst)
+;;      #f)
+;;     ((pred (car lst))
+;;      lst)
+;;     (else
+;;      (find-tail pred (cdr lst))))))
+
+(define any
+  (lambda args
+    (let* ((pred (car args))
+	   (lists (cdr args)))
+      (iterate-lists (lambda (state elms)
+		       (if (null? elms)
+			   '(#t . #f)
+			   (let ((res (apply pred elms)))
+			     (cons res res))))
+		     #f lists))))       
+
+(define every
+  (lambda args
+    (let* ((pred (car args))
+	   (lists (cdr args)))
+      (iterate-lists (lambda (state elms)
+		       (if (null? elms)
+			   '(#t . #t)
+			   (let ((res (apply pred elms)))
+			     (cons (not res) res))))
+		     #f lists))))	       
+
+(define fold
+  (lambda args
+    (let* ((kons (car args))
+	   (knil (cadr args))
+	   (lists (cddr args)))
+      (iterate-lists (lambda (state elms)
+		       (if (null? elms)
+			   (cons #t state)
+			   (cons #f (apply kons (append elms (list state))))))
+		     knil lists))))
+
+(define unfold
+  (lambda args
+    (let ((term? (nth 0 args))
+	  (kar (nth 1 args))
+	  (kdr (nth 2 args))
+	  (seed (nth 3 args))
+	  (tail-gen (if (= (length args)
+			   5)
+			(nth 4 args)
+			(lambda (x) ()))))
+      (if (term? seed)
+	  (tail-gen seed)
+	  (cons (kar seed)
+		(unfold term? kar kdr (kdr seed) tail-gen))))))
+
+(define filter
+  (lambda args
+    (let ((pred (car args))
+	  (lst (cadr args)))
+      (iterate-lists (lambda (state elms)
+		       (if (null? elms)
+			   (cons #t (reverse state))
+			   (let ((elm (car elms)))
+			     (cons #f (if (pred elm)
+					  (cons elm state)
+					  state)))))
+		     () (list lst)))))
+
+(define filter-map
+  (lambda args
+    (let ((f (car args))
+	  (lists (cdr args)))
+      (iterate-lists (lambda (state elms)
+		       (if (null? elms)
+			   (cons #t (reverse state))
+			   (let ((mapped (apply f elms)))
+			     (cons #f (if mapped
+					  (cons mapped state)
+					  state)))))
+		     () lists))))
+
+(define remove
+  (lambda (pred lst)
+    (filter (lambda (elm)
+	      (not (pred elm)))
+	    lst)))
+
+;; TODO: write test
+(define delete
+  (lambda args
+    (let ((x (car args))
+	  (lst (cadr args))
+	  (val=? (if (null? (cddr args))
+		     equal?
+		     (car (cddr args)))))
+      (filter (lambda (elm)
+		(not (val=? elm x)))
+	      lst))))
+
+(define alist-delete
+  (lambda args
+    (let ((key (car args))
+	  (alist (cadr args))
+	  (key=? (if (null? (cddr args))
+		     equal?
+		     (car (cddr args)))))
+    (remove (lambda (elm)
+	      (key=? (car elm)
+		     key))
+	    alist))))
+
 
 ;; SRFI-60 procedures
 ;; Siod's bit operation procedures take only two arguments

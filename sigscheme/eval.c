@@ -1255,8 +1255,14 @@ ScmObj ScmExp_let(ScmObj arg, ScmObj *envp, int *tail_flag)
     if (CONSP(bindings) || NULLP(bindings)) {
         for (; !NULLP(bindings); bindings = CDR(bindings)) {
             binding = CAR(bindings);
+
+#if SCM_STRICT_ARGCHECK
             if (NULLP(binding) || NULLP(CDR(binding)))
                 SigScm_ErrorObj("let : invalid binding form : ", binding);
+#else
+            if (NULLP(CDR(binding)))
+                SET_CDR(binding, Scm_NewCons(SCM_NIL, SCM_NIL));
+#endif
 
             vars = Scm_NewCons(CAR(binding), vars);
             vals = Scm_NewCons(ScmOp_eval(CAR(CDR(binding)), env), vals);
@@ -1328,8 +1334,14 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp, int *tail_flag)
     if (CONSP(bindings)) {
         for (; !NULLP(bindings); bindings = CDR(bindings)) {
             binding = CAR(bindings);
+
+#if SCM_STRICT_ARGCHECK
             if (NULLP(binding) || NULLP(CDR(binding)))
                 SigScm_ErrorObj("let* : invalid binding form : ", binding);
+#else
+            if (NULLP(CDR(binding)))
+                SET_CDR(binding, Scm_NewCons(SCM_NIL, SCM_NIL));
+#endif
 
             vars = Scm_NewCons(CAR(binding), SCM_NIL);
             vals = Scm_NewCons(ScmOp_eval(CAR(CDR(binding)), env), SCM_NIL);
@@ -1388,8 +1400,14 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp, int *tail_flag)
     if (CONSP(bindings) || NULLP(bindings)) {
         for (; !NULLP(bindings); bindings = CDR(bindings)) {
             binding = CAR(bindings);
+
+#if SCM_STRICT_ARGCHECK
             if (NULLP(binding) || NULLP(CDR(binding)))
                 SigScm_ErrorObj("letrec : invalid binding form : ", binding);
+#else
+            if (NULLP(CDR(binding)))
+                SET_CDR(binding, Scm_NewCons(SCM_NIL, SCM_NIL));
+#endif
 
             var = CAR(binding);
             val = CAR(CDR(binding));
