@@ -1,6 +1,27 @@
 (load "test/unittest.scm")
 
-(assert-equal? "= test" #t (= 1 1))
+;; TODO: add minus number comparisons
+(assert-true  "= #1" (= 1 1))
+(assert-false "= #2" (= 1 2))
+(assert-true  "= #3" (= 1 1 1))
+(assert-false "= #4" (= 1 2 1))
+(assert-false "= #5" (= 1 1 2))
+
+;; TODO: add minus number comparisons
+(assert-true  "> #1"  (> 1 0))
+(assert-false "> #2"  (> 1 1))
+(assert-false "> #3"  (> 1 2))
+(assert-false "> #4"  (> 1 0 0))
+(assert-true  "> #5"  (> 1 0 -1))
+(assert-true  "> #6"  (> 1 0 -1))
+(assert-false "> #7"  (> 1 0 1))
+(assert-false "> #8"  (> 1 1 0))
+(assert-false "> #9"  (> 1 1 1))
+(assert-false "> #10" (> 1 2 1))
+(assert-false "> #11" (> 1 2 0))
+
+;; TODO: add tests for <, >=, <=
+
 (assert-equal? "+ test1" 0  (+))
 (assert-equal? "+ test2" 3  (+ 3))
 (assert-equal? "+ test3" 3  (+ 1 2))

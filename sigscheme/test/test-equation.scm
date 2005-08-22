@@ -1,5 +1,8 @@
 (load "test/unittest.scm")
 
+(define closure1 (lambda (x) x))
+(define closure2 (lambda (x) x))
+
 ;; check eqv?
 (assert "eqv? #1" (eqv? #t #t))
 (assert "eqv? #2" (eqv? #f #f))
@@ -30,7 +33,16 @@
 (assert "eqv? #7" (not (eqv? '() '(())
 			          )))
 
+(assert-true  "eqv? #8 procedures" (eqv? + +))
+(assert-false "eqv? #8 procedures" (eqv? + -))
+(assert-false "eqv? #8 procedures" (eqv? + closure1))
+(assert-true  "eqv? #8 procedures" (eqv? closure1 closure1))
+(assert-false "eqv? #8 procedures" (eqv? closure1 closure2))
+
+;; TODO: add tests for port and continuation
+
 ;; check eq?
+;; FIXME: rewrite assert-equal? with assert
 (assert-equal? "eq? check empty list" '() '())
 
 (define pair1 (cons 'a 'b))
@@ -43,6 +55,14 @@
 
 (assert-equal? "eq? check func" + +)
 
+(assert-true  "eq? #5 procedures" (eq? + +))
+(assert-false "eq? #5 procedures" (eq? + -))
+(assert-false "eq? #5 procedures" (eq? + closure1))
+(assert-true  "eq? #5 procedures" (eq? closure1 closure1))
+(assert-false "eq? #5 procedures" (eq? closure1 closure2))
+
+;; TODO: add tests for port and continuation
+
 ;; check equal?
 (assert "basic equal? test1" (equal? 'a 'a))
 (assert "basic equal? test2" (equal? '(a) '(a)))
@@ -52,5 +72,13 @@
 (assert "basic equal? test5" (equal? 2 2))
 (assert "basic equal? test6" (equal? (make-vector 5 'a)
 				     (make-vector 5 'a)))
+
+(assert-true  "equal? #3 procedures" (equal? + +))
+(assert-false "equal? #3 procedures" (equal? + -))
+(assert-false "equal? #3 procedures" (equal? + closure1))
+(assert-true  "equal? #3 procedures" (equal? closure1 closure1))
+(assert-false "equal? #3 procedures" (equal? closure1 closure2))
+
+;; TODO: add tests for port and continuation
 
 (total-report)

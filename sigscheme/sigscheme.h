@@ -70,7 +70,7 @@ typedef void (*C_FUNC) (void);
 #define SCM_USE_SRFI8           1  /* use SRFI-8 receive procedure writtein in C */
 #define SCM_USE_NONSTD_FEATURES 1  /* use Non-R5RS standard features */
 #define SCM_COMPAT_SIOD         1  /* use SIOD compatible features */
-#define SCM_COMPAT_SIOD_BUGS    1  /* enable SIOD buggy features */
+#define SCM_COMPAT_SIOD_BUGS    1  /* emulate the buggy behaviors of SIOD */
 #define SCM_STRICT_R5RS         0  /* use strict R5RS check */
 #define SCM_STRICT_ARGCHECK     0  /* enable strict argument check */
 

@@ -29,6 +29,12 @@
 	  (report-error msg)
 	  #f))))
 
+(define assert-true assert)
+
+(define assert-false
+  (lambda (msg exp)
+    (assert msg (not exp))))
+
 (define assert-eq?
   (lambda (msg a b)
     (if (not (assert msg (eq? a b)))
