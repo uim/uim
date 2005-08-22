@@ -222,17 +222,17 @@ struct ScmObjInternal_ {
     } obj;
 };
 
-#define SCM_GETTYPE(a)       ((a)->type)
+#define SCM_TYPE(a)       ((a)->type)
 #define SCM_SETTYPE(a, objtype) ((a)->type = (objtype))
 #define SCM_MARK(a) ((a)->gcmark)
 
-#define SCM_INTP(a)  (SCM_GETTYPE(a) == ScmInt)
+#define SCM_INTP(a)  (SCM_TYPE(a) == ScmInt)
 #define SCM_INT(a)   (sigassert(SCM_INTP(a)), (a))
 #define SCM_INT_VALUE(a) (SCM_INT(a)->obj.int_value.value)
 #define SCM_SETINT(a)    (SCM_SETTYPE((a), ScmInt))
 #define SCM_SETINT_VALUE(a, val) (SCM_INT_VALUE(a) = (val))
 
-#define SCM_CONSP(a) (SCM_GETTYPE(a) == ScmCons)
+#define SCM_CONSP(a) (SCM_TYPE(a) == ScmCons)
 #define SCM_CONS(a)  (sigassert(SCM_CONSP(a)), (a))
 #define SCM_CAR(a)   (SCM_CONS(a)->obj.cons.car)
 #define SCM_CDR(a)   (SCM_CONS(a)->obj.cons.cdr)
@@ -244,7 +244,7 @@ struct ScmObjInternal_ {
 #define SCM_SETCAR(a,car)   (SCM_CAR(a) = car)
 #define SCM_SETCDR(a,cdr)   (SCM_CDR(a) = cdr)
 
-#define SCM_FREECELLP(a)     (SCM_GETTYPE(a) == ScmFreeCell)
+#define SCM_FREECELLP(a)     (SCM_TYPE(a) == ScmFreeCell)
 #define SCM_FREECELL(a)      (sigassert(SCM_FREECELLP(a)), (a))
 #define SCM_FREECELL_CAR(a)  (SCM_FREECELL(a)->obj.cons.car)
 #define SCM_FREECELL_CDR(a)  (SCM_FREECELL(a)->obj.cons.cdr)
@@ -252,7 +252,7 @@ struct ScmObjInternal_ {
 #define SCM_SETFREECELL_CAR(a,car) (SCM_FREECELL_CAR(a) = car)
 #define SCM_SETFREECELL_CDR(a,cdr) (SCM_FREECELL_CDR(a) = cdr)
 
-#define SCM_SYMBOLP(a)      (SCM_GETTYPE(a) == ScmSymbol)
+#define SCM_SYMBOLP(a)      (SCM_TYPE(a) == ScmSymbol)
 #define SCM_SYMBOL(a)       (sigassert(SCM_SYMBOLP(a)), (a))
 #define SCM_SYMBOL_NAME(a)  (SCM_SYMBOL(a)->obj.symbol.sym_name)
 #define SCM_SYMBOL_VCELL(a) (SCM_SYMBOL(a)->obj.symbol.v_cell)
@@ -260,13 +260,13 @@ struct ScmObjInternal_ {
 #define SCM_SETSYMBOL_NAME(a, name)   (SCM_SYMBOL_NAME(a) = (name))
 #define SCM_SETSYMBOL_VCELL(a, vcell) (SCM_SYMBOL_VCELL(a) = (vcell))
 
-#define SCM_CHARP(a) (SCM_GETTYPE(a) == ScmChar)
+#define SCM_CHARP(a) (SCM_TYPE(a) == ScmChar)
 #define SCM_CHAR(a)  (sigassert(SCM_CHARP(a)), (a))
 #define SCM_CHAR_CH(a) (SCM_CHAR(a)->obj.ch.ch)
 #define SCM_SETCHAR(a) (SCM_SETTYPE((a), ScmChar))
 #define SCM_SETCHAR_CH(a, chr) (SCM_CHAR_CH(a) = (chr))
 
-#define SCM_STRINGP(a) (SCM_GETTYPE(a) == ScmString)
+#define SCM_STRINGP(a) (SCM_TYPE(a) == ScmString)
 #define SCM_STRING(a)  (sigassert(SCM_STRINGP(a)), (a))
 #define SCM_STRING_STR(a) (SCM_STRING(a)->obj.string.str)
 #define SCM_STRING_LEN(a) (SCM_STRING(a)->obj.string.len)
@@ -275,7 +275,7 @@ struct ScmObjInternal_ {
 #define SCM_SETSTRING_LEN(a, len) (SCM_STRING_LEN(a) = (len))
 
 typedef ScmObj (*ScmFuncType) (void);
-#define SCM_FUNCP(a) (SCM_GETTYPE(a) == ScmFunc)
+#define SCM_FUNCP(a) (SCM_TYPE(a) == ScmFunc)
 #define SCM_FUNC(a) (sigassert(SCM_FUNCP(a)), (a))
 #define SCM_FUNC_NUMARG(a) (SCM_FUNC(a)->obj.func.num_arg)
 #define SCM_FUNC_FUNC(a)   (SCM_FUNC(a)->obj.func.subrs.subr0.func)
@@ -293,7 +293,7 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_FUNC_EXEC_SUBRR(a, arg1, arg2, arg3)             ((*(a)->obj.func.subrs.subrr.func) ((arg1), (arg2), (arg3)))
 #define SCM_FUNC_EXEC_SUBR2N(a, arg1, arg2)                  ((*(a)->obj.func.subrs.subr2.func) ((arg1), (arg2)))
 
-#define SCM_CLOSUREP(a) (SCM_GETTYPE(a) == ScmClosure)
+#define SCM_CLOSUREP(a) (SCM_TYPE(a) == ScmClosure)
 #define SCM_CLOSURE(a)  (sigassert(SCM_CLOSUREP(a)), (a))
 #define SCM_CLOSURE_EXP(a) (SCM_CLOSURE(a)->obj.closure.exp)
 #define SCM_CLOSURE_ENV(a) (SCM_CLOSURE(a)->obj.closure.env)
@@ -301,7 +301,7 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_SETCLOSURE_EXP(a, exp) (SCM_CLOSURE_EXP(a) = exp)
 #define SCM_SETCLOSURE_ENV(a, env) (SCM_CLOSURE_ENV(a) = env)
 
-#define SCM_VECTORP(a) (SCM_GETTYPE(a) == ScmVector)
+#define SCM_VECTORP(a) (SCM_TYPE(a) == ScmVector)
 #define SCM_VECTOR(a)  (sigassert(SCM_VECTORP(a)), (a))
 #define SCM_VECTOR_VEC(a) (SCM_VECTOR(a)->obj.vector.vec)
 #define SCM_VECTOR_LEN(a) (SCM_VECTOR(a)->obj.vector.len)
@@ -314,7 +314,7 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_SETVECTOR_CREF(a, idx, b) (SCM_VECTOR_CREF((a), (idx)) = (b))
 #define SCM_SETVECTOR_REF(a, idx, b)  (SCM_VECTOR_REF((a), (idx)) = (b))
 
-#define SCM_PORTP(a) (SCM_GETTYPE(a) == ScmPort)
+#define SCM_PORTP(a) (SCM_TYPE(a) == ScmPort)
 #define SCM_PORT(a)  (sigassert(SCM_PORTP(a)), (a))
 #define SCM_PORT_PORTDIRECTION(a) (SCM_PORT(a)->obj.port.port_direction)
 #define SCM_PORT_PORTINFO(a) (SCM_PORT(a)->obj.port.port_info)
@@ -329,14 +329,14 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_PORTINFO_STR_CURRENT(a) (SCM_PORT_PORTINFO(a)->info.str_port.str_current)
 #define SCM_PORTINFO_UNGOTTENCHAR(a) (SCM_PORT_PORTINFO(a)->ungottenchar)
 
-#define SCM_CONTINUATIONP(a) (SCM_GETTYPE(a) == ScmContinuation)
+#define SCM_CONTINUATIONP(a) (SCM_TYPE(a) == ScmContinuation)
 #define SCM_CONTINUATION(a)  (sigassert(SCM_CONTINUATIONP(a)), (a))
 #define SCM_CONTINUATION_CONTINFO(a) (SCM_CONTINUATION(a)->obj.continuation.cont_info)
 #define SCM_CONTINUATION_JMPENV(a) (SCM_CONTINUATION(a)->obj.continuation.cont_info->jmp_env)
 #define SCM_SETCONTINUATION(a) (SCM_SETTYPE((a), ScmContinuation))
 #define SCM_SETCONTINUATION_CONTINFO(a, cinfo) (SCM_CONTINUATION_CONTINFO(a) = (cinfo))
 
-#define SCM_VALUEPACKETP(a)          (SCM_GETTYPE(a) == ScmValuePacket)
+#define SCM_VALUEPACKETP(a)          (SCM_TYPE(a) == ScmValuePacket)
 #define SCM_VALUEPACKET(a)           (sigassert(SCM_VALUEPACKETP(a)), (a))
 #define SCM_VALUEPACKET_VALUES(a)    (SCM_VALUEPACKET(a)->obj.value_pack.values)
 #define SCM_SETVALUEPACKET(a)        (SCM_SETTYPE((a), ScmValuePacket))
@@ -345,7 +345,7 @@ typedef ScmObj (*ScmFuncType) (void);
 /*============================================================================
   Etcetra variables (Special Symbols like NIL)
 ============================================================================*/
-#define SCM_ETCP(a) (SCM_GETTYPE(a) == ScmEtc)
+#define SCM_ETCP(a) (SCM_TYPE(a) == ScmEtc)
 #define SCM_ETC(a) (sigassert(SCM_ETCP(a)), (a))
 #define SCM_ETC_TYPE(a) (SCM_ETC(a)->obj.etc.type)
 #define SCM_SETETC_TYPE(a, etctype) (SCM_ETC_TYPE(a) = (etctype))
@@ -359,13 +359,13 @@ typedef ScmObj (*ScmFuncType) (void);
 /*============================================================================
   For C-Interface
 ============================================================================*/
-#define SCM_C_POINTERP(a) (SCM_GETTYPE(a) == ScmCPointer)
+#define SCM_C_POINTERP(a) (SCM_TYPE(a) == ScmCPointer)
 #define SCM_C_POINTER(a)  (sigassert(SCM_C_POINTERP(a)), (a))
 #define SCM_C_POINTER_DATA(a) (SCM_C_POINTER(a)->obj.c_pointer.data)
 #define SCM_SETC_POINTER(a) (SCM_SETTYPE((a), ScmCPointer))
 #define SCM_SETC_POINTER_DATA(a, ptr) (SCM_C_POINTER_DATA(a) = ptr)
 
-#define SCM_C_FUNCPOINTERP(a) (SCM_GETTYPE(a) == ScmCFuncPointer)
+#define SCM_C_FUNCPOINTERP(a) (SCM_TYPE(a) == ScmCFuncPointer)
 #define SCM_C_FUNCPOINTER(a)  (sigassert(SCM_C_FUNCPOINTERP(a)), (a))
 #define SCM_C_FUNCPOINTER_FUNC(a) (SCM_C_FUNCPOINTER(a)->obj.c_func_pointer.func)
 #define SCM_SETC_FUNCPOINTER(a) (SCM_SETTYPE((a), ScmCFuncPointer))

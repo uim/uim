@@ -106,7 +106,7 @@ void SigScm_DisplayToPort(ScmObj port, ScmObj obj)
 
 static void print_ScmObj_internal(FILE *f, ScmObj obj, enum OutputType otype)
 {
-    switch (SCM_GETTYPE(obj)) {
+    switch (SCM_TYPE(obj)) {
     case ScmInt:
         fprintf(f, "%d", SCM_INT_VALUE(obj));
         break;

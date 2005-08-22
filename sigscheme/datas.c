@@ -335,7 +335,7 @@ mark_loop:
     SCM_DO_MARK(obj);
 
     /* mark recursively */
-    switch (SCM_GETTYPE(obj)) {
+    switch (SCM_TYPE(obj)) {
     case ScmCons:
         mark_obj(SCM_CAR(obj));
         obj = SCM_CDR(obj);
@@ -482,7 +482,7 @@ static void gc_mark(void)
 static void sweep_obj(ScmObj obj)
 {
     /* if the type has the pointer to free, then free it! */
-    switch (SCM_GETTYPE(obj)) {
+    switch (SCM_TYPE(obj)) {
     case ScmInt:
     case ScmCons:
     case ScmFunc:
@@ -871,7 +871,7 @@ int Scm_GetInt(ScmObj num)
 char* Scm_GetString(ScmObj str)
 {
     char *ret = NULL;
-    switch (SCM_GETTYPE(str)) {
+    switch (SCM_TYPE(str)) {
     case ScmString:
         ret = SCM_STRING_STR(str);
         break;

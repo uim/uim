@@ -243,7 +243,7 @@ ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
     trace_root = &frame;
 
 eval_loop:
-    switch (SCM_GETTYPE(obj)) {
+    switch (SCM_TYPE(obj)) {
     case ScmSymbol:
     {
         ret = symbol_value(obj, env);
@@ -259,7 +259,7 @@ eval_loop:
           Evaluating CAR
         ============================================================*/
         tmp = SCM_CAR(obj);
-        switch (SCM_GETTYPE(tmp)) {
+        switch (SCM_TYPE(tmp)) {
         case ScmFunc:
             break;
         case ScmClosure:
@@ -280,7 +280,7 @@ eval_loop:
         /*============================================================
           Evaluating the rest of the List by the type of CAR
         ============================================================*/
-        switch (SCM_GETTYPE(tmp)) {
+        switch (SCM_TYPE(tmp)) {
         case ScmFunc:
         {
             /*
@@ -524,7 +524,7 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
     obj  = SCM_CAR(SCM_CDR(args));
 
     /* apply proc */
-    switch (SCM_GETTYPE(proc)) {
+    switch (SCM_TYPE(proc)) {
     case ScmFunc:
     {
         switch (SCM_FUNC_NUMARG(proc)) {

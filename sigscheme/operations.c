@@ -76,10 +76,10 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
     if (SCM_EQ(obj1, obj2))
         return SCM_TRUE;
 
-    type = (enum ScmObjType)SCM_GETTYPE(obj1);
+    type = (enum ScmObjType)SCM_TYPE(obj1);
 
     /* different type */
-    if (type != SCM_GETTYPE(obj2))
+    if (type != SCM_TYPE(obj2))
         return SCM_FALSE;
 
     /* same type */
@@ -131,10 +131,10 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
     if (SCM_EQ(obj1, obj2))
         return SCM_TRUE;
 
-    type = (enum ScmObjType)SCM_GETTYPE(obj1);
+    type = (enum ScmObjType)SCM_TYPE(obj1);
 
     /* different type */
-    if (type != SCM_GETTYPE(obj2))
+    if (type != SCM_TYPE(obj2))
         return SCM_FALSE;
 
     /* same type */
@@ -156,7 +156,7 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
                 return SCM_FALSE;
 
             /* check next cdr's type */
-            if (SCM_GETTYPE(SCM_CDR(obj1)) != SCM_GETTYPE(SCM_CDR(obj2)))
+            if (SCM_TYPE(SCM_CDR(obj1)) != SCM_TYPE(SCM_CDR(obj2)))
                 return SCM_FALSE;
 
             /* check dot pair */
