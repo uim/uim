@@ -152,10 +152,10 @@ static void print_ScmObj_internal(FILE *f, ScmObj obj, enum OutputType otype)
         SigScm_Error("You cannot print ScmFreeCell, may be GC bug.\n");
         break;
     case ScmCPointer:
-        fprintf(f, "#<c_pointer %p>", SCM_C_POINTER_DATA(obj));
+        fprintf(f, "#<c_pointer %p>", SCM_C_POINTER_VALUE(obj));
         break;
     case ScmCFuncPointer:
-        fprintf(f, "#<c_func_pointer %p>", (void*)SCM_C_FUNCPOINTER_FUNC(obj));
+        fprintf(f, "#<c_func_pointer %p>", (void*)SCM_C_FUNCPOINTER_VALUE(obj));
         break;
     }   
 }
@@ -167,12 +167,12 @@ static void print_char(FILE *f, ScmObj obj, enum OutputType otype)
         /*
          * in write, character objects are written using the #\ notation.
          */ 
-        if (strcmp(SCM_CHAR_CH(obj), " ") == 0) {
+        if (strcmp(SCM_CHAR_VALUE(obj), " ") == 0) {
             fprintf(f, "#\\space");
-        } else if(strcmp(SCM_CHAR_CH(obj), "\n") == 0) {
+        } else if(strcmp(SCM_CHAR_VALUE(obj), "\n") == 0) {
             fprintf(f, "#\\newline");
         } else {
-            fprintf(f, "#\\%s", SCM_CHAR_CH(obj));
+            fprintf(f, "#\\%s", SCM_CHAR_VALUE(obj));
         }
         break;
     case AS_DISPLAY:
@@ -180,7 +180,7 @@ static void print_char(FILE *f, ScmObj obj, enum OutputType otype)
          * in display, character objects appear in the reqpresentation as
          * if writen by write-char instead of by write.
          */
-        fprintf(f, "%s", SCM_CHAR_CH(obj));
+        fprintf(f, "%s", SCM_CHAR_VALUE(obj));
         break;
     default:
         SigScm_Error("print_char : unknown output type\n");

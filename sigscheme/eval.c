@@ -108,8 +108,8 @@ static ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
         /* dot list appears */
         if (!NULLP(CDR(tmp_vars)) && !CONSP(CDR(tmp_vars))) {
             /* create new value */
-            SCM_SETCDR(tmp_vals, Scm_NewCons(CDR(tmp_vals),
-                                             SCM_NIL));
+            SET_CDR(tmp_vals, Scm_NewCons(CDR(tmp_vals),
+                                          SCM_NIL));
         }
 
         tmp_vars = CDR(tmp_vars);
@@ -706,7 +706,7 @@ ScmObj map_eval(ScmObj args, ScmObj env)
     newtail = SCM_NIL;
     for (args = CDR(args); !NULLP(args); args = CDR(args)) {
         newtail = Scm_NewCons(ScmOp_eval(CAR(args), env), SCM_NIL);
-        SCM_SETCDR(tail, newtail);
+        SET_CDR(tail, newtail);
         tail = newtail;
     }
 
@@ -1036,10 +1036,10 @@ ScmObj ScmExp_set(ScmObj arg, ScmObj *envp, int *tail_flag)
         if (FALSEP(ScmOp_symbol_boundp(sym)))
             SigScm_ErrorObj("set! : unbound variable ", sym);
 
-        SCM_SETSYMBOL_VCELL(sym, ret);
+        SCM_SYMBOL_SET_VCELL(sym, ret);
     } else {
         /* found in the environment*/
-        SCM_SETCAR(tmp, ret);
+        SET_CAR(tmp, ret);
     }
 
     /* set new env */
@@ -1107,9 +1107,8 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp, int *tail_flag)
                 if (FALSEP(ScmOp_procedurep(proc)))
                     SigScm_ErrorObj("cond : the value of exp after => must be the procedure but got ", proc);
 
-                return ScmOp_apply(Scm_NewCons(proc,
-                                               Scm_NewCons(Scm_NewCons(test, SCM_NIL),
-                                                           SCM_NIL)),
+                return ScmOp_apply(SCM_LIST_2(proc,
+                                              Scm_NewCons(test, SCM_NIL)),
                                    env);
             }
 
@@ -1415,7 +1414,7 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp, int *tail_flag)
 
         /* evaluate vals */
         for (; !NULLP(vals); vals = CDR(vals)) {
-            SCM_SETCAR(vals, ScmOp_eval(CAR(vals), env));
+            SET_CAR(vals, ScmOp_eval(CAR(vals), env));
         }
 
         /* evaluate body */
@@ -1548,7 +1547,7 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp, int *tail_flag)
         for (tmp_vars = vars; !NULLP(tmp_vars) && !NULLP(vals); tmp_vars = CDR(tmp_vars), vals = CDR(vals)) {
             obj = lookup_environment(CAR(tmp_vars), env);
             if (!NULLP(obj)) {
-                SCM_SETCAR(obj, CAR(vals));
+                SET_CAR(obj, CAR(vals));
             } else {
                 SigScm_Error("do : broken env\n");
             }
@@ -1575,7 +1574,7 @@ ScmObj ScmOp_delay(ScmObj arg, ScmObj *envp, int *tail_flag)
         SigScm_Error("delay : Wrong number of arguments\n");
 
     /* closure exp = ( () CAR(arg) ) */
-    return Scm_NewClosure(Scm_NewCons(SCM_NIL, Scm_NewCons(CAR(arg), SCM_NIL)), env);
+    return Scm_NewClosure(SCM_LIST_2(SCM_NIL, CAR(arg)), env);
 }
 
 /*===========================================================================
@@ -1636,7 +1635,7 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj *envp, int *tail_flag)
     if (SYMBOLP(var)) {
         if (NULLP(env)) {
             /* given NIL environment */
-            SCM_SETSYMBOL_VCELL(var, ScmOp_eval(body, env));
+            SCM_SYMBOL_SET_VCELL(var, ScmOp_eval(body, env));
         } else {
             /* add val to the environment */
             env = add_environment(var, ScmOp_eval(body, env), env);
@@ -1666,8 +1665,8 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj *envp, int *tail_flag)
         body    = CDR(arg);
 
         /* (val (lambda formals body))  */
-        arg = Scm_NewCons(val, Scm_NewCons(ScmExp_lambda(Scm_NewCons(formals, body), &env, tail_flag),
-                                           SCM_NIL));
+        arg = SCM_LIST_2(val,
+                         ScmExp_lambda(Scm_NewCons(formals, body), &env, tail_flag));
 
         return ScmExp_define(arg, &env, tail_flag);
     }

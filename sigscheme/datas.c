@@ -223,7 +223,7 @@ static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmOb
 
         /* link in order */
         for (cell=heap; cell-heap < HEAP_SIZE; cell++) {
-            SCM_SETFREECELL(cell);
+            SCM_ENTYPE_FREECELL(cell);
             SCM_DO_UNMARK(cell);
             SCM_SETFREECELL_CDR(cell, cell+1);
         }
@@ -256,7 +256,7 @@ static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, int HEAP_SIZE, ScmO
 
     /* link in order */
     for (cell=heap; cell-heap < HEAP_SIZE; cell++) {
-        SCM_SETFREECELL(cell);
+        SCM_ENTYPE_FREECELL(cell);
         SCM_DO_UNMARK(cell);
         SCM_SETFREECELL_CDR(cell, cell+1);
     }
@@ -493,7 +493,7 @@ static void sweep_obj(ScmObj obj)
         break;
 
     case ScmChar:
-        if (SCM_CHAR_CH(obj)) free(SCM_CHAR_CH(obj));
+        if (SCM_CHAR_VALUE(obj)) free(SCM_CHAR_VALUE(obj));
         break;
 
     case ScmString:
@@ -551,7 +551,7 @@ static void gc_sweep(void)
             if (!SCM_IS_MARKED(obj)) {
                 sweep_obj(obj);
 
-                SCM_SETFREECELL(obj);
+                SCM_ENTYPE_FREECELL(obj);
                 SCM_SETFREECELL_CAR(obj, SCM_NIL);
                 SCM_SETFREECELL_CDR(obj, scm_new_freelist);
                 scm_new_freelist = obj;
@@ -586,9 +586,9 @@ ScmObj Scm_NewCons(ScmObj a, ScmObj b)
     ScmObj obj = SCM_NIL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
-    SCM_SETCONS(obj);
-    SCM_SETCAR(obj, a);
-    SCM_SETCDR(obj, b);
+    SCM_ENTYPE_CONS(obj);
+    SET_CAR(obj, a);
+    SET_CDR(obj, b);
 
     return obj;
 }
@@ -598,8 +598,8 @@ ScmObj Scm_NewInt(int val)
     ScmObj obj = SCM_NIL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
-    SCM_SETINT(obj);
-    SCM_SETINT_VALUE(obj, val);
+    SCM_ENTYPE_INT(obj);
+    SCM_INT_SET_VALUE(obj, val);
 
     return obj;
 }
@@ -609,9 +609,9 @@ ScmObj Scm_NewSymbol(char *name, ScmObj v_cell)
     ScmObj obj = SCM_NIL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
-    SCM_SETSYMBOL(obj);
-    SCM_SETSYMBOL_NAME(obj, name);
-    SCM_SETSYMBOL_VCELL(obj, v_cell);
+    SCM_ENTYPE_SYMBOL(obj);
+    SCM_SYMBOL_SET_NAME(obj, name);
+    SCM_SYMBOL_SET_VCELL(obj, v_cell);
 
     return obj;
 }
@@ -628,8 +628,8 @@ ScmObj Scm_NewChar(char *ch)
 
     SCM_NEW_OBJ_INTERNAL(obj);
 
-    SCM_SETCHAR(obj);
-    SCM_SETCHAR_CH(obj, ch);
+    SCM_ENTYPE_CHAR(obj);
+    SCM_CHAR_SET_VALUE(obj, ch);
 
     return obj;
 }
@@ -640,9 +640,9 @@ ScmObj Scm_NewString(char *str)
 
     SCM_NEW_OBJ_INTERNAL(obj);
 
-    SCM_SETSTRING(obj);
-    SCM_SETSTRING_STR(obj, str);
-    SCM_SETSTRING_LEN(obj, SigScm_default_encoding_strlen(str));
+    SCM_ENTYPE_STRING(obj);
+    SCM_STRING_SET_STR(obj, str);
+    SCM_STRING_SET_LEN(obj, SigScm_default_encoding_strlen(str));
 
     return obj;
 }
@@ -653,10 +653,10 @@ ScmObj Scm_NewStringCopying(const char *str)
 
     SCM_NEW_OBJ_INTERNAL(obj);
 
-    SCM_SETSTRING(obj);
+    SCM_ENTYPE_STRING(obj);
     SCM_STRING_STR(obj) = (char *)malloc(sizeof(char) * strlen(str) + 1);
     strcpy(SCM_STRING_STR(obj), str);
-    SCM_SETSTRING_LEN(obj, SigScm_default_encoding_strlen(str));
+    SCM_STRING_SET_LEN(obj, SigScm_default_encoding_strlen(str));
 
     return obj;
 }
@@ -666,9 +666,9 @@ ScmObj Scm_NewString_With_StrLen(char *str, int len)
     ScmObj obj = SCM_NIL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
-    SCM_SETSTRING(obj);
-    SCM_SETSTRING_STR(obj, str);
-    SCM_SETSTRING_LEN(obj, len);
+    SCM_ENTYPE_STRING(obj);
+    SCM_STRING_SET_STR(obj, str);
+    SCM_STRING_SET_LEN(obj, len);
 
     return obj;
 }
@@ -678,9 +678,9 @@ ScmObj Scm_NewFunc(enum ScmFuncArgType num_arg, ScmFuncType func)
     ScmObj obj = SCM_NIL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
-    SCM_SETFUNC(obj);
-    SCM_SETFUNC_NUMARG(obj, num_arg);
-    SCM_SETFUNC_FUNC(obj, func);
+    SCM_ENTYPE_FUNC(obj);
+    SCM_FUNC_SET_NUMARG(obj, num_arg);
+    SCM_FUNC_SET_FUNC(obj, func);
 
     return obj;
 }
@@ -690,9 +690,9 @@ ScmObj Scm_NewClosure(ScmObj exp, ScmObj env)
     ScmObj obj = SCM_NIL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
-    SCM_SETCLOSURE(obj);
-    SCM_SETCLOSURE_EXP(obj, exp);
-    SCM_SETCLOSURE_ENV(obj, env);
+    SCM_ENTYPE_CLOSURE(obj);
+    SCM_CLOSURE_SET_EXP(obj, exp);
+    SCM_CLOSURE_SET_ENV(obj, env);
 
     return obj;
 }
@@ -702,9 +702,9 @@ ScmObj Scm_NewVector(ScmObj *vec, int len)
     ScmObj obj = SCM_NIL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
-    SCM_SETVECTOR(obj);
-    SCM_SETVECTOR_VEC(obj, vec);
-    SCM_SETVECTOR_LEN(obj, len);
+    SCM_ENTYPE_VECTOR(obj);
+    SCM_VECTOR_SET_VEC(obj, vec);
+    SCM_VECTOR_SET_LEN(obj, len);
 
     return obj;
 }
@@ -716,15 +716,15 @@ ScmObj Scm_NewFilePort(FILE *file, const char *filename, enum ScmPortDirection p
 
     SCM_NEW_OBJ_INTERNAL(obj);
 
-    SCM_SETPORT(obj);
-    SCM_SETPORT_PORTDIRECTION(obj, pdirection);
+    SCM_ENTYPE_PORT(obj);
+    SCM_PORT_SET_PORTDIRECTION(obj, pdirection);
     pinfo->port_type = PORT_FILE;
     pinfo->info.file_port.file = file;
     pinfo->info.file_port.filename = (char*)malloc(sizeof(char) * strlen(filename) + 1);
     strcpy(pinfo->info.file_port.filename, filename);
     pinfo->info.file_port.line = 0;
     pinfo->ungottenchar = 0;
-    SCM_SETPORT_PORTINFO(obj, pinfo);
+    SCM_PORT_SET_PORTINFO(obj, pinfo);
 
     return obj;
 }
@@ -736,14 +736,14 @@ ScmObj Scm_NewStringPort(const char *str)
 
     SCM_NEW_OBJ_INTERNAL(obj);
 
-    SCM_SETPORT(obj);
-    SCM_SETPORT_PORTDIRECTION(obj, PORT_INPUT);
+    SCM_ENTYPE_PORT(obj);
+    SCM_PORT_SET_PORTDIRECTION(obj, PORT_INPUT);
     pinfo->port_type = PORT_STRING;
     pinfo->info.str_port.port_str = (char *)malloc(strlen(str) + 1);
     strcpy(pinfo->info.str_port.port_str, str);
     pinfo->info.str_port.str_current = pinfo->info.str_port.port_str;
     pinfo->ungottenchar = 0;
-    SCM_SETPORT_PORTINFO(obj, pinfo);
+    SCM_PORT_SET_PORTINFO(obj, pinfo);
 
     return obj;
 }
@@ -755,9 +755,9 @@ ScmObj Scm_NewContinuation(void)
 
     SCM_NEW_OBJ_INTERNAL(obj);
 
-    SCM_SETCONTINUATION(obj);
+    SCM_ENTYPE_CONTINUATION(obj);
     cinfo = (ScmContInfo *)malloc(sizeof(ScmContInfo));
-    SCM_SETCONTINUATION_CONTINFO(obj, cinfo);
+    SCM_CONTINUATION_SET_CONTINFO(obj, cinfo);
 
     return obj;
 }
@@ -767,8 +767,8 @@ ScmObj Scm_NewValuePacket(ScmObj values)
     ScmObj packet = SCM_NIL;
     SCM_NEW_OBJ_INTERNAL(packet);
 
-    SCM_SETVALUEPACKET(packet);
-    SCM_SETVALUEPACKET_VALUES(packet, values);
+    SCM_ENTYPE_VALUEPACKET(packet);
+    SCM_VALUEPACKET_SET_VALUES(packet, values);
     return packet;
 }
 
@@ -778,8 +778,8 @@ ScmObj Scm_NewCPointer(void *data)
     ScmObj obj = SCM_NIL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
-    SCM_SETC_POINTER(obj);
-    SCM_SETC_POINTER_DATA(obj, data);
+    SCM_ENTYPE_C_POINTER(obj);
+    SCM_C_POINTER_SET_VALUE(obj, data);
 
     return obj;
 }
@@ -789,8 +789,8 @@ ScmObj Scm_NewCFuncPointer(C_FUNC func)
     ScmObj obj = SCM_NIL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
-    SCM_SETC_FUNCPOINTER(obj);
-    SCM_SETC_FUNCPOINTER_FUNC(obj, func);
+    SCM_ENTYPE_C_FUNCPOINTER(obj);
+    SCM_C_FUNCPOINTER_SET_VALUE(obj, func);
 
     return obj;
 }
@@ -892,7 +892,7 @@ void* Scm_GetCPointer(ScmObj c_ptr)
     if (!C_POINTERP(c_ptr))
         SigScm_ErrorObj("Scm_GetCPointer : c_ptr required but got ", c_ptr);
 
-    return SCM_C_POINTER_DATA(c_ptr);
+    return SCM_C_POINTER_VALUE(c_ptr);
 }
 
 C_FUNC Scm_GetCFuncPointer(ScmObj c_funcptr)
@@ -900,7 +900,7 @@ C_FUNC Scm_GetCFuncPointer(ScmObj c_funcptr)
     if (!C_FUNCPOINTERP(c_funcptr))
         SigScm_ErrorObj("Scm_GetCFuncPointer : c_funcptr required but got ", c_funcptr);
 
-    return SCM_C_FUNCPOINTER_FUNC(c_funcptr);
+    return SCM_C_FUNCPOINTER_VALUE(c_funcptr);
 }
 #endif
 

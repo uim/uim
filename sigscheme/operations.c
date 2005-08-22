@@ -218,12 +218,12 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
         break;
 
     case ScmCPointer:
-        if (SCM_C_POINTER_DATA(obj1) == SCM_C_POINTER_DATA(obj2))
+        if (SCM_C_POINTER_VALUE(obj1) == SCM_C_POINTER_VALUE(obj2))
             return SCM_TRUE;
         break;
 
     case ScmCFuncPointer:
-        if (SCM_C_FUNCPOINTER_FUNC(obj1) == SCM_C_FUNCPOINTER_FUNC(obj2))
+        if (SCM_C_FUNCPOINTER_VALUE(obj1) == SCM_C_FUNCPOINTER_VALUE(obj2))
             return SCM_TRUE;
         break;
     }
@@ -819,7 +819,7 @@ ScmObj ScmOp_cons(ScmObj car, ScmObj cdr)
 ScmObj ScmOp_setcar(ScmObj pair, ScmObj car)
 {
     if (CONSP(pair))
-        SCM_SETCAR(pair, car);
+        SET_CAR(pair, car);
     else
         SigScm_ErrorObj("set-car! : pair required but got ", pair);
 
@@ -829,7 +829,7 @@ ScmObj ScmOp_setcar(ScmObj pair, ScmObj car)
 ScmObj ScmOp_setcdr(ScmObj pair, ScmObj cdr)
 {
     if (CONSP(pair))
-        SCM_SETCDR(pair, cdr);
+        SET_CDR(pair, cdr);
     else
         SigScm_ErrorObj("set-cdr! : pair required but got ", pair);
 
@@ -1239,7 +1239,7 @@ ScmObj ScmOp_char_equal(ScmObj ch1, ScmObj ch2)
     if (!CHARP(ch2))
         SigScm_ErrorObj("char=? : char required but got ", ch2);
 
-    if (strcmp(SCM_CHAR_CH(ch1), SCM_CHAR_CH(ch2)) == 0)
+    if (strcmp(SCM_CHAR_VALUE(ch1), SCM_CHAR_VALUE(ch2)) == 0)
         return SCM_TRUE;
 
     return SCM_FALSE;
@@ -1251,11 +1251,11 @@ ScmObj ScmOp_char_alphabeticp(ScmObj obj)
         SigScm_ErrorObj("char-alphabetic? : char required but got ", obj);
 
     /* check multibyte */
-    if (strlen(SCM_CHAR_CH(obj)) != 1)
+    if (strlen(SCM_CHAR_VALUE(obj)) != 1)
         return SCM_FALSE;
 
     /* check alphabet */
-    if (isalpha(SCM_CHAR_CH(obj)[0]) != 0)
+    if (isalpha(SCM_CHAR_VALUE(obj)[0]) != 0)
         return SCM_TRUE;
 
     return SCM_FALSE;
@@ -1267,11 +1267,11 @@ ScmObj ScmOp_char_numericp(ScmObj obj)
         SigScm_ErrorObj("char-alphabetic? : char required but got ", obj);
 
     /* check multibyte */
-    if (strlen(SCM_CHAR_CH(obj)) != 1)
+    if (strlen(SCM_CHAR_VALUE(obj)) != 1)
         return SCM_FALSE;
 
     /* check digit */
-    if (isdigit(SCM_CHAR_CH(obj)[0]) != 0)
+    if (isdigit(SCM_CHAR_VALUE(obj)[0]) != 0)
         return SCM_TRUE;
 
     return SCM_FALSE;
@@ -1283,11 +1283,11 @@ ScmObj ScmOp_char_whitespacep(ScmObj obj)
         SigScm_ErrorObj("char-alphabetic? : char required but got ", obj);
 
     /* check multibyte */
-    if (strlen(SCM_CHAR_CH(obj)) != 1)
+    if (strlen(SCM_CHAR_VALUE(obj)) != 1)
         return SCM_FALSE;
 
     /* check space */
-    if (isspace(SCM_CHAR_CH(obj)[0]) != 0)
+    if (isspace(SCM_CHAR_VALUE(obj)[0]) != 0)
         return SCM_TRUE;
 
     return SCM_FALSE;
@@ -1299,11 +1299,11 @@ ScmObj ScmOp_char_upper_casep(ScmObj obj)
         SigScm_ErrorObj("char-alphabetic? : char required but got ", obj);
 
     /* check multibyte */
-    if (strlen(SCM_CHAR_CH(obj)) != 1)
+    if (strlen(SCM_CHAR_VALUE(obj)) != 1)
         return SCM_FALSE;
 
     /* check uppercase */
-    if (isupper(SCM_CHAR_CH(obj)[0]) != 0)
+    if (isupper(SCM_CHAR_VALUE(obj)[0]) != 0)
         return SCM_TRUE;
 
     return SCM_FALSE;
@@ -1315,11 +1315,11 @@ ScmObj ScmOp_char_lower_casep(ScmObj obj)
         SigScm_ErrorObj("char-alphabetic? : char required but got ", obj);
 
     /* check multibyte */
-    if (strlen(SCM_CHAR_CH(obj)) != 1)
+    if (strlen(SCM_CHAR_VALUE(obj)) != 1)
         return SCM_FALSE;
 
     /* check lowercase */
-    if (islower(SCM_CHAR_CH(obj)[0]) != 0)
+    if (islower(SCM_CHAR_VALUE(obj)[0]) != 0)
         return SCM_TRUE;
 
     return SCM_FALSE;
@@ -1331,11 +1331,11 @@ ScmObj ScmOp_char_upcase(ScmObj obj)
         SigScm_ErrorObj("char-upcase : char required but got ", obj);
 
     /* check multibyte */
-    if (strlen(SCM_CHAR_CH(obj)) != 1)
+    if (strlen(SCM_CHAR_VALUE(obj)) != 1)
         return obj;
 
     /* to upcase */
-    SCM_CHAR_CH(obj)[0] = toupper(SCM_CHAR_CH(obj)[0]);
+    SCM_CHAR_VALUE(obj)[0] = toupper(SCM_CHAR_VALUE(obj)[0]);
 
     return obj;
 }
@@ -1346,11 +1346,11 @@ ScmObj ScmOp_char_downcase(ScmObj obj)
         SigScm_ErrorObj("char-upcase : char required but got ", obj);
 
     /* check multibyte */
-    if (strlen(SCM_CHAR_CH(obj)) != 1)
+    if (strlen(SCM_CHAR_VALUE(obj)) != 1)
         return obj;
 
     /* to upcase */
-    SCM_CHAR_CH(obj)[0] = tolower(SCM_CHAR_CH(obj)[0]);
+    SCM_CHAR_VALUE(obj)[0] = tolower(SCM_CHAR_VALUE(obj)[0]);
 
     return obj;
 }
@@ -1472,7 +1472,7 @@ ScmObj ScmOp_string_set(ScmObj str, ScmObj k, ScmObj ch)
 
     /* calculate total size */
     front_size = strlen(string_str) - strlen(ch_start_ptr);
-    newch_size = strlen(SCM_CHAR_CH(ch));
+    newch_size = strlen(SCM_CHAR_VALUE(ch));
     back_size  = strlen(ch_end_ptr);
     total_size = front_size + newch_size + back_size;
 
@@ -1480,14 +1480,14 @@ ScmObj ScmOp_string_set(ScmObj str, ScmObj k, ScmObj ch)
     new_str = (char*)malloc(total_size + 1);
     memset(new_str, 0, total_size + 1);
     strncpy(new_str                           , string_str      , front_size);
-    strncpy(new_str + front_size              , SCM_CHAR_CH(ch) , newch_size);
+    strncpy(new_str + front_size              , SCM_CHAR_VALUE(ch) , newch_size);
     strncpy(new_str + front_size + newch_size , ch_end_ptr      , back_size);
 
     /* set */
     if (SCM_STRING_STR(str))
         free(SCM_STRING_STR(str));
 
-    SCM_SETSTRING_STR(str, new_str);
+    SCM_STRING_SET_STR(str, new_str);
 
     return str;
 }
@@ -1605,7 +1605,7 @@ ScmObj ScmOp_string2list(ScmObj string)
 
         next = Scm_NewCons(Scm_NewChar(new_ch), SCM_NIL);
         if (prev)
-            SCM_SETCDR(prev, next);
+            SET_CDR(prev, next);
         else
             head = next;
 
@@ -1635,7 +1635,7 @@ ScmObj ScmOp_list2string(ScmObj list)
         if (!CHARP(obj))
             SigScm_ErrorObj("list->string : char required but got ", obj);
 
-        total_size += strlen(SCM_CHAR_CH(obj));
+        total_size += strlen(SCM_CHAR_VALUE(obj));
     }
 
     /* allocate new string */
@@ -1646,8 +1646,8 @@ ScmObj ScmOp_list2string(ScmObj list)
     for (chars = list; !NULLP(chars); chars = CDR(chars)) {
         obj = CAR(chars);
 
-        strcpy(p, SCM_CHAR_CH(obj));
-        p += strlen(SCM_CHAR_CH(obj));
+        strcpy(p, SCM_CHAR_VALUE(obj));
+        p += strlen(SCM_CHAR_VALUE(obj));
     }
 
     return Scm_NewString(new_str);
@@ -1675,17 +1675,17 @@ ScmObj ScmOp_string_fill(ScmObj string, ScmObj ch)
         SigScm_ErrorObj("string-fill! : character required but got ", ch);
 
     /* create new str */
-    char_size = strlen(SCM_CHAR_CH(ch));
+    char_size = strlen(SCM_CHAR_VALUE(ch));
     str_len   = SCM_STRING_LEN(string);
     new_str   = (char*)realloc(SCM_STRING_STR(string), sizeof(char) * str_len * char_size + 1);
     for (i = 0, p = new_str; i < char_size * str_len;) {
-        strcpy(p, SCM_CHAR_CH(ch));
+        strcpy(p, SCM_CHAR_VALUE(ch));
 
         p += char_size;
         i += char_size;
     }
 
-    SCM_SETSTRING_STR(string, new_str);
+    SCM_STRING_SET_STR(string, new_str);
 
     return string;
 }
@@ -1766,7 +1766,7 @@ ScmObj ScmOp_vector_set(ScmObj vec, ScmObj scm_k, ScmObj obj)
     if (!INTP(scm_k))
         SigScm_ErrorObj("vector-set! : number required but got ", scm_k);
 
-    SCM_SETVECTOR_REF(vec, scm_k, obj);
+    SCM_VECTOR_SET_REF(vec, scm_k, obj);
 
     return vec;
 }
@@ -1792,7 +1792,7 @@ ScmObj ScmOp_vector2list(ScmObj vec)
         next = Scm_NewCons(v[i], SCM_NIL);
 
         if (prev) {
-            SCM_SETCDR(prev, next);
+            SET_CDR(prev, next);
         } else {
             head = next;
         }
@@ -1877,9 +1877,9 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
             tmp = CAR(args);
 
             /* create list for "apply" op */
-            tmp = Scm_NewCons(proc,
-                              Scm_NewCons(Scm_NewCons(tmp, SCM_NIL),
-                                          SCM_NIL));
+            tmp = SCM_LIST_2(proc,
+                             Scm_NewCons(tmp, SCM_NIL));
+
             /* apply proc */
             ret = Scm_NewCons(ScmOp_apply(tmp, env), ret);
         }
@@ -1901,17 +1901,14 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
             }
 
             arg1 = Scm_NewCons(CAR(tmp), arg1);
-            SCM_SETVECTOR_CREF(arg_vector, i, CDR(tmp));
+            SCM_VECTOR_SET_CREF(arg_vector, i, CDR(tmp));
         }
 
         /* reverse arg */
         arg1 = ScmOp_reverse(arg1);
 
         /* apply proc to arg1 */
-        ret = Scm_NewCons(ScmOp_apply(Scm_NewCons(proc,
-                                                  Scm_NewCons(arg1,
-                                                              SCM_NIL)),
-                                      env),
+        ret = Scm_NewCons(ScmOp_apply(SCM_LIST_2(proc, arg1), env),
                           ret);
     }
 
@@ -1957,7 +1954,7 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env)
     }
 
     /* execute (proc cont) */
-    SCM_SETCDR(arg, Scm_NewCons(cont, SCM_NIL));
+    SET_CDR(arg, Scm_NewCons(cont, SCM_NIL));
 
     return ScmOp_eval(arg, env);
 }
@@ -1998,8 +1995,8 @@ ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp, int *tail_flag)
 
     /* cons_wrapper would have no chance of being referenced from
      * anywhere else, so we'll reuse that object. */
-    SCM_SETCAR(cons_wrapper, SCM_CADR(argl));
-    SCM_SETCDR(cons_wrapper, vals);
+    SET_CAR(cons_wrapper, SCM_CADR(argl));
+    SET_CDR(cons_wrapper, vals);
     return cons_wrapper;
 }
 

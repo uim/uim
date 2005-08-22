@@ -267,7 +267,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
                 if (c != ')')
                     SigScm_Error("bad dot syntax\n");
 
-                SCM_SETCDR(list_tail, cdr);
+                SET_CDR(list_tail, cdr);
                 return list_head;
             }
 
@@ -296,7 +296,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
             list_tail = list_head;
         } else {
             /* update list_tail */
-            SCM_SETCDR(list_tail, Scm_NewCons(item, SCM_NIL));
+            SET_CDR(list_tail, Scm_NewCons(item, SCM_NIL));
             list_tail = CDR(list_tail);
         }
     }
