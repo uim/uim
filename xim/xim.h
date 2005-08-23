@@ -327,8 +327,6 @@ struct input_style {
 };
 
 XimIC *create_ic(Connection *, RxPacket *, int imid, int id, const char *engine);
-void force_event(Window w);
-
 void procXClientMessage(XClientMessageEvent *m);
 
 #endif
