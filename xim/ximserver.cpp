@@ -131,7 +131,7 @@ void XimServer::changeContext(const char *engine) {
     for (it = ic_list.begin(); it != ic_list.end(); it++) {
 	(*it)->changeContext(engine);
     }
-    // make sure to update locale of focused context
+    // make sure to use appropriate locale for the focused context
     InputContext *focusedContext = InputContext::focusedContext();
     if (focusedContext)
 	focusedContext->focusIn();
