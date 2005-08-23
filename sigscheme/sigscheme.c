@@ -321,7 +321,7 @@ void SigScm_Initialize(void)
     /*=======================================================================
       SRFI-8 Procedure
     =======================================================================*/
-    Scm_RegisterFuncR("receive"              , ScmOp_SRFI_8_receive);
+    Scm_RegisterFuncR("receive"              , ScmOp_SRFI8_receive);
 #endif
 
 #if SCM_COMPAT_SIOD

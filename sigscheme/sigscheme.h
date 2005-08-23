@@ -358,7 +358,7 @@ ScmObj ScmOp_SRFI1_circular_list(ScmObj list, ScmObj env);
 ScmObj ScmOp_SRFI1_iota(ScmObj args, ScmObj env);
 #endif
 #if SCM_USE_SRFI8
-ScmObj ScmOp_SRFI_8_receive(ScmObj args, ScmObj *envp, int *tail_flag);
+ScmObj ScmOp_SRFI8_receive(ScmObj args, ScmObj *envp, int *tail_flag);
 #endif
 
 #ifdef __cplusplus

@@ -63,7 +63,7 @@
 /*=============================================================================
   SRFI8 : Receive
 =============================================================================*/
-ScmObj ScmOp_SRFI_8_receive(ScmObj args, ScmObj *envp, int *tail_flag)
+ScmObj ScmOp_SRFI8_receive(ScmObj args, ScmObj *envp, int *tail_flag)
 {
     /*
      * (receive <formals> <expression> <body>)
