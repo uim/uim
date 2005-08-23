@@ -208,7 +208,7 @@
 		     "直接(無変換)入力モード"))
 		 (lambda (sc)
 		   (let ((dsc (skk-find-descendant-context sc)))
-		     (= (skk-context-state dsc)
+		     (eq? (skk-context-state dsc)
 			'skk-state-latin)))
 		 (lambda (sc)
 		   (let ((dsc (skk-find-descendant-context sc)))
@@ -223,7 +223,7 @@
 		     "全角英数入力モード"))
 		 (lambda (sc)
 		   (let ((dsc (skk-find-descendant-context sc)))
-		     (= (skk-context-state dsc)
+		     (eq? (skk-context-state dsc)
 			'skk-state-wide-latin)))
 		 (lambda (sc)
 		   (let ((dsc (skk-find-descendant-context sc)))
@@ -459,7 +459,7 @@
 (define skk-get-string
   (lambda (sc str kana)
     (let ((res (skk-do-get-string sc str kana)))
-      (if (and res (> (length res) 0))
+      (if (and res (> (string-length res) 0))
 	  res
 	  #f))))
 
@@ -683,7 +683,7 @@
   (lambda (sc)
     (let ((res #f))
       ;; get residual 'n'
-      (if (= (skk-context-state sc) 'skk-state-kanji)
+      (if (eq? (skk-context-state sc) 'skk-state-kanji)
 	  (skk-append-residual-kana sc))
       ;;
       (set! res
@@ -703,19 +703,19 @@
       (if (and
 	   (null? csc)
 	   (or
-	    (= stat 'skk-state-kanji)
-	    (= stat 'skk-state-completion)
-	    (= stat 'skk-state-okuri)))
+	    (eq? stat 'skk-state-kanji)
+	    (eq? stat 'skk-state-completion)
+	    (eq? stat 'skk-state-okuri)))
 	  (im-pushback-preedit sc skk-preedit-attr-mode-mark "▽"))
       (if (or
 	   (not (null? csc))
-	   (= stat 'skk-state-converting))
+	   (eq? stat 'skk-state-converting))
 	  (im-pushback-preedit sc skk-preedit-attr-mode-mark "▼"))
       (if (and
 	   (null? csc)
 	   (or
-	    (= stat 'skk-state-kanji)
-	    (= stat 'skk-state-okuri)))
+	    (eq? stat 'skk-state-kanji)
+	    (eq? stat 'skk-state-okuri)))
 	  (let ((h (skk-make-string 
 		    (skk-context-head sc)
 		    (skk-context-kana-mode sc))))
@@ -724,7 +724,7 @@
 		 sc skk-preedit-attr-head
 		 h))))
       (if (and
-	   (= stat 'skk-state-converting)
+	   (eq? stat 'skk-state-converting)
 	   (or
 	    (null? csc)
 	    (and
@@ -732,9 +732,9 @@
 	     (= (skk-context-child-type sc) skk-child-type-dialog))))
 	  (begin
 	    (if (or
-		 (= skk-candidate-selection-style 'uim)
+		 (eq? skk-candidate-selection-style 'uim)
 		 (and
-		  (= skk-candidate-selection-style 'ddskk-like)
+		  (eq? skk-candidate-selection-style 'ddskk-like)
 		  (not (skk-context-candidate-window sc))))
 		(im-pushback-preedit
 		 sc
@@ -759,11 +759,11 @@
       (if (and
 	   (not (null? csc))
 	   (or
-	     (= stat 'skk-state-kanji)
-	     (= stat 'skk-state-okuri)
+	     (eq? stat 'skk-state-kanji)
+	     (eq? stat 'skk-state-okuri)
 	     (and
-	      (= stat 'skk-state-converting)
-	      (= (skk-context-child-type sc) skk-child-type-editor))))
+	      (eq? stat 'skk-state-converting)
+	      (eq? (skk-context-child-type sc) skk-child-type-editor))))
 	  (let ((h '()))
 	    (if skk-use-numeric-conversion?
 	      ;; replace numeric string with #
@@ -779,7 +779,7 @@
 		 sc skk-preedit-attr-head
 		 h))))
       (if (and
-	   (= stat 'skk-state-completion)
+	   (eq? stat 'skk-state-completion)
 	   (null? csc))
 	  (begin
 	    (im-pushback-preedit
@@ -787,10 +787,10 @@
 	     (skk-get-current-completion sc))))
 
       (if (or
-	   (= stat 'skk-state-okuri)
+	   (eq? stat 'skk-state-okuri)
 	   (and
 	    (not (null? csc))
-	    (= stat 'skk-state-converting)
+	    (eq? stat 'skk-state-converting)
 	    (skk-context-okuri sc)
 	    (= (skk-context-child-type sc) skk-child-type-editor)))
 	  (begin
@@ -801,9 +801,9 @@
 				   (skk-context-kana-mode sc))))))
 
       (if (or
-	   (= stat 'skk-state-direct)
-	   (= stat 'skk-state-latin)
-	   (= stat 'skk-state-wide-latin))
+	   (eq? stat 'skk-state-direct)
+	   (eq? stat 'skk-state-latin)
+	   (eq? stat 'skk-state-wide-latin))
 	  (begin
 	    (im-pushback-preedit sc skk-preedit-attr-direct-pending-rk
 				 (rk-pending rkc))
@@ -813,9 +813,9 @@
 				 (rk-pending rkc))
 	    (if (and
 		 (or
-		  (= stat 'skk-state-kanji)
-		  (= stat 'skk-state-completion)
-		  (= stat 'skk-state-okuri))
+		  (eq? stat 'skk-state-kanji)
+		  (eq? stat 'skk-state-completion)
+		  (eq? stat 'skk-state-okuri))
 		 skk-show-cursor-on-preedit?)
 		(im-pushback-preedit sc preedit-cursor ""))))
 
@@ -1108,18 +1108,19 @@
 		key-str))
 	 #t));;and
       ;; update state
-      (if (= (skk-context-state sc) 'skk-state-kanji)
+      (if (eq? (skk-context-state sc) 'skk-state-kanji)
 	  (if res
 	      (skk-append-string sc res)))
       (if (or
-	   (= (skk-context-state sc) 'skk-state-direct)
-	   (= (skk-context-state sc) 'skk-state-latin)
-	   (= (skk-context-state sc) 'skk-state-wide-latin))
+	   (eq? (skk-context-state sc) 'skk-state-direct)
+	   (eq? (skk-context-state sc) 'skk-state-latin)
+	   (eq? (skk-context-state sc) 'skk-state-wide-latin))
 	  (if (and res
 		   (or
 		    (list? (car res))
 		    (not (string=? (car res) ""))))
-	      (skk-get-string sc res kana))
+	      (skk-get-string sc res kana)
+	      #f)
 	  #f))))
 
 (define skk-sokuon-shiin-char?
@@ -1300,7 +1301,7 @@
 		#f)
 	      #t)
 	  (if (and res
-		   (= stat 'skk-state-kanji)
+		   (eq? stat 'skk-state-kanji)
 		   (or
 		    (list? (car res))
 		    (not (string=? (car res) ""))))
@@ -1309,7 +1310,7 @@
 		#t)
 	      #t)
 	   (if (and res
-	 	    (= stat 'skk-state-okuri)
+	 	    (eq? stat 'skk-state-okuri)
 		    (or
 		     (list? (car res))
 		     (not (string=? (car res) ""))))
@@ -1356,9 +1357,9 @@
 	     (im-activate-candidate-selector
 	      sc
 	      (cond
-	       ((= skk-candidate-selection-style 'uim)
+	       ((eq? skk-candidate-selection-style 'uim)
 		(skk-context-nr-candidates sc))
-	       ((= skk-candidate-selection-style 'ddskk-like)
+	       ((eq? skk-candidate-selection-style 'ddskk-like)
 		(- (skk-context-nr-candidates sc)
 		   (- skk-candidate-op-count 1))))
 	      skk-nr-candidate-max))
@@ -1373,9 +1374,9 @@
 	     (im-activate-candidate-selector
 	      sc
 	      (cond
-	       ((= skk-candidate-selection-style 'uim)
+	       ((eq? skk-candidate-selection-style 'uim)
 		  (skk-context-nr-candidates sc))
-	       ((= skk-candidate-selection-style 'ddskk-like)
+	       ((eq? skk-candidate-selection-style 'ddskk-like)
 		  (- (skk-context-nr-candidates sc)
 		     (- skk-candidate-op-count 1))))
 	      skk-nr-candidate-max))))))))
@@ -1386,17 +1387,17 @@
 	  (cur-page (if (= skk-nr-candidate-max 0)
 			0
 			(cond
-			 ((= skk-candidate-selection-style 'uim)
+			 ((eq? skk-candidate-selection-style 'uim)
 			    (quotient (skk-context-nth sc)
 				      skk-nr-candidate-max))
-			 ((= skk-candidate-selection-style 'ddskk-like)
+			 ((eq? skk-candidate-selection-style 'ddskk-like)
 			    (quotient (- (skk-context-nth sc)
 					 (- skk-candidate-op-count 1))
 				      skk-nr-candidate-max)))))
 	  (idx -1)
 	  (res #f))
       (cond
-       ((= skk-candidate-selection-style 'uim)
+       ((eq? skk-candidate-selection-style 'uim)
 	(let ((num (- (length skk-uim-heading-label-char-list)
 		      (length
 		       (member (charcode->string key)
@@ -1404,7 +1405,7 @@
 	  (if (or (< num skk-nr-candidate-max)
 		  (= skk-nr-candidate-max 0))
 	      (set! idx (+ (* cur-page skk-nr-candidate-max) num)))))
-       ((= skk-candidate-selection-style 'ddskk-like)
+       ((eq? skk-candidate-selection-style 'ddskk-like)
 	(let ((num (- (length skk-ddskk-like-heading-label-char-list)
 		      (length
 		       (member (charcode->string key)
@@ -1423,9 +1424,9 @@
 (define skk-incr-candidate-index
   (lambda (sc)
     (cond
-     ((= skk-candidate-selection-style 'uim)
+     ((eq? skk-candidate-selection-style 'uim)
       (skk-context-set-nth! sc (+ 1 (skk-context-nth sc))))
-     ((= skk-candidate-selection-style 'ddskk-like)
+     ((eq? skk-candidate-selection-style 'ddskk-like)
       (if (> (+ (skk-context-nth sc) 1) (- skk-candidate-op-count 1))
 	  (if (> (+ (skk-context-nth sc) skk-nr-candidate-max)
 		 (- (skk-context-nr-candidates sc) 1))
@@ -1443,7 +1444,7 @@
 (define skk-decr-candidate-index
   (lambda (sc)
     (cond
-     ((= skk-candidate-selection-style 'uim)
+     ((eq? skk-candidate-selection-style 'uim)
       (if (> (skk-context-nth sc) 0)
 	  (begin
 	    (skk-context-set-nth! sc (- (skk-context-nth sc) 1))
@@ -1458,7 +1459,7 @@
 		   sc
 		   (- (skk-context-nr-candidates sc) 1))
 		  #t)))))
-     ((= skk-candidate-selection-style 'ddskk-like)
+     ((eq? skk-candidate-selection-style 'ddskk-like)
       (if (> (skk-context-nth sc)
 	     (+ skk-nr-candidate-max (- skk-candidate-op-count 2)))
 	  (begin
@@ -1500,9 +1501,9 @@
 	     ;;
 	     (if (skk-context-candidate-window sc)
 		 (cond
-		  ((= skk-candidate-selection-style 'uim)
+		  ((eq? skk-candidate-selection-style 'uim)
 		   (im-select-candidate sc (skk-context-nth sc)))
-		  ((= skk-candidate-selection-style 'ddskk-like)
+		  ((eq? skk-candidate-selection-style 'ddskk-like)
 		   (im-select-candidate
 		    sc
 		    (- (skk-context-nth sc) (- skk-candidate-op-count 1))))))
@@ -1541,9 +1542,9 @@
     (skk-check-candidate-window-begin sc)
     (if (skk-context-candidate-window sc)
 	(cond
-	 ((= skk-candidate-selection-style 'uim)
+	 ((eq? skk-candidate-selection-style 'uim)
 	  (im-select-candidate sc (skk-context-nth sc)))
-	 ((= skk-candidate-selection-style 'ddskk-like)
+	 ((eq? skk-candidate-selection-style 'ddskk-like)
 	  (im-select-candidate
 	   sc
 	   (- (skk-context-nth sc) (- skk-candidate-op-count 1))))))
@@ -1617,12 +1618,12 @@
 (define skk-heading-label-char?
   (lambda (key)
     (cond
-     ((= skk-candidate-selection-style 'uim)
+     ((eq? skk-candidate-selection-style 'uim)
       (if (member (charcode->string key)
       		  skk-uim-heading-label-char-list)
 	  #t
 	  #f))
-     ((= skk-candidate-selection-style 'ddskk-like)
+     ((eq? skk-candidate-selection-style 'ddskk-like)
       (if (member (charcode->string key)
 		  skk-ddskk-like-heading-label-char-list)
 	  #t
@@ -1685,7 +1686,7 @@
 	   #t)
        (if (skk-purge-candidate-key? key key-state)
 	   (if (not
-		(and (= skk-candidate-selection-style 'ddskk-like)
+		(and (eq? skk-candidate-selection-style 'ddskk-like)
 		     (skk-context-candidate-window sc)))
 	       (begin
 		 (skk-reset-candidate-window sc)
@@ -1796,19 +1797,19 @@
     (let* ((sc (skk-find-descendant-context c))
 	   (state (skk-context-state sc))
 	   (fun (cond
-		 ((= state 'skk-state-direct)
+		 ((eq? state 'skk-state-direct)
 		  skk-proc-state-direct)
-		 ((= state 'skk-state-kanji)
+		 ((eq? state 'skk-state-kanji)
 		  skk-proc-state-kanji)
-		 ((= state 'skk-state-completion)
+		 ((eq? state 'skk-state-completion)
 		  skk-proc-state-completion)
-		 ((= state 'skk-state-converting)
+		 ((eq? state 'skk-state-converting)
 		  skk-proc-state-converting)
-		 ((= state 'skk-state-okuri)
+		 ((eq? state 'skk-state-okuri)
 		  skk-proc-state-okuri)
-		 ((= state 'skk-state-latin)
+		 ((eq? state 'skk-state-latin)
 		  skk-proc-state-latin)
-		 ((= state 'skk-state-wide-latin)
+		 ((eq? state 'skk-state-wide-latin)
 		  skk-proc-state-wide-latin)))
 	   (res (fun c key key-state)))
       (if res
@@ -1835,7 +1836,7 @@
   (lambda (c key state)
     (let* ((sc (skk-find-descendant-context c))
 	   (state (skk-context-state sc)))
-      (if (= state 'skk-state-latin)
+      (if (eq? state 'skk-state-latin)
 	  ;; don't discard key release event for apps
 	  (begin
 	    (skk-context-set-commit-raw! sc #f)
@@ -1854,9 +1855,9 @@
 		  (skk-get-nth-candidate
 		   dcsc
 		   (cond
-		    ((= skk-candidate-selection-style 'uim)
+		    ((eq? skk-candidate-selection-style 'uim)
 		       idx)
-		    ((= skk-candidate-selection-style 'ddskk-like)
+		    ((eq? skk-candidate-selection-style 'ddskk-like)
 		       (+ idx (- skk-candidate-op-count 1)))))))
 	   (okuri (skk-context-okuri dcsc)))
       (list
@@ -1867,7 +1868,7 @@
 			  (skk-make-string okuri skk-type-hiragana))
 	   cand)
        (cond
-	((= skk-candidate-selection-style 'uim)
+	((eq? skk-candidate-selection-style 'uim)
 	 (if (= skk-nr-candidate-max 0)
 	     (digit->string (+ idx 1))
 	     (begin
@@ -1878,7 +1879,7 @@
 		     (string->charcode
 		      (nth idx skk-uim-heading-label-char-list))))
 		   ""))))
-	((= skk-candidate-selection-style 'ddskk-like)
+	((eq? skk-candidate-selection-style 'ddskk-like)
 	 (if (> skk-nr-candidate-max 0)
 	     (set! idx (remainder idx skk-nr-candidate-max)))
 	 (if (< idx (length skk-ddskk-like-heading-label-char-list))
@@ -1895,9 +1896,9 @@
       (if (skk-context-candidate-window sc)
 	  (begin
 	    (cond
-	     ((= skk-candidate-selection-style 'uim)
+	     ((eq? skk-candidate-selection-style 'uim)
 	      (skk-context-set-nth! sc idx))
-	     ((= skk-candidate-selection-style 'ddskk-like)
+	     ((eq? skk-candidate-selection-style 'ddskk-like)
 	      (skk-context-set-nth! sc (+ idx (- skk-candidate-op-count 1)))))
 	    (skk-update-preedit sc))))))
 
