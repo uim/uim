@@ -355,11 +355,10 @@
       (skk-reset-candidate-window sc)
       (skk-context-set-nr-candidates! sc 0)
       (skk-context-set-latin-conv! sc #f)
+      (skk-context-set-child-context! sc '())
+      (skk-context-set-child-type! sc '())
       (if (not (null? csc))
-	  (begin
-	    (skk-flush csc)
-	    (skk-context-set-child-context! sc '())
-	    (skk-context-set-child-type! sc '()))))))
+	  (skk-flush csc)))))
 
 (define skk-context-new
   (lambda (id im)
