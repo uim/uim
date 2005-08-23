@@ -1737,7 +1737,7 @@ ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val)
     if (!SYMBOLP(var))
         SigScm_ErrorObj("set-symbol-value! : require symbol but got ", var);
 
-    return SCM_SYMBOL_VCELL(var);
+    return SCM_SYMBOL_SET_VCELL(var, val);
 }
 
 ScmObj ScmOp_bit_and(ScmObj obj1, ScmObj obj2)

@@ -139,10 +139,10 @@
 		 (lambda ()
 		   (if (not skk-use-manual-candwin-setting?)
 		       (cond
-			((= skk-candidate-selection-style 'ddskk-like)
+			((eq? skk-candidate-selection-style 'ddskk-like)
 			    (custom-set-value! 'skk-candidate-op-count 5)
 			    (custom-set-value! 'skk-nr-candidate-max 7))
-		        ((= skk-candidate-selection-style 'uim)
+		        ((eq? skk-candidate-selection-style 'uim)
 			    (custom-set-value! 'skk-candidate-op-count 2)
 			    (custom-set-value! 'skk-nr-candidate-max 10))))))
 
