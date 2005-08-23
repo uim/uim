@@ -823,7 +823,11 @@ ScmObj ScmOp_setcar(ScmObj pair, ScmObj car)
     else
         SigScm_ErrorObj("set-car! : pair required but got ", pair);
 
-    return SCM_TRUE;
+#if SCM_COMPAT_SIOD
+    return car;
+#else
+    return SCM_UNDEF;
+#endif
 }
 
 ScmObj ScmOp_setcdr(ScmObj pair, ScmObj cdr)
@@ -833,7 +837,11 @@ ScmObj ScmOp_setcdr(ScmObj pair, ScmObj cdr)
     else
         SigScm_ErrorObj("set-cdr! : pair required but got ", pair);
 
-    return SCM_TRUE;
+#if SCM_COMPAT_SIOD
+    return cdr;
+#else
+    return SCM_UNDEF;
+#endif
 }
 
 ScmObj ScmOp_caar(ScmObj pair)
