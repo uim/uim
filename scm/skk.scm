@@ -132,6 +132,7 @@
 (define skk-preedit-attr-pending-rk #f)
 (define skk-preedit-attr-conv-body #f)
 (define skk-preedit-attr-conv-okuri #f)
+(define skk-preedit-attr-conv-appendix #f)
 (define skk-preedit-attr-direct-pending-rk #f)
 (define skk-preedit-attr-child-beginning-mark #f)
 (define skk-preedit-attr-child-end-mark #f)
