@@ -975,10 +975,7 @@
 (define anthy-reset-handler
   (lambda (ac)
     (if (anthy-context-on ac)
-        (begin
-          (anthy-flush ac)
-          (im-clear-preedit ac)
-          (im-update-preedit ac)))
+	(anthy-flush ac))
     ;; code to commit pending string must not be added to here.
     ;; -- YamaKen 2004-10-21
     ))

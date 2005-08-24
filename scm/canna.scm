@@ -877,8 +877,6 @@
   (if (canna-context-on cc)
       (begin
         (canna-flush cc)
-        (im-clear-preedit cc)
-        (im-update-preedit cc)
         (if (canna-context-state cc)
           (let ((cc-id (canna-context-cc-id cc)))
             (canna-lib-reset-conversion cc-id))))))
