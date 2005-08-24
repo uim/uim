@@ -88,7 +88,7 @@ extern ScmObj SigScm_features;
 #define SCM_SETFREECELL_CAR(a,car) (SCM_FREECELL_CAR(a) = car)
 #define SCM_SETFREECELL_CDR(a,cdr) (SCM_FREECELL_CDR(a) = cdr)
 
-/* Internal Macros with no prefix */
+/* Prefix-less Abbreviation Names For Convenient Internal Use */
 #define EQ             SCM_EQ
 #define NEQ            SCM_NEQ
 #define NULLP          SCM_NULLP
