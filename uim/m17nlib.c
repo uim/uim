@@ -36,6 +36,7 @@
 #include <string.h>
 #include <m17n.h>
 #include "uim-scm.h"
+#include "uim-util.h"
 #include "context.h"
 #include "plugin.h"
 
@@ -78,58 +79,11 @@ unused_ic_id(void)
   return max_input_contexts - 1;
 }
 
-static char *
-remap_lang_name(char *lang)
-{
-  static struct lang_map_ {
-    char *lib_lang;
-    char *lang;
-  } lang_map[] = {
-    {"Japanese", "ja"},
-    {"Amharic", "am"},
-    {"Assamese", "as"},
-    {"Bengali", "bn"},
-    {"Tibetan", "bo"},
-    {"Greek", "el"},
-    {"Arabic", "ar"},
-    /*    {"Farsi", ""},*/
-    {"Gujarati", "gu"},
-    {"Hebrew", "he"},
-    {"Hindi", "hi"},
-    {"Croatian", "hr"},
-    {"Kazakh", "kk"},
-    /*    {"Caombodia", ""},*/
-    {"Kannada", "kn"},
-    {"Korean", "ko"},
-    {"Laothian", "lo"},
-    {"Malayalam", "ml"},
-    {"Oriya", "or"},
-    {"Punjabi", "pa"},/* Panjabi ? */
-    {"Russian", "ru"},
-    {"Slovak", "sl"},/* Slovenia ? */
-    {"Serbian", "sr"},
-    {"Tamil", "ta"},
-    {"Telugu", "te"},
-    {"Thai", "th"},
-    {"Vietnamese", "vi"},
-    {"Chinese", "zh"},
-    {NULL, NULL}
-  };
-
-  struct lang_map_ *l;
-  for (l = lang_map; l->lib_lang; l++) {
-    if (!strcmp(lang, l->lib_lang)) {
-      return l->lang;
-    }
-  }
-  return NULL;
-}
-
 static void
 pushback_input_method(MInputMethod *im,
 		      char *lib_lang, char *name)
 {
-  char *lang = remap_lang_name(lib_lang);
+  char *lang = uim_get_language_code_from_language_name(lib_lang);
 
   im_array = realloc(im_array, 
 		     sizeof(struct im_) * (nr_input_methods + 1));
