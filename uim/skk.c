@@ -376,13 +376,6 @@ nth_candidate(char *str, int nth)
     str = next_cand_slash(str);
     if (*str == '/')
       str++;
-    /*
-     * we don't need sanity check here since argument nth is limited
-     * by caller
-     *
-     * if (*str == '\0')
-     *  return NULL;
-     */ 
   }
 
   if (*str == '\0')
@@ -853,17 +846,79 @@ is_purged_cand(const char *str)
   return 0;
 }
 
+static char *
+expand_str(const char *p)
+{
+  char buf[BUFSIZ];
+  int i = 0;
+  int c, n, ndigits;
+
+  while (*p != '\0') {
+    c = *p;
+    if (c == '\\') {
+      p++;
+      c = *p;
+      if (c == '\0')
+	break;
+      switch (c) {
+      case '\\':
+	c = '\\';
+	break;
+      case 'n':
+	c = '\n';
+	break;
+      case 'r':
+	c = '\r';
+	break;
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+    	n = c - '0';
+    	ndigits = 1;
+    	while (ndigits < 3) {
+    	  p++;
+    	  c = *p;
+    	  if (*p == '\0') {
+	    fprintf(stderr, "error in expand_str\n");
+	    return NULL;
+	  }
+	  if (c >= '0' && c <= '7') {
+	    n = n * 8 + c - '0';
+	    ndigits++;
+	  } else {
+	    p--;
+	    break;
+	  }
+	}
+	c = n;
+      }
+    }
+    if ((i + 1) >= BUFSIZ) {
+      fprintf(stderr, "expand_str: too long word\n");
+      return NULL;
+    }
+    buf[i] = c;
+    i++;
+    p++;
+  }
+  buf[i] = '\0';
+  return strdup(buf);
+}
+
 static char **
 get_purged_words(const char *str)
 {
   char *p;
   char **words = NULL;
   char *word = NULL;
-  const char *evaluated_word;
   int nr = 0;
   int open = 0;
-  int len = 0, word_len;
-  uim_lisp return_val;
+  int len = 0;
 
   p = strstr(str, "(skk-ignore-dic-word");
   if (!p)
@@ -875,7 +930,7 @@ get_purged_words(const char *str)
   p++;
 
   while (*p != '\0') {
-    if (*p == '"') {
+    if (*p == '"' && p[-1] != '\\') {
       open = open ? 0 : 1;
       if (open) {
 	p++;
@@ -883,29 +938,21 @@ get_purged_words(const char *str)
 	len = 0;
       } else {
 	char *orig = malloc(len + 1);
+	char *expanded_word;
+
 	nr++;
 	if (words)
 	  words = realloc(words, sizeof(char *) * nr);
-	else {
+	else
 	  words = malloc(sizeof(char *));
-	}
 	strncpy(orig, word, len);
 	orig[len] = '\0';
 
-	/* need to eval word. siod dependent like \073 -> ';' */
-	UIM_EVAL_FSTRING1(NULL, "(string-append \"%s\")", orig);
-	return_val = uim_scm_return_value();
-	if (return_val == uim_scm_null_list()) {
-	  words[nr - 1] = malloc(len + 1);
-	  strncpy(words[nr - 1], orig, len);
-	  words[nr - 1][len] = '\0';
-	} else {
-	  evaluated_word = uim_scm_refer_c_str(return_val);
-	  word_len = strlen(evaluated_word);
-	  words[nr - 1] = malloc(word_len + 1);
-	  strncpy(words[nr - 1], evaluated_word, word_len);
-	  words[nr - 1][word_len] = '\0';
-	}
+	expanded_word = expand_str(orig);
+	if (expanded_word)
+	  words[nr - 1] = expanded_word;
+	else
+	  words[nr - 1] = strdup(orig);
 	free(orig);
       }
     }
@@ -2131,6 +2178,7 @@ static void purge_candidate(struct skk_cand_array *ca, int nth)
     }
     
 #if 0
+    /* Disabled since we use okuri specific ignoing words */
     if (ca->okuri) {
       /* also purge the word in the base cand array */
       int index = index_in_real_cands(&ca->line->cands[0], str);
@@ -2836,13 +2884,60 @@ skk_remove_annotation(uim_lisp str_)
   return res;
 }
 
+static char *
+eval_candidate_with_concat(const char *cand)
+{
+  char *p, *q, *str;
+  char *expanded_str;
+  size_t len;
+
+  if ((p = strstr(cand, "(concat \"")) == NULL)
+    return NULL;
+
+  /* check close paren */
+  q = strrchr(p, ')');
+  if (!q || (strstr(p, "\")") == NULL))
+    return NULL;
+
+  /* ignore make-string */
+  if (strstr(p, "make-string"))
+    return NULL;
+
+  /* get quoted str  */
+  len = (q - p + 1) - strlen("(concat \"\")");
+  str = malloc(len + 1);
+  strncpy(str, p + strlen("(concat \""), len);
+  str[len] = '\0';
+
+  expanded_str = expand_str(str);
+  if (!expanded_str) {
+    free(str);
+    return NULL;
+  }
+  
+  /* get evaluated candidate */
+  len = p - cand + strlen(expanded_str);
+  if (len > strlen(str))
+    str = realloc(str, len + 1);
+
+  if (p != cand) {
+    strncpy(str, cand, p - cand);
+    str[p - cand] = '\0';
+    strcat(str, expanded_str);
+  } else {
+    strcpy(str, expanded_str);
+  }
+
+  free(expanded_str);
+  return str;
+}
+
 static uim_lisp
 skk_eval_candidate(uim_lisp str_)
 {
-  const char *cand, *evaluated_str;
-  char *p, *q, *str;
-  size_t len;
-  uim_lisp cand_, return_val;
+  const char *cand;
+  char *str;
+  uim_lisp cand_;
 
   if (str_ == uim_scm_null_list())
     return uim_scm_null_list();
@@ -2850,48 +2945,13 @@ skk_eval_candidate(uim_lisp str_)
   cand = uim_scm_refer_c_str(str_);
 
   /* eval concat only for now */
-  if ((p = strstr(cand, "(concat \"")) == NULL)
+  str = eval_candidate_with_concat(cand);
+  if (!str)
     return str_;
-
-  /* check close paren */
-  q = strrchr(p, ')');
-  if (!q || (strstr(p, "\")") == NULL))
-    return str_;
-
-  /* ignore make-string */
-  if (strstr(p, "make-string"))
-    return str_;
-
-  len = q - p + 1;
-  /* replace elisp's concat with string-append */
-  str = malloc(len + strlen("string-append") - strlen("concat") + 1);
-  strcpy(str, "(string-append");
-  strncat(str, p + strlen("(concat"), q - (p + strlen("(concat")) + 1);
-
-  /* XXX string expansion like \073 -> ';' is siod dependent */
-  UIM_EVAL_FSTRING1(NULL, "%s", str);
-  return_val = uim_scm_return_value();
-  if (return_val == uim_scm_null_list()) {
-    free(str);
-    return str_;
-  }
-  evaluated_str = uim_scm_refer_c_str(return_val);
-
-  /* get evaluated candidate */
-  len = p - cand + strlen(evaluated_str);
-  if (len > strlen(str))
-    str = realloc(str, len + 1);
-
-  if (p != cand) {
-    strncpy(str, cand, p - cand);
-    str[p - cand] = '\0';
-    strcat(str, evaluated_str);
-  } else {
-    strcpy(str, evaluated_str);
-  }
 
   cand_ = uim_scm_make_str(str);
   free(str);
+
   return cand_;
 }
 
