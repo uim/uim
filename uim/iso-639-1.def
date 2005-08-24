@@ -127,6 +127,7 @@
  {"mr",    N_("Marathi")},
  {"mo",    N_("Moldavian")},
  {"mn",    N_("Mongolian")},
+ {"my",    N_("Myanmar")},
  {"na",    N_("Nauru")},
  {"ne",    N_("Nepali")},
  {"no",    N_("Norwegian")},
