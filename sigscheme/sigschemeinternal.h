@@ -121,6 +121,22 @@ extern ScmObj SigScm_features;
 #define C_POINTERP     SCM_C_POINTERP
 #define C_FUNCPOINTERP SCM_C_FUNCPOINTERP
 
+/*
+ * Abbrev name for these constants are not provided since it involves some
+ * consistency problems and confusions. Use the canonical names always.
+ *
+ * SCM_NULL
+ * SCM_TRUE
+ * SCM_FALSE
+ * SCM_EOF
+ * SCM_QUOTE
+ * SCM_QUASIQUOTE
+ * SCM_UNQUOTE
+ * SCM_UNQUOTE_SPLICING
+ * SCM_UNBOUND
+ * SCM_UNDEF
+ */
+
 /* Macros For Argnument Number Checking */
 #define CHECK_1_ARG(arg) \
     (SCM_NULLP(arg))

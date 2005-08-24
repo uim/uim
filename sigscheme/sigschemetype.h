@@ -367,22 +367,6 @@ extern ScmObj SigScm_nil, SigScm_true, SigScm_false, SigScm_eof;
 extern ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote, SigScm_unquote_splicing;
 extern ScmObj SigScm_unbound, SigScm_undef;
 
-/*
- * Abbrev name for these constants are not provided since it involves some
- * consistency problems and confusions. Use the canonical names always.
- *
- * SCM_NULL
- * SCM_TRUE
- * SCM_FALSE
- * SCM_EOF
- * SCM_QUOTE
- * SCM_QUASIQUOTE
- * SCM_UNQUOTE
- * SCM_UNQUOTE_SPLICING
- * SCM_UNBOUND
- * SCM_UNDEF
- */
-
 #define SCM_NIL              SigScm_nil
 #define SCM_TRUE             SigScm_true
 #define SCM_FALSE            SigScm_false
