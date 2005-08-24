@@ -56,7 +56,6 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-extern ScmObj continuation_thrown_obj;
 
 /*=======================================
   File Local Function Declarations
@@ -1974,7 +1973,7 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env)
     jmpret = setjmp(SCM_CONTINUATION_JMPENV(cont));
     if (jmpret) {
         /* return by calling longjmp */
-        return continuation_thrown_obj;
+        return scm_continuation_thrown_obj;
     }
 
     /* execute (proc cont) */
