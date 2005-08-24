@@ -875,7 +875,7 @@ get_purged_words(const char *str)
   p++;
 
   while (*p != '\0') {
-    if (*p == '"') {
+    if (*p == '"' && p[-1] != '\\') {
       open = open ? 0 : 1;
       if (open) {
 	p++;
