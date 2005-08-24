@@ -75,8 +75,8 @@ static void print_etc(FILE *f, ScmObj obj, enum  OutputType otype);
 =======================================*/
 void SigScm_Display(ScmObj obj)
 {
-    print_ScmObj_internal(SCM_PORTINFO_FILE(current_output_port), obj, AS_WRITE);
-    fprintf(SCM_PORTINFO_FILE(current_output_port), "\n");
+    print_ScmObj_internal(SCM_PORTINFO_FILE(scm_current_output_port), obj, AS_WRITE);
+    fprintf(SCM_PORTINFO_FILE(scm_current_output_port), "\n");
 }
 
 void SigScm_WriteToPort(ScmObj port, ScmObj obj)

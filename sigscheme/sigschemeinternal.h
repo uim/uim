@@ -56,19 +56,21 @@ struct trace_frame {
    Variable Declarations
 =======================================*/
 /* datas.c */
-extern ScmObj *stack_start_pointer;
+extern ScmObj *scm_stack_start_pointer;
 
 /* error.c*/
-extern ScmObj current_error_port;
+extern ScmObj scm_current_error_port;
 
 /* eval.c */
-extern struct trace_frame *trace_root;
+extern ScmObj scm_continuation_thrown_obj;
+extern ScmObj scm_letrec_env;
+extern struct trace_frame *scm_trace_root;
 
 /* io.c */
-extern ScmObj current_input_port;
-extern ScmObj current_output_port;
-extern ScmObj current_error_port;
+extern ScmObj scm_current_input_port;
+extern ScmObj scm_current_output_port;
 extern ScmObj SigScm_features;
+
 
 /*=======================================
    Macro Declarations
@@ -99,6 +101,10 @@ extern ScmObj SigScm_features;
 #define CDR            SCM_CDR
 #define SET_CAR        SCM_CONS_SET_CAR
 #define SET_CDR        SCM_CONS_SET_CDR
+#define CAAR           SCM_CAAR
+#define CADR           SCM_CADR
+#define CDAR           SCM_CDAR
+#define CDDR           SCM_CDDR
 
 #define INTP           SCM_INTP
 #define CONSP          SCM_CONSP
@@ -114,22 +120,6 @@ extern ScmObj SigScm_features;
 #define FREECELLP      SCM_FREECELLP
 #define C_POINTERP     SCM_C_POINTERP
 #define C_FUNCPOINTERP SCM_C_FUNCPOINTERP
-
-/*
- * Abbrev name for these constants are not provided since it involves some
- * consistency problems and confusions. Use the canonical names always.
- *
- * SCM_NULL
- * SCM_TRUE
- * SCM_FALSE
- * SCM_EOF
- * SCM_QUOTE
- * SCM_QUASIQUOTE
- * SCM_UNQUOTE
- * SCM_UNQUOTE_SPLICING
- * SCM_UNBOUND
- * SCM_UNDEF
- */
 
 /* Macros For Argnument Number Checking */
 #define CHECK_1_ARG(arg) \
@@ -170,5 +160,13 @@ extern ScmObj SigScm_features;
 /*=======================================
    Function Declarations
 =======================================*/
+/* eval.c */
+/* environment related functions */
+ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env);
+ScmObj add_environment(ScmObj var, ScmObj val, ScmObj env);
+ScmObj lookup_environment(ScmObj var, ScmObj env);
+ScmObj lookup_frame(ScmObj var, ScmObj frame);
+ScmObj symbol_value(ScmObj var, ScmObj env);
+
 
 #endif /* __SIGSCHEMEINTERNAL_H */

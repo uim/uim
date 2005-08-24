@@ -52,23 +52,25 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define SCM_PORT_GETC(port, c)                                                  \
-    do {                                                                        \
-        if (SCM_PORTINFO_UNGOTTENCHAR(port)) {                                  \
-            c = SCM_PORTINFO_UNGOTTENCHAR(port);                                \
-            SCM_PORTINFO_UNGOTTENCHAR(port) = 0;                                \
-        } else {                                                                \
-            switch (SCM_PORTINFO_PORTTYPE(port)) {                              \
-            case PORT_FILE:                                                     \
-                c = getc(SCM_PORTINFO_FILE(port));                              \
-                break;                                                          \
-            case PORT_STRING:                                                   \
-                c = (*SCM_PORTINFO_STR_CURRENT(port));                          \
-                SCM_PORTINFO_STR_CURRENT(port)++;                               \
-                break;                                                          \
-            }                                                                   \
-            SCM_PORTINFO_UNGOTTENCHAR(port) = 0;                                \
-        }                                                                       \
+#define SCM_PORT_GETC(port, c)                                                \
+    do {                                                                      \
+        if (SCM_PORTINFO_UNGOTTENCHAR(port)) {                                \
+            c = SCM_PORTINFO_UNGOTTENCHAR(port);                              \
+            SCM_PORTINFO_UNGOTTENCHAR(port) = 0;                              \
+        } else {                                                              \
+            switch (SCM_PORTINFO_PORTTYPE(port)) {                            \
+            case PORT_FILE:                                                   \
+                c = getc(SCM_PORTINFO_FILE(port));                            \
+                if (c == '\n') SCM_PORTINFO_LINE(port)++;                     \
+                break;                                                        \
+            case PORT_STRING:                                                 \
+                c = (*SCM_PORTINFO_STR_CURRENT(port));                        \
+                if (c == '\0') c = EOF;                                       \
+                SCM_PORTINFO_STR_CURRENT(port)++;                             \
+                break;                                                        \
+            }                                                                 \
+            SCM_PORTINFO_UNGOTTENCHAR(port) = 0;                              \
+        }                                                                     \
     } while (0);
 
 #define SCM_PORT_UNGETC(port,c )        \
@@ -127,17 +129,9 @@ static int skip_comment_and_space(ScmObj port)
             while (1) {
                 SCM_PORT_GETC(port, c);
                 if (c == '\n') {
-                    if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE) {
-                        SCM_PORTINFO_LINE(port)++;
-                    }
                     break;
                 }
                 if (c == EOF ) return c;
-            }
-            continue;
-        } else if(c == '\n') {
-            if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE) {
-                SCM_PORTINFO_LINE(port)++;
             }
             continue;
         } else if(isspace(c)) {

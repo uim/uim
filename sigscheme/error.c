@@ -54,7 +54,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-ScmObj current_error_port  = NULL;
+ScmObj scm_current_error_port  = NULL;
 
 /*=======================================
   File Local Function Declarations
@@ -82,7 +82,7 @@ void SigScm_Error(const char *msg, ...)
 
     /* show message */
     va_start(va, msg);
-    vfprintf(SCM_PORTINFO_FILE(current_error_port), msg, va);
+    vfprintf(SCM_PORTINFO_FILE(scm_current_error_port), msg, va);
     va_end(va);
 
     /* show backtrace */
@@ -95,11 +95,11 @@ void SigScm_Error(const char *msg, ...)
 void SigScm_ErrorObj(const char *msg, ScmObj obj)
 {
     /* print msg */
-    fprintf(SCM_PORTINFO_FILE(current_error_port), "%s", msg);
+    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "%s", msg);
 
     /* print obj */
-    SigScm_WriteToPort(current_error_port, obj);
-    fprintf(SCM_PORTINFO_FILE(current_error_port), "\n");
+    SigScm_WriteToPort(scm_current_error_port, obj);
+    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "\n");
    
     /* show backtrace */
     SigScm_ShowBacktrace();
@@ -113,12 +113,12 @@ void SigScm_ShowBacktrace(void)
     struct trace_frame *f;
 
     /* show title */
-    fprintf(SCM_PORTINFO_FILE(current_error_port), "**** BACKTRACE ****\n");
+    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "**** BACKTRACE ****\n");
 
     /* show each frame's obj */
-    for (f = trace_root; f; f = f->prev) {
-        SigScm_WriteToPort(current_error_port, f->obj);
+    for (f = scm_trace_root; f; f = f->prev) {
+        SigScm_WriteToPort(scm_current_error_port, f->obj);
         
-        fprintf(SCM_PORTINFO_FILE(current_error_port), "\n");
+        fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "\n");
     }
 }

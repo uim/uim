@@ -65,8 +65,6 @@ ScmObjInternal SigScm_nil_impl, SigScm_true_impl, SigScm_false_impl, SigScm_eof_
 ScmObjInternal SigScm_quote_impl, SigScm_quasiquote_impl, SigScm_unquote_impl, SigScm_unquote_splicing_impl;
 ScmObjInternal SigScm_unbound_impl, SigScm_undef_impl;
 
-extern ScmObj continuation_thrown_obj, letrec_env;
-
 #if SCM_COMPAT_SIOD
 extern ScmObj scm_return_value;
 #endif
@@ -77,7 +75,7 @@ extern ScmObj scm_return_value;
 void SigScm_Initialize(void)
 {
     ScmObj obj;
-    stack_start_pointer = &obj;
+    SigScm_gc_protect_stack(&obj);
 
     /*=======================================================================
       Etc Variable Initialization
@@ -96,8 +94,8 @@ void SigScm_Initialize(void)
     /*=======================================================================
       Externed Variable Initialization
     =======================================================================*/
-    continuation_thrown_obj = SCM_NIL;
-    letrec_env              = SCM_NIL;
+    scm_continuation_thrown_obj = SCM_NIL;
+    scm_letrec_env              = SCM_NIL;
     /*=======================================================================
       Storage Initialization
     =======================================================================*/
@@ -298,12 +296,12 @@ void SigScm_Initialize(void)
     /*=======================================================================
       Current Input & Output Initialization
     =======================================================================*/
-    current_input_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
-    SigScm_gc_protect(current_input_port);
-    current_output_port = Scm_NewFilePort(stdout, "stdout", PORT_OUTPUT);
-    SigScm_gc_protect(current_output_port);
-    current_error_port  = Scm_NewFilePort(stderr, "stderr", PORT_OUTPUT);
-    SigScm_gc_protect(current_error_port);
+    scm_current_input_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
+    SigScm_gc_protect(scm_current_input_port);
+    scm_current_output_port = Scm_NewFilePort(stdout, "stdout", PORT_OUTPUT);
+    SigScm_gc_protect(scm_current_output_port);
+    scm_current_error_port  = Scm_NewFilePort(stderr, "stderr", PORT_OUTPUT);
+    SigScm_gc_protect(scm_current_error_port);
 
 #if SCM_USE_SRFI1
     /*=======================================================================
@@ -342,7 +340,7 @@ void SigScm_Initialize(void)
     scm_return_value = SCM_NIL;
 #endif
 
-    stack_start_pointer = NULL;
+    SigScm_gc_unprotect_stack(&obj);
 }
 
 void SigScm_Finalize()

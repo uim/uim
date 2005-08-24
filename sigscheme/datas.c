@@ -133,7 +133,7 @@ static ScmObj        scm_freelist  = NULL;
 static int           scm_cur_marker = SCM_INITIAL_MARKER;
 
 static jmp_buf save_regs_buf;
-ScmObj *stack_start_pointer = NULL;
+ScmObj *scm_stack_start_pointer = NULL;
 
 static ScmObj *symbol_hash = NULL;
 static gc_protected_obj *protected_obj_list = NULL;
@@ -476,7 +476,7 @@ static void gc_mark(void)
                       (ScmObj*)(((char*)save_regs_buf) + sizeof(save_regs_buf)));
 
     gc_mark_protected_obj();
-    gc_mark_locations(stack_start_pointer, &obj);
+    gc_mark_locations(scm_stack_start_pointer, &obj);
     gc_mark_symbol_hash();
 }
 
@@ -568,14 +568,14 @@ static void gc_sweep(void)
 
 void SigScm_gc_protect_stack(ScmObj *stack_start)
 {
-    if (!stack_start_pointer)
-        stack_start_pointer = stack_start;
+    if (!scm_stack_start_pointer)
+        scm_stack_start_pointer = stack_start;
 }
 
 void SigScm_gc_unprotect_stack(ScmObj *stack_start)
 {
-    if (stack_start_pointer == stack_start)
-        stack_start_pointer = NULL;
+    if (scm_stack_start_pointer == stack_start)
+        scm_stack_start_pointer = NULL;
 }
 
 /*===========================================================================

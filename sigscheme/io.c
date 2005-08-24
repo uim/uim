@@ -53,8 +53,8 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-ScmObj current_input_port   = NULL;
-ScmObj current_output_port  = NULL;
+ScmObj scm_current_input_port   = NULL;
+ScmObj scm_current_output_port  = NULL;
 
 ScmObj SigScm_features      = NULL;
 
@@ -149,12 +149,12 @@ ScmObj ScmOp_output_portp(ScmObj obj)
 
 ScmObj ScmOp_current_input_port(void)
 {
-    return current_input_port;
+    return scm_current_input_port;
 }
 
 ScmObj ScmOp_current_output_port(void)
 {
-    return current_output_port;
+    return scm_current_output_port;
 }
 
 ScmObj ScmOp_with_input_from_file(ScmObj filepath, ScmObj thunk)
@@ -167,9 +167,9 @@ ScmObj ScmOp_with_input_from_file(ScmObj filepath, ScmObj thunk)
     if (!FUNCP(thunk) && !CLOSUREP(thunk))
         SigScm_ErrorObj("with-input-from-file : proc required but got ", thunk);
     
-    /* set current_input_port */
-    tmp_port = current_input_port;
-    current_input_port = ScmOp_open_input_file(filepath);
+    /* set scm_current_input_port */
+    tmp_port = scm_current_input_port;
+    scm_current_input_port = ScmOp_open_input_file(filepath);
     
     /* (apply thunk ())*/
     ret = ScmOp_apply(SCM_LIST_2(thunk,
@@ -177,10 +177,10 @@ ScmObj ScmOp_with_input_from_file(ScmObj filepath, ScmObj thunk)
                       SCM_NIL);
 
     /* close port */
-    ScmOp_close_input_port(current_input_port);
+    ScmOp_close_input_port(scm_current_input_port);
 
-    /* restore current_input_port */
-    current_input_port = tmp_port;
+    /* restore scm_current_input_port */
+    scm_current_input_port = tmp_port;
 
     return ret;
 }
@@ -195,9 +195,9 @@ ScmObj ScmOp_with_output_to_file(ScmObj filepath, ScmObj thunk)
     if (!FUNCP(thunk) && !CLOSUREP(thunk))
         SigScm_ErrorObj("with-output-to-file : proc required but got ", thunk);
     
-    /* set current_output_port */
-    tmp_port = current_output_port;
-    current_output_port = ScmOp_open_output_file(filepath);
+    /* set scm_current_output_port */
+    tmp_port = scm_current_output_port;
+    scm_current_output_port = ScmOp_open_output_file(filepath);
     
     /* (apply thunk ())*/
     ret = ScmOp_apply(SCM_LIST_2(thunk,
@@ -205,10 +205,10 @@ ScmObj ScmOp_with_output_to_file(ScmObj filepath, ScmObj thunk)
                       SCM_NIL);
 
     /* close port */
-    ScmOp_close_output_port(current_output_port);
+    ScmOp_close_output_port(scm_current_output_port);
 
-    /* restore current_output_port */
-    current_output_port = tmp_port;
+    /* restore scm_current_output_port */
+    scm_current_output_port = tmp_port;
 
     return ret;
 }
@@ -275,7 +275,7 @@ ScmObj ScmOp_read(ScmObj arg, ScmObj env)
     ScmObj port = SCM_NIL;
     if (NULLP(arg)) {
         /* (read) */
-        port = current_input_port;
+        port = scm_current_input_port;
     } else if (PORTP(CAR(arg))) {
         /* (read port) */
         port = CAR(arg);
@@ -292,7 +292,7 @@ ScmObj ScmOp_read_char(ScmObj arg, ScmObj env)
     char  *buf  = NULL;
     if (NULLP(arg)) {
         /* (read-char) */
-        port = current_input_port;
+        port = scm_current_input_port;
     } else if (!NULLP(CDR(arg)) && PORTP(CAR(CDR(arg)))) {
         /* (read-char port) */
         port = CAR(CDR(arg));
@@ -338,7 +338,7 @@ ScmObj ScmOp_write(ScmObj arg, ScmObj env)
     arg = CDR(arg);
 
     /* get port */
-    port = current_output_port;
+    port = scm_current_output_port;
     if (!NULLP(arg) && !NULLP(CAR(arg)) && PORTP(CAR(arg)))
         port = CAR(arg);
 
@@ -359,7 +359,7 @@ ScmObj ScmOp_display(ScmObj arg, ScmObj env)
     arg = CDR(arg);
 
     /* get port */
-    port = current_output_port;
+    port = scm_current_output_port;
     
     /* (display obj port) */
     if (!NULLP(arg) && PORTP(CAR(arg)))
@@ -383,7 +383,7 @@ ScmObj ScmOp_print(ScmObj arg, ScmObj env)
     arg = CDR(arg);
 
     /* get port */
-    port = current_output_port;
+    port = scm_current_output_port;
     
     /* (display obj port) */
     if (!NULLP(arg) && PORTP(CAR(arg)))
@@ -399,7 +399,7 @@ ScmObj ScmOp_print(ScmObj arg, ScmObj env)
 ScmObj ScmOp_newline(ScmObj arg, ScmObj env)
 {
     /* get port */
-    ScmObj port = current_output_port;
+    ScmObj port = scm_current_output_port;
 
     /* (newline port) */
     if (!NULLP(arg) && !NULLP(CAR(arg)) && PORTP(CAR(arg))) {
@@ -425,7 +425,7 @@ ScmObj ScmOp_write_char(ScmObj arg, ScmObj env)
         SigScm_ErrorObj("write-char : char required but got ", obj);
 
     /* get port */
-    port = current_output_port;
+    port = scm_current_output_port;
     
     /* (write-char obj port) */
     if (!NULLP(arg) && PORTP(CAR(arg)))

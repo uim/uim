@@ -71,21 +71,14 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-ScmObj continuation_thrown_obj = NULL; /* for storing continuation return object */
-ScmObj letrec_env = NULL;              /* for storing environment obj of letrec */
+ScmObj scm_continuation_thrown_obj = NULL; /* for storing continuation return object */
+ScmObj scm_letrec_env = NULL;              /* for storing environment obj of letrec */
 
-struct trace_frame *trace_root = NULL;
+struct trace_frame *scm_trace_root = NULL;
 
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env);
-static ScmObj add_environment(ScmObj var, ScmObj val, ScmObj env);
-static ScmObj lookup_environment(ScmObj var, ScmObj env);
-static ScmObj lookup_frame(ScmObj var, ScmObj frame);
-
-static ScmObj symbol_value(ScmObj var, ScmObj env);
-
 static ScmObj map_eval(ScmObj args, ScmObj env);
 static ScmObj qquote_internal(ScmObj expr, ScmObj env, int nest);
 static ScmObj qquote_vector(ScmObj vec, ScmObj env, int nest);
@@ -93,8 +86,7 @@ static ScmObj qquote_vector(ScmObj vec, ScmObj env, int nest);
 /*=======================================
   Function Implementations
 =======================================*/
-
-static ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
+ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
 {
     ScmObj frame    = SCM_NIL;
     ScmObj tmp_vars = vars;
@@ -130,8 +122,7 @@ static ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
     return env;
 }
 
-
-static ScmObj add_environment(ScmObj var, ScmObj val, ScmObj env)
+ScmObj add_environment(ScmObj var, ScmObj val, ScmObj env)
 {
     ScmObj newest_frame, tmp;
     ScmObj new_varlist, new_vallist;
@@ -167,7 +158,7 @@ static ScmObj add_environment(ScmObj var, ScmObj val, ScmObj env)
 
   TODO : describe more precicely
 ========================================================*/
-static ScmObj lookup_environment(ScmObj var, ScmObj env)
+ScmObj lookup_environment(ScmObj var, ScmObj env)
 {
     ScmObj frame = SCM_NIL;
     ScmObj val   = SCM_NIL;
@@ -189,7 +180,7 @@ static ScmObj lookup_environment(ScmObj var, ScmObj env)
     return SCM_NIL;
 }
 
-static ScmObj lookup_frame(ScmObj var, ScmObj frame)
+ScmObj lookup_frame(ScmObj var, ScmObj frame)
 {
     ScmObj vals = SCM_NIL;
     ScmObj vars = SCM_NIL;
@@ -239,23 +230,20 @@ ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
 
     /* for debugging */
     struct trace_frame frame;
-    frame.prev = trace_root;
+    frame.prev = scm_trace_root;
     frame.obj  = obj;
-    trace_root = &frame;
+    scm_trace_root = &frame;
 
 eval_loop:
     switch (SCM_TYPE(obj)) {
     case ScmSymbol:
-    {
         ret = symbol_value(obj, env);
         goto eval_done;
-    }
 
     /*====================================================================
       Evaluating Expression
     ====================================================================*/
     case ScmCons:
-    {
         /*============================================================
           Evaluating CAR
         ============================================================*/
@@ -278,12 +266,12 @@ eval_loop:
             SigScm_ErrorObj("eval : invalid operation ", obj);
             break;
         }
+
         /*============================================================
           Evaluating the rest of the List by the type of CAR
         ============================================================*/
         switch (SCM_TYPE(tmp)) {
         case ScmFunc:
-        {
             /*
              * Description of FUNCTYPE handling.
              *
@@ -306,14 +294,12 @@ eval_loop:
              */
             switch (SCM_FUNC_NUMARG(tmp)) {
             case FUNCTYPE_L:
-            {
                 ret = SCM_FUNC_EXEC_SUBRL(tmp,
                                           map_eval(CDR(obj), env),
                                           env);
                 goto eval_done;
-            }
+
             case FUNCTYPE_R:
-            {
                 obj = SCM_FUNC_EXEC_SUBRR(tmp,
                                           CDR(obj),
                                           &env,
@@ -331,9 +317,8 @@ eval_loop:
 
                 ret = obj;
                 goto eval_done;
-            }
+
             case FUNCTYPE_2N:
-            {
                 obj = CDR(obj);
 
                 /* check 1st arg */
@@ -358,28 +343,24 @@ eval_loop:
                                                ScmOp_eval(CAR(obj), env));
                 }
                 goto eval_done;
-            }
+
             case FUNCTYPE_0:
-            {
                 ret = SCM_FUNC_EXEC_SUBR0(tmp);
                 goto eval_done;
-            }
+
             case FUNCTYPE_1:
-            {
                 ret = SCM_FUNC_EXEC_SUBR1(tmp, ScmOp_eval(CAR(CDR(obj)),env));
                 goto eval_done;
-            }
+
             case FUNCTYPE_2:
-            {
                 obj = CDR(obj);
                 arg = ScmOp_eval(CAR(obj), env); /* 1st arg */
                 ret = SCM_FUNC_EXEC_SUBR2(tmp,
                                           arg,
                                           ScmOp_eval(CAR(CDR(obj)), env)); /* 2nd arg */
                 goto eval_done;
-            }
+
             case FUNCTYPE_3:
-            {
                 obj = CDR(obj);
                 arg = ScmOp_eval(CAR(obj), env); /* 1st arg */
                 obj = CDR(obj);
@@ -388,9 +369,8 @@ eval_loop:
                                           ScmOp_eval(CAR(obj), env), /* 2nd arg */
                                           ScmOp_eval(CAR(CDR(obj)), env)); /* 3rd arg */
                 goto eval_done;
-            }
+
             case FUNCTYPE_4:
-            {
                 obj = CDR(obj);
                 arg = ScmOp_eval(CAR(obj), env); /* 1st arg */
                 obj = CDR(obj);
@@ -400,9 +380,8 @@ eval_loop:
                                           ScmOp_eval(CAR(CDR(obj)), env), /* 3rd arg */
                                           ScmOp_eval(CAR(CDR(CDR(obj))), env)); /* 4th arg */
                 goto eval_done;
-            }
+
             case FUNCTYPE_5:
-            {
                 obj = CDR(obj);
                 arg = ScmOp_eval(CAR(obj), env); /* 1st arg */
                 obj = CDR(obj);
@@ -413,13 +392,12 @@ eval_loop:
                                           ScmOp_eval(CAR(CDR(CDR(obj))), env), /* 4th arg */
                                           ScmOp_eval(CAR(CDR(CDR(CDR(obj)))), env)); /* 5th arg */
                 goto eval_done;
-            }
+
             default:
                 SigScm_Error("eval : unknown functype\n");
             }
-        }
+
         case ScmClosure:
-        {
             /*
              * Description of the ScmClosure handling
              *
@@ -468,14 +446,13 @@ eval_loop:
              */
             obj = ScmExp_begin(CDR(SCM_CLOSURE_EXP(tmp)), &env, &tail_flag);
             goto eval_loop;
-        }
+
         case ScmContinuation:
-        {
             /*
              * Description of ScmContinuation handling
              *
              * (1) eval 1st arg
-             * (2) store it to global variable "continuation_thrown_obj"
+             * (2) store it to global variable "scm_continuation_thrown_obj"
              * (3) then longjmp
              *
              * PROBLEM : setjmp/longjmp is stack based operation, so we
@@ -484,25 +461,24 @@ eval_loop:
              * class continuation? (TODO).
              */
             obj = CAR(CDR(obj));
-            continuation_thrown_obj = ScmOp_eval(obj, env);
+            scm_continuation_thrown_obj = ScmOp_eval(obj, env);
             longjmp(SCM_CONTINUATION_JMPENV(tmp), 1);
             break;
-        }
+
         case ScmEtc:
-        {
             SigScm_ErrorObj("eval : invalid application: ", obj);
-        }
+
         default:
             SigScm_ErrorObj("eval : What type of function? ", arg);
         }
-    }
+
     default:
         ret = obj;
         goto eval_done;
     }
 
 eval_done:
-    trace_root = frame.prev;
+    scm_trace_root = frame.prev;
     return ret;
 }
 
@@ -527,29 +503,22 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
     /* apply proc */
     switch (SCM_TYPE(proc)) {
     case ScmFunc:
-    {
         switch (SCM_FUNC_NUMARG(proc)) {
         case FUNCTYPE_L:
-        {
             return SCM_FUNC_EXEC_SUBRL(proc,
                                        obj,
                                        env);
-        }
+
         case FUNCTYPE_2N:
-        {
-            args = obj;
-            
+            args = obj;            
             /* check 1st arg */
             if (NULLP(args))
-                return SCM_FUNC_EXEC_SUBR2N(proc, SCM_NIL, SCM_NIL);
-            
+                return SCM_FUNC_EXEC_SUBR2N(proc, SCM_NIL, SCM_NIL); 
             /* eval 1st arg */
             obj  = CAR(args);
-            
             /* check 2nd arg */
             if (NULLP(CDR(args)))
                 return SCM_FUNC_EXEC_SUBR2N(proc, obj, SCM_NIL);
-            
             /* call proc with each 2 objs */
             for (args = CDR(args); !NULLP(args); args = CDR(args)) {
                 obj = SCM_FUNC_EXEC_SUBR2N(proc,
@@ -557,52 +526,45 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
                                            CAR(args));
             }
             return obj;
-        }
+
         case FUNCTYPE_0:
-        {
             return SCM_FUNC_EXEC_SUBR0(proc);
-        }
+
         case FUNCTYPE_1:
-        {
             return SCM_FUNC_EXEC_SUBR1(proc,
                                        CAR(obj));
-        }
+
         case FUNCTYPE_2:
-        {
             return SCM_FUNC_EXEC_SUBR2(proc,
                                        CAR(obj),
                                        CAR(CDR(obj)));
-        }
+
         case FUNCTYPE_3:
-        {
             return SCM_FUNC_EXEC_SUBR3(proc,
                                        CAR(obj),
                                        CAR(CDR(obj)),
                                        CAR(CDR(CDR(obj))));
-        }
+
         case FUNCTYPE_4:
-        {
             return SCM_FUNC_EXEC_SUBR4(proc,
                                        CAR(obj),
                                        CAR(CDR(obj)),
                                        CAR(CDR(CDR(obj))),
                                        CAR(CDR(CDR(CDR(obj)))));
-        }
+
         case FUNCTYPE_5:
-        {
             return SCM_FUNC_EXEC_SUBR5(proc,
                                        CAR(obj),
                                        CAR(CDR(obj)),
                                        CAR(CDR(CDR(obj))),
                                        CAR(CDR(CDR(CDR(obj)))),
                                        CAR(CDR(CDR(CDR(CDR(obj))))));
-        }
+
         default:
             SigScm_ErrorObj("apply : invalid application ", proc);
         }
-    }
+
     case ScmClosure:
-    {
         /*
          * Description of the ScmClosure handling
          *
@@ -615,7 +577,6 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
          *   (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
          */
         args = CAR(SCM_CLOSURE_EXP(proc)); /* arg is <formals> */
-
         if (SYMBOLP(args)) {
             /* (1) : <variable> */
             env = extend_environment(Scm_NewCons(args, SCM_NIL),
@@ -641,7 +602,6 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
         } else {
             SigScm_ErrorObj("lambda : bad syntax with ", args);
         }
-
         /*
          * Notice
          *
@@ -650,7 +610,7 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
          */
         obj = ScmExp_begin(CDR(SCM_CLOSURE_EXP(proc)), &env, &tail_flag);
         return ScmOp_eval(obj, env);
-    }
+
     default:
         SigScm_ErrorObj("apply : invalid application ", args);
     }
@@ -659,7 +619,7 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
     return SCM_NIL;
 }
 
-static ScmObj symbol_value(ScmObj var, ScmObj env)
+ScmObj symbol_value(ScmObj var, ScmObj env)
 {
     ScmObj val = SCM_NIL;
 
@@ -675,7 +635,7 @@ static ScmObj symbol_value(ScmObj var, ScmObj env)
     }
 
     /* next, lookup the special environment for letrec */
-    val = lookup_environment(var, letrec_env);
+    val = lookup_environment(var, scm_letrec_env);
     if (!NULLP(val)) {
         /* variable is found in letrec environment, so returns its value */
         return CAR(val);
@@ -1417,15 +1377,15 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp, int *tail_flag)
             vals = Scm_NewCons(val, vals);
         }
 
-        /* construct new frame for letrec_env */
+        /* construct new frame for scm_letrec_env */
         frame = Scm_NewCons(vars, vals);
-        letrec_env = Scm_NewCons(frame, letrec_env);
+        scm_letrec_env = Scm_NewCons(frame, scm_letrec_env);
 
-        /* extend environment by letrec_env */
+        /* extend environment by scm_letrec_env */
         env = extend_environment(CAR(frame), CDR(frame), env);
 
         /* ok, vars of letrec is extended to env */
-        letrec_env = SCM_NIL;
+        scm_letrec_env = SCM_NIL;
 
         /* set new env */
         *envp = env;
