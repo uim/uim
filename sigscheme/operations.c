@@ -92,8 +92,7 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
 
     case ScmChar:
         /* chars and are the same character according to the char=? */
-        if (NFALSEP(ScmOp_char_equal(obj1, obj2))) return SCM_TRUE;
-        break;
+        return ScmOp_char_equal(obj1, obj2);
 
     case ScmSymbol:  /* equivalent symbols must already be true on eq? */
     case ScmCons:
@@ -147,8 +146,7 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
 
     case ScmChar:
         /* chars and are the same character according to the char=? */
-        if (NFALSEP(ScmOp_char_equal(obj1, obj2))) return SCM_TRUE;
-        break;
+        return ScmOp_char_equal(obj1, obj2);
 
     case ScmCons:
         for (; !NULLP(obj1); obj1 = CDR(obj1), obj2 = CDR(obj2)) {
@@ -188,7 +186,8 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
             return SCM_TRUE;
         break;
 
-    case ScmSymbol: /* equivalent symbols must already be true on EQ */
+    case ScmSymbol:
+        /* equivalent symbols must already be true on the prior EQ */
         break;
 
     case ScmFunc:
@@ -197,25 +196,34 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
         break;
 
     case ScmClosure:
-        if (EQ(SCM_CLOSURE_EXP(obj1), SCM_CLOSURE_EXP(obj2))
-            && EQ(SCM_CLOSURE_ENV(obj1), SCM_CLOSURE_ENV(obj2)))
-            return SCM_TRUE;
+        /*
+         * eq? is the valid equality check for closures. Having same members
+         * does not ensure equality.
+         */
         break;
 
     case ScmPort:
+#if 0
+        /* does not make sense. eq? is sufficient */
         if (EQ(SCM_PORT_PORTDIRECTION(obj1), SCM_PORT_PORTDIRECTION(obj2))
             && EQ(SCM_PORT_PORTINFO(obj1), SCM_PORT_PORTINFO(obj2)))
             return SCM_TRUE;
+#endif
         break;
 
     case ScmContinuation:
-        if (EQ(SCM_CONTINUATION_CONTINFO(obj1), SCM_CONTINUATION_CONTINFO(obj2)))
-            return SCM_TRUE;
+        /*
+         * eq? is the valid equality check for continuations. Having same
+         * members does not ensure equality.
+         */
         break;
 
     case ScmValuePacket:
+#if 0
+        /* does not make sense. eq? is sufficient */
         if (EQ(SCM_VALUEPACKET_VALUES(obj1), SCM_VALUEPACKET_VALUES(obj2)))
             return SCM_TRUE;
+#endif
         break;
 
     case ScmEtc:
