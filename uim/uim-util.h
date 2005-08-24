@@ -52,6 +52,9 @@ extern "C" {
 const char *
 uim_get_language_name_from_locale(const char *localename);
 
+const char *
+uim_get_language_code_from_language_name(const char *language_name);
+
 int
 is_setugid(void);
 

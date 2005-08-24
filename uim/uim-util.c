@@ -597,6 +597,18 @@ uim_get_language_name_from_locale(const char *localename)
   return get_language_name_from_locale(localename);
 }
 
+const char *
+uim_get_language_code_from_language_name(const char *language_name)
+{
+  unsigned int i;
+  for (i = 0; i < NR_LOCALE_LANGUAGE; i++) {
+    if (strcmp(locale_language_table[i].language, language_name) == 0) {
+      return locale_language_table[i].locale;
+    }
+  }
+  return NULL;
+}
+
 static uim_lisp
 lang_code_to_lang_name_raw(uim_lisp code_)
 {
