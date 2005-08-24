@@ -680,7 +680,7 @@ ScmObj Scm_NewFunc(enum ScmFuncArgType num_arg, ScmFuncType func)
 
     SCM_ENTYPE_FUNC(obj);
     SCM_FUNC_SET_NUMARG(obj, num_arg);
-    SCM_FUNC_SET_FUNC(obj, func);
+    SCM_FUNC_SET_CFUNC(obj, func);
 
     return obj;
 }

@@ -188,21 +188,29 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
             return SCM_TRUE;
         break;
 
-    case ScmSymbol:  /* equivalent symbols must already be true on eq? */
+    case ScmSymbol: /* equivalent symbols must already be true on EQ */
         break;
 
-    /* ScmFunc, ScmClosure, ScmPort, ScmContinuation comparison is not unspecified in R5RS */
     case ScmFunc:
-        SigScm_ErrorObj("equal? : cannot compare function : ", Scm_NewCons(obj1, obj2));
+        if (EQ(SCM_FUNC_CFUNC(obj1), SCM_FUNC_CFUNC(obj2)))
+            return SCM_TRUE;
         break;
+
     case ScmClosure:
-        SigScm_ErrorObj("equal? : cannot compare function : ", Scm_NewCons(obj1, obj2));
+        if (EQ(SCM_CLOSURE_EXP(obj1), SCM_CLOSURE_EXP(obj2))
+            && EQ(SCM_CLOSURE_ENV(obj1), SCM_CLOSURE_ENV(obj2)))
+            return SCM_TRUE;
         break;
+
     case ScmPort:
-        SigScm_ErrorObj("equal? : cannot compare function : ", Scm_NewCons(obj1, obj2));
+        if (EQ(SCM_PORT_PORTDIRECTION(obj1), SCM_PORT_PORTDIRECTION(obj2))
+            && EQ(SCM_PORT_PORTINFO(obj1), SCM_PORT_PORTINFO(obj2)))
+            return SCM_TRUE;
         break;
+
     case ScmContinuation:
-        SigScm_ErrorObj("equal? : cannot compare function : ", Scm_NewCons(obj1, obj2));
+        if (EQ(SCM_CONTINUATION_CONTINFO(obj1), SCM_CONTINUATION_CONTINFO(obj2)))
+            return SCM_TRUE;
         break;
 
     case ScmValuePacket:

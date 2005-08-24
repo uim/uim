@@ -272,8 +272,8 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_ENTYPE_FUNC(a)     (SCM_ENTYPE((a), ScmFunc))
 #define SCM_FUNC_NUMARG(a) (SCM_FUNC(a)->obj.func.num_arg)
 #define SCM_FUNC_SET_NUMARG(a, numarg) (SCM_FUNC_NUMARG(a) = (numarg))
-#define SCM_FUNC_FUNC(a)   (SCM_FUNC(a)->obj.func.subrs.subr0.func)
-#define SCM_FUNC_SET_FUNC(a, func)     (SCM_FUNC_FUNC(a) = (ScmFuncType)(func))
+#define SCM_FUNC_CFUNC(a)   (SCM_FUNC(a)->obj.func.subrs.subr0.func)
+#define SCM_FUNC_SET_CFUNC(a, func)     (SCM_FUNC_CFUNC(a) = (ScmFuncType)(func))
 
 #define SCM_FUNC_EXEC_SUBR0(a)                               ((*(a)->obj.func.subrs.subr0.func) ())
 #define SCM_FUNC_EXEC_SUBR1(a, arg1)                         ((*(a)->obj.func.subrs.subr1.func) (arg1))
