@@ -194,8 +194,8 @@ uim_create_context(void *ptr,
 #else
   {
     uim_lisp id_     = uim_scm_make_int(uc->id);
-    uim_lisp lang_   = uim_scm_make_str(lang);
-    uim_lisp engine_ = uim_scm_make_str(engine);
+    uim_lisp lang_   = uim_scm_quote(uim_scm_make_symbol(lang));
+    uim_lisp engine_ = uim_scm_quote(uim_scm_make_symbol(engine));
     uim_lisp proc    = uim_scm_make_symbol("create-context");
     uim_lisp form    = uim_scm_list4(proc, id_, lang_, engine_);
 
