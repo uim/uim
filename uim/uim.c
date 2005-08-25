@@ -60,6 +60,9 @@ int uim_nr_im;
 static int uim_initialized;
 static int uim_quiting;
 
+/* Definition of mutex */
+UIM_NEW_MUTEX_STATIC(initing_or_quiting);
+
 void
 uim_set_preedit_cb(uim_context uc,
 		   void (*clear_cb)(void *ptr),
@@ -607,7 +610,7 @@ uim_set_surrounding_text(uim_context uc, const char *text,
 }
 
 static void
-uim_init_scm()
+uim_init_scm(void)
 {
   int i;
   char *scm_files = NULL;
@@ -666,7 +669,10 @@ uim_init_scm()
 int
 uim_init(void)
 {
+  UIM_LOCK_MUTEX(initing_or_quiting);
+
   if (uim_initialized) {
+    UIM_UNLOCK_MUTEX(initing_or_quiting);
     return 0;
   }
   uim_last_client_encoding = NULL;
@@ -674,6 +680,8 @@ uim_init(void)
   uim_nr_im = 0;
   uim_init_scm();
   uim_initialized = 1;
+
+  UIM_UNLOCK_MUTEX(initing_or_quiting);
   return 0;
 }
 
@@ -682,7 +690,10 @@ uim_quit(void)
 {
   int i;
 
+  UIM_LOCK_MUTEX(initing_or_quiting);
+  
   if (!uim_initialized || uim_quiting) {
+    UIM_UNLOCK_MUTEX(initing_or_quiting);
     return;
   }
   /* Some multithreaded applications calls uim_quit bursty. */
@@ -701,4 +712,5 @@ uim_quit(void)
   uim_last_client_encoding = NULL;
   uim_initialized = 0;
   uim_quiting = 0;
+  UIM_UNLOCK_MUTEX(initing_or_quiting);
 }
