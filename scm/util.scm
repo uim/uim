@@ -210,7 +210,9 @@
   (lambda (lst obj)
     (if (null? lst)
 	obj
-	(set-cdr! (last-pair lst) obj))))
+	(begin
+	  (set-cdr! (last-pair lst) obj)
+	  lst))))
 
 ;;
 ;; R5RS-like character procedures
