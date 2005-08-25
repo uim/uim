@@ -473,8 +473,8 @@
 				   res)
 		(ustr-insert-elem! (anthy-context-raw-ustr ac)
 				   key-str))
-	      (if (not (rk-pending rkc)
-                  (anthy-commit-raw ac))))))))))
+	      (if (not (rk-pending rkc))
+                  (anthy-commit-raw ac)))))))))
 
 (define anthy-has-preedit?
   (lambda (ac)
@@ -735,7 +735,7 @@
        (and (not (ustr-cursor-at-beginning? preconv-str))
 	    (cons preedit-underline
 		  (string-append-map-ustr-former extract-kana preconv-str)))
-       (and (> (length pending) 0)
+       (and (> (string-length pending) 0)
 	    (cons preedit-underline pending))
        (and (anthy-has-preedit? ac)
 	    (cons preedit-cursor ""))
