@@ -56,7 +56,7 @@
 		 (control-key-mask key-state))))))
 
 ;; key
-(define-key prime-language-toggle-key?        "F11")
+(define-key prime-language-toggle-key?  "F11")
 (define-key prime-expand-segment-key? '("<Control>o" "<Shift>right"))
 (define-key prime-shrink-segment-key? '("<Control>i" "<Shift>left"))
 
@@ -430,7 +430,7 @@
 (register-action 'action_prime_mode_latin
 		 (lambda (context)
 		   '(figure_prime_mode_latin
-		     "p[--]"
+		     "--"
 		     "通常入力"
 		     "PRIMEをオフ"))
 		 (lambda (context)
@@ -442,7 +442,7 @@
 (register-action 'action_prime_mode_hiragana
 		 (lambda (context)
 		   '(figure_prime_mode_hiragana
-		     "P[あ]"
+		     "あ"
 		     "日本語"
 		     "PRIMEをオン"))
 		 (lambda (context)
@@ -454,7 +454,7 @@
 (register-action 'action_prime_mode_wide_latin
 		 (lambda (context)
 		   '(figure_prime_mode_wide_latin
-		     "P[Ａ]"
+		     "Ａ"
 		     "全角英数"
 		     "全角を入力"))
 		 (lambda (context)
@@ -466,7 +466,7 @@
 (register-action 'action_prime_mode_application
 		 (lambda (context)
 		   '(figure_prime_mode_application
-		     "P[！]"
+		     "！"
 		     "特殊"
 		     "アプリケーション依存"))
 		 (lambda (context)
