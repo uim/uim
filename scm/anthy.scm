@@ -473,8 +473,8 @@
 				   res)
 		(ustr-insert-elem! (anthy-context-raw-ustr ac)
 				   key-str))
-	      (if (not (rk-pending rkc)
-                  (anthy-commit-raw ac))))))))))
+	      (if (not (rk-pending rkc))
+                  (anthy-commit-raw ac)))))))))
 
 (define anthy-has-preedit?
   (lambda (ac)
@@ -735,7 +735,7 @@
        (and (not (ustr-cursor-at-beginning? preconv-str))
 	    (cons preedit-underline
 		  (string-append-map-ustr-former extract-kana preconv-str)))
-       (and (> (length pending) 0)
+       (and (> (string-length pending) 0)
 	    (cons preedit-underline pending))
        (and (anthy-has-preedit? ac)
 	    (cons preedit-cursor ""))
@@ -975,10 +975,7 @@
 (define anthy-reset-handler
   (lambda (ac)
     (if (anthy-context-on ac)
-        (begin
-          (anthy-flush ac)
-          (im-clear-preedit ac)
-          (im-update-preedit ac)))
+	(anthy-flush ac))
     ;; code to commit pending string must not be added to here.
     ;; -- YamaKen 2004-10-21
     ))
