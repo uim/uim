@@ -174,6 +174,7 @@ AC_CHECK_HEADERS([sys/time.h sys/stat.h sys/un.h getopt.h assert.h signal.h term
 AC_CHECK_HEADERS([pty.h utmp.h util.h libutil.h])
 AC_CHECK_HEADERS([curses.h stropts.h])
 AC_CHECK_HEADERS([sys/param.h strings.h])
+AC_CHECK_HEADERS([pthread.h], have_pthread=yes, have_pthread=no)
 
 # Check for type
 AC_CHECK_TYPES(sig_t, , ,
@@ -515,6 +516,7 @@ AC_HELP_STRING([--with-libedit[=DIR], Enable libedit support]),
      LDFLAGS=$saved_LDFLAGS
 fi
 
+
 AM_CONDITIONAL(M17NLIB, test x$use_m17nlib = xyes)
 AM_CONDITIONAL(SCIM, test x$use_scim = xyes)
 AM_CONDITIONAL(ANTHY, test x$use_anthy = xyes)
@@ -537,7 +539,7 @@ AM_CONDITIONAL(COMPAT_SCM, test x$enable_compat_scm = xyes)
 AM_CONDITIONAL(COMPAT_TABLE, test x$enable_compat_table = xyes)
 AM_CONDITIONAL(NEED_SETENV_C, test $ac_cv_func_setenv = no -o $ac_cv_func_unsetenv = no)
 AM_CONDITIONAL(NEED_STRSEP_C, test $ac_cv_func_strsep = no)
-
+AM_CONDITIONAL(HAVE_PTHREAD, test "x$have_pthread" = "xyes")
 
 if test "x$use_applet" = "xyes"; then
   AC_PROG_INTLTOOL
@@ -797,6 +799,7 @@ Configure Result :
    DICT            : ${use_dict}
    EB              : ${use_eb}
    libedit         : ${use_libedit}
+   pthread         : ${have_pthread}
    Default toolkit : ${default_toolkit}
 ])
 
