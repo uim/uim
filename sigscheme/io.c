@@ -394,7 +394,7 @@ ScmObj ScmOp_print(ScmObj arg, ScmObj env)
     return SCM_UNDEF;
 
 }
-#endif
+#endif /* SCM_USE_NONSTD_FEATURES */
 
 ScmObj ScmOp_newline(ScmObj arg, ScmObj env)
 {
@@ -618,4 +618,4 @@ static int file_existsp(const char *c_filepath)
     fclose(f);
     return 1;
 }
-#endif
+#endif /* SCM_USE_NONSTD_FEATURES */

@@ -469,8 +469,7 @@ static char *read_word(ScmObj port)
             return dst;
 
         default:
-            stringbuf[stringlen] = (char)c;
-            stringlen++;
+            stringbuf[stringlen++] = (char)c;
             break;
         }
     }
@@ -499,8 +498,7 @@ static char *read_char_sequence(ScmObj port)
         case '(': case ')': case ';':
             /* pass through first char */
             if (stringlen == 0) {
-                stringbuf[stringlen] = (char)c;
-                stringlen++;
+                stringbuf[stringlen++] = (char)c;
                 break;
             }
             /* doesn't break */
@@ -512,8 +510,7 @@ static char *read_char_sequence(ScmObj port)
             return dst;
 
         default:
-            stringbuf[stringlen] = (char)c;
-            stringlen++;
+            stringbuf[stringlen++] = (char)c;
             break;
         }
     }

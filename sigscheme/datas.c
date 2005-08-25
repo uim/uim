@@ -794,7 +794,7 @@ ScmObj Scm_NewCFuncPointer(C_FUNC func)
 
     return obj;
 }
-#endif
+#endif /* SCM_USE_NONSTD_FEATURES */
 
 /*
  * Symbol Name Hash Related Functions
@@ -902,7 +902,7 @@ C_FUNC Scm_GetCFuncPointer(ScmObj c_funcptr)
 
     return SCM_C_FUNCPOINTER_VALUE(c_funcptr);
 }
-#endif
+#endif /* SCM_USE_NONSTD_FEATURES */
 
 ScmObj Scm_eval_c_string(const char *exp)
 {
