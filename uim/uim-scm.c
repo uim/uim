@@ -170,19 +170,19 @@ uim_scm_make_func_ptr(uim_func_ptr func_ptr)
 void
 uim_scm_gc_protect(uim_lisp *location)
 {
-  SigScm_gc_protect((ScmObj)(*location));
+  SigScm_GC_Protect((ScmObj)(*location));
 }
 
 void
 uim_scm_gc_protect_stack(uim_lisp *stack_start)
 {
-  SigScm_gc_protect_stack((ScmObj*)stack_start);
+  SigScm_GC_ProtectStack((ScmObj*)stack_start);
 }
 
 void
 uim_scm_gc_unprotect_stack(uim_lisp *stack_start)
 {
-  SigScm_gc_unprotect_stack((ScmObj*)stack_start);
+  SigScm_GC_UnprotectStack((ScmObj*)stack_start);
 }
 
 uim_bool
@@ -194,13 +194,13 @@ uim_scm_is_alive(void)
 long
 uim_scm_get_verbose_level(void)
 {
-  return (long)SigScm_get_verbose_level();
+  return (long)SigScm_GetVerboseLevel();
 }
 
 void
 uim_scm_set_verbose_level(long new_value)
 {
-  SigScm_set_verbose_level(new_value);
+  SigScm_SetVerboseLevel(new_value);
 }
 
 void

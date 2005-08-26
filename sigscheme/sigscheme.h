@@ -97,9 +97,9 @@ void Scm_RegisterFuncR(const char *name, ScmObj (*func) (ScmObj, ScmObj *envp, i
 /* datas.c */
 void   SigScm_InitStorage(void);
 void   SigScm_FinalizeStorage(void);
-void   SigScm_gc_protect(ScmObj obj);
-void   SigScm_gc_protect_stack(ScmObj *stack_start);
-void   SigScm_gc_unprotect_stack(ScmObj *stack_start);
+void   SigScm_GC_Protect(ScmObj obj);
+void   SigScm_GC_ProtectStack(ScmObj *stack_start);
+void   SigScm_GC_UnprotectStack(ScmObj *stack_start);
 ScmObj Scm_NewCons(ScmObj a, ScmObj b);
 ScmObj Scm_NewInt(int val);
 ScmObj Scm_NewSymbol(char *name, ScmObj v_cell);
@@ -362,8 +362,8 @@ ScmObj ScmOp_bit_not(ScmObj obj);
 ScmObj ScmOp_the_environment(ScmObj arg, ScmObj env);
 ScmObj ScmOp_closure_code(ScmObj closure);
 ScmObj ScmOp_verbose(ScmObj args, ScmObj env);
-long   SigScm_get_verbose_level(void);
-void   SigScm_set_verbose_level(long level);
+long   SigScm_GetVerboseLevel(void);
+void   SigScm_SetVerboseLevel(long level);
 #endif
 
 #ifdef __cplusplus

@@ -42,7 +42,7 @@
  *       marking the Scheme object which are stored in the registers.
  *
  *   - gc_mark_protected_obj()
- *       marking the protected Scheme object which are protected by calling SigScm_gc_protect().
+ *       marking the protected Scheme object which are protected by calling SigScm_GC_Protect().
  *
  *   - gc_mark_locations()
  *       marking the Scheme object which are pushed to the stack, so we need to
@@ -368,7 +368,7 @@ mark_loop:
     }
 }
 
-void SigScm_gc_protect(ScmObj obj)
+void SigScm_GC_Protect(ScmObj obj)
 {
     gc_protected_obj *item = (gc_protected_obj*)malloc(sizeof(gc_protected_obj));
     item->obj = obj;
@@ -566,13 +566,13 @@ static void gc_sweep(void)
     scm_freelist = scm_new_freelist;
 }
 
-void SigScm_gc_protect_stack(ScmObj *stack_start)
+void SigScm_GC_ProtectStack(ScmObj *stack_start)
 {
     if (!scm_stack_start_pointer)
         scm_stack_start_pointer = stack_start;
 }
 
-void SigScm_gc_unprotect_stack(ScmObj *stack_start)
+void SigScm_GC_UnprotectStack(ScmObj *stack_start)
 {
     if (scm_stack_start_pointer == stack_start)
         scm_stack_start_pointer = NULL;
@@ -911,7 +911,7 @@ ScmObj Scm_eval_c_string(const char *exp)
     ScmObj ret = SCM_NULL;
 
     /* start protecting stack */
-    SigScm_gc_protect_stack(&stack_start);
+    SigScm_GC_ProtectStack(&stack_start);
 
     str_port = Scm_NewStringPort(exp);
 
@@ -923,7 +923,7 @@ ScmObj Scm_eval_c_string(const char *exp)
 #endif
 
     /* now no need to protect stack */
-    SigScm_gc_unprotect_stack(&stack_start);
+    SigScm_GC_UnprotectStack(&stack_start);
 
     return ret;
 }

@@ -75,7 +75,7 @@ extern ScmObj scm_return_value;
 void SigScm_Initialize(void)
 {
     ScmObj obj;
-    SigScm_gc_protect_stack(&obj);
+    SigScm_GC_ProtectStack(&obj);
 
     /*=======================================================================
       Etc Variable Initialization
@@ -297,11 +297,11 @@ void SigScm_Initialize(void)
       Current Input & Output Initialization
     =======================================================================*/
     scm_current_input_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
-    SigScm_gc_protect(scm_current_input_port);
     scm_current_output_port = Scm_NewFilePort(stdout, "stdout", PORT_OUTPUT);
-    SigScm_gc_protect(scm_current_output_port);
     scm_current_error_port  = Scm_NewFilePort(stderr, "stderr", PORT_OUTPUT);
-    SigScm_gc_protect(scm_current_error_port);
+    SigScm_GC_Protect(scm_current_input_port);
+    SigScm_GC_Protect(scm_current_output_port);
+    SigScm_GC_Protect(scm_current_error_port);
 
 #if SCM_USE_SRFI1
     /*=======================================================================
@@ -341,7 +341,7 @@ void SigScm_Initialize(void)
     scm_return_value = SCM_NULL;
 #endif
 
-    SigScm_gc_unprotect_stack(&obj);
+    SigScm_GC_UnprotectStack(&obj);
 }
 
 void SigScm_Finalize()

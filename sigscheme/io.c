@@ -446,7 +446,7 @@ ScmObj SigScm_load(const char *filename)
     char  *filepath     = create_valid_path(filename);
 
     /* start protecting stack */
-    SigScm_gc_protect_stack(&stack_start);
+    SigScm_GC_ProtectStack(&stack_start);
 
     /* sanity check */
     /*
@@ -473,7 +473,7 @@ ScmObj SigScm_load(const char *filename)
     ScmOp_close_input_port(port);
 
     /* now no need to protect stack */
-    SigScm_gc_unprotect_stack(&stack_start);
+    SigScm_GC_UnprotectStack(&stack_start);
 
     /* free str */
     free(filepath);
@@ -539,7 +539,7 @@ ScmObj ScmOp_require(ScmObj filename)
         SigScm_ErrorObj("require : string required but got ", filename);
 
     /* start protecting stack */
-    SigScm_gc_protect_stack(&stack_start);
+    SigScm_GC_ProtectStack(&stack_start);
 
     /* construct loaded_str */
     loaded_str = create_loaded_str(filename);
@@ -553,7 +553,7 @@ ScmObj ScmOp_require(ScmObj filename)
     }
 
     /* now no need to protect stack */
-    SigScm_gc_unprotect_stack(&stack_start);
+    SigScm_GC_UnprotectStack(&stack_start);
 
     return SCM_TRUE;
 }

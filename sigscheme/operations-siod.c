@@ -157,12 +157,12 @@ ScmObj ScmOp_verbose(ScmObj args, ScmObj env)
     return Scm_NewInt(sscm_verbose_level);
 }
 
-long SigScm_get_verbose_level(void)
+long SigScm_GetVerboseLevel(void)
 {
     return sscm_verbose_level;
 }
 
-void SigScm_set_verbose_level(long level)
+void SigScm_SetVerboseLevel(long level)
 {
     sscm_verbose_level = level;
 }

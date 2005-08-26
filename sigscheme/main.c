@@ -64,7 +64,7 @@ static void repl(void)
     ScmObj result = SCM_NULL;
 
     /* start protecting stack */
-    SigScm_gc_protect_stack(&stack_start);
+    SigScm_GC_ProtectStack(&stack_start);
 
     /* init variable */
     stdin_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
@@ -85,7 +85,7 @@ static void repl(void)
     ScmOp_close_input_port(stdout_port);
 
     /* now no need to protect stack */
-    SigScm_gc_unprotect_stack(&stack_start);
+    SigScm_GC_UnprotectStack(&stack_start);
 }
 
 /*=======================================
