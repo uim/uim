@@ -47,6 +47,18 @@
 /*=======================================
    Struct Declarations
 =======================================*/
+/*
+ * Internal representation of these types MUST NOT directly touched by libsscm
+ * users. What libsscm users allowed is referring the types and constant values
+ * in declarations and definitions.
+ *
+ * All operations touching the internal representation such as accessing a
+ * member of a struct must be performed through the accessor macros defined in
+ * the section "Accessors For Scheme Objects" below. Otherwise the client code
+ * of libsscm will be broken when SigScheme has change internal object
+ * representations. The macros abstract the difference.
+ */
+
 /* Scheme Object Type */
 enum ScmObjType {
     ScmInt          = 0,
@@ -222,6 +234,12 @@ struct ScmObjInternal_ {
     } obj;
 };
 
+/* C Function */
+typedef ScmObj (*ScmFuncType) (void);
+
+/*=======================================
+   Accessors For Scheme Objects
+=======================================*/
 #define SCM_TYPE(a)       ((a)->type)
 #define SCM_ENTYPE(a, objtype) ((a)->type = (objtype))
 #define SCM_MARK(a) ((a)->gcmark)
@@ -266,7 +284,6 @@ struct ScmObjInternal_ {
 #define SCM_STRING_LEN(a) (SCM_STRING(a)->obj.string.len)
 #define SCM_STRING_SET_LEN(a, len) (SCM_STRING_LEN(a) = (len))
 
-typedef ScmObj (*ScmFuncType) (void);
 #define SCM_FUNCP(a) (SCM_TYPE(a) == ScmFunc)
 #define SCM_FUNC(a) (sigassert(SCM_FUNCP(a)), (a))
 #define SCM_ENTYPE_FUNC(a)     (SCM_ENTYPE((a), ScmFunc))
@@ -335,7 +352,7 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_VALUEPACKET_VALUES(a) = (v))
 
 /*============================================================================
-  Etcetra variables (Special Symbols like NULL)
+  Etcetra Variables (Special Constants like SCM_NULL)
 ============================================================================*/
 #define SCM_ETCP(a) (SCM_TYPE(a) == ScmEtc)
 #define SCM_ETC(a) (sigassert(SCM_ETCP(a)), (a))
@@ -349,7 +366,7 @@ typedef ScmObj (*ScmFuncType) (void);
     } while(0)
 
 /*============================================================================
-  For C-Interface
+  C Pointer Object
 ============================================================================*/
 #define SCM_C_POINTERP(a) (SCM_TYPE(a) == ScmCPointer)
 #define SCM_C_POINTER(a)  (sigassert(SCM_C_POINTERP(a)), (a))
@@ -363,10 +380,9 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_C_FUNCPOINTER_VALUE(a) (SCM_C_FUNCPOINTER(a)->obj.c_func_pointer.func)
 #define SCM_C_FUNCPOINTER_SET_VALUE(a, funcptr) (SCM_C_FUNCPOINTER_VALUE(a) = funcptr)
 
-extern ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
-extern ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote, SigScm_unquote_splicing;
-extern ScmObj SigScm_unbound, SigScm_undef;
-
+/*============================================================================
+  Special Constants
+============================================================================*/
 #define SCM_NULL             SigScm_null
 #define SCM_TRUE             SigScm_true
 #define SCM_FALSE            SigScm_false
@@ -385,5 +401,21 @@ extern ScmObj SigScm_unbound, SigScm_undef;
 #define SCM_FALSEP(a)  (SCM_EQ((a),  SCM_FALSE))
 #define SCM_NFALSEP(a) (SCM_NEQ((a), SCM_FALSE))
 #define SCM_EOFP(a)    (SCM_EQ((a),  SCM_EOF))
+
+/*============================================================================
+  Internal Declarations For Special Constants
+============================================================================*/
+/*
+ * These declarations are dedicated to internal use. libsscm users MUST NOT
+ * refer these internal representations directly.
+ *
+ * It may be changed when SigScheme's internal storage model or accessing
+ * method for the constants has been changed. To avoid suffering code
+ * incompatibility from it, use the abstract macro such as SCM_NULL defined
+ * above. They safely hides the internal model against such change.
+ */
+extern ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
+extern ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote, SigScm_unquote_splicing;
+extern ScmObj SigScm_unbound, SigScm_undef;
 
 #endif /* __SIGSCMTYPE_H */

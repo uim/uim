@@ -229,19 +229,19 @@ uim_scm_load_file(const char *fn)
 uim_lisp
 uim_scm_t(void)
 {
-  return (uim_lisp)SigScm_true;
+  return (uim_lisp)SCM_TRUE;
 }
 
 uim_lisp
 uim_scm_f(void)
 {
-  return (uim_lisp)SigScm_false;
+  return (uim_lisp)SCM_FALSE;
 }
 
 uim_lisp
 uim_scm_null_list(void)
 {
-  return (uim_lisp)SigScm_null;
+  return (uim_lisp)SCM_NULL;
 }
 
 uim_bool
@@ -283,7 +283,7 @@ uim_scm_stringp(uim_lisp obj)
 uim_bool
 uim_scm_eq(uim_lisp a, uim_lisp b)
 {
-  if (SCM_EQ(ScmOp_eqp((ScmObj) a, (ScmObj) b), SigScm_true))
+  if (SCM_EQ(ScmOp_eqp((ScmObj) a, (ScmObj) b), SCM_TRUE))
     return UIM_TRUE;
 
   return UIM_FALSE;
@@ -292,7 +292,7 @@ uim_scm_eq(uim_lisp a, uim_lisp b)
 uim_bool
 uim_scm_string_equal(uim_lisp a, uim_lisp b)
 {
-  if(SCM_EQ(ScmOp_string_equal((ScmObj)a, (ScmObj)b), SigScm_true))
+  if(SCM_EQ(ScmOp_string_equal((ScmObj)a, (ScmObj)b), SCM_TRUE))
     return UIM_TRUE;
 
   return UIM_FALSE;
@@ -305,7 +305,7 @@ uim_scm_eval(uim_lisp obj)
   uim_lisp stack_start;
 
   uim_scm_gc_protect_stack(&stack_start);
-  ret = (uim_lisp)ScmOp_eval((ScmObj)obj, SigScm_null);
+  ret = (uim_lisp)ScmOp_eval((ScmObj)obj, SCM_NULL);
   uim_scm_gc_unprotect_stack(&stack_start);
   return ret;
 }
@@ -315,17 +315,17 @@ uim_lisp
 uim_scm_apply(uim_lisp proc, uim_lisp args)
 {
   return (uim_lisp)ScmOp_apply(Scm_NewCons((ScmObj)proc,
-					   Scm_NewCons((ScmObj)args, SigScm_null)),	
-			       SigScm_null);
+					   Scm_NewCons((ScmObj)args, SCM_NULL)),	
+			       SCM_NULL);
 }
 
 uim_lisp
 uim_scm_quote(uim_lisp obj)
 {
   /* TODO : fixme Kazuki Ohta <mover@hct.zaq.ne.jp> */
-  return (uim_lisp)Scm_NewCons(SigScm_quote,
+  return (uim_lisp)Scm_NewCons(SCM_QUOTE,
 			       Scm_NewCons((ScmObj)obj,
-					   SigScm_null));
+					   SCM_NULL));
 }
 #endif  /* UIM_SCM_EXTENDED_API */
 
@@ -516,8 +516,8 @@ uim_scm_init(const char *verbose_level)
   }
 
   SigScm_Initialize();
-  true_sym  = (uim_lisp)SigScm_true;
-  false_sym = (uim_lisp)SigScm_false;
+  true_sym  = (uim_lisp)SCM_TRUE;
+  false_sym = (uim_lisp)SCM_FALSE;
   protected_arg0 = uim_scm_f();
 }
 
