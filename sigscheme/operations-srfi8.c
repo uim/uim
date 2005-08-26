@@ -69,11 +69,11 @@ ScmObj ScmOp_SRFI8_receive(ScmObj args, ScmObj *envp, int *tail_flag)
      * (receive <formals> <expression> <body>)
      */
     ScmObj env     = *envp;
-    ScmObj formals = SCM_NIL;
-    ScmObj expr    = SCM_NIL;
-    ScmObj body    = SCM_NIL;
-    ScmObj actuals = SCM_NIL;
-    ScmObj closure = SCM_NIL;
+    ScmObj formals = SCM_NULL;
+    ScmObj expr    = SCM_NULL;
+    ScmObj body    = SCM_NULL;
+    ScmObj actuals = SCM_NULL;
+    ScmObj closure = SCM_NULL;
 
     /* sanity check */
     if (CHECK_3_ARGS(args))
@@ -93,7 +93,7 @@ ScmObj ScmOp_SRFI8_receive(ScmObj args, ScmObj *envp, int *tail_flag)
     if (VALUEPACKETP(actuals))
         actuals = SCM_VALUEPACKET_VALUES(actuals);
     else
-        actuals = Scm_NewCons(actuals, SCM_NIL);
+        actuals = Scm_NewCons(actuals, SCM_NULL);
 
     closure = Scm_NewClosure(Scm_NewCons(formals, body), env);
 

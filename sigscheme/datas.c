@@ -109,7 +109,7 @@ struct gc_protected_obj_ {
 #define NAMEHASH_SIZE 1024
 
 #define SCM_NEW_OBJ_INTERNAL(VALNAME)                                   \
-    if (EQ(scm_freelist, SCM_NIL))                                      \
+    if (EQ(scm_freelist, SCM_NULL))                                      \
         gc_mark_and_sweep();                                            \
     VALNAME = scm_freelist;                                             \
     scm_freelist = SCM_FREECELL_CDR(scm_freelist);                      \
@@ -213,7 +213,7 @@ static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmOb
 
     /* allocate heap */
     (*heaps) = (ScmObj*)malloc(sizeof(ScmObj) * num_heap);
-    (*freelist) = SCM_NIL;
+    (*freelist) = SCM_NULL;
 
     /* fill with zero and construct free_list */
     for (i = 0; i < num_heap; i++) {
@@ -324,7 +324,7 @@ static void mark_obj(ScmObj obj)
     int i = 0;
 
 mark_loop:
-    /* no need to mark SCM_NIL */
+    /* no need to mark SCM_NULL */
     if (NULLP(obj))
         return;
 
@@ -397,7 +397,7 @@ static int is_pointer_to_heap(ScmObj obj)
 {
     /* The core part of Conservative GC */
     int i = 0;
-    ScmObj head = SCM_NIL;
+    ScmObj head = SCM_NULL;
     for (i = 0; i < scm_heap_num; i++) {
         if ((head = scm_heaps[i])
             && (head <= obj)
@@ -420,7 +420,7 @@ static void gc_mark_protected_obj(void)
 static void gc_mark_locations_n(ScmObj *start, int n)
 {
     int i = 0;
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
 
     /* mark stack */
     for (i = 0; i < n; i++) {
@@ -538,8 +538,8 @@ static void gc_sweep(void)
     int j = 0;
     int corrected_obj_num = 0;
 
-    ScmObj obj = SCM_NIL;
-    ScmObj scm_new_freelist = SCM_NIL;
+    ScmObj obj = SCM_NULL;
+    ScmObj scm_new_freelist = SCM_NULL;
     /* iterate heaps */
     for (i = 0; i < scm_heap_num; i++) {
         corrected_obj_num = 0;
@@ -552,7 +552,7 @@ static void gc_sweep(void)
                 sweep_obj(obj);
 
                 SCM_ENTYPE_FREECELL(obj);
-                SCM_SETFREECELL_CAR(obj, SCM_NIL);
+                SCM_SETFREECELL_CAR(obj, SCM_NULL);
                 SCM_SETFREECELL_CDR(obj, scm_new_freelist);
                 scm_new_freelist = obj;
                 corrected_obj_num++;
@@ -583,7 +583,7 @@ void SigScm_gc_unprotect_stack(ScmObj *stack_start)
 ===========================================================================*/
 ScmObj Scm_NewCons(ScmObj a, ScmObj b)
 {
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_CONS(obj);
@@ -595,7 +595,7 @@ ScmObj Scm_NewCons(ScmObj a, ScmObj b)
 
 ScmObj Scm_NewInt(int val)
 {
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_INT(obj);
@@ -606,7 +606,7 @@ ScmObj Scm_NewInt(int val)
 
 ScmObj Scm_NewSymbol(char *name, ScmObj v_cell)
 {
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_SYMBOL(obj);
@@ -618,7 +618,7 @@ ScmObj Scm_NewSymbol(char *name, ScmObj v_cell)
 
 ScmObj Scm_NewChar(char *ch)
 {
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
 
     /* check length */
     if (SigScm_default_encoding_strlen(ch) != 1) {
@@ -636,7 +636,7 @@ ScmObj Scm_NewChar(char *ch)
 
 ScmObj Scm_NewString(char *str)
 {
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
 
     SCM_NEW_OBJ_INTERNAL(obj);
 
@@ -649,7 +649,7 @@ ScmObj Scm_NewString(char *str)
 
 ScmObj Scm_NewStringCopying(const char *str)
 {
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
 
     SCM_NEW_OBJ_INTERNAL(obj);
 
@@ -663,7 +663,7 @@ ScmObj Scm_NewStringCopying(const char *str)
 
 ScmObj Scm_NewString_With_StrLen(char *str, int len)
 {
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_STRING(obj);
@@ -675,7 +675,7 @@ ScmObj Scm_NewString_With_StrLen(char *str, int len)
 
 ScmObj Scm_NewFunc(enum ScmFuncArgType num_arg, ScmFuncType func)
 {
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_FUNC(obj);
@@ -687,7 +687,7 @@ ScmObj Scm_NewFunc(enum ScmFuncArgType num_arg, ScmFuncType func)
 
 ScmObj Scm_NewClosure(ScmObj exp, ScmObj env)
 {
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_CLOSURE(obj);
@@ -699,7 +699,7 @@ ScmObj Scm_NewClosure(ScmObj exp, ScmObj env)
 
 ScmObj Scm_NewVector(ScmObj *vec, int len)
 {
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_VECTOR(obj);
@@ -711,7 +711,7 @@ ScmObj Scm_NewVector(ScmObj *vec, int len)
 
 ScmObj Scm_NewFilePort(FILE *file, const char *filename, enum ScmPortDirection pdirection)
 {
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
     ScmPortInfo *pinfo = (ScmPortInfo *)malloc(sizeof(ScmPortInfo));
 
     SCM_NEW_OBJ_INTERNAL(obj);
@@ -731,7 +731,7 @@ ScmObj Scm_NewFilePort(FILE *file, const char *filename, enum ScmPortDirection p
 
 ScmObj Scm_NewStringPort(const char *str)
 {
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
     ScmPortInfo *pinfo = (ScmPortInfo *)malloc(sizeof(ScmPortInfo));
 
     SCM_NEW_OBJ_INTERNAL(obj);
@@ -750,7 +750,7 @@ ScmObj Scm_NewStringPort(const char *str)
 
 ScmObj Scm_NewContinuation(void)
 {
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
     ScmContInfo *cinfo = NULL;
 
     SCM_NEW_OBJ_INTERNAL(obj);
@@ -764,7 +764,7 @@ ScmObj Scm_NewContinuation(void)
 
 ScmObj Scm_NewValuePacket(ScmObj values)
 {
-    ScmObj packet = SCM_NIL;
+    ScmObj packet = SCM_NULL;
     SCM_NEW_OBJ_INTERNAL(packet);
 
     SCM_ENTYPE_VALUEPACKET(packet);
@@ -775,7 +775,7 @@ ScmObj Scm_NewValuePacket(ScmObj values)
 #if SCM_USE_NONSTD_FEATURES
 ScmObj Scm_NewCPointer(void *data)
 {
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_C_POINTER(obj);
@@ -786,7 +786,7 @@ ScmObj Scm_NewCPointer(void *data)
 
 ScmObj Scm_NewCFuncPointer(C_FUNC func)
 {
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_C_FUNCPOINTER(obj);
@@ -811,7 +811,7 @@ static void initialize_symbol_hash(void)
     int i = 0;
     symbol_hash = (ScmObj*)malloc(sizeof(ScmObj) * NAMEHASH_SIZE);
     for (i = 0; i < NAMEHASH_SIZE; i++) {
-        symbol_hash[i] = SCM_NIL;
+        symbol_hash[i] = SCM_NULL;
     }
 }
 
@@ -834,8 +834,8 @@ static int symbol_name_hash(const char *name)
 ScmObj Scm_Intern(const char *name)
 {
     int n = symbol_name_hash(name);
-    ScmObj sym      = SCM_NIL;
-    ScmObj list     = SCM_NIL;
+    ScmObj sym      = SCM_NULL;
+    ScmObj list     = SCM_NULL;
     ScmObj sym_list = symbol_hash[n];
     char  *symname;
 
@@ -907,8 +907,8 @@ C_FUNC Scm_GetCFuncPointer(ScmObj c_funcptr)
 ScmObj Scm_eval_c_string(const char *exp)
 {
     ScmObj stack_start;
-    ScmObj str_port = SCM_NIL;
-    ScmObj ret = SCM_NIL;
+    ScmObj str_port = SCM_NULL;
+    ScmObj ret = SCM_NULL;
 
     /* start protecting stack */
     SigScm_gc_protect_stack(&stack_start);
@@ -916,7 +916,7 @@ ScmObj Scm_eval_c_string(const char *exp)
     str_port = Scm_NewStringPort(exp);
 
     ret = SigScm_Read(str_port);
-    ret = ScmOp_eval(ret, SCM_NIL);
+    ret = ScmOp_eval(ret, SCM_NULL);
 
 #if SCM_COMPAT_SIOD
     scm_return_value = ret;

@@ -228,9 +228,9 @@ static void print_string(FILE *f, ScmObj obj, enum OutputType otype)
 
 static void print_list(FILE *f, ScmObj list, enum OutputType otype)
 {
-    ScmObj car = SCM_NIL;
-    ScmObj cdr = SCM_NIL;
-    ScmObj tmp = SCM_NIL;
+    ScmObj car = SCM_NULL;
+    ScmObj cdr = SCM_NULL;
+    ScmObj tmp = SCM_NULL;
 
     /* print left parenthesis */
     fprintf(f, "(");
@@ -310,7 +310,7 @@ static void print_port(FILE *f, ScmObj port, enum OutputType otype)
 
 static void print_etc(FILE *f, ScmObj obj, enum  OutputType otype)
 {
-    if (EQ(obj, SCM_NIL))
+    if (EQ(obj, SCM_NULL))
         fprintf(f, "()");
     else if (EQ(obj, SCM_TRUE))
         fprintf(f, "#t");

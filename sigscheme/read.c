@@ -217,10 +217,10 @@ static ScmObj read_sexpression(ScmObj port)
 
 static ScmObj read_list(ScmObj port, int closeParen)
 {
-    ScmObj list_head = SCM_NIL;
-    ScmObj list_tail = SCM_NIL;
-    ScmObj item   = SCM_NIL;
-    ScmObj cdr    = SCM_NIL;
+    ScmObj list_head = SCM_NULL;
+    ScmObj list_tail = SCM_NULL;
+    ScmObj item   = SCM_NULL;
+    ScmObj cdr    = SCM_NULL;
     int    line   = SCM_PORTINFO_LINE(port);
     int    c      = 0;
     int    c2     = 0;
@@ -286,11 +286,11 @@ static ScmObj read_list(ScmObj port, int closeParen)
         /* Append item to the list_tail. */
         if (NULLP(list_tail)) {
             /* create new list */
-            list_head = Scm_NewCons(item, SCM_NIL);
+            list_head = Scm_NewCons(item, SCM_NULL);
             list_tail = list_head;
         } else {
             /* update list_tail */
-            SET_CDR(list_tail, Scm_NewCons(item, SCM_NIL));
+            SET_CDR(list_tail, Scm_NewCons(item, SCM_NULL));
             list_tail = CDR(list_tail);
         }
     }
@@ -393,7 +393,7 @@ static ScmObj read_number_or_symbol(ScmObj port)
     int is_str  = 0;
     int str_len = 0;
     char  *str = NULL;
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
 
 #if DEBUG_PARSER
     printf("read_number_or_symbol\n");
@@ -518,5 +518,5 @@ static char *read_char_sequence(ScmObj port)
 
 static ScmObj read_quote(ScmObj port, ScmObj quoter)
 {
-    return Scm_NewCons(quoter, Scm_NewCons(read_sexpression(port), SCM_NIL));
+    return Scm_NewCons(quoter, Scm_NewCons(read_sexpression(port), SCM_NULL));
 }

@@ -58,7 +58,7 @@
 static ScmObj list_gettailcons(ScmObj head)
 {
     if (NULLP(head))
-        return SCM_NIL;
+        return SCM_NULL;
     if (NULLP(CDR(head)))
         return head;
 
@@ -68,7 +68,7 @@ static ScmObj list_gettailcons(ScmObj head)
     }
 
     SigScm_Error("list_gettailcons : cannot get tailcons?\n");
-    return SCM_NIL;
+    return SCM_NULL;
 }
 
 /*=======================================
@@ -84,7 +84,7 @@ ScmObj ScmOp_SRFI1_xcons(ScmObj a, ScmObj b)
 
 ScmObj ScmOp_SRFI1_cons_star(ScmObj obj, ScmObj env)
 {
-    ScmObj tail_cons = SCM_NIL;
+    ScmObj tail_cons = SCM_NULL;
     ScmObj prev_tail = obj;
 
     if (NULLP(CDR(obj)))
@@ -93,7 +93,7 @@ ScmObj ScmOp_SRFI1_cons_star(ScmObj obj, ScmObj env)
     for (tail_cons = CDR(obj); !NULLP(tail_cons); tail_cons = CDR(tail_cons)) {
         /* check tail cons cell */
         if (NULLP(CDR(tail_cons))) {
-            SCM_SETCDR(prev_tail, CAR(tail_cons));
+            SET_CDR(prev_tail, CAR(tail_cons));
         }
 
         prev_tail = tail_cons;
@@ -104,8 +104,8 @@ ScmObj ScmOp_SRFI1_cons_star(ScmObj obj, ScmObj env)
 
 ScmObj ScmOp_SRFI1_make_list(ScmObj args, ScmObj env)
 {
-    ScmObj fill  = SCM_NIL;
-    ScmObj head  = SCM_NIL;
+    ScmObj fill  = SCM_NULL;
+    ScmObj head  = SCM_NULL;
     int n = 0;
     int i = 0;
 
@@ -136,9 +136,9 @@ ScmObj ScmOp_SRFI1_make_list(ScmObj args, ScmObj env)
 ScmObj ScmOp_SRFI1_list_tabulate(ScmObj args, ScmObj env)
 {
     ScmObj scm_n = CAR(args);
-    ScmObj proc  = SCM_NIL;
-    ScmObj head  = SCM_NIL;
-    ScmObj num   = SCM_NIL;
+    ScmObj proc  = SCM_NULL;
+    ScmObj head  = SCM_NULL;
+    ScmObj num   = SCM_NULL;
     int n = 0;
     int i = 0;
 
@@ -160,7 +160,7 @@ ScmObj ScmOp_SRFI1_list_tabulate(ScmObj args, ScmObj env)
         if (!NULLP(proc)) {
             /* evaluate (proc num) */
             num = ScmOp_eval(Scm_NewCons(proc,
-                                         Scm_NewCons(num, SCM_NIL)),
+                                         Scm_NewCons(num, SCM_NULL)),
                              env);
         }
 
@@ -172,9 +172,9 @@ ScmObj ScmOp_SRFI1_list_tabulate(ScmObj args, ScmObj env)
 
 ScmObj ScmOp_SRFI1_list_copy(ScmObj list)
 {
-    ScmObj head = SCM_NIL;
-    ScmObj tail = SCM_NIL;
-    ScmObj obj  = SCM_NIL;
+    ScmObj head = SCM_NULL;
+    ScmObj tail = SCM_NULL;
+    ScmObj obj  = SCM_NULL;
 
     if (FALSEP(ScmOp_listp(list)))
         SigScm_ErrorObj("list-copy : list required but got ", list);
@@ -187,9 +187,9 @@ ScmObj ScmOp_SRFI1_list_copy(ScmObj list)
             obj = ScmOp_SRFI1_list_copy(obj);
 
         /* then create new cons */
-        obj = Scm_NewCons(obj, SCM_NIL);
+        obj = Scm_NewCons(obj, SCM_NULL);
         if (!NULLP(tail)) {
-            SCM_SETCDR(tail, obj);
+            SET_CDR(tail, obj);
             tail = obj;
         } else {
             head = obj;
@@ -202,23 +202,23 @@ ScmObj ScmOp_SRFI1_list_copy(ScmObj list)
 
 ScmObj ScmOp_SRFI1_circular_list(ScmObj list, ScmObj env)
 {
-    ScmObj tailcons = SCM_NIL;
+    ScmObj tailcons = SCM_NULL;
 
     if (FALSEP(ScmOp_listp(list)))
         SigScm_ErrorObj("circular-list : list required but got ", list);
 
     tailcons = list_gettailcons(list);
-    SCM_SETCDR(tailcons, list);
+    SET_CDR(tailcons, list);
 
     return list;
 }
 
 ScmObj ScmOp_SRFI1_iota(ScmObj args, ScmObj env)
 {
-    ScmObj scm_count = SCM_NIL;
-    ScmObj scm_start = SCM_NIL;
-    ScmObj scm_step  = SCM_NIL;
-    ScmObj head      = SCM_NIL;
+    ScmObj scm_count = SCM_NULL;
+    ScmObj scm_start = SCM_NULL;
+    ScmObj scm_step  = SCM_NULL;
+    ScmObj head      = SCM_NULL;
     int count = 0;
     int start = 0;
     int step  = 0;

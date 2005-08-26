@@ -58,10 +58,10 @@
 =======================================*/
 static void Scm_RegisterFunc(const char *name, enum ScmFuncArgType argnum, ScmFuncType func);
 
-ScmObj SigScm_nil, SigScm_true, SigScm_false, SigScm_eof;
+ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
 ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote, SigScm_unquote_splicing;
 ScmObj SigScm_unbound, SigScm_undef;
-ScmObjInternal SigScm_nil_impl, SigScm_true_impl, SigScm_false_impl, SigScm_eof_impl;
+ScmObjInternal SigScm_null_impl, SigScm_true_impl, SigScm_false_impl, SigScm_eof_impl;
 ScmObjInternal SigScm_quote_impl, SigScm_quasiquote_impl, SigScm_unquote_impl, SigScm_unquote_splicing_impl;
 ScmObjInternal SigScm_unbound_impl, SigScm_undef_impl;
 
@@ -80,7 +80,7 @@ void SigScm_Initialize(void)
     /*=======================================================================
       Etc Variable Initialization
     =======================================================================*/
-    SCM_NEW_ETC(SigScm_nil,              SigScm_nil_impl,              1);
+    SCM_NEW_ETC(SigScm_null,             SigScm_null_impl,             1);
     SCM_NEW_ETC(SigScm_true,             SigScm_true_impl,             2);
     SCM_NEW_ETC(SigScm_false,            SigScm_false_impl,            3);
     SCM_NEW_ETC(SigScm_eof,              SigScm_eof_impl,              4);
@@ -88,14 +88,14 @@ void SigScm_Initialize(void)
     SCM_NEW_ETC(SigScm_undef,            SigScm_undef_impl,            10);
 
 #if SCM_COMPAT_SIOD_BUGS
-    SigScm_false = SigScm_nil;
+    SigScm_false = SigScm_null;
 #endif
 
     /*=======================================================================
       Externed Variable Initialization
     =======================================================================*/
-    scm_continuation_thrown_obj = SCM_NIL;
-    scm_letrec_env              = SCM_NIL;
+    scm_continuation_thrown_obj = SCM_NULL;
+    scm_letrec_env              = SCM_NULL;
     /*=======================================================================
       Storage Initialization
     =======================================================================*/
@@ -337,7 +337,7 @@ void SigScm_Initialize(void)
     Scm_RegisterFuncL("the-environment"      , ScmOp_the_environment);
     Scm_RegisterFunc1("%%closure-code"       , ScmOp_closure_code);
     /* datas.c */
-    scm_return_value = SCM_NIL;
+    scm_return_value = SCM_NULL;
 #endif
 
     SigScm_gc_unprotect_stack(&obj);

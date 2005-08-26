@@ -335,7 +335,7 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_VALUEPACKET_VALUES(a) = (v))
 
 /*============================================================================
-  Etcetra variables (Special Symbols like NIL)
+  Etcetra variables (Special Symbols like NULL)
 ============================================================================*/
 #define SCM_ETCP(a) (SCM_TYPE(a) == ScmEtc)
 #define SCM_ETC(a) (sigassert(SCM_ETCP(a)), (a))
@@ -363,11 +363,11 @@ typedef ScmObj (*ScmFuncType) (void);
 #define SCM_C_FUNCPOINTER_VALUE(a) (SCM_C_FUNCPOINTER(a)->obj.c_func_pointer.func)
 #define SCM_C_FUNCPOINTER_SET_VALUE(a, funcptr) (SCM_C_FUNCPOINTER_VALUE(a) = funcptr)
 
-extern ScmObj SigScm_nil, SigScm_true, SigScm_false, SigScm_eof;
+extern ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
 extern ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote, SigScm_unquote_splicing;
 extern ScmObj SigScm_unbound, SigScm_undef;
 
-#define SCM_NIL              SigScm_nil
+#define SCM_NULL             SigScm_null
 #define SCM_TRUE             SigScm_true
 #define SCM_FALSE            SigScm_false
 #define SCM_EOF              SigScm_eof
@@ -380,8 +380,8 @@ extern ScmObj SigScm_unbound, SigScm_undef;
 
 #define SCM_EQ(a, b)   ((a) == (b))
 #define SCM_NEQ(a, b)  ((a) != (b))
-#define SCM_NULLP(a)   (SCM_EQ((a),  SCM_NIL))
-#define SCM_NNULLP(a)  (SCM_NEQ((a), SCM_NIL))
+#define SCM_NULLP(a)   (SCM_EQ((a),  SCM_NULL))
+#define SCM_NNULLP(a)  (SCM_NEQ((a), SCM_NULL))
 #define SCM_FALSEP(a)  (SCM_EQ((a),  SCM_FALSE))
 #define SCM_NFALSEP(a) (SCM_NEQ((a), SCM_FALSE))
 #define SCM_EOFP(a)    (SCM_EQ((a),  SCM_EOF))

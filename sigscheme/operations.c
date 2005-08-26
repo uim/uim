@@ -353,7 +353,7 @@ ScmObj ScmOp_numberp(ScmObj obj)
 ScmObj ScmOp_equal(ScmObj args, ScmObj env)
 {
     int    val = 0;
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
 
     /* arglen check */
     if CHECK_2_ARGS(args)
@@ -385,7 +385,7 @@ ScmObj ScmOp_less(ScmObj args, ScmObj env )
 {
     int    val     = 0;
     int    car_val = 0;
-    ScmObj obj     = SCM_NIL;
+    ScmObj obj     = SCM_NULL;
 
     if (NULLP(args) || NULLP(CDR(args)))
         SigScm_Error("< : Wrong number of arguments\n");
@@ -417,7 +417,7 @@ ScmObj ScmOp_greater(ScmObj args, ScmObj env )
 {
     int    val     = 0;
     int    car_val = 0;
-    ScmObj obj     = SCM_NIL;
+    ScmObj obj     = SCM_NULL;
 
     /* type check */
     if (FALSEP(ScmOp_numberp(CAR(args))))
@@ -450,7 +450,7 @@ ScmObj ScmOp_lessEq(ScmObj args, ScmObj env )
 {
     int    val     = 0;
     int    car_val = 0;
-    ScmObj obj     = SCM_NIL;
+    ScmObj obj     = SCM_NULL;
 
     /* type check */
     if (FALSEP(ScmOp_numberp(CAR(args))))
@@ -464,7 +464,7 @@ ScmObj ScmOp_lessEq(ScmObj args, ScmObj env )
     val = SCM_INT_VALUE(CAR(args));
 
     /* compare following value */
-    obj = SCM_NIL;
+    obj = SCM_NULL;
     for (args = CDR(args); !NULLP(args); args = CDR(args)) {
         obj = CAR(args);
         if (FALSEP(ScmOp_numberp(obj)))
@@ -484,7 +484,7 @@ ScmObj ScmOp_greaterEq(ScmObj args, ScmObj env )
 {
     int    val     = 0;
     int    car_val = 0;
-    ScmObj obj     = SCM_NIL;
+    ScmObj obj     = SCM_NULL;
 
     /* type check */
     if (FALSEP(ScmOp_numberp(CAR(args))))
@@ -498,7 +498,7 @@ ScmObj ScmOp_greaterEq(ScmObj args, ScmObj env )
     val = SCM_INT_VALUE(CAR(args));
 
     /* compare following value */
-    obj = SCM_NIL;
+    obj = SCM_NULL;
     for (args = CDR(args); !NULLP(args); args = CDR(args)) {
         obj = CAR(args);
         if (FALSEP(ScmOp_numberp(obj)))
@@ -558,8 +558,8 @@ ScmObj ScmOp_max(ScmObj args, ScmObj env )
 {
     int    max     = 0;
     int    car_val = 0;
-    ScmObj car     = SCM_NIL;
-    ScmObj maxobj  = SCM_NIL;
+    ScmObj car     = SCM_NULL;
+    ScmObj maxobj  = SCM_NULL;
 
     if (NULLP(args))
         SigScm_Error("max : at least 1 number required\n");
@@ -583,8 +583,8 @@ ScmObj ScmOp_min(ScmObj args, ScmObj env )
 {
     int    min     = 0;
     int    car_val = 0;
-    ScmObj car     = SCM_NIL;
-    ScmObj minobj  = SCM_NIL;
+    ScmObj car     = SCM_NULL;
+    ScmObj minobj  = SCM_NULL;
 
     if (NULLP(args))
         SigScm_Error("min : at least 1 number required\n");
@@ -791,7 +791,7 @@ ScmObj ScmOp_car(ScmObj obj)
         SigScm_Error("car : empty list\n");
 #endif
     if (NULLP(obj))
-        return SCM_NIL;
+        return SCM_NULL;
 
     if (!CONSP(obj))
         SigScm_ErrorObj("car : list required but got ", obj);
@@ -813,7 +813,7 @@ ScmObj ScmOp_cdr(ScmObj obj)
         SigScm_Error("cdr : empty list\n");
 #endif
     if (NULLP(obj))
-        return SCM_NIL;
+        return SCM_NULL;
 
     if (!CONSP(obj))
         SigScm_ErrorObj("cdr : list required but got ", obj);
@@ -1032,20 +1032,20 @@ ScmObj ScmOp_length(ScmObj obj)
 
 ScmObj ScmOp_append(ScmObj args, ScmObj env)
 {
-    ScmObj ret_list = SCM_NIL;
+    ScmObj ret_list = SCM_NULL;
     ScmObj *ret_tail = &ret_list;
 
     ScmObj ls;
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
 
     if (NULLP(args))
-        return SCM_NIL;
+        return SCM_NULL;
 
     /* duplicate and merge all but the last argument */
     for (; !NULLP(CDR(args)); args = CDR(args)) {
         for (ls = CAR(args); CONSP(ls); ls = CDR(ls)) {
             obj = CAR(ls);
-            *ret_tail = Scm_NewCons(obj, SCM_NIL);
+            *ret_tail = Scm_NewCons(obj, SCM_NULL);
             ret_tail = &CDR(*ret_tail);
         }
         if (!NULLP(ls))
@@ -1061,7 +1061,7 @@ ScmObj ScmOp_append(ScmObj args, ScmObj env)
 
 ScmObj ScmOp_reverse(ScmObj list)
 {
-    ScmObj ret_list  = SCM_NIL;
+    ScmObj ret_list  = SCM_NULL;
 
     for (; CONSP(list); list = CDR(list))
         ret_list = Scm_NewCons(CAR(list), ret_list);
@@ -1100,7 +1100,7 @@ ScmObj ScmOp_list_tail(ScmObj list, ScmObj scm_k)
 
 ScmObj ScmOp_list_ref(ScmObj list, ScmObj scm_k)
 {
-    ScmObj list_tail = SCM_NIL;
+    ScmObj list_tail = SCM_NULL;
 
     if (FALSEP(ScmOp_numberp(scm_k)))
         SigScm_ErrorObj("list-ref : int required but got ", scm_k);
@@ -1115,7 +1115,7 @@ ScmObj ScmOp_list_ref(ScmObj list, ScmObj scm_k)
 
 ScmObj ScmOp_memq(ScmObj obj, ScmObj list)
 {
-    ScmObj tmplist = SCM_NIL;
+    ScmObj tmplist = SCM_NULL;
     for (tmplist = list; CONSP(tmplist); tmplist = CDR(tmplist)) {
         if (EQ(obj, CAR(tmplist))) {
             return tmplist;
@@ -1127,8 +1127,8 @@ ScmObj ScmOp_memq(ScmObj obj, ScmObj list)
 
 ScmObj ScmOp_memv(ScmObj obj, ScmObj list)
 {
-    ScmObj tmplist = SCM_NIL;
-    ScmObj tmpobj  = SCM_NIL;
+    ScmObj tmplist = SCM_NULL;
+    ScmObj tmpobj  = SCM_NULL;
     for (tmplist = list; CONSP(tmplist); tmplist = CDR(tmplist)) {
         tmpobj = CAR(tmplist);
         if (NFALSEP(ScmOp_eqvp(obj, tmpobj))) {
@@ -1141,8 +1141,8 @@ ScmObj ScmOp_memv(ScmObj obj, ScmObj list)
 
 ScmObj ScmOp_member(ScmObj obj, ScmObj list)
 {
-    ScmObj tmplist = SCM_NIL;
-    ScmObj tmpobj  = SCM_NIL;
+    ScmObj tmplist = SCM_NULL;
+    ScmObj tmpobj  = SCM_NULL;
     for (tmplist = list; CONSP(tmplist); tmplist = CDR(tmplist)) {
         tmpobj = CAR(tmplist);
         if (NFALSEP(ScmOp_equalp(obj, tmpobj))) {
@@ -1155,8 +1155,8 @@ ScmObj ScmOp_member(ScmObj obj, ScmObj list)
 
 ScmObj ScmOp_assq(ScmObj obj, ScmObj alist)
 {
-    ScmObj tmplist = SCM_NIL;
-    ScmObj tmpobj  = SCM_NIL;
+    ScmObj tmplist = SCM_NULL;
+    ScmObj tmpobj  = SCM_NULL;
     ScmObj car;
 
     for (tmplist = alist; CONSP(tmplist); tmplist = CDR(tmplist)) {
@@ -1178,8 +1178,8 @@ ScmObj ScmOp_assq(ScmObj obj, ScmObj alist)
 
 ScmObj ScmOp_assv(ScmObj obj, ScmObj alist)
 {
-    ScmObj tmplist = SCM_NIL;
-    ScmObj tmpobj  = SCM_NIL;
+    ScmObj tmplist = SCM_NULL;
+    ScmObj tmpobj  = SCM_NULL;
     ScmObj car;
 
     for (tmplist = alist; CONSP(tmplist); tmplist = CDR(tmplist)) {
@@ -1201,8 +1201,8 @@ ScmObj ScmOp_assv(ScmObj obj, ScmObj alist)
 
 ScmObj ScmOp_assoc(ScmObj obj, ScmObj alist)
 {
-    ScmObj tmplist = SCM_NIL;
-    ScmObj tmpobj  = SCM_NIL;
+    ScmObj tmplist = SCM_NULL;
+    ScmObj tmpobj  = SCM_NULL;
     ScmObj car;
 
     for (tmplist = alist; CONSP(tmplist); tmplist = CDR(tmplist)) {
@@ -1391,8 +1391,8 @@ ScmObj ScmOp_make_string(ScmObj arg, ScmObj env)
     int argc = SCM_INT_VALUE(ScmOp_length(arg));
     int len  = 0;
     char  *tmp = NULL;
-    ScmObj str = SCM_NIL;
-    ScmObj ch  = SCM_NIL;
+    ScmObj str = SCM_NULL;
+    ScmObj ch  = SCM_NULL;
 
     /* sanity check */
     if (argc != 1 && argc != 2)
@@ -1564,8 +1564,8 @@ ScmObj ScmOp_string_append(ScmObj arg, ScmObj env)
 {
     int total_size = 0;
     int total_len  = 0;
-    ScmObj strings = SCM_NIL;
-    ScmObj obj     = SCM_NIL;
+    ScmObj strings = SCM_NULL;
+    ScmObj obj     = SCM_NULL;
     char  *new_str = NULL;
     char  *p       = NULL;
 
@@ -1602,7 +1602,7 @@ ScmObj ScmOp_string2list(ScmObj string)
 {
     char *string_str = NULL;
     int   str_len    = 0;
-    ScmObj head = SCM_NIL;
+    ScmObj head = SCM_NULL;
     ScmObj prev = NULL;
     ScmObj next = NULL;
     int i = 0;
@@ -1616,7 +1616,7 @@ ScmObj ScmOp_string2list(ScmObj string)
     string_str = SCM_STRING_STR(string);
     str_len    = SCM_STRING_LEN(string);
     if (str_len == 0)
-        return SCM_NIL;
+        return SCM_NULL;
 
     for (i = 0; i < str_len; i++) {
         ch_start_ptr = SigScm_default_encoding_str_startpos(string_str, i);
@@ -1626,7 +1626,7 @@ ScmObj ScmOp_string2list(ScmObj string)
         memset(new_ch, 0, sizeof(char) * (ch_end_ptr - ch_start_ptr + 1));
         strncpy(new_ch, ch_start_ptr, (sizeof(char) * (ch_end_ptr - ch_start_ptr)));
 
-        next = Scm_NewCons(Scm_NewChar(new_ch), SCM_NIL);
+        next = Scm_NewCons(Scm_NewChar(new_ch), SCM_NULL);
         if (prev)
             SET_CDR(prev, next);
         else
@@ -1641,8 +1641,8 @@ ScmObj ScmOp_string2list(ScmObj string)
 ScmObj ScmOp_list2string(ScmObj list)
 {
     int total_size = 0;
-    ScmObj chars   = SCM_NIL;
-    ScmObj obj     = SCM_NIL;
+    ScmObj chars   = SCM_NULL;
+    ScmObj obj     = SCM_NULL;
     char  *new_str = NULL;
     char  *p       = NULL;
 
@@ -1725,7 +1725,7 @@ ScmObj ScmOp_make_vector(ScmObj arg, ScmObj env )
 {
     ScmObj *vec   = NULL;
     ScmObj  scm_k = CAR(arg);
-    ScmObj  fill  = SCM_NIL;
+    ScmObj  fill  = SCM_NULL;
     int c_k = 0;
     int i   = 0;
 
@@ -1809,10 +1809,10 @@ ScmObj ScmOp_vector2list(ScmObj vec)
     v = SCM_VECTOR_VEC(vec);
     c_len = SCM_VECTOR_LEN(vec);
     if (c_len == 0)
-        return SCM_NIL;
+        return SCM_NULL;
 
     for (i = 0; i < c_len; i++) {
-        next = Scm_NewCons(v[i], SCM_NIL);
+        next = Scm_NewCons(v[i], SCM_NULL);
 
         if (prev) {
             SET_CDR(prev, next);
@@ -1828,7 +1828,7 @@ ScmObj ScmOp_vector2list(ScmObj vec)
 
 ScmObj ScmOp_list2vector(ScmObj list)
 {
-    ScmObj  scm_len = SCM_NIL;
+    ScmObj  scm_len = SCM_NULL;
     ScmObj *v       = NULL;
     int c_len = 0;
     int i = 0;
@@ -1879,12 +1879,12 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
 {
     int arg_len = SCM_INT_VALUE(ScmOp_length(map_arg));
     ScmObj proc = CAR(map_arg);
-    ScmObj args = SCM_NIL;
-    ScmObj ret  = SCM_NIL;
-    ScmObj tmp  = SCM_NIL;
+    ScmObj args = SCM_NULL;
+    ScmObj ret  = SCM_NULL;
+    ScmObj tmp  = SCM_NULL;
 
-    ScmObj arg_vector = SCM_NIL;
-    ScmObj arg1       = SCM_NIL;
+    ScmObj arg_vector = SCM_NULL;
+    ScmObj arg1       = SCM_NULL;
     int vector_len = 0;
     int i = 0;
 
@@ -1901,7 +1901,7 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
 
             /* create list for "apply" op */
             tmp = SCM_LIST_2(proc,
-                             Scm_NewCons(tmp, SCM_NIL));
+                             Scm_NewCons(tmp, SCM_NULL));
 
             /* apply proc */
             ret = Scm_NewCons(ScmOp_apply(tmp, env), ret);
@@ -1914,12 +1914,12 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
     vector_len = SCM_VECTOR_LEN(arg_vector);
     while (1) {
         /* create arg */
-        arg1 = SCM_NIL;
+        arg1 = SCM_NULL;
         for (i = 0; i < vector_len; i++) {
             tmp  = SCM_VECTOR_CREF(arg_vector, i);
             /* check if we can continue next loop */
             if (NULLP(tmp)) {
-                /* if next item is SCM_NIL, let's return! */
+                /* if next item is SCM_NULL, let's return! */
                 return ScmOp_reverse(ret);
             }
 
@@ -1937,7 +1937,7 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
 
     /* never reaches here */
     SigScm_Error("map bug?\n");
-    return SCM_NIL;
+    return SCM_NULL;
 }
 
 ScmObj ScmOp_for_each(ScmObj arg, ScmObj env)
@@ -1955,14 +1955,14 @@ ScmObj ScmOp_force(ScmObj arg, ScmObj env)
         SigScm_Error("force : not proper delayed object\n");
 
     /* evaluated exp = ( CAR(arg) ) */
-    return ScmOp_eval(Scm_NewCons(CAR(arg), SCM_NIL), env);
+    return ScmOp_eval(Scm_NewCons(CAR(arg), SCM_NULL), env);
 }
 
 ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env)
 {
     int jmpret  = 0;
     ScmObj proc = CAR(arg);
-    ScmObj cont = SCM_NIL;
+    ScmObj cont = SCM_NULL;
 
     if (!CLOSUREP(proc))
         SigScm_ErrorObj("call-with-current-continuation : closure required but got ", proc);
@@ -1977,7 +1977,7 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env)
     }
 
     /* execute (proc cont) */
-    SET_CDR(arg, Scm_NewCons(cont, SCM_NIL));
+    SET_CDR(arg, Scm_NewCons(cont, SCM_NULL));
 
     return ScmOp_eval(arg, env);
 }
@@ -2003,12 +2003,12 @@ ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp, int *tail_flag)
         SigScm_ErrorObj("call-with-values: too few arguments: ", argl);
 
     /* make the list (producer) and evaluate it */
-    cons_wrapper = Scm_NewCons(CAR(argl), SCM_NIL);
+    cons_wrapper = Scm_NewCons(CAR(argl), SCM_NULL);
     vals = ScmOp_eval(cons_wrapper, *envp);
 
     if (!VALUEPACKETP(vals)) {
         /* got back a single value */
-        vals = Scm_NewCons(vals, SCM_NIL);
+        vals = Scm_NewCons(vals, SCM_NULL);
     } else {
         /* extract */
         vals = SCM_VALUEPACKET_VALUES(vals);

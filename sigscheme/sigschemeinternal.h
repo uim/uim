@@ -153,25 +153,25 @@ extern ScmObj SigScm_features;
 
 /* Macros For Creating List */
 #define SCM_LIST_1(obj1) \
-    (Scm_NewCons((obj1), SCM_NIL))
+    (Scm_NewCons((obj1), SCM_NULL))
 #define SCM_LIST_2(obj1, obj2) \
     (Scm_NewCons((obj1), \
-                 Scm_NewCons((obj2), SCM_NIL)))
+                 Scm_NewCons((obj2), SCM_NULL)))
 #define SCM_LIST_3(obj1, obj2, obj3) \
     (Scm_NewCons((obj1), \
                  Scm_NewCons((obj2), \
-                             Scm_NewCons((obj3), SCM_NIL))))
+                             Scm_NewCons((obj3), SCM_NULL))))
 #define SCM_LIST_4(obj1, obj2, obj3, obj4) \
     (Scm_NewCons((obj1), \
                  Scm_NewCons((obj2), \
                              Scm_NewCons((obj3), \
-                                         Scm_NewCons((obj4), SCM_NIL)))))
+                                         Scm_NewCons((obj4), SCM_NULL)))))
 #define SCM_LIST_5(obj1, obj2, obj3, obj4, obj5) \
     (Scm_NewCons((obj1), \
                  Scm_NewCons((obj2), \
                              Scm_NewCons((obj3), \
                                          Scm_NewCons((obj4), \
-                                                     Scm_NewCons((obj5), SCM_NIL))))))
+                                                     Scm_NewCons((obj5), SCM_NULL))))))
 
 /*=======================================
    Function Declarations

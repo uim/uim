@@ -58,10 +58,10 @@
 static void repl(void)
 {
     ScmObj stack_start;
-    ScmObj stdin_port  = SCM_NIL;
-    ScmObj stdout_port = SCM_NIL;
-    ScmObj s_exp  = SCM_NIL;
-    ScmObj result = SCM_NIL;
+    ScmObj stdin_port  = SCM_NULL;
+    ScmObj stdout_port = SCM_NULL;
+    ScmObj s_exp  = SCM_NULL;
+    ScmObj result = SCM_NULL;
 
     /* start protecting stack */
     SigScm_gc_protect_stack(&stack_start);
@@ -76,7 +76,7 @@ static void repl(void)
          !EOFP(s_exp);
          s_exp = SigScm_Read(stdin_port))
     {
-        result = ScmOp_eval(s_exp, SCM_NIL);
+        result = ScmOp_eval(s_exp, SCM_NULL);
         SigScm_DisplayToPort(stdout_port, result);
         printf("\nsscm> ");
     }

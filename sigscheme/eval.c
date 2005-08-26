@@ -88,7 +88,7 @@ static ScmObj qquote_vector(ScmObj vec, ScmObj env, int nest);
 =======================================*/
 ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
 {
-    ScmObj frame    = SCM_NIL;
+    ScmObj frame    = SCM_NULL;
     ScmObj tmp_vars = vars;
     ScmObj tmp_vals = vals;
 
@@ -101,7 +101,7 @@ ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
         if (!NULLP(CDR(tmp_vars)) && !CONSP(CDR(tmp_vars))) {
             /* create new value */
             SET_CDR(tmp_vals, Scm_NewCons(CDR(tmp_vals),
-                                          SCM_NIL));
+                                          SCM_NULL));
         }
 
         tmp_vars = CDR(tmp_vars);
@@ -113,7 +113,7 @@ ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
 
     /* add to env */
     if (NULLP(env))
-        env = Scm_NewCons(frame, SCM_NIL);
+        env = Scm_NewCons(frame, SCM_NULL);
     else if (CONSP(env))
         env = Scm_NewCons(frame, env);
     else
@@ -133,10 +133,10 @@ ScmObj add_environment(ScmObj var, ScmObj val, ScmObj env)
 
     /* add (var val) pair to the newest frame in env */
     if (NULLP(env)) {
-        newest_frame = Scm_NewCons(Scm_NewCons(var, SCM_NIL),
-                                   Scm_NewCons(val, SCM_NIL));
+        newest_frame = Scm_NewCons(Scm_NewCons(var, SCM_NULL),
+                                   Scm_NewCons(val, SCM_NULL));
         env = Scm_NewCons(newest_frame,
-                          SCM_NIL);
+                          SCM_NULL);
     } else if (CONSP(env)) {
         newest_frame = CAR(env);
         new_varlist  = Scm_NewCons(var, CAR(newest_frame));
@@ -160,12 +160,12 @@ ScmObj add_environment(ScmObj var, ScmObj val, ScmObj env)
 ========================================================*/
 ScmObj lookup_environment(ScmObj var, ScmObj env)
 {
-    ScmObj frame = SCM_NIL;
-    ScmObj val   = SCM_NIL;
+    ScmObj frame = SCM_NULL;
+    ScmObj val   = SCM_NULL;
 
     /* sanity check */
     if (NULLP(env))
-        return SCM_NIL;
+        return SCM_NULL;
     if (!CONSP(env))
         SigScm_ErrorObj("Broken environent : ", env);
 
@@ -177,17 +177,17 @@ ScmObj lookup_environment(ScmObj var, ScmObj env)
             return val;
     }
 
-    return SCM_NIL;
+    return SCM_NULL;
 }
 
 ScmObj lookup_frame(ScmObj var, ScmObj frame)
 {
-    ScmObj vals = SCM_NIL;
-    ScmObj vars = SCM_NIL;
+    ScmObj vals = SCM_NULL;
+    ScmObj vars = SCM_NULL;
 
     /* sanity check */
     if (NULLP(frame))
-        return SCM_NIL;
+        return SCM_NULL;
     else if (!CONSP(frame))
         SigScm_ErrorObj("Broken frame : ", frame);
 
@@ -215,7 +215,7 @@ ScmObj lookup_frame(ScmObj var, ScmObj frame)
         vals = CDR(vals);
     }
 
-    return SCM_NIL;
+    return SCM_NULL;
 }
 
 /*===========================================================================
@@ -223,9 +223,9 @@ ScmObj lookup_frame(ScmObj var, ScmObj frame)
 ===========================================================================*/
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
 {
-    ScmObj tmp = SCM_NIL;
-    ScmObj arg = SCM_NIL;
-    ScmObj ret = SCM_NIL;
+    ScmObj tmp = SCM_NULL;
+    ScmObj arg = SCM_NULL;
+    ScmObj ret = SCM_NULL;
     int tail_flag = 0;
 
     /* for debugging */
@@ -323,7 +323,7 @@ eval_loop:
 
                 /* check 1st arg */
                 if (NULLP(obj)) {
-                    ret =  SCM_FUNC_EXEC_SUBR2N(tmp, SCM_NIL, SCM_NIL);
+                    ret =  SCM_FUNC_EXEC_SUBR2N(tmp, SCM_NULL, SCM_NULL);
                     goto eval_done;
                 }
 
@@ -332,7 +332,7 @@ eval_loop:
 
                 /* check 2nd arg  */
                 if (NULLP(CDR(obj))) {
-                    ret = SCM_FUNC_EXEC_SUBR2N(tmp, ret, SCM_NIL);
+                    ret = SCM_FUNC_EXEC_SUBR2N(tmp, ret, SCM_NULL);
                     goto eval_done;
                 }
 
@@ -413,9 +413,9 @@ eval_loop:
             
             if (SYMBOLP(arg)) {
                 /* (1) : <variable> */
-                env = extend_environment(Scm_NewCons(arg, SCM_NIL),
+                env = extend_environment(Scm_NewCons(arg, SCM_NULL),
                                          Scm_NewCons(map_eval(CDR(obj), env),
-                                                     SCM_NIL),
+                                                     SCM_NULL),
                                          SCM_CLOSURE_ENV(tmp));
             } else if (CONSP(arg)) {
                 /*
@@ -431,8 +431,8 @@ eval_loop:
                 /*
                  * (2') : <variable> is '()
                  */
-                env = extend_environment(SCM_NIL,
-                                         SCM_NIL,
+                env = extend_environment(SCM_NULL,
+                                         SCM_NULL,
                                          SCM_CLOSURE_ENV(tmp));
             } else {
                 SigScm_ErrorObj("lambda : bad syntax with ", arg);
@@ -484,8 +484,8 @@ eval_done:
 
 ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 {
-    ScmObj proc  = SCM_NIL;
-    ScmObj obj   = SCM_NIL;
+    ScmObj proc  = SCM_NULL;
+    ScmObj obj   = SCM_NULL;
     int tail_flag = 0;
 
     /* sanity check */
@@ -513,12 +513,12 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
             args = obj;            
             /* check 1st arg */
             if (NULLP(args))
-                return SCM_FUNC_EXEC_SUBR2N(proc, SCM_NIL, SCM_NIL); 
+                return SCM_FUNC_EXEC_SUBR2N(proc, SCM_NULL, SCM_NULL); 
             /* eval 1st arg */
             obj  = CAR(args);
             /* check 2nd arg */
             if (NULLP(CDR(args)))
-                return SCM_FUNC_EXEC_SUBR2N(proc, obj, SCM_NIL);
+                return SCM_FUNC_EXEC_SUBR2N(proc, obj, SCM_NULL);
             /* call proc with each 2 objs */
             for (args = CDR(args); !NULLP(args); args = CDR(args)) {
                 obj = SCM_FUNC_EXEC_SUBR2N(proc,
@@ -579,8 +579,8 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
         args = CAR(SCM_CLOSURE_EXP(proc)); /* arg is <formals> */
         if (SYMBOLP(args)) {
             /* (1) : <variable> */
-            env = extend_environment(Scm_NewCons(args, SCM_NIL),
-                                     Scm_NewCons(obj, SCM_NIL),
+            env = extend_environment(Scm_NewCons(args, SCM_NULL),
+                                     Scm_NewCons(obj, SCM_NULL),
                                      SCM_CLOSURE_ENV(proc));
         } else if (CONSP(args)) {
             /*
@@ -596,8 +596,8 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
             /*
              * (2') : <variable> is '()
              */
-            env = extend_environment(SCM_NIL,
-                                     SCM_NIL,
+            env = extend_environment(SCM_NULL,
+                                     SCM_NULL,
                                      SCM_CLOSURE_ENV(proc));
         } else {
             SigScm_ErrorObj("lambda : bad syntax with ", args);
@@ -616,12 +616,12 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
     }
 
     /* never reaches here */
-    return SCM_NIL;
+    return SCM_NULL;
 }
 
 ScmObj symbol_value(ScmObj var, ScmObj env)
 {
-    ScmObj val = SCM_NIL;
+    ScmObj val = SCM_NULL;
 
     /* sanity check */
     if (!SYMBOLP(var))
@@ -652,20 +652,20 @@ ScmObj symbol_value(ScmObj var, ScmObj env)
 
 ScmObj map_eval(ScmObj args, ScmObj env)
 {
-    ScmObj result  = SCM_NIL;
-    ScmObj tail    = SCM_NIL;
-    ScmObj newtail = SCM_NIL;
+    ScmObj result  = SCM_NULL;
+    ScmObj tail    = SCM_NULL;
+    ScmObj newtail = SCM_NULL;
 
     /* sanity check */
     if (NULLP(args))
-        return SCM_NIL;
+        return SCM_NULL;
 
     /* eval each element of args */
-    result  = Scm_NewCons(ScmOp_eval(CAR(args), env), SCM_NIL);
+    result  = Scm_NewCons(ScmOp_eval(CAR(args), env), SCM_NULL);
     tail    = result;
-    newtail = SCM_NIL;
+    newtail = SCM_NULL;
     for (args = CDR(args); !NULLP(args); args = CDR(args)) {
-        newtail = Scm_NewCons(ScmOp_eval(CAR(args), env), SCM_NIL);
+        newtail = Scm_NewCons(ScmOp_eval(CAR(args), env), SCM_NULL);
         SET_CDR(tail, newtail);
         tail = newtail;
     }
@@ -689,12 +689,12 @@ ScmObj map_eval(ScmObj args, ScmObj env)
  */
 static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
 {
-    ScmObj ls        = SCM_NIL;
-    ScmObj obj       = SCM_NIL;
-    ScmObj car       = SCM_NIL;
-    ScmObj args      = SCM_NIL;
-    ScmObj result    = SCM_NIL;
-    ScmObj ret_list  = SCM_NIL;
+    ScmObj ls        = SCM_NULL;
+    ScmObj obj       = SCM_NULL;
+    ScmObj car       = SCM_NULL;
+    ScmObj args      = SCM_NULL;
+    ScmObj result    = SCM_NULL;
+    ScmObj ret_list  = SCM_NULL;
     ScmObj *ret_tail = NULL;
     int splice_flag  = 0;
 
@@ -705,7 +705,7 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
         ScmObj src = qexpr; \
         ret_tail = &ret_list; \
         while (!EQ(src, end)) { \
-            *ret_tail = Scm_NewCons(CAR(src), SCM_NIL); \
+            *ret_tail = Scm_NewCons(CAR(src), SCM_NULL); \
             ret_tail = &CDR(*ret_tail); \
             src = CDR(src); \
         } \
@@ -759,7 +759,7 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
 
         if (QQUOTE_IS_VERBATIM(result)) {
             if (!qquote_copy_delayed()) {
-                *ret_tail = Scm_NewCons(obj, SCM_NIL);
+                *ret_tail = Scm_NewCons(obj, SCM_NULL);
                 ret_tail = &CDR(*ret_tail);
             }
         } else {
@@ -775,7 +775,7 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
                     SigScm_ErrorObj("unquote-splicing: bad list: ",
                                     result);
             } else {
-                *ret_tail = Scm_NewCons(result, SCM_NIL);
+                *ret_tail = Scm_NewCons(result, SCM_NULL);
                 ret_tail = &CDR(*ret_tail);
             }
         }
@@ -813,12 +813,12 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
  */
 static ScmObj qquote_vector(ScmObj src, ScmObj env, int nest)
 {
-    ScmObj splices    = SCM_NIL;
-    ScmObj expr       = SCM_NIL;
-    ScmObj ret        = SCM_NIL;
+    ScmObj splices    = SCM_NULL;
+    ScmObj expr       = SCM_NULL;
+    ScmObj ret        = SCM_NULL;
     ScmObj *copy_buf  = NULL;
-    ScmObj result     = SCM_NIL;
-    ScmObj splice_len = SCM_NIL;
+    ScmObj result     = SCM_NULL;
+    ScmObj splice_len = SCM_NULL;
     int len = SCM_VECTOR_LEN(src);
     int growth = 0;
     int next_splice_index = -1;
@@ -838,7 +838,7 @@ static ScmObj qquote_vector(ScmObj src, ScmObj env, int nest)
         ret = Scm_NewVector(copy_buf, len + growth); \
         /* fill with something the garbage collector recognizes */ \
         for (k=n; k < len + growth; k++) \
-            copy_buf[k] = SCM_NIL; \
+            copy_buf[k] = SCM_NULL; \
     } while(0)
 
     QQUOTE_SET_VERBATIM(ret);
@@ -946,8 +946,8 @@ ScmObj ScmExp_lambda(ScmObj exp, ScmObj *envp, int *tail_flag)
 ScmObj ScmExp_if(ScmObj exp, ScmObj *envp, int *tail_flag)
 {
     ScmObj env       = *envp;
-    ScmObj pred      = SCM_NIL;
-    ScmObj false_exp = SCM_NIL;
+    ScmObj pred      = SCM_NULL;
+    ScmObj false_exp = SCM_NULL;
 
     /* set tail_flag */
     (*tail_flag) = 1;
@@ -982,8 +982,8 @@ ScmObj ScmExp_set(ScmObj arg, ScmObj *envp, int *tail_flag)
     ScmObj env = *envp;
     ScmObj sym = CAR(arg);
     ScmObj val = CAR(CDR(arg));
-    ScmObj ret = SCM_NIL;
-    ScmObj tmp = SCM_NIL;
+    ScmObj ret = SCM_NULL;
+    ScmObj tmp = SCM_NULL;
 
     /* set tail_flag */
     (*tail_flag) = 0;
@@ -1027,10 +1027,10 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp, int *tail_flag)
      *     (<test> => <expression)
      */
     ScmObj env    = *envp;
-    ScmObj clause = SCM_NIL;
-    ScmObj test   = SCM_NIL;
-    ScmObj exps   = SCM_NIL;
-    ScmObj proc   = SCM_NIL;
+    ScmObj clause = SCM_NULL;
+    ScmObj test   = SCM_NULL;
+    ScmObj exps   = SCM_NULL;
+    ScmObj proc   = SCM_NULL;
 
     /* set tail_flag */
     (*tail_flag) = 0;
@@ -1068,7 +1068,7 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp, int *tail_flag)
                     SigScm_ErrorObj("cond : the value of exp after => must be the procedure but got ", proc);
 
                 return ScmOp_apply(SCM_LIST_2(proc,
-                                              Scm_NewCons(test, SCM_NIL)),
+                                              Scm_NewCons(test, SCM_NULL)),
                                    env);
             }
 
@@ -1083,9 +1083,9 @@ ScmObj ScmExp_case(ScmObj arg, ScmObj *envp, int *tail_flag)
 {
     ScmObj env    = *envp;
     ScmObj key    = ScmOp_eval(CAR(arg), env);
-    ScmObj clause = SCM_NIL;
-    ScmObj datums = SCM_NIL;
-    ScmObj exps   = SCM_NIL;
+    ScmObj clause = SCM_NULL;
+    ScmObj datums = SCM_NULL;
+    ScmObj exps   = SCM_NULL;
 
     /* looping in each clause */
     for (arg = CDR(arg); !NULLP(arg); arg = CDR(arg)) {
@@ -1113,7 +1113,7 @@ ScmObj ScmExp_case(ScmObj arg, ScmObj *envp, int *tail_flag)
 ScmObj ScmExp_and(ScmObj arg, ScmObj *envp, int *tail_flag)
 {
     ScmObj env = *envp;
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
 
     /* sanity check */
     if (NULLP(arg))
@@ -1143,13 +1143,13 @@ ScmObj ScmExp_and(ScmObj arg, ScmObj *envp, int *tail_flag)
         }
     }
 
-    return SCM_NIL;
+    return SCM_NULL;
 }
 
 ScmObj ScmExp_or(ScmObj arg, ScmObj *envp, int *tail_flag)
 {
     ScmObj env = *envp;
-    ScmObj obj = SCM_NIL;
+    ScmObj obj = SCM_NULL;
 
     /* sanity check */
     if (NULLP(arg))
@@ -1179,7 +1179,7 @@ ScmObj ScmExp_or(ScmObj arg, ScmObj *envp, int *tail_flag)
 
     }
 
-    return SCM_NIL;
+    return SCM_NULL;
 }
 
 /*===========================================================================
@@ -1188,11 +1188,11 @@ ScmObj ScmExp_or(ScmObj arg, ScmObj *envp, int *tail_flag)
 ScmObj ScmExp_let(ScmObj arg, ScmObj *envp, int *tail_flag)
 {
     ScmObj env      = *envp;
-    ScmObj bindings = SCM_NIL;
-    ScmObj body     = SCM_NIL;
-    ScmObj vars     = SCM_NIL;
-    ScmObj vals     = SCM_NIL;
-    ScmObj binding  = SCM_NIL;
+    ScmObj bindings = SCM_NULL;
+    ScmObj body     = SCM_NULL;
+    ScmObj vars     = SCM_NULL;
+    ScmObj vals     = SCM_NULL;
+    ScmObj binding  = SCM_NULL;
 
     /* sanity check */
     if CHECK_2_ARGS(arg)
@@ -1221,7 +1221,7 @@ ScmObj ScmExp_let(ScmObj arg, ScmObj *envp, int *tail_flag)
                 SigScm_ErrorObj("let : invalid binding form : ", binding);
 #else
             if (NULLP(CDR(binding)))
-                SET_CDR(binding, Scm_NewCons(SCM_NIL, SCM_NIL));
+                SET_CDR(binding, Scm_NewCons(SCM_NULL, SCM_NULL));
 #endif
 
             vars = Scm_NewCons(CAR(binding), vars);
@@ -1271,11 +1271,11 @@ named_let:
 ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp, int *tail_flag)
 {
     ScmObj env      = *envp;
-    ScmObj bindings = SCM_NIL;
-    ScmObj body     = SCM_NIL;
-    ScmObj vars     = SCM_NIL;
-    ScmObj vals     = SCM_NIL;
-    ScmObj binding  = SCM_NIL;
+    ScmObj bindings = SCM_NULL;
+    ScmObj body     = SCM_NULL;
+    ScmObj vars     = SCM_NULL;
+    ScmObj vals     = SCM_NULL;
+    ScmObj binding  = SCM_NULL;
 
     /* sanity check */
     if CHECK_2_ARGS(arg)
@@ -1300,11 +1300,11 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp, int *tail_flag)
                 SigScm_ErrorObj("let* : invalid binding form : ", binding);
 #else
             if (NULLP(CDR(binding)))
-                SET_CDR(binding, Scm_NewCons(SCM_NIL, SCM_NIL));
+                SET_CDR(binding, Scm_NewCons(SCM_NULL, SCM_NULL));
 #endif
 
-            vars = Scm_NewCons(CAR(binding), SCM_NIL);
-            vals = Scm_NewCons(ScmOp_eval(CAR(CDR(binding)), env), SCM_NIL);
+            vars = Scm_NewCons(CAR(binding), SCM_NULL);
+            vals = Scm_NewCons(ScmOp_eval(CAR(CDR(binding)), env), SCM_NULL);
 
             /* add env to each time!*/
             env = extend_environment(vars, vals, env);
@@ -1315,8 +1315,8 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp, int *tail_flag)
         return ScmExp_begin(body, &env, tail_flag);
     } else if (NULLP(bindings)) {
         /* extend null environment */
-        env = extend_environment(SCM_NIL,
-                                 SCM_NIL,
+        env = extend_environment(SCM_NULL,
+                                 SCM_NULL,
                                  env);
 
         /* set new env */
@@ -1334,14 +1334,14 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp, int *tail_flag)
 ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp, int *tail_flag)
 {
     ScmObj env      = *envp;
-    ScmObj bindings = SCM_NIL;
-    ScmObj body     = SCM_NIL;
-    ScmObj vars     = SCM_NIL;
-    ScmObj vals     = SCM_NIL;
-    ScmObj binding  = SCM_NIL;
-    ScmObj var      = SCM_NIL;
-    ScmObj val      = SCM_NIL;
-    ScmObj frame    = SCM_NIL;
+    ScmObj bindings = SCM_NULL;
+    ScmObj body     = SCM_NULL;
+    ScmObj vars     = SCM_NULL;
+    ScmObj vals     = SCM_NULL;
+    ScmObj binding  = SCM_NULL;
+    ScmObj var      = SCM_NULL;
+    ScmObj val      = SCM_NULL;
+    ScmObj frame    = SCM_NULL;
 
     /* sanity check */
     if (NULLP(arg) || NULLP(CDR(arg)))
@@ -1366,7 +1366,7 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp, int *tail_flag)
                 SigScm_ErrorObj("letrec : invalid binding form : ", binding);
 #else
             if (NULLP(CDR(binding)))
-                SET_CDR(binding, Scm_NewCons(SCM_NIL, SCM_NIL));
+                SET_CDR(binding, Scm_NewCons(SCM_NULL, SCM_NULL));
 #endif
 
             var = CAR(binding);
@@ -1385,7 +1385,7 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp, int *tail_flag)
         env = extend_environment(CAR(frame), CDR(frame), env);
 
         /* ok, vars of letrec is extended to env */
-        scm_letrec_env = SCM_NIL;
+        scm_letrec_env = SCM_NULL;
 
         /* set new env */
         *envp = env;
@@ -1413,7 +1413,7 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp, int *tail_flag)
 ScmObj ScmExp_begin(ScmObj arg, ScmObj *envp, int *tail_flag)
 {
     ScmObj env = *envp;
-    ScmObj exp = SCM_NIL;
+    ScmObj exp = SCM_NULL;
 
     /* set tail_flag */
     (*tail_flag) = 1;
@@ -1429,7 +1429,7 @@ ScmObj ScmExp_begin(ScmObj arg, ScmObj *envp, int *tail_flag)
         exp = CAR(arg);
 
         /* return last expression's result */
-        if (EQ(CDR(arg), SCM_NIL)) {
+        if (EQ(CDR(arg), SCM_NULL)) {
             /* doesn't evaluate exp now for tail-recursion. */
             return exp;
         }
@@ -1461,18 +1461,18 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp, int *tail_flag)
      */
     ScmObj env        = *envp;
     ScmObj bindings   = CAR(arg);
-    ScmObj vars       = SCM_NIL;
-    ScmObj vals       = SCM_NIL;
-    ScmObj steps      = SCM_NIL;
-    ScmObj binding    = SCM_NIL;
-    ScmObj step       = SCM_NIL;
-    ScmObj testframe  = SCM_NIL;
-    ScmObj test       = SCM_NIL;
-    ScmObj expression = SCM_NIL;
-    ScmObj commands   = SCM_NIL;
-    ScmObj tmp_vars   = SCM_NIL;
-    ScmObj tmp_steps  = SCM_NIL;
-    ScmObj obj        = SCM_NIL;
+    ScmObj vars       = SCM_NULL;
+    ScmObj vals       = SCM_NULL;
+    ScmObj steps      = SCM_NULL;
+    ScmObj binding    = SCM_NULL;
+    ScmObj step       = SCM_NULL;
+    ScmObj testframe  = SCM_NULL;
+    ScmObj test       = SCM_NULL;
+    ScmObj expression = SCM_NULL;
+    ScmObj commands   = SCM_NULL;
+    ScmObj tmp_vars   = SCM_NULL;
+    ScmObj tmp_steps  = SCM_NULL;
+    ScmObj obj        = SCM_NULL;
 
     /* sanity check */
     if (SCM_INT_VALUE(ScmOp_length(arg)) < 2)
@@ -1515,7 +1515,7 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp, int *tail_flag)
          * results. each excution must be done independently. So, we store the
          * results to the "vals" variable and set it in hand.
          */
-        vals = SCM_NIL;
+        vals = SCM_NULL;
         for (tmp_steps = steps; !NULLP(tmp_steps); tmp_steps = CDR(tmp_steps)) {
             vals = Scm_NewCons(ScmOp_eval(CAR(tmp_steps), env), vals);
         }
@@ -1552,7 +1552,7 @@ ScmObj ScmOp_delay(ScmObj arg, ScmObj *envp, int *tail_flag)
         SigScm_Error("delay : Wrong number of arguments\n");
 
     /* closure exp = ( () CAR(arg) ) */
-    return Scm_NewClosure(SCM_LIST_2(SCM_NIL, CAR(arg)), env);
+    return Scm_NewClosure(SCM_LIST_2(SCM_NULL, CAR(arg)), env);
 }
 
 /*===========================================================================
@@ -1577,7 +1577,7 @@ ScmObj ScmOp_unquote(ScmObj obj, ScmObj *envp, int *tail_flag)
     if (!CONSP(obj) || !NULLP(CDR(obj)))
         SigScm_ErrorObj("unquote: bad argument list: ", obj);
     SigScm_Error("unquote outside quasiquote");
-    return SCM_NIL;
+    return SCM_NULL;
 }
 
 ScmObj ScmOp_unquote_splicing(ScmObj obj, ScmObj *envp, int *tail_flag)
@@ -1585,7 +1585,7 @@ ScmObj ScmOp_unquote_splicing(ScmObj obj, ScmObj *envp, int *tail_flag)
     if (!CONSP(obj) || !NULLP(CDR(obj)))
         SigScm_ErrorObj("unquote-splicing: bad argument list: ", obj);
     SigScm_Error("unquote-splicing outside quasiquote");
-    return SCM_NIL;
+    return SCM_NULL;
 }
 
 
@@ -1597,8 +1597,8 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj *envp, int *tail_flag)
     ScmObj env     = *envp;
     ScmObj var     = CAR(arg);
     ScmObj body    = CAR(CDR(arg));
-    ScmObj val     = SCM_NIL;
-    ScmObj formals = SCM_NIL;
+    ScmObj val     = SCM_NULL;
+    ScmObj formals = SCM_NULL;
 
     /* set tail_flag */
     (*tail_flag) = 0;
@@ -1650,7 +1650,7 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj *envp, int *tail_flag)
     }
 
     SigScm_ErrorObj("define : syntax error ", arg);
-    return SCM_NIL;
+    return SCM_NULL;
 }
 
 /*=======================================
@@ -1658,12 +1658,12 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj *envp, int *tail_flag)
 =======================================*/
 ScmObj ScmOp_scheme_report_environment(ScmObj version)
 {
-    return SCM_NIL;
+    return SCM_NULL;
 }
 
 ScmObj ScmOp_null_environment(ScmObj version)
 {
-    return SCM_NIL;
+    return SCM_NULL;
 }
 
 #if SCM_COMPAT_SIOD
@@ -1688,7 +1688,7 @@ ScmObj ScmOp_symbol_value(ScmObj var)
     if (!SYMBOLP(var))
         SigScm_ErrorObj("symbol-value : require symbol but got ", var);
 
-    return symbol_value(var, SCM_NIL);
+    return symbol_value(var, SCM_NULL);
 }
 
 ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val)
