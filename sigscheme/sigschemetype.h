@@ -220,10 +220,6 @@ struct ScmObjInternal_ {
             ScmObj values;
         } value_pack;
 
-        struct ScmEtc {
-            int type;
-        } etc;
-
         struct ScmCPointer {
             void *data;            
         } c_pointer;
@@ -356,13 +352,10 @@ typedef ScmObj (*ScmFuncType) (void);
 ============================================================================*/
 #define SCM_ETCP(a) (SCM_TYPE(a) == ScmEtc)
 #define SCM_AS_ETC(a) (sigassert(SCM_ETCP(a)), (a))
-#define SCM_ETC_TYPE(a) (SCM_AS_ETC(a)->obj.etc.type)
-#define SCM_SETETC_TYPE(a, etctype) (SCM_ETC_TYPE(a) = (etctype))
-#define SCM_NEW_ETC(a, impl, etctype)     \
+#define SCM_ETC_SET_IMPL(a, impl)         \
     do {                                  \
         (a) = &(impl);                    \
-        SCM_ENTYPE((a), ScmEtc);         \
-        SCM_SETETC_TYPE((a), (etctype));  \
+        SCM_ENTYPE((a), ScmEtc);          \
     } while(0)
 
 /*============================================================================

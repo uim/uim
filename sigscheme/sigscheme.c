@@ -80,12 +80,12 @@ void SigScm_Initialize(void)
     /*=======================================================================
       Etc Variable Initialization
     =======================================================================*/
-    SCM_NEW_ETC(SigScm_null,             SigScm_null_impl,             1);
-    SCM_NEW_ETC(SigScm_true,             SigScm_true_impl,             2);
-    SCM_NEW_ETC(SigScm_false,            SigScm_false_impl,            3);
-    SCM_NEW_ETC(SigScm_eof,              SigScm_eof_impl,              4);
-    SCM_NEW_ETC(SigScm_unbound,          SigScm_unbound_impl,          9);
-    SCM_NEW_ETC(SigScm_undef,            SigScm_undef_impl,            10);
+    SCM_ETC_SET_IMPL(SigScm_null,             SigScm_null_impl   );
+    SCM_ETC_SET_IMPL(SigScm_true,             SigScm_true_impl   );
+    SCM_ETC_SET_IMPL(SigScm_false,            SigScm_false_impl  );
+    SCM_ETC_SET_IMPL(SigScm_eof,              SigScm_eof_impl    );
+    SCM_ETC_SET_IMPL(SigScm_unbound,          SigScm_unbound_impl);
+    SCM_ETC_SET_IMPL(SigScm_undef,            SigScm_undef_impl  );
 
 #if SCM_COMPAT_SIOD_BUGS
     SigScm_false = SigScm_null;
