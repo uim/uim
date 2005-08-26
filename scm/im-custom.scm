@@ -269,9 +269,7 @@
 ;;		 (lambda ()
 ;;		   enable-im-switch))
 
-; TODO : fixme! Kazuki Ohta <mover@hct.zaq.ne.jp>
-;
-;(define-key switch-im-key? '())
+(define-key switch-im-key? '())
 
 (define-custom 'uim-color 'uim-color-uim
   '(global visual-preference)
@@ -281,11 +279,6 @@
   (_ "Preedit color")
   (_ "long description will be here."))
 
-;
-; TODO : fixme! Kazuki Ohta <mover@hct.zaq.ne.jp>
-; This code becomes an error for some reason.
-; May be SigScheme's bug.
-;
 ; referred by some bridges
 (define-custom 'candidate-window-position 'caret
   '(global visual-preference)
