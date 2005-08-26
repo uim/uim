@@ -138,8 +138,8 @@ uim_scm_str_from_c_str(const char *str)
 uim_lisp
 uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
 {
-  uim_lisp lst = (uim_lisp)SCM_NIL;
-  uim_lisp str = (uim_lisp)SCM_NIL;
+  uim_lisp lst = (uim_lisp)SigScm_null;
+  uim_lisp str = (uim_lisp)SigScm_null;
   const char *c_str;
   int i;
 

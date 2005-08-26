@@ -241,7 +241,7 @@ uim_scm_f(void)
 uim_lisp
 uim_scm_null_list(void)
 {
-  return (uim_lisp)SigScm_nil;
+  return (uim_lisp)SigScm_null;
 }
 
 uim_bool
@@ -305,7 +305,7 @@ uim_scm_eval(uim_lisp obj)
   uim_lisp stack_start;
 
   uim_scm_gc_protect_stack(&stack_start);
-  ret = (uim_lisp)ScmOp_eval((ScmObj)obj, SigScm_nil);
+  ret = (uim_lisp)ScmOp_eval((ScmObj)obj, SigScm_null);
   uim_scm_gc_unprotect_stack(&stack_start);
   return ret;
 }
@@ -315,8 +315,8 @@ uim_lisp
 uim_scm_apply(uim_lisp proc, uim_lisp args)
 {
   return (uim_lisp)ScmOp_apply(Scm_NewCons((ScmObj)proc,
-					   Scm_NewCons((ScmObj)args, SigScm_nil)),	
-			       SigScm_nil);
+					   Scm_NewCons((ScmObj)args, SigScm_null)),	
+			       SigScm_null);
 }
 
 uim_lisp
@@ -325,7 +325,7 @@ uim_scm_quote(uim_lisp obj)
   /* TODO : fixme Kazuki Ohta <mover@hct.zaq.ne.jp> */
   return (uim_lisp)Scm_NewCons(SigScm_quote,
 			       Scm_NewCons((ScmObj)obj,
-					   SigScm_nil));
+					   SigScm_null));
 }
 #endif  /* UIM_SCM_EXTENDED_API */
 
