@@ -78,7 +78,10 @@ static const char *candwin_command(void)
     candwin_prog = getenv("UIM_CANDWIN_PROG");
     if (!candwin_prog) {
 #ifdef UIM_COMPAT_SCM
-	candwin_prog = uim_scm_symbol_value_str("uim-candwin-prog");
+#if 0
+	// uim-candwin-prog is not bound in uim-custom setting.
+	// candwin_prog = uim_scm_symbol_value_str("uim-candwin-prog");
+#endif
 	if (candwin_prog)
 	    return candwin_prog;
 #endif /* UIM_COMPAT_SCM */
