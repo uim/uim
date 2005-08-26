@@ -47,7 +47,8 @@
    (test "char-upcase" (char-upcase #\A) #\A)
    (test "char-downcase" (char-downcase #\a) #\a)
    (test "char-downcase" (char-downcase #\A) #\a)
-   (test "unsigned char" (char->integer (integer->char 128)) 128))
+;   (test "unsigned char" (char->integer (integer->char 128)) 128)
+   )
 
 (test-char)
 			    

@@ -260,7 +260,6 @@ eval_loop:
             tmp = ScmOp_eval(tmp, env);
             break;
         case ScmEtc:
-            /* QUOTE case */
             break;
         default:
             SigScm_ErrorObj("eval : invalid operation ", obj);
@@ -1038,11 +1037,11 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp, int *tail_flag)
     /* looping in each clause */
     for (; !NULLP(arg); arg = CDR(arg)) {
         clause = CAR(arg);
-        test   = CAR(clause);
-        exps   = CDR(clause);
+        if (!CONSP(clause))
+            SigScm_ErrorObj("cond : bad clause: ", clause);
 
-        if (NULLP(clause) || NULLP(test))
-            SigScm_Error("cond : syntax error\n");
+        test = CAR(clause);
+        exps = CDR(clause);
 
         /* evaluate test */
         test = ScmOp_eval(test, env);

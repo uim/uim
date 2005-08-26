@@ -1738,7 +1738,7 @@ ScmObj ScmOp_make_vector(ScmObj arg, ScmObj env )
 
     /* fill vector */
     fill = SCM_UNDEF;
-    if (!NULLP(CDR(arg)) && !NULLP(CAR(CDR(arg))))
+    if (!NULLP(CDR(arg)))
         fill = CAR(CDR(arg));
 
     for (i = 0; i < c_k; i++) {
@@ -1954,8 +1954,8 @@ ScmObj ScmOp_force(ScmObj arg, ScmObj env)
     if (!CLOSUREP(CAR(arg)))
         SigScm_Error("force : not proper delayed object\n");
 
-    /* evaluated exp = ( CAR(arg) ) */
-    return ScmOp_eval(Scm_NewCons(CAR(arg), SCM_NULL), env);
+    /* the caller's already wrapped arg in a list for us */
+    return ScmOp_eval(arg, env);
 }
 
 ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env)

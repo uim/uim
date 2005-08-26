@@ -73,7 +73,7 @@
         }                                                                     \
     } while (0);
 
-#define SCM_PORT_UNGETC(port,c )        \
+#define SCM_PORT_UNGETC(port,c)         \
     SCM_PORTINFO_UNGOTTENCHAR(port) = c;
 
 /*=======================================
@@ -92,6 +92,7 @@ static ScmObj read_list(ScmObj port, int closeParen);
 static ScmObj read_char(ScmObj port);
 static ScmObj read_string(ScmObj port);
 static ScmObj read_symbol(ScmObj port);
+static ScmObj parse_number(const char *str);
 static ScmObj read_number_or_symbol(ScmObj port);
 static ScmObj read_quote(ScmObj port, ScmObj quoter);
 
@@ -131,7 +132,7 @@ static int skip_comment_and_space(ScmObj port)
                 if (c == '\n') {
                     break;
                 }
-                if (c == EOF ) return c;
+                if (c == EOF) return c;
             }
             continue;
         } else if(isspace(c)) {
@@ -165,8 +166,6 @@ static ScmObj read_sexpression(ScmObj port)
             return read_string(port);
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-            SCM_PORT_UNGETC(port, c);
-            return read_number_or_symbol(port);
         case '+': case '-':
             SCM_PORT_UNGETC(port, c);
             return read_number_or_symbol(port);
@@ -196,6 +195,9 @@ static ScmObj read_sexpression(ScmObj port)
                 return ScmOp_list2vector(read_list(port, ')'));
             case '\\':
                 return read_char(port);
+            case 'b': case 'o': case 'd': case 'x':
+                SCM_PORT_UNGETC(port, c1);
+                return parse_number(read_word(port));
             case EOF:
                 SigScm_Error("end in #\n");
             default:
@@ -225,7 +227,6 @@ static ScmObj read_list(ScmObj port, int closeParen)
     int    c      = 0;
     int    c2     = 0;
     char  *token  = NULL;
-    char  *dotsym = NULL;
 
 #if DEBUG_PARSER
     printf("read_list\n");
@@ -271,12 +272,11 @@ static ScmObj read_list(ScmObj port, int closeParen)
              * Gauche behave).
              */
             SCM_PORT_UNGETC(port, c2);
-            token  = read_word(port);
-            dotsym = (char*)malloc(sizeof(char) * (strlen(token) + 1 + 1));
-            memmove (dotsym + 1, token, strlen(token)+1);
-            dotsym[0] = '.';
-            item = Scm_Intern(dotsym);
-            free(dotsym);
+            token = read_word(port);
+            token = (char*)realloc(token, strlen(token) + 1 + 1);
+            memmove(token + 1, token, strlen(token)+1);
+            token[0] = '.';
+            item = Scm_Intern(token);
             free(token);
         } else {
             SCM_PORT_UNGETC(port, c);
@@ -358,6 +358,7 @@ static ScmObj read_string(ScmObj port)
             case 'r':  stringbuf[stringlen] = '\r'; break;
             case 'f':  stringbuf[stringlen] = '\f'; break;
             case 't':  stringbuf[stringlen] = '\t'; break;
+            case '\\': stringbuf[stringlen] = '\\'; break;
             default:
                 stringbuf[stringlen] = '\\';
                 stringbuf[++stringlen] = c;
@@ -389,11 +390,10 @@ static ScmObj read_symbol(ScmObj port)
 
 static ScmObj read_number_or_symbol(ScmObj port)
 {
-    int i = 0;
-    int is_str  = 0;
+    int number = 0;
     int str_len = 0;
     char  *str = NULL;
-    ScmObj obj = SCM_NULL;
+    char  *first_nondigit = NULL;
 
 #if DEBUG_PARSER
     printf("read_number_or_symbol\n");
@@ -403,44 +403,13 @@ static ScmObj read_number_or_symbol(ScmObj port)
     str = read_word(port);
     str_len = strlen(str);
 
-    if (strlen(str) == 1
-        && (strcmp(str, "+") == 0 || strcmp(str, "-") == 0))
-    {
-#if DEBUG_PARSER
-        printf("determined as symbol : %s\n", str);
-#endif
+    /* see if it's a decimal integer */
+    number = (int)strtol(str, &first_nondigit, 10);
 
-        obj = Scm_Intern(str);
-        free(str);
-        return obj;
-    }
+    if (*first_nondigit)
+        return Scm_Intern(str);
 
-    /* check whether each char is the digit */
-    for (i = 0; i < str_len; i++) {
-        if (i == 0 && (str[i] == '+' || str[i] == '-'))
-            continue;
-
-        if (!isdigit(str[i])) {
-            is_str = 1;
-            break;
-        }
-    }
-
-    /* if symbol, then intern it. if number, return new int obj */
-    if (is_str) {
-#if DEBUG_PARSER
-        printf("determined as symbol : %s\n", str);
-#endif
-        obj = Scm_Intern(str);
-    } else {
-#if DEBUG_PARSER
-        printf("determined as num : %s\n", str);
-#endif
-        obj = Scm_NewInt((int)atof(str));
-    }
-    free(str);
-
-    return obj;
+    return Scm_NewInt(number);
 }
 
 
@@ -518,5 +487,29 @@ static char *read_char_sequence(ScmObj port)
 
 static ScmObj read_quote(ScmObj port, ScmObj quoter)
 {
-    return Scm_NewCons(quoter, Scm_NewCons(read_sexpression(port), SCM_NULL));
+    return SCM_LIST_2(quoter, read_sexpression(port));
+}
+
+/* str should be what appeared right after '#' (eg. #b123) */
+static ScmObj parse_number(const char *str)
+{
+    int radix  = 0;
+    int number = 0;
+    char *first_nondigit = NULL;
+
+    switch (str[0]) {
+    case 'b': radix = 2;  break;
+    case 'o': radix = 8;  break;
+    case 'd': radix = 10; break;
+    case 'x': radix = 16; break;
+    default:
+        SigScm_Error("ill-formatted number: #%s\n", str);
+    }
+
+    number = (int)strtol(str+1, &first_nondigit, radix);
+
+    if (*first_nondigit)
+        SigScm_Error("ill-formatted number: #%s\n", str);
+
+    return Scm_NewInt(number);
 }
