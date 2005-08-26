@@ -55,7 +55,7 @@ extern "C" {
 =======================================*/
 typedef void (*C_FUNC) (void);
 
-/* type declaration */    
+/* type declaration */
 #include "sigschemetype.h"
 
 /*=======================================
@@ -153,18 +153,6 @@ ScmObj ScmOp_unquote_splicing(ScmObj obj, ScmObj *envp, int *tail_flag);
 ScmObj ScmExp_define(ScmObj arg, ScmObj *envp, int *tail_flag);
 ScmObj ScmOp_scheme_report_environment(ScmObj version);
 ScmObj ScmOp_null_environment(ScmObj version);
-#if SCM_COMPAT_SIOD
-/* SIOD compatible functions */
-ScmObj ScmOp_symbol_boundp(ScmObj obj);
-ScmObj ScmOp_symbol_value(ScmObj var);
-ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val);
-ScmObj ScmOp_bit_and(ScmObj obj1, ScmObj obj2);
-ScmObj ScmOp_bit_or(ScmObj obj1, ScmObj obj2);
-ScmObj ScmOp_bit_xor(ScmObj obj1, ScmObj obj2);
-ScmObj ScmOp_bit_not(ScmObj obj);
-ScmObj ScmOp_the_environment(ScmObj arg, ScmObj env);
-ScmObj ScmOp_closure_code(ScmObj closure);
-#endif
 
 /* operations.c */
 ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2);
@@ -349,6 +337,7 @@ void SigScm_WriteToPort(ScmObj port, ScmObj obj);
 void SigScm_DisplayToPort(ScmObj port, ScmObj obj);
 
 #if SCM_USE_SRFI1
+/* operations-srfi1.c */
 ScmObj ScmOp_SRFI1_xcons(ScmObj a, ScmObj b);
 ScmObj ScmOp_SRFI1_cons_star(ScmObj obj, ScmObj env);
 ScmObj ScmOp_SRFI1_make_list(ScmObj obj, ScmObj env);
@@ -358,7 +347,20 @@ ScmObj ScmOp_SRFI1_circular_list(ScmObj list, ScmObj env);
 ScmObj ScmOp_SRFI1_iota(ScmObj args, ScmObj env);
 #endif
 #if SCM_USE_SRFI8
+/* operations-srfi8.c */
 ScmObj ScmOp_SRFI8_receive(ScmObj args, ScmObj *envp, int *tail_flag);
+#endif
+#if SCM_COMPAT_SIOD
+/* operations-siod.c */
+ScmObj ScmOp_symbol_boundp(ScmObj obj);
+ScmObj ScmOp_symbol_value(ScmObj var);
+ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val);
+ScmObj ScmOp_bit_and(ScmObj obj1, ScmObj obj2);
+ScmObj ScmOp_bit_or(ScmObj obj1, ScmObj obj2);
+ScmObj ScmOp_bit_xor(ScmObj obj1, ScmObj obj2);
+ScmObj ScmOp_bit_not(ScmObj obj);
+ScmObj ScmOp_the_environment(ScmObj arg, ScmObj env);
+ScmObj ScmOp_closure_code(ScmObj closure);
 #endif
 
 #ifdef __cplusplus

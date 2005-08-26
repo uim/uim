@@ -326,7 +326,7 @@ void SigScm_Initialize(void)
     /*=======================================================================
       SIOD Compatible Variables and Procedures
     =======================================================================*/
-    /* eval.c */
+    /* operations-siod.c */
     Scm_RegisterFunc1("symbol-bound?"        , ScmOp_symbol_boundp);
     Scm_RegisterFunc1("symbol-value"         , ScmOp_symbol_value);
     Scm_RegisterFunc2("set-symbol-value!"    , ScmOp_set_symbol_value);

@@ -2029,3 +2029,6 @@ ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp, int *tail_flag)
 #if SCM_USE_SRFI8
 #include "operations-srfi8.c"
 #endif
+#if SCM_COMPAT_SIOD
+#include "operations-siod.c"
+#endif
