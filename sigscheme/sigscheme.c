@@ -280,9 +280,6 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc1("eof-object?"          , ScmOp_eof_objectp);
     Scm_RegisterFuncL("write"                , ScmOp_write);
     Scm_RegisterFuncL("display"              , ScmOp_display);
-#if SCM_USE_NONSTD_FEATURES
-    Scm_RegisterFuncL("print"                , ScmOp_print);
-#endif
     Scm_RegisterFuncL("newline"              , ScmOp_newline);
     Scm_RegisterFuncL("write-char"           , ScmOp_write_char);
     Scm_RegisterFunc1("load"                 , ScmOp_load);

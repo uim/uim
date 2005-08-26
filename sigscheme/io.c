@@ -369,33 +369,6 @@ ScmObj ScmOp_display(ScmObj arg, ScmObj env)
     return SCM_UNDEF;
 }
 
-#if SCM_USE_NONSTD_FEATURES
-ScmObj ScmOp_print(ScmObj arg, ScmObj env)
-{
-    ScmObj obj  = SCM_NULL;
-    ScmObj port = SCM_NULL;
-
-    if CHECK_1_ARG(arg)
-        SigScm_Error("print : invalid parameter\n");
-
-    /* get obj */
-    obj = CAR(arg);
-    arg = CDR(arg);
-
-    /* get port */
-    port = scm_current_output_port;
-    
-    /* (display obj port) */
-    if (!NULLP(arg) && PORTP(CAR(arg)))
-        port = CAR(arg);
-
-    SigScm_DisplayToPort(port, obj);
-    SigScm_DisplayToPort(port, Scm_NewStringCopying("\n"));
-    return SCM_UNDEF;
-
-}
-#endif /* SCM_USE_NONSTD_FEATURES */
-
 ScmObj ScmOp_newline(ScmObj arg, ScmObj env)
 {
     /* get port */

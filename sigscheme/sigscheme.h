@@ -301,9 +301,6 @@ ScmObj ScmOp_eof_objectp(ScmObj obj);
 ScmObj ScmOp_char_readyp(ScmObj arg, ScmObj env);
 ScmObj ScmOp_write(ScmObj arg, ScmObj env);
 ScmObj ScmOp_display(ScmObj arg, ScmObj env);
-#if SCM_USE_NONSTD_FEATURES
-ScmObj ScmOp_print(ScmObj arg, ScmObj env);
-#endif
 ScmObj ScmOp_newline(ScmObj arg, ScmObj env);
 ScmObj ScmOp_write_char(ScmObj arg, ScmObj env);
 

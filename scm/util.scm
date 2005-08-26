@@ -324,6 +324,8 @@
     (write obj)
     (newline)))
 
+(define print siod-print)
+
 ;;
 ;; SRFI procedures (don't expect 100% compatibility)
 ;;
