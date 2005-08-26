@@ -391,6 +391,7 @@ static void finalize_protected_obj(void)
         item = item->next_obj;
         free(tmp);
     }
+    protected_obj_list = NULL;
 }
 
 static int is_pointer_to_heap(ScmObj obj)
