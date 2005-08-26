@@ -37,6 +37,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+/* FIXME: relative path should not be used */
 #include "../sigscheme/sigscheme.h"
 #include "../sigscheme/sigschemetype.h"
 #include "uim-scm.h"
