@@ -6,4 +6,5 @@
       (test (- x (+ (* y 2) (/ x (abs y))))
 	    (- y (+ (* x 2) (/ y (abs x)))))))
 
-(print (test 1 1))
+(write (test 1 1))
+(newline)

@@ -4,4 +4,5 @@
 	(loop (+ 1 i) l)
 	l)))
 
-(print (loop 0 8000))
+(write (loop 0 8000))
+(newline)

@@ -12,4 +12,5 @@
           (foo 0 (- j 1))
 	  '())))
 
-(print (foo 0 100))
+(write (foo 0 100))
+(newline)

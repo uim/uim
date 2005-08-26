@@ -2,4 +2,5 @@
   (if (<= n 2) 1
       (+ (fib (- n 1)) (fib (- n 2)))))
 
-(print (fib 30))
+(write (fib 30))
+(newline)
