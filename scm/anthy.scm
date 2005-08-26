@@ -479,7 +479,7 @@
 (define anthy-has-preedit?
   (lambda (ac)
     (or (not (ustr-empty? (anthy-context-preconv-ustr ac)))
-	(> (length (rk-pending (anthy-context-rkc ac))) 0))))
+	(> (string-length (rk-pending (anthy-context-rkc ac))) 0))))
 
 (define anthy-proc-transposing-state
   (lambda (ac key key-state)
