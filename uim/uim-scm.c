@@ -195,18 +195,13 @@ uim_scm_is_alive(void)
 long
 uim_scm_get_verbose_level(void)
 {
-#if 0
-  return siod_verbose_level;
-#endif
-  return 0;
+  return (long)SigScm_get_verbose_level();
 }
 
 void
 uim_scm_set_verbose_level(long new_value)
 {
-#if 0
-  siod_verbose_level = new_value;
-#endif
+  SigScm_set_verbose_level(new_value);
 }
 
 void
@@ -512,9 +507,16 @@ exit_hook(void)
 void
 uim_scm_init(const char *verbose_level)
 {
-  if (!uim_output) {
+  long vlevel = 4;
+
+  if (!uim_output)
     uim_output = stderr;
+
+  if (verbose_level && isdigit(verbose_level[0])) {
+    verbose_level = atoi(verbose_level) % 10;
   }
+  uim_scm_set_verbose_level(vlevel);
+
 
   SigScm_Initialize();
   true_sym  = (uim_lisp)SCM_TRUE;

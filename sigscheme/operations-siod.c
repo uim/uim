@@ -52,6 +52,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+static long sscm_verbose_level = 0;
 
 /*=======================================
   File Local Function Declarations
@@ -142,4 +143,26 @@ ScmObj ScmOp_closure_code(ScmObj closure)
         SigScm_ErrorObj("%%closure-code : closure required but got ", closure);
 
     return SCM_CLOSURE_EXP(closure);
+}
+
+ScmObj ScmOp_verbose(ScmObj args, ScmObj env)
+{
+    if (!NULLP(args)) {
+        if (!INTP(CAR(args)))
+            SigScm_ErrorObj("verbose : integer required but got ", args);
+
+        sscm_verbose_level = SCM_INT_VALUE(CAR(args));
+    }
+
+    return Scm_NewInt(sscm_verbose_level);
+}
+
+long SigScm_get_verbose_level(void)
+{
+    return sscm_verbose_level;
+}
+
+void SigScm_set_verbose_level(long level)
+{
+    sscm_verbose_level = level;
 }

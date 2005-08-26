@@ -361,6 +361,9 @@ ScmObj ScmOp_bit_xor(ScmObj obj1, ScmObj obj2);
 ScmObj ScmOp_bit_not(ScmObj obj);
 ScmObj ScmOp_the_environment(ScmObj arg, ScmObj env);
 ScmObj ScmOp_closure_code(ScmObj closure);
+ScmObj ScmOp_verbose(ScmObj args, ScmObj env);
+long   SigScm_get_verbose_level(void);
+void   SigScm_set_verbose_level(long level);
 #endif
 
 #ifdef __cplusplus

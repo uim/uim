@@ -336,6 +336,7 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc1("bit-not"              , ScmOp_bit_not);
     Scm_RegisterFuncL("the-environment"      , ScmOp_the_environment);
     Scm_RegisterFunc1("%%closure-code"       , ScmOp_closure_code);
+    Scm_RegisterFuncL("verbose"              , ScmOp_verbose);
     /* datas.c */
     scm_return_value = SCM_NULL;
 #endif
