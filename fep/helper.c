@@ -44,6 +44,7 @@
 #include <stdlib.h>
 #endif
 #include "uim-fep.h"
+#include "callbacks.h"
 #include "helper.h"
 #include "str.h"
 #include <uim/uim-helper.h>

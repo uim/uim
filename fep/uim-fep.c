@@ -781,10 +781,14 @@ static void main_loop(void)
         buf[end + 1] = '\0';
         mode = atoi(&buf[start]);
         if (mode != uim_get_current_mode(g_context)) {
+          int need_draw;
           debug2(("mode change %d\n", mode));
           uim_set_mode(g_context, mode);
-          callbacks_set_mode(uim_get_current_mode(g_context));
-          draw_statusline_restore();
+          /* callbacks_set_mode(uim_get_current_mode(g_context)); */
+          need_draw = end_callbacks();
+          if (need_draw) {
+            draw_statusline_restore();
+          }
         }
       }
     }

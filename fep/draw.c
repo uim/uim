@@ -373,7 +373,7 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
   debug2(("statusline_str = \"%s\"\n", statusline_str));
   debug2(("candidate_str = \"%s\"\n", candidate_str));
   debug2(("candidate_col = %d\n", candidate_col));
-  debug2(("prev_mode_str = %d\n", prev_mode_str));
+  debug2(("prev_mode_str = %s\n", prev_mode_str));
   debug2(("mode_str = %s\n", mode_str));
   debug2(("index_str = \"%s\"\n", index_str));
   debug2(("index_col = %d\n", index_col));
