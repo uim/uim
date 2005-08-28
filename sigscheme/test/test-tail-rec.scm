@@ -952,7 +952,8 @@
 ;; <system dependent ulimit exceeded error message>
 ;; exploded
 (total-report)
-(print "check intentional 'exploded' message printed below")
+(display "check intentional 'exploded' message printed below")
+(newline)
 
 ;; test whether the explosive-count is actually explosive
 (assert-equal? "improper infinite tail recursion"

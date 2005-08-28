@@ -63,7 +63,7 @@
 /*=============================================================================
   SRFI8 : Receive
 =============================================================================*/
-ScmObj ScmOp_SRFI8_receive(ScmObj args, ScmObj *envp, int *tail_flag)
+ScmObj ScmOp_SRFI8_receive(ScmObj args, ScmObj *envp)
 {
     /*
      * (receive <formals> <expression> <body>)
@@ -78,9 +78,6 @@ ScmObj ScmOp_SRFI8_receive(ScmObj args, ScmObj *envp, int *tail_flag)
     /* sanity check */
     if (CHECK_3_ARGS(args))
         SigScm_ErrorObj("receive: bad argument list: ", args);
-
-    /* set tail_flag */
-    (*tail_flag) = 1;
 
     formals = SCM_CAR(args);
     expr = SCM_CADR(args);

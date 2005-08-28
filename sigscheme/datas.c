@@ -674,13 +674,13 @@ ScmObj Scm_NewString_With_StrLen(char *str, int len)
     return obj;
 }
 
-ScmObj Scm_NewFunc(enum ScmFuncArgType num_arg, ScmFuncType func)
+ScmObj Scm_NewFunc(enum ScmFuncTypeCode type, ScmFuncType func)
 {
     ScmObj obj = SCM_NULL;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_FUNC(obj);
-    SCM_FUNC_SET_NUMARG(obj, num_arg);
+    SCM_FUNC_SET_TYPECODE(obj, type);
     SCM_FUNC_SET_CFUNC(obj, func);
 
     return obj;

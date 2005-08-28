@@ -1993,12 +1993,11 @@ ScmObj ScmOp_values(ScmObj argl, ScmObj env)
     return Scm_NewValuePacket(argl);
 }
 
-ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp, int *tail_flag)
+ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp)
 {
     ScmObj vals;
     ScmObj cons_wrapper;
 
-    /* This should go away when we reorganize function types. */
     if (CHECK_2_ARGS(argl))
         SigScm_ErrorObj("call-with-values: too few arguments: ", argl);
 
@@ -2014,8 +2013,6 @@ ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp, int *tail_flag)
         vals = SCM_VALUEPACKET_VALUES(vals);
     }
     
-    (*tail_flag) = 1;
-
     /* cons_wrapper would have no chance of being referenced from
      * anywhere else, so we'll reuse that object. */
     SET_CAR(cons_wrapper, SCM_CADR(argl));
