@@ -53,7 +53,6 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#include <uim/uim.h>
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
@@ -117,6 +116,7 @@
 #include "escseq.h"
 #include "key.h"
 #include "read.h"
+#include "helper.h"
 
 #define DEFAULT_STATUS LASTLINE
 
@@ -135,8 +135,8 @@ struct opt_tag g_opt = {
 int g_win_in = STDIN_FILENO;
 int g_win_out = STDOUT_FILENO;
 struct winsize *g_win;
+uim_context g_context;
 
-static uim_context s_context;
 /* 疑似端末のmasterのファイル記述子 */
 static int s_master;
 /* 起動時の端末状態 */
@@ -179,10 +179,10 @@ static void init_uim(const char *engine)
     printf("uim_init error\n");
     exit(EXIT_FAILURE);
   }
-  s_context = uim_create_context(NULL, get_enc(), NULL, engine, uim_iconv, commit_cb);
-  nr = uim_get_nr_im(s_context);
+  g_context = uim_create_context(NULL, get_enc(), NULL, engine, uim_iconv, commit_cb);
+  nr = uim_get_nr_im(g_context);
   for (i = 0; i < nr; i++) {
-    if (strcmp(engine, uim_get_im_name(s_context, i)) == 0) {
+    if (strcmp(engine, uim_get_im_name(g_context, i)) == 0) {
       break;
     }
   }
@@ -500,9 +500,10 @@ opt_end:
 
   init_uim(engine);
   if (gnu_screen) {
-    uim_set_mode(s_context, 1);
+    uim_set_mode(g_context, 1);
   }
-  init_callbacks(s_context);
+  init_helper();
+  init_callbacks();
   init_draw(s_master, s_path_getmode);
   init_escseq(&attr_uim);
   set_signal_handler();
@@ -721,6 +722,9 @@ static void main_loop(void)
       nfd = s_setmode_fd;
     }
   }
+  if (g_helper_fd > nfd) {
+    nfd = g_helper_fd;
+  }
   nfd++;
 
   while (TRUE) {
@@ -748,6 +752,9 @@ static void main_loop(void)
     if (s_setmode_fd >= 0) {
       FD_SET(s_setmode_fd, &fds);
     }
+    if (g_helper_fd >= 0) {
+      FD_SET(g_helper_fd, &fds);
+    }
     if (my_select(nfd, &fds, NULL) <= 0) {
       /* signalで割り込まれたときにくる。selectの返り値は-1でerrno==EINTR */
       continue;
@@ -773,10 +780,10 @@ static void main_loop(void)
         for (start = end; start > 0 && isdigit((unsigned char)buf[start - 1]); --start);
         buf[end + 1] = '\0';
         mode = atoi(&buf[start]);
-        if (mode != uim_get_current_mode(s_context)) {
+        if (mode != uim_get_current_mode(g_context)) {
           debug2(("mode change %d\n", mode));
-          uim_set_mode(s_context, mode);
-          callbacks_set_mode(uim_get_current_mode(s_context));
+          uim_set_mode(g_context, mode);
+          callbacks_set_mode(uim_get_current_mode(g_context));
           draw_statusline_restore();
         }
       }
@@ -786,6 +793,9 @@ static void main_loop(void)
     /* キーボード(stdin)からの入力 */
     if (FD_ISSET(g_win_in, &fds)) {
       int key_state = 0;
+      if (!g_focus_in) {
+        focus_in();
+      }
 
       if ((len = read_stdin(buf, sizeof(buf) - 1)) <= 0) {
         /* ここにはこないと思う */
@@ -848,8 +858,12 @@ static void main_loop(void)
           if (g_opt.print_key) {
             print_key(key, key_state);
           } else {
-            int raw = press_key(key, key_state);
-            draw();
+            int *raw_and_need_draw = press_key(key, key_state);
+            int raw = raw_and_need_draw[0];
+            int need_draw = raw_and_need_draw[1];
+            if (need_draw) {
+              draw();
+            }
             if (raw && !g_start_preedit) {
               if (key_state & UMod_Alt) {
                 write(s_master, buf + i - 1, key_len + 1);
@@ -893,6 +907,15 @@ static void main_loop(void)
         }
       } else {
         put_pty_str(buf, len);
+      }
+    }
+
+    if (g_helper_fd >= 0 && FD_ISSET(g_helper_fd, &fds)) {
+      int need_draw;
+      helper_handler();
+      need_draw = end_callbacks();
+      if (need_draw) {
+        draw();
       }
     }
   }
@@ -1060,6 +1083,7 @@ void done(int exit_value)
 {
   uim_quit();
   quit_escseq();
+  quit_helper();
   if (g_opt.status_type == BACKTICK) {
     clear_backtick();
   }
