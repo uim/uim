@@ -92,7 +92,7 @@ static ScmObj read_list(ScmObj port, int closeParen);
 static ScmObj read_char(ScmObj port);
 static ScmObj read_string(ScmObj port);
 static ScmObj read_symbol(ScmObj port);
-static ScmObj parse_number(const char *str);
+static ScmObj parse_number(ScmObj port);
 static ScmObj read_number_or_symbol(ScmObj port);
 static ScmObj read_quote(ScmObj port, ScmObj quoter);
 
@@ -197,7 +197,7 @@ static ScmObj read_sexpression(ScmObj port)
                 return read_char(port);
             case 'b': case 'o': case 'd': case 'x':
                 SCM_PORT_UNGETC(port, c1);
-                return parse_number(read_word(port));
+                return parse_number(port);
             case EOF:
                 SigScm_Error("end in #\n");
             default:
@@ -392,8 +392,9 @@ static ScmObj read_number_or_symbol(ScmObj port)
 {
     int number = 0;
     int str_len = 0;
-    char  *str = NULL;
-    char  *first_nondigit = NULL;
+    char *str = NULL;
+    char *first_nondigit = NULL;
+    ScmObj ret = SCM_NULL;
 
 #if DEBUG_PARSER
     printf("read_number_or_symbol\n");
@@ -406,10 +407,13 @@ static ScmObj read_number_or_symbol(ScmObj port)
     /* see if it's a decimal integer */
     number = (int)strtol(str, &first_nondigit, 10);
 
-    if (*first_nondigit)
-        return Scm_Intern(str);
+    /* set return obj */
+    ret = (*first_nondigit) ? Scm_Intern(str) : Scm_NewInt(number);
 
-    return Scm_NewInt(number);
+    /* free */
+    free(str);
+
+    return ret;
 }
 
 
@@ -491,25 +495,29 @@ static ScmObj read_quote(ScmObj port, ScmObj quoter)
 }
 
 /* str should be what appeared right after '#' (eg. #b123) */
-static ScmObj parse_number(const char *str)
+static ScmObj parse_number(ScmObj port)
 {
     int radix  = 0;
     int number = 0;
     char *first_nondigit = NULL;
+    char *numstr = read_word(port);
 
-    switch (str[0]) {
+    switch (numstr[0]) {
     case 'b': radix = 2;  break;
     case 'o': radix = 8;  break;
     case 'd': radix = 10; break;
     case 'x': radix = 16; break;
     default:
-        SigScm_Error("ill-formatted number: #%s\n", str);
+        SigScm_Error("ill-formatted number: #%s\n", numstr);
     }
 
-    number = (int)strtol(str+1, &first_nondigit, radix);
-
+    /* get num */
+    number = (int)strtol(numstr+1, &first_nondigit, radix);
     if (*first_nondigit)
-        SigScm_Error("ill-formatted number: #%s\n", str);
+        SigScm_Error("ill-formatted number: #%s\n", numstr);
+
+    /* free str */
+    free(numstr);
 
     return Scm_NewInt(number);
 }
