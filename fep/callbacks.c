@@ -49,7 +49,6 @@
 #ifdef HAVE_ASSERT_H
 #include <assert.h>
 #endif
-#include <uim/uim-util.h>
 #include "uim-fep.h"
 #include "str.h"
 #include "callbacks.h"
@@ -296,9 +295,14 @@ int get_mode(void)
   return s_mode;
 }
 
+/*
+ * 現在のモード文字列を返す
+ * 返り値はNULLになることはなく、freeする必要がある
+ */
 char *get_mode_str(void)
 {
-  char *mode_str = strdup(uim_get_mode_name(s_context, s_mode));
+  char *mode_str = (char *)uim_get_mode_name(s_context, s_mode);
+  mode_str = strdup(mode_str != NULL ? mode_str : "");
   strhead(mode_str, s_max_width);
   return mode_str;
 }

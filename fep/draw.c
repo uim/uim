@@ -328,7 +328,7 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
   static int statusline_str_width = 0;
   static char *candidate_str = NULL;
   static int candidate_col = UNDEFINED;
-  static int mode = UNDEFINED;
+  static char *mode_str = NULL;
   static char *index_str = NULL;
   static int index_col = UNDEFINED;
 
@@ -336,7 +336,7 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
   int prev_statusline_str_width;
   char *prev_candidate_str;
   int prev_candidate_col;
-  int prev_mode;
+  char *prev_mode_str;
   char *prev_index_str;
   int prev_index_col;
 
@@ -350,19 +350,22 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
   if (index_str == NULL) {
     index_str = strdup("");
   }
+  if (mode_str == NULL) {
+    mode_str = strdup("");
+  }
 
   prev_statusline_str = statusline_str;
   prev_statusline_str_width = statusline_str_width;
   prev_candidate_str = candidate_str;
   prev_candidate_col = candidate_col;
-  prev_mode = mode;
+  prev_mode_str = mode_str;
   prev_index_str = index_str;
   prev_index_col = index_col;
 
   statusline_str = get_statusline_str();
   candidate_str = get_candidate_str();
   candidate_col = get_candidate_col();
-  mode = get_mode();
+  mode_str = get_mode_str();
   index_str = get_index_str();
   index_col = get_index_col();
 
@@ -370,8 +373,8 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
   debug2(("statusline_str = \"%s\"\n", statusline_str));
   debug2(("candidate_str = \"%s\"\n", candidate_str));
   debug2(("candidate_col = %d\n", candidate_col));
-  debug2(("prev_mode = %d\n", prev_mode));
-  debug2(("mode = %d\n", mode));
+  debug2(("prev_mode_str = %d\n", prev_mode_str));
+  debug2(("mode_str = %s\n", mode_str));
   debug2(("index_str = \"%s\"\n", index_str));
   debug2(("index_col = %d\n", index_col));
 
@@ -490,20 +493,19 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
   }
 end_candidate:
 
-  if (force || mode != prev_mode) {
+  if (force || strcmp(mode_str, prev_mode_str) != 0) {
 
     /* 現在のモードをUIM_FEP_GETMODEに書き込む */
     if (s_path_getmode[0] != '\0') {
       FILE *fp = fopen(s_path_getmode, "wt");
       if (fp) {
+        int mode = get_mode();
         fprintf(fp, "%d\n", mode);
         fclose(fp);
       }
     }
 
     if (g_opt.status_type != NONE && statusline_str[0] == '\0') {
-      char *mode_str = get_mode_str();
-      return_if_fail(mode_str != NULL);
       if (g_opt.status_type == LASTLINE) {
         if (restore) {
           put_save_cursor();
@@ -520,12 +522,12 @@ end_candidate:
       } else if (g_opt.status_type == BACKTICK) {
         strncpy(s_modebuf, mode_str, MODESIZE - 1);
       }
-      free(mode_str);
     }
   }
   free(prev_candidate_str);
   free(prev_statusline_str);
   free(prev_index_str);
+  free(prev_mode_str);
   if (restore) {
     put_restore_cursor();
   }
