@@ -504,10 +504,11 @@ void put_restore_cursor(void)
   }
 }
 
-#define range_check(i) do { \
-  if ((i) > escseq_len - 1) { \
-    goto retry; \
-  } \
+#define range_check(i)                   \
+do {                                     \
+  if ((i) > escseq_len - 1) {            \
+    goto retry;                          \
+  }                                      \
 } while(FALSE)
 
 /*
@@ -571,7 +572,7 @@ struct point_tag get_cursor_position(void)
       if (escseq[i] != '[') {
         unget_buf[unget_count++] = escseq[i++];
         if (escseq[i] != '[') {
-          break; /* goto retry */
+          continue;
         }
       }
       
@@ -600,11 +601,11 @@ struct point_tag get_cursor_position(void)
       }
 
       if (row == UNDEFINED) {
-        break; /* goto retry */
+        continue;
       }
 
       if (escseq[i] != ';') {
-        break; /* goto retry */
+        continue;
       }
 
       range_check(i + 1);
@@ -633,11 +634,11 @@ struct point_tag get_cursor_position(void)
       }
 
       if (col == UNDEFINED) {
-        break; /* goto retry */
+        continue;
       }
 
       if (escseq[i] != 'R') {
-        break; /* goto retry */
+        continue;
       }
 
       /* エスケープシーケンスの前に文字列があるか */
