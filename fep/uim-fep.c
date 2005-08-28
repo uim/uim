@@ -148,7 +148,7 @@ static char s_path_setmode[MAXPATHLEN];
 static char s_path_getmode[MAXPATHLEN];
 static int s_setmode_fd = -1;
 
-static void init_agent(const char *engine);
+static void init_uim(const char *engine);
 static const char *get_default_im_name(void);
 static int make_color_escseq(const char *instr, struct attribute_tag *attr);
 static int colorname2n(const char *name);
@@ -171,7 +171,7 @@ static void version(void);
  * uimを初期化する
  * engine 変換エンジンの名前
  */
-static void init_agent(const char *engine)
+static void init_uim(const char *engine)
 {
   int nr;
   int i;
@@ -224,17 +224,13 @@ int main(int argc, char **argv)
     UNDEFINED  /* background */
   };
   FILE *fp;
+  const char *suffix = NULL;
   const char *tmp_dir;
   const char *sty_str;
   const char *win_str;
   struct stat stat_buf;
 
   int op;
-
-  if (getenv("UIM_FEP_PID")) {
-    puts("uim-fep is already running");
-    return EXIT_FAILURE;
-  }
 
   if ((command[0] = getenv("SHELL")) == NULL || *command[0] == '\0') {
     struct passwd *pw;
@@ -247,7 +243,7 @@ int main(int argc, char **argv)
   init_str();
   engine = get_default_im_name();
 
-  while ((op = getopt(argc, argv, "e:s:u:b:w:t:C:SciodKvh")) != -1) {
+  while ((op = getopt(argc, argv, "e:s:u:b:w:t:C:f:SciodKvh")) != -1) {
     int i;
     switch (op) {
       case 'e':
@@ -311,6 +307,10 @@ int main(int argc, char **argv)
         sock_path = optarg;
         break;
 
+      case 'f':
+        suffix = optarg;
+        break;
+
       case 'w':
         g_opt.statusline_width = atoi(optarg);
         if (g_opt.statusline_width <= 0) {
@@ -354,18 +354,31 @@ opt_end:
     return EXIT_FAILURE;
   }
 
-  if (attr_uim.foreground == UNDEFINED) {
-    attr_uim.foreground = FALSE;
-  }
-  if (attr_uim.background == UNDEFINED) {
-    attr_uim.background = FALSE;
-  }
-
   if (gnu_screen) {
     g_opt.status_type = BACKTICK;
     s_master = PROC_FILENO;
     g_win_in = WIN_IN_FILENO;
     g_win_out = WIN_OUT_FILENO;
+  }
+
+  if (g_opt.status_type == BACKTICK) {
+    init_sendsocket(sock_path);
+  }
+
+  if (getenv("UIM_FEP_PID")) {
+    if (gnu_screen) {
+      sendline("uim-fep is already running");
+    } else {
+      puts("uim-fep is already running");
+    }
+    return EXIT_FAILURE;
+  }
+
+  if (attr_uim.foreground == UNDEFINED) {
+    attr_uim.foreground = FALSE;
+  }
+  if (attr_uim.background == UNDEFINED) {
+    attr_uim.background = FALSE;
   }
 
   if (!isatty(g_win_in)) {
@@ -390,13 +403,17 @@ opt_end:
     snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s-%s", tmp_dir, sty_str, win_str);
     if (stat(s_path_getmode, &stat_buf) == 0 || stat(s_path_setmode, &stat_buf) == 0) {
       char msg[100];
-      init_sendsocket(sock_path);
       snprintf(msg, 100, "uim-fep is already running on window %s", win_str);
       sendline(msg);
       return EXIT_FAILURE;
     }
-    snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s-%s-screen", tmp_dir, sty_str, win_str);
-    snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s-%s-screen", tmp_dir, sty_str, win_str);
+    if (suffix != NULL) {
+      snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s", tmp_dir, suffix);
+      snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s", tmp_dir, suffix);
+    } else {
+      snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s-%s-screen", tmp_dir, sty_str, win_str);
+      snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s-%s-screen", tmp_dir, sty_str, win_str);
+    }
   } else {
     if (sty_str != NULL && win_str != NULL) {
       snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s-%s-screen", tmp_dir, sty_str, win_str);
@@ -405,17 +422,28 @@ opt_end:
         printf("uim-fep is already running on window %s as filter\n", win_str);
         return EXIT_FAILURE;
       }
-      snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s-%s", tmp_dir, sty_str, win_str);
-      snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s-%s", tmp_dir, sty_str, win_str);
+      if (suffix != NULL) {
+        snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s", tmp_dir, suffix);
+        snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s", tmp_dir, suffix);
+      } else {
+        snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s-%s", tmp_dir, sty_str, win_str);
+        snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s-%s", tmp_dir, sty_str, win_str);
+      }
     } else {
-      int file_suffix = 1;
+      if (suffix != NULL) {
+        snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s", tmp_dir, suffix);
+        snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s", tmp_dir, suffix);
+      } else {
+        int file_suffix = 1;
+        int pid = getpid();
 
-      snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%d", tmp_dir, getpid());
-      snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%d", tmp_dir, getpid());
-      while (stat(s_path_getmode, &stat_buf) == 0 || stat(s_path_setmode, &stat_buf) == 0) {
-        snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%d-%d", tmp_dir, getpid(), file_suffix);
-        snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%d-%d", tmp_dir, getpid(), file_suffix);
-        file_suffix++;
+        snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%d", tmp_dir, pid);
+        snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%d", tmp_dir, pid);
+        while (stat(s_path_getmode, &stat_buf) == 0 || stat(s_path_setmode, &stat_buf) == 0) {
+          snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%d-%d", tmp_dir, pid, file_suffix);
+          snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%d-%d", tmp_dir, pid, file_suffix);
+          file_suffix++;
+        }
       }
     }
   }
@@ -434,6 +462,7 @@ opt_end:
     s_path_getmode[0] = '\0';
   }
 
+  unlink(s_path_setmode);
   if (mkfifo(s_path_setmode, 0600) != -1) {
     unlink(s_path_setmode);
     env_buf = malloc(strlen("UIM_FEP_SETMODE=") + strlen(s_path_setmode) + 1);
@@ -469,10 +498,7 @@ opt_end:
     g_opt.statusline_width = CANDSIZE / 2;
   }
 
-  if (g_opt.status_type == BACKTICK) {
-    init_sendsocket(sock_path);
-  }
-  init_agent(engine);
+  init_uim(engine);
   if (gnu_screen) {
     uim_set_mode(s_context, 1);
   }
@@ -704,7 +730,7 @@ static void main_loop(void)
       FD_ZERO(&fds);
       FD_SET(g_win_in, &fds);
       FD_SET(s_master, &fds);
-      if (s_setmode_fd > 0) {
+      if (s_setmode_fd >= 0) {
         FD_SET(s_setmode_fd, &fds);
       }
       t.tv_sec = 0;
@@ -719,7 +745,7 @@ static void main_loop(void)
     FD_ZERO(&fds);
     FD_SET(g_win_in, &fds);
     FD_SET(s_master, &fds);
-    if (s_setmode_fd > 0) {
+    if (s_setmode_fd >= 0) {
       FD_SET(s_setmode_fd, &fds);
     }
     if (my_select(nfd, &fds, NULL) <= 0) {
@@ -729,7 +755,7 @@ static void main_loop(void)
 
 
     /* モードを変更する */
-    if (s_setmode_fd > 0 && FD_ISSET(s_setmode_fd, &fds)) {
+    if (s_setmode_fd >= 0 && FD_ISSET(s_setmode_fd, &fds)) {
       int start, end;
 #ifdef __CYGWIN32__
       if ((len = read(s_setmode_fd, buf, sizeof(buf) - 1)) <= 0) {
@@ -1038,7 +1064,7 @@ void done(int exit_value)
     clear_backtick();
   }
   tcsetattr(g_win_in, TCSAFLUSH, &s_save_tios);
-  if (s_setmode_fd > 0) {
+  if (s_setmode_fd >= 0) {
     close(s_setmode_fd);
   }
   if (s_path_setmode[0] != '\0') {
@@ -1076,13 +1102,18 @@ static void usage(void)
   uim_init();
   context = uim_create_context(NULL, get_enc(), NULL, NULL, uim_iconv, commit_cb);
 
-  printf("uim-fep %s\n", PACKAGE_VERSION);
-  printf("usage: uim-fep [OPTIONS]\n"
-      "\n"
+  printf("uim-fep version %s\n", PACKAGE_VERSION);
+  printf("Usage: uim-fep [OPTIONS]\n");
+  printf("  or   uim-fep [OPTIONS] -e command arg1 arg2 ...\n");
+  printf("  or   uim-fep [OPTIONS] -S\n");
+  printf("  or   uim-fep [-t <sec>] -K\n");
+  printf("\n");
+  printf("Options\n"
       "-u <input method>                         input method      [default=%s]\n"
       "-s <lastline/backtick/none>               statusline type   [default=%s]\n"
       "-b <file>                                 socket file       [default=%s]\n"
       "-w <width>                                statusline width\n"
+      "%s"
       "%s"
       "-e command arg1 arg2 ...                  executed command  [default=%s]\n"
       "%s",
@@ -1095,8 +1126,9 @@ static void usage(void)
       "-c                                        reverse cursor\n"
       "-i                                        use cursor_invisible(civis)\n"
       "-o                                        on the spot\n"
+      "-d                                        ddskk like candidate style\n",
+      "-f                                        file name suffix of $UIM_FEP_SETMODE and $UIM_FEP_GETMODE\n"
       "-S                                        GNU screen mode\n"
-      "-d                                        ddskk like candidate style\n"
       "-K                                        show key code\n",
       getenv("SHELL") != NULL ? getenv("SHELL") : "/bin/sh",
       "-h                                        display this help\n"
@@ -1149,7 +1181,7 @@ static void usage(void)
  */
 static void version(void)
 {
-  printf("uim-fep %s\n", PACKAGE_VERSION);
+  printf("uim-fep version %s\n", PACKAGE_VERSION);
 }
 
 #if defined(DEBUG) && DEBUG > 1
