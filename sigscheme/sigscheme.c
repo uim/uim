@@ -152,8 +152,8 @@ void SigScm_Initialize(void)
     Scm_RegisterFuncEvaledList("="               , ScmOp_equal);
     Scm_RegisterFuncEvaledList("<"               , ScmOp_less);
     Scm_RegisterFuncEvaledList(">"               , ScmOp_greater);
-    Scm_RegisterFuncEvaledList("<="              , ScmOp_lessEq);
-    Scm_RegisterFuncEvaledList(">="              , ScmOp_greaterEq);
+    Scm_RegisterFuncEvaledList("<="              , ScmOp_less_eq);
+    Scm_RegisterFuncEvaledList(">="              , ScmOp_greater_eq);
     Scm_RegisterFunc1("zero?"                    , ScmOp_zerop);
     Scm_RegisterFunc1("positive?"                , ScmOp_positivep);
     Scm_RegisterFunc1("negative?"                , ScmOp_negativep);

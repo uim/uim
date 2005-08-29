@@ -441,7 +441,7 @@ ScmObj ScmOp_greater(ScmObj args, ScmObj env )
     return SCM_TRUE;
 }
 
-ScmObj ScmOp_lessEq(ScmObj args, ScmObj env )
+ScmObj ScmOp_less_eq(ScmObj args, ScmObj env )
 {
     int    val     = 0;
     int    car_val = 0;
@@ -475,7 +475,7 @@ ScmObj ScmOp_lessEq(ScmObj args, ScmObj env )
     return SCM_TRUE;
 }
 
-ScmObj ScmOp_greaterEq(ScmObj args, ScmObj env )
+ScmObj ScmOp_greater_eq(ScmObj args, ScmObj env )
 {
     int    val     = 0;
     int    car_val = 0;
