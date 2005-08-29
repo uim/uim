@@ -257,11 +257,10 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
 ScmObj ScmOp_plus(ScmObj args, ScmObj env)
 {
     int result = 0;
-    ScmObj ls;
-    ScmObj operand;
+    ScmObj operand = SCM_NULL;
 
-    for (ls = args; !NULLP(ls); ls = CDR(ls)) {
-        operand = CAR(ls);
+    for (; !NULLP(args); args = CDR(args)) {
+        operand = ScmOp_eval(CAR(args), env);
         if (!INTP(operand))
             SigScm_ErrorObj("+ : integer required but got ", operand);
         result += SCM_INT_VALUE(operand);
@@ -273,11 +272,10 @@ ScmObj ScmOp_plus(ScmObj args, ScmObj env)
 ScmObj ScmOp_times(ScmObj args, ScmObj env)
 {
     int result = 1;
-    ScmObj operand;
-    ScmObj ls;
+    ScmObj operand = SCM_NULL;
 
-    for (ls=args; !NULLP(ls); ls = CDR(ls)) {
-        operand = CAR(ls);
+    for (; !NULLP(args); args = CDR(args)) {
+        operand = ScmOp_eval(CAR(args), env);
         if (!INTP(operand))
             SigScm_ErrorObj("* : integer required but got ", operand);
         result *= SCM_INT_VALUE(operand);
@@ -288,23 +286,21 @@ ScmObj ScmOp_times(ScmObj args, ScmObj env)
 
 ScmObj ScmOp_minus(ScmObj args, ScmObj env)
 {
-    int result;
-    ScmObj operand;
-    ScmObj ls;
+    int result = 0;
+    ScmObj operand = SCM_NULL;
 
-    ls = args;
-    if (NULLP(ls))
-        SigScm_Error("- : at least 1 argument required");
+    if (NULLP(args))
+        SigScm_Error("- : at least 1 argument required\n");
 
-    result = SCM_INT_VALUE(CAR(ls));
-    ls = CDR(ls);
+    result = SCM_INT_VALUE(ScmOp_eval(CAR(args), env));
+    args = CDR(args);
 
     /* single arg */
-    if (NULLP(ls))
+    if (NULLP(args))
         return Scm_NewInt(-result);
 
-    for (; !NULLP(ls); ls = CDR(ls)) {
-        operand = CAR(ls);
+    for (; !NULLP(args); args = CDR(args)) {
+        operand = ScmOp_eval(CAR(args), env);
         if (!INTP(operand))
             SigScm_ErrorObj("- : integer required but got ", operand);
         result -= SCM_INT_VALUE(operand);
@@ -315,22 +311,21 @@ ScmObj ScmOp_minus(ScmObj args, ScmObj env)
 
 ScmObj ScmOp_divide(ScmObj args, ScmObj env)
 {
-    int result;
-    ScmObj operand;
-    ScmObj ls;
+    int result = 0;
+    ScmObj operand = SCM_NULL;
 
     if (NULLP(args))
-        SigScm_Error("/ : at least 1 argument required");
+        SigScm_Error("/ : at least 1 argument required\n");
 
-    result = SCM_INT_VALUE(CAR(args));
-    ls = CDR(args);
+    result = SCM_INT_VALUE(ScmOp_eval(CAR(args), env));
+    args = CDR(args);
 
     /* single arg */
-    if (NULLP(ls))
+    if (NULLP(args))
         return Scm_NewInt(1 / result);
 
-    for (; !NULLP(ls); ls = CDR(ls)) {
-        operand = CAR(ls);
+    for (; !NULLP(args); args = CDR(args)) {
+        operand = ScmOp_eval(CAR(args), env);
         if (!INTP(operand))
             SigScm_ErrorObj("/ : integer required but got ", operand);
 
@@ -556,24 +551,21 @@ ScmObj ScmOp_evenp(ScmObj scm_num)
 
 ScmObj ScmOp_max(ScmObj args, ScmObj env )
 {
-    int    max     = 0;
-    int    car_val = 0;
-    ScmObj car     = SCM_NULL;
-    ScmObj maxobj  = SCM_NULL;
+    int max = 0;
+    int val = 0;
+    ScmObj scm_num = SCM_NULL;
 
     if (NULLP(args))
         SigScm_Error("max : at least 1 number required\n");
 
     for (; !NULLP(args); args = CDR(args)) {
-        car = CAR(args);
-        if (FALSEP(ScmOp_numberp(car)))
-            SigScm_ErrorObj("max : number required but got ", car);
+        scm_num = ScmOp_eval(CAR(args), env);
+        if (FALSEP(ScmOp_numberp(scm_num)))
+            SigScm_ErrorObj("max : number required but got ", scm_num);
 
-        car_val = SCM_INT_VALUE(car);
-        if (max < car_val) {
-            max = car_val;
-            maxobj = car;
-        }
+        val = SCM_INT_VALUE(scm_num);
+        if (max < val)
+            max = val;
     }
 
     return Scm_NewInt(max);
@@ -581,27 +573,24 @@ ScmObj ScmOp_max(ScmObj args, ScmObj env )
 
 ScmObj ScmOp_min(ScmObj args, ScmObj env )
 {
-    int    min     = 0;
-    int    car_val = 0;
-    ScmObj car     = SCM_NULL;
-    ScmObj minobj  = SCM_NULL;
+    int min = 0;
+    int val = 0;
+    ScmObj scm_num = SCM_NULL;
 
     if (NULLP(args))
         SigScm_Error("min : at least 1 number required\n");
 
     for (; !NULLP(args); args = CDR(args)) {
-        car = CAR(args);
-        if (FALSEP(ScmOp_numberp(car)))
-            SigScm_ErrorObj("min : number required but got ", car);
+        scm_num = CAR(args);
+        if (FALSEP(ScmOp_numberp(scm_num)))
+            SigScm_ErrorObj("min : number required but got ", scm_num);
 
-        car_val = SCM_INT_VALUE(car);
-        if (car_val < min) {
-            min = car_val;
-            minobj = car;
-        }
+        val = SCM_INT_VALUE(scm_num);
+        if (val < min)
+            min = val;
     }
 
-    return minobj;
+    return Scm_NewInt(min);
 }
 
 

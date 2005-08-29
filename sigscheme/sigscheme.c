@@ -159,12 +159,12 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc1("negative?"                , ScmOp_negativep);
     Scm_RegisterFunc1("odd?"                     , ScmOp_oddp);
     Scm_RegisterFunc1("even?"                    , ScmOp_evenp);
-    Scm_RegisterFuncEvaledList("max"             , ScmOp_max);
-    Scm_RegisterFuncEvaledList("min"             , ScmOp_min);
-    Scm_RegisterFuncEvaledList("+"               , ScmOp_plus);
-    Scm_RegisterFuncEvaledList("*"               , ScmOp_times);
-    Scm_RegisterFuncEvaledList("-"               , ScmOp_minus);
-    Scm_RegisterFuncEvaledList("/"               , ScmOp_divide);
+    Scm_RegisterFuncRawList("max"                , ScmOp_max);
+    Scm_RegisterFuncRawList("min"                , ScmOp_min);
+    Scm_RegisterFuncRawList("+"                  , ScmOp_plus);
+    Scm_RegisterFuncRawList("*"                  , ScmOp_times);
+    Scm_RegisterFuncRawList("-"                  , ScmOp_minus);
+    Scm_RegisterFuncRawList("/"                  , ScmOp_divide);
     Scm_RegisterFunc1("abs"                      , ScmOp_abs);
     Scm_RegisterFunc2("quotient"                 , ScmOp_quotient);
     Scm_RegisterFunc2("modulo"                   , ScmOp_modulo);

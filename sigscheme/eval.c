@@ -532,6 +532,10 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
                                        CAR(CDR(CDR(CDR(CDR(obj))))));
 
         case FUNCTYPE_RAW_LIST:
+            return SCM_FUNC_EXEC_SUBRL(proc,
+                                       map_eval(obj, env),
+                                       env);
+
         case FUNCTYPE_RAW_LIST_TAIL_REC:
         default:
             SigScm_ErrorObj("apply : invalid application ", proc);
