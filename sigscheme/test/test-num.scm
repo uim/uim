@@ -22,6 +22,14 @@
 
 ;; TODO: add tests for <, >=, <=
 
+(assert-equal? "max test1" 0 (max 0))
+(assert-equal? "max test2" 1 (max 0 1))
+(assert-equal? "max test3" 2 (max 0 2 1))
+(assert-equal? "max test4" 7 (max -1 -10 7))
+(assert-equal? "min test1" 0 (min 0))
+(assert-equal? "min test2" 0 (min 0 1))
+(assert-equal? "min test3" 0 (min 2 0 1))
+(assert-equal? "min test4" -10 (min -1 -10 7))
 (assert-equal? "+ test1" 0  (+))
 (assert-equal? "+ test2" 3  (+ 3))
 (assert-equal? "+ test3" 3  (+ 1 2))

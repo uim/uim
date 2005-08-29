@@ -279,18 +279,49 @@ struct ScmObjInternal_ {
 /*=======================================
    Accessors For Scheme Objects
 =======================================*/
-#define SCM_TYPE(a)       ((a)->type)
+/* ScmObj Global Attribute */
+#define SCM_TYPE(a) ((a)->type)
 #define SCM_ENTYPE(a, objtype) ((a)->type = (objtype))
 #define SCM_MARK(a) ((a)->gcmark)
 
-#define SCM_INTP(a)  (SCM_TYPE(a) == ScmInt)
+/* Type Confirmation */
+#if SCM_ACCESSOR_ASSERT
 #define SCM_AS_INT(a)   (sigassert(SCM_INTP(a)), (a))
+#define SCM_AS_CONS(a)  (sigassert(SCM_CONSP(a)), (a))
+#define SCM_AS_SYMBOL(a)       (sigassert(SCM_SYMBOLP(a)), (a))
+#define SCM_AS_CHAR(a)  (sigassert(SCM_CHARP(a)), (a))
+#define SCM_AS_STRING(a)  (sigassert(SCM_STRINGP(a)), (a))
+#define SCM_AS_FUNC(a) (sigassert(SCM_FUNCP(a)), (a))
+#define SCM_AS_CLOSURE(a)  (sigassert(SCM_CLOSUREP(a)), (a))
+#define SCM_AS_VECTOR(a)  (sigassert(SCM_VECTORP(a)), (a))
+#define SCM_AS_PORT(a)  (sigassert(SCM_PORTP(a)), (a))
+#define SCM_AS_CONTINUATION(a)  (sigassert(SCM_CONTINUATIONP(a)), (a))
+#define SCM_AS_VALUEPACKET(a)           (sigassert(SCM_VALUEPACKETP(a)), (a))
+#define SCM_AS_C_POINTER(a)  (sigassert(SCM_C_POINTERP(a)), (a))
+#define SCM_AS_C_FUNCPOINTER(a)  (sigassert(SCM_C_FUNCPOINTERP(a)), (a))
+#else
+#define SCM_AS_INT(a) (a)
+#define SCM_AS_CONS(a) (a) 
+#define SCM_AS_SYMBOL(a) (a)
+#define SCM_AS_CHAR(a) (a)
+#define SCM_AS_STRING(a) (a)
+#define SCM_AS_FUNC(a) (a)
+#define SCM_AS_CLOSURE(a) (a)
+#define SCM_AS_VECTOR(a) (a)
+#define SCM_AS_PORT(a) (a)
+#define SCM_AS_CONTINUATION(a) (a)
+#define SCM_AS_VALUEPACKET(a) (a)
+#define SCM_AS_C_POINTER(a) (a)
+#define SCM_AS_C_FUNCPOINTER(a) (a)
+#endif /* SCM_ACCESSOR_ASSERT */
+
+/* Real Accessors */
+#define SCM_INTP(a)  (SCM_TYPE(a) == ScmInt)
 #define SCM_ENTYPE_INT(a)    (SCM_ENTYPE((a), ScmInt))
 #define SCM_INT_VALUE(a) (SCM_AS_INT(a)->obj.int_value.value)
 #define SCM_INT_SET_VALUE(a, val) (SCM_INT_VALUE(a) = (val))
 
 #define SCM_CONSP(a) (SCM_TYPE(a) == ScmCons)
-#define SCM_AS_CONS(a)  (sigassert(SCM_CONSP(a)), (a))
 #define SCM_ENTYPE_CONS(a) (SCM_ENTYPE((a), ScmCons))
 #define SCM_CAR(a)   (SCM_AS_CONS(a)->obj.cons.car)
 #define SCM_CONS_SET_CAR(a,car)   (SCM_CAR(a) = car)
@@ -302,7 +333,6 @@ struct ScmObjInternal_ {
 #define SCM_CDDR(a)  (SCM_CDR(SCM_CDR(a)))
 
 #define SCM_SYMBOLP(a)      (SCM_TYPE(a) == ScmSymbol)
-#define SCM_AS_SYMBOL(a)       (sigassert(SCM_SYMBOLP(a)), (a))
 #define SCM_ENTYPE_SYMBOL(a)    (SCM_ENTYPE((a), ScmSymbol))
 #define SCM_SYMBOL_NAME(a)  (SCM_AS_SYMBOL(a)->obj.symbol.sym_name)
 #define SCM_SYMBOL_SET_NAME(a, name)   (SCM_SYMBOL_NAME(a) = (name))
@@ -310,13 +340,11 @@ struct ScmObjInternal_ {
 #define SCM_SYMBOL_SET_VCELL(a, vcell) (SCM_SYMBOL_VCELL(a) = (vcell))
 
 #define SCM_CHARP(a) (SCM_TYPE(a) == ScmChar)
-#define SCM_AS_CHAR(a)  (sigassert(SCM_CHARP(a)), (a))
 #define SCM_ENTYPE_CHAR(a) (SCM_ENTYPE((a), ScmChar))
 #define SCM_CHAR_VALUE(a) (SCM_AS_CHAR(a)->obj.ch.ch)
 #define SCM_CHAR_SET_VALUE(a, chr) (SCM_CHAR_VALUE(a) = (chr))
 
 #define SCM_STRINGP(a) (SCM_TYPE(a) == ScmString)
-#define SCM_AS_STRING(a)  (sigassert(SCM_STRINGP(a)), (a))
 #define SCM_ENTYPE_STRING(a)  (SCM_ENTYPE((a), ScmString))
 #define SCM_STRING_STR(a) (SCM_AS_STRING(a)->obj.string.str)
 #define SCM_STRING_SET_STR(a, str) (SCM_STRING_STR(a) = (str))
@@ -324,7 +352,6 @@ struct ScmObjInternal_ {
 #define SCM_STRING_SET_LEN(a, len) (SCM_STRING_LEN(a) = (len))
 
 #define SCM_FUNCP(a) (SCM_TYPE(a) == ScmFunc)
-#define SCM_AS_FUNC(a) (sigassert(SCM_FUNCP(a)), (a))
 #define SCM_ENTYPE_FUNC(a)     (SCM_ENTYPE((a), ScmFunc))
 #define SCM_FUNC_TYPECODE(a) (SCM_AS_FUNC(a)->obj.func.type)
 #define SCM_FUNC_SET_TYPECODE(a, type) (SCM_FUNC_TYPECODE(a) = (type))
@@ -342,7 +369,6 @@ struct ScmObjInternal_ {
 #define SCM_FUNC_EXEC_SUBRF(a, arg1, arg2, arg3)             ((*(a)->obj.func.subrs.subrf.func) ((arg1), (arg2), (arg3)))
 
 #define SCM_CLOSUREP(a) (SCM_TYPE(a) == ScmClosure)
-#define SCM_AS_CLOSURE(a)  (sigassert(SCM_CLOSUREP(a)), (a))
 #define SCM_ENTYPE_CLOSURE(a) (SCM_ENTYPE((a), ScmClosure))
 #define SCM_CLOSURE_EXP(a) (SCM_AS_CLOSURE(a)->obj.closure.exp)
 #define SCM_CLOSURE_SET_EXP(a, exp) (SCM_CLOSURE_EXP(a) = exp)
@@ -350,7 +376,6 @@ struct ScmObjInternal_ {
 #define SCM_CLOSURE_SET_ENV(a, env) (SCM_CLOSURE_ENV(a) = env)
 
 #define SCM_VECTORP(a) (SCM_TYPE(a) == ScmVector)
-#define SCM_AS_VECTOR(a)  (sigassert(SCM_VECTORP(a)), (a))
 #define SCM_ENTYPE_VECTOR(a) (SCM_ENTYPE((a), ScmVector))
 #define SCM_VECTOR_VEC(a) (SCM_AS_VECTOR(a)->obj.vector.vec)
 #define SCM_VECTOR_SET_VEC(a, vec) (SCM_VECTOR_VEC(a) = (vec))
@@ -363,7 +388,6 @@ struct ScmObjInternal_ {
 #define SCM_VECTOR_CHECK_IDX(a, idx) ()
 
 #define SCM_PORTP(a) (SCM_TYPE(a) == ScmPort)
-#define SCM_AS_PORT(a)  (sigassert(SCM_PORTP(a)), (a))
 #define SCM_ENTYPE_PORT(a) (SCM_ENTYPE((a), ScmPort))
 #define SCM_PORT_PORTDIRECTION(a) (SCM_AS_PORT(a)->obj.port.port_direction)
 #define SCM_PORT_SET_PORTDIRECTION(a, pdirection) (SCM_PORT_PORTDIRECTION(a) = pdirection)
@@ -378,14 +402,12 @@ struct ScmObjInternal_ {
 #define SCM_PORTINFO_UNGOTTENCHAR(a) (SCM_PORT_PORTINFO(a)->ungottenchar)
 
 #define SCM_CONTINUATIONP(a) (SCM_TYPE(a) == ScmContinuation)
-#define SCM_AS_CONTINUATION(a)  (sigassert(SCM_CONTINUATIONP(a)), (a))
 #define SCM_ENTYPE_CONTINUATION(a) (SCM_ENTYPE((a), ScmContinuation))
 #define SCM_CONTINUATION_CONTINFO(a) (SCM_AS_CONTINUATION(a)->obj.continuation.cont_info)
 #define SCM_CONTINUATION_JMPENV(a) (SCM_AS_CONTINUATION(a)->obj.continuation.cont_info->jmp_env)
 #define SCM_CONTINUATION_SET_CONTINFO(a, cinfo) (SCM_CONTINUATION_CONTINFO(a) = (cinfo))
 
 #define SCM_VALUEPACKETP(a)          (SCM_TYPE(a) == ScmValuePacket)
-#define SCM_AS_VALUEPACKET(a)           (sigassert(SCM_VALUEPACKETP(a)), (a))
 #define SCM_ENTYPE_VALUEPACKET(a)        (SCM_ENTYPE((a), ScmValuePacket))
 #define SCM_VALUEPACKET_VALUES(a)    (SCM_AS_VALUEPACKET(a)->obj.value_pack.values)
 #define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_VALUEPACKET_VALUES(a) = (v))
@@ -394,7 +416,6 @@ struct ScmObjInternal_ {
   Etcetra Variables (Special Constants like SCM_NULL)
 ============================================================================*/
 #define SCM_ETCP(a) (SCM_TYPE(a) == ScmEtc)
-#define SCM_AS_ETC(a) (sigassert(SCM_ETCP(a)), (a))
 #define SCM_ETC_SET_IMPL(a, impl)         \
     do {                                  \
         (a) = &(impl);                    \
@@ -405,13 +426,11 @@ struct ScmObjInternal_ {
   C Pointer Object
 ============================================================================*/
 #define SCM_C_POINTERP(a) (SCM_TYPE(a) == ScmCPointer)
-#define SCM_AS_C_POINTER(a)  (sigassert(SCM_C_POINTERP(a)), (a))
 #define SCM_ENTYPE_C_POINTER(a) (SCM_ENTYPE((a), ScmCPointer))
 #define SCM_C_POINTER_VALUE(a) (SCM_AS_C_POINTER(a)->obj.c_pointer.data)
 #define SCM_C_POINTER_SET_VALUE(a, ptr) (SCM_C_POINTER_VALUE(a) = ptr)
 
 #define SCM_C_FUNCPOINTERP(a) (SCM_TYPE(a) == ScmCFuncPointer)
-#define SCM_AS_C_FUNCPOINTER(a)  (sigassert(SCM_C_FUNCPOINTERP(a)), (a))
 #define SCM_ENTYPE_C_FUNCPOINTER(a) (SCM_ENTYPE((a), ScmCFuncPointer))
 #define SCM_C_FUNCPOINTER_VALUE(a) (SCM_AS_C_FUNCPOINTER(a)->obj.c_func_pointer.func)
 #define SCM_C_FUNCPOINTER_SET_VALUE(a, funcptr) (SCM_C_FUNCPOINTER_VALUE(a) = funcptr)
