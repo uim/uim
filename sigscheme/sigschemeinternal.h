@@ -81,12 +81,12 @@ extern ScmObj SigScm_features;
 
 /* FreeCell Handling Macros */
 #define SCM_FREECELLP(a)     (SCM_TYPE(a) == ScmFreeCell)
-#define SCM_FREECELL(a)      (sigassert(SCM_FREECELLP(a)), (a))
-#define SCM_FREECELL_CAR(a)  (SCM_FREECELL(a)->obj.cons.car)
-#define SCM_FREECELL_CDR(a)  (SCM_FREECELL(a)->obj.cons.cdr)
+#define SCM_AS_FREECELL(a)   (sigassert(SCM_FREECELLP(a)), (a))
+#define SCM_FREECELL_CAR(a)  (SCM_AS_FREECELL(a)->obj.cons.car)
+#define SCM_FREECELL_CDR(a)  (SCM_AS_FREECELL(a)->obj.cons.cdr)
 #define SCM_ENTYPE_FREECELL(a)     (SCM_ENTYPE((a), ScmFreeCell))
-#define SCM_SETFREECELL_CAR(a,car) (SCM_FREECELL_CAR(a) = car)
-#define SCM_SETFREECELL_CDR(a,cdr) (SCM_FREECELL_CDR(a) = cdr)
+#define SCM_FREECELL_SET_CAR(a,car) (SCM_FREECELL_CAR(a) = car)
+#define SCM_FREECELL_SET_CDR(a,cdr) (SCM_FREECELL_CDR(a) = cdr)
 
 /* Prefix-less Abbreviation Names For Convenient Internal Use */
 #define EQ             SCM_EQ

@@ -225,10 +225,10 @@ static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmOb
         for (cell=heap; cell-heap < HEAP_SIZE; cell++) {
             SCM_ENTYPE_FREECELL(cell);
             SCM_DO_UNMARK(cell);
-            SCM_SETFREECELL_CDR(cell, cell+1);
+            SCM_FREECELL_SET_CDR(cell, cell+1);
         }
 
-        SCM_SETFREECELL_CDR(cell-1, (*freelist));
+        SCM_FREECELL_SET_CDR(cell-1, (*freelist));
         /* and freelist is head of the heap */
         (*freelist) = (*heaps)[i];
     }
@@ -258,10 +258,10 @@ static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, int HEAP_SIZE, ScmO
     for (cell=heap; cell-heap < HEAP_SIZE; cell++) {
         SCM_ENTYPE_FREECELL(cell);
         SCM_DO_UNMARK(cell);
-        SCM_SETFREECELL_CDR(cell, cell+1);
+        SCM_FREECELL_SET_CDR(cell, cell+1);
     }
 
-    SCM_SETFREECELL_CDR(cell-1, *freelist);
+    SCM_FREECELL_SET_CDR(cell-1, *freelist);
     (*freelist) = (*heaps)[num_heap - 1];
 }
 
@@ -553,8 +553,8 @@ static void gc_sweep(void)
                 sweep_obj(obj);
 
                 SCM_ENTYPE_FREECELL(obj);
-                SCM_SETFREECELL_CAR(obj, SCM_NULL);
-                SCM_SETFREECELL_CDR(obj, scm_new_freelist);
+                SCM_FREECELL_SET_CAR(obj, SCM_NULL);
+                SCM_FREECELL_SET_CDR(obj, scm_new_freelist);
                 scm_new_freelist = obj;
                 corrected_obj_num++;
             }
