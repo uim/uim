@@ -78,8 +78,8 @@
 	(display "  -r [module] Load and import module.\n"))
     (display "  -h        show this help\n")))
 
-;; TODO: Loop when error has occur. This is required to run GaUnit-based unit
-;; test for uim
+;; TODO: Loop even if error has occur. This is required to run GaUnit-based
+;; unit test for uim
 (define uim-sh
   (lambda (args)
     (uim-sh-parse-args args)
