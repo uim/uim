@@ -154,9 +154,9 @@ void init_callbacks(void)
   }
 }
 
-int *press_key(int key, int key_state)
+int press_key(int key, int key_state)
 {
-  static int raw_and_need_draw[2];
+  int raw;
 #if defined DEBUG && DEBUG > 2
   if (32 <= key && key <= 127) {
     debug2(("press key = %c key_state = %d\n", key, key_state));
@@ -164,22 +164,19 @@ int *press_key(int key, int key_state)
     debug2(("press key = %d key_state = %d\n", key, key_state));
   }
 #endif
-  raw_and_need_draw[0] = uim_press_key(g_context, key, key_state);
+  raw = uim_press_key(g_context, key, key_state);
   uim_release_key(g_context, key, key_state);
-  raw_and_need_draw[1] = end_callbacks();
-  return raw_and_need_draw;
+  return raw;
 }
 
-#define START_CALLBACKS                        \
-do {                                           \
-  if (!s_start_callbacks) {                    \
-    s_start_callbacks = TRUE;                  \
-    start_callbacks();                         \
-  }                                            \
-} while (FALSE)
 
 void start_callbacks(void)
 {
+  if (s_start_callbacks) {
+    return;
+  }
+  s_start_callbacks = TRUE;
+
   debug2(("\n\nstart_callbacks()\n"));
   if (s_commit_str != NULL) {
     free(s_commit_str);
@@ -201,6 +198,9 @@ void start_callbacks(void)
   s_mode = uim_get_current_mode(g_context);
 }
 
+/*
+ * コールバック関数が呼ばれていなければ、FALSEを返す
+ */
 int end_callbacks(void)
 {
   debug2(("end_callbacks()\n\n"));
@@ -329,7 +329,7 @@ char *get_mode_str(void)
 static void activate_cb(void *ptr, int nr, int display_limit)
 {
   debug2(("activate_cb(nr = %d display_limit = %d)\n", nr, display_limit));
-  START_CALLBACKS;
+  start_callbacks();
   reset_candidate();
   s_candidate.nr = nr;
   s_candidate.limit = display_limit;
@@ -347,7 +347,7 @@ static void select_cb(void *ptr, int index)
   debug2(("select_cb(index = %d)\n", index));
   return_if_fail(s_candidate.nr != UNDEFINED);
   return_if_fail(0 <= index && index < s_candidate.nr);
-  START_CALLBACKS;
+  start_callbacks();
   s_candidate.index = index;
   s_candidate.page = index2page(index);
 }
@@ -363,7 +363,7 @@ static void shift_page_cb(void *ptr, int direction)
   int index;
   debug2(("shift_page_cb(direction = %d)\n", direction));
   return_if_fail(s_candidate.nr != UNDEFINED);
-  START_CALLBACKS;
+  start_callbacks();
   if (direction == 0) {
     direction = -1;
   }
@@ -382,7 +382,7 @@ static void shift_page_cb(void *ptr, int direction)
 static void deactivate_cb(void *ptr)
 {
   debug2(("deactivate_cb()\n"));
-  START_CALLBACKS;
+  start_callbacks();
   reset_candidate();
 }
 
@@ -391,14 +391,14 @@ void commit_cb(void *ptr, const char *commit_str)
 {
   debug2(("commit_cb(commit_str = \"%s\")\n", commit_str));
   return_if_fail(commit_str != NULL);
-  START_CALLBACKS;
+  start_callbacks();
   s_commit_str = realloc(s_commit_str, strlen(s_commit_str) + strlen(commit_str) + 1);
   strcat(s_commit_str, commit_str);
 }
 
 static void clear_cb(void *ptr)
 {
-  START_CALLBACKS;
+  start_callbacks();
   if (s_preedit != NULL) {
     free_preedit(s_preedit);
   }
@@ -417,7 +417,7 @@ static void pushback_cb(void *ptr, int attr, const char *str)
   static int cursor = FALSE;
   debug2(("pushback_cb(attr = %d str = \"%s\")\n", attr, str));
   return_if_fail(str && s_preedit != NULL);
-  START_CALLBACKS;
+  start_callbacks();
   width = strwidth(str);
   /* UPreeditAttr_Cursorのときに空文字列とは限らない */
   if (attr & UPreeditAttr_Cursor) {
@@ -476,7 +476,7 @@ static void update_cb(void *ptr)
 static void mode_update_cb(void *ptr, int mode)
 {
   debug2(("mode_update_cb(mode = %d)\n", mode));
-  START_CALLBACKS;
+  start_callbacks();
   s_mode = mode;
 }
 

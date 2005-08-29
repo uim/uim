@@ -95,7 +95,6 @@ static const char *s_path_getmode;
 static int s_winch = FALSE;
 
 static void init_backtick(void);
-static void update_backtick(void);
 static void start_preedit(void);
 static void end_preedit(void);
 static void draw_statusline(int force, int restore, int visible, int draw_background);
@@ -137,7 +136,7 @@ static void init_backtick(void)
   }
 }
 
-static void update_backtick(void)
+void update_backtick(void)
 {
   char sendbuf[CANDSIZE];
   if (s_candbuf[0] == '\0') {
@@ -160,6 +159,10 @@ void draw(void)
   struct preedit_tag *prev_preedit;
 
   int i;
+
+  if (!end_callbacks()) {
+    return;
+  }
 
   /* 端末サイズが変更されたときはs_headを変更する */
   if (s_winch && g_start_preedit) {
@@ -546,6 +549,12 @@ end_candidate:
  */
 void draw_statusline_restore(void)
 {
+  if (!end_callbacks()) {
+    if (g_opt.status_type == BACKTICK) {
+      update_backtick();
+    }
+    return;
+  }
   draw_statusline(FALSE, TRUE, TRUE, FALSE);
 }
 
@@ -555,6 +564,7 @@ void draw_statusline_restore(void)
  */
 void draw_statusline_force_no_restore(void)
 {
+  end_callbacks();
   draw_statusline(TRUE, FALSE, FALSE, TRUE);
 }
 
@@ -564,6 +574,7 @@ void draw_statusline_force_no_restore(void)
  */
 void draw_statusline_force_restore(void)
 {
+  end_callbacks();
   draw_statusline(TRUE, TRUE, TRUE, TRUE);
 }
 

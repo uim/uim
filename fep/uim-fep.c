@@ -781,14 +781,10 @@ static void main_loop(void)
         buf[end + 1] = '\0';
         mode = atoi(&buf[start]);
         if (mode != uim_get_current_mode(g_context)) {
-          int need_draw;
           debug2(("mode change %d\n", mode));
           uim_set_mode(g_context, mode);
           /* callbacks_set_mode(uim_get_current_mode(g_context)); */
-          need_draw = end_callbacks();
-          if (need_draw) {
-            draw_statusline_restore();
-          }
+          draw_statusline_restore();
         }
       }
     }
@@ -862,11 +858,10 @@ static void main_loop(void)
           if (g_opt.print_key) {
             print_key(key, key_state);
           } else {
-            int *raw_and_need_draw = press_key(key, key_state);
-            int raw = raw_and_need_draw[0];
-            int need_draw = raw_and_need_draw[1];
-            if (need_draw) {
-              draw();
+            int raw = press_key(key, key_state);
+            draw();
+            if (g_opt.status_type == BACKTICK) {
+              update_backtick();
             }
             if (raw && !g_start_preedit) {
               if (key_state & UMod_Alt) {
@@ -915,12 +910,8 @@ static void main_loop(void)
     }
 
     if (g_helper_fd >= 0 && FD_ISSET(g_helper_fd, &fds)) {
-      int need_draw;
       helper_handler();
-      need_draw = end_callbacks();
-      if (need_draw) {
-        draw();
-      }
+      draw();
     }
   }
 }
