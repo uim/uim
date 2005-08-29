@@ -1,5 +1,4 @@
 EXTRA_DIST = pref-keyeditformbase.ui  pref-olisteditformbase.ui bushu.t
-uim_corelibs = $(top_builddir)/uim/libuim.la $(top_builddir)/sigscheme/libsscm.la
 
 if QT
 
@@ -79,7 +78,7 @@ libquiminputcontextplugin_la_SOURCES = \
 	immodule-subwindow.cpp immodule-subwindow.h
 libquiminputcontextplugin_la_CXXFLAGS = $(QT_CXXFLAGS)
 libquiminputcontextplugin_la_LDFLAGS  = $(QT_LDFLAGS) -avoid-version
-libquiminputcontextplugin_la_LIBADD   = $(uim_corelibs)
+libquiminputcontextplugin_la_LIBADD   = $(top_builddir)/uim/libuim.la
 
 immodule-candidatewindow.cpp: immodule-candidatewindow.moc
 immodule-qhelpermanager.cpp: immodule-qhelpermanager.moc
@@ -94,7 +93,7 @@ libtoolbarcommon_la_SOURCES  = toolbar-common-quimhelpertoolbar.cpp toolbar-comm
 			       toolbar-common-quimhelpertoolbar.h   toolbar-common-uimstateindicator.h
 libtoolbarcommon_la_CXXFLAGS = $(QT_CXXFLAGS)
 libtoolbarcommon_la_LDFLAGS  = $(QT_LDFLAGS) -avoid-version
-libtoolbarcommon_la_LIBADD   = $(uim_corelibs)
+libtoolbarcommon_la_LIBADD   = $(top_builddir)/uim/libuim.la
 toolbar-common-quimhelpertoolbar.cpp: toolbar-common-quimhelpertoolbar.moc
 toolbar-common-uimstateindicator.cpp: toolbar-common-uimstateindicator.moc
 
@@ -103,21 +102,21 @@ uim_toolbar_qt_SOURCES = toolbar-standalone-qt.cpp toolbar-standalone-qt.h qtget
 			 toolbar-common-quimhelpertoolbar.h toolbar-common-uimstateindicator.h
 uim_toolbar_qt_CXXFLAGS = $(QT_CXXFLAGS)
 uim_toolbar_qt_LDFLAGS  = $(QT_LDFLAGS)
-uim_toolbar_qt_LDADD    = $(uim_corelibs) ./libtoolbarcommon.la
+uim_toolbar_qt_LDADD    = $(top_builddir)/uim/libuim.la ./libtoolbarcommon.la
 toolbar-standalone-qt.cpp: toolbar-standalone-qt.moc
 
 # Candidate Window
 uim_candwin_qt_SOURCES  = candwin-qt.cpp candwin-qt.h qtgettext.h
 uim_candwin_qt_CXXFLAGS = $(QT_CXXFLAGS)
 uim_candwin_qt_LDFLAGS  = $(QT_LDFLAGS)
-uim_candwin_qt_LDADD = $(top_builddir)/uim/libuim.la $(top_builddir)/sigscheme/libsscm.la
+uim_candwin_qt_LDADD = $(top_builddir)/uim/libuim.la
 candwin-qt.cpp: candwin-qt.moc
 
 # Switcher
 uim_im_switcher_qt_SOURCES  = switcher-qt.cpp switcher-qt.h qtgettext.h
 uim_im_switcher_qt_CXXFLAGS = $(QT_CXXFLAGS)
 uim_im_switcher_qt_LDFLAGS  = $(QT_LDFLAGS)
-uim_im_switcher_qt_LDADD    = $(uim_corelibs)
+uim_im_switcher_qt_LDADD    = $(top_builddir)/uim/libuim.la
 switcher-qt.cpp: switcher-qt.moc
 
 # Pref
@@ -129,7 +128,7 @@ uim_pref_qt_SOURCES = \
 
 uim_pref_qt_CXXFLAGS = $(QT_CXXFLAGS)
 uim_pref_qt_LDFLAGS  = $(QT_LDFLAGS)
-uim_pref_qt_LDADD    = $(top_builddir)/uim/libuim-custom.la $(uim_corelibs)
+uim_pref_qt_LDADD    = $(top_builddir)/uim/libuim-custom.la $(top_builddir)/uim/libuim.la
 
 pref-customwidgets.h:pref-olisteditformbase.h pref-keyeditformbase.h
 pref-qt.h:pref-olisteditformbase.h pref-keyeditformbase.h
@@ -161,7 +160,7 @@ uim_chardict_qt_SOURCES = \
 	qtgettext.h
 uim_chardict_qt_CXXFLAGS = $(QT_CXXFLAGS) -DBUSHUDICT=\"$(datadir)/uim/helperdata/bushu.t\"
 uim_chardict_qt_LDFLAGS  = $(QT_LDFLAGS)
-uim_chardict_qt_LDADD    = $(uim_corelibs)
+uim_chardict_qt_LDADD    = $(top_builddir)/uim/libuim.la
 chardict-qt.cpp: chardict-qt.moc
 
 chardict-bushuviewwidget.cpp: chardict-bushuviewwidget.moc
