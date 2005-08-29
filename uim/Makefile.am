@@ -115,7 +115,7 @@ uim_helper_server_SOURCES = uim-helper.c uim-helper-server.c
 uim_sh_LIBS =
 uim_sh_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
 uim_sh_CFLAGS =
-uim_sh_LDADD = libuim.la $(top_builddir)/sigscheme/libsscm.la
+uim_sh_LDADD = libuim.la
 uim_sh_SOURCES = uim-sh.c
 if LIBEDIT
   uim_sh_CFLAGS += -DLIBEDIT
@@ -126,7 +126,7 @@ endif
 uim_module_manager_LIBS =
 uim_module_manager_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DUIM_DATADIR=\""$(datadir)/uim"\"
 uim_module_manager_CFLAGS =
-uim_module_manager_LDADD = libuim.la $(top_builddir)/sigscheme/libsscm.la
+uim_module_manager_LDADD = libuim.la
 uim_module_manager_SOURCES = uim-module-manager.c
 if NEED_SETENV_C
 uim_module_manager_SOURCES += setenv.c
@@ -135,4 +135,4 @@ endif
 noinst_PROGRAMS = uim-agent
 
 uim_agent_SOURCES = agent.c
-uim_agent_LDADD   = libuim.la $(top_builddir)/sigscheme/libsscm.la
+uim_agent_LDADD   = libuim.la
