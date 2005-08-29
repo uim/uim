@@ -454,6 +454,7 @@ ScmObj SigScm_load(const char *filename)
     return SCM_TRUE;
 }
 
+/* TODO: reject relative paths to ensure security */
 static char* create_valid_path(const char *filename)
 {
     char *c_filename = strdup(filename);
@@ -498,11 +499,21 @@ ScmObj ScmOp_load(ScmObj filename)
     char *c_filename = SCM_STRING_STR(filename);
     SigScm_load(c_filename);
 
-    /* TODO : investigate */
+#if SCM_STRICT_R5RS
+    return SCM_UNDEF;
+#else
+    /* TODO: reflect succeeded or not */
     return SCM_TRUE;
+#endif
 }
 
 #if SCM_USE_NONSTD_FEATURES
+/*
+ * TODO:
+ * - return the status which indicates succeeded or not
+ * - provide SIOD compatible behavior about return value when SCM_COMPAT_SIOD
+ *   is true
+ */
 ScmObj ScmOp_require(ScmObj filename)
 {
     ScmObj stack_start;
@@ -544,6 +555,10 @@ static ScmObj create_loaded_str(ScmObj filename)
     return Scm_NewString(loaded_str);
 }
 
+/*
+ * TODO: replace original specification with a SRFI standard or other de facto
+ * standard
+ */
 ScmObj ScmOp_provide(ScmObj feature)
 {
     if (!STRINGP(feature))
@@ -555,6 +570,10 @@ ScmObj ScmOp_provide(ScmObj feature)
     return SCM_TRUE;
 }
 
+/*
+ * TODO: replace original specification with a SRFI standard or other de facto
+ * standard
+ */
 ScmObj ScmOp_providedp(ScmObj feature)
 {
     if (!STRINGP(feature))
@@ -563,6 +582,10 @@ ScmObj ScmOp_providedp(ScmObj feature)
     return (FALSEP(ScmOp_member(feature, SigScm_features))) ? SCM_FALSE : SCM_TRUE;
 }
 
+/*
+ * TODO: describe compatibility with de facto standard of other Scheme
+ * implementations
+ */
 ScmObj ScmOp_file_existsp(ScmObj filepath)
 {
     if (!STRINGP(filepath))
@@ -571,6 +594,7 @@ ScmObj ScmOp_file_existsp(ScmObj filepath)
     return (file_existsp(SCM_STRING_STR(filepath))) ? SCM_TRUE : SCM_FALSE;
 }
 
+/* TODO: remove to ensure security */
 ScmObj ScmOp_delete_file(ScmObj filepath)
 {
     if (!STRINGP(filepath))

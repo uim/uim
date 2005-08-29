@@ -31,6 +31,18 @@
  *  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  *  SUCH DAMAGE.
 ===========================================================================*/
+
+/*
+ * TODO:
+ * - support SIOD compatible verbose level sensitive behavior. For example,
+ *   verbose level 1 must not print backtrace
+ * - provide SRFI-23 "Error reporting mechanism" compatible 'error' procedure
+ * - prepend SIOD compatible "ERROR: " header for each messages when
+ *   SCM_COMPAT_SIOD is true. But even if SCM_COMPAT_SIOD is false, some error
+ *   indicator header such as "Error: " should be prepended. This is required
+ *   to run GaUnit-based unit test for uim
+ */
+
 /*=======================================
   System Include
 =======================================*/
