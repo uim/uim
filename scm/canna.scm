@@ -296,7 +296,8 @@
                                                          multi-segment-type-hiragana)
                          (multi-segment-make-right-string (canna-context-right-string cc)
                                                           multi-segment-type-hiragana))))
-      (if (> (string-length preconv-str) 0)
+      (if (and (number? cc-id)
+               (> (string-length preconv-str) 0))
           (begin
             (canna-context-set-index-list!
               cc
@@ -395,7 +396,6 @@
 
 (define (canna-proc-input-state-with-preedit cc key key-state)
   (let ((rkc (canna-context-rkc cc))
-	(cc-id (canna-context-cc-id cc))
 	(kana (canna-context-kana-mode cc))
 	(rule (canna-context-input-rule cc)))
 
@@ -408,13 +408,11 @@
 ;      (canna-begin-conv cc))
      ;; backspace
      ((canna-backspace-key? key key-state)
-      (begin
-	(canna-lib-reset-conversion cc-id)
-	(if (not (rk-backspace rkc))
-	    (if (canna-context-left-string cc)
-		(canna-context-set-left-string!
-		 cc
-		 (cdr (canna-context-left-string cc)))))))
+      (if (not (rk-backspace rkc))
+          (if (canna-context-left-string cc)
+              (canna-context-set-left-string!
+                cc
+                (cdr (canna-context-left-string cc))))))
      ;; delete
      ((canna-delete-key? key key-state)
       (if (not (rk-delete rkc))
@@ -679,7 +677,8 @@
 
 (define (canna-release-handler cc)
   (let ((cc-id (canna-context-cc-id cc)))
-    (canna-lib-release-context cc-id)))
+    (if (number? cc-id)
+        (canna-lib-release-context cc-id))))
 
 (define (canna-move-segment cc dir)
   (let ((pos (+ (canna-context-cur-seg cc) dir))
