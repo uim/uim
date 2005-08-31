@@ -630,7 +630,7 @@ if test x$use_qt = xyes ; then
     if test -z "$HOST_MOC_QT3"; then
       AC_MSG_ERROR([No acceptable moc (meta object compiler) found])
     fi
-    MOC=$HOST_MOC_QT3
+    MOC_QT3=$HOST_MOC_QT3
 
     # Check For UIC
     if test -x "$QTDIR/bin/uic"; then
