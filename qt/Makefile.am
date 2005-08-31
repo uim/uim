@@ -25,7 +25,7 @@ HEADER_FILES = \
 	chardict-chargridview.h \
 	chardict-kseparator.h \
 	chardict-qt.h
-MOC_FILES = \
+MOC_QT3_FILES = \
 	toolbar-common-quimhelpertoolbar.moc \
 	toolbar-common-uimstateindicator.moc \
 	toolbar-standalone-qt.moc \
@@ -65,7 +65,7 @@ noinst_HEADERS += \
 	immodule-candidatewindow.h immodule-qhelpermanager.h \
 	immodule-quiminputcontext.h immodule-quiminputcontext_with_slave.h \
 	immodule-subwindow.h
-MOC_FILES += \
+MOC_QT3_FILES += \
 	immodule-candidatewindow.moc immodule-qhelpermanager.moc \
 	immodule-quiminputcontext.moc immodule-quiminputcontext_with_slave.moc \
 	immodule-subwindow.moc
@@ -138,18 +138,18 @@ pref-customwidgets.cpp: pref-customwidgets.moc
 pref-kseparator.cpp: pref-kseparator.moc
 
 pref-olisteditformbase.cpp: pref-olisteditformbase.h pref-olisteditformbase.moc
-	$(UIC) $(top_srcdir)/qt/pref-olisteditformbase.ui -i pref-olisteditformbase.h > pref-olisteditformbase.cpp.tmp
+	$(UIC_QT3) $(top_srcdir)/qt/pref-olisteditformbase.ui -i pref-olisteditformbase.h > pref-olisteditformbase.cpp.tmp
 	echo '#include "pref-olisteditformbase.moc"' >> pref-olisteditformbase.cpp.tmp
 	mv pref-olisteditformbase.cpp.tmp pref-olisteditformbase.cpp
 pref-olisteditformbase.h:
-	$(UIC) $(top_srcdir)/qt/pref-olisteditformbase.ui -o pref-olisteditformbase.h
+	$(UIC_QT3) $(top_srcdir)/qt/pref-olisteditformbase.ui -o pref-olisteditformbase.h
 
 pref-keyeditformbase.cpp: pref-keyeditformbase.h pref-keyeditformbase.moc
-	$(UIC) $(top_srcdir)/qt/pref-keyeditformbase.ui -i pref-keyeditformbase.h > pref-keyeditformbase.cpp.tmp
+	$(UIC_QT3) $(top_srcdir)/qt/pref-keyeditformbase.ui -i pref-keyeditformbase.h > pref-keyeditformbase.cpp.tmp
 	echo '#include "pref-keyeditformbase.moc"' >> pref-keyeditformbase.cpp.tmp
 	mv pref-keyeditformbase.cpp.tmp pref-keyeditformbase.cpp
 pref-keyeditformbase.h:
-	$(UIC) $(top_srcdir)/qt/pref-keyeditformbase.ui -o pref-keyeditformbase.h
+	$(UIC_QT3) $(top_srcdir)/qt/pref-keyeditformbase.ui -o pref-keyeditformbase.h
 
 uim_chardict_qt_SOURCES = \
 	chardict-qt.cpp chardict-qt.h \
@@ -172,12 +172,12 @@ helperdatadir = $(datadir)/uim/helperdata
 helperdata_DATA = bushu.t
 
 CLEANFILES = \
-	$(MOC_FILES) \
+	$(MOC_QT3_FILES) \
 	$(UI_TMP_FILES)
 
 .h.moc: 
-	$(MOC) $< -o $*.moc
+	$(MOC_QT3) $< -o $*.moc
 .ui.h: 
-	$(UIC) $< -o $*.h
+	$(UIC_QT3) $< -o $*.h
 endif
 
