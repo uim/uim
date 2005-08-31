@@ -360,6 +360,7 @@ ScmObj ScmOp_SRFI38_write_with_shared_structure(ScmObj arg, ScmObj env);
 ScmObj ScmOp_symbol_boundp(ScmObj obj);
 ScmObj ScmOp_symbol_value(ScmObj var);
 ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val);
+ScmObj ScmOp_siod_eql(ScmObj obj1, ScmObj obj2);
 ScmObj ScmOp_bit_and(ScmObj obj1, ScmObj obj2);
 ScmObj ScmOp_bit_or(ScmObj obj1, ScmObj obj2);
 ScmObj ScmOp_bit_xor(ScmObj obj1, ScmObj obj2);

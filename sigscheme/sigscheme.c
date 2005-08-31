@@ -334,13 +334,14 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc1("symbol-bound?"        , ScmOp_symbol_boundp);
     Scm_RegisterFunc1("symbol-value"         , ScmOp_symbol_value);
     Scm_RegisterFunc2("set-symbol-value!"    , ScmOp_set_symbol_value);
+    Scm_RegisterFunc2("="                    , ScmOp_siod_eql);
     Scm_RegisterFunc2("bit-and"              , ScmOp_bit_and);
     Scm_RegisterFunc2("bit-or"               , ScmOp_bit_or);
     Scm_RegisterFunc2("bit-xor"              , ScmOp_bit_xor);
     Scm_RegisterFunc1("bit-not"              , ScmOp_bit_not);
-    Scm_RegisterFuncEvaledList("the-environment"      , ScmOp_the_environment);
-    Scm_RegisterFunc1("%%closure-code"       , ScmOp_closure_code);
-    Scm_RegisterFuncEvaledList("verbose"              , ScmOp_verbose);
+    Scm_RegisterFuncEvaledList("the-environment" , ScmOp_the_environment);
+    Scm_RegisterFunc1("%%closure-code"           , ScmOp_closure_code);
+    Scm_RegisterFuncEvaledList("verbose"         , ScmOp_verbose);
     /* datas.c */
     scm_return_value = SCM_NULL;
 #endif

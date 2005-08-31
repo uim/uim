@@ -94,6 +94,20 @@ ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val)
     return SCM_SYMBOL_SET_VCELL(var, val);
 }
 
+ScmObj ScmOp_siod_eql(ScmObj obj1, ScmObj obj2)
+{
+    if (EQ(obj1, obj2))
+        return SCM_TRUE;
+    else if (!INTP(obj1))
+        return SCM_FALSE;
+    else if (!INTP(obj2))
+        return SCM_FALSE;
+    else if (SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2))
+        return SCM_TRUE;
+
+    return SCM_FALSE;
+}
+
 ScmObj ScmOp_bit_and(ScmObj obj1, ScmObj obj2)
 {
     if (!INTP(obj1))
