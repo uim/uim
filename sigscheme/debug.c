@@ -51,13 +51,46 @@ enum OutputType {
     UNKNOWN
 };
 
+#if SCM_USE_SRFI38
+typedef size_t hashval_t;
+typedef struct {
+    ScmObj key;
+    int datum;
+} hash_entry;
+
+typedef struct {
+    size_t size;  /* capacity; MUST be a power of 2 */
+    size_t used;  /* population */
+    hash_entry *ents;
+} hash_table;
+
+typedef struct {
+    hash_table seen; /* a table of seen objects */
+    int next_index;  /* the next index to use for #N# */
+} write_ss_context;
+#endif /* SCM_USE_SRFI38 */
+
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+#if SCM_USE_SRFI38
+#define INTERESTINGP(obj)  \
+    (CONSP(obj) \
+     || (STRINGP(obj) && SCM_STRING_LEN(obj)) \
+     || VECTORP(obj))
+#define SCM_INVALID NULL
+#define OCCUPIED(ent)      (!EQ((ent)->key, SCM_INVALID))
+#define HASH_EMPTY(table)  (!(table).used)
+#define DEFINING_DATUM      (-1)
+#define GET_DEFINDEX(x)    ((unsigned)(x) >> 1)
+#endif /* SCM_USE_SRFI38 */
 
 /*=======================================
   Variable Declarations
 =======================================*/
+#if SCM_USE_SRFI38
+static write_ss_context *write_ss_ctx; /* list of shared structures in the object we're writing out */
+#endif
 
 /*=======================================
   File Local Function Declarations
@@ -69,6 +102,13 @@ static void print_list(FILE *f, ScmObj list, enum OutputType otype);
 static void print_vector(FILE *f, ScmObj vec, enum OutputType otype);
 static void print_port(FILE *f, ScmObj port, enum OutputType otype);
 static void print_etc(FILE *f, ScmObj obj, enum  OutputType otype);
+
+#if SCM_USE_SRFI38
+static void hash_grow(hash_table *tab);
+static hash_entry *hash_lookup(hash_table *tab, ScmObj key, int insert);
+static void write_ss_scan(ScmObj obj, write_ss_context *ctx);
+static int  get_shared_index(ScmObj obj);
+#endif /* SCM_USE_SRFI38 */
 
 /*=======================================
    Function Implementations
@@ -107,15 +147,30 @@ void SigScm_DisplayToPort(ScmObj port, ScmObj obj)
 
 static void print_ScmObj_internal(FILE *f, ScmObj obj, enum OutputType otype)
 {
+#if SCM_USE_SRFI38
+    if (INTERESTINGP(obj)) {
+        int index = get_shared_index(obj);
+        if (index > 0) {
+            /* defined datum */
+            fprintf(f, "#%d#", index);
+            return;
+        }
+        if (index < 0) {
+            /* defining datum, with the new index negated */
+            fprintf(f, "#%d=", -index);
+            /* Print it; the next time it'll be defined. */
+        }
+    }
+#endif
     switch (SCM_TYPE(obj)) {
     case ScmInt:
         fprintf(f, "%d", SCM_INT_VALUE(obj));
         break;
     case ScmCons:
-        print_list(f, obj, otype);      
+        print_list(f, obj, otype);
         break;
     case ScmSymbol:
-        fprintf(f, "%s", SCM_SYMBOL_NAME(obj));         
+        fprintf(f, "%s", SCM_SYMBOL_NAME(obj));
         break;
     case ScmChar:
         print_char(f, obj, otype);
@@ -138,7 +193,7 @@ static void print_ScmObj_internal(FILE *f, ScmObj obj, enum OutputType otype)
         print_port(f, obj, otype);
         break;
     case ScmContinuation:
-        fprintf(f, "#<subr continuation>");     
+        fprintf(f, "#<subr continuation>");
         break;
     case ScmValuePacket:
         fputs("#<values ", f);
@@ -157,7 +212,7 @@ static void print_ScmObj_internal(FILE *f, ScmObj obj, enum OutputType otype)
     case ScmCFuncPointer:
         fprintf(f, "#<c_func_pointer %p>", (void*)SCM_C_FUNCPOINTER_VALUE(obj));
         break;
-    }   
+    }
 }
 
 static void print_char(FILE *f, ScmObj obj, enum OutputType otype)
@@ -166,7 +221,7 @@ static void print_char(FILE *f, ScmObj obj, enum OutputType otype)
     case AS_WRITE:
         /*
          * in write, character objects are written using the #\ notation.
-         */ 
+         */
         if (strcmp(SCM_CHAR_VALUE(obj), " ") == 0) {
             fprintf(f, "#\\space");
         } else if(strcmp(SCM_CHAR_VALUE(obj), "\n") == 0) {
@@ -229,47 +284,59 @@ static void print_string(FILE *f, ScmObj obj, enum OutputType otype)
 static void print_list(FILE *f, ScmObj list, enum OutputType otype)
 {
     ScmObj car = SCM_NULL;
-    ScmObj cdr = SCM_NULL;
-    ScmObj tmp = SCM_NULL;
+#if SCM_USE_SRFI38
+    int index;
+    int necessary_close_parens = 1;
+  cheap_recursion:
+#endif
 
     /* print left parenthesis */
     fprintf(f, "(");
 
-    /* get car and cdr */
-    car = CAR(list);
-    cdr = CDR(list);
-    
-    /* print car */
-    print_ScmObj_internal(f, car, otype);
-    if (!NULLP(cdr))
-        fprintf(f, " ");
+    for (;;) {
+        car = CAR(list);
+        print_ScmObj_internal(f, car, otype);
+        list = CDR(list);
+        if (!CONSP(list))
+            break;
+        fputs(" ", f);
 
-    /* print else for-each */
-    for (tmp = cdr; ; tmp = CDR(tmp)) {
-        if (CONSP(tmp)) {
-            print_ScmObj_internal(f, CAR(tmp), otype);
-            if (NULLP(CDR(tmp))) {
-                fprintf(f, ")");
-                return;
-            } else {
-                if (!NULLP(CDR(tmp)))
-                    fprintf(f, " ");
-            }
-        } else {
-            if (!NULLP(tmp)) {
-                fprintf(f, ". ");
-                print_ScmObj_internal(f, tmp, otype);
-            }
-
-            fprintf(f, ")");
-            return;
+#if SCM_USE_SRFI38
+        /* See if the next pair is shared.  Note that the case
+         * where the first pair is shared is handled in
+         * print_ScmObj_internal(). */
+        index = get_shared_index(list);
+        if (index > 0) {
+            /* defined datum */
+            fprintf(f, ". #%d#", index);
+            goto close_parens_and_return;
         }
+        if (index < 0) {
+            /* defining datum, with the new index negated */
+            fprintf(f, ". #%d=", -index);
+            necessary_close_parens++;
+            goto cheap_recursion;
+        }
+#endif
     }
+
+    /* last item */
+    if (!NULLP(list)) {
+        fputs(" . ", f);
+        /* Callee takes care of shared data. */
+        print_ScmObj_internal(f, list, otype);
+    }
+
+#if SCM_USE_SRFI38
+  close_parens_and_return:
+    while (necessary_close_parens--)
+#endif
+        fputc(')', f);
 }
 
 static void print_vector(FILE *f, ScmObj vec, enum OutputType otype)
 {
-    ScmObj *v = SCM_VECTOR_VEC(vec); 
+    ScmObj *v = SCM_VECTOR_VEC(vec);
     int c_len = SCM_VECTOR_LEN(vec);
     int i     = 0;
 
@@ -331,3 +398,155 @@ static void print_etc(FILE *f, ScmObj obj, enum  OutputType otype)
     else if (EQ(obj, SCM_UNDEF))
         fprintf(f, "#<undef>");
 }
+
+#if SCM_USE_SRFI38
+static void hash_grow(hash_table *tab)
+{
+    size_t old_size = tab->size;
+    size_t new_size = old_size * 2;
+    size_t i;
+    hash_entry *old_ents = tab->ents;
+    hash_entry *new_ent;
+
+    tab->ents = calloc(new_size, sizeof(hash_entry));
+    tab->size = new_size;
+
+    for (i=0; i < old_size; i++) {
+        /* Don't change the last argument, or hash_lookup() will call
+         * us again. */
+        new_ent = hash_lookup(tab, old_ents[i].key, 0);
+        *new_ent = old_ents[i];
+    }
+
+    free (old_ents);
+}
+
+/**
+ * @return A pointer to the entry, or NULL if not found.
+ */
+static hash_entry *hash_lookup(hash_table *tab, ScmObj key, int insert)
+{
+    size_t i;
+    unsigned hashval;
+    hash_entry *ent;
+
+    /* If we have > 32 bits, we'll discard some of them.  The lower
+     * bits are zeroed for alignment or used for tag bits, and in the
+     * latter case, the tag can only take 3 values: pair, string, or
+     * vector.  We'll drop these bits.  KEYs are expected to be
+     * pointers into the heap, so their higher bis are probably
+     * uniform.  I haven't confirmed either's validity, though. */
+    hashval = (unsigned)key;
+    if (sizeof(hashval) > 4) {
+        hashval /= sizeof(ScmObjInternal);
+        hashval &= 0xffffffff;
+    }
+
+    hashval *= 2654435761UL; /* golden ratio hash */
+
+    /* We probe linearly, since a) speed isn't a primary concern for
+     * SigScheme, and b) having a table of primes only for this
+     * purpose is probably just a waste. */
+    for (i=0; i < tab->size; i++) {
+        ent = &(tab->ents)[(hashval + i) & (tab->size - 1)];
+        if (!OCCUPIED(ent)) {
+            if (insert) {
+                /* used > size * 2/3 --> overpopulated, grow table */
+                if (tab->used * 3 > tab->size * 2) {
+                    hash_grow(tab);
+                    return hash_lookup(tab, key, 1);
+                }
+                ent->key = key;
+                tab->used++;
+            }
+            return NULL;
+        }
+        if (EQ(ent->key, key))
+            return ent;
+    }
+
+    /* A linear probe should always find a slot. */
+    abort();
+}
+
+/**
+ * Find out what non-atomic objects a structure shares within itself.
+ * @param obj The object in question, or a part of it.
+ * @param ctx Where to put the scan results.
+ */
+static void write_ss_scan(ScmObj obj, write_ss_context *ctx)
+{
+    int i;
+    hash_entry *ent;
+    /* (for-each mark-as-seen-or-return-if-familiar obj) */
+    while (CONSP(obj)) {
+        ent = hash_lookup(&ctx->seen, obj, 1);
+        if (ent) {
+            ent->datum = DEFINING_DATUM;
+            return;
+        }
+        write_ss_scan(CAR(obj), ctx);
+        obj = CDR(obj);
+    }
+
+    if (VECTORP(obj)) {
+        ent = hash_lookup(&ctx->seen, obj, 1);
+        if (ent) {
+            ent->datum = DEFINING_DATUM;
+            return;
+        }
+        for (i=0; i < SCM_VECTOR_LEN(obj); i++)
+            write_ss_scan(SCM_VECTOR_CREF(obj, i), ctx);
+        return;
+    }
+    if (STRINGP(obj) && SCM_STRING_LEN(obj)) {
+        ent = hash_lookup(&ctx->seen, obj, 1);
+	if (ent) {
+	    ent->datum = DEFINING_DATUM;
+	    return;
+	}
+    }
+}
+
+/**
+ * @return The index for obj, if it's a defined datum.  If it's a
+ *         defining datum, allocate an index for it and return the
+ *         *additive inverse* of the index.  If obj is nondefining,
+ *         return zero.
+ */
+static int get_shared_index(ScmObj obj)
+{
+    hash_entry *ent;
+
+    if (write_ss_ctx) {
+        ent = hash_lookup(&write_ss_ctx->seen, obj, 0);
+
+        if (ent->datum == DEFINING_DATUM) {
+            ent->datum = write_ss_ctx->next_index++;
+            return - (ent->datum);
+        }
+        return ent->datum;
+    }
+    return 0;
+}
+
+void SigScm_WriteToPortWithSharedStructure(ScmObj port, ScmObj obj)
+{
+    write_ss_context ctx = {{0}};
+
+    ctx.next_index = 1;
+    ctx.seen.size = 1 << 8; /* arbitrary initial size */
+    ctx.seen.ents = calloc(ctx.seen.size, sizeof(hash_entry));
+
+    write_ss_scan(obj, &ctx);
+
+    /* If no structure is shared, we do a normal write. */
+    if (!HASH_EMPTY(ctx.seen))
+        write_ss_ctx = &ctx;
+
+    SigScm_WriteToPort(port, obj);
+
+    write_ss_ctx = NULL;
+    free(ctx.seen.ents);
+}
+#endif /* SCM_USE_SRFI38 */

@@ -2015,6 +2015,9 @@ ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp)
 #if SCM_USE_SRFI8
 #include "operations-srfi8.c"
 #endif
+#if SCM_USE_SRFI38
+#include "operations-srfi38.c"
+#endif
 #if SCM_COMPAT_SIOD
 #include "operations-siod.c"
 #endif

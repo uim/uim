@@ -77,7 +77,11 @@ static void repl(void)
          s_exp = SigScm_Read(stdin_port))
     {
         result = ScmOp_eval(s_exp, SCM_NULL);
-        SigScm_DisplayToPort(stdout_port, result);
+#if SCM_USE_SRFI38
+        SigScm_WriteToPortWithSharedStructure(stdout_port, result);
+#else
+        SigScm_WriteToPort(stdout_port, result);
+#endif
         printf("\nsscm> ");
     }
     

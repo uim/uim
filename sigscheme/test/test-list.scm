@@ -53,7 +53,7 @@
 (define z '(why))
 (assert-equal? "append test4" '(n o d o car why . ta) (append w x y () z 'ta))
 (assert-equal? "append test5" '(n o) w)	; test non-destructiveness
-(assert-equal? "append test6" x (cdr (append '((Calpis hosi-)) x))) ; share last
+(assert-eq? "append test6" x (cdr (append '((Calpis hosi-)) x))) ; share last
 
 ; reverse
 (assert-equal? "reverse test1" '(c b a) (reverse '(a b c)))

@@ -319,6 +319,12 @@ void SigScm_Initialize(void)
     =======================================================================*/
     Scm_RegisterFuncRawListTailRec("receive", ScmOp_SRFI8_receive);
 #endif
+#if SCM_USE_SRFI38
+    /*=======================================================================
+      SRFI-8 Procedure
+    =======================================================================*/
+    Scm_RegisterFuncEvaledList("write-with-shared-structure", ScmOp_SRFI38_write_with_shared_structure);
+#endif
 
 #if SCM_COMPAT_SIOD
     /*=======================================================================
