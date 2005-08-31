@@ -66,8 +66,9 @@ typedef void (*C_FUNC) (void);
    Macro Declarations
 =======================================*/
 #define SCM_USE_EUCJP           1  /* use EUC-JP as internal encoding */
-#define SCM_USE_SRFI1           0  /* use SRFI-1 procedures written in C */
+#define SCM_USE_SRFI1           0  /* use SRFI-1 list library procedures written in C */
 #define SCM_USE_SRFI8           1  /* use SRFI-8 receive procedure written in C */
+#define SCM_USE_SRFI23          1  /* use SRFI-23 error procedure written in C */
 #define SCM_USE_SRFI38          1  /* use SRFI-38 write/ss written in C */
 #define SCM_USE_NONSTD_FEATURES 1  /* use Non-R5RS standard features */
 #define SCM_COMPAT_SIOD         1  /* use SIOD compatible features */
@@ -83,6 +84,9 @@ int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
 /*=======================================
    Function Declarations
 =======================================*/
+/*===========================================================================
+   SigScheme : Core Functions
+===========================================================================*/
 /* sigscheme.c */
 void SigScm_Initialize(void);
 void SigScm_Finalize(void);
@@ -338,6 +342,10 @@ void SigScm_DisplayToPort(ScmObj port, ScmObj obj);
 void SigScm_WriteToPortWithSharedStructure(ScmObj port, ScmObj obj);
 #endif
 
+
+/*===========================================================================
+   SigScheme : Optional Funtions
+===========================================================================*/
 #if SCM_USE_SRFI1
 /* operations-srfi1.c */
 ScmObj ScmOp_SRFI1_xcons(ScmObj a, ScmObj b);
@@ -352,7 +360,12 @@ ScmObj ScmOp_SRFI1_iota(ScmObj args, ScmObj env);
 /* operations-srfi8.c */
 ScmObj ScmOp_SRFI8_receive(ScmObj args, ScmObj *envp);
 #endif
+#if SCM_USE_SRFI23
+/* operations-srfi23.c */
+ScmObj ScmOp_SRFI23_error(ScmObj args, ScmObj env);
+#endif
 #if SCM_USE_SRFI38
+/* operations-srfi38.c */
 ScmObj ScmOp_SRFI38_write_with_shared_structure(ScmObj arg, ScmObj env);
 #endif
 #if SCM_COMPAT_SIOD

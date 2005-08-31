@@ -319,6 +319,12 @@ void SigScm_Initialize(void)
     =======================================================================*/
     Scm_RegisterFuncRawListTailRec("receive", ScmOp_SRFI8_receive);
 #endif
+#if SCM_USE_SRFI23
+    /*=======================================================================
+      SRFI-23 Procedure
+    =======================================================================*/
+    Scm_RegisterFuncEvaledList("error", ScmOp_SRFI23_error);
+#endif
 #if SCM_USE_SRFI38
     /*=======================================================================
       SRFI-8 Procedure
