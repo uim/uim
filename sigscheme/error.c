@@ -37,10 +37,6 @@
  * - support SIOD compatible verbose level sensitive behavior. For example,
  *   verbose level 1 must not print backtrace
  * - provide SRFI-23 "Error reporting mechanism" compatible 'error' procedure
- * - prepend SIOD compatible "ERROR: " header for each messages when
- *   SCM_COMPAT_SIOD is true. But even if SCM_COMPAT_SIOD is false, some error
- *   indicator header such as "Error: " should be prepended. This is required
- *   to run GaUnit-based unit test for uim
  */
 
 /*=======================================
@@ -77,7 +73,7 @@ ScmObj scm_current_error_port  = NULL;
 =======================================*/
 int SigScm_Die(const char *msg, const char *filename, int line) {
     /* show message */
-    printf("SigScheme Died : %s (file : %s, line : %d)\n", msg, filename, line);
+    printf("Error: SigScheme Died : %s (file : %s, line : %d)\n", msg, filename, line);
 
     /* show backtrace */
     SigScm_ShowBacktrace();
@@ -91,6 +87,9 @@ int SigScm_Die(const char *msg, const char *filename, int line) {
 void SigScm_Error(const char *msg, ...)
 {
     va_list va;
+
+    /* prepend message */
+    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "Error: ");
 
     /* show message */
     va_start(va, msg);
@@ -106,6 +105,9 @@ void SigScm_Error(const char *msg, ...)
 
 void SigScm_ErrorObj(const char *msg, ScmObj obj)
 {
+    /* prepend header */
+    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "Error: ");
+
     /* print msg */
     fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "%s", msg);
 
