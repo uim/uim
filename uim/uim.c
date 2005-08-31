@@ -62,6 +62,7 @@ static int uim_quiting;
 
 /* Definition of mutex */
 UIM_NEW_MUTEX_STATIC(initing_or_quiting);
+UIM_NEW_MUTEX_STATIC(context_array_mtx);
 
 void
 uim_set_preedit_cb(uim_context uc,
@@ -80,20 +81,25 @@ static void
 get_context_id(uim_context uc)
 {
   int i;
+  UIM_LOCK_MUTEX(context_array_mtx);
   for (i = 0; i < CONTEXT_ARRAY_SIZE; i++) {
     if (!context_array[i]) {
       context_array[i] = uc;
       uc->id = i;
+      UIM_UNLOCK_MUTEX(context_array_mtx);
       return;
     }
   }
   uc->id = -1;
+  UIM_UNLOCK_MUTEX(context_array_mtx);
 }
 
 static void
 put_context_id(uim_context uc)
 {
+  UIM_LOCK_MUTEX(context_array_mtx);
   context_array[uc->id] = NULL;
+  UIM_UNLOCK_MUTEX(context_array_mtx);
 }
 
 uim_context
@@ -272,7 +278,9 @@ uim_release_context(uim_context uc)
 uim_context
 uim_find_context(int id)
 {
+  UIM_LOCK_MUTEX(context_array_mtx);
   return context_array[id];
+  UIM_UNLOCK_MUTEX(context_array_mtx);
 }
 
 int
