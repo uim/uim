@@ -193,15 +193,15 @@ public:
     static void update_prop_label_cb(void *ptr, const char *str);
     static InputContext *focusedContext();
     static void deletefocusedContext();
-protected:
+private:
     void commit_string(char *);
+    void clear_pe_stat();
+
     XimIC *mXic;
     XimServer *mServer;
     pe_stat *m_pe;
     Convdisp *mConvdisp;
     uim_context mUc;
-private:
-    static InputContext *mFocusedContext;
     bool mCandwinActive;
     int mDisplayLimit;
     int mNumPage;
@@ -211,6 +211,8 @@ private:
     char *mEngineName;
     char *mLocaleName;
     bool mCaretStateShown;
+private:
+    static InputContext *mFocusedContext;
 };
 
 class Locale {

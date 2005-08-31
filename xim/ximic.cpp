@@ -407,6 +407,9 @@ void XimIC::setFocus()
     }
 }
 
+// Note that the sequence of XIM_SET_IC_FOCUS and XIM_UNSET_FOCUS
+// events is not consistent.  Be careful about hiding caret state and
+// candidate window.
 void XimIC::unsetFocus()
 {
     if (!mIsActive)
@@ -415,14 +418,6 @@ void XimIC::unsetFocus()
     mIsActive = false;
     nrActiveIC--;
     m_kkContext->focusOut();
-    // Since the sequence of XIM_SET_IC_FOCUS and XIM_UNSET_FOCUS
-    // events is not consistent, unsetting focus of candidate window
-    // is now handled in XimIC::setFocus() and focus_in message from
-    // helper application.
-    //
-    // if (mConvdisp && m_kkContext->hasActiveCandwin()) {
-    //     mConvdisp->unset_focus();
-    // }
 }
 
 void XimIC::OnKeyEvent(keyEventX e)
