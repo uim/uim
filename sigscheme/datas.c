@@ -662,7 +662,7 @@ ScmObj Scm_NewStringCopying(const char *str)
     return obj;
 }
 
-ScmObj Scm_NewString_With_StrLen(char *str, int len)
+ScmObj Scm_NewStringWithLen(char *str, int len)
 {
     ScmObj obj = SCM_NULL;
     SCM_NEW_OBJ_INTERNAL(obj);

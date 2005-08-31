@@ -1409,7 +1409,7 @@ ScmObj ScmOp_make_string(ScmObj arg, ScmObj env)
     }
 
     /* make string */
-    str = Scm_NewString_With_StrLen(NULL, len);
+    str = Scm_NewStringWithLen(NULL, len);
 
     /* and fill! */
     ScmOp_string_fill(str, ch);
@@ -1584,7 +1584,7 @@ ScmObj ScmOp_string_append(ScmObj arg, ScmObj env)
         p += strlen(SCM_STRING_STR(obj));
     }
 
-    return Scm_NewString_With_StrLen(new_str, total_len);
+    return Scm_NewStringWithLen(new_str, total_len);
 }
 
 ScmObj ScmOp_string2list(ScmObj string)

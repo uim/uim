@@ -113,7 +113,7 @@ ScmObj Scm_NewSymbol(char *name, ScmObj v_cell);
 ScmObj Scm_NewChar(char *ch);
 ScmObj Scm_NewString(char *str);
 ScmObj Scm_NewStringCopying(const char *str);
-ScmObj Scm_NewString_With_StrLen(char *str, int len);
+ScmObj Scm_NewStringWithLen(char *str, int len);
 ScmObj Scm_NewFunc(enum ScmFuncTypeCode type, ScmFuncType func);
 ScmObj Scm_NewClosure(ScmObj exp, ScmObj env);
 ScmObj Scm_NewVector(ScmObj *vec, int len);
