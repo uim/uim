@@ -331,7 +331,7 @@ InputContext::~InputContext()
 	mFocusedContext = NULL;
 
     if (mConvdisp)
-	mConvdisp->set_pe(0);
+	mConvdisp->set_pe(NULL);
 
     delete m_pe;
     uim_release_context(mUc);
@@ -477,6 +477,13 @@ void
 InputContext::focusOut()
 {
     uim_helper_client_focus_out(mUc);
+    if (mFocusedContext == this) {
+	Canddisp *disp = canddisp_singleton();
+	if (isCaretStateShown())
+	    disp->hide_caret_state();
+	if (hasActiveCandwin())
+	    disp->hide();
+    }
 }
 
 XimServer *
@@ -497,7 +504,7 @@ InputContext::commit_cb(void *ptr, const char *str)
     InputContext *ic = (InputContext *)ptr;
     XimIC *xic = ic->get_ic();
 
-    clear_cb(ptr);
+    ic->clear_pe_stat();
     ic->update_preedit();
     xic->commit_string(str);
 }
@@ -505,7 +512,7 @@ InputContext::commit_cb(void *ptr, const char *str)
 void InputContext::clear_cb(void *ptr)
 {
     InputContext *ic = (InputContext *)ptr;
-    ic->clear_preedit();
+    ic->clear_pe_stat();
 }
 
 void InputContext::pushback_cb(void *ptr, int attr, const char *str)
@@ -560,9 +567,16 @@ void InputContext::update_prop_label_cb(void *ptr, const char *str)
       ic->update_prop_label(str);
 }
 
-void InputContext::clear_preedit()
+void InputContext::clear_pe_stat()
 {
     m_pe->clear();
+}
+
+void InputContext::clear_preedit()
+{
+    clear_pe_stat();
+    if (mConvdisp)
+	mConvdisp->clear_preedit();
 }
 
 uString InputContext::get_preedit_string()
@@ -640,11 +654,10 @@ bool InputContext::hasActiveCandwin()
     return mCandwinActive;
 }
 
+// reset
 void InputContext::clear()
 {
     clear_preedit();
-    if (mConvdisp)
-	mConvdisp->clear_preedit();
     candidate_deactivate();
     uim_reset_context(mUc);
 }
