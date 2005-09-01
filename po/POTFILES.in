@@ -29,7 +29,7 @@ qt/toolbar-common-quimhelpertoolbar.cpp
 qt/toolbar-standalone-qt.cpp
 qt/pref-qt.cpp
 qt/pref-customwidgets.cpp
-scm/PY.scm
+scm/py.scm
 scm/action.scm
 scm/anthy-custom.scm
 scm/anthy-key-custom.scm

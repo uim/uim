@@ -34,12 +34,16 @@
 #ifndef UIM_FEP_H
 #define UIM_FEP_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
 #ifdef HAVE_TERMIOS_H
 #include <termios.h>
 #endif
+#include <uim/uim.h>
 
 #define FALSE 0
 #define TRUE 1
@@ -76,6 +80,7 @@ extern struct opt_tag g_opt;
 extern int g_win_in;
 extern int g_win_out;
 extern struct winsize *g_win;
+extern uim_context g_context;
 
 void done(int exit_value);
 

@@ -39,6 +39,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
 #include "connection.h"
 #include <list>
 #include <map>
@@ -398,7 +399,11 @@ void XConnection::writeProc()
     writePassivePacket();
     writeNormalPacket();
 
+    // interrupt while _XFlushInt() here will cause lock up of the display.
+    sig_t old_sigusr1 = signal(SIGUSR1, SIG_IGN);
     XFlush(XimServer::gDpy);
+    signal(SIGUSR1, old_sigusr1);
+
     if (mIsCloseWait) {
 	remove_window_watch(mClientWin);
 	mClientWin = None;

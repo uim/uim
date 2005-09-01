@@ -175,6 +175,13 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのfepです。
     になります。
     ($TMPが定義されていない場合は/tmpが使われる)
 
+  o -f str
+    $UIM_FEP_SETMODEと$UIM_FEP_GETMODEのファイル名を
+    uim-fep-setmode-{str}
+    uim-fep-setmode-{str}
+    にします。{str}は-fオプションの引数です。
+    UIM_FEP_SETMODEとUIM_FEP_GETMODEが置かれるディレクトリは$TMPか
+    TMPが定義されていなければ/tmpです。
 
   o -d
     候補一覧の表示スタイルをddskkのようにします。

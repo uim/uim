@@ -1,6 +1,6 @@
 AC_PREREQ(2.57)
 
-AC_INIT([uim], 0.4.8, [tkng@xem.jp])
+AC_INIT([uim], 0.5.0, [tkng@xem.jp])
 AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION)
 
 AC_CONFIG_SRCDIR([COPYING])
@@ -174,6 +174,7 @@ AC_CHECK_HEADERS([sys/time.h sys/stat.h sys/un.h getopt.h assert.h signal.h term
 AC_CHECK_HEADERS([pty.h utmp.h util.h libutil.h])
 AC_CHECK_HEADERS([curses.h stropts.h])
 AC_CHECK_HEADERS([sys/param.h strings.h])
+AC_CHECK_HEADERS([pthread.h], have_pthread=yes, have_pthread=no)
 
 # Check for type
 AC_CHECK_TYPES(sig_t, , ,
@@ -515,6 +516,7 @@ AC_HELP_STRING([--with-libedit[=DIR], Enable libedit support]),
      LDFLAGS=$saved_LDFLAGS
 fi
 
+
 AM_CONDITIONAL(M17NLIB, test x$use_m17nlib = xyes)
 AM_CONDITIONAL(SCIM, test x$use_scim = xyes)
 AM_CONDITIONAL(ANTHY, test x$use_anthy = xyes)
@@ -537,7 +539,7 @@ AM_CONDITIONAL(COMPAT_SCM, test x$enable_compat_scm = xyes)
 AM_CONDITIONAL(COMPAT_TABLE, test x$enable_compat_table = xyes)
 AM_CONDITIONAL(NEED_SETENV_C, test $ac_cv_func_setenv = no -o $ac_cv_func_unsetenv = no)
 AM_CONDITIONAL(NEED_STRSEP_C, test $ac_cv_func_strsep = no)
-
+AM_CONDITIONAL(HAVE_PTHREAD, test "x$have_pthread" = "xyes")
 
 if test "x$use_applet" = "xyes"; then
   AC_PROG_INTLTOOL
@@ -619,6 +621,17 @@ if test x$use_qt = xyes ; then
     fi
     MOC=$HOST_MOC
 
+    # Check For moc-qt3
+    if test -x "$QTDIR/bin/moc-qt3"; then
+      HOST_MOC="$QTDIR/bin/moc-qt3"
+    else
+      AC_CHECK_PROGS(HOST_MOC_QT3, moc-qt3, "")
+    fi
+    if test -z "$HOST_MOC_QT3"; then
+      AC_MSG_ERROR([No acceptable moc (meta object compiler) found])
+    fi
+    MOC_QT3=$HOST_MOC_QT3
+
     # Check For UIC
     if test -x "$QTDIR/bin/uic"; then
       HOST_UIC="$QTDIR/bin/uic"
@@ -630,6 +643,17 @@ if test x$use_qt = xyes ; then
     fi
     UIC=$HOST_UIC
 
+    # Check for uic-qt3
+    if test -x "$QTDIR/bin/uic-qt3"; then
+      HOST_UIC_QT3="$QTDIR/bin/uic-qt3"
+    else
+      AC_CHECK_PROGS(HOST_UIC_QT3, uic-qt3, "")
+    fi
+    if test -z "$HOST_UIC_QT3"; then
+      AC_MSG_ERROR([No acceptable uic-qt3 (user interface compiler) found])
+    fi
+    UIC_QT3=$HOST_UIC_QT3
+
     # GUESS plugins dir for immodule installation
     AC_MSG_CHECKING(for qt-immodule plugins dir)
     if test ! -d "$QTDIR/plugins"; then
@@ -639,7 +663,6 @@ if test x$use_qt = xyes ; then
       AC_MSG_RESULT($QT_PLUGINSDIR)
       AC_SUBST(QT_PLUGINSDIR)
     fi
-
 
     # Process for compiler & linker flags
     QT_CXXFLAGS="-I${QTINCDIR} -DQT_GENUINE_STR -DQT_NO_STL"
@@ -690,7 +713,9 @@ if test x$use_qt = xyes ; then
     UIM_QT_CXXFLAGS=$QT_CXXFLAGS
 
     AC_SUBST(MOC)
+    AC_SUBST(MOC_QT3)
     AC_SUBST(UIC)
+    AC_SUBST(UIC_QT3)
     AC_SUBST(UIM_QT_CXXFLAGS)
     AC_SUBST(UIM_QT_LDFLAGS)
 fi
@@ -798,6 +823,7 @@ Configure Result :
    DICT            : ${use_dict}
    EB              : ${use_eb}
    libedit         : ${use_libedit}
+   pthread         : ${have_pthread}
    Default toolkit : ${default_toolkit}
 ])
 

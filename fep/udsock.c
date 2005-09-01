@@ -56,6 +56,9 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
 
 #include "udsock.h"
 
@@ -117,6 +120,7 @@ void init_recvsocket(const char *sock_path)
     perror(sock_path);
     exit(1);
   }
+  chmod(sock_path, S_IRUSR|S_IWUSR);
 }
 
 void close_socket(void)

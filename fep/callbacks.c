@@ -49,12 +49,10 @@
 #ifdef HAVE_ASSERT_H
 #include <assert.h>
 #endif
-#include <uim/uim-util.h>
 #include "uim-fep.h"
 #include "str.h"
 #include "callbacks.h"
 
-static uim_context s_context;
 /* ステータスラインの最大幅 */
 static int s_max_width;
 static char *s_commit_str;
@@ -65,9 +63,8 @@ static char *s_index_str;
 static struct preedit_tag *s_preedit;
 static int s_mode;
 static char *s_nokori_str;
+static int s_start_callbacks = FALSE;
 
-static void start_callbacks(void);
-static void end_callbacks(void);
 static void activate_cb(void *ptr, int nr, int display_limit);
 static void select_cb(void *ptr, int index);
 static void shift_page_cb(void *ptr, int direction);
@@ -119,9 +116,8 @@ static struct candidate_tag s_candidate = {
 /*
  * 初期化
  */
-void init_callbacks(uim_context context)
+void init_callbacks(void)
 {
-  s_context = context;
   s_max_width = g_win->ws_col;
   if (g_opt.statusline_width != UNDEFINED && g_opt.statusline_width <= s_max_width) {
     s_max_width = g_opt.statusline_width;
@@ -131,12 +127,12 @@ void init_callbacks(uim_context context)
   s_statusline_str = strdup("");
   s_candidate_col = UNDEFINED;
   s_index_str = strdup("");
-  s_mode = uim_get_current_mode(s_context);
+  s_mode = uim_get_current_mode(g_context);
   s_preedit = create_preedit();
-  uim_set_preedit_cb(s_context, clear_cb, pushback_cb, update_cb);
-  uim_set_mode_cb(s_context, mode_update_cb);
+  uim_set_preedit_cb(g_context, clear_cb, pushback_cb, update_cb);
+  uim_set_mode_cb(g_context, mode_update_cb);
   if (g_opt.status_type != NONE) {
-    uim_set_candidate_selector_cb(s_context, activate_cb, select_cb, shift_page_cb, deactivate_cb);
+    uim_set_candidate_selector_cb(g_context, activate_cb, select_cb, shift_page_cb, deactivate_cb);
   }
 
   if (g_opt.ddskk) {
@@ -168,15 +164,19 @@ int press_key(int key, int key_state)
     debug2(("press key = %d key_state = %d\n", key, key_state));
   }
 #endif
-  start_callbacks();
-  raw = uim_press_key(s_context, key, key_state);
-  uim_release_key(s_context, key, key_state);
-  end_callbacks();
+  raw = uim_press_key(g_context, key, key_state);
+  uim_release_key(g_context, key, key_state);
   return raw;
 }
 
-static void start_callbacks(void)
+
+void start_callbacks(void)
 {
+  if (s_start_callbacks) {
+    return;
+  }
+  s_start_callbacks = TRUE;
+
   debug2(("\n\nstart_callbacks()\n"));
   if (s_commit_str != NULL) {
     free(s_commit_str);
@@ -195,12 +195,21 @@ static void start_callbacks(void)
     s_statusline_str = NULL;
   }
   s_candidate_col = UNDEFINED;
-  s_mode = uim_get_current_mode(s_context);
+  s_mode = uim_get_current_mode(g_context);
 }
 
-static void end_callbacks(void)
+/*
+ * コールバック関数が呼ばれていなければ、FALSEを返す
+ */
+int end_callbacks(void)
 {
   debug2(("end_callbacks()\n\n"));
+  if (!s_start_callbacks) {
+    return FALSE;
+  }
+
+  s_start_callbacks = FALSE;
+
   /* cursorが指定されていないときはプリエディットの末尾にする */
   if (s_preedit->cursor == UNDEFINED) {
     s_preedit->cursor = s_preedit->width;
@@ -220,6 +229,8 @@ static void end_callbacks(void)
     s_candidate_col = UNDEFINED;
     s_index_str = strdup("");
   }
+
+  return TRUE;
 }
 
 /*
@@ -296,9 +307,14 @@ int get_mode(void)
   return s_mode;
 }
 
+/*
+ * 現在のモード文字列を返す
+ * 返り値はNULLになることはなく、freeする必要がある
+ */
 char *get_mode_str(void)
 {
-  char *mode_str = strdup(uim_get_mode_name(s_context, s_mode));
+  char *mode_str = (char *)uim_get_mode_name(g_context, s_mode);
+  mode_str = strdup(mode_str != NULL ? mode_str : "");
   strhead(mode_str, s_max_width);
   return mode_str;
 }
@@ -313,6 +329,7 @@ char *get_mode_str(void)
 static void activate_cb(void *ptr, int nr, int display_limit)
 {
   debug2(("activate_cb(nr = %d display_limit = %d)\n", nr, display_limit));
+  start_callbacks();
   reset_candidate();
   s_candidate.nr = nr;
   s_candidate.limit = display_limit;
@@ -330,6 +347,7 @@ static void select_cb(void *ptr, int index)
   debug2(("select_cb(index = %d)\n", index));
   return_if_fail(s_candidate.nr != UNDEFINED);
   return_if_fail(0 <= index && index < s_candidate.nr);
+  start_callbacks();
   s_candidate.index = index;
   s_candidate.page = index2page(index);
 }
@@ -345,6 +363,7 @@ static void shift_page_cb(void *ptr, int direction)
   int index;
   debug2(("shift_page_cb(direction = %d)\n", direction));
   return_if_fail(s_candidate.nr != UNDEFINED);
+  start_callbacks();
   if (direction == 0) {
     direction = -1;
   }
@@ -353,7 +372,7 @@ static void shift_page_cb(void *ptr, int direction)
   return_if_fail(0 <= index && index < s_candidate.nr);
   s_candidate.page = page;
   s_candidate.index = index;
-  uim_set_candidate_index(s_context, s_candidate.index);
+  uim_set_candidate_index(g_context, s_candidate.index);
 }
 
 /*
@@ -363,6 +382,7 @@ static void shift_page_cb(void *ptr, int direction)
 static void deactivate_cb(void *ptr)
 {
   debug2(("deactivate_cb()\n"));
+  start_callbacks();
   reset_candidate();
 }
 
@@ -371,12 +391,14 @@ void commit_cb(void *ptr, const char *commit_str)
 {
   debug2(("commit_cb(commit_str = \"%s\")\n", commit_str));
   return_if_fail(commit_str != NULL);
+  start_callbacks();
   s_commit_str = realloc(s_commit_str, strlen(s_commit_str) + strlen(commit_str) + 1);
   strcat(s_commit_str, commit_str);
 }
 
 static void clear_cb(void *ptr)
 {
+  start_callbacks();
   if (s_preedit != NULL) {
     free_preedit(s_preedit);
   }
@@ -395,6 +417,7 @@ static void pushback_cb(void *ptr, int attr, const char *str)
   static int cursor = FALSE;
   debug2(("pushback_cb(attr = %d str = \"%s\")\n", attr, str));
   return_if_fail(str && s_preedit != NULL);
+  start_callbacks();
   width = strwidth(str);
   /* UPreeditAttr_Cursorのときに空文字列とは限らない */
   if (attr & UPreeditAttr_Cursor) {
@@ -453,6 +476,7 @@ static void update_cb(void *ptr)
 static void mode_update_cb(void *ptr, int mode)
 {
   debug2(("mode_update_cb(mode = %d)\n", mode));
+  start_callbacks();
   s_mode = mode;
 }
 
@@ -534,7 +558,7 @@ static void make_page_strs(void)
     int next = FALSE;
     /* "[10/20]" の幅 */
     int index_width;
-    uim_candidate cand = uim_get_candidate(s_context, index, index_in_page);
+    uim_candidate cand = uim_get_candidate(g_context, index, index_in_page);
     const char *cand_str_label = uim_candidate_get_heading_label(cand);
     char *cand_str_cand = tab2space(uim_candidate_get_cand_str(cand));
     int cand_label_width = strwidth(cand_str_label);
@@ -758,7 +782,7 @@ static void get_candidate(void)
     s_candidate_str = strdup("");
     return;
   }
-  cand = uim_get_candidate(s_context, s_candidate.index, 0);
+  cand = uim_get_candidate(g_context, s_candidate.index, 0);
   if (uim_candidate_get_cand_str(cand) == NULL) {
     s_candidate_str = strdup("");
     s_candidate_col = UNDEFINED;

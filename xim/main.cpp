@@ -539,6 +539,11 @@ reload_uim(int x)
 	}
     }
 
+    // make sure to use appropriate locale for the focused context
+    InputContext *focusedContext = InputContext::focusedContext();
+    if (focusedContext)
+	focusedContext->focusIn();
+
     pretrans_setup();
 }
 

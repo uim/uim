@@ -189,16 +189,6 @@ void XICATTRIBUTE::write_icattr_to_packet(TxPacket *p)
     }
 }
 
-void force_event(Window w)
-{
-    Window fw;
-    int rev;
-    XGetInputFocus(XimServer::gDpy, &fw, &rev);
-    XSetInputFocus(XimServer::gDpy, w, rev, CurrentTime);
-    XSetInputFocus(XimServer::gDpy, fw, rev, CurrentTime);
-    XFlush(XimServer::gDpy);
-}
-
 Connection::Connection(XimServer *svr)
 {
     mIsCloseWait = false;
