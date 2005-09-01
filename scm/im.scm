@@ -194,8 +194,7 @@
 
 (define switch-im
   (lambda (id name)
-    (release-context id)
-    (create-context id #f (next-im name))))
+    (uim-switch-im id (next-im name))))
 
 ;;
 ;; context-management
