@@ -278,9 +278,11 @@ uim_release_context(uim_context uc)
 uim_context
 uim_find_context(int id)
 {
+  uim_context uc;
   UIM_LOCK_MUTEX(context_array_mtx);
-  return context_array[id];
+  uc = context_array[id];
   UIM_UNLOCK_MUTEX(context_array_mtx);
+  return uc;
 }
 
 int
