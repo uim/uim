@@ -141,7 +141,7 @@
 
 (define spell-make-assoc-list
   (lambda (lst)
-	(mapcar 
+	(map 
 	 (lambda (str)
 	   (string-split str "="))
 	 lst)))
@@ -174,7 +174,7 @@
 
 (define spell-parse-cands
   (lambda (cands-string)
-	(mapcar
+	(map
 	 (lambda (str-line)
 	   (string-split str-line "\t"))
 	 (cdr (delq "" (string-split cands-string "\n"))))))

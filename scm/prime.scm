@@ -142,24 +142,24 @@
 	  (language (prime-context-language context))
 	  (keymap))
       (cond
-       ((= state 'prime-state-segment)
+       ((eq? state 'prime-state-segment)
 	(set! keymap prime-keymap-segment-state))
 
-       ((= state 'prime-state-modifying)
+       ((eq? state 'prime-state-modifying)
 	(set! keymap prime-keymap-modify-state))
 
-       ((= state 'prime-state-converting)
-	(if (= language 'Japanese)
+       ((eq? state 'prime-state-converting)
+	(if (eq? language 'Japanese)
 	    (set! keymap prime-keymap-conv-state)
 	    (set! keymap prime-keymap-english-conv-state)))
 
-       ((= state 'prime-state-preedit)
-	(if (= language 'Japanese)
+       ((eq? state 'prime-state-preedit)
+	(if (eq? language 'Japanese)
 	    (set! keymap prime-keymap-preedit-state)
 	    (set! keymap prime-keymap-english-preedit-state)))
 
-       ((= state 'prime-state-fund)
-	(if (= language 'Japanese)
+       ((eq? state 'prime-state-fund)
+	(if (eq? language 'Japanese)
 	    (if (prime-context-parent-context context)
 		(set! keymap prime-keymap-child-fund-state)
 		(set! keymap prime-keymap-fund-state))
@@ -538,7 +538,7 @@
 	  (prime-lib-init prime-use-unixdomain?)
 	  (let ((session (prime-engine-session-start)))
 	    (prime-custom-init)
-	    (prime-context-set-fund-line!  context (cons (list) (list)))
+	    (prime-context-set-fund-line!  context (cons () ()))
 	    (prime-context-set-session!    context session)
 	    (prime-context-set-lang-session-list!
 	     context
@@ -567,7 +567,7 @@
 (define prime-context-pop
   (lambda (context)
     (let ((parent-context (prime-context-parent-context context)))
-      (mapcar
+      (map
        (lambda (lang-pair)
 	 (prime-engine-session-end (cdr lang-pair)))
        (prime-context-lang-session-list context))
@@ -585,7 +585,7 @@
 (define prime-context-history-update!
   (lambda (context)
     (let* ((state          (prime-context-state context))
-	   (selected-index (if (= state 'prime-state-segment)
+	   (selected-index (if (eq? state 'prime-state-segment)
 			       (prime-context-segment-nth context)
 			       (prime-context-nth context))))
       (prime-context-set-history!
@@ -602,7 +602,7 @@
   (lambda (context)
     (let* ((prev-data      (prime-context-history context))
 	   (state          (prime-context-state context))
-	   (selected-index (if (= state 'prime-state-segment)
+	   (selected-index (if (eq? state 'prime-state-segment)
 			       (prime-context-segment-nth context)
 			       (prime-context-nth context))))
       (cond
@@ -686,7 +686,7 @@
 
 (define prime-util-assoc-list
   (lambda (lst)
-    (mapcar 
+    (map
      (lambda (str)
        (string-split str "="))
      lst)))
@@ -714,7 +714,7 @@
   (lambda (string)
     (let ((integer 0)
 	  (figure  1))
-      (mapcar
+      (map
        (lambda (digit-string)
 	 (if (string=? digit-string "-")
 	     (set! integer (- integer))
@@ -778,7 +778,7 @@
     (let* ((result
 	    (prime-engine-send-command (list command prime-session)))
 	   (index (prime-util-string-to-integer (car result)))
-	   (words (mapcar
+	   (words (map
 		   (lambda (string-line)
 		     (let ((word-data (prime-util-string-split string-line
 							       "\t")))
@@ -855,7 +855,7 @@
 
 (define prime-engine-session-language-set
   (lambda (language)
-    (let ((language-string (if (= language 'English) "English" "Japanese")))
+    (let ((language-string (if (eq? language 'English) "English" "Japanese")))
       (car (prime-engine-send-command
 	    (list "session_start" language-string))))))
 
@@ -990,7 +990,7 @@
 ;; This changes the typing mode specified by mode-string.
 (define prime-mode-set-mode
   (lambda (context mode-string)
-    (if (= (prime-context-state context) 'prime-state-converting)
+    (if (eq? (prime-context-state context) 'prime-state-converting)
 	(prime-convert-cancel context))
     (prime-engine-edit-set-mode (prime-context-session context) mode-string)))
     
@@ -1021,7 +1021,7 @@
 
 (define prime-command-language-toggle
   (lambda (context key key-state)
-    (let ((next-language (if (= (prime-context-language context) 'English)
+    (let ((next-language (if (eq? (prime-context-language context) 'English)
 			     'Japanese 'English)))
       (prime-mode-language-set context next-language))))
 
@@ -1308,8 +1308,8 @@
 (define prime-command-fund-space
   (lambda (context key key-state)
     (cond
-     ((= (prime-context-language context) 'Japanese)
-      (let ((space (if (= prime-custom-japanese-space 'wide) "　" " ")))
+     ((eq? (prime-context-language context) 'Japanese)
+      (let ((space (if (eq? prime-custom-japanese-space 'wide) "　" " ")))
 	(prime-commit-without-learning context space)))
      (t
       (prime-commit-without-learning context " ")))))
@@ -1317,8 +1317,8 @@
 (define prime-command-fund-altspace
   (lambda (context key key-state)
     (cond
-     ((= (prime-context-language context) 'Japanese)
-      (let ((space (if (= prime-custom-japanese-space 'wide) " " "　")))
+     ((eq? (prime-context-language context) 'Japanese)
+      (let ((space (if (eq? prime-custom-japanese-space 'wide) " " "　")))
 	(prime-commit-without-learning context space)))
      (t
       (prime-commit-without-learning context " ")))))
@@ -1407,7 +1407,7 @@
     (let ((key-data (car key-list)))
       (cond
        ;; there's no speficied command then pressed key is passed.
-       ((= key-list '())
+       ((eq? key-list '())
 	(prime-context-set-app-mode-key-list! context
 					      prime-app-mode-end-stroke-list)
 	(prime-commit-raw context))
@@ -1426,7 +1426,7 @@
 	(prime-commit-raw context))
 
        ;; call this command recursively.
-       (t
+       (#t
 	(prime-command-app-mode-internal context
 					 key key-state (cdr key-list)))))))
 
@@ -1526,7 +1526,7 @@
 ;; This returns #t if the preediting string is not empty.  Or #f.
 (define prime-preedit-exist?
   (lambda (context)
-    (> (length (prime-preedit-get-string-label context)) 0)))
+    (> (string-length (prime-preedit-get-string-label context)) 0)))
 
 ;; This returns a query string for PRIME server.
 (define prime-preedit-get-string-raw
@@ -1770,20 +1770,20 @@
   (lambda (context)
     (let ((diff (prime-context-history-compare context)))
       (cond
-       ((= diff 'state)
+       ((eq? diff 'state)
 	(let ((state     (prime-context-state context))
 	      (last-word (prime-context-last-word context)))
 	  (cond
-	   ((= state 'prime-state-preedit)
+	   ((eq? state 'prime-state-preedit)
 	    (prime-convert-get-prediction context))
-	   ((= state 'prime-state-converting)
+	   ((eq? state 'prime-state-converting)
 	    ;; Do nothing.  (prime-convert-get-conversion context) had been
 	    ;; already executed at prime-convert-start-internal
 	    )
-	   ((= state 'prime-state-fund)
+	   ((eq? state 'prime-state-fund)
 	    (prime-context-set-candidates! context '()))
 	    )))
-       ((= diff 'preedit)
+       ((eq? diff 'preedit)
 	(prime-convert-get-prediction context))
        ))))
 
@@ -1791,13 +1791,13 @@
   (lambda (context)
     (let ((diff (prime-context-history-compare context)))
       (cond
-       ((= diff 'state)
+       ((eq? diff 'state)
 	(let ((state (prime-context-state context)))
 	  (cond
-	   ((= state 'prime-state-fund)
+	   ((eq? state 'prime-state-fund)
 	    (im-deactivate-candidate-selector context))
 
-	   ((= state 'prime-state-preedit)
+	   ((eq? state 'prime-state-preedit)
 	    (if (> (prime-get-nr-candidates context) 0)
 		(im-activate-candidate-selector
 		 context
@@ -1805,15 +1805,15 @@
 		 3)))
 ;		 prime-nr-candidate-max)))
 
-	   ((= state 'prime-state-converting)
+	   ((eq? state 'prime-state-converting)
  	    (im-activate-candidate-selector
  	     context (prime-get-nr-candidates context) prime-nr-candidate-max)
 	    (im-select-candidate context (prime-context-nth context)))
 
-	   ((= state 'prime-state-modifying)
+	   ((eq? state 'prime-state-modifying)
 	    (im-deactivate-candidate-selector context))
 
-	   ((= state 'prime-state-segment)
+	   ((eq? state 'prime-state-segment)
  	    (im-activate-candidate-selector
 	     context
 	     (prime-segment-get-candidates-length context)
@@ -1821,12 +1821,12 @@
 	    (im-select-candidate context (prime-context-segment-nth context)))
 	    )))
 
-       ((= diff 'nth)
-	(if (= (prime-context-state context) 'prime-state-segment)
+       ((eq? diff 'nth)
+	(if (eq? (prime-context-state context) 'prime-state-segment)
 	    (im-select-candidate context (prime-context-segment-nth context))
 	    (im-select-candidate context (prime-context-nth context))))
 
-       ((= diff 'preedit)
+       ((eq? diff 'preedit)
 	(if (> (prime-get-nr-candidates context) 0)
 	    (im-activate-candidate-selector
 	     context (prime-get-nr-candidates context) prime-nr-candidate-max)
@@ -1859,12 +1859,12 @@
   (lambda (context)
     (let* ((state (prime-context-state context)))
       (cond
-       ((= state 'prime-state-converting)
+       ((eq? state 'prime-state-converting)
 	(list (cons 'converting (prime-get-current-candidate context))
 	      (cons 'cursor     "")))
 
-       ((or (= state 'prime-state-modifying)
-	    (= state 'prime-state-segment))
+       ((or (eq? state 'prime-state-modifying)
+	    (eq? state 'prime-state-segment))
 	(let* ((line (prime-context-modification context)))
 	  (list (cons 'segment           (nth 0 line))
 		(cons 'segment-highlight (nth 1 line))
@@ -2026,7 +2026,7 @@
 (define prime-get-candidate-handler
   (lambda (context index-no accel-enum-hint)
     (let ((candidate
-	   (if (= (prime-context-state context) 'prime-state-segment)
+	   (if (eq? (prime-context-state context) 'prime-state-segment)
 	       (nth index-no (prime-context-segment-candidates context))
 	       (nth index-no (prime-context-candidates context)))))
       ;; The return value is a list with a candidate string and the next index.
@@ -2042,18 +2042,18 @@
 	  (state      (prime-context-state context)))
       (if (and prime-custom-display-form?
 	       form
-	       (or (= state 'prime-state-converting)
-		   (= state 'prime-state-segment)))
+	       (or (eq? state 'prime-state-converting)
+		   (eq? state 'prime-state-segment)))
 	  (set! string (string-append string "  (" form ")")))
       (if (and prime-custom-display-usage?
 	       usage
-	       (or (= state 'prime-state-converting)
-		   (= state 'prime-state-segment)))
+	       (or (eq? state 'prime-state-converting)
+		   (eq? state 'prime-state-segment)))
 	  (set! string (string-append string "\t▽" usage)))
       (if (and prime-custom-display-comment?
 	       comment
-	       (or (= state 'prime-state-converting)
-		   (= state 'prime-state-segment)))
+	       (or (eq? state 'prime-state-converting)
+		   (eq? state 'prime-state-segment)))
 	  (set! string (string-append string "\t<" comment ">")))
       string)))
 
@@ -2070,7 +2070,7 @@
     (print "prime-set-candidate-index-handler")
     (if (prime-context-session context)
 	(begin
-	  (if (= (prime-context-state context) 'prime-state-segment)
+	  (if (eq? (prime-context-state context) 'prime-state-segment)
 	      (prime-commit-segment-nth context selection-index)
 	      (prime-commit-candidate context selection-index))
 	  (prime-update context)
