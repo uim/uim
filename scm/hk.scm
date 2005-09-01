@@ -81,7 +81,7 @@
 
 (define hk-make-match-list
   (lambda (left)
-    (mapcar
+    (map
      (lambda(l)
        (car (cadr l)))
      left)))
@@ -94,7 +94,7 @@
 (define hk-left-string-match
   (lambda (hkc)
     (let* ((left (hk-left-string-list hkc))
-	   (match-list (mapcar
+	   (match-list (map
 			(lambda(l)
 			  (car (cadr l)))
 			left))
@@ -157,7 +157,7 @@
 (define hk-make-str-list
   (lambda (str)
     (if str
-	(mapcar 
+	(map 
 	 (lambda (s)
 	   (let ((splitted (string-split s " ")))
 	     (if splitted
@@ -214,7 +214,7 @@
 	  (table-id (hk-context-table-id hkc)))
       (if str-list
 	  (begin
-	    (mapcar (lambda (s)
+	    (map (lambda (s)
 		  ;    (print str)
 		      (if str
 			  (set! str (string-append str " " s))
@@ -232,7 +232,7 @@
 	  (table-id (hk-context-table-id hkc)))
       (if str-list
 	  (begin
-	    (mapcar (lambda (s)
+	    (map (lambda (s)
 		      (if str
 			  (set! str (string-append str " " s))
 			  (set! str s)))
@@ -247,7 +247,7 @@
 	  (table-id (hk-context-table-id hkc)))
       (if str-list
 	  (begin
-	    (mapcar 
+	    (map 
 	     (lambda (s)
 	       (set! str (string-append str " " s)))
 	     str-list)
