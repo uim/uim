@@ -581,7 +581,7 @@ ScmObj ScmOp_min(ScmObj args, ScmObj env )
         SigScm_Error("min : at least 1 number required\n");
 
     for (; !NULLP(args); args = CDR(args)) {
-        scm_num = CAR(args);
+        scm_num = ScmOp_eval(CAR(args), env);
         if (FALSEP(ScmOp_numberp(scm_num)))
             SigScm_ErrorObj("min : number required but got ", scm_num);
 
