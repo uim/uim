@@ -389,22 +389,7 @@ void XimIC::setFocus()
 
     current_ic = this;
     mIsActive = true;
-
-    bool is_candwin_active = m_kkContext->hasActiveCandwin();
-
-    if (mConvdisp && is_candwin_active == false) {
-	// unset_focus before move_candwin in m_kkContext->focusIn()
-	mConvdisp->unset_focus();
-    }
-
     m_kkContext->focusIn();
-
-    if (mConvdisp && is_candwin_active == true) {
-	// Updating preedit here causes string mismatch if the context
-	// receives XIM_RESET_IC after XIM_SET_IC_FOCUS.  Should only
-	// update candidate window.
-	m_kkContext->candidate_update();
-    }
 }
 
 // Note that the sequence of XIM_SET_IC_FOCUS and XIM_UNSET_FOCUS

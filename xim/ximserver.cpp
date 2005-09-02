@@ -440,11 +440,14 @@ InputContext::focusIn()
     uim_helper_client_focus_in(mUc);
     mFocusedContext = this;
     if (mConvdisp) {
+	mConvdisp->unset_focus();
 	mConvdisp->move_candwin();
 	mConvdisp->update_caret_state();
     }
     uim_prop_list_update(mUc);	
     uim_prop_label_update(mUc);	
+    if (hasActiveCandwin())
+	candidate_update();
 }
 
 void
