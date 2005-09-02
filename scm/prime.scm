@@ -958,7 +958,7 @@
 	(prime-util-string-split (cdr result) "\t"))
        ((string=? result-type "boolean")
 	(string=? (nth 1 result) "true"))
-       (t
+       (else
 	'unknown))
       )))
 
@@ -1311,7 +1311,7 @@
      ((eq? (prime-context-language context) 'Japanese)
       (let ((space (if (eq? prime-custom-japanese-space 'wide) "¡¡" " ")))
 	(prime-commit-without-learning context space)))
-     (t
+     (else
       (prime-commit-without-learning context " ")))))
 
 (define prime-command-fund-altspace
@@ -1320,7 +1320,7 @@
      ((eq? (prime-context-language context) 'Japanese)
       (let ((space (if (eq? prime-custom-japanese-space 'wide) " " "¡¡")))
 	(prime-commit-without-learning context space)))
-     (t
+     (else
       (prime-commit-without-learning context " ")))))
 
 (define prime-command-fund-commit-ja-direct
@@ -1426,7 +1426,7 @@
 	(prime-commit-raw context))
 
        ;; call this command recursively.
-       (#t
+       (else
 	(prime-command-app-mode-internal context
 					 key key-state (cdr key-list)))))))
 
@@ -1734,7 +1734,7 @@
        ((null? session)
 	#f)  ;; Do nothing.
 
-       (#t
+       (else
 	;; Store the current preedition into the context
 	(prime-context-set-preedit-line!
 	 context
@@ -1751,7 +1751,7 @@
        ((null? session)
 	#f)  ;; Do nothing.
 
-       (#t
+       (else
 	(prime-update-prediction context)
 	(prime-update-candidate-window context)
 	(prime-update-history context)
