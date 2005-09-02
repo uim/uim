@@ -665,6 +665,10 @@ im_uim_finalize(GObject *obj)
     gtk_widget_destroy(GTK_WIDGET(uic->cwin));
     uic->cwin = NULL;
   }
+  if (uic->caret_state_indicator) {
+    gtk_widget_destroy(uic->caret_state_indicator);
+    uic->caret_state_indicator = NULL;
+  }
 
   uim_release_context(uic->uc);
 
