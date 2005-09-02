@@ -1016,8 +1016,6 @@ static int ScmOp_c_length(ScmObj obj)
 
 ScmObj ScmOp_length(ScmObj obj)
 {
-    SigScm_Display(obj);
-    
     int len = ScmOp_c_length(obj);
     if (len < 0)
         SigScm_ErrorObj("length : list required but got ", obj);
