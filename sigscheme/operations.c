@@ -1016,7 +1016,13 @@ static int ScmOp_c_length(ScmObj obj)
 
 ScmObj ScmOp_length(ScmObj obj)
 {
-    return Scm_NewInt(ScmOp_c_length(obj));
+    SigScm_Display(obj);
+    
+    int len = ScmOp_c_length(obj);
+    if (len < 0)
+        SigScm_ErrorObj("length : list required but got ", obj);
+
+    return Scm_NewInt(len);
 }
 
 ScmObj ScmOp_append(ScmObj args, ScmObj env)
