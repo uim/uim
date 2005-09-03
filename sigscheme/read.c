@@ -358,7 +358,6 @@ static ScmObj read_string(ScmObj port)
             case 'r':  stringbuf[stringlen] = '\r'; break;
             case 'f':  stringbuf[stringlen] = '\f'; break;
             case 't':  stringbuf[stringlen] = '\t'; break;
-            case '\\': stringbuf[stringlen] = '\\'; break;
             default:
                 stringbuf[stringlen] = '\\';
                 stringbuf[++stringlen] = c;
