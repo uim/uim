@@ -41,7 +41,6 @@
 (assert-equal? "hiragana string=? check" #t (string=? "あいうえお" "あいうえお"))
 (assert-equal? "mixed string=? check"    #t (string=? "aいうえo" "aいうえo"))
 
-
 ;; substring check
 (assert "alphabet substring check" (string=? "iu"   (substring "aiueo" 1 3)))
 (assert "hiragana substring check" (string=? "いう" (substring "あいうえお" 1 3)))
@@ -63,8 +62,8 @@
 
 
 ;; list->string
-(assert "list->string check" (string=? "あaい" (list->string '(#\あ #\a #\い))))
-
+(assert-equal? "list->string check" "あaい" (list->string '(#\あ #\a #\い)))
+(assert-equal? "string check #1" "\\" (list->string '(#\\)))
 
 ;; string-fill!
 (assert "alphabet string-fill! check" (string=? "jjjjj" (begin

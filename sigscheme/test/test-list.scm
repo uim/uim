@@ -28,11 +28,11 @@
 ; list?
 (assert "list? test1" (list? '(a b c)))
 (assert "list? test2" (list? '()))
-(assert-equal? "list? test3" #f (list? '(a . b)))
-; TODO : check finite length of the list!
-;(assert-equal? "list? test4" #f (let ((x (list 'a)))
-;			       (set-cdr! x x)
-;			       (list? x)))
+(assert-false "list? test3" (list? '(a . b)))
+(assert-false "list? test4" (list? '(a b . c)))
+(assert-false "list? test5" (let ((x (list 'a)))
+			      (set-cdr! x x)
+			      (list? x)))
 
 ; list
 (assert-equal? "list test1" '(a 7 c) (list 'a (+ 3 4) 'c))

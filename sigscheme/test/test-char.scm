@@ -8,5 +8,6 @@
 (assert "hiragana char" (char? #\дв))
 (assert "( char"        (char? #\())
 (assert ") char"        (char? #\)))
+(assert "\\ char"       (char? #\\))
 
 (total-report)
