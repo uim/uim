@@ -623,7 +623,7 @@ if test x$use_qt = xyes ; then
 
     # Check For moc-qt3
     if test -x "$QTDIR/bin/moc-qt3"; then
-      HOST_MOC="$QTDIR/bin/moc-qt3"
+      HOST_MOC_QT3="$QTDIR/bin/moc-qt3"
     else
       AC_CHECK_PROGS(HOST_MOC_QT3, moc-qt3, "")
     fi
