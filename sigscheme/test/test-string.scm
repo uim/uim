@@ -66,7 +66,7 @@
 (assert-equal? "list->string check" "\\" (list->string '(#\\)))
 (assert-equal? "list->string check" "\t" (list->string '(#\	)))
 (assert-equal? "list->string check" "\n" (list->string '(#\
-))
+)))
 
 ;; string-fill!
 (assert "alphabet string-fill! check" (string=? "jjjjj" (begin

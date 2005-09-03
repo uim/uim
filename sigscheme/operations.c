@@ -1633,10 +1633,12 @@ ScmObj ScmOp_string2list(ScmObj string)
 
 ScmObj ScmOp_list2string(ScmObj list)
 {
+    int len = 0;
     int total_size = 0;
     ScmObj chars   = SCM_NULL;
     ScmObj obj     = SCM_NULL;
     char  *new_str = NULL;
+    char  *ch      = NULL;
     char  *p       = NULL;
 
     if (FALSEP(ScmOp_listp(list)))
@@ -1661,9 +1663,15 @@ ScmObj ScmOp_list2string(ScmObj list)
     p = new_str;
     for (chars = list; !NULLP(chars); chars = CDR(chars)) {
         obj = CAR(chars);
+        ch  = SCM_CHAR_VALUE(obj);
+        len = strlen(SCM_CHAR_VALUE(obj));
 
-        strcpy(p, SCM_CHAR_VALUE(obj));
-        p += strlen(SCM_CHAR_VALUE(obj));
+        /* handle #\\ case */
+        if (len == 1 && ch[0] == '\\')
+            ch = "\\\\";
+
+        strcpy(p, ch);
+        p += len;
     }
 
     return Scm_NewString(new_str);

@@ -338,7 +338,8 @@ static ScmObj read_string(ScmObj port)
 
         switch (c) {
         case EOF:
-            SigScm_Error("EOF in the string\n");
+            stringbuf[stringlen] = '\0';
+            SigScm_Error("EOF in the string : str = %s\n", stringbuf);
             break;
 
         case '\"':
@@ -463,18 +464,19 @@ static char *read_char_sequence(ScmObj port)
 
         switch (c) {
         case EOF:
-            SigScm_Error("EOF in the char sequence.\n");
+            stringbuf[stringlen] = '\0';
+            SigScm_Error("EOF in the char sequence : char = %s\n", stringbuf);
             break;
 
-        case ' ': case '\"': case '\'':
-        case '(': case ')': case ';':
+        case ' ':  case '\"': case '\'':
+        case '(':  case ')':  case ';':
+        case '\n': case '\r': case '\f': case '\t':
             /* pass through first char */
             if (stringlen == 0) {
                 stringbuf[stringlen++] = (char)c;
                 break;
             }
-            /* doesn't break */
-        case '\n': case '\t':
+            /* return buf */
             SCM_PORT_UNGETC(port, c);
             stringbuf[stringlen] = '\0';
             dst = (char *)malloc(strlen(stringbuf) + 1);
