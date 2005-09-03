@@ -77,19 +77,24 @@ typedef struct {
 #define INTERESTINGP(obj)  \
     (CONSP(obj) \
      || (STRINGP(obj) && SCM_STRING_LEN(obj)) \
-     || VECTORP(obj))
+     || CLOSUREP(obj) \
+     || VECTORP(obj) \
+     || VALUEPACKETP(obj))
 #define SCM_INVALID NULL
 #define OCCUPIED(ent)      (!EQ((ent)->key, SCM_INVALID))
 #define HASH_EMPTY(table)  (!(table).used)
-#define DEFINING_DATUM      (-1)
+#define DEFINING_DATUM     (-1)
+#define NONDEFINING_DATUM  0
 #define GET_DEFINDEX(x)    ((unsigned)(x) >> 1)
+#define HASH_INSERT    1 /* insert key if it's not registered yet */
+#define HASH_FIND      0
 #endif /* SCM_USE_SRFI38 */
 
 /*=======================================
   Variable Declarations
 =======================================*/
 #if SCM_USE_SRFI38
-static write_ss_context *write_ss_ctx; /* list of shared structures in the object we're writing out */
+static write_ss_context *write_ss_ctx; /* misc info in priting shared structures */
 #endif
 
 /*=======================================
@@ -105,7 +110,7 @@ static void print_etc(FILE *f, ScmObj obj, enum  OutputType otype);
 
 #if SCM_USE_SRFI38
 static void hash_grow(hash_table *tab);
-static hash_entry *hash_lookup(hash_table *tab, ScmObj key, int insert);
+static hash_entry *hash_lookup(hash_table *tab, ScmObj key, int datum, int flag);
 static void write_ss_scan(ScmObj obj, write_ss_context *ctx);
 static int  get_shared_index(ScmObj obj);
 #endif /* SCM_USE_SRFI38 */
@@ -406,17 +411,13 @@ static void hash_grow(hash_table *tab)
     size_t new_size = old_size * 2;
     size_t i;
     hash_entry *old_ents = tab->ents;
-    hash_entry *new_ent;
 
     tab->ents = calloc(new_size, sizeof(hash_entry));
     tab->size = new_size;
+    tab->used = 0;
 
-    for (i=0; i < old_size; i++) {
-        /* Don't change the last argument, or hash_lookup() will call
-         * us again. */
-        new_ent = hash_lookup(tab, old_ents[i].key, 0);
-        *new_ent = old_ents[i];
-    }
+    for (i=0; i < old_size; i++)
+        hash_lookup(tab, old_ents[i].key, old_ents[i].datum, HASH_INSERT);
 
     free (old_ents);
 }
@@ -424,7 +425,7 @@ static void hash_grow(hash_table *tab)
 /**
  * @return A pointer to the entry, or NULL if not found.
  */
-static hash_entry *hash_lookup(hash_table *tab, ScmObj key, int insert)
+static hash_entry *hash_lookup(hash_table *tab, ScmObj key, int datum, int flag)
 {
     size_t i;
     unsigned hashval;
@@ -450,14 +451,14 @@ static hash_entry *hash_lookup(hash_table *tab, ScmObj key, int insert)
     for (i=0; i < tab->size; i++) {
         ent = &(tab->ents)[(hashval + i) & (tab->size - 1)];
         if (!OCCUPIED(ent)) {
-            if (insert) {
-                /* used > size * 2/3 --> overpopulated, grow table */
-                if (tab->used * 3 > tab->size * 2) {
-                    hash_grow(tab);
-                    return hash_lookup(tab, key, 1);
-                }
+            if (flag & HASH_INSERT) {
                 ent->key = key;
+                ent->datum = datum;
                 tab->used++;
+
+                /* used > size * 2/3 --> overpopulated */
+                if (tab->used * 3 > tab->size * 2)
+                    hash_grow(tab);
             }
             return NULL;
         }
@@ -480,7 +481,7 @@ static void write_ss_scan(ScmObj obj, write_ss_context *ctx)
     hash_entry *ent;
     /* (for-each mark-as-seen-or-return-if-familiar obj) */
     while (CONSP(obj)) {
-        ent = hash_lookup(&ctx->seen, obj, 1);
+        ent = hash_lookup(&ctx->seen, obj, NONDEFINING_DATUM, HASH_INSERT);
         if (ent) {
             ent->datum = DEFINING_DATUM;
             return;
@@ -489,22 +490,30 @@ static void write_ss_scan(ScmObj obj, write_ss_context *ctx)
         obj = CDR(obj);
     }
 
-    if (VECTORP(obj)) {
-        ent = hash_lookup(&ctx->seen, obj, 1);
+    if (INTERESTINGP(obj)) {
+        ent = hash_lookup(&ctx->seen, obj, NONDEFINING_DATUM, HASH_INSERT);
         if (ent) {
             ent->datum = DEFINING_DATUM;
             return;
         }
-        for (i=0; i < SCM_VECTOR_LEN(obj); i++)
-            write_ss_scan(SCM_VECTOR_CREF(obj, i), ctx);
-        return;
-    }
-    if (STRINGP(obj) && SCM_STRING_LEN(obj)) {
-        ent = hash_lookup(&ctx->seen, obj, 1);
-	if (ent) {
-	    ent->datum = DEFINING_DATUM;
-	    return;
-	}
+        switch (SCM_TYPE(obj)) {
+        case ScmClosure:
+            /* We don't need to track env because it's not printed anyway. */
+            write_ss_scan(SCM_CLOSURE_EXP(obj), ctx);
+            break;
+
+        case ScmValuePacket:
+            write_ss_scan(SCM_VALUEPACKET_VALUES(obj), ctx);
+            break;
+
+        case ScmVector:
+            for (i=0; i < SCM_VECTOR_LEN(obj); i++)
+                write_ss_scan(SCM_VECTOR_CREF(obj, i), ctx);
+            break;
+
+        default:
+            break;
+        }
     }
 }
 
@@ -519,7 +528,7 @@ static int get_shared_index(ScmObj obj)
     hash_entry *ent;
 
     if (write_ss_ctx) {
-        ent = hash_lookup(&write_ss_ctx->seen, obj, 0);
+        ent = hash_lookup(&write_ss_ctx->seen, obj, 0, HASH_FIND);
 
         if (ent->datum == DEFINING_DATUM) {
             ent->datum = write_ss_ctx->next_index++;
