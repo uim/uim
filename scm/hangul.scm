@@ -33,16 +33,30 @@
 ;; Hangul IMs requires some generic-keys disabled. See the post "A
 ;; question about the space bar" in uim@pdx.freedesktop.org
 ;; mailinglist from David Oftedal at Fri, 02 Apr 2004 22:55:25 +0200
+(define hangul-proc-on-mode-with-preedit
+  (let* ((non-existent-key? (make-single-key-predicate ""))
+	 (generic-next-candidate-key? non-existent-key?)
+	 (generic-prev-candidate-key? non-existent-key?)
+	 (generic-commit-key?
+	  (make-key-predicate '(" " generic-return-key?)))
+	 (generic-proc-input-state-with-preedit-with-this-env
+	  (enclose-another-env generic-proc-input-state-with-preedit
+	  		       (the-environment))))
+    (lambda (gc key state rkc)  ;; "gc" stands for "generic-context"
+      (generic-proc-input-state-with-preedit-with-this-env gc key state rkc))))
+
 (define hangul-proc-on-mode
   (let* ((non-existent-key? (make-single-key-predicate ""))
 	 (generic-next-candidate-key? non-existent-key?)
 	 (generic-prev-candidate-key? non-existent-key?)
 	 (generic-commit-key?
 	  (make-key-predicate '(" " generic-return-key?)))
-	 (generic-proc-on-mode-with-this-env
+	 (generic-proc-input-state-with-preedit
+	  hangul-proc-on-mode-with-preedit)
+	 (generic-proc-input-state-with-this-env
 	  (enclose-another-env generic-proc-input-state (the-environment))))
     (lambda (gc key state)  ;; "gc" stands for "generic-context"
-      (generic-proc-on-mode-with-this-env gc key state))))
+      (generic-proc-input-state-with-this-env gc key state))))
 
 ;; 'let*' is required rather than 'let'
 (define hangul-key-press-handler
