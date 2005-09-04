@@ -254,7 +254,7 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
 ==============================================================================*/
 /* Note: SigScheme supports only the integer part of the numerical tower. */
 
-ScmObj ScmOp_plus(ScmObj args, ScmObj env)
+ScmObj ScmOp_add(ScmObj args, ScmObj env)
 {
     int result = 0;
     ScmObj operand = SCM_NULL;
@@ -269,7 +269,7 @@ ScmObj ScmOp_plus(ScmObj args, ScmObj env)
     return Scm_NewInt(result);
 }
 
-ScmObj ScmOp_times(ScmObj args, ScmObj env)
+ScmObj ScmOp_multiply(ScmObj args, ScmObj env)
 {
     int result = 1;
     ScmObj operand = SCM_NULL;
@@ -284,7 +284,7 @@ ScmObj ScmOp_times(ScmObj args, ScmObj env)
     return Scm_NewInt(result);
 }
 
-ScmObj ScmOp_minus(ScmObj args, ScmObj env)
+ScmObj ScmOp_subtract(ScmObj args, ScmObj env)
 {
     int result = 0;
     ScmObj operand = SCM_NULL;
