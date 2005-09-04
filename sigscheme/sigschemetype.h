@@ -271,7 +271,7 @@ struct ScmObjInternal_ {
         } c_pointer;
 
         struct ScmCFuncPointer {
-            C_FUNC func;            
+            ScmCFunc func;            
         } c_func_pointer;
     } obj;
 };

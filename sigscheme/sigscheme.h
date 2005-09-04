@@ -53,7 +53,7 @@ extern "C" {
 /*=======================================
    Struct Declarations
 =======================================*/
-typedef void (*C_FUNC) (void);
+typedef void (*ScmCFunc) (void);
 
 /* type declaration */
 #include "sigschemetype.h"
@@ -123,14 +123,14 @@ ScmObj Scm_NewContinuation(void);
 ScmObj Scm_NewValuePacket(ScmObj values);
 #if SCM_USE_NONSTD_FEATURES
 ScmObj Scm_NewCPointer(void *data);
-ScmObj Scm_NewCFuncPointer(C_FUNC func);
+ScmObj Scm_NewCFuncPointer(ScmCFunc func);
 #endif
 ScmObj Scm_Intern(const char *name);
 int    Scm_GetInt(ScmObj num);
 char*  Scm_GetString(ScmObj str);
 #if SCM_USE_NONSTD_FEATURES
 void*  Scm_GetCPointer(ScmObj c_ptr);
-C_FUNC Scm_GetCFuncPointer(ScmObj c_funcptr);
+ScmCFunc Scm_GetCFuncPointer(ScmObj c_funcptr);
 #endif
 ScmObj Scm_eval_c_string(const char *exp);
 #if SCM_COMPAT_SIOD

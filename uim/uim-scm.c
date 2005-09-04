@@ -164,7 +164,7 @@ uim_scm_c_func_ptr(uim_lisp func_ptr)
 uim_lisp
 uim_scm_make_func_ptr(uim_func_ptr func_ptr)
 {
-  return (uim_lisp)Scm_NewCFuncPointer((C_FUNC)func_ptr);
+  return (uim_lisp)Scm_NewCFuncPointer((ScmCFunc)func_ptr);
 }
 
 void

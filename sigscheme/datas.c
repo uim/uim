@@ -785,7 +785,7 @@ ScmObj Scm_NewCPointer(void *data)
     return obj;
 }
 
-ScmObj Scm_NewCFuncPointer(C_FUNC func)
+ScmObj Scm_NewCFuncPointer(ScmCFunc func)
 {
     ScmObj obj = SCM_NULL;
     SCM_NEW_OBJ_INTERNAL(obj);
@@ -888,7 +888,7 @@ char* Scm_GetString(ScmObj str)
 }
 
 #if SCM_USE_NONSTD_FEATURES
-void* Scm_GetCPointer(ScmObj c_ptr)
+void *Scm_GetCPointer(ScmObj c_ptr)
 {
     if (!C_POINTERP(c_ptr))
         SigScm_ErrorObj("Scm_GetCPointer : c_ptr required but got ", c_ptr);
@@ -896,7 +896,7 @@ void* Scm_GetCPointer(ScmObj c_ptr)
     return SCM_C_POINTER_VALUE(c_ptr);
 }
 
-C_FUNC Scm_GetCFuncPointer(ScmObj c_funcptr)
+ScmCFunc Scm_GetCFuncPointer(ScmObj c_funcptr)
 {
     if (!C_FUNCPOINTERP(c_funcptr))
         SigScm_ErrorObj("Scm_GetCFuncPointer : c_funcptr required but got ", c_funcptr);
