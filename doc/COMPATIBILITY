@@ -58,6 +58,38 @@ Each change consist of following fields. All fields are required.
 The changes are described below in most recently updated order.
 
 ------------------------------------------------------------------------------
+Summary: Obsolete some misc Scheme APIs
+Affects: IM developers
+Updates: Scheme API
+Version: 0.5, 0.4.9
+Revision: ac1413
+Date: 2005-09-05
+Modifier: YamaKen
+Related:
+URL:
+Changes:
+  (removed) bitwise-or
+      (new) bitwise-ior
+  (removed) enclose-another-env
+      (new) %%enclose-another-env
+  (removed) toplevel-env
+      (new) interaction-environment
+Description:
+  Obsolete inappropriate or wrong API with new appropriate ones.
+------------------------------------------------------------------------------
+Summary: An experimental custom variable reloading API
+Affects: Helper program developers, Bridge developers
+Updates: C API, Helper protocol
+Version: 0.5
+Revision: ac1160, ac1161, ac1162
+Date: 2005-08-09
+Modifier: TOKUNAGA Hiroyuki, YamaKen
+Related: bug #3620
+URL:
+Changes:
+  (new) uim_custom_broadcast_reload_request()
+Description:
+------------------------------------------------------------------------------
 Summary: default IM switching responsibility separation from uim_switch_im()
 Affects: Bridge developers
 Updates: C API

@@ -192,6 +192,11 @@
 ;; definition of 'else' has been moved into slib.c
 ;(define else #t)
 
+;; for eval
+(define interaction-environment
+  (lambda ()
+    ()))
+
 (define boolean?
   (lambda (x)
     (or (eq? x #t)
@@ -555,7 +560,7 @@
   (lambda xs
     (fold bit-and (bitwise-not 0) xs)))
 
-(define bitwise-or
+(define bitwise-ior
   (lambda xs
     (fold bit-or 0 xs)))
 
@@ -593,11 +598,8 @@
 	 (eq? (symbolconc '* (string->symbol file) '-loaded*)
 	      (*catch 'errobj (require file))))))
 
-;; for eval
-(define toplevel-env ())
-
 ;; used for dynamic environment substitution of closure
-(define enclose-another-env
+(define %%enclose-another-env
   (lambda (closure another-env)
     (let* ((code (%%closure-code closure))
 	   (args (car code))
@@ -621,9 +623,9 @@
 				 (set-car! (nthcdr index rec)
 					   val))))
 		  (eval (list 'define getter-sym getter)
-			toplevel-env)
+			(interaction-environment))
 		  (eval (list 'define setter-sym setter)
-			toplevel-env)))
+			(interaction-environment))))
 	      rec-spec
 	      (iota (length rec-spec)))
     (let ((creator-sym (symbolconc rec-sym '-new))
@@ -647,7 +649,7 @@
 			(else
 			 #f))))))
       (eval (list 'define creator-sym creator)
-	    toplevel-env))))
+	    (interaction-environment)))))
 
 ;; for direct candidate selection
 (define number->candidate-index

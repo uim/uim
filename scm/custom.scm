@@ -518,7 +518,7 @@
 				    (list 'quote default)
 				    default)))
 	    (eval (list 'define sym quoted-default)
-		  toplevel-env)
+		  (interaction-environment))
 	    (custom-set-value! sym default)))  ;; to apply hooks
       (for-each (lambda (subgrp)
 		  (let ((registered (custom-group-subgroups primary-grp)))
@@ -571,7 +571,7 @@
 	       (let ((key-val (custom-modify-key-predicate-names val)))
 		 (eval (list 'define (symbolconc sym '?)
 			     (list 'make-key-predicate (list 'quote key-val)))
-		       toplevel-env)))
+		       (interaction-environment))))
 	   (custom-call-hook-procs sym custom-set-hooks)
 	   (custom-call-hook-procs sym custom-update-hooks)
 	   (let ((post-activities (map-activities)))

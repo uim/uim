@@ -197,9 +197,9 @@
 		  loaded-sym)
 		 ((try-load file)
 		  (eval (list 'define loaded-sym #t)
-			toplevel-env)
+			(interaction-environment))
 		  (eval (list 'define reloaded-sym #t)
-			toplevel-env)
+			(interaction-environment))
 		  loaded-sym)
 		 (else
 		  #f)))))

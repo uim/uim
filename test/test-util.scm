@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 952 (new repository)
+;; This file is tested with revision 1413 (new repository)
 
 (use test.unit)
 
@@ -1315,10 +1315,17 @@
 		 (uim '(alist-delete 'three alist-sym eq?)))))
 
 (define-uim-test-case "test util Siod specific procedures"
-  ("test toplevel-env"
-   (assert-true (uim-bool '(eval '(symbol-bound? 'filter-map)
-				 toplevel-env))))
-  ("test enclose-another-env"
+  ("test interaction-environment"
+   (assert-true  (uim-bool '(eval '(symbol-bound? 'filter-map)
+				  (interaction-environment))))
+   (assert-false (uim-bool '(eval '(symbol-bound? 'filter-baz)
+				  (interaction-environment))))
+   (uim '(eval (list define 'filter-baz filter-map)
+	       (interaction-environment)))
+   (assert-true  (uim-bool '(eval '(symbol-bound? 'filter-baz)
+				  (interaction-environment))))
+   (assert-true  (uim-bool '(eq? filter-baz filter-map))))
+  ("test %%enclose-another-env"
    (assert-equal 3
 		 (uim '(let* ((x 1)
 			      (y 2)
@@ -1333,7 +1340,7 @@
 			      (another-env '((x . 4)
 					     (y . 6))))
 			 (set! closure
-			       (enclose-another-env closure another-env))
+			       (%%enclose-another-env closure another-env))
 			 (closure))))
    ;; causes error since z is not exist in the another-env
    (assert-error (lambda ()
@@ -1345,7 +1352,7 @@
 				(another-env '((x . 4)
 					       (y . 6))))
 			   (set! closure
-				 (enclose-another-env closure another-env))
+				 (%%enclose-another-env closure another-env))
 			   (closure)))))))
 
 (define-uim-test-case "test util define-record"

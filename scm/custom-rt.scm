@@ -156,7 +156,7 @@
 	   (let ((key-val (custom-modify-key-predicate-names val)))
 	     (eval (list 'define (symbolconc sym '?)
 			 (list 'make-key-predicate (list 'quote key-val)))
-		   toplevel-env))
+		   (interaction-environment)))
 	   #t)
 	  ((custom-exist? sym #f)
 	   (set-symbol-value! sym val)
@@ -179,7 +179,7 @@
 				    (list 'quote default)
 				    default)))
 	    (eval (list 'define sym quoted-default)
-		  toplevel-env)
+		  (interaction-environment))
 	    (if (custom-key-exist? sym)
 		;; already define-key'ed in ~/.uim
 		(custom-call-hook-procs sym custom-set-hooks)
@@ -187,7 +187,7 @@
 		  (if (eq? (car type)
 			   'key)
 		      (eval (list 'define (symbolconc sym '?) list)
-			    toplevel-env))
+			    (interaction-environment)))
 		  (custom-set-value! sym default))))))))  ;; to apply hooks
 
 ;; lightweight implementation
