@@ -172,6 +172,7 @@
     (let* ((rkc (generic-context-rk-context pc))
 	   (cs (rk-current-seq rkc))
 	   (n (generic-context-rk-nth pc) (cadr cs))
+	   (nr (length (cadr cs)))
 	   (cur-page (if (= generic-nr-candidate-max 0)
 			 0
 			 (quotient n generic-nr-candidate-max)))
@@ -182,9 +183,13 @@
 				 (else
 				  pageidx)))
 	   (idx (+ (* cur-page generic-nr-candidate-max) compensated-pageidx)))
-      (im-commit pc (nth idx (cadr cs)))
-      (im-deactivate-candidate-selector pc)
-      (rk-flush rkc))))
+      (if (< idx nr)
+	  (begin
+	    (im-commit pc (nth idx (cadr cs)))
+	    (im-deactivate-candidate-selector pc)
+	    (rk-flush rkc)
+	    #t)
+	  #f))))
 
 (define generic-proc-input-state-without-preedit
   (lambda (pc key state rkc)
