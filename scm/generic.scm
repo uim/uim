@@ -457,7 +457,8 @@
 (define generic-set-candidate-index-handler
   (lambda (pc idx)
     (let ((rkc (generic-context-rk-context pc)))
-      (generic-context-set-rk-nth! pc idx))))
+      (generic-context-set-rk-nth! pc idx)
+      (generic-update-preedit pc))))
 
 (define generic-init-handler
   (lambda (id im init-handler)
