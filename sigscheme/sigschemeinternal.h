@@ -145,18 +145,17 @@ extern ScmObj SigScm_features;
  */
 
 /* Macros For Argnument Number Checking */
-#define CHECK_1_ARG(arg) \
-    (SCM_NULLP(arg))
-#define CHECK_2_ARGS(arg) \
-    (SCM_NULLP(arg) || SCM_NULLP(SCM_CDR(arg)))
-#define CHECK_3_ARGS(arg) \
-    (SCM_NULLP(arg) || SCM_NULLP(SCM_CDR(arg)) || SCM_NULLP(SCM_CDR(SCM_CDR(arg))))
-#define CHECK_4_ARGS(arg) \
-    (SCM_NULLP(arg) || SCM_NULLP(SCM_CDR(arg)) || SCM_NULLP(SCM_CDR(SCM_CDR(arg))) \
-     || SCM_NULLP(SCM_CDR(SCM_CDR(SCM_CDR(arg)))))
-#define CHECK_5_ARGS(arg) \
-    (SCM_NULLP(arg) || SCM_NULLP(SCM_CDR(arg)) || SCM_NULLP(SCM_CDR(SCM_CDR(arg))) \
-     || SCM_NULLP(SCM_CDR(SCM_CDR(SCM_CDR(arg)))) || SCM_NULLP(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(arg))))))
+/*
+ * TODO: rename appropriately
+ * Since 'CHECK' sounds a positive check as like as 'ASSERT', its opposite
+ * meaning may confuse users. So I suggest other name such as 'UNFILLED'.
+ *   -- YamaKen 2005-09-05
+ */
+#define CHECK_1_ARG(arg)  (NULLP(arg))
+#define CHECK_2_ARGS(arg) (CHECK_1_ARG(arg)  || NULLP(CDR(arg)))
+#define CHECK_3_ARGS(arg) (CHECK_2_ARGS(arg) || NULLP(CDDR(arg)))
+#define CHECK_4_ARGS(arg) (CHECK_3_ARGS(arg) || NULLP(CDR(CDDR(arg))))
+#define CHECK_5_ARGS(arg) (CHECK_4_ARGS(arg) || NULLP(CDDR(CDDR(arg))))
 
 /*=======================================
    Function Declarations
