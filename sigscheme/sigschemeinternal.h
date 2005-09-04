@@ -106,6 +106,13 @@ extern ScmObj SigScm_features;
 #define CDAR           SCM_CDAR
 #define CDDR           SCM_CDDR
 
+#define CONS           SCM_CONS
+#define LIST_1         SCM_LIST_1
+#define LIST_2         SCM_LIST_2
+#define LIST_3         SCM_LIST_3
+#define LIST_4         SCM_LIST_4
+#define LIST_5         SCM_LIST_5
+
 #define INTP           SCM_INTP
 #define CONSP          SCM_CONSP
 #define SYMBOLP        SCM_SYMBOLP
@@ -150,28 +157,6 @@ extern ScmObj SigScm_features;
 #define CHECK_5_ARGS(arg) \
     (SCM_NULLP(arg) || SCM_NULLP(SCM_CDR(arg)) || SCM_NULLP(SCM_CDR(SCM_CDR(arg))) \
      || SCM_NULLP(SCM_CDR(SCM_CDR(SCM_CDR(arg)))) || SCM_NULLP(SCM_CDR(SCM_CDR(SCM_CDR(SCM_CDR(arg))))))
-
-/* Macros For Creating List */
-#define SCM_LIST_1(obj1) \
-    (Scm_NewCons((obj1), SCM_NULL))
-#define SCM_LIST_2(obj1, obj2) \
-    (Scm_NewCons((obj1), \
-                 Scm_NewCons((obj2), SCM_NULL)))
-#define SCM_LIST_3(obj1, obj2, obj3) \
-    (Scm_NewCons((obj1), \
-                 Scm_NewCons((obj2), \
-                             Scm_NewCons((obj3), SCM_NULL))))
-#define SCM_LIST_4(obj1, obj2, obj3, obj4) \
-    (Scm_NewCons((obj1), \
-                 Scm_NewCons((obj2), \
-                             Scm_NewCons((obj3), \
-                                         Scm_NewCons((obj4), SCM_NULL)))))
-#define SCM_LIST_5(obj1, obj2, obj3, obj4, obj5) \
-    (Scm_NewCons((obj1), \
-                 Scm_NewCons((obj2), \
-                             Scm_NewCons((obj3), \
-                                         Scm_NewCons((obj4), \
-                                                     Scm_NewCons((obj5), SCM_NULL))))))
 
 /*=======================================
    Function Declarations
