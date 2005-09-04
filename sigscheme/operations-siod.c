@@ -153,10 +153,19 @@ ScmObj ScmOp_the_environment(ScmObj arg, ScmObj env)
 
 ScmObj ScmOp_closure_code(ScmObj closure)
 {
+    ScmObj exp, body;
+
     if (!CLOSUREP(closure))
         SigScm_ErrorObj("%%closure-code : closure required but got ", closure);
 
-    return SCM_CLOSURE_EXP(closure);
+    exp = SCM_CLOSURE_EXP(closure);
+
+    if (NULLP(CDR(CDR(exp))))
+	body = CAR(CDR(exp));
+    else
+	body = Scm_NewCons(Scm_Intern("begin"), CDR(exp));
+    
+    return Scm_NewCons(CAR(exp), body);
 }
 
 ScmObj ScmOp_verbose(ScmObj args, ScmObj env)
