@@ -66,6 +66,12 @@ static long sscm_verbose_level = 0;
 
   TODO : remove these functions!
 =======================================*/
+/*
+ * TODO:
+ * - generalize to SCM_USE_NONSTD_FEATURES
+ * - describe compatibility with de facto standard of other Scheme
+ *   implementations
+ */
 ScmObj ScmOp_symbol_boundp(ScmObj obj)
 {
     if (SYMBOLP(obj)
@@ -77,6 +83,12 @@ ScmObj ScmOp_symbol_boundp(ScmObj obj)
     return SCM_FALSE;
 }
 
+/*
+ * TODO:
+ * - replace with a portable proc such as (eval 'sym (interaction-environment))
+ * - make the portable proc interface similar to a de facto standard of other
+ *   Scheme implementations if existing
+ */
 ScmObj ScmOp_symbol_value(ScmObj var)
 {
     if (!SYMBOLP(var))
@@ -85,6 +97,13 @@ ScmObj ScmOp_symbol_value(ScmObj var)
     return symbol_value(var, SCM_NULL);
 }
 
+/*
+ * TODO:
+ * - replace with a portable proc such as (eval '(set! sym val)
+ *                                               (interaction-environment))
+ * - make the portable proc interface similar to a de facto standard of other
+ *   Scheme implementations if existing
+ */
 ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val)
 {
     /* sanity check */

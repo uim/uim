@@ -1588,10 +1588,17 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj env)
 =======================================*/
 ScmObj ScmOp_scheme_report_environment(ScmObj version)
 {
+    /* FIXME: check arg, warn incompatibility */
     return SCM_NULL;
 }
 
 ScmObj ScmOp_null_environment(ScmObj version)
+{
+    /* FIXME: check arg, warn incompatibility */
+    return SCM_NULL;
+}
+
+ScmObj ScmOp_interaction_environment(void)
 {
     return SCM_NULL;
 }

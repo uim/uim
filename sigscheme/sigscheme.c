@@ -143,6 +143,7 @@ void SigScm_Initialize(void)
     Scm_RegisterFuncRawListWithTailFlag("or"     , ScmExp_or);
     Scm_RegisterFunc1("scheme-report-environment", ScmOp_scheme_report_environment);
     Scm_RegisterFunc1("null-environment"         , ScmOp_null_environment);
+    Scm_RegisterFunc0("interaction-environment"  , ScmOp_interaction_environment);
     /* operations.c */
     Scm_RegisterFunc2("eqv?"                     , ScmOp_eqvp);
     Scm_RegisterFunc2("eq?"                      , ScmOp_eqp);

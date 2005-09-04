@@ -65,6 +65,7 @@ typedef void (*ScmCFunc) (void);
 /*=======================================
    Macro Declarations
 =======================================*/
+/* FIXME: split off to config.h */
 #define SCM_USE_EUCJP           1  /* use EUC-JP as internal encoding */
 #define SCM_USE_SRFI1           0  /* use SRFI-1 list library procedures written in C */
 #define SCM_USE_SRFI8           1  /* use SRFI-8 receive procedure written in C */
@@ -167,6 +168,7 @@ ScmObj ScmOp_unquote_splicing(ScmObj obj, ScmObj env);
 ScmObj ScmExp_define(ScmObj arg, ScmObj env);
 ScmObj ScmOp_scheme_report_environment(ScmObj version);
 ScmObj ScmOp_null_environment(ScmObj version);
+ScmObj ScmOp_interaction_environment(void);
 
 /* operations.c */
 ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2);
