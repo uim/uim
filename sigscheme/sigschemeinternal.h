@@ -81,7 +81,7 @@ extern ScmObj SigScm_features;
 
 /* FreeCell Handling Macros */
 #define SCM_FREECELLP(a)     (SCM_TYPE(a) == ScmFreeCell)
-#define SCM_AS_FREECELL(a)   (sigassert(SCM_FREECELLP(a)), (a))
+#define SCM_AS_FREECELL(a)   (SCM_ASSERT_TYPE(SCM_FREECELLP(a), (a)))
 #define SCM_FREECELL_CAR(a)  (SCM_AS_FREECELL(a)->obj.cons.car)
 #define SCM_FREECELL_CDR(a)  (SCM_AS_FREECELL(a)->obj.cons.cdr)
 #define SCM_ENTYPE_FREECELL(a)     (SCM_ENTYPE((a), ScmFreeCell))

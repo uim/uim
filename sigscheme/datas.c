@@ -548,7 +548,7 @@ static void gc_sweep(void)
         /* iterate in heap */
         for (j = 0; j < SCM_HEAP_SIZE; j++) {
             obj = &scm_heaps[i][j];
-            sigassert (!SCM_MARK_CORRUPT (obj));
+            SCM_ASSERT(!SCM_MARK_CORRUPT(obj));
             if (!SCM_IS_MARKED(obj)) {
                 sweep_obj(obj);
 

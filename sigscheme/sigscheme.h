@@ -78,7 +78,7 @@ typedef void (*ScmCFunc) (void);
 #define SCM_ACCESSOR_ASSERT     0  /* enable strict type check with accessor */
 
 int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
-#define sigassert(cond) \
+#define SCM_ASSERT(cond) \
     (cond ? 0 : SigScm_Die("assertion failed.", __FILE__, __LINE__))
 
 /*=======================================
