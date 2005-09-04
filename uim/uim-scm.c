@@ -50,10 +50,23 @@ static uim_lisp protected_arg0;
 static int uim_siod_fatal;
 static FILE *uim_output = NULL;
 
+static void uim_scm_error(const char *msg, uim_lisp errobj);
+
 #ifdef UIM_COMPAT_SCM
 #include "uim-compat-scm.c"
 #endif
 
+
+static void
+uim_scm_error(const char *msg, uim_lisp errobj)
+{
+  uim_lisp stack_start;
+
+  uim_scm_gc_protect_stack(&stack_start);
+  /* FIXME: don't terminate the process */
+  SigScm_ErrorObj(msg, (ScmObj)errobj);
+  uim_scm_gc_unprotect_stack(&stack_start);
+}
 
 FILE *
 uim_scm_get_output(void)
@@ -82,16 +95,13 @@ uim_scm_make_bool(uim_bool val)
 int
 uim_scm_c_int(uim_lisp integer)
 {
-  int c_int;
-  uim_lisp stack_start;
-
-  uim_scm_gc_protect_stack(&stack_start);  /* required for my_err() */
-
-  protected_arg0 = integer;
-  c_int = Scm_GetInt((ScmObj)integer);
-  uim_scm_gc_unprotect_stack(&stack_start);
-
-  return c_int;
+  if (SCM_INTP((ScmObj)integer)) {
+    return SCM_INT_VALUE((ScmObj)integer);
+  } else {
+    uim_scm_error("uim_scm_c_int: number required but got ",
+                  (uim_lisp)integer);
+    return -1;
+  }
 }
 
 uim_lisp
@@ -113,16 +123,15 @@ uim_scm_c_str(uim_lisp str)
 const char *
 uim_scm_refer_c_str(uim_lisp str)
 {
-  char *c_str;
-  uim_lisp stack_start;
-
-  uim_scm_gc_protect_stack(&stack_start);  /* required for my_err() */
-  protected_arg0 = str;
-  /* FIXME: return value of this function must be freed somewhere... */
-  c_str = Scm_GetString((ScmObj)str);
-  uim_scm_gc_unprotect_stack(&stack_start);
-
-  return c_str;
+  if (SCM_STRINGP((ScmObj)str)) {
+    return SCM_STRING_STR((ScmObj)str);
+  } else if (SCM_SYMBOLP((ScmObj)str)) {
+    return SCM_SYMBOL_NAME((ScmObj)str);
+  } else {
+    uim_scm_error("uim_scm_refer_c_str: string or symbol required but got ",
+                  (uim_lisp)str);
+    return NULL;
+  }
 }
 
 uim_lisp
@@ -146,7 +155,12 @@ uim_scm_make_symbol(const char *name)
 void *
 uim_scm_c_ptr(uim_lisp ptr)
 {
-  return Scm_GetCPointer((ScmObj)ptr);
+  if (SCM_C_POINTERP((ScmObj)ptr)) {
+    return SCM_C_POINTER_VALUE((ScmObj)ptr);
+  } else {
+    uim_scm_error("uim_scm_c_ptr: C pointer required but got ", (uim_lisp)ptr);
+    return NULL;
+  }
 }
 
 uim_lisp
@@ -158,7 +172,13 @@ uim_scm_make_ptr(void *ptr)
 uim_func_ptr
 uim_scm_c_func_ptr(uim_lisp func_ptr)
 {
-  return (uim_func_ptr)Scm_GetCFuncPointer((ScmObj)func_ptr);
+  if (SCM_C_FUNCPOINTERP((ScmObj)func_ptr)) {
+    return SCM_C_FUNCPOINTER_VALUE((ScmObj)func_ptr);
+  } else {
+    uim_scm_error("uim_scm_c_func_ptr: C function pointer required but got ",
+                  (uim_lisp)func_ptr);
+    return NULL;
+  }
 }
 
 uim_lisp
@@ -215,7 +235,7 @@ uim_scm_load_file(const char *fn)
   if (!fn)
     return UIM_FALSE;
 
-  /* TODO: fixme! */
+  /* FIXME! */
   SigScm_load(fn);
 
   return UIM_TRUE;

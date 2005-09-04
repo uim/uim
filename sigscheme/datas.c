@@ -862,49 +862,6 @@ ScmObj Scm_Intern(const char *name)
     return sym;
 }
 
-int Scm_GetInt(ScmObj num)
-{
-    if (FALSEP(ScmOp_numberp(num)))
-        SigScm_ErrorObj("Scm_GetInt : number required but got ", num);
-
-    return SCM_INT_VALUE(num);
-}
-
-char* Scm_GetString(ScmObj str)
-{
-    char *ret = NULL;
-    switch (SCM_TYPE(str)) {
-    case ScmString:
-        ret = SCM_STRING_STR(str);
-        break;
-    case ScmSymbol:
-        ret = SCM_SYMBOL_NAME(str);
-        break;
-    default:
-        SigScm_Error("Scm_GetString : cannot get string of not string nor symbol\n");
-    }
-
-    return ret;
-}
-
-#if SCM_USE_NONSTD_FEATURES
-void *Scm_GetCPointer(ScmObj c_ptr)
-{
-    if (!C_POINTERP(c_ptr))
-        SigScm_ErrorObj("Scm_GetCPointer : c_ptr required but got ", c_ptr);
-
-    return SCM_C_POINTER_VALUE(c_ptr);
-}
-
-ScmCFunc Scm_GetCFuncPointer(ScmObj c_funcptr)
-{
-    if (!C_FUNCPOINTERP(c_funcptr))
-        SigScm_ErrorObj("Scm_GetCFuncPointer : c_funcptr required but got ", c_funcptr);
-
-    return SCM_C_FUNCPOINTER_VALUE(c_funcptr);
-}
-#endif /* SCM_USE_NONSTD_FEATURES */
-
 ScmObj Scm_eval_c_string(const char *exp)
 {
     ScmObj stack_start;

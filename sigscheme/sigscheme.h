@@ -126,12 +126,6 @@ ScmObj Scm_NewCPointer(void *data);
 ScmObj Scm_NewCFuncPointer(ScmCFunc func);
 #endif
 ScmObj Scm_Intern(const char *name);
-int    Scm_GetInt(ScmObj num);
-char*  Scm_GetString(ScmObj str);
-#if SCM_USE_NONSTD_FEATURES
-void*  Scm_GetCPointer(ScmObj c_ptr);
-ScmCFunc Scm_GetCFuncPointer(ScmObj c_funcptr);
-#endif
 ScmObj Scm_eval_c_string(const char *exp);
 #if SCM_COMPAT_SIOD
 ScmObj Scm_return_value(void);
