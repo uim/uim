@@ -307,7 +307,7 @@
     (let* ((modified-key-strs (modify-key-strs-implicitly key-strs))
 	   (predicate (make-key-predicate modified-key-strs)))
       (eval (list 'define key-predicate-sym predicate)
-	    toplevel-env))))
+	    (interaction-environment)))))
 
 (define valid-key-str?
   (lambda (key-str)

@@ -58,6 +58,25 @@ Each change consist of following fields. All fields are required.
 The changes are described below in most recently updated order.
 
 ------------------------------------------------------------------------------
+Summary: Obsolete some misc Scheme APIs
+Affects: IM developers
+Updates: Scheme API
+Version: 0.5, 0.4.9
+Revision: ac1413
+Date: 2005-09-05
+Modifier: YamaKen
+Related:
+URL:
+Changes:
+  (removed) bitwise-or
+      (new) bitwise-ior
+  (removed) enclose-another-env
+      (new) %%enclose-another-env
+  (removed) toplevel-env
+      (new) interaction-environment
+Description:
+  Obsolete inappropriate or wrong API with new appropriate ones.
+------------------------------------------------------------------------------
 Summary: An experimental custom variable reloading API
 Affects: Helper program developers, Bridge developers
 Updates: C API, Helper protocol
