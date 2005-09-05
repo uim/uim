@@ -33,6 +33,7 @@
 
 #ifndef STR_H
 #define STR_H
+
 void init_str(void);
 const char *get_enc(void);
 int compare_str(char *str1, char *str2);
@@ -46,5 +47,5 @@ int strhead(char *str, int n);
 char *rstrstr_len(const char *haystack, const char *needle, int haystack_len);
 char *strstr_len(const char *haystack, const char *needle, int haystack_len);
 char *tab2space(const char *tabstr);
-#endif
 
+#endif

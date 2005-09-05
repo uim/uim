@@ -40,8 +40,9 @@
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
-#ifdef HAVE_TERMIOS_H
-#include <termios.h>
+/* solaris でwinsizeを使うために必要 */
+#ifdef HAVE_CURSES_H
+#include <curses.h>
 #endif
 #include <uim/uim.h>
 

@@ -34,19 +34,21 @@
 #ifndef DRAW_H
 #define DRAW_H
 
-#include <uim/uim.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+#ifdef HAVE_SYS_IOCTL_H
+#include <sys/ioctl.h>
+#endif
 
-#define FORCE -1
-#define CLEAR -2
 #define CANDSIZE 500
 
-#include "callbacks.h"
 extern int g_start_preedit;
 extern int g_commit;
 
 void init_draw(int master, const char *path_getmode);
 void update_backtick(void);
-void draw(void);
+int draw(void);
 void draw_statusline_restore(void);
 void draw_statusline_force_no_restore(void);
 void draw_statusline_force_restore(void);
@@ -54,8 +56,6 @@ void clear_lastline(void);
 void clear_backtick(void);
 int is_commit_and_preedit(void);
 void draw_commit_and_preedit(void);
-void draw_winch(void);
-
+void draw_winch(struct winsize *prevwin);
 
 #endif
-

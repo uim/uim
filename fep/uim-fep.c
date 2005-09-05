@@ -59,6 +59,7 @@
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif
+/* solarisでは term.hの前にcurses.hが必要 */
 #ifdef HAVE_CURSES_H
 #include <curses.h>
 #endif
@@ -147,6 +148,18 @@ static struct termios s_save_tios;
 static char s_path_setmode[MAXPATHLEN];
 static char s_path_getmode[MAXPATHLEN];
 static int s_setmode_fd = -1;
+#ifndef HAVE_SIG_ATOMIC_T
+typedef int sig_atomic_t;
+#endif
+static volatile sig_atomic_t s_signal_flag;
+static sigset_t s_orig_sigmask;
+
+#define SIG_FLAG_DONE    1
+#define SIG_FLAG_RECOVER (1 << 1)
+#define SIG_FLAG_WINCH   (1 << 2)
+#define SIG_FLAG_USR1    (1 << 3)
+#define SIG_FLAG_USR2    (1 << 4)
+#define SIG_FLAG_TSTP    (1 << 5)
 
 static void init_uim(const char *engine);
 static const char *get_default_im_name(void);
@@ -157,12 +170,13 @@ static void main_loop(void);
 static void recover_loop(void);
 static struct winsize *get_winsize(void);
 static void set_signal_handler(void);
-static void recover(int sig_no);
-static void sigtstp_handler(int sig_no);
-static void sigcont_handler(int sig_no);
-static void sigwinch_handler(int sig_no);
-static void sigusr1_handler(int sig_no);
-static void sigusr2_handler(int sig_no);
+static void reset_signal_handler(void);
+static void signal_handler(int sig_no);
+static void recover(void);
+static void sigtstp_handler(void);
+static void sigwinch_handler(void);
+static void sigusr1_handler(void);
+static void sigusr2_handler(void);
 static void usage(void);
 static void version(void);
 
@@ -504,6 +518,7 @@ opt_end:
   }
   init_helper();
   init_callbacks();
+  focus_in();
   init_draw(s_master, s_path_getmode);
   init_escseq(&attr_uim);
   set_signal_handler();
@@ -746,6 +761,7 @@ static void main_loop(void)
         debug2(("<end draw_commit_and_preedit>"));
       }
     }
+
     FD_ZERO(&fds);
     FD_SET(g_win_in, &fds);
     FD_SET(s_master, &fds);
@@ -755,15 +771,41 @@ static void main_loop(void)
     if (g_helper_fd >= 0) {
       FD_SET(g_helper_fd, &fds);
     }
-    if (my_select(nfd, &fds, NULL) <= 0) {
+
+    if (my_pselect(nfd, &fds, &s_orig_sigmask) <= 0) {
       /* signalで割り込まれたときにくる。selectの返り値は-1でerrno==EINTR */
+      debug(("signal flag = %x\n", s_signal_flag));
+      if ((s_signal_flag & SIG_FLAG_DONE   ) != 0) {
+        s_signal_flag &= ~SIG_FLAG_DONE;
+        done(1);
+      }
+      if ((s_signal_flag & SIG_FLAG_RECOVER) != 0) {
+        s_signal_flag &= ~SIG_FLAG_RECOVER;
+        recover();
+      }
+      if ((s_signal_flag & SIG_FLAG_WINCH  ) != 0) {
+        s_signal_flag &= ~SIG_FLAG_WINCH;
+        sigwinch_handler();
+      }
+      if ((s_signal_flag & SIG_FLAG_USR1   ) != 0) {
+        s_signal_flag &= ~SIG_FLAG_USR1;
+        sigusr1_handler();
+      }
+      if ((s_signal_flag & SIG_FLAG_USR2   ) != 0) {
+        s_signal_flag &= ~SIG_FLAG_USR2;
+        sigusr2_handler();
+      }
+      if ((s_signal_flag & SIG_FLAG_TSTP   ) != 0) {
+        s_signal_flag &= ~SIG_FLAG_TSTP;
+        sigtstp_handler();
+      }
       continue;
     }
-
 
     /* モードを変更する */
     if (s_setmode_fd >= 0 && FD_ISSET(s_setmode_fd, &fds)) {
       int start, end;
+
 #ifdef __CYGWIN32__
       if ((len = read(s_setmode_fd, buf, sizeof(buf) - 1)) <= 0) {
         debug2(("pipe closed\n"));
@@ -773,10 +815,12 @@ static void main_loop(void)
 #else
       len = read(s_setmode_fd, buf, sizeof(buf) - 1);
 #endif
+
       for (end = len - 1; end >= 0 && !isdigit((unsigned char)buf[end]); --end);
       /* プリエディットを編集中でなければモードを変更する */
       if (end >= 0 && !g_start_preedit) {
         int mode;
+
         for (start = end; start > 0 && isdigit((unsigned char)buf[start - 1]); --start);
         buf[end + 1] = '\0';
         mode = atoi(&buf[start]);
@@ -859,9 +903,10 @@ static void main_loop(void)
             print_key(key, key_state);
           } else {
             int raw = press_key(key, key_state);
-            draw();
-            if (g_opt.status_type == BACKTICK) {
-              update_backtick();
+            if (!draw()) {
+              if (g_opt.status_type == BACKTICK) {
+                update_backtick();
+              }
             }
             if (raw && !g_start_preedit) {
               if (key_state & UMod_Alt) {
@@ -974,41 +1019,87 @@ static struct winsize *get_winsize(void)
 static void set_signal_handler(void)
 {
   struct sigaction act;
+  sigset_t sigmask;
+
+  sigemptyset(&sigmask);
+  sigaddset(&sigmask, SIGHUP);
+  sigaddset(&sigmask, SIGTERM);
+  sigaddset(&sigmask, SIGQUIT);
+  sigaddset(&sigmask, SIGINT);
+  sigaddset(&sigmask, SIGWINCH);
+  sigaddset(&sigmask, SIGUSR1);
+  sigaddset(&sigmask, SIGUSR2);
+  sigaddset(&sigmask, SIGTSTP);
+  sigaddset(&sigmask, SIGCONT);
+  sigprocmask(SIG_BLOCK, &sigmask, &s_orig_sigmask);
+
   /* シグナルをブロックしない */
   sigemptyset(&act.sa_mask);
   act.sa_flags = 0;
   /* システムコールを再実行する(実装依存) */
   /* act.sa_flags = SA_RESTART; */
 
-  act.sa_handler = done;
+  act.sa_handler = signal_handler;
   sigaction(SIGHUP, &act, NULL);
   sigaction(SIGTERM, &act, NULL);
-
-  /* act.sa_handler = reload_uim; */
   sigaction(SIGQUIT, &act, NULL);
-
-  act.sa_handler = recover;
   sigaction(SIGINT, &act, NULL);
-
-
-  act.sa_handler = sigwinch_handler;
   sigaction(SIGWINCH, &act, NULL);
-
-  act.sa_handler = sigusr1_handler;
   sigaction(SIGUSR1, &act, NULL);
-
-  act.sa_handler = sigusr2_handler;
   sigaction(SIGUSR2, &act, NULL);
-
-  act.sa_handler = sigtstp_handler;
   sigaction(SIGTSTP, &act, NULL);
-
-  act.sa_handler = sigcont_handler;
   sigaction(SIGCONT, &act, NULL);
 }
 
-static void recover(int sig_no)
+static void reset_signal_handler(void)
 {
+  struct sigaction act;
+
+  sigprocmask(SIG_SETMASK, &s_orig_sigmask, NULL);
+
+  sigemptyset(&act.sa_mask);
+  act.sa_flags = 0;
+  act.sa_handler = SIG_DFL;
+  sigaction(SIGHUP, &act, NULL);
+  sigaction(SIGTERM, &act, NULL);
+  sigaction(SIGQUIT, &act, NULL);
+  sigaction(SIGINT, &act, NULL);
+  sigaction(SIGWINCH, &act, NULL);
+  sigaction(SIGUSR1, &act, NULL);
+  sigaction(SIGUSR2, &act, NULL);
+  sigaction(SIGTSTP, &act, NULL);
+  sigaction(SIGCONT, &act, NULL);
+}
+
+static void signal_handler(int sig_no)
+{
+  switch (sig_no) {
+    case SIGHUP:
+    case SIGTERM:
+    case SIGQUIT:
+      s_signal_flag |= SIG_FLAG_DONE;
+      break;
+    case SIGINT:
+      s_signal_flag |= SIG_FLAG_RECOVER;
+      break;
+    case SIGWINCH:
+      s_signal_flag |= SIG_FLAG_WINCH;
+      break;
+    case SIGUSR1:
+      s_signal_flag |= SIG_FLAG_USR1;
+      break;
+    case SIGUSR2:
+      s_signal_flag |= SIG_FLAG_USR2;
+      break;
+    case SIGTSTP:
+      s_signal_flag |= SIG_FLAG_TSTP;
+      break;
+  }
+}
+
+static void recover(void)
+{
+  reset_signal_handler();
   put_exit_attribute_mode();
   put_restore_cursor();
   put_cursor_normal();
@@ -1016,10 +1107,13 @@ static void recover(int sig_no)
   done(EXIT_SUCCESS);
 }
 
-static void sigtstp_handler(int sig_no)
+/*
+ * 休止シグナル
+ */
+static void sigtstp_handler(void)
 {
   struct sigaction act;
-  sigset_t mask;
+  sigset_t sigmask;
 
   quit_escseq();
   put_save_cursor();
@@ -1028,48 +1122,38 @@ static void sigtstp_handler(int sig_no)
   sigemptyset(&act.sa_mask);
   act.sa_flags = 0;
   act.sa_handler = SIG_DFL;
-
-  sigemptyset(&mask);
-  sigaddset(&mask, SIGTSTP);
-  sigprocmask(SIG_UNBLOCK, &mask, NULL);
-
   sigaction(SIGTSTP, &act, NULL);
+  sigaction(SIGCONT, &act, NULL);
+
+  sigemptyset(&sigmask);
+  sigaddset(&sigmask, SIGTSTP);
+  sigaddset(&sigmask, SIGCONT);
+  sigprocmask(SIG_UNBLOCK, &sigmask, NULL);
+
   kill(getpid(), SIGTSTP);
-  
-  act.sa_handler = sigtstp_handler;
-  sigaction(SIGTSTP, &act, NULL);
-}
 
-static void sigcont_handler(int sig_no)
-{
+  sigprocmask(SIG_BLOCK, &sigmask, NULL);
+  
+  act.sa_handler = signal_handler;
+  sigaction(SIGTSTP, &act, NULL);
+  sigaction(SIGCONT, &act, NULL);
   fixtty();
 }
 
 /*
  * 端末のサイズが変わったときに仮想端末の大きさを合わせる。
  */
-static void sigwinch_handler(int sig_no)
+static void sigwinch_handler(void)
 {
   struct winsize *prev_win = g_win;
   g_win = get_winsize();
+
   debug2(("g_win->ws_row = %d g_win->ws_col = %d\n", g_win->ws_row, g_win->ws_col));
+
   escseq_winch();
   callbacks_winch();
-  draw_winch();
-  if (g_opt.status_type == LASTLINE) {
-    put_save_cursor();
-    put_cursor_invisible();
-    if (g_win->ws_row > prev_win->ws_row) {
-      struct winsize save_win = *g_win;
-      g_win->ws_row = prev_win->ws_row;
-      clear_lastline();
-      *g_win = save_win;
-    }
-    draw_statusline_force_no_restore();
-    put_change_scroll_region(0, g_win->ws_row - 1);
-    put_restore_cursor();
-    put_cursor_normal();
-  }
+  draw_winch(prev_win);
+
   free(prev_win);
   ioctl(s_master, TIOCSWINSZ, g_win);
 }
@@ -1095,13 +1179,13 @@ void done(int exit_value)
   exit(exit_value);
 }
 
-static void sigusr1_handler(int sig_no)
+static void sigusr1_handler(void)
 {
   press_key(UKey_Private1, 0);
   draw();
 }
 
-static void sigusr2_handler(int sig_no)
+static void sigusr2_handler(void)
 {
   press_key(UKey_Private2, 0);
   draw();

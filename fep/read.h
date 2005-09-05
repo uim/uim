@@ -33,16 +33,23 @@
 
 #ifndef READ_H
 #define READ_H
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #if HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
 #if HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
+#ifdef HAVE_SIGNAL_H
+#include <signal.h>
+#endif
+
 int my_select(int n, fd_set *readfds, struct timeval *timeout);
+int my_pselect(int n, fd_set *readfds, const sigset_t *sigmask);
 ssize_t read_stdin(void *buf, int count);
 void unget_stdin(const char *str, int count);
 
-
 #endif
-

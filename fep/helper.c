@@ -57,14 +57,10 @@ int g_helper_fd = -1;
 static void helper_disconnected_cb(void);
 static void helper_handler_change_im(const char *str);
 static void send_im_list(void);
-static void prop_list_update_cb(void *ptr, const char *str);
-static void prop_label_update_cb(void *ptr, const char *str);
 
 void init_helper(void)
 {
   g_helper_fd = uim_helper_init_client_fd(helper_disconnected_cb);
-  uim_set_prop_list_update_cb(g_context, prop_list_update_cb);
-  uim_set_prop_label_update_cb(g_context, prop_label_update_cb);
 }
 
 void quit_helper(void)
@@ -80,7 +76,6 @@ static void helper_disconnected_cb(void)
   g_helper_fd = -1;
 }
 
-#define str_has_prefix(str, prefix) (strncmp((str), (prefix), strlen((prefix))) == 0)
 void helper_handler(void)
 {
   char *message;
@@ -139,10 +134,29 @@ void helper_handler(void)
         char *eol;
         debug(("commit_string\n"));
         if ((eol = strchr(message, '\n')) != NULL) {
-          char *commit_string = eol + 1;
-          if ((eol = strchr(commit_string, '\n')) != NULL) {
-            *eol = '\0';
-            commit_cb(NULL, commit_string);
+          char *charset = eol + 1;
+
+          if (str_has_prefix(charset, "charset=")) {
+            charset += strlen("charset=");
+            if ((eol = strchr(charset, '\n')) != NULL) {
+              char *commit_string = eol + 1;
+
+              *eol = '\0';
+              if ((eol = strchr(commit_string, '\n')) != NULL) {
+                const char *commit_enc;
+
+                *eol = '\0';
+                if (uim_iconv->is_convertible(commit_enc = get_enc(), charset)) {
+                  void *cd = uim_iconv->create(commit_enc, charset);
+                  commit_string = uim_iconv->convert(cd, commit_string);
+                  commit_cb(NULL, commit_string);
+                  free(commit_string);
+                  if (cd) {
+                    uim_iconv->release(cd);
+                  }
+                }
+              }
+            }
           }
         }
 
@@ -202,49 +216,10 @@ static void send_im_list(void)
 
     message = realloc(message, strlen(message) + strlen(im_str) + 1);
     strcat(message, im_str);
+    free(im_str);
   }
   uim_helper_send_message(g_helper_fd, message);
   free(message);
-}
-
-static void prop_list_update_cb(void *ptr, const char *str)
-{
-  const char *enc;
-  char *message_buf;
-
-  debug(("prop_list_update_cb\n"));
-  debug2(("str = %s", str));
-
-  if (!g_focus_in) {
-    return;
-  }
-
-  enc = get_enc();
-  message_buf = malloc(strlen("prop_list_update\ncharset=") + strlen(enc) + strlen("\n") + strlen(str) + 1);
-  sprintf(message_buf, "prop_list_update\ncharset=%s\n%s", enc, str);
-  uim_helper_send_message(g_helper_fd, message_buf);
-  free(message_buf);
-  debug(("prop_list_update_cb send message\n"));
-}
-
-static void prop_label_update_cb(void *ptr, const char *str)
-{
-  const char *enc;
-  char *message_buf;
-
-  debug(("prop_label_update_cb\n"));
-  debug2(("str = %s", str));
-
-  if (!g_focus_in) {
-    return;
-  }
-
-  enc = get_enc();
-  message_buf = malloc(strlen("prop_label_update\ncharset=") + strlen(enc) + strlen("\n") + strlen(str) + 1);
-  sprintf(message_buf, "prop_label_update\ncharset=%s\n%s", enc, str);
-  uim_helper_send_message(g_helper_fd, message_buf);
-  free(message_buf);
-  debug(("prop_label_update_cb send message\n"));
 }
 
 void focus_in(void)

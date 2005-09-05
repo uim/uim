@@ -34,8 +34,6 @@
 #ifndef CALLBACKS_H
 #define CALLBACKS_H
 
-#include <uim/uim.h>
-
 struct preedit_tag {
   /* Ê¸»úÎó¤ÎÉı */
   int width;
