@@ -177,6 +177,8 @@ AC_CHECK_HEADERS([sys/param.h strings.h])
 AC_CHECK_HEADERS([pthread.h], have_pthread=yes, have_pthread=no)
 
 # Check for type
+AC_CHECK_TYPES(sig_atomic_t, , ,
+  [ #include <signal.h> ])
 AC_CHECK_TYPES(sig_t, , ,
   [ #include <signal.h> ])
 
@@ -189,6 +191,7 @@ AC_CHECK_FUNCS([cfmakeraw])
 AC_CHECK_FUNCS([wcswidth])
 AC_CHECK_FUNCS(getpeereid asprintf vasprintf vsnprintf setenv unsetenv strsep)
 AC_CHECK_FUNCS(getpid stat mkdir chmod)
+AC_CHECK_FUNCS([pselect])
 AC_CACHE_CHECK([for C99 vsnprintf], uim_cv_HAVE_C99_VSNPRINTF,[
 AC_TRY_RUN([
 #include <sys/types.h>
