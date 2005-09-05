@@ -692,10 +692,10 @@ ScmObj ScmOp_number2string (ScmObj args, ScmObj env)
       r = 10;
   else {
 #ifdef SCM_STRICT_ARGCHECK
-      if (!NULLP(SCM_CDDR(args)))
+      if (!NULLP(CDDR(args)))
           SigScm_ErrorObj("number->string: too many arguments: ", args);
 #endif
-      radix = SCM_CADR(args);
+      radix = CADR(args);
       if (!INTP(radix))
           SigScm_ErrorObj("number->string: integer required but got ", radix);
       r = SCM_INT_VALUE(radix);
@@ -1392,8 +1392,8 @@ ScmObj ScmOp_make_string(ScmObj arg, ScmObj env)
         SigScm_Error("make-string : invalid use\n");
     if (!INTP(CAR(arg)))
         SigScm_ErrorObj("make-string : integer required but got ", CAR(arg));
-    if (argc == 2 && !CHARP(CAR(CDR(arg))))
-        SigScm_ErrorObj("make-string : character required but got ", CAR(CDR(arg)));
+    if (argc == 2 && !CHARP(CADR(arg)))
+        SigScm_ErrorObj("make-string : character required but got ", CADR(arg));
 
     /* get length */
     len = SCM_INT_VALUE(CAR(arg));
@@ -1409,7 +1409,7 @@ ScmObj ScmOp_make_string(ScmObj arg, ScmObj env)
         ch = Scm_NewChar(tmp);
     } else {
         /* also specify filler char */
-        ch = CAR(CDR(arg));
+        ch = CADR(arg);
     }
 
     /* make string */
@@ -1740,7 +1740,7 @@ ScmObj ScmOp_make_vector(ScmObj arg, ScmObj env )
     /* fill vector */
     fill = SCM_UNDEF;
     if (!NULLP(CDR(arg)))
-        fill = CAR(CDR(arg));
+        fill = CADR(arg);
 
     for (i = 0; i < c_k; i++) {
         vec[i] = fill;
@@ -1896,7 +1896,7 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
     /* 1proc and 1arg case */
     if (arg_len == 2) {
         /* apply func to each item */
-        for (args = CAR(CDR(map_arg)); !NULLP(args); args = CDR(args)) {
+        for (args = CADR(map_arg); !NULLP(args); args = CDR(args)) {
             /* create proc's arg */
             tmp = CAR(args);
 
@@ -2016,7 +2016,7 @@ ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp)
     
     /* cons_wrapper would have no chance of being referenced from
      * anywhere else, so we'll reuse that object. */
-    SET_CAR(cons_wrapper, SCM_CADR(argl));
+    SET_CAR(cons_wrapper, CADR(argl));
     SET_CDR(cons_wrapper, vals);
     return cons_wrapper;
 }

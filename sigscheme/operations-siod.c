@@ -141,8 +141,8 @@ ScmObj ScmOp_closure_code(ScmObj closure)
 
     exp = SCM_CLOSURE_EXP(closure);
 
-    if (NULLP(CDR(CDR(exp))))
-	body = CAR(CDR(exp));
+    if (NULLP(CDDR(exp)))
+	body = CADR(exp);
     else
 	body = Scm_NewCons(Scm_Intern("begin"), CDR(exp));
     

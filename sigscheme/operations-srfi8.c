@@ -79,9 +79,9 @@ ScmObj ScmOp_SRFI8_receive(ScmObj args, ScmObj *envp)
     if (CHECK_3_ARGS(args))
         SigScm_ErrorObj("receive: bad argument list: ", args);
 
-    formals = SCM_CAR(args);
-    expr = SCM_CADR(args);
-    body = SCM_CDDR(args);
+    formals = CAR(args);
+    expr = CADR(args);
+    body = CDDR(args);
 
     /* TODO: Check: do we have to extend the environment first?  The SRFI-8
      * document contradicts itself on this part. */

@@ -120,7 +120,7 @@ ScmObj ScmOp_SRFI1_make_list(ScmObj args, ScmObj env)
 
     /* get filler if available */
     if (!NULLP(CDR(args)))
-        fill = CAR(CDR(args));
+        fill = CADR(args);
 
     /* then create list */
     for (i = n; 0 < i; i--) {
@@ -151,7 +151,7 @@ ScmObj ScmOp_SRFI1_list_tabulate(ScmObj args, ScmObj env)
 
     /* get init_proc if available */
     if (!NULLP(CDR(args)))
-        proc = CAR(CDR(args));
+        proc = CADR(args);
 
     /* then create list */
     for (i = n; 0 < i; i--) {
@@ -232,10 +232,10 @@ ScmObj ScmOp_SRFI1_iota(ScmObj args, ScmObj env)
     scm_count = CAR(args);
 
     if (!NULLP(CDR(args)))
-        scm_start = CAR(CDR(args));
+        scm_start = CADR(args);
 
-    if (!NULLP(scm_start) && !NULLP(CDR(CDR(args))))
-        scm_step = CAR(CDR(CDR(args)));
+    if (!NULLP(scm_start) && !NULLP(CDDR(args)))
+        scm_step = CAR(CDDR(args));
 
     /* param type check */
     if (FALSEP(ScmOp_numberp(scm_count)))

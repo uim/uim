@@ -293,9 +293,9 @@ ScmObj ScmOp_read_char(ScmObj arg, ScmObj env)
     if (NULLP(arg)) {
         /* (read-char) */
         port = scm_current_input_port;
-    } else if (!NULLP(CDR(arg)) && PORTP(CAR(CDR(arg)))) {
+    } else if (!NULLP(CDR(arg)) && PORTP(CADR(arg))) {
         /* (read-char port) */
-        port = CAR(CDR(arg));
+        port = CADR(arg);
     } else {
         SigScm_ErrorObj("read-char : invalid parameter", arg);
     }

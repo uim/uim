@@ -440,7 +440,7 @@ eval_loop:
              * the stack. Is there any efficient way to implement first
              * class continuation? (TODO).
              */
-            obj = CAR(CDR(obj));
+            obj = CADR(obj);
             scm_continuation_thrown_obj = ScmOp_eval(obj, env);
             longjmp(SCM_CONTINUATION_JMPENV(tmp), 1);
             break;
@@ -473,14 +473,14 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
     /* sanity check */
     if CHECK_2_ARGS(args)
         SigScm_Error("apply : Wrong number of arguments\n");
-    if (!NULLP(CDR(CDR(args))))
+    if (!NULLP(CDDR(args)))
         SigScm_Error("apply : Doesn't support multiarg apply\n");
 
     /* 1st elem of list is proc */
     proc = CAR(args);
 
     /* 2nd elem of list is obj */
-    obj  = CAR(CDR(args));
+    obj  = CADR(args);
 
     /* apply proc */
     switch (SCM_TYPE(proc)) {
@@ -724,7 +724,7 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
         } else if (EQ(obj, SCM_UNQUOTE) && IS_LIST_LEN_1(CDR(ls))) {
             /* we're at the comma in (x . ,y) or qexpr was ,z */
             if (--nest == 0) {
-                result = ScmOp_eval(SCM_CADR(ls), env);
+                result = ScmOp_eval(CADR(ls), env);
                 goto append_last_item;
             }
             QQUOTE_SET_VERBATIM(result);
@@ -829,7 +829,7 @@ static ScmObj qquote_vector(ScmObj src, ScmObj env, int nest)
                 if (!IS_LIST_LEN_1(CDR(expr)))
                     SigScm_ErrorObj("syntax error: ", expr);
 
-                result = ScmOp_eval(SCM_CADR(expr), env);
+                result = ScmOp_eval(CADR(expr), env);
 
                 splice_len = ScmOp_length(result);
                 if (SCM_INT_VALUE(splice_len) < 0)
@@ -841,7 +841,7 @@ static ScmObj qquote_vector(ScmObj src, ScmObj env, int nest)
             }
         }
         if (!NULLP(splices)) {
-            next_splice_index = SCM_INT_VALUE(SCM_CDAR(splices));
+            next_splice_index = SCM_INT_VALUE(CDAR(splices));
             qquote_force_copy_upto(0);
         }
     }
@@ -850,14 +850,14 @@ static ScmObj qquote_vector(ScmObj src, ScmObj env, int nest)
         /* j will be the index for copy_buf */
         if (i == next_splice_index) {
             /* spliced */
-            for (expr=SCM_CAAR(splices); !NULLP(expr); expr=CDR(expr))
+            for (expr=CAAR(splices); !NULLP(expr); expr=CDR(expr))
                 copy_buf[j++] = CAR(expr);
             splices = CDR(splices);
 
             if (NULLP(splices))
                 next_splice_index = -1;
             else
-                next_splice_index = SCM_INT_VALUE(SCM_CDAR(splices));
+                next_splice_index = SCM_INT_VALUE(CDAR(splices));
             /* continue; */
         } else {
             expr = SCM_VECTOR_CREF(src, i);
@@ -929,11 +929,11 @@ ScmObj ScmExp_if(ScmObj exp, ScmObj *envp)
     /* if pred is true value */
     if (NFALSEP(pred)) {
         /* doesn't evaluate now for tail-recursion. */
-        return CAR(CDR(exp));
+        return CADR(exp);
     }
 
     /* if pred is SCM_FALSE */
-    false_exp = CDR(CDR(exp));
+    false_exp = CDDR(exp);
     if (NULLP(false_exp))
         return SCM_UNDEF;
 
@@ -947,7 +947,7 @@ ScmObj ScmExp_if(ScmObj exp, ScmObj *envp)
 ScmObj ScmExp_set(ScmObj arg, ScmObj env)
 {
     ScmObj sym = CAR(arg);
-    ScmObj val = CAR(CDR(arg));
+    ScmObj val = CADR(arg);
     ScmObj ret = SCM_NULL;
     ScmObj tmp = SCM_NULL;
 
@@ -1020,7 +1020,7 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp)
              * returned by this procedure is returned by the cond expression.
              */
             if (EQ(Scm_Intern("=>"), CAR(exps))) {
-                proc = ScmOp_eval(CAR(CDR(exps)), env);
+                proc = ScmOp_eval(CADR(exps), env);
                 if (FALSEP(ScmOp_procedurep(proc)))
                     SigScm_ErrorObj("cond : the value of exp after => must be the procedure but got ", proc);
 
@@ -1182,7 +1182,7 @@ ScmObj ScmExp_let(ScmObj arg, ScmObj *envp)
 #endif
 
             vars = Scm_NewCons(CAR(binding), vars);
-            vals = Scm_NewCons(ScmOp_eval(CAR(CDR(binding)), env), vals);
+            vals = Scm_NewCons(ScmOp_eval(CADR(binding), env), vals);
         }
 
         /* create new environment for */
@@ -1201,12 +1201,12 @@ named_let:
                      (<variable2> <init2>)
                      ...)
     ========================================================================*/
-    bindings = CAR(CDR(arg));
-    body     = CDR(CDR(arg));
+    bindings = CADR(arg);
+    body     = CDDR(arg);
     for (; !NULLP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
         vars = Scm_NewCons(CAR(binding), vars);
-        vals = Scm_NewCons(CAR(CDR(binding)), vals);
+        vals = Scm_NewCons(CADR(binding), vals);
     }
 
     vars = ScmOp_reverse(vars);
@@ -1258,7 +1258,7 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp)
 #endif
 
             vars = Scm_NewCons(CAR(binding), SCM_NULL);
-            vals = Scm_NewCons(ScmOp_eval(CAR(CDR(binding)), env), SCM_NULL);
+            vals = Scm_NewCons(ScmOp_eval(CADR(binding), env), SCM_NULL);
 
             /* add env to each time!*/
             env = extend_environment(vars, vals, env);
@@ -1321,7 +1321,7 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp)
 #endif
 
             var = CAR(binding);
-            val = CAR(CDR(binding));
+            val = CADR(binding);
 
             /* construct vars and vals list */
             vars = Scm_NewCons(var, vars);
@@ -1424,10 +1424,10 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp)
     for (; !NULLP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
         vars = Scm_NewCons(CAR(binding), vars);
-        vals = Scm_NewCons(ScmOp_eval(CAR(CDR(binding)), env), vals);
+        vals = Scm_NewCons(ScmOp_eval(CADR(binding), env), vals);
 
         /* append <step> to steps */
-        step = CDR(CDR(binding));
+        step = CDDR(binding);
         if (NULLP(step))
             steps = Scm_NewCons(CAR(binding), steps);
         else
@@ -1438,12 +1438,12 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp)
     env = extend_environment(vars, vals, env);
 
     /* construct test */
-    testframe  = CAR(CDR(arg));
+    testframe  = CADR(arg);
     test       = CAR(testframe);
     expression = CDR(testframe);
 
     /* construct commands */
-    commands = CDR(CDR(arg));
+    commands = CDDR(arg);
 
     /* now excution phase! */
     while (FALSEP(ScmOp_eval(test, env))) {
@@ -1531,7 +1531,7 @@ ScmObj ScmOp_unquote_splicing(ScmObj obj, ScmObj env)
 ScmObj ScmExp_define(ScmObj arg, ScmObj env)
 {
     ScmObj var     = CAR(arg);
-    ScmObj body    = CAR(CDR(arg));
+    ScmObj body    = CADR(arg);
     ScmObj val     = SCM_NULL;
     ScmObj formals = SCM_NULL;
 
