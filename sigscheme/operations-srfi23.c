@@ -69,20 +69,23 @@ ScmObj ScmOp_SRFI23_error(ScmObj args, ScmObj env)
         SigScm_Error("error : at least 1 argument required\n");
 
     if (!STRINGP(CAR(args)))
-        SigScm_ErrorObj("error : first argument should be string but got ", CAR(args));
+        SigScm_ErrorObj("error : first argument should be string but got ",
+                        CAR(args));
     
     /* prepend message */
     fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "Error: ");
 
     /* show message */
-    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "%s", SCM_STRING_STR(CAR(args)));
+    fprintf(SCM_PORTINFO_FILE(scm_current_error_port),
+            "%s", SCM_STRING_STR(CAR(args)));
 
     /* show each obj */
     for (args = CDR(args); !NULLP(args); args = CDR(args)) {
         fprintf(SCM_PORTINFO_FILE(scm_current_error_port), " ");
 
 #if SCM_USE_SRFI38
-        SigScm_WriteToPortWithSharedStructure(scm_current_error_port, CAR(args));
+        SigScm_WriteToPortWithSharedStructure(scm_current_error_port,
+                                              CAR(args));
 #else
         SigScm_WriteToPort(scm_current_error_port, CAR(args));
 #endif

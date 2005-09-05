@@ -72,7 +72,7 @@ static void repl(void)
 
     printf("sscm> ");
 
-    for( s_exp = SigScm_Read(stdin_port);
+    for (s_exp = SigScm_Read(stdin_port);
          !EOFP(s_exp);
          s_exp = SigScm_Read(stdin_port))
     {

@@ -158,12 +158,8 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
                 return SCM_FALSE;
 
             /* check dot pair */
-            if (!CONSP(CDR(obj1))) {
-                if (FALSEP(ScmOp_equalp(CDR(obj1), CDR(obj2))))
-                    return SCM_FALSE;
-                else
-                    return SCM_TRUE;
-            }
+            if (!CONSP(CDR(obj1)))
+                return ScmOp_equalp(CDR(obj1), CDR(obj2));
         }
         return SCM_TRUE;
 
@@ -174,7 +170,8 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
 
         /* check contents */
         for (i = 0; i < SCM_VECTOR_LEN(obj1); i++) {
-            if (FALSEP(ScmOp_equalp(SCM_VECTOR_CREF(obj1, i), SCM_VECTOR_CREF(obj2, i))))
+            if (FALSEP(ScmOp_equalp(SCM_VECTOR_CREF(obj1, i),
+                                    SCM_VECTOR_CREF(obj2, i))))
                 return SCM_FALSE;
         }
         return SCM_TRUE;
@@ -339,10 +336,7 @@ ScmObj ScmOp_divide(ScmObj args, ScmObj env)
 
 ScmObj ScmOp_numberp(ScmObj obj)
 {
-    if (INTP(obj))
-        return SCM_TRUE;
-
-    return SCM_FALSE;
+    return (INTP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_equal(ScmObj args, ScmObj env)
@@ -368,9 +362,7 @@ ScmObj ScmOp_equal(ScmObj args, ScmObj env)
             SigScm_ErrorObj("= : number required but got ", obj);
 
         if (SCM_INT_VALUE(obj) != val)
-        {
             return SCM_FALSE;
-        }
     }
 
     return SCM_TRUE;
@@ -768,44 +760,26 @@ ScmObj ScmOp_booleanp(ScmObj obj)
 ==============================================================================*/
 ScmObj ScmOp_car(ScmObj obj)
 {
-    /*
-     * TODO: fixme! : Kazuki Ohta <mover@hct.zaq.ne.jp>
-     *
-     * In R5RS (car '()) becomes an error, but current uim assumes (car '()) == ()
-     * in many places. So, I decided to change ScmOp_car to SIOD like behavior.
-     * 
-     */
-#if !SCM_COMPAT_SIOD_BUGS
-    if (NULLP(obj))
-        SigScm_Error("car : empty list\n");
-#endif
+#if SCM_COMPAT_SIOD_BUGS
     if (NULLP(obj))
         return SCM_NULL;
+#endif
 
     if (!CONSP(obj))
-        SigScm_ErrorObj("car : list required but got ", obj);
+        SigScm_ErrorObj("car : pair required but got ", obj);
 
     return CAR(obj);
 }
 
 ScmObj ScmOp_cdr(ScmObj obj)
 {
-    /*
-     * TODO: fixme! : Kazuki Ohta <mover@hct.zaq.ne.jp>
-     *
-     * In R5RS (car '()) becomes an error, but current uim assumes (car '()) == ()
-     * in many places. So, I decided to change ScmOp_car to SIOD like behavior.
-     * 
-     */
-#if !SCM_COMPAT_SIOD_BUGS
-    if (NULLP(obj))
-        SigScm_Error("cdr : empty list\n");
-#endif
+#if SCM_COMPAT_SIOD_BUGS
     if (NULLP(obj))
         return SCM_NULL;
+#endif
 
     if (!CONSP(obj))
-        SigScm_ErrorObj("cdr : list required but got ", obj);
+        SigScm_ErrorObj("cdr : pair required but got ", obj);
 
     return CDR(obj);
 }
@@ -822,10 +796,10 @@ ScmObj ScmOp_cons(ScmObj car, ScmObj cdr)
 
 ScmObj ScmOp_setcar(ScmObj pair, ScmObj car)
 {
-    if (CONSP(pair))
-        SET_CAR(pair, car);
-    else
+    if (!CONSP(pair))
         SigScm_ErrorObj("set-car! : pair required but got ", pair);
+
+    SET_CAR(pair, car);
 
 #if SCM_COMPAT_SIOD
     return car;
@@ -836,10 +810,10 @@ ScmObj ScmOp_setcar(ScmObj pair, ScmObj car)
 
 ScmObj ScmOp_setcdr(ScmObj pair, ScmObj cdr)
 {
-    if (CONSP(pair))
-        SET_CDR(pair, cdr);
-    else
+    if (!CONSP(pair))
         SigScm_ErrorObj("set-cdr! : pair required but got ", pair);
+
+    SET_CDR(pair, cdr);
 
 #if SCM_COMPAT_SIOD
     return cdr;
@@ -848,117 +822,117 @@ ScmObj ScmOp_setcdr(ScmObj pair, ScmObj cdr)
 #endif
 }
 
-ScmObj ScmOp_caar(ScmObj pair)
+ScmObj ScmOp_caar(ScmObj lst)
 {
-    return ScmOp_car( ScmOp_car(pair) );
+    return ScmOp_car( ScmOp_car(lst) );
 }
-ScmObj ScmOp_cadr(ScmObj pair)
+ScmObj ScmOp_cadr(ScmObj lst)
 {
-    return ScmOp_car( ScmOp_cdr(pair) );
+    return ScmOp_car( ScmOp_cdr(lst) );
 }
-ScmObj ScmOp_cdar(ScmObj pair)
+ScmObj ScmOp_cdar(ScmObj lst)
 {
-    return ScmOp_cdr( ScmOp_car(pair) );
+    return ScmOp_cdr( ScmOp_car(lst) );
 }
-ScmObj ScmOp_cddr(ScmObj pair)
+ScmObj ScmOp_cddr(ScmObj lst)
 {
-    return ScmOp_cdr( ScmOp_cdr(pair) );
+    return ScmOp_cdr( ScmOp_cdr(lst) );
 }
-ScmObj ScmOp_caaar(ScmObj pair)
+ScmObj ScmOp_caaar(ScmObj lst)
 {
-    return ScmOp_car( ScmOp_car( ScmOp_car(pair) ));
+    return ScmOp_car( ScmOp_car( ScmOp_car(lst) ));
 }
-ScmObj ScmOp_caadr(ScmObj pair)
+ScmObj ScmOp_caadr(ScmObj lst)
 {
-    return ScmOp_car( ScmOp_car( ScmOp_cdr(pair) ));
+    return ScmOp_car( ScmOp_car( ScmOp_cdr(lst) ));
 }
-ScmObj ScmOp_cadar(ScmObj pair)
+ScmObj ScmOp_cadar(ScmObj lst)
 {
-    return ScmOp_car( ScmOp_cdr( ScmOp_car(pair) ));
+    return ScmOp_car( ScmOp_cdr( ScmOp_car(lst) ));
 }
-ScmObj ScmOp_caddr(ScmObj pair)
+ScmObj ScmOp_caddr(ScmObj lst)
 {
-    return ScmOp_car( ScmOp_cdr( ScmOp_cdr(pair) ));
+    return ScmOp_car( ScmOp_cdr( ScmOp_cdr(lst) ));
 }
-ScmObj ScmOp_cdaar(ScmObj pair)
+ScmObj ScmOp_cdaar(ScmObj lst)
 {
-    return ScmOp_cdr( ScmOp_car( ScmOp_car(pair) ));
+    return ScmOp_cdr( ScmOp_car( ScmOp_car(lst) ));
 }
-ScmObj ScmOp_cdadr(ScmObj pair)
+ScmObj ScmOp_cdadr(ScmObj lst)
 {
-    return ScmOp_cdr( ScmOp_car( ScmOp_cdr(pair) ));
+    return ScmOp_cdr( ScmOp_car( ScmOp_cdr(lst) ));
 }
-ScmObj ScmOp_cddar(ScmObj pair)
+ScmObj ScmOp_cddar(ScmObj lst)
 {
-    return ScmOp_cdr( ScmOp_cdr( ScmOp_car(pair) ));
+    return ScmOp_cdr( ScmOp_cdr( ScmOp_car(lst) ));
 }
-ScmObj ScmOp_cdddr(ScmObj pair)
+ScmObj ScmOp_cdddr(ScmObj lst)
 {
-    return ScmOp_cdr( ScmOp_cdr( ScmOp_cdr(pair) ));
+    return ScmOp_cdr( ScmOp_cdr( ScmOp_cdr(lst) ));
 }
-ScmObj ScmOp_caaaar(ScmObj pair)
+ScmObj ScmOp_caaaar(ScmObj lst)
 {
-    return ScmOp_car( ScmOp_car( ScmOp_car( ScmOp_car(pair) )));
+    return ScmOp_car( ScmOp_car( ScmOp_car( ScmOp_car(lst) )));
 }
-ScmObj ScmOp_caaadr(ScmObj pair)
+ScmObj ScmOp_caaadr(ScmObj lst)
 {
-    return ScmOp_car( ScmOp_car( ScmOp_car( ScmOp_cdr(pair) )));
+    return ScmOp_car( ScmOp_car( ScmOp_car( ScmOp_cdr(lst) )));
 }
-ScmObj ScmOp_caadar(ScmObj pair)
+ScmObj ScmOp_caadar(ScmObj lst)
 {
-    return ScmOp_car( ScmOp_car( ScmOp_cdr( ScmOp_car(pair) )));
+    return ScmOp_car( ScmOp_car( ScmOp_cdr( ScmOp_car(lst) )));
 }
-ScmObj ScmOp_caaddr(ScmObj pair)
+ScmObj ScmOp_caaddr(ScmObj lst)
 {
-    return ScmOp_car( ScmOp_car( ScmOp_cdr( ScmOp_cdr(pair) )));
+    return ScmOp_car( ScmOp_car( ScmOp_cdr( ScmOp_cdr(lst) )));
 }
-ScmObj ScmOp_cadaar(ScmObj pair)
+ScmObj ScmOp_cadaar(ScmObj lst)
 {
-    return ScmOp_car( ScmOp_cdr( ScmOp_car( ScmOp_car(pair) )));
+    return ScmOp_car( ScmOp_cdr( ScmOp_car( ScmOp_car(lst) )));
 }
-ScmObj ScmOp_cadadr(ScmObj pair)
+ScmObj ScmOp_cadadr(ScmObj lst)
 {
-    return ScmOp_car( ScmOp_cdr( ScmOp_car( ScmOp_cdr(pair) )));
+    return ScmOp_car( ScmOp_cdr( ScmOp_car( ScmOp_cdr(lst) )));
 }
-ScmObj ScmOp_caddar(ScmObj pair)
+ScmObj ScmOp_caddar(ScmObj lst)
 {
-    return ScmOp_car( ScmOp_cdr( ScmOp_cdr( ScmOp_car(pair) )));
+    return ScmOp_car( ScmOp_cdr( ScmOp_cdr( ScmOp_car(lst) )));
 }
-ScmObj ScmOp_cadddr(ScmObj pair)
+ScmObj ScmOp_cadddr(ScmObj lst)
 {
-    return ScmOp_car( ScmOp_cdr( ScmOp_cdr( ScmOp_cdr(pair) )));
+    return ScmOp_car( ScmOp_cdr( ScmOp_cdr( ScmOp_cdr(lst) )));
 }
-ScmObj ScmOp_cdaaar(ScmObj pair)
+ScmObj ScmOp_cdaaar(ScmObj lst)
 {
-    return ScmOp_cdr( ScmOp_car( ScmOp_car( ScmOp_car(pair) )));
+    return ScmOp_cdr( ScmOp_car( ScmOp_car( ScmOp_car(lst) )));
 }
-ScmObj ScmOp_cdaadr(ScmObj pair)
+ScmObj ScmOp_cdaadr(ScmObj lst)
 {
-    return ScmOp_cdr( ScmOp_car( ScmOp_car( ScmOp_cdr(pair) )));
+    return ScmOp_cdr( ScmOp_car( ScmOp_car( ScmOp_cdr(lst) )));
 }
-ScmObj ScmOp_cdadar(ScmObj pair)
+ScmObj ScmOp_cdadar(ScmObj lst)
 {
-    return ScmOp_cdr( ScmOp_car( ScmOp_cdr( ScmOp_car(pair) )));
+    return ScmOp_cdr( ScmOp_car( ScmOp_cdr( ScmOp_car(lst) )));
 }
-ScmObj ScmOp_cdaddr(ScmObj pair)
+ScmObj ScmOp_cdaddr(ScmObj lst)
 {
-    return ScmOp_cdr( ScmOp_car( ScmOp_cdr( ScmOp_cdr(pair) )));
+    return ScmOp_cdr( ScmOp_car( ScmOp_cdr( ScmOp_cdr(lst) )));
 }
-ScmObj ScmOp_cddaar(ScmObj pair)
+ScmObj ScmOp_cddaar(ScmObj lst)
 {
-    return ScmOp_cdr( ScmOp_cdr( ScmOp_car( ScmOp_car(pair) )));
+    return ScmOp_cdr( ScmOp_cdr( ScmOp_car( ScmOp_car(lst) )));
 }
-ScmObj ScmOp_cddadr(ScmObj pair)
+ScmObj ScmOp_cddadr(ScmObj lst)
 {
-    return ScmOp_cdr( ScmOp_cdr( ScmOp_car( ScmOp_cdr(pair) )));
+    return ScmOp_cdr( ScmOp_cdr( ScmOp_car( ScmOp_cdr(lst) )));
 }
-ScmObj ScmOp_cdddar(ScmObj pair)
+ScmObj ScmOp_cdddar(ScmObj lst)
 {
-    return ScmOp_cdr( ScmOp_cdr( ScmOp_cdr( ScmOp_car(pair) )));
+    return ScmOp_cdr( ScmOp_cdr( ScmOp_cdr( ScmOp_car(lst) )));
 }
-ScmObj ScmOp_cddddr(ScmObj pair)
+ScmObj ScmOp_cddddr(ScmObj lst)
 {
-    return ScmOp_cdr( ScmOp_cdr( ScmOp_cdr( ScmOp_cdr(pair) )));
+    return ScmOp_cdr( ScmOp_cdr( ScmOp_cdr( ScmOp_cdr(lst) )));
 }
 
 ScmObj ScmOp_list(ScmObj obj, ScmObj env)
@@ -1701,7 +1675,8 @@ ScmObj ScmOp_string_fill(ScmObj string, ScmObj ch)
     /* create new str */
     char_size = strlen(SCM_CHAR_VALUE(ch));
     str_len   = SCM_STRING_LEN(string);
-    new_str   = (char*)realloc(SCM_STRING_STR(string), sizeof(char) * str_len * char_size + 1);
+    new_str   = (char*)realloc(SCM_STRING_STR(string),
+                               sizeof(char) * str_len * char_size + 1);
     for (i = 0, p = new_str; i < char_size * str_len;) {
         strcpy(p, SCM_CHAR_VALUE(ch));
 
@@ -1870,10 +1845,7 @@ ScmObj ScmOp_vector_fill(ScmObj vec, ScmObj fill)
 =======================================*/
 ScmObj ScmOp_procedurep(ScmObj obj)
 {
-    if (FUNCP(obj) || CLOSUREP(obj))
-        return SCM_TRUE;
-
-    return SCM_FALSE;
+    return (FUNCP(obj) || CLOSUREP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)

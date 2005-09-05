@@ -71,7 +71,7 @@ typedef void (*ScmCFunc) (void);
 #define SCM_USE_SRFI8           1  /* use SRFI-8 receive procedure written in C */
 #define SCM_USE_SRFI23          1  /* use SRFI-23 error procedure written in C */
 #define SCM_USE_SRFI38          1  /* use SRFI-38 write/ss written in C */
-#define SCM_USE_SRFI60          1  /* use SRFI-60 integers as bits written in C*/
+#define SCM_USE_SRFI60          1  /* use SRFI-60 integers as bits written in C */
 #define SCM_USE_NONSTD_FEATURES 1  /* use Non-R5RS standard features */
 #define SCM_COMPAT_SIOD         1  /* use SIOD compatible features */
 #define SCM_COMPAT_SIOD_BUGS    1  /* emulate the buggy behaviors of SIOD */
@@ -215,34 +215,34 @@ ScmObj ScmOp_pairp(ScmObj obj);
 ScmObj ScmOp_cons(ScmObj car, ScmObj cdr);
 ScmObj ScmOp_setcar(ScmObj pair, ScmObj car);
 ScmObj ScmOp_setcdr(ScmObj pair, ScmObj cdr);
-ScmObj ScmOp_caar(ScmObj pair);
-ScmObj ScmOp_cadr(ScmObj pair);
-ScmObj ScmOp_cdar(ScmObj pair);
-ScmObj ScmOp_cddr(ScmObj pair);
-ScmObj ScmOp_caaar(ScmObj pair);
-ScmObj ScmOp_caadr(ScmObj pair);
-ScmObj ScmOp_cadar(ScmObj pair);
-ScmObj ScmOp_caddr(ScmObj pair);
-ScmObj ScmOp_cdaar(ScmObj pair);
-ScmObj ScmOp_cdadr(ScmObj pair);
-ScmObj ScmOp_cddar(ScmObj pair);
-ScmObj ScmOp_cdddr(ScmObj pair);
-ScmObj ScmOp_caaaar(ScmObj pair);
-ScmObj ScmOp_caaadr(ScmObj pair);
-ScmObj ScmOp_caadar(ScmObj pair);
-ScmObj ScmOp_caaddr(ScmObj pair);
-ScmObj ScmOp_cadaar(ScmObj pair);
-ScmObj ScmOp_cadadr(ScmObj pair);
-ScmObj ScmOp_caddar(ScmObj pair);
-ScmObj ScmOp_cadddr(ScmObj pair);
-ScmObj ScmOp_cdaaar(ScmObj pair);
-ScmObj ScmOp_cdaadr(ScmObj pair);
-ScmObj ScmOp_cdadar(ScmObj pair);
-ScmObj ScmOp_cdaddr(ScmObj pair);
-ScmObj ScmOp_cddaar(ScmObj pair);
-ScmObj ScmOp_cddadr(ScmObj pair);
-ScmObj ScmOp_cdddar(ScmObj pair);
-ScmObj ScmOp_cddddr(ScmObj pair);
+ScmObj ScmOp_caar(ScmObj lst);
+ScmObj ScmOp_cadr(ScmObj lst);
+ScmObj ScmOp_cdar(ScmObj lst);
+ScmObj ScmOp_cddr(ScmObj lst);
+ScmObj ScmOp_caaar(ScmObj lst);
+ScmObj ScmOp_caadr(ScmObj lst);
+ScmObj ScmOp_cadar(ScmObj lst);
+ScmObj ScmOp_caddr(ScmObj lst);
+ScmObj ScmOp_cdaar(ScmObj lst);
+ScmObj ScmOp_cdadr(ScmObj lst);
+ScmObj ScmOp_cddar(ScmObj lst);
+ScmObj ScmOp_cdddr(ScmObj lst);
+ScmObj ScmOp_caaaar(ScmObj lst);
+ScmObj ScmOp_caaadr(ScmObj lst);
+ScmObj ScmOp_caadar(ScmObj lst);
+ScmObj ScmOp_caaddr(ScmObj lst);
+ScmObj ScmOp_cadaar(ScmObj lst);
+ScmObj ScmOp_cadadr(ScmObj lst);
+ScmObj ScmOp_caddar(ScmObj lst);
+ScmObj ScmOp_cadddr(ScmObj lst);
+ScmObj ScmOp_cdaaar(ScmObj lst);
+ScmObj ScmOp_cdaadr(ScmObj lst);
+ScmObj ScmOp_cdadar(ScmObj lst);
+ScmObj ScmOp_cdaddr(ScmObj lst);
+ScmObj ScmOp_cddaar(ScmObj lst);
+ScmObj ScmOp_cddadr(ScmObj lst);
+ScmObj ScmOp_cdddar(ScmObj lst);
+ScmObj ScmOp_cddddr(ScmObj lst);
 ScmObj ScmOp_list(ScmObj obj, ScmObj env);
 ScmObj ScmOp_nullp(ScmObj obj);
 ScmObj ScmOp_listp(ScmObj obj);

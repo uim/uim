@@ -1041,24 +1041,24 @@ ScmObj ScmExp_case(ScmObj arg, ScmObj *envp)
     ScmObj env    = *envp;
     ScmObj key    = ScmOp_eval(CAR(arg), env);
     ScmObj clause = SCM_NULL;
-    ScmObj datums = SCM_NULL;
+    ScmObj data   = SCM_NULL;
     ScmObj exps   = SCM_NULL;
 
     /* looping in each clause */
     for (arg = CDR(arg); !NULLP(arg); arg = CDR(arg)) {
         clause = CAR(arg);
-        datums = CAR(clause);
+        data   = CAR(clause);
         exps   = CDR(clause);
-        if (NULLP(clause) || NULLP(datums) || NULLP(exps))
+        if (NULLP(clause) || NULLP(data) || NULLP(exps))
             SigScm_Error("case : syntax error\n");
 
         /* check "else" symbol */
-        if (NULLP(CDR(arg)) && !CONSP(datums) && NFALSEP(SCM_SYMBOL_VCELL(datums)))
+        if (NULLP(CDR(arg)) && !CONSP(data) && NFALSEP(SCM_SYMBOL_VCELL(data)))
             return ScmExp_begin(exps, &env);
 
-        /* evaluate datums and compare to key by eqv? */
-        for (; !NULLP(datums); datums = CDR(datums)) {
-            if (NFALSEP(ScmOp_eqvp(CAR(datums), key))) {
+        /* evaluate data and compare to key by eqv? */
+        for (; !NULLP(data); data = CDR(data)) {
+            if (NFALSEP(ScmOp_eqvp(CAR(data), key))) {
                 return ScmExp_begin(exps, &env);
             }
         }
@@ -1458,13 +1458,19 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp)
          * results to the "vals" variable and set it in hand.
          */
         vals = SCM_NULL;
-        for (tmp_steps = steps; !NULLP(tmp_steps); tmp_steps = CDR(tmp_steps)) {
+        for (tmp_steps = steps;
+             !NULLP(tmp_steps);
+             tmp_steps = CDR(tmp_steps))
+        {
             vals = Scm_NewCons(ScmOp_eval(CAR(tmp_steps), env), vals);
         }
         vals = ScmOp_reverse(vals);
 
         /* set it */
-        for (tmp_vars = vars; !NULLP(tmp_vars) && !NULLP(vals); tmp_vars = CDR(tmp_vars), vals = CDR(vals)) {
+        for (tmp_vars = vars;
+             !NULLP(tmp_vars) && !NULLP(vals);
+             tmp_vars = CDR(tmp_vars), vals = CDR(vals))
+        {
             obj = lookup_environment(CAR(tmp_vars), env);
             if (!NULLP(obj)) {
                 SET_CAR(obj, CAR(vals));
