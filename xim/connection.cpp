@@ -52,6 +52,10 @@
 #define TRANSPORT_UNIT 20
 #define TRANSPORT_MAX 20	// Emacs's XIM won't work correctly when the value is 100
 
+#ifndef HAVE_SIG_T
+typedef void (*sig_t)(int);
+#endif
+
 extern char *xim_packet_name[];
 
 static std::map<Window, XConnection *> gXConnections;
