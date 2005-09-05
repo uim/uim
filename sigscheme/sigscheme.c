@@ -113,8 +113,11 @@ void SigScm_Initialize(void)
     /*=======================================================================
       Export Scheme Special Symbols
     =======================================================================*/
+#if 0
+    /* really required? */
     SCM_SYMBOL_VCELL(Scm_Intern("#t"))   = SCM_TRUE;
     SCM_SYMBOL_VCELL(Scm_Intern("#f"))   = SCM_FALSE;
+#endif
     SCM_SYMBOL_VCELL(Scm_Intern("else")) = SCM_TRUE;
     SCM_SYMBOL_VCELL(Scm_Intern("=>"))   = SCM_TRUE;
     /*=======================================================================
@@ -149,7 +152,7 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc2("eq?"                      , ScmOp_eqp);
     Scm_RegisterFunc2("equal?"                   , ScmOp_equalp);
     Scm_RegisterFunc1("number?"                  , ScmOp_numberp);
-    Scm_RegisterFunc1("integer?"                 , ScmOp_numberp);
+    SCM_DEFINE_ALIAS("integer?"                  , "number?");
     Scm_RegisterFuncEvaledList("="               , ScmOp_equal);
     Scm_RegisterFuncEvaledList("<"               , ScmOp_less);
     Scm_RegisterFuncEvaledList(">"               , ScmOp_greater);
