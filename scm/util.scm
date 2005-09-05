@@ -528,20 +528,6 @@
 	    alist))))
 
 
-;; SRFI-60 procedures
-;; Siod's bit operation procedures take only two arguments
-;; TODO: write tests
-(define bitwise-not bit-not)
-(define bitwise-and
-  (lambda xs
-    (fold bit-and (bitwise-not 0) xs)))
-(define bitwise-ior
-  (lambda xs
-    (fold bit-or 0 xs)))
-(define bitwise-xor
-  (lambda xs
-    (fold bit-xor 0 xs)))
-
 ;;
 ;; uim-specific utilities
 ;;

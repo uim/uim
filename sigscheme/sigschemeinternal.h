@@ -148,7 +148,7 @@ extern ScmObj SigScm_features;
 /*
  * TODO: rename appropriately
  * Since 'CHECK' sounds a positive check as like as 'ASSERT', its opposite
- * meaning may confuse users. So I suggest other name such as 'UNFILLED'.
+ * meaning may confuse users. So I suggest another name such as 'UNFILLED'.
  *   -- YamaKen 2005-09-05
  */
 #define CHECK_1_ARG(arg)  (NULLP(arg))
@@ -156,6 +156,52 @@ extern ScmObj SigScm_features;
 #define CHECK_3_ARGS(arg) (CHECK_2_ARGS(arg) || NULLP(CDDR(arg)))
 #define CHECK_4_ARGS(arg) (CHECK_3_ARGS(arg) || NULLP(CDR(CDDR(arg))))
 #define CHECK_5_ARGS(arg) (CHECK_4_ARGS(arg) || NULLP(CDDR(CDDR(arg))))
+
+#define SCM_REDUCE_BY_BINOP(op, ridentity, lst, env,                         \
+                            ctype, validp, extract, make, err_header)        \
+    SCM_REDUCE_INTERNAL(((extract(elm)) op accum), ridentity, lst, env,      \
+                        ctype, validp, extract, make, err_header)
+
+#define SCM_REDUCE_BY_FUNC(f, ridentity, lst, env,                           \
+                           ctype, validp, extract, make, err_header)         \
+    SCM_REDUCE_INTERNAL(f(extract(elm), accum), ridentity, lst, env,         \
+                        ctype, validp, extract, make, err_header)
+
+#define SCM_REDUCE_INTERNAL(fexp, ridentity, lst, env,                       \
+                            ctype, validp, extract, make, err_header)        \
+    do {                                                                     \
+        ScmObj elm, rest;                                                    \
+        ctype accum;                                                         \
+                                                                             \
+        /* 0 */                                                              \
+        if (NULLP(lst)) {                                                    \
+            return make(ridentity);                                          \
+        }                                                                    \
+                                                                             \
+        /* 1 */                                                              \
+        elm = ScmOp_eval(CAR(lst), env);                                     \
+        if (!validp(elm)) {                                                  \
+            SigScm_ErrorObj(err_header, elm);                                \
+            return SCM_FALSE;                                                \
+        } else if (NULLP(CDR(lst))) {                                        \
+            return elm;                                                      \
+        }                                                                    \
+                                                                             \
+        /* 2+ */                                                             \
+        accum = extract(elm);                                                \
+        rest = CDR(lst);                                                     \
+        do {                                                                 \
+            elm = ScmOp_eval(CAR(rest), env);                                \
+            rest = CDR(rest);                                                \
+            if (!validp(elm)) {                                              \
+                SigScm_ErrorObj(err_header, elm);                            \
+                return SCM_FALSE;                                            \
+            }                                                                \
+            accum = fexp;                                                    \
+        } while (!NULLP(rest));                                              \
+                                                                             \
+        return make(accum);                                                  \
+    } while (/* CONSTCOND */ 0)
 
 /*=======================================
    Function Declarations

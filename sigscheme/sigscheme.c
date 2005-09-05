@@ -332,6 +332,23 @@ void SigScm_Initialize(void)
     =======================================================================*/
     Scm_RegisterFuncEvaledList("write-with-shared-structure", ScmOp_SRFI38_write_with_shared_structure);
 #endif
+#if SCM_USE_SRFI60
+    /*=======================================================================
+      SRFI-60 Procedures
+    =======================================================================*/
+    Scm_RegisterFuncRawList("logand" , ScmOp_SRFI60_logand);
+    Scm_RegisterFuncRawList("logior" , ScmOp_SRFI60_logior);
+    Scm_RegisterFuncRawList("logxor" , ScmOp_SRFI60_logxor);
+    Scm_RegisterFunc1("lognot"       , ScmOp_SRFI60_lognot);
+    Scm_RegisterFunc3("bitwise-if"   , ScmOp_SRFI60_bitwise_if);
+    Scm_RegisterFunc2("logtest"      , ScmOp_SRFI60_logtest);
+    SCM_DEFINE_ALIAS("bitwise-and"   , "logand");
+    SCM_DEFINE_ALIAS("bitwise-ior"   , "logior");
+    SCM_DEFINE_ALIAS("bitwise-xor"   , "logxor");
+    SCM_DEFINE_ALIAS("bitwise-not"   , "lognot");
+    SCM_DEFINE_ALIAS("bitwise-merge" , "bitwise-if");
+    SCM_DEFINE_ALIAS("any-bits-set?" , "logtest");
+#endif
 
 #if SCM_COMPAT_SIOD
     /*=======================================================================
@@ -342,10 +359,10 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc1("symbol-value"         , ScmOp_symbol_value);
     Scm_RegisterFunc2("set-symbol-value!"    , ScmOp_set_symbol_value);
     Scm_RegisterFunc2("="                    , ScmOp_siod_eql);
-    Scm_RegisterFunc2("bit-and"              , ScmOp_bit_and);
-    Scm_RegisterFunc2("bit-or"               , ScmOp_bit_or);
-    Scm_RegisterFunc2("bit-xor"              , ScmOp_bit_xor);
-    Scm_RegisterFunc1("bit-not"              , ScmOp_bit_not);
+    SCM_DEFINE_ALIAS("bit-and"               , "logand");
+    SCM_DEFINE_ALIAS("bit-or"                , "logior");
+    SCM_DEFINE_ALIAS("bit-xor"               , "logxor");
+    SCM_DEFINE_ALIAS("bit-not"               , "lognot");
     Scm_RegisterFuncEvaledList("the-environment" , ScmOp_the_environment);
     Scm_RegisterFunc1("%%closure-code"           , ScmOp_closure_code);
     Scm_RegisterFuncEvaledList("verbose"         , ScmOp_verbose);

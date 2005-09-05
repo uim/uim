@@ -71,12 +71,18 @@ typedef void (*ScmCFunc) (void);
 #define SCM_USE_SRFI8           1  /* use SRFI-8 receive procedure written in C */
 #define SCM_USE_SRFI23          1  /* use SRFI-23 error procedure written in C */
 #define SCM_USE_SRFI38          1  /* use SRFI-38 write/ss written in C */
+#define SCM_USE_SRFI60          1  /* use SRFI-60 integers as bits written in C*/
 #define SCM_USE_NONSTD_FEATURES 1  /* use Non-R5RS standard features */
 #define SCM_COMPAT_SIOD         1  /* use SIOD compatible features */
 #define SCM_COMPAT_SIOD_BUGS    1  /* emulate the buggy behaviors of SIOD */
 #define SCM_STRICT_R5RS         0  /* use strict R5RS check */
 #define SCM_STRICT_ARGCHECK     0  /* enable strict argument check */
 #define SCM_ACCESSOR_ASSERT     0  /* enable strict type check with accessor */
+
+/* dependency resolution */
+#if SCM_COMPAT_SIOD
+#define SCM_USE_SRFI60          1
+#endif
 
 int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
 #define SCM_ASSERT(cond) \
@@ -94,6 +100,10 @@ int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
     (SCM_CONS((elm1), SCM_LIST_3(elm2, elm3, elm4)))
 #define SCM_LIST_5(elm1, elm2, elm3, elm4, elm5) \
     (SCM_CONS((elm1), SCM_LIST_4(elm2, elm3, elm4, elm5)))
+
+#define SCM_DEFINE_ALIAS(newsym, sym)                                        \
+    (SCM_SYMBOL_SET_VCELL(Scm_Intern(newsym),                                \
+                          SCM_SYMBOL_VCELL(Scm_Intern(sym))))
 
 /*=======================================
    Function Declarations
@@ -377,16 +387,21 @@ ScmObj ScmOp_SRFI23_error(ScmObj args, ScmObj env);
 /* operations-srfi38.c */
 ScmObj ScmOp_SRFI38_write_with_shared_structure(ScmObj arg, ScmObj env);
 #endif
+#if SCM_USE_SRFI60
+/* operations-srfi60.c */
+ScmObj ScmOp_SRFI60_logand(ScmObj args, ScmObj env);
+ScmObj ScmOp_SRFI60_logior(ScmObj args, ScmObj env);
+ScmObj ScmOp_SRFI60_logxor(ScmObj args, ScmObj env);
+ScmObj ScmOp_SRFI60_lognot(ScmObj n);
+ScmObj ScmOp_SRFI60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1);
+ScmObj ScmOp_SRFI60_logtest(ScmObj j, ScmObj k);
+#endif
 #if SCM_COMPAT_SIOD
 /* operations-siod.c */
 ScmObj ScmOp_symbol_boundp(ScmObj obj);
 ScmObj ScmOp_symbol_value(ScmObj var);
 ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val);
 ScmObj ScmOp_siod_eql(ScmObj obj1, ScmObj obj2);
-ScmObj ScmOp_bit_and(ScmObj obj1, ScmObj obj2);
-ScmObj ScmOp_bit_or(ScmObj obj1, ScmObj obj2);
-ScmObj ScmOp_bit_xor(ScmObj obj1, ScmObj obj2);
-ScmObj ScmOp_bit_not(ScmObj obj);
 ScmObj ScmOp_the_environment(ScmObj arg, ScmObj env);
 ScmObj ScmOp_closure_code(ScmObj closure);
 ScmObj ScmOp_verbose(ScmObj args, ScmObj env);
