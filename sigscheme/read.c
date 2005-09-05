@@ -32,6 +32,22 @@
  *  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  *  SUCH DAMAGE.
 ===========================================================================*/
+/*
+ * FIXME: Large fixed-size buffer on stack without limit checking
+ *
+ * Fix some functions contained in this file since:
+ *
+ * - danger
+ * - some embedded platform cannot allocate such large stack (approx. 20KB)
+ * - inefficient from the viewpoint of memory locality (cache, page, power
+ *   consumption etc)
+ *
+ * Search "FIXME" on this file to locate the codes. I wonder other Scheme
+ * implementations may have sophisticated code. Please consider porting them to
+ * save development cost, since this part is not the primary value of
+ * SigScheme.  -- YamaKen 2005-09-05
+ */
+
 /*=======================================
   System Include
 =======================================*/
@@ -321,7 +337,7 @@ static ScmObj read_char(ScmObj port)
 
 static ScmObj read_string(ScmObj port)
 {
-    char  stringbuf[1024];
+    char  stringbuf[1024]; /* FIXME! */
     int   stringlen = 0;
     int   c = 0;
 
@@ -419,7 +435,7 @@ static ScmObj read_number_or_symbol(ScmObj port)
 
 static char *read_word(ScmObj port)
 {
-    char  stringbuf[1024];
+    char  stringbuf[1024];  /* FIXME! */
     int   stringlen = 0;
     int   c = 0;
     char *dst = NULL;
@@ -450,7 +466,7 @@ static char *read_word(ScmObj port)
 
 static char *read_char_sequence(ScmObj port)
 {
-    char  stringbuf[1024];
+    char  stringbuf[1024];  /* FIXME! */
     int   stringlen = 0;
     int   c = 0;
     char *dst = NULL;
