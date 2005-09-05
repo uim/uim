@@ -592,7 +592,7 @@ void SigScm_GC_UnprotectStack(ScmObj *stack_start)
 /*===========================================================================
   Allocate Structure Functions
 ===========================================================================*/
-ScmObj CONS(ScmObj a, ScmObj b)
+ScmObj Scm_NewCons(ScmObj a, ScmObj b)
 {
     ScmObj obj = SCM_NULL;
     SCM_NEW_OBJ_INTERNAL(obj);
