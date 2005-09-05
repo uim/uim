@@ -167,20 +167,23 @@ extern ScmObj SigScm_features;
  */
 #define SCM_REDUCE(fexp, ridentity, lst, env,                                \
                    ctype, validp, extract, make, err_header)                 \
-    SCM_REDUCE_EXT((accum = (fexp)), ridentity, lst, env,                    \
+    SCM_REDUCE_EXT((accum = (fexp)),                                         \
+                   return make(ridentity),                                   \
+                   return scm_elm,                                           \
+                   lst, env,                                                 \
                    ctype, validp, extract, make,                             \
-                   (make(ridentity)), scm_elm, err_header)
+                   err_header)
 
-#define SCM_REDUCE_EXT(loop_exp, ridentity, lst, env,                        \
+#define SCM_REDUCE_EXT(exp_loop, exp0, exp1, lst, env,                       \
                        ctype, validp, extract, make,                         \
-                       res0, res1, err_header)                               \
+                       err_header)                                           \
     do {                                                                     \
         ScmObj scm_elm, rest;                                                \
         ctype elm, accum;                                                    \
                                                                              \
         /* 0 */                                                              \
         if (NULLP(lst)) {                                                    \
-            return (res0);                                                   \
+            exp0;                                                            \
         }                                                                    \
                                                                              \
         /* 1 */                                                              \
@@ -190,7 +193,7 @@ extern ScmObj SigScm_features;
             SigScm_ErrorObj(err_header, scm_elm);                            \
             return SCM_FALSE;                                                \
         } else if (NULLP(CDR(lst))) {                                        \
-            return (res1);                                                   \
+            exp1;                                                            \
         }                                                                    \
                                                                              \
         /* 2+ */                                                             \
@@ -203,7 +206,7 @@ extern ScmObj SigScm_features;
                 return SCM_FALSE;                                            \
             }                                                                \
             elm = extract(scm_elm);                                          \
-            (loop_exp);                                                      \
+            exp_loop;                                                        \
         } while (!NULLP(rest));                                              \
                                                                              \
         return make(accum);                                                  \
