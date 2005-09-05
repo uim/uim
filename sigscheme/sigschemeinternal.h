@@ -157,41 +157,56 @@ extern ScmObj SigScm_features;
 #define CHECK_4_ARGS(arg) (CHECK_3_ARGS(arg) || NULLP(CDR(CDDR(arg))))
 #define CHECK_5_ARGS(arg) (CHECK_4_ARGS(arg) || NULLP(CDDR(CDDR(arg))))
 
+/*
+ * TODO: Simplify implementation of following functions with SCM_REDUCE and
+ * SCM_REDUCE_EXT. Anyone?
+ *
+ * - ScmOp_add, ScmOp_multiply, ScmOp_subtract, ScmOp_divide, ScmOp_equal,
+ *   ScmOp_less, ScmOp_greater, ScmOp_less_eq, ScmOp_greater_eq, ScmOp_max,
+ *   ScmOp_min
+ */
 #define SCM_REDUCE(fexp, ridentity, lst, env,                                \
                    ctype, validp, extract, make, err_header)                 \
+    SCM_REDUCE_EXT((accum = (fexp)), ridentity, lst, env,                    \
+                   ctype, validp, extract, make,                             \
+                   (make(ridentity)), scm_elm, err_header)
+
+#define SCM_REDUCE_EXT(loop_exp, ridentity, lst, env,                        \
+                       ctype, validp, extract, make,                         \
+                       res0, res1, err_header)                               \
     do {                                                                     \
-        ScmObj elm, rest;                                                    \
-        ctype lhs, rhs;                                                      \
+        ScmObj scm_elm, rest;                                                \
+        ctype elm, accum;                                                    \
                                                                              \
         /* 0 */                                                              \
         if (NULLP(lst)) {                                                    \
-            return make(ridentity);                                          \
+            return (res0);                                                   \
         }                                                                    \
                                                                              \
         /* 1 */                                                              \
-        elm = ScmOp_eval(CAR(lst), env);                                     \
-        if (!validp(elm)) {                                                  \
-            SigScm_ErrorObj(err_header, elm);                                \
+        scm_elm = ScmOp_eval(CAR(lst), env);                                 \
+        accum = elm = extract(scm_elm);                                      \
+        if (!validp(scm_elm)) {                                              \
+            SigScm_ErrorObj(err_header, scm_elm);                            \
             return SCM_FALSE;                                                \
         } else if (NULLP(CDR(lst))) {                                        \
-            return elm;                                                      \
+            return (res1);                                                   \
         }                                                                    \
                                                                              \
         /* 2+ */                                                             \
-        rhs = extract(elm);                                                  \
         rest = CDR(lst);                                                     \
         do {                                                                 \
-            elm = ScmOp_eval(CAR(rest), env);                                \
+            scm_elm = ScmOp_eval(CAR(rest), env);                            \
             rest = CDR(rest);                                                \
-            if (!validp(elm)) {                                              \
-                SigScm_ErrorObj(err_header, elm);                            \
+            if (!validp(scm_elm)) {                                          \
+                SigScm_ErrorObj(err_header, scm_elm);                        \
                 return SCM_FALSE;                                            \
             }                                                                \
-            lhs = extract(elm);                                              \
-            rhs = (fexp);                                                    \
+            elm = extract(scm_elm);                                          \
+            (loop_exp);                                                      \
         } while (!NULLP(rest));                                              \
                                                                              \
-        return make(rhs);                                                    \
+        return make(accum);                                                  \
     } while (/* CONSTCOND */ 0)
 
 /*=======================================
