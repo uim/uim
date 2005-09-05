@@ -79,7 +79,7 @@ static ScmObj list_gettailcons(ScmObj head)
 ==============================================================================*/
 ScmObj ScmOp_SRFI1_xcons(ScmObj a, ScmObj b)
 {
-    return Scm_NewCons(b, a);
+    return CONS(b, a);
 }
 
 ScmObj ScmOp_SRFI1_cons_star(ScmObj obj, ScmObj env)
@@ -125,9 +125,9 @@ ScmObj ScmOp_SRFI1_make_list(ScmObj args, ScmObj env)
     /* then create list */
     for (i = n; 0 < i; i--) {
         if (!NULLP(fill))
-            head = Scm_NewCons(fill, head);
+            head = CONS(fill, head);
         else
-            head = Scm_NewCons(Scm_NewInt(i), head);
+            head = CONS(Scm_NewInt(i), head);
     }
 
     return head;
@@ -159,12 +159,12 @@ ScmObj ScmOp_SRFI1_list_tabulate(ScmObj args, ScmObj env)
 
         if (!NULLP(proc)) {
             /* evaluate (proc num) */
-            num = ScmOp_eval(Scm_NewCons(proc,
-                                         Scm_NewCons(num, SCM_NULL)),
+            num = ScmOp_eval(CONS(proc,
+                                         CONS(num, SCM_NULL)),
                              env);
         }
 
-        head = Scm_NewCons(num, head);
+        head = CONS(num, head);
     }
 
     return head;
@@ -187,7 +187,7 @@ ScmObj ScmOp_SRFI1_list_copy(ScmObj list)
             obj = ScmOp_SRFI1_list_copy(obj);
 
         /* then create new cons */
-        obj = Scm_NewCons(obj, SCM_NULL);
+        obj = CONS(obj, SCM_NULL);
         if (!NULLP(tail)) {
             SET_CDR(tail, obj);
             tail = obj;
@@ -252,7 +252,7 @@ ScmObj ScmOp_SRFI1_iota(ScmObj args, ScmObj env)
     start = NULLP(scm_start) ? 0 : SCM_INT_VALUE(scm_start);
     step  = NULLP(scm_step)  ? 1 : SCM_INT_VALUE(scm_step);
     for (i = count - 1; 0 <= i; i--) {
-        head = Scm_NewCons(Scm_NewInt(start + i*step), head);
+        head = CONS(Scm_NewInt(start + i*step), head);
     }
 
     return head;

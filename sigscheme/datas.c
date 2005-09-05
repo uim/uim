@@ -592,7 +592,7 @@ void SigScm_GC_UnprotectStack(ScmObj *stack_start)
 /*===========================================================================
   Allocate Structure Functions
 ===========================================================================*/
-ScmObj Scm_NewCons(ScmObj a, ScmObj b)
+ScmObj CONS(ScmObj a, ScmObj b)
 {
     ScmObj obj = SCM_NULL;
     SCM_NEW_OBJ_INTERNAL(obj);
@@ -866,7 +866,7 @@ ScmObj Scm_Intern(const char *name)
     sym = Scm_NewSymbol(symname, SCM_UNBOUND);
 
     /* And Append it to the head of symbol_hash */
-    sym_list = Scm_NewCons(sym, sym_list);
+    sym_list = CONS(sym, sym_list);
     symbol_hash[n] = sym_list;
 
     return sym;

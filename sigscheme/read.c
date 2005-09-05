@@ -302,11 +302,11 @@ static ScmObj read_list(ScmObj port, int closeParen)
         /* Append item to the list_tail. */
         if (NULLP(list_tail)) {
             /* create new list */
-            list_head = Scm_NewCons(item, SCM_NULL);
+            list_head = CONS(item, SCM_NULL);
             list_tail = list_head;
         } else {
             /* update list_tail */
-            SET_CDR(list_tail, Scm_NewCons(item, SCM_NULL));
+            SET_CDR(list_tail, CONS(item, SCM_NULL));
             list_tail = CDR(list_tail);
         }
     }

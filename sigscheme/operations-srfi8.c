@@ -90,12 +90,12 @@ ScmObj ScmOp_SRFI8_receive(ScmObj args, ScmObj *envp)
     if (VALUEPACKETP(actuals))
         actuals = SCM_VALUEPACKET_VALUES(actuals);
     else
-        actuals = Scm_NewCons(actuals, SCM_NULL);
+        actuals = CONS(actuals, SCM_NULL);
 
-    closure = Scm_NewClosure(Scm_NewCons(formals, body), env);
+    closure = Scm_NewClosure(CONS(formals, body), env);
 
     /* set new env */
     (*envp) = env;
 
-    return Scm_NewCons(closure, actuals);
+    return CONS(closure, actuals);
 }

@@ -791,7 +791,7 @@ ScmObj ScmOp_pairp(ScmObj obj)
 
 ScmObj ScmOp_cons(ScmObj car, ScmObj cdr)
 {
-    return Scm_NewCons(car, cdr);
+    return CONS(car, cdr);
 }
 
 ScmObj ScmOp_setcar(ScmObj pair, ScmObj car)
@@ -1012,7 +1012,7 @@ ScmObj ScmOp_append(ScmObj args, ScmObj env)
     for (; !NULLP(CDR(args)); args = CDR(args)) {
         for (ls = CAR(args); CONSP(ls); ls = CDR(ls)) {
             obj = CAR(ls);
-            *ret_tail = Scm_NewCons(obj, SCM_NULL);
+            *ret_tail = CONS(obj, SCM_NULL);
             ret_tail = &CDR(*ret_tail);
         }
         if (!NULLP(ls))
@@ -1031,7 +1031,7 @@ ScmObj ScmOp_reverse(ScmObj list)
     ScmObj ret_list  = SCM_NULL;
 
     for (; CONSP(list); list = CDR(list))
-        ret_list = Scm_NewCons(CAR(list), ret_list);
+        ret_list = CONS(CAR(list), ret_list);
 
     if (!NULLP(list))
         SigScm_ErrorObj("reverse: got improper list: ", list);
@@ -1061,7 +1061,7 @@ ScmObj ScmOp_list_tail(ScmObj list, ScmObj scm_k)
 
     if (EQ(ret, SCM_INVALID))
         SigScm_ErrorObj("list-tail: out of range or bad list, arglist is: ",
-                        Scm_NewCons(list, scm_k));
+                        CONS(list, scm_k));
     return ret;
 }
 
@@ -1075,7 +1075,7 @@ ScmObj ScmOp_list_ref(ScmObj list, ScmObj scm_k)
     list_tail = ScmOp_listtail_internal(list, SCM_INT_VALUE(scm_k));
     if (EQ(list_tail, SCM_INVALID))
         SigScm_ErrorObj("list-ref : out of range or bad list, arglist is: ",
-                        Scm_NewCons(list, scm_k));
+                        CONS(list, scm_k));
 
     return CAR(list_tail);
 }
@@ -1593,7 +1593,7 @@ ScmObj ScmOp_string2list(ScmObj string)
         memset(new_ch, 0, sizeof(char) * (ch_end_ptr - ch_start_ptr + 1));
         strncpy(new_ch, ch_start_ptr, (sizeof(char) * (ch_end_ptr - ch_start_ptr)));
 
-        next = Scm_NewCons(Scm_NewChar(new_ch), SCM_NULL);
+        next = CONS(Scm_NewChar(new_ch), SCM_NULL);
         if (prev)
             SET_CDR(prev, next);
         else
@@ -1788,7 +1788,7 @@ ScmObj ScmOp_vector2list(ScmObj vec)
         return SCM_NULL;
 
     for (i = 0; i < c_len; i++) {
-        next = Scm_NewCons(v[i], SCM_NULL);
+        next = CONS(v[i], SCM_NULL);
 
         if (prev) {
             SET_CDR(prev, next);
@@ -1874,10 +1874,10 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
 
             /* create list for "apply" op */
             tmp = SCM_LIST_2(proc,
-                             Scm_NewCons(tmp, SCM_NULL));
+                             CONS(tmp, SCM_NULL));
 
             /* apply proc */
-            ret = Scm_NewCons(ScmOp_apply(tmp, env), ret);
+            ret = CONS(ScmOp_apply(tmp, env), ret);
         }
         return ScmOp_reverse(ret);
     }
@@ -1896,7 +1896,7 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
                 return ScmOp_reverse(ret);
             }
 
-            arg1 = Scm_NewCons(CAR(tmp), arg1);
+            arg1 = CONS(CAR(tmp), arg1);
             SCM_VECTOR_SET_CREF(arg_vector, i, CDR(tmp));
         }
 
@@ -1904,7 +1904,7 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
         arg1 = ScmOp_reverse(arg1);
 
         /* apply proc to arg1 */
-        ret = Scm_NewCons(ScmOp_apply(SCM_LIST_2(proc, arg1), env),
+        ret = CONS(ScmOp_apply(SCM_LIST_2(proc, arg1), env),
                           ret);
     }
 
@@ -1950,7 +1950,7 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env)
     }
 
     /* execute (proc cont) */
-    SET_CDR(arg, Scm_NewCons(cont, SCM_NULL));
+    SET_CDR(arg, CONS(cont, SCM_NULL));
 
     return ScmOp_eval(arg, env);
 }
@@ -1975,12 +1975,12 @@ ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp)
         SigScm_ErrorObj("call-with-values: too few arguments: ", argl);
 
     /* make the list (producer) and evaluate it */
-    cons_wrapper = Scm_NewCons(CAR(argl), SCM_NULL);
+    cons_wrapper = CONS(CAR(argl), SCM_NULL);
     vals = ScmOp_eval(cons_wrapper, *envp);
 
     if (!VALUEPACKETP(vals)) {
         /* got back a single value */
-        vals = Scm_NewCons(vals, SCM_NULL);
+        vals = CONS(vals, SCM_NULL);
     } else {
         /* extract */
         vals = SCM_VALUEPACKET_VALUES(vals);

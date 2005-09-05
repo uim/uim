@@ -98,7 +98,7 @@ ScmObj ScmOp_call_with_input_file(ScmObj filepath, ScmObj proc)
     
     /* (apply proc (port)) */
     ret = ScmOp_apply(SCM_LIST_2(proc,
-                                 Scm_NewCons(port, SCM_NULL)),
+                                 CONS(port, SCM_NULL)),
                       SCM_NULL);
 
     /* close port */
@@ -122,7 +122,7 @@ ScmObj ScmOp_call_with_output_file(ScmObj filepath, ScmObj proc)
     
     /* (apply proc (port)) */
     ret = ScmOp_apply(SCM_LIST_2(proc,
-                                 Scm_NewCons(port, SCM_NULL)),
+                                 CONS(port, SCM_NULL)),
                       SCM_NULL);
 
     /* close port */
@@ -173,7 +173,7 @@ ScmObj ScmOp_with_input_from_file(ScmObj filepath, ScmObj thunk)
     
     /* (apply thunk ())*/
     ret = ScmOp_apply(SCM_LIST_2(thunk,
-                                 Scm_NewCons(SCM_NULL, SCM_NULL)),
+                                 CONS(SCM_NULL, SCM_NULL)),
                       SCM_NULL);
 
     /* close port */
@@ -201,7 +201,7 @@ ScmObj ScmOp_with_output_to_file(ScmObj filepath, ScmObj thunk)
     
     /* (apply thunk ())*/
     ret = ScmOp_apply(SCM_LIST_2(thunk,
-                                 Scm_NewCons(SCM_NULL, SCM_NULL)),
+                                 CONS(SCM_NULL, SCM_NULL)),
                       SCM_NULL);
 
     /* close port */
@@ -533,7 +533,7 @@ ScmObj ScmOp_require(ScmObj filename)
         ScmOp_load(filename);
 
         /* record to SigScm_features */
-        SCM_SYMBOL_VCELL(SigScm_features) = Scm_NewCons(loaded_str, SCM_SYMBOL_VCELL(SigScm_features));
+        SCM_SYMBOL_VCELL(SigScm_features) = CONS(loaded_str, SCM_SYMBOL_VCELL(SigScm_features));
     }
 
     /* now no need to protect stack */
@@ -565,7 +565,7 @@ ScmObj ScmOp_provide(ScmObj feature)
         SigScm_ErrorObj("provide : string required but got ", feature);
 
     /* record to SigScm_features */
-    SCM_SYMBOL_VCELL(SigScm_features) = Scm_NewCons(feature, SCM_SYMBOL_VCELL(SigScm_features));
+    SCM_SYMBOL_VCELL(SigScm_features) = CONS(feature, SCM_SYMBOL_VCELL(SigScm_features));
 
     return SCM_TRUE;
 }

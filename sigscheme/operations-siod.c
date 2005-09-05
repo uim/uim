@@ -142,9 +142,9 @@ ScmObj ScmOp_closure_code(ScmObj closure)
     if (NULLP(CDDR(exp)))
 	body = CADR(exp);
     else
-	body = Scm_NewCons(Scm_Intern("begin"), CDR(exp));
+	body = CONS(Scm_Intern("begin"), CDR(exp));
     
-    return Scm_NewCons(CAR(exp), body);
+    return CONS(CAR(exp), body);
 }
 
 ScmObj ScmOp_verbose(ScmObj args, ScmObj env)

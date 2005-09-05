@@ -102,8 +102,8 @@ ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
         /* dot list appears */
         if (!NULLP(CDR(tmp_vars)) && !CONSP(CDR(tmp_vars))) {
             /* create new value */
-            SET_CDR(tmp_vals, Scm_NewCons(CDR(tmp_vals),
-                                          SCM_NULL));
+            SET_CDR(tmp_vals, CONS(CDR(tmp_vals),
+                                   SCM_NULL));
         }
 
         tmp_vars = CDR(tmp_vars);
@@ -111,13 +111,13 @@ ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
     }
 
     /* create new frame */
-    frame = Scm_NewCons(vars, vals);
+    frame = CONS(vars, vals);
 
     /* add to env */
     if (NULLP(env))
-        env = Scm_NewCons(frame, SCM_NULL);
+        env = CONS(frame, SCM_NULL);
     else if (CONSP(env))
-        env = Scm_NewCons(frame, env);
+        env = CONS(frame, env);
     else
         SigScm_Error("Broken environment.\n");
 
@@ -135,16 +135,16 @@ ScmObj add_environment(ScmObj var, ScmObj val, ScmObj env)
 
     /* add (var val) pair to the newest frame in env */
     if (NULLP(env)) {
-        newest_frame = Scm_NewCons(Scm_NewCons(var, SCM_NULL),
-                                   Scm_NewCons(val, SCM_NULL));
-        env = Scm_NewCons(newest_frame,
+        newest_frame = CONS(CONS(var, SCM_NULL),
+                            CONS(val, SCM_NULL));
+        env = CONS(newest_frame,
                           SCM_NULL);
     } else if (CONSP(env)) {
         newest_frame = CAR(env);
-        new_varlist  = Scm_NewCons(var, CAR(newest_frame));
-        new_vallist  = Scm_NewCons(val, CDR(newest_frame));
+        new_varlist  = CONS(var, CAR(newest_frame));
+        new_vallist  = CONS(val, CDR(newest_frame));
 
-        tmp = Scm_NewCons(Scm_NewCons(new_varlist, new_vallist), CDR(env));
+        tmp = CONS(CONS(new_varlist, new_vallist), CDR(env));
         *env = *tmp;
     } else {
         SigScm_Error("broken environment\n");
@@ -393,9 +393,9 @@ eval_loop:
             
             if (SYMBOLP(arg)) {
                 /* (1) : <variable> */
-                env = extend_environment(Scm_NewCons(arg, SCM_NULL),
-                                         Scm_NewCons(map_eval(CDR(obj), env),
-                                                     SCM_NULL),
+                env = extend_environment(CONS(arg, SCM_NULL),
+                                         CONS(map_eval(CDR(obj), env),
+                                              SCM_NULL),
                                          SCM_CLOSURE_ENV(tmp));
             } else if (CONSP(arg)) {
                 /*
@@ -555,8 +555,8 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
         args = CAR(SCM_CLOSURE_EXP(proc)); /* arg is <formals> */
         if (SYMBOLP(args)) {
             /* (1) : <variable> */
-            env = extend_environment(Scm_NewCons(args, SCM_NULL),
-                                     Scm_NewCons(obj, SCM_NULL),
+            env = extend_environment(CONS(args, SCM_NULL),
+                                     CONS(obj, SCM_NULL),
                                      SCM_CLOSURE_ENV(proc));
         } else if (CONSP(args)) {
             /*
@@ -637,11 +637,11 @@ ScmObj map_eval(ScmObj args, ScmObj env)
         return SCM_NULL;
 
     /* eval each element of args */
-    result  = Scm_NewCons(ScmOp_eval(CAR(args), env), SCM_NULL);
+    result  = CONS(ScmOp_eval(CAR(args), env), SCM_NULL);
     tail    = result;
     newtail = SCM_NULL;
     for (args = CDR(args); !NULLP(args); args = CDR(args)) {
-        newtail = Scm_NewCons(ScmOp_eval(CAR(args), env), SCM_NULL);
+        newtail = CONS(ScmOp_eval(CAR(args), env), SCM_NULL);
         SET_CDR(tail, newtail);
         tail = newtail;
     }
@@ -681,7 +681,7 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
         ScmObj src = qexpr; \
         ret_tail = &ret_list; \
         while (!EQ(src, end)) { \
-            *ret_tail = Scm_NewCons(CAR(src), SCM_NULL); \
+            *ret_tail = CONS(CAR(src), SCM_NULL); \
             ret_tail = &CDR(*ret_tail); \
             src = CDR(src); \
         } \
@@ -735,7 +735,7 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
 
         if (QQUOTE_IS_VERBATIM(result)) {
             if (!qquote_copy_delayed()) {
-                *ret_tail = Scm_NewCons(obj, SCM_NULL);
+                *ret_tail = CONS(obj, SCM_NULL);
                 ret_tail = &CDR(*ret_tail);
             }
         } else {
@@ -751,7 +751,7 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
                     SigScm_ErrorObj("unquote-splicing: bad list: ",
                                     result);
             } else {
-                *ret_tail = Scm_NewCons(result, SCM_NULL);
+                *ret_tail = CONS(result, SCM_NULL);
                 ret_tail = &CDR(*ret_tail);
             }
         }
@@ -836,8 +836,8 @@ static ScmObj qquote_vector(ScmObj src, ScmObj env, int nest)
                     SigScm_Error("unquote-splicing: bad list");
 
                 growth += SCM_INT_VALUE(splice_len) - 1;
-                splices = Scm_NewCons(Scm_NewCons(result, Scm_NewInt(i)),
-                                      splices);
+                splices = CONS(CONS(result, Scm_NewInt(i)),
+                               splices);
             }
         }
         if (!NULLP(splices)) {
@@ -1025,7 +1025,7 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp)
                     SigScm_ErrorObj("cond : the value of exp after => must be the procedure but got ", proc);
 
                 return ScmOp_apply(SCM_LIST_2(proc,
-                                              Scm_NewCons(test, SCM_NULL)),
+                                              CONS(test, SCM_NULL)),
                                    env);
             }
 
@@ -1178,11 +1178,11 @@ ScmObj ScmExp_let(ScmObj arg, ScmObj *envp)
                 SigScm_ErrorObj("let : invalid binding form : ", binding);
 #else
             if (NULLP(CDR(binding)))
-                SET_CDR(binding, Scm_NewCons(SCM_NULL, SCM_NULL));
+                SET_CDR(binding, CONS(SCM_NULL, SCM_NULL));
 #endif
 
-            vars = Scm_NewCons(CAR(binding), vars);
-            vals = Scm_NewCons(ScmOp_eval(CADR(binding), env), vals);
+            vars = CONS(CAR(binding), vars);
+            vals = CONS(ScmOp_eval(CADR(binding), env), vals);
         }
 
         /* create new environment for */
@@ -1205,21 +1205,21 @@ named_let:
     body     = CDDR(arg);
     for (; !NULLP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
-        vars = Scm_NewCons(CAR(binding), vars);
-        vals = Scm_NewCons(CADR(binding), vals);
+        vars = CONS(CAR(binding), vars);
+        vals = CONS(CADR(binding), vals);
     }
 
     vars = ScmOp_reverse(vars);
     vals = ScmOp_reverse(vals);
 
     /* (define (<variable> <variable1> <variable2> ...>) <body>) */
-    ScmExp_define(Scm_NewCons(Scm_NewCons(CAR(arg),
-                                          vars),
-                              body),
+    ScmExp_define(CONS(CONS(CAR(arg),
+                            vars),
+                       body),
                   env);
 
     /* (func <init1> <init2> ...) */
-    return Scm_NewCons(CAR(arg), vals);
+    return CONS(CAR(arg), vals);
 }
 
 ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp)
@@ -1254,11 +1254,11 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp)
                 SigScm_ErrorObj("let* : invalid binding form : ", binding);
 #else
             if (NULLP(CDR(binding)))
-                SET_CDR(binding, Scm_NewCons(SCM_NULL, SCM_NULL));
+                SET_CDR(binding, CONS(SCM_NULL, SCM_NULL));
 #endif
 
-            vars = Scm_NewCons(CAR(binding), SCM_NULL);
-            vals = Scm_NewCons(ScmOp_eval(CADR(binding), env), SCM_NULL);
+            vars = CONS(CAR(binding), SCM_NULL);
+            vals = CONS(ScmOp_eval(CADR(binding), env), SCM_NULL);
 
             /* add env to each time!*/
             env = extend_environment(vars, vals, env);
@@ -1317,20 +1317,20 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp)
                 SigScm_ErrorObj("letrec : invalid binding form : ", binding);
 #else
             if (NULLP(CDR(binding)))
-                SET_CDR(binding, Scm_NewCons(SCM_NULL, SCM_NULL));
+                SET_CDR(binding, CONS(SCM_NULL, SCM_NULL));
 #endif
 
             var = CAR(binding);
             val = CADR(binding);
 
             /* construct vars and vals list */
-            vars = Scm_NewCons(var, vars);
-            vals = Scm_NewCons(val, vals);
+            vars = CONS(var, vars);
+            vals = CONS(val, vals);
         }
 
         /* construct new frame for scm_letrec_env */
-        frame = Scm_NewCons(vars, vals);
-        scm_letrec_env = Scm_NewCons(frame, scm_letrec_env);
+        frame = CONS(vars, vals);
+        scm_letrec_env = CONS(frame, scm_letrec_env);
 
         /* extend environment by scm_letrec_env */
         env = extend_environment(CAR(frame), CDR(frame), env);
@@ -1423,15 +1423,15 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp)
     /* construct Environment and steps */
     for (; !NULLP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
-        vars = Scm_NewCons(CAR(binding), vars);
-        vals = Scm_NewCons(ScmOp_eval(CADR(binding), env), vals);
+        vars = CONS(CAR(binding), vars);
+        vals = CONS(ScmOp_eval(CADR(binding), env), vals);
 
         /* append <step> to steps */
         step = CDDR(binding);
         if (NULLP(step))
-            steps = Scm_NewCons(CAR(binding), steps);
+            steps = CONS(CAR(binding), steps);
         else
-            steps = Scm_NewCons(CAR(step), steps);
+            steps = CONS(CAR(step), steps);
     }
 
     /* now extend environment */
@@ -1462,7 +1462,7 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp)
              !NULLP(tmp_steps);
              tmp_steps = CDR(tmp_steps))
         {
-            vals = Scm_NewCons(ScmOp_eval(CAR(tmp_steps), env), vals);
+            vals = CONS(ScmOp_eval(CAR(tmp_steps), env), vals);
         }
         vals = ScmOp_reverse(vals);
 
@@ -1579,7 +1579,7 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj env)
 
         /* (val (lambda formals body))  */
         arg = SCM_LIST_2(val,
-                         ScmExp_lambda(Scm_NewCons(formals, body), env));
+                         ScmExp_lambda(CONS(formals, body), env));
 
         return ScmExp_define(arg, env);
     }
