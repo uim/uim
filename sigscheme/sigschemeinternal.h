@@ -157,21 +157,11 @@ extern ScmObj SigScm_features;
 #define CHECK_4_ARGS(arg) (CHECK_3_ARGS(arg) || NULLP(CDR(CDDR(arg))))
 #define CHECK_5_ARGS(arg) (CHECK_4_ARGS(arg) || NULLP(CDDR(CDDR(arg))))
 
-#define SCM_REDUCE_BY_BINOP(op, ridentity, lst, env,                         \
-                            ctype, validp, extract, make, err_header)        \
-    SCM_REDUCE_INTERNAL(((extract(elm)) op accum), ridentity, lst, env,      \
-                        ctype, validp, extract, make, err_header)
-
-#define SCM_REDUCE_BY_FUNC(f, ridentity, lst, env,                           \
-                           ctype, validp, extract, make, err_header)         \
-    SCM_REDUCE_INTERNAL(f(extract(elm), accum), ridentity, lst, env,         \
-                        ctype, validp, extract, make, err_header)
-
-#define SCM_REDUCE_INTERNAL(fexp, ridentity, lst, env,                       \
-                            ctype, validp, extract, make, err_header)        \
+#define SCM_REDUCE(fexp, ridentity, lst, env,                                \
+                   ctype, validp, extract, make, err_header)                 \
     do {                                                                     \
         ScmObj elm, rest;                                                    \
-        ctype accum;                                                         \
+        ctype lhs, rhs;                                                      \
                                                                              \
         /* 0 */                                                              \
         if (NULLP(lst)) {                                                    \
@@ -188,7 +178,7 @@ extern ScmObj SigScm_features;
         }                                                                    \
                                                                              \
         /* 2+ */                                                             \
-        accum = extract(elm);                                                \
+        rhs = extract(elm);                                                  \
         rest = CDR(lst);                                                     \
         do {                                                                 \
             elm = ScmOp_eval(CAR(rest), env);                                \
@@ -197,10 +187,11 @@ extern ScmObj SigScm_features;
                 SigScm_ErrorObj(err_header, elm);                            \
                 return SCM_FALSE;                                            \
             }                                                                \
-            accum = fexp;                                                    \
+            lhs = extract(elm);                                              \
+            rhs = (fexp);                                                    \
         } while (!NULLP(rest));                                              \
                                                                              \
-        return make(accum);                                                  \
+        return make(rhs);                                                    \
     } while (/* CONSTCOND */ 0)
 
 /*=======================================

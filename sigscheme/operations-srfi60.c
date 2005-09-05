@@ -68,23 +68,23 @@
 /* Bitwise Operations */
 ScmObj ScmOp_SRFI60_logand(ScmObj args, ScmObj env)
 {
-    SCM_REDUCE_BY_BINOP(&, 0, args, env,
-                        int, INTP, SCM_INT_VALUE, Scm_NewInt,
-                        "logand : integer required but got ");
+    SCM_REDUCE((lhs & rhs), 0, args, env,
+               int, INTP, SCM_INT_VALUE, Scm_NewInt,
+               "logand : integer required but got ");
 }
 
 ScmObj ScmOp_SRFI60_logior(ScmObj args, ScmObj env)
 {
-    SCM_REDUCE_BY_BINOP(|, 0, args, env,
-                        int, INTP, SCM_INT_VALUE, Scm_NewInt,
-                        "logior : integer required but got ");
+    SCM_REDUCE((lhs | rhs), 0, args, env,
+               int, INTP, SCM_INT_VALUE, Scm_NewInt,
+               "logior : integer required but got ");
 }
 
 ScmObj ScmOp_SRFI60_logxor(ScmObj args, ScmObj env)
 {
-    SCM_REDUCE_BY_BINOP(^, 0, args, env,
-                        int, INTP, SCM_INT_VALUE, Scm_NewInt,
-                        "logxor : integer required but got ");
+    SCM_REDUCE((lhs ^ rhs), 0, args, env,
+               int, INTP, SCM_INT_VALUE, Scm_NewInt,
+               "logxor : integer required but got ");
 }
 
 ScmObj ScmOp_SRFI60_lognot(ScmObj n)
