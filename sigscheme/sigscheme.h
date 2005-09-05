@@ -90,16 +90,16 @@ int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
 
 #define SCM_CONS(kar, kdr) (Scm_NewCons(kar, kdr))
 
-#define SCM_LIST_1(elm1) \
-    (SCM_CONS((elm1), SCM_NULL))
-#define SCM_LIST_2(elm1, elm2) \
-    (SCM_CONS((elm1), SCM_LIST_1(elm2)))
-#define SCM_LIST_3(elm1, elm2, elm3) \
-    (SCM_CONS((elm1), SCM_LIST_2(elm2, elm3)))
-#define SCM_LIST_4(elm1, elm2, elm3, elm4) \
-    (SCM_CONS((elm1), SCM_LIST_3(elm2, elm3, elm4)))
-#define SCM_LIST_5(elm1, elm2, elm3, elm4, elm5) \
-    (SCM_CONS((elm1), SCM_LIST_4(elm2, elm3, elm4, elm5)))
+#define SCM_LIST_1(elm0) \
+    (SCM_CONS((elm0), SCM_NULL))
+#define SCM_LIST_2(elm0, elm1) \
+    (SCM_CONS((elm0), SCM_LIST_1(elm1)))
+#define SCM_LIST_3(elm0, elm1, elm2) \
+    (SCM_CONS((elm0), SCM_LIST_2(elm1, elm2)))
+#define SCM_LIST_4(elm0, elm1, elm2, elm3) \
+    (SCM_CONS((elm0), SCM_LIST_3(elm1, elm2, elm3)))
+#define SCM_LIST_5(elm0, elm1, elm2, elm3, elm4) \
+    (SCM_CONS((elm0), SCM_LIST_4(elm1, elm2, elm3, elm4)))
 
 #define SCM_DEFINE_ALIAS(newsym, sym)                                        \
     (SCM_SYMBOL_SET_VCELL(Scm_Intern(newsym),                                \
