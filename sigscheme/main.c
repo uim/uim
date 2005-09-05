@@ -76,7 +76,7 @@ static void repl(void)
          !EOFP(s_exp);
          s_exp = SigScm_Read(stdin_port))
     {
-        result = ScmOp_eval(s_exp, SCM_NULL);
+        result = EVAL(s_exp, SCM_NULL);
 #if SCM_USE_SRFI38
         SigScm_WriteToPortWithSharedStructure(stdout_port, result);
 #else

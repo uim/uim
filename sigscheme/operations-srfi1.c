@@ -159,9 +159,9 @@ ScmObj ScmOp_SRFI1_list_tabulate(ScmObj args, ScmObj env)
 
         if (!NULLP(proc)) {
             /* evaluate (proc num) */
-            num = ScmOp_eval(CONS(proc,
-                                  CONS(num, SCM_NULL)),
-                             env);
+            num = EVAL(CONS(proc,
+                            CONS(num, SCM_NULL)),
+                       env);
         }
 
         head = CONS(num, head);

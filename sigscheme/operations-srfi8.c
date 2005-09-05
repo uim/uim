@@ -85,7 +85,7 @@ ScmObj ScmOp_SRFI8_receive(ScmObj args, ScmObj *envp)
 
     /* TODO: Check: do we have to extend the environment first?  The SRFI-8
      * document contradicts itself on this part. */
-    actuals = ScmOp_eval(expr, env);
+    actuals = EVAL(expr, env);
 
     if (VALUEPACKETP(actuals))
         actuals = SCM_VALUEPACKET_VALUES(actuals);

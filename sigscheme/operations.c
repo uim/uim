@@ -257,7 +257,7 @@ ScmObj ScmOp_add(ScmObj args, ScmObj env)
     ScmObj operand = SCM_NULL;
 
     for (; !NULLP(args); args = CDR(args)) {
-        operand = ScmOp_eval(CAR(args), env);
+        operand = EVAL(CAR(args), env);
         if (!INTP(operand))
             SigScm_ErrorObj("+ : integer required but got ", operand);
         result += SCM_INT_VALUE(operand);
@@ -272,7 +272,7 @@ ScmObj ScmOp_multiply(ScmObj args, ScmObj env)
     ScmObj operand = SCM_NULL;
 
     for (; !NULLP(args); args = CDR(args)) {
-        operand = ScmOp_eval(CAR(args), env);
+        operand = EVAL(CAR(args), env);
         if (!INTP(operand))
             SigScm_ErrorObj("* : integer required but got ", operand);
         result *= SCM_INT_VALUE(operand);
@@ -289,7 +289,7 @@ ScmObj ScmOp_subtract(ScmObj args, ScmObj env)
     if (NULLP(args))
         SigScm_Error("- : at least 1 argument required\n");
 
-    result = SCM_INT_VALUE(ScmOp_eval(CAR(args), env));
+    result = SCM_INT_VALUE(EVAL(CAR(args), env));
     args = CDR(args);
 
     /* single arg */
@@ -297,7 +297,7 @@ ScmObj ScmOp_subtract(ScmObj args, ScmObj env)
         return Scm_NewInt(-result);
 
     for (; !NULLP(args); args = CDR(args)) {
-        operand = ScmOp_eval(CAR(args), env);
+        operand = EVAL(CAR(args), env);
         if (!INTP(operand))
             SigScm_ErrorObj("- : integer required but got ", operand);
         result -= SCM_INT_VALUE(operand);
@@ -314,7 +314,7 @@ ScmObj ScmOp_divide(ScmObj args, ScmObj env)
     if (NULLP(args))
         SigScm_Error("/ : at least 1 argument required\n");
 
-    result = SCM_INT_VALUE(ScmOp_eval(CAR(args), env));
+    result = SCM_INT_VALUE(EVAL(CAR(args), env));
     args = CDR(args);
 
     /* single arg */
@@ -322,7 +322,7 @@ ScmObj ScmOp_divide(ScmObj args, ScmObj env)
         return Scm_NewInt(1 / result);
 
     for (; !NULLP(args); args = CDR(args)) {
-        operand = ScmOp_eval(CAR(args), env);
+        operand = EVAL(CAR(args), env);
         if (!INTP(operand))
             SigScm_ErrorObj("/ : integer required but got ", operand);
 
@@ -551,7 +551,7 @@ ScmObj ScmOp_max(ScmObj args, ScmObj env )
         SigScm_Error("max : at least 1 number required\n");
 
     for (; !NULLP(args); args = CDR(args)) {
-        scm_num = ScmOp_eval(CAR(args), env);
+        scm_num = EVAL(CAR(args), env);
         if (FALSEP(ScmOp_numberp(scm_num)))
             SigScm_ErrorObj("max : number required but got ", scm_num);
 
@@ -573,7 +573,7 @@ ScmObj ScmOp_min(ScmObj args, ScmObj env )
         SigScm_Error("min : at least 1 number required\n");
 
     for (; !NULLP(args); args = CDR(args)) {
-        scm_num = ScmOp_eval(CAR(args), env);
+        scm_num = EVAL(CAR(args), env);
         if (FALSEP(ScmOp_numberp(scm_num)))
             SigScm_ErrorObj("min : number required but got ", scm_num);
 
@@ -1928,7 +1928,7 @@ ScmObj ScmOp_force(ScmObj arg, ScmObj env)
         SigScm_Error("force : not proper delayed object\n");
 
     /* the caller's already wrapped arg in a list for us */
-    return ScmOp_eval(arg, env);
+    return EVAL(arg, env);
 }
 
 ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env)
@@ -1952,7 +1952,7 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env)
     /* execute (proc cont) */
     SET_CDR(arg, CONS(cont, SCM_NULL));
 
-    return ScmOp_eval(arg, env);
+    return EVAL(arg, env);
 }
 
 ScmObj ScmOp_values(ScmObj argl, ScmObj env)
@@ -1976,7 +1976,7 @@ ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp)
 
     /* make the list (producer) and evaluate it */
     cons_wrapper = CONS(CAR(argl), SCM_NULL);
-    vals = ScmOp_eval(cons_wrapper, *envp);
+    vals = EVAL(cons_wrapper, *envp);
 
     if (!VALUEPACKETP(vals)) {
         /* got back a single value */

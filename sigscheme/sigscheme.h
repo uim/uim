@@ -101,6 +101,8 @@ int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
 #define SCM_LIST_5(elm0, elm1, elm2, elm3, elm4) \
     (SCM_CONS((elm0), SCM_LIST_4(elm1, elm2, elm3, elm4)))
 
+#define SCM_EVAL(obj, env) (ScmOp_eval(obj, env))
+
 #define SCM_DEFINE_ALIAS(newsym, sym)                                        \
     (SCM_SYMBOL_SET_VCELL(Scm_Intern(newsym),                                \
                           SCM_SYMBOL_VCELL(Scm_Intern(sym))))

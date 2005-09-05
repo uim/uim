@@ -494,7 +494,7 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
         case FUNCTYPE_RAW_LIST_WITH_TAIL_FLAG:
             obj = SCM_FUNC_EXEC_SUBRF(proc, obj, &env, &tail_flag);
             if (tail_flag)
-                obj = ScmOp_eval(obj, env);
+                obj = EVAL(obj, env);
             return obj;
 
         case FUNCTYPE_0:
@@ -585,7 +585,7 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
          * So we need to re-evaluate this!.
          */
         obj = ScmExp_begin(CDR(SCM_CLOSURE_EXP(proc)), &env);
-        return ScmOp_eval(obj, env);
+        return EVAL(obj, env);
 
     default:
         SigScm_ErrorObj("apply : invalid application ", args);
@@ -637,11 +637,11 @@ ScmObj map_eval(ScmObj args, ScmObj env)
         return SCM_NULL;
 
     /* eval each element of args */
-    result  = CONS(ScmOp_eval(CAR(args), env), SCM_NULL);
+    result  = CONS(EVAL(CAR(args), env), SCM_NULL);
     tail    = result;
     newtail = SCM_NULL;
     for (args = CDR(args); !NULLP(args); args = CDR(args)) {
-        newtail = CONS(ScmOp_eval(CAR(args), env), SCM_NULL);
+        newtail = CONS(EVAL(CAR(args), env), SCM_NULL);
         SET_CDR(tail, newtail);
         tail = newtail;
     }
@@ -698,7 +698,7 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
             if (!IS_LIST_LEN_1(args))
                 SigScm_ErrorObj("syntax error: ", qexpr);
             if (--nest == 0)
-                return ScmOp_eval(CAR(args), env);
+                return EVAL(CAR(args), env);
         } else if (EQ(car, SCM_QUASIQUOTE)) {
             if (!IS_LIST_LEN_1(args))
                 SigScm_ErrorObj("syntax error: ", qexpr);
@@ -724,7 +724,7 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
         } else if (EQ(obj, SCM_UNQUOTE) && IS_LIST_LEN_1(CDR(ls))) {
             /* we're at the comma in (x . ,y) or qexpr was ,z */
             if (--nest == 0) {
-                result = ScmOp_eval(CADR(ls), env);
+                result = EVAL(CADR(ls), env);
                 goto append_last_item;
             }
             QQUOTE_SET_VERBATIM(result);
@@ -829,7 +829,7 @@ static ScmObj qquote_vector(ScmObj src, ScmObj env, int nest)
                 if (!IS_LIST_LEN_1(CDR(expr)))
                     SigScm_ErrorObj("syntax error: ", expr);
 
-                result = ScmOp_eval(CADR(expr), env);
+                result = EVAL(CADR(expr), env);
 
                 splice_len = ScmOp_length(result);
                 if (SCM_INT_VALUE(splice_len) < 0)
@@ -924,7 +924,7 @@ ScmObj ScmExp_if(ScmObj exp, ScmObj *envp)
         SigScm_ErrorObj("if : syntax error : ", exp);
 
     /* eval predicates */
-    pred = ScmOp_eval(CAR(exp), env);
+    pred = EVAL(CAR(exp), env);
 
     /* if pred is true value */
     if (NFALSEP(pred)) {
@@ -951,7 +951,7 @@ ScmObj ScmExp_set(ScmObj arg, ScmObj env)
     ScmObj ret = SCM_NULL;
     ScmObj tmp = SCM_NULL;
 
-    ret = ScmOp_eval(val, env);
+    ret = EVAL(val, env);
     tmp = lookup_environment(sym, env);
     if (NULLP(tmp)) {
         /* Not found in the environment
@@ -1002,7 +1002,7 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp)
         exps = CDR(clause);
 
         /* evaluate test */
-        test = ScmOp_eval(test, env);
+        test = EVAL(test, env);
 
         /* check the result */
         if (NFALSEP(test)) {
@@ -1020,7 +1020,7 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp)
              * returned by this procedure is returned by the cond expression.
              */
             if (EQ(Scm_Intern("=>"), CAR(exps))) {
-                proc = ScmOp_eval(CADR(exps), env);
+                proc = EVAL(CADR(exps), env);
                 if (FALSEP(ScmOp_procedurep(proc)))
                     SigScm_ErrorObj("cond : the value of exp after => must be the procedure but got ", proc);
 
@@ -1039,7 +1039,7 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp)
 ScmObj ScmExp_case(ScmObj arg, ScmObj *envp)
 {
     ScmObj env    = *envp;
-    ScmObj key    = ScmOp_eval(CAR(arg), env);
+    ScmObj key    = EVAL(CAR(arg), env);
     ScmObj clause = SCM_NULL;
     ScmObj data   = SCM_NULL;
     ScmObj exps   = SCM_NULL;
@@ -1091,7 +1091,7 @@ ScmObj ScmExp_and(ScmObj arg, ScmObj *envp, int *tail_flag)
         }
 
         /* evaluate obj */
-        obj = ScmOp_eval(obj, env);
+        obj = EVAL(obj, env);
         if (FALSEP(obj)) {
             /* set tail_flag */
             (*tail_flag) = 0;
@@ -1126,7 +1126,7 @@ ScmObj ScmExp_or(ScmObj arg, ScmObj *envp, int *tail_flag)
             return obj;
         }
 
-        obj = ScmOp_eval(obj, env);
+        obj = EVAL(obj, env);
         if (NFALSEP(obj)) {
             /* set tail_flag */
             (*tail_flag) = 0;
@@ -1182,7 +1182,7 @@ ScmObj ScmExp_let(ScmObj arg, ScmObj *envp)
 #endif
 
             vars = CONS(CAR(binding), vars);
-            vals = CONS(ScmOp_eval(CADR(binding), env), vals);
+            vals = CONS(EVAL(CADR(binding), env), vals);
         }
 
         /* create new environment for */
@@ -1258,7 +1258,7 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp)
 #endif
 
             vars = CONS(CAR(binding), SCM_NULL);
-            vals = CONS(ScmOp_eval(CADR(binding), env), SCM_NULL);
+            vals = CONS(EVAL(CADR(binding), env), SCM_NULL);
 
             /* add env to each time!*/
             env = extend_environment(vars, vals, env);
@@ -1343,7 +1343,7 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp)
 
         /* evaluate vals */
         for (; !NULLP(vals); vals = CDR(vals)) {
-            SET_CAR(vals, ScmOp_eval(CAR(vals), env));
+            SET_CAR(vals, EVAL(CAR(vals), env));
         }
 
         /* evaluate body */
@@ -1380,7 +1380,7 @@ ScmObj ScmExp_begin(ScmObj arg, ScmObj *envp)
         }
 
         /* evaluate exp */
-        ScmOp_eval(exp, env);
+        EVAL(exp, env);
 
         /* set new env */
         *envp = env;
@@ -1424,7 +1424,7 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp)
     for (; !NULLP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
         vars = CONS(CAR(binding), vars);
-        vals = CONS(ScmOp_eval(CADR(binding), env), vals);
+        vals = CONS(EVAL(CADR(binding), env), vals);
 
         /* append <step> to steps */
         step = CDDR(binding);
@@ -1446,9 +1446,9 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp)
     commands = CDDR(arg);
 
     /* now excution phase! */
-    while (FALSEP(ScmOp_eval(test, env))) {
+    while (FALSEP(EVAL(test, env))) {
         /* execute commands */
-        ScmOp_eval(ScmExp_begin(commands, &env), env);
+        EVAL(ScmExp_begin(commands, &env), env);
 
         /*
          * Notice
@@ -1462,7 +1462,7 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp)
              !NULLP(tmp_steps);
              tmp_steps = CDR(tmp_steps))
         {
-            vals = CONS(ScmOp_eval(CAR(tmp_steps), env), vals);
+            vals = CONS(EVAL(CAR(tmp_steps), env), vals);
         }
         vals = ScmOp_reverse(vals);
 
@@ -1551,10 +1551,10 @@ ScmObj ScmExp_define(ScmObj arg, ScmObj env)
     if (SYMBOLP(var)) {
         if (NULLP(env)) {
             /* given NIL environment */
-            SCM_SYMBOL_SET_VCELL(var, ScmOp_eval(body, env));
+            SCM_SYMBOL_SET_VCELL(var, EVAL(body, env));
         } else {
             /* add val to the environment */
-            env = add_environment(var, ScmOp_eval(body, env), env);
+            env = add_environment(var, EVAL(body, env), env);
         }
 
         return var;

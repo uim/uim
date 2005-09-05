@@ -439,7 +439,7 @@ ScmObj SigScm_load(const char *filename)
          !EOFP(s_expression);
          s_expression = SigScm_Read(port))
     {
-        ScmOp_eval(s_expression, SCM_NULL);
+        EVAL(s_expression, SCM_NULL);
     }
 
     /* close port */

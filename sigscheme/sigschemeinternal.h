@@ -113,6 +113,8 @@ extern ScmObj SigScm_features;
 #define LIST_4         SCM_LIST_4
 #define LIST_5         SCM_LIST_5
 
+#define EVAL           SCM_EVAL
+
 #define INTP           SCM_INTP
 #define CONSP          SCM_CONSP
 #define SYMBOLP        SCM_SYMBOLP
@@ -201,7 +203,7 @@ extern ScmObj SigScm_features;
 
 #define SCM_SHIFT_EVALED(elm, lst, env)                                      \
     ((!NULLP(lst))                                                           \
-     && ((elm) = ScmOp_eval(CAR(lst), env), (lst) = CDR(lst), (lst)))
+     && ((elm) = EVAL(CAR(lst), env), (lst) = CDR(lst), (lst)))
 
 #define SCM_SHIFT_EVALED_1(elm0, lst, env)                                   \
     (SCM_SHIFT_EVALED(elm0, lst, env) ? (lst) : 0)
@@ -258,7 +260,7 @@ extern ScmObj SigScm_features;
         }                                                                    \
                                                                              \
         /* 1 */                                                              \
-        scm_elm = ScmOp_eval(CAR(lst), env);                                 \
+        scm_elm = EVAL(CAR(lst), env);                                       \
         accum = elm = extract(scm_elm);                                      \
         if (!validp(scm_elm)) {                                              \
             SigScm_ErrorObj(err_header, scm_elm);                            \
@@ -270,7 +272,7 @@ extern ScmObj SigScm_features;
         /* 2+ */                                                             \
         rest = CDR(lst);                                                     \
         do {                                                                 \
-            scm_elm = ScmOp_eval(CAR(rest), env);                            \
+            scm_elm = EVAL(CAR(rest), env);                                  \
             rest = CDR(rest);                                                \
             if (!validp(scm_elm)) {                                          \
                 SigScm_ErrorObj(err_header, scm_elm);                        \
