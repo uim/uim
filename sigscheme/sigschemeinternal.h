@@ -158,6 +158,77 @@ extern ScmObj SigScm_features;
 #define CHECK_5_ARGS(arg) (CHECK_4_ARGS(arg) || NULLP(CDDR(CDDR(arg))))
 
 /*
+ * Macros For List Element Extraction With Safety Check
+ *
+ * SCM_SHIFT_*() safely and efficiently extracts elements of a list into
+ * arbitrary storages (Suppose 'shift' function of scripting languages).
+ *
+ * The macro overwrites the argument variable 'lst' as list iterator, and
+ * returns rest list after requested number of elements have been
+ * extracted. Caller can test whether the list has been empty or not by
+ * applying NULLP to the result. If a shotage of the list has been occurred
+ * before extracting all elements, the iteration stops with false value, and
+ * the lst becomes to empty list. The macro itself does not have any error
+ * handlings. Caller must do it appropriately by referencing the result value.
+ */
+#define SCM_SHIFT_RAW(elm, lst)                                              \
+    ((!NULLP(lst)) && ((elm) = CAR(lst), (lst) = CDR(lst), (lst)))
+
+#define SCM_SHIFT_RAW_1(elm0, lst)                                           \
+    (SCM_SHIFT_RAW(elm0, lst) ? (lst) : 0)
+
+#define SCM_SHIFT_RAW_2(elm0, elm1, lst)                                     \
+    ((SCM_SHIFT_RAW(elm0, lst)                                               \
+      && SCM_SHIFT_RAW(elm1, lst)) ? (lst) : 0)
+
+#define SCM_SHIFT_RAW_3(elm0, elm1, elm2, lst)                               \
+    ((SCM_SHIFT_RAW(elm0, lst)                                               \
+      && SCM_SHIFT_RAW(elm1, lst)                                            \
+      && SCM_SHIFT_RAW(elm2, lst)) ? (lst) : 0)
+
+#define SCM_SHIFT_RAW_4(elm0, elm1, elm2, elm3, lst)                         \
+    ((SCM_SHIFT_RAW(elm0, lst)                                               \
+      && SCM_SHIFT_RAW(elm1, lst)                                            \
+      && SCM_SHIFT_RAW(elm2, lst)                                            \
+      && SCM_SHIFT_RAW(elm3, lst)) ? (lst) : 0)
+
+#define SCM_SHIFT_RAW_5(elm0, elm1, elm2, elm3, elm4, lst)                   \
+    ((SCM_SHIFT_RAW(elm0, lst)                                               \
+      && SCM_SHIFT_RAW(elm1, lst)                                            \
+      && SCM_SHIFT_RAW(elm2, lst)                                            \
+      && SCM_SHIFT_RAW(elm3, lst)                                            \
+      && SCM_SHIFT_RAW(elm4, lst)) ? (lst) : 0)
+
+#define SCM_SHIFT_EVALED(elm, lst, env)                                      \
+    ((!NULLP(lst))                                                           \
+     && ((elm) = ScmOp_eval(CAR(lst), env), (lst) = CDR(lst), (lst)))
+
+#define SCM_SHIFT_EVALED_1(elm0, lst, env)                                   \
+    (SCM_SHIFT_EVALED(elm0, lst, env) ? (lst) : 0)
+
+#define SCM_SHIFT_EVALED_2(elm0, elm1, lst, env)                             \
+    ((SCM_SHIFT_EVALED(elm0, lst, env)                                       \
+      && SCM_SHIFT_EVALED(elm1, lst, env)) ? (lst) : 0)
+
+#define SCM_SHIFT_EVALED_3(elm0, elm1, elm2, lst, env)                       \
+    ((SCM_SHIFT_EVALED(elm0, lst, env)                                       \
+      && SCM_SHIFT_EVALED(elm1, lst, env)                                    \
+      && SCM_SHIFT_EVALED(elm2, lst, env)) ? (lst) : 0)
+
+#define SCM_SHIFT_EVALED_4(elm0, elm1, elm2, elm3, lst, env)                 \
+    ((SCM_SHIFT_EVALED(elm0, lst, env)                                       \
+      && SCM_SHIFT_EVALED(elm1, lst, env)                                    \
+      && SCM_SHIFT_EVALED(elm2, lst, env)                                    \
+      && SCM_SHIFT_EVALED(elm3, lst, env)) ? (lst) : 0)
+
+#define SCM_SHIFT_EVALED_5(elm0, elm1, elm2, elm3, elm4, lst, env)           \
+    ((SCM_SHIFT_EVALED(elm0, lst, env)                                       \
+      && SCM_SHIFT_EVALED(elm1, lst, env)                                    \
+      && SCM_SHIFT_EVALED(elm2, lst, env)                                    \
+      && SCM_SHIFT_EVALED(elm3, lst, env)                                    \
+      && SCM_SHIFT_EVALED(elm4, lst, env)) ? (lst) : 0)
+
+/*
  * TODO: Simplify implementation of following functions with SCM_REDUCE and
  * SCM_REDUCE_EXT. Anyone?
  *

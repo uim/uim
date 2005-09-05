@@ -68,6 +68,8 @@
 #define QQUOTE_SET_VERBATIM(x) ((x) = SCM_INVALID)
 #define QQUOTE_IS_VERBATIM(x)  (EQ((x), SCM_INVALID))
 
+#define SCM_ERRMSG_WRONG_NR_ARG " Wrong number of arguments "
+
 /*=======================================
   Variable Declarations
 =======================================*/
@@ -223,9 +225,12 @@ ScmObj lookup_frame(ScmObj var, ScmObj frame)
 ===========================================================================*/
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
 {
-    ScmObj tmp = SCM_NULL;
-    ScmObj arg = SCM_NULL;
-    ScmObj ret = SCM_NULL;
+    ScmObj tmp  = SCM_NULL;
+    ScmObj arg  = SCM_NULL;
+    ScmObj arg0, arg1, arg2, arg3, arg4;
+    ScmObj rest = SCM_NULL;
+    ScmObj args = SCM_NULL;
+    ScmObj ret  = SCM_NULL;
     int tail_flag = 0;
 
     /* for debugging */
@@ -332,48 +337,40 @@ eval_loop:
                 goto eval_done;
 
             case FUNCTYPE_1:
-                ret = SCM_FUNC_EXEC_SUBR1(tmp, ScmOp_eval(CAR(CDR(obj)),env));
+                args = rest = CDR(obj);
+                if (!NULLP(SCM_SHIFT_EVALED_1(arg0, rest, env)))
+                    SigScm_ErrorObj("func1 :" SCM_ERRMSG_WRONG_NR_ARG, args);
+                ret = SCM_FUNC_EXEC_SUBR1(tmp, arg0);
                 goto eval_done;
 
             case FUNCTYPE_2:
-                obj = CDR(obj);
-                arg = ScmOp_eval(CAR(obj), env); /* 1st arg */
-                ret = SCM_FUNC_EXEC_SUBR2(tmp,
-                                          arg,
-                                          ScmOp_eval(CAR(CDR(obj)), env)); /* 2nd arg */
+                args = rest = CDR(obj);
+                if (!NULLP(SCM_SHIFT_EVALED_2(arg0, arg1, rest, env)))
+                    SigScm_ErrorObj("func2 :" SCM_ERRMSG_WRONG_NR_ARG, args);
+                ret = SCM_FUNC_EXEC_SUBR2(tmp, arg0, arg1);
                 goto eval_done;
 
             case FUNCTYPE_3:
-                obj = CDR(obj);
-                arg = ScmOp_eval(CAR(obj), env); /* 1st arg */
-                obj = CDR(obj);
-                ret = SCM_FUNC_EXEC_SUBR3(tmp,
-                                          arg,
-                                          ScmOp_eval(CAR(obj), env), /* 2nd arg */
-                                          ScmOp_eval(CAR(CDR(obj)), env)); /* 3rd arg */
+                args = rest = CDR(obj);
+                if (!NULLP(SCM_SHIFT_EVALED_3(arg0, arg1, arg2, rest, env)))
+                    SigScm_ErrorObj("func3 :" SCM_ERRMSG_WRONG_NR_ARG, args);
+                ret = SCM_FUNC_EXEC_SUBR3(tmp, arg0, arg1, arg2);
                 goto eval_done;
 
             case FUNCTYPE_4:
-                obj = CDR(obj);
-                arg = ScmOp_eval(CAR(obj), env); /* 1st arg */
-                obj = CDR(obj);
-                ret = SCM_FUNC_EXEC_SUBR4(tmp,
-                                          arg,
-                                          ScmOp_eval(CAR(obj), env), /* 2nd arg */
-                                          ScmOp_eval(CAR(CDR(obj)), env), /* 3rd arg */
-                                          ScmOp_eval(CAR(CDR(CDR(obj))), env)); /* 4th arg */
+                args = rest = CDR(obj);
+                if (!NULLP(SCM_SHIFT_EVALED_4(arg0, arg1, arg2, arg3,
+                                              rest, env)))
+                    SigScm_ErrorObj("func4 :" SCM_ERRMSG_WRONG_NR_ARG, args);
+                ret = SCM_FUNC_EXEC_SUBR4(tmp, arg0, arg1, arg2, arg3);
                 goto eval_done;
 
             case FUNCTYPE_5:
-                obj = CDR(obj);
-                arg = ScmOp_eval(CAR(obj), env); /* 1st arg */
-                obj = CDR(obj);
-                ret = SCM_FUNC_EXEC_SUBR5(tmp,
-                                          arg,
-                                          ScmOp_eval(CAR(obj), env), /* 2nd arg */
-                                          ScmOp_eval(CAR(CDR(obj)), env), /* 3rd arg */
-                                          ScmOp_eval(CAR(CDR(CDR(obj))), env), /* 4th arg */
-                                          ScmOp_eval(CAR(CDR(CDR(CDR(obj)))), env)); /* 5th arg */
+                args = rest = CDR(obj);
+                if (!NULLP(SCM_SHIFT_EVALED_5(arg0, arg1, arg2, arg3, arg4,
+                                              rest, env)))
+                    SigScm_ErrorObj("func5 :" SCM_ERRMSG_WRONG_NR_ARG, args);
+                ret = SCM_FUNC_EXEC_SUBR5(tmp, arg0, arg1, arg2, arg3, arg4);
                 goto eval_done;
 
             default:
@@ -469,6 +466,8 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 {
     ScmObj proc  = SCM_NULL;
     ScmObj obj   = SCM_NULL;
+    ScmObj rest  = SCM_NULL;
+    ScmObj arg0, arg1, arg2, arg3, arg4;
     int tail_flag = 0;
 
     /* sanity check */
@@ -502,34 +501,34 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
             return SCM_FUNC_EXEC_SUBR0(proc);
 
         case FUNCTYPE_1:
-            return SCM_FUNC_EXEC_SUBR1(proc,
-                                       CAR(obj));
+            rest = obj;
+            if (!NULLP(SCM_SHIFT_RAW_1(arg0, rest)))
+                SigScm_ErrorObj("apply func1 :" SCM_ERRMSG_WRONG_NR_ARG, obj);
+            return SCM_FUNC_EXEC_SUBR1(proc, arg0);
 
         case FUNCTYPE_2:
-            return SCM_FUNC_EXEC_SUBR2(proc,
-                                       CAR(obj),
-                                       CAR(CDR(obj)));
+            rest = obj;
+            if (!NULLP(SCM_SHIFT_RAW_2(arg0, arg1, rest)))
+                SigScm_ErrorObj("apply func2 :" SCM_ERRMSG_WRONG_NR_ARG, obj);
+            return SCM_FUNC_EXEC_SUBR2(proc, arg0, arg1);
 
         case FUNCTYPE_3:
-            return SCM_FUNC_EXEC_SUBR3(proc,
-                                       CAR(obj),
-                                       CAR(CDR(obj)),
-                                       CAR(CDR(CDR(obj))));
+            rest = obj;
+            if (!NULLP(SCM_SHIFT_RAW_3(arg0, arg1, arg2, rest)))
+                SigScm_ErrorObj("apply func3 :" SCM_ERRMSG_WRONG_NR_ARG, obj);
+            return SCM_FUNC_EXEC_SUBR3(proc, arg0, arg1, arg2);
 
         case FUNCTYPE_4:
-            return SCM_FUNC_EXEC_SUBR4(proc,
-                                       CAR(obj),
-                                       CAR(CDR(obj)),
-                                       CAR(CDR(CDR(obj))),
-                                       CAR(CDR(CDR(CDR(obj)))));
+            rest = obj;
+            if (!NULLP(SCM_SHIFT_RAW_4(arg0, arg1, arg2, arg3, rest)))
+                SigScm_ErrorObj("apply func4 :" SCM_ERRMSG_WRONG_NR_ARG, obj);
+            return SCM_FUNC_EXEC_SUBR4(proc, arg0, arg1, arg2, arg3);
 
         case FUNCTYPE_5:
-            return SCM_FUNC_EXEC_SUBR5(proc,
-                                       CAR(obj),
-                                       CAR(CDR(obj)),
-                                       CAR(CDR(CDR(obj))),
-                                       CAR(CDR(CDR(CDR(obj)))),
-                                       CAR(CDR(CDR(CDR(CDR(obj))))));
+            rest = obj;
+            if (!NULLP(SCM_SHIFT_RAW_5(arg0, arg1, arg2, arg3, arg4, rest)))
+                SigScm_ErrorObj("apply func5 :" SCM_ERRMSG_WRONG_NR_ARG, obj);
+            return SCM_FUNC_EXEC_SUBR5(proc, arg0, arg1, arg2, arg3, arg4);
 
         case FUNCTYPE_RAW_LIST:
             return SCM_FUNC_EXEC_SUBRL(proc,
