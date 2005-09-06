@@ -81,8 +81,12 @@ typedef void (*ScmCFunc) (void);
 
 /* dependency resolution */
 #if SCM_COMPAT_SIOD
+#undef SCM_USE_SRFI60
 #define SCM_USE_SRFI60          1
-#endif
+#else
+#undef SCM_COMPAT_SIOD_BUGS
+#define SCM_COMPAT_SIOD_BUGS    0
+#endif /* SCM_COMPAT_SIOD */
 
 int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
 #define SCM_ASSERT(cond) \

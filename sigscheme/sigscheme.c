@@ -361,7 +361,9 @@ void SigScm_Initialize(void)
     Scm_RegisterFunc1("symbol-bound?"        , ScmOp_symbol_boundp);
     Scm_RegisterFunc1("symbol-value"         , ScmOp_symbol_value);
     Scm_RegisterFunc2("set-symbol-value!"    , ScmOp_set_symbol_value);
+#if SCM_COMPAT_SIOD_BUGS
     Scm_RegisterFunc2("="                    , ScmOp_siod_eql);
+#endif
     SCM_DEFINE_ALIAS("bit-and"               , "logand");
     SCM_DEFINE_ALIAS("bit-or"                , "logior");
     SCM_DEFINE_ALIAS("bit-xor"               , "logxor");
