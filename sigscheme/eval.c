@@ -944,16 +944,19 @@ ScmObj ScmExp_if(ScmObj exp, ScmObj *envp)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.6 Assignment
 ===========================================================================*/
-ScmObj ScmExp_set(ScmObj arg, ScmObj env)
+ScmObj ScmExp_set(ScmObj args, ScmObj env)
 {
-    ScmObj sym = CAR(arg);
-    ScmObj val = CADR(arg);
-    ScmObj ret = SCM_NULL;
-    ScmObj tmp = SCM_NULL;
+    ScmObj sym, exp;
+    ScmObj rest          = args;
+    ScmObj evaled        = SCM_FALSE;
+    ScmObj locally_bound = SCM_NULL;
 
-    ret = EVAL(val, env);
-    tmp = lookup_environment(sym, env);
-    if (NULLP(tmp)) {
+    if (!NULLP(SCM_SHIFT_RAW_2(sym, exp, rest)))
+        SigScm_ErrorObj("set : syntax error ", args);
+
+    evaled = EVAL(exp, env);
+    locally_bound = lookup_environment(sym, env);
+    if (NULLP(locally_bound)) {
         if (!SYMBOLP(sym))
             SigScm_ErrorObj("set! : symbol required but got ", sym);
         /* Not found in the environment
@@ -961,16 +964,16 @@ ScmObj ScmExp_set(ScmObj arg, ScmObj env)
         if (!SCM_SYMBOL_BOUNDP(sym))
             SigScm_ErrorObj("set! : unbound variable ", sym);
 
-        SCM_SYMBOL_SET_VCELL(sym, ret);
+        SCM_SYMBOL_SET_VCELL(sym, evaled);
     } else {
         /* found in the environment*/
-        SET_CAR(tmp, ret);
+        SET_CAR(locally_bound, evaled);
     }
 
 #if SCM_STRICT_R5RS
     return SCM_UNDEF;
 #else
-    return ret;
+    return evaled;
 #endif
 }
 
@@ -1540,58 +1543,68 @@ ScmObj ScmOp_unquote_splicing(ScmObj obj, ScmObj env)
 /*=======================================
   R5RS : 5.2 Definitions
 =======================================*/
-ScmObj ScmExp_define(ScmObj arg, ScmObj env)
+ScmObj ScmExp_define(ScmObj args, ScmObj env)
 {
-    ScmObj var     = CAR(arg);
-    ScmObj body    = CADR(arg);
-    ScmObj val     = SCM_NULL;
-    ScmObj formals = SCM_NULL;
+    ScmObj var, exp;
+    ScmObj rest       = args;
+    ScmObj lambda_var = SCM_FALSE;
+    ScmObj body       = SCM_NULL;
+    ScmObj formals    = SCM_NULL;
 
-    /* sanity check */
-    if (NULLP(var))
-        SigScm_ErrorObj("define : syntax error ", arg);
+    if (!SCM_SHIFT_RAW_1(var, rest))
+        SigScm_ErrorObj("define : syntax error ", args);
 
     /*========================================================================
       (define <variable> <expression>)
     ========================================================================*/
     if (SYMBOLP(var)) {
+        if (!NULLP(SCM_SHIFT_RAW_1(exp, rest)))
+            SigScm_ErrorObj("define : syntax error ", args);
+
         if (NULLP(env)) {
-            /* given NIL environment */
-            SCM_SYMBOL_SET_VCELL(var, EVAL(body, env));
+            /* given top-level environment */
+            SCM_SYMBOL_SET_VCELL(var, EVAL(exp, env));
         } else {
             /* add val to the environment */
-            env = add_environment(var, EVAL(body, env), env);
+            env = add_environment(var, EVAL(exp, env), env);
         }
 
+#if SCM_STRICT_R5RS
+        return SCM_UNDEF;
+#else
         return var;
+#endif
     }
 
     /*========================================================================
-      (define (<val> <formals>) <body>)
+      (define (<variable> <formals>) <body>)
 
-      => (define <val>
+      => (define <variable>
              (lambda (<formals>) <body>))
     ========================================================================*/
     /*========================================================================
-      (define (<variable> . <formals>) <body>)
+      (define (<variable> . <formal>) <body>)
 
       => (define <variable>
-             (lambda <formals> <body>))
+             (lambda <formal> <body>))
     ========================================================================*/
     if (CONSP(var)) {
-        val     = CAR(var);
-        formals = CDR(var);
-        body    = CDR(arg);
+        lambda_var = CAR(var);
+        formals    = CDR(var);
+        body       = rest;
 
-        /* (val (lambda formals body))  */
-        arg = SCM_LIST_2(val,
-                         ScmExp_lambda(CONS(formals, body), env));
+        if (NULLP(body))
+            SigScm_ErrorObj("define : badly formed body ", args);
 
-        return ScmExp_define(arg, env);
+        /* (var (lambda formals body))  */
+        args = SCM_LIST_2(lambda_var,
+                          ScmExp_lambda(CONS(formals, body), env));
+
+        return ScmExp_define(args, env);
     }
 
-    SigScm_ErrorObj("define : syntax error ", arg);
-    return SCM_NULL;
+    SigScm_ErrorObj("define : syntax error ", args);
+    return SCM_UNDEF;
 }
 
 /*=======================================
