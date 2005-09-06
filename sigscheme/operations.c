@@ -1073,7 +1073,7 @@ ScmObj ScmOp_list_ref(ScmObj list, ScmObj scm_k)
         SigScm_ErrorObj("list-ref : int required but got ", scm_k);
 
     list_tail = ScmOp_listtail_internal(list, SCM_INT_VALUE(scm_k));
-    if (EQ(list_tail, SCM_INVALID))
+    if (EQ(list_tail, SCM_INVALID) || NULLP(list_tail))
         SigScm_ErrorObj("list-ref : out of range or bad list, arglist is: ",
                         CONS(list, scm_k));
 

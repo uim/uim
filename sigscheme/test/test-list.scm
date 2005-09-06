@@ -1,4 +1,53 @@
+;;  FileName : test-list.scm
+;;  About    : unit test for list operations
+;;
+;;  Copyright (C) 2005      by Kazuki Ohta (mover@hct.zaq.ne.jp)
+;;
+;;  All rights reserved.
+;;
+;;  Redistribution and use in source and binary forms, with or without
+;;  modification, are permitted provided that the following conditions
+;;  are met:
+;;
+;;  1. Redistributions of source code must retain the above copyright
+;;     notice, this list of conditions and the following disclaimer.
+;;  2. Redistributions in binary form must reproduce the above copyright
+;;     notice, this list of conditions and the following disclaimer in the
+;;     documentation and/or other materials provided with the distribution.
+;;  3. Neither the name of authors nor the names of its contributors
+;;     may be used to endorse or promote products derived from this software
+;;     without specific prior written permission.
+;;
+;;  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS
+;;  IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+;;  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+;;  PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR
+;;  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+;;  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+;;  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+;;  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+;;  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+;;  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 (load "test/unittest.scm")
+
+
+(define elm0 (lambda () #f))
+(define elm1 (lambda () #f))
+(define elm2 (lambda () #f))
+(define elm3 (lambda () #f))
+(define cdr3 (cons elm3 ()))
+(define cdr2 (cons elm2 cdr3))
+(define cdr1 (cons elm1 cdr2))
+(define cdr0 (cons elm0 cdr1))
+(define lst cdr0)
+
+;; dummy definition to eval args for assert-error. real implementation needed.
+(if (not (symbol-bound? 'assert-error))
+    (define assert-error
+      (lambda (msg exp)
+        #f)))
 
 ; pair?
 (assert "pair? test1" (pair? '(a . b)))
@@ -64,9 +113,23 @@
 (assert-equal? "list-tail test2" '(b c) (list-tail '(a b c) 1))
 (assert-equal? "list-tail test3" '(c) (list-tail '(a b c) 2))
 (assert-equal? "list-tail test4" '() (list-tail '(a b c) 3))
+;;(assert-error  "list-tail test5" '() (list-tail '(a b c) 4))
+(assert-equal? "list-tail test6" '() (list-tail '() 0))
+;;(assert-error  "list-tail test7" (list-tail '() 1))
+(assert-equal? "list-tail test8"  cdr0 (list-tail lst 0))
+(assert-equal? "list-tail test9"  cdr1 (list-tail lst 1))
+(assert-equal? "list-tail test10" cdr2 (list-tail lst 2))
+(assert-equal? "list-tail test11" cdr3 (list-tail lst 3))
+(assert-equal? "list-tail test12" '() (list-tail lst 4))
+;;(assert-error  "list-tail test13" (list-tail lst 5))
 
 ; list-ref
 (assert-equal? "list-ref test1" 'c (list-ref '(a b c d) 2))
+(assert-eq?    "list-ref test2" elm0 (list-ref lst 0))
+(assert-eq?    "list-ref test3" elm1 (list-ref lst 1))
+(assert-eq?    "list-ref test4" elm2 (list-ref lst 2))
+(assert-eq?    "list-ref test5" elm3 (list-ref lst 3))
+;;(assert-error  "list-ref test6" (list-ref lst 4))
 
 ; memq
 (assert-equal? "memq test1" '(a b c) (memq 'a '(a b c)))
