@@ -1067,17 +1067,17 @@ ScmObj ScmOp_list_tail(ScmObj list, ScmObj scm_k)
 
 ScmObj ScmOp_list_ref(ScmObj list, ScmObj scm_k)
 {
-    ScmObj list_tail = SCM_NULL;
+    ScmObj tail = SCM_NULL;
 
     if (FALSEP(ScmOp_numberp(scm_k)))
         SigScm_ErrorObj("list-ref : int required but got ", scm_k);
 
-    list_tail = ScmOp_listtail_internal(list, SCM_INT_VALUE(scm_k));
-    if (EQ(list_tail, SCM_INVALID) || NULLP(list_tail))
+    tail = ScmOp_listtail_internal(list, SCM_INT_VALUE(scm_k));
+    if (EQ(tail, SCM_INVALID) || NULLP(tail))
         SigScm_ErrorObj("list-ref : out of range or bad list, arglist is: ",
                         CONS(list, scm_k));
 
-    return CAR(list_tail);
+    return CAR(tail);
 }
 
 ScmObj ScmOp_memq(ScmObj obj, ScmObj list)
