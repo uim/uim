@@ -1,5 +1,10 @@
 (load "./test/unittest.scm")
 
+
+(define tee #t)
+(define ef #f)
+
+
 ;; lambda
 (assert-equal? "basic lambda test1" 8 ((lambda (x) (+ x x)) 4))
 (define reverse-subtract
@@ -17,6 +22,21 @@
 (assert-equal? "basic lambda test9" 1 ((lambda (x y . z) x) 1 2))
 (assert-equal? "basic lambda test10" 2 ((lambda (x y . z) y) 1 2))
 (assert-equal? "basic lambda test11" '() ((lambda (x y . z) z) 1 2))
+
+;;if
+(assert-equal? "if test1" 'true  (if #t 'true 'false))
+(assert-equal? "if test2" 'true  (if #t 'true))
+(assert-equal? "if test3" 'false (if #f 'true 'false))
+;; check that does not cause error
+(assert-equal? "if test4" (if #f 'true) (if #f 'true))
+;; check that <test> is evaluated
+(assert-equal? "if test5" 'true  (if tee 'true 'false))
+(assert-equal? "if test6" 'false (if ef 'true 'false))
+;; invalid forms
+;;(assert-error  "if test7"  (if))
+;;(assert-error  "if test8"  (if #t))
+;;(assert-error  "if test9"  (if #t 'true 'false 'excessive))
+;;(assert-error  "if test10" (if #f 'true 'false 'excessive))
 
 ;; cond
 (assert-equal? "basic cond test1" 'greater (cond ((> 3 2) 'greater)

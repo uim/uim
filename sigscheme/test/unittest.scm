@@ -57,3 +57,8 @@
 	  (display " but got ")
 	  (write b)
 	  (newline)))))
+
+;; dummy definition to eval args for assert-error. real implementation needed.
+(define assert-error
+  (lambda (msg exp)
+    #f))

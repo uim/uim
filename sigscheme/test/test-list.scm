@@ -44,11 +44,6 @@
 (define cdr0 (cons elm0 cdr1))
 (define lst cdr0)
 
-;; dummy definition to eval args for assert-error. real implementation needed.
-(if (not (symbol-bound? 'assert-error))
-    (define assert-error
-      (lambda (msg exp)
-        #f)))
 
 ; pair?
 (assert "pair? test1" (pair? '(a . b)))

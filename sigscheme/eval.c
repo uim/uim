@@ -892,53 +892,66 @@ static ScmObj qquote_vector(ScmObj src, ScmObj env, int nest)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.2 Literal expressions
 ===========================================================================*/
-ScmObj ScmOp_quote(ScmObj arglist, ScmObj env)
+/* FIXME: rename to ScmExp_quote since quote is a syntax */
+ScmObj ScmOp_quote(ScmObj args, ScmObj env)
 {
-    if (!CONSP(arglist) || !NULLP(CDR(arglist)))
-        SigScm_ErrorObj("quote: bad argument list: ", arglist);
-    return CAR(arglist);
+    ScmObj datum;
+    ScmObj rest  = args;
+
+    if (!NULLP(SCM_SHIFT_RAW_1(datum, rest)))
+        SigScm_ErrorObj("quote: syntax error : ", args);
+
+    return datum;
 }
 
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.4 Procedures
 ===========================================================================*/
-ScmObj ScmExp_lambda(ScmObj exp, ScmObj env)
+ScmObj ScmExp_lambda(ScmObj args, ScmObj env)
 {
-    if CHECK_2_ARGS(exp)
-        SigScm_ErrorObj("lambda : too few argument ", exp);
+    if (CHECK_2_ARGS(args))
+        SigScm_ErrorObj("lambda : bad form : ", args);
 
-    return Scm_NewClosure(exp, env);
+    return Scm_NewClosure(args, env);
 }
 
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.5 Conditionals
 ===========================================================================*/
-ScmObj ScmExp_if(ScmObj exp, ScmObj *envp)
+ScmObj ScmExp_if(ScmObj args, ScmObj *envp)
 {
-    ScmObj env       = *envp;
-    ScmObj pred      = SCM_NULL;
-    ScmObj false_exp = SCM_NULL;
+    ScmObj test, conseq, alt;
+    ScmObj rest = args;
+    ScmObj env  = *envp;
 
-    /* sanity check */
-    if (NULLP(exp) || NULLP(CDR(exp)))
-        SigScm_ErrorObj("if : syntax error : ", exp);
+    /*========================================================================
+      (if <test> <consequent>)
+      (if <test> <consequent> <alternate>)
+    ========================================================================*/
 
-    /* eval predicates */
-    pred = EVAL(CAR(exp), env);
+    if (!(SCM_SHIFT_RAW_2(test, conseq, rest)))
+        SigScm_ErrorObj("if : syntax error : ", args);
 
-    /* if pred is true value */
-    if (NFALSEP(pred)) {
+    if (NFALSEP(EVAL(test, env))) {
+#if SCM_STRICT_R5RS
+        /* excessive arguments */
+        if (!NULLP(rest) && !NULLP(CDR(rest)))
+            SigScm_ErrorObj("if : syntax error : ", args);
+#endif
+
         /* doesn't evaluate now for tail-recursion. */
-        return CADR(exp);
+        return conseq;
+    } else {
+        if (NULLP(rest))
+            return SCM_UNDEF;
+
+        /* excessive arguments */
+        if (!NULLP(SCM_SHIFT_RAW_1(alt, rest)))
+            SigScm_ErrorObj("if : syntax error : ", args);
+
+        /* doesn't evaluate now for tail-recursion. */
+        return alt;
     }
-
-    /* if pred is SCM_FALSE */
-    false_exp = CDDR(exp);
-    if (NULLP(false_exp))
-        return SCM_UNDEF;
-
-    /* doesn't evaluate now for tail-recursion. */
-    return CAR(false_exp);
 }
 
 /*===========================================================================
@@ -1498,13 +1511,17 @@ ScmObj ScmExp_do(ScmObj arg, ScmObj *envp)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.5 Delayed evaluation
 ===========================================================================*/
-ScmObj ScmOp_delay(ScmObj arg, ScmObj env)
+/* FIXME: rename to ScmExp_delay since delay is a syntax */
+ScmObj ScmOp_delay(ScmObj args, ScmObj env)
 {
-    if (SCM_INT_VALUE(ScmOp_length(arg)) != 1)
-        SigScm_Error("delay : Wrong number of arguments\n");
+    ScmObj exp;
+    ScmObj rest = args;
 
-    /* closure exp = ( () CAR(arg) ) */
-    return Scm_NewClosure(SCM_LIST_2(SCM_NULL, CAR(arg)), env);
+    if (!NULLP(SCM_SHIFT_RAW_1(exp, rest)))
+        SigScm_ErrorObj("delay : syntax error ", args);
+
+    /* (lambda () exp) */
+    return Scm_NewClosure(SCM_LIST_2(SCM_NULL, exp), env);
 }
 
 /*===========================================================================
