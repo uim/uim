@@ -63,6 +63,7 @@
 /*=============================================================================
   SRFI8 : Receive
 =============================================================================*/
+/* TODO: Simplify and optimize with SCM_SHIFT_*() macro */
 ScmObj ScmOp_SRFI8_receive(ScmObj args, ScmObj *envp)
 {
     /*

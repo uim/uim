@@ -251,6 +251,7 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
 ==============================================================================*/
 /* Note: SigScheme supports only the integer part of the numerical tower. */
 
+/* TODO: Simplify with SCM_REDUCE*() macro */
 ScmObj ScmOp_add(ScmObj args, ScmObj env)
 {
     int result = 0;
@@ -266,6 +267,7 @@ ScmObj ScmOp_add(ScmObj args, ScmObj env)
     return Scm_NewInt(result);
 }
 
+/* TODO: Simplify with SCM_REDUCE*() macro */
 ScmObj ScmOp_multiply(ScmObj args, ScmObj env)
 {
     int result = 1;
@@ -281,6 +283,7 @@ ScmObj ScmOp_multiply(ScmObj args, ScmObj env)
     return Scm_NewInt(result);
 }
 
+/* TODO: Simplify with SCM_REDUCE*() macro */
 ScmObj ScmOp_subtract(ScmObj args, ScmObj env)
 {
     int result = 0;
@@ -306,6 +309,7 @@ ScmObj ScmOp_subtract(ScmObj args, ScmObj env)
     return Scm_NewInt(result);
 }
 
+/* TODO: Simplify with SCM_REDUCE*() macro */
 ScmObj ScmOp_divide(ScmObj args, ScmObj env)
 {
     int result = 0;
@@ -339,6 +343,7 @@ ScmObj ScmOp_numberp(ScmObj obj)
     return (INTP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
+/* TODO: Simplify with SCM_REDUCE*() macro */
 ScmObj ScmOp_equal(ScmObj args, ScmObj env)
 {
     int    val = 0;
@@ -368,6 +373,7 @@ ScmObj ScmOp_equal(ScmObj args, ScmObj env)
     return SCM_TRUE;
 }
 
+/* TODO: Simplify with SCM_REDUCE*() macro */
 ScmObj ScmOp_less(ScmObj args, ScmObj env )
 {
     int    val     = 0;
@@ -400,6 +406,7 @@ ScmObj ScmOp_less(ScmObj args, ScmObj env )
     return SCM_TRUE;
 }
 
+/* TODO: Simplify with SCM_REDUCE*() macro */
 ScmObj ScmOp_greater(ScmObj args, ScmObj env )
 {
     int    val     = 0;
@@ -433,6 +440,7 @@ ScmObj ScmOp_greater(ScmObj args, ScmObj env )
     return SCM_TRUE;
 }
 
+/* TODO: Simplify with SCM_REDUCE*() macro */
 ScmObj ScmOp_less_eq(ScmObj args, ScmObj env )
 {
     int    val     = 0;
@@ -467,6 +475,7 @@ ScmObj ScmOp_less_eq(ScmObj args, ScmObj env )
     return SCM_TRUE;
 }
 
+/* TODO: Simplify with SCM_REDUCE*() macro */
 ScmObj ScmOp_greater_eq(ScmObj args, ScmObj env )
 {
     int    val     = 0;
@@ -541,6 +550,7 @@ ScmObj ScmOp_evenp(ScmObj scm_num)
     return (SCM_INT_VALUE(scm_num) & 0x1) ? SCM_FALSE : SCM_TRUE;
 }
 
+/* TODO: Simplify with SCM_REDUCE*() macro */
 ScmObj ScmOp_max(ScmObj args, ScmObj env )
 {
     int max = 0;
@@ -563,6 +573,7 @@ ScmObj ScmOp_max(ScmObj args, ScmObj env )
     return Scm_NewInt(max);
 }
 
+/* TODO: Simplify with SCM_REDUCE*() macro */
 ScmObj ScmOp_min(ScmObj args, ScmObj env )
 {
     int min = 0;
@@ -1966,6 +1977,7 @@ ScmObj ScmOp_values(ScmObj argl, ScmObj env)
     return Scm_NewValuePacket(argl);
 }
 
+/* TODO: Simplify and optimize with SCM_SHIFT_*() macro */
 ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp)
 {
     ScmObj vals;

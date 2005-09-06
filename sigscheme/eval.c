@@ -223,6 +223,10 @@ ScmObj lookup_frame(ScmObj var, ScmObj frame)
 /*===========================================================================
   S-Expression Evaluation
 ===========================================================================*/
+/*
+ * TODO: split function invocation handling off to a function and share it with
+ * ScmOp_apply
+ */
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
 {
     ScmObj tmp  = SCM_NULL;
@@ -462,6 +466,12 @@ eval_done:
     return ret;
 }
 
+/*
+ * TODO:
+ * - Simplify and optimize with SCM_SHIFT_EVALED_*() macro
+ * - split function invocation handling off to a function and share it with
+ *   ScmOp_eval
+ */
 ScmObj ScmOp_apply(ScmObj args, ScmObj env)
 {
     ScmObj proc  = SCM_NULL;
@@ -997,6 +1007,11 @@ ScmObj ScmExp_set(ScmObj args, ScmObj env)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.1 Conditionals
 ===========================================================================*/
+/*
+ * FIXME: following else handlings
+ * - depending on its own true value
+ * - can appeared in other than last clause
+ */
 ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp)
 {
     /*
@@ -1006,7 +1021,10 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp)
      *     (<test> <expression1> <expression2> ...)
      *
      * <clause> may be of the form
-     *     (<test> => <expression)
+     *     (<test> => <expression>)
+     *
+     * last <clause> may be of the form
+     *     (else <expression1> <expression2> ...)
      */
     ScmObj env    = *envp;
     ScmObj clause = SCM_NULL;
@@ -1041,6 +1059,7 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp)
              * this procedure is then called on the value of the <test> and the value
              * returned by this procedure is returned by the cond expression.
              */
+            /* FIXME: remove expensive Scm_Intern() */
             if (EQ(Scm_Intern("=>"), CAR(exps))) {
                 proc = EVAL(CADR(exps), env);
                 if (FALSEP(ScmOp_procedurep(proc)))
@@ -1058,6 +1077,7 @@ ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp)
     return SCM_UNDEF;
 }
 
+/* FIXME: argument extraction */
 ScmObj ScmExp_case(ScmObj arg, ScmObj *envp)
 {
     ScmObj env    = *envp;
@@ -1094,9 +1114,9 @@ ScmObj ScmExp_and(ScmObj arg, ScmObj *envp, int *tail_flag)
     ScmObj env = *envp;
     ScmObj obj = SCM_NULL;
 
-    /* sanity check */
     if (NULLP(arg))
         return SCM_TRUE;
+    /* FIXME: expensive operation */
     if (FALSEP(ScmOp_listp(arg)))
         SigScm_ErrorObj("and : list required but got ", arg);
 
@@ -1130,9 +1150,9 @@ ScmObj ScmExp_or(ScmObj arg, ScmObj *envp, int *tail_flag)
     ScmObj env = *envp;
     ScmObj obj = SCM_NULL;
 
-    /* sanity check */
     if (NULLP(arg))
         return SCM_FALSE;
+    /* FIXME: expensive operation */
     if (FALSEP(ScmOp_listp(arg)))
         SigScm_ErrorObj("or : list required but got ", arg);
 
@@ -1164,6 +1184,7 @@ ScmObj ScmExp_or(ScmObj arg, ScmObj *envp, int *tail_flag)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.2 Binding constructs
 ===========================================================================*/
+/* TODO: Simplify and optimize with SCM_SHIFT_*() macro */
 ScmObj ScmExp_let(ScmObj arg, ScmObj *envp)
 {
     ScmObj env      = *envp;
@@ -1244,6 +1265,7 @@ named_let:
     return CONS(CAR(arg), vals);
 }
 
+/* TODO: Simplify and optimize with SCM_SHIFT_*() macro */
 ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp)
 {
     ScmObj env      = *envp;
@@ -1304,6 +1326,7 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp)
     return SCM_UNDEF;
 }
 
+/* TODO: Simplify and optimize with SCM_SHIFT_*() macro */
 ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp)
 {
     ScmObj env      = *envp;
@@ -1388,6 +1411,7 @@ ScmObj ScmExp_begin(ScmObj arg, ScmObj *envp)
     /* sanity check */
     if (NULLP(arg))
         return SCM_UNDEF;
+    /* FIXME: expensive operation */
     if (FALSEP(ScmOp_listp(arg)))
         SigScm_ErrorObj("begin : list required but got ", arg);
 
@@ -1414,6 +1438,7 @@ ScmObj ScmExp_begin(ScmObj arg, ScmObj *envp)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.4 Iteration
 ===========================================================================*/
+/* FIXME: Make safe, simple and optimized with SCM_SHIFT_*() macro */
 ScmObj ScmExp_do(ScmObj arg, ScmObj *envp)
 {
     /*
@@ -1527,6 +1552,8 @@ ScmObj ScmOp_delay(ScmObj args, ScmObj env)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.6 Quasiquotation
 ===========================================================================*/
+/* FIXME: rename to ScmExp_quasiquote since quasiquote is a syntax */
+/* TODO: Simplify and optimize with SCM_SHIFT_*() macro */
 ScmObj ScmOp_quasiquote(ScmObj obj, ScmObj env)
 {
     ScmObj ret;
@@ -1540,6 +1567,7 @@ ScmObj ScmOp_quasiquote(ScmObj obj, ScmObj env)
     return ret;
 }
 
+/* FIXME: rename to ScmExp_unquote since unquote is a syntax */
 ScmObj ScmOp_unquote(ScmObj obj, ScmObj env)
 {
     if (!CONSP(obj) || !NULLP(CDR(obj)))
@@ -1548,6 +1576,10 @@ ScmObj ScmOp_unquote(ScmObj obj, ScmObj env)
     return SCM_NULL;
 }
 
+/*
+ * FIXME: rename to ScmExp_unquote_splicing since unquote_splicing is a
+ * syntax
+ */
 ScmObj ScmOp_unquote_splicing(ScmObj obj, ScmObj env)
 {
     if (!CONSP(obj) || !NULLP(CDR(obj)))
