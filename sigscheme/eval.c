@@ -38,9 +38,9 @@
  * [1] Data Structure of Environment
  *     Environment is the simple list that is formed as below.
  *
- *     - Frame = ( (var1 var2 var3 ...)
- *                 (val1 val2 val3 ...) )
- *     - Env   = ( Frame1 Frame2 Frame3 ...)
+ *     - Frame = (cons (var1 var2 var3 ...)
+ *                     (val1 val2 val3 ...))
+ *     - Env   = (Frame1 Frame2 Frame3 ...)
  *
  */
 
@@ -88,26 +88,33 @@ static ScmObj qquote_vector(ScmObj vec, ScmObj env, int nest);
 /*=======================================
   Function Implementations
 =======================================*/
+/**
+ * Add a frame to an env
+ *
+ * @param vars Symbol list as variable names. It accepts dot list to handle
+ *             function arguments directly.
+ * @param vals Arbitrary Scheme object list as values. Side effect:
+ *             destructively modifyies the vals when vars is a dot list.
+ * @see ScmOp_eval()
+ */
 ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
 {
-    ScmObj frame    = SCM_NULL;
-    ScmObj tmp_vars = vars;
-    ScmObj tmp_vals = vals;
+    ScmObj frame     = SCM_NULL;
+    ScmObj rest_vars, rest_vals;
 
-    /* handle dot list */
-    while (1) {
-        if (NULLP(tmp_vars) || !CONSP(tmp_vars))
+    /* sanity check & dot list handling */
+    for (rest_vars = vars, rest_vals = vals;
+         !NULLP(rest_vars);
+         rest_vars = CDR(rest_vars), rest_vals = CDR(rest_vals))
+    {
+        if (!CONSP(rest_vars) || !SYMBOLP(CAR(rest_vars)))
+            SigScm_ErrorObj("broken environment handling : ", rest_vars);
+
+        /* dot list appeared: fold the rest values into a variable */
+        if (SYMBOLP(CDR(rest_vars))) {
+            SET_CDR(rest_vals, LIST_1(CDR(rest_vals)));
             break;
-
-        /* dot list appears */
-        if (!NULLP(CDR(tmp_vars)) && !CONSP(CDR(tmp_vars))) {
-            /* create new value */
-            SET_CDR(tmp_vals, CONS(CDR(tmp_vals),
-                                   SCM_NULL));
         }
-
-        tmp_vars = CDR(tmp_vars);
-        tmp_vals = CDR(tmp_vals);
     }
 
     /* create new frame */
@@ -119,47 +126,47 @@ ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
     else if (CONSP(env))
         env = CONS(frame, env);
     else
-        SigScm_Error("Broken environment.\n");
+        SigScm_Error("broken environment.\n");
 
     return env;
 }
 
+/** Add a binding to newest frame of an env */
 ScmObj add_environment(ScmObj var, ScmObj val, ScmObj env)
 {
-    ScmObj newest_frame, tmp;
-    ScmObj new_varlist, new_vallist;
+    ScmObj newest_frame;
+    ScmObj new_vars, new_vals;
 
     /* sanity check */
-    if (NULLP(var))
-        return env;
+    if (!SYMBOLP(var))
+        SigScm_ErrorObj("broken environment handling : ", var);
 
-    /* add (var val) pair to the newest frame in env */
+    /* add (var, val) pair to the newest frame in env */
     if (NULLP(env)) {
         newest_frame = CONS(CONS(var, SCM_NULL),
                             CONS(val, SCM_NULL));
-        env = CONS(newest_frame,
-                          SCM_NULL);
+        env = CONS(newest_frame, SCM_NULL);
     } else if (CONSP(env)) {
         newest_frame = CAR(env);
-        new_varlist  = CONS(var, CAR(newest_frame));
-        new_vallist  = CONS(val, CDR(newest_frame));
+        new_vars = CONS(var, CAR(newest_frame));
+        new_vals = CONS(val, CDR(newest_frame));
 
-        tmp = CONS(CONS(new_varlist, new_vallist), CDR(env));
-        *env = *tmp;
+        SET_CAR(env, CONS(new_vars, new_vals));
     } else {
-        SigScm_Error("broken environment\n");
+        SigScm_ErrorObj("broken environent : ", env);
     }
     return env;
 }
 
-/*========================================================
-  ScmObj lookup_environment(ScmObj var, ScmObj env)
-
-  @return list which represent (val vals-in-frame).
-          val is the value of var.
-
-  TODO : describe more precicely
-========================================================*/
+/**
+ * Lookup a variable of an env
+ *
+ * @return a variable which represented as (val . rest-vals-in-frame).  val is
+ *         the value of var. Since the result is the part of the frame, caller
+ *         can modify the variable by (set-car! the-list new-val).
+ *
+ * @todo describe more precicely
+ */
 ScmObj lookup_environment(ScmObj var, ScmObj env)
 {
     ScmObj frame = SCM_NULL;
@@ -169,9 +176,9 @@ ScmObj lookup_environment(ScmObj var, ScmObj env)
     if (NULLP(env))
         return SCM_NULL;
     if (!CONSP(env))
-        SigScm_ErrorObj("Broken environent : ", env);
+        SigScm_ErrorObj("broken environent : ", env);
 
-    /* lookup frames */
+    /* lookup in frames */
     for (; !NULLP(env); env = CDR(env)) {
         frame = CAR(env);
         val   = lookup_frame(var, frame);
@@ -182,6 +189,7 @@ ScmObj lookup_environment(ScmObj var, ScmObj env)
     return SCM_NULL;
 }
 
+/** Lookup a variable of a frame */
 ScmObj lookup_frame(ScmObj var, ScmObj frame)
 {
     ScmObj vals = SCM_NULL;
@@ -191,30 +199,21 @@ ScmObj lookup_frame(ScmObj var, ScmObj frame)
     if (NULLP(frame))
         return SCM_NULL;
     else if (!CONSP(frame))
-        SigScm_ErrorObj("Broken frame : ", frame);
+        SigScm_ErrorObj("broken frame : ", frame);
 
     /* lookup in frame */
-    vars = CAR(frame);
-    vals = CDR(frame);
-
-    while (1) {
-        if (NULLP(vars))
-            break;
-
-        if (!CONSP(vars)) {
+    for (vars = CAR(frame), vals = CDR(frame);
+         !NULLP(vars);
+         vars = CDR(vars), vals = CDR(vals))
+    {
+        if (SYMBOLP(vars)) {
             /* handle dot list */
-            if (EQ(vars, var))
-                return vals;
-
-            break;
+            return (EQ(vars, var)) ? vals : SCM_NULL;
         } else {
             /* normal binding */
             if (EQ(CAR(vars), var))
                 return vals;
         }
-
-        vars = CDR(vars);
-        vals = CDR(vals);
     }
 
     return SCM_NULL;
