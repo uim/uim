@@ -70,17 +70,11 @@ static long sscm_verbose_level = 0;
  * TODO:
  * - generalize to SCM_USE_NONSTD_FEATURES
  * - describe compatibility with de facto standard of other Scheme
- *   implementations
+ *   implementations (accept env as optional arg, etc)
  */
 ScmObj ScmOp_symbol_boundp(ScmObj obj)
 {
-    if (SYMBOLP(obj)
-        && !EQ(SCM_SYMBOL_VCELL(obj), SCM_UNBOUND))
-    {
-        return SCM_TRUE;
-    }
-
-    return SCM_FALSE;
+    return (SYMBOLP(obj) && SCM_SYMBOL_BOUNDP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 /*

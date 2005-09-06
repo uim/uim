@@ -954,9 +954,11 @@ ScmObj ScmExp_set(ScmObj arg, ScmObj env)
     ret = EVAL(val, env);
     tmp = lookup_environment(sym, env);
     if (NULLP(tmp)) {
+        if (!SYMBOLP(sym))
+            SigScm_ErrorObj("set! : symbol required but got ", sym);
         /* Not found in the environment
-           If symbol is not bounded, error occurs */
-        if (FALSEP(ScmOp_symbol_boundp(sym)))
+           If symbol is not bound, error occurs */
+        if (!SCM_SYMBOL_BOUNDP(sym))
             SigScm_ErrorObj("set! : unbound variable ", sym);
 
         SCM_SYMBOL_SET_VCELL(sym, ret);
@@ -965,7 +967,11 @@ ScmObj ScmExp_set(ScmObj arg, ScmObj env)
         SET_CAR(tmp, ret);
     }
 
+#if SCM_STRICT_R5RS
+    return SCM_UNDEF;
+#else
     return ret;
+#endif
 }
 
 
