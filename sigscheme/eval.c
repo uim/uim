@@ -223,8 +223,8 @@ ScmObj lookup_frame(ScmObj var, ScmObj frame)
   S-Expression Evaluation
 ===========================================================================*/
 /*
- * TODO: split function invocation handling off to a function and share it with
- * ScmOp_apply
+ * TODO: split function invocation handling off into a function and share it
+ * with ScmOp_apply
  */
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
 {
@@ -483,7 +483,7 @@ ScmObj ScmOp_apply(ScmObj args, ScmObj env)
     if CHECK_2_ARGS(args)
         SigScm_Error("apply : Wrong number of arguments\n");
     if (!NULLP(CDDR(args)))
-        SigScm_Error("apply : Doesn't support multiarg apply\n");
+        SigScm_Error("apply : Multiarg apply is not supported\n");
 
     /* 1st elem of list is proc */
     proc = CAR(args);
