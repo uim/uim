@@ -16,9 +16,8 @@ do
 done
 
 echo "[ Run SigScheme Test ]"
-for test in test/test-*.scm
+for test in `ls test/test-*.scm | grep -v test-tail-rec\.scm`
 do
   echo "Running test $test..."
   ./sscm $test
 done
-
