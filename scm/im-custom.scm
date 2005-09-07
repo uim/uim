@@ -209,7 +209,16 @@
       (custom-im-list-as-choice-rec (reverse
 				     (alist-delete 'direct im-list eq?))))))
 
-(define-custom 'enabled-im-list '(direct)
+(define usable-im-list
+  (lambda ()
+    (let ((imlist (filter
+		    (lambda (name)
+	              (memq name system-available-im-list)) enabled-im-list)))
+	 (if (not (null? imlist))
+	     imlist
+	     '(direct)))))
+
+(define-custom 'enabled-im-list (usable-im-list)
   '(global im-deployment)
   (cons
    'ordered-list

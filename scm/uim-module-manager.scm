@@ -111,7 +111,8 @@
       (custom-list-as-literal installed-im-module-list)
       ")\n"
       (custom-definition-as-literal 'enabled-im-list)
-      "\n"))))
+      "\n"
+      "(define system-available-im-list enabled-im-list)\n"))))
 
 
 (prealloc-heaps-for-heavy-job)
