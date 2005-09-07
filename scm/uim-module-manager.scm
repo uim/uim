@@ -32,72 +32,86 @@
 (require "im.scm")
 (require "lazy-load.scm")
 
-
-;; FIXME: This function works fine, but too hard to read.
-(define (get-new-registered-module-list modules old-module-list)
-  (filter
-   (lambda (x) ;; Test for valid module
-      (if (require-module (symbol->string x))
-	  #t
-	  (begin (puts (string-append "Error: Module " x " is not a correct module.\n"))
-		 #f)))
-   (remove (lambda (x) ;; Test 
-	     (if (memq x old-module-list)
-		 (begin (puts (string-append "Error : Module " x " already registered\n"))
-			#t)
-		 (begin ;(puts (string-append "Module " x " not registered\n"))
+(define add-modules-to-module-list
+  (lambda (modules current-module-list)
+    (append
+     (filter
+      (lambda (module)
+	;; Test if the module is valid
+	(if (require-module (symbol->string module))
+	    #t
+	    (begin (puts (string-append "Warning: Module " module
+					" is not a correct module.\n"))
 		   #f)))
-	   modules)))
+      (remove
+       (lambda (module)
+	 (if (memq module current-module-list)
+	     (begin (puts (string-append "Warning: Module " module
+					 " is already registered\n"))
+		    #t)
+	     #f))
+       modules))
+     current-module-list)))
 
-(define (remove-unregistered-modules modules old-module-list)
-  (remove (lambda (x)
-	    (if (memq x modules)
-		(begin ;(puts (string-append "Error : Module " x " already registered\n"))
-		       #t)
-		(begin ;(puts (string-append "Module " x " not registered\n"))
-		       #f)))
-	    old-module-list))
+(define remove-modules-from-module-list
+  (lambda (removing-modules current-module-list)
+    (remove
+     (lambda (module)
+       (if (memq module removing-modules)
+	   #t
+	   #f))
+     current-module-list)))
 
-;; This function will call when $ uim-module-manager --register
-(define (register-modules)
-  (let* ((old-module-list (read-module-list))
-	 (new-module-list (get-new-registered-module-list (get-arguments) old-module-list)))
-    (update-modules-installed-modules.scm-loader.scm (append new-module-list old-module-list))))
+;; This function is called with 'uim-module-manager --register'
+(define register-modules
+  (lambda (module-names)
+    (let* ((modules (map string->symbol (string-split module-names " ")))
+	   (current-module-list (map string->symbol installed-im-module-list))
+	   (revised-module-list (add-modules-to-module-list modules
+				 current-module-list)))
+      (update-all-files revised-module-list))))
 
-;; This function will call when $ uim-module-manager --unregister
-(define (unregister-modules)
-  (let* ((old-module-list (read-module-list))
-	 (new-module-list (remove-unregistered-modules (get-arguments) old-module-list)))
-    (update-modules-installed-modules.scm-loader.scm new-module-list)))
+;; This function is called with 'uim-module-manager --unregister'
+(define unregister-modules
+  (lambda (module-names)
+    (let* ((modules (map string->symbol (string-split module-names " ")))
+	   (current-module-list (map string->symbol installed-im-module-list))
+	   (revised-module-list (remove-modules-from-module-list 
+				 modules
+				 current-module-list)))
+      (update-all-files revised-module-list))))
 
-(define (update-modules-installed-modules.scm-loader.scm module-list)
-  (update-modules module-list)
-  (update-installed-modules-scm module-list)
-  (update-loader-scm module-list))
+(define update-all-files
+  (lambda (module-list)
+    ;;(update-modules-file module-list)
+    (update-installed-modules-scm module-list)
+    (update-loader-scm module-list)))
 
-(define (update-modules module-list)
-  (write-module-list #f
-		     (map symbol->string
-			  (reverse module-list))))
+(define update-modules-file
+  (lambda (module-list)
+    (write-module-list #f (map symbol->string module-list))))
 
-;; FIXME: Current implementation is heavy.
-(define (update-loader-scm module-list)
-  (set! installed-im-module-list (map symbol->string module-list))
-  (write-loader.scm (string-join "\n" (stub-im-generate-all-stub-im-list))))
+(define update-loader-scm
+  (lambda (module-list)
+    (set! installed-im-module-list (map symbol->string module-list))
+    (write-loader.scm (string-join "\n" (stub-im-generate-all-stub-im-list)))))
 
-(define (update-installed-modules-scm module-list)
-  (set! installed-im-module-list (map symbol->string module-list))
-  (try-require "custom.scm")
-  (set! enabled-im-list
-	(map custom-choice-rec-sym (custom-installed-im-list)))
-  (write-installed-modules.scm
-   (string-append
-    "(define installed-im-module-list "
-    (custom-list-as-literal installed-im-module-list)
-    ")\n"
-    (custom-definition-as-literal 'enabled-im-list)
-    "\n")))
+(define update-installed-modules-scm
+  (lambda (module-list)
+    (set! installed-im-module-list (map symbol->string module-list))
+    (try-require "custom.scm")
+    (set! enabled-im-list
+	  (map custom-choice-rec-sym (custom-installed-im-list)))
+    (write-installed-modules.scm
+     (string-append
+      ";; The described order of input methods affects which IM is preferred\n"
+      ";; at the default IM selection process for each locale. i.e.  list\n"
+      ";; preferable IM first for each language\n"
+      "(define installed-im-module-list "
+      (custom-list-as-literal installed-im-module-list)
+      ")\n"
+      (custom-definition-as-literal 'enabled-im-list)
+      "\n"))))
 
-;(generate-installed-modules-scm))
 
 (prealloc-heaps-for-heavy-job)
