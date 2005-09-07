@@ -136,7 +136,7 @@ void Scm_RegisterFuncRawListWithTailFlag(const char *name, ScmFuncTypeRawListWit
 /* datas.c */
 void   SigScm_InitStorage(void);
 void   SigScm_FinalizeStorage(void);
-void   SigScm_GC_Protect(ScmObj *obj);
+void   SigScm_GC_Protect(ScmObj *var);
 void   SigScm_GC_ProtectStack(ScmObj *stack_start);
 void   SigScm_GC_UnprotectStack(ScmObj *stack_start);
 ScmObj Scm_NewCons(ScmObj a, ScmObj b);

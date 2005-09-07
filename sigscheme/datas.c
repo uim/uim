@@ -41,8 +41,9 @@
  *   - gc_mark_locations()
  *       marking the Scheme object which are stored in the registers.
  *
- *   - gc_mark_protected_obj()
- *       marking the protected Scheme object which are protected by calling SigScm_GC_Protect().
+ *   - gc_mark_protected_var()
+ *       marking the protected Scheme object which are being hold by C
+ *       variables registered by SigScm_GC_Protect().
  *
  *   - gc_mark_locations()
  *       marking the Scheme object which are pushed to the stack, so we need to
@@ -97,10 +98,10 @@
 typedef ScmObj ScmObjHeap;
 
 /* Represents C variable that is holding a ScmObj to be protected from GC */
-typedef struct gc_protected_obj_ gc_protected_obj;
-struct gc_protected_obj_ {
-    ScmObj *obj;
-    gc_protected_obj *next_obj;
+typedef struct gc_protected_var_ gc_protected_var;
+struct gc_protected_var_ {
+    ScmObj *var;
+    gc_protected_var *next_var;
 };
 
 /*=======================================
@@ -146,7 +147,7 @@ static jmp_buf save_regs_buf;
 ScmObj *scm_stack_start_pointer = NULL;
 
 static ScmObj *symbol_hash = NULL;
-static gc_protected_obj *protected_obj_list = NULL;
+static gc_protected_var *protected_var_list = NULL;
 
 #if SCM_COMPAT_SIOD
 ScmObj scm_return_value    = NULL;
@@ -168,7 +169,7 @@ static void gc_mark_and_sweep(void);
 static void mark_obj(ScmObj obj);
 static int  is_pointer_to_heap(ScmObj obj);
 
-static void gc_mark_protected_obj();
+static void gc_mark_protected_var();
 static void gc_mark_locations_n(ScmObj *start, int n);
 static void gc_mark_locations(ScmObj *start, ScmObj *end);
 static void gc_mark(void);
@@ -181,7 +182,7 @@ static void initialize_symbol_hash(void);
 static void finalize_symbol_hash(void);
 static int  symbol_name_hash(const char *name);
 
-static void finalize_protected_obj(void);
+static void finalize_protected_var(void);
 
 /*=======================================
   Function Implementations
@@ -196,7 +197,7 @@ void SigScm_FinalizeStorage(void)
 {
     finalize_heap();
     finalize_symbol_hash();
-    finalize_protected_obj();
+    finalize_protected_var();
 }
 
 static void *malloc_aligned(size_t size)
@@ -378,30 +379,27 @@ mark_loop:
     }
 }
 
-void SigScm_GC_Protect(ScmObj *obj)
+void SigScm_GC_Protect(ScmObj *var)
 {
-    gc_protected_obj *item = (gc_protected_obj*)malloc(sizeof(gc_protected_obj));
-    item->obj = obj;
+    gc_protected_var *item;
 
-    if (protected_obj_list) {
-        item->next_obj = protected_obj_list;
-        protected_obj_list = item;
-    } else {
-        protected_obj_list = item;
-        protected_obj_list->next_obj = NULL; /* null terminated */
-    }
+    item = (gc_protected_var *)malloc(sizeof(gc_protected_var));
+    item->var = var;
+
+    item->next_var = protected_var_list;
+    protected_var_list = item;
 }
 
-static void finalize_protected_obj(void)
+static void finalize_protected_var(void)
 {
-    gc_protected_obj *item = protected_obj_list;
-    gc_protected_obj *tmp  = NULL;
+    gc_protected_var *item = protected_var_list;
+    gc_protected_var *tmp  = NULL;
     while (item) {
         tmp  = item;
-        item = item->next_obj;
+        item = item->next_var;
         free(tmp);
     }
-    protected_obj_list = NULL;
+    protected_var_list = NULL;
 }
 
 static int is_pointer_to_heap(ScmObj obj)
@@ -420,11 +418,11 @@ static int is_pointer_to_heap(ScmObj obj)
     return 0;
 }
 
-static void gc_mark_protected_obj(void)
+static void gc_mark_protected_var(void)
 {
-    gc_protected_obj *item = NULL;
-    for (item = protected_obj_list; item; item = item->next_obj) {
-        mark_obj(*item->obj);
+    gc_protected_var *item = NULL;
+    for (item = protected_var_list; item; item = item->next_var) {
+        mark_obj(*item->var);
     }
 }
 
@@ -486,7 +484,7 @@ static void gc_mark(void)
     gc_mark_locations((ScmObj*)save_regs_buf,
                       (ScmObj*)(((char*)save_regs_buf) + sizeof(save_regs_buf)));
 
-    gc_mark_protected_obj();
+    gc_mark_protected_var();
     gc_mark_locations(scm_stack_start_pointer, &obj);
     gc_mark_symbol_hash();
 }
