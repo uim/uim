@@ -474,7 +474,7 @@ static void gc_mark_symbol_hash(void)
 
 static void gc_mark(void)
 {
-    ScmObj obj;
+    ScmObj stack_end;
 
 #if DEBUG_GC
     printf("gc_mark\n");
@@ -485,7 +485,7 @@ static void gc_mark(void)
                       (ScmObj*)(((char*)save_regs_buf) + sizeof(save_regs_buf)));
 
     gc_mark_protected_var();
-    gc_mark_locations(scm_stack_start_pointer, &obj);
+    gc_mark_locations(scm_stack_start_pointer, &stack_end);
     gc_mark_symbol_hash();
 }
 
@@ -872,9 +872,9 @@ ScmObj Scm_Intern(const char *name)
 
 ScmObj Scm_eval_c_string(const char *exp)
 {
-    ScmObj stack_start;
-    ScmObj str_port = SCM_NULL;
-    ScmObj ret = SCM_NULL;
+    ScmObj stack_start = NULL;
+    ScmObj str_port    = SCM_NULL;
+    ScmObj ret         = SCM_NULL;
 
     /* start protecting stack */
     SigScm_GC_ProtectStack(&stack_start);

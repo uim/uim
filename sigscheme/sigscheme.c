@@ -74,8 +74,9 @@ extern ScmObj scm_return_value;
 =======================================*/
 void SigScm_Initialize(void)
 {
-    ScmObj obj;
-    SigScm_GC_ProtectStack(&obj);
+    ScmObj stack_start = NULL;
+
+    SigScm_GC_ProtectStack(&stack_start);
 
     /*=======================================================================
       Etc Variable Initialization
@@ -375,7 +376,7 @@ void SigScm_Initialize(void)
     scm_return_value = SCM_NULL;
 #endif
 
-    SigScm_GC_UnprotectStack(&obj);
+    SigScm_GC_UnprotectStack(&stack_start);
 }
 
 void SigScm_Finalize()

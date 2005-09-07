@@ -413,7 +413,7 @@ ScmObj ScmOp_write_char(ScmObj arg, ScmObj env)
 ===========================================================================*/
 ScmObj SigScm_load(const char *filename)
 {
-    ScmObj stack_start;
+    ScmObj stack_start  = NULL;
     ScmObj port         = SCM_NULL;
     ScmObj s_expression = SCM_NULL;
     char  *filepath     = create_valid_path(filename);
@@ -516,8 +516,8 @@ ScmObj ScmOp_load(ScmObj filename)
  */
 ScmObj ScmOp_require(ScmObj filename)
 {
-    ScmObj stack_start;
-    ScmObj loaded_str = SCM_NULL;
+    ScmObj stack_start = NULL;
+    ScmObj loaded_str  = SCM_NULL;
 
     if (!STRINGP(filename))
         SigScm_ErrorObj("require : string required but got ", filename);
