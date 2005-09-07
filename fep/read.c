@@ -49,6 +49,9 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+#ifdef HAVE_ERRNO_H
+#include "errno.h"
+#endif
 
 #include "uim-fep.h"
 #include "read.h"
@@ -57,10 +60,8 @@ static char *s_unget_buf = NULL;
 static int s_buf_size = 0;
 
 
-#ifndef HAVE_PSELECT
-static int pselect(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
+static int pselect_(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
             const struct timespec *timeout, const sigset_t *sigmask);
-#endif
 
 /*
  * select
@@ -87,7 +88,7 @@ int my_pselect(int n, fd_set *readfds, const sigset_t *sigmask)
     FD_SET(g_win_in, readfds);
     return 1;
   }
-  return pselect(n, readfds, NULL, NULL, NULL, sigmask);
+  return pselect_(n, readfds, NULL, NULL, NULL, sigmask);
 }
 
 /*
@@ -126,17 +127,35 @@ void unget_stdin(const char *str, int count)
   s_buf_size += count;
 }
 
-#ifndef HAVE_PSELECT
-static int pselect(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
+static int pselect_(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
             const struct timespec *timeout, const sigset_t *sigmask)
 {
   int ret;
   sigset_t orig_sigmask;
+  sigset_t pending_signals;
 
-  sigprocmask(SIG_SETMASK, sigmask, &orig_sigmask);
+  /* シグナルが保留されているか */
+  sigpending(&pending_signals);
+  if (
+      sigismember(&pending_signals, SIGHUP)   ||
+      sigismember(&pending_signals, SIGTERM)  ||
+      sigismember(&pending_signals, SIGQUIT)  ||
+      sigismember(&pending_signals, SIGINT)   ||
+      sigismember(&pending_signals, SIGWINCH) ||
+      sigismember(&pending_signals, SIGUSR1)  ||
+      sigismember(&pending_signals, SIGUSR2)  ||
+      sigismember(&pending_signals, SIGTSTP)  ||
+      sigismember(&pending_signals, SIGCONT)
+     ) {
+    sigprocmask(SIG_SETMASK, sigmask, &orig_sigmask);
+    sigprocmask(SIG_SETMASK, &orig_sigmask, NULL);
+    errno = EINTR;
+    return -1;
+  }
+
   /* timeout は使わない */
+  sigprocmask(SIG_SETMASK, sigmask, &orig_sigmask);
   ret = select(n, readfds, writefds, exceptfds, NULL);
   sigprocmask(SIG_SETMASK, &orig_sigmask, NULL);
   return ret;
 }
-#endif
