@@ -45,6 +45,7 @@
 
 #include "context.h"
 #include "uim-helper.h"
+#include "uim-util.h"
 
 #ifndef HAVE_STRSEP
 char *uim_strsep(char **stringp, const char *delim);

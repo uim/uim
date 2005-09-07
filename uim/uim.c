@@ -44,6 +44,7 @@
 #include "uim-custom.h"
 #include "context.h"
 #include "gettext.h"
+#include "uim-util.h"
 
 extern char *uim_return_str;
 extern char *uim_return_str_list[10];

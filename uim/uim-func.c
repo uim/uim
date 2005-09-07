@@ -40,6 +40,7 @@
 #include "uim-scm.h"
 #include "uim-encoding.h"
 #include "uim-util.h"
+#include "uim-im-switcher.h"
 
 #define MAX_LENGTH_OF_INT_AS_STR (((sizeof(int) == 4) ? sizeof("-2147483648") : sizeof("-9223372036854775808")) - sizeof((char)'\0'))
 
