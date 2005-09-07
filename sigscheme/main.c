@@ -57,7 +57,7 @@
 /* Very simple repl, please rewrite. */
 static void repl(void)
 {
-    ScmObj stack_start;
+    ScmObj stack_start = NULL;
     ScmObj stdin_port  = SCM_NULL;
     ScmObj stdout_port = SCM_NULL;
     ScmObj s_exp  = SCM_NULL;
