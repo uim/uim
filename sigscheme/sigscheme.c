@@ -301,9 +301,9 @@ void SigScm_Initialize(void)
     scm_current_input_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
     scm_current_output_port = Scm_NewFilePort(stdout, "stdout", PORT_OUTPUT);
     scm_current_error_port  = Scm_NewFilePort(stderr, "stderr", PORT_OUTPUT);
-    SigScm_GC_Protect(scm_current_input_port);
-    SigScm_GC_Protect(scm_current_output_port);
-    SigScm_GC_Protect(scm_current_error_port);
+    SigScm_GC_Protect(&scm_current_input_port);
+    SigScm_GC_Protect(&scm_current_output_port);
+    SigScm_GC_Protect(&scm_current_error_port);
 
 #if SCM_USE_SRFI1
     /*=======================================================================

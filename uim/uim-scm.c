@@ -190,7 +190,7 @@ uim_scm_make_func_ptr(uim_func_ptr func_ptr)
 void
 uim_scm_gc_protect(uim_lisp *location)
 {
-  SigScm_GC_Protect((ScmObj)(*location));
+  SigScm_GC_Protect((ScmObj *)location);
 }
 
 void

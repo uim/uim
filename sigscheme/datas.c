@@ -96,10 +96,10 @@
 =======================================*/
 typedef ScmObj ScmObjHeap;
 
-/* Represent protected from GC object */
+/* Represents C variable that is holding a ScmObj to be protected from GC */
 typedef struct gc_protected_obj_ gc_protected_obj;
 struct gc_protected_obj_ {
-    ScmObj obj;
+    ScmObj *obj;
     gc_protected_obj *next_obj;
 };
 
@@ -378,7 +378,7 @@ mark_loop:
     }
 }
 
-void SigScm_GC_Protect(ScmObj obj)
+void SigScm_GC_Protect(ScmObj *obj)
 {
     gc_protected_obj *item = (gc_protected_obj*)malloc(sizeof(gc_protected_obj));
     item->obj = obj;
@@ -424,7 +424,7 @@ static void gc_mark_protected_obj(void)
 {
     gc_protected_obj *item = NULL;
     for (item = protected_obj_list; item; item = item->next_obj) {
-        mark_obj(item->obj);
+        mark_obj(*item->obj);
     }
 }
 
