@@ -55,16 +55,23 @@
 =======================================*/
 
 /* Very simple repl, please rewrite. */
+#if SCM_GCC4_READY_GC
+SCM_DEFINE_GC_PROTECTED_FUNC0(static, void *, repl)
+{
+#else
 static void repl(void)
 {
     ScmObj stack_start = NULL;
+#endif /* SCM_GCC4_READY_GC */
     ScmObj stdin_port  = SCM_NULL;
     ScmObj stdout_port = SCM_NULL;
     ScmObj s_exp  = SCM_NULL;
     ScmObj result = SCM_NULL;
 
+#if !SCM_GCC4_READY_GC
     /* start protecting stack */
     SigScm_GC_ProtectStack(&stack_start);
+#endif
 
     /* init variable */
     stdin_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
@@ -88,8 +95,12 @@ static void repl(void)
     ScmOp_close_input_port(stdin_port);
     ScmOp_close_input_port(stdout_port);
 
+#if SCM_GCC4_READY_GC
+    return NULL;
+#else
     /* now no need to protect stack */
     SigScm_GC_UnprotectStack(&stack_start);
+#endif
 }
 
 /*=======================================

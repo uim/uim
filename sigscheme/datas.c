@@ -575,6 +575,7 @@ static void gc_sweep(void)
     scm_freelist = scm_new_freelist;
 }
 
+#if !SCM_GCC4_READY_GC
 void SigScm_GC_ProtectStack(ScmObj *stack_start)
 {
     if (!scm_stack_start_pointer)
@@ -586,6 +587,7 @@ void SigScm_GC_UnprotectStack(ScmObj *stack_start)
     if (scm_stack_start_pointer == stack_start)
         scm_stack_start_pointer = NULL;
 }
+#endif /* !SCM_GCC4_READY_GC */
 
 /*===========================================================================
   Allocate Structure Functions
@@ -870,14 +872,21 @@ ScmObj Scm_Intern(const char *name)
     return sym;
 }
 
+#if SCM_GCC4_READY_GC
+SCM_DEFINE_GC_PROTECTED_FUNC1(, ScmObj, Scm_eval_c_string, const char *, exp)
+{
+#else
 ScmObj Scm_eval_c_string(const char *exp)
 {
     ScmObj stack_start = NULL;
+#endif /* SCM_GCC4_READY_GC */
     ScmObj str_port    = SCM_NULL;
     ScmObj ret         = SCM_NULL;
 
+#if !SCM_GCC4_READY_GC
     /* start protecting stack */
     SigScm_GC_ProtectStack(&stack_start);
+#endif
 
     str_port = Scm_NewStringPort(exp);
 
@@ -888,8 +897,10 @@ ScmObj Scm_eval_c_string(const char *exp)
     scm_return_value = ret;
 #endif
 
+#if !SCM_GCC4_READY_GC
     /* now no need to protect stack */
     SigScm_GC_UnprotectStack(&stack_start);
+#endif
 
     return ret;
 }

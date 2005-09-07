@@ -411,15 +411,22 @@ ScmObj ScmOp_write_char(ScmObj arg, ScmObj env)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.4 System Interface
 ===========================================================================*/
+#if SCM_GCC4_READY_GC
+SCM_DEFINE_GC_PROTECTED_FUNC1(, ScmObj, SigScm_load, const char *, filename)
+{
+#else
 ScmObj SigScm_load(const char *filename)
 {
     ScmObj stack_start  = NULL;
+#endif /* SCM_GCC4_READY_GC */
     ScmObj port         = SCM_NULL;
     ScmObj s_expression = SCM_NULL;
     char  *filepath     = create_valid_path(filename);
 
+#if !SCM_GCC4_READY_GC
     /* start protecting stack */
     SigScm_GC_ProtectStack(&stack_start);
+#endif
 
     /* sanity check */
     /*
@@ -445,8 +452,10 @@ ScmObj SigScm_load(const char *filename)
     /* close port */
     ScmOp_close_input_port(port);
 
+#if !SCM_GCC4_READY_GC
     /* now no need to protect stack */
     SigScm_GC_UnprotectStack(&stack_start);
+#endif
 
     /* free str */
     free(filepath);
@@ -514,16 +523,23 @@ ScmObj ScmOp_load(ScmObj filename)
  * - provide SIOD compatible behavior about return value when SCM_COMPAT_SIOD
  *   is true
  */
+#if SCM_GCC4_READY_GC
+SCM_DEFINE_GC_PROTECTED_FUNC1(, ScmObj, ScmOp_require, ScmObj, filename)
+{
+#else
 ScmObj ScmOp_require(ScmObj filename)
 {
     ScmObj stack_start = NULL;
+#endif /* SCM_GCC4_READY_GC */
     ScmObj loaded_str  = SCM_NULL;
 
     if (!STRINGP(filename))
         SigScm_ErrorObj("require : string required but got ", filename);
 
+#if !SCM_GCC4_READY_GC
     /* start protecting stack */
     SigScm_GC_ProtectStack(&stack_start);
+#endif
 
     /* construct loaded_str */
     loaded_str = create_loaded_str(filename);
@@ -536,8 +552,10 @@ ScmObj ScmOp_require(ScmObj filename)
         SCM_SYMBOL_VCELL(SigScm_features) = CONS(loaded_str, SCM_SYMBOL_VCELL(SigScm_features));
     }
 
+#if !SCM_GCC4_READY_GC
     /* now no need to protect stack */
     SigScm_GC_UnprotectStack(&stack_start);
+#endif
 
     return SCM_TRUE;
 }

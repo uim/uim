@@ -72,11 +72,16 @@ extern ScmObj scm_return_value;
 /*=======================================
   Function Implementations
 =======================================*/
+#if SCM_GCC4_READY_GC
+SCM_DEFINE_GC_PROTECTED_FUNC0(, void *, SigScm_Initialize)
+{
+#else
 void SigScm_Initialize(void)
 {
     ScmObj stack_start = NULL;
 
     SigScm_GC_ProtectStack(&stack_start);
+#endif /* SCM_GCC4_READY_GC */
 
     /*=======================================================================
       Etc Variable Initialization
@@ -376,7 +381,11 @@ void SigScm_Initialize(void)
     scm_return_value = SCM_NULL;
 #endif
 
+#if SCM_GCC4_READY_GC
+    return NULL;
+#else
     SigScm_GC_UnprotectStack(&stack_start);
+#endif
 }
 
 void SigScm_Finalize()
