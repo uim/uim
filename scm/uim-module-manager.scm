@@ -81,6 +81,10 @@
 				 current-module-list)))
       (update-all-files revised-module-list))))
 
+(define unregister-all-modules
+  (lambda (dummy)
+    (update-all-files '())))
+
 (define update-all-files
   (lambda (module-list)
     ;;(update-modules-file module-list)

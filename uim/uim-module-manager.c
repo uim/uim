@@ -51,7 +51,15 @@ static char *path;
 enum Action {
   Register,
   UnRegister,
+  UnRegisterAll,
   None
+};
+
+char *action_command[] = {
+  "register-modules",
+  "unregister-modules",
+  "unregister-all-modules",
+  NULL
 };
 
 /* Utility function */
@@ -91,12 +99,15 @@ print_usage(void)
   printf("Options:\n");
   printf("  --register <modules>   Register the modules\n");
   printf("  --unregister <modules> Unregister the modules\n");
-  printf("  --path <path>          Target path where installed-modules.scm,\n");
-  printf("                         loader.scm, and modules to be installed\n");
-  printf("    **  --path option may be removed in the future. **\n\n");
+  printf("  --path <path>          Target path where installed-modules.scm\n");
+  printf("                         and loader.scm to be installed\n");
+  printf("  --unregister-all       Unregister all modules\n\n");
   printf("Example:\n");
   printf("  uim-module-manager --register anthy skk\n");
-  printf("  uim-module-manager --register prime --path /usr/local/share/uim\n\n");
+  printf("  uim-module-manager --register prime --path /usr/local/share/uim\n");
+  printf("  uim-module-manager --register personal-module --path ~/.uim.d/plugin\n\n");
+  printf("Note:\n");
+  printf("  Registeration and unregistration cannot be done simultaneously.\n\n");
 }
 
 static uim_lisp
@@ -228,7 +239,7 @@ main(int argc, char *argv[]) {
   int action = None;
   char *module_names = NULL;
 
-  if (argc <= 2) {
+  if (argc <= 1) {
     print_usage();
     exit(EXIT_FAILURE);
   }
@@ -243,9 +254,9 @@ main(int argc, char *argv[]) {
 
   for (i = 0; i < argc; i++) {
     if (strcmp(argv[i], "--register") == 0) {
-      if (action == UnRegister) {
-	fprintf(stderr, "Registering and unregistering cannot be used at the same time.\n\n");
-	exit(EXIT_FAILURE);
+      if (action != None) {
+	action = None;
+	break;
       }
       action = Register; i++;
       while (argv[i] && strncmp(argv[i], "--", 2)) {
@@ -254,9 +265,9 @@ main(int argc, char *argv[]) {
       }
       i--;
     } else if (strcmp(argv[i], "--unregister") == 0) {
-      if (action == Register) {
-	fprintf(stderr, "Registering and unregistering cannot be used at the same time.\n\n");
-	exit(EXIT_FAILURE);
+      if (action != None) {
+	action = None;
+	break;
       }
       action = UnRegister; i++;
       while (argv[i] && strncmp(argv[i], "--", 2)) {
@@ -268,10 +279,16 @@ main(int argc, char *argv[]) {
       if (argv[i + 1]) {
 	path = argv[i + 1];
       }
+    } else if (strcmp(argv[i], "--unregister-all") == 0) {
+      if (action != None) {
+	action = None;
+	break;
+      }
+      action = UnRegisterAll;
     }
   }
   
-  if (action == None || !module_names) {
+  if (action == None) {
     print_usage();
     exit(EXIT_FAILURE);
   }
@@ -284,9 +301,12 @@ main(int argc, char *argv[]) {
   if (!uim_scm_require_file("uim-module-manager.scm"))
     exit(1);
 
+  /* for unregister-all */
+  if (!module_names)
+    module_names = "";
+
   UIM_EVAL_FSTRING2(NULL, "(%s \"%s\")",
-		    action == Register ? "register-modules"
-				       : "unregister-modules",
+		    action_command[action],
 		    module_names);
 
   uim_quit();
