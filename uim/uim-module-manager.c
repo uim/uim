@@ -288,7 +288,7 @@ main(int argc, char *argv[]) {
     }
   }
   
-  if (action == None) {
+  if (action == None || (action != UnRegisterAll && !module_names)) {
     print_usage();
     exit(EXIT_FAILURE);
   }
