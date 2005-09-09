@@ -1555,7 +1555,7 @@ ScmObj ScmOp_string_append(ScmObj arg, ScmObj env)
     for (strings = arg; !NULLP(strings); strings = CDR(strings)) {
         obj = CAR(strings);
         if (!STRINGP(obj))
-            SigScm_ErrorObj("string-append : list required but got ", obj);
+            SigScm_ErrorObj("string-append : string required but got ", obj);
 
         total_size += strlen(SCM_STRING_STR(obj));
         total_len  += SCM_STRING_LEN(obj);

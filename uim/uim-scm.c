@@ -532,7 +532,7 @@ uim_scm_init(const char *verbose_level)
     uim_output = stderr;
 
   if (verbose_level && isdigit(verbose_level[0])) {
-    verbose_level = atoi(verbose_level) % 10;
+    vlevel = atoi(verbose_level) % 10;
   }
   uim_scm_set_verbose_level(vlevel);
 
