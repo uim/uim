@@ -35,52 +35,39 @@ SCM_FILES += hk.scm
 endif
 
 module_names = "pyload"
-
 if ANTHY
   module_names += "anthy"
 endif
-
 if CANNA
   module_names += "canna"
 endif
-
 if PRIME
   module_names += "prime"
 endif
-
 if SKK
   module_names += "skk"
 endif
-
 module_names += "tcode" "tutcode" "hangul" "viqr" "ipa-x-sampa" "latin"
-
 if M17NLIB
   module_names += "m17nlib"
 endif
-
 if SCIM
   module_names += "scim"
 endif
 
 
-
-# TODO: resolve dependency to $(top_builddir)/uim/uim-sh in proper way
+# TODO: resolve dependency to $(top_builddir)/uim/uim-module-manager
+# in a proper way
 installed-modules.scm: $(SCM_FILES)
-	$(MAKE) -C $(top_builddir)/uim uim-sh && \
-	$(ECHO) "(define installed-im-module-list '(" '$(module_names)' ")) \
-	         (require \"manage-modules.scm\") \
-	         (generate-installed-modules-scm)" \
-	| LIBUIM_VERBOSE=1 LIBUIM_VANILLA=1 LIBUIM_SCM_FILES=`(cd $(top_srcdir) && pwd)`/scm LIBUIM_PLUGIN_LIB_DIR=$(top_builddir)/uim/.libs \
-	  $(top_builddir)/uim/uim-sh -B >$@
+	$(MAKE) -C $(top_builddir)/uim uim-module-manager && \
+	LIBUIM_SCM_FILES=`(cd $(top_srcdir) && pwd)`/scm LIBUIM_PLUGIN_LIB_DIR=$(top_builddir)/uim/.libs \
+	  $(top_builddir)/uim/uim-module-manager \
+	    --path $(top_builddir)/scm --register $(module_names)
 
-# TODO: resolve dependency to $(top_builddir)/uim/uim-sh in proper way
-loader.scm: installed-modules.scm
-	$(MAKE) -C $(top_builddir)/uim uim-sh && \
-	$(ECHO) "(require \"manage-modules.scm\") \
-	         (require (string-append (getenv \"PWD\") \
-	                                 \"/installed-modules.scm\")) \
-	         (generate-loader-scm)" \
-	| LIBUIM_VERBOSE=1 LIBUIM_VANILLA=1 LIBUIM_SCM_FILES=`(cd $(top_srcdir) && pwd)`/scm LIBUIM_PLUGIN_LIB_DIR=$(top_builddir)/uim/.libs \
-	  $(top_builddir)/uim/uim-sh -B >$@
+loader.scm: $(SCM_FILES)
+	$(MAKE) -C $(top_builddir)/uim uim-module-manager && \
+	LIBUIM_SCM_FILES=`(cd $(top_srcdir) && pwd)`/scm LIBUIM_PLUGIN_LIB_DIR=$(top_builddir)/uim/.libs \
+	  $(top_builddir)/uim/uim-module-manager \
+	    --path $(top_builddir)/scm --register $(module_names)
 
 # $(ECHO) $(ECHO_N) >$@

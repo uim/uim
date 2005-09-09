@@ -62,6 +62,7 @@
 ;; initialized. This limitation may be removed after uim 0.4.6.
 ;;   -- YamaKen 2005-01-25
 (define enabled-im-list ())
+(define system-available-im-list ())
 
 (define-record 'im
   (list
