@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 0.4.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-06-07 18:18+0900\n"
+"POT-Creation-Date: 2005-09-09 14:01+0900\n"
 "PO-Revision-Date: 2005-02-24 19:28+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
@@ -53,24 +53,24 @@ msgstr "言語"
 msgid "Description"
 msgstr "説明"
 
-#: helper/im-switcher-gtk.c:322 qt/switcher-qt.cpp:67
+#: helper/im-switcher-gtk.c:323 qt/switcher-qt.cpp:67
 msgid "uim input method switcher"
 msgstr "入力方式の切り替え"
 
-#: helper/im-switcher-gtk.c:348 qt/switcher-qt.cpp:105
+#: helper/im-switcher-gtk.c:352 qt/switcher-qt.cpp:105
 msgid "Changing way"
 msgstr "切り替え方法"
 
-#: helper/im-switcher-gtk.c:356 qt/switcher-qt.cpp:106
+#: helper/im-switcher-gtk.c:360 qt/switcher-qt.cpp:106
 msgid "Change whole desktop"
 msgstr "デスクトップ全体を切り替え"
 
 #. default is "Change whole desktop"
-#: helper/im-switcher-gtk.c:357 qt/switcher-qt.cpp:109
+#: helper/im-switcher-gtk.c:361 qt/switcher-qt.cpp:109
 msgid "Change this application only"
 msgstr "このアプリケーションのみ切り替え"
 
-#: helper/im-switcher-gtk.c:358 qt/switcher-qt.cpp:111
+#: helper/im-switcher-gtk.c:362 qt/switcher-qt.cpp:111
 msgid "Change this text area only"
 msgstr "このテキストエリアのみ切り替え"
 
@@ -363,7 +363,7 @@ msgstr "グループ"
 msgid "_Defaults"
 msgstr "デフォルト(_D)"
 
-#: helper/pref-gtk.c:481
+#: helper/pref-gtk.c:485
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -650,31 +650,33 @@ msgstr "文節区切りを表示する"
 #: scm/generic-custom.lisp:37 scm/generic-custom.lisp:43
 #: scm/generic-custom.lisp:49 scm/generic-custom.lisp:55
 #: scm/generic-custom.lisp:61 scm/generic-key-custom.lisp:37
-#: scm/generic-key-custom.lisp:41 scm/im-custom.lisp:46 scm/im-custom.lisp:50
-#: scm/im-custom.lisp:55 scm/im-custom.lisp:60 scm/im-custom.lisp:65
-#: scm/im-custom.lisp:70 scm/im-custom.lisp:75 scm/im-custom.lisp:80
-#: scm/im-custom.lisp:85 scm/im-custom.lisp:90 scm/im-custom.lisp:95
-#: scm/im-custom.lisp:100 scm/im-custom.lisp:105 scm/im-custom.lisp:116
-#: scm/im-custom.lisp:126 scm/im-custom.lisp:219 scm/im-custom.lisp:279
-#: scm/im-custom.lisp:295 scm/im-custom.lisp:301 scm/im-custom.lisp:308
-#: scm/im-custom.lisp:314 scm/im-custom.lisp:320 scm/im-custom.lisp:326
-#: scm/im-custom.lisp:332 scm/im-custom.lisp:338 scm/im-custom.lisp:344
-#: scm/im-custom.lisp:351 scm/im-custom.lisp:357 scm/im-custom.lisp:364
-#: scm/im-custom.lisp:370 scm/im-custom.lisp:376 scm/im-custom.lisp:382
-#: scm/prime-custom.lisp:58 scm/prime-custom.lisp:64 scm/prime-custom.lisp:70
-#: scm/prime-custom.lisp:76 scm/prime-custom.lisp:82 scm/prime-custom.lisp:90
-#: scm/prime-custom.lisp:96 scm/prime-custom.lisp:102
-#: scm/prime-custom.lisp:145 scm/prime-custom.lisp:154
-#: scm/prime-key-custom.lisp:61 scm/prime-key-custom.lisp:65
-#: scm/prime-key-custom.lisp:69 scm/skk-custom.lisp:59 scm/skk-custom.lisp:65
-#: scm/skk-custom.lisp:73 scm/skk-custom.lisp:79 scm/skk-custom.lisp:85
-#: scm/skk-custom.lisp:91 scm/skk-custom.lisp:218 scm/skk-custom.lisp:237
-#: scm/skk-custom.lisp:246 scm/skk-custom.lisp:277 scm/skk-custom.lisp:286
-#: scm/skk-custom.lisp:329 scm/skk-custom.lisp:335 scm/skk-custom.lisp:347
-#: scm/skk-custom.lisp:354 scm/skk-custom.lisp:361 scm/skk-custom.lisp:373
-#: scm/skk-custom.lisp:379 scm/skk-custom.lisp:385 scm/skk-custom.lisp:391
-#: scm/skk-custom.lisp:401 scm/skk-custom.lisp:407 scm/skk-custom.lisp:428
-#: scm/skk-custom.lisp:434 scm/skk-custom.lisp:441 scm/skk-key-custom.lisp:65
+#: scm/generic-key-custom.lisp:41 scm/im-custom.lisp:47 scm/im-custom.lisp:51
+#: scm/im-custom.lisp:56 scm/im-custom.lisp:61 scm/im-custom.lisp:66
+#: scm/im-custom.lisp:71 scm/im-custom.lisp:76 scm/im-custom.lisp:81
+#: scm/im-custom.lisp:86 scm/im-custom.lisp:91 scm/im-custom.lisp:96
+#: scm/im-custom.lisp:101 scm/im-custom.lisp:106 scm/im-custom.lisp:117
+#: scm/im-custom.lisp:127 scm/im-custom.lisp:229 scm/im-custom.lisp:289
+#: scm/im-custom.lisp:305 scm/im-custom.lisp:311 scm/im-custom.lisp:318
+#: scm/im-custom.lisp:324 scm/im-custom.lisp:330 scm/im-custom.lisp:336
+#: scm/im-custom.lisp:342 scm/im-custom.lisp:348 scm/im-custom.lisp:354
+#: scm/im-custom.lisp:367 scm/im-custom.lisp:373 scm/im-custom.lisp:380
+#: scm/im-custom.lisp:386 scm/im-custom.lisp:390 scm/im-custom.lisp:396
+#: scm/im-custom.lisp:402 scm/prime-custom.lisp:55 scm/prime-custom.lisp:61
+#: scm/prime-custom.lisp:69 scm/prime-custom.lisp:75 scm/prime-custom.lisp:93
+#: scm/prime-custom.lisp:99 scm/prime-custom.lisp:106
+#: scm/prime-custom.lisp:113 scm/prime-custom.lisp:121
+#: scm/prime-custom.lisp:129 scm/prime-custom.lisp:135
+#: scm/prime-custom.lisp:141 scm/prime-key-custom.lisp:61
+#: scm/prime-key-custom.lisp:65 scm/prime-key-custom.lisp:69
+#: scm/skk-custom.lisp:59 scm/skk-custom.lisp:65 scm/skk-custom.lisp:73
+#: scm/skk-custom.lisp:79 scm/skk-custom.lisp:85 scm/skk-custom.lisp:91
+#: scm/skk-custom.lisp:217 scm/skk-custom.lisp:236 scm/skk-custom.lisp:245
+#: scm/skk-custom.lisp:276 scm/skk-custom.lisp:285 scm/skk-custom.lisp:328
+#: scm/skk-custom.lisp:334 scm/skk-custom.lisp:346 scm/skk-custom.lisp:353
+#: scm/skk-custom.lisp:360 scm/skk-custom.lisp:372 scm/skk-custom.lisp:378
+#: scm/skk-custom.lisp:384 scm/skk-custom.lisp:390 scm/skk-custom.lisp:400
+#: scm/skk-custom.lisp:406 scm/skk-custom.lisp:427 scm/skk-custom.lisp:433
+#: scm/skk-custom.lisp:440 scm/skk-key-custom.lisp:65
 #: scm/skk-key-custom.lisp:69 scm/skk-key-custom.lisp:73
 #: scm/skk-key-custom.lisp:78 scm/spellcheck-custom.lisp:48
 #: scm/spellcheck-custom.lisp:54 scm/spellcheck-custom.lisp:60
@@ -683,7 +685,7 @@ msgstr "文節区切りを表示する"
 msgid "long description will be here."
 msgstr "詳細記述予定"
 
-#: scm/anthy-custom.lisp:56 scm/canna-custom.lisp:60 scm/im-custom.lisp:79
+#: scm/anthy-custom.lisp:56 scm/canna-custom.lisp:60 scm/im-custom.lisp:80
 msgid "Segment separator"
 msgstr "文節区切り"
 
@@ -700,62 +702,63 @@ msgid "Conversion key press count to show candidate window"
 msgstr "候補ウィンドウの表示を開始するまでの変換キー押下数"
 
 #: scm/anthy-custom.lisp:83 scm/canna-custom.lisp:87
-#: scm/generic-custom.lisp:54 scm/prime-custom.lisp:57 scm/skk-custom.lisp:90
+#: scm/generic-custom.lisp:54 scm/prime-custom.lisp:92 scm/skk-custom.lisp:90
 msgid "Number of candidates in candidate window at a time"
 msgstr "候補ウィンドウに表示する候補数"
 
 #: scm/anthy-custom.lisp:89 scm/generic-custom.lisp:60
+#: scm/prime-custom.lisp:128
 msgid "Select candidate by numeral keys"
 msgstr "数字キーで候補を選択する"
 
 #: scm/anthy-custom.lisp:119 scm/canna-custom.lisp:113
-#: scm/prime-custom.lisp:122 scm/skk-custom.lisp:169
+#: scm/prime-custom.lisp:160 scm/skk-custom.lisp:168
 msgid "Direct input"
 msgstr "直接入力"
 
-#: scm/anthy-custom.lisp:120 scm/canna-custom.lisp:114 scm/skk-custom.lisp:170
+#: scm/anthy-custom.lisp:120 scm/canna-custom.lisp:114 scm/skk-custom.lisp:169
 msgid "Direct input mode"
 msgstr "直接入力モード"
 
-#: scm/anthy-custom.lisp:124 scm/canna-custom.lisp:118 scm/skk-custom.lisp:174
+#: scm/anthy-custom.lisp:124 scm/canna-custom.lisp:118 scm/skk-custom.lisp:173
 msgid "Hiragana"
 msgstr "ひらがな"
 
-#: scm/anthy-custom.lisp:125 scm/canna-custom.lisp:119 scm/skk-custom.lisp:175
+#: scm/anthy-custom.lisp:125 scm/canna-custom.lisp:119 scm/skk-custom.lisp:174
 msgid "Hiragana input mode"
 msgstr "ひらがな入力モード"
 
-#: scm/anthy-custom.lisp:129 scm/canna-custom.lisp:123 scm/skk-custom.lisp:179
+#: scm/anthy-custom.lisp:129 scm/canna-custom.lisp:123 scm/skk-custom.lisp:178
 msgid "Katakana"
 msgstr "カタカナ"
 
-#: scm/anthy-custom.lisp:130 scm/canna-custom.lisp:124 scm/skk-custom.lisp:180
+#: scm/anthy-custom.lisp:130 scm/canna-custom.lisp:124 scm/skk-custom.lisp:179
 msgid "Katakana input mode"
 msgstr "カタカナ入力モード"
 
-#: scm/anthy-custom.lisp:134 scm/canna-custom.lisp:128 scm/skk-custom.lisp:184
+#: scm/anthy-custom.lisp:134 scm/canna-custom.lisp:128 scm/skk-custom.lisp:183
 msgid "Halfwidth Katakana"
 msgstr "半角カタカナ"
 
-#: scm/anthy-custom.lisp:135 scm/canna-custom.lisp:129 scm/skk-custom.lisp:185
+#: scm/anthy-custom.lisp:135 scm/canna-custom.lisp:129 scm/skk-custom.lisp:184
 msgid "Halfwidth Katakana input mode"
 msgstr "半角カタカナ入力モード"
 
 #: scm/anthy-custom.lisp:139 scm/canna-custom.lisp:133
-#: scm/prime-custom.lisp:132 scm/skk-custom.lisp:189
+#: scm/prime-custom.lisp:170 scm/skk-custom.lisp:188
 msgid "Fullwidth Alphanumeric"
 msgstr "全角英数"
 
 #: scm/anthy-custom.lisp:140 scm/canna-custom.lisp:134
-#: scm/prime-custom.lisp:133 scm/skk-custom.lisp:190
+#: scm/prime-custom.lisp:171 scm/skk-custom.lisp:189
 msgid "Fullwidth Alphanumeric input mode"
 msgstr "全角英数入力モード"
 
-#: scm/anthy-custom.lisp:147 scm/canna-custom.lisp:141 scm/skk-custom.lisp:197
+#: scm/anthy-custom.lisp:147 scm/canna-custom.lisp:141 scm/skk-custom.lisp:196
 msgid "Romaji"
 msgstr "ローマ字"
 
-#: scm/anthy-custom.lisp:148 scm/canna-custom.lisp:142 scm/skk-custom.lisp:198
+#: scm/anthy-custom.lisp:148 scm/canna-custom.lisp:142 scm/skk-custom.lisp:197
 msgid "Romaji input mode"
 msgstr "ローマ字入力モード"
 
@@ -767,45 +770,43 @@ msgstr "かな"
 msgid "Kana input mode"
 msgstr "かな入力モード"
 
-#: scm/anthy-custom.lisp:157 scm/canna-custom.lisp:151 scm/skk-custom.lisp:202
+#: scm/anthy-custom.lisp:157 scm/canna-custom.lisp:151 scm/skk-custom.lisp:201
 msgid "AZIK"
 msgstr "AZIK"
 
-#: scm/anthy-custom.lisp:158 scm/canna-custom.lisp:152 scm/skk-custom.lisp:203
+#: scm/anthy-custom.lisp:158 scm/canna-custom.lisp:152 scm/skk-custom.lisp:202
 msgid "AZIK extended romaji input mode"
 msgstr "AZIK拡張ローマ字入力モード"
 
 #: scm/anthy-custom.lisp:167 scm/anthy-custom.lisp:168
-#: scm/canna-custom.lisp:161 scm/canna-custom.lisp:162 scm/skk-custom.lisp:212
-#: scm/skk-custom.lisp:213
+#: scm/canna-custom.lisp:161 scm/canna-custom.lisp:162 scm/skk-custom.lisp:211
+#: scm/skk-custom.lisp:212
 msgid "Input mode"
 msgstr "入力モード"
 
 #: scm/anthy-custom.lisp:170 scm/anthy-custom.lisp:171
-#: scm/canna-custom.lisp:164 scm/canna-custom.lisp:165 scm/skk-custom.lisp:215
-#: scm/skk-custom.lisp:216
+#: scm/canna-custom.lisp:164 scm/canna-custom.lisp:165 scm/skk-custom.lisp:214
+#: scm/skk-custom.lisp:215
 msgid "Kana input method"
 msgstr "かな入力方式"
 
-#: scm/anthy-custom.lisp:172 scm/canna-custom.lisp:166 scm/skk-custom.lisp:217
+#: scm/anthy-custom.lisp:172 scm/canna-custom.lisp:166 scm/skk-custom.lisp:216
 msgid "Enabled toolbar buttons"
 msgstr "ツールバー上に表示するボタン"
 
-#: scm/anthy-custom.lisp:191 scm/canna-custom.lisp:185
-#: scm/prime-custom.lisp:144 scm/skk-custom.lisp:236
+#: scm/anthy-custom.lisp:191 scm/canna-custom.lisp:185 scm/skk-custom.lisp:235
 msgid "Default input mode"
 msgstr "デフォルトの入力モード"
 
-#: scm/anthy-custom.lisp:200 scm/canna-custom.lisp:194
-#: scm/prime-custom.lisp:153 scm/skk-custom.lisp:245
+#: scm/anthy-custom.lisp:200 scm/canna-custom.lisp:194 scm/skk-custom.lisp:244
 msgid "Input mode menu items"
 msgstr "入力モードメニュー項目"
 
-#: scm/anthy-custom.lisp:242 scm/canna-custom.lisp:236 scm/skk-custom.lisp:276
+#: scm/anthy-custom.lisp:242 scm/canna-custom.lisp:236 scm/skk-custom.lisp:275
 msgid "Default kana input method"
 msgstr "デフォルトのかな入力方式"
 
-#: scm/anthy-custom.lisp:251 scm/canna-custom.lisp:245 scm/skk-custom.lisp:285
+#: scm/anthy-custom.lisp:251 scm/canna-custom.lisp:245 scm/skk-custom.lisp:284
 msgid "Kana input method menu items"
 msgstr "かな入力方式メニュー項目"
 
@@ -879,12 +880,13 @@ msgstr "[Anthy] 次の文節"
 #: scm/skk-key-custom.lisp:161 scm/skk-key-custom.lisp:167
 #: scm/skk-key-custom.lisp:173 scm/skk-key-custom.lisp:179
 #: scm/skk-key-custom.lisp:185 scm/skk-key-custom.lisp:191
-#: scm/skk-key-custom.lisp:209 scm/skk-key-custom.lisp:215
+#: scm/skk-key-custom.lisp:197 scm/skk-key-custom.lisp:215
 #: scm/skk-key-custom.lisp:221 scm/skk-key-custom.lisp:227
 #: scm/skk-key-custom.lisp:233 scm/skk-key-custom.lisp:239
-#: scm/skk-key-custom.lisp:245 scm/spellcheck-custom.lisp:72
-#: scm/tutcode-key-custom.lisp:76 scm/tutcode-key-custom.lisp:82
-#: scm/tutcode-key-custom.lisp:88 scm/tutcode-key-custom.lisp:95
+#: scm/skk-key-custom.lisp:245 scm/skk-key-custom.lisp:251
+#: scm/spellcheck-custom.lisp:72 scm/tutcode-key-custom.lisp:76
+#: scm/tutcode-key-custom.lisp:82 scm/tutcode-key-custom.lisp:88
+#: scm/tutcode-key-custom.lisp:95
 msgid "long description will be here"
 msgstr "詳細記述予定"
 
@@ -1225,175 +1227,187 @@ msgstr "オン"
 msgid " Mode"
 msgstr " モード"
 
-#: scm/hangul.lisp:93
+#: scm/hangul.lisp:107
 msgid "Hangul (2-bul)"
 msgstr "2ボル式ハングル"
 
-#: scm/hangul.lisp:94
+#: scm/hangul.lisp:108
 msgid "2-bul style hangul input method"
 msgstr "2ボル式ハングル入力方式"
 
-#: scm/hangul.lisp:102
+#: scm/hangul.lisp:116
 msgid "Hangul (3-bul)"
 msgstr "3ボル式ハングル"
 
-#: scm/hangul.lisp:103
+#: scm/hangul.lisp:117
 msgid "3-bul style hangul input method"
 msgstr "3ボル式ハングル入力方式"
 
-#: scm/hangul.lisp:110
+#: scm/hangul.lisp:124
 msgid "Hangul (Romaja)"
 msgstr "ローマ字入力式ハングル"
 
-#: scm/hangul.lisp:111
+#: scm/hangul.lisp:125
 msgid "Romaja input style hangul input method"
 msgstr "ローマ字入力式ハングル入力方式"
 
-#: scm/im-custom.lisp:45
+#: scm/im-custom.lisp:46
 msgid "Global settings"
 msgstr "全体設定"
 
-#: scm/im-custom.lisp:49
+#: scm/im-custom.lisp:50
 msgid "Toolbar"
 msgstr "ツールバー"
 
-#: scm/im-custom.lisp:54
+#: scm/im-custom.lisp:55
 msgid "Advanced settings"
 msgstr "上級設定"
 
-#: scm/im-custom.lisp:59
+#: scm/im-custom.lisp:60
 msgid "Buttons"
 msgstr "ボタン"
 
-#: scm/im-custom.lisp:64
+#: scm/im-custom.lisp:65
 msgid "Candidate window"
 msgstr "候補ウィンドウ"
 
-#: scm/im-custom.lisp:69
+#: scm/im-custom.lisp:70
 msgid "Annotation"
 msgstr "註釈"
 
-#: scm/im-custom.lisp:74
+#: scm/im-custom.lisp:75
 msgid "Dictionary"
 msgstr "辞書"
 
-#: scm/im-custom.lisp:84
+#: scm/im-custom.lisp:85
 msgid "Mode transition"
 msgstr "モード遷移"
 
-#: scm/im-custom.lisp:89
+#: scm/im-custom.lisp:90
 msgid "Special operation"
 msgstr "特殊操作"
 
-#: scm/im-custom.lisp:94 scm/im-custom.lisp:125
+#: scm/im-custom.lisp:95 scm/im-custom.lisp:126
 msgid "Default input method"
 msgstr "デフォルトの入力方式"
 
-#: scm/im-custom.lisp:99
+#: scm/im-custom.lisp:100
 msgid "Input method deployment"
 msgstr "入力方式の利用準備"
 
-#: scm/im-custom.lisp:104
+#: scm/im-custom.lisp:105
 msgid "Visual preference"
 msgstr "視覚設定"
 
-#: scm/im-custom.lisp:115
+#: scm/im-custom.lisp:116
 msgid "Specify default IM"
 msgstr "デフォルトの入力方式を指定する"
 
-#: scm/im-custom.lisp:218
+#: scm/im-custom.lisp:228
 msgid "Enabled input methods"
 msgstr "使用可能にする入力方式"
 
-#: scm/im-custom.lisp:276 scm/skk-custom.lisp:70 scm/skk-custom.lisp:371
+#: scm/im-custom.lisp:286 scm/skk-custom.lisp:70 scm/skk-custom.lisp:370
 msgid "uim"
 msgstr "uim"
 
-#: scm/im-custom.lisp:276 scm/skk-custom.lisp:70 scm/skk-custom.lisp:371
+#: scm/im-custom.lisp:286 scm/skk-custom.lisp:70 scm/skk-custom.lisp:370
 msgid "uim native"
 msgstr "uimネイティブ"
 
-#: scm/im-custom.lisp:277
+#: scm/im-custom.lisp:287
 msgid "ATOK like"
 msgstr "ATOK風"
 
-#: scm/im-custom.lisp:277
+#: scm/im-custom.lisp:287
 msgid "Similar to ATOK"
 msgstr "ATOK風"
 
-#: scm/im-custom.lisp:278
+#: scm/im-custom.lisp:288
 msgid "Preedit color"
 msgstr "編集領域色"
 
-#: scm/im-custom.lisp:286 scm/im-custom.lisp:287
+#: scm/im-custom.lisp:296 scm/im-custom.lisp:297
 msgid "Adjacent to cursor"
 msgstr "カーソルに隣接"
 
-#: scm/im-custom.lisp:289 scm/im-custom.lisp:290
+#: scm/im-custom.lisp:299 scm/im-custom.lisp:300
 msgid "Left end of preedit area"
 msgstr "編集領域の左端"
 
-#: scm/im-custom.lisp:292 scm/im-custom.lisp:293
+#: scm/im-custom.lisp:302 scm/im-custom.lisp:303
 msgid "Right end of preedit area"
 msgstr "編集領域の右端"
 
-#: scm/im-custom.lisp:294
+#: scm/im-custom.lisp:304
 msgid "Candidate window position"
 msgstr "候補ウィンドウ表示位置"
 
-#: scm/im-custom.lisp:300
+#: scm/im-custom.lisp:310
 msgid "Enable lazy input method loading for fast startup"
 msgstr "高速起動のための遅延ローディングを有効にする"
 
-#: scm/im-custom.lisp:307
+#: scm/im-custom.lisp:317
 msgid "Show input method switcher button on toolbar"
 msgstr "入力方式の切り替えボタンをツールバーに表示する"
 
-#: scm/im-custom.lisp:313
+#: scm/im-custom.lisp:323
 msgid "Show uim preference tool button on toolbar"
 msgstr "設定ツールの起動ボタンをツールバーに表示する"
 
-#: scm/im-custom.lisp:319
+#: scm/im-custom.lisp:329
 msgid "Show uim Japanese dictionary tool button on toolbar"
 msgstr "日本語辞書ツールの起動ボタンをツールバーに表示する"
 
-#: scm/im-custom.lisp:325
+#: scm/im-custom.lisp:335
 msgid "Show uim input pad button on toolbar"
 msgstr "入力パッドの起動ボタンをツールバーに表示する"
 
-#: scm/im-custom.lisp:331
+#: scm/im-custom.lisp:341
 msgid "Show uim handwriting-input pad button on toolbar"
 msgstr "手書き入力パッドの起動ボタンをツールバーに表示する"
 
-#: scm/im-custom.lisp:337
+#: scm/im-custom.lisp:347
 msgid "Show uim help button on toolbar"
 msgstr "ヘルプボタンをツールバーに表示する"
 
-#: scm/im-custom.lisp:343
+#: scm/im-custom.lisp:353
 msgid "Show input mode nearby cursor"
 msgstr "入力モードをカーソルの近くに表示する"
 
-#: scm/im-custom.lisp:350
+#: scm/im-custom.lisp:359
+msgid "Time length for showing input mode nearby the cursor"
+msgstr "入力モード表示のタイムアウトまでの時間"
+
+#: scm/im-custom.lisp:360
+msgid "Set 0 to show indicator always."
+msgstr ""
+
+#: scm/im-custom.lisp:366
 msgid "EB library settings"
 msgstr "EBライブラリ設定"
 
-#: scm/im-custom.lisp:356
+#: scm/im-custom.lisp:372
 msgid "Use EB library to search annotations"
 msgstr "注釈の検索にEBライブラリを使用する"
 
-#: scm/im-custom.lisp:363
+#: scm/im-custom.lisp:379
 msgid "The directory which contains EB dictionary file"
 msgstr "EB辞書ファイルを格納しているディレクトリ"
 
-#: scm/im-custom.lisp:369
+#: scm/im-custom.lisp:385
 msgid "XIM settings"
 msgstr "XIM設定"
 
-#: scm/im-custom.lisp:375
+#: scm/im-custom.lisp:389
+msgid "Preedit settings of XIM"
+msgstr ""
+
+#: scm/im-custom.lisp:395
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr "XIM独自の編集領域にアンチエイリアスフォントを使用"
 
-#: scm/im-custom.lisp:381
+#: scm/im-custom.lisp:401
 msgid "Font name for preedit area (anti-aliased)"
 msgstr "編集領域に使用するアンチエイリアスフォント"
 
@@ -1411,55 +1425,92 @@ msgstr "ラテン文字"
 msgid "Latin characters mainly used for Latin and German languages"
 msgstr "主にラテン・ゲルマン諸語で使われるラテン文字入力方式"
 
-#: scm/m17nlib.lisp:336
+#: scm/m17nlib.lisp:338
 msgid "An input method provided by the m17n library"
 msgstr "m17nライブラリによって提供される入力方式"
 
-#: scm/prime-custom.lisp:35
+#: scm/prime-custom.lisp:34
 msgid "PRIME"
 msgstr "PRIME"
 
-#: scm/prime-custom.lisp:36
-msgid "Japanese predictable input method"
+#: scm/prime-custom.lisp:35
+msgid "Japanese predictive input method"
 msgstr "日本語予測入力方式"
 
-#: scm/prime-custom.lisp:63 scm/spellcheck-custom.lisp:65
-msgid "Always showing candidate window"
-msgstr "候補ウィンドウを常に表示する"
+#: scm/prime-custom.lisp:42
+msgid "PRIME (advanced)"
+msgstr "PRIME (高度)"
 
-#: scm/prime-custom.lisp:69
-msgid "Enable auto register mode"
-msgstr "自動登録モードを有効にする"
+#: scm/prime-custom.lisp:43
+msgid "Advanced settings for PRIME"
+msgstr "PRIME向けの上級設定"
 
-#: scm/prime-custom.lisp:75
-msgid "Enable pseudo mode cursor"
-msgstr "擬似的なモードカーソルを有効にする"
-
-#: scm/prime-custom.lisp:81
-msgid "Show candidate annotations"
-msgstr "候補ウィンドウ内に註釈を表示する"
-
-#: scm/prime-custom.lisp:89
-msgid "Show usage examples of candidate words"
-msgstr "候補ウィンドウ内に用例を表示する"
-
-#: scm/prime-custom.lisp:95
-msgid "Use Unix Domain Socket to communicate with PRIME"
-msgstr "PRIMEとの通信にUnixドメインソケットを使用する"
-
-#: scm/prime-custom.lisp:101
-msgid "Mask preedit strings (For T-Code users)"
-msgstr "入力中の文字をマスクする (T-Codeユーザ向け)"
-
-#: scm/prime-custom.lisp:123
-msgid "PRIME off"
-msgstr "PRIME オフ"
-
-#: scm/prime-custom.lisp:127 uim/iso-639-1.def:103
+#: scm/prime-custom.lisp:46 scm/prime-custom.lisp:52 scm/prime-custom.lisp:165
+#: uim/iso-639-1.def:105
 msgid "Japanese"
 msgstr "日本語"
 
-#: scm/prime-custom.lisp:128
+#: scm/prime-custom.lisp:47
+msgid "Japanese specific settings"
+msgstr ""
+
+#: scm/prime-custom.lisp:53 uim/iso-639-1.def:74
+msgid "English"
+msgstr "英語"
+
+#: scm/prime-custom.lisp:54
+msgid "Default language"
+msgstr "デフォルトの言語"
+
+#: scm/prime-custom.lisp:60
+msgid "Enable auto register mode"
+msgstr "自動登録モードを有効にする"
+
+#: scm/prime-custom.lisp:66
+msgid "Wide width (Zenkaku)"
+msgstr "全角"
+
+#: scm/prime-custom.lisp:67
+msgid "Half width (Hankaku)"
+msgstr "半角"
+
+#: scm/prime-custom.lisp:68
+msgid "Space character"
+msgstr "空白文字"
+
+#: scm/prime-custom.lisp:74
+msgid "Use Unix Domain Socket to communicate with PRIME"
+msgstr "PRIMEとの通信にUnixドメインソケットを使用する"
+
+#: scm/prime-custom.lisp:98 scm/spellcheck-custom.lisp:65
+msgid "Always showing candidate window"
+msgstr "候補ウィンドウを常に表示する"
+
+#: scm/prime-custom.lisp:105
+msgid "Show usage examples of candidate words"
+msgstr "候補ウィンドウ内に用例を表示する"
+
+#: scm/prime-custom.lisp:112
+msgid "Show candidate annotations"
+msgstr "候補ウィンドウ内に註釈を表示する"
+
+#: scm/prime-custom.lisp:120
+msgid "Show candidate forms"
+msgstr ""
+
+#: scm/prime-custom.lisp:134 scm/skk-custom.lisp:426
+msgid "Friendly for vi user"
+msgstr "viに適応した入力制御を使用する"
+
+#: scm/prime-custom.lisp:140
+msgid "Enable pseudo mode cursor"
+msgstr "擬似的なモードカーソルを有効にする"
+
+#: scm/prime-custom.lisp:161
+msgid "PRIME off"
+msgstr "PRIME オフ"
+
+#: scm/prime-custom.lisp:166
 msgid "PRIME on"
 msgstr "PRIME オン"
 
@@ -1476,28 +1527,28 @@ msgid "PRIME key bindings 3"
 msgstr "PRIMEキー設定 3"
 
 #: scm/prime-key-custom.lisp:75
-msgid "[PRIME] regist a word"
+msgid "[PRIME] prime-register-key"
 msgstr "[PRIME] 単語登録"
 
 #: scm/prime-key-custom.lisp:81
-msgid "[PRIME] hiragana typing mode"
-msgstr "[PRIME] ひらがな変換"
+msgid "[PRIME] prime-typing-mode-hiragana-key"
+msgstr "[PRIME] ひらがなモード"
 
 #: scm/prime-key-custom.lisp:87
-msgid "[PRIME] katakana typing mode"
-msgstr "[PRIME] カタカナ変換"
+msgid "[PRIME] prime-typing-mode-katakana-key"
+msgstr "[PRIME] カタカナモード"
 
 #: scm/prime-key-custom.lisp:93
-msgid "[PRIME] halfwidth katakana typing mode"
-msgstr "[PRIME] 半角カタカナ変換"
+msgid "[PRIME] prime-typing-mode-hankana-key"
+msgstr "[PRIME] 半角カタカナモード"
 
 #: scm/prime-key-custom.lisp:99
-msgid "[PRIME] wide ascii typing mode"
-msgstr "[PRIME] 全角英数変換"
+msgid "[PRIME] prime-typing-mode-wideascii-key"
+msgstr "[PRIME] 全角英数モード"
 
 #: scm/prime-key-custom.lisp:105
-msgid "[PRIME] ascii typing mode"
-msgstr "[PRIME] 半角英数変換"
+msgid "[PRIME] prime-typing-mode-ascii-key"
+msgstr "[PRIME] asciiモード"
 
 #: scm/prime-key-custom.lisp:114
 msgid "[PRIME] on"
@@ -1619,7 +1670,7 @@ msgstr "見出し表示のキーで候補を選択する"
 msgid "ddskk-like"
 msgstr "ddskk-like"
 
-#: scm/skk-custom.lisp:71 scm/skk-custom.lisp:370
+#: scm/skk-custom.lisp:71 scm/skk-custom.lisp:369
 msgid "Similar to ddskk"
 msgstr "ddskk風"
 
@@ -1631,63 +1682,59 @@ msgstr "候補選択のスタイル"
 msgid "Set candidate window behavior manually"
 msgstr "候補ウィンドウの挙動を手動で設定する"
 
-#: scm/skk-custom.lisp:328
+#: scm/skk-custom.lisp:327
 msgid "Use skkserv instead of SKK-JISYO"
 msgstr "辞書ファイルの代わりにSKKサーバを使用"
 
-#: scm/skk-custom.lisp:334
+#: scm/skk-custom.lisp:333
 msgid "Port number of skkserv"
 msgstr "SKKサーバのポート番号"
 
-#: scm/skk-custom.lisp:346
+#: scm/skk-custom.lisp:345
 msgid "Dictionary file"
 msgstr "辞書ファイル"
 
-#: scm/skk-custom.lisp:353
+#: scm/skk-custom.lisp:352
 msgid "Personal dictionary file"
 msgstr "個人辞書ファイル"
 
-#: scm/skk-custom.lisp:360
+#: scm/skk-custom.lisp:359
 msgid "Personal dictionary file (dedicated to uim)"
 msgstr "個人辞書ファイル (uim専用)"
 
-#: scm/skk-custom.lisp:370
+#: scm/skk-custom.lisp:369
 msgid "ddskk"
 msgstr "ddskk"
 
-#: scm/skk-custom.lisp:372
+#: scm/skk-custom.lisp:371
 msgid "Visual style"
 msgstr "ビジュアルスタイル"
 
-#: scm/skk-custom.lisp:378
+#: scm/skk-custom.lisp:377
 msgid "Use recursive learning"
 msgstr "再帰学習を使用する"
 
-#: scm/skk-custom.lisp:384
+#: scm/skk-custom.lisp:383
 msgid "Use numeric conversion"
 msgstr "数値変換を使用する"
 
-#: scm/skk-custom.lisp:390
+#: scm/skk-custom.lisp:389
 msgid "Enable auto conversion with punctuation marks"
 msgstr "句読点による自動変換を有効にする"
 
-#: scm/skk-custom.lisp:400
+#: scm/skk-custom.lisp:399
 msgid "Show annotation of candidate word"
 msgstr "候補に註釈を表示する"
 
-#: scm/skk-custom.lisp:406
+#: scm/skk-custom.lisp:405
 msgid "Show annotation also in preedit area"
 msgstr "編集領域内にも註釈を表示する"
 
-#: scm/skk-custom.lisp:427
-msgid "Friendly for vi user"
-msgstr "viに適応した入力制御を使用する"
-
-#: scm/skk-custom.lisp:433
+#: scm/skk-custom.lisp:432
 msgid "Use Enter key as just committing (egg-like operation)"
 msgstr "Enterキーを単に確定のために使う (egg風の操作)"
 
-#: scm/skk-custom.lisp:440
+#: scm/skk-custom.lisp:439
 msgid "Commit newline as ASCII string instead of native key-event"
 msgstr "新規行をネイティブキーイベントの代わりにASCII文字列として確定する"
 
@@ -1779,31 +1826,35 @@ msgstr ""
 msgid "[SKK] skk-state-direct-no-preedit-nop-key?"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:208
+#: scm/skk-key-custom.lisp:196
+msgid "[SKK] skk-purge-candidate-key?"
+msgstr "[SKK] 個人辞書中の単語を削除"
+
+#: scm/skk-key-custom.lisp:214
 msgid "[SKK] next candidate"
 msgstr "[SKK] 次候補"
 
-#: scm/skk-key-custom.lisp:214
+#: scm/skk-key-custom.lisp:220
 msgid "[SKK] previous candidate"
 msgstr "[SKK] 前候補"
 
-#: scm/skk-key-custom.lisp:220
+#: scm/skk-key-custom.lisp:226
 msgid "[SKK] next page of candidate window"
 msgstr "[SKK] 候補ウィンドウの次ページ"
 
-#: scm/skk-key-custom.lisp:226
+#: scm/skk-key-custom.lisp:232
 msgid "[SKK] previous page of candidate window"
 msgstr "[SKK] 候補ウィンドウの前ページ"
 
-#: scm/skk-key-custom.lisp:232
+#: scm/skk-key-custom.lisp:238
 msgid "[SKK] backspace"
 msgstr "[SKK] バックスペース"
 
-#: scm/skk-key-custom.lisp:238
+#: scm/skk-key-custom.lisp:244
 msgid "[SKK] go left"
 msgstr "[SKK] 左に移動"
 
-#: scm/skk-key-custom.lisp:244
+#: scm/skk-key-custom.lisp:250
 msgid "[SKK] go right"
 msgstr "[SKK] 右に移動"
 
@@ -1953,523 +2004,546 @@ msgid "Bengali (Bangla)"
 msgstr "ベンガル語"
 
 #: uim/iso-639-1.def:52
+msgid "Bengali"
+msgstr "ベンガル語"
+
+#: uim/iso-639-1.def:53
 msgid "Bhutani"
 msgstr "ブータン語"
 
-#: uim/iso-639-1.def:53
+#: uim/iso-639-1.def:54
 msgid "Bihari"
 msgstr "ビハリ語"
 
-#: uim/iso-639-1.def:54
+#: uim/iso-639-1.def:55
 msgid "Bislama"
 msgstr "ビスラマ語"
 
-#: uim/iso-639-1.def:55
+#: uim/iso-639-1.def:56
 msgid "Breton"
 msgstr "ブルトン語"
 
-#: uim/iso-639-1.def:56
+#: uim/iso-639-1.def:57
 msgid "Bulgarian"
 msgstr "ブルガリア語"
 
-#: uim/iso-639-1.def:57
+#: uim/iso-639-1.def:58
 msgid "Burmese"
 msgstr "ビルマ語"
 
-#: uim/iso-639-1.def:58
+#: uim/iso-639-1.def:59
 msgid "Byelorussian (Belarusian)"
 msgstr "ベラルーシ語"
 
-#: uim/iso-639-1.def:59
+#: uim/iso-639-1.def:60
+msgid "Byelorussian"
+msgstr "ベラルーシ語"
+
+#: uim/iso-639-1.def:61
 msgid "Cambodian"
 msgstr "カンボジア語"
 
-#: uim/iso-639-1.def:60
+#: uim/iso-639-1.def:62
 msgid "Catalan"
 msgstr "カタロニア語"
 
-#: uim/iso-639-1.def:61
+#: uim/iso-639-1.def:63
 msgid "Chewa"
 msgstr "チェワ語"
 
-#: uim/iso-639-1.def:62
+#: uim/iso-639-1.def:64
 msgid "Chinese (Simplified)"
 msgstr "簡体字中国語"
 
-#: uim/iso-639-1.def:63 uim/iso-639-1.def:64
+#: uim/iso-639-1.def:65 uim/iso-639-1.def:66
 msgid "Chinese (Traditional)"
 msgstr "繁体字中国語"
 
-#: uim/iso-639-1.def:65
+#: uim/iso-639-1.def:67
 msgid "Chinese"
 msgstr "中国語"
 
-#: uim/iso-639-1.def:66
+#: uim/iso-639-1.def:68
 msgid "Corsican"
 msgstr "コルシカ語"
 
-#: uim/iso-639-1.def:67
+#: uim/iso-639-1.def:69
 msgid "Croatian"
 msgstr "クロアチア語"
 
-#: uim/iso-639-1.def:68
+#: uim/iso-639-1.def:70
 msgid "Czech"
 msgstr "チェコ語"
 
-#: uim/iso-639-1.def:69
+#: uim/iso-639-1.def:71
 msgid "Danish"
 msgstr "デンマーク語"
 
-#: uim/iso-639-1.def:70
-msgid "Divehi"
+#: uim/iso-639-1.def:72
+msgid "Dhivehi"
 msgstr "ディヴェヒ語"
 
-#: uim/iso-639-1.def:71
+#: uim/iso-639-1.def:73
 msgid "Dutch"
 msgstr "オランダ語"
 
-#: uim/iso-639-1.def:72
-msgid "English"
-msgstr "英語"
-
-#: uim/iso-639-1.def:73
+#: uim/iso-639-1.def:75
 msgid "Esperanto"
 msgstr "エスペラント"
 
-#: uim/iso-639-1.def:74
+#: uim/iso-639-1.def:76
 msgid "Estonian"
 msgstr "エストニア語"
 
-#: uim/iso-639-1.def:75
+#: uim/iso-639-1.def:77
 msgid "Faeroese"
 msgstr "フェロー語"
 
-#: uim/iso-639-1.def:76
+#: uim/iso-639-1.def:78
 msgid "Farsi"
 msgstr "近代ペルシャ語"
 
-#: uim/iso-639-1.def:77
+#: uim/iso-639-1.def:79
 msgid "Fiji"
 msgstr "フィジー語"
 
-#: uim/iso-639-1.def:78
+#: uim/iso-639-1.def:80
 msgid "Finnish"
 msgstr "フィンランド語"
 
-#: uim/iso-639-1.def:79
+#: uim/iso-639-1.def:81
 msgid "Flemish"
 msgstr "フラマン語"
 
 #. defined as "nl" in the source
-#: uim/iso-639-1.def:80
+#: uim/iso-639-1.def:82
 msgid "French"
 msgstr "フランス語"
 
-#: uim/iso-639-1.def:81
+#: uim/iso-639-1.def:83
 msgid "Frisian"
 msgstr "フリースラント語"
 
-#: uim/iso-639-1.def:82
+#: uim/iso-639-1.def:84
 msgid "Galician"
 msgstr "ガリチア語"
 
-#: uim/iso-639-1.def:83
+#: uim/iso-639-1.def:85
 msgid "Gaelic (Scottish)"
 msgstr "ゲール語 (スコットランド語)"
 
-#: uim/iso-639-1.def:84
+#: uim/iso-639-1.def:86
 msgid "Gaelic (Manx)"
 msgstr "ゲール語 (マン島語)"
 
-#: uim/iso-639-1.def:85
+#: uim/iso-639-1.def:87
 msgid "Georgian"
 msgstr "グルジア語"
 
-#: uim/iso-639-1.def:86
+#: uim/iso-639-1.def:88
 msgid "German"
 msgstr "ドイツ語"
 
-#: uim/iso-639-1.def:87
+#: uim/iso-639-1.def:89
 msgid "Greek"
 msgstr "ギリシャ語"
 
-#: uim/iso-639-1.def:88
+#: uim/iso-639-1.def:90
 msgid "Greenlandic"
 msgstr "グリーンランド語"
 
-#: uim/iso-639-1.def:89
+#: uim/iso-639-1.def:91
 msgid "Guarani"
 msgstr "グアラニー語"
 
-#: uim/iso-639-1.def:90
+#: uim/iso-639-1.def:92
 msgid "Gujarati"
 msgstr "グジャラート語"
 
-#: uim/iso-639-1.def:91
+#: uim/iso-639-1.def:93
 msgid "Hausa"
 msgstr "ハウサ語"
 
-#: uim/iso-639-1.def:92
+#: uim/iso-639-1.def:94
 msgid "Hebrew"
 msgstr "ヘブライ語"
 
-#: uim/iso-639-1.def:93
+#: uim/iso-639-1.def:95
 msgid "Hindi"
 msgstr "ヒンディー語"
 
-#: uim/iso-639-1.def:94
+#: uim/iso-639-1.def:96
 msgid "Hungarian"
 msgstr "ハンガリー語"
 
-#: uim/iso-639-1.def:95
+#: uim/iso-639-1.def:97
 msgid "Icelandic"
 msgstr "アイスランド語"
 
-#: uim/iso-639-1.def:96
+#: uim/iso-639-1.def:98
 msgid "Indonesian"
 msgstr "インドネシア語"
 
-#: uim/iso-639-1.def:97
+#: uim/iso-639-1.def:99
 msgid "Interlingua"
 msgstr "インターリングア語"
 
-#: uim/iso-639-1.def:98
+#: uim/iso-639-1.def:100
 msgid "Interlingue"
 msgstr "インテルリング語"
 
-#: uim/iso-639-1.def:99
+#: uim/iso-639-1.def:101
 msgid "Inuktitut"
 msgstr "イヌクティトット語"
 
-#: uim/iso-639-1.def:100
+#: uim/iso-639-1.def:102
 msgid "Inupiak"
 msgstr "イヌピアック語"
 
-#: uim/iso-639-1.def:101
+#: uim/iso-639-1.def:103
 msgid "Irish"
 msgstr "アイルランド語"
 
-#: uim/iso-639-1.def:102
+#: uim/iso-639-1.def:104
 msgid "Italian"
 msgstr "イタリア語"
 
-#: uim/iso-639-1.def:104
+#: uim/iso-639-1.def:106
 msgid "Javanese"
 msgstr "ジャワ語"
 
-#: uim/iso-639-1.def:105
+#: uim/iso-639-1.def:107
 msgid "Kannada"
 msgstr "カンナダ語"
 
-#: uim/iso-639-1.def:106
+#: uim/iso-639-1.def:108
 msgid "Kashmiri"
 msgstr "カシミール語"
 
-#: uim/iso-639-1.def:107
+#: uim/iso-639-1.def:109
 msgid "Kazakh"
 msgstr "カザフ語"
 
-#: uim/iso-639-1.def:108
+#: uim/iso-639-1.def:110
 msgid "Kinyarwanda (Ruanda)"
 msgstr "キンヤルワンダ語"
 
-#: uim/iso-639-1.def:109
+#: uim/iso-639-1.def:111
 msgid "Kirghiz"
 msgstr "キルギス語"
 
-#: uim/iso-639-1.def:110
+#: uim/iso-639-1.def:112
 msgid "Kirundi (Rundi)"
 msgstr "キルンディ語"
 
-#: uim/iso-639-1.def:111
+#: uim/iso-639-1.def:113
 msgid "Konkani"
 msgstr "コンカニ語"
 
 #. defined as "kok" in ISO 639-2
-#: uim/iso-639-1.def:112
+#: uim/iso-639-1.def:114
 msgid "Korean"
 msgstr "ハングル"
 
-#: uim/iso-639-1.def:113
+#: uim/iso-639-1.def:115
 msgid "Kurdish"
 msgstr "クルド語"
 
-#: uim/iso-639-1.def:114
+#: uim/iso-639-1.def:116
 msgid "Laothian"
 msgstr "ラオス語"
 
-#: uim/iso-639-1.def:115
+#: uim/iso-639-1.def:117
 msgid "Latin"
 msgstr "ラテン語"
 
-#: uim/iso-639-1.def:116
+#: uim/iso-639-1.def:118
 msgid "Latvian (Lettish)"
 msgstr "ラトビア語"
 
-#: uim/iso-639-1.def:117
+#: uim/iso-639-1.def:119
 msgid "Lingala"
 msgstr "リンガラ語"
 
-#: uim/iso-639-1.def:118
+#: uim/iso-639-1.def:120
 msgid "Lithuanian"
 msgstr "リトアニア語"
 
-#: uim/iso-639-1.def:119
+#: uim/iso-639-1.def:121
 msgid "Macedonian"
 msgstr "マケドニア語"
 
-#: uim/iso-639-1.def:120
+#: uim/iso-639-1.def:122
 msgid "Malagasy"
 msgstr "マダガスカル語"
 
-#: uim/iso-639-1.def:121
+#: uim/iso-639-1.def:123
 msgid "Malay"
 msgstr "マレー語"
 
-#: uim/iso-639-1.def:122
+#: uim/iso-639-1.def:124
 msgid "Malayalam"
 msgstr "マラヤーラム語"
 
-#: uim/iso-639-1.def:123
+#: uim/iso-639-1.def:125
 msgid "Maltese"
 msgstr "マルタ語"
 
-#: uim/iso-639-1.def:124
+#: uim/iso-639-1.def:126
 msgid "Maori"
 msgstr "マオリ語"
 
-#: uim/iso-639-1.def:125
+#: uim/iso-639-1.def:127
 msgid "Marathi"
 msgstr "マラーティー語"
 
-#: uim/iso-639-1.def:126
+#: uim/iso-639-1.def:128
 msgid "Moldavian"
 msgstr "モルダヴィア語"
 
-#: uim/iso-639-1.def:127
+#: uim/iso-639-1.def:129
 msgid "Mongolian"
 msgstr "モンゴル語"
 
-#: uim/iso-639-1.def:128
+#: uim/iso-639-1.def:130
+msgid "Myanmar"
+msgstr "ミャンマー語"
+
+#: uim/iso-639-1.def:131
 msgid "Nauru"
 msgstr "ナウル語"
 
-#: uim/iso-639-1.def:129
+#: uim/iso-639-1.def:132
 msgid "Nepali"
 msgstr "ネパール語"
 
-#: uim/iso-639-1.def:130
+#: uim/iso-639-1.def:133
 msgid "Norwegian"
 msgstr "ノルウェー語"
 
-#: uim/iso-639-1.def:131
+#: uim/iso-639-1.def:134
 msgid "Occitan"
 msgstr "オクシタン語"
 
-#: uim/iso-639-1.def:132
+#: uim/iso-639-1.def:135
 msgid "Oriya"
 msgstr "オリヤー語"
 
-#: uim/iso-639-1.def:133
+#: uim/iso-639-1.def:136
 msgid "Oromo (Afan, Galla)"
 msgstr "オロモ語"
 
-#: uim/iso-639-1.def:134
+#: uim/iso-639-1.def:137
 msgid "Pashto (Pushto)"
 msgstr "パシュトー語"
 
-#: uim/iso-639-1.def:135
+#: uim/iso-639-1.def:138
 msgid "Polish"
 msgstr "ポーランド語"
 
-#: uim/iso-639-1.def:136
+#: uim/iso-639-1.def:139
 msgid "Portuguese"
 msgstr "ポルトガル語"
 
-#: uim/iso-639-1.def:137
+#: uim/iso-639-1.def:140
 msgid "Punjabi"
 msgstr "パンジャブ語"
 
-#: uim/iso-639-1.def:138
+#: uim/iso-639-1.def:141
 msgid "Quechua"
 msgstr "ケチュア語"
 
-#: uim/iso-639-1.def:139
+#: uim/iso-639-1.def:142
 msgid "Romanian"
 msgstr "ルーマニア語"
 
-#: uim/iso-639-1.def:140
+#: uim/iso-639-1.def:143
 msgid "Russian"
 msgstr "ロシア語"
 
-#: uim/iso-639-1.def:141
+#: uim/iso-639-1.def:144
 msgid "Samoan"
 msgstr "サモア語"
 
-#: uim/iso-639-1.def:142
+#: uim/iso-639-1.def:145
 msgid "Sangro"
 msgstr "サングロ語"
 
-#: uim/iso-639-1.def:143
+#: uim/iso-639-1.def:146
 msgid "Sanskrit"
 msgstr "サンスクリット"
 
-#: uim/iso-639-1.def:144
+#: uim/iso-639-1.def:147
 msgid "Serbian"
 msgstr "セルビア語"
 
-#: uim/iso-639-1.def:145
+#: uim/iso-639-1.def:148
 msgid "Sesotho"
 msgstr "ソト語"
 
-#: uim/iso-639-1.def:146
+#: uim/iso-639-1.def:149
 msgid "Setswana"
 msgstr "ツワナ語"
 
-#: uim/iso-639-1.def:147
+#: uim/iso-639-1.def:150
 msgid "Shona"
 msgstr "ショナ語"
 
-#: uim/iso-639-1.def:148
+#: uim/iso-639-1.def:151
 msgid "Sindhi"
 msgstr "シンディ語"
 
-#: uim/iso-639-1.def:149
+#: uim/iso-639-1.def:152
 msgid "Sinhalese"
 msgstr "シンハラ語"
 
-#: uim/iso-639-1.def:150
+#: uim/iso-639-1.def:153
 msgid "Siswati"
 msgstr "シスワティ語"
 
-#: uim/iso-639-1.def:151
+#: uim/iso-639-1.def:154
 msgid "Slovak"
 msgstr "スロバキア語"
 
-#: uim/iso-639-1.def:152
+#: uim/iso-639-1.def:155
 msgid "Slovenian"
 msgstr "スロベニア語"
 
-#: uim/iso-639-1.def:153
+#: uim/iso-639-1.def:156
 msgid "Somali"
 msgstr "ソマリ語"
 
-#: uim/iso-639-1.def:154
+#: uim/iso-639-1.def:157
 msgid "Spanish"
 msgstr "スペイン語"
 
-#: uim/iso-639-1.def:155
+#: uim/iso-639-1.def:158
 msgid "Sundanese"
 msgstr "スンダ語"
 
-#: uim/iso-639-1.def:156
+#: uim/iso-639-1.def:159
 msgid "Swahili (Kiswahili)"
 msgstr "スワヒリ語"
 
-#: uim/iso-639-1.def:157
+#: uim/iso-639-1.def:160
 msgid "Swedish"
 msgstr "スウェーデン語"
 
-#: uim/iso-639-1.def:158
+#: uim/iso-639-1.def:161
 msgid "Syriac"
 msgstr "古代シリア語"
 
 #. defined as "syr" in ISO 639-2
-#: uim/iso-639-1.def:159
+#: uim/iso-639-1.def:162
 msgid "Tagalog"
 msgstr "タガログ語"
 
-#: uim/iso-639-1.def:160
+#: uim/iso-639-1.def:163
 msgid "Tajik"
 msgstr "タジキスタン語"
 
-#: uim/iso-639-1.def:161
+#: uim/iso-639-1.def:164
 msgid "Tamil"
 msgstr "タミル語"
 
-#: uim/iso-639-1.def:162
+#: uim/iso-639-1.def:165
 msgid "Tatar"
 msgstr "タタール語"
 
-#: uim/iso-639-1.def:163
+#: uim/iso-639-1.def:166
 msgid "Telugu"
 msgstr "テルグ語"
 
-#: uim/iso-639-1.def:164
+#: uim/iso-639-1.def:167
 msgid "Thai"
 msgstr "タイ語"
 
-#: uim/iso-639-1.def:165
+#: uim/iso-639-1.def:168
 msgid "Tibetan"
 msgstr "チベット語"
 
-#: uim/iso-639-1.def:166
+#: uim/iso-639-1.def:169
 msgid "Tigrinya"
 msgstr "チグリヤナ語"
 
-#: uim/iso-639-1.def:167
+#: uim/iso-639-1.def:170
 msgid "Tonga"
 msgstr "トンガ語"
 
-#: uim/iso-639-1.def:168
+#: uim/iso-639-1.def:171
 msgid "Tsonga"
 msgstr "ツォンガ語"
 
-#: uim/iso-639-1.def:169
+#: uim/iso-639-1.def:172
 msgid "Turkish"
 msgstr "トルコ語"
 
-#: uim/iso-639-1.def:170
+#: uim/iso-639-1.def:173
 msgid "Turkmen"
 msgstr "トルクメニスタン語"
 
-#: uim/iso-639-1.def:171
+#: uim/iso-639-1.def:174
 msgid "Twi"
 msgstr "チュイ語"
 
-#: uim/iso-639-1.def:172
+#: uim/iso-639-1.def:175
 msgid "Uighur"
 msgstr "ウイグル語"
 
-#: uim/iso-639-1.def:173
+#: uim/iso-639-1.def:176
 msgid "Ukrainian"
 msgstr "ウクライナ語"
 
-#: uim/iso-639-1.def:174
+#: uim/iso-639-1.def:177
 msgid "Urdu"
 msgstr "ウルドゥー語"
 
-#: uim/iso-639-1.def:175
+#: uim/iso-639-1.def:178
 msgid "Uzbek"
 msgstr "ウズベク語"
 
-#: uim/iso-639-1.def:176
+#: uim/iso-639-1.def:179
 msgid "Vietnamese"
 msgstr "ベトナム語"
 
-#: uim/iso-639-1.def:177
+#: uim/iso-639-1.def:180
 msgid "Welsh"
 msgstr "ウェールズ語"
 
-#: uim/iso-639-1.def:178
+#: uim/iso-639-1.def:181
 msgid "Wolof"
 msgstr "ウォルフ語"
 
-#: uim/iso-639-1.def:179
+#: uim/iso-639-1.def:182
 msgid "Xhosa"
 msgstr "コーサ語"
 
-#: uim/iso-639-1.def:180
+#: uim/iso-639-1.def:183
 msgid "Yiddish"
 msgstr "イディッシュ語"
 
-#: uim/iso-639-1.def:181
+#: uim/iso-639-1.def:184
 msgid "Yoruba"
 msgstr "ヨルバ語"
 
-#: uim/iso-639-1.def:182
+#: uim/iso-639-1.def:185
 msgid "Zulu"
 msgstr "ズールー語"
+
+#~ msgid "Mask preedit strings (For T-Code users)"
+#~ msgstr "入力中の文字をマスクする (T-Codeユーザ向け)"
+
+#~ msgid "[PRIME] hiragana typing mode"
+#~ msgstr "[PRIME] ひらがな変換"
+
+#~ msgid "[PRIME] katakana typing mode"
+#~ msgstr "[PRIME] カタカナ変換"
+
+#~ msgid "[PRIME] halfwidth katakana typing mode"
+#~ msgstr "[PRIME] 半角カタカナ変換"
+
+#~ msgid "[PRIME] wide ascii typing mode"
+#~ msgstr "[PRIME] 全角英数変換"
 
 #~ msgid "[Anthy] commit as hiragana"
 #~ msgstr "[Anthy] ひらがなとして確定"
