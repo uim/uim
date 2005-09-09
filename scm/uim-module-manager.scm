@@ -40,13 +40,15 @@
 	;; Test if the module is valid
 	(if (require-module (symbol->string module))
 	    #t
-	    (begin (puts (string-append "Warning: Module " module
+	    (begin (puts (string-append "Warning: Module "
+	    				(symbol->string module)
 					" is not a correct module.\n"))
 		   #f)))
       (remove
        (lambda (module)
 	 (if (memq module current-module-list)
-	     (begin (puts (string-append "Warning: Module " module
+	     (begin (puts (string-append "Warning: Module "
+	     				 (symbol->string module)
 					 " is already registered\n"))
 		    #t)
 	     #f))
