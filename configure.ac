@@ -582,7 +582,7 @@ if test x$use_qt = xyes ; then
     if test -x "$QTDIR/bin/moc"; then
       HOST_MOC="$QTDIR/bin/moc"
     else
-      AC_CHECK_PROGS(HOST_MOC, moc, "")
+      AC_CHECK_PROGS(HOST_MOC, moc-qt3 moc, "")
     fi
     if test -z "$HOST_MOC"; then
       AC_MSG_ERROR([no acceptable moc( meta object compiler ) found])
@@ -593,7 +593,7 @@ if test x$use_qt = xyes ; then
     if test -x "$QTDIR/bin/uic"; then
       HOST_UIC="$QTDIR/bin/uic"
     else
-      AC_CHECK_PROGS(HOST_UIC, uic, "")
+      AC_CHECK_PROGS(HOST_UIC, uic-qt3 uic, "")
     fi
     if test -z "$HOST_UIC"; then
       AC_MSG_ERROR([no acceptable uic( user interface compiler ) found])
