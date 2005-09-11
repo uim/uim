@@ -119,7 +119,7 @@ uim_sh_LDADD = libuim.la
 uim_sh_SOURCES = uim-sh.c
 if LIBEDIT
   uim_sh_CFLAGS += -DLIBEDIT
-  uim_sh_SOURCES += editline.c
+  uim_sh_SOURCES += editline.c editline.h
   uim_sh_LDADD += -ledit -lcurses
 endif
 
