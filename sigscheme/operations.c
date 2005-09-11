@@ -1916,7 +1916,7 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
 
         /* apply proc to arg1 */
         ret = CONS(ScmOp_apply(SCM_LIST_2(proc, arg1), env),
-                          ret);
+                   ret);
     }
 
     /* never reaches here */
