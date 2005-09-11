@@ -58,6 +58,7 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+#define SCM_ERR_HEADER "Error: "
 
 /*=======================================
   Variable Declarations
@@ -72,8 +73,13 @@ ScmObj scm_current_error_port  = NULL;
   Function Implementations
 =======================================*/
 int SigScm_Die(const char *msg, const char *filename, int line) {
+    /* prepend header */
+    SigScm_ShowErrorHeader();
+
     /* show message */
-    printf("Error: SigScheme Died : %s (file : %s, line : %d)\n", msg, filename, line);
+    fprintf(SCM_PORTINFO_FILE(scm_current_error_port),
+            "SigScheme Died : %s (file : %s, line : %d)\n",
+            msg, filename, line);
 
     /* show backtrace */
     SigScm_ShowBacktrace();
@@ -88,13 +94,21 @@ void SigScm_Error(const char *msg, ...)
 {
     va_list va;
 
-    /* prepend message */
-    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "Error: ");
+    /* prepend header */
+    SigScm_ShowErrorHeader();
 
     /* show message */
     va_start(va, msg);
     vfprintf(SCM_PORTINFO_FILE(scm_current_error_port), msg, va);
     va_end(va);
+#if 0
+    /*
+     * FIXME: this function should always append "\n" to ensure that an error
+     * message forms a line message, instead of delegating the responsibility
+     * to caller. Otherwise subsequent error messages may be broken.
+     */
+    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "\n");
+#endif
 
     /* show backtrace */
     SigScm_ShowBacktrace();
@@ -106,7 +120,7 @@ void SigScm_Error(const char *msg, ...)
 void SigScm_ErrorObj(const char *msg, ScmObj obj)
 {
     /* prepend header */
-    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "Error: ");
+    SigScm_ShowErrorHeader();
 
     /* print msg */
     fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "%s", msg);
@@ -135,4 +149,9 @@ void SigScm_ShowBacktrace(void)
         
         fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "\n");
     }
+}
+
+void SigScm_ShowErrorHeader(void)
+{
+    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), SCM_ERR_HEADER);
 }

@@ -72,8 +72,8 @@ ScmObj ScmOp_SRFI23_error(ScmObj args, ScmObj env)
         SigScm_ErrorObj("error : first argument should be string but got ",
                         CAR(args));
     
-    /* prepend message */
-    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "Error: ");
+    /* prepend header */
+    SigScm_ShowErrorHeader();
 
     /* show message */
     fprintf(SCM_PORTINFO_FILE(scm_current_error_port),

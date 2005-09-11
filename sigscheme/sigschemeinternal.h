@@ -290,11 +290,17 @@ extern ScmObj SigScm_features;
 =======================================*/
 /* eval.c */
 /* environment related functions */
+/*
+ * FIXME: add a 'SCM' prefix to these functions since the symbols will be
+ * global. See objdump -TC libsscm.so.
+ */
 ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env);
 ScmObj add_environment(ScmObj var, ScmObj val, ScmObj env);
 ScmObj lookup_environment(ScmObj var, ScmObj env);
 ScmObj lookup_frame(ScmObj var, ScmObj frame);
 ScmObj symbol_value(ScmObj var, ScmObj env);
 
+/* error.c */
+void SigScm_ShowErrorHeader(void);
 
 #endif /* __SIGSCHEMEINTERNAL_H */
