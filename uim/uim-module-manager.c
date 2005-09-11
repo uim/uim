@@ -35,6 +35,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "config.h"
 
@@ -300,6 +302,14 @@ main(int argc, char *argv[]) {
 
   if (!uim_scm_require_file("uim-module-manager.scm"))
     exit(1);
+
+  if (path) {
+    char *extra_file = concat(path, "/installed-modules.scm");
+    struct stat st;
+    if (stat(extra_file, &st) != -1)
+      uim_scm_require_file(extra_file);
+    free(extra_file);
+  }
 
   /* for unregister-all */
   if (!module_names)
