@@ -35,6 +35,9 @@
 ;; check string-length
 (assert-equal? "alphabet string-length check" 5 (string-length "aiueo"))
 (assert-equal? "hiragana string-length check" 5 (string-length "あいうえお"))
+(assert-equal? "backslash string-length check" 1 (string-length "\\"))
+(assert-equal? "backslash string-length check" 2 (string-length "\\\\"))
+(assert-equal? "backslash string-length check" 3 (string-length "\\\\\\"))
 
 ;; string=? check
 (assert-equal? "alphabet string=? check" #t (string=? "aiueo" "aiueo"))
@@ -59,11 +62,16 @@
 
 ;; string->list
 (assert "string->list check" (equal? '(#\あ #\i #\う #\e #\お) (string->list "あiうeお")))
+(assert-equal? "string->list check" '(#\\)         (string->list "\\"))
+(assert-equal? "string->list check" '(#\\ #\\)     (string->list "\\\\"))
+(assert-equal? "string->list check" '(#\\ #\\ #\\) (string->list "\\\\\\"))
 
 
 ;; list->string
 (assert-equal? "list->string check" "あaい" (list->string '(#\あ #\a #\い)))
-(assert-equal? "list->string check" "\\" (list->string '(#\\)))
+(assert-equal? "list->string check" "\\"     (list->string '(#\\)))
+(assert-equal? "list->string check" "\\\\"   (list->string '(#\\ #\\)))
+(assert-equal? "list->string check" "\\\\\\" (list->string '(#\\ #\\ #\\)))
 (assert-equal? "list->string check" "\t" (list->string '(#\	)))
 (assert-equal? "list->string check" "\n" (list->string '(#\
 )))
