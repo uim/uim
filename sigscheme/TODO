@@ -1,0 +1,74 @@
+==============================================================================
+Requirements and bugs:
+
+* Introduce Exception handling (probably should be based on SRFI-34)
+  - Throw an exception instead of exit(3) when an error occurred
+  - Rename call/cc with call/ec? ([Anthy-dev 2216])
+  - Implement assert-error in unittest.scm
+  - [uim] Make uim-sh loop workable even if error occurred
+
+* Add SIOD compatibility about return value to ScmOp_require()
+
+* Support SIOD-compatible verbose message control (suppressing backtrace, GC
+  stat, error, etc based on verbose-level)
+  - [uim] Make the GaUnit-based testing framework workable
+
+* Fix invalid "\\" handlings (make test-string.scm passed)
+  - Provide a string escaping procedure. If a SRFI or another de facto standard
+    API for such purpose is existing, use it
+  - [uim] Implement string-escape as same as trunk
+
+* Dynamic encoding switching for a conversion between string and char list,
+  based on a SRFI or de facto standard API
+
+* grep "FIXME" and fix them
+
+==============================================================================
+Performances:
+
+* Object representation compaction ([Anthy-dev 2353], [Anthy-dev 2360])
+
+* Fix large fixed-size buffer on stack without limit checking in read.c
+
+==============================================================================
+Logical simplifications:
+
+* Automatically append "\n" in SigScm_Error() instead of append by caller
+
+* Eliminate similar codes by SCM_REDUCE*() (grep 'TODO.*SCM_REDUCE' *.c)
+
+* Simplify args extraction codes by SCM_SHIFT*() (grep 'TODO.*SCM_SHIFT' *.c)
+
+==============================================================================
+Namings and Cosmetic things:
+
+* Add a add a 'SCM' prefix to functions of sigschemeinternal.h
+
+* Rename 'arg' for argument list to 'args'
+
+* Rename STL names (string, list) to another such as str, lst
+
+* Split configuration macros such as SCM_COMPAT_SIOD off to config.h
+
+* Grand renaming (prefix reorganization, consideration about func_name and
+  FuncName styles) ([Anthy-dev 2254], [Anthy-dev 2251])
+
+* Define the coding style for indent(1) and reform *.[ch] by it
+
+* Refill license header with fill-column 79, and insert it into all test files
+
+* Rename datas.c to data.c or storage.c (YamaKen recommends storage.c)
+  ([Anthy-dev 2251])
+
+* [uim] Rename uim-scm.c to uim-scm-sigscheme.c
+
+==============================================================================
+Assigned to YamaKen:
+
+* GCC4-optimization-proof stack protection
+  - [uim] Introduce it into r5rs branch
+  - [uim] Port it into trunk
+
+* Add tests for proper tail recursion with apply to test-tail-rec.scm
+
+==============================================================================
