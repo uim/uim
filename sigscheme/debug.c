@@ -271,6 +271,7 @@ static void print_string(FILE *f, ScmObj obj, enum OutputType otype)
             case '\r': fprintf(f, "\\r"); break;
             case '\f': fprintf(f, "\\f"); break;
             case '\t': fprintf(f, "\\t"); break;
+            case '\\': fprintf(f, "\\\\"); break;
             default:
                 fprintf(f, "%c", str[i]); break;
             }

@@ -1651,10 +1651,6 @@ ScmObj ScmOp_list2string(ScmObj list)
         ch  = SCM_CHAR_VALUE(obj);
         len = strlen(SCM_CHAR_VALUE(obj));
 
-        /* handle #\\ case */
-        if (len == 1 && ch[0] == '\\')
-            ch = "\\\\";
-
         strcpy(p, ch);
         p += len;
     }
