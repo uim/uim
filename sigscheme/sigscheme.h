@@ -54,13 +54,6 @@ extern "C" {
    Struct Declarations
 =======================================*/
 typedef void (*ScmCFunc)(void);
-typedef void *(*ScmGCFunc0)(void);
-typedef void *(*ScmGCFunc1)(void *arg0);
-typedef void *(*ScmGCFunc2)(void *arg0, void *arg1);
-typedef void *(*ScmGCFunc3)(void *arg0, void *arg1, void *arg2);
-typedef void *(*ScmGCFunc4)(void *arg0, void *arg1, void *arg2, void *arg3);
-typedef void *(*ScmGCFunc5)(void *arg0, void *arg1, void *arg2, void *arg3,
-                            void *arg4);
 
 /* type declaration */
 #include "sigschemetype.h"
