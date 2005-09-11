@@ -18,6 +18,8 @@ Requirements and bugs:
     API for such purpose is existing, use it
   - [uim] Implement string-escape as same as trunk
 
+* [uim] link libsscm into libuim statically
+
 * Dynamic encoding switching for a conversion between string and char list,
   based on a SRFI or de facto standard API
 
