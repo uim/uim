@@ -53,16 +53,21 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-
-/* Very simple repl, please rewrite. */
 #if SCM_GCC4_READY_GC
-SCM_DEFINE_GC_PROTECTED_FUNC0(static, void *, repl)
-{
+static SCM_GC_PROTECTED_FUNC_DECL(void , repl, (void));
 #else
+static void repl(void);
+#endif
+
+/*=======================================
+  Function Implementations
+=======================================*/
+/* Very simple repl, please rewrite. */
 static void repl(void)
 {
+#if !SCM_GCC4_READY_GC
     ScmObj stack_start = NULL;
-#endif /* SCM_GCC4_READY_GC */
+#endif
     ScmObj stdin_port  = SCM_NULL;
     ScmObj stdout_port = SCM_NULL;
     ScmObj s_exp  = SCM_NULL;
@@ -95,17 +100,12 @@ static void repl(void)
     ScmOp_close_input_port(stdin_port);
     ScmOp_close_input_port(stdout_port);
 
-#if SCM_GCC4_READY_GC
-    return NULL;
-#else
+#if !SCM_GCC4_READY_GC
     /* now no need to protect stack */
     SigScm_GC_UnprotectStack(&stack_start);
 #endif
 }
 
-/*=======================================
-  Function Implementations
-=======================================*/
 int main(int argc, char **argv)
 {
     char *filename = argv[1];
@@ -113,10 +113,14 @@ int main(int argc, char **argv)
     SigScm_Initialize();
 
     if (argc < 2) {
-      repl();
-      /*        SigScm_Error("usage : sscm <filename>\n"); */
+#if SCM_GCC4_READY_GC
+        SCM_GC_CALL_PROTECTED_VOID_FUNC(repl, ());
+#else
+        repl();
+#endif
+        /*        SigScm_Error("usage : sscm <filename>\n"); */
     } else {
-      SigScm_load(filename);
+        SigScm_load(filename);
     }
 
     SigScm_Finalize();

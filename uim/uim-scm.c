@@ -457,12 +457,19 @@ uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
 uim_bool
 uim_scm_require_file(const char *fn)
 {
+  uim_lisp stack_start;
+
   if (!fn)
     return UIM_FALSE;
 
+  /*
+   * FIXME: Replace with SigScm_require() which contains the stack protection
+   */
+  uim_scm_gc_protect_stack(&stack_start);
   ScmOp_require(Scm_NewStringCopying(fn));
+  uim_scm_gc_unprotect_stack(&stack_start);
 
-  /* TODO: fixme */
+  /* FIXME */
   return UIM_TRUE;
 }
 

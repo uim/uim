@@ -56,6 +56,12 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
+#if SCM_GCC4_READY_GC
+static SCM_GC_PROTECTED_FUNC_DECL(void, SigScm_Initialize_internal, (void));
+#else
+static void SigScm_Initialize_internal(void);
+#endif
+
 static void Scm_RegisterFunc(const char *name, enum ScmFuncTypeCode type, ScmFuncType func);
 
 ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
@@ -72,17 +78,21 @@ extern ScmObj scm_return_value;
 /*=======================================
   Function Implementations
 =======================================*/
-#if SCM_GCC4_READY_GC
-SCM_DEFINE_GC_PROTECTED_FUNC0(, void *, SigScm_Initialize)
-{
-#else
 void SigScm_Initialize(void)
 {
+#if SCM_GCC4_READY_GC
+    SCM_GC_CALL_PROTECTED_VOID_FUNC(SigScm_Initialize_internal, ());
+#else
     ScmObj stack_start = NULL;
 
     SigScm_GC_ProtectStack(&stack_start);
-#endif /* SCM_GCC4_READY_GC */
+    SigScm_Initialize_internal();
+    SigScm_GC_UnprotectStack(&stack_start);
+#endif
+}
 
+static void SigScm_Initialize_internal(void)
+{
     /*=======================================================================
       Etc Variable Initialization
     =======================================================================*/
@@ -379,12 +389,6 @@ void SigScm_Initialize(void)
     Scm_RegisterFuncEvaledList("verbose"         , ScmOp_verbose);
     /* datas.c */
     scm_return_value = SCM_NULL;
-#endif
-
-#if SCM_GCC4_READY_GC
-    return NULL;
-#else
-    SigScm_GC_UnprotectStack(&stack_start);
 #endif
 }
 

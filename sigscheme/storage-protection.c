@@ -32,6 +32,8 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *  =========================================================================*/
 
+/* CAUTION: following description is obsoleted. It will be rewritten soon. */
+
 /*
  * **** THE FUNCTIONS OF THIS FILE MUST NOT BE INLINED INTO CALLER ****
  *
@@ -189,8 +191,6 @@
  *  -- YamaKen 2005-09-07
  */
 
-#if SCM_GCC4_READY_GC
-
 /*=======================================
   System Include
 =======================================*/
@@ -208,17 +208,6 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define SCM_GC_CALL_PROTECTED_FUNC(func_invocation)                          \
-    do {                                                                     \
-        void *ret = NULL;                                                    \
-        ScmObj *stack_start;                                                 \
-                                                                             \
-        stack_start = gc_protect_stack();                                    \
-        ret = (func_invocation);                                             \
-        gc_unprotect_stack(stack_start);                                     \
-                                                                             \
-        return ret;                                                          \
-    } while (/* CONSTCOND */ 0)
 
 /*=======================================
   Variable Declarations
@@ -227,8 +216,6 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static ScmObj *gc_protect_stack(void);
-static void gc_unprotect_stack(ScmObj *stack_start);
 
 /*=======================================
   Extern Function Declarations
@@ -237,7 +224,8 @@ static void gc_unprotect_stack(ScmObj *stack_start);
 /*=======================================
   Function Implementations
 =======================================*/
-static ScmObj *gc_protect_stack(void)
+#if SCM_GCC4_READY_GC
+ScmObj *SigScm_GC_ProtectStack(void)
 {
     ScmObj stack_start = NULL;
 
@@ -248,43 +236,14 @@ static ScmObj *gc_protect_stack(void)
     return &stack_start;
 }
 
-static void gc_unprotect_stack(ScmObj *stack_start)
+void SigScm_GC_UnprotectStack(ScmObj *stack_start)
 {
     if (scm_stack_start_pointer == stack_start)
         scm_stack_start_pointer = NULL;
 }
 
-void *SigScm_GC_CallProtectedFunc0(ScmGCFunc0 func)
+ScmCFunc SigScm_GC_EnsureUninlinedFunc(ScmCFunc func)
 {
-    SCM_GC_CALL_PROTECTED_FUNC(func());
+    return func;
 }
-
-void *SigScm_GC_CallProtectedFunc1(ScmGCFunc1 func, void *arg0)
-{
-    SCM_GC_CALL_PROTECTED_FUNC(func(arg0));
-}
-
-void *SigScm_GC_CallProtectedFunc2(ScmGCFunc2 func, void *arg0, void *arg1)
-{
-    SCM_GC_CALL_PROTECTED_FUNC(func(arg0, arg1));
-}
-
-void *SigScm_GC_CallProtectedFunc3(ScmGCFunc3 func, void *arg0, void *arg1,
-                                   void *arg2)
-{
-    SCM_GC_CALL_PROTECTED_FUNC(func(arg0, arg1, arg2));
-}
-
-void *SigScm_GC_CallProtectedFunc4(ScmGCFunc4 func, void *arg0, void *arg1,
-                                   void *arg2, void *arg3)
-{
-    SCM_GC_CALL_PROTECTED_FUNC(func(arg0, arg1, arg2, arg3));
-}
-
-void *SigScm_GC_CallProtectedFunc5(ScmGCFunc5 func, void *arg0, void *arg1,
-                                   void *arg2, void *arg3, void *arg4)
-{
-    SCM_GC_CALL_PROTECTED_FUNC(func(arg0, arg1, arg2, arg3, arg4));
-}
-
 #endif /* SCM_GCC4_READY_GC */

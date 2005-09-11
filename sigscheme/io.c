@@ -63,6 +63,11 @@ static const char *lib_path = NULL;
 /*=======================================
   File Local Function Declarations
 =======================================*/
+#if SCM_GCC4_READY_GC
+static SCM_GC_PROTECTED_FUNC_DECL(ScmObj, SigScm_load_internal, (const char *c_filename));
+#else
+static ScmObj SigScm_load_internal(const char *c_filename);
+#endif /* SCM_GCC4_READY_GC */
 static char*  create_valid_path(const char *c_filename);
 #if SCM_USE_NONSTD_FEATURES
 static ScmObj create_loaded_str(ScmObj filename);
@@ -411,22 +416,33 @@ ScmObj ScmOp_write_char(ScmObj arg, ScmObj env)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.4 System Interface
 ===========================================================================*/
-#if SCM_GCC4_READY_GC
-SCM_DEFINE_GC_PROTECTED_FUNC1(, ScmObj, SigScm_load, const char *, filename)
+ScmObj SigScm_load(const char *c_filename)
 {
-#else
-ScmObj SigScm_load(const char *filename)
-{
-    ScmObj stack_start  = NULL;
-#endif /* SCM_GCC4_READY_GC */
-    ScmObj port         = SCM_NULL;
-    ScmObj s_expression = SCM_NULL;
-    char  *filepath     = create_valid_path(filename);
-
 #if !SCM_GCC4_READY_GC
+    ScmObj stack_start = NULL;
+#endif
+    ScmObj succeeded   = SCM_FALSE;
+
+#if SCM_GCC4_READY_GC
+    SCM_GC_CALL_PROTECTED_FUNC(succeeded, SigScm_load_internal, (c_filename));
+#else
     /* start protecting stack */
     SigScm_GC_ProtectStack(&stack_start);
+
+    succeeded = SigScm_load_internal(c_filename);
+
+    /* now no need to protect stack */
+    SigScm_GC_UnprotectStack(&stack_start);
 #endif
+
+    return succeeded;
+}
+
+static ScmObj SigScm_load_internal(const char *c_filename)
+{
+    ScmObj port         = SCM_NULL;
+    ScmObj s_expression = SCM_NULL;
+    char  *filepath     = create_valid_path(c_filename);
 
     /* sanity check */
     /*
@@ -451,11 +467,6 @@ ScmObj SigScm_load(const char *filename)
 
     /* close port */
     ScmOp_close_input_port(port);
-
-#if !SCM_GCC4_READY_GC
-    /* now no need to protect stack */
-    SigScm_GC_UnprotectStack(&stack_start);
-#endif
 
     /* free str */
     free(filepath);
@@ -506,7 +517,7 @@ static char* create_valid_path(const char *filename)
 ScmObj ScmOp_load(ScmObj filename)
 {
     char *c_filename = SCM_STRING_STR(filename);
-    SigScm_load(c_filename);
+    SigScm_load_internal(c_filename);
 
 #if SCM_STRICT_R5RS
     return SCM_UNDEF;
@@ -517,29 +528,20 @@ ScmObj ScmOp_load(ScmObj filename)
 }
 
 #if SCM_USE_NONSTD_FEATURES
+/* FIXME: add ScmObj SigScm_require(const char *c_filename) */
+
 /*
  * TODO:
  * - return the status which indicates succeeded or not
  * - provide SIOD compatible behavior about return value when SCM_COMPAT_SIOD
  *   is true
  */
-#if SCM_GCC4_READY_GC
-SCM_DEFINE_GC_PROTECTED_FUNC1(, ScmObj, ScmOp_require, ScmObj, filename)
-{
-#else
 ScmObj ScmOp_require(ScmObj filename)
 {
-    ScmObj stack_start = NULL;
-#endif /* SCM_GCC4_READY_GC */
     ScmObj loaded_str  = SCM_NULL;
 
     if (!STRINGP(filename))
         SigScm_ErrorObj("require : string required but got ", filename);
-
-#if !SCM_GCC4_READY_GC
-    /* start protecting stack */
-    SigScm_GC_ProtectStack(&stack_start);
-#endif
 
     /* construct loaded_str */
     loaded_str = create_loaded_str(filename);
@@ -551,11 +553,6 @@ ScmObj ScmOp_require(ScmObj filename)
         /* record to SigScm_features */
         SCM_SYMBOL_VCELL(SigScm_features) = CONS(loaded_str, SCM_SYMBOL_VCELL(SigScm_features));
     }
-
-#if !SCM_GCC4_READY_GC
-    /* now no need to protect stack */
-    SigScm_GC_UnprotectStack(&stack_start);
-#endif
 
     return SCM_TRUE;
 }

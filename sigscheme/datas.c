@@ -184,6 +184,12 @@ static int  symbol_name_hash(const char *name);
 
 static void finalize_protected_var(void);
 
+#if SCM_GCC4_READY_GC
+static SCM_GC_PROTECTED_FUNC_DECL(ScmObj, Scm_eval_c_string_internal, (const char *exp));
+#else
+static ScmObj Scm_eval_c_string_internal(const char *exp);
+#endif
+
 /*=======================================
   Function Implementations
 =======================================*/
@@ -872,21 +878,32 @@ ScmObj Scm_Intern(const char *name)
     return sym;
 }
 
-#if SCM_GCC4_READY_GC
-SCM_DEFINE_GC_PROTECTED_FUNC1(, ScmObj, Scm_eval_c_string, const char *, exp)
-{
-#else
 ScmObj Scm_eval_c_string(const char *exp)
 {
+#if !SCM_GCC4_READY_GC
     ScmObj stack_start = NULL;
-#endif /* SCM_GCC4_READY_GC */
-    ScmObj str_port    = SCM_NULL;
+#endif
     ScmObj ret         = SCM_NULL;
 
-#if !SCM_GCC4_READY_GC
+#if SCM_GCC4_READY_GC
+    SCM_GC_CALL_PROTECTED_FUNC(ret, Scm_eval_c_string_internal, (exp));
+#else
     /* start protecting stack */
     SigScm_GC_ProtectStack(&stack_start);
+
+    ret = Scm_eval_c_string_internal(exp);
+
+    /* now no need to protect stack */
+    SigScm_GC_UnprotectStack(&stack_start);
 #endif
+
+    return ret;
+}
+
+ScmObj Scm_eval_c_string_internal(const char *exp)
+{
+    ScmObj str_port    = SCM_NULL;
+    ScmObj ret         = SCM_NULL;
 
     str_port = Scm_NewStringPort(exp);
 
@@ -895,11 +912,6 @@ ScmObj Scm_eval_c_string(const char *exp)
 
 #if SCM_COMPAT_SIOD
     scm_return_value = ret;
-#endif
-
-#if !SCM_GCC4_READY_GC
-    /* now no need to protect stack */
-    SigScm_GC_UnprotectStack(&stack_start);
 #endif
 
     return ret;

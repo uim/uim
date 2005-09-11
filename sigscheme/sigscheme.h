@@ -128,100 +128,38 @@ int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
                           SCM_SYMBOL_VCELL(Scm_Intern(sym))))
 
 /*
- * Function Definition With Automatic Stack Protection
+ * Function Invocation With Stack Protection
  *
- * Users should use SCM_DEFINE_GC_PROTECTED_FUNCn only.
+ * Users should only use SCM_GC_PROTECTED_FUNC_DECL(),
+ * SCM_GC_CALL_PROTECTED_FUNC() and SCM_GC_CALL_PROTECTED_VOID_FUNC().
  */
 #if SCM_GCC4_READY_GC
 
-#define SCM_GC_PROTECTED_FUNC(func) SigScm_GC_ProtectedFunc_##func
+#define SCM_GC_PROTECTED_FUNC_T(func) SigScm_GC_ProtectedType__##func
 
-#define SCM_DECLARE_GC_PROTECTED_FUNC_BODY(ret_type, func, args)             \
-    ret_type SCM_GC_PROTECTED_FUNC(func) args SCM_NOINLINE;
+#define SCM_GC_PROTECTED_FUNC_DECL(ret_type, func, args)                     \
+    ret_type func args SCM_NOINLINE;                                         \
+    typedef ret_type (*SCM_GC_PROTECTED_FUNC_T(func)) args
 
-#define SCM_DEFINE_GC_PROTECTED_FUNC_BODY(ret_type, func, args)              \
-    ret_type                                                                 \
-    SCM_GC_PROTECTED_FUNC(func) args
+#define SCM_GC_CALL_PROTECTED_FUNC(ret, func, args)                          \
+    SCM_GC_CALL_PROTECTED_FUNC_INTERNAL(ret = , func, args)
 
-#define SCM_DEFINE_GC_PROTECTED_FUNC0(sclass, ret_type, func)                \
-    SCM_DECLARE_GC_PROTECTED_FUNC_BODY(ret_type, func, (void))               \
-    sclass ret_type                                                          \
-    func(void)                                                               \
-    {                                                                        \
-        ScmGCFunc0 body = (ScmGCFunc0)SCM_GC_PROTECTED_FUNC(func);           \
-        SigScm_GC_CallProtectedFunc0(body);                                  \
-        return (ret_type)SigScm_GC_CallProtectedFunc0(body);                 \
-    }                                                                        \
-    SCM_DEFINE_GC_PROTECTED_FUNC_BODY(ret_type, func, (void))
+#define SCM_GC_CALL_PROTECTED_VOID_FUNC(func, args)                          \
+    SCM_GC_CALL_PROTECTED_FUNC_INTERNAL(, func, args)
 
-#define SCM_DEFINE_GC_PROTECTED_FUNC1(sclass, ret_type, func,                \
-                                      arg0_type, arg0)                       \
-    SCM_DECLARE_GC_PROTECTED_FUNC_BODY(ret_type, func, (arg0_type arg0))     \
-    sclass ret_type                                                          \
-    func(arg0_type arg0)                                                     \
-    {                                                                        \
-        ScmGCFunc1 body = (ScmGCFunc1)SCM_GC_PROTECTED_FUNC(func);           \
-        return (ret_type)SigScm_GC_CallProtectedFunc1(body, (void *)arg0);   \
-    }                                                                        \
-    SCM_DEFINE_GC_PROTECTED_FUNC_BODY(ret_type, func, (arg0_type arg0))
+#define SCM_GC_CALL_PROTECTED_FUNC_INTERNAL(exp_ret, func, args)             \
+    do {                                                                     \
+        SCM_GC_PROTECTED_FUNC_T(func) fp;                                    \
+        ScmObj *stack_start;                                                 \
+                                                                             \
+        stack_start = SigScm_GC_ProtectStack();                              \
+        fp = (SCM_GC_PROTECTED_FUNC_T(func))                                 \
+                  SigScm_GC_EnsureUninlinedFunc((ScmCFunc)&func);            \
+        exp_ret (*fp)args;                                                   \
+        SigScm_GC_UnprotectStack(stack_start);                               \
+                                                                             \
+    } while (/* CONSTCOND */ 0)
 
-#define SCM_DEFINE_GC_PROTECTED_FUNC2(sclass, ret_type, func,                \
-                                      arg0_type, arg0, arg1_type, arg1)      \
-    sclass ret_type                                                          \
-    func(arg0_type arg0, arg1_type arg1)                                     \
-    {                                                                        \
-        ScmGCFunc2 body = (ScmGCFunc2)SCM_GC_PROTECTED_FUNC(func);           \
-        return (ret_type)SigScm_GC_CallProtectedFunc2(body, arg0, arg1);     \
-    }                                                                        \
-    SCM_DEFINE_GC_PROTECTED_FUNC_BODY(ret_type, func, (arg0_type arg0,       \
-                                                       arg1_type arg1))
-
-#define SCM_DEFINE_GC_PROTECTED_FUNC3(sclass, ret_type, func,                \
-                                      arg0_type, arg0, arg1_type, arg1,      \
-                                      arg2_type, arg2)                       \
-    sclass ret_type                                                          \
-    func(arg0_type arg0, arg1_type arg1, arg2_type arg2)                     \
-    {                                                                        \
-        ScmGCFunc3 body = (ScmGCFunc3)SCM_GC_PROTECTED_FUNC(func);           \
-        return (ret_type)SigScm_GC_CallProtectedFunc3(body, arg0, arg1,      \
-                                                      arg2);                 \
-    }                                                                        \
-    SCM_DEFINE_GC_PROTECTED_FUNC_BODY(ret_type, func, (arg0_type arg0,       \
-                                                       arg1_type arg1,       \
-                                                       arg2_type arg2))
-
-#define SCM_DEFINE_GC_PROTECTED_FUNC4(sclass, ret_type, func,                \
-                                      arg0_type, arg0, arg1_type, arg1,      \
-                                      arg2_type, arg2, arg3_type, arg3)      \
-    sclass ret_type                                                          \
-    func(arg0_type arg0, arg1_type arg1, arg2_type arg2, arg3_type arg3)     \
-    {                                                                        \
-        ScmGCFunc4 body = (ScmGCFunc4)SCM_GC_PROTECTED_FUNC(func);           \
-        return (ret_type)SigScm_GC_CallProtectedFunc4(body, arg0, arg1,      \
-                                                      arg2, arg3);           \
-    }                                                                        \
-    SCM_DEFINE_GC_PROTECTED_FUNC_BODY(ret_type, func, (arg0_type arg0,       \
-                                                       arg1_type arg1,       \
-                                                       arg2_type arg2,       \
-                                                       arg3_type arg3))
-
-#define SCM_DEFINE_GC_PROTECTED_FUNC5(sclass, ret_type, func,                \
-                                      arg0_type, arg0, arg1_type, arg1,      \
-                                      arg2_type, arg2, arg3_type, arg3,      \
-                                      arg4_type, arg4)                       \
-    sclass ret_type                                                          \
-    func(arg0_type arg0, arg1_type arg1, arg2_type arg2, arg3_type arg3,     \
-         arg4_type arg4)                                                     \
-    {                                                                        \
-        ScmGCFunc5 body = (ScmGCFunc5)SCM_GC_PROTECTED_FUNC(func);           \
-        return (ret_type)SigScm_GC_CallProtectedFunc5(body, arg0, arg1,      \
-                                                      arg2, arg3, arg4);     \
-    }                                                                        \
-    SCM_DEFINE_GC_PROTECTED_FUNC_BODY(ret_type, func, (arg0_type arg0,       \
-                                                       arg1_type arg1,       \
-                                                       arg2_type arg2,       \
-                                                       arg3_type arg3,       \
-                                                       arg4_type arg4))
 #endif /* SCM_GCC4_READY_GC */
 
 /*=======================================
@@ -231,11 +169,7 @@ int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
    SigScheme : Core Functions
 ===========================================================================*/
 /* sigscheme.c */
-#if SCM_GCC4_READY_GC
-void *SigScm_Initialize(void);
-#else
 void SigScm_Initialize(void);
-#endif
 void SigScm_Finalize(void);
 void Scm_RegisterFunc0(const char *name, ScmFuncType0 func);
 void Scm_RegisterFunc1(const char *name, ScmFuncType1 func);
@@ -283,23 +217,12 @@ ScmObj Scm_return_value(void);
 /* storage-protection.c */
 #if SCM_GCC4_READY_GC
 /*
- * Ordinary programs does not need calling these functions directly. Use
- * SCM_DEFINE_GC_PROTECTED_FUNCn() instead.
+ * Ordinary programs should not call these functions directly. Use
+ * SCM_GC_CALL_PROTECTED_*FUNC() instead.
  */
-void  *SigScm_GC_CallProtectedFunc0(ScmGCFunc0 func) SCM_NOINLINE;
-void  *SigScm_GC_CallProtectedFunc1(ScmGCFunc1 func,
-                                    void *arg0) SCM_NOINLINE;
-void  *SigScm_GC_CallProtectedFunc2(ScmGCFunc2 func,
-                                    void *arg0, void *arg1) SCM_NOINLINE;
-void  *SigScm_GC_CallProtectedFunc3(ScmGCFunc3 func,
-                                    void *arg0, void *arg1,
-                                    void *arg2) SCM_NOINLINE;
-void  *SigScm_GC_CallProtectedFunc4(ScmGCFunc4 func,
-                                    void *arg0, void *arg1,
-                                    void *arg2, void *arg3) SCM_NOINLINE;
-void  *SigScm_GC_CallProtectedFunc5(ScmGCFunc5 func,
-                                    void *arg0, void *arg1, void *arg2,
-                                    void *arg3, void *arg4) SCM_NOINLINE;
+ScmObj *SigScm_GC_ProtectStack(void) SCM_NOINLINE;
+void SigScm_GC_UnprotectStack(ScmObj *stack_start) SCM_NOINLINE;
+ScmCFunc SigScm_GC_EnsureUninlinedFunc(ScmCFunc func) SCM_NOINLINE;
 #endif /* SCM_GCC4_READY_GC */
 
 /* eval.c */
@@ -479,6 +402,7 @@ ScmObj ScmOp_write_char(ScmObj arg, ScmObj env);
 ScmObj SigScm_load(const char *c_filename);
 ScmObj ScmOp_load(ScmObj filename);
 #if SCM_USE_NONSTD_FEATURES
+/* FIXME: add ScmObj SigScm_require(const char *c_filename); */
 ScmObj ScmOp_require(ScmObj filename);
 ScmObj ScmOp_provide(ScmObj feature);
 ScmObj ScmOp_providedp(ScmObj feature);
