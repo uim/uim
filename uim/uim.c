@@ -355,11 +355,17 @@ uim_prop_update_custom(uim_context uc, const char *custom, const char *val)
 
 /* Tentative name. I followed above uim_prop_update_custom, but prop 
 would not be proper to this function. */
+/*
+ * As I described in doc/HELPER-PROTOCOL, it had wrongly named by my
+ * misunderstanding about what is the 'property' of uim. It should be
+ * renamed along with corresponding procol names when an appropriate
+ * time has come.  -- YamaKen 2005-09-12
+ */
 uim_bool
 uim_prop_reload_configs(void)
 {
-  /* FIXME: proces return value properly. */
-  uim_scm_eval_c_string("(custom-reload-configs)");
+  /* FIXME: handle return value properly. */
+  uim_scm_eval_c_string("(custom-reload-user-configs)");
   return UIM_TRUE;
 }
 
