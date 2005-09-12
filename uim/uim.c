@@ -61,8 +61,8 @@ static int uim_initialized;
 static int uim_quiting;
 
 /* Definition of mutex */
-UIM_NEW_MUTEX_STATIC(initing_or_quiting);
-UIM_NEW_MUTEX_STATIC(context_array_mtx);
+UIM_DEFINE_MUTEX_STATIC(mtx_initing_or_quiting);
+UIM_DEFINE_MUTEX_STATIC(mtx_context_array);
 
 void
 uim_set_preedit_cb(uim_context uc,
@@ -81,25 +81,25 @@ static void
 get_context_id(uim_context uc)
 {
   int i;
-  UIM_LOCK_MUTEX(context_array_mtx);
+  UIM_LOCK_MUTEX(mtx_context_array);
   for (i = 0; i < CONTEXT_ARRAY_SIZE; i++) {
     if (!context_array[i]) {
       context_array[i] = uc;
       uc->id = i;
-      UIM_UNLOCK_MUTEX(context_array_mtx);
+      UIM_UNLOCK_MUTEX(mtx_context_array);
       return;
     }
   }
   uc->id = -1;
-  UIM_UNLOCK_MUTEX(context_array_mtx);
+  UIM_UNLOCK_MUTEX(mtx_context_array);
 }
 
 static void
 put_context_id(uim_context uc)
 {
-  UIM_LOCK_MUTEX(context_array_mtx);
+  UIM_LOCK_MUTEX(mtx_context_array);
   context_array[uc->id] = NULL;
-  UIM_UNLOCK_MUTEX(context_array_mtx);
+  UIM_UNLOCK_MUTEX(mtx_context_array);
 }
 
 uim_context
@@ -290,9 +290,9 @@ uim_context
 uim_find_context(int id)
 {
   uim_context uc;
-  UIM_LOCK_MUTEX(context_array_mtx);
+  UIM_LOCK_MUTEX(mtx_context_array);
   uc = context_array[id];
-  UIM_UNLOCK_MUTEX(context_array_mtx);
+  UIM_UNLOCK_MUTEX(mtx_context_array);
   return uc;
 }
 
@@ -365,11 +365,17 @@ uim_prop_update_custom(uim_context uc, const char *custom, const char *val)
 
 /* Tentative name. I followed above uim_prop_update_custom, but prop 
 would not be proper to this function. */
+/*
+ * As I described in doc/HELPER-PROTOCOL, it had wrongly named by my
+ * misunderstanding about what is the 'property' of uim. It should be
+ * renamed along with corresponding procol names when an appropriate
+ * time has come.  -- YamaKen 2005-09-12
+ */
 uim_bool
 uim_prop_reload_configs(void)
 {
-  /* FIXME: proces return value properly. */
-  uim_scm_eval_c_string("(custom-reload-configs)");
+  /* FIXME: handle return value properly. */
+  uim_scm_eval_c_string("(custom-reload-user-configs)");
   return UIM_TRUE;
 }
 
@@ -690,10 +696,10 @@ uim_init_scm(void)
 int
 uim_init(void)
 {
-  UIM_LOCK_MUTEX(initing_or_quiting);
+  UIM_LOCK_MUTEX(mtx_initing_or_quiting);
 
   if (uim_initialized) {
-    UIM_UNLOCK_MUTEX(initing_or_quiting);
+    UIM_UNLOCK_MUTEX(mtx_initing_or_quiting);
     return 0;
   }
   uim_last_client_encoding = NULL;
@@ -702,7 +708,7 @@ uim_init(void)
   uim_init_scm();
   uim_initialized = 1;
 
-  UIM_UNLOCK_MUTEX(initing_or_quiting);
+  UIM_UNLOCK_MUTEX(mtx_initing_or_quiting);
   return 0;
 }
 
@@ -711,10 +717,10 @@ uim_quit(void)
 {
   int i;
 
-  UIM_LOCK_MUTEX(initing_or_quiting);
+  UIM_LOCK_MUTEX(mtx_initing_or_quiting);
   
   if (!uim_initialized || uim_quiting) {
-    UIM_UNLOCK_MUTEX(initing_or_quiting);
+    UIM_UNLOCK_MUTEX(mtx_initing_or_quiting);
     return;
   }
   /* Some multithreaded applications calls uim_quit bursty. */
@@ -733,5 +739,5 @@ uim_quit(void)
   uim_last_client_encoding = NULL;
   uim_initialized = 0;
   uim_quiting = 0;
-  UIM_UNLOCK_MUTEX(initing_or_quiting);
+  UIM_UNLOCK_MUTEX(mtx_initing_or_quiting);
 }

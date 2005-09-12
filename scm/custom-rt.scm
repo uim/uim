@@ -44,6 +44,8 @@
 (require "key.scm")
 
 (define custom-full-featured? #f)
+;; experimental
+(define custom-enable-mtime-aware-user-conf-reloading? #f)
 
 (define-record 'custom-choice-rec
   '((sym   #f)
@@ -51,9 +53,10 @@
     (desc  "")))
 
 (define custom-required-custom-files ())
-(define custom-reload-group-syms ())
 (define custom-rt-primary-groups ())
 (define custom-set-hooks ())
+;; experimental
+(define custom-group-conf-freshnesses ())  ;; (gsym . mtime)
 
 (define custom-file-path
   (lambda (gsym)
@@ -64,34 +67,35 @@
 				".scm")))
       path)))
 
-(define prepend-new-reload-group-syms
-  (lambda (gsym path)
-    (set! custom-reload-group-syms
-	  (cons (cons gsym 0) custom-reload-group-syms))))
+;; experimental
+(define custom-update-group-conf-freshness
+  (lambda (gsym)
+    (let ((mtime (file-mtime (custom-file-path gsym))))
+      (set! custom-group-conf-freshnesses
+	    (alist-replace (cons gsym mtime)
+			   custom-group-conf-freshnesses))
+      #t)))
 
-(define update-gsym-mtime
-  (lambda (gsym path)
-    (set-cdr! (assq gsym custom-reload-group-syms)
-	      (file-mtime path))
-	      #t))
+;; experimental
+(define custom-group-conf-updated?
+  (lambda (gsym)
+    (let ((prev-mtime (assq-cdr gsym custom-group-conf-freshnesses)))
+      (or (not prev-mtime)
+	  (not (= (file-mtime (custom-file-path gsym))
+		  prev-mtime))))))
 
+;; experimental
 (define custom-load-updated-group-conf
   (lambda (gsym)
-    (let ((path (custom-file-path gsym)))
-      (if (not (memq gsym (map (lambda (x) (car x)) custom-reload-group-syms)))
-	  (prepend-new-reload-group-syms gsym path))
-      (if (= (file-mtime path)
-	     (cdr (assq gsym custom-reload-group-syms)))
-	  #t ; File isn't modified, no need to reload. 
-	  (if (try-load path)
-	      (update-gsym-mtime gsym path)
-	      #f)))))
+    (or (not (custom-group-conf-updated? gsym))
+	(and (try-load (custom-file-path gsym))
+	     (custom-update-group-conf-freshness gsym)))))
 
 ;; full implementation
 ;; This proc is existing for DUMB loading. No more processing such as
 ;; mtime comparation or history recording must not be added. Please
 ;; keep in mind responsibility separation, and don't alter an API
-;; specification previously stabilized without discussion.
+;; specification previously stabilized, without discussion.
 ;;   -- YamaKen 2005-08-09
 (define custom-load-group-conf
   (lambda (gsym)
@@ -108,7 +112,9 @@
       (let* ((post-groups (custom-list-primary-groups))
 	     (new-groups (list-tail post-groups (length pre-groups))))
 	(if (not (getenv "LIBUIM_VANILLA"))
-	    (for-each custom-load-group-conf
+	    (for-each (lambda (gsym)
+			(custom-load-group-conf gsym)
+			(custom-update-group-conf-freshness gsym))
 		      (reverse new-groups)))))))
 
 ;; full implementation
@@ -243,9 +249,9 @@
   (lambda (context custom-sym val)
     (custom-set-value! custom-sym val)))
 
-;; custom-reload-configs can switch its procedure definition from 2
-;; implementations. custom-reload-customs is selectable since the
-;; latter new code breaks the semantics of custom variable
+;; custom-reload-user-configs can switch its behavior by
+;; custom-enable-mtime-aware-user-conf-reloading? since the
+;; experimental code breaks the semantics of custom variable
 ;; broadcasting.
 ;;
 ;; For example, an arbitrary uim-enabled process can update a custom
@@ -256,12 +262,11 @@
 ;;
 ;; To make the latter code default, a discussion is required.
 ;;   -- YamaKen 2005-08-09
-(define custom-reload-configs
-  (if #f
-      custom-reload-customs  ;; original behavior
-      (lambda ()
-	(let ((group-syms (map (lambda (x) (car x)) custom-reload-group-syms)))
-	  (if (null? group-syms)
-	      #f ;; No file should be loaded.
-	      (for-each custom-load-updated-group-conf
-			(reverse group-syms)))))))
+(define custom-reload-user-configs
+  (lambda ()
+    (and (not (getenv "LIBUIM_VANILLA"))
+	 (let ((load-conf (if custom-enable-mtime-aware-user-conf-reloading?
+			      custom-load-updated-group-conf
+			      custom-load-group-conf)))  ;; original behavior
+	   (for-each load-conf (custom-list-primary-groups))
+	   (custom-call-all-hook-procs custom-set-hooks)))))

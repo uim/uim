@@ -71,7 +71,7 @@ static uim_lisp
 plugin_load(uim_lisp _name)
 {
   const char *plugin_name;
-  char *plugin_lib_filename, *plugin_scm_filename;
+  char *plugin_lib_filename = NULL, *plugin_scm_filename = NULL;
   uim_lisp lib_path = uim_scm_symbol_value("uim-plugin-lib-load-path");
   uim_lisp scm_path = uim_scm_symbol_value("uim-plugin-scm-load-path");
   uim_lisp path_car, path_cdr;
@@ -158,7 +158,7 @@ plugin_load(uim_lisp _name)
     return uim_scm_f();
   }
 
-  DPRINTFN(0, (stderr, "Calling plugin_instance_init().\n", plugin_name));
+  DPRINTFN(0, (stderr, "Calling plugin_instance_init() for %s.\n", plugin_name));
   (plugin_instance_init)();
   if (plugin_scm_filename) {
     uim_bool succeeded;
