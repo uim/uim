@@ -13,7 +13,7 @@ Requirements and bugs:
   stat, error, etc based on verbose-level)
   - [uim] Make the GaUnit-based testing framework workable
 
-* Fix invalid "\\" handlings (make test-string.scm passed)
+* 
   - Provide a string escaping procedure. If a SRFI or another de facto standard
     API for such purpose is existing, use it
   - [uim] Implement string-escape as same as trunk
@@ -36,6 +36,9 @@ Performances:
 Logical simplifications:
 
 * Automatically append "\n" in SigScm_Error() instead of append by caller
+
+* Split ScmOp_eval()'s function invocation handling off into a separated
+  function and share it with ScmOp_apply()
 
 * Eliminate similar codes by SCM_REDUCE*() (grep 'TODO.*SCM_REDUCE' *.c)
 
