@@ -324,14 +324,18 @@ static ScmObj read_char(ScmObj port)
     if (strcmp(ch, "space") == 0) {
         ch[0] = ' ';
         ch[1] = '\0';
+#if 0
+    /* to avoid portability problem, we should not support #\Space and so on */
     } else if (strcmp(ch, "Space") == 0) {
         ch[0] = ' ';
         ch[1] = '\0';
+#endif
     } else if (strcmp(ch, "newline") == 0) {
         ch[0] = '\n';
         ch[1] = '\0';
     }
 
+    /* FIXME: memory leak */
     return Scm_NewChar(ch);
 }
 
