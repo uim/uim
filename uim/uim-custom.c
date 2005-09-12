@@ -55,8 +55,23 @@
 #include "context.h"
 #include "uim-helper.h"
 
-#if 1
-/* TODO: make stable */
+#if 0
+/*
+ * The UIM_CUSTOM_EXPERIMENTAL_MTIME_SENSING is disabled since:
+ *
+ * - file_content_is_same() has a bug which may return invalid result
+ *   when the file size is greater than 4095 bytes
+ *
+ * - The codes aim to save custom-groups that some changes are
+ *   applied, but it should not be achieved by such violent method
+ *   (comparing entire content of saved files). Observing updated
+ *   group in uim-custom client program is recommended way
+ *
+ * - It breaks original behavior. See the comment of
+ *   custom-reload-user-configs in custom-rt.scm
+ *
+ *  -- YamaKen 2005-09-12
+ */
 #define UIM_CUSTOM_EXPERIMENTAL_MTIME_SENSING
 #endif
 

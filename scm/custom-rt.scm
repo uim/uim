@@ -45,7 +45,7 @@
 
 (define custom-full-featured? #f)
 ;; experimental
-(define custom-enable-mtime-aware-user-conf-reloading? #t)
+(define custom-enable-mtime-aware-user-conf-reloading? #f)
 
 (define-record 'custom-choice-rec
   '((sym   #f)
