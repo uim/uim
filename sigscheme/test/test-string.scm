@@ -62,10 +62,20 @@
 
 ;; string->list
 (assert "string->list check" (equal? '(#\あ #\i #\う #\e #\お) (string->list "あiうeお")))
-(assert-equal? "string->list check" '(#\\)         (string->list "\\"))
-(assert-equal? "string->list check" '(#\\ #\\)     (string->list "\\\\"))
-(assert-equal? "string->list check" '(#\\ #\\ #\\) (string->list "\\\\\\"))
-
+(assert-equal? "string->list check" '(#\\)             (string->list "\\"))
+(assert-equal? "string->list check" '(#\\ #\\)         (string->list "\\\\"))
+(assert-equal? "string->list check" '(#\\ #\\ #\\)     (string->list "\\\\\\"))
+;;(assert-equal? "string->list check" '(#\tab)           (string->list "\t"))
+(assert-equal? "string->list check" '(#\	)      (string->list "\t"))
+;;(assert-equal? "string->list check" '(#\return)        (string->list "\r"))
+(assert-equal? "string->list check" '(#\)            (string->list "\r"))
+(assert-equal? "string->list check" '(#\ #\)       (string->list "\r\r"))
+(assert-equal? "string->list check" '(#\newline)           (string->list "\n"))
+(assert-equal? "string->list check" '(#\newline #\newline) (string->list "\n\n"))
+(assert-equal? "string->list check" '(#\space)         (string->list " "))
+(assert-equal? "string->list check" '(#\space #\space) (string->list "  "))
+(assert-equal? "string->list check" '(#\")             (string->list "\""))
+(assert-equal? "string->list check" '(#\" #\")         (string->list "\"\""))
 
 ;; list->string
 (assert-equal? "list->string check" "あaい" (list->string '(#\あ #\a #\い)))
@@ -73,8 +83,17 @@
 (assert-equal? "list->string check" "\\\\"   (list->string '(#\\ #\\)))
 (assert-equal? "list->string check" "\\\\\\" (list->string '(#\\ #\\ #\\)))
 (assert-equal? "list->string check" "\t" (list->string '(#\	)))
+;;(assert-equal? "list->string check" "\t" (list->string '(#\tab)))
+(assert-equal? "list->string check" "\r" (list->string '(#\)))
+;;(assert-equal? "list->string check" "\r" (list->string '(#\return)))
 (assert-equal? "list->string check" "\n" (list->string '(#\
 )))
+(assert-equal? "list->string check" "\n" (list->string '(#\newline)))
+(assert-equal? "list->string check" " " (list->string '(#\ )))
+(assert-equal? "list->string check" " " (list->string '(#\space)))
+(assert-equal? "list->string check" " " (list->string '(#\ )))
+(assert-equal? "list->string check" "\"" (list->string '(#\")))
+(assert-equal? "list->string check" "\"a\"" (list->string '(#\" #\a #\")))
 
 ;; string-fill!
 (assert "alphabet string-fill! check" (string=? "jjjjj" (begin
