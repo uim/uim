@@ -64,7 +64,7 @@ static uim_lisp
 plugin_load(uim_lisp _name)
 {
   const char *plugin_name;
-  char *plugin_lib_filename, *plugin_scm_filename;
+  char *plugin_lib_filename = NULL, *plugin_scm_filename = NULL;
   uim_lisp lib_path = uim_scm_eval_c_string("uim-plugin-lib-load-path");
   uim_lisp scm_path = uim_scm_eval_c_string("uim-plugin-scm-load-path");
   uim_lisp path_car, path_cdr;
