@@ -158,7 +158,7 @@ plugin_load(uim_lisp _name)
     return uim_scm_f();
   }
 
-  DPRINTFN(0, (stderr, "Calling plugin_instance_init().\n", plugin_name));
+  DPRINTFN(0, (stderr, "Calling plugin_instance_init() for %s.\n", plugin_name));
   (plugin_instance_init)();
   if (plugin_scm_filename) {
     uim_bool succeeded;

@@ -30,11 +30,27 @@
   SUCH DAMAGE.
 */
 
-#include <uim/uim.h>
-#include <uim/uim-scm.h>
-#include <uim/plugin.h>
+/*
+ * Currently defined as 1 to be compatible with previous code. If no
+ * distro packagers need this, please remove
+ */
+#define UIM_EDITLINE_SEPARATED_BUILD 1
 
 #include <histedit.h>
+
+#if UIM_EDITLINE_SEPARATED_BUILD
+#include <uim/uim.h>
+#include <uim/uim-scm.h>
+#include <uim/uim-compat-scm.h>
+#include <uim/plugin.h>
+#else
+#include "uim.h"
+#include "uim-scm.h"
+#include "uim-compat-scm.h"
+#include "plugin.h"
+#endif
+
+#include "editline.h"
 
 static EditLine *el;
 static History *hist;
