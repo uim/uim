@@ -38,7 +38,12 @@ endif
 
 if GTK2
 
-bin_PROGRAMS = uim-candwin-gtk uim-toolbar-gtk uim-toolbar-gtk-systray uim-im-switcher-gtk uim-input-pad-ja
+bin_PROGRAMS = uim-toolbar-gtk uim-toolbar-gtk-systray uim-im-switcher-gtk uim-input-pad-ja
+if APPLET
+libexec_PROGRAMS += uim-candwin-gtk
+else
+libexec_PROGRAMS = uim-candwin-gtk
+endif
 
 if DICT
 bin_PROGRAMS += uim-dict-gtk
@@ -92,10 +97,9 @@ endif
 
 install-exec-hook-gtk2:
 	cd $(DESTDIR)$(bindir) && \
-	  rm -f uim-helper-candwin-gtk uim-helper-toolbar-gtk uim-helper-toolbar-gtk-systray && \
-	  $(LN_S) uim-candwin-gtk uim-helper-candwin-gtk && \
+	  rm -f uim-helper-toolbar-gtk uim-helper-toolbar-gtk-systray && \
 	  $(LN_S) uim-toolbar-gtk uim-helper-toolbar-gtk && \
-	  $(LN_S) uim-toolbar-gtk-systray uim-helper-toolbar-gtk-systray 
+	  $(LN_S) uim-toolbar-gtk-systray uim-helper-toolbar-gtk-systray
 else
 install-exec-hook-gtk2:
 	true # dummy

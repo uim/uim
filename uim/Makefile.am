@@ -105,7 +105,8 @@ libuim_custom_enabler_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -modul
 libuim_custom_enabler_la_CPPFLAGS = -I$(top_srcdir)
 
 
-bin_PROGRAMS = uim-helper-server uim-sh uim-module-manager
+bin_PROGRAMS = uim-sh uim-module-manager
+libexec_PROGRAMS = uim-helper-server
 
 uim_helper_server_LIBS =  
 uim_helper_server_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
