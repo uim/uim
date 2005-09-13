@@ -24,7 +24,13 @@ Requirements and bugs:
 * grep "FIXME" and fix them
 
 ==============================================================================
-Performances:
+Extensions:
+
+* SRFI-2 and-let* (significantly beneficial for uim codes, especially composer
+  branch)
+
+==============================================================================
+Performance improvements:
 
 * Object representation compaction ([Anthy-dev 2353], [Anthy-dev 2360])
 
@@ -32,6 +38,8 @@ Performances:
 
 ==============================================================================
 Logical simplifications:
+
+* Add tests for proper tail recursion with apply to test-tail-rec.scm
 
 * Automatically append "\n" in SigScm_Error() instead of append by caller
 
@@ -71,7 +79,5 @@ Assigned to YamaKen:
 * GCC4-optimization-proof stack protection
   - [uim] Introduce it into r5rs branch
   - [uim] Port it into trunk
-
-* Add tests for proper tail recursion with apply to test-tail-rec.scm
 
 ==============================================================================
