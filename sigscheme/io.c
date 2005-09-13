@@ -533,12 +533,14 @@ ScmObj ScmOp_load(ScmObj filename)
 /*
  * TODO:
  * - return the status which indicates succeeded or not
- * - provide SIOD compatible behavior about return value when SCM_COMPAT_SIOD
- *   is true
  */
 ScmObj ScmOp_require(ScmObj filename)
 {
     ScmObj loaded_str  = SCM_NULL;
+#if SCM_COMPAT_SIOD
+    ScmObj retsym = SCM_NULL;
+    char *retsym_name = NULL;
+#endif
 
     if (!STRINGP(filename))
         SigScm_ErrorObj("require : string required but got ", filename);
@@ -554,7 +556,16 @@ ScmObj ScmOp_require(ScmObj filename)
         SCM_SYMBOL_VCELL(SigScm_features) = CONS(loaded_str, SCM_SYMBOL_VCELL(SigScm_features));
     }
 
+#if SCM_COMPAT_SIOD
+    retsym_name = (char*)malloc(sizeof(char) * (strlen(SCM_STRING_STR(filename)) + strlen("*-loaded*") + 1));
+    sprintf(retsym_name, "*%s-loaded*", SCM_STRING_STR(filename));
+    printf("retsym_name = %s\n", retsym_name);
+    retsym = Scm_Intern(retsym_name);
+    free(retsym_name);
+    return retsym;
+#else
     return SCM_TRUE;
+#endif
 }
 
 static ScmObj create_loaded_str(ScmObj filename)
