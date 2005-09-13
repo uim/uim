@@ -481,15 +481,14 @@ static void gc_mark_symbol_hash(void)
 static void gc_mark(void)
 {
     ScmObj stack_end;
+    void *save_regs_buf_end = (char *)save_regs_buf + sizeof(save_regs_buf);
 
 #if DEBUG_GC
     printf("gc_mark\n");
 #endif
 
     setjmp(save_regs_buf);
-    gc_mark_locations((ScmObj*)save_regs_buf,
-                      (ScmObj*)(((char*)save_regs_buf) + sizeof(save_regs_buf)));
-
+    gc_mark_locations((ScmObj *)save_regs_buf, (ScmObj *)save_regs_buf_end);
     gc_mark_protected_var();
     gc_mark_locations(scm_stack_start_pointer, &stack_end);
     gc_mark_symbol_hash();
@@ -508,38 +507,46 @@ static void sweep_obj(ScmObj obj)
         break;
 
     case ScmChar:
-        if (SCM_CHAR_VALUE(obj)) free(SCM_CHAR_VALUE(obj));
+        if (SCM_CHAR_VALUE(obj))
+            free(SCM_CHAR_VALUE(obj));
         break;
 
     case ScmString:
-        if (SCM_STRING_STR(obj)) free(SCM_STRING_STR(obj));
+        if (SCM_STRING_STR(obj))
+            free(SCM_STRING_STR(obj));
         break;
 
     case ScmVector:
-        if (SCM_VECTOR_VEC(obj)) free(SCM_VECTOR_VEC(obj));
+        if (SCM_VECTOR_VEC(obj))
+            free(SCM_VECTOR_VEC(obj));
         break;
 
     case ScmSymbol:
-        if (SCM_SYMBOL_NAME(obj)) free(SCM_SYMBOL_NAME(obj));
+        if (SCM_SYMBOL_NAME(obj))
+            free(SCM_SYMBOL_NAME(obj));
         break;
 
     case ScmPort:
         /* handle each port type */
         switch (SCM_PORTINFO_PORTTYPE(obj)) {
         case PORT_FILE:
-            if (SCM_PORTINFO_FILENAME(obj)) free(SCM_PORTINFO_FILENAME(obj));
+            if (SCM_PORTINFO_FILENAME(obj))
+                free(SCM_PORTINFO_FILENAME(obj));
             break;
         case PORT_STRING:
-            if (SCM_PORTINFO_STR(obj)) free(SCM_PORTINFO_STR(obj));
+            if (SCM_PORTINFO_STR(obj))
+                free(SCM_PORTINFO_STR(obj));
             break;
         }
         /* free port info */
-        if (SCM_PORT_PORTINFO(obj)) free(SCM_PORT_PORTINFO(obj));
+        if (SCM_PORT_PORTINFO(obj))
+            free(SCM_PORT_PORTINFO(obj));
         break;
 
     case ScmContinuation:
         /* free continuation info */
-        if (SCM_CONTINUATION_CONTINFO(obj)) free(SCM_CONTINUATION_CONTINFO(obj));
+        if (SCM_CONTINUATION_CONTINFO(obj))
+            free(SCM_CONTINUATION_CONTINFO(obj));
         break;
 
     default:
