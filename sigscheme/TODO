@@ -16,6 +16,10 @@ Requirements and bugs:
     API for such purpose is existing, use it
   - [uim] Implement string-escape as same as trunk
 
+* Make ScmOp_apply() properly tail recursive
+  - Add tests for proper tail recursion with 'apply', 'call-with-values' and
+    'receive' to test-tail-rec.scm
+
 * [uim] link libsscm into libuim statically
 
 * Dynamic encoding switching for a conversion between string and char list,
@@ -39,21 +43,28 @@ Performance improvements:
 ==============================================================================
 Logical simplifications:
 
-* Add tests for proper tail recursion with apply to test-tail-rec.scm
-
 * Automatically append "\n" in SigScm_Error() instead of append by caller
 
 * Split ScmOp_eval()'s function invocation handling off into a separated
   function and share it with ScmOp_apply()
+  - Withdraw FUNCTYPE_EVALED_LIST, and eval args by safe, easy and efficient
+    SCM_SHIFT_EVALED*() in each functions instead of cell-consumptive
+    preparation by map_eval() in ScmOp_eval()
 
 * Eliminate similar codes by SCM_REDUCE*() (grep 'TODO.*SCM_REDUCE' *.c)
 
 * Simplify args extraction codes by SCM_SHIFT*() (grep 'TODO.*SCM_SHIFT' *.c)
 
+* Move procedure registration for SRFI and SIOD operations in
+  SigScm_Initialize_internal() to each operation-*.c and invoke them by
+  SigScm_*_Initialize() from SigScm_Initialize_internal(). It should be done
+  for logically appropriate file organization, and preparation for future
+  dynamic-loadable modularization
+
 ==============================================================================
 Namings and Cosmetic things:
 
-* Add a add a 'SCM' prefix to functions of sigschemeinternal.h
+* Add a 'SCM' prefix to the global functions listed in sigschemeinternal.h
 
 * Rename 'arg' for argument list to 'args'
 
