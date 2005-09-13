@@ -113,79 +113,6 @@ print_usage(void)
 }
 
 static uim_lisp
-read_module_list(void)
-{
-  FILE *fp;
-  char buf[1024];
-  uim_lisp module_list = uim_scm_null_list();
-
-  if (path) {
-    char *p = concat(path, "/modules");
-    fp = fopen(p, "r");
-    free(p);
-  } else {
-    fp = fopen(MODULE_LIST_FILENAME, "r");
-  }
-
-  if (!fp) {
-    /* fprintf(stderr, "Warning: failed to read module list.\n"); */
-    return uim_scm_f();
-  }
-  while (fgets(buf, sizeof(buf), fp) != NULL) {
-    if (buf[0] == '#' || buf[0] == '\n') {
-      continue; /* comment line or blank line */
-    }
-    else if (buf[strlen(buf) - 1] == '\n') {
-      buf[strlen(buf) - 1] = '\0'; /* Clear \n. */
-    }
-    module_list = uim_scm_cons(uim_scm_make_symbol(buf), module_list);
-  }
-  fclose(fp);
-  return module_list;
-}
-
-static uim_lisp
-write_module_list(uim_lisp new_module, uim_lisp module_list)
-{
-  FILE *fp;
-
-  if (path) {
-    char *p = concat(path, "/modules");
-    fp = fopen(p, "w");
-    free(p);
-  } else {
-    fp = fopen(MODULE_LIST_FILENAME, "w");
-  }
-
-  if (!fp) {
-    perror("Failed to write module list");
-    return uim_scm_f();
-  }
-
-  fputs("# This is an automatically generated file. DO NOT EDIT.\n\n", fp);
-
-  if (uim_scm_stringp(new_module) == UIM_TRUE) {
-    fputs(uim_scm_refer_c_str(new_module), fp);
-    fputs("\n", fp);
-  }
-
-  if (uim_scm_consp(module_list) == UIM_TRUE) {
-    while (1) {
-      uim_lisp module_name = uim_scm_car(module_list);
-      fputs(uim_scm_refer_c_str(module_name), fp);
-      fputs("\n",fp);
-      module_list = uim_scm_cdr(module_list);
-      if (module_list == uim_scm_null_list()) {
-	break;
-      }
-    }
-  }
-  
-  fclose(fp);
-  return uim_scm_t();
-}
-
-static uim_lisp
 write_loader_scm(uim_lisp str)
 {
   FILE *fp;
@@ -295,8 +222,6 @@ main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
 
-  uim_scm_init_subr_0("read-module-list", read_module_list);
-  uim_scm_init_subr_2("write-module-list", write_module_list);
   uim_scm_init_subr_1("write-loader.scm", write_loader_scm);
   uim_scm_init_subr_1("write-installed-modules.scm", write_installed_modules_scm);
 

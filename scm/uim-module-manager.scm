@@ -41,14 +41,14 @@
 	(if (require-module (symbol->string module))
 	    #t
 	    (begin (puts (string-append "Warning: Module "
-	    				(symbol->string module)
+					(symbol->string module)
 					" is not a correct module.\n"))
 		   #f)))
       (remove
        (lambda (module)
 	 (if (memq module current-module-list)
 	     (begin (puts (string-append "Warning: Module "
-	     				 (symbol->string module)
+					 (symbol->string module)
 					 " is already registered\n"))
 		    #t)
 	     #f))
@@ -89,13 +89,8 @@
 
 (define update-all-files
   (lambda (module-list)
-    ;;(update-modules-file module-list)
     (update-installed-modules-scm module-list)
     (update-loader-scm module-list)))
-
-(define update-modules-file
-  (lambda (module-list)
-    (write-module-list #f (map symbol->string module-list))))
 
 (define update-loader-scm
   (lambda (module-list)
