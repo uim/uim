@@ -33,9 +33,11 @@
 
 #ifndef UDSOCK_H
 #define UDSOCK_H
+
 #ifndef UNIX_PATH_MAX
 #define UNIX_PATH_MAX 100
 #endif
+
 const char *usersockname(const char *file);
 void init_sendsocket(const char *sock_path);
 void sendline(const char *buf);
@@ -44,4 +46,3 @@ int recvline(char *buf, int n);
 void close_socket(void);
 
 #endif
-

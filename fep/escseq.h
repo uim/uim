@@ -48,7 +48,6 @@ struct attribute_tag {
   int background;
 };
 
-
 void init_escseq(const struct attribute_tag *attr_uim);
 void quit_escseq(void);
 void fixtty(void);
@@ -77,4 +76,5 @@ void put_uim_str_no_color_len(const char *str, int attr, int len);
 void put_pty_str(const char *str, int len);
 char *cut_padding(const char *escseq);
 void escseq_winch(void);
+
 #endif

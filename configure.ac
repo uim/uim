@@ -168,7 +168,7 @@ AM_LANGINFO_CODESET
 # Checks for header files.
 AC_FUNC_ALLOCA
 AC_HEADER_STDC
-AC_CHECK_HEADERS([fcntl.h locale.h stdlib.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h locale.h stdlib.h unistd.h errno.h])
 AC_CHECK_HEADERS([string.h sys/ioctl.h sys/socket.h termios.h wchar.h])
 AC_CHECK_HEADERS([sys/time.h sys/stat.h sys/un.h getopt.h assert.h signal.h term.h ncurses/term.h ctype.h pwd.h stdarg.h])
 AC_CHECK_HEADERS([pty.h utmp.h util.h libutil.h])
@@ -177,6 +177,8 @@ AC_CHECK_HEADERS([sys/param.h strings.h])
 AC_CHECK_HEADERS([pthread.h], have_pthread=yes, have_pthread=no)
 
 # Check for type
+AC_CHECK_TYPES(sig_atomic_t, , ,
+  [ #include <signal.h> ])
 AC_CHECK_TYPES(sig_t, , ,
   [ #include <signal.h> ])
 
@@ -241,6 +243,8 @@ LIBDIR=`eval echo ${libdir}`
 AC_DEFINE_UNQUOTED(LIBDIR, "$LIBDIR", [libraries dir])
 DATADIR=`eval echo ${datadir}`
 AC_DEFINE_UNQUOTED(DATADIR, "$DATADIR", [read-only architecture-independent data dir])
+UIM_LIBEXECDIR=`eval echo "${libexecdir}"`
+AC_DEFINE_UNQUOTED(UIM_LIBEXECDIR, "$UIM_LIBEXECDIR", [libexec dir])
 # we should use more safe macro such as AC_EXPAND_DIR
 LOCALEDIR=`eval echo ${datadir}/locale`
 # backward compatibility
@@ -623,7 +627,7 @@ if test x$use_qt = xyes ; then
 
     # Check For moc-qt3
     if test -x "$QTDIR/bin/moc-qt3"; then
-      HOST_MOC="$QTDIR/bin/moc-qt3"
+      HOST_MOC_QT3="$QTDIR/bin/moc-qt3"
     else
       AC_CHECK_PROGS(HOST_MOC_QT3, moc-qt3, "")
     fi

@@ -151,8 +151,9 @@ void update_backtick(void)
 
 /*
  * プリエディット，ステータスラインを描画する
+ * 描写する必要がない場合はFALSEを返す
  */
-void draw(void)
+int draw(void)
 {
   char *commit_str;
 
@@ -161,21 +162,25 @@ void draw(void)
   int i;
 
   if (!end_callbacks()) {
-    return;
+    return FALSE;
   }
 
-  /* 端末サイズが変更されたときはs_headを変更する */
+  prev_preedit = s_preedit;
+  s_preedit = get_preedit();
+  commit_str = get_commit_str();
+
+  /* 端末サイズが変更されたときはs_headを変更し、前のpreeditがなかったことにする */
   if (s_winch && g_start_preedit) {
     if (g_opt.no_report_cursor) {
       s_preedit->cursor = 0;
     } else {
       s_head = get_cursor_position();
     }
+    end_preedit();
+    free_preedit(prev_preedit);
+    prev_preedit = create_preedit();
   }
-
-  prev_preedit = s_preedit;
-  s_preedit = get_preedit();
-  commit_str = get_commit_str();
+  s_winch = FALSE;
 
   debug2(("draw()\n"));
   debug2(("commit_str = \"%s\"\n", commit_str));
@@ -234,9 +239,9 @@ void draw(void)
   free_preedit(prev_preedit);
   free(commit_str);
   put_cursor_normal();
-  s_winch = FALSE;
 
   debug2(("\ndraw end\n"));
+  return TRUE;
 }
 
 /*
@@ -510,20 +515,57 @@ end_candidate:
 
     if (g_opt.status_type != NONE && statusline_str[0] == '\0') {
       if (g_opt.status_type == LASTLINE) {
+        int mode_str_width = strwidth(mode_str);
+
+        statusline_str_width = mode_str_width;
+
         if (restore) {
           put_save_cursor();
         }
         put_cursor_invisible();
-        put_goto_lastline(0);
-        put_uim_str(mode_str, UPreeditAttr_None);
-        statusline_str_width = strwidth(mode_str);
-        if (draw_background) {
-          put_clear_to_end_of_line(g_win->ws_col - statusline_str_width);
-        } else if (statusline_str_width < prev_statusline_str_width) {
-          put_clear_to_end_of_line(prev_statusline_str_width - statusline_str_width);
+
+        /* draw_background ならば force である */
+        /* 論理的には関係ないがそのような使われ方しかしていない */
+        assert(!draw_background || force);
+
+        if (force) {
+          put_goto_lastline(0);
+          put_uim_str(mode_str, UPreeditAttr_None);
+
+          if (draw_background) {
+            put_clear_to_end_of_line(g_win->ws_col - statusline_str_width);
+          } else if (statusline_str_width < prev_statusline_str_width) {
+            put_clear_to_end_of_line(prev_statusline_str_width - statusline_str_width);
+          }
+
+        } else {
+          /* !force なので prev_statusline_str_width はモード表示の長さである */
+          int eq_width = compare_str(mode_str, prev_mode_str);
+          int eq_byte = width2byte(mode_str, eq_width)[0];
+          int prev_mode_str_width = strwidth(prev_mode_str);
+
+          put_goto_lastline(eq_width);
+          if (mode_str_width == prev_mode_str_width) {
+            int eq_width_rev = compare_str_rev(mode_str, prev_mode_str);
+
+            if (eq_width_rev > 0) {
+              int draw_byte = width2byte(mode_str + eq_byte, mode_str_width - eq_width - eq_width_rev)[0];
+              put_uim_str_len(mode_str + eq_byte, UPreeditAttr_None, draw_byte);
+
+            } else {
+              put_uim_str(mode_str + eq_byte, UPreeditAttr_None);
+            }
+            
+          } else {
+            put_uim_str(mode_str + eq_byte, UPreeditAttr_None);
+            if (statusline_str_width < prev_statusline_str_width) {
+              put_clear_to_end_of_line(prev_statusline_str_width - statusline_str_width);
+            }
+          }
         }
+
       } else if (g_opt.status_type == BACKTICK) {
-        strncpy(s_modebuf, mode_str, MODESIZE - 1);
+        strncpy(s_modebuf, mode_str, sizeof(s_modebuf) - 1);
       }
     }
   }
@@ -608,7 +650,7 @@ static void draw_preedit(struct preedit_tag *preedit, struct preedit_tag *prev_p
   int eq_width;
 
   /* 端末サイズが変更されたときはprev_preeditは無視する */
-  eq_width = s_winch ? 0 : compare_preedit(preedit, prev_preedit);
+  eq_width = compare_preedit(preedit, prev_preedit);
 
 #if DEBUG > 2
   debug2(("\neq_width = %d\n", eq_width));
@@ -1087,9 +1129,23 @@ static struct point_tag width2point_col(int width)
 /*
  * 端末サイズが変更されたときに呼ぶ
  */
-void draw_winch(void)
+void draw_winch(struct winsize *prev_win)
 {
   s_winch = TRUE;
+  if (g_opt.status_type == LASTLINE) {
+    put_save_cursor();
+    put_cursor_invisible();
+    put_change_scroll_region(0, g_win->ws_row - 1);
+    if (g_win->ws_row > prev_win->ws_row) {
+      struct winsize save_win = *g_win;
+      *g_win = *prev_win;
+      clear_lastline();
+      *g_win = save_win;
+    }
+    draw_statusline_force_no_restore();
+    put_restore_cursor();
+    put_cursor_normal();
+  }
 }
 
 #if defined(DEBUG) && DEBUG > 2

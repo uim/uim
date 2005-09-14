@@ -45,6 +45,7 @@
 
 #include "context.h"
 #include "uim-helper.h"
+#include "uim-util.h"
 
 #ifndef HAVE_STRSEP
 char *uim_strsep(char **stringp, const char *delim);
@@ -200,15 +201,24 @@ uim_ipc_open_command_with_option(int old_pid, FILE **read_fp,
     if (is_setugid() != 0) {
       int cmd_len = strlen(command) + 30;
       char *fullpath_command = malloc(cmd_len);
-      
+      char *cmd_name = strrchr(command, '/');
+
+      if (cmd_name && cmd_name + 1 != '\0')
+	cmd_name++;
+      else
+	cmd_name = (char *)command;
       /*if (setuid(getuid())!=0) abort();*/ /* discarding privilege */
       
-      snprintf(fullpath_command, cmd_len, "/usr/local/bin/%s", command);
+      snprintf(fullpath_command, cmd_len, "/usr/local/bin/%s", cmd_name);
 
       result = execvp(fullpath_command, argv);
 
       if (result == -1) {
- 	snprintf(fullpath_command, cmd_len, "/usr/bin/%s", command);
+ 	snprintf(fullpath_command, cmd_len, "/usr/bin/%s", cmd_name);
+	result = execvp(fullpath_command, argv);
+      }
+      if (result == -1) {
+ 	snprintf(fullpath_command, cmd_len, UIM_LIBEXECDIR "/%s", cmd_name);
 	result = execvp(fullpath_command, argv);
       }
       free(fullpath_command);

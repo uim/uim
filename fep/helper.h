@@ -34,6 +34,8 @@
 #ifndef HELPER_H
 #define HELPER_H
 
+#define str_has_prefix(str, prefix) (strncmp((str), (prefix), strlen((prefix))) == 0)
+
 extern int g_focus_in;
 extern int g_helper_fd;
 

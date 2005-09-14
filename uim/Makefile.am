@@ -105,7 +105,8 @@ libuim_custom_enabler_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -modul
 libuim_custom_enabler_la_CPPFLAGS = -I$(top_srcdir)
 
 
-bin_PROGRAMS = uim-helper-server uim-sh uim-module-manager
+bin_PROGRAMS = uim-sh uim-module-manager
+libexec_PROGRAMS = uim-helper-server
 
 uim_helper_server_LIBS =  
 uim_helper_server_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
@@ -119,7 +120,7 @@ uim_sh_LDADD = libuim.la
 uim_sh_SOURCES = uim-sh.c
 if LIBEDIT
   uim_sh_CFLAGS += -DLIBEDIT
-  uim_sh_SOURCES += editline.c
+  uim_sh_SOURCES += editline.c editline.h
   uim_sh_LDADD += -ledit -lcurses
 endif
 

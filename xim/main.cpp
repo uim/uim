@@ -415,13 +415,18 @@ init_supported_locales()
 {
     std::list<char *> locale_list;
     char *locales;
+    const char *s;
     int len;
 
     asprintf(&supported_locales, "@locale=");
     len = strlen(supported_locales);
 
     // get all locales
-    locales = strdup(compose_localenames_from_im_lang("*"));
+    s = compose_localenames_from_im_lang("*");
+    if (s)
+	locales = strdup(s);
+    else
+	locales = strdup("");
     // replace ':' with ','
     char *sep;
     char *tmp = locales;

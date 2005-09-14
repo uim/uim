@@ -46,13 +46,13 @@ ChangeLog:
 
 releasetest-all-flag-enabled: RELEASETEST_CONFIGURE_FLAGS= --enable-debug \
 	 --enable-fep --enable-dict --with-m17nlib --with-canna \
-	 --with-gtk2 --with-gnome2 --with-qt --with-qt-immodule
+	 --with-gtk2 --with-gnome2 --with-qt --with-qt-immodule --with-libedit
 releasetest-all-flag-enabled: each-releasetest
 
 releasetest-all-flag-disabled: RELEASETEST_CONFIGURE_FLAGS= --disable-debug \
 	--disable-fep --disable-sumika	--disable-dict --without-m17nlib \
 	--without-canna --without-gtk2  --without-gnome2 --without-qt \
-	--without-qt-immodule
+	--without-qt-immodule --without-libedit
 releasetest-all-flag-disabled: each-releasetest
 
 each-releasetest:

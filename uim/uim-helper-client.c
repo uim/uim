@@ -61,7 +61,7 @@ static void (*uim_disconnect_cb)(void);
 static char *
 get_server_command(void)
 {
-  return "uim-helper-server";
+  return UIM_LIBEXECDIR "/uim-helper-server";
 }
 
 int uim_helper_init_client_fd(void (*disconnect_cb)(void))

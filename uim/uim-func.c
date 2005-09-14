@@ -40,6 +40,7 @@
 #include "uim-scm.h"
 #include "uim-encoding.h"
 #include "uim-util.h"
+#include "uim-im-switcher.h"
 
 #define MAX_LENGTH_OF_INT_AS_STR (((sizeof(int) == 4) ? sizeof("-2147483648") : sizeof("-9223372036854775808")) - sizeof((char)'\0'))
 
@@ -721,6 +722,16 @@ im_delete_surrounding(uim_lisp id_, uim_lisp offset_, uim_lisp len_)
   return uim_scm_t();
 }
 
+
+static uim_lisp
+switch_im(uim_lisp id_, uim_lisp name_)
+{
+  const char *name= uim_scm_refer_c_str(name_);
+  uim_context uc = uim_find_context(uim_scm_c_int(id_));
+  uim_switch_im(uc, name);
+  return uim_scm_t();
+}
+
 void
 uim_init_im_subrs(void)
 {
@@ -755,4 +766,6 @@ uim_init_im_subrs(void)
   /**/
   uim_scm_init_subr_1("im-request-surrounding", im_request_surrounding);
   uim_scm_init_subr_3("im-delete-surrounding", im_delete_surrounding);
+  /**/
+  uim_scm_init_subr_2("uim-switch-im", switch_im); /* FIXME: This function name would not be appropriate. */
 }

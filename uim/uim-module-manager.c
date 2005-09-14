@@ -35,20 +35,34 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "config.h"
 
 #include "uim.h"
 #include "uim-scm.h"
-#include "uim-compat-scm.h"
-
-static char *path;
+#include "context.h"
 
 #define MODULE_LIST_FILENAME UIM_DATADIR"/modules"
 #define LOADER_SCM_FILENAME  UIM_DATADIR"/loader.scm"
 #define INSTALLED_MODULES_SCM_FILENAME  UIM_DATADIR"/installed-modules.scm"
 
-static uim_lisp modulenames; /* FIXME: Provide a way to pass a list as an argument. */
+static char *path;
+
+enum Action {
+  Register,
+  UnRegister,
+  UnRegisterAll,
+  None
+};
+
+char *action_command[] = {
+  "register-modules",
+  "unregister-modules",
+  "unregister-all-modules",
+  NULL
+};
 
 /* Utility function */
 static char *
@@ -56,7 +70,7 @@ concat(const char *a, const char *b)
 {
   int len;
   char *dest;
-  if(!a || !b)
+  if (!a || !b)
     return NULL;
   len = strlen(a) + strlen(b) + 1;
   dest = malloc(len);
@@ -65,108 +79,45 @@ concat(const char *a, const char *b)
   return dest;
 }
 
-/* Utility function */
- /* FIXME: Provide a way to pass a list as an argument. */
-static uim_lisp
-get_arguments(void)
+static char *
+append_module_names(char *modules, const char *new_module)
 {
-  return modulenames;
+  if (!modules)
+    return strdup(new_module);
+
+  modules = realloc(modules, strlen(modules) + strlen(new_module) + 2);
+  if (modules) {
+    strcat(modules, " ");
+    strcat(modules, new_module);
+  }
+  return modules;
 }
 
 static void
 print_usage(void)
 {
   printf("Usage:\n");
-  printf("  uim-module-manager [OPTION] modulenames...\n\n");
+  printf("  uim-module-manager [options]\n\n");
   printf("Options:\n");
-  printf("  --register\n");
-  printf("  --unregister\n");
-  printf("  --path path to modules/loader.scm/installed-modules.scm\n");
-  printf("    **  --path option may be removed in the future. **\n\n");
+  printf("  --register <modules>   Register the modules\n");
+  printf("  --unregister <modules> Unregister the modules\n");
+  printf("  --path <path>          Target path where installed-modules.scm\n");
+  printf("                         and loader.scm to be installed\n");
+  printf("  --unregister-all       Unregister all modules\n\n");
   printf("Example:\n");
   printf("  uim-module-manager --register anthy skk\n");
-  printf("  uim-module-manager --register prime --path /usr/local/share/uim\n\n");
-}
-
-static uim_lisp
-read_module_list(void)
-{
-  FILE *fp;
-  char buf[1024];
-  uim_lisp module_list = uim_scm_null_list();
-
-  if(path) {
-    char *p = concat(path, "/modules");
-    fp = fopen(p, "r");
-    free(p);
-  } else {
-    fp = fopen(MODULE_LIST_FILENAME, "r");
-  }
-
-  if(!fp) {
-    perror("Failed to read module list.");
-    return uim_scm_f();
-  }
-  while (fgets (buf, sizeof(buf), fp) != NULL) {
-    if(buf[0] == '#' || buf[0] == '\n') {
-      continue; /* comment line or blank line */
-    }
-    else if(buf[strlen(buf)-1] == '\n') {
-      buf[strlen(buf)-1] = '\0'; /* Clear \n. */
-    }
-    module_list = uim_scm_cons(uim_scm_intern_c_str(buf), module_list);
-  }
-  fclose(fp);
-  return module_list;
-}
-
-static uim_lisp
-write_module_list(uim_lisp new_module, uim_lisp module_list)
-{
-  FILE *fp;
-  if(path) {
-    char *p = concat(path, "/modules");
-    fp = fopen(p, "w");
-    free(p);
-  } else {
-    fp = fopen(MODULE_LIST_FILENAME, "w");
-  }
-
-  if(!fp) {
-    perror("Failed to write module list");
-    return uim_scm_f();
-  }
-
-  fputs("# This is an automatically generated file. DO NOT EDIT.\n\n", fp);
-
-  if(uim_scm_stringp(new_module) == UIM_TRUE) {
-    fputs(uim_scm_refer_c_str(new_module), fp);
-    fputs("\n",fp);
-  }
-
-  if(uim_scm_consp(module_list) == UIM_TRUE) {
-    
-    while(1) {
-      uim_lisp module_name = uim_scm_car(module_list);
-      fputs(uim_scm_refer_c_str(module_name), fp);
-      fputs("\n",fp);
-      module_list = uim_scm_cdr(module_list);
-      if(module_list == uim_scm_null_list()) {
-	break;
-      }
-    }
-
-  }
-  
-  fclose(fp);
-  return uim_scm_t();
+  printf("  uim-module-manager --register prime --path /usr/local/share/uim\n");
+  printf("  uim-module-manager --register personal-module --path ~/.uim.d/plugin\n\n");
+  printf("Note:\n");
+  printf("  Registeration and unregistration cannot be done simultaneously.\n\n");
 }
 
 static uim_lisp
 write_loader_scm(uim_lisp str)
 {
   FILE *fp;
-  if(path) {
+
+  if (path) {
     char *p = concat(path, "/loader.scm");
     fp = fopen(p, "w");
     free(p);
@@ -174,14 +125,14 @@ write_loader_scm(uim_lisp str)
     fp = fopen(LOADER_SCM_FILENAME, "w");
   }
 
-  if(!fp) {
+  if (!fp) {
     perror("Failed to open loader.scm");
     return uim_scm_f();
   }
 
   fputs(";; This is an automatically generated file. DO NOT EDIT.\n\n", fp);
-
   fputs(uim_scm_refer_c_str(str), fp);
+
   fclose(fp);
   return uim_scm_t();
 }
@@ -190,7 +141,8 @@ static uim_lisp
 write_installed_modules_scm(uim_lisp str)
 {
   FILE *fp;
-  if(path) {
+
+  if (path) {
     char *p = concat(path, "/installed-modules.scm");
     fp = fopen(p, "w");
     free(p);
@@ -198,14 +150,14 @@ write_installed_modules_scm(uim_lisp str)
     fp = fopen(INSTALLED_MODULES_SCM_FILENAME, "w");
   }
 
-  if(!fp) {
+  if (!fp) {
     perror("Failed to open installed-modules.scm");
     return uim_scm_f();
   }
 
   fputs(";; This is an automatically generated file. DO NOT EDIT.\n\n", fp);
-
   fputs(uim_scm_refer_c_str(str), fp);
+
   fclose(fp);
   return uim_scm_t();
 }
@@ -213,75 +165,84 @@ write_installed_modules_scm(uim_lisp str)
 int
 main(int argc, char *argv[]) {
   int i;
-  int registerp = 0;
-  uim_lisp form;
+  int action = None;
+  char *module_names = NULL;
 
-  if(argc <= 2) {
+  if (argc <= 1) {
     print_usage();
     exit(EXIT_FAILURE);
   }
     
   /* FIXME: To generate loader.scm, we need this setenv for now.
-     But it's a dirty hack, not appropriate. I guess we need entirely new module system. */
+     But it's a dirty hack, not appropriate. I guess we need entirely
+     new module system. */
   setenv("LIBUIM_VANILLA", "1", 1);
   
   uim_init();
   uim_scm_set_verbose_level(1);
-  modulenames = uim_scm_null_list();
 
-  for(i=0; i<argc; i++) {
-    if(strcmp(argv[i], "--register") == 0) {
-      if(registerp == 2) {
-	printf("Regqistering and unregistering couldn't used at the same time.\n\n");
-	exit(EXIT_FAILURE);
+  for (i = 0; i < argc; i++) {
+    if (strcmp(argv[i], "--register") == 0) {
+      if (action != None) {
+	action = None;
+	break;
       }
-      registerp = 1; i++;
-      while(argv[i] && strncmp(argv[i], "--", 2)) {
-	modulenames = uim_scm_cons(uim_scm_intern_c_str(argv[i]), modulenames);
+      action = Register; i++;
+      while (argv[i] && strncmp(argv[i], "--", 2)) {
+	module_names = append_module_names(module_names, argv[i]);
 	i++;
       }
       i--;
-    } else if(strcmp(argv[i], "--unregister") == 0) {
-      if(registerp == 1) {
-	printf("Registering and unregistering couldn't used at the same time.\n\n");
-	exit(EXIT_FAILURE);
+    } else if (strcmp(argv[i], "--unregister") == 0) {
+      if (action != None) {
+	action = None;
+	break;
       }
-      registerp = 2; i++;
-      while(argv[i] && strncmp(argv[i], "--", 2)) {
-	modulenames = uim_scm_cons(uim_scm_intern_c_str(argv[i]), modulenames);
+      action = UnRegister; i++;
+      while (argv[i] && strncmp(argv[i], "--", 2)) {
+	module_names = append_module_names(module_names, argv[i]);
 	i++;
       }
       i--;
-    } else if(strcmp(argv[i], "--path") == 0) {
-      if(argv[i+1]) {
-	path = argv[i+1];
+    } else if (strcmp(argv[i], "--path") == 0) {
+      if (argv[i + 1]) {
+	path = argv[i + 1];
       }
+    } else if (strcmp(argv[i], "--unregister-all") == 0) {
+      if (action != None) {
+	action = None;
+	break;
+      }
+      action = UnRegisterAll;
     }
   }
   
-  if(!argv[2]) {
+  if (action == None || (action != UnRegisterAll && !module_names)) {
     print_usage();
     exit(EXIT_FAILURE);
   }
 
-  uim_scm_init_subr_0("read-module-list", read_module_list);
-  uim_scm_init_subr_2("write-module-list", write_module_list);
-
-  uim_scm_init_subr_0("get-arguments", get_arguments);
-
   uim_scm_init_subr_1("write-loader.scm", write_loader_scm);
   uim_scm_init_subr_1("write-installed-modules.scm", write_installed_modules_scm);
 
-  uim_scm_require_file("uim-module-manager.scm");
+  if (!uim_scm_require_file("uim-module-manager.scm"))
+    exit(1);
 
-  if(registerp == 1) {
-    form = uim_scm_list1(uim_scm_intern_c_str("register-modules"));
-  }
-  if(registerp == 2) {
-    form = uim_scm_list1(uim_scm_intern_c_str("unregister-modules"));
+  if (path) {
+    char *extra_file = concat(path, "/installed-modules.scm");
+    struct stat st;
+    if (stat(extra_file, &st) != -1)
+      uim_scm_require_file(extra_file);
+    free(extra_file);
   }
 
-  uim_scm_eval(form);
+  /* for unregister-all */
+  if (!module_names)
+    module_names = "";
+
+  UIM_EVAL_FSTRING2(NULL, "(%s \"%s\")",
+		    action_command[action],
+		    module_names);
 
   uim_quit();
 

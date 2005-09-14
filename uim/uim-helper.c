@@ -48,6 +48,7 @@
 #include <errno.h>
 #include "context.h"
 #include "uim-helper.h"
+#include "uim-util.h"
 
 #ifndef HAVE_SIG_T
 typedef void (*sig_t)(int);

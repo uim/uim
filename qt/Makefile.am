@@ -51,10 +51,11 @@ noinst_HEADERS = $(HEADER_FILES)
 
 bin_PROGRAMS = \
 	uim-toolbar-qt \
-	uim-candwin-qt \
 	uim-im-switcher-qt \
 	uim-pref-qt \
 	uim-chardict-qt
+
+libexec_PROGRAMS = uim-candwin-qt
 
 # Immodule
 if QT_IMMODULE

@@ -52,6 +52,11 @@
 #include "canddisp.h"
 #include "util.h"
 
+#if defined(USE_QT_CANDWIN)
+  #define DEFAULT_CANDWIN_PROG	(UIM_LIBEXECDIR "/uim-candwin-qt")
+#elif defined(USE_GTK_CANDWIN) && defined(USE_GTK2)
+  #define DEFAULT_CANDWIN_PROG	(UIM_LIBEXECDIR "/uim-candwin-gtk")
+#endif
 
 static FILE *candwin_r, *candwin_w;
 static int candwin_pid;
@@ -63,7 +68,8 @@ static void candwin_read_cb(int fd, int ev);
 
 static const char *candwin_command(void)
 {
-    char *candwin_prog = NULL;
+    char *candwin_prog;
+    const char *user_config;
 
     /*
       XXX: We should drop uim-compat-scm API. -- omote 07/12/2005
@@ -75,25 +81,18 @@ static const char *candwin_command(void)
 	 3. default toolkit's candwin program determined by ./configure
      */
 
-    candwin_prog = getenv("UIM_CANDWIN_PROG");
-    if (!candwin_prog) {
+    user_config = getenv("UIM_CANDWIN_PROG");
 #ifdef UIM_COMPAT_SCM
-#if 0
-	// uim-candwin-prog is not bound in uim-custom setting.
-	// candwin_prog = uim_scm_symbol_value_str("uim-candwin-prog");
+    if (!user_config)
+	user_config = uim_scm_symbol_value_str("uim-candwin-prog");
 #endif
-	if (candwin_prog)
-	    return candwin_prog;
-#endif /* UIM_COMPAT_SCM */
-#if defined(USE_QT_CANDWIN)
-	return "uim-candwin-qt";
-#elif defined(USE_GTK_CANDWIN) && defined(USE_GTK2)
-	return "uim-candwin-gtk";
-#else
-	return NULL;
-#endif
-    } else
+
+    if (user_config) {
+	asprintf(&candwin_prog, UIM_LIBEXECDIR "/%s", user_config);
 	return candwin_prog;
+    }
+
+    return DEFAULT_CANDWIN_PROG;
 }
 
 Canddisp *canddisp_singleton()

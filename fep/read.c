@@ -37,9 +37,6 @@
 #ifndef DEBUG
 #define NDEBUG
 #endif
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
@@ -52,12 +49,19 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+#ifdef HAVE_ERRNO_H
+#include "errno.h"
+#endif
 
 #include "uim-fep.h"
 #include "read.h"
 
 static char *s_unget_buf = NULL;
 static int s_buf_size = 0;
+
+
+static int pselect_(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
+            const struct timespec *timeout, const sigset_t *sigmask);
 
 /*
  * select
@@ -71,6 +75,20 @@ int my_select(int n, fd_set *readfds, struct timeval *timeout)
     return 1;
   }
   return select(n, readfds, NULL, NULL, timeout);
+}
+
+/*
+ * pselect
+ * ungetがあるときはpselectを呼ばない. 
+ */
+int my_pselect(int n, fd_set *readfds, const sigset_t *sigmask)
+{
+  if (s_buf_size > 0) {
+    FD_ZERO(readfds);
+    FD_SET(g_win_in, readfds);
+    return 1;
+  }
+  return pselect_(n, readfds, NULL, NULL, NULL, sigmask);
 }
 
 /*
@@ -107,4 +125,37 @@ void unget_stdin(const char *str, int count)
   s_unget_buf = realloc(s_unget_buf, s_buf_size + count);
   memcpy(s_unget_buf + s_buf_size, str, count);
   s_buf_size += count;
+}
+
+static int pselect_(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
+            const struct timespec *timeout, const sigset_t *sigmask)
+{
+  int ret;
+  sigset_t orig_sigmask;
+  sigset_t pending_signals;
+
+  /* シグナルが保留されているか */
+  sigpending(&pending_signals);
+  if (
+      sigismember(&pending_signals, SIGHUP)   ||
+      sigismember(&pending_signals, SIGTERM)  ||
+      sigismember(&pending_signals, SIGQUIT)  ||
+      sigismember(&pending_signals, SIGINT)   ||
+      sigismember(&pending_signals, SIGWINCH) ||
+      sigismember(&pending_signals, SIGUSR1)  ||
+      sigismember(&pending_signals, SIGUSR2)  ||
+      sigismember(&pending_signals, SIGTSTP)  ||
+      sigismember(&pending_signals, SIGCONT)
+     ) {
+    sigprocmask(SIG_SETMASK, sigmask, &orig_sigmask);
+    sigprocmask(SIG_SETMASK, &orig_sigmask, NULL);
+    errno = EINTR;
+    return -1;
+  }
+
+  /* timeout は使わない */
+  sigprocmask(SIG_SETMASK, sigmask, &orig_sigmask);
+  ret = select(n, readfds, writefds, exceptfds, NULL);
+  sigprocmask(SIG_SETMASK, &orig_sigmask, NULL);
+  return ret;
 }

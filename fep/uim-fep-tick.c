@@ -55,8 +55,8 @@ static void usage(void);
 static void version(void);
 int main(int argc, char **argv)
 {
-  char *buf = malloc(BUFSIZE + 1);
-  char *prev_buf = malloc(BUFSIZE + 1);
+  char buf[BUFSIZE + 1];
+  char prev_buf[BUFSIZE + 1];
   const char *sock_path = NULL;
   int op;
 
