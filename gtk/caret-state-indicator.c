@@ -92,7 +92,8 @@ caret_state_indicator_set_cursor_location(GtkWidget *window, GdkRectangle *curso
 void
 caret_state_indicator_set_timeout(GtkWidget *window, gint timeout)
 {
-  g_timeout_add(timeout, caret_state_indicator_timeout, (gpointer)window);
+  guint tag = g_timeout_add(timeout, caret_state_indicator_timeout, (gpointer)window);
+  g_object_set_data(G_OBJECT(window), "timeout-tag", GINT_TO_POINTER(tag));
 }
 
 static gint
