@@ -144,8 +144,8 @@ void
 caret_state_indicator_set_timeout(GtkWidget *window, gint timeout)
 {
   gint current_time = get_current_time();
-
-  g_timeout_add(timeout, caret_state_indicator_timeout, (gpointer)window);
+  guint tag = g_timeout_add(timeout, caret_state_indicator_timeout, (gpointer)window);
+  g_object_set_data(G_OBJECT(window), "timeout-tag", GINT_TO_POINTER(tag));
   g_object_set_data(G_OBJECT(window), "timeout", GINT_TO_POINTER(timeout));
   g_object_set_data(G_OBJECT(window), "called_time", GINT_TO_POINTER(current_time));
   /* "called_time" stores the time of last calling of this function */
