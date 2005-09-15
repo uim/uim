@@ -34,6 +34,9 @@
 # include "config.h"
 #endif
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -56,6 +59,8 @@
   #define DEFAULT_CANDWIN_PROG	(UIM_LIBEXECDIR "/uim-candwin-qt")
 #elif defined(USE_GTK_CANDWIN) && defined(USE_GTK2)
   #define DEFAULT_CANDWIN_PROG	(UIM_LIBEXECDIR "/uim-candwin-gtk")
+#else
+  #define DEFAULT_CANDWIN_PROG	NULL
 #endif
 
 static FILE *candwin_r, *candwin_w;
