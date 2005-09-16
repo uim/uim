@@ -214,8 +214,6 @@
 	  (set-cdr! (last-pair lst) obj)
 	  lst))))
 
-(define quotient /)	;; / in siod is quotient actually
-
 ;;
 ;; R5RS-like character procedures
 ;;
@@ -225,6 +223,29 @@
     (and (integer? c)
 	 (or (<= c 31)
 	     (= c 127)))))
+
+(define char-upper-case?
+  (lambda (c)
+    (and (integer? c)
+	 (>= c 65)
+	 (<= c 90))))
+
+(define char-lower-case?
+  (lambda (c)
+    (and (integer? c)
+	 (>= c 97)
+	 (<= c 122))))
+
+(define char-alphabetic?
+  (lambda (c)
+    (or (char-upper-case? c)
+	(char-lower-case? c))))
+
+(define char-numeric?
+  (lambda (c)
+    (and (integer? c)
+	 (>= c 48)
+	 (<= c 57))))
 
 (define char-printable?
   (lambda (c)
@@ -256,6 +277,18 @@
   (lambda (c)
     (if (char-numeric? c)
 	(- c 48)
+	c)))
+
+(define char-downcase
+  (lambda (c)
+    (if (char-upper-case? c)
+	(+ c 32)
+	c)))
+
+(define char-upcase
+  (lambda (c)
+    (if (char-lower-case? c)
+	(- c 32)
 	c)))
 
 ;;
