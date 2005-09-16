@@ -45,7 +45,7 @@
  * If *stringp is NULL, strsep returns NULL.
  */
 char *
-uim_strsep(char **stringp, const char *delim)
+strsep(char **stringp, const char *delim)
 {
 	char *s;
 	const char *spanp;
@@ -72,3 +72,12 @@ uim_strsep(char **stringp, const char *delim)
 }
 
 #endif /* !defined(HAVE_STRSEP) */
+
+/*
+ * uim_strsep is needed for keeping libuim's ABI.
+ */
+char *
+uim_strsep(char **stringp, const char *delim)
+{
+  strsep(stringp, delim);
+}

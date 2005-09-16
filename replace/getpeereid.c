@@ -27,7 +27,7 @@
 #if !defined(HAVE_GETPEEREID)
 
 #if defined(SO_PEERCRED)
-static int
+int
 getpeereid(int s, uid_t *euid, gid_t *gid)
 {
 	struct ucred cred;
@@ -105,7 +105,7 @@ getpeereid(int s, uid_t *euid, gid_t *gid)
 	return 0;
 }
 #else
-static int
+int
 getpeereid(int s, uid_t *euid, gid_t *gid)
 {
 	*euid = geteuid();
@@ -116,18 +116,3 @@ getpeereid(int s, uid_t *euid, gid_t *gid)
 #endif /* defined(SO_PEERCRED) */
 
 #endif /* !defined(HAVE_GETPEEREID) */
-int
-uim_helper_check_connection_fd(int fd)
-{
-  uid_t euid;
-  gid_t egid;
-  if (getpeereid(fd, &euid, &egid) < 0) {
-    perror("getpeereid failed");
-    return -1;
-  }
-  if ((euid != 0) && (euid != getuid())) {
-    fprintf(stderr, "uid mismatch\n");
-    return -1;
-  }
-  return 0;
-}

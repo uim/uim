@@ -17,15 +17,15 @@ libuim_la_SOURCES = uim.c uim-scm.c uim-util.c uim-func.c uim-key.c \
 		uim-helper.c uim-helper-client.c \
 		intl.c \
 		uim-ipc.c \
-		getpeereid.c \
 		plugin.c
+#		getpeereid.c
 
-if NEED_SETENV_C
-libuim_la_SOURCES += setenv.c
-endif
-if NEED_STRSEP_C
-libuim_la_SOURCES += strsep.c
-endif
+#if NEED_SETENV_C
+#libuim_la_SOURCES += setenv.c
+#endif
+#if NEED_STRSEP_C
+#libuim_la_SOURCES += strsep.c
+#endif
 
 if COMPAT_TABLE
 libuim_la_SOURCES += uim-table.c
@@ -85,8 +85,8 @@ libuim_skk_la_CPPFLAGS = -I$(top_srcdir)
 
 libuimincludedir =  $(includedir)/uim
 
-libuim_la_LDFLAGS = -version-info 0:1:0 -export-symbols-regex uim.\*
-libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@
+libuim_la_LDFLAGS = -version-info 0:2:0 -export-symbols-regex uim.\*
+libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@ $(top_srcdir)/replace/libreplace.la
 libuim_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DPKGLIBDIR=\"$(pkglibdir)\" \
 		     -DPKGDATADIR=\"$(pkgdatadir)\"
 
@@ -127,11 +127,11 @@ endif
 uim_module_manager_LIBS =
 uim_module_manager_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DUIM_DATADIR=\""$(datadir)/uim"\"
 uim_module_manager_CFLAGS =
-uim_module_manager_LDADD = libuim.la
+uim_module_manager_LDADD = libuim.la $(top_srcdir)/replace/libreplace.la
 uim_module_manager_SOURCES = uim-module-manager.c
-if NEED_SETENV_C
-uim_module_manager_SOURCES += setenv.c
-endif
+#if NEED_SETENV_C
+#uim_module_manager_SOURCES += setenv.c
+#endif
 
 noinst_PROGRAMS = uim-agent
 

@@ -161,3 +161,27 @@ unsetenv(name)
 #endif /* HAVE_UNSETENV */
 
 #endif /* !defined(HAVE_SETENV) || !defined(HAVE_UNSETENV) */
+
+#if 0
+/*
+ * I doubt uim_setenv and uim_unsetenv are really needed. Only libuim and
+ * uim-module-manager uses setenv and unsetenv. I choose linking libreplace.la
+ * to both of them for OSes not having setenv and unsetenv. If setenv and
+ * unsetenv are used in out of the uim, please uncomment.
+ *
+ * In any cases, we have to upgrade minor version of libuim.
+ * -- omote 09/17/2005
+ */
+
+int
+uim_setenv(const char *name, const char *value, const char *rewrite)
+{
+  setenv(name, value, rewrite);
+}
+
+void
+uim_unsetenv(const char *name)
+{
+  unsetenv(name);
+}
+#endif
