@@ -231,6 +231,7 @@ uim_switch_im(uim_context uc, const char *engine)
 
   UIM_EVAL_FSTRING1(uc, "(release-context %d)", uc->id);
   uim_release_preedit_segments(uc);
+  uim_update_preedit_segments(uc);
 
   UIM_EVAL_FSTRING2(uc, "(create-context %d #f '%s)", id, engine);
   if (uc->current_im_name)
