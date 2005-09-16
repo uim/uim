@@ -214,81 +214,7 @@
 	  (set-cdr! (last-pair lst) obj)
 	  lst))))
 
-;; definition of 'else' has been moved into slib.c
-;(define else #t)
-
-;; for eval
-(define interaction-environment
-  (lambda ()
-    ()))
-
-(define boolean?
-  (lambda (x)
-    (or (eq? x #t)
-        (eq? x #f))))
-
-(define integer?
-  (lambda (x)
-    (number? x)))
-
-;; Siod doesn't support char
-(define char?
-  (lambda (x)
-    #f))
-
-(define list?
-  (lambda (x)
-    (or (null? x)
-	(and (pair? x)
-	     (list? (cdr x))))))
-
-(define zero?
-  (lambda (x)
-    (if (integer? x)
-	(= x 0)
-	(error "non-numeric value for zero?"))))
-
-(define positive?
-  (lambda (x)
-    (> x 0)))
-
-(define negative?
-  (lambda (x)
-    (< x 0)))
-
-(define number->string integer->string)
-(define string->number string->integer)
-(define string->symbol intern)
-
-(define map
-  (lambda args
-    (let ((f (car args))
-	  (lists (cdr args)))
-      (if (<= (length lists) 3)  ;; uim's siod accepts up to 3 lists
-	  (apply mapcar args)    ;; faster native processing
-	  (iterate-lists (lambda (state elms)
-			   (if (null? elms)
-			       (cons #t (reverse state))
-			       (let ((mapped (apply f elms)))
-				 (cons #f (cons mapped state)))))
-			 () lists)))))
-
-(define for-each map)
-
 (define quotient /)	;; / in siod is quotient actually
-
-;;(define list-tail
-;;  (lambda (lst n)
-;;    (if (= n 0)
-;;	lst
-;;	(list-tail (cdr lst) (- n 1)))))
-(define list-tail
-  (lambda (lst n)
-    (if (or (< (length lst)
-	       n)
-	    (< n 0))
-	(error "out of range in list-tail")
-	(nthcdr n lst))))
 
 ;;
 ;; R5RS-like character procedures
@@ -299,29 +225,6 @@
     (and (integer? c)
 	 (or (<= c 31)
 	     (= c 127)))))
-
-(define char-upper-case?
-  (lambda (c)
-    (and (integer? c)
-	 (>= c 65)
-	 (<= c 90))))
-
-(define char-lower-case?
-  (lambda (c)
-    (and (integer? c)
-	 (>= c 97)
-	 (<= c 122))))
-
-(define char-alphabetic?
-  (lambda (c)
-    (or (char-upper-case? c)
-	(char-lower-case? c))))
-
-(define char-numeric?
-  (lambda (c)
-    (and (integer? c)
-	 (>= c 48)
-	 (<= c 57))))
 
 (define char-printable?
   (lambda (c)
@@ -353,18 +256,6 @@
   (lambda (c)
     (if (char-numeric? c)
 	(- c 48)
-	c)))
-
-(define char-downcase
-  (lambda (c)
-    (if (char-upper-case? c)
-	(+ c 32)
-	c)))
-
-(define char-upcase
-  (lambda (c)
-    (if (char-lower-case? c)
-	(- c 32)
 	c)))
 
 ;;
@@ -603,18 +494,6 @@
 		     key))
 	    alist))))
 
-
-(define bitwise-and
-  (lambda xs
-    (fold bit-and (bitwise-not 0) xs)))
-
-(define bitwise-ior
-  (lambda xs
-    (fold bit-or 0 xs)))
-
-(define bitwise-xor
-  (lambda xs
-    (fold bit-xor 0 xs)))
 
 ;;
 ;; uim-specific utilities
