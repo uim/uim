@@ -71,8 +71,6 @@ strsep(char **stringp, const char *delim)
 	/* NOTREACHED */
 }
 
-#endif /* !defined(HAVE_STRSEP) */
-
 /*
  * uim_strsep is needed for keeping libuim's ABI.
  */
@@ -81,3 +79,6 @@ uim_strsep(char **stringp, const char *delim)
 {
   strsep(stringp, delim);
 }
+
+#endif /* !defined(HAVE_STRSEP) */
+
