@@ -86,7 +86,7 @@ libuim_skk_la_CPPFLAGS = -I$(top_srcdir)
 libuimincludedir =  $(includedir)/uim
 
 libuim_la_LDFLAGS = -version-info 0:2:0 -export-symbols-regex uim.\*
-libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@ $(top_srcdir)/replace/libreplace.la
+libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@ $(top_builddir)/replace/libreplace.la
 libuim_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DPKGLIBDIR=\"$(pkglibdir)\" \
 		     -DPKGDATADIR=\"$(pkgdatadir)\"
 
@@ -127,7 +127,7 @@ endif
 uim_module_manager_LIBS =
 uim_module_manager_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DUIM_DATADIR=\""$(datadir)/uim"\"
 uim_module_manager_CFLAGS =
-uim_module_manager_LDADD = libuim.la $(top_srcdir)/replace/libreplace.la
+uim_module_manager_LDADD = libuim.la $(top_builddir)/replace/libreplace.la
 uim_module_manager_SOURCES = uim-module-manager.c
 #if NEED_SETENV_C
 #uim_module_manager_SOURCES += setenv.c
