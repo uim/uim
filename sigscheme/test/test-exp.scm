@@ -220,7 +220,7 @@
 (assert-false "values test9" (null?   (values)))
 
 ; not asserted, just make sure we don't blow up
-(values)
+(write (values))
 (begin (values 1 2 3) 'ignore)
 
 

@@ -17,7 +17,7 @@ Requirements and bugs:
   - [uim] Implement string-escape as same as trunk
 
 * Fix broken 'values' handlings
-  - sscm> (values) => SEGV
+  - (write (values)) => SEGV
   - (number? (values 5 6)) => error
 
 * Make ScmOp_apply() properly tail recursive
