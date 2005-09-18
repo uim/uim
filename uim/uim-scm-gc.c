@@ -39,11 +39,11 @@
 void
 uim_scm_gc_protect(uim_lisp *location)
 {
-  gc_protect((LISP *)location);
+  siod_gc_protect((LISP *)location);
 }
 
 uim_lisp *
-uim_scm_gc_protect_stack(uim_lisp *stack_start)
+uim_scm_gc_protect_stack(void)
 {
   LISP stack_start;
 

@@ -213,11 +213,7 @@ static LISP strcons (long length, const char *data);
 static LISP equal (LISP, LISP);
 static void set_fatal_exit_hook (void (*fcn) (void));
 static LISP intern (LISP x);
-static void gc_protect (LISP * location);
-#if (NESTED_REPL_C_STRING)
-static void siod_gc_protect_stack(LISP *stack_start);
-static void siod_gc_unprotect_stack(LISP *stack_start);
-#else
+#if !(NESTED_REPL_C_STRING)
 static int siod_repl_c_string_entered (void);
 #endif
 static long repl_c_string (const char *, long want_init, long want_print);
@@ -1581,7 +1577,7 @@ nconc (LISP a, LISP b)
 }
 
 #if (NESTED_REPL_C_STRING)
-static void
+void
 siod_gc_protect_stack(LISP *stack_start)
 {
   if (!stack_start_ptr) {
@@ -1590,7 +1586,7 @@ siod_gc_protect_stack(LISP *stack_start)
   }
 }
 
-static void
+void
 siod_gc_unprotect_stack(LISP *stack_start)
 {
   if (stack_start_ptr == stack_start)
@@ -2278,8 +2274,8 @@ gc_protect_n (LISP * location, long n)
   protected_registers = reg;
 }
 
-static void
-gc_protect (LISP * location)
+void
+siod_gc_protect (LISP * location)
 {
   gc_protect_n (location, 1);
 }
