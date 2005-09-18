@@ -215,9 +215,8 @@
 
 (assert-true  "values test5" (number? (values 5)))
 (assert-false "values test6" (number? (values 'five)))
-(assert-true  "values test7" (number? (values 5 6)))
-(assert-false "values test8" (number? (values)))
-(assert-false "values test9" (null?   (values)))
+(assert-false "values test7" (number? (values)))
+(assert-false "values test8" (null?   (values)))
 
 ; not asserted, just make sure we don't blow up
 (write (values))
