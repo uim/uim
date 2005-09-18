@@ -12,8 +12,9 @@ uim_plugindir = $(pkglibdir)/plugin
 pkginclude_HEADERS = uim.h uim-util.h uim-helper.h uim-im-switcher.h \
 		uim-scm.h uim-custom.h plugin.h
 
-libuim_la_SOURCES = uim.c uim-scm.c uim-util.c uim-func.c uim-key.c \
-		siod.h context.h gettext.h uim-encoding.h\
+libuim_la_SOURCES = uim.c uim-util.c uim-func.c uim-key.c \
+		context.h gettext.h uim-encoding.h\
+		siod.h  uim-scm.c uim-scm-gc.c \
 		uim-helper.c uim-helper-client.c \
 		intl.c \
 		uim-ipc.c \

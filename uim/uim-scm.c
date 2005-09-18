@@ -179,6 +179,7 @@ uim_scm_make_func_ptr(uim_func_ptr func_ptr)
   return (uim_lisp)funcptrcons(func_ptr);
 }
 
+#if !UIM_SCM_GCC4_READY_GC
 void
 uim_scm_gc_protect(uim_lisp *location)
 {
@@ -196,6 +197,7 @@ uim_scm_gc_unprotect_stack(uim_lisp *stack_start)
 {
   siod_gc_unprotect_stack((LISP *)stack_start);
 }
+#endif /* UIM_SCM_GCC4_READY_GC */
 
 uim_bool
 uim_scm_is_alive(void)
