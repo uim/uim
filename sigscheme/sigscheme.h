@@ -139,7 +139,7 @@ int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
     SCM_GC_CALL_PROTECTED_FUNC_INTERNAL(ret = , func, args)
 
 #define SCM_GC_CALL_PROTECTED_VOID_FUNC(func, args)                          \
-    SCM_GC_CALL_PROTECTED_FUNC_INTERNAL(, func, args)
+    SCM_GC_CALL_PROTECTED_FUNC_INTERNAL((void), func, args)
 
 #define SCM_GC_CALL_PROTECTED_FUNC_INTERNAL(exp_ret, func, args)             \
     do {                                                                     \
