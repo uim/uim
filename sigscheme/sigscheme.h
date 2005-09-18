@@ -150,7 +150,6 @@ int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
                   SigScm_GC_EnsureUninlinedFunc((ScmCFunc)&func);            \
         exp_ret (*fp)args;                                                   \
         SigScm_GC_UnprotectStack(stack_start);                               \
-                                                                             \
     } while (/* CONSTCOND */ 0)
 
 #endif /* SCM_GCC4_READY_GC */

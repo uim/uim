@@ -249,11 +249,11 @@ eval_loop:
         goto eval_done;
 
     /*====================================================================
-      Evaluating Expression
+      Evaluating a list form
     ====================================================================*/
     case ScmCons:
         /*============================================================
-          Evaluating CAR
+          Evaluating car of the form (syntax or procedure)
         ============================================================*/
         tmp = CAR(obj);
         switch (SCM_TYPE(tmp)) {
@@ -274,9 +274,9 @@ eval_loop:
             break;
         }
 
-        /*============================================================
-          Evaluating the rest of the List by the type of CAR
-        ============================================================*/
+        /*===============================================================
+          Evaluating the rest of the form according to type of the car
+        ===============================================================*/
         switch (SCM_TYPE(tmp)) {
         case ScmFunc:
             /*
@@ -635,7 +635,7 @@ ScmObj symbol_value(ScmObj var, ScmObj env)
     return val;
 }
 
-ScmObj map_eval(ScmObj args, ScmObj env)
+static ScmObj map_eval(ScmObj args, ScmObj env)
 {
     ScmObj result  = SCM_NULL;
     ScmObj tail    = SCM_NULL;
