@@ -115,8 +115,6 @@ uim_scm_eval(uim_lisp obj);
 #ifdef UIM_SCM_EXTENDED_API
 uim_lisp
 uim_scm_apply(uim_lisp proc, uim_lisp args);
-uim_lisp
-uim_scm_quote(uim_lisp obj);
 #endif  /* UIM_SCM_EXTENDED_API */
 
 uim_lisp
@@ -217,19 +215,6 @@ uim_lisp
 uim_scm_length(uim_lisp lst);
 uim_lisp
 uim_scm_reverse(uim_lisp lst);
-#ifdef UIM_SCM_EXTENDED_API
-uim_lisp
-uim_scm_list1(uim_lisp elm1);
-uim_lisp
-uim_scm_list2(uim_lisp elm1, uim_lisp elm2);
-uim_lisp
-uim_scm_list3(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3);
-uim_lisp
-uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4);
-uim_lisp
-uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
-              uim_lisp elm5);
-#endif  /* UIM_SCM_EXTENDED_API */
 
 
 #ifdef __cplusplus

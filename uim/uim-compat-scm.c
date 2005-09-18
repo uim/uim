@@ -171,10 +171,60 @@ uim_scm_qintern_c_str(const char *str)
 }
 
 uim_lisp
+uim_scm_quote(uim_lisp obj)
+{
+  /* TODO : fixme Kazuki Ohta <mover@hct.zaq.ne.jp> */
+  return (uim_lisp)Scm_NewCons(SCM_QUOTE,
+			       Scm_NewCons((ScmObj)obj,
+					   SCM_NULL));
+}
+
+uim_lisp
 uim_scm_nth(uim_lisp n, uim_lisp lst)
 {
   return (uim_lisp)ScmOp_list_ref((ScmObj)lst,
 				  (ScmObj)n);
+}
+
+uim_lisp
+uim_scm_list1(uim_lisp elm1)
+{
+  uim_lisp lst;
+  lst = uim_scm_cons(elm1, uim_scm_null_list());
+  return lst;
+}
+
+uim_lisp
+uim_scm_list2(uim_lisp elm1, uim_lisp elm2)
+{
+  uim_lisp lst;
+  lst = uim_scm_cons(elm1, uim_scm_cons(elm2, uim_scm_null_list()));
+  return lst;
+}
+
+uim_lisp
+uim_scm_list3(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3)
+{
+  uim_lisp lst;
+  lst = uim_scm_cons(elm1, uim_scm_cons(elm2, uim_scm_cons(elm3, uim_scm_null_list())));
+  return lst;
+}
+
+uim_lisp
+uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4)
+{
+  uim_lisp lst;
+  lst = uim_scm_cons(elm1, uim_scm_list3(elm2, elm3, elm4));
+  return lst;
+}
+
+uim_lisp
+uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
+              uim_lisp elm5)
+{
+  uim_lisp lst;
+  lst = uim_scm_cons(elm1, uim_scm_cons(elm2, uim_scm_list3(elm3, elm4, elm5)));
+  return lst;
 }
 
 /* Is this function used from somewhere? I think this function could be removed. */

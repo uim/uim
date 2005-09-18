@@ -88,7 +88,20 @@ uim_lisp
 uim_scm_qintern_c_str(const char *str);
 
 uim_lisp
+uim_scm_quote(uim_lisp obj);
+uim_lisp
 uim_scm_nth(uim_lisp n, uim_lisp lst);
+uim_lisp
+uim_scm_list1(uim_lisp elm1);
+uim_lisp
+uim_scm_list2(uim_lisp elm1, uim_lisp elm2);
+uim_lisp
+uim_scm_list3(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3);
+uim_lisp
+uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4);
+uim_lisp
+uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
+              uim_lisp elm5);
 
 uim_lisp
 uim_scm_nreverse(uim_lisp cell);
