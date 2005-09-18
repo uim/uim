@@ -132,6 +132,15 @@ static uim_bool for_each_primary_groups(uim_bool (*func)(const char *));
 static uim_bool uim_custom_load_group(const char *group);
 static uim_bool uim_custom_save_group(const char *group);
 
+#if UIM_SCM_GCC4_READY_GC
+static UIM_SCM_GC_PROTECTED_FUNC_DECL(char *, literalize_string_internal,
+				      (const char *str));
+static UIM_SCM_GC_PROTECTED_FUNC_DECL(uim_bool, custom_cb_add_internal,
+				      (const char *hook, const char *validator,
+				       const char *custom_sym, void *ptr,
+				       const char *gate_func, void (*cb)(void)));
+#endif
+
 static const char str_list_arg[] = "uim-custom-c-str-list-arg";
 static const char custom_subdir[] = "customs";
 static const char custom_msg_tmpl[] = "prop_update_custom\n%s\n%s\n";
@@ -141,16 +150,36 @@ static uim_lisp return_val;
 
 static char *
 literalize_string(const char *str)
+#if UIM_SCM_GCC4_READY_GC
 {
+  char *ret;
+
+  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, literalize_string_internal, (str));
+
+  return ret;
+}
+
+static char *
+literalize_string_internal(const char *str)
+#endif
+{
+#if !UIM_SCM_GCC4_READY_GC
   uim_lisp stack_start;
+#endif
   uim_lisp form;
   char *escaped;
 
+#if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_protect_stack(&stack_start);
+#endif
+
   form = uim_scm_list2(uim_scm_make_symbol("string-escape"),
 		       uim_scm_make_str(str));
   escaped = uim_scm_c_str(uim_scm_eval(form));
+
+#if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_unprotect_stack(&stack_start);
+#endif
 
   return escaped;
 }
@@ -1372,12 +1401,33 @@ static uim_bool
 custom_cb_add(const char *hook, const char *validator,
 	      const char *custom_sym, void *ptr,
 	      const char *gate_func, void (*cb)(void))
+#if UIM_SCM_GCC4_READY_GC
+{
+  uim_bool ret;
+
+  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, custom_cb_add_internal,
+				 (hook, validator, custom_sym, ptr, gate_func,
+				  cb));
+
+  return ret;
+}
+
+static uim_bool
+custom_cb_add_internal(const char *hook, const char *validator,
+		       const char *custom_sym, void *ptr,
+		       const char *gate_func, void (*cb)(void))
+#endif
 {
   uim_bool succeeded;
+#if !UIM_SCM_GCC4_READY_GC
   uim_lisp stack_start;
+#endif
   uim_lisp form;
 
+#if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_protect_stack(&stack_start);
+#endif
+
   form = uim_scm_list5(uim_scm_make_symbol(validator),
 		       uim_scm_quote(uim_scm_make_symbol(custom_sym)),
 		       uim_scm_make_ptr(ptr),
@@ -1386,7 +1436,10 @@ custom_cb_add(const char *hook, const char *validator,
   form = uim_scm_cons(uim_scm_quote(uim_scm_make_symbol(hook)), form);
   form = uim_scm_cons(uim_scm_make_symbol("custom-register-cb"), form);
   succeeded = uim_scm_c_bool(uim_scm_eval(form));
+
+#if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_unprotect_stack(&stack_start);
+#endif
 
   return succeeded;
 }

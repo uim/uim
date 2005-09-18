@@ -59,7 +59,7 @@ extern "C" {
 #endif
 
 
-#define UIM_SCM_GCC4_READY_GC 0
+#define UIM_SCM_GCC4_READY_GC 1
 
 /*
   uim companion tools should treat lisp object as opaque. struct
