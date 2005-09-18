@@ -241,6 +241,8 @@ static void siod_set_lib_path(const char *);
 
 /* macros */
 
+#define gc_protect siod_gc_protect
+
 #define INTERRUPT_CHECK()
 
 #define GETC_FCN(x) (*((*x).getc_fcn))((*x).cb_argument)

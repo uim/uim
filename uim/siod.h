@@ -215,8 +215,6 @@ typedef void (*C_FUNC) (void);
 
 #define TKBUFFERN 5120
 
-#define gc_protect siod_gc_protect
-
 void siod_gc_protect (LISP * location);
 #if (NESTED_REPL_C_STRING)
 void siod_gc_protect_stack(LISP *stack_start);
