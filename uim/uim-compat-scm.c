@@ -228,6 +228,12 @@ uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
 }
 
 /* Is this function used from somewhere? I think this function could be removed. */
+/*
+ * Not only this function but all functions of this file should be
+ * removed. See the header comment of uim-compat-scm.h. Remove these
+ * two comments if you have been satisfied by this answer.
+ *   -- YamaKen 2005-09-18
+ */
 uim_lisp
 uim_scm_nreverse(uim_lisp cell)
 {
