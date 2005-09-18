@@ -16,6 +16,10 @@ Requirements and bugs:
     API for such purpose is existing, use it
   - [uim] Implement string-escape as same as trunk
 
+* Fix broken 'values' handlings
+  - sscm> (values) => SEGV
+  - (number? (values 5 6)) => error
+
 * Make ScmOp_apply() properly tail recursive
   - Add tests for proper tail recursion with 'apply', 'call-with-values' and
     'receive' to test-tail-rec.scm
@@ -35,6 +39,8 @@ Extensions:
 
 ==============================================================================
 Performance improvements:
+
+* Suppress cons cell consumption of 'values' by ValueCons
 
 * Object representation compaction ([Anthy-dev 2353], [Anthy-dev 2360])
 
