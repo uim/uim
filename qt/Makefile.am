@@ -1,9 +1,6 @@
 EXTRA_DIST = pref-keyeditformbase.ui  pref-olisteditformbase.ui bushu.t
 
 if QT
-
-INCLUDES    = -I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/qt -I$(top_builddir)/qt
-
 QT_CXXFLAGS = $(UIM_QT_CXXFLAGS)
 QT_LDFLAGS  = $(UIM_QT_LDFLAGS)
 

@@ -28,31 +28,47 @@
   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
   SUCH DAMAGE.
+
 */
 
-#ifndef _util_h_included_
-#define _util_h_included_
+#ifndef _os_dep_h_included_
+#define _os_dep_h_included_
 
-// fd dispatch
-#define READ_OK 1
-#define WRITE_OK 2
-void add_fd_watch(int fd, int mask, void (*fn)(int, int));
-void remove_current_fd_watch(int fd);
-
-// misc
-int pad4(int);
-
-// debug functions
-void hex_dump(unsigned char *buf, int len);
-
-// misc replacement functions
-#ifndef HAV_ASPRINTF
-int asprintf(char **ptr, const char *format, ...);
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-#ifndef HAVE_VASPRINTF
-#include <stdarg.h>
-int vasprintf(char **ptr, const char *fmt, va_list ap);
+#include <sys/types.h>
+
+#ifndef HAVE_GETPEEREID
+int getpeereid(int , uid_t *, gid_t *);
 #endif
 
+/*
+ * I doubt uim_setenv and uim_unsetenv are really needed. Only libuim and
+ * uim-module-manager uses setenv and unsetenv. I choose linking libreplace.la
+ * to both of them for OSes not having setenv and unsetenv. If setenv and
+ * unsetenv are used in out of the uim, please uncomment.
+ *
+ * In any cases, we have to upgrade minor version of libuim.
+ * -- omote 09/17/2005
+ */
+#ifndef HAVE_SETENV
+/* #define setenv	uim_setenv */
+int setenv(const char *, const char *, int);
+#endif
+
+#ifndef HAVE_UNSETENV
+/* #define unsetenv	uim_unsetenv */
+void unsetenv(const char *);
+#endif
+
+#ifndef HAVE_STRSEP
+#define strsep	uim_strsep
+char *strsep(char **stringp, const char *delim);
+#endif
+
+#ifdef __cplusplus
+}
+#endif
 #endif

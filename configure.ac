@@ -766,6 +766,13 @@ if test x$enable_compat_table = xyes; then
             [Enable obsolete table API for hk.scm (broken)])
 fi
 
+AH_BOTTOM([/* Include os specific header. */
+#include "os_dep.h"])
+
+# Add include path
+INCLUDES='-I$(top_srcdir)/replace -I$(top_srcdir)/uim'
+AC_SUBST(INCLUDES)
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
 AC_C_CONST

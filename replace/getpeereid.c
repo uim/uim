@@ -21,8 +21,6 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/param.h>
-#include "uim.h"
-#include "uim-helper.h"
 
 #if !defined(HAVE_GETPEEREID)
 

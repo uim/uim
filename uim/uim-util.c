@@ -46,13 +46,6 @@
 #include "uim-compat-scm.h"
 #include "uim-util.h"
 
-#ifndef HAVE_SETENV
-int setenv(const char *, const char *, int);
-#endif
-#ifndef HAVE_UNSETENV
-void unsetenv(const char *);
-#endif
-
 extern char *uim_return_str;
 
 /* define constants as procedure to ensure unmodifiable */

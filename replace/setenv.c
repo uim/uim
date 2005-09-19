@@ -34,12 +34,6 @@
 #if !defined(HAVE_SETENV) || !defined(HAVE_UNSETENV)
 
 static char *__findenv(const char *name, int *offset);
-#ifndef HAVE_SETENV
-int setenv(const char *, const char *, int);
-#endif
-#ifndef HAVE_UNSETENV
-void unsetenv(const char *);
-#endif
 extern char **environ;
 
 /*
@@ -161,27 +155,3 @@ unsetenv(name)
 #endif /* HAVE_UNSETENV */
 
 #endif /* !defined(HAVE_SETENV) || !defined(HAVE_UNSETENV) */
-
-#if 0
-/*
- * I doubt uim_setenv and uim_unsetenv are really needed. Only libuim and
- * uim-module-manager uses setenv and unsetenv. I choose linking libreplace.la
- * to both of them for OSes not having setenv and unsetenv. If setenv and
- * unsetenv are used in out of the uim, please uncomment.
- *
- * In any cases, we have to upgrade minor version of libuim.
- * -- omote 09/17/2005
- */
-
-int
-uim_setenv(const char *name, const char *value, const char *rewrite)
-{
-  setenv(name, value, rewrite);
-}
-
-void
-uim_unsetenv(const char *name)
-{
-  unsetenv(name);
-}
-#endif
