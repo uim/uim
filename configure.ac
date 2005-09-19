@@ -619,45 +619,23 @@ if test x$use_qt = xyes ; then
     if test -x "$QTDIR/bin/moc"; then
       HOST_MOC="$QTDIR/bin/moc"
     else
-      AC_CHECK_PROGS(HOST_MOC, moc, "")
+      AC_CHECK_PROGS(HOST_MOC, moc-qt3 moc, "")
     fi
     if test -z "$HOST_MOC"; then
       AC_MSG_ERROR([no acceptable moc( meta object compiler ) found])
     fi
     MOC=$HOST_MOC
 
-    # Check For moc-qt3
-    if test -x "$QTDIR/bin/moc-qt3"; then
-      HOST_MOC_QT3="$QTDIR/bin/moc-qt3"
-    else
-      AC_CHECK_PROGS(HOST_MOC_QT3, moc-qt3, "")
-    fi
-    if test -z "$HOST_MOC_QT3"; then
-      AC_MSG_ERROR([No acceptable moc (meta object compiler) found])
-    fi
-    MOC_QT3=$HOST_MOC_QT3
-
     # Check For UIC
     if test -x "$QTDIR/bin/uic"; then
       HOST_UIC="$QTDIR/bin/uic"
     else
-      AC_CHECK_PROGS(HOST_UIC, uic, "")
+      AC_CHECK_PROGS(HOST_UIC, uic-qt3 uic, "")
     fi
     if test -z "$HOST_UIC"; then
       AC_MSG_ERROR([no acceptable uic( user interface compiler ) found])
     fi
     UIC=$HOST_UIC
-
-    # Check for uic-qt3
-    if test -x "$QTDIR/bin/uic-qt3"; then
-      HOST_UIC_QT3="$QTDIR/bin/uic-qt3"
-    else
-      AC_CHECK_PROGS(HOST_UIC_QT3, uic-qt3, "")
-    fi
-    if test -z "$HOST_UIC_QT3"; then
-      AC_MSG_ERROR([No acceptable uic-qt3 (user interface compiler) found])
-    fi
-    UIC_QT3=$HOST_UIC_QT3
 
     # GUESS plugins dir for immodule installation
     AC_MSG_CHECKING(for qt-immodule plugins dir)
@@ -718,9 +696,7 @@ if test x$use_qt = xyes ; then
     UIM_QT_CXXFLAGS=$QT_CXXFLAGS
 
     AC_SUBST(MOC)
-    AC_SUBST(MOC_QT3)
     AC_SUBST(UIC)
-    AC_SUBST(UIC_QT3)
     AC_SUBST(UIM_QT_CXXFLAGS)
     AC_SUBST(UIM_QT_LDFLAGS)
 fi
