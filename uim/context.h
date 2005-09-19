@@ -129,8 +129,8 @@ struct uim_context_ {
   #define UIM_LOCK_MUTEX(mtx)    pthread_mutex_lock(&mtx)
   #define UIM_UNLOCK_MUTEX(mtx)  pthread_mutex_unlock(&mtx)
 #else
-  #define UIM_NEW_MUTEX(mtx)
-  #define UIM_NEW_MUTEX_STATIC(mtx)
+  #define UIM_DEFINE_MUTEX(mtx)
+  #define UIM_DEFINE_MUTEX_STATIC(mtx)
   #define UIM_LOCK_MUTEX(mtx)
   #define UIM_UNLOCK_MUTEX(mtx)
 #endif /* HAVE_PTHREAD_H */
