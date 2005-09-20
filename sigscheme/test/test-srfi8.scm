@@ -1,18 +1,31 @@
-(load "test/unittest.scm")
+(load "./test/unittest.scm")
 
-(assert "receive test1"
-	(receive (a b c)
-		 (values #f #f #t)
-		 (and (not a) (not b) c)))
-(assert-equal? "receive test2"
+(receive (a b c)
+	 (values #f #t '())
+	 (assert-equal? "receive test 1" #f a)
+	 (assert-equal? "receive test 2" #t b)
+	 (assert-equal? "receive test 3" '() c))
+
+(assert-equal? "receive test4"
                5
 	       (receive (a b) (values 4 5)
                  b))
-(assert-true   "receive test3"
-	       (receive args (values)
-		 (null? args)))
-(assert-true   "receive test4"
-	       (receive () (values)
-                 #t))
+
+(assert-true "receive test5"
+	     (receive args (values)
+		      (null? args)))
+
+(assert-true "receive test6"
+	     (receive () (values)
+		      #t))
+
+(define var 'global)
+(receive (a b c var)
+	 (values 'a 6 var 'local)
+	 (assert-equal? "receive test 7" 'a a)
+	 (assert-equal? "receive test 8" 6 b)
+	 (assert-equal? "receive test 9" 'global c)
+	 (assert-equal? "receive test 10" 'local var))
+
 
 (total-report)
