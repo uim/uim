@@ -49,13 +49,13 @@ uim_scm_gc_protect_stack(void)
 
   siod_gc_protect_stack(&stack_start);
 
-  return (uim_lisp *)stack_start;
+  return (uim_lisp *)&stack_start;
 }
 
 void
 uim_scm_gc_unprotect_stack(uim_lisp *stack_start)
 {
-  siod_gc_unprotect_stack((LISP *)&stack_start);
+  siod_gc_unprotect_stack((LISP *)stack_start);
 }
 
 uim_func_ptr
