@@ -103,7 +103,7 @@ static write_ss_context *write_ss_ctx; /* misc info in priting shared structures
 static void print_ScmObj_internal(FILE *f, ScmObj obj, enum OutputType otype);
 static void print_char(FILE *f, ScmObj obj, enum OutputType otype);
 static void print_string(FILE *f, ScmObj obj, enum OutputType otype);
-static void print_list(FILE *f, ScmObj list, enum OutputType otype);
+static void print_list(FILE *f, ScmObj lst, enum OutputType otype);
 static void print_vector(FILE *f, ScmObj vec, enum OutputType otype);
 static void print_port(FILE *f, ScmObj port, enum OutputType otype);
 static void print_etc(FILE *f, ScmObj obj, enum  OutputType otype);
@@ -287,7 +287,7 @@ static void print_string(FILE *f, ScmObj obj, enum OutputType otype)
     }
 }
 
-static void print_list(FILE *f, ScmObj list, enum OutputType otype)
+static void print_list(FILE *f, ScmObj lst, enum OutputType otype)
 {
     ScmObj car = SCM_NULL;
 #if SCM_USE_SRFI38
@@ -299,11 +299,16 @@ static void print_list(FILE *f, ScmObj list, enum OutputType otype)
     /* print left parenthesis */
     fprintf(f, "(");
 
+    if (NULLP(lst)) {
+        fprintf(f, ")");
+        return;
+    }
+
     for (;;) {
-        car = CAR(list);
+        car = CAR(lst);
         print_ScmObj_internal(f, car, otype);
-        list = CDR(list);
-        if (!CONSP(list))
+        lst = CDR(lst);
+        if (!CONSP(lst))
             break;
         fputs(" ", f);
 
@@ -311,7 +316,7 @@ static void print_list(FILE *f, ScmObj list, enum OutputType otype)
         /* See if the next pair is shared.  Note that the case
          * where the first pair is shared is handled in
          * print_ScmObj_internal(). */
-        index = get_shared_index(list);
+        index = get_shared_index(lst);
         if (index > 0) {
             /* defined datum */
             fprintf(f, ". #%d#", index);
@@ -327,10 +332,10 @@ static void print_list(FILE *f, ScmObj list, enum OutputType otype)
     }
 
     /* last item */
-    if (!NULLP(list)) {
+    if (!NULLP(lst)) {
         fputs(" . ", f);
         /* Callee takes care of shared data. */
-        print_ScmObj_internal(f, list, otype);
+        print_ScmObj_internal(f, lst, otype);
     }
 
 #if SCM_USE_SRFI38
