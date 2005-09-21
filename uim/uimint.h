@@ -120,22 +120,6 @@ struct uim_context_ {
 };
 
 
-#ifdef HAVE_PTHREAD_H
-#include <pthread.h>
-  #define UIM_DEFINE_MUTEX(mtx)                                              \
-           pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER
-  #define UIM_DEFINE_MUTEX_STATIC(mtx)                                       \
-    static pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER
-  #define UIM_LOCK_MUTEX(mtx)    pthread_mutex_lock(&mtx)
-  #define UIM_UNLOCK_MUTEX(mtx)  pthread_mutex_unlock(&mtx)
-#else
-  #define UIM_DEFINE_MUTEX(mtx)
-  #define UIM_DEFINE_MUTEX_STATIC(mtx)
-  #define UIM_LOCK_MUTEX(mtx)
-  #define UIM_UNLOCK_MUTEX(mtx)
-#endif /* HAVE_PTHREAD_H */
-
-
 #ifdef ENABLE_NLS
 #define UIM_PREPARE_SAVING_TEXTDOMAIN_CODESET() \
     char *enc, *orig_encoding = NULL; \
