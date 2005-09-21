@@ -332,6 +332,32 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterFuncEvaledList("cons*"          , ScmOp_SRFI1_cons_star);
     Scm_RegisterFuncEvaledList("make-list"      , ScmOp_SRFI1_make_list);
     Scm_RegisterFuncEvaledList("list-tabulate"  , ScmOp_SRFI1_list_tabulate);
+    Scm_RegisterFunc1("proper-list?"         , ScmOp_SRFI1_proper_listp);
+    Scm_RegisterFunc1("circular-list?"       , ScmOp_SRFI1_circular_listp);
+    Scm_RegisterFunc1("dotted-list?"         , ScmOp_SRFI1_dotted_listp);
+    Scm_RegisterFunc1("not-pair?"            , ScmOp_SRFI1_not_pairp);
+    Scm_RegisterFunc1("null-list?"           , ScmOp_SRFI1_null_listp);
+    Scm_RegisterFuncEvaledList("list="       , ScmOp_SRFI1_listequal); 
+    Scm_RegisterFunc1("first"                , ScmOp_SRFI1_first);
+    Scm_RegisterFunc1("second"               , ScmOp_SRFI1_second);
+    Scm_RegisterFunc1("third"                , ScmOp_SRFI1_third);
+    Scm_RegisterFunc1("fourth"               , ScmOp_SRFI1_fourth);
+    Scm_RegisterFunc1("fifth"                , ScmOp_SRFI1_fifth);
+    Scm_RegisterFunc1("sixth"                , ScmOp_SRFI1_sixth);
+    Scm_RegisterFunc1("seventh"              , ScmOp_SRFI1_seventh);
+    Scm_RegisterFunc1("eighth"               , ScmOp_SRFI1_eighth);
+    Scm_RegisterFunc1("ninth"                , ScmOp_SRFI1_ninth);
+    Scm_RegisterFunc1("tenth"                , ScmOp_SRFI1_tenth);      
+    Scm_RegisterFunc2("take"                 , ScmOp_SRFI1_take);
+    Scm_RegisterFunc2("drop"                 , ScmOp_SRFI1_drop);
+    Scm_RegisterFunc2("take-right"           , ScmOp_SRFI1_take_right);
+    Scm_RegisterFunc2("drop-right"           , ScmOp_SRFI1_drop_right);
+    Scm_RegisterFunc2("take!"                , ScmOp_SRFI1_take_d);
+    Scm_RegisterFunc2("drop-right!"          , ScmOp_SRFI1_drop_right_d);
+    Scm_RegisterFunc2("split-at"             , ScmOp_SRFI1_split_at);
+    Scm_RegisterFunc2("split-at!"            , ScmOp_SRFI1_split_at_d);
+    Scm_RegisterFunc1("last"                 , ScmOp_SRFI1_last);
+    Scm_RegisterFunc1("last-pair"            , ScmOp_SRFI1_last_pair);
 #endif
 #if SCM_USE_SRFI8
     /*=======================================================================

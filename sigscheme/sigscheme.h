@@ -438,6 +438,33 @@ ScmObj ScmOp_SRFI1_list_tabulate(ScmObj arg, ScmObj env);
 ScmObj ScmOp_SRFI1_list_copy(ScmObj list);
 ScmObj ScmOp_SRFI1_circular_list(ScmObj list, ScmObj env);
 ScmObj ScmOp_SRFI1_iota(ScmObj args, ScmObj env);
+ScmObj ScmOp_SRFI1_proper_listp(ScmObj lst);
+ScmObj ScmOp_SRFI1_circular_listp(ScmObj lst);
+ScmObj ScmOp_SRFI1_dotted_listp(ScmObj lst);
+ScmObj ScmOp_SRFI1_not_pairp(ScmObj pair);
+ScmObj ScmOp_SRFI1_null_listp(ScmObj lst);
+ScmObj ScmOp_SRFI1_listequal(ScmObj args, ScmObj env);
+ScmObj ScmOp_SRFI1_first(ScmObj lst);
+ScmObj ScmOp_SRFI1_second(ScmObj lst);
+ScmObj ScmOp_SRFI1_third(ScmObj lst);
+ScmObj ScmOp_SRFI1_fourth(ScmObj lst);
+ScmObj ScmOp_SRFI1_fifth(ScmObj lst);
+ScmObj ScmOp_SRFI1_sixth(ScmObj lst);
+ScmObj ScmOp_SRFI1_seventh(ScmObj lst);
+ScmObj ScmOp_SRFI1_eighth(ScmObj lst);
+ScmObj ScmOp_SRFI1_ninth(ScmObj lst);
+ScmObj ScmOp_SRFI1_tenth(ScmObj lst);
+ScmObj ScmOp_SRFI1_carpluscdr(ScmObj lst);
+ScmObj ScmOp_SRFI1_take(ScmObj lst, ScmObj scm_idx);
+ScmObj ScmOp_SRFI1_drop(ScmObj lst, ScmObj scm_idx);
+ScmObj ScmOp_SRFI1_take_right(ScmObj lst, ScmObj scm_elem);
+ScmObj ScmOp_SRFI1_drop_right(ScmObj lst, ScmObj scm_elem);
+ScmObj ScmOp_SRFI1_take_d(ScmObj lst, ScmObj scm_idx);
+ScmObj ScmOp_SRFI1_drop_right_d(ScmObj lst, ScmObj scm_idx);
+ScmObj ScmOp_SRFI1_split_at(ScmObj lst, ScmObj idx);
+ScmObj ScmOp_SRFI1_split_at_d(ScmObj lst, ScmObj idx);
+ScmObj ScmOp_SRFI1_last(ScmObj lst);
+ScmObj ScmOp_SRFI1_last_pair(ScmObj lst);
 #endif
 #if SCM_USE_SRFI8
 /* operations-srfi8.c */
