@@ -42,7 +42,7 @@
 #include "uim-im-switcher.h"
 #include "uim-scm.h"
 #include "uim-custom.h"
-#include "context.h"
+#include "uimint.h"
 #include "gettext.h"
 #include "uim-util.h"
 

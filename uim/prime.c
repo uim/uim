@@ -46,7 +46,7 @@
 #include "config.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
-#include "context.h"
+#include "uimint.h"
 #include "plugin.h"
 #include "uim-helper.h"
 

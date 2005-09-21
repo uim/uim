@@ -52,7 +52,7 @@
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "uim-custom.h"
-#include "context.h"
+#include "uimint.h"
 #include "uim-helper.h"
 
 #if 0

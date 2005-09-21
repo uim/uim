@@ -31,7 +31,7 @@
 
 */
 
-#include "context.h"
+#include "uimint.h"
 
 static FILE *spell_r = NULL, *spell_w = NULL;
 static int spell_pid = 0;

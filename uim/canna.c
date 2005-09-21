@@ -40,7 +40,7 @@
 #include <dlfcn.h>
 #include <errno.h>
 #include <string.h>
-#include "context.h"
+#include "uimint.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "plugin.h"

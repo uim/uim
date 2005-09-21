@@ -51,7 +51,7 @@
 #include "uim-compat-scm.h"
 #include "uim-compat-scm.h"
 #include "plugin.h"
-#include "context.h"
+#include "uimint.h"
 
 #ifndef HAVE_DLFUNC
 #define dlfunc dlsym

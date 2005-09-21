@@ -40,7 +40,7 @@
 #include "siod.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
-#include "context.h"
+#include "uimint.h"
 
 /*
   To avoid namespace pollution, all siod functions are defined as

@@ -30,8 +30,8 @@
   SUCH DAMAGE.
 */
 
-#ifndef _context_h_included_
-#define _context_h_included_
+#ifndef _uimint.h_included_
+#define _uimint.h_included_
 
 #ifdef __cplusplus
 extern "C" {

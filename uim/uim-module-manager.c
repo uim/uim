@@ -42,7 +42,7 @@
 
 #include "uim.h"
 #include "uim-scm.h"
-#include "context.h"
+#include "uimint.h"
 
 #define MODULE_LIST_FILENAME UIM_DATADIR"/modules"
 #define LOADER_SCM_FILENAME  UIM_DATADIR"/loader.scm"
