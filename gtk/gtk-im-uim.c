@@ -794,6 +794,60 @@ im_uim_send_im_list(void)
   g_string_free(msg, TRUE);
 }
 
+/* Copied from helper-common-gtk.c. Maybe we need common GTK+ utility file. */
+static gchar *
+get_charset(gchar *line)
+{
+  gchar **splitted = NULL;
+
+  splitted = g_strsplit(line, "=", 0);
+
+  if (splitted && splitted[0] && splitted[1]
+     && strcmp("charset", splitted[0]) == 0) {
+    gchar *charset = g_strdup(splitted[1]);
+    g_strfreev(splitted);
+    return charset;
+  } else {
+    g_strfreev(splitted);
+    return NULL;
+  }
+}
+
+static void
+commit_string_from_other_process(const gchar *str)
+{
+  gchar **lines = g_strsplit(str, "\n", 0);
+  gchar *commit_string;
+
+  if(!lines || !lines[0] || !lines[1] || !lines[2]) {
+    return; /* Message is broken, do nothing. */
+  }
+
+  /* If second line exists, assume first line as character encoding.
+     This (rotten) convention is influenced by old design mistake (character
+     encoding was forgotten!), we would need novel protocol to fix this issue. */
+
+  if(strcmp(lines[2], "") != 0) {
+    gchar *encoding, *commit_string_utf8;
+    encoding = get_charset(lines[1]);
+    commit_string = lines[2];
+    commit_string_utf8 = g_convert(commit_string, strlen(commit_string),
+				   "UTF-8", encoding,
+				   NULL, /* gsize *bytes_read */
+				   NULL, /*size *bytes_written */
+				   NULL); /* GError **error*/
+    g_signal_emit_by_name(focused_context, "commit", commit_string_utf8);
+    g_free(encoding);
+    g_free(commit_string_utf8);
+  } else {
+    /* Assuming character encoding as UTF-8. */
+    commit_string = lines[1];
+    g_signal_emit_by_name(focused_context, "commit", commit_string);
+  }
+
+  g_strfreev(lines);
+}
+
 static void
 cand_activate_cb(void *ptr, int nr, int display_limit)
 {
@@ -1017,9 +1071,7 @@ im_uim_parse_helper_str(const char *str)
     } else if (g_str_has_prefix(str, "im_list_get") == TRUE) {
       im_uim_send_im_list();
     } else if (g_str_has_prefix(str, "commit_string")) {
-      lines = g_strsplit(str, "\n", 0);
-      if (lines && lines[0] && lines[1])
-	g_signal_emit_by_name(focused_context, "commit", lines[1]);
+      commit_string_from_other_process(str);
     } else if (g_str_has_prefix(str, "focus_in") == TRUE) {
       disable_focused_context = TRUE;
       /* We shouldn't do "focused_context = NULL" here, because some
