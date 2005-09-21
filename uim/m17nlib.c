@@ -37,7 +37,6 @@
 #include <m17n.h>
 #include "uim-scm.h"
 #include "uim-util.h"
-#include "uimint.h"
 #include "plugin.h"
 
 static int m17nlib_ok;

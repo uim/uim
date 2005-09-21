@@ -52,7 +52,6 @@
 #include <netdb.h>
 
 #include "uim-scm.h"
-#include "uimint.h"
 #include "plugin.h"
 
 #define skk_isalpha(ch)	(skk_islower(ch) || skk_isupper(ch))
