@@ -36,7 +36,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include "context.h"
+#include "uimint.h"
 #include "uim-scm.h"
 #include "uim-encoding.h"
 #include "uim-util.h"

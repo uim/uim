@@ -58,6 +58,12 @@ static HistEvent hev;
 static uim_lisp uim_editline_readline(void);
 static char *prompt(EditLine *e);
 
+#if UIM_SCM_GCC4_READY_GC
+static UIM_SCM_GC_PROTECTED_FUNC_DECL(uim_lisp,
+				      uim_editline_readline_internal,
+				      (void));
+#endif
+
 void
 editline_init(void)
 {
@@ -82,12 +88,29 @@ editline_quit(void)
 
 static uim_lisp
 uim_editline_readline(void)
+#if UIM_SCM_GCC4_READY_GC
+{
+  uim_lisp ret;
+
+  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, uim_editline_readline_internal, ());
+
+  return ret;
+}
+
+static uim_lisp
+uim_editline_readline_internal(void)
+#endif
 {
     const char *line;
     int count = 0;
-    uim_lisp ret, stack_start;
+#if !UIM_SCM_GCC4_READY_GC
+    uim_lisp stack_start;
+#endif
+    uim_lisp ret;
 
+#if !UIM_SCM_GCC4_READY_GC
     uim_scm_gc_protect_stack(&stack_start);
+#endif
 
     line = el_gets(el, &count);
 
@@ -98,7 +121,9 @@ uim_editline_readline(void)
 	ret = uim_scm_make_str("");
     }
 
+#if !UIM_SCM_GCC4_READY_GC
     uim_scm_gc_unprotect_stack(&stack_start);
+#endif
 
     return ret;
 }

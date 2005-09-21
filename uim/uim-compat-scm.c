@@ -37,7 +37,16 @@
 #include <string.h>
 
 #include "uim-compat-scm.h"
-#include "context.h"
+#include "uimint.h"
+
+#if UIM_SCM_GCC4_READY_GC
+static UIM_SCM_GC_PROTECTED_FUNC_DECL(int,
+				      uim_scm_symbol_value_int_internal,
+				      (const char *symbol_str));
+static UIM_SCM_GC_PROTECTED_FUNC_DECL(char *,
+				      uim_scm_symbol_value_str_internal,
+				      (const char *symbol_str));
+#endif
 
 static uim_lisp return_val;
 
@@ -59,12 +68,29 @@ uim_scm_repl_c_string(char *str, long want_init, long want_print)
 
 int
 uim_scm_symbol_value_int(const char *symbol_str)
+#if UIM_SCM_GCC4_READY_GC
 {
+  int ret;
+
+  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, uim_scm_symbol_value_int_internal,
+				 (symbol_str));
+
+  return ret;
+}
+
+static int
+uim_scm_symbol_value_int_internal(const char *symbol_str)
+#endif
+{
+#if !UIM_SCM_GCC4_READY_GC
   uim_lisp stack_start;
+#endif
   uim_lisp val_;
   int val;
 
+#if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_protect_stack(&stack_start);
+#endif
   val_ = uim_scm_symbol_value(symbol_str);
 
   if NFALSEP(val_) {
@@ -72,7 +98,9 @@ uim_scm_symbol_value_int(const char *symbol_str)
   } else {
     val = 0;
   }
+#if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_unprotect_stack(&stack_start);
+#endif
 
   return val;
 }
@@ -85,12 +113,29 @@ uim_scm_int_from_c_int(int integer)
 
 char *
 uim_scm_symbol_value_str(const char *symbol_str)
+#if UIM_SCM_GCC4_READY_GC
 {
+  char *ret;
+
+  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, uim_scm_symbol_value_str_internal,
+				 (symbol_str));
+
+  return ret;
+}
+
+static char *
+uim_scm_symbol_value_str_internal(const char *symbol_str)
+#endif
+{
+#if !UIM_SCM_GCC4_READY_GC
   uim_lisp stack_start;
+#endif
   uim_lisp val_ = uim_scm_f();
   char *val;
 
+#if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_protect_stack(&stack_start);
+#endif
   val_ = uim_scm_symbol_value(symbol_str);
 
   if NFALSEP(val_) {
@@ -98,7 +143,9 @@ uim_scm_symbol_value_str(const char *symbol_str)
   } else {
     val = NULL;
   }
+#if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_unprotect_stack(&stack_start);
+#endif
 
   return val;
 }

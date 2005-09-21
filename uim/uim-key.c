@@ -38,7 +38,7 @@
 #include "uim.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
-#include "context.h"
+#include "uimint.h"
 
 struct key_entry {
   int key;

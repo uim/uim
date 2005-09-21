@@ -43,14 +43,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "context.h"
+#include "uimint.h"
 #include "uim-helper.h"
 #include "uim-util.h"
-
-#ifndef HAVE_STRSEP
-char *uim_strsep(char **stringp, const char *delim);
-#define strsep	uim_strsep
-#endif
 
 /* This function is come from the GNU C Library manual */
 static int
@@ -295,4 +290,20 @@ uim_ipc_send_command(int *pid,
   free(tmp);
   *pid = uim_ipc_open_command(*pid, read_fp, write_fp, command);
   return NULL;
+}
+
+int
+uim_helper_check_connection_fd(int fd)
+{
+  uid_t euid;
+  gid_t egid;
+  if (getpeereid(fd, &euid, &egid) < 0) {
+    perror("getpeereid failed");
+    return -1;
+  }
+  if ((euid != 0) && (euid != getuid())) {
+    fprintf(stderr, "uid mismatch\n");
+    return -1;
+  }
+  return 0;
 }

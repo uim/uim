@@ -51,7 +51,7 @@
 #include "uim-compat-scm.h"
 #include "uim-compat-scm.h"
 #include "plugin.h"
-#include "context.h"
+#include "uimint.h"
 
 #ifndef HAVE_DLFUNC
 #define dlfunc dlsym
@@ -66,6 +66,13 @@ static int debug_scm = DEBUG_SCM;
 #else
 #define DPRINTFN(n,x)
 #endif
+
+#if UIM_SCM_GCC4_READY_GC
+static UIM_SCM_GC_PROTECTED_FUNC_DECL(uim_lisp, plugin_unload_internal,
+				      (uim_lisp _name));
+static UIM_SCM_GC_PROTECTED_FUNC_DECL(void, uim_quit_plugin_internal, (void));
+#endif
+
 
 static uim_lisp 
 plugin_load(uim_lisp _name)
@@ -188,12 +195,28 @@ plugin_load(uim_lisp _name)
 
 static uim_lisp
 plugin_unload(uim_lisp _name)
+#if UIM_SCM_GCC4_READY_GC
 {
+  uim_lisp ret;
+
+  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, plugin_unload_internal, (_name));
+
+  return ret;
+}
+
+static uim_lisp
+plugin_unload_internal(uim_lisp _name)
+#endif
+{
+#if !UIM_SCM_GCC4_READY_GC
   uim_lisp stack_start;
+#endif
   void *library;
   void (*plugin_instance_quit)(void);
 
+#if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_protect_stack(&stack_start);
+#endif
 
   UIM_EVAL_FSTRING1(NULL, "(plugin-list-query-library \"%s\")",
 		    uim_scm_refer_c_str(_name));
@@ -212,7 +235,11 @@ plugin_unload(uim_lisp _name)
 
   UIM_EVAL_FSTRING1(NULL, "(plugin-list-delete \"%s\")",
 		    uim_scm_refer_c_str(_name));
+
+#if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_unprotect_stack(&stack_start);
+#endif
+
   return uim_scm_t();
 }
 
@@ -229,17 +256,33 @@ uim_init_plugin(void)
 /* Called from uim_quit */
 void
 uim_quit_plugin(void)
+#if UIM_SCM_GCC4_READY_GC
 {
+  UIM_SCM_GC_CALL_PROTECTED_VOID_FUNC(uim_quit_plugin_internal, ());
+}
+
+static void
+uim_quit_plugin_internal(void)
+#endif
+{
+#if !UIM_SCM_GCC4_READY_GC
   uim_lisp stack_start;
+#endif
   uim_lisp alist, rest, entry, name;
 
+#if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_protect_stack(&stack_start);
-  alist = uim_scm_symbol_value("plugin-alist");
+#endif
+
+  alist = uim_scm_eval_c_string("plugin-alist");
   for (rest = alist; !uim_scm_nullp(rest); rest = uim_scm_cdr(rest)) {
     entry = uim_scm_car(rest);
     name = uim_scm_car(entry);
 
     plugin_unload(name);
   }
+
+#if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_unprotect_stack(&stack_start);
+#endif
 }

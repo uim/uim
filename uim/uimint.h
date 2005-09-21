@@ -30,8 +30,8 @@
   SUCH DAMAGE.
 */
 
-#ifndef _context_h_included_
-#define _context_h_included_
+#ifndef _uimint_h_included_
+#define _uimint_h_included_
 
 #ifdef __cplusplus
 extern "C" {
@@ -119,24 +119,6 @@ struct uim_context_ {
   int nr_psegs;
 };
 
-
-/*
-  Most of following definitions should be separated into another file such as
-  private.h since they are not relevant to input contexts. I'm not having
-  enough time to do and validate it. Anyone?  -- YamaKen 2005-07-30
-*/
-
-#if 0
-/*
-  Evaluating a S-expression in C involves the two problems, performance and
-  sourcecode-simpleness. Traditional UIM_EVAL_FSTRINGn() satisfies the latter,
-  but loses former. Manual sexp construction and evaluation by a sequence of
-  function calling is an opponent. The two should co-exist until better
-  solution has been implemented as a uim-scm API.  -- YamaKen 2005-07-30
- */
-#define UIM_EVAL_SEXP_AS_STRING
-#endif
-
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
   #define UIM_DEFINE_MUTEX(mtx)                                              \
@@ -146,8 +128,8 @@ struct uim_context_ {
   #define UIM_LOCK_MUTEX(mtx)    pthread_mutex_lock(&mtx)
   #define UIM_UNLOCK_MUTEX(mtx)  pthread_mutex_unlock(&mtx)
 #else
-  #define UIM_NEW_MUTEX(mtx)
-  #define UIM_NEW_MUTEX_STATIC(mtx)
+  #define UIM_DEFINE_MUTEX(mtx)
+  #define UIM_DEFINE_MUTEX_STATIC(mtx)
   #define UIM_LOCK_MUTEX(mtx)
   #define UIM_UNLOCK_MUTEX(mtx)
 #endif /* HAVE_PTHREAD_H */

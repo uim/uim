@@ -69,6 +69,8 @@ extern "C" {
 */
 #define UIM_SCM_EXTENDED_API
 
+#define UIM_SCM_GCC4_READY_GC 1
+
 /*
   uim companion tools should treat lisp object as opaque. struct
   uim_opaque exists only for type check and has no actual definition.
@@ -98,12 +100,53 @@ uim_scm_set_verbose_level(long new_value);
 void
 uim_scm_set_lib_path(const char *path);
 
+#if UIM_SCM_GCC4_READY_GC
+#ifdef __GNUC__
+#define UIM_SCM_NOINLINE __attribute__((noinline))
+#else
+#define UIM_SCM_NOINLINE
+#endif /* __GNUC__ */
+
+#define UIM_SCM_GC_PROTECTED_FUNC_T(func) uim_scm_gc_protected_type__##func
+
+#define UIM_SCM_GC_PROTECTED_FUNC_DECL(ret_type, func, args)                 \
+    ret_type func args UIM_SCM_NOINLINE;                                     \
+    typedef ret_type (*UIM_SCM_GC_PROTECTED_FUNC_T(func)) args
+
+#define UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, func, args)                      \
+    UIM_SCM_GC_CALL_PROTECTED_FUNC_INTERNAL(ret = , func, args)
+
+#define UIM_SCM_GC_CALL_PROTECTED_VOID_FUNC(func, args)                      \
+    UIM_SCM_GC_CALL_PROTECTED_FUNC_INTERNAL((void), func, args)
+
+#define UIM_SCM_GC_CALL_PROTECTED_FUNC_INTERNAL(exp_ret, func, args)         \
+    do {                                                                     \
+        UIM_SCM_GC_PROTECTED_FUNC_T(func) fp;                                \
+        uim_lisp *stack_start;                                               \
+                                                                             \
+        stack_start = uim_scm_gc_protect_stack();                            \
+        fp = (UIM_SCM_GC_PROTECTED_FUNC_T(func))                             \
+                  uim_scm_gc_ensure_uninlined_func((uim_func_ptr)&func);     \
+        exp_ret (*fp)args;                                                   \
+        uim_scm_gc_unprotect_stack(stack_start);                             \
+    } while (/* CONSTCOND */ 0)
+
+void
+uim_scm_gc_protect(uim_lisp *location);
+uim_lisp *
+uim_scm_gc_protect_stack(void);
+void
+uim_scm_gc_unprotect_stack(uim_lisp *stack_start);
+uim_func_ptr
+uim_scm_gc_ensure_uninlined_func(uim_func_ptr func);
+#else /* UIM_SCM_GCC4_READY_GC */
 void
 uim_scm_gc_protect(uim_lisp *location);
 void
 uim_scm_gc_protect_stack(uim_lisp *stack_start);
 void
 uim_scm_gc_unprotect_stack(uim_lisp *stack_start);
+#endif /* UIM_SCM_GCC4_READY_GC */
 
 /* evaluations */
 uim_bool
@@ -123,7 +166,7 @@ uim_lisp
 uim_scm_return_value(void);
 /*
   TODO: reorganize UIM_EVAL_FSTRINGn(), uim_sizeof_sexp_str() and
-  uim_eval_string() in context.h into this file
+  uim_eval_string() in uimint.h into this file
 */
 
 /* type conversions */

@@ -34,12 +34,6 @@
 #if !defined(HAVE_SETENV) || !defined(HAVE_UNSETENV)
 
 static char *__findenv(const char *name, int *offset);
-#ifndef HAVE_SETENV
-int setenv(const char *, const char *, int);
-#endif
-#ifndef HAVE_UNSETENV
-void unsetenv(const char *);
-#endif
 extern char **environ;
 
 /*

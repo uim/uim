@@ -46,7 +46,7 @@
 #include <pwd.h>
 #include <signal.h>
 #include <errno.h>
-#include "context.h"
+#include "uimint.h"
 #include "uim-helper.h"
 #include "uim-util.h"
 

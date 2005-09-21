@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
-#include "context.h"
 #include "plugin.h"
 
 #define MAX_CONTEXT 256

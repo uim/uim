@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -31,46 +31,44 @@
 
 */
 
-#include "uimint.h"
+#ifndef _os_dep_h_included_
+#define _os_dep_h_included_
 
-static FILE *spell_r = NULL, *spell_w = NULL;
-static int spell_pid = 0;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-static LISP
-spellcheck_init(void)
-{
-  spell_pid = uim_ipc_open_command(spell_pid, &spell_r,
-				   &spell_w, get_spell_command() );
-  if (spell_pid == 0) {
-    return NIL;
-  }
-  return siod_true_value();
+#include <sys/types.h>
+
+#ifndef HAVE_GETPEEREID
+int getpeereid(int , uid_t *, gid_t *);
+#endif
+
+/*
+ * I doubt uim_setenv and uim_unsetenv are really needed. Only libuim and
+ * uim-module-manager uses setenv and unsetenv. I choose linking libreplace.la
+ * to both of them for OSes not having setenv and unsetenv. If setenv and
+ * unsetenv are used in out of the uim, please uncomment.
+ *
+ * In any cases, we have to upgrade minor version of libuim.
+ * -- omote 09/17/2005
+ */
+#ifndef HAVE_SETENV
+/* #define setenv	uim_setenv */
+int setenv(const char *, const char *, int);
+#endif
+
+#ifndef HAVE_UNSETENV
+/* #define unsetenv	uim_unsetenv */
+void unsetenv(const char *);
+#endif
+
+#ifndef HAVE_STRSEP
+#define strsep	uim_strsep
+char *strsep(char **stringp, const char *delim);
+#endif
+
+#ifdef __cplusplus
 }
-
-static LISP
-spellcheck_send_command(LISP str_)
-{
-  char *str = get_c_string( str_ );
-  char *result;
-  LISP ret;
-
-  result = uim_ipc_send_command(&spell_pid, &spell_r, &spell_w, get_spell_command(), str);
-
-  if (result == NULL)
-    {
-      return NIL;
-    }
-
- ret = strcons( strlen(result), result );
- free(result);
- return ret;
-}
-
-
-void
-uim_init_spellcheck(void)
-{
- init_subr_0("spellcheck-lib-init", spellcheck_init);
- init_subr_1("spellcheck-lib-send-command", spellcheck_send_command);
-
-}
+#endif
+#endif

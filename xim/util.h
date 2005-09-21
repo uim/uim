@@ -55,14 +55,4 @@ int asprintf(char **ptr, const char *format, ...);
 int vasprintf(char **ptr, const char *fmt, va_list ap);
 #endif
 
-#ifndef HAVE_STRSEP
-#ifdef __cplusplus
-extern "C" {
-#endif
-char *uim_strsep(char **stringp, const char *delim);
-#define strsep	uim_strsep
-#ifdef __cplusplus
-}
-#endif
-#endif
 #endif

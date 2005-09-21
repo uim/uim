@@ -42,7 +42,7 @@
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "siod.h"
-#include "context.h"
+#include "uimint.h"
 
 /*This file is for find entry from table such Japanese roma-ji table*/
 

@@ -43,7 +43,7 @@
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "uim-custom.h"
-#include "context.h"
+#include "uimint.h"
 #include "gettext.h"
 #include "uim-util.h"
 
@@ -243,6 +243,7 @@ uim_switch_im(uim_context uc, const char *engine)
 
   UIM_EVAL_FSTRING1(uc, "(release-context %d)", uc->id);
   uim_release_preedit_segments(uc);
+  uim_update_preedit_segments(uc);
 
   UIM_EVAL_FSTRING2(uc, "(create-context %d #f '%s)", id, engine);
   if (uc->current_im_name)
