@@ -39,6 +39,7 @@
   Local Include
 =======================================*/
 #include "sigscheme.h"
+#include "sigschemeinternal.h"
 
 /*=======================================
   File Local Struct Declarations
@@ -51,7 +52,6 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-extern ScmObj scm_current_error_port;
 
 /*=======================================
   File Local Function Declarations

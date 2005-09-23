@@ -78,10 +78,6 @@ static ScmObjInternal SigScm_unbound_impl, SigScm_undef_impl;
 static ScmObj SigScm_null_values_impl;
 #endif
 
-#if SCM_COMPAT_SIOD
-extern ScmObj scm_return_value;
-#endif
-
 /*=======================================
   Function Implementations
 =======================================*/

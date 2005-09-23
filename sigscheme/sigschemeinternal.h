@@ -57,6 +57,9 @@ struct trace_frame {
 =======================================*/
 /* datas.c */
 extern ScmObj *scm_stack_start_pointer;
+#if SCM_COMPAT_SIOD
+extern ScmObj scm_return_value;
+#endif
 
 /* error.c*/
 extern ScmObj scm_current_error_port;
