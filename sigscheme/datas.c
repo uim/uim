@@ -109,11 +109,13 @@ struct gc_protected_var_ {
 =======================================*/
 #define NAMEHASH_SIZE 1024
 
-#define SCM_NEW_OBJ_INTERNAL(VALNAME)                                   \
-    if (EQ(scm_freelist, SCM_NULL))                                      \
-        gc_mark_and_sweep();                                            \
-    VALNAME = scm_freelist;                                             \
-    scm_freelist = SCM_FREECELL_CDR(scm_freelist);                      \
+#define SCM_NEW_OBJ_INTERNAL(VALNAME)                                        \
+    do {                                                                     \
+        if (NULLP(scm_freelist))                                             \
+            gc_mark_and_sweep();                                             \
+        VALNAME = scm_freelist;                                              \
+        scm_freelist = SCM_FREECELL_CDR(scm_freelist);                       \
+    } while (/* CONSTCOND */ 0)
 
 #define SCM_UNMARKER        0
 #define SCM_INITIAL_MARKER  (SCM_UNMARKER + 1)
@@ -673,13 +675,12 @@ ScmObj Scm_NewString(char *str)
 
 ScmObj Scm_NewStringCopying(const char *str)
 {
-    ScmObj obj = SCM_NULL;
+    ScmObj obj = SCM_FALSE;
 
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_STRING(obj);
-    SCM_STRING_STR(obj) = (char *)malloc(sizeof(char) * strlen(str) + 1);
-    strcpy(SCM_STRING_STR(obj), str);
+    SCM_STRING_SET_STR(obj, strdup(str));
     SCM_STRING_SET_LEN(obj, SigScm_default_encoding_strlen(str));
 
     return obj;
