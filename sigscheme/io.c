@@ -559,7 +559,9 @@ ScmObj ScmOp_require(ScmObj filename)
 #if SCM_COMPAT_SIOD
     retsym_name = (char*)malloc(sizeof(char) * (strlen(SCM_STRING_STR(filename)) + strlen("*-loaded*") + 1));
     sprintf(retsym_name, "*%s-loaded*", SCM_STRING_STR(filename));
-    printf("retsym_name = %s\n", retsym_name);
+#if 0
+    fprintf(stderr, "retsym_name = %s\n", retsym_name);
+#endif
     retsym = Scm_Intern(retsym_name);
     free(retsym_name);
     return retsym;
