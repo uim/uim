@@ -609,7 +609,7 @@ void SigScm_GC_UnprotectStack(ScmObj *stack_start)
 ===========================================================================*/
 ScmObj Scm_NewCons(ScmObj a, ScmObj b)
 {
-    ScmObj obj = SCM_NULL;
+    ScmObj obj = SCM_FALSE;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_CONS(obj);
@@ -621,7 +621,7 @@ ScmObj Scm_NewCons(ScmObj a, ScmObj b)
 
 ScmObj Scm_NewInt(int val)
 {
-    ScmObj obj = SCM_NULL;
+    ScmObj obj = SCM_FALSE;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_INT(obj);
@@ -632,7 +632,7 @@ ScmObj Scm_NewInt(int val)
 
 ScmObj Scm_NewSymbol(char *name, ScmObj v_cell)
 {
-    ScmObj obj = SCM_NULL;
+    ScmObj obj = SCM_FALSE;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_SYMBOL(obj);
@@ -644,12 +644,12 @@ ScmObj Scm_NewSymbol(char *name, ScmObj v_cell)
 
 ScmObj Scm_NewChar(char *ch)
 {
-    ScmObj obj = SCM_NULL;
+    ScmObj obj = SCM_FALSE;
 
     /* check length */
     if (SigScm_default_encoding_strlen(ch) != 1) {
-        printf("ch = [%s], len = %d\n", ch, SigScm_default_encoding_strlen(ch));
-        SigScm_Error("invalid character\n");
+        SigScm_Error("Scm_NewChar : invalid character ch = [%s], len = %d\n",
+                     ch, SigScm_default_encoding_strlen(ch));
     }
 
     SCM_NEW_OBJ_INTERNAL(obj);
@@ -662,7 +662,7 @@ ScmObj Scm_NewChar(char *ch)
 
 ScmObj Scm_NewString(char *str)
 {
-    ScmObj obj = SCM_NULL;
+    ScmObj obj = SCM_FALSE;
 
     SCM_NEW_OBJ_INTERNAL(obj);
 
@@ -688,7 +688,7 @@ ScmObj Scm_NewStringCopying(const char *str)
 
 ScmObj Scm_NewStringWithLen(char *str, int len)
 {
-    ScmObj obj = SCM_NULL;
+    ScmObj obj = SCM_FALSE;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_STRING(obj);
@@ -700,7 +700,7 @@ ScmObj Scm_NewStringWithLen(char *str, int len)
 
 ScmObj Scm_NewFunc(enum ScmFuncTypeCode type, ScmFuncType func)
 {
-    ScmObj obj = SCM_NULL;
+    ScmObj obj = SCM_FALSE;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_FUNC(obj);
@@ -712,7 +712,7 @@ ScmObj Scm_NewFunc(enum ScmFuncTypeCode type, ScmFuncType func)
 
 ScmObj Scm_NewClosure(ScmObj exp, ScmObj env)
 {
-    ScmObj obj = SCM_NULL;
+    ScmObj obj = SCM_FALSE;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_CLOSURE(obj);
@@ -724,7 +724,7 @@ ScmObj Scm_NewClosure(ScmObj exp, ScmObj env)
 
 ScmObj Scm_NewVector(ScmObj *vec, int len)
 {
-    ScmObj obj = SCM_NULL;
+    ScmObj obj = SCM_FALSE;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_VECTOR(obj);
@@ -734,9 +734,10 @@ ScmObj Scm_NewVector(ScmObj *vec, int len)
     return obj;
 }
 
-ScmObj Scm_NewFilePort(FILE *file, const char *filename, enum ScmPortDirection pdirection)
+ScmObj Scm_NewFilePort(FILE *file, const char *filename,
+                       enum ScmPortDirection pdirection)
 {
-    ScmObj obj = SCM_NULL;
+    ScmObj obj = SCM_FALSE;
     ScmPortInfo *pinfo = (ScmPortInfo *)malloc(sizeof(ScmPortInfo));
 
     SCM_NEW_OBJ_INTERNAL(obj);
@@ -745,8 +746,7 @@ ScmObj Scm_NewFilePort(FILE *file, const char *filename, enum ScmPortDirection p
     SCM_PORT_SET_PORTDIRECTION(obj, pdirection);
     pinfo->port_type = PORT_FILE;
     pinfo->info.file_port.file = file;
-    pinfo->info.file_port.filename = (char*)malloc(sizeof(char) * strlen(filename) + 1);
-    strcpy(pinfo->info.file_port.filename, filename);
+    pinfo->info.file_port.filename = strdup(filename);
     pinfo->info.file_port.line = 0;
     pinfo->ungottenchar = 0;
     SCM_PORT_SET_PORTINFO(obj, pinfo);
@@ -756,7 +756,7 @@ ScmObj Scm_NewFilePort(FILE *file, const char *filename, enum ScmPortDirection p
 
 ScmObj Scm_NewStringPort(const char *str)
 {
-    ScmObj obj = SCM_NULL;
+    ScmObj obj = SCM_FALSE;
     ScmPortInfo *pinfo = (ScmPortInfo *)malloc(sizeof(ScmPortInfo));
 
     SCM_NEW_OBJ_INTERNAL(obj);
@@ -764,8 +764,7 @@ ScmObj Scm_NewStringPort(const char *str)
     SCM_ENTYPE_PORT(obj);
     SCM_PORT_SET_PORTDIRECTION(obj, PORT_INPUT);
     pinfo->port_type = PORT_STRING;
-    pinfo->info.str_port.port_str = (char *)malloc(strlen(str) + 1);
-    strcpy(pinfo->info.str_port.port_str, str);
+    pinfo->info.str_port.port_str = strdup(str);
     pinfo->info.str_port.str_current = pinfo->info.str_port.port_str;
     pinfo->ungottenchar = 0;
     SCM_PORT_SET_PORTINFO(obj, pinfo);
@@ -775,7 +774,7 @@ ScmObj Scm_NewStringPort(const char *str)
 
 ScmObj Scm_NewContinuation(void)
 {
-    ScmObj obj = SCM_NULL;
+    ScmObj obj = SCM_FALSE;
     ScmContInfo *cinfo = NULL;
 
     SCM_NEW_OBJ_INTERNAL(obj);
@@ -789,18 +788,19 @@ ScmObj Scm_NewContinuation(void)
 
 ScmObj Scm_NewValuePacket(ScmObj values)
 {
-    ScmObj packet = SCM_NULL;
-    SCM_NEW_OBJ_INTERNAL(packet);
+    ScmObj obj = SCM_FALSE;
+    SCM_NEW_OBJ_INTERNAL(obj);
 
-    SCM_ENTYPE_VALUEPACKET(packet);
-    SCM_VALUEPACKET_SET_VALUES(packet, values);
-    return packet;
+    SCM_ENTYPE_VALUEPACKET(obj);
+    SCM_VALUEPACKET_SET_VALUES(obj, values);
+
+    return obj;
 }
 
 #if SCM_USE_NONSTD_FEATURES
 ScmObj Scm_NewCPointer(void *data)
 {
-    ScmObj obj = SCM_NULL;
+    ScmObj obj = SCM_FALSE;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_C_POINTER(obj);
@@ -811,7 +811,7 @@ ScmObj Scm_NewCPointer(void *data)
 
 ScmObj Scm_NewCFuncPointer(ScmCFunc func)
 {
-    ScmObj obj = SCM_NULL;
+    ScmObj obj = SCM_FALSE;
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_C_FUNCPOINTER(obj);
@@ -859,14 +859,12 @@ static int symbol_name_hash(const char *name)
 ScmObj Scm_Intern(const char *name)
 {
     int n = symbol_name_hash(name);
-    ScmObj sym      = SCM_NULL;
-    ScmObj list     = SCM_NULL;
+    ScmObj sym      = SCM_FALSE;
+    ScmObj list     = SCM_FALSE;
     ScmObj sym_list = symbol_hash[n];
-    char  *symname;
 
     /* Search Symbol by name */
-    list = sym_list;
-    for (; !NULLP(list); list = CDR(list)) {
+    for (list = sym_list; !NULLP(list); list = CDR(list)) {
         sym = CAR(list);
 
         if (strcmp(SCM_SYMBOL_NAME(sym), name) == 0) {
@@ -875,9 +873,7 @@ ScmObj Scm_Intern(const char *name)
     }
 
     /* If not in the sym_list, allocate new Symbol */
-    symname  = (char*)malloc(strlen(name) + 1);
-    strcpy(symname, name);
-    sym = Scm_NewSymbol(symname, SCM_UNBOUND);
+    sym = Scm_NewSymbol(strdup(name), SCM_UNBOUND);
 
     /* And Append it to the head of symbol_hash */
     sym_list = CONS(sym, sym_list);

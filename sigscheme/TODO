@@ -22,6 +22,9 @@ Requirements and bugs:
 
 * Fix invalid storage model assumption of ScmOp_append()
 
+* Add error message printing function which properly uses stderr, and replace
+  inappropriate 'printf' with it
+
 * Fix broken 'values' handling
   - (write (values)) => SEGV
 
