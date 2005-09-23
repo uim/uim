@@ -453,6 +453,7 @@ static ScmObj SigScm_load_internal(const char *c_filename)
     if (!filepath)
         return SCM_FALSE;
 
+    /* FIXME: generate an error when file open has been failed */
     /* open port */
     port = ScmOp_open_input_file(Scm_NewStringCopying(filepath));
     s_expression = SCM_NULL;
@@ -532,38 +533,28 @@ ScmObj ScmOp_load(ScmObj filename)
 
 /*
  * TODO:
- * - return the status which indicates succeeded or not
+ * - generate an error when the file open has been failed (via ScmOp_load())
  */
 ScmObj ScmOp_require(ScmObj filename)
 {
-    ScmObj loaded_str  = SCM_NULL;
+    ScmObj loaded_str = SCM_FALSE;
 #if SCM_COMPAT_SIOD
-    ScmObj retsym = SCM_NULL;
-    char *retsym_name = NULL;
+    ScmObj retsym     = SCM_FALSE;
 #endif
 
     if (!STRINGP(filename))
         SigScm_ErrorObj("require : string required but got ", filename);
 
-    /* construct loaded_str */
     loaded_str = create_loaded_str(filename);
-
-    if (FALSEP(ScmOp_member(loaded_str, SCM_SYMBOL_VCELL(SigScm_features)))) {
-        /* not provided, so load it! */
+    if (FALSEP(ScmOp_providedp(loaded_str))) {
         ScmOp_load(filename);
-
-        /* record to SigScm_features */
-        SCM_SYMBOL_VCELL(SigScm_features) = CONS(loaded_str, SCM_SYMBOL_VCELL(SigScm_features));
+        ScmOp_provide(loaded_str);
     }
 
 #if SCM_COMPAT_SIOD
-    retsym_name = (char*)malloc(sizeof(char) * (strlen(SCM_STRING_STR(filename)) + strlen("*-loaded*") + 1));
-    sprintf(retsym_name, "*%s-loaded*", SCM_STRING_STR(filename));
-#if 0
-    fprintf(stderr, "retsym_name = %s\n", retsym_name);
-#endif
-    retsym = Scm_Intern(retsym_name);
-    free(retsym_name);
+    retsym = Scm_Intern(SCM_STRING_STR(loaded_str));
+    SCM_SYMBOL_SET_VCELL(retsym, SCM_TRUE);
+
     return retsym;
 #else
     return SCM_TRUE;
@@ -576,9 +567,9 @@ static ScmObj create_loaded_str(ScmObj filename)
     int    size = 0;
 
     /* generate loaded_str, contents is filename-loaded* */
-    size = (strlen(SCM_STRING_STR(filename)) + strlen("-loaded*") + 1);
+    size = (strlen(SCM_STRING_STR(filename)) + strlen("*-loaded*") + 1);
     loaded_str = (char*)malloc(sizeof(char) * size);
-    snprintf(loaded_str, size, "%s-loaded*", SCM_STRING_STR(filename));
+    snprintf(loaded_str, size, "*%s-loaded*", SCM_STRING_STR(filename));
     
     return Scm_NewString(loaded_str);
 }
@@ -604,10 +595,14 @@ ScmObj ScmOp_provide(ScmObj feature)
  */
 ScmObj ScmOp_providedp(ScmObj feature)
 {
+    ScmObj provided = SCM_FALSE;
+
     if (!STRINGP(feature))
         SigScm_ErrorObj("provide : string required but got ", feature);
 
-    return (FALSEP(ScmOp_member(feature, SigScm_features))) ? SCM_FALSE : SCM_TRUE;
+    provided = ScmOp_member(feature, SCM_SYMBOL_VCELL(SigScm_features));
+
+    return (NFALSEP(provided)) ? SCM_TRUE : SCM_FALSE;
 }
 
 /*

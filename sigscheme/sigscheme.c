@@ -125,6 +125,7 @@ static void SigScm_Initialize_internal(void)
     SigScm_unquote_splicing = Scm_Intern("unquote-splicing");
 #if SCM_USE_NONSTD_FEATURES
     SigScm_features         = Scm_Intern("*features*");
+    SCM_SYMBOL_SET_VCELL(SigScm_features, SCM_NULL);
 #endif
     /*=======================================================================
       Export Scheme Special Symbols
