@@ -1008,6 +1008,12 @@ ScmObj ScmOp_length(ScmObj obj)
     return Scm_NewInt(len);
 }
 
+/*
+ * FIXME: Invalid direct cdr part referencing as lvalue. Don't assume such
+ * specific storage model. It breaks the abstract storage API. For example,
+ * base pointer + offset representation will not work under the lvalue
+ * assumption. Use SET_CDR properly.  -- YamaKen 2005-09-23
+ */
 ScmObj ScmOp_append(ScmObj args, ScmObj env)
 {
     ScmObj ret_list = SCM_NULL;
@@ -1855,6 +1861,7 @@ ScmObj ScmOp_procedurep(ScmObj obj)
     return (FUNCP(obj) || CLOSUREP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
+/* FIXME: excessive memory consumptions (reverse, vector) */
 ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
 {
     int arg_len = SCM_INT_VALUE(ScmOp_length(map_arg));
