@@ -67,9 +67,10 @@ static void Scm_RegisterFunc(const char *name, enum ScmFuncTypeCode type, ScmFun
 ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
 ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote, SigScm_unquote_splicing;
 ScmObj SigScm_unbound, SigScm_undef;
-ScmObjInternal SigScm_null_impl, SigScm_true_impl, SigScm_false_impl, SigScm_eof_impl;
-ScmObjInternal SigScm_quote_impl, SigScm_quasiquote_impl, SigScm_unquote_impl, SigScm_unquote_splicing_impl;
-ScmObjInternal SigScm_unbound_impl, SigScm_undef_impl;
+
+static ScmObjInternal SigScm_null_impl, SigScm_true_impl, SigScm_false_impl, SigScm_eof_impl;
+static ScmObjInternal SigScm_quote_impl, SigScm_quasiquote_impl, SigScm_unquote_impl, SigScm_unquote_splicing_impl;
+static ScmObjInternal SigScm_unbound_impl, SigScm_undef_impl;
 
 #if SCM_COMPAT_SIOD
 extern ScmObj scm_return_value;
