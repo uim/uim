@@ -132,11 +132,11 @@ static void SigScm_Initialize_internal(void)
     =======================================================================*/
 #if 0
     /* really required? */
-    SCM_SYMBOL_VCELL(Scm_Intern("#t"))   = SCM_TRUE;
-    SCM_SYMBOL_VCELL(Scm_Intern("#f"))   = SCM_FALSE;
+    SCM_SYMBOL_SET_VCELL(Scm_Intern("#t"),   SCM_TRUE);
+    SCM_SYMBOL_SET_VCELL(Scm_Intern("#f"),   SCM_FALSE);
 #endif
-    SCM_SYMBOL_VCELL(Scm_Intern("else")) = SCM_TRUE;
-    SCM_SYMBOL_VCELL(Scm_Intern("=>"))   = SCM_TRUE;
+    SCM_SYMBOL_SET_VCELL(Scm_Intern("else"), SCM_TRUE);
+    SCM_SYMBOL_SET_VCELL(Scm_Intern("=>"),   SCM_TRUE);
     /*=======================================================================
       Export Scheme Functions
     =======================================================================*/
@@ -432,7 +432,7 @@ static void Scm_RegisterFunc(const char *name, enum ScmFuncTypeCode type, ScmFun
     ScmObj sym  = Scm_Intern(name);
     ScmObj func = Scm_NewFunc(type, c_func);
 
-    SCM_SYMBOL_VCELL(sym) = func;
+    SCM_SYMBOL_SET_VCELL(sym, func);
 }
 
 void Scm_RegisterFunc0(const char *name, ScmFuncType0 func)

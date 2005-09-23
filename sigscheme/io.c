@@ -584,7 +584,8 @@ ScmObj ScmOp_provide(ScmObj feature)
         SigScm_ErrorObj("provide : string required but got ", feature);
 
     /* record to SigScm_features */
-    SCM_SYMBOL_VCELL(SigScm_features) = CONS(feature, SCM_SYMBOL_VCELL(SigScm_features));
+    SCM_SYMBOL_SET_VCELL(SigScm_features,
+                         CONS(feature, SCM_SYMBOL_VCELL(SigScm_features)));
 
     return SCM_TRUE;
 }
