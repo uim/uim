@@ -445,17 +445,13 @@ static ScmObj SigScm_load_internal(const char *c_filename)
     char  *filepath     = create_valid_path(c_filename);
 
     /* sanity check */
-    /*
-      TODO : FIXME! Kazuki Ohta <mover@hct.zaq.ne.jp>
-      This should be an error, but we don't have enough error handling
-      feature.
-    */
     if (!filepath)
-        return SCM_FALSE;
+        SigScm_Error("SigScm_load_internal : file \"%s\" not found\n",
+                     c_filename);
 
-    /* FIXME: generate an error when file open has been failed */
     /* open port */
     port = ScmOp_open_input_file(Scm_NewStringCopying(filepath));
+    free(filepath);
     s_expression = SCM_NULL;
     
     /* read & eval cycle */
@@ -468,9 +464,6 @@ static ScmObj SigScm_load_internal(const char *c_filename)
 
     /* close port */
     ScmOp_close_input_port(port);
-
-    /* free str */
-    free(filepath);
 
     return SCM_TRUE;
 }
@@ -531,10 +524,6 @@ ScmObj ScmOp_load(ScmObj filename)
 #if SCM_USE_NONSTD_FEATURES
 /* FIXME: add ScmObj SigScm_require(const char *c_filename) */
 
-/*
- * TODO:
- * - generate an error when the file open has been failed (via ScmOp_load())
- */
 ScmObj ScmOp_require(ScmObj filename)
 {
     ScmObj loaded_str = SCM_FALSE;

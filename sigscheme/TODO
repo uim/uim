@@ -11,8 +11,6 @@ Requirements and bugs:
   - Implement assert-error in unittest.scm
   - [uim] Make uim-sh loop workable even if error occurred
 
-* Fix error handling of SigScm_load_internal()
-
 * Support SIOD-compatible verbose message control (suppressing backtrace, GC
   stat, error, etc based on verbose-level)
   - [uim] Make the GaUnit-based testing framework workable
