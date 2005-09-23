@@ -458,8 +458,7 @@ static char *read_word(ScmObj port)
         case '\n': case '\t': case '\"': case '\'':
             SCM_PORT_UNGETC(port, c);
             stringbuf[stringlen] = '\0';
-            dst = (char *)malloc(strlen(stringbuf) + 1);
-            strcpy(dst, stringbuf);
+            dst = strdup(stringbuf);
             return dst;
 
         default:
@@ -500,8 +499,7 @@ static char *read_char_sequence(ScmObj port)
             /* return buf */
             SCM_PORT_UNGETC(port, c);
             stringbuf[stringlen] = '\0';
-            dst = (char *)malloc(strlen(stringbuf) + 1);
-            strcpy(dst, stringbuf);
+            dst = strdup(stringbuf);
             return dst;
 
         default:

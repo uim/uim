@@ -463,6 +463,11 @@ static ScmObj SigScm_load_internal(const char *c_filename)
     return SCM_TRUE;
 }
 
+/* FIXME:
+ * - Simplify
+ * - Avoid using strcat() and strcpy() to increase security. Use strncat(),
+ *   strncpy() or other safe functions instead
+ */
 /* TODO: reject relative paths to ensure security */
 static char* create_valid_path(const char *filename)
 {
