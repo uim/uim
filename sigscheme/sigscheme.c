@@ -67,10 +67,16 @@ static void Scm_RegisterFunc(const char *name, enum ScmFuncTypeCode type, ScmFun
 ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
 ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote, SigScm_unquote_splicing;
 ScmObj SigScm_unbound, SigScm_undef;
+#if SCM_USE_VALUECONS
+ScmObj SigScm_null_values;
+#endif
 
 static ScmObjInternal SigScm_null_impl, SigScm_true_impl, SigScm_false_impl, SigScm_eof_impl;
 static ScmObjInternal SigScm_quote_impl, SigScm_quasiquote_impl, SigScm_unquote_impl, SigScm_unquote_splicing_impl;
 static ScmObjInternal SigScm_unbound_impl, SigScm_undef_impl;
+#if SCM_USE_VALUECONS
+static ScmObj SigScm_null_values_impl;
+#endif
 
 #if SCM_COMPAT_SIOD
 extern ScmObj scm_return_value;
@@ -103,6 +109,9 @@ static void SigScm_Initialize_internal(void)
     SCM_ETC_SET_IMPL(SigScm_eof,              SigScm_eof_impl    );
     SCM_ETC_SET_IMPL(SigScm_unbound,          SigScm_unbound_impl);
     SCM_ETC_SET_IMPL(SigScm_undef,            SigScm_undef_impl  );
+#if SCM_USE_VALUECONS
+    SCM_ETC_SET_IMPL(SigScm_null_values,      SigScm_null_values_impl);
+#endif
 
 #if SCM_COMPAT_SIOD_BUGS
     SigScm_false = SigScm_null;

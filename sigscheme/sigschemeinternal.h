@@ -71,6 +71,11 @@ extern ScmObj scm_current_input_port;
 extern ScmObj scm_current_output_port;
 extern ScmObj SigScm_features;
 
+/* sigscheme.c */
+#if SCM_USE_VALUECONS
+extern ScmObj SigScm_null_values;
+#endif
+
 
 /*=======================================
    Macro Declarations
