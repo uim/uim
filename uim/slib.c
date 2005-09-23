@@ -255,7 +255,7 @@ static void siod_set_lib_path(const char *);
 #define STACK_CHECK(_ptr) \
   if (((char *) (_ptr)) < stack_limit_ptr) err_stack((char *) _ptr);
 
-#define NEWCELL(_into, _type)         \
+#define _NEWCELL(_into, _type)         \
 {  if NULLP(freelist)                 \
       gc_for_newcell();               \
     _into = freelist;                 \
@@ -267,8 +267,12 @@ static void siod_set_lib_path(const char *);
 #if ! DEBUG_SCM
 #define dbg_readini(f)
 #define dbg_readend()
-#define dbg_readabrt()
 #define dbg_register_closure(x)
+#define NEWCELL(_into, _type)	_NEWCELL (_into, _type)
+#else
+#define NEWCELL(_into, _type)		\
+{  _NEWCELL (_into, _type);		\
+   (*_into).dbg_info = car (dbg_pos);}
 #endif /* DEBUG_SCM */
 
 /* exported global symbol */
