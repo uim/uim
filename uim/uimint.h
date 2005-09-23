@@ -169,6 +169,38 @@ struct uim_context_ {
     UIM_RESTORE_TEXTDOMAIN_CODESET(); \
   }
 
+#ifdef HAVE_PTHREAD_H
+
+  extern pthread_mutex_t mtx_uim_evaling;
+
+  #define UIM_EVAL_FSTRING1_WITH_MUTEX(uc, sexp_tmpl, arg1)             \
+    UIM_LOCK_MUTEX(mtx_uim_evaling);                                       \
+    UIM_EVAL_FSTRING1(uc, sexp_tmpl, arg1);                             \
+    UIM_UNLOCK_MUTEX(mtx_uim_evaling);
+
+  #define UIM_EVAL_FSTRING2_WITH_MUTEX(uc, sexp_tmpl, arg1, arg2)       \
+    UIM_LOCK_MUTEX(mtx_uim_evaling);                                       \
+    UIM_EVAL_FSTRING2(uc, sexp_tmpl, arg1, arg2);		        \
+    UIM_UNLOCK_MUTEX(mtx_uim_evaling);
+
+  #define UIM_EVAL_FSTRING3_WITH_MUTEX(uc, sexp_tmpl, arg1, arg2, arg3) \
+    UIM_LOCK_MUTEX(mtx_uim_evaling);                                       \
+    UIM_EVAL_FSTRING3(uc, sexp_tmpl, arg1, arg2, arg3);			\
+    UIM_UNLOCK_MUTEX(mtx_uim_evaling);
+
+#else
+
+  #define UIM_EVAL_FSTRING1_WITH_MUTEX(uc, sexp_tmpl, arg1)             \
+    UIM_EVAL_FSTRING1(uc, sexp_tmpl, arg1);
+
+  #define UIM_EVAL_FSTRING2_WITH_MUTEX(uc, sexp_tmpl, arg1, arg2)       \
+    UIM_EVAL_FSTRING2(uc, sexp_tmpl, arg1, arg2);
+
+  #define UIM_EVAL_FSTRING3_WITH_MUTEX(uc, sexp_tmpl, arg1, arg2, arg3) \
+    UIM_EVAL_FSTRING3(uc, sexp_tmpl, arg1, arg2, arg3);
+
+#endif /* HAVE_PTHREAD_H */
+
 #define UIM_EVAL_FSTRING1(uc, sexp_tmpl, arg1) \
   { \
     int form_size; \
