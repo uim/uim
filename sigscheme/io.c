@@ -442,17 +442,18 @@ static ScmObj SigScm_load_internal(const char *c_filename)
 {
     ScmObj port         = SCM_NULL;
     ScmObj s_expression = SCM_NULL;
-    char  *filepath     = create_valid_path(c_filename);
+    ScmObj filepath     = SCM_FALSE;
+    char  *c_filepath   = create_valid_path(c_filename);
 
     /* sanity check */
-    if (!filepath)
+    if (!c_filepath)
         SigScm_Error("SigScm_load_internal : file \"%s\" not found\n",
                      c_filename);
 
     /* open port */
-    port = ScmOp_open_input_file(Scm_NewStringCopying(filepath));
-    free(filepath);
-    s_expression = SCM_NULL;
+    filepath = Scm_NewStringCopying(c_filepath);
+    free(c_filepath);
+    port = ScmOp_open_input_file(filepath);
     
     /* read & eval cycle */
     for (s_expression = SigScm_Read(port);
