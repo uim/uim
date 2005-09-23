@@ -516,7 +516,6 @@ ScmObj ScmOp_load(ScmObj filename)
 #if SCM_STRICT_R5RS
     return SCM_UNDEF;
 #else
-    /* TODO: reflect succeeded or not */
     return SCM_TRUE;
 #endif
 }
