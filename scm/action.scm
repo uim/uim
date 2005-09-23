@@ -339,8 +339,8 @@
   (lambda (context)
     (let* ((widgets (context-widgets context))
 	   (active-label (lambda (widget)
-			   (let* ((activity (widget-activity widget))
-				  (indication (action-indicate activity
+			   (let* ((indicator (widget-indicator widget))
+				  (indication (action-indicate indicator
 							       context)))
 			     (indication-compose-label indication))))
 	   (labels (map active-label widgets))
