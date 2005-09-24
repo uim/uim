@@ -222,7 +222,7 @@
  * libsscm. Therefore, be avoid making the variables static by combining
  * libsscm into other codes which enables function inlining for them.
  */
-ScmObj (*scm_gc_protect_stack)(ScmObj *) = &SigScm_GC_ProtectStackInternal;
+ScmObj *(*scm_gc_protect_stack)(ScmObj *) = &SigScm_GC_ProtectStackInternal;
 ScmCFunc (*scm_gc_ensure_uninlined_func)(ScmCFunc) = &SigScm_GC_EnsureUninlinedFuncInternal;
 #endif /* SCM_GCC4_READY_GC */
 

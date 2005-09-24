@@ -160,7 +160,7 @@ int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
  * For ensuring that these function calls be uninlined. Dont' access these
  * variables directly.
  */
-extern ScmObj (*scm_gc_protect_stack)(ScmObj *);
+extern ScmObj *(*scm_gc_protect_stack)(ScmObj *);
 extern ScmCFunc (*scm_gc_ensure_uninlined_func)(ScmCFunc);
 #endif /* SCM_GCC4_READY_GC */
 
