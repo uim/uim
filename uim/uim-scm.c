@@ -40,7 +40,7 @@
 #include "sigscheme/sigscheme.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
-#include "uimint.h"
+#include "uim-internal.h"
 
 
 static void uim_scm_error(const char *msg, uim_lisp errobj);

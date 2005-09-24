@@ -37,7 +37,7 @@
 #include <string.h>
 
 #include "uim-compat-scm.h"
-#include "uimint.h"
+#include "uim-internal.h"
 
 #if UIM_SCM_GCC4_READY_GC
 static UIM_SCM_GC_PROTECTED_FUNC_DECL(int,

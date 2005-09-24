@@ -193,7 +193,7 @@ uim_lisp
 uim_scm_return_value(void);
 /*
   TODO: reorganize UIM_EVAL_FSTRINGn(), uim_sizeof_sexp_str() and
-  uim_eval_string() in uimint.h into this file
+  uim_eval_string() in uim-internal.h into this file
 */
 
 /* type conversions */

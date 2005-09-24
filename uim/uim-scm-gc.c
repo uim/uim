@@ -58,6 +58,7 @@ uim_func_ptr (*uim_scm_gc_ensure_uninlined_func_ptr)(uim_func_ptr)
 
 #if UIM_SCM_GCC4_READY_GC
 
+
 void
 uim_scm_gc_protect(uim_lisp *location)
 {

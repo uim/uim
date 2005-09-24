@@ -46,7 +46,7 @@ extern "C" {
 
 /**
  * Get the name of current input method.
- * A uim_uimint.has several input methods, only one of them is
+ * A uim_context has several input methods, only one of them is
  * selected. This function returns the name of currently selected
  * input method.
  * 

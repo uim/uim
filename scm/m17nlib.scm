@@ -152,7 +152,7 @@
 	   (and showing-candidate? candidates-changed?)
 	   (and showing-candidate? (not (m17nlib-lib-candidate-show? mid))))
 	  (begin
-	    (im-deactivate-candidate-selector mc mid)
+	    (im-deactivate-candidate-selector mc)
 	    (m17nlib-context-set-showing-candidate! mc #f)))
 
       (if (and

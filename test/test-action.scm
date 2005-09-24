@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 389 of new repository
+;; This file is tested with revision 1540 of new repository
 
 (use test.unit)
 
@@ -219,6 +219,13 @@
 	  (indicator-new (lambda (owner)
 			   fallback-indication))
 	  #f) ;; has no actions
+
+	 (register-widget
+	  'widget_test_kana_input_method_without_act_indicator
+	  (indicator-new (lambda (owner)
+			   fallback-indication))
+	  (actions-new '(action_test_roma
+			 action_test_kana)))
 
 	 (define tc (test-context-new))
 	 (begin (test-context-set-rkc! tc (rk-context-new ja-rk-rule #t #f))
@@ -1506,6 +1513,18 @@
    (uim '(context-propagate-prop-label-update tc))
    (assert-equal (string-append "ア\tカタカナ\n"
 				"Ｒ\tローマ字\n")
+		 (uim 'test-prop-label))
+   ;; 2 widgets (without latter activity-indicator)
+   (uim '(begin
+	   (context-init-widgets! tc '(widget_test_input_mode
+				       widget_test_kana_input_method_without_act_indicator))
+	   #t))
+   (assert-true (uim-bool '(widget-activate! (assq 'widget_test_input_mode
+						   (context-widgets tc))
+					     'action_test_katakana)))
+   (uim '(context-propagate-prop-label-update tc))
+   (assert-equal (string-append "ア\tカタカナ\n"
+				"?\tunknown\n")
 		 (uim 'test-prop-label))
    ;; 2 widgets with non-existent
    (uim '(begin

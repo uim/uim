@@ -51,7 +51,7 @@
 #include "uim-compat-scm.h"
 #include "uim-compat-scm.h"
 #include "plugin.h"
-#include "uimint.h"
+#include "uim-internal.h"
 
 #ifndef HAVE_DLFUNC
 #define dlfunc dlsym
@@ -60,9 +60,9 @@
 #define PLUGIN_PREFIX "libuim-"
 #define PLUGIN_SUFFIX ".so"
 
-#ifdef DEBUG_SCM
-static int debug_scm = DEBUG_SCM;
-#define DPRINTFN(n,x)  if (debug_scm>(n)) fprintf x;
+#ifdef DEBUG
+static int debug_plugin = DEBUG;
+#define DPRINTFN(n,x)  if (debug_plugin>(n)) fprintf x;
 #else
 #define DPRINTFN(n,x)
 #endif
