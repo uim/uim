@@ -30,6 +30,8 @@ Requirements and bugs:
 
 * [uim] link libsscm into libuim statically
 
+* Split the configuration macros such as SCM_USE_SRFI1 off into config.h
+
 * Dynamic encoding switching for a conversion between string and char list,
   based on a SRFI or de facto standard API
 
@@ -78,6 +80,10 @@ Logical simplifications:
 
 ==============================================================================
 Namings and Cosmetic things:
+
+* Rename "Macro Declarations" of all C files, c_template and h_template to
+  "Macro Definitions" and move to immediately after of "Local Include" section
+  since other declarations and definitions sometimes need macros
 
 * Add a 'SCM' prefix to the global functions listed in sigschemeinternal.h
 
