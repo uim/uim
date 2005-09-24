@@ -62,7 +62,6 @@ static int uim_initialized;
 static int uim_quiting;
 
 /* Definition of mutex */
-UIM_DEFINE_MUTEX(mtx_uim_evaling);
 UIM_DEFINE_MUTEX_STATIC(mtx_initing_or_quiting);
 UIM_DEFINE_MUTEX_STATIC(mtx_context_array);
 
@@ -200,7 +199,7 @@ uim_create_context(void *ptr,
     uim_last_client_encoding = strdup(enc);
   }
 
-  UIM_EVAL_FSTRING3_WITH_MUTEX(uc, "(create-context %d '%s '%s)", uc->id, lang, engine);
+  UIM_EVAL_FSTRING3(uc, "(create-context %d '%s '%s)", uc->id, lang, engine);
 
   return uc;
 }
@@ -208,7 +207,7 @@ uim_create_context(void *ptr,
 void
 uim_reset_context(uim_context uc)
 {
-   UIM_EVAL_FSTRING1_WITH_MUTEX(uc, "(reset-handler %d)", uc->id);
+   UIM_EVAL_FSTRING1(uc, "(reset-handler %d)", uc->id);
 
    /* delete all preedit segments */
    uim_release_preedit_segments(uc);
@@ -230,11 +229,11 @@ uim_switch_im(uim_context uc, const char *engine)
   int id = uc->id;
   uim_reset_context(uc); /* FIXME: reset should be called here? */
 
-  UIM_EVAL_FSTRING1_WITH_MUTEX(uc, "(release-context %d)", uc->id);
+  UIM_EVAL_FSTRING1(uc, "(release-context %d)", uc->id);
   uim_release_preedit_segments(uc);
   uim_update_preedit_segments(uc);
 
-  UIM_EVAL_FSTRING2_WITH_MUTEX(uc, "(create-context %d #f '%s)", id, engine);
+  UIM_EVAL_FSTRING2(uc, "(create-context %d #f '%s)", id, engine);
   if (uc->current_im_name)
     free(uc->current_im_name);
   uc->current_im_name = strdup(engine);
@@ -245,7 +244,7 @@ uim_switch_im(uim_context uc, const char *engine)
   */
   if (uc->short_desc)
     free(uc->short_desc);
-  UIM_EVAL_FSTRING1_WITH_MUTEX(uc, "(uim-get-im-short-desc '%s)", im->name);
+  UIM_EVAL_FSTRING1(uc, "(uim-get-im-short-desc '%s)", im->name);
   uc->short_desc = uim_return_str;
   uim_return_str = NULL;  /* ownership has been transferred */
 #endif
@@ -259,7 +258,7 @@ uim_release_context(uim_context uc)
   if (!uc)
     return;
 
-  UIM_EVAL_FSTRING1_WITH_MUTEX(uc, "(release-context %d)", uc->id);
+  UIM_EVAL_FSTRING1(uc, "(release-context %d)", uc->id);
   put_context_id(uc);
   if (uc->conv) {
     uc->conv_if->release(uc->conv);
@@ -333,7 +332,7 @@ uim_prop_activate(uim_context uc, const char *str)
   if (!str)
     return;
       
-  UIM_EVAL_FSTRING2_WITH_MUTEX(uc, "(prop-activate-handler %d \"%s\")",
+  UIM_EVAL_FSTRING2(uc, "(prop-activate-handler %d \"%s\")",
 		    uc->id, str);
 }
 
@@ -350,7 +349,7 @@ uim_prop_update_custom(uim_context uc, const char *custom, const char *val)
   if (!custom || !val)
     return;
 
-  UIM_EVAL_FSTRING3_WITH_MUTEX(uc, "(custom-set-handler %d '%s %s)",
+  UIM_EVAL_FSTRING3(uc, "(custom-set-handler %d '%s %s)",
 		    uc->id, custom, val);
 }
 
@@ -381,7 +380,7 @@ void
 uim_set_mode(uim_context uc, int mode)
 {
   uc->mode = mode;
-  UIM_EVAL_FSTRING2_WITH_MUTEX(uc, "(mode-handler %d %d)", uc->id, mode);
+  UIM_EVAL_FSTRING2(uc, "(mode-handler %d %d)", uc->id, mode);
 }
 
 void
@@ -475,7 +474,7 @@ uim_get_im_short_desc(uim_context uc, int nth)
   if (im) {
     if (im->short_desc)
       free(im->short_desc);
-    UIM_EVAL_FSTRING1_WITH_MUTEX(uc, "(uim-get-im-short-desc '%s)", im->name);
+    UIM_EVAL_FSTRING1(uc, "(uim-get-im-short-desc '%s)", im->name);
     im->short_desc = uim_return_str;
     uim_return_str = NULL;  /* ownership has been transferred */
     return im->short_desc;
@@ -515,7 +514,7 @@ const char *
 uim_get_default_im_name(const char *localename)
 {
   const char *valid_default_im_name;
-  UIM_EVAL_FSTRING1_WITH_MUTEX(NULL, "(uim-get-default-im-name \"%s\")", localename);
+  UIM_EVAL_FSTRING1(NULL, "(uim-get-default-im-name \"%s\")", localename);
   valid_default_im_name = uim_check_im_exist(uim_return_str);
 
   if (!valid_default_im_name)
@@ -527,7 +526,7 @@ const char *
 uim_get_im_name_for_locale(const char *localename)
 {
   const char *valid_im_name;
-  UIM_EVAL_FSTRING1_WITH_MUTEX(NULL, "(uim-get-im-name-for-locale \"%s\")", localename);
+  UIM_EVAL_FSTRING1(NULL, "(uim-get-im-name-for-locale \"%s\")", localename);
   valid_im_name = uim_check_im_exist(uim_return_str);
 
   if (!valid_im_name)
@@ -554,8 +553,8 @@ uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
 {
   uim_candidate cand = malloc(sizeof(*cand));
   memset(cand, 0, sizeof(*cand));
-  UIM_EVAL_FSTRING3_WITH_MUTEX(uc, "(get-candidate %d %d %d)",
-			       uc->id, index, accel_enumeration_hint);
+  UIM_EVAL_FSTRING3(uc, "(get-candidate %d %d %d)",
+		    uc->id, index, accel_enumeration_hint);
 
   if (uim_return_str_list[0] && uim_return_str_list[1]) {
     cand->str = uc->conv_if->convert(uc->conv, uim_return_str_list[0]);
@@ -609,7 +608,7 @@ int uim_get_candidate_index(uim_context uc)
 void
 uim_set_candidate_index(uim_context uc, int nth)
 {
-  UIM_EVAL_FSTRING2_WITH_MUTEX(uc, "(set-candidate-index %d %d)", uc->id, nth);
+  UIM_EVAL_FSTRING2(uc, "(set-candidate-index %d %d)", uc->id, nth);
   return ;
 }
 
@@ -676,8 +675,8 @@ uim_init_scm(void)
    const char *client_enc;
 
    /* portable equivalent of nl_langinfo(CODESET) */
-   UIM_EVAL_FSTRING1_WITH_MUTEX(NULL, "(locale-lang (locale-new \"%s\"))",
-				setlocale(LC_CTYPE, NULL));
+   UIM_EVAL_FSTRING1(NULL, "(locale-lang (locale-new \"%s\"))",
+		     setlocale(LC_CTYPE, NULL));
    client_enc = uim_scm_refer_c_str(uim_scm_return_value());
    uim_last_client_encoding = strdup(client_enc);
  }
