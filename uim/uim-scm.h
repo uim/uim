@@ -75,6 +75,21 @@ typedef void (*uim_func_ptr)(void);
 #define NFALSEP(x) (!uim_scm_eq(x, uim_scm_f()))
 
 
+#if UIM_SCM_GCC4_READY_GC
+/*
+ * For ensuring that these function calls be uninlined. Don't access these
+ * variables directly.
+ *
+ * Exporting the variables ensures that a expression (*f)() is certainly real
+ * function call since the variables can be updated from outside of
+ * libuim. Therefore, be avoid making the variables static by combining libuim
+ * into other codes which enables function inlining for them.
+ */
+extern uim_lisp *(*uim_scm_gc_protect_stack_ptr)(void);
+extern uim_func_ptr (*uim_scm_gc_ensure_uninlined_func_ptr)(uim_func_ptr);
+#endif /* UIM_SCM_GCC4_READY_GC */
+
+
 /* 'uim_scm' prefix is not appropriate for these functions... any ideas? */
 FILE *
 uim_scm_get_output(void);
@@ -121,14 +136,26 @@ uim_scm_set_lib_path(const char *path);
         uim_scm_gc_unprotect_stack(stack_start);                             \
     } while (/* CONSTCOND */ 0)
 
+/*
+ * Ordinary programs should not call these functions directly. Use
+ * UIM_SCM_GC_CALL_PROTECTED_*FUNC() instead.
+ */
+#ifdef __GNUC__
+#define uim_scm_gc_protect_stack uim_scm_gc_protect_stack_internal
+#define uim_scm_gc_ensure_uninlined_func uim_scm_gc_ensure_uninlined_func_internal
+#else /* __GNUC__ */
+#define uim_scm_gc_protect_stack (*uim_scm_gc_protect_stack_ptr)
+#define uim_scm_gc_ensure_uninlined_func (*uim_scm_gc_ensure_uninlined_func_ptr)
+#endif /* __GNUC__ */
 void
 uim_scm_gc_protect(uim_lisp *location);
-uim_lisp *
-uim_scm_gc_protect_stack(void) UIM_SCM_NOINLINE;
 void
 uim_scm_gc_unprotect_stack(uim_lisp *stack_start);
+
+uim_lisp *
+uim_scm_gc_protect_stack_internal(void) UIM_SCM_NOINLINE;
 uim_func_ptr
-uim_scm_gc_ensure_uninlined_func(uim_func_ptr func) UIM_SCM_NOINLINE;
+uim_scm_gc_ensure_uninlined_func_internal(uim_func_ptr func) UIM_SCM_NOINLINE;
 #else /* UIM_SCM_GCC4_READY_GC */
 void
 uim_scm_gc_protect(uim_lisp *location);
