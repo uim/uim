@@ -124,11 +124,11 @@ uim_scm_set_lib_path(const char *path);
 void
 uim_scm_gc_protect(uim_lisp *location);
 uim_lisp *
-uim_scm_gc_protect_stack(void);
+uim_scm_gc_protect_stack(void) UIM_SCM_NOINLINE;
 void
 uim_scm_gc_unprotect_stack(uim_lisp *stack_start);
 uim_func_ptr
-uim_scm_gc_ensure_uninlined_func(uim_func_ptr func);
+uim_scm_gc_ensure_uninlined_func(uim_func_ptr func) UIM_SCM_NOINLINE;
 #else /* UIM_SCM_GCC4_READY_GC */
 void
 uim_scm_gc_protect(uim_lisp *location);
