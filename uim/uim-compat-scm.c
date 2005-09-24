@@ -38,7 +38,7 @@
 
 #include "siod.h"
 #include "uim-compat-scm.h"
-#include "uimint.h"
+#include "uim-internal.h"
 
 
 #if UIM_SCM_GCC4_READY_GC

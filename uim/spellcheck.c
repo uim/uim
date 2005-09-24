@@ -31,7 +31,7 @@
 
 */
 
-#include "uimint.h"
+#include "uim-internal.h"
 
 static FILE *spell_r = NULL, *spell_w = NULL;
 static int spell_pid = 0;

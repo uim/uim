@@ -50,7 +50,7 @@
 #include "uim-compat-scm.h"
 
 /* for uim_init_intl_subrs() */
-#include "uimint.h"
+#include "uim-internal.h"
 
 static uim_lisp
 intl_gettext_package()

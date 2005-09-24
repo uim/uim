@@ -44,7 +44,7 @@
 #include <unistd.h>
 #include "uim.h"
 #include "uim-helper.h"
-#include "uimint.h"
+#include "uim-internal.h"
 
 
 #define RECV_BUFFER_SIZE 1024

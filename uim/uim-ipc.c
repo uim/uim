@@ -43,7 +43,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "uimint.h"
+#include "uim-internal.h"
 #include "uim-helper.h"
 #include "uim-util.h"
 
