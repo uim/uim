@@ -225,15 +225,22 @@
   Function Implementations
 =======================================*/
 #if SCM_GCC4_READY_GC
-ScmObj *SigScm_GC_ProtectStack(void)
+ScmObj *SigScm_GC_ProtectStack(ScmObj *designated_stack_start)
 {
-    ScmObj stack_start = NULL;
+    /*
+     * &stack_start will be relocated to start of the frame of subsequent
+     * function call
+     */
+    ScmObj stack_start;
+
+    if (!designated_stack_start)
+        designated_stack_start = &stack_start;
 
     if (!scm_stack_start_pointer)
-        scm_stack_start_pointer = &stack_start;
+        scm_stack_start_pointer = designated_stack_start;
 
-    /* intentionally returning invalidated local address */
-    return &stack_start;
+    /* may intentionally be an invalidated local address */
+    return designated_stack_start;
 }
 
 void SigScm_GC_UnprotectStack(ScmObj *stack_start)

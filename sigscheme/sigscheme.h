@@ -146,7 +146,7 @@ int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
         SCM_GC_PROTECTED_FUNC_T(func) fp;                                    \
         ScmObj *stack_start;                                                 \
                                                                              \
-        stack_start = SigScm_GC_ProtectStack();                              \
+        stack_start = SigScm_GC_ProtectStack(NULL);                          \
         fp = (SCM_GC_PROTECTED_FUNC_T(func))                                 \
                   SigScm_GC_EnsureUninlinedFunc((ScmCFunc)&func);            \
         exp_ret (*fp)args;                                                   \
@@ -213,7 +213,7 @@ ScmObj Scm_return_value(void);
  * Ordinary programs should not call these functions directly. Use
  * SCM_GC_CALL_PROTECTED_*FUNC() instead.
  */
-ScmObj *SigScm_GC_ProtectStack(void) SCM_NOINLINE;
+ScmObj *SigScm_GC_ProtectStack(ScmObj *designated_stack_start) SCM_NOINLINE;
 void SigScm_GC_UnprotectStack(ScmObj *stack_start) SCM_NOINLINE;
 ScmCFunc SigScm_GC_EnsureUninlinedFunc(ScmCFunc func) SCM_NOINLINE;
 #endif /* SCM_GCC4_READY_GC */
