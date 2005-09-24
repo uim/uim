@@ -45,6 +45,10 @@ uim_scm_gc_protect(uim_lisp *location)
 uim_lisp *
 uim_scm_gc_protect_stack(void)
 {
+  /*
+   * &stack_start will be relocated to start of the frame of subsequent
+   * function call
+   */
   LISP stack_start;
 
   siod_gc_protect_stack(&stack_start);
