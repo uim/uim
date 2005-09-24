@@ -38,12 +38,17 @@
 #include <string.h>
 #include <ctype.h>
 #include "sigscheme/sigscheme.h"
-#include "sigscheme/sigschemetype.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "uimint.h"
 
+
+static void uim_scm_error(const char *msg, uim_lisp errobj);
+
 #if UIM_SCM_GCC4_READY_GC
+static UIM_SCM_GC_PROTECTED_FUNC_DECL(void,
+				      uim_scm_error_internal,
+				      (const char *msg, uim_lisp errobj));
 static UIM_SCM_GC_PROTECTED_FUNC_DECL(int,
 				      uim_scm_c_int_internal,
 				      (uim_lisp integer));
@@ -53,13 +58,12 @@ static UIM_SCM_GC_PROTECTED_FUNC_DECL(const char *,
 static UIM_SCM_GC_PROTECTED_FUNC_DECL(uim_lisp,
 				      uim_scm_eval_internal,
 				      (uim_lisp obj));
-static UIM_SCM_GC_PROTECTED_FUNC_DECL(void,
-				      siod_init_subr_internal,
-				      (const char *name, long type,
-				       SUBR_FUNC fcn));
 static UIM_SCM_GC_PROTECTED_FUNC_DECL(uim_lisp,
 				      uim_scm_eval_c_string_internal,
 				      (const char *str));
+static UIM_SCM_GC_PROTECTED_FUNC_DECL(uim_bool,
+				      uim_scm_require_file_internal,
+				      (const char *fn));
 #endif
 
 static uim_lisp true_sym;
@@ -69,8 +73,6 @@ static uim_lisp protected_arg0;
 static int uim_siod_fatal;
 static FILE *uim_output = NULL;
 
-static void uim_scm_error(const char *msg, uim_lisp errobj);
-
 #ifdef UIM_COMPAT_SCM
 #include "uim-compat-scm.c"
 #endif
@@ -78,13 +80,27 @@ static void uim_scm_error(const char *msg, uim_lisp errobj);
 
 static void
 uim_scm_error(const char *msg, uim_lisp errobj)
+#if UIM_SCM_GCC4_READY_GC
 {
+  UIM_SCM_GC_CALL_PROTECTED_VOID_FUNC(uim_scm_error_internal, (msg, errobj));
+}
+
+static void
+uim_scm_error_internal(const char *msg, uim_lisp errobj)
+#endif /* UIM_SCM_GCC4_READY_GC */
+{
+#if !UIM_SCM_GCC4_READY_GC
   uim_lisp stack_start;
 
   uim_scm_gc_protect_stack(&stack_start);
+#endif
+
   /* FIXME: don't terminate the process */
   SigScm_ErrorObj(msg, (ScmObj)errobj);
+
+#if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_unprotect_stack(&stack_start);
+#endif
 }
 
 FILE *
@@ -134,8 +150,13 @@ uim_scm_c_int_internal(uim_lisp integer)
   uim_scm_gc_protect_stack(&stack_start);
 #endif
 
-  protected_arg0 = integer;
-  c_int = get_c_int((LISP)integer);
+  if (SCM_INTP((ScmObj)integer)) {
+    c_int = SCM_INT_VALUE((ScmObj)integer);
+  } else {
+    uim_scm_error("uim_scm_c_int: number required but got ",
+                  (uim_lisp)integer);
+    c_int = -1;
+  }
 
 #if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_unprotect_stack(&stack_start);
@@ -183,8 +204,15 @@ uim_scm_refer_c_str_internal(uim_lisp str)
   uim_scm_gc_protect_stack(&stack_start);
 #endif
 
-  protected_arg0 = str;
-  c_str = get_c_string((LISP)str);
+  if (SCM_STRINGP((ScmObj)str)) {
+    c_str = SCM_STRING_STR((ScmObj)str);
+  } else if (SCM_SYMBOLP((ScmObj)str)) {
+    c_str = SCM_SYMBOL_NAME((ScmObj)str);
+  } else {
+    uim_scm_error("uim_scm_refer_c_str: string or symbol required but got ",
+                  (uim_lisp)str);
+    c_str = NULL;
+  }
 
 #if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_unprotect_stack(&stack_start);
@@ -396,7 +424,7 @@ uim_scm_eval_internal(uim_lisp obj)
   uim_scm_gc_protect_stack(&stack_start);
 #endif
 
-  ret = (uim_lisp)leval((LISP)obj, NIL);
+  ret = (uim_lisp)ScmOp_eval((ScmObj)obj, SCM_NULL);
 
 #if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_unprotect_stack(&stack_start);
@@ -430,8 +458,7 @@ static uim_lisp
 uim_scm_eval_c_string_internal(const char *str)
 #endif
 {
-  repl_c_string((char *)str, 0, 0);
-  return uim_scm_return_value();
+  return (uim_lisp)Scm_eval_c_string(str);
 }
 
 uim_lisp
@@ -497,8 +524,22 @@ uim_scm_reverse(uim_lisp lst)
 
 uim_bool
 uim_scm_require_file(const char *fn)
+#if UIM_SCM_GCC4_READY_GC
 {
+  uim_bool ret;
+
+  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, uim_scm_require_file_internal, (fn));
+
+  return ret;
+}
+
+static uim_bool
+uim_scm_require_file_internal(const char *fn)
+#endif /* UIM_SCM_GCC4_READY_GC */
+{
+#if !UIM_SCM_GCC4_READY_GC
   uim_lisp stack_start;
+#endif
 
   if (!fn)
     return UIM_FALSE;
@@ -506,36 +547,19 @@ uim_scm_require_file(const char *fn)
   /*
    * FIXME: Replace with SigScm_require() which contains the stack protection
    */
+#if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_protect_stack(&stack_start);
+#endif
+
   ScmOp_require(Scm_NewStringCopying(fn));
+
+#if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_unprotect_stack(&stack_start);
+#endif
 
   /* FIXME */
   return UIM_TRUE;
 }
-
-#if 0
-siod_init_subr(const char *name, long type, SUBR_FUNC fcn)
-#if UIM_SCM_GCC4_READY_GC
-{
-  UIM_SCM_GC_CALL_PROTECTED_VOID_FUNC(siod_init_subr_internal,
-				      (name, type, fcn));
-}
-
-static void
-siod_init_subr_internal(const char *name, long type, SUBR_FUNC fcn)
-{
-  init_subr(name, type, fcn);
-}
-#else
-{
-  uim_lisp stack_start;
-
-  uim_scm_gc_protect_stack(&stack_start);
-  init_subr(name, type, fcn);
-  uim_scm_gc_unprotect_stack(&stack_start);
-}
-#endif
 
 void
 uim_scm_init_subr_0(const char *name, uim_lisp (*func)(void))

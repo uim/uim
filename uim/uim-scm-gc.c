@@ -31,31 +31,34 @@
 
 */
 
-#include "siod.h"
+#include "sigscheme/sigscheme.h"
 #include "uim-scm.h"
 
 
 #if UIM_SCM_GCC4_READY_GC
+
+#if !SCM_GCC4_READY_GC
+#error "UIM_SCM_GCC4_READY_GC requires SCM_GCC4_READY_GC-enabled SigScheme"
+#endif
+
 void
 uim_scm_gc_protect(uim_lisp *location)
 {
-  siod_gc_protect((LISP *)location);
+  SigScm_GC_Protect((ScmObj *)location);
 }
 
 uim_lisp *
 uim_scm_gc_protect_stack(void)
 {
-  LISP stack_start;
+  ScmObj stack_start;
 
-  siod_gc_protect_stack(&stack_start);
-
-  return (uim_lisp *)&stack_start;
+  return (uim_lisp *)SigScm_GC_ProtectStack(&stack_start);
 }
 
 void
 uim_scm_gc_unprotect_stack(uim_lisp *stack_start)
 {
-  siod_gc_unprotect_stack((LISP *)stack_start);
+  SigScm_GC_UnprotectStack((ScmObj *)stack_start);
 }
 
 uim_func_ptr

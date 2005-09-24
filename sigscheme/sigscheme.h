@@ -78,7 +78,7 @@ typedef void (*ScmCFunc)(void);
 #define SCM_STRICT_R5RS         0  /* use strict R5RS check */
 #define SCM_STRICT_ARGCHECK     0  /* enable strict argument check */
 #define SCM_ACCESSOR_ASSERT     0  /* enable strict type check with accessor */
-#define SCM_GCC4_READY_GC       0  /* use experimental gcc4-ready stack protection */
+#define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
 #define SCM_USE_VALUECONS       0  /* use experimental values passing */
 
 /* dependency resolution */
