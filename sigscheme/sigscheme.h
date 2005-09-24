@@ -214,7 +214,7 @@ ScmObj Scm_return_value(void);
  * SCM_GC_CALL_PROTECTED_*FUNC() instead.
  */
 ScmObj *SigScm_GC_ProtectStack(ScmObj *designated_stack_start) SCM_NOINLINE;
-void SigScm_GC_UnprotectStack(ScmObj *stack_start) SCM_NOINLINE;
+void SigScm_GC_UnprotectStack(ScmObj *stack_start);
 ScmCFunc SigScm_GC_EnsureUninlinedFunc(ScmCFunc func) SCM_NOINLINE;
 #endif /* SCM_GCC4_READY_GC */
 
