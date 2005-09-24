@@ -212,6 +212,19 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+#if SCM_GCC4_READY_GC
+/*
+ * For ensuring that these function calls be uninlined. Don't access these
+ * variables directly.
+ *
+ * Exporting the variables ensures that a expression (*f)() is certainly real
+ * function call since the variables can be updated from outside of
+ * libsscm. Therefore, be avoid making the variables static by combining
+ * libsscm into other codes which enables function inlining for them.
+ */
+ScmObj (*scm_gc_protect_stack)(ScmObj *) = &SigScm_GC_ProtectStackInternal;
+ScmCFunc (*scm_gc_ensure_uninlined_func)(ScmCFunc) = &SigScm_GC_EnsureUninlinedFuncInternal;
+#endif /* SCM_GCC4_READY_GC */
 
 /*=======================================
   File Local Function Declarations
@@ -225,7 +238,7 @@
   Function Implementations
 =======================================*/
 #if SCM_GCC4_READY_GC
-ScmObj *SigScm_GC_ProtectStack(ScmObj *designated_stack_start)
+ScmObj *SigScm_GC_ProtectStackInternal(ScmObj *designated_stack_start)
 {
     /*
      * &stack_start will be relocated to start of the frame of subsequent
@@ -249,7 +262,7 @@ void SigScm_GC_UnprotectStack(ScmObj *stack_start)
         scm_stack_start_pointer = NULL;
 }
 
-ScmCFunc SigScm_GC_EnsureUninlinedFunc(ScmCFunc func)
+ScmCFunc SigScm_GC_EnsureUninlinedFuncInternal(ScmCFunc func)
 {
     return func;
 }

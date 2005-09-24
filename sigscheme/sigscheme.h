@@ -59,10 +59,6 @@ typedef void (*ScmCFunc)(void);
 #include "sigschemetype.h"
 
 /*=======================================
-   Variable Declarations
-=======================================*/
-
-/*=======================================
    Macro Declarations
 =======================================*/
 /* FIXME: split off to config.h */
@@ -156,6 +152,19 @@ int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
 #endif /* SCM_GCC4_READY_GC */
 
 /*=======================================
+   Variable Declarations
+=======================================*/
+/* storage-protection.c */
+#if SCM_GCC4_READY_GC
+/*
+ * For ensuring that these function calls be uninlined. Dont' access these
+ * variables directly.
+ */
+extern ScmObj (*scm_gc_protect_stack)(ScmObj *);
+extern ScmCFunc (*scm_gc_ensure_uninlined_func)(ScmCFunc);
+#endif /* SCM_GCC4_READY_GC */
+
+/*=======================================
    Function Declarations
 =======================================*/
 /*===========================================================================
@@ -213,9 +222,17 @@ ScmObj Scm_return_value(void);
  * Ordinary programs should not call these functions directly. Use
  * SCM_GC_CALL_PROTECTED_*FUNC() instead.
  */
-ScmObj *SigScm_GC_ProtectStack(ScmObj *designated_stack_start) SCM_NOINLINE;
+#ifdef __GNUC__
+#define SigScm_GC_ProtectStack SigScm_GC_ProtectStackInternal
+#define SigScm_GC_EnsureUninlinedFunc SigScm_GC_EnsureUninlinedFuncInternal
+#else /* __GNUC__ */
+#define SigScm_GC_ProtectStack (*scm_gc_protect_stack)
+#define SigScm_GC_EnsureUninlinedFunc (*scm_gc_ensure_uninlined_func)
+#endif /* __GNUC__ */
 void SigScm_GC_UnprotectStack(ScmObj *stack_start);
-ScmCFunc SigScm_GC_EnsureUninlinedFunc(ScmCFunc func) SCM_NOINLINE;
+
+ScmObj *SigScm_GC_ProtectStackInternal(ScmObj *designated_stack_start) SCM_NOINLINE;
+ScmCFunc SigScm_GC_EnsureUninlinedFuncInternal(ScmCFunc func) SCM_NOINLINE;
 #endif /* SCM_GCC4_READY_GC */
 
 /* eval.c */
