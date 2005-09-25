@@ -410,10 +410,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterFunc1("symbol-bound?"        , ScmOp_symbol_boundp);
     Scm_RegisterFunc1("symbol-value"         , ScmOp_symbol_value);
     Scm_RegisterFunc2("set-symbol-value!"    , ScmOp_set_symbol_value);
-#if 0
-    /*SCM_COMPAT_SIOD_BUGS*/
-    /* Is this necessary? This procedure's functionality is a full
-       subset of what's specified by R5RS.  */
+#if SCM_COMPAT_SIOD_BUGS
     Scm_RegisterFunc2("="                    , ScmOp_siod_eql);
 #endif
     SCM_DEFINE_ALIAS("bit-and"               , "logand");
