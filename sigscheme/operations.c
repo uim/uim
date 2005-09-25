@@ -251,90 +251,100 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
 ==============================================================================*/
 /* Note: SigScheme supports only the integer part of the numerical tower. */
 
-/* TODO: Simplify with SCM_REDUCE*() macro */
-ScmObj ScmOp_add(ScmObj args, ScmObj env)
+ScmObj ScmOp_add(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     int result = 0;
-    ScmObj operand = SCM_NULL;
-
-    for (; !NULLP(args); args = CDR(args)) {
-        operand = EVAL(CAR(args), env);
-        if (!INTP(operand))
-            SigScm_ErrorObj("+ : integer required but got ", operand);
-        result += SCM_INT_VALUE(operand);
+    switch (*state) {
+    case SCM_REDUCE_PARTWAY:
+    case SCM_REDUCE_LAST:
+        if (!INTP(left))
+            SigScm_ErrorObj("+ : integer required but got ", left);
+        result = SCM_INT_VALUE(left);
+        /* Fall through. */
+    case SCM_REDUCE_1:
+        if (!INTP(right))
+            SigScm_ErrorObj("+ : integer required but got ", right);
+        result += SCM_INT_VALUE(right);
+        /* Fall through. */
+    case SCM_REDUCE_0:
+        break;
+    default:
+        SigScm_Error("+ : (internal error) unrecognized state specifier: ", *state);
     }
 
     return Scm_NewInt(result);
 }
 
-/* TODO: Simplify with SCM_REDUCE*() macro */
-ScmObj ScmOp_multiply(ScmObj args, ScmObj env)
+ScmObj ScmOp_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     int result = 1;
-    ScmObj operand = SCM_NULL;
-
-    for (; !NULLP(args); args = CDR(args)) {
-        operand = EVAL(CAR(args), env);
-        if (!INTP(operand))
-            SigScm_ErrorObj("* : integer required but got ", operand);
-        result *= SCM_INT_VALUE(operand);
+    switch (*state) {
+    case SCM_REDUCE_PARTWAY:
+    case SCM_REDUCE_LAST:
+        if (!INTP(left))
+            SigScm_ErrorObj("* : integer required but got ", left);
+        result = SCM_INT_VALUE(left);
+        /* Fall through. */
+    case SCM_REDUCE_1:
+        if (!INTP(right))
+            SigScm_ErrorObj("* : integer required but got ", right);
+        result *= SCM_INT_VALUE(right);
+        /* Fall through. */
+    case SCM_REDUCE_0:
+        break;
+    default:
+        SigScm_Error("* : (internal error) unrecognized state specifier: ", *state);
     }
 
     return Scm_NewInt(result);
 }
 
-/* TODO: Simplify with SCM_REDUCE*() macro */
-ScmObj ScmOp_subtract(ScmObj args, ScmObj env)
+ScmObj ScmOp_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     int result = 0;
-    ScmObj operand = SCM_NULL;
+    switch (*state) {
+    case SCM_REDUCE_PARTWAY:
+    case SCM_REDUCE_LAST:
+        if (!INTP(left))
+            SigScm_ErrorObj("- : integer required but got ", left);
+        result = SCM_INT_VALUE(left);
+        /* Fall through. */
+    case SCM_REDUCE_1:
+        if (!INTP(right))
+            SigScm_ErrorObj("- : integer required but got ", right);
+        result -= SCM_INT_VALUE(right);
+        break;
 
-    if (NULLP(args))
+    case SCM_REDUCE_0:
         SigScm_Error("- : at least 1 argument required\n");
-
-    result = SCM_INT_VALUE(EVAL(CAR(args), env));
-    args = CDR(args);
-
-    /* single arg */
-    if (NULLP(args))
-        return Scm_NewInt(-result);
-
-    for (; !NULLP(args); args = CDR(args)) {
-        operand = EVAL(CAR(args), env);
-        if (!INTP(operand))
-            SigScm_ErrorObj("- : integer required but got ", operand);
-        result -= SCM_INT_VALUE(operand);
+    default:
+        SigScm_Error("- : (internal error) unrecognized state specifier: ", *state);
     }
-    
     return Scm_NewInt(result);
 }
 
-/* TODO: Simplify with SCM_REDUCE*() macro */
-ScmObj ScmOp_divide(ScmObj args, ScmObj env)
+ScmObj ScmOp_divide(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    int result = 0;
-    ScmObj operand = SCM_NULL;
-
-    if (NULLP(args))
+    int result = 1;
+    switch (*state) {
+    case SCM_REDUCE_PARTWAY:
+    case SCM_REDUCE_LAST:
+        if (!INTP(left))
+            SigScm_ErrorObj("/ : integer required but got ", left);
+        result = SCM_INT_VALUE(left);
+        /* Fall through. */
+    case SCM_REDUCE_1:
+        if (!INTP(right))
+            SigScm_ErrorObj("/ : integer required but got ", right);
+        if (SCM_INT_VALUE(right) == 0)
+            SigScm_Error("/ : division by zero\n");
+        result /= SCM_INT_VALUE(right);
+        break;
+    case SCM_REDUCE_0:
         SigScm_Error("/ : at least 1 argument required\n");
-
-    result = SCM_INT_VALUE(EVAL(CAR(args), env));
-    args = CDR(args);
-
-    /* single arg */
-    if (NULLP(args))
-        return Scm_NewInt(1 / result);
-
-    for (; !NULLP(args); args = CDR(args)) {
-        operand = EVAL(CAR(args), env);
-        if (!INTP(operand))
-            SigScm_ErrorObj("/ : integer required but got ", operand);
-
-        if (SCM_INT_VALUE(operand) == 0)
-            SigScm_ErrorObj("/ : division by zero ", args);
-        result /= SCM_INT_VALUE(operand);
+    default:
+        SigScm_Error("/ : (internal error) unrecognized state specifier: ", *state);
     }
-
     return Scm_NewInt(result);
 }
 
@@ -343,171 +353,51 @@ ScmObj ScmOp_numberp(ScmObj obj)
     return (INTP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-/* TODO: Simplify with SCM_REDUCE*() macro */
-ScmObj ScmOp_equal(ScmObj args, ScmObj env)
+ScmObj ScmOp_equal(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    int    val = 0;
-    ScmObj obj = SCM_NULL;
 
-    /* arglen check */
-    if CHECK_2_ARGS(args)
-        SigScm_Error("= : Wrong number of arguments\n");
+#define COMPARATOR_BODY(op, opstr) \
+    switch (*state) { \
+    case SCM_REDUCE_0: \
+    case SCM_REDUCE_1: \
+        SigScm_Error(opstr " : at least 2 arguments required\n"); \
+    case SCM_REDUCE_PARTWAY: \
+    case SCM_REDUCE_LAST: \
+        if (!INTP(left)) \
+            SigScm_ErrorObj(opstr " : integer required but got ", left); \
+        if (!INTP(right)) \
+            SigScm_ErrorObj(opstr " : integer required but got ", right); \
+        if (SCM_INT_VALUE(left) op SCM_INT_VALUE(right)) \
+            return *state == SCM_REDUCE_LAST ? SCM_TRUE : right; \
+        *state = SCM_REDUCE_STOP; \
+        return SCM_FALSE; \
+    default: \
+        SigScm_Error(opstr " : (internal error) unrecognized state specifier: ", *state); \
+    } \
+    return SCM_INVALID
 
-    /* type check */
-    if (FALSEP(ScmOp_numberp(CAR(args))))
-        SigScm_ErrorObj("= : number required but got ", CAR(args));
-
-    /* Get first value */
-    val = SCM_INT_VALUE(CAR(args));
-
-    /* compare following value */
-    for (args = CDR(args); !NULLP(args); args = CDR(args)) {
-        obj = CAR(args);
-        if (FALSEP(ScmOp_numberp(obj)))
-            SigScm_ErrorObj("= : number required but got ", obj);
-
-        if (SCM_INT_VALUE(obj) != val)
-            return SCM_FALSE;
-    }
-
-    return SCM_TRUE;
+    COMPARATOR_BODY(==, "=");
 }
 
-/* TODO: Simplify with SCM_REDUCE*() macro */
-ScmObj ScmOp_less(ScmObj args, ScmObj env )
+ScmObj ScmOp_less(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    int    val     = 0;
-    int    car_val = 0;
-    ScmObj obj     = SCM_NULL;
-
-    if (NULLP(args) || NULLP(CDR(args)))
-        SigScm_Error("< : Wrong number of arguments\n");
-
-    /* type check */
-    if (FALSEP(ScmOp_numberp(CAR(args))))
-        SigScm_ErrorObj("< : number required but got ", CAR(args));
-
-    /* Get first value */
-    val = SCM_INT_VALUE(CAR(args));
-
-    /* compare following value */
-    for (args = CDR(args); !NULLP(args); args = CDR(args)) {
-        obj = CAR(args);
-        if (FALSEP(ScmOp_numberp(obj)))
-            SigScm_ErrorObj("< : number required but got ", obj);
-
-        car_val = SCM_INT_VALUE(obj);
-        if (val < car_val)
-            val = car_val;
-        else
-            return SCM_FALSE;
-    }
-
-    return SCM_TRUE;
+    COMPARATOR_BODY(<, "<");
 }
 
-/* TODO: Simplify with SCM_REDUCE*() macro */
-ScmObj ScmOp_greater(ScmObj args, ScmObj env )
+ScmObj ScmOp_less_eq(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    int    val     = 0;
-    int    car_val = 0;
-    ScmObj obj     = SCM_NULL;
-
-    /* type check */
-    if (FALSEP(ScmOp_numberp(CAR(args))))
-        SigScm_ErrorObj("> : number required but got ", CAR(args));
-
-    /* arglen check */
-    if CHECK_2_ARGS(args)
-        SigScm_Error("> : Wrong number of arguments\n");
-
-    /* Get first value */
-    val = SCM_INT_VALUE(CAR(args));
-
-    /* compare following value */
-    for (args = CDR(args); !NULLP(args); args = CDR(args)) {
-        obj = CAR(args);
-        if (FALSEP(ScmOp_numberp(obj)))
-            SigScm_ErrorObj("> : number required but got ", obj);
-
-        car_val = SCM_INT_VALUE(obj);
-        if (val > car_val)
-            val = car_val;
-        else
-            return SCM_FALSE;
-    }
-
-    return SCM_TRUE;
+    COMPARATOR_BODY(<=, "<=");
 }
 
-/* TODO: Simplify with SCM_REDUCE*() macro */
-ScmObj ScmOp_less_eq(ScmObj args, ScmObj env )
+ScmObj ScmOp_greater(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    int    val     = 0;
-    int    car_val = 0;
-    ScmObj obj     = SCM_NULL;
-
-    /* type check */
-    if (FALSEP(ScmOp_numberp(CAR(args))))
-        SigScm_ErrorObj("<= : number required but got ", CAR(args));
-
-    /* arglen check */
-    if CHECK_2_ARGS(args)
-        SigScm_Error("<= : Wrong number of arguments\n");
-
-    /* Get first value */
-    val = SCM_INT_VALUE(CAR(args));
-
-    /* compare following value */
-    obj = SCM_NULL;
-    for (args = CDR(args); !NULLP(args); args = CDR(args)) {
-        obj = CAR(args);
-        if (FALSEP(ScmOp_numberp(obj)))
-            SigScm_ErrorObj("<= : number required but got ", obj);
-
-        car_val = SCM_INT_VALUE(obj);
-        if (val <= car_val)
-            val = car_val;
-        else
-            return SCM_FALSE;
-    }
-
-    return SCM_TRUE;
+    COMPARATOR_BODY(>, ">");
 }
 
-/* TODO: Simplify with SCM_REDUCE*() macro */
-ScmObj ScmOp_greater_eq(ScmObj args, ScmObj env )
+ScmObj ScmOp_greater_eq(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    int    val     = 0;
-    int    car_val = 0;
-    ScmObj obj     = SCM_NULL;
-
-    /* type check */
-    if (FALSEP(ScmOp_numberp(CAR(args))))
-        SigScm_ErrorObj(">= : number required but got ", CAR(args));
-
-    /* arglen check */
-    if CHECK_2_ARGS(args)
-        SigScm_Error(">= : Wrong number of arguments\n");
-
-    /* Get first value */
-    val = SCM_INT_VALUE(CAR(args));
-
-    /* compare following value */
-    obj = SCM_NULL;
-    for (args = CDR(args); !NULLP(args); args = CDR(args)) {
-        obj = CAR(args);
-        if (FALSEP(ScmOp_numberp(obj)))
-            SigScm_ErrorObj(">= : number required but got ", obj);
-
-        car_val = SCM_INT_VALUE(obj);
-        if (val >= car_val)
-            val = car_val;
-        else
-            return SCM_FALSE;
-    }
-
-    return SCM_TRUE;
+    COMPARATOR_BODY(>=, ">=");
+#undef COMPARATOR_BODY
 }
 
 ScmObj ScmOp_zerop(ScmObj scm_num)
@@ -550,50 +440,28 @@ ScmObj ScmOp_evenp(ScmObj scm_num)
     return (SCM_INT_VALUE(scm_num) & 0x1) ? SCM_FALSE : SCM_TRUE;
 }
 
-/* TODO: Simplify with SCM_REDUCE*() macro */
-ScmObj ScmOp_max(ScmObj args, ScmObj env )
+ScmObj ScmOp_max(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    int max = 0;
-    int val = 0;
-    ScmObj scm_num = SCM_NULL;
+    if (*state == SCM_REDUCE_0)
+        SigScm_Error("max : at least 1 argument required\n");
+    if (!INTP(left))
+        SigScm_Error("max : integer required but got ", left);
+    if (!INTP(right))
+        SigScm_Error("max : integer required but got ", right);
 
-    if (NULLP(args))
-        SigScm_Error("max : at least 1 number required\n");
-
-    for (; !NULLP(args); args = CDR(args)) {
-        scm_num = EVAL(CAR(args), env);
-        if (FALSEP(ScmOp_numberp(scm_num)))
-            SigScm_ErrorObj("max : number required but got ", scm_num);
-
-        val = SCM_INT_VALUE(scm_num);
-        if (max < val)
-            max = val;
-    }
-
-    return Scm_NewInt(max);
+    return SCM_INT_VALUE(left) > SCM_INT_VALUE(right) ? left : right;
 }
 
-/* TODO: Simplify with SCM_REDUCE*() macro */
-ScmObj ScmOp_min(ScmObj args, ScmObj env )
+ScmObj ScmOp_min(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    int min = 0;
-    int val = 0;
-    ScmObj scm_num = SCM_NULL;
+    if (*state == SCM_REDUCE_0)
+        SigScm_Error("min : at least 1 argument required\n");
+    if (!INTP(left))
+        SigScm_Error("min : integer required but got ", left);
+    if (!INTP(right))
+        SigScm_Error("min : integer required but got ", right);
 
-    if (NULLP(args))
-        SigScm_Error("min : at least 1 number required\n");
-
-    for (; !NULLP(args); args = CDR(args)) {
-        scm_num = EVAL(CAR(args), env);
-        if (FALSEP(ScmOp_numberp(scm_num)))
-            SigScm_ErrorObj("min : number required but got ", scm_num);
-
-        val = SCM_INT_VALUE(scm_num);
-        if (val < min)
-            min = val;
-    }
-
-    return Scm_NewInt(min);
+    return SCM_INT_VALUE(left) < SCM_INT_VALUE(right) ? left : right;
 }
 
 
@@ -1883,15 +1751,8 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
     if (arg_len == 2) {
         /* apply func to each item */
         for (args = CADR(map_arg); !NULLP(args); args = CDR(args)) {
-            /* create proc's arg */
-            tmp = CAR(args);
-
-            /* create list for "apply" op */
-            tmp = SCM_LIST_2(proc,
-                             CONS(tmp, SCM_NULL));
-
             /* apply proc */
-            ret = CONS(ScmOp_apply(tmp, env), ret);
+            ret = CONS(Scm_call(proc, LIST_1(CAR(args))), ret);
         }
         return ScmOp_reverse(ret);
     }
@@ -1918,8 +1779,7 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
         arg1 = ScmOp_reverse(arg1);
 
         /* apply proc to arg1 */
-        ret = CONS(ScmOp_apply(SCM_LIST_2(proc, arg1), env),
-                   ret);
+        ret = CONS(Scm_call(proc, arg1), ret);
     }
 
     /* never reaches here */
@@ -1980,18 +1840,11 @@ ScmObj ScmOp_values(ScmObj argl, ScmObj env)
     return Scm_NewValuePacket(argl);
 }
 
-/* TODO: Simplify and optimize with SCM_SHIFT_*() macro */
-ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp)
+ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer)
 {
     ScmObj vals;
-    ScmObj cons_wrapper;
 
-    if (CHECK_2_ARGS(argl))
-        SigScm_ErrorObj("call-with-values: too few arguments: ", argl);
-
-    /* make the list (producer) and evaluate it */
-    cons_wrapper = CONS(CAR(argl), SCM_NULL);
-    vals = EVAL(cons_wrapper, *envp);
+    vals = Scm_call(producer, SCM_NULL);
 
     if (!VALUEPACKETP(vals)) {
         /* got back a single value */
@@ -2000,12 +1853,8 @@ ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp)
         /* extract */
         vals = SCM_VALUEPACKET_VALUES(vals);
     }
-    
-    /* cons_wrapper would have no chance of being referenced from
-     * anywhere else, so we'll reuse that object. */
-    SET_CAR(cons_wrapper, CADR(argl));
-    SET_CDR(cons_wrapper, vals);
-    return cons_wrapper;
+
+    return Scm_call(consumer, vals);
 }
 
 #if SCM_USE_SRFI1

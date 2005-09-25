@@ -437,9 +437,7 @@ uim_scm_eval_internal(uim_lisp obj)
 uim_lisp
 uim_scm_apply(uim_lisp proc, uim_lisp args)
 {
-  return (uim_lisp)ScmOp_apply(Scm_NewCons((ScmObj)proc,
-					   Scm_NewCons((ScmObj)args, SCM_NULL)),	
-			       SCM_NULL);
+  return (uim_lisp)Scm_call(proc, Scm_NewCons((ScmObj)args, SCM_NULL));
 }
 #endif  /* UIM_SCM_EXTENDED_API */
 

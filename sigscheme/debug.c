@@ -122,6 +122,9 @@ void SigScm_Display(ScmObj obj)
 {
     print_ScmObj_internal(SCM_PORTINFO_FILE(scm_current_output_port), obj, AS_WRITE);
     fprintf(SCM_PORTINFO_FILE(scm_current_output_port), "\n");
+#if SCM_VOLATILE_OUTPUT
+    fflush(SCM_PORTINFO_FILE(scm_current_output_port));
+#endif
 }
 
 void SigScm_WriteToPort(ScmObj port, ScmObj obj)
@@ -131,6 +134,9 @@ void SigScm_WriteToPort(ScmObj port, ScmObj obj)
     if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE) {
         f = SCM_PORTINFO_FILE(port);
         print_ScmObj_internal(f, obj, AS_WRITE);
+#if SCM_VOLATILE_OUTPUT
+        fflush(f);
+#endif
         return;
     }
 
@@ -144,6 +150,9 @@ void SigScm_DisplayToPort(ScmObj port, ScmObj obj)
     if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE) {
         f = SCM_PORTINFO_FILE(port);
         print_ScmObj_internal(f, obj, AS_DISPLAY);
+#if SCM_VOLATILE_OUTPUT
+        fflush(f);
+#endif
         return;
     }
 
@@ -202,7 +211,10 @@ static void print_ScmObj_internal(FILE *f, ScmObj obj, enum OutputType otype)
         break;
     case ScmValuePacket:
         fputs("#<values ", f);
-        print_list(f, SCM_VALUEPACKET_VALUES(obj), otype);
+        if (NULLP (SCM_VALUEPACKET_VALUES(obj)))
+            fputs("()", f);
+        else
+            print_list(f, SCM_VALUEPACKET_VALUES(obj), otype);
         putc('>', f);
         break;
     case ScmEtc:

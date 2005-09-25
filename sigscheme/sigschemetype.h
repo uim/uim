@@ -50,6 +50,7 @@
 typedef struct ScmObjInternal_ ScmObjInternal;
 typedef ScmObjInternal *ScmObj;
 typedef struct _ScmPortInfo ScmPortInfo;
+typedef struct ScmEvalState_ ScmEvalState;
 typedef ScmObj (*ScmFuncType)();
 typedef ScmObj (*ScmFuncType0)(void);
 typedef ScmObj (*ScmFuncType1)(ScmObj arg1);
@@ -59,8 +60,8 @@ typedef ScmObj (*ScmFuncType4)(ScmObj arg1, ScmObj arg2, ScmObj arg3, ScmObj arg
 typedef ScmObj (*ScmFuncType5)(ScmObj arg1, ScmObj arg2, ScmObj arg3, ScmObj arg4, ScmObj arg5);
 typedef ScmObj (*ScmFuncTypeEvaledList)(ScmObj args, ScmObj env);
 typedef ScmObj (*ScmFuncTypeRawList)(ScmObj arglist, ScmObj env);
-typedef ScmObj (*ScmFuncTypeRawListTailRec)(ScmObj arglist, ScmObj *envp);
-typedef ScmObj (*ScmFuncTypeRawListWithTailFlag)(ScmObj arglist, ScmObj *envp, int *tail_flag);
+typedef ScmObj (*ScmFuncTypeRawListTailRec)(ScmObj arglist, ScmEvalState *eval_state);
+typedef ScmObj (*ScmFuncTypeRawListWithTailFlag)(ScmObj arglist, ScmEvalState *eval_state);
 
 /*=======================================
    Struct Declarations
@@ -140,44 +141,68 @@ struct _ScmContInfo {
 
 /*
  * Function types:
- * Built-in functions are classified by required argument type and
- * treatment of return value.  The constraints for arguments are shown
- * beside each declaration.  Enclosed in [] are examples of functions
- * that are implemented as that type and are likely to stay that way.
- * See the typedefs for the argument list template for each type.
  *
- * For FUNCTYPE_0 through 5, the caller checks the number of
- * arguments, and passes only the arguments.  For other types,
- * checking is the callee's reponsibility, and they receive the
- * current environment.
- * 
- * FUNCTYPE_0 through 5 and FUNCTYPE_EVALED_LIST require the caller to
- * evaluate arguments.  Others do it on their own.
- * 
- * FUNCTYPE_RAW_LIST_TAIL_REC represents a form that contains tail
- * expressions, which must be evaluated without consuming storage
- * (proper tail recursion).  A function of this type returns an
- * S-expression that the caller must evaluate to obtain the resultant
- * value of the entire form.  FUNCYTPE_RAW_LIST_WITH_TAIL_FLAG has the
- * same semantics, except that the return value must be evaluated if
- * and only if the callee sets tail_flag (an int passed by reference)
- * to nonzero.  The two types receive a *reference* to the effective
- * environment so that they can extend it as necessary.
+ * Function objects must tag themselves with proper information so
+ * that the evaluator can correctly invoke them.  See doc/invocation
+ * for details.
  */
 enum ScmFuncTypeCode {
-    FUNCTYPE_0  = 0, /* 0 arg  [current-input-port] */
-    FUNCTYPE_1  = 1, /* 1 arg  [pair? call/cc symbol->string] */
-    FUNCTYPE_2  = 2, /* 2 args [eqv? string-ref] */
-    FUNCTYPE_3  = 3, /* 3 args [list-set!] */
-    FUNCTYPE_4  = 4, /* 4 args [TODO: is there any?] */
-    FUNCTYPE_5  = 5, /* 5 args [TODO: is there any?] */
-    FUNCTYPE_EVALED_LIST  = 6,  /* map_eval()ed arg list [values] */
-    FUNCTYPE_RAW_LIST = 7,      /* verbatim arg list [quote lambda define] */
-    FUNCTYPE_RAW_LIST_TAIL_REC = 8, /* verbatim arg list, returns tail expr
-                                     * (see above) [if let cond case begin] */
-    FUNCTYPE_RAW_LIST_WITH_TAIL_FLAG = 9 /* verbatim arg list and tail_flag,
-                                          * may or may not return tail expr
-                                          * (see above) [and or] */
+    SCM_FUNCTYPE_MAND_BITS = 4,
+    SCM_FUNCTYPE_MAND_MASK = (1 << SCM_FUNCTYPE_MAND_BITS)-1,
+#define SCM_FUNCTYPE_MAND_MAX 5
+    /* SCM_FUNCTYPE_MAND_MAX  = 5, */
+    SCM_FUNCTYPE_SYNTAX    = 1 << SCM_FUNCTYPE_MAND_BITS,
+
+    SCM_FUNCTYPE_FIXED     = 0 << (SCM_FUNCTYPE_MAND_BITS+1),
+    SCM_FUNCTYPE_VARIADIC  = 1 << (SCM_FUNCTYPE_MAND_BITS+1),
+    SCM_FUNCTYPE_TAIL_REC  = 1 << (SCM_FUNCTYPE_MAND_BITS+2),
+
+    SCM_FUNCTYPE_ODDBALL   = 1 << (SCM_FUNCTYPE_MAND_BITS+10),
+
+    /* Compound types. */
+    SCM_PROCEDURE_FIXED              = SCM_FUNCTYPE_FIXED,
+    SCM_PROCEDURE_FIXED_TAIL_REC     = SCM_FUNCTYPE_TAIL_REC,
+    SCM_PROCEDURE_VARIADIC           = SCM_FUNCTYPE_VARIADIC,
+    SCM_PROCEDURE_VARIADIC_TAIL_REC  = SCM_FUNCTYPE_VARIADIC | SCM_FUNCTYPE_TAIL_REC,
+
+    SCM_SYNTAX_FIXED          = SCM_PROCEDURE_FIXED | SCM_FUNCTYPE_SYNTAX,
+    SCM_SYNTAX_FIXED_TAIL_REC = SCM_PROCEDURE_FIXED_TAIL_REC | SCM_FUNCTYPE_SYNTAX,
+    SCM_SYNTAX_VARIADIC       = SCM_PROCEDURE_VARIADIC | SCM_FUNCTYPE_SYNTAX,
+    SCM_SYNTAX_VARIADIC_TAIL_REC = SCM_PROCEDURE_VARIADIC_TAIL_REC | SCM_FUNCTYPE_SYNTAX,
+
+    /* Special type. */
+    SCM_REDUCTION_OPERATOR = SCM_FUNCTYPE_ODDBALL
+
+    /* Compatiblility defs.  To be nuked after complete transition. */
+    ,
+    FUNCTYPE_0 = SCM_PROCEDURE_FIXED | 0,
+    FUNCTYPE_1 = SCM_PROCEDURE_FIXED | 1,
+    FUNCTYPE_2 = SCM_PROCEDURE_FIXED | 2,
+    FUNCTYPE_3 = SCM_PROCEDURE_FIXED | 3,
+    FUNCTYPE_4 = SCM_PROCEDURE_FIXED | 4,
+    FUNCTYPE_5 = SCM_PROCEDURE_FIXED | 5,
+    FUNCTYPE_EVALED_LIST = SCM_PROCEDURE_VARIADIC | 0,
+    FUNCTYPE_RAW_LIST = SCM_SYNTAX_VARIADIC | 0,
+    FUNCTYPE_RAW_LIST_TAIL_REC = SCM_SYNTAX_VARIADIC,
+    FUNCTYPE_RAW_LIST_WITH_TAIL_FLAG = SCM_FUNCTYPE_TAIL_REC | SCM_FUNCTYPE_SYNTAX
+};
+
+/* Where we are in a reduction process. */
+enum ScmReductionState {
+    SCM_REDUCE_0,               /* No argument was given. */
+    SCM_REDUCE_1,               /* Only 1 argument was given. */
+    SCM_REDUCE_PARTWAY,         /* We have more arguments pending. */
+    SCM_REDUCE_LAST,            /* The callee must finalize. */
+    SCM_REDUCE_STOP             /* Callee wants to stop. */
+};
+
+/* The evaluator's state */
+struct ScmEvalState_ {
+    ScmObj env;
+    enum {
+        SCM_RETTYPE_AS_IS     = 0,
+        SCM_RETTYPE_NEED_EVAL = 1
+    } ret_type;
 };
 
 /* Scheme Object */
@@ -211,40 +236,7 @@ struct ScmObjInternal_ {
 
         struct {
             enum ScmFuncTypeCode type;
-            union {
-                struct {
-                    ScmFuncType0 func;
-                } subr0;
-                struct {
-                    ScmFuncType1 func;
-                } subr1;
-                struct {
-                    ScmFuncType2 func;
-                } subr2;
-                struct {
-                    ScmFuncType3 func;
-                } subr3;
-                struct {
-                    ScmFuncType4 func;
-                } subr4;
-                struct {
-                    ScmFuncType5 func;
-                } subr5;
-                /* -- these two are identical to subr2
-                struct {
-                    ScmFuncTypeEvaledList func;
-                } subr_evaled_list;
-                struct {
-                    ScmFuncTypeRawList func;
-                } subr_raw_list;
-                */
-                struct {
-                    ScmFuncTypeRawListTailRec func;
-                } subrr;
-                struct {
-                    ScmFuncTypeRawListWithTailFlag func;
-                } subrf;
-            } subrs;
+            ScmFuncType func;
         } func;
 
         struct ScmClosure {
@@ -354,7 +346,7 @@ struct ScmObjInternal_ {
 #define SCM_ENTYPE_FUNC(a)     (SCM_ENTYPE((a), ScmFunc))
 #define SCM_FUNC_TYPECODE(a) (SCM_AS_FUNC(a)->obj.func.type)
 #define SCM_FUNC_SET_TYPECODE(a, type) (SCM_FUNC_TYPECODE(a) = (type))
-#define SCM_FUNC_CFUNC(a)   (SCM_AS_FUNC(a)->obj.func.subrs.subr0.func)
+#define SCM_FUNC_CFUNC(a)   (SCM_AS_FUNC(a)->obj.func.func)
 #define SCM_FUNC_SET_CFUNC(a, func)     (SCM_FUNC_CFUNC(a) = (ScmFuncType)(func))
 
 #define SCM_FUNC_EXEC_SUBR0(a)                               ((*(a)->obj.func.subrs.subr0.func) ())

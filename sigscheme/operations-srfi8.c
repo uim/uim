@@ -39,6 +39,7 @@
   Local Include
 =======================================*/
 #include "sigscheme.h"
+#include "sigschemeinternal.h"
 
 /*=======================================
   File Local Struct Declarations
@@ -63,40 +64,25 @@
 /*=============================================================================
   SRFI8 : Receive
 =============================================================================*/
-/* TODO: Simplify and optimize with SCM_SHIFT_*() macro */
-ScmObj ScmOp_SRFI8_receive(ScmObj args, ScmObj *envp)
+ScmObj ScmOp_SRFI8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalState *eval_state)
 {
     /*
      * (receive <formals> <expression> <body>)
      */
-    ScmObj env     = *envp;
-    ScmObj formals = SCM_NULL;
-    ScmObj expr    = SCM_NULL;
-    ScmObj body    = SCM_NULL;
+    ScmObj env     = eval_state->env;
     ScmObj actuals = SCM_NULL;
-    ScmObj closure = SCM_NULL;
 
-    /* sanity check */
-    if (CHECK_3_ARGS(args))
-        SigScm_ErrorObj("receive: bad argument list: ", args);
-
-    formals = CAR(args);
-    expr = CADR(args);
-    body = CDDR(args);
-
-    /* TODO: Check: do we have to extend the environment first?  The SRFI-8
+    /* FIXME: do we have to extend the environment first?  The SRFI-8
      * document contradicts itself on this part. */
     actuals = EVAL(expr, env);
 
-    if (VALUEPACKETP(actuals))
+    if (SCM_VALUEPACKETP(actuals))
         actuals = SCM_VALUEPACKET_VALUES(actuals);
     else
         actuals = CONS(actuals, SCM_NULL);
 
-    closure = Scm_NewClosure(CONS(formals, body), env);
-
-    /* set new env */
-    (*envp) = env;
-
-    return CONS(closure, actuals);
+    return ScmOp_apply(Scm_NewClosure(CONS(formals, body), env),
+                       actuals,
+                       SCM_NULL,
+                       eval_state);
 }

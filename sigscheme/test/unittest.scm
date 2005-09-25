@@ -58,6 +58,9 @@
 	  (write b)
 	  (newline)))))
 
+(define (eval-counter n)
+  (list 'eval-counter (+ n 1)))
+
 ;; dummy definition to eval args for assert-error. real implementation needed.
 (define assert-error
   (lambda (msg exp)

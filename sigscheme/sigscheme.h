@@ -76,6 +76,7 @@ typedef void (*ScmCFunc)(void);
 #define SCM_ACCESSOR_ASSERT     0  /* enable strict type check with accessor */
 #define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
 #define SCM_USE_VALUECONS       0  /* use experimental values passing */
+#define SCM_VOLATILE_OUTPUT     0  /* always flush files on write */
 
 /* dependency resolution */
 #if SCM_COMPAT_SIOD
@@ -173,6 +174,377 @@ extern ScmCFunc (*scm_gc_ensure_uninlined_func)(ScmCFunc);
 /* sigscheme.c */
 void SigScm_Initialize(void);
 void SigScm_Finalize(void);
+void Scm_RegisterReductionOperator(const char *name, ScmObj (*func)(ScmObj, ScmObj, enum ScmReductionState*));
+void Scm_RegisterSyntaxFixed0(const char *name, ScmObj (*func)(ScmObj));
+#if SCM_FUNCTYPE_MAND_MAX >= 1
+void Scm_RegisterSyntaxFixed1(const char *name, ScmObj (*func)(ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 2
+void Scm_RegisterSyntaxFixed2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 3
+void Scm_RegisterSyntaxFixed3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 4
+void Scm_RegisterSyntaxFixed4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 5
+void Scm_RegisterSyntaxFixed5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 6
+void Scm_RegisterSyntaxFixed6(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 7
+void Scm_RegisterSyntaxFixed7(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 8
+void Scm_RegisterSyntaxFixed8(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 9
+void Scm_RegisterSyntaxFixed9(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 10
+void Scm_RegisterSyntaxFixed10(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 11
+void Scm_RegisterSyntaxFixed11(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 12
+void Scm_RegisterSyntaxFixed12(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 13
+void Scm_RegisterSyntaxFixed13(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 14
+void Scm_RegisterSyntaxFixed14(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 15
+void Scm_RegisterSyntaxFixed15(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+void Scm_RegisterSyntaxFixedTailRec0(const char *name, ScmObj (*func)(ScmEvalState*));
+#if SCM_FUNCTYPE_MAND_MAX >= 1
+void Scm_RegisterSyntaxFixedTailRec1(const char *name, ScmObj (*func)(ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 2
+void Scm_RegisterSyntaxFixedTailRec2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 3
+void Scm_RegisterSyntaxFixedTailRec3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 4
+void Scm_RegisterSyntaxFixedTailRec4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 5
+void Scm_RegisterSyntaxFixedTailRec5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 6
+void Scm_RegisterSyntaxFixedTailRec6(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 7
+void Scm_RegisterSyntaxFixedTailRec7(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 8
+void Scm_RegisterSyntaxFixedTailRec8(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 9
+void Scm_RegisterSyntaxFixedTailRec9(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 10
+void Scm_RegisterSyntaxFixedTailRec10(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 11
+void Scm_RegisterSyntaxFixedTailRec11(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 12
+void Scm_RegisterSyntaxFixedTailRec12(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 13
+void Scm_RegisterSyntaxFixedTailRec13(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 14
+void Scm_RegisterSyntaxFixedTailRec14(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 15
+void Scm_RegisterSyntaxFixedTailRec15(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+void Scm_RegisterSyntaxVariadic0(const char *name, ScmObj (*func)(ScmObj, ScmObj));
+#if SCM_FUNCTYPE_MAND_MAX >= 1
+void Scm_RegisterSyntaxVariadic1(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 2
+void Scm_RegisterSyntaxVariadic2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 3
+void Scm_RegisterSyntaxVariadic3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 4
+void Scm_RegisterSyntaxVariadic4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 5
+void Scm_RegisterSyntaxVariadic5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 6
+void Scm_RegisterSyntaxVariadic6(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 7
+void Scm_RegisterSyntaxVariadic7(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 8
+void Scm_RegisterSyntaxVariadic8(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 9
+void Scm_RegisterSyntaxVariadic9(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 10
+void Scm_RegisterSyntaxVariadic10(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 11
+void Scm_RegisterSyntaxVariadic11(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 12
+void Scm_RegisterSyntaxVariadic12(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 13
+void Scm_RegisterSyntaxVariadic13(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 14
+void Scm_RegisterSyntaxVariadic14(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 15
+void Scm_RegisterSyntaxVariadic15(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+void Scm_RegisterSyntaxVariadicTailRec0(const char *name, ScmObj (*func)(ScmObj, ScmEvalState*));
+#if SCM_FUNCTYPE_MAND_MAX >= 1
+void Scm_RegisterSyntaxVariadicTailRec1(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 2
+void Scm_RegisterSyntaxVariadicTailRec2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 3
+void Scm_RegisterSyntaxVariadicTailRec3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 4
+void Scm_RegisterSyntaxVariadicTailRec4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 5
+void Scm_RegisterSyntaxVariadicTailRec5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 6
+void Scm_RegisterSyntaxVariadicTailRec6(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 7
+void Scm_RegisterSyntaxVariadicTailRec7(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 8
+void Scm_RegisterSyntaxVariadicTailRec8(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 9
+void Scm_RegisterSyntaxVariadicTailRec9(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 10
+void Scm_RegisterSyntaxVariadicTailRec10(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 11
+void Scm_RegisterSyntaxVariadicTailRec11(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 12
+void Scm_RegisterSyntaxVariadicTailRec12(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 13
+void Scm_RegisterSyntaxVariadicTailRec13(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 14
+void Scm_RegisterSyntaxVariadicTailRec14(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 15
+void Scm_RegisterSyntaxVariadicTailRec15(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+void Scm_RegisterProcedureFixed0(const char *name, ScmObj (*func)());
+#if SCM_FUNCTYPE_MAND_MAX >= 1
+void Scm_RegisterProcedureFixed1(const char *name, ScmObj (*func)(ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 2
+void Scm_RegisterProcedureFixed2(const char *name, ScmObj (*func)(ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 3
+void Scm_RegisterProcedureFixed3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 4
+void Scm_RegisterProcedureFixed4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 5
+void Scm_RegisterProcedureFixed5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 6
+void Scm_RegisterProcedureFixed6(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 7
+void Scm_RegisterProcedureFixed7(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 8
+void Scm_RegisterProcedureFixed8(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 9
+void Scm_RegisterProcedureFixed9(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 10
+void Scm_RegisterProcedureFixed10(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 11
+void Scm_RegisterProcedureFixed11(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 12
+void Scm_RegisterProcedureFixed12(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 13
+void Scm_RegisterProcedureFixed13(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 14
+void Scm_RegisterProcedureFixed14(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 15
+void Scm_RegisterProcedureFixed15(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+void Scm_RegisterProcedureFixedTailRec0(const char *name, ScmObj (*func)(ScmEvalState*));
+#if SCM_FUNCTYPE_MAND_MAX >= 1
+void Scm_RegisterProcedureFixedTailRec1(const char *name, ScmObj (*func)(ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 2
+void Scm_RegisterProcedureFixedTailRec2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 3
+void Scm_RegisterProcedureFixedTailRec3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 4
+void Scm_RegisterProcedureFixedTailRec4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 5
+void Scm_RegisterProcedureFixedTailRec5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 6
+void Scm_RegisterProcedureFixedTailRec6(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 7
+void Scm_RegisterProcedureFixedTailRec7(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 8
+void Scm_RegisterProcedureFixedTailRec8(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 9
+void Scm_RegisterProcedureFixedTailRec9(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 10
+void Scm_RegisterProcedureFixedTailRec10(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 11
+void Scm_RegisterProcedureFixedTailRec11(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 12
+void Scm_RegisterProcedureFixedTailRec12(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 13
+void Scm_RegisterProcedureFixedTailRec13(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 14
+void Scm_RegisterProcedureFixedTailRec14(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 15
+void Scm_RegisterProcedureFixedTailRec15(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+void Scm_RegisterProcedureVariadic0(const char *name, ScmObj (*func)(ScmObj));
+#if SCM_FUNCTYPE_MAND_MAX >= 1
+void Scm_RegisterProcedureVariadic1(const char *name, ScmObj (*func)(ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 2
+void Scm_RegisterProcedureVariadic2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 3
+void Scm_RegisterProcedureVariadic3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 4
+void Scm_RegisterProcedureVariadic4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 5
+void Scm_RegisterProcedureVariadic5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 6
+void Scm_RegisterProcedureVariadic6(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 7
+void Scm_RegisterProcedureVariadic7(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 8
+void Scm_RegisterProcedureVariadic8(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 9
+void Scm_RegisterProcedureVariadic9(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 10
+void Scm_RegisterProcedureVariadic10(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 11
+void Scm_RegisterProcedureVariadic11(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 12
+void Scm_RegisterProcedureVariadic12(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 13
+void Scm_RegisterProcedureVariadic13(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 14
+void Scm_RegisterProcedureVariadic14(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 15
+void Scm_RegisterProcedureVariadic15(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+#endif
+void Scm_RegisterProcedureVariadicTailRec0(const char *name, ScmObj (*func)(ScmObj, ScmEvalState*));
+#if SCM_FUNCTYPE_MAND_MAX >= 1
+void Scm_RegisterProcedureVariadicTailRec1(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 2
+void Scm_RegisterProcedureVariadicTailRec2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 3
+void Scm_RegisterProcedureVariadicTailRec3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 4
+void Scm_RegisterProcedureVariadicTailRec4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 5
+void Scm_RegisterProcedureVariadicTailRec5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 6
+void Scm_RegisterProcedureVariadicTailRec6(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 7
+void Scm_RegisterProcedureVariadicTailRec7(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 8
+void Scm_RegisterProcedureVariadicTailRec8(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 9
+void Scm_RegisterProcedureVariadicTailRec9(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 10
+void Scm_RegisterProcedureVariadicTailRec10(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 11
+void Scm_RegisterProcedureVariadicTailRec11(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 12
+void Scm_RegisterProcedureVariadicTailRec12(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 13
+void Scm_RegisterProcedureVariadicTailRec13(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 14
+void Scm_RegisterProcedureVariadicTailRec14(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 15
+void Scm_RegisterProcedureVariadicTailRec15(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+#endif
+
+/* For compatibility only; slated for removal. */
 void Scm_RegisterFunc0(const char *name, ScmFuncType0 func);
 void Scm_RegisterFunc1(const char *name, ScmFuncType1 func);
 void Scm_RegisterFunc2(const char *name, ScmFuncType2 func);
@@ -237,50 +609,52 @@ ScmCFunc SigScm_GC_EnsureUninlinedFuncInternal(ScmCFunc func) SCM_NOINLINE;
 
 /* eval.c */
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env);
-ScmObj ScmOp_apply(ScmObj args, ScmObj env);
-ScmObj ScmOp_quote(ScmObj args, ScmObj envp);
+    ScmObj ScmOp_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state);
+    ScmObj ScmOp_quote(ScmObj datum, ScmObj env);
 ScmObj ScmExp_lambda(ScmObj args, ScmObj env);
-ScmObj ScmExp_if(ScmObj args, ScmObj *envp);
-ScmObj ScmExp_set(ScmObj args, ScmObj env);
-ScmObj ScmExp_cond(ScmObj arg, ScmObj *envp);
-ScmObj ScmExp_case(ScmObj arg, ScmObj *envp);
-ScmObj ScmExp_and(ScmObj arg, ScmObj *envp, int *tail_flag);
-ScmObj ScmExp_or(ScmObj arg, ScmObj *envp, int *tail_flag);
-ScmObj ScmExp_let(ScmObj arg, ScmObj *envp);
-ScmObj ScmExp_let_star(ScmObj arg, ScmObj *envp);
-ScmObj ScmExp_letrec(ScmObj arg, ScmObj *envp);
-ScmObj ScmExp_begin(ScmObj arg, ScmObj *envp);
-ScmObj ScmExp_do(ScmObj arg, ScmObj *envp);
-ScmObj ScmOp_delay(ScmObj args, ScmObj env);
-ScmObj ScmOp_quasiquote(ScmObj obj, ScmObj env);
-ScmObj ScmOp_unquote(ScmObj obj, ScmObj env);
-ScmObj ScmOp_unquote_splicing(ScmObj obj, ScmObj env);
-ScmObj ScmExp_define(ScmObj args, ScmObj env);
+    ScmObj ScmExp_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state);
+ScmObj ScmExp_set(ScmObj var, ScmObj val, ScmObj env);
+    ScmObj ScmExp_cond(ScmObj arg, ScmEvalState *eval_state);
+    ScmObj ScmExp_case(ScmObj arg, ScmEvalState *eval_state);
+    ScmObj ScmExp_and(ScmObj arg, ScmEvalState *eval_state);
+    ScmObj ScmExp_or(ScmObj arg, ScmEvalState *eval_state);
+    ScmObj ScmExp_let(ScmObj arg, ScmEvalState *eval_state);
+ScmObj ScmExp_let_star(ScmObj arg, ScmEvalState *eval_state);
+ScmObj ScmExp_letrec(ScmObj arg, ScmEvalState *eval_state);
+ScmObj ScmExp_begin(ScmObj arg, ScmEvalState *eval_state);
+ScmObj ScmExp_do(ScmObj arg, ScmEvalState *eval_state);
+ScmObj ScmOp_delay(ScmObj expr, ScmObj env);
+    ScmObj ScmOp_quasiquote(ScmObj datum, ScmObj env);
+    ScmObj ScmOp_unquote(ScmObj dummy, ScmObj env);
+    ScmObj ScmOp_unquote_splicing(ScmObj dummy, ScmObj env);
+ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env);
 ScmObj ScmOp_scheme_report_environment(ScmObj version);
 ScmObj ScmOp_null_environment(ScmObj version);
 ScmObj ScmOp_interaction_environment(void);
+
+ScmObj Scm_call(ScmObj proc, ScmObj args);
 
 /* operations.c */
 ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2);
 ScmObj ScmOp_eqp(ScmObj obj1, ScmObj obj2);
 ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2);
-ScmObj ScmOp_add(ScmObj args, ScmObj env);
-ScmObj ScmOp_multiply(ScmObj args, ScmObj env);
-ScmObj ScmOp_subtract(ScmObj args, ScmObj env);
-ScmObj ScmOp_divide(ScmObj args, ScmObj env);
+ScmObj ScmOp_add(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj ScmOp_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj ScmOp_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj ScmOp_divide(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj ScmOp_equal(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj ScmOp_less(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj ScmOp_less_eq(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj ScmOp_greater(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj ScmOp_greater_eq(ScmObj left, ScmObj right, enum ScmReductionState *state);
 ScmObj ScmOp_numberp(ScmObj obj);
-ScmObj ScmOp_equal(ScmObj args, ScmObj env);
-ScmObj ScmOp_less(ScmObj args, ScmObj env );
-ScmObj ScmOp_greater(ScmObj args, ScmObj env );
-ScmObj ScmOp_less_eq(ScmObj args, ScmObj env );
-ScmObj ScmOp_greater_eq(ScmObj args, ScmObj env );
 ScmObj ScmOp_zerop(ScmObj scm_num);
 ScmObj ScmOp_positivep(ScmObj scm_num);
 ScmObj ScmOp_negativep(ScmObj scm_num);
 ScmObj ScmOp_oddp(ScmObj scm_num);
 ScmObj ScmOp_evenp(ScmObj scm_num);
-ScmObj ScmOp_max(ScmObj args, ScmObj env );
-ScmObj ScmOp_min(ScmObj args, ScmObj env );
+ScmObj ScmOp_max(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj ScmOp_min(ScmObj left, ScmObj right, enum ScmReductionState *state);
 ScmObj ScmOp_abs(ScmObj scm_num);
 ScmObj ScmOp_quotient(ScmObj scm_n1, ScmObj scm_n2);
 ScmObj ScmOp_modulo(ScmObj scm_n1, ScmObj scm_n2);
@@ -381,7 +755,7 @@ ScmObj ScmOp_for_each(ScmObj arg, ScmObj env);
 ScmObj ScmOp_force(ScmObj arg, ScmObj env);
 ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env);
 ScmObj ScmOp_values(ScmObj argl, ScmObj env);
-ScmObj ScmOp_call_with_values(ScmObj argl, ScmObj *envp);
+ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer);
 
 /* io.c */
 void   SigScm_set_lib_path(const char *path);
@@ -485,7 +859,7 @@ ScmObj ScmOp_SRFI1_last_pair(ScmObj lst);
 #endif
 #if SCM_USE_SRFI8
 /* operations-srfi8.c */
-ScmObj ScmOp_SRFI8_receive(ScmObj args, ScmObj *envp);
+ScmObj ScmOp_SRFI8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalState *eval_state);
 #endif
 #if SCM_USE_SRFI23
 /* operations-srfi23.c */

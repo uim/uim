@@ -101,10 +101,7 @@ ScmObj ScmOp_call_with_input_file(ScmObj filepath, ScmObj proc)
     /* open port */
     port = ScmOp_open_input_file(filepath);
     
-    /* (apply proc (port)) */
-    ret = ScmOp_apply(SCM_LIST_2(proc,
-                                 CONS(port, SCM_NULL)),
-                      SCM_NULL);
+    ret = Scm_call(proc, LIST_1(port));
 
     /* close port */
     ScmOp_close_input_port(port);
@@ -126,9 +123,7 @@ ScmObj ScmOp_call_with_output_file(ScmObj filepath, ScmObj proc)
     port = ScmOp_open_output_file(filepath);
     
     /* (apply proc (port)) */
-    ret = ScmOp_apply(SCM_LIST_2(proc,
-                                 CONS(port, SCM_NULL)),
-                      SCM_NULL);
+    ret = Scm_call(proc, LIST_1(port));
 
     /* close port */
     ScmOp_close_output_port(port);
@@ -177,9 +172,7 @@ ScmObj ScmOp_with_input_from_file(ScmObj filepath, ScmObj thunk)
     scm_current_input_port = ScmOp_open_input_file(filepath);
     
     /* (apply thunk ())*/
-    ret = ScmOp_apply(SCM_LIST_2(thunk,
-                                 CONS(SCM_NULL, SCM_NULL)),
-                      SCM_NULL);
+    ret = Scm_call(thunk, SCM_NULL);
 
     /* close port */
     ScmOp_close_input_port(scm_current_input_port);
@@ -204,10 +197,8 @@ ScmObj ScmOp_with_output_to_file(ScmObj filepath, ScmObj thunk)
     tmp_port = scm_current_output_port;
     scm_current_output_port = ScmOp_open_output_file(filepath);
     
-    /* (apply thunk ())*/
-    ret = ScmOp_apply(SCM_LIST_2(thunk,
-                                 CONS(SCM_NULL, SCM_NULL)),
-                      SCM_NULL);
+    /* (thunk)*/
+    ret = Scm_call(thunk, SCM_NULL);
 
     /* close port */
     ScmOp_close_output_port(scm_current_output_port);
