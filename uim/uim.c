@@ -59,7 +59,6 @@ static uim_context context_array[CONTEXT_ARRAY_SIZE];
 struct uim_im *uim_im_array;
 int uim_nr_im;
 static int uim_initialized;
-static int uim_quiting;
 
 /* Definition of mutex */
 UIM_DEFINE_MUTEX_STATIC(mtx_initing_or_quiting);
@@ -710,12 +709,10 @@ uim_quit(void)
 
   UIM_LOCK_MUTEX(mtx_initing_or_quiting);
   
-  if (!uim_initialized || uim_quiting) {
+  if (!uim_initialized) {
     UIM_UNLOCK_MUTEX(mtx_initing_or_quiting);
     return;
   }
-  /* Some multithreaded applications calls uim_quit bursty. */
-  uim_quiting = 1;
 
   /* release still active contexts */
   for (i = 0; i < CONTEXT_ARRAY_SIZE; i++) {
@@ -729,6 +726,5 @@ uim_quit(void)
   free(uim_last_client_encoding);
   uim_last_client_encoding = NULL;
   uim_initialized = 0;
-  uim_quiting = 0;
   UIM_UNLOCK_MUTEX(mtx_initing_or_quiting);
 }
