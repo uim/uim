@@ -64,6 +64,7 @@ Logical simplifications:
   function and share it with ScmOp_apply()
 
 * Withdraw SCM_REDUCE*() macro
+  - Rewrite SRFI-60 procs as SCM_REDUCTION_OPERATOR function
 
 * Reorganize SCM_SHIFT*() macros and simplify args extraction codes
 

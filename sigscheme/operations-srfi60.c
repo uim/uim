@@ -66,6 +66,8 @@
 =============================================================================*/
 
 /* Bitwise Operations */
+
+/* FIXME: Rewrite as a SCM_REDUCTION_OPERATOR function */
 ScmObj ScmOp_SRFI60_logand(ScmObj args, ScmObj env)
 {
     SCM_REDUCE((accum & elm), 0, args, env,
@@ -73,6 +75,7 @@ ScmObj ScmOp_SRFI60_logand(ScmObj args, ScmObj env)
                "logand : integer required but got ");
 }
 
+/* FIXME: Rewrite as a SCM_REDUCTION_OPERATOR function */
 ScmObj ScmOp_SRFI60_logior(ScmObj args, ScmObj env)
 {
     SCM_REDUCE((accum | elm), 0, args, env,
@@ -80,6 +83,7 @@ ScmObj ScmOp_SRFI60_logior(ScmObj args, ScmObj env)
                "logior : integer required but got ");
 }
 
+/* FIXME: Rewrite as a SCM_REDUCTION_OPERATOR function */
 ScmObj ScmOp_SRFI60_logxor(ScmObj args, ScmObj env)
 {
     SCM_REDUCE((accum ^ elm), 0, args, env,
