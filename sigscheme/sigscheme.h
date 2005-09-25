@@ -72,7 +72,7 @@ typedef void (*ScmCFunc)(void);
 #define SCM_COMPAT_SIOD         1  /* use SIOD compatible features */
 #define SCM_COMPAT_SIOD_BUGS    1  /* emulate the buggy behaviors of SIOD */
 #define SCM_STRICT_R5RS         0  /* use strict R5RS check */
-#define SCM_STRICT_ARGCHECK     0  /* enable strict argument check */
+#define SCM_STRICT_ARGCHECK     1  /* enable strict argument check */
 #define SCM_ACCESSOR_ASSERT     0  /* enable strict type check with accessor */
 #define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
 #define SCM_USE_VALUECONS       0  /* use experimental values passing */
