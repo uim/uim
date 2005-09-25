@@ -81,7 +81,11 @@ struct trace_frame *scm_trace_root = NULL;
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static ScmObj call(ScmObj proc, ScmObj args, ScmEvalState *eval_state, int suppress_eval);
+static ScmObj reduce(ScmObj (*func)(), ScmObj args, ScmObj env,
+                     int suppress_eval);
+static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
+static ScmObj call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
+                   int suppress_eval);
 static ScmObj map_eval(ScmObj args, ScmObj env);
 static ScmObj qquote_internal(ScmObj expr, ScmObj env, int nest);
 static ScmObj qquote_vector(ScmObj vec, ScmObj env, int nest);
