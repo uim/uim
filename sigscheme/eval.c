@@ -496,10 +496,7 @@ static ScmObj call(ScmObj proc, ScmObj args, ScmEvalState *eval_state, int suppr
 /*===========================================================================
   S-Expression Evaluation
 ===========================================================================*/
-/*
- * TODO: split function invocation handling off into a function and share it
- * with ScmOp_apply
- */
+/* TODO: Enclose debugging features into #if SCM_DEBUG* */
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
 {
     ScmObj ret  = SCM_NULL;
@@ -1462,7 +1459,6 @@ ScmObj ScmOp_delay(ScmObj expr, ScmObj env)
   R5RS : 4.2 Derived expression types : 4.2.6 Quasiquotation
 ===========================================================================*/
 /* FIXME: rename to ScmExp_quasiquote since quasiquote is a syntax */
-/* TODO: Simplify and optimize with SCM_SHIFT_*() macro */
 ScmObj ScmOp_quasiquote(ScmObj datum, ScmObj env)
 {
     ScmObj ret;

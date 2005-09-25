@@ -1,10 +1,6 @@
 ==============================================================================
 Requirements and bugs:
 
-* Make ScmOp_apply() properly tail recursive
-  - Add tests for proper tail recursion with 'apply', 'call-with-values' and
-    'receive' to test-tail-rec.scm
-
 * Introduce Exception handling (probably should be based on SRFI-34)
   - Throw an exception instead of exit(3) when an error occurred
   - Rename call/cc with call/ec? ([Anthy-dev 2216])
@@ -14,6 +10,10 @@ Requirements and bugs:
 * Support SIOD-compatible verbose message control (suppressing backtrace, GC
   stat, error, etc based on verbose-level)
   - [uim] Make the GaUnit-based testing framework workable
+
+* 
+  - Add tests for proper tail recursion with 'apply', 'call-with-values' and
+    'receive' to test-tail-rec.scm
 
 * 
   - Provide a string escaping procedure. If a SRFI or another de facto standard
