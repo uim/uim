@@ -1041,6 +1041,7 @@ ScmObj ScmExp_case(ScmObj arg, ScmEvalState *eval_state)
     return SCM_UNDEF;
 }
 
+/* TODO: Simplify as like as ScmExp_begin() */
 ScmObj ScmExp_and(ScmObj arg, ScmEvalState *eval_state)
 {
     ScmObj env = eval_state->env;
@@ -1071,6 +1072,7 @@ ScmObj ScmExp_and(ScmObj arg, ScmEvalState *eval_state)
     return SCM_NULL;
 }
 
+/* TODO: Simplify as like as ScmExp_begin() */
 ScmObj ScmExp_or(ScmObj arg, ScmEvalState *eval_state)
 {
     ScmObj env = eval_state->env;
@@ -1327,6 +1329,7 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.3 Sequencing
 ===========================================================================*/
+/* TODO: Eliminate duplicate error check codes by simplify the loop */
 ScmObj ScmExp_begin(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env = eval_state->env;
