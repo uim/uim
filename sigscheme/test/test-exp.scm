@@ -205,19 +205,32 @@
 (assert-equal? "do test5" '((5 6) (3 4) (1 2)) (nreverse '((1 2) (3 4) (5 6))))
 
 ;; from R5RS
-(assert-equal? "values test1" 5
+(assert-equal? "call-with-values #1"
+               5
 	       (call-with-values (lambda () (values 4 5))
 		 (lambda (a b) b)))
+(assert-equal? "call-with-values #2"
+               4
+	       (call-with-values (lambda () (values 4))
+		 (lambda (x) x)))
+(assert-equal? "call-with-values #3"
+               'ok
+	       (call-with-values (lambda () (values))
+		 (lambda () 'ok)))
+(assert-equal? "call-with-values #4" -1 (call-with-values * -))
 
-;(assert-equal? "values test2" -1 (call-with-values * -))
-(assert "values test3" (number? (values 5)))
-(assert-equal? "values test4"
+(assert-true   "values #1" (number? (values 5)))
+(assert-false  "values #2" (number? (values 'five)))
+(assert-equal? "values #3"
                '((eval-counter 1) (eval-counter 1))
                (call-with-values
                    (lambda () (values (eval-counter 0) (eval-counter 0)))
                  (lambda x x)))
 
-(begin (values 1 2 3) 'ignore) ; not asserted, just make sure we don't blow up
+;; not asserted, just make sure we don't blow up
+(begin (values 1 2 3) 'ignore)
+(write (values))
+(newline)
 
 
 (total-report)
