@@ -20,7 +20,8 @@ Requirements and bugs:
     API for such purpose is existing, use it
   - [uim] Implement string-escape as same as trunk
 
-* Fix invalid storage model assumption of ScmOp_append()
+* Fix invalid storage model assumption of ScmOp_append() and qquote_internal()
+  with ScmRef
 
 * Add error message printing function which properly uses stderr, and replace
   inappropriate 'printf' with it

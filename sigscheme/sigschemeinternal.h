@@ -121,6 +121,11 @@ extern ScmObj SigScm_null_values;
 #define LIST_4         SCM_LIST_4
 #define LIST_5         SCM_LIST_5
 
+#define DEREF          SCM_DEREF
+#define SET            SCM_SET
+#define REF_CAR        SCM_REF_CAR
+#define REF_CDR        SCM_REF_CDR
+
 #define EVAL           SCM_EVAL
 
 #define INTP           SCM_INTP

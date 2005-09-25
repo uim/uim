@@ -49,6 +49,7 @@
 =======================================*/
 typedef struct ScmObjInternal_ ScmObjInternal;
 typedef ScmObjInternal *ScmObj;
+typedef ScmObj *ScmRef;
 typedef struct _ScmPortInfo ScmPortInfo;
 typedef struct ScmEvalState_ ScmEvalState;
 typedef ScmObj (*ScmFuncType)();
@@ -433,6 +434,16 @@ struct ScmObjInternal_ {
 #define SCM_ENTYPE_C_FUNCPOINTER(a) (SCM_ENTYPE((a), ScmCFuncPointer))
 #define SCM_C_FUNCPOINTER_VALUE(a) (SCM_AS_C_FUNCPOINTER(a)->obj.c_func_pointer.func)
 #define SCM_C_FUNCPOINTER_SET_VALUE(a, funcptr) (SCM_C_FUNCPOINTER_VALUE(a) = funcptr)
+
+/*============================================================================
+  Abstract ScmObj Reference For Storage-Representation Independent Efficient
+  List Operations
+============================================================================*/
+#define SCM_REF_CAR(obj)  (&SCM_CAR(obj))
+#define SCM_REF_CDR(obj)  (&SCM_CDR(obj))
+#define SCM_DEREF(ref)    (*(ref))
+/* RFC: Is there a better name? */
+#define SCM_SET(ref, obj) (*(ref) = (obj))
 
 /*============================================================================
   Special Constants
