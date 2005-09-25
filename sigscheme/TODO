@@ -25,9 +25,6 @@ Requirements and bugs:
 * Add error message printing function which properly uses stderr, and replace
   inappropriate 'printf' with it
 
-* Fix broken 'values' handling
-  - (write (values)) => SEGV
-
 * [uim] link libsscm into libuim statically
 
 * Split the configuration macros such as SCM_USE_SRFI1 off into config.h
@@ -109,7 +106,7 @@ Namings and Cosmetic things:
 Assigned to YamaKen:
 
 * GCC4-optimization-proof stack protection
-  - [uim] Introduce it into r5rs branch
-  - [uim] Port it into trunk
+  - Update the document
+  - Re-merge into datas.c
 
 ==============================================================================
