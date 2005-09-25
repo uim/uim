@@ -87,7 +87,7 @@ libuim_skk_la_CPPFLAGS = -I$(top_srcdir)
 libuimincludedir =  $(includedir)/uim
 
 libuim_la_LDFLAGS = -version-info 0:2:0 -export-symbols-regex uim.\*
-libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@ $(top_builddir)/replace/libreplace.la
+libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@ $(top_builddir)/sigscheme/libsscm.la  $(top_builddir)/replace/libreplace.la
 libuim_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DPKGLIBDIR=\"$(pkglibdir)\" \
 		     -DPKGDATADIR=\"$(pkgdatadir)\"
 
