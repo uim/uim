@@ -219,6 +219,20 @@
 		 (lambda () 'ok)))
 (assert-equal? "call-with-values #4" -1 (call-with-values * -))
 
+(assert-equal? "call-with-values #5"
+               5
+	       (apply call-with-values (list (lambda () (values 4 5))
+                                             (lambda (a b) b))))
+(assert-equal? "call-with-values #6"
+               4
+	       (apply call-with-values (list (lambda () (values 4))
+                                             (lambda (x) x))))
+(assert-equal? "call-with-values #7"
+               'ok
+	       (apply call-with-values (list (lambda () (values))
+                                             (lambda () 'ok))))
+(assert-equal? "call-with-values #8" -1 (apply call-with-values (list * -)))
+
 (assert-true   "values #1" (number? (values 5)))
 (assert-false  "values #2" (number? (values 'five)))
 (assert-equal? "values #3"
