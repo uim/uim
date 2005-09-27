@@ -350,16 +350,6 @@ struct ScmObjInternal_ {
 #define SCM_FUNC_CFUNC(a)   (SCM_AS_FUNC(a)->obj.func.func)
 #define SCM_FUNC_SET_CFUNC(a, func)     (SCM_FUNC_CFUNC(a) = (ScmFuncType)(func))
 
-#define SCM_FUNC_EXEC_SUBR0(a)                               ((*(a)->obj.func.subrs.subr0.func) ())
-#define SCM_FUNC_EXEC_SUBR1(a, arg1)                         ((*(a)->obj.func.subrs.subr1.func) (arg1))
-#define SCM_FUNC_EXEC_SUBR2(a, arg1, arg2)                   ((*(a)->obj.func.subrs.subr2.func) ((arg1), (arg2)))
-#define SCM_FUNC_EXEC_SUBR3(a, arg1, arg2, arg3)             ((*(a)->obj.func.subrs.subr3.func) ((arg1), (arg2), (arg3)))
-#define SCM_FUNC_EXEC_SUBR4(a, arg1, arg2, arg3, arg4)       ((*(a)->obj.func.subrs.subr4.func) ((arg1), (arg2), (arg3), (arg4)))
-#define SCM_FUNC_EXEC_SUBR5(a, arg1, arg2, arg3, arg4, arg5) ((*(a)->obj.func.subrs.subr5.func) ((arg1), (arg2), (arg3), (arg4), (arg5)))
-#define SCM_FUNC_EXEC_SUBRL(a, arg1, arg2)                   ((*(a)->obj.func.subrs.subr2.func) ((arg1), (arg2)))
-#define SCM_FUNC_EXEC_SUBRR(a, arg1, arg2)             ((*(a)->obj.func.subrs.subrr.func) ((arg1), (arg2)))
-#define SCM_FUNC_EXEC_SUBRF(a, arg1, arg2, arg3)             ((*(a)->obj.func.subrs.subrf.func) ((arg1), (arg2), (arg3)))
-
 #define SCM_CLOSUREP(a) (SCM_TYPE(a) == ScmClosure)
 #define SCM_ENTYPE_CLOSURE(a) (SCM_ENTYPE((a), ScmClosure))
 #define SCM_CLOSURE_EXP(a) (SCM_AS_CLOSURE(a)->obj.closure.exp)
