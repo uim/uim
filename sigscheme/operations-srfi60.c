@@ -48,6 +48,28 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+#define BITWISE_OPERATION_BODY(op, opstr)                                    \
+    do {                                                                     \
+        int result = 0;                                                      \
+        switch (*state) {                                                    \
+        case SCM_REDUCE_0:                                                   \
+            break;                                                           \
+        case SCM_REDUCE_1:                                                   \
+            if (!INTP(left))                                                 \
+                SigScm_ErrorObj(opstr " : integer required but got ", left); \
+            return right;                                                    \
+        case SCM_REDUCE_PARTWAY:                                             \
+        case SCM_REDUCE_LAST:                                                \
+            /* left is already ensured as int by previous loop */            \
+            if (!INTP(right))                                                \
+                SigScm_ErrorObj(opstr " : integer required but got ", right); \
+            result = (SCM_INT_VALUE(left) op SCM_INT_VALUE(right));          \
+            break;                                                           \
+        default:                                                             \
+            SigScm_Error(opstr " : (internal error) unrecognized state specifier: %d\n", *state); \
+        }                                                                    \
+        return Scm_NewInt(result);                                           \
+    } while (/* CONSTCOND */ 0)
 
 /*=======================================
   Variable Declarations
@@ -66,29 +88,22 @@
 =============================================================================*/
 
 /* Bitwise Operations */
-
-/* FIXME: Rewrite as a SCM_REDUCTION_OPERATOR function */
-ScmObj ScmOp_SRFI60_logand(ScmObj args, ScmObj env)
+ScmObj ScmOp_SRFI60_logand(ScmObj left, ScmObj right,
+                           enum ScmReductionState *state)
 {
-    SCM_REDUCE((accum & elm), 0, args, env,
-               int, INTP, SCM_INT_VALUE, Scm_NewInt,
-               "logand : integer required but got ");
+    BITWISE_OPERATION_BODY(&, "logand");
 }
 
-/* FIXME: Rewrite as a SCM_REDUCTION_OPERATOR function */
-ScmObj ScmOp_SRFI60_logior(ScmObj args, ScmObj env)
+ScmObj ScmOp_SRFI60_logior(ScmObj left, ScmObj right,
+                           enum ScmReductionState *state)
 {
-    SCM_REDUCE((accum | elm), 0, args, env,
-               int, INTP, SCM_INT_VALUE, Scm_NewInt,
-               "logior : integer required but got ");
+    BITWISE_OPERATION_BODY(|, "logand");
 }
 
-/* FIXME: Rewrite as a SCM_REDUCTION_OPERATOR function */
-ScmObj ScmOp_SRFI60_logxor(ScmObj args, ScmObj env)
+ScmObj ScmOp_SRFI60_logxor(ScmObj left, ScmObj right,
+                           enum ScmReductionState *state)
 {
-    SCM_REDUCE((accum ^ elm), 0, args, env,
-               int, INTP, SCM_INT_VALUE, Scm_NewInt,
-               "logxor : integer required but got ");
+    BITWISE_OPERATION_BODY(^, "logand");
 }
 
 ScmObj ScmOp_SRFI60_lognot(ScmObj n)

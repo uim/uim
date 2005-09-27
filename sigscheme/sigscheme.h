@@ -868,9 +868,12 @@ ScmObj ScmOp_SRFI38_write_with_shared_structure(ScmObj arg, ScmObj env);
 #endif
 #if SCM_USE_SRFI60
 /* operations-srfi60.c */
-ScmObj ScmOp_SRFI60_logand(ScmObj args, ScmObj env);
-ScmObj ScmOp_SRFI60_logior(ScmObj args, ScmObj env);
-ScmObj ScmOp_SRFI60_logxor(ScmObj args, ScmObj env);
+ScmObj ScmOp_SRFI60_logand(ScmObj left, ScmObj right,
+                           enum ScmReductionState *state);
+ScmObj ScmOp_SRFI60_logior(ScmObj left, ScmObj right,
+                           enum ScmReductionState *state);
+ScmObj ScmOp_SRFI60_logxor(ScmObj left, ScmObj right,
+                           enum ScmReductionState *state);
 ScmObj ScmOp_SRFI60_lognot(ScmObj n);
 ScmObj ScmOp_SRFI60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1);
 ScmObj ScmOp_SRFI60_logtest(ScmObj j, ScmObj k);

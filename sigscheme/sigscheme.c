@@ -387,18 +387,18 @@ static void SigScm_Initialize_internal(void)
     /*=======================================================================
       SRFI-60 Procedures
     =======================================================================*/
-    Scm_RegisterFuncRawList("logand" , ScmOp_SRFI60_logand);
-    Scm_RegisterFuncRawList("logior" , ScmOp_SRFI60_logior);
-    Scm_RegisterFuncRawList("logxor" , ScmOp_SRFI60_logxor);
-    Scm_RegisterFunc1("lognot"       , ScmOp_SRFI60_lognot);
-    Scm_RegisterFunc3("bitwise-if"   , ScmOp_SRFI60_bitwise_if);
-    Scm_RegisterFunc2("logtest"      , ScmOp_SRFI60_logtest);
-    Scm_DefineAlias("bitwise-and"   , "logand");
-    Scm_DefineAlias("bitwise-ior"   , "logior");
-    Scm_DefineAlias("bitwise-xor"   , "logxor");
-    Scm_DefineAlias("bitwise-not"   , "lognot");
-    Scm_DefineAlias("bitwise-merge" , "bitwise-if");
-    Scm_DefineAlias("any-bits-set?" , "logtest");
+    Scm_RegisterReductionOperator("logand"   , ScmOp_SRFI60_logand);
+    Scm_RegisterReductionOperator("logior"   , ScmOp_SRFI60_logior);
+    Scm_RegisterReductionOperator("logxor"   , ScmOp_SRFI60_logxor);
+    Scm_RegisterProcedureFixed1("lognot"     , ScmOp_SRFI60_lognot);
+    Scm_RegisterProcedureFixed3("bitwise-if" , ScmOp_SRFI60_bitwise_if);
+    Scm_RegisterProcedureFixed2("logtest"    , ScmOp_SRFI60_logtest);
+    Scm_DefineAlias("bitwise-and"            , "logand");
+    Scm_DefineAlias("bitwise-ior"            , "logior");
+    Scm_DefineAlias("bitwise-xor"            , "logxor");
+    Scm_DefineAlias("bitwise-not"            , "lognot");
+    Scm_DefineAlias("bitwise-merge"          , "bitwise-if");
+    Scm_DefineAlias("any-bits-set?"          , "logtest");
 #endif
 
 #if SCM_COMPAT_SIOD
