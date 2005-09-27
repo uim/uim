@@ -61,11 +61,6 @@ Performance improvements:
 ==============================================================================
 Logical simplifications:
 
-* Split ScmOp_eval()'s function invocation handling off into a separated
-  function and share it with ScmOp_apply()
-
-* Withdraw SCM_REDUCE*() macro
-
 * Reorganize SCM_SHIFT*() macros and simplify args extraction codes
 
 * Automatically append "\n" in SigScm_Error() instead of append by caller

@@ -243,61 +243,6 @@ extern ScmObj SigScm_null_values;
       && SCM_SHIFT_EVALED(elm3, lst, env)                                    \
       && SCM_SHIFT_EVALED(elm4, lst, env)) ? (lst) : 0)
 
-/*
- * TODO: Simplify implementation of following functions with SCM_REDUCE and
- * SCM_REDUCE_EXT. Anyone?
- *
- * - ScmOp_add, ScmOp_multiply, ScmOp_subtract, ScmOp_divide, ScmOp_equal,
- *   ScmOp_less, ScmOp_greater, ScmOp_less_eq, ScmOp_greater_eq, ScmOp_max,
- *   ScmOp_min
- */
-#define SCM_REDUCE(fexp, ridentity, lst, env,                                \
-                   ctype, validp, extract, make, err_header)                 \
-    SCM_REDUCE_EXT((accum = (fexp)),                                         \
-                   return make(ridentity),                                   \
-                   return scm_elm,                                           \
-                   lst, env,                                                 \
-                   ctype, validp, extract, make,                             \
-                   err_header)
-
-#define SCM_REDUCE_EXT(exp_loop, exp0, exp1, lst, env,                       \
-                       ctype, validp, extract, make,                         \
-                       err_header)                                           \
-    do {                                                                     \
-        ScmObj scm_elm, rest;                                                \
-        ctype elm, accum;                                                    \
-                                                                             \
-        /* 0 */                                                              \
-        if (NULLP(lst)) {                                                    \
-            exp0;                                                            \
-        }                                                                    \
-                                                                             \
-        /* 1 */                                                              \
-        scm_elm = EVAL(CAR(lst), env);                                       \
-        accum = elm = extract(scm_elm);                                      \
-        if (!validp(scm_elm)) {                                              \
-            SigScm_ErrorObj(err_header, scm_elm);                            \
-            return SCM_FALSE;                                                \
-        } else if (NULLP(CDR(lst))) {                                        \
-            exp1;                                                            \
-        }                                                                    \
-                                                                             \
-        /* 2+ */                                                             \
-        rest = CDR(lst);                                                     \
-        do {                                                                 \
-            scm_elm = EVAL(CAR(rest), env);                                  \
-            rest = CDR(rest);                                                \
-            if (!validp(scm_elm)) {                                          \
-                SigScm_ErrorObj(err_header, scm_elm);                        \
-                return SCM_FALSE;                                            \
-            }                                                                \
-            elm = extract(scm_elm);                                          \
-            exp_loop;                                                        \
-        } while (!NULLP(rest));                                              \
-                                                                             \
-        return make(accum);                                                  \
-    } while (/* CONSTCOND */ 0)
-
 /*=======================================
    Function Declarations
 =======================================*/
