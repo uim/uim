@@ -285,6 +285,7 @@ uim_lisp
 uim_scm_nreverse(uim_lisp cell)
 {
   fprintf(stderr, "uim_scm_nreverse : not implemented yet.\n");
+  return uim_scm_null_list();
 #if 0
   return (uim_lisp)nreverse((uim_lisp)cell);
 #endif
