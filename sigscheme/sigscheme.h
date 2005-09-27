@@ -370,24 +370,24 @@ ScmCFunc SigScm_GC_EnsureUninlinedFuncInternal(ScmCFunc func) SCM_NOINLINE;
 
 /* eval.c */
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env);
-    ScmObj ScmOp_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state);
-    ScmObj ScmOp_quote(ScmObj datum, ScmObj env);
+ScmObj ScmOp_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state);
+ScmObj ScmOp_quote(ScmObj datum, ScmObj env);
 ScmObj ScmExp_lambda(ScmObj args, ScmObj env);
-    ScmObj ScmExp_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state);
+ScmObj ScmExp_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state);
 ScmObj ScmExp_set(ScmObj var, ScmObj val, ScmObj env);
-    ScmObj ScmExp_cond(ScmObj arg, ScmEvalState *eval_state);
-    ScmObj ScmExp_case(ScmObj arg, ScmEvalState *eval_state);
-    ScmObj ScmExp_and(ScmObj arg, ScmEvalState *eval_state);
-    ScmObj ScmExp_or(ScmObj arg, ScmEvalState *eval_state);
-    ScmObj ScmExp_let(ScmObj arg, ScmEvalState *eval_state);
+ScmObj ScmExp_cond(ScmObj arg, ScmEvalState *eval_state);
+ScmObj ScmExp_case(ScmObj arg, ScmEvalState *eval_state);
+ScmObj ScmExp_and(ScmObj arg, ScmEvalState *eval_state);
+ScmObj ScmExp_or(ScmObj arg, ScmEvalState *eval_state);
+ScmObj ScmExp_let(ScmObj arg, ScmEvalState *eval_state);
 ScmObj ScmExp_let_star(ScmObj arg, ScmEvalState *eval_state);
 ScmObj ScmExp_letrec(ScmObj arg, ScmEvalState *eval_state);
 ScmObj ScmExp_begin(ScmObj arg, ScmEvalState *eval_state);
 ScmObj ScmExp_do(ScmObj arg, ScmEvalState *eval_state);
 ScmObj ScmOp_delay(ScmObj expr, ScmObj env);
-    ScmObj ScmOp_quasiquote(ScmObj datum, ScmObj env);
-    ScmObj ScmOp_unquote(ScmObj dummy, ScmObj env);
-    ScmObj ScmOp_unquote_splicing(ScmObj dummy, ScmObj env);
+ScmObj ScmOp_quasiquote(ScmObj datum, ScmObj env);
+ScmObj ScmOp_unquote(ScmObj dummy, ScmObj env);
+ScmObj ScmOp_unquote_splicing(ScmObj dummy, ScmObj env);
 ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env);
 ScmObj ScmOp_scheme_report_environment(ScmObj version);
 ScmObj ScmOp_null_environment(ScmObj version);
@@ -617,6 +617,8 @@ ScmObj ScmOp_SRFI1_split_at(ScmObj lst, ScmObj idx);
 ScmObj ScmOp_SRFI1_split_at_d(ScmObj lst, ScmObj idx);
 ScmObj ScmOp_SRFI1_last(ScmObj lst);
 ScmObj ScmOp_SRFI1_last_pair(ScmObj lst);
+ScmObj ScmOp_SRFI1_lengthplus(ScmObj lst);
+ScmObj ScmOp_SRFI1_concatenate(ScmObj args, ScmObj env);
 #endif
 #if SCM_USE_SRFI8
 /* operations-srfi8.c */

@@ -370,6 +370,8 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterFunc2("split-at!"            , ScmOp_SRFI1_split_at_d);
     Scm_RegisterFunc1("last"                 , ScmOp_SRFI1_last);
     Scm_RegisterFunc1("last-pair"            , ScmOp_SRFI1_last_pair);
+    Scm_RegisterFunc1("length+"              , ScmOp_SRFI1_lengthplus);
+    Scm_RegisterFuncEvaledList("concatenate" , ScmOp_SRFI1_concatenate);
 #endif
 #if SCM_USE_SRFI8
     /*=======================================================================

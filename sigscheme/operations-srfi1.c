@@ -342,10 +342,8 @@ ScmObj ScmOp_SRFI1_listequal(ScmObj args, ScmObj env)
 static ScmObj compare_list(ScmObj eqproc, ScmObj lst1, ScmObj lst2, ScmObj env)
 {
 #define CHECK_LIST_EQUALITY_WITH_EQPROC(eqproc, obj1, obj2, env)        \
-    (ScmOp_apply(SCM_LIST_2(eqproc,                                     \
-                            SCM_LIST_2(obj1,                            \
-                                       obj2)),                          \
-                 env));
+    (Scm_call(eqproc,                                                   \
+              LIST_2(obj1, obj2)))
 
     ScmObj ret_cmp = SCM_FALSE;
 
@@ -587,4 +585,24 @@ ScmObj ScmOp_SRFI1_last_pair(ScmObj lst)
         ;
 
     return lst;
+}
+
+/*==============================================================================
+  SRFI1 : The procedures : Miscellaneous
+==============================================================================*/
+ScmObj ScmOp_SRFI1_lengthplus(ScmObj lst)
+{
+    /* FIXME!: remove expensive circular_listp */
+    if (NFALSEP(ScmOp_SRFI1_circular_listp(lst)))
+        return SCM_FALSE;
+
+    return ScmOp_length(lst);
+}
+
+ScmObj ScmOp_SRFI1_concatenate(ScmObj args, ScmObj env)
+{
+    ScmObj lsts_of_lst = CAR(args);
+
+    return Scm_call(ScmOp_eval(Scm_Intern("append"), env),
+                    lsts_of_lst);
 }

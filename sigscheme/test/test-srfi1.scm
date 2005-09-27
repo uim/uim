@@ -124,18 +124,16 @@
 (assert-equal? "drop-right! test 3" '(1 2 3) (drop-right! '(1 2 3 . d) 0))
 
 ; split-at
-; TODO : fixme! current "receive" has the problem about evaluation order
-;(receive (former latter)
-;	 (split-at '(1 2 3 4 5 6 7) 3)
-;	 (assert-equal? "split-at test 1" '(1 2 3) former)
-;	 (assert-equal? "split-at test 2" '(4 5 6 7) latter))
+(receive (former latter)
+	 (split-at '(1 2 3 4 5 6 7) 3)
+	 (assert-equal? "split-at test 1" '(1 2 3) former)
+	 (assert-equal? "split-at test 2" '(4 5 6 7) latter))
 
 ; split-at!
-; TODO : fixme! current "receive" has the problem about evaluation order
-;(receive (former latter)
-;	 (split-at! '(1 2 3 4 5 6 7) 3)
-;	 (assert-equal? "split-at! test 1" '(1 2 3) former)
-;	 (assert-equal? "split-at! test 2" '(4 5 6 7) latter))
+(receive (former latter)
+	 (split-at! '(1 2 3 4 5 6 7) 3)
+	 (assert-equal? "split-at! test 1" '(1 2 3) former)
+	 (assert-equal? "split-at! test 2" '(4 5 6 7) latter))
 
 ; last
 (assert-equal? "last test 1" 'a (last '(a)))
@@ -149,5 +147,18 @@
 (assert-equal? "last-pair test 3" '(c) (last-pair '(a b c)))
 (assert-equal? "last-pair test 4" '(c . d) (last-pair '(a b c . d)))
 
+; length+
+(assert-false "length+ test 1" (length+ circular-lst))
+
+; concatenate
+(assert-equal? "concatenate test 1" '() (concatenate '(())))
+(assert-equal? "concatenate test 2" '() (concatenate '(() ())))
+(assert-equal? "concatenate test 3" '() (concatenate '(() () ())))
+(assert-equal? "concatenate test 4" '(a) (concatenate '((a))))
+(assert-equal? "concatenate test 5" '(a b) (concatenate '((a) (b))))
+(assert-equal? "concatenate test 6" '(a b c) (concatenate '((a) (b) (c))))
+(assert-equal? "concatenate test 7" '(a b) (concatenate '((a b))))
+(assert-equal? "concatenate test 8" '(a b c d) (concatenate '((a b) (c d))))
+(assert-equal? "concatenate test 9" '(a b c d e f) (concatenate '((a b) (c d) (e f))))
 
 (total-report)
