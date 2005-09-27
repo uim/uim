@@ -227,7 +227,7 @@ static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmOb
     ScmObj heap, cell;
 
 #if DEBUG_GC
-    printf("allocate_heap num:%d size:%d\n", num_heap, HEAP_SIZE);
+    SigScm_Debug("allocate_heap num:%d size:%d", num_heap, HEAP_SIZE);
 #endif
 
     /* allocate heap */
@@ -259,7 +259,7 @@ static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, int HEAP_SIZE, ScmO
     ScmObj heap, cell;
 
 #if DEBUG_GC
-    printf("add_heap current num of heaps:%d\n", *orig_num_heap);
+    SigScm_Debug("add_heap current num of heaps:%d", *orig_num_heap);
 #endif
 
     /* increment num_heap */
@@ -322,7 +322,7 @@ static void gc_preprocess(void)
 static void gc_mark_and_sweep(void)
 {
 #if DEBUG_GC
-    printf("[ gc start ]\n");
+    SigScm_Debug("[ gc start ]");
 #endif
 
     gc_preprocess();
@@ -332,7 +332,7 @@ static void gc_mark_and_sweep(void)
     /* we cannot sweep the object, so let's add new heap */
     if (NULLP(scm_freelist)) {
 #if DEBUG_GC
-      printf("Cannot sweeped the object, allocating new heap.\n");
+      SigScm_Debug("Cannot sweeped the object, allocating new heap.");
 #endif
         add_heap(&scm_heaps, &scm_heap_num, SCM_HEAP_SIZE, &scm_freelist);
     }
@@ -471,7 +471,7 @@ static void gc_mark_locations(ScmObj *start, ScmObj *end)
     size = end - start;
 
 #if DEBUG_GC
-    printf("gc_mark_locations() : size = %d\n", size);
+    SigScm_Debug("gc_mark_locations() : size = %d", size);
 #endif
 
     gc_mark_locations_n(start, size);
@@ -491,7 +491,7 @@ static void gc_mark(void)
     void *save_regs_buf_end = (char *)save_regs_buf + sizeof(save_regs_buf);
 
 #if DEBUG_GC
-    printf("gc_mark\n");
+    SigScm_Debug("gc_mark()");
 #endif
 
     setjmp(save_regs_buf);
@@ -589,7 +589,7 @@ static void gc_sweep(void)
         }
 
 #if DEBUG_GC
-        printf("scm[%d] sweeped = %d\n", i, corrected_obj_num);
+        SigScm_Debug("scm[%d] sweeped = %d", i, corrected_obj_num);
 #endif
     }
     scm_freelist = scm_new_freelist;

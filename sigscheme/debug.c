@@ -35,6 +35,7 @@
   System Include
 =======================================*/
 #include <stdio.h>
+#include <stdarg.h>
 
 /*=======================================
   Local Include
@@ -118,6 +119,17 @@ static int  get_shared_index(ScmObj obj);
 /*=======================================
    Function Implementations
 =======================================*/
+void SigScm_Debug(const char *msg, ...)
+{
+    va_list va;
+
+    va_start(va, msg);
+    vfprintf(stderr, msg, va);
+    va_end(va);
+
+    fprintf(stderr, "\n");
+}
+
 void SigScm_Display(ScmObj obj)
 {
     print_ScmObj_internal(SCM_PORTINFO_FILE(scm_current_output_port), obj, AS_WRITE);

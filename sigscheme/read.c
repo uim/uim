@@ -165,14 +165,14 @@ static ScmObj read_sexpression(ScmObj port)
     int c1 = 0;
 
 #if DEBUG_PARSER
-    printf("read_sexpression\n");
+    SigScm_Debug("read_sexpression");
 #endif
 
     while (1) {
         c = skip_comment_and_space(port);
 
 #if DEBUG_PARSER
-        printf("read_sexpression c = %c\n", c);
+        SigScm_Debug("read_sexpression c = %c", c);
 #endif
 
         switch (c) {
@@ -245,14 +245,14 @@ static ScmObj read_list(ScmObj port, int closeParen)
     char  *token  = NULL;
 
 #if DEBUG_PARSER
-    printf("read_list\n");
+    SigScm_Debug("read_list");
 #endif
 
     while (1) {
         c = skip_comment_and_space(port);
 
 #if DEBUG_PARSER
-        printf("read_list c = [%c]\n", c);
+        SigScm_Debug("read_list c = [%c]", c);
 #endif
 
         if (c == EOF) {
@@ -267,7 +267,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
             SCM_PORT_GETC(port, c2);
 
 #if DEBUG_PARSER
-            printf("read_list process_dot c2 = [%c]\n", c2);
+            SigScm_Debug("read_list process_dot c2 = [%c]", c2);
 #endif
             if (isspace(c2) || c2 == '(' || c2 == '"' || c2 == ';') {
                 cdr = read_sexpression(port);
@@ -317,7 +317,7 @@ static ScmObj read_char(ScmObj port)
     char *ch = read_char_sequence(port);
 
 #if DEBUG_PARSER
-    printf("read_char : ch = %s\n", ch);
+    SigScm_Debug("read_char : ch = %s", ch);
 #endif
 
     /* check special sequence "space" and "newline" */
@@ -346,14 +346,14 @@ static ScmObj read_string(ScmObj port)
     int   c = 0;
 
 #if DEBUG_PARSER
-    printf("read_string\n");
+    SigScm_Debug("read_string");
 #endif
 
     while (1) {
         SCM_PORT_GETC(port, c);
 
 #if DEBUG_PARSER
-        printf("read_string c = %c\n", c);
+        SigScm_Debug("read_string c = %c", c);
 #endif
 
         switch (c) {
@@ -403,7 +403,7 @@ static ScmObj read_symbol(ScmObj port)
     free(sym_name);
 
 #if DEBUG_PARSER
-    printf("read_symbol\n");
+    SigScm_Debug("read_symbol");
 #endif
 
     return sym;
@@ -418,7 +418,7 @@ static ScmObj read_number_or_symbol(ScmObj port)
     ScmObj ret = SCM_NULL;
 
 #if DEBUG_PARSER
-    printf("read_number_or_symbol\n");
+    SigScm_Debug("read_number_or_symbol");
 #endif
 
     /* read char sequence */
@@ -449,7 +449,7 @@ static char *read_word(ScmObj port)
         SCM_PORT_GETC(port, c);
 
 #if DEBUG_PARSER
-        printf("c = %c\n", c);
+        SigScm_Debug("c = %c", c);
 #endif
 
         switch (c) {
@@ -479,7 +479,7 @@ static char *read_char_sequence(ScmObj port)
         SCM_PORT_GETC(port, c);
 
 #if DEBUG_PARSER
-        printf("c = %c\n", c);
+        SigScm_Debug("c = %c", c);
 #endif
 
         switch (c) {

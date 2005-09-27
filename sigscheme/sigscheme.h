@@ -555,6 +555,7 @@ void SigScm_ErrorObj(const char *msg, ScmObj obj);
 void SigScm_ShowBacktrace(void);
 
 /* debug.c */
+void SigScm_Debug(const char *msg, ...);
 void SigScm_Display(ScmObj obj);
 void SigScm_WriteToPort(ScmObj port, ScmObj obj);
 void SigScm_DisplayToPort(ScmObj port, ScmObj obj);
