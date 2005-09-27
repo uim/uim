@@ -135,8 +135,10 @@ void SigScm_CategorizedDebug(int category, const char *msg, ...)
     va_list va;
 
     va_start(va, msg);
-    if (debug_mask & category)
-        SigScm_Debug(msg, va);
+    if (debug_mask & category) {
+        vfprintf(stderr, msg, va);
+        fprintf(stderr, "\n");
+    }
     va_end(va);
 }
 

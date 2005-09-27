@@ -170,7 +170,7 @@ ScmObj ScmOp_verbose(ScmObj args, ScmObj env)
         if (!INTP(CAR(args)))
             SigScm_ErrorObj("verbose : integer required but got ", args);
 
-        sscm_verbose_level = SCM_INT_VALUE(CAR(args));
+        SigScm_SetVerboseLevel(SCM_INT_VALUE(CAR(args)));
     }
 
     return Scm_NewInt(sscm_verbose_level);
@@ -184,7 +184,7 @@ long SigScm_GetVerboseLevel(void)
 void SigScm_SetVerboseLevel(long level)
 {
     if (level < 0)
-        SigScm_Error("SigScm_SetVerboseLevel : negative number has given\n");
+        SigScm_Error("SigScm_SetVerboseLevel : negative value has been given\n");
 
     sscm_verbose_level = level;
 
