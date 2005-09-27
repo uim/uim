@@ -67,7 +67,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-static int sscm_debug_mask_tbl[] = {
+static const int sscm_debug_mask_tbl[] = {
     SCM_DBG_SIOD_V0,
     SCM_DBG_SIOD_V1,
     SCM_DBG_SIOD_V2,
