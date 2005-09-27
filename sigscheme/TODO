@@ -46,8 +46,6 @@ Performance improvements:
 
 * Optimize ScmOp_map()
 
-* Suppress cons cell consumption of 'values' by ValueCons
-
 * Object representation compaction ([Anthy-dev 2353], [Anthy-dev 2360])
 
 * Replace almost ScmObj initialization by SCM_NULL with SCM_FALSE. SCM_NULL is

@@ -73,9 +73,6 @@ ScmObj SigScm_null_values;
 
 static ScmObjInternal SigScm_null_impl, SigScm_true_impl, SigScm_false_impl, SigScm_eof_impl;
 static ScmObjInternal SigScm_unbound_impl, SigScm_undef_impl;
-#if SCM_USE_VALUECONS
-static ScmObj SigScm_null_values_impl;
-#endif
 
 /*=======================================
   Function Implementations
@@ -104,9 +101,6 @@ static void SigScm_Initialize_internal(void)
     SCM_ETC_SET_IMPL(SigScm_eof,              SigScm_eof_impl    );
     SCM_ETC_SET_IMPL(SigScm_unbound,          SigScm_unbound_impl);
     SCM_ETC_SET_IMPL(SigScm_undef,            SigScm_undef_impl  );
-#if SCM_USE_VALUECONS
-    SCM_ETC_SET_IMPL(SigScm_null_values,      SigScm_null_values_impl);
-#endif
 
 #if SCM_COMPAT_SIOD_BUGS
     SigScm_false = SigScm_null;
@@ -142,6 +136,18 @@ static void SigScm_Initialize_internal(void)
 #endif
     SCM_SYMBOL_SET_VCELL(Scm_Intern("else"), SCM_TRUE);
     SCM_SYMBOL_SET_VCELL(Scm_Intern("=>"),   SCM_TRUE);
+    /*=======================================================================
+      Symbol-less Internal Variables
+    =======================================================================*/
+#if SCM_USE_VALUECONS
+    /*
+     * To keep storage model abstract, the cell is allocated from a heap
+     * instead of directly construct ScmObjInternal
+     */
+    SigScm_null_values = CONS(SCM_NULL, SCM_NULL);
+    SCM_ENTYPE_VALUEPACKET(SigScm_null_values);
+    SigScm_GC_Protect(&SigScm_null_values);
+#endif
     /*=======================================================================
       Export Scheme Functions
     =======================================================================*/

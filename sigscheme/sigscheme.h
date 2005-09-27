@@ -51,14 +51,6 @@ extern "C" {
 =======================================*/
 
 /*=======================================
-   Struct Declarations
-=======================================*/
-typedef void (*ScmCFunc)(void);
-
-/* type declaration */
-#include "sigschemetype.h"
-
-/*=======================================
    Macro Declarations
 =======================================*/
 /* FIXME: split off to config.h */
@@ -75,7 +67,7 @@ typedef void (*ScmCFunc)(void);
 #define SCM_STRICT_ARGCHECK     1  /* enable strict argument check */
 #define SCM_ACCESSOR_ASSERT     0  /* enable strict type check with accessor */
 #define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
-#define SCM_USE_VALUECONS       0  /* use experimental values passing */
+#define SCM_USE_VALUECONS       1  /* use experimental values passing */
 #define SCM_VOLATILE_OUTPUT     0  /* always flush files on write */
 
 /* dependency resolution */
@@ -147,6 +139,14 @@ int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
     } while (/* CONSTCOND */ 0)
 
 #endif /* SCM_GCC4_READY_GC */
+
+/*=======================================
+   Struct Declarations
+=======================================*/
+typedef void (*ScmCFunc)(void);
+
+/* type declaration */
+#include "sigschemetype.h"
 
 /*=======================================
    Variable Declarations
@@ -336,7 +336,9 @@ ScmObj Scm_NewVector(ScmObj *vec, int len);
 ScmObj Scm_NewFilePort(FILE *file, const char *filename, enum ScmPortDirection pdireciton);
 ScmObj Scm_NewStringPort(const char *str);  /* input only? */
 ScmObj Scm_NewContinuation(void);
+#if !SCM_USE_VALUECONS
 ScmObj Scm_NewValuePacket(ScmObj values);
+#endif
 #if SCM_USE_NONSTD_FEATURES
 ScmObj Scm_NewCPointer(void *data);
 ScmObj Scm_NewCFuncPointer(ScmCFunc func);

@@ -373,7 +373,12 @@ mark_loop:
         break;
 
     case ScmValuePacket:
+#if SCM_USE_VALUECONS
+        mark_obj(SCM_VALUECONS_CAR(obj));
+        obj = SCM_VALUECONS_CDR(obj);
+#else
         obj = SCM_VALUEPACKET_VALUES(obj);
+#endif
         goto mark_loop;
 
     case ScmVector:
@@ -786,6 +791,7 @@ ScmObj Scm_NewContinuation(void)
     return obj;
 }
 
+#if !SCM_USE_VALUECONS
 ScmObj Scm_NewValuePacket(ScmObj values)
 {
     ScmObj obj = SCM_FALSE;
@@ -796,6 +802,7 @@ ScmObj Scm_NewValuePacket(ScmObj values)
 
     return obj;
 }
+#endif
 
 #if SCM_USE_NONSTD_FEATURES
 ScmObj Scm_NewCPointer(void *data)

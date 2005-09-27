@@ -1836,8 +1836,17 @@ ScmObj ScmOp_values(ScmObj argl, ScmObj env)
     if (CONSP(argl) && NULLP(CDR(argl)))
         return CAR(argl);
 
+#if SCM_USE_VALUECONS
+    if (NULLP(argl)) {
+        return SigScm_null_values;
+    } else {
+        SCM_ENTYPE_VALUEPACKET(argl);
+        return argl;
+    }
+#else
     /* Otherwise, we'll return the values in a packet. */
     return Scm_NewValuePacket(argl);
+#endif
 }
 
 ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer)
@@ -1846,6 +1855,16 @@ ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer)
 
     vals = Scm_call(producer, SCM_NULL);
 
+#if SCM_USE_VALUECONS
+    if (SCM_NULLVALUESP(vals)) {
+        vals = SCM_NULL;
+    } else if (VALUEPACKETP(vals)) {
+        SCM_ENTYPE_CONS(vals);
+    } else {
+        /* got back a single value */
+        vals = CONS(vals, SCM_NULL);
+    }
+#else
     if (!VALUEPACKETP(vals)) {
         /* got back a single value */
         vals = CONS(vals, SCM_NULL);
@@ -1853,6 +1872,7 @@ ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer)
         /* extract */
         vals = SCM_VALUEPACKET_VALUES(vals);
     }
+#endif
 
     return Scm_call(consumer, vals);
 }

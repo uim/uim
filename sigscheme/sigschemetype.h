@@ -92,11 +92,7 @@ enum ScmObjType {
     ScmPort         = 8,
     ScmContinuation = 9,
     ScmEtc          = 10,
-#if SCM_USE_VALUECONS
-    ScmValueCons    = 11,
-#else
     ScmValuePacket  = 11,
-#endif
     ScmFreeCell     = 12,
 
     ScmCPointer     = 20,
@@ -299,11 +295,7 @@ struct ScmObjInternal_ {
 #define SCM_AS_VECTOR(a)        (SCM_ASSERT_TYPE(SCM_VECTORP(a),        (a)))
 #define SCM_AS_PORT(a)          (SCM_ASSERT_TYPE(SCM_PORTP(a),          (a)))
 #define SCM_AS_CONTINUATION(a)  (SCM_ASSERT_TYPE(SCM_CONTINUATIONP(a),  (a)))
-#if SCM_USE_VALUECONS
-#define SCM_AS_VALUECONS(a)     (SCM_ASSERT_TYPE(SCM_VALUECONSP(a),     (a)))
-#else
 #define SCM_AS_VALUEPACKET(a)   (SCM_ASSERT_TYPE(SCM_VALUEPACKETP(a),   (a)))
-#endif /* SCM_USE_VALUECONS */
 #define SCM_AS_C_POINTER(a)     (SCM_ASSERT_TYPE(SCM_C_POINTERP(a),     (a)))
 #define SCM_AS_C_FUNCPOINTER(a) (SCM_ASSERT_TYPE(SCM_C_FUNCPOINTERP(a), (a)))
 
@@ -390,11 +382,15 @@ struct ScmObjInternal_ {
 #define SCM_CONTINUATION_SET_CONTINFO(a, cinfo) (SCM_CONTINUATION_CONTINFO(a) = (cinfo))
 
 #if SCM_USE_VALUECONS
-/* to modify a ValueCons, rewrite its type to cons by SCM_ENTYPE_CONS(vcons) */
-#define SCM_VALUECONSP(a)       (SCM_TYPE(a) == ScmValueCons)
-#define SCM_ENTYPE_VALUECONS(a) (SCM_ENTYPE((a), ScmValueCons))
-#define SCM_VALUECONS_CAR(a)    (SCM_AS_VALUE_CONS(a)->obj.cons.car)
-#define SCM_VALUECONS_CDR(a)    (SCM_AS_VALUE_CONS(a)->obj.cons.cdr)
+/* to modify a VALUECONS, rewrite its type to cons by SCM_ENTYPE_CONS(vcons) */
+#define SCM_VALUEPACKETP(a)       (SCM_TYPE(a) == ScmValuePacket)
+#define SCM_NULLVALUESP(a)        (EQ(a, SigScm_null_values))
+#define SCM_ENTYPE_VALUEPACKET(a) (SCM_ENTYPE((a), ScmValuePacket))
+#define SCM_VALUEPACKET_VALUES(a) ((SCM_NULLVALUESP(a)) ? SCM_NULL :         \
+                                   (SCM_CONS(SCM_VALUECONS_CAR(a),           \
+                                             SCM_VALUECONS_CDR(a))))
+#define SCM_VALUECONS_CAR(a)      (SCM_AS_VALUEPACKET(a)->obj.cons.car)
+#define SCM_VALUECONS_CDR(a)      (SCM_AS_VALUEPACKET(a)->obj.cons.cdr)
 #else /* SCM_USE_VALUECONS */
 #define SCM_VALUEPACKETP(a)          (SCM_TYPE(a) == ScmValuePacket)
 #define SCM_ENTYPE_VALUEPACKET(a)        (SCM_ENTYPE((a), ScmValuePacket))
