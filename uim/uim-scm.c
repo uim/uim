@@ -43,6 +43,10 @@
 #include "uim-internal.h"
 
 
+#ifdef UIM_COMPAT_SCM
+#include "uim-compat-scm.c"
+#endif
+
 static void uim_scm_error(const char *msg, uim_lisp errobj);
 
 #if UIM_SCM_GCC4_READY_GC
@@ -73,9 +77,21 @@ static uim_lisp protected_arg0;
 static int uim_siod_fatal;
 static FILE *uim_output = NULL;
 
-#ifdef UIM_COMPAT_SCM
-#include "uim-compat-scm.c"
-#endif
+#if UIM_SCM_GCC4_READY_GC
+/*
+ * For ensuring that these function calls be uninlined. Don't access these
+ * variables directly.
+ *
+ * Exporting the variables ensures that a expression (*f)() is certainly real
+ * function call since the variables can be updated from outside of
+ * libuim. Therefore, be avoid making the variables static by combining libuim
+ * into other codes which enables function inlining for them.
+ */
+uim_lisp *(*uim_scm_gc_protect_stack_ptr)(void)
+     = &uim_scm_gc_protect_stack_internal;
+uim_func_ptr (*uim_scm_gc_ensure_uninlined_func_ptr)(uim_func_ptr)
+     = &uim_scm_gc_ensure_uninlined_func_internal;
+#endif /* UIM_SCM_GCC4_READY_GC */
 
 
 static void
@@ -274,7 +290,6 @@ uim_scm_make_func_ptr(uim_func_ptr func_ptr)
   return (uim_lisp)Scm_NewCFuncPointer((ScmCFunc)func_ptr);
 }
 
-#if !UIM_SCM_GCC4_READY_GC
 void
 uim_scm_gc_protect(uim_lisp *location)
 {
@@ -282,15 +297,35 @@ uim_scm_gc_protect(uim_lisp *location)
 }
 
 void
-uim_scm_gc_protect_stack(uim_lisp *stack_start)
-{
-  SigScm_GC_ProtectStack((ScmObj*)stack_start);
-}
-
-void
 uim_scm_gc_unprotect_stack(uim_lisp *stack_start)
 {
   SigScm_GC_UnprotectStack((ScmObj*)stack_start);
+}
+
+#if UIM_SCM_GCC4_READY_GC
+uim_lisp *
+uim_scm_gc_protect_stack_internal(void)
+{
+  /*
+   * &stack_start will be relocated to start of the frame of subsequent
+   * function call
+   */
+  ScmObj stack_start;
+
+  /* intentionally returns invalidated local address */
+  return (uim_lisp *)SigScm_GC_ProtectStack(&stack_start);
+}
+
+uim_func_ptr
+uim_scm_gc_ensure_uninlined_func_internal(uim_func_ptr func)
+{
+  return func;
+}
+#else /* UIM_SCM_GCC4_READY_GC */
+void
+uim_scm_gc_protect_stack(uim_lisp *stack_start)
+{
+  SigScm_GC_ProtectStack((ScmObj*)stack_start);
 }
 #endif /* UIM_SCM_GCC4_READY_GC */
 
