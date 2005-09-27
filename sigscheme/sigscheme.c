@@ -72,7 +72,6 @@ ScmObj SigScm_null_values;
 #endif
 
 static ScmObjInternal SigScm_null_impl, SigScm_true_impl, SigScm_false_impl, SigScm_eof_impl;
-static ScmObjInternal SigScm_quote_impl, SigScm_quasiquote_impl, SigScm_unquote_impl, SigScm_unquote_splicing_impl;
 static ScmObjInternal SigScm_unbound_impl, SigScm_undef_impl;
 #if SCM_USE_VALUECONS
 static ScmObj SigScm_null_values_impl;
