@@ -866,25 +866,25 @@ static int symbol_name_hash(const char *name)
 ScmObj Scm_Intern(const char *name)
 {
     int n = symbol_name_hash(name);
-    ScmObj sym      = SCM_FALSE;
-    ScmObj list     = SCM_FALSE;
-    ScmObj sym_list = symbol_hash[n];
+    ScmObj sym     = SCM_FALSE;
+    ScmObj lst     = SCM_FALSE;
+    ScmObj sym_lst = symbol_hash[n];
 
     /* Search Symbol by name */
-    for (list = sym_list; !NULLP(list); list = CDR(list)) {
-        sym = CAR(list);
+    for (lst = sym_lst; !NULLP(lst); lst = CDR(lst)) {
+        sym = CAR(lst);
 
         if (strcmp(SCM_SYMBOL_NAME(sym), name) == 0) {
             return sym;
         }
     }
 
-    /* If not in the sym_list, allocate new Symbol */
+    /* If not in the sym_lst, allocate new Symbol */
     sym = Scm_NewSymbol(strdup(name), SCM_UNBOUND);
 
     /* And Append it to the head of symbol_hash */
-    sym_list = CONS(sym, sym_list);
-    symbol_hash[n] = sym_list;
+    sym_lst = CONS(sym, sym_lst);
+    symbol_hash[n] = sym_lst;
 
     return sym;
 }

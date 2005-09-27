@@ -60,7 +60,7 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static int ScmOp_c_length(ScmObj list);
+static int ScmOp_c_length(ScmObj lst);
 static ScmObj ScmOp_listtail_internal(ScmObj obj, int k);
 
 /*=======================================
@@ -843,23 +843,23 @@ ScmObj ScmOp_listp(ScmObj obj)
  *
  * This function is ported from Gauche, by Shiro Kawai(shiro@acm.org)
  */
-static int ScmOp_c_length(ScmObj obj)
+static int ScmOp_c_length(ScmObj lst)
 {
-    ScmObj slow = obj;
+    ScmObj slow = lst;
     int len = 0;
 
     for (;;) {
-        if (NULLP(obj)) break;
-        if (!CONSP(obj)) return -1;
-        if (len != 0 && obj == slow) return -1; /* circular */
+        if (NULLP(lst)) break;
+        if (!CONSP(lst)) return -1;
+        if (len != 0 && lst == slow) return -1; /* circular */
 
-        obj = CDR(obj);
+        lst = CDR(lst);
         len++;
-        if (NULLP(obj)) break;
-        if (!CONSP(obj)) return -1;
-        if (obj == slow) return -1; /* circular */
+        if (NULLP(lst)) break;
+        if (!CONSP(lst)) return -1;
+        if (lst == slow) return -1; /* circular */
 
-        obj = CDR(obj);
+        lst = CDR(lst);
         slow = CDR(slow);
         len++;
     }
@@ -884,8 +884,8 @@ ScmObj ScmOp_length(ScmObj obj)
  */
 ScmObj ScmOp_append(ScmObj args, ScmObj env)
 {
-    ScmObj ret_list = SCM_NULL;
-    ScmObj *ret_tail = &ret_list;
+    ScmObj ret_lst = SCM_NULL;
+    ScmObj *ret_tail = &ret_lst;
 
     ScmObj ls;
     ScmObj obj = SCM_NULL;
@@ -908,111 +908,98 @@ ScmObj ScmOp_append(ScmObj args, ScmObj env)
     /* append the last argument */
     *ret_tail = CAR(args);
 
-    return ret_list;
+    return ret_lst;
 }
 
-ScmObj ScmOp_reverse(ScmObj list)
+ScmObj ScmOp_reverse(ScmObj lst)
 {
-    ScmObj ret_list  = SCM_NULL;
+    ScmObj ret_lst  = SCM_NULL;
 
-    for (; CONSP(list); list = CDR(list))
-        ret_list = CONS(CAR(list), ret_list);
+    for (; CONSP(lst); lst = CDR(lst))
+        ret_lst = CONS(CAR(lst), ret_lst);
 
-    if (!NULLP(list))
-        SigScm_ErrorObj("reverse: got improper list: ", list);
+    if (!NULLP(lst))
+        SigScm_ErrorObj("reverse: got improper list: ", lst);
 
-    return ret_list;
+    return ret_lst;
 }
 
-static ScmObj ScmOp_listtail_internal(ScmObj list, int k)
+static ScmObj ScmOp_listtail_internal(ScmObj lst, int k)
 {
     while (k--) {
-        if (!CONSP(list))
+        if (!CONSP(lst))
             return SCM_INVALID;
-        list = CDR(list);
+        lst = CDR(lst);
     }
 
-    return list;
+    return lst;
 }
 
-ScmObj ScmOp_list_tail(ScmObj list, ScmObj scm_k)
+ScmObj ScmOp_list_tail(ScmObj lst, ScmObj scm_k)
 {
     ScmObj ret;
 
     if (FALSEP(ScmOp_numberp(scm_k)))
         SigScm_ErrorObj("list-tail: number required but got ", scm_k);
 
-    ret = ScmOp_listtail_internal(list, SCM_INT_VALUE(scm_k));
+    ret = ScmOp_listtail_internal(lst, SCM_INT_VALUE(scm_k));
 
     if (EQ(ret, SCM_INVALID))
         SigScm_ErrorObj("list-tail: out of range or bad list, arglist is: ",
-                        CONS(list, scm_k));
+                        CONS(lst, scm_k));
     return ret;
 }
 
-ScmObj ScmOp_list_ref(ScmObj list, ScmObj scm_k)
+ScmObj ScmOp_list_ref(ScmObj lst, ScmObj scm_k)
 {
     ScmObj tail = SCM_NULL;
 
     if (FALSEP(ScmOp_numberp(scm_k)))
         SigScm_ErrorObj("list-ref : int required but got ", scm_k);
 
-    tail = ScmOp_listtail_internal(list, SCM_INT_VALUE(scm_k));
+    tail = ScmOp_listtail_internal(lst, SCM_INT_VALUE(scm_k));
     if (EQ(tail, SCM_INVALID) || NULLP(tail))
         SigScm_ErrorObj("list-ref : out of range or bad list, arglist is: ",
-                        CONS(list, scm_k));
+                        CONS(lst, scm_k));
 
     return CAR(tail);
 }
 
-ScmObj ScmOp_memq(ScmObj obj, ScmObj list)
+ScmObj ScmOp_memq(ScmObj obj, ScmObj lst)
 {
-    ScmObj tmplist = SCM_NULL;
-    for (tmplist = list; CONSP(tmplist); tmplist = CDR(tmplist)) {
-        if (EQ(obj, CAR(tmplist))) {
-            return tmplist;
-        }
-    }
+    for (; CONSP(lst); lst = CDR(lst))
+        if (EQ(obj, CAR(lst)))
+            return lst;
 
     return SCM_FALSE;
 }
 
-ScmObj ScmOp_memv(ScmObj obj, ScmObj list)
+ScmObj ScmOp_memv(ScmObj obj, ScmObj lst)
 {
-    ScmObj tmplist = SCM_NULL;
-    ScmObj tmpobj  = SCM_NULL;
-    for (tmplist = list; CONSP(tmplist); tmplist = CDR(tmplist)) {
-        tmpobj = CAR(tmplist);
-        if (NFALSEP(ScmOp_eqvp(obj, tmpobj))) {
-            return tmplist;
-        }
-    }
+    for (; CONSP(lst); lst = CDR(lst))
+        if (NFALSEP(ScmOp_eqvp(obj, CAR(lst))))
+            return lst;
 
     return SCM_FALSE;
 }
 
-ScmObj ScmOp_member(ScmObj obj, ScmObj list)
+ScmObj ScmOp_member(ScmObj obj, ScmObj lst)
 {
-    ScmObj tmplist = SCM_NULL;
-    ScmObj tmpobj  = SCM_NULL;
-    for (tmplist = list; CONSP(tmplist); tmplist = CDR(tmplist)) {
-        tmpobj = CAR(tmplist);
-        if (NFALSEP(ScmOp_equalp(obj, tmpobj))) {
-            return tmplist;
-        }
-    }
+    for (; CONSP(lst); lst = CDR(lst))
+        if (NFALSEP(ScmOp_equalp(obj, CAR(lst))))
+            return lst;
 
     return SCM_FALSE;
 }
 
 ScmObj ScmOp_assq(ScmObj obj, ScmObj alist)
 {
-    ScmObj tmplist = SCM_NULL;
+    ScmObj tmp_lst = SCM_NULL;
     ScmObj tmpobj  = SCM_NULL;
     ScmObj car;
 
-    for (tmplist = alist; CONSP(tmplist); tmplist = CDR(tmplist)) {
-        tmpobj = CAR(tmplist);
+    for (tmp_lst = alist; CONSP(tmp_lst); tmp_lst = CDR(tmp_lst)) {
+        tmpobj = CAR(tmp_lst);
         car = CAR(tmpobj);
 #if SCM_STRICT_R5RS
         if (!CONSP(tmpobj))
@@ -1030,12 +1017,12 @@ ScmObj ScmOp_assq(ScmObj obj, ScmObj alist)
 
 ScmObj ScmOp_assv(ScmObj obj, ScmObj alist)
 {
-    ScmObj tmplist = SCM_NULL;
+    ScmObj tmp_lst = SCM_NULL;
     ScmObj tmpobj  = SCM_NULL;
     ScmObj car;
 
-    for (tmplist = alist; CONSP(tmplist); tmplist = CDR(tmplist)) {
-        tmpobj = CAR(tmplist);
+    for (tmp_lst = alist; CONSP(tmp_lst); tmp_lst = CDR(tmp_lst)) {
+        tmpobj = CAR(tmp_lst);
         car = CAR(tmpobj);
 #if SCM_STRICT_R5RS
         if (!CONSP(tmpobj))
@@ -1053,12 +1040,12 @@ ScmObj ScmOp_assv(ScmObj obj, ScmObj alist)
 
 ScmObj ScmOp_assoc(ScmObj obj, ScmObj alist)
 {
-    ScmObj tmplist = SCM_NULL;
+    ScmObj tmp_lst = SCM_NULL;
     ScmObj tmpobj  = SCM_NULL;
     ScmObj car;
 
-    for (tmplist = alist; CONSP(tmplist); tmplist = CDR(tmplist)) {
-        tmpobj = CAR(tmplist);
+    for (tmp_lst = alist; CONSP(tmp_lst); tmp_lst = CDR(tmp_lst)) {
+        tmpobj = CAR(tmp_lst);
         car = CAR(tmpobj);
 #if SCM_STRICT_R5RS
         if (!CONSP(tmpobj))
@@ -1490,7 +1477,7 @@ ScmObj ScmOp_string2list(ScmObj string)
     return head;
 }
 
-ScmObj ScmOp_list2string(ScmObj list)
+ScmObj ScmOp_list2string(ScmObj lst)
 {
     int len = 0;
     int total_size = 0;
@@ -1500,14 +1487,14 @@ ScmObj ScmOp_list2string(ScmObj list)
     char  *ch      = NULL;
     char  *p       = NULL;
 
-    if (FALSEP(ScmOp_listp(list)))
-        SigScm_ErrorObj("list->string : list required but got ", list);
+    if (FALSEP(ScmOp_listp(lst)))
+        SigScm_ErrorObj("list->string : list required but got ", lst);
 
-    if (NULLP(list))
+    if (NULLP(lst))
         return Scm_NewStringCopying("");
 
     /* count total size of the string */
-    for (chars = list; !NULLP(chars); chars = CDR(chars)) {
+    for (chars = lst; !NULLP(chars); chars = CDR(chars)) {
         obj = CAR(chars);
         if (!CHARP(obj))
             SigScm_ErrorObj("list->string : char required but got ", obj);
@@ -1520,7 +1507,7 @@ ScmObj ScmOp_list2string(ScmObj list)
 
     /* copy char by char */
     p = new_str;
-    for (chars = list; !NULLP(chars); chars = CDR(chars)) {
+    for (chars = lst; !NULLP(chars); chars = CDR(chars)) {
         obj = CAR(chars);
         ch  = SCM_CHAR_VALUE(obj);
         len = strlen(SCM_CHAR_VALUE(obj));
@@ -1683,7 +1670,7 @@ ScmObj ScmOp_vector2list(ScmObj vec)
     return head;
 }
 
-ScmObj ScmOp_list2vector(ScmObj list)
+ScmObj ScmOp_list2vector(ScmObj lst)
 {
     ScmObj  scm_len = SCM_NULL;
     ScmObj *v       = NULL;
@@ -1691,15 +1678,15 @@ ScmObj ScmOp_list2vector(ScmObj list)
     int i = 0;
 
     /* TOOD : canbe optimized. scanning list many times */
-    if (FALSEP(ScmOp_listp(list)))
-        SigScm_ErrorObj("list->vector : list required but got ", list);
+    if (FALSEP(ScmOp_listp(lst)))
+        SigScm_ErrorObj("list->vector : list required but got ", lst);
 
-    scm_len = ScmOp_length(list);
+    scm_len = ScmOp_length(lst);
     c_len   = SCM_INT_VALUE(scm_len);
     v       = (ScmObj*)malloc(sizeof(ScmObj) * c_len);
     for (i = 0; i < c_len; i++) {
-        v[i] = CAR(list);
-        list = CDR(list);
+        v[i] = CAR(lst);
+        lst  = CDR(lst);
     }
 
     return Scm_NewVector(v, c_len);

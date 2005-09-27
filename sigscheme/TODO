@@ -28,8 +28,6 @@ Requirements and bugs:
 
 * [uim] link libsscm into libuim statically
 
-* Split the configuration macros such as SCM_USE_SRFI1 off into config.h
-
 * Dynamic encoding switching for a conversion between string and char list,
   based on a SRFI or de facto standard API
 
@@ -37,9 +35,6 @@ Requirements and bugs:
 
 ==============================================================================
 Extensions:
-
-* SRFI-2 and-let* (significantly beneficial for uim codes, especially composer
-  branch)
 
 ==============================================================================
 Performance improvements:
@@ -81,8 +76,6 @@ Namings and Cosmetic things:
 * Rename 'arg' for argument list to 'args'
 
 * Rename STL names (string, list) to another such as str, lst
-
-* Split configuration macros such as SCM_COMPAT_SIOD off to config.h
 
 * Grand renaming (prefix reorganization, consideration about func_name and
   FuncName styles) ([Anthy-dev 2254], [Anthy-dev 2251])

@@ -595,16 +595,16 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
     ScmObj car       = SCM_NULL;
     ScmObj args      = SCM_NULL;
     ScmObj result    = SCM_NULL;
-    ScmObj ret_list  = SCM_NULL;
+    ScmObj ret_lst   = SCM_NULL;
     ScmObj *ret_tail = NULL;
     int splice_flag  = 0;
 
     /* local "functions" */
-#define qquote_copy_delayed()   (QQUOTE_IS_VERBATIM(ret_list))
+#define qquote_copy_delayed()   (QQUOTE_IS_VERBATIM(ret_lst))
 #define qquote_force_copy_upto(end) \
     do { \
         ScmObj src = qexpr; \
-        ret_tail = &ret_list; \
+        ret_tail = &ret_lst; \
         while (!EQ(src, end)) { \
             *ret_tail = CONS(CAR(src), SCM_NULL); \
             ret_tail = &CDR(*ret_tail); \
@@ -613,7 +613,7 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
     } while (0)
 
 
-    QQUOTE_SET_VERBATIM(ret_list); /* default return value */
+    QQUOTE_SET_VERBATIM(ret_lst); /* default return value */
 
     if (CONSP(qexpr)) {
         car = CAR(qexpr);
@@ -699,7 +699,7 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
         *ret_tail = result;
     }
 
-    return ret_list;
+    return ret_lst;
 #undef qquote_is_spliced
 #undef qquote_copy_delayed
 #undef qquote_force_copy_upto
