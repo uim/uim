@@ -61,14 +61,15 @@
 /*=======================================
   Function Implementations
 =======================================*/
+/* FIXME: Simplify Scm_RegisterSyntaxFixedTailRec2 */
 ScmObj ScmOp_SRFI2_and_let_star(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env      = eval_state->env;
-    ScmObj bindings = SCM_NULL;
-    ScmObj body     = SCM_NULL;
-    ScmObj var      = SCM_NULL;
-    ScmObj val      = SCM_NULL;
-    ScmObj binding  = SCM_NULL;
+    ScmObj bindings = SCM_FALSE;
+    ScmObj body     = SCM_FALSE;
+    ScmObj var      = SCM_FALSE;
+    ScmObj val      = SCM_FALSE;
+    ScmObj binding  = SCM_FALSE;
 
     /* sanity check */
     if CHECK_2_ARGS(args)
@@ -78,14 +79,22 @@ ScmObj ScmOp_SRFI2_and_let_star(ScmObj args, ScmEvalState *eval_state)
     bindings = CAR(args);
     body     = CDR(args);
 
+    /*========================================================================
+      (and-let* <claws> <body>)
+
+      <claws> ::= '() | (cons <claw> <claws>)
+      <claw>  ::=  (<variable> <expression>) | (<expression>)
+                   | <bound-variable>
+    ========================================================================*/
     if (CONSP(bindings)) {
         for (; !NULLP(bindings); bindings = CDR(bindings)) {
             binding = CAR(bindings);
 
-            if (NULLP(binding) || NULLP(CDR(binding)))
+            /* FIXME: Support (<exp>) and <bound-variable> style claw */
+            if (!CONSP(binding) || NULLP(CDR(binding)))
                 SigScm_ErrorObj("and-let* : invalid binding form : ", binding);
 
-            SCM_SHIFT_RAW_2(var, val, binding);
+            SCM_SHIFT_RAW_2(var, val, binding); /* FIXME: error check */
             val = EVAL(val, env);
             if (FALSEP(val))
                 return val;
