@@ -521,18 +521,7 @@ eval_loop:
         obj = call(CAR(obj), CDR(obj), &state, 0);
         if (state.ret_type == SCM_RETTYPE_NEED_EVAL)
             goto eval_loop;
-        ret = obj;
-#if SCM_STRICT_R5RS
-        if (!VALUEPACKETP(obj))
-#endif
-            break;
-
-    case ScmValuePacket:
-#if SCM_STRICT_R5RS
-        SigScm_ErrorObj("a continuation expecting 1 value got: ", obj);
-#endif
-        /* Otherwise fallthrough. */
-
+        /* FALLTHROUGH */
     default:
         ret = obj;
         break;
