@@ -82,19 +82,32 @@ static void repl(void)
     stdin_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
     stdout_port = Scm_NewFilePort(stdout, "stdout", PORT_OUTPUT); 
 
-    printf("sscm> ");
+#if SCM_COMPAT_SIOD
+    if (SigScm_GetVerboseLevel() >= 2)
+#endif
+        printf("sscm> ");
 
     for (s_exp = SigScm_Read(stdin_port);
          !EOFP(s_exp);
          s_exp = SigScm_Read(stdin_port))
     {
         result = EVAL(s_exp, SCM_NULL);
-#if SCM_USE_SRFI38
-        SigScm_WriteToPortWithSharedStructure(stdout_port, result);
-#else
-        SigScm_WriteToPort(stdout_port, result);
+#if SCM_COMPAT_SIOD
+        if (SigScm_GetVerboseLevel() >= 1)
 #endif
-        printf("\nsscm> ");
+        {
+#if SCM_USE_SRFI38
+            SigScm_WriteToPortWithSharedStructure(stdout_port, result);
+#else
+            SigScm_WriteToPort(stdout_port, result);
+#endif
+            printf("\n");
+        }
+
+#if SCM_COMPAT_SIOD
+        if (SigScm_GetVerboseLevel() >= 2)
+#endif
+            printf("sscm> ");
     }
     
     ScmOp_close_input_port(stdin_port);
