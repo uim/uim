@@ -153,11 +153,7 @@ void SigScm_Debug(const char *msg, ...)
 
 void SigScm_Display(ScmObj obj)
 {
-    print_ScmObj_internal(SCM_PORTINFO_FILE(scm_current_output_port), obj, AS_WRITE);
-    fprintf(SCM_PORTINFO_FILE(scm_current_output_port), "\n");
-#if SCM_VOLATILE_OUTPUT
-    fflush(SCM_PORTINFO_FILE(scm_current_output_port));
-#endif
+    SigScm_DisplayToPort(scm_current_output_port, obj);
 }
 
 void SigScm_WriteToPort(ScmObj port, ScmObj obj)
