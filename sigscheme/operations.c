@@ -1880,6 +1880,9 @@ ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer)
 #if SCM_USE_SRFI1
 #include "operations-srfi1.c"
 #endif
+#if SCM_USE_SRFI2
+#include "operations-srfi2.c"
+#endif
 #if SCM_USE_SRFI8
 #include "operations-srfi8.c"
 #endif

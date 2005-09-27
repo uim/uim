@@ -373,6 +373,12 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterFunc1("length+"              , ScmOp_SRFI1_lengthplus);
     Scm_RegisterFuncEvaledList("concatenate" , ScmOp_SRFI1_concatenate);
 #endif
+#if SCM_USE_SRFI2
+    /*=======================================================================
+      SRFI-2 Procedure
+    =======================================================================*/
+    Scm_RegisterSyntaxVariadicTailRec0("and-let*", ScmOp_SRFI2_and_let_star);
+#endif
 #if SCM_USE_SRFI8
     /*=======================================================================
       SRFI-8 Procedure

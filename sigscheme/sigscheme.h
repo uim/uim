@@ -56,6 +56,7 @@ extern "C" {
 /* FIXME: split off to config.h */
 #define SCM_USE_EUCJP           1  /* use EUC-JP as internal encoding */
 #define SCM_USE_SRFI1           0  /* use SRFI-1 list library procedures written in C */
+#define SCM_USE_SRFI2           1  /* use SRFI-2 and-let* */
 #define SCM_USE_SRFI8           1  /* use SRFI-8 receive procedure written in C */
 #define SCM_USE_SRFI23          1  /* use SRFI-23 error procedure written in C */
 #define SCM_USE_SRFI38          1  /* use SRFI-38 write/ss written in C */
@@ -619,6 +620,9 @@ ScmObj ScmOp_SRFI1_last(ScmObj lst);
 ScmObj ScmOp_SRFI1_last_pair(ScmObj lst);
 ScmObj ScmOp_SRFI1_lengthplus(ScmObj lst);
 ScmObj ScmOp_SRFI1_concatenate(ScmObj args, ScmObj env);
+#endif
+#if SCM_USE_SRFI2
+ScmObj ScmOp_SRFI2_and_let_star(ScmObj args, ScmEvalState *eval_state);
 #endif
 #if SCM_USE_SRFI8
 /* operations-srfi8.c */
