@@ -114,10 +114,6 @@ int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
 
 #define SCM_EVAL(obj, env) (ScmOp_eval(obj, env))
 
-#define SCM_DEFINE_ALIAS(newsym, sym)                                        \
-    (SCM_SYMBOL_SET_VCELL(Scm_Intern(newsym),                                \
-                          SCM_SYMBOL_VCELL(Scm_Intern(sym))))
-
 /*
  * Function Invocation With Stack Protection
  *
@@ -174,6 +170,7 @@ extern ScmCFunc (*scm_gc_ensure_uninlined_func)(ScmCFunc);
 /* sigscheme.c */
 void SigScm_Initialize(void);
 void SigScm_Finalize(void);
+void Scm_DefineAlias(const char *newsym, const char *sym);
 void Scm_RegisterReductionOperator(const char *name, ScmObj (*func)(ScmObj, ScmObj, enum ScmReductionState*));
 void Scm_RegisterSyntaxFixed0(const char *name, ScmObj (*func)(ScmObj));
 #if SCM_FUNCTYPE_MAND_MAX >= 1

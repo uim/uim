@@ -175,7 +175,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterFunc2("eq?"                      , ScmOp_eqp);
     Scm_RegisterFunc2("equal?"                   , ScmOp_equalp);
     Scm_RegisterFunc1("number?"                  , ScmOp_numberp);
-    SCM_DEFINE_ALIAS("integer?"                  , "number?");
+    Scm_DefineAlias("integer?"                  , "number?");
     Scm_RegisterReductionOperator("="               , ScmOp_equal);
     Scm_RegisterReductionOperator("<"               , ScmOp_less);
     Scm_RegisterReductionOperator(">"               , ScmOp_greater);
@@ -394,12 +394,12 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterFunc1("lognot"       , ScmOp_SRFI60_lognot);
     Scm_RegisterFunc3("bitwise-if"   , ScmOp_SRFI60_bitwise_if);
     Scm_RegisterFunc2("logtest"      , ScmOp_SRFI60_logtest);
-    SCM_DEFINE_ALIAS("bitwise-and"   , "logand");
-    SCM_DEFINE_ALIAS("bitwise-ior"   , "logior");
-    SCM_DEFINE_ALIAS("bitwise-xor"   , "logxor");
-    SCM_DEFINE_ALIAS("bitwise-not"   , "lognot");
-    SCM_DEFINE_ALIAS("bitwise-merge" , "bitwise-if");
-    SCM_DEFINE_ALIAS("any-bits-set?" , "logtest");
+    Scm_DefineAlias("bitwise-and"   , "logand");
+    Scm_DefineAlias("bitwise-ior"   , "logior");
+    Scm_DefineAlias("bitwise-xor"   , "logxor");
+    Scm_DefineAlias("bitwise-not"   , "lognot");
+    Scm_DefineAlias("bitwise-merge" , "bitwise-if");
+    Scm_DefineAlias("any-bits-set?" , "logtest");
 #endif
 
 #if SCM_COMPAT_SIOD
@@ -413,10 +413,10 @@ static void SigScm_Initialize_internal(void)
 #if SCM_COMPAT_SIOD_BUGS
     Scm_RegisterFunc2("="                    , ScmOp_siod_eql);
 #endif
-    SCM_DEFINE_ALIAS("bit-and"               , "logand");
-    SCM_DEFINE_ALIAS("bit-or"                , "logior");
-    SCM_DEFINE_ALIAS("bit-xor"               , "logxor");
-    SCM_DEFINE_ALIAS("bit-not"               , "lognot");
+    Scm_DefineAlias("bit-and"               , "logand");
+    Scm_DefineAlias("bit-or"                , "logior");
+    Scm_DefineAlias("bit-xor"               , "logxor");
+    Scm_DefineAlias("bit-not"               , "lognot");
     Scm_RegisterFuncEvaledList("the-environment" , ScmOp_the_environment);
     Scm_RegisterFunc1("%%closure-code"           , ScmOp_closure_code);
     Scm_RegisterFuncEvaledList("verbose"         , ScmOp_verbose);
@@ -428,6 +428,12 @@ static void SigScm_Initialize_internal(void)
 void SigScm_Finalize()
 {
     SigScm_FinalizeStorage();
+}
+
+void Scm_DefineAlias(const char *newsym, const char *sym)
+{
+    SCM_SYMBOL_SET_VCELL(Scm_Intern(newsym),
+                         SCM_SYMBOL_VCELL(Scm_Intern(sym)));
 }
 
 /*===========================================================================
