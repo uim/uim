@@ -32,13 +32,6 @@
  *  SUCH DAMAGE.
 ===========================================================================*/
 
-/*
- * TODO:
- * - support SIOD compatible verbose level sensitive behavior. For example,
- *   verbose level 1 must not print backtrace
- * - provide SRFI-23 "Error reporting mechanism" compatible 'error' procedure
- */
-
 /*=======================================
   System Include
 =======================================*/
@@ -73,16 +66,16 @@ ScmObj scm_current_error_port  = NULL;
   Function Implementations
 =======================================*/
 int SigScm_Die(const char *msg, const char *filename, int line) {
-    /* prepend header */
-    SigScm_ShowErrorHeader();
+    if (SigScm_DebugCategories() & SCM_DBG_ERRMSG) {
+        SigScm_ShowErrorHeader();
 
-    /* show message */
-    fprintf(SCM_PORTINFO_FILE(scm_current_error_port),
-            "SigScheme Died : %s (file : %s, line : %d)\n",
-            msg, filename, line);
+        fprintf(SCM_PORTINFO_FILE(scm_current_error_port),
+                "SigScheme Died : %s (file : %s, line : %d)\n",
+                msg, filename, line);
+    }
 
-    /* show backtrace */
-    SigScm_ShowBacktrace();
+    if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
+        SigScm_ShowBacktrace();
 
     /* TODO: doesn't exit here */
     exit(-1);
@@ -94,24 +87,25 @@ void SigScm_Error(const char *msg, ...)
 {
     va_list va;
 
-    /* prepend header */
-    SigScm_ShowErrorHeader();
+    if (SigScm_DebugCategories() & SCM_DBG_ERRMSG) {
+        SigScm_ShowErrorHeader();
 
-    /* show message */
-    va_start(va, msg);
-    vfprintf(SCM_PORTINFO_FILE(scm_current_error_port), msg, va);
-    va_end(va);
+        va_start(va, msg);
+        vfprintf(SCM_PORTINFO_FILE(scm_current_error_port), msg, va);
+        va_end(va);
 #if 0
-    /*
-     * FIXME: this function should always append "\n" to ensure that an error
-     * message forms a line message, instead of delegating the responsibility
-     * to caller. Otherwise subsequent error messages may be broken.
-     */
-    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "\n");
+        /*
+         * FIXME: this function should always append "\n" to ensure that an
+         * error message forms a line message, instead of delegating the
+         * responsibility to caller. Otherwise subsequent error messages may be
+         * broken.
+         */
+        fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "\n");
 #endif
+    }
 
-    /* show backtrace */
-    SigScm_ShowBacktrace();
+    if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
+        SigScm_ShowBacktrace();
 
     /* TODO: doesn't exit here */
     exit(-1);
@@ -119,18 +113,19 @@ void SigScm_Error(const char *msg, ...)
 
 void SigScm_ErrorObj(const char *msg, ScmObj obj)
 {
-    /* prepend header */
-    SigScm_ShowErrorHeader();
+    if (SigScm_DebugCategories() & SCM_DBG_ERRMSG) {
+        SigScm_ShowErrorHeader();
 
-    /* print msg */
-    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "%s", msg);
+        /* print msg */
+        fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "%s", msg);
 
-    /* print obj */
-    SigScm_WriteToPort(scm_current_error_port, obj);
-    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "\n");
+        /* print obj */
+        SigScm_WriteToPort(scm_current_error_port, obj);
+        fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "\n");
+    }
    
-    /* show backtrace */
-    SigScm_ShowBacktrace();
+    if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
+        SigScm_ShowBacktrace();
  
     /* TODO: doesn't exit here*/
     exit(-1);
