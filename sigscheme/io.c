@@ -436,6 +436,8 @@ static ScmObj SigScm_load_internal(const char *c_filename)
     ScmObj filepath     = SCM_FALSE;
     char  *c_filepath   = create_valid_path(c_filename);
 
+    SigScm_CategorizedDebug(SCM_DBG_FILE, "loading %s", c_filename);
+
     /* sanity check */
     if (!c_filepath)
         SigScm_Error("SigScm_load_internal : file \"%s\" not found\n",
@@ -450,6 +452,8 @@ static ScmObj SigScm_load_internal(const char *c_filename)
     }
 
     ScmOp_close_input_port(port);
+
+    SigScm_CategorizedDebug(SCM_DBG_FILE, "done.");
 
     return SCM_TRUE;
 }
