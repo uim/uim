@@ -447,46 +447,6 @@ static ScmObj call(ScmObj proc, ScmObj args, ScmEvalState *eval_state, int suppr
     case 7:
         return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], argbuf[6]);
 #endif
-#if SCM_FUNCTYPE_MAND_MAX >= 6
-    case 8:
-        return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], argbuf[6], argbuf[7]);
-#endif
-#if SCM_FUNCTYPE_MAND_MAX >= 7
-    case 9:
-        return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], argbuf[6], argbuf[7], argbuf[8]);
-#endif
-#if SCM_FUNCTYPE_MAND_MAX >= 8
-    case 10:
-        return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], argbuf[6], argbuf[7], argbuf[8], argbuf[9]);
-#endif
-#if SCM_FUNCTYPE_MAND_MAX >= 9
-    case 11:
-        return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], argbuf[6], argbuf[7], argbuf[8], argbuf[9], argbuf[10]);
-#endif
-#if SCM_FUNCTYPE_MAND_MAX >= 10
-    case 12:
-        return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], argbuf[6], argbuf[7], argbuf[8], argbuf[9], argbuf[10], argbuf[11]);
-#endif
-#if SCM_FUNCTYPE_MAND_MAX >= 11
-    case 13:
-        return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], argbuf[6], argbuf[7], argbuf[8], argbuf[9], argbuf[10], argbuf[11], argbuf[12]);
-#endif
-#if SCM_FUNCTYPE_MAND_MAX >= 12
-    case 14:
-        return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], argbuf[6], argbuf[7], argbuf[8], argbuf[9], argbuf[10], argbuf[11], argbuf[12], argbuf[13]);
-#endif
-#if SCM_FUNCTYPE_MAND_MAX >= 13
-    case 15:
-        return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], argbuf[6], argbuf[7], argbuf[8], argbuf[9], argbuf[10], argbuf[11], argbuf[12], argbuf[13], argbuf[14]);
-#endif
-#if SCM_FUNCTYPE_MAND_MAX >= 14
-    case 16:
-        return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], argbuf[6], argbuf[7], argbuf[8], argbuf[9], argbuf[10], argbuf[11], argbuf[12], argbuf[13], argbuf[14], argbuf[15]);
-#endif
-#if SCM_FUNCTYPE_MAND_MAX >= 15
-    case 17:
-        return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], argbuf[6], argbuf[7], argbuf[8], argbuf[9], argbuf[10], argbuf[11], argbuf[12], argbuf[13], argbuf[14], argbuf[15], argbuf[16]);
-#endif
     default:
         SigScm_Error("Corrupted function: typecode=0x%x", type);
     }
