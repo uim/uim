@@ -94,7 +94,7 @@ typedef struct {
 /*=======================================
   Variable Declarations
 =======================================*/
-static debug_mask;
+static int debug_mask;
 #if SCM_USE_SRFI38
 static write_ss_context *write_ss_ctx; /* misc info in priting shared structures */
 #endif
