@@ -70,4 +70,15 @@
 #define SCM_USE_VALUECONS       1  /* use experimental values passing */
 #define SCM_VOLATILE_OUTPUT     0  /* always flush files on write */
 
+/*===========================================================================
+  Dependency Resolution
+===========================================================================*/
+#if SCM_COMPAT_SIOD
+#undef SCM_USE_SRFI60
+#define SCM_USE_SRFI60          1
+#else /* SCM_COMPAT_SIOD */
+#undef SCM_COMPAT_SIOD_BUGS
+#define SCM_COMPAT_SIOD_BUGS    0
+#endif /* SCM_COMPAT_SIOD */
+
 #endif /* __SIGSCHEME_CONFIG_H */

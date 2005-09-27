@@ -54,16 +54,6 @@ extern "C" {
 /*=======================================
    Macro Declarations
 =======================================*/
-
-/* dependency resolution */
-#if SCM_COMPAT_SIOD
-#undef SCM_USE_SRFI60
-#define SCM_USE_SRFI60          1
-#else
-#undef SCM_COMPAT_SIOD_BUGS
-#define SCM_COMPAT_SIOD_BUGS    0
-#endif /* SCM_COMPAT_SIOD */
-
 #ifdef __GNUC__
 #define SCM_NOINLINE __attribute__((noinline))
 #else
