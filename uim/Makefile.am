@@ -14,7 +14,7 @@ pkginclude_HEADERS = uim.h uim-util.h uim-helper.h uim-im-switcher.h \
 
 libuim_la_SOURCES = uim.c uim-util.c uim-func.c uim-key.c \
 		uim-internal.h gettext.h uim-encoding.h\
-		siod.h  uim-scm.c uim-scm-gc.c \
+		siod.h  uim-scm.c \
 		uim-helper.c uim-helper-client.c \
 		intl.c \
 		uim-ipc.c \
