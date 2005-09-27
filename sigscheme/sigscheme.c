@@ -438,6 +438,58 @@ void Scm_DefineAlias(const char *newsym, const char *sym)
 /*===========================================================================
   Scheme Function Export Related Functions
 ===========================================================================*/
+/* Left for compatibility only.  To be removed after complete transition. */
+void Scm_RegisterFunc0(const char *name, ScmFuncType0 func)
+{
+    Scm_RegisterFunc(name, func, FUNCTYPE_0);
+}
+
+void Scm_RegisterFunc1(const char *name, ScmFuncType1 func)
+{
+    Scm_RegisterFunc(name, func, FUNCTYPE_1);
+}
+
+void Scm_RegisterFunc2(const char *name, ScmFuncType2 func)
+{
+    Scm_RegisterFunc(name, func, FUNCTYPE_2);
+}
+
+void Scm_RegisterFunc3(const char *name, ScmFuncType3 func)
+{
+    Scm_RegisterFunc(name, func, FUNCTYPE_3);
+}
+
+void Scm_RegisterFunc4(const char *name, ScmFuncType4 func)
+{
+    Scm_RegisterFunc(name, func, FUNCTYPE_4);
+}
+
+void Scm_RegisterFunc5(const char *name, ScmFuncType5 func)
+{
+    Scm_RegisterFunc(name, func, FUNCTYPE_5);
+}
+
+void Scm_RegisterFuncEvaledList(const char *name, ScmFuncTypeEvaledList func)
+{
+    Scm_RegisterFunc(name, func, FUNCTYPE_EVALED_LIST);
+}
+
+void Scm_RegisterFuncRawList(const char *name, ScmFuncTypeRawList func)
+{
+    Scm_RegisterFunc(name, func, FUNCTYPE_RAW_LIST);
+}
+
+void Scm_RegisterFuncRawListTailRec(const char *name, ScmFuncTypeRawListTailRec func)
+{
+    Scm_RegisterFunc(name, func, FUNCTYPE_RAW_LIST_TAIL_REC);
+}
+
+void Scm_RegisterFuncRawListWithTailFlag(const char *name, ScmFuncTypeRawListWithTailFlag func)
+{
+    Scm_RegisterFunc(name, func, FUNCTYPE_RAW_LIST_WITH_TAIL_FLAG);
+}
+
+/* New Interfaces */
 static int Scm_RegisterFunc(const char *name, ScmFuncType c_func, enum ScmFuncTypeCode type)
 {
     ScmObj sym  = Scm_Intern(name);
@@ -1335,55 +1387,3 @@ void Scm_RegisterProcedureVariadicTailRec15(const char *name, ScmObj (*func)(Scm
     Scm_RegisterFunc(name, func, SCM_PROCEDURE_VARIADIC_TAIL_REC | 15);
 }
 #endif
-
-
-/* Left for compatibility only.  To be removed after complete transition. */
-void Scm_RegisterFunc0(const char *name, ScmFuncType0 func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_0);
-}
-
-void Scm_RegisterFunc1(const char *name, ScmFuncType1 func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_1);
-}
-
-void Scm_RegisterFunc2(const char *name, ScmFuncType2 func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_2);
-}
-
-void Scm_RegisterFunc3(const char *name, ScmFuncType3 func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_3);
-}
-
-void Scm_RegisterFunc4(const char *name, ScmFuncType4 func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_4);
-}
-
-void Scm_RegisterFunc5(const char *name, ScmFuncType5 func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_5);
-}
-
-void Scm_RegisterFuncEvaledList(const char *name, ScmFuncTypeEvaledList func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_EVALED_LIST);
-}
-
-void Scm_RegisterFuncRawList(const char *name, ScmFuncTypeRawList func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_RAW_LIST);
-}
-
-void Scm_RegisterFuncRawListTailRec(const char *name, ScmFuncTypeRawListTailRec func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_RAW_LIST_TAIL_REC);
-}
-
-void Scm_RegisterFuncRawListWithTailFlag(const char *name, ScmFuncTypeRawListWithTailFlag func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_RAW_LIST_WITH_TAIL_FLAG);
-}

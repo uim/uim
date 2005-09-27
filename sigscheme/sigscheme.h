@@ -171,6 +171,20 @@ extern ScmCFunc (*scm_gc_ensure_uninlined_func)(ScmCFunc);
 void SigScm_Initialize(void);
 void SigScm_Finalize(void);
 void Scm_DefineAlias(const char *newsym, const char *sym);
+
+/* For compatibility only; slated for removal. */
+void Scm_RegisterFunc0(const char *name, ScmFuncType0 func);
+void Scm_RegisterFunc1(const char *name, ScmFuncType1 func);
+void Scm_RegisterFunc2(const char *name, ScmFuncType2 func);
+void Scm_RegisterFunc3(const char *name, ScmFuncType3 func);
+void Scm_RegisterFunc4(const char *name, ScmFuncType4 func);
+void Scm_RegisterFunc5(const char *name, ScmFuncType5 func);
+void Scm_RegisterFuncEvaledList(const char *name, ScmFuncTypeEvaledList func);
+void Scm_RegisterFuncRawList(const char *name, ScmFuncTypeRawList func);
+void Scm_RegisterFuncRawListTailRec(const char *name, ScmFuncTypeRawListTailRec func);
+void Scm_RegisterFuncRawListWithTailFlag(const char *name, ScmFuncTypeRawListWithTailFlag func);
+
+/* Procedure/Syntax Registration */
 void Scm_RegisterReductionOperator(const char *name, ScmObj (*func)(ScmObj, ScmObj, enum ScmReductionState*));
 void Scm_RegisterSyntaxFixed0(const char *name, ScmObj (*func)(ScmObj));
 #if SCM_FUNCTYPE_MAND_MAX >= 1
@@ -540,18 +554,6 @@ void Scm_RegisterProcedureVariadicTailRec14(const char *name, ScmObj (*func)(Scm
 #if SCM_FUNCTYPE_MAND_MAX >= 15
 void Scm_RegisterProcedureVariadicTailRec15(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
-
-/* For compatibility only; slated for removal. */
-void Scm_RegisterFunc0(const char *name, ScmFuncType0 func);
-void Scm_RegisterFunc1(const char *name, ScmFuncType1 func);
-void Scm_RegisterFunc2(const char *name, ScmFuncType2 func);
-void Scm_RegisterFunc3(const char *name, ScmFuncType3 func);
-void Scm_RegisterFunc4(const char *name, ScmFuncType4 func);
-void Scm_RegisterFunc5(const char *name, ScmFuncType5 func);
-void Scm_RegisterFuncEvaledList(const char *name, ScmFuncTypeEvaledList func);
-void Scm_RegisterFuncRawList(const char *name, ScmFuncTypeRawList func);
-void Scm_RegisterFuncRawListTailRec(const char *name, ScmFuncTypeRawListTailRec func);
-void Scm_RegisterFuncRawListWithTailFlag(const char *name, ScmFuncTypeRawListWithTailFlag func);
 
 /* datas.c */
 void   SigScm_InitStorage(void);
