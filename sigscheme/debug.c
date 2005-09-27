@@ -94,6 +94,7 @@ typedef struct {
 /*=======================================
   Variable Declarations
 =======================================*/
+static debug_mask;
 #if SCM_USE_SRFI38
 static write_ss_context *write_ss_ctx; /* misc info in priting shared structures */
 #endif
@@ -119,6 +120,26 @@ static int  get_shared_index(ScmObj obj);
 /*=======================================
    Function Implementations
 =======================================*/
+int SigScm_DebugCategories(void)
+{
+    return debug_mask;
+}
+
+void SigScm_SetDebugCategories(int categories)
+{
+    debug_mask = categories;
+}
+
+void SigScm_CategorizedDebug(int category, const char *msg, ...)
+{
+    va_list va;
+
+    va_start(va, msg);
+    if (debug_mask & category)
+        SigScm_Debug(msg, va);
+    va_end(va);
+}
+
 void SigScm_Debug(const char *msg, ...)
 {
     va_list va;

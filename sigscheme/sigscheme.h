@@ -123,6 +123,23 @@ typedef void (*ScmCFunc)(void);
 /* type declaration */
 #include "sigschemetype.h"
 
+enum ScmDebugCategory {
+    SCM_DBG_NONE         = 0,
+    SCM_DBG_ERRMSG       = 1 << 0,   /* the "Error: foo bar" style msgs */
+    SCM_DBG_BACKTRACE    = 1 << 1,
+    SCM_DBG_GC           = 1 << 2,
+    SCM_DBG_FILE         = 1 << 3,   /* file loading */
+    SCM_DBG_PARSER       = 1 << 4,   /* print each parsed expression + misc */
+    SCM_DBG_MACRO        = 1 << 5,
+    SCM_DBG_ARGS         = 1 << 6,   /* number of arguments, type and so on */
+    SCM_DBG_EVAL         = 1 << 7,   /* evaluation-related things */
+    SCM_DBG_CONTINUATION = 1 << 8,
+    SCM_DBG_EXCEPTION    = 1 << 9,
+    SCM_DBG_EXPERIMENTAL = 1 << 10,  /* developed but experimental features */
+    SCM_DBG_DEVEL        = 1 << 11,  /* under development */
+    SCM_DBG_OTHER        = 1 << 30   /* all other messages */
+};
+
 /*=======================================
    Variable Declarations
 =======================================*/
@@ -545,6 +562,9 @@ void SigScm_ErrorObj(const char *msg, ScmObj obj);
 void SigScm_ShowBacktrace(void);
 
 /* debug.c */
+int  SigScm_DebugCategories(void);
+void SigScm_SetDebugCategories(int categories);
+void SigScm_CategorizedDebug(int category, const char *msg, ...);
 void SigScm_Debug(const char *msg, ...);
 void SigScm_Display(ScmObj obj);
 void SigScm_WriteToPort(ScmObj port, ScmObj obj);

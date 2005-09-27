@@ -92,6 +92,8 @@ void SigScm_Initialize(void)
 
 static void SigScm_Initialize_internal(void)
 {
+    SigScm_SetDebugCategories(SCM_DBG_ERRMSG | SCM_DBG_BACKTRACE);
+
     /*=======================================================================
       Etc Variable Initialization
     =======================================================================*/
@@ -435,6 +437,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterFuncEvaledList("verbose"         , ScmOp_verbose);
     /* datas.c */
     scm_return_value = SCM_NULL;
+    SigScm_SetVerboseLevel(2);
 #endif
 }
 

@@ -48,10 +48,33 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+/*
+ * SIOD's verbose-level compatible debug message printing control:
+ * Search 'siod_verbose_level' in slib.c to know further detail.
+ *
+ * Extra control:
+ *   v0: suppress all printing even if normal 'write' or 'display'
+ *   v1: print each result of repl
+ *   v2: print the "> " prompt
+ */
+#define SCM_DBG_SIOD_V0 SCM_DBG_NONE
+#define SCM_DBG_SIOD_V1 (SCM_DBG_ERRMSG | SCM_DBG_BACKTRACE)
+#define SCM_DBG_SIOD_V2 SCM_DBG_SIOD_V1
+#define SCM_DBG_SIOD_V3 (SCM_DBG_SIOD_V2 | SCM_DBG_FILE)
+#define SCM_DBG_SIOD_V4 (SCM_DBG_SIOD_V3 | SCM_DBG_GC)
+#define SCM_DBG_SIOD_V5 (SCM_DBG_SIOD_V4 | SCM_DBG_PARSER)
 
 /*=======================================
   Variable Declarations
 =======================================*/
+static int sscm_debug_mask_tbl[] = {
+    SCM_DBG_SIOD_V0,
+    SCM_DBG_SIOD_V1,
+    SCM_DBG_SIOD_V2,
+    SCM_DBG_SIOD_V3,
+    SCM_DBG_SIOD_V4,
+    SCM_DBG_SIOD_V5
+};
 static long sscm_verbose_level = 0;
 
 /*=======================================
@@ -160,5 +183,12 @@ long SigScm_GetVerboseLevel(void)
 
 void SigScm_SetVerboseLevel(long level)
 {
+    if (level < 0)
+        SigScm_Error("SigScm_SetVerboseLevel : negative number has given\n");
+
     sscm_verbose_level = level;
+
+    if (level > 5)
+        level = 5;
+    SigScm_SetDebugCategories(sscm_debug_mask_tbl[level]);
 }
