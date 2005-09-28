@@ -1483,13 +1483,23 @@ ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
 =======================================*/
 ScmObj ScmOp_scheme_report_environment(ScmObj version)
 {
-    /* FIXME: check arg, warn incompatibility */
+    /* sanity check */
+    if (!INTP(version))
+        SigScm_ErrorObj("scheme-report-environment : int required but got ", version);
+    if (SCM_INT_VALUE(version) != 5)
+        SigScm_ErrorObj("scheme-report-environment : version must be 5 but got ", version);
+
     return SCM_NULL;
 }
 
 ScmObj ScmOp_null_environment(ScmObj version)
 {
-    /* FIXME: check arg, warn incompatibility */
+    /* sanity check */
+    if (!INTP(version))
+        SigScm_ErrorObj("null-environment : int required but got ", version);
+    if (SCM_INT_VALUE(version) != 5)
+        SigScm_ErrorObj("null-environment : version must be 5 but got ", version);
+
     return SCM_NULL;
 }
 
