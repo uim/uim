@@ -195,4 +195,14 @@ void SigScm_SetVerboseLevel(long level)
     if (level >= 2)
         SigScm_SetDebugCategories(SigScm_DebugCategories()
                                   | SigScm_PredefinedDebugCategories());
+
+    if (level == 0) {
+        scm_current_error_port = NULL;
+        scm_current_output_port = NULL;
+    } else {
+        if (!scm_current_error_port)
+            scm_current_error_port = scm_std_error_port;
+        if (!scm_current_output_port)
+            scm_current_output_port = scm_std_output_port;
+    }
 }

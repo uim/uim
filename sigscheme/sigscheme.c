@@ -329,9 +329,15 @@ static void SigScm_Initialize_internal(void)
     /*=======================================================================
       Current Input & Output Initialization
     =======================================================================*/
-    scm_current_input_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
-    scm_current_output_port = Scm_NewFilePort(stdout, "stdout", PORT_OUTPUT);
-    scm_current_error_port  = Scm_NewFilePort(stderr, "stderr", PORT_OUTPUT);
+    scm_std_input_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
+    scm_std_output_port = Scm_NewFilePort(stdout, "stdout", PORT_OUTPUT);
+    scm_std_error_port  = Scm_NewFilePort(stderr, "stderr", PORT_OUTPUT);
+    scm_current_input_port  = scm_std_input_port;
+    scm_current_output_port = scm_std_output_port;
+    scm_current_error_port  = scm_std_error_port;
+    SigScm_GC_Protect(&scm_std_input_port);
+    SigScm_GC_Protect(&scm_std_output_port);
+    SigScm_GC_Protect(&scm_std_error_port);
     SigScm_GC_Protect(&scm_current_input_port);
     SigScm_GC_Protect(&scm_current_output_port);
     SigScm_GC_Protect(&scm_current_error_port);

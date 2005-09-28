@@ -53,6 +53,8 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+ScmObj scm_std_input_port   = NULL;
+ScmObj scm_std_output_port  = NULL;
 ScmObj scm_current_input_port   = NULL;
 ScmObj scm_current_output_port  = NULL;
 

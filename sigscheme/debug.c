@@ -179,10 +179,8 @@ void SigScm_WriteToPort(ScmObj port, ScmObj obj)
 {
     FILE *f = NULL;
 
-#if SCM_COMPAT_SIOD
-    if (SigScm_GetVerboseLevel() == 0)
+    if (!port)
         return;
-#endif
 
     if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE) {
         f = SCM_PORTINFO_FILE(port);
@@ -200,10 +198,8 @@ void SigScm_DisplayToPort(ScmObj port, ScmObj obj)
 {
     FILE *f = NULL;
 
-#if SCM_COMPAT_SIOD
-    if (SigScm_GetVerboseLevel() == 0)
+    if (!port)
         return;
-#endif
 
     if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE) {
         f = SCM_PORTINFO_FILE(port);

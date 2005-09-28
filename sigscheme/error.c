@@ -58,6 +58,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+ScmObj scm_std_error_port  = NULL;
 ScmObj scm_current_error_port  = NULL;
 
 /*=======================================
