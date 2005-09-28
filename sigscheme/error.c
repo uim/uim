@@ -70,10 +70,8 @@ ScmObj scm_current_error_port  = NULL;
 int SigScm_Die(const char *msg, const char *filename, int line) {
     if (SigScm_DebugCategories() & SCM_DBG_ERRMSG) {
         SigScm_ShowErrorHeader();
-
-        fprintf(SCM_PORTINFO_FILE(scm_current_error_port),
-                "SigScheme Died : %s (file : %s, line : %d)\n",
-                msg, filename, line);
+        SigScm_ErrorPrintf("SigScheme Died : %s (file : %s, line : %d)\n",
+                           msg, filename, line);
     }
 
     if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
@@ -92,10 +90,10 @@ void SigScm_Error(const char *msg, ...)
         SigScm_ShowErrorHeader();
 
         va_start(va, msg);
-        vfprintf(SCM_PORTINFO_FILE(scm_current_error_port), msg, va);
+        SigScm_VErrorPrintf(msg, va);
         va_end(va);
 
-        fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "\n");
+        SigScm_ErrorNewline();
     }
 
     if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
@@ -109,13 +107,9 @@ void SigScm_ErrorObj(const char *msg, ScmObj obj)
 {
     if (SigScm_DebugCategories() & SCM_DBG_ERRMSG) {
         SigScm_ShowErrorHeader();
-
-        /* print msg */
-        fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "%s", msg);
-
-        /* print obj */
+        SigScm_ErrorPrintf(msg);
         SigScm_WriteToPort(scm_current_error_port, obj);
-        fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "\n");
+        SigScm_ErrorNewline();
     }
    
     if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
@@ -130,21 +124,19 @@ void SigScm_ShowBacktrace(void)
 #if SCM_DEBUG
     struct trace_frame *f;
 
-    /* show header */
-    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), SCM_BACKTRACE_HEADER);
+    SigScm_ErrorPrintf(SCM_BACKTRACE_HEADER);
 
     /* show each frame's obj */
     for (f = scm_trace_root; f; f = f->prev) {
         SigScm_WriteToPort(scm_current_error_port, f->obj);
-        
-        fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "\n");
+        SigScm_ErrorNewline();
     }
 #endif
 }
 
 void SigScm_ShowErrorHeader(void)
 {
-    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), SCM_ERR_HEADER);
+    SigScm_ErrorPrintf(SCM_ERR_HEADER);
 }
 
 void SigScm_ErrorPrintf(const char *fmt, ...)
