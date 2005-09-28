@@ -990,66 +990,51 @@ ScmObj ScmExp_case(ScmObj arg, ScmEvalState *eval_state)
     return SCM_UNDEF;
 }
 
-/* TODO: Simplify as like as ScmExp_begin() */
-ScmObj ScmExp_and(ScmObj arg, ScmEvalState *eval_state)
+ScmObj ScmExp_and(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env = eval_state->env;
-    ScmObj obj = SCM_NULL;
+    ScmObj lst = args;
+    ScmObj obj = SCM_FALSE;
 
-    if (NULLP(arg))
+    if (NULLP(lst))
         return SCM_TRUE;
-    /* FIXME: expensive operation */
-    if (FALSEP(ScmOp_listp(arg)))
-        SigScm_ErrorObj("and : list required but got ", arg);
-
-    /* check recursively */
-    for (; !NULLP(arg); arg = CDR(arg)) {
-        obj = CAR(arg);
-
-        /* return last item */
-        if (NULLP(CDR(arg)))
-            return obj;
-
-        /* evaluate obj */
-        obj = EVAL(obj, env);
+    
+    for (; CONSP(CDR(lst)); lst = CDR(lst)) {
+        obj = EVAL(CAR(lst), env);
         if (FALSEP(obj)) {
             eval_state->ret_type = SCM_RETTYPE_AS_IS;
             return SCM_FALSE;
         }
     }
 
+    if (NULLP(CDR(lst)))
+        return CAR(lst);
+
+    SigScm_ErrorObj("and: improper argument list: ", lst);
     return SCM_NULL;
 }
 
-/* TODO: Simplify as like as ScmExp_begin() */
-ScmObj ScmExp_or(ScmObj arg, ScmEvalState *eval_state)
+ScmObj ScmExp_or(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env = eval_state->env;
-    ScmObj obj = SCM_NULL;
+    ScmObj lst = args;
+    ScmObj obj = SCM_FALSE;
 
-    if (NULLP(arg))
-        return SCM_FALSE;
-    /* FIXME: expensive operation */
-    if (FALSEP(ScmOp_listp(arg)))
-        SigScm_ErrorObj("or : list required but got ", arg);
-
-    /* check recursively */
-    for (; !NULLP(arg); arg = CDR(arg)) {
-        obj = CAR(arg);
-
-        /* return last item */
-        if (NULLP(CDR(arg)))
-            return obj;
-
-        obj = EVAL(obj, env);
+    if (NULLP(lst))
+        return SCM_TRUE;
+    
+    for (; CONSP(CDR(lst)); lst = CDR(lst)) {
+        obj = EVAL(CAR(lst), env);
         if (NFALSEP(obj)) {
-            /* Suppress return value evaluation. */
             eval_state->ret_type = SCM_RETTYPE_AS_IS;
-            return obj;
+            return SCM_FALSE;
         }
-
     }
 
+    if (NULLP(CDR(lst)))
+        return CAR(lst);
+
+    SigScm_ErrorObj("or: improper argument list: ", lst);
     return SCM_NULL;
 }
 
@@ -1278,7 +1263,6 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.3 Sequencing
 ===========================================================================*/
-/* TODO: Eliminate duplicate error check codes by simplify the loop */
 ScmObj ScmExp_begin(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env = eval_state->env;
@@ -1287,9 +1271,6 @@ ScmObj ScmExp_begin(ScmObj args, ScmEvalState *eval_state)
     /* sanity check */
     if (NULLP(lst))
         return SCM_UNDEF;
-
-    if (!CONSP(lst))
-        SigScm_ErrorObj("begin: improper argument list: ", args);
 
     for (; CONSP(CDR(lst)); lst = CDR(lst))
         EVAL(CAR(lst), env);
