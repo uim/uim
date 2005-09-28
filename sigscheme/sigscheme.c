@@ -167,7 +167,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterSyntaxVariadic1("define"             , ScmExp_define);
     Scm_RegisterSyntaxVariadicTailRec2("if"          , ScmExp_if);
     Scm_RegisterSyntaxVariadicTailRec0("cond"        , ScmExp_cond); /* FIXME */
-    Scm_RegisterSyntaxVariadicTailRec0("case"        , ScmExp_case); /* FIXME */
+    Scm_RegisterSyntaxVariadicTailRec1("case"        , ScmExp_case);
     Scm_RegisterSyntaxVariadicTailRec0("let"         , ScmExp_let); /* FIXME */
     Scm_RegisterSyntaxVariadicTailRec1("let*"        , ScmExp_let_star);
     Scm_RegisterSyntaxVariadicTailRec1("letrec"      , ScmExp_letrec);

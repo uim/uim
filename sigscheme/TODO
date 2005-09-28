@@ -63,8 +63,6 @@ Namings and Cosmetic things:
 
 * Add a 'SCM' prefix to the global functions listed in sigschemeinternal.h
 
-* Rename 'arg' for argument list to 'args'
-
 * Rename STL names (string, list) to another such as str, lst
 
 * Grand renaming (prefix reorganization, consideration about func_name and

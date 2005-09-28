@@ -903,7 +903,7 @@ ScmObj ScmExp_set(ScmObj sym, ScmObj exp, ScmObj env)
  * - depending on its own true value
  * - can appeared in other than last clause
  */
-ScmObj ScmExp_cond(ScmObj arg, ScmEvalState *eval_state)
+ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
 {
     /*
      * (cond <clause1> <clause2> ...)
@@ -924,8 +924,8 @@ ScmObj ScmExp_cond(ScmObj arg, ScmEvalState *eval_state)
     ScmObj proc   = SCM_NULL;
 
     /* looping in each clause */
-    for (; !NULLP(arg); arg = CDR(arg)) {
-        clause = CAR(arg);
+    for (; !NULLP(args); args = CDR(args)) {
+        clause = CAR(args);
         if (!CONSP(clause))
             SigScm_ErrorObj("cond : bad clause: ", clause);
 
@@ -967,24 +967,26 @@ ScmObj ScmExp_cond(ScmObj arg, ScmEvalState *eval_state)
 }
 
 /* FIXME: argument extraction */
-ScmObj ScmExp_case(ScmObj arg, ScmEvalState *eval_state)
+ScmObj ScmExp_case(ScmObj key, ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env    = eval_state->env;
-    ScmObj key    = EVAL(CAR(arg), env);
     ScmObj clause = SCM_NULL;
     ScmObj data   = SCM_NULL;
     ScmObj exps   = SCM_NULL;
 
+    /* get key */
+    key = EVAL(key, env);
+
     /* looping in each clause */
-    for (arg = CDR(arg); !NULLP(arg); arg = CDR(arg)) {
-        clause = CAR(arg);
+    for (; !NULLP(args); args = CDR(args)) {
+        clause = CAR(args);
         data   = CAR(clause);
         exps   = CDR(clause);
         if (NULLP(clause) || NULLP(data) || NULLP(exps))
             SigScm_Error("case : syntax error");
 
         /* check "else" symbol */
-        if (NULLP(CDR(arg)) && !CONSP(data) && NFALSEP(SCM_SYMBOL_VCELL(data)))
+        if (NULLP(CDR(args)) && !CONSP(data) && NFALSEP(SCM_SYMBOL_VCELL(data)))
             return ScmExp_begin(exps, eval_state);
 
         /* evaluate data and compare to key by eqv? */
@@ -1047,7 +1049,7 @@ ScmObj ScmExp_or(ScmObj args, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.2 Binding constructs
 ===========================================================================*/
-ScmObj ScmExp_let(ScmObj arg, ScmEvalState *eval_state)
+ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env      = eval_state->env;
     ScmObj bindings = SCM_NULL;
@@ -1059,16 +1061,16 @@ ScmObj ScmExp_let(ScmObj arg, ScmEvalState *eval_state)
     ScmObj binding  = SCM_NULL;
 
     /* sanity check */
-    if CHECK_2_ARGS(arg)
+    if CHECK_2_ARGS(args)
         SigScm_Error("let : syntax error");
 
     /* guess whether syntax is "Named let" */
-    if (SYMBOLP(CAR(arg)))
+    if (SYMBOLP(CAR(args)))
         goto named_let;
 
     /* get bindings and body */
-    bindings = CAR(arg);
-    body     = CDR(arg);
+    bindings = CAR(args);
+    body     = CDR(args);
 
     /*========================================================================
       (let <bindings> <body>)
@@ -1113,8 +1115,8 @@ named_let:
                      (<variable2> <init2>)
                      ...)
     ========================================================================*/
-    bindings = CADR(arg);
-    body     = CDDR(arg);
+    bindings = CADR(args);
+    body     = CDDR(args);
     for (; !NULLP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
         SCM_SHIFT_RAW_2(var, val, binding);
@@ -1126,12 +1128,12 @@ named_let:
     vals = ScmOp_reverse(vals);
 
     /* (define (<variable> <variable1> <variable2> ...>) <body>) */
-    ScmExp_define(CAR(arg),
+    ScmExp_define(CAR(args),
                   LIST_1(Scm_NewClosure(CONS(vars, body), env)),
                   env);
 
     /* (func <init1> <init2> ...) */
-    return CONS(CAR(arg), vals);
+    return CONS(CAR(args), vals);
 }
 
 ScmObj ScmExp_let_star(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)

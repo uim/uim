@@ -295,7 +295,7 @@ ScmObj ScmOp_read_char(ScmObj args)
     return Scm_NewChar(buf);
 }
 
-ScmObj ScmOp_peek_char(ScmObj arg, ScmObj env)
+ScmObj ScmOp_peek_char(ScmObj args, ScmObj env)
 {
     /* TODO : implement this */
 }
@@ -305,7 +305,7 @@ ScmObj ScmOp_eof_objectp(ScmObj obj)
     return (EOFP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj ScmOp_char_readyp(ScmObj arg, ScmObj env)
+ScmObj ScmOp_char_readyp(ScmObj args, ScmObj env)
 {
     /* TODO : implement this */
 }
