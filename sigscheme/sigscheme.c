@@ -175,122 +175,122 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterSyntaxVariadicTailRec2("do"          , ScmExp_do);
     Scm_RegisterSyntaxVariadicTailRec0("and"    , ScmExp_and);
     Scm_RegisterSyntaxVariadicTailRec0("or"     , ScmExp_or);
-    Scm_RegisterFunc1("scheme-report-environment", ScmOp_scheme_report_environment);
-    Scm_RegisterFunc1("null-environment"         , ScmOp_null_environment);
-    Scm_RegisterFunc0("interaction-environment"  , ScmOp_interaction_environment);
+    Scm_RegisterProcedureFixed1("scheme-report-environment", ScmOp_scheme_report_environment);
+    Scm_RegisterProcedureFixed1("null-environment"         , ScmOp_null_environment);
+    Scm_RegisterProcedureFixed0("interaction-environment"  , ScmOp_interaction_environment);
     /* operations.c */
-    Scm_RegisterFunc2("eqv?"                     , ScmOp_eqvp);
-    Scm_RegisterFunc2("eq?"                      , ScmOp_eqp);
-    Scm_RegisterFunc2("equal?"                   , ScmOp_equalp);
-    Scm_RegisterFunc1("number?"                  , ScmOp_numberp);
+    Scm_RegisterProcedureFixed2("eqv?"                     , ScmOp_eqvp);
+    Scm_RegisterProcedureFixed2("eq?"                      , ScmOp_eqp);
+    Scm_RegisterProcedureFixed2("equal?"                   , ScmOp_equalp);
+    Scm_RegisterProcedureFixed1("number?"                  , ScmOp_numberp);
     Scm_DefineAlias("integer?"                  , "number?");
     Scm_RegisterReductionOperator("="               , ScmOp_equal);
     Scm_RegisterReductionOperator("<"               , ScmOp_less);
     Scm_RegisterReductionOperator(">"               , ScmOp_greater);
     Scm_RegisterReductionOperator("<="              , ScmOp_less_eq);
     Scm_RegisterReductionOperator(">="              , ScmOp_greater_eq);
-    Scm_RegisterFunc1("zero?"                    , ScmOp_zerop);
-    Scm_RegisterFunc1("positive?"                , ScmOp_positivep);
-    Scm_RegisterFunc1("negative?"                , ScmOp_negativep);
-    Scm_RegisterFunc1("odd?"                     , ScmOp_oddp);
-    Scm_RegisterFunc1("even?"                    , ScmOp_evenp);
+    Scm_RegisterProcedureFixed1("zero?"                    , ScmOp_zerop);
+    Scm_RegisterProcedureFixed1("positive?"                , ScmOp_positivep);
+    Scm_RegisterProcedureFixed1("negative?"                , ScmOp_negativep);
+    Scm_RegisterProcedureFixed1("odd?"                     , ScmOp_oddp);
+    Scm_RegisterProcedureFixed1("even?"                    , ScmOp_evenp);
     Scm_RegisterReductionOperator("max"                , ScmOp_max);
     Scm_RegisterReductionOperator("min"                , ScmOp_min);
     Scm_RegisterReductionOperator("+"                  , ScmOp_add);
     Scm_RegisterReductionOperator("*"                  , ScmOp_multiply);
     Scm_RegisterReductionOperator("-"                  , ScmOp_subtract);
     Scm_RegisterReductionOperator("/"                  , ScmOp_divide);
-    Scm_RegisterFunc1("abs"                      , ScmOp_abs);
-    Scm_RegisterFunc2("quotient"                 , ScmOp_quotient);
-    Scm_RegisterFunc2("modulo"                   , ScmOp_modulo);
-    Scm_RegisterFunc2("remainder"                , ScmOp_remainder);
+    Scm_RegisterProcedureFixed1("abs"                      , ScmOp_abs);
+    Scm_RegisterProcedureFixed2("quotient"                 , ScmOp_quotient);
+    Scm_RegisterProcedureFixed2("modulo"                   , ScmOp_modulo);
+    Scm_RegisterProcedureFixed2("remainder"                , ScmOp_remainder);
     Scm_RegisterProcedureVariadic1("number->string" , ScmOp_number2string);
-    Scm_RegisterFunc1("string->number"           , ScmOp_string2number);
-    Scm_RegisterFunc1("not"                      , ScmOp_not);
-    Scm_RegisterFunc1("boolean?"                 , ScmOp_booleanp);
-    Scm_RegisterFunc1("pair?"                    , ScmOp_pairp);
-    Scm_RegisterFunc2("cons"                     , ScmOp_cons);
-    Scm_RegisterFunc1("car"                      , ScmOp_car);
-    Scm_RegisterFunc1("cdr"                      , ScmOp_cdr);
-    Scm_RegisterFunc2("set-car!"                 , ScmOp_setcar);
-    Scm_RegisterFunc2("set-cdr!"                 , ScmOp_setcdr);
-    Scm_RegisterFunc1("caar"                     , ScmOp_caar);
-    Scm_RegisterFunc1("cadr"                     , ScmOp_cadr);
-    Scm_RegisterFunc1("cdar"                     , ScmOp_cdar);
-    Scm_RegisterFunc1("cddr"                     , ScmOp_cddr);
-    Scm_RegisterFunc1("caaar"                    , ScmOp_caaar);
-    Scm_RegisterFunc1("caadr"                    , ScmOp_caadr);
-    Scm_RegisterFunc1("cadar"                    , ScmOp_cadar);
-    Scm_RegisterFunc1("caddr"                    , ScmOp_caddr);
-    Scm_RegisterFunc1("cdaar"                    , ScmOp_cdaar);
-    Scm_RegisterFunc1("cdadr"                    , ScmOp_cdadr);
-    Scm_RegisterFunc1("cddar"                    , ScmOp_cddar);
-    Scm_RegisterFunc1("cdddr"                    , ScmOp_cdddr);
-    Scm_RegisterFunc1("caaaar"                   , ScmOp_caaaar);
-    Scm_RegisterFunc1("caaadr"                   , ScmOp_caaadr);
-    Scm_RegisterFunc1("caadar"                   , ScmOp_caadar);
-    Scm_RegisterFunc1("caaddr"                   , ScmOp_caaddr);
-    Scm_RegisterFunc1("cadaar"                   , ScmOp_cadaar);
-    Scm_RegisterFunc1("cadadr"                   , ScmOp_cadadr);
-    Scm_RegisterFunc1("caddar"                   , ScmOp_caddar);
-    Scm_RegisterFunc1("cadddr"                   , ScmOp_cadddr);
-    Scm_RegisterFunc1("cdaaar"                   , ScmOp_cdaaar);
-    Scm_RegisterFunc1("cdaadr"                   , ScmOp_cdaadr);
-    Scm_RegisterFunc1("cdadar"                   , ScmOp_cdadar);
-    Scm_RegisterFunc1("cdaddr"                   , ScmOp_cdaddr);
-    Scm_RegisterFunc1("cddaar"                   , ScmOp_cddaar);
-    Scm_RegisterFunc1("cddadr"                   , ScmOp_cddadr);
-    Scm_RegisterFunc1("cdddar"                   , ScmOp_cdddar);
-    Scm_RegisterFunc1("cddddr"                   , ScmOp_cddddr);
-    Scm_RegisterFunc1("null?"                    , ScmOp_nullp);
-    Scm_RegisterFunc1("list?"                    , ScmOp_listp);
-    Scm_RegisterFunc1("length"                   , ScmOp_length);
+    Scm_RegisterProcedureFixed1("string->number"           , ScmOp_string2number);
+    Scm_RegisterProcedureFixed1("not"                      , ScmOp_not);
+    Scm_RegisterProcedureFixed1("boolean?"                 , ScmOp_booleanp);
+    Scm_RegisterProcedureFixed1("pair?"                    , ScmOp_pairp);
+    Scm_RegisterProcedureFixed2("cons"                     , ScmOp_cons);
+    Scm_RegisterProcedureFixed1("car"                      , ScmOp_car);
+    Scm_RegisterProcedureFixed1("cdr"                      , ScmOp_cdr);
+    Scm_RegisterProcedureFixed2("set-car!"                 , ScmOp_setcar);
+    Scm_RegisterProcedureFixed2("set-cdr!"                 , ScmOp_setcdr);
+    Scm_RegisterProcedureFixed1("caar"                     , ScmOp_caar);
+    Scm_RegisterProcedureFixed1("cadr"                     , ScmOp_cadr);
+    Scm_RegisterProcedureFixed1("cdar"                     , ScmOp_cdar);
+    Scm_RegisterProcedureFixed1("cddr"                     , ScmOp_cddr);
+    Scm_RegisterProcedureFixed1("caaar"                    , ScmOp_caaar);
+    Scm_RegisterProcedureFixed1("caadr"                    , ScmOp_caadr);
+    Scm_RegisterProcedureFixed1("cadar"                    , ScmOp_cadar);
+    Scm_RegisterProcedureFixed1("caddr"                    , ScmOp_caddr);
+    Scm_RegisterProcedureFixed1("cdaar"                    , ScmOp_cdaar);
+    Scm_RegisterProcedureFixed1("cdadr"                    , ScmOp_cdadr);
+    Scm_RegisterProcedureFixed1("cddar"                    , ScmOp_cddar);
+    Scm_RegisterProcedureFixed1("cdddr"                    , ScmOp_cdddr);
+    Scm_RegisterProcedureFixed1("caaaar"                   , ScmOp_caaaar);
+    Scm_RegisterProcedureFixed1("caaadr"                   , ScmOp_caaadr);
+    Scm_RegisterProcedureFixed1("caadar"                   , ScmOp_caadar);
+    Scm_RegisterProcedureFixed1("caaddr"                   , ScmOp_caaddr);
+    Scm_RegisterProcedureFixed1("cadaar"                   , ScmOp_cadaar);
+    Scm_RegisterProcedureFixed1("cadadr"                   , ScmOp_cadadr);
+    Scm_RegisterProcedureFixed1("caddar"                   , ScmOp_caddar);
+    Scm_RegisterProcedureFixed1("cadddr"                   , ScmOp_cadddr);
+    Scm_RegisterProcedureFixed1("cdaaar"                   , ScmOp_cdaaar);
+    Scm_RegisterProcedureFixed1("cdaadr"                   , ScmOp_cdaadr);
+    Scm_RegisterProcedureFixed1("cdadar"                   , ScmOp_cdadar);
+    Scm_RegisterProcedureFixed1("cdaddr"                   , ScmOp_cdaddr);
+    Scm_RegisterProcedureFixed1("cddaar"                   , ScmOp_cddaar);
+    Scm_RegisterProcedureFixed1("cddadr"                   , ScmOp_cddadr);
+    Scm_RegisterProcedureFixed1("cdddar"                   , ScmOp_cdddar);
+    Scm_RegisterProcedureFixed1("cddddr"                   , ScmOp_cddddr);
+    Scm_RegisterProcedureFixed1("null?"                    , ScmOp_nullp);
+    Scm_RegisterProcedureFixed1("list?"                    , ScmOp_listp);
+    Scm_RegisterProcedureFixed1("length"                   , ScmOp_length);
     Scm_RegisterProcedureVariadic0("list"        , ScmOp_list);
     Scm_RegisterProcedureVariadic0("append"      , ScmOp_append);
-    Scm_RegisterFunc1("reverse"                  , ScmOp_reverse);
-    Scm_RegisterFunc2("list-tail"                , ScmOp_list_tail);
-    Scm_RegisterFunc2("list-ref"                 , ScmOp_list_ref);
-    Scm_RegisterFunc2("memq"                     , ScmOp_memq);
-    Scm_RegisterFunc2("memv"                     , ScmOp_memv);
-    Scm_RegisterFunc2("member"                   , ScmOp_member);
-    Scm_RegisterFunc2("assq"                     , ScmOp_assq);
-    Scm_RegisterFunc2("assv"                     , ScmOp_assv);
-    Scm_RegisterFunc2("assoc"                    , ScmOp_assoc);
-    Scm_RegisterFunc1("symbol?"                  , ScmOp_symbolp);
-    Scm_RegisterFunc1("symbol->string"           , ScmOp_symbol2string);
-    Scm_RegisterFunc1("string->symbol"           , ScmOp_string2symbol);
-    Scm_RegisterFunc1("char?"                    , ScmOp_charp);
-    Scm_RegisterFunc2("char=?"                   , ScmOp_char_equal);
-    Scm_RegisterFunc1("char-alphabetic?"         , ScmOp_char_alphabeticp);
-    Scm_RegisterFunc1("char-numeric?"            , ScmOp_char_numericp);
-    Scm_RegisterFunc1("char-whitespace?"         , ScmOp_char_whitespacep);
-    Scm_RegisterFunc1("char-upper-case?"         , ScmOp_char_upper_casep);
-    Scm_RegisterFunc1("char-lower-case?"         , ScmOp_char_lower_casep);
-    Scm_RegisterFunc1("char-upcase"              , ScmOp_char_upcase);
-    Scm_RegisterFunc1("char-downcase"            , ScmOp_char_downcase);
-    Scm_RegisterFunc1("string?"                  , ScmOp_stringp);
+    Scm_RegisterProcedureFixed1("reverse"                  , ScmOp_reverse);
+    Scm_RegisterProcedureFixed2("list-tail"                , ScmOp_list_tail);
+    Scm_RegisterProcedureFixed2("list-ref"                 , ScmOp_list_ref);
+    Scm_RegisterProcedureFixed2("memq"                     , ScmOp_memq);
+    Scm_RegisterProcedureFixed2("memv"                     , ScmOp_memv);
+    Scm_RegisterProcedureFixed2("member"                   , ScmOp_member);
+    Scm_RegisterProcedureFixed2("assq"                     , ScmOp_assq);
+    Scm_RegisterProcedureFixed2("assv"                     , ScmOp_assv);
+    Scm_RegisterProcedureFixed2("assoc"                    , ScmOp_assoc);
+    Scm_RegisterProcedureFixed1("symbol?"                  , ScmOp_symbolp);
+    Scm_RegisterProcedureFixed1("symbol->string"           , ScmOp_symbol2string);
+    Scm_RegisterProcedureFixed1("string->symbol"           , ScmOp_string2symbol);
+    Scm_RegisterProcedureFixed1("char?"                    , ScmOp_charp);
+    Scm_RegisterProcedureFixed2("char=?"                   , ScmOp_char_equal);
+    Scm_RegisterProcedureFixed1("char-alphabetic?"         , ScmOp_char_alphabeticp);
+    Scm_RegisterProcedureFixed1("char-numeric?"            , ScmOp_char_numericp);
+    Scm_RegisterProcedureFixed1("char-whitespace?"         , ScmOp_char_whitespacep);
+    Scm_RegisterProcedureFixed1("char-upper-case?"         , ScmOp_char_upper_casep);
+    Scm_RegisterProcedureFixed1("char-lower-case?"         , ScmOp_char_lower_casep);
+    Scm_RegisterProcedureFixed1("char-upcase"              , ScmOp_char_upcase);
+    Scm_RegisterProcedureFixed1("char-downcase"            , ScmOp_char_downcase);
+    Scm_RegisterProcedureFixed1("string?"                  , ScmOp_stringp);
     Scm_RegisterProcedureVariadic1("make-string" , ScmOp_make_string);
     Scm_RegisterProcedureVariadic0("string"      , ScmOp_string);
-    Scm_RegisterFunc2("string-ref"               , ScmOp_string_ref);
-    Scm_RegisterFunc3("string-set!"              , ScmOp_string_set);
-    Scm_RegisterFunc1("string-length"            , ScmOp_string_length);
-    Scm_RegisterFunc2("string=?"                 , ScmOp_string_equal);
-    Scm_RegisterFunc3("substring"                , ScmOp_string_substring);
+    Scm_RegisterProcedureFixed2("string-ref"               , ScmOp_string_ref);
+    Scm_RegisterProcedureFixed3("string-set!"              , ScmOp_string_set);
+    Scm_RegisterProcedureFixed1("string-length"            , ScmOp_string_length);
+    Scm_RegisterProcedureFixed2("string=?"                 , ScmOp_string_equal);
+    Scm_RegisterProcedureFixed3("substring"                , ScmOp_string_substring);
     Scm_RegisterProcedureVariadic0("string-append" , ScmOp_string_append);
-    Scm_RegisterFunc1("string->list"             , ScmOp_string2list);
-    Scm_RegisterFunc1("list->string"             , ScmOp_list2string);
-    Scm_RegisterFunc1("string-copy"              , ScmOp_string_copy);
-    Scm_RegisterFunc2("string-fill!"             , ScmOp_string_fill);
-    Scm_RegisterFunc1("vector?"                  , ScmOp_vectorp);
+    Scm_RegisterProcedureFixed1("string->list"             , ScmOp_string2list);
+    Scm_RegisterProcedureFixed1("list->string"             , ScmOp_list2string);
+    Scm_RegisterProcedureFixed1("string-copy"              , ScmOp_string_copy);
+    Scm_RegisterProcedureFixed2("string-fill!"             , ScmOp_string_fill);
+    Scm_RegisterProcedureFixed1("vector?"                  , ScmOp_vectorp);
     Scm_RegisterProcedureVariadic1("make-vector" , ScmOp_make_vector);
     Scm_RegisterProcedureVariadic0("vector"      , ScmOp_vector);
-    Scm_RegisterFunc1("vector-length"            , ScmOp_vector_length);
-    Scm_RegisterFunc2("vector-ref"               , ScmOp_vector_ref);
-    Scm_RegisterFunc3("vector-set!"              , ScmOp_vector_set);
-    Scm_RegisterFunc1("vector->list"             , ScmOp_vector2list);
-    Scm_RegisterFunc1("list->vector"             , ScmOp_list2vector);
-    Scm_RegisterFunc2("vector-fill!"             , ScmOp_vector_fill);
-    Scm_RegisterFunc1("procedure?"               , ScmOp_procedurep);
+    Scm_RegisterProcedureFixed1("vector-length"            , ScmOp_vector_length);
+    Scm_RegisterProcedureFixed2("vector-ref"               , ScmOp_vector_ref);
+    Scm_RegisterProcedureFixed3("vector-set!"              , ScmOp_vector_set);
+    Scm_RegisterProcedureFixed1("vector->list"             , ScmOp_vector2list);
+    Scm_RegisterProcedureFixed1("list->vector"             , ScmOp_list2vector);
+    Scm_RegisterProcedureFixed2("vector-fill!"             , ScmOp_vector_fill);
+    Scm_RegisterProcedureFixed1("procedure?"               , ScmOp_procedurep);
     Scm_RegisterProcedureVariadic1("map"         , ScmOp_map);
     Scm_RegisterProcedureVariadic1("for-each"    , ScmOp_for_each);
     Scm_RegisterProcedureFixed1("force"          , ScmOp_force);
@@ -298,32 +298,32 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterProcedureFixed1("call-with-current-continuation", ScmOp_call_with_current_continuation);
     Scm_RegisterProcedureFixed2("call-with-values" , ScmOp_call_with_values);
     /* io.c */
-    Scm_RegisterFunc2("call-with-input-file"     , ScmOp_call_with_input_file);
-    Scm_RegisterFunc2("call-with-output-file"    , ScmOp_call_with_output_file);
-    Scm_RegisterFunc1("input-port?"              , ScmOp_input_portp);
-    Scm_RegisterFunc1("output-port?"             , ScmOp_output_portp);
-    Scm_RegisterFunc0("current-input-port"       , ScmOp_current_input_port);
-    Scm_RegisterFunc0("current-output-port"      , ScmOp_current_output_port);
-    Scm_RegisterFunc2("with-input-from-file"     , ScmOp_with_input_from_file);
-    Scm_RegisterFunc2("with-output-to-file"      , ScmOp_with_output_to_file);
-    Scm_RegisterFunc1("open-input-file"          , ScmOp_open_input_file);
-    Scm_RegisterFunc1("open-output-file"         , ScmOp_open_output_file);
-    Scm_RegisterFunc1("close-input-port"         , ScmOp_close_input_port);
-    Scm_RegisterFunc1("close-output-port"        , ScmOp_close_output_port);
-    Scm_RegisterFunc1("eof-object?"              , ScmOp_eof_objectp);
+    Scm_RegisterProcedureFixed2("call-with-input-file"     , ScmOp_call_with_input_file);
+    Scm_RegisterProcedureFixed2("call-with-output-file"    , ScmOp_call_with_output_file);
+    Scm_RegisterProcedureFixed1("input-port?"              , ScmOp_input_portp);
+    Scm_RegisterProcedureFixed1("output-port?"             , ScmOp_output_portp);
+    Scm_RegisterProcedureFixed0("current-input-port"       , ScmOp_current_input_port);
+    Scm_RegisterProcedureFixed0("current-output-port"      , ScmOp_current_output_port);
+    Scm_RegisterProcedureFixed2("with-input-from-file"     , ScmOp_with_input_from_file);
+    Scm_RegisterProcedureFixed2("with-output-to-file"      , ScmOp_with_output_to_file);
+    Scm_RegisterProcedureFixed1("open-input-file"          , ScmOp_open_input_file);
+    Scm_RegisterProcedureFixed1("open-output-file"         , ScmOp_open_output_file);
+    Scm_RegisterProcedureFixed1("close-input-port"         , ScmOp_close_input_port);
+    Scm_RegisterProcedureFixed1("close-output-port"        , ScmOp_close_output_port);
+    Scm_RegisterProcedureFixed1("eof-object?"              , ScmOp_eof_objectp);
     Scm_RegisterProcedureVariadic0("read"        , ScmOp_read);
     Scm_RegisterProcedureVariadic0("read-char"   , ScmOp_read_char);
     Scm_RegisterProcedureVariadic1("write"       , ScmOp_write);
     Scm_RegisterProcedureVariadic1("display"     , ScmOp_display);
     Scm_RegisterProcedureVariadic0("newline"     , ScmOp_newline);
     Scm_RegisterProcedureVariadic1("write-char"      , ScmOp_write_char);
-    Scm_RegisterFunc1("load"                     , ScmOp_load);
+    Scm_RegisterProcedureFixed1("load"                     , ScmOp_load);
 #if SCM_USE_NONSTD_FEATURES
-    Scm_RegisterFunc1("require"                  , ScmOp_require);
-    Scm_RegisterFunc1("provide"                  , ScmOp_provide);
-    Scm_RegisterFunc1("provided?"                , ScmOp_providedp);
-    Scm_RegisterFunc1("file-exists?"             , ScmOp_file_existsp);
-    Scm_RegisterFunc1("delete-file"              , ScmOp_delete_file);
+    Scm_RegisterProcedureFixed1("require"                  , ScmOp_require);
+    Scm_RegisterProcedureFixed1("provide"                  , ScmOp_provide);
+    Scm_RegisterProcedureFixed1("provided?"                , ScmOp_providedp);
+    Scm_RegisterProcedureFixed1("file-exists?"             , ScmOp_file_existsp);
+    Scm_RegisterProcedureFixed1("delete-file"              , ScmOp_delete_file);
 #endif
 
     /*=======================================================================
@@ -346,40 +346,40 @@ static void SigScm_Initialize_internal(void)
     /*=======================================================================
       SRFI-1 Procedures
     =======================================================================*/
-    Scm_RegisterFunc1("list-copy"            , ScmOp_SRFI1_list_copy);
-    Scm_RegisterFunc2("xcons"                , ScmOp_SRFI1_xcons);
+    Scm_RegisterProcedureFixed1("list-copy"            , ScmOp_SRFI1_list_copy);
+    Scm_RegisterProcedureFixed2("xcons"                , ScmOp_SRFI1_xcons);
     Scm_RegisterProcedureVariadic0("circular-list" , ScmOp_SRFI1_circular_list);
     Scm_RegisterProcedureVariadic1("iota"          , ScmOp_SRFI1_iota);
     Scm_RegisterProcedureVariadic0("cons*"          , ScmOp_SRFI1_cons_star);
     Scm_RegisterProcedureVariadic1("make-list"      , ScmOp_SRFI1_make_list);
     Scm_RegisterProcedureVariadic1("list-tabulate"  , ScmOp_SRFI1_list_tabulate);
-    Scm_RegisterFunc1("proper-list?"         , ScmOp_SRFI1_proper_listp);
-    Scm_RegisterFunc1("circular-list?"       , ScmOp_SRFI1_circular_listp);
-    Scm_RegisterFunc1("dotted-list?"         , ScmOp_SRFI1_dotted_listp);
-    Scm_RegisterFunc1("not-pair?"            , ScmOp_SRFI1_not_pairp);
-    Scm_RegisterFunc1("null-list?"           , ScmOp_SRFI1_null_listp);
+    Scm_RegisterProcedureFixed1("proper-list?"         , ScmOp_SRFI1_proper_listp);
+    Scm_RegisterProcedureFixed1("circular-list?"       , ScmOp_SRFI1_circular_listp);
+    Scm_RegisterProcedureFixed1("dotted-list?"         , ScmOp_SRFI1_dotted_listp);
+    Scm_RegisterProcedureFixed1("not-pair?"            , ScmOp_SRFI1_not_pairp);
+    Scm_RegisterProcedureFixed1("null-list?"           , ScmOp_SRFI1_null_listp);
     Scm_RegisterProcedureVariadic1("list="   , ScmOp_SRFI1_listequal); 
-    Scm_RegisterFunc1("first"                , ScmOp_SRFI1_first);
-    Scm_RegisterFunc1("second"               , ScmOp_SRFI1_second);
-    Scm_RegisterFunc1("third"                , ScmOp_SRFI1_third);
-    Scm_RegisterFunc1("fourth"               , ScmOp_SRFI1_fourth);
-    Scm_RegisterFunc1("fifth"                , ScmOp_SRFI1_fifth);
-    Scm_RegisterFunc1("sixth"                , ScmOp_SRFI1_sixth);
-    Scm_RegisterFunc1("seventh"              , ScmOp_SRFI1_seventh);
-    Scm_RegisterFunc1("eighth"               , ScmOp_SRFI1_eighth);
-    Scm_RegisterFunc1("ninth"                , ScmOp_SRFI1_ninth);
-    Scm_RegisterFunc1("tenth"                , ScmOp_SRFI1_tenth);      
-    Scm_RegisterFunc2("take"                 , ScmOp_SRFI1_take);
-    Scm_RegisterFunc2("drop"                 , ScmOp_SRFI1_drop);
-    Scm_RegisterFunc2("take-right"           , ScmOp_SRFI1_take_right);
-    Scm_RegisterFunc2("drop-right"           , ScmOp_SRFI1_drop_right);
-    Scm_RegisterFunc2("take!"                , ScmOp_SRFI1_take_d);
-    Scm_RegisterFunc2("drop-right!"          , ScmOp_SRFI1_drop_right_d);
-    Scm_RegisterFunc2("split-at"             , ScmOp_SRFI1_split_at);
-    Scm_RegisterFunc2("split-at!"            , ScmOp_SRFI1_split_at_d);
-    Scm_RegisterFunc1("last"                 , ScmOp_SRFI1_last);
-    Scm_RegisterFunc1("last-pair"            , ScmOp_SRFI1_last_pair);
-    Scm_RegisterFunc1("length+"              , ScmOp_SRFI1_lengthplus);
+    Scm_RegisterProcedureFixed1("first"                , ScmOp_SRFI1_first);
+    Scm_RegisterProcedureFixed1("second"               , ScmOp_SRFI1_second);
+    Scm_RegisterProcedureFixed1("third"                , ScmOp_SRFI1_third);
+    Scm_RegisterProcedureFixed1("fourth"               , ScmOp_SRFI1_fourth);
+    Scm_RegisterProcedureFixed1("fifth"                , ScmOp_SRFI1_fifth);
+    Scm_RegisterProcedureFixed1("sixth"                , ScmOp_SRFI1_sixth);
+    Scm_RegisterProcedureFixed1("seventh"              , ScmOp_SRFI1_seventh);
+    Scm_RegisterProcedureFixed1("eighth"               , ScmOp_SRFI1_eighth);
+    Scm_RegisterProcedureFixed1("ninth"                , ScmOp_SRFI1_ninth);
+    Scm_RegisterProcedureFixed1("tenth"                , ScmOp_SRFI1_tenth);      
+    Scm_RegisterProcedureFixed2("take"                 , ScmOp_SRFI1_take);
+    Scm_RegisterProcedureFixed2("drop"                 , ScmOp_SRFI1_drop);
+    Scm_RegisterProcedureFixed2("take-right"           , ScmOp_SRFI1_take_right);
+    Scm_RegisterProcedureFixed2("drop-right"           , ScmOp_SRFI1_drop_right);
+    Scm_RegisterProcedureFixed2("take!"                , ScmOp_SRFI1_take_d);
+    Scm_RegisterProcedureFixed2("drop-right!"          , ScmOp_SRFI1_drop_right_d);
+    Scm_RegisterProcedureFixed2("split-at"             , ScmOp_SRFI1_split_at);
+    Scm_RegisterProcedureFixed2("split-at!"            , ScmOp_SRFI1_split_at_d);
+    Scm_RegisterProcedureFixed1("last"                 , ScmOp_SRFI1_last);
+    Scm_RegisterProcedureFixed1("last-pair"            , ScmOp_SRFI1_last_pair);
+    Scm_RegisterProcedureFixed1("length+"              , ScmOp_SRFI1_lengthplus);
     Scm_RegisterProcedureVariadic0("concatenate" , ScmOp_SRFI1_concatenate);
 #endif
 #if SCM_USE_SRFI2
@@ -429,18 +429,18 @@ static void SigScm_Initialize_internal(void)
       SIOD Compatible Variables and Procedures
     =======================================================================*/
     /* operations-siod.c */
-    Scm_RegisterFunc1("symbol-bound?"        , ScmOp_symbol_boundp);
-    Scm_RegisterFunc1("symbol-value"         , ScmOp_symbol_value);
-    Scm_RegisterFunc2("set-symbol-value!"    , ScmOp_set_symbol_value);
+    Scm_RegisterProcedureFixed1("symbol-bound?"        , ScmOp_symbol_boundp);
+    Scm_RegisterProcedureFixed1("symbol-value"         , ScmOp_symbol_value);
+    Scm_RegisterProcedureFixed2("set-symbol-value!"    , ScmOp_set_symbol_value);
 #if SCM_COMPAT_SIOD_BUGS
-    Scm_RegisterFunc2("="                    , ScmOp_siod_eql);
+    Scm_RegisterProcedureFixed2("="                    , ScmOp_siod_eql);
 #endif
     Scm_DefineAlias("bit-and"               , "logand");
     Scm_DefineAlias("bit-or"                , "logior");
     Scm_DefineAlias("bit-xor"               , "logxor");
     Scm_DefineAlias("bit-not"               , "lognot");
     Scm_RegisterProcedureFixedTailRec0("the-environment" , ScmOp_the_environment);
-    Scm_RegisterFunc1("%%closure-code"       , ScmOp_closure_code);
+    Scm_RegisterProcedureFixed1("%%closure-code"       , ScmOp_closure_code);
     Scm_RegisterProcedureVariadic0("verbose" , ScmOp_verbose);
     /* datas.c */
     scm_return_value = SCM_NULL;
@@ -462,57 +462,6 @@ void Scm_DefineAlias(const char *newsym, const char *sym)
 /*===========================================================================
   Scheme Function Export Related Functions
 ===========================================================================*/
-/* Left for compatibility only.  To be removed after complete transition. */
-void Scm_RegisterFunc0(const char *name, ScmFuncType0 func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_0);
-}
-
-void Scm_RegisterFunc1(const char *name, ScmFuncType1 func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_1);
-}
-
-void Scm_RegisterFunc2(const char *name, ScmFuncType2 func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_2);
-}
-
-void Scm_RegisterFunc3(const char *name, ScmFuncType3 func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_3);
-}
-
-void Scm_RegisterFunc4(const char *name, ScmFuncType4 func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_4);
-}
-
-void Scm_RegisterFunc5(const char *name, ScmFuncType5 func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_5);
-}
-
-void Scm_RegisterFuncEvaledList(const char *name, ScmFuncTypeEvaledList func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_EVALED_LIST);
-}
-
-void Scm_RegisterFuncRawList(const char *name, ScmFuncTypeRawList func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_RAW_LIST);
-}
-
-void Scm_RegisterFuncRawListTailRec(const char *name, ScmFuncTypeRawListTailRec func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_RAW_LIST_TAIL_REC);
-}
-
-void Scm_RegisterFuncRawListWithTailFlag(const char *name, ScmFuncTypeRawListWithTailFlag func)
-{
-    Scm_RegisterFunc(name, func, FUNCTYPE_RAW_LIST_WITH_TAIL_FLAG);
-}
-
 /* New Interfaces */
 static int Scm_RegisterFunc(const char *name, ScmFuncType c_func, enum ScmFuncTypeCode type)
 {

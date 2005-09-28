@@ -46,8 +46,6 @@ Performance improvements:
 ==============================================================================
 Logical simplifications:
 
-* Replace legacy Scm_RegisterFunc*() with Scm_Register(Procedure|Syntax)*()
-
 * Reorganize SCM_SHIFT*() macros and simplify args extraction codes
 
 * Move procedure registration for SRFI and SIOD operations in
