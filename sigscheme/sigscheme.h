@@ -538,15 +538,15 @@ ScmObj ScmOp_open_output_file(ScmObj filepath);
 ScmObj ScmOp_close_input_port(ScmObj port);
 ScmObj ScmOp_close_output_port(ScmObj port);
 
-ScmObj ScmOp_read(ScmObj arg, ScmObj env);
-ScmObj ScmOp_read_char(ScmObj arg, ScmObj env);
+ScmObj ScmOp_read(ScmObj args);
+ScmObj ScmOp_read_char(ScmObj args);
 ScmObj ScmOp_peek_char(ScmObj arg, ScmObj env);
 ScmObj ScmOp_eof_objectp(ScmObj obj);
 ScmObj ScmOp_char_readyp(ScmObj arg, ScmObj env);
-ScmObj ScmOp_write(ScmObj arg, ScmObj env);
-ScmObj ScmOp_display(ScmObj arg, ScmObj env);
-ScmObj ScmOp_newline(ScmObj arg, ScmObj env);
-ScmObj ScmOp_write_char(ScmObj arg, ScmObj env);
+ScmObj ScmOp_write(ScmObj obj, ScmObj args);
+ScmObj ScmOp_display(ScmObj obj, ScmObj args);
+ScmObj ScmOp_newline(ScmObj args);
+ScmObj ScmOp_write_char(ScmObj obj, ScmObj args);
 
 ScmObj SigScm_load(const char *c_filename);
 ScmObj ScmOp_load(ScmObj filename);

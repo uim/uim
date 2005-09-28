@@ -268,35 +268,25 @@ ScmObj ScmOp_close_output_port(ScmObj port)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.2 Input
 ===========================================================================*/
-ScmObj ScmOp_read(ScmObj arg, ScmObj env)
+ScmObj ScmOp_read(ScmObj args)
 {
-    ScmObj port = SCM_NULL;
-    if (NULLP(arg)) {
-        /* (read) */
-        port = scm_current_input_port;
-    } else if (PORTP(CAR(arg))) {
-        /* (read port) */
-        port = CAR(arg);
-    } else {
-        SigScm_ErrorObj("read : invalid parameter", arg);
-    }
+    ScmObj port = scm_current_input_port;
+
+    /* get port */
+    if (!NULLP(args) && PORTP(CAR(args)))
+        port = CAR(args);
 
     return SigScm_Read(port);
 }
 
-ScmObj ScmOp_read_char(ScmObj arg, ScmObj env)
+ScmObj ScmOp_read_char(ScmObj args)
 {
-    ScmObj port = SCM_NULL;
+    ScmObj port = scm_current_input_port;
     char  *buf  = NULL;
-    if (NULLP(arg)) {
-        /* (read-char) */
-        port = scm_current_input_port;
-    } else if (!NULLP(CDR(arg)) && PORTP(CADR(arg))) {
-        /* (read-char port) */
-        port = CADR(arg);
-    } else {
-        SigScm_ErrorObj("read-char : invalid parameter", arg);
-    }
+
+    /* get port */
+    if (!NULLP(args) && PORTP(CAR(args)))
+        port = CAR(args);
 
     /* TODO : implement this multibyte-char awareness */
     buf = (char *)malloc(sizeof(char) * 2);
@@ -323,84 +313,54 @@ ScmObj ScmOp_char_readyp(ScmObj arg, ScmObj env)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.3 Output
 ===========================================================================*/
-ScmObj ScmOp_write(ScmObj arg, ScmObj env)
+ScmObj ScmOp_write(ScmObj obj, ScmObj args)
 {
-    ScmObj obj  = SCM_NULL;
-    ScmObj port = SCM_NULL;
-
-    if CHECK_1_ARG(arg)
-        SigScm_Error("write : invalid parameter");
-
-    /* get obj */
-    obj = CAR(arg);
-    arg = CDR(arg);
+    ScmObj port = scm_current_output_port;
 
     /* get port */
-    port = scm_current_output_port;
-    if (!NULLP(arg) && !NULLP(CAR(arg)) && PORTP(CAR(arg)))
-        port = CAR(arg);
+    if (!NULLP(args) && PORTP(CAR(args)))
+        port = CAR(args);
 
     SigScm_WriteToPort(port, obj);
     return SCM_UNDEF;
 }
 
-ScmObj ScmOp_display(ScmObj arg, ScmObj env)
+ScmObj ScmOp_display(ScmObj obj, ScmObj args)
 {
-    ScmObj obj  = SCM_NULL;
-    ScmObj port = SCM_NULL;
-
-    if CHECK_1_ARG(arg)
-        SigScm_Error("display : invalid parameter");
-
-    /* get obj */
-    obj = CAR(arg);
-    arg = CDR(arg);
-
-    /* get port */
-    port = scm_current_output_port;
+    ScmObj port = scm_current_output_port;
     
-    /* (display obj port) */
-    if (!NULLP(arg) && PORTP(CAR(arg)))
-        port = CAR(arg);
+    /* get port */
+    if (!NULLP(args) && PORTP(CAR(args)))
+        port = CAR(args);
 
     SigScm_DisplayToPort(port, obj);
     return SCM_UNDEF;
 }
 
-ScmObj ScmOp_newline(ScmObj arg, ScmObj env)
+ScmObj ScmOp_newline(ScmObj args)
 {
     /* get port */
     ScmObj port = scm_current_output_port;
 
     /* (newline port) */
-    if (!NULLP(arg) && !NULLP(CAR(arg)) && PORTP(CAR(arg))) {
-        port = CAR(arg);
-    }
+    if (!NULLP(args) && PORTP(CAR(args)))
+        port = CAR(args);
 
     SigScm_DisplayToPort(port, Scm_NewStringCopying("\n"));
     return SCM_UNDEF;
 }
 
-ScmObj ScmOp_write_char(ScmObj arg, ScmObj env)
+ScmObj ScmOp_write_char(ScmObj obj, ScmObj args)
 {
-    ScmObj obj  = SCM_NULL;
-    ScmObj port = SCM_NULL;
+    ScmObj port = scm_current_output_port;
 
-    if CHECK_1_ARG(arg)
-        SigScm_Error("write-char : invalid parameter");
-
-    /* get obj */
-    obj = CAR(arg);
-    arg = CDR(arg);
+    /* sanity check */
     if (!CHARP(obj))
         SigScm_ErrorObj("write-char : char required but got ", obj);
 
     /* get port */
-    port = scm_current_output_port;
-    
-    /* (write-char obj port) */
-    if (!NULLP(arg) && PORTP(CAR(arg)))
-        port = CAR(arg);
+    if (!NULLP(args) && PORTP(CAR(args)))
+        port = CAR(args);
 
     SigScm_DisplayToPort(port, obj);
     return SCM_UNDEF;

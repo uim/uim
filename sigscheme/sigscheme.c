@@ -311,12 +311,12 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterFunc1("close-input-port"         , ScmOp_close_input_port);
     Scm_RegisterFunc1("close-output-port"        , ScmOp_close_output_port);
     Scm_RegisterFunc1("eof-object?"              , ScmOp_eof_objectp);
-    Scm_RegisterFuncEvaledList("read"            , ScmOp_read);
-    Scm_RegisterFuncEvaledList("read-char"       , ScmOp_read_char);
-    Scm_RegisterFuncEvaledList("write"           , ScmOp_write);
-    Scm_RegisterFuncEvaledList("display"         , ScmOp_display);
-    Scm_RegisterFuncEvaledList("newline"         , ScmOp_newline);
-    Scm_RegisterFuncEvaledList("write-char"      , ScmOp_write_char);
+    Scm_RegisterProcedureVariadic0("read"        , ScmOp_read);
+    Scm_RegisterProcedureVariadic0("read-char"   , ScmOp_read_char);
+    Scm_RegisterProcedureVariadic1("write"       , ScmOp_write);
+    Scm_RegisterProcedureVariadic1("display"     , ScmOp_display);
+    Scm_RegisterProcedureVariadic0("newline"     , ScmOp_newline);
+    Scm_RegisterProcedureVariadic1("write-char"      , ScmOp_write_char);
     Scm_RegisterFunc1("load"                     , ScmOp_load);
 #if SCM_USE_NONSTD_FEATURES
     Scm_RegisterFunc1("require"                  , ScmOp_require);
