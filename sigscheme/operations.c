@@ -1753,7 +1753,7 @@ static ScmObj map_multiple_args(ScmObj proc, ScmObj args)
 
     while (1) {
         /* construct "map_arg" */
-        map_arg  = SCM_NULL;
+        map_arg  = SCM_FALSE;
         tmp_lsts = args;
         for (; !NULLP(tmp_lsts); tmp_lsts = CDR(tmp_lsts)) {
             lst = CAR(tmp_lsts);
