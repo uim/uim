@@ -57,75 +57,63 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static ScmObj handle_claw(ScmObj claw, ScmObj *envp);
 
 /*=======================================
   Function Implementations
 =======================================*/
 ScmObj ScmOp_SRFI2_and_let_star(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
 {
-    ScmObj env   = eval_state->env;
-    ScmObj val   = SCM_FALSE;
+    ScmObj env  = eval_state->env;
+    ScmObj claw = SCM_FALSE;
+    ScmObj var  = SCM_FALSE;
+    ScmObj val  = SCM_FALSE;
+    ScmObj exp  = SCM_FALSE;
 
     /*========================================================================
       (and-let* <claws> <body>)
 
       <claws> ::= '() | (cons <claw> <claws>)
+      <claw>  ::=  (<variable> <expression>) | (<expression>)
+                   | <bound-variable>
     ========================================================================*/
     if (CONSP(claws)) {
         for (; !NULLP(claws); claws = CDR(claws)) {
-            val = handle_claw(CAR(claws), &env);
+            claw = CAR(claws);
+            if (CONSP(claw)) {
+                if (SYMBOLP(CAR(claw))) {
+                    /* (<variable> <expression>) */
+                    if (!NULLP(SCM_SHIFT_RAW_2(var, exp, claw)))
+                        goto err;
+                    val = EVAL(exp, env);
+                    env = extend_environment(LIST_1(var), LIST_1(val), env);
+                } else if (NULLP(CDR(claw))) {
+                    /* (<expression>) */
+                    exp = CAR(claw);
+                    val = EVAL(exp, env);
+                } else {
+                    goto err;
+                }
+            } else if (SYMBOLP(claw)) {
+                /* <bound-variable> */
+                val = EVAL(claw, env);
+            } else {
+                goto err;
+            }
             if (FALSEP(val))
                 return SCM_FALSE;
         }
     } else if (NULLP(claws)) {
         env = extend_environment(SCM_NULL, SCM_NULL, env);
     } else {
-        SigScm_ErrorObj("and-let* : invalid claws form : ", claws);
+        goto err;
     }
 
     eval_state->env = env;
 
     return ScmExp_begin(body, eval_state);
-}
-
-static ScmObj handle_claw(ScmObj claw, ScmObj *envp)
-{
-    ScmObj env = *envp;
-    ScmObj var = SCM_FALSE;
-    ScmObj val = SCM_FALSE;
-    ScmObj exp = SCM_FALSE;
-
-    /*========================================================================
-      <claw>  ::=  (<variable> <expression>) | (<expression>)
-                   | <bound-variable>
-    ========================================================================*/
-    if (CONSP(claw)) {
-        if (SYMBOLP(CAR(claw))) {
-            /* (<variable> <expression>) */
-            if (!NULLP(SCM_SHIFT_RAW_2(var, exp, claw)))
-                goto err;
-            val = EVAL(exp, env);
-            env = extend_environment(LIST_1(var), LIST_1(val), env);
-            *envp = env;
-        } else if (NULLP(CDR(claw))) {
-            /* (<expression>) */
-            exp = CAR(claw);
-            val = EVAL(exp, env);
-        } else {
-            goto err;
-        }
-    } else if (SYMBOLP(claw)) {
-        /* <bound-variable> */
-        val = EVAL(claw, env);
-    } else {
-        goto err;
-    }
-
-    return val;
 
  err:
-    SigScm_ErrorObj("and-let* : invalid claw form : ", claw);
+    SigScm_ErrorObj("and-let* : invalid claws form : ", claws);
     /* NOTREACHED */
     return SCM_FALSE;
 }
