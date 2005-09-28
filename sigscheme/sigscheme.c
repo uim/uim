@@ -204,7 +204,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterFunc2("quotient"                 , ScmOp_quotient);
     Scm_RegisterFunc2("modulo"                   , ScmOp_modulo);
     Scm_RegisterFunc2("remainder"                , ScmOp_remainder);
-    Scm_RegisterFuncEvaledList("number->string"  , ScmOp_number2string);
+    Scm_RegisterProcedureVariadic1("number->string" , ScmOp_number2string);
     Scm_RegisterFunc1("string->number"           , ScmOp_string2number);
     Scm_RegisterFunc1("not"                      , ScmOp_not);
     Scm_RegisterFunc1("boolean?"                 , ScmOp_booleanp);
@@ -245,7 +245,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterFunc1("null?"                    , ScmOp_nullp);
     Scm_RegisterFunc1("list?"                    , ScmOp_listp);
     Scm_RegisterFunc1("length"                   , ScmOp_length);
-    Scm_RegisterFuncEvaledList("list"            , ScmOp_list);
+    Scm_RegisterProcedureVariadic0("list"        , ScmOp_list);
     Scm_RegisterFuncEvaledList("append"          , ScmOp_append);
     Scm_RegisterFunc1("reverse"                  , ScmOp_reverse);
     Scm_RegisterFunc2("list-tail"                , ScmOp_list_tail);
@@ -269,8 +269,8 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterFunc1("char-upcase"              , ScmOp_char_upcase);
     Scm_RegisterFunc1("char-downcase"            , ScmOp_char_downcase);
     Scm_RegisterFunc1("string?"                  , ScmOp_stringp);
-    Scm_RegisterFuncEvaledList("make-string"     , ScmOp_make_string);
-    Scm_RegisterFuncEvaledList("string"          , ScmOp_string);
+    Scm_RegisterProcedureVariadic1("make-string" , ScmOp_make_string);
+    Scm_RegisterProcedureVariadic0("string"      , ScmOp_string);
     Scm_RegisterFunc2("string-ref"               , ScmOp_string_ref);
     Scm_RegisterFunc3("string-set!"              , ScmOp_string_set);
     Scm_RegisterFunc1("string-length"            , ScmOp_string_length);
@@ -282,8 +282,8 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterFunc1("string-copy"              , ScmOp_string_copy);
     Scm_RegisterFunc2("string-fill!"             , ScmOp_string_fill);
     Scm_RegisterFunc1("vector?"                  , ScmOp_vectorp);
-    Scm_RegisterFuncEvaledList("make-vector"     , ScmOp_make_vector);
-    Scm_RegisterFuncEvaledList("vector"          , ScmOp_vector);
+    Scm_RegisterProcedureVariadic1("make-vector" , ScmOp_make_vector);
+    Scm_RegisterProcedureVariadic0("vector"      , ScmOp_vector);
     Scm_RegisterFunc1("vector-length"            , ScmOp_vector_length);
     Scm_RegisterFunc2("vector-ref"               , ScmOp_vector_ref);
     Scm_RegisterFunc3("vector-set!"              , ScmOp_vector_set);
@@ -293,9 +293,9 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterFunc1("procedure?"               , ScmOp_procedurep);
     Scm_RegisterProcedureVariadic1("map"         , ScmOp_map);
     Scm_RegisterProcedureVariadic1("for-each"    , ScmOp_for_each);
-    Scm_RegisterFuncEvaledList("force"           , ScmOp_force);
-    Scm_RegisterFuncEvaledList("values"          , ScmOp_values);
-    Scm_RegisterFuncEvaledList("call-with-current-continuation", ScmOp_call_with_current_continuation);
+    Scm_RegisterProcedureFixed1("force"          , ScmOp_force);
+    Scm_RegisterProcedureVariadic0("values"          , ScmOp_values);
+    Scm_RegisterProcedureFixed1("call-with-current-continuation", ScmOp_call_with_current_continuation);
     Scm_RegisterProcedureFixed2("call-with-values" , ScmOp_call_with_values);
     /* io.c */
     Scm_RegisterFunc2("call-with-input-file"     , ScmOp_call_with_input_file);

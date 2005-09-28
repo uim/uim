@@ -545,31 +545,27 @@ ScmObj ScmOp_remainder(ScmObj scm_n1, ScmObj scm_n2)
 /*==============================================================================
   R5RS : 6.2 Numbers : 6.2.6 Numerical input and output
 ==============================================================================*/
-ScmObj ScmOp_number2string (ScmObj args, ScmObj env)
+ScmObj ScmOp_number2string (ScmObj num, ScmObj args)
 {
   char buf[sizeof(int)*CHAR_BIT + 1];
   char *p;
   unsigned int n, r;
-  ScmObj number, radix;
+  ScmObj radix;
 
-  if (CHECK_1_ARG(args))
-      SigScm_ErrorObj("number->string: requires 1 or 2 arguments: ", args);
+  if (!INTP(num))
+      SigScm_ErrorObj("number->string: integer required but got ", num);
 
-  number = CAR(args);
-  if (!INTP(number))
-      SigScm_ErrorObj("number->string: integer required but got ", number);
-
-  n = SCM_INT_VALUE(number);
+  n = SCM_INT_VALUE(num);
 
   /* r = radix */
-  if (NULLP(CDR(args)))
+  if (NULLP(args))
       r = 10;
   else {
 #ifdef SCM_STRICT_ARGCHECK
-      if (!NULLP(CDDR(args)))
+      if (!NULLP(CDR(args)))
           SigScm_ErrorObj("number->string: too many arguments: ", args);
 #endif
-      radix = CADR(args);
+      radix = CAR(args);
       if (!INTP(radix))
           SigScm_ErrorObj("number->string: integer required but got ", radix);
       r = SCM_INT_VALUE(radix);
@@ -587,15 +583,13 @@ ScmObj ScmOp_number2string (ScmObj args, ScmObj env)
   p = &buf[sizeof(buf)-1];
   *p = 0;
 
-  do
-    {
+  do {
       if (n % r > 9)
         *--p = 'A' + n % r - 10;
       else
         *--p = '0' + n % r;
-    }
-  while (n /= r);
-  if (r == 10 && SCM_INT_VALUE (number) < 0)
+  } while (n /= r);
+  if (r == 10 && SCM_INT_VALUE (num) < 0)
     *--p = '-';
 
   return Scm_NewStringCopying(p);
@@ -817,9 +811,9 @@ ScmObj ScmOp_cddddr(ScmObj lst)
     return ScmOp_cdr( ScmOp_cdr( ScmOp_cdr( ScmOp_cdr(lst) )));
 }
 
-ScmObj ScmOp_list(ScmObj obj, ScmObj env)
+ScmObj ScmOp_list(ScmObj args)
 {
-    return obj;
+    return args;
 }
 
 ScmObj ScmOp_nullp(ScmObj obj)
@@ -1228,51 +1222,42 @@ ScmObj ScmOp_stringp(ScmObj obj)
     return (STRINGP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj ScmOp_make_string(ScmObj arg, ScmObj env)
+ScmObj ScmOp_make_string(ScmObj length, ScmObj args)
 {
-    int argc = SCM_INT_VALUE(ScmOp_length(arg));
-    int len  = 0;
-    char  *tmp = NULL;
-    ScmObj str = SCM_NULL;
-    ScmObj ch  = SCM_NULL;
+    int len = 0;
+    ScmObj str    = SCM_FALSE;
+    ScmObj filler = SCM_FALSE;
 
     /* sanity check */
-    if (argc != 1 && argc != 2)
-        SigScm_Error("make-string : invalid use");
-    if (!INTP(CAR(arg)))
-        SigScm_ErrorObj("make-string : integer required but got ", CAR(arg));
-    if (argc == 2 && !CHARP(CADR(arg)))
-        SigScm_ErrorObj("make-string : character required but got ", CADR(arg));
+    if (!INTP(length))
+        SigScm_ErrorObj("make-string : integer required but got ", length);
 
     /* get length */
-    len = SCM_INT_VALUE(CAR(arg));
+    len = SCM_INT_VALUE(length);
     if (len == 0)
         return Scm_NewStringCopying("");
 
     /* specify filler */
-    if (argc == 1) {
-        /* specify length only, so fill string with space(' ') */
-        tmp = (char*)malloc(sizeof(char) * (1 + 1));
-        tmp[0] = ' ';
-        tmp[1] = '\0';
-        ch = Scm_NewChar(tmp);
+    if (NULLP(args)) {
+        filler = Scm_NewChar(strdup(" "));
     } else {
-        /* also specify filler char */
-        ch = CADR(arg);
+        filler = CAR(args);
+        if (!CHARP(filler))
+            SigScm_ErrorObj("make-string : character required but got ", filler);
     }
 
     /* make string */
     str = Scm_NewStringWithLen(NULL, len);
 
     /* and fill! */
-    ScmOp_string_fill(str, ch);
+    ScmOp_string_fill(str, filler);
 
     return str;
 }
 
-ScmObj ScmOp_string(ScmObj arg, ScmObj env)
+ScmObj ScmOp_string(ScmObj args)
 {
-    return ScmOp_list2string(arg);
+    return ScmOp_list2string(args);
 }
 
 ScmObj ScmOp_string_length(ScmObj str)
@@ -1568,47 +1553,42 @@ ScmObj ScmOp_vectorp(ScmObj obj)
     return (VECTORP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj ScmOp_make_vector(ScmObj arg, ScmObj env )
+ScmObj ScmOp_make_vector(ScmObj vector_len, ScmObj args)
 {
-    ScmObj *vec   = NULL;
-    ScmObj  scm_k = CAR(arg);
-    ScmObj  fill  = SCM_NULL;
-    int c_k = 0;
+    ScmObj *vec    = NULL;
+    ScmObj  filler = SCM_FALSE;
+    int len = 0;
     int i   = 0;
 
-    if (!INTP(scm_k))
-        SigScm_ErrorObj("make-vector : integer required but got ", scm_k);
+    if (!INTP(vector_len))
+        SigScm_ErrorObj("make-vector : integer required but got ", vector_len);
 
     /* allocate vector */
-    c_k = SCM_INT_VALUE(scm_k);
-    vec = (ScmObj*)malloc(sizeof(ScmObj) * c_k);
+    len = SCM_INT_VALUE(vector_len);
+    vec = (ScmObj*)malloc(sizeof(ScmObj) * len);
 
     /* fill vector */
-    fill = SCM_UNDEF;
-    if (!NULLP(CDR(arg)))
-        fill = CADR(arg);
+    filler = SCM_UNDEF;
+    if (!NULLP(args))
+        filler = CAR(args);
 
-    for (i = 0; i < c_k; i++) {
-        vec[i] = fill;
-    }
+    for (i = 0; i < len; i++)
+        vec[i] = filler;
 
-    return Scm_NewVector(vec, c_k);
+    return Scm_NewVector(vec, len);
 }
 
-ScmObj ScmOp_vector(ScmObj arg, ScmObj env )
+ScmObj ScmOp_vector(ScmObj args)
 {
-    ScmObj scm_len = ScmOp_length(arg);
-    int c_len      = SCM_INT_VALUE(scm_len);
-    ScmObj *vec    = (ScmObj*)malloc(sizeof(ScmObj) * c_len); /* allocate vector */
+    int len = SCM_INT_VALUE(ScmOp_length(args));
+    int i   = 0;
+    ScmObj *vec = (ScmObj*)malloc(sizeof(ScmObj) * len); /* allocate vector */
 
     /* set item */
-    int i = 0;
-    for (i = 0; i < c_len; i++) {
-        vec[i] = CAR(arg);
-        arg = CDR(arg);
-    }
+    for (i = 0; i < len; i++)
+        SCM_SHIFT_RAW_1(vec[i], args);
 
-    return Scm_NewVector(vec, c_len);
+    return Scm_NewVector(vec, len);
 }
 
 ScmObj ScmOp_vector_length(ScmObj vec)
@@ -1817,22 +1797,18 @@ ScmObj ScmOp_for_each(ScmObj proc, ScmObj args)
     return SCM_UNDEF;
 }
 
-ScmObj ScmOp_force(ScmObj arg, ScmObj env)
+ScmObj ScmOp_force(ScmObj closure)
 {
-    if (SCM_INT_VALUE(ScmOp_length(arg)) != 1)
-        SigScm_Error("force : Wrong number of arguments");
-    if (!CLOSUREP(CAR(arg)))
-        SigScm_Error("force : not proper delayed object");
+    if (!CLOSUREP(closure))
+        SigScm_ErrorObj("force : not proper delayed object ", closure);
 
-    /* the caller's already wrapped arg in a list for us */
-    return EVAL(arg, env);
+    return Scm_call(closure, SCM_NULL);
 }
 
-ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env)
+ScmObj ScmOp_call_with_current_continuation(ScmObj proc)
 {
     int jmpret  = 0;
-    ScmObj proc = CAR(arg);
-    ScmObj cont = SCM_NULL;
+    ScmObj cont = SCM_FALSE;
 
     if (!CLOSUREP(proc))
         SigScm_ErrorObj("call-with-current-continuation : closure required but got ", proc);
@@ -1847,28 +1823,26 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj arg, ScmObj env)
     }
 
     /* execute (proc cont) */
-    SET_CDR(arg, CONS(cont, SCM_NULL));
-
-    return EVAL(arg, env);
+    return Scm_call(proc, LIST_1(cont));
 }
 
-ScmObj ScmOp_values(ScmObj argl, ScmObj env)
+ScmObj ScmOp_values(ScmObj args)
 {
     /* Values with one arg must return something that fits an ordinary
      * continuation. */
-    if (CONSP(argl) && NULLP(CDR(argl)))
-        return CAR(argl);
+    if (CONSP(args) && NULLP(CDR(args)))
+        return CAR(args);
 
 #if SCM_USE_VALUECONS
-    if (NULLP(argl)) {
+    if (NULLP(args)) {
         return SigScm_null_values;
     } else {
-        SCM_ENTYPE_VALUEPACKET(argl);
-        return argl;
+        SCM_ENTYPE_VALUEPACKET(args);
+        return args;
     }
 #else
     /* Otherwise, we'll return the values in a packet. */
-    return Scm_NewValuePacket(argl);
+    return Scm_NewValuePacket(args);
 #endif
 }
 
