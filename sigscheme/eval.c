@@ -1453,7 +1453,7 @@ ScmObj ScmOp_scheme_report_environment(ScmObj version)
 
     CDBG((SCM_DBG_DEVEL, "scheme-report-environment : warning: the environment is not conformed to R5RS"));
 
-    return SCM_NULL;
+    return SCM_INTERACTION_ENV;
 }
 
 ScmObj ScmOp_null_environment(ScmObj version)
@@ -1466,10 +1466,10 @@ ScmObj ScmOp_null_environment(ScmObj version)
 
     CDBG((SCM_DBG_DEVEL, "null-environment : warning: the environment is not conformed to R5RS"));
 
-    return SCM_NULL;
+    return SCM_INTERACTION_ENV;
 }
 
 ScmObj ScmOp_interaction_environment(void)
 {
-    return SCM_NULL;
+    return SCM_INTERACTION_ENV;
 }

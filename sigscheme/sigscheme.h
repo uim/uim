@@ -54,6 +54,8 @@ extern "C" {
 /*=======================================
    Macro Declarations
 =======================================*/
+#define SCM_INTERACTION_ENV SCM_NULL
+
 #ifdef __GNUC__
 #define SCM_NOINLINE __attribute__((noinline))
 #else
