@@ -20,13 +20,12 @@ Requirements and bugs:
 * Fix invalid storage model assumption of ScmOp_append() and qquote_internal()
   with ScmRef
 
-* Add error message printing function which properly uses stderr, and replace
-  inappropriate 'printf' with it
-
 * [uim] link libsscm into libuim statically
 
 * Dynamic encoding switching for a conversion between string and char list,
   based on a SRFI or de facto standard API
+
+* Fix large fixed-size buffer on stack without limit checking in read.c
 
 * grep "FIXME" and fix them
 
@@ -44,10 +43,10 @@ Performance improvements:
   macine-code level since SCM_FALSE will be represented by zero after the
   compaction
 
-* Fix large fixed-size buffer on stack without limit checking in read.c
-
 ==============================================================================
 Logical simplifications:
+
+* Replace legacy Scm_RegisterFunc*() with Scm_Register(Procedure|Syntax)*()
 
 * Reorganize SCM_SHIFT*() macros and simplify args extraction codes
 
