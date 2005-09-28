@@ -277,7 +277,7 @@ static void print_ScmObj_internal(FILE *f, ScmObj obj, enum OutputType otype)
         print_etc(f, obj, otype);
         break;
     case ScmFreeCell:
-        SigScm_Error("You cannot print ScmFreeCell, may be GC bug.\n");
+        SigScm_Error("You cannot print ScmFreeCell, may be GC bug.");
         break;
     case ScmCPointer:
         fprintf(f, "#<c_pointer %p>", SCM_C_POINTER_VALUE(obj));
@@ -311,7 +311,7 @@ static void print_char(FILE *f, ScmObj obj, enum OutputType otype)
         fprintf(f, "%s", SCM_CHAR_VALUE(obj));
         break;
     default:
-        SigScm_Error("print_char : unknown output type\n");
+        SigScm_Error("print_char : unknown output type");
         break;
     }
 }
@@ -350,7 +350,7 @@ static void print_string(FILE *f, ScmObj obj, enum OutputType otype)
         fprintf(f, "%s", SCM_STRING_STR(obj));
         break;
     default:
-        SigScm_Error("print_string : unknown output type\n");
+        SigScm_Error("print_string : unknown output type");
         break;
     }
 }

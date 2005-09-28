@@ -106,7 +106,7 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
         break;
 
     case ScmFreeCell:
-        SigScm_Error("eqv? : cannnot compare freecell, gc broken?\n");
+        SigScm_Error("eqv? : cannnot compare freecell, gc broken?");
         break;
 
     case ScmCPointer:
@@ -226,7 +226,7 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
         break;
 
     case ScmFreeCell:
-        SigScm_Error("equal? : cannnot compare freecell, gc broken?\n");
+        SigScm_Error("equal? : cannnot compare freecell, gc broken?");
         break;
 
     case ScmCPointer:
@@ -269,7 +269,7 @@ ScmObj ScmOp_add(ScmObj left, ScmObj right, enum ScmReductionState *state)
     case SCM_REDUCE_0:
         break;
     default:
-        SigScm_Error("+ : (internal error) unrecognized state specifier: ", *state);
+        SigScm_Error("+ : (internal error) unrecognized state specifier: %d", *state);
     }
 
     return Scm_NewInt(result);
@@ -293,7 +293,7 @@ ScmObj ScmOp_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state)
     case SCM_REDUCE_0:
         break;
     default:
-        SigScm_Error("* : (internal error) unrecognized state specifier: ", *state);
+        SigScm_Error("* : (internal error) unrecognized state specifier: %d", *state);
     }
 
     return Scm_NewInt(result);
@@ -316,9 +316,9 @@ ScmObj ScmOp_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state)
         break;
 
     case SCM_REDUCE_0:
-        SigScm_Error("- : at least 1 argument required\n");
+        SigScm_Error("- : at least 1 argument required");
     default:
-        SigScm_Error("- : (internal error) unrecognized state specifier: ", *state);
+        SigScm_Error("- : (internal error) unrecognized state specifier: %d", *state);
     }
     return Scm_NewInt(result);
 }
@@ -337,11 +337,11 @@ ScmObj ScmOp_divide(ScmObj left, ScmObj right, enum ScmReductionState *state)
         if (!INTP(right))
             SigScm_ErrorObj("/ : integer required but got ", right);
         if (SCM_INT_VALUE(right) == 0)
-            SigScm_Error("/ : division by zero\n");
+            SigScm_Error("/ : division by zero");
         result /= SCM_INT_VALUE(right);
         break;
     case SCM_REDUCE_0:
-        SigScm_Error("/ : at least 1 argument required\n");
+        SigScm_Error("/ : at least 1 argument required");
     default:
         SigScm_Error("/ : (internal error) unrecognized state specifier: ", *state);
     }
@@ -360,7 +360,7 @@ ScmObj ScmOp_equal(ScmObj left, ScmObj right, enum ScmReductionState *state)
     switch (*state) { \
     case SCM_REDUCE_0: \
     case SCM_REDUCE_1: \
-        SigScm_Error(opstr " : at least 2 arguments required\n"); \
+        SigScm_Error(opstr " : at least 2 arguments required"); \
     case SCM_REDUCE_PARTWAY: \
     case SCM_REDUCE_LAST: \
         if (!INTP(left)) \
@@ -443,7 +443,7 @@ ScmObj ScmOp_evenp(ScmObj scm_num)
 ScmObj ScmOp_max(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     if (*state == SCM_REDUCE_0)
-        SigScm_Error("max : at least 1 argument required\n");
+        SigScm_Error("max : at least 1 argument required");
     if (!INTP(left))
         SigScm_Error("max : integer required but got ", left);
     if (!INTP(right))
@@ -455,7 +455,7 @@ ScmObj ScmOp_max(ScmObj left, ScmObj right, enum ScmReductionState *state)
 ScmObj ScmOp_min(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     if (*state == SCM_REDUCE_0)
-        SigScm_Error("min : at least 1 argument required\n");
+        SigScm_Error("min : at least 1 argument required");
     if (!INTP(left))
         SigScm_Error("min : integer required but got ", left);
     if (!INTP(right))
@@ -487,7 +487,7 @@ ScmObj ScmOp_quotient(ScmObj scm_n1, ScmObj scm_n2)
     if (FALSEP(ScmOp_numberp(scm_n2)))
         SigScm_ErrorObj("quotient : number required but got ", scm_n2);
     if (NFALSEP(ScmOp_zerop(scm_n2)))
-        SigScm_Error("quotient : divide by zero\n");
+        SigScm_Error("quotient : divide by zero");
 
     n1 = SCM_INT_VALUE(scm_n1);
     n2 = SCM_INT_VALUE(scm_n2);
@@ -506,7 +506,7 @@ ScmObj ScmOp_modulo(ScmObj scm_n1, ScmObj scm_n2)
     if (FALSEP(ScmOp_numberp(scm_n2)))
         SigScm_ErrorObj("modulo : number required but got ", scm_n2);
     if (NFALSEP(ScmOp_zerop(scm_n2)))
-        SigScm_Error("modulo : divide by zero\n");
+        SigScm_Error("modulo : divide by zero");
 
     n1 = SCM_INT_VALUE(scm_n1);
     n2 = SCM_INT_VALUE(scm_n2);
@@ -531,7 +531,7 @@ ScmObj ScmOp_remainder(ScmObj scm_n1, ScmObj scm_n2)
     if (FALSEP(ScmOp_numberp(scm_n2)))
         SigScm_ErrorObj("remainder : number required but got ", scm_n2);
     if (NFALSEP(ScmOp_zerop(scm_n2)))
-        SigScm_Error("remainder : divide by zero\n");
+        SigScm_Error("remainder : divide by zero");
 
     n1 = SCM_INT_VALUE(scm_n1);
     n2 = SCM_INT_VALUE(scm_n2);
@@ -1235,7 +1235,7 @@ ScmObj ScmOp_make_string(ScmObj arg, ScmObj env)
 
     /* sanity check */
     if (argc != 1 && argc != 2)
-        SigScm_Error("make-string : invalid use\n");
+        SigScm_Error("make-string : invalid use");
     if (!INTP(CAR(arg)))
         SigScm_ErrorObj("make-string : integer required but got ", CAR(arg));
     if (argc == 2 && !CHARP(CADR(arg)))
@@ -1732,7 +1732,7 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
 
     /* arglen check */
     if (arg_len < 2)
-        SigScm_Error("map : Wrong number of arguments\n");
+        SigScm_Error("map : Wrong number of arguments");
 
     /* 1proc and 1arg case */
     if (arg_len == 2) {
@@ -1770,7 +1770,7 @@ ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
     }
 
     /* never reaches here */
-    SigScm_Error("map bug?\n");
+    SigScm_Error("map bug?");
     return SCM_NULL;
 }
 
@@ -1784,9 +1784,9 @@ ScmObj ScmOp_for_each(ScmObj arg, ScmObj env)
 ScmObj ScmOp_force(ScmObj arg, ScmObj env)
 {
     if (SCM_INT_VALUE(ScmOp_length(arg)) != 1)
-        SigScm_Error("force : Wrong number of arguments\n");
+        SigScm_Error("force : Wrong number of arguments");
     if (!CLOSUREP(CAR(arg)))
-        SigScm_Error("force : not proper delayed object\n");
+        SigScm_Error("force : not proper delayed object");
 
     /* the caller's already wrapped arg in a list for us */
     return EVAL(arg, env);

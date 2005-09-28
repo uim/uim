@@ -97,7 +97,7 @@ ScmObj ScmOp_SRFI1_make_list(ScmObj args, ScmObj env)
 
     /* sanity check */
     if CHECK_1_ARG(args)
-        SigScm_Error("make-llist : require at least 1 arg\n");
+        SigScm_Error("make-llist : require at least 1 arg");
     if (FALSEP(ScmOp_numberp(CAR(args))))
         SigScm_ErrorObj("make-list : number required but got ", CAR(args));
 
@@ -211,7 +211,7 @@ ScmObj ScmOp_SRFI1_iota(ScmObj args, ScmObj env)
 
     /* sanity check */
     if CHECK_1_ARG(args)
-        SigScm_Error("iota : required at least 1 arg\n");
+        SigScm_Error("iota : required at least 1 arg");
 
     /* get params */
     scm_count = CAR(args);
@@ -317,7 +317,7 @@ ScmObj ScmOp_SRFI1_listequal(ScmObj args, ScmObj env)
     ScmObj first_lst = SCM_NULL;
 
     if CHECK_1_ARG(args)
-        SigScm_Error("list= : required at least 1 arg\n");
+        SigScm_Error("list= : required at least 1 arg");
 
     eqproc = CAR(args);
     lsts   = CDR(args);

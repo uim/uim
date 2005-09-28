@@ -70,7 +70,7 @@ ScmObj ScmOp_SRFI38_write_with_shared_structure(ScmObj arg, ScmObj env)
     ScmObj port = SCM_NULL;
 
     if CHECK_1_ARG(arg)
-        SigScm_Error("write : invalid parameter\n");
+        SigScm_Error("write : invalid parameter");
 
     /* get obj */
     obj = CAR(arg);

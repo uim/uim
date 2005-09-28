@@ -66,7 +66,7 @@
             result = (SCM_INT_VALUE(left) op SCM_INT_VALUE(right));          \
             break;                                                           \
         default:                                                             \
-            SigScm_Error(opstr " : (internal error) unrecognized state specifier: %d\n", *state); \
+            SigScm_Error(opstr " : (internal error) unrecognized state specifier: %d", *state); \
         }                                                                    \
         return Scm_NewInt(result);                                           \
     } while (/* CONSTCOND */ 0)

@@ -131,7 +131,7 @@ ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
     else if (CONSP(env))
         env = CONS(frame, env);
     else
-        SigScm_Error("broken environment.\n");
+        SigScm_Error("broken environment.");
 
     return env;
 }
@@ -393,7 +393,7 @@ static ScmObj call(ScmObj proc, ScmObj args, ScmEvalState *eval_state, int suppr
         SigScm_Error("Corrupted function: typecode=0x%x", type);
     for (i=0; i < mand_count; i++) {
         if (NULLP(args))
-            SigScm_Error("%d or more argument(s) required but got only %d\n",
+            SigScm_Error("%d or more argument(s) required but got only %d",
                          mand_count, i);
         SCM_SHIFT_RAW(argbuf[i], args);
         if (!suppress_eval)
@@ -973,7 +973,7 @@ ScmObj ScmExp_case(ScmObj arg, ScmEvalState *eval_state)
         data   = CAR(clause);
         exps   = CDR(clause);
         if (NULLP(clause) || NULLP(data) || NULLP(exps))
-            SigScm_Error("case : syntax error\n");
+            SigScm_Error("case : syntax error");
 
         /* check "else" symbol */
         if (NULLP(CDR(arg)) && !CONSP(data) && NFALSEP(SCM_SYMBOL_VCELL(data)))
@@ -1053,7 +1053,7 @@ ScmObj ScmExp_let(ScmObj arg, ScmEvalState *eval_state)
 
     /* sanity check */
     if CHECK_2_ARGS(arg)
-        SigScm_Error("let : syntax error\n");
+        SigScm_Error("let : syntax error");
 
     /* guess whether syntax is "Named let" */
     if (SYMBOLP(CAR(arg)))
@@ -1137,7 +1137,7 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmEvalState *eval_state)
 
     /* sanity check */
     if CHECK_2_ARGS(arg)
-        SigScm_Error("let* : syntax error\n");
+        SigScm_Error("let* : syntax error");
 
     /* get bindings and body */
     bindings = CAR(arg);
@@ -1201,7 +1201,7 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmEvalState *eval_state)
 
     /* sanity check */
     if (NULLP(arg) || NULLP(CDR(arg)))
-        SigScm_Error("letrec : syntax error\n");
+        SigScm_Error("letrec : syntax error");
 
     /* get bindings and body */
     bindings = CAR(arg);
@@ -1255,7 +1255,7 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmEvalState *eval_state)
         return ScmExp_begin(body, eval_state);
     }
 
-    SigScm_Error("letrec : syntax error\n");
+    SigScm_Error("letrec : syntax error");
     return SCM_UNDEF;
 }
 
@@ -1311,7 +1311,7 @@ ScmObj ScmExp_do(ScmObj arg, ScmEvalState *eval_state)
 
     /* sanity check */
     if (SCM_INT_VALUE(ScmOp_length(arg)) < 2)
-        SigScm_Error("do : syntax error\n");
+        SigScm_Error("do : syntax error");
 
     /* construct Environment and steps */
     for (; !NULLP(bindings); bindings = CDR(bindings)) {
@@ -1368,7 +1368,7 @@ ScmObj ScmExp_do(ScmObj arg, ScmEvalState *eval_state)
             if (!NULLP(obj)) {
                 SET_CAR(obj, CAR(vals));
             } else {
-                SigScm_Error("do : broken env\n");
+                SigScm_Error("do : broken env");
             }
         }
     }
@@ -1435,7 +1435,7 @@ ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
     ========================================================================*/
     if (SYMBOLP(var)) {
         if (!NULLP(SCM_SHIFT_RAW_1(exp, rest)))
-            SigScm_Error("define : missing expression\n");
+            SigScm_Error("define : missing expression");
 
         if (NULLP(env)) {
             /* given top-level environment */
@@ -1464,7 +1464,7 @@ ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
         body       = rest;
 
         if (NULLP(body))
-            SigScm_Error("define : missing function body\n");
+            SigScm_Error("define : missing function body");
 
         if (!SYMBOLP(procname))
             SigScm_ErrorObj("define : symbol required but got ", procname);

@@ -639,7 +639,7 @@ ScmObj Scm_NewChar(char *ch)
 
     /* check length */
     if (SigScm_default_encoding_strlen(ch) != 1) {
-        SigScm_Error("Scm_NewChar : invalid character ch = [%s], len = %d\n",
+        SigScm_Error("Scm_NewChar : invalid character ch = [%s], len = %d",
                      ch, SigScm_default_encoding_strlen(ch));
     }
 

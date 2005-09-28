@@ -327,7 +327,7 @@ ScmObj ScmOp_write(ScmObj arg, ScmObj env)
     ScmObj port = SCM_NULL;
 
     if CHECK_1_ARG(arg)
-        SigScm_Error("write : invalid parameter\n");
+        SigScm_Error("write : invalid parameter");
 
     /* get obj */
     obj = CAR(arg);
@@ -348,7 +348,7 @@ ScmObj ScmOp_display(ScmObj arg, ScmObj env)
     ScmObj port = SCM_NULL;
 
     if CHECK_1_ARG(arg)
-        SigScm_Error("display : invalid parameter\n");
+        SigScm_Error("display : invalid parameter");
 
     /* get obj */
     obj = CAR(arg);
@@ -385,7 +385,7 @@ ScmObj ScmOp_write_char(ScmObj arg, ScmObj env)
     ScmObj port = SCM_NULL;
 
     if CHECK_1_ARG(arg)
-        SigScm_Error("write-char : invalid parameter\n");
+        SigScm_Error("write-char : invalid parameter");
 
     /* get obj */
     obj = CAR(arg);
@@ -440,7 +440,7 @@ static ScmObj SigScm_load_internal(const char *c_filename)
 
     /* sanity check */
     if (!c_filepath)
-        SigScm_Error("SigScm_load_internal : file \"%s\" not found\n",
+        SigScm_Error("SigScm_load_internal : file \"%s\" not found",
                      c_filename);
 
     filepath = Scm_NewString(c_filepath);

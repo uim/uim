@@ -93,15 +93,8 @@ void SigScm_Error(const char *msg, ...)
         va_start(va, msg);
         vfprintf(SCM_PORTINFO_FILE(scm_current_error_port), msg, va);
         va_end(va);
-#if 0
-        /*
-         * FIXME: this function should always append "\n" to ensure that an
-         * error message forms a line message, instead of delegating the
-         * responsibility to caller. Otherwise subsequent error messages may be
-         * broken.
-         */
+
         fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "\n");
-#endif
     }
 
     if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)

@@ -66,7 +66,7 @@
 ScmObj ScmOp_SRFI23_error(ScmObj args, ScmObj env)
 {
     if (NULLP(args))
-        SigScm_Error("error : at least 1 argument required\n");
+        SigScm_Error("error : at least 1 argument required");
 
     if (!STRINGP(CAR(args)))
         SigScm_ErrorObj("error : first argument should be string but got ",

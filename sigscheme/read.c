@@ -188,7 +188,7 @@ static ScmObj read_sexpression(ScmObj port)
         case ',':
             SCM_PORT_GETC(port, c1);
             if (c1 == EOF) {
-                SigScm_Error("EOF in unquote\n");
+                SigScm_Error("EOF in unquote");
             } else if (c1 == '@') {
                 return read_quote(port, SCM_UNQUOTE_SPLICING);
             } else {
@@ -211,14 +211,14 @@ static ScmObj read_sexpression(ScmObj port)
                 SCM_PORT_UNGETC(port, c1);
                 return parse_number(port);
             case EOF:
-                SigScm_Error("end in #\n");
+                SigScm_Error("end in #");
             default:
-                SigScm_Error("Unsupported # : %c\n", c1);
+                SigScm_Error("Unsupported # : %c", c1);
             }
             break;
         /* Error sequence */
         case ')':
-            SigScm_Error("invalid close parenthesis\n");
+            SigScm_Error("invalid close parenthesis");
             break;
         case EOF:
             return SCM_EOF;
@@ -249,9 +249,9 @@ static ScmObj read_list(ScmObj port, int closeParen)
 
         if (c == EOF) {
             if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE)
-                SigScm_Error("EOF inside list. (starting from line %d)\n", line + 1);
+                SigScm_Error("EOF inside list. (starting from line %d)", line + 1);
             else
-                SigScm_Error("EOF inside list.\n");
+                SigScm_Error("EOF inside list.");
         } else if (c == closeParen) {
             return list_head;
         } else if (c == '.') {
@@ -261,11 +261,11 @@ static ScmObj read_list(ScmObj port, int closeParen)
             if (isspace(c2) || c2 == '(' || c2 == '"' || c2 == ';') {
                 cdr = read_sexpression(port);
                 if (NULLP(list_tail))
-                    SigScm_Error(".(dot) at the start of the list.\n");
+                    SigScm_Error(".(dot) at the start of the list.");
 
                 c = skip_comment_and_space(port);
                 if (c != ')')
-                    SigScm_Error("bad dot syntax\n");
+                    SigScm_Error("bad dot syntax");
 
                 SET_CDR(list_tail, cdr);
                 return list_head;
@@ -342,7 +342,7 @@ static ScmObj read_string(ScmObj port)
         switch (c) {
         case EOF:
             stringbuf[stringlen] = '\0';
-            SigScm_Error("EOF in the string : str = %s\n", stringbuf);
+            SigScm_Error("EOF in the string : str = %s", stringbuf);
             break;
 
         case '\"':
@@ -460,7 +460,7 @@ static char *read_char_sequence(ScmObj port)
         switch (c) {
         case EOF:
             stringbuf[stringlen] = '\0';
-            SigScm_Error("EOF in the char sequence : char = %s\n", stringbuf);
+            SigScm_Error("EOF in the char sequence : char = %s", stringbuf);
             break;
 
         case ' ':  case '\"': case '\'':
@@ -503,13 +503,13 @@ static ScmObj parse_number(ScmObj port)
     case 'd': radix = 10; break;
     case 'x': radix = 16; break;
     default:
-        SigScm_Error("ill-formatted number: #%s\n", numstr);
+        SigScm_Error("ill-formatted number: #%s", numstr);
     }
 
     /* get num */
     number = (int)strtol(numstr+1, &first_nondigit, radix);
     if (*first_nondigit)
-        SigScm_Error("ill-formatted number: #%s\n", numstr);
+        SigScm_Error("ill-formatted number: #%s", numstr);
 
     /* free str */
     free(numstr);

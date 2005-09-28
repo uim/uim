@@ -131,7 +131,7 @@ int main(int argc, char **argv)
 #else
         repl();
 #endif
-        /*        SigScm_Error("usage : sscm <filename>\n"); */
+        /*        SigScm_Error("usage : sscm <filename>"); */
     } else {
         SigScm_load(filename);
     }

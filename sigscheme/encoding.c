@@ -140,6 +140,6 @@ static const char* eucjp_str_endpos(const char *str, int k)
     if (len == k + 1)
         return (const char *)cur;
 
-    SigScm_Error("eucjp_str_startpos : unreachable point\n");
+    SigScm_Error("eucjp_str_startpos : unreachable point");
     return NULL;
 }
