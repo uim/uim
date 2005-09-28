@@ -63,6 +63,9 @@
 static int ScmOp_c_length(ScmObj lst);
 static ScmObj ScmOp_listtail_internal(ScmObj obj, int k);
 
+static ScmObj map_singular_arg(ScmObj proc, ScmObj args);
+static ScmObj map_plural_args(ScmObj proc, ScmObj args);
+
 /*=======================================
   Function Implementations
 =======================================*/
@@ -1716,61 +1719,92 @@ ScmObj ScmOp_procedurep(ScmObj obj)
     return (FUNCP(obj) || CLOSUREP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-/* FIXME: excessive memory consumptions (reverse, vector) */
-ScmObj ScmOp_map(ScmObj map_arg, ScmObj env)
+ScmObj ScmOp_map(ScmObj args, ScmObj env)
 {
-    int arg_len = SCM_INT_VALUE(ScmOp_length(map_arg));
-    ScmObj proc = CAR(map_arg);
-    ScmObj args = SCM_NULL;
-    ScmObj ret  = SCM_NULL;
-    ScmObj tmp  = SCM_NULL;
-
-    ScmObj arg_vector = SCM_NULL;
-    ScmObj arg1       = SCM_NULL;
-    int vector_len = 0;
-    int i = 0;
+    ScmObj proc = CAR(args);
+    int arg_len = SCM_INT_VALUE(ScmOp_length(args));
 
     /* arglen check */
     if (arg_len < 2)
         SigScm_Error("map : Wrong number of arguments");
 
     /* 1proc and 1arg case */
-    if (arg_len == 2) {
-        /* apply func to each item */
-        for (args = CADR(map_arg); !NULLP(args); args = CDR(args)) {
-            /* apply proc */
-            ret = CONS(Scm_call(proc, LIST_1(CAR(args))), ret);
-        }
-        return ScmOp_reverse(ret);
-    }
+    if (arg_len == 2)
+        return map_singular_arg(proc, CADR(args));
 
     /* 1proc and many args case */
-    arg_vector = ScmOp_list2vector(CDR(map_arg));
-    vector_len = SCM_VECTOR_LEN(arg_vector);
-    while (1) {
-        /* create arg */
-        arg1 = SCM_NULL;
-        for (i = 0; i < vector_len; i++) {
-            tmp  = SCM_VECTOR_CREF(arg_vector, i);
-            /* check if we can continue next loop */
-            if (NULLP(tmp)) {
-                /* if next item is SCM_NULL, let's return! */
-                return ScmOp_reverse(ret);
-            }
+    return map_plural_args(proc, CDR(args));
+}
 
-            arg1 = CONS(CAR(tmp), arg1);
-            SCM_VECTOR_SET_CREF(arg_vector, i, CDR(tmp));
+static ScmObj map_singular_arg(ScmObj proc, ScmObj args)
+{
+    ScmObj ret      = SCM_NULL;
+    ScmObj ret_tail = SCM_FALSE;
+
+    if (NULLP(args))
+        return SCM_NULL;
+
+    for (; !NULLP(args); args = CDR(args)) {
+        if (NFALSEP(ret)) {
+            /* lasting */
+            SET_CDR(ret_tail, CONS(Scm_call(proc, LIST_1(CAR(args))), SCM_NULL));
+            ret_tail = CDR(ret_tail);
+
+        } else {
+            /* first */
+            ret = CONS(Scm_call(proc, LIST_1(CAR(args))), SCM_NULL);
+            ret_tail = ret;
         }
-
-        /* reverse arg */
-        arg1 = ScmOp_reverse(arg1);
-
-        /* apply proc to arg1 */
-        ret = CONS(Scm_call(proc, arg1), ret);
     }
 
-    /* never reaches here */
-    SigScm_Error("map bug?");
+    return ret;
+}
+
+static ScmObj map_plural_args(ScmObj proc, ScmObj args)
+{
+    ScmObj map_arg      = SCM_FALSE;
+    ScmObj map_arg_tail = SCM_FALSE;
+    ScmObj tmp_lsts     = SCM_FALSE;
+    ScmObj lst          = SCM_FALSE;
+    ScmObj ret          = SCM_FALSE;
+    ScmObj ret_tail     = SCM_FALSE;
+
+    while (1) {
+        /* construct map_arg */
+        map_arg  = SCM_NULL;
+        tmp_lsts = args;
+        for (; !NULLP(tmp_lsts); tmp_lsts = CDR(tmp_lsts)) {
+            lst = CAR(tmp_lsts);
+            if (NULLP(lst))
+                return ret;
+
+            if (NFALSEP(map_arg)) {
+                /* lasting */
+                SET_CDR(map_arg_tail, CONS(CAR(lst), SCM_NULL));
+                map_arg_tail = CDR(map_arg_tail);
+            } else {
+                /* first */
+                map_arg = CONS(CAR(lst), SCM_NULL);
+                map_arg_tail = map_arg;
+            }
+
+            /* update tmp_lsts */
+            SET_CAR(tmp_lsts, CDR(lst));
+        }
+
+        /* construct ret */
+        if (NFALSEP(ret)) {
+            /* lasting */
+            SET_CDR(ret_tail, CONS(Scm_call(proc, map_arg), SCM_NULL));
+            ret_tail = CDR(ret_tail);
+        } else {
+            /* first */
+            ret = CONS(Scm_call(proc, map_arg), SCM_NULL);
+            ret_tail = ret;
+        }
+    }
+
+    SigScm_Error("map : invalid argument ", args);
     return SCM_NULL;
 }
 
