@@ -142,9 +142,11 @@ ScmObj ScmOp_siod_eql(ScmObj obj1, ScmObj obj2)
     return SCM_FALSE;
 }
 
-ScmObj ScmOp_the_environment(ScmObj arg, ScmObj env)
+ScmObj ScmOp_the_environment(ScmEvalState *eval_state)
 {
-    return env;
+    eval_state->ret_type = SCM_RETTYPE_AS_IS;
+
+    return eval_state->env;
 }
 
 ScmObj ScmOp_closure_code(ScmObj closure)
@@ -164,7 +166,7 @@ ScmObj ScmOp_closure_code(ScmObj closure)
     return CONS(CAR(exp), body);
 }
 
-ScmObj ScmOp_verbose(ScmObj args, ScmObj env)
+ScmObj ScmOp_verbose(ScmObj args)
 {
     if (!NULLP(args)) {
         if (!INTP(CAR(args)))

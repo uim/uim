@@ -663,9 +663,9 @@ ScmObj ScmOp_symbol_boundp(ScmObj obj);
 ScmObj ScmOp_symbol_value(ScmObj var);
 ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val);
 ScmObj ScmOp_siod_eql(ScmObj obj1, ScmObj obj2);
-ScmObj ScmOp_the_environment(ScmObj arg, ScmObj env);
+ScmObj ScmOp_the_environment(ScmEvalState *eval_state);
 ScmObj ScmOp_closure_code(ScmObj closure);
-ScmObj ScmOp_verbose(ScmObj args, ScmObj env);
+ScmObj ScmOp_verbose(ScmObj args);
 long   SigScm_GetVerboseLevel(void);
 void   SigScm_SetVerboseLevel(long level);
 #endif

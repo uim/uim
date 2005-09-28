@@ -439,9 +439,9 @@ static void SigScm_Initialize_internal(void)
     Scm_DefineAlias("bit-or"                , "logior");
     Scm_DefineAlias("bit-xor"               , "logxor");
     Scm_DefineAlias("bit-not"               , "lognot");
-    Scm_RegisterFuncEvaledList("the-environment" , ScmOp_the_environment);
-    Scm_RegisterFunc1("%%closure-code"           , ScmOp_closure_code);
-    Scm_RegisterFuncEvaledList("verbose"         , ScmOp_verbose);
+    Scm_RegisterProcedureFixedTailRec0("the-environment" , ScmOp_the_environment);
+    Scm_RegisterFunc1("%%closure-code"       , ScmOp_closure_code);
+    Scm_RegisterProcedureVariadic0("verbose" , ScmOp_verbose);
     /* datas.c */
     scm_return_value = SCM_NULL;
     SigScm_SetVerboseLevel(2);
