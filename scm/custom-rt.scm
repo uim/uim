@@ -111,7 +111,8 @@
 		(cons filename custom-required-custom-files)))
       (let* ((post-groups (custom-list-primary-groups))
 	     (new-groups (list-tail post-groups (length pre-groups))))
-	(if (not (getenv "LIBUIM_VANILLA"))
+	(if (and (not (getenv "LIBUIM_VANILLA"))
+		 (not (is-set-ugid?)))
 	    (for-each (lambda (gsym)
 			(custom-load-group-conf gsym)
 			(custom-update-group-conf-freshness gsym))
@@ -265,6 +266,7 @@
 (define custom-reload-user-configs
   (lambda ()
     (and (not (getenv "LIBUIM_VANILLA"))
+	 (not (is-set-ugid?))
 	 (let ((load-conf (if custom-enable-mtime-aware-user-conf-reloading?
 			      custom-load-updated-group-conf
 			      custom-load-group-conf)))  ;; original behavior
