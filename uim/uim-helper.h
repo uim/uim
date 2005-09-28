@@ -59,6 +59,9 @@ char *uim_helper_buffer_append(char *buf,
 void uim_helper_buffer_shift(char *buf, int count);
 char *uim_helper_buffer_get_message(char *buf);
 
+uim_bool
+uim_helper_is_setugid(void);
+
 #ifdef __cplusplus
 }
 #endif
