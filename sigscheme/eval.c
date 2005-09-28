@@ -473,6 +473,10 @@ ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
     state.ret_type = SCM_RETTYPE_AS_IS;
 
 eval_loop:
+#if SCM_STRICT_R5RS
+    if (NULLP(obj))
+        SigScm_Error("() is not a valid R5RS form. use '() instead");
+#endif
     switch (SCM_TYPE(obj)) {
     case ScmSymbol:
         ret = symbol_value(obj, state.env);
