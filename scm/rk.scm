@@ -81,7 +81,7 @@
 		#f))
 	   (c (rk-lib-find-seq longest-tail rule))
 	   (t (rk-lib-find-seq seq rule))
-	   (res ()))
+	   (res #f))
       (and
        (if (> len 0)
 	   #t
@@ -222,8 +222,7 @@
     (let*
 	((cur-seq (rk-context-seq rkc))
 	 (new-seq (cons key cur-seq))
-	 (rule (rk-context-rule rkc))
-	 (res))
+	 (rule (rk-context-rule rkc)))
       (rk-context-set-seq! rkc new-seq)
       (rk-check-back-commit rkc rule new-seq))))
 
@@ -235,7 +234,7 @@
 	 (s (cons key s))
 	 (rule (rk-context-rule rkc))
 	 (seq (rk-lib-find-seq (reverse s) rule))
-	 (res))
+	 (res #f))
       (set!
        res
        (if (rk-partial-seq? rkc s)
