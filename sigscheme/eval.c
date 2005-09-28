@@ -69,6 +69,7 @@
 #define QQUOTE_IS_VERBATIM(x)  (EQ((x), SCM_INVALID))
 
 #define SCM_ERRMSG_WRONG_NR_ARG " Wrong number of arguments "
+#define SCM_ERRMSG_NON_R5RS_ENV " the environment is not conformed to R5RS"
 
 /*=======================================
   Variable Declarations
@@ -1451,7 +1452,12 @@ ScmObj ScmOp_scheme_report_environment(ScmObj version)
     if (SCM_INT_VALUE(version) != 5)
         SigScm_ErrorObj("scheme-report-environment : version must be 5 but got ", version);
 
-    CDBG((SCM_DBG_DEVEL, "scheme-report-environment : warning: the environment is not conformed to R5RS"));
+#if SCM_STRICT_R5RS
+    SigScm_Error("scheme-report-environment :" SCM_ERRMSG_NON_R5RS_ENV);
+#else
+    CDBG((SCM_DBG_COMPAT,
+          "scheme-report-environment : warning:" SCM_ERRMSG_NON_R5RS_ENV));
+#endif
 
     return SCM_INTERACTION_ENV;
 }
@@ -1464,7 +1470,12 @@ ScmObj ScmOp_null_environment(ScmObj version)
     if (SCM_INT_VALUE(version) != 5)
         SigScm_ErrorObj("null-environment : version must be 5 but got ", version);
 
-    CDBG((SCM_DBG_DEVEL, "null-environment : warning: the environment is not conformed to R5RS"));
+#if SCM_STRICT_R5RS
+    SigScm_Error("null-environment :" SCM_ERRMSG_NON_R5RS_ENV);
+#else
+    CDBG((SCM_DBG_COMPAT,
+          "null-environment : warning:" SCM_ERRMSG_NON_R5RS_ENV));
+#endif
 
     return SCM_INTERACTION_ENV;
 }

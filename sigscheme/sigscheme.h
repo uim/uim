@@ -148,6 +148,7 @@ enum ScmDebugCategory {
     SCM_DBG_EXCEPTION    = 1 << 9,
     SCM_DBG_EXPERIMENTAL = 1 << 10,  /* developed but experimental features */
     SCM_DBG_DEVEL        = 1 << 11,  /* under development */
+    SCM_DBG_COMPAT       = 1 << 12,  /* warns compatibility-sensitive code */
     SCM_DBG_OTHER        = 1 << 30   /* all other messages */
 };
 

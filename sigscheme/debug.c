@@ -145,7 +145,7 @@ void SigScm_CategorizedDebug(int category, const char *msg, ...)
 int SigScm_PredefinedDebugCategories(void)
 {
 #if SCM_DEBUG
-    return (SCM_DBG_DEVEL | SCM_DBG_OTHER
+    return (SCM_DBG_DEVEL | SCM_DBG_COMPAT | SCM_DBG_OTHER
 #if SCM_DEBUG_PARSER
             | SCM_DBG_PARSER
 #endif
