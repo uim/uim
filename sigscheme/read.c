@@ -120,10 +120,20 @@ static ScmObj read_quote(ScmObj port, ScmObj quoter);
 ===========================================================================*/
 ScmObj SigScm_Read(ScmObj port)
 {
+    ScmObj sexp = SCM_FALSE;
+
     if (!PORTP(port))
         SigScm_ErrorObj("SigScm_Read : port required but got ", port);
 
-    return read_sexpression(port);
+    sexp = read_sexpression(port);
+#if SCM_DEBUG
+    if ((SigScm_DebugCategories() & SCM_DBG_READ) && !EOFP(sexp)) {
+        SigScm_WriteToPort(scm_current_error_port, sexp);
+        SigScm_ErrorNewline();
+    }
+#endif
+
+    return sexp;
 }
 
 ScmObj SigScm_Read_Char(ScmObj port)

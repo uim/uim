@@ -139,15 +139,16 @@ enum ScmDebugCategory {
     SCM_DBG_BACKTRACE    = 1 << 1,
     SCM_DBG_GC           = 1 << 2,
     SCM_DBG_FILE         = 1 << 3,   /* file loading */
-    SCM_DBG_PARSER       = 1 << 4,   /* print each parsed expression + misc */
-    SCM_DBG_MACRO        = 1 << 5,
-    SCM_DBG_ARGS         = 1 << 6,   /* number of arguments, type and so on */
-    SCM_DBG_EVAL         = 1 << 7,   /* evaluation-related things */
-    SCM_DBG_CONTINUATION = 1 << 8,
-    SCM_DBG_EXCEPTION    = 1 << 9,
-    SCM_DBG_EXPERIMENTAL = 1 << 10,  /* developed but experimental features */
-    SCM_DBG_DEVEL        = 1 << 11,  /* under development */
-    SCM_DBG_COMPAT       = 1 << 12,  /* warns compatibility-sensitive code */
+    SCM_DBG_PARSER       = 1 << 4,
+    SCM_DBG_READ         = 1 << 5,   /* print each parsed expression + misc */
+    SCM_DBG_MACRO        = 1 << 6,
+    SCM_DBG_ARGS         = 1 << 7,   /* number of arguments, type and so on */
+    SCM_DBG_EVAL         = 1 << 8,   /* evaluation-related things */
+    SCM_DBG_CONTINUATION = 1 << 9,
+    SCM_DBG_EXCEPTION    = 1 << 10,
+    SCM_DBG_EXPERIMENTAL = 1 << 11,  /* developed but experimental features */
+    SCM_DBG_DEVEL        = 1 << 12,  /* under development */
+    SCM_DBG_COMPAT       = 1 << 13,  /* warns compatibility-sensitive code */
     SCM_DBG_OTHER        = 1 << 30   /* all other messages */
 };
 

@@ -62,7 +62,7 @@
 #define SCM_DBG_SIOD_V2 SCM_DBG_SIOD_V1
 #define SCM_DBG_SIOD_V3 (SCM_DBG_SIOD_V2 | SCM_DBG_FILE)
 #define SCM_DBG_SIOD_V4 (SCM_DBG_SIOD_V3 | SCM_DBG_GC)
-#define SCM_DBG_SIOD_V5 (SCM_DBG_SIOD_V4 | SCM_DBG_PARSER)
+#define SCM_DBG_SIOD_V5 (SCM_DBG_SIOD_V4 | SCM_DBG_READ)
 
 /*=======================================
   Variable Declarations
