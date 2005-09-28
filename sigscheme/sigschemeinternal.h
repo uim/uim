@@ -84,8 +84,8 @@ extern ScmObj SigScm_null_values;
    Macro Declarations
 =======================================*/
 /* Debugging Flags */
-#define DEBUG_PARSER  0
-#define DEBUG_GC      0
+#define DEBUG_PARSER  SCM_DEBUG_PARSER
+#define DEBUG_GC      SCM_DEBUG_GC
 
 /* FreeCell Handling Macros */
 #define SCM_FREECELLP(a)     (SCM_TYPE(a) == ScmFreeCell)
@@ -145,6 +145,9 @@ extern ScmObj SigScm_null_values;
 #define FREECELLP      SCM_FREECELLP
 #define C_POINTERP     SCM_C_POINTERP
 #define C_FUNCPOINTERP SCM_C_FUNCPOINTERP
+
+#define CDBG           SCM_CDBG
+#define DBG            SCM_DBG
 
 /*
  * Abbrev name for these constants are not provided since it involves some

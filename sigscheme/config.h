@@ -71,6 +71,13 @@
 #define SCM_VOLATILE_OUTPUT     0  /* always flush files on write */
 
 /*===========================================================================
+  Debugging
+===========================================================================*/
+#define SCM_DEBUG               1  /* enable debugging features */
+#define SCM_DEBUG_GC            0  /* enable GC debugging */
+#define SCM_DEBUG_PARSER        0  /* enable parser debugging */
+
+/*===========================================================================
   Dependency Resolution
 ===========================================================================*/
 #if SCM_COMPAT_SIOD

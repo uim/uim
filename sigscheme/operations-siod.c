@@ -191,4 +191,7 @@ void SigScm_SetVerboseLevel(long level)
     if (level > 5)
         level = 5;
     SigScm_SetDebugCategories(sscm_debug_mask_tbl[level]);
+
+    if (level >= 2)
+        SigScm_EnablePredefinedDebugCategories();
 }

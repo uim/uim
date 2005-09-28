@@ -142,15 +142,30 @@ void SigScm_CategorizedDebug(int category, const char *msg, ...)
     va_end(va);
 }
 
+int SigScm_EnablePredefinedDebugCategories(void)
+{
+    debug_mask = (debug_mask
+#if SCM_DEBUG_PARSER
+                  | SCM_DBG_PARSER
+#endif
+#if SCM_DEBUG_GC
+                  | SCM_DBG_GC
+#endif
+                  );
+
+    return debug_mask;
+}
+
 void SigScm_Debug(const char *msg, ...)
 {
     va_list va;
 
     va_start(va, msg);
-    vfprintf(stderr, msg, va);
+    if (debug_mask & SCM_DBG_DEVEL) {
+        vfprintf(stderr, msg, va);
+        fprintf(stderr, "\n");
+    }
     va_end(va);
-
-    fprintf(stderr, "\n");
 }
 
 void SigScm_Display(ScmObj obj)

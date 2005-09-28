@@ -60,6 +60,15 @@ extern "C" {
 #define SCM_NOINLINE
 #endif /* __GNUC__ */
 
+/* RFC: better names for the debug printing */
+#if SCM_DEBUG
+#define SCM_CDBG(args) (SigScm_CategorizedDebug args)
+#define SCM_DBG(args)  (SigScm_Debug args)
+#else /* SCM_DEBUG */
+#define SCM_CDBG(args)
+#define SCM_DBG(args)
+#endif /* SCM_DEBUG */
+
 int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
 #define SCM_ASSERT(cond) \
     (cond ? 0 : SigScm_Die("assertion failed.", __FILE__, __LINE__))
@@ -564,6 +573,7 @@ void SigScm_ShowBacktrace(void);
 /* debug.c */
 int  SigScm_DebugCategories(void);
 void SigScm_SetDebugCategories(int categories);
+int  SigScm_EnablePredefinedDebugCategories(void);
 void SigScm_CategorizedDebug(int category, const char *msg, ...);
 void SigScm_Debug(const char *msg, ...);
 void SigScm_Display(ScmObj obj);
