@@ -209,6 +209,17 @@ uim_helper_buffer_get_message(char *buf)
   return NULL;
 }
 
+/* Interface function for is_setugid. */
+uim_bool
+uim_helper_is_setugid(void)
+{
+  if(is_setugid() != 0) {
+    return UIM_TRUE;
+  } else {
+    return UIM_FALSE;
+  }
+}
+
 int
 is_setugid(void)
 {

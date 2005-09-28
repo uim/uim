@@ -826,7 +826,11 @@ uim_custom_load_group(const char *group)
 uim_bool
 uim_custom_load(void)
 {
-  return for_each_primary_groups(uim_custom_load_group);
+  if(uim_helper_is_setugid() ==UIM_FALSE) {
+    return for_each_primary_groups(uim_custom_load_group);
+  } else {
+    return UIM_FALSE;
+  }
 }
 
 static uim_bool
@@ -892,7 +896,11 @@ uim_custom_save_group(const char *group)
 uim_bool
 uim_custom_save(void)
 {
-  return for_each_primary_groups(uim_custom_save_group);
+  if(uim_helper_is_setugid() ==UIM_FALSE) {
+    return for_each_primary_groups(uim_custom_save_group);
+  } else {
+    return UIM_FALSE;
+  }
 }
 
 /**
