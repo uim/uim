@@ -38,6 +38,9 @@
 ;; <claw>  ::=  (<variable> <expression>) | (<expression>)
 ;;              | <bound-variable>
 
+(define true #t)
+(define false #f)
+
 ; and-let*
 (assert-true  "and-let* test 1" (and-let* () #t))
 (assert-true  "and-let* test 2" (and-let* () #t #t))
@@ -60,53 +63,57 @@
                                            (= three 4)))
 
 ;; <bound-variable> style claw
-(assert-true  "and-let* #11" (and-let* (#t)
+(assert-true  "and-let* #11" (and-let* (true)
                                'ok))
 (assert-true  "and-let* #12" (and-let* (even?)
                                'ok))
-(assert-false "and-let* #13" (and-let* (#f)
+(assert-false "and-let* #13" (and-let* (false)
                                'ok))
 (assert-true  "and-let* #14" (and-let* (even?
-                                        #t)
+                                        true)
                                'ok))
 (assert-false "and-let* #15" (and-let* (even?
-                                        #t
-                                        #f)
+                                        true
+                                        false)
                                'ok))
 
 ;; (<expression>) style claw
-(assert-true  "and-let* #16" (and-let* (((integer? 1)))
+(assert-true  "and-let* #16" (and-let* ((#t))
                                'ok))
-(assert-false "and-let* #17" (and-let* (((integer? #t)))
+(assert-false "and-let* #17" (and-let* ((#f))
                                'ok))
-(assert-true  "and-let* #18" (and-let* (((integer? 1))
+(assert-true  "and-let* #18" (and-let* (((integer? 1)))
+                               'ok))
+(assert-false "and-let* #19" (and-let* (((integer? #t)))
+                               'ok))
+(assert-true  "and-let* #20" (and-let* (((integer? 1))
                                         ((integer? 2)))
                                'ok))
-(assert-false "and-let* #19" (and-let* (((integer? 1))
+(assert-false "and-let* #21" (and-let* (((integer? 1))
                                         ((integer? 2))
                                         ((integer? #t)))
                                'ok))
 
 ;; combined form
-(assert-true  "and-let* #20" (and-let* (#t
+(assert-true  "and-let* #22" (and-let* (true
                                         even?
                                         ((integer? 1)))
                                'ok))
-(assert-true  "and-let* #21" (and-let* (#t
+(assert-true  "and-let* #23" (and-let* (true
                                         even?
                                         ((integer? 1))
                                         (foo '(1 2 3))
                                         ((list? foo))
                                         (bar foo))
                                'ok))
-(assert-false "and-let* #22" (and-let* (#t
+(assert-false "and-let* #24" (and-let* (true
                                         even?
                                         ((integer? 1))
                                         (foo #(1 2 3))
                                         ((list? foo))
                                         (bar foo))
                                'ok))
-(assert-false "and-let* #23" (and-let* (#t
+(assert-false "and-let* #25" (and-let* (true
                                         even?
                                         ((integer? 1))
                                         (foo '(1 2 3))
