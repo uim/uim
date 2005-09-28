@@ -1738,7 +1738,7 @@ ScmObj ScmOp_map(ScmObj args, ScmObj env)
 
 static ScmObj map_singular_arg(ScmObj proc, ScmObj args)
 {
-    ScmObj ret      = SCM_NULL;
+    ScmObj ret      = SCM_FALSE;
     ScmObj ret_tail = SCM_FALSE;
 
     if (NULLP(args))
@@ -1749,7 +1749,6 @@ static ScmObj map_singular_arg(ScmObj proc, ScmObj args)
             /* lasting */
             SET_CDR(ret_tail, CONS(Scm_call(proc, LIST_1(CAR(args))), SCM_NULL));
             ret_tail = CDR(ret_tail);
-
         } else {
             /* first */
             ret = CONS(Scm_call(proc, LIST_1(CAR(args))), SCM_NULL);
@@ -1770,7 +1769,7 @@ static ScmObj map_plural_args(ScmObj proc, ScmObj args)
     ScmObj ret_tail     = SCM_FALSE;
 
     while (1) {
-        /* construct map_arg */
+        /* construct "map_arg" */
         map_arg  = SCM_NULL;
         tmp_lsts = args;
         for (; !NULLP(tmp_lsts); tmp_lsts = CDR(tmp_lsts)) {
@@ -1792,7 +1791,7 @@ static ScmObj map_plural_args(ScmObj proc, ScmObj args)
             SET_CAR(tmp_lsts, CDR(lst));
         }
 
-        /* construct ret */
+        /* construct "ret" by applying proc to each map_arg */
         if (NFALSEP(ret)) {
             /* lasting */
             SET_CDR(ret_tail, CONS(Scm_call(proc, map_arg), SCM_NULL));
