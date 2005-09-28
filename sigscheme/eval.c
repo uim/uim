@@ -994,48 +994,46 @@ ScmObj ScmExp_and(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env = eval_state->env;
     ScmObj lst = args;
-    ScmObj obj = SCM_FALSE;
+    ScmObj val = SCM_FALSE;
 
     if (NULLP(lst))
         return SCM_TRUE;
     
     for (; CONSP(CDR(lst)); lst = CDR(lst)) {
-        obj = EVAL(CAR(lst), env);
-        if (FALSEP(obj)) {
+        val = EVAL(CAR(lst), env);
+        if (FALSEP(val)) {
             eval_state->ret_type = SCM_RETTYPE_AS_IS;
             return SCM_FALSE;
         }
     }
 
-    if (NULLP(CDR(lst)))
-        return CAR(lst);
+    if (!NULLP(CDR(lst)))
+        SigScm_ErrorObj("and: improper argument list: ", lst);
 
-    SigScm_ErrorObj("and: improper argument list: ", lst);
-    return SCM_NULL;
+    return CAR(lst);
 }
 
 ScmObj ScmExp_or(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env = eval_state->env;
     ScmObj lst = args;
-    ScmObj obj = SCM_FALSE;
+    ScmObj val = SCM_FALSE;
 
     if (NULLP(lst))
         return SCM_FALSE;
     
     for (; CONSP(CDR(lst)); lst = CDR(lst)) {
-        obj = EVAL(CAR(lst), env);
-        if (NFALSEP(obj)) {
+        val = EVAL(CAR(lst), env);
+        if (NFALSEP(val)) {
             eval_state->ret_type = SCM_RETTYPE_AS_IS;
-            return obj;
+            return val;
         }
     }
 
-    if (NULLP(CDR(lst)))
-        return CAR(lst);
+    if (!NULLP(CDR(lst)))
+        SigScm_ErrorObj("or: improper argument list: ", lst);
 
-    SigScm_ErrorObj("or: improper argument list: ", lst);
-    return SCM_NULL;
+    return CAR(lst);
 }
 
 /*===========================================================================
