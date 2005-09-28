@@ -262,5 +262,8 @@ ScmObj symbol_value(ScmObj var, ScmObj env);
 
 /* error.c */
 void SigScm_ShowErrorHeader(void);
+void SigScm_ErrorPrintf(const char *fmt, ...);
+void SigScm_VErrorPrintf(const char *fmt, va_list args);
+void SigScm_ErrorNewline(void);
 
 #endif /* __SIGSCHEMEINTERNAL_H */

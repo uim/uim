@@ -146,3 +146,38 @@ void SigScm_ShowErrorHeader(void)
 {
     fprintf(SCM_PORTINFO_FILE(scm_current_error_port), SCM_ERR_HEADER);
 }
+
+void SigScm_ErrorPrintf(const char *fmt, ...)
+{
+    va_list args;
+
+    va_start(args, fmt);
+    SigScm_VErrorPrintf(fmt, args);
+    va_end(args);
+}
+
+void SigScm_VErrorPrintf(const char *fmt, va_list args)
+{
+    FILE *err;
+
+    if (scm_current_error_port) {
+        err = SCM_PORTINFO_FILE(scm_current_error_port);
+        vfprintf(err, fmt, args);
+#if SCM_VOLATILE_OUTPUT
+        fflush(err);
+#endif
+    }
+}
+
+void SigScm_ErrorNewline(void)
+{
+    FILE *err;
+
+    if (scm_current_error_port) {
+        err = SCM_PORTINFO_FILE(scm_current_error_port);
+        fputc('\n', err);
+#if SCM_VOLATILE_OUTPUT
+        fflush(err);
+#endif
+    }
+}
