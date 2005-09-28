@@ -1451,6 +1451,8 @@ ScmObj ScmOp_scheme_report_environment(ScmObj version)
     if (SCM_INT_VALUE(version) != 5)
         SigScm_ErrorObj("scheme-report-environment : version must be 5 but got ", version);
 
+    CDBG((SCM_DBG_DEVEL, "scheme-report-environment : warning: the environment is not conformed to R5RS"));
+
     return SCM_NULL;
 }
 
@@ -1461,6 +1463,8 @@ ScmObj ScmOp_null_environment(ScmObj version)
         SigScm_ErrorObj("null-environment : int required but got ", version);
     if (SCM_INT_VALUE(version) != 5)
         SigScm_ErrorObj("null-environment : version must be 5 but got ", version);
+
+    CDBG((SCM_DBG_DEVEL, "null-environment : warning: the environment is not conformed to R5RS"));
 
     return SCM_NULL;
 }
