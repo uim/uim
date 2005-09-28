@@ -83,10 +83,6 @@ extern ScmObj SigScm_null_values;
 /*=======================================
    Macro Declarations
 =======================================*/
-/* Debugging Flags */
-#define DEBUG_PARSER  SCM_DEBUG_PARSER
-#define DEBUG_GC      SCM_DEBUG_GC
-
 /* FreeCell Handling Macros */
 #define SCM_FREECELLP(a)     (SCM_TYPE(a) == ScmFreeCell)
 #define SCM_AS_FREECELL(a)   (SCM_ASSERT_TYPE(SCM_FREECELLP(a), (a)))

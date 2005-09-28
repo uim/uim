@@ -164,16 +164,12 @@ static ScmObj read_sexpression(ScmObj port)
     int c  = 0;
     int c1 = 0;
 
-#if DEBUG_PARSER
-    SigScm_CategorizedDebug(SCM_DBG_PARSER, "read_sexpression");
-#endif
+    CDBG((SCM_DBG_PARSER, "read_sexpression"));
 
     while (1) {
         c = skip_comment_and_space(port);
 
-#if DEBUG_PARSER
-        SigScm_CategorizedDebug(SCM_DBG_PARSER, "read_sexpression c = %c", c);
-#endif
+        CDBG((SCM_DBG_PARSER, "read_sexpression c = %c", c));
 
         switch (c) {
         case '(':
@@ -244,16 +240,12 @@ static ScmObj read_list(ScmObj port, int closeParen)
     int    c2     = 0;
     char  *token  = NULL;
 
-#if DEBUG_PARSER
-    SigScm_CategorizedDebug(SCM_DBG_PARSER, "read_list");
-#endif
+    CDBG((SCM_DBG_PARSER, "read_list"));
 
     while (1) {
         c = skip_comment_and_space(port);
 
-#if DEBUG_PARSER
-        SigScm_CategorizedDebug(SCM_DBG_PARSER, "read_list c = [%c]", c);
-#endif
+        CDBG((SCM_DBG_PARSER, "read_list c = [%c]", c));
 
         if (c == EOF) {
             if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE)
@@ -265,10 +257,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
         } else if (c == '.') {
             c2 = 0;
             SCM_PORT_GETC(port, c2);
-
-#if DEBUG_PARSER
-            SigScm_CategorizedDebug(SCM_DBG_PARSER, "read_list process_dot c2 = [%c]", c2);
-#endif
+            CDBG((SCM_DBG_PARSER, "read_list process_dot c2 = [%c]", c2));
             if (isspace(c2) || c2 == '(' || c2 == '"' || c2 == ';') {
                 cdr = read_sexpression(port);
                 if (NULLP(list_tail))
@@ -316,9 +305,7 @@ static ScmObj read_char(ScmObj port)
 {
     char *ch = read_char_sequence(port);
 
-#if DEBUG_PARSER
-    SigScm_CategorizedDebug(SCM_DBG_PARSER, "read_char : ch = %s", ch);
-#endif
+    CDBG((SCM_DBG_PARSER, "read_char : ch = %s", ch));
 
     /* check special sequence "space" and "newline" */
     if (strcmp(ch, "space") == 0) {
@@ -345,16 +332,12 @@ static ScmObj read_string(ScmObj port)
     int   stringlen = 0;
     int   c = 0;
 
-#if DEBUG_PARSER
-    SigScm_CategorizedDebug(SCM_DBG_PARSER, "read_string");
-#endif
+    CDBG((SCM_DBG_PARSER, "read_string"));
 
     while (1) {
         SCM_PORT_GETC(port, c);
 
-#if DEBUG_PARSER
-        SigScm_CategorizedDebug(SCM_DBG_PARSER, "read_string c = %c", c);
-#endif
+        CDBG((SCM_DBG_PARSER, "read_string c = %c", c));
 
         switch (c) {
         case EOF:
@@ -402,9 +385,7 @@ static ScmObj read_symbol(ScmObj port)
     ScmObj sym = Scm_Intern(sym_name);
     free(sym_name);
 
-#if DEBUG_PARSER
-    SigScm_CategorizedDebug(SCM_DBG_PARSER, "read_symbol");
-#endif
+    CDBG((SCM_DBG_PARSER, "read_symbol"));
 
     return sym;
 }
@@ -417,9 +398,7 @@ static ScmObj read_number_or_symbol(ScmObj port)
     char *first_nondigit = NULL;
     ScmObj ret = SCM_NULL;
 
-#if DEBUG_PARSER
-    SigScm_CategorizedDebug(SCM_DBG_PARSER, "read_number_or_symbol");
-#endif
+    CDBG((SCM_DBG_PARSER, "read_number_or_symbol"));
 
     /* read char sequence */
     str = read_word(port);
@@ -448,9 +427,7 @@ static char *read_word(ScmObj port)
     while (1) {
         SCM_PORT_GETC(port, c);
 
-#if DEBUG_PARSER
-        SigScm_CategorizedDebug(SCM_DBG_PARSER, "c = %c", c);
-#endif
+        CDBG((SCM_DBG_PARSER, "c = %c", c));
 
         switch (c) {
         case EOF: /* don't became an error for handling c-eval, like Scm_eval_c_string("some-symbol"); */
@@ -478,9 +455,7 @@ static char *read_char_sequence(ScmObj port)
     while (1) {
         SCM_PORT_GETC(port, c);
 
-#if DEBUG_PARSER
-        SigScm_CategorizedDebug(SCM_DBG_PARSER, "c = %c", c);
-#endif
+        CDBG((SCM_DBG_PARSER, "c = %c", c));
 
         switch (c) {
         case EOF:

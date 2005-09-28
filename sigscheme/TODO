@@ -6,9 +6,6 @@ Requirements and bugs:
   - Rename call/cc with call/ec? ([Anthy-dev 2216])
   - Implement assert-error in unittest.scm
   - [uim] Make uim-sh loop workable even if error occurred
-
-* Support SIOD-compatible verbose message control (suppressing backtrace, GC
-  stat, error, etc based on verbose-level)
   - [uim] Make the GaUnit-based testing framework workable
 
 * 

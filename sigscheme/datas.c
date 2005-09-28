@@ -226,9 +226,7 @@ static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmOb
     int i = 0;
     ScmObj heap, cell;
 
-#if DEBUG_GC
-    SigScm_CategorizedDebug(SCM_DBG_GC, "allocate_heap num:%d size:%d", num_heap, HEAP_SIZE);
-#endif
+    CDBG((SCM_DBG_GC, "allocate_heap num:%d size:%d", num_heap, HEAP_SIZE));
 
     /* allocate heap */
     (*heaps) = (ScmObj*)malloc(sizeof(ScmObj) * num_heap);
@@ -258,9 +256,7 @@ static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, int HEAP_SIZE, ScmO
     int    num_heap = 0;
     ScmObj heap, cell;
 
-#if DEBUG_GC
-    SigScm_CategorizedDebug(SCM_DBG_GC, "add_heap current num of heaps:%d", *orig_num_heap);
-#endif
+    CDBG((SCM_DBG_GC, "add_heap current num of heaps:%d", *orig_num_heap));
 
     /* increment num_heap */
     (*orig_num_heap) += 1;
@@ -321,9 +317,7 @@ static void gc_preprocess(void)
 
 static void gc_mark_and_sweep(void)
 {
-#if DEBUG_GC
-    SigScm_CategorizedDebug(SCM_DBG_GC, "[ gc start ]");
-#endif
+    CDBG((SCM_DBG_GC, "[ gc start ]"));
 
     gc_preprocess();
     gc_mark();
@@ -331,9 +325,7 @@ static void gc_mark_and_sweep(void)
 
     /* we cannot sweep the object, so let's add new heap */
     if (NULLP(scm_freelist)) {
-#if DEBUG_GC
-      SigScm_CategorizedDebug(SCM_DBG_GC, "Cannot sweep the object, allocating new heap.");
-#endif
+        CDBG((SCM_DBG_GC, "Cannot sweep the object, allocating new heap."));
         add_heap(&scm_heaps, &scm_heap_num, SCM_HEAP_SIZE, &scm_freelist);
     }
 }
@@ -470,9 +462,7 @@ static void gc_mark_locations(ScmObj *start, ScmObj *end)
     /* get size */
     size = end - start;
 
-#if DEBUG_GC
-    SigScm_CategorizedDebug(SCM_DBG_GC, "gc_mark_locations() : size = %d", size);
-#endif
+    CDBG((SCM_DBG_GC, "gc_mark_locations() : size = %d", size));
 
     gc_mark_locations_n(start, size);
 }
@@ -490,9 +480,7 @@ static void gc_mark(void)
     ScmObj stack_end;
     void *save_regs_buf_end = (char *)save_regs_buf + sizeof(save_regs_buf);
 
-#if DEBUG_GC
-    SigScm_CategorizedDebug(SCM_DBG_GC, "gc_mark()");
-#endif
+    CDBG((SCM_DBG_GC, "gc_mark()"));
 
     setjmp(save_regs_buf);
     gc_mark_locations((ScmObj *)save_regs_buf, (ScmObj *)save_regs_buf_end);
@@ -588,9 +576,7 @@ static void gc_sweep(void)
             }
         }
 
-#if DEBUG_GC
-        SigScm_CategorizedDebug(SCM_DBG_GC, "heap[%d] swept = %d", i, corrected_obj_num);
-#endif
+        CDBG((SCM_DBG_GC, "heap[%d] swept = %d", i, corrected_obj_num));
     }
     scm_freelist = scm_new_freelist;
 }
