@@ -474,6 +474,7 @@ ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
 
 eval_loop:
 #if SCM_STRICT_R5RS
+    /* () is allowed by default for efficiency */
     if (NULLP(obj))
         SigScm_Error("() is not a valid R5RS form. use '() instead");
 #endif
