@@ -282,14 +282,13 @@ ScmObj ScmOp_read(ScmObj args)
 ScmObj ScmOp_read_char(ScmObj args)
 {
     ScmObj port = scm_current_input_port;
-    char  *buf  = NULL;
+    char   buf[2];
 
     /* get port */
     if (!NULLP(args) && PORTP(CAR(args)))
         port = CAR(args);
 
     /* TODO : implement this multibyte-char awareness */
-    buf = (char *)malloc(sizeof(char) * 2);
     buf[0] = getc(SCM_PORTINFO_FILE(port));
     buf[1] = '\0';
     return Scm_NewChar(buf);
@@ -297,7 +296,8 @@ ScmObj ScmOp_read_char(ScmObj args)
 
 ScmObj ScmOp_peek_char(ScmObj args, ScmObj env)
 {
-    /* TODO : implement this */
+    /* FIXME: implement this */
+    return SCM_FALSE;
 }
 
 ScmObj ScmOp_eof_objectp(ScmObj obj)
@@ -307,7 +307,8 @@ ScmObj ScmOp_eof_objectp(ScmObj obj)
 
 ScmObj ScmOp_char_readyp(ScmObj args, ScmObj env)
 {
-    /* TODO : implement this */
+    /* FIXME: implement this */
+    return SCM_FALSE;
 }
 
 /*===========================================================================
