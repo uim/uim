@@ -627,7 +627,7 @@ ScmObj ScmOp_SRFI1_lengthplus(ScmObj lst);
 ScmObj ScmOp_SRFI1_concatenate(ScmObj args, ScmObj env);
 #endif
 #if SCM_USE_SRFI2
-ScmObj ScmOp_SRFI2_and_let_star(ScmObj args, ScmEvalState *eval_state);
+ScmObj ScmOp_SRFI2_and_let_star(ScmObj claws, ScmObj body, ScmEvalState *eval_state);
 #endif
 #if SCM_USE_SRFI8
 /* operations-srfi8.c */

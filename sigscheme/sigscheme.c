@@ -380,7 +380,7 @@ static void SigScm_Initialize_internal(void)
     /*=======================================================================
       SRFI-2 Procedure
     =======================================================================*/
-    Scm_RegisterSyntaxVariadicTailRec0("and-let*", ScmOp_SRFI2_and_let_star);
+    Scm_RegisterSyntaxVariadicTailRec1("and-let*", ScmOp_SRFI2_and_let_star);
 #endif
 #if SCM_USE_SRFI8
     /*=======================================================================
