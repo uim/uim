@@ -1041,7 +1041,6 @@ ScmObj ScmExp_or(ScmObj args, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.2 Binding constructs
 ===========================================================================*/
-/* TODO: Simplify and optimize with SCM_SHIFT_*() macro */
 ScmObj ScmExp_let(ScmObj arg, ScmEvalState *eval_state)
 {
     ScmObj env      = eval_state->env;
@@ -1049,6 +1048,8 @@ ScmObj ScmExp_let(ScmObj arg, ScmEvalState *eval_state)
     ScmObj body     = SCM_NULL;
     ScmObj vars     = SCM_NULL;
     ScmObj vals     = SCM_NULL;
+    ScmObj var      = SCM_NULL;
+    ScmObj val      = SCM_NULL;
     ScmObj binding  = SCM_NULL;
 
     /* sanity check */
@@ -1080,9 +1081,10 @@ ScmObj ScmExp_let(ScmObj arg, ScmEvalState *eval_state)
             if (NULLP(CDR(binding)))
                 SET_CDR(binding, CONS(SCM_NULL, SCM_NULL));
 #endif
+            SCM_SHIFT_RAW_2(var, val, binding);
 
-            vars = CONS(CAR(binding), vars);
-            vals = CONS(EVAL(CADR(binding), env), vals);
+            vars = CONS(var, vars);
+            vals = CONS(EVAL(val, env), vals);
         }
 
         /* create new environment for */
@@ -1109,8 +1111,9 @@ named_let:
     body     = CDDR(arg);
     for (; !NULLP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
-        vars = CONS(CAR(binding), vars);
-        vals = CONS(CADR(binding), vals);
+        SCM_SHIFT_RAW_2(var, val, binding);
+        vars = CONS(var, vars);
+        vals = CONS(val, vals);
     }
 
     vars = ScmOp_reverse(vars);
@@ -1125,23 +1128,12 @@ named_let:
     return CONS(CAR(arg), vals);
 }
 
-/* TODO: Simplify and optimize with SCM_SHIFT_*() macro */
-ScmObj ScmExp_let_star(ScmObj arg, ScmEvalState *eval_state)
+ScmObj ScmExp_let_star(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
-    ScmObj env      = eval_state->env;
-    ScmObj bindings = SCM_NULL;
-    ScmObj body     = SCM_NULL;
-    ScmObj vars     = SCM_NULL;
-    ScmObj vals     = SCM_NULL;
-    ScmObj binding  = SCM_NULL;
-
-    /* sanity check */
-    if CHECK_2_ARGS(arg)
-        SigScm_Error("let* : syntax error");
-
-    /* get bindings and body */
-    bindings = CAR(arg);
-    body     = CDR(arg);
+    ScmObj env     = eval_state->env;
+    ScmObj var     = SCM_NULL;
+    ScmObj val     = SCM_NULL;
+    ScmObj binding = SCM_NULL;
 
     /*========================================================================
       (let* <bindings> <body>)
@@ -1160,52 +1152,37 @@ ScmObj ScmExp_let_star(ScmObj arg, ScmEvalState *eval_state)
             if (NULLP(CDR(binding)))
                 SET_CDR(binding, CONS(SCM_NULL, SCM_NULL));
 #endif
-
-            vars = CONS(CAR(binding), SCM_NULL);
-            vals = CONS(EVAL(CADR(binding), env), SCM_NULL);
+            SCM_SHIFT_RAW_2(var, val, binding);      
+            val = EVAL(val, env);
 
             /* add env to each time!*/
-            env = extend_environment(vars, vals, env);
+            env = extend_environment(LIST_1(var), LIST_1(val), env);
         }
-        /* set new env */
-        eval_state->env = env;
-        /* evaluate */
-        return ScmExp_begin(body, eval_state);
     } else if (NULLP(bindings)) {
         /* extend null environment */
         env = extend_environment(SCM_NULL,
                                  SCM_NULL,
                                  env);
-
-        /* set new env */
-        eval_state->env = env;
-        /* evaluate */
-        return ScmExp_begin(body, eval_state);
+    } else {
+        SigScm_ErrorObj("let* : invalid binding form : ", bindings);
     }
 
-    return SCM_UNDEF;
+    /* set new env */
+    eval_state->env = env;
+    /* evaluate */
+    return ScmExp_begin(body, eval_state);
 }
 
 /* TODO: Simplify and optimize with SCM_SHIFT_*() macro */
-ScmObj ScmExp_letrec(ScmObj arg, ScmEvalState *eval_state)
+ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
     ScmObj env      = eval_state->env;
-    ScmObj bindings = SCM_NULL;
-    ScmObj body     = SCM_NULL;
     ScmObj vars     = SCM_NULL;
     ScmObj vals     = SCM_NULL;
     ScmObj binding  = SCM_NULL;
     ScmObj var      = SCM_NULL;
     ScmObj val      = SCM_NULL;
     ScmObj frame    = SCM_NULL;
-
-    /* sanity check */
-    if (NULLP(arg) || NULLP(CDR(arg)))
-        SigScm_Error("letrec : syntax error");
-
-    /* get bindings and body */
-    bindings = CAR(arg);
-    body     = CDR(arg);
 
     /*========================================================================
       (letrec <bindings> <body>)
@@ -1224,9 +1201,7 @@ ScmObj ScmExp_letrec(ScmObj arg, ScmEvalState *eval_state)
             if (NULLP(CDR(binding)))
                 SET_CDR(binding, CONS(SCM_NULL, SCM_NULL));
 #endif
-
-            var = CAR(binding);
-            val = CADR(binding);
+            SCM_SHIFT_RAW_2(var, val, binding);
 
             /* construct vars and vals list */
             vars = CONS(var, vars);
@@ -1285,7 +1260,7 @@ ScmObj ScmExp_begin(ScmObj args, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.4 Iteration
 ===========================================================================*/
-ScmObj ScmExp_do(ScmObj arg, ScmEvalState *eval_state)
+ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_state)
 {
     /*
      * (do ((<variable1> <init1> <step1>)
@@ -1295,23 +1270,16 @@ ScmObj ScmExp_do(ScmObj arg, ScmEvalState *eval_state)
      *   <command> ...)
      */
     ScmObj env        = eval_state->env;
-    ScmObj bindings   = CAR(arg);
     ScmObj vars       = SCM_NULL;
     ScmObj vals       = SCM_NULL;
     ScmObj steps      = SCM_NULL;
     ScmObj binding    = SCM_NULL;
     ScmObj step       = SCM_NULL;
-    ScmObj testframe  = SCM_NULL;
     ScmObj test       = SCM_NULL;
     ScmObj expression = SCM_NULL;
-    ScmObj commands   = SCM_NULL;
     ScmObj tmp_vars   = SCM_NULL;
     ScmObj tmp_steps  = SCM_NULL;
     ScmObj obj        = SCM_NULL;
-
-    /* sanity check */
-    if (SCM_INT_VALUE(ScmOp_length(arg)) < 2)
-        SigScm_Error("do : syntax error");
 
     /* construct Environment and steps */
     for (; !NULLP(bindings); bindings = CDR(bindings)) {
@@ -1331,12 +1299,8 @@ ScmObj ScmExp_do(ScmObj arg, ScmEvalState *eval_state)
     env = extend_environment(vars, vals, env);
 
     /* construct test */
-    testframe  = CADR(arg);
     test       = CAR(testframe);
     expression = CDR(testframe);
-
-    /* construct commands */
-    commands = CDDR(arg);
 
     /* now execution phase! */
     while (FALSEP(EVAL(test, env))) {

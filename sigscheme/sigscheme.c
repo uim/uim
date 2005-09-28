@@ -169,10 +169,10 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterSyntaxVariadicTailRec0("cond"        , ScmExp_cond); /* FIXME */
     Scm_RegisterSyntaxVariadicTailRec0("case"        , ScmExp_case); /* FIXME */
     Scm_RegisterSyntaxVariadicTailRec0("let"         , ScmExp_let); /* FIXME */
-    Scm_RegisterSyntaxVariadicTailRec0("let*"        , ScmExp_let_star); /* FIXME */
-    Scm_RegisterSyntaxVariadicTailRec0("letrec"      , ScmExp_letrec); /* FIXME */
+    Scm_RegisterSyntaxVariadicTailRec1("let*"        , ScmExp_let_star);
+    Scm_RegisterSyntaxVariadicTailRec1("letrec"      , ScmExp_letrec);
     Scm_RegisterSyntaxVariadicTailRec0("begin"       , ScmExp_begin);
-    Scm_RegisterSyntaxVariadicTailRec0("do"          , ScmExp_do); /* FIXME */
+    Scm_RegisterSyntaxVariadicTailRec2("do"          , ScmExp_do);
     Scm_RegisterSyntaxVariadicTailRec0("and"    , ScmExp_and);
     Scm_RegisterSyntaxVariadicTailRec0("or"     , ScmExp_or);
     Scm_RegisterFunc1("scheme-report-environment", ScmOp_scheme_report_environment);
