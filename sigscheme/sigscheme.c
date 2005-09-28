@@ -291,8 +291,8 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterFunc1("list->vector"             , ScmOp_list2vector);
     Scm_RegisterFunc2("vector-fill!"             , ScmOp_vector_fill);
     Scm_RegisterFunc1("procedure?"               , ScmOp_procedurep);
-    Scm_RegisterFuncEvaledList("map"             , ScmOp_map);
-    Scm_RegisterFuncEvaledList("for-each"        , ScmOp_for_each);
+    Scm_RegisterProcedureVariadic1("map"         , ScmOp_map);
+    Scm_RegisterProcedureVariadic1("for-each"    , ScmOp_for_each);
     Scm_RegisterFuncEvaledList("force"           , ScmOp_force);
     Scm_RegisterFuncEvaledList("values"          , ScmOp_values);
     Scm_RegisterFuncEvaledList("call-with-current-continuation", ScmOp_call_with_current_continuation);

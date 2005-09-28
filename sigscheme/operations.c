@@ -1719,26 +1719,18 @@ ScmObj ScmOp_procedurep(ScmObj obj)
     return (FUNCP(obj) || CLOSUREP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-/*
- * FIXME:
- * - Simplify with Scm_RegisterProcedureVariadic1
- * - Replace expensive 'length' operation with CDR and NULLP
- */
-ScmObj ScmOp_map(ScmObj args, ScmObj env)
+ScmObj ScmOp_map(ScmObj proc, ScmObj args)
 {
-    ScmObj proc = CAR(args);
-    int arg_len = SCM_INT_VALUE(ScmOp_length(args));
-
-    /* arglen check */
-    if (arg_len < 2)
-        SigScm_Error("map : Wrong number of arguments");
+     /* sanity check */
+    if (NULLP(args))
+        SigScm_Error("map : wrong number of arguments");
 
     /* fast path for sinble arg case */
-    if (arg_len == 2)
-        return map_single_arg(proc, CADR(args));
+    if (NULLP(CDR(args)))
+        return map_single_arg(proc, CAR(args));
 
     /* multiple args case */
-    return map_multiple_args(proc, CDR(args));
+    return map_multiple_args(proc, args);
 }
 
 static ScmObj map_single_arg(ScmObj proc, ScmObj lst)
@@ -1818,9 +1810,9 @@ static ScmObj map_multiple_args(ScmObj proc, ScmObj args)
     return SCM_NULL;
 }
 
-ScmObj ScmOp_for_each(ScmObj arg, ScmObj env)
+ScmObj ScmOp_for_each(ScmObj proc, ScmObj args)
 {
-    ScmOp_map(arg, env);
+    ScmOp_map(proc, args);
 
     return SCM_UNDEF;
 }
