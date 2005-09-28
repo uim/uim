@@ -93,7 +93,7 @@ void SigScm_Initialize(void)
 static void SigScm_Initialize_internal(void)
 {
     SigScm_SetDebugCategories(SCM_DBG_ERRMSG | SCM_DBG_BACKTRACE
-                              | SCM_DBG_DEVEL | SCM_DBG_OTHER);
+                              | SigScm_PredefinedDebugCategories());
 
     /*=======================================================================
       Etc Variable Initialization
@@ -440,8 +440,6 @@ static void SigScm_Initialize_internal(void)
     scm_return_value = SCM_NULL;
     SigScm_SetVerboseLevel(2);
 #endif
-
-    SigScm_EnablePredefinedDebugCategories();
 }
 
 void SigScm_Finalize()

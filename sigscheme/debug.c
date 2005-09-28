@@ -142,18 +142,20 @@ void SigScm_CategorizedDebug(int category, const char *msg, ...)
     va_end(va);
 }
 
-int SigScm_EnablePredefinedDebugCategories(void)
+int SigScm_PredefinedDebugCategories(void)
 {
-    debug_mask = (debug_mask
+#if SCM_DEBUG
+    return (SCM_DBG_DEVEL | SCM_DBG_OTHER
 #if SCM_DEBUG_PARSER
-                  | SCM_DBG_PARSER
+            | SCM_DBG_PARSER
 #endif
 #if SCM_DEBUG_GC
-                  | SCM_DBG_GC
+            | SCM_DBG_GC
 #endif
-                  );
-
-    return debug_mask;
+            );
+#else /* SCM_DEBUG */
+    return SCM_DBG_NONE;
+#endif /* SCM_DEBUG */
 }
 
 void SigScm_Debug(const char *msg, ...)

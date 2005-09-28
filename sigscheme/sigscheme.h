@@ -575,7 +575,7 @@ void SigScm_ShowBacktrace(void);
 /* debug.c */
 int  SigScm_DebugCategories(void);
 void SigScm_SetDebugCategories(int categories);
-int  SigScm_EnablePredefinedDebugCategories(void);
+int  SigScm_PredefinedDebugCategories(void);
 void SigScm_CategorizedDebug(int category, const char *msg, ...);
 void SigScm_Debug(const char *msg, ...);
 void SigScm_Display(ScmObj obj);
