@@ -450,7 +450,7 @@ static ScmObj SigScm_load_internal(const char *c_filename)
     
     /* read & eval cycle */
     while (s_expression = SigScm_Read(port), !EOFP(s_expression)) {
-        EVAL(s_expression, SCM_NULL);
+        EVAL(s_expression, SCM_INTERACTION_ENV);
     }
 
     ScmOp_close_input_port(port);

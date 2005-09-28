@@ -905,7 +905,7 @@ ScmObj Scm_eval_c_string_internal(const char *exp)
     str_port = Scm_NewStringPort(exp);
 
     ret = SigScm_Read(str_port);
-    ret = EVAL(ret, SCM_NULL);
+    ret = EVAL(ret, SCM_INTERACTION_ENV);
 
 #if SCM_COMPAT_SIOD
     scm_return_value = ret;

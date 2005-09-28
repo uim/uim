@@ -91,7 +91,7 @@ static void repl(void)
          !EOFP(s_exp);
          s_exp = SigScm_Read(stdin_port))
     {
-        result = EVAL(s_exp, SCM_NULL);
+        result = EVAL(s_exp, SCM_INTERACTION_ENV);
 #if SCM_COMPAT_SIOD
         if (SigScm_GetVerboseLevel() >= 1)
 #endif
