@@ -130,18 +130,6 @@ void SigScm_SetDebugCategories(int categories)
     debug_mask = categories;
 }
 
-void SigScm_CategorizedDebug(int category, const char *msg, ...)
-{
-    va_list va;
-
-    va_start(va, msg);
-    if (debug_mask & category) {
-        SigScm_VErrorPrintf(msg, va);
-        SigScm_ErrorNewline();
-    }
-    va_end(va);
-}
-
 int SigScm_PredefinedDebugCategories(void)
 {
 #if SCM_DEBUG
@@ -156,6 +144,18 @@ int SigScm_PredefinedDebugCategories(void)
 #else /* SCM_DEBUG */
     return SCM_DBG_NONE;
 #endif /* SCM_DEBUG */
+}
+
+void SigScm_CategorizedDebug(int category, const char *msg, ...)
+{
+    va_list va;
+
+    va_start(va, msg);
+    if (debug_mask & category) {
+        SigScm_VErrorPrintf(msg, va);
+        SigScm_ErrorNewline();
+    }
+    va_end(va);
 }
 
 void SigScm_Debug(const char *msg, ...)
