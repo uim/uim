@@ -1719,6 +1719,11 @@ ScmObj ScmOp_procedurep(ScmObj obj)
     return (FUNCP(obj) || CLOSUREP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
+/*
+ * FIXME:
+ * - Simplify with Scm_RegisterProcedureVariadic1
+ * - Replace expensive 'length' operation with CDR and NULLP
+ */
 ScmObj ScmOp_map(ScmObj args, ScmObj env)
 {
     ScmObj proc = CAR(args);
@@ -1728,37 +1733,49 @@ ScmObj ScmOp_map(ScmObj args, ScmObj env)
     if (arg_len < 2)
         SigScm_Error("map : Wrong number of arguments");
 
-    /* 1proc and 1arg case */
+    /* fast path for sinble arg case */
     if (arg_len == 2)
         return map_singular_arg(proc, CADR(args));
 
-    /* 1proc and many args case */
+    /* multiple args case */
     return map_plural_args(proc, CDR(args));
 }
 
-static ScmObj map_singular_arg(ScmObj proc, ScmObj args)
+/*
+ * FIXME: Inappropriate name 'singular'. Google "singular variable" and "single
+ * vairable".
+ */
+static ScmObj map_singular_arg(ScmObj proc, ScmObj lst)
 {
-    ScmObj ret      = SCM_FALSE;
-    ScmObj ret_tail = SCM_FALSE;
+    ScmObj ret        = SCM_FALSE;
+    ScmObj ret_last   = SCM_FALSE;
+    ScmObj mapped_elm = SCM_FALSE;
 
-    if (NULLP(args))
+    if (NULLP(lst))
         return SCM_NULL;
 
-    for (; !NULLP(args); args = CDR(args)) {
+    for (; !NULLP(lst); lst = CDR(lst)) {
         if (NFALSEP(ret)) {
-            /* lasting */
-            SET_CDR(ret_tail, CONS(Scm_call(proc, LIST_1(CAR(args))), SCM_NULL));
-            ret_tail = CDR(ret_tail);
+            /* subsequent */
+            mapped_elm = CONS(Scm_call(proc, LIST_1(CAR(lst))), SCM_NULL);
+            SET_CDR(ret_last, mapped_elm);
+            ret_last = mapped_elm;
         } else {
             /* first */
-            ret = CONS(Scm_call(proc, LIST_1(CAR(args))), SCM_NULL);
-            ret_tail = ret;
+            ret = CONS(Scm_call(proc, LIST_1(CAR(lst))), SCM_NULL);
+            ret_last = ret;
         }
     }
 
     return ret;
 }
 
+/*
+ * FIXME:
+ * - Inappropriate name 'plural'. Google "plural variable" and "multiple
+ *   vairable".
+ * - Simplify and make names appropriate as like as map_singular_arg()
+ */
 static ScmObj map_plural_args(ScmObj proc, ScmObj args)
 {
     ScmObj map_arg      = SCM_FALSE;
