@@ -457,17 +457,17 @@ static ScmObj call(ScmObj proc, ScmObj args, ScmEvalState *eval_state, int suppr
 /*===========================================================================
   S-Expression Evaluation
 ===========================================================================*/
-/* TODO: Enclose debugging features into #if SCM_DEBUG* */
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
 {
     ScmObj ret  = SCM_NULL;
     ScmEvalState state = {0};
 
-    /* for debugging */
+#if SCM_DEBUG
     struct trace_frame frame;
     frame.prev = scm_trace_root;
     frame.obj  = obj;
     scm_trace_root = &frame;
+#endif
 
     state.env = env;
     state.ret_type = SCM_RETTYPE_AS_IS;
@@ -492,7 +492,9 @@ eval_loop:
         break;
     }
 
+#if SCM_DEBUG
     scm_trace_root = frame.prev;
+#endif
     return ret;
 }
 

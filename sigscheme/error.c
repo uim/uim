@@ -52,6 +52,7 @@
   File Local Macro Declarations
 =======================================*/
 #define SCM_ERR_HEADER "Error: "
+#define SCM_BACKTRACE_HEADER "**** BACKTRACE ****\n"
 
 /*=======================================
   Variable Declarations
@@ -126,10 +127,11 @@ void SigScm_ErrorObj(const char *msg, ScmObj obj)
 
 void SigScm_ShowBacktrace(void)
 {
+#if SCM_DEBUG
     struct trace_frame *f;
 
-    /* show title */
-    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "**** BACKTRACE ****\n");
+    /* show header */
+    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), SCM_BACKTRACE_HEADER);
 
     /* show each frame's obj */
     for (f = scm_trace_root; f; f = f->prev) {
@@ -137,6 +139,7 @@ void SigScm_ShowBacktrace(void)
         
         fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "\n");
     }
+#endif
 }
 
 void SigScm_ShowErrorHeader(void)
