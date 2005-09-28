@@ -639,7 +639,7 @@ ScmObj ScmOp_SRFI8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalStat
 #endif
 #if SCM_USE_SRFI23
 /* operations-srfi23.c */
-ScmObj ScmOp_SRFI23_error(ScmObj args, ScmObj env);
+ScmObj ScmOp_SRFI23_error(ScmObj reason, ScmObj args);
 #endif
 #if SCM_USE_SRFI38
 /* operations-srfi38.c */

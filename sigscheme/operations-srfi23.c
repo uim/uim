@@ -34,6 +34,7 @@
 /*=======================================
   System Include
 =======================================*/
+#include <stdlib.h>
 
 /*=======================================
   Local Include
@@ -63,42 +64,38 @@
 /*=============================================================================
   SRFI23 : Error reporting mechanism
 =============================================================================*/
-ScmObj ScmOp_SRFI23_error(ScmObj args, ScmObj env)
+ScmObj ScmOp_SRFI23_error(ScmObj reason, ScmObj args)
 {
-    if (NULLP(args))
-        SigScm_Error("error : at least 1 argument required");
+    ScmObj arg = SCM_FALSE;
 
-    if (!STRINGP(CAR(args)))
+    if (!STRINGP(reason))
         SigScm_ErrorObj("error : first argument should be string but got ",
-                        CAR(args));
+                        reason);
     
-    /* prepend header */
-    SigScm_ShowErrorHeader();
+    if (SigScm_DebugCategories() & SCM_DBG_ERRMSG) {
+        SigScm_ShowErrorHeader();
+        SigScm_DisplayToPort(scm_current_error_port, reason);
 
-    /* show message */
-    fprintf(SCM_PORTINFO_FILE(scm_current_error_port),
-            "%s", SCM_STRING_STR(CAR(args)));
-
-    /* show each obj */
-    for (args = CDR(args); !NULLP(args); args = CDR(args)) {
-        fprintf(SCM_PORTINFO_FILE(scm_current_error_port), " ");
-
+        /* show each obj */
+        for (; !NULLP(args); args = CDR(args)) {
+            arg = CAR(args);
+            SigScm_ErrorPrintf(" ");
 #if SCM_USE_SRFI38
-        SigScm_WriteToPortWithSharedStructure(scm_current_error_port,
-                                              CAR(args));
+            SigScm_WriteToPortWithSharedStructure(scm_current_error_port, arg);
 #else
-        SigScm_WriteToPort(scm_current_error_port, CAR(args));
+            SigScm_WriteToPort(scm_current_error_port, arg);
 #endif
+        }
+
+        SigScm_ErrorNewline();
     }
 
-    /* new line */
-    fprintf(SCM_PORTINFO_FILE(scm_current_error_port), "\n");
+    /* FIXME: backtrace should be printed by outermost exception handler */
+    if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
+        SigScm_ShowBacktrace();
 
-    /* show backtrace */
-    SigScm_ShowBacktrace();
-
-    /* TODO: doesn't exit here? */
-    exit(-1);
-
+    /* FIXME: throw an exception instead of exiting */
+    exit(EXIT_FAILURE);
+    /* NOTREACHED */
     return SCM_UNDEF;
 }
