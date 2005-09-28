@@ -136,8 +136,8 @@ void SigScm_CategorizedDebug(int category, const char *msg, ...)
 
     va_start(va, msg);
     if (debug_mask & category) {
-        vfprintf(stderr, msg, va);
-        fprintf(stderr, "\n");
+        SigScm_VErrorPrintf(msg, va);
+        SigScm_ErrorNewline();
     }
     va_end(va);
 }
@@ -164,8 +164,8 @@ void SigScm_Debug(const char *msg, ...)
 
     va_start(va, msg);
     if (debug_mask & SCM_DBG_DEVEL) {
-        vfprintf(stderr, msg, va);
-        fprintf(stderr, "\n");
+        SigScm_VErrorPrintf(msg, va);
+        SigScm_ErrorNewline();
     }
     va_end(va);
 }
