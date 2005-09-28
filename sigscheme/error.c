@@ -97,10 +97,11 @@ void SigScm_Error(const char *msg, ...)
         SigScm_ErrorNewline();
     }
 
+    /* FIXME: backtrace should be printed by outermost exception handler */
     if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
         SigScm_ShowBacktrace();
 
-    /* TODO: throw an exception instead of exiting */
+    /* FIXME: throw an exception instead of exiting */
     exit(EXIT_FAILURE);
 }
 
@@ -113,10 +114,11 @@ void SigScm_ErrorObj(const char *msg, ScmObj obj)
         SigScm_ErrorNewline();
     }
    
+    /* FIXME: backtrace should be printed by outermost exception handler */
     if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
         SigScm_ShowBacktrace();
  
-    /* TODO: throw an exception instead of exiting */
+    /* FIXME: throw an exception instead of exiting */
     exit(EXIT_FAILURE);
 }
 
