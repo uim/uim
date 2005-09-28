@@ -35,6 +35,7 @@
 /*=======================================
   System Include
 =======================================*/
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -78,10 +79,9 @@ int SigScm_Die(const char *msg, const char *filename, int line) {
     if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
         SigScm_ShowBacktrace();
 
-    /* TODO: doesn't exit here */
-    exit(-1);
-
-    return -1;
+    exit(EXIT_FAILURE);
+    /* NOTREACHED */
+    return 1;
 }
 
 void SigScm_Error(const char *msg, ...)
@@ -101,8 +101,8 @@ void SigScm_Error(const char *msg, ...)
     if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
         SigScm_ShowBacktrace();
 
-    /* TODO: doesn't exit here */
-    exit(-1);
+    /* TODO: throw an exception instead of exiting */
+    exit(EXIT_FAILURE);
 }
 
 void SigScm_ErrorObj(const char *msg, ScmObj obj)
@@ -121,8 +121,8 @@ void SigScm_ErrorObj(const char *msg, ScmObj obj)
     if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
         SigScm_ShowBacktrace();
  
-    /* TODO: doesn't exit here*/
-    exit(-1);
+    /* TODO: throw an exception instead of exiting */
+    exit(EXIT_FAILURE);
 }
 
 void SigScm_ShowBacktrace(void)

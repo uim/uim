@@ -71,9 +71,8 @@ extern "C" {
 #define SCM_DBG(args)
 #endif /* SCM_DEBUG */
 
-int SigScm_Die(const char *msg, const char *filename, int line); /* error.c */
 #define SCM_ASSERT(cond) \
-    (cond ? 0 : SigScm_Die("assertion failed.", __FILE__, __LINE__))
+    ((cond) || SigScm_Die("assertion failed.", __FILE__, __LINE__))
 
 #define SCM_SYMBOL_BOUNDP(sym) (SCM_NEQ(SCM_SYMBOL_VCELL(sym), SCM_UNBOUND))
 
@@ -569,6 +568,7 @@ ScmObj SigScm_Read(ScmObj port);
 ScmObj SigScm_Read_Char(ScmObj port);
 
 /* error.c */
+int  SigScm_Die(const char *msg, const char *filename, int line);
 void SigScm_Error(const char *msg, ...);
 void SigScm_ErrorObj(const char *msg, ScmObj obj);
 void SigScm_ShowBacktrace(void);
