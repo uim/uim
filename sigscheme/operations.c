@@ -63,8 +63,8 @@
 static int ScmOp_c_length(ScmObj lst);
 static ScmObj ScmOp_listtail_internal(ScmObj obj, int k);
 
-static ScmObj map_singular_arg(ScmObj proc, ScmObj args);
-static ScmObj map_plural_args(ScmObj proc, ScmObj args);
+static ScmObj map_single_arg(ScmObj proc, ScmObj args);
+static ScmObj map_multiple_args(ScmObj proc, ScmObj args);
 
 /*=======================================
   Function Implementations
@@ -1735,17 +1735,13 @@ ScmObj ScmOp_map(ScmObj args, ScmObj env)
 
     /* fast path for sinble arg case */
     if (arg_len == 2)
-        return map_singular_arg(proc, CADR(args));
+        return map_single_arg(proc, CADR(args));
 
     /* multiple args case */
-    return map_plural_args(proc, CDR(args));
+    return map_multiple_args(proc, CDR(args));
 }
 
-/*
- * FIXME: Inappropriate name 'singular'. Google "singular variable" and "single
- * vairable".
- */
-static ScmObj map_singular_arg(ScmObj proc, ScmObj lst)
+static ScmObj map_single_arg(ScmObj proc, ScmObj lst)
 {
     ScmObj ret        = SCM_FALSE;
     ScmObj ret_last   = SCM_FALSE;
@@ -1772,18 +1768,16 @@ static ScmObj map_singular_arg(ScmObj proc, ScmObj lst)
 
 /*
  * FIXME:
- * - Inappropriate name 'plural'. Google "plural variable" and "multiple
- *   vairable".
  * - Simplify and make names appropriate as like as map_singular_arg()
  */
-static ScmObj map_plural_args(ScmObj proc, ScmObj args)
+static ScmObj map_multiple_args(ScmObj proc, ScmObj args)
 {
     ScmObj map_arg      = SCM_FALSE;
-    ScmObj map_arg_tail = SCM_FALSE;
+    ScmObj map_arg_last = SCM_FALSE;
     ScmObj tmp_lsts     = SCM_FALSE;
     ScmObj lst          = SCM_FALSE;
     ScmObj ret          = SCM_FALSE;
-    ScmObj ret_tail     = SCM_FALSE;
+    ScmObj ret_last     = SCM_FALSE;
 
     while (1) {
         /* construct "map_arg" */
@@ -1795,13 +1789,13 @@ static ScmObj map_plural_args(ScmObj proc, ScmObj args)
                 return ret;
 
             if (NFALSEP(map_arg)) {
-                /* lasting */
-                SET_CDR(map_arg_tail, CONS(CAR(lst), SCM_NULL));
-                map_arg_tail = CDR(map_arg_tail);
+                /* subsequent */
+                SET_CDR(map_arg_last, CONS(CAR(lst), SCM_NULL));
+                map_arg_last = CDR(map_arg_last);
             } else {
                 /* first */
                 map_arg = CONS(CAR(lst), SCM_NULL);
-                map_arg_tail = map_arg;
+                map_arg_last = map_arg;
             }
 
             /* update tmp_lsts */
@@ -1810,13 +1804,13 @@ static ScmObj map_plural_args(ScmObj proc, ScmObj args)
 
         /* construct "ret" by applying proc to each map_arg */
         if (NFALSEP(ret)) {
-            /* lasting */
-            SET_CDR(ret_tail, CONS(Scm_call(proc, map_arg), SCM_NULL));
-            ret_tail = CDR(ret_tail);
+            /* subsequent */
+            SET_CDR(ret_last, CONS(Scm_call(proc, map_arg), SCM_NULL));
+            ret_last = CDR(ret_last);
         } else {
             /* first */
             ret = CONS(Scm_call(proc, map_arg), SCM_NULL);
-            ret_tail = ret;
+            ret_last = ret;
         }
     }
 
