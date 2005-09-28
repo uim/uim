@@ -74,7 +74,8 @@
 		(cons filename custom-required-custom-files)))
       (let* ((post-groups (custom-list-primary-groups))
 	     (new-groups (list-tail post-groups (length pre-groups))))
-	(if (not (getenv "LIBUIM_VANILLA"))
+	(if (and (not (getenv "LIBUIM_VANILLA"))
+		 (not (is-set-ugid?)))
 	    (for-each custom-load-group-conf
 		      (reverse new-groups)))))))
 
