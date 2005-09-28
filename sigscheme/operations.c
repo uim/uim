@@ -879,7 +879,7 @@ ScmObj ScmOp_length(ScmObj obj)
  * base pointer + offset representation will not work under the lvalue
  * assumption. Use SET_CDR properly.  -- YamaKen 2005-09-23
  */
-ScmObj ScmOp_append(ScmObj args, ScmObj env)
+ScmObj ScmOp_append(ScmObj args)
 {
     ScmObj ret_lst = SCM_NULL;
     ScmObj *ret_tail = &ret_lst;
@@ -1387,7 +1387,7 @@ ScmObj ScmOp_string_substring(ScmObj str, ScmObj start, ScmObj end)
     return Scm_NewString(new_str);
 }
 
-ScmObj ScmOp_string_append(ScmObj arg, ScmObj env)
+ScmObj ScmOp_string_append(ScmObj args)
 {
     int total_size = 0;
     int total_len  = 0;
@@ -1397,11 +1397,11 @@ ScmObj ScmOp_string_append(ScmObj arg, ScmObj env)
     char  *p       = NULL;
 
     /* sanity check */
-    if (NULLP(arg))
+    if (NULLP(args))
         return Scm_NewStringCopying("");
 
     /* count total size of the new string */
-    for (strings = arg; !NULLP(strings); strings = CDR(strings)) {
+    for (strings = args; !NULLP(strings); strings = CDR(strings)) {
         obj = CAR(strings);
         if (!STRINGP(obj))
             SigScm_ErrorObj("string-append : string required but got ", obj);
@@ -1415,7 +1415,7 @@ ScmObj ScmOp_string_append(ScmObj arg, ScmObj env)
 
     /* copy string by string */
     p = new_str;
-    for (strings = arg; !NULLP(strings); strings = CDR(strings)) {
+    for (strings = args; !NULLP(strings); strings = CDR(strings)) {
         obj = CAR(strings);
 
         strcpy(p, SCM_STRING_STR(obj));

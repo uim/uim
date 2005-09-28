@@ -55,7 +55,7 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static ScmObj compare_list(ScmObj eqproc, ScmObj lst1, ScmObj lst2, ScmObj env);
+static ScmObj compare_list(ScmObj eqproc, ScmObj lst1, ScmObj lst2);
 
 /*=======================================
   Function Implementations
@@ -68,62 +68,58 @@ ScmObj ScmOp_SRFI1_xcons(ScmObj a, ScmObj b)
     return CONS(b, a);
 }
 
-ScmObj ScmOp_SRFI1_cons_star(ScmObj obj, ScmObj env)
+ScmObj ScmOp_SRFI1_cons_star(ScmObj args)
 {
     ScmObj tail_cons = SCM_NULL;
-    ScmObj prev_tail = obj;
+    ScmObj prev_last = args;
 
-    if (NULLP(CDR(obj)))
-        return CAR(obj);
+    if (NULLP(CDR(args)))
+        return CAR(args);
 
-    for (tail_cons = CDR(obj); !NULLP(tail_cons); tail_cons = CDR(tail_cons)) {
+    for (tail_cons = CDR(args); !NULLP(tail_cons); tail_cons = CDR(tail_cons)) {
         /* check tail cons cell */
         if (NULLP(CDR(tail_cons))) {
-            SET_CDR(prev_tail, CAR(tail_cons));
+            SET_CDR(prev_last, CAR(tail_cons));
         }
 
-        prev_tail = tail_cons;
+        prev_last = tail_cons;
     }
 
-    return obj;
+    return args;
 }
 
-ScmObj ScmOp_SRFI1_make_list(ScmObj args, ScmObj env)
+ScmObj ScmOp_SRFI1_make_list(ScmObj length, ScmObj args)
 {
-    ScmObj fill  = SCM_NULL;
-    ScmObj head  = SCM_NULL;
-    int n = 0;
-    int i = 0;
+    ScmObj filler = SCM_FALSE;
+    ScmObj head   = SCM_FALSE;
+    int len = 0;
+    int i   = 0;
 
     /* sanity check */
-    if CHECK_1_ARG(args)
-        SigScm_Error("make-llist : require at least 1 arg");
-    if (FALSEP(ScmOp_numberp(CAR(args))))
-        SigScm_ErrorObj("make-list : number required but got ", CAR(args));
+    if (FALSEP(ScmOp_numberp(length)))
+        SigScm_ErrorObj("make-list : number required but got ", CAR(length));
 
-    /* get n */
-    n = SCM_INT_VALUE(CAR(args));
+    len = SCM_INT_VALUE(length);
 
     /* get filler if available */
-    if (!NULLP(CDR(args)))
-        fill = CADR(args);
+    if (!NULLP(args))
+        filler = CAR(args);
     else
-        fill = SCM_FALSE;
+        filler = SCM_FALSE;
 
     /* then create list */
-    for (i = n; 0 < i; i--) {
-        head = CONS(fill, head);
+    for (i = len; 0 < i; i--) {
+        head = CONS(filler, head);
     }
 
     return head;
 }
 
-ScmObj ScmOp_SRFI1_list_tabulate(ScmObj args, ScmObj env)
+ScmObj ScmOp_SRFI1_list_tabulate(ScmObj scm_n, ScmObj args)
 {
-    ScmObj scm_n = CAR(args);
-    ScmObj proc  = SCM_NULL;
+    ScmObj proc  = SCM_FALSE;
     ScmObj head  = SCM_NULL;
-    ScmObj num   = SCM_NULL;
+    ScmObj num   = SCM_FALSE;
     int n = 0;
     int i = 0;
 
@@ -135,19 +131,15 @@ ScmObj ScmOp_SRFI1_list_tabulate(ScmObj args, ScmObj env)
     n = SCM_INT_VALUE(scm_n);
 
     /* get init_proc if available */
-    if (!NULLP(CDR(args)))
-        proc = CADR(args);
+    if (!NULLP(args))
+        proc = CAR(args);
 
     /* then create list */
     for (i = n; 0 < i; i--) {
         num = Scm_NewInt(i - 1);
 
-        if (!NULLP(proc)) {
-            /* evaluate (proc num) */
-            num = EVAL(CONS(proc,
-                            CONS(num, SCM_NULL)),
-                       env);
-        }
+        if (!NULLP(proc))
+            num = Scm_call(proc, LIST_1(num));
 
         head = CONS(num, head);
     }
@@ -185,22 +177,21 @@ ScmObj ScmOp_SRFI1_list_copy(ScmObj lst)
     return head;
 }
 
-ScmObj ScmOp_SRFI1_circular_list(ScmObj lst, ScmObj env)
+ScmObj ScmOp_SRFI1_circular_list(ScmObj args)
 {
-    ScmObj tailcons = SCM_NULL;
+    ScmObj lastcons = SCM_NULL;
 
-    if (FALSEP(ScmOp_listp(lst)))
-        SigScm_ErrorObj("circular-list : list required but got ", lst);
+    if (FALSEP(ScmOp_listp(args)))
+        SigScm_ErrorObj("circular-list : list required but got ", args);
 
-    tailcons = ScmOp_SRFI1_last_pair(lst);
-    SET_CDR(tailcons, lst);
+    lastcons = ScmOp_SRFI1_last_pair(args);
+    SET_CDR(lastcons, args);
 
-    return lst;
+    return args;
 }
 
-ScmObj ScmOp_SRFI1_iota(ScmObj args, ScmObj env)
+ScmObj ScmOp_SRFI1_iota(ScmObj scm_count, ScmObj args)
 {
-    ScmObj scm_count = SCM_NULL;
     ScmObj scm_start = SCM_NULL;
     ScmObj scm_step  = SCM_NULL;
     ScmObj head      = SCM_NULL;
@@ -209,18 +200,12 @@ ScmObj ScmOp_SRFI1_iota(ScmObj args, ScmObj env)
     int step  = 0;
     int i = 0;
 
-    /* sanity check */
-    if CHECK_1_ARG(args)
-        SigScm_Error("iota : required at least 1 arg");
-
     /* get params */
-    scm_count = CAR(args);
+    if (!NULLP(args))
+        scm_start = CAR(args);
 
-    if (!NULLP(CDR(args)))
-        scm_start = CADR(args);
-
-    if (!NULLP(scm_start) && !NULLP(CDDR(args)))
-        scm_step = CAR(CDDR(args));
+    if (!NULLP(scm_start) && !NULLP(CDR(args)))
+        scm_step = CAR(CDR(args));
 
     /* param type check */
     if (FALSEP(ScmOp_numberp(scm_count)))
@@ -310,38 +295,30 @@ ScmObj ScmOp_SRFI1_null_listp(ScmObj lst)
     return NULLP(lst) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj ScmOp_SRFI1_listequal(ScmObj args, ScmObj env)
+ScmObj ScmOp_SRFI1_listequal(ScmObj eqproc, ScmObj args)
 {
-    ScmObj eqproc    = SCM_NULL;
-    ScmObj lsts      = SCM_NULL;
-    ScmObj first_lst = SCM_NULL;
+    ScmObj first_lst = SCM_FALSE;
 
-    if CHECK_1_ARG(args)
-        SigScm_Error("list= : required at least 1 arg");
-
-    eqproc = CAR(args);
-    lsts   = CDR(args);
-
-    if (NULLP(lsts))
+    if (NULLP(args))
         return SCM_TRUE;
 
-    first_lst = CAR(lsts);
-    lsts = CDR(lsts);
+    first_lst = CAR(args);
+    args = CDR(args);
 
-    if (NULLP(lsts))
+    if (NULLP(args))
         return SCM_TRUE;
 
-    for (; !NULLP(lsts); lsts = CDR(lsts)) {
-        if (FALSEP(compare_list(eqproc, first_lst, CAR(lsts), env)))
+    for (; !NULLP(args); args = CDR(args)) {
+        if (FALSEP(compare_list(eqproc, first_lst, CAR(args))))
             return SCM_FALSE;
     }
 
     return SCM_TRUE;
 }
 
-static ScmObj compare_list(ScmObj eqproc, ScmObj lst1, ScmObj lst2, ScmObj env)
+static ScmObj compare_list(ScmObj eqproc, ScmObj lst1, ScmObj lst2)
 {
-#define CHECK_LIST_EQUALITY_WITH_EQPROC(eqproc, obj1, obj2, env)        \
+#define CHECK_LIST_EQUALITY_WITH_EQPROC(eqproc, obj1, obj2)             \
     (Scm_call(eqproc,                                                   \
               LIST_2(obj1, obj2)))
 
@@ -349,7 +326,7 @@ static ScmObj compare_list(ScmObj eqproc, ScmObj lst1, ScmObj lst2, ScmObj env)
 
     for (; !NULLP(lst1); lst1 = CDR(lst1), lst2 = CDR(lst2)) {
         /* check contents */
-        ret_cmp = CHECK_LIST_EQUALITY_WITH_EQPROC(eqproc, CAR(lst1), CAR(lst2), env);
+        ret_cmp = CHECK_LIST_EQUALITY_WITH_EQPROC(eqproc, CAR(lst1), CAR(lst2));
         if (FALSEP(ret_cmp))
             return SCM_FALSE;
 
@@ -359,7 +336,7 @@ static ScmObj compare_list(ScmObj eqproc, ScmObj lst1, ScmObj lst2, ScmObj env)
 
         /* check dot pair */
         if (!CONSP(CDR(lst1))) {
-            return CHECK_LIST_EQUALITY_WITH_EQPROC(eqproc, CDR(lst1), CDR(lst2), env);
+            return CHECK_LIST_EQUALITY_WITH_EQPROC(eqproc, CDR(lst1), CDR(lst2));
         }
     }
     return SCM_TRUE;
@@ -599,10 +576,14 @@ ScmObj ScmOp_SRFI1_lengthplus(ScmObj lst)
     return ScmOp_length(lst);
 }
 
-ScmObj ScmOp_SRFI1_concatenate(ScmObj args, ScmObj env)
+ScmObj ScmOp_SRFI1_concatenate(ScmObj args)
 {
     ScmObj lsts_of_lst = CAR(args);
 
-    return Scm_call(ScmOp_eval(Scm_Intern("append"), env),
-                    lsts_of_lst);
+#if SCM_STRICT_ARGCHECK
+    if (!NULLP(CDR(args)))
+        SigScm_ErrorObj("concatenate : superfluous arguments: ", args);
+#endif
+
+    return ScmOp_append(lsts_of_lst);
 }

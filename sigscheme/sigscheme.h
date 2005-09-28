@@ -466,7 +466,7 @@ ScmObj ScmOp_list(ScmObj args);
 ScmObj ScmOp_nullp(ScmObj obj);
 ScmObj ScmOp_listp(ScmObj obj);
 ScmObj ScmOp_length(ScmObj obj);
-ScmObj ScmOp_append(ScmObj args, ScmObj env);
+ScmObj ScmOp_append(ScmObj args);
 ScmObj ScmOp_reverse(ScmObj lst);
 ScmObj ScmOp_list_tail(ScmObj lst, ScmObj scm_k);
 ScmObj ScmOp_list_ref(ScmObj lst, ScmObj scm_k);
@@ -500,7 +500,7 @@ ScmObj ScmOp_string_set(ScmObj str, ScmObj k, ScmObj ch);
 ScmObj ScmOp_string_equal(ScmObj str1, ScmObj str2);
 /* TODO : many comparing functions around string is unimplemented */
 ScmObj ScmOp_string_substring(ScmObj str, ScmObj start, ScmObj end);
-ScmObj ScmOp_string_append(ScmObj arg, ScmObj env);
+ScmObj ScmOp_string_append(ScmObj args);
 ScmObj ScmOp_string2list(ScmObj string);
 ScmObj ScmOp_list2string(ScmObj lst);
 ScmObj ScmOp_string_copy(ScmObj string);
@@ -594,12 +594,12 @@ void SigScm_WriteToPortWithSharedStructure(ScmObj port, ScmObj obj);
 #if SCM_USE_SRFI1
 /* operations-srfi1.c */
 ScmObj ScmOp_SRFI1_xcons(ScmObj a, ScmObj b);
-ScmObj ScmOp_SRFI1_cons_star(ScmObj obj, ScmObj env);
-ScmObj ScmOp_SRFI1_make_list(ScmObj obj, ScmObj env);
-ScmObj ScmOp_SRFI1_list_tabulate(ScmObj arg, ScmObj env);
+ScmObj ScmOp_SRFI1_cons_star(ScmObj args);
+ScmObj ScmOp_SRFI1_make_list(ScmObj length, ScmObj args);
+ScmObj ScmOp_SRFI1_list_tabulate(ScmObj scm_n, ScmObj args);
 ScmObj ScmOp_SRFI1_list_copy(ScmObj lst);
-ScmObj ScmOp_SRFI1_circular_list(ScmObj lst, ScmObj env);
-ScmObj ScmOp_SRFI1_iota(ScmObj args, ScmObj env);
+ScmObj ScmOp_SRFI1_circular_list(ScmObj args);
+ScmObj ScmOp_SRFI1_iota(ScmObj scm_count, ScmObj args);
 ScmObj ScmOp_SRFI1_proper_listp(ScmObj lst);
 ScmObj ScmOp_SRFI1_circular_listp(ScmObj lst);
 ScmObj ScmOp_SRFI1_dotted_listp(ScmObj lst);
@@ -628,7 +628,7 @@ ScmObj ScmOp_SRFI1_split_at_d(ScmObj lst, ScmObj idx);
 ScmObj ScmOp_SRFI1_last(ScmObj lst);
 ScmObj ScmOp_SRFI1_last_pair(ScmObj lst);
 ScmObj ScmOp_SRFI1_lengthplus(ScmObj lst);
-ScmObj ScmOp_SRFI1_concatenate(ScmObj args, ScmObj env);
+ScmObj ScmOp_SRFI1_concatenate(ScmObj args);
 #endif
 #if SCM_USE_SRFI2
 ScmObj ScmOp_SRFI2_and_let_star(ScmObj claws, ScmObj body, ScmEvalState *eval_state);
@@ -643,7 +643,7 @@ ScmObj ScmOp_SRFI23_error(ScmObj reason, ScmObj args);
 #endif
 #if SCM_USE_SRFI38
 /* operations-srfi38.c */
-ScmObj ScmOp_SRFI38_write_with_shared_structure(ScmObj arg, ScmObj env);
+ScmObj ScmOp_SRFI38_write_with_shared_structure(ScmObj obj, ScmObj args);
 #endif
 #if SCM_USE_SRFI60
 /* operations-srfi60.c */

@@ -63,23 +63,14 @@
 /*=============================================================================
   SRFI38 : External Representation for Data With Shared Structure
 =============================================================================*/
-
-ScmObj ScmOp_SRFI38_write_with_shared_structure(ScmObj arg, ScmObj env)
+ScmObj ScmOp_SRFI38_write_with_shared_structure(ScmObj obj, ScmObj args)
 {
-    ScmObj obj  = SCM_NULL;
-    ScmObj port = SCM_NULL;
-
-    if CHECK_1_ARG(arg)
-        SigScm_Error("write : invalid parameter");
-
-    /* get obj */
-    obj = CAR(arg);
-    arg = CDR(arg);
+    ScmObj port = scm_current_output_port;
 
     /* get port */
     port = scm_current_output_port;
-    if (!NULLP(arg) && !NULLP(CAR(arg)) && PORTP(CAR(arg)))
-        port = CAR(arg);
+    if (!NULLP(args) && PORTP(CAR(args)))
+        port = CAR(args);
 
     SigScm_WriteToPortWithSharedStructure(port, obj);
     return SCM_UNDEF;

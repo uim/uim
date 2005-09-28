@@ -246,7 +246,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterFunc1("list?"                    , ScmOp_listp);
     Scm_RegisterFunc1("length"                   , ScmOp_length);
     Scm_RegisterProcedureVariadic0("list"        , ScmOp_list);
-    Scm_RegisterFuncEvaledList("append"          , ScmOp_append);
+    Scm_RegisterProcedureVariadic0("append"      , ScmOp_append);
     Scm_RegisterFunc1("reverse"                  , ScmOp_reverse);
     Scm_RegisterFunc2("list-tail"                , ScmOp_list_tail);
     Scm_RegisterFunc2("list-ref"                 , ScmOp_list_ref);
@@ -276,7 +276,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterFunc1("string-length"            , ScmOp_string_length);
     Scm_RegisterFunc2("string=?"                 , ScmOp_string_equal);
     Scm_RegisterFunc3("substring"                , ScmOp_string_substring);
-    Scm_RegisterFuncEvaledList("string-append"   , ScmOp_string_append);
+    Scm_RegisterProcedureVariadic0("string-append" , ScmOp_string_append);
     Scm_RegisterFunc1("string->list"             , ScmOp_string2list);
     Scm_RegisterFunc1("list->string"             , ScmOp_list2string);
     Scm_RegisterFunc1("string-copy"              , ScmOp_string_copy);
@@ -348,17 +348,17 @@ static void SigScm_Initialize_internal(void)
     =======================================================================*/
     Scm_RegisterFunc1("list-copy"            , ScmOp_SRFI1_list_copy);
     Scm_RegisterFunc2("xcons"                , ScmOp_SRFI1_xcons);
-    Scm_RegisterFuncEvaledList("circular-list"  , ScmOp_SRFI1_circular_list);
-    Scm_RegisterFuncEvaledList("iota"           , ScmOp_SRFI1_iota);
-    Scm_RegisterFuncEvaledList("cons*"          , ScmOp_SRFI1_cons_star);
-    Scm_RegisterFuncEvaledList("make-list"      , ScmOp_SRFI1_make_list);
-    Scm_RegisterFuncEvaledList("list-tabulate"  , ScmOp_SRFI1_list_tabulate);
+    Scm_RegisterProcedureVariadic0("circular-list" , ScmOp_SRFI1_circular_list);
+    Scm_RegisterProcedureVariadic1("iota"          , ScmOp_SRFI1_iota);
+    Scm_RegisterProcedureVariadic0("cons*"          , ScmOp_SRFI1_cons_star);
+    Scm_RegisterProcedureVariadic1("make-list"      , ScmOp_SRFI1_make_list);
+    Scm_RegisterProcedureVariadic1("list-tabulate"  , ScmOp_SRFI1_list_tabulate);
     Scm_RegisterFunc1("proper-list?"         , ScmOp_SRFI1_proper_listp);
     Scm_RegisterFunc1("circular-list?"       , ScmOp_SRFI1_circular_listp);
     Scm_RegisterFunc1("dotted-list?"         , ScmOp_SRFI1_dotted_listp);
     Scm_RegisterFunc1("not-pair?"            , ScmOp_SRFI1_not_pairp);
     Scm_RegisterFunc1("null-list?"           , ScmOp_SRFI1_null_listp);
-    Scm_RegisterFuncEvaledList("list="       , ScmOp_SRFI1_listequal); 
+    Scm_RegisterProcedureVariadic1("list="   , ScmOp_SRFI1_listequal); 
     Scm_RegisterFunc1("first"                , ScmOp_SRFI1_first);
     Scm_RegisterFunc1("second"               , ScmOp_SRFI1_second);
     Scm_RegisterFunc1("third"                , ScmOp_SRFI1_third);
@@ -380,7 +380,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterFunc1("last"                 , ScmOp_SRFI1_last);
     Scm_RegisterFunc1("last-pair"            , ScmOp_SRFI1_last_pair);
     Scm_RegisterFunc1("length+"              , ScmOp_SRFI1_lengthplus);
-    Scm_RegisterFuncEvaledList("concatenate" , ScmOp_SRFI1_concatenate);
+    Scm_RegisterProcedureVariadic0("concatenate" , ScmOp_SRFI1_concatenate);
 #endif
 #if SCM_USE_SRFI2
     /*=======================================================================
@@ -404,7 +404,7 @@ static void SigScm_Initialize_internal(void)
     /*=======================================================================
       SRFI-8 Procedure
     =======================================================================*/
-    Scm_RegisterFuncEvaledList("write-with-shared-structure", ScmOp_SRFI38_write_with_shared_structure);
+    Scm_RegisterProcedureVariadic1("write-with-shared-structure", ScmOp_SRFI38_write_with_shared_structure);
 #endif
 #if SCM_USE_SRFI60
     /*=======================================================================
