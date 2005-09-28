@@ -79,7 +79,7 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
     if (EQ(obj1, obj2))
         return SCM_TRUE;
 
-    type = (enum ScmObjType)SCM_TYPE(obj1);
+    type = SCM_TYPE(obj1);
 
     /* different type */
     if (type != SCM_TYPE(obj2))
@@ -88,32 +88,20 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
     /* same type */
     switch (type) {
     case ScmInt:
-        /* both numbers, are numerically equal */
-        if ((SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2))) return SCM_TRUE;
+        if ((SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2)))
+            return SCM_TRUE;
         break;
 
     case ScmChar:
-        /* chars and are the same character according to the char=? */
         return ScmOp_char_equal(obj1, obj2);
 
-    case ScmSymbol:  /* equivalent symbols must already be true on eq? */
-    case ScmCons:
-    case ScmVector:
-    case ScmString:
-    case ScmFunc:
-    case ScmClosure:
-    case ScmPort:
-    case ScmContinuation:
-    case ScmValuePacket:
-    case ScmEtc:
-        break;
-
+#if SCM_DEBUG
     case ScmFreeCell:
         SigScm_Error("eqv? : cannnot compare freecell, gc broken?");
         break;
+#endif
 
-    case ScmCPointer:
-    case ScmCFuncPointer:
+    default:
         break;
     }
 
@@ -127,13 +115,15 @@ ScmObj ScmOp_eqp(ScmObj obj1, ScmObj obj2)
 
 ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
 {
-    int  i = 0;
     enum ScmObjType type;
+    int i = 0;
+    ScmObj elm1 = SCM_FALSE;
+    ScmObj elm2 = SCM_FALSE;
 
     if (EQ(obj1, obj2))
         return SCM_TRUE;
 
-    type = (enum ScmObjType)SCM_TYPE(obj1);
+    type = SCM_TYPE(obj1);
 
     /* different type */
     if (type != SCM_TYPE(obj2))
@@ -142,96 +132,46 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
     /* same type */
     switch (type) {
     case ScmInt:
-        /* both numbers, are numerically equal */
-        if ((SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2))) return SCM_TRUE;
+        if ((SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2)))
+            return SCM_TRUE;
         break;
 
     case ScmChar:
-        /* chars and are the same character according to the char=? */
         return ScmOp_char_equal(obj1, obj2);
 
-    case ScmCons:
-        for (; !NULLP(obj1); obj1 = CDR(obj1), obj2 = CDR(obj2)) {
-            /* check contents */
-            if (FALSEP(ScmOp_equalp(CAR(obj1), CAR(obj2))))
-                return SCM_FALSE;
-
-            /* check next cdr's type */
-            if (SCM_TYPE(CDR(obj1)) != SCM_TYPE(CDR(obj2)))
-                return SCM_FALSE;
-
-            /* check dot pair */
-            if (!CONSP(CDR(obj1)))
-                return ScmOp_equalp(CDR(obj1), CDR(obj2));
-        }
-        return SCM_TRUE;
-
-    case ScmVector:
-        /* check len */
-        if (SCM_VECTOR_LEN(obj1) != SCM_VECTOR_LEN(obj2))
-            return SCM_FALSE;
-
-        /* check contents */
-        for (i = 0; i < SCM_VECTOR_LEN(obj1); i++) {
-            if (FALSEP(ScmOp_equalp(SCM_VECTOR_CREF(obj1, i),
-                                    SCM_VECTOR_CREF(obj2, i))))
-                return SCM_FALSE;
-        }
-        return SCM_TRUE;
-
     case ScmString:
-        /* check string data */
         if (strcmp(SCM_STRING_STR(obj1), SCM_STRING_STR(obj2)) == 0)
             return SCM_TRUE;
         break;
 
-    case ScmSymbol:
-        /* equivalent symbols must already be true on the prior EQ */
-        break;
+    case ScmCons:
+        for (; CONSP(obj1) && CONSP(obj2); obj1 = CDR(obj1), obj2 = CDR(obj2))
+        {
+            elm1 = CAR(obj1);
+            elm2 = CAR(obj2);
+            if (!EQ(elm1, elm2)
+                && (SCM_TYPE(elm1) != SCM_TYPE(elm2)
+                    || FALSEP(ScmOp_equalp(elm1, elm2))))
+                return SCM_FALSE;
+        }
+        /* compare last cdr */
+        return (EQ(obj1, obj2)) ? SCM_TRUE : ScmOp_equalp(obj1, obj2);
 
-    case ScmFunc:
-        if (EQ(SCM_FUNC_CFUNC(obj1), SCM_FUNC_CFUNC(obj2)))
-            return SCM_TRUE;
-        break;
+    case ScmVector:
+        if (SCM_VECTOR_LEN(obj1) != SCM_VECTOR_LEN(obj2))
+            return SCM_FALSE;
 
-    case ScmClosure:
-        /*
-         * eq? is the valid equality check for closures. Having same members
-         * does not ensure equality.
-         */
-        break;
+        for (i = 0; i < SCM_VECTOR_LEN(obj1); i++) {
+            elm1 = SCM_VECTOR_CREF(obj1, i);
+            elm2 = SCM_VECTOR_CREF(obj2, i);
+            if (!EQ(elm1, elm2)
+                && (SCM_TYPE(elm1) != SCM_TYPE(elm2)
+                    || FALSEP(ScmOp_equalp(elm1, elm2))))
+                return SCM_FALSE;
+        }
+        return SCM_TRUE;
 
-    case ScmPort:
-#if 0
-        /* does not make sense. eq? is sufficient */
-        if (EQ(SCM_PORT_PORTDIRECTION(obj1), SCM_PORT_PORTDIRECTION(obj2))
-            && EQ(SCM_PORT_PORTINFO(obj1), SCM_PORT_PORTINFO(obj2)))
-            return SCM_TRUE;
-#endif
-        break;
-
-    case ScmContinuation:
-        /*
-         * eq? is the valid equality check for continuations. Having same
-         * members does not ensure equality.
-         */
-        break;
-
-    case ScmValuePacket:
-#if 0
-        /* does not make sense. eq? is sufficient */
-        if (EQ(SCM_VALUEPACKET_VALUES(obj1), SCM_VALUEPACKET_VALUES(obj2)))
-            return SCM_TRUE;
-#endif
-        break;
-
-    case ScmEtc:
-        break;
-
-    case ScmFreeCell:
-        SigScm_Error("equal? : cannnot compare freecell, gc broken?");
-        break;
-
+#if SCM_USE_NONSTD_FEATURES
     case ScmCPointer:
         if (SCM_C_POINTER_VALUE(obj1) == SCM_C_POINTER_VALUE(obj2))
             return SCM_TRUE;
@@ -240,6 +180,16 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
     case ScmCFuncPointer:
         if (SCM_C_FUNCPOINTER_VALUE(obj1) == SCM_C_FUNCPOINTER_VALUE(obj2))
             return SCM_TRUE;
+        break;
+#endif
+
+#if SCM_DEBUG
+    case ScmFreeCell:
+        SigScm_Error("equal? : cannnot compare freecell, gc broken?");
+        break;
+#endif
+
+    default:
         break;
     }
 
