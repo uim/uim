@@ -797,8 +797,8 @@
 			     (negative? (string->number "-80000000" 16))))
 
 (SECTION 6 6)
-(test #t eqv? '#\  #\Space)
-(test #t eqv? #\space '#\Space)
+;(test #t eqv? '#\  #\Space)
+;(test #t eqv? #\space '#\Space)
 (test #t char? #\a)
 (test #t char? #\()
 (test #t char? #\ )

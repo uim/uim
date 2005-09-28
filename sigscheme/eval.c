@@ -1021,13 +1021,13 @@ ScmObj ScmExp_or(ScmObj args, ScmEvalState *eval_state)
     ScmObj obj = SCM_FALSE;
 
     if (NULLP(lst))
-        return SCM_TRUE;
+        return SCM_FALSE;
     
     for (; CONSP(CDR(lst)); lst = CDR(lst)) {
         obj = EVAL(CAR(lst), env);
         if (NFALSEP(obj)) {
             eval_state->ret_type = SCM_RETTYPE_AS_IS;
-            return SCM_FALSE;
+            return obj;
         }
     }
 

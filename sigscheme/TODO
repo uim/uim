@@ -33,8 +33,6 @@ Requirements and bugs:
 ==============================================================================
 Extensions:
 
-* Fix the SRFI-2 issues
-
 ==============================================================================
 Performance improvements:
 
@@ -54,8 +52,6 @@ Performance improvements:
 Logical simplifications:
 
 * Reorganize SCM_SHIFT*() macros and simplify args extraction codes
-
-* Automatically append "\n" in SigScm_Error() instead of append by caller
 
 * Move procedure registration for SRFI and SIOD operations in
   SigScm_Initialize_internal() to each operation-*.c and invoke them by
