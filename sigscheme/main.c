@@ -68,8 +68,6 @@ static void repl(void)
 #if !SCM_GCC4_READY_GC
     ScmObj stack_start = NULL;
 #endif
-    ScmObj stdin_port  = SCM_NULL;
-    ScmObj stdout_port = SCM_NULL;
     ScmObj s_exp  = SCM_NULL;
     ScmObj result = SCM_NULL;
 
@@ -78,28 +76,21 @@ static void repl(void)
     SigScm_GC_ProtectStack(&stack_start);
 #endif
 
-    /* init variable */
-    stdin_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
-    stdout_port = Scm_NewFilePort(stdout, "stdout", PORT_OUTPUT); 
-
 #if SCM_COMPAT_SIOD
     if (SigScm_GetVerboseLevel() >= 2)
 #endif
         printf("sscm> ");
 
-    for (s_exp = SigScm_Read(stdin_port);
-         !EOFP(s_exp);
-         s_exp = SigScm_Read(stdin_port))
-    {
+    while (s_exp = SigScm_Read(scm_std_input_port), !EOFP(s_exp)) {
         result = EVAL(s_exp, SCM_INTERACTION_ENV);
 #if SCM_COMPAT_SIOD
         if (SigScm_GetVerboseLevel() >= 1)
 #endif
         {
 #if SCM_USE_SRFI38
-            SigScm_WriteToPortWithSharedStructure(stdout_port, result);
+            SigScm_WriteToPortWithSharedStructure(scm_std_output_port, result);
 #else
-            SigScm_WriteToPort(stdout_port, result);
+            SigScm_WriteToPort(scm_std_output_port, result);
 #endif
             printf("\n");
         }
@@ -109,9 +100,6 @@ static void repl(void)
 #endif
             printf("sscm> ");
     }
-    
-    ScmOp_close_input_port(stdin_port);
-    ScmOp_close_input_port(stdout_port);
 
 #if !SCM_GCC4_READY_GC
     /* now no need to protect stack */
