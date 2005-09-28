@@ -40,14 +40,14 @@
 #define SCM_USE_EUCJP           1  /* use EUC-JP as internal encoding */
 
 /*===========================================================================
-  SRFI(Scheme Request for Implementation)
+  SRFI (Scheme Request for Implementation) procedures written in C
 ===========================================================================*/
-#define SCM_USE_SRFI1           0  /* use SRFI-1 list library procedures written in C */
-#define SCM_USE_SRFI2           1  /* use SRFI-2 and-let* */
-#define SCM_USE_SRFI8           1  /* use SRFI-8 receive procedure written in C */
-#define SCM_USE_SRFI23          1  /* use SRFI-23 error procedure written in C */
-#define SCM_USE_SRFI38          1  /* use SRFI-38 write/ss written in C */
-#define SCM_USE_SRFI60          1  /* use SRFI-60 integers as bits written in C */
+#define SCM_USE_SRFI1           0  /* use SRFI-1  list library */
+#define SCM_USE_SRFI2           1  /* use SRFI-2  'and-let*' */
+#define SCM_USE_SRFI8           1  /* use SRFI-8  'receive' */
+#define SCM_USE_SRFI23          1  /* use SRFI-23 'error' */
+#define SCM_USE_SRFI38          1  /* use SRFI-38 'write-with-shared-structure' */
+#define SCM_USE_SRFI60          1  /* use SRFI-60 integers as bits */
 
 /*===========================================================================
   General Extensions
@@ -55,7 +55,7 @@
 #define SCM_USE_NONSTD_FEATURES 1  /* use Non-R5RS standard features such as "require" */
 
 /*===========================================================================
-  SIOD(Scheme In One Defun) Compatiblity
+  SIOD (Scheme In One Defun) Compatiblity
 ===========================================================================*/
 #define SCM_COMPAT_SIOD         1  /* use SIOD compatible features */
 #define SCM_COMPAT_SIOD_BUGS    1  /* emulate the buggy behaviors of SIOD */
