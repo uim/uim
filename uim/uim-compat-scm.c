@@ -294,7 +294,7 @@ uim_scm_nreverse(uim_lisp cell)
 void
 uim_scm_init_fsubr(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp))
 {
-  Scm_RegisterFuncRawList(name, (ScmFuncTypeRawList)fcn);
+  Scm_RegisterSyntaxVariadic0(name, (ScmObj (*)(ScmObj, ScmObj))fcn);
 }
 
 void
