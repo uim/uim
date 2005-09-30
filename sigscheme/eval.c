@@ -820,12 +820,12 @@ ScmObj ScmOp_quote(ScmObj datum, ScmObj env)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.4 Procedures
 ===========================================================================*/
-ScmObj ScmExp_lambda(ScmObj args , ScmEvalState *eval_state)
+ScmObj ScmExp_lambda(ScmObj args, ScmObj env)
 {
     if (CHECK_2_ARGS(args))
         SigScm_ErrorObj("lambda : bad form : ", args);
 
-    return Scm_NewClosure(args, eval_state->env);
+    return Scm_NewClosure(args, env);
 }
 
 /*===========================================================================
