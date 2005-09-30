@@ -53,6 +53,7 @@
   General Extensions
 ===========================================================================*/
 #define SCM_USE_NONSTD_FEATURES 1  /* use Non-R5RS standard features such as "require" */
+#define SCM_USE_DEEP_CADRS      1  /* use all c[ad]+r defined in R5RS */
 
 /*===========================================================================
   SIOD (Scheme In One Defun) Compatiblity

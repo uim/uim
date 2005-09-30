@@ -664,6 +664,16 @@ ScmObj ScmOp_cddr(ScmObj lst)
 {
     return ScmOp_cdr( ScmOp_cdr(lst) );
 }
+ScmObj ScmOp_caddr(ScmObj lst)
+{
+    return ScmOp_car( ScmOp_cdr( ScmOp_cdr(lst) ));
+}
+ScmObj ScmOp_cdddr(ScmObj lst)
+{
+    return ScmOp_cdr( ScmOp_cdr( ScmOp_cdr(lst) ));
+}
+
+#if SCM_USE_DEEP_CADRS
 ScmObj ScmOp_caaar(ScmObj lst)
 {
     return ScmOp_car( ScmOp_car( ScmOp_car(lst) ));
@@ -676,10 +686,6 @@ ScmObj ScmOp_cadar(ScmObj lst)
 {
     return ScmOp_car( ScmOp_cdr( ScmOp_car(lst) ));
 }
-ScmObj ScmOp_caddr(ScmObj lst)
-{
-    return ScmOp_car( ScmOp_cdr( ScmOp_cdr(lst) ));
-}
 ScmObj ScmOp_cdaar(ScmObj lst)
 {
     return ScmOp_cdr( ScmOp_car( ScmOp_car(lst) ));
@@ -691,10 +697,6 @@ ScmObj ScmOp_cdadr(ScmObj lst)
 ScmObj ScmOp_cddar(ScmObj lst)
 {
     return ScmOp_cdr( ScmOp_cdr( ScmOp_car(lst) ));
-}
-ScmObj ScmOp_cdddr(ScmObj lst)
-{
-    return ScmOp_cdr( ScmOp_cdr( ScmOp_cdr(lst) ));
 }
 ScmObj ScmOp_caaaar(ScmObj lst)
 {
@@ -760,6 +762,7 @@ ScmObj ScmOp_cddddr(ScmObj lst)
 {
     return ScmOp_cdr( ScmOp_cdr( ScmOp_cdr( ScmOp_cdr(lst) )));
 }
+#endif /* SCM_USE_DEEP_CADRS */
 
 ScmObj ScmOp_list(ScmObj args)
 {

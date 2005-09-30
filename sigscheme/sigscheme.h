@@ -426,14 +426,15 @@ ScmObj ScmOp_caar(ScmObj lst);
 ScmObj ScmOp_cadr(ScmObj lst);
 ScmObj ScmOp_cdar(ScmObj lst);
 ScmObj ScmOp_cddr(ScmObj lst);
+ScmObj ScmOp_caddr(ScmObj lst);
+ScmObj ScmOp_cdddr(ScmObj lst);
+#if SCM_USE_DEEP_CADRS
 ScmObj ScmOp_caaar(ScmObj lst);
 ScmObj ScmOp_caadr(ScmObj lst);
 ScmObj ScmOp_cadar(ScmObj lst);
-ScmObj ScmOp_caddr(ScmObj lst);
 ScmObj ScmOp_cdaar(ScmObj lst);
 ScmObj ScmOp_cdadr(ScmObj lst);
 ScmObj ScmOp_cddar(ScmObj lst);
-ScmObj ScmOp_cdddr(ScmObj lst);
 ScmObj ScmOp_caaaar(ScmObj lst);
 ScmObj ScmOp_caaadr(ScmObj lst);
 ScmObj ScmOp_caadar(ScmObj lst);
@@ -450,6 +451,7 @@ ScmObj ScmOp_cddaar(ScmObj lst);
 ScmObj ScmOp_cddadr(ScmObj lst);
 ScmObj ScmOp_cdddar(ScmObj lst);
 ScmObj ScmOp_cddddr(ScmObj lst);
+#endif /* SCM_USE_DEEP_CADRS */
 ScmObj ScmOp_list(ScmObj args);
 ScmObj ScmOp_nullp(ScmObj obj);
 ScmObj ScmOp_listp(ScmObj obj);

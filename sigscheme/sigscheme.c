@@ -217,14 +217,15 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterProcedureFixed1("cadr"                     , ScmOp_cadr);
     Scm_RegisterProcedureFixed1("cdar"                     , ScmOp_cdar);
     Scm_RegisterProcedureFixed1("cddr"                     , ScmOp_cddr);
+    Scm_RegisterProcedureFixed1("caddr"                    , ScmOp_caddr);
+    Scm_RegisterProcedureFixed1("cdddr"                    , ScmOp_cdddr);
+#if SCM_USE_DEEP_CADRS
     Scm_RegisterProcedureFixed1("caaar"                    , ScmOp_caaar);
     Scm_RegisterProcedureFixed1("caadr"                    , ScmOp_caadr);
     Scm_RegisterProcedureFixed1("cadar"                    , ScmOp_cadar);
-    Scm_RegisterProcedureFixed1("caddr"                    , ScmOp_caddr);
     Scm_RegisterProcedureFixed1("cdaar"                    , ScmOp_cdaar);
     Scm_RegisterProcedureFixed1("cdadr"                    , ScmOp_cdadr);
     Scm_RegisterProcedureFixed1("cddar"                    , ScmOp_cddar);
-    Scm_RegisterProcedureFixed1("cdddr"                    , ScmOp_cdddr);
     Scm_RegisterProcedureFixed1("caaaar"                   , ScmOp_caaaar);
     Scm_RegisterProcedureFixed1("caaadr"                   , ScmOp_caaadr);
     Scm_RegisterProcedureFixed1("caadar"                   , ScmOp_caadar);
@@ -241,6 +242,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterProcedureFixed1("cddadr"                   , ScmOp_cddadr);
     Scm_RegisterProcedureFixed1("cdddar"                   , ScmOp_cdddar);
     Scm_RegisterProcedureFixed1("cddddr"                   , ScmOp_cddddr);
+#endif /* SCM_USE_DEEP_CADRS */
     Scm_RegisterProcedureFixed1("null?"                    , ScmOp_nullp);
     Scm_RegisterProcedureFixed1("list?"                    , ScmOp_listp);
     Scm_RegisterProcedureFixed1("length"                   , ScmOp_length);
