@@ -165,7 +165,7 @@
 (assert-error  "basic letrec test5" (lambda ()
                                       (letrec ((letrec-a 1)
                                                (letrec-b letrec-a))
-                                        letrec-b))
+                                        letrec-b)))
 
 ;; begin
 (define x 0)
