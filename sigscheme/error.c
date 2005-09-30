@@ -124,10 +124,15 @@ void SigScm_ErrorObj(const char *msg, ScmObj obj)
 
 void SigScm_ShowBacktrace(void)
 {
+#define UNBOUNDP(var, env)                                                   \
+        (NULLP(lookup_environment(var, env))                                 \
+         && !SCM_SYMBOL_BOUNDP(var))
+
 #if SCM_DEBUG
     struct trace_frame *f;
-    ScmObj obj;
     ScmObj env;
+    ScmObj obj;
+    ScmObj proc;
 
     SigScm_ErrorPrintf(SCM_BACKTRACE_HEADER);
 
@@ -141,13 +146,9 @@ void SigScm_ShowBacktrace(void)
         SigScm_WriteToPort(scm_current_error_port, obj);
         SigScm_ErrorNewline();
 
-#define IS_UNBOUND(var, env)                                    \
-        (NULLP(lookup_environment(var, env))                    \
-         && EQ(SCM_SYMBOL_VCELL(var), SCM_UNBOUND))
-
         switch (SCM_TYPE(obj)) {
         case ScmSymbol:
-            if (IS_UNBOUND(obj, env))
+            if (UNBOUNDP(obj, env))
                 break;
             SigScm_ErrorPrintf("  - \"%s\": ", SCM_SYMBOL_NAME(obj));
             SigScm_WriteToPort(scm_current_error_port, symbol_value(obj, env));
@@ -156,11 +157,13 @@ void SigScm_ShowBacktrace(void)
 
         case ScmCons:
             for (; !NULLP(obj); obj = CDR(obj)) {
-                if (SYMBOLP(CAR(obj))) {
-                    if (IS_UNBOUND(CAR(obj), env))
+                proc = CAR(obj);
+                if (SYMBOLP(proc)) {
+                    if (UNBOUNDP(proc, env))
                         break;
-                    SigScm_ErrorPrintf("  - \"%s\": ", SCM_SYMBOL_NAME(CAR(obj)));
-                    SigScm_WriteToPort(scm_current_error_port, symbol_value(CAR(obj), env));
+                    SigScm_ErrorPrintf("  - \"%s\": ", SCM_SYMBOL_NAME(proc));
+                    SigScm_WriteToPort(scm_current_error_port,
+                                       symbol_value(proc, env));
                     SigScm_ErrorNewline();
                 }
             }
@@ -169,8 +172,8 @@ void SigScm_ShowBacktrace(void)
         default:
             break;
         }
-#undef IS_UNBOUND
     }
+#undef UNBOUNDP
 #endif
 }
 
