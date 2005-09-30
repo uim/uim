@@ -113,7 +113,6 @@ static void SigScm_Initialize_internal(void)
       Externed Variable Initialization
     =======================================================================*/
     scm_continuation_thrown_obj = SCM_NULL;
-    scm_letrec_env              = SCM_NULL;
     /*=======================================================================
       Storage Initialization
     =======================================================================*/

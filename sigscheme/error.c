@@ -143,7 +143,6 @@ void SigScm_ShowBacktrace(void)
 
 #define IS_UNBOUND(var, env)                                    \
         (NULLP(lookup_environment(var, env))                    \
-         && NULLP(lookup_environment(var, scm_letrec_env))      \
          && EQ(SCM_SYMBOL_VCELL(var), SCM_UNBOUND))
 
         switch (SCM_TYPE(obj)) {

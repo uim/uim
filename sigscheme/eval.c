@@ -75,7 +75,6 @@
   Variable Declarations
 =======================================*/
 ScmObj scm_continuation_thrown_obj = NULL; /* for storing continuation return object */
-ScmObj scm_letrec_env = NULL;              /* for storing environment obj of letrec */
 
 struct trace_frame *scm_trace_root = NULL;
 
@@ -541,13 +540,6 @@ ScmObj symbol_value(ScmObj var, ScmObj env)
     val = lookup_environment(var, env);
     if (!NULLP(val)) {
         /* variable is found in environment, so returns its value */
-        return CAR(val);
-    }
-
-    /* next, lookup the special environment for letrec */
-    val = lookup_environment(var, scm_letrec_env);
-    if (!NULLP(val)) {
-        /* variable is found in letrec environment, so returns its value */
         return CAR(val);
     }
 
@@ -1186,12 +1178,13 @@ ScmObj ScmExp_let_star(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
     ScmObj env      = eval_state->env;
+    ScmObj frame    = SCM_FALSE;
     ScmObj vars     = SCM_NULL;
     ScmObj vals     = SCM_NULL;
+    ScmObj rest_vals = SCM_FALSE;
     ScmObj binding  = SCM_NULL;
     ScmObj var      = SCM_NULL;
     ScmObj val      = SCM_NULL;
-    ScmObj frame    = SCM_NULL;
 
     /*========================================================================
       (letrec <bindings> <body>)
@@ -1200,6 +1193,11 @@ ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
                      ...)
     ========================================================================*/
     if (CONSP(bindings) || NULLP(bindings)) {
+        /* extend env by placeholder frame for subsequent lambda evaluations */
+        frame = CONS(SCM_NULL, SCM_NULL);
+        env = CONS(frame, env);
+        eval_state->env = env;
+
         for (; !NULLP(bindings); bindings = CDR(bindings)) {
             binding = CAR(bindings);
 
@@ -1212,28 +1210,15 @@ ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 #endif
             SCM_SHIFT_RAW_2(var, val, binding);
 
-            /* construct vars and vals list */
+            /* construct vars and vals list: any <init> must not refer a
+               <variable> at this time */
             vars = CONS(var, vars);
-            vals = CONS(val, vals);
+            vals = CONS(EVAL(val, env), vals);
         }
 
-        /* construct new frame for scm_letrec_env */
-        frame = CONS(vars, vals);
-        scm_letrec_env = CONS(frame, scm_letrec_env);
-
-        /* extend environment by scm_letrec_env */
-        env = extend_environment(CAR(frame), CDR(frame), env);
-
-        /* ok, vars of letrec is extended to env */
-        scm_letrec_env = SCM_NULL;
-
-        /* set new env */
-        eval_state->env = env;
-
-        /* evaluate vals */
-        for (; !NULLP(vals); vals = CDR(vals)) {
-            SET_CAR(vals, EVAL(CAR(vals), env));
-        }
+        /* fill placeholders */
+        SET_CAR(frame, vars);
+        SET_CDR(frame, vals);
 
         /* evaluate body */
         return ScmExp_begin(body, eval_state);

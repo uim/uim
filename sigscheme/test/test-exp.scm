@@ -161,6 +161,11 @@
       (apply-2 (car args) (append-to-last (cdr args))))))
 (assert-equal? "basic letrec test3" '((1) . 2) (mularg-apply cons '(1) '(2)))
 (assert-equal? "basic letrec test4" '(1 2) (mularg-apply cons 1 '((2))))
+;; SigScheme dependent behavior
+(assert-error  "basic letrec test5" (lambda ()
+                                      (letrec ((letrec-a 1)
+                                               (letrec-b letrec-a))
+                                        letrec-b))
 
 ;; begin
 (define x 0)

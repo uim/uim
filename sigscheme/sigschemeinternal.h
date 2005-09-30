@@ -65,7 +65,6 @@ extern ScmObj scm_return_value;
 
 /* eval.c */
 extern ScmObj scm_continuation_thrown_obj;
-extern ScmObj scm_letrec_env;
 extern struct trace_frame *scm_trace_root;
 
 /* error.c*/
