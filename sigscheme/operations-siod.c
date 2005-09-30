@@ -97,7 +97,16 @@ static long sscm_verbose_level = 0;
  */
 ScmObj ScmOp_symbol_boundp(ScmObj obj)
 {
-    return (SYMBOLP(obj) && SCM_SYMBOL_BOUNDP(obj)) ? SCM_TRUE : SCM_FALSE;
+    if (!SYMBOLP(obj))
+        SigScm_ErrorObj("symbol-bound? : symbol required but got ", obj);
+
+#if 1
+    /* SIOD compatible implementation */
+    return (SCM_SYMBOL_BOUNDP(obj)) ? SCM_TRUE : SCM_FALSE;
+#else
+    return (!NULLP(lookup_environment(obj, env))
+            || SCM_SYMBOL_BOUNDP(obj)) ? SCM_TRUE : SCM_FALSE;
+#endif
 }
 
 /*
