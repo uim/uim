@@ -47,6 +47,7 @@
 /*=======================================
   System Include
 =======================================*/
+#include <setjmp.h>
 
 /*=======================================
   Local Include
@@ -234,7 +235,7 @@ ScmObj Scm_call(ScmObj proc, ScmObj args)
      * closure, it'll have its own environment, if it's a syntax, it's
      * an error, and if it's a C procedure, it doesn't have any free
      * variables at the Scheme level. */
-    state.env       = SCM_NULL;
+    state.env       = SCM_INTERACTION_ENV;
     state.ret_type  = SCM_RETTYPE_AS_IS;
 
     ret = call(proc, args, &state, 1);
@@ -336,41 +337,44 @@ static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
  * @param suppress_eval PROC and ARGS are assumed to have already gone
  * through all necessary evaluations if this flag is nonzero.
  */
-static ScmObj call(ScmObj proc, ScmObj args, ScmEvalState *eval_state, int suppress_eval)
+static ScmObj call(ScmObj proc, ScmObj args,
+                   ScmEvalState *eval_state, int suppress_eval)
 {
     ScmObj env                = eval_state->env;
     ScmObj (*func)()          = NULL;
     enum ScmFuncTypeCode type = -1;
     int mand_count            = 0; /* Number of mandatory args. */
 
-    void* argbuf[SCM_FUNCTYPE_MAND_MAX+2] = {0}; /* The +2 is for rest and env/eval_state. */
+    /* The +2 is for rest and env/eval_state. */
+    void *argbuf[SCM_FUNCTYPE_MAND_MAX + 2] = {0};
     int i = 0;     /* Number of arguments already stored in argbuf. */
 
     if (!suppress_eval)
         proc = EVAL(proc, env);
 
     switch (SCM_TYPE(proc)) {
+    case ScmFunc:
+        break;
+
     case ScmClosure:
         return call_closure(proc,
                             suppress_eval ? args : map_eval(args, env),
                             eval_state);
-    case ScmContinuation:
-        if (NULLP(args)) {
-            SigScm_Error("Continuation invocation lacks an argument.");
-        }
-        scm_continuation_thrown_obj = EVAL(CAR(args), env);
-        longjmp(SCM_CONTINUATION_JMPENV(proc), 1);
-        return SCM_INVALID;
 
-    case ScmFunc:
-        type = SCM_FUNC_TYPECODE(proc);
-        break;
+    case ScmContinuation:
+        if (NULLP(args))
+            SigScm_Error("Continuation invocation lacks an argument.");
+        scm_continuation_thrown_obj
+            = suppress_eval ? CAR(args) : EVAL(CAR(args), env);
+        longjmp(SCM_CONTINUATION_JMPENV(proc), 1);
+        /* NOTREACHED */
     default:
         SigScm_ErrorObj("bad operator: ", proc);
     }
 
     /* We have a C function. */
 
+    type = SCM_FUNC_TYPECODE(proc);
     func = SCM_FUNC_CFUNC(proc);
 
     if (type == SCM_REDUCTION_OPERATOR)
@@ -388,7 +392,7 @@ static ScmObj call(ScmObj proc, ScmObj args, ScmEvalState *eval_state, int suppr
     mand_count = type & SCM_FUNCTYPE_MAND_MASK;
     if (mand_count > SCM_FUNCTYPE_MAND_MAX)
         SigScm_Error("Corrupted function: typecode=0x%x", type);
-    for (i=0; i < mand_count; i++) {
+    for (i = 0; i < mand_count; i++) {
         if (NULLP(args))
             SigScm_Error("%d or more argument(s) required but got only %d",
                          mand_count, i);
