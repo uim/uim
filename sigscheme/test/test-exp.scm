@@ -209,6 +209,14 @@
 (assert-equal? "do test4" '(c b a) (nreverse '(a b c)))
 (assert-equal? "do test5" '((5 6) (3 4) (1 2)) (nreverse '((1 2) (3 4) (5 6))))
 
+(assert-true  "procedure? #1" (procedure? even?))
+(assert-true  "procedure? #2" (procedure? (lambda (x) x)))
+(assert-true  "procedure? #3" (procedure? (call-with-current-continuation
+                                           (lambda (c)
+                                             c))))
+(assert-false "procedure? #4" (procedure? if))
+(assert-false "procedure? #5" (procedure? quote))
+
 ;; from R5RS
 (assert-equal? "call-with-values #1"
                5

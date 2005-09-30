@@ -136,6 +136,7 @@ extern ScmObj SigScm_unquote_splicing;
 #define CHARP          SCM_CHARP
 #define STRINGP        SCM_STRINGP
 #define FUNCP          SCM_FUNCP
+#define SYNTAXP        SCM_SYNTAXP
 #define CLOSUREP       SCM_CLOSUREP
 #define VECTORP        SCM_VECTORP
 #define PORTP          SCM_PORTP

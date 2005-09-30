@@ -1649,7 +1649,8 @@ ScmObj ScmOp_vector_fill(ScmObj vec, ScmObj fill)
 =======================================*/
 ScmObj ScmOp_procedurep(ScmObj obj)
 {
-    return (FUNCP(obj) || CLOSUREP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return ((FUNCP(obj) && !SYNTAXP(obj))
+            || CLOSUREP(obj) || CONTINUATIONP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_map(ScmObj proc, ScmObj args)
