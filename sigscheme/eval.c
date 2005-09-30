@@ -1216,7 +1216,7 @@ ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
         vals = CONS(EVAL(val, env), vals);
     }
 
-    /* fill placeholders */
+    /* fill the placeholder frame */
     SET_CAR(frame, vars);
     SET_CDR(frame, vals);
 
