@@ -140,7 +140,7 @@ void SigScm_ShowBacktrace(void)
     for (f = scm_trace_root; f; f = f->prev) {
 #if SCM_DEBUG_BACKTRACE_SEP
         SigScm_ErrorPrintf("------------------------------\n");
-#endif
+#endif /* SCM_DEBUG_BACKTRACE_SEP */
 
         env = f->env;
         obj = f->obj;
@@ -148,6 +148,7 @@ void SigScm_ShowBacktrace(void)
         SigScm_WriteToPort(scm_current_error_port, obj);
         SigScm_ErrorNewline();
 
+#if SCM_DEBUG_BACKTRACE_VAL
         switch (SCM_TYPE(obj)) {
         case ScmSymbol:
             if (UNBOUNDP(obj, env))
@@ -174,9 +175,13 @@ void SigScm_ShowBacktrace(void)
         default:
             break;
         }
+#endif /* SCM_DEBUG_BACKTRACE_VAL */
     }
+#if SCM_DEBUG_BACKTRACE_SEP
+        SigScm_ErrorPrintf("------------------------------\n");
+#endif /* SCM_DEBUG_BACKTRACE_SEP */
+#endif /* SCM_DEBUG */
 #undef UNBOUNDP
-#endif
 }
 
 void SigScm_ShowErrorHeader(void)

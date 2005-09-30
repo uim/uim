@@ -77,6 +77,7 @@
 #define SCM_DEBUG_GC            0  /* enable GC debugging */
 #define SCM_DEBUG_PARSER        0  /* enable parser debugging */
 #define SCM_DEBUG_BACKTRACE_SEP 1  /* enable frame-separator on backtrace */
+#define SCM_DEBUG_BACKTRACE_VAL 1  /* enable values printing on backtrace */
 
 /*===========================================================================
   Dependency Resolution
