@@ -1174,17 +1174,15 @@ ScmObj ScmExp_let_star(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     return ScmExp_begin(body, eval_state);
 }
 
-/* TODO: Simplify and optimize with SCM_SHIFT_*() macro */
 ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
     ScmObj env      = eval_state->env;
     ScmObj frame    = SCM_FALSE;
     ScmObj vars     = SCM_NULL;
     ScmObj vals     = SCM_NULL;
-    ScmObj rest_vals = SCM_FALSE;
-    ScmObj binding  = SCM_NULL;
-    ScmObj var      = SCM_NULL;
-    ScmObj val      = SCM_NULL;
+    ScmObj binding  = SCM_FALSE;
+    ScmObj var      = SCM_FALSE;
+    ScmObj val      = SCM_FALSE;
 
     /*========================================================================
       (letrec <bindings> <body>)
@@ -1192,40 +1190,39 @@ ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
                      (<variable2> <init2>)
                      ...)
     ========================================================================*/
-    if (CONSP(bindings) || NULLP(bindings)) {
-        /* extend env by placeholder frame for subsequent lambda evaluations */
-        frame = CONS(SCM_NULL, SCM_NULL);
-        env = CONS(frame, env);
-        eval_state->env = env;
+    if (!CONSP(bindings) && !NULLP(bindings))
+        SigScm_Error("letrec : syntax error");
 
-        for (; !NULLP(bindings); bindings = CDR(bindings)) {
-            binding = CAR(bindings);
+    /* extend env by placeholder frame for subsequent lambda evaluations */
+    frame = CONS(SCM_NULL, SCM_NULL);
+    env = CONS(frame, env);
+    eval_state->env = env;
 
-#if SCM_STRICT_ARGCHECK
-            if (NULLP(binding) || NULLP(CDR(binding)))
-                SigScm_ErrorObj("letrec : invalid binding form : ", binding);
+    for (; !NULLP(bindings); bindings = CDR(bindings)) {
+        binding = CAR(bindings);
+
+#if SCM_COMPAT_SIOD_BUGS
+        if (NULLP(binding))
+            SigScm_ErrorObj("letrec : invalid binding form : ", binding);
+        var = CAR(binding);
+        val = (!CONSP(CDR(binding))) ? SCM_FALSE : CADR(binding);
 #else
-            if (NULLP(CDR(binding)))
-                SET_CDR(binding, CONS(SCM_NULL, SCM_NULL));
+        if (!NULLP(SCM_SHIFT_RAW_2(var, val, binding)))
+            SigScm_ErrorObj("letrec : invalid binding form : ", binding);
 #endif
-            SCM_SHIFT_RAW_2(var, val, binding);
 
-            /* construct vars and vals list: any <init> must not refer a
-               <variable> at this time */
-            vars = CONS(var, vars);
-            vals = CONS(EVAL(val, env), vals);
-        }
-
-        /* fill placeholders */
-        SET_CAR(frame, vars);
-        SET_CDR(frame, vals);
-
-        /* evaluate body */
-        return ScmExp_begin(body, eval_state);
+        /* construct vars and vals list: any <init> must not refer a
+           <variable> at this time */
+        vars = CONS(var, vars);
+        vals = CONS(EVAL(val, env), vals);
     }
 
-    SigScm_Error("letrec : syntax error");
-    return SCM_UNDEF;
+    /* fill placeholders */
+    SET_CAR(frame, vars);
+    SET_CDR(frame, vals);
+
+    /* evaluate body */
+    return ScmExp_begin(body, eval_state);
 }
 
 
