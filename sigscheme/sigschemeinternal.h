@@ -252,6 +252,63 @@ extern ScmObj SigScm_unquote_splicing;
       && SCM_SHIFT_EVALED(elm3, lst, env)                                    \
       && SCM_SHIFT_EVALED(elm4, lst, env)) ? (lst) : 0)
 
+
+/* Obscures identifier ID. */
+#define SCM_MANGLE(id) Scm_internal_##id
+
+#define SCM_INVALID NULL
+#define VALIDP(obj)   (!EQ((obj), SCM_INVALID))
+#define INVALIDP(obj) (EQ((obj), SCM_INVALID))
+
+/* Declares the current function name as seen by Scheme codes.  TYPE
+ * is ignored, but we may use it in the future to implement a stub
+ * generator.  This macro can be invoked only at the beginning of a
+ * function body, right after local variable declarations. */
+#define DECLARE_FUNCTION(name, type) \
+    const char *SCM_MANGLE(name) = (name); \
+    ScmObj SCM_MANGLE(orig) = SCM_INVALID; \
+    ScmObj SCM_MANGLE(tmp)  = SCM_INVALID; \
+    int SCM_MANGLE(popped) = 0 /* No semicolon here. */
+
+/* Signals an error that occured on an object.  The current function
+ * name, the message, then the object, are written (with `write') to
+ * the error port. */
+#define ERR(msg, obj) Scm_ErrorObj(SCM_MANGLE(name), msg, obj)
+
+/* Destructively retreives the first element of an argument list.  If
+ * ARGS doesn't contain enough arguments, return SCM_INVALID. */
+#define POP_ARG(args) \
+    ((SCM_MANGLE(popped) \
+      || (SCM_MANGLE(popped)=1, SCM_MANGLE(orig) = (args))), \
+     NULLP(SCM_MANGLE(orig)) \
+     ? SCM_INVALID \
+     : (SCM_MANGLE(tmp) = CAR(args), (args) = CDR(args), SCM_MANGLE(tmp)))
+#define POP POP_ARG
+
+#define MUST_POP_ARG(args) \
+    (VALIDP(TRY_POP_ARG(args)) \
+     ? SCM_MANGLE(tmp) \
+     : ERR("not enough arguments", SCM_MANGLE(orig)))
+
+#define NO_MORE_ARG(args) NULLP(args)
+#define ASSERT_NO_MORE_ARG(args) \
+    (NO_MORE_ARG || (ERR("superfluous arguments", (args))))
+
+#define ASSERT_TYPE(pred, typename, obj) \
+    (pred(obj) || (ERR(typename "required but got", (obj)), 1))
+
+#define ASSERT_INTP(obj)     ASSERT_TYPE(INTP, "integer", (obj))
+#define ASSERT_CONSP(obj)    ASSERT_TYPE(CONSP, "pair", (obj))
+#define ASSERT_SYMBOLP(obj)  ASSERT_TYPE(SYMBOLP, "symbol", (obj))
+#define ASSERT_CHARP(obj)    ASSERT_TYPE(CHARP, "character", (obj))
+#define ASSERT_STRINGP(obj)  ASSERT_TYPE(STRINGP, "string", (obj))
+#define ASSERT_FUNCP(obj)    ASSERT_TYPE(FUNCP, "function", (obj))
+#define ASSERT_CLOSUREP(obj) ASSERT_TYPE(CLOSUREP, "closure", (obj))
+#define ASSERT_VECTORP(obj)  ASSERT_TYPE(VECTORP, "vector", (obj))
+#define ASSERT_PORTP(obj)    ASSERT_TYPE(PORTP, "port", (obj))
+#define ASSERT_CONTINUATIONP(obj) ASSERT_TYPE(CONTINUATIONP, "continuation", (obj))
+
+
 /*=======================================
    Function Declarations
 =======================================*/

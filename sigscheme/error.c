@@ -105,6 +105,7 @@ void SigScm_Error(const char *msg, ...)
     exit(EXIT_FAILURE);
 }
 
+/* Obsolete. */
 void SigScm_ErrorObj(const char *msg, ScmObj obj)
 {
     if (SigScm_DebugCategories() & SCM_DBG_ERRMSG) {
@@ -117,6 +118,24 @@ void SigScm_ErrorObj(const char *msg, ScmObj obj)
     /* FIXME: backtrace should be printed by outermost exception handler */
     if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
         SigScm_ShowBacktrace();
+ 
+    /* FIXME: throw an exception instead of exiting */
+    exit(EXIT_FAILURE);
+}
+
+/* This function obsoletes SigScm_ErrorObj(). */
+void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj)
+{
+    if (SigScm_DebugCategories() & SCM_DBG_ERRMSG) {
+	SigScm_ShowErrorHeader();
+	SigScm_ErrorPrintf("in %s: %s: ", func_name, msg);
+	SigScm_WriteToPort(scm_current_error_port, obj);
+	SigScm_ErrorNewline();
+    }
+
+    /* FIXME: backtrace should be printed by outermost exception handler */
+    if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
+	SigScm_ShowBacktrace();
  
     /* FIXME: throw an exception instead of exiting */
     exit(EXIT_FAILURE);
