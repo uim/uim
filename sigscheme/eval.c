@@ -94,18 +94,22 @@ static ScmObj qquote_vector(ScmObj vec, ScmObj env, int nest);
   Function Implementations
 =======================================*/
 /**
- * Add a frame to an env
+ * Construct new frame on an env
  *
- * @param vars Symbol list as variable names. It accepts dot list to handle
- *             function arguments directly.
- * @param vals Arbitrary Scheme object list as values. Side effect:
- *             destructively modifyies the vals when vars is a dot list.
+ * @param vars Symbol list as variable names of new frame. It accepts dot list
+ *             to handle function arguments directly.
+ * @param vals Arbitrary Scheme object list as values of new frame. Side
+ *             effect: destructively modifyies the vals when vars is a dot
+ *             list.
  * @see ScmOp_eval()
  */
 ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
 {
     ScmObj frame     = SCM_NULL;
     ScmObj rest_vars, rest_vals;
+
+    if (!CONSP(env) && !NULLP(env))
+        SigScm_Error("extend_environment : broken environment");
 
     /* sanity check & dot list handling */
     for (rest_vars = vars, rest_vals = vals;
@@ -125,15 +129,7 @@ ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
     /* create new frame */
     frame = CONS(vars, vals);
 
-    /* add to env */
-    if (NULLP(env))
-        env = CONS(frame, SCM_NULL);
-    else if (CONSP(env))
-        env = CONS(frame, env);
-    else
-        SigScm_Error("broken environment.");
-
-    return env;
+    return CONS(frame, env);
 }
 
 /** Add a binding to newest frame of an env */
