@@ -109,7 +109,7 @@ ScmObj ScmOp_symbol_boundp(ScmObj obj)
 ScmObj ScmOp_symbol_value(ScmObj var)
 {
     if (!SYMBOLP(var))
-        SigScm_ErrorObj("symbol-value : require symbol but got ", var);
+        SigScm_ErrorObj("symbol-value : symbol required but got ", var);
 
     return symbol_value(var, SCM_NULL);
 }
@@ -125,7 +125,7 @@ ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val)
 {
     /* sanity check */
     if (!SYMBOLP(var))
-        SigScm_ErrorObj("set-symbol-value! : require symbol but got ", var);
+        SigScm_ErrorObj("set-symbol-value! : symbol required but got ", var);
 
     return SCM_SYMBOL_SET_VCELL(var, val);
 }
