@@ -308,8 +308,6 @@ void Scm_RegisterProcedureVariadicTailRec5(const char *name, ScmObj (*func)(ScmO
 #endif
 
 /* datas.c */
-void   SigScm_InitStorage(void);
-void   SigScm_FinalizeStorage(void);
 void   SigScm_GC_Protect(ScmObj *var);
 #if !SCM_GCC4_READY_GC
 void   SigScm_GC_ProtectStack(ScmObj *stack_start);

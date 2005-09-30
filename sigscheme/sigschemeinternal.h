@@ -252,6 +252,10 @@ extern ScmObj SigScm_null_values;
 /*=======================================
    Function Declarations
 =======================================*/
+/* datas.c */
+void SigScm_InitStorage(void);
+void SigScm_FinalizeStorage(void);
+
 /* eval.c */
 /* environment related functions */
 /*
