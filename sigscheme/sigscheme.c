@@ -157,7 +157,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterProcedureFixed2("eval"                     , ScmOp_eval);
     Scm_RegisterProcedureVariadicTailRec2("apply"           , ScmOp_apply);
     Scm_RegisterSyntaxFixed1("quote"              , ScmOp_quote);
-    Scm_RegisterSyntaxVariadic0("lambda"             , ScmExp_lambda);
+    Scm_RegisterSyntaxFixedTailRec1("lambda"      , ScmExp_lambda);
     Scm_RegisterSyntaxFixed2("set!"               , ScmExp_set);
     Scm_RegisterSyntaxFixed1("delay"              , ScmOp_delay);
     Scm_RegisterSyntaxFixed1("quasiquote"         , ScmOp_quasiquote);
