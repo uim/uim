@@ -126,13 +126,51 @@ void SigScm_ShowBacktrace(void)
 {
 #if SCM_DEBUG
     struct trace_frame *f;
+    ScmObj obj;
+    ScmObj env;
 
     SigScm_ErrorPrintf(SCM_BACKTRACE_HEADER);
 
     /* show each frame's obj */
     for (f = scm_trace_root; f; f = f->prev) {
-        SigScm_WriteToPort(scm_current_error_port, f->obj);
+        SigScm_ErrorPrintf("------------------------------\n");
+
+        obj = f->obj;
+        env = f->env;
+
+        SigScm_WriteToPort(scm_current_error_port, obj);
         SigScm_ErrorNewline();
+
+#define IS_UNBOUND(var, env)                                    \
+        (NULLP(lookup_environment(var, env))                    \
+         && NULLP(lookup_environment(var, scm_letrec_env))      \
+         && EQ(SCM_SYMBOL_VCELL(var), SCM_UNBOUND))
+
+        switch (SCM_TYPE(obj)) {
+        case ScmSymbol:
+            if (IS_UNBOUND(obj, env))
+                break;
+            SigScm_ErrorPrintf("  - \"%s\": ", SCM_SYMBOL_NAME(obj));
+            SigScm_WriteToPort(scm_current_error_port, symbol_value(obj, env));
+            SigScm_ErrorNewline();
+            break;
+
+        case ScmCons:
+            for (; !NULLP(obj); obj = CDR(obj)) {
+                if (SYMBOLP(CAR(obj))) {
+                    if (IS_UNBOUND(CAR(obj), env))
+                        break;
+                    SigScm_ErrorPrintf("  - \"%s\": ", SCM_SYMBOL_NAME(CAR(obj)));
+                    SigScm_WriteToPort(scm_current_error_port, symbol_value(CAR(obj), env));
+                    SigScm_ErrorNewline();
+                }
+            }
+            break;
+
+        default:
+            break;
+        }
+#undef IS_UNBOUND
     }
 #endif
 }

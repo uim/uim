@@ -466,6 +466,7 @@ ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
     struct trace_frame frame;
     frame.prev = scm_trace_root;
     frame.obj  = obj;
+    frame.env  = env;
     scm_trace_root = &frame;
 #endif
 

@@ -51,6 +51,7 @@
 struct trace_frame {
     struct trace_frame *prev;
     ScmObj obj;
+    ScmObj env;    
 };
 
 /*=======================================
