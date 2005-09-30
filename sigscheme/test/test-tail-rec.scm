@@ -663,6 +663,14 @@
 		 (dummy2 (lambda () dummy)))
 	  (rec-even-with-letrec? (- n 1))))))
 
+(define rec-continuation
+  (lambda (n)
+    (if (zero? n)
+	'succeeded
+        (call-with-current-continuation
+         (lambda (cont)
+           (rec-continuation (- n 1)))))))
+
 (define rec-proper-infinite
   (lambda (cnt)
     (rec-proper-infinite (+ cnt 1))))
@@ -941,6 +949,14 @@
 		     (letrec ((dummy (+ 1 2))
 			      (dummy2 (+ 3 4)))
 		       (loop (- cnt 1))))))
+
+;; call/cc
+
+;; SigScheme cannot run this test as proper tail recursion. The stack will
+;; grown.
+;;(assert-equal? "proper tail recursion by call/cc"
+;;               'succeeded
+;;               (rec-continuation explosive-count))
 
 
 ;; This test is succeeded if [OK]-exploded message sequence has been

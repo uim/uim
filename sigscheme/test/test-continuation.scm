@@ -1,5 +1,7 @@
 (load "test/unittest.scm")
 
+(define call/cc call-with-current-continuation)
+
 (assert-equal? "call/cc test1" -3  (call-with-current-continuation
 				 (lambda (exit)
 				   (for-each (lambda (x)
@@ -23,5 +25,14 @@
 
 (assert-equal? "call/cc test2" 4  (list-length '(1 2 3 4)))
 (assert-equal? "call/cc test3" #f (list-length '(a b . c)))
+
+;; function written in C as proc
+(assert-true   "call/cc #4" (call/cc procedure?))
+
+;; another continuation as proc
+(assert-true   "call/cc #5" (procedure? (call/cc (lambda (c) (call/cc c)))))
+(call/cc (lambda (c) (call/cc c)))
+(call/cc (lambda (c) c))
+(call/cc (lambda (c) (c 1)))
 
 (total-report)
