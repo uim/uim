@@ -593,7 +593,7 @@ ScmObj ScmOp_SRFI1_circular_listp(ScmObj lst);
 ScmObj ScmOp_SRFI1_dotted_listp(ScmObj lst);
 ScmObj ScmOp_SRFI1_not_pairp(ScmObj pair);
 ScmObj ScmOp_SRFI1_null_listp(ScmObj lst);
-ScmObj ScmOp_SRFI1_listequal(ScmObj args, ScmObj env);
+ScmObj ScmOp_SRFI1_listequal(ScmObj eqproc, ScmObj args);
 ScmObj ScmOp_SRFI1_first(ScmObj lst);
 ScmObj ScmOp_SRFI1_second(ScmObj lst);
 ScmObj ScmOp_SRFI1_third(ScmObj lst);
