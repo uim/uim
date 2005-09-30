@@ -524,13 +524,10 @@ ScmObj ScmOp_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_sta
     return call(proc, args, eval_state, 1);
 }
 
+/* 'var' must be a symbol as precondition */
 ScmObj symbol_value(ScmObj var, ScmObj env)
 {
-    ScmObj val = SCM_NULL;
-
-    /* sanity check */
-    if (!SYMBOLP(var))
-        SigScm_ErrorObj("symbol_value : not symbol : ", var);
+    ScmObj val = SCM_FALSE;
 
     /* first, lookup the environment */
     val = lookup_environment(var, env);
@@ -541,9 +538,8 @@ ScmObj symbol_value(ScmObj var, ScmObj env)
 
     /* finally, look at the VCELL */
     val = SCM_SYMBOL_VCELL(var);
-    if (EQ(val, SCM_UNBOUND)) {
+    if (EQ(val, SCM_UNBOUND))
         SigScm_ErrorObj("symbol_value : unbound variable ", var);
-    }
 
     return val;
 }
