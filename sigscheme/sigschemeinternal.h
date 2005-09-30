@@ -264,11 +264,18 @@ extern ScmObj SigScm_unquote_splicing;
  * is ignored, but we may use it in the future to implement a stub
  * generator.  This macro can be invoked only at the beginning of a
  * function body, right after local variable declarations. */
-#define DECLARE_FUNCTION(name, type) \
-    const char *SCM_MANGLE(name) = (name); \
+#define DECLARE_FUNCTION(func_name, type) \
+    const char *SCM_MANGLE(name) = (func_name); \
     ScmObj SCM_MANGLE(orig) = SCM_INVALID; \
     ScmObj SCM_MANGLE(tmp)  = SCM_INVALID; \
     int SCM_MANGLE(popped) = 0 /* No semicolon here. */
+
+/* Set up the argument popping mechanism without requiring a function
+ * type.  This is meant for internal functions for which no
+ * corresponding Scheme functions exist.  NAME still has to be
+ * specified, though, to give the user an idea where the error was
+ * detected, should one be signalled. */
+#define SETUP_ARG_EXTRACTION(name) DECLARE_FUNCTION((name), ignored)
 
 /* Signals an error that occured on an object.  The current function
  * name, the message, then the object, are written (with `write') to
