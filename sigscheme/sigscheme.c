@@ -52,6 +52,10 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote, SigScm_unquote_splicing;
+#if SCM_USE_VALUECONS
+ScmObj SigScm_null_values;
+#endif
 
 /*=======================================
   File Local Function Declarations
@@ -63,16 +67,6 @@ static void SigScm_Initialize_internal(void);
 #endif
 
 static int Scm_RegisterFunc(const char *name, ScmFuncType func, enum ScmFuncTypeCode type);
-
-ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
-ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote, SigScm_unquote_splicing;
-ScmObj SigScm_unbound, SigScm_undef;
-#if SCM_USE_VALUECONS
-ScmObj SigScm_null_values;
-#endif
-
-static ScmObjInternal SigScm_null_impl, SigScm_true_impl, SigScm_false_impl, SigScm_eof_impl;
-static ScmObjInternal SigScm_unbound_impl, SigScm_undef_impl;
 
 /*=======================================
   Function Implementations
@@ -94,20 +88,6 @@ static void SigScm_Initialize_internal(void)
 {
     SigScm_SetDebugCategories(SCM_DBG_ERRMSG | SCM_DBG_BACKTRACE
                               | SigScm_PredefinedDebugCategories());
-
-    /*=======================================================================
-      Etc Variable Initialization
-    =======================================================================*/
-    SCM_ETC_SET_IMPL(SigScm_null,             SigScm_null_impl   );
-    SCM_ETC_SET_IMPL(SigScm_true,             SigScm_true_impl   );
-    SCM_ETC_SET_IMPL(SigScm_false,            SigScm_false_impl  );
-    SCM_ETC_SET_IMPL(SigScm_eof,              SigScm_eof_impl    );
-    SCM_ETC_SET_IMPL(SigScm_unbound,          SigScm_unbound_impl);
-    SCM_ETC_SET_IMPL(SigScm_undef,            SigScm_undef_impl  );
-
-#if SCM_COMPAT_SIOD_BUGS
-    SigScm_false = SigScm_null;
-#endif
 
     /*=======================================================================
       Externed Variable Initialization

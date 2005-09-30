@@ -402,11 +402,6 @@ struct ScmObjInternal_ {
   Etcetra Variables (Special Constants like SCM_NULL)
 ============================================================================*/
 #define SCM_ETCP(a) (SCM_TYPE(a) == ScmEtc)
-#define SCM_ETC_SET_IMPL(a, impl)         \
-    do {                                  \
-        (a) = &(impl);                    \
-        SCM_ENTYPE((a), ScmEtc);          \
-    } while(0)
 
 /*============================================================================
   C Pointer Object
@@ -466,7 +461,6 @@ struct ScmObjInternal_ {
  * above. They safely hides the internal model against such change.
  */
 extern ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
-extern ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote, SigScm_unquote_splicing;
 extern ScmObj SigScm_unbound, SigScm_undef;
 
 #endif /* __SIGSCMTYPE_H */
