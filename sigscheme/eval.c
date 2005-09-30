@@ -89,6 +89,7 @@ static ScmObj call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
 static ScmObj map_eval(ScmObj args, ScmObj env);
 static ScmObj qquote_internal(ScmObj expr, ScmObj env, int nest);
 static ScmObj qquote_vector(ScmObj vec, ScmObj env, int nest);
+static void define_internal(ScmObj var, ScmObj exp, ScmObj env);
 
 /*=======================================
   Function Implementations
@@ -1107,8 +1108,8 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
 
     /* named let */
     if (SYMBOLP(named_let_sym)) {
-        proc = LIST_1(Scm_NewClosure(CONS(ScmOp_reverse(vars), body), env));
-        ScmExp_define(named_let_sym, proc, env);
+        proc = Scm_NewClosure(CONS(ScmOp_reverse(vars), body), env);
+        define_internal(named_let_sym, proc, env);
     }
 
     return ScmExp_begin(body, eval_state);
@@ -1365,12 +1366,23 @@ ScmObj ScmOp_unquote_splicing(ScmObj dummy, ScmObj env)
 /*=======================================
   R5RS : 5.2 Definitions
 =======================================*/
+static void define_internal(ScmObj var, ScmObj exp, ScmObj env)
+{
+    if (NULLP(env)) {
+        /* given top-level environment */
+        SCM_SYMBOL_SET_VCELL(var, EVAL(exp, env));
+    } else {
+        /* add val to the environment */
+        env = add_environment(var, EVAL(exp, env), env);
+    }
+}
+
 ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
 {
-    ScmObj exp      = SCM_NULL;
-    ScmObj procname = SCM_NULL;
-    ScmObj body     = SCM_NULL;
-    ScmObj formals  = SCM_NULL;
+    ScmObj exp      = SCM_FALSE;
+    ScmObj procname = SCM_FALSE;
+    ScmObj body     = SCM_FALSE;
+    ScmObj formals  = SCM_FALSE;
 
     /*========================================================================
       (define <variable> <expression>)
@@ -1379,19 +1391,7 @@ ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
         if (!NULLP(SCM_SHIFT_RAW_1(exp, rest)))
             SigScm_Error("define : missing expression");
 
-        if (NULLP(env)) {
-            /* given top-level environment */
-            SCM_SYMBOL_SET_VCELL(var, EVAL(exp, env));
-        } else {
-            /* add val to the environment */
-            env = add_environment(var, EVAL(exp, env), env);
-        }
-
-#if SCM_STRICT_R5RS
-        return SCM_UNDEF;
-#else
-        return var;
-#endif
+        define_internal(var, exp, env);
     }
 
     /*========================================================================
@@ -1400,7 +1400,7 @@ ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
       => (define <variable>
              (lambda (<formals>) <body>))
     ========================================================================*/
-    if (CONSP(var)) {
+    else if (CONSP(var)) {
         procname   = CAR(var);
         formals    = CDR(var);
         body       = rest;
@@ -1411,13 +1411,18 @@ ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
         if (!SYMBOLP(procname))
             SigScm_ErrorObj("define : symbol required but got ", procname);
 
-        return ScmExp_define(procname,
-                             LIST_1(Scm_NewClosure(CONS(formals, body), env)),
-                             env);
+        define_internal(procname,
+                        Scm_NewClosure(CONS(formals, body), env),
+                        env);
+    } else {
+        SigScm_ErrorObj("define : syntax error: ", var);
     }
 
-    SigScm_ErrorObj("define : symbol required but got ", var);
+#if SCM_STRICT_R5RS
     return SCM_UNDEF;
+#else
+    return var;
+#endif
 }
 
 /*=======================================
