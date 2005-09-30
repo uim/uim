@@ -1764,8 +1764,8 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj proc)
     int jmpret  = 0;
     ScmObj cont = SCM_FALSE;
 
-    if (!CLOSUREP(proc))
-        SigScm_ErrorObj("call-with-current-continuation : closure required but got ", proc);
+    if (FALSEP(ScmOp_procedurep(proc)))
+        SigScm_ErrorObj("call-with-current-continuation : procedure required but got ", proc);
 
     cont = Scm_NewContinuation();
 

@@ -93,6 +93,7 @@ static void SigScm_Initialize_internal(void)
       Externed Variable Initialization
     =======================================================================*/
     scm_continuation_thrown_obj = SCM_NULL;
+    SigScm_GC_Protect(&scm_continuation_thrown_obj);
     /*=======================================================================
       Storage Initialization
     =======================================================================*/
@@ -305,6 +306,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterProcedureFixed1("provided?"                , ScmOp_providedp);
     Scm_RegisterProcedureFixed1("file-exists?"             , ScmOp_file_existsp);
     Scm_RegisterProcedureFixed1("delete-file"              , ScmOp_delete_file);
+    Scm_DefineAlias("call/cc", "call-with-current-continuation");
 #endif
 
     /*=======================================================================
