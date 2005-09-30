@@ -193,13 +193,15 @@ enum ScmReductionState {
     SCM_REDUCE_STOP             /* Callee wants to stop. */
 };
 
+enum ScmReturnType {
+    SCM_RETTYPE_AS_IS           = 0,
+    SCM_RETTYPE_NEED_EVAL       = 1
+};
+
 /* The evaluator's state */
 struct ScmEvalState_ {
     ScmObj env;
-    enum {
-        SCM_RETTYPE_AS_IS     = 0,
-        SCM_RETTYPE_NEED_EVAL = 1
-    } ret_type;
+    enum ScmReturnType ret_type;
 };
 
 /* Scheme Object */
