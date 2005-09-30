@@ -31,8 +31,5 @@
 
 ;; another continuation as proc
 (assert-true   "call/cc #5" (procedure? (call/cc (lambda (c) (call/cc c)))))
-(call/cc (lambda (c) (call/cc c)))
-(call/cc (lambda (c) c))
-(call/cc (lambda (c) (c 1)))
 
 (total-report)
