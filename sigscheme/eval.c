@@ -1103,7 +1103,13 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
     if (!NULLP(bindings))
         SigScm_Error("let : invalid bindings form");
 
+#if 1
+    /* current implementation extend_environment() contains unnecessary
+       error checking for let variants. So we extend manually */
+    env = CONS(CONS(vars, vals), env);
+#else
     env = extend_environment(vars, vals, env);
+#endif
     eval_state->env = env;
 
     /* named let */
