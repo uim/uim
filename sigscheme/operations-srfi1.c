@@ -394,7 +394,7 @@ ScmObj ScmOp_SRFI1_tenth(ScmObj lst)
 
 ScmObj ScmOp_SRFI1_carpluscdr(ScmObj lst)
 {
-    return Scm_NewValuePacket(LIST_2(CAR(lst), CDR(lst)));
+    return ScmOp_values(LIST_2(CAR(lst), CDR(lst)));
 }
 
 ScmObj ScmOp_SRFI1_take(ScmObj lst, ScmObj scm_idx)
@@ -531,16 +531,16 @@ ScmObj ScmOp_SRFI1_drop_right_d(ScmObj lst, ScmObj scm_idx)
 
 ScmObj ScmOp_SRFI1_split_at(ScmObj lst, ScmObj idx)
 {
-    return Scm_NewValuePacket(LIST_2(ScmOp_SRFI1_take(lst, idx),
-                                     ScmOp_SRFI1_drop(lst, idx)));
+    return ScmOp_values(LIST_2(ScmOp_SRFI1_take(lst, idx),
+                               ScmOp_SRFI1_drop(lst, idx)));
 }
 
 ScmObj ScmOp_SRFI1_split_at_d(ScmObj lst, ScmObj idx)
 {
     ScmObj drop = ScmOp_SRFI1_drop(lst, idx);
 
-    return Scm_NewValuePacket(LIST_2(ScmOp_SRFI1_take_d(lst, idx),
-                                     drop));
+    return ScmOp_values(LIST_2(ScmOp_SRFI1_take_d(lst, idx),
+                               drop));
 }
 
 ScmObj ScmOp_SRFI1_last(ScmObj lst)
