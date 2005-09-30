@@ -138,10 +138,12 @@ void SigScm_ShowBacktrace(void)
 
     /* show each frame's obj */
     for (f = scm_trace_root; f; f = f->prev) {
+#if SCM_DEBUG_BACKTRACE_SEP
         SigScm_ErrorPrintf("------------------------------\n");
+#endif
 
-        obj = f->obj;
         env = f->env;
+        obj = f->obj;
 
         SigScm_WriteToPort(scm_current_error_port, obj);
         SigScm_ErrorNewline();
@@ -150,7 +152,7 @@ void SigScm_ShowBacktrace(void)
         case ScmSymbol:
             if (UNBOUNDP(obj, env))
                 break;
-            SigScm_ErrorPrintf("  - \"%s\": ", SCM_SYMBOL_NAME(obj));
+            SigScm_ErrorPrintf("  - [%s]: ", SCM_SYMBOL_NAME(obj));
             SigScm_WriteToPort(scm_current_error_port, symbol_value(obj, env));
             SigScm_ErrorNewline();
             break;
@@ -161,7 +163,7 @@ void SigScm_ShowBacktrace(void)
                 if (SYMBOLP(proc)) {
                     if (UNBOUNDP(proc, env))
                         break;
-                    SigScm_ErrorPrintf("  - \"%s\": ", SCM_SYMBOL_NAME(proc));
+                    SigScm_ErrorPrintf("  - [%s]: ", SCM_SYMBOL_NAME(proc));
                     SigScm_WriteToPort(scm_current_error_port,
                                        symbol_value(proc, env));
                     SigScm_ErrorNewline();
