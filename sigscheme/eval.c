@@ -1129,12 +1129,14 @@ named_let:
     return CONS(CAR(args), vals);
 }
 
+/* RFC: ScmExp_letstar is preferable since the Scheme name is not 'let-*', and
+   in accordance with the name ScmExp_letrec -- YamaKen */
 ScmObj ScmExp_let_star(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
     ScmObj env     = eval_state->env;
-    ScmObj var     = SCM_NULL;
-    ScmObj val     = SCM_NULL;
-    ScmObj binding = SCM_NULL;
+    ScmObj var     = SCM_FALSE;
+    ScmObj val     = SCM_FALSE;
+    ScmObj binding = SCM_FALSE;
 
     /*========================================================================
       (let* <bindings> <body>)
@@ -1142,35 +1144,36 @@ ScmObj ScmExp_let_star(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
                      (<variable2> <init2>)
                      ...)
     ========================================================================*/
-    if (CONSP(bindings)) {
-        for (; !NULLP(bindings); bindings = CDR(bindings)) {
-            binding = CAR(bindings);
+    if (!CONSP(bindings) && !NULLP(bindings))
+        SigScm_Error("let* : syntax error");
 
-#if SCM_STRICT_ARGCHECK
-            if (NULLP(binding) || NULLP(CDR(binding)))
-                SigScm_ErrorObj("let* : invalid binding form : ", binding);
+    for (; !NULLP(bindings); bindings = CDR(bindings)) {
+        binding = CAR(bindings);
+
+#if SCM_COMPAT_SIOD_BUGS
+        if (NULLP(binding) || !SYMBOLP(var = CAR(binding)))
+            SigScm_ErrorObj("let* : invalid binding form : ", binding);
+        val = (!CONSP(CDR(binding))) ? SCM_FALSE : CADR(binding);
 #else
-            if (NULLP(CDR(binding)))
-                SET_CDR(binding, CONS(SCM_NULL, SCM_NULL));
+        if (!NULLP(SCM_SHIFT_RAW_2(var, val, binding)) || !SYMBOLP(var))
+            SigScm_ErrorObj("let* : invalid binding form : ", binding);
 #endif
-            SCM_SHIFT_RAW_2(var, val, binding);      
-            val = EVAL(val, env);
+        val = EVAL(val, env);
 
-            /* add env to each time!*/
-            env = extend_environment(LIST_1(var), LIST_1(val), env);
-        }
-    } else if (NULLP(bindings)) {
-        /* extend null environment */
-        env = extend_environment(SCM_NULL,
-                                 SCM_NULL,
-                                 env);
-    } else {
-        SigScm_ErrorObj("let* : invalid binding form : ", bindings);
+        /* extend env for each variable */
+#if 1
+        /* current implementation extend_environment() contains unnecessary
+           error checking for let variants. So we extend manually */
+        env = CONS(CONS(LIST_1(var), LIST_1(val)),
+                   env);
+#else
+        env = extend_environment(LIST_1(var), LIST_1(val), env);
+#endif
     }
 
-    /* set new env */
     eval_state->env = env;
-    /* evaluate */
+
+    /* evaluate body */
     return ScmExp_begin(body, eval_state);
 }
 
