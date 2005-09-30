@@ -1034,91 +1034,84 @@ ScmObj ScmExp_or(ScmObj args, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.2 Binding constructs
 ===========================================================================*/
+/*
+ * FIXME:
+ * - Remove inefficient 'reverse' for named let
+ * - Write the test for the named let spec:
+ *   <init>s should be evaluated in an environment where <procname> is not
+ *   bound to the closure.  <procname>'s scope must not penetrate to the
+ *   surrounding environment.
+ */
 ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
 {
-    ScmObj env      = eval_state->env;
-    ScmObj bindings = SCM_NULL;
-    ScmObj body     = SCM_NULL;
-    ScmObj vars     = SCM_NULL;
-    ScmObj vals     = SCM_NULL;
-    ScmObj var      = SCM_NULL;
-    ScmObj val      = SCM_NULL;
-    ScmObj binding  = SCM_NULL;
-
-    /* sanity check */
-    if CHECK_2_ARGS(args)
-        SigScm_Error("let : syntax error");
-
-    /* guess whether syntax is "Named let" */
-    if (SYMBOLP(CAR(args)))
-        goto named_let;
-
-    /* get bindings and body */
-    bindings = CAR(args);
-    body     = CDR(args);
+    ScmObj env           = eval_state->env;
+    ScmObj named_let_sym = SCM_FALSE;
+    ScmObj proc          = SCM_FALSE;
+    ScmObj bindings      = SCM_FALSE;
+    ScmObj body          = SCM_FALSE;
+    ScmObj binding       = SCM_FALSE;
+    ScmObj var           = SCM_FALSE;
+    ScmObj val           = SCM_FALSE;
+    ScmObj vars          = SCM_NULL;
+    ScmObj vals          = SCM_NULL;
 
     /*========================================================================
+      normal let:
+
       (let <bindings> <body>)
       <bindings> == ((<variable1> <init1>)
                      (<variable2> <init2>)
                      ...)
     ========================================================================*/
-    if (CONSP(bindings) || NULLP(bindings)) {
-        for (; !NULLP(bindings); bindings = CDR(bindings)) {
-            binding = CAR(bindings);
-
-#if SCM_STRICT_ARGCHECK
-            if (NULLP(binding) || NULLP(CDR(binding)))
-                SigScm_ErrorObj("let : invalid binding form : ", binding);
-#else
-            if (NULLP(CDR(binding)))
-                SET_CDR(binding, CONS(SCM_NULL, SCM_NULL));
-#endif
-            SCM_SHIFT_RAW_2(var, val, binding);
-
-            vars = CONS(var, vars);
-            vals = CONS(EVAL(val, env), vals);
-        }
-
-        /* create new environment for */
-        env = extend_environment(vars, vals, env);
-        eval_state->env = env;
-
-        return ScmExp_begin(body, eval_state);
-    }
-
-    return ScmExp_begin(body, eval_state);
-
-named_let:
-    /* This code needs reworking.  <init>s should be evaluated in an
-       environment where <procname> is not bound to the closure.
-       <procname>'s scope also penetrates to the surrounding
-       environment. */
     /*========================================================================
+      named let:
+
       (let <procname> <bindings> <body>)
       <bindings> == ((<variable1> <init1>)
                      (<variable2> <init2>)
                      ...)
     ========================================================================*/
-    bindings = CADR(args);
-    body     = CDDR(args);
-    for (; !NULLP(bindings); bindings = CDR(bindings)) {
-        binding = CAR(bindings);
-        SCM_SHIFT_RAW_2(var, val, binding);
-        vars = CONS(var, vars);
-        vals = CONS(val, vals);
+    if (!SCM_SHIFT_RAW(bindings, args))
+        SigScm_Error("let : syntax error");
+
+    /* named let */
+    if (SYMBOLP(bindings)) {
+        named_let_sym = bindings;
+        if (!SCM_SHIFT_RAW(bindings, args))
+            SigScm_Error("let : syntax error");
     }
 
-    vars = ScmOp_reverse(vars);
-    vals = ScmOp_reverse(vals);
+    body = args;
 
-    /* (define (<variable> <variable1> <variable2> ...>) <body>) */
-    ScmExp_define(CAR(args),
-                  LIST_1(Scm_NewClosure(CONS(vars, body), env)),
-                  env);
+    for (; CONSP(bindings); bindings = CDR(bindings)) {
+        binding = CAR(bindings);
 
-    /* (func <init1> <init2> ...) */
-    return CONS(CAR(args), vals);
+#if SCM_COMPAT_SIOD_BUGS
+        if (NULLP(binding) || !SYMBOLP(var = CAR(binding)))
+            SigScm_ErrorObj("let : invalid binding form : ", binding);
+        val = (!CONSP(CDR(binding))) ? SCM_FALSE : CADR(binding);
+#else
+        if (!NULLP(SCM_SHIFT_RAW_2(var, val, binding)) || !SYMBOLP(var))
+            SigScm_ErrorObj("let : invalid binding form : ", binding);
+#endif
+
+        vars = CONS(var, vars);
+        vals = CONS(EVAL(val, env), vals);
+    }
+
+    if (!NULLP(bindings))
+        SigScm_Error("let : invalid bindings form");
+
+    env = extend_environment(vars, vals, env);
+    eval_state->env = env;
+
+    /* named let */
+    if (SYMBOLP(named_let_sym)) {
+        proc = LIST_1(Scm_NewClosure(CONS(ScmOp_reverse(vars), body), env));
+        ScmExp_define(named_let_sym, proc, env);
+    }
+
+    return ScmExp_begin(body, eval_state);
 }
 
 /* RFC: ScmExp_letstar is preferable since the Scheme name is not 'let-*', and
