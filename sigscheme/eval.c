@@ -1202,12 +1202,11 @@ ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
         binding = CAR(bindings);
 
 #if SCM_COMPAT_SIOD_BUGS
-        if (NULLP(binding))
+        if (NULLP(binding) || !SYMBOLP(var = CAR(binding)))
             SigScm_ErrorObj("letrec : invalid binding form : ", binding);
-        var = CAR(binding);
         val = (!CONSP(CDR(binding))) ? SCM_FALSE : CADR(binding);
 #else
-        if (!NULLP(SCM_SHIFT_RAW_2(var, val, binding)))
+        if (!NULLP(SCM_SHIFT_RAW_2(var, val, binding)) || !SYMBOLP(var))
             SigScm_ErrorObj("letrec : invalid binding form : ", binding);
 #endif
 
