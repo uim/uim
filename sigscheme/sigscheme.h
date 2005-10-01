@@ -362,7 +362,7 @@ ScmCFunc SigScm_GC_EnsureUninlinedFuncInternal(ScmCFunc func) SCM_NOINLINE;
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env);
 ScmObj ScmOp_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state);
 ScmObj ScmOp_quote(ScmObj datum, ScmObj env);
-ScmObj ScmExp_lambda(ScmObj args, ScmObj env);
+ScmObj ScmExp_lambda(ScmObj formals, ScmObj first_expr, ScmObj rest, ScmObj env);
 ScmObj ScmExp_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state);
 ScmObj ScmExp_set(ScmObj var, ScmObj val, ScmObj env);
 ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state);

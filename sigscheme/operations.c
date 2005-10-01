@@ -59,7 +59,6 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static int ScmOp_c_length(ScmObj lst);
 static ScmObj ScmOp_listtail_internal(ScmObj obj, int k);
 
 static ScmObj map_single_arg(ScmObj proc, ScmObj args);
@@ -74,6 +73,7 @@ static ScmObj map_multiple_args(ScmObj proc, ScmObj args);
 ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
 {
     enum ScmObjType type;
+    DECLARE_FUNCTION("eqv?", ProcedureFixed2);
 
     if (EQ(obj1, obj2))
         return SCM_TRUE;
@@ -109,6 +109,7 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
 
 ScmObj ScmOp_eqp(ScmObj obj1, ScmObj obj2)
 {
+    DECLARE_FUNCTION("eq?", ProcedureFixed2);
     return (EQ(obj1, obj2)) ? SCM_TRUE : SCM_FALSE;
 }
 
@@ -118,6 +119,7 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
     int i = 0;
     ScmObj elm1 = SCM_FALSE;
     ScmObj elm2 = SCM_FALSE;
+    DECLARE_FUNCTION("equal?", ProcedureFixed2);
 
     if (EQ(obj1, obj2))
         return SCM_TRUE;
@@ -184,7 +186,7 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
 
 #if SCM_DEBUG
     case ScmFreeCell:
-        SigScm_Error("equal? : cannnot compare freecell, gc broken?");
+        ERR("cannnot compare freecell, gc broken?");
         break;
 #endif
 
@@ -206,22 +208,21 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
 ScmObj ScmOp_add(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     int result = 0;
+    DECLARE_FUNCTION("+", ReductionOperator);
     switch (*state) {
     case SCM_REDUCE_PARTWAY:
     case SCM_REDUCE_LAST:
-        if (!INTP(left))
-            SigScm_ErrorObj("+ : integer required but got ", left);
+        ASSERT_INTP(left);
         result = SCM_INT_VALUE(left);
         /* Fall through. */
     case SCM_REDUCE_1:
-        if (!INTP(right))
-            SigScm_ErrorObj("+ : integer required but got ", right);
+        ASSERT_INTP(right);
         result += SCM_INT_VALUE(right);
         /* Fall through. */
     case SCM_REDUCE_0:
         break;
     default:
-        SigScm_Error("+ : (internal error) unrecognized state specifier: %d", *state);
+        ERR("(internal error) unrecognized state specifier: %d", *state);
     }
 
     return Scm_NewInt(result);
@@ -230,22 +231,21 @@ ScmObj ScmOp_add(ScmObj left, ScmObj right, enum ScmReductionState *state)
 ScmObj ScmOp_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     int result = 1;
+    DECLARE_FUNCTION("*", ReductionOperator);
     switch (*state) {
     case SCM_REDUCE_PARTWAY:
     case SCM_REDUCE_LAST:
-        if (!INTP(left))
-            SigScm_ErrorObj("* : integer required but got ", left);
+        ASSERT_INTP(left);
         result = SCM_INT_VALUE(left);
         /* Fall through. */
     case SCM_REDUCE_1:
-        if (!INTP(right))
-            SigScm_ErrorObj("* : integer required but got ", right);
+        ASSERT_INTP(right);
         result *= SCM_INT_VALUE(right);
         /* Fall through. */
     case SCM_REDUCE_0:
         break;
     default:
-        SigScm_Error("* : (internal error) unrecognized state specifier: %d", *state);
+        ERR("(internal error) unrecognized state specifier: %d", *state);
     }
 
     return Scm_NewInt(result);
@@ -254,23 +254,22 @@ ScmObj ScmOp_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state)
 ScmObj ScmOp_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     int result = 0;
+    DECLARE_FUNCTION("-", ReductionOperator);
     switch (*state) {
     case SCM_REDUCE_PARTWAY:
     case SCM_REDUCE_LAST:
-        if (!INTP(left))
-            SigScm_ErrorObj("- : integer required but got ", left);
+        ASSERT_INTP(left);
         result = SCM_INT_VALUE(left);
         /* Fall through. */
     case SCM_REDUCE_1:
-        if (!INTP(right))
-            SigScm_ErrorObj("- : integer required but got ", right);
+        ASSERT_INTP(right);
         result -= SCM_INT_VALUE(right);
         break;
 
     case SCM_REDUCE_0:
-        SigScm_Error("- : at least 1 argument required");
+        ERR("at least 1 argument required");
     default:
-        SigScm_Error("- : (internal error) unrecognized state specifier: %d", *state);
+        ERR("(internal error) unrecognized state specifier: %d", *state);
     }
     return Scm_NewInt(result);
 }
@@ -278,140 +277,135 @@ ScmObj ScmOp_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state)
 ScmObj ScmOp_divide(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     int result = 1;
+    DECLARE_FUNCTION("/", ReductionOperator);
     switch (*state) {
     case SCM_REDUCE_PARTWAY:
     case SCM_REDUCE_LAST:
-        if (!INTP(left))
-            SigScm_ErrorObj("/ : integer required but got ", left);
+        ASSERT_INTP(left);
         result = SCM_INT_VALUE(left);
         /* Fall through. */
     case SCM_REDUCE_1:
-        if (!INTP(right))
-            SigScm_ErrorObj("/ : integer required but got ", right);
+        ASSERT_INTP(right);
         if (SCM_INT_VALUE(right) == 0)
-            SigScm_Error("/ : division by zero");
+            ERR("division by zero");
         result /= SCM_INT_VALUE(right);
         break;
     case SCM_REDUCE_0:
-        SigScm_Error("/ : at least 1 argument required");
+        ERR("at least 1 argument required");
     default:
-        SigScm_Error("/ : (internal error) unrecognized state specifier: ", *state);
+        ERR("(internal error) unrecognized state specifier: %d", *state);
     }
     return Scm_NewInt(result);
 }
 
 ScmObj ScmOp_numberp(ScmObj obj)
 {
+    DECLARE_FUNCTION("number?", ProcedureFixed1);
     return (INTP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_equal(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-
-#define COMPARATOR_BODY(op, opstr) \
+    DECLARE_FUNCTION("=", ReductionOperator);
+#define COMPARATOR_BODY(op) \
     switch (*state) { \
     case SCM_REDUCE_0: \
     case SCM_REDUCE_1: \
-        SigScm_Error(opstr " : at least 2 arguments required"); \
+        ERR("at least 2 arguments required"); \
     case SCM_REDUCE_PARTWAY: \
     case SCM_REDUCE_LAST: \
-        if (!INTP(left)) \
-            SigScm_ErrorObj(opstr " : integer required but got ", left); \
-        if (!INTP(right)) \
-            SigScm_ErrorObj(opstr " : integer required but got ", right); \
+        ASSERT_INTP(left); \
+        ASSERT_INTP(right); \
         if (SCM_INT_VALUE(left) op SCM_INT_VALUE(right)) \
             return *state == SCM_REDUCE_LAST ? SCM_TRUE : right; \
         *state = SCM_REDUCE_STOP; \
         return SCM_FALSE; \
     default: \
-        SigScm_Error(opstr " : (internal error) unrecognized state specifier: ", *state); \
+        ERR("(internal error) unrecognized state specifier: %d", *state); \
     } \
     return SCM_INVALID
 
-    COMPARATOR_BODY(==, "=");
+    COMPARATOR_BODY(==);
 }
 
 ScmObj ScmOp_less(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    COMPARATOR_BODY(<, "<");
+    DECLARE_FUNCTION("<", ReductionOperator);
+    COMPARATOR_BODY(<);
 }
 
 ScmObj ScmOp_less_eq(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    COMPARATOR_BODY(<=, "<=");
+    DECLARE_FUNCTION("<=", ReductionOperator);
+    COMPARATOR_BODY(<=);
 }
 
 ScmObj ScmOp_greater(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    COMPARATOR_BODY(>, ">");
+    DECLARE_FUNCTION(">", ReductionOperator);
+    COMPARATOR_BODY(>);
 }
 
 ScmObj ScmOp_greater_eq(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    COMPARATOR_BODY(>=, ">=");
+    DECLARE_FUNCTION(">=", ReductionOperator);
+    COMPARATOR_BODY(>=);
 #undef COMPARATOR_BODY
 }
 
 ScmObj ScmOp_zerop(ScmObj scm_num)
 {
-    if (FALSEP(ScmOp_numberp(scm_num)))
-        SigScm_ErrorObj("zero? : number required but got ", scm_num);
-
+    DECLARE_FUNCTION("zero?", ProcedureFixed1);
+    ASSERT_INTP(scm_num);
     return (SCM_INT_VALUE(scm_num) == 0) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_positivep(ScmObj scm_num)
 {
-    if (FALSEP(ScmOp_numberp(scm_num)))
-        SigScm_ErrorObj("positive? : number required but got", scm_num);
-
+    DECLARE_FUNCTION("positive?", ProcedureFixed1);
+    ASSERT_INTP(scm_num);
     return (SCM_INT_VALUE(scm_num) > 0) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_negativep(ScmObj scm_num)
 {
-    if (FALSEP(ScmOp_numberp(scm_num)))
-        SigScm_ErrorObj("negative? : number required but got ", scm_num);
-
+    DECLARE_FUNCTION("negative?", ProcedureFixed1);
+    ASSERT_INTP(scm_num);
     return (SCM_INT_VALUE(scm_num) < 0) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_oddp(ScmObj scm_num)
 {
-    if (FALSEP(ScmOp_numberp(scm_num)))
-        SigScm_ErrorObj("odd? : number required but got ", scm_num);
-
+    DECLARE_FUNCTION("odd?", ProcedureFixed1);
+    ASSERT_INTP(scm_num);
     return (SCM_INT_VALUE(scm_num) & 0x1) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_evenp(ScmObj scm_num)
 {
-    if (FALSEP(ScmOp_numberp(scm_num)))
-        SigScm_ErrorObj("even? : number required but got ", scm_num);
-
+    DECLARE_FUNCTION("even?", ProcedureFixed1);
+    ASSERT_INTP(scm_num);
     return (SCM_INT_VALUE(scm_num) & 0x1) ? SCM_FALSE : SCM_TRUE;
 }
 
 ScmObj ScmOp_max(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
+    DECLARE_FUNCTION("max", ReductionOperator);
     if (*state == SCM_REDUCE_0)
-        SigScm_Error("max : at least 1 argument required");
-    if (!INTP(left))
-        SigScm_Error("max : integer required but got ", left);
-    if (!INTP(right))
-        SigScm_Error("max : integer required but got ", right);
+        ERR("at least 1 argument required");
+    ASSERT_INTP(left);
+    ASSERT_INTP(right);
 
     return SCM_INT_VALUE(left) > SCM_INT_VALUE(right) ? left : right;
 }
 
 ScmObj ScmOp_min(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
+    DECLARE_FUNCTION("min", ReductionOperator);
     if (*state == SCM_REDUCE_0)
-        SigScm_Error("min : at least 1 argument required");
-    if (!INTP(left))
-        SigScm_Error("min : integer required but got ", left);
-    if (!INTP(right))
-        SigScm_Error("min : integer required but got ", right);
+        ERR("at least 1 argument required");
+    ASSERT_INTP(left);
+    ASSERT_INTP(right);
 
     return SCM_INT_VALUE(left) < SCM_INT_VALUE(right) ? left : right;
 }
@@ -420,9 +414,9 @@ ScmObj ScmOp_min(ScmObj left, ScmObj right, enum ScmReductionState *state)
 ScmObj ScmOp_abs(ScmObj scm_num)
 {
     int num = 0;
+    DECLARE_FUNCTION("abs", ProcedureFixed1);
 
-    if (FALSEP(ScmOp_numberp(scm_num)))
-        SigScm_ErrorObj("abs : number required but got ", scm_num);
+    ASSERT_INTP(scm_num);
 
     num = SCM_INT_VALUE(scm_num);
 
@@ -433,16 +427,16 @@ ScmObj ScmOp_quotient(ScmObj scm_n1, ScmObj scm_n2)
 {
     int n1 = 0;
     int n2 = 0;
+    DECLARE_FUNCTION("quotient", ProcedureFixed2);
 
-    if (FALSEP(ScmOp_numberp(scm_n1)))
-        SigScm_ErrorObj("quotient : number required but got ", scm_n1);
-    if (FALSEP(ScmOp_numberp(scm_n2)))
-        SigScm_ErrorObj("quotient : number required but got ", scm_n2);
-    if (NFALSEP(ScmOp_zerop(scm_n2)))
-        SigScm_Error("quotient : divide by zero");
+    ASSERT_INTP(scm_n1);
+    ASSERT_INTP(scm_n2);
 
     n1 = SCM_INT_VALUE(scm_n1);
     n2 = SCM_INT_VALUE(scm_n2);
+
+    if (n2 == 0)
+        ERR("division by zero");
 
     return Scm_NewInt((int)(n1 / n2));
 }
@@ -452,16 +446,16 @@ ScmObj ScmOp_modulo(ScmObj scm_n1, ScmObj scm_n2)
     int n1  = 0;
     int n2  = 0;
     int rem = 0;
+    DECLARE_FUNCTION("modulo", ProcedureFixed2);
 
-    if (FALSEP(ScmOp_numberp(scm_n1)))
-        SigScm_ErrorObj("modulo : number required but got ", scm_n1);
-    if (FALSEP(ScmOp_numberp(scm_n2)))
-        SigScm_ErrorObj("modulo : number required but got ", scm_n2);
-    if (NFALSEP(ScmOp_zerop(scm_n2)))
-        SigScm_Error("modulo : divide by zero");
+    ASSERT_INTP(scm_n1);
+    ASSERT_INTP(scm_n2);
 
     n1 = SCM_INT_VALUE(scm_n1);
     n2 = SCM_INT_VALUE(scm_n2);
+
+    if (n2 == 0)
+        ERR("division by zero");
 
     rem  = n1 % n2;
     if (n1 < 0 && n2 > 0) {
@@ -477,16 +471,16 @@ ScmObj ScmOp_remainder(ScmObj scm_n1, ScmObj scm_n2)
 {
     int n1  = 0;
     int n2  = 0;
+    DECLARE_FUNCTION("remainder", ProcedureFixed2);
 
-    if (FALSEP(ScmOp_numberp(scm_n1)))
-        SigScm_ErrorObj("remainder : number required but got ", scm_n1);
-    if (FALSEP(ScmOp_numberp(scm_n2)))
-        SigScm_ErrorObj("remainder : number required but got ", scm_n2);
-    if (NFALSEP(ScmOp_zerop(scm_n2)))
-        SigScm_Error("remainder : divide by zero");
+    ASSERT_INTP(scm_n1);
+    ASSERT_INTP(scm_n2);
 
     n1 = SCM_INT_VALUE(scm_n1);
     n2 = SCM_INT_VALUE(scm_n2);
+
+    if (n2 == 0)
+        ERR("division by zero");
 
     return Scm_NewInt(n1 % n2);
 }
@@ -494,34 +488,32 @@ ScmObj ScmOp_remainder(ScmObj scm_n1, ScmObj scm_n2)
 /*==============================================================================
   R5RS : 6.2 Numbers : 6.2.6 Numerical input and output
 ==============================================================================*/
-ScmObj ScmOp_number2string (ScmObj num, ScmObj args)
+ScmObj ScmOp_number2string(ScmObj num, ScmObj args)
 {
   char buf[sizeof(int)*CHAR_BIT + 1];
   char *p;
   unsigned int n, r;
   ScmObj radix;
+  DECLARE_FUNCTION("number->string", ProcedureVariadic1);
 
-  if (!INTP(num))
-      SigScm_ErrorObj("number->string: integer required but got ", num);
-
+  ASSERT_INTP(num);
   n = SCM_INT_VALUE(num);
 
   /* r = radix */
-  if (NULLP(args))
+  if (NO_MORE_ARG(args))
       r = 10;
   else {
-#ifdef SCM_STRICT_ARGCHECK
-      if (!NULLP(CDR(args)))
-          SigScm_ErrorObj("number->string: too many arguments: ", args);
-#endif
-      radix = CAR(args);
-      if (!INTP(radix))
-          SigScm_ErrorObj("number->string: integer required but got ", radix);
-      r = SCM_INT_VALUE(radix);
+      radix = POP_ARG(args);
+      ASSERT_NO_MORE_ARG(args);
 
+      ASSERT_INTP(radix);
+      r = SCM_INT_VALUE(radix);
+#if SCM_STRICT_R5RS
+      if (!(r == 2 || r == 8 || r == 10 || r == 16))
+#else
       if (!(2 <= r && r <= 16))
-          SigScm_ErrorObj("number->string: invalid or unsupported radix: ",
-                          radix);
+#endif
+          ERR_OBJ("invalid or unsupported radix", radix);
   }
 
   /* no signs for nondecimals */
@@ -550,9 +542,9 @@ ScmObj ScmOp_string2number(ScmObj string)
     char  *str = NULL;
     char  *p   = NULL;
     size_t len = 0;
+    DECLARE_FUNCTION("string->number", ProcedureFixed1);
 
-    if (!STRINGP(string))
-        SigScm_ErrorObj("string->number : string required but got ", string);
+    ASSERT_STRINGP(string);
 
     str = SCM_STRING_STR(string);
     len = strlen(str);
@@ -572,11 +564,13 @@ ScmObj ScmOp_string2number(ScmObj string)
 ==============================================================================*/
 ScmObj ScmOp_not(ScmObj obj)
 {
+    DECLARE_FUNCTION("not", ProcedureFixed1);
     return (FALSEP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_booleanp(ScmObj obj)
 {
+    DECLARE_FUNCTION("boolean?", ProcedureFixed1);
     return (EQ(obj, SCM_FALSE) || EQ(obj, SCM_TRUE)) ? SCM_TRUE : SCM_FALSE;
 }
 
@@ -585,44 +579,46 @@ ScmObj ScmOp_booleanp(ScmObj obj)
 ==============================================================================*/
 ScmObj ScmOp_car(ScmObj obj)
 {
+    DECLARE_FUNCTION("car", PocedureFixed1);
 #if SCM_COMPAT_SIOD_BUGS
     if (NULLP(obj))
         return SCM_NULL;
 #endif
 
-    if (!CONSP(obj))
-        SigScm_ErrorObj("car : pair required but got ", obj);
+    ASSERT_CONSP(obj);
 
     return CAR(obj);
 }
 
 ScmObj ScmOp_cdr(ScmObj obj)
 {
+    DECLARE_FUNCTION("cdr", ProcedureFixed1);
 #if SCM_COMPAT_SIOD_BUGS
     if (NULLP(obj))
         return SCM_NULL;
 #endif
 
-    if (!CONSP(obj))
-        SigScm_ErrorObj("cdr : pair required but got ", obj);
+    ASSERT_CONSP(obj);
 
     return CDR(obj);
 }
 
 ScmObj ScmOp_pairp(ScmObj obj)
 {
+    DECLARE_FUNCTION("pair?", ProcedureFixed1);
     return (CONSP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_cons(ScmObj car, ScmObj cdr)
 {
+    DECLARE_FUNCTION("cons", ProcedureFixed1);
     return CONS(car, cdr);
 }
 
 ScmObj ScmOp_setcar(ScmObj pair, ScmObj car)
 {
-    if (!CONSP(pair))
-        SigScm_ErrorObj("set-car! : pair required but got ", pair);
+    DECLARE_FUNCTION("set-car!", SyntaxFixed2);
+    ASSERT_CONSP(pair);
 
     SET_CAR(pair, car);
 
@@ -635,8 +631,8 @@ ScmObj ScmOp_setcar(ScmObj pair, ScmObj car)
 
 ScmObj ScmOp_setcdr(ScmObj pair, ScmObj cdr)
 {
-    if (!CONSP(pair))
-        SigScm_ErrorObj("set-cdr! : pair required but got ", pair);
+    DECLARE_FUNCTION("set-cdr!", SyntaxFixed2);
+    ASSERT_CONSP(pair);
 
     SET_CDR(pair, cdr);
 
@@ -649,133 +645,164 @@ ScmObj ScmOp_setcdr(ScmObj pair, ScmObj cdr)
 
 ScmObj ScmOp_caar(ScmObj lst)
 {
+    DECLARE_FUNCTION("caar", ProcedureFixed1);
     return ScmOp_car( ScmOp_car(lst) );
 }
 ScmObj ScmOp_cadr(ScmObj lst)
 {
+    DECLARE_FUNCTION("cadr", ProcedureFixed1);
     return ScmOp_car( ScmOp_cdr(lst) );
 }
 ScmObj ScmOp_cdar(ScmObj lst)
 {
+    DECLARE_FUNCTION("cdar", ProcedureFixed1);
     return ScmOp_cdr( ScmOp_car(lst) );
 }
 ScmObj ScmOp_cddr(ScmObj lst)
 {
+    DECLARE_FUNCTION("cddr", ProcedureFixed1);
     return ScmOp_cdr( ScmOp_cdr(lst) );
 }
 ScmObj ScmOp_caddr(ScmObj lst)
 {
+    DECLARE_FUNCTION("caddr", ProcedureFixed1);
     return ScmOp_car( ScmOp_cdr( ScmOp_cdr(lst) ));
 }
 ScmObj ScmOp_cdddr(ScmObj lst)
 {
+    DECLARE_FUNCTION("cdddr", ProcedureFixed1);
     return ScmOp_cdr( ScmOp_cdr( ScmOp_cdr(lst) ));
 }
 
 #if SCM_USE_DEEP_CADRS
 ScmObj ScmOp_caaar(ScmObj lst)
 {
+    DECLARE_FUNCTION("caaar", ProcedureFixed1);
     return ScmOp_car( ScmOp_car( ScmOp_car(lst) ));
 }
 ScmObj ScmOp_caadr(ScmObj lst)
 {
+    DECLARE_FUNCTION("caadr", ProcedureFixed1);
     return ScmOp_car( ScmOp_car( ScmOp_cdr(lst) ));
 }
 ScmObj ScmOp_cadar(ScmObj lst)
 {
+    DECLARE_FUNCTION("cadar", ProcedureFixed1);
     return ScmOp_car( ScmOp_cdr( ScmOp_car(lst) ));
 }
 ScmObj ScmOp_cdaar(ScmObj lst)
 {
+    DECLARE_FUNCTION("cdaar", ProcedureFixed1);
     return ScmOp_cdr( ScmOp_car( ScmOp_car(lst) ));
 }
 ScmObj ScmOp_cdadr(ScmObj lst)
 {
+    DECLARE_FUNCTION("cdadr", ProcedureFixed1);
     return ScmOp_cdr( ScmOp_car( ScmOp_cdr(lst) ));
 }
 ScmObj ScmOp_cddar(ScmObj lst)
 {
+    DECLARE_FUNCTION("cddar", ProcedureFixed1);
     return ScmOp_cdr( ScmOp_cdr( ScmOp_car(lst) ));
 }
 ScmObj ScmOp_caaaar(ScmObj lst)
 {
+    DECLARE_FUNCTION("caaaar", ProcedureFixed1);
     return ScmOp_car( ScmOp_car( ScmOp_car( ScmOp_car(lst) )));
 }
 ScmObj ScmOp_caaadr(ScmObj lst)
 {
+    DECLARE_FUNCTION("caaadr", ProcedureFixed1);
     return ScmOp_car( ScmOp_car( ScmOp_car( ScmOp_cdr(lst) )));
 }
 ScmObj ScmOp_caadar(ScmObj lst)
 {
+    DECLARE_FUNCTION("caadar", ProcedureFixed1);
     return ScmOp_car( ScmOp_car( ScmOp_cdr( ScmOp_car(lst) )));
 }
 ScmObj ScmOp_caaddr(ScmObj lst)
 {
+    DECLARE_FUNCTION("caaddr", ProcedureFixed1);
     return ScmOp_car( ScmOp_car( ScmOp_cdr( ScmOp_cdr(lst) )));
 }
 ScmObj ScmOp_cadaar(ScmObj lst)
 {
+    DECLARE_FUNCTION("cadaar", ProcedureFixed1);
     return ScmOp_car( ScmOp_cdr( ScmOp_car( ScmOp_car(lst) )));
 }
 ScmObj ScmOp_cadadr(ScmObj lst)
 {
+    DECLARE_FUNCTION("cadadr", ProcedureFixed1);
     return ScmOp_car( ScmOp_cdr( ScmOp_car( ScmOp_cdr(lst) )));
 }
 ScmObj ScmOp_caddar(ScmObj lst)
 {
+    DECLARE_FUNCTION("caddar", ProcedureFixed1);
     return ScmOp_car( ScmOp_cdr( ScmOp_cdr( ScmOp_car(lst) )));
 }
 ScmObj ScmOp_cadddr(ScmObj lst)
 {
+    DECLARE_FUNCTION("cadddr", ProcedureFixed1);
     return ScmOp_car( ScmOp_cdr( ScmOp_cdr( ScmOp_cdr(lst) )));
 }
 ScmObj ScmOp_cdaaar(ScmObj lst)
 {
+    DECLARE_FUNCTION("cdaaar", ProcedureFixed1);
     return ScmOp_cdr( ScmOp_car( ScmOp_car( ScmOp_car(lst) )));
 }
 ScmObj ScmOp_cdaadr(ScmObj lst)
 {
+    DECLARE_FUNCTION("cdaadr", ProcedureFixed1);
     return ScmOp_cdr( ScmOp_car( ScmOp_car( ScmOp_cdr(lst) )));
 }
 ScmObj ScmOp_cdadar(ScmObj lst)
 {
+    DECLARE_FUNCTION("cdadar", ProcedureFixed1);
     return ScmOp_cdr( ScmOp_car( ScmOp_cdr( ScmOp_car(lst) )));
 }
 ScmObj ScmOp_cdaddr(ScmObj lst)
 {
+    DECLARE_FUNCTION("cdaddr", ProcedureFixed1);
     return ScmOp_cdr( ScmOp_car( ScmOp_cdr( ScmOp_cdr(lst) )));
 }
 ScmObj ScmOp_cddaar(ScmObj lst)
 {
+    DECLARE_FUNCTION("cddaar", ProcedureFixed1);
     return ScmOp_cdr( ScmOp_cdr( ScmOp_car( ScmOp_car(lst) )));
 }
 ScmObj ScmOp_cddadr(ScmObj lst)
 {
+    DECLARE_FUNCTION("cddadr", ProcedureFixed1);
     return ScmOp_cdr( ScmOp_cdr( ScmOp_car( ScmOp_cdr(lst) )));
 }
 ScmObj ScmOp_cdddar(ScmObj lst)
 {
+    DECLARE_FUNCTION("cdddar", ProcedureFixed1);
     return ScmOp_cdr( ScmOp_cdr( ScmOp_cdr( ScmOp_car(lst) )));
 }
 ScmObj ScmOp_cddddr(ScmObj lst)
 {
+    DECLARE_FUNCTION("cddddr", ProcedureFixed1);
     return ScmOp_cdr( ScmOp_cdr( ScmOp_cdr( ScmOp_cdr(lst) )));
 }
 #endif /* SCM_USE_DEEP_CADRS */
 
 ScmObj ScmOp_list(ScmObj args)
 {
+    DECLARE_FUNCTION("list", ProcedureVariadic0);
     return args;
 }
 
 ScmObj ScmOp_nullp(ScmObj obj)
 {
+    DECLARE_FUNCTION("null?", ProcedureFixed1);
     return (NULLP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_listp(ScmObj obj)
 {
     int len = 0;
+    DECLARE_FUNCTION("list?", ProcedureFixed1);
 
     if (NULLP(obj))
         return SCM_TRUE;
@@ -792,7 +819,7 @@ ScmObj ScmOp_listp(ScmObj obj)
  *
  * This function is ported from Gauche, by Shiro Kawai(shiro@acm.org)
  */
-static int ScmOp_c_length(ScmObj lst)
+int ScmOp_c_length(ScmObj lst)
 {
     ScmObj slow = lst;
     int len = 0;
@@ -819,8 +846,10 @@ static int ScmOp_c_length(ScmObj lst)
 ScmObj ScmOp_length(ScmObj obj)
 {
     int len = ScmOp_c_length(obj);
+    DECLARE_FUNCTION("length", ProcedureFixed1);
+
     if (len < 0)
-        SigScm_ErrorObj("length : list required but got ", obj);
+        ERR_OBJ("list required but got", obj);
 
     return Scm_NewInt(len);
 }
@@ -1016,22 +1045,21 @@ ScmObj ScmOp_assoc(ScmObj obj, ScmObj alist)
 ==============================================================================*/
 ScmObj ScmOp_symbolp(ScmObj obj)
 {
+    DECLARE_FUNCTION("symbol?", ProcedureFixed1);
     return (SYMBOLP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_symbol2string(ScmObj obj)
 {
-    if (!SYMBOLP(obj))
-        SigScm_ErrorObj("symbol->string: symbol required, but got ", obj);
-
+    DECLARE_FUNCTION("symbol->string", ProcedureFixed1);
+    ASSERT_SYMBOLP(obj);
     return Scm_NewStringCopying(SCM_SYMBOL_NAME(obj));
 }
 
 ScmObj ScmOp_string2symbol(ScmObj str)
 {
-    if(!STRINGP(str))
-        SigScm_ErrorObj("string->symbol: string required, but got ", str);
-
+    DECLARE_FUNCTION("string->symbol", ProcedureFixed1);
+    ASSERT_STRINGP(str);
     return Scm_Intern(SCM_STRING_STR(str));
 }
 
@@ -1040,15 +1068,15 @@ ScmObj ScmOp_string2symbol(ScmObj str)
 ==============================================================================*/
 ScmObj ScmOp_charp(ScmObj obj)
 {
+    DECLARE_FUNCTION("char?", ProcedureFixed1);
     return (CHARP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_char_equal(ScmObj ch1, ScmObj ch2)
 {
-    if (!CHARP(ch1))
-        SigScm_ErrorObj("char=? : char required but got ", ch1);
-    if (!CHARP(ch2))
-        SigScm_ErrorObj("char=? : char required but got ", ch2);
+    DECLARE_FUNCTION("char=?", ProcedureFixed2);
+    ASSERT_CHARP(ch1);
+    ASSERT_CHARP(ch2);
 
     if (strcmp(SCM_CHAR_VALUE(ch1), SCM_CHAR_VALUE(ch2)) == 0)
         return SCM_TRUE;
@@ -1058,8 +1086,8 @@ ScmObj ScmOp_char_equal(ScmObj ch1, ScmObj ch2)
 
 ScmObj ScmOp_char_alphabeticp(ScmObj obj)
 {
-    if (!CHARP(obj))
-        SigScm_ErrorObj("char-alphabetic? : char required but got ", obj);
+    DECLARE_FUNCTION("char-alphabetic?", ProcedureFixed1);
+    ASSERT_CHARP(obj);
 
     /* check multibyte */
     if (strlen(SCM_CHAR_VALUE(obj)) != 1)
@@ -1074,8 +1102,8 @@ ScmObj ScmOp_char_alphabeticp(ScmObj obj)
 
 ScmObj ScmOp_char_numericp(ScmObj obj)
 {
-    if (!CHARP(obj))
-        SigScm_ErrorObj("char-alphabetic? : char required but got ", obj);
+    DECLARE_FUNCTION("char-numeric?", ProcedureFixed1);
+    ASSERT_CHARP(obj);
 
     /* check multibyte */
     if (strlen(SCM_CHAR_VALUE(obj)) != 1)
@@ -1090,8 +1118,8 @@ ScmObj ScmOp_char_numericp(ScmObj obj)
 
 ScmObj ScmOp_char_whitespacep(ScmObj obj)
 {
-    if (!CHARP(obj))
-        SigScm_ErrorObj("char-alphabetic? : char required but got ", obj);
+    DECLARE_FUNCTION("char-whitespace?", ProcedureFixed1);
+    ASSERT_CHARP(obj);
 
     /* check multibyte */
     if (strlen(SCM_CHAR_VALUE(obj)) != 1)
@@ -1106,8 +1134,8 @@ ScmObj ScmOp_char_whitespacep(ScmObj obj)
 
 ScmObj ScmOp_char_upper_casep(ScmObj obj)
 {
-    if (!CHARP(obj))
-        SigScm_ErrorObj("char-alphabetic? : char required but got ", obj);
+    DECLARE_FUNCTION("char-upper-case?", ProcedureFixed1);
+    ASSERT_CHARP(obj);
 
     /* check multibyte */
     if (strlen(SCM_CHAR_VALUE(obj)) != 1)
@@ -1122,8 +1150,8 @@ ScmObj ScmOp_char_upper_casep(ScmObj obj)
 
 ScmObj ScmOp_char_lower_casep(ScmObj obj)
 {
-    if (!CHARP(obj))
-        SigScm_ErrorObj("char-alphabetic? : char required but got ", obj);
+    DECLARE_FUNCTION("char-lower-case?", ProcedureFixed1);
+    ASSERT_CHARP(obj);
 
     /* check multibyte */
     if (strlen(SCM_CHAR_VALUE(obj)) != 1)
@@ -1138,8 +1166,8 @@ ScmObj ScmOp_char_lower_casep(ScmObj obj)
 
 ScmObj ScmOp_char_upcase(ScmObj obj)
 {
-    if (!CHARP(obj))
-        SigScm_ErrorObj("char-upcase : char required but got ", obj);
+    DECLARE_FUNCTION("char-upcase", ProcedureFixed1);
+    ASSERT_CHARP(obj);
 
     /* check multibyte */
     if (strlen(SCM_CHAR_VALUE(obj)) != 1)
@@ -1153,8 +1181,8 @@ ScmObj ScmOp_char_upcase(ScmObj obj)
 
 ScmObj ScmOp_char_downcase(ScmObj obj)
 {
-    if (!CHARP(obj))
-        SigScm_ErrorObj("char-upcase : char required but got ", obj);
+    DECLARE_FUNCTION("char-downcase", ProcedureFixed1);
+    ASSERT_CHARP(obj);
 
     /* check multibyte */
     if (strlen(SCM_CHAR_VALUE(obj)) != 1)
@@ -1171,6 +1199,7 @@ ScmObj ScmOp_char_downcase(ScmObj obj)
 ==============================================================================*/
 ScmObj ScmOp_stringp(ScmObj obj)
 {
+    DECLARE_FUNCTION("string?", ProcedureFixed1);
     return (STRINGP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
@@ -1179,23 +1208,19 @@ ScmObj ScmOp_make_string(ScmObj length, ScmObj args)
     int len = 0;
     ScmObj str    = SCM_FALSE;
     ScmObj filler = SCM_FALSE;
+    DECLARE_FUNCTION("make-string", ProcedureVariadic1);
 
-    /* sanity check */
-    if (!INTP(length))
-        SigScm_ErrorObj("make-string : integer required but got ", length);
-
-    /* get length */
+    ASSERT_INTP(length);
     len = SCM_INT_VALUE(length);
     if (len == 0)
         return Scm_NewStringCopying("");
 
     /* specify filler */
-    if (NULLP(args)) {
+    if (NO_MORE_ARG(args)) {
         filler = Scm_NewChar(strdup(" "));
     } else {
-        filler = CAR(args);
-        if (!CHARP(filler))
-            SigScm_ErrorObj("make-string : character required but got ", filler);
+        filler = POP_ARG(args);
+        ASSERT_CHARP(filler);
     }
 
     /* make string */
@@ -1209,14 +1234,14 @@ ScmObj ScmOp_make_string(ScmObj length, ScmObj args)
 
 ScmObj ScmOp_string(ScmObj args)
 {
+    DECLARE_FUNCTION("string", ProcedureVariadic0);
     return ScmOp_list2string(args);
 }
 
 ScmObj ScmOp_string_length(ScmObj str)
 {
-    if (!STRINGP(str))
-        SigScm_ErrorObj("string-length : string required but got ", str);
-
+    DECLARE_FUNCTION("string-length", ProcedureFixed1);
+    ASSERT_STRINGP(str);
     return Scm_NewInt(SigScm_default_encoding_strlen(SCM_STRING_STR(str)));
 }
 
@@ -1227,11 +1252,10 @@ ScmObj ScmOp_string_ref(ScmObj str, ScmObj k)
     const char *string_str   = NULL;
     const char *ch_start_ptr = NULL;
     const char *ch_end_ptr   = NULL;
+    DECLARE_FUNCTION("string-ref", ProcedureFixed2);
 
-    if (!STRINGP(str))
-        SigScm_ErrorObj("string-ref : string required but got ", str);
-    if (!INTP(k))
-        SigScm_ErrorObj("string-ref : number required but got ", k);
+    ASSERT_STRINGP(str);
+    ASSERT_INTP(k);
 
     /* get start_ptr and end_ptr */
     c_index = SCM_INT_VALUE(k);
@@ -1258,13 +1282,11 @@ ScmObj ScmOp_string_set(ScmObj str, ScmObj k, ScmObj ch)
     const char *string_str   = NULL;
     const char *ch_start_ptr = NULL;
     const char *ch_end_ptr   = NULL;
+    DECLARE_FUNCTION("string-set!", ProcedureFixed3);
 
-    if (!STRINGP(str))
-        SigScm_ErrorObj("string-set! : string required but got ", str);
-    if (!INTP(k))
-        SigScm_ErrorObj("string-set! : number required but got ", k);
-    if (!CHARP(ch))
-        SigScm_ErrorObj("string-set! : character required but got ", ch);
+    ASSERT_STRINGP(str);
+    ASSERT_INTP(k);
+    ASSERT_CHARP(ch);
 
     /* get indexes */
     c_start_index = SCM_INT_VALUE(k);
@@ -1296,6 +1318,11 @@ ScmObj ScmOp_string_set(ScmObj str, ScmObj k, ScmObj ch)
 
 ScmObj ScmOp_string_equal(ScmObj str1, ScmObj str2)
 {
+    DECLARE_FUNCTION("string=", ProcedureFixed2);
+
+    ASSERT_STRINGP(str1);
+    ASSERT_STRINGP(str2);
+
     if (strcmp(SCM_STRING_STR(str1), SCM_STRING_STR(str2)) == 0)
         return SCM_TRUE;
 
@@ -1310,13 +1337,11 @@ ScmObj ScmOp_string_substring(ScmObj str, ScmObj start, ScmObj end)
     const char *string_str   = NULL;
     const char *ch_start_ptr = NULL;
     const char *ch_end_ptr   = NULL;
+    DECLARE_FUNCTION("substring", ProcedureFixed3);
 
-    if (!STRINGP(str))
-        SigScm_ErrorObj("string-ref : string required but got ", str);
-    if (!INTP(start))
-        SigScm_ErrorObj("string-ref : number required but got ", start);
-    if (!INTP(end))
-        SigScm_ErrorObj("string-ref : number required but got ", end);
+    ASSERT_STRINGP(str);
+    ASSERT_INTP(start);
+    ASSERT_INTP(end);
 
     /* get start_ptr and end_ptr */
     c_start_index = SCM_INT_VALUE(start);
@@ -1341,15 +1366,16 @@ ScmObj ScmOp_string_substring(ScmObj str, ScmObj start, ScmObj end)
 
 ScmObj ScmOp_string_append(ScmObj args)
 {
+    /* FIXME: transition to new arg extraction mechanism incomplete. */
     int total_size = 0;
     int total_len  = 0;
     ScmObj strings = SCM_NULL;
     ScmObj obj     = SCM_NULL;
     char  *new_str = NULL;
     char  *p       = NULL;
+    DECLARE_FUNCTION("string-append", ProcedureFixed1);
 
-    /* sanity check */
-    if (NULLP(args))
+    if (NO_MORE_ARG(args))
         return Scm_NewStringCopying("");
 
     /* count total size of the new string */
@@ -1388,9 +1414,9 @@ ScmObj ScmOp_string2list(ScmObj string)
     const char *ch_start_ptr = NULL;
     const char *ch_end_ptr   = NULL;
     char *new_ch = NULL;
+    DECLARE_FUNCTION("string->list", string);
 
-    if (!STRINGP(string))
-        SigScm_ErrorObj("string->list : string required but got ", string);
+    ASSERT_STRINGP(string);
 
     string_str = SCM_STRING_STR(string);
     str_len    = SCM_STRING_LEN(string);
@@ -1461,9 +1487,8 @@ ScmObj ScmOp_list2string(ScmObj lst)
 
 ScmObj ScmOp_string_copy(ScmObj string)
 {
-    if (!STRINGP(string))
-        SigScm_ErrorObj("string-copy : string required but got ", string);
-
+    DECLARE_FUNCTION("string-copy", ProcedureFixed1);
+    ASSERT_STRINGP(string);
     return Scm_NewStringCopying(SCM_STRING_STR(string));
 }
 
@@ -1474,11 +1499,10 @@ ScmObj ScmOp_string_fill(ScmObj string, ScmObj ch)
     char *new_str  = NULL;
     char *p        = NULL;
     int   i        = 0;
+    DECLARE_FUNCTION("string-fill!", ProcedureFixed2);
 
-    if (!STRINGP(string))
-        SigScm_ErrorObj("string-fill! : string required but got ", string);
-    if (!CHARP(ch))
-        SigScm_ErrorObj("string-fill! : character required but got ", ch);
+    ASSERT_STRINGP(string);
+    ASSERT_CHARP(ch);
 
     /* create new str */
     char_size = strlen(SCM_CHAR_VALUE(ch));
@@ -1545,32 +1569,31 @@ ScmObj ScmOp_vector(ScmObj args)
 
 ScmObj ScmOp_vector_length(ScmObj vec)
 {
-    if (!VECTORP(vec))
-        SigScm_ErrorObj("vector-length : vector required but got ", vec);
+    DECLARE_FUNCTION("vector-length", ProcedureFixed1);
 
+    ASSERT_VECTORP(vec);
     return Scm_NewInt(SCM_VECTOR_LEN(vec));
 }
 
 ScmObj ScmOp_vector_ref(ScmObj vec, ScmObj scm_k)
 {
-    if (!VECTORP(vec))
-        SigScm_ErrorObj("vector-ref : vector required but got ", vec);
-    if (!INTP(scm_k))
-        SigScm_ErrorObj("vector-ref : number required but got ", scm_k);
+    DECLARE_FUNCTION("vector-ref", ProcedureFixed2);
+
+    ASSERT_VECTORP(vec);
+    ASSERT_INTP(scm_k);
 
     return SCM_VECTOR_REF(vec, scm_k);
 }
 
 ScmObj ScmOp_vector_set(ScmObj vec, ScmObj scm_k, ScmObj obj)
 {
-    if (!VECTORP(vec))
-        SigScm_ErrorObj("vector-set! : vector required but got ", vec);
-    if (!INTP(scm_k))
-        SigScm_ErrorObj("vector-set! : number required but got ", scm_k);
+    DECLARE_FUNCTION("vector-set!", ProcedureFixed3);
+    ASSERT_VECTORP(vec);
+    ASSERT_INTP(scm_k);
 
     SCM_VECTOR_SET_REF(vec, scm_k, obj);
 
-    return vec;
+    return SCM_UNDEF;
 }
 
 ScmObj ScmOp_vector2list(ScmObj vec)
@@ -1581,9 +1604,9 @@ ScmObj ScmOp_vector2list(ScmObj vec)
     ScmObj  head = NULL;
     int c_len = 0;
     int i = 0;
+    DECLARE_FUNCTION("vector->list", ProcedureFixed1);
 
-    if (!VECTORP(vec))
-        SigScm_ErrorObj("vector->list : vector required but got ", vec);
+    ASSERT_VECTORP(vec);
 
     v = SCM_VECTOR_VEC(vec);
     c_len = SCM_VECTOR_LEN(vec);
@@ -1631,9 +1654,9 @@ ScmObj ScmOp_vector_fill(ScmObj vec, ScmObj fill)
 {
     int c_len = 0;
     int i = 0;
+    DECLARE_FUNCTION("vector-fill!", ProcedureFixed2);
 
-    if (!VECTORP(vec))
-        SigScm_ErrorObj("vector->list : vector required but got ", vec);
+    ASSERT_VECTORP(vec);
 
     c_len = SCM_VECTOR_LEN(vec);
     for (i = 0; i < c_len; i++) {
@@ -1648,17 +1671,19 @@ ScmObj ScmOp_vector_fill(ScmObj vec, ScmObj fill)
 =======================================*/
 ScmObj ScmOp_procedurep(ScmObj obj)
 {
+    DECLARE_FUNCTION("procedure?", ProcedureFixed1);
     return ((FUNCP(obj) && !SYNTAXP(obj))
             || CLOSUREP(obj) || CONTINUATIONP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_map(ScmObj proc, ScmObj args)
 {
+    DECLARE_FUNCTION("map", ProcedureVariadic1);
      /* sanity check */
     if (NULLP(args))
         SigScm_Error("map : wrong number of arguments");
 
-    /* fast path for sinble arg case */
+    /* fast path for single arg case */
     if (NULLP(CDR(args)))
         return map_single_arg(proc, CAR(args));
 
@@ -1745,6 +1770,7 @@ static ScmObj map_multiple_args(ScmObj proc, ScmObj args)
 
 ScmObj ScmOp_for_each(ScmObj proc, ScmObj args)
 {
+    DECLARE_FUNCTION("for-each", ProcedureVariadic1);
     ScmOp_map(proc, args);
 
     return SCM_UNDEF;
@@ -1752,6 +1778,7 @@ ScmObj ScmOp_for_each(ScmObj proc, ScmObj args)
 
 ScmObj ScmOp_force(ScmObj closure)
 {
+    DECLARE_FUNCTION("force", ProcedureFixed1);
     if (!CLOSUREP(closure))
         SigScm_ErrorObj("force : not proper delayed object ", closure);
 
@@ -1760,9 +1787,9 @@ ScmObj ScmOp_force(ScmObj closure)
 
 ScmObj ScmOp_call_with_current_continuation(ScmObj proc)
 {
-    int jmpret  = 0;
     ScmObj cont = SCM_FALSE;
     ScmObj ret  = SCM_FALSE;
+    DECLARE_FUNCTION("call-with-current-continuation", ProcedureFixed1);
 
     if (FALSEP(ScmOp_procedurep(proc)))
         SigScm_ErrorObj("call-with-current-continuation : procedure required but got ", proc);
@@ -1770,8 +1797,7 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj proc)
     cont = Scm_NewContinuation();
 
     /* setjmp and check result */
-    jmpret = setjmp(SCM_CONTINUATION_JMPENV(cont));
-    if (jmpret) {
+    if (setjmp(SCM_CONTINUATION_JMPENV(cont))) {
         /* returned from longjmp */
         ret = scm_continuation_thrown_obj;
         scm_continuation_thrown_obj = SCM_FALSE;  /* make sweepable */
@@ -1784,6 +1810,7 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj proc)
 
 ScmObj ScmOp_values(ScmObj args)
 {
+    DECLARE_FUNCTION("values", ProcedureVariadic0);
     /* Values with one arg must return something that fits an ordinary
      * continuation. */
     if (CONSP(args) && NULLP(CDR(args)))
@@ -1806,6 +1833,7 @@ ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer,
                               ScmEvalState *eval_state)
 {
     ScmObj vals;
+    DECLARE_FUNCTION("call-with-values", ProcedureFixed2);
 
     vals = Scm_call(producer, SCM_NULL);
 

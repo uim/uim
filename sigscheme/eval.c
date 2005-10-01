@@ -247,21 +247,22 @@ static ScmObj reduce(ScmObj (*func)(), ScmObj args, ScmObj env, int suppress_eva
     ScmObj left;
     ScmObj right;
     enum ScmReductionState state;
+    DECLARE_INTERNAL_FUNCTION("(reduction)");
 
     state = SCM_REDUCE_0;
-    if (NULLP(args))
+    if (NO_MORE_ARG(args))
         return (*func)(SCM_INVALID, SCM_INVALID, &state);
 
     state = SCM_REDUCE_1;
-    SCM_SHIFT_RAW(left, args);
+    left = POP_ARG(args);
     if (!suppress_eval)
         left = EVAL(left, env);
-    if (NULLP(args))
+    if (NO_MORE_ARG(args))
         return (*func)(left, left, &state);
 
     /* Reduce upto all but the last argument. */
     state = SCM_REDUCE_PARTWAY;
-    while (SCM_SHIFT_RAW(right, args), !NULLP(args)) {
+    while (right = POP_ARG(args), !NO_MORE_ARG(args)) {
         if (!suppress_eval)
             right = EVAL(right, env);
         left = (*func)(left, right, &state);
@@ -345,6 +346,7 @@ static ScmObj call(ScmObj proc, ScmObj args,
     /* The +2 is for rest and env/eval_state. */
     void *argbuf[SCM_FUNCTYPE_MAND_MAX + 2] = {0};
     int i = 0;     /* Number of arguments already stored in argbuf. */
+    DECLARE_INTERNAL_FUNCTION("(function call)");
 
     if (!suppress_eval)
         proc = EVAL(proc, env);
@@ -359,14 +361,14 @@ static ScmObj call(ScmObj proc, ScmObj args,
                             eval_state);
 
     case ScmContinuation:
-        if (NULLP(args))
+        if (NO_MORE_ARG(args))
             SigScm_Error("Continuation invocation lacks an argument.");
         scm_continuation_thrown_obj
             = suppress_eval ? CAR(args) : EVAL(CAR(args), env);
         longjmp(SCM_CONTINUATION_JMPENV(proc), 1);
         /* NOTREACHED */
     default:
-        SigScm_ErrorObj("bad operator: ", proc);
+        ERR_OBJ("bad operator", proc);
     }
 
     /* We have a C function. */
@@ -390,10 +392,7 @@ static ScmObj call(ScmObj proc, ScmObj args,
     if (mand_count > SCM_FUNCTYPE_MAND_MAX)
         SigScm_Error("Corrupted function: typecode=0x%x", type);
     for (i = 0; i < mand_count; i++) {
-        if (NULLP(args))
-            SigScm_Error("%d or more argument(s) required but got only %d",
-                         mand_count, i);
-        SCM_SHIFT_RAW(argbuf[i], args);
+        argbuf[i] = MUST_POP_ARG(args);
         if (!suppress_eval)
             argbuf[i] = EVAL(argbuf[i], env);
     }
@@ -402,12 +401,9 @@ static ScmObj call(ScmObj proc, ScmObj args,
         if (!suppress_eval)
             args = map_eval(args, env);
         argbuf[i++] = args;
+    } else {
+        ASSERT_NO_MORE_ARG(args);
     }
-#if SCM_STRICT_ARGCHECK
-    else if (!NULLP(args)) {
-        SigScm_ErrorObj("superfluous arguments: ", args);
-    }
-#endif
 
     if (type & SCM_FUNCTYPE_TAIL_REC) {
         eval_state->ret_type = SCM_RETTYPE_NEED_EVAL;
@@ -562,6 +558,7 @@ static ScmObj map_eval(ScmObj args, ScmObj env)
     ScmObj result  = SCM_NULL;
     ScmObj tail    = SCM_NULL;
     ScmObj newtail = SCM_NULL;
+    DECLARE_INTERNAL_FUNCTION("(function call)");
 
     /* sanity check */
     if (NULLP(args))
@@ -832,12 +829,13 @@ ScmObj ScmOp_quote(ScmObj datum, ScmObj env)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.4 Procedures
 ===========================================================================*/
-ScmObj ScmExp_lambda(ScmObj args, ScmObj env)
+ScmObj ScmExp_lambda(ScmObj formals, ScmObj first_expr, ScmObj rest, ScmObj env)
 {
-    if (CHECK_2_ARGS(args))
-        SigScm_ErrorObj("lambda : bad form : ", args);
-
-    return Scm_NewClosure(args, env);
+    DECLARE_FUNCTION("lambda", SyntaxVariadic2);
+    if (!CONSP(formals) && !NULLP(formals) && !SYMBOLP(formals))
+        ERR_OBJ("bad formals", formals);
+                           /* (formals first_expr . rest) */
+    return Scm_NewClosure(CONS(formals, CONS(first_expr, rest)), env);
 }
 
 /*===========================================================================
@@ -845,7 +843,9 @@ ScmObj ScmExp_lambda(ScmObj args, ScmObj env)
 ===========================================================================*/
 ScmObj ScmExp_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state)
 {
-    ScmObj env  = eval_state->env;
+    ScmObj env = eval_state->env;
+    ScmObj alt = SCM_INVALID;
+    DECLARE_FUNCTION("if", SyntaxVariadicTailRec2);
 
     /*========================================================================
       (if <test> <consequent>)
@@ -854,8 +854,11 @@ ScmObj ScmExp_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_sta
 
     if (NFALSEP(EVAL(test, env)))
         return conseq;
-    else
-        return NULLP(rest) ? SCM_UNDEF : CAR(rest);
+    else {
+        alt = POP_ARG(rest);
+        ASSERT_NO_MORE_ARG(rest);
+        return VALIDP(alt) ? alt : SCM_UNDEF;
+    }
 }
 
 /*===========================================================================
@@ -1000,48 +1003,46 @@ ScmObj ScmExp_case(ScmObj key, ScmObj args, ScmEvalState *eval_state)
 
 ScmObj ScmExp_and(ScmObj args, ScmEvalState *eval_state)
 {
-    ScmObj env = eval_state->env;
-    ScmObj lst = args;
-    ScmObj val = SCM_FALSE;
+    ScmObj env  = eval_state->env;
+    ScmObj expr = SCM_INVALID;
+    ScmObj val  = SCM_FALSE;
+    DECLARE_FUNCTION("and", SyntaxVariadic0);
 
-    if (NULLP(lst))
+    if (NO_MORE_ARG(args))
         return SCM_TRUE;
-    
-    for (; CONSP(CDR(lst)); lst = CDR(lst)) {
-        val = EVAL(CAR(lst), env);
+
+    while (expr = POP_ARG(args), !NO_MORE_ARG(args)) {
+        val = EVAL(expr, env);
         if (FALSEP(val)) {
+            ASSERT_PROPER_ARG_LIST(args);
             eval_state->ret_type = SCM_RETTYPE_AS_IS;
             return SCM_FALSE;
         }
     }
 
-    if (!NULLP(CDR(lst)))
-        SigScm_ErrorObj("and: improper argument list: ", lst);
-
-    return CAR(lst);
+    return expr;
 }
 
 ScmObj ScmExp_or(ScmObj args, ScmEvalState *eval_state)
 {
-    ScmObj env = eval_state->env;
-    ScmObj lst = args;
-    ScmObj val = SCM_FALSE;
+    ScmObj env  = eval_state->env;
+    ScmObj expr = SCM_INVALID;
+    ScmObj val  = SCM_INVALID;
+    DECLARE_FUNCTION("or", SyntaxVariadicTailRec0);
 
-    if (NULLP(lst))
+    if (NO_MORE_ARG(args))
         return SCM_FALSE;
-    
-    for (; CONSP(CDR(lst)); lst = CDR(lst)) {
-        val = EVAL(CAR(lst), env);
-        if (NFALSEP(val)) {
+
+    while (expr = POP_ARG(args), !NO_MORE_ARG(args)) {
+        val = EVAL(expr, env);
+        if (!FALSEP(val)) {
+            ASSERT_PROPER_ARG_LIST(args);
             eval_state->ret_type = SCM_RETTYPE_AS_IS;
             return val;
         }
     }
 
-    if (!NULLP(CDR(lst)))
-        SigScm_ErrorObj("or: improper argument list: ", lst);
-
-    return CAR(lst);
+    return expr;
 }
 
 /*===========================================================================
@@ -1237,21 +1238,18 @@ ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 ===========================================================================*/
 ScmObj ScmExp_begin(ScmObj args, ScmEvalState *eval_state)
 {
-    ScmObj env = eval_state->env;
-    ScmObj lst = args;
+    ScmObj env  = eval_state->env;
+    ScmObj expr = SCM_INVALID;
+    DECLARE_FUNCTION("begin", SyntaxVariadicTailRec0);
 
-    /* sanity check */
-    if (NULLP(lst))
+    if (NO_MORE_ARG(args))
         return SCM_UNDEF;
 
-    for (; CONSP(CDR(lst)); lst = CDR(lst))
-        EVAL(CAR(lst), env);
-
-    if (!NULLP(CDR(lst)))
-        SigScm_ErrorObj("begin: improper argument list: ", args);
+    while (expr = POP_ARG(args), !NO_MORE_ARG(args))
+        EVAL(expr, env);
 
     /* Return tail expression. */
-    return CAR(lst);
+    return expr;
 }
 
 /*===========================================================================
