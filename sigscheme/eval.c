@@ -103,13 +103,13 @@ static void define_internal(ScmObj var, ScmObj exp, ScmObj env);
  *             list.
  * @see ScmOp_eval()
  */
-ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
+ScmObj Scm_ExtendEnvironment(ScmObj vars, ScmObj vals, ScmObj env)
 {
     ScmObj frame     = SCM_NULL;
     ScmObj rest_vars, rest_vals;
 
     if (!CONSP(env) && !NULLP(env))
-        SigScm_Error("extend_environment : broken environment");
+        SigScm_Error("Scm_ExtendEnvironment : broken environment");
 
     /* sanity check & dot list handling */
     for (rest_vars = vars, rest_vals = vals;
@@ -168,7 +168,7 @@ ScmObj add_environment(ScmObj var, ScmObj val, ScmObj env)
  *
  * @todo describe more precicely
  */
-ScmObj lookup_environment(ScmObj var, ScmObj env)
+ScmObj Scm_LookupEnvironment(ScmObj var, ScmObj env)
 {
     ScmObj frame = SCM_NULL;
     ScmObj val   = SCM_NULL;
@@ -182,7 +182,7 @@ ScmObj lookup_environment(ScmObj var, ScmObj env)
     /* lookup in frames */
     for (; !NULLP(env); env = CDR(env)) {
         frame = CAR(env);
-        val   = lookup_frame(var, frame);
+        val   = Scm_LookupFrame(var, frame);
         if (!NULLP(val))
             return val;
     }
@@ -191,7 +191,7 @@ ScmObj lookup_environment(ScmObj var, ScmObj env)
 }
 
 /** Lookup a variable of a frame */
-ScmObj lookup_frame(ScmObj var, ScmObj frame)
+ScmObj Scm_LookupFrame(ScmObj var, ScmObj frame)
 {
     ScmObj vals = SCM_NULL;
     ScmObj vars = SCM_NULL;
@@ -296,7 +296,7 @@ static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
 
     if (SYMBOLP(formals)) {
         /* (1) : <variable> */
-        eval_state->env = extend_environment(LIST_1(formals),
+        eval_state->env = Scm_ExtendEnvironment(LIST_1(formals),
                                              LIST_1(args),
                                              SCM_CLOSURE_ENV(proc));
     } else if (CONSP(formals)) {
@@ -304,9 +304,9 @@ static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
          * (2) : (<variable1> <variable2> ...)
          * (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
          *
-         *  - dot list is handled in lookup_frame().
+         *  - dot list is handled in Scm_ExtendEnvironment().
          */
-        eval_state->env = extend_environment(formals,
+        eval_state->env = Scm_ExtendEnvironment(formals,
                                              args,
                                              SCM_CLOSURE_ENV(proc));
     } else if (NULLP(formals)) {
@@ -314,7 +314,7 @@ static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
          * (2') : <variable> is '()
          */
         eval_state->env
-            = extend_environment(SCM_NULL,
+            = Scm_ExtendEnvironment(SCM_NULL,
                                  SCM_NULL,
                                  SCM_CLOSURE_ENV(proc));
     } else {
@@ -480,7 +480,7 @@ eval_loop:
 #endif
     switch (SCM_TYPE(obj)) {
     case ScmSymbol:
-        ret = symbol_value(obj, state.env);
+        ret = Scm_SymbolValue(obj, state.env);
         break;
 
     case ScmCons:
@@ -538,12 +538,12 @@ ScmObj ScmOp_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_sta
 }
 
 /* 'var' must be a symbol as precondition */
-ScmObj symbol_value(ScmObj var, ScmObj env)
+ScmObj Scm_SymbolValue(ScmObj var, ScmObj env)
 {
     ScmObj val = SCM_FALSE;
 
     /* first, lookup the environment */
-    val = lookup_environment(var, env);
+    val = Scm_LookupEnvironment(var, env);
     if (!NULLP(val)) {
         /* variable is found in environment, so returns its value */
         return CAR(val);
@@ -552,7 +552,7 @@ ScmObj symbol_value(ScmObj var, ScmObj env)
     /* finally, look at the VCELL */
     val = SCM_SYMBOL_VCELL(var);
     if (EQ(val, SCM_UNBOUND))
-        SigScm_ErrorObj("symbol_value : unbound variable ", var);
+        SigScm_ErrorObj("Scm_SymbolValue : unbound variable ", var);
 
     return val;
 }
@@ -867,7 +867,7 @@ ScmObj ScmExp_set(ScmObj sym, ScmObj exp, ScmObj env)
     ScmObj locally_bound = SCM_NULL;
 
     evaled = EVAL(exp, env);
-    locally_bound = lookup_environment(sym, env);
+    locally_bound = Scm_LookupEnvironment(sym, env);
     if (NULLP(locally_bound)) {
         if (!SYMBOLP(sym))
             SigScm_ErrorObj("set! : symbol required but got ", sym);
@@ -1116,11 +1116,11 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
         SigScm_Error("let : invalid bindings form");
 
 #if 1
-    /* current implementation extend_environment() contains unnecessary
+    /* current implementation Scm_ExtendEnvironment() contains unnecessary
        error checking for let variants. So we extend manually */
     env = CONS(CONS(vars, vals), env);
 #else
-    env = extend_environment(vars, vals, env);
+    env = Scm_ExtendEnvironment(vars, vals, env);
 #endif
     eval_state->env = env;
 
@@ -1166,12 +1166,12 @@ ScmObj ScmExp_let_star(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 
         /* extend env for each variable */
 #if 1
-        /* current implementation extend_environment() contains unnecessary
+        /* current implementation Scm_ExtendEnvironment() contains unnecessary
            error checking for let variants. So we extend manually */
         env = CONS(CONS(LIST_1(var), LIST_1(val)),
                    env);
 #else
-        env = extend_environment(LIST_1(var), LIST_1(val), env);
+        env = Scm_ExtendEnvironment(LIST_1(var), LIST_1(val), env);
 #endif
     }
 
@@ -1293,7 +1293,7 @@ ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalStat
     }
 
     /* now extend environment */
-    env = extend_environment(vars, vals, env);
+    env = Scm_ExtendEnvironment(vars, vals, env);
 
     /* construct test */
     test       = CAR(testframe);
@@ -1325,7 +1325,7 @@ ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalStat
              !NULLP(tmp_vars) && !NULLP(vals);
              tmp_vars = CDR(tmp_vars), vals = CDR(vals))
         {
-            obj = lookup_environment(CAR(tmp_vars), env);
+            obj = Scm_LookupEnvironment(CAR(tmp_vars), env);
             if (!NULLP(obj)) {
                 SET_CAR(obj, CAR(vals));
             } else {

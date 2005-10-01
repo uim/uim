@@ -143,9 +143,9 @@ void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj)
 
 void SigScm_ShowBacktrace(void)
 {
-#define UNBOUNDP(var, env)                                                   \
-        (NULLP(lookup_environment(var, env))                                 \
-         && !SCM_SYMBOL_BOUNDP(var))
+#define UNBOUNDP(var, env)                                              \
+    (NULLP(Scm_LookupEnvironment(var, env))                             \
+     && !SCM_SYMBOL_BOUNDP(var))
 
 #if SCM_DEBUG
     struct trace_frame *f;
@@ -173,7 +173,7 @@ void SigScm_ShowBacktrace(void)
             if (UNBOUNDP(obj, env))
                 break;
             SigScm_ErrorPrintf("  - [%s]: ", SCM_SYMBOL_NAME(obj));
-            SigScm_WriteToPort(scm_current_error_port, symbol_value(obj, env));
+            SigScm_WriteToPort(scm_current_error_port, Scm_SymbolValue(obj, env));
             SigScm_ErrorNewline();
             break;
 
@@ -185,14 +185,14 @@ void SigScm_ShowBacktrace(void)
                         break;
                     SigScm_ErrorPrintf("  - [%s]: ", SCM_SYMBOL_NAME(proc));
                     SigScm_WriteToPort(scm_current_error_port,
-                                       symbol_value(proc, env));
+                                       Scm_SymbolValue(proc, env));
                     SigScm_ErrorNewline();
                 }
             }
             if (SYMBOLP(obj)) {
                 SigScm_ErrorPrintf("  - [%s]: ", SCM_SYMBOL_NAME(proc));
                 SigScm_WriteToPort(scm_current_error_port,
-                                   symbol_value(proc, env));
+                                   Scm_SymbolValue(proc, env));
                 SigScm_ErrorNewline();
             }
             break;

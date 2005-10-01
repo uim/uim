@@ -349,11 +349,11 @@ void SigScm_FinalizeStorage(void);
  * FIXME: add a 'SCM' prefix to these functions since the symbols will be
  * global. See objdump -TC libsscm.so.
  */
-ScmObj extend_environment(ScmObj vars, ScmObj vals, ScmObj env);
-ScmObj add_environment(ScmObj var, ScmObj val, ScmObj env);
-ScmObj lookup_environment(ScmObj var, ScmObj env);
-ScmObj lookup_frame(ScmObj var, ScmObj frame);
-ScmObj symbol_value(ScmObj var, ScmObj env);
+ScmObj Scm_ExtendEnvironment(ScmObj vars, ScmObj vals, ScmObj env);
+ScmObj Scm_AddEnvironment(ScmObj var, ScmObj val, ScmObj env);
+ScmObj Scm_LookupEnvironment(ScmObj var, ScmObj env);
+ScmObj Scm_LookupFrame(ScmObj var, ScmObj frame);
+ScmObj Scm_SymbolValue(ScmObj var, ScmObj env);
 
 /* error.c */
 void SigScm_ShowErrorHeader(void);

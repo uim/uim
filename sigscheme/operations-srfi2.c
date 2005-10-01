@@ -85,7 +85,7 @@ ScmObj ScmOp_SRFI2_and_let_star(ScmObj claws, ScmObj body, ScmEvalState *eval_st
                     if (!NULLP(SCM_SHIFT_RAW_2(var, exp, claw)))
                         goto err;
                     val = EVAL(exp, env);
-                    env = extend_environment(LIST_1(var), LIST_1(val), env);
+                    env = Scm_ExtendEnvironment(LIST_1(var), LIST_1(val), env);
                 } else if (NULLP(CDR(claw))) {
                     /* (<expression>) */
                     exp = CAR(claw);
@@ -103,7 +103,7 @@ ScmObj ScmOp_SRFI2_and_let_star(ScmObj claws, ScmObj body, ScmEvalState *eval_st
                 return SCM_FALSE;
         }
     } else if (NULLP(claws)) {
-        env = extend_environment(SCM_NULL, SCM_NULL, env);
+        env = Scm_ExtendEnvironment(SCM_NULL, SCM_NULL, env);
     } else {
         goto err;
     }

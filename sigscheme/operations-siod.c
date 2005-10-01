@@ -104,7 +104,7 @@ ScmObj ScmOp_symbol_boundp(ScmObj obj)
     /* SIOD compatible implementation */
     return (SCM_SYMBOL_BOUNDP(obj)) ? SCM_TRUE : SCM_FALSE;
 #else
-    return (!NULLP(lookup_environment(obj, env))
+    return (!NULLP(Scm_LookupEnvironment(obj, env))
             || SCM_SYMBOL_BOUNDP(obj)) ? SCM_TRUE : SCM_FALSE;
 #endif
 }
@@ -120,7 +120,7 @@ ScmObj ScmOp_symbol_value(ScmObj var)
     if (!SYMBOLP(var))
         SigScm_ErrorObj("symbol-value : symbol required but got ", var);
 
-    return symbol_value(var, SCM_NULL);
+    return Scm_SymbolValue(var, SCM_NULL);
 }
 
 /*
