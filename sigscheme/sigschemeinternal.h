@@ -352,7 +352,6 @@ void SigScm_FinalizeStorage(void);
 ScmObj Scm_ExtendEnvironment(ScmObj vars, ScmObj vals, ScmObj env);
 ScmObj Scm_AddEnvironment(ScmObj var, ScmObj val, ScmObj env);
 ScmObj Scm_LookupEnvironment(ScmObj var, ScmObj env);
-ScmObj Scm_LookupFrame(ScmObj var, ScmObj frame);
 ScmObj Scm_SymbolValue(ScmObj var, ScmObj env);
 
 /* error.c */

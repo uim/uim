@@ -80,6 +80,7 @@ struct trace_frame *scm_trace_root = NULL;
 /*=======================================
   File Local Function Declarations
 =======================================*/
+static ScmObj lookup_frame(ScmObj var, ScmObj frame);
 static ScmObj reduce(ScmObj (*func)(), ScmObj args, ScmObj env,
                      int suppress_eval);
 static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
@@ -133,7 +134,7 @@ ScmObj Scm_ExtendEnvironment(ScmObj vars, ScmObj vals, ScmObj env)
 }
 
 /** Add a binding to newest frame of an env */
-ScmObj add_environment(ScmObj var, ScmObj val, ScmObj env)
+ScmObj Scm_AddEnvironment(ScmObj var, ScmObj val, ScmObj env)
 {
     ScmObj newest_frame;
     ScmObj new_vars, new_vals;
@@ -182,7 +183,7 @@ ScmObj Scm_LookupEnvironment(ScmObj var, ScmObj env)
     /* lookup in frames */
     for (; !NULLP(env); env = CDR(env)) {
         frame = CAR(env);
-        val   = Scm_LookupFrame(var, frame);
+        val   = lookup_frame(var, frame);
         if (!NULLP(val))
             return val;
     }
@@ -191,7 +192,7 @@ ScmObj Scm_LookupEnvironment(ScmObj var, ScmObj env)
 }
 
 /** Lookup a variable of a frame */
-ScmObj Scm_LookupFrame(ScmObj var, ScmObj frame)
+static ScmObj lookup_frame(ScmObj var, ScmObj frame)
 {
     ScmObj vals = SCM_NULL;
     ScmObj vars = SCM_NULL;
@@ -1391,7 +1392,7 @@ static void define_internal(ScmObj var, ScmObj exp, ScmObj env)
         SCM_SYMBOL_SET_VCELL(var, EVAL(exp, env));
     } else {
         /* add val to the environment */
-        env = add_environment(var, EVAL(exp, env), env);
+        env = Scm_AddEnvironment(var, EVAL(exp, env), env);
     }
 }
 
