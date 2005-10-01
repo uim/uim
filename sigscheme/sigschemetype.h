@@ -195,7 +195,8 @@ enum ScmReductionState {
 
 enum ScmReturnType {
     SCM_RETTYPE_AS_IS           = 0,
-    SCM_RETTYPE_NEED_EVAL       = 1
+    SCM_RETTYPE_NEED_EVAL       = 1,
+    SCM_RETTYPE_NEED_CALL_AS_IS = 2
 };
 
 /* The evaluator's state */
