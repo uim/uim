@@ -178,7 +178,7 @@ void SigScm_ShowBacktrace(void)
             break;
 
         case ScmCons:
-            for (; !NULLP(obj); obj = CDR(obj)) {
+            for (; CONSP(obj); obj = CDR(obj)) {
                 proc = CAR(obj);
                 if (SYMBOLP(proc)) {
                     if (UNBOUNDP(proc, env))
@@ -188,6 +188,12 @@ void SigScm_ShowBacktrace(void)
                                        symbol_value(proc, env));
                     SigScm_ErrorNewline();
                 }
+            }
+            if (SYMBOLP(obj)) {
+                SigScm_ErrorPrintf("  - [%s]: ", SCM_SYMBOL_NAME(proc));
+                SigScm_WriteToPort(scm_current_error_port,
+                                   symbol_value(proc, env));
+                SigScm_ErrorNewline();
             }
             break;
 
