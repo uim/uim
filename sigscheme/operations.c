@@ -51,7 +51,6 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define SCM_INVALID NULL
 
 /*=======================================
   Variable Declarations

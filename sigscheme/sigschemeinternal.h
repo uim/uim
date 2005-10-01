@@ -265,41 +265,61 @@ extern ScmObj SigScm_unquote_splicing;
  * generator.  This macro can be invoked only at the beginning of a
  * function body, right after local variable declarations. */
 #define DECLARE_FUNCTION(func_name, type) \
-    const char *SCM_MANGLE(name) = (func_name); \
+    const char *SCM_MANGLE(name) = NULL; \
     ScmObj SCM_MANGLE(orig) = SCM_INVALID; \
     ScmObj SCM_MANGLE(tmp)  = SCM_INVALID; \
-    int SCM_MANGLE(popped) = 0 /* No semicolon here. */
+    int SCM_MANGLE(popped)  = 0; \
+    SCM_MANGLE(name) = func_name /* No semicolon here. */
 
-/* Set up the argument popping mechanism without requiring a function
- * type.  This is meant for internal functions for which no
- * corresponding Scheme functions exist.  NAME still has to be
- * specified, though, to give the user an idea where the error was
- * detected, should one be signalled. */
-#define SETUP_ARG_EXTRACTION(name) DECLARE_FUNCTION((name), ignored)
+/* DECLARE_FUNCTION without the functype.
+ * FIXME: is there a better name? */
+#define DECLARE_INTERNAL_FUNCTION(name) DECLARE_FUNCTION((name), ignored)
 
 /* Signals an error that occured on an object.  The current function
  * name, the message, then the object, are written (with `write') to
  * the error port. */
 #define ERR(msg, obj) Scm_ErrorObj(SCM_MANGLE(name), msg, obj)
 
+/* ASSERT_NO_MORE_ARG() asserts that the variadic argument list has
+ * been exhausted.  The assertion is implicit in NO_MORE_ARG(), so
+ * usually you don't have to call it explicitly.
+ * ASSERT_PROPER_ARG_LIST() should be used when scanning is ended
+ * prematurely, e.g. if an argument to "and" evaluates to #f.  Both
+ * macros expand to no-ops #if !SCM_STRICT_ARGCHECK.
+ */
+#if SCM_STRICT_ARGCHECK
+#define NO_MORE_ARG(args) \
+    (!CONSP(args) \
+     && (NULLP(args) \
+         || (ERR("improper argument list terminator", (args)), 1)))
+#define ASSERT_NO_MORE_ARG(args) \
+    (NO_MORE_ARG(args) || (ERR("superfluous argument(s)", (args)), 1))
+#define ASSERT_PROPER_ARG_LIST(args) \
+    (ScmOp_c_length(args) >= 0 \
+     || (ERR("bad argument list", (args)), 1))
+#else  /* not SCM_STRICT_ARGCHECK */
+#define NO_MORE_ARG(args) (!CONSP(args))
+#define ASSERT_NO_MORE_ARG(args)
+#define ASSERT_PROPER_ARG_LIST(args)
+#endif /* not SCM_STRICT_ARGCHECK */
+
 /* Destructively retreives the first element of an argument list.  If
  * ARGS doesn't contain enough arguments, return SCM_INVALID. */
 #define POP_ARG(args) \
     ((SCM_MANGLE(popped) \
       || (SCM_MANGLE(popped)=1, SCM_MANGLE(orig) = (args))), \
-     NULLP(SCM_MANGLE(orig)) \
-     ? SCM_INVALID \
-     : (SCM_MANGLE(tmp) = CAR(args), (args) = CDR(args), SCM_MANGLE(tmp)))
-#define POP POP_ARG
+     CONSP(SCM_MANGLE(orig)) \
+     ? (SCM_MANGLE(tmp) = CAR(args), (args) = CDR(args), SCM_MANGLE(tmp)) \
+     : SCM_INVALID)
 
+/* Like POP_ARG(), but signals an error if no argument is
+   available. */
 #define MUST_POP_ARG(args) \
-    (VALIDP(TRY_POP_ARG(args)) \
-     ? SCM_MANGLE(tmp) \
-     : ERR("not enough arguments", SCM_MANGLE(orig)))
-
-#define NO_MORE_ARG(args) NULLP(args)
-#define ASSERT_NO_MORE_ARG(args) \
-    (NO_MORE_ARG || (ERR("superfluous arguments", (args))))
+    ((SCM_MANGLE(popped) \
+      || (SCM_MANGLE(popped)=1, SCM_MANGLE(orig) = (args))), \
+     CONSP(SCM_MANGLE(orig)) \
+     ? (SCM_MANGLE(tmp) = CAR(args), (args) = CDR(args), SCM_MANGLE(tmp)) \
+     : (ERR("missing argument(s)", SCM_MANGLE(orig)), NULL))
 
 #define ASSERT_TYPE(pred, typename, obj) \
     (pred(obj) || (ERR(typename "required but got", (obj)), 1))
@@ -340,5 +360,6 @@ void SigScm_ShowErrorHeader(void);
 void SigScm_ErrorPrintf(const char *fmt, ...);
 void SigScm_VErrorPrintf(const char *fmt, va_list args);
 void SigScm_ErrorNewline(void);
+void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj);
 
 #endif /* __SIGSCHEMEINTERNAL_H */
