@@ -469,7 +469,6 @@ ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
 #endif
 
     state.env = env;
-    state.ret_type = SCM_RETTYPE_AS_IS;
 
 eval_loop:
 #if SCM_STRICT_R5RS
@@ -485,9 +484,11 @@ eval_loop:
     case ScmCons:
         suppress_eval = 0;
     call_loop:
+        state.ret_type = SCM_RETTYPE_AS_IS;
         obj = call(CAR(obj), CDR(obj), &state, suppress_eval);
         switch (state.ret_type) {
         case SCM_RETTYPE_NEED_EVAL:
+            suppress_eval = 0;
             goto eval_loop;
         case SCM_RETTYPE_NEED_CALL_AS_IS:
             suppress_eval = 1;
