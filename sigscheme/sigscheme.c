@@ -90,14 +90,11 @@ static void SigScm_Initialize_internal(void)
                               | SigScm_PredefinedDebugCategories());
 
     /*=======================================================================
-      Externed Variable Initialization
-    =======================================================================*/
-    scm_continuation_thrown_obj = SCM_NULL;
-    SigScm_GC_Protect(&scm_continuation_thrown_obj);
-    /*=======================================================================
       Storage Initialization
     =======================================================================*/
     SigScm_InitStorage();
+    scm_continuation_thrown_obj = SCM_FALSE;
+    SigScm_GC_Protect(&scm_continuation_thrown_obj);
     /*=======================================================================
       Interned Variable Initialization
     =======================================================================*/
