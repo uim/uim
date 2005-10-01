@@ -16,7 +16,14 @@
 (assert-equal? "apply check11" 2 (apply (lambda x x 2) '(1)))
 
 (assert-equal? "apply check12" '() (apply (lambda (a . b) b) '(1)))
+(assert-equal? "apply check13" '(2) (apply (lambda (a . b) b) '(1 2)))
 (assert-equal? "apply check13" '() (apply (lambda (a b . c) c) '(1 2)))
+
+(define (dotarg-2 x . y)
+  (+ x (car y)))
+
+(assert-equal? "sequence dot-arg func apply check" 4 (apply dotarg-2 '(1 3)))
+(assert-equal? "sequence dot-arg func apply check" 4 (apply dotarg-2 '(1 3)))
 
 (define compose
   (lambda (f g)
