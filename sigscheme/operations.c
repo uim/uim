@@ -1802,7 +1802,8 @@ ScmObj ScmOp_values(ScmObj args)
 #endif
 }
 
-ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer)
+ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer,
+                              ScmEvalState *eval_state)
 {
     ScmObj vals;
 
@@ -1827,7 +1828,9 @@ ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer)
     }
 #endif
 
-    return Scm_call(consumer, vals);
+    /* call(consumer, vals, eval_state, 1) as proper tail recursion */
+    eval_state->ret_type = SCM_RETTYPE_NEED_CALL_AS_IS;
+    return CONS(consumer, vals);
 }
 
 #if SCM_USE_SRFI1

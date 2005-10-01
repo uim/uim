@@ -275,7 +275,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterProcedureFixed1("force"          , ScmOp_force);
     Scm_RegisterProcedureVariadic0("values"          , ScmOp_values);
     Scm_RegisterProcedureFixed1("call-with-current-continuation", ScmOp_call_with_current_continuation);
-    Scm_RegisterProcedureFixed2("call-with-values" , ScmOp_call_with_values);
+    Scm_RegisterProcedureFixedTailRec2("call-with-values", ScmOp_call_with_values);
     /* io.c */
     Scm_RegisterProcedureFixed2("call-with-input-file"     , ScmOp_call_with_input_file);
     Scm_RegisterProcedureFixed2("call-with-output-file"    , ScmOp_call_with_output_file);

@@ -508,7 +508,7 @@ ScmObj ScmOp_for_each(ScmObj proc, ScmObj args);
 ScmObj ScmOp_force(ScmObj closure);
 ScmObj ScmOp_call_with_current_continuation(ScmObj proc);
 ScmObj ScmOp_values(ScmObj args);
-ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer);
+ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer, ScmEvalState *eval_state);
 
 /* io.c */
 void   SigScm_set_lib_path(const char *path);
