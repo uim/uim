@@ -303,7 +303,7 @@ static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
          * (2) : (<variable1> <variable2> ...)
          * (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
          *
-         *  - dot list is handled in Scm_ExtendEnvironment().
+         *  - dot list is handled in lookup_frame().
          */
         eval_state->env = Scm_ExtendEnvironment(formals,
                                              args,
