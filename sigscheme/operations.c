@@ -1763,6 +1763,7 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj proc)
 {
     int jmpret  = 0;
     ScmObj cont = SCM_FALSE;
+    ScmObj ret  = SCM_FALSE;
 
     if (FALSEP(ScmOp_procedurep(proc)))
         SigScm_ErrorObj("call-with-current-continuation : procedure required but got ", proc);
@@ -1772,8 +1773,10 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj proc)
     /* setjmp and check result */
     jmpret = setjmp(SCM_CONTINUATION_JMPENV(cont));
     if (jmpret) {
-        /* return by calling longjmp */
-        return scm_continuation_thrown_obj;
+        /* returned from longjmp */
+        ret = scm_continuation_thrown_obj;
+        scm_continuation_thrown_obj = SCM_FALSE;  /* make sweepable */
+        return ret;
     }
 
     /* execute (proc cont) */
