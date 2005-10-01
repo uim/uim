@@ -671,6 +671,15 @@
          (lambda (cont)
            (rec-continuation (- n 1)))))))
 
+(define rec-call-with-values
+  (lambda (n)
+    (if (zero? n)
+	'succeeded
+        (call-with-values
+            (lambda () (values 2 3 n))
+          (lambda (dummy1 dummy2 n)
+            (rec-call-with-values (- n 1)))))))
+
 (define rec-proper-infinite
   (lambda (cnt)
     (rec-proper-infinite (+ cnt 1))))
@@ -958,6 +967,10 @@
 ;;               'succeeded
 ;;               (rec-continuation explosive-count))
 
+;; call-with-values
+(assert-equal? "proper tail recursion by call-with-values"
+               'succeeded
+               (rec-call-with-values explosive-count))
 
 ;; This test is succeeded if [OK]-exploded message sequence has been
 ;; printed as follows.
