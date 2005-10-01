@@ -62,8 +62,6 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define SCM_INVALID NULL        /* TODO: make a more appropriate choice */
-
 #define IS_LIST_LEN_1(args)  (CONSP(args) && NULLP(CDR(args)))
 /* for the quasiquote family */
 #define QQUOTE_SET_VERBATIM(x) ((x) = SCM_INVALID)
@@ -244,7 +242,7 @@ ScmObj Scm_call(ScmObj proc, ScmObj args)
     return ret;
 }
 
-/* ARGS should NOT be evaluated yet. */
+/* ARGS should NOT have been evaluated yet. */
 static ScmObj reduce(ScmObj (*func)(), ScmObj args, ScmObj env, int suppress_eval)
 {
     ScmObj left;
