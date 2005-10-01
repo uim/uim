@@ -205,18 +205,16 @@ static ScmObj lookup_frame(ScmObj var, ScmObj frame)
 
     /* lookup in frame */
     for (vars = CAR(frame), vals = CDR(frame);
-         !NULLP(vars);
+         CONSP(vars);
          vars = CDR(vars), vals = CDR(vals))
     {
-        if (SYMBOLP(vars)) {
-            /* handle dot list */
-            return (EQ(vars, var)) ? vals : SCM_NULL;
-        } else {
-            /* normal binding */
-            if (EQ(CAR(vars), var))
-                return vals;
-        }
+        if (EQ(CAR(vars), var))
+            return vals;
     }
+
+    /* handle dot list */
+    if (!NULLP(vars) && SYMBOLP(vars))
+        return (EQ(vars, var)) ? vals : SCM_NULL;
 
     return SCM_NULL;
 }
