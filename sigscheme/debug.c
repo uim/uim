@@ -81,7 +81,6 @@ typedef struct {
      || CLOSUREP(obj) \
      || VECTORP(obj) \
      || VALUEPACKETP(obj))
-#define SCM_INVALID NULL
 #define OCCUPIED(ent)      (!EQ((ent)->key, SCM_INVALID))
 #define HASH_EMPTY(table)  (!(table).used)
 #define DEFINING_DATUM     (-1)
