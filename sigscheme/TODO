@@ -8,9 +8,8 @@ Requirements and bugs:
   - [uim] Make uim-sh loop workable even if error occurred
   - [uim] Make the GaUnit-based testing framework workable
 
-* 
-  - Add tests for proper tail recursion with 'apply', 'call-with-values' and
-    'receive' to test-tail-rec.scm
+* Add tests for proper tail recursion with 'apply' and 'receive' to
+  test-tail-rec.scm
 
 * 
   - Provide a string escaping procedure. If a SRFI or another de facto standard
