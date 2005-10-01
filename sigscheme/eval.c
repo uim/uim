@@ -122,6 +122,7 @@ ScmObj Scm_ExtendEnvironment(ScmObj vars, ScmObj vals, ScmObj env)
 
         /* dot list appeared: fold the rest values into a variable */
         if (SYMBOLP(CDR(rest_vars))) {
+            SET_CDR(rest_vars, LIST_1(CDR(rest_vars)));
             SET_CDR(rest_vals, LIST_1(CDR(rest_vals)));
             break;
         }
@@ -208,14 +209,8 @@ static ScmObj lookup_frame(ScmObj var, ScmObj frame)
          !NULLP(vars);
          vars = CDR(vars), vals = CDR(vals))
     {
-        if (SYMBOLP(vars)) {
-            /* handle dot list */
-            return (EQ(vars, var)) ? vals : SCM_NULL;
-        } else {
-            /* normal binding */
-            if (EQ(CAR(vars), var))
-                return vals;
-        }
+        if (EQ(CAR(vars), var))
+            return vals;
     }
 
     return SCM_NULL;
