@@ -2,4 +2,4 @@
 
 TEST=test/test-tail-rec.scm
 
-ulimit -s 128 && ulimit -d 2048 && ./sscm $TEST || echo 'exploded'
+ulimit -s 128 && ulimit -d 2048 && ./sscm $TEST || echo 'correctly exploded'

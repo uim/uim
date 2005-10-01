@@ -63,7 +63,7 @@
     ;; been evaluated
     (display msg)
     (assert-orig msg exp)
-    (display " ...done\n")))
+    (display " ...OK\n")))
 
 
 (define rec-by-if-consequent
@@ -981,7 +981,7 @@
 ;; <system dependent ulimit exceeded error message>
 ;; exploded
 (total-report)
-(display "check intentional 'exploded' message printed below")
+(display "check intentional 'correctly exploded' message printed below")
 (newline)
 
 ;; test whether the explosive-count is actually explosive
