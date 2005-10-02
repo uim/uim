@@ -70,7 +70,7 @@ ScmObj ScmOp_SRFI8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalStat
      * (receive <formals> <expression> <body>)
      */
     ScmObj env     = eval_state->env;
-    ScmObj actuals = SCM_NULL;
+    ScmObj actuals = SCM_FALSE;
 
     /* FIXME: do we have to extend the environment first?  The SRFI-8
      * document contradicts itself on this part. */
@@ -81,8 +81,18 @@ ScmObj ScmOp_SRFI8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalStat
     else
         actuals = CONS(actuals, SCM_NULL);
 
-    return ScmOp_apply(Scm_NewClosure(CONS(formals, body), env),
-                       actuals,
-                       SCM_NULL,
-                       eval_state);
+#if 1
+    return Scm_tailcall(Scm_NewClosure(CONS(formals, body), env),
+                        actuals,
+                        eval_state);
+#else
+    /* fast path */
+
+    /* TODO: Support (receive args <exp> <body>) and (receive (a b . rest)
+     * <exp> <body>)style forms by revising the Scm_ExtendEnvironment().
+     */
+    eval_state->env = env = Scm_ExtendEnvironment(formals, actuals, env);
+
+    return ScmExp_begin(body, eval_state);
+#endif
 }
