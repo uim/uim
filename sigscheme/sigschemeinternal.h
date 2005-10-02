@@ -352,10 +352,6 @@ void Scm_CallContinuation(ScmObj cont, ScmObj ret);
 
 /* eval.c */
 /* environment related functions */
-/*
- * FIXME: add a 'SCM' prefix to these functions since the symbols will be
- * global. See objdump -TC libsscm.so.
- */
 ScmObj Scm_ExtendEnvironment(ScmObj vars, ScmObj vals, ScmObj env);
 ScmObj Scm_AddEnvironment(ScmObj var, ScmObj val, ScmObj env);
 ScmObj Scm_LookupEnvironment(ScmObj var, ScmObj env);
