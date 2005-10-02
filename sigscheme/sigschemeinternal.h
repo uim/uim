@@ -138,6 +138,7 @@ extern ScmObj SigScm_unquote_splicing;
 #define FUNCP          SCM_FUNCP
 #define SYNTAXP        SCM_SYNTAXP
 #define CLOSUREP       SCM_CLOSUREP
+#define PROCEDUREP     SCM_PROCEDUREP
 #define VECTORP        SCM_VECTORP
 #define PORTP          SCM_PORTP
 #define CONTINUATIONP  SCM_CONTINUATIONP
@@ -333,6 +334,7 @@ extern ScmObj SigScm_unquote_splicing;
 #define ASSERT_VECTORP(obj)  ASSERT_TYPE(VECTORP, "vector", (obj))
 #define ASSERT_PORTP(obj)    ASSERT_TYPE(PORTP, "port", (obj))
 #define ASSERT_CONTINUATIONP(obj) ASSERT_TYPE(CONTINUATIONP, "continuation", (obj))
+#define ASSERT_PROCEDUREP(obj) ASSERT_TYPE(PROCEDUREP, "procedure", (obj))
 
 
 /*=======================================

@@ -345,6 +345,10 @@ struct ScmObjInternal_ {
 #define SCM_FUNC_SET_CFUNC(a, func)     (SCM_FUNC_CFUNC(a) = (ScmFuncType)(func))
 #define SCM_SYNTAXP(a) (SCM_FUNCP(a)                                         \
                         && (SCM_FUNC_TYPECODE(a) & SCM_FUNCTYPE_SYNTAX))
+#define SCM_PROCEDUREP(a) ((SCM_FUNCP(a)                                     \
+                            && !(SCM_FUNC_TYPECODE(a) & SCM_FUNCTYPE_SYNTAX)) \
+                           || SCM_CLOSUREP(a)                                \
+                           || SCM_CONTINUATIONP(a))
 
 #define SCM_CLOSUREP(a) (SCM_TYPE(a) == ScmClosure)
 #define SCM_ENTYPE_CLOSURE(a) (SCM_ENTYPE((a), ScmClosure))

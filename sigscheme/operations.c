@@ -1672,8 +1672,7 @@ ScmObj ScmOp_vector_fill(ScmObj vec, ScmObj fill)
 ScmObj ScmOp_procedurep(ScmObj obj)
 {
     DECLARE_FUNCTION("procedure?", ProcedureFixed1);
-    return ((FUNCP(obj) && !SYNTAXP(obj))
-            || CLOSUREP(obj) || CONTINUATIONP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return (PROCEDUREP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_map(ScmObj proc, ScmObj args)
@@ -1791,8 +1790,7 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj proc)
     ScmObj ret  = SCM_FALSE;
     DECLARE_FUNCTION("call-with-current-continuation", ProcedureFixed1);
 
-    if (FALSEP(ScmOp_procedurep(proc)))
-        SigScm_ErrorObj("call-with-current-continuation : procedure required but got ", proc);
+    ASSERT_PROCEDUREP(proc);
 
     cont = Scm_NewContinuation();
 
