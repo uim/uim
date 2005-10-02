@@ -1794,16 +1794,18 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj proc)
 
     cont = Scm_NewContinuation();
 
-    /* setjmp and check result */
     if (setjmp(SCM_CONTINUATION_JMPENV(cont))) {
         /* returned from longjmp */
         ret = scm_continuation_thrown_obj;
-        scm_continuation_thrown_obj = SCM_FALSE;  /* make sweepable */
+        scm_continuation_thrown_obj = SCM_FALSE;  /* make ret sweepable */
         return ret;
+    } else {
+        /* call proc with current continutation as (proc cont): This call must
+         * not be Scm_tailcall(), to preserve current stack until longjmp()
+         * called.
+         */
+        return Scm_call(proc, LIST_1(cont));
     }
-
-    /* execute (proc cont) */
-    return Scm_call(proc, LIST_1(cont));
 }
 
 ScmObj ScmOp_values(ScmObj args)
