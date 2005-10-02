@@ -1833,7 +1833,7 @@ ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer,
                               ScmEvalState *eval_state)
 {
     ScmObj vals;
-    DECLARE_FUNCTION("call-with-values", ProcedureFixed2);
+    DECLARE_FUNCTION("call-with-values", ProcedureFixedTailRec2);
 
     vals = Scm_call(producer, SCM_NULL);
 
