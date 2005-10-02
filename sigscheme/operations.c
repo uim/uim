@@ -1820,6 +1820,9 @@ ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer,
     ScmObj vals;
     DECLARE_FUNCTION("call-with-values", ProcedureFixedTailRec2);
 
+    ASSERT_PROCEDUREP(producer);
+    ASSERT_PROCEDUREP(consumer);
+
     vals = Scm_call(producer, SCM_NULL);
 
 #if SCM_USE_VALUECONS
