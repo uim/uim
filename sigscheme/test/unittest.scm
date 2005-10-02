@@ -7,12 +7,16 @@
     (begin
       (if (= total-err-num 0)
 	  (begin
-	    (display "OK")
+	    (display "OK : ")
+	    (display total-test-num)
+	    (display " testcase(s) passed")
 	    (newline))
 	  (begin
-	    (display "[ ERROR NUM : ")
+	    (display "FAILED : ")
 	    (display total-err-num)
-	    (display " ]")
+	    (display " testcase(s) out of ")
+	    (display total-test-num)
+	    (display " testcase(s) failed")
 	    (newline))))))
 
 (define report-error
