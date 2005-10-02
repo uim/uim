@@ -254,6 +254,9 @@ static void *malloc_aligned(size_t size)
 }
 
 
+/*============================================================================
+  Heap Allocator & Garbage Collector
+============================================================================*/
 static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmObj *freelist)
 {
     int i = 0;
@@ -629,7 +632,7 @@ void SigScm_GC_UnprotectStack(ScmObj *stack_start)
 #endif /* !SCM_GCC4_READY_GC */
 
 /*===========================================================================
-  Allocate Structure Functions
+  Object Allocators
 ===========================================================================*/
 ScmObj Scm_NewCons(ScmObj a, ScmObj b)
 {
@@ -847,6 +850,9 @@ ScmObj Scm_NewCFuncPointer(ScmCFunc func)
 }
 #endif /* SCM_USE_NONSTD_FEATURES */
 
+/*============================================================================
+  Symbol table
+============================================================================*/
 /*
  * Symbol Name Hash Related Functions
  *
@@ -907,6 +913,10 @@ ScmObj Scm_Intern(const char *name)
 
     return sym;
 }
+
+/*============================================================================
+  Other functions: should be moved into appropriate files
+============================================================================*/
 
 ScmObj Scm_eval_c_string(const char *exp)
 {
