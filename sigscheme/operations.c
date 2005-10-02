@@ -1847,6 +1847,24 @@ ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer,
     return Scm_tailcall(consumer, vals, eval_state);
 }
 
+ScmObj ScmOp_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after,
+                          ScmEvalState *eval_state)
+{
+    ScmObj vals;
+    DECLARE_FUNCTION("dynamic-wind", ProcedureFixedTailRec3);
+
+    ASSERT_PROCEDUREP(before);
+    ASSERT_PROCEDUREP(thunk);
+    ASSERT_PROCEDUREP(after);
+
+#if 0
+    eval_state->dynwind_before = before;
+    eval_state->dynwind_after = after;
+#endif
+
+    return Scm_tailcall(thunk, SCM_NULL, eval_state);
+}
+
 #if SCM_USE_SRFI1
 #include "operations-srfi1.c"
 #endif
