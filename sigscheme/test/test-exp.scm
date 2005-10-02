@@ -246,6 +246,16 @@
                                              (lambda () 'ok))))
 (assert-equal? "call-with-values #8" -1 (apply call-with-values (list * -)))
 
+;; test whether the variable properly bound
+(assert-equal? "call-with-values #9"
+               1
+               ((lambda (n)
+                  (call-with-values
+                      (lambda () (values 2 3 n))
+                    (lambda (dummy1 dummy2 n2)
+                      n2)))
+                1))
+
 (assert-true   "values #1" (number? (values 5)))
 (assert-false  "values #2" (number? (values 'five)))
 (assert-equal? "values #3"
