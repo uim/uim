@@ -1784,11 +1784,11 @@ ScmObj ScmOp_force(ScmObj closure)
     return Scm_call(closure, SCM_NULL);
 }
 
-ScmObj ScmOp_call_with_current_continuation(ScmObj proc)
+ScmObj ScmOp_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
 {
     ScmObj cont = SCM_FALSE;
     ScmObj ret  = SCM_FALSE;
-    DECLARE_FUNCTION("call-with-current-continuation", ProcedureFixed1);
+    DECLARE_FUNCTION("call-with-current-continuation", ProcedureFixedTailRec1);
 
     ASSERT_PROCEDUREP(proc);
 
@@ -1796,15 +1796,23 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj proc)
 
     if (setjmp(SCM_CONTINUATION_JMPENV(cont))) {
         /* returned from longjmp */
+        eval_state->ret_type = SCM_RETTYPE_AS_IS;
         ret = scm_continuation_thrown_obj;
         scm_continuation_thrown_obj = SCM_FALSE;  /* make ret sweepable */
         return ret;
     } else {
+#if 1
         /* call proc with current continutation as (proc cont): This call must
          * not be Scm_tailcall(), to preserve current stack until longjmp()
          * called.
          */
         return Scm_call(proc, LIST_1(cont));
+#else
+        /* ONLY FOR TESTING: This call is properly recursible, but all
+         * continuations are broken and cannot be called.
+         */
+        return Scm_tailcall(proc, LIST_1(cont), eval_state);
+#endif
     }
 }
 

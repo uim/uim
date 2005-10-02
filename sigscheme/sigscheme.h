@@ -506,7 +506,7 @@ ScmObj ScmOp_procedurep(ScmObj obj);
 ScmObj ScmOp_map(ScmObj proc, ScmObj args);
 ScmObj ScmOp_for_each(ScmObj proc, ScmObj args);
 ScmObj ScmOp_force(ScmObj closure);
-ScmObj ScmOp_call_with_current_continuation(ScmObj proc);
+ScmObj ScmOp_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state);
 ScmObj ScmOp_values(ScmObj args);
 ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer, ScmEvalState *eval_state);
 
