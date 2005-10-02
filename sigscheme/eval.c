@@ -47,7 +47,6 @@
 /*=======================================
   System Include
 =======================================*/
-#include <setjmp.h>
 
 /*=======================================
   Local Include
@@ -73,8 +72,6 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-ScmObj scm_continuation_thrown_obj = NULL; /* for storing continuation return object */
-
 struct trace_frame *scm_trace_root = NULL;
 
 /*=======================================
@@ -370,9 +367,8 @@ static ScmObj call(ScmObj proc, ScmObj args,
     case ScmContinuation:
         if (NO_MORE_ARG(args))
             SigScm_Error("Continuation invocation lacks an argument.");
-        scm_continuation_thrown_obj
-            = suppress_eval ? CAR(args) : EVAL(CAR(args), env);
-        longjmp(SCM_CONTINUATION_JMPENV(proc), 1);
+        Scm_CallContinuation(proc,
+                             suppress_eval ? CAR(args) : EVAL(CAR(args), env));
         /* NOTREACHED */
     default:
         ERR_OBJ("bad operator", proc);

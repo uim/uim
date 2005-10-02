@@ -38,7 +38,6 @@
    System Include
 =======================================*/
 #include <stdio.h>
-#include <setjmp.h>
 
 /*=======================================
    Local Include
@@ -129,11 +128,6 @@ struct _ScmPortInfo {
     } info;
     
     int ungottenchar;
-};
-
-typedef struct _ScmContInfo ScmContInfo;
-struct _ScmContInfo {
-    jmp_buf jmp_env;
 };
 
 /*
@@ -254,7 +248,8 @@ struct ScmObjInternal_ {
         } port;
 
         struct ScmContinuation {
-            ScmContInfo *cont_info;
+            void *opaque0;
+            void *opaque1;
         } continuation;
 
 #if !SCM_USE_VALUECONS
@@ -385,9 +380,10 @@ struct ScmObjInternal_ {
 
 #define SCM_CONTINUATIONP(a) (SCM_TYPE(a) == ScmContinuation)
 #define SCM_ENTYPE_CONTINUATION(a) (SCM_ENTYPE((a), ScmContinuation))
-#define SCM_CONTINUATION_CONTINFO(a) (SCM_AS_CONTINUATION(a)->obj.continuation.cont_info)
-#define SCM_CONTINUATION_JMPENV(a) (SCM_AS_CONTINUATION(a)->obj.continuation.cont_info->jmp_env)
-#define SCM_CONTINUATION_SET_CONTINFO(a, cinfo) (SCM_CONTINUATION_CONTINFO(a) = (cinfo))
+#define SCM_CONTINUATION_OPAQUE0(a) (SCM_AS_CONTINUATION(a)->obj.continuation.opaque0)
+#define SCM_CONTINUATION_SET_OPAQUE0(a, val) (SCM_CONTINUATION_OPAQUE0(a) = (val))
+#define SCM_CONTINUATION_OPAQUE1(a) (SCM_AS_CONTINUATION(a)->obj.continuation.opaque1)
+#define SCM_CONTINUATION_SET_OPAQUE1(a, val) (SCM_CONTINUATION_OPAQUE1(a) = (val))
 
 #if SCM_USE_VALUECONS
 /* to modify a VALUECONS, rewrite its type to cons by SCM_ENTYPE_CONS(vcons) */

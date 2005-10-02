@@ -107,6 +107,12 @@ struct gc_protected_var_ {
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+/* specifies whether the storage abstraction layer can only handle nested
+ * (stacked) continuation or R5RS-conformant full implementation. But current
+ * implementation only supports '1'.
+ */
+#define SCM_NESTED_CONTINUATION_ONLY 1
+
 #define NAMEHASH_SIZE 1024
 
 #define SCM_NEW_OBJ_INTERNAL(VALNAME)                                        \
@@ -155,6 +161,10 @@ static int           scm_cur_marker = SCM_INITIAL_MARKER;
 static jmp_buf save_regs_buf;
 ScmObj *scm_stack_start_pointer = NULL;
 
+/* temporary store for a object returned from a continuation */
+static ScmObj continuation_thrown_obj = NULL;
+static ScmObj continuation_stack = NULL;
+
 static ScmObj *symbol_hash = NULL;
 static gc_protected_var *protected_var_list = NULL;
 
@@ -194,6 +204,13 @@ static void gc_mark(void);
 static void sweep_obj(ScmObj obj);
 static void gc_sweep(void);
 
+/* continuation */
+static void initialize_continuation_env(void);
+static void finalize_continuation_env(void);
+static void continuation_stack_push(ScmObj cont);
+static ScmObj continuation_stack_pop(void);
+static ScmObj continuation_stack_unwind(ScmObj dest_cont);
+
 static void initialize_symbol_hash(void);
 static void finalize_symbol_hash(void);
 static int  symbol_name_hash(const char *name);
@@ -231,11 +248,14 @@ void SigScm_InitStorage(void)
 {
     initialize_special_constants();
     allocate_heap(&scm_heaps, scm_heap_num, SCM_HEAP_SIZE, &scm_freelist);
+
+    initialize_continuation_env();
     initialize_symbol_hash();
 }
 
 void SigScm_FinalizeStorage(void)
 {
+    finalize_continuation_env();
     finalize_heap();
     finalize_symbol_hash();
     finalize_protected_var();
@@ -531,10 +551,7 @@ static void sweep_obj(ScmObj obj)
     switch (SCM_TYPE(obj)) {
     case ScmInt:
     case ScmCons:
-    case ScmFunc:
     case ScmClosure:
-    case ScmFreeCell:
-    case ScmEtc:
         break;
 
     case ScmChar:
@@ -574,12 +591,11 @@ static void sweep_obj(ScmObj obj)
             free(SCM_PORT_PORTINFO(obj));
         break;
 
+    /* rarely swept objects */
     case ScmContinuation:
-        /* free continuation info */
-        if (SCM_CONTINUATION_CONTINFO(obj))
-            free(SCM_CONTINUATION_CONTINFO(obj));
-        break;
-
+    case ScmFunc:
+    case ScmEtc:
+    case ScmFreeCell:
     default:
         break;
     }
@@ -802,13 +818,12 @@ ScmObj Scm_NewStringPort(const char *str)
 ScmObj Scm_NewContinuation(void)
 {
     ScmObj obj = SCM_FALSE;
-    ScmContInfo *cinfo = NULL;
 
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_CONTINUATION(obj);
-    cinfo = (ScmContInfo *)malloc(sizeof(ScmContInfo));
-    SCM_CONTINUATION_SET_CONTINFO(obj, cinfo);
+    SCM_CONTINUATION_SET_OPAQUE0(obj, NULL);
+    SCM_CONTINUATION_SET_OPAQUE1(obj, NULL);
 
     return obj;
 }
@@ -849,6 +864,123 @@ ScmObj Scm_NewCFuncPointer(ScmCFunc func)
     return obj;
 }
 #endif /* SCM_USE_NONSTD_FEATURES */
+
+/*============================================================================
+  Continuation
+============================================================================*/
+#define CONTINUATION_JMPENV     SCM_CONTINUATION_OPAQUE0
+#define CONTINUATION_SET_JMPENV SCM_CONTINUATION_SET_OPAQUE0
+#define CONTINUATION_UPPER      SCM_CONTINUATION_OPAQUE1
+#define CONTINUATION_SET_UPPER  SCM_CONTINUATION_SET_OPAQUE1
+
+#define INVALID_CONTINUATION    NULL
+
+static void initialize_continuation_env(void)
+{
+    continuation_thrown_obj = SCM_FALSE;
+    continuation_stack = SCM_NULL;
+    SigScm_GC_Protect(&continuation_thrown_obj);
+    SigScm_GC_Protect(&continuation_stack);
+}
+
+static void finalize_continuation_env(void)
+{
+    continuation_thrown_obj = NULL;
+    continuation_stack = NULL;
+}
+
+static void continuation_stack_push(ScmObj cont)
+{
+    CONTINUATION_SET_UPPER(cont, continuation_stack);
+    continuation_stack = cont;
+}
+
+static ScmObj continuation_stack_pop(void)
+{
+    ScmObj recentmost;
+
+    recentmost = continuation_stack;
+    continuation_stack = CONTINUATION_UPPER(continuation_stack);
+
+    return recentmost;
+}
+
+/* expire all descendant continuations and dest_cont */
+static ScmObj continuation_stack_unwind(ScmObj dest_cont)
+{
+    ScmObj cont;
+
+    do {
+        if (NULLP(continuation_stack))
+            return INVALID_CONTINUATION;
+        cont = continuation_stack_pop();
+        CONTINUATION_SET_JMPENV(cont, INVALID_CONTINUATION);
+    } while (!EQ(dest_cont, cont));
+
+    return dest_cont;
+}
+
+ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
+{
+    jmp_buf env;
+    ScmObj cont = SCM_FALSE;
+    ScmObj ret  = SCM_FALSE;
+
+    cont = Scm_NewContinuation();
+    CONTINUATION_SET_JMPENV(cont, &env);
+#if SCM_NESTED_CONTINUATION_ONLY
+    continuation_stack_push(cont);
+#endif
+
+    if (setjmp(env)) {
+        /* returned from longjmp */
+        ret = continuation_thrown_obj;
+        continuation_thrown_obj = SCM_FALSE;  /* make ret sweepable */
+
+        eval_state->ret_type = SCM_RETTYPE_AS_IS;
+        return ret;
+    } else {
+#if SCM_NESTED_CONTINUATION_ONLY
+        /* call proc with current continutation as (proc cont): This call must
+         * not be Scm_tailcall(), to preserve current stack until longjmp()
+         * called.
+         */
+        ret = Scm_call(proc, LIST_1(cont));
+#else
+        /* ONLY FOR TESTING: This call is properly recursible, but all
+         * continuations are broken and cannot be called, if the continuation
+         * is implemented by longjmp().
+         */
+        ret = Scm_tailcall(proc, LIST_1(cont), eval_state);
+#endif
+
+#if SCM_NESTED_CONTINUATION_ONLY
+        /* the continuation expires when this function returned */
+        continuation_stack_unwind(cont);
+#endif
+        return ret;
+    }
+}
+
+void Scm_CallContinuation(ScmObj cont, ScmObj ret)
+{
+    jmp_buf *env;
+
+    env = CONTINUATION_JMPENV(cont);
+
+    if (env != INVALID_CONTINUATION
+#if SCM_NESTED_CONTINUATION_ONLY
+        && continuation_stack_unwind(cont) != INVALID_CONTINUATION
+#endif
+        )
+    {
+        continuation_thrown_obj = ret;
+        longjmp(*env, 1);
+        /* NOTREACHED */
+    } else {
+        ERR("Scm_CallContinuation: called expired continuation");
+    }
+}
 
 /*============================================================================
   Symbol table

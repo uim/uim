@@ -64,7 +64,6 @@ extern ScmObj scm_return_value;
 #endif
 
 /* eval.c */
-extern ScmObj scm_continuation_thrown_obj;
 extern struct trace_frame *scm_trace_root;
 
 /* error.c*/
@@ -348,6 +347,8 @@ extern ScmObj scm_exception_continuations;
 /* datas.c */
 void SigScm_InitStorage(void);
 void SigScm_FinalizeStorage(void);
+ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state);
+void Scm_CallContinuation(ScmObj cont, ScmObj ret);
 
 /* eval.c */
 /* environment related functions */
