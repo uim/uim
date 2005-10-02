@@ -456,6 +456,7 @@ static void finalize_protected_var(void)
     gc_protected_var *item = protected_var_list;
     gc_protected_var *tmp  = NULL;
     while (item) {
+        *item->var = NULL;
         tmp  = item;
         item = item->next_var;
         free(tmp);
@@ -885,8 +886,6 @@ static void initialize_continuation_env(void)
 
 static void finalize_continuation_env(void)
 {
-    continuation_thrown_obj = NULL;
-    continuation_stack = NULL;
 }
 
 static void continuation_stack_push(ScmObj cont)
