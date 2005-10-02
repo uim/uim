@@ -219,6 +219,13 @@ static ScmObj lookup_frame(ScmObj var, ScmObj frame)
     return SCM_NULL;
 }
 
+/* A wrapper for call() for internal proper tail recursion */
+ScmObj Scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
+{
+    eval_state->ret_type = SCM_RETTYPE_AS_IS;
+    return call(proc, args, eval_state, 1);
+}
+
 /* Wrapper for call().  Just like ScmOp_apply(), except ARGS is used
  * as given---nothing special is done about the last item in the
  * list. */
