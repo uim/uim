@@ -85,6 +85,11 @@ extern ScmObj SigScm_null_values;
 extern ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote;
 extern ScmObj SigScm_unquote_splicing;
 
+/* operations-srfi34.c */
+#if SCM_USE_SRFI34
+extern ScmObj scm_exception_handlers;
+extern ScmObj scm_exception_continuations;
+#endif
 
 /*=======================================
    Macro Declarations

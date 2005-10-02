@@ -619,6 +619,7 @@ ScmObj ScmOp_SRFI1_lengthplus(ScmObj lst);
 ScmObj ScmOp_SRFI1_concatenate(ScmObj args);
 #endif
 #if SCM_USE_SRFI2
+/* operations-srfi2.c */
 ScmObj ScmOp_SRFI2_and_let_star(ScmObj claws, ScmObj body, ScmEvalState *eval_state);
 #endif
 #if SCM_USE_SRFI8
@@ -628,6 +629,12 @@ ScmObj ScmOp_SRFI8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalStat
 #if SCM_USE_SRFI23
 /* operations-srfi23.c */
 ScmObj ScmOp_SRFI23_error(ScmObj reason, ScmObj args);
+#endif
+#if SCM_USE_SRFI34
+/* operations-srfi34.c */
+ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk);
+ScmObj ScmOp_SRFI34_guard(ScmObj args, ScmEvalState *eval_state);
+ScmObj ScmOp_SRFI34_raise(ScmObj obj);
 #endif
 #if SCM_USE_SRFI38
 /* operations-srfi38.c */

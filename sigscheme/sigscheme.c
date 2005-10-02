@@ -380,9 +380,21 @@ static void SigScm_Initialize_internal(void)
     =======================================================================*/
     Scm_RegisterProcedureVariadic1("error", ScmOp_SRFI23_error);
 #endif
+#if SCM_USE_SRFI34
+    /*=======================================================================
+      SRFI-34 Procedure
+    =======================================================================*/
+    Scm_RegisterProcedureFixed2("with-exception-handler", ScmOp_SRFI34_with_exception_handler);
+    Scm_RegisterSyntaxVariadicTailRec0("guard"          , ScmOp_SRFI34_guard);
+    Scm_RegisterProcedureFixed1("raise"                 , ScmOp_SRFI34_raise);
+    scm_exception_handlers      = SCM_FALSE;
+    scm_exception_continuations = SCM_FALSE;
+    SigScm_GC_Protect(&scm_exception_handlers);
+    SigScm_GC_Protect(&scm_exception_continuations);
+#endif
 #if SCM_USE_SRFI38
     /*=======================================================================
-      SRFI-8 Procedure
+      SRFI-38 Procedure
     =======================================================================*/
     Scm_RegisterProcedureVariadic1("write-with-shared-structure", ScmOp_SRFI38_write_with_shared_structure);
 #endif

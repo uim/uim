@@ -46,6 +46,7 @@
 #define SCM_USE_SRFI2           1  /* use SRFI-2  'and-let*' */
 #define SCM_USE_SRFI8           1  /* use SRFI-8  'receive' */
 #define SCM_USE_SRFI23          1  /* use SRFI-23 'error' */
+#define SCM_USE_SRFI34          1  /* use SRFI-34 Exception Handling for Programs */
 #define SCM_USE_SRFI38          1  /* use SRFI-38 'write-with-shared-structure' */
 #define SCM_USE_SRFI60          1  /* use SRFI-60 integers as bits */
 
