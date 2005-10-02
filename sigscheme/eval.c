@@ -461,7 +461,6 @@ ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
 {
     ScmObj ret  = SCM_NULL;
     ScmEvalState state = {0};
-    int suppress_eval = 0;
 
 #if SCM_DEBUG
     struct trace_frame frame;
@@ -485,20 +484,9 @@ eval_loop:
         break;
 
     case ScmCons:
-        suppress_eval = 0;
-    call_loop:
-        state.ret_type = SCM_RETTYPE_AS_IS;
-        obj = call(CAR(obj), CDR(obj), &state, suppress_eval);
-        switch (state.ret_type) {
-        case SCM_RETTYPE_NEED_EVAL:
-            suppress_eval = 0;
+        obj = call(CAR(obj), CDR(obj), &state, 0);
+        if (state.ret_type == SCM_RETTYPE_NEED_EVAL)
             goto eval_loop;
-        case SCM_RETTYPE_NEED_CALL_AS_IS:
-            suppress_eval = 1;
-            goto call_loop;
-        default:
-            break;
-        }
         /* FALLTHROUGH */
     default:
         ret = obj;
