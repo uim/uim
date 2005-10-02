@@ -80,6 +80,9 @@ static ScmObj guard_handle_clauses(ScmObj clauses, ScmEvalState *eval_state);
 /*=======================================
   Function Implementations
 =======================================*/
+/* FIXME:
+ * - Insert new DECLARE_FUNCTION and ASSERT_*P macros
+ */
 ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk)
 {
     ScmObj ret  = SCM_FALSE;
@@ -102,6 +105,11 @@ ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk)
     return ret;
 }
 
+/* FIXME:
+ * - Change type to ProcedureVariadicTailRec1
+ * - Simplify with new DECLARE_FUNCTION and POP_ARG macros
+ * - Insert new ASSERT_*P macros
+ */
 ScmObj ScmOp_SRFI34_guard(ScmObj args, ScmEvalState *eval_state)
 {
     /* (guard (var clauses) body) */
@@ -129,10 +137,8 @@ ScmObj ScmOp_SRFI34_guard(ScmObj args, ScmEvalState *eval_state)
     return ret;
 }
 
-/*
- * FIXME: following else handlings
- * - depending on its own true value
- * - can appeared in other than last clause
+/* FIXME:
+ * - Simplify with ScmExp_cond()
  */
 static ScmObj guard_handle_clauses(ScmObj clauses, ScmEvalState *eval_state)
 {
@@ -194,6 +200,10 @@ static ScmObj guard_handle_clauses(ScmObj clauses, ScmEvalState *eval_state)
     return SCM_UNDEF;  
 }
 
+/* FIXME:
+ * - Rewrite with Scm_CallContinuation()
+ * - Insert DECLARE_FUNCTION
+ */
 ScmObj ScmOp_SRFI34_raise(ScmObj obj)
 {
     exception_thrown_obj = obj;
