@@ -439,6 +439,11 @@ struct ScmObjInternal_ {
   Predefined Symbols
 ============================================================================*/
 /* for list construction */
+/*
+ * TODO:
+ * - Rename to SCM_SYM_* to indicate that these macro are not pointing to
+ *   syntax but symbol
+ */
 #define SCM_QUOTE            SigScm_quote
 #define SCM_QUASIQUOTE       SigScm_quasiquote
 #define SCM_UNQUOTE          SigScm_unquote
