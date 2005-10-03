@@ -452,6 +452,6 @@ struct ScmObjInternal_ {
  * above. They safely hides the internal model against such change.
  */
 extern ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
-extern ScmObj SigScm_unbound, SigScm_undef;
+extern ScmObj SigScm_quote, SigScm_unbound, SigScm_undef;
 
 #endif /* __SIGSCMTYPE_H */
