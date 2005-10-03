@@ -70,6 +70,11 @@ static void repl(void)
 #endif
     ScmObj s_exp  = SCM_NULL;
     ScmObj result = SCM_NULL;
+#if SCM_COMPAT_SIOD
+    ScmObj siod_sym = SCM_FALSE;
+
+    siod_sym = Scm_Intern("siod");
+#endif
 
 #if !SCM_GCC4_READY_GC
     /* start protecting stack */
@@ -77,14 +82,16 @@ static void repl(void)
 #endif
 
 #if SCM_COMPAT_SIOD
-    if (SigScm_GetVerboseLevel() >= 2)
+    if (FALSEP(ScmOp_providedp(siod_sym))
+        || SigScm_GetVerboseLevel() >= 2)
 #endif
         printf("sscm> ");
 
     while (s_exp = SigScm_Read(scm_std_input_port), !EOFP(s_exp)) {
         result = EVAL(s_exp, SCM_INTERACTION_ENV);
 #if SCM_COMPAT_SIOD
-        if (SigScm_GetVerboseLevel() >= 1)
+        if (FALSEP(ScmOp_providedp(siod_sym))
+            || SigScm_GetVerboseLevel() >= 1)
 #endif
         {
 #if SCM_USE_SRFI38
@@ -96,7 +103,8 @@ static void repl(void)
         }
 
 #if SCM_COMPAT_SIOD
-        if (SigScm_GetVerboseLevel() >= 2)
+        if (FALSEP(ScmOp_providedp(siod_sym))
+            || SigScm_GetVerboseLevel() >= 2)
 #endif
             printf("sscm> ");
     }
