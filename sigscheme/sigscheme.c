@@ -416,15 +416,17 @@ void Scm_DefineAlias(const char *newsym, const char *sym)
 ScmObj ScmExp_use(ScmObj feature, ScmObj env)
 {
     struct module_info *mod = NULL;
+    ScmObj feature_str = SCM_FALSE;
     DECLARE_FUNCTION("use", SyntaxFixed1);
 
     ASSERT_SYMBOLP(feature);
 
     for (mod = module_info_table; mod->name; mod++) {
         if (EQ(feature, Scm_Intern(mod->name))) {
-            if (FALSEP(ScmOp_providedp(feature))) {
+            feature_str = ScmOp_symbol2string(feature);
+            if (FALSEP(ScmOp_providedp(feature_str))) {
                 (*mod->initializer)();
-                ScmOp_provide(feature);
+                ScmOp_provide(feature_str);
             }
             return SCM_TRUE;
         }
