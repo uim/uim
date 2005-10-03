@@ -408,6 +408,19 @@ struct ScmObjInternal_ {
 #define SCM_C_FUNCPOINTER_SET_VALUE(a, funcptr) (SCM_C_FUNCPOINTER_VALUE(a) = funcptr)
 
 /*============================================================================
+  Environment Specifiers
+============================================================================*/
+#define SCM_INTERACTION_ENV SCM_NULL
+/*
+ * Current implementation cannot handle scheme-report-environment and
+ * null-environment properly. Be careful to use these environemnts.
+ */
+#define SCM_R5RS_ENV        SCM_INTERACTION_ENV
+#define SCM_NULL_ENV        SCM_INTERACTION_ENV
+
+#define SCM_ENVP(env) (NULLP(env) || CONSP(env))
+
+/*============================================================================
   Abstract ScmObj Reference For Storage-Representation Independent Efficient
   List Operations
 ============================================================================*/

@@ -151,6 +151,7 @@ extern ScmObj scm_exception_continuations;
 #define FREECELLP      SCM_FREECELLP
 #define C_POINTERP     SCM_C_POINTERP
 #define C_FUNCPOINTERP SCM_C_FUNCPOINTERP
+#define ENVP           SCM_ENVP
 
 #define CDBG           SCM_CDBG
 #define DBG            SCM_DBG
@@ -337,6 +338,7 @@ extern ScmObj scm_exception_continuations;
 #define ASSERT_PORTP(obj)    ASSERT_TYPE(PORTP, "port", (obj))
 #define ASSERT_CONTINUATIONP(obj) ASSERT_TYPE(CONTINUATIONP, "continuation", (obj))
 #define ASSERT_PROCEDUREP(obj) ASSERT_TYPE(PROCEDUREP, "procedure", (obj))
+#define ASSERT_ENVP(obj)     ASSERT_TYPE(ENVP, "environment specifier", (obj))
 
 
 /*=======================================
