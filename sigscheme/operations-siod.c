@@ -118,7 +118,9 @@ void SigScm_Initialize_SIOD(void)
  */
 ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest)
 {
+#if !SCM_COMPAT_SIOD_BUGS
     ScmObj env = SCM_INVALID;
+#endif
     DECLARE_FUNCTION("symbol-bound?", ProcedureVariadic1);
 
     ASSERT_SYMBOLP(sym);

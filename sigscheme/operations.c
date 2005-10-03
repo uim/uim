@@ -1855,7 +1855,6 @@ ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer,
 ScmObj ScmOp_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after,
                           ScmEvalState *eval_state)
 {
-    ScmObj vals;
     DECLARE_FUNCTION("dynamic-wind", ProcedureFixedTailRec3);
 
     ASSERT_PROCEDUREP(before);
