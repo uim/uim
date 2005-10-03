@@ -173,6 +173,10 @@ extern ScmCFunc (*scm_gc_ensure_uninlined_func)(ScmCFunc);
 void SigScm_Initialize(void);
 void SigScm_Finalize(void);
 void Scm_DefineAlias(const char *newsym, const char *sym);
+ScmObj Scm_eval_c_string(const char *exp);
+#if SCM_COMPAT_SIOD
+ScmObj Scm_return_value(void);
+#endif
 
 /* Procedure/Syntax Registration */
 void Scm_RegisterReductionOperator(const char *name, ScmObj (*func)(ScmObj, ScmObj, enum ScmReductionState*));
@@ -332,10 +336,6 @@ ScmObj Scm_NewCPointer(void *data);
 ScmObj Scm_NewCFuncPointer(ScmCFunc func);
 #endif
 ScmObj Scm_Intern(const char *name);
-ScmObj Scm_eval_c_string(const char *exp);
-#if SCM_COMPAT_SIOD
-ScmObj Scm_return_value(void);
-#endif
 
 /* storage-protection.c */
 #if SCM_GCC4_READY_GC

@@ -57,6 +57,10 @@ ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote, SigScm_unquote_splicing;
 ScmObj SigScm_null_values;
 #endif
 
+#if SCM_COMPAT_SIOD
+static ScmObj scm_return_value    = NULL;
+#endif
+
 /*=======================================
   File Local Function Declarations
 =======================================*/
@@ -67,6 +71,12 @@ static void SigScm_Initialize_internal(void);
 #endif
 
 static int Scm_RegisterFunc(const char *name, ScmFuncType func, enum ScmFuncTypeCode type);
+
+#if SCM_GCC4_READY_GC
+static SCM_GC_PROTECTED_FUNC_DECL(ScmObj, Scm_eval_c_string_internal, (const char *exp));
+#else
+static ScmObj Scm_eval_c_string_internal(const char *exp);
+#endif
 
 /*=======================================
   Function Implementations
@@ -364,6 +374,52 @@ void Scm_DefineAlias(const char *newsym, const char *sym)
     SCM_SYMBOL_SET_VCELL(Scm_Intern(newsym),
                          SCM_SYMBOL_VCELL(Scm_Intern(sym)));
 }
+
+ScmObj Scm_eval_c_string(const char *exp)
+{
+#if !SCM_GCC4_READY_GC
+    ScmObj stack_start = NULL;
+#endif
+    ScmObj ret         = SCM_NULL;
+
+#if SCM_GCC4_READY_GC
+    SCM_GC_CALL_PROTECTED_FUNC(ret, Scm_eval_c_string_internal, (exp));
+#else
+    /* start protecting stack */
+    SigScm_GC_ProtectStack(&stack_start);
+
+    ret = Scm_eval_c_string_internal(exp);
+
+    /* now no need to protect stack */
+    SigScm_GC_UnprotectStack(&stack_start);
+#endif
+
+    return ret;
+}
+
+ScmObj Scm_eval_c_string_internal(const char *exp)
+{
+    ScmObj str_port    = SCM_NULL;
+    ScmObj ret         = SCM_NULL;
+
+    str_port = Scm_NewStringPort(exp);
+
+    ret = SigScm_Read(str_port);
+    ret = EVAL(ret, SCM_INTERACTION_ENV);
+
+#if SCM_COMPAT_SIOD
+    scm_return_value = ret;
+#endif
+
+    return ret;
+}
+
+#if SCM_COMPAT_SIOD
+ScmObj Scm_return_value(void)
+{
+    return scm_return_value;
+}
+#endif
 
 /*===========================================================================
   Scheme Function Export Related Functions

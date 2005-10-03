@@ -108,7 +108,6 @@ void SigScm_Initialize_SIOD(void)
     Scm_RegisterProcedureFixed1("%%closure-code"       , ScmOp_closure_code);
     Scm_RegisterProcedureVariadic0("verbose" , ScmOp_verbose);
     /* datas.c */
-    scm_return_value = SCM_NULL;
     SigScm_SetVerboseLevel(2);
 }
 
