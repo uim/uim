@@ -97,7 +97,6 @@ void SigScm_Initialize_SIOD(void)
     Scm_DefineAlias("bit-xor"               , "logxor");
     Scm_DefineAlias("bit-not"               , "lognot");
 
-    Scm_RegisterProcedureVariadic1("symbol-bound?"     , ScmOp_symbol_boundp);
     Scm_RegisterProcedureFixed1("symbol-value"         , ScmOp_symbol_value);
     Scm_RegisterProcedureFixed2("set-symbol-value!"    , ScmOp_set_symbol_value);
 #if SCM_COMPAT_SIOD_BUGS
@@ -108,36 +107,6 @@ void SigScm_Initialize_SIOD(void)
     Scm_RegisterProcedureVariadic0("verbose" , ScmOp_verbose);
 
     SigScm_SetVerboseLevel(2);
-}
-
-/*
- * TODO:
- * - generalize to SCM_USE_NONSTD_FEATURES
- * - describe compatibility with de facto standard of other Scheme
- *   implementations (accept env as optional arg, etc)
- */
-ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest)
-{
-#if !SCM_COMPAT_SIOD_BUGS
-    ScmObj env = SCM_INVALID;
-#endif
-    DECLARE_FUNCTION("symbol-bound?", ProcedureVariadic1);
-
-    ASSERT_SYMBOLP(sym);
-
-#if SCM_COMPAT_SIOD_BUGS
-    /* SIOD compatible implementation */
-    return (SCM_SYMBOL_BOUNDP(sym)) ? SCM_TRUE : SCM_FALSE;
-#else
-    env = POP_ARG(rest);
-    if (VALIDP(env))
-        ASSERT_ENVP(env);
-    else
-        env = SCM_INTERACTION_ENV;
-
-    return (!NULLP(Scm_LookupEnvironment(sym, env))
-            || SCM_SYMBOL_BOUNDP(sym)) ? SCM_TRUE : SCM_FALSE;
-#endif
 }
 
 /*

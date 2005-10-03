@@ -1869,6 +1869,34 @@ ScmObj ScmOp_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after,
     return Scm_tailcall(thunk, SCM_NULL, eval_state);
 }
 
+/*============================================================================
+  SigScheme-Specific Non-R5RS Standard Procedures
+============================================================================*/
+#if SCM_USE_NONSTD_FEATURES
+/*
+ * TODO:
+ * - describe compatibility with de facto standard of other Scheme
+ *   implementations (accept env as optional arg, etc)
+ */
+/* The implementation is fully compatible with SIOD */
+ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest)
+{
+    ScmObj env = SCM_INVALID;
+    DECLARE_FUNCTION("symbol-bound?", ProcedureVariadic1);
+
+    ASSERT_SYMBOLP(sym);
+
+    env = POP_ARG(rest);
+    if (VALIDP(env))
+        ASSERT_ENVP(env);
+    else
+        env = SCM_INTERACTION_ENV;
+
+    return (!NULLP(Scm_LookupEnvironment(sym, env))
+            || SCM_SYMBOL_BOUNDP(sym)) ? SCM_TRUE : SCM_FALSE;
+}
+#endif /* SCM_USE_NONSTD_FEATURES */
+
 #if SCM_USE_SRFI1
 #include "operations-srfi1.c"
 #endif

@@ -510,6 +510,9 @@ ScmObj ScmOp_values(ScmObj args);
 ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer, ScmEvalState *eval_state);
 ScmObj ScmOp_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after,
                           ScmEvalState *eval_state);
+#if SCM_USE_NONSTD_FEATURES
+ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest);
+#endif
 
 /* io.c */
 void   SigScm_set_lib_path(const char *path);
@@ -663,7 +666,6 @@ ScmObj ScmOp_SRFI60_logtest(ScmObj j, ScmObj k);
 #if SCM_COMPAT_SIOD
 /* operations-siod.c */
 void   SigScm_Initialize_SIOD(void);
-ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest);
 ScmObj ScmOp_symbol_value(ScmObj var);
 ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val);
 ScmObj ScmOp_siod_eql(ScmObj obj1, ScmObj obj2);
