@@ -1,4 +1,4 @@
-(load "test/unittest.scm")
+(load "./test/unittest.scm")
 
 (define call/cc call-with-current-continuation)
 
@@ -31,5 +31,15 @@
 
 ;; another continuation as proc
 (assert-true   "call/cc #5" (procedure? (call/cc (lambda (c) (call/cc c)))))
+
+(assert-equal? "call/cc #6" 'ret-call/cc
+	       (call-with-current-continuation
+		(lambda (k)
+		  'ret-call/cc)))
+
+(assert-equal? "call/cc #7" 'ret-call/cc
+	       (call-with-current-continuation
+		(lambda (k)
+		  (k 'ret-call/cc))))
 
 (total-report)
