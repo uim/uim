@@ -60,6 +60,48 @@ static ScmObj compare_list(ScmObj eqproc, ScmObj lst1, ScmObj lst2);
 /*=======================================
   Function Implementations
 =======================================*/
+void SigScm_Initialize_SRFI1(void)
+{
+    /*=======================================================================
+      SRFI-1 Procedures
+    =======================================================================*/
+    Scm_RegisterProcedureFixed1("list-copy"            , ScmOp_SRFI1_list_copy);
+    Scm_RegisterProcedureFixed2("xcons"                , ScmOp_SRFI1_xcons);
+    Scm_RegisterProcedureVariadic0("circular-list"     , ScmOp_SRFI1_circular_list);
+    Scm_RegisterProcedureVariadic1("iota"              , ScmOp_SRFI1_iota);
+    Scm_RegisterProcedureVariadic0("cons*"             , ScmOp_SRFI1_cons_star);
+    Scm_RegisterProcedureVariadic1("make-list"         , ScmOp_SRFI1_make_list);
+    Scm_RegisterProcedureVariadic1("list-tabulate"     , ScmOp_SRFI1_list_tabulate);
+    Scm_RegisterProcedureFixed1("proper-list?"         , ScmOp_SRFI1_proper_listp);
+    Scm_RegisterProcedureFixed1("circular-list?"       , ScmOp_SRFI1_circular_listp);
+    Scm_RegisterProcedureFixed1("dotted-list?"         , ScmOp_SRFI1_dotted_listp);
+    Scm_RegisterProcedureFixed1("not-pair?"            , ScmOp_SRFI1_not_pairp);
+    Scm_RegisterProcedureFixed1("null-list?"           , ScmOp_SRFI1_null_listp);
+    Scm_RegisterProcedureVariadic1("list="             , ScmOp_SRFI1_listequal); 
+    Scm_RegisterProcedureFixed1("first"                , ScmOp_SRFI1_first);
+    Scm_RegisterProcedureFixed1("second"               , ScmOp_SRFI1_second);
+    Scm_RegisterProcedureFixed1("third"                , ScmOp_SRFI1_third);
+    Scm_RegisterProcedureFixed1("fourth"               , ScmOp_SRFI1_fourth);
+    Scm_RegisterProcedureFixed1("fifth"                , ScmOp_SRFI1_fifth);
+    Scm_RegisterProcedureFixed1("sixth"                , ScmOp_SRFI1_sixth);
+    Scm_RegisterProcedureFixed1("seventh"              , ScmOp_SRFI1_seventh);
+    Scm_RegisterProcedureFixed1("eighth"               , ScmOp_SRFI1_eighth);
+    Scm_RegisterProcedureFixed1("ninth"                , ScmOp_SRFI1_ninth);
+    Scm_RegisterProcedureFixed1("tenth"                , ScmOp_SRFI1_tenth);      
+    Scm_RegisterProcedureFixed2("take"                 , ScmOp_SRFI1_take);
+    Scm_RegisterProcedureFixed2("drop"                 , ScmOp_SRFI1_drop);
+    Scm_RegisterProcedureFixed2("take-right"           , ScmOp_SRFI1_take_right);
+    Scm_RegisterProcedureFixed2("drop-right"           , ScmOp_SRFI1_drop_right);
+    Scm_RegisterProcedureFixed2("take!"                , ScmOp_SRFI1_take_d);
+    Scm_RegisterProcedureFixed2("drop-right!"          , ScmOp_SRFI1_drop_right_d);
+    Scm_RegisterProcedureFixed2("split-at"             , ScmOp_SRFI1_split_at);
+    Scm_RegisterProcedureFixed2("split-at!"            , ScmOp_SRFI1_split_at_d);
+    Scm_RegisterProcedureFixed1("last"                 , ScmOp_SRFI1_last);
+    Scm_RegisterProcedureFixed1("last-pair"            , ScmOp_SRFI1_last_pair);
+    Scm_RegisterProcedureFixed1("length+"              , ScmOp_SRFI1_lengthplus);
+    Scm_RegisterProcedureVariadic0("concatenate"       , ScmOp_SRFI1_concatenate);
+}
+
 /*==============================================================================
   SRFI1 : The procedures : Constructors
 ==============================================================================*/

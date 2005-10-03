@@ -83,6 +83,20 @@ static ScmObj guard_handle_clauses(ScmObj clauses, ScmObj env);
 /*=======================================
   Function Implementations
 =======================================*/
+void SigScm_Initialize_SRFI34(void)
+{
+    /*=======================================================================
+      SRFI-34 Procedure
+    =======================================================================*/
+    Scm_RegisterProcedureFixed2("with-exception-handler", ScmOp_SRFI34_with_exception_handler);
+    Scm_RegisterSyntaxVariadic1("guard"                 , ScmExp_SRFI34_guard);
+    Scm_RegisterProcedureFixed1("raise"                 , ScmOp_SRFI34_raise);
+    scm_exception_handlers      = SCM_FALSE;
+    scm_exception_continuations = SCM_FALSE;
+    SigScm_GC_Protect(&scm_exception_handlers);
+    SigScm_GC_Protect(&scm_exception_continuations);
+}
+
 ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk)
 {
     jmp_buf jmpenv;

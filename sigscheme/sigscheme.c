@@ -322,120 +322,28 @@ static void SigScm_Initialize_internal(void)
     SigScm_GC_Protect(&scm_current_error_port);
 
 #if SCM_USE_SRFI1
-    /*=======================================================================
-      SRFI-1 Procedures
-    =======================================================================*/
-    Scm_RegisterProcedureFixed1("list-copy"            , ScmOp_SRFI1_list_copy);
-    Scm_RegisterProcedureFixed2("xcons"                , ScmOp_SRFI1_xcons);
-    Scm_RegisterProcedureVariadic0("circular-list" , ScmOp_SRFI1_circular_list);
-    Scm_RegisterProcedureVariadic1("iota"          , ScmOp_SRFI1_iota);
-    Scm_RegisterProcedureVariadic0("cons*"          , ScmOp_SRFI1_cons_star);
-    Scm_RegisterProcedureVariadic1("make-list"      , ScmOp_SRFI1_make_list);
-    Scm_RegisterProcedureVariadic1("list-tabulate"  , ScmOp_SRFI1_list_tabulate);
-    Scm_RegisterProcedureFixed1("proper-list?"         , ScmOp_SRFI1_proper_listp);
-    Scm_RegisterProcedureFixed1("circular-list?"       , ScmOp_SRFI1_circular_listp);
-    Scm_RegisterProcedureFixed1("dotted-list?"         , ScmOp_SRFI1_dotted_listp);
-    Scm_RegisterProcedureFixed1("not-pair?"            , ScmOp_SRFI1_not_pairp);
-    Scm_RegisterProcedureFixed1("null-list?"           , ScmOp_SRFI1_null_listp);
-    Scm_RegisterProcedureVariadic1("list="   , ScmOp_SRFI1_listequal); 
-    Scm_RegisterProcedureFixed1("first"                , ScmOp_SRFI1_first);
-    Scm_RegisterProcedureFixed1("second"               , ScmOp_SRFI1_second);
-    Scm_RegisterProcedureFixed1("third"                , ScmOp_SRFI1_third);
-    Scm_RegisterProcedureFixed1("fourth"               , ScmOp_SRFI1_fourth);
-    Scm_RegisterProcedureFixed1("fifth"                , ScmOp_SRFI1_fifth);
-    Scm_RegisterProcedureFixed1("sixth"                , ScmOp_SRFI1_sixth);
-    Scm_RegisterProcedureFixed1("seventh"              , ScmOp_SRFI1_seventh);
-    Scm_RegisterProcedureFixed1("eighth"               , ScmOp_SRFI1_eighth);
-    Scm_RegisterProcedureFixed1("ninth"                , ScmOp_SRFI1_ninth);
-    Scm_RegisterProcedureFixed1("tenth"                , ScmOp_SRFI1_tenth);      
-    Scm_RegisterProcedureFixed2("take"                 , ScmOp_SRFI1_take);
-    Scm_RegisterProcedureFixed2("drop"                 , ScmOp_SRFI1_drop);
-    Scm_RegisterProcedureFixed2("take-right"           , ScmOp_SRFI1_take_right);
-    Scm_RegisterProcedureFixed2("drop-right"           , ScmOp_SRFI1_drop_right);
-    Scm_RegisterProcedureFixed2("take!"                , ScmOp_SRFI1_take_d);
-    Scm_RegisterProcedureFixed2("drop-right!"          , ScmOp_SRFI1_drop_right_d);
-    Scm_RegisterProcedureFixed2("split-at"             , ScmOp_SRFI1_split_at);
-    Scm_RegisterProcedureFixed2("split-at!"            , ScmOp_SRFI1_split_at_d);
-    Scm_RegisterProcedureFixed1("last"                 , ScmOp_SRFI1_last);
-    Scm_RegisterProcedureFixed1("last-pair"            , ScmOp_SRFI1_last_pair);
-    Scm_RegisterProcedureFixed1("length+"              , ScmOp_SRFI1_lengthplus);
-    Scm_RegisterProcedureVariadic0("concatenate" , ScmOp_SRFI1_concatenate);
+    SigScm_Initialize_SRFI1();
 #endif
 #if SCM_USE_SRFI2
-    /*=======================================================================
-      SRFI-2 Procedure
-    =======================================================================*/
-    Scm_RegisterSyntaxVariadicTailRec1("and-let*", ScmOp_SRFI2_and_let_star);
+    SigScm_Initialize_SRFI2();
 #endif
 #if SCM_USE_SRFI8
-    /*=======================================================================
-      SRFI-8 Procedure
-    =======================================================================*/
-    Scm_RegisterSyntaxVariadicTailRec2("receive", ScmOp_SRFI8_receive);
+    SigScm_Initialize_SRFI8();
 #endif
 #if SCM_USE_SRFI23
-    /*=======================================================================
-      SRFI-23 Procedure
-    =======================================================================*/
-    Scm_RegisterProcedureVariadic1("error", ScmOp_SRFI23_error);
+    SigScm_Initialize_SRFI23();
 #endif
 #if SCM_USE_SRFI34
-    /*=======================================================================
-      SRFI-34 Procedure
-    =======================================================================*/
-    Scm_RegisterProcedureFixed2("with-exception-handler", ScmOp_SRFI34_with_exception_handler);
-    Scm_RegisterSyntaxVariadic1("guard"                 , ScmExp_SRFI34_guard);
-    Scm_RegisterProcedureFixed1("raise"                 , ScmOp_SRFI34_raise);
-    scm_exception_handlers      = SCM_FALSE;
-    scm_exception_continuations = SCM_FALSE;
-    SigScm_GC_Protect(&scm_exception_handlers);
-    SigScm_GC_Protect(&scm_exception_continuations);
+    SigScm_Initialize_SRFI34();
 #endif
 #if SCM_USE_SRFI38
-    /*=======================================================================
-      SRFI-38 Procedure
-    =======================================================================*/
-    Scm_RegisterProcedureVariadic1("write-with-shared-structure", ScmOp_SRFI38_write_with_shared_structure);
+    SigScm_Initialize_SRFI38();
 #endif
 #if SCM_USE_SRFI60
-    /*=======================================================================
-      SRFI-60 Procedures
-    =======================================================================*/
-    Scm_RegisterReductionOperator("logand"   , ScmOp_SRFI60_logand);
-    Scm_RegisterReductionOperator("logior"   , ScmOp_SRFI60_logior);
-    Scm_RegisterReductionOperator("logxor"   , ScmOp_SRFI60_logxor);
-    Scm_RegisterProcedureFixed1("lognot"     , ScmOp_SRFI60_lognot);
-    Scm_RegisterProcedureFixed3("bitwise-if" , ScmOp_SRFI60_bitwise_if);
-    Scm_RegisterProcedureFixed2("logtest"    , ScmOp_SRFI60_logtest);
-    Scm_DefineAlias("bitwise-and"            , "logand");
-    Scm_DefineAlias("bitwise-ior"            , "logior");
-    Scm_DefineAlias("bitwise-xor"            , "logxor");
-    Scm_DefineAlias("bitwise-not"            , "lognot");
-    Scm_DefineAlias("bitwise-merge"          , "bitwise-if");
-    Scm_DefineAlias("any-bits-set?"          , "logtest");
+    SigScm_Initialize_SRFI60();
 #endif
-
 #if SCM_COMPAT_SIOD
-    /*=======================================================================
-      SIOD Compatible Variables and Procedures
-    =======================================================================*/
-    /* operations-siod.c */
-    Scm_RegisterProcedureFixed1("symbol-bound?"        , ScmOp_symbol_boundp);
-    Scm_RegisterProcedureFixed1("symbol-value"         , ScmOp_symbol_value);
-    Scm_RegisterProcedureFixed2("set-symbol-value!"    , ScmOp_set_symbol_value);
-#if SCM_COMPAT_SIOD_BUGS
-    Scm_RegisterProcedureFixed2("="                    , ScmOp_siod_eql);
-#endif
-    Scm_DefineAlias("bit-and"               , "logand");
-    Scm_DefineAlias("bit-or"                , "logior");
-    Scm_DefineAlias("bit-xor"               , "logxor");
-    Scm_DefineAlias("bit-not"               , "lognot");
-    Scm_RegisterProcedureFixedTailRec0("the-environment" , ScmOp_the_environment);
-    Scm_RegisterProcedureFixed1("%%closure-code"       , ScmOp_closure_code);
-    Scm_RegisterProcedureVariadic0("verbose" , ScmOp_verbose);
-    /* datas.c */
-    scm_return_value = SCM_NULL;
-    SigScm_SetVerboseLevel(2);
+    SigScm_Initialize_SIOD();
 #endif
 }
 

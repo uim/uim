@@ -583,6 +583,7 @@ void SigScm_WriteToPortWithSharedStructure(ScmObj port, ScmObj obj);
 ===========================================================================*/
 #if SCM_USE_SRFI1
 /* operations-srfi1.c */
+void   SigScm_Initialize_SRFI1(void);
 ScmObj ScmOp_SRFI1_xcons(ScmObj a, ScmObj b);
 ScmObj ScmOp_SRFI1_cons_star(ScmObj args);
 ScmObj ScmOp_SRFI1_make_list(ScmObj length, ScmObj args);
@@ -622,28 +623,34 @@ ScmObj ScmOp_SRFI1_concatenate(ScmObj args);
 #endif
 #if SCM_USE_SRFI2
 /* operations-srfi2.c */
+void   SigScm_Initialize_SRFI2(void);
 ScmObj ScmOp_SRFI2_and_let_star(ScmObj claws, ScmObj body, ScmEvalState *eval_state);
 #endif
 #if SCM_USE_SRFI8
 /* operations-srfi8.c */
+void   SigScm_Initialize_SRFI8(void);
 ScmObj ScmOp_SRFI8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalState *eval_state);
 #endif
 #if SCM_USE_SRFI23
 /* operations-srfi23.c */
+void   SigScm_Initialize_SRFI23(void);
 ScmObj ScmOp_SRFI23_error(ScmObj reason, ScmObj args);
 #endif
 #if SCM_USE_SRFI34
 /* operations-srfi34.c */
+void  SigScm_Initialize_SRFI34(void);
 ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk);
 ScmObj ScmExp_SRFI34_guard(ScmObj var_and_clauses, ScmObj body, ScmObj env);
 ScmObj ScmOp_SRFI34_raise(ScmObj obj);
 #endif
 #if SCM_USE_SRFI38
 /* operations-srfi38.c */
+void   SigScm_Initialize_SRFI38(void);
 ScmObj ScmOp_SRFI38_write_with_shared_structure(ScmObj obj, ScmObj args);
 #endif
 #if SCM_USE_SRFI60
 /* operations-srfi60.c */
+void   SigScm_Initialize_SRFI60(void);
 ScmObj ScmOp_SRFI60_logand(ScmObj left, ScmObj right,
                            enum ScmReductionState *state);
 ScmObj ScmOp_SRFI60_logior(ScmObj left, ScmObj right,
@@ -656,6 +663,7 @@ ScmObj ScmOp_SRFI60_logtest(ScmObj j, ScmObj k);
 #endif
 #if SCM_COMPAT_SIOD
 /* operations-siod.c */
+void   SigScm_Initialize_SIOD(void);
 ScmObj ScmOp_symbol_boundp(ScmObj obj);
 ScmObj ScmOp_symbol_value(ScmObj var);
 ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val);

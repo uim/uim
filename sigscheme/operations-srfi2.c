@@ -61,6 +61,14 @@
 /*=======================================
   Function Implementations
 =======================================*/
+void SigScm_Initialize_SRFI2(void)
+{
+    /*=======================================================================
+      SRFI-2 Procedure
+    =======================================================================*/
+    Scm_RegisterSyntaxVariadicTailRec1("and-let*", ScmOp_SRFI2_and_let_star);
+}
+
 ScmObj ScmOp_SRFI2_and_let_star(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
 {
     ScmObj env  = eval_state->env;

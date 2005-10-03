@@ -59,6 +59,13 @@
 /*=======================================
   Function Implementations
 =======================================*/
+void SigScm_Initialize_SRFI38(void)
+{
+    /*=======================================================================
+      SRFI-38 Procedure
+    =======================================================================*/
+    Scm_RegisterProcedureVariadic1("write-with-shared-structure", ScmOp_SRFI38_write_with_shared_structure);
+}
 
 /*=============================================================================
   SRFI38 : External Representation for Data With Shared Structure
