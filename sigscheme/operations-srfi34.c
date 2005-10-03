@@ -135,11 +135,12 @@ ScmObj ScmExp_SRFI34_guard(ScmObj var_and_clauses, ScmObj body, ScmObj env)
     ScmObj cont    = Scm_NewContinuation();
     DECLARE_FUNCTION("guard", SyntaxVariadic1);
 
-    ASSERT_SYMBOLP(var);
     ASSERT_CONSP(var_and_clauses);
 
     var     = CAR(var_and_clauses);
     clauses = CDR(var_and_clauses);
+
+    ASSERT_SYMBOLP(var);
 
     /* check if return from "raise" */
     CONTINUATION_SET_JMPENV(cont, &jmpenv);
