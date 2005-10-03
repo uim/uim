@@ -72,7 +72,7 @@ static ScmObj SigScm_load_internal(const char *c_filename);
 #endif /* SCM_GCC4_READY_GC */
 static char*  create_valid_path(const char *c_filename);
 #if SCM_USE_NONSTD_FEATURES
-static ScmObj create_loaded_str(ScmObj filename);
+static ScmObj create_loaded_sym(ScmObj filename);
 static int    file_existsp(const char *filepath);
 #endif
 
@@ -483,32 +483,29 @@ ScmObj ScmOp_load(ScmObj filename)
 
 ScmObj ScmOp_require(ScmObj filename)
 {
-    ScmObj loaded_str = SCM_FALSE;
-#if SCM_COMPAT_SIOD
-    ScmObj retsym     = SCM_FALSE;
-#endif
+    ScmObj loaded_sym = SCM_FALSE;
 
     if (!STRINGP(filename))
         SigScm_ErrorObj("require : string required but got ", filename);
 
-    loaded_str = create_loaded_str(filename);
-    if (FALSEP(ScmOp_providedp(loaded_str))) {
+    loaded_sym = create_loaded_sym(filename);
+    if (FALSEP(ScmOp_providedp(loaded_sym))) {
         ScmOp_load(filename);
-        ScmOp_provide(loaded_str);
+        ScmOp_provide(loaded_sym);
     }
 
 #if SCM_COMPAT_SIOD
-    retsym = Scm_Intern(SCM_STRING_STR(loaded_str));
-    SCM_SYMBOL_SET_VCELL(retsym, SCM_TRUE);
+    SCM_SYMBOL_SET_VCELL(loaded_sym, SCM_TRUE);
 
-    return retsym;
+    return loaded_sym;
 #else
     return SCM_TRUE;
 #endif
 }
 
-static ScmObj create_loaded_str(ScmObj filename)
+static ScmObj create_loaded_sym(ScmObj filename)
 {
+    ScmObj loaded_sym = SCM_FALSE;
     char  *loaded_str = NULL;
     int    size = 0;
 
@@ -516,8 +513,10 @@ static ScmObj create_loaded_str(ScmObj filename)
     size = (strlen(SCM_STRING_STR(filename)) + strlen("*-loaded*") + 1);
     loaded_str = (char*)malloc(sizeof(char) * size);
     snprintf(loaded_str, size, "*%s-loaded*", SCM_STRING_STR(filename));
+    loaded_sym = Scm_Intern(loaded_str);
+    free(loaded_str);
     
-    return Scm_NewString(loaded_str);
+    return loaded_sym;
 }
 
 /*
@@ -526,8 +525,9 @@ static ScmObj create_loaded_str(ScmObj filename)
  */
 ScmObj ScmOp_provide(ScmObj feature)
 {
-    if (!STRINGP(feature))
-        SigScm_ErrorObj("provide : string required but got ", feature);
+    DECLARE_FUNCTION("provide", ProcedureFixed1);
+
+    ASSERT_SYMBOLP(feature);
 
     /* record to SigScm_features */
     SCM_SYMBOL_SET_VCELL(SigScm_features,
@@ -543,11 +543,11 @@ ScmObj ScmOp_provide(ScmObj feature)
 ScmObj ScmOp_providedp(ScmObj feature)
 {
     ScmObj provided = SCM_FALSE;
+    DECLARE_FUNCTION("provided?", ProcedureFixed1);
 
-    if (!STRINGP(feature))
-        SigScm_ErrorObj("provide : string required but got ", feature);
-
-    provided = ScmOp_member(feature, SCM_SYMBOL_VCELL(SigScm_features));
+    ASSERT_SYMBOLP(feature);
+    
+    provided = ScmOp_memq(feature, SCM_SYMBOL_VCELL(SigScm_features));
 
     return (NFALSEP(provided)) ? SCM_TRUE : SCM_FALSE;
 }
