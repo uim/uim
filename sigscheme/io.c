@@ -72,7 +72,7 @@ static ScmObj SigScm_load_internal(const char *c_filename);
 #endif /* SCM_GCC4_READY_GC */
 static char*  create_valid_path(const char *c_filename);
 #if SCM_USE_NONSTD_FEATURES
-static ScmObj create_loaded_sym(ScmObj filename);
+static ScmObj create_loaded_str(ScmObj filename);
 static int    file_existsp(const char *filepath);
 #endif
 
@@ -483,29 +483,32 @@ ScmObj ScmOp_load(ScmObj filename)
 
 ScmObj ScmOp_require(ScmObj filename)
 {
-    ScmObj loaded_sym = SCM_FALSE;
+    ScmObj loaded_str = SCM_FALSE;
+#if SCM_COMPAT_SIOD
+    ScmObj retsym     = SCM_FALSE;
+#endif
 
     if (!STRINGP(filename))
         SigScm_ErrorObj("require : string required but got ", filename);
 
-    loaded_sym = create_loaded_sym(filename);
-    if (FALSEP(ScmOp_providedp(loaded_sym))) {
+    loaded_str = create_loaded_str(filename);
+    if (FALSEP(ScmOp_providedp(loaded_str))) {
         ScmOp_load(filename);
-        ScmOp_provide(loaded_sym);
+        ScmOp_provide(loaded_str);
     }
 
 #if SCM_COMPAT_SIOD
-    SCM_SYMBOL_SET_VCELL(loaded_sym, SCM_TRUE);
+    retsym = Scm_Intern(SCM_STRING_STR(loaded_str));
+    SCM_SYMBOL_SET_VCELL(retsym, SCM_TRUE);
 
-    return loaded_sym;
+    return retsym;
 #else
     return SCM_TRUE;
 #endif
 }
 
-static ScmObj create_loaded_sym(ScmObj filename)
+static ScmObj create_loaded_str(ScmObj filename)
 {
-    ScmObj loaded_sym = SCM_FALSE;
     char  *loaded_str = NULL;
     int    size = 0;
 
@@ -513,10 +516,8 @@ static ScmObj create_loaded_sym(ScmObj filename)
     size = (strlen(SCM_STRING_STR(filename)) + strlen("*-loaded*") + 1);
     loaded_str = (char*)malloc(sizeof(char) * size);
     snprintf(loaded_str, size, "*%s-loaded*", SCM_STRING_STR(filename));
-    loaded_sym = Scm_Intern(loaded_str);
-    free(loaded_str);
     
-    return loaded_sym;
+    return Scm_NewString(loaded_str);
 }
 
 /*
@@ -527,7 +528,7 @@ ScmObj ScmOp_provide(ScmObj feature)
 {
     DECLARE_FUNCTION("provide", ProcedureFixed1);
 
-    ASSERT_SYMBOLP(feature);
+    ASSERT_STRINGP(feature);
 
     /* record to SigScm_features */
     SCM_SYMBOL_SET_VCELL(SigScm_features,
@@ -545,9 +546,9 @@ ScmObj ScmOp_providedp(ScmObj feature)
     ScmObj provided = SCM_FALSE;
     DECLARE_FUNCTION("provided?", ProcedureFixed1);
 
-    ASSERT_SYMBOLP(feature);
-    
-    provided = ScmOp_memq(feature, SCM_SYMBOL_VCELL(SigScm_features));
+    ASSERT_STRINGP(feature);
+
+    provided = ScmOp_member(feature, SCM_SYMBOL_VCELL(SigScm_features));
 
     return (NFALSEP(provided)) ? SCM_TRUE : SCM_FALSE;
 }
