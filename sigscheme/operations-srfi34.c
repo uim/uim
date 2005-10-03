@@ -211,10 +211,13 @@ static ScmObj guard_handle_clauses(ScmObj clauses, ScmObj env)
 
 ScmObj ScmOp_SRFI34_raise(ScmObj obj)
 {
+    jmp_buf *env;
     DECLARE_FUNCTION("raise", ProcedureFixed1);
 
     exception_thrown_obj = obj;
-    longjmp(CONTINUATION_JMPENV(CURRENT_EXCEPTION_CONTINUATION()), 1);
+
+    env = CONTINUATION_JMPENV(CURRENT_EXCEPTION_CONTINUATION());
+    longjmp(*env, 1);
 
     /* never reaches here */
     return SCM_UNDEF;
