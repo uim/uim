@@ -135,9 +135,10 @@ ScmObj ScmExp_SRFI34_guard(ScmObj var_and_clauses, ScmObj body, ScmObj env)
     }
 
     PUSH_EXCEPTION_CONTINUATION(cont);
-    while (expr = POP_ARG(body), !NO_MORE_ARG(body))
-        EVAL(expr, env);
-    expr = EVAL(expr, env);
+    while (!NO_MORE_ARG(body)) {
+        expr = POP_ARG(body);
+        expr = EVAL(expr, env);
+    }
     POP_EXCEPTION_CONTINUATION();
 
     return expr;
