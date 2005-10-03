@@ -85,6 +85,8 @@
   Dependency Resolution
 ===========================================================================*/
 #if SCM_COMPAT_SIOD
+#undef SCM_USE_NONSTD_FEATURES
+#define SCM_USE_NONSTD_FEATURES 1
 #undef SCM_USE_SRFI60
 #define SCM_USE_SRFI60          1
 #else /* SCM_COMPAT_SIOD */
