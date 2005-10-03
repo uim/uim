@@ -1847,6 +1847,7 @@ ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer,
     return Scm_tailcall(consumer, vals, eval_state);
 }
 
+/* FIXME: implement properly */
 ScmObj ScmOp_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after,
                           ScmEvalState *eval_state)
 {

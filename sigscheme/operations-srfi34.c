@@ -201,7 +201,6 @@ static ScmObj guard_handle_clauses(ScmObj clauses, ScmEvalState *eval_state)
 }
 
 /* FIXME:
- * - Rewrite with Scm_CallContinuation()
  * - Insert DECLARE_FUNCTION
  */
 ScmObj ScmOp_SRFI34_raise(ScmObj obj)
