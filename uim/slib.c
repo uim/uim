@@ -274,7 +274,7 @@ static void siod_set_lib_path(const char *);
 #else
 #define NEWCELL(_into, _type)		\
 {  _NEWCELL (_into, _type);		\
-   (*_into).dbg_info = car (dbg_pos);}
+   (*_into).dbg_info = NIL; }
 #endif /* DEBUG_SCM */
 
 /* exported global symbol */
