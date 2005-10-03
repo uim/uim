@@ -86,15 +86,15 @@ void SigScm_Initialize(void)
 
 static void SigScm_Initialize_internal(void)
 {
+    /*=======================================================================
+      Core
+    =======================================================================*/
     SigScm_SetDebugCategories(SCM_DBG_ERRMSG | SCM_DBG_BACKTRACE
                               | SigScm_PredefinedDebugCategories());
+    SigScm_InitStorage();
 
     /*=======================================================================
-      Storage Initialization
-    =======================================================================*/
-    SigScm_InitStorage();
-    /*=======================================================================
-      Interned Variable Initialization
+      Predefined Symbols and Variables
     =======================================================================*/
     SigScm_quote            = Scm_Intern("quote");
     SigScm_quasiquote       = Scm_Intern("quasiquote");
@@ -104,19 +104,21 @@ static void SigScm_Initialize_internal(void)
     SigScm_features         = Scm_Intern("*features*");
     SCM_SYMBOL_SET_VCELL(SigScm_features, SCM_NULL);
 #endif
-    /*=======================================================================
-      Export Scheme Special Symbols
-    =======================================================================*/
+
 #if 0
-    /* really required? */
+    /* FIXME: really required? */
     SCM_SYMBOL_SET_VCELL(Scm_Intern("#t"),   SCM_TRUE);
     SCM_SYMBOL_SET_VCELL(Scm_Intern("#f"),   SCM_FALSE);
 #endif
+#if 1
+    /* FIXME: don't set SCM_TRUE and rely on the value */
     SCM_SYMBOL_SET_VCELL(Scm_Intern("else"), SCM_TRUE);
     SCM_SYMBOL_SET_VCELL(Scm_Intern("=>"),   SCM_TRUE);
-    /*=======================================================================
-      Symbol-less Internal Variables
-    =======================================================================*/
+#else
+    SigScm_foo              = Scm_Intern("=>");
+    SigScm_else             = Scm_Intern("else");
+#endif
+
 #if SCM_USE_VALUECONS
     /*
      * To keep storage model abstract, the cell is allocated from a heap
@@ -126,8 +128,25 @@ static void SigScm_Initialize_internal(void)
     SCM_ENTYPE_VALUEPACKET(SigScm_null_values);
     SigScm_GC_Protect(&SigScm_null_values);
 #endif
+
     /*=======================================================================
-      Export Scheme Functions
+      Preallocated Ports
+    =======================================================================*/
+    scm_std_input_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
+    scm_std_output_port = Scm_NewFilePort(stdout, "stdout", PORT_OUTPUT);
+    scm_std_error_port  = Scm_NewFilePort(stderr, "stderr", PORT_OUTPUT);
+    scm_current_input_port  = scm_std_input_port;
+    scm_current_output_port = scm_std_output_port;
+    scm_current_error_port  = scm_std_error_port;
+    SigScm_GC_Protect(&scm_std_input_port);
+    SigScm_GC_Protect(&scm_std_output_port);
+    SigScm_GC_Protect(&scm_std_error_port);
+    SigScm_GC_Protect(&scm_current_input_port);
+    SigScm_GC_Protect(&scm_current_output_port);
+    SigScm_GC_Protect(&scm_current_error_port);
+
+    /*=======================================================================
+      R5RS Syntaxes and Procedures
     =======================================================================*/
     /* eval.c */
     Scm_RegisterProcedureFixed2("eval"                     , ScmOp_eval);
@@ -296,6 +315,10 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterProcedureVariadic0("newline"     , ScmOp_newline);
     Scm_RegisterProcedureVariadic1("write-char"      , ScmOp_write_char);
     Scm_RegisterProcedureFixed1("load"                     , ScmOp_load);
+
+    /*=======================================================================
+      Optional Syntaxes and Procedures
+    =======================================================================*/
 #if SCM_USE_NONSTD_FEATURES
     Scm_RegisterProcedureFixed1("require"                  , ScmOp_require);
     Scm_RegisterProcedureFixed1("provide"                  , ScmOp_provide);
@@ -304,22 +327,6 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterProcedureFixed1("delete-file"              , ScmOp_delete_file);
     Scm_DefineAlias("call/cc", "call-with-current-continuation");
 #endif
-
-    /*=======================================================================
-      Current Input & Output Initialization
-    =======================================================================*/
-    scm_std_input_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
-    scm_std_output_port = Scm_NewFilePort(stdout, "stdout", PORT_OUTPUT);
-    scm_std_error_port  = Scm_NewFilePort(stderr, "stderr", PORT_OUTPUT);
-    scm_current_input_port  = scm_std_input_port;
-    scm_current_output_port = scm_std_output_port;
-    scm_current_error_port  = scm_std_error_port;
-    SigScm_GC_Protect(&scm_std_input_port);
-    SigScm_GC_Protect(&scm_std_output_port);
-    SigScm_GC_Protect(&scm_std_error_port);
-    SigScm_GC_Protect(&scm_current_input_port);
-    SigScm_GC_Protect(&scm_current_output_port);
-    SigScm_GC_Protect(&scm_current_error_port);
 
 #if SCM_USE_SRFI1
     SigScm_Initialize_SRFI1();
