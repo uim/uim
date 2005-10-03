@@ -102,7 +102,7 @@ ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk)
     jmp_buf jmpenv;
     ScmObj ret  = SCM_FALSE;
     ScmObj cont = Scm_NewContinuation();
-    DECLARE_FUNCTION("with-exception-handler", ProcedureFixed);
+    DECLARE_FUNCTION("with-exception-handler", ProcedureFixed2);
 
     ASSERT_PROCEDUREP(handler);
     ASSERT_PROCEDUREP(thunk);
@@ -125,20 +125,21 @@ ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk)
     return ret;
 }
 
-/* FIXME:
- * - Simplify with POP_ARG macros
- */
 ScmObj ScmExp_SRFI34_guard(ScmObj var_and_clauses, ScmObj body, ScmObj env)
 {
     /* (guard (var clauses) body) */
     jmp_buf jmpenv;
-    ScmObj var     = CAR(var_and_clauses);
-    ScmObj clauses = CDR(var_and_clauses);
+    ScmObj var     = SCM_FALSE;
+    ScmObj clauses = SCM_FALSE;
     ScmObj expr    = SCM_FALSE;
     ScmObj cont    = Scm_NewContinuation();
     DECLARE_FUNCTION("guard", SyntaxVariadic1);
 
     ASSERT_SYMBOLP(var);
+    ASSERT_CONSP(var_and_clauses);
+
+    var     = CAR(var_and_clauses);
+    clauses = CDR(var_and_clauses);
 
     /* check if return from "raise" */
     CONTINUATION_SET_JMPENV(cont, &jmpenv);
