@@ -819,6 +819,10 @@ ScmObj ScmOp_listp(ScmObj obj)
  *
  * This function is ported from Gauche, by Shiro Kawai(shiro@acm.org)
  */
+/* FIXME:
+ * - Rename to Scm_c_length() since it isn't a Scheme procedure
+ * - Insert its copyright and license into this file properly
+ */
 int ScmOp_c_length(ScmObj lst)
 {
     ScmObj slow = lst;
