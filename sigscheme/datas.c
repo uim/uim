@@ -944,6 +944,7 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
          * not be Scm_tailcall(), to preserve current stack until longjmp()
          * called.
          */
+        eval_state->ret_type = SCM_RETTYPE_AS_IS;
         ret = Scm_call(proc, LIST_1(cont));
 #else
         /* ONLY FOR TESTING: This call is properly recursible, but all

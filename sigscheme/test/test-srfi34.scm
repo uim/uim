@@ -86,38 +86,37 @@
 						  'guard-ret))
 						(raise 1)))))
 
-;(assert-equal? "mixed exception handling test #1" 'positive
-;  (call-with-current-continuation
-;   (lambda (k)
-;     (with-exception-handler (lambda (x)
-;			       (k 'zero))
-;			     (lambda ()
-;			       (guard (condition
-;				       ((positive? condition) 'positive)
-;				       ((negative? condition) 'negative))
-;				      (raise 1)))))))
-;
-;(assert-equal? "mixed exception handling test #2" 'negative
-;  (call-with-current-continuation
-;   (lambda (k)
-;     (with-exception-handler (lambda (x)
-;			       (k 'zero))
-;			     (lambda ()
-;			       (guard (condition
-;				       ((positive? condition) 'positive)
-;				       ((negative? condition) 'negative))
-;				      (raise -1)))))))
+(assert-equal? "mixed exception handling test #1" 'positive
+  (call-with-current-continuation
+   (lambda (k)
+     (with-exception-handler (lambda (x)
+			       (k 'zero))
+			     (lambda ()
+			       (guard (condition
+				       ((positive? condition) 'positive)
+				       ((negative? condition) 'negative))
+				      (raise 1)))))))
 
-;(assert-equal? "mixed exception handling test #3" 'zero
-;  (call-with-current-continuation
-;   (lambda (k)
-;     (with-exception-handler (lambda (x)
-;			       (k 'zero))
-;			     (lambda ()
-;			       (guard (condition
-;				       ((positive? condition) 'positive)
-;				       ((negative? condition) 'negative))
-;				      (raise 0)))))))
+(assert-equal? "mixed exception handling test #2" 'negative
+  (call-with-current-continuation
+   (lambda (k)
+     (with-exception-handler (lambda (x)
+			       (k 'zero))
+			     (lambda ()
+			       (guard (condition
+				       ((positive? condition) 'positive)
+				       ((negative? condition) 'negative))
+				      (raise -1)))))))
 
+(assert-equal? "mixed exception handling test #3" 'zero
+  (call-with-current-continuation
+   (lambda (k)
+     (with-exception-handler (lambda (x)
+			       (k 'zero))
+			     (lambda ()
+			       (guard (condition
+				       ((positive? condition) 'positive)
+				       ((negative? condition) 'negative))
+				      (raise 0)))))))
 
 (total-report)
