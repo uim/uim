@@ -220,10 +220,7 @@ uim_scm_qintern_c_str(const char *str)
 uim_lisp
 uim_scm_quote(uim_lisp obj)
 {
-  /* TODO : fixme Kazuki Ohta <mover@hct.zaq.ne.jp> */
-  return (uim_lisp)Scm_NewCons(SCM_QUOTE,
-			       Scm_NewCons((ScmObj)obj,
-					   SCM_NULL));
+  return (uim_lisp)SCM_LIST_2(SCM_QUOTE, (ScmObj)obj);
 }
 
 uim_lisp

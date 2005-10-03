@@ -81,8 +81,6 @@ extern ScmObj SigScm_features;
 #if SCM_USE_VALUECONS
 extern ScmObj SigScm_null_values;
 #endif
-extern ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote;
-extern ScmObj SigScm_unquote_splicing;
 
 /* operations-srfi34.c */
 #if SCM_USE_SRFI34

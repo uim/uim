@@ -418,16 +418,12 @@ struct ScmObjInternal_ {
 #define SCM_SET(ref, obj) (*(ref) = (obj))
 
 /*============================================================================
-  Special Constants
+  Special Constants and Predicates
 ============================================================================*/
 #define SCM_NULL             SigScm_null
 #define SCM_TRUE             SigScm_true
 #define SCM_FALSE            SigScm_false
 #define SCM_EOF              SigScm_eof
-#define SCM_QUOTE            SigScm_quote
-#define SCM_QUASIQUOTE       SigScm_quasiquote
-#define SCM_UNQUOTE          SigScm_unquote
-#define SCM_UNQUOTE_SPLICING SigScm_unquote_splicing
 #define SCM_UNBOUND          SigScm_unbound
 #define SCM_UNDEF            SigScm_undef
 
@@ -440,7 +436,16 @@ struct ScmObjInternal_ {
 #define SCM_EOFP(a)    (SCM_EQ((a),  SCM_EOF))
 
 /*============================================================================
-  Internal Declarations For Special Constants
+  Predefined Symbols
+============================================================================*/
+/* for list construction */
+#define SCM_QUOTE            SigScm_quote
+#define SCM_QUASIQUOTE       SigScm_quasiquote
+#define SCM_UNQUOTE          SigScm_unquote
+#define SCM_UNQUOTE_SPLICING SigScm_unquote_splicing
+
+/*============================================================================
+  Internal Declarations For Special Constants And Predefined Symbols
 ============================================================================*/
 /*
  * These declarations are dedicated to internal use. libsscm users MUST NOT
@@ -451,7 +456,12 @@ struct ScmObjInternal_ {
  * incompatibility from it, use the abstract macro such as SCM_NULL defined
  * above. They safely hides the internal model against such change.
  */
+/* datas.c */
 extern ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
-extern ScmObj SigScm_quote, SigScm_unbound, SigScm_undef;
+extern ScmObj SigScm_unbound, SigScm_undef;
+
+/* sigscheme.c */
+extern ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote;
+extern ScmObj SigScm_unquote_splicing;
 
 #endif /* __SIGSCMTYPE_H */
