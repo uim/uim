@@ -3,6 +3,7 @@
 ;;;
 
 (load "./test/unittest-gauche.scm")
+(use srfi-8)
 
 ;;----------------------------------------------------------------
 ;(test-section "contitionals")

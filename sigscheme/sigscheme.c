@@ -377,8 +377,8 @@ static void SigScm_Initialize_internal(void)
     Scm_DefineAlias("call/cc", "call-with-current-continuation");
 #endif
 
-#if 1
-    /* enable all features for backward compatibility */
+#if 0
+    /* enable all features as backward compatibility */
     ScmExp_use(Scm_Intern("srfi-1"), SCM_INTERACTION_ENV);
     ScmExp_use(Scm_Intern("srfi-2"), SCM_INTERACTION_ENV);
     ScmExp_use(Scm_Intern("srfi-8"), SCM_INTERACTION_ENV);

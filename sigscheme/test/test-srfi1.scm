@@ -1,4 +1,6 @@
 (load "./test/unittest.scm")
+(use srfi-1)
+(use srfi-8)
 
 ; xcons
 (assert-equal? "xcons test1" '(a b c) (xcons '(b c) 'a))

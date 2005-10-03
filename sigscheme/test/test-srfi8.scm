@@ -1,4 +1,5 @@
 (load "./test/unittest.scm")
+(use srfi-8)
 
 (receive (a b c)
 	 (values #f #t '())

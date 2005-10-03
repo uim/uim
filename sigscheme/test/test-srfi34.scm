@@ -1,4 +1,5 @@
 (load "./test/unittest.scm")
+(use srfi-34)
 
 ; with-exception-handler
 (with-exception-handler

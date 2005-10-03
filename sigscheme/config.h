@@ -42,7 +42,7 @@
 /*===========================================================================
   SRFI (Scheme Request for Implementation) procedures written in C
 ===========================================================================*/
-#define SCM_USE_SRFI1           0  /* use SRFI-1  list library */
+#define SCM_USE_SRFI1           1  /* use SRFI-1  list library */
 #define SCM_USE_SRFI2           1  /* use SRFI-2  'and-let*' */
 #define SCM_USE_SRFI8           1  /* use SRFI-8  'receive' */
 #define SCM_USE_SRFI23          1  /* use SRFI-23 'error' */

@@ -31,6 +31,7 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 (load "./test/unittest.scm")
+(use srfi-2)
 
 ;; (and-let* <claws> <body>)
 ;; 

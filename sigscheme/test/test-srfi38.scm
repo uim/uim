@@ -1,4 +1,5 @@
 ;; No assertive tests for now, just print something and see if we bloat.                                                              ;(load "test/unittest.scm")
+(use srfi-38)
 
 (let* ((s "abc")
        (convolution `(,s 1 #(,s b) (2) () ,s)))
