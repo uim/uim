@@ -91,23 +91,22 @@ static long sscm_verbose_level = 0;
 =======================================*/
 void SigScm_Initialize_SIOD(void)
 {
-    /*=======================================================================
-      SIOD Compatible Variables and Procedures
-    =======================================================================*/
+    ScmExp_use(Scm_Intern("srfi-60"), SCM_INTERACTION_ENV);
+    Scm_DefineAlias("bit-and"               , "logand");
+    Scm_DefineAlias("bit-or"                , "logior");
+    Scm_DefineAlias("bit-xor"               , "logxor");
+    Scm_DefineAlias("bit-not"               , "lognot");
+
     Scm_RegisterProcedureVariadic1("symbol-bound?"     , ScmOp_symbol_boundp);
     Scm_RegisterProcedureFixed1("symbol-value"         , ScmOp_symbol_value);
     Scm_RegisterProcedureFixed2("set-symbol-value!"    , ScmOp_set_symbol_value);
 #if SCM_COMPAT_SIOD_BUGS
     Scm_RegisterProcedureFixed2("="                    , ScmOp_siod_eql);
 #endif
-    Scm_DefineAlias("bit-and"               , "logand");
-    Scm_DefineAlias("bit-or"                , "logior");
-    Scm_DefineAlias("bit-xor"               , "logxor");
-    Scm_DefineAlias("bit-not"               , "lognot");
     Scm_RegisterProcedureFixedTailRec0("the-environment" , ScmOp_the_environment);
     Scm_RegisterProcedureFixed1("%%closure-code"       , ScmOp_closure_code);
     Scm_RegisterProcedureVariadic0("verbose" , ScmOp_verbose);
-    /* datas.c */
+
     SigScm_SetVerboseLevel(2);
 }
 

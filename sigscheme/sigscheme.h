@@ -173,6 +173,7 @@ extern ScmCFunc (*scm_gc_ensure_uninlined_func)(ScmCFunc);
 void SigScm_Initialize(void);
 void SigScm_Finalize(void);
 void Scm_DefineAlias(const char *newsym, const char *sym);
+ScmObj ScmExp_use(ScmObj feature, ScmObj env);
 ScmObj Scm_eval_c_string(const char *exp);
 #if SCM_COMPAT_SIOD
 ScmObj Scm_return_value(void);

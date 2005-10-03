@@ -44,6 +44,10 @@
 /*=======================================
   File Local Struct Declarations
 =======================================*/
+struct module_info {
+    const char *name;
+    void (*initializer)(void);
+};
 
 /*=======================================
   File Local Macro Declarations
@@ -60,6 +64,39 @@ ScmObj SigScm_null_values;
 #if SCM_COMPAT_SIOD
 static ScmObj scm_return_value    = NULL;
 #endif
+
+static struct module_info module_info_table[] = {
+#if SCM_USE_NONSTD_FEATURES
+#if 0
+    {"sscm", SigScm_Initialize_NONSTD_FEATURES},
+#endif
+#endif
+#if SCM_USE_SRFI1
+    {"srfi-1", SigScm_Initialize_SRFI1},
+#endif
+#if SCM_USE_SRFI2
+    {"srfi-2", SigScm_Initialize_SRFI2},
+#endif
+#if SCM_USE_SRFI8
+    {"srfi-8", SigScm_Initialize_SRFI8},
+#endif
+#if SCM_USE_SRFI23
+    {"srfi-23", SigScm_Initialize_SRFI23},
+#endif
+#if SCM_USE_SRFI34
+    {"srfi-34", SigScm_Initialize_SRFI34},
+#endif
+#if SCM_USE_SRFI38
+    {"srfi-38", SigScm_Initialize_SRFI38},
+#endif
+#if SCM_USE_SRFI60
+    {"srfi-60", SigScm_Initialize_SRFI60},
+#endif
+#if SCM_COMPAT_SIOD
+    {"siod", SigScm_Initialize_SIOD},
+#endif
+    {NULL, NULL}
+};
 
 /*=======================================
   File Local Function Declarations
@@ -335,32 +372,21 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterProcedureFixed1("provided?"                , ScmOp_providedp);
     Scm_RegisterProcedureFixed1("file-exists?"             , ScmOp_file_existsp);
     Scm_RegisterProcedureFixed1("delete-file"              , ScmOp_delete_file);
+
+    Scm_RegisterSyntaxFixed1("use"                         , ScmExp_use);
     Scm_DefineAlias("call/cc", "call-with-current-continuation");
 #endif
 
-#if SCM_USE_SRFI1
-    SigScm_Initialize_SRFI1();
-#endif
-#if SCM_USE_SRFI2
-    SigScm_Initialize_SRFI2();
-#endif
-#if SCM_USE_SRFI8
-    SigScm_Initialize_SRFI8();
-#endif
-#if SCM_USE_SRFI23
-    SigScm_Initialize_SRFI23();
-#endif
-#if SCM_USE_SRFI34
-    SigScm_Initialize_SRFI34();
-#endif
-#if SCM_USE_SRFI38
-    SigScm_Initialize_SRFI38();
-#endif
-#if SCM_USE_SRFI60
-    SigScm_Initialize_SRFI60();
-#endif
-#if SCM_COMPAT_SIOD
-    SigScm_Initialize_SIOD();
+#if 1
+    /* enable all features for backward compatibility */
+    ScmExp_use(Scm_Intern("srfi-1"), SCM_INTERACTION_ENV);
+    ScmExp_use(Scm_Intern("srfi-2"), SCM_INTERACTION_ENV);
+    ScmExp_use(Scm_Intern("srfi-8"), SCM_INTERACTION_ENV);
+    ScmExp_use(Scm_Intern("srfi-23"), SCM_INTERACTION_ENV);
+    ScmExp_use(Scm_Intern("srfi-34"), SCM_INTERACTION_ENV);
+    ScmExp_use(Scm_Intern("srfi-38"), SCM_INTERACTION_ENV);
+    ScmExp_use(Scm_Intern("srfi-60"), SCM_INTERACTION_ENV);
+    ScmExp_use(Scm_Intern("siod"), SCM_INTERACTION_ENV);
 #endif
 }
 
@@ -373,6 +399,38 @@ void Scm_DefineAlias(const char *newsym, const char *sym)
 {
     SCM_SYMBOL_SET_VCELL(Scm_Intern(newsym),
                          SCM_SYMBOL_VCELL(Scm_Intern(sym)));
+}
+
+/*
+ * TODO:
+ * - Make the interface and semantics of 'use' similar to other Scheme
+ *   implementations such as Gauche. This is important to make *.scm file
+ *   portable
+ * - Make a *.scm file loadable via this interface (if necessary to make
+ *   similar to other Scheme implementations), and make consistent with
+ *   'require'
+ * - Make the 'module' concept similar to other Scheme implementations and R6RS
+ * - Make the module_info_table dynamically registerable for dynamic loadable
+ *   objects (if necessary)
+ */
+ScmObj ScmExp_use(ScmObj feature, ScmObj env)
+{
+    struct module_info *mod = NULL;
+    DECLARE_FUNCTION("use", SyntaxFixed1);
+
+    ASSERT_SYMBOLP(feature);
+
+    for (mod = module_info_table; mod->name; mod++) {
+        if (EQ(feature, Scm_Intern(mod->name))) {
+            if (FALSEP(ScmOp_providedp(feature))) {
+                (*mod->initializer)();
+                ScmOp_provide(feature);
+            }
+            return SCM_TRUE;
+        }
+    }
+
+    return SCM_FALSE;
 }
 
 ScmObj Scm_eval_c_string(const char *exp)
