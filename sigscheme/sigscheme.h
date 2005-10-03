@@ -509,6 +509,8 @@ ScmObj ScmOp_force(ScmObj closure);
 ScmObj ScmOp_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state);
 ScmObj ScmOp_values(ScmObj args);
 ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer, ScmEvalState *eval_state);
+ScmObj ScmOp_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after,
+                          ScmEvalState *eval_state);
 
 /* io.c */
 void   SigScm_set_lib_path(const char *path);
@@ -633,7 +635,7 @@ ScmObj ScmOp_SRFI23_error(ScmObj reason, ScmObj args);
 #if SCM_USE_SRFI34
 /* operations-srfi34.c */
 ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk);
-ScmObj ScmOp_SRFI34_guard(ScmObj args, ScmEvalState *eval_state);
+ScmObj ScmExp_SRFI34_guard(ScmObj var_and_clauses, ScmObj body, ScmObj env);
 ScmObj ScmOp_SRFI34_raise(ScmObj obj);
 #endif
 #if SCM_USE_SRFI38

@@ -384,7 +384,7 @@ static void SigScm_Initialize_internal(void)
       SRFI-34 Procedure
     =======================================================================*/
     Scm_RegisterProcedureFixed2("with-exception-handler", ScmOp_SRFI34_with_exception_handler);
-    Scm_RegisterSyntaxVariadicTailRec0("guard"          , ScmOp_SRFI34_guard);
+    Scm_RegisterSyntaxVariadic1("guard"                 , ScmExp_SRFI34_guard);
     Scm_RegisterProcedureFixed1("raise"                 , ScmOp_SRFI34_raise);
     scm_exception_handlers      = SCM_FALSE;
     scm_exception_continuations = SCM_FALSE;

@@ -64,6 +64,9 @@
 #define POP_EXCEPTION_CONTINUATION()            \
     (scm_exception_continuations = CDR(scm_exception_continuations))
 
+#define CONTINUATION_JMPENV     SCM_CONTINUATION_OPAQUE0
+#define CONTINUATION_SET_JMPENV SCM_CONTINUATION_SET_OPAQUE0
+
 /*=======================================
   Variable Declarations
 =======================================*/
@@ -75,20 +78,23 @@ static ScmObj exception_thrown_obj = NULL;
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static ScmObj guard_handle_clauses(ScmObj clauses, ScmEvalState *eval_state);
+static ScmObj guard_handle_clauses(ScmObj clauses, ScmObj env);
 
 /*=======================================
   Function Implementations
 =======================================*/
-/* FIXME:
- * - Insert new DECLARE_FUNCTION and ASSERT_*P macros
- */
 ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk)
 {
+    jmp_buf jmpenv;
     ScmObj ret  = SCM_FALSE;
     ScmObj cont = Scm_NewContinuation();
+    DECLARE_FUNCTION("with-exception-handler", ProcedureFixed);
 
-    if (setjmp(SCM_CONTINUATION_JMPENV(cont))) {
+    ASSERT_PROCEDUREP(handler);
+    ASSERT_PROCEDUREP(thunk);
+
+    CONTINUATION_SET_JMPENV(cont, &jmpenv);
+    if (setjmp(CONTINUATION_JMPENV(cont))) {
         ret = Scm_call(CURRENT_EXCEPTION_HANDLER(), LIST_1(exception_thrown_obj));
         POP_EXCEPTION_CONTINUATION();
         POP_EXCEPTION_HANDLER();
@@ -106,48 +112,48 @@ ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk)
 }
 
 /* FIXME:
- * - Change type to ProcedureVariadicTailRec1
- * - Simplify with new DECLARE_FUNCTION and POP_ARG macros
- * - Insert new ASSERT_*P macros
+ * - Simplify with POP_ARG macros
  */
-ScmObj ScmOp_SRFI34_guard(ScmObj args, ScmEvalState *eval_state)
+ScmObj ScmExp_SRFI34_guard(ScmObj var_and_clauses, ScmObj body, ScmObj env)
 {
     /* (guard (var clauses) body) */
-    ScmObj env     = eval_state->env;
-    ScmObj var     = CAAR(args);
-    ScmObj clauses = CDAR(args);
-    ScmObj body    = CDR(args);
-    ScmObj ret     = SCM_FALSE;
+    jmp_buf jmpenv;
+    ScmObj var     = CAR(var_and_clauses);
+    ScmObj clauses = CDR(var_and_clauses);
+    ScmObj expr    = SCM_FALSE;
     ScmObj cont    = Scm_NewContinuation();
+    DECLARE_FUNCTION("guard", SyntaxVariadic1);
+
+    ASSERT_SYMBOLP(var);
 
     /* check if return from "raise" */
-    if (setjmp(SCM_CONTINUATION_JMPENV(cont))) {
+    CONTINUATION_SET_JMPENV(cont, &jmpenv);
+    if (setjmp(CONTINUATION_JMPENV(cont))) {
         POP_EXCEPTION_CONTINUATION();
-
-        eval_state->env      = Scm_ExtendEnvironment(LIST_1(var), LIST_1(exception_thrown_obj), env);
-        eval_state->ret_type = SCM_RETTYPE_AS_IS;
-
-        return guard_handle_clauses(clauses, eval_state);
+        env = Scm_ExtendEnvironment(LIST_1(var), LIST_1(exception_thrown_obj), env);
+        return guard_handle_clauses(clauses, env);
     }
 
     PUSH_EXCEPTION_CONTINUATION(cont);
-    ret = EVAL(ScmExp_begin(body, eval_state), env);
+    while (expr = POP_ARG(body), !NO_MORE_ARG(body))
+        EVAL(expr, env);
+    expr = EVAL(expr, env);
     POP_EXCEPTION_CONTINUATION();
 
-    return ret;
+    return expr;
 }
 
 /* FIXME:
  * - Simplify with ScmExp_cond()
  */
-static ScmObj guard_handle_clauses(ScmObj clauses, ScmEvalState *eval_state)
+static ScmObj guard_handle_clauses(ScmObj clauses, ScmObj env)
 {
-    ScmObj env     = eval_state->env;
     ScmObj thrown  = exception_thrown_obj;
     ScmObj clause  = SCM_FALSE;
     ScmObj test    = SCM_FALSE;
     ScmObj exps    = SCM_FALSE;
     ScmObj proc    = SCM_FALSE;
+    ScmObj ret     = SCM_FALSE;
 
     /* make sweepable */
     exception_thrown_obj = SCM_FALSE;
@@ -157,13 +163,13 @@ static ScmObj guard_handle_clauses(ScmObj clauses, ScmEvalState *eval_state)
         clause = CAR(clauses);
         if (!CONSP(clause))
             SigScm_ErrorObj("guard : bad clause: ", clause);
-        
+
         test = CAR(clause);
         exps = CDR(clause);
-        
+
         /* evaluate test */
         test = EVAL(test, env);
-        
+
         if (NFALSEP(test)) {
             /*
              * if the selected <clause> contains only the <test> and no <expression>s,
@@ -171,7 +177,7 @@ static ScmObj guard_handle_clauses(ScmObj clauses, ScmEvalState *eval_state)
              */
             if (NULLP(exps))
                 return test;
-            
+
             /*
              * If the selected <clause> uses the => alternate form, then the <expression>
              * is evaluated. Its value must be a procedure that accepts one argument;
@@ -183,30 +189,32 @@ static ScmObj guard_handle_clauses(ScmObj clauses, ScmEvalState *eval_state)
                 proc = EVAL(CADR(exps), env);
                 if (FALSEP(ScmOp_procedurep(proc)))
                     SigScm_ErrorObj("guard : the value of exp after => must be the procedure but got ", proc);
-                
+
                 return Scm_call(proc, LIST_1(test));
             }
-            
-            return EVAL(ScmExp_begin(exps, eval_state), env);
+
+            for (; !NULLP(exps); exps = CDR(exps))
+                ret = EVAL(CAR(exps), env);
+
+            return ret;
         }
     }
-    
+
     /* "reraise" exception */
     if (NULLP(CURRENT_EXCEPTION_CONTINUATION()))
         SigScm_Error("guard : cannot reraise exception");
     ScmOp_SRFI34_raise(thrown);
 
     /* never reaches here */
-    return SCM_UNDEF;  
+    return SCM_UNDEF;
 }
 
-/* FIXME:
- * - Insert DECLARE_FUNCTION
- */
 ScmObj ScmOp_SRFI34_raise(ScmObj obj)
 {
+    DECLARE_FUNCTION("raise", ProcedureFixed1);
+
     exception_thrown_obj = obj;
-    longjmp(SCM_CONTINUATION_JMPENV(CURRENT_EXCEPTION_CONTINUATION()), 1);
+    longjmp(CONTINUATION_JMPENV(CURRENT_EXCEPTION_CONTINUATION()), 1);
 
     /* never reaches here */
     return SCM_UNDEF;
