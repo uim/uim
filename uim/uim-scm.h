@@ -77,16 +77,27 @@ typedef void (*uim_func_ptr)(void);
 
 #if UIM_SCM_GCC4_READY_GC
 /*
- * For ensuring that these function calls be uninlined. Don't access these
- * variables directly.
+ * Variables for ensuring that some function calls be uninlined, to against
+ * variable reordering on a stack frame performed in some compilers as
+ * anti-stack smashing or optimization. Don't access these variables directly.
  *
- * Exporting the variables ensures that a expression (*f)() is certainly real
- * function call since the variables can be updated from outside of
- * libuim. Therefore, be avoid making the variables static by combining libuim
- * into other codes which enables function inlining for them.
+ * Exporting the variables as global symbol ensures that a expression (*f)() is
+ * certainly real function call since the variables can be updated from outside
+ * of libuim. Therefore, be avoid making the variables static by combining
+ * libuim into other codes which enables function inlining for them.
+ *
+ * Although the volatile qualifier is sufficient to prohibit inlining in
+ * ordinary situation, some aggressive (or buggy) compiler may optimize the
+ * constraint out when producing self-completed single executable. So I decided
+ * that performs both following method as double-insurance.
+ *
+ *   1. export the variables as global symbol
+ *   2. qualify the variables volatile
+ *
+ *   -- YamaKen 2005-10-04
  */
-extern uim_lisp *(*uim_scm_gc_protect_stack_ptr)(void);
-extern uim_func_ptr (*uim_scm_gc_ensure_uninlined_func_ptr)(uim_func_ptr);
+extern uim_lisp *(*volatile uim_scm_gc_protect_stack_ptr)(void);
+extern volatile uim_func_ptr uim_scm_uninlined_func_ptr;
 #endif /* UIM_SCM_GCC4_READY_GC */
 
 
@@ -124,14 +135,20 @@ uim_scm_set_lib_path(const char *path);
 #define UIM_SCM_GC_CALL_PROTECTED_VOID_FUNC(func, args)                      \
     UIM_SCM_GC_CALL_PROTECTED_FUNC_INTERNAL((void), func, args)
 
+/*
+ * Although the volatile qualifier of the 'fp' can remove
+ * uim_scm_uninlined_func_ptr, I do it as triple insurance for anti aggressive
+ * optimization (including optimizer bugs) -- YamaKen 2005-10-04
+ */
 #define UIM_SCM_GC_CALL_PROTECTED_FUNC_INTERNAL(exp_ret, func, args)         \
     do {                                                                     \
-        UIM_SCM_GC_PROTECTED_FUNC_T(func) fp;                                \
+        volatile UIM_SCM_GC_PROTECTED_FUNC_T(func) fp;                       \
         uim_lisp *stack_start;                                               \
                                                                              \
         stack_start = uim_scm_gc_protect_stack();                            \
-        fp = (UIM_SCM_GC_PROTECTED_FUNC_T(func))                             \
-                  uim_scm_gc_ensure_uninlined_func((uim_func_ptr)&func);     \
+        /* ensure that func is uninlined */                                  \
+        uim_scm_uninlined_func_ptr = (uim_func_ptr)&func;                    \
+        fp = (UIM_SCM_GC_PROTECTED_FUNC_T(func))uim_scm_uninlined_func_ptr;  \
         exp_ret (*fp)args;                                                   \
         uim_scm_gc_unprotect_stack(stack_start);                             \
     } while (/* CONSTCOND */ 0)
@@ -142,10 +159,8 @@ uim_scm_set_lib_path(const char *path);
  */
 #ifdef __GNUC__
 #define uim_scm_gc_protect_stack uim_scm_gc_protect_stack_internal
-#define uim_scm_gc_ensure_uninlined_func uim_scm_gc_ensure_uninlined_func_internal
 #else /* __GNUC__ */
 #define uim_scm_gc_protect_stack (*uim_scm_gc_protect_stack_ptr)
-#define uim_scm_gc_ensure_uninlined_func (*uim_scm_gc_ensure_uninlined_func_ptr)
 #endif /* __GNUC__ */
 void
 uim_scm_gc_protect(uim_lisp *location);
@@ -154,8 +169,6 @@ uim_scm_gc_unprotect_stack(uim_lisp *stack_start);
 
 uim_lisp *
 uim_scm_gc_protect_stack_internal(void) UIM_SCM_NOINLINE;
-uim_func_ptr
-uim_scm_gc_ensure_uninlined_func_internal(uim_func_ptr func) UIM_SCM_NOINLINE;
 #else /* UIM_SCM_GCC4_READY_GC */
 void
 uim_scm_gc_protect(uim_lisp *location);
