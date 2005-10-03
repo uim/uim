@@ -655,6 +655,7 @@ uim_scm_init(const char *verbose_level)
 
 
   SigScm_Initialize();
+  ScmExp_use(Scm_Intern("siod"), SCM_INTERACTION_ENV);
   true_sym  = (uim_lisp)SCM_TRUE;
   false_sym = (uim_lisp)SCM_FALSE;
   protected_arg0 = uim_scm_f();
