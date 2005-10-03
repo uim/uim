@@ -74,4 +74,15 @@
 		(lambda (k)
 		  (k 'ret-call/cc))))
 
+;; Call an expired continuation. Current SigScheme cause an error due to its
+;; setjmp/longjmp implementation.
+(assert-error  "call/cc #8"
+               (lambda ()
+                 (let ((res (call-with-current-continuation
+                             (lambda (k)
+                               k))))
+                   (if (procedure? res)
+                       (res 'succeeded)
+                       res))))
+
 (total-report)
