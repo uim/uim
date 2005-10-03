@@ -357,6 +357,7 @@ ScmObj Scm_AddEnvironment(ScmObj var, ScmObj val, ScmObj env);
 ScmObj Scm_LookupEnvironment(ScmObj var, ScmObj env);
 ScmObj Scm_SymbolValue(ScmObj var, ScmObj env);
 
+ScmObj Scm_eval(ScmObj obj, ScmObj env);
 ScmObj Scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
 
 /* error.c */

@@ -99,7 +99,7 @@ static void define_internal(ScmObj var, ScmObj exp, ScmObj env);
  * @param vals Arbitrary Scheme object list as values of new frame. Side
  *             effect: destructively modifyies the vals when vars is a dot
  *             list.
- * @see ScmOp_eval()
+ * @see Scm_eval()
  */
 ScmObj Scm_ExtendEnvironment(ScmObj vars, ScmObj vals, ScmObj env)
 {
@@ -454,6 +454,15 @@ static ScmObj call(ScmObj proc, ScmObj args,
   S-Expression Evaluation
 ===========================================================================*/
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
+{
+    DECLARE_FUNCTION("eval", ProcedureFixed2);
+
+    ASSERT_ENVP(env);
+
+    return Scm_eval(obj, env);
+}
+
+ScmObj Scm_eval(ScmObj obj, ScmObj env)
 {
     ScmObj ret  = SCM_NULL;
     ScmEvalState state = {0};
