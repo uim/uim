@@ -94,8 +94,7 @@ void SigScm_Initialize_SIOD(void)
     /*=======================================================================
       SIOD Compatible Variables and Procedures
     =======================================================================*/
-    /* operations-siod.c */
-    Scm_RegisterProcedureFixed1("symbol-bound?"        , ScmOp_symbol_boundp);
+    Scm_RegisterProcedureVariadic1("symbol-bound?"     , ScmOp_symbol_boundp);
     Scm_RegisterProcedureFixed1("symbol-value"         , ScmOp_symbol_value);
     Scm_RegisterProcedureFixed2("set-symbol-value!"    , ScmOp_set_symbol_value);
 #if SCM_COMPAT_SIOD_BUGS
@@ -119,17 +118,25 @@ void SigScm_Initialize_SIOD(void)
  * - describe compatibility with de facto standard of other Scheme
  *   implementations (accept env as optional arg, etc)
  */
-ScmObj ScmOp_symbol_boundp(ScmObj obj)
+ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest)
 {
-    if (!SYMBOLP(obj))
-        SigScm_ErrorObj("symbol-bound? : symbol required but got ", obj);
+    ScmObj env = SCM_INVALID;
+    DECLARE_FUNCTION("symbol-bound?", ProcedureVariadic1);
 
-#if 1
+    ASSERT_SYMBOLP(sym);
+
+#if SCM_COMPAT_SIOD_BUGS
     /* SIOD compatible implementation */
-    return (SCM_SYMBOL_BOUNDP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return (SCM_SYMBOL_BOUNDP(sym)) ? SCM_TRUE : SCM_FALSE;
 #else
-    return (!NULLP(Scm_LookupEnvironment(obj, env))
-            || SCM_SYMBOL_BOUNDP(obj)) ? SCM_TRUE : SCM_FALSE;
+    env = POP_ARG(rest);
+    if (VALIDP(env))
+        ASSERT_ENVP(env);
+    else
+        env = SCM_INTERACTION_ENV;
+
+    return (!NULLP(Scm_LookupEnvironment(sym, env))
+            || SCM_SYMBOL_BOUNDP(sym)) ? SCM_TRUE : SCM_FALSE;
 #endif
 }
 
