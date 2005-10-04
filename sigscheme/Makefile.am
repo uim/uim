@@ -8,6 +8,7 @@ libsscm_la_SOURCES = \
 		sigscheme.h sigschemetype.h
  
 libsscm_la_CFLAGS   = -Wall
+libsscm_la_LDFLAGS  = -static
 
 bin_PROGRAMS  = sscm
 sscm_SOURCES  = main.c
