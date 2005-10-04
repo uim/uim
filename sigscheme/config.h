@@ -35,13 +35,11 @@
 #define __SIGSCHEME_CONFIG_H
 
 /*===========================================================================
-  Character Encoding
+  Optional Features Written in C
 ===========================================================================*/
-#define SCM_USE_EUCJP           1  /* use EUC-JP as internal encoding */
+#define SCM_USE_DEEP_CADRS      1  /* use all c[ad]+r defined in R5RS */
+#define SCM_USE_NONSTD_FEATURES 1  /* use Non-R5RS standard features such as "require" */
 
-/*===========================================================================
-  SRFI (Scheme Request for Implementation) procedures written in C
-===========================================================================*/
 #define SCM_USE_SRFI1           1  /* use SRFI-1  list library */
 #define SCM_USE_SRFI2           1  /* use SRFI-2  'and-let*' */
 #define SCM_USE_SRFI8           1  /* use SRFI-8  'receive' */
@@ -50,27 +48,28 @@
 #define SCM_USE_SRFI38          1  /* use SRFI-38 'write-with-shared-structure' */
 #define SCM_USE_SRFI60          1  /* use SRFI-60 integers as bits */
 
-/*===========================================================================
-  General Extensions
-===========================================================================*/
-#define SCM_USE_NONSTD_FEATURES 1  /* use Non-R5RS standard features such as "require" */
-#define SCM_USE_DEEP_CADRS      1  /* use all c[ad]+r defined in R5RS */
-
-/*===========================================================================
-  SIOD (Scheme In One Defun) Compatiblity
-===========================================================================*/
 #define SCM_COMPAT_SIOD         1  /* use SIOD compatible features */
 #define SCM_COMPAT_SIOD_BUGS    1  /* emulate the buggy behaviors of SIOD */
 
 /*===========================================================================
-  Miscellaneous
+  Character Encoding Handlers
+===========================================================================*/
+#define SCM_USE_EUCJP           1  /* use EUC-JP as internal encoding */
+
+/* "which encodings are enabled" and "which encoding is the default" will be
+ * separated in future
+ */
+
+/*===========================================================================
+  Internal Behaviors
 ===========================================================================*/
 #define SCM_STRICT_R5RS         0  /* use strict R5RS check */
 #define SCM_STRICT_ARGCHECK     1  /* enable strict argument check */
 #define SCM_ACCESSOR_ASSERT     0  /* enable strict type check with accessor */
-#define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
 #define SCM_USE_VALUECONS       1  /* use experimental values passing */
 #define SCM_VOLATILE_OUTPUT     0  /* always flush files on write */
+
+#define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
 
 /*===========================================================================
   Debugging
