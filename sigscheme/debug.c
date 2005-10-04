@@ -461,14 +461,6 @@ static void print_constant(FILE *f, ScmObj obj, enum  OutputType otype)
         fprintf(f, "#f");
     else if (EQ(obj, SCM_EOF))
         fprintf(f, "#<eof>");
-    else if (EQ(obj, SCM_QUOTE))
-        fprintf(f, "#<quote>");
-    else if (EQ(obj, SCM_QUASIQUOTE))
-        fprintf(f, "#<quasiquote>");
-    else if (EQ(obj, SCM_UNQUOTE))
-        fprintf(f, "#<unquote>");
-    else if (EQ(obj, SCM_UNQUOTE_SPLICING))
-        fprintf(f, "#<unquote_splicing>");
     else if (EQ(obj, SCM_UNBOUND))
         fprintf(f, "#<unbound>");
     else if (EQ(obj, SCM_UNDEF))
