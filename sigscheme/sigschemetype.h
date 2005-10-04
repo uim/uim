@@ -46,8 +46,8 @@
 /*=======================================
    Type Declarations
 =======================================*/
-typedef struct ScmObjInternal_ ScmObjInternal;
-typedef ScmObjInternal *ScmObj;
+typedef struct ScmCell_ ScmCell;
+typedef ScmCell *ScmObj;
 typedef ScmObj *ScmRef;
 typedef struct _ScmPortInfo ScmPortInfo;
 typedef struct ScmEvalState_ ScmEvalState;
@@ -186,7 +186,7 @@ struct ScmEvalState_ {
 };
 
 /* Scheme Object */
-struct ScmObjInternal_ {
+struct ScmCell_ {
     enum ScmObjType type;
     int gcmark;
 

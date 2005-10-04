@@ -181,8 +181,8 @@ static gc_protected_var *protected_var_list = NULL;
 ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
 ScmObj SigScm_unbound, SigScm_undef;
 
-static ScmObjInternal SigScm_null_cell, SigScm_true_cell, SigScm_false_cell, SigScm_eof_cell;
-static ScmObjInternal SigScm_unbound_cell, SigScm_undef_cell;
+static ScmCell SigScm_null_cell, SigScm_true_cell, SigScm_false_cell, SigScm_eof_cell;
+static ScmCell SigScm_unbound_cell, SigScm_undef_cell;
 
 /*=======================================
   File Local Function Declarations
@@ -301,7 +301,7 @@ static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmOb
     /* fill with zero and construct free_list */
     for (i = 0; i < num_heap; i++) {
         /* Initialize Heap */
-        heap = (ScmObj)malloc_aligned(sizeof(ScmObjInternal) * HEAP_SIZE);
+        heap = (ScmObj)malloc_aligned(sizeof(ScmCell) * HEAP_SIZE);
         (*heaps)[i] = heap;
 
         /* link in order */
@@ -332,7 +332,7 @@ static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, int HEAP_SIZE, ScmO
     (*heaps) = (ScmObj*)realloc((*heaps), sizeof(ScmObj) * num_heap);
 
     /* allocate heap */
-    heap = (ScmObj)malloc_aligned(sizeof(ScmObjInternal) * HEAP_SIZE);
+    heap = (ScmObj)malloc_aligned(sizeof(ScmCell) * HEAP_SIZE);
     (*heaps)[num_heap - 1] = heap;
 
     /* link in order */
@@ -483,7 +483,7 @@ static int is_pointer_to_heap(ScmObj obj)
         if ((head = scm_heaps[i])
             && (head <= obj)
             && (obj  <  head + SCM_HEAP_SIZE)
-            && ((((char*)obj - (char*)head) % sizeof(ScmObjInternal)) == 0))
+            && ((((char*)obj - (char*)head) % sizeof(ScmCell)) == 0))
             return 1;
     }
 

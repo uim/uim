@@ -169,7 +169,7 @@ static void SigScm_Initialize_internal(void)
 #if SCM_USE_VALUECONS
     /*
      * To keep storage model abstract, the cell is allocated from a heap
-     * instead of directly construct ScmObjInternal
+     * instead of directly construct ScmCell
      */
     SigScm_null_values = CONS(SCM_NULL, SCM_NULL);
     SCM_ENTYPE_VALUEPACKET(SigScm_null_values);

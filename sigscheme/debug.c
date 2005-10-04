@@ -510,7 +510,7 @@ static hash_entry *hash_lookup(hash_table *tab, ScmObj key, int datum, int flag)
      * uniform.  I haven't confirmed either's validity, though. */
     hashval = (unsigned)key;
     if (sizeof(hashval) > 4) {
-        hashval /= sizeof(ScmObjInternal);
+        hashval /= sizeof(ScmCell);
         hashval &= 0xffffffff;
     }
 
