@@ -67,7 +67,7 @@ ScmObj scm_current_error_port  = NULL;
 static void throw_exception(ScmObj errorobj)
 {
 #if SCM_EXCEPTION_HANDLING
-    if (FALSEP(CURRENT_EXCEPTION_HANDLER())) {
+    if (FALSEP(CURRENT_EXCEPTION_CONTINUATION())) {
         /* outermost exception handler */
         if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
             SigScm_ShowBacktrace();
