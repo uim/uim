@@ -121,7 +121,7 @@ ScmObj ScmOp_SRFI60_logior(ScmObj left, ScmObj right,
 ScmObj ScmOp_SRFI60_logxor(ScmObj left, ScmObj right,
                            enum ScmReductionState *state)
 {
-    DECLARE_FUNCTION("logexor", ReductionOperator);
+    DECLARE_FUNCTION("logxor", ReductionOperator);
     BITWISE_OPERATION_BODY(^, "logxor");
 }
 
