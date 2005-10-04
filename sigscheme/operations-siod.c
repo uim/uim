@@ -117,8 +117,9 @@ void SigScm_Initialize_SIOD(void)
  */
 ScmObj ScmOp_symbol_value(ScmObj var)
 {
-    if (!SYMBOLP(var))
-        SigScm_ErrorObj("symbol-value : symbol required but got ", var);
+    DECLARE_FUNCTION("symbol-value", ProcedureFixed1);
+
+    ASSERT_SYMBOLP(var);
 
     return Scm_SymbolValue(var, SCM_NULL);
 }
@@ -132,15 +133,17 @@ ScmObj ScmOp_symbol_value(ScmObj var)
  */
 ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val)
 {
-    /* sanity check */
-    if (!SYMBOLP(var))
-        SigScm_ErrorObj("set-symbol-value! : symbol required but got ", var);
+    DECLARE_FUNCTION("set-symbol-value!", ProcedureFixed2);
+
+    ASSERT_SYMBOLP(var);
 
     return SCM_SYMBOL_SET_VCELL(var, val);
 }
 
 ScmObj ScmOp_siod_eql(ScmObj obj1, ScmObj obj2)
 {
+    DECLARE_FUNCTION("=", ProcedureFixed2);
+
     if (EQ(obj1, obj2))
         return SCM_TRUE;
     else if (!INTP(obj1) || !INTP(obj2))
@@ -153,6 +156,8 @@ ScmObj ScmOp_siod_eql(ScmObj obj1, ScmObj obj2)
 
 ScmObj ScmOp_the_environment(ScmEvalState *eval_state)
 {
+    DECLARE_FUNCTION("the-environment", ProcedureFixedTailRec0);
+
     eval_state->ret_type = SCM_RETTYPE_AS_IS;
 
     return eval_state->env;
@@ -161,12 +166,11 @@ ScmObj ScmOp_the_environment(ScmEvalState *eval_state)
 ScmObj ScmOp_closure_code(ScmObj closure)
 {
     ScmObj exp, body;
+    DECLARE_FUNCTION("%%closure-code", ProcedureFixed1);
 
-    if (!CLOSUREP(closure))
-        SigScm_ErrorObj("%%closure-code : closure required but got ", closure);
+    ASSERT_CLOSUREP(closure);
 
     exp = SCM_CLOSURE_EXP(closure);
-
     if (NULLP(CDDR(exp)))
 	body = CADR(exp);
     else
@@ -177,9 +181,10 @@ ScmObj ScmOp_closure_code(ScmObj closure)
 
 ScmObj ScmOp_verbose(ScmObj args)
 {
+    DECLARE_FUNCTION("verbose", ProcedureFixed1);
+
     if (!NULLP(args)) {
-        if (!INTP(CAR(args)))
-            SigScm_ErrorObj("verbose : integer required but got ", args);
+        ASSERT_INTP(CAR(args));
 
         SigScm_SetVerboseLevel(SCM_INT_VALUE(CAR(args)));
     }

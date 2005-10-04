@@ -75,10 +75,9 @@ void SigScm_Initialize_SRFI23(void)
 ScmObj ScmOp_SRFI23_error(ScmObj reason, ScmObj args)
 {
     ScmObj arg = SCM_FALSE;
+    DECLARE_FUNCTION("error", ProcedureVariadic1);
 
-    if (!STRINGP(reason))
-        SigScm_ErrorObj("error : first argument should be string but got ",
-                        reason);
+    ASSERT_STRINGP(reason);
     
     if (SigScm_DebugCategories() & SCM_DBG_ERRMSG) {
         SigScm_ShowErrorHeader();

@@ -76,6 +76,7 @@ ScmObj ScmOp_SRFI2_and_let_star(ScmObj claws, ScmObj body, ScmEvalState *eval_st
     ScmObj var  = SCM_FALSE;
     ScmObj val  = SCM_FALSE;
     ScmObj exp  = SCM_FALSE;
+    DECLARE_FUNCTION("and-let*", SyntaxVariadicTailRec1);
 
     /*========================================================================
       (and-let* <claws> <body>)
@@ -121,7 +122,7 @@ ScmObj ScmOp_SRFI2_and_let_star(ScmObj claws, ScmObj body, ScmEvalState *eval_st
     return ScmExp_begin(body, eval_state);
 
  err:
-    SigScm_ErrorObj("and-let* : invalid claws form : ", claws);
+    ERR_OBJ("invalid claws form : ", claws);
     /* NOTREACHED */
     return SCM_FALSE;
 }

@@ -73,6 +73,7 @@ void SigScm_Initialize_SRFI38(void)
 ScmObj ScmOp_SRFI38_write_with_shared_structure(ScmObj obj, ScmObj args)
 {
     ScmObj port = scm_current_output_port;
+    DECLARE_FUNCTION("write-with-shared-structure", ProcedureVariadic1);
 
     /* get port */
     port = scm_current_output_port;

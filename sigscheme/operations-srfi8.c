@@ -78,6 +78,7 @@ ScmObj ScmOp_SRFI8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalStat
      */
     ScmObj env     = eval_state->env;
     ScmObj actuals = SCM_FALSE;
+    DECLARE_FUNCTION("receive", SyntaxVariadicTailRec2);
 
     /* FIXME: do we have to extend the environment first?  The SRFI-8
      * document contradicts itself on this part. */

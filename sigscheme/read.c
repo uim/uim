@@ -123,7 +123,7 @@ ScmObj SigScm_Read(ScmObj port)
     ScmObj sexp = SCM_FALSE;
 
     if (!PORTP(port))
-        SigScm_ErrorObj("SigScm_Read : port required but got ", port);
+        Scm_ErrorObj("SigScm_Read", "port required but got ", port);
 
     sexp = read_sexpression(port);
 #if SCM_DEBUG
@@ -139,7 +139,7 @@ ScmObj SigScm_Read(ScmObj port)
 ScmObj SigScm_Read_Char(ScmObj port)
 {
     if (!PORTP(port))
-        SigScm_ErrorObj("SigScm_Read_Char : port required but got ", port);
+        Scm_ErrorObj("SigScm_Read_Char", "port required but got ", port);
 
     return read_char(port);
 }

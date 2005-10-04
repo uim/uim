@@ -55,14 +55,12 @@
         case SCM_REDUCE_0:                                                   \
             break;                                                           \
         case SCM_REDUCE_1:                                                   \
-            if (!INTP(left))                                                 \
-                SigScm_ErrorObj(opstr " : integer required but got ", left); \
+            ASSERT_INTP(left);                                               \
             return right;                                                    \
         case SCM_REDUCE_PARTWAY:                                             \
         case SCM_REDUCE_LAST:                                                \
             /* left is already ensured as int by previous loop */            \
-            if (!INTP(right))                                                \
-                SigScm_ErrorObj(opstr " : integer required but got ", right); \
+            ASSERT_INTP(right);                                              \
             result = (SCM_INT_VALUE(left) op SCM_INT_VALUE(right));          \
             break;                                                           \
         default:                                                             \
@@ -109,25 +107,29 @@ void SigScm_Initialize_SRFI60(void)
 ScmObj ScmOp_SRFI60_logand(ScmObj left, ScmObj right,
                            enum ScmReductionState *state)
 {
+    DECLARE_FUNCTION("logand", ReductionOperator);
     BITWISE_OPERATION_BODY(&, "logand");
 }
 
 ScmObj ScmOp_SRFI60_logior(ScmObj left, ScmObj right,
                            enum ScmReductionState *state)
 {
-    BITWISE_OPERATION_BODY(|, "logand");
+    DECLARE_FUNCTION("logior", ReductionOperator);
+    BITWISE_OPERATION_BODY(|, "logior");
 }
 
 ScmObj ScmOp_SRFI60_logxor(ScmObj left, ScmObj right,
                            enum ScmReductionState *state)
 {
-    BITWISE_OPERATION_BODY(^, "logand");
+    DECLARE_FUNCTION("logexor", ReductionOperator);
+    BITWISE_OPERATION_BODY(^, "logxor");
 }
 
 ScmObj ScmOp_SRFI60_lognot(ScmObj n)
 {
-    if (!INTP(n))
-        SigScm_ErrorObj("lognot : integer required but got ", n);
+    DECLARE_FUNCTION("lognot", ProcedureFixed1);
+
+    ASSERT_INTP(n);
 
     return Scm_NewInt(~SCM_INT_VALUE(n));
 }
@@ -135,13 +137,11 @@ ScmObj ScmOp_SRFI60_lognot(ScmObj n)
 ScmObj ScmOp_SRFI60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1)
 {
     int result, c_mask;
+    DECLARE_FUNCTION("bitwise-if", ProcedureFixed3);
 
-    if (!INTP(mask))
-        SigScm_ErrorObj("bitwise-if : integer required but got ", mask);
-    if (!INTP(n0))
-        SigScm_ErrorObj("bitwise-if : integer required but got ", n0);
-    if (!INTP(n1))
-        SigScm_ErrorObj("bitwise-if : integer required but got ", n1);
+    ASSERT_INTP(mask);
+    ASSERT_INTP(n0);
+    ASSERT_INTP(n1);
 
     c_mask = SCM_INT_VALUE(mask);
     result = (c_mask & SCM_INT_VALUE(n0)) | (~c_mask & SCM_INT_VALUE(n1));
@@ -151,10 +151,10 @@ ScmObj ScmOp_SRFI60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1)
 
 ScmObj ScmOp_SRFI60_logtest(ScmObj j, ScmObj k)
 {
-    if (!INTP(j))
-        SigScm_ErrorObj("logtest : integer required but got ", j);
-    if (!INTP(k))
-        SigScm_ErrorObj("logtest : integer required but got ", k);
+    DECLARE_FUNCTION("logtest", ProcedureFixed2);
+
+    ASSERT_INTP(j);
+    ASSERT_INTP(k);
 
     return (SCM_INT_VALUE(j) & SCM_INT_VALUE(k)) ? SCM_TRUE : SCM_FALSE;
 }

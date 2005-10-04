@@ -107,13 +107,15 @@ void SigScm_Initialize_SRFI1(void)
 ==============================================================================*/
 ScmObj ScmOp_SRFI1_xcons(ScmObj a, ScmObj b)
 {
+    DECLARE_FUNCTION("xcons", ProcedureFixed2);
     return CONS(b, a);
 }
 
 ScmObj ScmOp_SRFI1_cons_star(ScmObj args)
 {
-    ScmObj tail_cons = SCM_NULL;
+    ScmObj tail_cons = SCM_FALSE;
     ScmObj prev_last = args;
+    DECLARE_FUNCTION("cons*", ProcedureVariadic0);
 
     if (NULLP(CDR(args)))
         return CAR(args);
@@ -136,10 +138,9 @@ ScmObj ScmOp_SRFI1_make_list(ScmObj length, ScmObj args)
     ScmObj head   = SCM_FALSE;
     int len = 0;
     int i   = 0;
+    DECLARE_FUNCTION("make-list", ProcedureVariadic1);
 
-    /* sanity check */
-    if (FALSEP(ScmOp_numberp(length)))
-        SigScm_ErrorObj("make-list : number required but got ", CAR(length));
+    ASSERT_INTP(length);
 
     len = SCM_INT_VALUE(length);
 
@@ -164,10 +165,9 @@ ScmObj ScmOp_SRFI1_list_tabulate(ScmObj scm_n, ScmObj args)
     ScmObj num   = SCM_FALSE;
     int n = 0;
     int i = 0;
+    DECLARE_FUNCTION("list-tabulate", ProcedureVariadic1);
 
-    /* sanity check */
-    if (FALSEP(ScmOp_numberp(scm_n)))
-        SigScm_ErrorObj("list-tabulate : number required but got ", scm_n);
+    ASSERT_INTP(scm_n);
 
     /* get n */
     n = SCM_INT_VALUE(scm_n);
@@ -191,12 +191,13 @@ ScmObj ScmOp_SRFI1_list_tabulate(ScmObj scm_n, ScmObj args)
 
 ScmObj ScmOp_SRFI1_list_copy(ScmObj lst)
 {
-    ScmObj head = SCM_NULL;
-    ScmObj tail = SCM_NULL;
-    ScmObj obj  = SCM_NULL;
+    ScmObj head = SCM_FALSE;
+    ScmObj tail = SCM_FALSE;
+    ScmObj obj  = SCM_FALSE;
+    DECLARE_FUNCTION("list-copy", ProcedureFixed1);
 
     if (FALSEP(ScmOp_listp(lst)))
-        SigScm_ErrorObj("list-copy : list required but got ", lst);
+        ERR_OBJ("list required but got ", lst);
 
     for (; !NULLP(lst); lst = CDR(lst)) {
         obj = CAR(lst);
@@ -207,7 +208,7 @@ ScmObj ScmOp_SRFI1_list_copy(ScmObj lst)
 
         /* then create new cons */
         obj = CONS(obj, SCM_NULL);
-        if (!NULLP(tail)) {
+        if (!FALSEP(tail)) {
             SET_CDR(tail, obj);
             tail = obj;
         } else {
@@ -221,26 +222,25 @@ ScmObj ScmOp_SRFI1_list_copy(ScmObj lst)
 
 ScmObj ScmOp_SRFI1_circular_list(ScmObj args)
 {
-    ScmObj lastcons = SCM_NULL;
+    DECLARE_FUNCTION("circular-list", ProcedureVariadic0);
 
     if (FALSEP(ScmOp_listp(args)))
-        SigScm_ErrorObj("circular-list : list required but got ", args);
+        ERR_OBJ("list required but got ", args);
 
-    lastcons = ScmOp_SRFI1_last_pair(args);
-    SET_CDR(lastcons, args);
-
+    SET_CDR(ScmOp_SRFI1_last_pair(args), args);
     return args;
 }
 
 ScmObj ScmOp_SRFI1_iota(ScmObj scm_count, ScmObj args)
 {
-    ScmObj scm_start = SCM_NULL;
-    ScmObj scm_step  = SCM_NULL;
+    ScmObj scm_start = SCM_FALSE;
+    ScmObj scm_step  = SCM_FALSE;
     ScmObj head      = SCM_NULL;
     int count = 0;
     int start = 0;
     int step  = 0;
     int i = 0;
+    DECLARE_FUNCTION("iota", ProcedureVariadic1);
 
     /* get params */
     if (!NULLP(args))
@@ -250,14 +250,11 @@ ScmObj ScmOp_SRFI1_iota(ScmObj scm_count, ScmObj args)
         scm_step = CAR(CDR(args));
 
     /* param type check */
-    if (FALSEP(ScmOp_numberp(scm_count)))
-        SigScm_ErrorObj("iota : number required but got ", scm_count);
-
-    if (!NULLP(scm_start) && FALSEP(ScmOp_numberp(scm_start)))
-        SigScm_ErrorObj("iota : number required but got ", scm_start);
-
-    if (!NULLP(scm_step)  && FALSEP(ScmOp_numberp(scm_step)))
-        SigScm_ErrorObj("iota : number required but got ", scm_step);
+    ASSERT_INTP(scm_count);
+    if (!NULLP(scm_start))
+        ASSERT_INTP(scm_start);
+    if (!NULLP(scm_step))
+        ASSERT_INTP(scm_step);
 
     /* now create list */
     count = SCM_INT_VALUE(scm_count);
@@ -275,6 +272,7 @@ ScmObj ScmOp_SRFI1_iota(ScmObj scm_count, ScmObj args)
 ==============================================================================*/
 ScmObj ScmOp_SRFI1_proper_listp(ScmObj lst)
 {
+    DECLARE_FUNCTION("proper-list?", ProcedureFixed1);
     return ScmOp_listp(lst);
 }
 
@@ -282,6 +280,7 @@ ScmObj ScmOp_SRFI1_circular_listp(ScmObj obj)
 {
     ScmObj slow = obj;
     int len = 0;
+    DECLARE_FUNCTION("circular-list?", ProcedureFixed1);
 
     for (;;) {
         if (NULLP(obj)) break;
@@ -306,6 +305,7 @@ ScmObj ScmOp_SRFI1_dotted_listp(ScmObj obj)
 {
     ScmObj slow = obj;
     int len = 0;
+    DECLARE_FUNCTION("dotted-list?", ProcedureFixed1);
 
     for (;;) {
         if (NULLP(obj)) break;
@@ -328,11 +328,13 @@ ScmObj ScmOp_SRFI1_dotted_listp(ScmObj obj)
 
 ScmObj ScmOp_SRFI1_not_pairp(ScmObj pair)
 {
+    DECLARE_FUNCTION("not-pari?", ProcedureFixed1);
     return CONSP(pair) ? SCM_FALSE : SCM_TRUE;
 }
 
 ScmObj ScmOp_SRFI1_null_listp(ScmObj lst)
 {
+    DECLARE_FUNCTION("null-list?", ProcedureFixed1);
     /* TODO : check circular list */
     return NULLP(lst) ? SCM_TRUE : SCM_FALSE;
 }
@@ -340,6 +342,7 @@ ScmObj ScmOp_SRFI1_null_listp(ScmObj lst)
 ScmObj ScmOp_SRFI1_listequal(ScmObj eqproc, ScmObj args)
 {
     ScmObj first_lst = SCM_FALSE;
+    DECLARE_FUNCTION("list=", ProcedureVariadic1);
 
     if (NULLP(args))
         return SCM_TRUE;
@@ -386,76 +389,85 @@ static ScmObj compare_list(ScmObj eqproc, ScmObj lst1, ScmObj lst2)
 
 ScmObj ScmOp_SRFI1_first(ScmObj lst)
 {
+    DECLARE_FUNCTION("first", ProcedureFixed1);
     return ScmOp_car(lst);
 }
 
 ScmObj ScmOp_SRFI1_second(ScmObj lst)
 {
+    DECLARE_FUNCTION("second", ProcedureFixed1);
     return ScmOp_cadr(lst);
 }
 
 ScmObj ScmOp_SRFI1_third(ScmObj lst)
 {
+    DECLARE_FUNCTION("third", ProcedureFixed1);
     return ScmOp_caddr(lst);
 }
 
 ScmObj ScmOp_SRFI1_fourth(ScmObj lst)
 {
+    DECLARE_FUNCTION("fourth", ProcedureFixed1);
     return ScmOp_cadddr(lst);
 }
 
 ScmObj ScmOp_SRFI1_fifth(ScmObj lst)
 {
+    DECLARE_FUNCTION("fifth", ProcedureFixed1);
     return ScmOp_car(ScmOp_cddddr(lst));
 }
 
 ScmObj ScmOp_SRFI1_sixth(ScmObj lst)
 {
+    DECLARE_FUNCTION("sixth", ProcedureFixed1);
     return ScmOp_cadr(ScmOp_cddddr(lst));
 }
 
 ScmObj ScmOp_SRFI1_seventh(ScmObj lst)
 {
+    DECLARE_FUNCTION("seventh", ProcedureFixed1);
     return ScmOp_caddr(ScmOp_cddddr(lst));
 }
 
 ScmObj ScmOp_SRFI1_eighth(ScmObj lst)
 {
+    DECLARE_FUNCTION("eighth", ProcedureFixed1);
     return ScmOp_cadddr(ScmOp_cddddr(lst));
 }
 
 ScmObj ScmOp_SRFI1_ninth(ScmObj lst)
 {
+    DECLARE_FUNCTION("ninth", ProcedureFixed1);
     return ScmOp_car(ScmOp_cddddr(ScmOp_cddddr(lst)));
 }
 
 ScmObj ScmOp_SRFI1_tenth(ScmObj lst)
 {
+    DECLARE_FUNCTION("tenth", ProcedureFixed1);
     return ScmOp_cadr(ScmOp_cddddr(ScmOp_cddddr(lst)));
 }
 
 ScmObj ScmOp_SRFI1_carpluscdr(ScmObj lst)
 {
+    DECLARE_FUNCTION("car+cdr", ProcedureFixed1);
     return ScmOp_values(LIST_2(CAR(lst), CDR(lst)));
 }
 
 ScmObj ScmOp_SRFI1_take(ScmObj lst, ScmObj scm_idx)
 {
-    ScmObj tmp = lst;
-    ScmObj ret = SCM_NULL;
-    ScmObj ret_tail = SCM_NULL;
+    ScmObj tmp      = lst;
+    ScmObj ret      = SCM_FALSE;
+    ScmObj ret_tail = SCM_FALSE;
     int idx = 0;
     int i;
+    DECLARE_FUNCTION("take", ProcedureFixed2);
 
-    /* sanity check */
-    if (!INTP(scm_idx))
-        SigScm_ErrorObj("drop-right : number required but got ", scm_idx);
+    ASSERT_INTP(scm_idx);
 
     idx = SCM_INT_VALUE(scm_idx);
-
     for (i = 0; i < idx; i++) {
         if (SCM_NULLP(tmp))
-            SigScm_ErrorObj("take : illegal index is specified for ", lst);
+            ERR_OBJ("illegal index is specified for ", lst);
 
         if (i != 0) {
             SET_CDR(ret_tail,  CONS(CAR(tmp), SCM_NULL));
@@ -474,16 +486,16 @@ ScmObj ScmOp_SRFI1_take(ScmObj lst, ScmObj scm_idx)
 ScmObj ScmOp_SRFI1_drop(ScmObj lst, ScmObj scm_idx)
 {
     ScmObj ret = lst;
-    int idx = SCM_INT_VALUE(scm_idx);
+    int idx = 0;
     int i;
+    DECLARE_FUNCTION("drop", ProcedureFixed2);
 
-    /* sanity check */
-    if (!INTP(scm_idx))
-        SigScm_ErrorObj("drop-right : number required but got ", scm_idx);
+    ASSERT_INTP(scm_idx);
 
+    idx = SCM_INT_VALUE(scm_idx);
     for (i = 0; i < idx; i++) {
         if (!CONSP(ret))
-            SigScm_ErrorObj("drop : illegal index is specified for ", lst);
+            ERR_OBJ("illegal index is specified for ", lst);
 
         ret = CDR(ret);
     }
@@ -495,10 +507,9 @@ ScmObj ScmOp_SRFI1_take_right(ScmObj lst, ScmObj scm_elem)
 {
     ScmObj tmp = lst;
     int len = 0;
+    DECLARE_FUNCTION("take-right", ProcedureFixed2);
 
-    /* sanity check */
-    if (!INTP(scm_elem))
-        SigScm_ErrorObj("drop-right : number required but got ", scm_elem);
+    ASSERT_INTP(scm_elem);
 
     for (; CONSP(tmp); tmp = CDR(tmp))
         len++;
@@ -512,10 +523,9 @@ ScmObj ScmOp_SRFI1_drop_right(ScmObj lst, ScmObj scm_elem)
 {
     ScmObj tmp = lst;
     int len = 0;
+    DECLARE_FUNCTION("drop-right", ProcedureFixed2);
 
-    /* sanity check */
-    if (!INTP(scm_elem))
-        SigScm_ErrorObj("drop-right : number required but got ", scm_elem);
+    ASSERT_INTP(scm_elem);
 
     for (; CONSP(tmp); tmp = CDR(tmp))
         len++;
@@ -530,10 +540,9 @@ ScmObj ScmOp_SRFI1_take_d(ScmObj lst, ScmObj scm_idx)
     ScmObj tmp = lst;
     int idx = 0;
     int i;
+    DECLARE_FUNCTION("take!", ProcedureFixed2);
 
-    /* sanity check */
-    if (!INTP(scm_idx))
-        SigScm_ErrorObj("take! : number required but got ", scm_idx);
+    ASSERT_INTP(scm_idx);
 
     idx = SCM_INT_VALUE(scm_idx);
 
@@ -551,10 +560,9 @@ ScmObj ScmOp_SRFI1_drop_right_d(ScmObj lst, ScmObj scm_idx)
     ScmObj tmp = lst;
     int len = 0;
     int i;
+    DECLARE_FUNCTION("drop-right!", ProcedureFixed2);
 
-    /* sanity check */
-    if (!INTP(scm_idx))
-        SigScm_ErrorObj("drop-right! : number required but got ", scm_idx);
+    ASSERT_INTP(scm_idx);
 
     for (; CONSP(tmp); tmp = CDR(tmp))
         len++;
@@ -573,6 +581,8 @@ ScmObj ScmOp_SRFI1_drop_right_d(ScmObj lst, ScmObj scm_idx)
 
 ScmObj ScmOp_SRFI1_split_at(ScmObj lst, ScmObj idx)
 {
+    DECLARE_FUNCTION("split-at", ProcedureFixed2);
+
     return ScmOp_values(LIST_2(ScmOp_SRFI1_take(lst, idx),
                                ScmOp_SRFI1_drop(lst, idx)));
 }
@@ -580,6 +590,7 @@ ScmObj ScmOp_SRFI1_split_at(ScmObj lst, ScmObj idx)
 ScmObj ScmOp_SRFI1_split_at_d(ScmObj lst, ScmObj idx)
 {
     ScmObj drop = ScmOp_SRFI1_drop(lst, idx);
+    DECLARE_FUNCTION("split-at!", ProcedureFixed2);
 
     return ScmOp_values(LIST_2(ScmOp_SRFI1_take_d(lst, idx),
                                drop));
@@ -587,18 +598,22 @@ ScmObj ScmOp_SRFI1_split_at_d(ScmObj lst, ScmObj idx)
 
 ScmObj ScmOp_SRFI1_last(ScmObj lst)
 {
+    DECLARE_FUNCTION("last", ProcedureFixed1);
+
     /* sanity check */
     if (NULLP(lst))
-        SigScm_ErrorObj("last : non-empty, proper list is required but got ", lst);
+        ERR_OBJ("non-empty, proper list is required but got ", lst);
 
     return CAR(ScmOp_SRFI1_last_pair(lst));
 }
 
 ScmObj ScmOp_SRFI1_last_pair(ScmObj lst)
 {
+    DECLARE_FUNCTION("last-pair", ProcedureFixed1);
+
     /* sanity check */
     if (NULLP(lst))
-        SigScm_ErrorObj("last-pair : non-empty, proper list is required but got ", lst);
+        ERR_OBJ("non-empty, proper list is required but got ", lst);
 
     for (; CONSP(CDR(lst)); lst = CDR(lst))
         ;
@@ -611,6 +626,8 @@ ScmObj ScmOp_SRFI1_last_pair(ScmObj lst)
 ==============================================================================*/
 ScmObj ScmOp_SRFI1_lengthplus(ScmObj lst)
 {
+    DECLARE_FUNCTION("length+", ProcedureFixed0);
+
     /* FIXME!: remove expensive circular_listp */
     if (NFALSEP(ScmOp_SRFI1_circular_listp(lst)))
         return SCM_FALSE;
@@ -621,10 +638,11 @@ ScmObj ScmOp_SRFI1_lengthplus(ScmObj lst)
 ScmObj ScmOp_SRFI1_concatenate(ScmObj args)
 {
     ScmObj lsts_of_lst = CAR(args);
+    DECLARE_FUNCTION("concatenate", ProcedureFixed0);
 
 #if SCM_STRICT_ARGCHECK
     if (!NULLP(CDR(args)))
-        SigScm_ErrorObj("concatenate : superfluous arguments: ", args);
+        ERR_OBJ("superfluous arguments: ", args);
 #endif
 
     return ScmOp_append(lsts_of_lst);
