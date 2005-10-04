@@ -72,7 +72,7 @@ extern "C" {
 #define SCM_ASSERT(cond) \
     ((cond) || SigScm_Die("assertion failed.", __FILE__, __LINE__))
 
-#define SCM_SYMBOL_BOUNDP(sym) (SCM_NEQ(SCM_SYMBOL_VCELL(sym), SCM_UNBOUND))
+#define SCM_SYMBOL_BOUNDP(sym) (!SCM_EQ(SCM_SYMBOL_VCELL(sym), SCM_UNBOUND))
 
 #define SCM_CONS(kar, kdr) (Scm_NewCons(kar, kdr))
 

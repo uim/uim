@@ -107,7 +107,7 @@ static void print_string(FILE *f, ScmObj obj, enum OutputType otype);
 static void print_list(FILE *f, ScmObj lst, enum OutputType otype);
 static void print_vector(FILE *f, ScmObj vec, enum OutputType otype);
 static void print_port(FILE *f, ScmObj port, enum OutputType otype);
-static void print_etc(FILE *f, ScmObj obj, enum  OutputType otype);
+static void print_constant(FILE *f, ScmObj obj, enum  OutputType otype);
 
 #if SCM_USE_SRFI38
 static void hash_grow(hash_table *tab);
@@ -270,8 +270,8 @@ static void print_ScmObj_internal(FILE *f, ScmObj obj, enum OutputType otype)
             print_list(f, SCM_VALUEPACKET_VALUES(obj), otype);
         putc('>', f);
         break;
-    case ScmEtc:
-        print_etc(f, obj, otype);
+    case ScmConstant:
+        print_constant(f, obj, otype);
         break;
     case ScmFreeCell:
         SigScm_Error("You cannot print ScmFreeCell, may be GC bug.");
@@ -451,7 +451,7 @@ static void print_port(FILE *f, ScmObj port, enum OutputType otype)
     fprintf(f, ">");
 }
 
-static void print_etc(FILE *f, ScmObj obj, enum  OutputType otype)
+static void print_constant(FILE *f, ScmObj obj, enum  OutputType otype)
 {
     if (EQ(obj, SCM_NULL))
         fprintf(f, "()");

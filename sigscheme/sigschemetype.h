@@ -90,7 +90,7 @@ enum ScmObjType {
     ScmVector       = 7,
     ScmPort         = 8,
     ScmContinuation = 9,
-    ScmEtc          = 10,
+    ScmConstant     = 10,
     ScmValuePacket  = 11,
     ScmFreeCell     = 12,
 
@@ -390,9 +390,9 @@ struct ScmObjInternal_ {
 #endif /* SCM_USE_VALUECONS */
 
 /*============================================================================
-  Etcetra Variables (Special Constants like SCM_NULL)
+  Special Constants (such as SCM_NULL)
 ============================================================================*/
-#define SCM_ETCP(a) (SCM_TYPE(a) == ScmEtc)
+#define SCM_CONSTANTP(a) (SCM_TYPE(a) == ScmConstant)
 
 /*============================================================================
   C Pointer Object
@@ -441,11 +441,9 @@ struct ScmObjInternal_ {
 #define SCM_UNDEF            SigScm_undef
 
 #define SCM_EQ(a, b)   ((a) == (b))
-#define SCM_NEQ(a, b)  ((a) != (b))
 #define SCM_NULLP(a)   (SCM_EQ((a),  SCM_NULL))
-#define SCM_NNULLP(a)  (SCM_NEQ((a), SCM_NULL))
 #define SCM_FALSEP(a)  (SCM_EQ((a),  SCM_FALSE))
-#define SCM_NFALSEP(a) (SCM_NEQ((a), SCM_FALSE))
+#define SCM_NFALSEP(a) (!SCM_EQ((a), SCM_FALSE))
 #define SCM_EOFP(a)    (SCM_EQ((a),  SCM_EOF))
 
 /*============================================================================

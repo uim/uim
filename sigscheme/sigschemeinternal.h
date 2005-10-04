@@ -93,9 +93,7 @@ extern ScmObj SigScm_null_values;
 
 /* Prefix-less Abbreviation Names For Convenient Internal Use */
 #define EQ             SCM_EQ
-#define NEQ            SCM_NEQ
 #define NULLP          SCM_NULLP
-#define NNULLP         SCM_NNULLP
 #define FALSEP         SCM_FALSEP
 #define NFALSEP        SCM_NFALSEP
 #define EOFP           SCM_EOFP

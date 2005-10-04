@@ -148,12 +148,12 @@ struct gc_protected_var_ {
 #define SCM_MARK_CORRUPTED(a) ((unsigned)SCM_MARK_VALUE(a) > (unsigned)scm_cur_marker)
 #endif
 
-/* special constants initialization */
-#define SCM_ETC_SET_IMPL(a, impl)         \
-    do {                                  \
-        (a) = &(impl);                    \
-        SCM_ENTYPE((a), ScmEtc);          \
-    } while(0)
+/* special constant initialization */
+#define SCM_CONSTANT_BIND_SUBSTANCE(obj, cell)                                \
+    do {                                                                     \
+        (obj) = &(cell);                                                     \
+        SCM_ENTYPE((obj), ScmConstant);                                      \
+    } while(/* CONSTCOND */ 0)
 
 /*=======================================
   Variable Declarations
@@ -181,8 +181,8 @@ static gc_protected_var *protected_var_list = NULL;
 ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
 ScmObj SigScm_unbound, SigScm_undef;
 
-static ScmObjInternal SigScm_null_impl, SigScm_true_impl, SigScm_false_impl, SigScm_eof_impl;
-static ScmObjInternal SigScm_unbound_impl, SigScm_undef_impl;
+static ScmObjInternal SigScm_null_cell, SigScm_true_cell, SigScm_false_cell, SigScm_eof_cell;
+static ScmObjInternal SigScm_unbound_cell, SigScm_undef_cell;
 
 /*=======================================
   File Local Function Declarations
@@ -241,12 +241,12 @@ static void finalize_protected_var(void);
  */
 static void initialize_special_constants(void)
 {
-    SCM_ETC_SET_IMPL(SigScm_null,             SigScm_null_impl   );
-    SCM_ETC_SET_IMPL(SigScm_true,             SigScm_true_impl   );
-    SCM_ETC_SET_IMPL(SigScm_false,            SigScm_false_impl  );
-    SCM_ETC_SET_IMPL(SigScm_eof,              SigScm_eof_impl    );
-    SCM_ETC_SET_IMPL(SigScm_unbound,          SigScm_unbound_impl);
-    SCM_ETC_SET_IMPL(SigScm_undef,            SigScm_undef_impl  );
+    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_null,    SigScm_null_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_true,    SigScm_true_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_false,   SigScm_false_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_eof,     SigScm_eof_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_unbound, SigScm_unbound_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_undef,   SigScm_undef_cell);
 #if SCM_COMPAT_SIOD_BUGS
     SigScm_false = SigScm_null;
 #endif
@@ -605,7 +605,7 @@ static void sweep_obj(ScmObj obj)
     /* rarely swept objects */
     case ScmContinuation:
     case ScmFunc:
-    case ScmEtc:
+    case ScmConstant:
     case ScmFreeCell:
     default:
         break;
