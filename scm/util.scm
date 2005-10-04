@@ -28,9 +28,7 @@
 ;;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ;;; SUCH DAMAGE.
 
-;;; used features
-(use srif-34)
-(use siod)
+(use srfi-34)
 
 ;;;;
 ;(require "slib-mulapply.scm")
