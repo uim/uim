@@ -46,8 +46,8 @@
 
 
 ; pair?
-(assert "pair? test1" (pair? '(a . b)))
-(assert "pair? test2" (pair? '(a b c)))
+(assert-true "pair? test1" (pair? '(a . b)))
+(assert-true "pair? test2" (pair? '(a b c)))
 (assert-equal? "pair? test3" #f (pair? '()))
 (assert-equal? "pair? test4" #f (pair? '#(a b)))
 
@@ -67,12 +67,12 @@
 (assert-equal? "cdr test2" 2 (cdr '(1 . 2)))
 
 ; null?
-(assert "null? test1" (null? '()))
+(assert-true "null? test1" (null? '()))
 (assert-equal? "null? test2" #f (null? "aiueo"))
 
 ; list?
-(assert "list? test1" (list? '(a b c)))
-(assert "list? test2" (list? '()))
+(assert-true "list? test1" (list? '(a b c)))
+(assert-true "list? test2" (list? '()))
 (assert-false "list? test3" (list? '(a . b)))
 (assert-false "list? test4" (list? '(a b . c)))
 (assert-false "list? test5" (let ((x (list 'a)))

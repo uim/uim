@@ -1,16 +1,16 @@
 (load "./test/unittest.scm")
 
 ;; check char?
-(assert "alphabet char" (char? #\a))
-(assert "space 1"       (char? #\space))
-(assert "space 2"       (char? #\ ))
-(assert "tab"           (char? #\	))
-(assert "newline 2"     (char? #\newline))
-(assert "newline 2"     (char? #\
+(assert-true "alphabet char" (char? #\a))
+(assert-true "space 1"       (char? #\space))
+(assert-true "space 2"       (char? #\ ))
+(assert-true "tab"           (char? #\	))
+(assert-true "newline 2"     (char? #\newline))
+(assert-true "newline 2"     (char? #\
 ))
-(assert "hiragana char" (char? #\дв))
-(assert "( char"        (char? #\())
-(assert ") char"        (char? #\)))
-(assert "\\ char"       (char? #\\))
+(assert-true "hiragana char" (char? #\дв))
+(assert-true "( char"        (char? #\())
+(assert-true ") char"        (char? #\)))
+(assert-true "\\ char"       (char? #\\))
 
 (total-report)
