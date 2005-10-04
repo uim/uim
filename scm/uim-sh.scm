@@ -50,10 +50,10 @@
 	    (guard (err
 		    (else
 		     #f))
-		   ((if uim-sh-opt-strict-batch
-			(lambda (obj) #f)
-			print)
-		    (eval expr '())))
+	      ((if uim-sh-opt-strict-batch
+		   (lambda (obj) #f)
+		   print)
+	       (eval expr '())))
 	    (uim-sh-loop))
 	  #f))))
 
