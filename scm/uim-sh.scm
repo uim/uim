@@ -30,6 +30,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(use srfi-34)
+
 (define uim-sh-prompt "uim> ")
 (define uim-sh-opt-batch #f)
 (define uim-sh-opt-strict-batch #f)
@@ -45,10 +47,13 @@
 	   (eof  (eof-object? expr)))
       (if (not eof)
 	  (begin
-	    ((if  uim-sh-opt-strict-batch
-		  (lambda (obj) #f)
-		  print)
-	     (eval expr '()))
+	    (guard (err
+		    (else
+		     #f))
+		   ((if uim-sh-opt-strict-batch
+			(lambda (obj) #f)
+			print)
+		    (eval expr '())))
 	    (uim-sh-loop))
 	  #f))))
 
