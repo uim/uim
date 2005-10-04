@@ -27,12 +27,16 @@
 ;;; LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 ;;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ;;; SUCH DAMAGE.
+
+;;; used features
+(use srif-34)
+(use siod)
+
 ;;;;
 ;(require "slib-mulapply.scm")
 ;(require "slib-srfi-1.scm")
 
 ;; Current uim implementation treats char as integer
-
 ;;
 ;; generic utilities
 ;;
@@ -546,21 +550,19 @@
 ;; returns succeeded or not
 (define try-load
   (lambda (file)
-    (load file)))
-;  (lambda (file)
-;    (and (file-readable? (make-scm-pathname file))
-;	 (not (*catch 'errobj (begin (load file)
-;				     #f))))))
+    (with-exception-handler
+      (lambda (err) #f)
+      (lambda ()
+	(load file)))))
 
 ;; TODO: write test
 ;; returns succeeded or not
 (define try-require
   (lambda (file)
-    (require file)))
-;  (lambda (file)
-;    (and (file-readable? (make-scm-pathname file))
-;	 (eq? (symbolconc '* (string->symbol file) '-loaded*)
-;	      (*catch 'errobj (require file))))))
+    (with-exception-handler
+     (lambda (err) #f)
+     (lambda ()
+       (require file)))))
 
 ;; used for dynamic environment substitution of closure
 (define %%enclose-another-env
