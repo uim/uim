@@ -548,19 +548,19 @@
 ;; returns succeeded or not
 (define try-load
   (lambda (file)
-    (with-exception-handler
-      (lambda (err) #f)
-      (lambda ()
-	(load file)))))
+    (guard (err
+	    (else
+	     #f))
+      (load file))))
 
 ;; TODO: write test
 ;; returns succeeded or not
 (define try-require
   (lambda (file)
-    (with-exception-handler
-     (lambda (err) #f)
-     (lambda ()
-       (require file)))))
+    (guard (err
+	    (else
+	     #f))
+      (require file))))
 
 ;; used for dynamic environment substitution of closure
 (define %%enclose-another-env
