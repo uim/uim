@@ -1,4 +1,4 @@
-lib_LTLIBRARIES  = libsscm.la
+noinst_LTLIBRARIES  = libsscm.la
 libsscm_la_SOURCES = \
 		datas.c storage-protection.c debug.c \
 		encoding.c error.c \
@@ -8,7 +8,6 @@ libsscm_la_SOURCES = \
 		sigscheme.h sigschemetype.h
  
 libsscm_la_CFLAGS   = -Wall
-libsscm_la_LDFLAGS  = -static
 
 bin_PROGRAMS  = sscm
 sscm_SOURCES  = main.c
