@@ -161,6 +161,9 @@ static int           scm_cur_marker = SCM_INITIAL_MARKER;
 static jmp_buf save_regs_buf;
 ScmObj *scm_stack_start_pointer = NULL;
 
+/* dynamic extent */
+static ScmObj current_dynamic_extent = NULL;
+
 /* temporary store for a object returned from a continuation */
 static ScmObj continuation_thrown_obj = NULL;
 static ScmObj continuation_stack = NULL;
@@ -199,6 +202,14 @@ static void gc_mark(void);
 /* GC Sweep Related Functions */
 static void sweep_obj(ScmObj obj);
 static void gc_sweep(void);
+
+/* dynamic extent */
+static void initialize_dynamic_extent(void);
+static void finalize_dynamic_extent(void);
+static void wind_onto_dynamic_extent(ScmObj before, ScmObj after);
+static void unwind_dynamic_extent(void);
+static void enter_dynamic_extent(ScmObj dest);
+static void exit_dynamic_extent(ScmObj dest);
 
 /* continuation */
 static void initialize_continuation_env(void);
@@ -239,6 +250,7 @@ void SigScm_InitStorage(void)
     initialize_special_constants();
     allocate_heap(&scm_heaps, scm_heap_num, SCM_HEAP_SIZE, &scm_freelist);
 
+    initialize_dynamic_extent();
     initialize_continuation_env();
     initialize_symbol_hash();
 }
@@ -246,6 +258,7 @@ void SigScm_InitStorage(void)
 void SigScm_FinalizeStorage(void)
 {
     finalize_continuation_env();
+    finalize_dynamic_extent();
     finalize_heap();
     finalize_symbol_hash();
     finalize_protected_var();
@@ -855,6 +868,85 @@ ScmObj Scm_NewCFuncPointer(ScmCFunc func)
     return obj;
 }
 #endif /* SCM_USE_NONSTD_FEATURES */
+
+/*============================================================================
+  Dynamic Extent
+============================================================================*/
+#define MAKE_DYNEXT_FRAME(before, after) (CONS(before, after))
+#define DYNEXT_FRAME_BEFORE CAR
+#define DYNEXT_FRAME_AFTER  CDR
+
+static void initialize_dynamic_extent(void)
+{
+    current_dynamic_extent = SCM_NULL;
+    SigScm_GC_Protect(&current_dynamic_extent);
+}
+
+static void finalize_dynamic_extent(void)
+{
+}
+
+static void wind_onto_dynamic_extent(ScmObj before, ScmObj after)
+{
+    current_dynamic_extent = CONS(MAKE_DYNEXT_FRAME(before, after),
+                                  current_dynamic_extent);
+}
+
+static void unwind_dynamic_extent(void)
+{
+    if (NULLP(current_dynamic_extent))
+        SigScm_Error("corrupted dynamic extent");
+
+    current_dynamic_extent = CDR(current_dynamic_extent);
+}
+
+/* enter a dynamic extent of another continuation (dest) */
+static void enter_dynamic_extent(ScmObj dest)
+{
+    ScmObj frame   = SCM_FALSE;
+    ScmObj unwound = SCM_FALSE;
+    ScmObj retpath = SCM_NULL;
+
+    /* assumes that (SCM_NULL != NULL) */
+    for (unwound = dest; SCM_SHIFT_RAW(frame, unwound);) {
+        if (EQ(unwound, current_dynamic_extent))
+            break;
+        retpath = CONS(frame, retpath);
+    }
+
+    /* assumes that (SCM_NULL != NULL) */
+    while (SCM_SHIFT_RAW(frame, retpath)) {
+        Scm_call(DYNEXT_FRAME_BEFORE(frame), SCM_NULL);
+    }
+}
+
+/* exit to a dynamic extent of another continuation (dest) */
+static void exit_dynamic_extent(ScmObj dest)
+{
+    ScmObj frame = SCM_FALSE;
+
+    /* assumes that (SCM_NULL != NULL) */
+    while (SCM_SHIFT_RAW(frame, current_dynamic_extent)) {
+        if (EQ(current_dynamic_extent, dest))
+            return;
+        Scm_call(DYNEXT_FRAME_AFTER(frame), SCM_NULL);
+    }
+}
+
+ScmObj Scm_DynamicWind(ScmObj before, ScmObj thunk, ScmObj after)
+{
+    ScmObj ret   = SCM_FALSE;
+
+    Scm_call(before, SCM_NULL);
+    
+    wind_onto_dynamic_extent(before, after);
+    ret = Scm_call(thunk, SCM_NULL);
+    unwind_dynamic_extent();
+
+    Scm_call(after, SCM_NULL);
+
+    return ret;
+}
 
 /*============================================================================
   Continuation

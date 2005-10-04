@@ -360,6 +360,7 @@ void SigScm_InitStorage(void);
 void SigScm_FinalizeStorage(void);
 ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state);
 void Scm_CallContinuation(ScmObj cont, ScmObj ret);
+ScmObj Scm_DynamicWind(ScmObj before, ScmObj thunk, ScmObj after);
 
 /* eval.c */
 /* environment related functions */

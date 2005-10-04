@@ -1851,22 +1851,15 @@ ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer,
     return Scm_tailcall(consumer, vals, eval_state);
 }
 
-/* FIXME: implement properly */
-ScmObj ScmOp_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after,
-                          ScmEvalState *eval_state)
+ScmObj ScmOp_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after)
 {
-    DECLARE_FUNCTION("dynamic-wind", ProcedureFixedTailRec3);
+    DECLARE_FUNCTION("dynamic-wind", ProcedureFixed3);
 
     ASSERT_PROCEDUREP(before);
     ASSERT_PROCEDUREP(thunk);
     ASSERT_PROCEDUREP(after);
 
-#if 0
-    eval_state->dynwind_before = before;
-    eval_state->dynwind_after = after;
-#endif
-
-    return Scm_tailcall(thunk, SCM_NULL, eval_state);
+    return Scm_DynamicWind(before, thunk, after);
 }
 
 /*============================================================================

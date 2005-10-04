@@ -301,5 +301,83 @@
 (write (values))
 (newline)
 
+(define dynwind-res '())
+(define append-sym!
+  (lambda (sym)
+    (set! dynwind-res (append dynwind-res (list sym)))))
+
+(set! dynwind-res '())
+(assert-equal? "dynamic-wind #1"
+               '(before thunk after)
+               (begin
+                 (dynamic-wind
+                     (lambda ()
+                       (append-sym! 'before))
+                     (lambda ()
+                       (append-sym! 'thunk))
+                     (lambda ()
+                       (append-sym! 'after)))
+                 dynwind-res))
+                   
+(set! dynwind-res '())
+(assert-equal? "dynamic-wind #2"
+               '(before1 thunk1 before2 thunk2 after2 after1)
+               (begin
+                 (dynamic-wind
+                     (lambda ()
+                       (append-sym! 'before1))
+                     (lambda ()
+                       (append-sym! 'thunk1)
+                       (dynamic-wind
+                           (lambda ()
+                             (append-sym! 'before2))
+                           (lambda ()
+                             (append-sym! 'thunk2))
+                           (lambda ()
+                             (append-sym! 'after2))))
+                     (lambda ()
+                       (append-sym! 'after1)))
+                 dynwind-res))
+
+;; current implementation does not support this yet
+(set! dynwind-res '())
+(assert-equal? "dynamic-wind #3"
+               '(before thunk after)
+               (begin
+                 (call/cc
+                  (lambda (k)
+                    (dynamic-wind
+                        (lambda ()
+                          (append-sym! 'before))
+                        (lambda ()
+                          (append-sym! 'thunk)
+                          (k #f))
+                        (lambda ()
+                          (append-sym! 'after)))))
+                 dynwind-res))
+
+;; current implementation does not support this yet
+(set! dynwind-res '())
+(assert-equal? "dynamic-wind #4"
+               '(before1 thunk1 before2 thunk2 after2 after1)
+               (begin
+                 (call/cc
+                  (lambda (k)
+                    (dynamic-wind
+                        (lambda ()
+                          (append-sym! 'before1))
+                        (lambda ()
+                          (append-sym! 'thunk1)
+                          (dynamic-wind
+                              (lambda ()
+                                (append-sym! 'before2))
+                              (lambda ()
+                                (append-sym! 'thunk2)
+                                (k #f))
+                              (lambda ()
+                                (append-sym! 'after2))))
+                        (lambda ()
+                          (append-sym! 'after1)))))
+                 dynwind-res))
 
 (total-report)

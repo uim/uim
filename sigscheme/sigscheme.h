@@ -508,8 +508,7 @@ ScmObj ScmOp_force(ScmObj closure);
 ScmObj ScmOp_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state);
 ScmObj ScmOp_values(ScmObj args);
 ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer, ScmEvalState *eval_state);
-ScmObj ScmOp_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after,
-                          ScmEvalState *eval_state);
+ScmObj ScmOp_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
 #if SCM_USE_NONSTD_FEATURES
 ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest);
 #endif
