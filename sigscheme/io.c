@@ -94,15 +94,15 @@ ScmObj ScmOp_call_with_input_file(ScmObj filepath, ScmObj proc)
 {
     ScmObj port = SCM_NULL;
     ScmObj ret  = SCM_NULL;
+    DECLARE_FUNCTION("call-with-input-file", ProcedureFixed2);
 
-    if (!STRINGP(filepath))
-        SigScm_ErrorObj("call-with-input-file : string required but got", filepath);
+    ASSERT_STRINGP(filepath);
     if (!FUNCP(proc) && !CLOSUREP(proc))
-        SigScm_ErrorObj("call-with-input-file : proc required but got ", proc);
-    
+        ERR_OBJ("procedure required but got ", proc);
+
     /* open port */
     port = ScmOp_open_input_file(filepath);
-    
+
     ret = Scm_call(proc, LIST_1(port));
 
     /* close port */
@@ -115,15 +115,15 @@ ScmObj ScmOp_call_with_output_file(ScmObj filepath, ScmObj proc)
 {
     ScmObj port = SCM_NULL;
     ScmObj ret  = SCM_NULL;
+    DECLARE_FUNCTION("call-with-output-file", ProcedureFixed2);
 
-    if (!STRINGP(filepath))
-        SigScm_ErrorObj("call-with-output-file : string required but got ", filepath);
+    ASSERT_STRINGP(filepath);
     if (!FUNCP(proc) && !CLOSUREP(proc))
-        SigScm_ErrorObj("call-with-output-file : proc required but got ", proc);
-    
+        ERR_OBJ("procedure required but got ", proc);
+
     /* open port */
     port = ScmOp_open_output_file(filepath);
-    
+
     /* (apply proc (port)) */
     ret = Scm_call(proc, LIST_1(port));
 
@@ -133,29 +133,31 @@ ScmObj ScmOp_call_with_output_file(ScmObj filepath, ScmObj proc)
     return ret;
 }
 
-ScmObj ScmOp_input_portp(ScmObj obj)
+ScmObj ScmOp_input_portp(ScmObj port)
 {
-    if (PORTP(obj) && SCM_PORT_PORTDIRECTION(obj) == PORT_INPUT)
-        return SCM_TRUE;
+    DECLARE_FUNCTION("input-port?", ProcedureFixed1);
+    ASSERT_PORTP(port);
 
-    return SCM_FALSE;
+    return (SCM_PORT_PORTDIRECTION(port) == PORT_INPUT) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj ScmOp_output_portp(ScmObj obj)
+ScmObj ScmOp_output_portp(ScmObj port)
 {
-    if (PORTP(obj) && SCM_PORT_PORTDIRECTION(obj) == PORT_OUTPUT)
-        return SCM_TRUE;
+    DECLARE_FUNCTION("output-port?", ProcedureFixed1);
+    ASSERT_PORTP(port);
 
-    return SCM_FALSE;
+    return (SCM_PORT_PORTDIRECTION(port) == PORT_OUTPUT) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_current_input_port(void)
 {
+    DECLARE_FUNCTION("current-input-port", ProcedureFixed0);
     return scm_current_input_port;
 }
 
 ScmObj ScmOp_current_output_port(void)
 {
+    DECLARE_FUNCTION("current-output-port", ProcedureFixed0);
     return scm_current_output_port;
 }
 
@@ -163,16 +165,16 @@ ScmObj ScmOp_with_input_from_file(ScmObj filepath, ScmObj thunk)
 {
     ScmObj tmp_port = SCM_NULL;
     ScmObj ret      = SCM_NULL;
+    DECLARE_FUNCTION("with-input-from-file", ProcedureFixed2);
 
-    if (!STRINGP(filepath))
-        SigScm_ErrorObj("with-input-from-file : string required but got ", filepath);
+    ASSERT_STRINGP(filepath);
     if (!FUNCP(thunk) && !CLOSUREP(thunk))
-        SigScm_ErrorObj("with-input-from-file : proc required but got ", thunk);
-    
+        ERR_OBJ("procedure required but got ", thunk);
+
     /* set scm_current_input_port */
     tmp_port = scm_current_input_port;
     scm_current_input_port = ScmOp_open_input_file(filepath);
-    
+
     /* (apply thunk ())*/
     ret = Scm_call(thunk, SCM_NULL);
 
@@ -189,16 +191,16 @@ ScmObj ScmOp_with_output_to_file(ScmObj filepath, ScmObj thunk)
 {
     ScmObj tmp_port = SCM_NULL;
     ScmObj ret      = SCM_NULL;
+    DECLARE_FUNCTION("with-output-to-file", ProcedureFixed2);
 
-    if (!STRINGP(filepath))
-        SigScm_ErrorObj("with-output-to-file : string required but got ", filepath);
+    ASSERT_STRINGP(filepath);
     if (!FUNCP(thunk) && !CLOSUREP(thunk))
-        SigScm_ErrorObj("with-output-to-file : proc required but got ", thunk);
-    
+        ERR_OBJ("procedure required but got ", thunk);
+
     /* set scm_current_output_port */
     tmp_port = scm_current_output_port;
     scm_current_output_port = ScmOp_open_output_file(filepath);
-    
+
     /* (thunk)*/
     ret = Scm_call(thunk, SCM_NULL);
 
@@ -214,14 +216,14 @@ ScmObj ScmOp_with_output_to_file(ScmObj filepath, ScmObj thunk)
 ScmObj ScmOp_open_input_file(ScmObj filepath)
 {
     FILE *f = NULL;
+    DECLARE_FUNCTION("open-input-file", ProcedureFixed1);
 
-    if (!STRINGP(filepath))
-        SigScm_ErrorObj("open-input-file : string requred but got ", filepath);
+    ASSERT_STRINGP(filepath);
 
     /* Open File */
     f = fopen(SCM_STRING_STR(filepath), "r");
     if (!f)
-        SigScm_ErrorObj("open-input-file : cannot open file ", filepath);
+        ERR_OBJ("cannot open file ", filepath);
 
     /* Allocate ScmPort */
     return Scm_NewFilePort(f, SCM_STRING_STR(filepath), PORT_INPUT);
@@ -230,14 +232,14 @@ ScmObj ScmOp_open_input_file(ScmObj filepath)
 ScmObj ScmOp_open_output_file(ScmObj filepath)
 {
     FILE *f = NULL;
+    DECLARE_FUNCTION("open-output-file", ProcedureFixed1);
 
-    if (!STRINGP(filepath))
-        SigScm_ErrorObj("open-output-file : string requred but got ", filepath);
+    ASSERT_STRINGP(filepath);
 
     /* Open File */
     f = fopen(SCM_STRING_STR(filepath), "w");
     if (!f)
-        SigScm_ErrorObj("open-output-file : cannot open file ", filepath);
+        ERR_OBJ("cannot open file ", filepath);
 
     /* Return new ScmPort */
     return Scm_NewFilePort(f, SCM_STRING_STR(filepath), PORT_OUTPUT);
@@ -245,8 +247,9 @@ ScmObj ScmOp_open_output_file(ScmObj filepath)
 
 ScmObj ScmOp_close_input_port(ScmObj port)
 {
-    if (!PORTP(port))
-        SigScm_ErrorObj("close-input-port : port requred but got ", port);
+    DECLARE_FUNCTION("close-input-port", ProcedureFixed1);
+
+    ASSERT_PORTP(port);
 
     if (SCM_PORTINFO_FILE(port))
         fclose(SCM_PORTINFO_FILE(port));
@@ -256,9 +259,10 @@ ScmObj ScmOp_close_input_port(ScmObj port)
 
 ScmObj ScmOp_close_output_port(ScmObj port)
 {
-    if (!PORTP(port))
-        SigScm_ErrorObj("close-output-port : port requred but got ", port);
-    
+    DECLARE_FUNCTION("close-output-port", ProcedureFixed1);
+
+    ASSERT_PORTP(port);
+
     if (SCM_PORTINFO_FILE(port))
         fclose(SCM_PORTINFO_FILE(port));
 
@@ -271,6 +275,7 @@ ScmObj ScmOp_close_output_port(ScmObj port)
 ScmObj ScmOp_read(ScmObj args)
 {
     ScmObj port = scm_current_input_port;
+    DECLARE_FUNCTION("read", ProcedureVariadic0);
 
     /* get port */
     if (!NULLP(args) && PORTP(CAR(args)))
@@ -283,6 +288,7 @@ ScmObj ScmOp_read_char(ScmObj args)
 {
     ScmObj port = scm_current_input_port;
     char   buf[2];
+    DECLARE_FUNCTION("read-char", ProcedureVariadic0);
 
     /* get port */
     if (!NULLP(args) && PORTP(CAR(args)))
@@ -302,6 +308,7 @@ ScmObj ScmOp_peek_char(ScmObj args, ScmObj env)
 
 ScmObj ScmOp_eof_objectp(ScmObj obj)
 {
+    DECLARE_FUNCTION("eof-object?", ProcedureFixed1);
     return (EOFP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
@@ -317,6 +324,7 @@ ScmObj ScmOp_char_readyp(ScmObj args, ScmObj env)
 ScmObj ScmOp_write(ScmObj obj, ScmObj args)
 {
     ScmObj port = scm_current_output_port;
+    DECLARE_FUNCTION("write", ProcedureVariadic1);
 
     /* get port */
     if (!NULLP(args) && PORTP(CAR(args)))
@@ -329,7 +337,8 @@ ScmObj ScmOp_write(ScmObj obj, ScmObj args)
 ScmObj ScmOp_display(ScmObj obj, ScmObj args)
 {
     ScmObj port = scm_current_output_port;
-    
+    DECLARE_FUNCTION("display", ProcedureVariadic1);
+
     /* get port */
     if (!NULLP(args) && PORTP(CAR(args)))
         port = CAR(args);
@@ -342,6 +351,7 @@ ScmObj ScmOp_newline(ScmObj args)
 {
     /* get port */
     ScmObj port = scm_current_output_port;
+    DECLARE_FUNCTION("newline", ProcedureVariadic0);
 
     /* (newline port) */
     if (!NULLP(args) && PORTP(CAR(args)))
@@ -354,10 +364,9 @@ ScmObj ScmOp_newline(ScmObj args)
 ScmObj ScmOp_write_char(ScmObj obj, ScmObj args)
 {
     ScmObj port = scm_current_output_port;
+    DECLARE_FUNCTION("write-char", ProcedureVariadic1);
 
-    /* sanity check */
-    if (!CHARP(obj))
-        SigScm_ErrorObj("write-char : char required but got ", obj);
+    ASSERT_CHARP(obj);
 
     /* get port */
     if (!NULLP(args) && PORTP(CAR(args)))
@@ -408,7 +417,7 @@ static ScmObj SigScm_load_internal(const char *c_filename)
 
     filepath = Scm_NewString(c_filepath);
     port = ScmOp_open_input_file(filepath);
-    
+
     /* read & eval cycle */
     while (s_expression = SigScm_Read(port), !EOFP(s_expression)) {
         EVAL(s_expression, SCM_INTERACTION_ENV);
@@ -448,7 +457,7 @@ static char* create_valid_path(const char *filename)
             return filepath;
         }
     }
-    
+
     /* clear */
     if (filepath)
         free(filepath);
@@ -469,6 +478,8 @@ static char* create_valid_path(const char *filename)
 ScmObj ScmOp_load(ScmObj filename)
 {
     char *c_filename = SCM_STRING_STR(filename);
+    DECLARE_FUNCTION("load", ProcedureFixed1);
+
     SigScm_load_internal(c_filename);
 
 #if SCM_STRICT_R5RS
@@ -487,9 +498,9 @@ ScmObj ScmOp_require(ScmObj filename)
 #if SCM_COMPAT_SIOD
     ScmObj retsym     = SCM_FALSE;
 #endif
+    DECLARE_FUNCTION("require", ProcedureFixed1);
 
-    if (!STRINGP(filename))
-        SigScm_ErrorObj("require : string required but got ", filename);
+    ASSERT_STRINGP(filename);
 
     loaded_str = create_loaded_str(filename);
     if (FALSEP(ScmOp_providedp(loaded_str))) {
@@ -516,7 +527,7 @@ static ScmObj create_loaded_str(ScmObj filename)
     size = (strlen(SCM_STRING_STR(filename)) + strlen("*-loaded*") + 1);
     loaded_str = (char*)malloc(sizeof(char) * size);
     snprintf(loaded_str, size, "*%s-loaded*", SCM_STRING_STR(filename));
-    
+
     return Scm_NewString(loaded_str);
 }
 
@@ -559,8 +570,9 @@ ScmObj ScmOp_providedp(ScmObj feature)
  */
 ScmObj ScmOp_file_existsp(ScmObj filepath)
 {
-    if (!STRINGP(filepath))
-        SigScm_ErrorObj("file-exists? : string requred but got ", filepath);
+    DECLARE_FUNCTION("file-exists?", ProcedureFixed1);
+
+    ASSERT_STRINGP(filepath);
 
     return (file_existsp(SCM_STRING_STR(filepath))) ? SCM_TRUE : SCM_FALSE;
 }
@@ -568,12 +580,13 @@ ScmObj ScmOp_file_existsp(ScmObj filepath)
 /* TODO: remove to ensure security */
 ScmObj ScmOp_delete_file(ScmObj filepath)
 {
-    if (!STRINGP(filepath))
-        SigScm_ErrorObj("delete-file : string requred but got ", filepath);
+    DECLARE_FUNCTION("delete-file", ProcedureFixed1);
+
+    ASSERT_STRINGP(filepath);
 
     if (remove(SCM_STRING_STR(filepath)) == -1)
-        SigScm_ErrorObj("delete-file : delete failed. file = ", filepath);
-    
+        ERR_OBJ("delete failed. file = ", filepath);
+
     return SCM_TRUE;
 }
 
