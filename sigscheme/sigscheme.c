@@ -390,6 +390,10 @@ static void SigScm_Initialize_internal(void)
     ScmExp_use(Scm_Intern("srfi-60"), SCM_INTERACTION_ENV);
     ScmExp_use(Scm_Intern("siod"), SCM_INTERACTION_ENV);
 #endif
+
+#if SCM_EXCEPTION_HANDLING
+    ScmExp_use(Scm_Intern("srfi-34"), SCM_INTERACTION_ENV);
+#endif
 }
 
 void SigScm_Finalize()

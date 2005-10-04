@@ -64,6 +64,26 @@ ScmObj scm_current_error_port  = NULL;
 /*=======================================
   File Local Function Declarations
 =======================================*/
+static void throw_exception(ScmObj errorobj)
+{
+#if SCM_EXCEPTION_HANDLING
+    if (FALSEP(CURRENT_EXCEPTION_HANDLER())) {
+        /* outermost exception handler */
+        if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
+            SigScm_ShowBacktrace();
+
+        exit(EXIT_FAILURE);
+    } else {
+        /* throw an exception */
+        ScmOp_SRFI34_raise(errorobj);
+    }
+#else
+    if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
+        SigScm_ShowBacktrace();
+
+    exit(EXIT_FAILURE);
+#endif    
+}
 
 /*=======================================
   Function Implementations
@@ -97,12 +117,8 @@ void SigScm_Error(const char *msg, ...)
         SigScm_ErrorNewline();
     }
 
-    /* FIXME: backtrace should be printed by outermost exception handler */
-    if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
-        SigScm_ShowBacktrace();
-
-    /* FIXME: throw an exception instead of exiting */
-    exit(EXIT_FAILURE);
+    /* FIXME: this errorobj is OK? */
+    throw_exception(Scm_NewStringCopying("ERROR"));
 }
 
 /* Obsolete. */
@@ -114,13 +130,9 @@ void SigScm_ErrorObj(const char *msg, ScmObj obj)
         SigScm_WriteToPort(scm_current_error_port, obj);
         SigScm_ErrorNewline();
     }
-   
-    /* FIXME: backtrace should be printed by outermost exception handler */
-    if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
-        SigScm_ShowBacktrace();
- 
-    /* FIXME: throw an exception instead of exiting */
-    exit(EXIT_FAILURE);
+
+    /* FIXME: this errorobj is OK? */
+    throw_exception(Scm_NewStringCopying("ERROR"));
 }
 
 /* This function obsoletes SigScm_ErrorObj(). */
@@ -133,12 +145,8 @@ void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj)
         SigScm_ErrorNewline();
     }
 
-    /* FIXME: backtrace should be printed by outermost exception handler */
-    if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
-        SigScm_ShowBacktrace();
- 
-    /* FIXME: throw an exception instead of exiting */
-    exit(EXIT_FAILURE);
+    /* FIXME: this errorobj is OK? */
+    throw_exception(Scm_NewStringCopying("ERROR"));
 }
 
 void SigScm_ShowBacktrace(void)

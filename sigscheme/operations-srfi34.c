@@ -50,20 +50,6 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define CURRENT_EXCEPTION_HANDLER()             \
-    (CAR(scm_exception_handlers))
-#define PUSH_EXCEPTION_HANDLER(handler)                                 \
-    (scm_exception_handlers = CONS((handler), scm_exception_handlers))
-#define POP_EXCEPTION_HANDLER()                 \
-    (scm_exception_handlers = CDR(scm_exception_handlers))
-
-#define CURRENT_EXCEPTION_CONTINUATION()        \
-    (CAR(scm_exception_continuations))
-#define PUSH_EXCEPTION_CONTINUATION(cont)                               \
-    (scm_exception_continuations = CONS((cont), scm_exception_continuations))
-#define POP_EXCEPTION_CONTINUATION()            \
-    (scm_exception_continuations = CDR(scm_exception_continuations))
-
 #define CONTINUATION_JMPENV     SCM_CONTINUATION_OPAQUE0
 #define CONTINUATION_SET_JMPENV SCM_CONTINUATION_SET_OPAQUE0
 
