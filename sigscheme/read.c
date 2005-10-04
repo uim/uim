@@ -121,9 +121,9 @@ static ScmObj read_quote(ScmObj port, ScmObj quoter);
 ScmObj SigScm_Read(ScmObj port)
 {
     ScmObj sexp = SCM_FALSE;
+    DECLARE_INTERNAL_FUNCTION("SigScm_Read");
 
-    if (!PORTP(port))
-        Scm_ErrorObj("SigScm_Read", "port required but got ", port);
+    ASSERT_PORTP(port);
 
     sexp = read_sexpression(port);
 #if SCM_DEBUG
@@ -138,8 +138,9 @@ ScmObj SigScm_Read(ScmObj port)
 
 ScmObj SigScm_Read_Char(ScmObj port)
 {
-    if (!PORTP(port))
-        Scm_ErrorObj("SigScm_Read_Char", "port required but got ", port);
+    DECLARE_INTERNAL_FUNCTION("SigScm_Read_Char");
+
+    ASSERT_PORTP(port);
 
     return read_char(port);
 }
