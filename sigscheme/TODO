@@ -2,11 +2,10 @@
 Requirements and bugs:
 
 * Introduce Exception handling (probably should be based on SRFI-34)
-  - Throw an exception instead of exit(3) when an error occurred
-  - Rename call/cc with call/ec? ([Anthy-dev 2216])
   - Implement assert-error in unittest.scm
-  - [uim] Make uim-sh loop workable even if error occurred
   - [uim] Make the GaUnit-based testing framework workable
+  - Reimplement with dynamic-wind, and without direct setjmp/longjmp
+  - Rename call/cc with call/ec? ([Anthy-dev 2216])
 
 * Add tests for proper tail recursion with 'apply' to test-tail-rec.scm
 

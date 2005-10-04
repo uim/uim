@@ -83,6 +83,10 @@ void SigScm_Initialize_SRFI34(void)
     SigScm_GC_Protect(&scm_exception_continuations);
 }
 
+/*
+ * FIXME: Reimplement with dynamic-wind as "Reference Implementation" of
+ * SRFI-34 does, without direct use of setjmp/longjmp
+ */
 ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk)
 {
     jmp_buf jmpenv;
@@ -111,6 +115,11 @@ ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk)
     return ret;
 }
 
+/*
+ * FIXME: Reimplement with dynamic-wind, Scm_CallWithCurrentContinuation() and
+ * Scm_CallContinuation() as "Reference Implementation" of SRFI-34 does,
+ * without direct use of setjmp/longjmp
+ */
 ScmObj ScmExp_SRFI34_guard(ScmObj var_and_clauses, ScmObj body, ScmObj env)
 {
     /* (guard (var clauses) body) */
@@ -212,6 +221,14 @@ static ScmObj guard_handle_clauses(ScmObj clauses, ScmObj env)
     return SCM_UNDEF;
 }
 
+/*
+ * FIXME:
+ * - Reimplement with dynamic-wind as "Reference Implementation" of SRFI-34
+ *   does, without direct use of setjmp/longjmp
+ * - Cause error when the current exception handler returns, as "Reference
+ *   Implementation" of SRFI-34 does. current implementation allows writing
+ *   unspecified behavior
+ */
 ScmObj ScmOp_SRFI34_raise(ScmObj obj)
 {
     jmp_buf *env;
