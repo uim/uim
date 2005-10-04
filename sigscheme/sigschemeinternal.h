@@ -203,49 +203,6 @@ extern ScmObj SigScm_null_values;
       && SCM_SHIFT_RAW(elm1, lst)                                            \
       && SCM_SHIFT_RAW(elm2, lst)) ? (lst) : 0)
 
-#define SCM_SHIFT_RAW_4(elm0, elm1, elm2, elm3, lst)                         \
-    ((SCM_SHIFT_RAW(elm0, lst)                                               \
-      && SCM_SHIFT_RAW(elm1, lst)                                            \
-      && SCM_SHIFT_RAW(elm2, lst)                                            \
-      && SCM_SHIFT_RAW(elm3, lst)) ? (lst) : 0)
-
-#define SCM_SHIFT_RAW_5(elm0, elm1, elm2, elm3, elm4, lst)                   \
-    ((SCM_SHIFT_RAW(elm0, lst)                                               \
-      && SCM_SHIFT_RAW(elm1, lst)                                            \
-      && SCM_SHIFT_RAW(elm2, lst)                                            \
-      && SCM_SHIFT_RAW(elm3, lst)                                            \
-      && SCM_SHIFT_RAW(elm4, lst)) ? (lst) : 0)
-
-#define SCM_SHIFT_EVALED(elm, lst, env)                                      \
-    ((!NULLP(lst))                                                           \
-     && ((elm) = EVAL(CAR(lst), env), (lst) = CDR(lst), (lst)))
-
-#define SCM_SHIFT_EVALED_1(elm0, lst, env)                                   \
-    (SCM_SHIFT_EVALED(elm0, lst, env) ? (lst) : 0)
-
-#define SCM_SHIFT_EVALED_2(elm0, elm1, lst, env)                             \
-    ((SCM_SHIFT_EVALED(elm0, lst, env)                                       \
-      && SCM_SHIFT_EVALED(elm1, lst, env)) ? (lst) : 0)
-
-#define SCM_SHIFT_EVALED_3(elm0, elm1, elm2, lst, env)                       \
-    ((SCM_SHIFT_EVALED(elm0, lst, env)                                       \
-      && SCM_SHIFT_EVALED(elm1, lst, env)                                    \
-      && SCM_SHIFT_EVALED(elm2, lst, env)) ? (lst) : 0)
-
-#define SCM_SHIFT_EVALED_4(elm0, elm1, elm2, elm3, lst, env)                 \
-    ((SCM_SHIFT_EVALED(elm0, lst, env)                                       \
-      && SCM_SHIFT_EVALED(elm1, lst, env)                                    \
-      && SCM_SHIFT_EVALED(elm2, lst, env)                                    \
-      && SCM_SHIFT_EVALED(elm3, lst, env)) ? (lst) : 0)
-
-#define SCM_SHIFT_EVALED_5(elm0, elm1, elm2, elm3, elm4, lst, env)           \
-    ((SCM_SHIFT_EVALED(elm0, lst, env)                                       \
-      && SCM_SHIFT_EVALED(elm1, lst, env)                                    \
-      && SCM_SHIFT_EVALED(elm2, lst, env)                                    \
-      && SCM_SHIFT_EVALED(elm3, lst, env)                                    \
-      && SCM_SHIFT_EVALED(elm4, lst, env)) ? (lst) : 0)
-
-
 /* Obscures identifier ID. */
 #define SCM_MANGLE(id) Scm_internal_##id
 
