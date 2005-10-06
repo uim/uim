@@ -398,6 +398,10 @@ static ScmObj call(ScmObj proc, ScmObj args,
         argbuf[i] = MUST_POP_ARG(args);
         if (!suppress_eval)
             argbuf[i] = EVAL(argbuf[i], env);
+#if SCM_STRICT_R5RS
+        if (VALUEPACKETP((ScmObj)argbuf[i]))
+            SigScm_Error("multiple values are not allowed here");
+#endif
     }
 
     if (type & SCM_FUNCTYPE_VARIADIC) {
@@ -553,6 +557,7 @@ ScmObj Scm_SymbolValue(ScmObj var, ScmObj env)
     return val;
 }
 
+/* FIXME: Simplify */
 static ScmObj map_eval(ScmObj args, ScmObj env)
 {
     ScmObj result  = SCM_NULL;
@@ -566,10 +571,18 @@ static ScmObj map_eval(ScmObj args, ScmObj env)
 
     /* eval each element of args */
     result  = CONS(EVAL(CAR(args), env), SCM_NULL);
+#if SCM_STRICT_R5RS
+    if (VALUEPACKETP(CAR(result)))
+        SigScm_Error("multiple values are not allowed here");
+#endif
     tail    = result;
     newtail = SCM_NULL;
     for (args = CDR(args); !NULLP(args); args = CDR(args)) {
         newtail = CONS(EVAL(CAR(args), env), SCM_NULL);
+#if SCM_STRICT_R5RS
+    if (VALUEPACKETP(CAR(newtail)))
+        SigScm_Error("multiple values are not allowed here");
+#endif
         SET_CDR(tail, newtail);
         tail = newtail;
     }
