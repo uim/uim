@@ -111,8 +111,6 @@ void SigScm_Initialize_SIOD(void)
 
     saved_output_port = NULL;
     saved_error_port  = NULL;
-    SigScm_GC_Protect(&saved_output_port);
-    SigScm_GC_Protect(&saved_error_port);
 
     SigScm_SetVerboseLevel(2);
 }
