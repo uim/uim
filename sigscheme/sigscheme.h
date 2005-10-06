@@ -60,6 +60,8 @@ extern "C" {
 #define SCM_NOINLINE
 #endif /* __GNUC__ */
 
+#define SCM_REINTERPRET_CAST(type, obj) (*(type *)&(obj))
+
 /* RFC: better names for the debug printing */
 #if SCM_DEBUG
 #define SCM_CDBG(args) (SigScm_CategorizedDebug args)

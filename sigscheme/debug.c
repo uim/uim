@@ -280,7 +280,8 @@ static void print_ScmObj_internal(FILE *f, ScmObj obj, enum OutputType otype)
         fprintf(f, "#<c_pointer %p>", SCM_C_POINTER_VALUE(obj));
         break;
     case ScmCFuncPointer:
-        fprintf(f, "#<c_func_pointer %p>", (void*)SCM_C_FUNCPOINTER_VALUE(obj));
+        fprintf(f, "#<c_func_pointer %p>",
+                SCM_REINTERPRET_CAST(void *, SCM_C_FUNCPOINTER_VALUE(obj)));
         break;
     }
 }
