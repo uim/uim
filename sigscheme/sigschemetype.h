@@ -52,16 +52,6 @@ typedef ScmObj *ScmRef;
 typedef struct _ScmPortInfo ScmPortInfo;
 typedef struct ScmEvalState_ ScmEvalState;
 typedef ScmObj (*ScmFuncType)();
-typedef ScmObj (*ScmFuncType0)(void);
-typedef ScmObj (*ScmFuncType1)(ScmObj arg1);
-typedef ScmObj (*ScmFuncType2)(ScmObj arg1, ScmObj arg2);
-typedef ScmObj (*ScmFuncType3)(ScmObj arg1, ScmObj arg2, ScmObj arg3);
-typedef ScmObj (*ScmFuncType4)(ScmObj arg1, ScmObj arg2, ScmObj arg3, ScmObj arg4);
-typedef ScmObj (*ScmFuncType5)(ScmObj arg1, ScmObj arg2, ScmObj arg3, ScmObj arg4, ScmObj arg5);
-typedef ScmObj (*ScmFuncTypeEvaledList)(ScmObj args, ScmObj env);
-typedef ScmObj (*ScmFuncTypeRawList)(ScmObj arglist, ScmObj env);
-typedef ScmObj (*ScmFuncTypeRawListTailRec)(ScmObj arglist, ScmEvalState *eval_state);
-typedef ScmObj (*ScmFuncTypeRawListWithTailFlag)(ScmObj arglist, ScmEvalState *eval_state);
 
 /*=======================================
    Struct Declarations
