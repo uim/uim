@@ -377,6 +377,8 @@ struct ScmCell_ {
 #define SCM_VALUEPACKETP(a)       (SCM_TYPE(a) == ScmValuePacket)
 #define SCM_NULLVALUESP(a)        (EQ(a, SigScm_null_values))
 #define SCM_ENTYPE_VALUEPACKET(a) (SCM_ENTYPE((a), ScmValuePacket))
+#define SCM_MAKE_VALUEPACKET(vals) (NULLP(vals) ? SigScm_null_values :       \
+                                    (SCM_ENTYPE_VALUEPACKET(vals), (vals)))
 #define SCM_VALUEPACKET_VALUES(a) ((SCM_NULLVALUESP(a)) ? SCM_NULL :         \
                                    (SCM_ENTYPE_CONS(a), (a)))
 #define SCM_VALUECONS_CAR(a)      (SCM_AS_VALUEPACKET(a)->obj.cons.car)
@@ -384,6 +386,7 @@ struct ScmCell_ {
 #else /* SCM_USE_VALUECONS */
 #define SCM_VALUEPACKETP(a)          (SCM_TYPE(a) == ScmValuePacket)
 #define SCM_ENTYPE_VALUEPACKET(a)        (SCM_ENTYPE((a), ScmValuePacket))
+#define SCM_MAKE_VALUEPACKET(vals) (Scm_NewValuePacket(vals))
 #define SCM_VALUEPACKET_VALUES(a)    (SCM_AS_VALUEPACKET(a)->obj.value_pack.values)
 #define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_VALUEPACKET_VALUES(a) = (v))
 #endif /* SCM_USE_VALUECONS */

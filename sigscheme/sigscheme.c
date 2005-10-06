@@ -57,10 +57,6 @@ struct module_info {
   Variable Declarations
 =======================================*/
 ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote, SigScm_unquote_splicing;
-#if SCM_USE_VALUECONS
-ScmObj SigScm_null_values;
-#endif
-
 #if SCM_COMPAT_SIOD
 static ScmObj scm_return_value    = NULL;
 #endif
@@ -155,17 +151,6 @@ static void SigScm_Initialize_internal(void)
     /* FIXME: obsolete this. don't set SCM_TRUE and rely on the value */
     SCM_SYMBOL_SET_VCELL(Scm_Intern("else"), SCM_TRUE);
     SCM_SYMBOL_SET_VCELL(Scm_Intern("=>"),   SCM_TRUE);
-#endif
-
-#if SCM_USE_VALUECONS
-    /* FIXME: hide into datas.c */
-    /*
-     * To keep storage model abstract, the cell is allocated from a heap
-     * instead of directly construct ScmCell
-     */
-    SigScm_null_values = CONS(SCM_NULL, SCM_NULL);
-    SCM_ENTYPE_VALUEPACKET(SigScm_null_values);
-    SigScm_GC_Protect(&SigScm_null_values);
 #endif
 
 #if SCM_USE_NONSTD_FEATURES

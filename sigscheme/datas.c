@@ -168,6 +168,11 @@ static int           scm_cur_marker = SCM_INITIAL_MARKER;
 static jmp_buf save_regs_buf;
 ScmObj *scm_stack_start_pointer = NULL;
 
+/* multiple values */
+#if SCM_USE_VALUECONS
+ScmObj SigScm_null_values;
+#endif
+
 /* dynamic extent */
 static ScmObj current_dynamic_extent = NULL;
 
@@ -257,6 +262,15 @@ void SigScm_InitStorage(void)
     initialize_special_constants();
     allocate_heap(&scm_heaps, scm_heap_num, SCM_HEAP_SIZE, &scm_freelist);
 
+#if SCM_USE_VALUECONS
+    /*
+     * To keep storage model abstract, the cell is allocated from a heap
+     * instead of directly construct ScmCell
+     */
+    SigScm_null_values = CONS(SCM_NULL, SCM_NULL);
+    SCM_ENTYPE_VALUEPACKET(SigScm_null_values);
+    SigScm_GC_Protect(&SigScm_null_values);
+#endif
     initialize_dynamic_extent();
     initialize_continuation_env();
     initialize_symbol_hash();
