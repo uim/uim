@@ -233,7 +233,7 @@ void SigScm_VErrorPrintf(const char *fmt, va_list args)
 {
     FILE *err;
 
-    if (scm_current_error_port) {
+    if (!FALSEP(scm_current_error_port)) {
         err = SCM_PORTINFO_FILE(scm_current_error_port);
         vfprintf(err, fmt, args);
 #if SCM_VOLATILE_OUTPUT
@@ -246,7 +246,7 @@ void SigScm_ErrorNewline(void)
 {
     FILE *err;
 
-    if (scm_current_error_port) {
+    if (!FALSEP(scm_current_error_port)) {
         err = SCM_PORTINFO_FILE(scm_current_error_port);
         fputc('\n', err);
 #if SCM_VOLATILE_OUTPUT

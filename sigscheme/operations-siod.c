@@ -109,8 +109,10 @@ void SigScm_Initialize_SIOD(void)
     Scm_RegisterProcedureFixed1("%%closure-code"       , ScmOp_closure_code);
     Scm_RegisterProcedureVariadic0("verbose" , ScmOp_verbose);
 
-    saved_output_port = NULL;
-    saved_error_port  = NULL;
+    saved_output_port = SCM_FALSE;
+    saved_error_port  = SCM_FALSE;
+    SigScm_GC_Protect(&saved_output_port);
+    SigScm_GC_Protect(&saved_error_port);
 
     SigScm_SetVerboseLevel(2);
 }
@@ -222,8 +224,8 @@ void SigScm_SetVerboseLevel(long level)
         saved_error_port = scm_current_error_port;
         saved_output_port = scm_current_output_port;
 
-        scm_current_error_port = NULL;
-        scm_current_output_port = NULL;
+        scm_current_error_port = SCM_FALSE;
+        scm_current_output_port = SCM_FALSE;
     } else {
         if (!scm_current_error_port)
             scm_current_error_port = saved_error_port;

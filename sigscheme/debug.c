@@ -178,7 +178,7 @@ void SigScm_WriteToPort(ScmObj port, ScmObj obj)
 {
     FILE *f = NULL;
 
-    if (!port)
+    if (FALSEP(port))
         return;
 
     if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE) {
@@ -197,7 +197,7 @@ void SigScm_DisplayToPort(ScmObj port, ScmObj obj)
 {
     FILE *f = NULL;
 
-    if (!port)
+    if (FALSEP(port))
         return;
 
     if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE) {
