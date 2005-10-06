@@ -68,29 +68,11 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define SCM_PORT_GETC(port, c)                                          \
-    do {                                                                \
-        if (SCM_PORT_UNGOTTENCHAR(port)) {                              \
-            c = SCM_PORT_UNGOTTENCHAR(port);                            \
-            SCM_PORT_SET_UNGOTTENCHAR(port, 0);                         \
-        } else {                                                        \
-            switch (SCM_PORT_PORTTYPE(port)) {                          \
-            case PORT_FILE:                                             \
-                c = getc(SCM_PORT_FILE(port));                          \
-                if (c == '\n') SCM_PORT_LINE(port)++;                   \
-                break;                                                  \
-            case PORT_STRING:                                           \
-                c = (*SCM_PORT_STR_CURRENTPOS(port));                   \
-                if (c == '\0') c = EOF;                                 \
-                SCM_PORT_STR_CURRENTPOS(port)++;                        \
-                break;                                                  \
-            }                                                           \
-            SCM_PORT_SET_UNGOTTENCHAR(port, 0);                         \
-        }                                                               \
-    } while (0);
+#define SCM_PORT_GETC(port, c)                  \
+    (c = SCM_PORT_GETC_FUNC(port)(port))
 
 #define SCM_PORT_UNGETC(port,c)                 \
-    SCM_PORT_SET_UNGOTTENCHAR(port, c);
+    (SCM_PORT_SET_UNGOTTENCHAR(port, c))
 
 /*=======================================
   Variable Declarations

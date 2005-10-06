@@ -223,6 +223,12 @@ static void unwind_dynamic_extent(void);
 static void enter_dynamic_extent(ScmObj dest);
 static void exit_dynamic_extent(ScmObj dest);
 
+/* port */
+static int  fileport_getc(ScmObj port);
+static void fileport_print(ScmObj port, const char *str, ...);
+static int  stringport_getc(ScmObj port);
+static void stringport_print(ScmObj port, const char *str, ...);
+
 /* continuation */
 static void initialize_continuation_env(void);
 static void finalize_continuation_env(void);
@@ -818,9 +824,33 @@ ScmObj Scm_NewFilePort(FILE *file, const char *filename,
     SCM_PORT_SET_FILE(obj, file);
     SCM_PORT_SET_FILENAME(obj, strdup(filename));
     SCM_PORT_SET_LINE(obj, 0);
+    SCM_PORT_SET_GETC_FUNC(obj, fileport_getc);
+    SCM_PORT_SET_PRINT_FUNC(obj, fileport_print);
     SCM_PORT_SET_UNGOTTENCHAR(obj, 0);
 
     return obj;
+}
+
+static int fileport_getc(ScmObj port)
+{
+    int c = SCM_PORT_UNGOTTENCHAR(port);
+    if (!c) {
+        c = fgetc(SCM_PORT_FILE(port));
+        if (c == '\n')
+            SCM_PORT_LINE(port)++;
+    }
+
+    SCM_PORT_SET_UNGOTTENCHAR(port, 0);
+    return c;
+}
+
+static void fileport_print(ScmObj port, const char *str, ...)
+{
+    va_list va;
+
+    va_start(va, str);
+    vfprintf(SCM_PORT_FILE(port), str, va);
+    va_end(va);
 }
 
 ScmObj Scm_NewStringPort(const char *str)
@@ -837,9 +867,29 @@ ScmObj Scm_NewStringPort(const char *str)
     SCM_PORT_SET_PORTTYPE(obj, PORT_STRING);
     SCM_PORT_SET_STR(obj, strdup(str));
     SCM_PORT_SET_STR_CURRENTPOS(obj, SCM_PORT_STR(obj));
+    SCM_PORT_SET_GETC_FUNC(obj, stringport_getc);
     SCM_PORT_SET_UNGOTTENCHAR(obj, 0);
 
     return obj;
+}
+
+static int stringport_getc(ScmObj port)
+{
+    int c = SCM_PORT_UNGOTTENCHAR(port);
+    if (!c) {
+        c = (*SCM_PORT_STR_CURRENTPOS(port));
+        if (c == '\0')
+            c = EOF;
+        SCM_PORT_STR_CURRENTPOS(port)++;
+    }
+
+    SCM_PORT_SET_UNGOTTENCHAR(port, 0);
+    return c;
+}
+
+static void stringport_print(ScmObj port, const char *str, ...)
+{
+    /* not implemented yet */
 }
 
 ScmObj Scm_NewContinuation(void)

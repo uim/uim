@@ -116,7 +116,9 @@ struct _ScmPortInfo {
             const char *str_currentpos;
         } str_port;
     } info;
-    
+
+    int  (*getc_func) (ScmObj port);
+    void (*print_func) (ScmObj port, const char* str, ...);    
     int ungottenchar;
 };
 
@@ -352,6 +354,11 @@ struct ScmCell_ {
 #define SCM_PORT_SET_PORTTYPE(a, type) (SCM_PORT_PORTTYPE(a) = type)
 #define SCM_PORT_UNGOTTENCHAR(a) (SCM_PORT_PORTINFO(a)->ungottenchar)
 #define SCM_PORT_SET_UNGOTTENCHAR(a, ch) (SCM_PORT_UNGOTTENCHAR(a) = ch)
+#define SCM_PORT_GETC_FUNC(a) (SCM_PORT_PORTINFO(a)->getc_func)
+#define SCM_PORT_SET_GETC_FUNC(a, func) (SCM_PORT_GETC_FUNC(a) = func)
+#define SCM_PORT_PRINT_FUNC(a) (SCM_PORT_PORTINFO(a)->print_func)
+#define SCM_PORT_SET_PRINT_FUNC(a, func) (SCM_PORT_PRINT_FUNC(a) = func)
+
 /* File Port */
 #define SCM_PORT_FILE(a) (SCM_PORT_PORTINFO(a)->info.file_port.file)
 #define SCM_PORT_SET_FILE(a, file) (SCM_PORT_FILE(a) = file)
