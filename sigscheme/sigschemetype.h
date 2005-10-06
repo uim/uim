@@ -113,7 +113,7 @@ struct _ScmPortInfo {
         
         struct {
             char *port_str;
-            const char *str_current;
+            const char *str_currentpos;
         } str_port;
     } info;
     
@@ -347,13 +347,23 @@ struct ScmCell_ {
 #define SCM_PORT_SET_PORTDIRECTION(a, pdirection) (SCM_PORT_PORTDIRECTION(a) = pdirection)
 #define SCM_PORT_PORTINFO(a) (SCM_AS_PORT(a)->obj.port.port_info)
 #define SCM_PORT_SET_PORTINFO(a, pinfo) (SCM_PORT_PORTINFO(a) = (pinfo))
-#define SCM_PORTINFO_PORTTYPE(a) (SCM_PORT_PORTINFO(a)->port_type)
-#define SCM_PORTINFO_FILE(a) (SCM_PORT_PORTINFO(a)->info.file_port.file)
-#define SCM_PORTINFO_FILENAME(a) (SCM_PORT_PORTINFO(a)->info.file_port.filename)
-#define SCM_PORTINFO_LINE(a) (SCM_PORT_PORTINFO(a)->info.file_port.line)
-#define SCM_PORTINFO_STR(a) (SCM_PORT_PORTINFO(a)->info.str_port.port_str)
-#define SCM_PORTINFO_STR_CURRENT(a) (SCM_PORT_PORTINFO(a)->info.str_port.str_current)
-#define SCM_PORTINFO_UNGOTTENCHAR(a) (SCM_PORT_PORTINFO(a)->ungottenchar)
+
+#define SCM_PORT_PORTTYPE(a) (SCM_PORT_PORTINFO(a)->port_type)
+#define SCM_PORT_SET_PORTTYPE(a, type) (SCM_PORT_PORTTYPE(a) = type)
+#define SCM_PORT_UNGOTTENCHAR(a) (SCM_PORT_PORTINFO(a)->ungottenchar)
+#define SCM_PORT_SET_UNGOTTENCHAR(a, ch) (SCM_PORT_UNGOTTENCHAR(a) = ch)
+/* File Port */
+#define SCM_PORT_FILE(a) (SCM_PORT_PORTINFO(a)->info.file_port.file)
+#define SCM_PORT_SET_FILE(a, file) (SCM_PORT_FILE(a) = file)
+#define SCM_PORT_FILENAME(a) (SCM_PORT_PORTINFO(a)->info.file_port.filename)
+#define SCM_PORT_SET_FILENAME(a, filename) (SCM_PORT_FILENAME(a) = filename)
+#define SCM_PORT_LINE(a) (SCM_PORT_PORTINFO(a)->info.file_port.line)
+#define SCM_PORT_SET_LINE(a, line) (SCM_PORT_LINE(a) = line)
+/* String Port */
+#define SCM_PORT_STR(a) (SCM_PORT_PORTINFO(a)->info.str_port.port_str)
+#define SCM_PORT_SET_STR(a, str) (SCM_PORT_STR(a) = str)
+#define SCM_PORT_STR_CURRENTPOS(a) (SCM_PORT_PORTINFO(a)->info.str_port.str_currentpos)
+#define SCM_PORT_SET_STR_CURRENTPOS(a, pos) (SCM_PORT_STR_CURRENTPOS(a) = pos)
 
 #define SCM_CONTINUATIONP(a) (SCM_TYPE(a) == ScmContinuation)
 #define SCM_ENTYPE_CONTINUATION(a) (SCM_ENTYPE((a), ScmContinuation))

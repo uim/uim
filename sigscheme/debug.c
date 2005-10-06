@@ -181,8 +181,8 @@ void SigScm_WriteToPort(ScmObj port, ScmObj obj)
     if (FALSEP(port))
         return;
 
-    if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE) {
-        f = SCM_PORTINFO_FILE(port);
+    if (SCM_PORT_PORTTYPE(port) == PORT_FILE) {
+        f = SCM_PORT_FILE(port);
         print_ScmObj_internal(f, obj, AS_WRITE);
 #if SCM_VOLATILE_OUTPUT
         fflush(f);
@@ -200,8 +200,8 @@ void SigScm_DisplayToPort(ScmObj port, ScmObj obj)
     if (FALSEP(port))
         return;
 
-    if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE) {
-        f = SCM_PORTINFO_FILE(port);
+    if (SCM_PORT_PORTTYPE(port) == PORT_FILE) {
+        f = SCM_PORT_FILE(port);
         print_ScmObj_internal(f, obj, AS_DISPLAY);
 #if SCM_VOLATILE_OUTPUT
         fflush(f);
@@ -443,10 +443,10 @@ static void print_port(FILE *f, ScmObj port, enum OutputType otype)
     fprintf(f, "port ");
 
     /* file or string */
-    if (SCM_PORTINFO_PORTTYPE(port) == PORT_FILE)
-        fprintf(f, "file %s", SCM_PORTINFO_FILENAME(port));
-    else if (SCM_PORTINFO_PORTTYPE(port) == PORT_STRING)
-        fprintf(f, "string %s", SCM_PORTINFO_STR(port));
+    if (SCM_PORT_PORTTYPE(port) == PORT_FILE)
+        fprintf(f, "file %s", SCM_PORT_FILENAME(port));
+    else if (SCM_PORT_PORTTYPE(port) == PORT_STRING)
+        fprintf(f, "string %s", SCM_PORT_STR(port));
 
     fprintf(f, ">");
 }

@@ -250,8 +250,8 @@ ScmObj ScmOp_close_input_port(ScmObj port)
 
     ASSERT_PORTP(port);
 
-    if (SCM_PORTINFO_FILE(port))
-        fclose(SCM_PORTINFO_FILE(port));
+    if (SCM_PORT_FILE(port))
+        fclose(SCM_PORT_FILE(port));
 
     return SCM_UNDEF;
 }
@@ -262,8 +262,8 @@ ScmObj ScmOp_close_output_port(ScmObj port)
 
     ASSERT_PORTP(port);
 
-    if (SCM_PORTINFO_FILE(port))
-        fclose(SCM_PORTINFO_FILE(port));
+    if (SCM_PORT_FILE(port))
+        fclose(SCM_PORT_FILE(port));
 
     return SCM_UNDEF;
 }
@@ -294,7 +294,7 @@ ScmObj ScmOp_read_char(ScmObj args)
         port = CAR(args);
 
     /* TODO : implement this multibyte-char awareness */
-    buf[0] = getc(SCM_PORTINFO_FILE(port));
+    buf[0] = getc(SCM_PORT_FILE(port));
     buf[1] = '\0';
     return Scm_NewChar(buf);
 }

@@ -601,14 +601,14 @@ static void sweep_obj(ScmObj obj)
 
     case ScmPort:
         /* handle each port type */
-        switch (SCM_PORTINFO_PORTTYPE(obj)) {
+        switch (SCM_PORT_PORTTYPE(obj)) {
         case PORT_FILE:
-            if (SCM_PORTINFO_FILENAME(obj))
-                free(SCM_PORTINFO_FILENAME(obj));
+            if (SCM_PORT_FILENAME(obj))
+                free(SCM_PORT_FILENAME(obj));
             break;
         case PORT_STRING:
-            if (SCM_PORTINFO_STR(obj))
-                free(SCM_PORTINFO_STR(obj));
+            if (SCM_PORT_STR(obj))
+                free(SCM_PORT_STR(obj));
             break;
         }
         /* free port info */
@@ -812,12 +812,13 @@ ScmObj Scm_NewFilePort(FILE *file, const char *filename,
 
     SCM_ENTYPE_PORT(obj);
     SCM_PORT_SET_PORTDIRECTION(obj, pdirection);
-    pinfo->port_type = PORT_FILE;
-    pinfo->info.file_port.file = file;
-    pinfo->info.file_port.filename = strdup(filename);
-    pinfo->info.file_port.line = 0;
-    pinfo->ungottenchar = 0;
+
     SCM_PORT_SET_PORTINFO(obj, pinfo);
+    SCM_PORT_SET_PORTTYPE(obj, PORT_FILE);
+    SCM_PORT_SET_FILE(obj, file);
+    SCM_PORT_SET_FILENAME(obj, strdup(filename));
+    SCM_PORT_SET_LINE(obj, 0);
+    SCM_PORT_SET_UNGOTTENCHAR(obj, 0);
 
     return obj;
 }
@@ -831,11 +832,12 @@ ScmObj Scm_NewStringPort(const char *str)
 
     SCM_ENTYPE_PORT(obj);
     SCM_PORT_SET_PORTDIRECTION(obj, PORT_INPUT);
-    pinfo->port_type = PORT_STRING;
-    pinfo->info.str_port.port_str = strdup(str);
-    pinfo->info.str_port.str_current = pinfo->info.str_port.port_str;
-    pinfo->ungottenchar = 0;
+    
     SCM_PORT_SET_PORTINFO(obj, pinfo);
+    SCM_PORT_SET_PORTTYPE(obj, PORT_STRING);
+    SCM_PORT_SET_STR(obj, strdup(str));
+    SCM_PORT_SET_STR_CURRENTPOS(obj, SCM_PORT_STR(obj));
+    SCM_PORT_SET_UNGOTTENCHAR(obj, 0);
 
     return obj;
 }
