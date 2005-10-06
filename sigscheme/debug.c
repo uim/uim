@@ -90,18 +90,6 @@ typedef struct {
 #define HASH_FIND      0
 #endif /* SCM_USE_SRFI38 */
 
-/*
- * Port Handling macro for printing strings.
- *
- * FIXME: This macro cannot handle variadic functions
- *        properly. I want to use this macro like follows.
- *
- *   e.g. SCM_PORT_PRINT(port, "%s", string);
- *
- */
-#define SCM_PORT_PRINT(port, str)               \
-    (SCM_PORT_PRINT_FUNC(port)(port, str))
-
 /*=======================================
   Variable Declarations
 =======================================*/
@@ -109,6 +97,9 @@ static int debug_mask;
 #if SCM_USE_SRFI38
 static write_ss_context *write_ss_ctx; /* misc info in priting shared structures */
 #endif
+
+/* buffer for snprintf */
+char *scm_portbuffer;
 
 /*=======================================
   File Local Function Declarations
@@ -188,34 +179,34 @@ void SigScm_Display(ScmObj obj)
 
 void SigScm_WriteToPort(ScmObj port, ScmObj obj)
 {
-    if (FALSEP(port))
-        return;
+    DECLARE_INTERNAL_FUNCTION("SigScm_WriteToPort");
 
-    if (SCM_PORT_PORTTYPE(port) == PORT_FILE) {
-        print_ScmObj_internal(port, obj, AS_WRITE);
+    ASSERT_PORTP(port);
+    if (SCM_PORT_PORTDIRECTION(port) != PORT_OUTPUT)
+        SigScm_Error("output port is required");
+
+    print_ScmObj_internal(port, obj, AS_WRITE);
+
 #if SCM_VOLATILE_OUTPUT
-        fflush(f);
+    if (SCM_PORT_PORTTYPE(port) == PORT_FILE)
+        fflush(SCM_PORT_FILE(port));
 #endif
-        return;
-    }
-
-    SigScm_Error("SigScm_WriteToPort : support write only for file port.");
 }
 
 void SigScm_DisplayToPort(ScmObj port, ScmObj obj)
 {
-    if (FALSEP(port))
-        return;
+    DECLARE_INTERNAL_FUNCTION("SigScm_DisplayToPort");
 
-    if (SCM_PORT_PORTTYPE(port) == PORT_FILE) {
-        print_ScmObj_internal(port, obj, AS_DISPLAY);
+    ASSERT_PORTP(port);
+    if (SCM_PORT_PORTDIRECTION(port) != PORT_OUTPUT)
+        SigScm_Error("output port is required");
+
+    print_ScmObj_internal(port, obj, AS_DISPLAY);
+
 #if SCM_VOLATILE_OUTPUT
-        fflush(f);
+    if (SCM_PORT_PORTTYPE(port) == PORT_FILE)
+        fflush(SCM_PORT_FILE(port));
 #endif
-        return;
-    }
-
-    SigScm_Error("SigScm_DisplayToPort : support display only for file port.");
 }
 
 static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype)
@@ -225,25 +216,28 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
         int index = get_shared_index(obj);
         if (index > 0) {
             /* defined datum */
-            SCM_PORT_PRINT_FUNC(port)(port, "#%d#", index);
+            snprintf(scm_portbuffer, PORTBUFFER_SIZE, "#%d#", index);
+            SCM_PORT_PRINT(port, scm_portbuffer);
             return;
         }
         if (index < 0) {
             /* defining datum, with the new index negated */
-            SCM_PORT_PRINT_FUNC(port)(port, "#%d=", -index);
+            snprintf(scm_portbuffer, PORTBUFFER_SIZE, "#%d=", -index);
+            SCM_PORT_PRINT(port, scm_portbuffer);
             /* Print it; the next time it'll be defined. */
         }
     }
 #endif
     switch (SCM_TYPE(obj)) {
     case ScmInt:
-        SCM_PORT_PRINT_FUNC(port)(port, "%d", SCM_INT_VALUE(obj));
+        snprintf(scm_portbuffer, PORTBUFFER_SIZE, "%d", SCM_INT_VALUE(obj));
+        SCM_PORT_PRINT(port, scm_portbuffer);
         break;
     case ScmCons:
         print_list(port, obj, otype);
         break;
     case ScmSymbol:
-        SCM_PORT_PRINT_FUNC(port)(port, "%s", SCM_SYMBOL_NAME(obj));
+        SCM_PORT_PRINT(port, SCM_SYMBOL_NAME(obj));
         break;
     case ScmChar:
         print_char(port, obj, otype);
@@ -283,11 +277,13 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
         SigScm_Error("You cannot print ScmFreeCell, may be GC bug.");
         break;
     case ScmCPointer:
-        SCM_PORT_PRINT_FUNC(port)(port, "#<c_pointer %p>", SCM_C_POINTER_VALUE(obj));
+        snprintf(scm_portbuffer, PORTBUFFER_SIZE, "#<c_pointer %p>", SCM_C_POINTER_VALUE(obj));
+        SCM_PORT_PRINT(port, scm_portbuffer);
         break;
     case ScmCFuncPointer:
-        SCM_PORT_PRINT_FUNC(port)(port, "#<c_func_pointer %p>",
-                                  SCM_REINTERPRET_CAST(void *, SCM_C_FUNCPOINTER_VALUE(obj)));
+        snprintf(scm_portbuffer, PORTBUFFER_SIZE, "#<c_func_pointer %p>",
+                 SCM_REINTERPRET_CAST(void *, SCM_C_FUNCPOINTER_VALUE(obj)));
+        SCM_PORT_PRINT(port, scm_portbuffer);
         break;
     }
 }
@@ -304,7 +300,8 @@ static void print_char(ScmObj port, ScmObj obj, enum OutputType otype)
         } else if(strcmp(SCM_CHAR_VALUE(obj), "\n") == 0) {
             SCM_PORT_PRINT(port, "#\\newline");
         } else {
-            SCM_PORT_PRINT_FUNC(port)(port, "#\\%s", SCM_CHAR_VALUE(obj));
+            snprintf(scm_portbuffer, PORTBUFFER_SIZE, "#\\%s", SCM_CHAR_VALUE(obj));
+            SCM_PORT_PRINT(port, scm_portbuffer);
         }
         break;
     case AS_DISPLAY:
@@ -345,7 +342,9 @@ static void print_string(ScmObj port, ScmObj obj, enum OutputType otype)
             case '\t': SCM_PORT_PRINT(port, "\\t"); break;
             case '\\': SCM_PORT_PRINT(port, "\\\\"); break;
             default:
-                SCM_PORT_PRINT_FUNC(port)(port, "%c", str[i]); break;
+                snprintf(scm_portbuffer, PORTBUFFER_SIZE, "%c", str[i]);
+                SCM_PORT_PRINT(port, scm_portbuffer);
+                break;
             }
         }
         SCM_PORT_PRINT(port, "\""); /* last doublequote */
@@ -391,12 +390,14 @@ static void print_list(ScmObj port, ScmObj lst, enum OutputType otype)
         index = get_shared_index(lst);
         if (index > 0) {
             /* defined datum */
-            SCM_PORT_PRINT_FUNC(port)(port, ". #%d#", index);
+            snprintf(scm_portbuffer, PORTBUFFER_SIZE, ". #%d#", index);
+            SCM_PORT_PRINT(port, scm_portbuffer);
             goto close_parens_and_return;
         }
         if (index < 0) {
             /* defining datum, with the new index negated */
-            SCM_PORT_PRINT_FUNC(port)(port, ". #%d=", -index);
+            snprintf(scm_portbuffer, PORTBUFFER_SIZE, ". #%d=", -index);
+            SCM_PORT_PRINT(port, scm_portbuffer);
             necessary_close_parens++;
             goto cheap_recursion;
         }
@@ -450,10 +451,14 @@ static void print_port(ScmObj port, ScmObj obj, enum OutputType otype)
     SCM_PORT_PRINT(port, "port ");
 
     /* file or string */
-    if (SCM_PORT_PORTTYPE(obj) == PORT_FILE)
-        SCM_PORT_PRINT_FUNC(port)(port, "file %s", SCM_PORT_FILENAME(obj));
-    else if (SCM_PORT_PORTTYPE(obj) == PORT_STRING)
-        SCM_PORT_PRINT_FUNC(port)(port, "string %s", SCM_PORT_STR(obj));
+
+    if (SCM_PORT_PORTTYPE(obj) == PORT_FILE) {
+        snprintf(scm_portbuffer, PORTBUFFER_SIZE, "file %s", SCM_PORT_FILENAME(obj));
+        SCM_PORT_PRINT(port, scm_portbuffer);
+    } else if (SCM_PORT_PORTTYPE(obj) == PORT_STRING) {
+        snprintf(scm_portbuffer, PORTBUFFER_SIZE, "string %s", SCM_PORT_STR(obj));
+        SCM_PORT_PRINT(port, scm_portbuffer);
+    }
 
     SCM_PORT_PRINT(port, ">");
 }

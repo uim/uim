@@ -73,6 +73,9 @@ static struct module_info module_info_table[] = {
 #if SCM_USE_SRFI2
     {"srfi-2", SigScm_Initialize_SRFI2},
 #endif
+#if SCM_USE_SRFI6
+    {"srfi-6", SigScm_Initialize_SRFI6},
+#endif
 #if SCM_USE_SRFI8
     {"srfi-8", SigScm_Initialize_SRFI8},
 #endif
@@ -432,7 +435,7 @@ ScmObj Scm_eval_c_string_internal(const char *exp)
     ScmObj str_port    = SCM_NULL;
     ScmObj ret         = SCM_NULL;
 
-    str_port = Scm_NewStringPort(exp);
+    str_port = Scm_NewStringPort(exp, PORT_INPUT);
 
     ret = SigScm_Read(str_port);
     ret = EVAL(ret, SCM_INTERACTION_ENV);

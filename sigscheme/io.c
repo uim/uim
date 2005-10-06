@@ -34,7 +34,6 @@
 /*=======================================
   System Include
 =======================================*/
-#include <stdio.h>
 
 /*=======================================
   Local Include
@@ -250,7 +249,9 @@ ScmObj ScmOp_close_input_port(ScmObj port)
 
     ASSERT_PORTP(port);
 
-    if (SCM_PORT_FILE(port))
+    if (SCM_PORT_PORTTYPE(port) == PORT_FILE
+        && SCM_PORT_PORTDIRECTION(port) == PORT_INPUT
+        && SCM_PORT_FILE(port))
         fclose(SCM_PORT_FILE(port));
 
     return SCM_UNDEF;
@@ -262,7 +263,9 @@ ScmObj ScmOp_close_output_port(ScmObj port)
 
     ASSERT_PORTP(port);
 
-    if (SCM_PORT_FILE(port))
+    if (SCM_PORT_PORTTYPE(port) == PORT_FILE
+        && SCM_PORT_PORTDIRECTION(port) == PORT_OUTPUT
+        && SCM_PORT_FILE(port))
         fclose(SCM_PORT_FILE(port));
 
     return SCM_UNDEF;
@@ -293,8 +296,7 @@ ScmObj ScmOp_read_char(ScmObj args)
     if (!NULLP(args) && PORTP(CAR(args)))
         port = CAR(args);
 
-    /* TODO : implement this multibyte-char awareness */
-    buf[0] = getc(SCM_PORT_FILE(port));
+    SCM_PORT_GETC(port, buf[0]);
     buf[1] = '\0';
     return Scm_NewChar(buf);
 }

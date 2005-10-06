@@ -42,6 +42,7 @@
 
 #define SCM_USE_SRFI1           1  /* use SRFI-1  list library */
 #define SCM_USE_SRFI2           1  /* use SRFI-2  'and-let*' */
+#define SCM_USE_SRFI6           1  /* use SRFI-6  basic string ports */
 #define SCM_USE_SRFI8           1  /* use SRFI-8  'receive' */
 #define SCM_USE_SRFI23          1  /* use SRFI-23 'error' */
 #define SCM_USE_SRFI34          1  /* use SRFI-34 exception handling for programs */

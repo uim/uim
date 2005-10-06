@@ -225,9 +225,9 @@ static void exit_dynamic_extent(ScmObj dest);
 
 /* port */
 static int  fileport_getc(ScmObj port);
-static void fileport_print(ScmObj port, const char *str, ...);
+static void fileport_print(ScmObj port, const char *str);
 static int  stringport_getc(ScmObj port);
-static void stringport_print(ScmObj port, const char *str, ...);
+static void stringport_print(ScmObj port, const char *str);
 
 /* continuation */
 static void initialize_continuation_env(void);
@@ -267,6 +267,7 @@ void SigScm_InitStorage(void)
 {
     initialize_special_constants();
     allocate_heap(&scm_heaps, scm_heap_num, SCM_HEAP_SIZE, &scm_freelist);
+    scm_portbuffer = (char*)malloc(sizeof(char) * PORTBUFFER_SIZE + 1);
 
 #if SCM_USE_VALUECONS
     /*
@@ -289,6 +290,7 @@ void SigScm_FinalizeStorage(void)
     finalize_heap();
     finalize_symbol_hash();
     finalize_protected_var();
+    free(scm_portbuffer);
 }
 
 static void *malloc_aligned(size_t size)
@@ -844,16 +846,12 @@ static int fileport_getc(ScmObj port)
     return c;
 }
 
-static void fileport_print(ScmObj port, const char *str, ...)
+static void fileport_print(ScmObj port, const char *str)
 {
-    va_list va;
-
-    va_start(va, str);
-    vfprintf(SCM_PORT_FILE(port), str, va);
-    va_end(va);
+    fprintf(SCM_PORT_FILE(port), str);
 }
 
-ScmObj Scm_NewStringPort(const char *str)
+ScmObj Scm_NewStringPort(const char *str, enum ScmPortDirection pdirection)
 {
     ScmObj obj = SCM_FALSE;
     ScmPortInfo *pinfo = (ScmPortInfo *)malloc(sizeof(ScmPortInfo));
@@ -861,13 +859,17 @@ ScmObj Scm_NewStringPort(const char *str)
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_PORT(obj);
-    SCM_PORT_SET_PORTDIRECTION(obj, PORT_INPUT);
+    SCM_PORT_SET_PORTDIRECTION(obj, pdirection);
     
     SCM_PORT_SET_PORTINFO(obj, pinfo);
     SCM_PORT_SET_PORTTYPE(obj, PORT_STRING);
-    SCM_PORT_SET_STR(obj, strdup(str));
+    if (str)
+        SCM_PORT_SET_STR(obj, strdup(str));
+    else
+        SCM_PORT_SET_STR(obj, NULL);
     SCM_PORT_SET_STR_CURRENTPOS(obj, SCM_PORT_STR(obj));
     SCM_PORT_SET_GETC_FUNC(obj, stringport_getc);
+    SCM_PORT_SET_PRINT_FUNC(obj, stringport_print);
     SCM_PORT_SET_UNGOTTENCHAR(obj, 0);
 
     return obj;
@@ -887,9 +889,31 @@ static int stringport_getc(ScmObj port)
     return c;
 }
 
-static void stringport_print(ScmObj port, const char *str, ...)
+static void stringport_print(ScmObj port, const char *str)
 {
-    /* not implemented yet */
+    char *p = NULL;
+    char *str_start = SCM_PORT_STR(port);
+    int newstr_len = strlen(str);
+    int oldstr_len = 0;
+    int newsize    = 0;
+    int curpos     = 0;
+
+    /* set "newsize", "curpos" and "oldstr_len" */
+    if (str_start) {
+        oldstr_len = strlen(str_start);
+        newsize    = newstr_len + oldstr_len;
+        curpos     = SCM_PORT_STR_CURRENTPOS(port) - str_start;
+    } else {
+        newsize = newstr_len;
+        curpos  = 0;
+    }
+
+    p = (char *)realloc(str_start, newsize + 1);
+    p[newsize] = '0';
+    snprintf(p + oldstr_len, newstr_len + 1, "%s", str);
+
+    SCM_PORT_SET_STR(port, p);
+    SCM_PORT_SET_STR_CURRENTPOS(port, p + curpos);
 }
 
 ScmObj Scm_NewContinuation(void)

@@ -125,6 +125,18 @@ extern "C" {
 
 #endif /* SCM_GCC4_READY_GC */
 
+
+/*
+ * Port I/O Handling macros
+ */
+#define SCM_PORT_GETC(port, c)                  \
+    (c = SCM_PORT_GETC_FUNC(port)(port))
+#define SCM_PORT_UNGETC(port,c)                 \
+    (SCM_PORT_SET_UNGOTTENCHAR(port, c))
+#define SCM_PORT_PRINT(port, str)               \
+    (SCM_PORT_PRINT_FUNC(port)(port, str))
+
+
 /*=======================================
    Struct Declarations
 =======================================*/
@@ -329,7 +341,7 @@ ScmObj Scm_NewFunc(enum ScmFuncTypeCode type, ScmFuncType func);
 ScmObj Scm_NewClosure(ScmObj exp, ScmObj env);
 ScmObj Scm_NewVector(ScmObj *vec, int len);
 ScmObj Scm_NewFilePort(FILE *file, const char *filename, enum ScmPortDirection pdireciton);
-ScmObj Scm_NewStringPort(const char *str);  /* input only? */
+ScmObj Scm_NewStringPort(const char *str, enum ScmPortDirection pdirection);
 ScmObj Scm_NewContinuation(void);
 #if !SCM_USE_VALUECONS
 ScmObj Scm_NewValuePacket(ScmObj values);
@@ -628,6 +640,13 @@ ScmObj ScmOp_SRFI1_concatenate(ScmObj args);
 /* operations-srfi2.c */
 void   SigScm_Initialize_SRFI2(void);
 ScmObj ScmOp_SRFI2_and_let_star(ScmObj claws, ScmObj body, ScmEvalState *eval_state);
+#endif
+#if SCM_USE_SRFI6
+/* operations-srfi6.c */
+void   SigScm_Initialize_SRFI6(void);
+ScmObj ScmOp_SRFI6_open_input_string(ScmObj str);
+ScmObj ScmOp_SRFI6_open_output_string(void);
+ScmObj ScmOp_SRFI6_get_output_string(ScmObj port);
 #endif
 #if SCM_USE_SRFI8
 /* operations-srfi8.c */

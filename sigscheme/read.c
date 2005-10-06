@@ -68,11 +68,6 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define SCM_PORT_GETC(port, c)                  \
-    (c = SCM_PORT_GETC_FUNC(port)(port))
-
-#define SCM_PORT_UNGETC(port,c)                 \
-    (SCM_PORT_SET_UNGOTTENCHAR(port, c))
 
 /*=======================================
   Variable Declarations

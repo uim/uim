@@ -1890,6 +1890,9 @@ ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest)
 #if SCM_USE_SRFI2
 #include "operations-srfi2.c"
 #endif
+#if SCM_USE_SRFI6
+#include "operations-srfi6.c"
+#endif
 #if SCM_USE_SRFI8
 #include "operations-srfi8.c"
 #endif

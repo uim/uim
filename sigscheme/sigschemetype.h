@@ -118,7 +118,7 @@ struct _ScmPortInfo {
     } info;
 
     int  (*getc_func) (ScmObj port);
-    void (*print_func) (ScmObj port, const char* str, ...);    
+    void (*print_func) (ScmObj port, const char* str);    
     int ungottenchar;
 };
 
