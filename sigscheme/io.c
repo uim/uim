@@ -55,6 +55,7 @@
 =======================================*/
 ScmObj scm_current_input_port   = NULL;
 ScmObj scm_current_output_port  = NULL;
+ScmObj scm_current_error_port  = NULL;
 
 ScmObj SigScm_features      = NULL;
 

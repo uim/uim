@@ -58,7 +58,6 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-ScmObj scm_current_error_port  = NULL;
 
 /*=======================================
   File Local Function Declarations
