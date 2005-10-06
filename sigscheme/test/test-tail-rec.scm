@@ -680,6 +680,15 @@
           (lambda (dummy1 dummy2 n)
             (rec-call-with-values (- n 1)))))))
 
+(define rec-call-with-values-2
+  (lambda (n)
+    (letrec ((producer (lambda ()
+                         (if (zero? n)
+                             (values values (lambda () 'succeeded))
+                             (begin (set! n (- n 1))
+                                    (values producer call-with-values))))))
+      (call-with-values producer call-with-values))))
+
 (define rec-receive
   (lambda (n)
     (if (zero? n)
@@ -978,6 +987,11 @@
 (assert-equal? "proper tail recursion by call-with-values"
                'succeeded
                (rec-call-with-values explosive-count))
+
+;; call-with-values
+(assert-equal? "proper tail recursion by call-with-values (2)"
+               'succeeded
+               (rec-call-with-values-2 explosive-count))
 
 ;; receive
 (assert-equal? "proper tail recursion by receive"
