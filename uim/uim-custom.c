@@ -133,12 +133,10 @@ static uim_bool uim_custom_load_group(const char *group);
 static uim_bool uim_custom_save_group(const char *group);
 
 #if UIM_SCM_GCC4_READY_GC
-static UIM_SCM_GC_PROTECTED_FUNC_DECL(char *, literalize_string_internal,
-				      (const char *str));
-static UIM_SCM_GC_PROTECTED_FUNC_DECL(uim_bool, custom_cb_add_internal,
-				      (const char *hook, const char *validator,
+static char *literalize_string_internal(const char *str);
+static uim_bool custom_cb_add_internal(const char *hook, const char *validator,
 				       const char *custom_sym, void *ptr,
-				       const char *gate_func, void (*cb)(void)));
+				       const char *gate_func, void (*cb)(void));
 #endif
 
 static const char str_list_arg[] = "uim-custom-c-str-list-arg";
@@ -154,7 +152,7 @@ literalize_string(const char *str)
 {
   char *ret;
 
-  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, literalize_string_internal, (str));
+  UIM_SCM_GC_PROTECTED_CALL(ret, char *, literalize_string_internal, (str));
 
   return ret;
 }
@@ -1413,9 +1411,8 @@ custom_cb_add(const char *hook, const char *validator,
 {
   uim_bool ret;
 
-  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, custom_cb_add_internal,
-				 (hook, validator, custom_sym, ptr, gate_func,
-				  cb));
+  UIM_SCM_GC_PROTECTED_CALL(ret, uim_bool, custom_cb_add_internal,
+			    (hook, validator, custom_sym, ptr, gate_func, cb));
 
   return ret;
 }

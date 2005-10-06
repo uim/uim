@@ -59,9 +59,7 @@ static uim_lisp uim_editline_readline(void);
 static char *prompt(EditLine *e);
 
 #if UIM_SCM_GCC4_READY_GC
-static UIM_SCM_GC_PROTECTED_FUNC_DECL(uim_lisp,
-				      uim_editline_readline_internal,
-				      (void));
+static uim_lisp uim_editline_readline_internal(void);
 #endif
 
 void
@@ -92,7 +90,7 @@ uim_editline_readline(void)
 {
   uim_lisp ret;
 
-  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, uim_editline_readline_internal, ());
+  UIM_SCM_GC_PROTECTED_CALL(ret, uim_lisp, uim_editline_readline_internal, ());
 
   return ret;
 }

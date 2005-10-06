@@ -77,27 +77,13 @@ typedef void (*uim_func_ptr)(void);
 
 #if UIM_SCM_GCC4_READY_GC
 /*
- * Variables for ensuring that some function calls be uninlined, to against
- * variable reordering on a stack frame performed in some compilers as
- * anti-stack smashing or optimization. Don't access these variables directly.
+ * The variable to ensure that a call of uim_scm_gc_protect_stack() is
+ * uninlined in portable way through (*f)().
  *
- * Exporting the variables as global symbol ensures that a expression (*f)() is
- * certainly real function call since the variables can be updated from outside
- * of libuim. Therefore, be avoid making the variables static by combining
- * libuim into other codes which enables function inlining for them.
- *
- * Although the volatile qualifier is sufficient to prohibit inlining in
- * ordinary situation, some aggressive (or buggy) compiler may optimize the
- * constraint out when producing self-completed single executable. So I decided
- * that performs both following method as double-insurance.
- *
- *   1. export the variables as global symbol
- *   2. qualify the variables volatile
- *
- *   -- YamaKen 2005-10-04
+ * Don't access this variables directly. Use
+ * UIM_SCM_GC_PROTECTED_CALL*() instead.
  */
 extern uim_lisp *(*volatile uim_scm_gc_protect_stack_ptr)(void);
-extern volatile uim_func_ptr uim_scm_uninlined_func_ptr;
 #endif /* UIM_SCM_GCC4_READY_GC */
 
 
@@ -123,39 +109,34 @@ uim_scm_set_lib_path(const char *path);
 #define UIM_SCM_NOINLINE
 #endif /* __GNUC__ */
 
-#define UIM_SCM_GC_PROTECTED_FUNC_T(func) uim_scm_gc_protected_type__##func
-
-#define UIM_SCM_GC_PROTECTED_FUNC_DECL(ret_type, func, args)                 \
-    ret_type func args UIM_SCM_NOINLINE;                                     \
-    typedef ret_type (*UIM_SCM_GC_PROTECTED_FUNC_T(func)) args
-
-#define UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, func, args)                      \
-    UIM_SCM_GC_CALL_PROTECTED_FUNC_INTERNAL(ret = , func, args)
-
-#define UIM_SCM_GC_CALL_PROTECTED_VOID_FUNC(func, args)                      \
-    UIM_SCM_GC_CALL_PROTECTED_FUNC_INTERNAL((void), func, args)
-
 /*
- * Although the volatile qualifier of the 'fp' can remove
- * uim_scm_uninlined_func_ptr, I do it as triple insurance for anti aggressive
- * optimization (including optimizer bugs) -- YamaKen 2005-10-04
+ * Function caller with protecting lisp objects on stack from GC
+ *
+ * The protection is safe against with variable reordering on a stack
+ * frame performed in some compilers as anti-stack smashing or
+ * optimization.
  */
-#define UIM_SCM_GC_CALL_PROTECTED_FUNC_INTERNAL(exp_ret, func, args)         \
+#define UIM_SCM_GC_PROTECTED_CALL(ret, ret_type, func, args)                 \
+    UIM_SCM_GC_PROTECTED_CALL_INTERNAL(ret = , ret_type, func, args)
+
+#define UIM_SCM_GC_PROTECTED_CALL_VOID(func, args)                           \
+    UIM_SCM_GC_PROTECTED_CALL_INTERNAL((void), void, func, args)
+
+#define UIM_SCM_GC_PROTECTED_CALL_INTERNAL(exp_ret, ret_type, func, args)    \
     do {                                                                     \
-        volatile UIM_SCM_GC_PROTECTED_FUNC_T(func) fp;                       \
+        /* ensure that func is uninlined */                                  \
+        ret_type (*volatile fp)() = (ret_type (*)())&func;                   \
         uim_lisp *stack_start;                                               \
                                                                              \
+        if (0) exp_ret func args;  /* compile-time type check */             \
         stack_start = uim_scm_gc_protect_stack();                            \
-        /* ensure that func is uninlined */                                  \
-        uim_scm_uninlined_func_ptr = (uim_func_ptr)&func;                    \
-        fp = (UIM_SCM_GC_PROTECTED_FUNC_T(func))uim_scm_uninlined_func_ptr;  \
         exp_ret (*fp)args;                                                   \
         uim_scm_gc_unprotect_stack(stack_start);                             \
     } while (/* CONSTCOND */ 0)
 
 /*
  * Ordinary programs should not call these functions directly. Use
- * UIM_SCM_GC_CALL_PROTECTED_*FUNC() instead.
+ * UIM_SCM_GC_PROTECTED_CALL*() instead.
  */
 #ifdef __GNUC__
 #define uim_scm_gc_protect_stack uim_scm_gc_protect_stack_internal

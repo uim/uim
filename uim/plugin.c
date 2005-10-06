@@ -68,9 +68,8 @@ static int debug_plugin = DEBUG;
 #endif
 
 #if UIM_SCM_GCC4_READY_GC
-static UIM_SCM_GC_PROTECTED_FUNC_DECL(uim_lisp, plugin_unload_internal,
-				      (uim_lisp _name));
-static UIM_SCM_GC_PROTECTED_FUNC_DECL(void, uim_quit_plugin_internal, (void));
+static uim_lisp plugin_unload_internal(uim_lisp _name);
+static void uim_quit_plugin_internal(void);
 #endif
 
 
@@ -199,7 +198,7 @@ plugin_unload(uim_lisp _name)
 {
   uim_lisp ret;
 
-  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, plugin_unload_internal, (_name));
+  UIM_SCM_GC_PROTECTED_CALL(ret, uim_lisp, plugin_unload_internal, (_name));
 
   return ret;
 }
@@ -258,7 +257,7 @@ void
 uim_quit_plugin(void)
 #if UIM_SCM_GCC4_READY_GC
 {
-  UIM_SCM_GC_CALL_PROTECTED_VOID_FUNC(uim_quit_plugin_internal, ());
+  UIM_SCM_GC_PROTECTED_CALL_VOID(uim_quit_plugin_internal, ());
 }
 
 static void
