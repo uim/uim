@@ -997,7 +997,7 @@ ScmObj ScmOp_assq(ScmObj obj, ScmObj alist)
         tmpobj = CAR(tmp_lst);
         car = CAR(tmpobj);
 #if SCM_STRICT_R5RS
-        ASSRERT_CONSP(tmpobj);
+        ASSERT_CONSP(tmpobj);
         if (EQ(CAR(tmpobj), obj))
             return tmpobj;
 #else
