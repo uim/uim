@@ -64,12 +64,9 @@ extern ScmObj *scm_stack_start_pointer;
 extern struct trace_frame *scm_trace_root;
 
 /* error.c*/
-extern ScmObj scm_std_error_port;
 extern ScmObj scm_current_error_port;
 
 /* io.c */
-extern ScmObj scm_std_input_port;
-extern ScmObj scm_std_output_port;
 extern ScmObj scm_current_input_port;
 extern ScmObj scm_current_output_port;
 extern ScmObj SigScm_features;

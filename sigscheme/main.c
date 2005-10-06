@@ -87,7 +87,7 @@ static void repl(void)
 #endif
         printf("sscm> ");
 
-    while (s_exp = SigScm_Read(scm_std_input_port), !EOFP(s_exp)) {
+    while (s_exp = SigScm_Read(scm_current_input_port), !EOFP(s_exp)) {
         result = EVAL(s_exp, SCM_INTERACTION_ENV);
 #if SCM_COMPAT_SIOD
         if (FALSEP(ScmOp_providedp(siod_str))
@@ -95,9 +95,9 @@ static void repl(void)
 #endif
         {
 #if SCM_USE_SRFI38
-            SigScm_WriteToPortWithSharedStructure(scm_std_output_port, result);
+            SigScm_WriteToPortWithSharedStructure(scm_current_output_port, result);
 #else
-            SigScm_WriteToPort(scm_std_output_port, result);
+            SigScm_WriteToPort(scm_current_output_port, result);
 #endif
             printf("\n");
         }

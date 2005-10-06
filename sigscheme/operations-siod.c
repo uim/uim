@@ -77,6 +77,9 @@ static const int sscm_debug_mask_tbl[] = {
 };
 static long sscm_verbose_level = 0;
 
+static ScmObj saved_output_port  = NULL;
+static ScmObj saved_error_port  = NULL;
+
 /*=======================================
   File Local Function Declarations
 =======================================*/
@@ -105,6 +108,11 @@ void SigScm_Initialize_SIOD(void)
     Scm_RegisterProcedureFixedTailRec0("the-environment" , ScmOp_the_environment);
     Scm_RegisterProcedureFixed1("%%closure-code"       , ScmOp_closure_code);
     Scm_RegisterProcedureVariadic0("verbose" , ScmOp_verbose);
+
+    saved_output_port = NULL;
+    saved_error_port  = NULL;
+    SigScm_GC_Protect(&saved_output_port);
+    SigScm_GC_Protect(&saved_error_port);
 
     SigScm_SetVerboseLevel(2);
 }
@@ -213,12 +221,15 @@ void SigScm_SetVerboseLevel(long level)
                                   | SigScm_PredefinedDebugCategories());
 
     if (level == 0) {
+        saved_error_port = scm_current_error_port;
+        saved_output_port = scm_current_output_port;
+
         scm_current_error_port = NULL;
         scm_current_output_port = NULL;
     } else {
         if (!scm_current_error_port)
-            scm_current_error_port = scm_std_error_port;
+            scm_current_error_port = saved_error_port;
         if (!scm_current_output_port)
-            scm_current_output_port = scm_std_output_port;
+            scm_current_output_port = saved_output_port;
     }
 }
