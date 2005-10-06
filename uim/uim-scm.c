@@ -579,42 +579,49 @@ uim_scm_require_file_internal(const char *fn)
   return UIM_TRUE;
 }
 
+typedef ScmObj (*ScmProcedureFixed0)(void);
+typedef ScmObj (*ScmProcedureFixed1)(ScmObj arg1);
+typedef ScmObj (*ScmProcedureFixed2)(ScmObj arg1, ScmObj arg2);
+typedef ScmObj (*ScmProcedureFixed3)(ScmObj arg1, ScmObj arg2, ScmObj arg3);
+typedef ScmObj (*ScmProcedureFixed4)(ScmObj arg1, ScmObj arg2, ScmObj arg3, ScmObj arg4);
+typedef ScmObj (*ScmProcedureFixed5)(ScmObj arg1, ScmObj arg2, ScmObj arg3, ScmObj arg4, ScmObj arg5);
+
 void
 uim_scm_init_subr_0(const char *name, uim_lisp (*func)(void))
 {
-  Scm_RegisterProcedureFixed0(name, (ScmFuncType0)func);
+  Scm_RegisterProcedureFixed0(name, (ScmProcedureFixed0)func);
 }
 
 void
 uim_scm_init_subr_1(const char *name, uim_lisp (*func)(uim_lisp))
 {
-  Scm_RegisterProcedureFixed1(name, (ScmFuncType1)func);
+  Scm_RegisterProcedureFixed1(name, (ScmProcedureFixed1)func);
 }
 
 void
 uim_scm_init_subr_2(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp))
 {
-  Scm_RegisterProcedureFixed2(name, (ScmFuncType2)func);
+  Scm_RegisterProcedureFixed2(name, (ScmProcedureFixed2)func);
 }
 
 void
 uim_scm_init_subr_3(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp))
 {
-  Scm_RegisterProcedureFixed3(name, (ScmFuncType3)func);
+  Scm_RegisterProcedureFixed3(name, (ScmProcedureFixed3)func);
 }
 
 void
 uim_scm_init_subr_4(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
 						uim_lisp))
 {
-  Scm_RegisterProcedureFixed4(name, (ScmFuncType4)func);
+  Scm_RegisterProcedureFixed4(name, (ScmProcedureFixed4)func);
 }
 
 void
 uim_scm_init_subr_5(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
 						uim_lisp, uim_lisp))
 {
-  Scm_RegisterProcedureFixed5(name, (ScmFuncType5)func);
+  Scm_RegisterProcedureFixed5(name, (ScmProcedureFixed5)func);
 }
 
 static void
