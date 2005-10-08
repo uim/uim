@@ -753,6 +753,7 @@ ScmObj Scm_NewStringCopying(const char *str)
 {
     ScmObj obj = SCM_FALSE;
 
+    if (!str) str = "";
     SCM_NEW_OBJ_INTERNAL(obj);
 
     SCM_ENTYPE_STRING(obj);
@@ -848,7 +849,7 @@ static int fileport_getc(ScmObj port)
 
 static void fileport_print(ScmObj port, const char *str)
 {
-    fprintf(SCM_PORT_FILE(port), str);
+    fputs(str, SCM_PORT_FILE(port));
 }
 
 ScmObj Scm_NewStringPort(const char *str, enum ScmPortDirection pdirection)
@@ -893,27 +894,22 @@ static void stringport_print(ScmObj port, const char *str)
 {
     char *p = NULL;
     char *str_start = SCM_PORT_STR(port);
-    int newstr_len = strlen(str);
-    int oldstr_len = 0;
-    int newsize    = 0;
-    int curpos     = 0;
+    int len_delta  = strlen(str);
+    int old_len    = 0;
+    int new_len    = 0;
 
-    /* set "newsize", "curpos" and "oldstr_len" */
-    if (str_start) {
-        oldstr_len = strlen(str_start);
-        newsize    = newstr_len + oldstr_len;
-        curpos     = SCM_PORT_STR_CURRENTPOS(port) - str_start;
-    } else {
-        newsize = newstr_len;
-        curpos  = 0;
-    }
+    if (str_start)
+        old_len = SCM_PORT_STR_CURRENTPOS(port) - str_start;
+    else
+        old_len = 0;
 
-    p = (char *)realloc(str_start, newsize + 1);
-    p[newsize] = '0';
-    snprintf(p + oldstr_len, newstr_len + 1, "%s", str);
+    new_len = old_len + len_delta;
+
+    p = (char *)realloc(str_start, new_len + 1);
+    memcpy(p + old_len, str, len_delta + 1); /* Copy '\0' as well. */
 
     SCM_PORT_SET_STR(port, p);
-    SCM_PORT_SET_STR_CURRENTPOS(port, p + curpos);
+    SCM_PORT_SET_STR_CURRENTPOS(port, p + new_len);
 }
 
 ScmObj Scm_NewContinuation(void)

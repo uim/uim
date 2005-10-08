@@ -49,5 +49,7 @@
 						 (write (car x) q)
 						 (write (cdr x) q)
 						 (get-output-string q)))
+(assert-equal? "output string test 2" "" (get-output-string
+                                          (open-output-string)))
 
 (total-report)
