@@ -292,6 +292,7 @@ static void print_char(ScmObj port, ScmObj obj, enum OutputType otype)
 {
     switch (otype) {
     case AS_WRITE:
+        /* FIXME: Simplify with Scm_special_char_table */
         /*
          * in write, character objects are written using the #\ notation.
          */
@@ -333,6 +334,7 @@ static void print_string(ScmObj port, ScmObj obj, enum OutputType otype)
          */
         SCM_PORT_PRINT(port, "\""); /* first doublequote */
         for (i = 0; i < size; i++) {
+            /* FIXME: Simplify with Scm_special_char_table */
             c = str[i];
             switch (c) {
             case '\"': SCM_PORT_PRINT(port, "\\\""); break;

@@ -60,6 +60,33 @@ ScmObj SigScm_features      = NULL;
 
 static const char *lib_path = NULL;
 
+const ScmSpecialCharInfo Scm_special_char_table[] = {
+    /* printable characters */
+    {'\"',   "\\\"",  "\""},
+    {'\\',   "\\\\",  "\\"},
+    {' ',    " ",     "space"},  /* R5RS */
+#if 0
+    /* to avoid portability problem, we should not support #\Space and so on */
+    {' ',    " ",     "Space"},
+#endif
+
+    /* control characters */
+    {'\n',   "\\n",   "newline"},  /* R5RS */
+#if SCM_USE_SRFI75_NAMED_CHARS
+    {'\0',   "\\0",   "nul"},
+    {'\a',   "\\a",   "alarm"},
+    {'\b',   "\\b",   "backspace"},
+    {'\t',   "\\t",   "tab"},
+    {'\n',   "\\n",   "linefeed"},
+    {'\v',   "\\v",   "vtab"},
+    {'\f',   "\\f",   "page"},
+    {'\r',   "\\r",   "return"},
+    {'\x1b', "\\x1b", "esc"},
+    {'\x7f', "\\x7f", "delete"},
+#endif /* SCM_USE_SRFI75_NAMED_CHARS */
+    {0, NULL, NULL}
+};
+
 /*=======================================
   File Local Function Declarations
 =======================================*/

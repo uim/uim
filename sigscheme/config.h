@@ -48,6 +48,7 @@
 #define SCM_USE_SRFI34          1  /* use SRFI-34 exception handling for programs */
 #define SCM_USE_SRFI38          1  /* use SRFI-38 'write-with-shared-structure' */
 #define SCM_USE_SRFI60          1  /* use SRFI-60 integers as bits */
+#define SCM_USE_SRFI75_NAMED_CHARS 1  /* use named characters of SRFI-75 R6RS unicode data */
 
 #define SCM_COMPAT_SIOD         1  /* use SIOD compatible features */
 #define SCM_COMPAT_SIOD_BUGS    1  /* emulate the buggy behaviors of SIOD */

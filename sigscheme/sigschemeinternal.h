@@ -45,13 +45,20 @@
 #include "sigscheme.h"
 
 /*=======================================
-   Struct Declarations
+   Type Definitions
 =======================================*/
 /* for debugging */
 struct trace_frame {
     struct trace_frame *prev;
     ScmObj obj;
     ScmObj env;    
+};
+
+typedef struct ScmSpecialCharInfo_ ScmSpecialCharInfo;
+struct ScmSpecialCharInfo_ {
+    unsigned int code;    /* character code as ASCII/Unicode */
+    const char *esc_seq;  /* escape sequence as string */
+    const char *lex_rep;  /* lexical representation as character object */
 };
 
 /*=======================================
@@ -68,6 +75,7 @@ extern ScmObj scm_current_input_port;
 extern ScmObj scm_current_output_port;
 extern ScmObj scm_current_error_port;
 extern ScmObj SigScm_features;
+extern const ScmSpecialCharInfo Scm_special_char_table[];
 
 /* datas.c */
 #if SCM_USE_VALUECONS

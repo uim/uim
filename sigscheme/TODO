@@ -14,6 +14,8 @@ Requirements and bugs:
     API for such purpose is existing, use it
   - [uim] Implement string-escape as same as trunk
 
+* Add integer->char and char->integer procedures
+
 * Fix invalid storage model assumption of ScmOp_append() and qquote_internal()
   with ScmRef
 
@@ -47,6 +49,8 @@ Logical simplifications:
   NO_MORE_ARG macros in all procedure and syntaxes
 
 * Replace all Scm_ErrorObj() in procedures and syntaxes with ERR_OBJ
+
+* Simplify special character handlings with Scm_special_char_table
 
 * Reorganize SCM_SHIFT*() macros to complement POP_ARG() macro
 

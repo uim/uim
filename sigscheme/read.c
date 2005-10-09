@@ -295,6 +295,7 @@ static ScmObj read_char(ScmObj port)
 
     CDBG((SCM_DBG_PARSER, "read_char : ch = %s", ch));
 
+    /* FIXME: Simplify with Scm_special_char_table */
     /* check special sequence "space" and "newline" */
     if (strcmp(ch, "space") == 0) {
         ch[0] = ' ';
@@ -338,6 +339,7 @@ static ScmObj read_string(ScmObj port)
             return Scm_NewStringCopying(stringbuf);
 
         case '\\':
+            /* FIXME: Simplify with Scm_special_char_table */
             /*
              * (R5RS) 6.3.5 String
              * A double quote can be written inside a string only by
