@@ -51,7 +51,7 @@ int main(void)
 
 static ScmObj check_int(void)
 {
-    ScmObj var = (void*)0;
+    ScmObj var;
 
     /* entyping */
     SCM_ENTYPE_INT(var);

@@ -71,7 +71,7 @@
  *
  * (4) if S == "...11G", S is other types. Type is separated by the
  *     value of least n bits of S->Y. Anyway, G-bit of S-Y is always
- *     0 for sweeping phase..
+ *     1 for sweeping phase..
  *
  *        S->Y        Type
  *     ...0000|1 : Symbol
@@ -135,7 +135,7 @@ struct ScmCell_ {
 
 #define SCM_S_IMMEDIATE_TYPEBITS(a)             (((unsigned int)(a)) >> 3)
 #define SCM_S_OTHERS_TYPEBITS(a)                (((unsigned int)((a)->Y)) >> 1)
-#define SCM_S_ENTYPE_IMMEDIATE_TYPEBITS(a, val) ((a) = (ScmObj)(((unsigned int)(a)) | ((val & 0x1f) << 3)))
+#define SCM_S_ENTYPE_IMMEDIATE_TYPEBITS(a, val) ((a) = (ScmObj)(((unsigned int)(a)) | (val << 3)))
 #define SCM_S_ENTYPE_OTHERS_TYPEBITS(a, val)    ((a)->Y = (ScmObj)(((unsigned int)((a)->Y)) | ((val & 0xf) << 1)))
 
 #define SCM_S_ENTYPE_IMMEDIATE_VAL(a, val) (SCM_S_ENTYPE_IMMEDIATE(a), SCM_S_ENTYPE_IMMEDIATE_TYPEBITS(a, val))
@@ -177,28 +177,29 @@ struct ScmCell_ {
 #define SCM_C_FUNCPOINTERP(a)    (SCM_S_OTHERSP(a) && SCM_S_OTHERS_TYPEBITS(a) == 0x9) 
 
 /* Entyping Macros */
-#define SCM_ENTYPE_INT(a)             (SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x1))
-#define SCM_ENTYPE_CHAR(a)            (SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x2))
-#define SCM_ENTYPE_FALSE(a)           (SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x0))
-#define SCM_ENTYPE_TRUE(a)            (SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x2))
-#define SCM_ENTYPE_NULL(a)            (SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x4))
-#define SCM_ENTYPE_EOF(a)             (SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x6))
-#define SCM_ENTYPE_QUOTE(a)           (SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x8))
-#define SCM_ENTYPE_QUASIQUOTE(a)      (SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0xa))
-#define SCM_ENTYPE_UNQUOTE(a)         (SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0xc))
-#define SCM_ENTYPE_UNQUOTESPLICING(a) (SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0xe))
-#define SCM_ENTYPE_UNBOUND(a)         (SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0xf))
-#define SCM_ENTYPE_UNDEF(a)           (SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0xf2))
-#define SCM_ENTYPE_SYMBOL(a)          (SCM_S_ENTYPE_OTHERS_VAL(a, 0x0))
-#define SCM_ENTYPE_STRING(a)          (SCM_S_ENTYPE_OTHERS_VAL(a, 0x1))
-#define SCM_ENTYPE_FUNC(a)            (SCM_S_ENTYPE_OTHERS_VAL(a, 0x2))
-#define SCM_ENTYPE_VECTOR(a)          (SCM_S_ENTYPE_OTHERS_VAL(a, 0x03))
-#define SCM_ENTYPE_PORT(a)            (SCM_S_ENTYPE_OTHERS_VAL(a, 0x04))
-#define SCM_ENTYPE_CONTINUATION(a)    (SCM_S_ENTYPE_OTHERS_VAL(a, 0x05))
-#define SCM_ENTYPE_VALUES(a)          (SCM_S_ENTYPE_OTHERS_VAL(a, 0x06))
-#define SCM_ENTYPE_FREECELL(a)        (SCM_S_ENTYPE_OTHERS_VAL(a, 0x07))
-#define SCM_ENTYPE_C_POINTER(a)       (SCM_S_ENTYPE_OTHERS_VAL(a, 0x08))
-#define SCM_ENTYPE_C_FUNC_POINTER(a)  (SCM_S_ENTYPE_OTHERS_VAL(a, 0x09))
+#define SCM_CLEAR(a)                  (a = (void*)0)
+#define SCM_ENTYPE_INT(a)             (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x1))
+#define SCM_ENTYPE_CHAR(a)            (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x2))
+#define SCM_ENTYPE_FALSE(a)           (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x0))
+#define SCM_ENTYPE_TRUE(a)            (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x2))
+#define SCM_ENTYPE_NULL(a)            (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x4))
+#define SCM_ENTYPE_EOF(a)             (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x6))
+#define SCM_ENTYPE_QUOTE(a)           (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x8))
+#define SCM_ENTYPE_QUASIQUOTE(a)      (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0xa))
+#define SCM_ENTYPE_UNQUOTE(a)         (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0xc))
+#define SCM_ENTYPE_UNQUOTESPLICING(a) (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0xe))
+#define SCM_ENTYPE_UNBOUND(a)         (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0xf))
+#define SCM_ENTYPE_UNDEF(a)           (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0xf2))
+#define SCM_ENTYPE_SYMBOL(a)          (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x0))
+#define SCM_ENTYPE_STRING(a)          (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x1))
+#define SCM_ENTYPE_FUNC(a)            (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x2))
+#define SCM_ENTYPE_VECTOR(a)          (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x03))
+#define SCM_ENTYPE_PORT(a)            (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x04))
+#define SCM_ENTYPE_CONTINUATION(a)    (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x05))
+#define SCM_ENTYPE_VALUES(a)          (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x06))
+#define SCM_ENTYPE_FREECELL(a)        (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x07))
+#define SCM_ENTYPE_C_POINTER(a)       (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x08))
+#define SCM_ENTYPE_C_FUNC_POINTER(a)  (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x09))
 
 /* Real Accessors */
 #define SCM_INT_VALUE(a)              (((int)SCM_AS_INT(a)) >> 5)
