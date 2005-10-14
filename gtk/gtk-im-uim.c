@@ -667,7 +667,8 @@ im_uim_finalize(GObject *obj)
   }
   if (uic->caret_state_indicator) {
     guint tag = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(uic->caret_state_indicator), "timeout-tag"));
-    g_source_remove(tag);
+    if (tag > 0)
+	g_source_remove(tag);
     gtk_widget_destroy(uic->caret_state_indicator);
     uic->caret_state_indicator = NULL;
   }
