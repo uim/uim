@@ -75,7 +75,7 @@ static const int sscm_debug_mask_tbl[] = {
     SCM_DBG_SIOD_V4,
     SCM_DBG_SIOD_V5
 };
-static long sscm_verbose_level = 0;
+static long sscm_verbose_level = -1;
 
 static ScmObj saved_output_port  = NULL;
 static ScmObj saved_error_port  = NULL;
@@ -210,6 +210,9 @@ void SigScm_SetVerboseLevel(long level)
     if (level < 0)
         SigScm_Error("SigScm_SetVerboseLevel : negative value has been given");
 
+    if (sscm_verbose_level == level)
+	return;
+
     sscm_verbose_level = level;
 
     if (level > 5)
@@ -227,9 +230,9 @@ void SigScm_SetVerboseLevel(long level)
         scm_current_error_port = SCM_FALSE;
         scm_current_output_port = SCM_FALSE;
     } else {
-        if (!scm_current_error_port)
+        if (FALSEP(scm_current_error_port))
             scm_current_error_port = saved_error_port;
-        if (!scm_current_output_port)
+        if (FALSEP(scm_current_output_port))
             scm_current_output_port = saved_output_port;
     }
 }
