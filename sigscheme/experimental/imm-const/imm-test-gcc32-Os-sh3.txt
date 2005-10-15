@@ -1,0 +1,136 @@
+
+imm-test.o:     file format coff-sh
+
+SYMBOL TABLE:
+[  0](sec -2)(fl 0x00)(ty   0)(scl 103) (nx 1) 0x00000000 imm-test.c
+File 
+[  2](sec  1)(fl 0x00)(ty   0)(scl   3) (nx 1) 0x00000000 .text
+AUX scnlen 0xb0 nreloc 1 nlnno 0
+[  4](sec  2)(fl 0x00)(ty   0)(scl   3) (nx 1) 0x000000b0 .data
+AUX scnlen 0x0 nreloc 0 nlnno 0
+[  6](sec  3)(fl 0x00)(ty   0)(scl   3) (nx 1) 0x000000b0 .bss
+AUX scnlen 0x0 nreloc 0 nlnno 0
+[  8](sec  4)(fl 0x00)(ty   0)(scl   3) (nx 1) 0x000000b0 .comment
+AUX scnlen 0x20 nreloc 0 nlnno 0
+[ 10](sec  1)(fl 0x00)(ty   0)(scl   2) (nx 0) 0x00000000 _falsep
+[ 11](sec  1)(fl 0x00)(ty   0)(scl   2) (nx 0) 0x00000008 _ntc_falsep
+[ 12](sec  1)(fl 0x00)(ty   0)(scl   2) (nx 0) 0x0000000e _nullp
+[ 13](sec  1)(fl 0x00)(ty   0)(scl   2) (nx 0) 0x00000016 _ntc_nullp
+[ 14](sec  1)(fl 0x00)(ty   0)(scl   2) (nx 0) 0x0000001e _consp
+[ 15](sec  1)(fl 0x00)(ty   0)(scl   2) (nx 0) 0x00000026 _ntc_consp
+[ 16](sec  1)(fl 0x00)(ty   0)(scl   2) (nx 0) 0x00000038 _memq
+[ 17](sec  1)(fl 0x00)(ty   0)(scl   2) (nx 0) 0x00000052 _ntc_memq
+[ 18](sec  1)(fl 0x00)(ty   0)(scl   2) (nx 0) 0x00000074 _and
+[ 19](sec  1)(fl 0x00)(ty   0)(scl   2) (nx 0) 0x00000090 _ntc_and
+[ 20](sec  0)(fl 0x00)(ty   0)(scl   2) (nx 0) 0x00000004 _scm_ntc_true
+
+
+Disassembly of section .text:
+
+00000000 <_falsep>:
+   0:	60 43       	mov	r4,r0
+   2:	88 06       	cmp/eq	#6,r0
+   4:	00 0b       	rts	
+   6:	00 29       	movt	r0
+
+00000008 <_ntc_falsep>:
+   8:	24 48       	tst	r4,r4
+   a:	00 0b       	rts	
+   c:	00 29       	movt	r0
+
+0000000e <_nullp>:
+   e:	60 43       	mov	r4,r0
+  10:	88 26       	cmp/eq	#38,r0
+  12:	00 0b       	rts	
+  14:	00 29       	movt	r0
+
+00000016 <_ntc_nullp>:
+  16:	60 43       	mov	r4,r0
+  18:	88 02       	cmp/eq	#2,r0
+  1a:	00 0b       	rts	
+  1c:	00 29       	movt	r0
+
+0000001e <_consp>:
+  1e:	60 43       	mov	r4,r0
+  20:	c8 06       	tst	#6,r0
+  22:	00 0b       	rts	
+  24:	00 29       	movt	r0
+
+00000026 <_ntc_consp>:
+  26:	60 43       	mov	r4,r0
+  28:	c8 06       	tst	#6,r0
+  2a:	8f 03       	bf.s	34 <_ntc_consp+0xe>
+  2c:	e1 00       	mov	#0,r1
+  2e:	24 48       	tst	r4,r4
+  30:	89 00       	bt	34 <_ntc_consp+0xe>
+  32:	e1 01       	mov	#1,r1
+  34:	00 0b       	rts	
+  36:	60 13       	mov	r1,r0
+
+00000038 <_memq>:
+  38:	60 53       	mov	r5,r0
+  3a:	c8 06       	tst	#6,r0
+  3c:	8b 06       	bf	4c <_memq+0x14>
+  3e:	61 02       	mov.l	@r0,r1
+  40:	31 40       	cmp/eq	r4,r1
+  42:	8d 04       	bt.s	4e <_memq+0x16>
+  44:	61 03       	mov	r0,r1
+  46:	50 01       	mov.l	@(4,r0),r0
+  48:	c8 06       	tst	#6,r0
+  4a:	89 f8       	bt	3e <_memq+0x6>
+  4c:	e1 06       	mov	#6,r1
+  4e:	00 0b       	rts	
+  50:	60 13       	mov	r1,r0
+
+00000052 <_ntc_memq>:
+  52:	60 53       	mov	r5,r0
+  54:	c8 06       	tst	#6,r0
+  56:	8f 0a       	bf.s	6e <_ntc_memq+0x1c>
+  58:	25 58       	tst	r5,r5
+  5a:	89 08       	bt	6e <_ntc_memq+0x1c>
+  5c:	61 02       	mov.l	@r0,r1
+  5e:	31 40       	cmp/eq	r4,r1
+  60:	8d 06       	bt.s	70 <_ntc_memq+0x1e>
+  62:	61 03       	mov	r0,r1
+  64:	50 01       	mov.l	@(4,r0),r0
+  66:	c8 06       	tst	#6,r0
+  68:	8f 01       	bf.s	6e <_ntc_memq+0x1c>
+  6a:	20 08       	tst	r0,r0
+  6c:	8b f6       	bf	5c <_ntc_memq+0xa>
+  6e:	e1 00       	mov	#0,r1
+  70:	00 0b       	rts	
+  72:	60 13       	mov	r1,r0
+
+00000074 <_and>:
+  74:	60 43       	mov	r4,r0
+  76:	c8 06       	tst	#6,r0
+  78:	8f 06       	bf.s	88 <_and+0x14>
+  7a:	88 06       	cmp/eq	#6,r0
+  7c:	8d 05       	bt.s	8a <_and+0x16>
+  7e:	e1 06       	mov	#6,r1
+  80:	50 01       	mov.l	@(4,r0),r0
+  82:	c8 06       	tst	#6,r0
+  84:	8d fa       	bt.s	7c <_and+0x8>
+  86:	88 06       	cmp/eq	#6,r0
+  88:	91 01       	mov.w	8e <_and+0x1a>,r1	! 0xa6
+  8a:	00 0b       	rts	
+  8c:	60 13       	mov	r1,r0
+  8e:	00 a6       	mov.l	r10,@(r0,r0)
+
+00000090 <_ntc_and>:
+  90:	60 43       	mov	r4,r0
+  92:	c8 06       	tst	#6,r0
+  94:	8f 06       	bf.s	a4 <_ntc_and+0x14>
+  96:	24 48       	tst	r4,r4
+  98:	89 04       	bt	a4 <_ntc_and+0x14>
+  9a:	50 01       	mov.l	@(4,r0),r0
+  9c:	c8 06       	tst	#6,r0
+  9e:	8f 01       	bf.s	a4 <_ntc_and+0x14>
+  a0:	20 08       	tst	r0,r0
+  a2:	8b fa       	bf	9a <_ntc_and+0xa>
+  a4:	d1 01       	mov.l	ac <_ntc_and+0x1c>,r1	! 0x0
+  a6:	00 0b       	rts	
+  a8:	60 12       	mov.l	@r1,r0
+  aa:	00 09       	nop	
+  ac:	00 00       	.word 0x0000
+	...

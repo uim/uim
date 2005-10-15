@@ -1,0 +1,140 @@
+
+imm-test.o:     file format elf32-bigmips
+
+SYMBOL TABLE:
+00000000 l    d  .text	00000000 
+00000000 l    d  .data	00000000 
+00000000 l    d  .bss	00000000 
+00000000 l    d  .mdebug.abi32	00000000 
+00000000 l    d  .reginfo	00000000 
+00000000 l    d  .pdr	00000000 
+00000000 l    df *ABS*	00000000 imm-test.c
+00000000 g     F .text	00000000 0xf0 falsep
+0000000c g     F .text	00000000 0xf0 ntc_falsep
+00000014 g     F .text	00000000 0xf0 nullp
+00000020 g     F .text	00000000 0xf0 ntc_nullp
+0000002c g     F .text	00000000 0xf0 consp
+00000038 g     F .text	00000000 0xf0 ntc_consp
+00000048 g     F .text	00000000 0xf0 memq
+00000064 g     F .text	00000000 0xf0 ntc_memq
+00000084 g     F .text	00000000 0xf0 and
+000000a0 g     F .text	00000000 0xf0 ntc_and
+00000004       O *COM*	00000004 scm_ntc_true
+
+
+Disassembly of section .text:
+
+00000000 <falsep>:
+   0:	6a06      	li	v0,6
+   2:	ec4e      	xor	a0,v0
+   4:	5c01      	sltiu	a0,1
+   6:	e820      	jr	ra
+   8:	6758      	move	v0,t8
+	...
+
+0000000c <ntc_falsep>:
+   c:	5c01      	sltiu	a0,1
+   e:	e820      	jr	ra
+  10:	6758      	move	v0,t8
+	...
+
+00000014 <nullp>:
+  14:	6a26      	li	v0,38
+  16:	ec4e      	xor	a0,v0
+  18:	5c01      	sltiu	a0,1
+  1a:	e820      	jr	ra
+  1c:	6758      	move	v0,t8
+	...
+
+00000020 <ntc_nullp>:
+  20:	6a02      	li	v0,2
+  22:	ec4e      	xor	a0,v0
+  24:	5c01      	sltiu	a0,1
+  26:	e820      	jr	ra
+  28:	6758      	move	v0,t8
+	...
+
+0000002c <consp>:
+  2c:	6a06      	li	v0,6
+  2e:	ea8c      	and	v0,a0
+  30:	5a01      	sltiu	v0,1
+  32:	e820      	jr	ra
+  34:	6758      	move	v0,t8
+	...
+
+00000038 <ntc_consp>:
+  38:	6a06      	li	v0,6
+  3a:	ea8c      	and	v0,a0
+  3c:	6b00      	li	v1,0
+  3e:	2a02      	bnez	v0,44 <ntc_consp+0xc>
+  40:	2401      	beqz	a0,44 <ntc_consp+0xc>
+  42:	6b01      	li	v1,1
+  44:	e820      	jr	ra
+  46:	6743      	move	v0,v1
+
+00000048 <memq>:
+  48:	6a06      	li	v0,6
+  4a:	eaac      	and	v0,a1
+  4c:	2a08      	bnez	v0,5e <memq+0x16>
+  4e:	9d40      	lw	v0,0(a1)
+  50:	6765      	move	v1,a1
+  52:	ea8e      	xor	v0,a0
+  54:	2205      	beqz	v0,60 <memq+0x18>
+  56:	9da1      	lw	a1,4(a1)
+  58:	6a06      	li	v0,6
+  5a:	eaac      	and	v0,a1
+  5c:	22f8      	beqz	v0,4e <memq+0x6>
+  5e:	6b06      	li	v1,6
+  60:	e820      	jr	ra
+  62:	6743      	move	v0,v1
+
+00000064 <ntc_memq>:
+  64:	6a06      	li	v0,6
+  66:	eaac      	and	v0,a1
+  68:	2a0a      	bnez	v0,7e <ntc_memq+0x1a>
+  6a:	2509      	beqz	a1,7e <ntc_memq+0x1a>
+  6c:	9d40      	lw	v0,0(a1)
+  6e:	6765      	move	v1,a1
+  70:	ea8e      	xor	v0,a0
+  72:	2206      	beqz	v0,80 <ntc_memq+0x1c>
+  74:	9da1      	lw	a1,4(a1)
+  76:	6a06      	li	v0,6
+  78:	eaac      	and	v0,a1
+  7a:	2a01      	bnez	v0,7e <ntc_memq+0x1a>
+  7c:	2df7      	bnez	a1,6c <ntc_memq+0x8>
+  7e:	6b00      	li	v1,0
+  80:	e820      	jr	ra
+  82:	6743      	move	v0,v1
+
+00000084 <and>:
+  84:	6a06      	li	v0,6
+  86:	ea8c      	and	v0,a0
+  88:	2a07      	bnez	v0,98 <and+0x14>
+  8a:	7406      	cmpi	a0,6
+  8c:	6a06      	li	v0,6
+  8e:	6005      	bteqz	9a <and+0x16>
+  90:	9c81      	lw	a0,4(a0)
+  92:	6a06      	li	v0,6
+  94:	ea8c      	and	v0,a0
+  96:	22f9      	beqz	v0,8a <and+0x6>
+  98:	6aa6      	li	v0,166
+  9a:	e820      	jr	ra
+  9c:	6500      	nop
+	...
+
+000000a0 <ntc_and>:
+  a0:	6a06      	li	v0,6
+  a2:	ea8c      	and	v0,a0
+  a4:	2a06      	bnez	v0,b2 <ntc_and+0x12>
+  a6:	2405      	beqz	a0,b2 <ntc_and+0x12>
+  a8:	9c81      	lw	a0,4(a0)
+  aa:	6a06      	li	v0,6
+  ac:	ea8c      	and	v0,a0
+  ae:	2a01      	bnez	v0,b2 <ntc_and+0x12>
+  b0:	2cfb      	bnez	a0,a8 <ntc_and+0x8>
+  b2:	675c      	move	v0,gp
+  b4:	f000 9a40 	lw	v0,0(v0)
+  b8:	e820      	jr	ra
+  ba:	6500      	nop
+  bc:	6500      	nop
+  be:	6500      	nop

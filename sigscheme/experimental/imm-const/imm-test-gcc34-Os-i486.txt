@@ -1,0 +1,111 @@
+
+imm-test.o:     file format elf32-i386-freebsd
+
+SYMBOL TABLE:
+00000000 l    df *ABS*	00000000 imm-test.c
+00000000 l    d  .text	00000000 
+00000000 l    d  .data	00000000 
+00000000 l    d  .bss	00000000 
+00000000 l    d  .comment	00000000 
+00000000 g     F .text	0000000b falsep
+0000000b g     F .text	0000000b ntc_falsep
+00000016 g     F .text	0000000b nullp
+00000021 g     F .text	0000000b ntc_nullp
+0000002c g     F .text	0000000b consp
+00000037 g     F .text	00000012 ntc_consp
+00000049 g     F .text	0000001b memq
+00000064 g     F .text	0000001c ntc_memq
+00000080 g     F .text	00000018 and
+00000098 g     F .text	00000017 ntc_and
+00000004       O *COM*	00000004 scm_ntc_true
+
+
+Disassembly of section .text:
+
+00000000 <falsep>:
+   0:	31 c0                	xor    %eax,%eax
+   2:	83 7c 24 04 06       	cmpl   $0x6,0x4(%esp)
+   7:	0f 94 c0             	sete   %al
+   a:	c3                   	ret    
+
+0000000b <ntc_falsep>:
+   b:	31 c0                	xor    %eax,%eax
+   d:	83 7c 24 04 00       	cmpl   $0x0,0x4(%esp)
+  12:	0f 94 c0             	sete   %al
+  15:	c3                   	ret    
+
+00000016 <nullp>:
+  16:	31 c0                	xor    %eax,%eax
+  18:	83 7c 24 04 26       	cmpl   $0x26,0x4(%esp)
+  1d:	0f 94 c0             	sete   %al
+  20:	c3                   	ret    
+
+00000021 <ntc_nullp>:
+  21:	31 c0                	xor    %eax,%eax
+  23:	83 7c 24 04 02       	cmpl   $0x2,0x4(%esp)
+  28:	0f 94 c0             	sete   %al
+  2b:	c3                   	ret    
+
+0000002c <consp>:
+  2c:	31 c0                	xor    %eax,%eax
+  2e:	f6 44 24 04 06       	testb  $0x6,0x4(%esp)
+  33:	0f 94 c0             	sete   %al
+  36:	c3                   	ret    
+
+00000037 <ntc_consp>:
+  37:	8b 54 24 04          	mov    0x4(%esp),%edx
+  3b:	31 c0                	xor    %eax,%eax
+  3d:	f6 c2 06             	test   $0x6,%dl
+  40:	75 06                	jne    48 <ntc_consp+0x11>
+  42:	85 d2                	test   %edx,%edx
+  44:	74 02                	je     48 <ntc_consp+0x11>
+  46:	b0 01                	mov    $0x1,%al
+  48:	c3                   	ret    
+
+00000049 <memq>:
+  49:	8b 54 24 04          	mov    0x4(%esp),%edx
+  4d:	8b 44 24 08          	mov    0x8(%esp),%eax
+  51:	a8 06                	test   $0x6,%al
+  53:	75 09                	jne    5e <memq+0x15>
+  55:	39 10                	cmp    %edx,(%eax)
+  57:	74 0a                	je     63 <memq+0x1a>
+  59:	8b 40 04             	mov    0x4(%eax),%eax
+  5c:	eb f3                	jmp    51 <memq+0x8>
+  5e:	b8 06 00 00 00       	mov    $0x6,%eax
+  63:	c3                   	ret    
+
+00000064 <ntc_memq>:
+  64:	8b 54 24 04          	mov    0x4(%esp),%edx
+  68:	8b 44 24 08          	mov    0x8(%esp),%eax
+  6c:	eb 0b                	jmp    79 <ntc_memq+0x15>
+  6e:	85 c0                	test   %eax,%eax
+  70:	74 0b                	je     7d <ntc_memq+0x19>
+  72:	39 10                	cmp    %edx,(%eax)
+  74:	74 09                	je     7f <ntc_memq+0x1b>
+  76:	8b 40 04             	mov    0x4(%eax),%eax
+  79:	a8 06                	test   $0x6,%al
+  7b:	74 f1                	je     6e <ntc_memq+0xa>
+  7d:	31 c0                	xor    %eax,%eax
+  7f:	c3                   	ret    
+
+00000080 <and>:
+  80:	8b 44 24 04          	mov    0x4(%esp),%eax
+  84:	a8 06                	test   $0x6,%al
+  86:	75 0a                	jne    92 <and+0x12>
+  88:	83 f8 06             	cmp    $0x6,%eax
+  8b:	74 0a                	je     97 <and+0x17>
+  8d:	8b 40 04             	mov    0x4(%eax),%eax
+  90:	eb f2                	jmp    84 <and+0x4>
+  92:	b8 a6 00 00 00       	mov    $0xa6,%eax
+  97:	c3                   	ret    
+
+00000098 <ntc_and>:
+  98:	8b 44 24 04          	mov    0x4(%esp),%eax
+  9c:	eb 07                	jmp    a5 <ntc_and+0xd>
+  9e:	85 c0                	test   %eax,%eax
+  a0:	74 07                	je     a9 <ntc_and+0x11>
+  a2:	8b 40 04             	mov    0x4(%eax),%eax
+  a5:	a8 06                	test   $0x6,%al
+  a7:	74 f5                	je     9e <ntc_and+0x6>
+  a9:	a1 00 00 00 00       	mov    0x0,%eax
+  ae:	c3                   	ret    

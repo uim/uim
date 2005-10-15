@@ -1,0 +1,210 @@
+
+imm-test.o:     file format elf32-avr
+
+SYMBOL TABLE:
+00000000 l    df *ABS*	00000000 imm-test.c
+00000000 l    d  .text	00000000 .text
+00000000 l    d  .data	00000000 .data
+00000000 l    d  .bss	00000000 .bss
+0000003f l       *ABS*	00000000 __SREG__
+0000003e l       *ABS*	00000000 __SP_H__
+0000003d l       *ABS*	00000000 __SP_L__
+00000000 l       *ABS*	00000000 __tmp_reg__
+00000001 l       *ABS*	00000000 __zero_reg__
+00000000         *UND*	00000000 __do_copy_data
+00000000         *UND*	00000000 __do_clear_bss
+00000000 g     F .text	00000012 falsep
+00000012 g     F .text	00000012 ntc_falsep
+00000024 g     F .text	00000012 nullp
+00000036 g     F .text	00000012 ntc_nullp
+00000048 g     F .text	00000016 consp
+0000005e g     F .text	0000001e ntc_consp
+0000007c g     F .text	00000036 memq
+000000b2 g     F .text	0000003a ntc_memq
+000000ec g     F .text	0000002a and
+00000116 g     F .text	00000030 ntc_and
+00000002       O *COM*	00000001 scm_ntc_true
+
+
+Disassembly of section .text:
+
+00000000 <falsep>:
+   0:	20 e0       	ldi	r18, 0x00	; 0
+   2:	30 e0       	ldi	r19, 0x00	; 0
+   4:	06 97       	sbiw	r24, 0x06	; 6
+   6:	11 f4       	brne	.+4      	; 0xc <falsep+0xc>
+   8:	21 e0       	ldi	r18, 0x01	; 1
+   a:	30 e0       	ldi	r19, 0x00	; 0
+   c:	93 2f       	mov	r25, r19
+   e:	82 2f       	mov	r24, r18
+  10:	08 95       	ret
+
+00000012 <ntc_falsep>:
+  12:	20 e0       	ldi	r18, 0x00	; 0
+  14:	30 e0       	ldi	r19, 0x00	; 0
+  16:	89 2b       	or	r24, r25
+  18:	11 f4       	brne	.+4      	; 0x1e <ntc_falsep+0xc>
+  1a:	21 e0       	ldi	r18, 0x01	; 1
+  1c:	30 e0       	ldi	r19, 0x00	; 0
+  1e:	93 2f       	mov	r25, r19
+  20:	82 2f       	mov	r24, r18
+  22:	08 95       	ret
+
+00000024 <nullp>:
+  24:	20 e0       	ldi	r18, 0x00	; 0
+  26:	30 e0       	ldi	r19, 0x00	; 0
+  28:	86 97       	sbiw	r24, 0x26	; 38
+  2a:	11 f4       	brne	.+4      	; 0x30 <nullp+0xc>
+  2c:	21 e0       	ldi	r18, 0x01	; 1
+  2e:	30 e0       	ldi	r19, 0x00	; 0
+  30:	93 2f       	mov	r25, r19
+  32:	82 2f       	mov	r24, r18
+  34:	08 95       	ret
+
+00000036 <ntc_nullp>:
+  36:	20 e0       	ldi	r18, 0x00	; 0
+  38:	30 e0       	ldi	r19, 0x00	; 0
+  3a:	02 97       	sbiw	r24, 0x02	; 2
+  3c:	11 f4       	brne	.+4      	; 0x42 <ntc_nullp+0xc>
+  3e:	21 e0       	ldi	r18, 0x01	; 1
+  40:	30 e0       	ldi	r19, 0x00	; 0
+  42:	93 2f       	mov	r25, r19
+  44:	82 2f       	mov	r24, r18
+  46:	08 95       	ret
+
+00000048 <consp>:
+  48:	20 e0       	ldi	r18, 0x00	; 0
+  4a:	30 e0       	ldi	r19, 0x00	; 0
+  4c:	86 70       	andi	r24, 0x06	; 6
+  4e:	90 70       	andi	r25, 0x00	; 0
+  50:	89 2b       	or	r24, r25
+  52:	11 f4       	brne	.+4      	; 0x58 <consp+0x10>
+  54:	21 e0       	ldi	r18, 0x01	; 1
+  56:	30 e0       	ldi	r19, 0x00	; 0
+  58:	93 2f       	mov	r25, r19
+  5a:	82 2f       	mov	r24, r18
+  5c:	08 95       	ret
+
+0000005e <ntc_consp>:
+  5e:	28 2f       	mov	r18, r24
+  60:	39 2f       	mov	r19, r25
+  62:	40 e0       	ldi	r20, 0x00	; 0
+  64:	50 e0       	ldi	r21, 0x00	; 0
+  66:	86 70       	andi	r24, 0x06	; 6
+  68:	90 70       	andi	r25, 0x00	; 0
+  6a:	89 2b       	or	r24, r25
+  6c:	21 f4       	brne	.+8      	; 0x76 <ntc_consp+0x18>
+  6e:	23 2b       	or	r18, r19
+  70:	11 f0       	breq	.+4      	; 0x76 <ntc_consp+0x18>
+  72:	41 e0       	ldi	r20, 0x01	; 1
+  74:	50 e0       	ldi	r21, 0x00	; 0
+  76:	95 2f       	mov	r25, r21
+  78:	84 2f       	mov	r24, r20
+  7a:	08 95       	ret
+
+0000007c <memq>:
+  7c:	28 2f       	mov	r18, r24
+  7e:	39 2f       	mov	r19, r25
+  80:	f7 2f       	mov	r31, r23
+  82:	e6 2f       	mov	r30, r22
+  84:	8e 2f       	mov	r24, r30
+  86:	9f 2f       	mov	r25, r31
+  88:	86 70       	andi	r24, 0x06	; 6
+  8a:	90 70       	andi	r25, 0x00	; 0
+  8c:	89 2b       	or	r24, r25
+  8e:	61 f4       	brne	.+24     	; 0xa8 <memq+0x2c>
+  90:	80 81       	ld	r24, Z
+  92:	91 81       	ldd	r25, Z+1	; 0x01
+  94:	82 17       	cp	r24, r18
+  96:	93 07       	cpc	r25, r19
+  98:	19 f4       	brne	.+6      	; 0xa0 <memq+0x24>
+  9a:	6e 2f       	mov	r22, r30
+  9c:	7f 2f       	mov	r23, r31
+  9e:	06 c0       	rjmp	.+12     	; 0xac <memq+0x30>
+  a0:	02 80       	ldd	r0, Z+2	; 0x02
+  a2:	f3 81       	ldd	r31, Z+3	; 0x03
+  a4:	e0 2d       	mov	r30, r0
+  a6:	ee cf       	rjmp	.-36     	; 0x84 <memq+0x8>
+  a8:	66 e0       	ldi	r22, 0x06	; 6
+  aa:	70 e0       	ldi	r23, 0x00	; 0
+  ac:	97 2f       	mov	r25, r23
+  ae:	86 2f       	mov	r24, r22
+  b0:	08 95       	ret
+
+000000b2 <ntc_memq>:
+  b2:	28 2f       	mov	r18, r24
+  b4:	39 2f       	mov	r19, r25
+  b6:	f7 2f       	mov	r31, r23
+  b8:	e6 2f       	mov	r30, r22
+  ba:	0d c0       	rjmp	.+26     	; 0xd6 <ntc_memq+0x24>
+  bc:	30 97       	sbiw	r30, 0x00	; 0
+  be:	89 f0       	breq	.+34     	; 0xe2 <ntc_memq+0x30>
+  c0:	80 81       	ld	r24, Z
+  c2:	91 81       	ldd	r25, Z+1	; 0x01
+  c4:	82 17       	cp	r24, r18
+  c6:	93 07       	cpc	r25, r19
+  c8:	19 f4       	brne	.+6      	; 0xd0 <ntc_memq+0x1e>
+  ca:	6e 2f       	mov	r22, r30
+  cc:	7f 2f       	mov	r23, r31
+  ce:	0b c0       	rjmp	.+22     	; 0xe6 <ntc_memq+0x34>
+  d0:	02 80       	ldd	r0, Z+2	; 0x02
+  d2:	f3 81       	ldd	r31, Z+3	; 0x03
+  d4:	e0 2d       	mov	r30, r0
+  d6:	8e 2f       	mov	r24, r30
+  d8:	9f 2f       	mov	r25, r31
+  da:	86 70       	andi	r24, 0x06	; 6
+  dc:	90 70       	andi	r25, 0x00	; 0
+  de:	89 2b       	or	r24, r25
+  e0:	69 f3       	breq	.-38     	; 0xbc <ntc_memq+0xa>
+  e2:	60 e0       	ldi	r22, 0x00	; 0
+  e4:	70 e0       	ldi	r23, 0x00	; 0
+  e6:	97 2f       	mov	r25, r23
+  e8:	86 2f       	mov	r24, r22
+  ea:	08 95       	ret
+
+000000ec <and>:
+  ec:	f9 2f       	mov	r31, r25
+  ee:	e8 2f       	mov	r30, r24
+  f0:	8e 2f       	mov	r24, r30
+  f2:	9f 2f       	mov	r25, r31
+  f4:	86 70       	andi	r24, 0x06	; 6
+  f6:	90 70       	andi	r25, 0x00	; 0
+  f8:	89 2b       	or	r24, r25
+  fa:	51 f4       	brne	.+20     	; 0x110 <and+0x24>
+  fc:	e6 30       	cpi	r30, 0x06	; 6
+  fe:	f1 05       	cpc	r31, r1
+ 100:	19 f4       	brne	.+6      	; 0x108 <and+0x1c>
+ 102:	8e 2f       	mov	r24, r30
+ 104:	9f 2f       	mov	r25, r31
+ 106:	08 95       	ret
+ 108:	02 80       	ldd	r0, Z+2	; 0x02
+ 10a:	f3 81       	ldd	r31, Z+3	; 0x03
+ 10c:	e0 2d       	mov	r30, r0
+ 10e:	f0 cf       	rjmp	.-32     	; 0xf0 <and+0x4>
+ 110:	86 ea       	ldi	r24, 0xA6	; 166
+ 112:	90 e0       	ldi	r25, 0x00	; 0
+ 114:	08 95       	ret
+
+00000116 <ntc_and>:
+ 116:	f9 2f       	mov	r31, r25
+ 118:	e8 2f       	mov	r30, r24
+ 11a:	0a c0       	rjmp	.+20     	; 0x130 <ntc_and+0x1a>
+ 11c:	30 97       	sbiw	r30, 0x00	; 0
+ 11e:	71 f0       	breq	.+28     	; 0x13c <ntc_and+0x26>
+ 120:	30 97       	sbiw	r30, 0x00	; 0
+ 122:	19 f4       	brne	.+6      	; 0x12a <ntc_and+0x14>
+ 124:	8e 2f       	mov	r24, r30
+ 126:	9f 2f       	mov	r25, r31
+ 128:	08 95       	ret
+ 12a:	02 80       	ldd	r0, Z+2	; 0x02
+ 12c:	f3 81       	ldd	r31, Z+3	; 0x03
+ 12e:	e0 2d       	mov	r30, r0
+ 130:	8e 2f       	mov	r24, r30
+ 132:	9f 2f       	mov	r25, r31
+ 134:	86 70       	andi	r24, 0x06	; 6
+ 136:	90 70       	andi	r25, 0x00	; 0
+ 138:	89 2b       	or	r24, r25
+ 13a:	81 f3       	breq	.-32     	; 0x11c <ntc_and+0x6>
+ 13c:	80 91 00 00 	lds	r24, 0x0000
+ 140:	90 91 00 00 	lds	r25, 0x0000
+ 144:	08 95       	ret

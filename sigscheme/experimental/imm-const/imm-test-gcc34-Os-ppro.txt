@@ -1,0 +1,125 @@
+
+imm-test.o:     file format elf32-i386-freebsd
+
+SYMBOL TABLE:
+00000000 l    df *ABS*	00000000 imm-test.c
+00000000 l    d  .text	00000000 
+00000000 l    d  .data	00000000 
+00000000 l    d  .bss	00000000 
+00000000 l    d  .comment	00000000 
+00000000 g     F .text	0000000b falsep
+0000000b g     F .text	0000000b ntc_falsep
+00000016 g     F .text	0000000b nullp
+00000021 g     F .text	0000000b ntc_nullp
+0000002c g     F .text	0000000b consp
+00000037 g     F .text	00000014 ntc_consp
+0000004b g     F .text	0000001b memq
+00000066 g     F .text	0000002b ntc_memq
+00000091 g     F .text	00000018 and
+000000a9 g     F .text	00000027 ntc_and
+00000004       O *COM*	00000004 scm_ntc_true
+
+
+Disassembly of section .text:
+
+00000000 <falsep>:
+   0:	31 c0                	xor    %eax,%eax
+   2:	83 7c 24 04 06       	cmpl   $0x6,0x4(%esp)
+   7:	0f 94 c0             	sete   %al
+   a:	c3                   	ret    
+
+0000000b <ntc_falsep>:
+   b:	31 c0                	xor    %eax,%eax
+   d:	83 7c 24 04 00       	cmpl   $0x0,0x4(%esp)
+  12:	0f 94 c0             	sete   %al
+  15:	c3                   	ret    
+
+00000016 <nullp>:
+  16:	31 c0                	xor    %eax,%eax
+  18:	83 7c 24 04 26       	cmpl   $0x26,0x4(%esp)
+  1d:	0f 94 c0             	sete   %al
+  20:	c3                   	ret    
+
+00000021 <ntc_nullp>:
+  21:	31 c0                	xor    %eax,%eax
+  23:	83 7c 24 04 02       	cmpl   $0x2,0x4(%esp)
+  28:	0f 94 c0             	sete   %al
+  2b:	c3                   	ret    
+
+0000002c <consp>:
+  2c:	31 c0                	xor    %eax,%eax
+  2e:	f6 44 24 04 06       	testb  $0x6,0x4(%esp)
+  33:	0f 94 c0             	sete   %al
+  36:	c3                   	ret    
+
+00000037 <ntc_consp>:
+  37:	8b 44 24 04          	mov    0x4(%esp),%eax
+  3b:	a8 06                	test   $0x6,%al
+  3d:	0f 94 c2             	sete   %dl
+  40:	85 c0                	test   %eax,%eax
+  42:	0f 95 c0             	setne  %al
+  45:	0f b6 c0             	movzbl %al,%eax
+  48:	21 d0                	and    %edx,%eax
+  4a:	c3                   	ret    
+
+0000004b <memq>:
+  4b:	8b 54 24 04          	mov    0x4(%esp),%edx
+  4f:	8b 44 24 08          	mov    0x8(%esp),%eax
+  53:	a8 06                	test   $0x6,%al
+  55:	75 09                	jne    60 <memq+0x15>
+  57:	39 10                	cmp    %edx,(%eax)
+  59:	74 0a                	je     65 <memq+0x1a>
+  5b:	8b 40 04             	mov    0x4(%eax),%eax
+  5e:	eb f3                	jmp    53 <memq+0x8>
+  60:	b8 06 00 00 00       	mov    $0x6,%eax
+  65:	c3                   	ret    
+
+00000066 <ntc_memq>:
+  66:	53                   	push   %ebx
+  67:	8b 5c 24 08          	mov    0x8(%esp),%ebx
+  6b:	8b 4c 24 0c          	mov    0xc(%esp),%ecx
+  6f:	f6 c1 06             	test   $0x6,%cl
+  72:	0f 94 c0             	sete   %al
+  75:	31 d2                	xor    %edx,%edx
+  77:	85 c9                	test   %ecx,%ecx
+  79:	0f 95 c2             	setne  %dl
+  7c:	85 d0                	test   %edx,%eax
+  7e:	74 0d                	je     8d <ntc_memq+0x27>
+  80:	39 19                	cmp    %ebx,(%ecx)
+  82:	75 04                	jne    88 <ntc_memq+0x22>
+  84:	89 c8                	mov    %ecx,%eax
+  86:	eb 07                	jmp    8f <ntc_memq+0x29>
+  88:	8b 49 04             	mov    0x4(%ecx),%ecx
+  8b:	eb e2                	jmp    6f <ntc_memq+0x9>
+  8d:	31 c0                	xor    %eax,%eax
+  8f:	5b                   	pop    %ebx
+  90:	c3                   	ret    
+
+00000091 <and>:
+  91:	8b 44 24 04          	mov    0x4(%esp),%eax
+  95:	a8 06                	test   $0x6,%al
+  97:	75 0a                	jne    a3 <and+0x12>
+  99:	83 f8 06             	cmp    $0x6,%eax
+  9c:	74 0a                	je     a8 <and+0x17>
+  9e:	8b 40 04             	mov    0x4(%eax),%eax
+  a1:	eb f2                	jmp    95 <and+0x4>
+  a3:	b8 a6 00 00 00       	mov    $0xa6,%eax
+  a8:	c3                   	ret    
+
+000000a9 <ntc_and>:
+  a9:	8b 4c 24 04          	mov    0x4(%esp),%ecx
+  ad:	f6 c1 06             	test   $0x6,%cl
+  b0:	0f 94 c0             	sete   %al
+  b3:	31 d2                	xor    %edx,%edx
+  b5:	85 c9                	test   %ecx,%ecx
+  b7:	0f 95 c2             	setne  %dl
+  ba:	85 d0                	test   %edx,%eax
+  bc:	74 0c                	je     ca <ntc_and+0x21>
+  be:	85 c9                	test   %ecx,%ecx
+  c0:	75 03                	jne    c5 <ntc_and+0x1c>
+  c2:	31 c0                	xor    %eax,%eax
+  c4:	c3                   	ret    
+  c5:	8b 49 04             	mov    0x4(%ecx),%ecx
+  c8:	eb e3                	jmp    ad <ntc_and+0x4>
+  ca:	a1 00 00 00 00       	mov    0x0,%eax
+  cf:	c3                   	ret    
