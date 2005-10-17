@@ -118,18 +118,30 @@ struct ScmCell_ {
 /*=======================================
    Masks and Offsets
 =======================================*/
-#define SCM_VALUE_MASK      (~0 ^ (SCM_TAG_MASK | SCM_GCBIT_MASK))
+#define SCM_GCBIT_WIDTH     1
+#define SCM_GCBIT_OFFSET    0
+#define SCM_GCBIT_MASK      (0x1 << SCM_GCBIT_OFFSET)
+#define SCM_GCBIT_UNMARKED  (0x0 << SCM_GCBIT_OFFSET)
+#define SCM_GCBIT_MARKED    (0x1 << SCM_GCBIT_OFFSET)
 
-#define SCM_GCBIT_MASK      0x1
-#define SCM_GCBIT_UNMARKED  0x0
-#define SCM_GCBIT_MARKED    0x1
+/* 'IMM' stands for 'Immediate' */
+#define SCM_TAG_WIDTH       2
+#define SCM_TAG_OFFSET      1
+#define SCM_TAG_MASK        (0x3 << SCM_TAG_OFFSET)
+#define SCM_TAG_CONS        (0x0 << SCM_TAG_OFFSET)
+#define SCM_TAG_CLOSURE     (0x1 << SCM_TAG_OFFSET)
+#define SCM_TAG_OTHERS      (0x2 << SCM_TAG_OFFSET)
+#define SCM_TAG_IMM         (0x3 << SCM_TAG_OFFSET)
 
-#define SCM_TAG_MASK        0x6
-#define SCM_TAG_CONS        0x0
-#define SCM_TAG_CLOSURE     0x2
-#define SCM_TAG_OTHERS      0x4
-#define SCM_TAG_IMM         0x6 /* 'IMM' stands for 'Immediate' */
+/* FIXME: hardcoded width 32 */
+#define SCM_VALUE_WIDTH     (32 - (SCM_TAG_WIDTH + SCM_GCBIT_WIDTH))
+#define SCM_VALUE_OFFSET    (SCM_TAG_WIDTH + SCM_GCBIT_WIDTH)
+#define SCM_VALUE_MASK      (~0U << SCM_VALUE_OFFSET)
 
+/*
+ * FIXME: Replace value definitions with meaningful symbolic form using mask,
+ * offset and tags
+ */
 #define SCM_TAG_OTHERS_MASK_1                    0x7
 #define SCM_TAG_OTHERS_MASK_2                    0x3f
 #define SCM_TAG_OTHERS_MASK_3                    0x7f
@@ -168,6 +180,10 @@ struct ScmCell_ {
 #define SCM_TAG_OTHERS_UNDEF          0x77
 #define SCM_TAG_OTHERS_FREECELL       0x3f
 
+/*
+ * FIXME: Replace value definitions with meaningful symbolic form using mask,
+ * offset and tags
+ */
 #define SCM_TAG_IMM_MASK_1            0xe
 #define SCM_TAG_IMM_MASK_2            0x1e
 #define SCM_TAG_IMM_MASK_3            0x7e
@@ -179,10 +195,21 @@ struct ScmCell_ {
 #define SCM_TAG_IMM_INT     0x6
 #define SCM_TAG_IMM_CHAR    0xe
 #define SCM_TAG_IMM_CONST   0x1e
+
+/*
+ * FIXME:
+ * - Rename prefix appropriately since these are not tag but concrete constant
+ *   value
+ * - Replace value definitions with meaningful symbolic form using mask, offset
+ *   and tags
+ */
 #define SCM_TAG_IMM_INVALID 0x1e
 #define SCM_TAG_IMM_UNBOUND 0x3e
 #define SCM_TAG_IMM_FALSE   0x5e
 #define SCM_TAG_IMM_TRUE    0x7e
+#define SCM_TAG_IMM_NULL    x
+#define SCM_TAG_IMM_EOF     x
+#define SCM_TAG_IMM_UNDEF   x
 
 /*=======================================
    GC bit Accessor
