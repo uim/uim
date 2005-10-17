@@ -48,6 +48,11 @@
  * SigScheme.  -- YamaKen 2005-09-05
  */
 
+/*
+ * FIXME: Parse properly as defined in "7.1.1 Lexical structure" of R5RS, and
+ * use the popular words for parser as used in R5RS, such as 'token'.
+ */
+
 /*=======================================
   System Include
 =======================================*/
@@ -68,6 +73,9 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+/* Compatible with isspace(3). Use this to prevent incorrect space handlings */
+#define CASE_ISSPACE                                                         \
+    case ' ': case '\t': case '\n': case '\r': case '\v': case '\f'
 
 /*=======================================
   Variable Declarations
@@ -133,7 +141,7 @@ static int skip_comment_and_space(ScmObj port)
         } else if(c == ';') {
             while (1) {
                 SCM_PORT_GETC(port, c);
-                if (c == '\n') {
+                if (c == '\n' || c == '\r') {
                     break;
                 }
                 if (c == EOF) return c;
@@ -307,6 +315,7 @@ static ScmObj read_char(ScmObj port)
         ch[1] = '\0';
 #endif
     } else if (strcmp(ch, "newline") == 0) {
+        /* TODO: Support platform-dependent newline character sequence */
         ch[0] = '\n';
         ch[1] = '\0';
     }
@@ -380,6 +389,11 @@ static ScmObj read_symbol(ScmObj port)
     return sym;
 }
 
+/*
+ * FIXME: Parse properly as defined in "7.1.1 Lexical structure" of R5RS. For
+ * example, 1+ is not a valid identifier and should be rejected to prevent
+ * introducing unintended R5RS-incompatibility.
+ */
 static ScmObj read_number_or_symbol(ScmObj port)
 {
     int number = 0;
@@ -421,8 +435,8 @@ static char *read_word(ScmObj port)
 
         switch (c) {
         case EOF: /* don't became an error for handling c-eval, like Scm_eval_c_string("some-symbol"); */
-        case ' ':  case '(':  case ')':  case ';':
-        case '\n': case '\t': case '\"': case '\'':
+        case '(': case ')': case '\"': case '\'': case ';':
+        CASE_ISSPACE:
             SCM_PORT_UNGETC(port, c);
             stringbuf[stringlen] = '\0';
             dst = strdup(stringbuf);
@@ -453,9 +467,8 @@ static char *read_char_sequence(ScmObj port)
             SigScm_Error("EOF in the char sequence : char = %s", stringbuf);
             break;
 
-        case ' ':  case '\"': case '\'':
-        case '(':  case ')':  case ';':
-        case '\n': case '\r': case '\f': case '\t':
+        case '(': case ')': case '\"': case '\'': case ';':
+        CASE_ISSPACE:
             /* pass through first char */
             if (stringlen == 0) {
                 stringbuf[stringlen++] = (char)c;
