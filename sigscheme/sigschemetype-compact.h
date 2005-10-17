@@ -43,47 +43,48 @@
  * (0) LSB(Least Significant Bit) of "S" is called G-bit.
  *
  * (1) if S == "...00G", S is ConsCell. G-bit of S->X is used as
- *     marking bit of GC and G-bit of S-Y is always 0 for sweeping
- *     phase.
+ *     S->Y's G bit is always set to 0, which helps determine the
+ *     finalization semantics without a pointer. 
  *
- * (2) if S == "...01G", S is imeediate value. Imeediate value is
+ * (2) if S == "...01G", S is Closure. G-bit of S->X is used as
+ *     marking bit of GC.
+ *     S->Y's G bit is always set to 0, which helps determine the
+ *     finalization semantics without a pointer. 
+ *
+ *
+ * (4) if S == "...10G", S is other types. Type is separated by the
+ *     value of least n bits of S->Y.
+ *     S->Y's G bit is always set to 1, which helps determine the
+ *     finalization semantics without a pointer. 
+ *
+ *        S->Y              Type                content of S->Y
+ *     .....|00|1 : Symbol              : symbol name
+ *     .....|01|1 : String              : string length
+ *     .....|10|1 : Vector              : vector length
+ *     ..000|11|1 : Values              : all 0 (for efficiency)
+ *     ..001|11|1 : Func                : ScmFuncTypeCode
+ *     ..010|11|1 : Port                : ScmPortDirection
+ *     ..011|11|1 : Continuation        : all 0 (for efficiency)
+ *     ..100|11|1 : C Pointer           : pointer type
+ *                                      :   0 = void*, 1 = ScmFuncType
+ *     ..101|11|1 : Reserved            :
+ *     ..110|11|1 : Special Constant    : constant ID
+ *                                          0: EOF
+ *                                          1: Undef
+ *     ..111|11|1 : FreeCell            : all 0 (for efficiency)
+ *
+ * (4) if S == "...11G", S is imeediate value. Imeediate value is
  *     separated into these types by the value of least 2 or 5 bits of
  *     ((unsigned int S) >> 3).
  *
  *           S        Type
- *     .....01|01G : Integer
- *     .....11|01G : Char
+ *     ......0|11G : Integer
+ *     ......1|11G : Char
  *     ------------------------------
- *     ..00000|01G : #f
- *     ..00010|01G : #t
- *     ..00100|01G : ()
- *     ..00110|01G : EOF
- *     ..01000|01G : Quote
- *     ..01010|01G : Quasiquote
- *     ..01100|01G : Unquote
- *     ..01110|01G : UnquoteSplicing
- *     ..10000|01G : Unbound
- *     ..10010|01G : Undef
- *
- * (3) if S == "...10G", S is Closure. G-bit of S->X is used as
- *     marking bit of GC and G-bit of S-Y is always 0 for sweeping
- *     phase.
- *
- * (4) if S == "...11G", S is other types. Type is separated by the
- *     value of least n bits of S->Y. Anyway, G-bit of S-Y is always
- *     1 for sweeping phase..
- *
- *        S->Y        Type
- *     ...0000|1 : Symbol
- *     ...0001|1 : String
- *     ...0010|1 : Func
- *     ...0011|1 : Vector
- *     ...0100|1 : Port
- *     ...0101|1 : Continuation
- *     ...0110|1 : Values
- *     ...0111|1 : FreeCell
- *     ...1000|1 : C Pointer
- *     ...1001|1 : C Function Pointer
+ *     ..00|11|11G : INVALID
+ *     ..01|11|11G : UNBOUND
+ *     ..10|00|11G : #f
+ *     ..11|10|11G : #t
  */
 
 /*=======================================
