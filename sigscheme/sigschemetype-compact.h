@@ -67,9 +67,7 @@
  *     ..100|11|1 : C Pointer           : pointer type
  *                                      :   0 = void*, 1 = ScmFuncType
  *     ..101|11|1 : Reserved            :
- *     ..110|11|1 : Special Constant    : constant ID
- *                                          0: EOF
- *                                          1: Undef
+ *     ..110|11|1 : Reserved            :
  *     ..111|11|1 : FreeCell            : all 0 (for efficiency)
  *
  * (4) if S == "...11G", S is an immediate value. Immediate values are
@@ -82,10 +80,13 @@
  *     .....11|11G : Constant
  *     ------------------------------
  *     Constants
- *     ..00|11|11G : INVALID
- *     ..01|11|11G : UNBOUND
- *     ..10|11|11G : #f
- *     ..11|11|11G : #t
+ *     .000|11|11G : ()
+ *     .001|11|11G : INVALID
+ *     .010|11|11G : UNBOUND
+ *     .011|11|11G : #f
+ *     .100|11|11G : #t
+ *     .101|11|11G : EOF
+ *     .110|11|11G : UNDEF
  */
 
 /*=======================================
@@ -239,78 +240,50 @@ struct ScmEvalState_ {
 #define SCM_VALUE_OFFSET    (SCM_TAG_WIDTH + SCM_GCBIT_WIDTH)
 #define SCM_VALUE_MASK      (~0U << SCM_VALUE_OFFSET)
 
-/*
- * FIXME: Replace value definitions with meaningful symbolic form using mask,
- * offset and tags
- */
-#define SCM_TAG_OTHERS_MASK_1                    0x7
-#define SCM_TAG_OTHERS_MASK_2                    0x3f
-#define SCM_TAG_OTHERS_MASK_3                    0x7f
-#define SCM_TAG_OTHERS_MASK_SYMBOL               SCM_TAG_OTHERS_MASK_1
-#define SCM_TAG_OTHERS_MASK_STRING               SCM_TAG_OTHERS_MASK_1
-#define SCM_TAG_OTHERS_MASK_VECTOR               SCM_TAG_OTHERS_MASK_1
-#define SCM_TAG_OTHERS_MASK_VALUES               SCM_TAG_OTHERS_MASK_2
-#define SCM_TAG_OTHERS_MASK_FUNC                 SCM_TAG_OTHERS_MASK_2
-#define SCM_TAG_OTHERS_MASK_PORT                 SCM_TAG_OTHERS_MASK_2
-#define SCM_TAG_OTHERS_MASK_CONTINUATION         SCM_TAG_OTHERS_MASK_2
-#define SCM_TAG_OTHERS_MASK_C_POINTER            SCM_TAG_OTHERS_MASK_3
-#define SCM_TAG_OTHERS_MASK_SPECIALCONST         SCM_TAG_OTHERS_MASK_3
-#define SCM_TAG_OTHERS_MASK_FREECELL             SCM_TAG_OTHERS_MASK_2
-#define SCM_TAG_OTHERS_VALUE_OFFSET_1            3
-#define SCM_TAG_OTHERS_VALUE_OFFSET_2            6
-#define SCM_TAG_OTHERS_VALUE_OFFSET_SYMBOL       SCM_TAG_OTHERS_VALUE_OFFSET_1
-#define SCM_TAG_OTHERS_VALUE_OFFSET_STRING       SCM_TAG_OTHERS_VALUE_OFFSET_1
-#define SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR       SCM_TAG_OTHERS_VALUE_OFFSET_1
-#define SCM_TAG_OTHERS_VALUE_OFFSET_VALUES       SCM_TAG_OTHERS_VALUE_OFFSET_2
-#define SCM_TAG_OTHERS_VALUE_OFFSET_FUNC         SCM_TAG_OTHERS_VALUE_OFFSET_2
-#define SCM_TAG_OTHERS_VALUE_OFFSET_PORT         SCM_TAG_OTHERS_VALUE_OFFSET_2
-#define SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION SCM_TAG_OTHERS_VALUE_OFFSET_2
-#define SCM_TAG_OTHERS_VALUE_OFFSET_C_POINTER    SCM_TAG_OTHERS_VALUE_OFFSET_2
-#define SCM_TAG_OTHERS_VALUE_OFFSET_SPECIALCONST SCM_TAG_OTHERS_VALUE_OFFSET_2
-#define SCM_TAG_OTHERS_SYMBOL         0x1
-#define SCM_TAG_OTHERS_STRING         0x3
-#define SCM_TAG_OTHERS_VECTOR         0x5
-#define SCM_TAG_OTHERS_VALUES         0x7
-#define SCM_TAG_OTHERS_FUNC           0xf
-#define SCM_TAG_OTHERS_PORT           0x17
-#define SCM_TAG_OTHERS_CONTINUATION   0x1f
-#define SCM_TAG_OTHERS_C_POINTER      0x27
-#define SCM_TAG_OTHERS_C_FUNC_POINTER 0x67
-#define SCM_TAG_OTHERS_SPECIALCONST   0x37
-#define SCM_TAG_OTHERS_EOF            0x37
-#define SCM_TAG_OTHERS_UNDEF          0x77
-#define SCM_TAG_OTHERS_FREECELL       0x3f
+#define SCM_TAG_OTHERS_VALUE_OFFSET_SYMBOL       SCM_GCBIT_WIDTH + 2
+#define SCM_TAG_OTHERS_VALUE_OFFSET_STRING       SCM_GCBIT_WIDTH + 2
+#define SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR       SCM_GCBIT_WIDTH + 2
+#define SCM_TAG_OTHERS_VALUE_OFFSET_VALUES       SCM_GCBIT_WIDTH + 2 + 3
+#define SCM_TAG_OTHERS_VALUE_OFFSET_FUNC         SCM_GCBIT_WIDTH + 2 + 3
+#define SCM_TAG_OTHERS_VALUE_OFFSET_PORT         SCM_GCBIT_WIDTH + 2 + 3
+#define SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION SCM_GCBIT_WIDTH + 2 + 3
+#define SCM_TAG_OTHERS_VALUE_OFFSET_C_POINTER    SCM_GCBIT_WIDTH + 2 + 3 + 1
+#define SCM_TAG_OTHERS_VALUE_OFFSET_FREECELL     SCM_GCBIT_WIDTH + 2 + 3
+#define SCM_TAG_OTHERS_MASK_SYMBOL               ((0x1 << SCM_TAG_OTHERS_VALUE_OFFSET_SYMBOL)       - 1)
+#define SCM_TAG_OTHERS_MASK_STRING               ((0x1 << SCM_TAG_OTHERS_VALUE_OFFSET_STRING)       - 1)
+#define SCM_TAG_OTHERS_MASK_VECTOR               ((0x1 << SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR)       - 1)
+#define SCM_TAG_OTHERS_MASK_VALUES               ((0x1 << SCM_TAG_OTHERS_VALUE_OFFSET_VALUES)       - 1)
+#define SCM_TAG_OTHERS_MASK_FUNC                 ((0x1 << SCM_TAG_OTHERS_VALUE_OFFSET_FUNC)         - 1)
+#define SCM_TAG_OTHERS_MASK_PORT                 ((0x1 << SCM_TAG_OTHERS_VALUE_OFFSET_PORT)         - 1)
+#define SCM_TAG_OTHERS_MASK_CONTINUATION         ((0x1 << SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION) - 1)
+#define SCM_TAG_OTHERS_MASK_C_POINTER            ((0x1 << SCM_TAG_OTHERS_VALUE_OFFSET_C_POINTER)    - 1)
+#define SCM_TAG_OTHERS_MASK_FREECELL             ((0x1 << SCM_TAG_OTHERS_VALUE_OFFSET_FREECELL)     - 1)
+#define SCM_TAG_OTHERS_SYMBOL                    (SCM_TAG_OTHERS | (0x0 << SCM_GCBIT_WIDTH))
+#define SCM_TAG_OTHERS_STRING                    (SCM_TAG_OTHERS | (0x1 << SCM_GCBIT_WIDTH))
+#define SCM_TAG_OTHERS_VECTOR                    (SCM_TAG_OTHERS | (0x2 << SCM_GCBIT_WIDTH))
+#define SCM_TAG_OTHERS_VALUES                    (SCM_TAG_OTHERS | (0x3 << SCM_GCBIT_WIDTH) | (0x0 << 6))
+#define SCM_TAG_OTHERS_FUNC                      (SCM_TAG_OTHERS | (0x3 << SCM_GCBIT_WIDTH) | (0x1 << 6))
+#define SCM_TAG_OTHERS_PORT                      (SCM_TAG_OTHERS | (0x3 << SCM_GCBIT_WIDTH) | (0x2 << 6))
+#define SCM_TAG_OTHERS_CONTINUATION              (SCM_TAG_OTHERS | (0x3 << SCM_GCBIT_WIDTH) | (0x3 << 6))
+#define SCM_TAG_OTHERS_C_POINTER                 (SCM_TAG_OTHERS | (0x3 << SCM_GCBIT_WIDTH) | (0x4 << 6) | (0x0 << 7))
+#define SCM_TAG_OTHERS_C_FUNC_POINTER            (SCM_TAG_OTHERS | (0x3 << SCM_GCBIT_WIDTH) | (0x4 << 6) | (0x1 << 7))
+#define SCM_TAG_OTHERS_FREECELL                  (SCM_TAG_OTHERS | (0x3 << SCM_GCBIT_WIDTH) | (0x7 << 6))
 
-/*
- * FIXME: Replace value definitions with meaningful symbolic form using mask,
- * offset and tags
- */
-#define SCM_TAG_IMM_MASK_1            0xe
-#define SCM_TAG_IMM_MASK_2            0x1e
-#define SCM_TAG_IMM_MASK_3            0x7e
-#define SCM_TAG_IMM_MASK_INT          SCM_TAG_IMM_MASK_1
-#define SCM_TAG_IMM_MASK_CHAR         SCM_TAG_IMM_MASK_2
-#define SCM_TAG_IMM_MASK_CONST        SCM_TAG_IMM_MASK_3
-#define SCM_TAG_IMM_VALUE_OFFSET_INT  4
-#define SCM_TAG_IMM_VALUE_OFFSET_CHAR 5
-#define SCM_TAG_IMM_INT     0x6
-#define SCM_TAG_IMM_CHAR    0xe
-#define SCM_TAG_IMM_CONST   0x1e
-
-/*
- * FIXME:
- * - Rename prefix appropriately since these are not tag but concrete constant
- *   value
- * - Replace value definitions with meaningful symbolic form using mask, offset
- *   and tags
- */
-#define SCM_TAG_IMM_INVALID 0x1e
-#define SCM_TAG_IMM_UNBOUND 0x3e
-#define SCM_TAG_IMM_FALSE   0x5e
-#define SCM_TAG_IMM_TRUE    0x7e
-#define SCM_TAG_IMM_NULL    x
-#define SCM_TAG_IMM_EOF     x
-#define SCM_TAG_IMM_UNDEF   x
+#define SCM_TAG_IMM_VALUE_OFFSET_INT             SCM_GCBIT_WIDTH + 2 + 1
+#define SCM_TAG_IMM_VALUE_OFFSET_CHAR            SCM_GCBIT_WIDTH + 2 + 2
+#define SCM_TAG_IMM_VALUE_OFFSET_CONST           SCM_GCBIT_WIDTH + 2 + 2 + 3
+#define SCM_TAG_IMM_MASK_INT                     ((0x1 << SCM_TAG_IMM_VALUE_OFFSET_INT)   - 1)
+#define SCM_TAG_IMM_MASK_CHAR                    ((0x1 << SCM_TAG_IMM_VALUE_OFFSET_CHAR)  - 1)
+#define SCM_TAG_IMM_MASK_CONST                   ((0x1 << SCM_TAG_IMM_VALUE_OFFSET_CONST) - 1)
+#define SCM_TAG_IMM_INT                          (SCM_TAG_IMM | (0x0 << 3))
+#define SCM_TAG_IMM_CHAR                         (SCM_TAG_IMM | (0x1 << 3))
+#define SCM_TAG_IMM_NULL                         (SCM_TAG_IMM | (0x3 << 3) | (0x0 << 5))
+#define SCM_TAG_IMM_INVALID                      (SCM_TAG_IMM | (0x3 << 3) | (0x1 << 5))
+#define SCM_TAG_IMM_UNBOUND                      (SCM_TAG_IMM | (0x3 << 3) | (0x2 << 5))
+#define SCM_TAG_IMM_FALSE                        (SCM_TAG_IMM | (0x3 << 3) | (0x3 << 5))
+#define SCM_TAG_IMM_TRUE                         (SCM_TAG_IMM | (0x3 << 3) | (0x4 << 5))
+#define SCM_TAG_IMM_EOF                          (SCM_TAG_IMM | (0x3 << 3) | (0x5 << 5))
+#define SCM_TAG_IMM_UNDEF                        (SCM_TAG_IMM | (0x3 << 3) | (0x6 << 5))
 
 /*=======================================
    GC bit Accessor
@@ -338,16 +311,18 @@ struct ScmEvalState_ {
 #define SCM_TAG_OTHERS_CONTINUATIONP(a)   ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_CONTINUATION) == SCM_TAG_OTHERS_CONTINUATION)
 #define SCM_TAG_OTHERS_C_POINTERP(a)      ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_C_POINTER) == SCM_TAG_OTHERS_C_POINTER)
 #define SCM_TAG_OTHERS_C_FUNC_POINTERP(a) ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_C_POINTER) == SCM_TAG_OTHERS_C_FUNC_POINTER)
-#define SCM_TAG_OTHERS_EOFP(a)            ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_SPECIALCONST) == SCM_TAG_OTHERS_EOF)
-#define SCM_TAG_OTHERS_UNDEFP(a)          ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_SPECIALCONST) == SCM_TAG_OTHERS_UNDEF)
 #define SCM_TAG_OTHERS_FREECELLP(a)       ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_FREECELL) == SCM_TAG_OTHERS_FREECELL)
 
 /* Tag -> Imm */
 #define SCM_TAG_IMM_INTP(a)               ((((unsigned int)(a)) & SCM_TAG_IMM_MASK_INT)   == SCM_TAG_IMM_INT)
 #define SCM_TAG_IMM_CHARP(a)              ((((unsigned int)(a)) & SCM_TAG_IMM_MASK_CHAR)  == SCM_TAG_IMM_CHAR)
+#define SCM_TAG_IMM_NULLP(a)              ((((unsigned int)(a)) & SCM_TAG_IMM_MASK_CONST) == SCM_TAG_IMM_NULL)
 #define SCM_TAG_IMM_INVALIDP(a)           ((((unsigned int)(a)) & SCM_TAG_IMM_MASK_CONST) == SCM_TAG_IMM_INVALID)
+#define SCM_TAG_IMM_UNBOUNDP(a)           ((((unsigned int)(a)) & SCM_TAG_IMM_MASK_CONST) == SCM_TAG_IMM_UNBOUND)
 #define SCM_TAG_IMM_FALSEP(a)             ((((unsigned int)(a)) & SCM_TAG_IMM_MASK_CONST) == SCM_TAG_IMM_FALSE)
 #define SCM_TAG_IMM_TRUEP(a)              ((((unsigned int)(a)) & SCM_TAG_IMM_MASK_CONST) == SCM_TAG_IMM_TRUE)
+#define SCM_TAG_IMM_EOFP(a)               ((((unsigned int)(a)) & SCM_TAG_IMM_MASK_CONST) == SCM_TAG_IMM_EOF)
+#define SCM_TAG_IMM_UNDEFP(a)             ((((unsigned int)(a)) & SCM_TAG_IMM_MASK_CONST) == SCM_TAG_IMM_UNDEF)
 
 /* Type Predicates */
 #define SCM_CONSP(a)             (SCM_TAG_CONSP(a))
@@ -399,15 +374,16 @@ struct ScmEvalState_ {
 #define SCM_ENTYPE_CONTINUATION(a)    (a = (ScmObj)SCM_TAG_OTHERS_CONTINUATION)
 #define SCM_ENTYPE_C_POINTER(a)       (a = (ScmObj)SCM_TAG_OTHERS_C_POINTER)
 #define SCM_ENTYPE_C_FUNC_POINTER(a)  (a = (ScmObj)SCM_TAG_OTHERS_C_FUNC_POINTERP)
-#define SCM_ENTYPE_EOF(a)             (a = (ScmObj)SCM_TAG_OTHERS_EOF)
-#define SCM_ENTYPE_UNDEF(a)           (a = (ScmObj)SCM_TAG_OTHERS_UNDEF)
 #define SCM_ENTYPE_FREECELL(a)        (a = (ScmObj)SCM_TAG_OTHERS_FREECELL)
 #define SCM_ENTYPE_INT(a)             (a = (ScmObj)SCM_TAG_IMM_INT)
 #define SCM_ENTYPE_CHAR(a)            (a = (ScmObj)SCM_TAG_IMM_CHAR)
+#define SCM_ENTYPE_NULL(a)            (a = (ScmObj)SCM_TAG_IMM_NULL)
 #define SCM_ENTYPE_INVALID(a)         (a = (ScmObj)SCM_TAG_IMM_INVALID)
 #define SCM_ENTYPE_UNBOUND(a)         (a = (ScmObj)SCM_TAG_IMM_UNBOUND)
 #define SCM_ENTYPE_FALSE(a)           (a = (ScmObj)SCM_TAG_IMM_FALSE)
 #define SCM_ENTYPE_TRUE(a)            (a = (ScmObj)SCM_TAG_IMM_TRUE)
+#define SCM_ENTYPE_EOF(a)             (a = (ScmObj)SCM_TAG_IMM_EOF)
+#define SCM_ENTYPE_UNDEF(a)           (a = (ScmObj)SCM_TAG_IMM_UNDEF)
 
 /*=======================================
    Real Accessors
