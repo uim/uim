@@ -73,18 +73,20 @@
  *                                          1: Undef
  *     ..111|11|1 : FreeCell            : all 0 (for efficiency)
  *
- * (4) if S == "...11G", S is imeediate value. Imeediate value is
- *     separated into these types by the value of least 2 or 5 bits of
+ * (4) if S == "...11G", S is an immediate value. Immediate values are
+ *     separated into these types by the value of least 1-5 bits of
  *     ((unsigned int S) >> 3).
  *
  *           S        Type
  *     ......0|11G : Integer
- *     ......1|11G : Char
+ *     .....10|11G : Char
+ *     .....11|11G : Constant
  *     ------------------------------
+ *     Constants
  *     ..00|11|11G : INVALID
  *     ..01|11|11G : UNBOUND
- *     ..10|00|11G : #f
- *     ..11|10|11G : #t
+ *     ..10|11|11G : #f
+ *     ..11|11|11G : #t
  */
 
 /*=======================================
