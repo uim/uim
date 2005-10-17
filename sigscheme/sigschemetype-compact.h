@@ -130,18 +130,29 @@ struct ScmCell_ {
 #define SCM_TAG_OTHERS      0x4
 #define SCM_TAG_IMM         0x6 /* 'IMM' represents 'Immediate' */
 
-#define SCM_TAG_OTHERS_MASK_1       0x7
-#define SCM_TAG_OTHERS_MASK_2       0x3f
-#define SCM_TAG_OTHERS_VALUE_OFFSET_SYMBOL       3
-#define SCM_TAG_OTHERS_VALUE_OFFSET_STRING       3
-#define SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR       3
-#define SCM_TAG_OTHERS_VALUE_OFFSET_VALUES       6
-#define SCM_TAG_OTHERS_VALUE_OFFSET_FUNC         6
-#define SCM_TAG_OTHERS_VALUE_OFFSET_PORT         6
-#define SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION 6
-#define SCM_TAG_OTHERS_VALUE_OFFSET_C_POINTER    6
-#define SCM_TAG_OTHERS_VALUE_OFFSET_SPECIALCONST 6
-
+#define SCM_TAG_OTHERS_MASK_1                    0x7
+#define SCM_TAG_OTHERS_MASK_2                    0x3f
+#define SCM_TAG_OTHERS_MASK_SYMBOL               SCM_TAG_OTHERS_MASK_1
+#define SCM_TAG_OTHERS_MASK_STRING               SCM_TAG_OTHERS_MASK_1
+#define SCM_TAG_OTHERS_MASK_VECTOR               SCM_TAG_OTHERS_MASK_1
+#define SCM_TAG_OTHERS_MASK_VALUES               SCM_TAG_OTHERS_MASK_2
+#define SCM_TAG_OTHERS_MASK_FUNC                 SCM_TAG_OTHERS_MASK_2
+#define SCM_TAG_OTHERS_MASK_PORT                 SCM_TAG_OTHERS_MASK_2
+#define SCM_TAG_OTHERS_MASK_CONTINUATION         SCM_TAG_OTHERS_MASK_2
+#define SCM_TAG_OTHERS_MASK_C_POINTER            SCM_TAG_OTHERS_MASK_2
+#define SCM_TAG_OTHERS_MASK_SPECIALCONST         SCM_TAG_OTHERS_MASK_2
+#define SCM_TAG_OTHERS_MASK_FREECELL             SCM_TAG_OTHERS_MASK_2
+#define SCM_TAG_OTHERS_VALUE_OFFSET_1            3
+#define SCM_TAG_OTHERS_VALUE_OFFSET_2            6
+#define SCM_TAG_OTHERS_VALUE_OFFSET_SYMBOL       SCM_TAG_OTHERS_VALUE_OFFSET_1
+#define SCM_TAG_OTHERS_VALUE_OFFSET_STRING       SCM_TAG_OTHERS_VALUE_OFFSET_1
+#define SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR       SCM_TAG_OTHERS_VALUE_OFFSET_1
+#define SCM_TAG_OTHERS_VALUE_OFFSET_VALUES       SCM_TAG_OTHERS_VALUE_OFFSET_2
+#define SCM_TAG_OTHERS_VALUE_OFFSET_FUNC         SCM_TAG_OTHERS_VALUE_OFFSET_2
+#define SCM_TAG_OTHERS_VALUE_OFFSET_PORT         SCM_TAG_OTHERS_VALUE_OFFSET_2
+#define SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION SCM_TAG_OTHERS_VALUE_OFFSET_2
+#define SCM_TAG_OTHERS_VALUE_OFFSET_C_POINTER    SCM_TAG_OTHERS_VALUE_OFFSET_2
+#define SCM_TAG_OTHERS_VALUE_OFFSET_SPECIALCONST SCM_TAG_OTHERS_VALUE_OFFSET_2
 #define SCM_TAG_OTHERS_SYMBOL       0x1
 #define SCM_TAG_OTHERS_STRING       0x3
 #define SCM_TAG_OTHERS_VECTOR       0x5
@@ -155,12 +166,14 @@ struct ScmCell_ {
 #define SCM_TAG_OTHERS_UNDEF        0x77
 #define SCM_TAG_OTHERS_FREECELL     0x3f
 
-#define SCM_TAG_IMM_MASK_1   0xe
-#define SCM_TAG_IMM_MASK_2   0x1e
-#define SCM_TAG_IMM_MASK_3   0x7e
-#define SCM_TAG_IMM_VALUE_OFFSET_INT   4
-#define SCM_TAG_IMM_VALUE_OFFSET_CHAR  5
-
+#define SCM_TAG_IMM_MASK_1            0xe
+#define SCM_TAG_IMM_MASK_2            0x1e
+#define SCM_TAG_IMM_MASK_3            0x7e
+#define SCM_TAG_IMM_MASK_INT          SCM_TAG_IMM_MASK_1
+#define SCM_TAG_IMM_MASK_CHAR         SCM_TAG_IMM_MASK_2
+#define SCM_TAG_IMM_MASK_CONST        SCM_TAG_IMM_MASK_3
+#define SCM_TAG_IMM_VALUE_OFFSET_INT  4
+#define SCM_TAG_IMM_VALUE_OFFSET_CHAR 5
 #define SCM_TAG_IMM_INT     0x6
 #define SCM_TAG_IMM_CHAR    0xe
 #define SCM_TAG_IMM_CONST   0x1e
@@ -184,32 +197,32 @@ struct ScmCell_ {
 #define SCM_TAG_IMMEDIATEP(a) (((unsigned int)(a) & SCM_TAG_MASK) == SCM_TAG_IMM)
 
 /* Tag -> Others */
-#define SCM_TAG_OTHERS_SYMBOLP(a)       ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_1) == SCM_TAG_OTHERS_SYMBOL))
-#define SCM_TAG_OTHERS_STRINGP(a)       ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_1) == SCM_TAG_OTHERS_STRING))
-#define SCM_TAG_OTHERS_VECTORP(a)       ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_1) == SCM_TAG_OTHERS_VECTOR))
-#define SCM_TAG_OTHERS_VALUESP(a)       ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_2) == SCM_TAG_OTHERS_VALUES))
-#define SCM_TAG_OTHERS_FUNCP(a)         ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_2) == SCM_TAG_OTHERS_FUNC))
-#define SCM_TAG_OTHERS_PORTP(a)         ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_2) == SCM_TAG_OTHERS_PORT))
-#define SCM_TAG_OTHERS_CONTINUATIONP(a) ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_2) == SCM_TAG_OTHERS_CONTINUATION))
-#define SCM_TAG_OTHERS_C_POINTERP(a)    ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_2) == SCM_TAG_OTHERS_C_POINTER))
-#define SCM_TAG_OTHERS_SPECIALCONSTP(a) ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_2) == SCM_TAG_OTHERS_SPECIALCONST))
-#define SCM_TAG_OTHERS_FREECELLP(a)     ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_2) == SCM_TAG_OTHERS_FREECELL))
+#define SCM_TAG_OTHERS_SYMBOLP(a)       ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_SYMBOL) == SCM_TAG_OTHERS_SYMBOL))
+#define SCM_TAG_OTHERS_STRINGP(a)       ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_STRING) == SCM_TAG_OTHERS_STRING))
+#define SCM_TAG_OTHERS_VECTORP(a)       ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_VECTOR) == SCM_TAG_OTHERS_VECTOR))
+#define SCM_TAG_OTHERS_VALUESP(a)       ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_VALUES) == SCM_TAG_OTHERS_VALUES))
+#define SCM_TAG_OTHERS_FUNCP(a)         ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_FUNC) == SCM_TAG_OTHERS_FUNC))
+#define SCM_TAG_OTHERS_PORTP(a)         ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_PORT) == SCM_TAG_OTHERS_PORT))
+#define SCM_TAG_OTHERS_CONTINUATIONP(a) ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_CONTINUATION) == SCM_TAG_OTHERS_CONTINUATION))
+#define SCM_TAG_OTHERS_C_POINTERP(a)    ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_C_POINTER) == SCM_TAG_OTHERS_C_POINTER))
+#define SCM_TAG_OTHERS_SPECIALCONSTP(a) ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_SPECIALCONST) == SCM_TAG_OTHERS_SPECIALCONST))
+#define SCM_TAG_OTHERS_FREECELLP(a)     ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_FREECELL) == SCM_TAG_OTHERS_FREECELL))
 
 #define SCM_TAG_OTHERS_C_VOID_POINTERP(a) (SCM_TAG_OTHERS_C_POINTERP(a) \
-                                           && ((unsigned int)(a->Y) >> SCM_TAG_OTHERS_VALUE_OFFSET_C_POINTER) == 0)
+                                           && ((unsigned int)(a->Y) >> SCM_TAG_OTHERS_VALUE_OFFSET_C_POINTER)    == 0)
 #define SCM_TAG_OTHERS_C_FUNC_POINTERP(a) (SCM_TAG_OTHERS_C_POINTERP(a) \
-                                           && ((unsigned int)(a->Y) >> SCM_TAG_OTHERS_VALUE_OFFSET_C_POINTER) != 0)
+                                           && ((unsigned int)(a->Y) >> SCM_TAG_OTHERS_VALUE_OFFSET_C_POINTER)    != 0)
 #define SCM_TAG_OTHERS_EOFP(a)            (SCM_TAG_OTHERS_SPECIALCONSTP(a) \
                                            && ((unsigned int)(a->Y) >> SCM_TAG_OTHERS_VALUE_OFFSET_SPECIALCONST) == 0)
 #define SCM_TAG_OTHERS_UNDEFP(a)          (SCM_TAG_OTHERS_SPECIALCONSTP(a) \
                                            && ((unsigned int)(a->Y) >> SCM_TAG_OTHERS_VALUE_OFFSET_SPECIALCONST) == 1)
 
 /* Tag -> Imm */
-#define SCM_TAG_IMM_INTP(a)     ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_OTHERS_MASK_1) == SCM_TAG_IMM_INT))
-#define SCM_TAG_IMM_CHARP(a)    ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_OTHERS_MASK_2) == SCM_TAG_IMM_CHAR))
-#define SCM_TAG_IMM_INVALIDP(a) ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_OTHERS_MASK_3) == SCM_TAG_IMM_INVALID))
-#define SCM_TAG_IMM_TRUEP(a)    ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_OTHERS_MASK_3) == SCM_TAG_IMM_TRUE))
-#define SCM_TAG_IMM_FALSEP(a)   ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_OTHERS_MASK_3) == SCM_TAG_IMM_FALSE))
+#define SCM_TAG_IMM_INTP(a)     ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_IMM_MASK_INT)   == SCM_TAG_IMM_INT))
+#define SCM_TAG_IMM_CHARP(a)    ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_IMM_MASK_CHAR)  == SCM_TAG_IMM_CHAR))
+#define SCM_TAG_IMM_INVALIDP(a) ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_IMM_MASK_CONST) == SCM_TAG_IMM_INVALID))
+#define SCM_TAG_IMM_TRUEP(a)    ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_IMM_MASK_CONST) == SCM_TAG_IMM_TRUE))
+#define SCM_TAG_IMM_FALSEP(a)   ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_IMM_MASK_CONST) == SCM_TAG_IMM_FALSE))
 
 /* Type Predicates */
 #define SCM_CONSP(a)             (SCM_TAG_CONSP(a))
