@@ -42,21 +42,21 @@
  *
  * (0) LSB(Least Significant Bit) of "S" is called G-bit.
  *
- * (1) if S == "...00G", S is ConsCell. G-bit of S->X is used as
- *     S->Y's G bit is always set to 0, which helps determine the
+ * (1) if S == "...00G", S is ConsCell. G-bit of S->car is used as
+ *     S->cdr's G bit is always set to 0, which helps determine the
  *     finalization semantics without a pointer.
  *
- * (2) if S == "...01G", S is Closure. G-bit of S->X is used as
+ * (2) if S == "...01G", S is Closure. G-bit of S->car is used as
  *     marking bit of GC.
- *     S->Y's G bit is always set to 0, which helps determine the
+ *     S->cdr's G bit is always set to 0, which helps determine the
  *     finalization semantics without a pointer.
  *
  * (4) if S == "...10G", S is other types. Type is separated by the
- *     value of least n bits of S->Y.
- *     S->Y's G bit is always set to 1, which helps determine the
+ *     value of least n bits of S->cdr.
+ *     S->cdr's G bit is always set to 1, which helps determine the
  *     finalization semantics without a pointer.
  *
- *        S->Y              Type                content of S->Y
+ *        S->cdr              Type                content of S->cdr
  *     .....|00|1 : Symbol              : symbol name
  *     .....|01|1 : String              : string length
  *     .....|10|1 : Vector              : vector length
@@ -110,9 +110,110 @@ typedef ScmObj (*ScmFuncType)();
 /*=======================================
    Struct Declarations
 =======================================*/
+/*
+ * Internal representation of these types MUST NOT directly touched by libsscm
+ * users. What libsscm users allowed is referring the types and constant values
+ * in declarations and definitions.
+ *
+ * All operations touching the internal representation such as accessing a
+ * member of a struct must be performed through the accessor macros defined in
+ * the section "Accessors For Scheme Objects" below. Otherwise the client code
+ * of libsscm will be broken when SigScheme has change internal object
+ * representations. The macros abstract the difference.
+ */
+
 struct ScmCell_ {
-    ScmObj X;
-    ScmObj Y;
+    ScmObj car;
+    ScmObj cdr;
+};
+
+/* ScmPort direction */
+enum ScmPortDirection {
+    PORT_INPUT  = 0,
+    PORT_OUTPUT = 1
+};
+
+/* ScmPort type */
+enum ScmPortType {
+    PORT_FILE   = 0,
+    PORT_STRING = 1
+};
+
+/* ScmPort Info */
+struct _ScmPortInfo {
+    enum ScmPortType port_type; /* (PORT_FILE  | PORT_STRING) */
+    
+    union {
+        struct {
+            FILE *file;
+            char *filename;            
+            int line;
+        } file_port;
+        
+        struct {
+            char *port_str;
+            const char *str_currentpos;
+        } str_port;
+    } info;
+
+    int  (*getc_func) (ScmObj port);
+    void (*print_func) (ScmObj port, const char* str);    
+    int ungottenchar;
+};
+
+/*
+ * Function types:
+ *
+ * Function objects must tag themselves with proper information so
+ * that the evaluator can correctly invoke them.  See doc/invocation
+ * for details.
+ */
+enum ScmFuncTypeCode {
+    SCM_FUNCTYPE_MAND_BITS = 4,
+    SCM_FUNCTYPE_MAND_MASK = (1 << SCM_FUNCTYPE_MAND_BITS)-1,
+#define SCM_FUNCTYPE_MAND_MAX 5
+    /* SCM_FUNCTYPE_MAND_MAX  = 5, */
+    SCM_FUNCTYPE_SYNTAX    = 1 << SCM_FUNCTYPE_MAND_BITS,
+
+    SCM_FUNCTYPE_FIXED     = 0 << (SCM_FUNCTYPE_MAND_BITS+1),
+    SCM_FUNCTYPE_VARIADIC  = 1 << (SCM_FUNCTYPE_MAND_BITS+1),
+    SCM_FUNCTYPE_TAIL_REC  = 1 << (SCM_FUNCTYPE_MAND_BITS+2),
+
+    SCM_FUNCTYPE_ODDBALL   = 1 << (SCM_FUNCTYPE_MAND_BITS+10),
+
+    /* Compound types. */
+    SCM_PROCEDURE_FIXED              = SCM_FUNCTYPE_FIXED,
+    SCM_PROCEDURE_FIXED_TAIL_REC     = SCM_FUNCTYPE_TAIL_REC,
+    SCM_PROCEDURE_VARIADIC           = SCM_FUNCTYPE_VARIADIC,
+    SCM_PROCEDURE_VARIADIC_TAIL_REC  = SCM_FUNCTYPE_VARIADIC | SCM_FUNCTYPE_TAIL_REC,
+
+    SCM_SYNTAX_FIXED          = SCM_PROCEDURE_FIXED | SCM_FUNCTYPE_SYNTAX,
+    SCM_SYNTAX_FIXED_TAIL_REC = SCM_PROCEDURE_FIXED_TAIL_REC | SCM_FUNCTYPE_SYNTAX,
+    SCM_SYNTAX_VARIADIC       = SCM_PROCEDURE_VARIADIC | SCM_FUNCTYPE_SYNTAX,
+    SCM_SYNTAX_VARIADIC_TAIL_REC = SCM_PROCEDURE_VARIADIC_TAIL_REC | SCM_FUNCTYPE_SYNTAX,
+
+    /* Special type. */
+    SCM_REDUCTION_OPERATOR = SCM_FUNCTYPE_ODDBALL
+};
+
+/* Where we are in a reduction process. */
+enum ScmReductionState {
+    SCM_REDUCE_0,               /* No argument was given. */
+    SCM_REDUCE_1,               /* Only 1 argument was given. */
+    SCM_REDUCE_PARTWAY,         /* We have more arguments pending. */
+    SCM_REDUCE_LAST,            /* The callee must finalize. */
+    SCM_REDUCE_STOP             /* Callee wants to stop. */
+};
+
+enum ScmReturnType {
+    SCM_RETTYPE_AS_IS           = 0,
+    SCM_RETTYPE_NEED_EVAL       = 1
+};
+
+/* The evaluator's state */
+struct ScmEvalState_ {
+    ScmObj env;
+    enum ScmReturnType ret_type;
 };
 
 /*=======================================
@@ -228,18 +329,18 @@ struct ScmCell_ {
 #define SCM_TAG_IMMEDIATEP(a) ((((unsigned int)(a)) & SCM_TAG_MASK) == SCM_TAG_IMM)
 
 /* Tag -> Others */
-#define SCM_TAG_OTHERS_SYMBOLP(a)         ((((unsigned int)(a->Y)) & SCM_TAG_OTHERS_MASK_SYMBOL) == SCM_TAG_OTHERS_SYMBOL)
-#define SCM_TAG_OTHERS_STRINGP(a)         ((((unsigned int)(a->Y)) & SCM_TAG_OTHERS_MASK_STRING) == SCM_TAG_OTHERS_STRING)
-#define SCM_TAG_OTHERS_VECTORP(a)         ((((unsigned int)(a->Y)) & SCM_TAG_OTHERS_MASK_VECTOR) == SCM_TAG_OTHERS_VECTOR)
-#define SCM_TAG_OTHERS_VALUESP(a)         ((((unsigned int)(a->Y)) & SCM_TAG_OTHERS_MASK_VALUES) == SCM_TAG_OTHERS_VALUES)
-#define SCM_TAG_OTHERS_FUNCP(a)           ((((unsigned int)(a->Y)) & SCM_TAG_OTHERS_MASK_FUNC) == SCM_TAG_OTHERS_FUNC)
-#define SCM_TAG_OTHERS_PORTP(a)           ((((unsigned int)(a->Y)) & SCM_TAG_OTHERS_MASK_PORT) == SCM_TAG_OTHERS_PORT)
-#define SCM_TAG_OTHERS_CONTINUATIONP(a)   ((((unsigned int)(a->Y)) & SCM_TAG_OTHERS_MASK_CONTINUATION) == SCM_TAG_OTHERS_CONTINUATION)
-#define SCM_TAG_OTHERS_C_POINTERP(a)      ((((unsigned int)(a->Y)) & SCM_TAG_OTHERS_MASK_C_POINTER) == SCM_TAG_OTHERS_C_POINTER)
-#define SCM_TAG_OTHERS_C_FUNC_POINTERP(a) ((((unsigned int)(a->Y)) & SCM_TAG_OTHERS_MASK_C_POINTER) == SCM_TAG_OTHERS_C_FUNC_POINTER)
-#define SCM_TAG_OTHERS_EOFP(a)            ((((unsigned int)(a->Y)) & SCM_TAG_OTHERS_MASK_SPECIALCONST) == SCM_TAG_OTHERS_EOF)
-#define SCM_TAG_OTHERS_UNDEFP(a)          ((((unsigned int)(a->Y)) & SCM_TAG_OTHERS_MASK_SPECIALCONST) == SCM_TAG_OTHERS_UNDEF)
-#define SCM_TAG_OTHERS_FREECELLP(a)       ((((unsigned int)(a->Y)) & SCM_TAG_OTHERS_MASK_FREECELL) == SCM_TAG_OTHERS_FREECELL)
+#define SCM_TAG_OTHERS_SYMBOLP(a)         ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_SYMBOL) == SCM_TAG_OTHERS_SYMBOL)
+#define SCM_TAG_OTHERS_STRINGP(a)         ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_STRING) == SCM_TAG_OTHERS_STRING)
+#define SCM_TAG_OTHERS_VECTORP(a)         ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_VECTOR) == SCM_TAG_OTHERS_VECTOR)
+#define SCM_TAG_OTHERS_VALUESP(a)         ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_VALUES) == SCM_TAG_OTHERS_VALUES)
+#define SCM_TAG_OTHERS_FUNCP(a)           ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_FUNC) == SCM_TAG_OTHERS_FUNC)
+#define SCM_TAG_OTHERS_PORTP(a)           ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_PORT) == SCM_TAG_OTHERS_PORT)
+#define SCM_TAG_OTHERS_CONTINUATIONP(a)   ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_CONTINUATION) == SCM_TAG_OTHERS_CONTINUATION)
+#define SCM_TAG_OTHERS_C_POINTERP(a)      ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_C_POINTER) == SCM_TAG_OTHERS_C_POINTER)
+#define SCM_TAG_OTHERS_C_FUNC_POINTERP(a) ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_C_POINTER) == SCM_TAG_OTHERS_C_FUNC_POINTER)
+#define SCM_TAG_OTHERS_EOFP(a)            ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_SPECIALCONST) == SCM_TAG_OTHERS_EOF)
+#define SCM_TAG_OTHERS_UNDEFP(a)          ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_SPECIALCONST) == SCM_TAG_OTHERS_UNDEF)
+#define SCM_TAG_OTHERS_FREECELLP(a)       ((((unsigned int)(SCM_GET_AS_OBJ(a)->cdr)) & SCM_TAG_OTHERS_MASK_FREECELL) == SCM_TAG_OTHERS_FREECELL)
 
 /* Tag -> Imm */
 #define SCM_TAG_IMM_INTP(a)               ((((unsigned int)(a)) & SCM_TAG_IMM_MASK_INT)   == SCM_TAG_IMM_INT)
@@ -254,7 +355,7 @@ struct ScmCell_ {
 #define SCM_SYMBOLP(a)           (SCM_TAG_OTHERS_SYMBOLP(a))
 #define SCM_STRINGP(a)           (SCM_TAG_OTHERS_STRINGP(a))
 #define SCM_VECTORP(a)           (SCM_TAG_OTHERS_VECTORP(a))
-#define SCM_VALUESP(a)           (SCM_TAG_OTHERS_VALUESP(a))
+#define SCM_VALUEPACKETP(a)      (SCM_TAG_OTHERS_VALUESP(a))
 #define SCM_FUNCP(a)             (SCM_TAG_OTHERS_FUNCP(a))
 #define SCM_PORTP(a)             (SCM_TAG_OTHERS_PORTP(a))
 #define SCM_CONTINUATIONP(a)     (SCM_TAG_OTHERS_CONTINUATIONP(a))
@@ -267,41 +368,40 @@ struct ScmCell_ {
 /*=======================================
    Type Confirmation
 =======================================*/
-#define SCM_GET_VALUE(a)         ((ScmObj)(((unsigned int)(a)) & SCM_VALUE_MASK))
 #if SCM_ACCESSOR_ASSERT
 #define SCM_ASSERT_TYPE(cond, a) (SCM_ASSERT(cond), SCM_GET_VALUE((a)))
 #else
 #define SCM_ASSERT_TYPE(cond, a) (SCM_GET_VALUE((a)))
 #endif /* SCM_ACCESSOR_ASSERT */
-#define SCM_AS_CONS(a)           (SCM_ASSERT_TYPE(SCM_CONSP(SCM_GET_VALUE((a))),          (a)))
-#define SCM_AS_CLOSURE(a)        (SCM_ASSERT_TYPE(SCM_CLOSUREP(SCM_GET_VALUE((a))),       (a)))
-#define SCM_AS_SYMBOL(a)         (SCM_ASSERT_TYPE(SCM_SYMBOLP(SCM_GET_VALUE((a))),        (a)))
-#define SCM_AS_STRING(a)         (SCM_ASSERT_TYPE(SCM_STRINGP(SCM_GET_VALUE((a))),        (a)))
-#define SCM_AS_VECTOR(a)         (SCM_ASSERT_TYPE(SCM_VECTORP(SCM_GET_VALUE((a))),        (a)))
-#define SCM_AS_VALUEPACKET(a)    (SCM_ASSERT_TYPE(SCM_VALUEPACKETP(SCM_GET_VALUE((a))),   (a)))
-#define SCM_AS_FUNC(a)           (SCM_ASSERT_TYPE(SCM_FUNCP(SCM_GET_VALUE((a))),          (a)))
-#define SCM_AS_PORT(a)           (SCM_ASSERT_TYPE(SCM_PORTP(SCM_GET_VALUE((a))),          (a)))
-#define SCM_AS_CONTINUATION(a)   (SCM_ASSERT_TYPE(SCM_CONTINUATIONP(SCM_GET_VALUE((a))),  (a)))
-#define SCM_AS_C_POINTER(a)      (SCM_ASSERT_TYPE(SCM_C_POINTERP(SCM_GET_VALUE((a))),     (a)))
-#define SCM_AS_C_FUNCPOINTER(a)  (SCM_ASSERT_TYPE(SCM_C_FUNCPOINTERP(SCM_GET_VALUE((a))), (a)))
-#define SCM_AS_INT(a)            (SCM_ASSERT_TYPE(SCM_INTP(SCM_GET_VALUE((a))),           (a)))
-#define SCM_AS_CHAR(a)           (SCM_ASSERT_TYPE(SCM_CHARP(SCM_GET_VALUE((a))),          (a)))
+#define SCM_AS_CONS(a)           (SCM_ASSERT_TYPE(SCM_CONSP((a)),          (a)))
+#define SCM_AS_CLOSURE(a)        (SCM_ASSERT_TYPE(SCM_CLOSUREP((a)),       (a)))
+#define SCM_AS_SYMBOL(a)         (SCM_ASSERT_TYPE(SCM_SYMBOLP((a)),        (a)))
+#define SCM_AS_STRING(a)         (SCM_ASSERT_TYPE(SCM_STRINGP((a)),        (a)))
+#define SCM_AS_VECTOR(a)         (SCM_ASSERT_TYPE(SCM_VECTORP((a)),        (a)))
+#define SCM_AS_VALUEPACKET(a)    (SCM_ASSERT_TYPE(SCM_VALUEPACKETP((a)),   (a)))
+#define SCM_AS_FUNC(a)           (SCM_ASSERT_TYPE(SCM_FUNCP((a)),          (a)))
+#define SCM_AS_PORT(a)           (SCM_ASSERT_TYPE(SCM_PORTP((a)),          (a)))
+#define SCM_AS_CONTINUATION(a)   (SCM_ASSERT_TYPE(SCM_CONTINUATIONP((a)),  (a)))
+#define SCM_AS_C_POINTER(a)      (SCM_ASSERT_TYPE(SCM_C_POINTERP((a)),     (a)))
+#define SCM_AS_C_FUNCPOINTER(a)  (SCM_ASSERT_TYPE(SCM_C_FUNCPOINTERP((a)), (a)))
+#define SCM_AS_INT(a)            (SCM_ASSERT_TYPE(SCM_INTP((a)),           (a)))
+#define SCM_AS_CHAR(a)           (SCM_ASSERT_TYPE(SCM_CHARP((a)),          (a)))
 
 /*=======================================
    Entyping Macros
 =======================================*/
-#define SCM_ENTYPE_SYMBOL(a)          (a = (ScmObj)(((unsigned int)(a)) & (SCM_VALUE_MASK | SCM_TAG_OTHERS_SYMBOL)))
-#define SCM_ENTYPE_STRING(a)          (a = (ScmObj)(((unsigned int)(a)) & (SCM_VALUE_MASK | SCM_TAG_OTHERS_STRING)))
-#define SCM_ENTYPE_VECTOR(a)          (a = (ScmObj)(((unsigned int)(a)) & (SCM_VALUE_MASK | SCM_TAG_OTHERS_VECTOR)))
-#define SCM_ENTYPE_VALUES(a)          (a = (ScmObj)(((unsigned int)(a)) & (SCM_VALUE_MASK | SCM_TAG_OTHERS_VALUES)))
-#define SCM_ENTYPE_FUNC(a)            (a = (ScmObj)(((unsigned int)(a)) & (SCM_VALUE_MASK | SCM_TAG_OTHERS_FUNC)))
-#define SCM_ENTYPE_PORT(a)            (a = (ScmObj)(((unsigned int)(a)) & (SCM_VALUE_MASK | SCM_TAG_OTHERS_PORT)))
-#define SCM_ENTYPE_CONTINUATION(a)    (a = (ScmObj)(((unsigned int)(a)) & (SCM_VALUE_MASK | SCM_TAG_OTHERS_CONTINUATION)))
-#define SCM_ENTYPE_C_POINTER(a)       (a = (ScmObj)(((unsigned int)(a)) & (SCM_VALUE_MASK | SCM_TAG_OTHERS_C_POINTER)))
-#define SCM_ENTYPE_C_FUNC_POINTER(a)  (a = (ScmObj)(((unsigned int)(a)) & (SCM_VALUE_MASK | SCM_TAG_OTHERS_C_FUNC_POINTERP)))
-#define SCM_ENTYPE_EOF(a)             (a = (ScmObj)(((unsigned int)(a)) & (SCM_VALUE_MASK | SCM_TAG_OTHERS_EOF)))
-#define SCM_ENTYPE_UNDEF(a)           (a = (ScmObj)(((unsigned int)(a)) & (SCM_VALUE_MASK | SCM_TAG_OTHERS_UNDEF)))
-#define SCM_ENTYPE_FREECELL(a)        (a = (ScmObj)(((unsigned int)(a)) & (SCM_VALUE_MASK | SCM_TAG_OTHERS_FREECELL)))
+#define SCM_ENTYPE_SYMBOL(a)          (a = (ScmObj)SCM_TAG_OTHERS_SYMBOL)
+#define SCM_ENTYPE_STRING(a)          (a = (ScmObj)SCM_TAG_OTHERS_STRING)
+#define SCM_ENTYPE_VECTOR(a)          (a = (ScmObj)SCM_TAG_OTHERS_VECTOR)
+#define SCM_ENTYPE_VALUES(a)          (a = (ScmObj)SCM_TAG_OTHERS_VALUES)
+#define SCM_ENTYPE_FUNC(a)            (a = (ScmObj)SCM_TAG_OTHERS_FUNC)
+#define SCM_ENTYPE_PORT(a)            (a = (ScmObj)SCM_TAG_OTHERS_PORT)
+#define SCM_ENTYPE_CONTINUATION(a)    (a = (ScmObj)SCM_TAG_OTHERS_CONTINUATION)
+#define SCM_ENTYPE_C_POINTER(a)       (a = (ScmObj)SCM_TAG_OTHERS_C_POINTER)
+#define SCM_ENTYPE_C_FUNC_POINTER(a)  (a = (ScmObj)SCM_TAG_OTHERS_C_FUNC_POINTERP)
+#define SCM_ENTYPE_EOF(a)             (a = (ScmObj)SCM_TAG_OTHERS_EOF)
+#define SCM_ENTYPE_UNDEF(a)           (a = (ScmObj)SCM_TAG_OTHERS_UNDEF)
+#define SCM_ENTYPE_FREECELL(a)        (a = (ScmObj)SCM_TAG_OTHERS_FREECELL)
 #define SCM_ENTYPE_INT(a)             (a = (ScmObj)SCM_TAG_IMM_INT)
 #define SCM_ENTYPE_CHAR(a)            (a = (ScmObj)SCM_TAG_IMM_CHAR)
 #define SCM_ENTYPE_INVALID(a)         (a = (ScmObj)SCM_TAG_IMM_INVALID)
@@ -312,16 +412,17 @@ struct ScmCell_ {
 /*=======================================
    Real Accessors
 =======================================*/
-#define SCM_GET_AS_INT(a, offset)            ((int)(((unsigned int)(a)) >> offset))
-#define SCM_GET_AS_PTR(a, mask)              ((void*)(((unsigned int)(a)) & mask))
-#define SCM_GET_AS_STR(a, mask)              ((char*)SCM_GET_AS_PTR(a, mask))
-#define SCM_SET_AS_OBJ(a, b)                 (a = (ScmObj)(((unsigned int)(a)) & SCM_GCBIT_MASK) | (((unsigned int)b) & ~SCM_GCBIT_MASK))
-#define SCM_SET_AS_INT(a, val, offset, mask) (a = (ScmObj)((((unsigned int)(a)) & mask) | (val << offset)))
-#define SCM_SET_AS_PTR(a, val, mask)         (a = (ScmObj)((((unsigned int)(a)) & mask) | val))
-#define SCM_SET_AS_STR(a, val, mask)         (SCM_SET_AS_PTR(a, val, mask))
+#define SCM_GET_AS_OBJ(a)         ((ScmObj)(((unsigned int)(a)) & SCM_VALUE_MASK))
+#define SCM_GET_AS_INT(a, offset) ((int)(((unsigned int)(a)) >> offset))
+#define SCM_GET_AS_PTR(a, mask)   ((void*)(((unsigned int)(a)) & mask))
+#define SCM_GET_AS_STR(a, mask)   ((char*)SCM_GET_AS_PTR(a, mask))
+#define SCM_SET_AS_OBJ(a, b)      (a = (ScmObj)(((unsigned int)(a)) & SCM_GCBIT_MASK) | (((unsigned int)b) & ~SCM_GCBIT_MASK))
+#define SCM_SET_AS_INT(a, val, offset, tag) (a = (ScmObj)(tag | (val << offset)))
+#define SCM_SET_AS_PTR(a, val, tag)         (a = (ScmObj)(tag | val))
+#define SCM_SET_AS_STR(a, val, tag)         (SCM_SET_AS_PTR(a, val, tag))
 
-#define SCM_CAR(a)                     (SCM_AS_CONS(a)->X)
-#define SCM_CDR(a)                     (SCM_AS_CONS(a)->Y)
+#define SCM_CAR(a)                     (SCM_AS_CONS(a)->car)
+#define SCM_CDR(a)                     (SCM_AS_CONS(a)->cdr)
 #define SCM_CONS_SET_CAR(a, car)       (SCM_SET_AS_OBJ(SCM_CAR(a), car))
 #define SCM_CONS_SET_CDR(a, cdr)       (SCM_SET_AS_OBJ(SCM_CDR(a), cdr))
 #define SCM_CAAR(a)                    (SCM_CAR(SCM_CAR(a)))
@@ -329,27 +430,148 @@ struct ScmCell_ {
 #define SCM_CDAR(a)                    (SCM_CDR(SCM_CAR(a)))
 #define SCM_CDDR(a)                    (SCM_CDR(SCM_CDR(a)))
 
-#define SCM_CLOSURE_EXP(a)             (SCM_AS_CLOSURE(a)->X)
-#define SCM_CLOSURE_ENV(a)             (SCM_AS_CLOSURE(a)->Y)
+#define SCM_CLOSURE_EXP(a)             (SCM_AS_CLOSURE(a)->car)
+#define SCM_CLOSURE_ENV(a)             (SCM_AS_CLOSURE(a)->cdr)
 #define SCM_CLOSURE_SET_EXP(a, exp)    (SCM_SET_AS_OBJ(SCM_CLOSURE_EXP(a), exp))
 #define SCM_CLOSURE_SET_ENV(a, exp)    (SCM_SET_AS_OBJ(SCM_CLOSURE_EXP(a), env))
 
-#define SCM_SYMBOL_VCELL(a)            (SCM_AS_SYMBOL(a)->X)
-#define SCM_SYMBOL_NAME(a)             (SCM_GET_AS_STR(SCM_AS_SYMBOL(a)->Y, ~SCM_TAG_OTHERS_MASK_SYMBOL))
+#define SCM_SYMBOL_VCELL(a)            (SCM_AS_SYMBOL(a)->car)
+#define SCM_SYMBOL_NAME(a)             (SCM_GET_AS_STR(SCM_AS_SYMBOL(a)->cdr, ~SCM_TAG_OTHERS_MASK_SYMBOL))
 #define SCM_SYMBOL_SET_VCELL(a, vcell) (SCM_SET_AS_OBJ(SCM_SYMBOL_VCELL(a), vcell))
-#define SCM_SYMBOL_SET_NAME(a, name)   (SCM_SET_AS_STR(SCM_AS_SYMBOL(a)->Y, name, SCM_TAG_OTHERS_MASK_SYMBOL))
+#define SCM_SYMBOL_SET_NAME(a, name)   (SCM_SET_AS_STR(SCM_AS_SYMBOL(a)->cdr, name, SCM_TAG_OTHERS_SYMBOL))
 
-#define SCM_STRING_LEN(a)              (SCM_GET_AS_INT(SCM_AS_STRING(a)->X, SCM_TAG_OTHERS_VALUE_OFFSET_STRING))
-#define SCM_STRING_STR(a)              (SCM_GET_AS_STR(SCM_AS_STRING(a)->Y, ~SCM_TAG_OTHERS_MASK_STRING))
-#define SCM_STRING_SET_LEN(a, len)     (SCM_SET_AS_INT(SCM_AS_STRING(a)->X, len, SCM_TAG_OTHERS_VALUE_OFFSET_STRING, SCM_TAG_OTHERS_MASK_STRING))
-#define SCM_STRING_SET_STR(a, str)     (SCM_SET_AS_STR(SCM_AS_STRING(a)->Y, str, SCM_TAG_OTHERS_MASK_STRING))
+#define SCM_STRING_LEN(a)              (SCM_GET_AS_INT(SCM_AS_STRING(a)->car, SCM_TAG_OTHERS_VALUE_OFFSET_STRING))
+#define SCM_STRING_STR(a)              (SCM_GET_AS_STR(SCM_AS_STRING(a)->cdr, ~SCM_TAG_OTHERS_MASK_STRING))
+#define SCM_STRING_SET_LEN(a, len)     (SCM_SET_AS_INT(SCM_AS_STRING(a)->car, len, SCM_TAG_OTHERS_VALUE_OFFSET_STRING, SCM_TAG_OTHERS_STRING))
+#define SCM_STRING_SET_STR(a, str)     (SCM_SET_AS_STR(SCM_AS_STRING(a)->cdr, str, SCM_TAG_OTHERS_STRING))
 
-#define SCM_VECTOR_VEC(a)              (SCM_GET_AS_PTR(SCM_AS_VECTOR(a)->X, ~SCM_TAG_OTHERS_MASK_VECTOR))
-#define SCM_VECTOR_LEN(a)              (SCM_GET_AS_INT(SCM_AS_VECTOR(a)->Y, SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR))
-#define SCM_VECTOR_SET_VEC(a, vec)     (SCM_SET_AS_PTR(SCM_AS_VECTOR(a)->X, vec, SCM_TAG_OTHERS_MASK_VECTOR))
-#define SCM_VECTOR_SET_LEN(a, len)     (SCM_SET_AS_INT(a, len, SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR, SCM_TAG_OTHERS_MASK_VECTOR))
+#define SCM_VECTOR_VEC(a)              (SCM_GET_AS_PTR(SCM_AS_VECTOR(a)->car, ~SCM_TAG_OTHERS_MASK_VECTOR))
+#define SCM_VECTOR_LEN(a)              (SCM_GET_AS_INT(SCM_AS_VECTOR(a)->cdr, SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR))
+#define SCM_VECTOR_SET_VEC(a, vec)     (SCM_SET_AS_PTR(SCM_AS_VECTOR(a)->car, vec, SCM_TAG_OTHERS_VECTOR))
+#define SCM_VECTOR_SET_LEN(a, len)     (SCM_SET_AS_INT(a, len, SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR, SCM_TAG_OTHERS_VECTOR))
+#define SCM_VECTOR_CREF(a, idx)        (SCM_VECTOR_VEC(a)[idx])
+#define SCM_VECTOR_SET_CREF(a, idx, b) (SCM_VECTOR_CREF((a), (idx)) = (b))
+#define SCM_VECTOR_REF(a, idx)         (SCM_VECTOR_CREF((a), SCM_INT_VALUE(idx)))
+#define SCM_VECTOR_SET_REF(a, idx, b)  (SCM_VECTOR_REF((a), (idx)) = (b))
+
+#define SCM_VALUEPACKET_VALUES(a)        (SCM_AS_VALUEPACKET(a)->car)
+#define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_SET_AS_OBJ(SCM_AS_VALUEPACKET(a)-X, v))
+
+#define SCM_FUNC_CFUNC(a)              ((ScmFuncType)SCM_GET_AS_PTR(SCM_AS_FUNC(a)->car, ~SCM_TAG_OTHERS_MASK_FUNC))
+#define SCM_FUNC_TYPECODE(a)           ((ScmFuncTypeCode)SCM_GET_AS_INT(SCM_AS_FUNC(a)->cdr, SCM_TAG_OTHERS_VALUE_OFFSET_FUNC))
+#define SCM_FUNC_SET_CFUNC(a, fptr)    (SCM_SET_AS_PTR(SCM_AS_FUNC(a)->car, fptr, SCM_TAG_OTHERS_FUNC))
+#define SCM_FUNC_SET_TYPECODE(a, code) (SCM_SET_AS_INT(SCM_AS_FUNC(a)->cdr, code, SCM_TAG_OTHERS_VALUE_OFFSET_FUNC, SCM_TAG_OTHERS_FUNC))
+
+#define SCM_PORT_PORTINFO(a)                (SCM_GET_AS_PTR(SCM_AS_PORT(a)->car, ~SCM_TAG_OTHERS_MASK_PORT))
+#define SCM_PORT_PORTDIRECTION(a)           (SCM_GET_AS_INT(SCM_AS_PORT(a)->cdr, SCM_TAG_OTHERS_VALUE_OFFSET_PORT))
+#define SCM_PORT_SET_PORTINFO(a, info)      (SCM_SET_AS_PTR(SCM_AS_PORT(a)->car, info, SCM_TAG_OTHERS_PORT))
+#define SCM_PORT_SET_PORTDIRECTION(a, dir)  (SCM_SET_AS_INT(SCM_AS_PORT(a)->cdr, dir, SCM_TAG_OTHERS_VALUE_OFFSET_PORT, SCM_TAG_OTHERS_PORT))
+
+#define SCM_PORT_PORTTYPE(a)                (SCM_PORT_PORTINFO(a)->port_type)
+#define SCM_PORT_SET_PORTTYPE(a, type)      (SCM_PORT_PORTTYPE(a) = type)
+#define SCM_PORT_UNGOTTENCHAR(a)            (SCM_PORT_PORTINFO(a)->ungottenchar)
+#define SCM_PORT_SET_UNGOTTENCHAR(a, ch)    (SCM_PORT_UNGOTTENCHAR(a) = ch)
+#define SCM_PORT_GETC_FUNC(a)               (SCM_PORT_PORTINFO(a)->getc_func)
+#define SCM_PORT_SET_GETC_FUNC(a, func)     (SCM_PORT_GETC_FUNC(a) = func)
+#define SCM_PORT_PRINT_FUNC(a)              (SCM_PORT_PORTINFO(a)->print_func)
+#define SCM_PORT_SET_PRINT_FUNC(a, func)    (SCM_PORT_PRINT_FUNC(a) = func)
+/* File Port */
+#define SCM_PORT_FILE(a)                    (SCM_PORT_PORTINFO(a)->info.file_port.file)
+#define SCM_PORT_SET_FILE(a, file)          (SCM_PORT_FILE(a) = file)
+#define SCM_PORT_FILENAME(a)                (SCM_PORT_PORTINFO(a)->info.file_port.filename)
+#define SCM_PORT_SET_FILENAME(a, filename)  (SCM_PORT_FILENAME(a) = filename)
+#define SCM_PORT_LINE(a)                    (SCM_PORT_PORTINFO(a)->info.file_port.line)
+#define SCM_PORT_SET_LINE(a, line)          (SCM_PORT_LINE(a) = line)
+/* String Port */
+#define SCM_PORT_STR(a)                     (SCM_PORT_PORTINFO(a)->info.str_port.port_str)
+#define SCM_PORT_SET_STR(a, str)            (SCM_PORT_STR(a) = str)
+#define SCM_PORT_STR_CURRENTPOS(a)          (SCM_PORT_PORTINFO(a)->info.str_port.str_currentpos)
+#define SCM_PORT_SET_STR_CURRENTPOS(a, pos) (SCM_PORT_STR_CURRENTPOS(a) = pos)
+
+#define SCM_CONTINUATION_ENV(a)             (SCM_GET_AS_PTR(a, ~SCM_TAG_OTHERS_MASK_CONTINUATION))
+#define SCM_CONTINUATION_JMPENV(a)          (SCM_CONTINUATION_ENV(a)->jmpenv)
+#define SCM_CONTINUATION_DYNEXT(a)          (SCM_CONTINUATION_ENV(a)->dynext)
+#define SCM_CONTINUATION_SET_ENV(a, env)    (SCM_SET_AS_PTR(a, env, SCM_TAG_OTHERS_CONTINUATION))
+#define SCM_CONTINUATION_SET_JMPENV(a, jmp) (SCM_CONTINUATION_JMPENV(a) = jmp)
+#define SCM_CONTINUATION_SET_DYNEXT(a, ext) (SCM_CONTINUATION_DYNEXT(a) = ext)
 
 #define SCM_INT_VALUE(a)               (SCM_GET_AS_INT(a, SCM_TAG_IMM_VALUE_OFFSET_INT))
-#define SCM_INT_SET_VALUE(a, val)      (SCM_SET_AS_INT(a, val, SCM_TAG_IMM_VALUE_OFFSET_INT, SCM_TAG_IMM_MASK_INT))
+#define SCM_INT_SET_VALUE(a, val)      (SCM_SET_AS_INT(a, val, SCM_TAG_IMM_VALUE_OFFSET_INT, SCM_TAG_IMM_INT))
+
+#define SCM_CHAR_VALUE(a)              (SCM_GET_AS_STR(a, ~SCM_TAG_IMM_MASK_CHAR))
+#define SCM_CHAR_SET_VALUE(a, ch)      (SCM_SET_AS_STR(a, ch, SCM_TAG_IMM_CHAR))
+
+/*=======================================
+   Scheme Special Constants
+=======================================*/
+#define SCM_EOF        SigScm_eof
+#define SCM_UNDEF      SigScm_undef
+#define SCM_INVALID    SigScm_invalid
+#define SCM_UNBOUND    SigScm_unbound
+#define SCM_FALSE      SigScm_false
+#define SCM_TRUE       SigScm_true
+
+#define SCM_EQ(a, b)   ((a) == (b))
+#define SCM_NULLP(a)   (SCM_EQ((a),  SCM_NULL))
+#define SCM_FALSEP(a)  (SCM_EQ((a),  SCM_FALSE))
+#define SCM_NFALSEP(a) (!SCM_EQ((a), SCM_FALSE))
+#define SCM_EOFP(a)    (SCM_EQ((a),  SCM_EOF))
+
+/*============================================================================
+  Predefined Symbols
+============================================================================*/
+/* for list construction */
+/*
+ * TODO:
+ * - Rename to SCM_SYM_* to indicate that these macro are not pointing to
+ *   syntax but symbol
+ */
+#define SCM_QUOTE            SigScm_quote
+#define SCM_QUASIQUOTE       SigScm_quasiquote
+#define SCM_UNQUOTE          SigScm_unquote
+#define SCM_UNQUOTE_SPLICING SigScm_unquote_splicing
+
+/*============================================================================
+  Internal Declarations For Special Constants And Predefined Symbols
+============================================================================*/
+/*
+ * These declarations are dedicated to internal use. libsscm users MUST NOT
+ * refer these internal representations directly.
+ *
+ * It may be changed when SigScheme's internal storage model or accessing
+ * method for the constants has been changed. To avoid suffering code
+ * incompatibility from it, use the abstract macro such as SCM_NULL defined
+ * above. They safely hides the internal model against such change.
+ */
+/* datas.c */
+extern ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
+extern ScmObj SigScm_unbound, SigScm_undef;
+
+/* sigscheme.c */
+extern ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote;
+extern ScmObj SigScm_unquote_splicing;
+
+/*============================================================================
+  Environment Specifiers
+============================================================================*/
+#define SCM_INTERACTION_ENV SCM_NULL
+/*
+ * Current implementation cannot handle scheme-report-environment and
+ * null-environment properly. Be careful to use these environemnts.
+ */
+#define SCM_R5RS_ENV        SCM_INTERACTION_ENV
+#define SCM_NULL_ENV        SCM_INTERACTION_ENV
+
+#define SCM_ENVP(env) (NULLP(env) || CONSP(env))
+
+/*============================================================================
+  Abstract ScmObj Reference For Storage-Representation Independent Efficient
+  List Operations
+============================================================================*/
+#define SCM_REF_CAR(cons) (&SCM_CAR(cons))
+#define SCM_REF_CDR(cons) (&SCM_CDR(cons))
+#define SCM_DEREF(ref)    (*(ref))
+/* RFC: Is there a better name? */
+#define SCM_SET(ref, obj) (*(ref) = (obj))
 
 #endif /* __SIGSCMTYPE_COMPACT_H */
