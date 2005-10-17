@@ -116,7 +116,7 @@ struct ScmCell_ {
 };
 
 /*=======================================
-   Tag Masks
+   Masks and Offsets
 =======================================*/
 #define SCM_VALUE_MASK      (~0 ^ (SCM_GCBIT_MASK | SCM_TAG_MASK))
 
@@ -183,6 +183,7 @@ struct ScmCell_ {
 #define SCM_TAG_OTHERSP(a)    (((unsigned int)(a) & SCM_TAG_MASK) == SCM_TAG_OTHERS)
 #define SCM_TAG_IMMEDIATEP(a) (((unsigned int)(a) & SCM_TAG_MASK) == SCM_TAG_IMM)
 
+/* Tag -> Others */
 #define SCM_TAG_OTHERS_SYMBOLP(a)       ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_1) == SCM_TAG_OTHERS_SYMBOL))
 #define SCM_TAG_OTHERS_STRINGP(a)       ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_1) == SCM_TAG_OTHERS_STRING))
 #define SCM_TAG_OTHERS_VECTORP(a)       ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_1) == SCM_TAG_OTHERS_VECTOR))
@@ -203,6 +204,7 @@ struct ScmCell_ {
 #define SCM_TAG_OTHERS_UNDEFP(a)          (SCM_TAG_OTHERS_SPECIALCONSTP(a) \
                                            && ((unsigned int)(a->Y) >> SCM_TAG_OTHERS_VALUE_OFFSET_SPECIALCONST) == 1)
 
+/* Tag -> Imm */
 #define SCM_TAG_IMM_INTP(a)     ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_OTHERS_MASK_1) == SCM_TAG_IMM_INT))
 #define SCM_TAG_IMM_CHARP(a)    ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_OTHERS_MASK_2) == SCM_TAG_IMM_CHAR))
 #define SCM_TAG_IMM_INVALIDP(a) ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_OTHERS_MASK_3) == SCM_TAG_IMM_INVALID))
@@ -212,19 +214,18 @@ struct ScmCell_ {
 /* Type Predicates */
 #define SCM_CONSP(a)             (SCM_TAG_CONSP(a))
 #define SCM_CLOSUREP(a)          (SCM_TAG_CLOSUREP(a))
-#define SCM_SYMBOLP(a)           (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_SYMBOLP(a))
-#define SCM_STRINGP(a)           (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_STRINGP(a))
-#define SCM_VECTORP(a)           (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_VECTORP(a))
-#define SCM_VALUESP(a)           (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_VALUESP(a))
-#define SCM_FUNCP(a)             (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_FUNCP(a))
-#define SCM_PORTP(a)             (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_PORTP(a))
-#define SCM_CONTINUATIONP(a)     (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_CONTINUATIONP(a))
-#define SCM_C_POINTERP(a)        (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_C_VOID_POINTERP(a))
-#define SCM_C_FUNCPOINTERP(a)    (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_C_FUNC_POINTERP(a))
-#define SCM_FREECELLP(a)         (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_FREECELLP(a))
-
-#define SCM_INTP(a)              (SCM_TAG_IMMEDIATEP(a) && SCM_TAG_IMM_INTP(a))
-#define SCM_CHARP(a)             (SCM_TAG_IMMEDIATEP(a) && SCM_TAG_IMM_CHARP(a))
+#define SCM_SYMBOLP(a)           (SCM_TAG_OTHERS_SYMBOLP(a))
+#define SCM_STRINGP(a)           (SCM_TAG_OTHERS_STRINGP(a))
+#define SCM_VECTORP(a)           (SCM_TAG_OTHERS_VECTORP(a))
+#define SCM_VALUESP(a)           (SCM_TAG_OTHERS_VALUESP(a))
+#define SCM_FUNCP(a)             (SCM_TAG_OTHERS_FUNCP(a))
+#define SCM_PORTP(a)             (SCM_TAG_OTHERS_PORTP(a))
+#define SCM_CONTINUATIONP(a)     (SCM_TAG_OTHERS_CONTINUATIONP(a))
+#define SCM_C_POINTERP(a)        (SCM_TAG_OTHERS_C_VOID_POINTERP(a))
+#define SCM_C_FUNCPOINTERP(a)    (SCM_TAG_OTHERS_C_FUNC_POINTERP(a))
+#define SCM_FREECELLP(a)         (SCM_TAG_OTHERS_FREECELLP(a))
+#define SCM_INTP(a)              (SCM_TAG_IMM_INTP(a))
+#define SCM_CHARP(a)             (SCM_TAG_IMM_CHARP(a))
 
 /* Type Confirmation */
 #if SCM_ACCESSOR_ASSERT
