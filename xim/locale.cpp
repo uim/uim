@@ -32,13 +32,12 @@
 
 // Locale dependent routines
 
+#define _GNU_SOURCE // for asprintf on stdio.h with old glibc/gcc
+
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
 #include <stdio.h>
 #include <locale.h>
 #include <iconv.h>

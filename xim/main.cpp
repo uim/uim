@@ -32,14 +32,13 @@
 
 // XIM Server supporting CJK languages
 // initialize many modules
-//
+
+#define _GNU_SOURCE // for asprintf on stdio.h with old glibc/gcc
+
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
 #include <stdio.h>
 #include <string.h>
 #include <locale.h>
