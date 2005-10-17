@@ -51,7 +51,6 @@
  *     S->Y's G bit is always set to 0, which helps determine the
  *     finalization semantics without a pointer. 
  *
- *
  * (4) if S == "...10G", S is other types. Type is separated by the
  *     value of least n bits of S->Y.
  *     S->Y's G bit is always set to 1, which helps determine the
@@ -117,39 +116,121 @@ struct ScmCell_ {
 };
 
 /*=======================================
+   Tag Masks
+=======================================*/
+#define SCM_VALUE_MASK      (~0 ^ (SCM_GCBIT_MASK | SCM_TAG_MASK))
+
+#define SCM_GCBIT_MASK      0x1
+#define SCM_GCBIT_UNMARKED  0x0
+#define SCM_GCBIT_MARKED    0x1
+
+#define SCM_TAG_MASK        0x6
+#define SCM_TAG_CONS        0x0
+#define SCM_TAG_CLOSURE     0x2
+#define SCM_TAG_OTHERS      0x4
+#define SCM_TAG_IMM         0x6 /* 'IMM' represents 'Immediate' */
+
+#define SCM_TAG_OTHERS_MASK_1       0x7
+#define SCM_TAG_OTHERS_MASK_2       0x3f
+#define SCM_TAG_OTHERS_VALUE_OFFSET_SYMBOL       3
+#define SCM_TAG_OTHERS_VALUE_OFFSET_STRING       3
+#define SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR       3
+#define SCM_TAG_OTHERS_VALUE_OFFSET_VALUES       6
+#define SCM_TAG_OTHERS_VALUE_OFFSET_FUNC         6
+#define SCM_TAG_OTHERS_VALUE_OFFSET_PORT         6
+#define SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION 6
+#define SCM_TAG_OTHERS_VALUE_OFFSET_C_POINTER    6
+#define SCM_TAG_OTHERS_VALUE_OFFSET_SPECIALCONST 6
+
+#define SCM_TAG_OTHERS_SYMBOL       0x1
+#define SCM_TAG_OTHERS_STRING       0x3
+#define SCM_TAG_OTHERS_VECTOR       0x5
+#define SCM_TAG_OTHERS_VALUES       0x7
+#define SCM_TAG_OTHERS_FUNC         0xf
+#define SCM_TAG_OTHERS_PORT         0x17
+#define SCM_TAG_OTHERS_CONTINUATION 0x1f
+#define SCM_TAG_OTHERS_C_POINTER    0x27
+#define SCM_TAG_OTHERS_SPECIALCONST 0x37
+#define SCM_TAG_OTHERS_EOF          0x37
+#define SCM_TAG_OTHERS_UNDEF        0x77
+#define SCM_TAG_OTHERS_FREECELL     0x3f
+
+#define SCM_TAG_IMM_MASK_1   0xe
+#define SCM_TAG_IMM_MASK_2   0x1e
+#define SCM_TAG_IMM_MASK_3   0x7e
+#define SCM_TAG_IMM_VALUE_OFFSET_INT   4
+#define SCM_TAG_IMM_VALUE_OFFSET_CHAR  5
+
+#define SCM_TAG_IMM_INT     0x6
+#define SCM_TAG_IMM_CHAR    0xe
+#define SCM_TAG_IMM_CONST   0x1e
+#define SCM_TAG_IMM_INVALID 0x1e
+#define SCM_TAG_IMM_UNBOUND 0x3e
+#define SCM_TAG_IMM_TRUE    0x5e
+#define SCM_TAG_IMM_TRUE    0x7e
+
+/*=======================================
    Accessors For Scheme Objects
 =======================================*/
-/* G bit Accessor */
-#define G_BIT(a)            ((unsigned int)(a) & 0x1)
-#define SCM_DO_MARK(a)      ((a) = (ScmObj)((unsigned int)(a) | 0x1))
-#define SCM_DO_UNMARK(a)    ((a) = (ScmObj)((unsigned int)(a) & ~0x1))
+/* GC bit Accessor */
+#define SCM_GC_BIT(a)       ((unsigned int)(a) & SCM_GCBIT_MASK)
+#define SCM_DO_MARK(a)      ((a) = (ScmObj)((unsigned int)(a) | SCM_GCBIT_MASK))
+#define SCM_DO_UNMARK(a)    ((a) = (ScmObj)((unsigned int)(a) & ~SCM_GCBIT_MASK))
 
-/* S bit Accessor */
-#define SCM_S_MASK(a)       ((unsigned int)(a) & ~0x7)
-#define SCM_S_CONSP(a)      (((unsigned int)(a) & 0x6) == 0x0)
-#define SCM_S_IMMEDIATEP(a) (((unsigned int)(a) & 0x6) == 0x2)
-#define SCM_S_CLOSUREP(a)   (((unsigned int)(a) & 0x6) == 0x4)
-#define SCM_S_OTHERSP(a)    (((unsigned int)(a) & 0x6) == 0x6)
+/* Tag Accessor */
+#define SCM_TAG_CONSP(a)      (((unsigned int)(a) & SCM_TAG_MASK) == SCM_TAG_CONS)
+#define SCM_TAG_CLOSUREP(a)   (((unsigned int)(a) & SCM_TAG_MASK) == SCM_TAG_CLOSURE)
+#define SCM_TAG_OTHERSP(a)    (((unsigned int)(a) & SCM_TAG_MASK) == SCM_TAG_OTHERS)
+#define SCM_TAG_IMMEDIATEP(a) (((unsigned int)(a) & SCM_TAG_MASK) == SCM_TAG_IMM)
 
-#define SCM_S_ENTYPE_CONS(a)      ((a) = (ScmObj)((unsigned int)(a) | ((0x0 & 0x03) << 1)))
-#define SCM_S_ENTYPE_IMMEDIATE(a) ((a) = (ScmObj)((unsigned int)(a) | ((0x1 & 0x03) << 1)))
-#define SCM_S_ENTYPE_CLOSURE(a)   ((a) = (ScmObj)((unsigned int)(a) | ((0x2 & 0x03) << 1)))
-#define SCM_S_ENTYPE_OTHERS(a)    ((a) = (ScmObj)((unsigned int)(a) | ((0x3 & 0x03) << 1)))
+#define SCM_TAG_OTHERS_SYMBOLP(a)       ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_1) == SCM_TAG_OTHERS_SYMBOL))
+#define SCM_TAG_OTHERS_STRINGP(a)       ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_1) == SCM_TAG_OTHERS_STRING))
+#define SCM_TAG_OTHERS_VECTORP(a)       ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_1) == SCM_TAG_OTHERS_VECTOR))
+#define SCM_TAG_OTHERS_VALUESP(a)       ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_2) == SCM_TAG_OTHERS_VALUES))
+#define SCM_TAG_OTHERS_FUNCP(a)         ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_2) == SCM_TAG_OTHERS_FUNC))
+#define SCM_TAG_OTHERS_PORTP(a)         ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_2) == SCM_TAG_OTHERS_PORT))
+#define SCM_TAG_OTHERS_CONTINUATIONP(a) ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_2) == SCM_TAG_OTHERS_CONTINUATION))
+#define SCM_TAG_OTHERS_C_POINTERP(a)    ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_2) == SCM_TAG_OTHERS_C_POINTER))
+#define SCM_TAG_OTHERS_SPECIALCONSTP(a) ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_2) == SCM_TAG_OTHERS_SPECIALCONST))
+#define SCM_TAG_OTHERS_FREECELLP(a)     ((a) = (ScmObj)(((unsigned int)(a->Y) & SCM_TAG_OTHERS_MASK_2) == SCM_TAG_OTHERS_FREECELL))
 
-#define SCM_S_IMMEDIATE_TYPEBITS(a)             (((unsigned int)(a)) >> 3)
-#define SCM_S_OTHERS_TYPEBITS(a)                (((unsigned int)((a)->Y)) >> 1)
-#define SCM_S_ENTYPE_IMMEDIATE_TYPEBITS(a, val) ((a) = (ScmObj)(((unsigned int)(a)) | (val << 3)))
-#define SCM_S_ENTYPE_OTHERS_TYPEBITS(a, val)    ((a)->Y = (ScmObj)(((unsigned int)((a)->Y)) | ((val & 0xf) << 1)))
+#define SCM_TAG_OTHERS_C_VOID_POINTERP(a) (SCM_TAG_OTHERS_C_POINTERP(a) \
+                                           && ((unsigned int)(a->Y) >> SCM_TAG_OTHERS_VALUE_OFFSET_C_POINTER) == 0)
+#define SCM_TAG_OTHERS_C_FUNC_POINTERP(a) (SCM_TAG_OTHERS_C_POINTERP(a) \
+                                           && ((unsigned int)(a->Y) >> SCM_TAG_OTHERS_VALUE_OFFSET_C_POINTER) != 0)
+#define SCM_TAG_OTHERS_EOFP(a)            (SCM_TAG_OTHERS_SPECIALCONSTP(a) \
+                                           && ((unsigned int)(a->Y) >> SCM_TAG_OTHERS_VALUE_OFFSET_SPECIALCONST) == 0)
+#define SCM_TAG_OTHERS_UNDEFP(a)          (SCM_TAG_OTHERS_SPECIALCONSTP(a) \
+                                           && ((unsigned int)(a->Y) >> SCM_TAG_OTHERS_VALUE_OFFSET_SPECIALCONST) == 1)
 
-#define SCM_S_ENTYPE_IMMEDIATE_VAL(a, val) (SCM_S_ENTYPE_IMMEDIATE(a), SCM_S_ENTYPE_IMMEDIATE_TYPEBITS(a, val))
-#define SCM_S_ENTYPE_OTHERS_VAL(a, val)    (SCM_S_ENTYPE_OTHERS(a), SCM_S_ENTYPE_OTHERS_TYPEBITS(a, val))
+#define SCM_TAG_IMM_INTP(a)     ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_OTHERS_MASK_1) == SCM_TAG_IMM_INT))
+#define SCM_TAG_IMM_CHARP(a)    ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_OTHERS_MASK_2) == SCM_TAG_IMM_CHAR))
+#define SCM_TAG_IMM_INVALIDP(a) ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_OTHERS_MASK_3) == SCM_TAG_IMM_INVALID))
+#define SCM_TAG_IMM_TRUEP(a)    ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_OTHERS_MASK_3) == SCM_TAG_IMM_TRUE))
+#define SCM_TAG_IMM_FALSEP(a)   ((a) = (ScmObj)(((unsigned int)(a) & SCM_TAG_OTHERS_MASK_3) == SCM_TAG_IMM_FALSE))
 
+/* Type Predicates */
+#define SCM_CONSP(a)             (SCM_TAG_CONSP(a))
+#define SCM_CLOSUREP(a)          (SCM_TAG_CLOSUREP(a))
+#define SCM_SYMBOLP(a)           (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_SYMBOLP(a))
+#define SCM_STRINGP(a)           (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_STRINGP(a))
+#define SCM_VECTORP(a)           (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_VECTORP(a))
+#define SCM_VALUESP(a)           (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_VALUESP(a))
+#define SCM_FUNCP(a)             (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_FUNCP(a))
+#define SCM_PORTP(a)             (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_PORTP(a))
+#define SCM_CONTINUATIONP(a)     (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_CONTINUATIONP(a))
+#define SCM_C_POINTERP(a)        (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_C_VOID_POINTERP(a))
+#define SCM_C_FUNCPOINTERP(a)    (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_C_FUNC_POINTERP(a))
+#define SCM_FREECELLP(a)         (SCM_TAG_OTHERSP(a) && SCM_TAG_OTHERS_FREECELLP(a))
+
+#define SCM_INTP(a)              (SCM_TAG_IMMEDIATEP(a) && SCM_TAG_IMM_INTP(a))
+#define SCM_CHARP(a)             (SCM_TAG_IMMEDIATEP(a) && SCM_TAG_IMM_CHARP(a))
 
 /* Type Confirmation */
 #if SCM_ACCESSOR_ASSERT
-#define SCM_ASSERT_TYPE(cond, x) (SCM_ASSERT(cond), (ScmObj)SCM_S_MASK(x))
+#define SCM_ASSERT_TYPE(cond, x) (SCM_ASSERT(cond), (ScmObj)(((unsigned int)x) & SCM_VALUE_MASK))
 #else
-#define SCM_ASSERT_TYPE(cond, x) ((ScmObj)SCM_S_MASK(x))
+#define SCM_ASSERT_TYPE(cond, x) ((ScmObj)(((unsigned int)x) & SCM_VALUE_MASK))
 #endif /* SCM_ACCESSOR_ASSERT */
 #define SCM_AS_INT(a)            (SCM_ASSERT_TYPE(SCM_INTP(a),           (a)))
 #define SCM_AS_CONS(a)           (SCM_ASSERT_TYPE(SCM_CONSP(a),          (a)))
@@ -165,47 +246,37 @@ struct ScmCell_ {
 #define SCM_AS_C_POINTER(a)      (SCM_ASSERT_TYPE(SCM_C_POINTERP(a),     (a)))
 #define SCM_AS_C_FUNCPOINTER(a)  (SCM_ASSERT_TYPE(SCM_C_FUNCPOINTERP(a), (a)))
 
-/* Type Predicates */
-#define SCM_INTP(a)              (SCM_S_IMMEDIATEP(a) && (SCM_S_IMMEDIATE_TYPEBITS(a) & 0x3) == 0x1)
-#define SCM_CHARP(a)             (SCM_S_IMMEDIATEP(a) && (SCM_S_IMMEDIATE_TYPEBITS(a) & 0x3) == 0x2)
-#define SCM_SYMBOLP(a)           (SCM_S_OTHERSP(a) && SCM_S_OTHERS_TYPEBITS(a) == 0x0)
-#define SCM_STRINGP(a)           (SCM_S_OTHERSP(a) && SCM_S_OTHERS_TYPEBITS(a) == 0x1)
-#define SCM_FUNCP(a)             (SCM_S_OTHERSP(a) && SCM_S_OTHERS_TYPEBITS(a) == 0x2)
-#define SCM_VECTORP(a)           (SCM_S_OTHERSP(a) && SCM_S_OTHERS_TYPEBITS(a) == 0x3)
-#define SCM_PORTP(a)             (SCM_S_OTHERSP(a) && SCM_S_OTHERS_TYPEBITS(a) == 0x4)
-#define SCM_CONTINUATIONP(a)     (SCM_S_OTHERSP(a) && SCM_S_OTHERS_TYPEBITS(a) == 0x5)
-#define SCM_VALUESP(a)           (SCM_S_OTHERSP(a) && SCM_S_OTHERS_TYPEBITS(a) == 0x6)
-#define SCM_FREECELLP(a)         (SCM_S_OTHERSP(a) && SCM_S_OTHERS_TYPEBITS(a) == 0x7)
-#define SCM_C_POINTERP(a)        (SCM_S_OTHERSP(a) && SCM_S_OTHERS_TYPEBITS(a) == 0x8)
-#define SCM_C_FUNCPOINTERP(a)    (SCM_S_OTHERSP(a) && SCM_S_OTHERS_TYPEBITS(a) == 0x9) 
-
 /* Entyping Macros */
+/*
 #define SCM_CLEAR(a)                  (a = (void*)0)
-#define SCM_ENTYPE_INT(a)             (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x1))
-#define SCM_ENTYPE_CHAR(a)            (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x2))
-#define SCM_ENTYPE_FALSE(a)           (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x0))
-#define SCM_ENTYPE_TRUE(a)            (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x2))
-#define SCM_ENTYPE_NULL(a)            (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x4))
-#define SCM_ENTYPE_EOF(a)             (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x6))
-#define SCM_ENTYPE_QUOTE(a)           (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0x8))
-#define SCM_ENTYPE_QUASIQUOTE(a)      (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0xa))
-#define SCM_ENTYPE_UNQUOTE(a)         (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0xc))
-#define SCM_ENTYPE_UNQUOTESPLICING(a) (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0xe))
-#define SCM_ENTYPE_UNBOUND(a)         (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0xf))
-#define SCM_ENTYPE_UNDEF(a)           (SCM_CLEAR(a), SCM_S_ENTYPE_IMMEDIATE_VAL(a, 0xf2))
-#define SCM_ENTYPE_SYMBOL(a)          (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x0))
-#define SCM_ENTYPE_STRING(a)          (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x1))
-#define SCM_ENTYPE_FUNC(a)            (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x2))
-#define SCM_ENTYPE_VECTOR(a)          (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x03))
-#define SCM_ENTYPE_PORT(a)            (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x04))
-#define SCM_ENTYPE_CONTINUATION(a)    (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x05))
-#define SCM_ENTYPE_VALUES(a)          (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x06))
-#define SCM_ENTYPE_FREECELL(a)        (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x07))
-#define SCM_ENTYPE_C_POINTER(a)       (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x08))
-#define SCM_ENTYPE_C_FUNC_POINTER(a)  (SCM_CLEAR(a), SCM_S_ENTYPE_OTHERS_VAL(a, 0x09))
+#define SCM_ENTYPE_INT(a)             (SCM_CLEAR(a), SCM_TAG_ENTYPE_IMMEDIATE_VAL(a, 0x1))
+#define SCM_ENTYPE_CHAR(a)            (SCM_CLEAR(a), SCM_TAG_ENTYPE_IMMEDIATE_VAL(a, 0x2))
+#define SCM_ENTYPE_FALSE(a)           (SCM_CLEAR(a), SCM_TAG_ENTYPE_IMMEDIATE_VAL(a, 0x0))
+#define SCM_ENTYPE_TRUE(a)            (SCM_CLEAR(a), SCM_TAG_ENTYPE_IMMEDIATE_VAL(a, 0x2))
+#define SCM_ENTYPE_NULL(a)            (SCM_CLEAR(a), SCM_TAG_ENTYPE_IMMEDIATE_VAL(a, 0x4))
+#define SCM_ENTYPE_EOF(a)             (SCM_CLEAR(a), SCM_TAG_ENTYPE_IMMEDIATE_VAL(a, 0x6))
+#define SCM_ENTYPE_QUOTE(a)           (SCM_CLEAR(a), SCM_TAG_ENTYPE_IMMEDIATE_VAL(a, 0x8))
+#define SCM_ENTYPE_QUASIQUOTE(a)      (SCM_CLEAR(a), SCM_TAG_ENTYPE_IMMEDIATE_VAL(a, 0xa))
+#define SCM_ENTYPE_UNQUOTE(a)         (SCM_CLEAR(a), SCM_TAG_ENTYPE_IMMEDIATE_VAL(a, 0xc))
+#define SCM_ENTYPE_UNQUOTESPLICING(a) (SCM_CLEAR(a), SCM_TAG_ENTYPE_IMMEDIATE_VAL(a, 0xe))
+#define SCM_ENTYPE_UNBOUND(a)         (SCM_CLEAR(a), SCM_TAG_ENTYPE_IMMEDIATE_VAL(a, 0xf))
+#define SCM_ENTYPE_UNDEF(a)           (SCM_CLEAR(a), SCM_TAG_ENTYPE_IMMEDIATE_VAL(a, 0xf2))
+#define SCM_ENTYPE_SYMBOL(a)          (SCM_CLEAR(a), SCM_TAG_ENTYPE_OTHERS_VAL(a, 0x0))
+#define SCM_ENTYPE_STRING(a)          (SCM_CLEAR(a), SCM_TAG_ENTYPE_OTHERS_VAL(a, 0x1))
+#define SCM_ENTYPE_FUNC(a)            (SCM_CLEAR(a), SCM_TAG_ENTYPE_OTHERS_VAL(a, 0x2))
+#define SCM_ENTYPE_VECTOR(a)          (SCM_CLEAR(a), SCM_TAG_ENTYPE_OTHERS_VAL(a, 0x03))
+#define SCM_ENTYPE_PORT(a)            (SCM_CLEAR(a), SCM_TAG_ENTYPE_OTHERS_VAL(a, 0x04))
+#define SCM_ENTYPE_CONTINUATION(a)    (SCM_CLEAR(a), SCM_TAG_ENTYPE_OTHERS_VAL(a, 0x05))
+#define SCM_ENTYPE_VALUES(a)          (SCM_CLEAR(a), SCM_TAG_ENTYPE_OTHERS_VAL(a, 0x06))
+#define SCM_ENTYPE_FREECELL(a)        (SCM_CLEAR(a), SCM_TAG_ENTYPE_OTHERS_VAL(a, 0x07))
+#define SCM_ENTYPE_C_POINTER(a)       (SCM_CLEAR(a), SCM_TAG_ENTYPE_OTHERS_VAL(a, 0x08))
+#define SCM_ENTYPE_C_FUNC_POINTER(a)  (SCM_CLEAR(a), SCM_TAG_ENTYPE_OTHERS_VAL(a, 0x09))
+*/
 
 /* Real Accessors */
+/*
 #define SCM_INT_VALUE(a)              (((int)SCM_AS_INT(a)) >> 5)
 #define SCM_INT_SET_VALUE(a, val)     ((a) = (ScmObj)(((unsigned int)a & 0x1f) | (val << 5)))
+*/
 
 #endif /* __SIGSCMTYPE_COMPACT_H */
