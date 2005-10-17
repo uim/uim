@@ -118,7 +118,7 @@ struct ScmCell_ {
 /*=======================================
    Masks and Offsets
 =======================================*/
-#define SCM_VALUE_MASK      (~0 ^ (SCM_GCBIT_MASK | SCM_TAG_MASK))
+#define SCM_VALUE_MASK      (~0 ^ (SCM_TAG_MASK | SCM_GCBIT_MASK))
 
 #define SCM_GCBIT_MASK      0x1
 #define SCM_GCBIT_UNMARKED  0x0
@@ -128,7 +128,7 @@ struct ScmCell_ {
 #define SCM_TAG_CONS        0x0
 #define SCM_TAG_CLOSURE     0x2
 #define SCM_TAG_OTHERS      0x4
-#define SCM_TAG_IMM         0x6 /* 'IMM' represents 'Immediate' */
+#define SCM_TAG_IMM         0x6 /* 'IMM' stands for 'Immediate' */
 
 #define SCM_TAG_OTHERS_MASK_1                    0x7
 #define SCM_TAG_OTHERS_MASK_2                    0x3f
