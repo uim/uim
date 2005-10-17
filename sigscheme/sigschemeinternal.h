@@ -213,7 +213,6 @@ extern char *scm_portbuffer;
 /* Obscures identifier ID. */
 #define SCM_MANGLE(id) Scm_internal_##id
 
-#define SCM_INVALID NULL
 #define VALIDP(obj)   (!EQ((obj), SCM_INVALID))
 #define INVALIDP(obj) (EQ((obj), SCM_INVALID))
 

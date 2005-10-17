@@ -442,6 +442,7 @@ struct ScmCell_ {
 /*============================================================================
   Special Constants and Predicates
 ============================================================================*/
+#define SCM_INVALID          NULL
 #define SCM_NULL             SigScm_null
 #define SCM_TRUE             SigScm_true
 #define SCM_FALSE            SigScm_false
