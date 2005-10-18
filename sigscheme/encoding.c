@@ -183,6 +183,7 @@ ScmMultibyteString Scm_mb_substring(ScmMultibyteString mbs, int i, int len)
 #define IN_GR96(c) (0xA0 <= (uchar)(c) && (uchar)(c) <= 0xFF)
 
 #define IS_ASCII(c) ((uchar)(c) <= 0x7F)
+#define IS_GR_SPC_OR_DEL(c)  ((uchar)(c) == 0xA0 || (uchar)(c) == 0xFF)
 
 #define ESC 0x1B
 #define SO  0x0E
@@ -216,13 +217,15 @@ static ScmMultibyteCharInfo eucjp_scan_char(ScmMultibyteString mbs)
         EXPECT_SIZE(2);
         if (size < 2)         RETURN_INCOMPLETE(1);
 #if SCM_STRICT_ENCODING_CHECK
-        if (!IN_GR94(str[1])) RETURN_ERROR();
+        if (!IN_GR96(str[1])) RETURN_ERROR();
 #endif
         RETURN(2);
     } else if ((uchar)str[0] == SS3) {
         EXPECT_SIZE(3);
 #if SCM_STRICT_ENCODING_CHECK
         if (size < 2)         RETURN_INCOMPLETE(size);
+        if (IS_GR_SPC_OR_DEL(str[1]))
+            RETURN(2);
         if (!IN_GR94(str[1])) RETURN_ERROR();
         if (size < 3)         RETURN_INCOMPLETE(size);
         if (!IN_GR94(str[2])) RETURN_ERROR();
@@ -262,7 +265,7 @@ static ScmMultibyteCharInfo euccn_scan_char(ScmMultibyteString mbs)
         if (size < 2)
             RETURN_INCOMPLETE(size);
 #if SCM_STRICT_ENCODING_CHECK
-        if (!IN_GR94(str[1]))
+        if (!IN_GR96(str[1]))
             RETURN_ERROR();
 #endif
         RETURN(2);
@@ -296,7 +299,7 @@ static ScmMultibyteCharInfo euckr_scan_char(ScmMultibyteString mbs)
         if (size < 2)
             RETURN_INCOMPLETE(size);
 #if SCM_STRICT_ENCODING_CHECK
-        if (!IN_GR94(str[1]))
+        if (!IN_GR96(str[1]))
             RETURN_ERROR();
 #endif
         RETURN(2);
