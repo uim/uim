@@ -161,6 +161,7 @@ enum ScmDebugCategory {
     SCM_DBG_EXPERIMENTAL = 1 << 11,  /* developed but experimental features */
     SCM_DBG_DEVEL        = 1 << 12,  /* under development */
     SCM_DBG_COMPAT       = 1 << 13,  /* warns compatibility-sensitive code */
+    SCM_DBG_ENCODING     = 1 << 14,  /* multibyte handling */
     SCM_DBG_OTHER        = 1 << 30   /* all other messages */
 };
 
@@ -565,9 +566,11 @@ ScmObj ScmOp_delete_file(ScmObj filepath);
 #endif
 
 /* encoding.c */
-int SigScm_default_encoding_strlen(const char *str);
-const char* SigScm_default_encoding_str_startpos(const char *str, int k);
-const char* SigScm_default_encoding_str_endpos(const char *str, int k);
+int Scm_mb_strlen(ScmMultibyteString mbs);
+int Scm_mb_bare_c_strlen(const char *str);
+ScmMultibyteString Scm_mb_substring(ScmMultibyteString str, int i, int len);
+#define Scm_mb_strref(str, i) (Scm_mb_substring((str), (i), 1))
+extern ScmMultibyteCharInfo (*Scm_mb_scan_char)(ScmMultibyteString mbs);
 
 /* read.c */
 ScmObj SigScm_Read(ScmObj port);

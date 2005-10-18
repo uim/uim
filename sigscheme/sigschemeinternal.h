@@ -252,7 +252,7 @@ extern char *scm_portbuffer;
      && (NULLP(args) \
          || (ERR_OBJ("improper argument list terminator", (args)), 1)))
 #define ASSERT_NO_MORE_ARG(args) \
-    (NO_MORE_ARG(args) || (ERR("superfluous argument(s)", (args)), 1))
+    (NO_MORE_ARG(args) || (ERR_OBJ("superfluous argument(s)", (args)), 1))
 #define ASSERT_PROPER_ARG_LIST(args) \
     (ScmOp_c_length(args) >= 0 \
      || (ERR_OBJ("bad argument list", (args)), 1))

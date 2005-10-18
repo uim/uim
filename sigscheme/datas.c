@@ -721,11 +721,13 @@ ScmObj Scm_NewSymbol(char *name, ScmObj v_cell)
 ScmObj Scm_NewChar(char *ch)
 {
     ScmObj obj = SCM_FALSE;
+    int len;
 
-    /* check length */
-    if (SigScm_default_encoding_strlen(ch) != 1) {
+    /* assert length == 1 */
+    len = Scm_mb_bare_c_strlen(ch);
+    if (len != 1) {
         SigScm_Error("Scm_NewChar : invalid character ch = [%s], len = %d",
-                     ch, SigScm_default_encoding_strlen(ch));
+                     ch, len);
     }
 
     SCM_NEW_OBJ_INTERNAL(obj);
@@ -744,7 +746,7 @@ ScmObj Scm_NewString(char *str)
 
     SCM_ENTYPE_STRING(obj);
     SCM_STRING_SET_STR(obj, str);
-    SCM_STRING_SET_LEN(obj, SigScm_default_encoding_strlen(str));
+    SCM_STRING_SET_LEN(obj, str ? Scm_mb_bare_c_strlen(str) : 0);
 
     return obj;
 }
@@ -758,7 +760,7 @@ ScmObj Scm_NewStringCopying(const char *str)
 
     SCM_ENTYPE_STRING(obj);
     SCM_STRING_SET_STR(obj, strdup(str));
-    SCM_STRING_SET_LEN(obj, SigScm_default_encoding_strlen(str));
+    SCM_STRING_SET_LEN(obj, Scm_mb_bare_c_strlen(str));
 
     return obj;
 }

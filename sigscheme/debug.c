@@ -142,6 +142,9 @@ int SigScm_PredefinedDebugCategories(void)
 #if SCM_DEBUG_GC
             | SCM_DBG_GC
 #endif
+#if SCM_DEBUG_ENCODING
+            | SCM_DBG_ENCODING
+#endif
             );
 #else /* SCM_DEBUG */
     return SCM_DBG_NONE;
@@ -182,7 +185,7 @@ void SigScm_WriteToPort(ScmObj port, ScmObj obj)
     DECLARE_INTERNAL_FUNCTION("SigScm_WriteToPort");
 
     if (FALSEP(port))
-	return;
+        return;
 
     ASSERT_PORTP(port);
     if (SCM_PORT_PORTDIRECTION(port) != PORT_OUTPUT)
@@ -201,7 +204,7 @@ void SigScm_DisplayToPort(ScmObj port, ScmObj obj)
     DECLARE_INTERNAL_FUNCTION("SigScm_DisplayToPort");
 
     if (FALSEP(port))
-	return;
+        return;
 
     ASSERT_PORTP(port);
     if (SCM_PORT_PORTDIRECTION(port) != PORT_OUTPUT)

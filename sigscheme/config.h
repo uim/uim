@@ -56,7 +56,16 @@
 /*===========================================================================
   Character Encoding Handlers
 ===========================================================================*/
-#define SCM_USE_EUCJP           1  /* use EUC-JP as internal encoding */
+/* Support for each encoding will be compiled in if the corresponding
+ * macro is defined as nonzero. */
+#define SCM_USE_EUCJP           0
+#define SCM_USE_SJIS            0
+#define SCM_USE_UTF8            1
+#define SCM_USE_EUCCN           0
+#define SCM_USE_EUCKR           0
+
+/* For now, edit encoding.c and change the initialization of
+ * Scm_mb_scan_char to change the default encoding. */
 
 /* "which encodings are enabled" and "which encoding is the default" will be
  * separated in future
@@ -67,6 +76,7 @@
 ===========================================================================*/
 #define SCM_STRICT_R5RS         0  /* use strict R5RS check */
 #define SCM_STRICT_ARGCHECK     1  /* enable strict argument check */
+#define SCM_STRICT_ENCODING_CHECK 1 /* do all feasible encoding error checks */
 #define SCM_ACCESSOR_ASSERT     0  /* enable strict type check with accessor */
 #define SCM_USE_VALUECONS       1  /* use experimental values passing */
 #define SCM_VOLATILE_OUTPUT     0  /* always flush files on write */
@@ -80,6 +90,7 @@
 #define SCM_DEBUG               1  /* enable debugging features */
 #define SCM_DEBUG_GC            0  /* enable GC debugging */
 #define SCM_DEBUG_PARSER        0  /* enable parser debugging */
+#define SCM_DEBUG_ENCODING      0  /* debug encoding-related functions */
 #define SCM_DEBUG_BACKTRACE_SEP 1  /* enable frame-separator on backtrace */
 #define SCM_DEBUG_BACKTRACE_VAL 1  /* enable values printing on backtrace */
 

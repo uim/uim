@@ -1258,31 +1258,32 @@ ScmObj ScmOp_string_length(ScmObj str)
 {
     DECLARE_FUNCTION("string-length", ProcedureFixed1);
     ASSERT_STRINGP(str);
-    return Scm_NewInt(SigScm_default_encoding_strlen(SCM_STRING_STR(str)));
+    return Scm_NewInt(Scm_mb_bare_c_strlen(SCM_STRING_STR(str)));
 }
 
 ScmObj ScmOp_string_ref(ScmObj str, ScmObj k)
 {
     int   c_index = 0;
     char *new_ch  = NULL;
-    const char *string_str   = NULL;
-    const char *ch_start_ptr = NULL;
-    const char *ch_end_ptr   = NULL;
+    ScmMultibyteString mbs;
     DECLARE_FUNCTION("string-ref", ProcedureFixed2);
 
     ASSERT_STRINGP(str);
     ASSERT_INTP(k);
 
+    SCM_MBS_INIT(mbs);
     /* get start_ptr and end_ptr */
     c_index = SCM_INT_VALUE(k);
-    string_str   = SCM_STRING_STR(str);
-    ch_start_ptr = SigScm_default_encoding_str_startpos(string_str, c_index);
-    ch_end_ptr   = SigScm_default_encoding_str_endpos(string_str, c_index);
+    SCM_MBS_SET_STR(mbs, SCM_STRING_STR(str));
+
+    /* FIXME: This strlen() can be eliminated. */
+    SCM_MBS_SET_SIZE(mbs, strlen(SCM_STRING_STR(str)));
+    mbs = Scm_mb_strref(mbs, c_index);
 
     /* copy from start_ptr to end_ptr */
-    new_ch = (char*)malloc(sizeof(char) * (ch_end_ptr - ch_start_ptr) + 1);
-    memset(new_ch, 0, sizeof(char) * (ch_end_ptr - ch_start_ptr) + 1);
-    strncpy(new_ch, ch_start_ptr, (ch_end_ptr - ch_start_ptr));
+    new_ch = (char*)malloc(SCM_MBS_GET_SIZE(mbs) + 1);
+    memcpy(new_ch, SCM_MBS_GET_STR(mbs), SCM_MBS_GET_SIZE(mbs));
+    new_ch[SCM_MBS_GET_SIZE(mbs)] = 0;
 
     return Scm_NewChar(new_ch);
 }
@@ -1290,14 +1291,13 @@ ScmObj ScmOp_string_ref(ScmObj str, ScmObj k)
 ScmObj ScmOp_string_set(ScmObj str, ScmObj k, ScmObj ch)
 {
     int   c_start_index = 0;
-    int   front_size = 0;
+    int   prefix_size = 0;
     int   newch_size = 0;
-    int   back_size  = 0;
+    int   postfix_size  = 0;
     int   total_size = 0;
     char *new_str  = NULL;
+    ScmMultibyteString mbs;
     const char *string_str   = NULL;
-    const char *ch_start_ptr = NULL;
-    const char *ch_end_ptr   = NULL;
     DECLARE_FUNCTION("string-set!", ProcedureFixed3);
 
     ASSERT_STRINGP(str);
@@ -1307,23 +1307,28 @@ ScmObj ScmOp_string_set(ScmObj str, ScmObj k, ScmObj ch)
     /* get indexes */
     c_start_index = SCM_INT_VALUE(k);
     string_str    = SCM_STRING_STR(str);
-    ch_start_ptr  = SigScm_default_encoding_str_startpos(string_str, c_start_index);
-    ch_end_ptr    = SigScm_default_encoding_str_endpos(string_str, c_start_index);
+    /* FIXME: can string_str be NULL at this point or not? */
+    if (!string_str) string_str = "";
+
+    /* FIXME: strlen() can be eliminiated. */
+    SCM_MBS_INIT(mbs);
+    SCM_MBS_SET_STR(mbs, string_str);
+    SCM_MBS_SET_SIZE(mbs, strlen(string_str));
+    mbs = Scm_mb_strref(mbs, c_start_index);
 
     /* calculate total size */
-    front_size = strlen(string_str) - strlen(ch_start_ptr);
-    newch_size = strlen(SCM_CHAR_VALUE(ch));
-    back_size  = strlen(ch_end_ptr);
-    total_size = front_size + newch_size + back_size;
+    prefix_size = SCM_MBS_GET_STR(mbs) - string_str;
+    newch_size  = strlen(SCM_CHAR_VALUE(ch));
+    postfix_size  = strlen(SCM_MBS_GET_STR(mbs) + SCM_MBS_GET_SIZE(mbs));
+    total_size = prefix_size + newch_size + postfix_size;
 
-    /* copy each parts */
+    /* copy each part */
     new_str = (char*)malloc(total_size + 1);
-    memset(new_str, 0, total_size + 1);
-    strncpy(new_str                           , string_str      , front_size);
-    strncpy(new_str + front_size              , SCM_CHAR_VALUE(ch) , newch_size);
-    strncpy(new_str + front_size + newch_size , ch_end_ptr      , back_size);
+    memcpy(new_str, string_str, prefix_size);
+    memcpy(new_str+prefix_size, SCM_CHAR_VALUE(ch), newch_size);
+    memcpy(new_str+prefix_size+newch_size,
+           SCM_MBS_GET_STR(mbs)+SCM_MBS_GET_SIZE(mbs), postfix_size);
 
-    /* set */
     if (SCM_STRING_STR(str))
         free(SCM_STRING_STR(str));
 
@@ -1349,10 +1354,9 @@ ScmObj ScmOp_string_substring(ScmObj str, ScmObj start, ScmObj end)
 {
     int   c_start_index = 0;
     int   c_end_index   = 0;
-    char *new_str  = NULL;
+    char *new_str = NULL;
+    ScmMultibyteString mbs;
     const char *string_str   = NULL;
-    const char *ch_start_ptr = NULL;
-    const char *ch_end_ptr   = NULL;
     DECLARE_FUNCTION("substring", ProcedureFixed3);
 
     ASSERT_STRINGP(str);
@@ -1364,18 +1368,22 @@ ScmObj ScmOp_string_substring(ScmObj str, ScmObj start, ScmObj end)
     c_end_index   = SCM_INT_VALUE(end);
 
     /* sanity check */
-    if (c_start_index == c_end_index)
-        return Scm_NewStringCopying("");
+    if (c_start_index > c_end_index)
+        ERR("substring: start index is greater than end index.");
+    if (c_end_index > SCM_STRING_LEN(str))
+        ERR_OBJ("index out of range", end);
 
-    /* get str */
-    string_str    = SCM_STRING_STR(str);
-    ch_start_ptr  = SigScm_default_encoding_str_startpos(string_str, c_start_index);
-    ch_end_ptr    = SigScm_default_encoding_str_startpos(string_str, c_end_index);
+    /* FIXME: strlen() can be eliminated. */
+    string_str = SCM_STRING_STR(str);
+    SCM_MBS_INIT(mbs);
+    SCM_MBS_SET_STR(mbs, string_str);
+    SCM_MBS_SET_SIZE(mbs, strlen(string_str));
+    mbs = Scm_mb_substring(mbs, c_start_index, c_end_index - c_start_index);
 
     /* copy from start_ptr to end_ptr */
-    new_str = (char*)malloc(sizeof(char) * (ch_end_ptr - ch_start_ptr) + 1);
-    memset(new_str, 0, sizeof(char) * (ch_end_ptr - ch_start_ptr) + 1);
-    strncpy(new_str, ch_start_ptr, sizeof(char) * (ch_end_ptr - ch_start_ptr));
+    new_str = (char*)malloc(SCM_MBS_GET_SIZE(mbs) + 1);
+    memcpy(new_str, SCM_MBS_GET_STR(mbs), SCM_MBS_GET_SIZE(mbs));
+    new_str[SCM_MBS_GET_SIZE(mbs)] = 0;
 
     return Scm_NewString(new_str);
 }
@@ -1420,39 +1428,35 @@ ScmObj ScmOp_string_append(ScmObj args)
 
 ScmObj ScmOp_string2list(ScmObj string)
 {
-    char *string_str = NULL;
-    int   str_len    = 0;
     ScmObj head = SCM_NULL;
-    ScmObj prev = NULL;
-    ScmObj next = NULL;
-    int i = 0;
-    const char *ch_start_ptr = NULL;
-    const char *ch_end_ptr   = NULL;
-    char *new_ch = NULL;
+    ScmObj tail = SCM_NULL;
+    ScmObj next = SCM_NULL;
+    ScmMultibyteString mbs;
+    ScmMultibyteCharInfo ch;
+    char *buf;
     DECLARE_FUNCTION("string->list", string);
 
     ASSERT_STRINGP(string);
 
-    string_str = SCM_STRING_STR(string);
-    str_len    = SCM_STRING_LEN(string);
-    if (str_len == 0)
-        return SCM_NULL;
+    SCM_MBS_INIT(mbs);
+    SCM_MBS_SET_STR(mbs, SCM_STRING_STR(string));
+    SCM_MBS_SET_SIZE(mbs, strlen(SCM_STRING_STR(string)));
 
-    for (i = 0; i < str_len; i++) {
-        ch_start_ptr = SigScm_default_encoding_str_startpos(string_str, i);
-        ch_end_ptr   = SigScm_default_encoding_str_endpos(string_str, i);
+    while (SCM_MBS_GET_SIZE(mbs)) {
+        ch = Scm_mb_scan_char(mbs);
+        buf = malloc(SCM_MBCINFO_GET_SIZE(ch)+1);
+        memcpy(buf, SCM_MBS_GET_STR(mbs), SCM_MBCINFO_GET_SIZE(ch));
+        buf[SCM_MBCINFO_GET_SIZE(ch)] = 0;
+        next = LIST_1(Scm_NewChar(buf));
 
-        new_ch = (char*)malloc(sizeof(char) * (ch_end_ptr - ch_start_ptr + 1));
-        memset(new_ch, 0, sizeof(char) * (ch_end_ptr - ch_start_ptr + 1));
-        strncpy(new_ch, ch_start_ptr, (sizeof(char) * (ch_end_ptr - ch_start_ptr)));
+        if (NULLP(tail))
+            head = tail = next;
+        else {
+            SET_CDR(tail, next);
+            tail = CDR(tail);
+        }
 
-        next = CONS(Scm_NewChar(new_ch), SCM_NULL);
-        if (prev)
-            SET_CDR(prev, next);
-        else
-            head = next;
-
-        prev = next;
+        SCM_MBS_SKIP_CHAR(mbs, ch);
     }
 
     return head;

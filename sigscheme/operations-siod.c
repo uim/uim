@@ -180,9 +180,9 @@ ScmObj ScmOp_closure_code(ScmObj closure)
 
     exp = SCM_CLOSURE_EXP(closure);
     if (NULLP(CDDR(exp)))
-	body = CADR(exp);
+        body = CADR(exp);
     else
-	body = CONS(Scm_Intern("begin"), CDR(exp));
+        body = CONS(Scm_Intern("begin"), CDR(exp));
     
     return CONS(CAR(exp), body);
 }
@@ -211,7 +211,7 @@ void SigScm_SetVerboseLevel(long level)
         SigScm_Error("SigScm_SetVerboseLevel : negative value has been given");
 
     if (sscm_verbose_level == level)
-	return;
+        return;
 
     sscm_verbose_level = level;
 
