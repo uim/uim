@@ -101,6 +101,7 @@
   (lambda (gsym)
     (try-load (custom-file-path gsym))))
 
+;; TODO: disable all newly defined customs when an error occurred in loading
 ;; full implementation
 (define require-custom
   (lambda (filename)
