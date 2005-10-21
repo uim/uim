@@ -47,7 +47,7 @@
   (_ "Japanese specific settings"))
 
 (define-custom 'prime-custom-default-language 'Japanese
-  '(prime global)
+  '(prime)
   (list 'choice
 	(list 'Japanese (_ "Japanese") (_ "Japanese"))
 	(list 'English  (_ "English")  (_ "English")))
@@ -55,7 +55,7 @@
   (_ "long description will be here."))
 
 (define-custom 'prime-auto-register-mode? #t
-  '(prime global)
+  '(prime)
   '(boolean)
   (_ "Enable auto register mode")
   (_ "long description will be here."))

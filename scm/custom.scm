@@ -391,16 +391,12 @@
 ;; API
 (define custom-group-label
   (lambda (gsym)
-    (if (custom-group-rec gsym)
-	(custom-group-rec-label (custom-group-rec gsym))
-	(string-append "Error: " gsym " not found."))))
+    (custom-group-rec-label (custom-group-rec gsym))))
 
 ;; API
 (define custom-group-desc
   (lambda (gsym)
-    (if (custom-group-rec gsym)
-	(custom-group-rec-desc (custom-group-rec gsym))
-	(string-append "Error: " gsym " not found."))))
+    (custom-group-rec-desc (custom-group-rec gsym))))
 
 ;; API
 (define custom-group-subgroups
@@ -510,6 +506,14 @@
 			(cdr groups)))
 	   (modified-groups (cons primary-grp subgrps))
 	   (crec (custom-rec-new sym default modified-groups type label desc)))
+      ;; See also require-custom for error handling TODO
+      (for-each (lambda (gsym)
+		  (or (custom-group-rec gsym)
+		      (error (string-append "undefined group '"
+					    (symbol->string gsym)
+					    "' is referred by "
+					    (symbol->string sym)))))
+		modified-groups)
       (set! custom-rec-alist (alist-replace crec custom-rec-alist))
       (custom-call-hook-procs primary-grp custom-group-update-hooks)
       (if (not (symbol-bound? sym))

@@ -64,6 +64,7 @@
 				".scm")))
       (try-load path))))
 
+;; TODO: disable all newly defined customs when an error occurred in loading
 ;; full implementation
 (define require-custom
   (lambda (filename)
