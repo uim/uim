@@ -42,11 +42,52 @@ static int die(const char *filename, int line)
     return -1;
 }
 
+static void check_entype(void);
 static ScmObj check_int(void);
 
 int main(void)
 {
+    check_entype();
+
     check_int();
+}
+
+static void check_entype(void)
+{
+    ScmObj var;
+
+    SCM_ENTYPE_CONS(var);
+    SCM_ASSERT(SCM_CONSP(var));
+
+    SCM_ENTYPE_CLOSURE(var);
+    SCM_ASSERT(SCM_CLOSUREP(var));
+
+    SCM_ENTYPE_SYMBOL(var);
+    SCM_ASSERT(SCM_SYMBOLP(var));
+
+    SCM_ENTYPE_STRING(var);
+    SCM_ASSERT(SCM_STRINGP(var));
+
+    SCM_ENTYPE_VECTOR(var);
+    SCM_ASSERT(SCM_VECTORP(var));
+
+    SCM_ENTYPE_VALUES(var);
+    SCM_ASSERT(SCM_VALUEPACKETP(var));
+
+    SCM_ENTYPE_FUNC(var);
+    SCM_ASSERT(SCM_FUNCP(var));//
+
+    SCM_ENTYPE_PORT(var);
+    SCM_ASSERT(SCM_PORTP(var));//
+
+    SCM_ENTYPE_CONTINUATION(var);
+    SCM_ASSERT(SCM_CONTINUATIONP(var));//
+
+    SCM_ENTYPE_C_POINTER(var);
+    SCM_ASSERT(SCM_C_POINTERP(var));//
+
+    SCM_ENTYPE_C_FUNCPOINTER(var);
+    SCM_ASSERT(SCM_C_FUNCPOINTERP(var));//
 }
 
 static ScmObj check_int(void)

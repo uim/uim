@@ -143,7 +143,11 @@ extern "C" {
 typedef void (*ScmCFunc)(void);
 
 /* type declaration */
+#if SCM_OBJ_COMPACT
+#include "sigschemetype-compact.h"
+#else
 #include "sigschemetype.h"
+#endif
 
 enum ScmDebugCategory {
     SCM_DBG_NONE         = 0,

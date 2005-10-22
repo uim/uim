@@ -90,13 +90,23 @@ extern char *scm_portbuffer;
    Macro Declarations
 =======================================*/
 /* FreeCell Handling Macros */
-#define SCM_FREECELLP(a)     (SCM_TYPE(a) == ScmFreeCell)
-#define SCM_AS_FREECELL(a)   (SCM_ASSERT_TYPE(SCM_FREECELLP(a), (a)))
-#define SCM_FREECELL_CAR(a)  (SCM_AS_FREECELL(a)->obj.cons.car)
-#define SCM_FREECELL_CDR(a)  (SCM_AS_FREECELL(a)->obj.cons.cdr)
-#define SCM_ENTYPE_FREECELL(a)     (SCM_ENTYPE((a), ScmFreeCell))
+#if SCM_OBJ_COMPACT
+#define SCM_FREECELLP(a)            (SCM_CONSP(a))
+#define SCM_AS_FREECELL(a)          (SCM_ASSERT_TYPE(SCM_CONSP(a), (a)))
+#define SCM_FREECELL_CAR(a)         (SCM_CAR(a))
+#define SCM_FREECELL_CDR(a)         (SCM_CDR(a))
+#define SCM_ENTYPE_FREECELL(a)      (SCM_ENTYPE_CONS(a))
+#define SCM_FREECELL_SET_CAR(a,car) (SCM_CONS_SET_CAR(a))
+#define SCM_FREECELL_SET_CDR(a,cdr) (SCM_CONS_SET_CDR(a))
+#else
+#define SCM_FREECELLP(a)            (SCM_TYPE(a) == ScmFreeCell)
+#define SCM_AS_FREECELL(a)          (SCM_ASSERT_TYPE(SCM_FREECELLP(a), (a)))
+#define SCM_FREECELL_CAR(a)         (SCM_AS_FREECELL(a)->obj.cons.car)
+#define SCM_FREECELL_CDR(a)         (SCM_AS_FREECELL(a)->obj.cons.cdr)
+#define SCM_ENTYPE_FREECELL(a)      (SCM_ENTYPE((a), ScmFreeCell))
 #define SCM_FREECELL_SET_CAR(a,car) (SCM_FREECELL_CAR(a) = car)
 #define SCM_FREECELL_SET_CDR(a,cdr) (SCM_FREECELL_CDR(a) = cdr)
+#endif
 
 /* Prefix-less Abbreviation Names For Convenient Internal Use */
 #define EQ             SCM_EQ

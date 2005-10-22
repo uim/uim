@@ -53,6 +53,8 @@
 #define SCM_COMPAT_SIOD         1  /* use SIOD compatible features */
 #define SCM_COMPAT_SIOD_BUGS    1  /* emulate the buggy behaviors of SIOD */
 
+#define SCM_OBJ_COMPACT         1  /* object representation compaction (experimental) */
+
 /*===========================================================================
   Character Encoding Handlers
 ===========================================================================*/
