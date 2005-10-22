@@ -181,22 +181,25 @@ public:
     void changeContext(const char *engine);
     void customContext(const char *custom, const char *val);
     void createUimContext(const char *engine);
+    void configuration_changed();
 public:
-    static void commit_cb(void *, const char *);
-    static void clear_cb(void *);
-    static void pushback_cb(void *, int attr, const char *str);
-    static void update_cb(void *);
+    static void commit_cb(void *ptr, const char *str);
+    static void clear_cb(void *ptr);
+    static void pushback_cb(void *ptr, int attr, const char *str);
+    static void update_cb(void *ptr);
     static void candidate_activate_cb(void *ptr, int nr, int index);
     static void candidate_select_cb(void *ptr, int index);
     static void candidate_shift_page_cb(void *ptr, int direction);
     static void candidate_deactivate_cb(void *ptr);
     static void update_prop_list_cb(void *ptr, const char *str);
     static void update_prop_label_cb(void *ptr, const char *str);
+    static void configuration_changed_cb(void *ptr);
     static InputContext *focusedContext();
     static void deletefocusedContext();
 private:
     void commit_string(char *);
     void clear_pe_stat();
+    void review_im(const char *engine);
 
     XimIC *mXic;
     XimServer *mServer;

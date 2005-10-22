@@ -533,7 +533,7 @@ reload_uim(int x)
     uim_quit();
     clear_uim_info();
     get_uim_info();
-    print_uim_info();
+    //print_uim_info();
 
     for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); it++) {
 	XimServer *xs = it->second;
