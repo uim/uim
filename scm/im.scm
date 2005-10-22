@@ -197,6 +197,27 @@
   (lambda (id name)
     (uim-switch-im id (next-im name))))
 
+;; im-toggle
+(define toggle-im-preserved-im #f)
+(define toggle-im-preserved-widget-states '())
+(define toggle-im-alt-preserved-widget-states '())
+
+(define toggle-im
+  (lambda (id name)
+    (let ((widget-states (context-current-widget-states (find-context id))))
+      (if (eq? name toggle-im-alt-im)
+	  (begin
+	    (set! toggle-im-alt-preserved-widget-states widget-states)
+	    (uim-switch-im id toggle-im-preserved-im)
+	    (context-update-widget-states! (find-context id)
+					   toggle-im-preserved-widget-states))
+	  (begin
+	    (set! toggle-im-preserved-im name)
+	    (set! toggle-im-preserved-widget-states widget-states)
+	    (uim-switch-im id toggle-im-alt-im)
+	    (context-update-widget-states! (find-context id)
+	    			  toggle-im-alt-preserved-widget-states))))))
+
 ;;
 ;; context-management
 ;;
@@ -269,6 +290,9 @@
     (let* ((c (find-context id))
 	   (im (and c (context-im c))))
       (cond
+       ((and enable-im-toggle?
+	     (toggle-im-key? key state))
+	(toggle-im id (im-name im)))
        ((and enable-im-switch
 	     (switch-im-key? key state))
 	(switch-im id (im-name im)))
