@@ -170,6 +170,8 @@ uim_create_context(void *ptr,
   uc->request_surrounding_text_cb = NULL;
   uc->delete_surrounding_text_cb = NULL;
   /**/
+  uc->configuration_changed_cb = NULL;
+  /**/
   uc->nr_candidates = 0;
   uc->candidate_index = 0;
   /**/
@@ -210,6 +212,13 @@ uim_reset_context(uim_context uc)
 
    /* delete all preedit segments */
    uim_release_preedit_segments(uc);
+}
+
+void
+uim_set_configuration_changed_cb(uim_context uc,
+				 void (*changed_cb)(void *ptr))
+{
+  uc->configuration_changed_cb = changed_cb;
 }
 
 void
