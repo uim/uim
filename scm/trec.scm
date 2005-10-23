@@ -87,7 +87,7 @@
 (define trec-rule-value cdr)
 (define trec-rule-new cons)
 
-(define trec-vnode-directive? procedure?)
+(define trec-vnode-directive? vector?)
 
 ;; .parameter ruleset A list of trec-rule
 ;; .parameter backward-match Bool value indicates that the ruletree shall be
@@ -152,8 +152,8 @@
 	   (val (trec-rule-value rule))
 	   (descend! (lambda (keys cur-node)
 		       (if (trec-vnode-directive? (cdr keys))
-			   (let* ((make-vnode (cdr keys))
-				  (vnode (make-vnode (car keys) val)))
+			   (let ((vnode (trec-vnode-new
+					 (cdr keys) (car keys) val)))
 			     (trec-node-insert-branch! cur-node vnode)
 			     #f)
 			   (trec-node-descend! cur-node key=? (car keys)))))
@@ -444,72 +444,77 @@
 ;; virtual nodes
 ;;
 
+(define trec-vnode-new
+  (lambda (directive-vec rule-key rule-val)
+    (let* ((directive (vector->list directive-vec))
+	   (directive-sym (car directive))
+	   (pregiven-keys (cdr directive))
+	   (make-vnode (or (assq-cdr directive-sym trec-vnode-directive-alist)
+			   (error "invalid vnode directive"))))
+      (make-vnode pregiven-keys rule-key rule-val))))
+
 ;; TODO: simplify
 (define trec-vnode-peek-new
-  (lambda (pregiven-keys)
+  (lambda (pregiven-keys rule-key rule-val)
     (if (not (null? pregiven-keys))
 	(error "'peek' does not take arguments"))
-    (define make-vnode
-      (lambda (rule-key rule-val)
-	(lambda (router route matcher key)
-	  (and-let* ((matched (matcher rule-key key)))
-	    (cond
-	     ((eq? matched TREC-MATCHER-FIN)
-	      (cons (cons (list TREC-NULL-KEY rule-val)
-			  route)
-		    (list key)))
-	     ((eq? matched TREC-MATCHER-RETRY)
-	      (router (cons (list TREC-NULL-KEY rule-val)
-			    route)
-		      ()
-		      key))
-	     (else
-	      (let ((next-node (make-vnode matched rule-val)))
-		(cons (cons (list TREC-NULL-KEY TREC-NULL-VALUE next-node)
-			    route)
-		      (list key)))))))))
-    make-vnode))
+    (lambda (router route matcher key)
+      (and-let* ((matched (matcher rule-key key)))
+	(cond
+	 ((eq? matched TREC-MATCHER-FIN)
+	  (cons (cons (list TREC-NULL-KEY rule-val)
+		      route)
+		(list key)))
+	 ((eq? matched TREC-MATCHER-RETRY)
+	  (router (cons (list TREC-NULL-KEY rule-val)
+			route)
+		  ()
+		  key))
+	 (else
+	  (let ((next-node (trec-vnode-peek-new pregiven-keys matched rule-val)))
+	    (cons (cons (list TREC-NULL-KEY TREC-NULL-VALUE next-node)
+			route)
+		  (list key)))))))))
 
 ;; TODO: simplify
 (define trec-make-vnode-recur-new
   (lambda (join retry)
-    (lambda (pregiven-keys)
-      (define make-vnode
-	(lambda (rule-key rule-val)
-	  (lambda (router route matcher key)
-	    (and-let* ((matched (matcher rule-key key)))
-	      (if (not (trec-matcher-terminal-state matched))
-		  (let ((next-node (make-vnode matched rule-val)))
-		    (cons (list key TREC-NULL-VALUE next-node)
-			  route))
-		  (let ((root (trec-route-last-root route))
-			(keys (if retry
-				  (append pregiven-keys (list key))
-				  pregiven-keys))
-			(node (cond
-			       ((eq? matched TREC-MATCHER-FIN)
-				(list key rule-val))
-			       ((eq? matched TREC-MATCHER-RETRY)
-				(list TREC-NULL-KEY rule-val)))))
-		    (trec-route-route router
-				      (if join
-					  (cons* root node route)
-					  root)
-				      keys)))))))
-	make-vnode)))
+    (define make-vnode
+      (lambda (pregiven-keys rule-key rule-val)
+	(lambda (router route matcher key)
+	  (and-let* ((matched (matcher rule-key key)))
+	    (if (not (trec-matcher-terminal-state matched))
+		(let ((next-node (make-vnode matched rule-val)))
+		  (cons (list key TREC-NULL-VALUE next-node)
+			route))
+		(let ((root (trec-route-last-root route))
+		      (keys (if retry
+				(append pregiven-keys (list key))
+				pregiven-keys))
+		      (node (cond
+			     ((eq? matched TREC-MATCHER-FIN)
+			      (list key rule-val))
+			     ((eq? matched TREC-MATCHER-RETRY)
+			      (list TREC-NULL-KEY rule-val)))))
+		  (trec-route-route router
+				    (if join
+					(cons* root node route)
+					root)
+				    keys)))))))
+    make-vnode))
 
 (define trec-vnode-join-new        (trec-make-vnode-recur-new #f #f))
 (define trec-vnode-join-retry-new  (trec-make-vnode-recur-new #f #t))
 (define trec-vnode-recur-new       (trec-make-vnode-recur-new #t #f))
 (define trec-vnode-recur-retry-new (trec-make-vnode-recur-new #t #t))
 
-;; FIXME: resolve namespace pollution
-;; shortcut for rule path definition
-(define peek        trec-vnode-peek-new)
-(define join        trec-vnode-join-new)
-(define join-retry  trec-vnode-join-retry-new)
-(define recur       trec-vnode-recur-new)
-(define recur-retry trec-vnode-recur-retry-new)
+(define trec-vnode-directive-alist
+  (list
+   (cons 'peek        trec-vnode-peek-new)
+   (cons 'join        trec-vnode-join-new)
+   (cons 'join-retry  trec-vnode-join-retry-new)
+   (cons 'recur       trec-vnode-recur-new)
+   (cons 'recur-retry trec-vnode-recur-retry-new)))
 
 
 (if trec-enable-reroutable-search
