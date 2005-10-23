@@ -63,9 +63,9 @@ Logical simplifications:
 ==============================================================================
 Namings and Cosmetic things:
 
-* Rename "Macro Declarations" of all C files, c_template and h_template to
-  "Macro Definitions" and move to immediately after of "Local Include" section
-  since other declarations and definitions sometimes need macros
+* Rename "Macro Declarations" of all C files, "Macro Definitions" and move to
+  immediately after of "Local Include" section since other declarations and
+  definitions sometimes need macros
 
 * Rename STL names (string, list) to another such as str, lst
 

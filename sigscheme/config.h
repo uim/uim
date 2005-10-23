@@ -53,8 +53,6 @@
 #define SCM_COMPAT_SIOD         1  /* use SIOD compatible features */
 #define SCM_COMPAT_SIOD_BUGS    1  /* emulate the buggy behaviors of SIOD */
 
-#define SCM_OBJ_COMPACT         1  /* object representation compaction (experimental) */
-
 /*===========================================================================
   Character Encoding Handlers
 ===========================================================================*/
@@ -83,6 +81,7 @@
 #define SCM_USE_VALUECONS       1  /* use experimental values passing */
 #define SCM_VOLATILE_OUTPUT     0  /* always flush files on write */
 #define SCM_EXCEPTION_HANDLING  1  /* use SRFI-34 base exception handling */
+#define SCM_OBJ_COMPACT         0  /* object representation compaction (experimental) */
 
 #define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
 
@@ -113,5 +112,10 @@
 #undef SCM_USE_SRFI34
 #define SCM_USE_SRFI34          1
 #endif /* SCM_EXCEPTION_HANDLING */
+
+#if SCM_DEBUG
+#undef SCM_VOLATILE_OUTPUT
+#define SCM_VOLATILE_OUTPUT     1
+#endif /* SCM_DEBUG */
 
 #endif /* __SIGSCHEME_CONFIG_H */
