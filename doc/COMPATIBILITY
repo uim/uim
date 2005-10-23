@@ -56,7 +56,23 @@ Each change consist of following fields. All fields are required.
 
 
 The changes are described below in most recently updated order.
-
+------------------------------------------------------------------------------
+Summary: Notification of changes in input context configuration
+Affects: Bridge developers
+Updates: C API
+Version: 0.5.1
+Revision: ac1866
+Date: 2005-10-23
+Modifier: Etsushi Kato
+Related: IM switch by hot keys
+URL:
+  http://lists.sourceforge.jp/mailman/archives/anthy-dev/2005-October/002577.html (Japanese)
+Changes:
+  (new) uim_set_configuration_changed_cb
+Description:
+  API for setting a callback function for notifying some configuration
+  changes in input context.  The callback is typically called when IM
+  of a context is changed.
 ------------------------------------------------------------------------------
 Summary: Obsolete some misc Scheme APIs
 Affects: IM developers
