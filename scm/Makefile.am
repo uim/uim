@@ -8,7 +8,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  default.scm \
  util.scm key.scm ustr.scm utext.scm i18n.scm \
  ng-action.scm action.scm load-action.scm \
- ng-key.scm physical-key.scm event.scm evmap.scm evmap-csv.scm \
+ ng-key.scm physical-key.scm event.scm trec.scm evmap.scm evmap-csv.scm \
  event-translator.scm \
  key-custom.scm \
  segmental-converter.scm \
