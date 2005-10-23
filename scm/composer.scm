@@ -99,7 +99,7 @@
     ((composer-mtbl-finalize! (composer-methods self)) self)))
 
 ;; FIXME: describe naming rule
-;; Get a symbol for programs that uniquely identifies the composer
+;; Get a symbol for programs that uniquely identifies the class of composer
 ;; .parameter self Abstract composer object
 ;; .returns A symbol such as 'anthy
 (define composer-idname

@@ -479,12 +479,12 @@
 ;; TODO: simplify
 (define trec-make-vnode-recur-new
   (lambda (join retry)
-    (define make-vnode
+    (define vnode-new
       (lambda (pregiven-keys rule-key rule-val)
 	(lambda (router route matcher key)
 	  (and-let* ((matched (matcher rule-key key)))
 	    (if (not (trec-matcher-terminal-state matched))
-		(let ((next-node (make-vnode matched rule-val)))
+		(let ((next-node (vnode-new matched rule-val)))
 		  (cons (list key TREC-NULL-VALUE next-node)
 			route))
 		(let ((root (trec-route-last-root route))
@@ -501,7 +501,7 @@
 					(cons* root node route)
 					root)
 				    keys)))))))
-    make-vnode))
+    vnode-new))
 
 (define trec-vnode-join-new        (trec-make-vnode-recur-new #f #f))
 (define trec-vnode-join-retry-new  (trec-make-vnode-recur-new #f #t))
