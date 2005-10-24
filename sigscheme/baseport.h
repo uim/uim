@@ -90,7 +90,6 @@
 =======================================*/
 typedef struct ScmCharPortVTbl_ ScmCharPortVTbl;
 typedef struct ScmCharPort_     ScmCharPort;
-typedef struct ScmBaseCharPort_ ScmBaseCharPort;
 typedef struct ScmBytePortVTbl_ ScmBytePortVTbl;
 typedef struct ScmBytePort_     ScmBytePort;
 
@@ -114,12 +113,6 @@ struct ScmCharPortVTbl_ {
 
 struct ScmCharPort_ {
     const ScmCharPortVTbl *vptr;
-};
-
-struct ScmBaseCharPort_ {
-    const ScmCharPortVTbl *vptr;
-
-    ScmBytePort *bport;
 };
 
 struct ScmBytePortVTbl_ {
