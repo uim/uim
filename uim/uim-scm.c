@@ -65,9 +65,6 @@ static UIM_SCM_GC_PROTECTED_FUNC_DECL(uim_lisp,
 static UIM_SCM_GC_PROTECTED_FUNC_DECL(uim_lisp,
 				      uim_scm_eval_c_string_internal,
 				      (const char *str));
-static UIM_SCM_GC_PROTECTED_FUNC_DECL(uim_bool,
-				      uim_scm_require_file_internal,
-				      (const char *fn));
 #endif
 
 static uim_lisp true_sym;
@@ -542,41 +539,16 @@ uim_scm_reverse(uim_lisp lst)
 
 uim_bool
 uim_scm_require_file(const char *fn)
-#if UIM_SCM_GCC4_READY_GC
 {
   uim_bool ret;
-
-  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, uim_scm_require_file_internal, (fn));
-
-  return ret;
-}
-
-static uim_bool
-uim_scm_require_file_internal(const char *fn)
-#endif /* UIM_SCM_GCC4_READY_GC */
-{
-#if !UIM_SCM_GCC4_READY_GC
-  uim_lisp stack_start;
-#endif
 
   if (!fn)
     return UIM_FALSE;
 
-  /*
-   * FIXME: Replace with SigScm_require() which contains the stack protection
-   */
-#if !UIM_SCM_GCC4_READY_GC
-  uim_scm_gc_protect_stack(&stack_start);
-#endif
+  UIM_EVAL_FSTRING1(NULL, "(guard (err (else #f)) (require \"%s\"))", fn);
+  ret = uim_scm_c_bool(uim_scm_return_value());
 
-  ScmOp_require(Scm_NewStringCopying(fn));
-
-#if !UIM_SCM_GCC4_READY_GC
-  uim_scm_gc_unprotect_stack(&stack_start);
-#endif
-
-  /* FIXME */
-  return UIM_TRUE;
+  return ret;
 }
 
 typedef ScmObj (*ScmProcedureFixed0)(void);
