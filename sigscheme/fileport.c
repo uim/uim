@@ -116,10 +116,6 @@ ScmFilePort_new(FILE *file)
     return (ScmBytePort *)port;
 }
 
-/*
- * To allow method invocation from subclasses, all method must call
- * SCM_PORT_DYNAMIC_CAST() explicitly.
- */
 static ScmBytePort *
 fileport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
 {
@@ -138,7 +134,7 @@ fileport_close(ScmBytePort *bport)
     ScmFilePort *fport;
     int err;
 
-    fport = SCM_PORT_DYNAMIC_CAST(ScmFilePort, bport);
+    fport = (ScmFilePort *)bport;
     err = fclose(fport->file);
     free(fport);
 
@@ -150,7 +146,7 @@ fileport_get_byte(ScmBytePort *bport)
 {
     ScmFilePort *fport;
 
-    fport = SCM_PORT_DYNAMIC_CAST(ScmFilePort, bport);
+    fport = (ScmFilePort *)bport;
     return getc(fport->file);
 }
 
@@ -160,7 +156,7 @@ fileport_peek_byte(ScmBytePort *bport)
     ScmFilePort *fport;
     int ch;
 
-    fport = SCM_PORT_DYNAMIC_CAST(ScmFilePort, bport);
+    fport = (ScmFilePort *)bport;
     ch = getc(fport->file);
     return ungetc(ch, fport->file);
 }
@@ -178,7 +174,7 @@ fileport_vprintf(ScmBytePort *bport, const char *str, va_list args)
 {
     ScmFilePort *fport;
 
-    fport = SCM_PORT_DYNAMIC_CAST(ScmFilePort, bport);
+    fport = (ScmFilePort *)bport;
     return vfprintf(fport->file, str, args);
 }
 
@@ -187,7 +183,7 @@ fileport_puts(ScmBytePort *bport, const char *str)
 {
     ScmFilePort *fport;
 
-    fport = SCM_PORT_DYNAMIC_CAST(ScmFilePort, bport);
+    fport = (ScmFilePort *)bport;
     return fputs(str, fport->file);
 }
 
@@ -196,7 +192,7 @@ fileport_write(ScmBytePort *bport, size_t nbytes, const char *buf)
 {
     ScmFilePort *fport;
 
-    fport = SCM_PORT_DYNAMIC_CAST(ScmFilePort, bport);
+    fport = (ScmFilePort *)bport;
     return fwrite(buf, 1, nbytes, fport->file);
 }
 
@@ -205,6 +201,6 @@ fileport_flush(ScmBytePort *bport)
 {
     ScmFilePort *fport;
 
-    fport = SCM_PORT_DYNAMIC_CAST(ScmFilePort, bport);
+    fport = (ScmFilePort *)bport;
     return fflush(fport->file);
 }

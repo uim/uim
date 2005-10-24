@@ -122,7 +122,7 @@ basecport_close(ScmCharPort *cport)
 {
     ScmBaseCharPort *basecport;
 
-    basecport = SCM_PORT_DYNAMIC_CAST(ScmBaseCharPort, cport);
+    basecport = (ScmBaseCharPort *)cport;
     return SCM_BYTEPORT_CLOSE(basecport->bport);
 }
 
@@ -131,7 +131,7 @@ basecport_get_char(ScmCharPort *cport)
 {
     ScmBaseCharPort *basecport;
 
-    basecport = SCM_PORT_DYNAMIC_CAST(ScmBaseCharPort, cport);
+    basecport = (ScmBaseCharPort *)cport;
     return SCM_BYTEPORT_GET_BYTE(basecport->bport);
 }
 
@@ -140,7 +140,7 @@ basecport_peek_char(ScmCharPort *cport)
 {
     ScmBaseCharPort *basecport;
 
-    basecport = SCM_PORT_DYNAMIC_CAST(ScmBaseCharPort, cport);
+    basecport = (ScmBaseCharPort *)cport;
     return SCM_BYTEPORT_PEEK_BYTE(basecport->bport);
 }
 
@@ -149,7 +149,7 @@ basecport_char_readyp(ScmCharPort *cport)
 {
     ScmBaseCharPort *basecport;
 
-    basecport = SCM_PORT_DYNAMIC_CAST(ScmBaseCharPort, cport);
+    basecport = (ScmBaseCharPort *)cport;
     return SCM_BYTEPORT_BYTE_READYP(basecport->bport);
 }
 
@@ -158,7 +158,7 @@ basecport_vprintf(ScmCharPort *cport, const char *str, va_list args)
 {
     ScmBaseCharPort *basecport;
 
-    basecport = SCM_PORT_DYNAMIC_CAST(ScmBaseCharPort, cport);
+    basecport = (ScmBaseCharPort *)cport;
     return SCM_BYTEPORT_VPRINTF(basecport->bport, str, args);
 }
 
@@ -167,7 +167,7 @@ basecport_flush(ScmCharPort *cport)
 {
     ScmBaseCharPort *basecport;
 
-    basecport = SCM_PORT_DYNAMIC_CAST(ScmBaseCharPort, cport);
+    basecport = (ScmBaseCharPort *)cport;
     return SCM_BYTEPORT_FLUSH(basecport->bport);
 }
 
@@ -213,7 +213,7 @@ sbcport_encoding(ScmCharPort *cport)
 {
     ScmSingleByteCharPort *sbcport;
 
-    sbcport = SCM_PORT_DYNAMIC_CAST(ScmSingleByteCharPort, cport);
+    sbcport = (ScmSingleByteCharPort *)cport;
     return "US-ASCII";
 }
 
@@ -224,6 +224,6 @@ sbcport_put_char(ScmCharPort *cport, int ch)
     char buf[1];
 
     buf[0] = ch;
-    sbcport = SCM_PORT_DYNAMIC_CAST(ScmSingleByteCharPort, cport);
+    sbcport = (ScmSingleByteCharPort *)cport;
     return SCM_BYTEPORT_WRITE(sbcport->bport, 1, buf);
 }

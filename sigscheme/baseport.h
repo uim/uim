@@ -61,6 +61,10 @@
 #define SCM_BYTEPORT_ERROR(bport, msg) (exit(EXIT_FAILURE))
 #endif /* SCM_BYTEPORT_ERROR */
 
+/*
+ * To allow safe method invocation (contains from subclasses), all non-standard
+ * method must call SCM_PORT_DYNAMIC_CAST() explicitly.
+ */
 #define SCM_PORT_DYNAMIC_CAST(type, obj)                                     \
      ((type *)(*obj->vptr->dyn_cast)(obj, &type##_vtbl))
 
