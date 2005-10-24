@@ -62,7 +62,7 @@
 /*=======================================
    Variable Declarations
 =======================================*/
-extern const ScmBytePortVTbl ScmFilePort_vtbl;
+extern const ScmBytePortVTbl *ScmFilePort_vptr;
 
 /*=======================================
    Function Declarations

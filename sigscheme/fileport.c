@@ -85,7 +85,7 @@ static int fileport_flush(ScmBytePort *bport);
 /*=======================================
   Variable Declarations
 =======================================*/
-const ScmBytePortVTbl ScmFilePort_vtbl = {
+static const ScmBytePortVTbl ScmFilePort_vtbl = {
     &fileport_dyn_cast,
     &fileport_close,
     &fileport_get_byte,
@@ -96,6 +96,7 @@ const ScmBytePortVTbl ScmFilePort_vtbl = {
     &fileport_write,
     &fileport_flush
 };
+const ScmBytePortVTbl *ScmFilePort_vptr = &ScmFilePort_vtbl;
 
 /*=======================================
   Function Implementations
@@ -108,7 +109,7 @@ ScmFilePort_new(FILE *file)
 
     port = malloc(sizeof(ScmFilePort));
     if (port) {
-        port->vptr = &ScmFilePort_vtbl;
+        port->vptr = ScmFilePort_vptr;
         port->file = file;
     }
 
@@ -124,7 +125,7 @@ fileport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
 {
     ScmBytePort *cast;
 
-    cast = (dst_vptr == &ScmFilePort_vtbl) ? bport : NULL;
+    cast = (dst_vptr == ScmFilePort_vptr) ? bport : NULL;
     if (!cast)
         SCM_BYTEPORT_ERROR(bport, "invalid object is passed to a ScmFilePort method");
 
