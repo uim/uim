@@ -100,19 +100,9 @@ static struct module_info module_info_table[] = {
 /*=======================================
   File Local Function Declarations
 =======================================*/
-#if SCM_GCC4_READY_GC
-static SCM_GC_PROTECTED_FUNC_DECL(void, SigScm_Initialize_internal, (void));
-#else
 static void SigScm_Initialize_internal(void);
-#endif
-
 static int Scm_RegisterFunc(const char *name, ScmFuncType func, enum ScmFuncTypeCode type);
-
-#if SCM_GCC4_READY_GC
-static SCM_GC_PROTECTED_FUNC_DECL(ScmObj, Scm_eval_c_string_internal, (const char *exp));
-#else
 static ScmObj Scm_eval_c_string_internal(const char *exp);
-#endif
 
 /*=======================================
   Function Implementations
@@ -120,7 +110,7 @@ static ScmObj Scm_eval_c_string_internal(const char *exp);
 void SigScm_Initialize(void)
 {
 #if SCM_GCC4_READY_GC
-    SCM_GC_CALL_PROTECTED_VOID_FUNC(SigScm_Initialize_internal, ());
+    SCM_GC_PROTECTED_CALL_VOID(SigScm_Initialize_internal, ());
 #else
     ScmObj stack_start = NULL;
 
@@ -416,7 +406,7 @@ ScmObj Scm_eval_c_string(const char *exp)
     ScmObj ret         = SCM_NULL;
 
 #if SCM_GCC4_READY_GC
-    SCM_GC_CALL_PROTECTED_FUNC(ret, Scm_eval_c_string_internal, (exp));
+    SCM_GC_PROTECTED_CALL(ret, ScmObj, Scm_eval_c_string_internal, (exp));
 #else
     /* start protecting stack */
     SigScm_GC_ProtectStack(&stack_start);

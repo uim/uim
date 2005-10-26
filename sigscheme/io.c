@@ -90,11 +90,7 @@ const ScmSpecialCharInfo Scm_special_char_table[] = {
 /*=======================================
   File Local Function Declarations
 =======================================*/
-#if SCM_GCC4_READY_GC
-static SCM_GC_PROTECTED_FUNC_DECL(ScmObj, SigScm_load_internal, (const char *c_filename));
-#else
 static ScmObj SigScm_load_internal(const char *c_filename);
-#endif /* SCM_GCC4_READY_GC */
 static char*  create_valid_path(const char *c_filename);
 #if SCM_USE_NONSTD_FEATURES
 static ScmObj create_loaded_str(ScmObj filename);
@@ -415,7 +411,7 @@ ScmObj SigScm_load(const char *c_filename)
     ScmObj succeeded   = SCM_FALSE;
 
 #if SCM_GCC4_READY_GC
-    SCM_GC_CALL_PROTECTED_FUNC(succeeded, SigScm_load_internal, (c_filename));
+    SCM_GC_PROTECTED_CALL(succeeded, ScmObj, SigScm_load_internal, (c_filename));
 #else
     /* start protecting stack */
     SigScm_GC_ProtectStack(&stack_start);

@@ -53,11 +53,7 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-#if SCM_GCC4_READY_GC
-static SCM_GC_PROTECTED_FUNC_DECL(void , repl, (void));
-#else
 static void repl(void);
-#endif
 
 /*=======================================
   Function Implementations
@@ -123,7 +119,7 @@ int main(int argc, char **argv)
 
     if (argc < 2) {
 #if SCM_GCC4_READY_GC
-        SCM_GC_CALL_PROTECTED_VOID_FUNC(repl, ());
+        SCM_GC_PROTECTED_CALL_VOID(repl, ());
 #else
         repl();
 #endif

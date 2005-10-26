@@ -167,6 +167,11 @@ static int           scm_cur_marker = SCM_INITIAL_MARKER;
 
 static jmp_buf save_regs_buf;
 ScmObj *scm_stack_start_pointer = NULL;
+#if UIM_SCM_GCC4_READY_GC
+/* See also the comment about these variables in sigscheme.h */
+ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *)
+    = &SigScm_GC_ProtectStackInternal;
+#endif /* UIM_SCM_GCC4_READY_GC */
 
 /* multiple values */
 #if SCM_USE_VALUECONS
@@ -666,19 +671,39 @@ static void gc_sweep(void)
     scm_freelist = scm_new_freelist;
 }
 
-#if !SCM_GCC4_READY_GC
+#if SCM_GCC4_READY_GC
+ScmObj *SigScm_GC_ProtectStackInternal(ScmObj *designated_stack_start)
+{
+    /*
+     * &stack_start will be relocated to start of the frame of subsequent
+     * function call
+     */
+    ScmObj stack_start;
+
+    if (!designated_stack_start)
+        designated_stack_start = &stack_start;
+
+    if (!scm_stack_start_pointer)
+        scm_stack_start_pointer = designated_stack_start;
+
+    /* may intentionally be an invalidated local address */
+    return designated_stack_start;
+}
+
+#else /* SCM_GCC4_READY_GC */
+
 void SigScm_GC_ProtectStack(ScmObj *stack_start)
 {
     if (!scm_stack_start_pointer)
         scm_stack_start_pointer = stack_start;
 }
+#endif /* SCM_GCC4_READY_GC */
 
 void SigScm_GC_UnprotectStack(ScmObj *stack_start)
 {
     if (scm_stack_start_pointer == stack_start)
         scm_stack_start_pointer = NULL;
 }
-#endif /* !SCM_GCC4_READY_GC */
 
 /*===========================================================================
   Object Allocators

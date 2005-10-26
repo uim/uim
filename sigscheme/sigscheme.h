@@ -91,34 +91,31 @@ extern "C" {
 
 #define SCM_EVAL(obj, env) (Scm_eval(obj, env))
 
-/*
- * Function Invocation With Stack Protection
- *
- * Users should only use SCM_GC_PROTECTED_FUNC_DECL(),
- * SCM_GC_CALL_PROTECTED_FUNC() and SCM_GC_CALL_PROTECTED_VOID_FUNC().
- */
 #if SCM_GCC4_READY_GC
+/*
+ * Function caller with protecting Scheme objects on stack from GC
+ *
+ * The protection is safe against with variable reordering on a stack
+ * frame performed in some compilers as anti-stack smashing or
+ * optimization.
+ *
+ * Users should only use SCM_GC_PROTECTED_CALL() and
+ * SCM_GC_PROTECTED_CALL_VOID().
+ */
+#define SCM_GC_PROTECTED_CALL(ret, ret_type, func, args)                     \
+    SCM_GC_PROTECTED_CALL_INTERNAL(ret = , ret_type, func, args)
 
-#define SCM_GC_PROTECTED_FUNC_T(func) SigScm_GC_ProtectedType__##func
+#define SCM_GC_PROTECTED_CALL_VOID(func, args)                               \
+    SCM_GC_PROTECTED_CALL_INTERNAL((void), void, func, args)
 
-#define SCM_GC_PROTECTED_FUNC_DECL(ret_type, func, args)                     \
-    ret_type func args SCM_NOINLINE;                                         \
-    typedef ret_type (*SCM_GC_PROTECTED_FUNC_T(func)) args
-
-#define SCM_GC_CALL_PROTECTED_FUNC(ret, func, args)                          \
-    SCM_GC_CALL_PROTECTED_FUNC_INTERNAL(ret = , func, args)
-
-#define SCM_GC_CALL_PROTECTED_VOID_FUNC(func, args)                          \
-    SCM_GC_CALL_PROTECTED_FUNC_INTERNAL((void), func, args)
-
-#define SCM_GC_CALL_PROTECTED_FUNC_INTERNAL(exp_ret, func, args)             \
+#define SCM_GC_PROTECTED_CALL_INTERNAL(exp_ret, ret_type, func, args)        \
     do {                                                                     \
-        SCM_GC_PROTECTED_FUNC_T(func) fp;                                    \
+        /* ensure that func is uninlined */                                  \
+        ret_type (*volatile fp)() = (ret_type (*)())&func;                   \
         ScmObj *stack_start;                                                 \
                                                                              \
+        if (0) exp_ret func args;  /* compile-time type check */             \
         stack_start = SigScm_GC_ProtectStack(NULL);                          \
-        fp = (SCM_GC_PROTECTED_FUNC_T(func))                                 \
-                  SigScm_GC_EnsureUninlinedFunc((ScmCFunc)&func);            \
         exp_ret (*fp)args;                                                   \
         SigScm_GC_UnprotectStack(stack_start);                               \
     } while (/* CONSTCOND */ 0)
@@ -172,14 +169,15 @@ enum ScmDebugCategory {
 /*=======================================
    Variable Declarations
 =======================================*/
-/* storage-protection.c */
+/* datas.c */
 #if SCM_GCC4_READY_GC
 /*
- * For ensuring that these function calls be uninlined. Dont' access these
- * variables directly.
+ * The variable to ensure that a call of SigScm_GC_ProtectStack() is
+ * uninlined in portable way through (*f)().
+ *
+ * Don't access this variables directly. Use SCM_GC_PROTECTED_CALL*() instead.
  */
-extern ScmObj *(*scm_gc_protect_stack)(ScmObj *);
-extern ScmCFunc (*scm_gc_ensure_uninlined_func)(ScmCFunc);
+extern ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *);
 #endif /* SCM_GCC4_READY_GC */
 
 /*=======================================
@@ -331,10 +329,22 @@ void Scm_RegisterProcedureVariadicTailRec5(const char *name, ScmObj (*func)(ScmO
 
 /* datas.c */
 void   SigScm_GC_Protect(ScmObj *var);
-#if !SCM_GCC4_READY_GC
+#if SCM_GCC4_READY_GC
+/*
+ * Ordinary programs should not call these functions directly. Use
+ * SCM_GC_PROTECTED_CALL*() instead.
+ */
+#ifdef __GNUC__
+#define SigScm_GC_ProtectStack SigScm_GC_ProtectStackInternal
+#else /* __GNUC__ */
+#define SigScm_GC_ProtectStack (*scm_gc_protect_stack)
+#endif /* __GNUC__ */
+
+ScmObj *SigScm_GC_ProtectStackInternal(ScmObj *designated_stack_start) SCM_NOINLINE;
+#else /* SCM_GCC4_READY_GC */
 void   SigScm_GC_ProtectStack(ScmObj *stack_start);
+#endif /* SCM_GCC4_READY_GC */
 void   SigScm_GC_UnprotectStack(ScmObj *stack_start);
-#endif
 ScmObj Scm_NewCons(ScmObj a, ScmObj b);
 ScmObj Scm_NewInt(int val);
 ScmObj Scm_NewSymbol(char *name, ScmObj v_cell);
@@ -356,25 +366,6 @@ ScmObj Scm_NewCPointer(void *data);
 ScmObj Scm_NewCFuncPointer(ScmCFunc func);
 #endif
 ScmObj Scm_Intern(const char *name);
-
-/* storage-protection.c */
-#if SCM_GCC4_READY_GC
-/*
- * Ordinary programs should not call these functions directly. Use
- * SCM_GC_CALL_PROTECTED_*FUNC() instead.
- */
-#ifdef __GNUC__
-#define SigScm_GC_ProtectStack SigScm_GC_ProtectStackInternal
-#define SigScm_GC_EnsureUninlinedFunc SigScm_GC_EnsureUninlinedFuncInternal
-#else /* __GNUC__ */
-#define SigScm_GC_ProtectStack (*scm_gc_protect_stack)
-#define SigScm_GC_EnsureUninlinedFunc (*scm_gc_ensure_uninlined_func)
-#endif /* __GNUC__ */
-void SigScm_GC_UnprotectStack(ScmObj *stack_start);
-
-ScmObj *SigScm_GC_ProtectStackInternal(ScmObj *designated_stack_start) SCM_NOINLINE;
-ScmCFunc SigScm_GC_EnsureUninlinedFuncInternal(ScmCFunc func) SCM_NOINLINE;
-#endif /* SCM_GCC4_READY_GC */
 
 /* eval.c */
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env);
