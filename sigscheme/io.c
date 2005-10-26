@@ -105,6 +105,15 @@ void SigScm_set_lib_path(const char *path)
     lib_path = path;
 }
 
+#if SCM_USE_NONSTD_FEATURES
+/* SIOD compatible */
+ScmObj ScmOp_load_path(void)
+{
+    DECLARE_FUNCTION("load-path", ProcedureFixed0);
+    return Scm_NewStringCopying(lib_path);
+}
+#endif
+
 /*=======================================
   R5RS : 6.6 Input and Output
 =======================================*/

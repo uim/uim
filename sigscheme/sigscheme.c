@@ -338,6 +338,7 @@ static void SigScm_Initialize_internal(void)
 #if SCM_USE_NONSTD_FEATURES
     Scm_RegisterProcedureVariadic1("symbol-bound?"     , ScmOp_symbol_boundp);
 
+    Scm_RegisterProcedureFixed0("load-path"                , ScmOp_load_path);
     Scm_RegisterProcedureFixed1("require"                  , ScmOp_require);
     Scm_RegisterProcedureFixed1("provide"                  , ScmOp_provide);
     Scm_RegisterProcedureFixed1("provided?"                , ScmOp_providedp);

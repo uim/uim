@@ -552,6 +552,7 @@ ScmObj ScmOp_write_char(ScmObj obj, ScmObj args);
 ScmObj SigScm_load(const char *c_filename);
 ScmObj ScmOp_load(ScmObj filename);
 #if SCM_USE_NONSTD_FEATURES
+ScmObj ScmOp_load_path(void);
 /* FIXME: add ScmObj SigScm_require(const char *c_filename); */
 ScmObj ScmOp_require(ScmObj filename);
 ScmObj ScmOp_provide(ScmObj feature);
