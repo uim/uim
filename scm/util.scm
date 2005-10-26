@@ -586,6 +586,7 @@
 ;; returns succeeded or not
 (define try-load
   (lambda (file)
+    ;; to suppress error message, check file existence first
     (and (file-readable? (make-scm-pathname file))
 	 (not (*catch 'errobj (begin (load file)
 				     #f))))))
@@ -594,6 +595,7 @@
 ;; returns succeeded or not
 (define try-require
   (lambda (file)
+    ;; to suppress error message, check file existence first
     (and (file-readable? (make-scm-pathname file))
 	 (eq? (symbolconc '* (string->symbol file) '-loaded*)
 	      (*catch 'errobj (require file))))))
