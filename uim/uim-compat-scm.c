@@ -40,12 +40,8 @@
 #include "uim-internal.h"
 
 #if UIM_SCM_GCC4_READY_GC
-static UIM_SCM_GC_PROTECTED_FUNC_DECL(int,
-				      uim_scm_symbol_value_int_internal,
-				      (const char *symbol_str));
-static UIM_SCM_GC_PROTECTED_FUNC_DECL(char *,
-				      uim_scm_symbol_value_str_internal,
-				      (const char *symbol_str));
+static int uim_scm_symbol_value_int_internal(const char *symbol_str);
+static char *uim_scm_symbol_value_str_internal(const char *symbol_str);
 #endif
 
 static uim_lisp return_val;
@@ -72,8 +68,7 @@ uim_scm_symbol_value_int(const char *symbol_str)
 {
   int ret;
 
-  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, uim_scm_symbol_value_int_internal,
-				 (symbol_str));
+  UIM_SCM_GC_PROTECTED_CALL(ret, int, uim_scm_symbol_value_int_internal, (symbol_str));
 
   return ret;
 }
@@ -117,8 +112,8 @@ uim_scm_symbol_value_str(const char *symbol_str)
 {
   char *ret;
 
-  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, uim_scm_symbol_value_str_internal,
-				 (symbol_str));
+  UIM_SCM_GC_PROTECTED_CALL(ret, char *, uim_scm_symbol_value_str_internal,
+			    (symbol_str));
 
   return ret;
 }

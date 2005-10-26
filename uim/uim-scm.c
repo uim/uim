@@ -50,21 +50,11 @@
 static void uim_scm_error(const char *msg, uim_lisp errobj);
 
 #if UIM_SCM_GCC4_READY_GC
-static UIM_SCM_GC_PROTECTED_FUNC_DECL(void,
-				      uim_scm_error_internal,
-				      (const char *msg, uim_lisp errobj));
-static UIM_SCM_GC_PROTECTED_FUNC_DECL(int,
-				      uim_scm_c_int_internal,
-				      (uim_lisp integer));
-static UIM_SCM_GC_PROTECTED_FUNC_DECL(const char *,
-				      uim_scm_refer_c_str_internal,
-				      (uim_lisp str));
-static UIM_SCM_GC_PROTECTED_FUNC_DECL(uim_lisp,
-				      uim_scm_eval_internal,
-				      (uim_lisp obj));
-static UIM_SCM_GC_PROTECTED_FUNC_DECL(uim_lisp,
-				      uim_scm_eval_c_string_internal,
-				      (const char *str));
+static void uim_scm_error_internal(const char *msg, uim_lisp errobj);
+static int uim_scm_c_int_internal(uim_lisp integer);
+static const char *uim_scm_refer_c_str_internal(uim_lisp str);
+static uim_lisp uim_scm_eval_internal(uim_lisp obj);
+static uim_lisp uim_scm_eval_c_string_internal(const char *str);
 #endif
 
 static uim_lisp true_sym;
@@ -77,8 +67,7 @@ static FILE *uim_output = NULL;
 #if UIM_SCM_GCC4_READY_GC
 /* See also the comment about these variables in uim-scm.h */
 uim_lisp *(*volatile uim_scm_gc_protect_stack_ptr)(void)
-   = &uim_scm_gc_protect_stack_internal;
-volatile uim_func_ptr uim_scm_uninlined_func_ptr = NULL;
+  = &uim_scm_gc_protect_stack_internal;
 #endif /* UIM_SCM_GCC4_READY_GC */
 
 
@@ -86,7 +75,7 @@ static void
 uim_scm_error(const char *msg, uim_lisp errobj)
 #if UIM_SCM_GCC4_READY_GC
 {
-  UIM_SCM_GC_CALL_PROTECTED_VOID_FUNC(uim_scm_error_internal, (msg, errobj));
+  UIM_SCM_GC_PROTECTED_CALL_VOID(uim_scm_error_internal, (msg, errobj));
 }
 
 static void
@@ -137,7 +126,7 @@ uim_scm_c_int(uim_lisp integer)
 {
   int ret;
 
-  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, uim_scm_c_int_internal, (integer));
+  UIM_SCM_GC_PROTECTED_CALL(ret, int, uim_scm_c_int_internal, (integer));
 
   return ret;
 }
@@ -191,7 +180,7 @@ uim_scm_refer_c_str(uim_lisp str)
 {
   const char *ret;
 
-  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, uim_scm_refer_c_str_internal, (str));
+  UIM_SCM_GC_PROTECTED_CALL(ret, const char *, uim_scm_refer_c_str_internal, (str));
 
   return ret;
 }
@@ -425,7 +414,7 @@ uim_scm_eval(uim_lisp obj)
 {
   uim_lisp ret;
 
-  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, uim_scm_eval_internal, (obj));
+  UIM_SCM_GC_PROTECTED_CALL(ret, uim_lisp, uim_scm_eval_internal, (obj));
 
   return ret;
 }
@@ -464,7 +453,7 @@ uim_scm_eval_c_string(const char *str)
 {
   uim_lisp ret;
 
-  UIM_SCM_GC_CALL_PROTECTED_FUNC(ret, uim_scm_eval_c_string_internal, (str));
+  UIM_SCM_GC_PROTECTED_CALL(ret, uim_lisp, uim_scm_eval_c_string_internal, (str));
 
   return ret;
 }
