@@ -551,7 +551,9 @@
     (guard (err
 	    (else
 	     #f))
-      (load file))))
+      ;; to suppress error message, check file existence first
+      (and (file-readable? (make-scm-pathname file))
+	   (load file)))))
 
 ;; TODO: write test
 ;; returns succeeded or not
@@ -560,7 +562,9 @@
     (guard (err
 	    (else
 	     #f))
-      (require file))))
+      ;; to suppress error message, check file existence first
+      (and (file-readable? (make-scm-pathname file))
+	   (require file)))))
 
 ;; used for dynamic environment substitution of closure
 (define %%enclose-another-env
