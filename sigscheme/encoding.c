@@ -89,7 +89,11 @@ typedef unsigned char uchar;
 =======================================*/
 /* TODO: add some mechanism to dynamically switch between encodings. */
 ScmMultibyteCharInfo (*Scm_mb_scan_char)(ScmMultibyteString mbs)
+#if SCM_USE_UTF8
     = utf8_scan_char;
+#else
+    = unibyte_scan_char;
+#endif
 
 /*=======================================
   Public API
