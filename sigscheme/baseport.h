@@ -71,7 +71,7 @@
  * method must call SCM_PORT_DYNAMIC_CAST() explicitly.
  */
 #define SCM_PORT_DYNAMIC_CAST(type, obj)                                     \
-     ((type *)(*obj->vptr->dyn_cast)(obj, &type##_vtbl))
+     ((type *)(*obj->vptr->dyn_cast)(obj, type##_vptr))
 
 #define SCM_CHARPORT_CLOSE(cport)        ((*cport->vptr->close)(cport))
 #define SCM_CHARPORT_ENCODING(cport)     ((*cport->vptr->encoding)(cport))
