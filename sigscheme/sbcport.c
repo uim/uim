@@ -42,7 +42,6 @@
   System Include
 =======================================*/
 #include <stdlib.h>
-#include <stdio.h>
 #include <stdarg.h>
 
 /*=======================================
@@ -127,9 +126,7 @@ static const char *
 basecport_encoding(ScmBaseCharPort *port)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(CHAR, port, ScmBaseCharPort);
-
     /* NOTREACHED */
-    return NULL;
 }
 
 static int
@@ -160,9 +157,7 @@ static int
 basecport_put_char(ScmBaseCharPort *port, int ch)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(CHAR, port, ScmBaseCharPort);
-
     /* NOTREACHED */
-    return EOF;
 }
 
 static int

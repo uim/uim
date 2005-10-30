@@ -53,7 +53,11 @@
 /*=======================================
   Macro Definitions
 =======================================*/
-/* define appropriate error handling such as exception to override these */
+/*
+ * Define appropriate error handling such as exception to override these. The
+ * macro MUST NOT return. The replacement expression should indicate that it
+ * will not return, in compiler specific way such as noreturn attribute of GCC.
+ */
 #ifndef SCM_CHARPORT_ERROR
 #define SCM_CHARPORT_ERROR(cport, msg) (exit(EXIT_FAILURE))
 #endif /* SCM_CHARPORT_ERROR */

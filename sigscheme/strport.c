@@ -233,24 +233,28 @@ static int
 istrport_vprintf(ScmInputStrPort *port, const char *str, va_list args)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmInputStrPort);
+    /* NOTREACHED */
 }
 
 static int
 istrport_puts(ScmInputStrPort *port, const char *str)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmInputStrPort);
+    /* NOTREACHED */
 }
 
 static size_t
 istrport_write(ScmInputStrPort *port, size_t nbytes, const char *buf)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmInputStrPort);
+    /* NOTREACHED */
 }
 
 static int
 istrport_flush(ScmInputStrPort *port)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmInputStrPort);
+    /* NOTREACHED */
 }
 
 
@@ -319,18 +323,21 @@ static int
 ostrport_get_byte(ScmOutputStrPort *port)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmOutputStrPort);
+    /* NOTREACHED */
 }
 
 static int
 ostrport_peek_byte(ScmOutputStrPort *port)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmOutputStrPort);
+    /* NOTREACHED */
 }
 
 static int
 ostrport_byte_readyp(ScmOutputStrPort *port)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmOutputStrPort);
+    /* NOTREACHED */
 }
 
 static int
