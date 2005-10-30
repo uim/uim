@@ -103,6 +103,15 @@ const ScmBytePortVTbl *ScmFilePort_vptr = &ScmFilePort_vtbl;
   Function Implementations
 =======================================*/
 
+/*
+ * Client code must call this first even if current implementation does not
+ * contain actual code.
+ */
+void Scm_fileport_init(void)
+{
+    return;
+}
+
 ScmBytePort *
 ScmFilePort_new(FILE *file)
 {

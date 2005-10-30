@@ -67,6 +67,8 @@ extern const ScmBytePortVTbl *ScmFilePort_vptr;
 /*=======================================
    Function Declarations
 =======================================*/
+void Scm_fileport_init(void);
+
 /* FIXME: add a creator takes pathname */
 ScmBytePort *ScmFilePort_new(FILE *file);
 
