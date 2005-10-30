@@ -88,6 +88,12 @@
                       SCM_MBS_GET_SIZE(mbs) - SCM_MBCINFO_GET_SIZE(inf)),     \
      SCM_MBS_SET_STATE((mbs), SCM_MBCINFO_GET_STATE(inf)))
 
+#define SCM_CHARCODEC_ENCODING(codec)           ((*codec->encoding)())
+#define SCM_CHARCODEC_SCAN_CHAR(codec, mbs)     ((*codec->scan_char)(mbs))
+#define SCM_CHARCODEC_STR2INT(codec, start, nbytes)                          \
+    ((*codec->str2int)(start, nbytes))
+#define SCM_CHARCODEC_INT2STR(codec, start, ch) ((*codec->int2str)(start, ch))
+
 /*=======================================
   Type Definitions
 =======================================*/
@@ -119,6 +125,21 @@ typedef struct {
     ScmMultibyteState state;
 #endif
 } ScmMultibyteString;
+
+typedef struct ScmCharCodecVTbl_ ScmCharCodecVTbl;
+typedef ScmCharCodecVTbl ScmCharCodec;
+
+typedef const char *(*ScmCharCodecMethod_encoding)(void);
+typedef ScmMultibyteCharInfo (*ScmCharCodecMethod_scan_char)(ScmMultibyteString mbs);
+typedef int (*ScmCharCodecMethod_str2int)(const char *start, size_t nbytes);
+typedef char *(*ScmCharCodecMethod_int2str)(char *start, int ch);
+
+struct ScmCharCodecVTbl_ {
+    ScmCharCodecMethod_encoding  encoding;
+    ScmCharCodecMethod_scan_char scan_char;
+    ScmCharCodecMethod_str2int   str2int;
+    ScmCharCodecMethod_int2str   int2str;
+};
 
 /*=======================================
    Variable Declarations
