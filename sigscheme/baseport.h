@@ -61,12 +61,12 @@
 #define SCM_BYTEPORT_ERROR(bport, msg) (exit(EXIT_FAILURE))
 #endif /* SCM_BYTEPORT_ERROR */
 
-#define SCM_BYTEPORT_ERROR_INVALID_TYPE(bport, type)                         \
-    SCM_BYTEPORT_ERROR(bport, #type ": invalid object is passed to")
-#define SCM_BYTEPORT_ERROR_INVALID_OPERATION(bport, type)                    \
-    SCM_BYTEPORT_ERROR(bport, #type ": invalid operation")
-#define SCM_BYTEPORT_ERROR_NOMEM(bport, type)                                \
-    SCM_BYTEPORT_ERROR(bport, #type ": Out of memory")
+#define SCM_PORT_ERROR_INVALID_TYPE(klass, port, type)                       \
+    SCM_##klass##PORT_ERROR(port, #type ": invalid object is passed to")
+#define SCM_PORT_ERROR_INVALID_OPERATION(klass, port, type)                  \
+    SCM_##klass##PORT_ERROR(port, #type ": invalid operation")
+#define SCM_PORT_ERROR_NOMEM(klass, port, type)                              \
+    SCM_##klass##PORT_ERROR(port, #type ": Out of memory")
 
 /*
  * To allow safe method invocation (contains from subclasses), all non-standard

@@ -119,7 +119,7 @@ ScmFilePort_new(FILE *file)
 
     port = malloc(sizeof(ScmFilePort));
     if (!port)
-        SCM_BYTEPORT_ERROR_NOMEM(NULL, ScmFilePort);
+        SCM_PORT_ERROR_NOMEM(BYTE, NULL, ScmFilePort);
 
     port->vptr = ScmFilePort_vptr;
     port->file = file;
@@ -131,7 +131,7 @@ static ScmBytePort *
 fileport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
 {
     if (dst_vptr != ScmFilePort_vptr)
-        SCM_BYTEPORT_ERROR_INVALID_TYPE(bport, ScmBytePort);
+        SCM_PORT_ERROR_INVALID_TYPE(BYTE, bport, ScmBytePort);
 
     return bport;
 }

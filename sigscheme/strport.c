@@ -164,7 +164,7 @@ ScmInputStrPort_new(char *str, int ownership)
 
     port = malloc(sizeof(ScmInputStrPort));
     if (!port)
-        SCM_BYTEPORT_ERROR_NOMEM(NULL, ScmInputStrPort);
+        SCM_PORT_ERROR_NOMEM(BYTE, NULL, ScmInputStrPort);
 
     port->vptr = ScmInputStrPort_vptr;
     port->cur = port->str = str;
@@ -187,7 +187,7 @@ ScmInputStrPort_ref_opaque(ScmBytePort *bport)
 
     port = SCM_PORT_DYNAMIC_CAST(ScmInputStrPort, bport);
     if (!port)
-        SCM_BYTEPORT_ERROR_INVALID_TYPE(bport, ScmInputStrPort);
+        SCM_PORT_ERROR_INVALID_TYPE(BYTE, bport, ScmInputStrPort);
 
     return &port->opaque;
 }
@@ -196,7 +196,7 @@ static ScmBytePort *
 istrport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
 {
     if (dst_vptr != ScmInputStrPort_vptr)
-        SCM_BYTEPORT_ERROR_INVALID_TYPE(bport, ScmInputStrPort);
+        SCM_PORT_ERROR_INVALID_TYPE(BYTE, bport, ScmInputStrPort);
 
     return bport;
 }
@@ -232,25 +232,25 @@ istrport_byte_readyp(ScmInputStrPort *port)
 static int
 istrport_vprintf(ScmInputStrPort *port, const char *str, va_list args)
 {
-    SCM_BYTEPORT_ERROR_INVALID_OPERATION(port, ScmInputStrPort);
+    SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmInputStrPort);
 }
 
 static int
 istrport_puts(ScmInputStrPort *port, const char *str)
 {
-    SCM_BYTEPORT_ERROR_INVALID_OPERATION(port, ScmInputStrPort);
+    SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmInputStrPort);
 }
 
 static size_t
 istrport_write(ScmInputStrPort *port, size_t nbytes, const char *buf)
 {
-    SCM_BYTEPORT_ERROR_INVALID_OPERATION(port, ScmInputStrPort);
+    SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmInputStrPort);
 }
 
 static int
 istrport_flush(ScmInputStrPort *port)
 {
-    SCM_BYTEPORT_ERROR_INVALID_OPERATION(port, ScmInputStrPort);
+    SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmInputStrPort);
 }
 
 
@@ -261,7 +261,7 @@ ScmOutputStrPort_new(void)
 
     port = malloc(sizeof(ScmOutputStrPort));
     if (!port)
-        SCM_BYTEPORT_ERROR_NOMEM(NULL, ScmOutputStrPort);
+        SCM_PORT_ERROR_NOMEM(BYTE, NULL, ScmOutputStrPort);
 
     port->vptr = ScmOutputStrPort_vptr;
     port->str = NULL;
@@ -280,7 +280,7 @@ ScmOutputStrPort_str(ScmBytePort *bport)
 
     port = SCM_PORT_DYNAMIC_CAST(ScmOutputStrPort, bport);
     if (!port)
-        SCM_BYTEPORT_ERROR_INVALID_TYPE(bport, ScmOutputStrPort);
+        SCM_PORT_ERROR_INVALID_TYPE(BYTE, bport, ScmOutputStrPort);
 
     return port->str;
 }
@@ -292,7 +292,7 @@ ScmOutputStrPort_ref_opaque(ScmBytePort *bport)
 
     port = SCM_PORT_DYNAMIC_CAST(ScmOutputStrPort, bport);
     if (!port)
-        SCM_BYTEPORT_ERROR_INVALID_TYPE(bport, ScmOutputStrPort);
+        SCM_PORT_ERROR_INVALID_TYPE(BYTE, bport, ScmOutputStrPort);
 
     return &port->opaque;
 }
@@ -301,7 +301,7 @@ static ScmBytePort *
 ostrport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
 {
     if (dst_vptr != ScmOutputStrPort_vptr)
-        SCM_BYTEPORT_ERROR_INVALID_TYPE(bport, ScmOutputStrPort);
+        SCM_PORT_ERROR_INVALID_TYPE(BYTE, bport, ScmOutputStrPort);
 
     return bport;
 }
@@ -318,19 +318,19 @@ ostrport_close(ScmOutputStrPort *port)
 static int
 ostrport_get_byte(ScmOutputStrPort *port)
 {
-    SCM_BYTEPORT_ERROR_INVALID_OPERATION(port, ScmOutputStrPort);
+    SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmOutputStrPort);
 }
 
 static int
 ostrport_peek_byte(ScmOutputStrPort *port)
 {
-    SCM_BYTEPORT_ERROR_INVALID_OPERATION(port, ScmOutputStrPort);
+    SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmOutputStrPort);
 }
 
 static int
 ostrport_byte_readyp(ScmOutputStrPort *port)
 {
-    SCM_BYTEPORT_ERROR_INVALID_OPERATION(port, ScmOutputStrPort);
+    SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmOutputStrPort);
 }
 
 static int
@@ -342,7 +342,7 @@ ostrport_vprintf(ScmOutputStrPort *port, const char *str, va_list args)
     
     len = vasprintf(&appendix, str, args);
     if (!appendix)
-        SCM_BYTEPORT_ERROR_NOMEM(port, ScmOutputStrPort);
+        SCM_PORT_ERROR_NOMEM(BYTE, port, ScmOutputStrPort);
     if (0 < len)
         ostrport_append(port, len, appendix);
     free(appendix);
@@ -384,7 +384,7 @@ ostrport_append(ScmOutputStrPort *port, size_t len, const char *str)
         port->buf_size += len;
         new_str = realloc(port->str, port->buf_size);
         if (!new_str)
-            SCM_BYTEPORT_ERROR_NOMEM(NULL, ScmOutputStrPort);
+            SCM_PORT_ERROR_NOMEM(BYTE, NULL, ScmOutputStrPort);
         port->str = new_str;
     }
 
