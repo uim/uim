@@ -96,6 +96,15 @@
 #define SCM_DEBUG_BACKTRACE_VAL 1  /* enable values printing on backtrace */
 
 /*===========================================================================
+  Platform Dependency
+===========================================================================*/
+/*
+ * FIXME: detect with configure and link against a replace function if not
+ * found
+ */
+#define HAVE_VASPRINTF          1
+
+/*===========================================================================
   Dependency Resolution
 ===========================================================================*/
 #if SCM_COMPAT_SIOD
