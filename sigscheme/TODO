@@ -16,6 +16,9 @@ Requirements and bugs:
 
 * Add integer->char and char->integer procedures
 
+* Inhibit a mutation on string constants as described in "3.4 Storage model" of
+  R5RS
+
 * Fix invalid storage model assumption of ScmOp_append() and qquote_internal()
   with ScmRef
 

@@ -32,6 +32,14 @@
 					      (string-set! str 2 #\u)
 					      str)))
 
+;; immutable strings: See "3.4 Storage model" of R5RS
+(assert-error "string-set! on constant string #1"
+              (lambda ()
+                (string-set! "foo" 0 #\b)))
+(assert-error "string-set! on constant string #2"
+              (lambda ()
+                (string-set! (symbol->string 'foo) 0 #\b)))
+
 ;; check string-length
 (assert-equal? "alphabet string-length check" 5 (string-length "aiueo"))
 (assert-equal? "hiragana string-length check" 5 (string-length "あいうえお"))
