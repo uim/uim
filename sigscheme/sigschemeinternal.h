@@ -89,6 +89,13 @@ extern char *scm_portbuffer;
 /*=======================================
    Macro Declarations
 =======================================*/
+#ifndef FALSE
+#define FALSE 0
+#endif /* FALSE */
+#ifndef TRUE
+#define TRUE  (!FALSE)
+#endif /* TRUE */
+
 /* FreeCell Handling Macros */
 #if SCM_OBJ_COMPACT
 #define SCM_FREECELLP(a)            (SCM_CONSP(a))

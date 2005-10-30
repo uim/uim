@@ -166,7 +166,7 @@ fileport_byte_readyp(ScmBytePort *bport)
 {
     /* does not support a FILE based on a pipe, or opened by fdopen(3) */
     /* FIXME: support stdin properly */
-    return 1;
+    return TRUE;
 }
 
 static int
