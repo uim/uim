@@ -50,6 +50,7 @@ extern "C" {
    Local Include
 =======================================*/
 #include "config.h"
+#include "encoding.h"
 
 /*=======================================
    Macro Declarations
@@ -560,13 +561,6 @@ ScmObj ScmOp_providedp(ScmObj feature);
 ScmObj ScmOp_file_existsp(ScmObj filepath);
 ScmObj ScmOp_delete_file(ScmObj filepath);
 #endif
-
-/* encoding.c */
-int Scm_mb_strlen(ScmMultibyteString mbs);
-int Scm_mb_bare_c_strlen(const char *str);
-ScmMultibyteString Scm_mb_substring(ScmMultibyteString str, int i, int len);
-#define Scm_mb_strref(str, i) (Scm_mb_substring((str), (i), 1))
-extern ScmMultibyteCharInfo (*Scm_mb_scan_char)(ScmMultibyteString mbs);
 
 /* read.c */
 ScmObj SigScm_Read(ScmObj port);

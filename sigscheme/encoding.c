@@ -1,6 +1,6 @@
 /*===========================================================================
  *  FileName : encoding.c
- *  About    : handling encoding
+ *  About    : Character encoding handling
  *
  *  Copyright (C) 2005      by Kazuki Ohta (mover@hct.zaq.ne.jp)
  *
@@ -37,15 +37,22 @@
  * authors, Tomohiro KUBOTA, et al. */
 
 
+/* This file is going to be portable. Don't depend on SigScheme if possible. */
+
 /*=======================================
   System Include
 =======================================*/
+#include <stdlib.h>
+#include <string.h>
 
 /*=======================================
   Local Include
 =======================================*/
+#include "encoding.h"
+#if SCM_ENCODING_USE_WITH_SIGSCHEME
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
+#endif
 
 /*=======================================
   File Local Functions
