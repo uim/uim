@@ -61,6 +61,11 @@
 #define SCM_BYTEPORT_ERROR(bport, msg) (exit(EXIT_FAILURE))
 #endif /* SCM_BYTEPORT_ERROR */
 
+#define SCM_BYTEPORT_ERROR_INVALID_TYPE(bport, type)                         \
+    SCM_BYTEPORT_ERROR(bport, "invalid object is passed to a " #type " method")
+#define SCM_BYTEPORT_ERROR_INVALID_OPERATION(bport, type)                    \
+    SCM_BYTEPORT_ERROR(bport, "invalid operation for " #type)
+
 /*
  * To allow safe method invocation (contains from subclasses), all non-standard
  * method must call SCM_PORT_DYNAMIC_CAST() explicitly.

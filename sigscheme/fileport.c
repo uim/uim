@@ -121,7 +121,7 @@ static ScmBytePort *
 fileport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
 {
     if (dst_vptr != ScmFilePort_vptr)
-        SCM_BYTEPORT_ERROR(bport, "invalid object is passed to a ScmFilePort method");
+        SCM_BYTEPORT_ERROR_INVALID_TYPE(bport, ScmBytePort);
 
     return bport;
 }
