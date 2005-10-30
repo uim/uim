@@ -73,28 +73,29 @@ struct ScmFilePort_ {
 =======================================*/
 static ScmBytePort *fileport_dyn_cast(ScmBytePort *bport,
                                       const ScmBytePortVTbl *dest_vptr);
-static int fileport_close(ScmBytePort *bport);
-static int fileport_get_byte(ScmBytePort *bport);
-static int fileport_peek_byte(ScmBytePort *bport);
-static int fileport_byte_readyp(ScmBytePort *bport);
-static int fileport_vprintf(ScmBytePort *bport, const char *str, va_list args);
-static int fileport_puts(ScmBytePort *bport, const char *str);
-static size_t fileport_write(ScmBytePort *bport, size_t nbytes, const char *buf);
-static int fileport_flush(ScmBytePort *bport);
+static int fileport_close(ScmFilePort *bport);
+static int fileport_get_byte(ScmFilePort *bport);
+static int fileport_peek_byte(ScmFilePort *bport);
+static int fileport_byte_readyp(ScmFilePort *bport);
+static int fileport_vprintf(ScmFilePort *bport, const char *str, va_list args);
+static int fileport_puts(ScmFilePort *bport, const char *str);
+static size_t fileport_write(ScmFilePort *bport,
+                             size_t nbytes, const char *buf);
+static int fileport_flush(ScmFilePort *bport);
 
 /*=======================================
   Variable Declarations
 =======================================*/
 static const ScmBytePortVTbl ScmFilePort_vtbl = {
-    &fileport_dyn_cast,
-    &fileport_close,
-    &fileport_get_byte,
-    &fileport_peek_byte,
-    &fileport_byte_readyp,
-    &fileport_vprintf,
-    &fileport_puts,
-    &fileport_write,
-    &fileport_flush
+    (ScmBytePortMethod_dyn_cast)   &fileport_dyn_cast,
+    (ScmBytePortMethod_close)      &fileport_close,
+    (ScmBytePortMethod_get_byte)   &fileport_get_byte,
+    (ScmBytePortMethod_peek_byte)  &fileport_peek_byte,
+    (ScmBytePortMethod_byte_readyp)&fileport_byte_readyp,
+    (ScmBytePortMethod_vprintf)    &fileport_vprintf,
+    (ScmBytePortMethod_puts)       &fileport_puts,
+    (ScmBytePortMethod_write)      &fileport_write,
+    (ScmBytePortMethod_flush)      &fileport_flush
 };
 const ScmBytePortVTbl *ScmFilePort_vptr = &ScmFilePort_vtbl;
 
@@ -119,50 +120,40 @@ ScmFilePort_new(FILE *file)
 static ScmBytePort *
 fileport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
 {
-    ScmBytePort *cast;
-
-    cast = (dst_vptr == ScmFilePort_vptr) ? bport : NULL;
-    if (!cast)
+    if (dst_vptr != ScmFilePort_vptr)
         SCM_BYTEPORT_ERROR(bport, "invalid object is passed to a ScmFilePort method");
 
-    return cast;
+    return bport;
 }
 
 static int
-fileport_close(ScmBytePort *bport)
+fileport_close(ScmFilePort *port)
 {
-    ScmFilePort *fport;
     int err;
 
-    fport = (ScmFilePort *)bport;
-    err = fclose(fport->file);
-    free(fport);
+    err = fclose(port->file);
+    free(port);
 
     return err;
 }
 
 static int
-fileport_get_byte(ScmBytePort *bport)
+fileport_get_byte(ScmFilePort *port)
 {
-    ScmFilePort *fport;
-
-    fport = (ScmFilePort *)bport;
-    return getc(fport->file);
+    return getc(port->file);
 }
 
 static int
-fileport_peek_byte(ScmBytePort *bport)
+fileport_peek_byte(ScmFilePort *port)
 {
-    ScmFilePort *fport;
     int ch;
 
-    fport = (ScmFilePort *)bport;
-    ch = getc(fport->file);
-    return ungetc(ch, fport->file);
+    ch = getc(port->file);
+    return ungetc(ch, port->file);
 }
 
 static int
-fileport_byte_readyp(ScmBytePort *bport)
+fileport_byte_readyp(ScmFilePort *port)
 {
     /* does not support a FILE based on a pipe, or opened by fdopen(3) */
     /* FIXME: support stdin properly */
@@ -170,37 +161,25 @@ fileport_byte_readyp(ScmBytePort *bport)
 }
 
 static int
-fileport_vprintf(ScmBytePort *bport, const char *str, va_list args)
+fileport_vprintf(ScmFilePort *port, const char *str, va_list args)
 {
-    ScmFilePort *fport;
-
-    fport = (ScmFilePort *)bport;
-    return vfprintf(fport->file, str, args);
+    return vfprintf(port->file, str, args);
 }
 
 static int
-fileport_puts(ScmBytePort *bport, const char *str)
+fileport_puts(ScmFilePort *port, const char *str)
 {
-    ScmFilePort *fport;
-
-    fport = (ScmFilePort *)bport;
-    return fputs(str, fport->file);
+    return fputs(str, port->file);
 }
 
 static size_t
-fileport_write(ScmBytePort *bport, size_t nbytes, const char *buf)
+fileport_write(ScmFilePort *port, size_t nbytes, const char *buf)
 {
-    ScmFilePort *fport;
-
-    fport = (ScmFilePort *)bport;
-    return fwrite(buf, 1, nbytes, fport->file);
+    return fwrite(buf, 1, nbytes, port->file);
 }
 
 static int
-fileport_flush(ScmBytePort *bport)
+fileport_flush(ScmFilePort *port)
 {
-    ScmFilePort *fport;
-
-    fport = (ScmFilePort *)bport;
-    return fflush(fport->file);
+    return fflush(port->file);
 }

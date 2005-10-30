@@ -97,42 +97,70 @@ typedef struct ScmCharPort_     ScmCharPort;
 typedef struct ScmBytePortVTbl_ ScmBytePortVTbl;
 typedef struct ScmBytePort_     ScmBytePort;
 
+/*
+ * char port
+ */
+typedef ScmCharPort *(*ScmCharPortMethod_dyn_cast)(ScmCharPort *cport, const ScmCharPortVTbl *dst_vptr);
+typedef int (*ScmCharPortMethod_close)(ScmCharPort *cport);
+/* returns "UTF-8", "eucJP" and so on */
+typedef const char *(*ScmCharPortMethod_encoding)(ScmCharPort *cport);
+
+/* input */
+typedef int (*ScmCharPortMethod_get_char)(ScmCharPort *cport);
+typedef int (*ScmCharPortMethod_peek_char)(ScmCharPort *cport);
+typedef int (*ScmCharPortMethod_char_readyp)(ScmCharPort *cport);
+
+/* output */
+typedef int (*ScmCharPortMethod_vprintf)(ScmCharPort *cport,
+                                         const char *str, va_list args);
+typedef int (*ScmCharPortMethod_put_char)(ScmCharPort *cport, int ch);
+typedef int (*ScmCharPortMethod_flush)(ScmCharPort *cport);
 
 struct ScmCharPortVTbl_ {
-    ScmCharPort *(*dyn_cast)(ScmCharPort *cport, const ScmCharPortVTbl *dst_vptr);
-    int (*close)(ScmCharPort *cport);
-    /* returns "UTF-8", "eucJP" and so on */
-    const char *(*encoding)(ScmCharPort *cport);
-
-    /* input */
-    int (*get_char)(ScmCharPort *cport);
-    int (*peek_char)(ScmCharPort *cport);
-    int (*char_readyp)(ScmCharPort *cport);
-
-    /* output */
-    int (*vprintf)(ScmCharPort *cport, const char *str, va_list args); /* tmp */
-    int (*put_char)(ScmCharPort *cport, int ch);
-    int (*flush)(ScmCharPort *cport);
+    ScmCharPortMethod_dyn_cast    dyn_cast;
+    ScmCharPortMethod_close       close;
+    ScmCharPortMethod_encoding    encoding;
+    ScmCharPortMethod_get_char    get_char;
+    ScmCharPortMethod_peek_char   peek_char;
+    ScmCharPortMethod_char_readyp char_readyp;
+    ScmCharPortMethod_vprintf     vprintf;  /* tmp */
+    ScmCharPortMethod_put_char    put_char;
+    ScmCharPortMethod_flush       flush;
 };
 
 struct ScmCharPort_ {
     const ScmCharPortVTbl *vptr;
 };
 
+/*
+ * byte port
+ */
+typedef ScmBytePort *(*ScmBytePortMethod_dyn_cast)(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr);
+typedef int (*ScmBytePortMethod_close)(ScmBytePort *bport);
+
+/* input */
+typedef int (*ScmBytePortMethod_get_byte)(ScmBytePort *bport);
+typedef int (*ScmBytePortMethod_peek_byte)(ScmBytePort *bport);
+typedef int (*ScmBytePortMethod_byte_readyp)(ScmBytePort *bport);
+
+/* output */
+typedef int (*ScmBytePortMethod_vprintf)(ScmBytePort *bport,
+                                         const char *str, va_list args);
+typedef int (*ScmBytePortMethod_puts)(ScmBytePort *bport, const char *str);
+typedef size_t (*ScmBytePortMethod_write)(ScmBytePort *bport,
+                                          size_t nbytes, const char *buf);
+typedef int (*ScmBytePortMethod_flush)(ScmBytePort *bport);
+
 struct ScmBytePortVTbl_ {
-    ScmBytePort *(*dyn_cast)(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr);
-    int (*close)(ScmBytePort *bport);
-
-    /* input */
-    int (*get_byte)(ScmBytePort *bport);
-    int (*peek_byte)(ScmBytePort *bport);
-    int (*byte_readyp)(ScmBytePort *bport);
-
-    /* output */
-    int (*vprintf)(ScmBytePort *bport, const char *str, va_list args); /* tmp */
-    int (*puts)(ScmBytePort *bport, const char *str);
-    size_t (*write)(ScmBytePort *bport, size_t nbytes, const char *buf);
-    int (*flush)(ScmBytePort *bport);
+    ScmBytePortMethod_dyn_cast    dyn_cast;
+    ScmBytePortMethod_close       close;
+    ScmBytePortMethod_get_byte    get_byte;
+    ScmBytePortMethod_peek_byte   peek_byte;
+    ScmBytePortMethod_byte_readyp byte_readyp;
+    ScmBytePortMethod_vprintf     vprintf;  /* tmp */
+    ScmBytePortMethod_puts        puts;
+    ScmBytePortMethod_write       write;
+    ScmBytePortMethod_flush       flush;
 };
 
 struct ScmBytePort_ {
