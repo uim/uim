@@ -68,8 +68,9 @@ extern const ScmBytePortVTbl *ScmOutputStrPort_vptr;
 =======================================*/
 void Scm_strport_init(void);
 
-ScmBytePort *ScmInputStrPort_new(char *str, int ownership);
+ScmBytePort *ScmInputStrPort_new(char *str);
 ScmBytePort *ScmInputStrPort_new_copying(char *str);
+ScmBytePort *ScmInputStrPort_new_const(const char *str);
 void **ScmInputStrPort_ref_opaque(ScmBytePort *bport);
 
 ScmBytePort *ScmOutputStrPort_new(void);

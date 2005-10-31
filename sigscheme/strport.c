@@ -86,6 +86,8 @@ struct ScmOutputStrPort_ {
 /*=======================================
   File Local Function Declarations
 =======================================*/
+static ScmBytePort *istrport_new(char *str, int ownership);
+
 static ScmBytePort *istrport_dyn_cast(ScmBytePort *bport,
                                       const ScmBytePortVTbl *dest_vptr);
 static int istrport_close(ScmInputStrPort *port);
@@ -157,8 +159,8 @@ void Scm_strport_init(void)
     return;
 }
 
-ScmBytePort *
-ScmInputStrPort_new(char *str, int ownership)
+static ScmBytePort *
+istrport_new(char *str, int ownership)
 {
     ScmInputStrPort *port;
 
@@ -175,9 +177,22 @@ ScmInputStrPort_new(char *str, int ownership)
 }
 
 ScmBytePort *
+ScmInputStrPort_new(char *str)
+{
+    return istrport_new(str, TRUE);
+}
+
+ScmBytePort *
 ScmInputStrPort_new_copying(char *str)
 {
-    return ScmInputStrPort_new(strdup(str), TRUE);
+    return istrport_new(strdup(str), TRUE);
+}
+
+ScmBytePort *
+ScmInputStrPort_new_const(const char *str)
+{
+    /* str is actually treated as const */
+    return istrport_new((char *)str, FALSE);
 }
 
 void **
