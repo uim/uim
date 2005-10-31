@@ -1618,7 +1618,9 @@ make_comp_array_from_cache(struct dic_info *di, const char *s)
     if (/* string 's' is part of sl->head */
 	!strncmp(sl->head, s, strlen(s)) && strcmp(sl->head, s) &&
 	/* and sl is okuri-nasi line */
-	(sl->okuri_head == '\0')) {
+	sl->okuri_head == '\0' &&
+	/* use commited entry only */
+	sl->need_save == 1) {
       ca->nr_comps++;
       ca->comps = realloc(ca->comps, sizeof(char *) * ca->nr_comps);
       ca->comps[ca->nr_comps - 1] = strdup(sl->head);
