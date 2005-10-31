@@ -189,7 +189,7 @@ void SigScm_WriteToPort(ScmObj port, ScmObj obj)
 
     ASSERT_PORTP(port);
     if (SCM_PORT_PORTDIRECTION(port) != PORT_OUTPUT)
-        SigScm_Error("output port is required");
+        ERR("output port is required");
 
     print_ScmObj_internal(port, obj, AS_WRITE);
 
@@ -208,7 +208,7 @@ void SigScm_DisplayToPort(ScmObj port, ScmObj obj)
 
     ASSERT_PORTP(port);
     if (SCM_PORT_PORTDIRECTION(port) != PORT_OUTPUT)
-        SigScm_Error("output port is required");
+        ERR("output port is required");
 
     print_ScmObj_internal(port, obj, AS_DISPLAY);
 
@@ -283,7 +283,7 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
         print_constant(port, obj, otype);
         break;
     case ScmFreeCell:
-        SigScm_Error("You cannot print ScmFreeCell, may be GC bug.");
+        ERR("You cannot print ScmFreeCell, may be GC bug.");
         break;
     case ScmCPointer:
         snprintf(scm_portbuffer, PORTBUFFER_SIZE, "#<c_pointer %p>", SCM_C_POINTER_VALUE(obj));
@@ -322,7 +322,7 @@ static void print_char(ScmObj port, ScmObj obj, enum OutputType otype)
         SCM_PORT_PRINT(port, SCM_CHAR_VALUE(obj));
         break;
     default:
-        SigScm_Error("print_char : unknown output type");
+        ERR("print_char : unknown output type");
         break;
     }
 }
@@ -364,7 +364,7 @@ static void print_string(ScmObj port, ScmObj obj, enum OutputType otype)
         SCM_PORT_PRINT(port, SCM_STRING_STR(obj));
         break;
     default:
-        SigScm_Error("print_string : unknown output type");
+        ERR("print_string : unknown output type");
         break;
     }
 }
