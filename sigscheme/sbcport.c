@@ -77,6 +77,7 @@ static int basecport_peek_char(ScmBaseCharPort *port);
 static int basecport_char_readyp(ScmBaseCharPort *port);
 static int basecport_vprintf(ScmBaseCharPort *port, const char *str,
                              va_list args);
+static int basecport_puts(ScmBaseCharPort *port, const char *str);
 static int basecport_put_char(ScmBaseCharPort *port, int ch);
 static int basecport_flush(ScmBaseCharPort *port);
 
@@ -96,6 +97,7 @@ static const ScmCharPortVTbl ScmBaseCharPort_vtbl = {
     (ScmCharPortMethod_peek_char)  &basecport_peek_char,
     (ScmCharPortMethod_char_readyp)&basecport_char_readyp,
     (ScmCharPortMethod_vprintf)    &basecport_vprintf,
+    (ScmCharPortMethod_puts)       &basecport_puts,
     (ScmCharPortMethod_put_char)   &basecport_put_char,
     (ScmCharPortMethod_flush)      &basecport_flush
 };
@@ -151,6 +153,12 @@ static int
 basecport_vprintf(ScmBaseCharPort *port, const char *str, va_list args)
 {
     return SCM_BYTEPORT_VPRINTF(port->bport, str, args);
+}
+
+static int
+basecport_puts(ScmBaseCharPort *port, const char *str)
+{
+    return SCM_BYTEPORT_PUTS(port->bport, str);
 }
 
 static int

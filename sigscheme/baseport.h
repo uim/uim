@@ -86,6 +86,7 @@
 #define SCM_CHARPORT_CHAR_READYP(cport)  ((*cport->vptr->char_readyp)(cport))
 #define SCM_CHARPORT_VPRINTF(cport, str, args)                               \
     ((*cport->vptr->vprintf)(cport, str, args))
+#define SCM_CHARPORT_PUTS(cport, str)    ((*cport->vptr->puts)(cport, str))
 #define SCM_CHARPORT_PUT_CHAR(cport, ch) ((*cport->vptr->put_char)(cport, ch))
 #define SCM_CHARPORT_FLUSH(cport)        ((*cport->vptr->flush)(cport))
 
@@ -124,6 +125,7 @@ typedef int (*ScmCharPortMethod_char_readyp)(ScmCharPort *cport);
 /* output */
 typedef int (*ScmCharPortMethod_vprintf)(ScmCharPort *cport,
                                          const char *str, va_list args);
+typedef int (*ScmCharPortMethod_puts)(ScmCharPort *cport, const char *str);
 typedef int (*ScmCharPortMethod_put_char)(ScmCharPort *cport, int ch);
 typedef int (*ScmCharPortMethod_flush)(ScmCharPort *cport);
 
@@ -135,6 +137,7 @@ struct ScmCharPortVTbl_ {
     ScmCharPortMethod_peek_char   peek_char;
     ScmCharPortMethod_char_readyp char_readyp;
     ScmCharPortMethod_vprintf     vprintf;  /* tmp */
+    ScmCharPortMethod_puts        puts;
     ScmCharPortMethod_put_char    put_char;
     ScmCharPortMethod_flush       flush;
 };
