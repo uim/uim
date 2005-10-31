@@ -122,20 +122,17 @@ ScmObj ScmOp_load_path(void)
 ===========================================================================*/
 ScmObj ScmOp_call_with_input_file(ScmObj filepath, ScmObj proc)
 {
-    ScmObj port = SCM_NULL;
-    ScmObj ret  = SCM_NULL;
+    ScmObj port = SCM_FALSE;
+    ScmObj ret  = SCM_FALSE;
     DECLARE_FUNCTION("call-with-input-file", ProcedureFixed2);
 
     ASSERT_STRINGP(filepath);
-    if (!FUNCP(proc) && !CLOSUREP(proc))
-        ERR_OBJ("procedure required but got ", proc);
+    ASSERT_PROCEDUREP(proc);
 
-    /* open port */
     port = ScmOp_open_input_file(filepath);
 
     ret = Scm_call(proc, LIST_1(port));
 
-    /* close port */
     ScmOp_close_input_port(port);
 
     return ret;
@@ -143,21 +140,17 @@ ScmObj ScmOp_call_with_input_file(ScmObj filepath, ScmObj proc)
 
 ScmObj ScmOp_call_with_output_file(ScmObj filepath, ScmObj proc)
 {
-    ScmObj port = SCM_NULL;
-    ScmObj ret  = SCM_NULL;
+    ScmObj port = SCM_FALSE;
+    ScmObj ret  = SCM_FALSE;
     DECLARE_FUNCTION("call-with-output-file", ProcedureFixed2);
 
     ASSERT_STRINGP(filepath);
-    if (!FUNCP(proc) && !CLOSUREP(proc))
-        ERR_OBJ("procedure required but got ", proc);
+    ASSERT_PROCEDUREP(proc);
 
-    /* open port */
     port = ScmOp_open_output_file(filepath);
 
-    /* (apply proc (port)) */
     ret = Scm_call(proc, LIST_1(port));
 
-    /* close port */
     ScmOp_close_output_port(port);
 
     return ret;
@@ -193,25 +186,19 @@ ScmObj ScmOp_current_output_port(void)
 
 ScmObj ScmOp_with_input_from_file(ScmObj filepath, ScmObj thunk)
 {
-    ScmObj tmp_port = SCM_NULL;
-    ScmObj ret      = SCM_NULL;
+    ScmObj tmp_port = SCM_FALSE;
+    ScmObj ret      = SCM_FALSE;
     DECLARE_FUNCTION("with-input-from-file", ProcedureFixed2);
 
     ASSERT_STRINGP(filepath);
-    if (!FUNCP(thunk) && !CLOSUREP(thunk))
-        ERR_OBJ("procedure required but got ", thunk);
+    ASSERT_PROCEDUREP(thunk);
 
-    /* set scm_current_input_port */
     tmp_port = scm_current_input_port;
     scm_current_input_port = ScmOp_open_input_file(filepath);
 
-    /* (apply thunk ())*/
     ret = Scm_call(thunk, SCM_NULL);
 
-    /* close port */
     ScmOp_close_input_port(scm_current_input_port);
-
-    /* restore scm_current_input_port */
     scm_current_input_port = tmp_port;
 
     return ret;
@@ -219,25 +206,19 @@ ScmObj ScmOp_with_input_from_file(ScmObj filepath, ScmObj thunk)
 
 ScmObj ScmOp_with_output_to_file(ScmObj filepath, ScmObj thunk)
 {
-    ScmObj tmp_port = SCM_NULL;
-    ScmObj ret      = SCM_NULL;
+    ScmObj tmp_port = SCM_FALSE;
+    ScmObj ret      = SCM_FALSE;
     DECLARE_FUNCTION("with-output-to-file", ProcedureFixed2);
 
     ASSERT_STRINGP(filepath);
-    if (!FUNCP(thunk) && !CLOSUREP(thunk))
-        ERR_OBJ("procedure required but got ", thunk);
+    ASSERT_PROCEDUREP(thunk);
 
-    /* set scm_current_output_port */
     tmp_port = scm_current_output_port;
     scm_current_output_port = ScmOp_open_output_file(filepath);
 
-    /* (thunk)*/
     ret = Scm_call(thunk, SCM_NULL);
 
-    /* close port */
     ScmOp_close_output_port(scm_current_output_port);
-
-    /* restore scm_current_output_port */
     scm_current_output_port = tmp_port;
 
     return ret;
@@ -250,12 +231,10 @@ ScmObj ScmOp_open_input_file(ScmObj filepath)
 
     ASSERT_STRINGP(filepath);
 
-    /* Open File */
     f = fopen(SCM_STRING_STR(filepath), "r");
     if (!f)
         ERR_OBJ("cannot open file ", filepath);
 
-    /* Allocate ScmPort */
     return Scm_NewFilePort(f, SCM_STRING_STR(filepath), PORT_INPUT);
 }
 
@@ -266,12 +245,10 @@ ScmObj ScmOp_open_output_file(ScmObj filepath)
 
     ASSERT_STRINGP(filepath);
 
-    /* Open File */
     f = fopen(SCM_STRING_STR(filepath), "w");
     if (!f)
         ERR_OBJ("cannot open file ", filepath);
 
-    /* Return new ScmPort */
     return Scm_NewFilePort(f, SCM_STRING_STR(filepath), PORT_OUTPUT);
 }
 
@@ -306,27 +283,32 @@ ScmObj ScmOp_close_output_port(ScmObj port)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.2 Input
 ===========================================================================*/
+#define PREPARE_PORT(port, args, default_port)                               \
+    do {                                                                     \
+        port = POP_ARG(args);                                                \
+        if (!VALIDP(port))                                                   \
+            port = default_port;                                             \
+        ASSERT_PORTP(port);                                                  \
+        ASSERT_NO_MORE_ARG(args);                                            \
+    } while (/* CONSTCOND */ 0)
+
+
 ScmObj ScmOp_read(ScmObj args)
 {
-    ScmObj port = scm_current_input_port;
+    ScmObj port = SCM_INVALID;
     DECLARE_FUNCTION("read", ProcedureVariadic0);
 
-    /* get port */
-    if (!NULLP(args) && PORTP(CAR(args)))
-        port = CAR(args);
-
+    PREPARE_PORT(port, args, scm_current_input_port);
     return SigScm_Read(port);
 }
 
 ScmObj ScmOp_read_char(ScmObj args)
 {
-    ScmObj port = scm_current_input_port;
+    ScmObj port = SCM_INVALID;
     char   buf[2];
     DECLARE_FUNCTION("read-char", ProcedureVariadic0);
 
-    /* get port */
-    if (!NULLP(args) && PORTP(CAR(args)))
-        port = CAR(args);
+    PREPARE_PORT(port, args, scm_current_input_port);
 
     SCM_PORT_GETC(port, buf[0]);
     buf[1] = '\0';
@@ -356,55 +338,42 @@ ScmObj ScmOp_char_readyp(ScmObj args, ScmObj env)
 ===========================================================================*/
 ScmObj ScmOp_write(ScmObj obj, ScmObj args)
 {
-    ScmObj port = scm_current_output_port;
+    ScmObj port = SCM_INVALID;
     DECLARE_FUNCTION("write", ProcedureVariadic1);
 
-    /* get port */
-    if (!NULLP(args) && PORTP(CAR(args)))
-        port = CAR(args);
-
+    PREPARE_PORT(port, args, scm_current_output_port);
     SigScm_WriteToPort(port, obj);
     return SCM_UNDEF;
 }
 
 ScmObj ScmOp_display(ScmObj obj, ScmObj args)
 {
-    ScmObj port = scm_current_output_port;
+    ScmObj port = SCM_INVALID;
     DECLARE_FUNCTION("display", ProcedureVariadic1);
 
-    /* get port */
-    if (!NULLP(args) && PORTP(CAR(args)))
-        port = CAR(args);
-
+    PREPARE_PORT(port, args, scm_current_output_port);
     SigScm_DisplayToPort(port, obj);
     return SCM_UNDEF;
 }
 
 ScmObj ScmOp_newline(ScmObj args)
 {
-    /* get port */
-    ScmObj port = scm_current_output_port;
+    ScmObj port = SCM_INVALID;
     DECLARE_FUNCTION("newline", ProcedureVariadic0);
 
-    /* (newline port) */
-    if (!NULLP(args) && PORTP(CAR(args)))
-        port = CAR(args);
-
+    PREPARE_PORT(port, args, scm_current_output_port);
     SigScm_DisplayToPort(port, Scm_NewStringCopying("\n"));
     return SCM_UNDEF;
 }
 
 ScmObj ScmOp_write_char(ScmObj obj, ScmObj args)
 {
-    ScmObj port = scm_current_output_port;
+    ScmObj port = SCM_INVALID;
     DECLARE_FUNCTION("write-char", ProcedureVariadic1);
 
     ASSERT_CHARP(obj);
 
-    /* get port */
-    if (!NULLP(args) && PORTP(CAR(args)))
-        port = CAR(args);
-
+    PREPARE_PORT(port, args, scm_current_output_port);
     SigScm_DisplayToPort(port, obj);
     return SCM_UNDEF;
 }
