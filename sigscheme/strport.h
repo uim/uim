@@ -56,6 +56,10 @@
 /*=======================================
   Type Definitions
 =======================================*/
+typedef void (*ScmInputStrPort_finalizer)(char **str, int ownership,
+                                          void **opaque);
+typedef void (*ScmOutputStrPort_finalizer)(char **str, size_t buf_size,
+                                           void **opaque);
 
 /*=======================================
    Variable Declarations
@@ -68,12 +72,15 @@ extern const ScmBytePortVTbl *ScmOutputStrPort_vptr;
 =======================================*/
 void Scm_strport_init(void);
 
-ScmBytePort *ScmInputStrPort_new(char *str);
-ScmBytePort *ScmInputStrPort_new_copying(const char *str);
-ScmBytePort *ScmInputStrPort_new_const(const char *str);
+ScmBytePort *ScmInputStrPort_new(char *str,
+                                 ScmInputStrPort_finalizer finalize);
+ScmBytePort *ScmInputStrPort_new_copying(const char *str,
+                                         ScmInputStrPort_finalizer finalize);
+ScmBytePort *ScmInputStrPort_new_const(const char *str,
+                                       ScmInputStrPort_finalizer finalize);
 void **ScmInputStrPort_ref_opaque(ScmBytePort *bport);
 
-ScmBytePort *ScmOutputStrPort_new(void);
+ScmBytePort *ScmOutputStrPort_new(ScmOutputStrPort_finalizer finalize);
 const char *ScmOutputStrPort_str(ScmBytePort *bport);
 void **ScmOutputStrPort_ref_opaque(ScmBytePort *bport);
 

@@ -71,6 +71,7 @@ struct ScmInputStrPort_ {
     const char *cur;
     int has_str_ownership;
     void *opaque;  /* client-specific opaque information */
+    ScmInputStrPort_finalizer finalize;
 };
 
 /* inherits ScmBytePort */
@@ -81,12 +82,14 @@ struct ScmOutputStrPort_ {
     size_t cur;       /* offset to terminal '\0' */
     size_t buf_size;
     void *opaque;     /* client-specific opaque information */
+    ScmOutputStrPort_finalizer finalize;
 };
 
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static ScmBytePort *istrport_new(char *str, int ownership);
+static ScmBytePort *istrport_new(char *str, int ownership,
+                                 ScmInputStrPort_finalizer finalize);
 
 static ScmBytePort *istrport_dyn_cast(ScmBytePort *bport,
                                       const ScmBytePortVTbl *dest_vptr);
@@ -160,7 +163,7 @@ void Scm_strport_init(void)
 }
 
 static ScmBytePort *
-istrport_new(char *str, int ownership)
+istrport_new(char *str, int ownership, ScmInputStrPort_finalizer finalize)
 {
     ScmInputStrPort *port;
 
@@ -172,27 +175,29 @@ istrport_new(char *str, int ownership)
     port->cur = port->str = str;
     port->has_str_ownership = ownership;
     port->opaque = NULL;
+    port->finalize = finalize;
 
     return (ScmBytePort *)port;
 }
 
 ScmBytePort *
-ScmInputStrPort_new(char *str)
+ScmInputStrPort_new(char *str, ScmInputStrPort_finalizer finalize)
 {
-    return istrport_new(str, TRUE);
+    return istrport_new(str, TRUE, finalize);
 }
 
 ScmBytePort *
-ScmInputStrPort_new_copying(const char *str)
+ScmInputStrPort_new_copying(const char *str,
+                            ScmInputStrPort_finalizer finalize)
 {
-    return istrport_new(strdup(str), TRUE);
+    return istrport_new(strdup(str), TRUE, finalize);
 }
 
 ScmBytePort *
-ScmInputStrPort_new_const(const char *str)
+ScmInputStrPort_new_const(const char *str, ScmInputStrPort_finalizer finalize)
 {
     /* str is actually treated as const */
-    return istrport_new((char *)str, FALSE);
+    return istrport_new((char *)str, FALSE, finalize);
 }
 
 void **
@@ -219,6 +224,8 @@ istrport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
 static int
 istrport_close(ScmInputStrPort *port)
 {
+    if (port->finalize)
+        (*port->finalize)(&port->str, port->has_str_ownership, &port->opaque);
     if (port->has_str_ownership)
         free(port->str);
     free(port);
@@ -274,7 +281,7 @@ istrport_flush(ScmInputStrPort *port)
 
 
 ScmBytePort *
-ScmOutputStrPort_new(void)
+ScmOutputStrPort_new(ScmOutputStrPort_finalizer finalize)
 {
     ScmOutputStrPort *port;
 
@@ -287,6 +294,7 @@ ScmOutputStrPort_new(void)
     port->cur = 0;
     port->buf_size = 0;
     port->opaque = NULL;
+    port->finalize = finalize;
 
     return (ScmBytePort *)port;
 }
@@ -328,6 +336,8 @@ ostrport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
 static int
 ostrport_close(ScmOutputStrPort *port)
 {
+    if (port->finalize)
+        (*port->finalize)(&port->str, port->buf_size, &port->opaque);
     free(port->str);
     free(port);
 
