@@ -183,7 +183,7 @@ ScmInputStrPort_new(char *str)
 }
 
 ScmBytePort *
-ScmInputStrPort_new_copying(char *str)
+ScmInputStrPort_new_copying(const char *str)
 {
     return istrport_new(strdup(str), TRUE);
 }
