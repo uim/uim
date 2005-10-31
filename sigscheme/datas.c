@@ -228,11 +228,13 @@ static void unwind_dynamic_extent(void);
 static void enter_dynamic_extent(ScmObj dest);
 static void exit_dynamic_extent(ScmObj dest);
 
+#if !SCM_USE_NEWPORT
 /* port */
 static int  fileport_getc(ScmObj port);
 static void fileport_print(ScmObj port, const char *str);
 static int  stringport_getc(ScmObj port);
 static void stringport_print(ScmObj port, const char *str);
+#endif /* SCM_USE_NEWPORT */
 
 /* continuation */
 static void initialize_continuation_env(void);
@@ -488,6 +490,20 @@ void SigScm_GC_Protect(ScmObj *var)
     protected_var_list = item;
 }
 
+void SigScm_GC_Unprotect(ScmObj *var)
+{
+    gc_protected_var **item = &protected_var_list;
+    gc_protected_var *next  = NULL;
+    while (*item) {
+        if ((*item)->var == var) {
+            next = (*item)->next_var;
+            free(*item);
+            *item = next;
+            break;
+        }
+    }
+}
+
 static void finalize_protected_var(void)
 {
     gc_protected_var *item = protected_var_list;
@@ -613,6 +629,10 @@ static void sweep_obj(ScmObj obj)
         break;
 
     case ScmPort:
+#if SCM_USE_NEWPORT
+        if (SCM_PORT_IMPL(obj))
+            SCM_PORT_CLOSE_IMPL(obj);
+#else /* SCM_USE_NEWPORT */
         /* handle each port type */
         switch (SCM_PORT_PORTTYPE(obj)) {
         case PORT_FILE:
@@ -627,6 +647,7 @@ static void sweep_obj(ScmObj obj)
         /* free port info */
         if (SCM_PORT_PORTINFO(obj))
             free(SCM_PORT_PORTINFO(obj));
+#endif /* SCM_USE_NEWPORT */
         break;
 
     /* rarely swept objects */
@@ -838,6 +859,28 @@ ScmObj Scm_NewVector(ScmObj *vec, int len)
     return obj;
 }
 
+#if SCM_USE_NEWPORT
+ScmObj Scm_NewPort(ScmCharPort *cport, enum ScmPortFlag flag)
+{
+    ScmObj obj = SCM_FALSE;
+
+    SCM_NEW_OBJ_INTERNAL(obj);
+
+    SCM_ENTYPE_PORT(obj);
+
+    if (flag & SCM_PORTFLAG_INPUT)
+        flag |= SCM_PORTFLAG_LIVE_INPUT;
+    if (flag & SCM_PORTFLAG_OUTPUT)
+        flag |= SCM_PORTFLAG_LIVE_OUTPUT;
+    SCM_PORT_SET_FLAG(obj, flag);
+
+    SCM_PORT_SET_IMPL(obj, cport);
+
+    return obj;
+}
+
+#else /* SCM_USE_NEWPORT */
+
 ScmObj Scm_NewFilePort(FILE *file, const char *filename,
                        enum ScmPortDirection pdirection)
 {
@@ -938,6 +981,7 @@ static void stringport_print(ScmObj port, const char *str)
     SCM_PORT_SET_STR(port, p);
     SCM_PORT_SET_STR_CURRENTPOS(port, p + new_len);
 }
+#endif /* SCM_USE_NEWPORT */
 
 ScmObj Scm_NewContinuation(void)
 {

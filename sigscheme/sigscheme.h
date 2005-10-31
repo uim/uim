@@ -51,6 +51,9 @@ extern "C" {
 =======================================*/
 #include "config.h"
 #include "encoding.h"
+#if SCM_USE_NEWPORT
+#include "baseport.h"
+#endif
 
 /*=======================================
    Macro Declarations
@@ -127,12 +130,46 @@ extern "C" {
 /*
  * Port I/O Handling macros
  */
+#if SCM_USE_NEWPORT
+#define SCM_ASSERT_LIVE_PORT(port)                                           \
+    (SCM_PORT_IMPL(port)                                                     \
+     || (SigScm_ErrorObj("operated on closed port", port), 1))
+
+#define SCM_PORT_CLOSE_IMPL(port)                                            \
+    (SCM_CHARPORT_CLOSE(SCM_PORT_IMPL(port)), SCM_PORT_SET_IMPL(port, NULL))
+#define SCM_PORT_ENCODING(port)                                              \
+    (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_ENCODING(SCM_PORT_IMPL(port)))
+#define SCM_PORT_GET_CHAR(port)                                              \
+    (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_GET_CHAR(SCM_PORT_IMPL(port)))
+#define SCM_PORT_PEEK_CHAR(port)                                             \
+    (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_PEEK_CHAR(SCM_PORT_IMPL(port)))
+#define SCM_PORT_CHAR_READYP(port)                                           \
+    (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_CHAR_READYP(SCM_PORT_IMPL(port)))
+#define SCM_PORT_VPRINTF(port, str, args)                                    \
+    (SCM_ASSERT_LIVE_PORT(port),                                             \
+     SCM_CHARPORT_VPRINTF(SCM_PORT_IMPL(port), str, args))
+#define SCM_PORT_PUTS(port, str)                                             \
+    (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_PUTS(SCM_PORT_IMPL(port), str))
+#define SCM_PORT_PUT_CHAR(port, ch)                                          \
+    (SCM_ASSERT_LIVE_PORT(port),                                             \
+     SCM_CHARPORT_PUT_CHAR(SCM_PORT_IMPL(port), ch))
+#define SCM_PORT_FLUSH(port)                                                 \
+    (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_FLUSH(SCM_PORT_IMPL(port)))
+
+/* backward compatibility */
+#define SCM_PORT_GETC(port, c) (c = SCM_PORT_GET_CHAR(port))
+#define SCM_PORT_UNGETC(port, c)
+#define SCM_PORT_PRINT SCM_PORT_PUTS
+
+#else /* SCM_USE_NEWPORT */
+
 #define SCM_PORT_GETC(port, c)                  \
     (c = SCM_PORT_GETC_FUNC(port)(port))
 #define SCM_PORT_UNGETC(port,c)                 \
     (SCM_PORT_SET_UNGOTTENCHAR(port, c))
 #define SCM_PORT_PRINT(port, str)               \
     (SCM_PORT_PRINT_FUNC(port)(port, str))
+#endif /* SCM_USE_NEWPORT */
 
 
 /*=======================================
@@ -329,7 +366,8 @@ void Scm_RegisterProcedureVariadicTailRec5(const char *name, ScmObj (*func)(ScmO
 #endif
 
 /* datas.c */
-void   SigScm_GC_Protect(ScmObj *var);
+void SigScm_GC_Protect(ScmObj *var);
+void SigScm_GC_Unprotect(ScmObj *var);
 #if SCM_GCC4_READY_GC
 /*
  * Ordinary programs should not call these functions directly. Use
@@ -356,8 +394,12 @@ ScmObj Scm_NewStringWithLen(char *str, int len);
 ScmObj Scm_NewFunc(enum ScmFuncTypeCode type, ScmFuncType func);
 ScmObj Scm_NewClosure(ScmObj exp, ScmObj env);
 ScmObj Scm_NewVector(ScmObj *vec, int len);
+#if SCM_USE_NEWPORT
+ScmObj Scm_NewPort(ScmCharPort *cport, enum ScmPortFlag flag);
+#else /* SCM_USE_NEWPORT */
 ScmObj Scm_NewFilePort(FILE *file, const char *filename, enum ScmPortDirection pdireciton);
 ScmObj Scm_NewStringPort(const char *str, enum ScmPortDirection pdirection);
+#endif /* SCM_USE_NEWPORT */
 ScmObj Scm_NewContinuation(void);
 #if !SCM_USE_VALUECONS
 ScmObj Scm_NewValuePacket(ScmObj values);
@@ -542,9 +584,9 @@ ScmObj ScmOp_close_output_port(ScmObj port);
 
 ScmObj ScmOp_read(ScmObj args);
 ScmObj ScmOp_read_char(ScmObj args);
-ScmObj ScmOp_peek_char(ScmObj args, ScmObj env);
+ScmObj ScmOp_peek_char(ScmObj args);
 ScmObj ScmOp_eof_objectp(ScmObj obj);
-ScmObj ScmOp_char_readyp(ScmObj args, ScmObj env);
+ScmObj ScmOp_char_readyp(ScmObj args);
 ScmObj ScmOp_write(ScmObj obj, ScmObj args);
 ScmObj ScmOp_display(ScmObj obj, ScmObj args);
 ScmObj ScmOp_newline(ScmObj args);

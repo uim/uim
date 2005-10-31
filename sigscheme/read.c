@@ -69,6 +69,12 @@
 /*=======================================
   File Local Struct Declarations
 =======================================*/
+#if SCM_USE_NEWPORT
+enum LexerState {
+    LEX_ST_NORMAL,
+    LEX_ST_COMMENT
+};
+#endif
 
 /*=======================================
   File Local Macro Declarations
@@ -76,6 +82,13 @@
 /* Compatible with isspace(3). Use this to prevent incorrect space handlings */
 #define CASE_ISSPACE                                                         \
     case ' ': case '\t': case '\n': case '\r': case '\v': case '\f'
+
+/* FIXME: discard at first of each reader instead of caller */
+#if SCM_USE_NEWPORT
+#define DISCARD_LOOKAHEAD(port) (SCM_PORT_GET_CHAR(port))
+#else
+#define DISCARD_LOOKAHEAD(port)
+#endif
 
 /*=======================================
   Variable Declarations
@@ -133,6 +146,31 @@ ScmObj SigScm_Read_Char(ScmObj port)
 
 static int skip_comment_and_space(ScmObj port)
 {
+#if SCM_USE_NEWPORT
+    /* WARNING: the behavior is different to !SCM_USE_NEWPORT */
+    int c, state;
+
+    state = LEX_ST_NORMAL;
+    for (;;) {
+        c = SCM_PORT_PEEK_CHAR(port);
+        switch (state) {
+        case LEX_ST_NORMAL:
+            if (c == ';')
+                state = LEX_ST_COMMENT;
+            else if (!isspace(c) || c == EOF)
+                return c;  /* peeked */
+            break;
+
+        case LEX_ST_COMMENT:
+            if (c == '\n' || c == '\r')
+                state = LEX_ST_NORMAL;
+            else if (c == EOF)
+                return c;  /* peeked */
+            break;
+        }
+        SCM_PORT_GET_CHAR(port);  /* skip the char */
+    }
+#else /* SCM_USE_NEWPORT */
     int c = 0;
     while (1) {
         SCM_PORT_GETC(port, c);
@@ -153,6 +191,7 @@ static int skip_comment_and_space(ScmObj port)
 
         return c;
     }
+#endif /* SCM_USE_NEWPORT */
 }
 
 static ScmObj read_sexpression(ScmObj port)
@@ -169,8 +208,10 @@ static ScmObj read_sexpression(ScmObj port)
 
         switch (c) {
         case '(':
+            DISCARD_LOOKAHEAD(port);
             return read_list(port, ')');
         case '\"':
+            DISCARD_LOOKAHEAD(port);
             return read_string(port);
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
@@ -178,14 +219,22 @@ static ScmObj read_sexpression(ScmObj port)
             SCM_PORT_UNGETC(port, c);
             return read_number_or_symbol(port);
         case '\'':
+            DISCARD_LOOKAHEAD(port);
             return read_quote(port, SCM_QUOTE);
         case '`':
+            DISCARD_LOOKAHEAD(port);
             return read_quote(port, SCM_QUASIQUOTE);
         case ',':
+            DISCARD_LOOKAHEAD(port);
+#if SCM_USE_NEWPORT
+            c1 = SCM_PORT_PEEK_CHAR(port);
+#else
             SCM_PORT_GETC(port, c1);
+#endif
             if (c1 == EOF) {
                 SigScm_Error("EOF in unquote");
             } else if (c1 == '@') {
+                DISCARD_LOOKAHEAD(port);
                 return read_quote(port, SCM_UNQUOTE_SPLICING);
             } else {
                 SCM_PORT_UNGETC(port, c1);
@@ -193,15 +242,24 @@ static ScmObj read_sexpression(ScmObj port)
             }
             break;
         case '#':
+            DISCARD_LOOKAHEAD(port);
+#if SCM_USE_NEWPORT
+            c1 = SCM_PORT_PEEK_CHAR(port);
+#else
             SCM_PORT_GETC(port, c1);
+#endif
             switch (c1) {
             case 't': case 'T':
+                DISCARD_LOOKAHEAD(port);
                 return SCM_TRUE;
             case 'f': case 'F':
+                DISCARD_LOOKAHEAD(port);
                 return SCM_FALSE;
             case '(':
+                DISCARD_LOOKAHEAD(port);
                 return ScmOp_list2vector(read_list(port, ')'));
             case '\\':
+                DISCARD_LOOKAHEAD(port);
                 return read_char(port);
             case 'b': case 'o': case 'd': case 'x':
                 SCM_PORT_UNGETC(port, c1);
@@ -244,22 +302,34 @@ static ScmObj read_list(ScmObj port, int closeParen)
         CDBG((SCM_DBG_PARSER, "read_list c = [%c]", c));
 
         if (c == EOF) {
+#if SCM_USE_NEWPORT
+            if (FALSE)
+#else
             if (SCM_PORT_PORTTYPE(port) == PORT_FILE)
+#endif
                 SigScm_Error("EOF inside list. (starting from line %d)", line + 1);
             else
                 SigScm_Error("EOF inside list.");
         } else if (c == closeParen) {
+            DISCARD_LOOKAHEAD(port);
             return list_head;
         } else if (c == '.') {
+            DISCARD_LOOKAHEAD(port);
             c2 = 0;
+#if SCM_USE_NEWPORT
+            c2 = SCM_PORT_PEEK_CHAR(port);
+#else
             SCM_PORT_GETC(port, c2);
+#endif
             CDBG((SCM_DBG_PARSER, "read_list process_dot c2 = [%c]", c2));
             if (isspace(c2) || c2 == '(' || c2 == '"' || c2 == ';') {
+                DISCARD_LOOKAHEAD(port);
                 cdr = read_sexpression(port);
                 if (NULLP(list_tail))
                     SigScm_Error(".(dot) at the start of the list.");
 
                 c = skip_comment_and_space(port);
+                DISCARD_LOOKAHEAD(port);
                 if (c != ')')
                     SigScm_Error("bad dot syntax");
 
@@ -429,7 +499,11 @@ static char *read_word(ScmObj port)
     char *dst = NULL;
 
     while (1) {
+#if SCM_USE_NEWPORT
+        c = SCM_PORT_PEEK_CHAR(port);
+#else
         SCM_PORT_GETC(port, c);
+#endif
 
         CDBG((SCM_DBG_PARSER, "c = %c", c));
 
@@ -443,6 +517,7 @@ static char *read_word(ScmObj port)
             return dst;
 
         default:
+            DISCARD_LOOKAHEAD(port);
             stringbuf[stringlen++] = (char)c;
             break;
         }
@@ -457,7 +532,11 @@ static char *read_char_sequence(ScmObj port)
     char *dst = NULL;
 
     while (1) {
+#if SCM_USE_NEWPORT
+        c = SCM_PORT_PEEK_CHAR(port);
+#else
         SCM_PORT_GETC(port, c);
+#endif
 
         CDBG((SCM_DBG_PARSER, "c = %c", c));
 
@@ -471,6 +550,7 @@ static char *read_char_sequence(ScmObj port)
         CASE_ISSPACE:
             /* pass through first char */
             if (stringlen == 0) {
+                DISCARD_LOOKAHEAD(port);
                 stringbuf[stringlen++] = (char)c;
                 break;
             }
@@ -481,6 +561,7 @@ static char *read_char_sequence(ScmObj port)
             return dst;
 
         default:
+            DISCARD_LOOKAHEAD(port);
             stringbuf[stringlen++] = (char)c;
             break;
         }

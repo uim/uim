@@ -40,6 +40,12 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
+#if SCM_USE_NEWPORT
+#include "baseport.h"
+#include "sbcport.h"
+#include "fileport.h"
+#include "strport.h"
+#endif
 
 /*=======================================
   File Local Struct Declarations
@@ -154,9 +160,24 @@ static void SigScm_Initialize_internal(void)
     /*=======================================================================
       Preallocated Ports
     =======================================================================*/
+#if SCM_USE_NEWPORT
+    Scm_fileport_init();
+    Scm_sbcport_init();
+
+    scm_current_input_port
+        = Scm_NewPort(ScmSingleByteCharPort_new(ScmFilePort_new(stdin)),
+                      SCM_PORTFLAG_INPUT);
+    scm_current_output_port
+        = Scm_NewPort(ScmSingleByteCharPort_new(ScmFilePort_new(stdout)),
+                      SCM_PORTFLAG_OUTPUT);
+    scm_current_error_port
+        = Scm_NewPort(ScmSingleByteCharPort_new(ScmFilePort_new(stderr)),
+                      SCM_PORTFLAG_OUTPUT);
+#else /* SCM_USE_NEWPORT */
     scm_current_input_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
     scm_current_output_port = Scm_NewFilePort(stdout, "stdout", PORT_OUTPUT);
     scm_current_error_port  = Scm_NewFilePort(stderr, "stderr", PORT_OUTPUT);
+#endif /* SCM_USE_NEWPORT */
     SigScm_GC_Protect(&scm_current_input_port);
     SigScm_GC_Protect(&scm_current_output_port);
     SigScm_GC_Protect(&scm_current_error_port);
@@ -326,6 +347,8 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterProcedureFixed1("eof-object?"              , ScmOp_eof_objectp);
     Scm_RegisterProcedureVariadic0("read"        , ScmOp_read);
     Scm_RegisterProcedureVariadic0("read-char"   , ScmOp_read_char);
+    Scm_RegisterProcedureVariadic0("peek-char"   , ScmOp_peek_char);
+    Scm_RegisterProcedureVariadic0("char-ready?" , ScmOp_char_readyp);
     Scm_RegisterProcedureVariadic1("write"       , ScmOp_write);
     Scm_RegisterProcedureVariadic1("display"     , ScmOp_display);
     Scm_RegisterProcedureVariadic0("newline"     , ScmOp_newline);
@@ -423,10 +446,18 @@ ScmObj Scm_eval_c_string(const char *exp)
 
 ScmObj Scm_eval_c_string_internal(const char *exp)
 {
-    ScmObj str_port    = SCM_NULL;
-    ScmObj ret         = SCM_NULL;
+    ScmObj str_port    = SCM_FALSE;
+    ScmObj ret         = SCM_FALSE;
+#if SCM_USE_NEWPORT
+    ScmBytePort *bport;
+    ScmCharPort *cport;
 
+    bport = ScmInputStrPort_new_const(exp, NULL);
+    cport = ScmSingleByteCharPort_new(bport);
+    str_port = Scm_NewPort(cport, SCM_PORTFLAG_INPUT);
+#else
     str_port = Scm_NewStringPort(exp, PORT_INPUT);
+#endif
 
     ret = SigScm_Read(str_port);
     ret = EVAL(ret, SCM_INTERACTION_ENV);

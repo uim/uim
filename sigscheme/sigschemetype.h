@@ -49,7 +49,9 @@
 typedef struct ScmCell_ ScmCell;
 typedef ScmCell *ScmObj;
 typedef ScmObj *ScmRef;
+#if !SCM_USE_NEWPORT
 typedef struct _ScmPortInfo ScmPortInfo;
+#endif
 typedef struct ScmEvalState_ ScmEvalState;
 typedef ScmObj (*ScmFuncType)();
 
@@ -88,6 +90,21 @@ enum ScmObjType {
     ScmCFuncPointer = 21
 };
 
+#if SCM_USE_NEWPORT
+enum ScmPortFlag {
+    SCM_PORTFLAG_NONE        = 0,
+    SCM_PORTFLAG_OUTPUT      = 1 << 0,
+    SCM_PORTFLAG_INPUT       = 1 << 1,
+    SCM_PORTFLAG_LIVE_OUTPUT = 1 << 2,
+    SCM_PORTFLAG_LIVE_INPUT  = 1 << 3,
+
+    SCM_PORTFLAG_DIR_MASK = (SCM_PORTFLAG_OUTPUT | SCM_PORTFLAG_INPUT),
+    SCM_PORTFLAG_ALIVENESS_MASK = (SCM_PORTFLAG_LIVE_OUTPUT
+                                   | SCM_PORTFLAG_LIVE_INPUT)
+};
+
+#else /* SCM_USE_NEWPORT */
+
 /* ScmPort direction */
 enum ScmPortDirection {
     PORT_INPUT  = 0,
@@ -121,6 +138,7 @@ struct _ScmPortInfo {
     void (*print_func) (ScmObj port, const char* str);    
     int ungottenchar;
 };
+#endif /* SCM_USE_NEWPORT */
 
 /*
  * Function types:
@@ -222,8 +240,13 @@ struct ScmCell_ {
         } vector;
 
         struct ScmPort {
+#if SCM_USE_NEWPORT
+            enum ScmPortFlag flag;
+            ScmCharPort *impl;
+#else
             enum ScmPortDirection port_direction; /* (PORT_INPUT | PORT_OUTPUT) */
             ScmPortInfo *port_info;
+#endif
         } port;
 
         struct ScmContinuation {
@@ -345,6 +368,13 @@ struct ScmCell_ {
 
 #define SCM_PORTP(a) (SCM_TYPE(a) == ScmPort)
 #define SCM_ENTYPE_PORT(a) (SCM_ENTYPE((a), ScmPort))
+#if SCM_USE_NEWPORT
+#define SCM_PORT_FLAG(a)           (SCM_AS_PORT(a)->obj.port.flag)
+#define SCM_PORT_SET_FLAG(a, flag) (SCM_PORT_FLAG(a) = (flag))
+#define SCM_PORT_IMPL(a)           (SCM_AS_PORT(a)->obj.port.impl)
+#define SCM_PORT_SET_IMPL(a, impl) (SCM_PORT_IMPL(a) = (impl))
+#define SCM_PORT_LINE(a)           (0)
+#else /* SCM_USE_NEWPORT */
 #define SCM_PORT_PORTDIRECTION(a) (SCM_AS_PORT(a)->obj.port.port_direction)
 #define SCM_PORT_SET_PORTDIRECTION(a, pdirection) (SCM_PORT_PORTDIRECTION(a) = pdirection)
 #define SCM_PORT_PORTINFO(a) (SCM_AS_PORT(a)->obj.port.port_info)
@@ -371,6 +401,7 @@ struct ScmCell_ {
 #define SCM_PORT_SET_STR(a, str) (SCM_PORT_STR(a) = str)
 #define SCM_PORT_STR_CURRENTPOS(a) (SCM_PORT_PORTINFO(a)->info.str_port.str_currentpos)
 #define SCM_PORT_SET_STR_CURRENTPOS(a, pos) (SCM_PORT_STR_CURRENTPOS(a) = pos)
+#endif /* SCM_USE_NEWPORT */
 
 #define SCM_CONTINUATIONP(a) (SCM_TYPE(a) == ScmContinuation)
 #define SCM_ENTYPE_CONTINUATION(a) (SCM_ENTYPE((a), ScmContinuation))

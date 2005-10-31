@@ -82,6 +82,7 @@
 #define SCM_VOLATILE_OUTPUT     0  /* always flush files on write */
 #define SCM_EXCEPTION_HANDLING  1  /* use SRFI-34 base exception handling */
 #define SCM_OBJ_COMPACT         0  /* object representation compaction (experimental) */
+#define SCM_USE_NEWPORT         1  /* use experimental port implementation */
 
 #define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
 
@@ -126,5 +127,11 @@
 #undef SCM_VOLATILE_OUTPUT
 #define SCM_VOLATILE_OUTPUT     1
 #endif /* SCM_DEBUG */
+
+#if SCM_USE_NEWPORT
+/* for Scm_eval_c_string_internal() */
+#undef SCM_USE_SRFI6
+#define SCM_USE_SRFI6           1
+#endif /* SCM_USE_NEWPORT */
 
 #endif /* __SIGSCHEME_CONFIG_H */
