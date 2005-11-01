@@ -579,7 +579,7 @@ ScmObj ScmOp_booleanp(ScmObj obj)
 ==============================================================================*/
 ScmObj ScmOp_car(ScmObj obj)
 {
-    DECLARE_FUNCTION("car", PocedureFixed1);
+    DECLARE_FUNCTION("car", ProcedureFixed1);
 #if SCM_COMPAT_SIOD_BUGS
     if (NULLP(obj))
         return SCM_NULL;
@@ -1434,7 +1434,7 @@ ScmObj ScmOp_string2list(ScmObj string)
     ScmMultibyteString mbs;
     ScmMultibyteCharInfo ch;
     char *buf;
-    DECLARE_FUNCTION("string->list", string);
+    DECLARE_FUNCTION("string->list", ProcedureFixed1);
 
     ASSERT_STRINGP(string);
 
