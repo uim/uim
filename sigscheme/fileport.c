@@ -62,8 +62,7 @@
 =======================================*/
 typedef struct ScmFilePort_ ScmFilePort;
 
-/* inherits ScmBytePort */
-struct ScmFilePort_ {
+struct ScmFilePort_ {  /* inherits ScmBytePort */
     const ScmBytePortVTbl *vptr;
 
     FILE *file;

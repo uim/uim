@@ -63,8 +63,7 @@
 typedef struct ScmInputStrPort_  ScmInputStrPort;
 typedef struct ScmOutputStrPort_ ScmOutputStrPort;
 
-/* inherits ScmBytePort */
-struct ScmInputStrPort_ {
+struct ScmInputStrPort_ {  /* inherits ScmBytePort */
     const ScmBytePortVTbl *vptr;
 
     char *str;
@@ -74,8 +73,7 @@ struct ScmInputStrPort_ {
     ScmInputStrPort_finalizer finalize;
 };
 
-/* inherits ScmBytePort */
-struct ScmOutputStrPort_ {
+struct ScmOutputStrPort_ {  /* inherits ScmBytePort */
     const ScmBytePortVTbl *vptr;
 
     char *str;
