@@ -43,6 +43,13 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
+  File Local Macro Declarations
+=======================================*/
+#if SCM_COMPAT_SIOD
+#define SIOD_STRING "siod"
+#endif
+
+/*=======================================
   File Local Struct Declarations
 =======================================*/
 
@@ -54,22 +61,17 @@
   File Local Function Declarations
 =======================================*/
 static void repl(void);
+static void repl_loop(void);
+static int  is_repl_prompt(void);
+static int  is_repl_show_result(void);
 
 /*=======================================
   Function Implementations
 =======================================*/
-/* Very simple repl, please rewrite. */
 static void repl(void)
 {
 #if !SCM_GCC4_READY_GC
     ScmObj stack_start = NULL;
-#endif
-    ScmObj s_exp  = SCM_NULL;
-    ScmObj result = SCM_NULL;
-#if SCM_COMPAT_SIOD
-    ScmObj siod_str = SCM_FALSE;
-
-    siod_str = Scm_NewStringCopying("siod");
 #endif
 
 #if !SCM_GCC4_READY_GC
@@ -77,18 +79,29 @@ static void repl(void)
     SigScm_GC_ProtectStack(&stack_start);
 #endif
 
-#if SCM_COMPAT_SIOD
-    if (FALSEP(ScmOp_providedp(siod_str))
-        || SigScm_GetVerboseLevel() >= 2)
+    /* goto repl loop */
+    repl_loop();
+
+#if !SCM_GCC4_READY_GC
+    /* now no need to protect stack */
+    SigScm_GC_UnprotectStack(&stack_start);
 #endif
+}
+
+static void repl_loop(void)
+{
+    ScmObj s_exp  = SCM_NULL;
+    ScmObj result = SCM_NULL;
+    int is_prompt      = is_repl_prompt();
+    int is_show_result = is_repl_show_result();
+
+    if (is_prompt)
         printf("sscm> ");
 
     while (s_exp = SigScm_Read(scm_current_input_port), !EOFP(s_exp)) {
         result = EVAL(s_exp, SCM_INTERACTION_ENV);
-#if SCM_COMPAT_SIOD
-        if (FALSEP(ScmOp_providedp(siod_str))
-            || SigScm_GetVerboseLevel() >= 1)
-#endif
+
+        if (is_show_result)
         {
 #if SCM_USE_SRFI38
             SigScm_WriteToPortWithSharedStructure(scm_current_output_port, result);
@@ -98,17 +111,35 @@ static void repl(void)
             printf("\n");
         }
 
-#if SCM_COMPAT_SIOD
-        if (FALSEP(ScmOp_providedp(siod_str))
-            || SigScm_GetVerboseLevel() >= 2)
-#endif
+        if (is_prompt)
             printf("sscm> ");
     }
+}
 
-#if !SCM_GCC4_READY_GC
-    /* now no need to protect stack */
-    SigScm_GC_UnprotectStack(&stack_start);
+static int is_repl_prompt(void)
+{
+    int ret = FALSE;
+#if SCM_COMPAT_SIOD
+    if (FALSEP(ScmOp_providedp(Scm_NewStringCopying(SIOD_STRING)))
+        || SigScm_GetVerboseLevel() >= 2)
+        ret = TRUE;
+#else
+    ret = TRUE;
 #endif
+    return ret;
+}
+
+static int is_repl_show_result(void)
+{
+    int ret = FALSE;
+#if SCM_COMPAT_SIOD
+    if (FALSEP(ScmOp_providedp(Scm_NewStringCopying(SIOD_STRING)))
+        || SigScm_GetVerboseLevel() >= 1)
+        ret = TRUE;
+#else
+    ret = TRUE;
+#endif
+    return ret;
 }
 
 int main(int argc, char **argv)
