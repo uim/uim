@@ -373,7 +373,6 @@ struct ScmCell_ {
 #define SCM_PORT_SET_FLAG(a, flag) (SCM_PORT_FLAG(a) = (flag))
 #define SCM_PORT_IMPL(a)           (SCM_AS_PORT(a)->obj.port.impl)
 #define SCM_PORT_SET_IMPL(a, impl) (SCM_PORT_IMPL(a) = (impl))
-#define SCM_PORT_LINE(a)           (0)
 #else /* SCM_USE_NEWPORT */
 #define SCM_PORT_PORTDIRECTION(a) (SCM_AS_PORT(a)->obj.port.port_direction)
 #define SCM_PORT_SET_PORTDIRECTION(a, pdirection) (SCM_PORT_PORTDIRECTION(a) = pdirection)

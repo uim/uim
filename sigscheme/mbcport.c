@@ -167,6 +167,10 @@ mbcport_get_char(ScmMultiByteCharPort *port)
     ch = mbcport_peek_char(port);
     port->rbuf[0] = '\0';
     SCM_MBCPORT_CLEAR_STATE(cport)
+#if SCM_DEBUG
+    if (ch == '\n')
+        port->linenum++;
+#endif
 
     return ch;
 }

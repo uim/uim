@@ -499,7 +499,6 @@ struct ScmEvalState_ {
 #define SCM_PORT_FLAG(a)                    (SCM_GET_VALUE_AS_INT(SCM_AS_PORT(a)->cdr, SCM_TAG_OTHERS_VALUE_OFFSET_PORT))
 #define SCM_PORT_SET_IMPL(a, impl)          (SCM_SET_VALUE_AS_PTR(SCM_AS_PORT(a)->car, impl, SCM_TAG_OTHERS_PORT))
 #define SCM_PORT_SET_FLAG(a, flag)          (SCM_SET_VALUE_AS_INT(SCM_AS_PORT(a)->cdr, flag, SCM_TAG_OTHERS_VALUE_OFFSET_PORT, SCM_TAG_OTHERS_PORT))
-#define SCM_PORT_LINE(a)           (0)
 #else /* SCM_USE_NEWPORT */
 #define SCM_PORT_PORTINFO(a)                (SCM_GET_VALUE_AS_PTR(SCM_AS_PORT(a)->car, ~SCM_TAG_OTHERS_MASK_PORT))
 #define SCM_PORT_PORTDIRECTION(a)           (SCM_GET_VALUE_AS_INT(SCM_AS_PORT(a)->cdr, SCM_TAG_OTHERS_VALUE_OFFSET_PORT))

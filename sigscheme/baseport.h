@@ -53,6 +53,10 @@
 /*=======================================
   Macro Definitions
 =======================================*/
+#ifndef SCM_DEBUG_PORT
+#define SCM_DEBUG_PORT 0
+#endif
+
 /*
  * Define appropriate error handling such as exception to override these. The
  * macro MUST NOT return. The replacement expression should indicate that it

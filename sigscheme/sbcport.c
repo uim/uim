@@ -113,6 +113,17 @@ ScmBaseCharPort_construct(ScmBaseCharPort *port, const ScmCharPortVTbl *vptr,
 {
     port->vptr = ScmSingleByteCharPort_vptr;
     port->bport = bport;
+#if SCM_DEBUG
+    port->linenum = 1;
+#else
+    port->linenum = -1;
+#endif
+}
+
+int
+ScmBaseCharPort_line_number(ScmBaseCharPort *port)
+{
+    return port->linenum;
 }
 
 static ScmCharPort *
@@ -140,7 +151,15 @@ basecport_encoding(ScmBaseCharPort *port)
 static int
 basecport_get_char(ScmBaseCharPort *port)
 {
-    return SCM_BYTEPORT_GET_BYTE(port->bport);
+    int ch;
+
+    ch = SCM_BYTEPORT_GET_BYTE(port->bport);
+#if SCM_DEBUG
+    if (ch == '\n')
+        port->linenum++;
+#endif
+
+    return ch;
 }
 
 static int

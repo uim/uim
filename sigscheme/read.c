@@ -65,6 +65,9 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
+#if SCM_USE_NEWPORT
+#include "sbcport.h"
+#endif
 
 /*=======================================
   File Local Struct Declarations
@@ -288,12 +291,22 @@ static ScmObj read_list(ScmObj port, int closeParen)
     ScmObj list_tail = SCM_NULL;
     ScmObj item   = SCM_NULL;
     ScmObj cdr    = SCM_NULL;
+#if SCM_USE_NEWPORT
+    ScmBaseCharPort *basecport;
+    int    start_line, cur_line;
+#else
     int    line   = SCM_PORT_LINE(port);
+#endif
     int    c      = 0;
     int    c2     = 0;
     char  *token  = NULL;
 
     CDBG((SCM_DBG_PARSER, "read_list"));
+#if SCM_USE_NEWPORT
+    basecport = SCM_PORT_DYNAMIC_CAST(ScmBaseCharPort, SCM_PORT_IMPL(port));
+    if (basecport)
+        start_line = ScmBaseCharPort_line_number(basecport);
+#endif
 
     while (1) {
         c = skip_comment_and_space(port);
@@ -302,11 +315,15 @@ static ScmObj read_list(ScmObj port, int closeParen)
 
         if (c == EOF) {
 #if SCM_USE_NEWPORT
-            if (FALSE)
+            if (basecport) {
+                cur_line = ScmBaseCharPort_line_number(basecport);
+                ERR("EOF inside list at line %d. (starting from line %d)",
+                    cur_line, start_line);
+            }
 #else
             if (SCM_PORT_PORTTYPE(port) == PORT_FILE)
-#endif
                 SigScm_Error("EOF inside list. (starting from line %d)", line + 1);
+#endif
             else
                 SigScm_Error("EOF inside list.");
         } else if (c == closeParen) {

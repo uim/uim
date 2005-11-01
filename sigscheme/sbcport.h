@@ -63,6 +63,7 @@ struct ScmBaseCharPort_ {  /* inherits ScmCharPort */
     const ScmCharPortVTbl *vptr;
 
     ScmBytePort *bport;  /* protected */
+    int linenum;         /* protected */
 };
 
 /*=======================================
@@ -79,6 +80,7 @@ void Scm_sbcport_init(void);
 void ScmBaseCharPort_construct(ScmBaseCharPort *port,
                                const ScmCharPortVTbl *vptr,
                                ScmBytePort *bport);
+int ScmBaseCharPort_line_number(ScmBaseCharPort *port);
 
 void ScmSingleByteCharPort_construct(ScmSingleByteCharPort *port,
                                      const ScmCharPortVTbl *vptr,
