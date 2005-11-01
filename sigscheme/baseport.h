@@ -78,8 +78,8 @@
 
 #define SCM_PORT_ALLOC(klass, port, type)                                    \
     do {                                                                     \
-        port = malloc(sizeof(type));                                         \
-        if (!port)                                                           \
+        (port) = malloc(sizeof(type));                                       \
+        if (!(port))                                                         \
             SCM_PORT_ERROR_NOMEM(klass, NULL, type);                         \
     } while (/* CONSTCOND */ 0)
 
@@ -88,31 +88,32 @@
  * method must call SCM_PORT_DYNAMIC_CAST() explicitly.
  */
 #define SCM_PORT_DYNAMIC_CAST(type, obj)                                     \
-     ((type *)(*obj->vptr->dyn_cast)(obj, type##_vptr))
+     ((type *)(*(obj)->vptr->dyn_cast)((obj), type##_vptr))
 
-#define SCM_CHARPORT_CLOSE(cport)        ((*cport->vptr->close)(cport))
-#define SCM_CHARPORT_ENCODING(cport)     ((*cport->vptr->encoding)(cport))
-#define SCM_CHARPORT_INSPECT(cport)      ((*cport->vptr->inspect)(cport))
-#define SCM_CHARPORT_GET_CHAR(cport)     ((*cport->vptr->get_char)(cport))
-#define SCM_CHARPORT_PEEK_CHAR(cport)    ((*cport->vptr->peek_char)(cport))
-#define SCM_CHARPORT_CHAR_READYP(cport)  ((*cport->vptr->char_readyp)(cport))
+#define SCM_CHARPORT_CLOSE(cport)        ((*(cport)->vptr->close)(cport))
+#define SCM_CHARPORT_ENCODING(cport)     ((*(cport)->vptr->encoding)(cport))
+#define SCM_CHARPORT_INSPECT(cport)      ((*(cport)->vptr->inspect)(cport))
+#define SCM_CHARPORT_GET_CHAR(cport)     ((*(cport)->vptr->get_char)(cport))
+#define SCM_CHARPORT_PEEK_CHAR(cport)    ((*(cport)->vptr->peek_char)(cport))
+#define SCM_CHARPORT_CHAR_READYP(cport)  ((*(cport)->vptr->char_readyp)(cport))
 #define SCM_CHARPORT_VPRINTF(cport, str, args)                               \
-    ((*cport->vptr->vprintf)(cport, str, args))
-#define SCM_CHARPORT_PUTS(cport, str)    ((*cport->vptr->puts)(cport, str))
-#define SCM_CHARPORT_PUT_CHAR(cport, ch) ((*cport->vptr->put_char)(cport, ch))
-#define SCM_CHARPORT_FLUSH(cport)        ((*cport->vptr->flush)(cport))
+    ((*(cport)->vptr->vprintf)(cport, str, args))
+#define SCM_CHARPORT_PUTS(cport, str)    ((*(cport)->vptr->puts)(cport, str))
+#define SCM_CHARPORT_PUT_CHAR(cport, ch)                                     \
+    ((*(cport)->vptr->put_char)(cport, ch))
+#define SCM_CHARPORT_FLUSH(cport)        ((*(cport)->vptr->flush)(cport))
 
-#define SCM_BYTEPORT_CLOSE(bport)        ((*bport->vptr->close)(bport))
-#define SCM_BYTEPORT_INSPECT(bport)      ((*bport->vptr->inspect)(bport))
-#define SCM_BYTEPORT_GET_BYTE(bport)     ((*bport->vptr->get_byte)(bport))
-#define SCM_BYTEPORT_PEEK_BYTE(bport)    ((*bport->vptr->peek_byte)(bport))
-#define SCM_BYTEPORT_BYTE_READYP(bport)  ((*bport->vptr->byte_readyp)(bport))
+#define SCM_BYTEPORT_CLOSE(bport)        ((*(bport)->vptr->close)(bport))
+#define SCM_BYTEPORT_INSPECT(bport)      ((*(bport)->vptr->inspect)(bport))
+#define SCM_BYTEPORT_GET_BYTE(bport)     ((*(bport)->vptr->get_byte)(bport))
+#define SCM_BYTEPORT_PEEK_BYTE(bport)    ((*(bport)->vptr->peek_byte)(bport))
+#define SCM_BYTEPORT_BYTE_READYP(bport)  ((*(bport)->vptr->byte_readyp)(bport))
 #define SCM_BYTEPORT_VPRINTF(bport, str, args)                               \
-    ((*bport->vptr->vprintf)(bport, str, args))
-#define SCM_BYTEPORT_PUTS(bport, str)    ((*bport->vptr->puts)(bport, str))
+    ((*(bport)->vptr->vprintf)(bport, str, args))
+#define SCM_BYTEPORT_PUTS(bport, str)    ((*(bport)->vptr->puts)(bport, str))
 #define SCM_BYTEPORT_WRITE(bport, nbytes, buf)                               \
-    ((*bport->vptr->write)(bport, nbytes, buf))
-#define SCM_BYTEPORT_FLUSH(bport)        ((*bport->vptr->flush)(bport))
+    ((*(bport)->vptr->write)(bport, nbytes, buf))
+#define SCM_BYTEPORT_FLUSH(bport)        ((*(bport)->vptr->flush)(bport))
 
 /*=======================================
   Type Definitions

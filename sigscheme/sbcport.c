@@ -130,8 +130,8 @@ ScmBaseCharPort_inspect(ScmBaseCharPort *port, const char *header)
     char *bport_part, *combined;
     size_t size;
 
-    encoding = SCM_CHARPORT_ENCODING(port);
-    bport_part = SCM_BYTEPORT_INSPECT(port->bport);
+    encoding = SCM_CHARPORT_ENCODING((ScmCharPort *)port);
+    bport_part = SCM_BYTEPORT_INSPECT((ScmBytePort *)port->bport);
     size = strlen(header) + strlen(encoding) + strlen(bport_part)
         + sizeof("  ");
     combined = malloc(size);
@@ -275,7 +275,7 @@ sbcport_encoding(ScmSingleByteCharPort *port)
 static char *
 sbcport_inspect(ScmSingleByteCharPort *port)
 {
-    return ScmBaseCharPort_inspect(port, "sb");
+    return ScmBaseCharPort_inspect((ScmBaseCharPort *)port, "sb");
 }
 
 static int
