@@ -1283,7 +1283,7 @@ ScmObj ScmOp_string_ref(ScmObj str, ScmObj k)
     /* copy from start_ptr to end_ptr */
     new_ch = (char*)malloc(SCM_MBS_GET_SIZE(mbs) + 1);
     memcpy(new_ch, SCM_MBS_GET_STR(mbs), SCM_MBS_GET_SIZE(mbs));
-    new_ch[SCM_MBS_GET_SIZE(mbs)] = 0;
+    new_ch[SCM_MBS_GET_SIZE(mbs)] = '\0';
 
     return Scm_NewChar(new_ch);
 }

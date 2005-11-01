@@ -10,7 +10,7 @@
 
 ;; check string-ref
 (assert-equal? "alphabet string-ref check" #\o  (string-ref "aiueo" 4))
-(assert-equal? "hiragena string-ref check" #\お (string-ref "あいうえお" 4))
+(assert-equal? "hiragana string-ref check" #\お (string-ref "あいうえお" 4))
 (assert-equal? "mixed string-ref check"    #\お (string-ref "あiueお" 4))
 (assert-equal? "alphabet string-ref 0 check" #\a  (string-ref "aiueo" 0))
 (assert-equal? "hiragena string-ref 0 check" #\あ (string-ref "あいうえお" 0))
