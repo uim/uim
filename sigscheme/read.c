@@ -150,8 +150,7 @@ static int skip_comment_and_space(ScmObj port)
     /* WARNING: the behavior is different to !SCM_USE_NEWPORT */
     int c, state;
 
-    state = LEX_ST_NORMAL;
-    for (;;) {
+    for (state = LEX_ST_NORMAL;;) {
         c = SCM_PORT_PEEK_CHAR(port);
         switch (state) {
         case LEX_ST_NORMAL:
