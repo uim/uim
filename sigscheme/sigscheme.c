@@ -185,13 +185,13 @@ static void SigScm_Initialize_internal(void)
     /* eval.c */
     Scm_RegisterProcedureFixed2("eval"                     , ScmOp_eval);
     Scm_RegisterProcedureVariadicTailRec2("apply"           , ScmOp_apply);
-    Scm_RegisterSyntaxFixed1("quote"              , ScmOp_quote);
+    Scm_RegisterSyntaxFixed1("quote"                 , ScmOp_quote);
     Scm_RegisterSyntaxVariadic2("lambda"             , ScmExp_lambda);
-    Scm_RegisterSyntaxFixed2("set!"               , ScmExp_setd);
-    Scm_RegisterSyntaxFixed1("delay"              , ScmOp_delay);
-    Scm_RegisterSyntaxFixed1("quasiquote"         , ScmOp_quasiquote);
-    Scm_RegisterSyntaxFixed1("unquote"            , ScmOp_unquote);
-    Scm_RegisterSyntaxFixed1("unquote-splicing"   , ScmOp_unquote_splicing);
+    Scm_RegisterSyntaxFixed2("set!"                  , ScmExp_setd);
+    Scm_RegisterSyntaxFixed1("delay"                 , ScmExp_delay);
+    Scm_RegisterSyntaxFixed1("quasiquote"            , ScmExp_quasiquote);
+    Scm_RegisterSyntaxFixed1("unquote"               , ScmExp_unquote);
+    Scm_RegisterSyntaxFixed1("unquote-splicing"      , ScmExp_unquote_splicing);
     Scm_RegisterSyntaxVariadic1("define"             , ScmExp_define);
     Scm_RegisterSyntaxVariadicTailRec2("if"          , ScmExp_if);
     Scm_RegisterSyntaxVariadicTailRec0("cond"        , ScmExp_cond); /* FIXME */

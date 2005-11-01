@@ -521,6 +521,8 @@ ScmObj ScmOp_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_sta
     ScmObj last = SCM_INVALID;
     ScmObj lst  = SCM_INVALID;
 
+    DECLARE_FUNCTION("apply", ProcedureVariadicTailRec2);
+
     if (NULLP(rest)) {
         args = last = arg0;
     } else {
@@ -839,9 +841,9 @@ static ScmObj qquote_vector(ScmObj src, ScmObj env, int nest)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.2 Literal expressions
 ===========================================================================*/
-/* FIXME: rename to ScmExp_quote since quote is a syntax */
-ScmObj ScmOp_quote(ScmObj datum, ScmObj env)
+ScmObj ScmExp_quote(ScmObj datum, ScmObj env)
 {
+    DECLARE_FUNCTION("quote", SyntaxFixed1);
     return datum;
 }
 
@@ -891,6 +893,7 @@ ScmObj ScmExp_setd(ScmObj sym, ScmObj exp, ScmObj env)
 {
     ScmObj evaled        = SCM_FALSE;
     ScmObj locally_bound = SCM_NULL;
+    DECLARE_FUNCTION("set!", SyntaxFixed2);
 
     evaled = EVAL(exp, env);
     locally_bound = Scm_LookupEnvironment(sym, env);
@@ -946,6 +949,7 @@ ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
     ScmObj test   = SCM_NULL;
     ScmObj exps   = SCM_NULL;
     ScmObj proc   = SCM_NULL;
+    DECLARE_FUNCTION("cond", SyntaxVariadicTailRec0);
 
     /* looping in each clause */
     for (; !NULLP(args); args = CDR(args)) {
@@ -997,6 +1001,7 @@ ScmObj ScmExp_case(ScmObj key, ScmObj args, ScmEvalState *eval_state)
     ScmObj clause = SCM_NULL;
     ScmObj data   = SCM_NULL;
     ScmObj exps   = SCM_NULL;
+    DECLARE_FUNCTION("case", SyntaxVariadicTailRec1);
 
     /* get key */
     key = EVAL(key, env);
@@ -1091,6 +1096,7 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
     ScmObj val           = SCM_FALSE;
     ScmObj vars          = SCM_NULL;
     ScmObj vals          = SCM_NULL;
+    DECLARE_FUNCTION("let", SyntaxVariadicTalRec0);
 
     /*========================================================================
       normal let:
@@ -1163,6 +1169,7 @@ ScmObj ScmExp_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     ScmObj var     = SCM_FALSE;
     ScmObj val     = SCM_FALSE;
     ScmObj binding = SCM_FALSE;
+    DECLARE_FUNCTION("let*", SyntaxVariadicTalRec1);
 
     /*========================================================================
       (let* <bindings> <body>)
@@ -1212,6 +1219,7 @@ ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     ScmObj binding  = SCM_FALSE;
     ScmObj var      = SCM_FALSE;
     ScmObj val      = SCM_FALSE;
+    DECLARE_FUNCTION("letrec", SyntaxVariadicTalRec1);
 
     /*========================================================================
       (letrec <bindings> <body>)
@@ -1296,6 +1304,7 @@ ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalStat
     ScmObj tmp_vars   = SCM_NULL;
     ScmObj tmp_steps  = SCM_NULL;
     ScmObj obj        = SCM_NULL;
+    DECLARE_FUNCTION("do", SyntaxVariadicTailRec2);
 
     /* construct Environment and steps */
     for (; !NULLP(bindings); bindings = CDR(bindings)) {
@@ -1361,9 +1370,10 @@ ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalStat
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.5 Delayed evaluation
 ===========================================================================*/
-/* FIXME: rename to ScmExp_delay since delay is a syntax */
-ScmObj ScmOp_delay(ScmObj expr, ScmObj env)
+ScmObj ScmExp_delay(ScmObj expr, ScmObj env)
 {
+    DECLARE_FUNCTION("delay", SyntaxFixed1);
+
     /* (lambda () exp) */
     return Scm_NewClosure(SCM_LIST_2(SCM_NULL, expr), env);
 }
@@ -1371,30 +1381,27 @@ ScmObj ScmOp_delay(ScmObj expr, ScmObj env)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.6 Quasiquotation
 ===========================================================================*/
-/* FIXME: rename to ScmExp_quasiquote since quasiquote is a syntax */
-ScmObj ScmOp_quasiquote(ScmObj datum, ScmObj env)
+ScmObj ScmExp_quasiquote(ScmObj datum, ScmObj env)
 {
-    ScmObj ret;
-    ret = qquote_internal(datum, env, 1);
+    DECLARE_FUNCTION("quasiquote", SyntaxFixed1);
 
-    if (QQUOTE_IS_VERBATIM(ret))
+    if (QQUOTE_IS_VERBATIM(qquote_internal(datum, env, 1)))
         return datum;
     return ret;
 }
 
-/* FIXME: rename to ScmExp_unquote since unquote is a syntax */
-ScmObj ScmOp_unquote(ScmObj dummy, ScmObj env)
+ScmObj ScmExp_unquote(ScmObj dummy, ScmObj env)
 {
+    DECLARE_FUNCTION("unquote", SyntaxFixed1);
+
     SigScm_Error("unquote outside quasiquote");
     return SCM_NULL;
 }
 
-/*
- * FIXME: rename to ScmExp_unquote_splicing since unquote_splicing is a
- * syntax
- */
-ScmObj ScmOp_unquote_splicing(ScmObj dummy, ScmObj env)
+ScmObj ScmExp_unquote_splicing(ScmObj dummy, ScmObj env)
 {
+    DECLARE_FUNCTION("unquote-splicing", SyntaxFixed1);
+
     SigScm_Error("unquote-splicing outside quasiquote");
     return SCM_NULL;
 }
@@ -1420,6 +1427,7 @@ ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
     ScmObj procname = SCM_FALSE;
     ScmObj body     = SCM_FALSE;
     ScmObj formals  = SCM_FALSE;
+    DECLARE_FUNCTION("define", SyntaxVariadic1);
 
     /*========================================================================
       (define <variable> <expression>)
@@ -1467,6 +1475,8 @@ ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
 =======================================*/
 ScmObj ScmOp_scheme_report_environment(ScmObj version)
 {
+    DECLARE_FUNCTION("scheme-report-environment", ProcedureFixed1);
+
     /* sanity check */
     if (!INTP(version))
         SigScm_ErrorObj("scheme-report-environment : int required but got ", version);
@@ -1485,6 +1495,8 @@ ScmObj ScmOp_scheme_report_environment(ScmObj version)
 
 ScmObj ScmOp_null_environment(ScmObj version)
 {
+    DECLARE_FUNCTION("null-environment", ProcedureFixed1);
+
     /* sanity check */
     if (!INTP(version))
         SigScm_ErrorObj("null-environment : int required but got ", version);
@@ -1503,5 +1515,6 @@ ScmObj ScmOp_null_environment(ScmObj version)
 
 ScmObj ScmOp_interaction_environment(void)
 {
+    DECLARE_FUNCTION("interaction-environment", ProcedureFixed0);
     return SCM_INTERACTION_ENV;
 }
