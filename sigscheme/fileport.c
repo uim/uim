@@ -67,6 +67,7 @@ struct ScmFilePort_ {
     const ScmBytePortVTbl *vptr;
 
     FILE *file;
+    char *aux_info;  /* human readable auxilialy information about the file */
 };
 
 /*=======================================
@@ -116,16 +117,35 @@ void Scm_fileport_init(void)
 }
 
 ScmBytePort *
-ScmFilePort_new(FILE *file)
-{
+ScmFilePort_new(FILE *file, const char *aux_info)
+ {
     ScmFilePort *port;
 
     SCM_PORT_ALLOC(BYTE, port, ScmFilePort);
 
     port->vptr = ScmFilePort_vptr;
     port->file = file;
+    port->aux_info = strdup(aux_info);
 
     return (ScmBytePort *)port;
+}
+
+ScmBytePort *
+ScmFilePort_open_input_file(const char *path)
+{
+    FILE *file;
+
+    file = fopen(path, "rb");
+    return (file) ? ScmFilePort_new(file, path) : NULL;
+}
+
+ScmBytePort *
+ScmFilePort_open_output_file(const char *path)
+{
+    FILE *file;
+
+    file = fopen(path, "wb");
+    return (file) ? ScmFilePort_new(file, path) : NULL;
 }
 
 static ScmBytePort *
@@ -143,6 +163,7 @@ fileport_close(ScmFilePort *port)
     int err;
 
     err = fclose(port->file);
+    free(port->aux_info);
     free(port);
 
     return err;
@@ -151,7 +172,17 @@ fileport_close(ScmFilePort *port)
 static char *
 fileport_inspect(ScmFilePort *port)
 {
-    return strdup("file");
+    char *combined;
+    size_t size;
+
+    if (port->aux_info) {
+        size = sizeof("file ") + strlen(port->aux_info);
+        combined = malloc(size);
+        snprintf(combined, size, "file %s", port->aux_info);
+        return combined;
+    } else {
+        return strdup("file");
+    }
 }
 
 static int

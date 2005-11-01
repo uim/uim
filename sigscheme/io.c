@@ -239,38 +239,52 @@ ScmObj ScmOp_with_output_to_file(ScmObj filepath, ScmObj thunk)
 
 ScmObj ScmOp_open_input_file(ScmObj filepath)
 {
+#if SCM_USE_NEWPORT
+    ScmBytePort *bport;
+#else
     FILE *f = NULL;
+#endif
     DECLARE_FUNCTION("open-input-file", ProcedureFixed1);
 
     ASSERT_STRINGP(filepath);
 
+#if SCM_USE_NEWPORT
+    bport = ScmFilePort_open_input_file(SCM_STRING_STR(filepath));
+    if (!bport)
+        ERR_OBJ("cannot open file ", filepath);
+
+    return Scm_NewPort(ScmSingleByteCharPort_new(bport), SCM_PORTFLAG_INPUT);
+#else /* SCM_USE_NEWPORT */
     f = fopen(SCM_STRING_STR(filepath), "r");
     if (!f)
         ERR_OBJ("cannot open file ", filepath);
 
-#if SCM_USE_NEWPORT
-    return Scm_NewPort(ScmSingleByteCharPort_new(ScmFilePort_new(f)),
-                       SCM_PORTFLAG_INPUT);
-#else /* SCM_USE_NEWPORT */
     return Scm_NewFilePort(f, SCM_STRING_STR(filepath), PORT_INPUT);
 #endif /* SCM_USE_NEWPORT */
 }
 
 ScmObj ScmOp_open_output_file(ScmObj filepath)
 {
+#if SCM_USE_NEWPORT
+    ScmBytePort *bport;
+#else
     FILE *f = NULL;
+#endif
     DECLARE_FUNCTION("open-output-file", ProcedureFixed1);
 
     ASSERT_STRINGP(filepath);
 
+#if SCM_USE_NEWPORT
+    bport = ScmFilePort_open_output_file(SCM_STRING_STR(filepath));
+    if (!bport)
+        ERR_OBJ("cannot open file ", filepath);
+
+    return Scm_NewPort(ScmSingleByteCharPort_new(bport), SCM_PORTFLAG_OUTPUT);
+#else /* SCM_USE_NEWPORT */
     f = fopen(SCM_STRING_STR(filepath), "w");
     if (!f)
         ERR_OBJ("cannot open file ", filepath);
 
-#if SCM_USE_NEWPORT
-    return Scm_NewPort(ScmSingleByteCharPort_new(ScmFilePort_new(f)),
-                       SCM_PORTFLAG_OUTPUT);
-#else /* SCM_USE_NEWPORT */
     return Scm_NewFilePort(f, SCM_STRING_STR(filepath), PORT_OUTPUT);
 #endif /* SCM_USE_NEWPORT */
 }
