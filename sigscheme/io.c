@@ -35,6 +35,7 @@
   System Include
 =======================================*/
 #include <stdio.h>
+#include <string.h>
 
 /*=======================================
   Local Include
@@ -380,7 +381,7 @@ ScmObj ScmOp_read_char(ScmObj args)
     SCM_PORT_GETC(port, buf[0]);
     buf[1] = '\0';
 #endif /* SCM_USE_NEWPORT */
-    return Scm_NewChar(buf);
+    return Scm_NewChar(strdup(buf));
 }
 
 ScmObj ScmOp_peek_char(ScmObj args)
@@ -400,7 +401,7 @@ ScmObj ScmOp_peek_char(ScmObj args)
 
     buf[0] = ch;
     buf[1] = '\0';
-    return Scm_NewChar(buf);
+    return Scm_NewChar(strdup(buf));
 #else /* SCM_USE_NEWPORT */
     /* FIXME: implement this */
     return SCM_FALSE;
