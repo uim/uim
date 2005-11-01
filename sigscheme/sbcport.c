@@ -70,6 +70,7 @@ static ScmCharPort *basecport_dyn_cast(ScmCharPort *cport,
                                        const ScmCharPortVTbl *dst_vptr);
 static int basecport_close(ScmBaseCharPort *port);
 static const char *basecport_encoding(ScmBaseCharPort *port);
+static char *basecport_inspect(ScmBaseCharPort *port);
 static int basecport_get_char(ScmBaseCharPort *port);
 static int basecport_peek_char(ScmBaseCharPort *port);
 static int basecport_char_readyp(ScmBaseCharPort *port);
@@ -82,6 +83,7 @@ static int basecport_flush(ScmBaseCharPort *port);
 static ScmCharPort *sbcport_dyn_cast(ScmCharPort *cport,
                                      const ScmCharPortVTbl *dst_vptr);
 static const char *sbcport_encoding(ScmSingleByteCharPort *port);
+static char *sbcport_inspect(ScmSingleByteCharPort *port);
 static int sbcport_put_char(ScmSingleByteCharPort *port, int ch);
 
 /*=======================================
@@ -91,6 +93,7 @@ static const ScmCharPortVTbl ScmBaseCharPort_vtbl = {
     (ScmCharPortMethod_dyn_cast)   &basecport_dyn_cast,
     (ScmCharPortMethod_close)      &basecport_close,
     (ScmCharPortMethod_encoding)   &basecport_encoding,
+    (ScmCharPortMethod_inspect)    &basecport_inspect,
     (ScmCharPortMethod_get_char)   &basecport_get_char,
     (ScmCharPortMethod_peek_char)  &basecport_peek_char,
     (ScmCharPortMethod_char_readyp)&basecport_char_readyp,
@@ -120,6 +123,24 @@ ScmBaseCharPort_construct(ScmBaseCharPort *port, const ScmCharPortVTbl *vptr,
 #endif
 }
 
+char *
+ScmBaseCharPort_inspect(ScmBaseCharPort *port, const char *header)
+{
+    const char *encoding;
+    char *bport_part, *combined;
+    size_t size;
+
+    encoding = SCM_CHARPORT_ENCODING(port);
+    bport_part = SCM_BYTEPORT_INSPECT(port->bport);
+    size = strlen(header) + strlen(encoding) + strlen(bport_part)
+        + sizeof("  ");
+    combined = malloc(size);
+    snprintf(combined, size, "%s %s %s", header, encoding, bport_part);
+    free(bport_part);
+
+    return combined;
+}
+
 int
 ScmBaseCharPort_line_number(ScmBaseCharPort *port)
 {
@@ -146,6 +167,12 @@ basecport_encoding(ScmBaseCharPort *port)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(CHAR, port, ScmBaseCharPort);
     /* NOTREACHED */
+}
+
+static char *
+basecport_inspect(ScmBaseCharPort *port)
+{
+    return ScmBaseCharPort_inspect(port, "unknown");
 }
 
 static int
@@ -206,6 +233,7 @@ Scm_sbcport_init(void)
     ScmSingleByteCharPort_vtbl = *ScmBaseCharPort_vptr;
     ScmSingleByteCharPort_vtbl.dyn_cast = (ScmCharPortMethod_dyn_cast)&sbcport_dyn_cast;
     ScmSingleByteCharPort_vtbl.encoding = (ScmCharPortMethod_encoding)&sbcport_encoding;
+    ScmSingleByteCharPort_vtbl.inspect  = (ScmCharPortMethod_inspect)&sbcport_inspect;
     ScmSingleByteCharPort_vtbl.put_char = (ScmCharPortMethod_put_char)&sbcport_put_char;
 }
 
@@ -242,6 +270,12 @@ static const char *
 sbcport_encoding(ScmSingleByteCharPort *port)
 {
     return "US-ASCII";
+}
+
+static char *
+sbcport_inspect(ScmSingleByteCharPort *port)
+{
+    return ScmBaseCharPort_inspect(port, "sb");
 }
 
 static int

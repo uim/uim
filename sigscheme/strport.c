@@ -94,6 +94,7 @@ static ScmBytePort *istrport_new(char *str, int ownership,
 static ScmBytePort *istrport_dyn_cast(ScmBytePort *bport,
                                       const ScmBytePortVTbl *dest_vptr);
 static int istrport_close(ScmInputStrPort *port);
+static char *istrport_inspect(ScmInputStrPort *port);
 static int istrport_get_byte(ScmInputStrPort *port);
 static int istrport_peek_byte(ScmInputStrPort *port);
 static int istrport_byte_readyp(ScmInputStrPort *port);
@@ -107,6 +108,7 @@ static int istrport_flush(ScmInputStrPort *port);
 static ScmBytePort *ostrport_dyn_cast(ScmBytePort *bport,
                                       const ScmBytePortVTbl *dest_vptr);
 static int ostrport_close(ScmOutputStrPort *port);
+static char *ostrport_inspect(ScmOutputStrPort *port);
 static int ostrport_get_byte(ScmOutputStrPort *port);
 static int ostrport_peek_byte(ScmOutputStrPort *port);
 static int ostrport_byte_readyp(ScmOutputStrPort *port);
@@ -126,6 +128,7 @@ static size_t ostrport_append(ScmOutputStrPort *port,
 static const ScmBytePortVTbl ScmInputStrPort_vtbl = {
     (ScmBytePortMethod_dyn_cast)   &istrport_dyn_cast,
     (ScmBytePortMethod_close)      &istrport_close,
+    (ScmBytePortMethod_inspect)    &istrport_inspect,
     (ScmBytePortMethod_get_byte)   &istrport_get_byte,
     (ScmBytePortMethod_peek_byte)  &istrport_peek_byte,
     (ScmBytePortMethod_byte_readyp)&istrport_byte_readyp,
@@ -139,6 +142,7 @@ const ScmBytePortVTbl *ScmInputStrPort_vptr = &ScmInputStrPort_vtbl;
 static const ScmBytePortVTbl ScmOutputStrPort_vtbl = {
     (ScmBytePortMethod_dyn_cast)   &ostrport_dyn_cast,
     (ScmBytePortMethod_close)      &ostrport_close,
+    (ScmBytePortMethod_inspect)    &ostrport_inspect,
     (ScmBytePortMethod_get_byte)   &ostrport_get_byte,
     (ScmBytePortMethod_peek_byte)  &ostrport_peek_byte,
     (ScmBytePortMethod_byte_readyp)&ostrport_byte_readyp,
@@ -229,6 +233,12 @@ istrport_close(ScmInputStrPort *port)
     free(port);
 
     return OK;
+}
+
+static char *
+istrport_inspect(ScmInputStrPort *port)
+{
+    return strdup("string");
 }
 
 static int
@@ -338,6 +348,12 @@ ostrport_close(ScmOutputStrPort *port)
     free(port);
 
     return OK;
+}
+
+static char *
+ostrport_inspect(ScmOutputStrPort *port)
+{
+    return strdup("string");
 }
 
 static int

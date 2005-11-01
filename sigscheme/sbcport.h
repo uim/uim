@@ -80,6 +80,7 @@ void Scm_sbcport_init(void);
 void ScmBaseCharPort_construct(ScmBaseCharPort *port,
                                const ScmCharPortVTbl *vptr,
                                ScmBytePort *bport);
+char *ScmBaseCharPort_inspect(ScmBaseCharPort *port, const char *header);
 int ScmBaseCharPort_line_number(ScmBaseCharPort *port);
 
 void ScmSingleByteCharPort_construct(ScmSingleByteCharPort *port,

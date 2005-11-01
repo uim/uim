@@ -45,6 +45,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 
 /*=======================================
   Local Include
@@ -74,6 +75,7 @@ struct ScmFilePort_ {
 static ScmBytePort *fileport_dyn_cast(ScmBytePort *bport,
                                       const ScmBytePortVTbl *dest_vptr);
 static int fileport_close(ScmFilePort *bport);
+static char *fileport_inspect(ScmFilePort *port);
 static int fileport_get_byte(ScmFilePort *bport);
 static int fileport_peek_byte(ScmFilePort *bport);
 static int fileport_byte_readyp(ScmFilePort *bport);
@@ -89,6 +91,7 @@ static int fileport_flush(ScmFilePort *bport);
 static const ScmBytePortVTbl ScmFilePort_vtbl = {
     (ScmBytePortMethod_dyn_cast)   &fileport_dyn_cast,
     (ScmBytePortMethod_close)      &fileport_close,
+    (ScmBytePortMethod_inspect)    &fileport_inspect,
     (ScmBytePortMethod_get_byte)   &fileport_get_byte,
     (ScmBytePortMethod_peek_byte)  &fileport_peek_byte,
     (ScmBytePortMethod_byte_readyp)&fileport_byte_readyp,
@@ -143,6 +146,12 @@ fileport_close(ScmFilePort *port)
     free(port);
 
     return err;
+}
+
+static char *
+fileport_inspect(ScmFilePort *port)
+{
+    return strdup("file");
 }
 
 static int

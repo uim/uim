@@ -469,6 +469,10 @@ static void print_vector(ScmObj port, ScmObj vec, enum OutputType otype)
 
 static void print_port(ScmObj port, ScmObj obj, enum OutputType otype)
 {
+#if SCM_USE_NEWPORT
+    char *info;
+#endif
+
     SCM_PORT_PRINT(port, "#<");
 
     /* input or output */
@@ -489,7 +493,14 @@ static void print_port(ScmObj port, ScmObj obj, enum OutputType otype)
 
     /* file or string */
 
-#if !SCM_USE_NEWPORT
+#if SCM_USE_NEWPORT
+    info = SCM_PORT_INSPECT(obj);
+    if (*info) {
+        SCM_PORT_PRINT(port, " ");
+        SCM_PORT_PRINT(port, info);
+    }
+    free(info);
+#else /* SCM_USE_NEWPORT */
     if (SCM_PORT_PORTTYPE(obj) == PORT_FILE) {
         snprintf(scm_portbuffer, PORTBUFFER_SIZE, " file %s", SCM_PORT_FILENAME(obj));
         SCM_PORT_PRINT(port, scm_portbuffer);
@@ -497,7 +508,7 @@ static void print_port(ScmObj port, ScmObj obj, enum OutputType otype)
         snprintf(scm_portbuffer, PORTBUFFER_SIZE, " string %s", SCM_PORT_STR(obj));
         SCM_PORT_PRINT(port, scm_portbuffer);
     }
-#endif /* !SCM_USE_NEWPORT */
+#endif /* SCM_USE_NEWPORT */
 
     SCM_PORT_PRINT(port, ">");
 }

@@ -92,6 +92,7 @@
 
 #define SCM_CHARPORT_CLOSE(cport)        ((*cport->vptr->close)(cport))
 #define SCM_CHARPORT_ENCODING(cport)     ((*cport->vptr->encoding)(cport))
+#define SCM_CHARPORT_INSPECT(cport)      ((*cport->vptr->inspect)(cport))
 #define SCM_CHARPORT_GET_CHAR(cport)     ((*cport->vptr->get_char)(cport))
 #define SCM_CHARPORT_PEEK_CHAR(cport)    ((*cport->vptr->peek_char)(cport))
 #define SCM_CHARPORT_CHAR_READYP(cport)  ((*cport->vptr->char_readyp)(cport))
@@ -102,6 +103,7 @@
 #define SCM_CHARPORT_FLUSH(cport)        ((*cport->vptr->flush)(cport))
 
 #define SCM_BYTEPORT_CLOSE(bport)        ((*bport->vptr->close)(bport))
+#define SCM_BYTEPORT_INSPECT(bport)      ((*bport->vptr->inspect)(bport))
 #define SCM_BYTEPORT_GET_BYTE(bport)     ((*bport->vptr->get_byte)(bport))
 #define SCM_BYTEPORT_PEEK_BYTE(bport)    ((*bport->vptr->peek_byte)(bport))
 #define SCM_BYTEPORT_BYTE_READYP(bport)  ((*bport->vptr->byte_readyp)(bport))
@@ -127,6 +129,8 @@ typedef ScmCharPort *(*ScmCharPortMethod_dyn_cast)(ScmCharPort *cport, const Scm
 typedef int (*ScmCharPortMethod_close)(ScmCharPort *cport);
 /* returns "UTF-8", "eucJP" and so on */
 typedef const char *(*ScmCharPortMethod_encoding)(ScmCharPort *cport);
+/* returns brief information */
+typedef char *(*ScmCharPortMethod_inspect)(ScmCharPort *cport);
 
 /* input */
 typedef int (*ScmCharPortMethod_get_char)(ScmCharPort *cport);
@@ -144,6 +148,7 @@ struct ScmCharPortVTbl_ {
     ScmCharPortMethod_dyn_cast    dyn_cast;
     ScmCharPortMethod_close       close;
     ScmCharPortMethod_encoding    encoding;
+    ScmCharPortMethod_inspect     inspect;
     ScmCharPortMethod_get_char    get_char;
     ScmCharPortMethod_peek_char   peek_char;
     ScmCharPortMethod_char_readyp char_readyp;
@@ -162,6 +167,8 @@ struct ScmCharPort_ {
  */
 typedef ScmBytePort *(*ScmBytePortMethod_dyn_cast)(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr);
 typedef int (*ScmBytePortMethod_close)(ScmBytePort *bport);
+/* returns brief information */
+typedef char *(*ScmBytePortMethod_inspect)(ScmBytePort *bport);
 
 /* input */
 typedef int (*ScmBytePortMethod_get_byte)(ScmBytePort *bport);
@@ -179,6 +186,7 @@ typedef int (*ScmBytePortMethod_flush)(ScmBytePort *bport);
 struct ScmBytePortVTbl_ {
     ScmBytePortMethod_dyn_cast    dyn_cast;
     ScmBytePortMethod_close       close;
+    ScmBytePortMethod_inspect     inspect;
     ScmBytePortMethod_get_byte    get_byte;
     ScmBytePortMethod_peek_byte   peek_byte;
     ScmBytePortMethod_byte_readyp byte_readyp;

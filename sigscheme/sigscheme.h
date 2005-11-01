@@ -139,6 +139,8 @@ extern "C" {
     (SCM_CHARPORT_CLOSE(SCM_PORT_IMPL(port)), SCM_PORT_SET_IMPL(port, NULL))
 #define SCM_PORT_ENCODING(port)                                              \
     (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_ENCODING(SCM_PORT_IMPL(port)))
+#define SCM_PORT_INSPECT(port)                                              \
+    (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_INSPECT(SCM_PORT_IMPL(port)))
 #define SCM_PORT_GET_CHAR(port)                                              \
     (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_GET_CHAR(SCM_PORT_IMPL(port)))
 #define SCM_PORT_PEEK_CHAR(port)                                             \
