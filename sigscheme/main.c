@@ -99,8 +99,22 @@ static void repl_loop(void)
         printf("sscm> ");
 
     while (s_exp = SigScm_Read(scm_current_input_port), !EOFP(s_exp)) {
+#if SCM_USE_SRFI34
+        /*
+         * Error Aware repl_loop
+         *
+         * (guard (err (else #f))
+         *   (eval exp '()))
+         */
+        result = ScmExp_SRFI34_guard(LIST_2(Scm_Intern("err"),
+                                            LIST_2(Scm_Intern("else"), SCM_UNDEF)),
+                                     LIST_1(LIST_3(Scm_Intern("eval"),
+                                                   s_exp,
+                                                   SCM_INTERACTION_ENV)),
+                                     SCM_INTERACTION_ENV);
+#else /* SCM_USE_SRFI34 */
         result = EVAL(s_exp, SCM_INTERACTION_ENV);
-
+#endif
         if (is_show_result)
         {
 #if SCM_USE_SRFI38
