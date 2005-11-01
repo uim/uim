@@ -201,8 +201,13 @@ static ScmObj lookup_frame(ScmObj var, ScmObj frame)
         SigScm_ErrorObj("broken frame : ", frame);
 
     /* lookup in frame */
+    /*
+     * CONSP(vals) is required to reject hand-maid broken frame:
+     *   (eval '(+ x y) '((x . 4)
+     *                    (y . 6)))
+     */
     for (vars = CAR(frame), vals = CDR(frame);
-         CONSP(vars);
+         CONSP(vars) && CONSP(vals);
          vars = CDR(vars), vals = CDR(vals))
     {
         if (EQ(CAR(vars), var))
@@ -210,7 +215,8 @@ static ScmObj lookup_frame(ScmObj var, ScmObj frame)
     }
 
     /* handle dot list */
-    if (!NULLP(vars) && SYMBOLP(vars))
+    /* CONSP(vals) is required to reject hand-maid broken frame */
+    if (!NULLP(vars) && SYMBOLP(vars) && CONSP(vals))
         return (EQ(vars, var)) ? vals : SCM_NULL;
 
     return SCM_NULL;
