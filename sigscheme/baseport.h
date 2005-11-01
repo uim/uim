@@ -72,6 +72,25 @@
 #define SCM_PORT_ERROR_NOMEM(klass, port, type)                              \
     SCM_##klass##PORT_ERROR(port, #type ": Out of memory")
 
+#define SCM_PORT_CREATOR_BODY(macro_klass, abstract_type, concrete_type, bport) \
+    do {                                                                     \
+        concrete_type *port;                                                 \
+                                                                             \
+        port = malloc(sizeof(concrete_type));                                \
+        if (!port)                                                           \
+            SCM_PORT_ERROR_NOMEM(macro_klass, port, concrete_type);          \
+                                                                             \
+        concrete_type##_construct(port, concrete_type##_vptr, bport);        \
+                                                                             \
+        return (abstract_type *)port;                                        \
+    } while (/* CONSTCOND */ 0)
+
+#define SCM_BYTEPORT_CREATOR_BODY(concrete_type, bport)                      \
+    SCM_PORT_CREATOR_BODY(BYTE, ScmBytePort, concrete_type, bport)
+
+#define SCM_CHARPORT_CREATOR_BODY(concrete_type, bport)                      \
+    SCM_PORT_CREATOR_BODY(CHAR, ScmCharPort, concrete_type, bport)
+
 /*
  * To allow safe method invocation (contains from subclasses), all non-standard
  * method must call SCM_PORT_DYNAMIC_CAST() explicitly.
