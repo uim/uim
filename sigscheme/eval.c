@@ -1383,9 +1383,10 @@ ScmObj ScmExp_delay(ScmObj expr, ScmObj env)
 ===========================================================================*/
 ScmObj ScmExp_quasiquote(ScmObj datum, ScmObj env)
 {
+    ScmObj ret = qquote_internal(datum, env, 1);
     DECLARE_FUNCTION("quasiquote", SyntaxFixed1);
 
-    if (QQUOTE_IS_VERBATIM(qquote_internal(datum, env, 1)))
+    if (QQUOTE_IS_VERBATIM(ret))
         return datum;
     return ret;
 }
@@ -1478,8 +1479,7 @@ ScmObj ScmOp_scheme_report_environment(ScmObj version)
     DECLARE_FUNCTION("scheme-report-environment", ProcedureFixed1);
 
     /* sanity check */
-    if (!INTP(version))
-        SigScm_ErrorObj("scheme-report-environment : int required but got ", version);
+    ASSERT_INTP(version);
     if (SCM_INT_VALUE(version) != 5)
         SigScm_ErrorObj("scheme-report-environment : version must be 5 but got ", version);
 
@@ -1498,8 +1498,7 @@ ScmObj ScmOp_null_environment(ScmObj version)
     DECLARE_FUNCTION("null-environment", ProcedureFixed1);
 
     /* sanity check */
-    if (!INTP(version))
-        SigScm_ErrorObj("null-environment : int required but got ", version);
+    ASSERT_INTP(version);
     if (SCM_INT_VALUE(version) != 5)
         SigScm_ErrorObj("null-environment : version must be 5 but got ", version);
 
