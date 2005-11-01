@@ -51,9 +51,6 @@ extern "C" {
 =======================================*/
 #include "config.h"
 #include "encoding.h"
-#if SCM_USE_NEWPORT
-#include "baseport.h"
-#endif
 
 /*=======================================
    Macro Declarations
@@ -131,6 +128,9 @@ extern "C" {
  * Port I/O Handling macros
  */
 #if SCM_USE_NEWPORT
+#define SCM_CHARPORT_ERROR(cport, msg) (SigScm_Error(msg))
+#define SCM_BYTEPORT_ERROR(bport, msg) (SigScm_Error(msg))
+
 #define SCM_ASSERT_LIVE_PORT(port)                                           \
     (SCM_PORT_IMPL(port)                                                     \
      || (SigScm_ErrorObj("operated on closed port", port), 1))
@@ -162,6 +162,14 @@ extern "C" {
 #define SCM_PORT_GETC(port, c) (c = SCM_PORT_GET_CHAR(port))
 #define SCM_PORT_UNGETC(port, c)
 #define SCM_PORT_PRINT SCM_PORT_PUTS
+
+/*
+ * SCM_CHARPORT_ERROR and SCM_BYTEPORT_ERROR must be defined before this
+ * inclusion
+ */
+#if SCM_USE_NEWPORT
+#include "baseport.h"
+#endif
 
 #else /* SCM_USE_NEWPORT */
 
