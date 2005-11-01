@@ -615,7 +615,7 @@ ScmObj ScmOp_cons(ScmObj car, ScmObj cdr)
     return CONS(car, cdr);
 }
 
-ScmObj ScmOp_setcar(ScmObj pair, ScmObj car)
+ScmObj ScmOp_set_card(ScmObj pair, ScmObj car)
 {
     DECLARE_FUNCTION("set-car!", SyntaxFixed2);
     ASSERT_CONSP(pair);
@@ -629,7 +629,7 @@ ScmObj ScmOp_setcar(ScmObj pair, ScmObj car)
 #endif
 }
 
-ScmObj ScmOp_setcdr(ScmObj pair, ScmObj cdr)
+ScmObj ScmOp_set_cdrd(ScmObj pair, ScmObj cdr)
 {
     DECLARE_FUNCTION("set-cdr!", SyntaxFixed2);
     ASSERT_CONSP(pair);
@@ -1243,7 +1243,7 @@ ScmObj ScmOp_make_string(ScmObj length, ScmObj args)
     str = Scm_NewStringWithLen(NULL, len);
 
     /* and fill! */
-    ScmOp_string_fill(str, filler);
+    ScmOp_string_filld(str, filler);
 
     return str;
 }
@@ -1288,7 +1288,7 @@ ScmObj ScmOp_string_ref(ScmObj str, ScmObj k)
     return Scm_NewChar(new_ch);
 }
 
-ScmObj ScmOp_string_set(ScmObj str, ScmObj k, ScmObj ch)
+ScmObj ScmOp_string_setd(ScmObj str, ScmObj k, ScmObj ch)
 {
     int   c_start_index = 0;
     int   prefix_size = 0;
@@ -1511,7 +1511,7 @@ ScmObj ScmOp_string_copy(ScmObj string)
     return Scm_NewStringCopying(SCM_STRING_STR(string));
 }
 
-ScmObj ScmOp_string_fill(ScmObj string, ScmObj ch)
+ScmObj ScmOp_string_filld(ScmObj string, ScmObj ch)
 {
     int  char_size = 0;
     int  str_len   = 0;
@@ -1606,7 +1606,7 @@ ScmObj ScmOp_vector_ref(ScmObj vec, ScmObj scm_k)
     return SCM_VECTOR_REF(vec, scm_k);
 }
 
-ScmObj ScmOp_vector_set(ScmObj vec, ScmObj scm_k, ScmObj obj)
+ScmObj ScmOp_vector_setd(ScmObj vec, ScmObj scm_k, ScmObj obj)
 {
     DECLARE_FUNCTION("vector-set!", ProcedureFixed3);
     ASSERT_VECTORP(vec);
@@ -1672,7 +1672,7 @@ ScmObj ScmOp_list2vector(ScmObj lst)
     return Scm_NewVector(v, c_len);
 }
 
-ScmObj ScmOp_vector_fill(ScmObj vec, ScmObj fill)
+ScmObj ScmOp_vector_filld(ScmObj vec, ScmObj fill)
 {
     int c_len = 0;
     int i = 0;

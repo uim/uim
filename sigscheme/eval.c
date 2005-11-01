@@ -887,7 +887,7 @@ ScmObj ScmExp_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_sta
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.6 Assignment
 ===========================================================================*/
-ScmObj ScmExp_set(ScmObj sym, ScmObj exp, ScmObj env)
+ScmObj ScmExp_setd(ScmObj sym, ScmObj exp, ScmObj env)
 {
     ScmObj evaled        = SCM_FALSE;
     ScmObj locally_bound = SCM_NULL;
@@ -1157,9 +1157,7 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
     return ScmExp_begin(body, eval_state);
 }
 
-/* RFC: ScmExp_letstar is preferable since the Scheme name is not 'let-*', and
-   in accordance with the name ScmExp_letrec -- YamaKen */
-ScmObj ScmExp_let_star(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
+ScmObj ScmExp_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
     ScmObj env     = eval_state->env;
     ScmObj var     = SCM_FALSE;

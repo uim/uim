@@ -187,7 +187,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterProcedureVariadicTailRec2("apply"           , ScmOp_apply);
     Scm_RegisterSyntaxFixed1("quote"              , ScmOp_quote);
     Scm_RegisterSyntaxVariadic2("lambda"             , ScmExp_lambda);
-    Scm_RegisterSyntaxFixed2("set!"               , ScmExp_set);
+    Scm_RegisterSyntaxFixed2("set!"               , ScmExp_setd);
     Scm_RegisterSyntaxFixed1("delay"              , ScmOp_delay);
     Scm_RegisterSyntaxFixed1("quasiquote"         , ScmOp_quasiquote);
     Scm_RegisterSyntaxFixed1("unquote"            , ScmOp_unquote);
@@ -197,7 +197,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterSyntaxVariadicTailRec0("cond"        , ScmExp_cond); /* FIXME */
     Scm_RegisterSyntaxVariadicTailRec1("case"        , ScmExp_case);
     Scm_RegisterSyntaxVariadicTailRec0("let"         , ScmExp_let); /* FIXME */
-    Scm_RegisterSyntaxVariadicTailRec1("let*"        , ScmExp_let_star);
+    Scm_RegisterSyntaxVariadicTailRec1("let*"        , ScmExp_letstar);
     Scm_RegisterSyntaxVariadicTailRec1("letrec"      , ScmExp_letrec);
     Scm_RegisterSyntaxVariadicTailRec0("begin"       , ScmExp_begin);
     Scm_RegisterSyntaxVariadicTailRec2("do"          , ScmExp_do);
@@ -240,8 +240,8 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterProcedureFixed2("cons"                     , ScmOp_cons);
     Scm_RegisterProcedureFixed1("car"                      , ScmOp_car);
     Scm_RegisterProcedureFixed1("cdr"                      , ScmOp_cdr);
-    Scm_RegisterProcedureFixed2("set-car!"                 , ScmOp_setcar);
-    Scm_RegisterProcedureFixed2("set-cdr!"                 , ScmOp_setcdr);
+    Scm_RegisterProcedureFixed2("set-car!"                 , ScmOp_set_card);
+    Scm_RegisterProcedureFixed2("set-cdr!"                 , ScmOp_set_cdrd);
     Scm_RegisterProcedureFixed1("caar"                     , ScmOp_caar);
     Scm_RegisterProcedureFixed1("cadr"                     , ScmOp_cadr);
     Scm_RegisterProcedureFixed1("cdar"                     , ScmOp_cdar);
@@ -302,7 +302,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterProcedureVariadic1("make-string" , ScmOp_make_string);
     Scm_RegisterProcedureVariadic0("string"      , ScmOp_string);
     Scm_RegisterProcedureFixed2("string-ref"               , ScmOp_string_ref);
-    Scm_RegisterProcedureFixed3("string-set!"              , ScmOp_string_set);
+    Scm_RegisterProcedureFixed3("string-set!"              , ScmOp_string_setd);
     Scm_RegisterProcedureFixed1("string-length"            , ScmOp_string_length);
     Scm_RegisterProcedureFixed2("string=?"                 , ScmOp_string_equal);
     Scm_RegisterProcedureFixed3("substring"                , ScmOp_string_substring);
@@ -310,16 +310,16 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterProcedureFixed1("string->list"             , ScmOp_string2list);
     Scm_RegisterProcedureFixed1("list->string"             , ScmOp_list2string);
     Scm_RegisterProcedureFixed1("string-copy"              , ScmOp_string_copy);
-    Scm_RegisterProcedureFixed2("string-fill!"             , ScmOp_string_fill);
+    Scm_RegisterProcedureFixed2("string-fill!"             , ScmOp_string_filld);
     Scm_RegisterProcedureFixed1("vector?"                  , ScmOp_vectorp);
     Scm_RegisterProcedureVariadic1("make-vector" , ScmOp_make_vector);
     Scm_RegisterProcedureVariadic0("vector"      , ScmOp_vector);
     Scm_RegisterProcedureFixed1("vector-length"            , ScmOp_vector_length);
     Scm_RegisterProcedureFixed2("vector-ref"               , ScmOp_vector_ref);
-    Scm_RegisterProcedureFixed3("vector-set!"              , ScmOp_vector_set);
+    Scm_RegisterProcedureFixed3("vector-set!"              , ScmOp_vector_setd);
     Scm_RegisterProcedureFixed1("vector->list"             , ScmOp_vector2list);
     Scm_RegisterProcedureFixed1("list->vector"             , ScmOp_list2vector);
-    Scm_RegisterProcedureFixed2("vector-fill!"             , ScmOp_vector_fill);
+    Scm_RegisterProcedureFixed2("vector-fill!"             , ScmOp_vector_filld);
     Scm_RegisterProcedureFixed1("procedure?"               , ScmOp_procedurep);
     Scm_RegisterProcedureVariadic1("map"         , ScmOp_map);
     Scm_RegisterProcedureVariadic1("for-each"    , ScmOp_for_each);
