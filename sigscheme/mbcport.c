@@ -67,8 +67,6 @@
 /*=======================================
   File Local Type Definitions
 =======================================*/
-typedef struct ScmMultiByteCharPort_ ScmMultiByteCharPort;
-
 struct ScmMultiByteCharPort_ {  /* inherits ScmBaseCharPort */
     const ScmCharPortVTbl *vptr;
 
@@ -121,20 +119,26 @@ Scm_mbcport_init(void)
     vptr->put_char    = (ScmCharPortMethod_put_char)&mbcport_put_char;
 }
 
+void
+ScmMultiByteCharPort_construct(ScmMultiByteCharPort *port,
+                               const ScmCharPortVTbl *vptr,
+                               ScmBytePort *bport, ScmCharCodec *codec)
+{
+    ScmBaseCharPort_construct((ScmBaseCharPort *)port, vptr, bport);
+
+    cport->codec = codec;
+    cport->rbuf[0] = '\0';
+    SCM_MBCPORT_CLEAR_STATE(cport);
+}
+
 ScmCharPort *
 ScmMultiByteCharPort_new(ScmBytePort *bport, ScmCharCodec *codec)
 {
     ScmMultiByteCharPort *cport;
 
-    cport = malloc(sizeof(ScmMultiByteCharPort));
-    if (!cport)
-        SCM_PORT_ERROR_NOMEM(CHAR, cport, ScmMultiByteCharPort);
-
-    cport->vptr = ScmMultiByteCharPort_vptr;
-    cport->bport = bport;
-    cport->codec = codec;
-    cport->rbuf[0] = '\0';
-    SCM_MBCPORT_CLEAR_STATE(cport);
+    SCM_PORT_ALLOC(CHAR, cport, ScmMultiByteCharPort);
+    ScmMultiByteCharPort_construct(cport, ScmMultiByteCharPort_vptr,
+                                   bport, codec);
 
     return (ScmCharPort *)cport;
 }

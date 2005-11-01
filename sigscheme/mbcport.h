@@ -61,6 +61,7 @@
 /*=======================================
   Type Definitions
 =======================================*/
+typedef struct ScmMultiByteCharPort_ ScmMultiByteCharPort;
 
 /*=======================================
    Variable Declarations
@@ -71,6 +72,10 @@ extern const ScmCharPortVTbl *ScmMultiByteCharPort_vptr;
    Function Declarations
 =======================================*/
 void Scm_mbcport_init(void);
+
+void ScmMultiByteCharPort_construct(ScmMultiByteCharPort *port,
+                                    const ScmCharPortVTbl *vptr,
+                                    ScmBytePort *bport, ScmCharCodec *codec);
 ScmCharPort *ScmMultiByteCharPort_new(ScmBytePort *bport, ScmCharCodec *codec);
 
 

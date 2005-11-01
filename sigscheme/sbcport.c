@@ -57,8 +57,6 @@
 /*=======================================
   File Local Type Definitions
 =======================================*/
-typedef struct ScmSingleByteCharPort_ ScmSingleByteCharPort;
-
 struct ScmSingleByteCharPort_ {  /* inherits ScmBaseCharPort */
     const ScmCharPortVTbl *vptr;
 
@@ -109,6 +107,14 @@ const ScmCharPortVTbl *ScmSingleByteCharPort_vptr = &ScmSingleByteCharPort_vtbl;
 /*=======================================
   Function Implementations
 =======================================*/
+void
+ScmBaseCharPort_construct(ScmBaseCharPort *port, const ScmCharPortVTbl *vptr,
+                          ScmBytePort *bport)
+{
+    port->vptr = ScmSingleByteCharPort_vptr;
+    port->bport = bport;
+}
+
 static ScmCharPort *
 basecport_dyn_cast(ScmCharPort *cport, const ScmCharPortVTbl *dst_vptr)
 {
@@ -184,17 +190,21 @@ Scm_sbcport_init(void)
     ScmSingleByteCharPort_vtbl.put_char = (ScmCharPortMethod_put_char)&sbcport_put_char;
 }
 
+void
+ScmSingleByteCharPort_construct(ScmSingleByteCharPort *port,
+                                const ScmCharPortVTbl *vptr,
+                                ScmBytePort *bport)
+{
+    ScmBaseCharPort_construct((ScmBaseCharPort *)port, vptr, bport);
+}
+
 ScmCharPort *
 ScmSingleByteCharPort_new(ScmBytePort *bport)
 {
     ScmSingleByteCharPort *cport;
 
-    cport = malloc(sizeof(ScmSingleByteCharPort));
-    if (!cport)
-        SCM_PORT_ERROR_NOMEM(CHAR, cport, ScmSingleByteCharPort);
-
-    cport->vptr = ScmSingleByteCharPort_vptr;
-    cport->bport = bport;
+    SCM_PORT_ALLOC(CHAR, cport, ScmSingleByteCharPort);
+    ScmSingleByteCharPort_construct(cport, ScmSingleByteCharPort_vptr, bport);
 
     return (ScmCharPort *)cport;
 }

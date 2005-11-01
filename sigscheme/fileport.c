@@ -117,9 +117,7 @@ ScmFilePort_new(FILE *file)
 {
     ScmFilePort *port;
 
-    port = malloc(sizeof(ScmFilePort));
-    if (!port)
-        SCM_PORT_ERROR_NOMEM(BYTE, NULL, ScmFilePort);
+    SCM_PORT_ALLOC(BYTE, port, ScmFilePort);
 
     port->vptr = ScmFilePort_vptr;
     port->file = file;

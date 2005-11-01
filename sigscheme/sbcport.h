@@ -57,6 +57,7 @@
   Type Definitions
 =======================================*/
 typedef struct ScmBaseCharPort_ ScmBaseCharPort;
+typedef struct ScmSingleByteCharPort_ ScmSingleByteCharPort;
 
 struct ScmBaseCharPort_ {  /* inherits ScmCharPort */
     const ScmCharPortVTbl *vptr;
@@ -74,6 +75,14 @@ extern const ScmCharPortVTbl *ScmSingleByteCharPort_vptr;
    Function Declarations
 =======================================*/
 void Scm_sbcport_init(void);
+
+void ScmBaseCharPort_construct(ScmBaseCharPort *port,
+                               const ScmCharPortVTbl *vptr,
+                               ScmBytePort *bport);
+
+void ScmSingleByteCharPort_construct(ScmSingleByteCharPort *port,
+                                     const ScmCharPortVTbl *vptr,
+                                     ScmBytePort *bport);
 ScmCharPort *ScmSingleByteCharPort_new(ScmBytePort *bport);
 
 

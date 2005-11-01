@@ -167,9 +167,7 @@ istrport_new(char *str, int ownership, ScmInputStrPort_finalizer finalize)
 {
     ScmInputStrPort *port;
 
-    port = malloc(sizeof(ScmInputStrPort));
-    if (!port)
-        SCM_PORT_ERROR_NOMEM(BYTE, NULL, ScmInputStrPort);
+    SCM_PORT_ALLOC(BYTE, port, ScmInputStrPort);
 
     port->vptr = ScmInputStrPort_vptr;
     port->cur = port->str = str;
@@ -285,9 +283,7 @@ ScmOutputStrPort_new(ScmOutputStrPort_finalizer finalize)
 {
     ScmOutputStrPort *port;
 
-    port = malloc(sizeof(ScmOutputStrPort));
-    if (!port)
-        SCM_PORT_ERROR_NOMEM(BYTE, NULL, ScmOutputStrPort);
+    SCM_PORT_ALLOC(BYTE, port, ScmOutputStrPort);
 
     port->vptr = ScmOutputStrPort_vptr;
     port->str = NULL;
