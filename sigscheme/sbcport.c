@@ -230,11 +230,15 @@ basecport_flush(ScmBaseCharPort *port)
 void
 Scm_sbcport_init(void)
 {
+    ScmCharPortVTbl *vptr;
+
     ScmSingleByteCharPort_vtbl = *ScmBaseCharPort_vptr;
-    ScmSingleByteCharPort_vtbl.dyn_cast = (ScmCharPortMethod_dyn_cast)&sbcport_dyn_cast;
-    ScmSingleByteCharPort_vtbl.encoding = (ScmCharPortMethod_encoding)&sbcport_encoding;
-    ScmSingleByteCharPort_vtbl.inspect  = (ScmCharPortMethod_inspect)&sbcport_inspect;
-    ScmSingleByteCharPort_vtbl.put_char = (ScmCharPortMethod_put_char)&sbcport_put_char;
+
+    vptr = &ScmSingleByteCharPort_vtbl;
+    vptr->dyn_cast = (ScmCharPortMethod_dyn_cast)&sbcport_dyn_cast;
+    vptr->encoding = (ScmCharPortMethod_encoding)&sbcport_encoding;
+    vptr->inspect  = (ScmCharPortMethod_inspect)&sbcport_inspect;
+    vptr->put_char = (ScmCharPortMethod_put_char)&sbcport_put_char;
 }
 
 void
