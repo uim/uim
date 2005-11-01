@@ -57,8 +57,10 @@ extern "C" {
 =======================================*/
 #ifdef __GNUC__
 #define SCM_NOINLINE __attribute__((noinline))
+#define SCM_NORETURN __attribute__((noreturn))
 #else
 #define SCM_NOINLINE
+#define SCM_NORETURN
 #endif /* __GNUC__ */
 
 #define SCM_REINTERPRET_CAST(type, obj) (*(type *)&(obj))
@@ -620,8 +622,8 @@ ScmObj SigScm_Read_Char(ScmObj port);
 
 /* error.c */
 int  SigScm_Die(const char *msg, const char *filename, int line);
-void SigScm_Error(const char *msg, ...);
-void SigScm_ErrorObj(const char *msg, ScmObj obj);
+void SigScm_Error(const char *msg, ...) SCM_NORETURN;
+void SigScm_ErrorObj(const char *msg, ScmObj obj) SCM_NORETURN;
 void SigScm_ShowBacktrace(void);
 
 /* debug.c */

@@ -62,6 +62,11 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
+static void throw_exception(ScmObj errorobj) SCM_NORETURN;
+
+/*=======================================
+  Function Implementations
+=======================================*/
 static void throw_exception(ScmObj errorobj)
 {
 #if SCM_EXCEPTION_HANDLING
@@ -78,14 +83,11 @@ static void throw_exception(ScmObj errorobj)
 #else
     if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
         SigScm_ShowBacktrace();
+#endif    
 
     exit(EXIT_FAILURE);
-#endif    
 }
 
-/*=======================================
-  Function Implementations
-=======================================*/
 int SigScm_Die(const char *msg, const char *filename, int line) {
     if (SigScm_DebugCategories() & SCM_DBG_ERRMSG) {
         SigScm_ShowErrorHeader();
@@ -98,7 +100,7 @@ int SigScm_Die(const char *msg, const char *filename, int line) {
 
     exit(EXIT_FAILURE);
     /* NOTREACHED */
-    return 1;
+    return 1;  /* dummy value for boolean expression */
 }
 
 void SigScm_Error(const char *msg, ...)
