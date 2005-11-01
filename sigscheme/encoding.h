@@ -50,6 +50,8 @@
 =======================================*/
 #define SCM_ENCODING_USE_WITH_SIGSCHEME 1
 
+#define SCM_MB_MAX_LEN 4
+
 #define SCM_MBS_SET_STR(mbs, s)         ((mbs).str = (s))
 #define SCM_MBS_GET_STR(mbs)            ((mbs).str)
 #define SCM_MBS_SET_SIZE(mbs, siz)      ((mbs).size = (siz))

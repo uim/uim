@@ -769,9 +769,8 @@ ScmObj Scm_NewChar(char *ch)
     ScmObj obj = SCM_FALSE;
     int len;
 
-    /* assert length == 1 */
     len = Scm_mb_bare_c_strlen(ch);
-    if (len != 1) {
+    if (len > SCM_MB_MAX_LEN) {
         SigScm_Error("Scm_NewChar : invalid character ch = [%s], len = %d",
                      ch, len);
     }
