@@ -580,6 +580,10 @@ ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest);
 
 /* io.c */
 void   SigScm_set_lib_path(const char *path);
+#if SCM_USE_NEWPORT
+ScmObj Scm_MakeSharedFilePort(FILE *file, const char *aux_info,
+                              enum ScmPortFlag flag);
+#endif
 
 ScmObj ScmOp_call_with_input_file(ScmObj filepath, ScmObj proc);
 ScmObj ScmOp_call_with_output_file(ScmObj filepath, ScmObj proc);

@@ -128,10 +128,6 @@ void SigScm_Initialize(void)
 
 static void SigScm_Initialize_internal(void)
 {
-#if SCM_USE_NEWPORT
-    ScmBytePort *bport;
-#endif
-
     /*=======================================================================
       Core
     =======================================================================*/
@@ -168,15 +164,12 @@ static void SigScm_Initialize_internal(void)
     Scm_fileport_init();
     Scm_sbcport_init();
 
-    bport = ScmFilePort_new_shared(stdin, "stdin");
-    scm_current_input_port = Scm_NewPort(ScmSingleByteCharPort_new(bport),
-                                         SCM_PORTFLAG_INPUT);
-    bport = ScmFilePort_new_shared(stdout, "stdout");
-    scm_current_output_port = Scm_NewPort(ScmSingleByteCharPort_new(bport),
-                                          SCM_PORTFLAG_OUTPUT);
-    bport = ScmFilePort_new_shared(stderr, "stderr");
-    scm_current_error_port = Scm_NewPort(ScmSingleByteCharPort_new(bport),
-                                         SCM_PORTFLAG_OUTPUT);
+    scm_current_input_port  = Scm_MakeSharedFilePort(stdin, "stdin",
+                                                     SCM_PORTFLAG_INPUT);
+    scm_current_output_port = Scm_MakeSharedFilePort(stdout, "stdout",
+                                                     SCM_PORTFLAG_OUTPUT);
+    scm_current_error_port  = Scm_MakeSharedFilePort(stderr, "stderr",
+                                                     SCM_PORTFLAG_OUTPUT);
 #else /* SCM_USE_NEWPORT */
     scm_current_input_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
     scm_current_output_port = Scm_NewFilePort(stdout, "stdout", PORT_OUTPUT);

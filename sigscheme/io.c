@@ -120,6 +120,18 @@ ScmObj ScmOp_load_path(void)
 }
 #endif
 
+#if SCM_USE_NEWPORT
+ScmObj Scm_MakeSharedFilePort(FILE *file, const char *aux_info,
+                              enum ScmPortFlag flag)
+{
+    ScmBytePort *bport;
+
+    /* GC safe */
+    bport = ScmFilePort_new_shared(file, aux_info);
+    return Scm_NewPort(ScmSingleByteCharPort_new(bport), flag);
+}
+#endif
+
 /*=======================================
   R5RS : 6.6 Input and Output
 =======================================*/
