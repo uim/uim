@@ -76,7 +76,7 @@
     do {                                                                     \
         port = malloc(sizeof(type));                                         \
         if (!port)                                                           \
-            SCM_PORT_ERROR_NOMEM(klass, port, type);                         \
+            SCM_PORT_ERROR_NOMEM(klass, NULL, type);                         \
     } while (/* CONSTCOND */ 0)
 
 /*
