@@ -175,7 +175,7 @@ static ScmObj guard_handle_clauses(ScmObj clauses, ScmObj env)
     for (; !NULLP(clauses); clauses = CDR(clauses)) {
         clause = CAR(clauses);
         if (!CONSP(clause))
-            ERR_OBJ("bad clause ", clause);
+            ERR_OBJ("bad clause", clause);
 
         test = CAR(clause);
         exps = CDR(clause);
@@ -201,7 +201,7 @@ static ScmObj guard_handle_clauses(ScmObj clauses, ScmObj env)
             if (EQ(Scm_Intern("=>"), CAR(exps))) {
                 proc = EVAL(CADR(exps), env);
                 if (FALSEP(ScmOp_procedurep(proc)))
-                    ERR_OBJ("the value of exp after => must be the procedure but got ", proc);
+                    ERR_OBJ("the value of exp after => must be the procedure but got", proc);
 
                 return Scm_call(proc, LIST_1(test));
             }

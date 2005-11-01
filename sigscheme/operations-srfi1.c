@@ -197,7 +197,7 @@ ScmObj ScmOp_SRFI1_list_copy(ScmObj lst)
     DECLARE_FUNCTION("list-copy", ProcedureFixed1);
 
     if (FALSEP(ScmOp_listp(lst)))
-        ERR_OBJ("list required but got ", lst);
+        ERR_OBJ("list required but got", lst);
 
     for (; !NULLP(lst); lst = CDR(lst)) {
         obj = CAR(lst);
@@ -225,7 +225,7 @@ ScmObj ScmOp_SRFI1_circular_list(ScmObj args)
     DECLARE_FUNCTION("circular-list", ProcedureVariadic0);
 
     if (FALSEP(ScmOp_listp(args)))
-        ERR_OBJ("list required but got ", args);
+        ERR_OBJ("list required but got", args);
 
     SET_CDR(ScmOp_SRFI1_last_pair(args), args);
     return args;
@@ -467,7 +467,7 @@ ScmObj ScmOp_SRFI1_take(ScmObj lst, ScmObj scm_idx)
     idx = SCM_INT_VALUE(scm_idx);
     for (i = 0; i < idx; i++) {
         if (SCM_NULLP(tmp))
-            ERR_OBJ("illegal index is specified for ", lst);
+            ERR_OBJ("illegal index is specified for", lst);
 
         if (i != 0) {
             SET_CDR(ret_tail,  CONS(CAR(tmp), SCM_NULL));
@@ -495,7 +495,7 @@ ScmObj ScmOp_SRFI1_drop(ScmObj lst, ScmObj scm_idx)
     idx = SCM_INT_VALUE(scm_idx);
     for (i = 0; i < idx; i++) {
         if (!CONSP(ret))
-            ERR_OBJ("illegal index is specified for ", lst);
+            ERR_OBJ("illegal index is specified for", lst);
 
         ret = CDR(ret);
     }
@@ -602,7 +602,7 @@ ScmObj ScmOp_SRFI1_last(ScmObj lst)
 
     /* sanity check */
     if (NULLP(lst))
-        ERR_OBJ("non-empty, proper list is required but got ", lst);
+        ERR_OBJ("non-empty, proper list is required but got", lst);
 
     return CAR(ScmOp_SRFI1_last_pair(lst));
 }
@@ -613,7 +613,7 @@ ScmObj ScmOp_SRFI1_last_pair(ScmObj lst)
 
     /* sanity check */
     if (NULLP(lst))
-        ERR_OBJ("non-empty, proper list is required but got ", lst);
+        ERR_OBJ("non-empty, proper list is required but got", lst);
 
     for (; CONSP(CDR(lst)); lst = CDR(lst))
         ;
@@ -642,7 +642,7 @@ ScmObj ScmOp_SRFI1_concatenate(ScmObj args)
 
 #if SCM_STRICT_ARGCHECK
     if (!NULLP(CDR(args)))
-        ERR_OBJ("superfluous arguments: ", args);
+        ERR_OBJ("superfluous arguments", args);
 #endif
 
     return ScmOp_append(lsts_of_lst);

@@ -883,7 +883,7 @@ ScmObj ScmOp_append(ScmObj args)
             ret_tail = &CDR(*ret_tail);
         }
         if (!NULLP(ls))
-            ERR_OBJ("proper list required but got: ", CAR(args));
+            ERR_OBJ("proper list required but got", CAR(args));
     }
 
     /* append the last argument */
@@ -901,7 +901,7 @@ ScmObj ScmOp_reverse(ScmObj lst)
         ret_lst = CONS(CAR(lst), ret_lst);
 
     if (!NULLP(lst))
-        ERR_OBJ("got improper list: ", lst);
+        ERR_OBJ("got improper list", lst);
 
     return ret_lst;
 }
@@ -926,7 +926,7 @@ ScmObj ScmOp_list_tail(ScmObj lst, ScmObj scm_k)
 
     ret = ScmOp_listtail_internal(lst, SCM_INT_VALUE(scm_k));
     if (EQ(ret, SCM_INVALID))
-        ERR_OBJ("out of range or bad list, arglist is: ", CONS(lst, scm_k));
+        ERR_OBJ("out of range or bad list, arglist is", CONS(lst, scm_k));
 
     return ret;
 }
@@ -940,7 +940,7 @@ ScmObj ScmOp_list_ref(ScmObj lst, ScmObj scm_k)
 
     tail = ScmOp_listtail_internal(lst, SCM_INT_VALUE(scm_k));
     if (EQ(tail, SCM_INVALID) || NULLP(tail))
-        ERR_OBJ("out of range or bad list, arglist is: ", CONS(lst, scm_k));
+        ERR_OBJ("out of range or bad list, arglist is", CONS(lst, scm_k));
     
     return CAR(tail);
 }
@@ -1474,7 +1474,7 @@ ScmObj ScmOp_list2string(ScmObj lst)
     DECLARE_FUNCTION("list->string", ProcedureFixed1);
 
     if (FALSEP(ScmOp_listp(lst)))
-        ERR_OBJ("list required but got ", lst);
+        ERR_OBJ("list required but got", lst);
 
     if (NULLP(lst))
         return Scm_NewStringCopying("");
@@ -1659,7 +1659,7 @@ ScmObj ScmOp_list2vector(ScmObj lst)
 
     /* TOOD : canbe optimized. scanning list many times */
     if (FALSEP(ScmOp_listp(lst)))
-        ERR_OBJ("list required but got ", lst);
+        ERR_OBJ("list required but got", lst);
 
     scm_len = ScmOp_length(lst);
     c_len   = SCM_INT_VALUE(scm_len);

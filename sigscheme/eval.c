@@ -105,9 +105,10 @@ ScmObj Scm_ExtendEnvironment(ScmObj vars, ScmObj vals, ScmObj env)
 {
     ScmObj frame     = SCM_NULL;
     ScmObj rest_vars, rest_vals;
+    DECLARE_INTERNAL_FUNCTION("Scm_ExtendEnvironment");
 
     if (!CONSP(env) && !NULLP(env))
-        SigScm_Error("Scm_ExtendEnvironment : broken environment");
+        SigScm_Error("broken environment");
 
     /* sanity check & dot list handling */
     for (rest_vars = vars, rest_vals = vals;
@@ -115,7 +116,7 @@ ScmObj Scm_ExtendEnvironment(ScmObj vars, ScmObj vals, ScmObj env)
          rest_vars = CDR(rest_vars), rest_vals = CDR(rest_vals))
     {
         if (!CONSP(rest_vars) || !SYMBOLP(CAR(rest_vars)))
-            SigScm_ErrorObj("broken environment handling : ", rest_vars);
+            ERR_OBJ("broken environment handling", rest_vars);
 
         /* dot list appeared: fold the rest values into a variable */
         if (SYMBOLP(CDR(rest_vars))) {
@@ -135,10 +136,11 @@ ScmObj Scm_AddEnvironment(ScmObj var, ScmObj val, ScmObj env)
 {
     ScmObj newest_frame;
     ScmObj new_vars, new_vals;
+    DECLARE_INTERNAL_FUNCTION("Scm_AddEnvironment");
 
     /* sanity check */
     if (!SYMBOLP(var))
-        SigScm_ErrorObj("broken environment handling : ", var);
+        ERR_OBJ("broken environment handling", var);
 
     /* add (var, val) pair to the newest frame in env */
     if (NULLP(env)) {
@@ -152,7 +154,7 @@ ScmObj Scm_AddEnvironment(ScmObj var, ScmObj val, ScmObj env)
 
         SET_CAR(env, CONS(new_vars, new_vals));
     } else {
-        SigScm_ErrorObj("broken environent : ", env);
+        ERR_OBJ("broken environent", env);
     }
     return env;
 }
@@ -170,12 +172,13 @@ ScmObj Scm_LookupEnvironment(ScmObj var, ScmObj env)
 {
     ScmObj frame = SCM_NULL;
     ScmObj val   = SCM_NULL;
+    DECLARE_INTERNAL_FUNCTION("Scm_LookupEnvironment");
 
     /* sanity check */
     if (NULLP(env))
         return SCM_NULL;
     if (!CONSP(env))
-        SigScm_ErrorObj("broken environent : ", env);
+        ERR_OBJ("broken environent", env);
 
     /* lookup in frames */
     for (; !NULLP(env); env = CDR(env)) {
@@ -193,12 +196,13 @@ static ScmObj lookup_frame(ScmObj var, ScmObj frame)
 {
     ScmObj vals = SCM_NULL;
     ScmObj vars = SCM_NULL;
+    DECLARE_INTERNAL_FUNCTION("lookup_frame");
 
     /* sanity check */
     if (NULLP(frame))
         return SCM_NULL;
     else if (!CONSP(frame))
-        SigScm_ErrorObj("broken frame : ", frame);
+        ERR_OBJ("broken frame", frame);
 
     /* lookup in frame */
     /*
@@ -291,6 +295,8 @@ static ScmObj reduce(ScmObj (*func)(), ScmObj args, ScmObj env, int suppress_eva
 static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj formals;
+    DECLARE_INTERNAL_FUNCTION("call_closure");
+
     /*
      * Description of the ScmClosure handling
      *
@@ -328,7 +334,7 @@ static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
                                  SCM_NULL,
                                  SCM_CLOSURE_ENV(proc));
     } else {
-        SigScm_ErrorObj("lambda : bad formals list: ", formals);
+        ERR_OBJ("lambda : bad formals list", formals);
     }
 
     eval_state->ret_type = SCM_RETTYPE_NEED_EVAL;
@@ -391,7 +397,7 @@ static ScmObj call(ScmObj proc, ScmObj args,
     /* Suppress argument evaluation for syntaxes. */
     if (suppress_eval) {
         if (type & SCM_FUNCTYPE_SYNTAX)
-            SigScm_ErrorObj("can't apply/map a syntax: ", proc);
+            ERR_OBJ("can't apply/map a syntax", proc);
     } else {
         suppress_eval = type & SCM_FUNCTYPE_SYNTAX;
     }
@@ -535,11 +541,11 @@ ScmObj ScmOp_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_sta
         last = CAR(lst);
         SET_CDR(tail, last); /* The last one is spliced. */
         if (!NULLP(CDR(lst)))
-            SigScm_ErrorObj("apply : improper argument list: ", CONS(arg0, rest));
+            ERR_OBJ("improper argument list", CONS(arg0, rest));
     }
 
     if (FALSEP(ScmOp_listp(last)))
-        SigScm_ErrorObj("apply : list required but got: ", last);
+        ERR_OBJ("list required but got", last);
 
     /* The last argument inhibits argument re-evaluation. */
     return call(proc, args, eval_state, 1);
@@ -549,6 +555,7 @@ ScmObj ScmOp_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_sta
 ScmObj Scm_SymbolValue(ScmObj var, ScmObj env)
 {
     ScmObj val = SCM_FALSE;
+    DECLARE_INTERNAL_FUNCTION("Scm_SymbolValue");
 
     /* first, lookup the environment */
     val = Scm_LookupEnvironment(var, env);
@@ -560,7 +567,7 @@ ScmObj Scm_SymbolValue(ScmObj var, ScmObj env)
     /* finally, look at the VCELL */
     val = SCM_SYMBOL_VCELL(var);
     if (EQ(val, SCM_UNBOUND))
-        SigScm_ErrorObj("Scm_SymbolValue : unbound variable ", var);
+        ERR_OBJ("unbound variable", var);
 
     return val;
 }
@@ -622,6 +629,7 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
     ScmObj ret_lst   = SCM_NULL;
     ScmObj *ret_tail = NULL;
     int splice_flag  = 0;
+    DECLARE_INTERNAL_FUNCTION("qquote_internal");
 
     /* local "functions" */
 #define qquote_copy_delayed()   (QQUOTE_IS_VERBATIM(ret_lst))
@@ -645,12 +653,12 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
 
         if (EQ(car, SCM_UNQUOTE_SPLICING)) {
             if (!IS_LIST_LEN_1(args))
-                SigScm_ErrorObj("syntax error: ", qexpr);
+                ERR_OBJ("syntax error", qexpr);
             if (--nest == 0)
                 return EVAL(CAR(args), env);
         } else if (EQ(car, SCM_QUASIQUOTE)) {
             if (!IS_LIST_LEN_1(args))
-                SigScm_ErrorObj("syntax error: ", qexpr);
+                ERR_OBJ("syntax error", qexpr);
             if (++nest <= 0)
                 SigScm_Error("quasiquote: nesting too deep (circular list?)");
         }
@@ -697,7 +705,7 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
                 while (CONSP(*ret_tail))
                     ret_tail = &CDR(*ret_tail);
                 if (!NULLP(*ret_tail))
-                    SigScm_ErrorObj("unquote-splicing: bad list: ",
+                    ERR_OBJ("unquote-splicing: bad list",
                                     result);
             } else {
                 *ret_tail = CONS(result, SCM_NULL);
@@ -749,6 +757,7 @@ static ScmObj qquote_vector(ScmObj src, ScmObj env, int nest)
     int next_splice_index = -1;
     int i = 0;
     int j = 0;
+    DECLARE_INTERNAL_FUNCTION("qquote_vector");
 
     /* local "functions" */
 #define qquote_copy_delayed() (copy_buf == NULL)
@@ -776,7 +785,7 @@ static ScmObj qquote_vector(ScmObj src, ScmObj env, int nest)
             expr = SCM_VECTOR_CREF(src, i);
             if (qquote_is_spliced(expr)) {
                 if (!IS_LIST_LEN_1(CDR(expr)))
-                    SigScm_ErrorObj("syntax error: ", expr);
+                    ERR_OBJ("syntax error: ", expr);
 
                 result = EVAL(CADR(expr), env);
 
@@ -899,11 +908,11 @@ ScmObj ScmExp_setd(ScmObj sym, ScmObj exp, ScmObj env)
     locally_bound = Scm_LookupEnvironment(sym, env);
     if (NULLP(locally_bound)) {
         if (!SYMBOLP(sym))
-            SigScm_ErrorObj("set! : symbol required but got ", sym);
+            ERR_OBJ("symbol required but got", sym);
         /* Not found in the environment
            If symbol is not bound, error occurs */
         if (!SCM_SYMBOL_BOUNDP(sym))
-            SigScm_ErrorObj("set! : unbound variable ", sym);
+            ERR_OBJ("unbound variable:", sym);
 
         SCM_SYMBOL_SET_VCELL(sym, evaled);
     } else {
@@ -955,7 +964,7 @@ ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
     for (; !NULLP(args); args = CDR(args)) {
         clause = CAR(args);
         if (!CONSP(clause))
-            SigScm_ErrorObj("cond : bad clause: ", clause);
+            ERR_OBJ("bad clause", clause);
 
         test = CAR(clause);
         exps = CDR(clause);
@@ -982,7 +991,7 @@ ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
             if (EQ(Scm_Intern("=>"), CAR(exps))) {
                 proc = EVAL(CADR(exps), env);
                 if (FALSEP(ScmOp_procedurep(proc)))
-                    SigScm_ErrorObj("cond : the value of exp after => must be the procedure but got ", proc);
+                    ERR_OBJ("the value of exp after => must be the procedure but got", proc);
 
                 return Scm_call(proc, LIST_1(test));
             }
@@ -1131,11 +1140,11 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
 
 #if SCM_COMPAT_SIOD_BUGS
         if (NULLP(binding) || !SYMBOLP(var = CAR(binding)))
-            SigScm_ErrorObj("let : invalid binding form : ", binding);
+            ERR_OBJ("invalid binding form", binding);
         val = (!CONSP(CDR(binding))) ? SCM_FALSE : CADR(binding);
 #else
         if (!NULLP(SCM_SHIFT_RAW_2(var, val, binding)) || !SYMBOLP(var))
-            SigScm_ErrorObj("let : invalid binding form : ", binding);
+            ERR_OBJ("invalid binding form", binding);
 #endif
 
         vars = CONS(var, vars);
@@ -1185,11 +1194,11 @@ ScmObj ScmExp_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 
 #if SCM_COMPAT_SIOD_BUGS
         if (NULLP(binding) || !SYMBOLP(var = CAR(binding)))
-            SigScm_ErrorObj("let* : invalid binding form : ", binding);
+            ERR_OBJ("invalid binding form", binding);
         val = (!CONSP(CDR(binding))) ? SCM_FALSE : CADR(binding);
 #else
         if (!NULLP(SCM_SHIFT_RAW_2(var, val, binding)) || !SYMBOLP(var))
-            SigScm_ErrorObj("let* : invalid binding form : ", binding);
+            ERR_OBJ("invalid binding form", binding);
 #endif
         val = EVAL(val, env);
 
@@ -1240,11 +1249,11 @@ ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 
 #if SCM_COMPAT_SIOD_BUGS
         if (NULLP(binding) || !SYMBOLP(var = CAR(binding)))
-            SigScm_ErrorObj("letrec : invalid binding form : ", binding);
+            ERR_OBJ("invalid binding form", binding);
         val = (!CONSP(CDR(binding))) ? SCM_FALSE : CADR(binding);
 #else
         if (!NULLP(SCM_SHIFT_RAW_2(var, val, binding)) || !SYMBOLP(var))
-            SigScm_ErrorObj("letrec : invalid binding form : ", binding);
+            ERR_OBJ("invalid binding form", binding);
 #endif
 
         /* construct vars and vals list: any <init> must not refer a
@@ -1455,13 +1464,13 @@ ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
             SigScm_Error("define : missing function body");
 
         if (!SYMBOLP(procname))
-            SigScm_ErrorObj("define : symbol required but got ", procname);
+            ERR_OBJ("symbol required but got", procname);
 
         define_internal(procname,
                         Scm_NewClosure(CONS(formals, body), env),
                         env);
     } else {
-        SigScm_ErrorObj("define : syntax error: ", var);
+        ERR_OBJ("syntax error", var);
     }
 
 #if SCM_STRICT_R5RS
@@ -1481,7 +1490,7 @@ ScmObj ScmOp_scheme_report_environment(ScmObj version)
     /* sanity check */
     ASSERT_INTP(version);
     if (SCM_INT_VALUE(version) != 5)
-        SigScm_ErrorObj("scheme-report-environment : version must be 5 but got ", version);
+        ERR_OBJ("version must be 5 but got", version);
 
 #if SCM_STRICT_R5RS
     SigScm_Error("scheme-report-environment :" SCM_ERRMSG_NON_R5RS_ENV);
@@ -1500,7 +1509,7 @@ ScmObj ScmOp_null_environment(ScmObj version)
     /* sanity check */
     ASSERT_INTP(version);
     if (SCM_INT_VALUE(version) != 5)
-        SigScm_ErrorObj("null-environment : version must be 5 but got ", version);
+        ERR_OBJ("version must be 5 but got", version);
 
 #if SCM_STRICT_R5RS
     SigScm_Error("null-environment :" SCM_ERRMSG_NON_R5RS_ENV);

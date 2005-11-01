@@ -122,7 +122,7 @@ ScmObj ScmOp_SRFI2_and_let_star(ScmObj claws, ScmObj body, ScmEvalState *eval_st
     return ScmExp_begin(body, eval_state);
 
  err:
-    ERR_OBJ("invalid claws form : ", claws);
+    ERR_OBJ("invalid claws form", claws);
     /* NOTREACHED */
     return SCM_FALSE;
 }
