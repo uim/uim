@@ -473,24 +473,28 @@ static void print_port(ScmObj port, ScmObj obj, enum OutputType otype)
 
     /* input or output */
 #if SCM_USE_NEWPORT
+    /* print "i", "o" or "io" if bidirectional port */
     if (SCM_PORT_FLAG(obj) & SCM_PORTFLAG_INPUT)
+        SCM_PORT_PRINT(port, "i");
+    if (SCM_PORT_FLAG(obj) & SCM_PORTFLAG_OUTPUT)
+        SCM_PORT_PRINT(port, "o");
 #else
     if (SCM_PORT_PORTDIRECTION(obj) == PORT_INPUT)
-#endif
         SCM_PORT_PRINT(port, "i");
     else
         SCM_PORT_PRINT(port, "o");
+#endif
 
-    SCM_PORT_PRINT(port, "port ");
+    SCM_PORT_PRINT(port, "port");
 
     /* file or string */
 
 #if !SCM_USE_NEWPORT
     if (SCM_PORT_PORTTYPE(obj) == PORT_FILE) {
-        snprintf(scm_portbuffer, PORTBUFFER_SIZE, "file %s", SCM_PORT_FILENAME(obj));
+        snprintf(scm_portbuffer, PORTBUFFER_SIZE, " file %s", SCM_PORT_FILENAME(obj));
         SCM_PORT_PRINT(port, scm_portbuffer);
     } else if (SCM_PORT_PORTTYPE(obj) == PORT_STRING) {
-        snprintf(scm_portbuffer, PORTBUFFER_SIZE, "string %s", SCM_PORT_STR(obj));
+        snprintf(scm_portbuffer, PORTBUFFER_SIZE, " string %s", SCM_PORT_STR(obj));
         SCM_PORT_PRINT(port, scm_portbuffer);
     }
 #endif /* !SCM_USE_NEWPORT */
