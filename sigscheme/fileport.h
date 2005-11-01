@@ -70,6 +70,7 @@ extern const ScmBytePortVTbl *ScmFilePort_vptr;
 void Scm_fileport_init(void);
 
 ScmBytePort *ScmFilePort_new(FILE *file, const char *aux_info);
+ScmBytePort *ScmFilePort_new_shared(FILE *file, const char *aux_info);
 ScmBytePort *ScmFilePort_open_input_file(const char *path);
 ScmBytePort *ScmFilePort_open_output_file(const char *path);
 

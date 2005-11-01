@@ -56,6 +56,7 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
+#define OK 0
 
 /*=======================================
   File Local Type Definitions
@@ -67,11 +68,15 @@ struct ScmFilePort_ {  /* inherits ScmBytePort */
 
     FILE *file;
     char *aux_info;  /* human readable auxilialy information about the file */
+    int ownership;   /* whether close the file at fileport_close() */
 };
 
 /*=======================================
   File Local Function Declarations
 =======================================*/
+static ScmBytePort *fileport_new_internal(FILE *file, const char *aux_info,
+                                          int ownership);
+
 static ScmBytePort *fileport_dyn_cast(ScmBytePort *bport,
                                       const ScmBytePortVTbl *dest_vptr);
 static int fileport_close(ScmFilePort *bport);
@@ -115,9 +120,9 @@ void Scm_fileport_init(void)
     return;
 }
 
-ScmBytePort *
-ScmFilePort_new(FILE *file, const char *aux_info)
- {
+static ScmBytePort *
+fileport_new_internal(FILE *file, const char *aux_info, int ownership)
+{
     ScmFilePort *port;
 
     SCM_PORT_ALLOC(BYTE, port, ScmFilePort);
@@ -125,8 +130,21 @@ ScmFilePort_new(FILE *file, const char *aux_info)
     port->vptr = ScmFilePort_vptr;
     port->file = file;
     port->aux_info = strdup(aux_info);
+    port->ownership = ownership;
 
     return (ScmBytePort *)port;
+}
+
+ScmBytePort *
+ScmFilePort_new(FILE *file, const char *aux_info)
+{
+    return fileport_new_internal(file, aux_info, TRUE);
+}
+
+ScmBytePort *
+ScmFilePort_new_shared(FILE *file, const char *aux_info)
+{
+    return fileport_new_internal(file, aux_info, FALSE);
 }
 
 ScmBytePort *
@@ -161,7 +179,7 @@ fileport_close(ScmFilePort *port)
 {
     int err;
 
-    err = fclose(port->file);
+    err = (port->ownership) ? fclose(port->file) : OK;
     free(port->aux_info);
     free(port);
 

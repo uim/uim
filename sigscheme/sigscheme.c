@@ -168,13 +168,13 @@ static void SigScm_Initialize_internal(void)
     Scm_fileport_init();
     Scm_sbcport_init();
 
-    bport = ScmFilePort_new(stdin, "stdin");
+    bport = ScmFilePort_new_shared(stdin, "stdin");
     scm_current_input_port = Scm_NewPort(ScmSingleByteCharPort_new(bport),
                                          SCM_PORTFLAG_INPUT);
-    bport = ScmFilePort_new(stdout, "stdout");
+    bport = ScmFilePort_new_shared(stdout, "stdout");
     scm_current_output_port = Scm_NewPort(ScmSingleByteCharPort_new(bport),
                                           SCM_PORTFLAG_OUTPUT);
-    bport = ScmFilePort_new(stderr, "stderr");
+    bport = ScmFilePort_new_shared(stderr, "stderr");
     scm_current_error_port = Scm_NewPort(ScmSingleByteCharPort_new(bport),
                                          SCM_PORTFLAG_OUTPUT);
 #else /* SCM_USE_NEWPORT */
