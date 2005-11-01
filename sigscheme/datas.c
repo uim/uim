@@ -91,6 +91,14 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
+#include "encoding.h"
+
+#if !SCM_OBJ_COMPACT
+#if (SCM_CHARCELL_SIZE <= SCM_MB_MAX_LEN)
+#error
+#error "SCM_MB_MAX_LEN is exceeded design limit"
+#endif
+#endif /* !SCM_OBJ_COMPACT */
 
 /*=======================================
   File Local Struct Declarations

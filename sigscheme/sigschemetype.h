@@ -195,6 +195,8 @@ struct ScmEvalState_ {
     enum ScmReturnType ret_type;
 };
 
+#define SCM_CHARCELL_SIZE 8
+
 /* Scheme Object */
 struct ScmCell_ {
     enum ScmObjType type;
@@ -216,7 +218,12 @@ struct ScmCell_ {
         } symbol;
 
         struct {
+#if 0
+            /* placeholdler for future optimization */
+            unsigned char seq[SCM_CHARCELL_SIZE];
+#else
             char *ch;
+#endif
         } ch;
 
         struct {
