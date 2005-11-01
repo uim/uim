@@ -39,7 +39,7 @@
                            #f)
                          (lambda ()
                            (read in)))))
-      (if (and (eq? 'ERROR: uim-sh-output)
+      (if (and (eq? 'Error: uim-sh-output)
                (uim-sh-select in 3))
         (error (string-trim-both (read-block 10000 in)))
         uim-sh-output)))

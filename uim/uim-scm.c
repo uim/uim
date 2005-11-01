@@ -47,6 +47,10 @@
 #include "uim-compat-scm.c"
 #endif
 
+/* FIXME: violent internal access */
+extern ScmObj scm_current_output_port;
+extern ScmObj scm_current_error_port;
+
 static void uim_scm_error(const char *msg, uim_lisp errobj);
 
 #if UIM_SCM_GCC4_READY_GC
@@ -597,6 +601,9 @@ void
 uim_scm_init(const char *verbose_level)
 {
   long vlevel = 4;
+#if SCM_USE_NEWPORT
+  ScmObj output_port;
+#endif
 
   if (!uim_output)
     uim_output = stderr;
@@ -606,6 +613,13 @@ uim_scm_init(const char *verbose_level)
   }
 
   SigScm_Initialize();
+
+#if SCM_USE_NEWPORT
+  /* GC safe */
+  output_port = Scm_MakeSharedFilePort(uim_output, "uim", SCM_PORTFLAG_OUTPUT);
+  scm_current_output_port = scm_current_error_port = output_port;
+#endif /* SCM_USE_NEWPORT */
+
   ScmExp_use(Scm_Intern("siod"), SCM_INTERACTION_ENV);
   true_sym  = (uim_lisp)SCM_TRUE;
   false_sym = (uim_lisp)SCM_FALSE;
