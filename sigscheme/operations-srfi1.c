@@ -328,7 +328,7 @@ ScmObj ScmOp_SRFI1_dotted_listp(ScmObj obj)
 
 ScmObj ScmOp_SRFI1_not_pairp(ScmObj pair)
 {
-    DECLARE_FUNCTION("not-pari?", ProcedureFixed1);
+    DECLARE_FUNCTION("not-pair?", ProcedureFixed1);
     return CONSP(pair) ? SCM_FALSE : SCM_TRUE;
 }
 
