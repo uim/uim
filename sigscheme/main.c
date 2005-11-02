@@ -45,8 +45,10 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+#define PROMPT_STR "sscm> "
+
 #if SCM_COMPAT_SIOD
-#define SIOD_STRING "siod"
+#define FEATURE_ID_SIOD "siod"
 #endif
 
 /*=======================================
@@ -56,6 +58,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+static ScmObj feature_id_siod;
 
 /*=======================================
   File Local Function Declarations
@@ -75,15 +78,14 @@ static void repl(void)
 #endif
 
 #if !SCM_GCC4_READY_GC
-    /* start protecting stack */
     SigScm_GC_ProtectStack(&stack_start);
 #endif
 
-    /* goto repl loop */
+    feature_id_siod = Scm_NewStringCopying(FEATURE_ID_SIOD);
+
     repl_loop();
 
 #if !SCM_GCC4_READY_GC
-    /* now no need to protect stack */
     SigScm_GC_UnprotectStack(&stack_start);
 #endif
 }
@@ -96,7 +98,7 @@ static void repl_loop(void)
     int is_show_result = is_repl_show_result();
 
     if (is_prompt)
-        printf("sscm> ");
+        SigScm_PortPrintf(scm_current_output_port, PROMPT_STR);
 
     while (s_exp = SigScm_Read(scm_current_input_port), !EOFP(s_exp)) {
 #if SCM_USE_SRFI34
@@ -122,38 +124,33 @@ static void repl_loop(void)
 #else
             SigScm_WriteToPort(scm_current_output_port, result);
 #endif
-            printf("\n");
+            /* FIXME: Make portable with SigScm_NewlineToPort() */
+            SigScm_PortPrintf(scm_current_output_port, "\n");
         }
 
         if (is_prompt)
-            printf("sscm> ");
+            SigScm_PortPrintf(scm_current_output_port, PROMPT_STR);
     }
 }
 
 static int is_repl_prompt(void)
 {
-    int ret = FALSE;
 #if SCM_COMPAT_SIOD
-    if (FALSEP(ScmOp_providedp(Scm_NewStringCopying(SIOD_STRING)))
-        || SigScm_GetVerboseLevel() >= 2)
-        ret = TRUE;
+    return (FALSEP(ScmOp_providedp(feature_id_siod))
+            || SigScm_GetVerboseLevel() >= 2);
 #else
-    ret = TRUE;
+    return TRUE;
 #endif
-    return ret;
 }
 
 static int is_repl_show_result(void)
 {
-    int ret = FALSE;
 #if SCM_COMPAT_SIOD
-    if (FALSEP(ScmOp_providedp(Scm_NewStringCopying(SIOD_STRING)))
-        || SigScm_GetVerboseLevel() >= 1)
-        ret = TRUE;
+    return (FALSEP(ScmOp_providedp(feature_id_siod))
+            || SigScm_GetVerboseLevel() >= 1);
 #else
-    ret = TRUE;
+    return TRUE;
 #endif
-    return ret;
 }
 
 int main(int argc, char **argv)
