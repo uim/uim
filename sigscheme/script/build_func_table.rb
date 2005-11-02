@@ -49,6 +49,7 @@ $SCM2C_FUNCNAME_RULE = [
   [/^>=/,         "greater_eq"],
   [/^>/,          "greater"],
   [/^\=/,         "equal"],
+  [/^%%/,         "sscm_"],
 
   # suffix
   [/\?$/,  "p"],
