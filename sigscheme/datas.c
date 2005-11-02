@@ -283,6 +283,10 @@ void SigScm_InitStorage(void)
     initialize_special_constants();
     allocate_heap(&scm_heaps, scm_heap_num, SCM_HEAP_SIZE, &scm_freelist);
     scm_portbuffer = (char*)malloc(sizeof(char) * PORTBUFFER_SIZE + 1);
+#if 0 && SCM_COMPAT_SIOD_BUGS
+    SigScm_GC_Protect(&SigScm_true);
+    SigScm_true = Scm_NewInt(1);
+#endif
 
 #if SCM_USE_VALUECONS
     /*

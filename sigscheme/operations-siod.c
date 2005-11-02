@@ -108,6 +108,8 @@ void SigScm_Initialize_SIOD(void)
     Scm_RegisterProcedureFixedTailRec0("the-environment" , ScmOp_the_environment);
     Scm_RegisterProcedureFixed1("%%closure-code"       , ScmOp_closure_code);
     Scm_RegisterProcedureVariadic0("verbose" , ScmOp_verbose);
+    Scm_RegisterProcedureFixed0("eof-val" , ScmOp_eof_val);
+    Scm_RegisterSyntaxFixed1("undefine" , ScmOp_undefine);
 
     saved_output_port = SCM_FALSE;
     saved_error_port  = SCM_FALSE;
@@ -198,6 +200,28 @@ ScmObj ScmOp_verbose(ScmObj args)
     }
 
     return Scm_NewInt(sscm_verbose_level);
+}
+
+ScmObj ScmOp_eof_val(void)
+{
+    DECLARE_FUNCTION("eof-val", ProcedureFixed0);
+    return SCM_EOF;
+}
+
+ScmObj ScmOp_undefine(ScmObj var, ScmObj env)
+{
+    ScmObj val = SCM_FALSE;
+    DECLARE_FUNCTION("undefine", SyntaxFixed1);
+
+    ASSERT_SYMBOLP(var);
+
+    val = Scm_LookupEnvironment(var, env);
+    if (!NULLP(val))
+        return SET_CAR(val, SCM_UNBOUND);
+
+    SCM_SYMBOL_SET_VCELL(var, SCM_UNBOUND);
+
+    return SCM_FALSE;
 }
 
 long SigScm_GetVerboseLevel(void)

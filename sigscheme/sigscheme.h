@@ -743,6 +743,8 @@ ScmObj ScmOp_siod_eql(ScmObj obj1, ScmObj obj2);
 ScmObj ScmOp_the_environment(ScmEvalState *eval_state);
 ScmObj ScmOp_closure_code(ScmObj closure);
 ScmObj ScmOp_verbose(ScmObj args);
+ScmObj ScmOp_eof_val(void);
+ScmObj ScmOp_undefine(ScmObj var, ScmObj env);
 long   SigScm_GetVerboseLevel(void);
 void   SigScm_SetVerboseLevel(long level);
 #endif

@@ -522,7 +522,11 @@ static void print_constant(ScmObj port, ScmObj obj, enum  OutputType otype)
     else if (EQ(obj, SCM_FALSE))
         SCM_PORT_PRINT(port, "#f");
     else if (EQ(obj, SCM_EOF))
+#if SCM_COMPAT_SIOD_BUGS
+        SCM_PORT_PRINT(port, "(eof)");
+#else
         SCM_PORT_PRINT(port, "#<eof>");
+#endif
     else if (EQ(obj, SCM_UNBOUND))
         SCM_PORT_PRINT(port, "#<unbound>");
     else if (EQ(obj, SCM_UNDEF))
