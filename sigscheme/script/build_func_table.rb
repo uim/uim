@@ -33,12 +33,18 @@
 #  SUCH DAMAGE.
 #===========================================================================
 
-$FUNC_TYPE_INVALID   = 0
-$FUNC_TYPE_SYNTAX    = 1
-$FUNC_TYPE_PROCEDURE = 2
-$FUNC_TYPE_REDUCTION = 3
+FUNC_TYPE_INVALID   = 0
+FUNC_TYPE_SYNTAX    = 1
+FUNC_TYPE_PROCEDURE = 2
+FUNC_TYPE_REDUCTION = 3
 
-$SCM2C_FUNCNAME_RULE = [
+TYPE2PREFIX = {
+  FUNC_TYPE_SYNTAX    => "ScmExp_",
+  FUNC_TYPE_PROCEDURE => "ScmOp_",
+  FUNC_TYPE_REDUCTION => "ScmOp_",
+}
+
+SCM2C_FUNCNAME_RULE = [
   # prefix
   [/^\+/,        "add"],
   [/^\*/,        "multiply"],
@@ -67,18 +73,11 @@ $SCM2C_FUNCNAME_RULE = [
 
 def guess_c_funcname(scm_funcname, type)
   # guess prefix
-  prefix = ""
-  if type == $FUNC_TYPE_SYNTAX
-    prefix = "ScmExp_"
-  elsif type == $FUNC_TYPE_PROCEDURE
-    prefix = "ScmOp_"
-  elsif type == $FUNC_TYPE_REDUCTION
-    prefix = "ScmOp_"
-  end
+  prefix = TYPE2PREFIX[type] || "";
 
   # apply replace rule
   c_funcname = scm_funcname
-  $SCM2C_FUNCNAME_RULE.each { |rule|
+  SCM2C_FUNCNAME_RULE.each { |rule|
     c_funcname = c_funcname.gsub(rule[0], rule[1])
   }
   
@@ -91,14 +90,15 @@ def search_declare_function(filename)
       scm_func = $1
       reg_func = "Scm_Register" + $2
 
-      type = $FUNC_TYPE_INVALID
-      if reg_func.index("Syntax")
-        type = $FUNC_TYPE_SYNTAX
-      elsif reg_func.index("Procedure")
-        type = $FUNC_TYPE_PROCEDURE
-      elsif reg_func.index("Reduction")
-        type = $FUNC_TYPE_REDUCTION
-      end
+      type = if reg_func.index("Syntax")
+               FUNC_TYPE_SYNTAX
+             elsif reg_func.index("Procedure")
+               FUNC_TYPE_PROCEDURE
+             elsif reg_func.index("Reduction")
+               FUNC_TYPE_REDUCTION
+             else
+               FUNC_TYPE_INVALID
+             end
 
       c_func = guess_c_funcname(scm_func, type)
 
