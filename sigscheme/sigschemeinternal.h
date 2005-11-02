@@ -330,6 +330,9 @@ extern ScmObj scm_exception_continuations;
     (scm_exception_continuations = CDR(scm_exception_continuations))
 #endif /* SCM_USE_SRFI34 */
 
+/* gc.c and symbol.c */
+#define NAMEHASH_SIZE 1024
+
 /*=======================================
    Function Declarations
 =======================================*/

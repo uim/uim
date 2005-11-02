@@ -1,12 +1,12 @@
 noinst_LTLIBRARIES  = libsscm.la
 libsscm_la_SOURCES = \
-		datas.c debug.c \
-		encoding.c error.c \
+		datas.c debug.c gc.c constants.c \
+		symbol.c encoding.c error.c \
 		eval.c io.c \
 		operations.c \
 		read.c sigscheme.c  \
 		sigscheme.h sigschemetype.h
- 
+
 libsscm_la_CFLAGS   = -Wall
 
 bin_PROGRAMS  = sscm

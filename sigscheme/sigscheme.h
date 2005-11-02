@@ -219,7 +219,7 @@ enum ScmDebugCategory {
 /*=======================================
    Variable Declarations
 =======================================*/
-/* datas.c */
+/* gc.c */
 #if SCM_GCC4_READY_GC
 /*
  * The variable to ensure that a call of SigScm_GC_ProtectStack() is
@@ -377,9 +377,12 @@ void Scm_RegisterProcedureVariadicTailRec4(const char *name, ScmObj (*func)(ScmO
 void Scm_RegisterProcedureVariadicTailRec5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
 
-/* datas.c */
-void SigScm_GC_Protect(ScmObj *var);
-void SigScm_GC_Unprotect(ScmObj *var);
+/* gc.c */
+void   SigScm_InitGC(void);
+void   SigScm_FinalizeGC(void);
+ScmObj SigScm_NewObj(void);
+void   SigScm_GC_Protect(ScmObj *var);
+void   SigScm_GC_Unprotect(ScmObj *var);
 #if SCM_GCC4_READY_GC
 /*
  * Ordinary programs should not call these functions directly. Use
@@ -396,6 +399,17 @@ ScmObj *SigScm_GC_ProtectStackInternal(ScmObj *designated_stack_start) SCM_NOINL
 void   SigScm_GC_ProtectStack(ScmObj *stack_start);
 #endif /* SCM_GCC4_READY_GC */
 void   SigScm_GC_UnprotectStack(ScmObj *stack_start);
+
+/* symbol.c */
+void   SigScm_InitSymbol(void);
+void   SigScm_FinalizeSymbol(void);
+ScmObj Scm_Intern(const char *name);
+
+/* constants.c */
+void SigScm_InitConstants(void);
+void SigScm_FinalizeConstants(void);
+
+/* datas.c */
 ScmObj Scm_NewCons(ScmObj a, ScmObj b);
 ScmObj Scm_NewInt(int val);
 ScmObj Scm_NewSymbol(char *name, ScmObj v_cell);
@@ -420,7 +434,6 @@ ScmObj Scm_NewValuePacket(ScmObj values);
 ScmObj Scm_NewCPointer(void *data);
 ScmObj Scm_NewCFuncPointer(ScmCFunc func);
 #endif
-ScmObj Scm_Intern(const char *name);
 
 /* eval.c */
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env);

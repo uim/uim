@@ -133,6 +133,9 @@ static void SigScm_Initialize_internal(void)
     =======================================================================*/
     SigScm_SetDebugCategories(SCM_DBG_ERRMSG | SCM_DBG_BACKTRACE
                               | SigScm_PredefinedDebugCategories());
+    SigScm_InitConstants();
+    SigScm_InitGC();
+    SigScm_InitSymbol();
     SigScm_InitStorage();
 
     /*=======================================================================
@@ -377,6 +380,9 @@ static void SigScm_Initialize_internal(void)
 void SigScm_Finalize()
 {
     SigScm_FinalizeStorage();
+    SigScm_FinalizeSymbol();
+    SigScm_FinalizeGC();
+    SigScm_FinalizeConstants();
 }
 
 void Scm_DefineAlias(const char *newsym, const char *sym)
