@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 #===========================================================================
 #  FileName : build_func_table.rb
 #  About    : script to building built-in function table
@@ -39,6 +39,7 @@ $FUNC_TYPE_PROCEDURE = 2
 $FUNC_TYPE_REDUCTION = 3
 
 $SCM2C_FUNCNAME_RULE = [
+  # prefix
   [/^\+/,        "add"],
   [/^\*/,        "multiply"],
   [/^-/,         "subtract"],
@@ -49,11 +50,18 @@ $SCM2C_FUNCNAME_RULE = [
   [/^>/,          "greater"],
   [/^\=/,         "equal"],
 
-  [/\*/,   "star"],
+  # suffix
+  [/\?$/,  "p"],
+  [/!$/,   "d"],
+
+  # suffix or intermediate
+  [/-/,   "_"],
   [/->/,  "2"],
-  [/\?/,  "p"],
-  [/!/,  "d"],
-  [/-/,    "_"]
+  [/\?/,  "_"],
+  [/!/,   "_"],
+  [/\=/,  "equal"],
+  [/\*/,  "star"],
+  [/\+/,  "plus"],
 ]
 
 def guess_c_funcname(scm_funcname, type)
