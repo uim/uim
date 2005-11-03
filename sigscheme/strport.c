@@ -219,10 +219,13 @@ istrport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
 static int
 istrport_close(ScmInputStrPort *port)
 {
-    if (port->finalize)
+    if (port->finalize) {
+        /* custom finalizer be responsible for freeing port->str */
         (*port->finalize)(&port->str, port->has_str_ownership, &port->opaque);
-    if (port->has_str_ownership)
-        free(port->str);
+    } else {
+        if (port->has_str_ownership)
+            free(port->str);
+    }
     free(port);
 
     return OK;
@@ -328,9 +331,12 @@ ostrport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
 static int
 ostrport_close(ScmOutputStrPort *port)
 {
-    if (port->finalize)
+    if (port->finalize) {
+        /* custom finalizer be responsible for freeing port->str */
         (*port->finalize)(&port->str, port->buf_size, &port->opaque);
-    free(port->str);
+    } else {
+        free(port->str);
+    }
     free(port);
 
     return OK;
