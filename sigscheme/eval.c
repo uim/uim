@@ -1043,7 +1043,7 @@ ScmObj ScmExp_and(ScmObj args, ScmEvalState *eval_state)
     ScmObj env  = eval_state->env;
     ScmObj expr = SCM_INVALID;
     ScmObj val  = SCM_FALSE;
-    DECLARE_FUNCTION("and", SyntaxVariadic0);
+    DECLARE_FUNCTION("and", SyntaxVariadicTailRec0);
 
     if (NO_MORE_ARG(args))
         return SCM_TRUE;
