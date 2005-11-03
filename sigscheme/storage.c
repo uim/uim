@@ -77,8 +77,8 @@ ScmObj SigScm_null_values;
 /* constants */
 ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
 ScmObj SigScm_unbound, SigScm_undef;
-static ScmCell SigScm_null_cell, SigScm_true_cell, SigScm_false_cell, SigScm_eof_cell;
-static ScmCell SigScm_unbound_cell, SigScm_undef_cell;
+static ScmCell null_cell, true_cell, false_cell, eof_cell;
+static ScmCell unbound_cell, undef_cell;
 
 /* storage-continuation.c */
 extern ScmObj scm_current_dynamic_extent;
@@ -133,12 +133,12 @@ void SigScm_FinalizeStorage(void)
  */
 static void initialize_special_constants(void)
 {
-    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_null,    SigScm_null_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_true,    SigScm_true_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_false,   SigScm_false_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_eof,     SigScm_eof_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_unbound, SigScm_unbound_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_undef,   SigScm_undef_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_null,    null_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_true,    true_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_false,   false_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_eof,     eof_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_unbound, unbound_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_undef,   undef_cell);
 #if SCM_COMPAT_SIOD_BUGS
     SigScm_false = SigScm_null;
 #endif
