@@ -85,6 +85,7 @@ def guess_c_funcname(scm_funcname, type)
 end
 
 def search_declare_function(filename)
+  puts "    /* #{filename} */"
   IO.readlines(filename).each{ |line|
     if line.strip =~ /DECLARE_FUNCTION\(\"(\S+)\",\s*((Syntax|Procedure|Reduction)\S+)\);/
       scm_func = $1
@@ -102,7 +103,7 @@ def search_declare_function(filename)
 
       c_func = guess_c_funcname(scm_func, type)
 
-      puts "{ \"#{scm_func}\", #{c_func}, #{reg_func} },"
+      puts "    { \"#{scm_func}\", (ScmBuiltinFunc)#{c_func}, (ScmRegisterFunc)#{reg_func} },"
     end
   }
 end
@@ -111,22 +112,88 @@ def build_table(filename)
   search_declare_function(filename)
 end
 
+def null_entry()
+  puts "    {NULL, NULL, NULL}"
+end
 
-def build_table_of_all_c_file
-  Dir.foreach("./") { |file|
-    if (file != "." && file != ".." && /[\w].\.c/ =~ file)
-      build_table(file)
-    end
+def print_tableheader(tablename)
+  puts "struct builtin_func_info #{tablename}[] = {"
+end
+
+def print_tablefooter()
+  puts "};"
+  puts ""
+end
+
+def build_functable(tablename, filelist)
+  print_tableheader(tablename)
+  filelist.each { |filename|
+    build_table(filename)
+  }
+  null_entry()
+  print_tablefooter
+end
+
+def print_header()
+  IO.readlines("./script/functable-header.txt").each { |line|
+    puts line
   }
 end
+
+def print_footer()
+  IO.readlines("script/functable-footer.txt").each { |line|
+    puts line
+  }
+end
+
+
 
 
 ######################################################################
 
-if ARGV.empty?
-  puts "usage: ruby build_func_table.rb filename1 filename2 ..."
-else
-  ARGV.each{ |filename|
-    build_table(filename)
-  }
-end
+# Header
+print_header
+
+
+# R5RS
+build_functable("r5rs_func_info_table",
+                ["eval.c", "io.c", "operations.c", "sigscheme.c"])
+
+# SRFI-1
+build_functable("srfi1_func_info_table",
+                ["operations-srfi1.c"])
+
+# SRFI-2
+build_functable("srfi2_func_info_table",
+                ["operations-srfi2.c"])
+
+# SRFI-6
+build_functable("srfi6_func_info_table",
+                ["operations-srfi6.c"])
+
+# SRFI-8
+build_functable("srfi8_func_info_table",
+                ["operations-srfi8.c"])
+
+# SRFI-23
+build_functable("srfi23_func_info_table",
+                ["operations-srfi23.c"])
+
+# SRFI-34
+build_functable("srfi34_func_info_table",
+                ["operations-srfi34.c"])
+
+# SRFI-38
+build_functable("srfi38_func_info_table",
+                ["operations-srfi38.c"])
+
+# SRFI-60
+build_functable("srfi60_func_info_table",
+                ["operations-srfi60.c"])
+
+# SIOD
+build_functable("siod_func_info_table",
+                ["operations-siod.c"])
+
+# Footer
+print_footer
