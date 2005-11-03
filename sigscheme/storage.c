@@ -118,8 +118,8 @@ void SigScm_InitStorage(void)
 
 void SigScm_FinalizeStorage(void)
 {
-    SigScm_FinalizeContinuation();
     SigScm_FinalizeSymbol();
+    SigScm_FinalizeContinuation();
     SigScm_FinalizeGC();
 }
 
