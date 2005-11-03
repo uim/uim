@@ -173,7 +173,7 @@ mbcport_get_char(ScmMultiByteCharPort *port)
     port->rbuf[0] = '\0';
     SCM_MBCPORT_CLEAR_STATE(cport)
 #if SCM_DEBUG
-    if (ch == '\n')
+    if (ch == SCM_NEWLINE_STR[0])
         port->linenum++;
 #endif
 

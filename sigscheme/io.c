@@ -402,7 +402,7 @@ ScmObj ScmOp_newline(ScmObj args)
     DECLARE_FUNCTION("newline", ProcedureVariadic0);
 
     PREPARE_PORT(port, args, scm_current_output_port);
-    SigScm_DisplayToPort(port, Scm_NewStringCopying("\n"));
+    SigScm_PortNewline(port);
     return SCM_UNDEF;
 }
 
