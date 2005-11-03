@@ -47,6 +47,9 @@
 
 (define canna-prepare-activation
   (lambda (cc)
+    (if (canna-context-state cc)
+        (let ((cc-id (canna-context-cc-id cc)))
+          (canna-lib-reset-conversion cc-id)))
     (canna-flush cc)
     (canna-update-preedit cc)))
 
@@ -65,7 +68,7 @@
 		 (lambda (cc) ;; action handler
 		   (canna-prepare-activation cc)
 		   (canna-context-set-on! cc #t)
-		   (canna-context-set-kana-mode! cc
+		   (canna-context-change-kana-mode! cc
 						 multi-segment-type-hiragana)))
 
 (register-action 'action_canna_katakana
@@ -81,7 +84,7 @@
 		 (lambda (cc)
 		   (canna-prepare-activation cc)
 		   (canna-context-set-on! cc #t)
-		   (canna-context-set-kana-mode! cc
+		   (canna-context-change-kana-mode! cc
 						 multi-segment-type-katakana)))
 
 (register-action 'action_canna_hankana
@@ -97,7 +100,7 @@
 		 (lambda (cc)
 		   (canna-prepare-activation cc)
 		   (canna-context-set-on! cc #t)
-		   (canna-context-set-kana-mode! cc
+		   (canna-context-change-kana-mode! cc
 						 multi-segment-type-hankana)))
 
 (register-action 'action_canna_direct
@@ -154,9 +157,9 @@
 		      canna-input-rule-kana))
 		 (lambda (cc)
 		   (canna-prepare-activation cc)
-		   (rk-context-set-rule! (canna-context-rkc cc)
-					 ja-kana-hiragana-rule)
-		   (canna-context-set-input-rule! cc canna-input-rule-kana)))
+		   (canna-context-set-input-rule! cc canna-input-rule-kana)
+                   (canna-context-change-kana-mode!
+                     cc (canna-context-kana-mode cc))))
 
 (register-action 'action_canna_azik
 		 (lambda (cc)
@@ -240,7 +243,19 @@
 (define (canna-context-kana-toggle cc)
   (let* ((kana (canna-context-kana-mode cc))
 	 (opposite-kana (canna-opposite-kana kana)))
-    (canna-context-set-kana-mode! cc opposite-kana)))
+    (canna-context-change-kana-mode! cc opposite-kana)))
+
+(define canna-context-change-kana-mode!
+  (lambda (cc kana-mode)
+    (if (= (canna-context-input-rule cc)
+           canna-input-rule-kana)
+        (rk-context-set-rule!
+          (canna-context-rkc cc)
+          (cond
+            ((= kana-mode multi-segment-type-hiragana) ja-kana-hiragana-rule)
+            ((= kana-mode multi-segment-type-katakana) ja-kana-katakana-rule)
+            ((= kana-mode multi-segment-type-hankana)  ja-kana-hankana-rule))))
+    (canna-context-set-kana-mode! cc kana-mode)))
 
 (define (canna-flush cc)
   (rk-flush (canna-context-rkc cc))
@@ -340,7 +355,7 @@
       (canna-commit-raw cc))
      
      ((canna-hankaku-kana-key? key key-state)
-      (canna-context-set-kana-mode! cc multi-segment-type-hankana))
+      (canna-context-change-kana-mode! cc multi-segment-type-hankana))
      
      ((canna-kana-toggle-key? key key-state)
       (canna-context-kana-toggle cc))
@@ -395,9 +410,11 @@
 	      (canna-proc-input-state cc key key-state)))))))
 
 (define (canna-proc-input-state-with-preedit cc key key-state)
-  (let ((rkc (canna-context-rkc cc))
-	(kana (canna-context-kana-mode cc))
-	(rule (canna-context-input-rule cc)))
+  (let* ((rkc (canna-context-rkc cc))
+         (rule (canna-context-input-rule cc))
+         (kana (if (= rule canna-input-rule-kana)
+                   multi-segment-type-hiragana
+                   (canna-context-kana-mode cc))))
 
     (cond
      ;; begin conversion
@@ -433,14 +450,17 @@
        
      ;; ひらがなモードでカタカナを確定する
      ((canna-commit-as-opposite-kana-key? key key-state)
-      (begin
+      (let ((opposite-kana (if (= rule canna-input-rule-kana)
+                               multi-segment-type-hiragana
+                               (canna-opposite-kana kana))))
 	(im-commit
 	 cc
 	 (string-append
 	  (multi-segment-make-left-string (canna-context-left-string cc)
-					  (canna-opposite-kana kana))
+					  opposite-kana)
+	  (rk-pending rkc)
 	  (multi-segment-make-right-string (canna-context-right-string cc)
-					   (canna-opposite-kana kana))))
+					   opposite-kana)))
 	(canna-flush cc)))
 
        ;; Transposing状態へ移行
@@ -460,6 +480,7 @@
 	 (string-append
 	  (multi-segment-make-left-string (canna-context-left-string cc)
 					  kana)
+	  (rk-pending rkc)
 	  (multi-segment-make-right-string (canna-context-right-string cc)
 					   kana)))
 	(canna-flush cc)
@@ -622,7 +643,10 @@
 
 (define (canna-input-state-preedit cc)
   (let ((rkc (canna-context-rkc cc))
-	(kana (canna-context-kana-mode cc)))
+        (kana (if (= (canna-context-input-rule cc)
+                     canna-input-rule-kana)
+                   multi-segment-type-hiragana
+                   (canna-context-kana-mode cc))))
     (im-clear-preedit cc)
     (im-pushback-preedit
      cc preedit-underline

@@ -30,13 +30,12 @@
   SUCH DAMAGE.
 */
 
+#define _GNU_SOURCE // for asprintf on stdio.h with old glibc/gcc
+
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE 
-#endif
 #include <stdio.h>
 #include <ctype.h>
 #include <locale.h>
@@ -54,6 +53,7 @@
 #include "helper.h"
 
 #include "uim/uim-helper.h"
+#include "uim/uim-im-switcher.h"
 #include "uim/uim-compat-scm.h"
 
 #ifndef __GNUC__
@@ -408,6 +408,7 @@ InputContext::createUimContext(const char *engine)
 				InputContext::update_prop_list_cb);
     uim_set_prop_label_update_cb(uc,
 				 InputContext::update_prop_label_cb);
+    uim_set_configuration_changed_cb(uc, InputContext::configuration_changed_cb);
 
     if (mFocusedContext == this)
 	uim_prop_list_update(uc);
@@ -436,6 +437,45 @@ InputContext::changeContext(const char *engine)
     if (mConvdisp) {
 	mConvdisp->set_im_lang(get_im_lang_from_engine(mEngineName));
 	mConvdisp->set_locale_name(mLocaleName);
+    }
+}
+
+void InputContext::configuration_changed()
+{
+    const char *engine = uim_get_current_im_name(mUc);
+
+    review_im(engine);
+}
+
+void InputContext::review_im(const char *engine)
+{
+    char *locale;
+    const char *client_locale, *engine_locales;
+    const char *encoding;
+
+    encoding = mXic->get_encoding();
+    client_locale = mXic->get_lang_region();
+    engine_locales = compose_localenames_from_im_lang(get_im_lang_from_engine(engine));
+
+    if (!strcmp(encoding, "UTF-8")) {
+	if (is_locale_included(engine_locales, client_locale))
+	    locale = strdup(client_locale);
+	else
+	    locale = get_prefered_locale(engine_locales);
+	locale = (char *)realloc(locale, strlen(locale) + strlen(".UTF-8") + 1);
+	strcat(locale, ".UTF-8");
+	setlocale(LC_CTYPE, locale);
+	free(mLocaleName);
+	mLocaleName = locale;
+	free(mEngineName);
+	mEngineName = strdup(engine);
+    } else {
+	if (!is_locale_included(engine_locales, client_locale))
+	    changeContext(mEngineName);
+	else {
+	    free(mEngineName);
+	    mEngineName = strdup(engine);
+	}
     }
 }
 
@@ -568,6 +608,13 @@ void InputContext::update_prop_label_cb(void *ptr, const char *str)
     InputContext *focusedContext = InputContext::focusedContext();
     if (ic == focusedContext)
       ic->update_prop_label(str);
+}
+
+void InputContext::configuration_changed_cb(void *ptr)
+{
+    InputContext *ic = (InputContext *)ptr;
+
+    ic->configuration_changed();
 }
 
 void InputContext::clear_pe_stat()

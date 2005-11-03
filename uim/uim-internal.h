@@ -114,6 +114,8 @@ struct uim_context_ {
   /* surrounding text */
   void (*request_surrounding_text_cb)(void *ptr);
   int (*delete_surrounding_text_cb)(void *ptr, int offset, int len);
+  /* configuration changed */
+  void (*configuration_changed_cb)(void *ptr);
   /* preedit segments array */
   struct preedit_segment *psegs;
   int nr_psegs;
@@ -136,21 +138,6 @@ struct uim_context_ {
  */
 #define UIM_EVAL_SEXP_AS_STRING
 #endif
-
-#ifdef HAVE_PTHREAD_H
-#include <pthread.h>
-  #define UIM_DEFINE_MUTEX(mtx)                                              \
-           pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER
-  #define UIM_DEFINE_MUTEX_STATIC(mtx)                                       \
-    static pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER
-  #define UIM_LOCK_MUTEX(mtx)    pthread_mutex_lock(&mtx)
-  #define UIM_UNLOCK_MUTEX(mtx)  pthread_mutex_unlock(&mtx)
-#else
-  #define UIM_DEFINE_MUTEX(mtx)
-  #define UIM_DEFINE_MUTEX_STATIC(mtx)
-  #define UIM_LOCK_MUTEX(mtx)
-  #define UIM_UNLOCK_MUTEX(mtx)
-#endif /* HAVE_PTHREAD_H */
 
 #ifdef ENABLE_NLS
 #define UIM_PREPARE_SAVING_TEXTDOMAIN_CODESET() \
@@ -186,38 +173,6 @@ struct uim_context_ {
     UIM_EVAL_STRING_INTERNAL(uc, sexp_str); \
     UIM_RESTORE_TEXTDOMAIN_CODESET(); \
   }
-
-#ifdef HAVE_PTHREAD_H
-
-  extern pthread_mutex_t mtx_uim_evaling;
-
-  #define UIM_EVAL_FSTRING1_WITH_MUTEX(uc, sexp_tmpl, arg1)             \
-    UIM_LOCK_MUTEX(mtx_uim_evaling);                                       \
-    UIM_EVAL_FSTRING1(uc, sexp_tmpl, arg1);                             \
-    UIM_UNLOCK_MUTEX(mtx_uim_evaling);
-
-  #define UIM_EVAL_FSTRING2_WITH_MUTEX(uc, sexp_tmpl, arg1, arg2)       \
-    UIM_LOCK_MUTEX(mtx_uim_evaling);                                       \
-    UIM_EVAL_FSTRING2(uc, sexp_tmpl, arg1, arg2);		        \
-    UIM_UNLOCK_MUTEX(mtx_uim_evaling);
-
-  #define UIM_EVAL_FSTRING3_WITH_MUTEX(uc, sexp_tmpl, arg1, arg2, arg3) \
-    UIM_LOCK_MUTEX(mtx_uim_evaling);                                       \
-    UIM_EVAL_FSTRING3(uc, sexp_tmpl, arg1, arg2, arg3);			\
-    UIM_UNLOCK_MUTEX(mtx_uim_evaling);
-
-#else
-
-  #define UIM_EVAL_FSTRING1_WITH_MUTEX(uc, sexp_tmpl, arg1)             \
-    UIM_EVAL_FSTRING1(uc, sexp_tmpl, arg1);
-
-  #define UIM_EVAL_FSTRING2_WITH_MUTEX(uc, sexp_tmpl, arg1, arg2)       \
-    UIM_EVAL_FSTRING2(uc, sexp_tmpl, arg1, arg2);
-
-  #define UIM_EVAL_FSTRING3_WITH_MUTEX(uc, sexp_tmpl, arg1, arg2, arg3) \
-    UIM_EVAL_FSTRING3(uc, sexp_tmpl, arg1, arg2, arg3);
-
-#endif /* HAVE_PTHREAD_H */
 
 #define UIM_EVAL_FSTRING1(uc, sexp_tmpl, arg1) \
   { \

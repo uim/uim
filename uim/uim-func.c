@@ -729,6 +729,9 @@ switch_im(uim_lisp id_, uim_lisp name_)
   const char *name= uim_scm_refer_c_str(name_);
   uim_context uc = uim_find_context(uim_scm_c_int(id_));
   uim_switch_im(uc, name);
+  if (uc->configuration_changed_cb)
+    uc->configuration_changed_cb(uc->ptr);
+
   return uim_scm_t();
 }
 

@@ -327,6 +327,22 @@
 	      context-list)))
 
 ;; API for uim developers
+;; returns action-id list that can be passed to context-update-widget-states!
+;; TODO: write test
+(define context-current-widget-states
+  (let ((widget-act-id (compose action-id widget-activity)))
+    (lambda (context)
+      (map widget-act-id (context-widgets context)))))
+
+;; API for uim developers
+;; TODO: write test
+(define context-update-widget-states!
+  (lambda (context act-ids)
+    (for-each widget-activate!
+	      (context-widgets context)
+	      act-ids)))
+
+;; API for uim developers
 (define context-update-widgets
   (lambda (context)
     (let ((widgets (context-widgets context)))

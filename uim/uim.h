@@ -567,6 +567,17 @@ void
 uim_set_surrounding_text(uim_context uc, const char *text,
 			 int cursor_pos, int len);
 
+/*
+ * Set callback function to be called when configuration of input
+ * context is changed.
+ *
+ * @param uc input context
+ * @param changed_cb called when configuration of the input context is changed.
+ *        1st argument "ptr" corresponds to the 1st argument of uim_create_context.
+ */
+void
+uim_set_configuration_changed_cb(uim_context uc,
+				 void (*changed_cb)(void *ptr));
 
 /* Utility functions */
 int

@@ -46,7 +46,7 @@ int pad4(int);
 void hex_dump(unsigned char *buf, int len);
 
 // misc replacement functions
-#ifndef HAV_ASPRINTF
+#ifndef HAVE_ASPRINTF
 int asprintf(char **ptr, const char *format, ...);
 #endif
 

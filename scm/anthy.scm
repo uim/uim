@@ -76,7 +76,7 @@
 		 (lambda (ac) ;; action handler
 		   (anthy-prepare-activation ac)
 		   (anthy-context-set-on! ac #t)
-		   (anthy-context-set-kana-mode! ac anthy-type-hiragana)))
+                   (anthy-context-change-kana-mode! ac anthy-type-hiragana)))
 
 (register-action 'action_anthy_katakana
 ;;		 (indication-alist-indicator 'action_anthy_katakana
@@ -93,12 +93,7 @@
 		 (lambda (ac)
 		   (anthy-prepare-activation ac)
 		   (anthy-context-set-on! ac #t)
-
-		   (if (= anthy-input-rule-kana
-			  (anthy-context-input-rule ac))
-		       (rk-context-set-rule! (anthy-context-rkc ac)
-					     ja-kana-katakana-rule))
-		   (anthy-context-set-kana-mode! ac anthy-type-katakana)))
+                   (anthy-context-change-kana-mode! ac anthy-type-katakana)))
 
 (register-action 'action_anthy_hankana
 ;;		 (indication-alist-indicator 'action_anthy_hankana
@@ -115,7 +110,7 @@
 		 (lambda (ac)
 		   (anthy-prepare-activation ac)
 		   (anthy-context-set-on! ac #t)
-		   (anthy-context-set-kana-mode! ac anthy-type-hankana)))
+                   (anthy-context-change-kana-mode! ac anthy-type-hankana)))
 
 (register-action 'action_anthy_direct
 ;;		 (indication-alist-indicator 'action_anthy_direct
@@ -179,13 +174,8 @@
 		      anthy-input-rule-kana))
 		 (lambda (ac)
 		   (anthy-prepare-activation ac)
-		   (rk-context-set-rule! (anthy-context-rkc ac)
-					 (if (= (anthy-context-kana-mode ac)
-						anthy-type-katakana)
-						ja-kana-katakana-rule
-						ja-kana-hiragana-rule))
-
 		   (anthy-context-set-input-rule! ac anthy-input-rule-kana)
+		   (anthy-context-change-kana-mode! ac (anthy-context-kana-mode ac))
 		   ;;(define-key anthy-kana-toggle-key? "")
 		   ;;(define-key anthy-latin-key? generic-on-key?)
 		   ;;(define-key anthy-wide-latin-key? "")
@@ -277,7 +267,19 @@
   (lambda (ac)
     (let* ((kana (anthy-context-kana-mode ac))
 	   (opposite-kana (multi-segment-opposite-kana kana)))
-      (anthy-context-set-kana-mode! ac opposite-kana))))
+      (anthy-context-change-kana-mode! ac opposite-kana))))
+
+(define anthy-context-change-kana-mode!
+  (lambda (ac kana-mode)
+    (if (= (anthy-context-input-rule ac)
+           anthy-input-rule-kana)
+        (rk-context-set-rule!
+          (anthy-context-rkc ac)
+          (cond
+            ((= kana-mode anthy-type-hiragana) ja-kana-hiragana-rule)
+            ((= kana-mode anthy-type-katakana) ja-kana-katakana-rule)
+            ((= kana-mode anthy-type-hankana)  ja-kana-hankana-rule))))
+    (anthy-context-set-kana-mode! ac kana-mode)))
 
 ;; TODO: generarize as multi-segment procedure
 ;; side effect: none. rkc will not be altered
@@ -444,7 +446,7 @@
 	(anthy-commit-raw ac))
        
        ((anthy-hankaku-kana-key? key key-state)
-	(anthy-context-set-kana-mode! ac anthy-type-hankana))
+	(anthy-context-change-kana-mode! ac anthy-type-hankana))
 
        ((anthy-kana-toggle-key? key key-state)
 	(anthy-context-kana-toggle ac))
@@ -494,10 +496,14 @@
       (anthy-context-set-transposing-type! ac anthy-type-hankana))
 
      ((anthy-transpose-as-latin-key? key key-state)
-      (anthy-context-set-transposing-type! ac anthy-type-latin))
+      (if (not (= (anthy-context-input-rule ac)
+                  anthy-input-rule-kana))
+          (anthy-context-set-transposing-type! ac anthy-type-latin)))
 
      ((anthy-transpose-as-wide-latin-key? key key-state)
-      (anthy-context-set-transposing-type! ac anthy-type-wide-latin))
+      (if (not (= (anthy-context-input-rule ac)
+                  anthy-input-rule-kana))
+          (anthy-context-set-transposing-type! ac anthy-type-wide-latin)))
 
      (else
       (begin

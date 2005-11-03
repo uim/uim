@@ -60,11 +60,6 @@ static uim_context context_array[CONTEXT_ARRAY_SIZE];
 struct uim_im *uim_im_array;
 int uim_nr_im;
 static int uim_initialized;
-static int uim_quiting;
-
-/* Definition of mutex */
-UIM_DEFINE_MUTEX_STATIC(mtx_initing_or_quiting);
-UIM_DEFINE_MUTEX_STATIC(mtx_context_array);
 
 void
 uim_set_preedit_cb(uim_context uc,
@@ -83,25 +78,20 @@ static void
 get_context_id(uim_context uc)
 {
   int i;
-  UIM_LOCK_MUTEX(mtx_context_array);
   for (i = 0; i < CONTEXT_ARRAY_SIZE; i++) {
     if (!context_array[i]) {
       context_array[i] = uc;
       uc->id = i;
-      UIM_UNLOCK_MUTEX(mtx_context_array);
       return;
     }
   }
   uc->id = -1;
-  UIM_UNLOCK_MUTEX(mtx_context_array);
 }
 
 static void
 put_context_id(uim_context uc)
 {
-  UIM_LOCK_MUTEX(mtx_context_array);
   context_array[uc->id] = NULL;
-  UIM_UNLOCK_MUTEX(mtx_context_array);
 }
 
 uim_context
@@ -172,6 +162,8 @@ uim_create_context(void *ptr,
   uc->request_surrounding_text_cb = NULL;
   uc->delete_surrounding_text_cb = NULL;
   /**/
+  uc->configuration_changed_cb = NULL;
+  /**/
   uc->nr_candidates = 0;
   uc->candidate_index = 0;
   /**/
@@ -223,6 +215,13 @@ uim_reset_context(uim_context uc)
 
    /* delete all preedit segments */
    uim_release_preedit_segments(uc);
+}
+
+void
+uim_set_configuration_changed_cb(uim_context uc,
+				 void (*changed_cb)(void *ptr))
+{
+  uc->configuration_changed_cb = changed_cb;
 }
 
 void
@@ -293,9 +292,7 @@ uim_context
 uim_find_context(int id)
 {
   uim_context uc;
-  UIM_LOCK_MUTEX(mtx_context_array);
   uc = context_array[id];
-  UIM_UNLOCK_MUTEX(mtx_context_array);
   return uc;
 }
 
@@ -699,19 +696,15 @@ uim_init_scm(void)
 int
 uim_init(void)
 {
-  UIM_LOCK_MUTEX(mtx_initing_or_quiting);
-
-  if (uim_initialized) {
-    UIM_UNLOCK_MUTEX(mtx_initing_or_quiting);
+  if (uim_initialized)
     return 0;
-  }
+
   uim_last_client_encoding = NULL;
   uim_im_array = NULL;
   uim_nr_im = 0;
   uim_init_scm();
   uim_initialized = 1;
 
-  UIM_UNLOCK_MUTEX(mtx_initing_or_quiting);
   return 0;
 }
 
@@ -720,14 +713,8 @@ uim_quit(void)
 {
   int i;
 
-  UIM_LOCK_MUTEX(mtx_initing_or_quiting);
-  
-  if (!uim_initialized || uim_quiting) {
-    UIM_UNLOCK_MUTEX(mtx_initing_or_quiting);
+  if (!uim_initialized)
     return;
-  }
-  /* Some multithreaded applications calls uim_quit bursty. */
-  uim_quiting = 1;
 
   /* release still active contexts */
   for (i = 0; i < CONTEXT_ARRAY_SIZE; i++) {
@@ -741,6 +728,4 @@ uim_quit(void)
   free(uim_last_client_encoding);
   uim_last_client_encoding = NULL;
   uim_initialized = 0;
-  uim_quiting = 0;
-  UIM_UNLOCK_MUTEX(mtx_initing_or_quiting);
 }

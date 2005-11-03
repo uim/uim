@@ -280,6 +280,43 @@
 
 (define-key switch-im-key? '())
 
+;; im-toggle 
+(define-custom-group 'im-toggle
+		     (_ "Input method toggle")
+		     (_ "long description will be here."))
+
+(define-custom 'enable-im-toggle? #t
+  '(global im-toggle)
+  '(boolean)
+  (_ "Enable Input method toggle by hot keys")
+  (_ "long description will be here."))
+
+(define-custom 'toggle-im-key '("<Alt> " "<Meta> ")
+  '(global im-toggle)
+  '(key)
+  (_ "Input method toggle key")
+  (_ "long description will be here."))
+
+(define-custom 'toggle-im-alt-im 'direct
+  '(global im-toggle)
+  (cons
+   'choice
+   (custom-im-list-as-choice-rec (reverse im-list)))
+  (_ "Alternative input method")
+  (_ "long description will be here."))
+
+;; activity dependency
+(custom-add-hook 'toggle-im-key
+		 'custom-activity-hooks
+		 (lambda ()
+		   enable-im-toggle?))
+
+(custom-add-hook 'toggle-im-alt-im
+		 'custom-activity-hooks
+		 (lambda ()
+		   enable-im-toggle?))
+
+
 (define-custom 'uim-color 'uim-color-uim
   '(global visual-preference)
   (list 'choice
