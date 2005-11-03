@@ -351,7 +351,6 @@ static ScmObj read_char(ScmObj port)
         ch[1] = '\0';
     }
 
-    /* FIXME: memory leak */
     return Scm_NewChar(ch);
 }
 
