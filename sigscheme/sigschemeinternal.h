@@ -348,13 +348,6 @@ ScmObj Scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
 
 /* error.c */
 void SigScm_ShowErrorHeader(void);
-/* TODO: Move these functions to io.c */
-void SigScm_PortPrintf(ScmObj port, const char *fmt, ...);
-void SigScm_VPortPrintf(ScmObj port, const char *fmt, va_list args);
-void SigScm_PortNewline(ScmObj port);
-void SigScm_ErrorPrintf(const char *fmt, ...);
-void SigScm_VErrorPrintf(const char *fmt, va_list args);
-void SigScm_ErrorNewline(void);
 void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj);
 
 /* operations.c */

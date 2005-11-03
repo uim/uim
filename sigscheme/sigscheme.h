@@ -563,6 +563,12 @@ ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest);
 void   SigScm_set_lib_path(const char *path);
 ScmObj Scm_MakeSharedFilePort(FILE *file, const char *aux_info,
                               enum ScmPortFlag flag);
+void SigScm_PortPrintf(ScmObj port, const char *fmt, ...);
+void SigScm_VPortPrintf(ScmObj port, const char *fmt, va_list args);
+void SigScm_PortNewline(ScmObj port);
+void SigScm_ErrorPrintf(const char *fmt, ...);
+void SigScm_VErrorPrintf(const char *fmt, va_list args);
+void SigScm_ErrorNewline(void);
 
 ScmObj ScmOp_call_with_input_file(ScmObj filepath, ScmObj proc);
 ScmObj ScmOp_call_with_output_file(ScmObj filepath, ScmObj proc);

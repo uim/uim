@@ -128,6 +128,51 @@ ScmObj Scm_MakeSharedFilePort(FILE *file, const char *aux_info,
     return Scm_NewPort(ScmSingleByteCharPort_new(bport), flag);
 }
 
+void SigScm_PortPrintf(ScmObj port, const char *fmt, ...)
+{
+    va_list args;
+
+    va_start(args, fmt);
+    SigScm_VPortPrintf(port, fmt, args);
+    va_end(args);
+}
+
+void SigScm_VPortPrintf(ScmObj port, const char *fmt, va_list args)
+{
+    if (!FALSEP(port)) {
+        SCM_PORT_VPRINTF(port, fmt, args);
+#if SCM_VOLATILE_OUTPUT
+        SCM_PORT_FLUSH(port);
+#endif
+    }
+}
+
+void SigScm_PortNewline(ScmObj port)
+{
+    if (!FALSEP(port)) {
+        SCM_PORT_PUTS(port, SCM_NEWLINE_STR);
+    }
+}
+
+void SigScm_ErrorPrintf(const char *fmt, ...)
+{
+    va_list args;
+
+    va_start(args, fmt);
+    SigScm_VErrorPrintf(fmt, args);
+    va_end(args);
+}
+
+void SigScm_VErrorPrintf(const char *fmt, va_list args)
+{
+    SigScm_VPortPrintf(scm_current_error_port, fmt, args);
+}
+
+void SigScm_ErrorNewline(void)
+{
+    SigScm_PortNewline(scm_current_error_port);
+}
+
 /*=======================================
   R5RS : 6.6 Input and Output
 =======================================*/
