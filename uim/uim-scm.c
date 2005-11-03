@@ -616,6 +616,11 @@ uim_scm_init(const char *verbose_level)
   output_port = Scm_MakeSharedFilePort(uim_output, "uim", SCM_PORTFLAG_OUTPUT);
   scm_current_output_port = scm_current_error_port = output_port;
 
+#ifdef DEBUG_SCM
+  /* required by test-im.scm */
+  uim_scm_provide("debug");
+#endif
+
   ScmExp_use(Scm_Intern("siod"), SCM_INTERACTION_ENV);
   true_sym  = (uim_lisp)SCM_TRUE;
   false_sym = (uim_lisp)SCM_FALSE;

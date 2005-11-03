@@ -315,7 +315,9 @@
   (lambda (lst)
     (append lst '())))
 
-;; Siod compatibility
+;;
+;; SIOD compatibility
+;;
 (define puts display)
 
 ;; TODO: Rename to more appropriate name such as 'inspect' (the name
@@ -327,6 +329,10 @@
     (newline)))
 
 (define print siod-print)
+
+(define feature?
+  (lambda (sym)
+    (provided? (symbol->string sym))))
 
 ;;
 ;; SRFI procedures (don't expect 100% compatibility)
