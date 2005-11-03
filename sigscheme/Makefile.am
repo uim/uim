@@ -7,8 +7,11 @@ libsscm_la_SOURCES = \
 		encoding.c error.c \
 		eval.c io.c \
 		operations.c \
-		read.c sigscheme.c  \
-		sigscheme.h sigschemetype.h
+		read.c sigscheme.c sigschemefunctable.c \
+		sigscheme.h sigschemetype.h sigschemefunctable.h
+
+sigschemefunctable.c:./script/build_func_table.rb
+	./script/build_func_table.rb > sigschemefunctable.c
 
 libsscm_la_CFLAGS   = -Wall
 

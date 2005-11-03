@@ -66,7 +66,11 @@ void SigScm_Initialize_SRFI23(void)
     /*=======================================================================
       SRFI-23 Procedure
     =======================================================================*/
+#if SCM_USE_REGISTER_TABLE
+    REGISTER_FUNC_TABLE(srfi23_func_info_table);
+#else /* SCM_USE_REGISTER_TABLE */
     Scm_RegisterProcedureVariadic1("error", ScmOp_SRFI23_error);
+#endif
 }
 
 /*=============================================================================

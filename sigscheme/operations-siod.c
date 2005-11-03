@@ -100,6 +100,9 @@ void SigScm_Initialize_SIOD(void)
     Scm_DefineAlias("bit-xor"               , "logxor");
     Scm_DefineAlias("bit-not"               , "lognot");
 
+#if SCM_USE_REGISTER_TABLE
+    REGISTER_FUNC_TABLE(siod_func_info_table);
+#else /* SCM_USE_REGISTER_TABLE */
     Scm_RegisterProcedureFixed1("symbol-value"         , ScmOp_symbol_value);
     Scm_RegisterProcedureFixed2("set-symbol-value!"    , ScmOp_set_symbol_valued);
 #if SCM_COMPAT_SIOD_BUGS
@@ -110,6 +113,7 @@ void SigScm_Initialize_SIOD(void)
     Scm_RegisterProcedureVariadic0("verbose" , ScmOp_verbose);
     Scm_RegisterProcedureFixed0("eof-val" , ScmOp_eof_val);
     Scm_RegisterSyntaxFixed1("undefine" , ScmExp_undefine);
+#endif /* SCM_USE_REGISTER_TABLE */
 
     saved_output_port = SCM_FALSE;
     saved_error_port  = SCM_FALSE;

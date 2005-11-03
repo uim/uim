@@ -64,7 +64,11 @@ void SigScm_Initialize_SRFI38(void)
     /*=======================================================================
       SRFI-38 Procedure
     =======================================================================*/
+#if SCM_USE_REGISTER_TABLE
+    REGISTER_FUNC_TABLE(srfi38_func_info_table);
+#else /* SCM_USE_REGISTER_TABLE */
     Scm_RegisterProcedureVariadic1("write-with-shared-structure", ScmOp_SRFI38_write_with_shared_structure);
+#endif
 }
 
 /*=============================================================================

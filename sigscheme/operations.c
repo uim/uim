@@ -611,7 +611,7 @@ ScmObj ScmOp_pairp(ScmObj obj)
 
 ScmObj ScmOp_cons(ScmObj car, ScmObj cdr)
 {
-    DECLARE_FUNCTION("cons", ProcedureFixed1);
+    DECLARE_FUNCTION("cons", ProcedureFixed2);
     return CONS(car, cdr);
 }
 
@@ -1337,9 +1337,9 @@ ScmObj ScmOp_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     return str;
 }
 
-ScmObj ScmOp_stringequal(ScmObj str1, ScmObj str2)
+ScmObj ScmOp_stringequalp(ScmObj str1, ScmObj str2)
 {
-    DECLARE_FUNCTION("string=", ProcedureFixed2);
+    DECLARE_FUNCTION("string=?", ProcedureFixed2);
 
     ASSERT_STRINGP(str1);
     ASSERT_STRINGP(str2);
@@ -1397,7 +1397,7 @@ ScmObj ScmOp_string_append(ScmObj args)
     ScmObj obj     = SCM_NULL;
     char  *new_str = NULL;
     char  *p       = NULL;
-    DECLARE_FUNCTION("string-append", ProcedureFixed1);
+    DECLARE_FUNCTION("string-append", ProcedureVariadic0);
 
     if (NO_MORE_ARG(args))
         return Scm_NewStringCopying("");

@@ -74,9 +74,14 @@ void SigScm_Initialize_SRFI34(void)
     /*=======================================================================
       SRFI-34 Procedure
     =======================================================================*/
+#if SCM_USE_REGISTER_TABLE
+    REGISTER_FUNC_TABLE(srfi34_func_info_table);
+#else /* SCM_USE_REGISTER_TABLE */
     Scm_RegisterProcedureFixed2("with-exception-handler", ScmOp_SRFI34_with_exception_handler);
     Scm_RegisterSyntaxVariadic1("guard"                 , ScmExp_SRFI34_guard);
     Scm_RegisterProcedureFixed1("raise"                 , ScmOp_SRFI34_raise);
+#endif /* SCM_USE_REGISTER_TABLE */
+
     scm_exception_handlers      = SCM_FALSE;
     scm_exception_continuations = SCM_FALSE;
     SigScm_GC_Protect(&scm_exception_handlers);

@@ -65,6 +65,9 @@ void SigScm_Initialize_SRFI1(void)
     /*=======================================================================
       SRFI-1 Procedures
     =======================================================================*/
+#if SCM_USE_REGISTER_TABLE
+    REGISTER_FUNC_TABLE(srfi1_func_info_table);
+#else /* SCM_USE_REGISTER_TABLE */
     Scm_RegisterProcedureFixed1("list-copy"            , ScmOp_SRFI1_list_copy);
     Scm_RegisterProcedureFixed2("xcons"                , ScmOp_SRFI1_xcons);
     Scm_RegisterProcedureVariadic0("circular-list"     , ScmOp_SRFI1_circular_list);
@@ -100,6 +103,7 @@ void SigScm_Initialize_SRFI1(void)
     Scm_RegisterProcedureFixed1("last-pair"            , ScmOp_SRFI1_last_pair);
     Scm_RegisterProcedureFixed1("length+"              , ScmOp_SRFI1_lengthplus);
     Scm_RegisterProcedureVariadic0("concatenate"       , ScmOp_SRFI1_concatenate);
+#endif /* SCM_USE_REGISTER_TABLE */
 }
 
 /*==============================================================================

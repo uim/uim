@@ -174,6 +174,13 @@ static void SigScm_Initialize_internal(void)
     /*=======================================================================
       R5RS Syntaxes and Procedures
     =======================================================================*/
+#if SCM_USE_REGISTER_TABLE
+    REGISTER_FUNC_TABLE(r5rs_func_info_table);
+    Scm_DefineAlias("integer?"                  , "number?");
+#if SCM_USE_NONSTD_FEATURES
+    Scm_DefineAlias("call/cc", "call-with-current-continuation");
+#endif
+#else /* SCM_USE_REGISTER_TABLE */
     /* eval.c */
     Scm_RegisterProcedureFixed2("eval"                     , ScmOp_eval);
     Scm_RegisterProcedureVariadicTailRec2("apply"           , ScmOp_apply);
@@ -296,7 +303,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterProcedureFixed2("string-ref"               , ScmOp_string_ref);
     Scm_RegisterProcedureFixed3("string-set!"              , ScmOp_string_setd);
     Scm_RegisterProcedureFixed1("string-length"            , ScmOp_string_length);
-    Scm_RegisterProcedureFixed2("string=?"                 , ScmOp_stringequal);
+    Scm_RegisterProcedureFixed2("string=?"                 , ScmOp_stringequalp);
     Scm_RegisterProcedureFixed3("substring"                , ScmOp_substring);
     Scm_RegisterProcedureVariadic0("string-append" , ScmOp_string_append);
     Scm_RegisterProcedureFixed1("string->list"             , ScmOp_string2list);
@@ -364,6 +371,8 @@ static void SigScm_Initialize_internal(void)
 #if SCM_EXCEPTION_HANDLING
     ScmExp_use(Scm_Intern("srfi-34"), SCM_INTERACTION_ENV);
 #endif
+#endif /* SCM_USE_REGISTER_TABLE */
+
 }
 
 void SigScm_Finalize()

@@ -534,7 +534,7 @@ ScmObj ScmOp_string(ScmObj args);
 ScmObj ScmOp_string_length(ScmObj str);
 ScmObj ScmOp_string_ref(ScmObj str, ScmObj k);
 ScmObj ScmOp_string_setd(ScmObj str, ScmObj k, ScmObj ch);
-ScmObj ScmOp_stringequal(ScmObj str1, ScmObj str2);
+ScmObj ScmOp_stringequalp(ScmObj str1, ScmObj str2);
 /* TODO : many comparing functions around string is unimplemented */
 ScmObj ScmOp_substring(ScmObj str, ScmObj start, ScmObj end);
 ScmObj ScmOp_string_append(ScmObj args);
