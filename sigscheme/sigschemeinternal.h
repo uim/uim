@@ -82,10 +82,6 @@ extern const ScmSpecialCharInfo Scm_special_char_table[];
 extern ScmObj SigScm_null_values;
 #endif
 
-/* debug.c */
-#define PORTBUFFER_SIZE 1024
-extern char *scm_portbuffer;
-
 /*=======================================
    Macro Declarations
 =======================================*/

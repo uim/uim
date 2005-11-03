@@ -98,9 +98,6 @@ static int debug_mask;
 static write_ss_context *write_ss_ctx; /* misc info in priting shared structures */
 #endif
 
-/* buffer for snprintf */
-char *scm_portbuffer;
-
 /*=======================================
   File Local Function Declarations
 =======================================*/
@@ -225,22 +222,19 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
         int index = get_shared_index(obj);
         if (index > 0) {
             /* defined datum */
-            snprintf(scm_portbuffer, PORTBUFFER_SIZE, "#%d#", index);
-            SCM_PORT_PRINT(port, scm_portbuffer);
+            SigScm_PortPrintf(port, "#%d#", index);
             return;
         }
         if (index < 0) {
             /* defining datum, with the new index negated */
-            snprintf(scm_portbuffer, PORTBUFFER_SIZE, "#%d=", -index);
-            SCM_PORT_PRINT(port, scm_portbuffer);
+            SigScm_PortPrintf(port, "#%d=", -index);
             /* Print it; the next time it'll be defined. */
         }
     }
 #endif
     switch (SCM_TYPE(obj)) {
     case ScmInt:
-        snprintf(scm_portbuffer, PORTBUFFER_SIZE, "%d", SCM_INT_VALUE(obj));
-        SCM_PORT_PRINT(port, scm_portbuffer);
+        SigScm_PortPrintf(port, "%d", SCM_INT_VALUE(obj));
         break;
     case ScmCons:
         print_list(port, obj, otype);
@@ -286,13 +280,11 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
         ERR("You cannot print ScmFreeCell, may be GC bug.");
         break;
     case ScmCPointer:
-        snprintf(scm_portbuffer, PORTBUFFER_SIZE, "#<c_pointer %p>", SCM_C_POINTER_VALUE(obj));
-        SCM_PORT_PRINT(port, scm_portbuffer);
+        SigScm_PortPrintf(port, "#<c_pointer %p>", SCM_C_POINTER_VALUE(obj));
         break;
     case ScmCFuncPointer:
-        snprintf(scm_portbuffer, PORTBUFFER_SIZE, "#<c_func_pointer %p>",
-                 SCM_REINTERPRET_CAST(void *, SCM_C_FUNCPOINTER_VALUE(obj)));
-        SCM_PORT_PRINT(port, scm_portbuffer);
+        SigScm_PortPrintf(port, "#<c_func_pointer %p>",
+                          SCM_REINTERPRET_CAST(void *, SCM_C_FUNCPOINTER_VALUE(obj)));
         break;
     }
 }
@@ -310,8 +302,7 @@ static void print_char(ScmObj port, ScmObj obj, enum OutputType otype)
         } else if(strcmp(SCM_CHAR_VALUE(obj), "\n") == 0) {
             SCM_PORT_PRINT(port, "#\\newline");
         } else {
-            snprintf(scm_portbuffer, PORTBUFFER_SIZE, "#\\%s", SCM_CHAR_VALUE(obj));
-            SCM_PORT_PRINT(port, scm_portbuffer);
+            SigScm_PortPrintf(port, "#\\%s", SCM_CHAR_VALUE(obj));
         }
         break;
     case AS_DISPLAY:
@@ -353,8 +344,7 @@ static void print_string(ScmObj port, ScmObj obj, enum OutputType otype)
             case '\t': SCM_PORT_PRINT(port, "\\t"); break;
             case '\\': SCM_PORT_PRINT(port, "\\\\"); break;
             default:
-                snprintf(scm_portbuffer, PORTBUFFER_SIZE, "%c", str[i]);
-                SCM_PORT_PRINT(port, scm_portbuffer);
+                SigScm_PortPrintf(port, "%c", str[i]);
                 break;
             }
         }
@@ -401,14 +391,12 @@ static void print_list(ScmObj port, ScmObj lst, enum OutputType otype)
         index = get_shared_index(lst);
         if (index > 0) {
             /* defined datum */
-            snprintf(scm_portbuffer, PORTBUFFER_SIZE, ". #%d#", index);
-            SCM_PORT_PRINT(port, scm_portbuffer);
+            SigScm_PortPrintf(port, ". #%d#", index);
             goto close_parens_and_return;
         }
         if (index < 0) {
             /* defining datum, with the new index negated */
-            snprintf(scm_portbuffer, PORTBUFFER_SIZE, ". #%d=", -index);
-            SCM_PORT_PRINT(port, scm_portbuffer);
+            SigScm_PortPrintf(port, ". #%d=", -index);
             necessary_close_parens++;
             goto cheap_recursion;
         }
