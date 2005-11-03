@@ -326,14 +326,26 @@ extern ScmObj scm_exception_continuations;
     (scm_exception_continuations = CDR(scm_exception_continuations))
 #endif /* SCM_USE_SRFI34 */
 
+/* Macros For Handling Continuation Object */
+#define INVALID_CONTINUATION_JMPENV  NULL
+
+#define CONTINUATION_JMPENV          SCM_CONTINUATION_OPAQUE0
+#define CONTINUATION_SET_JMPENV      SCM_CONTINUATION_SET_OPAQUE0
+#define CONTINUATION_DYNEXT          SCM_CONTINUATION_OPAQUE1
+#define CONTINUATION_SET_DYNEXT      SCM_CONTINUATION_SET_OPAQUE1
+
 /*=======================================
    Function Declarations
 =======================================*/
 /* datas.c */
 void SigScm_InitStorage(void);
 void SigScm_FinalizeStorage(void);
+
+/* storage-continuation.c */
+void   SigScm_InitContinuation(void);
+void   SigScm_FinalizeContinuation(void);
 ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state);
-void Scm_CallContinuation(ScmObj cont, ScmObj ret);
+void   Scm_CallContinuation(ScmObj cont, ScmObj ret);
 ScmObj Scm_DynamicWind(ScmObj before, ScmObj thunk, ScmObj after);
 
 /* eval.c */
