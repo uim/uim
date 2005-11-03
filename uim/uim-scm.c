@@ -601,9 +601,7 @@ void
 uim_scm_init(const char *verbose_level)
 {
   long vlevel = 4;
-#if SCM_USE_NEWPORT
   ScmObj output_port;
-#endif
 
   if (!uim_output)
     uim_output = stderr;
@@ -614,11 +612,9 @@ uim_scm_init(const char *verbose_level)
 
   SigScm_Initialize();
 
-#if SCM_USE_NEWPORT
   /* GC safe */
   output_port = Scm_MakeSharedFilePort(uim_output, "uim", SCM_PORTFLAG_OUTPUT);
   scm_current_output_port = scm_current_error_port = output_port;
-#endif /* SCM_USE_NEWPORT */
 
   ScmExp_use(Scm_Intern("siod"), SCM_INTERACTION_ENV);
   true_sym  = (uim_lisp)SCM_TRUE;
