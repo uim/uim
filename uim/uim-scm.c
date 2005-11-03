@@ -397,7 +397,7 @@ uim_scm_stringp(uim_lisp obj)
 uim_bool
 uim_scm_eq(uim_lisp a, uim_lisp b)
 {
-  if (SCM_EQ(ScmOp_eqp((ScmObj) a, (ScmObj) b), SCM_TRUE))
+  if (SCM_EQ((ScmObj)a, (ScmObj)b))
     return UIM_TRUE;
 
   return UIM_FALSE;
@@ -406,7 +406,7 @@ uim_scm_eq(uim_lisp a, uim_lisp b)
 uim_bool
 uim_scm_string_equal(uim_lisp a, uim_lisp b)
 {
-  if(SCM_EQ(ScmOp_stringequal((ScmObj)a, (ScmObj)b), SCM_TRUE))
+  if (SCM_NFALSEP(ScmOp_stringequal((ScmObj)a, (ScmObj)b)))
     return UIM_TRUE;
 
   return UIM_FALSE;
