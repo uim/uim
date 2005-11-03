@@ -205,7 +205,7 @@ enum ScmDebugCategory {
 /*=======================================
    Variable Declarations
 =======================================*/
-/* datas.c */
+/* storage-gc.c */
 #if SCM_GCC4_READY_GC
 /*
  * The variable to ensure that a call of SigScm_GC_ProtectStack() is
@@ -364,24 +364,6 @@ void Scm_RegisterProcedureVariadicTailRec5(const char *name, ScmObj (*func)(ScmO
 #endif
 
 /* datas.c */
-void SigScm_GC_Protect(ScmObj *var);
-void SigScm_GC_Unprotect(ScmObj *var);
-#if SCM_GCC4_READY_GC
-/*
- * Ordinary programs should not call these functions directly. Use
- * SCM_GC_PROTECTED_CALL*() instead.
- */
-#ifdef __GNUC__
-#define SigScm_GC_ProtectStack SigScm_GC_ProtectStackInternal
-#else /* __GNUC__ */
-#define SigScm_GC_ProtectStack (*scm_gc_protect_stack)
-#endif /* __GNUC__ */
-
-ScmObj *SigScm_GC_ProtectStackInternal(ScmObj *designated_stack_start) SCM_NOINLINE;
-#else /* SCM_GCC4_READY_GC */
-void   SigScm_GC_ProtectStack(ScmObj *stack_start);
-#endif /* SCM_GCC4_READY_GC */
-void   SigScm_GC_UnprotectStack(ScmObj *stack_start);
 ScmObj Scm_NewCons(ScmObj a, ScmObj b);
 ScmObj Scm_NewInt(int val);
 ScmObj Scm_NewSymbol(char *name, ScmObj v_cell);
@@ -401,6 +383,26 @@ ScmObj Scm_NewValuePacket(ScmObj values);
 ScmObj Scm_NewCPointer(void *data);
 ScmObj Scm_NewCFuncPointer(ScmCFunc func);
 #endif
+
+/* storage-gc.c */
+void SigScm_GC_Protect(ScmObj *var);
+void SigScm_GC_Unprotect(ScmObj *var);
+#if SCM_GCC4_READY_GC
+/*
+ * Ordinary programs should not call these functions directly. Use
+ * SCM_GC_PROTECTED_CALL*() instead.
+ */
+#ifdef __GNUC__
+#define SigScm_GC_ProtectStack SigScm_GC_ProtectStackInternal
+#else /* __GNUC__ */
+#define SigScm_GC_ProtectStack (*scm_gc_protect_stack)
+#endif /* __GNUC__ */
+
+ScmObj *SigScm_GC_ProtectStackInternal(ScmObj *designated_stack_start) SCM_NOINLINE;
+#else /* SCM_GCC4_READY_GC */
+void   SigScm_GC_ProtectStack(ScmObj *stack_start);
+#endif /* SCM_GCC4_READY_GC */
+void   SigScm_GC_UnprotectStack(ScmObj *stack_start);    
 
 /* storage-symbol.c */
 ScmObj Scm_Intern(const char *name);

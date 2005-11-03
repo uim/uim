@@ -64,9 +64,6 @@ struct ScmSpecialCharInfo_ {
 /*=======================================
    Variable Declarations
 =======================================*/
-/* datas.c */
-extern ScmObj *scm_stack_start_pointer;
-
 /* eval.c */
 extern struct trace_frame *scm_trace_root;
 
@@ -81,6 +78,9 @@ extern const ScmSpecialCharInfo Scm_special_char_table[];
 #if SCM_USE_VALUECONS
 extern ScmObj SigScm_null_values;
 #endif
+
+/* storage-gc.c */
+extern ScmObj *scm_stack_start_pointer;
 
 /*=======================================
    Macro Declarations
@@ -342,6 +342,11 @@ extern ScmObj scm_exception_continuations;
 /* datas.c */
 void SigScm_InitStorage(void);
 void SigScm_FinalizeStorage(void);
+
+/* storage-gc.c */
+void   SigScm_InitGC(void);
+void   SigScm_FinalizeGC(void);
+ScmObj SigScm_NewObjFromHeap(void);
 
 /* storage-continuation.c */
 void   SigScm_InitContinuation(void);
