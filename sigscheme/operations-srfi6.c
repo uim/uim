@@ -114,10 +114,8 @@ ScmObj ScmOp_SRFI6_get_output_string(ScmObj port)
     ASSERT_PORTP(port);
 
     SCM_ASSERT_LIVE_PORT(port);
-    cport = SCM_PORT_DYNAMIC_CAST(ScmBaseCharPort, SCM_PORT_IMPL(port));
-    if (!cport)
-        SCM_PORT_ERROR_INVALID_TYPE(CHAR,
-                                    SCM_PORT_IMPL(port), ScmBaseCharPort);
+    cport = SCM_CHARPORT_DYNAMIC_CAST(ScmBaseCharPort, SCM_PORT_IMPL(port));
+
     return Scm_NewStringCopying(ScmOutputStrPort_str(cport->bport));
 }
 

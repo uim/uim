@@ -205,9 +205,7 @@ ScmInputStrPort_ref_opaque(ScmBytePort *bport)
 {
     ScmInputStrPort *port;
 
-    port = SCM_PORT_DYNAMIC_CAST(ScmInputStrPort, bport);
-    if (!port)
-        SCM_PORT_ERROR_INVALID_TYPE(BYTE, bport, ScmInputStrPort);
+    port = SCM_BYTEPORT_DYNAMIC_CAST(ScmInputStrPort, bport);
 
     return &port->opaque;
 }
@@ -215,10 +213,7 @@ ScmInputStrPort_ref_opaque(ScmBytePort *bport)
 static ScmBytePort *
 istrport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
 {
-    if (dst_vptr != ScmInputStrPort_vptr)
-        SCM_PORT_ERROR_INVALID_TYPE(BYTE, bport, ScmInputStrPort);
-
-    return bport;
+    return (dst_vptr == ScmInputStrPort_vptr) ? bport : NULL;
 }
 
 static int
@@ -309,9 +304,7 @@ ScmOutputStrPort_str(ScmBytePort *bport)
 {
     ScmOutputStrPort *port;
 
-    port = SCM_PORT_DYNAMIC_CAST(ScmOutputStrPort, bport);
-    if (!port)
-        SCM_PORT_ERROR_INVALID_TYPE(BYTE, bport, ScmOutputStrPort);
+    port = SCM_BYTEPORT_DYNAMIC_CAST(ScmOutputStrPort, bport);
 
     return port->str;
 }
@@ -321,9 +314,7 @@ ScmOutputStrPort_ref_opaque(ScmBytePort *bport)
 {
     ScmOutputStrPort *port;
 
-    port = SCM_PORT_DYNAMIC_CAST(ScmOutputStrPort, bport);
-    if (!port)
-        SCM_PORT_ERROR_INVALID_TYPE(BYTE, bport, ScmOutputStrPort);
+    port = SCM_BYTEPORT_DYNAMIC_CAST(ScmOutputStrPort, bport);
 
     return &port->opaque;
 }
@@ -331,10 +322,7 @@ ScmOutputStrPort_ref_opaque(ScmBytePort *bport)
 static ScmBytePort *
 ostrport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
 {
-    if (dst_vptr != ScmOutputStrPort_vptr)
-        SCM_PORT_ERROR_INVALID_TYPE(BYTE, bport, ScmOutputStrPort);
-
-    return bport;
+    return (dst_vptr == ScmOutputStrPort_vptr) ? bport : NULL;
 }
 
 static int

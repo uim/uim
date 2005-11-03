@@ -168,10 +168,7 @@ ScmFilePort_open_output_file(const char *path)
 static ScmBytePort *
 fileport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
 {
-    if (dst_vptr != ScmFilePort_vptr)
-        SCM_PORT_ERROR_INVALID_TYPE(BYTE, bport, ScmFilePort);
-
-    return bport;
+    return (dst_vptr == ScmFilePort_vptr) ? bport : NULL;
 }
 
 static int

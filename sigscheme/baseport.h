@@ -85,10 +85,17 @@
 
 /*
  * To allow safe method invocation (contains from subclasses), all non-standard
- * method must call SCM_PORT_DYNAMIC_CAST() explicitly.
+ * method must call SCM_PORT_*DYNAMIC_CAST() explicitly.
  */
-#define SCM_PORT_DYNAMIC_CAST(type, obj)                                     \
-     ((type *)(*(obj)->vptr->dyn_cast)((obj), type##_vptr))
+#define SCM_CHARPORT_DYNAMIC_CAST(type, obj)                                 \
+    (SCM_PORT_DYNAMIC_CAST(CHAR, type, obj))
+#define SCM_BYTEPORT_DYNAMIC_CAST(type, obj)                                 \
+    (SCM_PORT_DYNAMIC_CAST(BYTE, type, obj))
+#define SCM_PORT_DYNAMIC_CAST(klass, type, obj)                              \
+    ((SCM_PORT_TRY_DYNAMIC_CAST(type, obj)) ?                                \
+     ((type *)(obj)) : (SCM_PORT_ERROR_INVALID_TYPE(klass, obj, type), NULL))
+#define SCM_PORT_TRY_DYNAMIC_CAST(type, obj)                                 \
+    ((type *)(*(obj)->vptr->dyn_cast)((obj), type##_vptr))
 
 #define SCM_CHARPORT_CLOSE(cport)        ((*(cport)->vptr->close)(cport))
 #define SCM_CHARPORT_ENCODING(cport)     ((*(cport)->vptr->encoding)(cport))

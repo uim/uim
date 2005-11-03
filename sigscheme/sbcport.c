@@ -150,10 +150,7 @@ ScmBaseCharPort_line_number(ScmBaseCharPort *port)
 static ScmCharPort *
 basecport_dyn_cast(ScmCharPort *cport, const ScmCharPortVTbl *dst_vptr)
 {
-    if (dst_vptr != ScmBaseCharPort_vptr)
-        SCM_PORT_ERROR_INVALID_TYPE(CHAR, cport, ScmBaseCharPort);
-
-    return cport;
+    return (dst_vptr == ScmBaseCharPort_vptr) ? cport : NULL;
 }
 
 static int
@@ -263,11 +260,8 @@ ScmSingleByteCharPort_new(ScmBytePort *bport)
 static ScmCharPort *
 sbcport_dyn_cast(ScmCharPort *cport, const ScmCharPortVTbl *dst_vptr)
 {
-    if (dst_vptr != ScmBaseCharPort_vptr
-        && dst_vptr != ScmSingleByteCharPort_vptr)
-        SCM_PORT_ERROR_INVALID_TYPE(CHAR, cport, ScmSingleByteCharPort);
-
-    return cport;
+    return (dst_vptr == ScmBaseCharPort_vptr
+            || dst_vptr == ScmSingleByteCharPort_vptr) ? cport : NULL;
 }
 
 static const char *

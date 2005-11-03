@@ -148,11 +148,8 @@ ScmMultiByteCharPort_new(ScmBytePort *bport, ScmCharCodec *codec)
 static ScmCharPort *
 mbcport_dyn_cast(ScmCharPort *cport, const ScmCharPortVTbl *dst_vptr)
 {
-    if (dst_vptr != ScmBaseCharPort_vptr
-        && dst_vptr != ScmMultiByteCharPort_vptr)
-        SCM_PORT_ERROR_INVALID_TYPE(CHAR, cport, ScmMultiByteCharPort);
-
-    return cport;
+    return (dst_vptr == ScmBaseCharPort_vptr
+            || dst_vptr == ScmMultiByteCharPort_vptr) ? cport : NULL;
 }
 
 static const char *

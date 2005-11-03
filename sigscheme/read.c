@@ -258,7 +258,8 @@ static ScmObj read_list(ScmObj port, int closeParen)
     char  *token  = NULL;
 
     CDBG((SCM_DBG_PARSER, "read_list"));
-    basecport = SCM_PORT_DYNAMIC_CAST(ScmBaseCharPort, SCM_PORT_IMPL(port));
+    basecport = SCM_PORT_TRY_DYNAMIC_CAST(ScmBaseCharPort,
+                                          SCM_PORT_IMPL(port));
     if (basecport)
         start_line = ScmBaseCharPort_line_number(basecport);
 
