@@ -367,12 +367,11 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterSyntaxFixed1("use"                         , ScmExp_use);
     Scm_DefineAlias("call/cc", "call-with-current-continuation");
 #endif
+#endif /* SCM_USE_REGISTER_TABLE */
 
 #if SCM_EXCEPTION_HANDLING
     ScmExp_use(Scm_Intern("srfi-34"), SCM_INTERACTION_ENV);
 #endif
-#endif /* SCM_USE_REGISTER_TABLE */
-
 }
 
 void SigScm_Finalize()
