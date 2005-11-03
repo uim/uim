@@ -401,6 +401,8 @@ ScmObj Scm_NewValuePacket(ScmObj values);
 ScmObj Scm_NewCPointer(void *data);
 ScmObj Scm_NewCFuncPointer(ScmCFunc func);
 #endif
+
+/* storage-symbol.c */
 ScmObj Scm_Intern(const char *name);
 
 /* eval.c */

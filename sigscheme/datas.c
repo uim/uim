@@ -115,8 +115,6 @@ struct gc_protected_var_ {
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define NAMEHASH_SIZE 1024
-
 #define SCM_NEW_OBJ_INTERNAL(VALNAME)                                        \
     do {                                                                     \
         if (NULLP(scm_freelist))                                             \
@@ -173,7 +171,6 @@ ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *)
 ScmObj SigScm_null_values;
 #endif
 
-static ScmObj *symbol_hash = NULL;
 static gc_protected_var *protected_var_list = NULL;
 
 ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
@@ -184,6 +181,9 @@ static ScmCell SigScm_unbound_cell, SigScm_undef_cell;
 
 /* storage-continuation.c */
 extern ScmObj scm_current_dynamic_extent;
+
+/* storage-symbol.c */
+extern ScmObj *scm_symbol_hash;
 
 /*=======================================
   File Local Function Declarations
@@ -210,10 +210,6 @@ static void gc_mark(void);
 /* GC Sweep Related Functions */
 static void sweep_obj(ScmObj obj);
 static void gc_sweep(void);
-
-static void initialize_symbol_hash(void);
-static void finalize_symbol_hash(void);
-static int  symbol_name_hash(const char *name);
 
 static void finalize_protected_var(void);
 
@@ -258,14 +254,14 @@ void SigScm_InitStorage(void)
 #endif
 
     SigScm_InitContinuation();
-    initialize_symbol_hash();
+    SigScm_InitSymbol();
 }
 
 void SigScm_FinalizeStorage(void)
 {
     SigScm_FinalizeContinuation();
     finalize_heap();
-    finalize_symbol_hash();
+    SigScm_FinalizeSymbol();
     finalize_protected_var();
 }
 
@@ -550,7 +546,7 @@ static void gc_mark_symbol_hash(void)
 {
     int i = 0;
     for (i = 0; i < NAMEHASH_SIZE; i++) {
-        mark_obj(symbol_hash[i]);
+        mark_obj(scm_symbol_hash[i]);
     }
 }
 
@@ -878,67 +874,3 @@ ScmObj Scm_NewCFuncPointer(ScmCFunc func)
     return obj;
 }
 #endif /* SCM_USE_NONSTD_FEATURES */
-
-/*============================================================================
-  Symbol table
-============================================================================*/
-/*
- * Symbol Name Hash Related Functions
- *
- * - Data Structure of Symbol Name Hash
- *
- *     - n = symbol_name_hash(name)
- *     - symbol_hash[n] = sym_list
- *     - sym_list = ( ScmObj(SYMBOL) ScmObj(SYMBOL) ... )
- *
- */
-static void initialize_symbol_hash(void)
-{
-    int i = 0;
-    symbol_hash = (ScmObj*)malloc(sizeof(ScmObj) * NAMEHASH_SIZE);
-    for (i = 0; i < NAMEHASH_SIZE; i++) {
-        symbol_hash[i] = SCM_NULL;
-    }
-}
-
-static void finalize_symbol_hash(void)
-{
-    free(symbol_hash);
-}
-
-static int symbol_name_hash(const char *name)
-{
-    int hash = 0;
-    int c;
-    char *cname = (char *)name;
-    while ((c = *cname++)) {
-        hash = ((hash * 17) ^ c) % NAMEHASH_SIZE;
-    }
-    return hash;
-}
-
-ScmObj Scm_Intern(const char *name)
-{
-    int n = symbol_name_hash(name);
-    ScmObj sym     = SCM_FALSE;
-    ScmObj lst     = SCM_FALSE;
-    ScmObj sym_lst = symbol_hash[n];
-
-    /* Search Symbol by name */
-    for (lst = sym_lst; !NULLP(lst); lst = CDR(lst)) {
-        sym = CAR(lst);
-
-        if (strcmp(SCM_SYMBOL_NAME(sym), name) == 0) {
-            return sym;
-        }
-    }
-
-    /* If not in the sym_lst, allocate new Symbol */
-    sym = Scm_NewSymbol(strdup(name), SCM_UNBOUND);
-
-    /* And Append it to the head of symbol_hash */
-    sym_lst = CONS(sym, sym_lst);
-    symbol_hash[n] = sym_lst;
-
-    return sym;
-}
