@@ -60,9 +60,14 @@
 #define PLUGIN_PREFIX "libuim-"
 #define PLUGIN_SUFFIX ".so"
 
+/*
+ * SIOD's verbose-level compatible definition.
+ * See sigscheme/operations-siod.c for further information.
+ */
+#define UIM_VLEVEL_PLUGIN 3
+
 #ifdef DEBUG
-static int debug_plugin = DEBUG;
-#define DPRINTFN(n,x)  if (debug_plugin>(n)) fprintf x;
+#define DPRINTFN(n,x)  if ((n) <= uim_scm_get_verbose_level()) fprintf x;
 #else
 #define DPRINTFN(n,x)
 #endif
@@ -93,7 +98,7 @@ plugin_load(uim_lisp _name)
     return uim_scm_f();
   }
 
-  DPRINTFN(0, (stderr, "Searching libuim-%s.so.\n", plugin_name));
+  DPRINTFN(UIM_VLEVEL_PLUGIN, (stderr, "Searching libuim-%s.so.\n", plugin_name));
 
   for (path_cdr = lib_path;
        !uim_scm_nullp(path_cdr);
@@ -110,14 +115,14 @@ plugin_load(uim_lisp _name)
     fd = open(plugin_lib_filename, O_RDONLY);
     if (fd >= 0) {
       close(fd);
-      DPRINTFN(0, (stderr, "Found %s.\n", plugin_lib_filename));
+      DPRINTFN(UIM_VLEVEL_PLUGIN, (stderr, "Found %s.\n", plugin_lib_filename));
       break;
     }
     free(plugin_lib_filename);
     plugin_lib_filename = NULL;
   }
 
-  DPRINTFN(0, (stderr, "Searching %s.scm.\n", plugin_name));
+  DPRINTFN(UIM_VLEVEL_PLUGIN, (stderr, "Searching %s.scm.\n", plugin_name));
   for (path_cdr = scm_path;
        !uim_scm_nullp(path_cdr);
        path_cdr = uim_scm_cdr(path_cdr))
@@ -132,7 +137,7 @@ plugin_load(uim_lisp _name)
     fd = open(plugin_scm_filename, O_RDONLY);
     if (fd >= 0) {
       close(fd);
-      DPRINTFN(0, (stderr, "Found %s.\n", plugin_scm_filename));
+      DPRINTFN(UIM_VLEVEL_PLUGIN, (stderr, "Found %s.\n", plugin_scm_filename));
       break;
     }
     free(plugin_scm_filename);
@@ -144,7 +149,7 @@ plugin_load(uim_lisp _name)
     return uim_scm_f();
   }
 
-  DPRINTFN(0, (stderr, "Loading libuim-%s.so.\n", plugin_name));
+  DPRINTFN(UIM_VLEVEL_PLUGIN, (stderr, "Loading libuim-%s.so.\n", plugin_name));
   library = dlopen(plugin_lib_filename, RTLD_NOW);
   free(plugin_lib_filename);
 
@@ -164,7 +169,7 @@ plugin_load(uim_lisp _name)
     return uim_scm_f();
   }
 
-  DPRINTFN(0, (stderr, "Calling plugin_instance_init() for %s.\n", plugin_name));
+  DPRINTFN(UIM_VLEVEL_PLUGIN, (stderr, "Calling plugin_instance_init() for %s.\n", plugin_name));
   (plugin_instance_init)();
   if (plugin_scm_filename) {
     uim_bool succeeded;
