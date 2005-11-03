@@ -361,55 +361,37 @@ uim_scm_null_list(void)
 uim_bool
 uim_scm_nullp(uim_lisp obj)
 {
-  if (SCM_NULLP((ScmObj)obj))
-    return UIM_TRUE;
-
-  return UIM_FALSE;
+  return (SCM_NULLP((ScmObj)obj));
 }
 
 uim_bool
 uim_scm_consp(uim_lisp obj)
 {
-  if (SCM_CONSP((ScmObj)obj))
-    return UIM_TRUE;
-
-  return UIM_FALSE;  
+  return (SCM_CONSP((ScmObj)obj));
 }
 
 uim_bool
 uim_scm_integerp(uim_lisp obj)
 {
-  if (SCM_INTP((ScmObj)obj))
-    return UIM_TRUE;
-
-  return UIM_FALSE;  
+  return (SCM_INTP((ScmObj)obj));
 }
 
 uim_bool
 uim_scm_stringp(uim_lisp obj)
 {
-  if (SCM_STRINGP((ScmObj)obj))
-    return UIM_TRUE;
-
-  return UIM_FALSE;  
+  return (SCM_STRINGP((ScmObj)obj));
 }
 
 uim_bool
 uim_scm_eq(uim_lisp a, uim_lisp b)
 {
-  if (SCM_EQ((ScmObj)a, (ScmObj)b))
-    return UIM_TRUE;
-
-  return UIM_FALSE;
+  return (SCM_EQ((ScmObj)a, (ScmObj)b));
 }
 
 uim_bool
 uim_scm_string_equal(uim_lisp a, uim_lisp b)
 {
-  if (SCM_NFALSEP(ScmOp_stringequal((ScmObj)a, (ScmObj)b)))
-    return UIM_TRUE;
-
-  return UIM_FALSE;
+  return (SCM_NFALSEP(ScmOp_stringequal((ScmObj)a, (ScmObj)b)));
 }
 
 uim_lisp
