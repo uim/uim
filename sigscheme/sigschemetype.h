@@ -49,9 +49,7 @@
 typedef struct ScmCell_ ScmCell;
 typedef ScmCell *ScmObj;
 typedef ScmObj *ScmRef;
-#if !SCM_USE_NEWPORT
-typedef struct _ScmPortInfo ScmPortInfo;
-#endif
+
 typedef struct ScmEvalState_ ScmEvalState;
 typedef ScmObj (*ScmFuncType)();
 
@@ -90,7 +88,6 @@ enum ScmObjType {
     ScmCFuncPointer = 21
 };
 
-#if SCM_USE_NEWPORT
 enum ScmPortFlag {
     SCM_PORTFLAG_NONE        = 0,
     SCM_PORTFLAG_OUTPUT      = 1 << 0,
@@ -102,43 +99,6 @@ enum ScmPortFlag {
     SCM_PORTFLAG_ALIVENESS_MASK = (SCM_PORTFLAG_LIVE_OUTPUT
                                    | SCM_PORTFLAG_LIVE_INPUT)
 };
-
-#else /* SCM_USE_NEWPORT */
-
-/* ScmPort direction */
-enum ScmPortDirection {
-    PORT_INPUT  = 0,
-    PORT_OUTPUT = 1
-};
-
-/* ScmPort type */
-enum ScmPortType {
-    PORT_FILE   = 0,
-    PORT_STRING = 1
-};
-
-/* ScmPort Info */
-struct _ScmPortInfo {
-    enum ScmPortType port_type; /* (PORT_FILE  | PORT_STRING) */
-    
-    union {
-        struct {
-            FILE *file;
-            char *filename;            
-            int line;
-        } file_port;
-        
-        struct {
-            char *port_str;
-            const char *str_currentpos;
-        } str_port;
-    } info;
-
-    int  (*getc_func) (ScmObj port);
-    void (*print_func) (ScmObj port, const char* str);    
-    int ungottenchar;
-};
-#endif /* SCM_USE_NEWPORT */
 
 /*
  * Function types:
@@ -247,13 +207,8 @@ struct ScmCell_ {
         } vector;
 
         struct ScmPort {
-#if SCM_USE_NEWPORT
             enum ScmPortFlag flag;
             ScmCharPort *impl;
-#else
-            enum ScmPortDirection port_direction; /* (PORT_INPUT | PORT_OUTPUT) */
-            ScmPortInfo *port_info;
-#endif
         } port;
 
         struct ScmContinuation {
@@ -375,39 +330,10 @@ struct ScmCell_ {
 
 #define SCM_PORTP(a) (SCM_TYPE(a) == ScmPort)
 #define SCM_ENTYPE_PORT(a) (SCM_ENTYPE((a), ScmPort))
-#if SCM_USE_NEWPORT
 #define SCM_PORT_FLAG(a)           (SCM_AS_PORT(a)->obj.port.flag)
 #define SCM_PORT_SET_FLAG(a, flag) (SCM_PORT_FLAG(a) = (flag))
 #define SCM_PORT_IMPL(a)           (SCM_AS_PORT(a)->obj.port.impl)
 #define SCM_PORT_SET_IMPL(a, impl) (SCM_PORT_IMPL(a) = (impl))
-#else /* SCM_USE_NEWPORT */
-#define SCM_PORT_PORTDIRECTION(a) (SCM_AS_PORT(a)->obj.port.port_direction)
-#define SCM_PORT_SET_PORTDIRECTION(a, pdirection) (SCM_PORT_PORTDIRECTION(a) = pdirection)
-#define SCM_PORT_PORTINFO(a) (SCM_AS_PORT(a)->obj.port.port_info)
-#define SCM_PORT_SET_PORTINFO(a, pinfo) (SCM_PORT_PORTINFO(a) = (pinfo))
-
-#define SCM_PORT_PORTTYPE(a) (SCM_PORT_PORTINFO(a)->port_type)
-#define SCM_PORT_SET_PORTTYPE(a, type) (SCM_PORT_PORTTYPE(a) = type)
-#define SCM_PORT_UNGOTTENCHAR(a) (SCM_PORT_PORTINFO(a)->ungottenchar)
-#define SCM_PORT_SET_UNGOTTENCHAR(a, ch) (SCM_PORT_UNGOTTENCHAR(a) = ch)
-#define SCM_PORT_GETC_FUNC(a) (SCM_PORT_PORTINFO(a)->getc_func)
-#define SCM_PORT_SET_GETC_FUNC(a, func) (SCM_PORT_GETC_FUNC(a) = func)
-#define SCM_PORT_PRINT_FUNC(a) (SCM_PORT_PORTINFO(a)->print_func)
-#define SCM_PORT_SET_PRINT_FUNC(a, func) (SCM_PORT_PRINT_FUNC(a) = func)
-
-/* File Port */
-#define SCM_PORT_FILE(a) (SCM_PORT_PORTINFO(a)->info.file_port.file)
-#define SCM_PORT_SET_FILE(a, file) (SCM_PORT_FILE(a) = file)
-#define SCM_PORT_FILENAME(a) (SCM_PORT_PORTINFO(a)->info.file_port.filename)
-#define SCM_PORT_SET_FILENAME(a, filename) (SCM_PORT_FILENAME(a) = filename)
-#define SCM_PORT_LINE(a) (SCM_PORT_PORTINFO(a)->info.file_port.line)
-#define SCM_PORT_SET_LINE(a, line) (SCM_PORT_LINE(a) = line)
-/* String Port */
-#define SCM_PORT_STR(a) (SCM_PORT_PORTINFO(a)->info.str_port.port_str)
-#define SCM_PORT_SET_STR(a, str) (SCM_PORT_STR(a) = str)
-#define SCM_PORT_STR_CURRENTPOS(a) (SCM_PORT_PORTINFO(a)->info.str_port.str_currentpos)
-#define SCM_PORT_SET_STR_CURRENTPOS(a, pos) (SCM_PORT_STR_CURRENTPOS(a) = pos)
-#endif /* SCM_USE_NEWPORT */
 
 #define SCM_CONTINUATIONP(a) (SCM_TYPE(a) == ScmContinuation)
 #define SCM_ENTYPE_CONTINUATION(a) (SCM_ENTYPE((a), ScmContinuation))

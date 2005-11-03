@@ -223,7 +223,6 @@ void SigScm_ShowErrorHeader(void)
 }
 
 /* TODO: move to io.c */
-#if SCM_USE_NEWPORT
 void SigScm_PortPrintf(ScmObj port, const char *fmt, ...)
 {
     va_list args;
@@ -242,7 +241,6 @@ void SigScm_VPortPrintf(ScmObj port, const char *fmt, va_list args)
 #endif
     }
 }
-#endif /* SCM_USE_NEWPORT */
 
 void SigScm_ErrorPrintf(const char *fmt, ...)
 {
@@ -255,34 +253,10 @@ void SigScm_ErrorPrintf(const char *fmt, ...)
 
 void SigScm_VErrorPrintf(const char *fmt, va_list args)
 {
-#if SCM_USE_NEWPORT
     SigScm_VPortPrintf(scm_current_error_port, fmt, args);
-#else /* SCM_USE_NEWPORT */
-    FILE *err;
-
-    if (!FALSEP(scm_current_error_port)) {
-        err = SCM_PORT_FILE(scm_current_error_port);
-        vfprintf(err, fmt, args);
-#if SCM_VOLATILE_OUTPUT
-        fflush(err);
-#endif
-    }
-#endif /* SCM_USE_NEWPORT */
 }
 
 void SigScm_ErrorNewline(void)
 {
-#if SCM_USE_NEWPORT
     SigScm_PortPrintf(scm_current_error_port, "\n");
-#else /* SCM_USE_NEWPORT */
-    FILE *err;
-
-    if (!FALSEP(scm_current_error_port)) {
-        err = SCM_PORT_FILE(scm_current_error_port);
-        fputc('\n', err);
-#if SCM_VOLATILE_OUTPUT
-        fflush(err);
-#endif
-    }
-#endif /* SCM_USE_NEWPORT */
 }

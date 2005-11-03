@@ -129,7 +129,6 @@ extern "C" {
 /*
  * Port I/O Handling macros
  */
-#if SCM_USE_NEWPORT
 #define SCM_CHARPORT_ERROR(cport, msg) (SigScm_Error(msg))
 #define SCM_BYTEPORT_ERROR(bport, msg) (SigScm_Error(msg))
 
@@ -169,20 +168,7 @@ extern "C" {
  * SCM_CHARPORT_ERROR and SCM_BYTEPORT_ERROR must be defined before this
  * inclusion
  */
-#if SCM_USE_NEWPORT
 #include "baseport.h"
-#endif
-
-#else /* SCM_USE_NEWPORT */
-
-#define SCM_PORT_GETC(port, c)                  \
-    (c = SCM_PORT_GETC_FUNC(port)(port))
-#define SCM_PORT_UNGETC(port,c)                 \
-    (SCM_PORT_SET_UNGOTTENCHAR(port, c))
-#define SCM_PORT_PRINT(port, str)               \
-    (SCM_PORT_PRINT_FUNC(port)(port, str))
-#endif /* SCM_USE_NEWPORT */
-
 
 /*=======================================
    Struct Declarations
@@ -406,12 +392,7 @@ ScmObj Scm_NewStringWithLen(char *str, int len);
 ScmObj Scm_NewFunc(enum ScmFuncTypeCode type, ScmFuncType func);
 ScmObj Scm_NewClosure(ScmObj exp, ScmObj env);
 ScmObj Scm_NewVector(ScmObj *vec, int len);
-#if SCM_USE_NEWPORT
 ScmObj Scm_NewPort(ScmCharPort *cport, enum ScmPortFlag flag);
-#else /* SCM_USE_NEWPORT */
-ScmObj Scm_NewFilePort(FILE *file, const char *filename, enum ScmPortDirection pdireciton);
-ScmObj Scm_NewStringPort(const char *str, enum ScmPortDirection pdirection);
-#endif /* SCM_USE_NEWPORT */
 ScmObj Scm_NewContinuation(void);
 #if !SCM_USE_VALUECONS
 ScmObj Scm_NewValuePacket(ScmObj values);
@@ -580,10 +561,8 @@ ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest);
 
 /* io.c */
 void   SigScm_set_lib_path(const char *path);
-#if SCM_USE_NEWPORT
 ScmObj Scm_MakeSharedFilePort(FILE *file, const char *aux_info,
                               enum ScmPortFlag flag);
-#endif
 
 ScmObj ScmOp_call_with_input_file(ScmObj filepath, ScmObj proc);
 ScmObj ScmOp_call_with_output_file(ScmObj filepath, ScmObj proc);

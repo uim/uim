@@ -188,23 +188,14 @@ void SigScm_WriteToPort(ScmObj port, ScmObj obj)
         return;
 
     ASSERT_PORTP(port);
-#if SCM_USE_NEWPORT
     SCM_ASSERT_LIVE_PORT(port);
     if (!(SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT))
-#else
-    if (SCM_PORT_PORTDIRECTION(port) != PORT_OUTPUT)
-#endif
         ERR("output port is required");
 
     print_ScmObj_internal(port, obj, AS_WRITE);
 
 #if SCM_VOLATILE_OUTPUT
-#if SCM_USE_NEWPORT
     SCM_PORT_FLUSH(port);
-#else /* SCM_USE_NEWPORT */
-    if (SCM_PORT_PORTTYPE(port) == PORT_FILE)
-        fflush(SCM_PORT_FILE(port));
-#endif /* SCM_USE_NEWPORT */
 #endif /* SCM_VOLATILE_OUTPUT */
 }
 
@@ -216,23 +207,14 @@ void SigScm_DisplayToPort(ScmObj port, ScmObj obj)
         return;
 
     ASSERT_PORTP(port);
-#if SCM_USE_NEWPORT
     SCM_ASSERT_LIVE_PORT(port);
     if (!(SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT))
-#else
-    if (SCM_PORT_PORTDIRECTION(port) != PORT_OUTPUT)
-#endif
         ERR("output port is required");
 
     print_ScmObj_internal(port, obj, AS_DISPLAY);
 
 #if SCM_VOLATILE_OUTPUT
-#if SCM_USE_NEWPORT
     SCM_PORT_FLUSH(port);
-#else /* SCM_USE_NEWPORT */
-    if (SCM_PORT_PORTTYPE(port) == PORT_FILE)
-        fflush(SCM_PORT_FILE(port));
-#endif /* SCM_USE_NEWPORT */
 #endif /* SCM_VOLATILE_OUTPUT */
 }
 
@@ -469,46 +451,26 @@ static void print_vector(ScmObj port, ScmObj vec, enum OutputType otype)
 
 static void print_port(ScmObj port, ScmObj obj, enum OutputType otype)
 {
-#if SCM_USE_NEWPORT
     char *info;
-#endif
 
     SCM_PORT_PRINT(port, "#<");
 
     /* input or output */
-#if SCM_USE_NEWPORT
     /* print "i", "o" or "io" if bidirectional port */
     if (SCM_PORT_FLAG(obj) & SCM_PORTFLAG_INPUT)
         SCM_PORT_PRINT(port, "i");
     if (SCM_PORT_FLAG(obj) & SCM_PORTFLAG_OUTPUT)
         SCM_PORT_PRINT(port, "o");
-#else
-    if (SCM_PORT_PORTDIRECTION(obj) == PORT_INPUT)
-        SCM_PORT_PRINT(port, "i");
-    else
-        SCM_PORT_PRINT(port, "o");
-#endif
 
     SCM_PORT_PRINT(port, "port");
 
     /* file or string */
-
-#if SCM_USE_NEWPORT
     info = SCM_PORT_INSPECT(obj);
     if (*info) {
         SCM_PORT_PRINT(port, " ");
         SCM_PORT_PRINT(port, info);
     }
     free(info);
-#else /* SCM_USE_NEWPORT */
-    if (SCM_PORT_PORTTYPE(obj) == PORT_FILE) {
-        snprintf(scm_portbuffer, PORTBUFFER_SIZE, " file %s", SCM_PORT_FILENAME(obj));
-        SCM_PORT_PRINT(port, scm_portbuffer);
-    } else if (SCM_PORT_PORTTYPE(obj) == PORT_STRING) {
-        snprintf(scm_portbuffer, PORTBUFFER_SIZE, " string %s", SCM_PORT_STR(obj));
-        SCM_PORT_PRINT(port, scm_portbuffer);
-    }
-#endif /* SCM_USE_NEWPORT */
 
     SCM_PORT_PRINT(port, ">");
 }

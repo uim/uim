@@ -40,12 +40,10 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
-#if SCM_USE_NEWPORT
 #include "baseport.h"
 #include "sbcport.h"
 #include "fileport.h"
 #include "strport.h"
-#endif
 
 /*=======================================
   File Local Struct Declarations
@@ -160,7 +158,6 @@ static void SigScm_Initialize_internal(void)
     /*=======================================================================
       Preallocated Ports
     =======================================================================*/
-#if SCM_USE_NEWPORT
     Scm_fileport_init();
     Scm_sbcport_init();
 
@@ -170,11 +167,6 @@ static void SigScm_Initialize_internal(void)
                                                      SCM_PORTFLAG_OUTPUT);
     scm_current_error_port  = Scm_MakeSharedFilePort(stderr, "stderr",
                                                      SCM_PORTFLAG_OUTPUT);
-#else /* SCM_USE_NEWPORT */
-    scm_current_input_port  = Scm_NewFilePort(stdin,  "stdin",  PORT_INPUT);
-    scm_current_output_port = Scm_NewFilePort(stdout, "stdout", PORT_OUTPUT);
-    scm_current_error_port  = Scm_NewFilePort(stderr, "stderr", PORT_OUTPUT);
-#endif /* SCM_USE_NEWPORT */
     SigScm_GC_Protect(&scm_current_input_port);
     SigScm_GC_Protect(&scm_current_output_port);
     SigScm_GC_Protect(&scm_current_error_port);
@@ -445,16 +437,12 @@ ScmObj Scm_eval_c_string_internal(const char *exp)
 {
     ScmObj str_port    = SCM_FALSE;
     ScmObj ret         = SCM_FALSE;
-#if SCM_USE_NEWPORT
     ScmBytePort *bport;
     ScmCharPort *cport;
 
     bport = ScmInputStrPort_new_const(exp, NULL);
     cport = ScmSingleByteCharPort_new(bport);
     str_port = Scm_NewPort(cport, SCM_PORTFLAG_INPUT);
-#else
-    str_port = Scm_NewStringPort(exp, PORT_INPUT);
-#endif
 
     ret = SigScm_Read(str_port);
     ret = EVAL(ret, SCM_INTERACTION_ENV);

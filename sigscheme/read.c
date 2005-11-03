@@ -65,19 +65,15 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
-#if SCM_USE_NEWPORT
 #include "sbcport.h"
-#endif
 
 /*=======================================
   File Local Struct Declarations
 =======================================*/
-#if SCM_USE_NEWPORT
 enum LexerState {
     LEX_ST_NORMAL,
     LEX_ST_COMMENT
 };
-#endif
 
 /*=======================================
   File Local Macro Declarations
@@ -87,11 +83,7 @@ enum LexerState {
     case ' ': case '\t': case '\n': case '\r': case '\v': case '\f'
 
 /* FIXME: discard at first of each reader instead of caller */
-#if SCM_USE_NEWPORT
 #define DISCARD_LOOKAHEAD(port) (SCM_PORT_GET_CHAR(port))
-#else
-#define DISCARD_LOOKAHEAD(port)
-#endif
 
 /*=======================================
   Variable Declarations
@@ -149,8 +141,6 @@ ScmObj SigScm_Read_Char(ScmObj port)
 
 static int skip_comment_and_space(ScmObj port)
 {
-#if SCM_USE_NEWPORT
-    /* WARNING: the behavior is different to !SCM_USE_NEWPORT */
     int c, state;
 
     for (state = LEX_ST_NORMAL;;) {
@@ -172,28 +162,6 @@ static int skip_comment_and_space(ScmObj port)
         }
         SCM_PORT_GET_CHAR(port);  /* skip the char */
     }
-#else /* SCM_USE_NEWPORT */
-    int c = 0;
-    while (1) {
-        SCM_PORT_GETC(port, c);
-        if (c == EOF) {
-            return c;
-        } else if(c == ';') {
-            while (1) {
-                SCM_PORT_GETC(port, c);
-                if (c == '\n' || c == '\r') {
-                    break;
-                }
-                if (c == EOF) return c;
-            }
-            continue;
-        } else if(isspace(c)) {
-            continue;
-        }
-
-        return c;
-    }
-#endif /* SCM_USE_NEWPORT */
 }
 
 static ScmObj read_sexpression(ScmObj port)
@@ -228,11 +196,7 @@ static ScmObj read_sexpression(ScmObj port)
             return read_quote(port, SCM_QUASIQUOTE);
         case ',':
             DISCARD_LOOKAHEAD(port);
-#if SCM_USE_NEWPORT
             c1 = SCM_PORT_PEEK_CHAR(port);
-#else
-            SCM_PORT_GETC(port, c1);
-#endif
             if (c1 == EOF) {
                 SigScm_Error("EOF in unquote");
             } else if (c1 == '@') {
@@ -245,11 +209,7 @@ static ScmObj read_sexpression(ScmObj port)
             break;
         case '#':
             DISCARD_LOOKAHEAD(port);
-#if SCM_USE_NEWPORT
             c1 = SCM_PORT_PEEK_CHAR(port);
-#else
-            SCM_PORT_GETC(port, c1);
-#endif
             switch (c1) {
             case 't': case 'T':
                 DISCARD_LOOKAHEAD(port);
@@ -291,22 +251,16 @@ static ScmObj read_list(ScmObj port, int closeParen)
     ScmObj list_tail = SCM_NULL;
     ScmObj item   = SCM_NULL;
     ScmObj cdr    = SCM_NULL;
-#if SCM_USE_NEWPORT
     ScmBaseCharPort *basecport;
     int    start_line, cur_line;
-#else
-    int    line   = SCM_PORT_LINE(port);
-#endif
     int    c      = 0;
     int    c2     = 0;
     char  *token  = NULL;
 
     CDBG((SCM_DBG_PARSER, "read_list"));
-#if SCM_USE_NEWPORT
     basecport = SCM_PORT_DYNAMIC_CAST(ScmBaseCharPort, SCM_PORT_IMPL(port));
     if (basecport)
         start_line = ScmBaseCharPort_line_number(basecport);
-#endif
 
     while (1) {
         c = skip_comment_and_space(port);
@@ -314,16 +268,11 @@ static ScmObj read_list(ScmObj port, int closeParen)
         CDBG((SCM_DBG_PARSER, "read_list c = [%c]", c));
 
         if (c == EOF) {
-#if SCM_USE_NEWPORT
             if (basecport) {
                 cur_line = ScmBaseCharPort_line_number(basecport);
                 ERR("EOF inside list at line %d. (starting from line %d)",
                     cur_line, start_line);
             }
-#else
-            if (SCM_PORT_PORTTYPE(port) == PORT_FILE)
-                SigScm_Error("EOF inside list. (starting from line %d)", line + 1);
-#endif
             else
                 SigScm_Error("EOF inside list.");
         } else if (c == closeParen) {
@@ -331,12 +280,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
             return list_head;
         } else if (c == '.') {
             DISCARD_LOOKAHEAD(port);
-            c2 = 0;
-#if SCM_USE_NEWPORT
             c2 = SCM_PORT_PEEK_CHAR(port);
-#else
-            SCM_PORT_GETC(port, c2);
-#endif
             CDBG((SCM_DBG_PARSER, "read_list process_dot c2 = [%c]", c2));
             if (isspace(c2) || c2 == '(' || c2 == '"' || c2 == ';') {
                 DISCARD_LOOKAHEAD(port);
@@ -515,11 +459,7 @@ static char *read_word(ScmObj port)
     char *dst = NULL;
 
     while (1) {
-#if SCM_USE_NEWPORT
         c = SCM_PORT_PEEK_CHAR(port);
-#else
-        SCM_PORT_GETC(port, c);
-#endif
 
         CDBG((SCM_DBG_PARSER, "c = %c", c));
 
@@ -548,11 +488,7 @@ static char *read_char_sequence(ScmObj port)
     char *dst = NULL;
 
     while (1) {
-#if SCM_USE_NEWPORT
         c = SCM_PORT_PEEK_CHAR(port);
-#else
-        SCM_PORT_GETC(port, c);
-#endif
 
         CDBG((SCM_DBG_PARSER, "c = %c", c));
 

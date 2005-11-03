@@ -42,10 +42,8 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
-#if SCM_USE_NEWPORT
 #include "sbcport.h"
 #include "fileport.h"
-#endif
 
 /*=======================================
   File Local Struct Declarations
@@ -120,7 +118,6 @@ ScmObj ScmOp_load_path(void)
 }
 #endif
 
-#if SCM_USE_NEWPORT
 ScmObj Scm_MakeSharedFilePort(FILE *file, const char *aux_info,
                               enum ScmPortFlag flag)
 {
@@ -130,7 +127,6 @@ ScmObj Scm_MakeSharedFilePort(FILE *file, const char *aux_info,
     bport = ScmFilePort_new_shared(file, aux_info);
     return Scm_NewPort(ScmSingleByteCharPort_new(bport), flag);
 }
-#endif
 
 /*=======================================
   R5RS : 6.6 Input and Output
@@ -179,11 +175,7 @@ ScmObj ScmOp_input_portp(ScmObj port)
     DECLARE_FUNCTION("input-port?", ProcedureFixed1);
     ASSERT_PORTP(port);
 
-#if SCM_USE_NEWPORT
     return (SCM_PORT_FLAG(port) & SCM_PORTFLAG_INPUT) ? SCM_TRUE : SCM_FALSE;
-#else /* SCM_USE_NEWPORT */
-    return (SCM_PORT_PORTDIRECTION(port) == PORT_INPUT) ? SCM_TRUE : SCM_FALSE;
-#endif /* SCM_USE_NEWPORT */
 }
 
 ScmObj ScmOp_output_portp(ScmObj port)
@@ -191,11 +183,7 @@ ScmObj ScmOp_output_portp(ScmObj port)
     DECLARE_FUNCTION("output-port?", ProcedureFixed1);
     ASSERT_PORTP(port);
 
-#if SCM_USE_NEWPORT
     return (SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT) ? SCM_TRUE : SCM_FALSE;
-#else /* SCM_USE_NEWPORT */
-    return (SCM_PORT_PORTDIRECTION(port) == PORT_OUTPUT) ? SCM_TRUE : SCM_FALSE;
-#endif /* SCM_USE_NEWPORT */
 }
 
 ScmObj ScmOp_current_input_port(void)
@@ -252,100 +240,58 @@ ScmObj ScmOp_with_output_to_file(ScmObj filepath, ScmObj thunk)
 
 ScmObj ScmOp_open_input_file(ScmObj filepath)
 {
-#if SCM_USE_NEWPORT
     ScmBytePort *bport;
-#else
-    FILE *f = NULL;
-#endif
     DECLARE_FUNCTION("open-input-file", ProcedureFixed1);
 
     ASSERT_STRINGP(filepath);
 
-#if SCM_USE_NEWPORT
     bport = ScmFilePort_open_input_file(SCM_STRING_STR(filepath));
     if (!bport)
         ERR_OBJ("cannot open file ", filepath);
 
     return Scm_NewPort(ScmSingleByteCharPort_new(bport), SCM_PORTFLAG_INPUT);
-#else /* SCM_USE_NEWPORT */
-    f = fopen(SCM_STRING_STR(filepath), "r");
-    if (!f)
-        ERR_OBJ("cannot open file ", filepath);
-
-    return Scm_NewFilePort(f, SCM_STRING_STR(filepath), PORT_INPUT);
-#endif /* SCM_USE_NEWPORT */
 }
 
 ScmObj ScmOp_open_output_file(ScmObj filepath)
 {
-#if SCM_USE_NEWPORT
     ScmBytePort *bport;
-#else
-    FILE *f = NULL;
-#endif
     DECLARE_FUNCTION("open-output-file", ProcedureFixed1);
 
     ASSERT_STRINGP(filepath);
 
-#if SCM_USE_NEWPORT
     bport = ScmFilePort_open_output_file(SCM_STRING_STR(filepath));
     if (!bport)
         ERR_OBJ("cannot open file ", filepath);
 
     return Scm_NewPort(ScmSingleByteCharPort_new(bport), SCM_PORTFLAG_OUTPUT);
-#else /* SCM_USE_NEWPORT */
-    f = fopen(SCM_STRING_STR(filepath), "w");
-    if (!f)
-        ERR_OBJ("cannot open file ", filepath);
-
-    return Scm_NewFilePort(f, SCM_STRING_STR(filepath), PORT_OUTPUT);
-#endif /* SCM_USE_NEWPORT */
 }
 
 ScmObj ScmOp_close_input_port(ScmObj port)
 {
-#if SCM_USE_NEWPORT
     int flag;
-#endif
     DECLARE_FUNCTION("close-input-port", ProcedureFixed1);
 
     ASSERT_PORTP(port);
 
-#if SCM_USE_NEWPORT
     flag = SCM_PORT_FLAG(port) & ~SCM_PORTFLAG_LIVE_INPUT;
     SCM_PORT_SET_FLAG(port, flag);
     if (!(flag & SCM_PORTFLAG_ALIVENESS_MASK) && SCM_PORT_IMPL(port))
         SCM_PORT_CLOSE_IMPL(port);
-#else /* SCM_USE_NEWPORT */
-    if (SCM_PORT_PORTTYPE(port) == PORT_FILE
-        && SCM_PORT_PORTDIRECTION(port) == PORT_INPUT
-        && SCM_PORT_FILE(port))
-        fclose(SCM_PORT_FILE(port));
-#endif /* SCM_USE_NEWPORT */
 
     return SCM_UNDEF;
 }
 
 ScmObj ScmOp_close_output_port(ScmObj port)
 {
-#if SCM_USE_NEWPORT
     int flag;
-#endif
     DECLARE_FUNCTION("close-output-port", ProcedureFixed1);
 
     ASSERT_PORTP(port);
 
-#if SCM_USE_NEWPORT
     flag = SCM_PORT_FLAG(port) & ~SCM_PORTFLAG_LIVE_OUTPUT;
     SCM_PORT_SET_FLAG(port, flag);
     if (!(flag & SCM_PORTFLAG_ALIVENESS_MASK) && SCM_PORT_IMPL(port))
         SCM_PORT_CLOSE_IMPL(port);
-#else /* SCM_USE_NEWPORT */
-    if (SCM_PORT_PORTTYPE(port) == PORT_FILE
-        && SCM_PORT_PORTDIRECTION(port) == PORT_OUTPUT
-        && SCM_PORT_FILE(port))
-        fclose(SCM_PORT_FILE(port));
-#endif /* SCM_USE_NEWPORT */
 
     return SCM_UNDEF;
 }
@@ -382,17 +328,13 @@ ScmObj ScmOp_read_char(ScmObj args)
 
     PREPARE_PORT(port, args, scm_current_input_port);
 
-#if SCM_USE_NEWPORT
     ch = SCM_PORT_GET_CHAR(port);
     if (ch == EOF)
         return SCM_EOF;
 
     buf[0] = ch;
     buf[1] = '\0';
-#else /* SCM_USE_NEWPORT */
-    SCM_PORT_GETC(port, buf[0]);
-    buf[1] = '\0';
-#endif /* SCM_USE_NEWPORT */
+
     return Scm_NewChar(strdup(buf));
 }
 
@@ -406,7 +348,6 @@ ScmObj ScmOp_peek_char(ScmObj args)
 
     PREPARE_PORT(port, args, scm_current_input_port);
 
-#if SCM_USE_NEWPORT
     ch = SCM_PORT_PEEK_CHAR(port);
     if (ch == EOF)
         return SCM_EOF;
@@ -414,10 +355,6 @@ ScmObj ScmOp_peek_char(ScmObj args)
     buf[0] = ch;
     buf[1] = '\0';
     return Scm_NewChar(strdup(buf));
-#else /* SCM_USE_NEWPORT */
-    /* FIXME: implement this */
-    return SCM_FALSE;
-#endif /* SCM_USE_NEWPORT */
 }
 
 ScmObj ScmOp_eof_objectp(ScmObj obj)
@@ -433,12 +370,7 @@ ScmObj ScmOp_char_readyp(ScmObj args)
 
     PREPARE_PORT(port, args, scm_current_input_port);
 
-#if SCM_USE_NEWPORT
     return (SCM_PORT_CHAR_READYP(port))? SCM_TRUE : SCM_FALSE;
-#else /* SCM_USE_NEWPORT */
-    /* FIXME: implement this */
-    return SCM_FALSE;
-#endif /* SCM_USE_NEWPORT */
 }
 
 /*===========================================================================
@@ -713,7 +645,5 @@ static int file_existsp(const char *c_filepath)
 
 
 /* FIXME: link conditionally with autoconf */
-#if SCM_USE_NEWPORT
 #include "sbcport.c"
 #include "fileport.c"
-#endif

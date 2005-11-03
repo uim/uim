@@ -41,11 +41,9 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
-#if SCM_USE_NEWPORT
 #include "baseport.h"
 #include "sbcport.h"
 #include "strport.h"
-#endif
 
 /*=======================================
   File Local Struct Declarations
@@ -62,18 +60,14 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-#if SCM_USE_NEWPORT
 static void istrport_finalize(char **str, int ownership, void **opaque);
-#endif
 
 /*=======================================
   Function Implementations
 =======================================*/
 void SigScm_Initialize_SRFI6(void)
 {
-#if SCM_USE_NEWPORT
     Scm_strport_init();
-#endif
 
     /*=======================================================================
       SRFI-6 Procedures
@@ -83,72 +77,50 @@ void SigScm_Initialize_SRFI6(void)
     Scm_RegisterProcedureFixed1("get-output-string", ScmOp_SRFI6_get_output_string);
 }
 
-#if SCM_USE_NEWPORT
 static void istrport_finalize(char **str, int ownership, void **opaque)
 {
     SigScm_GC_Unprotect((ScmObj *)opaque);
 }
-#endif /* SCM_USE_NEWPORT */
 
 ScmObj ScmOp_SRFI6_open_input_string(ScmObj str)
 {
-#if SCM_USE_NEWPORT
     ScmObj      *hold_str;
     ScmBytePort *bport;
-#endif
     DECLARE_FUNCTION("open-input-string", ProcedureFixed1);
 
     ASSERT_STRINGP(str);
 
-#if SCM_USE_NEWPORT
     bport = ScmInputStrPort_new_const(SCM_STRING_STR(str), istrport_finalize);
     hold_str = (ScmObj *)ScmInputStrPort_ref_opaque(bport);
     *hold_str = str;
     SigScm_GC_Protect(hold_str);
     return Scm_NewPort(ScmSingleByteCharPort_new(bport), SCM_PORTFLAG_INPUT);
-#else /* SCM_USE_NEWPORT */
-    return Scm_NewStringPort(SCM_STRING_STR(str), PORT_INPUT);
-#endif /* SCM_USE_NEWPORT */
 }
 
 ScmObj ScmOp_SRFI6_open_output_string(void)
 {
-#if SCM_USE_NEWPORT
     ScmBytePort *bport;
-#endif
     DECLARE_FUNCTION("open-output-string", ProcedureFixed0);
 
-#if SCM_USE_NEWPORT
     bport = ScmOutputStrPort_new(NULL);
     return Scm_NewPort(ScmSingleByteCharPort_new(bport), SCM_PORTFLAG_OUTPUT);
-#else /* SCM_USE_NEWPORT */
-    return Scm_NewStringPort(NULL, PORT_OUTPUT);
-#endif /* SCM_USE_NEWPORT */
 }
 
 ScmObj ScmOp_SRFI6_get_output_string(ScmObj port)
 {
-#if SCM_USE_NEWPORT
     ScmBaseCharPort *cport;
-#endif
     DECLARE_FUNCTION("get-output-string", ProcedureFixed1);
 
     ASSERT_PORTP(port);
 
-#if SCM_USE_NEWPORT
     SCM_ASSERT_LIVE_PORT(port);
     cport = SCM_PORT_DYNAMIC_CAST(ScmBaseCharPort, SCM_PORT_IMPL(port));
     if (!cport)
         SCM_PORT_ERROR_INVALID_TYPE(CHAR,
                                     SCM_PORT_IMPL(port), ScmBaseCharPort);
     return Scm_NewStringCopying(ScmOutputStrPort_str(cport->bport));
-#else /* SCM_USE_NEWPORT */
-    return Scm_NewStringCopying(SCM_PORT_STR(port));
-#endif /* SCM_USE_NEWPORT */
 }
 
 
 /* FIXME: link conditionally with autoconf */
-#if SCM_USE_NEWPORT
 #include "strport.c"
-#endif
