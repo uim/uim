@@ -406,7 +406,7 @@ uim_scm_eq(uim_lisp a, uim_lisp b)
 uim_bool
 uim_scm_string_equal(uim_lisp a, uim_lisp b)
 {
-  if(SCM_EQ(ScmOp_string_equal((ScmObj)a, (ScmObj)b), SCM_TRUE))
+  if(SCM_EQ(ScmOp_stringequal((ScmObj)a, (ScmObj)b), SCM_TRUE))
     return UIM_TRUE;
 
   return UIM_FALSE;
