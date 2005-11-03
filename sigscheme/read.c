@@ -272,9 +272,9 @@ static ScmObj read_list(ScmObj port, int closeParen)
                 cur_line = ScmBaseCharPort_line_number(basecport);
                 ERR("EOF inside list at line %d. (starting from line %d)",
                     cur_line, start_line);
-            }
-            else
+            } else {
                 SigScm_Error("EOF inside list.");
+            }
         } else if (c == closeParen) {
             DISCARD_LOOKAHEAD(port);
             return list_head;
