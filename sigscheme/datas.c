@@ -123,23 +123,13 @@ struct gc_protected_var_ {
         scm_freelist = SCM_FREECELL_CDR(scm_freelist);                       \
     } while (/* CONSTCOND */ 0)
 
-#define SCM_UNMARKER        0
-#define SCM_INITIAL_MARKER  (SCM_UNMARKER + 1)
-#if 1
-#define SCM_IS_MARKED(a)    (SCM_MARK(a) == scm_cur_marker)
-#define SCM_IS_UNMARKED(a)  (!SCM_IS_MARKED)
-#define SCM_DO_MARK(a)      (SCM_MARK(a) = scm_cur_marker)
-#define SCM_DO_UNMARK(a)    (SCM_MARK(a) = SCM_UNMARKER)
-#define SCM_MARK_CORRUPT(a) ((unsigned)SCM_MARK(a) > (unsigned)scm_cur_marker)
-#else
-/* YamaKen's suggestion: remove if you don't favor them */
-#define SCM_MARK_VALUE(a)     ((a)->gcmark)
-#define SCM_MARKED(a)         (SCM_MARK_VALUE(a) == scm_cur_marker)
-#define SCM_UNMARKED(a)       (!SCM_MARKED(a))
-#define SCM_MARK(a)           (SCM_MARK_VALUE(a) = scm_cur_marker)
-#define SCM_UNMARK(a)         (SCM_MARK_VALUE(a) = SCM_UNMARKER)
-#define SCM_MARK_CORRUPTED(a) ((unsigned)SCM_MARK_VALUE(a) > (unsigned)scm_cur_marker)
-#endif
+#define SCM_UNMARKER          0
+#define SCM_INITIAL_MARKER    (SCM_UNMARKER + 1)
+#define SCM_IS_MARKED(a)      (SCM_MARK(a) == scm_cur_marker)
+#define SCM_IS_UNMARKED(a)    (!SCM_IS_MARKED)
+#define SCM_DO_MARK(a)        (SCM_MARK(a) = scm_cur_marker)
+#define SCM_DO_UNMARK(a)      (SCM_MARK(a) = SCM_UNMARKER)
+#define SCM_MARK_CORRUPTED(a) ((unsigned)SCM_MARK(a) > (unsigned)scm_cur_marker)
 
 /* special constant initialization */
 #define SCM_CONSTANT_BIND_SUBSTANCE(obj, cell)                                \
@@ -623,7 +613,7 @@ static void gc_sweep(void)
         /* iterate in heap */
         for (j = 0; j < SCM_HEAP_SIZE; j++) {
             obj = &scm_heaps[i][j];
-            SCM_ASSERT(!SCM_MARK_CORRUPT(obj));
+            SCM_ASSERT(!SCM_MARK_CORRUPTED(obj));
             if (!SCM_IS_MARKED(obj)) {
                 sweep_obj(obj);
 
