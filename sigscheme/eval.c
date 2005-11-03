@@ -1105,7 +1105,7 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
     ScmObj val           = SCM_FALSE;
     ScmObj vars          = SCM_NULL;
     ScmObj vals          = SCM_NULL;
-    DECLARE_FUNCTION("let", SyntaxVariadicTalRec0);
+    DECLARE_FUNCTION("let", SyntaxVariadicTailRec0);
 
     /*========================================================================
       normal let:
@@ -1178,7 +1178,7 @@ ScmObj ScmExp_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     ScmObj var     = SCM_FALSE;
     ScmObj val     = SCM_FALSE;
     ScmObj binding = SCM_FALSE;
-    DECLARE_FUNCTION("let*", SyntaxVariadicTalRec1);
+    DECLARE_FUNCTION("let*", SyntaxVariadicTailRec1);
 
     /*========================================================================
       (let* <bindings> <body>)
@@ -1228,7 +1228,7 @@ ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     ScmObj binding  = SCM_FALSE;
     ScmObj var      = SCM_FALSE;
     ScmObj val      = SCM_FALSE;
-    DECLARE_FUNCTION("letrec", SyntaxVariadicTalRec1);
+    DECLARE_FUNCTION("letrec", SyntaxVariadicTailRec1);
 
     /*========================================================================
       (letrec <bindings> <body>)

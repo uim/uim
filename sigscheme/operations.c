@@ -92,7 +92,7 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
         break;
 
     case ScmChar:
-        return ScmOp_char_equal(obj1, obj2);
+        return ScmOp_charequalp(obj1, obj2);
 
 #if SCM_DEBUG
     case ScmFreeCell:
@@ -138,7 +138,7 @@ ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2)
         break;
 
     case ScmChar:
-        return ScmOp_char_equal(obj1, obj2);
+        return ScmOp_charequalp(obj1, obj2);
 
     case ScmString:
         if (strcmp(SCM_STRING_STR(obj1), SCM_STRING_STR(obj2)) == 0)
@@ -617,7 +617,7 @@ ScmObj ScmOp_cons(ScmObj car, ScmObj cdr)
 
 ScmObj ScmOp_set_card(ScmObj pair, ScmObj car)
 {
-    DECLARE_FUNCTION("set-car!", SyntaxFixed2);
+    DECLARE_FUNCTION("set-car!", ProcedureFixed2);
     ASSERT_CONSP(pair);
 
     SET_CAR(pair, car);
@@ -631,7 +631,7 @@ ScmObj ScmOp_set_card(ScmObj pair, ScmObj car)
 
 ScmObj ScmOp_set_cdrd(ScmObj pair, ScmObj cdr)
 {
-    DECLARE_FUNCTION("set-cdr!", SyntaxFixed2);
+    DECLARE_FUNCTION("set-cdr!", ProcedureFixed2);
     ASSERT_CONSP(pair);
 
     SET_CDR(pair, cdr);
@@ -1088,7 +1088,7 @@ ScmObj ScmOp_charp(ScmObj obj)
     return (CHARP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj ScmOp_char_equal(ScmObj ch1, ScmObj ch2)
+ScmObj ScmOp_charequalp(ScmObj ch1, ScmObj ch2)
 {
     DECLARE_FUNCTION("char=?", ProcedureFixed2);
     ASSERT_CHARP(ch1);
@@ -1337,7 +1337,7 @@ ScmObj ScmOp_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     return str;
 }
 
-ScmObj ScmOp_string_equal(ScmObj str1, ScmObj str2)
+ScmObj ScmOp_stringequal(ScmObj str1, ScmObj str2)
 {
     DECLARE_FUNCTION("string=", ProcedureFixed2);
 
@@ -1350,7 +1350,7 @@ ScmObj ScmOp_string_equal(ScmObj str1, ScmObj str2)
     return SCM_FALSE;
 }
 
-ScmObj ScmOp_string_substring(ScmObj str, ScmObj start, ScmObj end)
+ScmObj ScmOp_substring(ScmObj str, ScmObj start, ScmObj end)
 {
     int   c_start_index = 0;
     int   c_end_index   = 0;

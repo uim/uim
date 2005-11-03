@@ -69,7 +69,7 @@ void SigScm_Initialize_SRFI1(void)
     Scm_RegisterProcedureFixed2("xcons"                , ScmOp_SRFI1_xcons);
     Scm_RegisterProcedureVariadic0("circular-list"     , ScmOp_SRFI1_circular_list);
     Scm_RegisterProcedureVariadic1("iota"              , ScmOp_SRFI1_iota);
-    Scm_RegisterProcedureVariadic0("cons*"             , ScmOp_SRFI1_cons_star);
+    Scm_RegisterProcedureVariadic0("cons*"             , ScmOp_SRFI1_consstar);
     Scm_RegisterProcedureVariadic1("make-list"         , ScmOp_SRFI1_make_list);
     Scm_RegisterProcedureVariadic1("list-tabulate"     , ScmOp_SRFI1_list_tabulate);
     Scm_RegisterProcedureFixed1("proper-list?"         , ScmOp_SRFI1_proper_listp);
@@ -92,10 +92,10 @@ void SigScm_Initialize_SRFI1(void)
     Scm_RegisterProcedureFixed2("drop"                 , ScmOp_SRFI1_drop);
     Scm_RegisterProcedureFixed2("take-right"           , ScmOp_SRFI1_take_right);
     Scm_RegisterProcedureFixed2("drop-right"           , ScmOp_SRFI1_drop_right);
-    Scm_RegisterProcedureFixed2("take!"                , ScmOp_SRFI1_take_d);
-    Scm_RegisterProcedureFixed2("drop-right!"          , ScmOp_SRFI1_drop_right_d);
+    Scm_RegisterProcedureFixed2("take!"                , ScmOp_SRFI1_taked);
+    Scm_RegisterProcedureFixed2("drop-right!"          , ScmOp_SRFI1_drop_rightd);
     Scm_RegisterProcedureFixed2("split-at"             , ScmOp_SRFI1_split_at);
-    Scm_RegisterProcedureFixed2("split-at!"            , ScmOp_SRFI1_split_at_d);
+    Scm_RegisterProcedureFixed2("split-at!"            , ScmOp_SRFI1_split_atd);
     Scm_RegisterProcedureFixed1("last"                 , ScmOp_SRFI1_last);
     Scm_RegisterProcedureFixed1("last-pair"            , ScmOp_SRFI1_last_pair);
     Scm_RegisterProcedureFixed1("length+"              , ScmOp_SRFI1_lengthplus);
@@ -111,7 +111,7 @@ ScmObj ScmOp_SRFI1_xcons(ScmObj a, ScmObj b)
     return CONS(b, a);
 }
 
-ScmObj ScmOp_SRFI1_cons_star(ScmObj args)
+ScmObj ScmOp_SRFI1_consstar(ScmObj args)
 {
     ScmObj tail_cons = SCM_FALSE;
     ScmObj prev_last = args;
@@ -535,7 +535,7 @@ ScmObj ScmOp_SRFI1_drop_right(ScmObj lst, ScmObj scm_elem)
     return ScmOp_SRFI1_take(lst, Scm_NewInt(len));
 }
 
-ScmObj ScmOp_SRFI1_take_d(ScmObj lst, ScmObj scm_idx)
+ScmObj ScmOp_SRFI1_taked(ScmObj lst, ScmObj scm_idx)
 {
     ScmObj tmp = lst;
     int idx = 0;
@@ -555,7 +555,7 @@ ScmObj ScmOp_SRFI1_take_d(ScmObj lst, ScmObj scm_idx)
     return lst;
 }
 
-ScmObj ScmOp_SRFI1_drop_right_d(ScmObj lst, ScmObj scm_idx)
+ScmObj ScmOp_SRFI1_drop_rightd(ScmObj lst, ScmObj scm_idx)
 {
     ScmObj tmp = lst;
     int len = 0;
@@ -587,12 +587,12 @@ ScmObj ScmOp_SRFI1_split_at(ScmObj lst, ScmObj idx)
                                ScmOp_SRFI1_drop(lst, idx)));
 }
 
-ScmObj ScmOp_SRFI1_split_at_d(ScmObj lst, ScmObj idx)
+ScmObj ScmOp_SRFI1_split_atd(ScmObj lst, ScmObj idx)
 {
     ScmObj drop = ScmOp_SRFI1_drop(lst, idx);
     DECLARE_FUNCTION("split-at!", ProcedureFixed2);
 
-    return ScmOp_values(LIST_2(ScmOp_SRFI1_take_d(lst, idx),
+    return ScmOp_values(LIST_2(ScmOp_SRFI1_taked(lst, idx),
                                drop));
 }
 

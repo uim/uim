@@ -282,7 +282,7 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterProcedureFixed1("symbol->string"           , ScmOp_symbol2string);
     Scm_RegisterProcedureFixed1("string->symbol"           , ScmOp_string2symbol);
     Scm_RegisterProcedureFixed1("char?"                    , ScmOp_charp);
-    Scm_RegisterProcedureFixed2("char=?"                   , ScmOp_char_equal);
+    Scm_RegisterProcedureFixed2("char=?"                   , ScmOp_charequalp);
     Scm_RegisterProcedureFixed1("char-alphabetic?"         , ScmOp_char_alphabeticp);
     Scm_RegisterProcedureFixed1("char-numeric?"            , ScmOp_char_numericp);
     Scm_RegisterProcedureFixed1("char-whitespace?"         , ScmOp_char_whitespacep);
@@ -296,8 +296,8 @@ static void SigScm_Initialize_internal(void)
     Scm_RegisterProcedureFixed2("string-ref"               , ScmOp_string_ref);
     Scm_RegisterProcedureFixed3("string-set!"              , ScmOp_string_setd);
     Scm_RegisterProcedureFixed1("string-length"            , ScmOp_string_length);
-    Scm_RegisterProcedureFixed2("string=?"                 , ScmOp_string_equal);
-    Scm_RegisterProcedureFixed3("substring"                , ScmOp_string_substring);
+    Scm_RegisterProcedureFixed2("string=?"                 , ScmOp_stringequal);
+    Scm_RegisterProcedureFixed3("substring"                , ScmOp_substring);
     Scm_RegisterProcedureVariadic0("string-append" , ScmOp_string_append);
     Scm_RegisterProcedureFixed1("string->list"             , ScmOp_string2list);
     Scm_RegisterProcedureFixed1("list->string"             , ScmOp_list2string);

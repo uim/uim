@@ -65,13 +65,13 @@ void SigScm_Initialize_SRFI8(void)
     /*=======================================================================
       SRFI-8 Procedure
     =======================================================================*/
-    Scm_RegisterSyntaxVariadicTailRec2("receive", ScmOp_SRFI8_receive);
+    Scm_RegisterSyntaxVariadicTailRec2("receive", ScmExp_SRFI8_receive);
 }
 
 /*=============================================================================
   SRFI8 : Receive
 =============================================================================*/
-ScmObj ScmOp_SRFI8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalState *eval_state)
+ScmObj ScmExp_SRFI8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalState *eval_state)
 {
     /*
      * (receive <formals> <expression> <body>)

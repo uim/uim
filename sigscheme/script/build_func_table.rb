@@ -39,9 +39,9 @@ FUNC_TYPE_PROCEDURE = 2
 FUNC_TYPE_REDUCTION = 3
 
 TYPE2PREFIX = {
-  FUNC_TYPE_SYNTAX    => "ScmExp_",
-  FUNC_TYPE_PROCEDURE => "ScmOp_",
-  FUNC_TYPE_REDUCTION => "ScmOp_",
+  FUNC_TYPE_SYNTAX    => "ScmExp",
+  FUNC_TYPE_PROCEDURE => "ScmOp",
+  FUNC_TYPE_REDUCTION => "ScmOp",
 }
 
 SCM2C_FUNCNAME_RULE = [
@@ -62,8 +62,8 @@ SCM2C_FUNCNAME_RULE = [
   [/!$/,   "d"],
 
   # suffix or intermediate
-  [/-/,   "_"],
   [/->/,  "2"],
+  [/-/,   "_"],
   [/\?/,  "_"],
   [/!/,   "_"],
   [/\=/,  "equal"],
@@ -71,9 +71,14 @@ SCM2C_FUNCNAME_RULE = [
   [/\+/,  "plus"],
 ]
 
-def guess_c_funcname(scm_funcname, type)
+def guess_c_funcname(prefix, scm_funcname, type)
   # guess prefix
-  prefix = TYPE2PREFIX[type] || "";
+  c_prefix = TYPE2PREFIX[type] || "";
+  if (prefix.length != 0)
+    c_prefix += prefix
+  else
+    c_prefix += "_"
+  end
 
   # apply replace rule
   c_funcname = scm_funcname
@@ -81,10 +86,10 @@ def guess_c_funcname(scm_funcname, type)
     c_funcname = c_funcname.gsub(rule[0], rule[1])
   }
   
-  return prefix + c_funcname
+  return c_prefix + c_funcname
 end
 
-def search_declare_function(filename)
+def search_declare_function(prefix, filename)
   puts "    /* #{filename} */"
   IO.readlines(filename).each{ |line|
     if line.strip =~ /DECLARE_FUNCTION\(\"(\S+)\",\s*((Syntax|Procedure|Reduction)\S+)\);/
@@ -101,15 +106,15 @@ def search_declare_function(filename)
                FUNC_TYPE_INVALID
              end
 
-      c_func = guess_c_funcname(scm_func, type)
+      c_func = guess_c_funcname(prefix, scm_func, type)
 
       puts "    { \"#{scm_func}\", (ScmBuiltinFunc)#{c_func}, (ScmRegisterFunc)#{reg_func} },"
     end
   }
 end
 
-def build_table(filename)
-  search_declare_function(filename)
+def build_table(prefix, filename)
+  search_declare_function(prefix, filename)
 end
 
 def null_entry()
@@ -125,10 +130,10 @@ def print_tablefooter()
   puts ""
 end
 
-def build_functable(tablename, filelist)
+def build_functable(prefix, tablename, filelist)
   print_tableheader(tablename)
   filelist.each { |filename|
-    build_table(filename)
+    build_table(prefix, filename)
   }
   null_entry()
   print_tablefooter
@@ -154,45 +159,54 @@ end
 # Header
 print_header
 
-
 # R5RS
-build_functable("r5rs_func_info_table",
+build_functable("",
+                "r5rs_func_info_table",
                 ["eval.c", "io.c", "operations.c", "sigscheme.c"])
 
 # SRFI-1
-build_functable("srfi1_func_info_table",
+build_functable("_SRFI1_",
+                "srfi1_func_info_table",
                 ["operations-srfi1.c"])
 
 # SRFI-2
-build_functable("srfi2_func_info_table",
+build_functable("_SRFI2_",
+                "srfi2_func_info_table",
                 ["operations-srfi2.c"])
 
 # SRFI-6
-build_functable("srfi6_func_info_table",
+build_functable("_SRFI6_",
+                "srfi6_func_info_table",
                 ["operations-srfi6.c"])
 
 # SRFI-8
-build_functable("srfi8_func_info_table",
+build_functable("_SRFI8_",
+                "srfi8_func_info_table",
                 ["operations-srfi8.c"])
 
 # SRFI-23
-build_functable("srfi23_func_info_table",
+build_functable("_SRFI23_",
+                "srfi23_func_info_table",
                 ["operations-srfi23.c"])
 
 # SRFI-34
-build_functable("srfi34_func_info_table",
+build_functable("_SRFI34_",
+                "srfi34_func_info_table",
                 ["operations-srfi34.c"])
 
 # SRFI-38
-build_functable("srfi38_func_info_table",
+build_functable("_SRFI38_",
+                "srfi38_func_info_table",
                 ["operations-srfi38.c"])
 
 # SRFI-60
-build_functable("srfi60_func_info_table",
+build_functable("_SRFI60_",
+                "srfi60_func_info_table",
                 ["operations-srfi60.c"])
 
 # SIOD
-build_functable("siod_func_info_table",
+build_functable("",
+                "siod_func_info_table",
                 ["operations-siod.c"])
 
 # Footer

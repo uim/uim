@@ -518,7 +518,7 @@ ScmObj ScmOp_symbol2string(ScmObj obj);
 ScmObj ScmOp_string2symbol(ScmObj str);
 
 ScmObj ScmOp_charp(ScmObj obj);
-ScmObj ScmOp_char_equal(ScmObj ch1, ScmObj ch2);
+ScmObj ScmOp_charequalp(ScmObj ch1, ScmObj ch2);
 /* TODO : many comparing functions around char is unimplemented */
 ScmObj ScmOp_char_alphabeticp(ScmObj obj);
 ScmObj ScmOp_char_numericp(ScmObj obj);
@@ -534,9 +534,9 @@ ScmObj ScmOp_string(ScmObj args);
 ScmObj ScmOp_string_length(ScmObj str);
 ScmObj ScmOp_string_ref(ScmObj str, ScmObj k);
 ScmObj ScmOp_string_setd(ScmObj str, ScmObj k, ScmObj ch);
-ScmObj ScmOp_string_equal(ScmObj str1, ScmObj str2);
+ScmObj ScmOp_stringequal(ScmObj str1, ScmObj str2);
 /* TODO : many comparing functions around string is unimplemented */
-ScmObj ScmOp_string_substring(ScmObj str, ScmObj start, ScmObj end);
+ScmObj ScmOp_substring(ScmObj str, ScmObj start, ScmObj end);
 ScmObj ScmOp_string_append(ScmObj args);
 ScmObj ScmOp_string2list(ScmObj string);
 ScmObj ScmOp_list2string(ScmObj lst);
@@ -640,7 +640,7 @@ void SigScm_WriteToPortWithSharedStructure(ScmObj port, ScmObj obj);
 /* operations-srfi1.c */
 void   SigScm_Initialize_SRFI1(void);
 ScmObj ScmOp_SRFI1_xcons(ScmObj a, ScmObj b);
-ScmObj ScmOp_SRFI1_cons_star(ScmObj args);
+ScmObj ScmOp_SRFI1_consstar(ScmObj args);
 ScmObj ScmOp_SRFI1_make_list(ScmObj length, ScmObj args);
 ScmObj ScmOp_SRFI1_list_tabulate(ScmObj scm_n, ScmObj args);
 ScmObj ScmOp_SRFI1_list_copy(ScmObj lst);
@@ -667,10 +667,10 @@ ScmObj ScmOp_SRFI1_take(ScmObj lst, ScmObj scm_idx);
 ScmObj ScmOp_SRFI1_drop(ScmObj lst, ScmObj scm_idx);
 ScmObj ScmOp_SRFI1_take_right(ScmObj lst, ScmObj scm_elem);
 ScmObj ScmOp_SRFI1_drop_right(ScmObj lst, ScmObj scm_elem);
-ScmObj ScmOp_SRFI1_take_d(ScmObj lst, ScmObj scm_idx);
-ScmObj ScmOp_SRFI1_drop_right_d(ScmObj lst, ScmObj scm_idx);
+ScmObj ScmOp_SRFI1_taked(ScmObj lst, ScmObj scm_idx);
+ScmObj ScmOp_SRFI1_drop_rightd(ScmObj lst, ScmObj scm_idx);
 ScmObj ScmOp_SRFI1_split_at(ScmObj lst, ScmObj idx);
-ScmObj ScmOp_SRFI1_split_at_d(ScmObj lst, ScmObj idx);
+ScmObj ScmOp_SRFI1_split_atd(ScmObj lst, ScmObj idx);
 ScmObj ScmOp_SRFI1_last(ScmObj lst);
 ScmObj ScmOp_SRFI1_last_pair(ScmObj lst);
 ScmObj ScmOp_SRFI1_lengthplus(ScmObj lst);
@@ -679,7 +679,7 @@ ScmObj ScmOp_SRFI1_concatenate(ScmObj args);
 #if SCM_USE_SRFI2
 /* operations-srfi2.c */
 void   SigScm_Initialize_SRFI2(void);
-ScmObj ScmOp_SRFI2_and_let_star(ScmObj claws, ScmObj body, ScmEvalState *eval_state);
+ScmObj ScmExp_SRFI2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state);
 #endif
 #if SCM_USE_SRFI6
 /* operations-srfi6.c */
@@ -691,7 +691,7 @@ ScmObj ScmOp_SRFI6_get_output_string(ScmObj port);
 #if SCM_USE_SRFI8
 /* operations-srfi8.c */
 void   SigScm_Initialize_SRFI8(void);
-ScmObj ScmOp_SRFI8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalState *eval_state);
+ScmObj ScmExp_SRFI8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalState *eval_state);
 #endif
 #if SCM_USE_SRFI23
 /* operations-srfi23.c */
@@ -727,13 +727,13 @@ ScmObj ScmOp_SRFI60_logtest(ScmObj j, ScmObj k);
 /* operations-siod.c */
 void   SigScm_Initialize_SIOD(void);
 ScmObj ScmOp_symbol_value(ScmObj var);
-ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val);
+ScmObj ScmOp_set_symbol_valued(ScmObj var, ScmObj val);
 ScmObj ScmOp_siod_eql(ScmObj obj1, ScmObj obj2);
 ScmObj ScmOp_the_environment(ScmEvalState *eval_state);
-ScmObj ScmOp_closure_code(ScmObj closure);
+ScmObj ScmOp_sscm_closure_code(ScmObj closure);
 ScmObj ScmOp_verbose(ScmObj args);
 ScmObj ScmOp_eof_val(void);
-ScmObj ScmOp_undefine(ScmObj var, ScmObj env);
+ScmObj ScmExp_undefine(ScmObj var, ScmObj env);
 long   SigScm_GetVerboseLevel(void);
 void   SigScm_SetVerboseLevel(long level);
 #endif

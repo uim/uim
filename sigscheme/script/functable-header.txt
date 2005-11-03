@@ -41,6 +41,18 @@
 /*=======================================
   Local Include
 =======================================*/
+#include "sigscheme.h"
+
+/*=======================================
+  Macro Definitions
+=======================================*/
+#define REGISTER_FUNC_TABLE(functable)                          \
+    do {                                                        \
+        struct builtin_func_info *info = NULL;                  \
+        for (info = functable; info->funcname; info++) {        \
+            (*info->reg_func)(info->funcname, info->c_func);    \
+        }                                                       \
+    } while (/* CONSTCOND */ 0)
 
 /*=======================================
   Type Definitions

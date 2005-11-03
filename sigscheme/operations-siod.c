@@ -101,15 +101,15 @@ void SigScm_Initialize_SIOD(void)
     Scm_DefineAlias("bit-not"               , "lognot");
 
     Scm_RegisterProcedureFixed1("symbol-value"         , ScmOp_symbol_value);
-    Scm_RegisterProcedureFixed2("set-symbol-value!"    , ScmOp_set_symbol_value);
+    Scm_RegisterProcedureFixed2("set-symbol-value!"    , ScmOp_set_symbol_valued);
 #if SCM_COMPAT_SIOD_BUGS
     Scm_RegisterProcedureFixed2("="                    , ScmOp_siod_eql);
 #endif
     Scm_RegisterProcedureFixedTailRec0("the-environment" , ScmOp_the_environment);
-    Scm_RegisterProcedureFixed1("%%closure-code"       , ScmOp_closure_code);
+    Scm_RegisterProcedureFixed1("%%closure-code"       , ScmOp_sscm_closure_code);
     Scm_RegisterProcedureVariadic0("verbose" , ScmOp_verbose);
     Scm_RegisterProcedureFixed0("eof-val" , ScmOp_eof_val);
-    Scm_RegisterSyntaxFixed1("undefine" , ScmOp_undefine);
+    Scm_RegisterSyntaxFixed1("undefine" , ScmExp_undefine);
 
     saved_output_port = SCM_FALSE;
     saved_error_port  = SCM_FALSE;
@@ -141,7 +141,7 @@ ScmObj ScmOp_symbol_value(ScmObj var)
  * - make the portable proc interface similar to a de facto standard of other
  *   Scheme implementations if existing
  */
-ScmObj ScmOp_set_symbol_value(ScmObj var, ScmObj val)
+ScmObj ScmOp_set_symbol_valued(ScmObj var, ScmObj val)
 {
     DECLARE_FUNCTION("set-symbol-value!", ProcedureFixed2);
 
@@ -173,7 +173,7 @@ ScmObj ScmOp_the_environment(ScmEvalState *eval_state)
     return eval_state->env;
 }
 
-ScmObj ScmOp_closure_code(ScmObj closure)
+ScmObj ScmOp_sscm_closure_code(ScmObj closure)
 {
     ScmObj exp, body;
     DECLARE_FUNCTION("%%closure-code", ProcedureFixed1);
@@ -208,7 +208,7 @@ ScmObj ScmOp_eof_val(void)
     return SCM_EOF;
 }
 
-ScmObj ScmOp_undefine(ScmObj var, ScmObj env)
+ScmObj ScmExp_undefine(ScmObj var, ScmObj env)
 {
     ScmObj val = SCM_FALSE;
     DECLARE_FUNCTION("undefine", SyntaxFixed1);
