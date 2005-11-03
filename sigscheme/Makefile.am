@@ -1,6 +1,6 @@
 noinst_LTLIBRARIES  = libsscm.la
 libsscm_la_SOURCES = \
-		datas.c debug.c \
+		storage.c debug.c \
                 storage-gc.c \
                 storage-symbol.c \
 		storage-continuation.c \

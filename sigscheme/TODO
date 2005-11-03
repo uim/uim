@@ -79,9 +79,6 @@ Namings and Cosmetic things:
 
 * Refill license header with fill-column 79, and insert it into all test files
 
-* Rename datas.c to data.c or storage.c (YamaKen recommends storage.c)
-  ([Anthy-dev 2251])
-
 * [uim] Rename uim-scm.c to uim-scm-sigscheme.c
 
 ==============================================================================
