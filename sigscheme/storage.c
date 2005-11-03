@@ -1,6 +1,6 @@
 /*===========================================================================
- *  FileName : datas.c
- *  About    : GC(Garbage Collection) and Allocation
+ *  FileName : storage.c
+ *  About    : scheme storage layer
  *
  *  Copyright (C) 2005      by Kazuki Ohta (mover@hct.zaq.ne.jp)
  *
