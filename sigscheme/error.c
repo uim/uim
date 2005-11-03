@@ -242,6 +242,13 @@ void SigScm_VPortPrintf(ScmObj port, const char *fmt, va_list args)
     }
 }
 
+void SigScm_PortNewline(ScmObj port)
+{
+    if (!FALSEP(port)) {
+        SCM_PORT_PUTS(port, SCM_NEWLINE_STR);
+    }
+}
+
 void SigScm_ErrorPrintf(const char *fmt, ...)
 {
     va_list args;
@@ -258,5 +265,5 @@ void SigScm_VErrorPrintf(const char *fmt, va_list args)
 
 void SigScm_ErrorNewline(void)
 {
-    SigScm_PortPrintf(scm_current_error_port, "\n");
+    SigScm_PortNewline(scm_current_error_port);
 }

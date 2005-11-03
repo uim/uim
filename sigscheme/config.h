@@ -99,6 +99,12 @@
 /*===========================================================================
   Platform Dependency
 ===========================================================================*/
+#define SCM_NEWLINE_STR         "\n"   /* UNIX flavors */
+#if 0
+#define SCM_NEWLINE_STR         "\r\n" /* Windows/DOS */
+#define SCM_NEWLINE_STR         "\r"   /* Mac OS */
+#endif
+
 /*
  * FIXME: detect with configure and link against a replace function if not
  * found

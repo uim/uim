@@ -179,7 +179,7 @@ basecport_get_char(ScmBaseCharPort *port)
 
     ch = SCM_BYTEPORT_GET_BYTE(port->bport);
 #if SCM_DEBUG
-    if (ch == '\n')
+    if (ch == SCM_NEWLINE_STR[0])
         port->linenum++;
 #endif
 

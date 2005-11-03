@@ -124,8 +124,7 @@ static void repl_loop(void)
 #else
             SigScm_WriteToPort(scm_current_output_port, result);
 #endif
-            /* FIXME: Make portable with SigScm_NewlineToPort() */
-            SigScm_PortPrintf(scm_current_output_port, "\n");
+            SigScm_PortNewline(scm_current_output_port);
         }
 
         if (is_prompt)
