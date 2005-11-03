@@ -151,6 +151,7 @@ void SigScm_PortNewline(ScmObj port)
 {
     if (!FALSEP(port)) {
         SCM_PORT_PUTS(port, SCM_NEWLINE_STR);
+        SCM_PORT_FLUSH(port);  /* required */
     }
 }
 
