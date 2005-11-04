@@ -32,6 +32,8 @@
 /**/
 #include <dlfcn.h>
 #include <stdlib.h>
+#include <anthy/anthy.h>
+
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "plugin.h"
@@ -47,35 +49,29 @@
 
 #endif /*__APPLE__*/
 
-struct anthy_context;
-
-struct anthy_conv_stat{
-  int nr_segment;
-};
-
-struct anthy_segment_stat{
-  int nr_candidate;
-  int seg_len;
-};
-
 static struct anthy_api {
   void *diclib, *lib;
 
-  int (*init)(void);
-  int (*quit)(void);
-  struct anthy_context *(*create_context)(void);
-  void (*release_context)(struct anthy_context *);
-  void (*set_string)(struct anthy_context *, char *);
-  void (*get_stat)(struct anthy_context *, struct anthy_conv_stat *);
-  void (*get_segment_stat)(struct anthy_context *, int,
+  /* library management */
+  int  (*init)(void);
+  int  (*quit)(void);
+
+  /* context management */
+  anthy_context_t (*create_context)(void);
+  void (*release_context)(anthy_context_t );
+
+  /* conversion control */
+  int  (*set_string)(anthy_context_t , char *);
+  int  (*get_stat)(anthy_context_t , struct anthy_conv_stat *);
+  int  (*get_segment_stat)(anthy_context_t , int,
 			   struct anthy_segment_stat *);
-  int (*get_segment)(struct anthy_context *, int, int, char *, int);
-  void (*resize_segment)(struct anthy_context *, int, int);
-  void (*commit_segment)(struct anthy_context *, int, int);
+  int  (*get_segment)(anthy_context_t , int, int, char *, int);
+  void (*resize_segment)(anthy_context_t , int, int);
+  int  (*commit_segment)(anthy_context_t , int, int);
 } api;
 
 static struct context {
-  struct anthy_context *ac;
+  anthy_context_t ac;
 } *context_slot;
 
 static int
@@ -94,14 +90,14 @@ get_anthy_api(void)
   }
   *(int  **)(&api.init) = dlsym(api.lib, "anthy_init");
   *(int  **)(&api.quit) = dlsym(api.lib, "anthy_quit");
-  *(struct anthy_context **)(&api.create_context) = dlsym(api.lib, "anthy_create_context");
+  *(anthy_context_t **)(&api.create_context) = dlsym(api.lib, "anthy_create_context");
   *(void **)(&api.release_context) = dlsym(api.lib, "anthy_release_context");
-  *(void **)(&api.set_string) = dlsym(api.lib, "anthy_set_string");
-  *(void **)(&api.get_stat) = dlsym(api.lib, "anthy_get_stat");
-  *(void **)(&api.get_segment_stat) = dlsym(api.lib, "anthy_get_segment_stat");
+  *(int  **)(&api.set_string) = dlsym(api.lib, "anthy_set_string");
+  *(int  **)(&api.get_stat) = dlsym(api.lib, "anthy_get_stat");
+  *(int  **)(&api.get_segment_stat) = dlsym(api.lib, "anthy_get_segment_stat");
   *(int  **)(&api.get_segment) = dlsym(api.lib, "anthy_get_segment");
   *(void **)(&api.resize_segment) = dlsym(api.lib, "anthy_resize_segment");
-  *(void **)(&api.commit_segment) = dlsym(api.lib, "anthy_commit_segment");
+  *(int  **)(&api.commit_segment) = dlsym(api.lib, "anthy_commit_segment");
   if (api.init &&
       api.quit &&
       api.create_context &&
@@ -113,7 +109,7 @@ get_anthy_api(void)
   return -1;
 }
 
-static struct anthy_context *
+static anthy_context_t 
 get_anthy_context(int id)
 {
   if (id < 0 || id >= MAX_CONTEXT) {
@@ -156,7 +152,7 @@ create_context(void)
 
   for (i = 0; i < MAX_CONTEXT; i++) {
     if (!context_slot[i].ac) {
-      struct anthy_context *ac = api.create_context();
+      anthy_context_t ac = api.create_context();
       if (!ac) {
 	return uim_scm_f();
       }
@@ -184,7 +180,7 @@ set_string(uim_lisp id_, uim_lisp str_)
 {
   int id = uim_scm_c_int(id_);
   char *str;
-  struct anthy_context *ac = get_anthy_context(id);
+  anthy_context_t ac = get_anthy_context(id);
   if (!ac) {
     return uim_scm_f();
   }
@@ -199,7 +195,7 @@ get_nr_segments(uim_lisp id_)
 {
   int id = uim_scm_c_int(id_);
   struct anthy_conv_stat acs;
-  struct anthy_context *ac = get_anthy_context(id);
+  anthy_context_t ac = get_anthy_context(id);
   if (!ac) {
     return uim_scm_f();
   }
@@ -212,7 +208,7 @@ static uim_lisp
 get_nr_candidates(uim_lisp id_, uim_lisp nth_)
 {
   int id, nth;
-  struct anthy_context *ac;
+  anthy_context_t ac;
   struct anthy_conv_stat cs;
   id = uim_scm_c_int(id_);
   nth = uim_scm_c_int(nth_);
@@ -238,7 +234,7 @@ get_nth_candidate(uim_lisp id_, uim_lisp seg_, uim_lisp nth_)
   int buflen;
   char *buf;
   uim_lisp buf_;
-  struct anthy_context *ac = get_anthy_context(id);
+  anthy_context_t ac = get_anthy_context(id);
   if (!ac) {
     return uim_scm_f();
   }
@@ -257,7 +253,7 @@ static uim_lisp
 get_segment_length(uim_lisp id_, uim_lisp nth_)
 {
   int id, nth;
-  struct anthy_context *ac;
+  anthy_context_t ac;
   struct anthy_conv_stat cs;
   id = uim_scm_c_int(id_);
   nth = uim_scm_c_int(nth_);
@@ -280,7 +276,7 @@ resize_segment(uim_lisp id_, uim_lisp seg_, uim_lisp cnt_)
   int id = uim_scm_c_int(id_);
   int seg = uim_scm_c_int(seg_);
   int cnt = uim_scm_c_int(cnt_);
-  struct anthy_context *ac = get_anthy_context(id);
+  anthy_context_t ac = get_anthy_context(id);
   api.resize_segment(ac, seg, cnt);
   return uim_scm_f();
 }
@@ -291,7 +287,7 @@ commit_segment(uim_lisp id_, uim_lisp s_, uim_lisp nth_)
   int id = uim_scm_c_int(id_);
   int s = uim_scm_c_int(s_);
   int nth = uim_scm_c_int(nth_);
-  struct anthy_context *ac = get_anthy_context(id);
+  anthy_context_t ac = get_anthy_context(id);
   api.commit_segment(ac, s, nth);
   return uim_scm_f();
 }
