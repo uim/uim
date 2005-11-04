@@ -7,4 +7,5 @@ KEY                 KEY customizationg guide
 PLUGIN              Description of the plugin
 UIM-SCM             Usage of uim-scm API for developers
 UIM-SH              How to use uim-sh to debug interactively
+UNIT-TEST           usage of the unit testing framework for uim for developers
 XIM-SERVER          Description of uim-xim
