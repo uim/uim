@@ -33,6 +33,9 @@
 (use srfi-13)
 (use test.unit)
 
+(if (version<? *gaunit-version* "0.1.1")
+    (error "GaUnit 0.1.1 is required"))
+
 (sys-putenv "LIBUIM_SCM_FILES" "./scm")
 (sys-putenv "LIBUIM_VERBOSE" "1")  ;; must be 1
 (sys-putenv "LIBUIM_VANILLA" "1")
