@@ -63,10 +63,20 @@
 		 (uim '(im-module-name (retrieve-im 'hangul2))))
    ;; raw require does not set im-module-name
    (uim '(set! im-list ()))
+
+   ;; SIOD
+   ;;(uim '(undefine *tcode.scm-loaded*))
+   ;;(assert-false (uim-bool '(symbol-bound? '*tcode.scm-loaded*)))
+   ;;(assert-false (uim-bool '(retrieve-im 'tcode)))
+   ;;(assert-true  (uim-bool '(require "tcode.scm")))
+   ;; SigScheme
    (uim '(undefine *tcode.scm-loaded*))
+   (uim '(set! *features* (delete "*tcode.scm-loaded*" *features*)))
    (assert-false (uim-bool '(symbol-bound? '*tcode.scm-loaded*)))
+   (assert-false (uim-bool '(provided? "*tcode.scm-loaded*")))
    (assert-false (uim-bool '(retrieve-im 'tcode)))
    (assert-true  (uim-bool '(require "tcode.scm")))
+
    (assert-equal 'tcode
 		 (uim '(im-name (retrieve-im 'tcode))))
    (assert-false (uim-bool '(im-module-name (retrieve-im 'tcode))))

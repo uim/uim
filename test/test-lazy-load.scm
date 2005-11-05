@@ -44,6 +44,11 @@
    (uim '(set! im-list ()))
    (uim '(undefine *hangul.scm-loaded*))
    (assert-false (uim-bool '(symbol-bound? '*hangul.scm-loaded*)))
+
+   ;; SigScheme
+   (uim '(set! *features* (delete "*hangul.scm-loaded*" *features*)))
+   (assert-false (uim-bool '(provided? "*hangul.scm-loaded*")))
+
    (uim '(define init-handler (stub-im-generate-init-handler 'hangul2
 							     "hangul")))
    (assert-true  (uim-bool '(procedure? init-handler)))
@@ -62,6 +67,11 @@
    (uim '(set! im-list ()))
    (uim '(undefine *hangul.scm-loaded*))
    (assert-false (uim-bool '(symbol-bound? '*hangul.scm-loaded*)))
+
+   ;; SigScheme
+   (uim '(set! *features* (delete "*hangul.scm-loaded*" *features*)))
+   (assert-false (uim-bool '(provided? "*hangul.scm-loaded*")))
+
    (uim '(register-stub-im
 	  'hangul2
 	  "ko"
@@ -124,6 +134,13 @@
    (uim '(undefine *hangul.scm-loaded*))
    (assert-false (uim-bool '(symbol-bound? '*tcode.scm-loaded*)))
    (assert-false (uim-bool '(symbol-bound? '*hangul.scm-loaded*)))
+
+   ;; SigScheme
+   (uim '(set! *features* (delete "*tcode.scm-loaded*" *features*)))
+   (uim '(set! *features* (delete "*hangul.scm-loaded*" *features*)))
+   (assert-false (uim-bool '(provided? "*tcode.scm-loaded*")))
+   (assert-false (uim-bool '(provided? "*hangul.scm-loaded*")))
+
    (assert-false (uim-bool '(retrieve-im 'tcode)))
    (assert-false (uim-bool '(retrieve-im 'hangul2)))
    (assert-false (uim-bool '(retrieve-im 'hangul3)))

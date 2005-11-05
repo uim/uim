@@ -673,7 +673,12 @@
    (assert-false (uim-bool '(boolean? 'foo)))
    (assert-false (uim-bool '(boolean? -1)))
    (assert-false (uim-bool '(boolean? 0)))
-   (assert-true  (uim-bool '(boolean? 1)))  ; Siod specific
+
+   ;; SIOD
+   ;;(assert-true  (uim-bool '(boolean? 1)))  ; Siod specific
+   ;; SigScheme
+   (assert-false (uim-bool '(boolean? 1)))
+
    (assert-false (uim-bool '(boolean? 10)))
    (assert-true  (uim-bool '(boolean? ()))) ; Siod specific
    (assert-false (uim-bool '(boolean? '(1 "2" 'three))))
@@ -1337,8 +1342,13 @@
 			      (y 2)
 			      (closure (lambda ()
 					 (+ x y)))
-			      (another-env '((x . 4)
-					     (y . 6))))
+			      ;; SIOD: broken frame for SigScheme
+;;			      (another-env '((x . 4)
+;;					     (y . 6)))
+			      ;; SigScheme: valid 2-frame env
+			      (another-env '(((x) . (4))
+					     ((y) . (6))))
+			      )
 			 (set! closure
 			       (%%enclose-another-env closure another-env))
 			 (closure))))
@@ -1349,8 +1359,13 @@
 				(z 3)
 				(closure (lambda ()
 					   (+ x y z)))
-				(another-env '((x . 4)
-					       (y . 6))))
+				;; SIOD: broken frame for SigScheme
+;;				(another-env '((x . 4)
+;;					       (y . 6)))
+				;; SigScheme: valid 2-frame env
+				(another-env '(((x) . (4))
+					       ((y) . (6))))
+				)
 			   (set! closure
 				 (%%enclose-another-env closure another-env))
 			   (closure)))))))
