@@ -195,7 +195,7 @@ ScmObj ScmOp_sscm_closure_code(ScmObj closure)
 
 ScmObj ScmOp_verbose(ScmObj args)
 {
-    DECLARE_FUNCTION("verbose", ProcedureFixed1);
+    DECLARE_FUNCTION("verbose", ProcedureVariadic0);
 
     if (!NULLP(args)) {
         ASSERT_INTP(CAR(args));

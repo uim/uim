@@ -630,7 +630,7 @@ ScmObj ScmOp_SRFI1_last_pair(ScmObj lst)
 ==============================================================================*/
 ScmObj ScmOp_SRFI1_lengthplus(ScmObj lst)
 {
-    DECLARE_FUNCTION("length+", ProcedureFixed0);
+    DECLARE_FUNCTION("length+", ProcedureFixed1);
 
     /* FIXME!: remove expensive circular_listp */
     if (NFALSEP(ScmOp_SRFI1_circular_listp(lst)))
@@ -642,7 +642,7 @@ ScmObj ScmOp_SRFI1_lengthplus(ScmObj lst)
 ScmObj ScmOp_SRFI1_concatenate(ScmObj args)
 {
     ScmObj lsts_of_lst = CAR(args);
-    DECLARE_FUNCTION("concatenate", ProcedureFixed0);
+    DECLARE_FUNCTION("concatenate", ProcedureVariadic0);
 
 #if SCM_STRICT_ARGCHECK
     if (!NULLP(CDR(args)))
