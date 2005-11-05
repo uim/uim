@@ -1,0 +1,75 @@
+This document describes usage of the unit testing framework for uim
+for developers.
+
+
+* Abstract
+
+  The testing framework can test *.scm written for uim. It consists of
+  the three components below.
+
+  - Gauche: a Scheme implementation
+  - GaUnit: an unit testing framework for Gauche
+  - uim-test-utils.scm: uim-sh to GaUnit adapter
+
+  The framework runs on Gauche and evaluates the expression of tests
+  by sending it to uim-sh invoked as inferior process. So the
+  framework can test all uim-dependent codes, on the rich Scheme
+  environment.
+
+  uim-test-utils.scm was contributed by Kouhei Sutou, the author of
+  GaUnit. Thank you for the significant help.
+
+
+* Prerequisite
+
+  Install the following.
+
+  - Gauche 0.8.5 or higher
+
+    http://www.shiro.dreamhost.com/scheme/gauche/
+
+  - GaUnit 0.1.1
+
+    http://www.cozmixng.org/~kou/download/index.html.en
+    http://www.cozmixng.org/~rwiki/index.rb?cmd=view;name=GaUnit%3A%3AREADME.en
+
+    WARNING: GaUnit 0.1.0 does not work for this framework
+
+
+* Usage
+
+  1) cd top source/build directory of uim
+
+  2) Build uim
+
+  3) Run test as follows
+
+     All tests:
+
+       $ gosh -I. test/run-test.scm
+
+     Selective:
+
+       $ gosh -I. test/test-foo.scm
+
+     With options:
+
+       $ gosh -I. test/test-util.scm -vv -c "list procedures"
+
+     Refer the document of GaUnit or specify -h to see all options.
+
+
+* Writing tests
+
+  1) touch test/test-foo.scm
+
+  2) chmod +x test/test-foo.scm
+
+  3) Insert test/template.scm into 1)
+
+  4) Write tests as described in test/test-example.scm
+
+
+* Guidelines for uim project
+
+  FIXME: describe this
