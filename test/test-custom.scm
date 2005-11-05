@@ -350,6 +350,15 @@
 	     (define custom-group-rec-alist ())
 	     (define custom-subgroup-alist ())
 	     
+	     ;; resurrect the predefined subgroups defined in custom.scm
+	     (define-custom-group 'main
+	       (_ "-")
+	       (_ "Main settings of this group"))
+
+	     (define-custom-group 'hidden
+	       (_ "Hidden settings")
+	       (_ "Hidden settings of this group. This group is invisible from uim_custom clients. Exists for internal variable management."))
+
 	     (define test-group-recs-length 0)
 	     (define-custom-group 'global
 	       (_ "Global settings")
@@ -1447,6 +1456,9 @@
    (assert-equal "Test style"
 		 (uim '(custom-label 'test-style)))
 
+   (uim '(define-custom-group 'global-keys
+	                      "global-keys"
+			      "global-keys"))
    ;; overwriting definition
    (uim '(define-custom 'test-style 'test-style-uim
 	   '(global-keys)
@@ -1538,6 +1550,14 @@
   (setup
    (lambda ()
      (uim '(require "custom.scm"))
+
+     (uim '(define-custom-group 'test
+	                        "test"
+				"test"))
+     (uim '(define-custom-group 'ui
+	                        "ui"
+				"ui"))
+
      (uim '(define-custom 'test-style 'test-style-ddskk
 	     '(global)
 	     '(choice
@@ -2146,6 +2166,14 @@
   (setup
    (lambda ()
      (uim '(require "custom.scm"))
+
+     (uim '(define-custom-group 'test
+	                        "test"
+				"test"))
+     (uim '(define-custom-group 'ui
+	                        "ui"
+				"ui"))
+
      (uim '(define-custom 'test-nr-candidate-max 10
 	     '(test advanced ui)
 	     '(integer 1 20)
