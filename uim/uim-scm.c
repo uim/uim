@@ -582,7 +582,7 @@ exit_hook(void)
 void
 uim_scm_init(const char *verbose_level)
 {
-  long vlevel = 4;
+  long vlevel = 2;
   ScmObj output_port;
 
   if (!uim_output)

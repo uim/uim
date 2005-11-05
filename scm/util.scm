@@ -34,7 +34,6 @@
 ;(require "slib-mulapply.scm")
 ;(require "slib-srfi-1.scm")
 
-;; Current uim implementation treats char as integer
 ;;
 ;; generic utilities
 ;;
@@ -42,18 +41,24 @@
 ;; FIXME: Properly escape all special chars in s such as "\"", "\\" as
 ;; original siod based one does.
 ;;
-;;$ uim-sh
-;;uim> (string-escape "\"")
-;;"\"\\\"\""
-;;uim> (string-escape "\\")
-;;"\"\\\\\""
-;;uim> (string-escape "\n")
-;;"\"\\n\""
+;; Make escaped string literal to print a form.
 ;;
-;; TODO: write test
+;; (string-escape "a str\n") -> "\"a str\\n\""
+;;
+;; The following two codes must display same result. See
+;; test/test-util.scm for further specification.
+;;
+;; (display str)
+;;
+;; (use srfi-6)
+;; (define estr (string-append "(display " (string-escape str) ")"))
+;; (eval (read (open-input-string estr))
+;;       (interaction-environment))
 (define string-escape
   (lambda (s)
     (string-append "\"" s "\"")))
+
+;; Current uim implementation treats char as integer
 
 ;; TODO: write test
 (define string->char

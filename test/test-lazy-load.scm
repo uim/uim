@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 327 of new repository
+;; This file is tested with revision 2000 of new repository
 
 (use test.unit)
 
@@ -107,8 +107,12 @@
    (uim '(define im-update-preedit (lambda arg #f)))
    (uim '(define im-pushback-preedit (lambda arg #f)))
 
-   (uim '(create-context 0 #f 'hangul2))
-   (uim '(define test-context (find-context 0)))
+   (uim '(begin
+	   (create-context 0 #f 'hangul2)
+	   #f))
+   (uim '(begin
+	   (define test-context (find-context 0))
+	   #f))
    (assert-equal 'hangul2
 		 (uim '(im-name (context-im test-context))))
    (assert-equal "hangul"

@@ -741,6 +741,10 @@
 	 (let ((cb (lambda () (gate-func func ptr custom-sym))))
 	   (custom-add-hook custom-sym hook cb)))))
 
+;;
+;; predefined subgroups
+;;
+
 (define-custom-group 'main
 		     (_ "-")
 		     (_ "Main settings of this group"))
@@ -749,5 +753,6 @@
 		     (_ "Hidden settings")
 		     (_ "Hidden settings of this group. This group is invisible from uim_custom clients. Exists for internal variable management."))
 
-;(prealloc-heaps-for-heavy-job)
+
+(prealloc-heaps-for-heavy-job)
 (custom-reload-customs)

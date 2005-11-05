@@ -57,6 +57,22 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Verbose level of backtrace has been changed
+Affects: uim developers, bridge developers
+Updates: Internal behavior of libuim
+Version: 0.5.1
+Revision: ac2004
+Date: 2005-11-05
+Modifier: YamaKen
+Related: 
+URL:
+Changes:
+Description:
+  To fix unstable result of the testing framework, backtrace printing
+  has been suppressed at verbose level 1. Now verbose level 2 is
+  required to print backtrace, and libuim's default is also changed to
+  2. So ordinary users and developers don't needed to mind it.
+------------------------------------------------------------------------------
 Summary: Notification of changes in input context configuration
 Affects: Bridge developers
 Updates: C API

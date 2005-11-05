@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 327 of new repository
+;; This file is tested with revision 1999 of new repository
 
 ;; TODO:
 ;;
@@ -324,21 +324,23 @@
 		 (uim '(custom-choice-label 'uim-color 'uim-color-uim)))
    (assert-equal "ATOK like"
 		 (uim '(custom-choice-label 'uim-color 'uim-color-atok)))
+   (assert-equal "uim-color-nonexistent"
+		 (uim '(custom-choice-label 'uim-color
+					    'uim-color-nonexistent)))
    (assert-error (lambda ()
-                   (uim '(custom-choice-label 'uim-color
-                                              'uim-color-nonexistent))))
-   (assert-error (lambda ()
-                   (uim '(custom-choice-label 'uim-nonexistent
-                                              'uim-nonexistent)))))
+		   (uim '(custom-choice-label 'uim-nonexistent
+					      'uim-nonexistent)))))
   ("test custom-choice-desc"
    (assert-equal "uim native"
 		 (uim '(custom-choice-desc 'uim-color 'uim-color-uim)))
    (assert-equal "Similar to ATOK"
 		 (uim '(custom-choice-desc 'uim-color 'uim-color-atok)))
-   (assert-error (lambda () (uim '(custom-choice-desc 'uim-color
-                                                      'uim-color-nonexistent))))
-   (assert-error (lambda () (uim '(custom-choice-desc 'uim-nonexistent
-                                                      'uim-nonexistent))))))
+   (assert-equal "uim-color-nonexistent"
+		 (uim '(custom-choice-desc 'uim-color
+					   'uim-color-nonexistent)))
+   (assert-error (lambda ()
+		   (uim '(custom-choice-desc 'uim-nonexistent
+					     'uim-nonexistent))))))
 
 (define-uim-test-case "testcase custom custom-group"
   (setup
@@ -350,6 +352,15 @@
 	     (define custom-group-rec-alist ())
 	     (define custom-subgroup-alist ())
 	     
+	     ;; resurrect the predefined subgroups defined in custom.scm
+	     (define-custom-group 'main
+	       (_ "-")
+	       (_ "Main settings of this group"))
+
+	     (define-custom-group 'hidden
+	       (_ "Hidden settings")
+	       (_ "Hidden settings of this group. This group is invisible from uim_custom clients. Exists for internal variable management."))
+
 	     (define test-group-recs-length 0)
 	     (define-custom-group 'global
 	       (_ "Global settings")
@@ -670,7 +681,7 @@
 			     "long description of test group 3"))
 		 (uim '(custom-group-rec 'test-group3))))
   ("test custom-list-groups"
-   (assert-equal '(advanced anthy canna global im-switching other-ims prime skk spellcheck)
+   (assert-equal '(advanced anthy canna global hidden im-switching main other-ims prime skk spellcheck)
 		 (sort-symbol (uim '(custom-list-groups)))))
   ("test custom-list-primary-groups"
    ;; defined order have to be kept
@@ -1425,6 +1436,46 @@
    (lambda ()
      (uim '(require "custom.scm"))))
 
+  ;; tests updated features committed in r559 and r1862 of new repository
+  ("test define-custom (group)"
+   (uim '(define-custom 'test-bool #f
+	   '(global)
+	   '(boolean)
+	   "Test bool"
+	   "long description will be here."))
+
+   ;; implicit subgroup 'main' is complemented
+   (assert-equal '(global main)
+		 (uim '(custom-groups 'test-bool)))
+
+   ;; at least a primary group required
+   (assert-error (lambda ()
+		   (uim '(define-custom 'test-bool2 #f
+			   '()
+			   '(boolean)
+			   "Test bool"
+			   "long description will be here."))))
+
+   ;; referring undefined group(s) causes error
+   (assert-error (lambda ()
+		   (uim '(define-custom 'test-bool3 #f
+			   '(global nonexistent)
+			   '(boolean)
+			   "Test bool"
+			   "long description will be here."))))
+   (assert-error (lambda ()
+		   (uim '(define-custom 'test-bool4 #f
+			   '(nonexistent)
+			   '(boolean)
+			   "Test bool"
+			   "long description will be here."))))
+   (assert-error (lambda ()
+		   (uim '(define-custom 'test-bool5 #f
+			   '(nonexistent hidden)
+			   '(boolean)
+			   "Test bool"
+			   "long description will be here.")))))
+
   ("test define-custom (choice)"
    (assert-false (uim-bool '(symbol-bound? 'test-style)))
 
@@ -1440,13 +1491,16 @@
    (assert-true (uim-bool '(symbol-bound? 'test-style)))
    (assert-equal 'test-style-ddskk
 		 (uim 'test-style))
-   (assert-equal '(global)
+   (assert-equal '(global main)
 		 (uim '(custom-groups 'test-style)))
    (assert-equal '(test-style-uim test-style-ddskk test-style-canna)
 		 (uim '(custom-range 'test-style)))
    (assert-equal "Test style"
 		 (uim '(custom-label 'test-style)))
 
+   (uim '(define-custom-group 'global-keys
+	                      "global-keys"
+			      "global-keys"))
    ;; overwriting definition
    (uim '(define-custom 'test-style 'test-style-uim
 	   '(global-keys)
@@ -1459,7 +1513,7 @@
    (assert-true (uim-bool '(symbol-bound? 'test-style)))
    (assert-equal 'test-style-ddskk
 		 (uim 'test-style))
-   (assert-equal '(global-keys)
+   (assert-equal '(global-keys main)
 		 (uim '(custom-groups 'test-style)))
    (assert-equal '(test-style-canna test-style-uim)
 		 (uim '(custom-range 'test-style)))
@@ -1497,6 +1551,8 @@
    (assert-true  (uim-bool '(symbol-bound? 'test-foo-key)))
    (assert-equal '("a")
 		 (uim 'test-foo-key))
+   (assert-equal '(global main)
+		 (uim '(custom-groups 'test-foo-key)))
    (assert-true  (uim-bool '(symbol-bound? 'test-foo-key?)))
    (assert-true  (uim-bool '(test-foo-key? (string->charcode "a") 0)))
 
@@ -1538,6 +1594,14 @@
   (setup
    (lambda ()
      (uim '(require "custom.scm"))
+
+     (uim '(define-custom-group 'test
+	                        "test"
+				"test"))
+     (uim '(define-custom-group 'ui
+	                        "ui"
+				"ui"))
+
      (uim '(define-custom 'test-style 'test-style-ddskk
 	     '(global)
 	     '(choice
@@ -1988,19 +2052,19 @@
 		 (uim '(custom-default-value 'test-dic-file-name))))
 
   ("test custom-groups"
-   (assert-equal '(global)
+   (assert-equal '(global main)
 		 (uim '(custom-groups 'test-style)))
-   (assert-equal '(global)
+   (assert-equal '(global main)
 		 (uim '(custom-groups 'test-available-ims)))
-   (assert-equal '(global)
+   (assert-equal '(global main)
 		 (uim '(custom-groups 'test-cancel-key)))
    (assert-equal '(test ui)
 		 (uim '(custom-groups 'test-use-candidate-window?)))
    (assert-equal '(test advanced ui)
 		 (uim '(custom-groups 'test-nr-candidate-max)))
-   (assert-equal '(test)
+   (assert-equal '(test main)
 		 (uim '(custom-groups 'test-string)))
-   (assert-equal '(test)
+   (assert-equal '(test main)
 		 (uim '(custom-groups 'test-dic-file-name))))
 
   ("test custom-type"
@@ -2146,6 +2210,14 @@
   (setup
    (lambda ()
      (uim '(require "custom.scm"))
+
+     (uim '(define-custom-group 'test
+	                        "test"
+				"test"))
+     (uim '(define-custom-group 'ui
+	                        "ui"
+				"ui"))
+
      (uim '(define-custom 'test-nr-candidate-max 10
 	     '(test advanced ui)
 	     '(integer 1 20)
