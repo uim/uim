@@ -328,8 +328,8 @@
 		 (uim '(custom-choice-label 'uim-color
 					    'uim-color-nonexistent)))
    (assert-error (lambda ()
-                   (uim '(custom-choice-label 'uim-nonexistent
-                                              'uim-nonexistent)))))
+		   (uim '(custom-choice-label 'uim-nonexistent
+					      'uim-nonexistent)))))
   ("test custom-choice-desc"
    (assert-equal "uim native"
 		 (uim '(custom-choice-desc 'uim-color 'uim-color-uim)))
@@ -338,8 +338,9 @@
    (assert-equal "uim-color-nonexistent"
 		 (uim '(custom-choice-desc 'uim-color
 					   'uim-color-nonexistent)))
-   (assert-error (lambda () (uim '(custom-choice-desc 'uim-nonexistent
-                                                      'uim-nonexistent))))))
+   (assert-error (lambda ()
+		   (uim '(custom-choice-desc 'uim-nonexistent
+					     'uim-nonexistent))))))
 
 (define-uim-test-case "testcase custom custom-group"
   (setup
