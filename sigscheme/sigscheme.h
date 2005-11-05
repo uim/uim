@@ -561,6 +561,7 @@ ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer, ScmEvalState *ev
 ScmObj ScmOp_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
 #if SCM_USE_NONSTD_FEATURES
 ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest);
+ScmObj ScmOp_sscm_backtrace(void);
 #endif
 
 /* io.c */

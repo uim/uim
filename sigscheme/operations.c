@@ -1886,6 +1886,15 @@ ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest)
     return (!NULLP(Scm_LookupEnvironment(sym, env))
             || SCM_SYMBOL_BOUNDP(sym)) ? SCM_TRUE : SCM_FALSE;
 }
+
+ScmObj ScmOp_sscm_backtrace(void)
+{
+    DECLARE_FUNCTION("%%backtrace", ProcedureFixed0);
+
+    SigScm_ShowBacktrace();
+
+    return SCM_UNDEF;
+}
 #endif /* SCM_USE_NONSTD_FEATURES */
 
 #if SCM_USE_SRFI1
