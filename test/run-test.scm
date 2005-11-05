@@ -44,7 +44,9 @@
                 (load (string-join (list dir test-script) "/")))
               (directory-list dir
                               :filter (lambda (x)
-                                        (rxmatch #/^test-.+\.scm$/ x))))
+                                        (and (rxmatch #/^test-.+\.scm$/ x)
+					     (not (string=? "test-example.scm"
+							    x))))))
     (if (symbol-bound? '_main)
         (_main `(,(car args) "-vp" ,@(cdr args)))
         (run-all-test))))
