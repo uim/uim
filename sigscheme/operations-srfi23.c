@@ -101,12 +101,7 @@ ScmObj ScmOp_SRFI23_error(ScmObj reason, ScmObj args)
         SigScm_ErrorNewline();
     }
 
-    /* FIXME: backtrace should be printed by outermost exception handler */
-    if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
-        SigScm_ShowBacktrace();
-
-    /* FIXME: throw an exception instead of exiting */
-    exit(EXIT_FAILURE);
+    Scm_ThrowException(args);
     /* NOTREACHED */
     return SCM_UNDEF;
 }

@@ -62,12 +62,11 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static void throw_exception(ScmObj errorobj) SCM_NORETURN;
 
 /*=======================================
   Function Implementations
 =======================================*/
-static void throw_exception(ScmObj errorobj)
+void Scm_ThrowException(ScmObj errorobj)
 {
 #if SCM_EXCEPTION_HANDLING
     if (FALSEP(CURRENT_EXCEPTION_CONTINUATION())) {
@@ -118,7 +117,7 @@ void SigScm_Error(const char *msg, ...)
     }
 
     /* FIXME: this errorobj is OK? */
-    throw_exception(Scm_NewStringCopying("ERROR"));
+    Scm_ThrowException(Scm_NewStringCopying("ERROR"));
 }
 
 /* Obsolete. */
@@ -132,7 +131,7 @@ void SigScm_ErrorObj(const char *msg, ScmObj obj)
     }
 
     /* FIXME: this errorobj is OK? */
-    throw_exception(Scm_NewStringCopying("ERROR"));
+    Scm_ThrowException(Scm_NewStringCopying("ERROR"));
 }
 
 /* This function obsoletes SigScm_ErrorObj(). */
@@ -146,7 +145,7 @@ void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj)
     }
 
     /* FIXME: this errorobj is OK? */
-    throw_exception(Scm_NewStringCopying("ERROR"));
+    Scm_ThrowException(Scm_NewStringCopying("ERROR"));
 }
 
 void SigScm_ShowBacktrace(void)
