@@ -104,7 +104,7 @@ uim_scm_set_lib_path(const char *path);
 
 #if UIM_SCM_GCC4_READY_GC
 #ifdef __GNUC__
-#define UIM_SCM_NOINLINE __attribute__((noinline))
+#define UIM_SCM_NOINLINE __attribute__((__noinline__))
 #else
 #define UIM_SCM_NOINLINE
 #endif /* __GNUC__ */
