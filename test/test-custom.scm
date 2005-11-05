@@ -679,7 +679,7 @@
 			     "long description of test group 3"))
 		 (uim '(custom-group-rec 'test-group3))))
   ("test custom-list-groups"
-   (assert-equal '(advanced anthy canna global im-switching other-ims prime skk spellcheck)
+   (assert-equal '(advanced anthy canna global hidden im-switching main other-ims prime skk spellcheck)
 		 (sort-symbol (uim '(custom-list-groups)))))
   ("test custom-list-primary-groups"
    ;; defined order have to be kept
@@ -1489,7 +1489,7 @@
    (assert-true (uim-bool '(symbol-bound? 'test-style)))
    (assert-equal 'test-style-ddskk
 		 (uim 'test-style))
-   (assert-equal '(global)
+   (assert-equal '(global main)
 		 (uim '(custom-groups 'test-style)))
    (assert-equal '(test-style-uim test-style-ddskk test-style-canna)
 		 (uim '(custom-range 'test-style)))
@@ -1511,7 +1511,7 @@
    (assert-true (uim-bool '(symbol-bound? 'test-style)))
    (assert-equal 'test-style-ddskk
 		 (uim 'test-style))
-   (assert-equal '(global-keys)
+   (assert-equal '(global-keys main)
 		 (uim '(custom-groups 'test-style)))
    (assert-equal '(test-style-canna test-style-uim)
 		 (uim '(custom-range 'test-style)))
@@ -1549,6 +1549,8 @@
    (assert-true  (uim-bool '(symbol-bound? 'test-foo-key)))
    (assert-equal '("a")
 		 (uim 'test-foo-key))
+   (assert-equal '(global main)
+		 (uim '(custom-groups 'test-foo-key)))
    (assert-true  (uim-bool '(symbol-bound? 'test-foo-key?)))
    (assert-true  (uim-bool '(test-foo-key? (string->charcode "a") 0)))
 
@@ -2048,19 +2050,19 @@
 		 (uim '(custom-default-value 'test-dic-file-name))))
 
   ("test custom-groups"
-   (assert-equal '(global)
+   (assert-equal '(global main)
 		 (uim '(custom-groups 'test-style)))
-   (assert-equal '(global)
+   (assert-equal '(global main)
 		 (uim '(custom-groups 'test-available-ims)))
-   (assert-equal '(global)
+   (assert-equal '(global main)
 		 (uim '(custom-groups 'test-cancel-key)))
    (assert-equal '(test ui)
 		 (uim '(custom-groups 'test-use-candidate-window?)))
    (assert-equal '(test advanced ui)
 		 (uim '(custom-groups 'test-nr-candidate-max)))
-   (assert-equal '(test)
+   (assert-equal '(test main)
 		 (uim '(custom-groups 'test-string)))
-   (assert-equal '(test)
+   (assert-equal '(test main)
 		 (uim '(custom-groups 'test-dic-file-name))))
 
   ("test custom-type"
