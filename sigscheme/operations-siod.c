@@ -52,14 +52,18 @@
  * SIOD's verbose-level compatible debug message printing control:
  * Search 'siod_verbose_level' in slib.c to know further detail.
  *
+ * Don't change the verbose level 2 for SCM_DBG_BACKTRACE. This is used to
+ * suppress backtrace when run by the testing framework of uim.
+ *   -- YamaKen 2005-11-05
+ *
  * Extra control:
  *   v0: suppress all printing even if normal 'write' or 'display'
  *   v1: print each result of repl
  *   v2: print the "> " prompt
  */
 #define SCM_DBG_SIOD_V0 SCM_DBG_NONE
-#define SCM_DBG_SIOD_V1 (SCM_DBG_ERRMSG | SCM_DBG_BACKTRACE)
-#define SCM_DBG_SIOD_V2 SCM_DBG_SIOD_V1
+#define SCM_DBG_SIOD_V1 SCM_DBG_ERRMSG
+#define SCM_DBG_SIOD_V2 (SCM_DBG_SIOD_V1 | SCM_DBG_BACKTRACE)
 #define SCM_DBG_SIOD_V3 (SCM_DBG_SIOD_V2 | SCM_DBG_FILE)
 #define SCM_DBG_SIOD_V4 (SCM_DBG_SIOD_V3 | SCM_DBG_GC)
 #define SCM_DBG_SIOD_V5 (SCM_DBG_SIOD_V4 | SCM_DBG_READ)
