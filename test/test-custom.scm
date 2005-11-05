@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 327 of new repository
+;; This file is tested with revision 1999 of new repository
 
 ;; TODO:
 ;;
@@ -324,9 +324,9 @@
 		 (uim '(custom-choice-label 'uim-color 'uim-color-uim)))
    (assert-equal "ATOK like"
 		 (uim '(custom-choice-label 'uim-color 'uim-color-atok)))
-   (assert-error (lambda ()
-                   (uim '(custom-choice-label 'uim-color
-                                              'uim-color-nonexistent))))
+   (assert-equal "uim-color-nonexistent"
+		 (uim '(custom-choice-label 'uim-color
+					    'uim-color-nonexistent)))
    (assert-error (lambda ()
                    (uim '(custom-choice-label 'uim-nonexistent
                                               'uim-nonexistent)))))
@@ -335,8 +335,9 @@
 		 (uim '(custom-choice-desc 'uim-color 'uim-color-uim)))
    (assert-equal "Similar to ATOK"
 		 (uim '(custom-choice-desc 'uim-color 'uim-color-atok)))
-   (assert-error (lambda () (uim '(custom-choice-desc 'uim-color
-                                                      'uim-color-nonexistent))))
+   (assert-equal "uim-color-nonexistent"
+		 (uim '(custom-choice-desc 'uim-color
+					   'uim-color-nonexistent)))
    (assert-error (lambda () (uim '(custom-choice-desc 'uim-nonexistent
                                                       'uim-nonexistent))))))
 
