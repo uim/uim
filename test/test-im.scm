@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 327 of new repository
+;; This file is tested with revision 2005 of new repository
 
 (use test.unit)
 
@@ -53,7 +53,8 @@
 	     (require-module "canna")
 	     (require-module "skk")
 	     (require-module "tcode")
-	     (set! enabled-im-list (append enabled-im-list
+	     (set! enabled-im-list (append (delete 'm17n-en-ispell
+						   enabled-im-list)
 					   '(test-im test-im2)))
 	     (for-each require-module installed-im-module-list)
 	     (define prev-im #f)
