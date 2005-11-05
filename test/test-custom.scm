@@ -1434,6 +1434,46 @@
    (lambda ()
      (uim '(require "custom.scm"))))
 
+  ;; tests updated features committed in r559 and r1862 of new repository
+  ("test define-custom (group)"
+   (uim '(define-custom 'test-bool #f
+	   '(global)
+	   '(boolean)
+	   "Test bool"
+	   "long description will be here."))
+
+   ;; implicit subgroup 'main' is complemented
+   (assert-equal '(global main)
+		 (uim '(custom-groups 'test-bool)))
+
+   ;; at least a primary group required
+   (assert-error (lambda ()
+		   (uim '(define-custom 'test-bool2 #f
+			   '()
+			   '(boolean)
+			   "Test bool"
+			   "long description will be here."))))
+
+   ;; referring undefined group(s) causes error
+   (assert-error (lambda ()
+		   (uim '(define-custom 'test-bool3 #f
+			   '(global nonexistent)
+			   '(boolean)
+			   "Test bool"
+			   "long description will be here."))))
+   (assert-error (lambda ()
+		   (uim '(define-custom 'test-bool4 #f
+			   '(nonexistent)
+			   '(boolean)
+			   "Test bool"
+			   "long description will be here."))))
+   (assert-error (lambda ()
+		   (uim '(define-custom 'test-bool5 #f
+			   '(nonexistent hidden)
+			   '(boolean)
+			   "Test bool"
+			   "long description will be here.")))))
+
   ("test define-custom (choice)"
    (assert-false (uim-bool '(symbol-bound? 'test-style)))
 
