@@ -558,14 +558,14 @@ uim_scm_init(const char *verbose_level)
   char *siod_argv[] =
     {
       "siod",
-      "-v0",          /* siod_verbose_level */
+      "-v2",          /* siod_verbose_level */
       "-h16384:64",   /* heap_size(unit: lisp objects):nheaps */
       "-t16384",      /* heap_alloc_threshold (unit: lisp objects) */
       "-o1024",       /* obarray_dim (hash size of symbol table) */
       "-s262144",     /* stack_size (unit: bytes) */
       "-n128"         /* inums_dim (preallocated fixnum objects) */
     };
-  char verbose_argv[] = "-v4";
+  char verbose_argv[] = "-v2";
   int siod_argc, warnflag = 1;
 
   if (!uim_output) {

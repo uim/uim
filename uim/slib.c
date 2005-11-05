@@ -474,8 +474,14 @@ my_err (char *message, LISP x)
       fprintf (siod_output, "%s\n", siod_err_msg);
       fflush (siod_output);
     }
-  if (siod_verbose_level >= 1)
+
+  /*
+   * Don't change the verbose level 2. This is used to suppress backtrace
+   * when run by the testing framework. -- YamaKen 2005-11-05
+   */
+  if (siod_verbose_level >= 2)
     show_backtrace();
+
   if (errjmp_ok == 1)
     {
       /* prevent recording of bogus debug info */
