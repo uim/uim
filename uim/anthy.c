@@ -68,6 +68,13 @@ static struct anthy_api {
   int  (*get_segment)(anthy_context_t , int, int, char *, int);
   void (*resize_segment)(anthy_context_t , int, int);
   int  (*commit_segment)(anthy_context_t , int, int);
+
+#ifdef HAS_ANTHY_PREDICTION
+  /* prediction */
+  int  (*set_prediction_string)(anthy_context_t , const char *);
+  int  (*get_prediction_stat)(anthy_context_t , struct anthy_prediction_stat *);
+  int  (*get_prediction)(anthy_context_t , int, char *, int);
+#endif /* HAS_ANTHY_PREDICTION */
 } api;
 
 static struct context {
@@ -98,12 +105,19 @@ get_anthy_api(void)
   *(int  **)(&api.get_segment) = dlsym(api.lib, "anthy_get_segment");
   *(void **)(&api.resize_segment) = dlsym(api.lib, "anthy_resize_segment");
   *(int  **)(&api.commit_segment) = dlsym(api.lib, "anthy_commit_segment");
-  if (api.init &&
-      api.quit &&
-      api.create_context &&
-      api.release_context && api.set_string &&
-      api.get_stat && api.get_segment_stat &&
-      api.get_segment && api.resize_segment && api.commit_segment) {
+#ifdef HAS_ANTHY_PREDICTION
+  *(int  **)(&api.set_prediction_string) = dlsym(api.lib, "anthy_set_prediction_string");
+  *(int  **)(&api.get_prediction_stat) = dlsym(api.lib, "anthy_get_prediction_stat");
+  *(int  **)(&api.get_prediction) = dlsym(api.lib, "anthy_get_prediction");
+#endif /* HAS_ANTHY_PREDICTION */
+  if (api.init && api.quit
+      && api.create_context && api.release_context
+      && api.set_string && api.get_stat && api.get_segment_stat
+      && api.get_segment && api.resize_segment && api.commit_segment
+#ifdef HAS_ANTHY_PREDICTION
+      && api.set_prediction_string && api.get_prediction_stat && api.get_prediction
+#endif /* HAS_ANTHY_PREDICTION */
+      ) {
     return 0;
   }
   return -1;
@@ -292,6 +306,57 @@ commit_segment(uim_lisp id_, uim_lisp s_, uim_lisp nth_)
   return uim_scm_f();
 }
 
+#ifdef HAS_ANTHY_PREDICTION
+static uim_lisp
+set_prediction_src_string(uim_lisp id_, uim_lisp str_)
+{
+  int id = uim_scm_c_int(id_);
+  const char *str = uim_scm_refer_c_str(str_);
+  anthy_context_t ac = get_anthy_context(id);
+  if (!ac) {
+    return uim_scm_f();
+  }
+  api.set_prediction_string(ac, str);
+  return uim_scm_f();
+}
+
+static uim_lisp
+get_nr_predictions(uim_lisp id_)
+{
+  int id = uim_scm_c_int(id_);
+  anthy_context_t ac = get_anthy_context(id);
+  struct anthy_prediction_stat ps;
+  if (!ac) {
+    return uim_scm_f();
+  }
+  api.get_prediction_stat(ac, &ps);
+  return uim_scm_make_int(ps.nr_prediction);
+}
+
+static uim_lisp
+get_nth_prediction(uim_lisp id_, uim_lisp nth_)
+{
+  int id  = uim_scm_c_int(id_);
+  int nth = uim_scm_c_int(nth_); 
+  int buflen;
+  char *buf;
+  uim_lisp buf_;
+  anthy_context_t ac = get_anthy_context(id);
+  if (!ac) {
+    return uim_scm_f();
+  }
+  buflen = api.get_prediction(ac, nth, NULL, 0);
+  if (buflen == -1) {
+    return uim_scm_f();
+  }
+  buf = (char *)malloc(buflen + 1);
+  api.get_prediction(ac, nth, buf, buflen + 1);
+  buf_ = uim_scm_make_str(buf);
+  free(buf);
+  return buf_;
+}
+#endif /* HAS_ANTHY_PREDICTION */
+
 void
 uim_plugin_instance_init(void)
 {
@@ -305,6 +370,11 @@ uim_plugin_instance_init(void)
   uim_scm_init_subr_2("anthy-lib-get-segment-length", get_segment_length);
   uim_scm_init_subr_3("anthy-lib-resize-segment", resize_segment);
   uim_scm_init_subr_3("anthy-lib-commit-segment", commit_segment);
+#ifdef HAS_ANTHY_PREDICTION
+  uim_scm_init_subr_2("anthy-lib-set-prediction-src-string", set_prediction_src_string);
+  uim_scm_init_subr_1("anthy-lib-get-nr-predictions", get_nr_predictions);
+  uim_scm_init_subr_2("anthy-lib-get-nth-prediction", get_nth_prediction);
+#endif /* HAS_ANTHY_PREDICTION */
 }
 
 void
