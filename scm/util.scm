@@ -29,13 +29,25 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; Current uim implementation treats char as integer
-
-;; TODO: write test
+;; Make escaped string literal to print a form.
+;;
+;; (string-escape "a str\n") -> "\"a str\\n\""
+;;
+;; The following two codes must display same result. See
+;; test/test-util.scm for further specification.
+;;
+;; (display str)
+;;
+;; (use srfi-6)
+;; (define estr (string-append "(display " (string-escape str) ")"))
+;; (eval (read (open-input-string estr))
+;;       (interaction-environment))
 (define string-escape
   (lambda (s)
     (let ((buf (string-append "\"\"" s s)))
       (print-to-string s buf))))
+
+;; Current uim implementation treats char as integer
 
 ;; TODO: write test
 (define string->char

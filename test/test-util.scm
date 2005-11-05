@@ -542,6 +542,60 @@
 		 (uim '(string-append-map car '(("c" "C") ("a" "A") ("r" "R")))))))
 
 (define-uim-test-case "testcase util misc"
+  ("test string-escape"
+   ;; empty string
+   (assert-equal "\"\""
+		 (uim '(string-escape "")))
+   ;; single character
+   (assert-equal "\"\\\"\""
+		 (uim '(string-escape "\"")))
+   (assert-equal "\"\\\\\""
+		 (uim '(string-escape "\\")))
+   (assert-equal "\"\\n\""
+		 (uim '(string-escape "\n")))
+   (assert-equal "\"a\""
+		 (uim '(string-escape "a")))
+   (assert-equal "\"b\""
+		 (uim '(string-escape "b")))
+   (assert-equal "\"c\""
+		 (uim '(string-escape "c")))
+   (assert-equal "\"a\""
+		 (uim '(string-escape "\a")))
+   (assert-equal "\"b\""
+		 (uim '(string-escape "\b")))
+   (assert-equal "\"c\""
+		 (uim '(string-escape "\c")))
+   (assert-equal "\"A\""
+		 (uim '(string-escape "A")))
+   (assert-equal "\"B\""
+		 (uim '(string-escape "B")))
+   (assert-equal "\"C\""
+		 (uim '(string-escape "C")))
+   (assert-equal "\"A\""
+		 (uim '(string-escape "\A")))
+   (assert-equal "\"B\""
+		 (uim '(string-escape "\B")))
+   (assert-equal "\"C\""
+		 (uim '(string-escape "\C")))
+   ;; 2 characters
+   (assert-equal "\"\\\"\\\"\""
+		 (uim '(string-escape "\"\"")))
+   (assert-equal "\"\\\\\\\"\""
+		 (uim '(string-escape "\\\"")))
+   (assert-equal "\"\\\\\\\\\""
+		 (uim '(string-escape "\\\\")))
+   (assert-equal "\"\\r\\n\""
+		 (uim '(string-escape "\r\n")))
+   (assert-equal "\"aB\""
+		 (uim '(string-escape "aB")))
+   (assert-equal "\"aB\""
+		 (uim '(string-escape "a\B")))
+   (assert-equal "\"aB\""
+		 (uim '(string-escape "\a\B")))
+   ;; complex
+   (assert-equal "\"\\\"a string\\\" in two-line\\nstring\\n\""
+		 (uim '(string-escape "\"a\ string\" in two-line\nstring\n"))))
+
   ("test compose"
    (uim '(define test-list '(0 1 2 3 4 5)))
    (assert-true  (uim-bool '(procedure? (compose))))
