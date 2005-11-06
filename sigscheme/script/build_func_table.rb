@@ -164,6 +164,11 @@ build_functable("",
                 "r5rs_func_info_table",
                 ["eval.c", "io.c", "operations.c", "sigscheme.c"])
 
+# R5RS deep c[ad]+r
+build_functable("",
+                "r5rs_deepcadrs_func_info_table",
+                ["operations-r5rs-deepcadrs.c"])
+
 # SRFI-1
 build_functable("_SRFI1_",
                 "srfi1_func_info_table",

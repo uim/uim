@@ -663,6 +663,7 @@ ScmObj ScmOp_cddr(ScmObj lst)
     DECLARE_FUNCTION("cddr", ProcedureFixed1);
     return ScmOp_cdr( ScmOp_cdr(lst) );
 }
+
 ScmObj ScmOp_caddr(ScmObj lst)
 {
     DECLARE_FUNCTION("caddr", ProcedureFixed1);
@@ -673,119 +674,6 @@ ScmObj ScmOp_cdddr(ScmObj lst)
     DECLARE_FUNCTION("cdddr", ProcedureFixed1);
     return ScmOp_cdr( ScmOp_cdr( ScmOp_cdr(lst) ));
 }
-
-#if SCM_USE_DEEP_CADRS
-ScmObj ScmOp_caaar(ScmObj lst)
-{
-    DECLARE_FUNCTION("caaar", ProcedureFixed1);
-    return ScmOp_car( ScmOp_car( ScmOp_car(lst) ));
-}
-ScmObj ScmOp_caadr(ScmObj lst)
-{
-    DECLARE_FUNCTION("caadr", ProcedureFixed1);
-    return ScmOp_car( ScmOp_car( ScmOp_cdr(lst) ));
-}
-ScmObj ScmOp_cadar(ScmObj lst)
-{
-    DECLARE_FUNCTION("cadar", ProcedureFixed1);
-    return ScmOp_car( ScmOp_cdr( ScmOp_car(lst) ));
-}
-ScmObj ScmOp_cdaar(ScmObj lst)
-{
-    DECLARE_FUNCTION("cdaar", ProcedureFixed1);
-    return ScmOp_cdr( ScmOp_car( ScmOp_car(lst) ));
-}
-ScmObj ScmOp_cdadr(ScmObj lst)
-{
-    DECLARE_FUNCTION("cdadr", ProcedureFixed1);
-    return ScmOp_cdr( ScmOp_car( ScmOp_cdr(lst) ));
-}
-ScmObj ScmOp_cddar(ScmObj lst)
-{
-    DECLARE_FUNCTION("cddar", ProcedureFixed1);
-    return ScmOp_cdr( ScmOp_cdr( ScmOp_car(lst) ));
-}
-ScmObj ScmOp_caaaar(ScmObj lst)
-{
-    DECLARE_FUNCTION("caaaar", ProcedureFixed1);
-    return ScmOp_car( ScmOp_car( ScmOp_car( ScmOp_car(lst) )));
-}
-ScmObj ScmOp_caaadr(ScmObj lst)
-{
-    DECLARE_FUNCTION("caaadr", ProcedureFixed1);
-    return ScmOp_car( ScmOp_car( ScmOp_car( ScmOp_cdr(lst) )));
-}
-ScmObj ScmOp_caadar(ScmObj lst)
-{
-    DECLARE_FUNCTION("caadar", ProcedureFixed1);
-    return ScmOp_car( ScmOp_car( ScmOp_cdr( ScmOp_car(lst) )));
-}
-ScmObj ScmOp_caaddr(ScmObj lst)
-{
-    DECLARE_FUNCTION("caaddr", ProcedureFixed1);
-    return ScmOp_car( ScmOp_car( ScmOp_cdr( ScmOp_cdr(lst) )));
-}
-ScmObj ScmOp_cadaar(ScmObj lst)
-{
-    DECLARE_FUNCTION("cadaar", ProcedureFixed1);
-    return ScmOp_car( ScmOp_cdr( ScmOp_car( ScmOp_car(lst) )));
-}
-ScmObj ScmOp_cadadr(ScmObj lst)
-{
-    DECLARE_FUNCTION("cadadr", ProcedureFixed1);
-    return ScmOp_car( ScmOp_cdr( ScmOp_car( ScmOp_cdr(lst) )));
-}
-ScmObj ScmOp_caddar(ScmObj lst)
-{
-    DECLARE_FUNCTION("caddar", ProcedureFixed1);
-    return ScmOp_car( ScmOp_cdr( ScmOp_cdr( ScmOp_car(lst) )));
-}
-ScmObj ScmOp_cadddr(ScmObj lst)
-{
-    DECLARE_FUNCTION("cadddr", ProcedureFixed1);
-    return ScmOp_car( ScmOp_cdr( ScmOp_cdr( ScmOp_cdr(lst) )));
-}
-ScmObj ScmOp_cdaaar(ScmObj lst)
-{
-    DECLARE_FUNCTION("cdaaar", ProcedureFixed1);
-    return ScmOp_cdr( ScmOp_car( ScmOp_car( ScmOp_car(lst) )));
-}
-ScmObj ScmOp_cdaadr(ScmObj lst)
-{
-    DECLARE_FUNCTION("cdaadr", ProcedureFixed1);
-    return ScmOp_cdr( ScmOp_car( ScmOp_car( ScmOp_cdr(lst) )));
-}
-ScmObj ScmOp_cdadar(ScmObj lst)
-{
-    DECLARE_FUNCTION("cdadar", ProcedureFixed1);
-    return ScmOp_cdr( ScmOp_car( ScmOp_cdr( ScmOp_car(lst) )));
-}
-ScmObj ScmOp_cdaddr(ScmObj lst)
-{
-    DECLARE_FUNCTION("cdaddr", ProcedureFixed1);
-    return ScmOp_cdr( ScmOp_car( ScmOp_cdr( ScmOp_cdr(lst) )));
-}
-ScmObj ScmOp_cddaar(ScmObj lst)
-{
-    DECLARE_FUNCTION("cddaar", ProcedureFixed1);
-    return ScmOp_cdr( ScmOp_cdr( ScmOp_car( ScmOp_car(lst) )));
-}
-ScmObj ScmOp_cddadr(ScmObj lst)
-{
-    DECLARE_FUNCTION("cddadr", ProcedureFixed1);
-    return ScmOp_cdr( ScmOp_cdr( ScmOp_car( ScmOp_cdr(lst) )));
-}
-ScmObj ScmOp_cdddar(ScmObj lst)
-{
-    DECLARE_FUNCTION("cdddar", ProcedureFixed1);
-    return ScmOp_cdr( ScmOp_cdr( ScmOp_cdr( ScmOp_car(lst) )));
-}
-ScmObj ScmOp_cddddr(ScmObj lst)
-{
-    DECLARE_FUNCTION("cddddr", ProcedureFixed1);
-    return ScmOp_cdr( ScmOp_cdr( ScmOp_cdr( ScmOp_cdr(lst) )));
-}
-#endif /* SCM_USE_DEEP_CADRS */
 
 ScmObj ScmOp_list(ScmObj args)
 {
@@ -1896,6 +1784,10 @@ ScmObj ScmOp_sscm_backtrace(void)
     return SCM_UNDEF;
 }
 #endif /* SCM_USE_NONSTD_FEATURES */
+
+#if SCM_USE_DEEP_CADRS
+#include "operations-r5rs-deepcadrs.c"
+#endif /* SCM_USE_DEEP_CADRS */
 
 #if SCM_USE_SRFI1
 #include "operations-srfi1.c"
