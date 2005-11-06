@@ -68,6 +68,8 @@ ScmObj scm_current_dynamic_extent = NULL;
 static ScmObj continuation_thrown_obj = NULL;
 static ScmObj continuation_stack = NULL;
 
+static struct trace_frame *trace_stack = NULL;
+
 /*=======================================
   File Local Function Declarations
 =======================================*/
@@ -93,6 +95,7 @@ void SigScm_InitContinuation(void)
 {
     initialize_dynamic_extent();
     initialize_continuation_env();
+    trace_stack = NULL;
 }
 
 void SigScm_FinalizeContinuation(void)
@@ -235,6 +238,7 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
     jmp_buf env;
     ScmObj cont = SCM_FALSE;
     ScmObj ret  = SCM_FALSE;
+    struct trace_frame *saved_trace_stack;
 
     cont = Scm_NewContinuation();
     CONTINUATION_SET_JMPENV(cont, &env);
@@ -246,12 +250,14 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
         /* returned from longjmp */
         ret = continuation_thrown_obj;
         continuation_thrown_obj = SCM_FALSE;  /* make ret sweepable */
+        trace_stack = saved_trace_stack;
 
         enter_dynamic_extent(CONTINUATION_DYNEXT(cont));
 
         eval_state->ret_type = SCM_RETTYPE_AS_IS;
         return ret;
     } else {
+        saved_trace_stack = trace_stack;
 #if SCM_NESTED_CONTINUATION_ONLY
         /* call proc with current continutation as (proc cont): This call must
          * not be Scm_tailcall(), to preserve current stack until longjmp()
@@ -295,4 +301,25 @@ void Scm_CallContinuation(ScmObj cont, ScmObj ret)
     } else {
         ERR("Scm_CallContinuation: called expired continuation");
     }
+}
+
+/*============================================================================
+  Trace Stack
+============================================================================*/
+void Scm_PushTraceFrame(struct trace_frame *frame, ScmObj obj, ScmObj env)
+{
+    frame->prev = trace_stack;
+    frame->obj  = obj;
+    frame->env  = env;
+    trace_stack = frame;
+}
+
+void Scm_PopTraceFrame(void)
+{
+    trace_stack = trace_stack->prev;
+}
+
+const struct trace_frame *Scm_TraceStack(void)
+{
+    return trace_stack;
 }

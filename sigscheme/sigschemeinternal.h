@@ -345,6 +345,9 @@ void   SigScm_FinalizeContinuation(void);
 ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state);
 void   Scm_CallContinuation(ScmObj cont, ScmObj ret);
 ScmObj Scm_DynamicWind(ScmObj before, ScmObj thunk, ScmObj after);
+void Scm_PushTraceFrame(struct trace_frame *frame, ScmObj obj, ScmObj env);
+void Scm_PopTraceFrame(void);
+const struct trace_frame *Scm_TraceStack(void);
 
 /* storage-symbol.c */
 void   SigScm_InitSymbol(void);

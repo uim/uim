@@ -72,7 +72,6 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-struct trace_frame *scm_trace_root = NULL;
 
 /*=======================================
   File Local Function Declarations
@@ -485,10 +484,8 @@ ScmObj Scm_eval(ScmObj obj, ScmObj env)
 
 #if SCM_DEBUG
     struct trace_frame frame;
-    frame.prev = scm_trace_root;
-    frame.obj  = obj;
-    frame.env  = env;
-    scm_trace_root = &frame;
+
+    Scm_PushTraceFrame(&frame, obj, env);
 #endif
 
     state.env = env;
@@ -515,7 +512,7 @@ eval_loop:
     }
 
 #if SCM_DEBUG
-    scm_trace_root = frame.prev;
+    Scm_PopTraceFrame();
 #endif
     return ret;
 }
