@@ -2,8 +2,6 @@
 Requirements and bugs:
 
 * Introduce Exception handling (probably should be based on SRFI-34)
-  - Implement assert-error in unittest.scm
-  - [uim] Make the GaUnit-based testing framework workable
   - Reimplement with dynamic-wind, and without direct setjmp/longjmp
   - Rename call/cc with call/ec? ([Anthy-dev 2216])
 
@@ -84,8 +82,10 @@ Namings and Cosmetic things:
 ==============================================================================
 Assigned to YamaKen:
 
+* Implement assert-error in unittest.scm
+* Write tests for SRFI-34
+
 * GCC4-optimization-proof stack protection
   - Update the document
-  - Re-merge into datas.c
 
 ==============================================================================
