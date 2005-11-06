@@ -30,14 +30,19 @@
 (use gauche.process)
 (use gauche.selector)
 (use gauche.version)
+(use srfi-1)
 (use srfi-13)
 (use test.unit)
+
+;; Must be #t when LIBUIM_VERBOSE is set to 2. This enables receiving
+;; backtrace following an error.
+(define UIM-SH-MULTILINE-ERROR #t)
 
 (if (version<? *gaunit-version* "0.1.1")
     (error "GaUnit 0.1.1 is required"))
 
 (sys-putenv "LIBUIM_SCM_FILES" "./scm")
-(sys-putenv "LIBUIM_VERBOSE" "1")  ;; must be 1
+(sys-putenv "LIBUIM_VERBOSE" "2")  ;; must be 1 or 2 (2 enables backtrace)
 (sys-putenv "LIBUIM_VANILLA" "1")
 
 (set! (port-buffering (current-output-port)) :none)
@@ -71,11 +76,25 @@
                            #f)
                          (lambda ()
                            (read in)))))
-      (if (and (eq? 'ERROR: uim-sh-output)
-               (uim-sh-select in 3))
-        (error (string-trim-both (read-block 10000 in)))
-        uim-sh-output)))
+    (if (eq? 'ERROR: uim-sh-output)
+	(error (uim-sh-read-error in))
+	uim-sh-output)))
 
+(define (uim-sh-read-error in)
+  (let* ((blocks (if UIM-SH-MULTILINE-ERROR
+		     (unfold (lambda (in)
+			       (not (or (char-ready? in)
+					(begin
+					  (sys-nanosleep 100000000) ;; 0.1s
+					  (char-ready? in)))))
+			     (lambda (in)
+			       (read-block 4096 in))
+			     values
+			     in)
+		     (list (read-line in))))
+	 (msg (string-trim-both (string-concatenate blocks))))
+    msg))
+ 
 (define (uim sexp)
   (uim-sh-write sexp (process-input *uim-sh-process*))
   (uim-sh-read (process-output *uim-sh-process*)))
