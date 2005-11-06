@@ -169,6 +169,11 @@ build_functable("",
                 "r5rs_deepcadrs_func_info_table",
                 ["operations-r5rs-deepcadrs.c"])
 
+# SigScheme specific non standard operations
+build_functable("",
+                "nonstd_func_info_table",
+                ["operations-nonstd.c"])
+
 # SRFI-1
 build_functable("_SRFI1_",
                 "srfi1_func_info_table",

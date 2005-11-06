@@ -535,10 +535,6 @@ ScmObj ScmOp_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_stat
 ScmObj ScmOp_values(ScmObj args);
 ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer, ScmEvalState *eval_state);
 ScmObj ScmOp_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
-#if SCM_USE_NONSTD_FEATURES
-ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest);
-ScmObj ScmOp_sscm_backtrace(void);
-#endif
 
 /* operations-r5rs-deepcadrs.c */
 #if SCM_USE_DEEP_CADRS
@@ -565,6 +561,19 @@ ScmObj ScmOp_cddadr(ScmObj lst);
 ScmObj ScmOp_cdddar(ScmObj lst);
 ScmObj ScmOp_cddddr(ScmObj lst);
 #endif /* SCM_USE_DEEP_CADRS */
+
+/* operations-nonstd.c */
+#if SCM_USE_NONSTD_FEATURES
+ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest);
+ScmObj ScmOp_sscm_backtrace(void);
+ScmObj ScmOp_load_path(void);
+/* FIXME: add ScmObj SigScm_require(const char *c_filename); */
+ScmObj ScmOp_require(ScmObj filename);
+ScmObj ScmOp_provide(ScmObj feature);
+ScmObj ScmOp_providedp(ScmObj feature);
+ScmObj ScmOp_file_existsp(ScmObj filepath);
+ScmObj ScmOp_delete_file(ScmObj filepath);
+#endif
 
 /* io.c */
 void   SigScm_set_lib_path(const char *path);
@@ -602,15 +611,6 @@ ScmObj ScmOp_write_char(ScmObj obj, ScmObj args);
 
 ScmObj SigScm_load(const char *c_filename);
 ScmObj ScmOp_load(ScmObj filename);
-#if SCM_USE_NONSTD_FEATURES
-ScmObj ScmOp_load_path(void);
-/* FIXME: add ScmObj SigScm_require(const char *c_filename); */
-ScmObj ScmOp_require(ScmObj filename);
-ScmObj ScmOp_provide(ScmObj feature);
-ScmObj ScmOp_providedp(ScmObj feature);
-ScmObj ScmOp_file_existsp(ScmObj filepath);
-ScmObj ScmOp_delete_file(ScmObj filepath);
-#endif
 
 /* read.c */
 ScmObj SigScm_Read(ScmObj port);

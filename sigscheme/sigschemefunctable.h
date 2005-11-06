@@ -68,6 +68,7 @@ struct builtin_func_info {
 =======================================*/
 extern struct builtin_func_info r5rs_func_info_table[];
 extern struct builtin_func_info r5rs_deepcadrs_func_info_table[];
+extern struct builtin_func_info nonstd_func_info_table[];
 extern struct builtin_func_info srfi1_func_info_table[];
 extern struct builtin_func_info srfi2_func_info_table[];
 extern struct builtin_func_info srfi6_func_info_table[];

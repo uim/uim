@@ -181,6 +181,7 @@ static void SigScm_Initialize_internal(void)
     REGISTER_FUNC_TABLE(r5rs_deepcadrs_func_info_table);
 #endif
 #if SCM_USE_NONSTD_FEATURES
+    REGISTER_FUNC_TABLE(nonstd_func_info_table);
     Scm_DefineAlias("call/cc", "call-with-current-continuation");
 #endif
 #else /* SCM_USE_REGISTER_TABLE */

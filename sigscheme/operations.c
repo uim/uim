@@ -1748,47 +1748,12 @@ ScmObj ScmOp_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after)
     return Scm_DynamicWind(before, thunk, after);
 }
 
-/*============================================================================
-  SigScheme-Specific Non-R5RS Standard Procedures
-============================================================================*/
-#if SCM_USE_NONSTD_FEATURES
-/*
- * TODO:
- * - describe compatibility with de facto standard of other Scheme
- *   implementations (accept env as optional arg, etc)
- */
-/* The implementation is fully compatible with SIOD */
-ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest)
-{
-    ScmObj env = SCM_INVALID;
-    DECLARE_FUNCTION("symbol-bound?", ProcedureVariadic1);
-
-    ASSERT_SYMBOLP(sym);
-
-    env = POP_ARG(rest);
-    if (VALIDP(env))
-        ASSERT_ENVP(env);
-    else
-        env = SCM_INTERACTION_ENV;
-
-    return (!NULLP(Scm_LookupEnvironment(sym, env))
-            || SCM_SYMBOL_BOUNDP(sym)) ? SCM_TRUE : SCM_FALSE;
-}
-
-ScmObj ScmOp_sscm_backtrace(void)
-{
-    DECLARE_FUNCTION("%%backtrace", ProcedureFixed0);
-
-    SigScm_ShowBacktrace();
-
-    return SCM_UNDEF;
-}
-#endif /* SCM_USE_NONSTD_FEATURES */
-
 #if SCM_USE_DEEP_CADRS
 #include "operations-r5rs-deepcadrs.c"
-#endif /* SCM_USE_DEEP_CADRS */
-
+#endif
+#if SCM_USE_NONSTD_FEATURES
+#include "operations-nonstd.c"
+#endif 
 #if SCM_USE_SRFI1
 #include "operations-srfi1.c"
 #endif

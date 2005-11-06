@@ -62,7 +62,7 @@ ScmObj scm_current_error_port  = NULL;
 
 ScmObj SigScm_features      = NULL;
 
-static const char *lib_path = NULL;
+const char *scm_lib_path = NULL;
 
 const ScmSpecialCharInfo Scm_special_char_table[] = {
     /* printable characters */
@@ -96,27 +96,15 @@ const ScmSpecialCharInfo Scm_special_char_table[] = {
 =======================================*/
 static ScmObj SigScm_load_internal(const char *c_filename);
 static char*  create_valid_path(const char *c_filename);
-#if SCM_USE_NONSTD_FEATURES
-static ScmObj create_loaded_str(ScmObj filename);
 static int    file_existsp(const char *filepath);
-#endif
 
 /*=======================================
   Function Implementations
 =======================================*/
 void SigScm_set_lib_path(const char *path)
 {
-    lib_path = path;
+    scm_lib_path = path;
 }
-
-#if SCM_USE_NONSTD_FEATURES
-/* SIOD compatible */
-ScmObj ScmOp_load_path(void)
-{
-    DECLARE_FUNCTION("load-path", ProcedureFixed0);
-    return Scm_NewStringCopying(lib_path);
-}
-#endif
 
 ScmObj Scm_MakeSharedFilePort(FILE *file, const char *aux_info,
                               enum ScmPortFlag flag)
@@ -530,14 +518,14 @@ static char* create_valid_path(const char *filename)
     char *filepath   = NULL;
 
     /* construct filepath */
-    if (lib_path) {
+    if (scm_lib_path) {
         /* try absolute path */
         if (file_existsp(c_filename))
             return c_filename;
 
-        /* use lib_path */
-        filepath = (char*)malloc(strlen(lib_path) + strlen(c_filename) + 2);
-        strcpy(filepath, lib_path);
+        /* use scm_lib_path */
+        filepath = (char*)malloc(strlen(scm_lib_path) + strlen(c_filename) + 2);
+        strcpy(filepath, scm_lib_path);
         strcat(filepath, "/");
         strcat(filepath, c_filename);
         if (file_existsp(filepath)) {
@@ -563,6 +551,16 @@ static char* create_valid_path(const char *filename)
     return NULL;
 }
 
+static int file_existsp(const char *c_filepath)
+{
+    FILE *f = fopen(c_filepath, "r");
+    if (!f)
+        return 0;
+
+    fclose(f);
+    return 1;
+}
+
 ScmObj ScmOp_load(ScmObj filename)
 {
     char *c_filename = SCM_STRING_STR(filename);
@@ -576,119 +574,6 @@ ScmObj ScmOp_load(ScmObj filename)
     return SCM_TRUE;
 #endif
 }
-
-#if SCM_USE_NONSTD_FEATURES
-/* FIXME: add ScmObj SigScm_require(const char *c_filename) */
-
-ScmObj ScmOp_require(ScmObj filename)
-{
-    ScmObj loaded_str = SCM_FALSE;
-#if SCM_COMPAT_SIOD
-    ScmObj retsym     = SCM_FALSE;
-#endif
-    DECLARE_FUNCTION("require", ProcedureFixed1);
-
-    ASSERT_STRINGP(filename);
-
-    loaded_str = create_loaded_str(filename);
-    if (FALSEP(ScmOp_providedp(loaded_str))) {
-        ScmOp_load(filename);
-        ScmOp_provide(loaded_str);
-    }
-
-#if SCM_COMPAT_SIOD
-    retsym = Scm_Intern(SCM_STRING_STR(loaded_str));
-    SCM_SYMBOL_SET_VCELL(retsym, SCM_TRUE);
-
-    return retsym;
-#else
-    return SCM_TRUE;
-#endif
-}
-
-static ScmObj create_loaded_str(ScmObj filename)
-{
-    char  *loaded_str = NULL;
-    int    size = 0;
-
-    /* generate loaded_str, contents is filename-loaded* */
-    size = (strlen(SCM_STRING_STR(filename)) + strlen("*-loaded*") + 1);
-    loaded_str = (char*)malloc(sizeof(char) * size);
-    snprintf(loaded_str, size, "*%s-loaded*", SCM_STRING_STR(filename));
-
-    return Scm_NewString(loaded_str);
-}
-
-/*
- * TODO: replace original specification with a SRFI standard or other de facto
- * standard
- */
-ScmObj ScmOp_provide(ScmObj feature)
-{
-    DECLARE_FUNCTION("provide", ProcedureFixed1);
-
-    ASSERT_STRINGP(feature);
-
-    /* record to SigScm_features */
-    SCM_SYMBOL_SET_VCELL(SigScm_features,
-                         CONS(feature, SCM_SYMBOL_VCELL(SigScm_features)));
-
-    return SCM_TRUE;
-}
-
-/*
- * TODO: replace original specification with a SRFI standard or other de facto
- * standard
- */
-ScmObj ScmOp_providedp(ScmObj feature)
-{
-    ScmObj provided = SCM_FALSE;
-    DECLARE_FUNCTION("provided?", ProcedureFixed1);
-
-    ASSERT_STRINGP(feature);
-
-    provided = ScmOp_member(feature, SCM_SYMBOL_VCELL(SigScm_features));
-
-    return (NFALSEP(provided)) ? SCM_TRUE : SCM_FALSE;
-}
-
-/*
- * TODO: describe compatibility with de facto standard of other Scheme
- * implementations
- */
-ScmObj ScmOp_file_existsp(ScmObj filepath)
-{
-    DECLARE_FUNCTION("file-exists?", ProcedureFixed1);
-
-    ASSERT_STRINGP(filepath);
-
-    return (file_existsp(SCM_STRING_STR(filepath))) ? SCM_TRUE : SCM_FALSE;
-}
-
-/* TODO: remove to ensure security */
-ScmObj ScmOp_delete_file(ScmObj filepath)
-{
-    DECLARE_FUNCTION("delete-file", ProcedureFixed1);
-
-    ASSERT_STRINGP(filepath);
-
-    if (remove(SCM_STRING_STR(filepath)) == -1)
-        ERR_OBJ("delete failed. file = ", filepath);
-
-    return SCM_TRUE;
-}
-
-static int file_existsp(const char *c_filepath)
-{
-    FILE *f = fopen(c_filepath, "r");
-    if (!f)
-        return 0;
-
-    fclose(f);
-    return 1;
-}
-#endif /* SCM_USE_NONSTD_FEATURES */
-
 
 /* FIXME: link conditionally with autoconf */
 #include "sbcport.c"
