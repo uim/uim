@@ -42,7 +42,7 @@
 # $8  :register_func   ProcedureFixedTailRec2
 # $9  :functype_prefix Procedure
 # $10 :functype_spec   FixedTailRec2
-SCM_DECL_RE = /\n((ScmObj)\s+(Scm(Op|Exp)_(.\w+))\(([^{]+)\))[ \t]*\n\s*\{[^{}]+DECLARE_FUNCTION\(\s*\"([^\"]+)\"[\s,]+([^\s,]+)\)/m
+SCM_DECL_RE = /\n((ScmObj)\s+(Scm(Op|Exp)_(\w+))\(([^{]+)\))[ \t]*\n\s*\{[^{}]+DECLARE_FUNCTION\(\s*\"([^\"]+)\"[\s,]+([^\s,]+)\)/m
 
 
 class String
@@ -61,7 +61,7 @@ class String
         :functype_prefix => functype_prefix,
         :functype_spec   => functype_spec,
       }
-      res.push(yield(decl))
+      res << yield(decl)
     }
     res
   end
