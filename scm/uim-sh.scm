@@ -49,6 +49,8 @@
 	  (begin
 	    (guard (err
 		    (else
+		     ;; currently not working
+		     ;;(%%backtrace)
 		     #f))
 	      ((if uim-sh-opt-strict-batch
 		   (lambda (obj) #f)
