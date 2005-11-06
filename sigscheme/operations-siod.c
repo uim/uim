@@ -106,11 +106,13 @@ void SigScm_Initialize_SIOD(void)
 
 #if SCM_USE_REGISTER_TABLE
     REGISTER_FUNC_TABLE(siod_func_info_table);
+    Scm_DefineAlias("=", "%%=");
 #else /* SCM_USE_REGISTER_TABLE */
     Scm_RegisterProcedureFixed1("symbol-value"         , ScmOp_symbol_value);
     Scm_RegisterProcedureFixed2("set-symbol-value!"    , ScmOp_set_symbol_valued);
 #if SCM_COMPAT_SIOD_BUGS
-    Scm_RegisterProcedureFixed2("="                    , ScmOp_siod_eql);
+    Scm_RegisterProcedureFixed2("%%="                  , ScmOp_sscm_equal);
+    Scm_DefineAlias("=", "%%=");
 #endif
     Scm_RegisterProcedureFixedTailRec0("the-environment" , ScmOp_the_environment);
     Scm_RegisterProcedureFixed1("%%closure-code"       , ScmOp_sscm_closure_code);
@@ -158,9 +160,9 @@ ScmObj ScmOp_set_symbol_valued(ScmObj var, ScmObj val)
     return SCM_SYMBOL_SET_VCELL(var, val);
 }
 
-ScmObj ScmOp_siod_eql(ScmObj obj1, ScmObj obj2)
+ScmObj ScmOp_sscm_equal(ScmObj obj1, ScmObj obj2)
 {
-    DECLARE_FUNCTION("=", ProcedureFixed2);
+    DECLARE_FUNCTION("%%=", ProcedureFixed2);
 
     if (EQ(obj1, obj2))
         return SCM_TRUE;

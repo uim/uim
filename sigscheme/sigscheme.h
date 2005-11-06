@@ -729,7 +729,7 @@ ScmObj ScmOp_SRFI60_logtest(ScmObj j, ScmObj k);
 void   SigScm_Initialize_SIOD(void);
 ScmObj ScmOp_symbol_value(ScmObj var);
 ScmObj ScmOp_set_symbol_valued(ScmObj var, ScmObj val);
-ScmObj ScmOp_siod_eql(ScmObj obj1, ScmObj obj2);
+ScmObj ScmOp_sscm_equal(ScmObj obj1, ScmObj obj2);
 ScmObj ScmOp_the_environment(ScmEvalState *eval_state);
 ScmObj ScmOp_sscm_closure_code(ScmObj closure);
 ScmObj ScmOp_verbose(ScmObj args);
