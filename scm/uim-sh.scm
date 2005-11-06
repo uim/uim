@@ -48,7 +48,7 @@
 	    ((if  uim-sh-opt-strict-batch
 		  (lambda () #f)
 		  print)
-	     (eval expr))
+	     (eval expr (interaction-environment)))
 	    (uim-sh-loop))
 	  #f))))
 
@@ -110,7 +110,7 @@
 			      ((if uim-sh-opt-strict-batch
 				   (lambda () #f)
 				   print)
-			       (eval expr))
+			       (eval expr (interaction-environment)))
 			      (uim-sh-loop))
 			    #f)))))
 	#t))))
