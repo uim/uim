@@ -623,6 +623,73 @@ is_setugidp(void)
   return uim_scm_f();
 }
 
+/*
+ * Make escaped string literal to print a form.
+ *
+ * (string-escape "a str\n") -> "\"a str\\n\""
+ *
+ * The following two codes must display same result. See
+ * test/test-util.scm for further specification.
+ *
+ * (display str)
+ *
+ * (use srfi-6)
+ * (define estr (string-append "(display " (string-escape str) ")"))
+ * (eval (read (open-input-string estr))
+ *       (interaction-environment))
+ */
+static uim_lisp
+string_escape(uim_lisp str)
+{
+  const char *c_str = uim_scm_refer_c_str(str);
+  const char *s;
+  char *ret;
+  int len = strlen("\"\"");
+  int ch;
+  int i;
+  uim_lisp scm_ret;
+  if (strlen(c_str) == 0)
+    return uim_scm_make_str("\"\"");
+
+  /* guess len */
+  for (s = c_str; (*s); s++) {
+    ch = (*s);
+    switch (ch) {
+    case '\"': case '\\': case '\n': case '\r':
+      len += 2;
+      break;
+
+    default:
+      len++;
+      break;
+    }
+  }
+
+  ret = (char*)malloc(sizeof(char) * len + 1);
+
+  /* fill str */
+  for (i = 1, s = c_str; i < len - 1; i++, s++) {
+    ch = (*s);
+    switch (ch) {
+    case '\"': ret[i]='\\'; ret[++i]='\"'; break; 
+    case '\\': ret[i]='\\'; ret[++i]='\\'; break;
+    case '\n': ret[i]='\\'; ret[++i]='n';  break;
+    case '\r': ret[i]='\\'; ret[++i]='r';  break;
+
+    default:
+      ret[i] = ch;
+      break;
+    }
+  }
+  ret[0]       = '\"';
+  ret[len - 1] = '\"';
+  ret[len]     = '\0';
+
+  scm_ret = uim_scm_make_str(ret);
+  free(ret);
+  return scm_ret;
+}
+
 void
 uim_init_util_subrs(void)
 {
@@ -656,4 +723,5 @@ uim_init_util_subrs(void)
   uim_scm_init_subr_2("find-tail", find_tail);
   uim_scm_init_subr_1("lang-code->lang-name-raw", lang_code_to_lang_name_raw);
   uim_scm_init_subr_0("is-set-ugid?", is_setugidp);
+  uim_scm_init_subr_1("string-escape", string_escape);
 }
