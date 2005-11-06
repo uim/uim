@@ -38,11 +38,11 @@
 # $4  :prefix          Op
 # $5  :func_body       call_with_values
 # $6  :args            ScmObj producer, ScmObj consumer, ScmEvalState *eval_state
-# $7  :proc            "call-with-values"
+# $7  :proc            call-with-values
 # $8  :register_func   ProcedureFixedTailRec2
 # $9  :functype_prefix Procedure
 # $10 :functype_spec   FixedTailRec2
-SCM_DECL_RE = /\n((ScmObj)\s+(Scm(Op|Exp)_(.\w+))\(([^\{]+)\))[ \t]*\n\s*\{[^{}]+DECLARE_FUNCTION\(\s*\"([^\"]+)\"[\s,]+([^\s,]+)\)/m
+SCM_DECL_RE = /\n((ScmObj)\s+(Scm(Op|Exp)_(.\w+))\(([^{]+)\))[ \t]*\n\s*\{[^{}]+DECLARE_FUNCTION\(\s*\"([^\"]+)\"[\s,]+([^\s,]+)\)/m
 
 
 class String
