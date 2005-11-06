@@ -1077,14 +1077,24 @@
 	     #f)
 	   #t)
        (if (char-upper-case? key)
-	   (let* ((residual-kana (rk-push-key-last! rkc)))
-	     ;; handle preceding "n"
-	     (if residual-kana
-		 (skk-commit sc (skk-get-string sc residual-kana kana)))
-	     (skk-context-set-state! sc 'skk-state-kanji)
-	     (set! key (to-lower-char key))
-	     (set! key-str (charcode->string key))
-	     #t)
+	   (if (and 
+		(not (null? (rk-context-seq rkc)))
+		(not (rk-current-seq rkc)))
+	       ;; ddskk compatible behavior but not in SKK speciation
+	       (begin
+		 (skk-context-set-state! sc 'skk-state-kanji)
+		 (skk-append-string sc (rk-push-key!
+					rkc
+					(charcode->string
+					 (to-lower-char key))))
+		 #f)
+	       (let* ((residual-kana (rk-push-key-last! rkc)))
+		 ;; handle preceding "n"
+		 (if residual-kana
+		     (skk-commit sc (skk-get-string sc residual-kana kana)))
+		 (skk-context-set-state! sc 'skk-state-kanji)
+		 (set! key (to-lower-char key))
+		 #t))
 	   #t)
        ;; Hack to handle "n1" sequence as "¤ó1".
        ;; This should be handled in rk.scm. -- ekato
@@ -1134,6 +1144,16 @@
 	  (not (= c 101))	;; e
 	  (not (= c 111))	;; o
 	  (not (= c 110))))))	;; n
+
+(define skk-rk-push-key-match-without-new-seq
+  (lambda (rkc key)
+    (let* ((s (rk-context-seq rkc))
+	   (s (cons key s))
+	   (rule (rk-context-rule rkc))
+	   (seq (rk-lib-find-seq (reverse s) rule)))
+	 (if (null? (cdar seq))
+	     (cadr seq)
+	     #f))))
 
 (define skk-proc-state-kanji
   (lambda (c key key-state)
@@ -1231,22 +1251,36 @@
 	   #t)
        (if (and (char-upper-case? key)
 		(not (null? (skk-context-head sc))))
-	   (begin
-	     (skk-context-set-state! sc 'skk-state-okuri)
-	     (set! key (to-lower-char key))
-	     (skk-context-set-okuri-head! sc
-					  (charcode->string key))
-	     (if (skk-sokuon-shiin-char? key)
+	   (let ((key-str (charcode->string (to-lower-char key))))
+	     (set! res (skk-rk-push-key-match-without-new-seq rkc key-str))
+	     (if (and
+		  (not (null? (rk-context-seq rkc)))
+		  (not (rk-current-seq rkc))
+		  res)
+		 ;; ddskk compatible behavior but not in SKK speciation
+		 (begin	
+		   (skk-context-set-state! sc 'skk-state-okuri)
+		   (skk-context-set-okuri-head!
+		    sc
+		    (car (reverse (rk-context-seq rkc))))
+		   (rk-context-set-seq! rkc '())
+		   (skk-append-okuri-string sc res)
+		   (skk-begin-conversion sc)
+		   #f)
 		 (begin
-		   (set! res
-			 (rk-push-key! rkc (charcode->string key)))
-		   (if res
-		       (skk-context-set-head! sc
-					      (cons
-					       res
-					       (skk-context-head sc))))))
-	     (skk-append-residual-kana sc)
-	     #t)
+		   (skk-context-set-state! sc 'skk-state-okuri)
+		   (set! key (to-lower-char key))
+		   (skk-context-set-okuri-head! sc key-str)
+		   (if (skk-sokuon-shiin-char? key)
+		       (begin
+			 (set! res (rk-push-key! rkc key-str))
+			 (if res
+			     (skk-context-set-head! sc
+						    (cons
+						     res
+						     (skk-context-head sc))))))
+		   (skk-append-residual-kana sc)
+		   #t)))
 	   #t)
        (if (skk-kana-toggle-key? key key-state)
 	   (begin
@@ -1587,7 +1621,7 @@
 	  (skk-append-list-to-context-head
 	   sc
 	   (if (or
-	        (skk-context-latin-conv sc)
+		(skk-context-latin-conv sc)
 		;; handle Setsubi-ji
 		(and
 		 (null? (cdr sl))
