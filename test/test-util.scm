@@ -542,17 +542,51 @@
 		 (uim '(string-append-map car '(("c" "C") ("a" "A") ("r" "R")))))))
 
 (define-uim-test-case "testcase util misc"
+  ("test R6RS(SRFI-75) and C89 compliant escape sequences of Gauche"
+   (assert-false (string=? "t" "\t"))  ;; #\tab
+   (assert-false (string=? "n" "\n"))  ;; #\linefeed
+   (assert-false (string=? "f" "\f"))  ;; #\page
+   (assert-false (string=? "r" "\r"))  ;; #\return
+
+   ;; not supported by Gauche 0.8.6
+   ;; FIXME: enable when Gauche support it
+;;   (assert-false (string=? "a" "\a"))  ;; #\alarm
+;;   (assert-false (string=? "b" "\b"))  ;; #\backspace
+;;   (assert-false (string=? "v" "\v"))  ;; #\vtab
+   )
+
   ("test string-escape"
    ;; empty string
    (assert-equal "\"\""
 		 (uim '(string-escape "")))
    ;; single character
+   ;; R5RS
    (assert-equal "\"\\\"\""
 		 (uim '(string-escape "\"")))
    (assert-equal "\"\\\\\""
 		 (uim '(string-escape "\\")))
+
+   ;; R6RS(SRFI-75) and C89 (uim-sh)
+   (assert-equal "\"\\t\""
+		 (uim '(string-escape "\t")))  ;; #\tab
    (assert-equal "\"\\n\""
-		 (uim '(string-escape "\n")))
+		 (uim '(string-escape "\n")))  ;; #\linefeed
+   (assert-equal "\"\\f\""
+		 (uim '(string-escape "\f")))  ;; #\page
+   (assert-equal "\"\\r\""
+		 (uim '(string-escape "\r")))  ;; #\return
+
+   ;; R6RS(SRFI-75) and C89 (uim-sh), but cannot test since Gauche
+   ;; does not support the escape sequences.
+   ;; FIXME: enable when Gauche support it
+;;   (assert-equal "\"\\a\""
+;;		 (uim '(string-escape "\a")))  ;; #\alarm
+;;   (assert-equal "\"\\b\""
+;;		 (uim '(string-escape "\b")))  ;; #\backspace
+;;   (assert-equal "\"\\v\""
+;;		 (uim '(string-escape "\v")))  ;; #\vtab
+
+   ;; R5RS
    (assert-equal "\"a\""
 		 (uim '(string-escape "a")))
    (assert-equal "\"b\""
