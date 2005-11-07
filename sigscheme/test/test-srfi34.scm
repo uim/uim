@@ -37,11 +37,11 @@
 ;; with-exception-handler
 (with-exception-handler
     (lambda (x)
-      (assert-equal? "with-exception-handler test #1" 'an-error x))
+      (assert-equal? "with-exception-handler #1" 'an-error x))
   (lambda ()
     (+ 1 (raise 'an-error))))
 
-(assert-equal? "with-exception-handler test #2"
+(assert-equal? "with-exception-handler #2"
                6
 	       (with-exception-handler
                    (lambda (x)
@@ -49,7 +49,7 @@
                  (lambda ()
                    (+ 1 2 3))))
 
-(assert-equal? "with-exception-handler test #2"
+(assert-equal? "with-exception-handler #2"
                'success
 	       (with-exception-handler
                    (lambda (x)
@@ -59,36 +59,36 @@
 
 
 ;; guard
-(assert-equal? "guard test #1"
+(assert-equal? "guard #1"
                'exception
 	       (guard (condition
 		       (else
-			(assert-equal? "guard test #2" 'an-error condition)
+			(assert-equal? "guard #2" 'an-error condition)
 			'exception))
                  (+ 1 (raise 'an-error))))
 
-(assert-equal? "guard test #3"
+(assert-equal? "guard #3"
                3
 	       (guard (condition
 		       (else
 			'exception))
                  (+ 1 2)))
 
-(assert-equal? "guard test #4"
+(assert-equal? "guard #4"
                'success
 	       (guard (condition
 		       (else
 			'exception))
                  'success))
 
-(assert-equal? "guard test #5"
+(assert-equal? "guard #5"
                'exception
 	       (guard (condition
 		       (else
 			'exception))
                  (+ 1 (raise 'error))))
 
-(assert-equal? "guard test #6"
+(assert-equal? "guard #6"
                42
                (guard (condition
                        ((assq 'a condition) => cdr)
@@ -98,7 +98,7 @@
                         (newline)))
                  (raise (list (cons 'a 42)))))
 
-(assert-equal? "guard test #7"
+(assert-equal? "guard #7"
                '(b . 23)
                (guard (condition
                        ((assq 'a condition) => cdr)
@@ -110,7 +110,7 @@
 
 
 ;; mixed use of with-exception-handler and guard
-(assert-equal? "mixed exception handling test #1"
+(assert-equal? "mixed exception handling #1"
                'guard-ret
 	       (with-exception-handler (lambda (x)
 					 (k 'with-exception-ret))
@@ -120,7 +120,7 @@
                             'guard-ret))
                      (raise 1)))))
 
-(assert-equal? "mixed exception handling test #1"
+(assert-equal? "mixed exception handling #1"
                'with-exception-ret
 	       (with-exception-handler (lambda (x)
 					 'with-exception-ret)
@@ -130,7 +130,7 @@
                             'guard-ret))
                      (raise 1)))))
 
-(assert-equal? "mixed exception handling test #1"
+(assert-equal? "mixed exception handling #1"
                'positive
                (call-with-current-continuation
                 (lambda (k)
@@ -142,7 +142,7 @@
                               ((negative? condition) 'negative))
                         (raise 1)))))))
 
-(assert-equal? "mixed exception handling test #2"
+(assert-equal? "mixed exception handling #2"
                'negative
                (call-with-current-continuation
                 (lambda (k)
@@ -154,7 +154,7 @@
                               ((negative? condition) 'negative))
                         (raise -1)))))))
 
-(assert-equal? "mixed exception handling test #3"
+(assert-equal? "mixed exception handling #3"
                'zero
                (call-with-current-continuation
                 (lambda (k)
