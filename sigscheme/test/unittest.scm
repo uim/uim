@@ -64,6 +64,17 @@
       (display errmsg)
       (newline))))
 
+(define report-inequality
+  (lambda (expected actual)
+    (display " expected: <")
+    (write expected)
+    (display ">")
+    (newline)
+    (display "   actual: <")
+    (write actual)
+    (display ">")
+    (newline)))
+
 (define assert
   (lambda (msg exp)
     (set! *total-assertions* (+ *total-assertions* 1))
@@ -82,23 +93,13 @@
 
 (define assert-eq?
   (lambda (msg a b)
-    (if (not (assert msg (eq? a b)))
-	(begin
-	  (display "assert-eq? : we expect ")
-	  (write a)
-	  (display " but got ")
-	  (write b)
-	  (newline)))))
+    (or (assert msg (eq? a b))
+        (report-inequality a b))))
 
 (define assert-equal?
   (lambda (msg a b)
-    (if (not (assert msg (equal? a b)))
-	(begin
-	  (display "assert-equal? : we expect ")
-	  (write a)
-	  (display " but got ")
-	  (write b)
-	  (newline)))))
+    (or (assert msg (equal? a b))
+        (report-inequality a b))))
 
 (define assert-error
   (lambda (assertion-name proc)
