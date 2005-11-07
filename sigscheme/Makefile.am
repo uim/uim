@@ -10,7 +10,10 @@ libsscm_la_SOURCES = \
 		read.c sigscheme.c sigschemefunctable.c \
 		sigscheme.h sigschemetype.h sigschemefunctable.h
 
-sigschemefunctable.c:./script/build_func_table.rb
+#FIXME: list operations-*.c and so on into EXTRA_DIST
+
+#FIXME: depends on operations*.c, eval.c and io.c
+sigschemefunctable.c: ./script/build_func_table.rb
 	./script/build_func_table.rb > sigschemefunctable.c
 
 libsscm_la_CFLAGS   = -Wall
