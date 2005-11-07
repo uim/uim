@@ -331,24 +331,17 @@ static ScmObj read_list(ScmObj port, int closeParen)
 static ScmObj read_char(ScmObj port)
 {
     char *ch = read_char_sequence(port);
+    const ScmSpecialCharInfo *info = Scm_special_char_table;
 
     CDBG((SCM_DBG_PARSER, "read_char : ch = %s", ch));
 
-    /* FIXME: Simplify with Scm_special_char_table */
-    /* check special sequence "space" and "newline" */
-    if (strcmp(ch, "space") == 0) {
-        ch[0] = ' ';
-        ch[1] = '\0';
-#if 0
-    /* to avoid portability problem, we should not support #\Space and so on */
-    } else if (strcmp(ch, "Space") == 0) {
-        ch[0] = ' ';
-        ch[1] = '\0';
-#endif
-    } else if (strcmp(ch, "newline") == 0) {
-        /* TODO: Support platform-dependent newline character sequence */
-        ch[0] = '\n';
-        ch[1] = '\0';
+    /* check special sequence */
+    for (; info->esc_seq; info++) {
+        if (strcmp(ch, info->lex_rep) == 0) {
+            ch[0] = info->code;
+            ch[1] = '\0';
+            break;
+        }
     }
 
     return Scm_NewChar(ch);
@@ -359,6 +352,8 @@ static ScmObj read_string(ScmObj port)
     char  stringbuf[1024]; /* FIXME! */
     int   stringlen = 0;
     int   c = 0;
+    const ScmSpecialCharInfo *info = NULL;
+    int found = 0;
 
     CDBG((SCM_DBG_PARSER, "read_string"));
 
@@ -378,24 +373,23 @@ static ScmObj read_string(ScmObj port)
             return Scm_NewStringCopying(stringbuf);
 
         case '\\':
-            /* FIXME: Simplify with Scm_special_char_table */
             /*
              * (R5RS) 6.3.5 String
              * A double quote can be written inside a string only by
              * escaping it with a backslash (\).
              */
             SCM_PORT_GETC(port, c);
-            switch (c) {
-            case '\"': stringbuf[stringlen] = c;    break;
-            case 'n':  stringbuf[stringlen] = '\n'; break;
-            case 'r':  stringbuf[stringlen] = '\r'; break;
-            case 'f':  stringbuf[stringlen] = '\f'; break;
-            case 't':  stringbuf[stringlen] = '\t'; break;
-            case '\\': stringbuf[stringlen] = '\\'; break;
-            default:
+            found = 0;
+            for (info = Scm_special_char_table; info->esc_seq; info++) {
+                if (strlen(info->esc_seq) > 1 && c == info->esc_seq[1]) {
+                    stringbuf[stringlen] = info->code;
+                    found = 1;
+                    break;
+                }
+            }
+            if (!found) {
                 stringbuf[stringlen] = '\\';
                 stringbuf[++stringlen] = c;
-                break;
             }
             stringlen++;
             break;

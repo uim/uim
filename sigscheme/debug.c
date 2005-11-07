@@ -291,20 +291,25 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
 
 static void print_char(ScmObj port, ScmObj obj, enum OutputType otype)
 {
+    const ScmSpecialCharInfo *info = NULL;
+    const char *lex_rep = NULL;
+
+    /* sanity check */
+    if (SCM_CHAR_VALUE(obj) == NULL)
+        return;
+
     switch (otype) {
     case AS_WRITE:
-        /* FIXME: Simplify with Scm_special_char_table */
-        /*
-         * in write, character objects are written using the #\ notation.
-         */
-        if (strcmp(SCM_CHAR_VALUE(obj), " ") == 0) {
-            SCM_PORT_PRINT(port, "#\\space");
-        } else if(strcmp(SCM_CHAR_VALUE(obj), "\n") == 0) {
-            SCM_PORT_PRINT(port, "#\\newline");
-        } else {
-            SigScm_PortPrintf(port, "#\\%s", SCM_CHAR_VALUE(obj));
+        lex_rep = SCM_CHAR_VALUE(obj);
+        for (info = Scm_special_char_table; info->esc_seq; info++) {
+            if (SCM_CHAR_VALUE(obj)[0] == info->code) {
+                lex_rep = info->lex_rep;
+                break;
+            }
         }
+        SigScm_PortPrintf(port, "#\\%s", lex_rep);
         break;
+
     case AS_DISPLAY:
         /*
          * in display, character objects appear in the reqpresentation as
@@ -312,6 +317,7 @@ static void print_char(ScmObj port, ScmObj obj, enum OutputType otype)
          */
         SCM_PORT_PRINT(port, SCM_CHAR_VALUE(obj));
         break;
+
     default:
         ERR("print_char : unknown output type");
         break;
@@ -321,9 +327,11 @@ static void print_char(ScmObj port, ScmObj obj, enum OutputType otype)
 static void print_string(ScmObj port, ScmObj obj, enum OutputType otype)
 {
     const char *str = SCM_STRING_STR(obj);
-    int  size = strlen(str);
-    int  i = 0;
-    char c = 0;
+    const ScmSpecialCharInfo *info = NULL;
+    int size = strlen(str);
+    int i = 0;
+    int found = 0;
+    unsigned int  c = 0;
 
     switch (otype) {
     case AS_WRITE:
@@ -334,19 +342,18 @@ static void print_string(ScmObj port, ScmObj obj, enum OutputType otype)
          */
         SCM_PORT_PRINT(port, "\""); /* first doublequote */
         for (i = 0; i < size; i++) {
-            /* FIXME: Simplify with Scm_special_char_table */
+            /* iterate Scm_special_char_table */
             c = str[i];
-            switch (c) {
-            case '\"': SCM_PORT_PRINT(port, "\\\""); break;
-            case '\n': SCM_PORT_PRINT(port, "\\n"); break;
-            case '\r': SCM_PORT_PRINT(port, "\\r"); break;
-            case '\f': SCM_PORT_PRINT(port, "\\f"); break;
-            case '\t': SCM_PORT_PRINT(port, "\\t"); break;
-            case '\\': SCM_PORT_PRINT(port, "\\\\"); break;
-            default:
-                SigScm_PortPrintf(port, "%c", str[i]);
-                break;
+            found = 0;
+            for (info = Scm_special_char_table; info->esc_seq; info++) {
+                if (c == info->code) {
+                    SigScm_PortPrintf(port, "%s", info->lex_rep);
+                    found = 1;
+                    break;
+                }
             }
+            if (!found)
+                SigScm_PortPrintf(port, "%c", str[i]);
         }
         SCM_PORT_PRINT(port, "\""); /* last doublequote */
         break;
