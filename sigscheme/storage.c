@@ -59,12 +59,14 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+#if !SCM_OBJ_COMPACT
 /* special constant initialization */
-#define SCM_CONSTANT_BIND_SUBSTANCE(obj, cell)                                \
-    do {                                                                     \
-        (obj) = &(cell);                                                     \
-        SCM_ENTYPE((obj), ScmConstant);                                      \
+#define SCM_CONSTANT_BIND_SUBSTANCE(obj, cell)                          \
+    do {                                                                \
+        (obj) = &(cell);                                                \
+        SCM_ENTYPE((obj), ScmConstant);                                 \
     } while(/* CONSTCOND */ 0)
+#endif /* SCM_OBJ_COMPACT */
 
 /*=======================================
   Variable Declarations
@@ -77,8 +79,11 @@ ScmObj SigScm_null_values;
 /* constants */
 ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
 ScmObj SigScm_unbound, SigScm_undef;
+
+#if !SCM_OBJ_COMPACT
 static ScmCell null_cell, true_cell, false_cell, eof_cell;
 static ScmCell unbound_cell, undef_cell;
+#endif
 
 /* storage-continuation.c */
 extern ScmObj scm_current_dynamic_extent;
@@ -133,12 +138,22 @@ void SigScm_FinalizeStorage(void)
  */
 static void initialize_special_constants(void)
 {
+#if SCM_OBJ_COMPACT
+    SigScm_null    = SCM_NULL;
+    SigScm_true    = SCM_TRUE;
+    SigScm_false   = SCM_FALSE;
+    SigScm_eof     = SCM_EOF;
+    SigScm_unbound = SCM_UNBOUND;
+    SigScm_undef   = SCM_UNDEF;
+#else /* SCM_OBJ_COMPACT */
     SCM_CONSTANT_BIND_SUBSTANCE(SigScm_null,    null_cell);
     SCM_CONSTANT_BIND_SUBSTANCE(SigScm_true,    true_cell);
     SCM_CONSTANT_BIND_SUBSTANCE(SigScm_false,   false_cell);
     SCM_CONSTANT_BIND_SUBSTANCE(SigScm_eof,     eof_cell);
     SCM_CONSTANT_BIND_SUBSTANCE(SigScm_unbound, unbound_cell);
     SCM_CONSTANT_BIND_SUBSTANCE(SigScm_undef,   undef_cell);
+#endif /* SCM_OBJ_COMPACT */
+
 #if SCM_COMPAT_SIOD_BUGS
     SigScm_false = SigScm_null;
 #endif
