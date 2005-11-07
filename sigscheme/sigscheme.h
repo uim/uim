@@ -501,6 +501,7 @@ ScmObj ScmOp_char_numericp(ScmObj obj);
 ScmObj ScmOp_char_whitespacep(ScmObj obj);
 ScmObj ScmOp_char_upper_casep(ScmObj obj);
 ScmObj ScmOp_char_lower_casep(ScmObj obj);
+ScmObj ScmOp_integer2char(ScmObj obj);
 ScmObj ScmOp_char_upcase(ScmObj obj);
 ScmObj ScmOp_char_downcase(ScmObj obj);
 

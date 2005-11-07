@@ -66,27 +66,27 @@ const char *scm_lib_path = NULL;
 
 const ScmSpecialCharInfo Scm_special_char_table[] = {
     /* printable characters */
-    {'\"',   "\\\"",  "\""},
-    {'\\',   "\\\\",  "\\"},
-    {' ',    " ",     "space"},  /* R5RS */
+    {'\"',   "\\\"",  "\""},         /* 34, R5RS */
+    {'\\',   "\\\\",  "\\"},         /* 92, R5RS */
+    {' ',    " ",     "space"},      /* 32, R5RS */
 #if 0
     /* to avoid portability problem, we should not support #\Space and so on */
     {' ',    " ",     "Space"},
 #endif
 
     /* control characters */
-    {'\n',   "\\n",   "newline"},  /* R5RS */
+    {'\n',   "\\n",   "newline"},    /*  10, R5RS */
 #if SCM_USE_SRFI75_NAMED_CHARS
-    {'\0',   "\\0",   "nul"},
-    {'\a',   "\\a",   "alarm"},
-    {'\b',   "\\b",   "backspace"},
-    {'\t',   "\\t",   "tab"},
-    {'\n',   "\\n",   "linefeed"},
-    {'\v',   "\\v",   "vtab"},
-    {'\f',   "\\f",   "page"},
-    {'\r',   "\\r",   "return"},
-    {'\x1b', "\\x1b", "esc"},
-    {'\x7f', "\\x7f", "delete"},
+    {'\0',   "\\0",   "nul"},        /*   0 */
+    {'\a',   "\\a",   "alarm"},      /*   7 */
+    {'\b',   "\\b",   "backspace"},  /*   8 */
+    {'\t',   "\\t",   "tab"},        /*   9 */
+    {'\n',   "\\n",   "linefeed"},   /*  10 */
+    {'\v',   "\\v",   "vtab"},       /*  11 */
+    {'\f',   "\\f",   "page"},       /*  12 */
+    {'\r',   "\\r",   "return"},     /*  13 */
+    {0x1b,   "\\x1b", "esc"},        /*  27 */
+    {0x7f,   "\\x7f", "delete"},     /* 127 */
 #endif /* SCM_USE_SRFI75_NAMED_CHARS */
     {0, NULL, NULL}
 };
