@@ -86,9 +86,6 @@ static ScmCell null_cell, true_cell, false_cell, eof_cell;
 static ScmCell unbound_cell, undef_cell;
 #endif
 
-/* storage-continuation.c */
-extern ScmObj scm_current_dynamic_extent;
-
 /*=======================================
   File Local Function Declarations
 =======================================*/
@@ -295,8 +292,8 @@ ScmObj Scm_NewContinuation(void)
     ScmObj obj = SigScm_NewObjFromHeap();
 
     SCM_ENTYPE_CONTINUATION(obj);
-    CONTINUATION_SET_JMPENV(obj, INVALID_CONTINUATION_JMPENV);
-    CONTINUATION_SET_DYNEXT(obj, scm_current_dynamic_extent);
+    SCM_CONTINUATION_SET_OPAQUE0(obj, INVALID_CONTINUATION_OPAQUE);
+    SCM_CONTINUATION_SET_OPAQUE1(obj, INVALID_CONTINUATION_OPAQUE);
 
     return obj;
 }

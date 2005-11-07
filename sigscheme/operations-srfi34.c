@@ -50,12 +50,18 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+/* FIXME: make internal representation hidden */
 #define CONTINUATION_JMPENV     SCM_CONTINUATION_OPAQUE0
 #define CONTINUATION_SET_JMPENV SCM_CONTINUATION_SET_OPAQUE0
+#define CONTINUATION_DYNEXT     SCM_CONTINUATION_OPAQUE1
+#define CONTINUATION_SET_DYNEXT SCM_CONTINUATION_SET_OPAQUE1
 
 /*=======================================
   Variable Declarations
 =======================================*/
+/* storage-continuation.c */
+extern ScmObj scm_current_dynamic_extent;
+
 ScmObj scm_exception_handlers      = NULL;
 ScmObj scm_exception_continuations = NULL;
 
@@ -103,6 +109,7 @@ ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk)
     ASSERT_PROCEDUREP(thunk);
 
     CONTINUATION_SET_JMPENV(cont, &jmpenv);
+    CONTINUATION_SET_DYNEXT(cont, scm_current_dynamic_extent);
     if (setjmp(CONTINUATION_JMPENV(cont))) {
         ret = Scm_call(CURRENT_EXCEPTION_HANDLER(), LIST_1(exception_thrown_obj));
         POP_EXCEPTION_CONTINUATION();
@@ -144,6 +151,7 @@ ScmObj ScmExp_SRFI34_guard(ScmObj var_and_clauses, ScmObj body, ScmObj env)
 
     /* check if return from "raise" */
     CONTINUATION_SET_JMPENV(cont, &jmpenv);
+    CONTINUATION_SET_DYNEXT(cont, scm_current_dynamic_extent);
     if (setjmp(CONTINUATION_JMPENV(cont))) {
         POP_EXCEPTION_CONTINUATION();
         env = Scm_ExtendEnvironment(LIST_1(var), LIST_1(exception_thrown_obj), env);

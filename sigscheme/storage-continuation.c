@@ -58,10 +58,16 @@
  */
 #define SCM_NESTED_CONTINUATION_ONLY 1
 
+#define CONTINUATION_JMPENV          SCM_CONTINUATION_OPAQUE0
+#define CONTINUATION_SET_JMPENV      SCM_CONTINUATION_SET_OPAQUE0
+#define CONTINUATION_DYNEXT          SCM_CONTINUATION_OPAQUE1
+#define CONTINUATION_SET_DYNEXT      SCM_CONTINUATION_SET_OPAQUE1
+
 /*=======================================
   Variable Declarations
 =======================================*/
 /* dynamic extent */
+/* FIXME: make static */
 ScmObj scm_current_dynamic_extent = NULL;
 
 /* temporary store for a object returned from a continuation */
@@ -227,7 +233,7 @@ static ScmObj continuation_stack_unwind(ScmObj dest_cont)
         cont = continuation_stack_pop();
         if (FALSEP(cont))
             return SCM_FALSE;
-        CONTINUATION_SET_JMPENV(cont, INVALID_CONTINUATION_JMPENV);
+        CONTINUATION_SET_JMPENV(cont, INVALID_CONTINUATION_OPAQUE);
     } while (!EQ(dest_cont, cont));
 
     return dest_cont;
@@ -242,6 +248,7 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
 
     cont = Scm_NewContinuation();
     CONTINUATION_SET_JMPENV(cont, &env);
+    CONTINUATION_SET_DYNEXT(cont, scm_current_dynamic_extent);
 #if SCM_NESTED_CONTINUATION_ONLY
     continuation_stack_push(cont);
 #endif
@@ -287,7 +294,7 @@ void Scm_CallContinuation(ScmObj cont, ScmObj ret)
 
     env = CONTINUATION_JMPENV(cont);
 
-    if (env != INVALID_CONTINUATION_JMPENV
+    if (env != INVALID_CONTINUATION_OPAQUE
 #if SCM_NESTED_CONTINUATION_ONLY
         && CONTINUATIONP(continuation_stack_unwind(cont))
 #endif
