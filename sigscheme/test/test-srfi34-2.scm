@@ -87,10 +87,6 @@
                         'exception))
                  (+ 1 (raise 'an-error))))
 
-;; the result is not specified by SRFI-34, but we should result #<UNDEF> to
-;; prevent misuse of 'guard' procedure.
-(for-each values '())  ;; to produce #<UNDEF>
-
 (display "test #4")
 (newline)
 ;;PRINTS: something went wrong
