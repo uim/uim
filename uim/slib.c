@@ -1045,6 +1045,18 @@ lreadstring (struct gen_readio * f)
 	    case 'r':
 	      c = '\r';
 	      break;
+	    case 'f':
+	      c = '\f';
+	      break;
+	    case 'a':
+	      c = '\a';
+	      break;
+	    case 'b':
+	      c = '\b';
+	      break;
+	    case 'v':
+	      c = '\v';
+	      break;
 	    case 'd':
 	      c = 0x04;
 	      break;
@@ -2348,7 +2360,7 @@ string_prin1 (LISP ptr, struct gen_printio *f)
     {
     case tc_string:
       gput_st (f, "\"");
-      if (strcspn (ptr->storage_as.string.data, "\"\\\n\r\t") ==
+      if (strcspn (ptr->storage_as.string.data, "\"\\\n\r\t\f\a\b\v") ==
 	  strlen (ptr->storage_as.string.data))
 	gput_st (f, ptr->storage_as.string.data);
       else
@@ -2374,6 +2386,18 @@ string_prin1 (LISP ptr, struct gen_printio *f)
 		break;
 	      case '\t':
 		gput_st (f, "\\t");
+		break;
+	      case '\f':
+		gput_st (f, "\\f");
+		break;
+	      case '\a':
+		gput_st (f, "\\a");
+		break;
+	      case '\b':
+		gput_st (f, "\\b");
+		break;
+	      case '\v':
+		gput_st (f, "\\v");
 		break;
 	      default:
 		cbuff[0] = c;
