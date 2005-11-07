@@ -531,7 +531,7 @@ struct ScmEvalState_ {
 #define SCM_UNQUOTE_SPLICING SigScm_unquote_splicing
 
 /*============================================================================
-  Internal Declarations For Special Constants And Predefined Symbols
+  Internal Declarations For Predefined Symbols
 ============================================================================*/
 /*
  * These declarations are dedicated to internal use. libsscm users MUST NOT
@@ -539,13 +539,9 @@ struct ScmEvalState_ {
  *
  * It may be changed when SigScheme's internal storage model or accessing
  * method for the constants has been changed. To avoid suffering code
- * incompatibility from it, use the abstract macro such as SCM_NULL defined
+ * incompatibility from it, use the abstract macro such as SCM_QUOTE defined
  * above. They safely hides the internal model against such change.
  */
-/* datas.c */
-extern ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
-extern ScmObj SigScm_unbound, SigScm_undef;
-
 /* sigscheme.c */
 extern ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote;
 extern ScmObj SigScm_unquote_splicing;
