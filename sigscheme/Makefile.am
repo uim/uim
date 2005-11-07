@@ -18,7 +18,7 @@ EXTRA_DIST = \
 		operations-srfi23.c operations-srfi34.c  \
 		operations-srfi38.c operations-srfi60.c
 
-sigschemefunctable.c: ./script/build_func_table.rb operations.c eval.c io.c ${EXTRA_DIST}
+sigschemefunctable.c: ./script/build_func_table.rb operations.c eval.c io.c $(EXTRA_DIST)
 	./script/build_func_table.rb > sigschemefunctable.c
 
 libsscm_la_CFLAGS   = -Wall
