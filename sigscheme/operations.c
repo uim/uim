@@ -37,6 +37,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <ctype.h>
 
 /*=======================================
   Local Include
@@ -1066,6 +1067,26 @@ ScmObj ScmOp_char_lower_casep(ScmObj obj)
         return SCM_TRUE;
 
     return SCM_FALSE;
+}
+
+ScmObj ScmOp_integer2char(ScmObj obj)
+{
+    int val;
+    char *buf;
+    DECLARE_FUNCTION("integer->char", ProcedureFixed1);
+
+    ASSERT_INTP(obj);
+
+    /* FIXME: only supports ASCII */
+    val = SCM_INT_VALUE(obj);
+    if (isascii(val)) {
+        buf = malloc(sizeof(char) + sizeof((char)'\0'));
+        buf[0] = val;
+        buf[1] = '\0';
+        return Scm_NewChar(buf);
+    } else {
+        ERR_OBJ("current implementation only supports ASCII", obj);
+    }
 }
 
 ScmObj ScmOp_char_upcase(ScmObj obj)
