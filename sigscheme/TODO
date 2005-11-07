@@ -1,6 +1,12 @@
 ==============================================================================
 Requirements and bugs:
 
+* Fix character and escape sequence related issues. grep Scm_special_char_table
+  to find the issues, and make all tests in test-char.scm and test-string.scm
+  passed
+
+* Fix Makefile.am
+
 * Introduce Exception handling (probably should be based on SRFI-34)
   - Reimplement with dynamic-wind, and without direct setjmp/longjmp
   - Rename call/cc with call/ec? ([Anthy-dev 2216])
@@ -12,7 +18,7 @@ Requirements and bugs:
     API for such purpose is existing, use it
   - [uim] Implement string-escape as same as trunk
 
-* Add integer->char and char->integer procedures
+* Add integer->char and char->integer procedures with multibyte support
 
 * Inhibit a mutation on string constants as described in "3.4 Storage model" of
   R5RS
