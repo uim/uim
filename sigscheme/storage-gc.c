@@ -564,12 +564,8 @@ static void sweep_obj(ScmObj obj)
             SCM_PORT_CLOSE_IMPL(obj);
         break;
 
-    case ScmContinuation:
-        if (SCM_CONTINUATION_INFO(obj))
-            free(SCM_CONTINUATION_INFO(obj));
-        break;
-
     /* rarely swept objects */
+    case ScmContinuation:
     case ScmFunc:
     case ScmConstant:
     case ScmFreeCell:

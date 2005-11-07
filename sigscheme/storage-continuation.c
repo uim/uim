@@ -227,7 +227,7 @@ static ScmObj continuation_stack_unwind(ScmObj dest_cont)
         cont = continuation_stack_pop();
         if (FALSEP(cont))
             return SCM_FALSE;
-        SCM_CONTINUATION_SET_JMPENV(cont, INVALID_CONTINUATION_JMPENV);
+        CONTINUATION_SET_JMPENV(cont, INVALID_CONTINUATION_JMPENV);
     } while (!EQ(dest_cont, cont));
 
     return dest_cont;
@@ -241,7 +241,7 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
     struct trace_frame *saved_trace_stack;
 
     cont = Scm_NewContinuation();
-    SCM_CONTINUATION_SET_JMPENV(cont, &env);
+    CONTINUATION_SET_JMPENV(cont, &env);
 #if SCM_NESTED_CONTINUATION_ONLY
     continuation_stack_push(cont);
 #endif
@@ -252,7 +252,7 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
         continuation_thrown_obj = SCM_FALSE;  /* make ret sweepable */
         trace_stack = saved_trace_stack;
 
-        enter_dynamic_extent(SCM_CONTINUATION_DYNEXT(cont));
+        enter_dynamic_extent(CONTINUATION_DYNEXT(cont));
 
         eval_state->ret_type = SCM_RETTYPE_AS_IS;
         return ret;
@@ -285,7 +285,7 @@ void Scm_CallContinuation(ScmObj cont, ScmObj ret)
 {
     jmp_buf *env;
 
-    env = SCM_CONTINUATION_JMPENV(cont);
+    env = CONTINUATION_JMPENV(cont);
 
     if (env != INVALID_CONTINUATION_JMPENV
 #if SCM_NESTED_CONTINUATION_ONLY
@@ -293,7 +293,7 @@ void Scm_CallContinuation(ScmObj cont, ScmObj ret)
 #endif
         )
     {
-        exit_dynamic_extent(SCM_CONTINUATION_DYNEXT(cont));
+        exit_dynamic_extent(CONTINUATION_DYNEXT(cont));
 
         continuation_thrown_obj = ret;
         longjmp(*env, 1);
