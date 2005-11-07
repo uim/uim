@@ -33,23 +33,29 @@
 (use srfi-23)
 (use srfi-34)
 
-(define total-err-num  0)
-(define total-test-num 0)
+(define *total-testsuites* 1)  ;; TODO: introduce test suites and defaults to 0
+(define *total-testcases* 1)   ;; TODO: introduce testcase and defaults to 0
+(define *total-tests* 1)       ;; TODO: introduce test group and defaults to 0
+(define *total-failures*  0)
+(define *total-assertions* 0)
+(define *total-errors* 0) ;; TODO: recover unintended error and increment this
 (define test-filename "unspecified")
 
 (define total-report
   (lambda ()
-    (for-each display
-              (list
-               (if (zero? total-err-num)
-                   "OK : "
-                   "FAILED : ")
-               1 " tests, "
-               total-test-num " assertions, "
-               (- total-test-num total-err-num) " successes, "
-               total-err-num " failures, "
-               0 " errors"))
-    (newline)))
+    (let ((header (if (zero? *total-failures*)
+                      "OK : "
+                      "FAILED : "))
+          (total-successes (- *total-assertions* *total-failures*)))
+      (for-each display
+                (list
+                 header
+                 *total-tests*      " tests, "
+                 *total-assertions* " assertions, "
+                 total-successes    " successes, "
+                 *total-failures*   " failures, "
+                 *total-errors*     " errors"))
+      (newline))))
 
 (define report-error
   (lambda (errmsg)
@@ -60,11 +66,11 @@
 
 (define assert
   (lambda (msg exp)
-    (set! total-test-num (+ total-test-num 1))
+    (set! *total-assertions* (+ *total-assertions* 1))
     (if exp
 	#t
 	(begin
-	  (set! total-err-num (+ total-err-num 1))
+	  (set! *total-failures* (+ *total-failures* 1))
 	  (report-error msg)
 	  #f))))
 
@@ -95,13 +101,14 @@
 	  (newline)))))
 
 (define assert-error
-  (lambda (test-name proc)
+  (lambda (assertion-name proc)
     (let ((errored (guard (err
                            (else
                             #t))
                      (proc)
                      #f))
-          (err-msg (string-append "no error has occurred in test " test-name)))
+          (err-msg (string-append "no error has occurred in assertion "
+                                  assertion-name)))
       (assert err-msg errored))))
 
 
