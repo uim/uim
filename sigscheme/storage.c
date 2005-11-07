@@ -77,7 +77,7 @@ ScmObj SigScm_null_values;
 #endif
 
 #if !SCM_OBJ_COMPACT
-/* SCM_OBJ_COMPACT MUST NOT refer these variables. Use SCM_NULL and so on.
+/* SCM_OBJ_COMPACT MUST NOT refer these variables. Use SCM_NULL and so on. */
 
 /* constants */
 ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
@@ -292,8 +292,8 @@ ScmObj Scm_NewContinuation(void)
     ScmObj obj = SigScm_NewObjFromHeap();
 
     SCM_ENTYPE_CONTINUATION(obj);
-    SCM_CONTINUATION_SET_OPAQUE0(obj, INVALID_CONTINUATION_OPAQUE);
-    SCM_CONTINUATION_SET_OPAQUE1(obj, INVALID_CONTINUATION_OPAQUE);
+    SCM_CONTINUATION_SET_OPAQUE(obj, INVALID_CONTINUATION_OPAQUE);
+    SCM_CONTINUATION_SET_TAG(obj, 0);
 
     return obj;
 }

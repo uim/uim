@@ -44,17 +44,26 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Struct Declarations
-=======================================*/
-
-/*=======================================
   File Local Macro Declarations
 =======================================*/
 /* FIXME: make internal representation hidden */
-#define CONTINUATION_JMPENV     SCM_CONTINUATION_OPAQUE0
-#define CONTINUATION_SET_JMPENV SCM_CONTINUATION_SET_OPAQUE0
-#define CONTINUATION_DYNEXT     SCM_CONTINUATION_OPAQUE1
-#define CONTINUATION_SET_DYNEXT SCM_CONTINUATION_SET_OPAQUE1
+#define CONTINUATION_FRAME(cont)                                             \
+    ((struct continuation_frame *)SCM_CONTINUATION_OPAQUE(cont))
+#define CONTINUATION_SET_FRAME             SCM_CONTINUATION_SET_OPAQUE
+#define CONTINUATION_JMPENV(cont)          (CONTINUATION_FRAME(cont)->env)
+#define CONTINUATION_SET_JMPENV(cont, env) (CONTINUATION_JMPENV(cont) = (env))
+#define CONTINUATION_DYNEXT(cont)          (CONTINUATION_FRAME(cont)->dyn_ext)
+#define CONTINUATION_SET_DYNEXT(cont, dyn_ext)                               \
+    ((CONTINUATION_DYNEXT(cont)) = (dyn_ext))
+
+/*=======================================
+  File Local Type Definitions
+=======================================*/
+/* FIXME: make internal representation hidden */
+struct continuation_frame {
+    jmp_buf *env;
+    ScmObj dyn_ext;
+};
 
 /*=======================================
   Variable Declarations
@@ -103,11 +112,13 @@ ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk)
     jmp_buf jmpenv;
     ScmObj ret  = SCM_FALSE;
     ScmObj cont = Scm_NewContinuation();
+    struct continuation_frame cont_frame;
     DECLARE_FUNCTION("with-exception-handler", ProcedureFixed2);
 
     ASSERT_PROCEDUREP(handler);
     ASSERT_PROCEDUREP(thunk);
 
+    CONTINUATION_SET_FRAME(cont, &cont_frame);
     CONTINUATION_SET_JMPENV(cont, &jmpenv);
     CONTINUATION_SET_DYNEXT(cont, scm_current_dynamic_extent);
     if (setjmp(jmpenv)) {
@@ -140,6 +151,7 @@ ScmObj ScmExp_SRFI34_guard(ScmObj var_and_clauses, ScmObj body, ScmObj env)
     ScmObj clauses = SCM_FALSE;
     ScmObj expr    = SCM_FALSE;
     ScmObj cont    = Scm_NewContinuation();
+    struct continuation_frame cont_frame;
     DECLARE_FUNCTION("guard", SyntaxVariadic1);
 
     ASSERT_CONSP(var_and_clauses);
@@ -150,6 +162,7 @@ ScmObj ScmExp_SRFI34_guard(ScmObj var_and_clauses, ScmObj body, ScmObj env)
     ASSERT_SYMBOLP(var);
 
     /* check if return from "raise" */
+    CONTINUATION_SET_FRAME(cont, &cont_frame);
     CONTINUATION_SET_JMPENV(cont, &jmpenv);
     CONTINUATION_SET_DYNEXT(cont, scm_current_dynamic_extent);
     if (setjmp(jmpenv)) {

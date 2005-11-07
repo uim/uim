@@ -212,8 +212,8 @@ struct ScmCell_ {
         } port;
 
         struct ScmContinuation {
-            void *opaque0;
-            void *opaque1;
+            void *opaque;
+            int tag;
         } continuation;
 
 #if !SCM_USE_VALUECONS
@@ -337,10 +337,10 @@ struct ScmCell_ {
 
 #define SCM_CONTINUATIONP(a) (SCM_TYPE(a) == ScmContinuation)
 #define SCM_ENTYPE_CONTINUATION(a) (SCM_ENTYPE((a), ScmContinuation))
-#define SCM_CONTINUATION_OPAQUE0(a) (SCM_AS_CONTINUATION(a)->obj.continuation.opaque0)
-#define SCM_CONTINUATION_SET_OPAQUE0(a, val) (SCM_CONTINUATION_OPAQUE0(a) = (val))
-#define SCM_CONTINUATION_OPAQUE1(a) (SCM_AS_CONTINUATION(a)->obj.continuation.opaque1)
-#define SCM_CONTINUATION_SET_OPAQUE1(a, val) (SCM_CONTINUATION_OPAQUE1(a) = (val))
+#define SCM_CONTINUATION_OPAQUE(a) (SCM_AS_CONTINUATION(a)->obj.continuation.opaque)
+#define SCM_CONTINUATION_SET_OPAQUE(a, val) (SCM_CONTINUATION_OPAQUE(a) = (val))
+#define SCM_CONTINUATION_TAG(a) (SCM_AS_CONTINUATION(a)->obj.continuation.tag)
+#define SCM_CONTINUATION_SET_TAG(a, val) (SCM_CONTINUATION_TAG(a) = (val))
 
 #if SCM_USE_VALUECONS
 /* to modify a VALUECONS, rewrite its type to cons by SCM_ENTYPE_CONS(vcons) */

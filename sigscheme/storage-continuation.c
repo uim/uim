@@ -46,10 +46,6 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Struct Declarations
-=======================================*/
-
-/*=======================================
   File Local Macro Declarations
 =======================================*/
 /* specifies whether the storage abstraction layer can only handle nested
@@ -58,10 +54,22 @@
  */
 #define SCM_NESTED_CONTINUATION_ONLY 1
 
-#define CONTINUATION_JMPENV          SCM_CONTINUATION_OPAQUE0
-#define CONTINUATION_SET_JMPENV      SCM_CONTINUATION_SET_OPAQUE0
-#define CONTINUATION_DYNEXT          SCM_CONTINUATION_OPAQUE1
-#define CONTINUATION_SET_DYNEXT      SCM_CONTINUATION_SET_OPAQUE1
+#define CONTINUATION_FRAME(cont)                                             \
+    ((struct continuation_frame *)SCM_CONTINUATION_OPAQUE(cont))
+#define CONTINUATION_SET_FRAME             SCM_CONTINUATION_SET_OPAQUE
+#define CONTINUATION_JMPENV(cont)          (CONTINUATION_FRAME(cont)->env)
+#define CONTINUATION_SET_JMPENV(cont, env) (CONTINUATION_JMPENV(cont) = (env))
+#define CONTINUATION_DYNEXT(cont)          (CONTINUATION_FRAME(cont)->dyn_ext)
+#define CONTINUATION_SET_DYNEXT(cont, dyn_ext)                               \
+    ((CONTINUATION_DYNEXT(cont)) = (dyn_ext))
+
+/*=======================================
+  File Local Type Definitions
+=======================================*/
+struct continuation_frame {
+    jmp_buf *env;
+    ScmObj dyn_ext;
+};
 
 /*=======================================
   Variable Declarations
@@ -233,7 +241,7 @@ static ScmObj continuation_stack_unwind(ScmObj dest_cont)
         cont = continuation_stack_pop();
         if (FALSEP(cont))
             return SCM_FALSE;
-        CONTINUATION_SET_JMPENV(cont, INVALID_CONTINUATION_OPAQUE);
+        CONTINUATION_SET_FRAME(cont, INVALID_CONTINUATION_OPAQUE);
     } while (!EQ(dest_cont, cont));
 
     return dest_cont;
@@ -244,9 +252,11 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
     jmp_buf env;
     ScmObj cont = SCM_FALSE;
     ScmObj ret  = SCM_FALSE;
+    struct continuation_frame cont_frame;
     struct trace_frame *saved_trace_stack;
 
     cont = Scm_NewContinuation();
+    CONTINUATION_SET_FRAME(cont, &cont_frame);
     CONTINUATION_SET_JMPENV(cont, &env);
     CONTINUATION_SET_DYNEXT(cont, scm_current_dynamic_extent);
 #if SCM_NESTED_CONTINUATION_ONLY
@@ -255,11 +265,15 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
 
     if (setjmp(env)) {
         /* returned from longjmp */
+        /*
+         * Don't refer cont because it may already be invalidated by
+         * continuation_stack_unwind().
+         */
         ret = continuation_thrown_obj;
         continuation_thrown_obj = SCM_FALSE;  /* make ret sweepable */
         trace_stack = saved_trace_stack;
 
-        enter_dynamic_extent(CONTINUATION_DYNEXT(cont));
+        enter_dynamic_extent(cont_frame.dyn_ext);
 
         eval_state->ret_type = SCM_RETTYPE_AS_IS;
         return ret;
@@ -290,20 +304,24 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
 
 void Scm_CallContinuation(ScmObj cont, ScmObj ret)
 {
-    jmp_buf *env;
+    struct continuation_frame *frame;
 
-    env = CONTINUATION_JMPENV(cont);
+    frame = CONTINUATION_FRAME(cont);
 
-    if (env != INVALID_CONTINUATION_OPAQUE
+    if (frame != INVALID_CONTINUATION_OPAQUE
 #if SCM_NESTED_CONTINUATION_ONLY
         && CONTINUATIONP(continuation_stack_unwind(cont))
 #endif
         )
     {
-        exit_dynamic_extent(CONTINUATION_DYNEXT(cont));
+        /*
+         * Don't refer cont because it may already be invalidated by
+         * continuation_stack_unwind().
+         */
+        exit_dynamic_extent(frame->dyn_ext);
 
         continuation_thrown_obj = ret;
-        longjmp(*env, 1);
+        longjmp(*frame->env, 1);
         /* NOTREACHED */
     } else {
         ERR("Scm_CallContinuation: called expired continuation");
