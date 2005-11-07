@@ -62,16 +62,20 @@
 (display "test #2")
 (newline)
 ;;PRINTS: something went wrong
-;;then behaves in an unspecified way
+;; Then behaves in an unspecified way. Although the behavior when a handler
+;; returned is not specified in SRFI-34, SigScheme should produce an error to
+;; prevent being misused by users.
 (print-expected "something went wrong")
-(call-with-current-continuation
- (lambda (k)
-   (with-exception-handler (lambda (x)
-                             (display "something went wrong")
-                             (newline)
-                             'dont-care)
-     (lambda ()
-       (+ 1 (raise 'an-error))))))
+(assert-error "Examples of SRFI-34 document"
+              (lambda ()
+                (call-with-current-continuation
+                 (lambda (k)
+                   (with-exception-handler (lambda (x)
+                                             (display "something went wrong")
+                                             (newline)
+                                             'dont-care)
+                     (lambda ()
+                       (+ 1 (raise 'an-error))))))))
 
 (display "test #3")
 (newline)

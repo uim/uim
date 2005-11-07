@@ -35,17 +35,35 @@
 (use srfi-34)
 
 ;; with-exception-handler
+
+;; Although the behavior when a handler returned is not specified in SRFI-34,
+;; SigScheme should produce an error to prevent being misused by users.
 (display "with-exception-handler #1")
 (newline)
-(with-exception-handler
-    (lambda (x)
-      (assert-equal? "with-exception-handler #1" 'an-error x))
-  (lambda ()
-    (+ 1 (raise 'an-error))))
+(assert-error "with-exception-handler #1"
+              (lambda ()
+                (with-exception-handler
+                    (lambda (x)
+                      'a-handler-must-not-return)
+                  (lambda ()
+                    (+ 1 (raise 'an-error))))))
 
 (display "with-exception-handler #2")
 (newline)
-(assert-equal? "with-exception-handler #2"
+(assert-error "with-exception-handler #3"
+              (lambda ()
+                (with-exception-handler
+                    (lambda (x)
+                      (assert-equal? "with-exception-handler #2" 'an-error x)
+                      (display "with-exception-handler #3")
+                      (newline)
+                      'a-handler-must-not-return)
+                  (lambda ()
+                    (+ 1 (raise 'an-error))))))
+
+(display "with-exception-handler #4")
+(newline)
+(assert-equal? "with-exception-handler #4"
                6
 	       (with-exception-handler
                    (lambda (x)
@@ -53,9 +71,9 @@
                  (lambda ()
                    (+ 1 2 3))))
 
-(display "with-exception-handler #3")
+(display "with-exception-handler #5")
 (newline)
-(assert-equal? "with-exception-handler #3"
+(assert-equal? "with-exception-handler #5"
                'success
 	       (with-exception-handler
                    (lambda (x)
