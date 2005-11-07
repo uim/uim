@@ -103,8 +103,8 @@ extern ScmObj *scm_stack_start_pointer;
 #define SCM_FREECELL_CAR(a)         (SCM_CAR(a))
 #define SCM_FREECELL_CDR(a)         (SCM_CDR(a))
 #define SCM_ENTYPE_FREECELL(a)      (SCM_ENTYPE_CONS(a))
-#define SCM_FREECELL_SET_CAR(a,car) (SCM_CONS_SET_CAR(a))
-#define SCM_FREECELL_SET_CDR(a,cdr) (SCM_CONS_SET_CDR(a))
+#define SCM_FREECELL_SET_CAR(a,car) (SCM_CONS_SET_CAR(a, car))
+#define SCM_FREECELL_SET_CDR(a,cdr) (SCM_CONS_SET_CDR(a, cdr))
 #else
 #define SCM_FREECELLP(a)            (SCM_TYPE(a) == ScmFreeCell)
 #define SCM_AS_FREECELL(a)          (SCM_ASSERT_TYPE(SCM_FREECELLP(a), (a)))
