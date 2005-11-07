@@ -135,6 +135,11 @@
 #define SCM_VOLATILE_OUTPUT     1
 #endif /* SCM_DEBUG */
 
+#if SCM_OBJ_COMPACT
+#undef SCM_USE_VALUECONS
+#define SCM_USE_VALUECONS       0
+#endif /* SCM_OBJ_COMPACT */
+
 /* for Scm_eval_c_string_internal() */
 #undef SCM_USE_SRFI6
 #define SCM_USE_SRFI6           1
