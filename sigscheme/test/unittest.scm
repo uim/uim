@@ -76,42 +76,50 @@
     (newline)))
 
 (define assert
-  (lambda (msg exp)
+  (lambda (test-name exp)
     (set! *total-assertions* (+ *total-assertions* 1))
     (if exp
 	#t
 	(begin
 	  (set! *total-failures* (+ *total-failures* 1))
-	  (report-error msg)
+	  (report-error test-name)
 	  #f))))
+
+;;
+;; assertions for test writers
+;;
 
 (define assert-true assert)
 
 (define assert-false
-  (lambda (msg exp)
-    (assert msg (not exp))))
+  (lambda (test-name exp)
+    (assert test-name (not exp))))
 
 (define assert-eq?
-  (lambda (msg a b)
-    (or (assert msg (eq? a b))
-        (report-inequality a b))))
+  (lambda (test-name expected actual)
+    (or (assert test-name (eq? expected actual))
+        (report-inequality expected actual))))
 
 (define assert-equal?
-  (lambda (msg a b)
-    (or (assert msg (equal? a b))
-        (report-inequality a b))))
+  (lambda (test-name expected actual)
+    (or (assert test-name (equal? expected actual))
+        (report-inequality expected actual))))
 
 (define assert-error
-  (lambda (assertion-name proc)
+  (lambda (test-name proc)
     (let ((errored (guard (err
                            (else
                             #t))
                      (proc)
                      #f))
-          (err-msg (string-append "no error has occurred in assertion "
-                                  assertion-name)))
+          (err-msg (string-append "no error has occurred in test "
+                                  test-name)))
       (assert err-msg errored))))
 
+
+;;
+;; misc
+;;
 
 (define (eval-counter n)
   (list 'eval-counter (+ n 1)))
