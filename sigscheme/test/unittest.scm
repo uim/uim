@@ -76,13 +76,13 @@
     (newline)))
 
 (define assert
-  (lambda (test-name exp)
+  (lambda (err-msg exp)
     (set! *total-assertions* (+ *total-assertions* 1))
     (if exp
 	#t
 	(begin
 	  (set! *total-failures* (+ *total-failures* 1))
-	  (report-error test-name)
+	  (report-error err-msg)
 	  #f))))
 
 ;;
