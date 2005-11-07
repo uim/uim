@@ -30,7 +30,6 @@
 ;;  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-(use srfi-23)
 (use srfi-34)
 
 (define *total-testsuites* 1)  ;; TODO: introduce test suites and defaults to 0
