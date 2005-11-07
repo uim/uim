@@ -284,10 +284,13 @@ ScmObj Scm_NewPort(ScmCharPort *cport, enum ScmPortFlag flag)
 ScmObj Scm_NewContinuation(void)
 {
     ScmObj obj = SigScm_NewObjFromHeap();
+    struct ScmContinuationInfo *info = (struct ScmContinuationInfo*)malloc(sizeof(struct ScmContinuationInfo));
 
     SCM_ENTYPE_CONTINUATION(obj);
-    CONTINUATION_SET_JMPENV(obj, INVALID_CONTINUATION_JMPENV);
-    CONTINUATION_SET_DYNEXT(obj, scm_current_dynamic_extent);
+
+    SCM_CONTINUATION_SET_INFO(obj, info);
+    SCM_CONTINUATION_SET_JMPENV(obj, INVALID_CONTINUATION_JMPENV);
+    SCM_CONTINUATION_SET_DYNEXT(obj, scm_current_dynamic_extent);
 
     return obj;
 }

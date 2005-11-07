@@ -50,8 +50,6 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define CONTINUATION_JMPENV     SCM_CONTINUATION_OPAQUE0
-#define CONTINUATION_SET_JMPENV SCM_CONTINUATION_SET_OPAQUE0
 
 /*=======================================
   Variable Declarations
@@ -102,8 +100,8 @@ ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk)
     ASSERT_PROCEDUREP(handler);
     ASSERT_PROCEDUREP(thunk);
 
-    CONTINUATION_SET_JMPENV(cont, &jmpenv);
-    if (setjmp(CONTINUATION_JMPENV(cont))) {
+    SCM_CONTINUATION_SET_JMPENV(cont, &jmpenv);
+    if (setjmp(SCM_CONTINUATION_JMPENV(cont))) {
         ret = Scm_call(CURRENT_EXCEPTION_HANDLER(), LIST_1(exception_thrown_obj));
         POP_EXCEPTION_CONTINUATION();
         POP_EXCEPTION_HANDLER();
@@ -143,8 +141,8 @@ ScmObj ScmExp_SRFI34_guard(ScmObj var_and_clauses, ScmObj body, ScmObj env)
     ASSERT_SYMBOLP(var);
 
     /* check if return from "raise" */
-    CONTINUATION_SET_JMPENV(cont, &jmpenv);
-    if (setjmp(CONTINUATION_JMPENV(cont))) {
+    SCM_CONTINUATION_SET_JMPENV(cont, &jmpenv);
+    if (setjmp(SCM_CONTINUATION_JMPENV(cont))) {
         POP_EXCEPTION_CONTINUATION();
         env = Scm_ExtendEnvironment(LIST_1(var), LIST_1(exception_thrown_obj), env);
         return guard_handle_clauses(clauses, env);
@@ -242,7 +240,7 @@ ScmObj ScmOp_SRFI34_raise(ScmObj obj)
 
     exception_thrown_obj = obj;
 
-    env = CONTINUATION_JMPENV(CURRENT_EXCEPTION_CONTINUATION());
+    env = SCM_CONTINUATION_JMPENV(CURRENT_EXCEPTION_CONTINUATION());
     longjmp(*env, 1);
 
     /* never reaches here */

@@ -38,6 +38,7 @@
    System Include
 =======================================*/
 #include <stdio.h>
+#include <setjmp.h>
 
 /*=======================================
    Local Include
@@ -157,6 +158,11 @@ struct ScmEvalState_ {
 
 #define SCM_CHARCELL_SIZE 8
 
+struct ScmContinuationInfo {
+    void *jmpenv;
+    ScmObj dynext;
+};
+
 /* Scheme Object */
 struct ScmCell_ {
     enum ScmObjType type;
@@ -212,8 +218,7 @@ struct ScmCell_ {
         } port;
 
         struct ScmContinuation {
-            void *opaque0;
-            void *opaque1;
+            struct ScmContinuationInfo *info;            
         } continuation;
 
 #if !SCM_USE_VALUECONS
@@ -335,12 +340,14 @@ struct ScmCell_ {
 #define SCM_PORT_IMPL(a)           (SCM_AS_PORT(a)->obj.port.impl)
 #define SCM_PORT_SET_IMPL(a, impl) (SCM_PORT_IMPL(a) = (impl))
 
-#define SCM_CONTINUATIONP(a) (SCM_TYPE(a) == ScmContinuation)
-#define SCM_ENTYPE_CONTINUATION(a) (SCM_ENTYPE((a), ScmContinuation))
-#define SCM_CONTINUATION_OPAQUE0(a) (SCM_AS_CONTINUATION(a)->obj.continuation.opaque0)
-#define SCM_CONTINUATION_SET_OPAQUE0(a, val) (SCM_CONTINUATION_OPAQUE0(a) = (val))
-#define SCM_CONTINUATION_OPAQUE1(a) (SCM_AS_CONTINUATION(a)->obj.continuation.opaque1)
-#define SCM_CONTINUATION_SET_OPAQUE1(a, val) (SCM_CONTINUATION_OPAQUE1(a) = (val))
+#define SCM_CONTINUATIONP(a)                 (SCM_TYPE(a) == ScmContinuation)
+#define SCM_ENTYPE_CONTINUATION(a)           (SCM_ENTYPE((a), ScmContinuation))
+#define SCM_CONTINUATION_INFO(a)             (SCM_AS_CONTINUATION(a)->obj.continuation.info)
+#define SCM_CONTINUATION_SET_INFO(a, info)   (SCM_CONTINUATION_INFO(a) = info)
+#define SCM_CONTINUATION_JMPENV(a)           (SCM_CONTINUATION_INFO(a)->jmpenv)
+#define SCM_CONTINUATION_SET_JMPENV(a, env)  (SCM_CONTINUATION_JMPENV(a) = (void*)env)
+#define SCM_CONTINUATION_DYNEXT(a)           (SCM_CONTINUATION_INFO(a)->dynext)
+#define SCM_CONTINUATION_SET_DYNEXT(a, dyn)  (SCM_CONTINUATION_DYNEXT(a) = dyn)
 
 #if SCM_USE_VALUECONS
 /* to modify a VALUECONS, rewrite its type to cons by SCM_ENTYPE_CONS(vcons) */
