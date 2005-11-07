@@ -110,7 +110,7 @@ ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk)
 
     CONTINUATION_SET_JMPENV(cont, &jmpenv);
     CONTINUATION_SET_DYNEXT(cont, scm_current_dynamic_extent);
-    if (setjmp(CONTINUATION_JMPENV(cont))) {
+    if (setjmp(jmpenv)) {
         ret = Scm_call(CURRENT_EXCEPTION_HANDLER(), LIST_1(exception_thrown_obj));
         POP_EXCEPTION_CONTINUATION();
         POP_EXCEPTION_HANDLER();
@@ -152,7 +152,7 @@ ScmObj ScmExp_SRFI34_guard(ScmObj var_and_clauses, ScmObj body, ScmObj env)
     /* check if return from "raise" */
     CONTINUATION_SET_JMPENV(cont, &jmpenv);
     CONTINUATION_SET_DYNEXT(cont, scm_current_dynamic_extent);
-    if (setjmp(CONTINUATION_JMPENV(cont))) {
+    if (setjmp(jmpenv)) {
         POP_EXCEPTION_CONTINUATION();
         env = Scm_ExtendEnvironment(LIST_1(var), LIST_1(exception_thrown_obj), env);
         return guard_handle_clauses(clauses, env);
