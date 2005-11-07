@@ -66,6 +66,9 @@ static ScmObj create_loaded_str(ScmObj filename);
  * TODO:
  * - describe compatibility with de facto standard of other Scheme
  *   implementations (accept env as optional arg, etc)
+ *
+ * NOTE: Gauche 0.8.6 has deprecated symbol-bound? and is going to replace the
+ * procedure with global-variable-bound?.
  */
 /* The implementation is fully compatible with SIOD */
 ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest)
