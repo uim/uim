@@ -153,4 +153,145 @@
 									(string-fill! str #\¤¤)
 									str)))
 
+;;
+;; escape sequences
+;;
+
+(define integer->string
+  (lambda (i)
+    (list->string (list (integer->char i)))))
+
+;; R5RS compliant
+(assert-equal? "R5RS escape sequence" (integer->string 34)        "\"")  ;; 34
+(assert-equal? "R5RS escape sequence" (list->string '(#\"))       "\"")  ;; 34
+(assert-equal? "R5RS escape sequence" '(#\")       (string->list "\""))  ;; 34
+(assert-equal? "R5RS escape sequence" (integer->string 92)        "\\")  ;; 92
+(assert-equal? "R5RS escape sequence" (list->string '(#\\))       "\\")  ;; 92
+(assert-equal? "R5RS escape sequence" '(#\\)       (string->list "\\"))  ;; 92
+(assert-equal? "R5RS escape sequence" (integer->string 10)        "\n")  ;; 110
+(assert-equal? "R5RS escape sequence" (list->string '(#\newline)) "\n")  ;; 110
+(assert-equal? "R5RS escape sequence" '(#\newline) (string->list "\n"))  ;; 110
+
+;; R6RS(SRFI-75) compliant
+(assert-equal? "R6RS escape sequence" (integer->string 0)        "\0")  ;; 0
+(assert-equal? "R6RS escape sequence" (list->string '(#\nul))    "\0")  ;; 0
+(assert-equal? "R6RS escape sequence" '(#\nul)    (string->list "\0"))  ;; 0
+(assert-equal? "R6RS escape sequence" (integer->string 7)        "\a")  ;; 97
+(assert-equal? "R6RS escape sequence" (list->string '(#\alarm))  "\a")  ;; 97
+(assert-equal? "R6RS escape sequence" '(#\alarm)  (string->list "\a"))  ;; 97
+(assert-equal? "R6RS escape sequence" (integer->string 8)        "\b")  ;; 98
+(assert-equal? "R6RS escape sequence" (list->string '(#\backspace)) "\b")  ;; 98
+(assert-equal? "R6RS escape sequence" '(#\backspace) (string->list "\b"))  ;; 98
+(assert-equal? "R6RS escape sequence" (integer->string 12)       "\f")  ;; 102
+(assert-equal? "R6RS escape sequence" (list->string '(#\page))   "\f")  ;; 102
+(assert-equal? "R6RS escape sequence" '(#\page)   (string->list "\f"))  ;; 102
+(assert-equal? "R6RS escape sequence" (integer->string 13)       "\r")  ;; 114
+(assert-equal? "R6RS escape sequence" (list->string '(#\return)) "\r")  ;; 114
+(assert-equal? "R6RS escape sequence" '(#\return) (string->list "\r"))  ;; 114
+(assert-equal? "R6RS escape sequence" (integer->string 9)        "\t")  ;; 116
+(assert-equal? "R6RS escape sequence" (list->string '(#\tab))    "\t")  ;; 116
+(assert-equal? "R6RS escape sequence" '(#\tab)    (string->list "\t"))  ;; 116
+(assert-equal? "R6RS escape sequence" (integer->string 11)       "\v")  ;; 118
+(assert-equal? "R6RS escape sequence" (list->string '(#\vtab))   "\v")  ;; 118
+(assert-equal? "R6RS escape sequence" '(#\vtab)   (string->list "\v"))  ;; 118
+(assert-equal? "R6RS escape sequence" (integer->string 124)      "\|")  ;; 124
+
+;; not specified in R5RS or SRFI-75, but conventional interpretation
+;;                                                "\0"   ;; 0
+(assert-equal? "conventional escape sequence" " " "\ ")  ;; 32
+(assert-equal? "conventional escape sequence" "!" "\!")  ;; 33
+;;                                                "\""   ;; 34
+(assert-equal? "conventional escape sequence" "#" "\#")  ;; 35
+(assert-equal? "conventional escape sequence" "$" "\$")  ;; 36
+(assert-equal? "conventional escape sequence" "%" "\%")  ;; 37
+(assert-equal? "conventional escape sequence" "&" "\&")  ;; 38
+(assert-equal? "conventional escape sequence" "'" "\'")  ;; 39
+(assert-equal? "conventional escape sequence" "(" "\(")  ;; 40
+(assert-equal? "conventional escape sequence" ")" "\)")  ;; 41
+(assert-equal? "conventional escape sequence" "*" "\*")  ;; 42
+(assert-equal? "conventional escape sequence" "+" "\+")  ;; 43
+(assert-equal? "conventional escape sequence" "," "\,")  ;; 44
+(assert-equal? "conventional escape sequence" "-" "\-")  ;; 45
+(assert-equal? "conventional escape sequence" "." "\.")  ;; 46
+(assert-equal? "conventional escape sequence" "/" "\/")  ;; 47
+(assert-equal? "conventional escape sequence" "0" "\0")  ;; 48
+(assert-equal? "conventional escape sequence" "1" "\1")  ;; 49
+(assert-equal? "conventional escape sequence" "2" "\2")  ;; 50
+(assert-equal? "conventional escape sequence" "3" "\3")  ;; 51
+(assert-equal? "conventional escape sequence" "4" "\4")  ;; 52
+(assert-equal? "conventional escape sequence" "5" "\5")  ;; 53
+(assert-equal? "conventional escape sequence" "6" "\6")  ;; 54
+(assert-equal? "conventional escape sequence" "7" "\7")  ;; 55
+(assert-equal? "conventional escape sequence" "8" "\8")  ;; 56
+(assert-equal? "conventional escape sequence" "9" "\9")  ;; 57
+(assert-equal? "conventional escape sequence" ":" "\:")  ;; 58
+(assert-equal? "conventional escape sequence" ";" "\;")  ;; 59
+(assert-equal? "conventional escape sequence" "<" "\<")  ;; 60
+(assert-equal? "conventional escape sequence" "=" "\=")  ;; 61
+(assert-equal? "conventional escape sequence" ">" "\>")  ;; 62
+(assert-equal? "conventional escape sequence" "?" "\?")  ;; 63
+(assert-equal? "conventional escape sequence" "@" "\@")  ;; 64
+(assert-equal? "conventional escape sequence" "A" "\A")  ;; 65
+(assert-equal? "conventional escape sequence" "B" "\B")  ;; 66
+(assert-equal? "conventional escape sequence" "C" "\C")  ;; 67
+(assert-equal? "conventional escape sequence" "D" "\D")  ;; 68
+(assert-equal? "conventional escape sequence" "E" "\E")  ;; 69
+(assert-equal? "conventional escape sequence" "F" "\F")  ;; 70
+(assert-equal? "conventional escape sequence" "G" "\G")  ;; 71
+(assert-equal? "conventional escape sequence" "H" "\H")  ;; 72
+(assert-equal? "conventional escape sequence" "I" "\I")  ;; 73
+(assert-equal? "conventional escape sequence" "J" "\J")  ;; 74
+(assert-equal? "conventional escape sequence" "K" "\K")  ;; 75
+(assert-equal? "conventional escape sequence" "L" "\L")  ;; 76
+(assert-equal? "conventional escape sequence" "M" "\M")  ;; 77
+(assert-equal? "conventional escape sequence" "N" "\N")  ;; 78
+(assert-equal? "conventional escape sequence" "O" "\O")  ;; 79
+(assert-equal? "conventional escape sequence" "P" "\P")  ;; 80
+(assert-equal? "conventional escape sequence" "Q" "\Q")  ;; 81
+(assert-equal? "conventional escape sequence" "R" "\R")  ;; 82
+(assert-equal? "conventional escape sequence" "S" "\S")  ;; 83
+(assert-equal? "conventional escape sequence" "T" "\T")  ;; 84
+(assert-equal? "conventional escape sequence" "U" "\U")  ;; 85
+(assert-equal? "conventional escape sequence" "V" "\V")  ;; 86
+(assert-equal? "conventional escape sequence" "W" "\W")  ;; 87
+(assert-equal? "conventional escape sequence" "X" "\X")  ;; 88
+(assert-equal? "conventional escape sequence" "Y" "\Y")  ;; 89
+(assert-equal? "conventional escape sequence" "Z" "\Z")  ;; 90
+(assert-equal? "conventional escape sequence" "[" "\[")  ;; 91
+;;                                                "\\"   ;; 92
+(assert-equal? "conventional escape sequence" "]" "\]")  ;; 93
+(assert-equal? "conventional escape sequence" "^" "\^")  ;; 94
+(assert-equal? "conventional escape sequence" "_" "\_")  ;; 95
+(assert-equal? "conventional escape sequence" "`" "\`")  ;; 96
+;;                                                "\a"   ;; 97
+;;                                                "\b"   ;; 98
+(assert-equal? "conventional escape sequence" "c" "\c")  ;; 99
+(assert-equal? "conventional escape sequence" "d" "\d")  ;; 100
+(assert-equal? "conventional escape sequence" "e" "\e")  ;; 101
+;;                                                "\f"   ;; 102
+(assert-equal? "conventional escape sequence" "g" "\g")  ;; 103
+(assert-equal? "conventional escape sequence" "h" "\h")  ;; 104
+(assert-equal? "conventional escape sequence" "i" "\i")  ;; 105
+(assert-equal? "conventional escape sequence" "j" "\j")  ;; 106
+(assert-equal? "conventional escape sequence" "k" "\k")  ;; 107
+(assert-equal? "conventional escape sequence" "l" "\l")  ;; 108
+(assert-equal? "conventional escape sequence" "m" "\m")  ;; 109
+;;                                                "\n"   ;; 110
+(assert-equal? "conventional escape sequence" "o" "\o")  ;; 111
+(assert-equal? "conventional escape sequence" "p" "\p")  ;; 112
+(assert-equal? "conventional escape sequence" "q" "\q")  ;; 113
+;;                                                "\r"   ;; 114
+(assert-equal? "conventional escape sequence" "s" "\s")  ;; 115
+;;                                                "\t"   ;; 116
+(assert-equal? "conventional escape sequence" "u" "\u")  ;; 117
+;;                                                "\v"   ;; 118
+(assert-equal? "conventional escape sequence" "w" "\w")  ;; 119
+(assert-equal? "conventional escape sequence" "x" "\x")  ;; 120
+(assert-equal? "conventional escape sequence" "y" "\y")  ;; 121
+(assert-equal? "conventional escape sequence" "z" "\z")  ;; 122
+(assert-equal? "conventional escape sequence" "{" "\{")  ;; 123
+;;                                                "\|"   ;; 124
+(assert-equal? "conventional escape sequence" "}" "\}")  ;; 125
+(assert-equal? "conventional escape sequence" "~" "\~")  ;; 126
+
 (total-report)
