@@ -82,7 +82,6 @@ Namings and Cosmetic things:
 ==============================================================================
 Assigned to YamaKen:
 
-* Implement assert-error in unittest.scm
 * Write tests for SRFI-34
 
 * GCC4-optimization-proof stack protection

@@ -30,6 +30,9 @@
 ;;  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+(use srfi-23)
+(use srfi-34)
+
 (define total-err-num  0)
 (define total-test-num 0)
 (define test-filename "unspecified")
@@ -97,7 +100,12 @@
 (define (eval-counter n)
   (list 'eval-counter (+ n 1)))
 
-;; dummy definition to eval args for assert-error. real implementation needed.
 (define assert-error
-  (lambda (msg exp)
-    #f))
+  (lambda (test-name proc)
+    (let ((errored (guard (err
+                           (else
+                            #t))
+                     (proc)
+                     #f))
+          (err-msg (string-append "no error has occurred in test " test-name)))
+      (assert err-msg errored))))
