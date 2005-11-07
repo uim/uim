@@ -97,9 +97,6 @@
 	  (write b)
 	  (newline)))))
 
-(define (eval-counter n)
-  (list 'eval-counter (+ n 1)))
-
 (define assert-error
   (lambda (test-name proc)
     (let ((errored (guard (err
@@ -109,3 +106,7 @@
                      #f))
           (err-msg (string-append "no error has occurred in test " test-name)))
       (assert err-msg errored))))
+
+
+(define (eval-counter n)
+  (list 'eval-counter (+ n 1)))
