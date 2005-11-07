@@ -10,10 +10,15 @@ libsscm_la_SOURCES = \
 		read.c sigscheme.c sigschemefunctable.c \
 		sigscheme.h sigschemetype.h sigschemefunctable.h
 
-#FIXME: list operations-*.c and so on into EXTRA_DIST
+EXTRA_DIST = \
+		operations-r5rs-deepcadrs.c \
+		operations-nonstd.c operations-siod.c    \
+		operations-srfi1.c operations-srfi2.c    \
+		operations-srfi6.c operations-srfi8.c    \
+		operations-srfi23.c operations-srfi34.c  \
+		operations-srfi38.c operations-srfi60.c
 
-#FIXME: depends on operations*.c, eval.c and io.c
-sigschemefunctable.c: ./script/build_func_table.rb
+sigschemefunctable.c: ./script/build_func_table.rb operations.c eval.c io.c ${EXTRA_DIST}
 	./script/build_func_table.rb > sigschemefunctable.c
 
 libsscm_la_CFLAGS   = -Wall

@@ -5,8 +5,6 @@ Requirements and bugs:
   to find the issues, and make all tests in test-char.scm and test-string.scm
   passed
 
-* Fix Makefile.am
-
 * Introduce Exception handling (probably should be based on SRFI-34)
   - Reimplement with dynamic-wind, and without direct setjmp/longjmp
   - Rename call/cc with call/ec? ([Anthy-dev 2216])
