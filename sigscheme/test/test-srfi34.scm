@@ -35,12 +35,16 @@
 (use srfi-34)
 
 ;; with-exception-handler
+(display "with-exception-handler #1")
+(newline)
 (with-exception-handler
     (lambda (x)
       (assert-equal? "with-exception-handler #1" 'an-error x))
   (lambda ()
     (+ 1 (raise 'an-error))))
 
+(display "with-exception-handler #2")
+(newline)
 (assert-equal? "with-exception-handler #2"
                6
 	       (with-exception-handler
@@ -49,7 +53,9 @@
                  (lambda ()
                    (+ 1 2 3))))
 
-(assert-equal? "with-exception-handler #2"
+(display "with-exception-handler #3")
+(newline)
+(assert-equal? "with-exception-handler #3"
                'success
 	       (with-exception-handler
                    (lambda (x)
@@ -59,14 +65,20 @@
 
 
 ;; guard
+(display "guard #1")
+(newline)
 (assert-equal? "guard #1"
                'exception
 	       (guard (condition
 		       (else
+                        (display "guard #2")
+                        (newline)
 			(assert-equal? "guard #2" 'an-error condition)
 			'exception))
                  (+ 1 (raise 'an-error))))
 
+(display "guard #3")
+(newline)
 (assert-equal? "guard #3"
                3
 	       (guard (condition
@@ -74,6 +86,8 @@
 			'exception))
                  (+ 1 2)))
 
+(display "guard #4")
+(newline)
 (assert-equal? "guard #4"
                'success
 	       (guard (condition
@@ -81,6 +95,8 @@
 			'exception))
                  'success))
 
+(display "guard #5")
+(newline)
 (assert-equal? "guard #5"
                'exception
 	       (guard (condition
@@ -88,6 +104,8 @@
 			'exception))
                  (+ 1 (raise 'error))))
 
+(display "guard #6")
+(newline)
 (assert-equal? "guard #6"
                42
                (guard (condition
@@ -98,6 +116,8 @@
                         (newline)))
                  (raise (list (cons 'a 42)))))
 
+(display "guard #7")
+(newline)
 (assert-equal? "guard #7"
                '(b . 23)
                (guard (condition
@@ -110,6 +130,8 @@
 
 
 ;; mixed use of with-exception-handler and guard
+(display "mixed exception handling #1")
+(newline)
 (assert-equal? "mixed exception handling #1"
                'guard-ret
 	       (with-exception-handler (lambda (x)
@@ -120,7 +142,9 @@
                             'guard-ret))
                      (raise 1)))))
 
-(assert-equal? "mixed exception handling #1"
+(display "mixed exception handling #2")
+(newline)
+(assert-equal? "mixed exception handling #2"
                'with-exception-ret
 	       (with-exception-handler (lambda (x)
 					 'with-exception-ret)
@@ -130,7 +154,9 @@
                             'guard-ret))
                      (raise 1)))))
 
-(assert-equal? "mixed exception handling #1"
+(display "mixed exception handling #3")
+(newline)
+(assert-equal? "mixed exception handling #3"
                'positive
                (call-with-current-continuation
                 (lambda (k)
@@ -142,7 +168,9 @@
                               ((negative? condition) 'negative))
                         (raise 1)))))))
 
-(assert-equal? "mixed exception handling #2"
+(display "mixed exception handling #4")
+(newline)
+(assert-equal? "mixed exception handling #4"
                'negative
                (call-with-current-continuation
                 (lambda (k)
@@ -154,7 +182,9 @@
                               ((negative? condition) 'negative))
                         (raise -1)))))))
 
-(assert-equal? "mixed exception handling #3"
+(display "mixed exception handling #5")
+(newline)
+(assert-equal? "mixed exception handling #5"
                'zero
                (call-with-current-continuation
                 (lambda (k)
