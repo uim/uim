@@ -39,20 +39,17 @@
 
 (define total-report
   (lambda ()
-    (begin
-      (if (= total-err-num 0)
-	  (begin
-	    (display "OK : ")
-	    (display total-test-num)
-	    (display " testcase(s) passed")
-	    (newline))
-	  (begin
-	    (display "FAILED : ")
-	    (display total-err-num)
-	    (display " testcase(s) out of ")
-	    (display total-test-num)
-	    (display " testcase(s) failed")
-	    (newline))))))
+    (for-each display
+              (list
+               (if (zero? total-err-num)
+                   "OK : "
+                   "FAILED : ")
+               1 " tests, "
+               total-test-num " assertions, "
+               (- total-test-num total-err-num) " successes, "
+               total-err-num " failures, "
+               0 " errors"))
+    (newline)))
 
 (define report-error
   (lambda (errmsg)
