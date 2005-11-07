@@ -69,6 +69,8 @@ for developers.
 
   4) Write tests as described in test/test-example.scm
 
+  5) Add test-foo.scm into EXTRA_DIST of test/Makefile.am
+
 
 * Guidelines for uim project
 
