@@ -984,8 +984,7 @@ ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
              * this procedure is then called on the value of the <test> and the value
              * returned by this procedure is returned by the cond expression.
              */
-            /* FIXME: remove expensive Scm_Intern() */
-            if (EQ(Scm_Intern("=>"), CAR(exps)) && !NULLP(CDR(exps))) {
+            if (EQ(SYM_YIELDS, CAR(exps)) && !NULLP(CDR(exps))) {
                 proc = EVAL(CADR(exps), env);
                 if (FALSEP(ScmOp_procedurep(proc)))
                     ERR_OBJ("the value of exp after => must be the procedure but got", proc);

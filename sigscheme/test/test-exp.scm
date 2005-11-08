@@ -101,18 +101,15 @@
                    (lambda ()
                      (cond
                       (else)))))
-;; FAILED
 (assert-error  "cond invalid form #6"
                (lambda ()
                  (cond
                   (#t =>))))
-;; FAILED
 (assert-error  "cond invalid form #7"
                (lambda ()
                  (cond
                   (#t =>)
                   (else #t))))
-;; FAILED
 (assert-error  "cond invalid form #8"
                (lambda ()
                  (cond

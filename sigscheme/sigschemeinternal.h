@@ -68,6 +68,9 @@ struct ScmSpecialCharInfo_ {
 /*=======================================
    Variable Declarations
 =======================================*/
+/* sigscheme.c */
+extern ScmObj Scm_sym_else, Scm_sym_yields;
+
 /* eval.c */
 extern struct trace_frame *scm_trace_root;
 
@@ -120,6 +123,8 @@ extern ScmObj *scm_stack_start_pointer;
 #define SYM_QUASIQUOTE       SCM_SYM_QUASIQUOTE
 #define SYM_UNQUOTE          SCM_SYM_UNQUOTE
 #define SYM_UNQUOTE_SPLICING SCM_SYM_UNQUOTE_SPLICING
+#define SYM_ELSE             Scm_sym_else
+#define SYM_YIELDS           Scm_sym_yields
 
 #define EQ             SCM_EQ
 #define NULLP          SCM_NULLP

@@ -62,6 +62,7 @@ struct module_info {
 =======================================*/
 ScmObj Scm_sym_quote, Scm_sym_quasiquote;
 ScmObj Scm_sym_unquote, Scm_sym_unquote_splicing;
+ScmObj Scm_sym_else, Scm_sym_yields;
 
 #if SCM_COMPAT_SIOD
 static ScmObj scm_return_value    = NULL;
@@ -142,14 +143,11 @@ static void SigScm_Initialize_internal(void)
     Scm_sym_quasiquote       = Scm_Intern("quasiquote");
     Scm_sym_unquote          = Scm_Intern("unquote");
     Scm_sym_unquote_splicing = Scm_Intern("unquote-splicing");
-#if 0
-    /* FIXME: Rewrite ScmExp_cond() and ScmExp_case(), and enable this */
-    SigScm_else             = Scm_Intern("else");
-    SigScm_foo              = Scm_Intern("=>");
-#else
+    Scm_sym_else             = Scm_Intern("else");
+    Scm_sym_yields           = Scm_Intern("=>");
+#if 1
     /* FIXME: obsolete this. don't set SCM_TRUE and rely on the value */
     SCM_SYMBOL_SET_VCELL(Scm_Intern("else"), SCM_TRUE);
-    SCM_SYMBOL_SET_VCELL(Scm_Intern("=>"),   SCM_TRUE);
 #endif
 
 #if SCM_USE_NONSTD_FEATURES
