@@ -283,8 +283,15 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
         SigScm_PortPrintf(port, "#<c_pointer %p>", SCM_C_POINTER_VALUE(obj));
         break;
     case ScmCFuncPointer:
+
+        /* FIXME: This is a workaround for SCM_OBJ_COMPACT. Is there any proper solution? */
+#if SCM_OBJ_COMPACT
+        SigScm_PortPrintf(port, "#<c_func_pointer %p>",
+                          SCM_C_FUNCPOINTER_VALUE(obj));
+#else
         SigScm_PortPrintf(port, "#<c_func_pointer %p>",
                           SCM_REINTERPRET_CAST(void *, SCM_C_FUNCPOINTER_VALUE(obj)));
+#endif
         break;
     }
 }

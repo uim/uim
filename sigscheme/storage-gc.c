@@ -107,6 +107,7 @@ struct gc_protected_var_ {
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+#if !SCM_OBJ_COMPACT
 #define SCM_UNMARKER          0
 #define SCM_INITIAL_MARKER    (SCM_UNMARKER + 1)
 #define SCM_IS_MARKED(a)      (SCM_MARK(a) == scm_cur_marker)
@@ -114,6 +115,7 @@ struct gc_protected_var_ {
 #define SCM_DO_MARK(a)        (SCM_MARK(a) = scm_cur_marker)
 #define SCM_DO_UNMARK(a)      (SCM_MARK(a) = SCM_UNMARKER)
 #define SCM_MARK_CORRUPTED(a) ((unsigned)SCM_MARK(a) > (unsigned)scm_cur_marker)
+#endif /* !SCM_OBJ_COMPACT */
 
 /*=======================================
   Variable Declarations
@@ -123,7 +125,9 @@ static int           scm_heap_num  = 8;
 static ScmObjHeap   *scm_heaps     = NULL;
 static ScmObj        scm_freelist  = NULL;
 
+#if !SCM_OBJ_COMPACT
 static int           scm_cur_marker = SCM_INITIAL_MARKER;
+#endif
 
 static jmp_buf save_regs_buf;
 ScmObj *scm_stack_start_pointer = NULL;
@@ -347,6 +351,10 @@ static void finalize_heap(void)
 
 static void gc_preprocess(void)
 {
+#if SCM_OBJ_COMPACT
+    /* TODO : Implement Here! */
+    ;
+#else /* SCM_OBJ_COMPACT */
     ++scm_cur_marker;           /* make everything unmarked */
 
     if (scm_cur_marker == SCM_UNMARKER) {
@@ -364,6 +372,7 @@ static void gc_preprocess(void)
             }
         }
     }
+#endif /* SCM_OBJ_COMPACT */
 }
 
 static void gc_mark_and_sweep(void)
@@ -532,6 +541,10 @@ static void gc_mark(void)
 
 static void sweep_obj(ScmObj obj)
 {
+#if SCM_OBJ_COMPACT
+    /* TODO : Implement Here! */
+    ;
+#else /* SCM_OBJ_COMPACT */
     /* if the type has the pointer to free, then free it! */
     switch (SCM_TYPE(obj)) {
     case ScmInt:
@@ -572,10 +585,15 @@ static void sweep_obj(ScmObj obj)
     default:
         break;
     }
+#endif
 }
 
 static void gc_sweep(void)
 {
+#if SCM_OBJ_COMPACT
+    /* TODO : Implement Here! */
+    ;
+#else /* SCM_OBJ_COMPACT */
     int i = 0;
     int j = 0;
     int corrected_obj_num = 0;
@@ -604,4 +622,5 @@ static void gc_sweep(void)
         CDBG((SCM_DBG_GC, "heap[%d] swept = %d", i, corrected_obj_num));
     }
     scm_freelist = scm_new_freelist;
+#endif
 }
