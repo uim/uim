@@ -1,0 +1,22 @@
+Coding style
+
+* Macro definition
+
+  Any argument should be wrapped into () or [] if no exceptional reason exist,
+  to prevent unintended operator associations.
+
+    #define SCM_CONS_SET_CAR(a, car)   (SCM_CAR(a) = (car))
+
+  And ultra-cowardively, passing an argument to another function or macro is
+  should also be wrapped as follows.
+
+    #define SCM_CONS(kar, kdr) (Scm_NewCons((kar), (kdr)))
+
+  This is intended to endure unconditional safety against rare-cases such as
+  follows.
+
+    #define FOO assert(), get_foo()
+    #define MAKE_LIST2(x, y) make_list(x, y)
+    
+    MAKE_LIST2(FOO, SCM_FALSE);
+    /* => make_list(assert(), get_foo(), SCM_FALSE) */
