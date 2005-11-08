@@ -63,7 +63,7 @@ extern "C" {
 #define SCM_NORETURN
 #endif /* __GNUC__ */
 
-#define SCM_REINTERPRET_CAST(type, obj) (*(type *)&(obj))
+#define SCM_REINTERPRET_CAST(type, obj) ((type)(int)(obj))
 
 /* RFC: better names for the debug printing */
 #if SCM_DEBUG
