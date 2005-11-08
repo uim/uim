@@ -347,7 +347,7 @@ static void print_string(ScmObj port, ScmObj obj, enum OutputType otype)
             found = 0;
             for (info = Scm_special_char_table; info->esc_seq; info++) {
                 if (c == info->code) {
-                    SigScm_PortPrintf(port, "%s", info->lex_rep);
+                    SigScm_PortPrintf(port, "%s", info->esc_seq);
                     found = 1;
                     break;
                 }
