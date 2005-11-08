@@ -579,6 +579,16 @@ static void sweep_obj(ScmObj obj)
 
     /* rarely swept objects */
     case ScmContinuation:
+        /*
+         * Since continuation object is not so many, destructing the object by
+         * function call will not cost high. This function interface makes
+         * continuation module substitution easy without preparing
+         * module-specific header file which contains the module-specific
+         * destruction macro.
+         */
+        Scm_DestructContinuation(obj);
+        break;
+
     case ScmFunc:
     case ScmConstant:
     case ScmFreeCell:

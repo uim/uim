@@ -247,6 +247,11 @@ static ScmObj continuation_stack_unwind(ScmObj dest_cont)
     return dest_cont;
 }
 
+void Scm_DestructContinuation(ScmObj cont)
+{
+    /* no object to free(3) in this implementation */
+}
+
 ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
 {
     jmp_buf env;

@@ -337,6 +337,7 @@ ScmObj SigScm_NewObjFromHeap(void);
 /* storage-continuation.c */
 void   SigScm_InitContinuation(void);
 void   SigScm_FinalizeContinuation(void);
+void   Scm_DestructContinuation(ScmObj cont);
 ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state);
 void   Scm_CallContinuation(ScmObj cont, ScmObj ret);
 ScmObj Scm_DynamicWind(ScmObj before, ScmObj thunk, ScmObj after);
