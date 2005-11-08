@@ -74,7 +74,6 @@
 ;; cond
 ;;
 
-;; FAILED
 (assert-error  "cond invalid form #1"
                (lambda ()
                  (cond)))
@@ -87,14 +86,12 @@
                  (cond
                   ()
                   (else #t))))
-;; FAILED
 ;; 'else' followed by another caluse
 (assert-error  "cond invalid form #4"
                (lambda ()
                  (cond
                   (else #t)
                   (#t))))
-;; FAILED
 ;; not specified in R5RS, but SigScheme should cause error
 (if (provided? "sigscheme")
     (assert-error  "cond invalid form #5"

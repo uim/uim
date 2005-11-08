@@ -951,22 +951,27 @@ ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
      *     (else <expression1> <expression2> ...)
      */
     ScmObj env    = eval_state->env;
-    ScmObj clause = SCM_NULL;
-    ScmObj test   = SCM_NULL;
-    ScmObj exps   = SCM_NULL;
-    ScmObj proc   = SCM_NULL;
+    ScmObj clause = SCM_FALSE;
+    ScmObj test   = SCM_FALSE;
+    ScmObj exps   = SCM_FALSE;
+    ScmObj proc   = SCM_FALSE;
     DECLARE_FUNCTION("cond", SyntaxVariadicTailRec0);
 
+    if (NO_MORE_ARG(args))
+        ERR("cond: syntax error: at least one clause required");
+
     /* looping in each clause */
-    for (; !NULLP(args); args = CDR(args)) {
-        clause = CAR(args);
+    while (clause = POP_ARG(args), VALIDP(clause)) {
         if (!CONSP(clause))
             ERR_OBJ("bad clause", clause);
 
         test = CAR(clause);
         exps = CDR(clause);
 
-        test = EVAL(test, env);
+        if (EQ(test, SYM_ELSE))
+            ASSERT_NO_MORE_ARG(args);
+        else
+            test = EVAL(test, env);
 
         if (NFALSEP(test)) {
             /*
@@ -974,8 +979,12 @@ ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
              * <expression>s, then the value of the <test> is returned as the
              * result.
              */
-            if (NULLP(exps))
-                return test;
+            if (NULLP(exps)) {
+                if (EQ(test, SYM_ELSE))
+                    ERR_OBJ("bad clause: else with no expressions", clause);
+                else
+                    return test;
+            }
 
             /*
              * If the selected <clause> uses the => alternate form, then the
@@ -984,10 +993,12 @@ ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
              * of the <test> and the value returned by this procedure is
              * returned by the cond expression.
              */
-            if (EQ(SYM_YIELDS, CAR(exps)) && !NULLP(CDR(exps))) {
+            if (EQ(SYM_YIELDS, CAR(exps)) && CONSP(CDR(exps))) {
+                if (!NULLP(CDDR(exps)))
+                    ERR_OBJ("bad clause", clause);
                 proc = EVAL(CADR(exps), env);
-                if (FALSEP(ScmOp_procedurep(proc)))
-                    ERR_OBJ("the value of exp after => must be the procedure but got", proc);
+                if (!PROCEDUREP(proc))
+                    ERR_OBJ("exp after => must be the procedure but got", proc);
 
                 return Scm_call(proc, LIST_1(test));
             }
