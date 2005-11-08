@@ -32,7 +32,10 @@
 
 (load "./test/unittest.scm")
 
-(use srfi-34)
+(cond-expand
+ (sigscheme
+  (use srfi-34))
+ (else #t))
 
 ;; these tests are ported from "Examples" section of SRFI-34
 

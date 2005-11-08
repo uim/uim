@@ -30,7 +30,15 @@
 ;;  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-(use srfi-34)
+(if (provided? "sigscheme")
+    (begin
+      (define cond-expand cond)
+      (define sigscheme #t)))
+
+(cond-expand
+ (sigscheme
+  (use srfi-34))
+ (else #t))
 
 (define *total-testsuites* 1)  ;; TODO: introduce test suites and defaults to 0
 (define *total-testcases* 1)   ;; TODO: introduce testcase and defaults to 0
@@ -119,6 +127,11 @@
 ;;
 ;; misc
 ;;
+
+;; SigScheme and Gauche surely returns #<undef>
+(define undef
+  (lambda ()
+    (for-each values ())))
 
 (define (eval-counter n)
   (list 'eval-counter (+ n 1)))

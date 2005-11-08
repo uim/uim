@@ -32,7 +32,10 @@
 
 (load "./test/unittest.scm")
 
-(use srfi-34)
+(cond-expand
+ (sigscheme
+  (use srfi-34))
+ (else #t))
 
 ;; with-exception-handler
 
