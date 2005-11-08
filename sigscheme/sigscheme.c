@@ -147,6 +147,7 @@ static void SigScm_Initialize_internal(void)
     Scm_sym_yields           = Scm_Intern("=>");
 #if 1
     /* FIXME: obsolete this. don't set SCM_TRUE and rely on the value */
+    /* only operations-srfi34.c depends on this */
     SCM_SYMBOL_SET_VCELL(Scm_Intern("else"), SCM_TRUE);
 #endif
 

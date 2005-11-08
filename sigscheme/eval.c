@@ -931,11 +931,6 @@ ScmObj ScmExp_setd(ScmObj sym, ScmObj exp, ScmObj env)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.1 Conditionals
 ===========================================================================*/
-/*
- * FIXME: following else handlings
- * - depending on its own true value
- * - can appeared in other than last clause
- */
 ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
 {
     /*
