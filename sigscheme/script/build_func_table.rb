@@ -159,65 +159,10 @@ end
 # Header
 print_header
 
-# R5RS
-build_functable("",
-                "r5rs_func_info_table",
-                ["eval.c", "io.c", "operations.c", "sigscheme.c"])
-
-# R5RS deep c[ad]+r
-build_functable("",
-                "r5rs_deepcadrs_func_info_table",
-                ["operations-r5rs-deepcadrs.c"])
-
-# SigScheme specific non standard operations
-build_functable("",
-                "nonstd_func_info_table",
-                ["operations-nonstd.c"])
-
-# SRFI-1
-build_functable("_SRFI1_",
-                "srfi1_func_info_table",
-                ["operations-srfi1.c"])
-
-# SRFI-2
-build_functable("_SRFI2_",
-                "srfi2_func_info_table",
-                ["operations-srfi2.c"])
-
-# SRFI-6
-build_functable("_SRFI6_",
-                "srfi6_func_info_table",
-                ["operations-srfi6.c"])
-
-# SRFI-8
-build_functable("_SRFI8_",
-                "srfi8_func_info_table",
-                ["operations-srfi8.c"])
-
-# SRFI-23
-build_functable("_SRFI23_",
-                "srfi23_func_info_table",
-                ["operations-srfi23.c"])
-
-# SRFI-34
-build_functable("_SRFI34_",
-                "srfi34_func_info_table",
-                ["operations-srfi34.c"])
-
-# SRFI-38
-build_functable("_SRFI38_",
-                "srfi38_func_info_table",
-                ["operations-srfi38.c"])
-
-# SRFI-60
-build_functable("_SRFI60_",
-                "srfi60_func_info_table",
-                ["operations-srfi60.c"])
-
-# SIOD
-build_functable("",
-                "siod_func_info_table",
-                ["operations-siod.c"])
+# Print Table
+build_functable(ARGV[0],
+                ARGV[1],
+                ARGV[2..-1])
 
 # Footer
 print_footer

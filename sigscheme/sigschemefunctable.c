@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : sigschemefunctable.h
+ *  FileName : sigschemefunctable.c
  *  About    : Built-in function table
  *
  *  Copyright (C) 2005      by Kazuki Ohta (mover@hct.zaq.ne.jp)
@@ -31,8 +31,6 @@
  *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#ifndef __SIGSCHEME_FUNCTABLE_H
-#define __SIGSCHEME_FUNCTABLE_H
 
 /*=======================================
   System Include
@@ -41,67 +39,52 @@
 /*=======================================
   Local Include
 =======================================*/
+#include "sigscheme.h"
+#include "sigschemefunctable.h"
 
 /*=======================================
   Macro Definitions
 =======================================*/
-#define REGISTER_FUNC_TABLE(functable)                                  \
-    do {                                                                \
-        struct builtin_func_info *info = NULL;                          \
-        for (info = functable; info->funcname; info++) {                \
-            (*info->reg_func)(info->funcname, info->c_func);            \
-        }                                                               \
-    } while (/* CONSTCOND */ 0)
 
 /*=======================================
   Type Definitions
 =======================================*/
-typedef ScmObj (*ScmBuiltinFunc)(void);
-typedef void   (*ScmRegisterFunc)(const char *name, ScmBuiltinFunc func);
-
-struct builtin_func_info {
-    const char     *funcname;
-    ScmBuiltinFunc  c_func;
-    ScmRegisterFunc reg_func;
-};
 
 /*=======================================
-   Variable Declarations
+   Builtin Function Tables
 =======================================*/
-extern struct builtin_func_info r5rs_func_info_table[];
+#include "sigschemefunctable-r5rs.c"
 
 #if SCM_USE_DEEP_CADRS
-extern struct builtin_func_info r5rs_deepcadrs_func_info_table[];
+#include "sigschemefunctable-r5rs-deepcadrs.c"
 #endif
 #if SCM_USE_NONSTD_FEATURES
-extern struct builtin_func_info nonstd_func_info_table[];
+#include "sigschemefunctable-nonstd.c"
 #endif
 #if SCM_USE_SRFI1
-extern struct builtin_func_info srfi1_func_info_table[];
+#include "sigschemefunctable-srfi1.c"
 #endif
 #if SCM_USE_SRFI2
-extern struct builtin_func_info srfi2_func_info_table[];
+#include "sigschemefunctable-srfi2.c"
 #endif
 #if SCM_USE_SRFI6
-extern struct builtin_func_info srfi6_func_info_table[];
+#include "sigschemefunctable-srfi6.c"
 #endif
 #if SCM_USE_SRFI8
-extern struct builtin_func_info srfi8_func_info_table[];
+#include "sigschemefunctable-srfi8.c"
 #endif
 #if SCM_USE_SRFI23
-extern struct builtin_func_info srfi23_func_info_table[];
+#include "sigschemefunctable-srfi23.c"
 #endif
 #if SCM_USE_SRFI34
-extern struct builtin_func_info srfi34_func_info_table[];
+#include "sigschemefunctable-srfi34.c"
 #endif
 #if SCM_USE_SRFI38
-extern struct builtin_func_info srfi38_func_info_table[];
+#include "sigschemefunctable-srfi38.c"
 #endif
 #if SCM_USE_SRFI60
-extern struct builtin_func_info srfi60_func_info_table[];
+#include "sigschemefunctable-srfi60.c"
 #endif
 #if SCM_COMPAT_SIOD
-extern struct builtin_func_info siod_func_info_table[];
+#include "sigschemefunctable-siod.c"
 #endif
-
-#endif /* __SIGSCHEME_FUNCTABLE_H */
