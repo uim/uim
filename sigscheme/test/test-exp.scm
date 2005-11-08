@@ -71,18 +71,33 @@
 ;;(assert-error  "if test10" (if #f 'true 'false 'excessive))
 
 ;; cond
-(assert-equal? "basic cond test1" 'greater (cond ((> 3 2) 'greater)
-						 ((< 3 2) 'less)))
-(assert-equal? "basic cond test2" 'equal (cond ((> 3 3) 'greater)
-					       ((< 3 3) 'less)
-					       (else 'equal)))
-(assert-equal? "basic cond test3" #t (cond ((> 3 2))
-					   ((< 3 4) 'less)
-					   (else 'equal)))
-(assert-equal? "basic cond test4" 2 (cond ((assv 'b '((a 1) (b 2))) => cadr)
-					  (else #f)))
-(assert-equal? "basic cond test5" 'greater1 (cond ((> 3 2) 'greater0 'greater1)
-						  (else #f)))
+(assert-equal? "cond"
+               'greater
+               (cond
+                ((> 3 2) 'greater)
+                ((< 3 2) 'less)))
+(assert-equal? "cond"
+               'equal
+               (cond
+                ((> 3 3) 'greater)
+                ((< 3 3) 'less)
+                (else 'equal)))
+(assert-equal? "cond"
+               #t
+               (cond
+                ((> 3 2))
+                ((< 3 4) 'less)
+                (else 'equal)))
+(assert-equal? "cond"
+               2
+               (cond
+                ((assv 'b '((a 1) (b 2))) => cadr)
+                (else #f)))
+(assert-equal? "cond"
+               'greater1
+               (cond
+                ((> 3 2) 'greater0 'greater1)
+                (else #f)))
 
 ;; case
 (assert-equal? "basic case check1" 'case1 (case 1
