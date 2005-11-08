@@ -335,6 +335,8 @@ ScmObj Scm_NewCFuncPointer(ScmCFunc func)
 #if SCM_OBJ_COMPACT
 enum ScmObjType Scm_Type(ScmObj obj)
 {
+    DECLARE_INTERNAL_FUNCTION("Scm_Type");
+
     if (CONSP(obj))
         return ScmCons;
     else if (INTP(obj))
@@ -357,9 +359,15 @@ enum ScmObjType Scm_Type(ScmObj obj)
         return ScmPort;
     else if (CONTINUATIONP(obj))
         return ScmContinuation;
+    else if (SCM_CONSTANTP(obj))
+        return ScmConstant;
     else if (C_POINTERP(obj))
         return ScmCPointer;
     else if (C_FUNCPOINTERP(obj))
         return ScmCFuncPointer;
+
+    ERR_OBJ("invalid type", obj);
+
+    /* NOTREACHED */
 }
 #endif /* SCM_OBJ_COMPACT */
