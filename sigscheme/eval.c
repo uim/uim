@@ -966,23 +966,23 @@ ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
         test = CAR(clause);
         exps = CDR(clause);
 
-        /* evaluate test */
         test = EVAL(test, env);
 
-        /* check the result */
         if (NFALSEP(test)) {
             /*
-             * if the selected <clause> contains only the <test> and no <expression>s,
-             * then the value of the <test> is returned as the result.
+             * if the selected <clause> contains only the <test> and no
+             * <expression>s, then the value of the <test> is returned as the
+             * result.
              */
             if (NULLP(exps))
                 return test;
 
             /*
-             * If the selected <clause> uses the => alternate form, then the <expression>
-             * is evaluated. Its value must be a procedure that accepts one argument;
-             * this procedure is then called on the value of the <test> and the value
-             * returned by this procedure is returned by the cond expression.
+             * If the selected <clause> uses the => alternate form, then the
+             * <expression> is evaluated. Its value must be a procedure that
+             * accepts one argument; this procedure is then called on the value
+             * of the <test> and the value returned by this procedure is
+             * returned by the cond expression.
              */
             if (EQ(SYM_YIELDS, CAR(exps)) && !NULLP(CDR(exps))) {
                 proc = EVAL(CADR(exps), env);
