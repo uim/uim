@@ -63,7 +63,7 @@
  *     ..000|11|1 : Values              : all 0 (for efficiency)
  *     ..001|11|1 : Func                : ScmFuncTypeCode
  *     ..010|11|1 : Port                : ScmPortDirection
- *     ..011|11|1 : Continuation        : all 0 (for efficiency)
+ *     ..011|11|1 : Continuation        : tag
  *     ..100|11|1 : C Pointer           : pointer type
  *                                      :   0 = void*, 1 = ScmFuncType
  *     ..101|11|1 : Reserved            :
@@ -97,6 +97,7 @@
 /*=======================================
    Local Include
 =======================================*/
+#include "baseport.h"
 
 /*=======================================
    Type Declarations
@@ -246,6 +247,7 @@ struct ScmEvalState_ {
 #define SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR       (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH)
 #define SCM_TAG_OTHERS_VALUE_OFFSET_FUNC         (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 3)
 #define SCM_TAG_OTHERS_VALUE_OFFSET_PORT         (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 3)
+#define SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 3)
 
 /*==============================================================================
   Masks Offsets, and Tags : IMM
@@ -476,14 +478,12 @@ struct ScmEvalState_ {
 #define SCM_PORT_SET_IMPL(a, impl)          (SCM_AS_PORT(a)->car = (ScmObj)impl)
 #define SCM_PORT_SET_FLAG(a, flag)          (SCM_SET_VALUE_AS_INT(SCM_AS_PORT(a)->cdr, flag, SCM_TAG_OTHERS_VALUE_OFFSET_PORT, SCM_TAG_OTHERS_PORT))
 
-/*
-#define SCM_CONTINUATION_INFO(a)            ((struct ScmContinuationInfo*)(SCM_AS_CONTINUATION(a)->car))
-#define SCM_CONTINUATION_SET_INFO(a, info)  (SCM_AS_CONTINUATION(a)->car = info)
-#define SCM_CONTINUATION_JMPENV(a)          (SCM_CONTINUATION_INFO(a)->jmpenv)
-#define SCM_CONTINUATION_DYNEXT(a)          (SCM_CONTINUATION_INFO(a)->dynext)
-#define SCM_CONTINUATION_SET_JMPENV(a, jmp) (SCM_CONTINUATION_JMPENV(a) = jmp)
-#define SCM_CONTINUATION_SET_DYNEXT(a, ext) (SCM_CONTINUATION_DYNEXT(a) = ext)
-*/
+
+#define SCM_CONTINUATION_OPAQUE(a)          ((void*)(SCM_AS_CONTINUATION(a)->car))
+#define SCM_CONTINUATION_SET_OPAQUE(a, val) (SCM_AS_CONTINUATION(a)->car = (ScmObj)val)
+#define SCM_CONTINUATION_TAG(a)             (SCM_GET_VALUE_AS_INT(SCM_AS_CONTINUATION(a)->cdr, SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION))
+#define SCM_CONTINUATION_SET_TAG(a, val)    (SCM_SET_VALUE_AS_INT(SCM_AS_CONTINUATION(a)->cdr, val, SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION, SCM_TAG_OTHERS_CONTINUATION))
+
 
 #define SCM_C_POINTER_VALUE(a)              ((void*)SCM_AS_C_POINTER(a)->car)
 #define SCM_C_POINTER_SET_VALUE(a, val)     (SCM_AS_C_POINTER(a)->car = (ScmObj)val)
@@ -593,7 +593,7 @@ enum ScmObjType {
 };
 
 /* storage.c */
-#define SCM_TYPE(a) Scm_Type(a);
+#define SCM_TYPE(a) Scm_Type(a)
 extern enum ScmObjType Scm_Type(ScmObj obj);
 
 #if YAMAKEN

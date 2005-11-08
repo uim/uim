@@ -331,3 +331,35 @@ ScmObj Scm_NewCFuncPointer(ScmCFunc func)
     return obj;
 }
 #endif /* SCM_USE_NONSTD_FEATURES */
+
+#if SCM_OBJ_COMPACT
+enum ScmObjType Scm_Type(ScmObj obj)
+{
+    if (CONSP(obj))
+        return ScmCons;
+    else if (INTP(obj))
+        return ScmInt;
+    else if (CHARP(obj))
+        return ScmChar;
+    else if (CLOSUREP(obj))
+        return ScmClosure;
+    else if (SYMBOLP(obj))
+        return ScmSymbol;
+    else if (STRINGP(obj))
+        return ScmString;
+    else if (VECTORP(obj))
+        return ScmVector;
+    else if (VALUEPACKETP(obj))
+        return ScmValuePacket;
+    else if (FUNCP(obj))
+        return ScmFunc;
+    else if (PORTP(obj))
+        return ScmPort;
+    else if (CONTINUATIONP(obj))
+        return ScmContinuation;
+    else if (C_POINTERP(obj))
+        return ScmCPointer;
+    else if (C_FUNCPOINTERP(obj))
+        return ScmCFuncPointer;
+}
+#endif /* SCM_OBJ_COMPACT */

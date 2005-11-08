@@ -153,7 +153,6 @@ ScmObj Scm_CheckChar(char *ch)
 #define SCM_MB_MAX_LEN 4
 
     ScmObj obj;
-    int len;
     char *val = aligned_strdup(ch);
 
     SCM_ASSERT(strlen(ch) <= SCM_MB_MAX_LEN);
@@ -266,40 +265,49 @@ ScmObj Scm_CheckVector(int len)
     return obj;
 }
 
-/*
-ScmObj Scm_CheckPort(ScmCharPort *cport, enum ScmPortFlag flag)
+
+ScmObj Scm_CheckPort()
 {
-    ScmObj obj;
+    ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
+    ScmCharPort port;
 
     SCM_ENTYPE_PORT(obj);
+    SCM_ASSERT(SCM_PORTP(obj));
 
-    if (flag & SCM_PORTFLAG_INPUT)
-        flag |= SCM_PORTFLAG_LIVE_INPUT;
-    if (flag & SCM_PORTFLAG_OUTPUT)
-        flag |= SCM_PORTFLAG_LIVE_OUTPUT;
-    SCM_PORT_SET_FLAG(obj, flag);
+    SCM_PORT_SET_FLAG(obj, SCM_PORTFLAG_INPUT);
+    SCM_ASSERT(SCM_PORTP(obj));
+    SCM_ASSERT(SCM_PORT_FLAG(obj) == SCM_PORTFLAG_INPUT);
 
-    SCM_PORT_SET_IMPL(obj, cport);
+    SCM_PORT_SET_IMPL(obj, &port);
+    SCM_ASSERT(SCM_PORTP(obj));
+    SCM_ASSERT(SCM_PORT_IMPL(obj) == &port);
 
     return obj;
 }
-*/
 
-/*
+
 ScmObj Scm_CheckContinuation(void)
 {
-    ScmObj obj;
-    struct ScmContinuationInfo *info = (struct ScmContinuationInfo*)malloc(sizeof(struct ScmContinuationInfo));
+    ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
+    void *val = (void*)0x20;
 
     SCM_ENTYPE_CONTINUATION(obj);
+    SCM_ASSERT(SCM_CONTINUATIONP(obj));
 
-    SCM_CONTINUATION_SET_INFO(obj, info);
-    SCM_CONTINUATION_SET_JMPENV(obj, INVALID_CONTINUATION_JMPENV);
-    SCM_CONTINUATION_SET_DYNEXT(obj, scm_current_dynamic_extent);
+    SCM_CONTINUATION_SET_OPAQUE(obj, val);
+    SCM_ASSERT(SCM_CONTINUATIONP(obj));
+    SCM_ASSERT(SCM_CONTINUATION_OPAQUE(obj) == val);
+
+    SCM_CONTINUATION_SET_TAG(obj, 10);
+    SCM_ASSERT(SCM_CONTINUATIONP(obj));
+    SCM_ASSERT(SCM_CONTINUATION_TAG(obj) == 10);
+
+    SCM_CONTINUATION_SET_TAG(obj, 0);
+    SCM_ASSERT(SCM_CONTINUATIONP(obj));
+    SCM_ASSERT(SCM_CONTINUATION_TAG(obj) == 0);
 
     return obj;
 }
-*/
 
 ScmObj Scm_CheckValuePacket()
 {
@@ -361,6 +369,8 @@ int main(void)
     Scm_CheckFunc();
     Scm_CheckVector(5);
     Scm_CheckValuePacket();
+    Scm_CheckContinuation();
+    Scm_CheckPort();
     Scm_CheckCPointer();
     Scm_CheckCFuncPointer();
 }
