@@ -79,20 +79,20 @@ extern "C" {
 
 #define SCM_SYMBOL_BOUNDP(sym) (!SCM_EQ(SCM_SYMBOL_VCELL(sym), SCM_UNBOUND))
 
-#define SCM_CONS(kar, kdr) (Scm_NewCons(kar, kdr))
+#define SCM_CONS(kar, kdr) (Scm_NewCons((kar), (kdr)))
 
 #define SCM_LIST_1(elm0) \
     (SCM_CONS((elm0), SCM_NULL))
 #define SCM_LIST_2(elm0, elm1) \
     (SCM_CONS((elm0), SCM_LIST_1(elm1)))
 #define SCM_LIST_3(elm0, elm1, elm2) \
-    (SCM_CONS((elm0), SCM_LIST_2(elm1, elm2)))
+    (SCM_CONS((elm0), SCM_LIST_2((elm1), (elm2))))
 #define SCM_LIST_4(elm0, elm1, elm2, elm3) \
-    (SCM_CONS((elm0), SCM_LIST_3(elm1, elm2, elm3)))
+    (SCM_CONS((elm0), SCM_LIST_3((elm1), (elm2), (elm3))))
 #define SCM_LIST_5(elm0, elm1, elm2, elm3, elm4) \
-    (SCM_CONS((elm0), SCM_LIST_4(elm1, elm2, elm3, elm4)))
+    (SCM_CONS((elm0), SCM_LIST_4((elm1), (elm2), (elm3), (elm4))))
 
-#define SCM_EVAL(obj, env) (Scm_eval(obj, env))
+#define SCM_EVAL(obj, env) (Scm_eval((obj), (env)))
 
 #if SCM_GCC4_READY_GC
 /*
@@ -150,17 +150,17 @@ extern "C" {
     (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_CHAR_READYP(SCM_PORT_IMPL(port)))
 #define SCM_PORT_VPRINTF(port, str, args)                                    \
     (SCM_ASSERT_LIVE_PORT(port),                                             \
-     SCM_CHARPORT_VPRINTF(SCM_PORT_IMPL(port), str, args))
+     SCM_CHARPORT_VPRINTF(SCM_PORT_IMPL(port), (str), (args)))
 #define SCM_PORT_PUTS(port, str)                                             \
-    (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_PUTS(SCM_PORT_IMPL(port), str))
+    (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_PUTS(SCM_PORT_IMPL(port), (str)))
 #define SCM_PORT_PUT_CHAR(port, ch)                                          \
     (SCM_ASSERT_LIVE_PORT(port),                                             \
-     SCM_CHARPORT_PUT_CHAR(SCM_PORT_IMPL(port), ch))
+     SCM_CHARPORT_PUT_CHAR(SCM_PORT_IMPL(port), (ch)))
 #define SCM_PORT_FLUSH(port)                                                 \
     (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_FLUSH(SCM_PORT_IMPL(port)))
 
 /* backward compatibility */
-#define SCM_PORT_GETC(port, c) (c = SCM_PORT_GET_CHAR(port))
+#define SCM_PORT_GETC(port, c) ((c) = SCM_PORT_GET_CHAR(port))
 #define SCM_PORT_UNGETC(port, c)
 #define SCM_PORT_PRINT SCM_PORT_PUTS
 

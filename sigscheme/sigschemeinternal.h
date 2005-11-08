@@ -103,16 +103,16 @@ extern ScmObj *scm_stack_start_pointer;
 #define SCM_FREECELL_CAR(a)         (SCM_CAR(a))
 #define SCM_FREECELL_CDR(a)         (SCM_CDR(a))
 #define SCM_ENTYPE_FREECELL(a)      (SCM_ENTYPE_CONS(a))
-#define SCM_FREECELL_SET_CAR(a,car) (SCM_CONS_SET_CAR(a, car))
-#define SCM_FREECELL_SET_CDR(a,cdr) (SCM_CONS_SET_CDR(a, cdr))
+#define SCM_FREECELL_SET_CAR(a, car) (SCM_CONS_SET_CAR((a), (car)))
+#define SCM_FREECELL_SET_CDR(a, cdr) (SCM_CONS_SET_CDR((a), (cdr)))
 #else
 #define SCM_FREECELLP(a)            (SCM_TYPE(a) == ScmFreeCell)
 #define SCM_AS_FREECELL(a)          (SCM_ASSERT_TYPE(SCM_FREECELLP(a), (a)))
 #define SCM_FREECELL_CAR(a)         (SCM_AS_FREECELL(a)->obj.cons.car)
 #define SCM_FREECELL_CDR(a)         (SCM_AS_FREECELL(a)->obj.cons.cdr)
 #define SCM_ENTYPE_FREECELL(a)      (SCM_ENTYPE((a), ScmFreeCell))
-#define SCM_FREECELL_SET_CAR(a,car) (SCM_FREECELL_CAR(a) = car)
-#define SCM_FREECELL_SET_CDR(a,cdr) (SCM_FREECELL_CDR(a) = cdr)
+#define SCM_FREECELL_SET_CAR(a, car) (SCM_FREECELL_CAR(a) = (car))
+#define SCM_FREECELL_SET_CDR(a, cdr) (SCM_FREECELL_CDR(a) = (cdr))
 #endif
 
 /* Prefix-less Abbreviation Names For Convenient Internal Use */
@@ -203,16 +203,15 @@ extern ScmObj *scm_stack_start_pointer;
     ((!NULLP(lst)) && ((elm) = CAR(lst), (lst) = CDR(lst), (lst)))
 
 #define SCM_SHIFT_RAW_1(elm0, lst)                                           \
-    (SCM_SHIFT_RAW(elm0, lst) ? (lst) : 0)
-
+    (SCM_SHIFT_RAW((elm0), (lst)) ? (lst) : 0)
 #define SCM_SHIFT_RAW_2(elm0, elm1, lst)                                     \
-    ((SCM_SHIFT_RAW(elm0, lst)                                               \
-      && SCM_SHIFT_RAW(elm1, lst)) ? (lst) : 0)
+    ((SCM_SHIFT_RAW((elm0), (lst))                                           \
+      && SCM_SHIFT_RAW((elm1), (lst))) ? (lst) : 0)
 
 #define SCM_SHIFT_RAW_3(elm0, elm1, elm2, lst)                               \
-    ((SCM_SHIFT_RAW(elm0, lst)                                               \
-      && SCM_SHIFT_RAW(elm1, lst)                                            \
-      && SCM_SHIFT_RAW(elm2, lst)) ? (lst) : 0)
+    ((SCM_SHIFT_RAW((elm0), (lst))                                           \
+      && SCM_SHIFT_RAW((elm1), (lst))                                        \
+      && SCM_SHIFT_RAW((elm2), (lst))) ? (lst) : 0)
 
 /* Obscures identifier ID. */
 #define SCM_MANGLE(id) Scm_internal_##id
@@ -241,7 +240,7 @@ extern ScmObj *scm_stack_start_pointer;
 /* Signals an error that occured on an object.  The current function
  * name, the message, then the object, are written (with `write') to
  * the error port. */
-#define ERR_OBJ(msg, obj) Scm_ErrorObj(SCM_MANGLE(name), msg, obj)
+#define ERR_OBJ(msg, obj) Scm_ErrorObj(SCM_MANGLE(name), (msg), (obj))
 
 /* ASSERT_NO_MORE_ARG() asserts that the variadic argument list has
  * been exhausted.  The assertion is implicit in NO_MORE_ARG(), so

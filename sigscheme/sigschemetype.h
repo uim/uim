@@ -269,9 +269,9 @@ struct ScmCell_ {
 #define SCM_CONSP(a) (SCM_TYPE(a) == ScmCons)
 #define SCM_ENTYPE_CONS(a) (SCM_ENTYPE((a), ScmCons))
 #define SCM_CAR(a)   (SCM_AS_CONS(a)->obj.cons.car)
-#define SCM_CONS_SET_CAR(a,car)   (SCM_CAR(a) = car)
+#define SCM_CONS_SET_CAR(a, car)   (SCM_CAR(a) = (car))
 #define SCM_CDR(a)   (SCM_AS_CONS(a)->obj.cons.cdr)
-#define SCM_CONS_SET_CDR(a,cdr)   (SCM_CDR(a) = cdr)
+#define SCM_CONS_SET_CDR(a, cdr)   (SCM_CDR(a) = (cdr))
 #define SCM_CAAR(a)  (SCM_CAR(SCM_CAR(a)))
 #define SCM_CADR(a)  (SCM_CAR(SCM_CDR(a)))
 #define SCM_CDAR(a)  (SCM_CDR(SCM_CAR(a)))
@@ -312,9 +312,9 @@ struct ScmCell_ {
 #define SCM_CLOSUREP(a) (SCM_TYPE(a) == ScmClosure)
 #define SCM_ENTYPE_CLOSURE(a) (SCM_ENTYPE((a), ScmClosure))
 #define SCM_CLOSURE_EXP(a) (SCM_AS_CLOSURE(a)->obj.closure.exp)
-#define SCM_CLOSURE_SET_EXP(a, exp) (SCM_CLOSURE_EXP(a) = exp)
+#define SCM_CLOSURE_SET_EXP(a, exp) (SCM_CLOSURE_EXP(a) = (exp))
 #define SCM_CLOSURE_ENV(a) (SCM_AS_CLOSURE(a)->obj.closure.env)
-#define SCM_CLOSURE_SET_ENV(a, env) (SCM_CLOSURE_ENV(a) = env)
+#define SCM_CLOSURE_SET_ENV(a, env) (SCM_CLOSURE_ENV(a) = (env))
 
 #define SCM_VECTORP(a) (SCM_TYPE(a) == ScmVector)
 #define SCM_ENTYPE_VECTOR(a) (SCM_ENTYPE((a), ScmVector))
@@ -345,7 +345,7 @@ struct ScmCell_ {
 #if SCM_USE_VALUECONS
 /* to modify a VALUECONS, rewrite its type to cons by SCM_ENTYPE_CONS(vcons) */
 #define SCM_VALUEPACKETP(a)       (SCM_TYPE(a) == ScmValuePacket)
-#define SCM_NULLVALUESP(a)        (EQ(a, SigScm_null_values))
+#define SCM_NULLVALUESP(a)        (EQ((a), SigScm_null_values))
 #define SCM_ENTYPE_VALUEPACKET(a) (SCM_ENTYPE((a), ScmValuePacket))
 #define SCM_MAKE_VALUEPACKET(vals) (NULLP(vals) ? SigScm_null_values :       \
                                     (SCM_ENTYPE_VALUEPACKET(vals), (vals)))
@@ -372,12 +372,12 @@ struct ScmCell_ {
 #define SCM_C_POINTERP(a) (SCM_TYPE(a) == ScmCPointer)
 #define SCM_ENTYPE_C_POINTER(a) (SCM_ENTYPE((a), ScmCPointer))
 #define SCM_C_POINTER_VALUE(a) (SCM_AS_C_POINTER(a)->obj.c_pointer.data)
-#define SCM_C_POINTER_SET_VALUE(a, ptr) (SCM_C_POINTER_VALUE(a) = ptr)
+#define SCM_C_POINTER_SET_VALUE(a, ptr) (SCM_C_POINTER_VALUE(a) = (ptr))
 
 #define SCM_C_FUNCPOINTERP(a) (SCM_TYPE(a) == ScmCFuncPointer)
 #define SCM_ENTYPE_C_FUNCPOINTER(a) (SCM_ENTYPE((a), ScmCFuncPointer))
 #define SCM_C_FUNCPOINTER_VALUE(a) (SCM_AS_C_FUNCPOINTER(a)->obj.c_func_pointer.func)
-#define SCM_C_FUNCPOINTER_SET_VALUE(a, funcptr) (SCM_C_FUNCPOINTER_VALUE(a) = funcptr)
+#define SCM_C_FUNCPOINTER_SET_VALUE(a, funcptr) (SCM_C_FUNCPOINTER_VALUE(a) = (funcptr))
 
 /*============================================================================
   Environment Specifiers

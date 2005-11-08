@@ -93,8 +93,9 @@
 #define SCM_CHARCODEC_ENCODING(codec)           ((*codec->encoding)())
 #define SCM_CHARCODEC_SCAN_CHAR(codec, mbs)     ((*codec->scan_char)(mbs))
 #define SCM_CHARCODEC_STR2INT(codec, start, nbytes)                          \
-    ((*codec->str2int)(start, nbytes))
-#define SCM_CHARCODEC_INT2STR(codec, start, ch) ((*codec->int2str)(start, ch))
+    ((*codec->str2int)((start), (nbytes)))
+#define SCM_CHARCODEC_INT2STR(codec, start, ch)                              \
+    ((*codec->int2str)((start), (ch)))
 
 /*=======================================
   Type Definitions

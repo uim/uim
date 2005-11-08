@@ -70,11 +70,11 @@
 #endif /* SCM_BYTEPORT_ERROR */
 
 #define SCM_PORT_ERROR_INVALID_TYPE(klass, port, type)                       \
-    SCM_##klass##PORT_ERROR(port, #type ": invalid object is passed to")
+    SCM_##klass##PORT_ERROR((port), #type ": invalid object is passed to")
 #define SCM_PORT_ERROR_INVALID_OPERATION(klass, port, type)                  \
-    SCM_##klass##PORT_ERROR(port, #type ": invalid operation")
+    SCM_##klass##PORT_ERROR((port), #type ": invalid operation")
 #define SCM_PORT_ERROR_NOMEM(klass, port, type)                              \
-    SCM_##klass##PORT_ERROR(port, #type ": Out of memory")
+    SCM_##klass##PORT_ERROR((port), #type ": Out of memory")
 
 #define SCM_PORT_ALLOC(klass, port, type)                                    \
     do {                                                                     \
@@ -88,12 +88,12 @@
  * method must call SCM_PORT_*DYNAMIC_CAST() explicitly.
  */
 #define SCM_CHARPORT_DYNAMIC_CAST(type, obj)                                 \
-    (SCM_PORT_DYNAMIC_CAST(CHAR, type, obj))
+    (SCM_PORT_DYNAMIC_CAST(CHAR, type, (obj)))
 #define SCM_BYTEPORT_DYNAMIC_CAST(type, obj)                                 \
-    (SCM_PORT_DYNAMIC_CAST(BYTE, type, obj))
+    (SCM_PORT_DYNAMIC_CAST(BYTE, type, (obj)))
 #define SCM_PORT_DYNAMIC_CAST(klass, type, obj)                              \
-    ((SCM_PORT_TRY_DYNAMIC_CAST(type, obj)) ?                                \
-     ((type *)(obj)) : (SCM_PORT_ERROR_INVALID_TYPE(klass, obj, type), NULL))
+    ((SCM_PORT_TRY_DYNAMIC_CAST(type, (obj))) ?                              \
+     ((type *)(obj)) : (SCM_PORT_ERROR_INVALID_TYPE(klass, (obj), type), NULL))
 #define SCM_PORT_TRY_DYNAMIC_CAST(type, obj)                                 \
     ((type *)(*(obj)->vptr->dyn_cast)((obj), type##_vptr))
 
@@ -104,10 +104,11 @@
 #define SCM_CHARPORT_PEEK_CHAR(cport)    ((*(cport)->vptr->peek_char)(cport))
 #define SCM_CHARPORT_CHAR_READYP(cport)  ((*(cport)->vptr->char_readyp)(cport))
 #define SCM_CHARPORT_VPRINTF(cport, str, args)                               \
-    ((*(cport)->vptr->vprintf)(cport, str, args))
-#define SCM_CHARPORT_PUTS(cport, str)    ((*(cport)->vptr->puts)(cport, str))
+    ((*(cport)->vptr->vprintf)((cport), (str), (args)))
+#define SCM_CHARPORT_PUTS(cport, str)                                        \
+    ((*(cport)->vptr->puts)((cport), (str)))
 #define SCM_CHARPORT_PUT_CHAR(cport, ch)                                     \
-    ((*(cport)->vptr->put_char)(cport, ch))
+    ((*(cport)->vptr->put_char)((cport), (ch)))
 #define SCM_CHARPORT_FLUSH(cport)        ((*(cport)->vptr->flush)(cport))
 
 #define SCM_BYTEPORT_CLOSE(bport)        ((*(bport)->vptr->close)(bport))
@@ -116,10 +117,11 @@
 #define SCM_BYTEPORT_PEEK_BYTE(bport)    ((*(bport)->vptr->peek_byte)(bport))
 #define SCM_BYTEPORT_BYTE_READYP(bport)  ((*(bport)->vptr->byte_readyp)(bport))
 #define SCM_BYTEPORT_VPRINTF(bport, str, args)                               \
-    ((*(bport)->vptr->vprintf)(bport, str, args))
-#define SCM_BYTEPORT_PUTS(bport, str)    ((*(bport)->vptr->puts)(bport, str))
+    ((*(bport)->vptr->vprintf)((bport), (str), (args)))
+#define SCM_BYTEPORT_PUTS(bport, str)                                        \
+    ((*(bport)->vptr->puts)((bport), (str)))
 #define SCM_BYTEPORT_WRITE(bport, nbytes, buf)                               \
-    ((*(bport)->vptr->write)(bport, nbytes, buf))
+    ((*(bport)->vptr->write)((bport), (nbytes), (buf)))
 #define SCM_BYTEPORT_FLUSH(bport)        ((*(bport)->vptr->flush)(bport))
 
 /*=======================================
