@@ -70,7 +70,104 @@
 ;;(assert-error  "if test9"  (if #t 'true 'false 'excessive))
 ;;(assert-error  "if test10" (if #f 'true 'false 'excessive))
 
+;;
 ;; cond
+;;
+
+;; FAILED
+(assert-error  "cond invalid form #1"
+               (lambda ()
+                 (cond)))
+(assert-error  "cond invalid form #2"
+               (lambda ()
+                 (cond
+                  ())))
+(assert-error  "cond invalid form #3"
+               (lambda ()
+                 (cond
+                  ()
+                  (else #t))))
+;; FAILED
+;; 'else' followed by another caluse
+(assert-error  "cond invalid form #4"
+               (lambda ()
+                 (cond
+                  (else #t)
+                  (#t))))
+;; FAILED
+;; not specified in R5RS, but SigScheme should cause error
+(if (provided? "sigscheme")
+    (assert-error  "cond invalid form #5"
+                   (lambda ()
+                     (cond
+                      (else)))))
+;; SEGV
+(assert-error  "cond invalid form #6"
+               (lambda ()
+                 (cond
+                  (#t =>))))
+;; SEGV
+(assert-error  "cond invalid form #7"
+               (lambda ()
+                 (cond
+                  (#t =>)
+                  (else #t))))
+;; SEGV
+(assert-error  "cond invalid form #8"
+               (lambda ()
+                 (cond
+                  (else =>))))
+;; not a procedure
+(assert-error  "cond invalid form #9"
+               (lambda ()
+                 (cond
+                  (#t => #t))))
+(assert-error  "cond invalid form #10"
+               (lambda ()
+                 (cond
+                  (#t => #f))))
+;; procedure but argument number mismatch
+(assert-error  "cond invalid form #11"
+               (lambda ()
+                 (cond
+                  (#t => eq?))))
+;; not a procedure but a syntax
+(assert-error  "cond invalid form #12"
+               (lambda ()
+                 (cond
+                  (#t => delay))))
+
+;; not specified in R5RS, but SigScheme surely returns #<undef>
+(if (provided? "sigscheme")
+    (assert-equal?  "cond unspecified behavior #1"
+                    (undef)
+                    (cond
+                     (#f))))
+(if (provided? "sigscheme")
+    (assert-equal?  "cond unspecified behavior #2"
+                    (undef)
+                    (cond
+                     ((even? 3) #f)
+                     ((positive? -1) #f))))
+
+;; R5RS: If the selected <clause> contains only the <test> and no
+;; <expression>s, then the value of the <test> is returned as the result.
+(assert-equal?  "cond"
+                #t
+                (cond
+                 (#t)))
+(assert-equal?  "cond"
+                3
+                (cond
+                 (#f)
+                 (3)))
+(assert-equal?  "cond"
+                3
+                (cond
+                 (#f)
+                 (3)
+                 (4)))
+
 (assert-equal? "cond"
                'greater
                (cond
@@ -92,6 +189,11 @@
                2
                (cond
                 ((assv 'b '((a 1) (b 2))) => cadr)
+                (else #f)))
+(assert-equal? "cond"
+               #f
+               (cond
+                ((assv 'c '((a 1) (b 2))) => cadr)
                 (else #f)))
 (assert-equal? "cond"
                'greater1
