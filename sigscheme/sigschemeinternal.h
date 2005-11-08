@@ -361,7 +361,7 @@ ScmObj Scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
 /* error.c */
 void Scm_ThrowException(ScmObj errorobj) SCM_NORETURN;
 void SigScm_ShowErrorHeader(void);
-void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj);
+void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj) SCM_NORETURN;
 
 /* operations.c */
 int ScmOp_c_length(ScmObj lst);

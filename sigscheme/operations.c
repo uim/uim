@@ -1086,6 +1086,7 @@ ScmObj ScmOp_integer2char(ScmObj obj)
         return Scm_NewChar(buf);
     } else {
         ERR_OBJ("current implementation only supports ASCII", obj);
+        /* NOTREACHED */
     }
 }
 
