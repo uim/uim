@@ -70,3 +70,6 @@ bin_PROGRAMS  = sscm
 sscm_SOURCES  = main.c
 sscm_CFLAGS   = -Wall
 sscm_LDADD    = $(top_builddir)/sigscheme/libsscm.la
+
+CLEANFILES = \
+	$(FUNC_TABLES)
