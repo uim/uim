@@ -66,11 +66,7 @@ void SigScm_Initialize_SRFI2(void)
     /*=======================================================================
       SRFI-2 Procedure
     =======================================================================*/
-#if SCM_USE_REGISTER_TABLE
     REGISTER_FUNC_TABLE(srfi2_func_info_table);
-#else /* SCM_USE_REGISTER_TABLE */
-    Scm_RegisterSyntaxVariadicTailRec1("and-let*", ScmExp_SRFI2_and_letstar);
-#endif
 }
 
 ScmObj ScmExp_SRFI2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)

@@ -85,16 +85,7 @@ void SigScm_Initialize_SRFI60(void)
     /*=======================================================================
       SRFI-60 Procedures
     =======================================================================*/
-#if SCM_USE_REGISTER_TABLE
     REGISTER_FUNC_TABLE(srfi60_func_info_table);
-#else /* SCM_USE_REGISTER_TABLE */
-    Scm_RegisterReductionOperator("logand"   , ScmOp_SRFI60_logand);
-    Scm_RegisterReductionOperator("logior"   , ScmOp_SRFI60_logior);
-    Scm_RegisterReductionOperator("logxor"   , ScmOp_SRFI60_logxor);
-    Scm_RegisterProcedureFixed1("lognot"     , ScmOp_SRFI60_lognot);
-    Scm_RegisterProcedureFixed3("bitwise-if" , ScmOp_SRFI60_bitwise_if);
-    Scm_RegisterProcedureFixed2("logtest"    , ScmOp_SRFI60_logtest);
-#endif /* SCM_USE_REGISTER_TABLE */
 
     Scm_DefineAlias("bitwise-and"            , "logand");
     Scm_DefineAlias("bitwise-ior"            , "logior");

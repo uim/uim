@@ -72,13 +72,7 @@ void SigScm_Initialize_SRFI6(void)
     /*=======================================================================
       SRFI-6 Procedures
     =======================================================================*/
-#if SCM_USE_REGISTER_TABLE
     REGISTER_FUNC_TABLE(srfi6_func_info_table);
-#else /* SCM_USE_REGISTER_TABLE */
-    Scm_RegisterProcedureFixed1("open-input-string", ScmOp_SRFI6_open_input_string);
-    Scm_RegisterProcedureFixed0("open-output-string", ScmOp_SRFI6_open_output_string);
-    Scm_RegisterProcedureFixed1("get-output-string", ScmOp_SRFI6_get_output_string);
-#endif
 }
 
 static void istrport_finalize(char **str, int ownership, void **opaque)

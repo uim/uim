@@ -82,7 +82,6 @@
 #define SCM_VOLATILE_OUTPUT     0  /* always flush files on write */
 #define SCM_EXCEPTION_HANDLING  1  /* use SRFI-34 base exception handling */
 #define SCM_OBJ_COMPACT         0  /* object representation compaction (experimental) */
-#define SCM_USE_REGISTER_TABLE  1  /* register functions by using auto-generated func table */
 
 #define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
 

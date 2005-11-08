@@ -65,7 +65,7 @@ void SigScm_Initialize_SRFI8(void)
     /*=======================================================================
       SRFI-8 Procedure
     =======================================================================*/
-    Scm_RegisterSyntaxVariadicTailRec2("receive", ScmExp_SRFI8_receive);
+    REGISTER_FUNC_TABLE(srfi8_func_info_table);
 }
 
 /*=============================================================================

@@ -43,10 +43,7 @@
    Local Include
 =======================================*/
 #include "sigscheme.h"
-
-#if SCM_USE_REGISTER_TABLE
 #include "sigschemefunctable.h"
-#endif /* SCM_USE_REGISTER_TABLE */
 
 /*=======================================
    Type Definitions
