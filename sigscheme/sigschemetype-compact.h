@@ -520,15 +520,10 @@ struct ScmEvalState_ {
   Predefined Symbols
 ============================================================================*/
 /* for list construction */
-/*
- * TODO:
- * - Rename to SCM_SYM_* to indicate that these macro are not pointing to
- *   syntax but symbol
- */
-#define SCM_QUOTE            SigScm_quote
-#define SCM_QUASIQUOTE       SigScm_quasiquote
-#define SCM_UNQUOTE          SigScm_unquote
-#define SCM_UNQUOTE_SPLICING SigScm_unquote_splicing
+#define SCM_SYM_QUOTE            Scm_sym_quote
+#define SCM_SYM_QUASIQUOTE       Scm_sym_quasiquote
+#define SCM_SYM_UNQUOTE          Scm_sym_unquote
+#define SCM_SYM_UNQUOTE_SPLICING Scm_sym_unquote_splicing
 
 /*============================================================================
   Internal Declarations For Predefined Symbols
@@ -539,12 +534,12 @@ struct ScmEvalState_ {
  *
  * It may be changed when SigScheme's internal storage model or accessing
  * method for the constants has been changed. To avoid suffering code
- * incompatibility from it, use the abstract macro such as SCM_QUOTE defined
- * above. They safely hides the internal model against such change.
+ * incompatibility from it, use the abstract macro such as SCM_SYM_QUOTE
+ * defined above. They safely hides the internal model against such change.
  */
 /* sigscheme.c */
-extern ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote;
-extern ScmObj SigScm_unquote_splicing;
+extern ScmObj Scm_sym_quote, Scm_sym_quasiquote;
+extern ScmObj Scm_sym_unquote, Scm_sym_unquote_splicing;
 
 /*============================================================================
   Environment Specifiers

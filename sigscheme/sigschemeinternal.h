@@ -116,6 +116,11 @@ extern ScmObj *scm_stack_start_pointer;
 #endif
 
 /* Prefix-less Abbreviation Names For Convenient Internal Use */
+#define SYM_QUOTE            SCM_SYM_QUOTE
+#define SYM_QUASIQUOTE       SCM_SYM_QUASIQUOTE
+#define SYM_UNQUOTE          SCM_SYM_UNQUOTE
+#define SYM_UNQUOTE_SPLICING SCM_SYM_UNQUOTE_SPLICING
+
 #define EQ             SCM_EQ
 #define NULLP          SCM_NULLP
 #define FALSEP         SCM_FALSEP
@@ -177,10 +182,6 @@ extern ScmObj *scm_stack_start_pointer;
  * SCM_TRUE
  * SCM_FALSE
  * SCM_EOF
- * SCM_QUOTE
- * SCM_QUASIQUOTE
- * SCM_UNQUOTE
- * SCM_UNQUOTE_SPLICING
  * SCM_UNBOUND
  * SCM_UNDEF
  */

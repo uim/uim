@@ -111,7 +111,7 @@ static void repl_loop(void)
         result = ScmExp_SRFI34_guard(LIST_2(Scm_Intern("err"),
                                             LIST_2(Scm_Intern("else"), SCM_UNDEF)),
                                      LIST_1(LIST_3(Scm_Intern("eval"),
-                                                   LIST_2(SCM_QUOTE, s_exp),
+                                                   LIST_2(SYM_QUOTE, s_exp),
                                                    SCM_INTERACTION_ENV)),
                                      SCM_INTERACTION_ENV);
 #else /* SCM_USE_SRFI34 */

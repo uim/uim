@@ -190,10 +190,10 @@ static ScmObj read_sexpression(ScmObj port)
             return read_number_or_symbol(port);
         case '\'':
             DISCARD_LOOKAHEAD(port);
-            return read_quote(port, SCM_QUOTE);
+            return read_quote(port, SYM_QUOTE);
         case '`':
             DISCARD_LOOKAHEAD(port);
-            return read_quote(port, SCM_QUASIQUOTE);
+            return read_quote(port, SYM_QUASIQUOTE);
         case ',':
             DISCARD_LOOKAHEAD(port);
             c1 = SCM_PORT_PEEK_CHAR(port);
@@ -201,10 +201,10 @@ static ScmObj read_sexpression(ScmObj port)
                 SigScm_Error("EOF in unquote");
             } else if (c1 == '@') {
                 DISCARD_LOOKAHEAD(port);
-                return read_quote(port, SCM_UNQUOTE_SPLICING);
+                return read_quote(port, SYM_UNQUOTE_SPLICING);
             } else {
                 SCM_PORT_UNGETC(port, c1);
-                return read_quote(port, SCM_UNQUOTE);
+                return read_quote(port, SYM_UNQUOTE);
             }
             break;
         case '#':

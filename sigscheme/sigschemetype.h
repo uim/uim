@@ -423,15 +423,10 @@ struct ScmCell_ {
   Predefined Symbols
 ============================================================================*/
 /* for list construction */
-/*
- * TODO:
- * - Rename to SCM_SYM_* to indicate that these macro are not pointing to
- *   syntax but symbol
- */
-#define SCM_QUOTE            SigScm_quote
-#define SCM_QUASIQUOTE       SigScm_quasiquote
-#define SCM_UNQUOTE          SigScm_unquote
-#define SCM_UNQUOTE_SPLICING SigScm_unquote_splicing
+#define SCM_SYM_QUOTE            Scm_sym_quote
+#define SCM_SYM_QUASIQUOTE       Scm_sym_quasiquote
+#define SCM_SYM_UNQUOTE          Scm_sym_unquote
+#define SCM_SYM_UNQUOTE_SPLICING Scm_sym_unquote_splicing
 
 /*============================================================================
   Internal Declarations For Special Constants And Predefined Symbols
@@ -450,7 +445,7 @@ extern ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
 extern ScmObj SigScm_unbound, SigScm_undef;
 
 /* sigscheme.c */
-extern ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote;
-extern ScmObj SigScm_unquote_splicing;
+extern ScmObj Scm_sym_quote, Scm_sym_quasiquote;
+extern ScmObj Scm_sym_unquote, Scm_sym_unquote_splicing;
 
 #endif /* __SIGSCMTYPE_H */

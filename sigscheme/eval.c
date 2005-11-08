@@ -648,12 +648,12 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
         car = CAR(qexpr);
         args = CDR(qexpr);
 
-        if (EQ(car, SCM_UNQUOTE_SPLICING)) {
+        if (EQ(car, SYM_UNQUOTE_SPLICING)) {
             if (!IS_LIST_LEN_1(args))
                 ERR_OBJ("syntax error", qexpr);
             if (--nest == 0)
                 return EVAL(CAR(args), env);
-        } else if (EQ(car, SCM_QUASIQUOTE)) {
+        } else if (EQ(car, SYM_QUASIQUOTE)) {
             if (!IS_LIST_LEN_1(args))
                 ERR_OBJ("syntax error", qexpr);
             if (++nest <= 0)
@@ -668,14 +668,14 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
         if (CONSP(obj)) {
             result = qquote_internal(obj, env, nest);
 
-            if (EQ(CAR(obj), SCM_UNQUOTE_SPLICING) && nest == 1) {
+            if (EQ(CAR(obj), SYM_UNQUOTE_SPLICING) && nest == 1) {
                 /* ,@x */
                 splice_flag = 1;
             }
         } else if (VECTORP(obj)) {
             /* #(x) */
             result = qquote_vector(obj, env, nest);
-        } else if (EQ(obj, SCM_UNQUOTE) && IS_LIST_LEN_1(CDR(ls))) {
+        } else if (EQ(obj, SYM_UNQUOTE) && IS_LIST_LEN_1(CDR(ls))) {
             /* we're at the comma in (x . ,y) or qexpr was ,z */
             if (--nest == 0) {
                 result = EVAL(CADR(ls), env);
@@ -759,7 +759,7 @@ static ScmObj qquote_vector(ScmObj src, ScmObj env, int nest)
     /* local "functions" */
 #define qquote_copy_delayed() (copy_buf == NULL)
 #define qquote_is_spliced(o)  \
-    (CONSP(o) && EQ(CAR(o), SCM_UNQUOTE_SPLICING))
+    (CONSP(o) && EQ(CAR(o), SYM_UNQUOTE_SPLICING))
 #define qquote_force_copy_upto(n) \
     do { \
         int k; \

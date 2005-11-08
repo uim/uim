@@ -60,7 +60,9 @@ struct module_info {
 /*=======================================
   Variable Declarations
 =======================================*/
-ScmObj SigScm_quote, SigScm_quasiquote, SigScm_unquote, SigScm_unquote_splicing;
+ScmObj Scm_sym_quote, Scm_sym_quasiquote;
+ScmObj Scm_sym_unquote, Scm_sym_unquote_splicing;
+
 #if SCM_COMPAT_SIOD
 static ScmObj scm_return_value    = NULL;
 #endif
@@ -136,10 +138,10 @@ static void SigScm_Initialize_internal(void)
     /*=======================================================================
       Predefined Symbols and Variables
     =======================================================================*/
-    SigScm_quote            = Scm_Intern("quote");
-    SigScm_quasiquote       = Scm_Intern("quasiquote");
-    SigScm_unquote          = Scm_Intern("unquote");
-    SigScm_unquote_splicing = Scm_Intern("unquote-splicing");
+    Scm_sym_quote            = Scm_Intern("quote");
+    Scm_sym_quasiquote       = Scm_Intern("quasiquote");
+    Scm_sym_unquote          = Scm_Intern("unquote");
+    Scm_sym_unquote_splicing = Scm_Intern("unquote-splicing");
 #if 0
     /* FIXME: Rewrite ScmExp_cond() and ScmExp_case(), and enable this */
     SigScm_else             = Scm_Intern("else");
