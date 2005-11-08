@@ -215,7 +215,7 @@ uim_scm_qintern_c_str(const char *str)
 uim_lisp
 uim_scm_quote(uim_lisp obj)
 {
-  return (uim_lisp)SCM_LIST_2(SCM_QUOTE, (ScmObj)obj);
+  return (uim_lisp)SCM_LIST_2(SCM_SYM_QUOTE, (ScmObj)obj);
 }
 
 uim_lisp
