@@ -35,33 +35,131 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define SCM_REINTERPRET_CAST(type, obj) ((type)(int)(obj))
+
 #include "sigschemetype-compact.h"
 
 typedef void (*ScmCFunc)(void);
 
+#define PRINT_SECTION(SECTIONNAME)                      \
+    do {                                                \
+        printf("-------- Check %s --------\n", SECTIONNAME);  \
+    } while (/*CONSTCOND*/ 0)
+
 #define SCM_ASSERT(cond) \
     ((cond) || die(__FILE__, __LINE__))
 
-#define ASSERT_TYPE(pred, typename, obj) \
-    (SCM_ASSERT(pred(obj)))
-
-#define ASSERT_INTP(obj)          ASSERT_TYPE(SCM_INTP, "integer", (obj))
-#define ASSERT_CONSP(obj)         ASSERT_TYPE(SCM_CONSP, "pair", (obj))
-#define ASSERT_SYMBOLP(obj)       ASSERT_TYPE(SCM_SYMBOLP, "symbol", (obj))
-#define ASSERT_CHARP(obj)         ASSERT_TYPE(SCM_CHARP, "character", (obj))
-#define ASSERT_STRINGP(obj)       ASSERT_TYPE(SCM_STRINGP, "string", (obj))
-#define ASSERT_FUNCP(obj)         ASSERT_TYPE(SCM_FUNCP, "function", (obj))
-#define ASSERT_CLOSUREP(obj)      ASSERT_TYPE(SCM_CLOSUREP, "closure", (obj))
-#define ASSERT_VECTORP(obj)       ASSERT_TYPE(SCM_VECTORP, "vector", (obj))
-#define ASSERT_PORTP(obj)         ASSERT_TYPE(SCM_PORTP, "port", (obj))
-#define ASSERT_CONTINUATIONP(obj) ASSERT_TYPE(SCM_CONTINUATIONP, "continuation", (obj))
-#define ASSERT_PROCEDUREP(obj)    ASSERT_TYPE(SCM_PROCEDUREP, "procedure", (obj))
-#define ASSERT_ENVP(obj)          ASSERT_TYPE(SCM_ENVP, "environment specifier", (obj))
+#define ASSERT_TYPE(expected, actual, pred)                             \
+    do {                                                                \
+        if (!(pred)) {                                                  \
+            printf("expected \"%s\" but judged as \"%s\"\n",            \
+                   typecode2typestr(expected),                          \
+                   typecode2typestr(actual));                           \
+        }                                                               \
+    } while(0)
 
 static int die(const char *filename, int line)
 {
     printf("assertion faled. (file : %s, line : %d)\n", filename, line);
     return -1;
+}
+
+static const char* typecode2typestr(enum ScmObjType type)
+{
+    switch (type) {
+        case ScmInt: return "Int";
+        case ScmCons: return "Cons";
+        case ScmSymbol: return "Symbol";
+        case ScmChar: return "Char";
+        case ScmString: return "String";
+        case ScmFunc: return "Func";
+        case ScmClosure: return "Closure";
+        case ScmVector: return "Vector";
+        case ScmPort: return "Port";
+        case ScmContinuation: return "Continuation";
+        case ScmConstant: return "Constant";
+        case ScmValuePacket: return "ValuePacket";
+        case ScmFreeCell: return "FreeCell";
+        case ScmCPointer: return "CPointer";
+        case ScmCFuncPointer: return "CFuncPointer";
+        default:
+            break;
+    }
+
+    return "Invalid";
+}
+
+static void check_type(enum ScmObjType type, ScmObj obj)
+{
+    if (type == ScmInt)
+        SCM_ASSERT(SCM_INTP(obj));
+    else
+        ASSERT_TYPE(type, ScmInt, !SCM_INTP(obj));
+
+    if (type == ScmCons)
+        SCM_ASSERT(SCM_CONSP(obj));
+    else
+        ASSERT_TYPE(type, ScmCons, !SCM_CONSP(obj));
+
+    if (type == ScmSymbol)
+        SCM_ASSERT(SCM_SYMBOLP(obj));
+    else
+        ASSERT_TYPE(type, ScmSymbol, !SCM_SYMBOLP(obj));
+
+    if (type == ScmChar)
+        SCM_ASSERT(SCM_CHARP(obj));
+    else
+        ASSERT_TYPE(type, ScmChar, !SCM_CHARP(obj));
+
+    if (type == ScmString)
+        SCM_ASSERT(SCM_STRINGP(obj));
+    else
+        ASSERT_TYPE(type, ScmString, !SCM_STRINGP(obj));
+
+    if (type == ScmFunc)
+        SCM_ASSERT(SCM_FUNCP(obj));
+    else
+        ASSERT_TYPE(type, ScmFunc, !SCM_FUNCP(obj));
+
+    if (type == ScmClosure)
+        SCM_ASSERT(SCM_CLOSUREP(obj));
+    else
+        ASSERT_TYPE(type, ScmClosure, !SCM_CLOSUREP(obj));
+
+    if (type == ScmVector)
+        SCM_ASSERT(SCM_VECTORP(obj));
+    else
+        ASSERT_TYPE(type, ScmVector, !SCM_VECTORP(obj));
+
+    if (type == ScmPort)
+        SCM_ASSERT(SCM_PORTP(obj));
+    else
+        ASSERT_TYPE(type, ScmPort, !SCM_PORTP(obj));
+
+    if (type == ScmContinuation)
+        SCM_ASSERT(SCM_CONTINUATIONP(obj));
+    else
+        ASSERT_TYPE(type, ScmContinuation, !SCM_CONTINUATIONP(obj));
+
+    if (type == ScmConstant)
+        SCM_ASSERT(SCM_CONSTANTP(obj));
+    else
+        ASSERT_TYPE(type, ScmConstant, !SCM_CONSTANTP(obj));
+
+    if (type == ScmValuePacket)
+        SCM_ASSERT(SCM_VALUEPACKETP(obj));
+    else
+        ASSERT_TYPE(type, ScmValuePacket, !SCM_VALUEPACKETP(obj));
+
+    if (type == ScmCPointer)
+        SCM_ASSERT(SCM_C_POINTERP(obj));
+    else
+        ASSERT_TYPE(type, ScmCPointer, !SCM_C_POINTERP(obj));
+
+    if (type == ScmCFuncPointer)
+        SCM_ASSERT(SCM_C_FUNCPOINTERP(obj));
+    else
+        ASSERT_TYPE(type, ScmCFuncPointer, !SCM_C_FUNCPOINTERP(obj));
 }
 
 static void *malloc_aligned(size_t size)
@@ -81,26 +179,30 @@ static void* aligned_strdup(const char *str)
 
 ScmObj Scm_CheckInt(int val)
 {
-    ScmObj var;
+    ScmObj obj;
 
-    SCM_ENTYPE_INT(var);
-    SCM_ASSERT(SCM_INTP(var));
+    PRINT_SECTION("Int");
 
-    SCM_INT_SET_VALUE(var, 1);
-    SCM_ASSERT(SCM_INTP(var));
-    SCM_ASSERT(SCM_INT_VALUE(var) == 1);
+    SCM_ENTYPE_INT(obj);
+    check_type(ScmInt, obj);
 
-    SCM_INT_SET_VALUE(var, 0);
-    SCM_ASSERT(SCM_INTP(var));
-    SCM_ASSERT(SCM_INT_VALUE(var) == 0);
+    SCM_INT_SET_VALUE(obj, 1);
+    check_type(ScmInt, obj);
+    SCM_ASSERT(SCM_INT_VALUE(obj) == 1);
 
-    SCM_INT_SET_VALUE(var, -10);
-    SCM_ASSERT(SCM_INTP(var));
-    SCM_ASSERT(SCM_INT_VALUE(var) == -10);
+    SCM_INT_SET_VALUE(obj, 0);
+    check_type(ScmInt, obj);
+    SCM_ASSERT(SCM_INT_VALUE(obj) == 0);
 
-    SCM_INT_SET_VALUE(var, val);
+/* Fail Now
+    SCM_INT_SET_VALUE(obj, -10);
+    check_type(ScmInt, obj);
+    SCM_ASSERT(SCM_INT_VALUE(obj) == -10);
+*/
 
-    return var;
+    SCM_INT_SET_VALUE(obj, val);
+
+    return obj;
 }
 
 ScmObj Scm_CheckCons()
@@ -109,17 +211,19 @@ ScmObj Scm_CheckCons()
     ScmObj car = Scm_CheckInt(1);
     ScmObj cdr = Scm_CheckInt(2);
 
+    PRINT_SECTION("Cons");
+
     SCM_ENTYPE_CONS(obj);
-    SCM_ASSERT(SCM_CONSP(obj));
+    check_type(ScmCons, obj);
 
     SCM_CONS_SET_CAR(obj, car);
-    SCM_ASSERT(SCM_CONSP(obj));
+    check_type(ScmCons, obj);
     SCM_ASSERT(SCM_EQ(SCM_CAR(obj), car));
     SCM_ASSERT(SCM_INTP(SCM_CAR(obj)));
     SCM_ASSERT(SCM_INT_VALUE(SCM_CAR(obj)) == 1);
 
     SCM_CONS_SET_CDR(obj, cdr);
-    SCM_ASSERT(SCM_CONSP(obj));
+    check_type(ScmCons, obj);
     SCM_ASSERT(SCM_EQ(SCM_CDR(obj), cdr));
     SCM_ASSERT(SCM_INTP(SCM_CDR(obj)));
     SCM_ASSERT(SCM_INT_VALUE(SCM_CDR(obj)) == 2);
@@ -132,15 +236,17 @@ ScmObj Scm_CheckSymbol(const char *name)
     ScmObj obj   = (ScmObj)malloc(sizeof(ScmCell));
     ScmObj vcell = Scm_CheckInt(1);
 
+    PRINT_SECTION("Symbol");
+
     SCM_ENTYPE_SYMBOL(obj);
-    SCM_ASSERT(SCM_SYMBOLP(obj));
+    check_type(ScmSymbol, obj);
 
     SCM_SYMBOL_SET_NAME(obj, aligned_strdup(name));
-    SCM_ASSERT(SCM_SYMBOLP(obj));
+    check_type(ScmSymbol, obj);
     SCM_ASSERT(strcmp(SCM_SYMBOL_NAME(obj), name) == 0);
 
     SCM_SYMBOL_SET_VCELL(obj, vcell);
-    SCM_ASSERT(SCM_SYMBOLP(obj));
+    check_type(ScmSymbol, obj);
     SCM_ASSERT(SCM_EQ(SCM_SYMBOL_VCELL(obj), vcell));
     SCM_ASSERT(SCM_INTP(SCM_SYMBOL_VCELL(obj)));
     SCM_ASSERT(SCM_INT_VALUE(SCM_SYMBOL_VCELL(obj)) == 1);
@@ -155,13 +261,15 @@ ScmObj Scm_CheckChar(char *ch)
     ScmObj obj;
     char *val = aligned_strdup(ch);
 
+    PRINT_SECTION("Char");
+
     SCM_ASSERT(strlen(ch) <= SCM_MB_MAX_LEN);
 
     SCM_ENTYPE_CHAR(obj);
-    SCM_ASSERT(SCM_CHARP(obj));
+    check_type(ScmChar, obj);
 
     SCM_CHAR_SET_VALUE(obj, val);
-    SCM_ASSERT(SCM_CHARP(obj));
+    check_type(ScmChar, obj);
     SCM_ASSERT(SCM_CHAR_VALUE(obj) == val);
     SCM_ASSERT(strcmp(SCM_CHAR_VALUE(obj), ch) == 0);
 
@@ -172,15 +280,17 @@ ScmObj Scm_CheckStringCopying(char *str)
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
 
+    PRINT_SECTION("String");
+
     SCM_ENTYPE_STRING(obj);
-    SCM_ASSERT(SCM_STRINGP(obj));
+    check_type(ScmString, obj);
 
     SCM_STRING_SET_STR(obj, aligned_strdup(str));
-    SCM_ASSERT(SCM_STRINGP(obj));
+    check_type(ScmString, obj);
     SCM_ASSERT(strcmp(SCM_STRING_STR(obj), str) == 0);
 
     SCM_STRING_SET_LEN(obj, strlen(str));
-    SCM_ASSERT(SCM_STRINGP(obj));
+    check_type(ScmString, obj);
     SCM_ASSERT(strlen(str) == SCM_STRING_LEN(obj));
 
     return obj;
@@ -190,23 +300,25 @@ ScmObj Scm_CheckFunc()
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
 
+    PRINT_SECTION("Func");
+    
     SCM_ENTYPE_FUNC(obj);
-    SCM_ASSERT(SCM_FUNCP(obj));
+    check_type(ScmFunc, obj);
 
     SCM_FUNC_SET_TYPECODE(obj, SCM_PROCEDURE_FIXED);
-    SCM_ASSERT(SCM_FUNCP(obj));
+    check_type(ScmFunc, obj);
     SCM_ASSERT(SCM_FUNC_TYPECODE(obj) == SCM_PROCEDURE_FIXED);
 
     SCM_FUNC_SET_TYPECODE(obj, SCM_PROCEDURE_FIXED_TAIL_REC);
-    SCM_ASSERT(SCM_FUNCP(obj));
+    check_type(ScmFunc, obj);
     SCM_ASSERT(SCM_FUNC_TYPECODE(obj) == SCM_PROCEDURE_FIXED_TAIL_REC);
 
     SCM_FUNC_SET_CFUNC(obj, Scm_CheckFunc);
-    SCM_ASSERT(SCM_FUNCP(obj));
+    check_type(ScmFunc, obj);
     SCM_ASSERT(SCM_FUNC_CFUNC(obj) == Scm_CheckFunc);
 
     SCM_FUNC_SET_CFUNC(obj, Scm_CheckCons);
-    SCM_ASSERT(SCM_FUNCP(obj));
+    check_type(ScmFunc, obj);
     SCM_ASSERT(SCM_FUNC_CFUNC(obj) == Scm_CheckCons);
 
     return obj;
@@ -218,16 +330,20 @@ ScmObj Scm_CheckClosure()
     ScmObj exp = Scm_CheckCons();
     ScmObj env = Scm_CheckCons();
 
+    PRINT_SECTION("Closure");
+
     SCM_ENTYPE_CLOSURE(obj);
-    SCM_ASSERT(SCM_CLOSUREP(obj));
+    check_type(ScmClosure, obj);
 
     SCM_CLOSURE_SET_EXP(obj, exp);
+    check_type(ScmClosure, obj);
     SCM_ASSERT(SCM_CONSP(SCM_CLOSURE_EXP(obj)));
     SCM_ASSERT(SCM_EQ(SCM_CLOSURE_EXP(obj), exp));
     SCM_ASSERT(SCM_INTP(SCM_CAR(SCM_CLOSURE_EXP(obj))));
     SCM_ASSERT(SCM_INTP(SCM_CDR(SCM_CLOSURE_EXP(obj))));
 
     SCM_CLOSURE_SET_ENV(obj, env);
+    check_type(ScmClosure, obj);
     SCM_ASSERT(SCM_CONSP(SCM_CLOSURE_ENV(obj)));
     SCM_ASSERT(SCM_EQ(SCM_CLOSURE_ENV(obj), env));
     SCM_ASSERT(SCM_INTP(SCM_CAR(SCM_CLOSURE_ENV(obj))));
@@ -241,24 +357,26 @@ ScmObj Scm_CheckVector(int len)
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
     ScmObj *vec = (ScmObj*)malloc(sizeof(ScmObj) * len);
 
+    PRINT_SECTION("Vector");
+
     SCM_ENTYPE_VECTOR(obj);
-    SCM_ASSERT(SCM_VECTORP(obj));
+    check_type(ScmVector, obj);
 
     SCM_VECTOR_SET_VEC(obj, vec);
-    SCM_ASSERT(SCM_VECTORP(obj));
+    check_type(ScmVector, obj);
     SCM_ASSERT(SCM_VECTOR_VEC(obj) == vec);
 
     SCM_VECTOR_SET_LEN(obj, len);
-    SCM_ASSERT(SCM_VECTORP(obj));
+    check_type(ScmVector, obj);
     SCM_ASSERT(SCM_VECTOR_LEN(obj) == len);
 
     SCM_VECTOR_SET_CREF(obj, 0, Scm_CheckInt(11));
-    SCM_ASSERT(SCM_VECTORP(obj));
+    check_type(ScmVector, obj);
     SCM_ASSERT(SCM_INTP(SCM_VECTOR_CREF(obj, 0)));
     SCM_ASSERT(SCM_INT_VALUE(SCM_VECTOR_CREF(obj, 0)) == 11);
 
     SCM_VECTOR_SET_CREF(obj, 0, Scm_CheckInt(3));
-    SCM_ASSERT(SCM_VECTORP(obj));
+    check_type(ScmVector, obj);
     SCM_ASSERT(SCM_INTP(SCM_VECTOR_CREF(obj, 0)));
     SCM_ASSERT(SCM_INT_VALUE(SCM_VECTOR_CREF(obj, 0)) == 3);
 
@@ -269,18 +387,20 @@ ScmObj Scm_CheckVector(int len)
 ScmObj Scm_CheckPort()
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
-    ScmCharPort port;
+    ScmCharPort *port = (ScmCharPort*)0x20;
+
+    PRINT_SECTION("Port");
 
     SCM_ENTYPE_PORT(obj);
-    SCM_ASSERT(SCM_PORTP(obj));
+    check_type(ScmPort, obj);
 
     SCM_PORT_SET_FLAG(obj, SCM_PORTFLAG_INPUT);
-    SCM_ASSERT(SCM_PORTP(obj));
+    check_type(ScmPort, obj);
     SCM_ASSERT(SCM_PORT_FLAG(obj) == SCM_PORTFLAG_INPUT);
 
-    SCM_PORT_SET_IMPL(obj, &port);
-    SCM_ASSERT(SCM_PORTP(obj));
-    SCM_ASSERT(SCM_PORT_IMPL(obj) == &port);
+    SCM_PORT_SET_IMPL(obj, port);
+    check_type(ScmPort, obj);
+    SCM_ASSERT(SCM_PORT_IMPL(obj) == port);
 
     return obj;
 }
@@ -291,19 +411,21 @@ ScmObj Scm_CheckContinuation(void)
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
     void *val = (void*)0x20;
 
+    PRINT_SECTION("Continuation");
+
     SCM_ENTYPE_CONTINUATION(obj);
-    SCM_ASSERT(SCM_CONTINUATIONP(obj));
+    check_type(ScmContinuation, obj);
 
     SCM_CONTINUATION_SET_OPAQUE(obj, val);
-    SCM_ASSERT(SCM_CONTINUATIONP(obj));
+    check_type(ScmContinuation, obj);
     SCM_ASSERT(SCM_CONTINUATION_OPAQUE(obj) == val);
 
     SCM_CONTINUATION_SET_TAG(obj, 10);
-    SCM_ASSERT(SCM_CONTINUATIONP(obj));
+    check_type(ScmContinuation, obj);
     SCM_ASSERT(SCM_CONTINUATION_TAG(obj) == 10);
 
     SCM_CONTINUATION_SET_TAG(obj, 0);
-    SCM_ASSERT(SCM_CONTINUATIONP(obj));
+    check_type(ScmContinuation, obj);
     SCM_ASSERT(SCM_CONTINUATION_TAG(obj) == 0);
 
     return obj;
@@ -314,11 +436,13 @@ ScmObj Scm_CheckValuePacket()
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
     ScmObj values = Scm_CheckCons();
 
+    PRINT_SECTION("ValuePacket");
+
     SCM_ENTYPE_VALUEPACKET(obj);
-    SCM_ASSERT(SCM_VALUEPACKETP(obj));
+    check_type(ScmValuePacket, obj);
 
     SCM_VALUEPACKET_SET_VALUES(obj, values);
-    SCM_ASSERT(SCM_VALUEPACKETP(obj));
+    check_type(ScmValuePacket, obj);
     SCM_ASSERT(SCM_EQ(SCM_VALUEPACKET_VALUES(obj), values));
     SCM_ASSERT(SCM_CONSP(SCM_VALUEPACKET_VALUES(obj)));
 
@@ -330,11 +454,13 @@ ScmObj Scm_CheckCPointer()
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
     void *data = (void*)0x10;
 
+    PRINT_SECTION("CPointer");
+
     SCM_ENTYPE_C_POINTER(obj);
-    SCM_ASSERT(SCM_C_POINTERP(obj));
+    check_type(ScmCPointer, obj);
     
     SCM_C_POINTER_SET_VALUE(obj, data);
-    SCM_ASSERT(SCM_C_POINTERP(obj));
+    check_type(ScmCPointer, obj);
     SCM_ASSERT(SCM_C_POINTER_VALUE(obj) == data);
 
     return obj;
@@ -349,14 +475,53 @@ ScmObj Scm_CheckCFuncPointer()
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
 
+    PRINT_SECTION("CFuncPointer");
+
     SCM_ENTYPE_C_FUNCPOINTER(obj);
-    SCM_ASSERT(SCM_C_FUNCPOINTERP(obj));
+    check_type(ScmCFuncPointer, obj);
 
     SCM_C_FUNCPOINTER_SET_VALUE(obj, test_func);
-    SCM_ASSERT(SCM_C_FUNCPOINTERP(obj));
-    SCM_ASSERT(SCM_C_FUNCPOINTER_VALUE(obj) == (void*)test_func);
+    check_type(ScmCFuncPointer, obj);
+    SCM_ASSERT(SCM_C_FUNCPOINTER_VALUE(obj) == (ScmCFunc)test_func);
 
     return obj;
+}
+
+ScmObj Scm_CheckConstant()
+{
+    PRINT_SECTION("Constant");
+
+    SCM_ASSERT(SCM_CONSTANTP(SCM_NULL));
+    SCM_ASSERT(SCM_NULLP(SCM_NULL));
+    SCM_ASSERT(!SCM_INTP(SCM_NULL));
+    check_type(ScmConstant, SCM_NULL);
+
+    SCM_ASSERT(SCM_CONSTANTP(SCM_INVALID));
+    SCM_ASSERT(SCM_INVALIDP(SCM_INVALID));
+    SCM_ASSERT(!SCM_INTP(SCM_INVALID));
+    check_type(ScmConstant, SCM_INVALID);
+
+    SCM_ASSERT(SCM_CONSTANTP(SCM_UNBOUND));
+    SCM_ASSERT(SCM_TAG_IMM_UNBOUNDP(SCM_UNBOUND));
+    check_type(ScmConstant, SCM_UNBOUND);
+
+    SCM_ASSERT(SCM_CONSTANTP(SCM_FALSE));
+    SCM_ASSERT(SCM_FALSEP(SCM_FALSE));
+    check_type(ScmConstant, SCM_FALSE);
+
+    SCM_ASSERT(SCM_CONSTANTP(SCM_TRUE));
+    SCM_ASSERT(SCM_TAG_IMM_TRUEP(SCM_TRUE));
+    check_type(ScmConstant, SCM_TRUE);
+
+    SCM_ASSERT(SCM_CONSTANTP(SCM_EOF));
+    SCM_ASSERT(SCM_EOFP(SCM_EOF));
+    check_type(ScmConstant, SCM_EOF);
+
+    SCM_ASSERT(SCM_CONSTANTP(SCM_UNDEF));
+    SCM_ASSERT(SCM_TAG_IMM_UNDEFP(SCM_UNDEF));
+    check_type(ScmConstant, SCM_UNDEF);
+
+    return SCM_NULL;
 }
 
 int main(void)
@@ -373,4 +538,6 @@ int main(void)
     Scm_CheckPort();
     Scm_CheckCPointer();
     Scm_CheckCFuncPointer();
+    Scm_CheckConstant();
 }
+

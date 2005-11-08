@@ -220,14 +220,14 @@ struct ScmEvalState_ {
   Masks Offsets, and Tags : Others
 ==============================================================================*/
 /* mask */
-#define SCM_TAG_OTHERS_MASK_SYMBOL               (0x1 | (0x0 << SCM_GCBIT_WIDTH))
-#define SCM_TAG_OTHERS_MASK_STRING               (0x1 | (0x1 << SCM_GCBIT_WIDTH))
-#define SCM_TAG_OTHERS_MASK_VECTOR               (0x1 | (0x2 << SCM_GCBIT_WIDTH))
-#define SCM_TAG_OTHERS_MASK_VALUES               (0x1 | (0x3 << SCM_GCBIT_WIDTH) | (0x0 << 3))
-#define SCM_TAG_OTHERS_MASK_FUNC                 (0x1 | (0x3 << SCM_GCBIT_WIDTH) | (0x1 << 3))
-#define SCM_TAG_OTHERS_MASK_PORT                 (0x1 | (0x3 << SCM_GCBIT_WIDTH) | (0x2 << 3))
-#define SCM_TAG_OTHERS_MASK_CONTINUATION         (0x1 | (0x3 << SCM_GCBIT_WIDTH) | (0x3 << 3))
-#define SCM_TAG_OTHERS_MASK_C_POINTER            (0x1 | (0x3 << SCM_GCBIT_WIDTH) | (0x4 << 3) | (0x1 << 6))
+#define SCM_TAG_OTHERS_MASK_SYMBOL               (0x1 | (0x3 << SCM_GCBIT_WIDTH))
+#define SCM_TAG_OTHERS_MASK_STRING               (0x1 | (0x3 << SCM_GCBIT_WIDTH))
+#define SCM_TAG_OTHERS_MASK_VECTOR               (0x1 | (0x3 << SCM_GCBIT_WIDTH))
+#define SCM_TAG_OTHERS_MASK_VALUES               (0x1 | (0x3 << SCM_GCBIT_WIDTH) | (0x7 << 3))
+#define SCM_TAG_OTHERS_MASK_FUNC                 (0x1 | (0x3 << SCM_GCBIT_WIDTH) | (0x7 << 3))
+#define SCM_TAG_OTHERS_MASK_PORT                 (0x1 | (0x3 << SCM_GCBIT_WIDTH) | (0x7 << 3))
+#define SCM_TAG_OTHERS_MASK_CONTINUATION         (0x1 | (0x3 << SCM_GCBIT_WIDTH) | (0x7 << 3))
+#define SCM_TAG_OTHERS_MASK_C_POINTER            (0x1 | (0x3 << SCM_GCBIT_WIDTH) | (0x7 << 3) | (0x1 << 6))
 /* #define SCM_TAG_OTHERS_MASK_FREECELL             (0x1 | (0x3 << SCM_GCBIT_WIDTH) | (0x7 << 3)) */
 
 /* tag */
@@ -253,8 +253,8 @@ struct ScmEvalState_ {
   Masks Offsets, and Tags : IMM
 ==============================================================================*/
 /* mask */
-#define SCM_TAG_IMM_MASK_INT                     (SCM_TAG_MASK | (0x0 << 3))
-#define SCM_TAG_IMM_MASK_CHAR                    (SCM_TAG_MASK | (0x1 << 3))
+#define SCM_TAG_IMM_MASK_INT                     (SCM_TAG_MASK | (0x1 << 3))
+#define SCM_TAG_IMM_MASK_CHAR                    (SCM_TAG_MASK | (0x3 << 3))
 #define SCM_TAG_IMM_MASK_CONST                   (SCM_TAG_MASK | (0x3 << 3))
 #define SCM_TAG_IMM_MASK_CONST_VALUE             (SCM_TAG_MASK | (0x3 << 3)  | (0x7 << 5))
 
@@ -343,14 +343,14 @@ struct ScmEvalState_ {
 #define SCM_TAG_IMM_INTP(a)               ((SCM_CAST_UINT(a) & SCM_TAG_IMM_MASK_INT)   == SCM_TAG_IMM_INT)
 #define SCM_TAG_IMM_CHARP(a)              ((SCM_CAST_UINT(a) & SCM_TAG_IMM_MASK_CHAR)  == SCM_TAG_IMM_CHAR)
 
-#define SCM_TAG_IMM_CONSTANTP(a)          ((SCM_CAST_UINT(a) & SCM_TAG_IMM_MASK_CONST) == 0x3)
-#define SCM_TAG_IMM_NULLP(a)              ((SCM_CAST_UINT(a) & SCM_TAG_IMM_MASK_CONST_VALUE) == SCM_IMM_NULL)
-#define SCM_TAG_IMM_INVALIDP(a)           ((SCM_CAST_UINT(a) & SCM_TAG_IMM_MASK_CONST_VALUE) == SCM_IMM_INVALID)
-#define SCM_TAG_IMM_UNBOUNDP(a)           ((SCM_CAST_UINT(a) & SCM_TAG_IMM_MASK_CONST_VALUE) == SCM_IMM_UNBOUND)
-#define SCM_TAG_IMM_FALSEP(a)             ((SCM_CAST_UINT(a) & SCM_TAG_IMM_MASK_CONST_VALUE) == SCM_IMM_FALSE)
-#define SCM_TAG_IMM_TRUEP(a)              ((SCM_CAST_UINT(a) & SCM_TAG_IMM_MASK_CONST_VALUE) == SCM_IMM_TRUE)
-#define SCM_TAG_IMM_EOFP(a)               ((SCM_CAST_UINT(a) & SCM_TAG_IMM_MASK_CONST_VALUE) == SCM_IMM_EOF)
-#define SCM_TAG_IMM_UNDEFP(a)             ((SCM_CAST_UINT(a) & SCM_TAG_IMM_MASK_CONST_VALUE) == SCM_IMM_UNDEF)
+#define SCM_TAG_IMM_CONSTANTP(a)          ((SCM_CAST_UINT(a) & SCM_TAG_IMM_MASK_CONST) == (SCM_TAG_IMM | (0x3 << 3)))
+#define SCM_TAG_IMM_NULLP(a)              (SCM_CAST_UINT(a) == SCM_IMM_NULL)
+#define SCM_TAG_IMM_INVALIDP(a)           (SCM_CAST_UINT(a) == SCM_IMM_INVALID)
+#define SCM_TAG_IMM_UNBOUNDP(a)           (SCM_CAST_UINT(a) == SCM_IMM_UNBOUND)
+#define SCM_TAG_IMM_FALSEP(a)             (SCM_CAST_UINT(a) == SCM_IMM_FALSE)
+#define SCM_TAG_IMM_TRUEP(a)              (SCM_CAST_UINT(a) == SCM_IMM_TRUE)
+#define SCM_TAG_IMM_EOFP(a)               (SCM_CAST_UINT(a) == SCM_IMM_EOF)
+#define SCM_TAG_IMM_UNDEFP(a)             (SCM_CAST_UINT(a) == SCM_IMM_UNDEF)
 
 /* Type Predicates */
 #define SCM_CONSP(a)             (SCM_TAG_CONSP(a))
