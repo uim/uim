@@ -40,6 +40,7 @@
   (use srfi-34))
  (else #t))
 
+(define *test-track-progress* #f)  ;; for locationg SEGV point
 (define *total-testsuites* 1)  ;; TODO: introduce test suites and defaults to 0
 (define *total-testcases* 1)   ;; TODO: introduce testcase and defaults to 0
 (define *total-tests* 1)       ;; TODO: introduce test group and defaults to 0
@@ -85,6 +86,11 @@
 (define assert
   (lambda (err-msg exp)
     (set! *total-assertions* (+ *total-assertions* 1))
+    (if *test-track-progress*
+        (begin
+          (display "done: ")
+          (display err-msg)  ;; FIXME: should indicate test-name
+          (newline)))
     (if exp
 	#t
 	(begin
