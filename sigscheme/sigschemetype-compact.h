@@ -277,35 +277,72 @@ struct ScmEvalState_ {
 /*=======================================
    Getter & Setter
 =======================================*/
-#define SCM_GET_VALUE_AS_OBJ(a)                   ((ScmObj)(SCM_CAST_UINT(a) & SCM_VALUE_MASK))
-#define SCM_GET_VALUE_AS_INT(a, offset)           ((int)   (SCM_CAST_UINT(a) >> (offset)))
-#define SCM_GET_VALUE_AS_PTR(a, mask)             ((void*) (SCM_CAST_UINT(a) & (mask)))
-#define SCM_GET_VALUE_AS_STR(a, mask)             ((char*) (SCM_GET_VALUE_AS_PTR((a), (mask))))
-#define SCM_SET_VALUE_AS_OBJ(a, b)                ((a) = (ScmObj)((SCM_CAST_UINT(a) & SCM_GCBIT_MASK) | (SCM_CAST_UINT(b) & ~SCM_GCBIT_MASK)))
-#define SCM_SET_VALUE_AS_INT(a, val, offset, tag) ((a) = (ScmObj)((tag) | ((val) << (offset))))
-#define SCM_SET_VALUE_AS_PTR(a, val, tag)         ((a) = (ScmObj)((tag) | SCM_CAST_UINT(val)))
-#define SCM_SET_VALUE_AS_STR(a, val, tag)         SCM_SET_VALUE_AS_PTR((a), (val), (tag))
+/* Aware GC Bit */
+#define SCM_GET_VALUE_AS_OBJ_DISCARDS_GCBIT(a, mask)   ((ScmObj)(SCM_CAST_UINT(a) & (mask & ~SCM_GCBIT_MASK)))
+#define SCM_GET_VALUE_AS_INT_DISCARDS_GCBIT(a, offset) ((int)   (SCM_CAST_UINT(a) >> (offset)))
+#define SCM_GET_VALUE_AS_PTR_DISCARDS_GCBIT(a, mask)   ((void*) (SCM_CAST_UINT(a) & (mask & ~SCM_GCBIT_MASK)))
+#define SCM_GET_VALUE_AS_STR_DISCARDS_GCBIT(a, mask)   ((char*) (SCM_GET_VALUE_AS_PTR_DISCARDS_GCBIT((a), (mask & ~SCM_GCBIT_MASK))))
 
-#define SCM_GET_CAR(a)      (SCM_GET_VALUE_AS_OBJ(a)->car)
-#define SCM_GET_CDR(a)      (SCM_GET_VALUE_AS_OBJ(a)->cdr)
-#define SCM_SET_CAR(a, val) (SCM_GET_CAR(a) = (ScmObj)(val))
-#define SCM_SET_CDR(a, val) (SCM_GET_CDR(a) = (ScmObj)(val))
+#define SCM_SET_VALUE_AS_OBJ_REMAIN_GCBIT(a, val)                       \
+    ((a) = (ScmObj)((SCM_CAST_UINT(a) & SCM_GCBIT_MASK) | (SCM_CAST_UINT(val) & ~SCM_GCBIT_MASK)))
+#define SCM_SET_VALUE_AS_INT_REMAIN_GCBIT(a, val, offset, tag)          \
+    (SCM_SET_VALUE_AS_OBJ_REMAIN_GCBIT((a), ((SCM_CAST_UINT(val) << (offset)) | (tag))))
+#define SCM_SET_VALUE_AS_PTR_REMAIN_GCBIT(a, val, tag)                  \
+    (SCM_SET_VALUE_AS_OBJ_REMAIN_GCBIT((a), (SCM_CAST_UINT(val) | (tag))))
+#define SCM_SET_VALUE_AS_STR_REMAIN_GCBIT(a, val, tag)                  \
+    (SCM_SET_VALUE_AS_PTR_REMAIN_GCBIT((a), (val), (tag))
+
+/* Primary Obj */
+#define SCM_PRIMARY_GET_VALUE_AS_OBJ(a)         (SCM_GET_VALUE_AS_OBJ_DISCARDS_GCBIT((a), SCM_VALUE_MASK))
+#define SCM_PRIMARY_GET_VALUE_AS_INT(a, offset) (SCM_GET_VALUE_AS_INT_DISCARDS_GCBIT((a), (offset)))
+#define SCM_PRIMARY_GET_VALUE_AS_PTR(a, mask)   (SCM_GET_VALUE_AS_PTR_DISCARDS_GCBIT((a), (mask)))
+#define SCM_PRIMARY_GET_VALUE_AS_STR(a, mask)   ((char*)SCM_PRIMARY_GET_VALUE_AS_PTR((a), (mask)))
+
+/* Not Used
+#define SCM_PRIMARY_SET_VALUE_AS_OBJ(a, val)              (SCM_SET_VALUE_AS_OBJ_REMAIN_GCBIT((a), (val))) */
+#define SCM_PRIMARY_SET_VALUE_AS_INT(a, val, offset, tag) (SCM_SET_VALUE_AS_INT_REMAIN_GCBIT((a), (val), (offset), (tag)))
+#define SCM_PRIMARY_SET_VALUE_AS_PTR(a, val, tag)         (SCM_SET_VALUE_AS_PTR_REMAIN_GCBIT((a), (val), (tag)))
+#define SCM_PRIMARY_SET_VALUE_AS_STR(a, val, tag)         (SCM_PRIMARY_SET_VALUE_AS_PTR((a), (val), (tag)))
+
+/* CAR & CDR Direct Accessor */
+#define SCM_GET_DIRECT_CAR(a)      (SCM_PRIMARY_GET_VALUE_AS_OBJ(a)->car)
+#define SCM_GET_DIRECT_CDR(a)      (SCM_PRIMARY_GET_VALUE_AS_OBJ(a)->cdr)
+#define SCM_SET_DIRECT_CAR(a, val) (SCM_GET_DIRECT_CAR(a) = (ScmObj)(val))
+#define SCM_SET_DIRECT_CDR(a, val) (SCM_GET_DIRECT_CDR(a) = (ScmObj)(val))
+
+/* CAR */
+#define SCM_CAR_GET_VALUE_AS_OBJ(a)         (SCM_GET_VALUE_AS_OBJ_DISCARDS_GCBIT(SCM_GET_DIRECT_CAR(a), ~0U))
+#define SCM_CAR_GET_VALUE_AS_INT(a, offset) (SCM_GET_VALUE_AS_INT_DISCARDS_GCBIT(SCM_GET_DIRECT_CAR(a), (offset)))
+#define SCM_CAR_GET_VALUE_AS_PTR(a)         (SCM_GET_VALUE_AS_PTR_DISCARDS_GCBIT(SCM_GET_DIRECT_CAR(a), ~0U))
+#define SCM_CAR_GET_VALUE_AS_STR(a)         ((char*)SCM_CAR_GET_VALUE_AS_PTR(a))
+
+#define SCM_CAR_SET_VALUE_AS_OBJ(a, val)         (SCM_SET_VALUE_AS_OBJ_REMAIN_GCBIT(SCM_GET_DIRECT_CAR(a), (val)))
+#define SCM_CAR_SET_VALUE_AS_INT(a, val, offset) (SCM_SET_VALUE_AS_INT_REMAIN_GCBIT(SCM_GET_DIRECT_CAR(a), (val), (offset), 0))
+#define SCM_CAR_SET_VALUE_AS_PTR(a, val)         (SCM_SET_VALUE_AS_PTR_REMAIN_GCBIT(SCM_GET_DIRECT_CAR(a), (val), 0))
+#define SCM_CAR_SET_VALUE_AS_STR(a, val)         (SCM_CAR_SET_VALUE_AS_PTR((a), (val)))
+
+/* CDR */
+#define SCM_CDR_GET_VALUE_AS_OBJ(a)         (SCM_GET_VALUE_AS_OBJ_DISCARDS_GCBIT(SCM_GET_DIRECT_CDR(a), ~0U))
+#define SCM_CDR_GET_VALUE_AS_INT(a, offset) (SCM_GET_VALUE_AS_INT_DISCARDS_GCBIT(SCM_GET_DIRECT_CDR(a), (offset)))
+#define SCM_CDR_GET_VALUE_AS_PTR(a, mask)   (SCM_GET_VALUE_AS_PTR_DISCARDS_GCBIT(SCM_GET_DIRECT_CDR(a), (mask)))
+#define SCM_CDR_GET_VALUE_AS_STR(a, mask)   ((char*)SCM_CDR_GET_VALUE_AS_PTR((a), (mask)))
+
+#define SCM_CDR_SET_VALUE_AS_OBJ(a, val)              (SCM_SET_VALUE_AS_OBJ_REMAIN_GCBIT(SCM_GET_DIRECT_CDR(a), (val)))
+#define SCM_CDR_SET_VALUE_AS_INT(a, val, offset, tag) (SCM_SET_VALUE_AS_INT_REMAIN_GCBIT(SCM_GET_DIRECT_CDR(a), (val), (offset), (tag)))
+#define SCM_CDR_SET_VALUE_AS_PTR(a, val, tag)         (SCM_SET_VALUE_AS_PTR_REMAIN_GCBIT(SCM_GET_DIRECT_CDR(a), (val), (tag)))
+#define SCM_CDR_SET_VALUE_AS_STR(a, val, tag)         (SCM_CDR_SET_VALUE_AS_PTR((a), (val), (tag)))
 
 /*=======================================
    Casting to unsigned int
 =======================================*/
 #define SCM_CAST_UINT(a)     ((unsigned int)(a))
-#define SCM_CAST_CAR_UINT(a) SCM_CAST_UINT(SCM_GET_VALUE_AS_OBJ(a)->car)
-#define SCM_CAST_CDR_UINT(a) SCM_CAST_UINT(SCM_GET_VALUE_AS_OBJ(a)->cdr)
+#define SCM_CAST_CAR_UINT(a) SCM_CAST_UINT(SCM_GET_DIRECT_CAR(a))
+#define SCM_CAST_CDR_UINT(a) SCM_CAST_UINT(SCM_GET_DIRECT_CDR(a))
 
 /*=======================================
    GC bit Accessor
 =======================================*/
 #define SCM_GC_BIT(a)       (SCM_CAST_UINT(a) & SCM_GCBIT_MASK)
-#define SCM_IS_MARKED(a)    (SCM_GC_BIT(a))
-#define SCM_IS_UNMARKED(a)  (!SCM_IS_MARKED(a))
-#define SCM_DO_MARK(a)      ((a) = (ScmObj)(SCM_CAST_UINT(a) | SCM_GCBIT_MASK))
-#define SCM_DO_UNMARK(a)    ((a) = (ScmObj)(SCM_CAST_UINT(a) & ~SCM_GCBIT_MASK))
 
 /*=======================================
    Type Predicates
@@ -373,11 +410,12 @@ struct ScmEvalState_ {
 /*=======================================
    Type Confirmation
 =======================================*/
+/*
 #if SCM_ACCESSOR_ASSERT
 #define SCM_ASSERT_TYPE(cond, a) (SCM_ASSERT(cond), SCM_GET_VALUE_AS_OBJ((a)))
 #else
 #define SCM_ASSERT_TYPE(cond, a) (SCM_GET_VALUE_AS_OBJ((a)))
-#endif /* SCM_ACCESSOR_ASSERT */
+#endif
 #define SCM_AS_CONS(a)           (SCM_ASSERT_TYPE(SCM_CONSP((a)),          (a)))
 #define SCM_AS_CLOSURE(a)        (SCM_ASSERT_TYPE(SCM_CLOSUREP((a)),       (a)))
 #define SCM_AS_SYMBOL(a)         (SCM_ASSERT_TYPE(SCM_SYMBOLP((a)),        (a)))
@@ -391,81 +429,82 @@ struct ScmEvalState_ {
 #define SCM_AS_C_FUNCPOINTER(a)  (SCM_ASSERT_TYPE(SCM_C_FUNCPOINTERP((a)), (a)))
 #define SCM_AS_INT(a)            (SCM_ASSERT_TYPE(SCM_INTP((a)),           (a)))
 #define SCM_AS_CHAR(a)           (SCM_ASSERT_TYPE(SCM_CHARP((a)),          (a)))
+*/
 
 /*=======================================
    Entyping Macros
 =======================================*/
-#define SCM_ENTYPE_TAG(a, tag, mask)          ((a) = (ScmObj)((SCM_CAST_UINT(a) & mask) | (tag)))
-#define SCM_ENTYPE_PRIMARY_TAG(a, tag)        SCM_ENTYPE_TAG((a), (tag),  ~SCM_TAG_MASK)
-#define SCM_ENTYPE_PRIMARY_TAG_CONS(a)        SCM_ENTYPE_PRIMARY_TAG((a), SCM_TAG_CONS)
-#define SCM_ENTYPE_PRIMARY_TAG_CLOSURE(a)     SCM_ENTYPE_PRIMARY_TAG((a), SCM_TAG_CLOSURE)
-#define SCM_ENTYPE_PRIMARY_TAG_OTHERS(a)      SCM_ENTYPE_PRIMARY_TAG((a), SCM_TAG_OTHERS)
+#define SCM_ENTYPE_TAG(a, tag, mask)      ((a) = (ScmObj)((SCM_CAST_UINT(a) & mask) | (tag)))
+#define SCM_ENTYPE_PRIMARY_TAG(a, tag)    (SCM_ENTYPE_TAG((a), (tag),  ~SCM_TAG_MASK))
+#define SCM_ENTYPE_PRIMARY_TAG_CONS(a)    (SCM_ENTYPE_PRIMARY_TAG((a), SCM_TAG_CONS))
+#define SCM_ENTYPE_PRIMARY_TAG_CLOSURE(a) (SCM_ENTYPE_PRIMARY_TAG((a), SCM_TAG_CLOSURE))
+#define SCM_ENTYPE_PRIMARY_TAG_OTHERS(a)  (SCM_ENTYPE_PRIMARY_TAG((a), SCM_TAG_OTHERS))
 
-#define SCM_ENTYPE_CONS(a)            (SCM_ENTYPE_PRIMARY_TAG_CONS(a),    SCM_SET_CDR(a, 0x0))
-#define SCM_ENTYPE_CLOSURE(a)         (SCM_ENTYPE_PRIMARY_TAG_CLOSURE(a), SCM_SET_CDR(a, 0x0))
-#define SCM_ENTYPE_SYMBOL(a)          (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_SET_CDR(a, SCM_TAG_OTHERS_SYMBOL))
-#define SCM_ENTYPE_STRING(a)          (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_SET_CDR(a, SCM_TAG_OTHERS_STRING))
-#define SCM_ENTYPE_VECTOR(a)          (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_SET_CDR(a, SCM_TAG_OTHERS_VECTOR))
-#define SCM_ENTYPE_VALUEPACKET(a)     (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_SET_CDR(a, SCM_TAG_OTHERS_VALUES))
-#define SCM_ENTYPE_FUNC(a)            (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_SET_CDR(a, SCM_TAG_OTHERS_FUNC))
-#define SCM_ENTYPE_PORT(a)            (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_SET_CDR(a, SCM_TAG_OTHERS_PORT))
-#define SCM_ENTYPE_CONTINUATION(a)    (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_SET_CDR(a, SCM_TAG_OTHERS_CONTINUATION))
-#define SCM_ENTYPE_C_POINTER(a)       (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_SET_CDR(a, SCM_TAG_OTHERS_C_POINTER))
-#define SCM_ENTYPE_C_FUNCPOINTER(a)   (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_SET_CDR(a, SCM_TAG_OTHERS_C_FUNCPOINTER))
-#define SCM_ENTYPE_INT(a)             (SCM_ENTYPE_TAG((a), SCM_TAG_IMM_INT,  ~SCM_TAG_IMM_MASK_INT))
-#define SCM_ENTYPE_CHAR(a)            (SCM_ENTYPE_TAG((a), SCM_TAG_IMM_CHAR, ~SCM_TAG_IMM_MASK_CHAR))
-#define SCM_ENTYPE_NULL(a)            (SCM_ENTYPE_TAG((a), SCM_IMM_NULL,     ~SCM_TAG_IMM_MASK_CONST_VALUE))
-#define SCM_ENTYPE_INVALID(a)         (SCM_ENTYPE_TAG((a), SCM_IMM_INVALID,  ~SCM_TAG_IMM_MASK_CONST_VALUE))
-#define SCM_ENTYPE_UNBOUND(a)         (SCM_ENTYPE_TAG((a), SCM_IMM_UNBOUND,  ~SCM_TAG_IMM_MASK_CONST_VALUE))
-#define SCM_ENTYPE_FALSE(a)           (SCM_ENTYPE_TAG((a), SCM_IMM_FALSE,    ~SCM_TAG_IMM_MASK_CONST_VALUE))
-#define SCM_ENTYPE_TRUE(a)            (SCM_ENTYPE_TAG((a), SCM_IMM_TRUE,     ~SCM_TAG_IMM_MASK_CONST_VALUE))
-#define SCM_ENTYPE_EOF(a)             (SCM_ENTYPE_TAG((a), SCM_IMM_EOF,      ~SCM_TAG_IMM_MASK_CONST_VALUE))
-#define SCM_ENTYPE_UNDEF(a)           (SCM_ENTYPE_TAG((a), SCM_IMM_UNDEF,    ~SCM_TAG_IMM_MASK_CONST_VALUE))
+#define SCM_ENTYPE_CONS(a)          (SCM_ENTYPE_PRIMARY_TAG_CONS(a),    SCM_DO_UNMARK(a), SCM_SET_DIRECT_CDR(a, 0x0))
+#define SCM_ENTYPE_CLOSURE(a)       (SCM_ENTYPE_PRIMARY_TAG_CLOSURE(a), SCM_DO_UNMARK(a), SCM_SET_DIRECT_CDR(a, 0x0))
+#define SCM_ENTYPE_SYMBOL(a)        (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_DO_UNMARK(a), SCM_SET_DIRECT_CDR(a, SCM_TAG_OTHERS_SYMBOL))
+#define SCM_ENTYPE_STRING(a)        (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_DO_UNMARK(a), SCM_SET_DIRECT_CDR(a, SCM_TAG_OTHERS_STRING))
+#define SCM_ENTYPE_VECTOR(a)        (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_DO_UNMARK(a), SCM_SET_DIRECT_CDR(a, SCM_TAG_OTHERS_VECTOR))
+#define SCM_ENTYPE_VALUEPACKET(a)   (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_DO_UNMARK(a), SCM_SET_DIRECT_CDR(a, SCM_TAG_OTHERS_VALUES))
+#define SCM_ENTYPE_FUNC(a)          (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_DO_UNMARK(a), SCM_SET_DIRECT_CDR(a, SCM_TAG_OTHERS_FUNC))
+#define SCM_ENTYPE_PORT(a)          (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_DO_UNMARK(a), SCM_SET_DIRECT_CDR(a, SCM_TAG_OTHERS_PORT))
+#define SCM_ENTYPE_CONTINUATION(a)  (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_DO_UNMARK(a), SCM_SET_DIRECT_CDR(a, SCM_TAG_OTHERS_CONTINUATION))
+#define SCM_ENTYPE_C_POINTER(a)     (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_DO_UNMARK(a), SCM_SET_DIRECT_CDR(a, SCM_TAG_OTHERS_C_POINTER))
+#define SCM_ENTYPE_C_FUNCPOINTER(a) (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_DO_UNMARK(a), SCM_SET_DIRECT_CDR(a, SCM_TAG_OTHERS_C_FUNCPOINTER))
+#define SCM_ENTYPE_INT(a)           (SCM_ENTYPE_TAG((a), SCM_TAG_IMM_INT,  ~SCM_TAG_IMM_MASK_INT))
+#define SCM_ENTYPE_CHAR(a)          (SCM_ENTYPE_TAG((a), SCM_TAG_IMM_CHAR, ~SCM_TAG_IMM_MASK_CHAR))
+#define SCM_ENTYPE_NULL(a)          (SCM_ENTYPE_TAG((a), SCM_IMM_NULL,     ~SCM_TAG_IMM_MASK_CONST_VALUE))
+#define SCM_ENTYPE_INVALID(a)       (SCM_ENTYPE_TAG((a), SCM_IMM_INVALID,  ~SCM_TAG_IMM_MASK_CONST_VALUE))
+#define SCM_ENTYPE_UNBOUND(a)       (SCM_ENTYPE_TAG((a), SCM_IMM_UNBOUND,  ~SCM_TAG_IMM_MASK_CONST_VALUE))
+#define SCM_ENTYPE_FALSE(a)         (SCM_ENTYPE_TAG((a), SCM_IMM_FALSE,    ~SCM_TAG_IMM_MASK_CONST_VALUE))
+#define SCM_ENTYPE_TRUE(a)          (SCM_ENTYPE_TAG((a), SCM_IMM_TRUE,     ~SCM_TAG_IMM_MASK_CONST_VALUE))
+#define SCM_ENTYPE_EOF(a)           (SCM_ENTYPE_TAG((a), SCM_IMM_EOF,      ~SCM_TAG_IMM_MASK_CONST_VALUE))
+#define SCM_ENTYPE_UNDEF(a)         (SCM_ENTYPE_TAG((a), SCM_IMM_UNDEF,    ~SCM_TAG_IMM_MASK_CONST_VALUE))
 
 /*=======================================
    Real Accessors
 =======================================*/
-#define SCM_CAR(a)                     (SCM_AS_CONS(a)->car)
-#define SCM_CDR(a)                     (SCM_AS_CONS(a)->cdr)
-#define SCM_CONS_SET_CAR(a, car)       (SCM_CAR(a) = (car))
-#define SCM_CONS_SET_CDR(a, cdr)       (SCM_CDR(a) = (cdr))
-#define SCM_CAAR(a)                    (SCM_CAR(SCM_CAR(a)))
-#define SCM_CADR(a)                    (SCM_CAR(SCM_CDR(a)))
-#define SCM_CDAR(a)                    (SCM_CDR(SCM_CAR(a)))
-#define SCM_CDDR(a)                    (SCM_CDR(SCM_CDR(a)))
+#define SCM_CAR(a)                       (SCM_CAR_GET_VALUE_AS_OBJ(a))
+#define SCM_CDR(a)                       (SCM_CDR_GET_VALUE_AS_OBJ(a))
+#define SCM_CONS_SET_CAR(a, car)         (SCM_CAR_SET_VALUE_AS_OBJ((a), (car)))
+#define SCM_CONS_SET_CDR(a, cdr)         (SCM_CDR_SET_VALUE_AS_OBJ((a), (cdr)))
+#define SCM_CAAR(a)                      (SCM_CAR(SCM_CAR(a)))
+#define SCM_CADR(a)                      (SCM_CAR(SCM_CDR(a)))
+#define SCM_CDAR(a)                      (SCM_CDR(SCM_CAR(a)))
+#define SCM_CDDR(a)                      (SCM_CDR(SCM_CDR(a)))
 
-#define SCM_CLOSURE_EXP(a)             (SCM_AS_CLOSURE(a)->car)
-#define SCM_CLOSURE_ENV(a)             (SCM_AS_CLOSURE(a)->cdr)
-#define SCM_CLOSURE_SET_EXP(a, exp)    (SCM_CLOSURE_EXP(a) = (exp))
-#define SCM_CLOSURE_SET_ENV(a, env)    (SCM_CLOSURE_ENV(a) = (env))
+#define SCM_CLOSURE_EXP(a)               (SCM_CAR_GET_VALUE_AS_OBJ(a))
+#define SCM_CLOSURE_ENV(a)               (SCM_CDR_GET_VALUE_AS_OBJ(a))
+#define SCM_CLOSURE_SET_EXP(a, exp)      (SCM_CAR_SET_VALUE_AS_OBJ((a), (exp)))
+#define SCM_CLOSURE_SET_ENV(a, env)      (SCM_CDR_SET_VALUE_AS_OBJ((a), (env)))
 
-#define SCM_SYMBOL_VCELL(a)            (SCM_AS_SYMBOL(a)->car)
-#define SCM_SYMBOL_NAME(a)             (SCM_GET_VALUE_AS_STR(SCM_AS_SYMBOL(a)->cdr, ~SCM_TAG_OTHERS_MASK_SYMBOL))
-#define SCM_SYMBOL_SET_VCELL(a, vcell) (SCM_SYMBOL_VCELL(a) = (vcell))
-#define SCM_SYMBOL_SET_NAME(a, name)   (SCM_SET_VALUE_AS_STR(SCM_AS_SYMBOL(a)->cdr, (name), SCM_TAG_OTHERS_SYMBOL))
+#define SCM_SYMBOL_VCELL(a)              (SCM_CAR_GET_VALUE_AS_OBJ(a))
+#define SCM_SYMBOL_NAME(a)               (SCM_CDR_GET_VALUE_AS_STR((a), ~SCM_TAG_OTHERS_MASK_SYMBOL))
+#define SCM_SYMBOL_SET_VCELL(a, vcell)   (SCM_CAR_SET_VALUE_AS_OBJ((a), (vcell)))
+#define SCM_SYMBOL_SET_NAME(a, name)     (SCM_CDR_SET_VALUE_AS_STR((a), (name), SCM_TAG_OTHERS_SYMBOL))
 
-#define SCM_STRING_LEN(a)              (SCM_GET_VALUE_AS_INT(SCM_AS_STRING(a)->car, SCM_TAG_OTHERS_VALUE_OFFSET_STRING))
-#define SCM_STRING_STR(a)              (SCM_GET_VALUE_AS_STR(SCM_AS_STRING(a)->cdr, ~SCM_TAG_OTHERS_MASK_STRING))
-#define SCM_STRING_SET_LEN(a, len)     (SCM_SET_VALUE_AS_INT(SCM_AS_STRING(a)->car, (len), SCM_TAG_OTHERS_VALUE_OFFSET_STRING, SCM_TAG_OTHERS_STRING))
-#define SCM_STRING_SET_STR(a, str)     (SCM_SET_VALUE_AS_STR(SCM_AS_STRING(a)->cdr, (str), SCM_TAG_OTHERS_STRING))
+#define SCM_STRING_LEN(a)                (SCM_CAR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_STRING))
+#define SCM_STRING_STR(a)                (SCM_CDR_GET_VALUE_AS_STR((a), ~SCM_TAG_OTHERS_MASK_STRING))
+#define SCM_STRING_SET_LEN(a, len)       (SCM_CAR_SET_VALUE_AS_INT((a), (len), SCM_TAG_OTHERS_VALUE_OFFSET_STRING))
+#define SCM_STRING_SET_STR(a, str)       (SCM_CDR_SET_VALUE_AS_STR((a), (str), SCM_TAG_OTHERS_STRING))
 
-#define SCM_VECTOR_VEC(a)              ((ScmObj*)(SCM_AS_VECTOR(a)->car))
-#define SCM_VECTOR_LEN(a)              (SCM_GET_VALUE_AS_INT(SCM_AS_VECTOR(a)->cdr, SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR))
-#define SCM_VECTOR_SET_VEC(a, vec)     (SCM_AS_VECTOR(a)->car = (ScmObj)(vec))
-#define SCM_VECTOR_SET_LEN(a, len)     (SCM_SET_VALUE_AS_INT(SCM_AS_VECTOR(a)->cdr, (len), SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR, SCM_TAG_OTHERS_VECTOR))
-#define SCM_VECTOR_CREF(a, idx)        (((ScmObj*)SCM_VECTOR_VEC(a))[idx])
-#define SCM_VECTOR_SET_CREF(a, idx, b) (SCM_VECTOR_CREF((a), (idx)) = (b))
-#define SCM_VECTOR_REF(a, idx)         (SCM_VECTOR_CREF((a), SCM_INT_VALUE(idx)))
-#define SCM_VECTOR_SET_REF(a, idx, b)  (SCM_VECTOR_REF((a), (idx)) = (b))
+#define SCM_VECTOR_VEC(a)                ((ScmObj*)(SCM_CAR_GET_VALUE_AS_PTR((a))))
+#define SCM_VECTOR_LEN(a)                (SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR))
+#define SCM_VECTOR_SET_VEC(a, vec)       (SCM_CAR_SET_VALUE_AS_PTR((a), (vec)))
+#define SCM_VECTOR_SET_LEN(a, len)       (SCM_CDR_SET_VALUE_AS_INT((a), (len), SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR, SCM_TAG_OTHERS_VECTOR))
+#define SCM_VECTOR_CREF(a, idx)          ((SCM_VECTOR_VEC(a))[idx])
+#define SCM_VECTOR_SET_CREF(a, idx, b)   (SCM_VECTOR_CREF((a), (idx)) = (b))
+#define SCM_VECTOR_REF(a, idx)           (SCM_VECTOR_CREF((a), SCM_INT_VALUE(idx)))
+#define SCM_VECTOR_SET_REF(a, idx, b)    (SCM_VECTOR_REF((a), (idx)) = (b))
 
 #define SCM_MAKE_VALUEPACKET(vals)       (Scm_NewValuePacket(vals))
-#define SCM_VALUEPACKET_VALUES(a)        (SCM_AS_VALUEPACKET(a)->car)
-#define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_VALUEPACKET_VALUES(a) = (v))
+#define SCM_VALUEPACKET_VALUES(a)        (SCM_CAR_GET_VALUE_AS_OBJ(a))
+#define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_CAR_SET_VALUE_AS_OBJ((a), (v)))
 
-#define SCM_FUNC_CFUNC(a)              (SCM_WORD_CAST(ScmFuncType, (SCM_AS_FUNC(a)->car)))
-#define SCM_FUNC_TYPECODE(a)           ((enum ScmFuncTypeCode)SCM_GET_VALUE_AS_INT(SCM_AS_FUNC(a)->cdr, SCM_TAG_OTHERS_VALUE_OFFSET_FUNC))
-#define SCM_FUNC_SET_CFUNC(a, fptr)    (SCM_AS_FUNC(a)->car = SCM_WORD_CAST(ScmObj, (fptr)))
-#define SCM_FUNC_SET_TYPECODE(a, code) (SCM_SET_VALUE_AS_INT(SCM_AS_FUNC(a)->cdr, (code), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC, SCM_TAG_OTHERS_FUNC))
+#define SCM_FUNC_CFUNC(a)                (SCM_WORD_CAST(ScmFuncType, SCM_CAR_GET_VALUE_AS_PTR(a)))
+#define SCM_FUNC_TYPECODE(a)             ((enum ScmFuncTypeCode)SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC))
+#define SCM_FUNC_SET_CFUNC(a, fptr)      (SCM_CAR_SET_VALUE_AS_PTR((a), SCM_WORD_CAST(ScmObj, (fptr))))
+#define SCM_FUNC_SET_TYPECODE(a, code)   (SCM_CDR_SET_VALUE_AS_INT((a), (code), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC, SCM_TAG_OTHERS_FUNC))
 #define SCM_SYNTAXP(a) (SCM_FUNCP(a)                                         \
                         && (SCM_FUNC_TYPECODE(a) & SCM_FUNCTYPE_SYNTAX))
 #define SCM_PROCEDUREP(a) ((SCM_FUNCP(a)                                     \
@@ -473,29 +512,27 @@ struct ScmEvalState_ {
                            || SCM_CLOSUREP(a)                                \
                            || SCM_CONTINUATIONP(a))
 
-#define SCM_PORT_IMPL(a)                    ((ScmCharPort*)(SCM_AS_PORT(a)->car))
-#define SCM_PORT_FLAG(a)                    ((enum ScmPortFlag)SCM_GET_VALUE_AS_INT(SCM_AS_PORT(a)->cdr, SCM_TAG_OTHERS_VALUE_OFFSET_PORT))
-#define SCM_PORT_SET_IMPL(a, impl)          (SCM_AS_PORT(a)->car = (ScmObj)(impl))
-#define SCM_PORT_SET_FLAG(a, flag)          (SCM_SET_VALUE_AS_INT(SCM_AS_PORT(a)->cdr, (flag), SCM_TAG_OTHERS_VALUE_OFFSET_PORT, SCM_TAG_OTHERS_PORT))
+#define SCM_PORT_IMPL(a)                 ((ScmCharPort*)SCM_CAR_GET_VALUE_AS_PTR(a))
+#define SCM_PORT_FLAG(a)                 ((enum ScmPortFlag)SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_PORT))
+#define SCM_PORT_SET_IMPL(a, impl)       (SCM_CAR_SET_VALUE_AS_PTR((a), (ScmObj)(impl)))
+#define SCM_PORT_SET_FLAG(a, flag)       (SCM_CDR_SET_VALUE_AS_INT((a), (flag), SCM_TAG_OTHERS_VALUE_OFFSET_PORT, SCM_TAG_OTHERS_PORT))
 
+#define SCM_CONTINUATION_OPAQUE(a)          ((void*)SCM_CAR_GET_VALUE_AS_PTR(a))
+#define SCM_CONTINUATION_TAG(a)             (SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION))
+#define SCM_CONTINUATION_SET_OPAQUE(a, val) (SCM_CAR_SET_VALUE_AS_PTR((a), (val)))
+#define SCM_CONTINUATION_SET_TAG(a, val)    (SCM_CDR_SET_VALUE_AS_INT((a), (val), SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION, SCM_TAG_OTHERS_CONTINUATION))
 
-#define SCM_CONTINUATION_OPAQUE(a)          ((void*)(SCM_AS_CONTINUATION(a)->car))
-#define SCM_CONTINUATION_SET_OPAQUE(a, val) (SCM_AS_CONTINUATION(a)->car = (ScmObj)(val))
-#define SCM_CONTINUATION_TAG(a)             (SCM_GET_VALUE_AS_INT(SCM_AS_CONTINUATION(a)->cdr, SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION))
-#define SCM_CONTINUATION_SET_TAG(a, val)    (SCM_SET_VALUE_AS_INT(SCM_AS_CONTINUATION(a)->cdr, (val), SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION, SCM_TAG_OTHERS_CONTINUATION))
+#define SCM_C_POINTER_VALUE(a)              ((void*)SCM_CAR_GET_VALUE_AS_PTR(a))
+#define SCM_C_POINTER_SET_VALUE(a, val)     (SCM_CAR_SET_VALUE_AS_PTR((a), (val)))
 
+#define SCM_C_FUNCPOINTER_VALUE(a)          (SCM_WORD_CAST(ScmCFunc, SCM_CAR_GET_VALUE_AS_PTR(a)))
+#define SCM_C_FUNCPOINTER_SET_VALUE(a, val) (SCM_CAR_SET_VALUE_AS_PTR((a), SCM_WORD_CAST(ScmObj, (val))))
 
-#define SCM_C_POINTER_VALUE(a)              ((void*)SCM_AS_C_POINTER(a)->car)
-#define SCM_C_POINTER_SET_VALUE(a, val)     (SCM_AS_C_POINTER(a)->car = (ScmObj)(val))
+#define SCM_INT_VALUE(a)          (SCM_PRIMARY_GET_VALUE_AS_INT((a), SCM_TAG_IMM_VALUE_OFFSET_INT))
+#define SCM_INT_SET_VALUE(a, val) (SCM_PRIMARY_SET_VALUE_AS_INT((a), (val), SCM_TAG_IMM_VALUE_OFFSET_INT, SCM_TAG_IMM_INT))
 
-#define SCM_C_FUNCPOINTER_VALUE(a)          (SCM_WORD_CAST(ScmCFunc, SCM_AS_C_FUNCPOINTER(a)->car))
-#define SCM_C_FUNCPOINTER_SET_VALUE(a, val) (SCM_AS_C_FUNCPOINTER(a)->car = SCM_WORD_CAST(ScmObj, (val)))
-
-#define SCM_INT_VALUE(a)          (SCM_GET_VALUE_AS_INT((a), SCM_TAG_IMM_VALUE_OFFSET_INT))
-#define SCM_INT_SET_VALUE(a, val) (SCM_SET_VALUE_AS_INT((a), (val), SCM_TAG_IMM_VALUE_OFFSET_INT, SCM_TAG_IMM_INT))
-
-#define SCM_CHAR_VALUE(a)         (SCM_GET_VALUE_AS_STR((a), ~SCM_TAG_IMM_MASK_CHAR))
-#define SCM_CHAR_SET_VALUE(a, ch) (SCM_SET_VALUE_AS_STR((a), (ch), SCM_TAG_IMM_CHAR))
+#define SCM_CHAR_VALUE(a)         (SCM_PRIMARY_GET_VALUE_AS_STR((a), ~SCM_TAG_IMM_MASK_CHAR))
+#define SCM_CHAR_SET_VALUE(a, ch) (SCM_PRIMARY_SET_VALUE_AS_STR((a), (ch), SCM_TAG_IMM_CHAR))
 
 /*=======================================
    Scheme Special Constants
@@ -515,6 +552,16 @@ struct ScmEvalState_ {
 #define SCM_FALSEP(a)   (SCM_TAG_IMM_FALSEP(a))
 #define SCM_NFALSEP(a)  (!SCM_TAG_IMM_FALSEP(a))
 #define SCM_EOFP(a)     (SCM_TAG_IMM_EOFP(a))
+
+/*============================================================================
+  GC Marking & Unmarking
+============================================================================*/
+#define SCM_DO_MARK(a)     (SCM_GET_DIRECT_CAR(a) = (ScmObj)(SCM_CAST_UINT(SCM_GET_DIRECT_CAR(a)) & ~0x1))
+#define SCM_DO_UNMARK(a)   (SCM_GET_DIRECT_CAR(a) = (ScmObj)(SCM_CAST_UINT(SCM_GET_DIRECT_CAR(a)) | 0x1))
+
+#define SCM_IS_MARKED(a)   ((SCM_CAST_UINT(SCM_GET_DIRECT_CAR(a)) & SCM_GCBIT_MASK) == 0x0)
+#define SCM_IS_UNMARKED(a) (!SCM_IS_MARKED(obj))
+
 
 /*============================================================================
   Predefined Symbols
@@ -590,165 +637,5 @@ enum ScmObjType {
 /* storage.c */
 #define SCM_TYPE(a) Scm_Type(a)
 extern enum ScmObjType Scm_Type(ScmObj obj);
-
-#if YAMAKEN
-/* FIXME: hardcoded width 32 */
-#define SCM_WORD_WIDTH      32
-
-/*
- * I suggest these macro defining convention to achieve:
- *   - making names consistent
- *   - avoiding misunderstanding of names
- *   - magic number-free obvious meaning on value definition
- *   - hiding bitwise representation from accessor layer
- *
- * Rewrite the immediate type and special constants likewise if the convention
- * is felt reasonable.  -- YamaKen 2005-10-18
- */
-
-/* primary tag */
-#define SCM_OTHERS_CDR_TAG_WIDTH         2
-#define SCM_OTHERS_CDR_TAG_OFFSET        SCM_GCBIT_WIDTH
-#define SCM_OTHERS_CDR_TAG_MASK          (0x3 << SCM_OTHERS_CDR_TAG_OFFSET)
-#define SCM_OTHERS_CDR_TAG_SYMBOL        (0x0 << SCM_OTHERS_CDR_TAG_OFFSET)
-#define SCM_OTHERS_CDR_TAG_STRING        (0x1 << SCM_OTHERS_CDR_TAG_OFFSET)
-#define SCM_OTHERS_CDR_TAG_VECTOR        (0x2 << SCM_OTHERS_CDR_TAG_OFFSET)
-#define SCM_OTHERS_CDR_TAG_EXT           (0x3 << SCM_OTHERS_CDR_TAG_OFFSET)
-
-/* subtag */
-#define SCM_OTHERS_CDR_SUB_TAG_WIDTH     3
-#define SCM_OTHERS_CDR_SUB_TAG_OFFSET    (SCM_OTHERS_CDR_TAG_OFFSET          \
-                                          + SCM_OTHERS_CDR_TAG_WIDTH)
-#define SCM_OTHERS_CDR_SUB_TAG_MASK      (0x7 << SCM_OTHERS_CDR_SUB_TAG_OFFSET)
-#define SCM_OTHERS_CDR_SUB_TAG_VALUES    (0x0 << SCM_OTHERS_CDR_SUB_TAG_OFFSET)
-#define SCM_OTHERS_CDR_SUB_TAG_FUNC      (0x1 << SCM_OTHERS_CDR_SUB_TAG_OFFSET)
-#define SCM_OTHERS_CDR_SUB_TAG_PORT      (0x2 << SCM_OTHERS_CDR_SUB_TAG_OFFSET)
-#define SCM_OTHERS_CDR_SUB_TAG_CONTINUATION (0x3 << SCM_OTHERS_CDR_SUB_TAG_OFFSET)
-#define SCM_OTHERS_CDR_SUB_TAG_C_POINTER (0x4 << SCM_OTHERS_CDR_SUB_TAG_OFFSET)
-#define SCM_OTHERS_CDR_SUB_TAG_RESERVED5 (0x5 << SCM_OTHERS_CDR_SUB_TAG_OFFSET)
-#define SCM_OTHERS_CDR_SUB_TAG_RESERVED6 (0x6 << SCM_OTHERS_CDR_SUB_TAG_OFFSET)
-#define SCM_OTHERS_CDR_SUB_TAG_FREECELL  (0x7 << SCM_OTHERS_CDR_SUB_TAG_OFFSET)
-
-/* extended tag combines primary tag and subtag */
-#define SCM_OTHERS_CDR_EXT_TAG_WIDTH     (SCM_OTHERS_CDR_TAG_WIDTH           \
-                                          + SCM_OTHERS_CDR_SUB_TAG_WIDTH)
-#define SCM_OTHERS_CDR_EXT_TAG_OFFSET    (SCM_OTHERS_CDR_TAG_OFFSET          \
-                                          + SCM_OTHERS_CDR_SUB_TAG_OFFSET)
-#define SCM_OTHERS_CDR_EXT_TAG_MASK      (SCM_OTHERS_CDR_TAG_MASK            \
-                                          + SCM_OTHERS_CDR_SUB_TAG_MASK)
-#define SCM_OTHERS_CDR_EXT_TAG_VALUES    (SCM_OTHERS_CDR_SUB_TAG_VALUES      \
-                                          | SCM_OTHERS_CDR_TAG_EXT)
-#define SCM_OTHERS_CDR_EXT_TAG_FUNC      (SCM_OTHERS_CDR_SUB_TAG_FUNC        \
-                                          | SCM_OTHERS_CDR_TAG_EXT)
-#define SCM_OTHERS_CDR_EXT_TAG_PORT      (SCM_OTHERS_CDR_SUB_TAG_PORT        \
-                                          | SCM_OTHERS_CDR_TAG_EXT)
-#define SCM_OTHERS_CDR_EXT_TAG_CONTINUATION (SCM_OTHERS_CDR_SUB_TAG_CONTINUATION \
-                                             | SCM_OTHERS_CDR_TAG_EXT)
-#define SCM_OTHERS_CDR_EXT_TAG_C_POINTER (SCM_OTHERS_CDR_SUB_TAG_C_POINTER   \
-                                          | SCM_OTHERS_CDR_TAG_EXT)
-#define SCM_OTHERS_CDR_EXT_TAG_RESERVED5 (SCM_OTHERS_CDR_SUB_TAG_RESERVED5   \
-                                          | SCM_OTHERS_CDR_TAG_EXT)
-#define SCM_OTHERS_CDR_EXT_TAG_RESERVED6 (SCM_OTHERS_CDR_SUB_TAG_RESERVED6   \
-                                          | SCM_OTHERS_CDR_TAG_EXT)
-#define SCM_OTHERS_CDR_EXT_TAG_FREECELL  (SCM_OTHERS_CDR_SUB_TAG_FREECELL    \
-                                          | SCM_OTHERS_CDR_TAG_EXT)
-
-/* value field for primary tag */
-#define SCM_OTHERS_CDR_VALUE_WIDTH   (SCM_WORD_WIDTH                         \
-                                      - (SCM_OTHERS_CDR_TAG_WIDTH            \
-                                         + SCM_GCBIT_WIDTH))
-#define SCM_OTHERS_CDR_VALUE_OFFSET  (SCM_OTHERS_CDR_TAG_WIDTH               \
-                                      + SCM_GCBIT_WIDTH)
-#define SCM_OTHERS_CDR_VALUE_MASK    (~0U << SCM_OTHERS_CDR_VALUE_OFFSET)
-
-/* value field for extended tag */
-#define SCM_OTHERS_CDR_NARROW_VALUE_WIDTH  (SCM_WORD_WIDTH                   \
-                                            - (SCM_OTHERS_CDR_SUB_TAG_WIDTH  \
-                                               + SCM_OTHERS_CDR_TAG_WIDTH    \
-                                               + SCM_GCBIT_WIDTH))
-#define SCM_OTHERS_CDR_NARROW_VALUE_OFFSET (SCM_OTHERS_CDR_SUB_TAG_WIDTH     \
-                                            + SCM_OTHERS_CDR_TAG_WIDTH       \
-                                            + SCM_GCBIT_WIDTH)
-#define SCM_OTHERS_CDR_NARROW_VALUE_MASK   (~0U << SCM_OTHERS_CDR_VALUE_OFFSET)
-
-/* for specific types */
-#define SCM_OTHERS_CDR_TAG_WIDTH_SYMBOL     SCM_OTHERS_CDR_TAG_WIDTH
-#define SCM_OTHERS_CDR_TAG_OFFSET_SYMBOL    SCM_OTHERS_CDR_TAG_OFFSET
-#define SCM_OTHERS_CDR_TAG_MASK_SYMBOL      SCM_OTHERS_CDR_TAG_MASK
-#define SCM_OTHERS_CDR_VALUE_WIDTH_SYMBOL   SCM_OTHERS_CDR_VALUE_WIDTH
-#define SCM_OTHERS_CDR_VALUE_OFFSET_SYMBOL  SCM_OTHERS_CDR_VALUE_OFFSET
-#define SCM_OTHERS_CDR_VALUE_MASK_SYMBOL    SCM_OTHERS_CDR_VALUE_MASK
-
-#define SCM_OTHERS_CDR_TAG_WIDTH_STRING     SCM_OTHERS_CDR_TAG_WIDTH
-#define SCM_OTHERS_CDR_TAG_OFFSET_STRING    SCM_OTHERS_CDR_TAG_OFFSET
-#define SCM_OTHERS_CDR_TAG_MASK_STRING      SCM_OTHERS_CDR_TAG_MASK
-#define SCM_OTHERS_CDR_VALUE_WIDTH_STRING   SCM_OTHERS_CDR_VALUE_WIDTH
-#define SCM_OTHERS_CDR_VALUE_OFFSET_STRING  SCM_OTHERS_CDR_VALUE_OFFSET
-#define SCM_OTHERS_CDR_VALUE_MASK_STRING    SCM_OTHERS_CDR_VALUE_MASK
-
-#define SCM_OTHERS_CDR_TAG_WIDTH_VECTOR     SCM_OTHERS_CDR_TAG_WIDTH
-#define SCM_OTHERS_CDR_TAG_OFFSET_VECTOR    SCM_OTHERS_CDR_TAG_OFFSET
-#define SCM_OTHERS_CDR_TAG_MASK_VECTOR      SCM_OTHERS_CDR_TAG_MASK
-#define SCM_OTHERS_CDR_VALUE_WIDTH_VECTOR   SCM_OTHERS_CDR_VALUE_WIDTH
-#define SCM_OTHERS_CDR_VALUE_OFFSET_VECTOR  SCM_OTHERS_CDR_VALUE_OFFSET
-#define SCM_OTHERS_CDR_VALUE_MASK_VECTOR    SCM_OTHERS_CDR_VALUE_MASK
-
-#define SCM_OTHERS_CDR_TAG_WIDTH_VALUES     SCM_OTHERS_CDR_EXT_TAG_WIDTH
-#define SCM_OTHERS_CDR_TAG_OFFSET_VALUES    SCM_OTHERS_CDR_EXT_TAG_OFFSET
-#define SCM_OTHERS_CDR_TAG_MASK_VALUES      SCM_OTHERS_CDR_EXT_TAG_MASK
-#define SCM_OTHERS_CDR_VALUE_WIDTH_VALUES   SCM_OTHERS_CDR_NARROW_VALUE_WIDTH
-#define SCM_OTHERS_CDR_VALUE_OFFSET_VALUES  SCM_OTHERS_CDR_NARROW_VALUE_OFFSET
-#define SCM_OTHERS_CDR_VALUE_MASK_VALUES    SCM_OTHERS_CDR_NARROW_VALUE_MASK
-
-#define SCM_OTHERS_CDR_TAG_WIDTH_FUNC       SCM_OTHERS_CDR_EXT_TAG_WIDTH
-#define SCM_OTHERS_CDR_TAG_OFFSET_FUNC      SCM_OTHERS_CDR_EXT_TAG_OFFSET
-#define SCM_OTHERS_CDR_TAG_MASK_FUNC        SCM_OTHERS_CDR_EXT_TAG_MASK
-#define SCM_OTHERS_CDR_VALUE_WIDTH_FUNC     SCM_OTHERS_CDR_NARROW_VALUE_WIDTH
-#define SCM_OTHERS_CDR_VALUE_OFFSET_FUNC    SCM_OTHERS_CDR_NARROW_VALUE_OFFSET
-#define SCM_OTHERS_CDR_VALUE_MASK_FUNC      SCM_OTHERS_CDR_NARROW_VALUE_MASK
-
-#define SCM_OTHERS_CDR_TAG_WIDTH_PORT       SCM_OTHERS_CDR_EXT_TAG_WIDTH
-#define SCM_OTHERS_CDR_TAG_OFFSET_PORT      SCM_OTHERS_CDR_EXT_TAG_OFFSET
-#define SCM_OTHERS_CDR_TAG_MASK_PORT        SCM_OTHERS_CDR_EXT_TAG_MASK
-#define SCM_OTHERS_CDR_VALUE_WIDTH_PORT     SCM_OTHERS_CDR_NARROW_VALUE_WIDTH
-#define SCM_OTHERS_CDR_VALUE_OFFSET_PORT    SCM_OTHERS_CDR_NARROW_VALUE_OFFSET
-#define SCM_OTHERS_CDR_VALUE_MASK_PORT      SCM_OTHERS_CDR_NARROW_VALUE_MASK
-
-#define SCM_OTHERS_CDR_TAG_WIDTH_CONTINUATION    SCM_OTHERS_CDR_EXT_TAG_WIDTH
-#define SCM_OTHERS_CDR_TAG_OFFSET_CONTINUATION   SCM_OTHERS_CDR_EXT_TAG_OFFSET
-#define SCM_OTHERS_CDR_TAG_MASK_CONTINUATION     SCM_OTHERS_CDR_EXT_TAG_MASK
-#define SCM_OTHERS_CDR_VALUE_WIDTH_CONTINUATION  SCM_OTHERS_CDR_NARROW_VALUE_WIDTH
-#define SCM_OTHERS_CDR_VALUE_OFFSET_CONTINUATION SCM_OTHERS_CDR_NARROW_VALUE_OFFSET
-#define SCM_OTHERS_CDR_VALUE_MASK_CONTINUATION   SCM_OTHERS_CDR_NARROW_VALUE_MASK
-
-#define SCM_OTHERS_CDR_TAG_WIDTH_C_POINTER    SCM_OTHERS_CDR_EXT_TAG_WIDTH
-#define SCM_OTHERS_CDR_TAG_OFFSET_C_POINTER   SCM_OTHERS_CDR_EXT_TAG_OFFSET
-#define SCM_OTHERS_CDR_TAG_MASK_C_POINTER     SCM_OTHERS_CDR_EXT_TAG_MASK
-#define SCM_OTHERS_CDR_VALUE_WIDTH_C_POINTER  SCM_OTHERS_CDR_NARROW_VALUE_WIDTH
-#define SCM_OTHERS_CDR_VALUE_OFFSET_C_POINTER SCM_OTHERS_CDR_NARROW_VALUE_OFFSET
-#define SCM_OTHERS_CDR_VALUE_MASK_C_POINTER   SCM_OTHERS_CDR_NARROW_VALUE_MASK
-
-#define SCM_OTHERS_CDR_TAG_WIDTH_RESERVED5    SCM_OTHERS_CDR_EXT_TAG_WIDTH
-#define SCM_OTHERS_CDR_TAG_OFFSET_RESERVED5   SCM_OTHERS_CDR_EXT_TAG_OFFSET
-#define SCM_OTHERS_CDR_TAG_MASK_RESERVED5     SCM_OTHERS_CDR_EXT_TAG_MASK
-#define SCM_OTHERS_CDR_VALUE_WIDTH_RESERVED5  SCM_OTHERS_CDR_NARROW_VALUE_WIDTH
-#define SCM_OTHERS_CDR_VALUE_OFFSET_RESERVED5 SCM_OTHERS_CDR_NARROW_VALUE_OFFSET
-#define SCM_OTHERS_CDR_VALUE_MASK_RESERVED5   SCM_OTHERS_CDR_NARROW_VALUE_MASK
-
-#define SCM_OTHERS_CDR_TAG_WIDTH_RESERVED6    SCM_OTHERS_CDR_EXT_TAG_WIDTH
-#define SCM_OTHERS_CDR_TAG_OFFSET_RESERVED6   SCM_OTHERS_CDR_EXT_TAG_OFFSET
-#define SCM_OTHERS_CDR_TAG_MASK_RESERVED6     SCM_OTHERS_CDR_EXT_TAG_MASK
-#define SCM_OTHERS_CDR_VALUE_WIDTH_RESERVED6  SCM_OTHERS_CDR_NARROW_VALUE_WIDTH
-#define SCM_OTHERS_CDR_VALUE_OFFSET_RESERVED6 SCM_OTHERS_CDR_NARROW_VALUE_OFFSET
-#define SCM_OTHERS_CDR_VALUE_MASK_RESERVED6   SCM_OTHERS_CDR_NARROW_VALUE_MASK
-
-#define SCM_OTHERS_CDR_TAG_WIDTH_FREECELL     SCM_OTHERS_CDR_EXT_TAG_WIDTH
-#define SCM_OTHERS_CDR_TAG_OFFSET_FREECELL    SCM_OTHERS_CDR_EXT_TAG_OFFSET
-#define SCM_OTHERS_CDR_TAG_MASK_FREECELL      SCM_OTHERS_CDR_EXT_TAG_MASK
-#define SCM_OTHERS_CDR_VALUE_WIDTH_FREECELL   SCM_OTHERS_CDR_NARROW_VALUE_WIDTH
-#define SCM_OTHERS_CDR_VALUE_OFFSET_FREECELL  SCM_OTHERS_CDR_NARROW_VALUE_OFFSET
-#define SCM_OTHERS_CDR_VALUE_MASK_FREECELL    SCM_OTHERS_CDR_NARROW_VALUE_MASK
-#endif /* YAMAKEN */
-
 
 #endif /* __SIGSCMTYPE_COMPACT_H */
