@@ -462,9 +462,9 @@ struct ScmEvalState_ {
 #define SCM_VALUEPACKET_VALUES(a)        (SCM_AS_VALUEPACKET(a)->car)
 #define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_SET_VALUE_AS_OBJ(SCM_VALUEPACKET_VALUES(a), (v)))
 
-#define SCM_FUNC_CFUNC(a)              (SCM_REINTERPRET_CAST(ScmFuncType, (SCM_AS_FUNC(a)->car)))
+#define SCM_FUNC_CFUNC(a)              (SCM_WORD_CAST(ScmFuncType, (SCM_AS_FUNC(a)->car)))
 #define SCM_FUNC_TYPECODE(a)           ((enum ScmFuncTypeCode)SCM_GET_VALUE_AS_INT(SCM_AS_FUNC(a)->cdr, SCM_TAG_OTHERS_VALUE_OFFSET_FUNC))
-#define SCM_FUNC_SET_CFUNC(a, fptr)    (SCM_AS_FUNC(a)->car = SCM_REINTERPRET_CAST(ScmObj, (fptr)))
+#define SCM_FUNC_SET_CFUNC(a, fptr)    (SCM_AS_FUNC(a)->car = SCM_WORD_CAST(ScmObj, (fptr)))
 #define SCM_FUNC_SET_TYPECODE(a, code) (SCM_SET_VALUE_AS_INT(SCM_AS_FUNC(a)->cdr, (code), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC, SCM_TAG_OTHERS_FUNC))
 #define SCM_SYNTAXP(a) (SCM_FUNCP(a)                                         \
                         && (SCM_FUNC_TYPECODE(a) & SCM_FUNCTYPE_SYNTAX))
@@ -488,8 +488,8 @@ struct ScmEvalState_ {
 #define SCM_C_POINTER_VALUE(a)              ((void*)SCM_AS_C_POINTER(a)->car)
 #define SCM_C_POINTER_SET_VALUE(a, val)     (SCM_AS_C_POINTER(a)->car = (ScmObj)(val))
 
-#define SCM_C_FUNCPOINTER_VALUE(a)          (SCM_REINTERPRET_CAST(ScmCFunc, SCM_AS_C_FUNCPOINTER(a)->car))
-#define SCM_C_FUNCPOINTER_SET_VALUE(a, val) (SCM_AS_C_FUNCPOINTER(a)->car = SCM_REINTERPRET_CAST(ScmObj, (val)))
+#define SCM_C_FUNCPOINTER_VALUE(a)          (SCM_WORD_CAST(ScmCFunc, SCM_AS_C_FUNCPOINTER(a)->car))
+#define SCM_C_FUNCPOINTER_SET_VALUE(a, val) (SCM_AS_C_FUNCPOINTER(a)->car = SCM_WORD_CAST(ScmObj, (val)))
 
 #define SCM_INT_VALUE(a)          (SCM_GET_VALUE_AS_INT((a), SCM_TAG_IMM_VALUE_OFFSET_INT))
 #define SCM_INT_SET_VALUE(a, val) (SCM_SET_VALUE_AS_INT((a), (val), SCM_TAG_IMM_VALUE_OFFSET_INT, SCM_TAG_IMM_INT))

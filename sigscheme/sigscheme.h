@@ -63,7 +63,14 @@ extern "C" {
 #define SCM_NORETURN
 #endif /* __GNUC__ */
 
-#define SCM_REINTERPRET_CAST(type, obj) ((type)(int)(obj))
+/* Casts a machine word mainly a function pointer and (void *) */
+#define SCM_WORD_CAST(type, obj) ((type)(unsigned long)(obj))
+/*
+ * Re-interprets a storage as-is, similarly to reinterpret_cast<type>(obj) of
+ * C++. Don't change the semantics. This cast requires that obj is a pointable
+ * storage.
+ */
+#define SCM_REINTERPRET_CAST(type, obj) (*(type *)&(obj))
 
 /* RFC: better names for the debug printing */
 #if SCM_DEBUG

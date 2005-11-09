@@ -35,8 +35,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define SCM_REINTERPRET_CAST(type, obj) ((type)(int)(obj))
-
 #include "sigschemetype-compact.h"
 
 typedef void (*ScmCFunc)(void);

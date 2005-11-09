@@ -284,7 +284,7 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
         break;
     case ScmCFuncPointer:
         SigScm_PortPrintf(port, "#<c_func_pointer %p>",
-                          SCM_REINTERPRET_CAST(void *, SCM_C_FUNCPOINTER_VALUE(obj)));
+                          SCM_WORD_CAST(void *, SCM_C_FUNCPOINTER_VALUE(obj)));
         break;
     }
 }
