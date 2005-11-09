@@ -120,8 +120,8 @@ static struct dic_info {
   int cache_modified;
   /* length of cached lines */
   int cache_len;
-  /* skkserv is initialized */
-  int skkserv_ok;
+  /* skkserv related state */
+  int skkserv_state;
   /* skkserv port number */
   int skkserv_portnum;
 } *skk_dic;
@@ -150,6 +150,8 @@ static void merge_purged_cand_to_dst_array(struct skk_cand_array *src_ca,
 #define SKK_SERVICENAME	"skkserv"
 #define SKK_SERVER_HOST	"localhost"
 #define SKK_SERV_BUFSIZ	1024
+#define SKK_SERV_USE	(1<<0)
+#define SKK_SERV_CONNECTED	(1<<1)
 
 static int skkservsock = -1;
 static FILE *rserv, *wserv;
@@ -157,6 +159,7 @@ static char *SKKServerHost = NULL;
 /* prototype */
 static int open_skkserv(int portnum);
 static void close_skkserv(void);
+static void skkserv_disconnected(struct dic_info *di);
 
 static int
 calc_line_len(const char *s)
@@ -227,9 +230,9 @@ open_dic(const char *fn, uim_bool use_skkserv, int skkserv_portnum)
 
   di->skkserv_portnum = skkserv_portnum;
   if (use_skkserv)
-    di->skkserv_ok = open_skkserv(skkserv_portnum);
+    di->skkserv_state = SKK_SERV_USE | open_skkserv(skkserv_portnum);
   else {
-    di->skkserv_ok = 0;
+    di->skkserv_state = 0;
     fd = open(fn, O_RDONLY);
     if (fd != -1) {
       if (fstat(fd, &st) != -1) {
@@ -667,23 +670,34 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
   char *line;
   char *idx = alloca(strlen(s) + 2);
 
+  if (!(di->skkserv_state & SKK_SERV_CONNECTED)) {
+      if (!((di->skkserv_state |= open_skkserv(di->skkserv_portnum)) &
+			      SKK_SERV_CONNECTED))
+	return NULL;
+  }
+
   sprintf(idx, "%s%c", s, okuri_head);
 
   fprintf(wserv, "1%s \n", idx);
   ret = fflush(wserv);
   if (ret != 0 && errno == EPIPE) {
-    di->skkserv_ok = open_skkserv(di->skkserv_portnum);
+    skkserv_disconnected(di);
     return NULL;
   }
 
   line = malloc(strlen(idx) + 2);
   sprintf(line, "%s ", idx);
-  read(skkservsock, &r, 1);
+
+  if (read(skkservsock, &r, 1) <= 0) {
+    skkserv_disconnected(di);
+    return NULL;
+  }
+
   if (r == '1') {  /* succeeded */
     while (1) {
       ret = read(skkservsock, &r, 1);
       if (ret <= 0) {
-	fprintf(stderr, "skkserv connection closed\n");
+	skkserv_disconnected(di);
 	return NULL;
       }
 
@@ -774,7 +788,7 @@ find_cand_array(struct dic_info *di, const char *s,
 
   sl = search_line_from_cache(di, s, okuri_head);
   if (!sl) {
-    if (di->skkserv_ok)
+    if (di->skkserv_state & SKK_SERV_USE)
       sl = search_line_from_server(di, s, okuri_head);
     else
       sl = search_line_from_file(di, s, okuri_head);
@@ -793,9 +807,11 @@ find_cand_array(struct dic_info *di, const char *s,
     merge_base_candidates_to_array(sl, ca);
     ca->is_used = 1;
     if (!from_file) {
-      if (di->skkserv_ok)
+      if (di->skkserv_state & SKK_SERV_USE) {
 	sl_file = search_line_from_server(di, s, okuri_head);
-      else
+	if (!(di->skkserv_state & SKK_SERV_CONNECTED))
+	  ca->is_used = 0;
+      } else
 	sl_file = search_line_from_file(di, s, okuri_head);
       merge_base_candidates_to_array(sl_file, ca);
       free_skk_line(sl_file);
@@ -2999,7 +3015,7 @@ uim_plugin_instance_quit(void)
     free_skk_line(tmp);
   }
 
-  if (skk_dic->skkserv_ok)
+  if (skk_dic->skkserv_state & SKK_SERV_CONNECTED)
     close_skkserv();
 
   free(skk_dic);
@@ -3061,7 +3077,7 @@ open_skkserv(int portnum)
   skkservsock = sock;
   rserv = fdopen(sock, "r");
   wserv = fdopen(sock, "w");
-  return 1;
+  return SKK_SERV_CONNECTED;
 }
 
 static void
@@ -3071,4 +3087,27 @@ close_skkserv()
     fprintf(wserv, "0\n");
     fflush(wserv);
   }
+}
+
+static void
+reset_is_used_flag_of_cache(struct dic_info *di)
+{
+  struct skk_line *sl;
+  int i;
+
+  sl = di->head.next;
+  while (sl) {
+    for (i = 0; i < sl->nr_cand_array; i++) {
+      struct skk_cand_array *ca = &sl->cands[i];
+      ca->is_used = 0;
+    }
+    sl = sl->next;
+  }
+}
+
+static void
+skkserv_disconnected(struct dic_info *di)
+{
+  di->skkserv_state &= ~SKK_SERV_CONNECTED;
+  reset_is_used_flag_of_cache(di);
 }
