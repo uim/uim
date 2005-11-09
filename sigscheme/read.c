@@ -332,15 +332,26 @@ static ScmObj read_char(ScmObj port)
 {
     char *ch = read_char_sequence(port);
     const ScmSpecialCharInfo *info = Scm_special_char_table;
+    char *first_nondigit = NULL;
 
     CDBG((SCM_DBG_PARSER, "read_char : ch = %s", ch));
 
-    /* check special sequence */
-    for (; info->esc_seq; info++) {
-        if (strcmp(ch, info->lex_rep) == 0) {
-            ch[0] = info->code;
-            ch[1] = '\0';
-            break;
+    /* check #\x0F style character (defined in R6RS) */
+    if (ch && ch[0] == 'x' && strlen(ch) > 1) {
+        /* FIXME: only supports ASCII */
+        ch[0] = (char)strtol(ch + 1, &first_nondigit, 16);
+        if (*first_nondigit) {
+            SigScm_Error("invalid character form\n");
+        }
+        ch[1] = '\0';
+    } else {
+        /* check special sequence */
+        for (; info->esc_seq; info++) {
+            if (strcmp(ch, info->lex_rep) == 0) {
+                ch[0] = info->code;
+                ch[1] = '\0';
+                break;
+            }
         }
     }
 
