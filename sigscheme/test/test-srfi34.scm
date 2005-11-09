@@ -39,20 +39,72 @@
 
 (set! *test-track-progress* #t)
 
+(define my-assert-error
+  (lambda (test-name proc)
+    (assert-error test-name (lambda ()
+                              (guard (var
+                                      ;; not an error but user-raised object
+                                      ((eq? var 'obj)
+                                       #f))
+                                (proc))))))
+
+;;
+;; raise
+;;
+
+;; no guard or raw exception handler
+(assert-error "raise #1" #f (lambda ()
+                              (raise 'exception)))
+
 ;;
 ;; with-exception-handler
 ;;
 
+;; handler is not a procedure
+(my-assert-error "with-exception-handler invalid form #1"
+                 (lambda ()
+                   (with-exception-handler
+                       'a-handler-must-not-return
+                     (lambda ()
+                       (+ 1 (raise 'obj))))))
+
+;; FAILED: infinite loop with a message "Error: missing argument(s)"
+;; handler a procedure but takes 2 arguments
+;;(my-assert-error "with-exception-handler invalid form #2"
+;;                 (lambda ()
+;;                   (with-exception-handler
+;;                       eq?
+;;                     (lambda ()
+;;                       (+ 1 (raise 'obj))))))
+
+;; thunk is not a procedure
+(my-assert-error "with-exception-handler invalid form #3"
+                 (lambda ()
+                   (with-exception-handler
+                       (lambda (x)
+                         'a-handler-must-not-return)
+                     'an-error)))
+
+;; handler a procedure but takes an argument
+(my-assert-error "with-exception-handler invalid form #4"
+                 (lambda ()
+                   (with-exception-handler
+                       (lambda (x)
+                         'a-handler-must-not-return)
+                     (lambda (dummy)
+                       (+ 1 (raise 'obj))))))
+
 ;; FAILED
 ;; Although the behavior when a handler returned is not specified in SRFI-34,
 ;; SigScheme should produce an error to prevent being misused by users.
-(assert-error "with-exception-handler #1"
-              (lambda ()
-                (with-exception-handler
-                    (lambda (x)
-                      'a-handler-must-not-return)
-                  (lambda ()
-                    (+ 1 (raise 'an-error))))))
+(if (provided? "sigscheme")
+    (my-assert-error "with-exception-handler #1"
+                     (lambda ()
+                       (with-exception-handler
+                           (lambda (x)
+                             'a-handler-must-not-return)
+                         (lambda ()
+                           (+ 1 (raise 'obj)))))))
 
 ;; SEGV
 ;;(assert-error "with-exception-handler #3"
@@ -130,6 +182,150 @@
                         (display condition)
                         (newline)))
                  (raise (list (cons 'b 23)))))
+
+;; not matched against => and fall through to else
+(assert-equal? "guard #8"
+               #f
+               (guard (condition
+                       ((assv condition '((a 1) (b 2))) => cadr)
+                       (else #f))
+                 (raise 'c)))
+
+;;
+;; handler part of guard
+;;
+
+;; SEGV
+;;(my-assert-error  "guard handler invalid form #1"
+;;                  (lambda ()
+;;                    (guard (var)
+;;                      (raise 'obj))))
+
+;; FAILED
+(my-assert-error  "guard handler invalid form #2"
+                  (lambda ()
+                    (guard (var
+                            ())
+                      (raise 'obj))))
+
+;; FAILED
+(my-assert-error  "guard handler invalid form #3"
+                  (lambda ()
+                    (guard (var
+                            ()
+                            (else #t))
+                      (raise 'obj))))
+
+;; SEGV
+;; 'else' followed by another caluse
+;;(my-assert-error  "guard handler invalid form #4"
+;;                  (lambda ()
+;;                    (guard (var
+;;                            (else #t)
+;;                            (#t))
+;;                      (raise 'obj))))
+
+;; SEGV
+;; not specified in R5RS 'case', but SigScheme should cause error
+;;(if (provided? "sigscheme")
+;;    (my-assert-error  "guard handler invalid form #5"
+;;                      (lambda ()
+;;                        (guard (var
+;;                                (else))
+;;                          (raise 'obj)))))
+
+;; SEGV
+;;(my-assert-error  "guard handler invalid form #6"
+;;                  (lambda ()
+;;                    (guard (var
+;;                            (#t =>))
+;;                      (raise 'obj))))
+
+;; SEGV
+;;(my-assert-error  "guard handler invalid form #7"
+;;                  (lambda ()
+;;                    (guard (var
+;;                            (#t =>)
+;;                            (else #t))
+;;                      (raise 'obj))))
+
+;; SEGV
+;;(my-assert-error  "guard handler invalid form #8"
+;;                  (lambda ()
+;;                    (guard (var
+;;                            (else =>))
+;;                      (raise 'obj))))
+
+;; FAILED
+;; not a procedure
+(my-assert-error  "guard handler invalid form #9"
+                  (lambda ()
+                    (guard (var
+                            (#t => #t))
+                      (raise 'obj))))
+
+;; FAILED
+;; not a procedure but #f
+(my-assert-error  "guard handler invalid form #10"
+                  (lambda ()
+                    (guard (var
+                            (#t => #f))
+                      (raise 'obj))))
+
+;; FAILED
+;; procedure but argument number mismatch
+(my-assert-error  "guard handler invalid form #11"
+                  (lambda ()
+                    (guard (var
+                            (#t => eq?))
+                      (raise 'obj))))
+
+;; FAILED
+;; not a procedure but a syntax
+(my-assert-error  "guard handler invalid form #12"
+                  (lambda ()
+                    (guard (var
+                            (#t => delay))
+                      (raise 'obj))))
+
+(assert-equal?  "guard handler reraise #1"
+                'reraised
+                (guard (var
+                        ((eq? var 'error)
+                         'reraised))
+                  (guard (var
+                          (#f))
+                    (raise 'error))))
+(assert-equal?  "guard handler reraise #2"
+                'reraised
+                (guard (var
+                        ((eq? var 'error)
+                         'reraised))
+                  (guard (var
+                          ((even? 3) #f)
+                          ((positive? -1) #f))
+                    (raise 'error))))
+
+;; R5RS: If the selected <clause> contains only the <test> and no
+;; <expression>s, then the value of the <test> is returned as the result.
+(assert-equal?  "guard handler tested value as result #1"
+                #t
+                (guard (var
+                        (#t))
+                  (raise 'error)))
+(assert-equal?  "guard handler tested value as result #2"
+                3
+                (guard (var
+                        (#f)
+                        (3))
+                  (raise 'error)))
+(assert-equal?  "guard handler tested value as result #3"
+                3
+                (guard(var
+                       (#f)
+                       (3)
+                       (4))
+                  (raise 'error)))
 
 ;;
 ;; mixed use of with-exception-handler and guard

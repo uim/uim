@@ -86,8 +86,6 @@ Namings and Cosmetic things:
 ==============================================================================
 Assigned to YamaKen:
 
-* Write tests for SRFI-34
-
 * GCC4-optimization-proof stack protection
   - Update the document
 
