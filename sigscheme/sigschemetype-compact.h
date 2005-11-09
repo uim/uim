@@ -302,8 +302,8 @@ struct ScmEvalState_ {
    GC bit Accessor
 =======================================*/
 #define SCM_GC_BIT(a)       (SCM_CAST_UINT(a) & SCM_GCBIT_MASK)
-#define SCM_IS_MARKED(a)      (SCM_GC_BIT(a))
-#define SCM_IS_UNMARKED(a)    (!SCM_IS_MARKED(a))
+#define SCM_IS_MARKED(a)    (SCM_GC_BIT(a))
+#define SCM_IS_UNMARKED(a)  (!SCM_IS_MARKED(a))
 #define SCM_DO_MARK(a)      ((a) = (ScmObj)(SCM_CAST_UINT(a) | SCM_GCBIT_MASK))
 #define SCM_DO_UNMARK(a)    ((a) = (ScmObj)(SCM_CAST_UINT(a) & ~SCM_GCBIT_MASK))
 
@@ -427,8 +427,8 @@ struct ScmEvalState_ {
 =======================================*/
 #define SCM_CAR(a)                     (SCM_AS_CONS(a)->car)
 #define SCM_CDR(a)                     (SCM_AS_CONS(a)->cdr)
-#define SCM_CONS_SET_CAR(a, car)       (SCM_SET_VALUE_AS_OBJ(SCM_CAR(a), (car)))
-#define SCM_CONS_SET_CDR(a, cdr)       (SCM_SET_VALUE_AS_OBJ(SCM_CDR(a), (cdr)))
+#define SCM_CONS_SET_CAR(a, car)       (SCM_CAR(a) = (car))
+#define SCM_CONS_SET_CDR(a, cdr)       (SCM_CDR(a) = (cdr))
 #define SCM_CAAR(a)                    (SCM_CAR(SCM_CAR(a)))
 #define SCM_CADR(a)                    (SCM_CAR(SCM_CDR(a)))
 #define SCM_CDAR(a)                    (SCM_CDR(SCM_CAR(a)))
@@ -436,12 +436,12 @@ struct ScmEvalState_ {
 
 #define SCM_CLOSURE_EXP(a)             (SCM_AS_CLOSURE(a)->car)
 #define SCM_CLOSURE_ENV(a)             (SCM_AS_CLOSURE(a)->cdr)
-#define SCM_CLOSURE_SET_EXP(a, exp)    (SCM_SET_VALUE_AS_OBJ(SCM_CLOSURE_EXP(a), (exp)))
-#define SCM_CLOSURE_SET_ENV(a, exp)    (SCM_SET_VALUE_AS_OBJ(SCM_CLOSURE_EXP(a), (env)))
+#define SCM_CLOSURE_SET_EXP(a, exp)    (SCM_CLOSURE_EXP(a) = (exp))
+#define SCM_CLOSURE_SET_ENV(a, env)    (SCM_CLOSURE_ENV(a) = (env))
 
 #define SCM_SYMBOL_VCELL(a)            (SCM_AS_SYMBOL(a)->car)
 #define SCM_SYMBOL_NAME(a)             (SCM_GET_VALUE_AS_STR(SCM_AS_SYMBOL(a)->cdr, ~SCM_TAG_OTHERS_MASK_SYMBOL))
-#define SCM_SYMBOL_SET_VCELL(a, vcell) (SCM_SET_VALUE_AS_OBJ(SCM_SYMBOL_VCELL(a), (vcell)))
+#define SCM_SYMBOL_SET_VCELL(a, vcell) (SCM_SYMBOL_VCELL(a) = (vcell))
 #define SCM_SYMBOL_SET_NAME(a, name)   (SCM_SET_VALUE_AS_STR(SCM_AS_SYMBOL(a)->cdr, (name), SCM_TAG_OTHERS_SYMBOL))
 
 #define SCM_STRING_LEN(a)              (SCM_GET_VALUE_AS_INT(SCM_AS_STRING(a)->car, SCM_TAG_OTHERS_VALUE_OFFSET_STRING))
@@ -460,7 +460,7 @@ struct ScmEvalState_ {
 
 #define SCM_MAKE_VALUEPACKET(vals)       (Scm_NewValuePacket(vals))
 #define SCM_VALUEPACKET_VALUES(a)        (SCM_AS_VALUEPACKET(a)->car)
-#define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_SET_VALUE_AS_OBJ(SCM_VALUEPACKET_VALUES(a), (v)))
+#define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_VALUEPACKET_VALUES(a) = (v))
 
 #define SCM_FUNC_CFUNC(a)              (SCM_WORD_CAST(ScmFuncType, (SCM_AS_FUNC(a)->car)))
 #define SCM_FUNC_TYPECODE(a)           ((enum ScmFuncTypeCode)SCM_GET_VALUE_AS_INT(SCM_AS_FUNC(a)->cdr, SCM_TAG_OTHERS_VALUE_OFFSET_FUNC))

@@ -35,16 +35,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "sigscheme.h"
 #include "sigschemetype-compact.h"
-
-typedef void (*ScmCFunc)(void);
 
 #define PRINT_SECTION(SECTIONNAME)                      \
     do {                                                \
         printf("-------- Check %s --------\n", SECTIONNAME);  \
     } while (/*CONSTCOND*/ 0)
 
-#define SCM_ASSERT(cond) \
+#undef SCM_ASSERT
+#define SCM_ASSERT(cond)                      \
     ((cond) || die(__FILE__, __LINE__))
 
 #define ASSERT_TYPE(expected, actual, pred)                             \
@@ -55,6 +55,16 @@ typedef void (*ScmCFunc)(void);
                    typecode2typestr(actual));                           \
         }                                                               \
     } while(0)
+
+#define MARK_TEST(obj)                          \
+    do {                                        \
+        SCM_DO_MARK(obj);                       \
+        SCM_ASSERT(SCM_IS_MARKED(obj));         \
+        SCM_DO_UNMARK(obj);                     \
+        SCM_ASSERT(SCM_IS_UNMARKED(obj));       \
+        SCM_DO_MARK(obj);                       \
+        SCM_ASSERT(SCM_IS_MARKED(obj));         \
+    } while(0);
 
 static int die(const char *filename, int line)
 {
@@ -226,6 +236,8 @@ ScmObj Scm_CheckCons()
     SCM_ASSERT(SCM_INTP(SCM_CDR(obj)));
     SCM_ASSERT(SCM_INT_VALUE(SCM_CDR(obj)) == 2);
 
+    MARK_TEST(obj);
+
     return obj;
 }
 
@@ -249,6 +261,8 @@ ScmObj Scm_CheckSymbol(const char *name)
     SCM_ASSERT(SCM_INTP(SCM_SYMBOL_VCELL(obj)));
     SCM_ASSERT(SCM_INT_VALUE(SCM_SYMBOL_VCELL(obj)) == 1);
 
+    MARK_TEST(obj);
+
     return obj;
 }
 
@@ -271,6 +285,8 @@ ScmObj Scm_CheckChar(char *ch)
     SCM_ASSERT(SCM_CHAR_VALUE(obj) == val);
     SCM_ASSERT(strcmp(SCM_CHAR_VALUE(obj), ch) == 0);
 
+    MARK_TEST(obj);
+
     return obj;
 }
 
@@ -290,6 +306,8 @@ ScmObj Scm_CheckStringCopying(char *str)
     SCM_STRING_SET_LEN(obj, strlen(str));
     check_type(ScmString, obj);
     SCM_ASSERT(strlen(str) == SCM_STRING_LEN(obj));
+
+    MARK_TEST(obj);
 
     return obj;
 }
@@ -319,6 +337,8 @@ ScmObj Scm_CheckFunc()
     check_type(ScmFunc, obj);
     SCM_ASSERT(SCM_FUNC_CFUNC(obj) == Scm_CheckCons);
 
+    MARK_TEST(obj);
+
     return obj;
 }
 
@@ -335,17 +355,19 @@ ScmObj Scm_CheckClosure()
 
     SCM_CLOSURE_SET_EXP(obj, exp);
     check_type(ScmClosure, obj);
-    SCM_ASSERT(SCM_CONSP(SCM_CLOSURE_EXP(obj)));
+    check_type(ScmCons, SCM_CLOSURE_EXP(obj));
     SCM_ASSERT(SCM_EQ(SCM_CLOSURE_EXP(obj), exp));
-    SCM_ASSERT(SCM_INTP(SCM_CAR(SCM_CLOSURE_EXP(obj))));
-    SCM_ASSERT(SCM_INTP(SCM_CDR(SCM_CLOSURE_EXP(obj))));
+    check_type(ScmInt, SCM_CAR(SCM_CLOSURE_EXP(obj)));
+    check_type(ScmInt, SCM_CDR(SCM_CLOSURE_EXP(obj)));
 
     SCM_CLOSURE_SET_ENV(obj, env);
     check_type(ScmClosure, obj);
-    SCM_ASSERT(SCM_CONSP(SCM_CLOSURE_ENV(obj)));
+    check_type(ScmCons, SCM_CLOSURE_ENV(obj));
     SCM_ASSERT(SCM_EQ(SCM_CLOSURE_ENV(obj), env));
-    SCM_ASSERT(SCM_INTP(SCM_CAR(SCM_CLOSURE_ENV(obj))));
-    SCM_ASSERT(SCM_INTP(SCM_CDR(SCM_CLOSURE_ENV(obj))));
+    check_type(ScmInt, SCM_CAR(SCM_CLOSURE_ENV(obj)));
+    check_type(ScmInt, SCM_CDR(SCM_CLOSURE_ENV(obj)));
+
+    MARK_TEST(obj);
 
     return obj;
 }
@@ -378,6 +400,8 @@ ScmObj Scm_CheckVector(int len)
     SCM_ASSERT(SCM_INTP(SCM_VECTOR_CREF(obj, 0)));
     SCM_ASSERT(SCM_INT_VALUE(SCM_VECTOR_CREF(obj, 0)) == 3);
 
+    MARK_TEST(obj);
+
     return obj;
 }
 
@@ -399,6 +423,8 @@ ScmObj Scm_CheckPort()
     SCM_PORT_SET_IMPL(obj, port);
     check_type(ScmPort, obj);
     SCM_ASSERT(SCM_PORT_IMPL(obj) == port);
+
+    MARK_TEST(obj);
 
     return obj;
 }
@@ -426,6 +452,8 @@ ScmObj Scm_CheckContinuation(void)
     check_type(ScmContinuation, obj);
     SCM_ASSERT(SCM_CONTINUATION_TAG(obj) == 0);
 
+    MARK_TEST(obj);
+
     return obj;
 }
 
@@ -444,6 +472,8 @@ ScmObj Scm_CheckValuePacket()
     SCM_ASSERT(SCM_EQ(SCM_VALUEPACKET_VALUES(obj), values));
     SCM_ASSERT(SCM_CONSP(SCM_VALUEPACKET_VALUES(obj)));
 
+    MARK_TEST(obj);
+
     return obj;
 }
 
@@ -460,6 +490,8 @@ ScmObj Scm_CheckCPointer()
     SCM_C_POINTER_SET_VALUE(obj, data);
     check_type(ScmCPointer, obj);
     SCM_ASSERT(SCM_C_POINTER_VALUE(obj) == data);
+
+    MARK_TEST(obj);
 
     return obj;
 }
@@ -481,6 +513,8 @@ ScmObj Scm_CheckCFuncPointer()
     SCM_C_FUNCPOINTER_SET_VALUE(obj, test_func);
     check_type(ScmCFuncPointer, obj);
     SCM_ASSERT(SCM_C_FUNCPOINTER_VALUE(obj) == (ScmCFunc)test_func);
+
+    MARK_TEST(obj);
 
     return obj;
 }
@@ -529,6 +563,7 @@ int main(void)
     Scm_CheckSymbol("aiueo");
     Scm_CheckChar("a");
     Scm_CheckStringCopying("aiueo");
+    Scm_CheckClosure();
     Scm_CheckFunc();
     Scm_CheckVector(5);
     Scm_CheckValuePacket();
