@@ -36,6 +36,8 @@
  *
  * Many many things are to be implemented!
  */
+#include "config.h"
+
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -60,6 +62,9 @@
 #define skk_isascii(ch)	((((unsigned char)ch) & ~0x7f) == 0)
 
 #define IGNORING_WORD_MAX	63
+#define USE_SKK_JISYO_S_BUF	1	/* use SKK-JISYO.S as a cache for
+					   word completion */
+#define SKK_JISYO_S	DATADIR "/skk/SKK-JISYO.S"
 
 /*
  * cand : candidate
@@ -145,6 +150,8 @@ static void merge_purged_cands(struct skk_cand_array *src_ca,
 		struct skk_cand_array *dst_ca, int src_nth, int dst_nth);
 static void merge_purged_cand_to_dst_array(struct skk_cand_array *src_ca,
 		struct skk_cand_array *dst_ca, char *purged_cand);
+static void update_personal_dictionary_cache_with_file(const char *fn,
+		int is_personal);
 
 /* skkserv connection */
 #define SKK_SERVICENAME	"skkserv"
@@ -1680,9 +1687,7 @@ make_comp_array_from_cache(struct dic_info *di, const char *s)
     if (/* string 's' is part of sl->head */
 	!strncmp(sl->head, s, strlen(s)) && strcmp(sl->head, s) &&
 	/* and sl is okuri-nasi line */
-	sl->okuri_head == '\0' &&
-	/* use commited entry only */
-	sl->need_save == 1) {
+	sl->okuri_head == '\0') {
       ca->nr_comps++;
       ca->comps = realloc(ca->comps, sizeof(char *) * ca->nr_comps);
       ca->comps[ca->nr_comps - 1] = strdup(sl->head);
@@ -2434,7 +2439,7 @@ reverse_cache(struct dic_info *di)
 }
 
 static void
-parse_dic_line(struct dic_info *di, char *line)
+parse_dic_line(struct dic_info *di, char *line, int is_personal)
 {
   char *buf, *sep;
   struct skk_line *sl;
@@ -2455,10 +2460,14 @@ parse_dic_line(struct dic_info *di, char *line)
   } else {
     sl = compose_line(di, buf, 0, line);
   }
-  sl->need_save = 1;
-  /* set nr_real_cands for the candidate array from personal dictionaly */
-  for (i = 0; i < sl->nr_cand_array; i++)
-    sl->cands[i].nr_real_cands = sl->cands[i].nr_cands;
+  if (is_personal) {
+    sl->need_save = 1;
+    /* set nr_real_cands for the candidate array from personal dictionaly */
+    for (i = 0; i < sl->nr_cand_array; i++)
+      sl->cands[i].nr_real_cands = sl->cands[i].nr_cands;
+  } else {
+    sl->need_save = 0;
+  }
   add_line_to_cache_head(di, sl);
 }
 
@@ -2544,8 +2553,8 @@ close_lock(int fd)
   close(fd);
 }
 
-static uim_lisp
-read_personal_dictionary(struct dic_info *di, const char *fn)
+static int
+read_dictionary_file(struct dic_info *di, const char *fn, int is_personal)
 {
   struct stat st;
   FILE *fp;
@@ -2554,19 +2563,19 @@ read_personal_dictionary(struct dic_info *di, const char *fn)
   int lock_fd;
 
   if (!di)
-    return uim_scm_f();
+    return 0;
 
   lock_fd = open_lock(fn, F_RDLCK);
 
   if (stat(fn, &st) == -1) {
     close_lock(lock_fd);
-    return uim_scm_f();
+    return 0;
   }
 
   fp = fopen(fn, "r");
   if (!fp) {
     close_lock(lock_fd);
-    return uim_scm_f();
+    return 0;
   }
 
   di->personal_dic_timestamp = st.st_mtime;
@@ -2577,7 +2586,7 @@ read_personal_dictionary(struct dic_info *di, const char *fn)
       if (err_flag == 0) {
 	if (buf[0] != ';') {
 	  buf[len - 1] = '\0';
-	  parse_dic_line(di, buf);
+	  parse_dic_line(di, buf, is_personal);
 	}
       } else {
 	/* erroneous line ends here */
@@ -2590,14 +2599,25 @@ read_personal_dictionary(struct dic_info *di, const char *fn)
   fclose(fp);
   close_lock(lock_fd);
   reverse_cache(di);
-  return uim_scm_t();
+  return 1;
 }
 
 static uim_lisp
 skk_read_personal_dictionary(uim_lisp fn_)
 {
-  const char *fn = uim_scm_refer_c_str(fn_);
-  return read_personal_dictionary(skk_dic, fn);
+  const char *fn;
+  struct stat st;
+  uim_lisp ret;
+
+  fn = uim_scm_refer_c_str(fn_);
+  ret = (stat(fn, &st) != -1) ? uim_scm_t() : uim_scm_f();
+
+  update_personal_dictionary_cache_with_file(fn, 1);
+#if USE_SKK_JISYO_S_BUF
+  update_personal_dictionary_cache_with_file(SKK_JISYO_S, 0);
+#endif
+
+  return ret;
 }
 
 static void push_back_candidate_array_to_sl(struct skk_line *sl,
@@ -2746,7 +2766,7 @@ lsort(struct skk_line *p)
 }
 
 static void
-update_personal_dictionary_cache(const char *fn)
+update_personal_dictionary_cache_with_file(const char *fn, int is_personal)
 {
   struct dic_info *di;
   struct skk_line *sl, *tmp, *diff, **cache_array;
@@ -2755,15 +2775,32 @@ update_personal_dictionary_cache(const char *fn)
   di = (struct dic_info *)malloc(sizeof(struct dic_info));
   if (di == NULL)
     return;
+  di->cache_len = 0;
   di->head.next = NULL;
-  read_personal_dictionary(di, fn);
-  di->head.next = lsort(di->head.next);
+
+  if (!read_dictionary_file(di, fn, is_personal)) {
+    free(di);
+    return;
+  }
+
+  /* If any cache is available, just use new one. */
+  if (!skk_dic->head.next) {
+    skk_dic->head.next = di->head.next;
+    skk_dic->cache_len = di->cache_len;
+    skk_dic->cache_modified = di->cache_modified;
+    skk_dic->personal_dic_timestamp = di->personal_dic_timestamp;
+    free(di);
+    return;
+  }
 
   /* keep original sequence of cache */
   cache_array = (struct skk_line **)malloc(sizeof(struct skk_line *)
 		  * skk_dic->cache_len);
-  if (cache_array == NULL)
+  if (cache_array == NULL) {
+    free(di);
     return;
+  }
+
   i = 0;
   sl = skk_dic->head.next;
   while (sl) {
@@ -2772,13 +2809,13 @@ update_personal_dictionary_cache(const char *fn)
     i++;
   }
 
-  skk_dic->head.next = lsort(skk_dic->head.next);
-
   /* get differential lines and merge candidate */
+  di->head.next = lsort(di->head.next);
+  skk_dic->head.next = lsort(skk_dic->head.next);
   diff = cache_line_diffs(skk_dic->head.next, di->head.next, &diff_len);
 
   /* revert sequence of the cache */
-  if (cache_array[0]) {
+  if (skk_dic->cache_len) {
     sl = skk_dic->head.next = cache_array[0];
     for (i = 0; i < skk_dic->cache_len - 1; i++) {
       sl->next = cache_array[i + 1];
@@ -2787,16 +2824,26 @@ update_personal_dictionary_cache(const char *fn)
     sl->next = NULL;
   }
 
-  /* add differential lines at the top of the cache */
-  if (diff != NULL) {
-    sl = diff;
-    while (sl->next) {
-      sl = sl->next;
+  if (is_personal) {
+    /* prepend differential lines at the top of the cache */
+    if (diff != NULL) {
+      sl = diff;
+      while (sl->next) {
+        sl = sl->next;
+      }
+      sl->next = skk_dic->head.next;
+      skk_dic->head.next = diff;
+      skk_dic->cache_len += diff_len;
     }
-    sl->next = skk_dic->head.next;
-    skk_dic->head.next = diff;
+  } else {
+    /* append differential lines at the bottom of the cache */
+    if (skk_dic->head.next)
+      sl->next = diff;
+    else
+      skk_dic->head.next = diff;
     skk_dic->cache_len += diff_len;
   }
+
   skk_dic->cache_modified = 1;
 
   sl = di->head.next;
@@ -2825,7 +2872,7 @@ skk_save_personal_dictionary(uim_lisp fn_)
   if (fn) {
     if (stat(fn, &st) != -1) {
       if (st.st_mtime != skk_dic->personal_dic_timestamp)
-	update_personal_dictionary_cache(fn);
+	update_personal_dictionary_cache_with_file(fn, 1);
     }
 
     lock_fd = open_lock(fn, F_WRLCK);
