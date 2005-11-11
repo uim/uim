@@ -129,6 +129,10 @@
                                   test-name)))
       (assert err-msg errored))))
 
+(define assert-parse-error
+  (lambda (test-name str)
+    (assert-error test-name (lambda ()
+                              (string-read str)))))
 
 ;;
 ;; misc
@@ -138,6 +142,19 @@
 (define undef
   (lambda ()
     (for-each values ())))
+
+(define obj->literal
+  (lambda (obj)
+    (use srfi-6)
+    (let ((port (open-output-string)))
+      (write obj port)
+      (get-output-string port))))
+
+(define string-read
+  (lambda (str)
+    (use srfi-6)
+    (let ((port (open-input-string str)))
+      (read port))))
 
 (define (eval-counter n)
   (list 'eval-counter (+ n 1)))
