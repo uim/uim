@@ -36,6 +36,8 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
+#include "sbcport.h"
+#include "nullport.h"
 
 /*=======================================
   Local Include
@@ -81,7 +83,8 @@ static const int sscm_debug_mask_tbl[] = {
 };
 static long sscm_verbose_level = -1;
 
-static ScmObj saved_output_port  = NULL;
+static ScmObj null_port         = NULL;
+static ScmObj saved_output_port = NULL;
 static ScmObj saved_error_port  = NULL;
 
 /*=======================================
@@ -107,10 +110,16 @@ void SigScm_Initialize_SIOD(void)
     REGISTER_FUNC_TABLE(siod_func_info_table);
     Scm_DefineAlias("=", "%%=");
 
+    null_port         = SCM_FALSE;
     saved_output_port = SCM_FALSE;
     saved_error_port  = SCM_FALSE;
+    SigScm_GC_Protect(&null_port);
     SigScm_GC_Protect(&saved_output_port);
     SigScm_GC_Protect(&saved_error_port);
+
+    Scm_nullport_init();
+    null_port = Scm_NewPort(ScmSingleByteCharPort_new(ScmNullPort_new()),
+                            SCM_PORTFLAG_INPUT | SCM_PORTFLAG_OUTPUT);
 
     SigScm_SetVerboseLevel(2);
 }
@@ -247,8 +256,8 @@ void SigScm_SetVerboseLevel(long level)
         saved_error_port = scm_current_error_port;
         saved_output_port = scm_current_output_port;
 
-        scm_current_error_port = SCM_FALSE;
-        scm_current_output_port = SCM_FALSE;
+        scm_current_error_port = null_port;
+        scm_current_output_port = null_port;
     } else {
         if (FALSEP(scm_current_error_port))
             scm_current_error_port = saved_error_port;
@@ -256,3 +265,6 @@ void SigScm_SetVerboseLevel(long level)
             scm_current_output_port = saved_output_port;
     }
 }
+
+/* FIXME: link conditionally with autoconf */
+#include "nullport.c"

@@ -127,20 +127,16 @@ void SigScm_PortPrintf(ScmObj port, const char *fmt, ...)
 
 void SigScm_VPortPrintf(ScmObj port, const char *fmt, va_list args)
 {
-    if (!FALSEP(port)) {
-        SCM_PORT_VPRINTF(port, fmt, args);
+    SCM_PORT_VPRINTF(port, fmt, args);
 #if SCM_VOLATILE_OUTPUT
-        SCM_PORT_FLUSH(port);
+    SCM_PORT_FLUSH(port);
 #endif
-    }
 }
 
 void SigScm_PortNewline(ScmObj port)
 {
-    if (!FALSEP(port)) {
-        SCM_PORT_PUTS(port, SCM_NEWLINE_STR);
-        SCM_PORT_FLUSH(port);  /* required */
-    }
+    SCM_PORT_PUTS(port, SCM_NEWLINE_STR);
+    SCM_PORT_FLUSH(port);  /* required */
 }
 
 void SigScm_ErrorPrintf(const char *fmt, ...)

@@ -66,7 +66,6 @@ static ScmObj feature_id_siod;
 static void repl(void);
 static void repl_loop(void);
 static int  is_repl_prompt(void);
-static int  is_repl_show_result(void);
 
 /*=======================================
   Function Implementations
@@ -95,7 +94,6 @@ static void repl_loop(void)
     ScmObj s_exp  = SCM_NULL;
     ScmObj result = SCM_NULL;
     int is_prompt      = is_repl_prompt();
-    int is_show_result = is_repl_show_result();
 
     if (is_prompt)
         SigScm_PortPrintf(scm_current_output_port, PROMPT_STR);
@@ -117,15 +115,13 @@ static void repl_loop(void)
 #else /* SCM_USE_SRFI34 */
         result = EVAL(s_exp, SCM_INTERACTION_ENV);
 #endif
-        if (is_show_result)
-        {
+
 #if SCM_USE_SRFI38
-            SigScm_WriteToPortWithSharedStructure(scm_current_output_port, result);
+        SigScm_WriteToPortWithSharedStructure(scm_current_output_port, result);
 #else
-            SigScm_WriteToPort(scm_current_output_port, result);
+        SigScm_WriteToPort(scm_current_output_port, result);
 #endif
-            SigScm_PortNewline(scm_current_output_port);
-        }
+        SigScm_PortNewline(scm_current_output_port);
 
         if (is_prompt)
             SigScm_PortPrintf(scm_current_output_port, PROMPT_STR);
@@ -137,16 +133,6 @@ static int is_repl_prompt(void)
 #if SCM_COMPAT_SIOD
     return (FALSEP(ScmOp_providedp(feature_id_siod))
             || SigScm_GetVerboseLevel() >= 2);
-#else
-    return TRUE;
-#endif
-}
-
-static int is_repl_show_result(void)
-{
-#if SCM_COMPAT_SIOD
-    return (FALSEP(ScmOp_providedp(feature_id_siod))
-            || SigScm_GetVerboseLevel() >= 1);
 #else
     return TRUE;
 #endif

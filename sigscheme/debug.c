@@ -181,9 +181,6 @@ void SigScm_WriteToPort(ScmObj port, ScmObj obj)
 {
     DECLARE_INTERNAL_FUNCTION("SigScm_WriteToPort");
 
-    if (FALSEP(port))
-        return;
-
     ASSERT_PORTP(port);
     SCM_ASSERT_LIVE_PORT(port);
     if (!(SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT))
@@ -199,9 +196,6 @@ void SigScm_WriteToPort(ScmObj port, ScmObj obj)
 void SigScm_DisplayToPort(ScmObj port, ScmObj obj)
 {
     DECLARE_INTERNAL_FUNCTION("SigScm_DisplayToPort");
-
-    if (FALSEP(port))
-        return;
 
     ASSERT_PORTP(port);
     SCM_ASSERT_LIVE_PORT(port);
