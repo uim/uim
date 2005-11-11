@@ -198,103 +198,174 @@
 
 ;; All these conventional escape sequences should cause parse error as defined
 ;; in SRFI-75: "Any other character in a string after a backslash is an
-;; error". Since no way exist for testing parse error, the tests are simply
-;; disabled.
-;;;;                                                "\0"   ;; 0
-;;(assert-equal? "conventional escape sequence" " " "\ ")  ;; 32
-;;(assert-equal? "conventional escape sequence" "!" "\!")  ;; 33
-;;;;                                                "\""   ;; 34
-;;(assert-equal? "conventional escape sequence" "#" "\#")  ;; 35
-;;(assert-equal? "conventional escape sequence" "$" "\$")  ;; 36
-;;(assert-equal? "conventional escape sequence" "%" "\%")  ;; 37
-;;(assert-equal? "conventional escape sequence" "&" "\&")  ;; 38
-;;(assert-equal? "conventional escape sequence" "'" "\'")  ;; 39
-;;(assert-equal? "conventional escape sequence" "(" "\(")  ;; 40
-;;(assert-equal? "conventional escape sequence" ")" "\)")  ;; 41
-;;(assert-equal? "conventional escape sequence" "*" "\*")  ;; 42
-;;(assert-equal? "conventional escape sequence" "+" "\+")  ;; 43
-;;(assert-equal? "conventional escape sequence" "," "\,")  ;; 44
-;;(assert-equal? "conventional escape sequence" "-" "\-")  ;; 45
-;;(assert-equal? "conventional escape sequence" "." "\.")  ;; 46
-;;(assert-equal? "conventional escape sequence" "/" "\/")  ;; 47
-;;(assert-equal? "conventional escape sequence" "0" "\0")  ;; 48
-;;(assert-equal? "conventional escape sequence" "1" "\1")  ;; 49
-;;(assert-equal? "conventional escape sequence" "2" "\2")  ;; 50
-;;(assert-equal? "conventional escape sequence" "3" "\3")  ;; 51
-;;(assert-equal? "conventional escape sequence" "4" "\4")  ;; 52
-;;(assert-equal? "conventional escape sequence" "5" "\5")  ;; 53
-;;(assert-equal? "conventional escape sequence" "6" "\6")  ;; 54
-;;(assert-equal? "conventional escape sequence" "7" "\7")  ;; 55
-;;(assert-equal? "conventional escape sequence" "8" "\8")  ;; 56
-;;(assert-equal? "conventional escape sequence" "9" "\9")  ;; 57
-;;(assert-equal? "conventional escape sequence" ":" "\:")  ;; 58
-;;(assert-equal? "conventional escape sequence" ";" "\;")  ;; 59
-;;(assert-equal? "conventional escape sequence" "<" "\<")  ;; 60
-;;(assert-equal? "conventional escape sequence" "=" "\=")  ;; 61
-;;(assert-equal? "conventional escape sequence" ">" "\>")  ;; 62
-;;(assert-equal? "conventional escape sequence" "?" "\?")  ;; 63
-;;(assert-equal? "conventional escape sequence" "@" "\@")  ;; 64
-;;(assert-equal? "conventional escape sequence" "A" "\A")  ;; 65
-;;(assert-equal? "conventional escape sequence" "B" "\B")  ;; 66
-;;(assert-equal? "conventional escape sequence" "C" "\C")  ;; 67
-;;(assert-equal? "conventional escape sequence" "D" "\D")  ;; 68
-;;(assert-equal? "conventional escape sequence" "E" "\E")  ;; 69
-;;(assert-equal? "conventional escape sequence" "F" "\F")  ;; 70
-;;(assert-equal? "conventional escape sequence" "G" "\G")  ;; 71
-;;(assert-equal? "conventional escape sequence" "H" "\H")  ;; 72
-;;(assert-equal? "conventional escape sequence" "I" "\I")  ;; 73
-;;(assert-equal? "conventional escape sequence" "J" "\J")  ;; 74
-;;(assert-equal? "conventional escape sequence" "K" "\K")  ;; 75
-;;(assert-equal? "conventional escape sequence" "L" "\L")  ;; 76
-;;(assert-equal? "conventional escape sequence" "M" "\M")  ;; 77
-;;(assert-equal? "conventional escape sequence" "N" "\N")  ;; 78
-;;(assert-equal? "conventional escape sequence" "O" "\O")  ;; 79
-;;(assert-equal? "conventional escape sequence" "P" "\P")  ;; 80
-;;(assert-equal? "conventional escape sequence" "Q" "\Q")  ;; 81
-;;(assert-equal? "conventional escape sequence" "R" "\R")  ;; 82
-;;(assert-equal? "conventional escape sequence" "S" "\S")  ;; 83
-;;(assert-equal? "conventional escape sequence" "T" "\T")  ;; 84
-;;(assert-equal? "conventional escape sequence" "U" "\U")  ;; 85
-;;(assert-equal? "conventional escape sequence" "V" "\V")  ;; 86
-;;(assert-equal? "conventional escape sequence" "W" "\W")  ;; 87
-;;(assert-equal? "conventional escape sequence" "X" "\X")  ;; 88
-;;(assert-equal? "conventional escape sequence" "Y" "\Y")  ;; 89
-;;(assert-equal? "conventional escape sequence" "Z" "\Z")  ;; 90
-;;(assert-equal? "conventional escape sequence" "[" "\[")  ;; 91
-;;;;                                                "\\"   ;; 92
-;;(assert-equal? "conventional escape sequence" "]" "\]")  ;; 93
-;;(assert-equal? "conventional escape sequence" "^" "\^")  ;; 94
-;;(assert-equal? "conventional escape sequence" "_" "\_")  ;; 95
-;;(assert-equal? "conventional escape sequence" "`" "\`")  ;; 96
-;;;;                                                "\a"   ;; 97
-;;;;                                                "\b"   ;; 98
-;;(assert-equal? "conventional escape sequence" "c" "\c")  ;; 99
-;;(assert-equal? "conventional escape sequence" "d" "\d")  ;; 100
-;;(assert-equal? "conventional escape sequence" "e" "\e")  ;; 101
-;;;;                                                "\f"   ;; 102
-;;(assert-equal? "conventional escape sequence" "g" "\g")  ;; 103
-;;(assert-equal? "conventional escape sequence" "h" "\h")  ;; 104
-;;(assert-equal? "conventional escape sequence" "i" "\i")  ;; 105
-;;(assert-equal? "conventional escape sequence" "j" "\j")  ;; 106
-;;(assert-equal? "conventional escape sequence" "k" "\k")  ;; 107
-;;(assert-equal? "conventional escape sequence" "l" "\l")  ;; 108
-;;(assert-equal? "conventional escape sequence" "m" "\m")  ;; 109
-;;;;                                                "\n"   ;; 110
-;;(assert-equal? "conventional escape sequence" "o" "\o")  ;; 111
-;;(assert-equal? "conventional escape sequence" "p" "\p")  ;; 112
-;;(assert-equal? "conventional escape sequence" "q" "\q")  ;; 113
-;;;;                                                "\r"   ;; 114
-;;(assert-equal? "conventional escape sequence" "s" "\s")  ;; 115
-;;;;                                                "\t"   ;; 116
-;;(assert-equal? "conventional escape sequence" "u" "\u")  ;; 117
-;;;;                                                "\v"   ;; 118
-;;(assert-equal? "conventional escape sequence" "w" "\w")  ;; 119
-;;(assert-equal? "conventional escape sequence" "x" "\x")  ;; 120
-;;(assert-equal? "conventional escape sequence" "y" "\y")  ;; 121
-;;(assert-equal? "conventional escape sequence" "z" "\z")  ;; 122
-;;(assert-equal? "conventional escape sequence" "{" "\{")  ;; 123
-;;;;                                                "\|"   ;; 124
-;;(assert-equal? "conventional escape sequence" "}" "\}")  ;; 125
-;;(assert-equal? "conventional escape sequence" "~" "\~")  ;; 126
+;; error".
+;;                                                      "\0"   ;; 0
+(assert-parse-error "conventional escape sequence" "\"\\ \"")  ;; 32
+(assert-parse-error "conventional escape sequence" "\"\\!\"")  ;; 33
+;;                                                      "\""   ;; 34
+(assert-parse-error "conventional escape sequence" "\"\\#\"")  ;; 35
+(assert-parse-error "conventional escape sequence" "\"\\$\"")  ;; 36
+(assert-parse-error "conventional escape sequence" "\"\\%\"")  ;; 37
+(assert-parse-error "conventional escape sequence" "\"\\&\"")  ;; 38
+(assert-parse-error "conventional escape sequence" "\"\\'\"")  ;; 39
+(assert-parse-error "conventional escape sequence" "\"\\(\"")  ;; 40
+(assert-parse-error "conventional escape sequence" "\"\\)\"")  ;; 41
+(assert-parse-error "conventional escape sequence" "\"\\*\"")  ;; 42
+(assert-parse-error "conventional escape sequence" "\"\\+\"")  ;; 43
+(assert-parse-error "conventional escape sequence" "\"\\,\"")  ;; 44
+(assert-parse-error "conventional escape sequence" "\"\\-\"")  ;; 45
+(assert-parse-error "conventional escape sequence" "\"\\.\"")  ;; 46
+(assert-parse-error "conventional escape sequence" "\"\\/\"")  ;; 47
+(assert-parse-error "conventional escape sequence" "\"\\0\"")  ;; 48
+(assert-parse-error "conventional escape sequence" "\"\\1\"")  ;; 49
+(assert-parse-error "conventional escape sequence" "\"\\2\"")  ;; 50
+(assert-parse-error "conventional escape sequence" "\"\\3\"")  ;; 51
+(assert-parse-error "conventional escape sequence" "\"\\4\"")  ;; 52
+(assert-parse-error "conventional escape sequence" "\"\\5\"")  ;; 53
+(assert-parse-error "conventional escape sequence" "\"\\6\"")  ;; 54
+(assert-parse-error "conventional escape sequence" "\"\\7\"")  ;; 55
+(assert-parse-error "conventional escape sequence" "\"\\8\"")  ;; 56
+(assert-parse-error "conventional escape sequence" "\"\\9\"")  ;; 57
+(assert-parse-error "conventional escape sequence" "\"\\:\"")  ;; 58
+(assert-parse-error "conventional escape sequence" "\"\\;\"")  ;; 59
+(assert-parse-error "conventional escape sequence" "\"\\<\"")  ;; 60
+(assert-parse-error "conventional escape sequence" "\"\\=\"")  ;; 61
+(assert-parse-error "conventional escape sequence" "\"\\>\"")  ;; 62
+(assert-parse-error "conventional escape sequence" "\"\\?\"")  ;; 63
+(assert-parse-error "conventional escape sequence" "\"\\@\"")  ;; 64
+(assert-parse-error "conventional escape sequence" "\"\\A\"")  ;; 65
+(assert-parse-error "conventional escape sequence" "\"\\B\"")  ;; 66
+(assert-parse-error "conventional escape sequence" "\"\\C\"")  ;; 67
+(assert-parse-error "conventional escape sequence" "\"\\D\"")  ;; 68
+(assert-parse-error "conventional escape sequence" "\"\\E\"")  ;; 69
+(assert-parse-error "conventional escape sequence" "\"\\F\"")  ;; 70
+(assert-parse-error "conventional escape sequence" "\"\\G\"")  ;; 71
+(assert-parse-error "conventional escape sequence" "\"\\H\"")  ;; 72
+(assert-parse-error "conventional escape sequence" "\"\\I\"")  ;; 73
+(assert-parse-error "conventional escape sequence" "\"\\J\"")  ;; 74
+(assert-parse-error "conventional escape sequence" "\"\\K\"")  ;; 75
+(assert-parse-error "conventional escape sequence" "\"\\L\"")  ;; 76
+(assert-parse-error "conventional escape sequence" "\"\\M\"")  ;; 77
+(assert-parse-error "conventional escape sequence" "\"\\N\"")  ;; 78
+(assert-parse-error "conventional escape sequence" "\"\\O\"")  ;; 79
+(assert-parse-error "conventional escape sequence" "\"\\P\"")  ;; 80
+(assert-parse-error "conventional escape sequence" "\"\\Q\"")  ;; 81
+(assert-parse-error "conventional escape sequence" "\"\\R\"")  ;; 82
+(assert-parse-error "conventional escape sequence" "\"\\S\"")  ;; 83
+(assert-parse-error "conventional escape sequence" "\"\\T\"")  ;; 84
+(assert-parse-error "conventional escape sequence" "\"\\U\"")  ;; 85
+(assert-parse-error "conventional escape sequence" "\"\\V\"")  ;; 86
+(assert-parse-error "conventional escape sequence" "\"\\W\"")  ;; 87
+(assert-parse-error "conventional escape sequence" "\"\\X\"")  ;; 88
+(assert-parse-error "conventional escape sequence" "\"\\Y\"")  ;; 89
+(assert-parse-error "conventional escape sequence" "\"\\Z\"")  ;; 90
+(assert-parse-error "conventional escape sequence" "\"\\[\"")  ;; 91
+;;                                                      "\\"   ;; 92
+(assert-parse-error "conventional escape sequence" "\"\\]\"")  ;; 93
+(assert-parse-error "conventional escape sequence" "\"\\^\"")  ;; 94
+(assert-parse-error "conventional escape sequence" "\"\\_\"")  ;; 95
+(assert-parse-error "conventional escape sequence" "\"\\`\"")  ;; 96
+;;                                                      "\a"   ;; 97
+;;                                                      "\b"   ;; 98
+(assert-parse-error "conventional escape sequence" "\"\\c\"")  ;; 99
+(assert-parse-error "conventional escape sequence" "\"\\d\"")  ;; 100
+(assert-parse-error "conventional escape sequence" "\"\\e\"")  ;; 101
+;;                                                      "\f"   ;; 102
+(assert-parse-error "conventional escape sequence" "\"\\g\"")  ;; 103
+(assert-parse-error "conventional escape sequence" "\"\\h\"")  ;; 104
+(assert-parse-error "conventional escape sequence" "\"\\i\"")  ;; 105
+(assert-parse-error "conventional escape sequence" "\"\\j\"")  ;; 106
+(assert-parse-error "conventional escape sequence" "\"\\k\"")  ;; 107
+(assert-parse-error "conventional escape sequence" "\"\\l\"")  ;; 108
+(assert-parse-error "conventional escape sequence" "\"\\m\"")  ;; 109
+;;                                                      "\n"   ;; 110
+(assert-parse-error "conventional escape sequence" "\"\\o\"")  ;; 111
+(assert-parse-error "conventional escape sequence" "\"\\p\"")  ;; 112
+(assert-parse-error "conventional escape sequence" "\"\\q\"")  ;; 113
+;;                                                      "\r"   ;; 114
+(assert-parse-error "conventional escape sequence" "\"\\s\"")  ;; 115
+;;                                                      "\t"   ;; 116
+(assert-parse-error "conventional escape sequence" "\"\\u\"")  ;; 117
+;;                                                      "\v"   ;; 118
+(assert-parse-error "conventional escape sequence" "\"\\w\"")  ;; 119
+(assert-parse-error "conventional escape sequence" "\"\\x\"")  ;; 120
+(assert-parse-error "conventional escape sequence" "\"\\y\"")  ;; 121
+(assert-parse-error "conventional escape sequence" "\"\\z\"")  ;; 122
+(assert-parse-error "conventional escape sequence" "\"\\{\"")  ;; 123
+;;                                                      "\|"   ;; 124
+(assert-parse-error "conventional escape sequence" "\"\\}\"")  ;; 125
+(assert-parse-error "conventional escape sequence" "\"\\~\"")  ;; 126
+
+;; raw control chars
+(assert-equal? "raw control char in string literal" (integer->string   0) " ")  ;; 0
+(assert-equal? "raw control char in string literal" (integer->string   1) "")  ;; 1
+(assert-equal? "raw control char in string literal" (integer->string   2) "")  ;; 2
+(assert-equal? "raw control char in string literal" (integer->string   3) "")  ;; 3
+(assert-equal? "raw control char in string literal" (integer->string   4) "")  ;; 4
+(assert-equal? "raw control char in string literal" (integer->string   5) "")  ;; 5
+(assert-equal? "raw control char in string literal" (integer->string   6) "")  ;; 6
+(assert-equal? "raw control char in string literal" (integer->string   7) "")  ;; 7
+(assert-equal? "raw control char in string literal" (integer->string   8) "")  ;; 8  ;; DON'T EDIT THIS LINE!
+(assert-equal? "raw control char in string literal" (integer->string   9) "	")  ;; 9
+(assert-equal? "raw control char in string literal" (integer->string  10) "
+")  ;; 10  ;; DON'T EDIT THIS LINE!
+(assert-equal? "raw control char in string literal" (integer->string  11) "")  ;; 11
+(assert-equal? "raw control char in string literal" (integer->string  12) "")  ;; 12
+(assert-equal? "raw control char in string literal" (integer->string  13) "")  ;; 13  ;; DON'T EDIT THIS LINE!
+(assert-equal? "raw control char in string literal" (integer->string  14) "")  ;; 14
+(assert-equal? "raw control char in string literal" (integer->string  15) "")  ;; 15
+(assert-equal? "raw control char in string literal" (integer->string  16) "")  ;; 16
+(assert-equal? "raw control char in string literal" (integer->string  17) "")  ;; 17
+(assert-equal? "raw control char in string literal" (integer->string  18) "")  ;; 18
+(assert-equal? "raw control char in string literal" (integer->string  19) "")  ;; 19
+(assert-equal? "raw control char in string literal" (integer->string  20) "")  ;; 20
+(assert-equal? "raw control char in string literal" (integer->string  21) "")  ;; 21
+(assert-equal? "raw control char in string literal" (integer->string  22) "")  ;; 22
+(assert-equal? "raw control char in string literal" (integer->string  23) "")  ;; 23
+(assert-equal? "raw control char in string literal" (integer->string  24) "")  ;; 24
+(assert-equal? "raw control char in string literal" (integer->string  25) "")  ;; 25  ;; DON'T EDIT THIS LINE!
+(assert-equal? "raw control char in string literal" (integer->string  26) "")  ;; 26
+(assert-equal? "raw control char in string literal" (integer->string  27) "")  ;; 27
+(assert-equal? "raw control char in string literal" (integer->string  28) "")  ;; 28
+(assert-equal? "raw control char in string literal" (integer->string  29) "")  ;; 29
+(assert-equal? "raw control char in string literal" (integer->string  30) "")  ;; 30
+(assert-equal? "raw control char in string literal" (integer->string  31) "")  ;; 31
+(assert-equal? "raw control char in string literal" (integer->string 127) "")  ;; 127
+
+;; escaped raw control chars
+;;(assert-parse-error "escaped raw control char in string literal" "\"\\ \"")  ;; 0  ;; cannot read by string port
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 1
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 2
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 3
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 4
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 5
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 6
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 7
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 8  ;; DON'T EDIT THIS LINE!
+(assert-parse-error "escaped raw control char in string literal" "\"\\	\"")  ;; 9
+(assert-parse-error "escaped raw control char in string literal" "\"\\
+\"")  ;; 10  ;; DON'T EDIT THIS LINE!
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 11
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 12
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 13  ;; DON'T EDIT THIS LINE!
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 14
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 15
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 16
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 17
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 18
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 19
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 20
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 21
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 22
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 23
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 24
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 25  ;; DON'T EDIT THIS LINE!
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 26
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 27
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 28
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 29
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 30
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 31
+(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 127
 
 (total-report)
