@@ -34,7 +34,7 @@
 /*=======================================
   System Include
 =======================================*/
-#include <stdio.h>
+#include <stdlib.h>
 
 /*=======================================
   Local Include
@@ -91,9 +91,9 @@ static void repl(void)
 
 static void repl_loop(void)
 {
-    ScmObj s_exp  = SCM_NULL;
-    ScmObj result = SCM_NULL;
-    int is_prompt      = is_repl_prompt();
+    ScmObj s_exp  = SCM_FALSE;
+    ScmObj result = SCM_FALSE;
+    int is_prompt = is_repl_prompt();
 
     if (is_prompt)
         SigScm_PortPrintf(scm_current_output_port, PROMPT_STR);
@@ -156,5 +156,5 @@ int main(int argc, char **argv)
     }
 
     SigScm_Finalize();
-    return 0;
+    return EXIT_SUCCESS;
 }
