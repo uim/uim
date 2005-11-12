@@ -975,10 +975,12 @@ ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
              * result.
              */
             if (NULLP(exps)) {
-                if (EQ(test, SYM_ELSE))
+                if (EQ(test, SYM_ELSE)) {
                     ERR_OBJ("bad clause: else with no expressions", clause);
-                else
+                } else {
+                    eval_state->ret_type = SCM_RETTYPE_AS_IS;
                     return test;
+                }
             }
 
             /*
@@ -995,6 +997,7 @@ ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
                 if (!PROCEDUREP(proc))
                     ERR_OBJ("exp after => must be the procedure but got", proc);
 
+                eval_state->ret_type = SCM_RETTYPE_AS_IS;
                 return Scm_call(proc, LIST_1(test));
             }
 
