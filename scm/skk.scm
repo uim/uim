@@ -1218,7 +1218,7 @@
        (if (skk-special-midashi-key? key key-state)
 	   (begin
 	     (skk-append-residual-kana sc)
-	     (skk-append-string sc '(">"))
+	     (skk-append-string sc '(">" ">" ">"))
 	     (skk-begin-conversion sc)
 	     #f)
 	   #t)
@@ -1579,7 +1579,14 @@
 	(begin
 	  (skk-append-list-to-context-head
 	   sc
-	   (find-kana-list-from-rule ja-rk-rule-basic (car sl)))
+	   (if (or
+		(skk-context-latin-conv sc)
+		;; handle Setsubi-ji
+		(and
+		 (null? (cdr sl))
+		 (string=? ">" (car sl))))
+	       (list (car sl) (car sl) (car sl))
+	       (find-kana-list-from-rule ja-rk-rule-basic (car sl))))
 	  (skk-string-list-to-context-head sc (cdr sl)))
 	#f)))
 
@@ -1696,7 +1703,7 @@
 	 (if (skk-special-midashi-key? key key-state)
 	     (begin
 	       (skk-context-set-state! sc 'skk-state-kanji)
-	       (skk-append-string sc '(">"))
+	       (skk-append-string sc '(">" ">" ">"))
 	       (set! res #f))
 	     (set! res (skk-proc-state-direct c key key-state)))))
       res)))
