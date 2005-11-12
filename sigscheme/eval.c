@@ -929,7 +929,8 @@ ScmObj ScmExp_setd(ScmObj sym, ScmObj exp, ScmObj env)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.1 Conditionals
 ===========================================================================*/
-ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
+/* body of 'cond' and also invoked from 'guard' of SRFI-34 */
+ScmObj ScmExp_cond_internal(ScmObj args, ScmEvalState *eval_state)
 {
     /*
      * (cond <clause1> <clause2> ...)
@@ -948,7 +949,7 @@ ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
     ScmObj test   = SCM_FALSE;
     ScmObj exps   = SCM_FALSE;
     ScmObj proc   = SCM_FALSE;
-    DECLARE_FUNCTION("cond", SyntaxVariadicTailRec0);
+    DECLARE_INTERNAL_FUNCTION("cond" /* , SyntaxVariadicTailRec0 */);
 
     if (NO_MORE_ARG(args))
         ERR("cond: syntax error: at least one clause required");
@@ -1003,7 +1004,20 @@ ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
         }
     }
 
-    return SCM_UNDEF;
+    /*
+     * To distinguish unmatched status from SCM_UNDEF from a clause, pure
+     * internal value SCM_INVALID is returned. Don't pass it to Scheme world.
+     */
+    return SCM_INVALID;
+}
+
+ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
+{
+    ScmObj ret;
+    DECLARE_FUNCTION("cond", SyntaxVariadicTailRec0);
+
+    ret = ScmExp_cond_internal(args, eval_state);
+    return (VALIDP(ret)) ? ret : SCM_UNDEF;
 }
 
 /* FIXME: argument extraction */

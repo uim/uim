@@ -362,6 +362,8 @@ ScmObj Scm_SymbolValue(ScmObj var, ScmObj env);
 ScmObj Scm_eval(ScmObj obj, ScmObj env);
 ScmObj Scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
 
+ScmObj ScmExp_cond_internal(ScmObj args, ScmEvalState *eval_state);
+
 /* error.c */
 void Scm_ThrowException(ScmObj errorobj) SCM_NORETURN;
 void SigScm_ShowErrorHeader(void);
