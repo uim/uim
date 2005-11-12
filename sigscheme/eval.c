@@ -856,17 +856,15 @@ ScmObj ScmExp_quote(ScmObj datum, ScmObj env)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.4 Procedures
 ===========================================================================*/
-/* FIXME: Accept all arguments as single variadic variable to reduce cons cell
- * consumption. And current 'first_expr' check should be enclosed into
- * SCM_STRICT_ARGCHECK or SCM_STRICT_R5RS.
- */
-ScmObj ScmExp_lambda(ScmObj formals, ScmObj first_expr, ScmObj rest, ScmObj env)
+ScmObj ScmExp_lambda(ScmObj formals, ScmObj body, ScmObj env)
 {
-    DECLARE_FUNCTION("lambda", SyntaxVariadic2);
+    DECLARE_FUNCTION("lambda", SyntaxVariadic1);
     if (!CONSP(formals) && !NULLP(formals) && !SYMBOLP(formals))
         ERR_OBJ("bad formals", formals);
-                           /* (formals first_expr . rest) */
-    return Scm_NewClosure(CONS(formals, CONS(first_expr, rest)), env);
+    if (!CONSP(body))
+        ERR_OBJ("at least one expression required", body);
+
+    return Scm_NewClosure(CONS(formals, body), env);
 }
 
 /*===========================================================================
