@@ -714,7 +714,12 @@ ScmObj ScmOp_SRFI23_error(ScmObj reason, ScmObj args);
 /* operations-srfi34.c */
 void  SigScm_Initialize_SRFI34(void);
 ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk);
+#if SCM_USE_NEW_SRFI34
+ScmObj ScmExp_SRFI34_guard(ScmObj cond_catch, ScmObj body,
+                           ScmEvalState *eval_state);
+#else /* SCM_USE_NEW_SRFI34 */
 ScmObj ScmExp_SRFI34_guard(ScmObj var_and_clauses, ScmObj body, ScmObj env);
+#endif /* SCM_USE_NEW_SRFI34 */
 ScmObj ScmOp_SRFI34_raise(ScmObj obj);
 #endif
 #if SCM_USE_SRFI38

@@ -100,6 +100,31 @@ static void repl_loop(void)
 
     while (s_exp = SigScm_Read(scm_current_input_port), !EOFP(s_exp)) {
 #if SCM_USE_SRFI34
+#if SCM_USE_NEW_SRFI34
+        /* FIXME: move the fallback exception handling into error.c */
+        /*
+         * Error-proof evaluation
+         *
+         * (guard (err
+         *         (else
+         *          (display "unhandled exception: ")
+         *          (write err)
+         *          (newline)
+         *          #<undef>))
+         *   exp)
+         */
+        result = EVAL(LIST_3(Scm_Intern("guard"),
+                             LIST_2(Scm_Intern("err"),
+                                    LIST_5(SYM_ELSE,
+                                           LIST_2(Scm_Intern("display"),
+                                                  Scm_NewStringCopying("unhandled exception: ")),
+                                           LIST_2(Scm_Intern("write"),
+                                                  Scm_Intern("err")),
+                                           LIST_1(Scm_Intern("newline")),
+                                           SCM_UNDEF)),
+                             s_exp),
+                      SCM_INTERACTION_ENV);
+#else /* SCM_USE_NEW_SRFI34 */
         /*
          * Error Aware repl_loop
          *
@@ -112,6 +137,7 @@ static void repl_loop(void)
                                                    LIST_2(SYM_QUOTE, s_exp),
                                                    SCM_INTERACTION_ENV)),
                                      SCM_INTERACTION_ENV);
+#endif /* SCM_USE_NEW_SRFI34 */
 #else /* SCM_USE_SRFI34 */
         result = EVAL(s_exp, SCM_INTERACTION_ENV);
 #endif
@@ -143,6 +169,10 @@ int main(int argc, char **argv)
     char *filename = argv[1];
 
     SigScm_Initialize();
+
+#if SCM_USE_SRFI34
+    Scm_use("srfi-34");
+#endif
 
     if (argc < 2) {
 #if SCM_GCC4_READY_GC

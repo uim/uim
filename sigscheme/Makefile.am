@@ -1,3 +1,5 @@
+BUILD_FUNCTBL = ./script/build_func_table.rb
+
 noinst_LTLIBRARIES  = libsscm.la
 
 FUNC_TABLES = \
@@ -11,9 +13,11 @@ FUNC_TABLES = \
 		sigschemefunctable-srfi8.c \
 		sigschemefunctable-srfi23.c \
 		sigschemefunctable-srfi34.c \
+		sigschemefunctable-new-srfi34.c \
 		sigschemefunctable-srfi38.c \
 		sigschemefunctable-srfi60.c
 
+# FIXME: simplify like sigschemefunctable-new-srfi34.c
 sigschemefunctable.c: $(FUNC_TABLES)
 sigschemefunctable-r5rs.c: ./script/build_func_table.rb sigscheme.c operations.c eval.c io.c
 	./script/build_func_table.rb "" "r5rs_func_info_table" "sigscheme.c" "operations.c" "eval.c" "io.c" \
@@ -42,6 +46,8 @@ sigschemefunctable-srfi23.c: ./script/build_func_table.rb operations-srfi23.c
 sigschemefunctable-srfi34.c: ./script/build_func_table.rb operations-srfi34.c
 	./script/build_func_table.rb "_SRFI34_" "srfi34_func_info_table" "operations-srfi34.c" \
 		> sigschemefunctable-srfi34.c
+sigschemefunctable-new-srfi34.c: operations-new-srfi34.c $(BUILD_FUNCTBL)
+	$(BUILD_FUNCTBL) "_SRFI34_" "scm_new_srfi34_func_info_table" $< > $@
 sigschemefunctable-srfi38.c: ./script/build_func_table.rb operations-srfi38.c
 	./script/build_func_table.rb "_SRFI38_" "srfi38_func_info_table" "operations-srfi38.c" \
 		> sigschemefunctable-srfi38.c
@@ -52,6 +58,7 @@ sigschemefunctable-siod.c: ./script/build_func_table.rb operations-siod.c
 	./script/build_func_table.rb "" "siod_func_info_table" "operations-siod.c" \
 		> sigschemefunctable-siod.c
 
+# FIXME: add all distribution files to EXTRA_DIST
 EXTRA_DIST = $(FUNC_TABLES)
 libsscm_la_SOURCES = \
 		storage.c debug.c \
