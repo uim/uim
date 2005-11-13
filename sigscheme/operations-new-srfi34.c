@@ -86,6 +86,20 @@ static ScmObj proc_with_exception_handlers;
 static ScmObj syn_guard_internal, syn_guard_handler, syn_guard_handler_body;
 static ScmObj syn_guard_body;
 
+static ScmObj *global_obj_list[] = {
+    &current_exception_handlers,
+    &errmsg_unhandled_exception, &errmsg_handler_returned,
+    &sym_error, &sym_raise,
+    &sym_lex_env, &sym_cond_catch, &sym_body,
+    &sym_condition, &sym_guard_k, &sym_handler_k,
+    &syn_apply, &proc_values,
+    &syn_set_cur_handlers, &proc_fallback_handler,
+    &proc_with_exception_handlers,
+    &syn_guard_internal, &syn_guard_handler, &syn_guard_handler_body,
+    &syn_guard_body,
+    NULL
+};
+
 /*=======================================
   File Local Function Declarations
 =======================================*/
@@ -101,7 +115,15 @@ static ScmObj guard_body(ScmEvalState *eval_state);
 =======================================*/
 void SigScm_Initialize_SRFI34(void)
 {
+    ScmObj **var;
+
     Scm_use("srfi-23");
+
+    /* protect global variables */
+    for (var = &global_obj_list[0]; *var; var++) {
+        **var = SCM_FALSE;
+        SigScm_GC_Protect(*var);
+    }
 
     errmsg_unhandled_exception = MAKE_STR_COPYING(ERRMSG_UNHANDLED_EXCEPTION);
     errmsg_handler_returned    = MAKE_STR_COPYING(ERRMSG_HANDLER_RETURNED);
