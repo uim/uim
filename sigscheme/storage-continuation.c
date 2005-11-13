@@ -109,7 +109,9 @@ void SigScm_InitContinuation(void)
 {
     initialize_dynamic_extent();
     initialize_continuation_env();
+
     trace_stack = SCM_NULL;
+    SigScm_GC_Protect(&trace_stack);
 }
 
 void SigScm_FinalizeContinuation(void)
