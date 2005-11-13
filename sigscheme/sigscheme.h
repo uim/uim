@@ -233,6 +233,7 @@ extern ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *);
 void SigScm_Initialize(void);
 void SigScm_Finalize(void);
 void Scm_DefineAlias(const char *newsym, const char *sym);
+int  Scm_use(const char *feature);
 ScmObj ScmExp_use(ScmObj feature, ScmObj env);
 ScmObj Scm_eval_c_string(const char *exp);
 #if SCM_COMPAT_SIOD

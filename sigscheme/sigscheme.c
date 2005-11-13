@@ -211,6 +211,15 @@ void Scm_DefineAlias(const char *newsym, const char *sym)
                          SCM_SYMBOL_VCELL(Scm_Intern(sym)));
 }
 
+int Scm_use(const char *feature)
+{
+    ScmObj ok;
+    SCM_ASSERT(feature);
+
+    ok = ScmExp_use(Scm_Intern(feature), SCM_INTERACTION_ENV);
+    return NFALSEP(ok);
+}
+
 /*
  * TODO:
  * - Make the interface and semantics of 'use' similar to other Scheme
