@@ -243,7 +243,7 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
         print_string(port, obj, otype);
         break;
     case ScmFunc:
-        SCM_PORT_PRINT(port, "#<subr>");
+        SCM_PORT_PRINT(port, (SCM_SYNTAXP(obj)) ? "#<syntax>" : "#<subr>");
         break;
     case ScmClosure:
         SCM_PORT_PRINT(port, "#<closure:");
