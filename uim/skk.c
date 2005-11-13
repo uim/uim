@@ -1813,6 +1813,27 @@ skk_clear_completions(uim_lisp head_)
   return uim_scm_t();
 }
 
+static uim_lisp
+skk_get_dcomp_entry(uim_lisp head_)
+{
+  const char *hs;
+  struct skk_line *sl;
+  int len;
+  
+  hs = uim_scm_refer_c_str(head_);
+  len = strlen(hs);
+
+  if (len != 0) {
+    /* Search from cache using same way as in make_comp_array_from_cache(). */
+    for (sl = skk_dic->head.next; sl; sl = sl->next) {
+      if (!strncmp(sl->head, hs, len) && strcmp(sl->head, hs) &&
+		   sl->okuri_head == '\0')
+	return uim_scm_make_str(sl->head);
+    }
+  }
+  return uim_scm_make_str("");
+}
+
 static void
 reorder_candidate(struct skk_cand_array *ca, const char *str)
 {
@@ -2829,7 +2850,7 @@ update_personal_dictionary_cache_with_file(const char *fn, int is_personal)
     if (diff != NULL) {
       sl = diff;
       while (sl->next) {
-        sl = sl->next;
+	sl = sl->next;
       }
       sl->next = skk_dic->head.next;
       skk_dic->head.next = diff;
@@ -3019,6 +3040,43 @@ skk_eval_candidate(uim_lisp str_)
   return cand_;
 }
 
+/* only for siod */
+static uim_lisp
+skk_substring(uim_lisp str_, uim_lisp start_, uim_lisp end_)
+{
+  const char *str;
+  char *s;
+  int start;
+  int end;
+  int len;
+  uim_lisp ret;
+  int i, j = 0;
+
+  str = uim_scm_refer_c_str(str_);
+  start = uim_scm_c_int(start_);
+  end = uim_scm_c_int(end_);
+
+  if (!str || start < 0 || start > end)
+    return uim_scm_make_str("");
+
+  len = strlen(str);
+
+  if (end > len)
+    return uim_scm_make_str("");
+
+  s = malloc(end - start + 1);
+
+  for (i = start; i < end; i++) {
+    s[j] = str[i];
+    j++;
+  }
+  s[j] = '\0';
+  ret = uim_scm_make_str(s);
+  free(s);
+
+  return ret;
+}
+
 
 void
 uim_plugin_instance_init(void)
@@ -3041,7 +3099,9 @@ uim_plugin_instance_init(void)
   uim_scm_init_subr_2("skk-lib-get-nth-completion", skk_get_nth_completion);
   uim_scm_init_subr_1("skk-lib-get-nr-completions", skk_get_nr_completions);
   uim_scm_init_subr_1("skk-lib-clear-completions", skk_clear_completions);
+  uim_scm_init_subr_1("skk-lib-get-dcomp-word", skk_get_dcomp_entry);
   uim_scm_init_subr_1("skk-lib-eval-candidate", skk_eval_candidate);
+  uim_scm_init_subr_3("skk-lib-substring", skk_substring);
 }
 
 void

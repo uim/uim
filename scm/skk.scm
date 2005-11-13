@@ -73,6 +73,7 @@
     (skk-preedit-attr-child-end-mark       . preedit-attr?)
     (skk-preedit-attr-child-committed      . preedit-attr?)
     (skk-preedit-attr-child-dialog	   . preedit-attr?)
+    (skk-preedit-attr-dcomp		   . preedit-attr?)
     (skk-child-context-beginning-mark      . string?)
     (skk-child-context-end-mark		   . string?)
     (skk-show-cursor-on-preedit?	   . boolean?)
@@ -91,6 +92,7 @@
     (skk-preedit-attr-child-end-mark       . preedit-reverse)
     (skk-preedit-attr-child-committed      . preedit-reverse)
     (skk-preedit-attr-child-dialog	   . preedit-none)
+    (skk-preedit-attr-dcomp		   . preedit-none)
     (skk-child-context-beginning-mark      . "[")
     (skk-child-context-end-mark		   . "]")
     (skk-show-cursor-on-preedit?	   . #f)
@@ -108,6 +110,7 @@
     (skk-preedit-attr-child-end-mark       . preedit-underline)
     (skk-preedit-attr-child-committed      . preedit-underline)
     (skk-preedit-attr-child-dialog	   . preedit-none)
+    (skk-preedit-attr-dcomp		   . preedit-underline)
     (skk-child-context-beginning-mark      . "¡Ú")
     (skk-child-context-end-mark		   . "¡Û")
     (skk-show-cursor-on-preedit?	   . #t)
@@ -138,6 +141,7 @@
 (define skk-preedit-attr-child-end-mark #f)
 (define skk-preedit-attr-child-committed #f)
 (define skk-preedit-attr-child-dialog #f)
+(define skk-preedit-attr-dcomp #f)
 (define skk-child-context-beginning-mark #f)
 (define skk-child-context-end-mark #f)
 (define skk-show-cursor-on-preedit? #f)
@@ -286,6 +290,7 @@
     (list 'okuri-head	      "")
     (list 'okuri	      '())
     (list 'appendix	      '())
+    (list 'dcomp-word	      "")
     ;(list 'candidates	      '())
     (list 'nth		      0)
     (list 'nr-candidates      0)
@@ -353,6 +358,8 @@
       (skk-context-set-okuri-head! sc "")
       (skk-context-set-okuri! sc '())
       (skk-context-set-appendix! sc '())
+      (if skk-dcomp-activate?
+	  (skk-context-set-dcomp-word! sc ""))
       (skk-reset-candidate-window sc)
       (skk-context-set-nr-candidates! sc 0)
       (skk-context-set-latin-conv! sc #f)
@@ -464,6 +471,7 @@
 	  res
 	  #f))))
 
+;;; no longer used 
 (define skk-get-string-by-mode
   (lambda (sc str)
     (let ((kana (skk-context-kana-mode sc)))
@@ -696,11 +704,20 @@
 	    (skk-context-set-state! sc 'skk-state-completion)))
       )))
 
+(define skk-dcomp-word-tail
+  (lambda (sc)
+   (let ((h (skk-make-string (skk-context-head sc) skk-type-hiragana))
+	 (w (skk-context-dcomp-word sc)))
+     (skk-lib-substring w (string-length h) (string-length w)))))
+
+
 (define skk-do-update-preedit
   (lambda (sc)
     (let ((rkc (skk-context-rk-context sc))
 	  (stat (skk-context-state sc))
-	  (csc (skk-context-child-context sc)))
+	  (csc (skk-context-child-context sc))
+	  (with-dcomp-word? #f))
+      ;; mark
       (if (and
 	   (null? csc)
 	   (or
@@ -712,6 +729,7 @@
 	   (not (null? csc))
 	   (eq? stat 'skk-state-converting))
 	  (im-pushback-preedit sc skk-preedit-attr-mode-mark "¢§"))
+      ;; head without child context
       (if (and
 	   (null? csc)
 	   (or
@@ -724,6 +742,21 @@
 		(im-pushback-preedit
 		 sc skk-preedit-attr-head
 		 h))))
+      ;; dcomp
+      (if (and
+	   skk-dcomp-activate?
+	   (null? csc)
+	   (eq? stat 'skk-state-kanji)
+	   (not (skk-rk-pending? sc))
+	   (not (string=? (skk-context-dcomp-word sc) "")))
+	  (begin
+	    (im-pushback-preedit sc preedit-cursor "")
+	    (im-pushback-preedit
+	     sc skk-preedit-attr-dcomp
+	     (skk-dcomp-word-tail sc))
+	    (set! with-dcomp-word? #t)
+	     ))
+      ;; conv-body + okuri
       (if (and
 	   (eq? stat 'skk-state-converting)
 	   (or
@@ -757,6 +790,7 @@
 	     sc skk-preedit-attr-conv-appendix
 	     (skk-make-string (skk-context-appendix sc)
 			      (skk-context-kana-mode sc)))))
+      ;; head with child context
       (if (and
 	   (not (null? csc))
 	   (or
@@ -779,6 +813,7 @@
 		(im-pushback-preedit
 		 sc skk-preedit-attr-head
 		 h))))
+      ;; completion
       (if (and
 	   (eq? stat 'skk-state-completion)
 	   (null? csc))
@@ -786,13 +821,13 @@
 	    (im-pushback-preedit
 	     sc skk-preedit-attr-head
 	     (skk-get-current-completion sc))))
-
+      ;; okuri mark
       (if (or
 	   (eq? stat 'skk-state-okuri)
 	   (and
 	    (not (null? csc))
 	    (eq? stat 'skk-state-converting)
-	    (skk-context-okuri sc)
+	    (not (null? (skk-context-okuri sc)))
 	    (= (skk-context-child-type sc) skk-child-type-editor)))
 	  (begin
 	    (im-pushback-preedit 
@@ -800,7 +835,7 @@
 	     (string-append
 	      "*" (skk-make-string (skk-context-okuri sc)
 				   (skk-context-kana-mode sc))))))
-
+      ;; pending rk
       (if (or
 	   (eq? stat 'skk-state-direct)
 	   (eq? stat 'skk-state-latin)
@@ -817,9 +852,9 @@
 		  (eq? stat 'skk-state-kanji)
 		  (eq? stat 'skk-state-completion)
 		  (eq? stat 'skk-state-okuri))
-		 skk-show-cursor-on-preedit?)
+		 skk-show-cursor-on-preedit?
+		 (not with-dcomp-word?))
 		(im-pushback-preedit sc preedit-cursor ""))))
-
       ;; child context's preedit
       (if (not (null? csc))
 	  (let ((editor (skk-context-editor sc))
@@ -958,6 +993,12 @@
      (else
       #t))))
 
+(define skk-rk-pending?
+  (lambda (sc)
+    (if (null? (rk-context-seq (skk-context-rk-context sc)))
+	#f
+	#t)))
+
 (define skk-proc-state-direct
   (lambda (c key key-state)
     (let* ((sc (skk-find-descendant-context c))
@@ -967,7 +1008,7 @@
 	   (kana (skk-context-kana-mode sc)))
       (and
        ;; at first, no preedit mode
-       (if (string=? (rk-pending rkc) "")
+       (if (not (skk-rk-pending? sc))
 	   (skk-proc-state-direct-no-preedit key key-state sc rkc)
 	   #t)
        (if (skk-cancel-key? key key-state)
@@ -1078,7 +1119,7 @@
 	   #t)
        (if (char-upper-case? key)
 	   (if (and 
-		(not (null? (rk-context-seq rkc)))
+		(skk-rk-pending? sc)
 		(not (rk-current-seq rkc)))
 	       ;; ddskk compatible behavior but not in SKK speciation
 	       (begin
@@ -1087,6 +1128,13 @@
 					rkc
 					(charcode->string
 					 (to-lower-char key))))
+		 ;;; dcomp
+		 (if skk-dcomp-activate?
+		     (skk-context-set-dcomp-word!
+		      sc
+		      (skk-lib-get-dcomp-word
+		       (skk-make-string
+			(skk-context-head sc) skk-type-hiragana))))
 		 #f)
 	       (let* ((residual-kana (rk-push-key-last! rkc)))
 		 ;; handle preceding "n"
@@ -1120,8 +1168,15 @@
 	 #t));;and
       ;; update state
       (if (eq? (skk-context-state sc) 'skk-state-kanji)
-	  (if res
-	      (skk-append-string sc res)))
+	  (begin
+	    (if res
+		(skk-append-string sc res))
+	    ;;; dcomp
+	    (if skk-dcomp-activate?
+		(skk-context-set-dcomp-word!
+		 sc
+		 (skk-lib-get-dcomp-word
+		  (skk-make-string (skk-context-head sc) skk-type-hiragana))))))
       (if (or
 	   (eq? (skk-context-state sc) 'skk-state-direct)
 	   (eq? (skk-context-state sc) 'skk-state-latin)
@@ -1186,9 +1241,20 @@
 	   (begin
 	     (if (not (rk-backspace rkc))
 		 (if (> (length (skk-context-head sc)) 0)
-		     (skk-context-set-head!
-		      sc (cdr (skk-context-head sc)))
+		     (skk-context-set-head! sc (cdr (skk-context-head sc)))
 		     (skk-flush sc)))
+	     ;;; dcomp
+	     (if (and
+		  skk-dcomp-activate?
+		  (eq? (skk-context-state sc) 'skk-state-kanji))
+		 (skk-context-set-dcomp-word!
+		  sc
+		  (if (not (skk-rk-pending? sc))
+		      (skk-lib-get-dcomp-word
+		       (skk-make-string
+		       (skk-context-head sc)
+		       skk-type-hiragana))
+			"")))
 	     #f)
 	   #t)
        (if (or
@@ -1225,7 +1291,14 @@
 		   (if (usual-char? key)
 		       (let* ((s (charcode->string key))
 			      (p (cons s (cons s (cons s s)))))
-			 (skk-append-string sc p)))))
+			 (skk-append-string sc p)))
+		   ;; dcomp
+		   (if skk-dcomp-activate?
+		       (skk-context-set-dcomp-word!
+			sc
+			(skk-lib-get-dcomp-word
+			 (skk-make-string
+			  (skk-context-head sc) skk-type-hiragana))))))
 	     #f)
 	   #t)
        (if (skk-kanji-mode-key? key key-state)
@@ -1254,7 +1327,7 @@
 	   (let ((key-str (charcode->string (to-lower-char key))))
 	     (set! res (skk-rk-push-key-match-without-new-seq rkc key-str))
 	     (if (and
-		  (not (null? (rk-context-seq rkc)))
+		  (skk-rk-pending? sc)
 		  (not (rk-current-seq rkc))
 		  res)
 		 ;; ddskk compatible behavior but not in SKK speciation
@@ -1342,6 +1415,13 @@
 		    (not (string=? (car res) ""))))
 	      (begin
 		(skk-append-string sc res)
+		;; dcomp
+		(if skk-dcomp-activate?
+		    (skk-context-set-dcomp-word!
+		     sc
+		     (skk-lib-get-dcomp-word
+		      (skk-make-string
+		       (skk-context-head sc) skk-type-hiragana))))
 		#t)
 	      #t)
 	   (if (and res
@@ -1793,7 +1873,7 @@
 		   (not (string=? (car res) ""))))
 	     (begin
 	       (skk-append-okuri-string sc res)
-	       (if (string=? (rk-pending rkc) "")
+	       (if (not (skk-rk-pending? sc))
 		   (skk-begin-conversion sc)))
 	     (begin
 	       (if (= (length (rk-context-seq rkc)) 1)
