@@ -86,7 +86,7 @@ static ScmObj proc_with_exception_handlers;
 static ScmObj syn_guard_internal, syn_guard_handler, syn_guard_handler_body;
 static ScmObj syn_guard_body;
 
-static ScmObj *global_var_list[] = {
+static ScmObj *const global_var_list[] = {
     &current_exception_handlers,
     &errmsg_unhandled_exception, &errmsg_handler_returned,
     &sym_error, &sym_raise,
@@ -115,7 +115,7 @@ static ScmObj guard_body(ScmEvalState *eval_state);
 =======================================*/
 void SigScm_Initialize_SRFI34(void)
 {
-    ScmObj **var;
+    ScmObj *const *var;
 
     Scm_use("srfi-23");
 
