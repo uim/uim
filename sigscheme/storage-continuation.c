@@ -138,7 +138,7 @@ static void finalize_dynamic_extent(void)
 static void wind_onto_dynamic_extent(ScmObj before, ScmObj after)
 {
     scm_current_dynamic_extent = CONS(MAKE_DYNEXT_FRAME(before, after),
-                                  scm_current_dynamic_extent);
+                                      scm_current_dynamic_extent);
 }
 
 static void unwind_dynamic_extent(void)
