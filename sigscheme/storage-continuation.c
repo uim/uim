@@ -82,7 +82,7 @@ ScmObj scm_current_dynamic_extent = NULL;
 static ScmObj continuation_thrown_obj = NULL;
 static ScmObj continuation_stack = NULL;
 
-static struct trace_frame *trace_stack = NULL;
+static ScmObj trace_stack = NULL;
 
 /*=======================================
   File Local Function Declarations
@@ -109,7 +109,7 @@ void SigScm_InitContinuation(void)
 {
     initialize_dynamic_extent();
     initialize_continuation_env();
-    trace_stack = NULL;
+    trace_stack = SCM_NULL;
 }
 
 void SigScm_FinalizeContinuation(void)
@@ -258,7 +258,7 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
     ScmObj cont = SCM_FALSE;
     ScmObj ret  = SCM_FALSE;
     struct continuation_frame cont_frame;
-    struct trace_frame *saved_trace_stack;
+    ScmObj saved_trace_stack;
 
     cont = Scm_NewContinuation();
     CONTINUATION_SET_FRAME(cont, &cont_frame);
@@ -336,20 +336,20 @@ void Scm_CallContinuation(ScmObj cont, ScmObj ret)
 /*============================================================================
   Trace Stack
 ============================================================================*/
-void Scm_PushTraceFrame(struct trace_frame *frame, ScmObj obj, ScmObj env)
+void Scm_PushTraceFrame(ScmObj obj, ScmObj env)
 {
-    frame->prev = trace_stack;
-    frame->obj  = obj;
-    frame->env  = env;
-    trace_stack = frame;
+    ScmObj frame;
+
+    frame = MAKE_TRACE_FRAME(obj, env);
+    trace_stack = CONS(frame, trace_stack);
 }
 
 void Scm_PopTraceFrame(void)
 {
-    trace_stack = trace_stack->prev;
+    trace_stack = CDR(trace_stack);
 }
 
-const struct trace_frame *Scm_TraceStack(void)
+ScmObj Scm_TraceStack(void)
 {
     return trace_stack;
 }

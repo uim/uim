@@ -92,7 +92,7 @@ ScmObj ScmOp_sscm_backtrace(void)
 {
     DECLARE_FUNCTION("%%backtrace", ProcedureFixed0);
 
-    SigScm_ShowBacktrace();
+    SigScm_ShowBacktrace(Scm_TraceStack());
 
     return SCM_UNDEF;
 }

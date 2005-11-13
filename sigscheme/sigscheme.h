@@ -629,7 +629,7 @@ ScmObj SigScm_Read_Char(ScmObj port);
 int  SigScm_Die(const char *msg, const char *filename, int line);
 void SigScm_Error(const char *msg, ...) SCM_NORETURN;
 void SigScm_ErrorObj(const char *msg, ScmObj obj) SCM_NORETURN;
-void SigScm_ShowBacktrace(void);
+void SigScm_ShowBacktrace(ScmObj trace_stack);
 
 /* debug.c */
 int  SigScm_DebugCategories(void);

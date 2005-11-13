@@ -483,9 +483,7 @@ ScmObj Scm_eval(ScmObj obj, ScmObj env)
     ScmEvalState state = {0};
 
 #if SCM_DEBUG
-    struct trace_frame frame;
-
-    Scm_PushTraceFrame(&frame, obj, env);
+    Scm_PushTraceFrame(obj, env);
 #endif
 
     state.env = env;

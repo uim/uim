@@ -48,13 +48,6 @@
 /*=======================================
    Type Definitions
 =======================================*/
-/* for debugging */
-struct trace_frame {
-    struct trace_frame *prev;
-    ScmObj obj;
-    ScmObj env;    
-};
-
 typedef struct ScmSpecialCharInfo_ ScmSpecialCharInfo;
 struct ScmSpecialCharInfo_ {
     unsigned int code;    /* character code as ASCII/Unicode */
@@ -95,6 +88,11 @@ extern ScmObj *scm_stack_start_pointer;
 #ifndef TRUE
 #define TRUE  (!FALSE)
 #endif /* TRUE */
+
+/* trace stack for debugging */
+#define MAKE_TRACE_FRAME(obj, env) (CONS(obj, env))
+#define TRACE_FRAME_OBJ CAR
+#define TRACE_FRAME_ENV CDR
 
 /* FreeCell Handling Macros */
 #if SCM_OBJ_COMPACT
@@ -344,9 +342,9 @@ void   Scm_DestructContinuation(ScmObj cont);
 ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state);
 void   Scm_CallContinuation(ScmObj cont, ScmObj ret);
 ScmObj Scm_DynamicWind(ScmObj before, ScmObj thunk, ScmObj after);
-void Scm_PushTraceFrame(struct trace_frame *frame, ScmObj obj, ScmObj env);
+void Scm_PushTraceFrame(ScmObj obj, ScmObj env);
 void Scm_PopTraceFrame(void);
-const struct trace_frame *Scm_TraceStack(void);
+ScmObj Scm_TraceStack(void);
 
 /* storage-symbol.c */
 void   SigScm_InitSymbol(void);

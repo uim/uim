@@ -72,7 +72,7 @@ void Scm_ThrowException(ScmObj errorobj)
     if (FALSEP(CURRENT_EXCEPTION_CONTINUATION())) {
         /* outermost exception handler */
         if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
-            SigScm_ShowBacktrace();
+            SigScm_ShowBacktrace(Scm_TraceStack());
 
         exit(EXIT_FAILURE);
     } else {
@@ -81,7 +81,7 @@ void Scm_ThrowException(ScmObj errorobj)
     }
 #else
     if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
-        SigScm_ShowBacktrace();
+        SigScm_ShowBacktrace(Scm_TraceStack());
 #endif    
 
     exit(EXIT_FAILURE);
@@ -95,7 +95,7 @@ int SigScm_Die(const char *msg, const char *filename, int line) {
     }
 
     if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
-        SigScm_ShowBacktrace();
+        SigScm_ShowBacktrace(Scm_TraceStack());
 
     exit(EXIT_FAILURE);
     /* NOTREACHED */
@@ -148,14 +148,14 @@ void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj)
     Scm_ThrowException(Scm_NewStringCopying("ERROR"));
 }
 
-void SigScm_ShowBacktrace(void)
+void SigScm_ShowBacktrace(ScmObj trace_stack)
 {
 #define UNBOUNDP(var, env)                                              \
     (NULLP(Scm_LookupEnvironment(var, env))                             \
      && !SCM_SYMBOL_BOUNDP(var))
 
 #if SCM_DEBUG
-    const struct trace_frame *f;
+    ScmObj frame;
     ScmObj env;
     ScmObj obj;
     ScmObj proc;
@@ -163,13 +163,13 @@ void SigScm_ShowBacktrace(void)
     SigScm_ErrorPrintf(SCM_BACKTRACE_HEADER);
 
     /* show each frame's obj */
-    for (f = Scm_TraceStack(); f; f = f->prev) {
+    for (frame = trace_stack; !NULLP(frame); frame = CDR(frame)) {
 #if SCM_DEBUG_BACKTRACE_SEP
         SigScm_ErrorPrintf("------------------------------\n");
 #endif /* SCM_DEBUG_BACKTRACE_SEP */
 
-        env = f->env;
-        obj = f->obj;
+        env = TRACE_FRAME_ENV(frame);
+        obj = TRACE_FRAME_OBJ(frame);
 
         SigScm_WriteToPort(scm_current_error_port, obj);
         SigScm_ErrorNewline();
