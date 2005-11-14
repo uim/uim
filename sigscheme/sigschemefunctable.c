@@ -77,10 +77,7 @@
 #if SCM_USE_SRFI23
 #include "sigschemefunctable-srfi23.c"
 #endif
-#if SCM_USE_FORMER_SRFI34
-#include "sigschemefunctable-srfi34.c"
-#endif
-#if SCM_USE_NEW_SRFI34
+#if SCM_USE_SRFI34
 #include "sigschemefunctable-new-srfi34.c"
 #endif
 #if SCM_USE_SRFI38

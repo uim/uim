@@ -34,7 +34,6 @@
 /*=======================================
   System Include
 =======================================*/
-#include <stdlib.h>
 
 /*=======================================
   Local Include
@@ -72,8 +71,6 @@ void SigScm_Initialize_SRFI23(void)
 /*=============================================================================
   SRFI23 : Error reporting mechanism
 =============================================================================*/
-#if SCM_USE_NEW_SRFI34
-
 /*
  * This code implements the '4.' of following Specification defined in SRFI-34.
  *
@@ -104,36 +101,3 @@ ScmObj ScmOp_SRFI23_error(ScmObj reason, ScmObj args)
     /* NOTREACHED */
     return SCM_UNDEF;
 }
-
-#else /* SCM_USE_NEW_SRFI34 */
-
-ScmObj ScmOp_SRFI23_error(ScmObj reason, ScmObj args)
-{
-    ScmObj arg = SCM_FALSE;
-    DECLARE_FUNCTION("error", ProcedureVariadic1);
-
-    ASSERT_STRINGP(reason);
-    
-    if (SigScm_DebugCategories() & SCM_DBG_ERRMSG) {
-        SigScm_ShowErrorHeader();
-        SigScm_DisplayToPort(scm_current_error_port, reason);
-
-        /* show each obj */
-        for (; !NULLP(args); args = CDR(args)) {
-            arg = CAR(args);
-            SigScm_ErrorPrintf(" ");
-#if SCM_USE_SRFI38
-            SigScm_WriteToPortWithSharedStructure(scm_current_error_port, arg);
-#else
-            SigScm_WriteToPort(scm_current_error_port, arg);
-#endif
-        }
-
-        SigScm_ErrorNewline();
-    }
-
-    Scm_ThrowException(args);
-    /* NOTREACHED */
-    return SCM_UNDEF;
-}
-#endif /* SCM_USE_NEW_SRFI34 */

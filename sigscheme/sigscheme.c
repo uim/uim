@@ -146,7 +146,7 @@ static void SigScm_Initialize_internal(void)
     Scm_sym_unquote_splicing = Scm_Intern("unquote-splicing");
     Scm_sym_else             = Scm_Intern("else");
     Scm_sym_yields           = Scm_Intern("=>");
-#if SCM_USE_FORMER_SRFI34
+#if 1
     /* FIXME: obsolete this. don't set SCM_TRUE and rely on the value */
     SCM_SYMBOL_SET_VCELL(Scm_Intern("else"), SCM_TRUE);
 #endif

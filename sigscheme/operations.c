@@ -1792,13 +1792,8 @@ ScmObj ScmOp_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after)
 #include "operations-srfi23.c"
 #endif
 #if SCM_USE_SRFI34
-#if SCM_USE_FORMER_SRFI34
-#include "operations-srfi34.c"
-#endif
-#if SCM_USE_NEW_SRFI34
 #include "operations-new-srfi34.c"
 #endif
-#endif /* SCM_USE_SRFI34 */
 #if SCM_USE_SRFI38
 #include "operations-srfi38.c"
 #endif

@@ -198,32 +198,8 @@ ScmObj ScmOp_sscm_backtrace(void)
     return SCM_UNDEF;
 }
 
-#if SCM_USE_FORMER_SRFI34
-void Scm_ThrowException(ScmObj errorobj)
-{
-#if SCM_EXCEPTION_HANDLING
-    if (FALSEP(CURRENT_EXCEPTION_CONTINUATION())) {
-        /* outermost exception handler */
-        if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
-            SigScm_ShowBacktrace(Scm_TraceStack());
-
-        exit(EXIT_FAILURE);
-    } else {
-        /* throw an exception */
-        ScmOp_SRFI34_raise(errorobj);
-    }
-#else
-    if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
-        SigScm_ShowBacktrace(Scm_TraceStack());
-#endif    
-
-    exit(EXIT_FAILURE);
-}
-#endif /* SCM_USE_FORMER_SRFI34 */
-
 int SigScm_Die(const char *msg, const char *filename, int line)
 {
-#if SCM_USE_NEW_SRFI34
     char *reason;
     ScmObj err_obj;
 
@@ -236,18 +212,6 @@ int SigScm_Die(const char *msg, const char *filename, int line)
 #endif /* HAVE_ASPRINTF */
     err_obj = Scm_MakeErrorObj(Scm_NewString(reason), LIST_1(SCM_UNDEF));
     ScmOp_sscm_fatal_error(err_obj);
-#else /* SCM_USE_NEW_SRFI34 */
-    if (SigScm_DebugCategories() & SCM_DBG_ERRMSG) {
-        SigScm_ShowErrorHeader();
-        SigScm_ErrorPrintf("SigScheme Died : %s (file : %s, line : %d)\n",
-                           msg, filename, line);
-    }
-
-    if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE)
-        SigScm_ShowBacktrace(Scm_TraceStack());
-
-    exit(EXIT_FAILURE);
-#endif /* SCM_USE_NEW_SRFI34 */
     /* NOTREACHED */
     return 1;  /* dummy value for boolean expression */
 }
@@ -255,8 +219,6 @@ int SigScm_Die(const char *msg, const char *filename, int line)
 void SigScm_Error(const char *msg, ...)
 {
     va_list va;
-
-#if SCM_USE_NEW_SRFI34
     char *reason;
     ScmObj err_obj;
 
@@ -269,48 +231,21 @@ void SigScm_Error(const char *msg, ...)
     err_obj = Scm_MakeErrorObj(Scm_NewString(reason), LIST_1(SCM_UNDEF));
     Scm_RaiseError(err_obj);
     /* NOTREACHED */
-#else /* SCM_USE_NEW_SRFI34 */
-    if (SigScm_DebugCategories() & SCM_DBG_ERRMSG) {
-        SigScm_ShowErrorHeader();
-
-        va_start(va, msg);
-        SigScm_VErrorPrintf(msg, va);
-        va_end(va);
-
-        SigScm_ErrorNewline();
-    }
-
-    /* FIXME: this errorobj is OK? */
-    Scm_ThrowException(Scm_NewStringCopying("ERROR"));
-#endif /* SCM_USE_NEW_SRFI34 */
 }
 
 /* Obsolete. */
 void SigScm_ErrorObj(const char *msg, ScmObj obj)
 {
-#if SCM_USE_NEW_SRFI34
     ScmObj err_obj;
 
     err_obj = Scm_MakeErrorObj(Scm_NewStringCopying(msg), LIST_1(obj));
     Scm_RaiseError(err_obj);
     /* NOTREACHED */
-#else /* SCM_USE_NEW_SRFI34 */
-    if (SigScm_DebugCategories() & SCM_DBG_ERRMSG) {
-        SigScm_ShowErrorHeader();
-        SigScm_ErrorPrintf(msg);
-        SigScm_WriteToPort(scm_current_error_port, obj);
-        SigScm_ErrorNewline();
-    }
-
-    /* FIXME: this errorobj is OK? */
-    Scm_ThrowException(Scm_NewStringCopying("ERROR"));
-#endif /* SCM_USE_NEW_SRFI34 */
 }
 
 /* This function obsoletes SigScm_ErrorObj(). */
 void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj)
 {
-#if SCM_USE_NEW_SRFI34
     char *reason;
     ScmObj err_obj;
 
@@ -323,17 +258,6 @@ void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj)
     err_obj = Scm_MakeErrorObj(Scm_NewString(reason), LIST_1(obj));
     Scm_RaiseError(err_obj);
     /* NOTREACHED */
-#else /* SCM_USE_NEW_SRFI34 */
-    if (SigScm_DebugCategories() & SCM_DBG_ERRMSG) {
-        SigScm_ShowErrorHeader();
-        SigScm_ErrorPrintf("in %s: %s: ", func_name, msg);
-        SigScm_WriteToPort(scm_current_error_port, obj);
-        SigScm_ErrorNewline();
-    }
-
-    /* FIXME: this errorobj is OK? */
-    Scm_ThrowException(Scm_NewStringCopying("ERROR"));
-#endif /* SCM_USE_NEW_SRFI34 */
 }
 
 void SigScm_ShowBacktrace(ScmObj trace_stack)

@@ -300,27 +300,6 @@ extern ScmObj *scm_stack_start_pointer;
 #define ASSERT_ENVP(obj)     ASSERT_TYPE(ENVP, "environment specifier", (obj))
 #define ASSERT_ERROBJP(obj)  ASSERT_TYPE(ERROBJP, "error object", (obj))
 
-#if SCM_USE_FORMER_SRFI34
-/* Macros and Variables For Handling Exception Handlers based on SRFI-34 */
-extern ScmObj scm_exception_handlers;
-extern ScmObj scm_exception_continuations;
-
-#define CURRENT_EXCEPTION_HANDLER()                             \
-    (FALSEP(scm_exception_handlers)                             \
-     ? scm_exception_handlers : CAR(scm_exception_handlers))
-#define PUSH_EXCEPTION_HANDLER(handler)                                 \
-    (scm_exception_handlers = CONS((handler), scm_exception_handlers))
-#define POP_EXCEPTION_HANDLER()                 \
-    (scm_exception_handlers = CDR(scm_exception_handlers))
-
-#define CURRENT_EXCEPTION_CONTINUATION()        \
-    (FALSEP(scm_exception_continuations) ? scm_exception_continuations : CAR(scm_exception_continuations))
-#define PUSH_EXCEPTION_CONTINUATION(cont)                               \
-    (scm_exception_continuations = CONS((cont), scm_exception_continuations))
-#define POP_EXCEPTION_CONTINUATION()            \
-    (scm_exception_continuations = CDR(scm_exception_continuations))
-#endif /* SCM_USE_FORMER_SRFI34 */
-
 /* Macros For Handling Continuation Object */
 #define INVALID_CONTINUATION_OPAQUE  NULL
 

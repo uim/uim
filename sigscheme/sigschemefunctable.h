@@ -94,10 +94,7 @@ extern struct builtin_func_info srfi8_func_info_table[];
 #if SCM_USE_SRFI23
 extern struct builtin_func_info srfi23_func_info_table[];
 #endif
-#if SCM_USE_FORMER_SRFI34
-extern struct builtin_func_info srfi34_func_info_table[];
-#endif
-#if SCM_USE_NEW_SRFI34
+#if SCM_USE_SRFI34
 extern struct builtin_func_info scm_new_srfi34_func_info_table[];
 #endif
 #if SCM_USE_SRFI38

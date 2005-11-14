@@ -95,19 +95,20 @@ static void repl_loop(void)
     ScmObj cond_catch = SCM_FALSE;
     int is_prompt     = is_repl_prompt();
 
+#if SCM_USE_SRFI34
     /* prepare the constant part of the form to get the loop fast */
     sym_guard = Scm_Intern("guard");
     cond_catch = LIST_2(Scm_Intern("err"),
                         LIST_2(SYM_ELSE,
                                LIST_2(Scm_Intern("%%inspect-error"),
                                       Scm_Intern("err"))));
+#endif /* SCM_USE_SRFI34 */
 
     if (is_prompt)
         SigScm_PortPrintf(scm_current_output_port, PROMPT_STR);
 
     while (s_exp = SigScm_Read(scm_current_input_port), !EOFP(s_exp)) {
 #if SCM_USE_SRFI34
-#if SCM_USE_NEW_SRFI34
         /*
          * Error-proof evaluation
          *
@@ -121,23 +122,9 @@ static void repl_loop(void)
          */
         result = EVAL(LIST_3(sym_guard, cond_catch, s_exp),
                       SCM_INTERACTION_ENV);
-#else /* SCM_USE_NEW_SRFI34 */
-        /*
-         * Error Aware repl_loop
-         *
-         * (guard (err (else #f))
-         *   (eval exp '()))
-         */
-        result = ScmExp_SRFI34_guard(LIST_2(Scm_Intern("err"),
-                                            LIST_2(Scm_Intern("else"), SCM_UNDEF)),
-                                     LIST_1(LIST_3(Scm_Intern("eval"),
-                                                   LIST_2(SYM_QUOTE, s_exp),
-                                                   SCM_INTERACTION_ENV)),
-                                     SCM_INTERACTION_ENV);
-#endif /* SCM_USE_NEW_SRFI34 */
 #else /* SCM_USE_SRFI34 */
         result = EVAL(s_exp, SCM_INTERACTION_ENV);
-#endif
+#endif /* SCM_USE_SRFI34 */
 
 #if SCM_USE_SRFI38
         SigScm_WriteToPortWithSharedStructure(scm_current_output_port, result);
