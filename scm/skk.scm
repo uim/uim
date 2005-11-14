@@ -1728,6 +1728,8 @@
 	     (skk-lib-clear-completions
 	       (skk-make-string (skk-context-head sc) skk-type-hiragana))
 	     (skk-context-set-state! sc 'skk-state-kanji)
+	     (if skk-dcomp-activate?
+		 (skk-context-set-dcomp-word! sc ""))
 	     #f)
 	   #t)
        (let ((sl (string-to-list (skk-get-current-completion sc))))
