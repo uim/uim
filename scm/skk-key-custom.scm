@@ -172,6 +172,13 @@
 	       (_ "[SKK] previous completion candidate")
 	       (_ "long description will be here"))
 
+(define-custom 'skk-begin-conv-with-completion-key '("<Alt> ")
+	       '(skk-keys2 skk-keys-completion)
+	       '(key)
+	       (_ "[SKK] begin conversion with completion")
+	       (_ "long description will be here"))
+
+
 (define-custom 'skk-special-midashi-key '("<IgnoreShift>>" "<IgnoreShift><" "<IgnoreShift>?")
                '(skk-keys2)
 	       '(key)

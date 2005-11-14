@@ -1275,6 +1275,34 @@
 			   (skk-proc-state-direct c key key-state)))))
  	     #f)
 	   #t)
+       (if (skk-begin-conv-with-completion-key? key key-state)
+	   (begin
+	     (if (and
+		  skk-dcomp-activate?
+		  (not (skk-rk-pending? sc))
+		  (not (string=? (skk-context-dcomp-word sc) "")))
+		 (let ((sl (string-to-list (skk-context-dcomp-word sc))))
+		    (skk-context-set-head! sc '())
+		    (skk-string-list-to-context-head sc sl)
+		    (skk-begin-conversion sc))
+		 (begin
+		   (skk-append-residual-kana sc)
+		   (let ((sl (string-to-list
+		 	    (skk-lib-get-dcomp-word
+			     (skk-make-string
+			      (skk-context-head sc)
+			      (skk-context-kana-mode sc))))))
+		     (if (not (null? sl))
+			 (begin
+			   (skk-context-set-head! sc '())
+			   (skk-string-list-to-context-head sc sl)
+			   (skk-begin-conversion sc))
+			 (begin
+			   (if (not (null? (skk-context-head sc)))
+			       (skk-begin-conversion sc)
+			       (skk-flush sc)))))))
+	     #f)
+	   #t)
        ;; Then check latin-conv status before key handling of hiragana/katakana
        (if (skk-context-latin-conv sc)
 	   (begin
