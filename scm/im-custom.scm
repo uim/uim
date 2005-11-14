@@ -288,10 +288,10 @@
 (define-custom 'enable-im-toggle? #t
   '(global im-toggle)
   '(boolean)
-  (_ "Enable Input method toggle by hot keys")
+  (_ "Enable input method toggle by hot keys")
   (_ "long description will be here."))
 
-(define-custom 'toggle-im-key '("<Alt> " "<Meta> ")
+(define-custom 'toggle-im-key '("<Meta> ")
   '(global im-toggle)
   '(key)
   (_ "Input method toggle key")
