@@ -70,12 +70,12 @@
 
 ;; FAILED: infinite loop with a message "Error: missing argument(s)"
 ;; handler a procedure but takes 2 arguments
-;;(my-assert-error "with-exception-handler invalid form #2"
-;;                 (lambda ()
-;;                   (with-exception-handler
-;;                       eq?
-;;                     (lambda ()
-;;                       (+ 1 (raise 'obj))))))
+(my-assert-error "with-exception-handler invalid form #2"
+                 (lambda ()
+                   (with-exception-handler
+                       eq?
+                     (lambda ()
+                       (+ 1 (raise 'obj))))))
 
 ;; thunk is not a procedure
 (my-assert-error "with-exception-handler invalid form #3"
@@ -107,14 +107,14 @@
                            (+ 1 (raise 'obj)))))))
 
 ;; SEGV
-;;(assert-error "with-exception-handler #3"
-;;              (lambda ()
-;;                (with-exception-handler
-;;                    (lambda (x)
-;;                      (assert-equal? "with-exception-handler #2" 'an-error x)
-;;                      'a-handler-must-not-return)
-;;                  (lambda ()
-;;                    (+ 1 (raise 'an-error))))))
+(assert-error "with-exception-handler #3"
+              (lambda ()
+                (with-exception-handler
+                    (lambda (x)
+                      (assert-equal? "with-exception-handler #2" 'an-error x)
+                      'a-handler-must-not-return)
+                  (lambda ()
+                    (+ 1 (raise 'an-error))))))
 
 (assert-equal? "with-exception-handler #4"
                6
@@ -196,10 +196,10 @@
 ;;
 
 ;; SEGV
-;;(my-assert-error  "guard handler invalid form #1"
-;;                  (lambda ()
-;;                    (guard (var)
-;;                      (raise 'obj))))
+(my-assert-error  "guard handler invalid form #1"
+                  (lambda ()
+                    (guard (var)
+                      (raise 'obj))))
 
 ;; FAILED
 (my-assert-error  "guard handler invalid form #2"
@@ -218,43 +218,43 @@
 
 ;; SEGV
 ;; 'else' followed by another caluse
-;;(my-assert-error  "guard handler invalid form #4"
-;;                  (lambda ()
-;;                    (guard (var
-;;                            (else #t)
-;;                            (#t))
-;;                      (raise 'obj))))
+(my-assert-error  "guard handler invalid form #4"
+                  (lambda ()
+                    (guard (var
+                            (else #t)
+                            (#t))
+                      (raise 'obj))))
 
 ;; SEGV
 ;; not specified in R5RS 'case', but SigScheme should cause error
-;;(if (provided? "sigscheme")
-;;    (my-assert-error  "guard handler invalid form #5"
-;;                      (lambda ()
-;;                        (guard (var
-;;                                (else))
-;;                          (raise 'obj)))))
+(if (provided? "sigscheme")
+    (my-assert-error  "guard handler invalid form #5"
+                      (lambda ()
+                        (guard (var
+                                (else))
+                          (raise 'obj)))))
 
 ;; SEGV
-;;(my-assert-error  "guard handler invalid form #6"
-;;                  (lambda ()
-;;                    (guard (var
-;;                            (#t =>))
-;;                      (raise 'obj))))
+(my-assert-error  "guard handler invalid form #6"
+                  (lambda ()
+                    (guard (var
+                            (#t =>))
+                      (raise 'obj))))
 
 ;; SEGV
-;;(my-assert-error  "guard handler invalid form #7"
-;;                  (lambda ()
-;;                    (guard (var
-;;                            (#t =>)
-;;                            (else #t))
-;;                      (raise 'obj))))
+(my-assert-error  "guard handler invalid form #7"
+                  (lambda ()
+                    (guard (var
+                            (#t =>)
+                            (else #t))
+                      (raise 'obj))))
 
 ;; SEGV
-;;(my-assert-error  "guard handler invalid form #8"
-;;                  (lambda ()
-;;                    (guard (var
-;;                            (else =>))
-;;                      (raise 'obj))))
+(my-assert-error  "guard handler invalid form #8"
+                  (lambda ()
+                    (guard (var
+                            (else =>))
+                      (raise 'obj))))
 
 ;; FAILED
 ;; not a procedure
@@ -332,15 +332,15 @@
 ;;
 
 ;; SEGV
-;;(assert-equal? "mixed exception handling #1"
-;;               'guard-ret
-;;	       (with-exception-handler (lambda (x)
-;;					 (k 'with-exception-ret))
-;;                 (lambda ()
-;;                   (guard (condition
-;;                           (else
-;;                            'guard-ret))
-;;                     (raise 1)))))
+(assert-equal? "mixed exception handling #1"
+               'guard-ret
+	       (with-exception-handler (lambda (x)
+					 (k 'with-exception-ret))
+                 (lambda ()
+                   (guard (condition
+                           (else
+                            'guard-ret))
+                     (raise 1)))))
 
 (assert-equal? "mixed exception handling #2"
                'with-exception-ret
@@ -353,30 +353,30 @@
                      (raise 1)))))
 
 ;; SEGV
-;;(assert-equal? "mixed exception handling #3"
-;;               'positive
-;;               (call-with-current-continuation
-;;                (lambda (k)
-;;                  (with-exception-handler (lambda (x)
-;;                                            (k 'zero))
-;;                    (lambda ()
-;;                      (guard (condition
-;;                              ((positive? condition) 'positive)
-;;                              ((negative? condition) 'negative))
-;;                        (raise 1)))))))
+(assert-equal? "mixed exception handling #3"
+               'positive
+               (call-with-current-continuation
+                (lambda (k)
+                  (with-exception-handler (lambda (x)
+                                            (k 'zero))
+                    (lambda ()
+                      (guard (condition
+                              ((positive? condition) 'positive)
+                              ((negative? condition) 'negative))
+                        (raise 1)))))))
 
 ;; SEGV
-;;(assert-equal? "mixed exception handling #4"
-;;               'negative
-;;               (call-with-current-continuation
-;;                (lambda (k)
-;;                  (with-exception-handler (lambda (x)
-;;                                            (k 'zero))
-;;                    (lambda ()
-;;                      (guard (condition
-;;                              ((positive? condition) 'positive)
-;;                              ((negative? condition) 'negative))
-;;                        (raise -1)))))))
+(assert-equal? "mixed exception handling #4"
+               'negative
+               (call-with-current-continuation
+                (lambda (k)
+                  (with-exception-handler (lambda (x)
+                                            (k 'zero))
+                    (lambda ()
+                      (guard (condition
+                              ((positive? condition) 'positive)
+                              ((negative? condition) 'negative))
+                        (raise -1)))))))
 
 (assert-equal? "mixed exception handling #5"
                'zero

@@ -67,17 +67,17 @@
 ;; Then behaves in an unspecified way. Although the behavior when a handler
 ;; returned is not specified in SRFI-34, SigScheme should produce an error to
 ;; prevent being misused by users.
-;;(print-expected "something went wrong")
-;;(assert-error "Examples of SRFI-34 document #2"
-;;              (lambda ()
-;;                (call-with-current-continuation
-;;                 (lambda (k)
-;;                   (with-exception-handler (lambda (x)
-;;                                             (display "something went wrong")
-;;                                             (newline)
-;;                                             'dont-care)
-;;                     (lambda ()
-;;                       (+ 1 (raise 'an-error))))))))
+(print-expected "something went wrong")
+(assert-error "Examples of SRFI-34 document #2"
+              (lambda ()
+                (call-with-current-continuation
+                 (lambda (k)
+                   (with-exception-handler (lambda (x)
+                                             (display "something went wrong")
+                                             (newline)
+                                             'dont-care)
+                     (lambda ()
+                       (+ 1 (raise 'an-error))))))))
 
 ;;PRINTS: condition: an-error
 (print-expected "condition: an-error")
@@ -103,32 +103,32 @@
                  (+ 1 (raise 'an-error))))
 
 ;; SEGV
-;;(assert-equal? "Examples of SRFI-34 document #5"
-;;               'positive
-;;               (call-with-current-continuation
-;;                (lambda (k)
-;;                  (with-exception-handler (lambda (x)
-;;                                            (display "reraised ") (write x) (newline)
-;;                                            (k 'zero))
-;;                    (lambda ()
-;;                      (guard (condition
-;;                              ((positive? condition) 'positive)
-;;                              ((negative? condition) 'negative))
-;;                        (raise 1)))))))
+(assert-equal? "Examples of SRFI-34 document #5"
+               'positive
+               (call-with-current-continuation
+                (lambda (k)
+                  (with-exception-handler (lambda (x)
+                                            (display "reraised ") (write x) (newline)
+                                            (k 'zero))
+                    (lambda ()
+                      (guard (condition
+                              ((positive? condition) 'positive)
+                              ((negative? condition) 'negative))
+                        (raise 1)))))))
 
 ;; SEGV
-;;(assert-equal? "Examples of SRFI-34 document #6"
-;;               'negative
-;;               (call-with-current-continuation
-;;                (lambda (k)
-;;                  (with-exception-handler (lambda (x)
-;;                                            (display "reraised ") (write x) (newline)
-;;                                            (k 'zero))
-;;                    (lambda ()
-;;                      (guard (condition
-;;                              ((positive? condition) 'positive)
-;;                              ((negative? condition) 'negative))
-;;                        (raise -1)))))))
+(assert-equal? "Examples of SRFI-34 document #6"
+               'negative
+               (call-with-current-continuation
+                (lambda (k)
+                  (with-exception-handler (lambda (x)
+                                            (display "reraised ") (write x) (newline)
+                                            (k 'zero))
+                    (lambda ()
+                      (guard (condition
+                              ((positive? condition) 'positive)
+                              ((negative? condition) 'negative))
+                        (raise -1)))))))
 
 ;;PRINTS: reraised 0
 (print-expected "reraised 0")
