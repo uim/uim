@@ -92,6 +92,27 @@ ScmObj Scm_Intern(const char *name)
     return sym;
 }
 
+/* lookup the symbol bound to an obj reversely */
+ScmObj Scm_SymbolBoundTo(ScmObj obj)
+{
+    int i;
+    ScmObj sym_lst, sym, val;
+
+    for (i = 0; i < NAMEHASH_SIZE; i++) {
+        for (sym_lst = scm_symbol_hash[i];
+             CONSP(sym_lst);
+             sym_lst = CDR(sym_lst))
+        {
+            sym = CAR(sym_lst);
+            val = SCM_SYMBOL_VCELL(sym);
+            if (!EQ(val, SCM_UNBOUND) && EQ(val, obj))
+                return sym;
+        }
+    }
+
+    return SCM_FALSE;
+}
+
 void SigScm_InitSymbol(void)
 {
     initialize_symbol_hash();

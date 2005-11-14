@@ -211,6 +211,8 @@ void SigScm_DisplayToPort(ScmObj port, ScmObj obj)
 
 static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype)
 {
+    ScmObj sym;
+
 #if SCM_USE_SRFI38
     if (INTERESTINGP(obj)) {
         int index = get_shared_index(obj);
@@ -243,10 +245,16 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
         print_string(port, obj, otype);
         break;
     case ScmFunc:
-        SCM_PORT_PRINT(port, (SCM_SYNTAXP(obj)) ? "#<syntax>" : "#<subr>");
+        SCM_PORT_PRINT(port, (SCM_SYNTAXP(obj)) ? "#<syntax " : "#<subr ");
+        sym = Scm_SymbolBoundTo(obj);
+        if (NFALSEP(sym))
+            SigScm_DisplayToPort(port, sym);
+        else
+            SigScm_PortPrintf(port, "%p", (void *)obj);
+        SCM_PORT_PRINT(port, ">");
         break;
     case ScmClosure:
-        SCM_PORT_PRINT(port, "#<closure:");
+        SCM_PORT_PRINT(port, "#<closure ");
         print_ScmObj_internal(port, SCM_CLOSURE_EXP(obj), otype);
         SCM_PORT_PRINT(port, ">");
         break;

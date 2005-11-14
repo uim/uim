@@ -414,6 +414,7 @@ void   SigScm_GC_UnprotectStack(ScmObj *stack_start);
 
 /* storage-symbol.c */
 ScmObj Scm_Intern(const char *name);
+ScmObj Scm_SymbolBoundTo(ScmObj obj);
 
 /* eval.c */
 ScmObj ScmOp_eval(ScmObj obj, ScmObj env);
