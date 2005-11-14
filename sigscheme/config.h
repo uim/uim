@@ -111,6 +111,7 @@
  * FIXME: detect with configure and link against a replace function if not
  * found
  */
+#define HAVE_ASPRINTF           1
 #define HAVE_VASPRINTF          1
 
 /*===========================================================================
