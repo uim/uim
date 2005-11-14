@@ -76,6 +76,9 @@ extern struct builtin_func_info r5rs_deepcadrs_func_info_table[];
 #if SCM_USE_NONSTD_FEATURES
 extern struct builtin_func_info nonstd_func_info_table[];
 #endif
+#if SCM_USE_NONSTD_FEATURES
+extern struct builtin_func_info scm_error_func_info_table[];
+#endif
 #if SCM_USE_SRFI1
 extern struct builtin_func_info srfi1_func_info_table[];
 #endif

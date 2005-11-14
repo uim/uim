@@ -80,8 +80,6 @@ static void repl(void)
     SigScm_GC_ProtectStack(&stack_start);
 #endif
 
-    feature_id_siod = Scm_NewStringCopying(FEATURE_ID_SIOD);
-
     repl_loop();
 
 #if !SCM_GCC4_READY_GC
@@ -91,9 +89,18 @@ static void repl(void)
 
 static void repl_loop(void)
 {
-    ScmObj s_exp  = SCM_FALSE;
-    ScmObj result = SCM_FALSE;
-    int is_prompt = is_repl_prompt();
+    ScmObj s_exp      = SCM_FALSE;
+    ScmObj result     = SCM_FALSE;
+    ScmObj sym_guard  = SCM_FALSE;
+    ScmObj cond_catch = SCM_FALSE;
+    int is_prompt     = is_repl_prompt();
+
+    /* prepare the constant part of the form to get the loop fast */
+    sym_guard = Scm_Intern("guard");
+    cond_catch = LIST_2(Scm_Intern("err"),
+                        LIST_2(SYM_ELSE,
+                               LIST_2(Scm_Intern("%%inspect-error"),
+                                      Scm_Intern("err"))));
 
     if (is_prompt)
         SigScm_PortPrintf(scm_current_output_port, PROMPT_STR);
@@ -101,28 +108,18 @@ static void repl_loop(void)
     while (s_exp = SigScm_Read(scm_current_input_port), !EOFP(s_exp)) {
 #if SCM_USE_SRFI34
 #if SCM_USE_NEW_SRFI34
-        /* FIXME: move the fallback exception handling into error.c */
         /*
          * Error-proof evaluation
          *
          * (guard (err
          *         (else
-         *          (display "unhandled exception: ")
-         *          (write err)
-         *          (newline)
-         *          #<undef>))
+         *          (%%inspect-error err)))
          *   exp)
+         *
+         * To allow redefinition of 'guard' and '%%inspect-err', surely access
+         * them via symbol instead of prepared syntax or procedure object.
          */
-        result = EVAL(LIST_3(Scm_Intern("guard"),
-                             LIST_2(Scm_Intern("err"),
-                                    LIST_5(SYM_ELSE,
-                                           LIST_2(Scm_Intern("display"),
-                                                  Scm_NewStringCopying("unhandled exception: ")),
-                                           LIST_2(Scm_Intern("write"),
-                                                  Scm_Intern("err")),
-                                           LIST_1(Scm_Intern("newline")),
-                                           SCM_UNDEF)),
-                             s_exp),
+        result = EVAL(LIST_3(sym_guard, cond_catch, s_exp),
                       SCM_INTERACTION_ENV);
 #else /* SCM_USE_NEW_SRFI34 */
         /*
@@ -173,6 +170,9 @@ int main(int argc, char **argv)
 #if SCM_USE_SRFI34
     Scm_use("srfi-34");
 #endif
+
+    SigScm_GC_Protect(&feature_id_siod);
+    feature_id_siod   = Scm_NewStringCopying(FEATURE_ID_SIOD);
 
     if (argc < 2) {
 #if SCM_GCC4_READY_GC

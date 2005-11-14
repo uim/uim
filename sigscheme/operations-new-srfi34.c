@@ -55,8 +55,11 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
+#define USE_WITH_SIGSCHEME_FATAL_ERROR 1
+
 #define ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"
 #define ERRMSG_HANDLER_RETURNED    "handler returned"
+#define ERRMSG_FALLBACK_EXHAUSTED  "fallback handler exhausted"
 
 #define MAKE_STR_COPYING Scm_NewStringCopying
 #define DECLARE_PRIVATE_FUNCTION(func_name, type)                            \
@@ -73,6 +76,7 @@ static ScmObj current_exception_handlers;
 
 /* error messages */
 static ScmObj errmsg_unhandled_exception, errmsg_handler_returned;
+static ScmObj errmsg_fallback_exhausted;
 
 /* symbols */
 static ScmObj sym_error, sym_raise;
@@ -89,6 +93,7 @@ static ScmObj syn_guard_body;
 static ScmObj *const global_var_list[] = {
     &current_exception_handlers,
     &errmsg_unhandled_exception, &errmsg_handler_returned,
+    &errmsg_fallback_exhausted,
     &sym_error, &sym_raise,
     &sym_lex_env, &sym_cond_catch, &sym_body,
     &sym_condition, &sym_guard_k, &sym_handler_k,
@@ -127,6 +132,7 @@ void SigScm_Initialize_SRFI34(void)
 
     errmsg_unhandled_exception = MAKE_STR_COPYING(ERRMSG_UNHANDLED_EXCEPTION);
     errmsg_handler_returned    = MAKE_STR_COPYING(ERRMSG_HANDLER_RETURNED);
+    errmsg_fallback_exhausted  = MAKE_STR_COPYING(ERRMSG_FALLBACK_EXHAUSTED);
 
     sym_error      = Scm_Intern("error");
     sym_raise      = Scm_Intern("raise");
@@ -155,9 +161,23 @@ void SigScm_Initialize_SRFI34(void)
     syn_guard_body = Scm_NewFunc(SCM_SYNTAX_FIXED_TAIL_REC | 0,
                                  &guard_body);
 
+#if USE_WITH_SIGSCHEME_FATAL_ERROR
+    proc_fallback_handler
+        = ScmExp_lambda(LIST_1(sym_condition),
+                        LIST_1(LIST_4(Scm_Intern("if"),
+                                      LIST_2(Scm_Intern("%%error-object?"),
+                                             sym_condition),
+                                      LIST_2(Scm_Intern("%%fatal-error"),
+                                             sym_condition),
+                                      LIST_3(sym_error,
+                                             errmsg_unhandled_exception,
+                                             sym_condition))),
+                        SCM_INTERACTION_ENV);
+#else /* USE_WITH_SIGSCHEME_FATAL_ERROR */
     /*
-     * The 'error' procedure should not be invoked directly by ScmOp_error(),
-     * to allow dynamic redifinition, and keep SRFI-23 implementation abstract.
+     * The 'error' procedure should not be invoked directly by
+     * ScmOp_SRFI23_error(), to allow dynamic redifinition, and keep SRFI-23
+     * implementation abstract.
      */
     proc_fallback_handler
         = ScmExp_lambda(LIST_1(sym_condition),
@@ -165,6 +185,7 @@ void SigScm_Initialize_SRFI34(void)
                                       errmsg_unhandled_exception,
                                       sym_condition)),
                         SCM_INTERACTION_ENV);
+#endif /* USE_WITH_SIGSCHEME_FATAL_ERROR */
 
     REGISTER_FUNC_TABLE(scm_new_srfi34_func_info_table);
 
@@ -191,7 +212,7 @@ static ScmObj with_exception_handlers(ScmObj new_handlers, ScmObj thunk)
     after = ScmExp_lambda(SCM_NULL,
                           LIST_1(LIST_2(syn_set_cur_handlers, prev_handlers)),
                           SCM_INTERACTION_ENV);
-    return ScmOp_dynamic_wind(before, thunk, after);
+    return Scm_DynamicWind(before, thunk, after);
 }
 
 /* with-exception-handler */
@@ -212,11 +233,21 @@ ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk)
 
 ScmObj ScmOp_SRFI34_raise(ScmObj obj)
 {
-    ScmObj handler, rest_handlers, thunk;
+    ScmObj handler, rest_handlers, thunk, err_obj;
     DECLARE_FUNCTION("raise", ProcedureFixed1);
+
+    if (NULLP(current_exception_handlers)) {
+        if (ERROBJP(obj))
+            err_obj = obj;
+        else
+            err_obj = Scm_MakeErrorObj(errmsg_fallback_exhausted, LIST_1(obj));
+        ScmOp_sscm_fatal_error(err_obj);
+        /* NOTREACHED */
+    }
 
     handler = CAR(current_exception_handlers);
     rest_handlers = CDR(current_exception_handlers);
+    obj = LIST_2(SYM_QUOTE, obj);
     thunk = ScmExp_lambda(SCM_NULL,
                           LIST_2(LIST_2(handler, obj),
                                  LIST_3(sym_error,
@@ -300,7 +331,6 @@ static ScmObj guard_handler_body(ScmObj handler_k, ScmObj env)
     sym_var = CAR(cond_catch);
     clauses = CDR(cond_catch);
     ASSERT_SYMBOLP(sym_var);
-    condition = EVAL(condition, lex_env);
     cond_env = Scm_ExtendEnvironment(LIST_1(sym_var),
                                      LIST_1(condition),
                                      lex_env);

@@ -72,6 +72,41 @@ void SigScm_Initialize_SRFI23(void)
 /*=============================================================================
   SRFI23 : Error reporting mechanism
 =============================================================================*/
+#if SCM_USE_NEW_SRFI34
+
+/*
+ * This code implements the '4.' of following Specification defined in SRFI-34.
+ *
+ * 1. Display <reason> and <arg1>... on the screen and terminate the Scheme
+ *    program. (This might be suitable for a Scheme system implemented as a
+ *    batch compiler.)
+ * 2. Display <reason> and <arg1>... on the screen and go back to the
+ *    read-evaluate-print loop. (This might be suitable for an interactive
+ *    implementation).
+ * 4. Package <reason> and <arg1>... up into an error object and pass this
+ *    error object to an exception handler. The default exception handler then
+ *    might do something as described in points 1 to 3.
+ */
+ScmObj ScmOp_SRFI23_error(ScmObj reason, ScmObj args)
+{
+    ScmObj err_obj;
+    DECLARE_FUNCTION("error", ProcedureVariadic1);
+#if 0
+    /*
+     * Although SRFI-23 specified that "The argument <reason> should be a
+     * string", we should not force it. Displayable is sufficient.
+     */
+    ASSERT_STRINGP(reason);
+#endif
+
+    err_obj = Scm_MakeErrorObj(reason, args);
+    Scm_RaiseError(err_obj);
+    /* NOTREACHED */
+    return SCM_UNDEF;
+}
+
+#else /* SCM_USE_NEW_SRFI34 */
+
 ScmObj ScmOp_SRFI23_error(ScmObj reason, ScmObj args)
 {
     ScmObj arg = SCM_FALSE;
@@ -101,3 +136,4 @@ ScmObj ScmOp_SRFI23_error(ScmObj reason, ScmObj args)
     /* NOTREACHED */
     return SCM_UNDEF;
 }
+#endif /* SCM_USE_NEW_SRFI34 */

@@ -108,6 +108,7 @@ static void print_list(ScmObj port, ScmObj lst, enum OutputType otype);
 static void print_vector(ScmObj port, ScmObj vec, enum OutputType otype);
 static void print_port(ScmObj port, ScmObj obj, enum OutputType otype);
 static void print_constant(ScmObj port, ScmObj obj, enum  OutputType otype);
+static void print_errobj(ScmObj port, ScmObj obj, enum  OutputType otype);
 
 #if SCM_USE_SRFI38
 static void hash_grow(hash_table *tab);
@@ -233,7 +234,10 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
         SigScm_PortPrintf(port, "%d", SCM_INT_VALUE(obj));
         break;
     case ScmCons:
-        print_list(port, obj, otype);
+        if (ERROBJP(obj))
+            print_errobj(port, obj, otype);
+        else
+            print_list(port, obj, otype);
         break;
     case ScmSymbol:
         SCM_PORT_PRINT(port, SCM_SYMBOL_NAME(obj));
@@ -490,6 +494,43 @@ static void print_constant(ScmObj port, ScmObj obj, enum  OutputType otype)
         SCM_PORT_PRINT(port, "#<unbound>");
     else if (EQ(obj, SCM_UNDEF))
         SCM_PORT_PRINT(port, "#<undef>");
+}
+
+static void print_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
+{
+    ScmObj err_obj_tag, reason, objs, trace_stack;
+    DECLARE_INTERNAL_FUNCTION("print_errobj");
+
+    err_obj_tag = MUST_POP_ARG(obj);
+    reason      = MUST_POP_ARG(obj);
+    objs        = MUST_POP_ARG(obj);
+    trace_stack = MUST_POP_ARG(obj);
+    ASSERT_NO_MORE_ARG(obj);
+
+    switch (otype) {
+    case AS_WRITE:
+        SCM_PORT_PRINT(port, "#<error ");
+        SigScm_WriteToPort(port, reason);
+        break;
+
+    case AS_DISPLAY:
+        SigScm_DisplayToPort(port, reason);
+        if (CONSP(objs))
+            SCM_PORT_PRINT(port, ":");
+        break;
+
+    default:
+        ERR("print_errobj: unknown output type");
+        break;
+    }
+
+    for (; CONSP(objs); objs = CDR(objs)) {
+        SCM_PORT_PRINT(port, " ");
+        SigScm_WriteToPort(port, CAR(objs));
+    }
+
+    if (otype == AS_WRITE)
+        SCM_PORT_PRINT(port, ">");
 }
 
 #if SCM_USE_SRFI38

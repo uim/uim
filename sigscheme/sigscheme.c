@@ -135,6 +135,7 @@ static void SigScm_Initialize_internal(void)
     SigScm_SetDebugCategories(SCM_DBG_ERRMSG | SCM_DBG_BACKTRACE
                               | SigScm_PredefinedDebugCategories());
     SigScm_InitStorage();
+    SigScm_InitError();
 
     /*=======================================================================
       Predefined Symbols and Variables
@@ -145,13 +146,13 @@ static void SigScm_Initialize_internal(void)
     Scm_sym_unquote_splicing = Scm_Intern("unquote-splicing");
     Scm_sym_else             = Scm_Intern("else");
     Scm_sym_yields           = Scm_Intern("=>");
-#if 1
+#if SCM_USE_FORMER_SRFI34
     /* FIXME: obsolete this. don't set SCM_TRUE and rely on the value */
-    /* only operations-srfi34.c depends on this */
     SCM_SYMBOL_SET_VCELL(Scm_Intern("else"), SCM_TRUE);
 #endif
 
 #if SCM_USE_NONSTD_FEATURES
+    /* FIXME: make invisible from users */
     SigScm_features         = Scm_Intern("*features*");
     SCM_SYMBOL_SET_VCELL(SigScm_features, SCM_NULL);
 #endif

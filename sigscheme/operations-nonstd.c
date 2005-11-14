@@ -88,15 +88,6 @@ ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest)
             || SCM_SYMBOL_BOUNDP(sym)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj ScmOp_sscm_backtrace(void)
-{
-    DECLARE_FUNCTION("%%backtrace", ProcedureFixed0);
-
-    SigScm_ShowBacktrace(Scm_TraceStack());
-
-    return SCM_UNDEF;
-}
-
 /* SIOD compatible */
 ScmObj ScmOp_load_path(void)
 {

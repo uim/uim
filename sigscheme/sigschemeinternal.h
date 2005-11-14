@@ -113,6 +113,8 @@ extern ScmObj *scm_stack_start_pointer;
 #define SCM_FREECELL_SET_CDR(a, cdr) (SCM_FREECELL_CDR(a) = (cdr))
 #endif
 
+#define SCM_ERROBJP(obj)            (NFALSEP(ScmOp_sscm_error_objectp(obj)))
+
 /* Prefix-less Abbreviation Names For Convenient Internal Use */
 #define SYM_QUOTE            SCM_SYM_QUOTE
 #define SYM_QUASIQUOTE       SCM_SYM_QUASIQUOTE
@@ -170,6 +172,7 @@ extern ScmObj *scm_stack_start_pointer;
 #define C_POINTERP     SCM_C_POINTERP
 #define C_FUNCPOINTERP SCM_C_FUNCPOINTERP
 #define ENVP           SCM_ENVP
+#define ERROBJP        SCM_ERROBJP
 
 #define CDBG           SCM_CDBG
 #define DBG            SCM_DBG
@@ -295,6 +298,7 @@ extern ScmObj *scm_stack_start_pointer;
 #define ASSERT_CONTINUATIONP(obj) ASSERT_TYPE(CONTINUATIONP, "continuation", (obj))
 #define ASSERT_PROCEDUREP(obj) ASSERT_TYPE(PROCEDUREP, "procedure", (obj))
 #define ASSERT_ENVP(obj)     ASSERT_TYPE(ENVP, "environment specifier", (obj))
+#define ASSERT_ERROBJP(obj)  ASSERT_TYPE(ERROBJP, "error object", (obj))
 
 #if SCM_USE_FORMER_SRFI34
 /* Macros and Variables For Handling Exception Handlers based on SRFI-34 */
@@ -363,6 +367,7 @@ ScmObj Scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
 ScmObj ScmExp_cond_internal(ScmObj args, ScmEvalState *eval_state);
 
 /* error.c */
+void SigScm_InitError(void);
 void Scm_ThrowException(ScmObj errorobj) SCM_NORETURN;
 void SigScm_ShowErrorHeader(void);
 void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj) SCM_NORETURN;

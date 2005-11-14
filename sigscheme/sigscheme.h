@@ -575,7 +575,6 @@ ScmObj ScmOp_cddddr(ScmObj lst);
 /* operations-nonstd.c */
 #if SCM_USE_NONSTD_FEATURES
 ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest);
-ScmObj ScmOp_sscm_backtrace(void);
 ScmObj ScmOp_load_path(void);
 /* FIXME: add ScmObj SigScm_require(const char *c_filename); */
 ScmObj ScmOp_require(ScmObj filename);
@@ -631,6 +630,12 @@ int  SigScm_Die(const char *msg, const char *filename, int line);
 void SigScm_Error(const char *msg, ...) SCM_NORETURN;
 void SigScm_ErrorObj(const char *msg, ScmObj obj) SCM_NORETURN;
 void SigScm_ShowBacktrace(ScmObj trace_stack);
+ScmObj Scm_MakeErrorObj(ScmObj reason, ScmObj objs);
+void   Scm_RaiseError(ScmObj err_obj) SCM_NORETURN;
+ScmObj ScmOp_sscm_error_objectp(ScmObj obj);
+ScmObj ScmOp_sscm_fatal_error(ScmObj err_obj) SCM_NORETURN;
+ScmObj ScmOp_sscm_inspect_error(ScmObj err_obj);
+ScmObj ScmOp_sscm_backtrace(void);
 
 /* debug.c */
 int  SigScm_DebugCategories(void);

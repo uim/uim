@@ -46,8 +46,8 @@
 #define SCM_USE_SRFI8           1  /* use SRFI-8  'receive' */
 #define SCM_USE_SRFI23          1  /* use SRFI-23 'error' */
 #define SCM_USE_SRFI34          1  /* use SRFI-34 exception handling for programs */
-#define SCM_USE_FORMER_SRFI34   1  /* use former SRFI-34 implementation */
-#define SCM_USE_NEW_SRFI34      0  /* use new SRFI-34 implementation */
+#define SCM_USE_FORMER_SRFI34   0  /* use former SRFI-34 implementation */
+#define SCM_USE_NEW_SRFI34      1  /* use new SRFI-34 implementation */
 #define SCM_USE_SRFI38          1  /* use SRFI-38 'write-with-shared-structure' */
 #define SCM_USE_SRFI60          1  /* use SRFI-60 integers as bits */
 #define SCM_USE_SRFI75_NAMED_CHARS 1  /* use named characters of SRFI-75 R6RS unicode data */
