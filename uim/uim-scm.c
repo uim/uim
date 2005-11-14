@@ -603,7 +603,10 @@ uim_scm_init(const char *verbose_level)
   uim_scm_provide("debug");
 #endif
 
-  ScmExp_use(Scm_Intern("siod"), SCM_INTERACTION_ENV);
+  Scm_Use("srfi-23");
+  Scm_Use("srfi-34");
+  Scm_Use("siod");
+
   true_sym  = (uim_lisp)SCM_TRUE;
   false_sym = (uim_lisp)SCM_FALSE;
   protected_arg0 = uim_scm_f();
