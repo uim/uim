@@ -212,7 +212,7 @@ void Scm_DefineAlias(const char *newsym, const char *sym)
                          SCM_SYMBOL_VCELL(Scm_Intern(sym)));
 }
 
-int Scm_use(const char *feature)
+int Scm_Use(const char *feature)
 {
     ScmObj ok;
     SCM_ASSERT(feature);

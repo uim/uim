@@ -168,7 +168,7 @@ int main(int argc, char **argv)
     SigScm_Initialize();
 
 #if SCM_USE_SRFI34
-    Scm_use("srfi-34");
+    Scm_Use("srfi-34");
 #endif
 
     SigScm_GC_Protect(&feature_id_siod);

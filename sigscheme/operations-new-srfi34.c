@@ -122,7 +122,7 @@ void SigScm_Initialize_SRFI34(void)
 {
     ScmObj *const *var;
 
-    Scm_use("srfi-23");
+    Scm_Use("srfi-23");
 
     /* protect global variables */
     for (var = &global_var_list[0]; *var; var++) {
