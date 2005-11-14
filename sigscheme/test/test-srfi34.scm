@@ -37,7 +37,9 @@
   (use srfi-34))
  (else #t))
 
-(set! *test-track-progress* #t)
+;; All tests in this file are passed against r2143 (new repository)
+
+;;(set! *test-track-progress* #t)
 
 (define my-assert-error
   (lambda (test-name proc)
@@ -68,7 +70,6 @@
                      (lambda ()
                        (+ 1 (raise 'obj))))))
 
-;; FAILED: infinite loop with a message "Error: missing argument(s)"
 ;; handler a procedure but takes 2 arguments
 (my-assert-error "with-exception-handler invalid form #2"
                  (lambda ()
@@ -94,7 +95,6 @@
                      (lambda (dummy)
                        (+ 1 (raise 'obj))))))
 
-;; FAILED
 ;; Although the behavior when a handler returned is not specified in SRFI-34,
 ;; SigScheme should produce an error to prevent being misused by users.
 (if (provided? "sigscheme")
@@ -106,7 +106,6 @@
                          (lambda ()
                            (+ 1 (raise 'obj)))))))
 
-;; SEGV
 (assert-error "with-exception-handler #3"
               (lambda ()
                 (with-exception-handler
@@ -195,20 +194,17 @@
 ;; handler part of guard
 ;;
 
-;; SEGV
 (my-assert-error  "guard handler invalid form #1"
                   (lambda ()
                     (guard (var)
                       (raise 'obj))))
 
-;; FAILED
 (my-assert-error  "guard handler invalid form #2"
                   (lambda ()
                     (guard (var
                             ())
                       (raise 'obj))))
 
-;; FAILED
 (my-assert-error  "guard handler invalid form #3"
                   (lambda ()
                     (guard (var
@@ -216,7 +212,6 @@
                             (else #t))
                       (raise 'obj))))
 
-;; SEGV
 ;; 'else' followed by another caluse
 (my-assert-error  "guard handler invalid form #4"
                   (lambda ()
@@ -225,7 +220,6 @@
                             (#t))
                       (raise 'obj))))
 
-;; SEGV
 ;; not specified in R5RS 'case', but SigScheme should cause error
 (if (provided? "sigscheme")
     (my-assert-error  "guard handler invalid form #5"
@@ -234,14 +228,12 @@
                                 (else))
                           (raise 'obj)))))
 
-;; SEGV
 (my-assert-error  "guard handler invalid form #6"
                   (lambda ()
                     (guard (var
                             (#t =>))
                       (raise 'obj))))
 
-;; SEGV
 (my-assert-error  "guard handler invalid form #7"
                   (lambda ()
                     (guard (var
@@ -249,14 +241,12 @@
                             (else #t))
                       (raise 'obj))))
 
-;; SEGV
 (my-assert-error  "guard handler invalid form #8"
                   (lambda ()
                     (guard (var
                             (else =>))
                       (raise 'obj))))
 
-;; FAILED
 ;; not a procedure
 (my-assert-error  "guard handler invalid form #9"
                   (lambda ()
@@ -264,7 +254,6 @@
                             (#t => #t))
                       (raise 'obj))))
 
-;; FAILED
 ;; not a procedure but #f
 (my-assert-error  "guard handler invalid form #10"
                   (lambda ()
@@ -272,7 +261,6 @@
                             (#t => #f))
                       (raise 'obj))))
 
-;; FAILED
 ;; procedure but argument number mismatch
 (my-assert-error  "guard handler invalid form #11"
                   (lambda ()
@@ -280,7 +268,6 @@
                             (#t => eq?))
                       (raise 'obj))))
 
-;; FAILED
 ;; not a procedure but a syntax
 (my-assert-error  "guard handler invalid form #12"
                   (lambda ()
@@ -305,6 +292,12 @@
                           ((even? 3) #f)
                           ((positive? -1) #f))
                     (raise 'error))))
+(assert-error "guard handler reraise #3"
+              (lambda ()
+                (guard (condition
+                        ((positive? condition) 'positive)
+                        ((negative? condition) 'negative))
+                  (raise 0))))
 
 ;; R5RS: If the selected <clause> contains only the <test> and no
 ;; <expression>s, then the value of the <test> is returned as the result.
@@ -331,7 +324,6 @@
 ;; mixed use of with-exception-handler and guard
 ;;
 
-;; SEGV
 (assert-equal? "mixed exception handling #1"
                'guard-ret
 	       (with-exception-handler (lambda (x)
@@ -342,17 +334,19 @@
                             'guard-ret))
                      (raise 1)))))
 
-(assert-equal? "mixed exception handling #2"
-               'with-exception-ret
-	       (with-exception-handler (lambda (x)
-					 'with-exception-ret)
-                 (lambda ()
-                   (guard (condition
-                           ((negative? condition)
-                            'guard-ret))
-                     (raise 1)))))
+(assert-error "mixed exception handling #2"
+              (lambda ()
+                (with-exception-handler (lambda (x)
+                                          'with-exception-ret
+                                          ;; a exception handler must not
+                                          ;; return (as specified in SRFI-34)
+                                          )
+                  (lambda ()
+                    (guard (condition
+                            ((negative? condition)
+                             'guard-ret))
+                      (raise 1))))))
 
-;; SEGV
 (assert-equal? "mixed exception handling #3"
                'positive
                (call-with-current-continuation
@@ -365,7 +359,6 @@
                               ((negative? condition) 'negative))
                         (raise 1)))))))
 
-;; SEGV
 (assert-equal? "mixed exception handling #4"
                'negative
                (call-with-current-continuation

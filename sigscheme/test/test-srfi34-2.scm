@@ -37,7 +37,9 @@
   (use srfi-34))
  (else #t))
 
-(set! *test-track-progress* #t)
+;; All tests in this file are passed against r2143 (new repository)
+
+;;(set! *test-track-progress* #t)
 
 ;; these tests are ported from "Examples" section of SRFI-34
 
@@ -62,7 +64,6 @@
                     (lambda ()
                       (+ 1 (raise 'an-error)))))))
 
-;; SEGV
 ;;PRINTS: something went wrong
 ;; Then behaves in an unspecified way. Although the behavior when a handler
 ;; returned is not specified in SRFI-34, SigScheme should produce an error to
@@ -102,7 +103,6 @@
                         'dont-care))
                  (+ 1 (raise 'an-error))))
 
-;; SEGV
 (assert-equal? "Examples of SRFI-34 document #5"
                'positive
                (call-with-current-continuation
@@ -116,7 +116,6 @@
                               ((negative? condition) 'negative))
                         (raise 1)))))))
 
-;; SEGV
 (assert-equal? "Examples of SRFI-34 document #6"
                'negative
                (call-with-current-continuation

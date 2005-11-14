@@ -110,9 +110,9 @@ static ScmObj *const global_var_list[] = {
 =======================================*/
 static ScmObj set_cur_handlers(ScmObj handlers, ScmObj env);
 static ScmObj with_exception_handlers(ScmObj new_handlers, ScmObj thunk);
-static ScmObj guard_internal(ScmObj guard_k, ScmObj env);
+static ScmObj guard_internal(ScmObj q_guard_k, ScmObj env);
 static ScmObj guard_handler(ScmObj q_condition, ScmEvalState *eval_state);
-static ScmObj guard_handler_body(ScmObj handler_k, ScmObj env);
+static ScmObj guard_handler_body(ScmObj q_handler_k, ScmObj env);
 static ScmObj guard_body(ScmEvalState *eval_state);
 
 /*=======================================
@@ -315,10 +315,10 @@ static ScmObj guard_handler(ScmObj q_condition, ScmEvalState *eval_state)
 }
 
 /* assumes that ScmExp_delay() returns a closure */
-static ScmObj guard_handler_body(ScmObj handler_k, ScmObj env)
+static ScmObj guard_handler_body(ScmObj q_handler_k, ScmObj env)
 {
     ScmEvalState eval_state;
-    ScmObj lex_env, cond_env, condition, cond_catch, guard_k;
+    ScmObj lex_env, cond_env, condition, cond_catch, guard_k, handler_k;
     ScmObj sym_var, clauses, caught, reraise, ret;
     DECLARE_PRIVATE_FUNCTION("guard", SyntaxFixed1);
 
@@ -326,6 +326,7 @@ static ScmObj guard_handler_body(ScmObj handler_k, ScmObj env)
     condition  = Scm_SymbolValue(sym_condition, env);
     cond_catch = Scm_SymbolValue(sym_cond_catch, env);
     guard_k    = Scm_SymbolValue(sym_guard_k, env);
+    handler_k  = EVAL(q_handler_k, env);
 
     /* eval cond-catch block */
     sym_var = CAR(cond_catch);
