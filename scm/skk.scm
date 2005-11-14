@@ -1134,7 +1134,7 @@
 		      sc
 		      (skk-lib-get-dcomp-word
 		       (skk-make-string
-			(skk-context-head sc) skk-type-hiragana))))
+			(skk-context-head sc) (skk-context-kana-mode sc)))))
 		 #f)
 	       (let* ((residual-kana (rk-push-key-last! rkc)))
 		 ;; handle preceding "n"
@@ -1176,7 +1176,7 @@
 		(skk-context-set-dcomp-word!
 		 sc
 		 (skk-lib-get-dcomp-word
-		  (skk-make-string (skk-context-head sc) skk-type-hiragana))))))
+		  (skk-make-string (skk-context-head sc) (skk-context-kana-mode sc)))))))
       (if (or
 	   (eq? (skk-context-state sc) 'skk-state-direct)
 	   (eq? (skk-context-state sc) 'skk-state-latin)
@@ -1253,7 +1253,7 @@
 		      (skk-lib-get-dcomp-word
 		       (skk-make-string
 		       (skk-context-head sc)
-		       skk-type-hiragana))
+		       (skk-context-kana-mode sc)))
 			"")))
 	     #f)
 	   #t)
@@ -1298,7 +1298,7 @@
 			sc
 			(skk-lib-get-dcomp-word
 			 (skk-make-string
-			  (skk-context-head sc) skk-type-hiragana))))))
+			  (skk-context-head sc) (skk-context-kana-mode sc)))))))
 	     #f)
 	   #t)
        (if (skk-kanji-mode-key? key key-state)
@@ -1421,7 +1421,7 @@
 		     sc
 		     (skk-lib-get-dcomp-word
 		      (skk-make-string
-		       (skk-context-head sc) skk-type-hiragana))))
+		       (skk-context-head sc) (skk-context-kana-mode sc)))))
 		#t)
 	      #t)
 	   (if (and res

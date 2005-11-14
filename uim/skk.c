@@ -1814,7 +1814,7 @@ skk_clear_completions(uim_lisp head_)
 }
 
 static uim_lisp
-skk_get_dcomp_entry(uim_lisp head_)
+skk_get_dcomp_word(uim_lisp head_)
 {
   const char *hs;
   struct skk_line *sl;
@@ -2804,7 +2804,7 @@ update_personal_dictionary_cache_with_file(const char *fn, int is_personal)
     return;
   }
 
-  /* If any cache is available, just use new one. */
+  /* If no cache is available, just use new one. */
   if (!skk_dic->head.next) {
     skk_dic->head.next = di->head.next;
     skk_dic->cache_len = di->cache_len;
@@ -3099,7 +3099,7 @@ uim_plugin_instance_init(void)
   uim_scm_init_subr_2("skk-lib-get-nth-completion", skk_get_nth_completion);
   uim_scm_init_subr_1("skk-lib-get-nr-completions", skk_get_nr_completions);
   uim_scm_init_subr_1("skk-lib-clear-completions", skk_clear_completions);
-  uim_scm_init_subr_1("skk-lib-get-dcomp-word", skk_get_dcomp_entry);
+  uim_scm_init_subr_1("skk-lib-get-dcomp-word", skk_get_dcomp_word);
   uim_scm_init_subr_1("skk-lib-eval-candidate", skk_eval_candidate);
   uim_scm_init_subr_3("skk-lib-substring", skk_substring);
 }
