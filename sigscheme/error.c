@@ -155,6 +155,7 @@ void SigScm_ShowBacktrace(ScmObj trace_stack)
      && !SCM_SYMBOL_BOUNDP(var))
 
 #if SCM_DEBUG
+    ScmObj top;
     ScmObj frame;
     ScmObj env;
     ScmObj obj;
@@ -163,11 +164,12 @@ void SigScm_ShowBacktrace(ScmObj trace_stack)
     SigScm_ErrorPrintf(SCM_BACKTRACE_HEADER);
 
     /* show each frame's obj */
-    for (frame = trace_stack; !NULLP(frame); frame = CDR(frame)) {
+    for (top = trace_stack; !NULLP(top); top = CDR(top)) {
 #if SCM_DEBUG_BACKTRACE_SEP
         SigScm_ErrorPrintf("------------------------------\n");
 #endif /* SCM_DEBUG_BACKTRACE_SEP */
 
+        frame = CAR(top);
         env = TRACE_FRAME_ENV(frame);
         obj = TRACE_FRAME_OBJ(frame);
 
