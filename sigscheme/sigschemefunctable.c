@@ -78,7 +78,7 @@
 #include "sigschemefunctable-srfi23.c"
 #endif
 #if SCM_USE_SRFI34
-#include "sigschemefunctable-new-srfi34.c"
+#include "sigschemefunctable-srfi34.c"
 #endif
 #if SCM_USE_SRFI38
 #include "sigschemefunctable-srfi38.c"

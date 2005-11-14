@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : operations-new-srfi34.c
+ *  FileName : operations-srfi34.c
  *  About    : New implementation of SRFI-34 exception handling for programs
  *
  *  Copyright (C) 2005      by YamaKen (yamaken AT bp.iij4u.or.jp)
