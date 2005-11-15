@@ -480,27 +480,12 @@
 (define skk-get-nth-candidate
   (lambda (sc n)
     (let* ((head (skk-context-head sc))
-    	   (cand (if skk-use-numeric-conversion?
-		     ;; store and restore numeric strings
-		     (let ((numlst (skk-lib-store-replaced-numstr
-				    (skk-make-string head skk-type-hiragana))))
-		       (skk-lib-merge-replaced-numstr
-			(skk-lib-get-nth-candidate
-			 n
-			 (skk-lib-replace-numeric (skk-make-string
-						   head skk-type-hiragana))
-			 (skk-context-okuri-head sc)
-			 (skk-make-string (skk-context-okuri sc)
-					  skk-type-hiragana)
-			 numlst)
-			numlst))
-		     (skk-lib-get-nth-candidate
-		      n
-		      (skk-make-string head skk-type-hiragana)
-		      (skk-context-okuri-head sc)
-		      (skk-make-string (skk-context-okuri sc)
-				       skk-type-hiragana)
-		      '()))))
+    	   (cand (skk-lib-get-nth-candidate
+		  n
+		  (skk-make-string head skk-type-hiragana)
+		  (skk-context-okuri-head sc)
+		  (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
+		  skk-use-numeric-conversion?)))
       (if skk-show-annotation?
 	  cand
 	  (skk-lib-remove-annotation cand)))))
@@ -570,22 +555,12 @@
 				   (skk-context-kana-mode sc)))
 	   (res (string-append cand okuri appendix))
 	   (head (skk-context-head sc)))
-      (if skk-use-numeric-conversion?
-	  ;; store original number for numeric conversion #4
-	  (let ((numlst (skk-lib-store-replaced-numstr
-			 (skk-make-string head skk-type-hiragana))))
-	    (skk-lib-commit-candidate
-	     (skk-lib-replace-numeric (skk-make-string head skk-type-hiragana))
-	     (skk-context-okuri-head sc)
-	     (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
-	     (skk-context-nth sc)
-	     numlst))
-	  (skk-lib-commit-candidate
-	   (skk-make-string head skk-type-hiragana)
-	   (skk-context-okuri-head sc)
-	   (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
-	   (skk-context-nth sc)
-	   '()))
+      (skk-lib-commit-candidate
+       (skk-make-string head skk-type-hiragana)
+       (skk-context-okuri-head sc)
+       (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
+       (skk-context-nth sc)
+       skk-use-numeric-conversion?)
       (if (> (skk-context-nth sc) 0)
 	  (skk-save-personal-dictionary))
       (skk-reset-candidate-window sc)
@@ -594,30 +569,12 @@
 
 (define skk-purge-candidate
   (lambda (sc)
-    (let* ((okuri (skk-make-string (skk-context-okuri sc)
-				   (skk-context-kana-mode sc)))
-	   (appendix (skk-make-string (skk-context-appendix sc)
-				   (skk-context-kana-mode sc)))
-	   (head (skk-context-head sc))
-	   (res #f))
-      (if skk-use-numeric-conversion?
-	  ;; store original number for numeric conversion #4
-	  (let ((numlst (skk-lib-store-replaced-numstr
-			 (skk-make-string head skk-type-hiragana))))
-	    (set! res (skk-lib-purge-candidate
-		       (skk-lib-replace-numeric
-			(skk-make-string head skk-type-hiragana))
-		       (skk-context-okuri-head sc)
-		       (skk-make-string (skk-context-okuri sc)
-					skk-type-hiragana)
-		       (skk-context-nth sc)
-		       numlst)))
-	  (set! res (skk-lib-purge-candidate
-		     (skk-make-string head skk-type-hiragana)
-		     (skk-context-okuri-head sc)
-		     (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
-		     (skk-context-nth sc)
-		     '())))
+    (let ((res (skk-lib-purge-candidate
+		 (skk-make-string (skk-context-head sc) skk-type-hiragana)
+		 (skk-context-okuri-head sc)
+		 (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
+		 (skk-context-nth sc)
+		 skk-use-numeric-conversion?)))
       (if res
 	  (skk-save-personal-dictionary))
       (skk-reset-candidate-window sc)
@@ -661,21 +618,12 @@
 
 (define skk-begin-conversion
   (lambda (sc)
-    (let ((res #f)
-	  (head (skk-context-head sc)))
-      (if skk-use-numeric-conversion?
-	  ;; no need to store original number for numeric conversion
-	  (set! res (skk-lib-get-entry
-	    	     (skk-lib-replace-numeric
-		      (skk-make-string head skk-type-hiragana))
-		     (skk-context-okuri-head sc)
-		     (skk-make-string (skk-context-okuri sc)
-				      skk-type-hiragana)))
-	  (set! res (skk-lib-get-entry
-		     (skk-make-string head skk-type-hiragana)
-		     (skk-context-okuri-head sc)
-		     (skk-make-string (skk-context-okuri sc)
-				      skk-type-hiragana))))
+    (let ((res (skk-lib-get-entry
+	       (skk-make-string (skk-context-head sc) skk-type-hiragana)
+		(skk-context-okuri-head sc)
+		(skk-make-string (skk-context-okuri sc)
+				 skk-type-hiragana)
+		skk-use-numeric-conversion?)))
       (if res
 	  (begin
 	    (skk-context-set-nth! sc 0)
@@ -1477,52 +1425,28 @@
 
 (define skk-check-candidate-window-begin
   (lambda (sc)
-    (let ((head (skk-context-head sc)))
-      (if
-       (and
-	(not (skk-context-candidate-window sc))
-	skk-use-candidate-window?
-	(> (skk-context-nth sc) (- skk-candidate-op-count 2)))
-       (begin
-	 (skk-context-set-candidate-window! sc #t)
-	 (if skk-use-numeric-conversion?
-	   ;; store numeric strings to check #4
-	   (let ((numlst (skk-lib-store-replaced-numstr
-			  (skk-make-string head skk-type-hiragana))))
-	     (skk-context-set-nr-candidates!
-	      sc
-	      (skk-lib-get-nr-candidates
-		(skk-lib-replace-numeric
-		 (skk-make-string head skk-type-hiragana))
-		(skk-context-okuri-head sc)
-		(skk-make-string (skk-context-okuri sc) skk-type-hiragana)
-		numlst))
-	     (im-activate-candidate-selector
-	      sc
-	      (cond
-	       ((eq? skk-candidate-selection-style 'uim)
-		(skk-context-nr-candidates sc))
-	       ((eq? skk-candidate-selection-style 'ddskk-like)
-		(- (skk-context-nr-candidates sc)
-		   (- skk-candidate-op-count 1))))
-	      skk-nr-candidate-max))
-	   (begin
-	     (skk-context-set-nr-candidates!
-	      sc
-	      (skk-lib-get-nr-candidates
-	       (skk-make-string head skk-type-hiragana)
-	       (skk-context-okuri-head sc)
-	       (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
-	       '()))
-	     (im-activate-candidate-selector
-	      sc
-	      (cond
-	       ((eq? skk-candidate-selection-style 'uim)
+    (if (and
+	 (not (skk-context-candidate-window sc))
+	 skk-use-candidate-window?
+	 (> (skk-context-nth sc) (- skk-candidate-op-count 2)))
+	(begin
+	  (skk-context-set-candidate-window! sc #t)
+	  (skk-context-set-nr-candidates!
+	   sc
+	   (skk-lib-get-nr-candidates
+	    (skk-make-string (skk-context-head sc) skk-type-hiragana)
+	    (skk-context-okuri-head sc)
+	    (skk-make-string (skk-context-okuri sc) skk-type-hiragana)
+	    skk-use-numeric-conversion?))
+	  (im-activate-candidate-selector
+	   sc
+	   (cond
+	    ((eq? skk-candidate-selection-style 'uim)
 		  (skk-context-nr-candidates sc))
-	       ((eq? skk-candidate-selection-style 'ddskk-like)
+	    ((eq? skk-candidate-selection-style 'ddskk-like)
 		  (- (skk-context-nr-candidates sc)
 		     (- skk-candidate-op-count 1))))
-	      skk-nr-candidate-max))))))))
+	   skk-nr-candidate-max)))))
 
 (define skk-commit-by-label-key
   (lambda (sc key)
