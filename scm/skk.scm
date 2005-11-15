@@ -1735,7 +1735,10 @@
 		;; handle Setsubi-ji
 		(and
 		 (null? (cdr sl))
-		 (string=? ">" (car sl))))
+		 (string=? ">" (car sl)))
+		(and
+		 skk-use-numeric-conversion?
+		 (string=? "#" (car sl))))
 	       (list (car sl) (car sl) (car sl))
 	       (find-kana-list-from-rule ja-rk-rule-basic (car sl))))
 	  (skk-string-list-to-context-head sc (cdr sl)))
