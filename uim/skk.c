@@ -147,6 +147,7 @@ struct skk_comp_array {
 /* XXX should create skk.h */
 static uim_lisp skk_replace_numeric(uim_lisp head_);
 
+static uim_lisp restore_numeric(const char *s, uim_lisp numlst_);
 static char *replace_numeric(const char *str);
 static char *sanitize_word(const char *str, const char *prefix);
 static int is_purged_cand(const char *str);
@@ -1770,21 +1771,31 @@ find_comp_array(struct dic_info *di, const char *s)
 }
 
 static struct skk_comp_array *
-find_comp_array_lisp(uim_lisp head_)
+find_comp_array_lisp(uim_lisp head_, uim_lisp numeric_conv_)
 {
   const char *hs;
   struct skk_comp_array *ca;
+  char *rs = NULL;
   
   hs = uim_scm_refer_c_str(head_);
-  ca = find_comp_array(skk_dic, hs);
+
+  if NFALSEP(numeric_conv_)
+    rs = replace_numeric(hs);
+
+  if (!rs)
+    ca = find_comp_array(skk_dic, hs);
+  else {
+    ca = find_comp_array(skk_dic, rs);
+    free(rs);
+  }
   return ca;
 }
 
 static uim_lisp
-skk_get_completion(uim_lisp head_)
+skk_get_completion(uim_lisp head_, uim_lisp numeric_conv_)
 {
   struct skk_comp_array *ca;
-  ca = find_comp_array_lisp(head_);
+  ca = find_comp_array_lisp(head_, numeric_conv_);
   if (ca) {
     ca->refcount++;
     return uim_scm_t();
@@ -1793,47 +1804,73 @@ skk_get_completion(uim_lisp head_)
 }
 
 static uim_lisp
-skk_get_nth_completion(uim_lisp nth_, uim_lisp head_)
+skk_get_nth_completion(uim_lisp nth_, uim_lisp head_, uim_lisp numeric_conv_)
 {
   int n;
   struct skk_comp_array *ca;
   char *str;
+  uim_lisp numlst_ = uim_scm_null_list();
 
-  ca = find_comp_array_lisp(head_);
+  if NFALSEP(numeric_conv_)
+    numlst_ = skk_store_replaced_numeric_str(head_);
+
+  if (!uim_scm_nullp(numlst_))
+    ca = find_comp_array_lisp(head_, numeric_conv_);
+  else
+    ca = find_comp_array_lisp(head_, uim_scm_f());
+
   n = uim_scm_c_int(nth_);
   if (ca && ca->nr_comps > n) {
     str = ca->comps[n];
-    return uim_scm_make_str(str);
+    if (!uim_scm_nullp(numlst_))
+      return restore_numeric(str, numlst_);
+    else
+      return uim_scm_make_str(str);
   }
   return uim_scm_null_list();
 }
 
 static uim_lisp
-skk_get_nr_completions(uim_lisp head_)
+skk_get_nr_completions(uim_lisp head_, uim_lisp numeric_conv_)
 {
   int n = 0;
   struct skk_comp_array *ca;
 
-  ca = find_comp_array_lisp(head_);
-  if (ca) {
+  ca = find_comp_array_lisp(head_, numeric_conv_);
+  if (ca)
     n = ca->nr_comps;
-  }
+
   return uim_scm_make_int(n);
 }
 
 static uim_lisp
-skk_clear_completions(uim_lisp head_)
+skk_clear_completions(uim_lisp head_, uim_lisp numeric_conv_)
 {
   int i;
   struct skk_comp_array *ca, *ca_prev;
   const char *hs;
+  char *rs = NULL;
 
   hs = uim_scm_refer_c_str(head_);
-  for (ca = skk_comp; ca; ca = ca->next) {
-    if (!strcmp(ca->head, hs)) {
-      ca->refcount--;
-      break;
+
+  if NFALSEP(numeric_conv_)
+    rs = replace_numeric(hs);
+
+  if (!rs)
+    for (ca = skk_comp; ca; ca = ca->next) {
+      if (!strcmp(ca->head, hs)) {
+        ca->refcount--;
+        break;
+      }
     }
+  else {
+    for (ca = skk_comp; ca; ca = ca->next) {
+      if (!strcmp(ca->head, rs)) {
+        ca->refcount--;
+        break;
+      }
+    }
+    free(rs);
   }
 
   if (ca && ca->refcount == 0) {
@@ -1859,21 +1896,75 @@ skk_clear_completions(uim_lisp head_)
 }
 
 static uim_lisp
-skk_get_dcomp_word(uim_lisp head_)
+restore_numeric(const char *s, uim_lisp numlst_)
+{
+  int i, j, len, newlen, numstrlen;
+  const char *numstr;
+  char *str;
+  uim_lisp ret;
+
+  str = strdup(s);
+  newlen = len = strlen(str);
+
+  for (i = 0, j = 0; j < len; i++, j++) {
+    if (str[i] == '#') {
+      if (uim_scm_nullp(numlst_))
+	break;
+      
+      numstr  = uim_scm_refer_c_str(uim_scm_car(numlst_));
+      numstrlen = strlen(numstr);
+      newlen = newlen - 1 + numstrlen;
+      str = realloc(str, newlen + 1);
+      memmove(&str[i + numstrlen], &str[i + 1], newlen - i - numstrlen + 1);
+      memcpy(&str[i], numstr, numstrlen);
+      i = i  - 1 + numstrlen;
+
+      numlst_ = uim_scm_cdr(numlst_);
+    }
+  }
+  ret = uim_scm_make_str(str);
+  free(str);
+
+  return ret;
+}
+
+static uim_lisp
+skk_get_dcomp_word(uim_lisp head_, uim_lisp numeric_conv_)
 {
   const char *hs;
   struct skk_line *sl;
   int len;
+  uim_lisp numlst_ = uim_scm_null_list();
+  char *rs = NULL;
   
   hs = uim_scm_refer_c_str(head_);
-  len = strlen(hs);
+
+  if NFALSEP(numeric_conv_)
+    numlst_ = skk_store_replaced_numeric_str(head_);
+
+  if (!uim_scm_nullp(numlst_)) {
+    rs = replace_numeric(hs);
+    len = strlen(rs);
+  } else
+    len = strlen(hs);
 
   if (len != 0) {
     /* Search from cache using same way as in make_comp_array_from_cache(). */
-    for (sl = skk_dic->head.next; sl; sl = sl->next) {
-      if (!strncmp(sl->head, hs, len) && strcmp(sl->head, hs) &&
-		   sl->okuri_head == '\0')
-	return uim_scm_make_str(sl->head);
+    if (!rs)
+      for (sl = skk_dic->head.next; sl; sl = sl->next) {
+	if (!strncmp(sl->head, hs, len) && strcmp(sl->head, hs) &&
+			sl->okuri_head == '\0')
+	  return uim_scm_make_str(sl->head);
+      }
+    else {
+      for (sl = skk_dic->head.next; sl; sl = sl->next) {
+	if (!strncmp(sl->head, rs, len) && strcmp(sl->head, rs) &&
+			sl->okuri_head == '\0') {
+	  free(rs);
+	  return restore_numeric(sl->head, numlst_);
+	}
+      }
+      free(rs);
     }
   }
   return uim_scm_make_str("");
@@ -3155,11 +3246,11 @@ uim_plugin_instance_init(void)
   uim_scm_init_subr_5("skk-lib-learn-word", skk_learn_word);
   uim_scm_init_subr_1("skk-lib-get-annotation", skk_get_annotation);
   uim_scm_init_subr_1("skk-lib-remove-annotation", skk_remove_annotation);
-  uim_scm_init_subr_1("skk-lib-get-completion", skk_get_completion);
-  uim_scm_init_subr_2("skk-lib-get-nth-completion", skk_get_nth_completion);
-  uim_scm_init_subr_1("skk-lib-get-nr-completions", skk_get_nr_completions);
-  uim_scm_init_subr_1("skk-lib-clear-completions", skk_clear_completions);
-  uim_scm_init_subr_1("skk-lib-get-dcomp-word", skk_get_dcomp_word);
+  uim_scm_init_subr_2("skk-lib-get-completion", skk_get_completion);
+  uim_scm_init_subr_3("skk-lib-get-nth-completion", skk_get_nth_completion);
+  uim_scm_init_subr_2("skk-lib-get-nr-completions", skk_get_nr_completions);
+  uim_scm_init_subr_2("skk-lib-clear-completions", skk_clear_completions);
+  uim_scm_init_subr_2("skk-lib-get-dcomp-word", skk_get_dcomp_word);
   uim_scm_init_subr_1("skk-lib-eval-candidate", skk_eval_candidate);
   uim_scm_init_subr_3("skk-lib-substring", skk_substring);
 }
