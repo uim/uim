@@ -178,6 +178,11 @@
 	       (_ "[SKK] begin conversion with completion")
 	       (_ "long description will be here"))
 
+(define-custom 'skk-commit-with-conv-completion-key '("<IgnoreCase><Control><Alt>j")
+	       '(skk-keys2 skk-keys-completion)
+	       '(key)
+	       (_ "[SKK] commit the first candidate with completion")
+	       (_ "long description will be here"))
 
 (define-custom 'skk-special-midashi-key '("<IgnoreShift>>" "<IgnoreShift><" "<IgnoreShift>?")
                '(skk-keys2)
