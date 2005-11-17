@@ -91,6 +91,10 @@ struct skk_cand_array {
   struct skk_line *line;
 };
 
+/* skk_line state */
+#define SKK_LINE_NEED_SAVE	(1<<0)
+#define SKK_LINE_USE_FOR_COMPLETION	(1<<1)
+
 /* skk dictionary line */
 struct skk_line {
   /* line index. head part */
@@ -101,8 +105,8 @@ struct skk_line {
   /* array of candidate array for different okuri-gana */
   int nr_cand_array;
   struct skk_cand_array *cands;
-  /* modified or read from file */
-  int need_save;
+  /* state of line */
+  int state;
   /* link to next entry in the list */
   struct skk_line *next;
 };
@@ -560,7 +564,7 @@ alloc_skk_line(const char *word, char okuri_head)
 {
   struct skk_line *sl;
   sl = malloc(sizeof(struct skk_line));
-  sl->need_save = 0;
+  sl->state = 0;
   sl->head = strdup(word);
   sl->okuri_head = okuri_head;
   sl->nr_cand_array = 1;
@@ -584,7 +588,7 @@ copy_skk_line(struct skk_line *p)
     return NULL;
 
   sl = malloc(sizeof(struct skk_line));
-  sl->need_save = p->need_save;
+  sl->state = p->state;
   sl->head = strdup(p->head);
   sl->okuri_head = p->okuri_head;
   sl->nr_cand_array = p->nr_cand_array;
@@ -1733,7 +1737,9 @@ make_comp_array_from_cache(struct dic_info *di, const char *s)
     if (/* string 's' is part of sl->head */
 	!strncmp(sl->head, s, strlen(s)) && strcmp(sl->head, s) &&
 	/* and sl is okuri-nasi line */
-	sl->okuri_head == '\0') {
+	sl->okuri_head == '\0' &&
+	/* exclude some entries */
+	sl->state & SKK_LINE_USE_FOR_COMPLETION) {
       ca->nr_comps++;
       ca->comps = realloc(ca->comps, sizeof(char *) * ca->nr_comps);
       ca->comps[ca->nr_comps - 1] = strdup(sl->head);
@@ -1953,13 +1959,15 @@ skk_get_dcomp_word(uim_lisp head_, uim_lisp numeric_conv_)
     if (!rs)
       for (sl = skk_dic->head.next; sl; sl = sl->next) {
 	if (!strncmp(sl->head, hs, len) && strcmp(sl->head, hs) &&
-			sl->okuri_head == '\0')
+			sl->okuri_head == '\0' &&
+			sl->state & SKK_LINE_USE_FOR_COMPLETION)
 	  return uim_scm_make_str(sl->head);
       }
     else {
       for (sl = skk_dic->head.next; sl; sl = sl->next) {
 	if (!strncmp(sl->head, rs, len) && strcmp(sl->head, rs) &&
-			sl->okuri_head == '\0') {
+			sl->okuri_head == '\0' &&
+			sl->state & SKK_LINE_USE_FOR_COMPLETION) {
 	  free(rs);
 	  return restore_numeric(sl->head, numlst_);
 	}
@@ -2341,7 +2349,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
     }
   }
 
-  ca->line->need_save = 1;
+  ca->line->state = SKK_LINE_NEED_SAVE | SKK_LINE_USE_FOR_COMPLETION;
   move_line_to_cache_head(skk_dic, ca->line);
 
   return uim_scm_f();
@@ -2467,7 +2475,7 @@ learn_word_to_cand_array(struct skk_cand_array *ca, const char *word)
     push_back_candidate_to_array(ca, word);
 
   reorder_candidate(ca, word);
-  ca->line->need_save = 1;
+  ca->line->state = SKK_LINE_NEED_SAVE | SKK_LINE_USE_FOR_COMPLETION;
 }
 
 static char *
@@ -2633,12 +2641,12 @@ parse_dic_line(struct dic_info *di, char *line, int is_personal)
     sl = compose_line(di, buf, 0, line);
   }
   if (is_personal) {
-    sl->need_save = 1;
+    sl->state = SKK_LINE_NEED_SAVE | SKK_LINE_USE_FOR_COMPLETION;
     /* set nr_real_cands for the candidate array from personal dictionaly */
     for (i = 0; i < sl->nr_cand_array; i++)
       sl->cands[i].nr_real_cands = sl->cands[i].nr_cands;
   } else {
-    sl->need_save = 0;
+    sl->state = SKK_LINE_USE_FOR_COMPLETION;
   }
   add_line_to_cache_head(di, sl);
 }
@@ -3061,7 +3069,7 @@ skk_save_personal_dictionary(uim_lisp fn_)
   }
 
   for (sl = skk_dic->head.next; sl; sl = sl->next) {
-    if (sl->need_save)
+    if (sl->state & SKK_LINE_NEED_SAVE)
       write_out_line(fp, sl);
   }
 
