@@ -21,9 +21,6 @@ Requirements and bugs:
 * Inhibit a mutation on string constants as described in "3.4 Storage model" of
   R5RS
 
-* Fix invalid storage model assumption of ScmOp_append() and qquote_internal()
-  with ScmRef
-
 * [uim] link libsscm into libuim statically
 
 * Dynamic encoding switching for a conversion between string and char list,

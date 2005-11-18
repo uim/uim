@@ -622,21 +622,21 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
     ScmObj args      = SCM_NULL;
     ScmObj result    = SCM_NULL;
     ScmObj ret_lst   = SCM_NULL;
-    ScmObj *ret_tail = NULL;
+    ScmRef ret_tail  = SCM_REF_NULL;
     int splice_flag  = 0;
     DECLARE_INTERNAL_FUNCTION("qquote_internal");
 
     /* local "functions" */
 #define qquote_copy_delayed()   (QQUOTE_IS_VERBATIM(ret_lst))
-#define qquote_force_copy_upto(end) \
-    do { \
-        ScmObj src = qexpr; \
-        ret_tail = &ret_lst; \
-        while (!EQ(src, end)) { \
-            *ret_tail = CONS(CAR(src), SCM_NULL); \
-            ret_tail = &CDR(*ret_tail); \
-            src = CDR(src); \
-        } \
+#define qquote_force_copy_upto(end)                             \
+    do {                                                        \
+        ScmObj src = qexpr;                                     \
+        ret_tail = SCM_REF(ret_lst);                            \
+        while (!EQ(src, end)) {                                 \
+            SCM_SET(ret_tail, CONS(CAR(src), SCM_NULL));        \
+            ret_tail = SCM_REF_CDR(SCM_DEREF(ret_tail));        \
+            src = CDR(src);                                     \
+        }                                                       \
     } while (0)
 
 
@@ -687,24 +687,24 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
 
         if (QQUOTE_IS_VERBATIM(result)) {
             if (!qquote_copy_delayed()) {
-                *ret_tail = CONS(obj, SCM_NULL);
-                ret_tail = &CDR(*ret_tail);
+                SCM_SET(ret_tail, CONS(obj, SCM_NULL));
+                ret_tail = SCM_REF_CDR(SCM_DEREF(ret_tail));
             }
         } else {
             if (qquote_copy_delayed())
                 qquote_force_copy_upto(ls);
 
             if (splice_flag) {
-                *ret_tail = result;
+                SCM_SET(ret_tail, result);
                 /* find the new tail (which may be the current pos) */
-                while (CONSP(*ret_tail))
-                    ret_tail = &CDR(*ret_tail);
-                if (!NULLP(*ret_tail))
+                while (CONSP(SCM_DEREF(ret_tail)))
+                    ret_tail = SCM_REF_CDR(SCM_DEREF(ret_tail));
+                if (!NULLP(SCM_DEREF(ret_tail)))
                     ERR_OBJ("unquote-splicing: bad list",
                                     result);
             } else {
-                *ret_tail = CONS(result, SCM_NULL);
-                ret_tail = &CDR(*ret_tail);
+                SCM_SET(ret_tail, CONS(result, SCM_NULL));
+                ret_tail = SCM_REF_CDR(SCM_DEREF(ret_tail));
             }
         }
     } /* foreach ls in qexpr */
@@ -719,11 +719,11 @@ static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
   append_last_item:
     if (QQUOTE_IS_VERBATIM(result)) {
         if (!qquote_copy_delayed())
-            *ret_tail = ls;
+            SCM_SET(ret_tail, ls);
     } else {
         if (qquote_copy_delayed())
             qquote_force_copy_upto(ls);
-        *ret_tail = result;
+        SCM_SET(ret_tail, result);
     }
 
     return ret_lst;
