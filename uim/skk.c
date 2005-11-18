@@ -3297,7 +3297,6 @@ open_skkserv(int portnum)
   struct hostent *entry;
   /* struct servent *serv; */
   struct protoent *proto;
-  int a1, a2, a3, a4;
   char *hostname;
 
   signal(SIGPIPE, SIG_IGN);
@@ -3321,13 +3320,7 @@ open_skkserv(int portnum)
     return 0;
 #endif
   }
-  if ('0' <= *hostname && *hostname <= '9') {
-    if (sscanf(hostname,"%d.%d.%d.%d", &a1, &a2, &a3, &a4) != 4) {
-      return 0;
-    }
-    a1 = (a1 << 24) | (a2 << 16) | (a3 << 8) | a4;
-    hostaddr.sin_addr.s_addr = htonl(a1);
-  } else {
+  if (!inet_aton(hostname, (struct in_addr *)&hostaddr.sin_addr.s_addr)) {
     if ((entry = gethostbyname(hostname)) == NULL) {
       return 0;
     }
