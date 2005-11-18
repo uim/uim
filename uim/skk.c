@@ -3320,7 +3320,7 @@ open_skkserv(int portnum)
     return 0;
 #endif
   }
-  if (!inet_aton(hostname, (struct in_addr *)&hostaddr.sin_addr.s_addr)) {
+  if (!inet_aton(hostname, (struct in_addr *)&hostaddr.sin_addr)) {
     if ((entry = gethostbyname(hostname)) == NULL) {
       return 0;
     }
