@@ -33,92 +33,87 @@
 #  SUCH DAMAGE.
 #===========================================================================
 
-FUNC_TYPE_INVALID   = 0
-FUNC_TYPE_SYNTAX    = 1
-FUNC_TYPE_PROCEDURE = 2
-FUNC_TYPE_REDUCTION = 3
+# $1  :prototype       ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer, ScmEvalState *eval_state)
+# $2  :ret             ScmObj
+# $3  :func            ScmOp_call_with_values
+# $4  :prefix          Op
+# $5  :func_body       call_with_values
+# $6  :args            ScmObj producer, ScmObj consumer, ScmEvalState *eval_state
+# $7  :proc            call-with-values
+# $8  :register_func   ProcedureFixedTailRec2
+# $9  :functype_prefix Procedure
+# $10 :functype_spec   FixedTailRec2
+SCM_DECL_RE = /\n((ScmObj)\s+(Scm(Op|Exp)_(\w+))\(([^{]+)\))[ \t]*\n\s*\{[^{}]+DECLARE_FUNCTION\(\s*\"([^\"]+)\"[\s,]+([^\s,]+)\)/m
 
-TYPE2PREFIX = {
-  FUNC_TYPE_SYNTAX    => "ScmExp",
-  FUNC_TYPE_PROCEDURE => "ScmOp",
-  FUNC_TYPE_REDUCTION => "ScmOp",
-}
-
-SCM2C_FUNCNAME_RULE = [
-  # prefix
-  [/^\+/,        "add"],
-  [/^\*/,        "multiply"],
-  [/^-/,         "subtract"],
-  [/^\//,        "divide"],
-  [/^<=/,         "less_eq"],
-  [/^</,          "less"],
-  [/^>=/,         "greater_eq"],
-  [/^>/,          "greater"],
-  [/^\=/,         "equal"],
-  [/^%%/,         "sscm_"],
-
-  # suffix
-  [/\?$/,  "p"],
-  [/!$/,   "d"],
-
-  # suffix or intermediate
-  [/->/,  "2"],
-  [/-/,   "_"],
-  [/\?/,  "_"],
-  [/!/,   "_"],
-  [/\=/,  "equal"],
-  [/\*/,  "star"],
-  [/\+/,  "plus"],
-]
-
-def guess_c_funcname(prefix, scm_funcname, type)
-  # guess prefix
-  c_prefix = TYPE2PREFIX[type] || "";
-  if (prefix.length != 0)
-    c_prefix += prefix
-  else
-    c_prefix += "_"
+class String
+  def scan_scm_decl
+    res = []
+    scan(SCM_DECL_RE) { |prototype, ret, func, prefix, func_body, args, proc, register_func, functype_prefix, functype_spec|
+      decl = {
+        :prototype       => prototype.gsub(/\s+/, " "),
+        :ret             => ret,
+        :func            => func,
+        :prefix          => prefix,
+        :func_body       => func_body,
+        :args            => args.gsub(/\s+/, " "),
+        :proc            => proc,
+        :register_func   => "Scm_Register" + register_func,
+        :functype_prefix => functype_prefix,
+        :functype_spec   => functype_spec,
+      }
+      res << yield(decl)
+    }
+    res
   end
-
-  # apply replace rule
-  c_funcname = scm_funcname
-  SCM2C_FUNCNAME_RULE.each { |rule|
-    c_funcname = c_funcname.gsub(rule[0], rule[1])
-  }
-  
-  return c_prefix + c_funcname
 end
 
-def search_declare_function(prefix, filename)
+def scm_func_table_entry(decl)
+  proc, func, register_func = decl.values_at(:proc, :func, :register_func)
+  "{ \"#{proc}\", (ScmBuiltinFunc)#{func}, (ScmRegisterFunc)#{register_func} }"
+end
+
+def scm_func_register_exp(decl)
+  proc, func, register_func = decl.values_at(:proc, :func, :register_func)
+  "#{register_func}(\"#{proc}\", #{func})"
+end
+
+def scm_generate_func_table_body(str)
+  str.scan_scm_decl { |decl|
+    entry = scm_func_table_entry(decl)
+    "    #{entry},\n"
+  }.join
+end
+
+def scm_generate_func_register_exps(str)
+  str.scan_scm_decl { |decl|
+    exp = scm_func_register_exp(decl)
+    "    #{exp};\n"
+  }.join
+end
+
+def scm_generate_func_prototypes(str)
+  str.scan_scm_decl { |decl|
+    "#{decl[:prototype]};\n"
+  }.join
+end
+
+#####################################################################
+
+def search_declare_function(filename)
   puts "    /* #{filename} */"
-  IO.readlines(filename).each{ |line|
-    if line.strip =~ /DECLARE_FUNCTION\(\"(\S+)\",\s*((Syntax|Procedure|Reduction)\S+)\);/
-      scm_func = $1
-      reg_func = "Scm_Register" + $2
+  f = File.new(filename)
 
-      type = if reg_func.index("Syntax")
-               FUNC_TYPE_SYNTAX
-             elsif reg_func.index("Procedure")
-               FUNC_TYPE_PROCEDURE
-             elsif reg_func.index("Reduction")
-               FUNC_TYPE_REDUCTION
-             else
-               FUNC_TYPE_INVALID
-             end
+  print (scm_generate_func_table_body f.read)
 
-      c_func = guess_c_funcname(prefix, scm_func, type)
-
-      puts "    { \"#{scm_func}\", (ScmBuiltinFunc)#{c_func}, (ScmRegisterFunc)#{reg_func} },"
-    end
-  }
+  f.close
 end
 
-def build_table(prefix, filename)
-  search_declare_function(prefix, filename)
+def build_table(filename)
+  search_declare_function(filename)
 end
 
 def null_entry()
-  puts "    {NULL, NULL, NULL}"
+  puts "    { NULL, NULL, NULL }"
 end
 
 def print_tableheader(tablename)
@@ -130,10 +125,10 @@ def print_tablefooter()
   puts ""
 end
 
-def build_functable(prefix, tablename, filelist)
+def build_functable(tablename, filelist)
   print_tableheader(tablename)
   filelist.each { |filename|
-    build_table(prefix, filename)
+    build_table(filename)
   }
   null_entry()
   print_tablefooter
@@ -151,9 +146,6 @@ def print_footer()
   }
 end
 
-
-
-
 ######################################################################
 
 # Header
@@ -161,8 +153,7 @@ print_header
 
 # Print Table
 build_functable(ARGV[0],
-                ARGV[1],
-                ARGV[2..-1])
+                ARGV[1..-1])
 
 # Footer
 print_footer
