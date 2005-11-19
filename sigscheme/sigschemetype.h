@@ -398,7 +398,7 @@ struct ScmCell_ {
 ============================================================================*/
 #define SCM_REF_NULL      NULL
 
-#define SCM_REF(obj)      (&obj)
+#define SCM_REF(obj)      (&(obj))
 #define SCM_REF_CAR(cons) (SCM_REF(SCM_CAR(cons)))
 #define SCM_REF_CDR(cons) (SCM_REF(SCM_CDR(cons)))
 #define SCM_DEREF(ref)    (*(ref))

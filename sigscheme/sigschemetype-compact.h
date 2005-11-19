@@ -633,7 +633,7 @@ extern ScmObj Scm_sym_unquote, Scm_sym_unquote_splicing;
 ============================================================================*/
 #define SCM_REF_NULL      NULL
 
-#define SCM_REF(obj)      (&obj)
+#define SCM_REF(obj)      (&(obj))
 #define SCM_REF_CAR(cons) (SCM_REF(SCM_GET_DIRECT_CAR(cons)))
 #define SCM_REF_CDR(cons) (SCM_REF(SCM_GET_DIRECT_CDR(cons)))
 #define SCM_DEREF(ref)    (*(ref))
