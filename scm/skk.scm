@@ -425,6 +425,23 @@
 		       (get-wide-latin-str sl))
 	""))))
 
+(define skk-conv-alt-case
+  (lambda (sl)
+    (let ((get-alt-case-str
+	   (lambda (l)
+	     (let ((c (string->charcode (caar l))))
+	       (cond
+		((char-upper-case? c)
+		 (charcode->string (+ c 32)))
+		((char-lower-case? c)
+		 (charcode->string (- c 32)))
+		(else
+		 (caar l)))))))
+      (if (not (null? sl))
+	  (string-append (skk-conv-alt-case (cdr sl))
+			 (get-alt-case-str sl))
+	  ""))))
+
 (define skk-opposite-kana
   (lambda (kana)
     (cond
@@ -1326,28 +1343,36 @@
        ;; Then check latin-conv status before key handling of hiragana/katakana
        (if (skk-context-latin-conv sc)
 	   (begin
-	     (if (skk-conv-wide-latin-key? key key-state) 
-		 ;; wide latin conversion
-		 (begin
-		   (if (not (null? (skk-context-head sc)))
-		       (begin
-			 (skk-commit sc (skk-conv-wide-latin
-					 (skk-context-head sc)))
-			 (skk-flush sc))))
-		 ;; append latin string
-		 (begin
-		   (if (usual-char? key)
-		       (let* ((s (charcode->string key))
-			      (p (cons s (cons s (cons s s)))))
-			 (skk-append-string sc p)))
-		   ;; dcomp
-		   (if skk-dcomp-activate?
-		       (skk-context-set-dcomp-word!
-			sc
-			(skk-lib-get-dcomp-word
-			 (skk-make-string
-			  (skk-context-head sc) (skk-context-kana-mode sc))
-			 skk-use-numeric-conversion?)))))
+	     (cond
+	      ((skk-conv-wide-latin-key? key key-state) 
+	       ;; wide latin conversion
+	       (if (not (null? (skk-context-head sc)))
+		   (begin
+		     (skk-commit sc (skk-conv-wide-latin
+				     (skk-context-head sc)))
+		     (skk-flush sc))))
+	      ((skk-commit-alt-case-key? key key-state) 
+	       ;; alternative case conversion
+	       (if (not (null? (skk-context-head sc)))
+		   (begin
+		     (skk-commit sc (skk-conv-alt-case
+				     (skk-context-head sc)))
+		     (skk-flush sc))))
+	      (else
+	       ;; append latin string
+	       (begin
+		 (if (usual-char? key)
+		     (let* ((s (charcode->string key))
+			    (p (cons s (cons s (cons s s)))))
+		       (skk-append-string sc p)))
+		 ;; dcomp
+		 (if skk-dcomp-activate?
+		     (skk-context-set-dcomp-word!
+		      sc
+		      (skk-lib-get-dcomp-word
+		       (skk-make-string
+			(skk-context-head sc) (skk-context-kana-mode sc))
+		       skk-use-numeric-conversion?))))))
 	     #f)
 	   #t)
        (if (skk-kanji-mode-key? key key-state)
