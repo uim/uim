@@ -18,6 +18,7 @@ FUNC_TABLES = \
 BUILD_FUNCTBL = ./script/build_func_table.rb
 BUILD_FUNCTBL_SOURCES = \
 		$(BUILD_FUNCTBL) \
+		./script/scm_decl.rb
 		./script/functable-header.txt \
 		./script/functable-footer.txt
 
