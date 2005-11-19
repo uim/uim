@@ -501,9 +501,11 @@ struct ScmEvalState_ {
 #define SCM_VALUEPACKET_VALUES(a)        (SCM_CAR_GET_VALUE_AS_OBJ(a))
 #define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_CAR_SET_VALUE_AS_OBJ((a), (v)))
 
-#define SCM_FUNC_CFUNC(a)                (SCM_WORD_CAST(ScmFuncType, SCM_CAR_GET_VALUE_AS_PTR(a)))
+/* FIXME: This is a workaround way, because CAR part overwrites GC bit.
+ * How can we deal with this? */
+#define SCM_FUNC_CFUNC(a)                (SCM_WORD_CAST(ScmFuncType, SCM_GET_DIRECT_CAR(a)))
 #define SCM_FUNC_TYPECODE(a)             ((enum ScmFuncTypeCode)SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC))
-#define SCM_FUNC_SET_CFUNC(a, fptr)      (SCM_CAR_SET_VALUE_AS_PTR((a), SCM_WORD_CAST(ScmObj, (fptr))))
+#define SCM_FUNC_SET_CFUNC(a, fptr)      (SCM_SET_DIRECT_CAR((a), SCM_WORD_CAST(ScmObj, (fptr))))
 #define SCM_FUNC_SET_TYPECODE(a, code)   (SCM_CDR_SET_VALUE_AS_INT((a), (code), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC, SCM_TAG_OTHERS_FUNC))
 #define SCM_SYNTAXP(a) (SCM_FUNCP(a)                                         \
                         && (SCM_FUNC_TYPECODE(a) & SCM_FUNCTYPE_SYNTAX))
