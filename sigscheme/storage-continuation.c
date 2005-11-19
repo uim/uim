@@ -75,8 +75,7 @@ struct continuation_frame {
   Variable Declarations
 =======================================*/
 /* dynamic extent */
-/* FIXME: make static */
-ScmObj scm_current_dynamic_extent = NULL;
+static ScmObj current_dynamic_extent = NULL;
 
 /* temporary store for a object returned from a continuation */
 static ScmObj continuation_thrown_obj = NULL;
@@ -129,8 +128,8 @@ void SigScm_FinalizeContinuation(void)
 
 static void initialize_dynamic_extent(void)
 {
-    scm_current_dynamic_extent = SCM_NULL;
-    SigScm_GC_Protect(&scm_current_dynamic_extent);
+    current_dynamic_extent = SCM_NULL;
+    SigScm_GC_Protect(&current_dynamic_extent);
 }
 
 static void finalize_dynamic_extent(void)
@@ -139,16 +138,16 @@ static void finalize_dynamic_extent(void)
 
 static void wind_onto_dynamic_extent(ScmObj before, ScmObj after)
 {
-    scm_current_dynamic_extent = CONS(MAKE_DYNEXT_FRAME(before, after),
-                                      scm_current_dynamic_extent);
+    current_dynamic_extent = CONS(MAKE_DYNEXT_FRAME(before, after),
+                                      current_dynamic_extent);
 }
 
 static void unwind_dynamic_extent(void)
 {
-    if (NULLP(scm_current_dynamic_extent))
+    if (NULLP(current_dynamic_extent))
         SigScm_Error("corrupted dynamic extent");
 
-    scm_current_dynamic_extent = CDR(scm_current_dynamic_extent);
+    current_dynamic_extent = CDR(current_dynamic_extent);
 }
 
 /* enter a dynamic extent of another continuation (dest) */
@@ -159,7 +158,7 @@ static void enter_dynamic_extent(ScmObj dest)
     ScmObj retpath = SCM_NULL;
 
     for (unwound = dest; !NULLP(unwound); unwound = CDR(unwound)) {
-        if (EQ(unwound, scm_current_dynamic_extent))
+        if (EQ(unwound, current_dynamic_extent))
             break;
         frame = CAR(unwound);
         retpath = CONS(frame, retpath);
@@ -177,12 +176,12 @@ static void exit_dynamic_extent(ScmObj dest)
     ScmObj frame = SCM_FALSE;
 
     for (;
-         !NULLP(scm_current_dynamic_extent);
-         scm_current_dynamic_extent = CDR(scm_current_dynamic_extent))
+         !NULLP(current_dynamic_extent);
+         current_dynamic_extent = CDR(current_dynamic_extent))
     {
-        if (EQ(scm_current_dynamic_extent, dest))
+        if (EQ(current_dynamic_extent, dest))
             return;
-        frame = CAR(scm_current_dynamic_extent);
+        frame = CAR(current_dynamic_extent);
         Scm_call(DYNEXT_FRAME_AFTER(frame), SCM_NULL);
     }
 }
@@ -265,7 +264,7 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
     cont = Scm_NewContinuation();
     CONTINUATION_SET_FRAME(cont, &cont_frame);
     CONTINUATION_SET_JMPENV(cont, &env);
-    CONTINUATION_SET_DYNEXT(cont, scm_current_dynamic_extent);
+    CONTINUATION_SET_DYNEXT(cont, current_dynamic_extent);
 #if SCM_NESTED_CONTINUATION_ONLY
     continuation_stack_push(cont);
 #endif
