@@ -528,11 +528,38 @@ struct ScmEvalState_ {
 #define SCM_C_FUNCPOINTER_VALUE(a)          (SCM_WORD_CAST(ScmCFunc, SCM_CAR_GET_VALUE_AS_PTR(a)))
 #define SCM_C_FUNCPOINTER_SET_VALUE(a, val) (SCM_CAR_SET_VALUE_AS_PTR((a), SCM_WORD_CAST(ScmObj, (val))))
 
-#define SCM_INT_VALUE(a)          (SCM_PRIMARY_GET_VALUE_AS_INT((a), SCM_TAG_IMM_VALUE_OFFSET_INT))
-#define SCM_INT_SET_VALUE(a, val) (SCM_PRIMARY_SET_VALUE_AS_INT((a), (val), SCM_TAG_IMM_VALUE_OFFSET_INT, SCM_TAG_IMM_INT))
-
 #define SCM_CHAR_VALUE(a)         (SCM_PRIMARY_GET_VALUE_AS_STR((a), ~SCM_TAG_IMM_MASK_CHAR))
 #define SCM_CHAR_SET_VALUE(a, ch) (SCM_PRIMARY_SET_VALUE_AS_STR((a), (ch), SCM_TAG_IMM_CHAR))
+
+/*
+ * Integer need to preserve 'singed' or 'unsigned', so need special accessor.
+ * Current pack and unpack algorithm is like this.
+ *
+ * int pack(int a) {
+ *   return (a < 0) ? (~a << OFFSET) | SIGNED_MARK
+ *                  : (a << OFFSET);
+ * }
+ *
+ * int unpack(int a) {
+ *   return (a & SIGN_BIT_MASK) ? ~((a & SIGN_VALUE_MASK) >> OFFSET) | SIGNED_MARK
+ *                              : (a >> OFFSET);
+ * }
+ *
+ */
+#define BITS_PER_BITE             8
+#define SIZEOF_INT                sizeof(int)
+#define SIGN_BIT_MASK             (0x1 << (SIZEOF_INT * BITS_PER_BITE - 1))
+#define SIGN_VALUE_MASK           ~SIGN_BIT_MASK
+#define SIGNED_MARK               (0x1 << (SIZEOF_INT * BITS_PER_BITE - 1))
+
+#define SCM_INT_VALUE(a)          ((SCM_CAST_UINT(a) & SIGN_BIT_MASK)   \
+                                   ? ~((SCM_CAST_UINT(a) & SIGN_VALUE_MASK) >> SCM_TAG_IMM_VALUE_OFFSET_INT) | SIGNED_MARK \
+                                   : (SCM_CAST_UINT(a) >> SCM_TAG_IMM_VALUE_OFFSET_INT))
+    
+#define SCM_INT_SET_VALUE(a, val) (SCM_SET_VALUE_AS_OBJ_REMAIN_GCBIT((a), \
+                                                                     ((val) >= 0) \
+                                                                     ? (val) << SCM_TAG_IMM_VALUE_OFFSET_INT | SCM_TAG_IMM_INT \
+                                                                     : (~(val) << SCM_TAG_IMM_VALUE_OFFSET_INT) | SIGNED_MARK | SCM_TAG_IMM_INT))
 
 /*=======================================
    Scheme Special Constants
@@ -561,7 +588,6 @@ struct ScmEvalState_ {
 
 #define SCM_IS_MARKED(a)   ((SCM_CAST_UINT(SCM_GET_DIRECT_CAR(a)) & SCM_GCBIT_MASK) == 0x0)
 #define SCM_IS_UNMARKED(a) (!SCM_IS_MARKED(obj))
-
 
 /*============================================================================
   Predefined Symbols
