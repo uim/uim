@@ -148,7 +148,7 @@
 	       (_ "[SKK] commit as fullwidth alphanumeric")
 	       (_ "long description will be here"))
 
-(define-custom 'skk-commit-alt-case-key '("<IgnoreCase><Control>u")
+(define-custom 'skk-conv-alt-case-key '("<IgnoreCase><Control>u")
                '(skk-keys2)
 	       '(key)
 	       (_ "[SKK] commit as alternative case in latin conversion")

@@ -1351,7 +1351,7 @@
 		     (skk-commit sc (skk-conv-wide-latin
 				     (skk-context-head sc)))
 		     (skk-flush sc))))
-	      ((skk-commit-alt-case-key? key key-state) 
+	      ((skk-conv-alt-case-key? key key-state) 
 	       ;; alternative case conversion
 	       (if (not (null? (skk-context-head sc)))
 		   (begin
