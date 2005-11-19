@@ -502,48 +502,36 @@ static ScmObj SigScm_load_internal(const char *c_filename)
     return SCM_TRUE;
 }
 
-/* FIXME:
- * - Simplify
- * - Avoid using strcat() and strcpy() to increase security. Use strncat(),
- *   strncpy() or other safe functions instead
- */
 /* TODO: reject relative paths to ensure security */
 static char* create_valid_path(const char *filename)
 {
-    char *c_filename = strdup(filename);
     char *filepath   = NULL;
+    int lib_path_len = 0;
+    int filename_len = 0;
 
-    /* construct filepath */
+    /* sanity check */
+    SCM_ASSERT(filename);
+
+    lib_path_len = scm_lib_path ? strlen(scm_lib_path) : 0;
+    filename_len = strlen(filename);
+
+    /* try absolute and relative path */
+    if (file_existsp(filename))
+        return strdup(filename);
+
+    /* try under scm_lib_path */
     if (scm_lib_path) {
-        /* try absolute path */
-        if (file_existsp(c_filename))
-            return c_filename;
-
-        /* use scm_lib_path */
-        filepath = (char*)malloc(strlen(scm_lib_path) + strlen(c_filename) + 2);
-        strcpy(filepath, scm_lib_path);
-        strcat(filepath, "/");
-        strcat(filepath, c_filename);
-        if (file_existsp(filepath)) {
-            free(c_filename);
+        filepath = (char*)malloc(lib_path_len + 1 + filename_len + 1);
+        snprintf(filepath,
+                 lib_path_len + 1 + filename_len + 1,
+                 "%s/%s",
+                 scm_lib_path,
+                 filename);
+        if (file_existsp(filepath))
             return filepath;
-        }
-    }
-
-    /* clear */
-    if (filepath)
         free(filepath);
-
-    /* fallback */
-    filepath = (char*)malloc(strlen(c_filename) + 1);
-    strcpy(filepath, c_filename);
-    if (file_existsp(filepath)) {
-        free(c_filename);
-        return filepath;
     }
 
-    free(c_filename);
-    free(filepath);
     return NULL;
 }
 
