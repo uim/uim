@@ -192,11 +192,9 @@ ScmObj Scm_CheckInt(int val)
     check_type(ScmInt, obj);
     SCM_ASSERT(SCM_INT_VALUE(obj) == 0);
 
-/* Fail Now
     SCM_INT_SET_VALUE(obj, -10);
     check_type(ScmInt, obj);
     SCM_ASSERT(SCM_INT_VALUE(obj) == -10);
-*/
 
     SCM_INT_SET_VALUE(obj, val);
 
@@ -744,4 +742,3 @@ int main(void)
     Scm_CheckCFuncPointer();
     Scm_CheckConstant();
 }
-
