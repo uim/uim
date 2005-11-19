@@ -55,7 +55,7 @@
 ;;
 
 ;; no guard or raw exception handler
-(assert-error "raise #1" #f (lambda ()
+(assert-error "raise #1" (lambda ()
                               (raise 'exception)))
 
 ;;
