@@ -8,11 +8,6 @@ Requirements and bugs:
 * Add tests for proper tail recursion with 'apply' and 'guard' to
   test-tail-rec.scm
 
-* 
-  - Provide a string escaping procedure. If a SRFI or another de facto standard
-    API for such purpose is existing, use it
-  - [uim] Implement string-escape as same as trunk
-
 * Add integer->char and char->integer procedures with multibyte support
 
 * Inhibit a mutation on string constants as described in "3.4 Storage model" of

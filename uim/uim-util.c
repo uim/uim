@@ -655,8 +655,13 @@ string_escape(uim_lisp str)
   for (s = c_str; (*s); s++) {
     ch = (*s);
     switch (ch) {
-    case '\"': case '\\': case '\n':
-    case '\r': case '\t': case '\f':
+    case '\"':
+    case '\\':
+    case '\n':
+    case '\r':
+    case '\t':
+    case '\f':
+    case '\v':
       len += 2;
       break;
 
@@ -678,6 +683,7 @@ string_escape(uim_lisp str)
     case '\r': ret[i]='\\'; ret[++i]='r';  break;
     case '\t': ret[i]='\\'; ret[++i]='t';  break;
     case '\f': ret[i]='\\'; ret[++i]='f';  break;
+    case '\v': ret[i]='\\'; ret[++i]='v';  break;
 
     default:
       ret[i] = ch;
