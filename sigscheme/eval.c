@@ -412,9 +412,9 @@ static ScmObj call(ScmObj proc, ScmObj args,
         argbuf[i] = MUST_POP_ARG(args);
         if (!suppress_eval)
             argbuf[i] = EVAL(argbuf[i], env);
-#if SCM_STRICT_R5RS
+#if SCM_STRICT_ARGCHECK
         if (VALUEPACKETP((ScmObj)argbuf[i]))
-            SigScm_Error("multiple values are not allowed here");
+            ERR_OBJ("multiple values are not allowed here", (ScmObj)argbuf[i]);
 #endif
     }
 

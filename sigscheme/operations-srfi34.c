@@ -112,6 +112,7 @@ static ScmObj set_cur_handlers(ScmObj handlers, ScmObj env);
 static ScmObj with_exception_handlers(ScmObj new_handlers, ScmObj thunk);
 static ScmObj guard_internal(ScmObj q_guard_k, ScmObj env);
 static ScmObj guard_handler(ScmObj q_condition, ScmEvalState *eval_state);
+static ScmObj delay(ScmObj evaled_obj, ScmObj env);
 static ScmObj guard_handler_body(ScmObj q_handler_k, ScmObj env);
 static ScmObj guard_body(ScmEvalState *eval_state);
 
@@ -315,11 +316,26 @@ static ScmObj guard_handler(ScmObj q_condition, ScmEvalState *eval_state)
 }
 
 /* assumes that ScmExp_delay() returns a closure */
+static ScmObj delay(ScmObj evaled_obj, ScmObj env)
+{
+    ScmObj vals;
+
+    if (VALUEPACKETP(evaled_obj)) {
+        vals = SCM_VALUEPACKET_VALUES(evaled_obj);
+        return ScmExp_delay(LIST_3(syn_apply,
+                                   proc_values, LIST_2(SYM_QUOTE, vals)),
+                            env);
+    } else {
+        return ScmExp_delay(LIST_2(SYM_QUOTE, evaled_obj), env);
+    }
+}
+
+/* assumes that ScmExp_delay() returns a closure */
 static ScmObj guard_handler_body(ScmObj q_handler_k, ScmObj env)
 {
     ScmEvalState eval_state;
     ScmObj lex_env, cond_env, condition, cond_catch, guard_k, handler_k;
-    ScmObj sym_var, clauses, caught, reraise, ret;
+    ScmObj sym_var, clauses, caught, reraise;
     DECLARE_PRIVATE_FUNCTION("guard", SyntaxFixed1);
 
     lex_env    = Scm_SymbolValue(sym_lex_env, env);
@@ -342,8 +358,7 @@ static ScmObj guard_handler_body(ScmObj q_handler_k, ScmObj env)
     if (VALIDP(caught)) {
         if (eval_state.ret_type == SCM_RETTYPE_NEED_EVAL)
             caught = EVAL(caught, cond_env);
-        ret = ScmExp_delay(LIST_2(SYM_QUOTE, caught), cond_env);
-        Scm_CallContinuation(guard_k, ret);
+        Scm_CallContinuation(guard_k, delay(caught, cond_env));
     } else {
         reraise = ScmExp_delay(LIST_2(sym_raise, LIST_2(SYM_QUOTE, condition)),
                                cond_env);
@@ -353,11 +368,10 @@ static ScmObj guard_handler_body(ScmObj q_handler_k, ScmObj env)
     return SCM_UNDEF;
 }
 
-/* assumes that ScmExp_delay() returns a closure */
 static ScmObj guard_body(ScmEvalState *eval_state)
 {
     ScmEvalState lex_eval_state;
-    ScmObj lex_env, guard_k, body, result, vals, ret;
+    ScmObj lex_env, guard_k, body, result;
     DECLARE_PRIVATE_FUNCTION("guard", SyntaxFixedTailRec0);
 
     lex_env = Scm_SymbolValue(sym_lex_env, eval_state->env);
@@ -371,15 +385,7 @@ static ScmObj guard_body(ScmEvalState *eval_state)
     result = EVAL(result, lex_env);
     eval_state->ret_type = SCM_RETTYPE_AS_IS;
 
-    if (VALUEPACKETP(result)) {
-        vals = SCM_VALUEPACKET_VALUES(result);
-        ret = ScmExp_delay(LIST_3(syn_apply,
-                                  proc_values, LIST_2(SYM_QUOTE, vals)),
-                           lex_env);
-    } else {
-        ret = ScmExp_delay(LIST_2(SYM_QUOTE, result), lex_env);
-    }
-    Scm_CallContinuation(guard_k, ret);
+    Scm_CallContinuation(guard_k, delay(result, lex_env));
     /* NOTREACHED */
     return SCM_UNDEF;
 }

@@ -37,7 +37,9 @@
   (use srfi-34))
  (else #t))
 
-;; All tests in this file are passed against r2143 (new repository)
+(use srfi-8)
+
+;; All tests in this file are passed against r2181 (new repository)
 
 ;;(set! *test-track-progress* #t)
 
@@ -274,6 +276,204 @@
                     (guard (var
                             (#t => delay))
                       (raise 'obj))))
+
+(assert-false "guard namespace taintlessness #1"
+              (guard (var
+                      (#f var))
+                (symbol-bound? 'lex-env)))
+
+(assert-false "guard namespace taintlessness #2"
+              (guard (var
+                      (#f var))
+                (symbol-bound? 'cond-catch)))
+
+(assert-false "guard namespace taintlessness #3"
+              (guard (var
+                      (#f var))
+                (symbol-bound? 'body)))
+
+(assert-false "guard namespace taintlessness #4"
+              (guard (var
+                      (#f var))
+                (symbol-bound? 'condition)))
+
+(assert-false "guard namespace taintlessness #5"
+              (guard (var
+                      (#f var))
+                (symbol-bound? 'guard-k)))
+
+(assert-false "guard namespace taintlessness #6"
+              (guard (var
+                      (#f var))
+                (symbol-bound? 'handler-k)))
+
+(assert-false "guard namespace taintlessness #7"
+              (guard (var
+                      (#f var))
+                (symbol-bound? 'var)))
+
+(assert-false "guard handler namespace taintlessness #1"
+              (guard (var
+                      (else
+                       (symbol-bound? 'lex-env)))
+                (raise 'err)))
+
+(assert-false "guard handler namespace taintlessness #2"
+              (guard (var
+                      (else
+                       (symbol-bound? 'cond-catch)))
+                (raise 'err)))
+
+(assert-false "guard handler namespace taintlessness #3"
+              (guard (var
+                      (else
+                       (symbol-bound? 'body)))
+                (raise 'err)))
+
+(assert-false "guard handler namespace taintlessness #4"
+              (guard (var
+                      (else
+                       (symbol-bound? 'condition)))
+                (raise 'err)))
+
+(assert-false "guard handler namespace taintlessness #5"
+              (guard (var
+                      (else
+                       (symbol-bound? 'guard-k)))
+                (raise 'err)))
+
+(assert-false "guard handler namespace taintlessness #6"
+              (guard (var
+                      (else
+                       (symbol-bound? 'handler-k)))
+                (raise 'err)))
+
+(assert-equal? "guard handler condition variable #1"
+               'err
+               (guard (var
+                       (else var))
+                 (raise 'err)))
+
+;; the variable can be modified
+(assert-equal? "guard handler condition variable #2"
+               'ERR
+               (guard (var
+                       (#t
+                        (set! var 'ERR)
+                        var))
+                 (raise 'err)))
+
+;; the variable does not affect outer environment
+(define var 'global-var)
+(assert-equal? "guard handler condition variable #3"
+               'outer
+               (let ((var 'outer))
+                 (guard (var
+                         (#t
+                          (set! var 'ERR)))
+                   (raise 'err))
+                 var))
+
+;; the variable does not affect global one
+(define var 'global-var)
+(assert-equal? "guard handler condition variable #4"
+               'global-var
+               (begin
+                 (guard (var
+                         (#t
+                          (set! var 'ERR)))
+                   (raise 'err))
+                 var))
+
+(assert-equal? "guard evaluation count exactness #1"
+               7
+               (guard (var
+                       (else var))
+                 (+ 3 4)))
+
+(assert-equal? "guard evaluation count exactness #2"
+               7
+               (guard (var
+                       (else var))
+                 (raise (+ 3 4))))
+
+(assert-equal? "guard evaluation count exactness #3"
+               7
+               (guard (var
+                       (else (+ 3 4)))
+                 (raise 'err)))
+
+(assert-equal? "guard evaluation count exactness #4"
+               7
+               (let ((a 3)
+                     (b 4))
+                 (guard (var
+                         (else var))
+                   (+ a b))))
+
+(assert-equal? "guard evaluation count exactness #5"
+               7
+               (let ((a 3)
+                     (b 4))
+                 (guard (var
+                         (else var))
+                   (raise (+ a b)))))
+
+(assert-equal? "guard evaluation count exactness #6"
+               7
+               (let ((a 3)
+                     (b 4))
+                 (guard (var
+                         (else (+ a b)))
+                   (raise 'err))))
+
+(assert-equal? "guard evaluation count exactness #7"
+               (list + 3 4)  ;; not 7
+               (let ((a 3)
+                     (b 4))
+                 (guard (var
+                         (else var))
+                   (list + a b))))
+
+(assert-equal? "guard evaluation count exactness #8"
+               (list + 3 4)  ;; not 7
+               (let ((a 3)
+                     (b 4))
+                 (guard (var
+                         (else var))
+                   (raise (list + a b)))))
+
+(assert-equal? "guard evaluation count exactness #9"
+               (list + 3 4)  ;; not 7
+               (let ((a 3)
+                     (b 4))
+                 (guard (var
+                         (else (list + a b)))
+                   (raise 'err))))
+
+(assert-equal? "guard with multiple values #1"
+               '(1 2)
+               (receive vals
+                   (guard (var
+                           (else var))
+                     (values 1 2))
+                 vals))
+
+(assert-equal? "guard with multiple values #2"
+               '(1 2)
+               (receive vals
+                   (guard (var
+                           (else (values 1 2)))
+                     (raise 'err))
+                 vals))
+
+(if (provided? "sigscheme")
+    (assert-error "guard with multiple values #3"
+                  (lambda ()
+                    (guard (var
+                            ((not (%%error-object? var))
+                             var))
+                      (raise (values 1 2))))))
 
 (assert-equal?  "guard handler reraise #1"
                 'reraised
