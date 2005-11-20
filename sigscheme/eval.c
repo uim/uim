@@ -83,9 +83,12 @@ static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
 static ScmObj call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
                    int suppress_eval);
 static ScmObj map_eval(ScmObj args, ScmObj env);
-static ScmObj qquote_internal(ScmObj expr, ScmObj env, int nest);
-static ScmObj qquote_vector(ScmObj vec, ScmObj env, int nest);
 static void define_internal(ScmObj var, ScmObj exp, ScmObj env);
+
+/* Quasiquotation. */
+typedef struct _qquote_result qquote_result;
+static qquote_result qquote_internal(ScmObj input, ScmObj env, int nest);
+static qquote_result qquote_vector(ScmObj vec, ScmObj env, int nest);
 
 /*=======================================
   Function Implementations
@@ -600,243 +603,96 @@ static ScmObj map_eval(ScmObj args, ScmObj env)
     return result;
 }
 
+/*===========================================================================
+  Utilities: Compound Data Translators
+===========================================================================*/
+
+/* Providing also a vector translator would make sense, but currently
+ * there's no compelling reason to take the trouble of designing a
+ * clean interface for it. */
 
 /**
- * The big bad full-implementation of quasiquote.
+ * This structure aids in copying a list with modifications to some
+ * parts of it.  It's currently used for handling quasiquotation, and
+ * planned to be used to implement run-time macro expansion.
  *
- * @param qexpr The expression given to quasiquote.
- * @param env The effective environment.
- * @param nest Nesting level of quasiquote.  This function is recursive.
+ * The translator has an input, an output, and a current position.
+ * Only the input is supplied by the user.  Conceptually, the
+ * translator replicates the input list and places it at the output.
+ * The user then CDRs down the input by successively calling
+ * TRL_NEXT().  When an element is encountered that shall be modified,
+ * the user calls listrans() with a suitable message (of type tr_msg)
+ * along with the modified object.
  *
- * @return If qexpr or any of its subexpressions was evaluated, then
- * (do-unquotes qexpr) is returned.  Otherwise, the return
- * value will test true for QQUOTE_IS_VERBATIM().
- *
- * @see qquote_vector()
+ * @see tr_msg
  */
-static ScmObj qquote_internal(ScmObj qexpr, ScmObj env, int nest)
-{
-    ScmObj ls        = SCM_NULL;
-    ScmObj obj       = SCM_NULL;
-    ScmObj car       = SCM_NULL;
-    ScmObj args      = SCM_NULL;
-    ScmObj result    = SCM_NULL;
-    ScmObj ret_lst   = SCM_NULL;
-    ScmRef ret_tail  = SCM_REF_NULL;
-    int splice_flag  = 0;
-    DECLARE_INTERNAL_FUNCTION("qquote_internal");
+typedef struct {
+    ScmObj output;
+    ScmObj src;                 /* Uncopied portion of input. */
+    ScmObj ptr;                 /* Current position. */
+    ScmQueue q;
+} list_translator;
 
-    /* local "functions" */
-#define qquote_copy_delayed()   (QQUOTE_IS_VERBATIM(ret_lst))
-#define qquote_force_copy_upto(end)                             \
-    do {                                                        \
-        ScmObj src = qexpr;                                     \
-        ret_tail = SCM_REF(ret_lst);                            \
-        while (!EQ(src, end)) {                                 \
-            SCM_SET(ret_tail, CONS(CAR(src), SCM_NULL));        \
-            ret_tail = SCM_REF_CDR(SCM_DEREF(ret_tail));        \
-            src = CDR(src);                                     \
-        }                                                       \
-    } while (0)
+typedef enum {
+    TR_MSG_NOP,
 
+    /** Substitute OBJ for all the cons cells at or after the current
+     * position. */
+    TR_MSG_SET_TAIL,
 
-    QQUOTE_SET_VERBATIM(ret_lst); /* default return value */
+    /** Put OBJ in place of the current element. */
+    TR_MSG_REPLACE_CAR,
 
-    if (CONSP(qexpr)) {
-        car = CAR(qexpr);
-        args = CDR(qexpr);
+    /** Splice OBJ into the current position. */
+    TR_MSG_SPLICE,
 
-        if (EQ(car, SYM_UNQUOTE_SPLICING)) {
-            if (!IS_LIST_LEN_1(args))
-                ERR_OBJ("syntax error", qexpr);
-            if (--nest == 0)
-                return EVAL(CAR(args), env);
-        } else if (EQ(car, SYM_QUASIQUOTE)) {
-            if (!IS_LIST_LEN_1(args))
-                ERR_OBJ("syntax error", qexpr);
-            if (++nest <= 0)
-                SigScm_Error("quasiquote: nesting too deep (circular list?)");
-        }
-    }
+    /* Aliases. */
+    TR_MSG_REUSE_CAR = TR_MSG_NOP,
+    TR_MSG_CURTAIL = TR_MSG_NOP,
+    TR_MSG_REPLACE_CONS = TR_MSG_SPLICE
+} tr_msg;
 
-    for (ls = qexpr; CONSP(ls); ls = CDR(ls)) {
-        obj = CAR(ls);
-        splice_flag = 0;
-
-        if (CONSP(obj)) {
-            result = qquote_internal(obj, env, nest);
-
-            if (EQ(CAR(obj), SYM_UNQUOTE_SPLICING) && nest == 1) {
-                /* ,@x */
-                splice_flag = 1;
-            }
-        } else if (VECTORP(obj)) {
-            /* #(x) */
-            result = qquote_vector(obj, env, nest);
-        } else if (EQ(obj, SYM_UNQUOTE) && IS_LIST_LEN_1(CDR(ls))) {
-            /* we're at the comma in (x . ,y) or qexpr was ,z */
-            if (--nest == 0) {
-                result = EVAL(CADR(ls), env);
-                goto append_last_item;
-            }
-            QQUOTE_SET_VERBATIM(result);
-        } else {
-            /* atom */
-            QQUOTE_SET_VERBATIM(result);
-        }
-
-        if (QQUOTE_IS_VERBATIM(result)) {
-            if (!qquote_copy_delayed()) {
-                SCM_SET(ret_tail, CONS(obj, SCM_NULL));
-                ret_tail = SCM_REF_CDR(SCM_DEREF(ret_tail));
-            }
-        } else {
-            if (qquote_copy_delayed())
-                qquote_force_copy_upto(ls);
-
-            if (splice_flag) {
-                SCM_SET(ret_tail, result);
-                /* find the new tail (which may be the current pos) */
-                while (CONSP(SCM_DEREF(ret_tail)))
-                    ret_tail = SCM_REF_CDR(SCM_DEREF(ret_tail));
-                if (!NULLP(SCM_DEREF(ret_tail)))
-                    ERR_OBJ("unquote-splicing: bad list",
-                                    result);
-            } else {
-                SCM_SET(ret_tail, CONS(result, SCM_NULL));
-                ret_tail = SCM_REF_CDR(SCM_DEREF(ret_tail));
-            }
-        }
-    } /* foreach ls in qexpr */
-
-    /* Handle the leftover of an improper list; if qexpr is a proper
-     * list, all the following will be a no-op. */
-    if (VECTORP(ls))
-        result = qquote_vector(ls, env, nest);
-    else
-        QQUOTE_SET_VERBATIM(result);
-
-  append_last_item:
-    if (QQUOTE_IS_VERBATIM(result)) {
-        if (!qquote_copy_delayed())
-            SCM_SET(ret_tail, ls);
-    } else {
-        if (qquote_copy_delayed())
-            qquote_force_copy_upto(ls);
-        SCM_SET(ret_tail, result);
-    }
-
-    return ret_lst;
-#undef qquote_is_spliced
-#undef qquote_copy_delayed
-#undef qquote_force_copy_upto
-}
+#define LISTRAN_INIT(_t, _in)  ((_t).output = SCM_INVALID,               \
+                                SCM_QUEUE_POINT_TO((_t).q, (_t).output), \
+                                (_t).src = (_t).ptr = (_in))
+#define LISTRAN_CURPOS(_t)     ((_t).ptr)
+#define LISTRAN_NEXT(_t)       ((_t).ptr = CDR((_t).ptr))
+#define LISTRAN_EXTRACT(_t)    ((_t).output)
 
 /**
- * The semantics are the same as qquote_internal, except the first
- * argument should be a vector.  Adapted some ideas from Gauche,
- * another Scheme implementation by Shiro Kawai.
- *
- * @see qquote_internal()
+ * Performs (relatively) complex operations on a list translator.
+ * 
+ * @see list_translator, tr_msg
  */
-static ScmObj qquote_vector(ScmObj src, ScmObj env, int nest)
+static void listran(list_translator *t, tr_msg msg, ScmObj obj)
 {
-    ScmObj splices    = SCM_NULL;
-    ScmObj expr       = SCM_NULL;
-    ScmObj ret        = SCM_NULL;
-    ScmObj *copy_buf  = NULL;
-    ScmObj result     = SCM_NULL;
-    ScmObj splice_len = SCM_NULL;
-    int len = SCM_VECTOR_LEN(src);
-    int growth = 0;
-    int next_splice_index = -1;
-    int i = 0;
-    int j = 0;
-    DECLARE_INTERNAL_FUNCTION("qquote_vector");
+    DECLARE_INTERNAL_FUNCTION("(list translator)");
+    switch (msg) {
+    case TR_MSG_NOP:
+        break;
 
-    /* local "functions" */
-#define qquote_copy_delayed() (copy_buf == NULL)
-#define qquote_is_spliced(o)  \
-    (CONSP(o) && EQ(CAR(o), SYM_UNQUOTE_SPLICING))
-#define qquote_force_copy_upto(n) \
-    do { \
-        int k; \
-        copy_buf = (ScmObj*)malloc((len + growth) * sizeof(ScmObj)); \
-        memcpy(copy_buf, SCM_VECTOR_VEC(src), n*sizeof(ScmObj)); \
-        /* wrap it now, or a cont invocation can leak it */ \
-        ret = Scm_NewVector(copy_buf, len + growth); \
-        /* fill with something the garbage collector recognizes */ \
-        for (k=n; k < len + growth; k++) \
-            copy_buf[k] = SCM_NULL; \
-    } while(0)
+    case TR_MSG_REPLACE_CAR:
+        obj = LIST_1(obj);
+        /* Fall through. */
+    case TR_MSG_SET_TAIL:
+    case TR_MSG_SPLICE:
 
-    QQUOTE_SET_VERBATIM(ret);
-    copy_buf = NULL;
+        /* Let src cath up with ptr, copying elements in between. */
+        for (; !EQ(t->src, t->ptr); t->src = CDR(t->src))
+            SCM_QUEUE_ADD(t->q, CAR(t->src));
 
-    if (nest == 1) {
-        /* Evaluate all the splices first, in reverse order, and store
-         * them in a list ((ls . index) (ls . index)...). */
-        for (i = len - 1; i >= 0; i--) {
-            expr = SCM_VECTOR_CREF(src, i);
-            if (qquote_is_spliced(expr)) {
-                if (!IS_LIST_LEN_1(CDR(expr)))
-                    ERR_OBJ("syntax error: ", expr);
-
-                result = EVAL(CADR(expr), env);
-
-                splice_len = ScmOp_length(result);
-                if (SCM_INT_VALUE(splice_len) < 0)
-                    SigScm_Error("unquote-splicing: bad list");
-
-                growth += SCM_INT_VALUE(splice_len) - 1;
-                splices = CONS(CONS(result, Scm_NewInt(i)),
-                               splices);
-            }
+        if (msg != TR_MSG_SET_TAIL) {
+            SCM_QUEUE_APPEND(t->q, obj);
+#if SCM_STRICT_R5RS
+            if (!NULLP(SCM_QUEUE_TERMINATOR(t->q)))
+                ERR_OBJ("bad splice list", obj);
+#endif
+            obj = t->src = CDR(t->src);
         }
-        if (!NULLP(splices)) {
-            next_splice_index = SCM_INT_VALUE(CDAR(splices));
-            qquote_force_copy_upto(0);
-        }
+        SCM_QUEUE_SLOPPY_APPEND(t->q, obj);
+            
+        break;
     }
-
-    for (i = j = 0; i < len; i++) {
-        /* j will be the index for copy_buf */
-        if (i == next_splice_index) {
-            /* spliced */
-            for (expr=CAAR(splices); !NULLP(expr); expr=CDR(expr))
-                copy_buf[j++] = CAR(expr);
-            splices = CDR(splices);
-
-            if (NULLP(splices))
-                next_splice_index = -1;
-            else
-                next_splice_index = SCM_INT_VALUE(CDAR(splices));
-            /* continue; */
-        } else {
-            expr = SCM_VECTOR_CREF(src, i);
-            if (CONSP(expr))
-                result = qquote_internal(expr, env, nest);
-            else if (VECTORP(expr))
-                result = qquote_vector(expr, env, nest);
-            else
-                QQUOTE_SET_VERBATIM(result);
-
-            if (!QQUOTE_IS_VERBATIM(result)) {
-                if (qquote_copy_delayed())
-                    qquote_force_copy_upto(i);
-
-                copy_buf[j] = result;
-            } else if (!qquote_copy_delayed()) {
-                copy_buf[j] = expr;
-            }
-
-            j++;
-        }
-    }
-
-    return ret;
-#undef qquote_copy_delayed
-#undef qquote_force_copy_upto
 }
 
 /*=======================================
@@ -1405,14 +1261,191 @@ ScmObj ScmExp_delay(ScmObj expr, ScmObj env)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.6 Quasiquotation
 ===========================================================================*/
+
+struct _qquote_result {
+    ScmObj obj;
+    tr_msg insn;
+};
+
+static qquote_result qquote_vector(ScmObj input, ScmObj env, int nest)
+{
+    ScmObj replacements;
+    ScmObj obj;
+    ScmObj *copy_buf;
+    int splice_len;
+    int growth;
+    int len;
+    int i, cpi;
+    int next_rindex;
+    qquote_result tmp;
+    qquote_result my_result;
+    DECLARE_INTERNAL_FUNCTION("(quasiquote:vector)");
+
+    len          = SCM_VECTOR_LEN(input);
+    replacements = SCM_NULL;
+    obj          = SCM_INVALID;
+    copy_buf     = NULL;
+    growth       = 0;
+
+    for (i = len - 1; i >= 0; i--) {
+        obj = SCM_VECTOR_CREF(input, i);
+        tmp = qquote_internal(obj, env, nest);
+        switch (tmp.insn) {
+        case TR_MSG_REPLACE_CAR:
+            replacements = CONS(CONS(Scm_NewInt(i),
+                                     tmp.obj),
+                                replacements);
+            break;
+        case TR_MSG_SPLICE:
+            replacements = CONS(CONS(Scm_NewInt(-i-1), /* Mark as splice. */
+                                     tmp.obj),
+                                replacements);
+            splice_len = ScmOp_c_length(tmp.obj);
+#if SCM_STRICT_R5RS
+            if (splice_len < 0)
+                ERR_OBJ("got bad splice list from", obj);
+#endif
+            growth += splice_len - 1;
+            break;
+        default:
+            break;
+        }
+    }
+
+    if (NULLP(replacements)) {
+        my_result.obj = SCM_INVALID;
+        my_result.insn = TR_MSG_REUSE_CAR;
+        return my_result;
+    }
+
+    copy_buf = malloc((len + growth) * sizeof(ScmObj));
+
+    /* i indexes input and cpi indexes copy_buf. */
+    next_rindex = SCM_INT_VALUE(CAAR(replacements));
+    for (i = cpi = 0; i < len; i++) {
+        if (i == next_rindex) {
+            copy_buf[cpi++] = CDAR(replacements);
+        } else if (-i-1 == next_rindex) {
+            ScmObj tmp;
+            for (tmp = CDAR(replacements); CONSP(tmp); tmp = CDR(tmp))
+                copy_buf[cpi++] = CAR(tmp);
+        } else {
+            copy_buf[cpi++] = SCM_VECTOR_CREF(input, i);
+            continue;
+        }
+        replacements = CDR(replacements);
+        if (NULLP(replacements))
+            next_rindex = len;   /* Invalidate. */
+        else
+            next_rindex = SCM_INT_VALUE(CAAR(replacements));
+    }
+
+    my_result.obj = Scm_NewVector(copy_buf, len + growth);
+    my_result.insn = TR_MSG_REPLACE_CAR;
+    return my_result;
+}
+
+/**
+ * Interpret a quasiquoted expression.
+ *
+ * @see qquote_vector()
+ */
+static qquote_result qquote_internal(ScmObj input, ScmObj env, int nest)
+{
+    ScmObj ptr;
+    list_translator tr;
+    qquote_result tmp_result;
+    qquote_result my_result;
+    DECLARE_INTERNAL_FUNCTION("(quasiquote)");
+
+    LISTRAN_INIT(tr, input);
+    ptr = LISTRAN_CURPOS(tr);        /* This will be our traverser. */
+
+    if (VECTORP(input))
+        return qquote_vector(input, env, nest);
+
+    if (!CONSP(input))
+        goto end;
+
+#define EXPAND(_datum)                                                  \
+        (tmp_result = qquote_internal((_datum), env, nest),             \
+         listran(&tr, tmp_result.insn, tmp_result.obj))
+
+#define SET_TAIL(_datum) \
+        listran(&tr, TR_MSG_SET_TAIL, (_datum))
+
+    /* INPUT can't be a syntactical expression if length < 2. */
+    if (!CONSP(CDR(ptr)))
+        goto one_cons;
+
+    /* Process up to the penultimate element (not counting the
+     * list terminator). */
+    for (; CONSP(CDDR(ptr)); ptr = LISTRAN_NEXT(tr))
+        EXPAND(CAR(ptr));
+
+    if (NULLP(CDDR(ptr))) {
+        if (EQ(CAR(ptr), SYM_QUASIQUOTE)) {
+            /* PTR == `x */
+            ++nest;
+        } else if (EQ(CAR(ptr), SYM_UNQUOTE)) {
+            /* PTR == ,x */
+            if (--nest == 0) {
+                SET_TAIL(EVAL(CADR(ptr), env));
+                my_result.obj = LISTRAN_EXTRACT(tr);
+                my_result.insn = TR_MSG_REPLACE_CAR;
+                return my_result;
+            }
+        } else if (EQ(CAR(ptr), SYM_UNQUOTE_SPLICING)) {
+            /* PTR == ,@x */
+            if (!EQ(ptr, input)) /* (a . ,@b) */
+                ERR_OBJ(",@ in wrong context", input);
+            if (--nest == 0) {
+                my_result.insn = TR_MSG_SPLICE;
+                my_result.obj  = EVAL(CADR(ptr), env);
+                return my_result;
+            }
+        }
+    }
+
+  one_cons:
+    do {
+        EXPAND(CAR(ptr));
+        ptr = LISTRAN_NEXT(tr);
+    } while (CONSP(ptr));
+
+    /* Handle list terminator; '() for proper lists. */
+    tmp_result = qquote_internal(ptr, env, nest);
+    if (tmp_result.insn != TR_MSG_REUSE_CAR)
+        SET_TAIL(tmp_result.obj);
+
+  end:
+    my_result.obj = LISTRAN_EXTRACT(tr);
+    my_result.insn = VALIDP(my_result.obj)
+        ? TR_MSG_REPLACE_CAR
+        : TR_MSG_REUSE_CAR;
+    return my_result;
+#undef EXPAND
+#undef SET_TAIL
+}
+
 ScmObj ScmExp_quasiquote(ScmObj datum, ScmObj env)
 {
-    ScmObj ret = qquote_internal(datum, env, 1);
+    qquote_result ret = qquote_internal(datum, env, 1);
     DECLARE_FUNCTION("quasiquote", SyntaxFixed1);
 
-    if (QQUOTE_IS_VERBATIM(ret))
+    switch (ret.insn) {
+    case TR_MSG_REUSE_CAR:
         return datum;
-    return ret;
+    case TR_MSG_SPLICE:
+#if SCM_STRICT_R5RS
+        ERR_OBJ("unquote-splicing in invalid context", datum);
+#endif
+        /* Otherwise fall through. */
+    case TR_MSG_REPLACE_CAR:
+        return ret.obj;
+    default:
+        ERR_OBJ("bug in quasiquote", datum);
+    }
 }
 
 ScmObj ScmExp_unquote(ScmObj dummy, ScmObj env)

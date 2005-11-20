@@ -149,6 +149,7 @@ extern ScmObj *scm_stack_start_pointer;
 #define SET            SCM_SET
 #define REF_CAR        SCM_REF_CAR
 #define REF_CDR        SCM_REF_CDR
+#define REF_OFF_HEAP   SCM_REF_OFF_HEAP
 
 #define EVAL           SCM_EVAL
 
@@ -306,6 +307,23 @@ extern ScmObj *scm_stack_start_pointer;
 /* Symbol Name Hash Size */
 #define NAMEHASH_SIZE 1024
 
+/*=======================================
+   List Constructor
+=======================================*/
+typedef ScmRef ScmQueue;
+#define SCM_QUEUE_INVALIDATE(_q) ((_q) = NULL)
+#define SCM_QUEUE_VALIDP(_q)     (_q)
+#define SCM_QUEUE_POINT_TO(_q, _out) ((_q) = SCM_REF_OFF_HEAP(_out))
+#define SCM_QUEUE_ADD(_q, _dat) (SET((_q), LIST_1(_dat)),       \
+                                 (_q) = REF_CDR(DEREF(_q)))
+#define SCM_QUEUE_APPEND(_q, _lst)              \
+    do {                                        \
+        DEREF(_q) = (_lst);                     \
+        while (CONSP(DEREF(_q)))                \
+            (_q) = REF_CDR(DEREF(_q));          \
+    } while (0)
+#define SCM_QUEUE_TERMINATOR(_q)          (DEREF(_q))
+#define SCM_QUEUE_SLOPPY_APPEND(_q, _lst) (DEREF(_q) = (_lst))
 /*=======================================
    Function Declarations
 =======================================*/
