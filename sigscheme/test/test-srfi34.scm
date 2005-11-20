@@ -39,7 +39,7 @@
 
 (use srfi-8)
 
-;; All tests in this file are passed against r2181 (new repository)
+;; All tests in this file are passed against r2183 (new repository)
 
 ;;(set! *test-track-progress* #t)
 
