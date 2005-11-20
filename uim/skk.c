@@ -52,6 +52,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <arpa/inet.h>
 
 #include "uim-scm.h"
 #include "plugin.h"
@@ -73,7 +74,7 @@
 
 /* candidate array for each okurigana
  *
- * |C0|C1| .. |Cnr_real_cands| ..              |Cnr_cands|
+ * |C0|C1| .. |Cnr_real_cands| ..	       |Cnr_cands|
  * <-------should be saved --><-- cache of master dict -->
  */
 struct skk_cand_array {
@@ -1083,6 +1084,9 @@ skk_get_entry(uim_lisp head_, uim_lisp okuri_head_,
   if (ca && ca->nr_cands > 0 && !is_purged_only(ca))
       return uim_scm_t();
 
+  if NFALSEP(numeric_conv_)
+    return skk_get_entry(head_, okuri_head_, okuri_, uim_scm_f());
+
   return uim_scm_f();
 }
 
@@ -1520,6 +1524,23 @@ find_numeric_conv_method4_mark(const char *cand, int *nth)
   return p;
 }
 
+static int
+has_numeric_in_head(uim_lisp head_)
+{
+  const char *str;
+  int i = 0;
+
+  str = uim_scm_refer_c_str(head_);
+
+  while (str[i] != '\0') {
+    if (isdigit((unsigned char)str[i]))
+      return 1;
+    i++;
+  }
+
+  return 0;
+}
+
 static uim_lisp
 get_nth(int nth, uim_lisp lst_)
 {
@@ -1664,6 +1685,11 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
     }
   }
 
+  /* check non-numeric conversion */
+  if (!cands && n >= k && !uim_scm_nullp(numlst_))
+    return skk_get_nth_candidate(uim_scm_make_int(n - k), head_, okuri_head_,
+		    okuri_, uim_scm_f());
+
   if (cands)
     str_ = uim_scm_make_str(cands);
 
@@ -1713,6 +1739,13 @@ skk_get_nr_candidates(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim
       }
     }
   }
+
+  /* add non-numeric conversion */
+  if (!uim_scm_nullp(numlst_))
+    return uim_scm_make_int(nr_cands +
+		    uim_scm_c_int(skk_get_nr_candidates(head_, okuri_head_,
+				    okuri_, uim_scm_f())));
+
   return uim_scm_make_int(nr_cands);
 }
 
@@ -1806,6 +1839,10 @@ skk_get_completion(uim_lisp head_, uim_lisp numeric_conv_)
     ca->refcount++;
     return uim_scm_t();
   }
+
+  if (NFALSEP(numeric_conv_) && has_numeric_in_head(head_))
+    return skk_get_completion(head_, uim_scm_f());
+
   return uim_scm_f();
 }
 
@@ -1825,14 +1862,26 @@ skk_get_nth_completion(uim_lisp nth_, uim_lisp head_, uim_lisp numeric_conv_)
   else
     ca = find_comp_array_lisp(head_, uim_scm_f());
 
+  if (!ca) {
+    if (!uim_scm_nullp(numlst_))
+      return skk_get_nth_completion(nth_, head_, uim_scm_f());
+    else
+      return uim_scm_null_list();
+  }
+
   n = uim_scm_c_int(nth_);
-  if (ca && ca->nr_comps > n) {
+  if (ca->nr_comps > n) {
     str = ca->comps[n];
     if (!uim_scm_nullp(numlst_))
       return restore_numeric(str, numlst_);
     else
       return uim_scm_make_str(str);
   }
+
+  if (!uim_scm_nullp(numlst_) && n >= ca->nr_comps)
+    return skk_get_nth_completion(uim_scm_make_int(n - ca->nr_comps),
+		    head_, uim_scm_f());
+
   return uim_scm_null_list();
 }
 
@@ -1845,6 +1894,10 @@ skk_get_nr_completions(uim_lisp head_, uim_lisp numeric_conv_)
   ca = find_comp_array_lisp(head_, numeric_conv_);
   if (ca)
     n = ca->nr_comps;
+
+  if (NFALSEP(numeric_conv_) && has_numeric_in_head(head_))
+    return uim_scm_make_int(n +
+		    uim_scm_c_int(skk_get_nr_completions(head_, uim_scm_f()))); 
 
   return uim_scm_make_int(n);
 }
@@ -1865,15 +1918,15 @@ skk_clear_completions(uim_lisp head_, uim_lisp numeric_conv_)
   if (!rs)
     for (ca = skk_comp; ca; ca = ca->next) {
       if (!strcmp(ca->head, hs)) {
-        ca->refcount--;
-        break;
+	ca->refcount--;
+	break;
       }
     }
   else {
     for (ca = skk_comp; ca; ca = ca->next) {
       if (!strcmp(ca->head, rs)) {
-        ca->refcount--;
-        break;
+	ca->refcount--;
+	break;
       }
     }
     free(rs);
@@ -1898,6 +1951,10 @@ skk_clear_completions(uim_lisp head_, uim_lisp numeric_conv_)
       free(ca);
     }
   }
+
+  if (NFALSEP(numeric_conv_) && has_numeric_in_head(head_))
+    skk_clear_completions(head_, uim_scm_f());
+
   return uim_scm_t();
 }
 
@@ -1973,6 +2030,7 @@ skk_get_dcomp_word(uim_lisp head_, uim_lisp numeric_conv_)
 	}
       }
       free(rs);
+      return skk_get_dcomp_word(head_, uim_scm_f());
     }
   }
   return uim_scm_make_str("");
@@ -2272,8 +2330,13 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
   else
     ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, uim_scm_f());
 
-  if (!ca)
+  if (!ca) {
+    if (!uim_scm_nullp(numlst_))
+      return skk_commit_candidate(head_, okuri_head_, okuri_, nth_,
+		      uim_scm_f());
     return uim_scm_f();
+  }
+
   get_ignoring_indices(ca, ignoring_indices);
 
   /* handle #4 method of numeric conversion */
@@ -2307,8 +2370,12 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
 	k++;
       }
     }
-    if (!str)
+    if (!str) {
+      if (nth >= k)
+	return skk_commit_candidate(head_, okuri_head_, okuri_,
+			uim_scm_make_int(nth - k), uim_scm_f());
       return uim_scm_f();
+    }
   } else {
     for (i = 0; i < ca->nr_cands; i++) {
       if (match_to_discarding_index(ignoring_indices, i))
@@ -2339,9 +2406,9 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
     }
     if (!found) {
       if (!uim_scm_nullp(numlst_))
-        ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 1, numeric_conv_);
+	ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 1, numeric_conv_);
       else
-        ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 1, uim_scm_f());
+	ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 1, uim_scm_f());
       reorder_candidate(ca, str);
     } else {
       /* also reorder base candidate array */
@@ -2407,8 +2474,14 @@ skk_purge_candidate(uim_lisp head_, uim_lisp okuri_head_,
     ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, numeric_conv_);
   else
     ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, uim_scm_f());
-  if (!ca)
+
+  if (!ca) {
+    if (!uim_scm_nullp(numlst_))
+      return skk_purge_candidate(head_, okuri_head_, okuri_, nth_,
+		      uim_scm_f());
     return uim_scm_f(); /* shouldn't happen */
+  }
+
   get_ignoring_indices(ca, ignoring_indices);
 
   /* handle #4 method of numeric conversion */
@@ -2444,8 +2517,12 @@ skk_purge_candidate(uim_lisp head_, uim_lisp okuri_head_,
 	k++;
       }
     }
-    if (!str)
+    if (!str) {
+      if (nth >= k)
+	skk_purge_candidate(head_, okuri_head_, okuri_,
+			uim_scm_make_int(nth - k), uim_scm_f());
       return uim_scm_f();
+    }
   } else {
     for (i = 0; i < ca->nr_cands; i++) {
       if (match_to_discarding_index(ignoring_indices, i))
