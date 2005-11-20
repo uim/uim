@@ -212,15 +212,16 @@ void SigScm_GC_Protect(ScmObj *var)
 
 void SigScm_GC_Unprotect(ScmObj *var)
 {
-    gc_protected_var **item = &protected_var_list;
-    gc_protected_var *next  = NULL;
-    while (*item) {
-        if ((*item)->var == var) {
-            next = (*item)->next_var;
-            free(*item);
-            *item = next;
+    gc_protected_var *item, **prev_next;
+
+    prev_next = &protected_var_list;
+    for (item = protected_var_list; item; item = item->next_var) {
+        if (item->var == var) {
+            *prev_next = item->next_var;
+            free(item);
             break;
         }
+        prev_next = &item->next_var;
     }
 }
 
