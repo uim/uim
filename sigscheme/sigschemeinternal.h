@@ -71,6 +71,8 @@ extern ScmObj scm_current_error_port;
 extern ScmObj SigScm_features;
 extern const ScmSpecialCharInfo Scm_special_char_table[];
 
+extern void (*Scm_writess_func)(ScmObj port, ScmObj obj);
+
 /* datas.c */
 #if SCM_USE_VALUECONS
 extern ScmObj SigScm_null_values;

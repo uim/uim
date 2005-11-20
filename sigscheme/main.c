@@ -126,11 +126,7 @@ static void repl_loop(void)
         result = EVAL(s_exp, SCM_INTERACTION_ENV);
 #endif /* SCM_USE_SRFI34 */
 
-#if SCM_USE_SRFI38
-        SigScm_WriteToPortWithSharedStructure(scm_current_output_port, result);
-#else
-        SigScm_WriteToPort(scm_current_output_port, result);
-#endif
+        SCM_WRITESS_TO_PORT(scm_current_output_port, result);
         SigScm_PortNewline(scm_current_output_port);
 
         if (is_prompt)

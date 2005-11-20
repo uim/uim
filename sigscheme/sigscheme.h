@@ -177,6 +177,10 @@ extern "C" {
  */
 #include "baseport.h"
 
+/* FIXME: rewrite all #ifdef'ed SigScm_WriteToPortWithSharedStructure()
+   invocation with this */
+#define SCM_WRITESS_TO_PORT(port, obj) ((*Scm_writess_func)(port, obj))
+
 /*=======================================
    Struct Declarations
 =======================================*/

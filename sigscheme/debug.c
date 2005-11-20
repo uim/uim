@@ -93,6 +93,13 @@ typedef struct {
 /*=======================================
   Variable Declarations
 =======================================*/
+void (*Scm_writess_func)(ScmObj port, ScmObj obj)
+#if SCM_USE_SRFI38
+    = &SigScm_WriteToPortWithSharedStructure;
+#else
+    = &SigScm_WriteToPort;
+#endif
+
 static int debug_mask;
 #if SCM_USE_SRFI38
 static write_ss_context *write_ss_ctx; /* misc info in priting shared structures */
