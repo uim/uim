@@ -223,7 +223,9 @@ void SigScm_Error(const char *msg, ...)
     ScmObj err_obj;
 
 #if HAVE_VASPRINTF
+    va_start(va, msg);
     vasprintf(&reason, msg, va);
+    va_end(va);
 #else /* HAVE_VASPRINTF */
     /* FIXME: provide replace vasprintf */
     reason = strdup(msg);
