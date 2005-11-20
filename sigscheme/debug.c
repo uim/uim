@@ -659,11 +659,13 @@ static int get_shared_index(ScmObj obj)
     if (write_ss_ctx) {
         ent = hash_lookup(&write_ss_ctx->seen, obj, 0, HASH_FIND);
 
-        if (ent->datum == DEFINING_DATUM) {
-            ent->datum = write_ss_ctx->next_index++;
-            return - (ent->datum);
+        if (ent) {
+            if (ent->datum == DEFINING_DATUM) {
+                ent->datum = write_ss_ctx->next_index++;
+                return - (ent->datum);
+            }
+            return ent->datum;
         }
-        return ent->datum;
     }
     return 0;
 }
