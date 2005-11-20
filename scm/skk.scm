@@ -656,20 +656,14 @@
 
 (define skk-begin-completion
   (lambda (sc)
-    (let ((res #f))
-      ;; get residual 'n'
-      (if (eq? (skk-context-state sc) 'skk-state-kanji)
-	  (skk-append-residual-kana sc))
-      ;;
-      (set! res
-	    (skk-lib-get-completion
-	     (skk-make-string (skk-context-head sc) (skk-context-kana-mode sc))
-	     skk-use-numeric-conversion?))
-      (if res
-	  (begin
-	    (skk-context-set-completion-nth! sc 0)
-	    (skk-context-set-state! sc 'skk-state-completion)))
-      )))
+    ;; get residual 'n'
+    (if (eq? (skk-context-state sc) 'skk-state-kanji)
+	(skk-append-residual-kana sc))
+    (skk-lib-get-completion
+     (skk-make-string (skk-context-head sc) (skk-context-kana-mode sc))
+     skk-use-numeric-conversion?)
+    (skk-context-set-completion-nth! sc 0)
+    (skk-context-set-state! sc 'skk-state-completion)))
 
 (define skk-dcomp-word-tail
   (lambda (sc)
@@ -784,10 +778,14 @@
       (if (and
 	   (eq? stat 'skk-state-completion)
 	   (null? csc))
-	  (begin
+	  (let ((comp (skk-get-current-completion sc)))
 	    (im-pushback-preedit
 	     sc skk-preedit-attr-head
-	     (skk-get-current-completion sc))))
+	     (if (not (string=? comp ""))
+		 comp
+		 (skk-make-string 
+		  (skk-context-head sc)
+		  (skk-context-kana-mode sc))))))
       ;; okuri mark
       (if (or
 	   (eq? stat 'skk-state-okuri)
@@ -1779,6 +1777,26 @@
        (if (skk-prev-completion-key? key key-state)
 	   (skk-change-completion-index sc #f)
 	   #t)
+       (if (skk-new-completion-from-current-comp-key? key key-state)
+	   (let* ((comp (skk-get-current-completion sc))
+		  (sl (string-to-list comp)))
+	     (if (not (null? sl))
+		 (begin (skk-lib-get-completion
+			 (skk-get-current-completion sc)
+			 skk-use-numeric-conversion?)))
+	     (skk-lib-clear-completions
+	      (skk-make-string
+	       (skk-context-head sc)
+	       skk-type-hiragana)
+	       skk-use-numeric-conversion?)
+
+	     (if (not (null? sl))
+		 (begin
+		   (skk-context-set-head! sc '())
+		   (skk-string-list-to-context-head sc sl)))
+	     (skk-context-set-completion-nth! sc 0)
+	     #f)
+	   #t)
        (if (skk-cancel-key? key key-state)
 	   (begin
 	     (skk-lib-clear-completions
@@ -1791,10 +1809,12 @@
 	   #t)
        (let ((sl (string-to-list (skk-get-current-completion sc))))
 	 (skk-lib-clear-completions
-	   (skk-make-string (skk-context-head sc) (skk-context-kana-mode sc))
-	   skk-use-numeric-conversion?)
-	 (skk-context-set-head! sc '())
-	 (skk-string-list-to-context-head sc sl)
+	  (skk-make-string (skk-context-head sc) (skk-context-kana-mode sc))
+	  skk-use-numeric-conversion?)
+	 (if (not (null? sl))
+	     (begin
+	       (skk-context-set-head! sc '())
+	       (skk-string-list-to-context-head sc sl)))
 	 (skk-context-set-state! sc 'skk-state-kanji)
 	 (skk-proc-state-kanji c key key-state)))
       #f)))

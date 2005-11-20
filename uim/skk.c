@@ -1866,7 +1866,7 @@ skk_get_nth_completion(uim_lisp nth_, uim_lisp head_, uim_lisp numeric_conv_)
     if (!uim_scm_nullp(numlst_))
       return skk_get_nth_completion(nth_, head_, uim_scm_f());
     else
-      return uim_scm_null_list();
+      return uim_scm_make_str("");
   }
 
   n = uim_scm_c_int(nth_);
@@ -1882,7 +1882,7 @@ skk_get_nth_completion(uim_lisp nth_, uim_lisp head_, uim_lisp numeric_conv_)
     return skk_get_nth_completion(uim_scm_make_int(n - ca->nr_comps),
 		    head_, uim_scm_f());
 
-  return uim_scm_null_list();
+  return uim_scm_make_str("");
 }
 
 static uim_lisp

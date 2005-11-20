@@ -160,7 +160,7 @@
 	       (_ "[SKK] begin latin conversion")
 	       (_ "long description will be here"))
 
-(define-custom 'skk-begin-completion-key '("tab" "<IgnoreCase><Control>i")
+(define-custom 'skk-begin-completion-key '("tab" "<IgnoreCase><Control>i" skk-new-completion-from-current-comp-key)
                '(skk-keys2 skk-keys-completion)
 	       '(key)
 	       (_ "[SKK] begin completion")
@@ -178,14 +178,20 @@
 	       (_ "[SKK] previous completion candidate")
 	       (_ "long description will be here"))
 
+(define-custom 'skk-new-completion-from-current-comp-key '("<IgnoreCase><Control><Alt>i")
+	       '(skk-keys3 skk-keys-completion)
+	       '(key)
+	       (_ "[SKK] new completion using current completion")
+	       (_ "long description will be here"))
+
 (define-custom 'skk-begin-conv-with-completion-key '("<Alt> ")
-	       '(skk-keys2 skk-keys-completion)
+	       '(skk-keys3 skk-keys-completion)
 	       '(key)
 	       (_ "[SKK] begin conversion with completion")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-commit-with-conv-completion-key '("<IgnoreCase><Control><Alt>j")
-	       '(skk-keys2 skk-keys-completion)
+	       '(skk-keys3 skk-keys-completion)
 	       '(key)
 	       (_ "[SKK] commit the first candidate with completion")
 	       (_ "long description will be here"))
