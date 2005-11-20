@@ -379,8 +379,8 @@ static ScmObj call(ScmObj proc, ScmObj args,
                             eval_state);
 
     case ScmContinuation:
-        if (NO_MORE_ARG(args))
-            SigScm_Error("Continuation invocation lacks an argument.");
+        if (!CONSP(args) || !NULLP(CDR(args)))
+            ERR("continuation takes exactly one argument");
         Scm_CallContinuation(proc,
                              suppress_eval ? CAR(args) : EVAL(CAR(args), env));
         /* NOTREACHED */
@@ -584,17 +584,17 @@ static ScmObj map_eval(ScmObj args, ScmObj env)
 
     /* eval each element of args */
     result  = CONS(EVAL(CAR(args), env), SCM_NULL);
-#if SCM_STRICT_R5RS
+#if SCM_STRICT_ARGCHECK
     if (VALUEPACKETP(CAR(result)))
-        SigScm_Error("multiple values are not allowed here");
+        ERR_OBJ("multiple values are not allowed here", CAR(result));
 #endif
     tail    = result;
     newtail = SCM_NULL;
     for (args = CDR(args); !NULLP(args); args = CDR(args)) {
         newtail = CONS(EVAL(CAR(args), env), SCM_NULL);
-#if SCM_STRICT_R5RS
+#if SCM_STRICT_ARGCHECK
     if (VALUEPACKETP(CAR(newtail)))
-        SigScm_Error("multiple values are not allowed here");
+        ERR_OBJ("multiple values are not allowed here", CAR(newtail));
 #endif
         SET_CDR(tail, newtail);
         tail = newtail;
