@@ -67,8 +67,10 @@
   File Local Type Definitions
 =======================================*/
 struct continuation_frame {
-    jmp_buf *env;
+    /* to ensure that the struct is even-byte aligned on stack, a ScmObj is
+       listed first */
     ScmObj dyn_ext;
+    jmp_buf *env;
 };
 
 /*=======================================
