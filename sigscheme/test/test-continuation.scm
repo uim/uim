@@ -85,4 +85,28 @@
                        (res 'succeeded)
                        res))))
 
+;; "6.4 Control features" of R5RS:
+;; The escape procedure accepts the same number of arguments as the
+;; continuation to the original call to call-with-current-continuation.
+;; Except for continuations created by the `call-with-values' procedure, all
+;; continuations take exactly one value.
+(assert-error "call/cc #9"
+              (lambda ()
+                (call-with-current-continuation
+                 (lambda (k)
+                   (k (values 1 2))))))
+
+(assert-error "call/cc #10"
+              (lambda ()
+                (call-with-current-continuation
+                 (lambda (k)
+                   (k (values))))))
+
+;; one value is OK
+(assert-equal? "call/cc #11"
+               1
+               (call-with-current-continuation
+                (lambda (k)
+                  (k (values 1)))))
+
 (total-report)
