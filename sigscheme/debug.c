@@ -272,8 +272,8 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
         SCM_PORT_PRINT(port, "#<subr continuation>");
         break;
     case ScmValuePacket:
-        SCM_PORT_PRINT(port, "#<values");
-        if (NULLP (SCM_VALUEPACKET_VALUES(obj)))
+        SCM_PORT_PRINT(port, "#<values ");
+        if (NULLP(SCM_VALUEPACKET_VALUES(obj)))
             SCM_PORT_PRINT(port, "()");
         else
             print_list(port, SCM_VALUEPACKET_VALUES(obj), otype);

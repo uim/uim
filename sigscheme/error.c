@@ -250,7 +250,7 @@ void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj)
     ScmObj err_obj;
 
 #if HAVE_ASPRINTF
-    asprintf(&reason, "in %s: %s: ", func_name, msg);
+    asprintf(&reason, "in %s: %s", func_name, msg);
 #else /* HAVE_ASPRINTF */
     /* FIXME: provide replace asprintf */
     reason = strdup(msg);
