@@ -101,13 +101,13 @@ static ScmObj saved_error_port  = NULL;
 =======================================*/
 void SigScm_Initialize_SIOD(void)
 {
-    Scm_Use("srfi-60");
-    Scm_DefineAlias("bit-and"               , "logand");
-    Scm_DefineAlias("bit-or"                , "logior");
-    Scm_DefineAlias("bit-xor"               , "logxor");
-    Scm_DefineAlias("bit-not"               , "lognot");
-
     REGISTER_FUNC_TABLE(siod_func_info_table);
+
+    Scm_Use("srfi-60");
+    Scm_DefineAlias("bit-and", "logand");
+    Scm_DefineAlias("bit-or",  "logior");
+    Scm_DefineAlias("bit-xor", "logxor");
+    Scm_DefineAlias("bit-not", "lognot");
 
     null_port         = SCM_FALSE;
     saved_output_port = SCM_FALSE;
