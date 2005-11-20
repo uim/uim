@@ -49,6 +49,6 @@
             (convolution (eval (list 'lambda () a-pair) (scheme-report-environment 5))))
        (set-cdr! a-pair convolution)
        (write-with-shared-structure convolution outs)
-       (assert-equal? "#1=#<closure:(() (kar . #1#))>" outs))
+       (assert-equal? "srfi38 #2" "#1=#<closure (() (kar . #1#))>" (get-output-string outs)))
 
 (total-report)
