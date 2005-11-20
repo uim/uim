@@ -192,11 +192,8 @@ static void SigScm_Initialize_internal(void)
 #endif
 
     /*=======================================================================
-      Feature Resolving
+      Fixing up
     =======================================================================*/
-#if SCM_EXCEPTION_HANDLING
-    ScmExp_use(Scm_Intern("srfi-34"), SCM_INTERACTION_ENV);
-#endif
     /* to evaluate SigScheme-dependent codes conditionally */
     ScmOp_provide(Scm_NewStringCopying("sigscheme"));
 }

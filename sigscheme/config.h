@@ -80,7 +80,6 @@
 #define SCM_ACCESSOR_ASSERT     0  /* enable strict type check with accessor */
 #define SCM_USE_VALUECONS       1  /* use experimental values passing */
 #define SCM_VOLATILE_OUTPUT     0  /* always flush files on write */
-#define SCM_EXCEPTION_HANDLING  1  /* use SRFI-34 base exception handling */
 #define SCM_OBJ_COMPACT         0  /* object representation compaction (experimental) */
 
 #define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
@@ -124,11 +123,6 @@
 #undef SCM_COMPAT_SIOD_BUGS
 #define SCM_COMPAT_SIOD_BUGS    0
 #endif /* SCM_COMPAT_SIOD */
-
-#if SCM_EXCEPTION_HANDLING
-#undef SCM_USE_SRFI34
-#define SCM_USE_SRFI34          1
-#endif /* SCM_EXCEPTION_HANDLING */
 
 #if SCM_USE_SRFI34
 #undef SCM_USE_SRFI23
