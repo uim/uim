@@ -302,7 +302,7 @@ extern ScmObj *scm_stack_start_pointer;
 #define ASSERT_ERROBJP(obj)  ASSERT_TYPE(ERROBJP, "error object", (obj))
 
 /* Macros For Handling Continuation Object */
-#define INVALID_CONTINUATION_OPAQUE  SCM_FALSE
+#define INVALID_CONTINUATION_OPAQUE  NULL
 
 /* Symbol Name Hash Size */
 #define NAMEHASH_SIZE 1024
