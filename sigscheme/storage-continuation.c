@@ -261,7 +261,7 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
     ScmObj cont = SCM_FALSE;
     ScmObj ret  = SCM_FALSE;
     struct continuation_frame cont_frame;
-    ScmObj saved_trace_stack;
+    ScmObj saved_trace_stack = SCM_FALSE;
 
     cont = Scm_NewContinuation();
     CONTINUATION_SET_FRAME(cont, &cont_frame);
