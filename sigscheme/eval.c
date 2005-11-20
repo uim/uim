@@ -200,6 +200,8 @@ ScmObj Scm_LookupEnvironment(ScmObj var, ScmObj env)
     return SCM_NULL;
 }
 
+/* FIXME: Simplify as written in
+   http://d.hatena.ne.jp/jun0/20050925#1127590537 */
 /** Lookup a variable of a frame */
 static ScmObj lookup_frame(ScmObj var, ScmObj frame)
 {
