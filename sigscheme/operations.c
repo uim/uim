@@ -750,7 +750,7 @@ ScmObj ScmOp_length(ScmObj obj)
 ScmObj ScmOp_append(ScmObj args)
 {
     ScmObj ret_lst  = SCM_NULL;
-    ScmRef ret_tail = SCM_REF(ret_lst);
+    ScmRef ret_tail = SCM_REF_OFF_HEAP(ret_lst);
     ScmObj ls;
     ScmObj obj = SCM_NULL;
     DECLARE_FUNCTION("append", ProcedureVariadic0);

@@ -633,11 +633,11 @@ extern ScmObj Scm_sym_unquote, Scm_sym_unquote_splicing;
   Abstract ScmObj Reference For Storage-Representation Independent Efficient
   List Operations
 ============================================================================*/
-#define SCM_REF_NULL      NULL
+#define SCM_INVALID_REF   NULL
 
-#define SCM_REF(obj)      (&(obj))
-#define SCM_REF_CAR(cons) (SCM_REF(SCM_GET_DIRECT_CAR(cons)))
-#define SCM_REF_CDR(cons) (SCM_REF(SCM_GET_DIRECT_CDR(cons)))
+#define SCM_REF_CAR(cons) (&SCM_GET_DIRECT_CAR(cons))
+#define SCM_REF_CDR(cons) (&SCM_GET_DIRECT_CDR(cons))
+#define SCM_REF_OFF_HEAP(obj) (&(obj))
 #define SCM_DEREF(ref)    (*(ref))
 
 /* RFC: Is there a better name? */

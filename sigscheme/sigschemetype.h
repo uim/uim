@@ -396,12 +396,11 @@ struct ScmCell_ {
   Abstract ScmObj Reference For Storage-Representation Independent Efficient
   List Operations
 ============================================================================*/
-#define SCM_REF_NULL      NULL
+#define SCM_INVALID_REF   NULL
 
-#define SCM_REF(obj)      (&(obj))
-#define SCM_REF_CAR(cons) (SCM_REF(SCM_CAR(cons)))
-#define SCM_REF_CDR(cons) (SCM_REF(SCM_CDR(cons)))
-#define SCM_REF_OFF_HEAP(cons) (&(cons))
+#define SCM_REF_CAR(cons) (&SCM_CAR(cons))
+#define SCM_REF_CDR(cons) (&SCM_CDR(cons))
+#define SCM_REF_OFF_HEAP(obj) (&(obj))
 #define SCM_DEREF(ref)    (*(ref))
 /* RFC: Is there a better name? */
 #define SCM_SET(ref, obj) (*(ref) = (obj))
