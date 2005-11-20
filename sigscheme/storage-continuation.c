@@ -313,6 +313,7 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
 void Scm_CallContinuation(ScmObj cont, ScmObj ret)
 {
     struct continuation_frame *frame;
+    DECLARE_INTERNAL_FUNCTION("Scm_CallContinuation");
 
     frame = CONTINUATION_FRAME(cont);
 
@@ -322,6 +323,9 @@ void Scm_CallContinuation(ScmObj cont, ScmObj ret)
 #endif
         )
     {
+        if (VALUEPACKETP(ret))
+            ERR_OBJ("continuations take exactly one value but got", ret);
+
         /*
          * Don't refer cont because it may already be invalidated by
          * continuation_stack_unwind().
