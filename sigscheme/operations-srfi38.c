@@ -61,10 +61,10 @@
 =======================================*/
 void SigScm_Initialize_SRFI38(void)
 {
-    /*=======================================================================
-      SRFI-38 Procedure
-    =======================================================================*/
     REGISTER_FUNC_TABLE(srfi38_func_info_table);
+
+    /* SRFI-38 allows providing (read/ss) and (write/ss) */
+    Scm_DefineAlias("write/ss", "write-with-shared-structure");
 }
 
 /*=============================================================================
