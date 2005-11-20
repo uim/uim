@@ -123,9 +123,16 @@ ScmObj Scm_ExtendEnvironment(ScmObj vars, ScmObj vals, ScmObj env)
         /* dot list appeared: fold the rest values into a variable */
         if (SYMBOLP(CDR(rest_vars))) {
             SET_CDR(rest_vals, LIST_1(CDR(rest_vals)));
+#if SCM_STRICT_ARGCHECK
+            rest_vars = rest_vals = SCM_NULL;
+#endif
             break;
         }
     }
+#if SCM_STRICT_ARGCHECK
+    if (!NULLP(rest_vals))
+        ERR_OBJ("unmatched variable number", vals);
+#endif
 
     /* create new frame */
     frame = CONS(vars, vals);

@@ -287,7 +287,11 @@ void SigScm_ShowBacktrace(ScmObj trace_stack)
         env = TRACE_FRAME_ENV(frame);
         obj = TRACE_FRAME_OBJ(frame);
 
+#if SCM_USE_SRFI38
+        SigScm_WriteToPortWithSharedStructure(scm_current_error_port, obj);
+#else
         SigScm_WriteToPort(scm_current_error_port, obj);
+#endif
         SigScm_ErrorNewline();
 
 #if SCM_DEBUG_BACKTRACE_VAL
@@ -296,7 +300,11 @@ void SigScm_ShowBacktrace(ScmObj trace_stack)
             if (UNBOUNDP(obj, env))
                 break;
             SigScm_ErrorPrintf("  - [%s]: ", SCM_SYMBOL_NAME(obj));
+#if SCM_USE_SRFI38
+            SigScm_WriteToPortWithSharedStructure(scm_current_error_port, Scm_SymbolValue(obj, env));
+#else
             SigScm_WriteToPort(scm_current_error_port, Scm_SymbolValue(obj, env));
+#endif
             SigScm_ErrorNewline();
             break;
 
@@ -307,15 +315,25 @@ void SigScm_ShowBacktrace(ScmObj trace_stack)
                     if (UNBOUNDP(proc, env))
                         break;
                     SigScm_ErrorPrintf("  - [%s]: ", SCM_SYMBOL_NAME(proc));
+#if SCM_USE_SRFI38
+                    SigScm_WriteToPortWithSharedStructure(scm_current_error_port,
+                                                          Scm_SymbolValue(proc, env));
+#else
                     SigScm_WriteToPort(scm_current_error_port,
                                        Scm_SymbolValue(proc, env));
+#endif
                     SigScm_ErrorNewline();
                 }
             }
             if (SYMBOLP(obj)) {
                 SigScm_ErrorPrintf("  - [%s]: ", SCM_SYMBOL_NAME(proc));
+#if SCM_USE_SRFI38
+                SigScm_WriteToPortWithSharedStructure(scm_current_error_port,
+                                                      Scm_SymbolValue(proc, env));
+#else
                 SigScm_WriteToPort(scm_current_error_port,
                                    Scm_SymbolValue(proc, env));
+#endif
                 SigScm_ErrorNewline();
             }
             break;
