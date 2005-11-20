@@ -101,14 +101,13 @@ static ScmObj saved_error_port  = NULL;
 =======================================*/
 void SigScm_Initialize_SIOD(void)
 {
-    ScmExp_use(Scm_Intern("srfi-60"), SCM_INTERACTION_ENV);
+    Scm_Use("srfi-60");
     Scm_DefineAlias("bit-and"               , "logand");
     Scm_DefineAlias("bit-or"                , "logior");
     Scm_DefineAlias("bit-xor"               , "logxor");
     Scm_DefineAlias("bit-not"               , "lognot");
 
     REGISTER_FUNC_TABLE(siod_func_info_table);
-    Scm_DefineAlias("=", "%%=");
 
     null_port         = SCM_FALSE;
     saved_output_port = SCM_FALSE;
@@ -155,9 +154,9 @@ ScmObj ScmOp_set_symbol_valued(ScmObj var, ScmObj val)
     return SCM_SYMBOL_SET_VCELL(var, val);
 }
 
-ScmObj ScmOp_sscm_equal(ScmObj obj1, ScmObj obj2)
+ScmObj ScmOp_SIOD_equal(ScmObj obj1, ScmObj obj2)
 {
-    DECLARE_FUNCTION("%%=", ProcedureFixed2);
+    DECLARE_FUNCTION("=", ProcedureFixed2);
 
     if (EQ(obj1, obj2))
         return SCM_TRUE;
