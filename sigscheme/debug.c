@@ -277,6 +277,10 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
             SCM_PORT_PRINT(port, "()");
         else
             print_list(port, SCM_VALUEPACKET_VALUES(obj), otype);
+#if SCM_USE_VALUECONS
+        /* SCM_VALUEPACKET_VALUES() changes the type destructively */
+        SCM_ENTYPE_VALUEPACKET(obj);
+#endif
         SCM_PORT_PRINT(port, ">");
         break;
     case ScmConstant:
@@ -632,7 +636,15 @@ static void write_ss_scan(ScmObj obj, write_ss_context *ctx)
             break;
 
         case ScmValuePacket:
+#if SCM_USE_VALUECONS
+            if (!SCM_NULLVALUESP(obj)) {
+                write_ss_scan(CDR(SCM_VALUEPACKET_VALUES(obj)), ctx);
+                /* SCM_VALUEPACKET_VALUES() changes the type destructively */
+                SCM_ENTYPE_VALUEPACKET(obj);
+            }
+#else
             write_ss_scan(SCM_VALUEPACKET_VALUES(obj), ctx);
+#endif
             break;
 
         case ScmVector:
