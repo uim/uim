@@ -178,7 +178,7 @@
 	       (_ "[SKK] previous completion candidate")
 	       (_ "long description will be here"))
 
-(define-custom 'skk-new-completion-from-current-comp-key '("<IgnoreCase><Control><Alt>i")
+(define-custom 'skk-new-completion-from-current-comp-key '("<Alt>tab" "<IgnoreCase><Control><Alt>i")
 	       '(skk-keys3 skk-keys-completion)
 	       '(key)
 	       (_ "[SKK] new completion using current completion")

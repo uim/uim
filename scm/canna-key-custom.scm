@@ -127,7 +127,7 @@
 	       (_ "[Canna] off")
 	       (_ "long description will be here"))
 
-(define-custom 'canna-begin-conv-key '(generic-begin-conv-key generic-on-key)
+(define-custom 'canna-begin-conv-key '(generic-begin-conv-key)
                '(canna-keys2)
 	       '(key)
 	       (_ "[Canna] begin conversion")
