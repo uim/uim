@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 0.4.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-09 14:09+0900\n"
+"POT-Creation-Date: 2005-11-21 18:06+0900\n"
 "PO-Revision-Date: 2005-02-24 19:28+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
@@ -557,8 +557,8 @@ msgstr "手書き入力パッドの起動"
 msgid "Execute uim's help tool"
 msgstr "ヘルプの起動"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:99 scm/action.lisp:531
-#: scm/action.lisp:532
+#: qt/toolbar-common-quimhelpertoolbar.cpp:99 scm/action.lisp:547
+#: scm/action.lisp:548
 msgid "exec im-switcher"
 msgstr "入力方式の切り替え"
 
@@ -630,11 +630,11 @@ msgstr "編集"
 msgid "Key Grab Dialog"
 msgstr "キー取得ダイアログ"
 
-#: scm/action.lisp:486 scm/action.lisp:487
+#: scm/action.lisp:502 scm/action.lisp:503
 msgid "unknown"
 msgstr "不明"
 
-#: scm/action.lisp:526
+#: scm/action.lisp:542
 msgid "Japanese Kana Kanji Conversion Engine, Example"
 msgstr "日本語かな漢字変換エンジン例"
 
@@ -673,27 +673,29 @@ msgstr "文節区切りを表示する"
 #: scm/im-custom.lisp:76 scm/im-custom.lisp:81 scm/im-custom.lisp:86
 #: scm/im-custom.lisp:91 scm/im-custom.lisp:96 scm/im-custom.lisp:101
 #: scm/im-custom.lisp:106 scm/im-custom.lisp:117 scm/im-custom.lisp:127
-#: scm/im-custom.lisp:229 scm/im-custom.lisp:289 scm/im-custom.lisp:305
-#: scm/im-custom.lisp:311 scm/im-custom.lisp:318 scm/im-custom.lisp:324
-#: scm/im-custom.lisp:330 scm/im-custom.lisp:336 scm/im-custom.lisp:342
-#: scm/im-custom.lisp:348 scm/im-custom.lisp:354 scm/im-custom.lisp:367
-#: scm/im-custom.lisp:373 scm/im-custom.lisp:380 scm/im-custom.lisp:386
-#: scm/im-custom.lisp:390 scm/im-custom.lisp:396 scm/im-custom.lisp:402
-#: scm/prime-custom.lisp:55 scm/prime-custom.lisp:61 scm/prime-custom.lisp:69
-#: scm/prime-custom.lisp:75 scm/prime-custom.lisp:93 scm/prime-custom.lisp:99
-#: scm/prime-custom.lisp:106 scm/prime-custom.lisp:113
-#: scm/prime-custom.lisp:121 scm/prime-custom.lisp:129
-#: scm/prime-custom.lisp:135 scm/prime-custom.lisp:141
-#: scm/prime-key-custom.lisp:61 scm/prime-key-custom.lisp:65
-#: scm/prime-key-custom.lisp:69 scm/skk-custom.lisp:59 scm/skk-custom.lisp:65
-#: scm/skk-custom.lisp:73 scm/skk-custom.lisp:79 scm/skk-custom.lisp:85
-#: scm/skk-custom.lisp:91 scm/skk-custom.lisp:217 scm/skk-custom.lisp:236
-#: scm/skk-custom.lisp:245 scm/skk-custom.lisp:276 scm/skk-custom.lisp:285
-#: scm/skk-custom.lisp:328 scm/skk-custom.lisp:334 scm/skk-custom.lisp:346
-#: scm/skk-custom.lisp:353 scm/skk-custom.lisp:360 scm/skk-custom.lisp:372
-#: scm/skk-custom.lisp:378 scm/skk-custom.lisp:384 scm/skk-custom.lisp:390
-#: scm/skk-custom.lisp:400 scm/skk-custom.lisp:406 scm/skk-custom.lisp:427
-#: scm/skk-custom.lisp:433 scm/skk-custom.lisp:440 scm/skk-key-custom.lisp:65
+#: scm/im-custom.lisp:229 scm/im-custom.lisp:286 scm/im-custom.lisp:292
+#: scm/im-custom.lisp:298 scm/im-custom.lisp:306 scm/im-custom.lisp:326
+#: scm/im-custom.lisp:342 scm/im-custom.lisp:348 scm/im-custom.lisp:355
+#: scm/im-custom.lisp:361 scm/im-custom.lisp:367 scm/im-custom.lisp:373
+#: scm/im-custom.lisp:379 scm/im-custom.lisp:385 scm/im-custom.lisp:391
+#: scm/im-custom.lisp:404 scm/im-custom.lisp:410 scm/im-custom.lisp:417
+#: scm/im-custom.lisp:423 scm/im-custom.lisp:427 scm/im-custom.lisp:433
+#: scm/im-custom.lisp:439 scm/prime-custom.lisp:55 scm/prime-custom.lisp:61
+#: scm/prime-custom.lisp:69 scm/prime-custom.lisp:75 scm/prime-custom.lisp:93
+#: scm/prime-custom.lisp:99 scm/prime-custom.lisp:106
+#: scm/prime-custom.lisp:113 scm/prime-custom.lisp:121
+#: scm/prime-custom.lisp:129 scm/prime-custom.lisp:135
+#: scm/prime-custom.lisp:141 scm/prime-key-custom.lisp:61
+#: scm/prime-key-custom.lisp:65 scm/prime-key-custom.lisp:69
+#: scm/skk-custom.lisp:59 scm/skk-custom.lisp:65 scm/skk-custom.lisp:73
+#: scm/skk-custom.lisp:79 scm/skk-custom.lisp:85 scm/skk-custom.lisp:91
+#: scm/skk-custom.lisp:217 scm/skk-custom.lisp:236 scm/skk-custom.lisp:245
+#: scm/skk-custom.lisp:276 scm/skk-custom.lisp:285 scm/skk-custom.lisp:328
+#: scm/skk-custom.lisp:334 scm/skk-custom.lisp:346 scm/skk-custom.lisp:353
+#: scm/skk-custom.lisp:360 scm/skk-custom.lisp:372 scm/skk-custom.lisp:378
+#: scm/skk-custom.lisp:384 scm/skk-custom.lisp:390 scm/skk-custom.lisp:396
+#: scm/skk-custom.lisp:406 scm/skk-custom.lisp:412 scm/skk-custom.lisp:433
+#: scm/skk-custom.lisp:439 scm/skk-custom.lisp:446 scm/skk-key-custom.lisp:65
 #: scm/skk-key-custom.lisp:69 scm/skk-key-custom.lisp:73
 #: scm/skk-key-custom.lisp:78 scm/spellcheck-custom.lisp:48
 #: scm/spellcheck-custom.lisp:54 scm/spellcheck-custom.lisp:60
@@ -828,7 +830,7 @@ msgid "Kana input method menu items"
 msgstr "かな入力方式メニュー項目"
 
 #: scm/anthy-custom.lisp:289 scm/canna-custom.lisp:363
-#: scm/prime-custom.lisp:134 scm/skk-custom.lisp:426
+#: scm/prime-custom.lisp:134 scm/skk-custom.lisp:432
 msgid "Friendly for vi user"
 msgstr "viに適応した入力制御を使用する"
 
@@ -907,10 +909,12 @@ msgstr "[Anthy] 次の文節"
 #: scm/skk-key-custom.lisp:161 scm/skk-key-custom.lisp:167
 #: scm/skk-key-custom.lisp:173 scm/skk-key-custom.lisp:179
 #: scm/skk-key-custom.lisp:185 scm/skk-key-custom.lisp:191
-#: scm/skk-key-custom.lisp:197 scm/skk-key-custom.lisp:215
-#: scm/skk-key-custom.lisp:221 scm/skk-key-custom.lisp:227
-#: scm/skk-key-custom.lisp:233 scm/skk-key-custom.lisp:239
+#: scm/skk-key-custom.lisp:197 scm/skk-key-custom.lisp:203
+#: scm/skk-key-custom.lisp:209 scm/skk-key-custom.lisp:215
+#: scm/skk-key-custom.lisp:221 scm/skk-key-custom.lisp:239
 #: scm/skk-key-custom.lisp:245 scm/skk-key-custom.lisp:251
+#: scm/skk-key-custom.lisp:257 scm/skk-key-custom.lisp:263
+#: scm/skk-key-custom.lisp:269 scm/skk-key-custom.lisp:275
 #: scm/spellcheck-custom.lisp:72 scm/tutcode-key-custom.lisp:76
 #: scm/tutcode-key-custom.lisp:82 scm/tutcode-key-custom.lisp:88
 #: scm/tutcode-key-custom.lisp:95
@@ -1374,107 +1378,123 @@ msgstr "デフォルトの入力方式を指定する"
 msgid "Enabled input methods"
 msgstr "使用可能にする入力方式"
 
-#: scm/im-custom.lisp:286 scm/skk-custom.lisp:70 scm/skk-custom.lisp:370
+#: scm/im-custom.lisp:285
+msgid "Input method toggle"
+msgstr "入力方式のトグル"
+
+#: scm/im-custom.lisp:291
+msgid "Enable input method toggle by hot keys"
+msgstr "ホットキーによる入力方式のトグルを有効にする"
+
+#: scm/im-custom.lisp:297
+msgid "Input method toggle key"
+msgstr "入力方式をトグルするキー"
+
+#: scm/im-custom.lisp:305
+msgid "Alternative input method"
+msgstr "もう一方の入力方式"
+
+#: scm/im-custom.lisp:323 scm/skk-custom.lisp:70 scm/skk-custom.lisp:370
 msgid "uim"
 msgstr "uim"
 
-#: scm/im-custom.lisp:286 scm/skk-custom.lisp:70 scm/skk-custom.lisp:370
+#: scm/im-custom.lisp:323 scm/skk-custom.lisp:70 scm/skk-custom.lisp:370
 msgid "uim native"
 msgstr "uimネイティブ"
 
-#: scm/im-custom.lisp:287
+#: scm/im-custom.lisp:324
 msgid "ATOK like"
 msgstr "ATOK風"
 
-#: scm/im-custom.lisp:287
+#: scm/im-custom.lisp:324
 msgid "Similar to ATOK"
 msgstr "ATOK風"
 
-#: scm/im-custom.lisp:288
+#: scm/im-custom.lisp:325
 msgid "Preedit color"
 msgstr "編集領域色"
 
-#: scm/im-custom.lisp:296 scm/im-custom.lisp:297
+#: scm/im-custom.lisp:333 scm/im-custom.lisp:334
 msgid "Adjacent to cursor"
 msgstr "カーソルに隣接"
 
-#: scm/im-custom.lisp:299 scm/im-custom.lisp:300
+#: scm/im-custom.lisp:336 scm/im-custom.lisp:337
 msgid "Left end of preedit area"
 msgstr "編集領域の左端"
 
-#: scm/im-custom.lisp:302 scm/im-custom.lisp:303
+#: scm/im-custom.lisp:339 scm/im-custom.lisp:340
 msgid "Right end of preedit area"
 msgstr "編集領域の右端"
 
-#: scm/im-custom.lisp:304
+#: scm/im-custom.lisp:341
 msgid "Candidate window position"
 msgstr "候補ウィンドウ表示位置"
 
-#: scm/im-custom.lisp:310
+#: scm/im-custom.lisp:347
 msgid "Enable lazy input method loading for fast startup"
 msgstr "高速起動のための遅延ローディングを有効にする"
 
-#: scm/im-custom.lisp:317
+#: scm/im-custom.lisp:354
 msgid "Show input method switcher button on toolbar"
 msgstr "入力方式の切り替えボタンをツールバーに表示する"
 
-#: scm/im-custom.lisp:323
+#: scm/im-custom.lisp:360
 msgid "Show uim preference tool button on toolbar"
 msgstr "設定ツールの起動ボタンをツールバーに表示する"
 
-#: scm/im-custom.lisp:329
+#: scm/im-custom.lisp:366
 msgid "Show uim Japanese dictionary tool button on toolbar"
 msgstr "日本語辞書ツールの起動ボタンをツールバーに表示する"
 
-#: scm/im-custom.lisp:335
+#: scm/im-custom.lisp:372
 msgid "Show uim input pad button on toolbar"
 msgstr "入力パッドの起動ボタンをツールバーに表示する"
 
-#: scm/im-custom.lisp:341
+#: scm/im-custom.lisp:378
 msgid "Show uim handwriting-input pad button on toolbar"
 msgstr "手書き入力パッドの起動ボタンをツールバーに表示する"
 
-#: scm/im-custom.lisp:347
+#: scm/im-custom.lisp:384
 msgid "Show uim help button on toolbar"
 msgstr "ヘルプボタンをツールバーに表示する"
 
-#: scm/im-custom.lisp:353
+#: scm/im-custom.lisp:390
 msgid "Show input mode nearby cursor"
 msgstr "入力モードをカーソルの近くに表示する"
 
-#: scm/im-custom.lisp:359
+#: scm/im-custom.lisp:396
 msgid "Time length for showing input mode nearby the cursor"
 msgstr "入力モード表示のタイムアウトまでの時間"
 
-#: scm/im-custom.lisp:360
+#: scm/im-custom.lisp:397
 msgid "Set 0 to show indicator always."
 msgstr ""
 
-#: scm/im-custom.lisp:366
+#: scm/im-custom.lisp:403
 msgid "EB library settings"
 msgstr "EBライブラリ設定"
 
-#: scm/im-custom.lisp:372
+#: scm/im-custom.lisp:409
 msgid "Use EB library to search annotations"
 msgstr "注釈の検索にEBライブラリを使用する"
 
-#: scm/im-custom.lisp:379
+#: scm/im-custom.lisp:416
 msgid "The directory which contains EB dictionary file"
 msgstr "EB辞書ファイルを格納しているディレクトリ"
 
-#: scm/im-custom.lisp:385
+#: scm/im-custom.lisp:422
 msgid "XIM settings"
 msgstr "XIM設定"
 
-#: scm/im-custom.lisp:389
+#: scm/im-custom.lisp:426
 msgid "Preedit settings of XIM"
 msgstr ""
 
-#: scm/im-custom.lisp:395
+#: scm/im-custom.lisp:432
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr "XIM独自の編集領域にアンチエイリアスフォントを使用"
 
-#: scm/im-custom.lisp:401
+#: scm/im-custom.lisp:438
 msgid "Font name for preedit area (anti-aliased)"
 msgstr "編集領域に使用するアンチエイリアスフォント"
 
@@ -1783,19 +1803,23 @@ msgstr "数値変換を使用する"
 msgid "Enable auto conversion with punctuation marks"
 msgstr "句読点による自動変換を有効にする"
 
-#: scm/skk-custom.lisp:399
+#: scm/skk-custom.lisp:395
+msgid "Enable dynamic completion"
+msgstr "自動ダイナミックコンプリーションを有効にする"
+
+#: scm/skk-custom.lisp:405
 msgid "Show annotation of candidate word"
 msgstr "候補に註釈を表示する"
 
-#: scm/skk-custom.lisp:405
+#: scm/skk-custom.lisp:411
 msgid "Show annotation also in preedit area"
 msgstr "編集領域内にも註釈を表示する"
 
-#: scm/skk-custom.lisp:432
+#: scm/skk-custom.lisp:438
 msgid "Use Enter key as just committing (egg-like operation)"
 msgstr "Enterキーを単に確定のために使う (egg風の操作)"
 
-#: scm/skk-custom.lisp:439
+#: scm/skk-custom.lisp:445
 msgid "Commit newline as ASCII string instead of native key-event"
 msgstr "新規行をネイティブキーイベントの代わりにASCII文字列として確定する"
 
@@ -1860,62 +1884,78 @@ msgid "[SKK] commit as fullwidth alphanumeric"
 msgstr "[SKK] 全角英数として確定"
 
 #: scm/skk-key-custom.lisp:154
+msgid "[SKK] commit as opposite case in latin conversion"
+msgstr "[SKK] opposite caseとして確定"
+
+#: scm/skk-key-custom.lisp:160
 msgid "[SKK] begin latin conversion"
 msgstr "[SKK] アルファベット変換開始"
 
-#: scm/skk-key-custom.lisp:160
+#: scm/skk-key-custom.lisp:166
 msgid "[SKK] begin completion"
 msgstr "[SKK] 補完開始"
 
-#: scm/skk-key-custom.lisp:166
+#: scm/skk-key-custom.lisp:172
 msgid "[SKK] next completion candidate"
 msgstr "[SKK] 次の補完候補"
 
-#: scm/skk-key-custom.lisp:172
+#: scm/skk-key-custom.lisp:178
 msgid "[SKK] previous completion candidate"
 msgstr "[SKK] 前の補完候補"
 
-#: scm/skk-key-custom.lisp:178
+#: scm/skk-key-custom.lisp:184
+msgid "[SKK] new completion using current completion"
+msgstr "[SKK] 現在の補完候補から新規に補完"
+
+#: scm/skk-key-custom.lisp:190
+msgid "[SKK] begin conversion with completion"
+msgstr "[SKK] 補完しながら変換開始"
+
+#: scm/skk-key-custom.lisp:196
+msgid "[SKK] commit the first candidate with completion"
+msgstr "[SKK] 補完しながら変換、確定"
+
+#: scm/skk-key-custom.lisp:202
 msgid "[SKK] skk-special-midashi-key?"
 msgstr "[SKK] 接頭辞、接尾辞の入力"
 
-#: scm/skk-key-custom.lisp:184
+#: scm/skk-key-custom.lisp:208
 msgid "[SKK] skk-vi-escape-key?"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:190
+#: scm/skk-key-custom.lisp:214
 msgid "[SKK] skk-state-direct-no-preedit-nop-key?"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:196
+#: scm/skk-key-custom.lisp:220
 msgid "[SKK] skk-purge-candidate-key?"
 msgstr "[SKK] 個人辞書中の単語を削除"
 
-#: scm/skk-key-custom.lisp:214
+#: scm/skk-key-custom.lisp:238
 msgid "[SKK] next candidate"
 msgstr "[SKK] 次候補"
 
-#: scm/skk-key-custom.lisp:220
+#: scm/skk-key-custom.lisp:244
 msgid "[SKK] previous candidate"
 msgstr "[SKK] 前候補"
 
-#: scm/skk-key-custom.lisp:226
+#: scm/skk-key-custom.lisp:250
 msgid "[SKK] next page of candidate window"
 msgstr "[SKK] 候補ウィンドウの次ページ"
 
-#: scm/skk-key-custom.lisp:232
+#: scm/skk-key-custom.lisp:256
 msgid "[SKK] previous page of candidate window"
 msgstr "[SKK] 候補ウィンドウの前ページ"
 
-#: scm/skk-key-custom.lisp:238
+#: scm/skk-key-custom.lisp:262
 msgid "[SKK] backspace"
 msgstr "[SKK] バックスペース"
 
-#: scm/skk-key-custom.lisp:244
+#: scm/skk-key-custom.lisp:268
 msgid "[SKK] go left"
 msgstr "[SKK] 左に移動"
 
-#: scm/skk-key-custom.lisp:250
+#: scm/skk-key-custom.lisp:274
 msgid "[SKK] go right"
 msgstr "[SKK] 右に移動"
 
@@ -2629,9 +2669,6 @@ msgstr "ズールー語"
 
 #~ msgid "Global advanced key bindings"
 #~ msgstr "全体キー設定 (高度)"
-
-#~ msgid "Input method switching"
-#~ msgstr "入力言語の切り替え"
 
 #~ msgid "Enable IM switching by hotkey"
 #~ msgstr "ホットキーでのIM切替えを有効にする"

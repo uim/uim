@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-09 14:09+0900\n"
+"POT-Creation-Date: 2005-11-21 18:06+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -544,8 +544,8 @@ msgstr ""
 msgid "Execute uim's help tool"
 msgstr ""
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:99 scm/action.lisp:531
-#: scm/action.lisp:532
+#: qt/toolbar-common-quimhelpertoolbar.cpp:99 scm/action.lisp:547
+#: scm/action.lisp:548
 msgid "exec im-switcher"
 msgstr ""
 
@@ -611,11 +611,11 @@ msgstr ""
 msgid "Key Grab Dialog"
 msgstr ""
 
-#: scm/action.lisp:486 scm/action.lisp:487
+#: scm/action.lisp:502 scm/action.lisp:503
 msgid "unknown"
 msgstr ""
 
-#: scm/action.lisp:526
+#: scm/action.lisp:542
 msgid "Japanese Kana Kanji Conversion Engine, Example"
 msgstr ""
 
@@ -654,27 +654,29 @@ msgstr ""
 #: scm/im-custom.lisp:76 scm/im-custom.lisp:81 scm/im-custom.lisp:86
 #: scm/im-custom.lisp:91 scm/im-custom.lisp:96 scm/im-custom.lisp:101
 #: scm/im-custom.lisp:106 scm/im-custom.lisp:117 scm/im-custom.lisp:127
-#: scm/im-custom.lisp:229 scm/im-custom.lisp:289 scm/im-custom.lisp:305
-#: scm/im-custom.lisp:311 scm/im-custom.lisp:318 scm/im-custom.lisp:324
-#: scm/im-custom.lisp:330 scm/im-custom.lisp:336 scm/im-custom.lisp:342
-#: scm/im-custom.lisp:348 scm/im-custom.lisp:354 scm/im-custom.lisp:367
-#: scm/im-custom.lisp:373 scm/im-custom.lisp:380 scm/im-custom.lisp:386
-#: scm/im-custom.lisp:390 scm/im-custom.lisp:396 scm/im-custom.lisp:402
-#: scm/prime-custom.lisp:55 scm/prime-custom.lisp:61 scm/prime-custom.lisp:69
-#: scm/prime-custom.lisp:75 scm/prime-custom.lisp:93 scm/prime-custom.lisp:99
-#: scm/prime-custom.lisp:106 scm/prime-custom.lisp:113
-#: scm/prime-custom.lisp:121 scm/prime-custom.lisp:129
-#: scm/prime-custom.lisp:135 scm/prime-custom.lisp:141
-#: scm/prime-key-custom.lisp:61 scm/prime-key-custom.lisp:65
-#: scm/prime-key-custom.lisp:69 scm/skk-custom.lisp:59 scm/skk-custom.lisp:65
-#: scm/skk-custom.lisp:73 scm/skk-custom.lisp:79 scm/skk-custom.lisp:85
-#: scm/skk-custom.lisp:91 scm/skk-custom.lisp:217 scm/skk-custom.lisp:236
-#: scm/skk-custom.lisp:245 scm/skk-custom.lisp:276 scm/skk-custom.lisp:285
-#: scm/skk-custom.lisp:328 scm/skk-custom.lisp:334 scm/skk-custom.lisp:346
-#: scm/skk-custom.lisp:353 scm/skk-custom.lisp:360 scm/skk-custom.lisp:372
-#: scm/skk-custom.lisp:378 scm/skk-custom.lisp:384 scm/skk-custom.lisp:390
-#: scm/skk-custom.lisp:400 scm/skk-custom.lisp:406 scm/skk-custom.lisp:427
-#: scm/skk-custom.lisp:433 scm/skk-custom.lisp:440 scm/skk-key-custom.lisp:65
+#: scm/im-custom.lisp:229 scm/im-custom.lisp:286 scm/im-custom.lisp:292
+#: scm/im-custom.lisp:298 scm/im-custom.lisp:306 scm/im-custom.lisp:326
+#: scm/im-custom.lisp:342 scm/im-custom.lisp:348 scm/im-custom.lisp:355
+#: scm/im-custom.lisp:361 scm/im-custom.lisp:367 scm/im-custom.lisp:373
+#: scm/im-custom.lisp:379 scm/im-custom.lisp:385 scm/im-custom.lisp:391
+#: scm/im-custom.lisp:404 scm/im-custom.lisp:410 scm/im-custom.lisp:417
+#: scm/im-custom.lisp:423 scm/im-custom.lisp:427 scm/im-custom.lisp:433
+#: scm/im-custom.lisp:439 scm/prime-custom.lisp:55 scm/prime-custom.lisp:61
+#: scm/prime-custom.lisp:69 scm/prime-custom.lisp:75 scm/prime-custom.lisp:93
+#: scm/prime-custom.lisp:99 scm/prime-custom.lisp:106
+#: scm/prime-custom.lisp:113 scm/prime-custom.lisp:121
+#: scm/prime-custom.lisp:129 scm/prime-custom.lisp:135
+#: scm/prime-custom.lisp:141 scm/prime-key-custom.lisp:61
+#: scm/prime-key-custom.lisp:65 scm/prime-key-custom.lisp:69
+#: scm/skk-custom.lisp:59 scm/skk-custom.lisp:65 scm/skk-custom.lisp:73
+#: scm/skk-custom.lisp:79 scm/skk-custom.lisp:85 scm/skk-custom.lisp:91
+#: scm/skk-custom.lisp:217 scm/skk-custom.lisp:236 scm/skk-custom.lisp:245
+#: scm/skk-custom.lisp:276 scm/skk-custom.lisp:285 scm/skk-custom.lisp:328
+#: scm/skk-custom.lisp:334 scm/skk-custom.lisp:346 scm/skk-custom.lisp:353
+#: scm/skk-custom.lisp:360 scm/skk-custom.lisp:372 scm/skk-custom.lisp:378
+#: scm/skk-custom.lisp:384 scm/skk-custom.lisp:390 scm/skk-custom.lisp:396
+#: scm/skk-custom.lisp:406 scm/skk-custom.lisp:412 scm/skk-custom.lisp:433
+#: scm/skk-custom.lisp:439 scm/skk-custom.lisp:446 scm/skk-key-custom.lisp:65
 #: scm/skk-key-custom.lisp:69 scm/skk-key-custom.lisp:73
 #: scm/skk-key-custom.lisp:78 scm/spellcheck-custom.lisp:48
 #: scm/spellcheck-custom.lisp:54 scm/spellcheck-custom.lisp:60
@@ -809,7 +811,7 @@ msgid "Kana input method menu items"
 msgstr ""
 
 #: scm/anthy-custom.lisp:289 scm/canna-custom.lisp:363
-#: scm/prime-custom.lisp:134 scm/skk-custom.lisp:426
+#: scm/prime-custom.lisp:134 scm/skk-custom.lisp:432
 msgid "Friendly for vi user"
 msgstr ""
 
@@ -888,10 +890,12 @@ msgstr ""
 #: scm/skk-key-custom.lisp:161 scm/skk-key-custom.lisp:167
 #: scm/skk-key-custom.lisp:173 scm/skk-key-custom.lisp:179
 #: scm/skk-key-custom.lisp:185 scm/skk-key-custom.lisp:191
-#: scm/skk-key-custom.lisp:197 scm/skk-key-custom.lisp:215
-#: scm/skk-key-custom.lisp:221 scm/skk-key-custom.lisp:227
-#: scm/skk-key-custom.lisp:233 scm/skk-key-custom.lisp:239
+#: scm/skk-key-custom.lisp:197 scm/skk-key-custom.lisp:203
+#: scm/skk-key-custom.lisp:209 scm/skk-key-custom.lisp:215
+#: scm/skk-key-custom.lisp:221 scm/skk-key-custom.lisp:239
 #: scm/skk-key-custom.lisp:245 scm/skk-key-custom.lisp:251
+#: scm/skk-key-custom.lisp:257 scm/skk-key-custom.lisp:263
+#: scm/skk-key-custom.lisp:269 scm/skk-key-custom.lisp:275
 #: scm/spellcheck-custom.lisp:72 scm/tutcode-key-custom.lisp:76
 #: scm/tutcode-key-custom.lisp:82 scm/tutcode-key-custom.lisp:88
 #: scm/tutcode-key-custom.lisp:95
@@ -1354,107 +1358,123 @@ msgstr ""
 msgid "Enabled input methods"
 msgstr ""
 
-#: scm/im-custom.lisp:286 scm/skk-custom.lisp:70 scm/skk-custom.lisp:370
+#: scm/im-custom.lisp:285
+msgid "Input method toggle"
+msgstr ""
+
+#: scm/im-custom.lisp:291
+msgid "Enable input method toggle by hot keys"
+msgstr ""
+
+#: scm/im-custom.lisp:297
+msgid "Input method toggle key"
+msgstr ""
+
+#: scm/im-custom.lisp:305
+msgid "Alternative input method"
+msgstr ""
+
+#: scm/im-custom.lisp:323 scm/skk-custom.lisp:70 scm/skk-custom.lisp:370
 msgid "uim"
 msgstr ""
 
-#: scm/im-custom.lisp:286 scm/skk-custom.lisp:70 scm/skk-custom.lisp:370
+#: scm/im-custom.lisp:323 scm/skk-custom.lisp:70 scm/skk-custom.lisp:370
 msgid "uim native"
 msgstr ""
 
-#: scm/im-custom.lisp:287
+#: scm/im-custom.lisp:324
 msgid "ATOK like"
 msgstr ""
 
-#: scm/im-custom.lisp:287
+#: scm/im-custom.lisp:324
 msgid "Similar to ATOK"
 msgstr ""
 
-#: scm/im-custom.lisp:288
+#: scm/im-custom.lisp:325
 msgid "Preedit color"
 msgstr ""
 
-#: scm/im-custom.lisp:296 scm/im-custom.lisp:297
+#: scm/im-custom.lisp:333 scm/im-custom.lisp:334
 msgid "Adjacent to cursor"
 msgstr ""
 
-#: scm/im-custom.lisp:299 scm/im-custom.lisp:300
+#: scm/im-custom.lisp:336 scm/im-custom.lisp:337
 msgid "Left end of preedit area"
 msgstr ""
 
-#: scm/im-custom.lisp:302 scm/im-custom.lisp:303
+#: scm/im-custom.lisp:339 scm/im-custom.lisp:340
 msgid "Right end of preedit area"
 msgstr ""
 
-#: scm/im-custom.lisp:304
+#: scm/im-custom.lisp:341
 msgid "Candidate window position"
 msgstr ""
 
-#: scm/im-custom.lisp:310
+#: scm/im-custom.lisp:347
 msgid "Enable lazy input method loading for fast startup"
 msgstr ""
 
-#: scm/im-custom.lisp:317
+#: scm/im-custom.lisp:354
 msgid "Show input method switcher button on toolbar"
 msgstr ""
 
-#: scm/im-custom.lisp:323
+#: scm/im-custom.lisp:360
 msgid "Show uim preference tool button on toolbar"
 msgstr ""
 
-#: scm/im-custom.lisp:329
+#: scm/im-custom.lisp:366
 msgid "Show uim Japanese dictionary tool button on toolbar"
 msgstr ""
 
-#: scm/im-custom.lisp:335
+#: scm/im-custom.lisp:372
 msgid "Show uim input pad button on toolbar"
 msgstr ""
 
-#: scm/im-custom.lisp:341
+#: scm/im-custom.lisp:378
 msgid "Show uim handwriting-input pad button on toolbar"
 msgstr ""
 
-#: scm/im-custom.lisp:347
+#: scm/im-custom.lisp:384
 msgid "Show uim help button on toolbar"
 msgstr ""
 
-#: scm/im-custom.lisp:353
+#: scm/im-custom.lisp:390
 msgid "Show input mode nearby cursor"
 msgstr ""
 
-#: scm/im-custom.lisp:359
+#: scm/im-custom.lisp:396
 msgid "Time length for showing input mode nearby the cursor"
 msgstr ""
 
-#: scm/im-custom.lisp:360
+#: scm/im-custom.lisp:397
 msgid "Set 0 to show indicator always."
 msgstr ""
 
-#: scm/im-custom.lisp:366
+#: scm/im-custom.lisp:403
 msgid "EB library settings"
 msgstr ""
 
-#: scm/im-custom.lisp:372
+#: scm/im-custom.lisp:409
 msgid "Use EB library to search annotations"
 msgstr ""
 
-#: scm/im-custom.lisp:379
+#: scm/im-custom.lisp:416
 msgid "The directory which contains EB dictionary file"
 msgstr ""
 
-#: scm/im-custom.lisp:385
+#: scm/im-custom.lisp:422
 msgid "XIM settings"
 msgstr ""
 
-#: scm/im-custom.lisp:389
+#: scm/im-custom.lisp:426
 msgid "Preedit settings of XIM"
 msgstr ""
 
-#: scm/im-custom.lisp:395
+#: scm/im-custom.lisp:432
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr ""
 
-#: scm/im-custom.lisp:401
+#: scm/im-custom.lisp:438
 msgid "Font name for preedit area (anti-aliased)"
 msgstr ""
 
@@ -1763,19 +1783,23 @@ msgstr ""
 msgid "Enable auto conversion with punctuation marks"
 msgstr ""
 
-#: scm/skk-custom.lisp:399
-msgid "Show annotation of candidate word"
+#: scm/skk-custom.lisp:395
+msgid "Enable dynamic completion"
 msgstr ""
 
 #: scm/skk-custom.lisp:405
+msgid "Show annotation of candidate word"
+msgstr ""
+
+#: scm/skk-custom.lisp:411
 msgid "Show annotation also in preedit area"
 msgstr ""
 
-#: scm/skk-custom.lisp:432
+#: scm/skk-custom.lisp:438
 msgid "Use Enter key as just committing (egg-like operation)"
 msgstr ""
 
-#: scm/skk-custom.lisp:439
+#: scm/skk-custom.lisp:445
 msgid "Commit newline as ASCII string instead of native key-event"
 msgstr ""
 
@@ -1840,62 +1864,78 @@ msgid "[SKK] commit as fullwidth alphanumeric"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:154
-msgid "[SKK] begin latin conversion"
+msgid "[SKK] commit as opposite case in latin conversion"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:160
-msgid "[SKK] begin completion"
+msgid "[SKK] begin latin conversion"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:166
-msgid "[SKK] next completion candidate"
+msgid "[SKK] begin completion"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:172
-msgid "[SKK] previous completion candidate"
+msgid "[SKK] next completion candidate"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:178
-msgid "[SKK] skk-special-midashi-key?"
+msgid "[SKK] previous completion candidate"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:184
-msgid "[SKK] skk-vi-escape-key?"
+msgid "[SKK] new completion using current completion"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:190
-msgid "[SKK] skk-state-direct-no-preedit-nop-key?"
+msgid "[SKK] begin conversion with completion"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:196
-msgid "[SKK] skk-purge-candidate-key?"
+msgid "[SKK] commit the first candidate with completion"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:202
+msgid "[SKK] skk-special-midashi-key?"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:208
+msgid "[SKK] skk-vi-escape-key?"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:214
-msgid "[SKK] next candidate"
+msgid "[SKK] skk-state-direct-no-preedit-nop-key?"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:220
-msgid "[SKK] previous candidate"
-msgstr ""
-
-#: scm/skk-key-custom.lisp:226
-msgid "[SKK] next page of candidate window"
-msgstr ""
-
-#: scm/skk-key-custom.lisp:232
-msgid "[SKK] previous page of candidate window"
+msgid "[SKK] skk-purge-candidate-key?"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:238
-msgid "[SKK] backspace"
+msgid "[SKK] next candidate"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:244
-msgid "[SKK] go left"
+msgid "[SKK] previous candidate"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:250
+msgid "[SKK] next page of candidate window"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:256
+msgid "[SKK] previous page of candidate window"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:262
+msgid "[SKK] backspace"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:268
+msgid "[SKK] go left"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:274
 msgid "[SKK] go right"
 msgstr ""
 
