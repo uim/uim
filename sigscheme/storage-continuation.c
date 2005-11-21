@@ -250,6 +250,11 @@ static ScmObj continuation_stack_unwind(ScmObj dest_cont)
     return dest_cont;
 }
 
+void Scm_MarkContinuation(ScmObj cont)
+{
+    Scm_MarkObj(CONTINUATION_DYNEXT(cont));
+}
+
 void Scm_DestructContinuation(ScmObj cont)
 {
     /* no object to free(3) in this implementation */

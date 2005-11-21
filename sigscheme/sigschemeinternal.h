@@ -337,10 +337,12 @@ void SigScm_FinalizeStorage(void);
 void   SigScm_InitGC(void);
 void   SigScm_FinalizeGC(void);
 ScmObj SigScm_NewObjFromHeap(void);
+void   Scm_MarkObj(ScmObj obj);
 
 /* storage-continuation.c */
 void   SigScm_InitContinuation(void);
 void   SigScm_FinalizeContinuation(void);
+void   Scm_MarkContinuation(ScmObj cont);
 void   Scm_DestructContinuation(ScmObj cont);
 ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state);
 void   Scm_CallContinuation(ScmObj cont, ScmObj ret);
