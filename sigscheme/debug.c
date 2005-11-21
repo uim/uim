@@ -309,7 +309,7 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
 static void print_char(ScmObj port, ScmObj obj, enum OutputType otype)
 {
     const ScmSpecialCharInfo *info = NULL;
-    const char *lex_rep = NULL;
+    char *lex_rep = NULL;
 
     /* sanity check */
     if (SCM_CHAR_VALUE(obj) == NULL)
@@ -318,12 +318,28 @@ static void print_char(ScmObj port, ScmObj obj, enum OutputType otype)
     switch (otype) {
     case AS_WRITE:
         lex_rep = SCM_CHAR_VALUE(obj);
-        for (info = Scm_special_char_table; info->esc_seq; info++) {
-            if (SCM_CHAR_VALUE(obj)[0] == info->code) {
-                lex_rep = info->lex_rep;
-                break;
+        /* single byte */
+        if (strlen(lex_rep) < 2) {
+            /* search in the Scm_special_char_table */
+            for (info = Scm_special_char_table; info->esc_seq; info++) {
+                if (SCM_CHAR_VALUE(obj)[0] == info->code) {
+                    SigScm_PortPrintf(port, "#\\%s", info->lex_rep);
+                    return;
+                }
             }
+            /* not found in the table*/
+            if (isprint(SCM_CHAR_VALUE(obj)[0])) {
+                SigScm_PortPrintf(port, "#\\%s", SCM_CHAR_VALUE(obj));
+            } else {
+                /* convert to hexadecimal format */ 
+                lex_rep = (char*)malloc(sizeof(char) * 4);
+                snprintf(lex_rep, 4, "x%02x", (int)SCM_CHAR_VALUE(obj)[0]);
+                SigScm_PortPrintf(port, "#\\%s", lex_rep);
+                free(lex_rep);
+            }
+            return;
         }
+        /* multi byte */
         SigScm_PortPrintf(port, "#\\%s", lex_rep);
         break;
 
