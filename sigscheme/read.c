@@ -395,14 +395,13 @@ static ScmObj read_string(ScmObj port)
             found = 0;
             for (info = Scm_special_char_table; info->esc_seq; info++) {
                 if (strlen(info->esc_seq) > 1 && c == info->esc_seq[1]) {
-                    stringbuf[stringlen] = info->code;
+                    stringbuf[stringlen++] = info->code;
                     found = 1;
                     break;
                 }
             }
             if (found == 0)
                 SigScm_Error("the character in a string after a backslash causes invalid escape sequence");
-            stringlen++;
             break;
 
         default:
