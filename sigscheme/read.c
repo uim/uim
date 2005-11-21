@@ -336,13 +336,15 @@ static ScmObj read_char(ScmObj port)
 
     CDBG((SCM_DBG_PARSER, "read_char : ch = %s", ch));
 
-    /* check #\x0F style character (defined in R6RS) */
-    if (ch && ch[0] == 'x' && strlen(ch) > 1) {
-        /* FIXME: only supports ASCII */
+    /* check #\x<x><x> style character where <x> is a hexadecimal
+     * digit and the sequence of two <x>s forms a hexadecimal
+     * number between 0 and #xFF(defined in R6RS) */
+    if (ch && ch[0] == 'x' && 1 < strlen(ch)) {
+        if (strlen(ch) != 3)
+            SigScm_Error("invalid hexadecimal character form. should be #\\x<x><x>\n");
         ch[0] = (char)strtol(ch + 1, &first_nondigit, 16);
-        if (*first_nondigit) {
-            SigScm_Error("invalid character form\n");
-        }
+        if (*first_nondigit)
+            SigScm_Error("invalid hexadecimal character form. should be #\\x<x><x>\n");
         ch[1] = '\0';
     } else {
         /* check special sequence */
