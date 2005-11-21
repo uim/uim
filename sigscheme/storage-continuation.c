@@ -56,12 +56,7 @@
 
 #define CONTINUATION_FRAME(cont)                                             \
     ((struct continuation_frame *)SCM_CONTINUATION_OPAQUE(cont))
-#define CONTINUATION_SET_FRAME             SCM_CONTINUATION_SET_OPAQUE
-#define CONTINUATION_JMPENV(cont)          (CONTINUATION_FRAME(cont)->env)
-#define CONTINUATION_SET_JMPENV(cont, env) (CONTINUATION_JMPENV(cont) = (env))
-#define CONTINUATION_DYNEXT(cont)          (CONTINUATION_FRAME(cont)->dyn_ext)
-#define CONTINUATION_SET_DYNEXT(cont, dyn_ext)                               \
-    ((CONTINUATION_DYNEXT(cont)) = (dyn_ext))
+#define CONTINUATION_SET_FRAME    SCM_CONTINUATION_SET_OPAQUE
 
 /*=======================================
   File Local Type Definitions
@@ -70,7 +65,7 @@ struct continuation_frame {
     /* to ensure that the struct is even-byte aligned on stack, a ScmObj is
        listed first */
     ScmObj dyn_ext;
-    jmp_buf *env;
+    jmp_buf c_env;
 };
 
 /*=======================================
@@ -252,7 +247,11 @@ static ScmObj continuation_stack_unwind(ScmObj dest_cont)
 
 void Scm_MarkContinuation(ScmObj cont)
 {
-    Scm_MarkObj(CONTINUATION_DYNEXT(cont));
+    struct continuation_frame *frame;
+
+    frame = CONTINUATION_FRAME(cont);
+    if (frame != INVALID_CONTINUATION_OPAQUE)
+        Scm_MarkObj(frame->dyn_ext);
 }
 
 void Scm_DestructContinuation(ScmObj cont)
@@ -262,21 +261,19 @@ void Scm_DestructContinuation(ScmObj cont)
 
 ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
 {
-    jmp_buf env;
     ScmObj cont = SCM_FALSE;
     ScmObj ret  = SCM_FALSE;
-    struct continuation_frame cont_frame;
     ScmObj saved_trace_stack = SCM_FALSE;
+    struct continuation_frame cont_frame;
 
+    cont_frame.dyn_ext = current_dynamic_extent;
     cont = Scm_NewContinuation();
     CONTINUATION_SET_FRAME(cont, &cont_frame);
-    CONTINUATION_SET_JMPENV(cont, &env);
-    CONTINUATION_SET_DYNEXT(cont, current_dynamic_extent);
 #if SCM_NESTED_CONTINUATION_ONLY
     continuation_stack_push(cont);
 #endif
 
-    if (setjmp(env)) {
+    if (setjmp(cont_frame.c_env)) {
         /* returned from longjmp */
         /*
          * Don't refer cont because it may already be invalidated by
@@ -338,7 +335,7 @@ void Scm_CallContinuation(ScmObj cont, ScmObj ret)
         exit_dynamic_extent(frame->dyn_ext);
 
         continuation_thrown_obj = ret;
-        longjmp(*frame->env, 1);
+        longjmp(frame->c_env, 1);
         /* NOTREACHED */
     } else {
         ERR("Scm_CallContinuation: called expired continuation");
