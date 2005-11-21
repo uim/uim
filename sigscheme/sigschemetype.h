@@ -443,7 +443,7 @@ struct ScmCell_ {
  * incompatibility from it, use the abstract macro such as SCM_NULL defined
  * above. They safely hides the internal model against such change.
  */
-/* datas.c */
+/* storage.c */
 extern ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
 extern ScmObj SigScm_unbound, SigScm_undef;
 

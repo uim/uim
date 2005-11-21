@@ -375,7 +375,7 @@ void Scm_RegisterProcedureVariadicTailRec4(const char *name, ScmObj (*func)(ScmO
 void Scm_RegisterProcedureVariadicTailRec5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
 
-/* datas.c */
+/* storage.c */
 ScmObj Scm_NewCons(ScmObj a, ScmObj b);
 ScmObj Scm_NewInt(int val);
 ScmObj Scm_NewSymbol(char *name, ScmObj v_cell);

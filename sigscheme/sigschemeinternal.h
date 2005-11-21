@@ -73,7 +73,7 @@ extern const ScmSpecialCharInfo Scm_special_char_table[];
 
 extern void (*Scm_writess_func)(ScmObj port, ScmObj obj);
 
-/* datas.c */
+/* storage.c */
 #if SCM_USE_VALUECONS
 extern ScmObj SigScm_null_values;
 #endif
@@ -329,7 +329,7 @@ typedef ScmRef ScmQueue;
 /*=======================================
    Function Declarations
 =======================================*/
-/* datas.c */
+/* storage.c */
 void SigScm_InitStorage(void);
 void SigScm_FinalizeStorage(void);
 
