@@ -425,9 +425,9 @@
 		       (get-wide-latin-str sl))
 	""))))
 
-(define skk-conv-alt-case
+(define skk-conv-opposite-case
   (lambda (sl)
-    (let ((get-alt-case-str
+    (let ((get-opposite-case-str
 	   (lambda (l)
 	     (let ((c (string->charcode (caar l))))
 	       (cond
@@ -438,8 +438,8 @@
 		(else
 		 (caar l)))))))
       (if (not (null? sl))
-	  (string-append (skk-conv-alt-case (cdr sl))
-			 (get-alt-case-str sl))
+	  (string-append (skk-conv-opposite-case (cdr sl))
+			 (get-opposite-case-str sl))
 	  ""))))
 
 (define skk-opposite-kana
@@ -1349,11 +1349,11 @@
 		     (skk-commit sc (skk-conv-wide-latin
 				     (skk-context-head sc)))
 		     (skk-flush sc))))
-	      ((skk-conv-alt-case-key? key key-state) 
+	      ((skk-conv-opposite-case-key? key key-state) 
 	       ;; alternative case conversion
 	       (if (not (null? (skk-context-head sc)))
 		   (begin
-		     (skk-commit sc (skk-conv-alt-case
+		     (skk-commit sc (skk-conv-opposite-case
 				     (skk-context-head sc)))
 		     (skk-flush sc))))
 	      (else

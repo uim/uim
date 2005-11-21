@@ -2930,6 +2930,8 @@ static void compare_and_merge_skk_line(struct skk_line *dst_sl,
     if (!dup)
       push_back_candidate_array_to_sl(dst_sl, src_ca);
   }
+
+  dst_sl->state |= src_sl->state;
 }
 
 /* for merge sort */
