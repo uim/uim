@@ -1885,7 +1885,7 @@ msgstr "[SKK] 全角英数として確定"
 
 #: scm/skk-key-custom.lisp:154
 msgid "[SKK] commit as opposite case in latin conversion"
-msgstr "[SKK] opposite caseとして確定"
+msgstr "[SKK] 大文字と小文字を入れ替えて確定"
 
 #: scm/skk-key-custom.lisp:160
 msgid "[SKK] begin latin conversion"

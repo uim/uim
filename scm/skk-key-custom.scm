@@ -77,6 +77,10 @@
 		     (_ "Completion")
 		     (_ "long description will be here."))
 
+(define-custom-group 'skk-keys-latin-conv
+		     (_ "Latin conversion")
+		     (_ "long description will be here."))
+
 
 (define-custom 'skk-on-key '("<IgnoreCase><Control>j" generic-on-key)
                '(skk-keys1 mode-transition)
@@ -142,22 +146,22 @@
 	       (_ "[SKK] return")
 	       (_ "long description will be here"))
 
+(define-custom 'skk-latin-conv-key '("/")
+               '(skk-keys2 skk-keys-latin-conv)
+	       '(key)
+	       (_ "[SKK] begin latin conversion")
+	       (_ "long description will be here"))
+
 (define-custom 'skk-conv-wide-latin-key '("<IgnoreCase><Control>q")
-               '(skk-keys2)
+               '(skk-keys2 skk-keys-latin-conv)
 	       '(key)
 	       (_ "[SKK] commit as fullwidth alphanumeric")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-conv-opposite-case-key '("<IgnoreCase><Control>u")
-               '(skk-keys2)
+               '(skk-keys2 skk-keys-latin-conv)
 	       '(key)
 	       (_ "[SKK] commit as opposite case in latin conversion")
-	       (_ "long description will be here"))
-
-(define-custom 'skk-latin-conv-key '("/")
-               '(skk-keys2)
-	       '(key)
-	       (_ "[SKK] begin latin conversion")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-begin-completion-key '("tab" "<IgnoreCase><Control>i" skk-new-completion-from-current-comp-key)
