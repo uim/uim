@@ -400,10 +400,8 @@ static ScmObj read_string(ScmObj port)
                     break;
                 }
             }
-            if (!found) {
-                stringbuf[stringlen] = '\\';
-                stringbuf[++stringlen] = c;
-            }
+            if (found == 0)
+                SigScm_Error("the character in a string after a backslash causes invalid escape sequence");
             stringlen++;
             break;
 
