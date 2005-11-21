@@ -257,7 +257,7 @@ int main(int argc, char **argv)
   init_str();
   engine = get_default_im_name();
 
-  while ((op = getopt(argc, argv, "e:s:u:b:w:t:C:f:SciodKvh")) != -1) {
+  while ((op = getopt(argc, argv, "e:s:u:b:w:t:C:f:SXciodKvh")) != -1) {
     int i;
     switch (op) {
       case 'e':
@@ -289,6 +289,10 @@ int main(int argc, char **argv)
       case 'S':
         gnu_screen = TRUE;
         g_opt.no_report_cursor = TRUE;
+        break;
+
+      case 'X':
+        gnu_screen = TRUE;
         break;
 
       case 'd':
