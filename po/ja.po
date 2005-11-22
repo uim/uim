@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 0.4.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-22 15:24+0900\n"
-"PO-Revision-Date: 2005-02-24 19:28+0900\n"
+"POT-Creation-Date: 2005-11-22 21:11+0900\n"
+"PO-Revision-Date: 2005-11-22 21:24+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -656,14 +656,14 @@ msgstr "文節区切りを表示する"
 #: scm/anthy-custom.lisp:201 scm/anthy-custom.lisp:243
 #: scm/anthy-custom.lisp:252 scm/anthy-custom.lisp:290
 #: scm/anthy-key-custom.lisp:37 scm/anthy-key-custom.lisp:41
-#: scm/anthy-key-custom.lisp:45 scm/byeoru-custom.lisp:79
-#: scm/byeoru-custom.lisp:83 scm/byeoru-custom.lisp:87
-#: scm/byeoru-custom.lisp:102 scm/byeoru-custom.lisp:109
-#: scm/byeoru-custom.lisp:112 scm/byeoru-custom.lisp:115
-#: scm/byeoru-custom.lisp:117 scm/byeoru-custom.lisp:129
-#: scm/byeoru-custom.lisp:135 scm/byeoru-custom.lisp:141
-#: scm/byeoru-custom.lisp:152 scm/byeoru-custom.lisp:158
-#: scm/byeoru-custom.lisp:165 scm/byeoru-key-custom.lisp:39
+#: scm/anthy-key-custom.lisp:45 scm/byeoru-custom.lisp:81
+#: scm/byeoru-custom.lisp:85 scm/byeoru-custom.lisp:89
+#: scm/byeoru-custom.lisp:104 scm/byeoru-custom.lisp:111
+#: scm/byeoru-custom.lisp:114 scm/byeoru-custom.lisp:117
+#: scm/byeoru-custom.lisp:119 scm/byeoru-custom.lisp:131
+#: scm/byeoru-custom.lisp:137 scm/byeoru-custom.lisp:143
+#: scm/byeoru-custom.lisp:154 scm/byeoru-custom.lisp:160
+#: scm/byeoru-custom.lisp:167 scm/byeoru-key-custom.lisp:39
 #: scm/canna-custom.lisp:44 scm/canna-custom.lisp:55 scm/canna-custom.lisp:61
 #: scm/canna-custom.lisp:76 scm/canna-custom.lisp:82 scm/canna-custom.lisp:88
 #: scm/canna-custom.lisp:94 scm/canna-custom.lisp:173
@@ -1058,125 +1058,134 @@ msgstr ""
 
 #: scm/byeoru-custom.lisp:37
 msgid "Byeoru"
-msgstr ""
+msgstr "Byeoru"
 
 #: scm/byeoru-custom.lisp:38
-msgid "The Byeoru Hangul input module"
+msgid "The Byeoru Hangul input suite"
+msgstr "Byeoruハングル入力スイート"
+
+#. for future use
+#: scm/byeoru-custom.lisp:40
+msgid ""
+"A comprehensive input method suite for Hangul. This covers almost major "
+"input methods such as 2-beol and 3-beol variants, and provides some advanced "
+"features such as Hangul-Chinese conversion. The name 'byeoru' is Korean for "
+"inkstone."
 msgstr ""
 
 #. 2-beol can not be orderless.
-#: scm/byeoru-custom.lisp:44
+#: scm/byeoru-custom.lisp:46
 msgid "Hangul 2-beol"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:45
+#: scm/byeoru-custom.lisp:47
 msgid "Standard Hangul 2-beol keyboard"
 msgstr ""
 
 #. neither can strict 3-beol.
-#: scm/byeoru-custom.lisp:48
+#: scm/byeoru-custom.lisp:50
 msgid "Hangul 3-beol final strict"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:49
+#: scm/byeoru-custom.lisp:51
 msgid "Hangul 3-beol that forbids composition of precomposed jamos"
 msgstr ""
 
 #. generous 3-beol can be orderless.
-#: scm/byeoru-custom.lisp:52
+#: scm/byeoru-custom.lisp:54
 msgid "Hangul 3-beol final generous"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:53
+#: scm/byeoru-custom.lisp:55
 msgid "Hangul 3-beol that allows composition of precomposed jamos"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:56
+#: scm/byeoru-custom.lisp:58
 msgid "Hangul 390 strict"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:57
+#: scm/byeoru-custom.lisp:59
 msgid "Hangul 390 that forbids composition of precomposed jamos"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:60
+#: scm/byeoru-custom.lisp:62
 msgid "Hangul 390 generous"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:61
+#: scm/byeoru-custom.lisp:63
 msgid "Hangul 390 that allows composition of precomposed jamos"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:64
+#: scm/byeoru-custom.lisp:66
 msgid "Hangul 3-beol no-shift"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:65
+#: scm/byeoru-custom.lisp:67
 msgid "Hangul 3-beol that does not require any shift key press"
 msgstr ""
 
 #. romaja can not be orderless.
-#: scm/byeoru-custom.lisp:68
+#: scm/byeoru-custom.lisp:70
 msgid "Hangul romaja"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:69
+#: scm/byeoru-custom.lisp:71
 msgid "Hangul romaja in the style of HWP 2004"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:78
+#: scm/byeoru-custom.lisp:80
 msgid "Keyboard"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:82
+#: scm/byeoru-custom.lisp:84
 msgid "Properties"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:86
+#: scm/byeoru-custom.lisp:88
 msgid "Workarounds"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:101
+#: scm/byeoru-custom.lisp:103
 msgid "Hangul keyboard layout"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:108
+#: scm/byeoru-custom.lisp:110
 msgid "ordered"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:111
+#: scm/byeoru-custom.lisp:113
 msgid "orderless"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:114
+#: scm/byeoru-custom.lisp:116
 msgid "more orderless"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:116
+#: scm/byeoru-custom.lisp:118
 msgid "Jamo input is"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:128
+#: scm/byeoru-custom.lisp:130
 msgid "ESC turns off Hangul mode"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:134
+#: scm/byeoru-custom.lisp:136
 msgid "Default unit of commitment is word"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:140
+#: scm/byeoru-custom.lisp:142
 msgid "Shifted roman vowel inputs an isolated vowel"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:151
+#: scm/byeoru-custom.lisp:153
 msgid "Candidate window size"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:157
+#: scm/byeoru-custom.lisp:159
 msgid "Symbol cache size"
 msgstr ""
 
-#: scm/byeoru-custom.lisp:164
+#: scm/byeoru-custom.lisp:166
 msgid "Represent incomplete syllables using compatibility jamos"
 msgstr ""
 
@@ -1197,8 +1206,8 @@ msgid "[Byeoru] convert Hangul to Chinese"
 msgstr ""
 
 #: scm/byeoru-key-custom.lisp:62
-msgid "[Byeoru] 確定"
-msgstr ""
+msgid "[Byeoru] confirm conversion"
+msgstr "[Byeoru] 確定"
 
 #: scm/byeoru-key-custom.lisp:68
 msgid "[Byeoru] cancel conversion"
@@ -1501,19 +1510,19 @@ msgid " Mode"
 msgstr " モード"
 
 #: scm/hangul.lisp:107
-msgid "Hangul (2-bul)"
+msgid "Hangul (2-beol)"
 msgstr "2ボル式ハングル"
 
 #: scm/hangul.lisp:108
-msgid "2-bul style hangul input method"
+msgid "2-beol style hangul input method"
 msgstr "2ボル式ハングル入力方式"
 
 #: scm/hangul.lisp:116
-msgid "Hangul (3-bul)"
+msgid "Hangul (3-beol)"
 msgstr "3ボル式ハングル"
 
 #: scm/hangul.lisp:117
-msgid "3-bul style hangul input method"
+msgid "3-beol style hangul input method"
 msgstr "3ボル式ハングル入力方式"
 
 #: scm/hangul.lisp:124
