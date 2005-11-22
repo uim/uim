@@ -36,6 +36,8 @@
  *
  * Many many things are to be implemented!
  */
+#include "config.h"
+
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -50,6 +52,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <arpa/inet.h>
 
 #include "uim-scm.h"
 #include "plugin.h"
@@ -60,6 +63,9 @@
 #define skk_isascii(ch)	((((unsigned char)ch) & ~0x7f) == 0)
 
 #define IGNORING_WORD_MAX	63
+#define USE_SKK_JISYO_S_BUF	1	/* use SKK-JISYO.S as a cache for
+					   word completion */
+#define SKK_JISYO_S	DATADIR "/skk/SKK-JISYO.S"
 
 /*
  * cand : candidate
@@ -68,7 +74,7 @@
 
 /* candidate array for each okurigana
  *
- * |C0|C1| .. |Cnr_real_cands| ..              |Cnr_cands|
+ * |C0|C1| .. |Cnr_real_cands| ..	       |Cnr_cands|
  * <-------should be saved --><-- cache of master dict -->
  */
 struct skk_cand_array {
@@ -86,6 +92,10 @@ struct skk_cand_array {
   struct skk_line *line;
 };
 
+/* skk_line state */
+#define SKK_LINE_NEED_SAVE	(1<<0)
+#define SKK_LINE_USE_FOR_COMPLETION	(1<<1)
+
 /* skk dictionary line */
 struct skk_line {
   /* line index. head part */
@@ -96,8 +106,8 @@ struct skk_line {
   /* array of candidate array for different okuri-gana */
   int nr_cand_array;
   struct skk_cand_array *cands;
-  /* modified or read from file */
-  int need_save;
+  /* state of line */
+  int state;
   /* link to next entry in the list */
   struct skk_line *next;
 };
@@ -120,8 +130,8 @@ static struct dic_info {
   int cache_modified;
   /* length of cached lines */
   int cache_len;
-  /* skkserv is initialized */
-  int skkserv_ok;
+  /* skkserv related state */
+  int skkserv_state;
   /* skkserv port number */
   int skkserv_portnum;
 } *skk_dic;
@@ -139,17 +149,26 @@ struct skk_comp_array {
   struct skk_comp_array *next;
 } *skk_comp;
 
+/* XXX should create skk.h */
+static uim_lisp skk_replace_numeric(uim_lisp head_);
+
+static uim_lisp restore_numeric(const char *s, uim_lisp numlst_);
+static char *replace_numeric(const char *str);
 static char *sanitize_word(const char *str, const char *prefix);
 static int is_purged_cand(const char *str);
 static void merge_purged_cands(struct skk_cand_array *src_ca,
 		struct skk_cand_array *dst_ca, int src_nth, int dst_nth);
 static void merge_purged_cand_to_dst_array(struct skk_cand_array *src_ca,
 		struct skk_cand_array *dst_ca, char *purged_cand);
+static void update_personal_dictionary_cache_with_file(const char *fn,
+		int is_personal);
 
 /* skkserv connection */
 #define SKK_SERVICENAME	"skkserv"
 #define SKK_SERVER_HOST	"localhost"
 #define SKK_SERV_BUFSIZ	1024
+#define SKK_SERV_USE	(1<<0)
+#define SKK_SERV_CONNECTED	(1<<1)
 
 static int skkservsock = -1;
 static FILE *rserv, *wserv;
@@ -157,6 +176,7 @@ static char *SKKServerHost = NULL;
 /* prototype */
 static int open_skkserv(int portnum);
 static void close_skkserv(void);
+static void skkserv_disconnected(struct dic_info *di);
 
 static int
 calc_line_len(const char *s)
@@ -227,9 +247,9 @@ open_dic(const char *fn, uim_bool use_skkserv, int skkserv_portnum)
 
   di->skkserv_portnum = skkserv_portnum;
   if (use_skkserv)
-    di->skkserv_ok = open_skkserv(skkserv_portnum);
+    di->skkserv_state = SKK_SERV_USE | open_skkserv(skkserv_portnum);
   else {
-    di->skkserv_ok = 0;
+    di->skkserv_state = 0;
     fd = open(fn, O_RDONLY);
     if (fd != -1) {
       if (fstat(fd, &st) != -1) {
@@ -545,7 +565,7 @@ alloc_skk_line(const char *word, char okuri_head)
 {
   struct skk_line *sl;
   sl = malloc(sizeof(struct skk_line));
-  sl->need_save = 0;
+  sl->state = 0;
   sl->head = strdup(word);
   sl->okuri_head = okuri_head;
   sl->nr_cand_array = 1;
@@ -569,7 +589,7 @@ copy_skk_line(struct skk_line *p)
     return NULL;
 
   sl = malloc(sizeof(struct skk_line));
-  sl->need_save = p->need_save;
+  sl->state = p->state;
   sl->head = strdup(p->head);
   sl->okuri_head = p->okuri_head;
   sl->nr_cand_array = p->nr_cand_array;
@@ -667,23 +687,34 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
   char *line;
   char *idx = alloca(strlen(s) + 2);
 
+  if (!(di->skkserv_state & SKK_SERV_CONNECTED)) {
+      if (!((di->skkserv_state |= open_skkserv(di->skkserv_portnum)) &
+			      SKK_SERV_CONNECTED))
+	return NULL;
+  }
+
   sprintf(idx, "%s%c", s, okuri_head);
 
   fprintf(wserv, "1%s \n", idx);
   ret = fflush(wserv);
   if (ret != 0 && errno == EPIPE) {
-    di->skkserv_ok = open_skkserv(di->skkserv_portnum);
+    skkserv_disconnected(di);
     return NULL;
   }
 
   line = malloc(strlen(idx) + 2);
   sprintf(line, "%s ", idx);
-  read(skkservsock, &r, 1);
+
+  if (read(skkservsock, &r, 1) <= 0) {
+    skkserv_disconnected(di);
+    return NULL;
+  }
+
   if (r == '1') {  /* succeeded */
     while (1) {
       ret = read(skkservsock, &r, 1);
       if (ret <= 0) {
-	fprintf(stderr, "skkserv connection closed\n");
+	skkserv_disconnected(di);
 	return NULL;
       }
 
@@ -774,7 +805,7 @@ find_cand_array(struct dic_info *di, const char *s,
 
   sl = search_line_from_cache(di, s, okuri_head);
   if (!sl) {
-    if (di->skkserv_ok)
+    if (di->skkserv_state & SKK_SERV_USE)
       sl = search_line_from_server(di, s, okuri_head);
     else
       sl = search_line_from_file(di, s, okuri_head);
@@ -793,9 +824,11 @@ find_cand_array(struct dic_info *di, const char *s,
     merge_base_candidates_to_array(sl, ca);
     ca->is_used = 1;
     if (!from_file) {
-      if (di->skkserv_ok)
+      if (di->skkserv_state & SKK_SERV_USE) {
 	sl_file = search_line_from_server(di, s, okuri_head);
-      else
+	if (!(di->skkserv_state & SKK_SERV_CONNECTED))
+	  ca->is_used = 0;
+      } else
 	sl_file = search_line_from_file(di, s, okuri_head);
       merge_base_candidates_to_array(sl_file, ca);
       free_skk_line(sl_file);
@@ -807,17 +840,22 @@ find_cand_array(struct dic_info *di, const char *s,
 
 static struct skk_cand_array *
 find_cand_array_lisp(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_,
-		     int create_if_not_found)
+		     int create_if_not_found, uim_lisp numeric_conv_)
 {
   char o;
   const char *hs;
   const char *okuri = NULL;
   struct skk_cand_array *ca;
+  char *rs = NULL;
 
   hs = uim_scm_refer_c_str(head_);
-  if (okuri_ != uim_scm_null_list()) {
+
+  if NFALSEP(numeric_conv_)
+    rs = replace_numeric(hs);
+
+  if (okuri_ != uim_scm_null_list())
     okuri = uim_scm_refer_c_str(okuri_);
-  }
+
   if (okuri_head_ == uim_scm_null_list()) {
     o = '\0';
   } else {
@@ -825,7 +863,13 @@ find_cand_array_lisp(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_,
     o = os[0];
   }
 
-  ca = find_cand_array(skk_dic, hs, o, okuri, create_if_not_found);
+  if (!rs)
+    ca = find_cand_array(skk_dic, hs, o, okuri, create_if_not_found);
+  else {
+    ca = find_cand_array(skk_dic, rs, o, okuri, create_if_not_found);
+    free(rs);
+  }
+
   return ca;
 }
 
@@ -1030,12 +1074,18 @@ match_to_discarding_index(int indices[], int n)
 }
 
 static uim_lisp
-skk_get_entry(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_)
+skk_get_entry(uim_lisp head_, uim_lisp okuri_head_,
+	      uim_lisp okuri_, uim_lisp numeric_conv_)
 {
   struct skk_cand_array *ca;
-  ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
+
+  ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, numeric_conv_);
+
   if (ca && ca->nr_cands > 0 && !is_purged_only(ca))
       return uim_scm_t();
+
+  if NFALSEP(numeric_conv_)
+    return skk_get_entry(head_, okuri_head_, okuri_, uim_scm_f());
 
   return uim_scm_f();
 }
@@ -1414,24 +1464,22 @@ skk_merge_replaced_numeric_str(uim_lisp str_, uim_lisp numlst_)
   return merged_str;
 }
 
-static uim_lisp
-skk_replace_numeric(uim_lisp head_)
+static char *
+replace_numeric(const char *str)
 {
-  char *str;
+  char *newstr;
   int prev_is_num = 0;
   int i, j, len, newlen;
-  uim_lisp result;
 
-  str = uim_scm_c_str(head_);
-  len = strlen(str);
-  newlen = len;
+  newstr = strdup(str);
+  len = newlen = strlen(newstr);
 
   for (i = 0, j = 0; j < len; i++, j++) {
-    if (isdigit((unsigned char)str[i])) {
+    if (isdigit((unsigned char)newstr[i])) {
       if (prev_is_num == 0) {
-	str[i] = '#';
+	newstr[i] = '#';
       } else {
-	memmove(&str[i], &str[i + 1], newlen - i);
+	memmove(&newstr[i], &newstr[i + 1], newlen - i);
 	newlen--;
 	i--;
       }
@@ -1440,6 +1488,16 @@ skk_replace_numeric(uim_lisp head_)
       prev_is_num = 0;
     }
   }
+  return newstr;
+}
+
+static uim_lisp
+skk_replace_numeric(uim_lisp head_)
+{
+  char *str;
+  uim_lisp result;
+
+  str = replace_numeric(uim_scm_refer_c_str(head_));
   result = uim_scm_make_str(str);
   free(str);
   return result;
@@ -1464,6 +1522,23 @@ find_numeric_conv_method4_mark(const char *cand, int *nth)
     }
   }
   return p;
+}
+
+static int
+has_numeric_in_head(uim_lisp head_)
+{
+  const char *str;
+  int i = 0;
+
+  str = uim_scm_refer_c_str(head_);
+
+  while (str[i] != '\0') {
+    if (isdigit((unsigned char)str[i]))
+      return 1;
+    i++;
+  }
+
+  return 0;
 }
 
 static uim_lisp
@@ -1531,7 +1606,7 @@ get_ignoring_indices(struct skk_cand_array *ca, int indices[])
 }
 
 static uim_lisp
-skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp numlst_)
+skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp numeric_conv_)
 {
   int n;
   struct skk_cand_array *ca, *subca;
@@ -1543,11 +1618,19 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
   int sublen, newlen;
   int mark;
   uim_lisp str_ = uim_scm_null_list();
-
+  uim_lisp numlst_ = uim_scm_null_list();
   int ignoring_indices[IGNORING_WORD_MAX + 1];
+  
+  if NFALSEP(numeric_conv_)
+    numlst_ = skk_store_replaced_numeric_str(head_);
 
   n = uim_scm_c_int(nth_);
-  ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
+
+  if (!uim_scm_nullp(numlst_))
+    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, numeric_conv_);
+  else
+    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, uim_scm_f());
+
   get_ignoring_indices(ca, ignoring_indices);
 
   if (ca) {
@@ -1576,7 +1659,7 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
 
 		str_ = uim_scm_make_str(cands);
 		free(cands);
-		return str_;
+		return skk_merge_replaced_numeric_str(str_, numlst_);
 	      }
 	      k++;
 	    }
@@ -1602,23 +1685,39 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
     }
   }
 
+  /* check non-numeric conversion */
+  if (!cands && n >= k && !uim_scm_nullp(numlst_))
+    return skk_get_nth_candidate(uim_scm_make_int(n - k), head_, okuri_head_,
+		    okuri_, uim_scm_f());
+
   if (cands)
     str_ = uim_scm_make_str(cands);
-  return str_;
+
+  if (!uim_scm_nullp(numlst_))
+    return skk_merge_replaced_numeric_str(str_, numlst_);
+  else
+    return str_;
 }
 
 static uim_lisp
-skk_get_nr_candidates(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp numlst_)
+skk_get_nr_candidates(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp numeric_conv_)
 {
   struct skk_cand_array *ca, *subca;
   int n = 0;
   int i, nr_cands = 0;
   const char *numstr;
   int method_place = 0;
-
+  uim_lisp numlst_ = uim_scm_null_list();
   int ignoring_indices[IGNORING_WORD_MAX + 1];
 
-  ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
+  if NFALSEP(numeric_conv_)
+    numlst_ = skk_store_replaced_numeric_str(head_);
+
+  if (!uim_scm_nullp(numlst_))
+    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, numeric_conv_);
+  else
+    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, uim_scm_f());
+
   if (ca)
     n = ca->nr_cands;
   nr_cands = n;
@@ -1640,6 +1739,13 @@ skk_get_nr_candidates(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim
       }
     }
   }
+
+  /* add non-numeric conversion */
+  if (!uim_scm_nullp(numlst_))
+    return uim_scm_make_int(nr_cands +
+		    uim_scm_c_int(skk_get_nr_candidates(head_, okuri_head_,
+				    okuri_, uim_scm_f())));
+
   return uim_scm_make_int(nr_cands);
 }
 
@@ -1665,8 +1771,8 @@ make_comp_array_from_cache(struct dic_info *di, const char *s)
 	!strncmp(sl->head, s, strlen(s)) && strcmp(sl->head, s) &&
 	/* and sl is okuri-nasi line */
 	sl->okuri_head == '\0' &&
-	/* use commited entry only */
-	sl->need_save == 1) {
+	/* exclude some entries */
+	sl->state & SKK_LINE_USE_FOR_COMPLETION) {
       ca->nr_comps++;
       ca->comps = realloc(ca->comps, sizeof(char *) * ca->nr_comps);
       ca->comps[ca->nr_comps - 1] = strdup(sl->head);
@@ -1704,70 +1810,126 @@ find_comp_array(struct dic_info *di, const char *s)
 }
 
 static struct skk_comp_array *
-find_comp_array_lisp(uim_lisp head_)
+find_comp_array_lisp(uim_lisp head_, uim_lisp numeric_conv_)
 {
   const char *hs;
   struct skk_comp_array *ca;
+  char *rs = NULL;
   
   hs = uim_scm_refer_c_str(head_);
-  ca = find_comp_array(skk_dic, hs);
+
+  if NFALSEP(numeric_conv_)
+    rs = replace_numeric(hs);
+
+  if (!rs)
+    ca = find_comp_array(skk_dic, hs);
+  else {
+    ca = find_comp_array(skk_dic, rs);
+    free(rs);
+  }
   return ca;
 }
 
 static uim_lisp
-skk_get_completion(uim_lisp head_)
+skk_get_completion(uim_lisp head_, uim_lisp numeric_conv_)
 {
   struct skk_comp_array *ca;
-  ca = find_comp_array_lisp(head_);
+  ca = find_comp_array_lisp(head_, numeric_conv_);
   if (ca) {
     ca->refcount++;
     return uim_scm_t();
   }
+
+  if (NFALSEP(numeric_conv_) && has_numeric_in_head(head_))
+    return skk_get_completion(head_, uim_scm_f());
+
   return uim_scm_f();
 }
 
 static uim_lisp
-skk_get_nth_completion(uim_lisp nth_, uim_lisp head_)
+skk_get_nth_completion(uim_lisp nth_, uim_lisp head_, uim_lisp numeric_conv_)
 {
   int n;
   struct skk_comp_array *ca;
   char *str;
+  uim_lisp numlst_ = uim_scm_null_list();
 
-  ca = find_comp_array_lisp(head_);
-  n = uim_scm_c_int(nth_);
-  if (ca && ca->nr_comps > n) {
-    str = ca->comps[n];
-    return uim_scm_make_str(str);
+  if NFALSEP(numeric_conv_)
+    numlst_ = skk_store_replaced_numeric_str(head_);
+
+  if (!uim_scm_nullp(numlst_))
+    ca = find_comp_array_lisp(head_, numeric_conv_);
+  else
+    ca = find_comp_array_lisp(head_, uim_scm_f());
+
+  if (!ca) {
+    if (!uim_scm_nullp(numlst_))
+      return skk_get_nth_completion(nth_, head_, uim_scm_f());
+    else
+      return uim_scm_make_str("");
   }
-  return uim_scm_null_list();
+
+  n = uim_scm_c_int(nth_);
+  if (ca->nr_comps > n) {
+    str = ca->comps[n];
+    if (!uim_scm_nullp(numlst_))
+      return restore_numeric(str, numlst_);
+    else
+      return uim_scm_make_str(str);
+  }
+
+  if (!uim_scm_nullp(numlst_) && n >= ca->nr_comps)
+    return skk_get_nth_completion(uim_scm_make_int(n - ca->nr_comps),
+		    head_, uim_scm_f());
+
+  return uim_scm_make_str("");
 }
 
 static uim_lisp
-skk_get_nr_completions(uim_lisp head_)
+skk_get_nr_completions(uim_lisp head_, uim_lisp numeric_conv_)
 {
   int n = 0;
   struct skk_comp_array *ca;
 
-  ca = find_comp_array_lisp(head_);
-  if (ca) {
+  ca = find_comp_array_lisp(head_, numeric_conv_);
+  if (ca)
     n = ca->nr_comps;
-  }
+
+  if (NFALSEP(numeric_conv_) && has_numeric_in_head(head_))
+    return uim_scm_make_int(n +
+		    uim_scm_c_int(skk_get_nr_completions(head_, uim_scm_f()))); 
+
   return uim_scm_make_int(n);
 }
 
 static uim_lisp
-skk_clear_completions(uim_lisp head_)
+skk_clear_completions(uim_lisp head_, uim_lisp numeric_conv_)
 {
   int i;
   struct skk_comp_array *ca, *ca_prev;
   const char *hs;
+  char *rs = NULL;
 
   hs = uim_scm_refer_c_str(head_);
-  for (ca = skk_comp; ca; ca = ca->next) {
-    if (!strcmp(ca->head, hs)) {
-      ca->refcount--;
-      break;
+
+  if NFALSEP(numeric_conv_)
+    rs = replace_numeric(hs);
+
+  if (!rs)
+    for (ca = skk_comp; ca; ca = ca->next) {
+      if (!strcmp(ca->head, hs)) {
+	ca->refcount--;
+	break;
+      }
     }
+  else {
+    for (ca = skk_comp; ca; ca = ca->next) {
+      if (!strcmp(ca->head, rs)) {
+	ca->refcount--;
+	break;
+      }
+    }
+    free(rs);
   }
 
   if (ca && ca->refcount == 0) {
@@ -1789,7 +1951,89 @@ skk_clear_completions(uim_lisp head_)
       free(ca);
     }
   }
+
+  if (NFALSEP(numeric_conv_) && has_numeric_in_head(head_))
+    skk_clear_completions(head_, uim_scm_f());
+
   return uim_scm_t();
+}
+
+static uim_lisp
+restore_numeric(const char *s, uim_lisp numlst_)
+{
+  int i, j, len, newlen, numstrlen;
+  const char *numstr;
+  char *str;
+  uim_lisp ret;
+
+  str = strdup(s);
+  newlen = len = strlen(str);
+
+  for (i = 0, j = 0; j < len; i++, j++) {
+    if (str[i] == '#') {
+      if (uim_scm_nullp(numlst_))
+	break;
+      
+      numstr  = uim_scm_refer_c_str(uim_scm_car(numlst_));
+      numstrlen = strlen(numstr);
+      newlen = newlen - 1 + numstrlen;
+      str = realloc(str, newlen + 1);
+      memmove(&str[i + numstrlen], &str[i + 1], newlen - i - numstrlen + 1);
+      memcpy(&str[i], numstr, numstrlen);
+      i = i  - 1 + numstrlen;
+
+      numlst_ = uim_scm_cdr(numlst_);
+    }
+  }
+  ret = uim_scm_make_str(str);
+  free(str);
+
+  return ret;
+}
+
+static uim_lisp
+skk_get_dcomp_word(uim_lisp head_, uim_lisp numeric_conv_)
+{
+  const char *hs;
+  struct skk_line *sl;
+  int len;
+  uim_lisp numlst_ = uim_scm_null_list();
+  char *rs = NULL;
+  
+  hs = uim_scm_refer_c_str(head_);
+
+  if NFALSEP(numeric_conv_)
+    numlst_ = skk_store_replaced_numeric_str(head_);
+
+  if (!uim_scm_nullp(numlst_)) {
+    rs = replace_numeric(hs);
+    len = strlen(rs);
+  } else
+    len = strlen(hs);
+
+  if (len != 0) {
+    /* Search from cache using same way as in make_comp_array_from_cache(). */
+    if (!rs)
+      for (sl = skk_dic->head.next; sl; sl = sl->next) {
+	if (!strncmp(sl->head, hs, len) && strcmp(sl->head, hs) &&
+			sl->okuri_head == '\0' &&
+			sl->state & SKK_LINE_USE_FOR_COMPLETION)
+	  return uim_scm_make_str(sl->head);
+      }
+    else {
+      for (sl = skk_dic->head.next; sl; sl = sl->next) {
+	if (!strncmp(sl->head, rs, len) && strcmp(sl->head, rs) &&
+			sl->okuri_head == '\0' &&
+			sl->state & SKK_LINE_USE_FOR_COMPLETION) {
+	  free(rs);
+	  return restore_numeric(sl->head, numlst_);
+	}
+      }
+      free(rs);
+      return skk_get_dcomp_word(head_, uim_scm_f());
+    }
+  }
+  return uim_scm_make_str("");
 }
 
 static void
@@ -2064,7 +2308,7 @@ merge_real_candidate_array(struct skk_cand_array *src_ca,
 
 static uim_lisp
 skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
-		     uim_lisp okuri_, uim_lisp nth_, uim_lisp numlst_)
+		     uim_lisp okuri_, uim_lisp nth_, uim_lisp numeric_conv_)
 {
   int nth;
   struct skk_cand_array *ca, *subca;
@@ -2073,14 +2317,26 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
   uim_lisp numstr_;
   const char *numstr;
   int method_place = 0;
-
+  uim_lisp numlst_ = uim_scm_null_list();
   int ignoring_indices[IGNORING_WORD_MAX + 1];
 
-  nth = uim_scm_c_int(nth_);
-  ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
+  if NFALSEP(numeric_conv_)
+    numlst_ = skk_store_replaced_numeric_str(head_);
 
-  if (!ca)
+  nth = uim_scm_c_int(nth_);
+
+  if (!uim_scm_nullp(numlst_))
+    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, numeric_conv_);
+  else
+    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, uim_scm_f());
+
+  if (!ca) {
+    if (!uim_scm_nullp(numlst_))
+      return skk_commit_candidate(head_, okuri_head_, okuri_, nth_,
+		      uim_scm_f());
     return uim_scm_f();
+  }
+
   get_ignoring_indices(ca, ignoring_indices);
 
   /* handle #4 method of numeric conversion */
@@ -2114,8 +2370,12 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
 	k++;
       }
     }
-    if (!str)
+    if (!str) {
+      if (nth >= k)
+	return skk_commit_candidate(head_, okuri_head_, okuri_,
+			uim_scm_make_int(nth - k), uim_scm_f());
       return uim_scm_f();
+    }
   } else {
     for (i = 0; i < ca->nr_cands; i++) {
       if (match_to_discarding_index(ignoring_indices, i))
@@ -2145,7 +2405,10 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
       }
     }
     if (!found) {
-      ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 1);
+      if (!uim_scm_nullp(numlst_))
+	ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 1, numeric_conv_);
+      else
+	ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 1, uim_scm_f());
       reorder_candidate(ca, str);
     } else {
       /* also reorder base candidate array */
@@ -2153,7 +2416,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
     }
   }
 
-  ca->line->need_save = 1;
+  ca->line->state = SKK_LINE_NEED_SAVE | SKK_LINE_USE_FOR_COMPLETION;
   move_line_to_cache_head(skk_dic, ca->line);
 
   return uim_scm_f();
@@ -2192,7 +2455,7 @@ static void purge_candidate(struct skk_cand_array *ca, int nth)
 
 static uim_lisp
 skk_purge_candidate(uim_lisp head_, uim_lisp okuri_head_,
-		    uim_lisp okuri_, uim_lisp nth_, uim_lisp numlst_)
+		    uim_lisp okuri_, uim_lisp nth_, uim_lisp numeric_conv_)
 {
   int nth = uim_scm_c_int(nth_);
   struct skk_cand_array *ca, *subca;
@@ -2201,12 +2464,24 @@ skk_purge_candidate(uim_lisp head_, uim_lisp okuri_head_,
   uim_lisp numstr_;
   const char *numstr;
   int method_place = 0;
-
+  uim_lisp numlst_ = uim_scm_null_list();
   int ignoring_indices[IGNORING_WORD_MAX + 1];
 
-  ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0);
-  if (!ca)
+  if NFALSEP(numeric_conv_)
+    numlst_ = skk_store_replaced_numeric_str(head_);
+
+  if (!uim_scm_nullp(numlst_))
+    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, numeric_conv_);
+  else
+    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, uim_scm_f());
+
+  if (!ca) {
+    if (!uim_scm_nullp(numlst_))
+      return skk_purge_candidate(head_, okuri_head_, okuri_, nth_,
+		      uim_scm_f());
     return uim_scm_f(); /* shouldn't happen */
+  }
+
   get_ignoring_indices(ca, ignoring_indices);
 
   /* handle #4 method of numeric conversion */
@@ -2242,8 +2517,12 @@ skk_purge_candidate(uim_lisp head_, uim_lisp okuri_head_,
 	k++;
       }
     }
-    if (!str)
+    if (!str) {
+      if (nth >= k)
+	skk_purge_candidate(head_, okuri_head_, okuri_,
+			uim_scm_make_int(nth - k), uim_scm_f());
       return uim_scm_f();
+    }
   } else {
     for (i = 0; i < ca->nr_cands; i++) {
       if (match_to_discarding_index(ignoring_indices, i))
@@ -2273,7 +2552,7 @@ learn_word_to_cand_array(struct skk_cand_array *ca, const char *word)
     push_back_candidate_to_array(ca, word);
 
   reorder_candidate(ca, word);
-  ca->line->need_save = 1;
+  ca->line->state = SKK_LINE_NEED_SAVE | SKK_LINE_USE_FOR_COMPLETION;
 }
 
 static char *
@@ -2374,7 +2653,8 @@ sanitize_word(const char *str, const char *prefix)
 }
 
 static uim_lisp
-skk_learn_word(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp word_)
+skk_learn_word(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_,
+	       uim_lisp word_, uim_lisp numeric_conv_)
 {
   struct skk_cand_array *ca;
   char *word;
@@ -2385,17 +2665,15 @@ skk_learn_word(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp w
   if (!word)
     return uim_scm_f();
 
-  ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 1);
-  if (ca) {
+  ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 1, numeric_conv_);
+  if (ca)
     learn_word_to_cand_array(ca, word);
-  }
 
   tmp = uim_scm_refer_c_str(okuri_);
   if (strlen(tmp)) {
-    ca = find_cand_array_lisp(head_, okuri_head_, uim_scm_null_list(), 1);
-    if (ca) {
+    ca = find_cand_array_lisp(head_, okuri_head_, uim_scm_null_list(), 1, numeric_conv_);
+    if (ca)
       learn_word_to_cand_array(ca, word);
-    }
   }
   free(word);
   return uim_scm_f();
@@ -2418,7 +2696,7 @@ reverse_cache(struct dic_info *di)
 }
 
 static void
-parse_dic_line(struct dic_info *di, char *line)
+parse_dic_line(struct dic_info *di, char *line, int is_personal)
 {
   char *buf, *sep;
   struct skk_line *sl;
@@ -2439,10 +2717,14 @@ parse_dic_line(struct dic_info *di, char *line)
   } else {
     sl = compose_line(di, buf, 0, line);
   }
-  sl->need_save = 1;
-  /* set nr_real_cands for the candidate array from personal dictionaly */
-  for (i = 0; i < sl->nr_cand_array; i++)
-    sl->cands[i].nr_real_cands = sl->cands[i].nr_cands;
+  if (is_personal) {
+    sl->state = SKK_LINE_NEED_SAVE | SKK_LINE_USE_FOR_COMPLETION;
+    /* set nr_real_cands for the candidate array from personal dictionaly */
+    for (i = 0; i < sl->nr_cand_array; i++)
+      sl->cands[i].nr_real_cands = sl->cands[i].nr_cands;
+  } else {
+    sl->state = SKK_LINE_USE_FOR_COMPLETION;
+  }
   add_line_to_cache_head(di, sl);
 }
 
@@ -2528,8 +2810,8 @@ close_lock(int fd)
   close(fd);
 }
 
-static uim_lisp
-read_personal_dictionary(struct dic_info *di, const char *fn)
+static int
+read_dictionary_file(struct dic_info *di, const char *fn, int is_personal)
 {
   struct stat st;
   FILE *fp;
@@ -2538,19 +2820,19 @@ read_personal_dictionary(struct dic_info *di, const char *fn)
   int lock_fd;
 
   if (!di)
-    return uim_scm_f();
+    return 0;
 
   lock_fd = open_lock(fn, F_RDLCK);
 
   if (stat(fn, &st) == -1) {
     close_lock(lock_fd);
-    return uim_scm_f();
+    return 0;
   }
 
   fp = fopen(fn, "r");
   if (!fp) {
     close_lock(lock_fd);
-    return uim_scm_f();
+    return 0;
   }
 
   di->personal_dic_timestamp = st.st_mtime;
@@ -2561,7 +2843,7 @@ read_personal_dictionary(struct dic_info *di, const char *fn)
       if (err_flag == 0) {
 	if (buf[0] != ';') {
 	  buf[len - 1] = '\0';
-	  parse_dic_line(di, buf);
+	  parse_dic_line(di, buf, is_personal);
 	}
       } else {
 	/* erroneous line ends here */
@@ -2574,14 +2856,25 @@ read_personal_dictionary(struct dic_info *di, const char *fn)
   fclose(fp);
   close_lock(lock_fd);
   reverse_cache(di);
-  return uim_scm_t();
+  return 1;
 }
 
 static uim_lisp
 skk_read_personal_dictionary(uim_lisp fn_)
 {
-  const char *fn = uim_scm_refer_c_str(fn_);
-  return read_personal_dictionary(skk_dic, fn);
+  const char *fn;
+  struct stat st;
+  uim_lisp ret;
+
+  fn = uim_scm_refer_c_str(fn_);
+  ret = (stat(fn, &st) != -1) ? uim_scm_t() : uim_scm_f();
+
+  update_personal_dictionary_cache_with_file(fn, 1);
+#if USE_SKK_JISYO_S_BUF
+  update_personal_dictionary_cache_with_file(SKK_JISYO_S, 0);
+#endif
+
+  return ret;
 }
 
 static void push_back_candidate_array_to_sl(struct skk_line *sl,
@@ -2637,6 +2930,8 @@ static void compare_and_merge_skk_line(struct skk_line *dst_sl,
     if (!dup)
       push_back_candidate_array_to_sl(dst_sl, src_ca);
   }
+
+  dst_sl->state |= src_sl->state;
 }
 
 /* for merge sort */
@@ -2730,7 +3025,7 @@ lsort(struct skk_line *p)
 }
 
 static void
-update_personal_dictionary_cache(const char *fn)
+update_personal_dictionary_cache_with_file(const char *fn, int is_personal)
 {
   struct dic_info *di;
   struct skk_line *sl, *tmp, *diff, **cache_array;
@@ -2739,15 +3034,32 @@ update_personal_dictionary_cache(const char *fn)
   di = (struct dic_info *)malloc(sizeof(struct dic_info));
   if (di == NULL)
     return;
+  di->cache_len = 0;
   di->head.next = NULL;
-  read_personal_dictionary(di, fn);
-  di->head.next = lsort(di->head.next);
+
+  if (!read_dictionary_file(di, fn, is_personal)) {
+    free(di);
+    return;
+  }
+
+  /* If no cache is available, just use new one. */
+  if (!skk_dic->head.next) {
+    skk_dic->head.next = di->head.next;
+    skk_dic->cache_len = di->cache_len;
+    skk_dic->cache_modified = di->cache_modified;
+    skk_dic->personal_dic_timestamp = di->personal_dic_timestamp;
+    free(di);
+    return;
+  }
 
   /* keep original sequence of cache */
   cache_array = (struct skk_line **)malloc(sizeof(struct skk_line *)
 		  * skk_dic->cache_len);
-  if (cache_array == NULL)
+  if (cache_array == NULL) {
+    free(di);
     return;
+  }
+
   i = 0;
   sl = skk_dic->head.next;
   while (sl) {
@@ -2756,13 +3068,13 @@ update_personal_dictionary_cache(const char *fn)
     i++;
   }
 
-  skk_dic->head.next = lsort(skk_dic->head.next);
-
   /* get differential lines and merge candidate */
+  di->head.next = lsort(di->head.next);
+  skk_dic->head.next = lsort(skk_dic->head.next);
   diff = cache_line_diffs(skk_dic->head.next, di->head.next, &diff_len);
 
   /* revert sequence of the cache */
-  if (cache_array[0]) {
+  if (skk_dic->cache_len) {
     sl = skk_dic->head.next = cache_array[0];
     for (i = 0; i < skk_dic->cache_len - 1; i++) {
       sl->next = cache_array[i + 1];
@@ -2771,16 +3083,26 @@ update_personal_dictionary_cache(const char *fn)
     sl->next = NULL;
   }
 
-  /* add differential lines at the top of the cache */
-  if (diff != NULL) {
-    sl = diff;
-    while (sl->next) {
-      sl = sl->next;
+  if (is_personal) {
+    /* prepend differential lines at the top of the cache */
+    if (diff != NULL) {
+      sl = diff;
+      while (sl->next) {
+	sl = sl->next;
+      }
+      sl->next = skk_dic->head.next;
+      skk_dic->head.next = diff;
+      skk_dic->cache_len += diff_len;
     }
-    sl->next = skk_dic->head.next;
-    skk_dic->head.next = diff;
+  } else {
+    /* append differential lines at the bottom of the cache */
+    if (skk_dic->head.next)
+      sl->next = diff;
+    else
+      skk_dic->head.next = diff;
     skk_dic->cache_len += diff_len;
   }
+
   skk_dic->cache_modified = 1;
 
   sl = di->head.next;
@@ -2809,7 +3131,7 @@ skk_save_personal_dictionary(uim_lisp fn_)
   if (fn) {
     if (stat(fn, &st) != -1) {
       if (st.st_mtime != skk_dic->personal_dic_timestamp)
-	update_personal_dictionary_cache(fn);
+	update_personal_dictionary_cache_with_file(fn, 1);
     }
 
     lock_fd = open_lock(fn, F_WRLCK);
@@ -2826,7 +3148,7 @@ skk_save_personal_dictionary(uim_lisp fn_)
   }
 
   for (sl = skk_dic->head.next; sl; sl = sl->next) {
-    if (sl->need_save)
+    if (sl->state & SKK_LINE_NEED_SAVE)
       write_out_line(fp, sl);
   }
 
@@ -2956,6 +3278,43 @@ skk_eval_candidate(uim_lisp str_)
   return cand_;
 }
 
+/* only for siod */
+static uim_lisp
+skk_substring(uim_lisp str_, uim_lisp start_, uim_lisp end_)
+{
+  const char *str;
+  char *s;
+  int start;
+  int end;
+  int len;
+  uim_lisp ret;
+  int i, j = 0;
+
+  str = uim_scm_refer_c_str(str_);
+  start = uim_scm_c_int(start_);
+  end = uim_scm_c_int(end_);
+
+  if (!str || start < 0 || start > end)
+    return uim_scm_make_str("");
+
+  len = strlen(str);
+
+  if (end > len)
+    return uim_scm_make_str("");
+
+  s = malloc(end - start + 1);
+
+  for (i = start; i < end; i++) {
+    s[j] = str[i];
+    j++;
+  }
+  s[j] = '\0';
+  ret = uim_scm_make_str(s);
+  free(s);
+
+  return ret;
+}
+
 
 void
 uim_plugin_instance_init(void)
@@ -2963,7 +3322,7 @@ uim_plugin_instance_init(void)
   uim_scm_init_subr_3("skk-lib-dic-open", skk_dic_open);
   uim_scm_init_subr_1("skk-lib-read-personal-dictionary", skk_read_personal_dictionary);
   uim_scm_init_subr_1("skk-lib-save-personal-dictionary", skk_save_personal_dictionary);
-  uim_scm_init_subr_3("skk-lib-get-entry", skk_get_entry);
+  uim_scm_init_subr_4("skk-lib-get-entry", skk_get_entry);
   uim_scm_init_subr_1("skk-lib-store-replaced-numstr", skk_store_replaced_numeric_str);
   uim_scm_init_subr_2("skk-lib-merge-replaced-numstr", skk_merge_replaced_numeric_str);
   uim_scm_init_subr_1("skk-lib-replace-numeric", skk_replace_numeric);
@@ -2971,14 +3330,16 @@ uim_plugin_instance_init(void)
   uim_scm_init_subr_4("skk-lib-get-nr-candidates", skk_get_nr_candidates);
   uim_scm_init_subr_5("skk-lib-commit-candidate", skk_commit_candidate);
   uim_scm_init_subr_5("skk-lib-purge-candidate", skk_purge_candidate);
-  uim_scm_init_subr_4("skk-lib-learn-word", skk_learn_word);
+  uim_scm_init_subr_5("skk-lib-learn-word", skk_learn_word);
   uim_scm_init_subr_1("skk-lib-get-annotation", skk_get_annotation);
   uim_scm_init_subr_1("skk-lib-remove-annotation", skk_remove_annotation);
-  uim_scm_init_subr_1("skk-lib-get-completion", skk_get_completion);
-  uim_scm_init_subr_2("skk-lib-get-nth-completion", skk_get_nth_completion);
-  uim_scm_init_subr_1("skk-lib-get-nr-completions", skk_get_nr_completions);
-  uim_scm_init_subr_1("skk-lib-clear-completions", skk_clear_completions);
+  uim_scm_init_subr_2("skk-lib-get-completion", skk_get_completion);
+  uim_scm_init_subr_3("skk-lib-get-nth-completion", skk_get_nth_completion);
+  uim_scm_init_subr_2("skk-lib-get-nr-completions", skk_get_nr_completions);
+  uim_scm_init_subr_2("skk-lib-clear-completions", skk_clear_completions);
+  uim_scm_init_subr_2("skk-lib-get-dcomp-word", skk_get_dcomp_word);
   uim_scm_init_subr_1("skk-lib-eval-candidate", skk_eval_candidate);
+  uim_scm_init_subr_3("skk-lib-substring", skk_substring);
 }
 
 void
@@ -2999,7 +3360,7 @@ uim_plugin_instance_quit(void)
     free_skk_line(tmp);
   }
 
-  if (skk_dic->skkserv_ok)
+  if (skk_dic->skkserv_state & SKK_SERV_CONNECTED)
     close_skkserv();
 
   free(skk_dic);
@@ -3015,7 +3376,6 @@ open_skkserv(int portnum)
   struct hostent *entry;
   /* struct servent *serv; */
   struct protoent *proto;
-  int a1, a2, a3, a4;
   char *hostname;
 
   signal(SIGPIPE, SIG_IGN);
@@ -3039,13 +3399,7 @@ open_skkserv(int portnum)
     return 0;
 #endif
   }
-  if ('0' <= *hostname && *hostname <= '9') {
-    if (sscanf(hostname,"%d.%d.%d.%d", &a1, &a2, &a3, &a4) != 4) {
-      return 0;
-    }
-    a1 = (a1 << 24) | (a2 << 16) | (a3 << 8) | a4;
-    hostaddr.sin_addr.s_addr = htonl(a1);
-  } else {
+  if (!inet_aton(hostname, (struct in_addr *)&hostaddr.sin_addr)) {
     if ((entry = gethostbyname(hostname)) == NULL) {
       return 0;
     }
@@ -3061,7 +3415,7 @@ open_skkserv(int portnum)
   skkservsock = sock;
   rserv = fdopen(sock, "r");
   wserv = fdopen(sock, "w");
-  return 1;
+  return SKK_SERV_CONNECTED;
 }
 
 static void
@@ -3071,4 +3425,27 @@ close_skkserv()
     fprintf(wserv, "0\n");
     fflush(wserv);
   }
+}
+
+static void
+reset_is_used_flag_of_cache(struct dic_info *di)
+{
+  struct skk_line *sl;
+  int i;
+
+  sl = di->head.next;
+  while (sl) {
+    for (i = 0; i < sl->nr_cand_array; i++) {
+      struct skk_cand_array *ca = &sl->cands[i];
+      ca->is_used = 0;
+    }
+    sl = sl->next;
+  }
+}
+
+static void
+skkserv_disconnected(struct dic_info *di)
+{
+  di->skkserv_state &= ~SKK_SERV_CONNECTED;
+  reset_is_used_flag_of_cache(di);
 }

@@ -66,9 +66,11 @@ static char *s_index_str;
 static struct preedit_tag *s_preedit;
 static int s_mode;
 static char *s_label_str;
+static const char *s_im_str;
 static char *s_nokori_str;
 static int s_start_callbacks = FALSE;
 
+static void configuration_changed_cb(void *ptr);
 static void activate_cb(void *ptr, int nr, int display_limit);
 static void select_cb(void *ptr, int index);
 static void shift_page_cb(void *ptr, int direction);
@@ -140,6 +142,8 @@ void init_callbacks(void)
   uim_set_mode_cb(g_context, mode_update_cb);
   uim_set_prop_list_update_cb(g_context, prop_list_update_cb);
   uim_set_prop_label_update_cb(g_context, prop_label_update_cb);
+  uim_set_configuration_changed_cb(g_context, configuration_changed_cb);
+  configuration_changed_cb(NULL);
   if (g_opt.status_type != NONE) {
     uim_set_candidate_selector_cb(g_context, activate_cb, select_cb, shift_page_cb, deactivate_cb);
   }
@@ -325,16 +329,20 @@ int get_mode(void)
 char *get_mode_str(void)
 {
   char *str;
-  char *im_str = (char *)uim_get_current_im_name(g_context);
 
   assert(!s_start_callbacks);
 
-  im_str = im_str != NULL ? im_str : "";
-  str = malloc(strlen(im_str) + strlen(s_label_str) + strlen("[]") + 1);
-  sprintf(str, "%s[%s]", im_str, s_label_str);
+  str = malloc(strlen(s_im_str) + strlen(s_label_str) + strlen("[]") + 1);
+  sprintf(str, "%s[%s]", s_im_str, s_label_str);
   strhead(str, s_max_width);
 
   return str;
+}
+
+static void configuration_changed_cb(void *ptr)
+{
+  s_im_str = uim_get_current_im_name(g_context);
+  s_im_str = s_im_str != NULL ? s_im_str : "";
 }
 
 /*

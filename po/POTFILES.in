@@ -34,6 +34,11 @@ scm/action.scm
 scm/anthy-custom.scm
 scm/anthy-key-custom.scm
 scm/anthy.scm
+scm/byeoru-custom.scm
+scm/byeoru-dic.scm
+scm/byeoru-key-custom.scm
+scm/byeoru-symbols.scm
+scm/byeoru.scm
 scm/canna-custom.scm
 scm/canna-key-custom.scm
 scm/canna.scm
@@ -68,6 +73,7 @@ scm/pyunihan.scm
 scm/rk.scm
 scm/romaja.scm
 scm/skk-custom.scm
+scm/skk-dialog.scm
 scm/skk-editor.scm
 scm/skk-key-custom.scm
 scm/skk.scm

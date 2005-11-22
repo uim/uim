@@ -77,6 +77,10 @@
 		     (_ "Completion")
 		     (_ "long description will be here."))
 
+(define-custom-group 'skk-keys-latin-conv
+		     (_ "Latin conversion")
+		     (_ "long description will be here."))
+
 
 (define-custom 'skk-on-key '("<IgnoreCase><Control>j" generic-on-key)
                '(skk-keys1 mode-transition)
@@ -142,19 +146,25 @@
 	       (_ "[SKK] return")
 	       (_ "long description will be here"))
 
-(define-custom 'skk-conv-wide-latin-key '("<IgnoreCase><Control>q")
-               '(skk-keys2)
-	       '(key)
-	       (_ "[SKK] commit as fullwidth alphanumeric")
-	       (_ "long description will be here"))
-
 (define-custom 'skk-latin-conv-key '("/")
-               '(skk-keys2)
+               '(skk-keys2 skk-keys-latin-conv)
 	       '(key)
 	       (_ "[SKK] begin latin conversion")
 	       (_ "long description will be here"))
 
-(define-custom 'skk-begin-completion-key '("tab" "<IgnoreCase><Control>i")
+(define-custom 'skk-conv-wide-latin-key '("<IgnoreCase><Control>q")
+               '(skk-keys2 skk-keys-latin-conv)
+	       '(key)
+	       (_ "[SKK] commit as fullwidth alphanumeric")
+	       (_ "long description will be here"))
+
+(define-custom 'skk-conv-opposite-case-key '("<IgnoreCase><Control>u")
+               '(skk-keys2 skk-keys-latin-conv)
+	       '(key)
+	       (_ "[SKK] commit as opposite case in latin conversion")
+	       (_ "long description will be here"))
+
+(define-custom 'skk-begin-completion-key '("tab" "<IgnoreCase><Control>i" skk-new-completion-from-current-comp-key)
                '(skk-keys2 skk-keys-completion)
 	       '(key)
 	       (_ "[SKK] begin completion")
@@ -170,6 +180,24 @@
                '(skk-keys2 skk-keys-completion)
 	       '(key)
 	       (_ "[SKK] previous completion candidate")
+	       (_ "long description will be here"))
+
+(define-custom 'skk-new-completion-from-current-comp-key '("<Alt>tab" "<IgnoreCase><Control><Alt>i")
+	       '(skk-keys3 skk-keys-completion)
+	       '(key)
+	       (_ "[SKK] new completion using current completion")
+	       (_ "long description will be here"))
+
+(define-custom 'skk-begin-conv-with-completion-key '("<Alt> ")
+	       '(skk-keys3 skk-keys-completion)
+	       '(key)
+	       (_ "[SKK] begin conversion with completion")
+	       (_ "long description will be here"))
+
+(define-custom 'skk-commit-with-conv-completion-key '("<IgnoreCase><Control><Alt>j")
+	       '(skk-keys3 skk-keys-completion)
+	       '(key)
+	       (_ "[SKK] commit the first candidate with completion")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-special-midashi-key '("<IgnoreShift>>" "<IgnoreShift><" "<IgnoreShift>?")

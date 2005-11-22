@@ -21,6 +21,8 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  tcode.scm \
  tutcode.scm tutcode-key-custom.scm \
  hangul.scm hangul2.scm hangul3.scm romaja.scm \
+ byeoru.scm byeoru-dic.scm byeoru-symbols.scm \
+ byeoru-custom.scm byeoru-key-custom.scm \
  viqr.scm \
  ipa-x-sampa.scm \
  latin.scm \
@@ -47,7 +49,8 @@ endif
 if SKK
   module_names += "skk"
 endif
-module_names += "tcode" "tutcode" "hangul" "viqr" "ipa-x-sampa" "latin"
+module_names += "tcode" "tutcode" "byeoru" "hangul" "viqr" "ipa-x-sampa" \
+		"latin"
 if M17NLIB
   module_names += "m17nlib"
 endif

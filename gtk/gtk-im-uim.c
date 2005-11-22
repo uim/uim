@@ -745,7 +745,7 @@ update_prop_label_cb(void *ptr, const char *str)
   g_string_free(tmp, TRUE);
 
   show_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
-  if (show_state == UIM_TRUE) {
+  if (show_state == UIM_TRUE && uic->win) {
     gint timeout;
     gdk_window_get_origin(uic->win, &x, &y);
     caret_state_indicator_update(uic->caret_state_indicator, x, y, str);

@@ -1,0 +1,129 @@
+;; -*- mode: scheme; coding: utf-8 -*-
+
+;;; byeoru-key-custom.scm: Key customization variables for byeoru.scm
+;;;
+;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
+;;;
+;;; All rights reserved.
+;;;
+;;; Redistribution and use in source and binary forms, with or without
+;;; modification, are permitted provided that the following conditions
+;;; are met:
+;;; 1. Redistributions of source code must retain the above copyright
+;;;    notice, this list of conditions and the following disclaimer.
+;;; 2. Redistributions in binary form must reproduce the above copyright
+;;;    notice, this list of conditions and the following disclaimer in the
+;;;    documentation and/or other materials provided with the distribution.
+;;; 3. Neither the name of authors nor the names of its contributors
+;;;    may be used to endorse or promote products derived from this software
+;;;    without specific prior written permission.
+;;;
+;;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS'' AND
+;;; ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+;;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+;;; ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+;;; FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+;;; DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+;;; OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+;;; HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+;;; LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+;;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+;;; SUCH DAMAGE.
+;;;;
+
+(require "i18n.scm")
+
+
+(define-custom-group 'byeoru-keys
+  (_ "Byeoru key bindings")
+  (_ "long description will be here."))
+
+(define-custom 'byeoru-on-key '("<Shift> ")
+  '(byeoru-keys)
+  '(key)
+  (_ "[Byeoru] on")
+  (_ "long description will be here"))
+
+(define-custom 'byeoru-latin-key '("<Shift> ")
+  '(byeoru-keys)
+  '(key)
+  (_ "[Byeoru] off")
+  (_ "long description will be here"))
+
+(define-custom 'byeoru-conversion-key '("F9")
+  '(byeoru-keys)
+  '(key)
+  (_ "[Byeoru] convert Hangul to Chinese")
+  (_ "long description will be here"))
+
+(define-custom 'byeoru-commit-key '(generic-commit-key)
+  '(byeoru-keys)
+  '(key)
+  (_ "[Byeoru] confirm conversion")
+  (_ "long description will be here"))
+
+(define-custom 'byeoru-cancel-key '(generic-cancel-key)
+  '(byeoru-keys)
+  '(key)
+  (_ "[Byeoru] cancel conversion")
+  (_ "long description will be here"))
+
+(define-custom 'byeoru-next-candidate-key '(generic-next-candidate-key)
+  '(byeoru-keys)
+  '(key)
+  (_ "[Byeoru] next candidate")
+  (_ "long description will be here"))
+
+(define-custom 'byeoru-prev-candidate-key '(generic-prev-candidate-key)
+  '(byeoru-keys)
+  '(key)
+  (_ "[Byeoru] previous candidate")
+  (_ "long description will be here"))
+
+(define-custom 'byeoru-next-page-key '(generic-next-page-key)
+  '(byeoru-keys)
+  '(key)
+  (_ "[Byeoru] next page of candidate window")
+  (_ "long description will be here"))
+
+(define-custom 'byeoru-prev-page-key '(generic-prev-page-key)
+  '(byeoru-keys)
+  '(key)
+  (_ "[Byeoru] previous page of candidate window")
+  (_ "long description will be here"))
+
+(define-custom 'byeoru-backspace-key '(generic-backspace-key)
+  '(byeoru-keys)
+  '(key)
+  (_ "[Byeoru] backspace")
+  (_ "long description will be here"))
+
+(define-custom 'byeoru-delete-key '(generic-delete-key)
+  '(byeoru-keys)
+  '(key)
+  (_ "[Byeoru] delete")
+  (_ "long description will be here"))
+
+(define-custom 'byeoru-go-left-key '(generic-go-left-key)
+  '(byeoru-keys)
+  '(key)
+  (_ "[Byeoru] go left")
+  (_ "long description will be here"))
+
+(define-custom 'byeoru-go-right-key '(generic-go-right-key)
+  '(byeoru-keys)
+  '(key)
+  (_ "[Byeoru] go right")
+  (_ "long description will be here"))
+
+(define-custom 'byeoru-beginning-of-preedit-key '(generic-beginning-of-preedit-key)
+  '(byeoru-keys)
+  '(key)
+  (_ "[Byeoru] beginning of word")
+  (_ "long description will be here"))
+
+(define-custom 'byeoru-end-of-preedit-key '(generic-end-of-preedit-key)
+  '(byeoru-keys)
+  '(key)
+  (_ "[Byeoru] end of word")
+  (_ "long description will be here"))

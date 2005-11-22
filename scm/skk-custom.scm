@@ -389,6 +389,12 @@
   (_ "Enable auto conversion with punctuation marks")
   (_ "long description will be here."))
 
+(define-custom 'skk-dcomp-activate? #f
+  '(skk-advanced)
+  '(boolean)
+  (_ "Enable dynamic completion")
+  (_ "long description will be here."))
+
 ;;
 ;; annotation
 ;;
