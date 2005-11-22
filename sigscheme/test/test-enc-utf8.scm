@@ -19,3 +19,5 @@
 
 (assert-equal? "string 2" str1 (apply string str1-list))
 (assert-equal? "list->string 2" str1-list (string->list str1))
+
+(total-report)
