@@ -173,9 +173,6 @@
 (assert-equal? "R5RS escape sequence" '(#\newline) (string->list "\n"))  ;; 110
 
 ;; R6RS(SRFI-75) compliant
-(assert-equal? "R6RS escape sequence" (integer->string 0)        "\0")  ;; 0
-(assert-equal? "R6RS escape sequence" (list->string '(#\nul))    "\0")  ;; 0
-(assert-equal? "R6RS escape sequence" '(#\nul)    (string->list "\0"))  ;; 0
 (assert-equal? "R6RS escape sequence" (integer->string 7)        "\a")  ;; 97
 (assert-equal? "R6RS escape sequence" (list->string '(#\alarm))  "\a")  ;; 97
 (assert-equal? "R6RS escape sequence" '(#\alarm)  (string->list "\a"))  ;; 97

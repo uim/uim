@@ -77,7 +77,7 @@ const ScmSpecialCharInfo Scm_special_char_table[] = {
     /* control characters */
     {'\n',   "\\n",   "newline"},    /*  10, R5RS */
 #if SCM_USE_SRFI75_NAMED_CHARS
-    {'\0',   "\\0",   "nul"},        /*   0 */
+    {'\0',   "\\x00", "nul"},        /*   0 */
     {'\a',   "\\a",   "alarm"},      /*   7 */
     {'\b',   "\\b",   "backspace"},  /*   8 */
     {'\t',   "\\t",   "tab"},        /*   9 */
