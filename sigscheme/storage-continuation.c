@@ -79,6 +79,7 @@ static ScmObj continuation_thrown_obj = NULL;
 static ScmObj continuation_stack = NULL;
 
 static ScmObj trace_stack = NULL;
+static ScmObj saved_trace_stack = NULL;
 
 /*=======================================
   File Local Function Declarations
@@ -263,7 +264,6 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
 {
     ScmObj cont = SCM_FALSE;
     ScmObj ret  = SCM_FALSE;
-    ScmObj saved_trace_stack = SCM_FALSE;
     struct continuation_frame cont_frame;
 
     cont_frame.dyn_ext = current_dynamic_extent;
