@@ -537,24 +537,36 @@ ScmObj ScmOp_number2string(ScmObj num, ScmObj args)
   return Scm_NewStringCopying(p);
 }
 
-/* TODO : support radix */
-ScmObj ScmOp_string2number(ScmObj string)
+ScmObj ScmOp_string2number(ScmObj str, ScmObj args)
 {
-    char  *str = NULL;
-    char  *p   = NULL;
-    size_t len = 0;
-    DECLARE_FUNCTION("string->number", ProcedureFixed1);
+    ScmObj radix = SCM_FALSE;
+    int r = 10;
+    int num = 0;
+    char *first_nondigit = NULL;
+    DECLARE_FUNCTION("string->number", ProcedureVariadic1);
 
-    ASSERT_STRINGP(string);
+    ASSERT_STRINGP(str);
 
-    str = SCM_STRING_STR(string);
-    len = strlen(str);
-    for (p = str; p < str + len; p++) {
-        if (isdigit(*p) == 0)
-            return SCM_FALSE;
+    /* r = radix */
+    if (!NO_MORE_ARG(args)) {
+        radix = POP_ARG(args);
+        ASSERT_NO_MORE_ARG(args);
+
+        ASSERT_INTP(radix);
+        r = SCM_INT_VALUE(radix);
+#if SCM_STRICT_R5RS
+      if (!(r == 2 || r == 8 || r == 10 || r == 16))
+#else
+      if (!(2 <= r && r <= 16))
+#endif
+          ERR_OBJ("invalid or unsupported radix", radix);
     }
 
-    return Scm_NewInt((int)atoi(SCM_STRING_STR(string)));
+    num = (int)strtol(SCM_STRING_STR(str), &first_nondigit, r);
+    if (*first_nondigit)
+        ERR("ill-formatted number: %s", SCM_STRING_STR(str));
+
+    return Scm_NewInt(num);
 }
 
 /*===================================

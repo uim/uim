@@ -473,7 +473,7 @@ ScmObj ScmOp_quotient(ScmObj scm_n1, ScmObj scm_n2);
 ScmObj ScmOp_modulo(ScmObj scm_n1, ScmObj scm_n2);
 ScmObj ScmOp_remainder(ScmObj scm_n1, ScmObj scm_n2);
 ScmObj ScmOp_number2string (ScmObj num, ScmObj args);
-ScmObj ScmOp_string2number(ScmObj string);
+ScmObj ScmOp_string2number(ScmObj str, ScmObj args);
 ScmObj ScmOp_not(ScmObj obj);
 ScmObj ScmOp_booleanp(ScmObj obj);
 ScmObj ScmOp_car(ScmObj obj);

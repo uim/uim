@@ -151,9 +151,21 @@
 (assert-equal? "number->string test3" "100" (number->string 100))
 
 ; check string->number
-(assert-equal? "string->number test1" 1   (string->number "1"))
-(assert-equal? "string->number test2" 10  (string->number "10"))
-(assert-equal? "string->number test2" 100 (string->number "100"))
+(assert-equal? "string->number test1"  1   (string->number "1"))
+(assert-equal? "string->number test2"  10  (string->number "10"))
+(assert-equal? "string->number test3"  100 (string->number "100"))
+(assert-equal? "string->number test4"  1   (string->number "1"   2))
+(assert-equal? "string->number test5"  2   (string->number "10"  2))
+(assert-equal? "string->number test6"  4   (string->number "100" 2))
+(assert-equal? "string->number test7"  1   (string->number "1"   8))
+(assert-equal? "string->number test8"  8   (string->number "10"  8))
+(assert-equal? "string->number test9"  64  (string->number "100" 8))
+(assert-equal? "string->number test10" 1   (string->number "1"   10))
+(assert-equal? "string->number test11" 10  (string->number "10"  10))
+(assert-equal? "string->number test12" 100 (string->number "100" 10))
+(assert-equal? "string->number test13" 1   (string->number "1"   16))
+(assert-equal? "string->number test14" 16  (string->number "10"  16))
+(assert-equal? "string->number test15" 256 (string->number "100" 16))
 
 ; numbers in various radices
 (assert-true "binary number test1" (= #b1111 15))
