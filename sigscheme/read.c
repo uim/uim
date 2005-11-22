@@ -401,7 +401,7 @@ static ScmObj read_string(ScmObj port)
                 }
             }
             if (found == 0)
-                SigScm_Error("the character in a string after a backslash causes invalid escape sequence");
+                SigScm_Error("\\%c in a string causes invalid escape sequence", c);
             break;
 
         default:
