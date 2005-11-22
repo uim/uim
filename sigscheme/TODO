@@ -8,8 +8,6 @@ Requirements and bugs:
 * Add tests for proper tail recursion with 'apply' and 'guard' to
   test-tail-rec.scm
 
-* Add integer->char and char->integer procedures with multibyte support
-
 * Inhibit a mutation on string constants as described in "3.4 Storage model" of
   R5RS
 
@@ -17,6 +15,7 @@ Requirements and bugs:
 
 * Dynamic encoding switching for a conversion between string and char list,
   based on a SRFI or de facto standard API
+  - Evaluate ces API of Gauche
 
 * Fix large fixed-size buffer on stack without limit checking in read.c
 
@@ -48,12 +47,6 @@ Logical simplifications:
 
 * Reorganize SCM_SHIFT*() macros to complement POP_ARG() macro
 
-* Change procedure and syntax registration from dumb function invocation
-  sequence to iterating over name-initializer pair, as ScmExp_use() does. This
-  change reduces code size and type consistency management cost. The
-  name-initializer array should automatically be generated from
-  DECLARE_FUNCTION macro (by using some UNIX tools)
-
 ==============================================================================
 Namings and Cosmetic things:
 
@@ -74,6 +67,8 @@ Namings and Cosmetic things:
 
 ==============================================================================
 Assigned to YamaKen:
+
+* Add integer->char and char->integer procedures with multibyte support
 
 * GCC4-optimization-proof stack protection
   - Update the document
