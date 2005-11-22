@@ -155,6 +155,7 @@ static void gc_preprocess(void);
 static void gc_mark_and_sweep(void);
 
 /* GC Mark Related Functions */
+static void mark_obj(ScmObj obj);
 static int  is_pointer_to_heap(ScmObj obj);
 
 static void gc_mark_protected_var();
@@ -390,7 +391,7 @@ static void gc_mark_and_sweep(void)
     }
 }
 
-void Scm_MarkObj(ScmObj obj)
+static void mark_obj(ScmObj obj)
 {
     int i = 0;
 
@@ -409,24 +410,24 @@ mark_loop:
     /* mark recursively */
     switch (SCM_TYPE(obj)) {
     case ScmCons:
-        Scm_MarkObj(CAR(obj));
+        mark_obj(CAR(obj));
         obj = CDR(obj);
         goto mark_loop;
         break;
 
     case ScmSymbol:
-        Scm_MarkObj(SCM_SYMBOL_VCELL(obj));
+        mark_obj(SCM_SYMBOL_VCELL(obj));
         break;
 
     case ScmClosure:
-        Scm_MarkObj(SCM_CLOSURE_EXP(obj));
+        mark_obj(SCM_CLOSURE_EXP(obj));
         obj = SCM_CLOSURE_ENV(obj);
         goto mark_loop;
         break;
 
     case ScmValuePacket:
 #if SCM_USE_VALUECONS
-        Scm_MarkObj(SCM_VALUECONS_CAR(obj));
+        mark_obj(SCM_VALUECONS_CAR(obj));
         obj = SCM_VALUECONS_CDR(obj);
 #else
         obj = SCM_VALUEPACKET_VALUES(obj);
@@ -435,19 +436,8 @@ mark_loop:
 
     case ScmVector:
         for (i = 0; i < SCM_VECTOR_LEN(obj); i++) {
-            Scm_MarkObj(SCM_VECTOR_VEC(obj)[i]);
+            mark_obj(SCM_VECTOR_VEC(obj)[i]);
         }
-        break;
-
-    case ScmContinuation:
-        /*
-         * Since continuation object is not so many, marking the object by
-         * function call will not cost high. This function interface makes
-         * continuation module substitution easy without preparing
-         * module-specific header file which contains the module-specific
-         * mark macro.
-         */
-        Scm_MarkContinuation(obj);
         break;
 
     default:
@@ -488,7 +478,7 @@ static void gc_mark_protected_var(void)
 {
     gc_protected_var *item = NULL;
     for (item = protected_var_list; item; item = item->next_var) {
-        Scm_MarkObj(*item->var);
+        mark_obj(*item->var);
     }
 }
 
@@ -502,7 +492,7 @@ static void gc_mark_locations_n(ScmObj *start, int n)
         obj = start[i];
 
         if (is_pointer_to_heap(obj)) {
-            Scm_MarkObj(obj);
+            mark_obj(obj);
         }
     }
 
@@ -532,7 +522,7 @@ static void gc_mark_symbol_hash(void)
 {
     int i = 0;
     for (i = 0; i < NAMEHASH_SIZE; i++) {
-        Scm_MarkObj(scm_symbol_hash[i]);
+        mark_obj(scm_symbol_hash[i]);
     }
 }
 

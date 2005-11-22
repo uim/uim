@@ -245,15 +245,6 @@ static ScmObj continuation_stack_unwind(ScmObj dest_cont)
     return dest_cont;
 }
 
-void Scm_MarkContinuation(ScmObj cont)
-{
-    struct continuation_frame *frame;
-
-    frame = CONTINUATION_FRAME(cont);
-    if (frame != INVALID_CONTINUATION_OPAQUE)
-        Scm_MarkObj(frame->dyn_ext);
-}
-
 void Scm_DestructContinuation(ScmObj cont)
 {
     /* no object to free(3) in this implementation */
