@@ -101,6 +101,7 @@
 (assert-true"mixed 3 string-append check" (string=? "あiう" (string-append "あ" "i" "う")))
 
 ;; string->list
+(assert-equal? "string->list check" '()                (string->list ""))
 (assert-true"string->list check" (equal? '(#\あ #\i #\う #\e #\お) (string->list "あiうeお")))
 (assert-equal? "string->list check" '(#\\)             (string->list "\\"))
 (assert-equal? "string->list check" '(#\\ #\\)         (string->list "\\\\"))
@@ -118,6 +119,7 @@
 (assert-equal? "string->list check" '(#\" #\")         (string->list "\"\""))
 
 ;; list->string
+(assert-equal? "list->string check" ""     (list->string '()))
 (assert-equal? "list->string check" "あaい" (list->string '(#\あ #\a #\い)))
 (assert-equal? "list->string check" "\\"     (list->string '(#\\)))
 (assert-equal? "list->string check" "\\\\"   (list->string '(#\\ #\\)))
