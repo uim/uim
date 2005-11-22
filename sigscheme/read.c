@@ -394,8 +394,9 @@ static ScmObj read_string(ScmObj port)
             SCM_PORT_GETC(port, c);
             found = 0;
             for (info = Scm_special_char_table; info->esc_seq; info++) {
-                if (strlen(info->esc_seq) > 1 && c == info->esc_seq[1]) {
+                if (strlen(info->esc_seq) == 2 && c == info->esc_seq[1]) {
                     stringbuf[stringlen++] = info->code;
+                    printf("found = %s\n", info->lex_rep);
                     found = 1;
                     break;
                 }
