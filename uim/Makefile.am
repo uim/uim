@@ -28,10 +28,6 @@ libuim_la_SOURCES = uim.c uim-util.c uim-func.c uim-key.c \
 #libuim_la_SOURCES += strsep.c
 #endif
 
-if COMPAT_TABLE
-libuim_la_SOURCES += uim-table.c
-endif
-
 if COMPAT_SCM
   pkginclude_HEADERS += uim-compat-scm.h
 endif

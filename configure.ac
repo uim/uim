@@ -388,14 +388,6 @@ AC_ARG_ENABLE(compat-scm,
     enable_compat_scm="yes"
   ])
 
-AC_ARG_ENABLE(compat-table,
-  AC_HELP_STRING([--enable-compat-table],
-                 [enable obsolete table API for hk.scm (broken)]),
-  [],
-  [
-    enable_compat_table="no"
-  ])
-
 AC_ARG_ENABLE(fep,
   AC_HELP_STRING([--disable-fep],
                  [disable uim-fep]),
@@ -540,7 +532,6 @@ AM_CONDITIONAL(EB, test x$use_eb = xyes)
 AM_CONDITIONAL(LIBEDIT, test x$use_libedit = xyes)
 AM_CONDITIONAL(DEBUG, test x$enable_debug = xyes)
 AM_CONDITIONAL(COMPAT_SCM, test x$enable_compat_scm = xyes)
-AM_CONDITIONAL(COMPAT_TABLE, test x$enable_compat_table = xyes)
 AM_CONDITIONAL(NEED_SETENV_C, test $ac_cv_func_setenv = no -o $ac_cv_func_unsetenv = no)
 AM_CONDITIONAL(NEED_STRSEP_C, test $ac_cv_func_strsep = no)
 
@@ -735,11 +726,6 @@ if test x$enable_compat_scm = xyes; then
             [Enable obsolete part of uim-scm API])
 fi
 
-if test x$enable_compat_table = xyes; then
-  AC_DEFINE(UIM_COMPAT_TABLE, 1,
-            [Enable obsolete table API for hk.scm (broken)])
-fi
-
 AH_BOTTOM([/* Include os specific header. */
 #include "os_dep.h"])
 
@@ -779,7 +765,6 @@ AC_CONFIG_FILES([test.sh
                  qt/Makefile
                  xim/Makefile
 		 fep/Makefile
-		 tables/Makefile
 		 test/Makefile
 		 examples/Makefile
 		 examples/uim-custom/Makefile
@@ -818,6 +803,5 @@ Configure Result for developers:
 
    DEBUG           : ${enable_debug}
    COMPAT_SCM      : ${enable_compat_scm}
-   COMPAT_TABLE    : ${enable_compat_table}
 ])
 fi

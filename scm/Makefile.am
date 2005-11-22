@@ -32,10 +32,6 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  scim.scm \
  uim-module-manager.scm
 
-if COMPAT_TABLE
-SCM_FILES += hk.scm
-endif
-
 module_names = "pyload"
 if ANTHY
   module_names += "anthy"
