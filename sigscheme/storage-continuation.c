@@ -62,8 +62,7 @@
   File Local Type Definitions
 =======================================*/
 struct continuation_frame {
-    /* to ensure that the struct is even-byte aligned on stack, a ScmObj is
-       listed first */
+    /* to hint appropriate alignment on stack, a ScmObj is listed first */
     volatile ScmObj dyn_ext;
     volatile ScmObj ret_val;
 #if SCM_DEBUG
@@ -265,7 +264,7 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
 #endif
 
     if (setjmp(cont_frame.c_env)) {
-        /* returned from longjmp */
+        /* returned back to the original continuation */
         /*
          * Don't refer cont because it may already be invalidated by
          * continuation_stack_unwind().
