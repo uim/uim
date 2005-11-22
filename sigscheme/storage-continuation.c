@@ -64,21 +64,20 @@
 struct continuation_frame {
     /* to ensure that the struct is even-byte aligned on stack, a ScmObj is
        listed first */
-    ScmObj dyn_ext;
+    volatile ScmObj dyn_ext;
+    volatile ScmObj ret_val;
+#if SCM_DEBUG
+    volatile ScmObj trace_stack;
+#endif
     jmp_buf c_env;
 };
 
 /*=======================================
   Variable Declarations
 =======================================*/
-/* dynamic extent */
-static ScmObj current_dynamic_extent = NULL;
-
-/* temporary store for a object returned from a continuation */
-static ScmObj continuation_thrown_obj = NULL;
-static ScmObj continuation_stack = NULL;
-
-static ScmObj trace_stack = NULL;
+static volatile ScmObj current_dynamic_extent = NULL;
+static volatile ScmObj continuation_stack = NULL;
+static volatile ScmObj trace_stack = NULL;
 
 /*=======================================
   File Local Function Declarations
@@ -107,7 +106,7 @@ void SigScm_InitContinuation(void)
     initialize_continuation_env();
 
     trace_stack = SCM_NULL;
-    SigScm_GC_Protect(&trace_stack);
+    SigScm_GC_Protect((ScmObj *)&trace_stack);
 }
 
 void SigScm_FinalizeContinuation(void)
@@ -126,7 +125,7 @@ void SigScm_FinalizeContinuation(void)
 static void initialize_dynamic_extent(void)
 {
     current_dynamic_extent = SCM_NULL;
-    SigScm_GC_Protect(&current_dynamic_extent);
+    SigScm_GC_Protect((ScmObj *)&current_dynamic_extent);
 }
 
 static void finalize_dynamic_extent(void)
@@ -203,10 +202,8 @@ ScmObj Scm_DynamicWind(ScmObj before, ScmObj thunk, ScmObj after)
 ============================================================================*/
 static void initialize_continuation_env(void)
 {
-    continuation_thrown_obj = SCM_FALSE;
     continuation_stack = SCM_NULL;
-    SigScm_GC_Protect(&continuation_thrown_obj);
-    SigScm_GC_Protect(&continuation_stack);
+    SigScm_GC_Protect((ScmObj *)&continuation_stack);
 }
 
 static void finalize_continuation_env(void)
@@ -252,12 +249,15 @@ void Scm_DestructContinuation(ScmObj cont)
 
 ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
 {
-    ScmObj cont = SCM_FALSE;
-    ScmObj ret  = SCM_FALSE;
-    volatile ScmObj saved_trace_stack = SCM_FALSE;
+    volatile ScmObj cont = SCM_FALSE;
+    volatile ScmObj ret  = SCM_FALSE;
     struct continuation_frame cont_frame;
 
     cont_frame.dyn_ext = current_dynamic_extent;
+    cont_frame.ret_val = SCM_FALSE;
+#if SCM_DEBUG
+    cont_frame.trace_stack = trace_stack;
+#endif
     cont = Scm_NewContinuation();
     CONTINUATION_SET_FRAME(cont, &cont_frame);
 #if SCM_NESTED_CONTINUATION_ONLY
@@ -270,16 +270,15 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
          * Don't refer cont because it may already be invalidated by
          * continuation_stack_unwind().
          */
-        ret = continuation_thrown_obj;
-        continuation_thrown_obj = SCM_FALSE;  /* make ret sweepable */
-        trace_stack = saved_trace_stack;
+#if SCM_DEBUG
+        trace_stack = cont_frame.trace_stack;
+#endif
 
         enter_dynamic_extent(cont_frame.dyn_ext);
 
         eval_state->ret_type = SCM_RETTYPE_AS_IS;
-        return ret;
+        return cont_frame.ret_val;
     } else {
-        saved_trace_stack = trace_stack;
 #if SCM_NESTED_CONTINUATION_ONLY
         /* call proc with current continutation as (proc cont): This call must
          * not be Scm_tailcall(), to preserve current stack until longjmp()
@@ -325,7 +324,7 @@ void Scm_CallContinuation(ScmObj cont, ScmObj ret)
          */
         exit_dynamic_extent(frame->dyn_ext);
 
-        continuation_thrown_obj = ret;
+        frame->ret_val = ret;
         longjmp(frame->c_env, 1);
         /* NOTREACHED */
     } else {
