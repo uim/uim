@@ -61,9 +61,6 @@ struct ScmSpecialCharInfo_ {
 /* sigscheme.c */
 extern ScmObj Scm_sym_else, Scm_sym_yields;
 
-/* eval.c */
-extern struct trace_frame *scm_trace_root;
-
 /* io.c */
 extern ScmObj scm_current_input_port;
 extern ScmObj scm_current_output_port;
