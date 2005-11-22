@@ -62,7 +62,10 @@
   File Local Type Definitions
 =======================================*/
 struct continuation_frame {
-    /* to hint appropriate alignment on stack, a ScmObj is listed first */
+    /*
+     * - To hint appropriate alignment on stack, a ScmObj is listed first
+     * - GC marking for these ScmObj are implicitly performed by stack scanning
+     */
     volatile ScmObj dyn_ext;
     volatile ScmObj ret_val;
 #if SCM_DEBUG
