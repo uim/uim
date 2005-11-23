@@ -187,7 +187,7 @@ uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
 
   for (i = n_strs - 1; 0 <= i; i--) {
     c_str = strs[i];
-    str = (uim_lisp)Scm_NewStringCopying(c_str);
+    str = (uim_lisp)Scm_NewMutableStringCopying(c_str);
     lst = (uim_lisp)Scm_NewCons((ScmObj)str, (ScmObj)lst);
   }
 
@@ -292,7 +292,7 @@ uim_scm_init_fsubr(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp))
 void
 uim_scm_provide(const char *feature)
 {
-  ScmOp_provide(Scm_NewStringCopying(feature));
+  ScmOp_provide(Scm_NewImmutableStringCopying(feature));
 }
 
 
