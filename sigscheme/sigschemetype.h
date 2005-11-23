@@ -309,10 +309,10 @@ struct ScmCell_ {
 #define SCM_STRING_SET_LEN(a, len)   (SCM_STRING_LEN(a) = (len))
 #define SCM_STRING_MUTATION_TYPE(a)  ((enum ScmStrMutationType)(((unsigned int)SCM_AS_STRING(a)->obj.string.str) \
                                                                 & SCM_STRING_MUTATION_TYPE_MASK))
-#define SCM_STRING_SET_MUTABLE(a)    (SCM_AS_STRING(a)->obj.string.str = ((unsigned int)(SCM_AS_STRING(a)->obj.string.str)) \
-                                      | SCM_STR_MUTABLE)
-#define SCM_STRING_SET_IMMMUTABLE(a) (SCM_AS_STRING(a)->obj.string.str = ((unsigned int)(SCM_AS_STRING(a)->obj.string.str)) \
-                                      | SCM_STR_IMMUTABLE)
+#define SCM_STRING_SET_MUTABLE(a)   (SCM_AS_STRING(a)->obj.string.str = (char*)(((unsigned int)(SCM_AS_STRING(a)->obj.string.str)) \
+                                                                                | SCM_STR_MUTABLE))
+#define SCM_STRING_SET_IMMUTABLE(a) (SCM_AS_STRING(a)->obj.string.str = (char*)(((unsigned int)(SCM_AS_STRING(a)->obj.string.str)) \
+                                                                                | SCM_STR_IMMUTABLE))
 
 #define SCM_FUNCP(a) (SCM_TYPE(a) == ScmFunc)
 #define SCM_ENTYPE_FUNC(a)     (SCM_ENTYPE((a), ScmFunc))

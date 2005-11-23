@@ -487,7 +487,7 @@ static ScmObj SigScm_load_internal(const char *c_filename)
         SigScm_Error("SigScm_load_internal : file \"%s\" not found",
                      c_filename);
 
-    filepath = Scm_NewString(c_filepath);
+    filepath = Scm_NewImmutableString(c_filepath);
     port = ScmOp_open_input_file(filepath);
 
     /* read & eval cycle */

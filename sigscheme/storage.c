@@ -202,7 +202,7 @@ ScmObj Scm_NewChar(char *ch)
     return obj;
 }
 
-ScmObj Scm_NewString(char *str)
+ScmObj Scm_NewString(char *str, int is_immutable)
 {
     ScmObj obj = SigScm_NewObjFromHeap();
 
@@ -210,20 +210,32 @@ ScmObj Scm_NewString(char *str)
     SCM_STRING_SET_STR(obj, str);
     SCM_STRING_SET_LEN(obj, str ? Scm_mb_bare_c_strlen(str) : 0);
 
+    if (is_immutable)
+        SCM_STRING_SET_IMMUTABLE(obj);
+    else
+        SCM_STRING_SET_MUTABLE(obj);
+
     return obj;
 }
 
-ScmObj Scm_NewStringCopying(const char *str)
+ScmObj Scm_NewImmutableString(char *str)
 {
-    ScmObj obj = SigScm_NewObjFromHeap();
+    return Scm_NewString(str, 1);
+}
 
-    if (!str) str = "";
+ScmObj Scm_NewImmutableStringCopying(const char *str)
+{
+    return Scm_NewString(strdup(str), 1);
+}
 
-    SCM_ENTYPE_STRING(obj);
-    SCM_STRING_SET_STR(obj, strdup(str));
-    SCM_STRING_SET_LEN(obj, Scm_mb_bare_c_strlen(str));
+ScmObj Scm_NewMutableString(char *str)
+{
+    return Scm_NewString(str, 0);
+}
 
-    return obj;
+ScmObj Scm_NewMutableStringCopying(const char *str)
+{
+    return Scm_NewString(strdup(str), 0);
 }
 
 ScmObj Scm_NewFunc(enum ScmFuncTypeCode type, ScmFuncType func)

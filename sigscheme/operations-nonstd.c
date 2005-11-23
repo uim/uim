@@ -92,7 +92,7 @@ ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest)
 ScmObj ScmOp_load_path(void)
 {
     DECLARE_FUNCTION("load-path", ProcedureFixed0);
-    return Scm_NewStringCopying(scm_lib_path);
+    return Scm_NewImmutableStringCopying(scm_lib_path);
 }
 
 /* FIXME: add ScmObj SigScm_require(const char *c_filename) */
@@ -132,7 +132,7 @@ static ScmObj create_loaded_str(ScmObj filename)
     loaded_str = (char*)malloc(sizeof(char) * size);
     snprintf(loaded_str, size, "*%s-loaded*", SCM_STRING_STR(filename));
 
-    return Scm_NewString(loaded_str);
+    return Scm_NewImmutableString(loaded_str);
 }
 
 /*

@@ -195,7 +195,7 @@ static void SigScm_Initialize_internal(void)
       Fixing up
     =======================================================================*/
     /* to evaluate SigScheme-dependent codes conditionally */
-    ScmOp_provide(Scm_NewStringCopying("sigscheme"));
+    ScmOp_provide(Scm_NewImmutableStringCopying("sigscheme"));
 }
 
 void SigScm_Finalize()

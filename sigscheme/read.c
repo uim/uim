@@ -383,7 +383,7 @@ static ScmObj read_string(ScmObj port)
 
         case '\"':
             stringbuf[stringlen] = '\0';
-            return Scm_NewStringCopying(stringbuf);
+            return Scm_NewImmutableStringCopying(stringbuf);
 
         case '\\':
             /*

@@ -61,7 +61,7 @@
 #define ERRMSG_HANDLER_RETURNED    "handler returned"
 #define ERRMSG_FALLBACK_EXHAUSTED  "fallback handler exhausted"
 
-#define MAKE_STR_COPYING Scm_NewStringCopying
+#define MAKE_STR_COPYING Scm_NewImmutableStringCopying
 #define DECLARE_PRIVATE_FUNCTION(func_name, type)                            \
     DECLARE_INTERNAL_FUNCTION(func_name)
 

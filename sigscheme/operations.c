@@ -534,7 +534,7 @@ ScmObj ScmOp_number2string(ScmObj num, ScmObj args)
   if (r == 10 && SCM_INT_VALUE (num) < 0)
     *--p = '-';
 
-  return Scm_NewStringCopying(p);
+  return Scm_NewMutableStringCopying(p);
 }
 
 ScmObj ScmOp_string2number(ScmObj str, ScmObj args)
@@ -964,7 +964,7 @@ ScmObj ScmOp_symbol2string(ScmObj obj)
 {
     DECLARE_FUNCTION("symbol->string", ProcedureFixed1);
     ASSERT_SYMBOLP(obj);
-    return Scm_NewStringCopying(SCM_SYMBOL_NAME(obj));
+    return Scm_NewImmutableStringCopying(SCM_SYMBOL_NAME(obj));
 }
 
 ScmObj ScmOp_string2symbol(ScmObj str)
@@ -1158,7 +1158,7 @@ ScmObj ScmOp_make_string(ScmObj length, ScmObj args)
     ASSERT_INTP(length);
     len = SCM_INT_VALUE(length);
     if (len == 0)
-        return Scm_NewStringCopying("");
+        return Scm_NewMutableStringCopying("");
     if (len < 0)
         ERR_OBJ("length out of range", length);
 
@@ -1181,7 +1181,7 @@ ScmObj ScmOp_make_string(ScmObj length, ScmObj args)
     }
     new_str[fillstr_size * len] = '\0';
 
-    return Scm_NewString(new_str);
+    return Scm_NewMutableString(new_str);
 }
 
 ScmObj ScmOp_string(ScmObj args)
@@ -1237,6 +1237,7 @@ ScmObj ScmOp_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     DECLARE_FUNCTION("string-set!", ProcedureFixed3);
 
     ASSERT_STRINGP(str);
+    ASSERT_MUTABLEP(str);
     ASSERT_INTP(k);
     ASSERT_CHARP(ch);
 
@@ -1296,6 +1297,7 @@ ScmObj ScmOp_substring(ScmObj str, ScmObj start, ScmObj end)
     DECLARE_FUNCTION("substring", ProcedureFixed3);
 
     ASSERT_STRINGP(str);
+    ASSERT_MUTABLEP(str);
     ASSERT_INTP(start);
     ASSERT_INTP(end);
 
@@ -1321,7 +1323,7 @@ ScmObj ScmOp_substring(ScmObj str, ScmObj start, ScmObj end)
     memcpy(new_str, SCM_MBS_GET_STR(mbs), SCM_MBS_GET_SIZE(mbs));
     new_str[SCM_MBS_GET_SIZE(mbs)] = 0;
 
-    return Scm_NewString(new_str);
+    return Scm_NewMutableString(new_str);
 }
 
 ScmObj ScmOp_string_append(ScmObj args)
@@ -1336,7 +1338,7 @@ ScmObj ScmOp_string_append(ScmObj args)
     DECLARE_FUNCTION("string-append", ProcedureVariadic0);
 
     if (NO_MORE_ARG(args))
-        return Scm_NewStringCopying("");
+        return Scm_NewMutableStringCopying("");
 
     /* count total size of the new string */
     for (strings = args; !NULLP(strings); strings = CDR(strings)) {
@@ -1359,7 +1361,7 @@ ScmObj ScmOp_string_append(ScmObj args)
         p += strlen(SCM_STRING_STR(obj));
     }
 
-    return Scm_NewString(new_str);
+    return Scm_NewMutableString(new_str);
 }
 
 ScmObj ScmOp_string2list(ScmObj string)
@@ -1413,7 +1415,7 @@ ScmObj ScmOp_list2string(ScmObj lst)
         ERR_OBJ("list required but got", lst);
 
     if (NULLP(lst))
-        return Scm_NewStringCopying("");
+        return Scm_NewMutableStringCopying("");
 
     /* count total size of the string */
     for (chars = lst; !NULLP(chars); chars = CDR(chars)) {
@@ -1437,14 +1439,14 @@ ScmObj ScmOp_list2string(ScmObj lst)
         p += len;
     }
 
-    return Scm_NewString(new_str);
+    return Scm_NewMutableString(new_str);
 }
 
 ScmObj ScmOp_string_copy(ScmObj string)
 {
     DECLARE_FUNCTION("string-copy", ProcedureFixed1);
     ASSERT_STRINGP(string);
-    return Scm_NewStringCopying(SCM_STRING_STR(string));
+    return Scm_NewMutableStringCopying(SCM_STRING_STR(string));
 }
 
 ScmObj ScmOp_string_filld(ScmObj string, ScmObj ch)
@@ -1457,6 +1459,7 @@ ScmObj ScmOp_string_filld(ScmObj string, ScmObj ch)
     DECLARE_FUNCTION("string-fill!", ProcedureFixed2);
 
     ASSERT_STRINGP(string);
+    ASSERT_MUTABLEP(string);
     ASSERT_CHARP(ch);
 
     /* create new str */

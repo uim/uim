@@ -307,6 +307,15 @@ extern ScmObj *scm_stack_start_pointer;
 #define NAMEHASH_SIZE 1024
 
 /*=======================================
+   String Mutation Assertion
+=======================================*/
+#define ASSERT_MUTABLEP(str)                                            \
+    do {                                                                \
+        if (SCM_STRING_MUTATION_TYPE(str) == SCM_STR_IMMUTABLE)         \
+            ERR_OBJ("attempted to modify immutable string", str);       \
+    } while (/* CONSTCOND */ 0)
+
+/*=======================================
    List Constructor
 =======================================*/
 typedef ScmRef ScmQueue;
@@ -323,6 +332,7 @@ typedef ScmRef ScmQueue;
     } while (0)
 #define SCM_QUEUE_TERMINATOR(_q)          (DEREF(_q))
 #define SCM_QUEUE_SLOPPY_APPEND(_q, _lst) (DEREF(_q) = (_lst))
+
 /*=======================================
    Function Declarations
 =======================================*/

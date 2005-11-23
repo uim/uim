@@ -80,7 +80,7 @@ void SigScm_InitError(void)
     /* allocate a cons cell as unique ID */
     err_obj_tag = CONS(SCM_UNDEF, SCM_UNDEF);
 
-    str_srfi34 = Scm_NewStringCopying("srfi-34");
+    str_srfi34 = Scm_NewImmutableStringCopying("srfi-34");
     srfi34_is_provided = FALSE;
 
     fatal_err_looped = FALSE;
@@ -210,7 +210,7 @@ int SigScm_Die(const char *msg, const char *filename, int line)
     /* FIXME: provide replace asprintf */
     reason = strdup("SigScheme Died");
 #endif /* HAVE_ASPRINTF */
-    err_obj = Scm_MakeErrorObj(Scm_NewString(reason), LIST_1(SCM_UNDEF));
+    err_obj = Scm_MakeErrorObj(Scm_NewImmutableString(reason), LIST_1(SCM_UNDEF));
     ScmOp_sscm_fatal_error(err_obj);
     /* NOTREACHED */
     return 1;  /* dummy value for boolean expression */
@@ -230,7 +230,7 @@ void SigScm_Error(const char *msg, ...)
     /* FIXME: provide replace vasprintf */
     reason = strdup(msg);
 #endif /* HAVE_VASPRINTF */
-    err_obj = Scm_MakeErrorObj(Scm_NewString(reason), LIST_1(SCM_UNDEF));
+    err_obj = Scm_MakeErrorObj(Scm_NewImmutableString(reason), LIST_1(SCM_UNDEF));
     Scm_RaiseError(err_obj);
     /* NOTREACHED */
 }
@@ -240,7 +240,7 @@ void SigScm_ErrorObj(const char *msg, ScmObj obj)
 {
     ScmObj err_obj;
 
-    err_obj = Scm_MakeErrorObj(Scm_NewStringCopying(msg), LIST_1(obj));
+    err_obj = Scm_MakeErrorObj(Scm_NewImmutableStringCopying(msg), LIST_1(obj));
     Scm_RaiseError(err_obj);
     /* NOTREACHED */
 }
@@ -257,7 +257,7 @@ void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj)
     /* FIXME: provide replace asprintf */
     reason = strdup(msg);
 #endif /* HAVE_ASPRINTF */
-    err_obj = Scm_MakeErrorObj(Scm_NewString(reason), LIST_1(obj));
+    err_obj = Scm_MakeErrorObj(Scm_NewImmutableString(reason), LIST_1(obj));
     Scm_RaiseError(err_obj);
     /* NOTREACHED */
 }

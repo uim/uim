@@ -155,7 +155,7 @@ int main(int argc, char **argv)
 #endif
 
     SigScm_GC_Protect(&feature_id_siod);
-    feature_id_siod   = Scm_NewStringCopying(FEATURE_ID_SIOD);
+    feature_id_siod = Scm_NewImmutableStringCopying(FEATURE_ID_SIOD);
 
     if (argc < 2) {
 #if SCM_GCC4_READY_GC
