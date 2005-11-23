@@ -226,17 +226,6 @@ ScmObj Scm_NewStringCopying(const char *str)
     return obj;
 }
 
-ScmObj Scm_NewStringWithLen(char *str, int len)
-{
-    ScmObj obj = SigScm_NewObjFromHeap();
-
-    SCM_ENTYPE_STRING(obj);
-    SCM_STRING_SET_STR(obj, str);
-    SCM_STRING_SET_LEN(obj, len);
-
-    return obj;
-}
-
 ScmObj Scm_NewFunc(enum ScmFuncTypeCode type, ScmFuncType func)
 {
     ScmObj obj = SigScm_NewObjFromHeap();

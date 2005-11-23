@@ -1138,30 +1138,41 @@ ScmObj ScmOp_stringp(ScmObj obj)
 ScmObj ScmOp_make_string(ScmObj length, ScmObj args)
 {
     int len = 0;
-    ScmObj str    = SCM_FALSE;
+    int i;
+    int fillstr_size = 0;
     ScmObj filler = SCM_FALSE;
+    const char *fillstr = NULL;
+    char *new_str = NULL;
+    char *p = NULL;
     DECLARE_FUNCTION("make-string", ProcedureVariadic1);
 
     ASSERT_INTP(length);
     len = SCM_INT_VALUE(length);
     if (len == 0)
         return Scm_NewStringCopying("");
+    if (len < 0)
+        ERR_OBJ("length out of range", length);
 
-    /* specify filler */
+    /* extract fillstr */
     if (NO_MORE_ARG(args)) {
-        filler = Scm_NewChar(strdup(" "));
+        fillstr = " ";
     } else {
         filler = POP_ARG(args);
+        ASSERT_NO_MORE_ARG(args);
         ASSERT_CHARP(filler);
+        fillstr = SCM_CHAR_VALUE(filler);
     }
 
-    /* make string */
-    str = Scm_NewStringWithLen(NULL, len);
+    /* fill string */
+    fillstr_size = strlen(fillstr);
+    new_str = (char*)malloc(sizeof(char) * fillstr_size * len + 1);
+    for (i = 0, p = new_str; i < len; i++) {
+        strcpy(p, fillstr);
+        p += fillstr_size;
+    }
+    new_str[fillstr_size * len] = '\0';
 
-    /* and fill! */
-    ScmOp_string_filld(str, filler);
-
-    return str;
+    return Scm_NewString(new_str);
 }
 
 ScmObj ScmOp_string(ScmObj args)
@@ -1339,7 +1350,7 @@ ScmObj ScmOp_string_append(ScmObj args)
         p += strlen(SCM_STRING_STR(obj));
     }
 
-    return Scm_NewStringWithLen(new_str, total_len);
+    return Scm_NewString(new_str);
 }
 
 ScmObj ScmOp_string2list(ScmObj string)
