@@ -155,6 +155,11 @@ struct ScmEvalState_ {
     enum ScmReturnType ret_type;
 };
 
+enum ScmStrMutationType {
+    SCM_STR_IMMUTABLE           = 0,
+    SCM_STR_MUTABLE             = 1
+};
+
 #define SCM_CHARCELL_SIZE 8
 
 /* Scheme Object */
@@ -223,11 +228,11 @@ struct ScmCell_ {
 #endif
 
         struct ScmCPointer {
-            void *data;            
+            void *data;
         } c_pointer;
 
         struct ScmCFuncPointer {
-            ScmCFunc func;            
+            ScmCFunc func;
         } c_func_pointer;
     } obj;
 };
@@ -289,12 +294,25 @@ struct ScmCell_ {
 #define SCM_CHAR_VALUE(a) (SCM_AS_CHAR(a)->obj.ch.ch)
 #define SCM_CHAR_SET_VALUE(a, chr) (SCM_CHAR_VALUE(a) = (chr))
 
-#define SCM_STRINGP(a) (SCM_TYPE(a) == ScmString)
-#define SCM_ENTYPE_STRING(a)  (SCM_ENTYPE((a), ScmString))
-#define SCM_STRING_STR(a) (SCM_AS_STRING(a)->obj.string.str)
-#define SCM_STRING_SET_STR(a, str) (SCM_STRING_STR(a) = (str))
-#define SCM_STRING_LEN(a) (SCM_AS_STRING(a)->obj.string.len)
-#define SCM_STRING_SET_LEN(a, len) (SCM_STRING_LEN(a) = (len))
+/* String Object uses tagged pointer for packing mutation type.
+ * LSB of ScmCell.obj.string.str is used to represent mutation type
+ * (mutable or immutable). */
+#define SCM_STRING_MUTATION_TYPE_MASK 0x1
+#define SCM_STRING_STR_VALUE_MASK     ~SCM_STRING_MUTATION_TYPE_MASK
+#define SCM_STRINGP(a)               (SCM_TYPE(a) == ScmString)
+#define SCM_ENTYPE_STRING(a)         (SCM_ENTYPE((a), ScmString))
+#define SCM_STRING_STR(a)            ((char*)(((unsigned int)(SCM_AS_STRING(a)->obj.string.str)) & SCM_STRING_STR_VALUE_MASK))
+#define SCM_STRING_SET_STR(a, val)   (SCM_AS_STRING(a)->obj.string.str = \
+                                      ((char*)((((unsigned int)(SCM_STRING_STR(a))) & SCM_STRING_MUTATION_TYPE_MASK) \
+                                               | ((unsigned int)(val)))))
+#define SCM_STRING_LEN(a)            (SCM_AS_STRING(a)->obj.string.len)
+#define SCM_STRING_SET_LEN(a, len)   (SCM_STRING_LEN(a) = (len))
+#define SCM_STRING_MUTATION_TYPE(a)  ((enum ScmStrMutationType)(((unsigned int)SCM_AS_STRING(a)->obj.string.str) \
+                                                                & SCM_STRING_MUTATION_TYPE_MASK))
+#define SCM_STRING_SET_MUTABLE(a)    (SCM_AS_STRING(a)->obj.string.str = ((unsigned int)(SCM_AS_STRING(a)->obj.string.str)) \
+                                      | SCM_STR_MUTABLE)
+#define SCM_STRING_SET_IMMMUTABLE(a) (SCM_AS_STRING(a)->obj.string.str = ((unsigned int)(SCM_AS_STRING(a)->obj.string.str)) \
+                                      | SCM_STR_IMMUTABLE)
 
 #define SCM_FUNCP(a) (SCM_TYPE(a) == ScmFunc)
 #define SCM_ENTYPE_FUNC(a)     (SCM_ENTYPE((a), ScmFunc))
