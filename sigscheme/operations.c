@@ -1210,6 +1210,8 @@ ScmObj ScmOp_string_ref(ScmObj str, ScmObj k)
     SCM_MBS_INIT(mbs);
     /* get start_ptr and end_ptr */
     c_index = SCM_INT_VALUE(k);
+    if (c_index < 0 || SCM_STRING_LEN(str) <= c_index)
+        ERR_OBJ("index out of range", k);
     SCM_MBS_SET_STR(mbs, SCM_STRING_STR(str));
 
     /* FIXME: This strlen() can be eliminated. */
@@ -1244,6 +1246,8 @@ ScmObj ScmOp_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     /* get indexes */
     c_start_index = SCM_INT_VALUE(k);
     string_str    = SCM_STRING_STR(str);
+    if (c_start_index < 0 || SCM_STRING_LEN(str) <= c_start_index)
+        ERR_OBJ("index out of range", k);
     /* FIXME: can string_str be NULL at this point or not? */
     if (!string_str) string_str = "";
 
@@ -1306,10 +1310,12 @@ ScmObj ScmOp_substring(ScmObj str, ScmObj start, ScmObj end)
     c_end_index   = SCM_INT_VALUE(end);
 
     /* sanity check */
+    if (c_start_index < 0 || SCM_STRING_LEN(str) <= c_start_index)
+        ERR_OBJ("start index out of range", start);
+    if (c_end_index < 0 || SCM_STRING_LEN(str) <= c_end_index)
+        ERR_OBJ("end index out of range", end);
     if (c_start_index > c_end_index)
         ERR("substring: start index is greater than end index.");
-    if (c_end_index > SCM_STRING_LEN(str))
-        ERR_OBJ("index out of range", end);
 
     /* FIXME: strlen() can be eliminated. */
     string_str = SCM_STRING_STR(str);
