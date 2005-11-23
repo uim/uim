@@ -43,6 +43,7 @@
   System Include
 =======================================*/
 #include <stdlib.h>
+#include <stdio.h>  /* for EOF */
 #include <string.h>
 
 /*=======================================
@@ -55,10 +56,21 @@
 #endif
 
 /*=======================================
+  File Local Type Definitions
+=======================================*/
+/* FIXME: replace with C99-independent stdint */
+typedef unsigned char uchar;
+typedef unsigned int  uint;
+
+/*=======================================
   File Local Functions
 =======================================*/
 #if SCM_USE_EUCJP
+static const char *eucjp_encoding(void);
 static ScmMultibyteCharInfo eucjp_scan_char(ScmMultibyteString mbs);
+static int eucjp_str2int(const uchar *src, size_t len,
+                         ScmMultibyteState state);
+static uchar *eucjp_int2str(uchar *dst, int ch, ScmMultibyteState state);
 #endif
 
 #if SCM_USE_ISO2022KR
@@ -72,34 +84,138 @@ static ScmMultibyteCharInfo iso2022jp_scan_input_char(ScmMultibyteString mbs);
 #endif
 
 #if SCM_USE_SJIS
+static const char *sjis_encoding(void);
 static ScmMultibyteCharInfo sjis_scan_char(ScmMultibyteString mbs);
+static uchar *sjis_int2str(uchar *dst, int ch);
+#endif
+
+#if (SCM_USE_EUCCN || SCM_USE_EUCKR || SCM_USE_SJIS)
+/* generic double-byte char */
+static int dbc_str2int(const uchar *src, size_t len, ScmMultibyteState state);
+#endif
+
+#if (SCM_USE_EUCCN || SCM_USE_EUCKR)
+/* shared by EUCCN and EUCKR */
+static uchar *euc_int2str(uchar *dst, int ch, ScmMultibyteState state);
 #endif
 
 #if SCM_USE_EUCCN
+static const char *euccn_encoding(void);
 static ScmMultibyteCharInfo euccn_scan_char(ScmMultibyteString mbs);
 #endif
 
 #if SCM_USE_EUCKR
+static const char *euckr_encoding(void);
 static ScmMultibyteCharInfo euckr_scan_char(ScmMultibyteString mbs);
 #endif
 
 #if SCM_USE_UTF8
+static const char *utf8_encoding(void);
 static ScmMultibyteCharInfo utf8_scan_char(ScmMultibyteString mbs);
+static int utf8_str2int(const uchar *src, size_t len, ScmMultibyteState state);
+static uchar *utf8_int2str(uchar *dst, int ch, ScmMultibyteState state);
 #endif
 
+static const char *unibyte_encoding(void);
 static ScmMultibyteCharInfo unibyte_scan_char(ScmMultibyteString mbs);
+static int unibyte_str2int(const uchar *src, size_t len,
+                           ScmMultibyteState state);
+static uchar *unibyte_int2str(uchar *dst, int ch, ScmMultibyteState state);
 
-typedef unsigned char uchar;
+/*=======================================
+  Local Variables
+=======================================*/
+#if SCM_USE_UTF8
+static const ScmCharCodecVTbl utf8_codec_vtbl = {
+    &utf8_encoding,
+    &utf8_scan_char,
+    (ScmCharCodecMethod_str2int)&utf8_str2int,
+    (ScmCharCodecMethod_int2str)&utf8_int2str
+};
+#define utf8_codec (&utf8_codec_vtbl)
+#endif
+
+#if SCM_USE_EUCCN
+static const ScmCharCodecVTbl euccn_codec_vtbl = {
+    &euccn_encoding,
+    &euccn_scan_char,
+    (ScmCharCodecMethod_str2int)&dbc_str2int,
+    (ScmCharCodecMethod_int2str)&euc_int2str
+};
+#define euccn_codec (&euccn_codec_vtbl)
+#endif
+
+#if SCM_USE_EUCJP
+static const ScmCharCodecVTbl eucjp_codec_vtbl = {
+    &eucjp_encoding,
+    &eucjp_scan_char,
+    (ScmCharCodecMethod_str2int)&eucjp_str2int,
+    (ScmCharCodecMethod_int2str)&eucjp_int2str
+};
+#define eucjp_codec (&eucjp_codec_vtbl)
+#endif
+
+#if SCM_USE_EUCKR
+static const ScmCharCodecVTbl euckr_codec_vtbl = {
+    &euckr_encoding,
+    &euckr_scan_char,
+    (ScmCharCodecMethod_str2int)&dbc_str2int,
+    (ScmCharCodecMethod_int2str)&euc_int2str
+};
+#define euckr_codec (&euckr_codec_vtbl)
+#endif
+
+#if SCM_USE_SJIS
+static const ScmCharCodecVTbl sjis_codec_vtbl = {
+    &sjis_encoding,
+    &sjis_scan_char,
+    (ScmCharCodecMethod_str2int)&dbc_str2int,
+    (ScmCharCodecMethod_int2str)&sjis_int2str
+};
+#define sjis_codec (&sjis_codec_vtbl)
+#endif
+
+static const ScmCharCodecVTbl unibyte_codec_vtbl = {
+    &unibyte_encoding,
+    &unibyte_scan_char,
+    (ScmCharCodecMethod_str2int)&unibyte_str2int,
+    (ScmCharCodecMethod_int2str)&unibyte_int2str
+};
+#define unibyte_codec (&unibyte_codec_vtbl)
 
 /*=======================================
   Global Variables
 =======================================*/
-/* TODO: add some mechanism to dynamically switch between encodings. */
+/* FIXME: merge into Scm_current_char_codec */
 ScmMultibyteCharInfo (*Scm_mb_scan_char)(ScmMultibyteString mbs)
-#if SCM_USE_UTF8
+#if SCM_USE_UTF8_AS_DEFAULT
     = utf8_scan_char;
+#elif SCM_USE_EUCCN_AS_DEFAULT
+    = euccn_scan_char;
+#elif SCM_USE_EUCJP_AS_DEFAULT
+    = eucjp_scan_char;
+#elif SCM_USE_EUCKR_AS_DEFAULT
+    = eucjp_scan_char;
+#elif SCM_USE_SJIS_AS_DEFAULT
+    = sjis_scan_char;
 #else
     = unibyte_scan_char;
+#endif
+
+/* temporary solution */
+ScmCharCodec *Scm_current_char_codec
+#if SCM_USE_UTF8_AS_DEFAULT
+    = utf8_codec;
+#elif SCM_USE_EUCJP_AS_DEFAULT
+    = eucjp_codec;
+#elif SCM_USE_EUCCN_AS_DEFAULT
+    = euccn_codec;
+#elif SCM_USE_EUCKR_AS_DEFAULT
+    = euckr_codec;
+#elif SCM_USE_SJIS_AS_DEFAULT
+    = sjis_codec;
+#else
+    = unibyte_codec;
 #endif
 
 /*=======================================
@@ -196,14 +312,24 @@ ScmMultibyteString Scm_mb_substring(ScmMultibyteString mbs, int i, int len)
 #define IS_ASCII(c) ((uchar)(c) <= 0x7F)
 #define IS_GR_SPC_OR_DEL(c)  ((uchar)(c) == 0xA0 || (uchar)(c) == 0xFF)
 
+#define CHAR_BITS    8
+#define BYTE_MASK    0xFF
+#define IS_1BYTE(e)  ((uint)(e) <= 0x7F)
+#define IS_2BYTES(e) ((uint)(e) <= 0xFFFF)
+#define IS_3BYTES(e) ((uint)(e) <= ((SS3 << CHAR_BITS * 2) | 0xFFFF))
+
 #define ESC 0x1B
 #define SO  0x0E
 #define SI  0x0F
 #define SS2 0x8E
 #define SS3 0x8F
 
-
 #if SCM_USE_EUCJP
+static const char *eucjp_encoding(void)
+{
+    return "EUC-JP";
+}
+
 /* G0 <- (96) ASCII (or was it JIS X 0201 Roman?)
  * G1 <- (94x94) JIS X 0208 kanji/kana
  * G2 <- (94) JIS X 0201 Katakana ("half-width katakana")
@@ -250,9 +376,132 @@ static ScmMultibyteCharInfo eucjp_scan_char(ScmMultibyteString mbs)
 
     RETURN_ERROR();
 }
+
+static int eucjp_str2int(const uchar *src, size_t len, ScmMultibyteState state)
+{
+    int ch;
+
+    switch (len) {
+    case 1:
+        ch = src[0];
+        break;
+
+    case 2:
+        ch  = src[0] << CHAR_BITS;
+        ch |= src[1];
+        break;
+
+    case 3:
+        ch  = src[0] << CHAR_BITS;
+        ch |= src[1] << CHAR_BITS * 2;
+        ch |= src[2];
+        break;
+
+    default:
+        return EOF;
+    }
+
+    return ch;
+}
+
+/* TODO: migrate to a canonical form shared with ISO-2022 variants that contain
+   absolute character set identifier instead of raw encoding-dependent
+   shifts */
+static uchar *eucjp_int2str(uchar *dst, int ch, ScmMultibyteState state)
+{
+#if SCM_STRICT_ENCODING_CHECK
+    uchar seq[3];
+#endif
+
+    if (IS_1BYTE(ch)) {
+        *dst++ = ch;
+    } else if (IS_2BYTES(ch)) {
+#if SCM_STRICT_ENCODING_CHECK
+        seq[0] = ch >> CHAR_BITS;
+        seq[1] = ch & BYTE_MASK;
+        if ((!IN_GR94(seq[0]) && seq[0] != SS2)
+            || !IN_GR96(seq[1]))
+            return NULL;
+#endif
+        *dst++ = ch >> CHAR_BITS;
+        *dst++ = ch & BYTE_MASK;
+    } else if (IS_3BYTES(ch)) {
+#if SCM_STRICT_ENCODING_CHECK
+        seq[0] = ch >> CHAR_BITS * 2;
+        seq[1] = (ch >> CHAR_BITS) & BYTE_MASK;
+        seq[2] = ch & BYTE_MASK;
+        if (seq[0] != SS3 || !IN_GR94(seq[1]) || !IN_GR94(seq[2]))
+            return NULL;
+#endif
+        *dst++ = ch >> CHAR_BITS * 2;
+        *dst++ = (ch >> CHAR_BITS) & BYTE_MASK;
+        *dst++ = ch & BYTE_MASK;
+    } else {
+        return NULL;
+    }
+    *dst = '\0';
+
+    return dst;
+}
 #endif /* SCM_USE_EUCJP */
 
+#if (SCM_USE_EUCCN || SCM_USE_EUCKR || SCM_USE_SJIS)
+/* generic double-byte char */
+static int dbc_str2int(const uchar *src, size_t len, ScmMultibyteState state)
+{
+    int ch;
+
+    switch (len) {
+    case 1:
+        ch = src[0];
+        break;
+
+    case 2:
+        ch  = src[0] << CHAR_BITS;
+        ch |= src[1];
+        break;
+
+    default:
+        return EOF;
+    }
+
+    return ch;
+}
+#endif /* (SCM_USE_EUCCN || SCM_USE_EUCKR || SCM_USE_SJIS) */
+
+#if (SCM_USE_EUCCN || SCM_USE_EUCKR)
+static uchar *euc_int2str(uchar *dst, int ch, ScmMultibyteState state)
+{
+#if SCM_STRICT_ENCODING_CHECK
+    uchar seq[2];
+#endif
+
+    if (IS_1BYTE(ch)) {
+        *dst++ = ch;
+    } else if (IS_2BYTES(ch)) {
+#if SCM_STRICT_ENCODING_CHECK
+        seq[0] = ch >> CHAR_BITS;
+        seq[1] = ch & BYTE_MASK;
+        if (!IN_GR94(seq[0]) || !IN_GR96(seq[1]))
+            return NULL;
+#endif
+        *dst++ = ch >> CHAR_BITS;
+        *dst++ = ch & BYTE_MASK;
+    } else {
+        return NULL;
+    }
+    *dst = '\0';
+
+    return dst;
+}
+#endif /* (SCM_USE_EUCCN || SCM_USE_EUCKR) */
+
 #if SCM_USE_EUCCN
+static const char *euccn_encoding(void)
+{
+    return "EUC-CN";
+}
+
 /* FIXME: NOT TESTED!
  * 
  * G0 <- ASCII (or GB 1988?)
@@ -286,6 +535,11 @@ static ScmMultibyteCharInfo euccn_scan_char(ScmMultibyteString mbs)
 #endif
 
 #if SCM_USE_EUCKR
+static const char *euckr_encoding(void)
+{
+    return "EUC-KR";
+}
+
 /* FIXME: NOT TESTED!  I'm not sure about this encoding.  There's also
  * a Microsoft variant called CP949, which is not supported (yet).
  * RFC 1557 says KS X 1001 is 94x94.
@@ -320,12 +574,30 @@ static ScmMultibyteCharInfo euckr_scan_char(ScmMultibyteString mbs)
 #endif /* SCM_USE_EUCKR */
 
 /*==== Encodings for Unicode ====*/
+#define IN_OCT_BMP(u)  ((uint)(u) <= 0x7ff)
+#define IN_BMP(u)      ((uint)(u) <= 0xffff)
+#define IN_SMP(u)      ((uint)(u) <= 0x10ffff && !IN_BMP(u))
+
 #if SCM_USE_UTF8
 /* RFC 3629 */
 #define MASK(n)        ((LEN_CODE(n) >> 1) | 0x80)
 #define LEN_CODE(n)    (((1 << (n))-1) << (8-n))
 #define IS_LEN(c, n)   ((MASK(n) & (c)) == LEN_CODE(n))
 #define IS_TRAILING(c) (IS_LEN((c), 1))
+
+#define LEN_CODE_BITS(n)    (n + 1)
+#define TRAILING_CODE_BITS  LEN_CODE_BITS(1)
+#define TRAILING_VAL_BITS   (CHAR_BITS - TRAILING_CODE_BITS)
+#define LEADING_VAL_BITS(n) (CHAR_BITS - LEN_CODE_BITS(n))
+#define LEADING_VAL(u, n)                                                    \
+    ((u) >> (LEN_CODE_BITS(n) + TRAILING_VAL_BITS * ((n) - 1)))
+#define TRAILING_VAL(u, n, i)                                                \
+    (~MASK(1) & ((u) >> (TRAILING_VAL_BITS * ((n) - 2 - (i)))))
+
+static const char *utf8_encoding(void)
+{
+    return "UTF-8";
+}
 
 static ScmMultibyteCharInfo utf8_scan_char(ScmMultibyteString mbs)
 {
@@ -363,10 +635,73 @@ static ScmMultibyteCharInfo utf8_scan_char(ScmMultibyteString mbs)
 
 }
 
+static int utf8_str2int(const uchar *src, size_t len, ScmMultibyteState state)
+{
+    int ch;
+
+    switch (len) {
+    case 1:
+        ch = src[0];
+        break;
+
+    case 2:
+        ch  = (~MASK(2) & src[0]) << TRAILING_VAL_BITS;
+        ch |= (~MASK(1) & src[1]);
+        break;
+
+    case 3:
+        ch  = (~MASK(3) & src[0]) << TRAILING_VAL_BITS * 2;
+        ch |= (~MASK(1) & src[1]) << TRAILING_VAL_BITS;
+        ch |= (~MASK(1) & src[2]);
+        break;
+
+    case 4:
+        ch  = (~MASK(4) & src[0]) << TRAILING_VAL_BITS * 3;
+        ch |= (~MASK(1) & src[1]) << TRAILING_VAL_BITS * 2;
+        ch |= (~MASK(1) & src[2]) << TRAILING_VAL_BITS;
+        ch |= (~MASK(1) & src[3]);
+        break;
+
+    default:
+        return EOF;
+    }
+
+    return ch;
+}
+
+static uchar *utf8_int2str(uchar *dst, int ch, ScmMultibyteState state)
+{
+    if (IS_ASCII(ch)) {
+        *dst++ = ch;
+    } else if (IN_OCT_BMP(ch)) {
+        *dst++ = LEN_CODE(2) | LEADING_VAL(ch, 2);
+        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 2, 0);
+    } else if (IN_BMP(ch)) {
+        *dst++ = LEN_CODE(3) | LEADING_VAL(ch, 3);
+        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 3, 0);
+        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 3, 1);
+    } else if (IN_SMP(ch)) {
+        *dst++ = LEN_CODE(4) | LEADING_VAL(ch, 4);
+        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 4, 0);
+        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 4, 1);
+        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 4, 2);
+    } else {
+        return NULL;
+    }
+    *dst = '\0';
+
+    return dst;
+}
 #undef MASK
 #undef LEN_CODE
 #undef IS_LEN
 #undef IS_TRAILING
+#undef LEN_CODE_BITS
+#undef TRAILING_CODE_BITS
+#undef TRAILING_VAL_BITS
+#undef LEADING_VAL_BITS
+#undef LEADING_VAL
+#undef TRAILING_VAL
 #endif /* SCM_USE_UTF8 */
 
 /*==== Other encodings ====*/
@@ -387,8 +722,6 @@ static ScmMultibyteCharInfo utf8_scan_char(ScmMultibyteString mbs)
  * 0x40 .. 0x7E: trailing byte of 2-byte char
  * 0x80 .. 0xFC: trailing byte of 2-byte char
  */
-static ScmMultibyteCharInfo sjis_scan_char(ScmMultibyteString mbs)
-{
 #define IS_KANA(c) (0xA1 <= (uchar)(c) && (uchar)(c) <= 0xDF)
 #define IS_LEAD(c)        \
     (0x81 <= (uchar)(c)   \
@@ -397,6 +730,13 @@ static ScmMultibyteCharInfo sjis_scan_char(ScmMultibyteString mbs)
     && (uchar)(c) != 0xA0)
 #define IS_TRAIL(c) (0x40 <= (uchar)(c) && (uchar)(c) <= 0xFC && (c) != 0x7E)
 
+static const char *sjis_encoding(void)
+{
+    return "SHIFT_JIS";
+}
+
+static ScmMultibyteCharInfo sjis_scan_char(ScmMultibyteString mbs)
+{
     const char *str = SCM_MBS_GET_STR(mbs);
     const int  size = SCM_MBS_GET_SIZE(mbs);
     ENTER;
@@ -413,11 +753,34 @@ static ScmMultibyteCharInfo sjis_scan_char(ScmMultibyteString mbs)
         RETURN(2);
     }
     RETURN(1);
+}
 
+static uchar *sjis_int2str(uchar *dst, int ch)
+{
+    uchar seq[2];
+
+#if SCM_STRICT_ENCODING_CHECK
+    if (ch >> CHAR_BITS * 2)
+        return NULL;
+#endif
+    seq[0] = ch >> CHAR_BITS;
+    seq[1] = ch & BYTE_MASK;
+
+    *dst++ = seq[0];
+    if (IS_LEAD(seq[0])) {
+#if SCM_STRICT_ENCODING_CHECK
+        if (!IS_TRAIL(seq[1]))
+            return NULL;
+#endif
+        *dst++ = seq[1];
+    }
+    *dst = '\0';
+
+    return dst;
+}
 #undef IS_KANA
 #undef IS_LEAD
 #undef IS_TRAIL
-}
 #endif /* SCM_USE_SJIS */
 
 /* Single-byte encodings.  Please add any that you know are missing.
@@ -428,10 +791,36 @@ static ScmMultibyteCharInfo sjis_scan_char(ScmMultibyteString mbs)
  * ISO-8859-*
  * VISCII
  */
+static const char *unibyte_encoding(void)
+{
+    /* conventional assumption */
+    return "ISO-8859-1";
+}
+
 static ScmMultibyteCharInfo unibyte_scan_char(ScmMultibyteString mbs)
 {
     ENTER;
     if (SCM_MBS_GET_SIZE(mbs))
         RETURN(1);
     RETURN(0);
+}
+
+static int unibyte_str2int(const uchar *src, size_t len,
+                           ScmMultibyteState state)
+{
+#if SCM_STRICT_ENCODING_CHECK
+    if (len != 1)
+        return EOF;
+#endif
+    return src[0];
+}
+
+static uchar *unibyte_int2str(uchar *dst, int ch, ScmMultibyteState state)
+{
+#if SCM_STRICT_ENCODING_CHECK
+    if (ch & ~BYTE_MASK)
+        return NULL;
+#endif
+    *dst++ = ch;
+    return dst;
 }

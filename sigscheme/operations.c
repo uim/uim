@@ -1075,25 +1075,34 @@ ScmObj ScmOp_char_lower_casep(ScmObj obj)
     return SCM_FALSE;
 }
 
+ScmObj ScmOp_char2integer(ScmObj obj)
+{
+    int val;
+    const char *str;
+    DECLARE_FUNCTION("char->integer", ProcedureFixed1);
+
+    ASSERT_CHARP(obj);
+
+    str = SCM_CHAR_VALUE(obj);
+    val = SCM_CHARCODEC_STR2INT(Scm_current_char_codec, str, strlen(str),
+                                SCM_MB_STATELESS);
+    if (val == EOF)
+        ERR_OBJ("invalid char value", obj);
+    return Scm_NewInt(val);
+}
+
 ScmObj ScmOp_integer2char(ScmObj obj)
 {
     int val;
-    char *buf;
+    char buf[SCM_MB_MAX_LEN + sizeof((char)'\0')];
     DECLARE_FUNCTION("integer->char", ProcedureFixed1);
 
     ASSERT_INTP(obj);
 
-    /* FIXME: only supports ASCII */
     val = SCM_INT_VALUE(obj);
-    if (isascii(val)) {
-        buf = malloc(sizeof(char) + sizeof((char)'\0'));
-        buf[0] = val;
-        buf[1] = '\0';
-        return Scm_NewChar(buf);
-    } else {
-        ERR_OBJ("current implementation only supports ASCII", obj);
-        /* NOTREACHED */
-    }
+    if (!SCM_CHARCODEC_INT2STR(Scm_current_char_codec, buf, val, SCM_MB_STATELESS))
+        ERR_OBJ("invalid char value", obj);
+    return Scm_NewChar(strdup(buf));
 }
 
 ScmObj ScmOp_char_upcase(ScmObj obj)

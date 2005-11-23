@@ -58,18 +58,18 @@
 ===========================================================================*/
 /* Support for each encoding will be compiled in if the corresponding
  * macro is defined as nonzero. */
-#define SCM_USE_EUCJP           0
-#define SCM_USE_SJIS            0
 #define SCM_USE_UTF8            1
-#define SCM_USE_EUCCN           0
-#define SCM_USE_EUCKR           0
+#define SCM_USE_EUCCN           1
+#define SCM_USE_EUCJP           1
+#define SCM_USE_EUCKR           1
+#define SCM_USE_SJIS            1
 
-/* For now, edit encoding.c and change the initialization of
- * Scm_mb_scan_char to change the default encoding. */
-
-/* "which encodings are enabled" and "which encoding is the default" will be
- * separated in future
- */
+/* choose exclusively. fallbacks to the unibyte encoding if nothing chosen. */
+#define SCM_USE_UTF8_AS_DEFAULT  1
+#define SCM_USE_EUCCN_AS_DEFAULT 0
+#define SCM_USE_EUCJP_AS_DEFAULT 0
+#define SCM_USE_EUCKR_AS_DEFAULT 0
+#define SCM_USE_SJIS_AS_DEFAULT  0
 
 /*===========================================================================
   Internal Behaviors
@@ -138,6 +138,20 @@
 #undef SCM_USE_VALUECONS
 #define SCM_USE_VALUECONS       0
 #endif /* SCM_OBJ_COMPACT */
+
+#if (SCM_USE_UTF8 || SCM_USE_EUCCN || SCM_USE_EUCJP || SCM_USE_EUCKR || SCM_USE_SJIS)
+#define SCM_USE_MULTIBYTE_CHAR  1
+#else
+#define SCM_USE_MULTIBYTE_CHAR  0
+#endif
+
+#if (   SCM_USE_UTF8_AS_DEFAULT  && !SCM_USE_UTF8                            \
+     || SCM_USE_EUCCN_AS_DEFAULT && !SCM_USE_EUCCN                           \
+     || SCM_USE_EUCJP_AS_DEFAULT && !SCM_USE_EUCJP                           \
+     || SCM_USE_EUCKR_AS_DEFAULT && !SCM_USE_EUCKR                           \
+     || SCM_USE_SJIS_AS_DEFAULT  && !SCM_USE_SJIS)
+#error "disabled character encoding is chosen as default"
+#endif
 
 /* for Scm_eval_c_string_internal() */
 #undef SCM_USE_SRFI6

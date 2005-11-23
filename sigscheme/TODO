@@ -13,10 +13,6 @@ Requirements and bugs:
 
 * [uim] link libsscm into libuim statically
 
-* Dynamic encoding switching for a conversion between string and char list,
-  based on a SRFI or de facto standard API
-  - Evaluate ces API of Gauche
-
 * Fix large fixed-size buffer on stack without limit checking in read.c
 
 * grep "FIXME" and fix them
@@ -69,6 +65,12 @@ Namings and Cosmetic things:
 Assigned to YamaKen:
 
 * Add integer->char and char->integer procedures with multibyte support
+  - Write test
+  - Make character object int-based
+
+* Dynamic encoding switching for a conversion between string and char list,
+  based on a SRFI or de facto standard API
+  - Evaluate ces API of Gauche
 
 * GCC4-optimization-proof stack protection
   - Update the document

@@ -92,10 +92,10 @@
 
 #define SCM_CHARCODEC_ENCODING(codec)           ((*codec->encoding)())
 #define SCM_CHARCODEC_SCAN_CHAR(codec, mbs)     ((*codec->scan_char)(mbs))
-#define SCM_CHARCODEC_STR2INT(codec, start, nbytes)                          \
-    ((*codec->str2int)((start), (nbytes)))
-#define SCM_CHARCODEC_INT2STR(codec, start, ch)                              \
-    ((*codec->int2str)((start), (ch)))
+#define SCM_CHARCODEC_STR2INT(codec, src, len, state)                        \
+    ((*codec->str2int)((src), (len), (state)))
+#define SCM_CHARCODEC_INT2STR(codec, dst, ch, state)                         \
+    ((*codec->int2str)((dst), (ch), (state)))
 
 /*=======================================
   Type Definitions
@@ -103,6 +103,8 @@
 /* This type will actually contain some encoding-dependent enum value.
  * It might as well be defined as mbstate_t if we're using libc. */
 typedef int ScmMultibyteState;
+
+#define SCM_MB_STATELESS 0
 
 /* Metadata of a multibyte character.  These are usually allocated on
    stack or register, so we'll make liberal use of space. */
@@ -130,12 +132,16 @@ typedef struct {
 } ScmMultibyteString;
 
 typedef struct ScmCharCodecVTbl_ ScmCharCodecVTbl;
-typedef ScmCharCodecVTbl ScmCharCodec;
+typedef const ScmCharCodecVTbl ScmCharCodec;
 
+/* FIXME: replace (char *) with (uchar *) once C99-independent stdint is
+   introduced */
 typedef const char *(*ScmCharCodecMethod_encoding)(void);
 typedef ScmMultibyteCharInfo (*ScmCharCodecMethod_scan_char)(ScmMultibyteString mbs);
-typedef int (*ScmCharCodecMethod_str2int)(const char *start, size_t nbytes);
-typedef char *(*ScmCharCodecMethod_int2str)(char *start, int ch);
+typedef int (*ScmCharCodecMethod_str2int)(const char *src, size_t len,
+                                          ScmMultibyteState state);
+typedef char *(*ScmCharCodecMethod_int2str)(char *dst, int ch,
+                                            ScmMultibyteState state);
 
 struct ScmCharCodecVTbl_ {
     ScmCharCodecMethod_encoding  encoding;
@@ -148,6 +154,7 @@ struct ScmCharCodecVTbl_ {
    Variable Declarations
 =======================================*/
 extern ScmMultibyteCharInfo (*Scm_mb_scan_char)(ScmMultibyteString mbs);
+extern ScmCharCodec *Scm_current_char_codec;
 
 /*=======================================
    Function Declarations
