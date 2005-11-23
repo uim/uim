@@ -531,10 +531,10 @@ ScmObj ScmOp_stringequalp(ScmObj str1, ScmObj str2);
 /* TODO : many comparing functions around string is unimplemented */
 ScmObj ScmOp_substring(ScmObj str, ScmObj start, ScmObj end);
 ScmObj ScmOp_string_append(ScmObj args);
-ScmObj ScmOp_string2list(ScmObj string);
+ScmObj ScmOp_string2list(ScmObj str);
 ScmObj ScmOp_list2string(ScmObj lst);
-ScmObj ScmOp_string_copy(ScmObj string);
-ScmObj ScmOp_string_filld(ScmObj string, ScmObj ch);
+ScmObj ScmOp_string_copy(ScmObj str);
+ScmObj ScmOp_string_filld(ScmObj str, ScmObj ch);
 ScmObj ScmOp_vectorp(ScmObj obj);
 ScmObj ScmOp_make_vector(ScmObj vector_len, ScmObj args);
 ScmObj ScmOp_vector(ScmObj args);

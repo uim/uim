@@ -1337,8 +1337,8 @@ ScmObj ScmOp_string_append(ScmObj args)
     /* FIXME: transition to new arg extraction mechanism incomplete. */
     int total_size = 0;
     int total_len  = 0;
-    ScmObj strings = SCM_NULL;
-    ScmObj obj     = SCM_NULL;
+    ScmObj strlst  = SCM_FALSE;
+    ScmObj obj     = SCM_FALSE;
     char  *new_str = NULL;
     char  *p       = NULL;
     DECLARE_FUNCTION("string-append", ProcedureVariadic0);
@@ -1347,8 +1347,8 @@ ScmObj ScmOp_string_append(ScmObj args)
         return Scm_NewMutableStringCopying("");
 
     /* count total size of the new string */
-    for (strings = args; !NULLP(strings); strings = CDR(strings)) {
-        obj = CAR(strings);
+    for (strlst = args; !NULLP(strlst); strlst = CDR(strlst)) {
+        obj = CAR(strlst);
         ASSERT_STRINGP(obj);
 
         total_size += strlen(SCM_STRING_STR(obj));
@@ -1360,8 +1360,8 @@ ScmObj ScmOp_string_append(ScmObj args)
 
     /* copy string by string */
     p = new_str;
-    for (strings = args; !NULLP(strings); strings = CDR(strings)) {
-        obj = CAR(strings);
+    for (strlst = args; !NULLP(strlst); strlst = CDR(strlst)) {
+        obj = CAR(strlst);
 
         strcpy(p, SCM_STRING_STR(obj));
         p += strlen(SCM_STRING_STR(obj));
@@ -1370,7 +1370,7 @@ ScmObj ScmOp_string_append(ScmObj args)
     return Scm_NewMutableString(new_str);
 }
 
-ScmObj ScmOp_string2list(ScmObj string)
+ScmObj ScmOp_string2list(ScmObj str)
 {
     ScmObj head = SCM_NULL;
     ScmObj tail = SCM_NULL;
@@ -1380,11 +1380,11 @@ ScmObj ScmOp_string2list(ScmObj string)
     char *buf;
     DECLARE_FUNCTION("string->list", ProcedureFixed1);
 
-    ASSERT_STRINGP(string);
+    ASSERT_STRINGP(str);
 
     SCM_MBS_INIT(mbs);
-    SCM_MBS_SET_STR(mbs, SCM_STRING_STR(string));
-    SCM_MBS_SET_SIZE(mbs, strlen(SCM_STRING_STR(string)));
+    SCM_MBS_SET_STR(mbs, SCM_STRING_STR(str));
+    SCM_MBS_SET_SIZE(mbs, strlen(SCM_STRING_STR(str)));
 
     while (SCM_MBS_GET_SIZE(mbs)) {
         ch = Scm_mb_scan_char(mbs);
@@ -1448,14 +1448,14 @@ ScmObj ScmOp_list2string(ScmObj lst)
     return Scm_NewMutableString(new_str);
 }
 
-ScmObj ScmOp_string_copy(ScmObj string)
+ScmObj ScmOp_string_copy(ScmObj str)
 {
     DECLARE_FUNCTION("string-copy", ProcedureFixed1);
-    ASSERT_STRINGP(string);
-    return Scm_NewMutableStringCopying(SCM_STRING_STR(string));
+    ASSERT_STRINGP(str);
+    return Scm_NewMutableStringCopying(SCM_STRING_STR(str));
 }
 
-ScmObj ScmOp_string_filld(ScmObj string, ScmObj ch)
+ScmObj ScmOp_string_filld(ScmObj str, ScmObj ch)
 {
     int  char_size = 0;
     int  str_len   = 0;
@@ -1464,14 +1464,14 @@ ScmObj ScmOp_string_filld(ScmObj string, ScmObj ch)
     int   i        = 0;
     DECLARE_FUNCTION("string-fill!", ProcedureFixed2);
 
-    ASSERT_STRINGP(string);
-    ASSERT_MUTABLEP(string);
+    ASSERT_STRINGP(str);
+    ASSERT_MUTABLEP(str);
     ASSERT_CHARP(ch);
 
     /* create new str */
     char_size = strlen(SCM_CHAR_VALUE(ch));
-    str_len   = SCM_STRING_LEN(string);
-    new_str   = (char*)realloc(SCM_STRING_STR(string),
+    str_len   = SCM_STRING_LEN(str);
+    new_str   = (char*)realloc(SCM_STRING_STR(str),
                                sizeof(char) * str_len * char_size + 1);
     for (i = 0, p = new_str; i < char_size * str_len;) {
         strcpy(p, SCM_CHAR_VALUE(ch));
@@ -1480,9 +1480,9 @@ ScmObj ScmOp_string_filld(ScmObj string, ScmObj ch)
         i += char_size;
     }
 
-    SCM_STRING_SET_STR(string, new_str);
+    SCM_STRING_SET_STR(str, new_str);
 
-    return string;
+    return str;
 }
 
 /*==============================================================================
