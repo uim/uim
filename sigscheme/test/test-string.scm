@@ -33,45 +33,80 @@
 (load "./test/unittest.scm")
 
 ;; check string?
-(assert-true "string? check" (string? "aiueo"))
+(assert-true "string? check" (string? ""))
+(assert-true "string? check" (string? "abcde"))
 
 ;; check make-string
-(assert-true "null make-string" (string? (make-string 6)))
+(assert-equal? "make-string check" ""   (make-string 0))
+(assert-equal? "make-string check" " "  (make-string 1))
+(assert-equal? "make-string check" "  " (make-string 2))
+(assert-equal? "make-string check" ""   (make-string 0 #\a))
+(assert-equal? "make-string check" "a"  (make-string 1 #\a))
+(assert-equal? "make-string check" "aa" (make-string 2 #\a))
 
 ;; check string-ref
-(assert-equal? "alphabet string-ref check" #\o  (string-ref "aiueo" 4))
+(assert-equal? "string-ref check" #\a (string-ref "abcde" 0))
+(assert-equal? "string-ref check" #\e (string-ref "abcde" 4))
+(assert-error  "string-ref check" (lambda ()
+				    (string-ref "abcde" -1)))
+(assert-error  "string-ref check" (lambda ()
+				    (string-ref "abcde" 5)))
 
 ;; check string-set!
-(assert-equal? "alphabet string-set! check" "aikeo"
+(assert-equal? "string-set! check" "zbcdef"
 	       (begin
-		 (define str (string-copy "aiueo"))
-		 (string-set! str 2 #\k)
-		 str))
-
-;; immutable strings: See "3.4 Storage model" of R5RS
-(assert-error "string-set! on constant string #1"
-              (lambda ()
-                (string-set! "foo" 0 #\b)))
-(assert-error "string-set! on constant string #2"
-              (lambda ()
-                (string-set! (symbol->string 'foo) 0 #\b)))
+		 (define tmpstr (string-copy "abcdef"))
+		 (string-set! tmpstr 0 #\z)
+		 tmpstr))
+(assert-equal? "string-set! check" "abzdef"
+	       (begin
+		 (define tmpstr (string-copy "abcdef"))
+		 (string-set! tmpstr 2 #\z)
+		 tmpstr))
+(assert-equal? "string-set! check" "abcdez"
+	       (begin
+		 (define tmpstr (string-copy "abcdef"))
+		 (string-set! tmpstr 5 #\z)
+		 tmpstr))
+(assert-error  "string-set! check" (lambda ()
+				     (string-set! (string-copy "abcdef") -1 #\z)))
+(assert-error  "string-set! check" (lambda ()
+				     (string-set! (string-copy "abcdef")  6 #\z)))
 
 ;; check string-length
-(assert-equal? "alphabet string-length check" 5 (string-length "aiueo"))
-(assert-equal? "backslash string-length check" 1 (string-length "\\"))
-(assert-equal? "backslash string-length check" 2 (string-length "\\\\"))
-(assert-equal? "backslash string-length check" 3 (string-length "\\\\\\"))
+(assert-equal? "string-length check" 0 (string-length ""))
+(assert-equal? "string-length check" 5 (string-length "abcde"))
+(assert-equal? "string-length check" 1 (string-length "\\"))
+(assert-equal? "string-length check" 2 (string-length "\\\\"))
+(assert-equal? "string-length check" 3 (string-length "\\\\\\"))
 
 ;; string=? check
-(assert-equal? "alphabet string=? check" #t (string=? "aiueo" "aiueo"))
+(assert-true "string=? check" (string=? "" ""))
+(assert-true "string=? check" (string=? "abcde" "abcde"))
 
 ;; substring check
-(assert-true "alphabet substring check" (string=? "iu" (substring (string-copy "aiueo") 1 3)))
+(assert-equal? "substring check" ""    (substring (string-copy "abcde") 0 0))
+(assert-equal? "substring check" "a"   (substring (string-copy "abcde") 0 1))
+(assert-equal? "substring check" "bc"  (substring (string-copy "abcde") 1 3))
+(assert-equal? "substring check" "bcd" (substring (string-copy "abcde") 1 4))
+(assert-error  "substring check" (lambda ()
+				   (substring (string-copy "abcde") 1 -1)))
+(assert-error  "substring check" (lambda ()
+				   (substring (string-copy "abcde") -1 1)))
+(assert-error  "substring check" (lambda ()
+				   (substring (string-copy "abcde") -1 -1)))
+(assert-error  "substring check" (lambda ()
+				   (substring (string-copy "abcde") 2 1)))
+
 
 ;; string-append check
-(assert-true "alphabet 1 string-append check" (string=? "a"   (string-append "a")))
-(assert-true "alphabet 2 string-append check" (string=? "ai"  (string-append "a" "i")))
-(assert-true "alphabet 3 string-append check" (string=? "aiu" (string-append "a" "i" "u")))
+(assert-equal? "string-append check" ""    (string-append ""))
+(assert-equal? "string-append check" "a"   (string-append "a"))
+(assert-equal? "string-append check" "ab"  (string-append "a" "b"))
+(assert-equal? "string-append check" "abc" (string-append "a" "b" "c"))
+(assert-equal? "string-append check" "ab"     (string-append "ab"))
+(assert-equal? "string-append check" "abcd"   (string-append "ab" "cd"))
+(assert-equal? "string-append check" "abcdef" (string-append "ab" "cd" "ef"))
 
 ;; string->list
 (assert-equal? "string->list check" '()                (string->list ""))
@@ -109,10 +144,39 @@
 (assert-equal? "list->string check" "\"a\"" (list->string '(#\" #\a #\")))
 
 ;; string-fill!
-(assert-true"alphabet string-fill! check" (string=? "jjjjj" (begin
-							      (define str (string-copy "aiueo"))
-							      (string-fill! str #\j)
-							      str)))
+(assert-equal? "string-fill! check" "jjjjj" (begin
+					      (define tmpstr (string-copy "abcde"))
+					      (string-fill! tmpstr #\j)
+					      tmpstr))
+(assert-equal? "string-fill! check" "\\\\\\" (begin
+					       (define tmpstr (string-copy "abc"))
+					       (string-fill! tmpstr #\\)
+					       tmpstr))
+
+;; string-copy
+(assert-equal? "string copy check" ""   (string-copy ""))
+(assert-equal? "string copy check" "a"  (string-copy "a"))
+(assert-equal? "string copy check" "ab" (string-copy "ab"))
+
+;; symbol->string
+(assert-equal? "symbol->string check" "a"  (symbol->string 'a))
+(assert-equal? "symbol->string check" "ab" (symbol->string 'ab))
+
+;; string->symbol
+;; TODO: need to investigate (string->symbol "") behavior
+(assert-equal? "string->symbol check" 'a  (string->symbol "a"))
+(assert-equal? "string->symbol check" 'ab (string->symbol "ab"))
+
+;;
+;; immutable strings: See "3.4 Storage model" of R5RS
+;;
+(assert-error "string-set! on constant string #1"
+              (lambda ()
+                (string-set! "foo" 0 #\b)))
+(assert-error "string-set! on constant string #2"
+              (lambda ()
+                (string-set! (symbol->string 'foo) 0 #\b)))
+
 
 ;;
 ;; escape sequences
