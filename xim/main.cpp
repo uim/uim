@@ -306,6 +306,10 @@ ProcXEvent(XEvent *e)
     case ClientMessage:
 	procXClientMessage(&e->xclient);
 	break;
+    case MappingNotify:
+	XRefreshKeyboardMapping((XMappingEvent *)e);
+	init_modifier_keys();
+	break;
     default:;
 	//printf("unknown type of X event. %d\n", e->type);
     }
