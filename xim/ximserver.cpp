@@ -1126,6 +1126,7 @@ void init_modifier_keys() {
 		      Mod1MaskSyms, Mod2MaskSyms, Mod3MaskSyms,
 		      Mod4MaskSyms, Mod5MaskSyms;
 
+    gXNumLockMask = 0;
     XModifierKeymap *map = XGetModifierMapping(XimServer::gDpy);
     XDisplayKeycodes(XimServer::gDpy, &min_keycode, &max_keycode);
     KeySym *sym = XGetKeyboardMapping(XimServer::gDpy, min_keycode,
