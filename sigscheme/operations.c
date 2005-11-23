@@ -1160,7 +1160,7 @@ ScmObj ScmOp_make_string(ScmObj length, ScmObj args)
     if (len == 0)
         return Scm_NewMutableStringCopying("");
     if (len < 0)
-        ERR_OBJ("length out of range", length);
+        ERR_OBJ("length must be a positive integer", length);
 
     /* extract fillstr */
     if (NO_MORE_ARG(args)) {
@@ -1504,6 +1504,10 @@ ScmObj ScmOp_make_vector(ScmObj vector_len, ScmObj args)
 
     ASSERT_INTP(vector_len);
 
+    /* sanity check */
+    if (SCM_INT_VALUE(vector_len) < 0)
+        ERR_OBJ("length must be a positive integer", vector_len);
+
     /* allocate vector */
     len = SCM_INT_VALUE(vector_len);
     vec = (ScmObj*)malloc(sizeof(ScmObj) * len);
@@ -1548,14 +1552,23 @@ ScmObj ScmOp_vector_ref(ScmObj vec, ScmObj scm_k)
     ASSERT_VECTORP(vec);
     ASSERT_INTP(scm_k);
 
+    /* sanity check */
+    if (SCM_INT_VALUE(scm_k) < 0 || SCM_VECTOR_LEN(vec) <= SCM_INT_VALUE(scm_k))
+        ERR_OBJ("index out of range", scm_k);
+
     return SCM_VECTOR_REF(vec, scm_k);
 }
 
 ScmObj ScmOp_vector_setd(ScmObj vec, ScmObj scm_k, ScmObj obj)
 {
     DECLARE_FUNCTION("vector-set!", ProcedureFixed3);
+
     ASSERT_VECTORP(vec);
     ASSERT_INTP(scm_k);
+
+    /* sanity check */
+    if (SCM_INT_VALUE(scm_k) < 0 || SCM_VECTOR_LEN(vec) <= SCM_INT_VALUE(scm_k))
+        ERR_OBJ("index out of range", scm_k);
 
     SCM_VECTOR_SET_REF(vec, scm_k, obj);
 
