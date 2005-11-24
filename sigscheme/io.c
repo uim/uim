@@ -561,4 +561,7 @@ ScmObj ScmOp_load(ScmObj filename)
 
 /* FIXME: link conditionally with autoconf */
 #include "sbcport.c"
+#if SCM_USE_MULTIBYTE_CHAR
+#include "mbcport.c"
+#endif
 #include "fileport.c"

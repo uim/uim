@@ -71,10 +71,10 @@ struct ScmMultiByteCharPort_ {  /* inherits ScmBaseCharPort */
     const ScmCharPortVTbl *vptr;
 
     ScmBytePort *bport;  /* protected */
+    int linenum;         /* protected */
+
     ScmCharCodec *codec;
-#if SCM_USE_STATEFUL_ENCODING
     ScmMultibyteState state;
-#endif
     char rbuf[SCM_MB_MAX_LEN + sizeof((char)'\0')];
 };
 
@@ -128,9 +128,9 @@ ScmMultiByteCharPort_construct(ScmMultiByteCharPort *port,
 {
     ScmBaseCharPort_construct((ScmBaseCharPort *)port, vptr, bport);
 
-    cport->codec = codec;
-    cport->rbuf[0] = '\0';
-    SCM_MBCPORT_CLEAR_STATE(cport);
+    port->codec = codec;
+    port->rbuf[0] = '\0';
+    SCM_MBCPORT_CLEAR_STATE(port);
 }
 
 ScmCharPort *
@@ -161,17 +161,26 @@ mbcport_encoding(ScmMultiByteCharPort *port)
 static char *
 mbcport_inspect(ScmMultiByteCharPort *port)
 {
-    return ScmBaseCharPort_inspect(port, "mb");
+    return ScmBaseCharPort_inspect((ScmBaseCharPort *)port, "mb");
 }
 
 static int
 mbcport_get_char(ScmMultiByteCharPort *port)
 {
     int ch;
+#if SCM_USE_STATEFUL_ENCODING
+    ScmMultibyteCharInfo mbc;
+    ScmMultibyteState next_state;
+
+    mbc = mbcport_fill_rbuf(port, TRUE);
+    next_state = SCM_MBCINFO_GET_STATE(mbc);
+#endif
 
     ch = mbcport_peek_char(port);
     port->rbuf[0] = '\0';
-    SCM_MBCPORT_CLEAR_STATE(cport)
+#if SCM_USE_STATEFUL_ENCODING
+    SCM_MBCPORT_SET_STATE(port, next_state)
+#endif
 #if SCM_DEBUG
     if (ch == SCM_NEWLINE_STR[0])
         port->linenum++;
@@ -188,7 +197,10 @@ mbcport_peek_char(ScmMultiByteCharPort *port)
 
     mbc = mbcport_fill_rbuf(port, TRUE);
     size = SCM_MBCINFO_GET_SIZE(mbc);
-    ch = (size) ? SCM_CHARCODEC_STR2INT(port->codec, port->rbuf, size) : EOF;
+    if (size)
+        ch = SCM_CHARCODEC_STR2INT(port->codec, port->rbuf, size, port->state);
+    else
+        ch = EOF;
 
     return ch;
 }
@@ -208,7 +220,8 @@ mbcport_put_char(ScmMultiByteCharPort *port, int ch)
     char wbuf[SCM_MB_MAX_LEN + sizeof((char)'\0')];
     char *end;
 
-    end = SCM_CHARCODEC_INT2STR(port->codec, wbuf, ch);
+    /* FIXME: set updated state to port->state */
+    end = SCM_CHARCODEC_INT2STR(port->codec, wbuf, ch, port->state);
     if (!end)
         SCM_CHARPORT_ERROR(port, "ScmMultibyteCharPort: invalid character");
     return SCM_BYTEPORT_WRITE(port->bport, end - wbuf, wbuf);
@@ -238,6 +251,7 @@ mbcport_fill_rbuf(ScmMultiByteCharPort *port, int block)
             SCM_CHARPORT_ERROR(port, "ScmMultibyteCharPort: broken scanner");
 
         byte = SCM_BYTEPORT_GET_BYTE(port->bport);
+        SCM_MBCINFO_SET_STATE(mbc, SCM_MBS_GET_STATE(mbs));
         if (byte == EOF) {
             SCM_MBCINFO_INIT(mbc);
             port->rbuf[0] = '\0';
