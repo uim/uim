@@ -84,6 +84,9 @@ extern "C" {
 #define SCM_ASSERT(cond) \
     ((cond) || SigScm_Die("assertion failed.", __FILE__, __LINE__))
 
+#define SCM_ERROBJP(obj)       (NFALSEP(ScmOp_sscm_error_objectp(obj)))
+#define SCM_LISTP(obj)         (CONSP(obj) || NULLP(obj))
+
 #define SCM_SYMBOL_BOUNDP(sym) (!SCM_EQ(SCM_SYMBOL_VCELL(sym), SCM_UNBOUND))
 
 #define SCM_CONS(kar, kdr) (Scm_NewCons((kar), (kdr)))

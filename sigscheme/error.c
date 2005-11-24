@@ -111,7 +111,7 @@ ScmObj Scm_MakeErrorObj(ScmObj reason, ScmObj objs)
 {
     DECLARE_INTERNAL_FUNCTION("Scm_MakeErrorObj");
 
-    ASSERT_CONSP(objs);
+    ASSERT_LISTP(objs);
 #if 0
     /* should be string, but not forced. displayable is sufficient. */
     ASSERT_STRINGP(reason);
@@ -230,7 +230,7 @@ void SigScm_Error(const char *msg, ...)
     /* FIXME: provide replace vasprintf */
     reason = strdup(msg);
 #endif /* HAVE_VASPRINTF */
-    err_obj = Scm_MakeErrorObj(Scm_NewImmutableString(reason), LIST_1(SCM_UNDEF));
+    err_obj = Scm_MakeErrorObj(Scm_NewImmutableString(reason), SCM_NULL);
     Scm_RaiseError(err_obj);
     /* NOTREACHED */
 }

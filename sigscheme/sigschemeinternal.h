@@ -112,8 +112,6 @@ extern ScmObj *scm_stack_start_pointer;
 #define SCM_FREECELL_SET_CDR(a, cdr) (SCM_FREECELL_CDR(a) = (cdr))
 #endif
 
-#define SCM_ERROBJP(obj)            (NFALSEP(ScmOp_sscm_error_objectp(obj)))
-
 /* Prefix-less Abbreviation Names For Convenient Internal Use */
 #define SYM_QUOTE            SCM_SYM_QUOTE
 #define SYM_QUASIQUOTE       SCM_SYM_QUASIQUOTE
@@ -173,6 +171,7 @@ extern ScmObj *scm_stack_start_pointer;
 #define C_FUNCPOINTERP SCM_C_FUNCPOINTERP
 #define ENVP           SCM_ENVP
 #define ERROBJP        SCM_ERROBJP
+#define LISTP          SCM_LISTP
 
 #define CDBG           SCM_CDBG
 #define DBG            SCM_DBG
@@ -299,6 +298,7 @@ extern ScmObj *scm_stack_start_pointer;
 #define ASSERT_PROCEDUREP(obj) ASSERT_TYPE(PROCEDUREP, "procedure", (obj))
 #define ASSERT_ENVP(obj)     ASSERT_TYPE(ENVP, "environment specifier", (obj))
 #define ASSERT_ERROBJP(obj)  ASSERT_TYPE(ERROBJP, "error object", (obj))
+#define ASSERT_LISTP(obj)    ASSERT_TYPE(LISTP, "list", (obj))
 
 /* Macros For Handling Continuation Object */
 #define INVALID_CONTINUATION_OPAQUE  NULL
