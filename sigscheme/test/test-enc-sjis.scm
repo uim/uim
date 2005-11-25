@@ -36,6 +36,8 @@
 
 (load "./test/unittest.scm")
 
+(set! *test-track-progress* #t)
+
 (assert-equal? "string 1" "”ül‚É‚Í" (string #\”ü #\l #\‚É #\‚Í))
 (assert-equal? "list->string 1" "3“ú‚Å" (list->string '(#\3 #\“ú #\‚Å)))
 (assert-equal? "string->list 1" '(#\‚Ÿ #\‚« #\‚é) (string->list "‚Ÿ‚«‚é"))
@@ -57,5 +59,22 @@
 
 (assert-equal? "string 2" str1 (apply string str1-list))
 (assert-equal? "list->string 2" str1-list (string->list str1))
+
+;; JIS X 0201 kana (single byte)
+(assert-equal? "JIS X 0201 kana" #\Ë (integer->char #xcb))
+(assert-equal? "JIS X 0201 kana" #xcb (char->integer #\Ë))
+(assert-equal? "JIS X 0201 kana" '(#\Ë) (string->list "Ë"))
+(assert-equal? "JIS X 0201 kana" "Ë" (list->string '(#\Ë)))
+
+(assert-equal? "JIS X 0208 kana #1" #\ƒ„ (integer->char #x8384))
+(assert-equal? "JIS X 0208 kana #2" (car (string->list "ƒ„")) (integer->char #x8384))
+(assert-equal? "JIS X 0208 kana #3" #x8384 (char->integer #\ƒ„))
+(assert-equal? "JIS X 0208 kana #4" #x8384 (char->integer (integer->char #x8384)))
+(assert-equal? "JIS X 0208 kana #5" '(#\ƒ„) (string->list "ƒ„"))
+(assert-equal? "JIS X 0208 kana #6" "ƒ„" (list->string '(#\ƒ„)))
+(assert-equal? "JIS X 0208 kana #7" "ƒ„" (list->string (string->list "ƒ„")))
+
+(assert-equal? "JIS X 0201 kana and 0208 kana" '(#\Ë #\ƒƒ) (string->list "Ëƒƒ"))
+(assert-equal? "JIS X 0201 kana and 0208 kana" "Ëƒƒ" (list->string '(#\Ë #\ƒƒ)))
 
 (total-report)

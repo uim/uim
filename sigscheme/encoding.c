@@ -789,23 +789,23 @@ static ScmMultibyteCharInfo sjis_scan_char(ScmMultibyteString mbs)
 
 static uchar *sjis_int2str(uchar *dst, int ch)
 {
-    uchar seq[2];
+    uchar high, low;
 
 #if SCM_STRICT_ENCODING_CHECK
     if (ch >> CHAR_BITS * 2)
         return NULL;
 #endif
-    seq[0] = ch >> CHAR_BITS;
-    seq[1] = ch & BYTE_MASK;
+    high = ch >> CHAR_BITS;
+    low  = ch & BYTE_MASK;
 
-    *dst++ = seq[0];
-    if (IS_LEAD(seq[0])) {
+    if (IS_LEAD(high)) {
 #if SCM_STRICT_ENCODING_CHECK
-        if (!IS_TRAIL(seq[1]))
+        if (!IS_TRAIL(high))
             return NULL;
 #endif
-        *dst++ = seq[1];
+        *dst++ = high;
     }
+    *dst++ = low;
     *dst = '\0';
 
     return dst;
