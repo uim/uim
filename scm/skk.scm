@@ -1188,7 +1188,6 @@
       (if (skk-lib-get-entry
 	   (skk-context-dcomp-word sc) "" "" skk-use-numeric-conversion?)
 	  (begin
-	    (skk-context-set-head! sc '())
 	    (skk-string-list-to-context-head
 	     sc
 	     (string-to-list (skk-context-dcomp-word sc)))
@@ -1208,7 +1207,6 @@
 			 (skk-context-kana-mode sc)))))
 	    (if (not (string=? dcomp ""))
 		(begin
-		  (skk-context-set-head! sc '())
 		  (skk-string-list-to-context-head
 		   sc
 		   (string-to-list dcomp))
@@ -1333,7 +1331,6 @@
 		    (not (skk-rk-pending? sc))
 		    (not (string=? (skk-context-dcomp-word sc) "")))
 	       (let ((sl (string-to-list (skk-context-dcomp-word sc))))
-		 (skk-context-set-head! sc '())
 		 (skk-string-list-to-context-head sc sl)
 		 (skk-begin-conversion sc)))
 	      ((and skk-dcomp-activate?
@@ -1348,7 +1345,6 @@
 			   skk-use-numeric-conversion?))))
 		 (if (not (null? sl))
 		     (begin
-		       (skk-context-set-head! sc '())
 		       (skk-string-list-to-context-head sc sl)
 		       (skk-begin-conversion sc))
 		     (begin
@@ -1772,29 +1768,34 @@
 	    (find-kana-list-from-rule (cdr rule) str))
 	(list str str str))))
 
-(define skk-append-list-to-context-head
-  (lambda (sc sl)
-     (skk-context-set-head! sc (append (skk-context-head sc) (list sl)))))
-
 (define skk-string-list-to-context-head
   (lambda (sc sl)
-    (if (not (null? sl))
-	(begin
-	  (skk-append-list-to-context-head
-	   sc
-	   (if (or
-		(skk-context-latin-conv sc)
-		;; handle Setsubi-ji
-		(and
-		 (null? (cdr sl))
-		 (string=? ">" (car sl)))
-		(and
-		 skk-use-numeric-conversion?
-		 (string=? "#" (car sl))))
+    (skk-context-set-head! sc '())
+    (skk-append-string-list-to-context-head sc sl)))
+
+(define skk-append-string-list-to-context-head
+  (lambda (sc sl)
+    (let ((append-list-to-context-head
+    	    (lambda (sc sl)
+	      (skk-context-set-head! sc (append (skk-context-head sc)
+	      (list sl))))))
+      (if (not (null? sl))
+	  (begin
+	    (append-list-to-context-head
+	      sc
+	      (if (or
+		  (skk-context-latin-conv sc)
+		  ;; handle Setsubi-ji
+		  (and
+		   (null? (cdr sl))
+		   (string=? ">" (car sl)))
+		   (and
+		    skk-use-numeric-conversion?
+		    (string=? "#" (car sl))))
 	       (list (car sl) (car sl) (car sl))
 	       (find-kana-list-from-rule ja-rk-rule-basic (car sl))))
-	  (skk-string-list-to-context-head sc (cdr sl)))
-	#f)))
+	  (skk-append-string-list-to-context-head sc (cdr sl)))
+	#f))))
 
 (define skk-proc-state-completion
   (lambda (c key key-state)
@@ -1818,11 +1819,8 @@
 	       (skk-context-head sc)
 	       skk-type-hiragana)
 	       skk-use-numeric-conversion?)
-
 	     (if (not (null? sl))
-		 (begin
-		   (skk-context-set-head! sc '())
-		   (skk-string-list-to-context-head sc sl)))
+		 (skk-string-list-to-context-head sc sl))
 	     (skk-context-set-completion-nth! sc 0)
 	     #f)
 	   #t)
@@ -1841,9 +1839,7 @@
 	  (skk-make-string (skk-context-head sc) (skk-context-kana-mode sc))
 	  skk-use-numeric-conversion?)
 	 (if (not (null? sl))
-	     (begin
-	       (skk-context-set-head! sc '())
-	       (skk-string-list-to-context-head sc sl)))
+	     (skk-string-list-to-context-head sc sl))
 	 (if skk-dcomp-activate?
 	     (skk-context-set-dcomp-word! sc ""))
 	 (skk-context-set-state! sc 'skk-state-kanji)
