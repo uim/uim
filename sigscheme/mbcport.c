@@ -49,7 +49,6 @@
   Local Include
 =======================================*/
 #include "baseport.h"
-#include "sbcport.h"
 #include "encoding.h"
 #include "mbcport.h"
 
@@ -107,9 +106,7 @@ Scm_mbcport_init(void)
 {
     ScmCharPortVTbl *vptr;
 
-    Scm_sbcport_init();
-
-    ScmMultiByteCharPort_vtbl = *ScmSingleByteCharPort_vptr;
+    ScmMultiByteCharPort_vtbl = *ScmBaseCharPort_vptr;
 
     vptr = &ScmMultiByteCharPort_vtbl;
     vptr->dyn_cast    = (ScmCharPortMethod_dyn_cast)&mbcport_dyn_cast;

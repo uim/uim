@@ -65,7 +65,6 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
-#include "sbcport.h"
 
 /*=======================================
   File Local Struct Declarations

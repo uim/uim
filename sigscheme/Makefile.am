@@ -58,6 +58,7 @@ libsscm_la_SOURCES = \
 		storage-continuation.c \
 		encoding.c error.c \
 		eval.c io.c \
+                basecport.c fileport.c \
 		operations.c \
 		read.c sigscheme.c sigschemefunctable.c \
 		sigscheme.h sigschemetype.h sigschemefunctable.h

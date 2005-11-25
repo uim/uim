@@ -42,7 +42,6 @@
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 #include "baseport.h"
-#include "sbcport.h"
 #include "strport.h"
 
 /*=======================================

@@ -655,8 +655,8 @@ static char **parse_script_prelude(ScmObj port)
 #endif
 
 /* FIXME: link conditionally with autoconf */
-#include "sbcport.c"
 #if SCM_USE_MULTIBYTE_CHAR
 #include "mbcport.c"
-#endif
-#include "fileport.c"
+#else /* SCM_USE_MULTIBYTE_CHAR */
+#include "sbcport.c"
+#endif /* SCM_USE_MULTIBYTE_CHAR */

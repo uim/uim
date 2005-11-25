@@ -56,32 +56,17 @@
 /*=======================================
   Type Definitions
 =======================================*/
-typedef struct ScmBaseCharPort_ ScmBaseCharPort;
 typedef struct ScmSingleByteCharPort_ ScmSingleByteCharPort;
-
-struct ScmBaseCharPort_ {  /* inherits ScmCharPort */
-    const ScmCharPortVTbl *vptr;
-
-    ScmBytePort *bport;  /* protected */
-    int linenum;         /* protected */
-};
 
 /*=======================================
    Variable Declarations
 =======================================*/
-extern const ScmCharPortVTbl *ScmBaseCharPort_vptr;
 extern const ScmCharPortVTbl *ScmSingleByteCharPort_vptr;
 
 /*=======================================
    Function Declarations
 =======================================*/
 void Scm_sbcport_init(void);
-
-void ScmBaseCharPort_construct(ScmBaseCharPort *port,
-                               const ScmCharPortVTbl *vptr,
-                               ScmBytePort *bport);
-char *ScmBaseCharPort_inspect(ScmBaseCharPort *port, const char *header);
-int ScmBaseCharPort_line_number(ScmBaseCharPort *port);
 
 void ScmSingleByteCharPort_construct(ScmSingleByteCharPort *port,
                                      const ScmCharPortVTbl *vptr,
