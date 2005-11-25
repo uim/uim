@@ -42,7 +42,11 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
+#if SCM_USE_MULTIBYTE_CHAR
+#include "mbcport.h"
+#else /* SCM_USE_MULTIBYTE_CHAR */
 #include "sbcport.h"
+#endif /* SCM_USE_MULTIBYTE_CHAR */
 #include "fileport.h"
 
 /*=======================================
@@ -52,6 +56,11 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+#if SCM_USE_SRFI22
+/* SRFI-22: The <script prelude> line may not be longer than 64 characters. */
+#define SCRIPT_PRELUDE_MAXLEN 64
+#define SCRIPT_PRELUDE_DELIM  " \t\n\r"
+#endif
 
 /*=======================================
   Variable Declarations
@@ -97,10 +106,23 @@ const ScmSpecialCharInfo Scm_special_char_table[] = {
 static ScmObj SigScm_load_internal(const char *c_filename);
 static char*  create_valid_path(const char *c_filename);
 static int    file_existsp(const char *filepath);
+#if SCM_USE_SRFI22
+static void interpret_script_prelude(ScmObj port);
+static char **parse_script_prelude(ScmObj port);
+#endif
 
 /*=======================================
   Function Implementations
 =======================================*/
+ScmCharPort *Scm_NewCharPort(ScmBytePort *bport)
+{
+#if  SCM_USE_MULTIBYTE_CHAR
+    return ScmMultiByteCharPort_new(bport, Scm_current_char_codec);
+#else
+    return ScmSingleByteCharPort_new(bport);
+#endif
+}
+
 void SigScm_set_lib_path(const char *path)
 {
     scm_lib_path = path;
@@ -113,7 +135,7 @@ ScmObj Scm_MakeSharedFilePort(FILE *file, const char *aux_info,
 
     /* GC safe */
     bport = ScmFilePort_new_shared(file, aux_info);
-    return Scm_NewPort(ScmSingleByteCharPort_new(bport), flag);
+    return Scm_NewPort(Scm_NewCharPort(bport), flag);
 }
 
 void SigScm_PortPrintf(ScmObj port, const char *fmt, ...)
@@ -279,7 +301,7 @@ ScmObj ScmOp_open_input_file(ScmObj filepath)
     if (!bport)
         ERR_OBJ("cannot open file ", filepath);
 
-    return Scm_NewPort(ScmSingleByteCharPort_new(bport), SCM_PORTFLAG_INPUT);
+    return Scm_NewPort(Scm_NewCharPort(bport), SCM_PORTFLAG_INPUT);
 }
 
 ScmObj ScmOp_open_output_file(ScmObj filepath)
@@ -293,7 +315,7 @@ ScmObj ScmOp_open_output_file(ScmObj filepath)
     if (!bport)
         ERR_OBJ("cannot open file ", filepath);
 
-    return Scm_NewPort(ScmSingleByteCharPort_new(bport), SCM_PORTFLAG_OUTPUT);
+    return Scm_NewPort(Scm_NewCharPort(bport), SCM_PORTFLAG_OUTPUT);
 }
 
 ScmObj ScmOp_close_input_port(ScmObj port)
@@ -478,6 +500,7 @@ static ScmObj SigScm_load_internal(const char *c_filename)
     ScmObj port         = SCM_FALSE;
     ScmObj s_expression = SCM_FALSE;
     ScmObj filepath     = SCM_FALSE;
+    ScmCharCodec *saved_codec;
     char  *c_filepath   = create_valid_path(c_filename);
 
     CDBG((SCM_DBG_FILE, "loading %s", c_filename));
@@ -490,12 +513,19 @@ static ScmObj SigScm_load_internal(const char *c_filename)
     filepath = Scm_NewImmutableString(c_filepath);
     port = ScmOp_open_input_file(filepath);
 
+    saved_codec = Scm_current_char_codec;
+#if SCM_USE_SRFI22
+    if (SCM_PORT_PEEK_CHAR(port) == '#')
+        interpret_script_prelude(port);
+#endif
+
     /* read & eval cycle */
     while (s_expression = SigScm_Read(port), !EOFP(s_expression)) {
         EVAL(s_expression, SCM_INTERACTION_ENV);
     }
 
     ScmOp_close_input_port(port);
+    Scm_current_char_codec = saved_codec;
 
     CDBG((SCM_DBG_FILE, "done."));
 
@@ -558,6 +588,71 @@ ScmObj ScmOp_load(ScmObj filename)
     return SCM_TRUE;
 #endif
 }
+
+#if SCM_USE_SRFI22
+static void interpret_script_prelude(ScmObj port)
+{
+    char **argv;
+
+    argv = parse_script_prelude(port);
+    Scm_InterpretArgv(argv);
+#if SCM_USE_MULTIBYTE_CHAR
+    if (SCM_CHARPORT_DYNAMIC_CAST(ScmMultiByteCharPort, SCM_PORT_IMPL(port))) {
+        ScmMultiByteCharPort_set_codec(SCM_PORT_IMPL(port),
+                                       Scm_current_char_codec);
+    }
+#endif
+    Scm_FreeArgv(argv);
+}
+
+static char **parse_script_prelude(ScmObj port)
+{
+    int argc, c, len;
+    char **argv, *arg, *p, line[SCRIPT_PRELUDE_MAXLEN];
+    DECLARE_INTERNAL_FUNCTION("parse_script_prelude");
+
+    for (p = line; p < &line[SCRIPT_PRELUDE_MAXLEN]; p++) {
+        c = SCM_PORT_GET_CHAR(port);
+        if (!isascii(c))
+            ERR("non-ASCII char appeared in UNIX script prelude");
+        if (c == SCM_NEWLINE_STR[0]) {
+            *p = '\0';
+            break;
+        }
+        *p = c;
+    }
+    if (*p)
+        ERR("too long UNIX script prelude (max 64)");
+
+    if (line[0] != '#' || line[1] != '!') {
+        ERR("Invalid UNIX script prelude");
+    }
+#if 1
+    /* strict check */
+    if (line[2] != ' ') {
+        ERR("Invalid UNIX script prelude: "
+            "SRFI-22 requires a space after hash-bang sequence");
+    }
+#endif
+
+    argv = malloc(sizeof(char *));
+    argc = 0;
+    for (p = &line[3]; p < &line[SCRIPT_PRELUDE_MAXLEN]; p += len + 1) {
+        p += strspn(p, SCRIPT_PRELUDE_DELIM);
+        len = strcspn(p, SCRIPT_PRELUDE_DELIM);
+        if (len) {
+            p[len] = '\0';
+            arg = strdup(p);
+            argv[argc] = arg;
+            argv = realloc(argv, sizeof(char *) * (++argc + 1));
+            argv[argc] = NULL;
+        }
+    }         
+    argv[argc] = NULL;
+
+    return argv;
+}
+#endif
 
 /* FIXME: link conditionally with autoconf */
 #include "sbcport.c"

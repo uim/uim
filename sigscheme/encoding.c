@@ -183,6 +183,26 @@ static const ScmCharCodecVTbl unibyte_codec_vtbl = {
 };
 #define unibyte_codec (&unibyte_codec_vtbl)
 
+static ScmCharCodec *available_codecs[] = {
+#if SCM_USE_UTF8
+    utf8_codec,
+#endif
+#if SCM_USE_EUCJP
+    eucjp_codec,
+#endif
+#if SCM_USE_EUCCN
+    euccn_codec,
+#endif
+#if SCM_USE_EUCKR
+    euckr_codec,
+#endif
+#if SCM_USE_SJIS
+    sjis_codec,
+#endif
+    unibyte_codec,
+    NULL
+};
+
 /*=======================================
   Global Variables
 =======================================*/
@@ -275,6 +295,18 @@ ScmMultibyteString Scm_mb_substring(ScmMultibyteString mbs, int i, int len)
     return ret;
 }
 
+/* TODO: support encoding name canonicalization */
+ScmCharCodec *Scm_mb_find_codec(const char *encoding)
+{
+    ScmCharCodec **codecp;
+
+    for (codecp = &available_codecs[0]; *codecp; codecp++) {
+        if (strcmp(SCM_CHARCODEC_ENCODING(*codecp), encoding) == 0)
+            return *codecp;
+    }
+
+    return NULL;
+}
 
 /*=======================================
   Encoding-specific functions

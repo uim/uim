@@ -306,6 +306,8 @@ extern ScmObj *scm_stack_start_pointer;
 /* Symbol Name Hash Size */
 #define NAMEHASH_SIZE 1024
 
+#define SCM_ERR_HEADER "Error: "
+
 /*=======================================
    String Mutation Assertion
 =======================================*/
@@ -380,5 +382,12 @@ void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj) SCM_NORETU
 
 /* operations.c */
 int ScmOp_c_length(ScmObj lst);
+
+/* io.c */
+ScmCharPort *Scm_NewCharPort(ScmBytePort *bport);
+
+/* sigscheme.c */
+char **Scm_InterpretArgv(char **argv);
+void Scm_FreeArgv(char **argv);
 
 #endif /* __SIGSCHEMEINTERNAL_H */

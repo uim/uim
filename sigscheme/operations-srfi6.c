@@ -92,7 +92,7 @@ ScmObj ScmOp_SRFI6_open_input_string(ScmObj str)
     hold_str = (ScmObj *)ScmInputStrPort_ref_opaque(bport);
     *hold_str = str;
     SigScm_GC_Protect(hold_str);
-    return Scm_NewPort(ScmSingleByteCharPort_new(bport), SCM_PORTFLAG_INPUT);
+    return Scm_NewPort(Scm_NewCharPort(bport), SCM_PORTFLAG_INPUT);
 }
 
 ScmObj ScmOp_SRFI6_open_output_string(void)
@@ -101,7 +101,7 @@ ScmObj ScmOp_SRFI6_open_output_string(void)
     DECLARE_FUNCTION("open-output-string", ProcedureFixed0);
 
     bport = ScmOutputStrPort_new(NULL);
-    return Scm_NewPort(ScmSingleByteCharPort_new(bport), SCM_PORTFLAG_OUTPUT);
+    return Scm_NewPort(Scm_NewCharPort(bport), SCM_PORTFLAG_OUTPUT);
 }
 
 ScmObj ScmOp_SRFI6_get_output_string(ScmObj port)

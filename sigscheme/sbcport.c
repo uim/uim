@@ -114,7 +114,7 @@ void
 ScmBaseCharPort_construct(ScmBaseCharPort *port, const ScmCharPortVTbl *vptr,
                           ScmBytePort *bport)
 {
-    port->vptr = ScmSingleByteCharPort_vptr;
+    port->vptr = vptr;
     port->bport = bport;
 #if SCM_DEBUG
     port->linenum = 1;

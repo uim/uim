@@ -146,7 +146,12 @@ static int is_repl_prompt(void)
 
 int main(int argc, char **argv)
 {
-    char *filename = argv[1];
+    const char *filename = NULL;
+    char **rest_argv;
+
+    /* must be done before SigScm_Initialize() */
+    rest_argv = Scm_InterpretArgv(argv);
+    filename = rest_argv[0];
 
     SigScm_Initialize();
 
@@ -157,15 +162,15 @@ int main(int argc, char **argv)
     SigScm_GC_Protect(&feature_id_siod);
     feature_id_siod = Scm_NewImmutableStringCopying(FEATURE_ID_SIOD);
 
-    if (argc < 2) {
+    if (filename) {
+        SigScm_load(filename);
+    } else {
 #if SCM_GCC4_READY_GC
         SCM_GC_PROTECTED_CALL_VOID(repl, ());
 #else
         repl();
 #endif
         /*        SigScm_Error("usage : sscm <filename>"); */
-    } else {
-        SigScm_load(filename);
     }
 
     SigScm_Finalize();

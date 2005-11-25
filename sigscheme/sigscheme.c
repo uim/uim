@@ -34,6 +34,8 @@
 /*=======================================
   System Include
 =======================================*/
+#include <stdlib.h>
+#include <stdio.h>
 
 /*=======================================
   Local Include
@@ -41,9 +43,13 @@
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 #include "baseport.h"
-#include "sbcport.h"
 #include "fileport.h"
 #include "strport.h"
+#if SCM_USE_MULTIBYTE_CHAR
+#include "mbcport.h"
+#else /* SCM_USE_MULTIBYTE_CHAR */
+#include "sbcport.h"
+#endif /* SCM_USE_MULTIBYTE_CHAR */
 
 /*=======================================
   File Local Struct Declarations
@@ -63,6 +69,8 @@ struct module_info {
 ScmObj Scm_sym_quote, Scm_sym_quasiquote;
 ScmObj Scm_sym_unquote, Scm_sym_unquote_splicing;
 ScmObj Scm_sym_else, Scm_sym_yields;
+
+static int scm_initialized;
 
 #if SCM_COMPAT_SIOD
 static ScmObj scm_return_value    = NULL;
@@ -161,7 +169,11 @@ static void SigScm_Initialize_internal(void)
       Preallocated Ports
     =======================================================================*/
     Scm_fileport_init();
+#if SCM_USE_MULTIBYTE_CHAR
+    Scm_mbcport_init();
+#else
     Scm_sbcport_init();
+#endif
 
     scm_current_input_port  = Scm_MakeSharedFilePort(stdin, "stdin",
                                                      SCM_PORTFLAG_INPUT);
@@ -196,11 +208,13 @@ static void SigScm_Initialize_internal(void)
     =======================================================================*/
     /* to evaluate SigScheme-dependent codes conditionally */
     ScmOp_provide(Scm_NewImmutableStringCopying("sigscheme"));
+    scm_initialized = TRUE;
 }
 
 void SigScm_Finalize()
 {
     SigScm_FinalizeStorage();
+    scm_initialized = FALSE;
 }
 
 void Scm_DefineAlias(const char *newsym, const char *sym)
@@ -279,11 +293,9 @@ ScmObj Scm_eval_c_string_internal(const char *exp)
     ScmObj str_port    = SCM_FALSE;
     ScmObj ret         = SCM_FALSE;
     ScmBytePort *bport;
-    ScmCharPort *cport;
 
     bport = ScmInputStrPort_new_const(exp, NULL);
-    cport = ScmSingleByteCharPort_new(bport);
-    str_port = Scm_NewPort(cport, SCM_PORTFLAG_INPUT);
+    str_port = Scm_NewPort(Scm_NewCharPort(bport), SCM_PORTFLAG_INPUT);
 
     ret = SigScm_Read(str_port);
     ret = EVAL(ret, SCM_INTERACTION_ENV);
@@ -301,6 +313,69 @@ ScmObj Scm_return_value(void)
     return scm_return_value;
 }
 #endif
+
+/* TODO: parse properly */
+/* don't access ScmObj if (!scm_initialized) */
+char **Scm_InterpretArgv(char **argv)
+{
+    char **argp, **rest;
+    const char *encoding;
+    ScmCharCodec *specified_codec;
+    ScmObj err_obj; /* dont' initialize */
+    DECLARE_INTERNAL_FUNCTION("Scm_InterpretArgv");
+
+    encoding = NULL;
+    argp = (strcmp(argv[0], "/usr/bin/env") == 0) ? &argv[2] : &argv[1];
+
+    for (; *argp; argp++) {
+        /* script name appeared */
+        if (*argp[0] != '-')
+            break;
+
+        /* character encoding */
+        if (strcmp(*argp, "-C") == 0) {
+            encoding = *++argp;
+            if (!*argp) {
+                if (scm_initialized) {
+                    ERR("no encoding name specified");
+                } else {
+                    fprintf(stderr, "%sno encoding name specified\n",
+                            SCM_ERR_HEADER);
+                    exit(EXIT_FAILURE);
+                }
+            }
+        }
+    }
+    rest = argp;
+
+    if (encoding) {
+        specified_codec = Scm_mb_find_codec(encoding);
+        if (!specified_codec) {
+            if (scm_initialized) {
+                err_obj = Scm_NewImmutableStringCopying(encoding);
+                Scm_FreeArgv(argv);
+                ERR_OBJ("unsupported encoding", err_obj);
+            } else {
+                fprintf(stderr, "%sunsupported encoding: %s\n",
+                        SCM_ERR_HEADER, encoding);
+                exit(EXIT_FAILURE);
+            }
+        }
+        Scm_current_char_codec = specified_codec;
+    }
+
+    return rest;
+}
+
+void Scm_FreeArgv(char **argv)
+{
+    char **argp;
+
+    for (argp = &argv[0]; *argp; argp++) {
+        free(*argp);
+    }
+    free(argv);
+}
 
 /*===========================================================================
   Scheme Function Export Related Functions

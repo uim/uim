@@ -36,7 +36,6 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
-#include "sbcport.h"
 #include "nullport.h"
 
 /*=======================================
@@ -117,7 +116,7 @@ void SigScm_Initialize_SIOD(void)
     SigScm_GC_Protect(&saved_error_port);
 
     Scm_nullport_init();
-    null_port = Scm_NewPort(ScmSingleByteCharPort_new(ScmNullPort_new()),
+    null_port = Scm_NewPort(Scm_NewCharPort(ScmNullPort_new()),
                             SCM_PORTFLAG_INPUT | SCM_PORTFLAG_OUTPUT);
 
     SigScm_SetVerboseLevel(2);

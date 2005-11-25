@@ -90,12 +90,12 @@
                       SCM_MBS_GET_SIZE(mbs) - SCM_MBCINFO_GET_SIZE(inf)),     \
      SCM_MBS_SET_STATE((mbs), SCM_MBCINFO_GET_STATE(inf)))
 
-#define SCM_CHARCODEC_ENCODING(codec)           ((*codec->encoding)())
-#define SCM_CHARCODEC_SCAN_CHAR(codec, mbs)     ((*codec->scan_char)(mbs))
+#define SCM_CHARCODEC_ENCODING(codec)           ((*(codec)->encoding)())
+#define SCM_CHARCODEC_SCAN_CHAR(codec, mbs)     ((*(codec)->scan_char)(mbs))
 #define SCM_CHARCODEC_STR2INT(codec, src, len, state)                        \
-    ((*codec->str2int)((src), (len), (state)))
+    ((*(codec)->str2int)((src), (len), (state)))
 #define SCM_CHARCODEC_INT2STR(codec, dst, ch, state)                         \
-    ((*codec->int2str)((dst), (ch), (state)))
+    ((*(codec)->int2str)((dst), (ch), (state)))
 
 /*=======================================
   Type Definitions
@@ -163,6 +163,7 @@ int Scm_mb_strlen(ScmMultibyteString mbs);
 int Scm_mb_bare_c_strlen(const char *str);
 ScmMultibyteString Scm_mb_substring(ScmMultibyteString str, int i, int len);
 #define Scm_mb_strref(str, i) (Scm_mb_substring((str), (i), 1))
+ScmCharCodec *Scm_mb_find_codec(const char *encoding);
 
 
 #endif /* __SCM_ENCODING_H */

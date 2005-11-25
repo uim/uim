@@ -52,7 +52,6 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define SCM_ERR_HEADER "Error: "
 #define SCM_BACKTRACE_HEADER "**** BACKTRACE ****\n"
 
 #define ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"

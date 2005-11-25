@@ -145,6 +145,19 @@ ScmMultiByteCharPort_new(ScmBytePort *bport, ScmCharCodec *codec)
     return (ScmCharPort *)cport;
 }
 
+void
+ScmMultiByteCharPort_set_codec(ScmCharPort *cport, ScmCharCodec *codec)
+{
+    ScmMultiByteCharPort *mbcport;
+
+    mbcport = SCM_BYTEPORT_DYNAMIC_CAST(ScmMultiByteCharPort, cport);
+    mbcport->codec = codec;
+    SCM_MBCPORT_CLEAR_STATE(mbcport);
+    /* only one byte can be preserved for new codec. otherwise cleared */
+    if (1 < strlen(mbcport->rbuf))
+        mbcport->rbuf[0] = '\0';
+}
+
 static ScmCharPort *
 mbcport_dyn_cast(ScmCharPort *cport, const ScmCharPortVTbl *dst_vptr)
 {
@@ -245,7 +258,7 @@ mbcport_fill_rbuf(ScmMultiByteCharPort *port, int block)
         
         if (SCM_MBCINFO_ERRORP(mbc))
             SCM_CHARPORT_ERROR(port, "ScmMultibyteCharPort: broken character");
-        if (!SCM_MBCINFO_INCOMPLETEP(mbc))
+        if (!SCM_MBCINFO_INCOMPLETEP(mbc) && SCM_MBCINFO_GET_SIZE(mbc))
             break;
         if (SCM_MBS_GET_SIZE(mbs) == SCM_MB_MAX_LEN)
             SCM_CHARPORT_ERROR(port, "ScmMultibyteCharPort: broken scanner");

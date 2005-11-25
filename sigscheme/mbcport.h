@@ -78,5 +78,6 @@ void ScmMultiByteCharPort_construct(ScmMultiByteCharPort *port,
                                     ScmBytePort *bport, ScmCharCodec *codec);
 ScmCharPort *ScmMultiByteCharPort_new(ScmBytePort *bport, ScmCharCodec *codec);
 
+void ScmMultiByteCharPort_set_codec(ScmCharPort *cport, ScmCharCodec *codec);
 
 #endif /* __SCM_MBCPORT_H */
