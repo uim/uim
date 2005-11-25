@@ -1,5 +1,5 @@
 #! /usr/bin/env sscm -C EUC-CN
-;; -*- euc-cn -*-
+;; -*- buffer-file-coding-system: euc-jp -*-
 
 ;;  FileName : test-enc-eucgeneric.scm
 ;;  About    : unit test for EUC string
@@ -43,7 +43,10 @@
 (assert-equal? "list->string 1" "3日で" (list->string '(#\3 #\日 #\で)))
 (assert-equal? "string->list 1" '(#\ぁ #\き #\る) (string->list "ぁきる"))
 
-(assert-equal? "string-ref 1" #\歩  (string-ref "歯hi歩ﾍ歩" 3))
+;; since single shift is only supported in EUC-JP in SigScheme, the JIS X 0201
+;; kana character is replaced to JIS x 0208.  -- YamaKen 2005-11-25
+(assert-equal? "string-ref 1" #\歩  (string-ref "歯hi歩へ歩" 3))
+
 (assert-equal? "make-string 1" "歩歩歩歩歩"   (make-string 5 #\歩))
 (assert-equal? "string-copy 1"     "金銀香"   (string-copy "金銀香"))
 (assert-equal? "string-set! 1"     "金桂玉"   (string-set!

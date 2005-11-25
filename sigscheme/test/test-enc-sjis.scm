@@ -1,5 +1,6 @@
 #! /usr/bin/env sscm -C SHIFT_JIS
-;; -*- sjis -*-
+;; -*- buffer-file-coding-system: shift_jisx0213 -*-
+;; C-x RET c shift_jisx0213 C-x C-f test-enc-sjis.scm
 
 ;;  FileName : test-enc-sjis.scm
 ;;  About    : unit test for SJIS string
@@ -35,24 +36,24 @@
 
 (load "./test/unittest.scm")
 
-(assert-equal? "string 1" "Èş¿Í¤Ë¤Ï" (string #\Èş #\¿Í #\¤Ë #\¤Ï))
-(assert-equal? "list->string 1" "3Æü¤Ç" (list->string '(#\3 #\Æü #\¤Ç)))
-(assert-equal? "string->list 1" '(#\¤¡ #\¤­ #\¤ë) (string->list "¤¡¤­¤ë"))
+(assert-equal? "string 1" "”ül‚É‚Í" (string #\”ü #\l #\‚É #\‚Í))
+(assert-equal? "list->string 1" "3“ú‚Å" (list->string '(#\3 #\“ú #\‚Å)))
+(assert-equal? "string->list 1" '(#\‚Ÿ #\‚« #\‚é) (string->list "‚Ÿ‚«‚é"))
 
-(assert-equal? "string-ref 1" #\Êâ  (string-ref "»õhiÊâÍÊâ" 3))
-(assert-equal? "make-string 1" "ÊâÊâÊâÊâÊâ"   (make-string 5 #\Êâ))
-(assert-equal? "string-copy 1"     "¶â¶ä¹á"   (string-copy "¶â¶ä¹á"))
-(assert-equal? "string-set! 1"     "¶â·Ë¶Ì"   (string-set!
-                                               (string-copy "¶â·Ë¤È")
+(assert-equal? "string-ref 1" #\•à  (string-ref "•hi•àÍ•à" 3))
+(assert-equal? "make-string 1" "•à•à•à•à•à"   (make-string 5 #\•à))
+(assert-equal? "string-copy 1"     "‹à‹â"   (string-copy "‹à‹â"))
+(assert-equal? "string-set! 1"     "‹àŒj‹Ê"   (string-set!
+                                               (string-copy "‹àŒj‚Æ")
                                                2
-                                               #\¶Ì))
+                                               #\‹Ê))
 
 
 
 
-;; The character after ¡ù is in JIS X 0213 plane 2.
-(define str1 "¤¢Ë¥ãahË½\\Ë½n!!¡ù !")
-(define str1-list '(#\¤¢ #\Ë #\¥ã #\a #\h #\Ë½ #\\ #\Ë½ #\n #\! #\! #\¡ù #\  #\!))
+;; The character after ™ is in JIS X 0213 plane 2.
+(define str1 "‚ Ëƒƒah–\\\–\n!!™ğ@!")
+(define str1-list '(#\‚  #\Ë #\ƒƒ #\a #\h #\–\ #\\ #\–\ #\n #\! #\! #\™ #\ğ@ #\!))
 
 (assert-equal? "string 2" str1 (apply string str1-list))
 (assert-equal? "list->string 2" str1-list (string->list str1))
