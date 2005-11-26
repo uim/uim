@@ -1830,8 +1830,9 @@
 	       (skk-make-string (skk-context-head sc) skk-type-hiragana)
 	       skk-use-numeric-conversion?)
 	     (skk-context-set-state! sc 'skk-state-kanji)
-	     (if skk-dcomp-activate?
-		 (skk-context-set-dcomp-word! sc ""))
+	     ;; don't clear dcomp (not compatible with ddskk's behavior)
+	     ;;(if skk-dcomp-activate?
+	     ;;	 (skk-context-set-dcomp-word! sc ""))
 	     #f)
 	   #t)
        (let ((sl (string-to-list (skk-get-current-completion sc))))
