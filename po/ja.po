@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: uim 0.4.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-11-22 21:11+0900\n"
-"PO-Revision-Date: 2005-11-22 21:24+0900\n"
+"PO-Revision-Date: 2005-11-26 20:10+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -365,19 +365,19 @@ msgstr "デフォルト(_D)"
 
 #: helper/pref-gtk.c:352
 msgid "Revert all changes to default"
-msgstr ""
+msgstr "全ての設定をデフォルトに戻す"
 
 #: helper/pref-gtk.c:362
 msgid "Apply all changes"
-msgstr ""
+msgstr "全ての設定変更の適用"
 
 #: helper/pref-gtk.c:370
 msgid "Quit this application without applying changes"
-msgstr ""
+msgstr "設定を適用せず終了"
 
 #: helper/pref-gtk.c:381
 msgid "Quit this application with applying changes"
-msgstr ""
+msgstr "設定を保存して終了"
 
 #: helper/pref-gtk.c:530
 msgid ""
@@ -1543,7 +1543,7 @@ msgstr "ツールバー"
 
 #: scm/im-custom.lisp:55
 msgid "Advanced settings"
-msgstr "上級設定"
+msgstr "高度な設定"
 
 #: scm/im-custom.lisp:60
 msgid "Buttons"
@@ -1739,7 +1739,7 @@ msgstr "PRIME (高度)"
 
 #: scm/prime-custom.lisp:43
 msgid "Advanced settings for PRIME"
-msgstr "PRIME向けの上級設定"
+msgstr "PRIME向けの高度な設定"
 
 #: scm/prime-custom.lisp:46 scm/prime-custom.lisp:52 scm/prime-custom.lisp:165
 #: uim/iso-639-1.def:105
@@ -1952,7 +1952,7 @@ msgstr "SKK (高度)"
 
 #: scm/skk-custom.lisp:48
 msgid "Advanced settings for SKK"
-msgstr "SKK向けの上級設定"
+msgstr "SKK向けの高度な設定"
 
 #: scm/skk-custom.lisp:64
 msgid "Commit candidate by heading label keys"
