@@ -50,7 +50,6 @@ scm/generic.scm
 scm/hangul.scm
 scm/hangul2.scm
 scm/hangul3.scm
-scm/hk.scm
 scm/i18n.scm
 scm/im-custom.scm
 scm/im.scm
