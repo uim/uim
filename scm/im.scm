@@ -208,9 +208,12 @@
       (if (eq? name toggle-im-alt-im)
 	  (begin
 	    (set! toggle-im-alt-preserved-widget-states widget-states)
-	    (uim-switch-im id toggle-im-preserved-im)
-	    (context-update-widget-states! (find-context id)
-					   toggle-im-preserved-widget-states))
+	    (if toggle-im-preserved-im
+		(begin
+		  (uim-switch-im id toggle-im-preserved-im)
+		  (context-update-widget-states!
+		   (find-context id)
+		   toggle-im-preserved-widget-states))))
 	  (begin
 	    (set! toggle-im-preserved-im name)
 	    (set! toggle-im-preserved-widget-states widget-states)
