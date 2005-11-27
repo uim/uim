@@ -57,6 +57,30 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Removal of obsolete constant definitions
+Affects: Bridge developers, Helper program developers
+Updates: C API
+Version: 0.5.1
+Revision: ac2262
+Date: 2005-11-27
+Modifier: YamaKen
+Related: 
+URL:
+Changes:
+  (removed) UKey_Shift
+  (removed) UKey_Control
+  (removed) UKey_Alt
+  (removed) UKey_Meta
+  (removed) UKey_Pseudo0
+  (removed) UKey_Pseudo1
+  (removed) UPeAttr_None
+  (removed) UPeAttr_UnderLine
+  (removed) UPeAttr_Reverse
+  (removed) UPeAttr_Cursor
+  (removed) UPeAttr_Separator
+Description:
+  The constants for backward compatibility have been removed. Use new ones.
+------------------------------------------------------------------------------
 Summary: Verbose level of backtrace has been changed
 Affects: uim developers, bridge developers
 Updates: Internal behavior of libuim

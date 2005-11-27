@@ -173,17 +173,6 @@ enum UKeyModifier {
   UMod_Pseudo1 = 32,
   UMod_Super = 64,
   UMod_Hyper = 128
-
-#ifndef UIM_NO_BACKWARD_COMPATIBLE_API
-  /* will be deprecated */
-  ,
-  UKey_Shift = UMod_Shift,
-  UKey_Control = UMod_Control,
-  UKey_Alt = UMod_Alt,
-  UKey_Meta = UMod_Meta,
-  UKey_Pseudo0 = UMod_Pseudo0,
-  UKey_Pseudo1 = UMod_Pseudo1
-#endif
 };
   
 enum UPreeditAttr {
@@ -192,16 +181,6 @@ enum UPreeditAttr {
   UPreeditAttr_Reverse = 2,
   UPreeditAttr_Cursor = 4,
   UPreeditAttr_Separator = 8
-
-#ifndef UIM_NO_BACKWARD_COMPATIBLE_API
-  /* will be deprecated */
-  ,
-  UPeAttr_None = UPreeditAttr_None,
-  UPeAttr_UnderLine = UPreeditAttr_UnderLine,
-  UPeAttr_Reverse = UPreeditAttr_Reverse,
-  UPeAttr_Cursor = UPreeditAttr_Cursor,
-  UPeAttr_Separator = UPreeditAttr_Separator
-#endif
 };
 
 /* abstracting platform-dependent character code conversion method */
