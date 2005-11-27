@@ -1822,6 +1822,10 @@
 	     (if (not (null? sl))
 		 (skk-string-list-to-context-head sc sl))
 	     (skk-context-set-completion-nth! sc 0)
+	     (if skk-dcomp-activate?
+		 (skk-context-set-dcomp-word!
+		  sc
+		  (skk-get-current-completion sc)))
 	     #f)
 	   #t)
        (if (skk-cancel-key? key key-state)
