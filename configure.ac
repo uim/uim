@@ -420,6 +420,26 @@ AC_ARG_ENABLE(fep,
     AC_SUBST(FEP_LIBADD)
   ])
 
+AC_ARG_ENABLE(emacs,
+  AC_HELP_STRING([--disable-emacs],
+                 [disable uim-el]),
+  [
+    case $enable_emacs in
+      no)
+        use_uim_el="no"
+      ;;
+      yes|*)
+        use_uim_el="yes"
+        AM_PATH_LISPDIR
+        AC_SUBST(UIMEL_LISP_DIR, $lispdir/uim-el)
+      ;;
+    esac
+  ],
+  [ use_uim_el="yes"
+    AM_PATH_LISPDIR
+    AC_SUBST(UIMEL_LISP_DIR, $lispdir/uim-el)
+  ])
+
 AC_ARG_ENABLE(dict,
   AC_HELP_STRING([--enable-dict],
                  [enable uim-dict (a dictionary utility for uim, broken)]),
@@ -526,6 +546,7 @@ AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test x$default_toolkit = xqt)
 AM_CONDITIONAL(GNOME2, test x$use_gnome2 = xyes)
 AM_CONDITIONAL(APPLET, test x$use_applet = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
+AM_CONDITIONAL(UIM_EL, test x$use_uim_el = xyes)
 AM_CONDITIONAL(XIM, test x$use_xim = xyes)
 AM_CONDITIONAL(DICT, test x$use_dict = xyes)
 AM_CONDITIONAL(EB, test x$use_eb = xyes)
@@ -754,17 +775,18 @@ AC_SUBST(SRCDIR)
 
 
 AC_CONFIG_FILES([test.sh
-                 Makefile
-                 po/Makefile.in
+		 Makefile
+		 po/Makefile.in
 		 m4/Makefile
-                 helper/Makefile
-                 doc/Makefile
-                 uim/Makefile
-                 scm/Makefile
-                 gtk/Makefile
-                 qt/Makefile
-                 xim/Makefile
+		 helper/Makefile
+		 doc/Makefile
+		 uim/Makefile
+		 scm/Makefile
+		 gtk/Makefile
+		 qt/Makefile
+		 xim/Makefile
 		 fep/Makefile
+		 emacs/Makefile
 		 test/Makefile
 		 examples/Makefile
 		 examples/uim-custom/Makefile
@@ -772,7 +794,7 @@ AC_CONFIG_FILES([test.sh
 		 replace/Makefile
 		 uim.pc
 		 uim.desktop
-                 ])
+		 ])
 
 AC_OUTPUT
 
@@ -790,6 +812,7 @@ Configure Result :
    Qt              : ${use_qt}
    Qt immodule     : ${use_qtimmodule}
    FEP             : ${use_uim_fep}
+   Emacs           : ${use_uim_el}
    XIM             : ${use_xim}
    DICT            : ${use_dict}
    EB              : ${use_eb}

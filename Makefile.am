@@ -1,5 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = m4 doc replace uim scm gtk qt xim helper po test fep examples pixmaps
+SUBDIRS = m4 doc replace uim scm gtk qt xim helper po test fep emacs \
+	examples pixmaps
 EXTRA_DIST = README.ja INSTALL.ja test.sh.in uim.spec.in \
 	intltool-extract.in intltool-merge.in intltool-update.in \
 	uim.pc.in ChangeLog.old uim.desktop autogen.sh RELEASING
@@ -45,14 +46,15 @@ ChangeLog:
 .PHONY: ChangeLog releasetest-all-flag-enabled releasetest-all-flag-disabled each-releasetest releasetest
 
 releasetest-all-flag-enabled: RELEASETEST_CONFIGURE_FLAGS= --enable-debug \
-	 --enable-fep --enable-dict --with-m17nlib --with-canna \
-	 --with-gtk2 --with-gnome2 --with-qt --with-qt-immodule --with-libedit
+	--enable-fep --enable-emacs --enable-dict \
+	--with-m17nlib --with-canna --with-gtk2 --with-gnome2 --with-qt \
+	--with-qt-immodule --with-libedit
 releasetest-all-flag-enabled: each-releasetest
 
 releasetest-all-flag-disabled: RELEASETEST_CONFIGURE_FLAGS= --disable-debug \
-	--disable-fep --disable-sumika	--disable-dict --without-m17nlib \
-	--without-canna --without-gtk2  --without-gnome2 --without-qt \
-	--without-qt-immodule --without-libedit
+	--disable-fep --disable-sumika --disable-emacs --disable-dict \
+	--without-m17nlib --without-canna --without-gtk2  --without-gnome2 \
+	--without-qt --without-qt-immodule --without-libedit
 releasetest-all-flag-disabled: each-releasetest
 
 each-releasetest:
