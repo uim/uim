@@ -1,10 +1,10 @@
-EXTRA_DIST = README.jp $(uimel_target)
+EXTRA_DIST = README.jp
 
 if UIM_EL
 
-uimel_target = uim.el uim-var.el uim-keymap.el uim-key.el uim-util.el uim-candidate.el uim-preedit.el uim-debug.el uim-leim.el
-uimeldir = $(UIMEL_LISP_DIR)
-uimel_DATA = $(uimel_target)
+uimel_lispdir = $(UIMEL_LISP_DIR)
+dist_uimel_lisp_DATA = uim.el uim-var.el uim-keymap.el uim-key.el uim-util.el \
+ uim-candidate.el uim-preedit.el uim-debug.el uim-leim.el
 
 bin_PROGRAMS = uim-el-agent
 
