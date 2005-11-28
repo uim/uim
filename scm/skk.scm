@@ -1723,8 +1723,9 @@
 				       (skk-context-head sc))))
     (skk-context-set-okuri! sc '())
     (skk-context-set-appendix! sc '())
-    (if skk-dcomp-activate?
-	(skk-context-set-dcomp-word! sc ""))
+    ;; don't clear dcomp (not compatible with ddskk's behavior)
+    ;;(if skk-dcomp-activate?
+    ;;	(skk-context-set-dcomp-word! sc ""))
     (skk-context-set-nr-candidates! sc 0)))
 
 (define skk-back-to-converting-state
