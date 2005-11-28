@@ -1,4 +1,4 @@
-EXTRA_DIST = README.jp
+EXTRA_DIST = README.jp $(uimel_target)
 
 if UIM_EL
 
