@@ -91,6 +91,8 @@ open_pipe_rw(FILE **fr, FILE **fw)
       _exit(0);
     } else {
       /* grand child */
+      close(pipe_fd[0]);
+      close(pipe_fd[1]);
       if (fr) {
 	close(fdr[0]);
 	dup2(fdr[1], 1);
@@ -99,8 +101,6 @@ open_pipe_rw(FILE **fr, FILE **fw)
 	close(fdw[1]);
 	dup2(fdw[0], 0);
       }
-      close(pipe_fd[0]);
-      close(pipe_fd[1]);
     }
     return 0;
   }
