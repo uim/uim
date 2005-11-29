@@ -1,32 +1,35 @@
-TOKUNAGA Hiroyuki <tkng@xem.jp>
-  Maintainer
+TOKUNAGA Hiroyuki <tkng AT xem.jp>
+  Committer
 
-Masahito Omote <omote@utuuzin.net>
+Masahito Omote <omote AT utuuzin.net>
   Maintainer of Debian packages & Committer
 
-Yusuke Tabata <yusuke@cherubim.icw.co.jp>
-  Creator & Committer
+Yusuke Tabata <yusuke AT cherubim.icw.co.jp>
+  Original author & Committer
 
-Yamaken <yamaken@bp.iij4u.or.jp>
-  Author of IMKit-uim for Zaurus & Committer
+Yamaken <yamaken AT bp.iij4u.or.jp>
+  Project leader
 
-NOKUBI Takatsugu <knok@daionet.gr.jp>
+NOKUBI Takatsugu <knok AT daionet.gr.jp>
   Author of screen-uim
 
-Kazuki Ohta  <mover@hct.zaq.ne.jp>
+Kazuki Ohta  <mover AT hct.zaq.ne.jp>
   Author of qt-immodule for uim & Committer
 
-Masanari Yamamoto <h013177b@ice.nuie.nagoya-u.ac.jp>
+Masanari Yamamoto <h013177b AT ice.nuie.nagoya-u.ac.jp>
   Author of uim-fep & Committer
 
-Etsushi Kato <ekato@ees.hokudai.ac.jp>
+Etsushi Kato <ekato AT ees.hokudai.ac.jp>
+  Release manager & Committer
+
+Takuro Ashie <ashie AT homa.ne.jp>
   Committer
 
-Takuro Ashie <ashie@homa.ne.jp>
+Jun Inoue <jun.lambda AT gmail.com>
   Committer
 
-Jun Inoue <jun.lambda@gmail.com>
-  Committer
+Jae-hyeon Park <jhpark AT tuhep.phys.tohoku.ac.jp>
+  Author of uim-byeoru
 
-Konosuke Watanabe <sasugaanija@gmail.com>
-  Author of uim-el
+Konosuke Watanabe <sasugaanija AT gmail.com>
+  Author of uim.el
