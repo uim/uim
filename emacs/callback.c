@@ -129,21 +129,6 @@ candidate_deactivate_cb(void *ptr)
 }
 
 
-/*
- *
- *  This function is called after key event... maybe...
- *     If it's true, "ptr" is equal to "current" and 
- *    S-expression with new prop_label should be outputted at end
- *    of key processing.
- *
- *  This function is called when IM mode has changed... maybe...
- * 
- *  To notify current IM status to other processes which are 
- *  displaying IM's status (such as uim-toolbar-gtk), 
- *  uim_helper_send_message should be called... maybe...
- *
- */
-
 void
 prop_list_update_cb(void *ptr, const char *str)
 {

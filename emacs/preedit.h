@@ -46,7 +46,7 @@
 #include "output.h"
 #include "candidate.h"
 
-typedef struct preedit_buffer { /* -> preedit_segment */
+typedef struct preedit_buffer {
   char *str;
   int attr;
   unsigned cursor;

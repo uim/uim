@@ -41,18 +41,6 @@ char *default_engine_name = NULL;
 
 int default_engine_updated = 0;
 
-/*
-int
-init_default_engine(void)
-{
-  if (default_engine_name) free(default_engine_name);
-
-  default_engine_name 
-	= strdup(uim_get_default_im_name(setlocale(LC_ALL, NULL)));
-
-  return 1;
-}
-*/
 
 void
 update_default_engine(const char *engine_name)
@@ -102,14 +90,6 @@ list_im_engine(void)
   uim_context context;
 
   context = uim_create_context(NULL, "UTF-8", NULL, NULL, NULL, NULL);
-
-  /*
-  if (default_engine_name)
-	a_printf(" ( L \"%s\" ", default_engine_name);
-  else
-	a_printf(" ( L \"%s\" ", uim_get_default_im_name(setlocale(LC_ALL, NULL)));
-  */
-  /*a_printf(" ( L "); */
 
   a_printf(" ( L \"%s\" ", uim_get_default_im_name(setlocale(LC_ALL, NULL)));
   

@@ -128,8 +128,6 @@ helper_im_changed(char *request, char *engine_name)
 
 	/* change default */
 	update_default_engine(engine_name);
-	  /* if (default_engine_name) free(default_engine_name);
-		 default_engine_name = strdup(engine_name); */
 
 	/* check focus state when change IM of current application */
 	if (strcmp(request, "im_change_whole_desktop") == 0 || current) {

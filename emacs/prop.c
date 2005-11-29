@@ -102,18 +102,6 @@ output_prop_list(property *prop, const char *im)
 	return;
   }
 
-  /*
-  if (im)
-	a_printf(" ( l ( \"%s\" . ", im);
-  else
-	a_printf(" ( l ( \"\" . ");
-
-
-  if (default_engine_name) 
-	a_printf("\"%s\" ) ", default_engine_name);
-  else
-	a_printf("\"%s\" ) ", uim_get_default_im_name(setlocale(LC_ALL, NULL)));
-  */
 
   if (im)
 	a_printf(" ( l \"%s\"", im);

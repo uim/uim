@@ -178,19 +178,6 @@ create_uim_agent_context(const char *encoding)
 
   ret->context = create_context(ret->encoding, ret);
 
-  /* 
-	 uim_get_current_im_name doesn't return IM name.
-	 It just returns copy of argument.
-	 Hmm... I just want to know IM name which is in use.
-  */
-  /*
-  if( (im = uim_get_current_im_name(ret->context)) ){
-	ret->im = strdup(im);
-  }else{
-	ret->im = NULL;
-  }
-  */
-
   if ((im = uim_get_default_im_name(setlocale(LC_ALL, NULL))))
 	ret->im = strdup(im);
   else
