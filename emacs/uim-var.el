@@ -1,5 +1,6 @@
 ;; 
-;;  Copyright (c) 2005, Konosuke Watanabe <nosuke@csc.ne.jp>
+;;  Copyright (c) 2005 uim Project http://uim.freedesktop.org/
+;;
 ;;  All rights reserved.
 ;;
 ;;  Redistribution and use in source and binary forms, with or
