@@ -99,7 +99,7 @@ static int srfi34_providedp(void)
 #endif
 
 /* The name 'error?' should be reserved for SRFI-35 */
-ScmObj ScmOp_sscm_error_objectp(ScmObj obj)
+ScmObj ScmOp_error_objectp(ScmObj obj)
 {
     DECLARE_FUNCTION("%%error-object?", ProcedureFixed1);
     return (CONSP(obj) && EQ(CAR(obj), err_obj_tag)) ? SCM_TRUE : SCM_FALSE;
@@ -131,17 +131,17 @@ void Scm_RaiseError(ScmObj err_obj)
         /* NOTREACHED */
     }
 #endif
-    ScmOp_sscm_fatal_error(err_obj);
+    ScmOp_fatal_error(err_obj);
 }
 
-ScmObj ScmOp_sscm_fatal_error(ScmObj err_obj)
+ScmObj ScmOp_fatal_error(ScmObj err_obj)
 {
     DECLARE_FUNCTION("%%fatal-error", ProcedureFixed1);
 
     if (!fatal_err_looped) {
         fatal_err_looped = TRUE;
         ASSERT_ERROBJP(err_obj);
-        ScmOp_sscm_inspect_error(err_obj);
+        ScmOp_inspect_error(err_obj);
     }
 
 #if 0
@@ -153,7 +153,7 @@ ScmObj ScmOp_sscm_fatal_error(ScmObj err_obj)
     /* NOTREACHED */
 }
 
-ScmObj ScmOp_sscm_inspect_error(ScmObj err_obj)
+ScmObj ScmOp_inspect_error(ScmObj err_obj)
 {
     ScmObj rest, err_obj_tag, reason, objs, trace_stack;
     DECLARE_FUNCTION("%%inspect-error", ProcedureFixed1);
@@ -188,7 +188,7 @@ ScmObj ScmOp_sscm_inspect_error(ScmObj err_obj)
     return SCM_UNDEF;
 }
 
-ScmObj ScmOp_sscm_backtrace(void)
+ScmObj ScmOp_backtrace(void)
 {
     DECLARE_FUNCTION("%%backtrace", ProcedureFixed0);
 
@@ -210,7 +210,7 @@ int SigScm_Die(const char *msg, const char *filename, int line)
     reason = strdup("SigScheme Died");
 #endif /* HAVE_ASPRINTF */
     err_obj = Scm_MakeErrorObj(Scm_NewImmutableString(reason), LIST_1(SCM_UNDEF));
-    ScmOp_sscm_fatal_error(err_obj);
+    ScmOp_fatal_error(err_obj);
     /* NOTREACHED */
     return 1;  /* dummy value for boolean expression */
 }

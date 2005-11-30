@@ -242,7 +242,7 @@ ScmObj ScmOp_SRFI34_raise(ScmObj obj)
             err_obj = obj;
         else
             err_obj = Scm_MakeErrorObj(errmsg_fallback_exhausted, LIST_1(obj));
-        ScmOp_sscm_fatal_error(err_obj);
+        ScmOp_fatal_error(err_obj);
         /* NOTREACHED */
     }
 

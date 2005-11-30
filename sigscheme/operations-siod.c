@@ -176,7 +176,7 @@ ScmObj ScmOp_the_environment(ScmEvalState *eval_state)
     return eval_state->env;
 }
 
-ScmObj ScmOp_sscm_closure_code(ScmObj closure)
+ScmObj ScmOp_closure_code(ScmObj closure)
 {
     ScmObj exp, body;
     DECLARE_FUNCTION("%%closure-code", ProcedureFixed1);

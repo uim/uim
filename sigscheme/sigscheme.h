@@ -84,7 +84,7 @@ extern "C" {
 #define SCM_ASSERT(cond) \
     ((cond) || SigScm_Die("assertion failed.", __FILE__, __LINE__))
 
-#define SCM_ERROBJP(obj)       (NFALSEP(ScmOp_sscm_error_objectp(obj)))
+#define SCM_ERROBJP(obj)       (NFALSEP(ScmOp_error_objectp(obj)))
 #define SCM_LISTP(obj)         (CONSP(obj) || NULLP(obj))
 
 #define SCM_SYMBOL_BOUNDP(sym) (!SCM_EQ(SCM_SYMBOL_VCELL(sym), SCM_UNBOUND))
@@ -642,10 +642,10 @@ void SigScm_ErrorObj(const char *msg, ScmObj obj) SCM_NORETURN;
 void SigScm_ShowBacktrace(ScmObj trace_stack);
 ScmObj Scm_MakeErrorObj(ScmObj reason, ScmObj objs);
 void   Scm_RaiseError(ScmObj err_obj) SCM_NORETURN;
-ScmObj ScmOp_sscm_error_objectp(ScmObj obj);
-ScmObj ScmOp_sscm_fatal_error(ScmObj err_obj) SCM_NORETURN;
-ScmObj ScmOp_sscm_inspect_error(ScmObj err_obj);
-ScmObj ScmOp_sscm_backtrace(void);
+ScmObj ScmOp_error_objectp(ScmObj obj);
+ScmObj ScmOp_fatal_error(ScmObj err_obj) SCM_NORETURN;
+ScmObj ScmOp_inspect_error(ScmObj err_obj);
+ScmObj ScmOp_backtrace(void);
 
 /* debug.c */
 int  SigScm_DebugCategories(void);
@@ -759,7 +759,7 @@ ScmObj ScmOp_symbol_value(ScmObj var);
 ScmObj ScmOp_set_symbol_valued(ScmObj var, ScmObj val);
 ScmObj ScmOp_SIOD_equal(ScmObj obj1, ScmObj obj2);
 ScmObj ScmOp_the_environment(ScmEvalState *eval_state);
-ScmObj ScmOp_sscm_closure_code(ScmObj closure);
+ScmObj ScmOp_closure_code(ScmObj closure);
 ScmObj ScmOp_verbose(ScmObj args);
 ScmObj ScmOp_eof_val(void);
 ScmObj ScmExp_undefine(ScmObj var, ScmObj env);
