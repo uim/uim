@@ -84,7 +84,7 @@ endif
 
 uim_plugin_LTLIBRARIES += libuim-skk.la
 libuim_skk_la_SOURCES = skk.c
-libuim_skk_la_LIBADD = libuim.la
+libuim_skk_la_LIBADD = libuim.la @NETLIBS@
 libuim_skk_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_skk_la_CPPFLAGS = -I$(top_srcdir)
 

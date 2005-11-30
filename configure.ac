@@ -243,9 +243,15 @@ fi
 AC_SEARCH_LIBS(dlfunc,dl,
   [
     AC_DEFINE(HAVE_DLFUNC, 1,
-              [Define to 1 if you have the `dlfunc' function.])
+              [Define to 1 if you have the dlfunc function.])
 
   ])
+
+dnl Solaris 9 needs -lresolv for inet_aton
+NETLIBS=""
+AC_CHECK_FUNC(inet_aton, ,
+  [AC_CHECK_LIB(resolv, inet_aton, [NETLIBS="-lresolv"])])
+AC_SUBST(NETLIBS)
 
 GETTEXT_PACKAGE=uim
 AC_SUBST(GETTEXT_PACKAGE)
@@ -424,7 +430,7 @@ AC_ARG_ENABLE(fep,
         use_uim_fep="yes"
 	AC_CHECK_LIB(curses, setupterm, FEP_LIBADD="-lcurses $FEP_LIBADD",
 	  [AC_CHECK_LIB(ncurses, setupterm, FEP_LIBADD="-lncurses $FEP_LIBADD",
-	    AC_MSG_WARN([fep needs libcurses or libncurses. disabled...]);use_uim_fep="no")])
+	    AC_MSG_WARN([fep needs setupterm in libcurses or libncurses. disabled...]);use_uim_fep="no")])
 	AC_CHECK_FUNCS(forkpty)
 	if test $ac_cv_func_forkpty = no; then
 	  AC_CHECK_LIB(util, forkpty, [AC_DEFINE(HAVE_FORKPTY) FEP_LIBADD="-lutil $FEP_LIBADD"])
@@ -436,7 +442,7 @@ AC_ARG_ENABLE(fep,
   [ use_uim_fep="yes"
     AC_CHECK_LIB(curses, setupterm, FEP_LIBADD="-lcurses $FEP_LIBADD",
       [AC_CHECK_LIB(ncurses, setupterm, FEP_LIBADD="-lncurses $FEP_LIBADD",
-        AC_MSG_WARN([fep needs libcurses or libncurses. disabled...]);use_uim_fep="no")])
+        AC_MSG_WARN([fep needs setupterm in libcurses or libncurses. disabled...]);use_uim_fep="no")])
     AC_CHECK_FUNCS(forkpty)
     if test $ac_cv_func_forkpty = no; then
       AC_CHECK_LIB(util, forkpty, [AC_DEFINE(HAVE_FORKPTY) FEP_LIBADD="-lutil $FEP_LIBADD"])
