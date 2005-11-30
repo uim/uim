@@ -1,5 +1,9 @@
-aclocal-1.7 -I m4 \
+#!/bin/sh
+
+# Notice: Autotools' version must be 1.7 or later
+
+aclocal -I m4 \
   && libtoolize --force --copy \
   && autoheader \
-  && automake-1.7 --add-missing --foreign --copy \
+  && automake --add-missing --foreign --copy \
   && autoconf
