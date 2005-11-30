@@ -1,6 +1,5 @@
-aclocal -I m4 \
+aclocal-1.7 -I m4 \
   && libtoolize --force --copy \
   && autoheader \
-  && automake --add-missing --foreign --copy \
-  && autoconf \
-  && ./configure $@
+  && automake-1.7 --add-missing --foreign --copy \
+  && autoconf
