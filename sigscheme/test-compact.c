@@ -296,6 +296,7 @@ ScmObj Scm_CheckSymbol(const char *name)
     return obj;
 }
 
+/* FIXME: follow int-based char */
 ScmObj Scm_CheckChar(char *ch)
 {
 #define SCM_MB_MAX_LEN 4

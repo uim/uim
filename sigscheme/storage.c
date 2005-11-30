@@ -45,13 +45,6 @@
 #include "sigschemeinternal.h"
 #include "encoding.h"
 
-#if !SCM_OBJ_COMPACT
-#if (SCM_CHARCELL_SIZE <= SCM_MB_MAX_LEN)
-#error
-#error "SCM_MB_MAX_LEN is exceeded design limit"
-#endif
-#endif /* !SCM_OBJ_COMPACT */
-
 /*=======================================
   File Local Struct Declarations
 =======================================*/
@@ -185,19 +178,12 @@ ScmObj Scm_NewSymbol(char *name, ScmObj v_cell)
     return obj;
 }
 
-ScmObj Scm_NewChar(char *ch)
+ScmObj Scm_NewChar(int val)
 {
     ScmObj obj = SigScm_NewObjFromHeap();
-    int len;
-
-    len = Scm_mb_bare_c_strlen(ch);
-    if (len > SCM_MB_MAX_LEN) {
-        SigScm_Error("Scm_NewChar : invalid character ch = [%s], len = %d",
-                     ch, len);
-    }
 
     SCM_ENTYPE_CHAR(obj);
-    SCM_CHAR_SET_VALUE(obj, ch);
+    SCM_CHAR_SET_VALUE(obj, val);
 
     return obj;
 }

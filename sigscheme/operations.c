@@ -986,109 +986,80 @@ ScmObj ScmOp_charp(ScmObj obj)
 ScmObj ScmOp_charequalp(ScmObj ch1, ScmObj ch2)
 {
     DECLARE_FUNCTION("char=?", ProcedureFixed2);
+
     ASSERT_CHARP(ch1);
     ASSERT_CHARP(ch2);
 
-    if (strcmp(SCM_CHAR_VALUE(ch1), SCM_CHAR_VALUE(ch2)) == 0)
-        return SCM_TRUE;
-
-    return SCM_FALSE;
+    return (SCM_CHAR_VALUE(ch1) == SCM_CHAR_VALUE(ch2)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_char_alphabeticp(ScmObj obj)
 {
+    int ch;
     DECLARE_FUNCTION("char-alphabetic?", ProcedureFixed1);
+
     ASSERT_CHARP(obj);
 
-    /* check multibyte */
-    if (strlen(SCM_CHAR_VALUE(obj)) != 1)
-        return SCM_FALSE;
+    ch = SCM_CHAR_VALUE(obj);
 
-    /* check alphabet */
-    if (isalpha(SCM_CHAR_VALUE(obj)[0]) != 0)
-        return SCM_TRUE;
-
-    return SCM_FALSE;
+    return (isascii(ch) && isalpha(ch)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_char_numericp(ScmObj obj)
 {
+    int ch;
     DECLARE_FUNCTION("char-numeric?", ProcedureFixed1);
+
     ASSERT_CHARP(obj);
 
-    /* check multibyte */
-    if (strlen(SCM_CHAR_VALUE(obj)) != 1)
-        return SCM_FALSE;
+    ch = SCM_CHAR_VALUE(obj);
 
-    /* check digit */
-    if (isdigit(SCM_CHAR_VALUE(obj)[0]) != 0)
-        return SCM_TRUE;
-
-    return SCM_FALSE;
+    return (isascii(ch) && isdigit(ch)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_char_whitespacep(ScmObj obj)
 {
+    int ch;
     DECLARE_FUNCTION("char-whitespace?", ProcedureFixed1);
+
     ASSERT_CHARP(obj);
 
-    /* check multibyte */
-    if (strlen(SCM_CHAR_VALUE(obj)) != 1)
-        return SCM_FALSE;
+    ch = SCM_CHAR_VALUE(obj);
 
-    /* check space */
-    if (isspace(SCM_CHAR_VALUE(obj)[0]) != 0)
-        return SCM_TRUE;
-
-    return SCM_FALSE;
+    return (isascii(ch) && isspace(ch)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_char_upper_casep(ScmObj obj)
 {
+    int ch;
     DECLARE_FUNCTION("char-upper-case?", ProcedureFixed1);
+
     ASSERT_CHARP(obj);
 
-    /* check multibyte */
-    if (strlen(SCM_CHAR_VALUE(obj)) != 1)
-        return SCM_FALSE;
+    ch = SCM_CHAR_VALUE(obj);
 
-    /* check uppercase */
-    if (isupper(SCM_CHAR_VALUE(obj)[0]) != 0)
-        return SCM_TRUE;
-
-    return SCM_FALSE;
+    return (isascii(ch) && isupper(ch)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_char_lower_casep(ScmObj obj)
 {
+    int ch;
     DECLARE_FUNCTION("char-lower-case?", ProcedureFixed1);
+
     ASSERT_CHARP(obj);
 
-    /* check multibyte */
-    if (strlen(SCM_CHAR_VALUE(obj)) != 1)
-        return SCM_FALSE;
+    ch = SCM_CHAR_VALUE(obj);
 
-    /* check lowercase */
-    if (islower(SCM_CHAR_VALUE(obj)[0]) != 0)
-        return SCM_TRUE;
-
-    return SCM_FALSE;
+    return (isascii(ch) && islower(ch)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_char2integer(ScmObj obj)
 {
-    int val;
-    const char *str;
     DECLARE_FUNCTION("char->integer", ProcedureFixed1);
 
     ASSERT_CHARP(obj);
 
-    str = SCM_CHAR_VALUE(obj);
-    val = SCM_CHARCODEC_STR2INT(Scm_current_char_codec, str, strlen(str),
-                                SCM_MB_STATELESS);
-    if (val == EOF)
-        ERR_OBJ("invalid char value", obj);
-    return Scm_NewInt(val);
+    return Scm_NewInt(SCM_CHAR_VALUE(obj));
 }
 
 ScmObj ScmOp_integer2char(ScmObj obj)
@@ -1102,35 +1073,33 @@ ScmObj ScmOp_integer2char(ScmObj obj)
     val = SCM_INT_VALUE(obj);
     if (!SCM_CHARCODEC_INT2STR(Scm_current_char_codec, buf, val, SCM_MB_STATELESS))
         ERR_OBJ("invalid char value", obj);
-    return Scm_NewChar(strdup(buf));
+    return Scm_NewChar(val);
 }
 
 ScmObj ScmOp_char_upcase(ScmObj obj)
 {
+    int ch;
     DECLARE_FUNCTION("char-upcase", ProcedureFixed1);
+
     ASSERT_CHARP(obj);
 
-    /* check multibyte */
-    if (strlen(SCM_CHAR_VALUE(obj)) != 1)
-        return obj;
-
-    /* to upcase */
-    SCM_CHAR_VALUE(obj)[0] = toupper(SCM_CHAR_VALUE(obj)[0]);
+    ch = SCM_CHAR_VALUE(obj);
+    if (isascii(ch))
+        SCM_CHAR_SET_VALUE(obj, toupper(ch));
 
     return obj;
 }
 
 ScmObj ScmOp_char_downcase(ScmObj obj)
 {
+    int ch;
     DECLARE_FUNCTION("char-downcase", ProcedureFixed1);
+
     ASSERT_CHARP(obj);
 
-    /* check multibyte */
-    if (strlen(SCM_CHAR_VALUE(obj)) != 1)
-        return obj;
-
-    /* to upcase */
-    SCM_CHAR_VALUE(obj)[0] = tolower(SCM_CHAR_VALUE(obj)[0]);
+    ch = SCM_CHAR_VALUE(obj);
+    if (isascii(ch))
+        SCM_CHAR_SET_VALUE(obj, tolower(ch));
 
     return obj;
 }
@@ -1146,13 +1115,9 @@ ScmObj ScmOp_stringp(ScmObj obj)
 
 ScmObj ScmOp_make_string(ScmObj length, ScmObj args)
 {
-    int len = 0;
-    int i;
-    int fillstr_size = 0;
+    int filler_val, len, i;
     ScmObj filler = SCM_FALSE;
-    const char *fillstr = NULL;
-    char *new_str = NULL;
-    char *p = NULL;
+    ScmObj sport  = SCM_FALSE;
     DECLARE_FUNCTION("make-string", ProcedureVariadic1);
 
     ASSERT_INTP(length);
@@ -1162,26 +1127,24 @@ ScmObj ScmOp_make_string(ScmObj length, ScmObj args)
     if (len < 0)
         ERR_OBJ("length must be a positive integer", length);
 
-    /* extract fillstr */
+    /* extract filler */
     if (NO_MORE_ARG(args)) {
-        fillstr = " ";
+        filler_val = ' ';
     } else {
         filler = POP_ARG(args);
         ASSERT_NO_MORE_ARG(args);
         ASSERT_CHARP(filler);
-        fillstr = SCM_CHAR_VALUE(filler);
+        filler_val = SCM_CHAR_VALUE(filler);
     }
 
-    /* fill string */
-    fillstr_size = strlen(fillstr);
-    new_str = (char*)malloc(sizeof(char) * fillstr_size * len + 1);
-    for (i = 0, p = new_str; i < len; i++) {
-        strcpy(p, fillstr);
-        p += fillstr_size;
+    /* TODO: make efficient */
+    /* fill string (multibyte-ready) */
+    sport = ScmOp_SRFI6_open_output_string();
+    for (i = 0; i < len; i++) {
+        SCM_PORT_PUT_CHAR(sport, filler_val);
     }
-    new_str[fillstr_size * len] = '\0';
 
-    return Scm_NewMutableString(new_str);
+    return ScmOp_SRFI6_get_output_string(sport);
 }
 
 ScmObj ScmOp_string(ScmObj args)
@@ -1200,30 +1163,29 @@ ScmObj ScmOp_string_length(ScmObj str)
 ScmObj ScmOp_string_ref(ScmObj str, ScmObj k)
 {
     int   c_index = 0;
-    char *new_ch  = NULL;
+    int   ch;
     ScmMultibyteString mbs;
     DECLARE_FUNCTION("string-ref", ProcedureFixed2);
 
     ASSERT_STRINGP(str);
     ASSERT_INTP(k);
 
-    SCM_MBS_INIT(mbs);
-    /* get start_ptr and end_ptr */
     c_index = SCM_INT_VALUE(k);
     if (c_index < 0 || SCM_STRING_LEN(str) <= c_index)
         ERR_OBJ("index out of range", k);
-    SCM_MBS_SET_STR(mbs, SCM_STRING_STR(str));
 
-    /* FIXME: This strlen() can be eliminated. */
+    SCM_MBS_INIT(mbs);
+    SCM_MBS_SET_STR(mbs, SCM_STRING_STR(str));
     SCM_MBS_SET_SIZE(mbs, strlen(SCM_STRING_STR(str)));
     mbs = Scm_mb_strref(mbs, c_index);
 
-    /* copy from start_ptr to end_ptr */
-    new_ch = (char*)malloc(SCM_MBS_GET_SIZE(mbs) + 1);
-    memcpy(new_ch, SCM_MBS_GET_STR(mbs), SCM_MBS_GET_SIZE(mbs));
-    new_ch[SCM_MBS_GET_SIZE(mbs)] = '\0';
+    /* FIXME: support stateful encoding */
+    ch = SCM_CHARCODEC_STR2INT(Scm_current_char_codec, SCM_MBS_GET_STR(mbs),
+                               SCM_MBS_GET_SIZE(mbs), SCM_MB_STATELESS);
+    if (ch == EOF)
+        ERR("string-ref: invalid char sequence");
 
-    return Scm_NewChar(new_ch);
+    return Scm_NewChar(ch);
 }
 
 ScmObj ScmOp_string_setd(ScmObj str, ScmObj k, ScmObj ch)
@@ -1236,6 +1198,8 @@ ScmObj ScmOp_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     char *new_str  = NULL;
     ScmMultibyteString mbs;
     const char *string_str   = NULL;
+    char new_ch_str[SCM_MB_MAX_LEN + sizeof((char)'\0')];
+    const char *next;
     DECLARE_FUNCTION("string-set!", ProcedureFixed3);
 
     ASSERT_STRINGP(str);
@@ -1251,22 +1215,27 @@ ScmObj ScmOp_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     /* FIXME: can string_str be NULL at this point or not? */
     if (!string_str) string_str = "";
 
-    /* FIXME: strlen() can be eliminiated. */
     SCM_MBS_INIT(mbs);
     SCM_MBS_SET_STR(mbs, string_str);
     SCM_MBS_SET_SIZE(mbs, strlen(string_str));
     mbs = Scm_mb_strref(mbs, c_start_index);
 
+    /* FIXME: support stateful encoding */
+    next = SCM_CHARCODEC_INT2STR(Scm_current_char_codec, new_ch_str,
+                                 SCM_CHAR_VALUE(ch), SCM_MB_STATELESS);
+    if (!next)
+        ERR_OBJ("invalid char in", str);
+
     /* calculate total size */
     prefix_size = SCM_MBS_GET_STR(mbs) - string_str;
-    newch_size  = strlen(SCM_CHAR_VALUE(ch));
+    newch_size  = next - new_ch_str;
     postfix_size  = strlen(SCM_MBS_GET_STR(mbs) + SCM_MBS_GET_SIZE(mbs));
     total_size = prefix_size + newch_size + postfix_size;
 
     /* copy each part */
     new_str = (char*)malloc(total_size + 1);
     memcpy(new_str, string_str, prefix_size);
-    memcpy(new_str+prefix_size, SCM_CHAR_VALUE(ch), newch_size);
+    memcpy(new_str+prefix_size, new_ch_str, newch_size);
     memcpy(new_str+prefix_size+newch_size,
            SCM_MBS_GET_STR(mbs)+SCM_MBS_GET_SIZE(mbs), postfix_size);
 
@@ -1376,8 +1345,9 @@ ScmObj ScmOp_string2list(ScmObj str)
     ScmObj tail = SCM_NULL;
     ScmObj next = SCM_NULL;
     ScmMultibyteString mbs;
-    ScmMultibyteCharInfo ch;
-    char *buf;
+    ScmMultibyteCharInfo mbc;
+    ScmMultibyteState state;
+    int ch;
     DECLARE_FUNCTION("string->list", ProcedureFixed1);
 
     ASSERT_STRINGP(str);
@@ -1387,11 +1357,18 @@ ScmObj ScmOp_string2list(ScmObj str)
     SCM_MBS_SET_SIZE(mbs, strlen(SCM_STRING_STR(str)));
 
     while (SCM_MBS_GET_SIZE(mbs)) {
-        ch = Scm_mb_scan_char(mbs);
-        buf = malloc(SCM_MBCINFO_GET_SIZE(ch)+1);
-        memcpy(buf, SCM_MBS_GET_STR(mbs), SCM_MBCINFO_GET_SIZE(ch));
-        buf[SCM_MBCINFO_GET_SIZE(ch)] = 0;
-        next = LIST_1(Scm_NewChar(buf));
+        state = SCM_MBS_GET_STATE(mbs);
+        mbc = SCM_CHARCODEC_SCAN_CHAR(Scm_current_char_codec, mbs);
+        if (SCM_MBCINFO_ERRORP(mbc) || SCM_MBCINFO_INCOMPLETEP(mbc))
+            ERR("string->list: invalid char sequence");
+        ch = SCM_CHARCODEC_STR2INT(Scm_current_char_codec,
+                                   SCM_MBS_GET_STR(mbs),
+                                   SCM_MBCINFO_GET_SIZE(mbc),
+                                   state);
+        if (ch == EOF)
+            ERR("string->list: invalid char sequence");
+
+        next = LIST_1(Scm_NewChar(ch));
 
         if (NULLP(tail))
             head = tail = next;
@@ -1400,7 +1377,7 @@ ScmObj ScmOp_string2list(ScmObj str)
             tail = CDR(tail);
         }
 
-        SCM_MBS_SKIP_CHAR(mbs, ch);
+        SCM_MBS_SKIP_CHAR(mbs, mbc);
     }
 
     return head;
@@ -1408,44 +1385,25 @@ ScmObj ScmOp_string2list(ScmObj str)
 
 ScmObj ScmOp_list2string(ScmObj lst)
 {
-    int len = 0;
-    int total_size = 0;
-    ScmObj chars   = SCM_NULL;
-    ScmObj obj     = SCM_NULL;
-    char  *new_str = NULL;
-    char  *ch      = NULL;
-    char  *p       = NULL;
+    ScmObj rest, ch, sport;
     DECLARE_FUNCTION("list->string", ProcedureFixed1);
 
-    if (FALSEP(ScmOp_listp(lst)))
-        ERR_OBJ("list required but got", lst);
+    ASSERT_LISTP(lst);
 
     if (NULLP(lst))
         return Scm_NewMutableStringCopying("");
 
-    /* count total size of the string */
-    for (chars = lst; !NULLP(chars); chars = CDR(chars)) {
-        obj = CAR(chars);
-        ASSERT_CHARP(obj);
-
-        total_size += strlen(SCM_CHAR_VALUE(obj));
+    /* TODO: make efficient */
+    sport = ScmOp_SRFI6_open_output_string();
+    for (rest = lst; CONSP(rest); rest = CDR(rest)) {
+        ch = CAR(rest);
+        ASSERT_CHARP(ch);
+        SCM_PORT_PUT_CHAR(sport, SCM_CHAR_VALUE(ch));
     }
+    if (!NULLP(rest))
+        ERR_OBJ("invalid char list", lst);
 
-    /* allocate new string */
-    new_str = (char*)malloc(sizeof(char) * total_size + 1);
-
-    /* copy char by char */
-    p = new_str;
-    for (chars = lst; !NULLP(chars); chars = CDR(chars)) {
-        obj = CAR(chars);
-        ch  = SCM_CHAR_VALUE(obj);
-        len = strlen(SCM_CHAR_VALUE(obj));
-
-        strcpy(p, ch);
-        p += len;
-    }
-
-    return Scm_NewMutableString(new_str);
+    return ScmOp_SRFI6_get_output_string(sport);
 }
 
 ScmObj ScmOp_string_copy(ScmObj str)
@@ -1461,23 +1419,26 @@ ScmObj ScmOp_string_filld(ScmObj str, ScmObj ch)
     int  str_len   = 0;
     char *new_str  = NULL;
     char *p        = NULL;
-    int   i        = 0;
+    char ch_str[SCM_MB_MAX_LEN + sizeof((char)'\0')];
+    const char *next;
     DECLARE_FUNCTION("string-fill!", ProcedureFixed2);
 
     ASSERT_STRINGP(str);
     ASSERT_MUTABLEP(str);
     ASSERT_CHARP(ch);
 
-    /* create new str */
-    char_size = strlen(SCM_CHAR_VALUE(ch));
-    str_len   = SCM_STRING_LEN(str);
-    new_str   = (char*)realloc(SCM_STRING_STR(str),
-                               sizeof(char) * str_len * char_size + 1);
-    for (i = 0, p = new_str; i < char_size * str_len;) {
-        strcpy(p, SCM_CHAR_VALUE(ch));
+    /* FIXME: support stateful encoding */
+    next = SCM_CHARCODEC_INT2STR(Scm_current_char_codec, ch_str,
+                                 SCM_CHAR_VALUE(ch), SCM_MB_STATELESS);
+    if (!next)
+        ERR_OBJ("invalid char in", str);
 
-        p += char_size;
-        i += char_size;
+    /* create new str */
+    char_size = next - ch_str;
+    str_len   = SCM_STRING_LEN(str);
+    new_str   = realloc(SCM_STRING_STR(str), str_len * char_size + 1);
+    for (p = new_str; p < &new_str[char_size * str_len]; p += char_size) {
+        strcpy(p, ch_str);
     }
 
     SCM_STRING_SET_STR(str, new_str);

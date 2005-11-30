@@ -160,8 +160,6 @@ enum ScmStrMutationType {
     SCM_STR_MUTABLE             = 1
 };
 
-#define SCM_CHARCELL_SIZE 8
-
 /* Scheme Object */
 struct ScmCell_ {
     enum ScmObjType type;
@@ -183,12 +181,7 @@ struct ScmCell_ {
         } symbol;
 
         struct {
-#if 0
-            /* placeholdler for future optimization */
-            unsigned char seq[SCM_CHARCELL_SIZE];
-#else
-            char *ch;
-#endif
+            int value;
         } ch;
 
         struct {
@@ -291,8 +284,8 @@ struct ScmCell_ {
 
 #define SCM_CHARP(a) (SCM_TYPE(a) == ScmChar)
 #define SCM_ENTYPE_CHAR(a) (SCM_ENTYPE((a), ScmChar))
-#define SCM_CHAR_VALUE(a) (SCM_AS_CHAR(a)->obj.ch.ch)
-#define SCM_CHAR_SET_VALUE(a, chr) (SCM_CHAR_VALUE(a) = (chr))
+#define SCM_CHAR_VALUE(a) (SCM_AS_CHAR(a)->obj.ch.value)
+#define SCM_CHAR_SET_VALUE(a, val) (SCM_CHAR_VALUE(a) = (val))
 
 /* String Object uses tagged pointer for packing mutation type.
  * LSB of ScmCell.obj.string.str is used to represent mutation type

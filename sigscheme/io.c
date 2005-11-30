@@ -373,9 +373,7 @@ ScmObj ScmOp_read(ScmObj args)
 ScmObj ScmOp_read_char(ScmObj args)
 {
     ScmObj port = SCM_INVALID;
-    /* FIXME: use int as char */
     int    ch;
-    char   buf[2];
     DECLARE_FUNCTION("read-char", ProcedureVariadic0);
 
     PREPARE_PORT(port, args, scm_current_input_port);
@@ -384,18 +382,13 @@ ScmObj ScmOp_read_char(ScmObj args)
     if (ch == EOF)
         return SCM_EOF;
 
-    buf[0] = ch;
-    buf[1] = '\0';
-
-    return Scm_NewChar(strdup(buf));
+    return Scm_NewChar(ch);
 }
 
 ScmObj ScmOp_peek_char(ScmObj args)
 {
     ScmObj port = SCM_INVALID;
-    /* FIXME: use int as char */
     int    ch;
-    char   buf[2];
     DECLARE_FUNCTION("peek-char", ProcedureVariadic0);
 
     PREPARE_PORT(port, args, scm_current_input_port);
@@ -404,9 +397,7 @@ ScmObj ScmOp_peek_char(ScmObj args)
     if (ch == EOF)
         return SCM_EOF;
 
-    buf[0] = ch;
-    buf[1] = '\0';
-    return Scm_NewChar(strdup(buf));
+    return Scm_NewChar(ch);
 }
 
 ScmObj ScmOp_eof_objectp(ScmObj obj)

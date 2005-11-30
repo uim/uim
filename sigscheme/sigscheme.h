@@ -382,7 +382,7 @@ void Scm_RegisterProcedureVariadicTailRec5(const char *name, ScmObj (*func)(ScmO
 ScmObj Scm_NewCons(ScmObj a, ScmObj b);
 ScmObj Scm_NewInt(int val);
 ScmObj Scm_NewSymbol(char *name, ScmObj v_cell);
-ScmObj Scm_NewChar(char *ch);
+ScmObj Scm_NewChar(int val);
 ScmObj Scm_NewString(char *str, int is_immutable);
 ScmObj Scm_NewImmutableString(char *str);
 ScmObj Scm_NewImmutableStringCopying(const char *str);

@@ -66,7 +66,6 @@ Assigned to YamaKen:
 
 * Add integer->char and char->integer procedures with multibyte support
   - Write test
-  - Make character object int-based
 
 * Dynamic encoding switching for a conversion between string and char list,
   based on a SRFI or de facto standard API

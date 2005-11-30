@@ -548,14 +548,10 @@ static void sweep_obj(ScmObj obj)
 #else /* SCM_OBJ_COMPACT */
     /* if the type has the pointer to free, then free it! */
     switch (SCM_TYPE(obj)) {
-    case ScmInt:
     case ScmCons:
-    case ScmClosure:
-        break;
-
+    case ScmInt:
     case ScmChar:
-        if (SCM_CHAR_VALUE(obj))
-            free(SCM_CHAR_VALUE(obj));
+    case ScmClosure:
         break;
 
     case ScmString:

@@ -153,7 +153,6 @@ struct ScmCharCodecVTbl_ {
 /*=======================================
    Variable Declarations
 =======================================*/
-extern ScmMultibyteCharInfo (*Scm_mb_scan_char)(ScmMultibyteString mbs);
 extern ScmCharCodec *Scm_current_char_codec;
 
 /*=======================================

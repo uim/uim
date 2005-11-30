@@ -308,51 +308,33 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
 
 static void print_char(ScmObj port, ScmObj obj, enum OutputType otype)
 {
-    const ScmSpecialCharInfo *info = NULL;
-    char *lex_rep = NULL;
+    const ScmSpecialCharInfo *info;
+    int c;
 
-    /* sanity check */
-    if (SCM_CHAR_VALUE(obj) == NULL)
-        return;
-
+    c = SCM_CHAR_VALUE(obj);
     switch (otype) {
     case AS_WRITE:
-        lex_rep = SCM_CHAR_VALUE(obj);
-        /* single byte */
-        if (strlen(lex_rep) < 2) {
-            /* search in the Scm_special_char_table */
-            for (info = Scm_special_char_table; info->esc_seq; info++) {
-                if (SCM_CHAR_VALUE(obj)[0] == info->code) {
-                    SigScm_PortPrintf(port, "#\\%s", info->lex_rep);
-                    return;
-                }
+        SCM_PORT_PUTS(port, "#\\");
+        /* special chars */
+        for (info = Scm_special_char_table; info->esc_seq; info++) {
+            if (c == (int)info->code) {
+                SCM_PORT_PUTS(port, info->lex_rep);
+                return;
             }
-            /* not found in the table*/
-            if (isprint(SCM_CHAR_VALUE(obj)[0])) {
-                SigScm_PortPrintf(port, "#\\%s", SCM_CHAR_VALUE(obj));
-            } else {
-                /* convert to hexadecimal format */ 
-                lex_rep = (char*)malloc(sizeof(char) * 4);
-                snprintf(lex_rep, 4, "x%02x", (int)SCM_CHAR_VALUE(obj)[0]);
-                SigScm_PortPrintf(port, "#\\%s", lex_rep);
-                free(lex_rep);
-            }
+        }
+
+        /* other control chars are printed in hexadecimal form */ 
+        if (isascii(c) && iscntrl(c)) {
+            SigScm_PortPrintf(port, "x%02x", c);
             return;
         }
-        /* multi byte */
-        SigScm_PortPrintf(port, "#\\%s", lex_rep);
-        break;
-
+        /* FALLTHROUGH */
     case AS_DISPLAY:
-        /*
-         * in display, character objects appear in the reqpresentation as
-         * if writen by write-char instead of by write.
-         */
-        SCM_PORT_PRINT(port, SCM_CHAR_VALUE(obj));
+        SCM_PORT_PUT_CHAR(port, c);
         break;
 
     default:
-        ERR("print_char : unknown output type");
+        ERR("print_char: unknown output type");
         break;
     }
 }

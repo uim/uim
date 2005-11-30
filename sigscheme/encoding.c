@@ -206,22 +206,6 @@ static ScmCharCodec *available_codecs[] = {
 /*=======================================
   Global Variables
 =======================================*/
-/* FIXME: merge into Scm_current_char_codec */
-ScmMultibyteCharInfo (*Scm_mb_scan_char)(ScmMultibyteString mbs)
-#if SCM_USE_UTF8_AS_DEFAULT
-    = utf8_scan_char;
-#elif SCM_USE_EUCCN_AS_DEFAULT
-    = euccn_scan_char;
-#elif SCM_USE_EUCJP_AS_DEFAULT
-    = eucjp_scan_char;
-#elif SCM_USE_EUCKR_AS_DEFAULT
-    = eucjp_scan_char;
-#elif SCM_USE_SJIS_AS_DEFAULT
-    = sjis_scan_char;
-#else
-    = unibyte_scan_char;
-#endif
-
 /* temporary solution */
 ScmCharCodec *Scm_current_char_codec
 #if SCM_USE_UTF8_AS_DEFAULT
@@ -251,7 +235,7 @@ int Scm_mb_strlen(ScmMultibyteString mbs)
           SCM_MBS_GET_SIZE(mbs), SCM_MBS_GET_STR(mbs)));
 
     while (SCM_MBS_GET_SIZE(mbs)) {
-        c = Scm_mb_scan_char(mbs);
+        c = SCM_CHARCODEC_SCAN_CHAR(Scm_current_char_codec, mbs);
         CDBG((SCM_DBG_ENCODING, "%d, %d;", SCM_MBCINFO_GET_SIZE(c), c.flag));
         SCM_MBS_SKIP_CHAR(mbs, c);
         len++;
@@ -280,14 +264,14 @@ ScmMultibyteString Scm_mb_substring(ScmMultibyteString mbs, int i, int len)
     ret = mbs;
 
     while (i--) {
-        c = Scm_mb_scan_char(ret);
+        c = SCM_CHARCODEC_SCAN_CHAR(Scm_current_char_codec, ret);
         SCM_MBS_SKIP_CHAR(ret, c);
     }
 
     end = ret;
 
     while (len--) {
-        c = Scm_mb_scan_char(end);
+        c = SCM_CHARCODEC_SCAN_CHAR(Scm_current_char_codec, end);
         SCM_MBS_SKIP_CHAR(end, c);
     }
 
@@ -341,7 +325,7 @@ ScmCharCodec *Scm_mb_find_codec(const char *encoding)
 #define IN_GR94(c) (0xA1 <= (uchar)(c) && (uchar)(c) <= 0xFE)
 #define IN_GR96(c) (0xA0 <= (uchar)(c) && (uchar)(c) <= 0xFF)
 
-#define IS_ASCII(c) ((uchar)(c) <= 0x7F)
+#define IS_ASCII(c) ((uint)(c) <= 0x7F)
 #define IS_GR_SPC_OR_DEL(c)  ((uchar)(c) == 0xA0 || (uchar)(c) == 0xFF)
 
 #define CHAR_BITS    8
@@ -424,8 +408,8 @@ static int eucjp_str2int(const uchar *src, size_t len, ScmMultibyteState state)
         break;
 
     case 3:
-        ch  = src[0] << CHAR_BITS;
-        ch |= src[1] << CHAR_BITS * 2;
+        ch  = src[0] << CHAR_BITS * 2;
+        ch |= src[1] << CHAR_BITS;
         ch |= src[2];
         break;
 
@@ -621,10 +605,8 @@ static ScmMultibyteCharInfo euckr_scan_char(ScmMultibyteString mbs)
 #define TRAILING_CODE_BITS  LEN_CODE_BITS(1)
 #define TRAILING_VAL_BITS   (CHAR_BITS - TRAILING_CODE_BITS)
 #define LEADING_VAL_BITS(n) (CHAR_BITS - LEN_CODE_BITS(n))
-#define LEADING_VAL(u, n)                                                    \
-    ((u) >> (LEN_CODE_BITS(n) + TRAILING_VAL_BITS * ((n) - 1)))
-#define TRAILING_VAL(u, n, i)                                                \
-    (~MASK(1) & ((u) >> (TRAILING_VAL_BITS * ((n) - 2 - (i)))))
+#define LEADING_VAL(u, n)   ((u) >> TRAILING_VAL_BITS * ((n) - 1))
+#define TRAILING_VAL(u, i)  (~MASK(1) & ((u) >> TRAILING_VAL_BITS * (i)))
 
 static const char *utf8_encoding(void)
 {
@@ -707,16 +689,16 @@ static uchar *utf8_int2str(uchar *dst, int ch, ScmMultibyteState state)
         *dst++ = ch;
     } else if (IN_OCT_BMP(ch)) {
         *dst++ = LEN_CODE(2) | LEADING_VAL(ch, 2);
-        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 2, 0);
+        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 0);
     } else if (IN_BMP(ch)) {
         *dst++ = LEN_CODE(3) | LEADING_VAL(ch, 3);
-        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 3, 0);
-        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 3, 1);
+        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 1);
+        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 0);
     } else if (IN_SMP(ch)) {
         *dst++ = LEN_CODE(4) | LEADING_VAL(ch, 4);
-        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 4, 0);
-        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 4, 1);
-        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 4, 2);
+        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 2);
+        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 1);
+        *dst++ = LEN_CODE(1) | TRAILING_VAL(ch, 0);
     } else {
         return NULL;
     }

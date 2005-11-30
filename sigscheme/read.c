@@ -77,6 +77,11 @@ enum LexerState {
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+/* can accept "backspace" of R5RS and "U0010FFFF" of SRFI-75 */
+#define CHAR_LITERAL_LEN_MAX (sizeof("backspace") - sizeof((char)'\0'))
+
+#define INITIAL_STRING_BUF_SIZE 1024
+
 /* Compatible with isspace(3). Use this to prevent incorrect space handlings */
 #define CASE_ISSPACE                                                         \
     case ' ': case '\t': case '\n': case '\r': case '\v': case '\f'
@@ -329,9 +334,29 @@ static ScmObj read_list(ScmObj port, int closeParen)
 
 static ScmObj read_char(ScmObj port)
 {
-    char *ch = read_char_sequence(port);
-    const ScmSpecialCharInfo *info = Scm_special_char_table;
+    int c;
+    char *ch;
+    const ScmSpecialCharInfo *info;
     char *first_nondigit = NULL;
+
+    /* TODO: reorganize with read_char_sequence() */
+    /* non-ascii char (multibyte-ready) */
+    c = SCM_PORT_PEEK_CHAR(port);
+    if (!isascii(c)) {
+        DISCARD_LOOKAHEAD(port);
+        switch (SCM_PORT_PEEK_CHAR(port)) {
+        case '(': case ')': case '\"': case '\'': case ';':
+        CASE_ISSPACE:
+        case EOF:
+            /* properly delimited */
+            return Scm_NewChar(c);
+
+        default:
+            ERR("invalid character literal");
+        }
+    }
+
+    ch = read_char_sequence(port);
 
     CDBG((SCM_DBG_PARSER, "read_char : ch = %s", ch));
 
@@ -341,48 +366,53 @@ static ScmObj read_char(ScmObj port)
     if (ch && ch[0] == 'x' && 1 < strlen(ch)) {
         if (strlen(ch) != 3)
             SigScm_Error("invalid hexadecimal character form. should be #\\x<x><x>\n");
-        ch[0] = (char)strtol(ch + 1, &first_nondigit, 16);
+        c = strtol(ch + 1, &first_nondigit, 16);
         if (*first_nondigit)
             SigScm_Error("invalid hexadecimal character form. should be #\\x<x><x>\n");
-        ch[1] = '\0';
     } else {
         /* check special sequence */
-        for (; info->esc_seq; info++) {
+        for (info = Scm_special_char_table; info->esc_seq; info++) {
             if (strcmp(ch, info->lex_rep) == 0) {
-                ch[0] = info->code;
-                ch[1] = '\0';
+                c = info->code;
                 break;
             }
         }
     }
-
-    return Scm_NewChar(ch);
+    free(ch);
+    return Scm_NewChar(c);
 }
 
+/* FIXME: extend buffer on demand */
 static ScmObj read_string(ScmObj port)
 {
-    char  stringbuf[1024]; /* FIXME! */
-    int   stringlen = 0;
-    int   c = 0;
-    const ScmSpecialCharInfo *info = NULL;
-    int found = 0;
+    ScmObj obj;
+    const ScmSpecialCharInfo *info;
+    int c;
+    size_t bufsize;
+    char *p, *buf;
+    char autobuf[INITIAL_STRING_BUF_SIZE];
 
     CDBG((SCM_DBG_PARSER, "read_string"));
 
-    while (1) {
-        SCM_PORT_GETC(port, c);
+    buf = autobuf;
+    bufsize = sizeof(autobuf);
+    for (p = buf; p < &buf[bufsize];) {
+        c = SCM_PORT_GET_CHAR(port);
 
         CDBG((SCM_DBG_PARSER, "read_string c = %c", c));
 
         switch (c) {
         case EOF:
-            stringbuf[stringlen] = '\0';
-            SigScm_Error("EOF in the string : str = %s", stringbuf);
+            *p = '\0';
+            ERR("EOF in string: \"%s<eof>", buf);
             break;
 
         case '\"':
-            stringbuf[stringlen] = '\0';
-            return Scm_NewImmutableStringCopying(stringbuf);
+            *p = '\0';
+            obj = Scm_NewImmutableStringCopying(buf);
+            if (buf != autobuf)
+                free(buf);
+            return obj;
 
         case '\\':
             /*
@@ -390,25 +420,29 @@ static ScmObj read_string(ScmObj port)
              * A double quote can be written inside a string only by
              * escaping it with a backslash (\).
              */
-            SCM_PORT_GETC(port, c);
-            found = 0;
+            c = SCM_PORT_GET_CHAR(port);
             for (info = Scm_special_char_table; info->esc_seq; info++) {
                 if (strlen(info->esc_seq) == 2 && c == info->esc_seq[1]) {
-                    stringbuf[stringlen++] = info->code;
-                    found = 1;
-                    break;
+                    *p++ = info->code;
+                    goto found;
                 }
             }
-            if (found == 0)
-                SigScm_Error("\\%c in a string causes invalid escape sequence", c);
+            ERR("invalid escape sequence in string: \\%c", c);
+        found:
             break;
 
         default:
-            stringbuf[stringlen] = c;
-            stringlen++;
+            /* FIXME: support stateful encoding */
+            p = SCM_CHARCODEC_INT2STR(Scm_current_char_codec,
+                                      p, c, SCM_MB_STATELESS);
+            if (!p)
+                ERR("invalid char in string: 0x%x", c);
             break;
         }
     }
+    buf[bufsize - 1] = '\0';
+    ERR("too long string: \"%s\"", buf);
+    /* NOTREACHED */
 }
 
 static ScmObj read_symbol(ScmObj port)
@@ -485,42 +519,40 @@ static char *read_word(ScmObj port)
 
 static char *read_char_sequence(ScmObj port)
 {
-    char  stringbuf[1024];  /* FIXME! */
-    int   stringlen = 0;
-    int   c = 0;
-    char *dst = NULL;
+    int c;
+    size_t len;
+    char buf[CHAR_LITERAL_LEN_MAX + sizeof((char)'\0')];
+    DECLARE_INTERNAL_FUNCTION("read_char_sequence");
 
-    while (1) {
+    for (len = 0; len <= CHAR_LITERAL_LEN_MAX; len++) {
         c = SCM_PORT_PEEK_CHAR(port);
+        if (!isascii(c))
+            ERR("non-ASCII char in char sequence: 0x%x", c);
 
         CDBG((SCM_DBG_PARSER, "c = %c", c));
 
         switch (c) {
         case EOF:
-            stringbuf[stringlen] = '\0';
-            SigScm_Error("EOF in the char sequence : char = %s", stringbuf);
-            break;
+            buf[len] = '\0';
+            ERR("EOF in char sequence: %s", buf);
+            /* NOTREACHED */
 
         case '(': case ')': case '\"': case '\'': case ';':
         CASE_ISSPACE:
-            /* pass through first char */
-            if (stringlen == 0) {
-                DISCARD_LOOKAHEAD(port);
-                stringbuf[stringlen++] = (char)c;
-                break;
+            if (len) {
+                /* appeared as delimiter */
+                buf[len] = '\0';
+                return strdup(buf);
             }
-            /* return buf */
-            SCM_PORT_UNGETC(port, c);
-            stringbuf[stringlen] = '\0';
-            dst = strdup(stringbuf);
-            return dst;
-
+            /* FALLTHROUGH */
         default:
             DISCARD_LOOKAHEAD(port);
-            stringbuf[stringlen++] = (char)c;
+            buf[len] = (char)c;
             break;
         }
     }
+    ERR("invalid char sequence");
+    /* NOTREACHED */
 }
 
 static ScmObj read_quote(ScmObj port, ScmObj quoter)
