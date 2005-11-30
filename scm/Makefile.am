@@ -46,7 +46,7 @@ endif
 if SKK
   module_names += "skk"
 endif
-module_names += "tcode" "tutcode" "byeoru" "hangul" "viqr" "ipa-x-sampa" \
+module_names += "mana" "tcode" "tutcode" "byeoru" "hangul" "viqr" "ipa-x-sampa" \
 		"latin"
 if M17NLIB
   module_names += "m17nlib"
