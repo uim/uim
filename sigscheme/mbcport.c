@@ -249,7 +249,7 @@ mbcport_fill_rbuf(ScmMultiByteCharPort *port, int block)
     SCM_MBS_SET_STATE(mbs, port->state);
     do {
         SCM_MBS_SET_STR(mbs, port->rbuf);
-        SCM_MBS_SET_SIZE(mbs, strlen(port->rbuf));
+        SCM_MBS_SET_SIZE(mbs, end - port->rbuf);
 
         mbc = SCM_CHARCODEC_SCAN_CHAR(port->codec, mbs);
         

@@ -301,7 +301,6 @@ ScmOutputStrPort_new(ScmOutputStrPort_finalizer finalize)
     return (ScmBytePort *)port;
 }
 
-/* may return NULL */
 const char *
 ScmOutputStrPort_str(ScmBytePort *bport)
 {
@@ -309,7 +308,7 @@ ScmOutputStrPort_str(ScmBytePort *bport)
 
     port = SCM_BYTEPORT_DYNAMIC_CAST(ScmOutputStrPort, bport);
 
-    return port->str;
+    return (port->str) ? port->str : "";
 }
 
 void **
