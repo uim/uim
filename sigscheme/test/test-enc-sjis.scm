@@ -36,8 +36,6 @@
 
 (load "./test/unittest.scm")
 
-(set! *test-track-progress* #t)
-
 (assert-equal? "string 1" "”ül‚É‚Í" (string #\”ü #\l #\‚É #\‚Í))
 (assert-equal? "list->string 1" "3“ú‚Å" (list->string '(#\3 #\“ú #\‚Å)))
 (assert-equal? "string->list 1" '(#\‚Ÿ #\‚« #\‚é) (string->list "‚Ÿ‚«‚é"))

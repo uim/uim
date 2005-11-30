@@ -1,3 +1,6 @@
+#! /usr/bin/env sscm -C EUC-JP
+;; -*- buffer-file-coding-system: euc-jp -*-
+
 ;;  FileName : test-char.scm
 ;;  About    : unit test for R5RS char
 ;;

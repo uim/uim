@@ -409,8 +409,10 @@
 
 ;; not asserted, just make sure we don't blow up
 (begin (values 1 2 3) 'ignore)
-(write (values))
-(newline)
+
+(assert-error "multiple values at invalid place"
+              (lambda ()
+                (write (values))))
 
 (define dynwind-res '())
 (define append-sym!

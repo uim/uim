@@ -1,4 +1,4 @@
-;; this test only works when the core system is compiled with euc-jp.
+#! /usr/bin/env sscm -C EUC-JP
 
 ;; $Id: euc-jp.scm,v 1.6 2001/05/03 19:05:39 shirok Exp $
 

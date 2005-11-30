@@ -1,3 +1,5 @@
+#! /usr/bin/env sscm -C ISO-8859-1
+
 ;*---------------------------------------------------------------------*/
 ;*    serrano/prgm/project/bigloo/recette/bchar.scm                    */
 ;*                                                                     */
