@@ -38,9 +38,8 @@
 extern "C" {
 #endif
 
-#include <sys/types.h>
-
 #ifndef HAVE_GETPEEREID
+#include <sys/types.h>
 int getpeereid(int , uid_t *, gid_t *);
 #endif
 
