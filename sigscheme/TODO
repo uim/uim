@@ -1,24 +1,42 @@
 ==============================================================================
 Requirements and bugs:
 
+* Inhibit a mutation on string constants as described in "3.4 Storage model" of
+  R5RS
+  - Write both immutable and mutable case tests for all procedures that accepts
+    a string
+
 * Fix character and escape sequence related issues. grep Scm_special_char_table
   to find the issues, and make all tests in test-char.scm and test-string.scm
   passed
 
+* Autoconfiscate the SigScheme package (don't rely on uim's configure)
+  - [uim] configure sigscheme subdir by top-level configure like GCC
+
 * Add tests for proper tail recursion with 'apply' and 'guard' to
   test-tail-rec.scm
 
-* Inhibit a mutation on string constants as described in "3.4 Storage model" of
-  R5RS
-
 * [uim] link libsscm into libuim statically
-
-* Fix large fixed-size buffer on stack without limit checking in read.c
 
 * grep "FIXME" and fix them
 
 ==============================================================================
-Extensions:
+Extensions: (not required for now)
+
+* Introduce dynamic environment for internal use
+  - Fix continuation-unsafe current-{input,output}-port handling with it
+  - Replace Scm_current_char_codec handling with it
+
+* Dynamic encoding switching for a conversion between string and char list,
+  based on a SRFI or de facto standard API
+  - Evaluate ces API of Gauche
+  - Consider dynamic environment
+
+* Support SRFI-75 character literals such as #\u3042 and #\U0010FFFF
+
+* Add GB18030 to encoding.c
+
+* Add Big5 to encoding.c
 
 ==============================================================================
 Performance improvements:
@@ -64,12 +82,10 @@ Namings and Cosmetic things:
 ==============================================================================
 Assigned to YamaKen:
 
+* Fix large fixed-size buffer on stack without limit checking in read.c
+
 * Add integer->char and char->integer procedures with multibyte support
   - Write test
-
-* Dynamic encoding switching for a conversion between string and char list,
-  based on a SRFI or de facto standard API
-  - Evaluate ces API of Gauche
 
 * GCC4-optimization-proof stack protection
   - Update the document
