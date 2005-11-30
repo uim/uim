@@ -2710,7 +2710,8 @@ parse_dic_line(struct dic_info *di, char *line, int is_personal)
     return;
 
   *sep = '\0';
-  if (!skk_isascii(buf[0]) && skk_islower(sep[-1])) { /* okuri-ari entry */
+  if ((!skk_isascii(buf[0]) || buf[0] == '>') && skk_islower(sep[-1])) {
+    /* okuri-ari entry */
     char okuri_head = sep[-1];
     sep[-1] = '\0';
     sl = compose_line(di, buf, okuri_head, line);
