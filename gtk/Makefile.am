@@ -1,3 +1,4 @@
+SUBDIRS = test
 
 moduledir = $(libdir)/gtk-2.0/@GTK_BINARY_VERSION@/immodules
 GTK_IMMODULES= $(DESTDIR)$(sysconfdir)/gtk-2.0/gtk.immodules

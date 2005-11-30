@@ -1,9 +1,9 @@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = m4 doc replace uim scm gtk qt xim helper po test fep emacs \
 	examples pixmaps
-EXTRA_DIST = README.ja INSTALL.ja test.sh.in uim.spec.in \
+EXTRA_DIST = uim.spec.in \
 	intltool-extract.in intltool-merge.in intltool-update.in \
-	uim.pc.in ChangeLog.old uim.desktop autogen.sh RELEASING
+	uim.pc.in ChangeLog.old uim.desktop autogen.sh
 
 DISTCLEANFILES = uim.pc intltool-extract intltool-merge intltool-update po/.intltool-merge-cache
 
@@ -12,23 +12,6 @@ pkgconfig_DATA = uim.pc
 
 desktopdir = $(datadir)/applications
 desktop_DATA = uim.desktop
-
-noinst_PROGRAMS = $(gtk_entry) $(qedittest)
-
-if GTK2
-gtk_entry = gtk-entry
-gtk_entry_SOURCES = entry.c
-gtk_entry_LDADD = @GTK2_LIBS@
-gtk_entry_CFLAGS = @GTK2_CFLAGS@
-else
-endif
-
-if QT
-qedittest = qedittest
-qedittest_SOURCES = qedittest.cpp
-qedittest_CXXFLAGS  = $(UIM_QT_CXXFLAGS)
-qedittest_LDFLAGS = $(UIM_QT_LDFLAGS)
-endif
 
 ACLOCAL_AMFLAGS = -I m4
 

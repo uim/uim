@@ -799,8 +799,7 @@ SRCDIR=$srcdir
 AC_SUBST(SRCDIR)
 
 
-AC_CONFIG_FILES([test.sh
-		 Makefile
+AC_CONFIG_FILES([Makefile
 		 po/Makefile.in
 		 m4/Makefile
 		 helper/Makefile
@@ -808,7 +807,10 @@ AC_CONFIG_FILES([test.sh
 		 uim/Makefile
 		 scm/Makefile
 		 gtk/Makefile
+		 gtk/test/Makefile
+		 gtk/test/test.sh
 		 qt/Makefile
+		 qt/test/Makefile
 		 xim/Makefile
 		 fep/Makefile
 		 emacs/Makefile

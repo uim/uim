@@ -1,3 +1,4 @@
+SUBDIRS = test
 EXTRA_DIST = pref-keyeditformbase.ui  pref-olisteditformbase.ui bushu.t
 
 if QT
