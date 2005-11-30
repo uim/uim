@@ -153,7 +153,7 @@ static int skip_comment_and_space(ScmObj port)
         case LEX_ST_NORMAL:
             if (c == ';')
                 state = LEX_ST_COMMENT;
-            else if (!isspace(c) || c == EOF)
+            else if ((isascii(c) && !isspace(c)) || c == EOF)
                 return c;  /* peeked */
             break;
 
@@ -287,7 +287,8 @@ static ScmObj read_list(ScmObj port, int closeParen)
             DISCARD_LOOKAHEAD(port);
             c2 = SCM_PORT_PEEK_CHAR(port);
             CDBG((SCM_DBG_PARSER, "read_list process_dot c2 = [%c]", c2));
-            if (isspace(c2) || c2 == '(' || c2 == '"' || c2 == ';') {
+            if ((isascii(c2) && isspace(c2))
+                || c2 == '(' || c2 == '"' || c2 == ';') {
                 DISCARD_LOOKAHEAD(port);
                 cdr = read_sexpression(port);
                 if (NULLP(list_tail))
