@@ -38,6 +38,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "sigscheme/sigscheme.h"
+#include "sigscheme/encoding.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "uim-internal.h"
@@ -591,6 +592,16 @@ uim_scm_init(const char *verbose_level)
   if (verbose_level && isdigit(verbose_level[0])) {
     vlevel = atoi(verbose_level) % 10;
   }
+
+  /* *GC safe operation*
+   * 
+   * Set the raw unibyte codec which accepts all (multi)byte sequence
+   * although it slashes a multibyte character on Scheme-level
+   * character processing. Since current uim implementation treats a
+   * multibyte character as string, it is not a problem. The name
+   * "ISO-8859-1" is a dummy name for the codec.
+   */
+  Scm_current_char_codec = Scm_mb_find_codec("ISO-8859-1");
 
   SigScm_Initialize();
 
