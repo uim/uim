@@ -1,7 +1,7 @@
 AC_PREREQ(2.57)
 
-AC_INIT([uim], 0.5.0, [tkng@xem.jp])
-AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION)
+AC_INIT([uim], [1.0.0], [uim@lists.freedesktop.org])
+AM_INIT_AUTOMAKE(1.8.3)
 
 AC_CONFIG_SRCDIR([COPYING])
 
@@ -104,6 +104,31 @@ AC_ARG_WITH(canna,
 ])
 
 # ***********************
+# *** Tests for Mana ***
+# ***********************
+AC_ARG_WITH(mana,
+	AS_HELP_STRING([--with-mana], [Build a plugin for Mana]),
+	[
+	if test "x$with_mana" = "xyes"; then
+	        AC_CHECK_PROG(MANA, mana, mana)
+		if test -n "$MANA"; then
+			use_mana="yes"
+		else
+			use_mana="no"
+		fi
+	else
+		use_mana="no"
+	fi
+	],[
+	        AC_CHECK_PROG(MANA, mana, mana)
+		if test -n "$MANA"; then
+			use_mana="yes"
+		else
+			use_mana="no"
+		fi
+])
+
+# ***********************
 # *** Tests for PRIME ***
 # ***********************
 AC_ARG_WITH(prime,
@@ -117,7 +142,6 @@ AC_ARG_WITH(prime,
 	],[
 	        PKG_CHECK_MODULES(PRIME, prime >= 0.8.5.2, use_prime="yes",use_prime="no")
 ])
-
 
 AC_PATH_XTRA
 
@@ -537,6 +561,7 @@ AM_CONDITIONAL(M17NLIB, test x$use_m17nlib = xyes)
 AM_CONDITIONAL(SCIM, test x$use_scim = xyes)
 AM_CONDITIONAL(ANTHY, test x$use_anthy = xyes)
 AM_CONDITIONAL(CANNA, test x$use_canna = xyes)
+AM_CONDITIONAL(MANA, test x$use_mana = xyes)
 AM_CONDITIONAL(PRIME, test x$use_prime = xyes)
 AM_CONDITIONAL(SKK, true)
 AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
@@ -803,6 +828,7 @@ Configure Result :
 
    Anthy           : ${use_anthy}
    Canna           : ${use_canna}
+   Mana            : ${use_mana}
    PRIME           : ${use_prime}
    m17n-lib        : ${use_m17nlib}
    SCIM            : ${use_scim}

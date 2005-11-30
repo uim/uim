@@ -66,6 +66,14 @@ if ANTHY
   libuim_anthy_la_CPPFLAGS = -I$(top_srcdir)
 endif
 
+if MANA
+uim_plugin_LTLIBRARIES += libuim-mana.la
+libuim_mana_la_SOURCES = mana.c
+libuim_mana_la_LIBADD = libuim.la
+libuim_mana_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_mana_la_CPPFLAGS = -I$(top_srcdir)
+endif
+
 if PRIME
   uim_plugin_LTLIBRARIES += libuim-prime.la
   libuim_prime_la_SOURCES = prime.c
@@ -79,12 +87,6 @@ libuim_skk_la_SOURCES = skk.c
 libuim_skk_la_LIBADD = libuim.la
 libuim_skk_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_skk_la_CPPFLAGS = -I$(top_srcdir)
-
-uim_plugin_LTLIBRARIES += libuim-mana.la
-libuim_mana_la_SOURCES = mana.c
-libuim_mana_la_LIBADD = libuim.la
-libuim_mana_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
-libuim_mana_la_CPPFLAGS = -I$(top_srcdir)
 
 libuimincludedir =  $(includedir)/uim
 
