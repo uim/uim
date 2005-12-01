@@ -118,6 +118,8 @@ static ScmObj read_list(ScmObj port, int closeParen);
 static ScmObj read_char(ScmObj port);
 static ScmObj read_string(ScmObj port);
 static ScmObj read_symbol(ScmObj port);
+static ScmObj parse_number(ScmObj port,
+                           char *buf, size_t buf_size, char prefix);
 static ScmObj read_number(ScmObj port, char prefix);
 static ScmObj read_number_or_symbol(ScmObj port);
 static ScmObj read_quote(ScmObj port, ScmObj quoter);
@@ -218,7 +220,7 @@ static ScmObj read_sexpression(ScmObj port)
             return read_string(port);
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-        case '+': case '-':
+        case '+': case '-': case '.': case '@':
             SCM_PORT_UNGETC(port, c);
             return read_number_or_symbol(port);
         case '\'':
@@ -539,28 +541,43 @@ static ScmObj read_symbol(ScmObj port)
  */
 static ScmObj read_number_or_symbol(ScmObj port)
 {
-    int number = 0;
-    int str_len = 0;
+    int c, str_len;
     char *str = NULL;
-    char *first_nondigit = NULL;
-    ScmObj ret = SCM_NULL;
+    char buf[INT_LITERAL_LEN_MAX + sizeof((char)'\0')];
 
     CDBG((SCM_DBG_PARSER, "read_number_or_symbol"));
 
-    /* read char sequence */
+    c = SCM_PORT_PEEK_CHAR(port);
+
+    if (isascii(c)) {
+        if (isdigit(c))
+            return read_number(port, 'd');
+
+        if (c == '+' || c == '-') {
+            read_token(port, buf, sizeof(buf), DELIMITER_CHARS);
+            if (!buf[1])
+                return Scm_Intern(buf);
+            return parse_number(port, buf, sizeof(buf), 'd');
+        }
+
+        if (c == '.') {
+            read_token(port, buf, sizeof(buf), DELIMITER_CHARS);
+            if (strcmp(buf, "...") == 0)
+                return Scm_Intern(buf);
+            /* TODO: support numeric expressions when the numeric tower is
+               implemented */
+            ERR("invalid identifier: %s", buf);
+        }
+
+        if (c == '@')
+            ERR("invalid identifier: %s", buf);
+    }
+
     str = read_word(port);
     str_len = strlen(str);
 
-    /* see if it's a decimal integer */
-    number = (int)strtol(str, &first_nondigit, 10);
-
-    /* set return obj */
-    ret = (*first_nondigit) ? Scm_Intern(str) : Scm_NewInt(number);
-
-    /* free */
-    free(str);
-
-    return ret;
+    /* FIXME: leak */
+    return Scm_Intern(str);
 }
 
 
@@ -636,14 +653,21 @@ static ScmObj read_quote(ScmObj port, ScmObj quoter)
     return SCM_LIST_2(quoter, read_sexpression(port));
 }
 
-/* str should be what appeared right after '#' (eg. #b123) */
 static ScmObj read_number(ScmObj port, char prefix)
 {
-    int radix, number;
-    char *first_nondigit;
     char buf[INT_LITERAL_LEN_MAX + sizeof((char)'\0')];
 
     read_token(port, buf, sizeof(buf), DELIMITER_CHARS);
+
+    return parse_number(port, buf, sizeof(buf), prefix);
+}
+
+/* reads 'b123' part of #b123 */
+static ScmObj parse_number(ScmObj port,
+                           char *buf, size_t buf_size, char prefix)
+{
+    int radix, number;
+    char *first_nondigit;
 
     switch (prefix) {
     case 'b': radix = 2;  break;
