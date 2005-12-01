@@ -82,6 +82,9 @@ enum LexerState {
 
 #define INITIAL_STRING_BUF_SIZE 1024
 
+#define WHITESPACE_CHARS " \t\n\r\v\f"
+#define DELIMITER_CHARS  "()\"\';" WHITESPACE_CHARS
+
 /* Compatible with isspace(3). Use this to prevent incorrect space handlings */
 #define CASE_ISSPACE                                                         \
     case ' ': case '\t': case '\n': case '\r': case '\v': case '\f'
@@ -99,7 +102,8 @@ enum LexerState {
 static int    skip_comment_and_space(ScmObj port);
 static void   read_sequence(ScmObj port, char *buf, int len);
 static char*  read_word(ScmObj port);
-static char*  read_char_sequence(ScmObj port);
+static size_t read_token(ScmObj port,
+                         char *buf, size_t buf_size, const char *delim);
 #if SCM_USE_SRFI75
 static int    parse_unicode_sequence(const char *seq);
 static int    read_unicode_sequence(ScmObj port, char prefix);
@@ -414,53 +418,39 @@ static int read_unicode_sequence(ScmObj port, char prefix)
 
 static ScmObj read_char(ScmObj port)
 {
-    int c;
+    int c, next;
 #if SCM_USE_SRFI75
     int unicode;
 #endif
-    char *ch;
     const ScmSpecialCharInfo *info;
+    size_t len;
+    char buf[CHAR_LITERAL_LEN_MAX + sizeof((char)'\0')];
 
-    /* TODO: reorganize with read_char_sequence() */
-    /* non-ascii char (multibyte-ready) */
-    c = SCM_PORT_PEEK_CHAR(port);
-    if (!isascii(c)) {
-        DISCARD_LOOKAHEAD(port);
-        switch (SCM_PORT_PEEK_CHAR(port)) {
-        case '(': case ')': case '\"': case '\'': case ';':
-        CASE_ISSPACE:
-        case EOF:
-            /* properly delimited */
-            return Scm_NewChar(c);
+    /* plain char (multibyte-ready) */
+    c = SCM_PORT_GET_CHAR(port);
+    next = SCM_PORT_PEEK_CHAR(port);
+    if (strchr(DELIMITER_CHARS, next) || next == EOF)
+        return Scm_NewChar(c);
+#if SCM_USE_SRFI75
+    else if (!isascii(c))
+        ERR("invalid character literal");
+#endif
 
-        default:
-            ERR("invalid character literal");
-        }
-    }
-
-    ch = read_char_sequence(port);
-    if (!ch)
-        ERR("memory exhausted");
-
-    CDBG((SCM_DBG_PARSER, "read_char : ch = %s", ch));
+    buf[0] = c;
+    len = read_token(port, &buf[1], sizeof(buf) - 1, DELIMITER_CHARS);
+    CDBG((SCM_DBG_PARSER, "read_char : ch = %s", buf));
 
 #if SCM_USE_SRFI75
-    unicode = parse_unicode_sequence(ch);
-    if (0 <= unicode) {
-        c = unicode;
-    } else
+    unicode = parse_unicode_sequence(buf);
+    if (0 <= unicode)
+        return Scm_NewChar(unicode);
 #endif
-    {
-        /* named chars */
-        for (info = Scm_special_char_table; info->esc_seq; info++) {
-            if (strcmp(ch, info->lex_rep) == 0) {
-                c = info->code;
-                break;
-            }
-        }
+    /* named chars */
+    for (info = Scm_special_char_table; info->esc_seq; info++) {
+        if (strcmp(buf, info->lex_rep) == 0)
+            return Scm_NewChar(info->code);
     }
-    free(ch);
-    return Scm_NewChar(c);
+    ERR("invalid character literal: #\%s", buf);
 }
 
 /* FIXME: extend buffer on demand */
@@ -607,42 +597,42 @@ static char *read_word(ScmObj port)
     }
 }
 
-static char *read_char_sequence(ScmObj port)
+static size_t read_token(ScmObj port,
+                         char *buf, size_t buf_size, const char *delim)
 {
     int c;
     size_t len;
-    char buf[CHAR_LITERAL_LEN_MAX + sizeof((char)'\0')];
-    DECLARE_INTERNAL_FUNCTION("read_char_sequence");
+    char *p;
 
-    for (len = 0; len <= CHAR_LITERAL_LEN_MAX; len++) {
+    for (p = buf; p < &buf[buf_size];) {
         c = SCM_PORT_PEEK_CHAR(port);
-        if (!isascii(c))
-            ERR("non-ASCII char in char sequence: 0x%x", c);
-
         CDBG((SCM_DBG_PARSER, "c = %c", c));
 
-        switch (c) {
-        case EOF:
-            buf[len] = '\0';
-            ERR("EOF in char sequence: %s", buf);
-            /* NOTREACHED */
-
-        case '(': case ')': case '\"': case '\'': case ';':
-        CASE_ISSPACE:
-            if (len) {
-                /* appeared as delimiter */
-                buf[len] = '\0';
-                return strdup(buf);
+        if (p == buf) {
+            if (c == EOF)
+                ERR("unexpected EOF at a token");
+        } else {
+            if (strchr(delim, c) || c == EOF) {
+                *p = '\0';
+                len = p - buf;
+                return len;
             }
-            /* FALLTHROUGH */
-        default:
-            DISCARD_LOOKAHEAD(port);
-            buf[len] = (char)c;
-            break;
+        }
+
+        DISCARD_LOOKAHEAD(port);
+        if (isascii(c)) {
+            *p++ = c;
+        } else {
+#if SCM_USE_SRFI75
+            /* FIXME: check Unicode capability of Scm_current_char_codec */
+            p = SCM_CHARCODEC_INT2STR(Scm_current_char_codec,
+                                      p, c, SCM_MB_STATELESS);
+#else
+            ERR("non-ASCII char in token: 0x%x", c);
+#endif
         }
     }
-    ERR("invalid char sequence");
-    /* NOTREACHED */
+    ERR("token buffer exceeded");
 }
 
 static ScmObj read_quote(ScmObj port, ScmObj quoter)
