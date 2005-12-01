@@ -43,12 +43,12 @@
 
 ;; check string?
 ;;;; immutable
-(assert-true "string? check" (string? ""))
-(assert-true "string? check" (string? "abcde"))
+(assert-true "string? immutable" (string? ""))
+(assert-true "string? immutable" (string? "abcde"))
 (assert-true "string? immutable" (string? (symbol->string 'foo)))
 ;;;; mutable
-(assert-true "string? check" (string? (string-copy "")))
-(assert-true "string? check" (string? (string-copy "abcde")))
+(assert-true "string? mutable" (string? (string-copy "")))
+(assert-true "string? mutable" (string? (string-copy "abcde")))
 
 
 ;; check make-string
@@ -62,19 +62,19 @@
 
 ;; check string-ref
 ;;;; immutable
-(assert-equal? "string-ref check" #\a (string-ref "abcde" 0))
-(assert-equal? "string-ref check" #\e (string-ref "abcde" 4))
-(assert-error  "string-ref check" (lambda ()
-				    (string-ref "abcde" -1)))
-(assert-error  "string-ref check" (lambda ()
-				    (string-ref "abcde" 5)))
+(assert-equal? "string-ref immutable" #\a (string-ref "abcde" 0))
+(assert-equal? "string-ref immutable" #\e (string-ref "abcde" 4))
+(assert-error  "string-ref immutable" (lambda ()
+					(string-ref "abcde" -1)))
+(assert-error  "string-ref immutable" (lambda ()
+					(string-ref "abcde" 5)))
 ;;;; mutable
-(assert-equal? "string-ref check" #\a (string-ref (string-copy "abcde") 0))
-(assert-equal? "string-ref check" #\e (string-ref (string-copy "abcde") 4))
-(assert-error  "string-ref check" (lambda ()
-				    (string-ref (string-copy "abcde") -1)))
-(assert-error  "string-ref check" (lambda ()
-				    (string-ref (string-copy "abcde") 5)))
+(assert-equal? "string-ref mutable" #\a (string-ref (string-copy "abcde") 0))
+(assert-equal? "string-ref mutable" #\e (string-ref (string-copy "abcde") 4))
+(assert-error  "string-ref mutable" (lambda ()
+				      (string-ref (string-copy "abcde") -1)))
+(assert-error  "string-ref mutable" (lambda ()
+				      (string-ref (string-copy "abcde") 5)))
 
 
 ;; check string-set!
@@ -88,46 +88,46 @@
 					(string-set! immutable-str 0 #\b)
 					immutable-str))
 ;;;; mutable
-(assert-equal? "string-set! check" "zbcdef"
+(assert-equal? "string-set! mutable" "zbcdef"
 	       (begin
 		 (define tmpstr (string-copy "abcdef"))
 		 (string-set! tmpstr 0 #\z)
 		 tmpstr))
-(assert-equal? "string-set! check" "abzdef"
+(assert-equal? "string-set! mutable" "abzdef"
 	       (begin
 		 (define tmpstr (string-copy "abcdef"))
 		 (string-set! tmpstr 2 #\z)
 		 tmpstr))
-(assert-equal? "string-set! check" "abcdez"
+(assert-equal? "string-set! mutable" "abcdez"
 	       (begin
 		 (define tmpstr (string-copy "abcdef"))
 		 (string-set! tmpstr 5 #\z)
 		 tmpstr))
-(assert-error  "string-set! check" (lambda ()
-				     (string-set! (string-copy "abcdef") -1 #\z)))
-(assert-error  "string-set! check" (lambda ()
-				     (string-set! (string-copy "abcdef")  6 #\z)))
+(assert-error  "string-set! mutable" (lambda ()
+				       (string-set! (string-copy "abcdef") -1 #\z)))
+(assert-error  "string-set! mutable" (lambda ()
+				       (string-set! (string-copy "abcdef")  6 #\z)))
 
 
 ;; check string-length
 ;;;; immutable
-(assert-equal? "string-length check" 0 (string-length ""))
-(assert-equal? "string-length check" 5 (string-length "abcde"))
-(assert-equal? "string-length check" 1 (string-length "\\"))
-(assert-equal? "string-length check" 2 (string-length "\\\\"))
-(assert-equal? "string-length check" 3 (string-length "\\\\\\"))
+(assert-equal? "string-length immutable" 0 (string-length ""))
+(assert-equal? "string-length immutable" 5 (string-length "abcde"))
+(assert-equal? "string-length immutable" 1 (string-length "\\"))
+(assert-equal? "string-length immutable" 2 (string-length "\\\\"))
+(assert-equal? "string-length immutable" 3 (string-length "\\\\\\"))
 ;;;; mutable
-(assert-equal? "string-length check" 0 (string-length (string-copy "")))
-(assert-equal? "string-length check" 5 (string-length (string-copy "abcde")))
-(assert-equal? "string-length check" 1 (string-length (string-copy "\\")))
-(assert-equal? "string-length check" 2 (string-length (string-copy "\\\\")))
-(assert-equal? "string-length check" 3 (string-length (string-copy "\\\\\\")))
+(assert-equal? "string-length mutable" 0 (string-length (string-copy "")))
+(assert-equal? "string-length mutable" 5 (string-length (string-copy "abcde")))
+(assert-equal? "string-length mutable" 1 (string-length (string-copy "\\")))
+(assert-equal? "string-length mutable" 2 (string-length (string-copy "\\\\")))
+(assert-equal? "string-length mutable" 3 (string-length (string-copy "\\\\\\")))
 
 
 ;; string=? check
 ;;;; immutable
-(assert-true "string=? check" (string=? "" ""))
-(assert-true "string=? check" (string=? "abcde" "abcde"))
+(assert-true "string=? immutable" (string=? "" ""))
+(assert-true "string=? immutable" (string=? "abcde" "abcde"))
 (assert-true "string=? immutable" (string=? "foo" "foo"))
 (assert-true "string=? immutable" (string=? "foo" (symbol->string 'foo)))
 (assert-true "string=? immutable" (string=? (symbol->string 'foo) "foo"))
@@ -147,31 +147,31 @@
 (assert-error "substring immutable" (lambda () (substring "foo" 0 3)))
 (assert-error "substring immutable" (lambda () (substring (symbol->string 'foo) 0 3)))
 ;;;; mutable
-(assert-equal? "substring check" ""    (substring (string-copy "abcde") 0 0))
-(assert-equal? "substring check" "a"   (substring (string-copy "abcde") 0 1))
-(assert-equal? "substring check" "bc"  (substring (string-copy "abcde") 1 3))
-(assert-equal? "substring check" "bcd" (substring (string-copy "abcde") 1 4))
-(assert-error  "substring check" (lambda ()
-				   (substring (string-copy "abcde") 1 -1)))
-(assert-error  "substring check" (lambda ()
-				   (substring (string-copy "abcde") -1 1)))
-(assert-error  "substring check" (lambda ()
-				   (substring (string-copy "abcde") -1 -1)))
-(assert-error  "substring check" (lambda ()
-				   (substring (string-copy "abcde") 2 1)))
+(assert-equal? "substring mutable" ""    (substring (string-copy "abcde") 0 0))
+(assert-equal? "substring mutable" "a"   (substring (string-copy "abcde") 0 1))
+(assert-equal? "substring mutable" "bc"  (substring (string-copy "abcde") 1 3))
+(assert-equal? "substring mutable" "bcd" (substring (string-copy "abcde") 1 4))
+(assert-error  "substring mutable" (lambda ()
+				     (substring (string-copy "abcde") 1 -1)))
+(assert-error  "substring mutable" (lambda ()
+				     (substring (string-copy "abcde") -1 1)))
+(assert-error  "substring mutable" (lambda ()
+				     (substring (string-copy "abcde") -1 -1)))
+(assert-error  "substring mutable" (lambda ()
+				     (substring (string-copy "abcde") 2 1)))
 
 
 ;; string-append check
 ;;;; immutable
-(assert-equal? "string-append check" ""    (string-append ""))
-(assert-equal? "string-append check" ""    (string-append "" ""))
-(assert-equal? "string-append check" ""    (string-append "" "" ""))
-(assert-equal? "string-append check" "a"   (string-append "a"))
-(assert-equal? "string-append check" "ab"  (string-append "a" "b"))
-(assert-equal? "string-append check" "abc" (string-append "a" "b" "c"))
-(assert-equal? "string-append check" "ab"     (string-append "ab"))
-(assert-equal? "string-append check" "abcd"   (string-append "ab" "cd"))
-(assert-equal? "string-append check" "abcdef" (string-append "ab" "cd" "ef"))
+(assert-equal? "string-append immutable" ""       (string-append ""))
+(assert-equal? "string-append immutable" ""       (string-append "" ""))
+(assert-equal? "string-append immutable" ""       (string-append "" "" ""))
+(assert-equal? "string-append immutable" "a"      (string-append "a"))
+(assert-equal? "string-append immutable" "ab"     (string-append "a" "b"))
+(assert-equal? "string-append immutable" "abc"    (string-append "a" "b" "c"))
+(assert-equal? "string-append immutable" "ab"     (string-append "ab"))
+(assert-equal? "string-append immutable" "abcd"   (string-append "ab" "cd"))
+(assert-equal? "string-append immutable" "abcdef" (string-append "ab" "cd" "ef"))
 ;;;; mutable
 (assert-equal? "string-append mutable" ""       (string-append (string-copy "")))
 (assert-equal? "string-append mutable" ""       (string-append (string-copy "") (string-copy "")))
@@ -195,21 +195,21 @@
 
 ;; string->list
 ;;;; immutable
-(assert-equal? "string->list check" '()                (string->list ""))
-(assert-equal? "string->list check" '(#\\)             (string->list "\\"))
-(assert-equal? "string->list check" '(#\\ #\\)         (string->list "\\\\"))
-(assert-equal? "string->list check" '(#\\ #\\ #\\)     (string->list "\\\\\\"))
-;;(assert-equal? "string->list check" '(#\tab)           (string->list "\t"))
-(assert-equal? "string->list check" '(#\	)      (string->list "\t"))
-;;(assert-equal? "string->list check" '(#\return)        (string->list "\r"))
-(assert-equal? "string->list check" '(#\)            (string->list "\r"))
-(assert-equal? "string->list check" '(#\ #\)       (string->list "\r\r"))
-(assert-equal? "string->list check" '(#\newline)           (string->list "\n"))
-(assert-equal? "string->list check" '(#\newline #\newline) (string->list "\n\n"))
-(assert-equal? "string->list check" '(#\space)         (string->list " "))
-(assert-equal? "string->list check" '(#\space #\space) (string->list "  "))
-(assert-equal? "string->list check" '(#\")             (string->list "\""))
-(assert-equal? "string->list check" '(#\" #\")         (string->list "\"\""))
+(assert-equal? "string->list immutable" '()                (string->list ""))
+(assert-equal? "string->list immutable" '(#\\)             (string->list "\\"))
+(assert-equal? "string->list immutable" '(#\\ #\\)         (string->list "\\\\"))
+(assert-equal? "string->list immutable" '(#\\ #\\ #\\)     (string->list "\\\\\\"))
+;;(assert-equal? "string->list immutable" '(#\tab)           (string->list "\t"))
+(assert-equal? "string->list immutable" '(#\	)      (string->list "\t"))
+;;(assert-equal? "string->list immutable" '(#\return)        (string->list "\r"))
+(assert-equal? "string->list immutable" '(#\)            (string->list "\r"))
+(assert-equal? "string->list immutable" '(#\ #\)       (string->list "\r\r"))
+(assert-equal? "string->list immutable" '(#\newline)           (string->list "\n"))
+(assert-equal? "string->list immutable" '(#\newline #\newline) (string->list "\n\n"))
+(assert-equal? "string->list immutable" '(#\space)         (string->list " "))
+(assert-equal? "string->list immutable" '(#\space #\space) (string->list "  "))
+(assert-equal? "string->list immutable" '(#\")             (string->list "\""))
+(assert-equal? "string->list immutable" '(#\" #\")         (string->list "\"\""))
 ;;;; mutable
 (assert-equal? "string->list mutable" '()                    (string->list (string-copy "")))
 (assert-equal? "string->list mutable" '(#\\)                 (string->list (string-copy "\\")))
@@ -252,14 +252,14 @@
 (assert-error "string-fill! immutable" (lambda ()
 					 (string-fill! (string->symbol 'foo) #\j)))
 ;;;; mutable
-(assert-equal? "string-fill! check" "jjjjj" (begin
-					      (define tmpstr (string-copy "abcde"))
-					      (string-fill! tmpstr #\j)
-					      tmpstr))
-(assert-equal? "string-fill! check" "\\\\\\" (begin
-					       (define tmpstr (string-copy "abc"))
-					       (string-fill! tmpstr #\\)
-					       tmpstr))
+(assert-equal? "string-fill! mutable" "jjjjj" (begin
+						(define tmpstr (string-copy "abcde"))
+						(string-fill! tmpstr #\j)
+						tmpstr))
+(assert-equal? "string-fill! mutable" "\\\\\\" (begin
+						 (define tmpstr (string-copy "abc"))
+						 (string-fill! tmpstr #\\)
+						 tmpstr))
 
 ;; string-copy
 (assert-equal? "string copy check" ""   (string-copy ""))
@@ -273,11 +273,11 @@
 ;; string->symbol
 ;; TODO: need to investigate (string->symbol "") behavior
 ;;;; immutable
-(assert-equal? "string->symbol check" 'a  (string->symbol "a"))
-(assert-equal? "string->symbol check" 'ab (string->symbol "ab"))
+(assert-equal? "string->symbol immutable" 'a  (string->symbol "a"))
+(assert-equal? "string->symbol immutable" 'ab (string->symbol "ab"))
 ;;;; mutable
-(assert-equal? "string->symbol check" 'a  (string->symbol (string-copy "a")))
-(assert-equal? "string->symbol check" 'ab (string->symbol (string-copy "ab")))
+(assert-equal? "string->symbol mutable" 'a  (string->symbol (string-copy "a")))
+(assert-equal? "string->symbol mutable" 'ab (string->symbol (string-copy "ab")))
 
 ;;
 ;; escape sequences

@@ -40,16 +40,16 @@
 (define p
   (open-input-string "(a . (b . (c . ()))) 34"))
 
-(assert-true   "open-input-string test 1" (input-port? p))
-(assert-equal? "open-input-string test 2" '(a b c) (read p))
-(assert-equal? "open-input-string test 3" 34 (read p))
+(assert-true   "open-input-string immutable" (input-port? p))
+(assert-equal? "open-input-string immutable" '(a b c) (read p))
+(assert-equal? "open-input-string immutable" 34 (read p))
 ;;;; mutable
 (define p2
   (open-input-string (string-copy "(a . (b . (c . ()))) 34")))
 
-(assert-true   "open-input-string test 1" (input-port? p2))
-(assert-equal? "open-input-string test 2" '(a b c) (read p2))
-(assert-equal? "open-input-string test 3" 34 (read p2))
+(assert-true   "open-input-string mutable" (input-port? p2))
+(assert-equal? "open-input-string mutable" '(a b c) (read p2))
+(assert-equal? "open-input-string mutable" 34 (read p2))
 
 ;; open-output-string and get-output-string
 (assert-equal? "output string test 1" "a(b c)" (let ((q (open-output-string))
