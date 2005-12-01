@@ -244,9 +244,9 @@ static ScmObj read_sexpression(ScmObj port)
             DISCARD_LOOKAHEAD(port);
             c1 = SCM_PORT_GET_CHAR(port);
             switch (c1) {
-            case 't': case 'T':
+            case 't':
                 return SCM_TRUE;
-            case 'f': case 'F':
+            case 'f':
                 return SCM_FALSE;
             case '(':
                 return ScmOp_list2vector(read_list(port, ')'));
