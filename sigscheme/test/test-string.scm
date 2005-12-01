@@ -248,10 +248,16 @@
 ;; string-fill!
 ;;;; immutable
 (assert-error "string-fill! immutable" (lambda ()
+					 (string-fill! "" #\j)))
+(assert-error "string-fill! immutable" (lambda ()
 					 (string-fill! "foo" #\j)))
 (assert-error "string-fill! immutable" (lambda ()
 					 (string-fill! (string->symbol 'foo) #\j)))
 ;;;; mutable
+(assert-equal? "string-fill! mutable" "" (begin
+					   (define tmpstr (string-copy ""))
+					   (string-fill! tmpstr #\j)
+					   tmpstr))
 (assert-equal? "string-fill! mutable" "jjjjj" (begin
 						(define tmpstr (string-copy "abcde"))
 						(string-fill! tmpstr #\j)

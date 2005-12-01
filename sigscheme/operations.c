@@ -1427,6 +1427,10 @@ ScmObj ScmOp_string_filld(ScmObj str, ScmObj ch)
     ASSERT_MUTABLEP(str);
     ASSERT_CHARP(ch);
 
+    str_len = SCM_STRING_LEN(str);
+    if (str_len == 0)
+        return Scm_NewMutableStringCopying("");
+
     /* FIXME: support stateful encoding */
     next = SCM_CHARCODEC_INT2STR(Scm_current_char_codec, ch_str,
                                  SCM_CHAR_VALUE(ch), SCM_MB_STATELESS);
@@ -1435,7 +1439,6 @@ ScmObj ScmOp_string_filld(ScmObj str, ScmObj ch)
 
     /* create new str */
     char_size = next - ch_str;
-    str_len   = SCM_STRING_LEN(str);
     new_str   = realloc(SCM_STRING_STR(str), str_len * char_size + 1);
     for (p = new_str; p < &new_str[char_size * str_len]; p += char_size) {
         strcpy(p, ch_str);
