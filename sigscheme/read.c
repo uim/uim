@@ -48,11 +48,6 @@
  * SigScheme.  -- YamaKen 2005-09-05
  */
 
-/*
- * FIXME: Parse properly as defined in "7.1.1 Lexical structure" of R5RS, and
- * use the popular words for parser as used in R5RS, such as 'token'.
- */
-
 /*=======================================
   System Include
 =======================================*/
@@ -201,12 +196,11 @@ static void read_sequence(ScmObj port, char *buf, int len)
 
 static ScmObj read_sexpression(ScmObj port)
 {
-    int c  = 0;
-    int c1 = 0;
+    int c;
 
     CDBG((SCM_DBG_PARSER, "read_sexpression"));
 
-    while (1) {
+    for (;;) {
         c = skip_comment_and_space(port);
 
         CDBG((SCM_DBG_PARSER, "read_sexpression c = %c", c));
@@ -215,37 +209,44 @@ static ScmObj read_sexpression(ScmObj port)
         case '(':
             DISCARD_LOOKAHEAD(port);
             return read_list(port, ')');
+
         case '\"':
             DISCARD_LOOKAHEAD(port);
             return read_string(port);
+
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
         case '+': case '-': case '.': case '@':
-            SCM_PORT_UNGETC(port, c);
             return read_number_or_symbol(port);
+
         case '\'':
             DISCARD_LOOKAHEAD(port);
             return read_quote(port, SYM_QUOTE);
+
         case '`':
             DISCARD_LOOKAHEAD(port);
             return read_quote(port, SYM_QUASIQUOTE);
+
         case ',':
             DISCARD_LOOKAHEAD(port);
-            c1 = SCM_PORT_PEEK_CHAR(port);
-            if (c1 == EOF) {
-                SigScm_Error("EOF in unquote");
-            } else if (c1 == '@') {
+            c = SCM_PORT_PEEK_CHAR(port);
+            switch (c) {
+            case EOF:
+                ERR("EOF in unquote");
+                /* NOTREACHED */
+
+            case '@':
                 DISCARD_LOOKAHEAD(port);
                 return read_quote(port, SYM_UNQUOTE_SPLICING);
-            } else {
-                SCM_PORT_UNGETC(port, c1);
+
+            default:
                 return read_quote(port, SYM_UNQUOTE);
             }
-            break;
+
         case '#':
             DISCARD_LOOKAHEAD(port);
-            c1 = SCM_PORT_GET_CHAR(port);
-            switch (c1) {
+            c = SCM_PORT_GET_CHAR(port);
+            switch (c) {
             case 't':
                 return SCM_TRUE;
             case 'f':
@@ -255,21 +256,22 @@ static ScmObj read_sexpression(ScmObj port)
             case '\\':
                 return read_char(port);
             case 'b': case 'o': case 'd': case 'x':
-                return read_number(port, c1);
+                return read_number(port, c);
             case EOF:
-                SigScm_Error("end in #");
+                ERR("EOF in #");
             default:
-                SigScm_Error("Unsupported # : %c", c1);
+                ERR("Unsupported # notation: %c", c);
             }
             break;
-        /* Error sequence */
+
         case ')':
-            SigScm_Error("invalid close parenthesis");
-            break;
+            ERR("invalid close parenthesis");
+            /* NOTREACHED */
+
         case EOF:
             return SCM_EOF;
+
         default:
-            SCM_PORT_UNGETC(port, c);
             return read_symbol(port);
         }
     }
@@ -534,11 +536,6 @@ static ScmObj read_symbol(ScmObj port)
     return sym;
 }
 
-/*
- * FIXME: Parse properly as defined in "7.1.1 Lexical structure" of R5RS. For
- * example, 1+ is not a valid identifier and should be rejected to prevent
- * introducing unintended R5RS-incompatibility.
- */
 static ScmObj read_number_or_symbol(ScmObj port)
 {
     int c, str_len;

@@ -35,6 +35,8 @@
 
 (load "./test/unittest.scm")
 
+;; All tests in this file are passed against r2300 (new repository)
+
 ;; See "7.1 Formal syntax" of R5RS
 
 (assert-parse-error "invalid boolean" "#F")
