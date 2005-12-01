@@ -58,7 +58,9 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+#if SCM_COMPAT_SIOD
 static ScmObj feature_id_siod;
+#endif
 
 /*=======================================
   File Local Function Declarations
@@ -159,8 +161,10 @@ int main(int argc, char **argv)
     Scm_Use("srfi-34");
 #endif
 
+#if SCM_COMPAT_SIOD
     SigScm_GC_Protect(&feature_id_siod);
     feature_id_siod = Scm_NewImmutableStringCopying(FEATURE_ID_SIOD);
+#endif
 
     if (filename) {
         SigScm_load(filename);
