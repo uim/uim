@@ -1,11 +1,6 @@
 ==============================================================================
 Requirements and bugs:
 
-* Inhibit a mutation on string constants as described in "3.4 Storage model" of
-  R5RS
-  - Write both immutable and mutable case tests for all procedures that accepts
-    a string
-
 * Fix character and escape sequence related issues. grep Scm_special_char_table
   to find the issues, and make all tests in test-char.scm and test-string.scm
   passed
@@ -82,6 +77,15 @@ Namings and Cosmetic things:
 * [uim] Rename uim-scm.c to uim-scm-sigscheme.c
 
 ==============================================================================
+Assigned to Kazuki:
+
+* Inhibit a mutation on string constants as described in "3.4 Storage model" of
+  R5RS
+  - Write both immutable and mutable case tests for all procedures that accepts
+    a string
+
+==============================================================================
+
 Assigned to YamaKen:
 
 * Fix large fixed-size buffer on stack without limit checking in read.c
