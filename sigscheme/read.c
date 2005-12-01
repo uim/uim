@@ -56,6 +56,7 @@
 /*=======================================
   System Include
 =======================================*/
+#include <limits.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
@@ -79,6 +80,9 @@ enum LexerState {
 =======================================*/
 /* can accept "backspace" of R5RS and "U0010FFFF" of SRFI-75 */
 #define CHAR_LITERAL_LEN_MAX (sizeof("backspace") - sizeof((char)'\0'))
+
+/* #b-010101... */
+#define INT_LITERAL_LEN_MAX  (sizeof("-") + sizeof(int) * CHAR_BIT - sizeof((char)'\0'))
 
 #define INITIAL_STRING_BUF_SIZE 1024
 
@@ -114,7 +118,7 @@ static ScmObj read_list(ScmObj port, int closeParen);
 static ScmObj read_char(ScmObj port);
 static ScmObj read_string(ScmObj port);
 static ScmObj read_symbol(ScmObj port);
-static ScmObj parse_number(ScmObj port);
+static ScmObj read_number(ScmObj port, char prefix);
 static ScmObj read_number_or_symbol(ScmObj port);
 static ScmObj read_quote(ScmObj port, ScmObj quoter);
 
@@ -238,23 +242,18 @@ static ScmObj read_sexpression(ScmObj port)
             break;
         case '#':
             DISCARD_LOOKAHEAD(port);
-            c1 = SCM_PORT_PEEK_CHAR(port);
+            c1 = SCM_PORT_GET_CHAR(port);
             switch (c1) {
             case 't': case 'T':
-                DISCARD_LOOKAHEAD(port);
                 return SCM_TRUE;
             case 'f': case 'F':
-                DISCARD_LOOKAHEAD(port);
                 return SCM_FALSE;
             case '(':
-                DISCARD_LOOKAHEAD(port);
                 return ScmOp_list2vector(read_list(port, ')'));
             case '\\':
-                DISCARD_LOOKAHEAD(port);
                 return read_char(port);
             case 'b': case 'o': case 'd': case 'x':
-                SCM_PORT_UNGETC(port, c1);
-                return parse_number(port);
+                return read_number(port, c1);
             case EOF:
                 SigScm_Error("end in #");
             default:
@@ -447,7 +446,7 @@ static ScmObj read_char(ScmObj port)
         if (strcmp(buf, info->lex_rep) == 0)
             return Scm_NewChar(info->code);
     }
-    ERR("invalid character literal: #\%s", buf);
+    ERR("invalid character literal: #\\%s", buf);
 }
 
 /* FIXME: extend buffer on demand */
@@ -638,29 +637,29 @@ static ScmObj read_quote(ScmObj port, ScmObj quoter)
 }
 
 /* str should be what appeared right after '#' (eg. #b123) */
-static ScmObj parse_number(ScmObj port)
+static ScmObj read_number(ScmObj port, char prefix)
 {
-    int radix  = 0;
-    int number = 0;
-    char *first_nondigit = NULL;
-    char *numstr = read_word(port);
+    int radix, number;
+    char *first_nondigit;
+    char buf[INT_LITERAL_LEN_MAX + sizeof((char)'\0')];
 
-    switch (numstr[0]) {
+    read_token(port, buf, sizeof(buf), DELIMITER_CHARS);
+
+    switch (prefix) {
     case 'b': radix = 2;  break;
     case 'o': radix = 8;  break;
     case 'd': radix = 10; break;
     case 'x': radix = 16; break;
     default:
-        SigScm_Error("ill-formatted number: #%s", numstr);
+        goto err;
     }
 
-    /* get num */
-    number = (int)strtol(numstr+1, &first_nondigit, radix);
+    number = strtol(buf, &first_nondigit, radix);
     if (*first_nondigit)
-        SigScm_Error("ill-formatted number: #%s", numstr);
-
-    /* free str */
-    free(numstr);
+        goto err;
 
     return Scm_NewInt(number);
+
+ err:
+    ERR("ill-formatted number: #%c%s", prefix, buf);
 }

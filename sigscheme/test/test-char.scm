@@ -42,7 +42,9 @@
 ;; invalid character literal
 (assert-parse-error "invalid char literal" "#\\nonexistent")
 
-(assert-parse-error "invalid char literal" "#\\x")
+(assert-equal? "invalid char literal"
+               (integer->char 120)
+               (read (open-input-string "#\\x")))
 (assert-parse-error "invalid char literal" "#\\x0")
 (assert-parse-error "invalid char literal" "#\\x1")
 (assert-parse-error "invalid char literal" "#\\x0g")
