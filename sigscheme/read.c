@@ -97,8 +97,13 @@ enum LexerState {
   File Local Function Declarations
 =======================================*/
 static int    skip_comment_and_space(ScmObj port);
+static void   read_sequence(ScmObj port, char *buf, int len);
 static char*  read_word(ScmObj port);
 static char*  read_char_sequence(ScmObj port);
+#if SCM_USE_SRFI75
+static int    parse_unicode_sequence(const char *seq);
+static int    read_unicode_sequence(ScmObj port, char prefix);
+#endif
 
 static ScmObj read_sexpression(ScmObj port);
 static ScmObj read_list(ScmObj port, int closeParen);
@@ -166,6 +171,22 @@ static int skip_comment_and_space(ScmObj port)
         }
         SCM_PORT_GET_CHAR(port);  /* skip the char */
     }
+}
+
+static void read_sequence(ScmObj port, char *buf, int len)
+{
+    int c;
+    char *p;
+
+    for (p = buf; p < &buf[len]; p++) {
+        c = SCM_PORT_GET_CHAR(port);
+        if (c == EOF)
+            ERR("unexpected EOF");
+        if (!isascii(c))
+            ERR("unexpected non-ASCII char");
+        *p = c;
+    }
+    buf[len] = '\0';
 }
 
 static ScmObj read_sexpression(ScmObj port)
@@ -333,12 +354,72 @@ static ScmObj read_list(ScmObj port, int closeParen)
     }
 }
 
+#if SCM_USE_SRFI75
+static int parse_unicode_sequence(const char *seq)
+{
+    int c;
+    size_t len;
+    char *first_nondigit;
+
+    len = strlen(seq);
+
+    /* reject ordinary char literal and invalid signed hexadecimal */
+    if (len < 3 || !isxdigit(seq[1]))
+        return -1;
+
+    switch (seq[0]) {
+    case 'x':
+        /* #\x<x><x> : <x> = a hexadecimal digit (ignore case) */
+        if (len != 3)
+            ERR("invalid hexadecimal character sequence. conform \\x<x><x>");
+        break;
+
+    case 'u':
+        /* #\u<x><x><x><x> : Unicode char of BMP */
+        if (len != 5 || (0xd800 <= c && c <= 0xdfff))
+            ERR("invalid Unicode sequence. conform \\u<x><x><x><x>");
+        break;
+
+    case 'U':
+        /* #\U<x><x><x><x><x><x><x><x> : Unicode char of BMP or SMP */
+        if (len != 8 || (0xd800 <= c && c <= 0xdfff) || 0x10ffff < c)
+            ERR("invalid Unicode sequence. conform \\U<x><x><x><x><x><x><x><x>");
+        break;
+
+    default:
+        return -1;
+    }
+    c = strtol(&seq[1], &first_nondigit, 16);
+    return (*first_nondigit) ? -1 : c;
+}
+
+static int read_unicode_sequence(ScmObj port, char prefix)
+{
+    int len;
+    char seq[sizeof("U0010ffff")];
+
+    switch (prefix) {
+    case 'x': len = 2; break;
+    case 'u': len = 4; break;
+    case 'U': len = 8; break;
+    default:
+        /* FIXME: add fatal error handling */
+        break;
+    }
+    seq[0] = prefix;
+    read_sequence(port, &seq[1], len);
+    return parse_unicode_sequence(seq);
+}
+#endif /* SCM_USE_SRFI75 */
+
 static ScmObj read_char(ScmObj port)
 {
     int c;
+#if SCM_USE_SRFI75
+    int unicode;
+#endif
     char *ch;
     const ScmSpecialCharInfo *info;
-    char *first_nondigit = NULL;
 
     /* TODO: reorganize with read_char_sequence() */
     /* non-ascii char (multibyte-ready) */
@@ -358,20 +439,19 @@ static ScmObj read_char(ScmObj port)
     }
 
     ch = read_char_sequence(port);
+    if (!ch)
+        ERR("memory exhausted");
 
     CDBG((SCM_DBG_PARSER, "read_char : ch = %s", ch));
 
-    /* check #\x<x><x> style character where <x> is a hexadecimal
-     * digit and the sequence of two <x>s forms a hexadecimal
-     * number between 0 and #xFF(defined in R6RS) */
-    if (ch && ch[0] == 'x' && 1 < strlen(ch)) {
-        if (strlen(ch) != 3)
-            SigScm_Error("invalid hexadecimal character form. should be #\\x<x><x>\n");
-        c = strtol(ch + 1, &first_nondigit, 16);
-        if (*first_nondigit)
-            SigScm_Error("invalid hexadecimal character form. should be #\\x<x><x>\n");
-    } else {
-        /* check special sequence */
+#if SCM_USE_SRFI75
+    unicode = parse_unicode_sequence(ch);
+    if (0 <= unicode) {
+        c = unicode;
+    } else
+#endif
+    {
+        /* named chars */
         for (info = Scm_special_char_table; info->esc_seq; info++) {
             if (strcmp(ch, info->lex_rep) == 0) {
                 c = info->code;
@@ -416,16 +496,25 @@ static ScmObj read_string(ScmObj port)
             return obj;
 
         case '\\':
-            /*
-             * (R5RS) 6.3.5 String
-             * A double quote can be written inside a string only by
-             * escaping it with a backslash (\).
-             */
             c = SCM_PORT_GET_CHAR(port);
-            for (info = Scm_special_char_table; info->esc_seq; info++) {
-                if (strlen(info->esc_seq) == 2 && c == info->esc_seq[1]) {
-                    *p++ = info->code;
-                    goto found;
+#if SCM_USE_SRFI75
+            if (strchr("xuU", c)) {
+                c = read_unicode_sequence(port, c);
+                /* FIXME: check Unicode capability of Scm_current_char_codec */
+                p = SCM_CHARCODEC_INT2STR(Scm_current_char_codec,
+                                          p, c, SCM_MB_STATELESS);
+                if (!p)
+                    ERR("invalid Unicode sequence in string: 0x%x", c);
+                goto found;
+            } else
+#endif
+            {
+                /* escape sequences */
+                for (info = Scm_special_char_table; info->esc_seq; info++) {
+                    if (strlen(info->esc_seq) == 2 && c == info->esc_seq[1]) {
+                        *p++ = info->code;
+                        goto found;
+                    }
                 }
             }
             ERR("invalid escape sequence in string: \\%c", c);

@@ -82,6 +82,9 @@ const ScmSpecialCharInfo Scm_special_char_table[] = {
     /* to avoid portability problem, we should not support #\Space and so on */
     {' ',    " ",     "Space"},
 #endif
+#if SCM_USE_SRFI75
+    {'|',    "\\|",   "|"},
+#endif
 
     /* control characters */
     {'\n',   "\\n",   "newline"},    /*  10, R5RS */

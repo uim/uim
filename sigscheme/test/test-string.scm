@@ -198,14 +198,9 @@
 (assert-equal? "R5RS escape sequence" '(#\newline) (string->list "\n"))  ;; 110
 
 ;; R6RS(SRFI-75) compliant
-;
-; 2005/11/23 Kazuki Ohta <mover@hct.zaq.ne.jp>
-; temporally commented out, because we cannot handle "\x<x><x>" style escape
-; sequence yet.
-;
-;(assert-equal? "R6RS escape sequence" (integer->string 0)      "\x00")  ;; 0
-;(assert-equal? "R6RS escape sequence" (list->string '(#\nul))  "\x00")  ;; 0
-;(assert-equal? "R6RS escape sequence" '(#\nul)  (string->list "\x00"))  ;; 0
+(assert-equal? "R6RS escape sequence" (integer->string 0)      "\x00")  ;; 0
+(assert-equal? "R6RS escape sequence" (list->string '(#\nul))  "\x00")  ;; 0
+(assert-equal? "R6RS escape sequence" '(#\nul)  (string->list "\x00"))  ;; 0
 (assert-equal? "R6RS escape sequence" (integer->string 7)        "\a")  ;; 97
 (assert-equal? "R6RS escape sequence" (list->string '(#\alarm))  "\a")  ;; 97
 (assert-equal? "R6RS escape sequence" '(#\alarm)  (string->list "\a"))  ;; 97
@@ -224,11 +219,7 @@
 (assert-equal? "R6RS escape sequence" (integer->string 11)       "\v")  ;; 118
 (assert-equal? "R6RS escape sequence" (list->string '(#\vtab))   "\v")  ;; 118
 (assert-equal? "R6RS escape sequence" '(#\vtab)   (string->list "\v"))  ;; 118
-
-; 2005/11/22 Kazuki Ohta <mover@hct.zaq.ne.jp>
-; temporally commented out
-;
-; (assert-equal? "R6RS escape sequence" (integer->string 124)      "\|")  ;; 124
+(assert-equal? "R6RS escape sequence" (integer->string 124)      "\|")  ;; 124
 
 ;; All these conventional escape sequences should cause parse error as defined
 ;; in SRFI-75: "Any other character in a string after a backslash is an

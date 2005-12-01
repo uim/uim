@@ -9,8 +9,12 @@ Requirements and bugs:
 * Fix character and escape sequence related issues. grep Scm_special_char_table
   to find the issues, and make all tests in test-char.scm and test-string.scm
   passed
+  - Write tests for SRFI-75
 
 * Autoconfiscate the SigScheme package (don't rely on uim's configure)
+  - Prepare replace functions (asprintf and so on)
+  - Introduce C99-independent stdint.h
+    http://autoconf-archive.cryp.to/ax_create_stdint_h.html
   - [uim] configure sigscheme subdir by top-level configure like GCC
 
 * Add tests for proper tail recursion with 'apply' and 'guard' to
@@ -31,8 +35,6 @@ Extensions: (not required for now)
   based on a SRFI or de facto standard API
   - Evaluate ces API of Gauche
   - Consider dynamic environment
-
-* Support SRFI-75 character literals such as #\u3042 and #\U0010FFFF
 
 * Add GB18030 to encoding.c
 
