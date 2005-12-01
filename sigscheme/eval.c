@@ -1535,8 +1535,11 @@ ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
     if (SYMBOLP(var)) {
         if (NULLP(rest))
             SigScm_Error("define : missing expression");
+        if (!CONSP(rest))
+            ERR_OBJ("proper list is required as <expression> but got", rest);
 
         define_internal(var, POP_ARG(rest), env);
+        ASSERT_NO_MORE_ARG(rest);
     }
 
     /*========================================================================
@@ -1552,6 +1555,8 @@ ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
 
         if (NULLP(body))
             SigScm_Error("define : missing function body");
+        if (!CONSP(body))
+            ERR_OBJ("proper list is required as <body> but got", body);
 
         if (!SYMBOLP(procname))
             ERR_OBJ("symbol required but got", procname);

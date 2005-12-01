@@ -1,5 +1,25 @@
 (load "./test/unittest.scm")
 
+; invalid form
+(assert-error "define invalid form #1"
+	      (lambda ()
+		(define)))
+(assert-error "define invalid form #2"
+	      (lambda ()
+		(define a)))
+(assert-error "define invalid form #3"
+	      (lambda ()
+		(define 1 1)))
+(assert-error "define invalid form #4"
+	      (lambda ()
+		(define a 1 'excessive)))
+(assert-error "define invalid form #5"
+	      (lambda ()
+		(define a . 2)))
+(assert-error "define invalid form #6"
+	      (lambda ()
+		(define (f x) . x)))
+
 ; basic define
 (define val1 3)
 (assert-equal? "basic define check" 3 val1)
@@ -69,7 +89,6 @@
 ; set!
 (define (set-dot a . b)
   (set! b '(1 2))
-  (display b)
   b)
 
 (assert-equal? "set dot test" '(1 2) (set-dot '()))
