@@ -105,7 +105,7 @@ static char*  read_word(ScmObj port);
 static size_t read_token(ScmObj port,
                          char *buf, size_t buf_size, const char *delim);
 #if SCM_USE_SRFI75
-static int    parse_unicode_sequence(const char *seq);
+static int    parse_unicode_sequence(const char *seq, int len);
 static int    read_unicode_sequence(ScmObj port, char prefix);
 #endif
 
@@ -359,13 +359,10 @@ static ScmObj read_list(ScmObj port, int closeParen)
 }
 
 #if SCM_USE_SRFI75
-static int parse_unicode_sequence(const char *seq)
+static int parse_unicode_sequence(const char *seq, int len)
 {
     int c;
-    size_t len;
     char *first_nondigit;
-
-    len = strlen(seq);
 
     /* reject ordinary char literal and invalid signed hexadecimal */
     if (len < 3 || !isxdigit(seq[1]))
@@ -412,7 +409,7 @@ static int read_unicode_sequence(ScmObj port, char prefix)
     }
     seq[0] = prefix;
     read_sequence(port, &seq[1], len);
-    return parse_unicode_sequence(seq);
+    return parse_unicode_sequence(seq, len + sizeof(prefix));
 }
 #endif /* SCM_USE_SRFI75 */
 
@@ -441,7 +438,7 @@ static ScmObj read_char(ScmObj port)
     CDBG((SCM_DBG_PARSER, "read_char : ch = %s", buf));
 
 #if SCM_USE_SRFI75
-    unicode = parse_unicode_sequence(buf);
+    unicode = parse_unicode_sequence(buf, len + 1);
     if (0 <= unicode)
         return Scm_NewChar(unicode);
 #endif
