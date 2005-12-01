@@ -1183,36 +1183,46 @@ ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalStat
      *   <command> ...)
      */
     ScmObj env        = eval_state->env;
-    ScmObj vars       = SCM_NULL;
-    ScmObj vals       = SCM_NULL;
+    ScmObj binding    = SCM_FALSE;
+    ScmObj var        = SCM_FALSE;
+    ScmObj val        = SCM_FALSE;
+    ScmObj vars       = SCM_FALSE;
+    ScmObj vals       = SCM_FALSE;
     ScmObj steps      = SCM_NULL;
-    ScmObj binding    = SCM_NULL;
-    ScmObj step       = SCM_NULL;
-    ScmObj test       = SCM_NULL;
-    ScmObj expression = SCM_NULL;
-    ScmObj tmp_vars   = SCM_NULL;
-    ScmObj tmp_steps  = SCM_NULL;
-    ScmObj obj        = SCM_NULL;
+    ScmObj test       = SCM_FALSE;
+    ScmObj expression = SCM_FALSE;
+    ScmObj tmp_steps  = SCM_FALSE;
+    ScmObj tmp_vars   = SCM_FALSE;
+    ScmObj obj        = SCM_FALSE;
     DECLARE_FUNCTION("do", SyntaxVariadicTailRec2);
 
     /* construct Environment and steps */
     for (; !NULLP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
-        vars = CONS(CAR(binding), vars);
-        vals = CONS(EVAL(CADR(binding), env), vals);
+        if (NULLP(binding))
+            ERR("invalid bindings");
+
+        var = MUST_POP_ARG(binding);
+        val = MUST_POP_ARG(binding);
+
+        vars = CONS(var, vars);
+        vals = CONS(EVAL(val, env), vals);
 
         /* append <step> to steps */
-        step = CDDR(binding);
-        if (NULLP(step))
-            steps = CONS(CAR(binding), steps);
+        if (NO_MORE_ARG(binding))
+            steps = CONS(var, steps);
         else
-            steps = CONS(CAR(step), steps);
+            steps = CONS(POP_ARG(binding), steps);
+
+        ASSERT_NO_MORE_ARG(binding);
     }
 
     /* now extend environment */
     env = Scm_ExtendEnvironment(vars, vals, env);
 
     /* construct test */
+    if (NULLP(testframe))
+        ERR("invalid testframe");
     test       = CAR(testframe);
     expression = CDR(testframe);
 
@@ -1253,7 +1263,7 @@ ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalStat
 
     eval_state->env = env;
 
-    return ScmExp_begin(expression, eval_state);
+    return NULLP(expression) ? EVAL(test, env) : ScmExp_begin(expression, eval_state);
 }
 
 /*===========================================================================
