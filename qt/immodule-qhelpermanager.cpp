@@ -36,6 +36,7 @@ SUCH DAMAGE.
 #include <qsocketnotifier.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qtextcodec.h>
 
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
@@ -97,8 +98,8 @@ void QUimHelperManager::parseHelperStr( const QString &str )
             uim_prop_label_update( focusedInputContext->uimContext() );
         else if ( str.startsWith( "prop_activate" ) )
         {
-            QStringList list = QStringList::split( "\n", str );
-            uim_prop_activate( focusedInputContext->uimContext(), ( const char* ) list[ 1 ] );
+            QStringList lines = QStringList::split( "\n", str );
+            uim_prop_activate( focusedInputContext->uimContext(), ( const char* ) lines[ 1 ] );
         }
         else if ( str.startsWith( "im_list_get" ) )
         {
@@ -106,9 +107,24 @@ void QUimHelperManager::parseHelperStr( const QString &str )
         }
         else if ( str.startsWith( "commit_string" ) )
         {
-            QStringList list = QStringList::split( "\n", str );
-            if ( !list.isEmpty() && !list[ 1 ].isEmpty() )
-                focusedInputContext->commitString( list[ 1 ] );
+            QStringList lines = QStringList::split( "\n", str );
+            if ( !lines.isEmpty() && !lines[ 1 ].isEmpty() ) {
+                QString commit_str = QString::null;
+                
+                if ( lines[ 1 ].startsWith( "charset" ) ) {
+                    /* get charset */
+                    QString charset = QStringList::split( "=", lines[ 1 ] ) [ 1 ];
+
+                    /* convert to unicode */
+                    QTextCodec *codec = QTextCodec::codecForName( charset );
+                    if ( codec && !lines[ 2 ].isEmpty() )
+                        commit_str = codec->toUnicode( lines[ 2 ] );
+                } else {
+                    commit_str = lines[ 1 ];
+                }
+
+                focusedInputContext->commitString( commit_str );
+            }
         }
         else if ( str.startsWith( "focus_in" ) )
         {
