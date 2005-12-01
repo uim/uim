@@ -1003,14 +1003,18 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
                      (<variable2> <init2>)
                      ...)
     ========================================================================*/
-    if (!SCM_SHIFT_RAW(bindings, args))
-        SigScm_Error("let : syntax error");
+
+    if (NULLP(args))
+        SigScm_Error("let : invalid form");
+    bindings = POP_ARG(args);
 
     /* named let */
     if (SYMBOLP(bindings)) {
         named_let_sym = bindings;
-        if (!SCM_SHIFT_RAW(bindings, args))
-            SigScm_Error("let : syntax error");
+
+        if (NULLP(args))
+            SigScm_Error("let : invalid named let form");
+        bindings = POP_ARG(args);
     }
 
     body = args;
@@ -1018,13 +1022,17 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
     for (; CONSP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
 
-#if SCM_COMPAT_SIOD_BUGS
         if (NULLP(binding) || !SYMBOLP(var = CAR(binding)))
             ERR_OBJ("invalid binding form", binding);
+
+#if SCM_COMPAT_SIOD_BUGS
         val = (!CONSP(CDR(binding))) ? SCM_FALSE : CADR(binding);
 #else
-        if (!NULLP(SCM_SHIFT_RAW_2(var, val, binding)) || !SYMBOLP(var))
+        if (!CONSP(CDR(binding)))
             ERR_OBJ("invalid binding form", binding);
+        val = CADR(binding);
+        if (!NULLP(CDDR(binding)))
+            ERR_OBJ("invalid binding form (superfluous object)", binding);
 #endif
 
         vars = CONS(var, vars);
@@ -1032,7 +1040,7 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
     }
 
     if (!NULLP(bindings))
-        SigScm_Error("let : invalid bindings form");
+        ERR_OBJ("invalid bindings form", bindings);
 
 #if 1
     /* current implementation Scm_ExtendEnvironment() contains unnecessary
@@ -1069,17 +1077,22 @@ ScmObj ScmExp_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     if (!CONSP(bindings) && !NULLP(bindings))
         SigScm_Error("let* : syntax error");
 
-    for (; !NULLP(bindings); bindings = CDR(bindings)) {
+    for (; CONSP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
 
-#if SCM_COMPAT_SIOD_BUGS
         if (NULLP(binding) || !SYMBOLP(var = CAR(binding)))
             ERR_OBJ("invalid binding form", binding);
+
+#if SCM_COMPAT_SIOD_BUGS
         val = (!CONSP(CDR(binding))) ? SCM_FALSE : CADR(binding);
 #else
-        if (!NULLP(SCM_SHIFT_RAW_2(var, val, binding)) || !SYMBOLP(var))
+        if (!CONSP(CDR(binding)))
             ERR_OBJ("invalid binding form", binding);
+        val = CADR(binding);
+        if (!NULLP(CDDR(binding)))
+            ERR_OBJ("invalid binding form (superfluous object)", binding);
 #endif
+
         val = EVAL(val, env);
 
         /* extend env for each variable */
@@ -1092,6 +1105,9 @@ ScmObj ScmExp_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
         env = Scm_ExtendEnvironment(LIST_1(var), LIST_1(val), env);
 #endif
     }
+
+    if (!NULLP(bindings))
+        ERR_OBJ("invalid bindings form", bindings);
 
     eval_state->env = env;
 
@@ -1124,16 +1140,20 @@ ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     env = CONS(frame, env);
     eval_state->env = env;
 
-    for (; !NULLP(bindings); bindings = CDR(bindings)) {
+    for (; CONSP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
 
-#if SCM_COMPAT_SIOD_BUGS
         if (NULLP(binding) || !SYMBOLP(var = CAR(binding)))
             ERR_OBJ("invalid binding form", binding);
+
+#if SCM_COMPAT_SIOD_BUGS
         val = (!CONSP(CDR(binding))) ? SCM_FALSE : CADR(binding);
 #else
-        if (!NULLP(SCM_SHIFT_RAW_2(var, val, binding)) || !SYMBOLP(var))
+        if (!CONSP(CDR(binding)))
             ERR_OBJ("invalid binding form", binding);
+        val = CADR(binding);
+        if (!NULLP(CDDR(binding)))
+            ERR_OBJ("invalid binding form (superfluous object)", binding);
 #endif
 
         /* construct vars and vals list: any <init> must not refer a
@@ -1141,6 +1161,9 @@ ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
         vars = CONS(var, vars);
         vals = CONS(EVAL(val, env), vals);
     }
+
+    if (!NULLP(bindings))
+        ERR_OBJ("invalid bindings form", bindings);
 
     /* fill the placeholder frame */
     SET_CAR(frame, vars);
@@ -1186,8 +1209,8 @@ ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalStat
     ScmObj binding    = SCM_FALSE;
     ScmObj var        = SCM_FALSE;
     ScmObj val        = SCM_FALSE;
-    ScmObj vars       = SCM_FALSE;
-    ScmObj vals       = SCM_FALSE;
+    ScmObj vars       = SCM_NULL;
+    ScmObj vals       = SCM_NULL;
     ScmObj steps      = SCM_NULL;
     ScmObj test       = SCM_FALSE;
     ScmObj expression = SCM_FALSE;
@@ -1203,6 +1226,7 @@ ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalStat
             ERR("invalid bindings");
 
         var = MUST_POP_ARG(binding);
+        ASSERT_SYMBOLP(var);
         val = MUST_POP_ARG(binding);
 
         vars = CONS(var, vars);
@@ -1500,7 +1524,6 @@ static void define_internal(ScmObj var, ScmObj exp, ScmObj env)
 
 ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
 {
-    ScmObj exp      = SCM_FALSE;
     ScmObj procname = SCM_FALSE;
     ScmObj body     = SCM_FALSE;
     ScmObj formals  = SCM_FALSE;
@@ -1510,10 +1533,10 @@ ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
       (define <variable> <expression>)
     ========================================================================*/
     if (SYMBOLP(var)) {
-        if (!NULLP(SCM_SHIFT_RAW_1(exp, rest)))
+        if (NULLP(rest))
             SigScm_Error("define : missing expression");
 
-        define_internal(var, exp, env);
+        define_internal(var, POP_ARG(rest), env);
     }
 
     /*========================================================================
