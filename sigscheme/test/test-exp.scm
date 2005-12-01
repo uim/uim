@@ -258,6 +258,15 @@
 (assert-error  "let invalid form #5"
                (lambda ()
                  (let ((a 1 'excessive)))))
+(assert-error  "let invalid form #6"
+               (lambda ()
+                 (let ((a 1) . (b 2)))))
+(assert-error  "let invalid form #7"
+               (lambda ()
+                 (let ((a . 1)))))
+(assert-error  "let invalid form #8"
+               (lambda ()
+                 (let ((a  1)) . a)))
 
 (assert-equal? "basic let test1" 0 (let ((n 0))
 				 n))
@@ -319,6 +328,15 @@
 (assert-error  "let* invalid form #5"
                (lambda ()
                  (let* ((a 1 'excessive)))))
+(assert-error  "let* invalid form #6"
+               (lambda ()
+                 (let* ((a 1) . (b 2)))))
+(assert-error  "let* invalid form #7"
+               (lambda ()
+                 (let* ((a . 1)))))
+(assert-error  "let* invalid form #8"
+               (lambda ()
+                 (let* ((a  1)) . a)))
 
 (assert-equal? "basic let* test1" 70 (let ((x 2) (y 3))
 				    (let* ((x 7)
@@ -343,6 +361,15 @@
 (assert-error  "letrec invalid form #5"
                (lambda ()
                  (letrec ((a 1 'excessive)))))
+(assert-error  "letrec invalid form #6"
+               (lambda ()
+                 (letrec ((a 1) . (b 2)))))
+(assert-error  "letrec invalid form #7"
+               (lambda ()
+                 (letrec ((a . 1)))))
+(assert-error  "letrec invalid form #8"
+               (lambda ()
+                 (letrec ((a  1)) . a)))
 
 (assert-equal? "basic letrec test1" #t (letrec ((even?
 					   (lambda (n)
