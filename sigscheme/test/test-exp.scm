@@ -55,7 +55,22 @@
 (assert-equal? "basic lambda test10" 2 ((lambda (x y . z) y) 1 2))
 (assert-equal? "basic lambda test11" '() ((lambda (x y . z) z) 1 2))
 
-;;if
+;;
+;; if
+;;
+(assert-error "if invalid form #1"
+	      (lambda ()
+		(if)))
+(assert-error "if invalid form #2"
+	      (lambda ()
+		(if #t)))
+(assert-error "if invalid form #3"
+	      (lambda ()
+		(if #t 'true 'false 'excessive)))
+(assert-error "if invalid form #4"
+	      (lambda ()
+		(if #f 'true 'false 'excessive)))
+
 (assert-equal? "if test1" 'true  (if #t 'true 'false))
 (assert-equal? "if test2" 'true  (if #t 'true))
 (assert-equal? "if test3" 'false (if #f 'true 'false))
@@ -64,16 +79,11 @@
 ;; check that <test> is evaluated
 (assert-equal? "if test5" 'true  (if tee 'true 'false))
 (assert-equal? "if test6" 'false (if ef 'true 'false))
-;; invalid forms
-;;(assert-error  "if test7"  (if))
-;;(assert-error  "if test8"  (if #t))
-;;(assert-error  "if test9"  (if #t 'true 'false 'excessive))
-;;(assert-error  "if test10" (if #f 'true 'false 'excessive))
+
 
 ;;
 ;; cond
 ;;
-
 (assert-error  "cond invalid form #1"
                (lambda ()
                  (cond)))
@@ -214,20 +224,41 @@
 					   (else
 					    'caseelse)))
 
+;;
 ;; and
+;;
 (assert-equal? "and test 1" #t (and (= 2 2) (> 2 1)))
 (assert-equal? "and test 2" #f (and (= 2 2) (< 2 1)))
 (assert-equal? "and test 3" '(f g) (and 1 2 'c '(f g)))
 (assert-equal? "and test 4" #t (and))
 
+;;
 ;; or
+;;
 (assert-equal? "or test1" #t (or (= 2 2) (> 2 1)))
 (assert-equal? "or test2" #t (or (= 2 2) (< 2 1)))
 (assert-equal? "or test3" #f (or #f #f #f))
 (assert-equal? "or test4" '(b c) (or (memq 'b '(a b c))
 				     (/ 3 0)))
-
+;;
 ;; let
+;;
+(assert-error  "let invalid form #1"
+               (lambda ()
+                 (let)))
+(assert-error  "let invalid form #2"
+               (lambda ()
+                 (let a)))
+(assert-error  "let invalid form #3"
+               (lambda ()
+                 (let (a 1))))
+(assert-error  "let invalid form #4"
+               (lambda ()
+                 (let ((a)))))
+(assert-error  "let invalid form #5"
+               (lambda ()
+                 (let ((a 1 'excessive)))))
+
 (assert-equal? "basic let test1" 0 (let ((n 0))
 				 n))
 (assert-equal? "basic let test2" 1 (let ((n 0))
@@ -270,13 +301,49 @@
 								  nonneg
 								  (cons (car numbers) neg))))))
 
+;;
 ;; let*
+;;
+(assert-error  "let* invalid form #1"
+               (lambda ()
+                 (let*)))
+(assert-error  "let* invalid form #2"
+               (lambda ()
+                 (let* a)))
+(assert-error  "let* invalid form #3"
+               (lambda ()
+                 (let* (a 1))))
+(assert-error  "let* invalid form #4"
+               (lambda ()
+                 (let* ((a)))))
+(assert-error  "let* invalid form #5"
+               (lambda ()
+                 (let* ((a 1 'excessive)))))
+
 (assert-equal? "basic let* test1" 70 (let ((x 2) (y 3))
 				    (let* ((x 7)
 					   (z (+ x y)))
 				      (* z x))))
 
+;;
 ;; letrec
+;;
+(assert-error  "letrec invalid form #1"
+               (lambda ()
+                 (letrec)))
+(assert-error  "letrec invalid form #2"
+               (lambda ()
+                 (letrec a)))
+(assert-error  "letrec invalid form #3"
+               (lambda ()
+                 (letrec (a 1))))
+(assert-error  "letrec invalid form #4"
+               (lambda ()
+                 (letrec ((a)))))
+(assert-error  "letrec invalid form #5"
+               (lambda ()
+                 (letrec ((a 1 'excessive)))))
+
 (assert-equal? "basic letrec test1" #t (letrec ((even?
 					   (lambda (n)
 					     (if (zero? n)
@@ -309,8 +376,9 @@
                                       (letrec ((letrec-a 1)
                                                (letrec-b letrec-a))
                                         letrec-b)))
-
+;;
 ;; begin
+;;
 (define x 0)
 (assert-equal? "basic begin test1" 6 (begin
 				    (set! x 5)
@@ -324,7 +392,41 @@
 				    (define n 0)
 				    (set! n 1)
                                     n))
+
+;;
 ;; do
+;;
+(assert-error  "do invalid form #1"
+               (lambda ()
+                 (do)))
+(assert-error  "do invalid form #2"
+               (lambda ()
+                 (do a)))
+(assert-error  "do invalid form #3"
+               (lambda ()
+                 (do (a 1))))
+(assert-error  "do invalid form #4"
+               (lambda ()
+                 (do ((a 1))
+		     )))
+(assert-error  "do invalid form #5"
+               (lambda ()
+                 (do ((a))
+		     'eval)))
+(assert-error  "do invalid form #6"
+               (lambda ()
+                 (do ((a 1))
+		     'unknow-value)))
+(assert-error  "do invalid form #7"
+               (lambda ()
+                 (do ((a 1 2 'excessive))
+		     'eval)))
+(assert-error  "do invalid form #8"
+               (lambda ()
+                 (do ((a 1))
+		     ()
+		     'eval)))
+
 (assert-equal? "do test1" '#(0 1 2 3 4) (do ((vec (make-vector 5))
 					     (i 0 (+ i 1)))
 					    ((= i 5) vec)
@@ -352,6 +454,13 @@
 (assert-equal? "do test4" '(c b a) (nreverse '(a b c)))
 (assert-equal? "do test5" '((5 6) (3 4) (1 2)) (nreverse '((1 2) (3 4) (5 6))))
 
+(assert-equal? "do test6" 1  (do ((a 1)) (a) 'some))
+(assert-equal? "do test7" #t (do ((a 1)) (#t) 'some))
+(assert-equal? "do test8" eval (do ((a 1)) 'eval))
+
+;;
+;; procedure?
+;;
 (assert-true  "procedure? #1" (procedure? even?))
 (assert-true  "procedure? #2" (procedure? (lambda (x) x)))
 (assert-true  "procedure? #3" (procedure? (call-with-current-continuation
@@ -360,6 +469,9 @@
 (assert-false "procedure? #4" (procedure? if))
 (assert-false "procedure? #5" (procedure? quote))
 
+;;
+;; call-with-values
+;;
 ;; from R5RS
 (assert-equal? "call-with-values #1"
                5
@@ -399,6 +511,9 @@
                       n2)))
                 1))
 
+;;
+;; values
+;;
 (assert-true   "values #1" (number? (values 5)))
 (assert-false  "values #2" (number? (values 'five)))
 (assert-equal? "values #3"
@@ -414,6 +529,9 @@
               (lambda ()
                 (write (values))))
 
+;;
+;; dynamic-wind
+;;
 (define dynwind-res '())
 (define append-sym!
   (lambda (sym)
