@@ -32,9 +32,24 @@
 
 (load "./test/unittest.scm")
 
+
+;;
+;; All procedures which take the string as argument is tested with
+;; both immutable string and mutable string.
+;;
+;; See "3.4 Storage model" of R5RS
+;;
+
+
 ;; check string?
+;;;; immutable
 (assert-true "string? check" (string? ""))
 (assert-true "string? check" (string? "abcde"))
+(assert-true "string? immutable" (string? (symbol->string 'foo)))
+;;;; mutable
+(assert-true "string? check" (string? (string-copy "")))
+(assert-true "string? check" (string? (string-copy "abcde")))
+
 
 ;; check make-string
 (assert-equal? "make-string check" ""   (make-string 0))
@@ -44,15 +59,35 @@
 (assert-equal? "make-string check" "a"  (make-string 1 #\a))
 (assert-equal? "make-string check" "aa" (make-string 2 #\a))
 
+
 ;; check string-ref
+;;;; immutable
 (assert-equal? "string-ref check" #\a (string-ref "abcde" 0))
 (assert-equal? "string-ref check" #\e (string-ref "abcde" 4))
 (assert-error  "string-ref check" (lambda ()
 				    (string-ref "abcde" -1)))
 (assert-error  "string-ref check" (lambda ()
 				    (string-ref "abcde" 5)))
+;;;; mutable
+(assert-equal? "string-ref check" #\a (string-ref (string-copy "abcde") 0))
+(assert-equal? "string-ref check" #\e (string-ref (string-copy "abcde") 4))
+(assert-error  "string-ref check" (lambda ()
+				    (string-ref (string-copy "abcde") -1)))
+(assert-error  "string-ref check" (lambda ()
+				    (string-ref (string-copy "abcde") 5)))
+
 
 ;; check string-set!
+;;;; immutable
+(assert-error "string-set! immutable" (lambda ()
+					(string-set! "foo" 0 #\b)))
+(assert-error "string-set! immutable" (lambda ()
+					(string-set! (symbol->string 'foo) 0 #\b)))
+(assert-error "string-set! immutable" (lambda ()
+					(define immutable-str "foo")
+					(string-set! immutable-str 0 #\b)
+					immutable-str))
+;;;; mutable
 (assert-equal? "string-set! check" "zbcdef"
 	       (begin
 		 (define tmpstr (string-copy "abcdef"))
@@ -73,18 +108,45 @@
 (assert-error  "string-set! check" (lambda ()
 				     (string-set! (string-copy "abcdef")  6 #\z)))
 
+
 ;; check string-length
+;;;; immutable
 (assert-equal? "string-length check" 0 (string-length ""))
 (assert-equal? "string-length check" 5 (string-length "abcde"))
 (assert-equal? "string-length check" 1 (string-length "\\"))
 (assert-equal? "string-length check" 2 (string-length "\\\\"))
 (assert-equal? "string-length check" 3 (string-length "\\\\\\"))
+;;;; mutable
+(assert-equal? "string-length check" 0 (string-length (string-copy "")))
+(assert-equal? "string-length check" 5 (string-length (string-copy "abcde")))
+(assert-equal? "string-length check" 1 (string-length (string-copy "\\")))
+(assert-equal? "string-length check" 2 (string-length (string-copy "\\\\")))
+(assert-equal? "string-length check" 3 (string-length (string-copy "\\\\\\")))
+
 
 ;; string=? check
+;;;; immutable
 (assert-true "string=? check" (string=? "" ""))
 (assert-true "string=? check" (string=? "abcde" "abcde"))
+(assert-true "string=? immutable" (string=? "foo" "foo"))
+(assert-true "string=? immutable" (string=? "foo" (symbol->string 'foo)))
+(assert-true "string=? immutable" (string=? (symbol->string 'foo) "foo"))
+(assert-true "string=? immutable" (string=? (symbol->string 'foo) (symbol->string 'foo)))
+;;;; mutable
+(assert-true "string=? mutable" (string=? (string-copy "") (string-copy "")))
+(assert-true "string=? mutable" (string=? (string-copy "foo") (string-copy "foo")))
+;;;; mixed
+(assert-true "string=? mixed" (string=? (string-copy "") ""))
+(assert-true "string=? mixed" (string=? (string-copy "foo") "foo"))
+(assert-true "string=? mixed" (string=? (string-copy "foo") (symbol->string 'foo)))
+
 
 ;; substring check
+;;;; immutable
+(assert-error "substring immutable" (lambda () (substring "foo" 0 0)))
+(assert-error "substring immutable" (lambda () (substring "foo" 0 3)))
+(assert-error "substring immutable" (lambda () (substring (symbol->string 'foo) 0 3)))
+;;;; mutable
 (assert-equal? "substring check" ""    (substring (string-copy "abcde") 0 0))
 (assert-equal? "substring check" "a"   (substring (string-copy "abcde") 0 1))
 (assert-equal? "substring check" "bc"  (substring (string-copy "abcde") 1 3))
@@ -100,15 +162,39 @@
 
 
 ;; string-append check
+;;;; immutable
 (assert-equal? "string-append check" ""    (string-append ""))
+(assert-equal? "string-append check" ""    (string-append "" ""))
+(assert-equal? "string-append check" ""    (string-append "" "" ""))
 (assert-equal? "string-append check" "a"   (string-append "a"))
 (assert-equal? "string-append check" "ab"  (string-append "a" "b"))
 (assert-equal? "string-append check" "abc" (string-append "a" "b" "c"))
 (assert-equal? "string-append check" "ab"     (string-append "ab"))
 (assert-equal? "string-append check" "abcd"   (string-append "ab" "cd"))
 (assert-equal? "string-append check" "abcdef" (string-append "ab" "cd" "ef"))
+;;;; mutable
+(assert-equal? "string-append mutable" ""       (string-append (string-copy "")))
+(assert-equal? "string-append mutable" ""       (string-append (string-copy "") (string-copy "")))
+(assert-equal? "string-append mutable" ""       (string-append (string-copy "") (string-copy "") (string-copy "")))
+(assert-equal? "string-append mutable" "a"      (string-append (string-copy "a")))
+(assert-equal? "string-append mutable" "ab"     (string-append (string-copy "a") (string-copy "b")))
+(assert-equal? "string-append mutable" "abc"    (string-append (string-copy "a") (string-copy "b") (string-copy "c")))
+(assert-equal? "string-append mutable" "ab"     (string-append (string-copy "ab")))
+(assert-equal? "string-append mutable" "abcd"   (string-append (string-copy "ab") (string-copy "cd")))
+(assert-equal? "string-append mutable" "abcdef" (string-append (string-copy "ab") (string-copy "cd") (string-copy "ef")))
+;;; mixed
+(assert-equal? "string-append mixed" ""    (string-append (string-copy "") ""))
+(assert-equal? "string-append mixed" "ab"  (string-append (string-copy "a") "b"))
+(assert-equal? "string-append mixed" "abc" (string-append "a" (string-copy "b") (string-copy "c")))
+(assert-equal? "string-append mixed" "abc" (string-append (string-copy "a") "b" (string-copy "c")))
+(assert-equal? "string-append mixed" "abc" (string-append (string-copy "a") (string-copy "b") "c"))
+(assert-equal? "string-append mixed" "abc" (string-append "a" "b" (string-copy "c")))
+(assert-equal? "string-append mixed" "abc" (string-append "a" (string-copy "b") "c"))
+(assert-equal? "string-append mixed" "abc" (string-append (string-copy "a") "b" "c"))
+
 
 ;; string->list
+;;;; immutable
 (assert-equal? "string->list check" '()                (string->list ""))
 (assert-equal? "string->list check" '(#\\)             (string->list "\\"))
 (assert-equal? "string->list check" '(#\\ #\\)         (string->list "\\\\"))
@@ -124,6 +210,22 @@
 (assert-equal? "string->list check" '(#\space #\space) (string->list "  "))
 (assert-equal? "string->list check" '(#\")             (string->list "\""))
 (assert-equal? "string->list check" '(#\" #\")         (string->list "\"\""))
+;;;; mutable
+(assert-equal? "string->list mutable" '()                    (string->list (string-copy "")))
+(assert-equal? "string->list mutable" '(#\\)                 (string->list (string-copy "\\")))
+(assert-equal? "string->list mutable" '(#\\ #\\)             (string->list (string-copy "\\\\")))
+(assert-equal? "string->list mutable" '(#\\ #\\ #\\)         (string->list (string-copy "\\\\\\")))
+;;(assert-equal? "string->list mutable" '(#\tab)           (string->list (string-copy "\t")))
+(assert-equal? "string->list mutable" '(#\	)            (string->list (string-copy "\t")))
+;;(assert-equal? "string->list mutable" '(#\return)        (string->list (string-copy "\r")))
+(assert-equal? "string->list mutable" '(#\)                (string->list (string-copy "\r")))
+(assert-equal? "string->list mutable" '(#\ #\)           (string->list (string-copy "\r\r")))
+(assert-equal? "string->list mutable" '(#\newline)           (string->list (string-copy "\n")))
+(assert-equal? "string->list mutable" '(#\newline #\newline) (string->list (string-copy "\n\n")))
+(assert-equal? "string->list mutable" '(#\space)             (string->list (string-copy " ")))
+(assert-equal? "string->list mutable" '(#\space #\space)     (string->list (string-copy "  ")))
+(assert-equal? "string->list mutable" '(#\")                 (string->list (string-copy "\"")))
+(assert-equal? "string->list mutable" '(#\" #\")             (string->list (string-copy "\"\"")))
 
 ;; list->string
 (assert-equal? "list->string check" ""     (list->string '()))
@@ -144,6 +246,12 @@
 (assert-equal? "list->string check" "\"a\"" (list->string '(#\" #\a #\")))
 
 ;; string-fill!
+;;;; immutable
+(assert-error "string-fill! immutable" (lambda ()
+					 (string-fill! "foo" #\j)))
+(assert-error "string-fill! immutable" (lambda ()
+					 (string-fill! (string->symbol 'foo) #\j)))
+;;;; mutable
 (assert-equal? "string-fill! check" "jjjjj" (begin
 					      (define tmpstr (string-copy "abcde"))
 					      (string-fill! tmpstr #\j)
@@ -164,19 +272,12 @@
 
 ;; string->symbol
 ;; TODO: need to investigate (string->symbol "") behavior
+;;;; immutable
 (assert-equal? "string->symbol check" 'a  (string->symbol "a"))
 (assert-equal? "string->symbol check" 'ab (string->symbol "ab"))
-
-;;
-;; immutable strings: See "3.4 Storage model" of R5RS
-;;
-(assert-error "string-set! on constant string #1"
-              (lambda ()
-                (string-set! "foo" 0 #\b)))
-(assert-error "string-set! on constant string #2"
-              (lambda ()
-                (string-set! (symbol->string 'foo) 0 #\b)))
-
+;;;; mutable
+(assert-equal? "string->symbol check" 'a  (string->symbol (string-copy "a")))
+(assert-equal? "string->symbol check" 'ab (string->symbol (string-copy "ab")))
 
 ;;
 ;; escape sequences

@@ -35,15 +35,23 @@
 (use srfi-6)
 
 
-; open-input-string
+;; open-input-string
+;;;; immutable
 (define p
   (open-input-string "(a . (b . (c . ()))) 34"))
 
 (assert-true   "open-input-string test 1" (input-port? p))
 (assert-equal? "open-input-string test 2" '(a b c) (read p))
 (assert-equal? "open-input-string test 3" 34 (read p))
+;;;; mutable
+(define p2
+  (open-input-string (string-copy "(a . (b . (c . ()))) 34")))
 
-; open-output-string and get-output-string
+(assert-true   "open-input-string test 1" (input-port? p2))
+(assert-equal? "open-input-string test 2" '(a b c) (read p2))
+(assert-equal? "open-input-string test 3" 34 (read p2))
+
+;; open-output-string and get-output-string
 (assert-equal? "output string test 1" "a(b c)" (let ((q (open-output-string))
 						     (x '(a b c)))
 						 (write (car x) q)
