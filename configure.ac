@@ -75,16 +75,35 @@ AC_ARG_WITH(anthy,
   AC_HELP_STRING([--without-anthy], [Don't build with libanthy]),
   [
     if test "x$with_anthy" = "xyes"; then
-      AC_CHECK_HEADERS([anthy/anthy.h], [use_anthy="yes"],
-                       [use_anthy="no"])
+      AC_CHECK_HEADERS([anthy/anthy.h],
+        [
+          saved_LIBS=$LIBS
+          LIBS="$LIBS -lanthy -lanthydic"
+          AC_CHECK_LIB([anthy], [anthy_init], [use_anthy="yes"], [use_anthy="no"])
+          LIBS=$saved_LIBS
+        ],
+        [use_anthy="no"])
     else
       use_anthy="no"
     fi
   ],
   [
-    AC_CHECK_HEADERS([anthy/anthy.h], [use_anthy="yes"],
-                     [use_anthy="no"])
+    AC_CHECK_HEADERS([anthy/anthy.h],
+     [
+       saved_LIBS=$LIBS
+       LIBS="$LIBS -lanthy -lanthydic"
+       AC_CHECK_LIB([anthy], [anthy_init], [use_anthy="yes"], [use_anthy="no"])
+       LIBS=$saved_LIBS
+     ],
+     [use_anthy="no"])
   ])
+
+if test "x$use_anthy" = "xyes"; then
+  ANTHY_LIBS="-lanthy -lanthydic"
+  ANTHY_CFLAGS=""
+fi
+AC_SUBST(ANTHY_LIBS)
+AC_SUBST(ANTHY_CFLAGS)
 
 # ***********************
 # *** Tests for Canna ***

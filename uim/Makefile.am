@@ -61,7 +61,7 @@ endif
 if ANTHY
   uim_plugin_LTLIBRARIES += libuim-anthy.la
   libuim_anthy_la_SOURCES = anthy.c
-  libuim_anthy_la_LIBADD = libuim.la
+  libuim_anthy_la_LIBADD = @ANTHY_LIBS@ libuim.la
   libuim_anthy_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
   libuim_anthy_la_CPPFLAGS = -I$(top_srcdir)
 endif
