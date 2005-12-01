@@ -208,6 +208,9 @@ static void SigScm_Initialize_internal(void)
     =======================================================================*/
     /* to evaluate SigScheme-dependent codes conditionally */
     ScmOp_provide(Scm_NewImmutableStringCopying("sigscheme"));
+#if SCM_STRICT_R5RS
+    ScmOp_provide(Scm_NewImmutableStringCopying("strict-r5rs"));
+#endif
     scm_initialized = TRUE;
 }
 

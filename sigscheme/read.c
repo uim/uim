@@ -82,7 +82,7 @@ enum LexerState {
 #define INITIAL_STRING_BUF_SIZE 1024
 
 #define WHITESPACE_CHARS " \t\n\r\v\f"
-#define DELIMITER_CHARS  "()\"\';" WHITESPACE_CHARS
+#define DELIMITER_CHARS  "()\";" WHITESPACE_CHARS
 
 /* Compatible with isspace(3). Use this to prevent incorrect space handlings */
 #define CASE_ISSPACE                                                         \
@@ -279,15 +279,12 @@ static ScmObj read_sexpression(ScmObj port)
 
 static ScmObj read_list(ScmObj port, int closeParen)
 {
-    ScmObj list_head = SCM_NULL;
-    ScmObj list_tail = SCM_NULL;
-    ScmObj item   = SCM_NULL;
-    ScmObj cdr    = SCM_NULL;
+    ScmObj lst, elm, cdr;
+    ScmQueue q;
     ScmBaseCharPort *basecport;
-    int    start_line, cur_line;
-    int    c      = 0;
-    int    c2     = 0;
-    char  *token  = NULL;
+    int start_line, cur_line;
+    int c;
+    char dot_buf[sizeof("...")];
 
     CDBG((SCM_DBG_PARSER, "read_list"));
     basecport = SCM_PORT_TRY_DYNAMIC_CAST(ScmBaseCharPort,
@@ -295,7 +292,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
     if (basecport)
         start_line = ScmBaseCharPort_line_number(basecport);
 
-    while (1) {
+    for (lst = SCM_NULL, SCM_QUEUE_POINT_TO(q, lst);; SCM_QUEUE_ADD(q, elm)) {
         c = skip_comment_and_space(port);
 
         CDBG((SCM_DBG_PARSER, "read_list c = [%c]", c));
@@ -303,60 +300,52 @@ static ScmObj read_list(ScmObj port, int closeParen)
         if (c == EOF) {
             if (basecport) {
                 cur_line = ScmBaseCharPort_line_number(basecport);
-                ERR("EOF inside list at line %d. (starting from line %d)",
+                ERR("EOF inside list at line %d (starting from line %d)",
                     cur_line, start_line);
             } else {
-                SigScm_Error("EOF inside list.");
+                ERR("EOF inside list");
             }
         } else if (c == closeParen) {
             DISCARD_LOOKAHEAD(port);
-            return list_head;
+            return lst;
         } else if (c == '.') {
-            DISCARD_LOOKAHEAD(port);
-            c2 = SCM_PORT_PEEK_CHAR(port);
-            CDBG((SCM_DBG_PARSER, "read_list process_dot c2 = [%c]", c2));
-            if ((isascii(c2) && isspace(c2))
-                || c2 == '(' || c2 == '"' || c2 == ';') {
-                DISCARD_LOOKAHEAD(port);
-                cdr = read_sexpression(port);
-                if (NULLP(list_tail))
-                    SigScm_Error(".(dot) at the start of the list.");
+            /* Since expressions that beginning with a dot are limited to '.',
+             * '...' and numbers in R5RS (See "7.1.1 Lexical structure"), fixed
+             * size buffer can safely buffer them.
+             */
+            read_token(port, dot_buf, sizeof(dot_buf), DELIMITER_CHARS);
 
+            if (dot_buf[1] == '\0') {
+#if !SCM_STRICT_R5RS
+                /* Although implicit delimiter around the dot is allowd by
+                 * R5RS, some other implementation doesn't parse so
+                 * (e.g. '("foo"."bar") is parsed as 3 element list which 2nd
+                 * elem is dot as symbol). To avoid introducing such
+                 * incompatibility problem into codes of SigScheme users,
+                 * require explicit whitespace around the dot.
+                 */
+                c = SCM_PORT_PEEK_CHAR(port);
+                if (!strchr(WHITESPACE_CHARS, c))
+                    ERR("implicit dot delimitation is disabled to avoid compatibility problem");
+#endif
+                if (NULLP(lst))
+                    ERR(".(dot) at the start of the list");
+
+                cdr = read_sexpression(port);
                 c = skip_comment_and_space(port);
                 DISCARD_LOOKAHEAD(port);
                 if (c != ')')
-                    SigScm_Error("bad dot syntax");
+                    ERR("bad dot syntax");
 
-                SET_CDR(list_tail, cdr);
-                return list_head;
+                SCM_QUEUE_TERMINATE(q, cdr);
+                return lst;
+            } else if (strcmp(dot_buf, "...") == 0) {
+                elm = Scm_Intern(dot_buf);
+            } else {
+                ERR("bad dot syntax");
             }
-
-            /*
-             * This dirty hack here picks up the current token as a
-             * symbol beginning with the dot (that's how Guile and
-             * Gauche behave).
-             */
-            SCM_PORT_UNGETC(port, c2);
-            token = read_word(port);
-            token = (char*)realloc(token, strlen(token) + 1 + 1);
-            memmove(token + 1, token, strlen(token)+1);
-            token[0] = '.';
-            item = Scm_Intern(token);
-            free(token);
         } else {
-            SCM_PORT_UNGETC(port, c);
-            item = read_sexpression(port);
-        }
-
-        /* Append item to the list_tail. */
-        if (NULLP(list_tail)) {
-            /* create new list */
-            list_head = CONS(item, SCM_NULL);
-            list_tail = list_head;
-        } else {
-            /* update list_tail */
-            SET_CDR(list_tail, CONS(item, SCM_NULL));
-            list_tail = CDR(list_tail);
+            elm = read_sexpression(port);
         }
     }
 }

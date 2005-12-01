@@ -134,6 +134,15 @@
     (assert-error test-name (lambda ()
                               (string-read str)))))
 
+(define assert-parseable
+  (lambda (test-name str)
+    (assert-true test-name (guard (err
+                                   (else
+                                    #f))
+                             (lambda ()
+                               (string-read str)
+                               #t)))))
+
 ;;
 ;; misc
 ;;

@@ -35,7 +35,7 @@
 
 (load "./test/unittest.scm")
 
-;; All tests in this file are passed against r2300 (new repository)
+;; All tests in this file are passed against r2302 (new repository)
 
 ;; See "7.1 Formal syntax" of R5RS
 
@@ -122,5 +122,53 @@
 (assert-true "integer" (integer? (string-read "#d-1")))
 (assert-true "integer" (integer? (string-eval "'#d+1")))
 (assert-true "integer" (integer? (string-eval "'#d-1")))
+
+(assert-parse-error "invalid dot pair" "( . )")
+(assert-parse-error "invalid dot pair" "( . \"foo\")")
+(assert-parse-error "invalid dot pair" "( . \"foo\" \"bar\")")
+(assert-parse-error "invalid dot pair" "(\"foo\" . )")
+(assert-parse-error "invalid dot pair" "(\"foo\" \"bar\" . )")
+(assert-parse-error "invalid dot pair" "(\"foo\" . \"bar\" \"baz\")")
+(assert-parse-error "invalid dot pair" "(\"foo\" \"bar\" . \"baz\" \"quux\")")
+
+(assert-parse-error "invalid dot pair without left space" "(. )")
+(assert-parse-error "invalid dot pair without left space" "(. \"foo\")")
+(assert-parse-error "invalid dot pair without left space" "(. \"foo\" \"bar\")")
+(assert-parse-error "invalid dot pair without left space" "(\"foo\". )")
+(assert-parse-error "invalid dot pair without left space" "(\"foo\" \"bar\". )")
+(assert-parse-error "invalid dot pair without left space" "(\"foo\". \"bar\" \"baz\")")
+(assert-parse-error "invalid dot pair without left space" "(\"foo\" \"bar\". \"baz\" \"quux\")")
+
+(assert-parseable "dot pair" "(\"foo\" . \"bar\")")
+(assert-parseable "dot pair" "(\"foo\" \"bar\" . \"baz\")")
+
+(assert-parseable "dot pair without left space" "(\"foo\". \"bar\")")
+(assert-parseable "dot pair without left space" "(\"foo\" \"bar\". \"baz\")")
+
+(let ((assert (if (and (provided? "sigscheme")
+                       (not (provided? "strict-r5rs")))
+                  assert-parse-error
+                  assert-parseable)))
+  (assert "invalid dot pair without right space" "( .)")
+  (assert "invalid dot pair without right space" "( .\"foo\")")
+  (assert "invalid dot pair without right space" "( .\"foo\" \"bar\")")
+  (assert "invalid dot pair without right space" "(\"foo\" .)")
+  (assert "invalid dot pair without right space" "(\"foo\" \"bar\" .)")
+  (assert "invalid dot pair without right space" "(\"foo\" .\"bar\" \"baz\")")
+  (assert "invalid dot pair without right space" "(\"foo\" \"bar\" .\"baz\" \"quux\")")
+
+  (assert "invalid dot pair without both space" "(.)")
+  (assert "invalid dot pair without both space" "(.\"foo\")")
+  (assert "invalid dot pair without both space" "(.\"foo\" \"bar\")")
+  (assert "invalid dot pair without both space" "(\"foo\".)")
+  (assert "invalid dot pair without both space" "(\"foo\" \"bar\".)")
+  (assert "invalid dot pair without both space" "(\"foo\".\"bar\" \"baz\")")
+  (assert "invalid dot pair without both space" "(\"foo\" \"bar\".\"baz\" \"quux\")")
+
+  (assert "dot pair without right space" "(\"foo\" .\"bar\")")
+  (assert "dot pair without right space" "(\"foo\" \"bar\" .\"baz\")")
+
+  (assert "dot pair without both space" "(\"foo\".\"bar\")")
+  (assert "dot pair without both space" "(\"foo\" \"bar\".\"baz\")"))
 
 (total-report)
