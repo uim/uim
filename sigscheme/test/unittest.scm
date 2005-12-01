@@ -156,5 +156,10 @@
     (let ((port (open-input-string str)))
       (read port))))
 
+(define string-eval
+  (lambda (str)
+    (eval (string-read str)
+          (interaction-environment))))
+
 (define (eval-counter n)
   (list 'eval-counter (+ n 1)))
