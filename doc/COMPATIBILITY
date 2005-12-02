@@ -57,6 +57,22 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Update helper protocol about commit_string.
+Affects: Bridge developers, Helper program developers
+Updates: Helper protocol
+Version: 1.0.0
+Revision: ac2314
+Date: 2005-12-02
+Modifier: Etsushi Kato
+Related:
+URL:
+Changes:
+  (update) "commit_string"
+Description:
+  Charset is now required to be specified with "commit_string"
+  message.  For backward compatibility, each bridge should handle the
+  message as UTF-8 if charset specifier is not available.
+------------------------------------------------------------------------------
 Summary: Removal of obsolete constant definitions
 Affects: Bridge developers, Helper program developers
 Updates: C API
