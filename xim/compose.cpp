@@ -58,7 +58,6 @@
 
 static int parse_line(char *line, char **argv, int argsize);
 static unsigned int KeySymToUcs4(KeySym keysym);
-static int mb_string_to_utf8(char *utf8, const char *str, int to_len, const char *enc);
 
 Compose::Compose(DefTree *top, XimIC *xic)
 {
@@ -1142,7 +1141,7 @@ KeySymToUcs4(KeySym keysym)
 	return 0;
 }
 
-static int
+int
 mb_string_to_utf8(char *utf8, const char *str, int len, const char *enc) {
     size_t outbufsize = len + 1;
     const char *inbuf;

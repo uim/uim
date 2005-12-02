@@ -342,7 +342,7 @@ protocol within uim.
     This message commits a string to currently focused context. See also
     focus_in.
     
-    commit_string = "commit_string\n" str_to_commit "\n"
+    commit_string = "commit_string\n" charset_specifier str_to_commit "\n"
     str_to_commit = /^[^\n]+$/
 
 
