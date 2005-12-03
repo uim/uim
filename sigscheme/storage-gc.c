@@ -393,6 +393,10 @@ static void gc_mark_and_sweep(void)
 
 static void mark_obj(ScmObj obj)
 {
+#if SCM_OBJ_COMPACT
+    /* TODO : Implement Here! */
+    ;
+#else /* SCM_OBJ_COMPACT */
     int i = 0;
 
 mark_loop:
@@ -443,6 +447,7 @@ mark_loop:
     default:
         break;
     }
+#endif /* SCM_OBJ_COMPACT */
 }
 
 static void finalize_protected_var(void)
