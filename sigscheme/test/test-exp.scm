@@ -267,6 +267,9 @@
 (assert-error  "let invalid form #8"
                (lambda ()
                  (let ((a  1)) . a)))
+(assert-error  "let invalid form #9"
+               (lambda ()
+                 (let (1) #t)))
 
 (assert-equal? "basic let test1" 0 (let ((n 0))
 				 n))
@@ -337,6 +340,9 @@
 (assert-error  "let* invalid form #8"
                (lambda ()
                  (let* ((a  1)) . a)))
+(assert-error  "let invalid form #9"
+               (lambda ()
+                 (let* (1) #t)))
 
 (assert-equal? "basic let* test1" 70 (let ((x 2) (y 3))
 				    (let* ((x 7)
@@ -370,6 +376,9 @@
 (assert-error  "letrec invalid form #8"
                (lambda ()
                  (letrec ((a  1)) . a)))
+(assert-error  "let invalid form #9"
+               (lambda ()
+                 (letrec (1) #t)))
 
 (assert-equal? "basic letrec test1" #t (letrec ((even?
 					   (lambda (n)
