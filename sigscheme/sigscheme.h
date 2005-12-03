@@ -85,7 +85,6 @@ extern "C" {
     ((cond) || SigScm_Die("assertion failed.", __FILE__, __LINE__))
 
 #define SCM_ERROBJP(obj)       (NFALSEP(ScmOp_error_objectp(obj)))
-#define SCM_LISTP(obj)         (CONSP(obj) || NULLP(obj))
 
 #define SCM_SYMBOL_BOUNDP(sym) (!SCM_EQ(SCM_SYMBOL_VCELL(sym), SCM_UNBOUND))
 
@@ -102,6 +101,7 @@ extern "C" {
 #define SCM_LIST_5(elm0, elm1, elm2, elm3, elm4) \
     (SCM_CONS((elm0), SCM_LIST_4((elm1), (elm2), (elm3), (elm4))))
 
+#define SCM_LISTP(obj)    (SCM_CONSP(obj) || SCM_NULLP(obj))
 #define SCM_LIST_1_P(lst) (SCM_CONSP(lst) && SCM_NULLP(SCM_CDR(lst)))
 #define SCM_LIST_2_P(lst) (SCM_CONSP(lst) && SCM_LIST_1_P(SCM_CDR(lst)))
 #define SCM_LIST_3_P(lst) (SCM_CONSP(lst) && SCM_LIST_2_P(SCM_CDR(lst)))

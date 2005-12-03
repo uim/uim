@@ -141,11 +141,6 @@ extern ScmObj *scm_stack_start_pointer;
 #define LIST_3         SCM_LIST_3
 #define LIST_4         SCM_LIST_4
 #define LIST_5         SCM_LIST_5
-#define LIST_1_P       SCM_LIST_1_P
-#define LIST_2_P       SCM_LIST_2_P
-#define LIST_3_P       SCM_LIST_3_P
-#define LIST_4_P       SCM_LIST_4_P
-#define LIST_5_P       SCM_LIST_5_P
 
 #define DEREF          SCM_DEREF
 #define SET            SCM_SET
@@ -176,7 +171,13 @@ extern ScmObj *scm_stack_start_pointer;
 #define C_FUNCPOINTERP SCM_C_FUNCPOINTERP
 #define ENVP           SCM_ENVP
 #define ERROBJP        SCM_ERROBJP
+
 #define LISTP          SCM_LISTP
+#define LIST_1_P       SCM_LIST_1_P
+#define LIST_2_P       SCM_LIST_2_P
+#define LIST_3_P       SCM_LIST_3_P
+#define LIST_4_P       SCM_LIST_4_P
+#define LIST_5_P       SCM_LIST_5_P
 
 #define CDBG           SCM_CDBG
 #define DBG            SCM_DBG
