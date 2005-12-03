@@ -530,20 +530,36 @@ static ScmObj read_string(ScmObj port)
 
 static ScmObj read_symbol(ScmObj port)
 {
-    char  *sym_name = read_word(port);
-    ScmObj sym = Scm_Intern(sym_name);
-    free(sym_name);
-
+    ScmObj sym;
+    size_t offset, tail_len;
+    int err;
+    ScmLBuf(char) lbuf;
+    char init_buf[SCM_INITIAL_SYMBOL_BUF_SIZE];
+ 
     CDBG((SCM_DBG_PARSER, "read_symbol"));
 
+    LBUF_INIT(lbuf, init_buf, sizeof(init_buf));
+ 
+    for (offset = 0;;) {
+        tail_len = read_token(port, &err,
+                              &LBUF_BUF(lbuf)[offset],
+                              LBUF_SIZE(lbuf) - offset,
+                              DELIMITER_CHARS);
+        if (err != TOKEN_BUF_EXCEEDED)
+            break;
+        offset += tail_len;
+        LBUF_EXTEND(lbuf, SCM_LBUF_F_SYMBOL, LBUF_SIZE(lbuf) + MB_MAX_SIZE);
+    }
+ 
+    sym = Scm_Intern(LBUF_BUF(lbuf));
+    LBUF_FREE(lbuf);
+ 
     return sym;
 }
 
 static ScmObj read_number_or_symbol(ScmObj port)
 {
-    int err;
-    int c, str_len;
-    char *str = NULL;
+    int c, err;
     size_t len;
     char buf[INT_LITERAL_LEN_MAX + sizeof((char)'\0')];
 
@@ -577,11 +593,7 @@ static ScmObj read_number_or_symbol(ScmObj port)
             ERR("invalid identifier: %s", buf);
     }
 
-    str = read_word(port);
-    str_len = strlen(str);
-
-    /* FIXME: leak */
-    return Scm_Intern(str);
+    return read_symbol(port);
 }
 
 
