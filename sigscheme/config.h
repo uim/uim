@@ -87,6 +87,17 @@
 #define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
 
 /*===========================================================================
+  Tunings
+===========================================================================*/
+/* on-stack initial token buffer size for parser */
+#define SCM_INITIAL_STRING_BUF_SIZE 64
+#define SCM_INITIAL_SYMBOL_BUF_SIZE 64
+
+/* token buffer size extender function */
+#define SCM_LBUF_F_STRING LBUF_F_LINEAR
+#define SCM_LBUF_F_SYMBOL LBUF_F_LINEAR
+
+/*===========================================================================
   Debugging
 ===========================================================================*/
 #define SCM_DEBUG               1  /* enable debugging features */

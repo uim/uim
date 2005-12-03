@@ -73,13 +73,13 @@ enum LexerState {
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+#define MB_MAX_SIZE (SCM_MB_MAX_LEN + sizeof((char)'\0'))
+
 /* can accept "backspace" of R5RS and "U0010FFFF" of SRFI-75 */
 #define CHAR_LITERAL_LEN_MAX (sizeof("backspace") - sizeof((char)'\0'))
 
 /* #b-010101... */
 #define INT_LITERAL_LEN_MAX  (sizeof("-") + sizeof(int) * CHAR_BIT - sizeof((char)'\0'))
-
-#define INITIAL_STRING_BUF_SIZE 1024
 
 #define WHITESPACE_CHARS " \t\n\r\v\f"
 #define DELIMITER_CHARS  "()\";" WHITESPACE_CHARS
@@ -448,30 +448,32 @@ static ScmObj read_string(ScmObj port)
     ScmObj obj;
     const ScmSpecialCharInfo *info;
     int c;
-    size_t bufsize;
-    char *p, *buf;
-    char autobuf[INITIAL_STRING_BUF_SIZE];
+    size_t offset;
+    char *p;
+    ScmLBuf(char) lbuf;
+    char init_buf[SCM_INITIAL_STRING_BUF_SIZE];
 
     CDBG((SCM_DBG_PARSER, "read_string"));
 
-    buf = autobuf;
-    bufsize = sizeof(autobuf);
-    for (p = buf; p < &buf[bufsize];) {
+    LBUF_INIT(lbuf, init_buf, sizeof(init_buf));
+
+    for (offset = 0, p = LBUF_BUF(lbuf);; offset = p - LBUF_BUF(lbuf)) {
         c = SCM_PORT_GET_CHAR(port);
 
         CDBG((SCM_DBG_PARSER, "read_string c = %c", c));
 
         switch (c) {
         case EOF:
+            LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + 1);
             *p = '\0';
-            ERR("EOF in string: \"%s<eof>", buf);
+            ERR("EOF in string: \"%s<eof>", LBUF_BUF(lbuf));
             break;
 
         case '\"':
+            LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + 1);
             *p = '\0';
-            obj = Scm_NewImmutableStringCopying(buf);
-            if (buf != autobuf)
-                free(buf);
+            obj = Scm_NewImmutableStringCopying(LBUF_BUF(lbuf));
+            LBUF_FREE(lbuf);
             return obj;
 
         case '\\':
@@ -479,6 +481,8 @@ static ScmObj read_string(ScmObj port)
 #if SCM_USE_SRFI75
             if (strchr("xuU", c)) {
                 c = read_unicode_sequence(port, c);
+                LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + MB_MAX_SIZE);
+                p = &LBUF_BUF(lbuf)[offset];
                 /* FIXME: check Unicode capability of Scm_current_char_codec */
                 p = SCM_CHARCODEC_INT2STR(Scm_current_char_codec,
                                           p, c, SCM_MB_STATELESS);
@@ -491,6 +495,8 @@ static ScmObj read_string(ScmObj port)
                 /* escape sequences */
                 for (info = Scm_special_char_table; info->esc_seq; info++) {
                     if (strlen(info->esc_seq) == 2 && c == info->esc_seq[1]) {
+                        LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + 1);
+                        p = &LBUF_BUF(lbuf)[offset];
                         *p++ = info->code;
                         goto found;
                     }
@@ -501,6 +507,8 @@ static ScmObj read_string(ScmObj port)
             break;
 
         default:
+            LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + MB_MAX_SIZE);
+            p = &LBUF_BUF(lbuf)[offset];
             /* FIXME: support stateful encoding */
             p = SCM_CHARCODEC_INT2STR(Scm_current_char_codec,
                                       p, c, SCM_MB_STATELESS);
@@ -509,8 +517,8 @@ static ScmObj read_string(ScmObj port)
             break;
         }
     }
-    buf[bufsize - 1] = '\0';
-    ERR("too long string: \"%s\"", buf);
+    LBUF_END(lbuf)[-1] = '\0';
+    ERR("too long string: \"%s\"", LBUF_BUF(lbuf));
     /* NOTREACHED */
 }
 
