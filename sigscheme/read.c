@@ -73,6 +73,8 @@ enum LexerState {
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+#define TOKEN_BUF_EXCEEDED (~0UL)
+
 #define MB_MAX_SIZE (SCM_MB_MAX_LEN + sizeof((char)'\0'))
 
 /* can accept "backspace" of R5RS and "U0010FFFF" of SRFI-75 */
@@ -427,6 +429,9 @@ static ScmObj read_char(ScmObj port)
 
     buf[0] = c;
     len = read_token(port, &buf[1], sizeof(buf) - 1, DELIMITER_CHARS);
+    if (len == TOKEN_BUF_EXCEEDED)
+        ERR("invalid character literal");
+
     CDBG((SCM_DBG_PARSER, "read_char : ch = %s", buf));
 
 #if SCM_USE_SRFI75
@@ -537,6 +542,7 @@ static ScmObj read_number_or_symbol(ScmObj port)
 {
     int c, str_len;
     char *str = NULL;
+    size_t len;
     char buf[INT_LITERAL_LEN_MAX + sizeof((char)'\0')];
 
     CDBG((SCM_DBG_PARSER, "read_number_or_symbol"));
@@ -548,7 +554,9 @@ static ScmObj read_number_or_symbol(ScmObj port)
             return read_number(port, 'd');
 
         if (c == '+' || c == '-') {
-            read_token(port, buf, sizeof(buf), DELIMITER_CHARS);
+            len = read_token(port, buf, sizeof(buf), DELIMITER_CHARS);
+            if (len == TOKEN_BUF_EXCEEDED)
+                ERR("invalid number literal");
             if (!buf[1])
                 return Scm_Intern(buf);
             return parse_number(port, buf, sizeof(buf), 'd');
@@ -631,6 +639,8 @@ static size_t read_token(ScmObj port,
             *p++ = c;
         } else {
 #if SCM_USE_SRFI75
+            if (&buf[buf_size] <= p + SCM_MB_MAX_LEN)
+                break;
             /* FIXME: check Unicode capability of Scm_current_char_codec */
             p = SCM_CHARCODEC_INT2STR(Scm_current_char_codec,
                                       p, c, SCM_MB_STATELESS);
@@ -639,7 +649,7 @@ static size_t read_token(ScmObj port,
 #endif
         }
     }
-    ERR("token buffer exceeded");
+    return TOKEN_BUF_EXCEEDED;
 }
 
 static ScmObj read_quote(ScmObj port, ScmObj quoter)
@@ -649,9 +659,12 @@ static ScmObj read_quote(ScmObj port, ScmObj quoter)
 
 static ScmObj read_number(ScmObj port, char prefix)
 {
+    size_t len;
     char buf[INT_LITERAL_LEN_MAX + sizeof((char)'\0')];
 
-    read_token(port, buf, sizeof(buf), DELIMITER_CHARS);
+    len = read_token(port, buf, sizeof(buf), DELIMITER_CHARS);
+    if (len == TOKEN_BUF_EXCEEDED)
+        ERR("invalid number literal");
 
     return parse_number(port, buf, sizeof(buf), prefix);
 }
