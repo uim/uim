@@ -252,9 +252,13 @@
 (assert-error  "let invalid form #3"
                (lambda ()
                  (let (a 1))))
-(assert-error  "let invalid form #4"
-               (lambda ()
-                 (let ((a)))))
+(if (provided? "siod-bugs")
+    (assert-equal? "let invalid form #4"
+                   (undef)
+                   (let ((a))))
+    (assert-error  "let invalid form #4"
+                   (lambda ()
+                     (let ((a))))))
 (assert-error  "let invalid form #5"
                (lambda ()
                  (let ((a 1 'excessive)))))
@@ -325,9 +329,13 @@
 (assert-error  "let* invalid form #3"
                (lambda ()
                  (let* (a 1))))
-(assert-error  "let* invalid form #4"
-               (lambda ()
-                 (let* ((a)))))
+(if (provided? "siod-bugs")
+    (assert-equal? "let* invalid form #4"
+                   (undef)
+                   (let* ((a))))
+    (assert-error  "let* invalid form #4"
+                   (lambda ()
+                     (let* ((a))))))
 (assert-error  "let* invalid form #5"
                (lambda ()
                  (let* ((a 1 'excessive)))))
@@ -361,9 +369,13 @@
 (assert-error  "letrec invalid form #3"
                (lambda ()
                  (letrec (a 1))))
-(assert-error  "letrec invalid form #4"
-               (lambda ()
-                 (letrec ((a)))))
+(if (provided? "siod-bugs")
+    (assert-equal? "letrec invalid form #4"
+                   (undef)
+                   (letrec ((a))))
+    (assert-error  "letrec invalid form #4"
+                   (lambda ()
+                     (letrec ((a))))))
 (assert-error  "letrec invalid form #5"
                (lambda ()
                  (letrec ((a 1 'excessive)))))

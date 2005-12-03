@@ -211,6 +211,9 @@ static void SigScm_Initialize_internal(void)
 #if SCM_STRICT_R5RS
     ScmOp_provide(Scm_NewImmutableStringCopying("strict-r5rs"));
 #endif
+#if SCM_COMPAT_SIOD_BUGS
+    ScmOp_provide(Scm_NewImmutableStringCopying("siod-bugs"));
+#endif
     scm_initialized = TRUE;
 }
 
