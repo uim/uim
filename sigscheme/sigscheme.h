@@ -102,6 +102,12 @@ extern "C" {
 #define SCM_LIST_5(elm0, elm1, elm2, elm3, elm4) \
     (SCM_CONS((elm0), SCM_LIST_4((elm1), (elm2), (elm3), (elm4))))
 
+#define SCM_LIST_1_P(lst) (SCM_CONSP(lst) && SCM_NULLP(SCM_CDR(lst)))
+#define SCM_LIST_2_P(lst) (SCM_CONSP(lst) && SCM_LIST_1_P(SCM_CDR(lst)))
+#define SCM_LIST_3_P(lst) (SCM_CONSP(lst) && SCM_LIST_2_P(SCM_CDR(lst)))
+#define SCM_LIST_4_P(lst) (SCM_CONSP(lst) && SCM_LIST_3_P(SCM_CDR(lst)))
+#define SCM_LIST_5_P(lst) (SCM_CONSP(lst) && SCM_LIST_4_P(SCM_CDR(lst)))
+
 #define SCM_EVAL(obj, env) (Scm_eval((obj), (env)))
 
 #if SCM_GCC4_READY_GC
