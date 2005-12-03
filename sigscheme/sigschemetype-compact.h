@@ -57,11 +57,15 @@
  *     finalization semantics without a pointer.
  *
  *       S->car             Type              content of S->car
- *     --------------------------------------------------------
- *     ........|G : All                 : LSB is used to GC mark information.
+ *     ---------------------------------------------------------------
+ *     ......|I|G : String              : I bit is used to represent mutable or immutable string.
+ *                                        G bit is used to GC mark information.
+ *                                        The other part is used to store str ptr value.
+ *     ........|G : Otherwise           : LSB is used to GC mark information.
  *                                        In the other part, the value of each type is stored.
  *
  *       S->cdr             Type              content of S->cdr
+ *     ---------------------------------------------------------------
  *     .....|00|1 : Symbol              : symbol name
  *     .....|01|1 : String              : string length
  *     .....|10|1 : Vector              : vector length
@@ -105,7 +109,7 @@
  *     Symbol
  *         name (char*)        : 8
  *     String
- *         str (char*)         : 2
+ *         str (char*)         : 4
  *     Vector
  *         vec (ScmObj*)       : 2
  *     Port
@@ -220,6 +224,11 @@ enum ScmReturnType {
 struct ScmEvalState_ {
     ScmObj env;
     enum ScmReturnType ret_type;
+};
+
+enum ScmStrMutationType {
+    SCM_STR_IMMUTABLE           = 0,
+    SCM_STR_MUTABLE             = 1
 };
 
 /*=======================================
@@ -501,20 +510,34 @@ struct ScmEvalState_ {
 #define SCM_CDAR(a)                      (SCM_CDR(SCM_CAR(a)))
 #define SCM_CDDR(a)                      (SCM_CDR(SCM_CDR(a)))
 
+
 #define SCM_CLOSURE_EXP(a)               (SCM_CAR_GET_VALUE_AS_OBJ(a))
 #define SCM_CLOSURE_ENV(a)               (SCM_CDR_GET_VALUE_AS_OBJ(a))
 #define SCM_CLOSURE_SET_EXP(a, exp)      (SCM_CAR_SET_VALUE_AS_OBJ((a), (exp)))
 #define SCM_CLOSURE_SET_ENV(a, env)      (SCM_CDR_SET_VALUE_AS_OBJ((a), (env)))
+
 
 #define SCM_SYMBOL_VCELL(a)              (SCM_CAR_GET_VALUE_AS_OBJ(a))
 #define SCM_SYMBOL_NAME(a)               (SCM_CDR_GET_VALUE_AS_STR((a), ~SCM_TAG_OTHERS_MASK_SYMBOL))
 #define SCM_SYMBOL_SET_VCELL(a, vcell)   (SCM_CAR_SET_VALUE_AS_OBJ((a), (vcell)))
 #define SCM_SYMBOL_SET_NAME(a, name)     (SCM_CDR_SET_VALUE_AS_STR((a), (name), SCM_TAG_OTHERS_SYMBOL))
 
-#define SCM_STRING_LEN(a)                (SCM_CAR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_STRING))
-#define SCM_STRING_STR(a)                (SCM_CDR_GET_VALUE_AS_STR((a), ~SCM_TAG_OTHERS_MASK_STRING))
-#define SCM_STRING_SET_LEN(a, len)       (SCM_CAR_SET_VALUE_AS_INT((a), (len), SCM_TAG_OTHERS_VALUE_OFFSET_STRING))
-#define SCM_STRING_SET_STR(a, str)       (SCM_CDR_SET_VALUE_AS_STR((a), (str), SCM_TAG_OTHERS_STRING))
+
+/* 2nd lowest bit of S->car is used to represent mutation type (mutable or immutable). */
+#define SCM_STRING_MUTATION_TYPE_OFFSET  1
+#define SCM_STRING_MUTATION_TYPE_MASK    (0x1 << SCM_STRING_MUTATION_TYPE_OFFSET)
+#define SCM_STRING_STR_VALUE_MASK        ~(SCM_STRING_MUTATION_TYPE_MASK | SCM_GCBIT_MASK)
+
+#define SCM_STRING_MUTATION_TYPE(a)      ((enum ScmStrMutationType)((SCM_CAST_UINT(SCM_GET_DIRECT_CAR(a)) & SCM_STRING_MUTATION_TYPE_MASK) >> SCM_STRING_MUTATION_TYPE_OFFSET))
+#define SCM_STRING_SET_MUTABLE(a)        (SCM_SET_DIRECT_CAR((a), ((SCM_CAST_UINT(SCM_GET_DIRECT_CAR(a)) | (SCM_STR_MUTABLE << SCM_STRING_MUTATION_TYPE_OFFSET)))))
+#define SCM_STRING_SET_IMMUTABLE(a)      (SCM_SET_DIRECT_CAR((a), (SCM_CAST_UINT(SCM_GET_DIRECT_CAR(a)) & ~SCM_STRING_MUTATION_TYPE_MASK)))
+
+#define SCM_STRING_LEN(a)                (SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_STRING))
+#define SCM_STRING_STR(a)                ((char*)(SCM_CAST_UINT(SCM_CAR_GET_VALUE_AS_STR((a))) & SCM_STRING_STR_VALUE_MASK))
+
+#define SCM_STRING_SET_LEN(a, len)       (SCM_CDR_SET_VALUE_AS_INT((a), (len), SCM_TAG_OTHERS_VALUE_OFFSET_STRING, SCM_TAG_OTHERS_STRING))
+#define SCM_STRING_SET_STR(a, str)       (SCM_CAR_SET_VALUE_AS_STR((a), (SCM_CAST_UINT(str) | (SCM_STRING_MUTATION_TYPE(a) << SCM_STRING_MUTATION_TYPE_OFFSET))))
+
 
 #define SCM_VECTOR_VEC(a)                ((ScmObj*)(SCM_CAR_GET_VALUE_AS_PTR((a))))
 #define SCM_VECTOR_LEN(a)                (SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR))
@@ -525,9 +548,11 @@ struct ScmEvalState_ {
 #define SCM_VECTOR_REF(a, idx)           (SCM_VECTOR_CREF((a), SCM_INT_VALUE(idx)))
 #define SCM_VECTOR_SET_REF(a, idx, b)    (SCM_VECTOR_REF((a), (idx)) = (b))
 
+
 #define SCM_MAKE_VALUEPACKET(vals)       (Scm_NewValuePacket(vals))
 #define SCM_VALUEPACKET_VALUES(a)        (SCM_CAR_GET_VALUE_AS_OBJ(a))
 #define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_CAR_SET_VALUE_AS_OBJ((a), (v)))
+
 
 /*
  * GCC4.0 doesn't align the address of function, so we need to store LSB of the function
@@ -556,18 +581,22 @@ struct ScmEvalState_ {
                            || SCM_CLOSUREP(a)                                \
                            || SCM_CONTINUATIONP(a))
 
+
 #define SCM_PORT_IMPL(a)                 ((ScmCharPort*)SCM_CAR_GET_VALUE_AS_PTR(a))
 #define SCM_PORT_FLAG(a)                 ((enum ScmPortFlag)SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_PORT))
 #define SCM_PORT_SET_IMPL(a, impl)       (SCM_CAR_SET_VALUE_AS_PTR((a), (ScmObj)(impl)))
 #define SCM_PORT_SET_FLAG(a, flag)       (SCM_CDR_SET_VALUE_AS_INT((a), (flag), SCM_TAG_OTHERS_VALUE_OFFSET_PORT, SCM_TAG_OTHERS_PORT))
+
 
 #define SCM_CONTINUATION_OPAQUE(a)          ((void*)SCM_CAR_GET_VALUE_AS_PTR(a))
 #define SCM_CONTINUATION_TAG(a)             (SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION))
 #define SCM_CONTINUATION_SET_OPAQUE(a, val) (SCM_CAR_SET_VALUE_AS_PTR((a), (val)))
 #define SCM_CONTINUATION_SET_TAG(a, val)    (SCM_CDR_SET_VALUE_AS_INT((a), (val), SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION, SCM_TAG_OTHERS_CONTINUATION))
 
+
 #define SCM_C_POINTER_VALUE(a)              ((void*)SCM_CAR_GET_VALUE_AS_PTR(a))
 #define SCM_C_POINTER_SET_VALUE(a, val)     (SCM_CAR_SET_VALUE_AS_PTR((a), (val)))
+
 
 /*
  * GCC4.0 doesn't align the address of function, so we need to store LSB of the function

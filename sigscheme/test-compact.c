@@ -316,7 +316,6 @@ ScmObj Scm_CheckChar(char *ch)
     return obj;
 }
 
-#if 0
 ScmObj Scm_CheckStringCopying(char *str)
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
@@ -339,6 +338,18 @@ ScmObj Scm_CheckStringCopying(char *str)
     check_type(ScmString, obj);
     SCM_ASSERT(strlen(str) == SCM_STRING_LEN(obj));
 
+    SCM_STRING_SET_MUTABLE(obj);
+    SCM_ASSERT(SCM_STRING_MUTATION_TYPE(obj) == SCM_STR_MUTABLE);
+    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    check_type(ScmString, obj);
+    SCM_ASSERT(strlen(str) == SCM_STRING_LEN(obj));
+
+    SCM_STRING_SET_IMMUTABLE(obj);
+    SCM_ASSERT(SCM_STRING_MUTATION_TYPE(obj) == SCM_STR_IMMUTABLE);
+    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    check_type(ScmString, obj);
+    SCM_ASSERT(strlen(str) == SCM_STRING_LEN(obj)); 
+
     /* marked state */
     SCM_DO_MARK(obj);
     SCM_ASSERT(SCM_IS_MARKED(obj));
@@ -353,9 +364,20 @@ ScmObj Scm_CheckStringCopying(char *str)
     check_type(ScmString, obj);
     SCM_ASSERT(strlen(str) == SCM_STRING_LEN(obj));
 
+    SCM_STRING_SET_MUTABLE(obj);
+    SCM_ASSERT(SCM_STRING_MUTATION_TYPE(obj) == SCM_STR_MUTABLE);
+    SCM_ASSERT(SCM_IS_MARKED(obj));
+    check_type(ScmString, obj);
+    SCM_ASSERT(strlen(str) == SCM_STRING_LEN(obj));
+
+    SCM_STRING_SET_IMMUTABLE(obj);
+    SCM_ASSERT(SCM_STRING_MUTATION_TYPE(obj) == SCM_STR_IMMUTABLE);
+    SCM_ASSERT(SCM_IS_MARKED(obj));
+    check_type(ScmString, obj);
+    SCM_ASSERT(strlen(str) == SCM_STRING_LEN(obj)); 
+
     return obj;
 }
-#endif
 
 ScmObj Scm_CheckFunc()
 {
@@ -733,9 +755,7 @@ int main(void)
     Scm_CheckCons();
     Scm_CheckSymbol("aiueo");
     Scm_CheckChar("a");
-#if 0
     Scm_CheckStringCopying("aiueo");
-#endif
     Scm_CheckClosure();
     Scm_CheckFunc();
     Scm_CheckVector(5);
