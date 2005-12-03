@@ -73,7 +73,8 @@ enum LexerState {
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define TOKEN_BUF_EXCEEDED (~0UL)
+#define OK 0
+#define TOKEN_BUF_EXCEEDED -1
 
 #define MB_MAX_SIZE (SCM_MB_MAX_LEN + sizeof((char)'\0'))
 
@@ -103,7 +104,7 @@ enum LexerState {
 static int    skip_comment_and_space(ScmObj port);
 static void   read_sequence(ScmObj port, char *buf, int len);
 static char*  read_word(ScmObj port);
-static size_t read_token(ScmObj port,
+static size_t read_token(ScmObj port, int *err,
                          char *buf, size_t buf_size, const char *delim);
 #if SCM_USE_SRFI75
 static int    parse_unicode_sequence(const char *seq, int len);
@@ -285,7 +286,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
     ScmQueue q;
     ScmBaseCharPort *basecport;
     int start_line, cur_line;
-    int c;
+    int c, err;
     char dot_buf[sizeof("...")];
 
     CDBG((SCM_DBG_PARSER, "read_list"));
@@ -315,7 +316,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
              * '...' and numbers in R5RS (See "7.1.1 Lexical structure"), fixed
              * size buffer can safely buffer them.
              */
-            read_token(port, dot_buf, sizeof(dot_buf), DELIMITER_CHARS);
+            read_token(port, &err, dot_buf, sizeof(dot_buf), DELIMITER_CHARS);
 
             if (dot_buf[1] == '\0') {
 #if !SCM_STRICT_R5RS
@@ -409,7 +410,7 @@ static int read_unicode_sequence(ScmObj port, char prefix)
 
 static ScmObj read_char(ScmObj port)
 {
-    int c, next;
+    int c, next, err;
 #if SCM_USE_SRFI75
     int unicode;
 #endif
@@ -428,8 +429,8 @@ static ScmObj read_char(ScmObj port)
 #endif
 
     buf[0] = c;
-    len = read_token(port, &buf[1], sizeof(buf) - 1, DELIMITER_CHARS);
-    if (len == TOKEN_BUF_EXCEEDED)
+    len = read_token(port, &err, &buf[1], sizeof(buf) - 1, DELIMITER_CHARS);
+    if (err == TOKEN_BUF_EXCEEDED)
         ERR("invalid character literal");
 
     CDBG((SCM_DBG_PARSER, "read_char : ch = %s", buf));
@@ -540,6 +541,7 @@ static ScmObj read_symbol(ScmObj port)
 
 static ScmObj read_number_or_symbol(ScmObj port)
 {
+    int err;
     int c, str_len;
     char *str = NULL;
     size_t len;
@@ -554,8 +556,8 @@ static ScmObj read_number_or_symbol(ScmObj port)
             return read_number(port, 'd');
 
         if (c == '+' || c == '-') {
-            len = read_token(port, buf, sizeof(buf), DELIMITER_CHARS);
-            if (len == TOKEN_BUF_EXCEEDED)
+            len = read_token(port, &err, buf, sizeof(buf), DELIMITER_CHARS);
+            if (err == TOKEN_BUF_EXCEEDED)
                 ERR("invalid number literal");
             if (!buf[1])
                 return Scm_Intern(buf);
@@ -563,7 +565,7 @@ static ScmObj read_number_or_symbol(ScmObj port)
         }
 
         if (c == '.') {
-            read_token(port, buf, sizeof(buf), DELIMITER_CHARS);
+            read_token(port, &err, buf, sizeof(buf), DELIMITER_CHARS);
             if (strcmp(buf, "...") == 0)
                 return Scm_Intern(buf);
             /* TODO: support numeric expressions when the numeric tower is
@@ -612,14 +614,14 @@ static char *read_word(ScmObj port)
     }
 }
 
-static size_t read_token(ScmObj port,
+static size_t read_token(ScmObj port, int *err,
                          char *buf, size_t buf_size, const char *delim)
 {
     int c;
     size_t len;
     char *p;
 
-    for (p = buf; p < &buf[buf_size];) {
+    for (p = buf;;) {
         c = SCM_PORT_PEEK_CHAR(port);
         CDBG((SCM_DBG_PARSER, "c = %c", c));
 
@@ -628,19 +630,23 @@ static size_t read_token(ScmObj port,
                 ERR("unexpected EOF at a token");
         } else {
             if (strchr(delim, c) || c == EOF) {
-                *p = '\0';
-                len = p - buf;
-                return len;
+                *err = OK;
+                break;
             }
         }
 
-        DISCARD_LOOKAHEAD(port);
         if (isascii(c)) {
+            if (p == &buf[buf_size - sizeof((char)'\0')]) {
+                *err = TOKEN_BUF_EXCEEDED;
+                break;
+            }
             *p++ = c;
         } else {
 #if SCM_USE_SRFI75
-            if (&buf[buf_size] <= p + SCM_MB_MAX_LEN)
+            if (&buf[buf_size] <= p + SCM_MB_MAX_LEN) {
+                *err = TOKEN_BUF_EXCEEDED;
                 break;
+            }
             /* FIXME: check Unicode capability of Scm_current_char_codec */
             p = SCM_CHARCODEC_INT2STR(Scm_current_char_codec,
                                       p, c, SCM_MB_STATELESS);
@@ -648,8 +654,12 @@ static size_t read_token(ScmObj port,
             ERR("non-ASCII char in token: 0x%x", c);
 #endif
         }
+        DISCARD_LOOKAHEAD(port);
     }
-    return TOKEN_BUF_EXCEEDED;
+
+    *p = '\0';
+    len = p - buf;
+    return len;
 }
 
 static ScmObj read_quote(ScmObj port, ScmObj quoter)
@@ -659,11 +669,12 @@ static ScmObj read_quote(ScmObj port, ScmObj quoter)
 
 static ScmObj read_number(ScmObj port, char prefix)
 {
+    int err;
     size_t len;
     char buf[INT_LITERAL_LEN_MAX + sizeof((char)'\0')];
 
-    len = read_token(port, buf, sizeof(buf), DELIMITER_CHARS);
-    if (len == TOKEN_BUF_EXCEEDED)
+    len = read_token(port, &err, buf, sizeof(buf), DELIMITER_CHARS);
+    if (err == TOKEN_BUF_EXCEEDED)
         ERR("invalid number literal");
 
     return parse_number(port, buf, sizeof(buf), prefix);
