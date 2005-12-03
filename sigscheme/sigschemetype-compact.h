@@ -56,16 +56,23 @@
  *     S->cdr's G bit is always set to 1, which helps determine the
  *     finalization semantics without a pointer.
  *
- *        S->cdr              Type                content of S->cdr
+ *       S->car             Type              content of S->car
+ *     --------------------------------------------------------
+ *     ........|G : All                 : LSB is used to GC mark information.
+ *                                        In the other part, the value of each type is stored.
+ *
+ *       S->cdr             Type              content of S->cdr
  *     .....|00|1 : Symbol              : symbol name
  *     .....|01|1 : String              : string length
  *     .....|10|1 : Vector              : vector length
  *     ..000|11|1 : Values              : all 0 (for efficiency)
- *     ..001|11|1 : Func                : ScmFuncTypeCode
+ *     ..001|11|1 : Func                : ScmFuncTypeCode and LSB of stored Func address
  *     ..010|11|1 : Port                : ScmPortDirection
  *     ..011|11|1 : Continuation        : tag
  *     ..100|11|1 : C Pointer           : pointer type
  *                                      :   0 = void*, 1 = ScmFuncType
+ *                                      : if pointer type == 1, LSB of func address is
+ *                                      : also stored.
  *     ..101|11|1 : Reserved            :
  *     ..110|11|1 : Reserved            :
  *     ..111|11|1 : FreeCell            : all 0 (for efficiency)
@@ -243,11 +250,13 @@ struct ScmEvalState_ {
 /* #define SCM_TAG_OTHERS_FREECELL                  (0x1 | (0x3 << SCM_GCBIT_WIDTH) | (0x7 << 3)) */
 
 /* offset */
-#define SCM_TAG_OTHERS_VALUE_OFFSET_STRING       (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH)
-#define SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR       (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH)
-#define SCM_TAG_OTHERS_VALUE_OFFSET_FUNC         (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 3)
-#define SCM_TAG_OTHERS_VALUE_OFFSET_PORT         (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 3)
-#define SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 3)
+#define SCM_TAG_OTHERS_VALUE_OFFSET_STRING        (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH)
+#define SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR        (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH)
+#define SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR  (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 3)
+#define SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_FUNCTYPE (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 3 + 1)
+#define SCM_TAG_OTHERS_VALUE_OFFSET_PORT          (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 3)
+#define SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION  (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 3)
+#define SCM_TAG_OTHERS_VALUE_OFFSET_C_FUNCPOINTER_LSBADDR (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 3 + 1)
 
 /*==============================================================================
   Masks Offsets, and Tags : IMM
@@ -500,13 +509,27 @@ struct ScmEvalState_ {
 #define SCM_VALUEPACKET_VALUES(a)        (SCM_CAR_GET_VALUE_AS_OBJ(a))
 #define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_CAR_SET_VALUE_AS_OBJ((a), (v)))
 
-/* FIXME: This is a workaround way, because CAR part overwrites GC bit.
- * How can we deal with this? */
-#define SCM_FUNC_CFUNC(a)                (SCM_WORD_CAST(ScmFuncType, SCM_GET_DIRECT_CAR(a)))
-#define SCM_FUNC_TYPECODE(a)             ((enum ScmFuncTypeCode)SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC))
-#define SCM_FUNC_SET_CFUNC(a, fptr)      (SCM_SET_DIRECT_CAR((a), SCM_WORD_CAST(ScmObj, (fptr))))
-#define SCM_FUNC_SET_TYPECODE(a, code)   (SCM_CDR_SET_VALUE_AS_INT((a), (code), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC, SCM_TAG_OTHERS_FUNC))
-#define SCM_SYNTAXP(a) (SCM_FUNCP(a)                                         \
+/*
+ * GCC4.0 doesn't align the address of function, so we need to store LSB of the function
+ * address to the cdr part.
+ *
+ * FuncAddr = (S->car & ~0x01) | ((S->cdr >> SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR) & 0x1)
+ */
+#define SCM_FUNC_CFUNC_OTHERB(a) (SCM_CAST_UINT(SCM_CAR_GET_VALUE_AS_PTR(a)))
+#define SCM_FUNC_CFUNC_LSB(a)    (SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR) & 0x1)
+#define SCM_FUNC_CFUNC(a)        (SCM_WORD_CAST(ScmFuncType, SCM_FUNC_CFUNC_OTHERB(a) | SCM_FUNC_CFUNC_LSB(a)))
+#define SCM_FUNC_TYPECODE(a)     ((enum ScmFuncTypeCode)SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_FUNCTYPE))
+
+#define SCM_FUNC_SET_CFUNC_LSB(a, val)    (SCM_GET_DIRECT_CDR(a) = \
+                                           (ScmObj)(SCM_CAST_UINT(SCM_GET_DIRECT_CDR(a)) \
+                                                    | ((SCM_CAST_UINT(val) & 0x1) << SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR)))
+#define SCM_FUNC_SET_CFUNC_OTHERB(a, val) (SCM_CAR_SET_VALUE_AS_PTR((a), SCM_WORD_CAST(ScmObj, (val))))
+#define SCM_FUNC_SET_CFUNC(a, fptr)       (SCM_FUNC_SET_CFUNC_OTHERB((a), SCM_CAST_UINT(fptr) & ~0x1), \
+                                           SCM_FUNC_SET_CFUNC_LSB((a), (SCM_CAST_UINT(fptr) & 0x1)))
+#define SCM_FUNC_SET_TYPECODE(a, code)    (SCM_CDR_SET_VALUE_AS_INT((a), (code), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_FUNCTYPE, \
+                                                                    (SCM_TAG_OTHERS_FUNC | (SCM_FUNC_CFUNC_LSB(a) << SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR))))
+
+#define SCM_SYNTAXP(a) (SCM_FUNCP(a)                                    \
                         && (SCM_FUNC_TYPECODE(a) & SCM_FUNCTYPE_SYNTAX))
 #define SCM_PROCEDUREP(a) ((SCM_FUNCP(a)                                     \
                             && !(SCM_FUNC_TYPECODE(a) & SCM_FUNCTYPE_SYNTAX)) \
@@ -556,7 +579,7 @@ struct ScmEvalState_ {
 #define SCM_INT_VALUE(a)          ((SCM_CAST_UINT(a) & SIGN_BIT_MASK)   \
                                    ? ~((SCM_CAST_UINT(a) & SIGN_VALUE_MASK) >> SCM_TAG_IMM_VALUE_OFFSET_INT) | SIGNED_MARK \
                                    : (SCM_CAST_UINT(a) >> SCM_TAG_IMM_VALUE_OFFSET_INT))
-    
+
 #define SCM_INT_SET_VALUE(a, val) (SCM_SET_VALUE_AS_OBJ_REMAIN_GCBIT((a), \
                                                                      ((val) >= 0) \
                                                                      ? (val) << SCM_TAG_IMM_VALUE_OFFSET_INT | SCM_TAG_IMM_INT \

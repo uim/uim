@@ -360,6 +360,7 @@ ScmObj Scm_CheckStringCopying(char *str)
 ScmObj Scm_CheckFunc()
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
+    void *funcptr = (void*)0xFFFFFFFF;
 
     PRINT_SECTION("Func");
 
@@ -369,29 +370,31 @@ ScmObj Scm_CheckFunc()
     check_type(ScmFunc, obj);
 
     /* unmarked state */
+    SCM_FUNC_SET_CFUNC(obj, funcptr);
+    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    check_type(ScmFunc, obj);
+    SCM_ASSERT(SCM_FUNC_CFUNC(obj) == funcptr);
+
     SCM_FUNC_SET_TYPECODE(obj, SCM_PROCEDURE_FIXED_TAIL_REC);
     SCM_ASSERT(SCM_IS_UNMARKED(obj));
     check_type(ScmFunc, obj);
     SCM_ASSERT(SCM_FUNC_TYPECODE(obj) == SCM_PROCEDURE_FIXED_TAIL_REC);
-
-    SCM_FUNC_SET_CFUNC(obj, Scm_CheckFunc);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
-    check_type(ScmFunc, obj);
-    SCM_ASSERT(SCM_FUNC_CFUNC(obj) == Scm_CheckFunc);
+    SCM_ASSERT(SCM_FUNC_CFUNC(obj) == funcptr);
 
     /* marked state */
     SCM_DO_MARK(obj);
     SCM_ASSERT(SCM_IS_MARKED(obj));
 
+    SCM_FUNC_SET_CFUNC(obj, funcptr);
+    SCM_ASSERT(SCM_IS_MARKED(obj));
+    check_type(ScmFunc, obj);
+    SCM_ASSERT(SCM_FUNC_CFUNC(obj) == funcptr);
+
     SCM_FUNC_SET_TYPECODE(obj, SCM_PROCEDURE_FIXED_TAIL_REC);
     SCM_ASSERT(SCM_IS_MARKED(obj));
     check_type(ScmFunc, obj);
     SCM_ASSERT(SCM_FUNC_TYPECODE(obj) == SCM_PROCEDURE_FIXED_TAIL_REC);
-
-    SCM_FUNC_SET_CFUNC(obj, Scm_CheckFunc);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
-    check_type(ScmFunc, obj);
-    SCM_ASSERT(SCM_FUNC_CFUNC(obj) == Scm_CheckFunc);
+    SCM_ASSERT(SCM_FUNC_CFUNC(obj) == funcptr);
 
     return obj;
 }
