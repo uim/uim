@@ -145,7 +145,7 @@ static int skip_comment_and_space(ScmObj port)
         case LEX_ST_NORMAL:
             if (c == ';')
                 state = LEX_ST_COMMENT;
-            else if ((isascii(c) && !isspace(c)) || c == EOF)
+            else if (!isascii(c) || !isspace(c) || c == EOF)
                 return c;  /* peeked */
             break;
 
