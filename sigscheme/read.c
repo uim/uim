@@ -187,6 +187,7 @@ static ScmObj read_sexpression(ScmObj port)
 
         CDBG((SCM_DBG_PARSER, "read_sexpression c = %c", c));
 
+        /* case labels are ordered by appearance rate and penalty cost */
         switch (c) {
         case '(':
             DISCARD_LOOKAHEAD(port);
@@ -196,34 +197,9 @@ static ScmObj read_sexpression(ScmObj port)
             DISCARD_LOOKAHEAD(port);
             return read_string(port);
 
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-        case '+': case '-': case '.': case '@':
-            return read_number_or_symbol(port);
-
         case '\'':
             DISCARD_LOOKAHEAD(port);
             return read_quote(port, SYM_QUOTE);
-
-        case '`':
-            DISCARD_LOOKAHEAD(port);
-            return read_quote(port, SYM_QUASIQUOTE);
-
-        case ',':
-            DISCARD_LOOKAHEAD(port);
-            c = SCM_PORT_PEEK_CHAR(port);
-            switch (c) {
-            case EOF:
-                ERR("EOF in unquote");
-                /* NOTREACHED */
-
-            case '@':
-                DISCARD_LOOKAHEAD(port);
-                return read_quote(port, SYM_UNQUOTE_SPLICING);
-
-            default:
-                return read_quote(port, SYM_UNQUOTE);
-            }
 
         case '#':
             DISCARD_LOOKAHEAD(port);
@@ -245,6 +221,32 @@ static ScmObj read_sexpression(ScmObj port)
                 ERR("Unsupported # notation: %c", c);
             }
             break;
+
+        case '`':
+            DISCARD_LOOKAHEAD(port);
+            return read_quote(port, SYM_QUASIQUOTE);
+
+        case ',':
+            DISCARD_LOOKAHEAD(port);
+            c = SCM_PORT_PEEK_CHAR(port);
+            switch (c) {
+            case EOF:
+                ERR("EOF in unquote");
+                /* NOTREACHED */
+
+            case '@':
+                DISCARD_LOOKAHEAD(port);
+                return read_quote(port, SYM_UNQUOTE_SPLICING);
+
+            default:
+                return read_quote(port, SYM_UNQUOTE);
+            }
+
+        case '.': case '+': case '-':
+        case '1': case '2': case '3': case '4': case '5':
+        case '6': case '7': case '8': case '9': case '0':
+        case '@':
+            return read_number_or_symbol(port);
 
         case ')':
             ERR("invalid close parenthesis");
