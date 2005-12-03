@@ -62,6 +62,12 @@ static ScmObj create_loaded_str(ScmObj filename);
 /*=======================================
   Function Implementations
 =======================================*/
+void SigScm_Initialize_NONSTD_FEATURES(void)
+{
+    REGISTER_FUNC_TABLE(nonstd_func_info_table);
+    Scm_DefineAlias("call/cc", "call-with-current-continuation");
+}
+
 /*
  * TODO:
  * - describe compatibility with de facto standard of other Scheme
@@ -145,9 +151,7 @@ ScmObj ScmOp_provide(ScmObj feature)
 
     ASSERT_STRINGP(feature);
 
-    /* record to SigScm_features */
-    SCM_SYMBOL_SET_VCELL(SigScm_features,
-                         CONS(feature, SCM_SYMBOL_VCELL(SigScm_features)));
+    Scm_Provide(feature);
 
     return SCM_TRUE;
 }
@@ -163,9 +167,7 @@ ScmObj ScmOp_providedp(ScmObj feature)
 
     ASSERT_STRINGP(feature);
 
-    provided = ScmOp_member(feature, SCM_SYMBOL_VCELL(SigScm_features));
-
-    return (NFALSEP(provided)) ? SCM_TRUE : SCM_FALSE;
+    return (Scm_Providedp(feature)) ? SCM_TRUE : SCM_FALSE;
 }
 
 /*

@@ -69,8 +69,6 @@ ScmObj scm_current_input_port   = NULL;
 ScmObj scm_current_output_port  = NULL;
 ScmObj scm_current_error_port  = NULL;
 
-ScmObj SigScm_features      = NULL;
-
 const char *scm_lib_path = NULL;
 
 const ScmSpecialCharInfo Scm_special_char_table[] = {

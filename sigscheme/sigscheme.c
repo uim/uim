@@ -71,6 +71,7 @@ ScmObj Scm_sym_unquote, Scm_sym_unquote_splicing;
 ScmObj Scm_sym_else, Scm_sym_yields;
 
 static int scm_initialized;
+static ScmObj features;
 
 #if SCM_COMPAT_SIOD
 static ScmObj scm_return_value    = NULL;
@@ -78,9 +79,7 @@ static ScmObj scm_return_value    = NULL;
 
 static struct module_info module_info_table[] = {
 #if SCM_USE_NONSTD_FEATURES
-#if 0
     {"sscm", SigScm_Initialize_NONSTD_FEATURES},
-#endif
 #endif
 #if SCM_USE_SRFI1
     {"srfi-1", SigScm_Initialize_SRFI1},
@@ -159,11 +158,7 @@ static void SigScm_Initialize_internal(void)
     SCM_SYMBOL_SET_VCELL(Scm_Intern("else"), SCM_TRUE);
 #endif
 
-#if SCM_USE_NONSTD_FEATURES
-    /* FIXME: make invisible from users */
-    SigScm_features         = Scm_Intern("*features*");
-    SCM_SYMBOL_SET_VCELL(SigScm_features, SCM_NULL);
-#endif
+    features = SCM_NULL;
 
     /*=======================================================================
       Preallocated Ports
@@ -197,22 +192,19 @@ static void SigScm_Initialize_internal(void)
     REGISTER_FUNC_TABLE(r5rs_deepcadrs_func_info_table);
 #endif
 
-#if SCM_USE_NONSTD_FEATURES
-    /* Non-Standard Functions */
-    REGISTER_FUNC_TABLE(nonstd_func_info_table);
-    Scm_DefineAlias("call/cc", "call-with-current-continuation");
-#endif
-
     /*=======================================================================
       Fixing up
     =======================================================================*/
+#if SCM_USE_NONSTD_FEATURES
+    Scm_Use("sscm");
+#endif
     /* to evaluate SigScheme-dependent codes conditionally */
-    ScmOp_provide(Scm_NewImmutableStringCopying("sigscheme"));
+    Scm_Provide(Scm_NewImmutableStringCopying("sigscheme"));
 #if SCM_STRICT_R5RS
-    ScmOp_provide(Scm_NewImmutableStringCopying("strict-r5rs"));
+    Scm_Provide(Scm_NewImmutableStringCopying("strict-r5rs"));
 #endif
 #if SCM_COMPAT_SIOD_BUGS
-    ScmOp_provide(Scm_NewImmutableStringCopying("siod-bugs"));
+    Scm_Provide(Scm_NewImmutableStringCopying("siod-bugs"));
 #endif
     scm_initialized = TRUE;
 }
@@ -227,6 +219,16 @@ void Scm_DefineAlias(const char *newsym, const char *sym)
 {
     SCM_SYMBOL_SET_VCELL(Scm_Intern(newsym),
                          SCM_SYMBOL_VCELL(Scm_Intern(sym)));
+}
+
+void Scm_Provide(ScmObj feature)
+{
+    features = CONS(feature, features);
+}
+
+int Scm_Providedp(ScmObj feature)
+{
+    return NFALSEP(ScmOp_member(feature, features));
 }
 
 int Scm_Use(const char *feature)

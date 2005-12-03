@@ -246,6 +246,8 @@ extern ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *);
 void SigScm_Initialize(void);
 void SigScm_Finalize(void);
 void Scm_DefineAlias(const char *newsym, const char *sym);
+void Scm_Provide(ScmObj feature);
+int  Scm_Providedp(ScmObj feature);
 int  Scm_Use(const char *feature);
 ScmObj ScmExp_use(ScmObj feature, ScmObj env);
 ScmObj Scm_eval_c_string(const char *exp);
@@ -590,6 +592,7 @@ ScmObj ScmOp_cddddr(ScmObj lst);
 
 /* operations-nonstd.c */
 #if SCM_USE_NONSTD_FEATURES
+void SigScm_Initialize_NONSTD_FEATURES(void);
 ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest);
 ScmObj ScmOp_load_path(void);
 /* FIXME: add ScmObj SigScm_require(const char *c_filename); */

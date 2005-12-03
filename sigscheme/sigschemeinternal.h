@@ -65,7 +65,6 @@ extern ScmObj Scm_sym_else, Scm_sym_yields;
 extern ScmObj scm_current_input_port;
 extern ScmObj scm_current_output_port;
 extern ScmObj scm_current_error_port;
-extern ScmObj SigScm_features;
 extern const ScmSpecialCharInfo Scm_special_char_table[];
 
 extern void (*Scm_writess_func)(ScmObj port, ScmObj obj);
