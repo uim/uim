@@ -64,7 +64,7 @@
   (_ "Commit candidate by heading label keys")
   (_ "long description will be here."))
 
-(define-custom 'skk-candidate-selection-style 'uim
+(define-custom 'skk-candidate-selection-style 'ddskk-like
   '(skk candwin)
   (list 'choice
 	(list 'uim (_ "uim") (_ "uim native"))
