@@ -94,6 +94,26 @@
  *     .100|11|11G : #t
  *     .101|11|11G : EOF
  *     .110|11|11G : UNDEF
+ *
+ *
+ * Notice:
+ *   Some data must be aligned properly for compaction.
+ *   Required Alignments are listed below.
+ *
+ * Required Data Aligment:
+ *
+ *     Symbol
+ *         name (char*)        : 8
+ *     String
+ *         str (char*)         : 2
+ *     Vector
+ *         vec (ScmObj*)       : 2
+ *     Port
+ *         impl (ScmCharPort*) : 2
+ *     Continuation
+ *         opaque (void*)      : 2
+ *     
+ *
  */
 
 /*=======================================
