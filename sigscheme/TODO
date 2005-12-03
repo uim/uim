@@ -88,8 +88,6 @@ Assigned to Kazuki:
 
 Assigned to YamaKen:
 
-* Fix large fixed-size buffer on stack without limit checking in read.c
-
 * Add integer->char and char->integer procedures with multibyte support
   - Write test
 

@@ -32,21 +32,6 @@
  *  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  *  SUCH DAMAGE.
 ===========================================================================*/
-/*
- * FIXME: Large fixed-size buffer on stack without limit checking
- *
- * Fix some functions contained in this file since:
- *
- * - danger
- * - some embedded platform cannot allocate such large stack (approx. 20KB)
- * - inefficient from the viewpoint of memory locality (cache, page, power
- *   consumption etc)
- *
- * Search "FIXME" on this file to locate the codes. I wonder other Scheme
- * implementations may have sophisticated code. Please consider porting them to
- * save development cost, since this part is not the primary value of
- * SigScheme.  -- YamaKen 2005-09-05
- */
 
 /*=======================================
   System Include
@@ -87,11 +72,6 @@ enum LexerState {
 #define WHITESPACE_CHARS " \t\n\r\v\f"
 #define DELIMITER_CHARS  "()\";" WHITESPACE_CHARS
 
-/* Compatible with isspace(3). Use this to prevent incorrect space handlings */
-#define CASE_ISSPACE                                                         \
-    case ' ': case '\t': case '\n': case '\r': case '\v': case '\f'
-
-/* FIXME: discard at first of each reader instead of caller */
 #define DISCARD_LOOKAHEAD(port) (SCM_PORT_GET_CHAR(port))
 
 /*=======================================
@@ -103,7 +83,6 @@ enum LexerState {
 =======================================*/
 static int    skip_comment_and_space(ScmObj port);
 static void   read_sequence(ScmObj port, char *buf, int len);
-static char*  read_word(ScmObj port);
 static size_t read_token(ScmObj port, int *err,
                          char *buf, size_t buf_size, const char *delim);
 #if SCM_USE_SRFI75
@@ -448,7 +427,6 @@ static ScmObj read_char(ScmObj port)
     ERR("invalid character literal: #\\%s", buf);
 }
 
-/* FIXME: extend buffer on demand */
 static ScmObj read_string(ScmObj port)
 {
     ScmObj obj;
@@ -594,36 +572,6 @@ static ScmObj read_number_or_symbol(ScmObj port)
     }
 
     return read_symbol(port);
-}
-
-
-static char *read_word(ScmObj port)
-{
-    char  stringbuf[1024];  /* FIXME! */
-    int   stringlen = 0;
-    int   c = 0;
-    char *dst = NULL;
-
-    while (1) {
-        c = SCM_PORT_PEEK_CHAR(port);
-
-        CDBG((SCM_DBG_PARSER, "c = %c", c));
-
-        switch (c) {
-        case EOF: /* don't became an error for handling c-eval, like Scm_eval_c_string("some-symbol"); */
-        case '(': case ')': case '\"': case '\'': case ';':
-        CASE_ISSPACE:
-            SCM_PORT_UNGETC(port, c);
-            stringbuf[stringlen] = '\0';
-            dst = strdup(stringbuf);
-            return dst;
-
-        default:
-            DISCARD_LOOKAHEAD(port);
-            stringbuf[stringlen++] = (char)c;
-            break;
-        }
-    }
 }
 
 static size_t read_token(ScmObj port, int *err,
