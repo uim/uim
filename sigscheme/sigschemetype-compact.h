@@ -524,7 +524,7 @@ struct ScmEvalState_ {
                                            (ScmObj)(SCM_CAST_UINT(SCM_GET_DIRECT_CDR(a)) \
                                                     | ((SCM_CAST_UINT(val) & 0x1) << SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR)))
 #define SCM_FUNC_SET_CFUNC_OTHERB(a, val) (SCM_CAR_SET_VALUE_AS_PTR((a), SCM_WORD_CAST(ScmObj, (val))))
-#define SCM_FUNC_SET_CFUNC(a, fptr)       (SCM_FUNC_SET_CFUNC_OTHERB((a), SCM_CAST_UINT(fptr) & ~0x1), \
+#define SCM_FUNC_SET_CFUNC(a, fptr)       (SCM_FUNC_SET_CFUNC_OTHERB((a), (SCM_CAST_UINT(fptr) & ~0x1)), \
                                            SCM_FUNC_SET_CFUNC_LSB((a), (SCM_CAST_UINT(fptr) & 0x1)))
 #define SCM_FUNC_SET_TYPECODE(a, code)    (SCM_CDR_SET_VALUE_AS_INT((a), (code), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_FUNCTYPE, \
                                                                     (SCM_TAG_OTHERS_FUNC | (SCM_FUNC_CFUNC_LSB(a) << SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR))))
@@ -549,11 +549,22 @@ struct ScmEvalState_ {
 #define SCM_C_POINTER_VALUE(a)              ((void*)SCM_CAR_GET_VALUE_AS_PTR(a))
 #define SCM_C_POINTER_SET_VALUE(a, val)     (SCM_CAR_SET_VALUE_AS_PTR((a), (val)))
 
-#define SCM_C_FUNCPOINTER_VALUE(a)          (SCM_WORD_CAST(ScmCFunc, SCM_CAR_GET_VALUE_AS_PTR(a)))
-#define SCM_C_FUNCPOINTER_SET_VALUE(a, val) (SCM_CAR_SET_VALUE_AS_PTR((a), SCM_WORD_CAST(ScmObj, (val))))
+/*
+ * GCC4.0 doesn't align the address of function, so we need to store LSB of the function
+ * address to the cdr part.
+ *
+ * FuncAddr = (S->car & ~0x01) | ((S->cdr >> SCM_TAG_OTHERS_VALUE_OFFSET_C_FUNCPOINTER_LSBADDR) & 0x1)
+ */
+#define SCM_C_FUNCPOINTER_OTHERSB(a)        (SCM_CAST_UINT(SCM_CAR_GET_VALUE_AS_PTR(a)))
+#define SCM_C_FUNCPOINTER_LSB(a)            (SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_C_FUNCPOINTER_LSBADDR) & 0x1)
+#define SCM_C_FUNCPOINTER_VALUE(a)          (SCM_WORD_CAST(ScmCFunc, SCM_C_FUNCPOINTER_OTHERSB(a) | SCM_C_FUNCPOINTER_LSB(a)))
 
-#define SCM_CHAR_VALUE(a)         (SCM_PRIMARY_GET_VALUE_AS_INT((a), SCM_TAG_IMM_VALUE_OFFSET_CHAR))
-#define SCM_CHAR_SET_VALUE(a, ch) (SCM_PRIMARY_SET_VALUE_AS_INT((a), (ch), SCM_TAG_IMM_VALUE_OFFSET_CHAR, SCM_TAG_IMM_CHAR))
+#define SCM_C_FUNCPOINTER_SET_OTHERSB(a, val) (SCM_CAR_SET_VALUE_AS_PTR((a), (val)))
+#define SCM_C_FUNCPOINTER_SET_LSB(a, val)     (SCM_GET_DIRECT_CDR(a) = \
+                                               (ScmObj)(SCM_CAST_UINT(SCM_GET_DIRECT_CDR(a)) \
+                                                        | ((SCM_CAST_UINT(val) & 0x1) << SCM_TAG_OTHERS_VALUE_OFFSET_C_FUNCPOINTER_LSBADDR)))
+#define SCM_C_FUNCPOINTER_SET_VALUE(a, val)   (SCM_C_FUNCPOINTER_SET_OTHERSB((a), (SCM_CAST_UINT(val) & ~0x1)), \
+                                               SCM_C_FUNCPOINTER_SET_LSB((a), (SCM_CAST_UINT(val) & 0x1)))
 
 /*
  * Integer need to preserve 'singed' or 'unsigned', so need special accessor.
@@ -584,6 +595,10 @@ struct ScmEvalState_ {
                                                                      ((val) >= 0) \
                                                                      ? (val) << SCM_TAG_IMM_VALUE_OFFSET_INT | SCM_TAG_IMM_INT \
                                                                      : (~(val) << SCM_TAG_IMM_VALUE_OFFSET_INT) | SIGNED_MARK | SCM_TAG_IMM_INT))
+
+
+#define SCM_CHAR_VALUE(a)         (SCM_PRIMARY_GET_VALUE_AS_INT((a), SCM_TAG_IMM_VALUE_OFFSET_CHAR))
+#define SCM_CHAR_SET_VALUE(a, ch) (SCM_PRIMARY_SET_VALUE_AS_INT((a), (ch), SCM_TAG_IMM_VALUE_OFFSET_CHAR, SCM_TAG_IMM_CHAR))
 
 /*=======================================
    Scheme Special Constants
