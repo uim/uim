@@ -130,7 +130,7 @@ static int           scm_cur_marker = SCM_INITIAL_MARKER;
 #endif
 
 static jmp_buf save_regs_buf;
-ScmObj *scm_stack_start_pointer = NULL;
+static ScmObj *stack_start_pointer = NULL;
 #if UIM_SCM_GCC4_READY_GC
 /* See also the comment about these variables in sigscheme.h */
 ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *)
@@ -240,8 +240,8 @@ ScmObj *SigScm_GC_ProtectStackInternal(ScmObj *designated_stack_start)
     if (!designated_stack_start)
         designated_stack_start = &stack_start;
 
-    if (!scm_stack_start_pointer)
-        scm_stack_start_pointer = designated_stack_start;
+    if (!stack_start_pointer)
+        stack_start_pointer = designated_stack_start;
 
     /* may intentionally be an invalidated local address */
     return designated_stack_start;
@@ -251,15 +251,15 @@ ScmObj *SigScm_GC_ProtectStackInternal(ScmObj *designated_stack_start)
 
 void SigScm_GC_ProtectStack(ScmObj *stack_start)
 {
-    if (!scm_stack_start_pointer)
-        scm_stack_start_pointer = stack_start;
+    if (!stack_start_pointer)
+        stack_start_pointer = stack_start;
 }
 #endif /* SCM_GCC4_READY_GC */
 
 void SigScm_GC_UnprotectStack(ScmObj *stack_start)
 {
-    if (scm_stack_start_pointer == stack_start)
-        scm_stack_start_pointer = NULL;
+    if (stack_start_pointer == stack_start)
+        stack_start_pointer = NULL;
 }
 
 /*============================================================================
@@ -536,7 +536,7 @@ static void gc_mark(void)
     setjmp(save_regs_buf);
     gc_mark_locations((ScmObj *)save_regs_buf, (ScmObj *)save_regs_buf_end);
     gc_mark_protected_var();
-    gc_mark_locations(scm_stack_start_pointer, &stack_end);
+    gc_mark_locations(stack_start_pointer, &stack_end);
     gc_mark_symbol_hash();
 }
 

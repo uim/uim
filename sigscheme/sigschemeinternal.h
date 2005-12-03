@@ -75,9 +75,6 @@ extern void (*Scm_writess_func)(ScmObj port, ScmObj obj);
 extern ScmObj SigScm_null_values;
 #endif
 
-/* storage-gc.c */
-extern ScmObj *scm_stack_start_pointer;
-
 /*=======================================
    Macro Declarations
 =======================================*/
