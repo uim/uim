@@ -78,13 +78,13 @@
   (_ "Set candidate window behavior manually")
   (_ "long description will be here."))
 
-(define-custom 'skk-candidate-op-count 2
+(define-custom 'skk-candidate-op-count 5
   '(skk candwin)
   '(integer 0 99)
   (_ "Conversion key press count to show candidate window")
   (_ "long description will be here."))
 
-(define-custom 'skk-nr-candidate-max 10
+(define-custom 'skk-nr-candidate-max 7
   '(skk candwin)
   '(integer 1 20)
   (_ "Number of candidates in candidate window at a time")
