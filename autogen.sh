@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Notice: Autotools' version must be 1.7 or later
+# Notice: Automake 1.8.3 or later is required.
 
 aclocal -I m4 \
   && libtoolize --force --copy \
