@@ -637,8 +637,8 @@ enum ScmStrMutationType {
 #define SIGNED_MARK               (0x1 << (SIZEOF_INT * BITS_PER_BITE - 1))
 
 #define SCM_INT_VALUE(a)          ((SCM_CAST_UINT(a) & SIGN_BIT_MASK)   \
-                                   ? ~((SCM_CAST_UINT(a) & SIGN_VALUE_MASK) >> SCM_TAG_IMM_VALUE_OFFSET_INT) | SIGNED_MARK \
-                                   : (SCM_CAST_UINT(a) >> SCM_TAG_IMM_VALUE_OFFSET_INT))
+                                   ? (int)~((SCM_CAST_UINT(a) & SIGN_VALUE_MASK) >> SCM_TAG_IMM_VALUE_OFFSET_INT) | SIGNED_MARK \
+                                   : (int)(SCM_CAST_UINT(a) >> SCM_TAG_IMM_VALUE_OFFSET_INT))
 
 #define SCM_INT_SET_VALUE(a, val) (SCM_SET_VALUE_AS_OBJ_REMAIN_GCBIT((a), \
                                                                      ((val) >= 0) \
