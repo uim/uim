@@ -273,7 +273,6 @@ struct ScmEvalState_ {
 #define SCM_TAG_IMM_VALUE_OFFSET_INT             (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 1)
 #define SCM_TAG_IMM_VALUE_OFFSET_CHAR            (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 2)
 
-
 /*=======================================
    Getter & Setter
 =======================================*/
@@ -530,8 +529,8 @@ struct ScmEvalState_ {
 #define SCM_C_FUNCPOINTER_VALUE(a)          (SCM_WORD_CAST(ScmCFunc, SCM_CAR_GET_VALUE_AS_PTR(a)))
 #define SCM_C_FUNCPOINTER_SET_VALUE(a, val) (SCM_CAR_SET_VALUE_AS_PTR((a), SCM_WORD_CAST(ScmObj, (val))))
 
-#define SCM_CHAR_VALUE(a)         (SCM_PRIMARY_GET_VALUE_AS_INT((a), ~SCM_TAG_IMM_MASK_CHAR))
-#define SCM_CHAR_SET_VALUE(a, ch) (SCM_PRIMARY_SET_VALUE_AS_INT((a), (ch), SCM_TAG_IMM_CHAR))
+#define SCM_CHAR_VALUE(a)         (SCM_PRIMARY_GET_VALUE_AS_INT((a), SCM_TAG_IMM_VALUE_OFFSET_CHAR))
+#define SCM_CHAR_SET_VALUE(a, ch) (SCM_PRIMARY_SET_VALUE_AS_INT((a), (ch), SCM_TAG_IMM_VALUE_OFFSET_CHAR, SCM_TAG_IMM_CHAR))
 
 /*
  * Integer need to preserve 'singed' or 'unsigned', so need special accessor.

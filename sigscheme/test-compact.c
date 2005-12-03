@@ -296,30 +296,27 @@ ScmObj Scm_CheckSymbol(const char *name)
     return obj;
 }
 
-/* FIXME: follow int-based char */
 ScmObj Scm_CheckChar(char *ch)
 {
-#define SCM_MB_MAX_LEN 4
-
     ScmObj obj;
-    char *val = aligned_strdup(ch);
-
     PRINT_SECTION("Char");
-
-    SCM_ASSERT(strlen(ch) <= SCM_MB_MAX_LEN);
 
     /* entyping */
     SCM_ENTYPE_CHAR(obj);
     check_type(ScmChar, obj);
 
-    SCM_CHAR_SET_VALUE(obj, val);
+    SCM_CHAR_SET_VALUE(obj, 0);
     check_type(ScmChar, obj);
-    SCM_ASSERT(SCM_CHAR_VALUE(obj) == val);
-    SCM_ASSERT(strcmp(SCM_CHAR_VALUE(obj), ch) == 0);
+    SCM_ASSERT(SCM_CHAR_VALUE(obj) == 0);
+
+    SCM_CHAR_SET_VALUE(obj, 255);
+    check_type(ScmChar, obj);
+    SCM_ASSERT(SCM_CHAR_VALUE(obj) == 255);
 
     return obj;
 }
 
+#if 0
 ScmObj Scm_CheckStringCopying(char *str)
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
@@ -358,6 +355,7 @@ ScmObj Scm_CheckStringCopying(char *str)
 
     return obj;
 }
+#endif
 
 ScmObj Scm_CheckFunc()
 {
@@ -732,7 +730,9 @@ int main(void)
     Scm_CheckCons();
     Scm_CheckSymbol("aiueo");
     Scm_CheckChar("a");
+#if 0
     Scm_CheckStringCopying("aiueo");
+#endif
     Scm_CheckClosure();
     Scm_CheckFunc();
     Scm_CheckVector(5);
