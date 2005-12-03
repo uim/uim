@@ -344,6 +344,88 @@ typedef ScmRef ScmQueue;
 #define SCM_QUEUE_SLOPPY_APPEND(_q, _lst) (DEREF(_q) = (_lst))
 
 /*=======================================
+   Local Buffer Allocator
+=======================================*/
+/* don't touch inside directly */
+#define ScmLBuf(T)                                                           \
+    struct ScmLBuf_##T##_ {                                                  \
+        T *_buf;                                                             \
+        size_t _size;                                                        \
+        T *_init_buf;                                                        \
+        size_t _init_size;                                                   \
+        int _extended_cnt;                                                   \
+    }
+
+/* lvalue access is permitted */
+#define LBUF_BUF(lbuf)       ((lbuf)._buf)
+
+/* lvalue access is not permitted */
+#define LBUF_END(lbuf)       (&LBUF_BUF(lbuf)[LBUF_SIZE(lbuf)])
+#define LBUF_SIZE(lbuf)      ((lbuf)._size)
+#define LBUF_INIT_SIZE(lbuf) ((lbuf)._init_size)
+#define LBUF_EXT_CNT(lbuf)   ((lbuf)._extended_cnt)
+
+#define LBUF_INIT(lbuf, init_buf, init_size)                                 \
+    do {                                                                     \
+        (lbuf)._buf  = (lbuf)._init_buf  = init_buf;                         \
+        (lbuf)._size = (lbuf)._init_size = init_size;                        \
+        (lbuf)._extended_cnt = 0;                                            \
+    } while (/* CONSTCOND */ 0)
+
+#define LBUF_FREE(lbuf)                                                      \
+    do {                                                                     \
+        if ((lbuf)._buf != (lbuf)._init_buf)                                 \
+            free((lbuf)._buf);                                               \
+    } while (/* CONSTCOND */ 0)
+
+#define LBUF_ALLOC(lbuf, size)                                               \
+    do {                                                                     \
+        (lbuf)._buf = malloc(size);                                          \
+        (lbuf)._size = (size);                                               \
+        if (!(lbuf)._buf)                                                    \
+            ERR("memory exhausted");                                         \
+    } while (/* CONSTCOND */ 0)
+
+#define LBUF_REALLOC(lbuf, size)                                             \
+    do {                                                                     \
+        if ((lbuf)._buf == (lbuf)._init_buf) {                               \
+            void *new_buf;                                                   \
+                                                                             \
+            new_buf = malloc(size);                                          \
+            if (!new_buf)                                                    \
+                ERR("memory exhausted");                                     \
+            (lbuf)._buf = memcpy(new_buf, LBUF_BUF(lbuf), LBUF_SIZE(lbuf));  \
+        } else {                                                             \
+            (lbuf)._buf = realloc((lbuf)._buf, (size));                      \
+            if (!(lbuf)._buf)                                                \
+                ERR("memory exhausted");                                     \
+        }                                                                    \
+        (lbuf)._size = (size);                                               \
+    } while (/* CONSTCOND */ 0)
+
+#define LBUF_EXTEND(lbuf, f, min_size)                                       \
+    do {                                                                     \
+        size_t new_size;                                                     \
+                                                                             \
+        if (LBUF_SIZE(lbuf) < (min_size)) {                                  \
+            new_size = f(lbuf);                                              \
+            if (new_size < LBUF_SIZE(lbuf))                                  \
+                ERR("local buffer exceeded");                                \
+            if (new_size < (size_t)min_size)                                 \
+                new_size = (size_t)min_size;                                 \
+            LBUF_REALLOC((lbuf), new_size);                                  \
+            (lbuf)._extended_cnt++;                                          \
+        }                                                                    \
+    } while (/* CONSTCOND */ 0)
+
+/*
+ * extended size functions:
+ * define your own version if more optimized version is needed
+ */
+#define LBUF_F_LINEAR(lbuf)      (LBUF_SIZE(lbuf) + LBUF_INIT_SIZE(lbuf))
+#define LBUF_F_EXPONENTIAL(lbuf) (LBUF_SIZE(lbuf) << 1)
+
+/*=======================================
    Function Declarations
 =======================================*/
 /* storage.c */
