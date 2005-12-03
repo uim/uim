@@ -85,20 +85,20 @@ static int    skip_comment_and_space(ScmObj port);
 static void   read_sequence(ScmObj port, char *buf, int len);
 static size_t read_token(ScmObj port, int *err,
                          char *buf, size_t buf_size, const char *delim);
+
+static ScmObj read_sexpression(ScmObj port);
+static ScmObj read_list(ScmObj port, int closeParen);
 #if SCM_USE_SRFI75
 static int    parse_unicode_sequence(const char *seq, int len);
 static int    read_unicode_sequence(ScmObj port, char prefix);
 #endif
-
-static ScmObj read_sexpression(ScmObj port);
-static ScmObj read_list(ScmObj port, int closeParen);
 static ScmObj read_char(ScmObj port);
 static ScmObj read_string(ScmObj port);
 static ScmObj read_symbol(ScmObj port);
+static ScmObj read_number_or_symbol(ScmObj port);
 static ScmObj parse_number(ScmObj port,
                            char *buf, size_t buf_size, char prefix);
 static ScmObj read_number(ScmObj port, char prefix);
-static ScmObj read_number_or_symbol(ScmObj port);
 static ScmObj read_quote(ScmObj port, ScmObj quoter);
 
 /*=======================================
@@ -174,6 +174,54 @@ static void read_sequence(ScmObj port, char *buf, int len)
         *p = c;
     }
     buf[len] = '\0';
+}
+
+static size_t read_token(ScmObj port, int *err,
+                         char *buf, size_t buf_size, const char *delim)
+{
+    int c;
+    size_t len;
+    char *p;
+
+    for (p = buf;;) {
+        c = SCM_PORT_PEEK_CHAR(port);
+        CDBG((SCM_DBG_PARSER, "c = %c", c));
+
+        if (p == buf) {
+            if (c == EOF)
+                ERR("unexpected EOF at a token");
+        } else {
+            if (strchr(delim, c) || c == EOF) {
+                *err = OK;
+                break;
+            }
+        }
+
+        if (isascii(c)) {
+            if (p == &buf[buf_size - sizeof((char)'\0')]) {
+                *err = TOKEN_BUF_EXCEEDED;
+                break;
+            }
+            *p++ = c;
+        } else {
+#if SCM_USE_SRFI75
+            if (&buf[buf_size] <= p + SCM_MB_MAX_LEN) {
+                *err = TOKEN_BUF_EXCEEDED;
+                break;
+            }
+            /* FIXME: check Unicode capability of Scm_current_char_codec */
+            p = SCM_CHARCODEC_INT2STR(Scm_current_char_codec,
+                                      p, c, SCM_MB_STATELESS);
+#else
+            ERR("non-ASCII char in token: 0x%x", c);
+#endif
+        }
+        DISCARD_LOOKAHEAD(port);
+    }
+
+    *p = '\0';
+    len = p - buf;
+    return len;
 }
 
 static ScmObj read_sexpression(ScmObj port)
@@ -576,72 +624,6 @@ static ScmObj read_number_or_symbol(ScmObj port)
     return read_symbol(port);
 }
 
-static size_t read_token(ScmObj port, int *err,
-                         char *buf, size_t buf_size, const char *delim)
-{
-    int c;
-    size_t len;
-    char *p;
-
-    for (p = buf;;) {
-        c = SCM_PORT_PEEK_CHAR(port);
-        CDBG((SCM_DBG_PARSER, "c = %c", c));
-
-        if (p == buf) {
-            if (c == EOF)
-                ERR("unexpected EOF at a token");
-        } else {
-            if (strchr(delim, c) || c == EOF) {
-                *err = OK;
-                break;
-            }
-        }
-
-        if (isascii(c)) {
-            if (p == &buf[buf_size - sizeof((char)'\0')]) {
-                *err = TOKEN_BUF_EXCEEDED;
-                break;
-            }
-            *p++ = c;
-        } else {
-#if SCM_USE_SRFI75
-            if (&buf[buf_size] <= p + SCM_MB_MAX_LEN) {
-                *err = TOKEN_BUF_EXCEEDED;
-                break;
-            }
-            /* FIXME: check Unicode capability of Scm_current_char_codec */
-            p = SCM_CHARCODEC_INT2STR(Scm_current_char_codec,
-                                      p, c, SCM_MB_STATELESS);
-#else
-            ERR("non-ASCII char in token: 0x%x", c);
-#endif
-        }
-        DISCARD_LOOKAHEAD(port);
-    }
-
-    *p = '\0';
-    len = p - buf;
-    return len;
-}
-
-static ScmObj read_quote(ScmObj port, ScmObj quoter)
-{
-    return SCM_LIST_2(quoter, read_sexpression(port));
-}
-
-static ScmObj read_number(ScmObj port, char prefix)
-{
-    int err;
-    size_t len;
-    char buf[INT_LITERAL_LEN_MAX + sizeof((char)'\0')];
-
-    len = read_token(port, &err, buf, sizeof(buf), DELIMITER_CHARS);
-    if (err == TOKEN_BUF_EXCEEDED)
-        ERR("invalid number literal");
-
-    return parse_number(port, buf, sizeof(buf), prefix);
-}
-
 /* reads 'b123' part of #b123 */
 static ScmObj parse_number(ScmObj port,
                            char *buf, size_t buf_size, char prefix)
@@ -666,4 +648,22 @@ static ScmObj parse_number(ScmObj port,
 
  err:
     ERR("ill-formatted number: #%c%s", prefix, buf);
+}
+
+static ScmObj read_number(ScmObj port, char prefix)
+{
+    int err;
+    size_t len;
+    char buf[INT_LITERAL_LEN_MAX + sizeof((char)'\0')];
+
+    len = read_token(port, &err, buf, sizeof(buf), DELIMITER_CHARS);
+    if (err == TOKEN_BUF_EXCEEDED)
+        ERR("invalid number literal");
+
+    return parse_number(port, buf, sizeof(buf), prefix);
+}
+
+static ScmObj read_quote(ScmObj port, ScmObj quoter)
+{
+    return SCM_LIST_2(quoter, read_sexpression(port));
 }
