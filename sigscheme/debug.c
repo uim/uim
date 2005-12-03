@@ -690,10 +690,14 @@ static int get_shared_index(ScmObj obj)
 void SigScm_WriteToPortWithSharedStructure(ScmObj port, ScmObj obj)
 {
     write_ss_context ctx = {{0}};
+    unsigned int i;
 
     ctx.next_index = 1;
     ctx.seen.size = 1 << 8; /* arbitrary initial size */
     ctx.seen.ents = calloc(ctx.seen.size, sizeof(hash_entry));
+    for (i = 0; i < ctx.seen.size; i++) {
+        ctx.seen.ents[i].key = SCM_INVALID;
+    }
 
     write_ss_scan(obj, &ctx);
 
