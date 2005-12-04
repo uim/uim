@@ -140,6 +140,11 @@
                (lambda ()
                  (cond
                   (#t => delay))))
+;; '=>' is not applicable at 'else' clause
+(assert-error  "cond invalid form #13"
+               (lambda ()
+                 (cond
+                  (else => values))))
 
 ;; not specified in R5RS, but SigScheme surely returns #<undef>
 (if (provided? "sigscheme")
@@ -205,7 +210,179 @@
                 ((> 3 2) 'greater0 'greater1)
                 (else #f)))
 
+;;
 ;; case
+;;
+(assert-error  "case invalid form #1"
+               (lambda ()
+                 (case)))
+(assert-error  "case invalid form #2"
+               (lambda ()
+                 (case 'key)))
+(assert-error  "case invalid form #3"
+               (lambda ()
+                 (case 'key
+                   ())))
+(assert-error  "case invalid form #4"
+               (lambda ()
+                 (case 'key
+                   (1))))
+(assert-error  "case invalid form #5"
+               (lambda ()
+                 (case 'key
+                   ((1 . 2)))))
+
+(if (provided? "sigscheme")
+    (begin
+      ;; improper clause does not cause error if not evaled
+      (assert-equal? "case invalid form #6"
+                     (undef)
+                     (case 'key
+                       ((1) . 2)))
+      (assert-equal?  "case invalid form #7"
+                      (undef)
+                      (case 'key
+                        ((1) #t . 2)))
+      ;; causes error when evaled
+      (assert-error  "case invalid form #6"
+                     (lambda ()
+                       (case 1
+                         ((1) . 2))))
+      (assert-error  "case invalid form #7"
+                     (lambda ()
+                       (case 1
+                         ((1) #t . 2))))))
+
+(assert-error  "case invalid form #8"
+               (lambda ()
+                 (case 'key
+                  ()
+                  (else #t))))
+;; 'else' followed by another caluse
+(assert-error  "case invalid form #9"
+               (lambda ()
+                 (case 'key
+                  (else #t)
+                  (#t))))
+;; not specified in R5RS, but SigScheme should cause error
+(if (provided? "sigscheme")
+    (assert-error  "case invalid form #10"
+                   (lambda ()
+                     (case 'key
+                      (else)))))
+(assert-error  "case invalid form #11"
+               (lambda ()
+                 (case 'key
+                  (#t =>))))
+(assert-error  "case invalid form #12"
+               (lambda ()
+                 (case 'key
+                  (#t =>)
+                  (else #t))))
+(assert-error  "case invalid form #13"
+               (lambda ()
+                 (case 'key
+                  (else =>))))
+(assert-error  "case invalid form #14"
+               (lambda ()
+                 (case 'key
+                  (else => symbol?))))
+(assert-error  "case invalid form #15"
+               (lambda ()
+                 (case 'key
+                  (else => #t))))
+;; not a procedure
+(assert-error  "case invalid form #16"
+               (lambda ()
+                 (case 'key
+                  (#t => #t))))
+(assert-error  "case invalid form #17"
+               (lambda ()
+                 (case 'key
+                  (#t => #f))))
+;; procedure but argument number mismatch
+(assert-error  "case invalid form #18"
+               (lambda ()
+                 (case 'key
+                  (#t => eq?))))
+;; not a procedure but a syntax
+(assert-error  "case invalid form #19"
+               (lambda ()
+                 (case 'key
+                  (#t => delay))))
+
+;; not specified in R5RS, but SigScheme surely returns #<undef>
+(if (provided? "sigscheme")
+    (assert-equal?  "case unspecified behavior #1"
+                    (undef)
+                    (case 'key
+                      ((#f)))))
+(if (provided? "sigscheme")
+    (assert-equal?  "case unspecified behavior #2"
+                    (undef)
+                    (case 'key
+                      ((foo) #f)
+                      ((bar) #f))))
+
+;; R5RS: If the selected <clause> contains only the <test> and no
+;; <expression>s, then the value of the <test> is returned as the result.
+(assert-equal?  "case"
+                'key
+                (case 'key
+                  ((key))))
+(assert-equal?  "case"
+                'key
+                (case 'key
+                  ((#f))
+                  ((key))))
+(assert-equal?  "case"
+                'key
+                (case 'key
+                  ((#f))
+                  ((key))
+                  ((foo))))
+(assert-equal? "case"
+               'odd
+               (case 3
+                 ((1 3 5) 'odd)
+                 ((2 4 6) 'even)))
+(assert-equal? "case"
+               'unknown
+               (case 0
+                 ((1 3 5) 'odd)
+                 ((2 4 6) 'even)
+                 (else 'unknown)))
+(assert-equal? "case"
+               'odd
+               (case (+ 1 2)
+                 ((1 3 5) 'odd)
+                 ((2 4 6) 'even)
+                 (else 'unknown)))
+(assert-equal? "case"
+               3
+               (case 3
+                 ((1 3 5))
+                 ((2 4 6) 'even)
+                 (else 'unknown)))
+(assert-equal? "case"
+               -3
+               (case 3
+                 ((1 3 5) => -)
+                 ((2 4 6) 'even)
+                 (else 'unknown)))
+(assert-equal? "case"
+               'unknown
+               (case 0
+                 ((1 3 5) => -)
+                 ((2 4 6) 'even)
+                 (else 'unknown)))
+(assert-equal? "case"
+               'second
+               (case 3
+                 ((1 3 5) 'first 'second)
+                 ((2 4 6) 'even)
+                 (else 'unknown)))
+
 (assert-equal? "basic case check1" 'case1 (case 1
 					 ((1) 'case1)
 					 ((2) 'case2)))

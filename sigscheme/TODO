@@ -84,8 +84,6 @@ Assigned to Kazuki:
 
 Assigned to YamaKen:
 
-* Rewrite ScmExp_case() and obsolete 'else' value
-
 * Revise fatal error handling
 
 * Fix character and escape sequence related issues. grep Scm_special_char_table

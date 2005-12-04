@@ -456,7 +456,7 @@ ScmObj Scm_SymbolValue(ScmObj var, ScmObj env);
 ScmObj Scm_eval(ScmObj obj, ScmObj env);
 ScmObj Scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
 
-ScmObj ScmExp_cond_internal(ScmObj args, ScmEvalState *eval_state);
+ScmObj ScmExp_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state);
 
 /* error.c */
 void SigScm_InitError(void);

@@ -776,8 +776,8 @@ ScmObj ScmExp_setd(ScmObj sym, ScmObj exp, ScmObj env)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.1 Conditionals
 ===========================================================================*/
-/* body of 'cond' and also invoked from 'guard' of SRFI-34 */
-ScmObj ScmExp_cond_internal(ScmObj args, ScmEvalState *eval_state)
+/* body of 'cond' and also invoked from 'case' and 'guard' of SRFI-34 */
+ScmObj ScmExp_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
 {
     /*
      * (cond <clause1> <clause2> ...)
@@ -798,6 +798,10 @@ ScmObj ScmExp_cond_internal(ScmObj args, ScmEvalState *eval_state)
     ScmObj proc   = SCM_FALSE;
     DECLARE_INTERNAL_FUNCTION("cond" /* , SyntaxVariadicTailRec0 */);
 
+    /* dirty hack to replace internal function name */
+    if (VALIDP(case_key))
+        SCM_MANGLE(name) = "case";
+
     if (NO_MORE_ARG(args))
         ERR("cond: syntax error: at least one clause required");
 
@@ -809,10 +813,14 @@ ScmObj ScmExp_cond_internal(ScmObj args, ScmEvalState *eval_state)
         test = CAR(clause);
         exps = CDR(clause);
 
-        if (EQ(test, SYM_ELSE))
+        if (EQ(test, SYM_ELSE)) {
             ASSERT_NO_MORE_ARG(args);
-        else
-            test = EVAL(test, env);
+        } else {
+            if (VALIDP(case_key))
+                test = (NFALSEP(ScmOp_memv(case_key, test))) ? case_key : SCM_FALSE;
+            else
+                test = EVAL(test, env);
+        }
 
         if (NFALSEP(test)) {
             /*
@@ -836,7 +844,9 @@ ScmObj ScmExp_cond_internal(ScmObj args, ScmEvalState *eval_state)
              * of the <test> and the value returned by this procedure is
              * returned by the cond expression.
              */
-            if (EQ(SYM_YIELDS, CAR(exps)) && CONSP(CDR(exps))) {
+            if (EQ(SYM_YIELDS, CAR(exps)) && CONSP(CDR(exps))
+                && !EQ(test, SYM_ELSE))
+            {
                 if (!NULLP(CDDR(exps)))
                     ERR_OBJ("bad clause", clause);
                 proc = EVAL(CADR(exps), env);
@@ -863,43 +873,18 @@ ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
     ScmObj ret;
     DECLARE_FUNCTION("cond", SyntaxVariadicTailRec0);
 
-    ret = ScmExp_cond_internal(args, eval_state);
+    ret = ScmExp_cond_internal(args, SCM_INVALID, eval_state);
     return (VALIDP(ret)) ? ret : SCM_UNDEF;
 }
 
-/* FIXME: argument extraction */
-ScmObj ScmExp_case(ScmObj key, ScmObj args, ScmEvalState *eval_state)
+ScmObj ScmExp_case(ScmObj key, ScmObj clauses, ScmEvalState *eval_state)
 {
-    ScmObj env    = eval_state->env;
-    ScmObj clause = SCM_NULL;
-    ScmObj data   = SCM_NULL;
-    ScmObj exps   = SCM_NULL;
+    ScmObj ret;
     DECLARE_FUNCTION("case", SyntaxVariadicTailRec1);
 
-    /* get key */
-    key = EVAL(key, env);
-
-    /* looping in each clause */
-    for (; !NULLP(args); args = CDR(args)) {
-        clause = CAR(args);
-        data   = CAR(clause);
-        exps   = CDR(clause);
-        if (NULLP(clause) || NULLP(data) || NULLP(exps))
-            SigScm_Error("case : syntax error");
-
-        /* check "else" symbol */
-        if (NULLP(CDR(args)) && !CONSP(data) && NFALSEP(SCM_SYMBOL_VCELL(data)))
-            return ScmExp_begin(exps, eval_state);
-
-        /* evaluate data and compare to key by eqv? */
-        for (; !NULLP(data); data = CDR(data)) {
-            if (NFALSEP(ScmOp_eqvp(CAR(data), key))) {
-                return ScmExp_begin(exps, eval_state);
-            }
-        }
-    }
-
-    return SCM_UNDEF;
+    key = EVAL(key, eval_state->env);
+    ret = ScmExp_cond_internal(clauses, key, eval_state);
+    return (VALIDP(ret)) ? ret : SCM_UNDEF;
 }
 
 ScmObj ScmExp_and(ScmObj args, ScmEvalState *eval_state)

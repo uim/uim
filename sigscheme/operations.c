@@ -852,6 +852,11 @@ ScmObj ScmOp_memq(ScmObj obj, ScmObj lst)
         if (EQ(obj, CAR(lst)))
             return lst;
 
+#if SCM_STRICT_ARGCHECK
+    if (!NULLP(lst))
+        ERR_OBJ("invalid list", lst);
+#endif
+
     return SCM_FALSE;
 }
 
@@ -863,6 +868,11 @@ ScmObj ScmOp_memv(ScmObj obj, ScmObj lst)
         if (NFALSEP(ScmOp_eqvp(obj, CAR(lst))))
             return lst;
 
+#if SCM_STRICT_ARGCHECK
+    if (!NULLP(lst))
+        ERR_OBJ("invalid list", lst);
+#endif
+
     return SCM_FALSE;
 }
 
@@ -873,6 +883,11 @@ ScmObj ScmOp_member(ScmObj obj, ScmObj lst)
     for (; CONSP(lst); lst = CDR(lst))
         if (NFALSEP(ScmOp_equalp(obj, CAR(lst))))
             return lst;
+
+#if SCM_STRICT_ARGCHECK
+    if (!NULLP(lst))
+        ERR_OBJ("invalid list", lst);
+#endif
 
     return SCM_FALSE;
 }

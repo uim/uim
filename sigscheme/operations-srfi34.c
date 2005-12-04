@@ -353,7 +353,7 @@ static ScmObj guard_handler_body(ScmObj q_handler_k, ScmObj env)
                                      lex_env);
     eval_state.env = cond_env;
     eval_state.ret_type = SCM_RETTYPE_NEED_EVAL;
-    caught = ScmExp_cond_internal(clauses, &eval_state);
+    caught = ScmExp_cond_internal(clauses, SCM_INVALID, &eval_state);
 
     if (VALIDP(caught)) {
         if (eval_state.ret_type == SCM_RETTYPE_NEED_EVAL)
