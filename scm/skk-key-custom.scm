@@ -170,7 +170,7 @@
 	       (_ "[SKK] begin completion")
 	       (_ "long description will be here"))
 
-(define-custom 'skk-next-completion-key '("." skk-begin-completion-key)
+(define-custom 'skk-next-completion-key '("." "tab" "<IgnoreCase><Control>i")
                '(skk-keys2 skk-keys-completion)
 	       '(key)
 	       (_ "[SKK] next completion candidate")
