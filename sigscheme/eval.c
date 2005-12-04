@@ -1492,10 +1492,8 @@ ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
       (define <variable> <expression>)
     ========================================================================*/
     if (SYMBOLP(var)) {
-        if (NULLP(rest))
-            SigScm_Error("define : missing expression");
-        if (!CONSP(rest))
-            ERR_OBJ("proper list is required as <expression> but got", rest);
+        if (!LIST_1_P(rest))
+            ERR_OBJ("exactly 1 arg required but got", rest);
 
         define_internal(var, POP_ARG(rest), env);
         ASSERT_NO_MORE_ARG(rest);
@@ -1513,12 +1511,14 @@ ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
         body       = rest;
 
         if (NULLP(body))
-            SigScm_Error("define : missing function body");
+            ERR("define: missing function body");
+#if SCM_STRICT_ARGCHECK
+        /* this is not necessary because checked in closure call */
         if (!CONSP(body))
             ERR_OBJ("proper list is required as <body> but got", body);
+#endif
 
-        if (!SYMBOLP(procname))
-            ERR_OBJ("symbol required but got", procname);
+        ASSERT_SYMBOLP(procname);
 
         define_internal(procname,
                         Scm_NewClosure(CONS(formals, body), env),
