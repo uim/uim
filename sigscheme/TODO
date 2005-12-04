@@ -1,11 +1,6 @@
 ==============================================================================
 Requirements and bugs:
 
-* Fix character and escape sequence related issues. grep Scm_special_char_table
-  to find the issues, and make all tests in test-char.scm and test-string.scm
-  passed
-  - Write tests for SRFI-75
-
 * Autoconfiscate the SigScheme package (don't rely on uim's configure)
   - Prepare replace functions (asprintf and so on)
   - Introduce C99-independent stdint.h
@@ -49,12 +44,13 @@ Performance improvements:
 ==============================================================================
 Logical simplifications:
 
+* rewrite all #ifdef'ed SigScm_WriteToPortWithSharedStructure() invocation with
+  SCM_WRITESS_TO_PORT()
+
 * Simplify argument extraction by DECLARE_FUNCTION, ASSERT_*P, POP_ARG and
   NO_MORE_ARG macros in all procedure and syntaxes
 
 * Replace all Scm_ErrorObj() in procedures and syntaxes with ERR_OBJ
-
-* Simplify special character handlings with Scm_special_char_table
 
 * Reorganize SCM_SHIFT*() macros to complement POP_ARG() macro
 
@@ -87,6 +83,15 @@ Assigned to Kazuki:
 ==============================================================================
 
 Assigned to YamaKen:
+
+* Rewrite ScmExp_case() and obsolete 'else' value
+
+* Revise fatal error handling
+
+* Fix character and escape sequence related issues. grep Scm_special_char_table
+  to find the issues, and make all tests in test-char.scm and test-string.scm
+  passed
+  - Write tests for SRFI-75
 
 * Add integer->char and char->integer procedures with multibyte support
   - Write test

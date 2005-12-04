@@ -1282,7 +1282,6 @@ ScmObj ScmOp_substring(ScmObj str, ScmObj start, ScmObj end)
     if (c_start_index > c_end_index)
         ERR("substring: start index is greater than end index.");
 
-    /* FIXME: strlen() can be eliminated. */
     string_str = SCM_STRING_STR(str);
     SCM_MBS_INIT(mbs);
     SCM_MBS_SET_STR(mbs, string_str);
