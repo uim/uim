@@ -334,8 +334,6 @@ typedef ScmRef ScmQueue;
         while (CONSP(DEREF(_q)))                \
             (_q) = REF_CDR(DEREF(_q));          \
     } while (/* CONSTCOND */ 0)
-#define SCM_QUEUE_TERMINATE(_q, _cdr) (SET((_q), _cdr),                      \
-                                       SCM_QUEUE_INVALIDATE(_q))
 #define SCM_QUEUE_TERMINATOR(_q)          (DEREF(_q))
 #define SCM_QUEUE_SLOPPY_APPEND(_q, _lst) (DEREF(_q) = (_lst))
 

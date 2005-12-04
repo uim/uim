@@ -369,7 +369,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
                 if (c != ')')
                     ERR("bad dot syntax");
 
-                SCM_QUEUE_TERMINATE(q, cdr);
+                SCM_QUEUE_SLOPPY_APPEND(q, cdr);
                 return lst;
             } else if (strcmp(dot_buf, "...") == 0) {
                 elm = Scm_Intern(dot_buf);
