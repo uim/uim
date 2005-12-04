@@ -412,7 +412,14 @@ struct ScmCell_ {
 #define SCM_REF_CAR(cons) (&SCM_CAR(cons))
 #define SCM_REF_CDR(cons) (&SCM_CDR(cons))
 #define SCM_REF_OFF_HEAP(obj) (&(obj))
+
+/* SCM_DEREF(ref) is not permitted to be used as lvalue */
+#if SCM_DEBUG
+#define SCM_DEREF(ref)    (*(ref) + 0)
+#else /* SCM_DEBUG */
 #define SCM_DEREF(ref)    (*(ref))
+#endif /* SCM_DEBUG */
+
 /* RFC: Is there a better name? */
 #define SCM_SET(ref, obj) (*(ref) = (obj))
 

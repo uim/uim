@@ -724,7 +724,13 @@ extern ScmObj Scm_sym_unquote, Scm_sym_unquote_splicing;
 #define SCM_REF_CAR(cons) (&SCM_GET_DIRECT_CAR(cons))
 #define SCM_REF_CDR(cons) (&SCM_GET_DIRECT_CDR(cons))
 #define SCM_REF_OFF_HEAP(obj) (&(obj))
+
+/* SCM_DEREF(ref) is not permitted to be used as lvalue */
+#if SCM_DEBUG
+#define SCM_DEREF(ref)    (*(ref) + 0)
+#else /* SCM_DEBUG */
 #define SCM_DEREF(ref)    (*(ref))
+#endif /* SCM_DEBUG */
 
 /* RFC: Is there a better name? */
 #define SCM_SET(ref, obj) (*(ref) = (ScmObj)((SCM_CAST_UINT(*(ref)) & SCM_GCBIT_MASK) | SCM_CAST_UINT(obj)))

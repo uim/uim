@@ -330,12 +330,12 @@ typedef ScmRef ScmQueue;
                                  (_q) = REF_CDR(DEREF(_q)))
 #define SCM_QUEUE_APPEND(_q, _lst)              \
     do {                                        \
-        DEREF(_q) = (_lst);                     \
+        SET((_q), (_lst));                      \
         while (CONSP(DEREF(_q)))                \
             (_q) = REF_CDR(DEREF(_q));          \
     } while (/* CONSTCOND */ 0)
 #define SCM_QUEUE_TERMINATOR(_q)          (DEREF(_q))
-#define SCM_QUEUE_SLOPPY_APPEND(_q, _lst) (DEREF(_q) = (_lst))
+#define SCM_QUEUE_SLOPPY_APPEND(_q, _lst) (SET((_q), (_lst)))
 
 /*=======================================
    Local Buffer Allocator
