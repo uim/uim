@@ -162,7 +162,6 @@ ScmObj ScmOp_provide(ScmObj feature)
  */
 ScmObj ScmOp_providedp(ScmObj feature)
 {
-    ScmObj provided = SCM_FALSE;
     DECLARE_FUNCTION("provided?", ProcedureFixed1);
 
     ASSERT_STRINGP(feature);
