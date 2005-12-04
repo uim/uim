@@ -1600,9 +1600,9 @@ ScmObj ScmOp_procedurep(ScmObj obj)
 ScmObj ScmOp_map(ScmObj proc, ScmObj args)
 {
     DECLARE_FUNCTION("map", ProcedureVariadic1);
-     /* sanity check */
+
     if (NULLP(args))
-        SigScm_Error("map : wrong number of arguments");
+        ERR("map: wrong number of arguments");
 
     /* fast path for single arg case */
     if (NULLP(CDR(args)))
@@ -1651,6 +1651,8 @@ static ScmObj map_multiple_args(ScmObj proc, ScmObj args)
             /* pop destructively */
             SET_CAR(rest_args, CDR(arg));
         }
+        if (!NULLP(rest_args))
+            ERR_OBJ("proper list required but got", args);
 
         SCM_QUEUE_ADD(resq, Scm_call(proc, map_args));
     }
