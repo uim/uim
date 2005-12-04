@@ -318,7 +318,7 @@ enum ScmStrMutationType {
 #define SCM_GET_VALUE_AS_OBJ_DISCARDS_GCBIT(a, mask)   ((ScmObj)(SCM_CAST_UINT(a) & (mask & ~SCM_GCBIT_MASK)))
 #define SCM_GET_VALUE_AS_INT_DISCARDS_GCBIT(a, offset) ((int)   (SCM_CAST_UINT(a) >> (offset)))
 #define SCM_GET_VALUE_AS_PTR_DISCARDS_GCBIT(a, mask)   ((void*) (SCM_CAST_UINT(a) & (mask & ~SCM_GCBIT_MASK)))
-#define SCM_GET_VALUE_AS_STR_DISCARDS_GCBIT(a, mask)   ((char*) (SCM_GET_VALUE_AS_PTR_DISCARDS_GCBIT((a), (mask & ~SCM_GCBIT_MASK))))
+#define SCM_GET_VALUE_AS_STR_DISCARDS_GCBIT(a, mask)   ((char*) (SCM_GET_VALUE_AS_PTR_DISCARDS_GCBIT((a), (mask))))
 
 #define SCM_SET_VALUE_AS_OBJ_REMAIN_GCBIT(a, val)                       \
     ((a) = (ScmObj)((SCM_CAST_UINT(a) & SCM_GCBIT_MASK) | (SCM_CAST_UINT(val) & ~SCM_GCBIT_MASK)))
@@ -327,19 +327,18 @@ enum ScmStrMutationType {
 #define SCM_SET_VALUE_AS_PTR_REMAIN_GCBIT(a, val, tag)                  \
     (SCM_SET_VALUE_AS_OBJ_REMAIN_GCBIT((a), (SCM_CAST_UINT(val) | (tag))))
 #define SCM_SET_VALUE_AS_STR_REMAIN_GCBIT(a, val, tag)                  \
-    (SCM_SET_VALUE_AS_PTR_REMAIN_GCBIT((a), (val), (tag))
+    (SCM_SET_VALUE_AS_PTR_REMAIN_GCBIT((a), (val), (tag)))
 
 /* Primary Obj */
 #define SCM_PRIMARY_GET_VALUE_AS_OBJ(a)         (SCM_GET_VALUE_AS_OBJ_DISCARDS_GCBIT((a), SCM_VALUE_MASK))
 #define SCM_PRIMARY_GET_VALUE_AS_INT(a, offset) (SCM_GET_VALUE_AS_INT_DISCARDS_GCBIT((a), (offset)))
 #define SCM_PRIMARY_GET_VALUE_AS_PTR(a, mask)   (SCM_GET_VALUE_AS_PTR_DISCARDS_GCBIT((a), (mask)))
-#define SCM_PRIMARY_GET_VALUE_AS_STR(a, mask)   ((char*)SCM_PRIMARY_GET_VALUE_AS_PTR((a), (mask)))
+#define SCM_PRIMARY_GET_VALUE_AS_STR(a, mask)   (SCM_GET_VALUE_AS_STR_DISCARDS_GCBIT((a), (mask)))
 
-/* Not Used
-#define SCM_PRIMARY_SET_VALUE_AS_OBJ(a, val)              (SCM_SET_VALUE_AS_OBJ_REMAIN_GCBIT((a), (val))) */
+#define SCM_PRIMARY_SET_VALUE_AS_OBJ(a, val)              (SCM_SET_VALUE_AS_OBJ_REMAIN_GCBIT((a), (val)))
 #define SCM_PRIMARY_SET_VALUE_AS_INT(a, val, offset, tag) (SCM_SET_VALUE_AS_INT_REMAIN_GCBIT((a), (val), (offset), (tag)))
 #define SCM_PRIMARY_SET_VALUE_AS_PTR(a, val, tag)         (SCM_SET_VALUE_AS_PTR_REMAIN_GCBIT((a), (val), (tag)))
-#define SCM_PRIMARY_SET_VALUE_AS_STR(a, val, tag)         (SCM_PRIMARY_SET_VALUE_AS_PTR((a), (val), (tag)))
+#define SCM_PRIMARY_SET_VALUE_AS_STR(a, val, tag)         (SCM_SET_VALUE_AS_STR_REMAIN_GCBIT((a), (val), (tag)))
 
 /* CAR & CDR Direct Accessor */
 #define SCM_GET_DIRECT_CAR(a)      (SCM_PRIMARY_GET_VALUE_AS_OBJ(a)->car)
@@ -351,23 +350,23 @@ enum ScmStrMutationType {
 #define SCM_CAR_GET_VALUE_AS_OBJ(a)         (SCM_GET_VALUE_AS_OBJ_DISCARDS_GCBIT(SCM_GET_DIRECT_CAR(a), ~0U))
 #define SCM_CAR_GET_VALUE_AS_INT(a, offset) (SCM_GET_VALUE_AS_INT_DISCARDS_GCBIT(SCM_GET_DIRECT_CAR(a), (offset)))
 #define SCM_CAR_GET_VALUE_AS_PTR(a)         (SCM_GET_VALUE_AS_PTR_DISCARDS_GCBIT(SCM_GET_DIRECT_CAR(a), ~0U))
-#define SCM_CAR_GET_VALUE_AS_STR(a)         ((char*)SCM_CAR_GET_VALUE_AS_PTR(a))
+#define SCM_CAR_GET_VALUE_AS_STR(a)         (SCM_GET_VALUE_AS_STR_DISCARDS_GCBIT(SCM_GET_DIRECT_CAR(a), ~0U))
 
 #define SCM_CAR_SET_VALUE_AS_OBJ(a, val)         (SCM_SET_VALUE_AS_OBJ_REMAIN_GCBIT(SCM_GET_DIRECT_CAR(a), (val)))
 #define SCM_CAR_SET_VALUE_AS_INT(a, val, offset) (SCM_SET_VALUE_AS_INT_REMAIN_GCBIT(SCM_GET_DIRECT_CAR(a), (val), (offset), 0))
 #define SCM_CAR_SET_VALUE_AS_PTR(a, val)         (SCM_SET_VALUE_AS_PTR_REMAIN_GCBIT(SCM_GET_DIRECT_CAR(a), (val), 0))
-#define SCM_CAR_SET_VALUE_AS_STR(a, val)         (SCM_CAR_SET_VALUE_AS_PTR((a), (val)))
+#define SCM_CAR_SET_VALUE_AS_STR(a, val)         (SCM_SET_VALUE_AS_STR_REMAIN_GCBIT(SCM_GET_DIRECT_CAR(a), (val), 0))
 
 /* CDR */
 #define SCM_CDR_GET_VALUE_AS_OBJ(a)         (SCM_GET_VALUE_AS_OBJ_DISCARDS_GCBIT(SCM_GET_DIRECT_CDR(a), ~0U))
 #define SCM_CDR_GET_VALUE_AS_INT(a, offset) (SCM_GET_VALUE_AS_INT_DISCARDS_GCBIT(SCM_GET_DIRECT_CDR(a), (offset)))
 #define SCM_CDR_GET_VALUE_AS_PTR(a, mask)   (SCM_GET_VALUE_AS_PTR_DISCARDS_GCBIT(SCM_GET_DIRECT_CDR(a), (mask)))
-#define SCM_CDR_GET_VALUE_AS_STR(a, mask)   ((char*)SCM_CDR_GET_VALUE_AS_PTR((a), (mask)))
+#define SCM_CDR_GET_VALUE_AS_STR(a, mask)   (SCM_GET_VALUE_AS_STR_DISCARDS_GCBIT(SCM_GET_DIRECT_CDR(a), (mask)))
 
 #define SCM_CDR_SET_VALUE_AS_OBJ(a, val)              (SCM_SET_VALUE_AS_OBJ_REMAIN_GCBIT(SCM_GET_DIRECT_CDR(a), (val)))
 #define SCM_CDR_SET_VALUE_AS_INT(a, val, offset, tag) (SCM_SET_VALUE_AS_INT_REMAIN_GCBIT(SCM_GET_DIRECT_CDR(a), (val), (offset), (tag)))
 #define SCM_CDR_SET_VALUE_AS_PTR(a, val, tag)         (SCM_SET_VALUE_AS_PTR_REMAIN_GCBIT(SCM_GET_DIRECT_CDR(a), (val), (tag)))
-#define SCM_CDR_SET_VALUE_AS_STR(a, val, tag)         (SCM_CDR_SET_VALUE_AS_PTR((a), (val), (tag)))
+#define SCM_CDR_SET_VALUE_AS_STR(a, val, tag)         (SCM_SET_VALUE_AS_STR_REMAIN_GCBIT(SCM_GET_DIRECT_CDR(a), (val), (tag)))
 
 /*=======================================
    Casting to unsigned int
@@ -477,6 +476,7 @@ enum ScmStrMutationType {
 #define SCM_ENTYPE_PRIMARY_TAG_CLOSURE(a) (SCM_ENTYPE_PRIMARY_TAG((a), SCM_TAG_CLOSURE))
 #define SCM_ENTYPE_PRIMARY_TAG_OTHERS(a)  (SCM_ENTYPE_PRIMARY_TAG((a), SCM_TAG_OTHERS))
 
+/* Scheme Objects */
 #define SCM_ENTYPE_CONS(a)          (SCM_ENTYPE_PRIMARY_TAG_CONS(a),    SCM_DO_UNMARK(a), SCM_SET_DIRECT_CDR(a, 0x0))
 #define SCM_ENTYPE_CLOSURE(a)       (SCM_ENTYPE_PRIMARY_TAG_CLOSURE(a), SCM_DO_UNMARK(a), SCM_SET_DIRECT_CDR(a, 0x0))
 #define SCM_ENTYPE_SYMBOL(a)        (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_DO_UNMARK(a), SCM_SET_DIRECT_CDR(a, SCM_TAG_OTHERS_SYMBOL))
@@ -488,15 +488,19 @@ enum ScmStrMutationType {
 #define SCM_ENTYPE_CONTINUATION(a)  (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_DO_UNMARK(a), SCM_SET_DIRECT_CDR(a, SCM_TAG_OTHERS_CONTINUATION))
 #define SCM_ENTYPE_C_POINTER(a)     (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_DO_UNMARK(a), SCM_SET_DIRECT_CDR(a, SCM_TAG_OTHERS_C_POINTER))
 #define SCM_ENTYPE_C_FUNCPOINTER(a) (SCM_ENTYPE_PRIMARY_TAG_OTHERS(a),  SCM_DO_UNMARK(a), SCM_SET_DIRECT_CDR(a, SCM_TAG_OTHERS_C_FUNCPOINTER))
-#define SCM_ENTYPE_INT(a)           (SCM_ENTYPE_TAG((a), SCM_TAG_IMM_INT,  ~SCM_TAG_IMM_MASK_INT))
-#define SCM_ENTYPE_CHAR(a)          (SCM_ENTYPE_TAG((a), SCM_TAG_IMM_CHAR, ~SCM_TAG_IMM_MASK_CHAR))
-#define SCM_ENTYPE_NULL(a)          (SCM_ENTYPE_TAG((a), SCM_IMM_NULL,     ~SCM_TAG_IMM_MASK_CONST_VALUE))
-#define SCM_ENTYPE_INVALID(a)       (SCM_ENTYPE_TAG((a), SCM_IMM_INVALID,  ~SCM_TAG_IMM_MASK_CONST_VALUE))
-#define SCM_ENTYPE_UNBOUND(a)       (SCM_ENTYPE_TAG((a), SCM_IMM_UNBOUND,  ~SCM_TAG_IMM_MASK_CONST_VALUE))
-#define SCM_ENTYPE_FALSE(a)         (SCM_ENTYPE_TAG((a), SCM_IMM_FALSE,    ~SCM_TAG_IMM_MASK_CONST_VALUE))
-#define SCM_ENTYPE_TRUE(a)          (SCM_ENTYPE_TAG((a), SCM_IMM_TRUE,     ~SCM_TAG_IMM_MASK_CONST_VALUE))
-#define SCM_ENTYPE_EOF(a)           (SCM_ENTYPE_TAG((a), SCM_IMM_EOF,      ~SCM_TAG_IMM_MASK_CONST_VALUE))
-#define SCM_ENTYPE_UNDEF(a)         (SCM_ENTYPE_TAG((a), SCM_IMM_UNDEF,    ~SCM_TAG_IMM_MASK_CONST_VALUE))
+
+/* Constants */
+#define SCM_INIT_CONSTANT(a)        ((a) = (ScmObj)(0U))
+
+#define SCM_ENTYPE_INT(a)           (SCM_INIT_CONSTANT(a), SCM_ENTYPE_TAG((a), SCM_TAG_IMM_INT,  ~SCM_TAG_IMM_MASK_INT))
+#define SCM_ENTYPE_CHAR(a)          (SCM_INIT_CONSTANT(a), SCM_ENTYPE_TAG((a), SCM_TAG_IMM_CHAR, ~SCM_TAG_IMM_MASK_CHAR))
+#define SCM_ENTYPE_NULL(a)          (SCM_INIT_CONSTANT(a), SCM_ENTYPE_TAG((a), SCM_IMM_NULL,     ~SCM_TAG_IMM_MASK_CONST_VALUE))
+#define SCM_ENTYPE_INVALID(a)       (SCM_INIT_CONSTANT(a), SCM_ENTYPE_TAG((a), SCM_IMM_INVALID,  ~SCM_TAG_IMM_MASK_CONST_VALUE))
+#define SCM_ENTYPE_UNBOUND(a)       (SCM_INIT_CONSTANT(a), SCM_ENTYPE_TAG((a), SCM_IMM_UNBOUND,  ~SCM_TAG_IMM_MASK_CONST_VALUE))
+#define SCM_ENTYPE_FALSE(a)         (SCM_INIT_CONSTANT(a), SCM_ENTYPE_TAG((a), SCM_IMM_FALSE,    ~SCM_TAG_IMM_MASK_CONST_VALUE))
+#define SCM_ENTYPE_TRUE(a)          (SCM_INIT_CONSTANT(a), SCM_ENTYPE_TAG((a), SCM_IMM_TRUE,     ~SCM_TAG_IMM_MASK_CONST_VALUE))
+#define SCM_ENTYPE_EOF(a)           (SCM_INIT_CONSTANT(a), SCM_ENTYPE_TAG((a), SCM_IMM_EOF,      ~SCM_TAG_IMM_MASK_CONST_VALUE))
+#define SCM_ENTYPE_UNDEF(a)         (SCM_INIT_CONSTANT(a), SCM_ENTYPE_TAG((a), SCM_IMM_UNDEF,    ~SCM_TAG_IMM_MASK_CONST_VALUE))
 
 /*=======================================
    Real Accessors
@@ -727,9 +731,9 @@ extern ScmObj Scm_sym_unquote, Scm_sym_unquote_splicing;
 
 /* SCM_DEREF(ref) is not permitted to be used as lvalue */
 #if SCM_DEBUG
-#define SCM_DEREF(ref)    (*(ref) + 0)
+#define SCM_DEREF(ref)    ((ScmObj)(SCM_CAST_UINT(*(ref) + 0) & ~SCM_GCBIT_MASK))
 #else /* SCM_DEBUG */
-#define SCM_DEREF(ref)    (*(ref))
+#define SCM_DEREF(ref)    ((ScmObj)(SCM_CAST_UINT(*(ref)) & ~SCM_GCBIT_MASK))
 #endif /* SCM_DEBUG */
 
 /* RFC: Is there a better name? */
