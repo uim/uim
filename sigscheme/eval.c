@@ -1017,13 +1017,7 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
     if (!NULLP(bindings))
         ERR_OBJ("invalid bindings form", bindings);
 
-#if 1
-    /* current implementation Scm_ExtendEnvironment() contains unnecessary
-       error checking for let variants. So we extend manually */
-    env = CONS(CONS(vars, vals), env);
-#else
     env = Scm_ExtendEnvironment(vars, vals, env);
-#endif
     eval_state->env = env;
 
     /* named let */
@@ -1071,14 +1065,7 @@ ScmObj ScmExp_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
         val = EVAL(val, env);
 
         /* extend env for each variable */
-#if 1
-        /* current implementation Scm_ExtendEnvironment() contains unnecessary
-           error checking for let variants. So we extend manually */
-        env = CONS(CONS(LIST_1(var), LIST_1(val)),
-                   env);
-#else
         env = Scm_ExtendEnvironment(LIST_1(var), LIST_1(val), env);
-#endif
     }
 
     if (!NULLP(bindings))
