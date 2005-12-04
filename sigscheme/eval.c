@@ -61,6 +61,9 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+#define EVAL_ARGS          0
+#define SUPPRESS_EVAL_ARGS 1
+
 #define IS_LIST_LEN_1(args)  (CONSP(args) && NULLP(CDR(args)))
 /* for the quasiquote family */
 #define QQUOTE_SET_VERBATIM(x) ((x) = SCM_INVALID)
@@ -241,7 +244,7 @@ static ScmObj lookup_frame(ScmObj var, ScmObj frame)
 ScmObj Scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
 {
     eval_state->ret_type = SCM_RETTYPE_AS_IS;
-    return call(proc, args, eval_state, 1);
+    return call(proc, args, eval_state, SUPPRESS_EVAL_ARGS);
 }
 
 /* Wrapper for call().  Just like ScmOp_apply(), except ARGS is used
@@ -260,7 +263,7 @@ ScmObj Scm_call(ScmObj proc, ScmObj args)
     state.env       = SCM_INTERACTION_ENV;
     state.ret_type  = SCM_RETTYPE_AS_IS;
 
-    ret = call(proc, args, &state, 1);
+    ret = call(proc, args, &state, SUPPRESS_EVAL_ARGS);
     if (state.ret_type == SCM_RETTYPE_NEED_EVAL)
         ret = EVAL(ret, state.env);
     return ret;
@@ -512,7 +515,7 @@ eval_loop:
         break;
 
     case ScmCons:
-        obj = call(CAR(obj), CDR(obj), &state, 0);
+        obj = call(CAR(obj), CDR(obj), &state, EVAL_ARGS);
         if (state.ret_type == SCM_RETTYPE_NEED_EVAL)
             goto eval_loop;
         /* FALLTHROUGH */
@@ -549,7 +552,7 @@ ScmObj ScmOp_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_sta
     ASSERT_LISTP(last);
 
     /* The last argument inhibits argument re-evaluation. */
-    return call(proc, args, eval_state, 1);
+    return call(proc, args, eval_state, SUPPRESS_EVAL_ARGS);
 }
 
 /* 'var' must be a symbol as precondition */
