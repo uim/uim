@@ -997,7 +997,7 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
     for (; CONSP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
 
-        if (NULLP(binding) || !SYMBOLP(var = CAR(binding)))
+        if (!CONSP(binding) || !SYMBOLP(var = CAR(binding)))
             ERR_OBJ("invalid binding form", binding);
 
 #if SCM_COMPAT_SIOD_BUGS
@@ -1049,7 +1049,7 @@ ScmObj ScmExp_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     for (; CONSP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
 
-        if (NULLP(binding) || !SYMBOLP(var = CAR(binding)))
+        if (!CONSP(binding) || !SYMBOLP(var = CAR(binding)))
             ERR_OBJ("invalid binding form", binding);
 
 #if SCM_COMPAT_SIOD_BUGS
@@ -1105,7 +1105,7 @@ ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     for (; CONSP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
 
-        if (NULLP(binding) || !SYMBOLP(var = CAR(binding)))
+        if (!CONSP(binding) || !SYMBOLP(var = CAR(binding)))
             ERR_OBJ("invalid binding form", binding);
 
 #if SCM_COMPAT_SIOD_BUGS
