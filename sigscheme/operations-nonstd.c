@@ -90,7 +90,7 @@ ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest)
     else
         env = SCM_INTERACTION_ENV;
 
-    return (!NULLP(Scm_LookupEnvironment(sym, env))
+    return (Scm_LookupEnvironment(sym, env) != SCM_INVALID_REF
             || SCM_SYMBOL_BOUNDP(sym)) ? SCM_TRUE : SCM_FALSE;
 }
 

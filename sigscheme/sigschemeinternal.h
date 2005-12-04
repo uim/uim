@@ -450,7 +450,7 @@ void   SigScm_FinalizeSymbol(void);
 /* environment related functions */
 ScmObj Scm_ExtendEnvironment(ScmObj vars, ScmObj vals, ScmObj env);
 ScmObj Scm_AddEnvironment(ScmObj var, ScmObj val, ScmObj env);
-ScmObj Scm_LookupEnvironment(ScmObj var, ScmObj env);
+ScmRef Scm_LookupEnvironment(ScmObj var, ScmObj env);
 ScmObj Scm_SymbolValue(ScmObj var, ScmObj env);
 
 ScmObj Scm_eval(ScmObj obj, ScmObj env);

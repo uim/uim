@@ -79,7 +79,7 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static ScmObj lookup_frame(ScmObj var, ScmObj frame);
+static ScmRef lookup_frame(ScmObj var, ScmObj frame);
 static ScmObj reduce(ScmObj (*func)(), ScmObj args, ScmObj env,
                      int suppress_eval);
 static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
@@ -99,6 +99,8 @@ static qquote_result qquote_vector(ScmObj vec, ScmObj env, int nest);
 /**
  * Construct new frame on an env
  *
+ * @a vars and @a vals must surely be a list.
+ *
  * @param vars Symbol list as variable names of new frame. It accepts dot list
  *             to handle function arguments directly.
  * @param vals Arbitrary Scheme object list as values of new frame. Side
@@ -108,34 +110,23 @@ static qquote_result qquote_vector(ScmObj vec, ScmObj env, int nest);
  */
 ScmObj Scm_ExtendEnvironment(ScmObj vars, ScmObj vals, ScmObj env)
 {
-    ScmObj frame     = SCM_NULL;
-    ScmObj rest_vars, rest_vals;
+    ScmObj frame, rest_vars, rest_vals;
     DECLARE_INTERNAL_FUNCTION("Scm_ExtendEnvironment");
 
-    if (!CONSP(env) && !NULLP(env))
-        SigScm_Error("broken environment");
+#if SCM_STRICT_ARGCHECK
+    if (!LISTP(env))
+        ERR("broken environment");
 
-    /* sanity check & dot list handling */
     for (rest_vars = vars, rest_vals = vals;
-         !NULLP(rest_vars);
+         CONSP(rest_vars) && !NULLP(rest_vals);
          rest_vars = CDR(rest_vars), rest_vals = CDR(rest_vals))
     {
-        if (!CONSP(rest_vars) || !SYMBOLP(CAR(rest_vars)))
-            ERR_OBJ("broken environment handling", rest_vars);
-
-        /* dot list appeared: fold the rest values into a variable */
-        if (SYMBOLP(CDR(rest_vars))) {
-            SET_CDR(rest_vals, LIST_1(CDR(rest_vals)));
-#if SCM_STRICT_ARGCHECK
-            rest_vars = rest_vals = SCM_NULL;
-#endif
+        if (!SYMBOLP(CAR(rest_vars)))
             break;
-        }
     }
-#if SCM_STRICT_ARGCHECK
-    if (!NULLP(rest_vals))
-        ERR_OBJ("unmatched variable number", vals);
-#endif
+    if (!(NULLP(rest_vars) || SYMBOLP(rest_vars)))
+        ERR_OBJ("broken environment extension", rest_vars);
+#endif /* SCM_STRICT_ARGCHECK */
 
     /* create new frame */
     frame = CONS(vars, vals);
@@ -174,70 +165,63 @@ ScmObj Scm_AddEnvironment(ScmObj var, ScmObj val, ScmObj env)
 /**
  * Lookup a variable of an env
  *
- * @return a variable which represented as (val . rest-vals-in-frame).  val is
- *         the value of var. Since the result is the part of the frame, caller
- *         can modify the variable by (set-car! the-list new-val).
- *
- * @todo describe more precicely
+ * @return Reference to the variable. SCM_INVALID_REF if not found.
  */
-ScmObj Scm_LookupEnvironment(ScmObj var, ScmObj env)
+ScmRef Scm_LookupEnvironment(ScmObj var, ScmObj env)
 {
-    ScmObj frame = SCM_NULL;
-    ScmObj val   = SCM_NULL;
+    ScmObj frame;
+    ScmRef ref;
     DECLARE_INTERNAL_FUNCTION("Scm_LookupEnvironment");
 
-    /* sanity check */
-    if (NULLP(env))
-        return SCM_NULL;
-    if (!CONSP(env))
-        ERR_OBJ("broken environent", env);
-
     /* lookup in frames */
-    for (; !NULLP(env); env = CDR(env)) {
+    for (; CONSP(env); env = CDR(env)) {
         frame = CAR(env);
-        val   = lookup_frame(var, frame);
-        if (!NULLP(val))
-            return val;
+        ref   = lookup_frame(var, frame);
+        if (ref != SCM_INVALID_REF)
+            return ref;
     }
 
-    return SCM_NULL;
+#if SCM_STRICT_ARGCHECK
+    if (!NULLP(env))
+        ERR_OBJ("broken environent", env);
+#endif
+
+    return SCM_INVALID_REF;
 }
 
-/* FIXME: Simplify as written in
-   http://d.hatena.ne.jp/jun0/20050925#1127590537 */
 /** Lookup a variable of a frame */
-static ScmObj lookup_frame(ScmObj var, ScmObj frame)
+static ScmRef lookup_frame(ScmObj var, ScmObj frame)
 {
-    ScmObj vals = SCM_NULL;
-    ScmObj vars = SCM_NULL;
+    ScmObj vars;
+    ScmRef vals;
     DECLARE_INTERNAL_FUNCTION("lookup_frame");
 
-    /* sanity check */
-    if (NULLP(frame))
-        return SCM_NULL;
-    else if (!CONSP(frame))
-        ERR_OBJ("broken frame", frame);
+#if SCM_STRICT_ARGCHECK
+    ASSERT_SYMBOLP(var);
+    ASSERT_CONSP(frame);
+#endif
 
-    /* lookup in frame */
-    /*
-     * CONSP(vals) is required to reject hand-maid broken frame:
-     *   (eval '(+ x y) '((x . 4)
-     *                    (y . 6)))
-     */
-    for (vars = CAR(frame), vals = CDR(frame);
-         CONSP(vars) && CONSP(vals);
-         vars = CDR(vars), vals = CDR(vals))
+    for (vars = CAR(frame), vals = REF_CDR(frame);
+         CONSP(vars);
+         vars = CDR(vars), vals = REF_CDR(DEREF(vals)))
     {
-        if (EQ(CAR(vars), var))
-            return vals;
+#if 1 && SCM_STRICT_ARGCHECK
+        /*
+         * This is required to reject hand-maid broken frame:
+         *   (eval '(+ x y) '((x . 4)
+         *                    (y . 6)))
+         *
+         * It can be removed once the typed environment object is implemented.
+         */
+        ASSERT_CONSP(DEREF(vals));
+#endif
+        if (EQ(var, CAR(vars)))
+            return REF_CAR(DEREF(vals));
     }
+    if (EQ(vars, var))
+        return vals;
 
-    /* handle dot list */
-    /* CONSP(vals) is required to reject hand-maid broken frame */
-    if (!NULLP(vars) && SYMBOLP(vars) && CONSP(vals))
-        return (EQ(vars, var)) ? vals : SCM_NULL;
-
-    return SCM_NULL;
+    return SCM_INVALID_REF;
 }
 
 /* A wrapper for call() for internal proper tail recursion */
@@ -558,14 +542,15 @@ ScmObj ScmOp_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_sta
 /* 'var' must be a symbol as precondition */
 ScmObj Scm_SymbolValue(ScmObj var, ScmObj env)
 {
-    ScmObj val = SCM_FALSE;
+    ScmRef ref;
+    ScmObj val;
     DECLARE_INTERNAL_FUNCTION("Scm_SymbolValue");
 
     /* first, lookup the environment */
-    val = Scm_LookupEnvironment(var, env);
-    if (!NULLP(val)) {
+    ref = Scm_LookupEnvironment(var, env);
+    if (ref != SCM_INVALID_REF) {
         /* variable is found in environment, so returns its value */
-        return CAR(val);
+        return DEREF(ref);
     }
 
     /* finally, look at the VCELL */
@@ -750,12 +735,12 @@ ScmObj ScmExp_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_sta
 ScmObj ScmExp_setd(ScmObj sym, ScmObj exp, ScmObj env)
 {
     ScmObj evaled        = SCM_FALSE;
-    ScmObj locally_bound = SCM_NULL;
+    ScmRef locally_bound;
     DECLARE_FUNCTION("set!", SyntaxFixed2);
 
     evaled = EVAL(exp, env);
     locally_bound = Scm_LookupEnvironment(sym, env);
-    if (NULLP(locally_bound)) {
+    if (locally_bound == SCM_INVALID_REF) {
         if (!SYMBOLP(sym))
             ERR_OBJ("symbol required but got", sym);
         /* Not found in the environment
@@ -766,7 +751,7 @@ ScmObj ScmExp_setd(ScmObj sym, ScmObj exp, ScmObj env)
         SCM_SYMBOL_SET_VCELL(sym, evaled);
     } else {
         /* found in the environment*/
-        SET_CAR(locally_bound, evaled);
+        SET(locally_bound, evaled);
     }
 
 #if SCM_STRICT_R5RS
@@ -1207,7 +1192,7 @@ ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalStat
     ScmObj expression = SCM_FALSE;
     ScmObj tmp_steps  = SCM_FALSE;
     ScmObj tmp_vars   = SCM_FALSE;
-    ScmObj obj        = SCM_FALSE;
+    ScmRef obj;
     DECLARE_FUNCTION("do", SyntaxVariadicTailRec2);
 
     /* construct Environment and steps */
@@ -1268,8 +1253,8 @@ ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalStat
              tmp_vars = CDR(tmp_vars), vals = CDR(vals))
         {
             obj = Scm_LookupEnvironment(CAR(tmp_vars), env);
-            if (!NULLP(obj)) {
-                SET_CAR(obj, CAR(vals));
+            if (obj != SCM_INVALID_REF) {
+                SET(obj, CAR(vals));
             } else {
                 SigScm_Error("do : broken env");
             }

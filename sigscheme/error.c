@@ -264,7 +264,7 @@ void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj)
 void SigScm_ShowBacktrace(ScmObj trace_stack)
 {
 #define UNBOUNDP(var, env)                                              \
-    (NULLP(Scm_LookupEnvironment(var, env))                             \
+    (Scm_LookupEnvironment(var, env) == SCM_INVALID_REF                 \
      && !SCM_SYMBOL_BOUNDP(var))
 
 #if SCM_DEBUG

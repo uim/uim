@@ -213,14 +213,14 @@ ScmObj ScmOp_eof_val(void)
 
 ScmObj ScmExp_undefine(ScmObj var, ScmObj env)
 {
-    ScmObj val = SCM_FALSE;
+    ScmRef val;
     DECLARE_FUNCTION("undefine", SyntaxFixed1);
 
     ASSERT_SYMBOLP(var);
 
     val = Scm_LookupEnvironment(var, env);
-    if (!NULLP(val))
-        return SET_CAR(val, SCM_UNBOUND);
+    if (val != SCM_INVALID_REF)
+        return SET(val, SCM_UNBOUND);
 
     SCM_SYMBOL_SET_VCELL(var, SCM_UNBOUND);
 
