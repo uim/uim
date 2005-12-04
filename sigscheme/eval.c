@@ -711,7 +711,7 @@ ScmObj ScmExp_lambda(ScmObj formals, ScmObj body, ScmObj env)
 ScmObj ScmExp_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state)
 {
     ScmObj env = eval_state->env;
-    ScmObj alt = SCM_INVALID;
+    ScmObj alt;
     DECLARE_FUNCTION("if", SyntaxVariadicTailRec2);
 
     /*========================================================================
@@ -719,12 +719,21 @@ ScmObj ScmExp_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_sta
       (if <test> <consequent> <alternate>)
     ========================================================================*/
 
-    if (NFALSEP(EVAL(test, env)))
-        return conseq;
-    else {
-        alt = POP_ARG(rest);
+    if (NFALSEP(EVAL(test, env))) {
+#if SCM_STRICT_ARGCHECK
+        POP_ARG(rest);
         ASSERT_NO_MORE_ARG(rest);
-        return VALIDP(alt) ? alt : SCM_UNDEF;
+#endif
+        return conseq;
+    } else {
+        /* does not use POP_ARG() for efficiency since 'if' syntax is
+           frequently used */
+        alt = (CONSP(rest)) ? CAR(rest) : SCM_UNDEF;
+#if SCM_STRICT_ARGCHECK
+        POP_ARG(rest);
+        ASSERT_NO_MORE_ARG(rest);
+#endif
+        return alt;
     }
 }
 
