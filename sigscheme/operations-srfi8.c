@@ -80,6 +80,9 @@ ScmObj ScmExp_SRFI8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalSta
     ScmObj actuals = SCM_FALSE;
     DECLARE_FUNCTION("receive", SyntaxVariadicTailRec2);
 
+    if (!(CONSP(formals) || NULLP(formals) || SYMBOLP(formals)))
+        ERR_OBJ("bad formals", formals);
+
     /* FIXME: do we have to extend the environment first?  The SRFI-8
      * document contradicts itself on this part. */
     actuals = EVAL(expr, env);
@@ -89,18 +92,7 @@ ScmObj ScmExp_SRFI8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalSta
     else
         actuals = CONS(actuals, SCM_NULL);
 
-#if 1
-    return Scm_tailcall(Scm_NewClosure(CONS(formals, body), env),
-                        actuals,
-                        eval_state);
-#else
-    /* fast path */
-
-    /* TODO: Support (receive args <exp> <body>) and (receive (a b . rest)
-     * <exp> <body>)style forms by revising the Scm_ExtendEnvironment().
-     */
     eval_state->env = env = Scm_ExtendEnvironment(formals, actuals, env);
 
     return ScmExp_begin(body, eval_state);
-#endif
 }
