@@ -942,7 +942,6 @@ ScmObj ScmExp_or(ScmObj args, ScmEvalState *eval_state)
 ===========================================================================*/
 /*
  * FIXME:
- * - Remove inefficient 'reverse' for named let
  * - Write the test for the named let spec:
  *   <init>s should be evaluated in an environment where <procname> is not
  *   bound to the closure.  <procname>'s scope must not penetrate to the
@@ -960,6 +959,7 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
     ScmObj val           = SCM_FALSE;
     ScmObj vars          = SCM_NULL;
     ScmObj vals          = SCM_NULL;
+    ScmQueue varq, valq;
     DECLARE_FUNCTION("let", SyntaxVariadicTailRec0);
 
     /*========================================================================
@@ -994,6 +994,8 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
 
     body = args;
 
+    SCM_QUEUE_POINT_TO(varq, vars);
+    SCM_QUEUE_POINT_TO(valq, vals);
     for (; CONSP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
 
@@ -1010,8 +1012,8 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
             ERR_OBJ("invalid binding form (superfluous object)", binding);
 #endif
 
-        vars = CONS(var, vars);
-        vals = CONS(EVAL(val, env), vals);
+        SCM_QUEUE_ADD(varq, var);
+        SCM_QUEUE_ADD(valq, EVAL(val, env));
     }
 
     if (!NULLP(bindings))
@@ -1022,7 +1024,7 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
 
     /* named let */
     if (SYMBOLP(named_let_sym)) {
-        proc = Scm_NewClosure(CONS(ScmOp_reverse(vars), body), env);
+        proc = Scm_NewClosure(CONS(vars, body), env);
         define_internal(named_let_sym, proc, env);
     }
 
