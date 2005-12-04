@@ -147,9 +147,8 @@ ScmObj Scm_AddEnvironment(ScmObj var, ScmObj val, ScmObj env)
 
     /* add (var, val) pair to the newest frame in env */
     if (NULLP(env)) {
-        newest_frame = CONS(CONS(var, SCM_NULL),
-                            CONS(val, SCM_NULL));
-        env = CONS(newest_frame, SCM_NULL);
+        newest_frame = CONS(LIST_1(var), LIST_1(val));
+        env = LIST_1(newest_frame);
     } else if (CONSP(env)) {
         newest_frame = CAR(env);
         new_vars = CONS(var, CAR(newest_frame));
