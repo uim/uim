@@ -266,10 +266,16 @@ struct ScmCell_ {
 
 #define SCM_CONSP(a) (SCM_TYPE(a) == ScmCons)
 #define SCM_ENTYPE_CONS(a) (SCM_ENTYPE((a), ScmCons))
-#define SCM_CAR(a)   (SCM_AS_CONS(a)->obj.cons.car)
-#define SCM_CONS_SET_CAR(a, car)   (SCM_CAR(a) = (car))
-#define SCM_CDR(a)   (SCM_AS_CONS(a)->obj.cons.cdr)
-#define SCM_CONS_SET_CDR(a, cdr)   (SCM_CDR(a) = (cdr))
+#if SCM_DEBUG
+/* don't use as lvalue */
+#define SCM_CAR(a)               (SCM_AS_CONS(a)->obj.cons.car + 0)
+#define SCM_CDR(a)               (SCM_AS_CONS(a)->obj.cons.cdr + 0)
+#else /* SCM_DEBUG */
+#define SCM_CAR(a)               (SCM_AS_CONS(a)->obj.cons.car)
+#define SCM_CDR(a)               (SCM_AS_CONS(a)->obj.cons.cdr)
+#endif /* SCM_DEBUG */
+#define SCM_CONS_SET_CAR(a, kar) (SCM_AS_CONS(a)->obj.cons.car = (kar))
+#define SCM_CONS_SET_CDR(a, kdr) (SCM_AS_CONS(a)->obj.cons.cdr = (kdr))
 #define SCM_CAAR(a)  (SCM_CAR(SCM_CAR(a)))
 #define SCM_CADR(a)  (SCM_CAR(SCM_CDR(a)))
 #define SCM_CDAR(a)  (SCM_CDR(SCM_CAR(a)))
@@ -409,8 +415,8 @@ struct ScmCell_ {
 ============================================================================*/
 #define SCM_INVALID_REF   NULL
 
-#define SCM_REF_CAR(cons) (&SCM_CAR(cons))
-#define SCM_REF_CDR(cons) (&SCM_CDR(cons))
+#define SCM_REF_CAR(kons)     (&SCM_AS_CONS(kons)->obj.cons.car)
+#define SCM_REF_CDR(kons)     (&SCM_AS_CONS(kons)->obj.cons.cdr)
 #define SCM_REF_OFF_HEAP(obj) (&(obj))
 
 /* SCM_DEREF(ref) is not permitted to be used as lvalue */
