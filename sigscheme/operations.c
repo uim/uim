@@ -761,30 +761,26 @@ ScmObj ScmOp_length(ScmObj obj)
 
 ScmObj ScmOp_append(ScmObj args)
 {
-    ScmObj ret_lst  = SCM_NULL;
-    ScmRef ret_tail = SCM_REF_OFF_HEAP(ret_lst);
-    ScmObj ls;
-    ScmObj obj = SCM_NULL;
+    ScmQueue q;
+    ScmObj elm_lst, res;
     DECLARE_FUNCTION("append", ProcedureVariadic0);
 
     if (NULLP(args))
         return SCM_NULL;
 
+    res = SCM_NULL;
+    SCM_QUEUE_POINT_TO(q, res);
     /* duplicate and merge all but the last argument */
-    for (; !NULLP(CDR(args)); args = CDR(args)) {
-        for (ls = CAR(args); CONSP(ls); ls = CDR(ls)) {
-            obj = CAR(ls);
-            SCM_SET(ret_tail, CONS(obj, SCM_NULL));
-            ret_tail = SCM_REF_CDR(SCM_DEREF(ret_tail));
-        }
-        if (!NULLP(ls))
-            ERR_OBJ("proper list required but got", CAR(args));
+    while (elm_lst = POP_ARG(args), !NO_MORE_ARG(args)) {
+        for (; CONSP(elm_lst); elm_lst = CDR(elm_lst))
+            SCM_QUEUE_ADD(q, CAR(elm_lst));
+        if (!NULLP(elm_lst))
+            ERR_OBJ("proper list required but got", elm_lst);
     }
-
     /* append the last argument */
-    SCM_SET(ret_tail, CAR(args));
+    SCM_QUEUE_SLOPPY_APPEND(q, elm_lst);
 
-    return ret_lst;
+    return res;
 }
 
 ScmObj ScmOp_reverse(ScmObj lst)
@@ -1341,13 +1337,12 @@ ScmObj ScmOp_string_append(ScmObj args)
 
 ScmObj ScmOp_string2list(ScmObj str)
 {
-    ScmObj head = SCM_NULL;
-    ScmObj tail = SCM_NULL;
-    ScmObj next = SCM_NULL;
+    ScmQueue q;
+    ScmObj res;
+    int ch;
     ScmMultibyteString mbs;
     ScmMultibyteCharInfo mbc;
     ScmMultibyteState state;
-    int ch;
     DECLARE_FUNCTION("string->list", ProcedureFixed1);
 
     ASSERT_STRINGP(str);
@@ -1356,6 +1351,8 @@ ScmObj ScmOp_string2list(ScmObj str)
     SCM_MBS_SET_STR(mbs, SCM_STRING_STR(str));
     SCM_MBS_SET_SIZE(mbs, strlen(SCM_STRING_STR(str)));
 
+    res = SCM_NULL;
+    SCM_QUEUE_POINT_TO(q, res);
     while (SCM_MBS_GET_SIZE(mbs)) {
         state = SCM_MBS_GET_STATE(mbs);
         mbc = SCM_CHARCODEC_SCAN_CHAR(Scm_current_char_codec, mbs);
@@ -1368,19 +1365,11 @@ ScmObj ScmOp_string2list(ScmObj str)
         if (ch == EOF)
             ERR("string->list: invalid char sequence");
 
-        next = LIST_1(Scm_NewChar(ch));
-
-        if (NULLP(tail))
-            head = tail = next;
-        else {
-            SET_CDR(tail, next);
-            tail = CDR(tail);
-        }
-
+        SCM_QUEUE_ADD(q, Scm_NewChar(ch));
         SCM_MBS_SKIP_CHAR(mbs, mbc);
     }
 
-    return head;
+    return res;
 }
 
 ScmObj ScmOp_list2string(ScmObj lst)
@@ -1541,34 +1530,23 @@ ScmObj ScmOp_vector_setd(ScmObj vec, ScmObj scm_k, ScmObj obj)
 
 ScmObj ScmOp_vector2list(ScmObj vec)
 {
-    ScmObj *v    = NULL;
-    ScmObj  prev = NULL;
-    ScmObj  next = NULL;
-    ScmObj  head = NULL;
-    int c_len = 0;
-    int i = 0;
+    ScmQueue q;
+    ScmObj res;
+    ScmObj *v;
+    int len, i;
     DECLARE_FUNCTION("vector->list", ProcedureFixed1);
 
     ASSERT_VECTORP(vec);
 
     v = SCM_VECTOR_VEC(vec);
-    c_len = SCM_VECTOR_LEN(vec);
-    if (c_len == 0)
-        return SCM_NULL;
+    len = SCM_VECTOR_LEN(vec);
 
-    for (i = 0; i < c_len; i++) {
-        next = CONS(v[i], SCM_NULL);
+    res = SCM_NULL;
+    SCM_QUEUE_POINT_TO(q, res);
+    for (i = 0; i < len; i++)
+        SCM_QUEUE_ADD(q, v[i]);
 
-        if (prev) {
-            SET_CDR(prev, next);
-        } else {
-            head = next;
-        }
-
-        prev = next;
-    }
-
-    return head;
+    return res;
 }
 
 ScmObj ScmOp_list2vector(ScmObj lst)
@@ -1636,79 +1614,46 @@ ScmObj ScmOp_map(ScmObj proc, ScmObj args)
 
 static ScmObj map_single_arg(ScmObj proc, ScmObj lst)
 {
-    ScmObj ret        = SCM_FALSE;
-    ScmObj ret_last   = SCM_FALSE;
-    ScmObj mapped_elm = SCM_FALSE;
+    ScmQueue q;
+    ScmObj elm, res;
+    DECLARE_INTERNAL_FUNCTION("map");
 
-    if (NULLP(lst))
-        return SCM_NULL;
-
-    for (; !NULLP(lst); lst = CDR(lst)) {
-        if (NFALSEP(ret)) {
-            /* subsequent */
-            mapped_elm = CONS(Scm_call(proc, LIST_1(CAR(lst))), SCM_NULL);
-            SET_CDR(ret_last, mapped_elm);
-            ret_last = mapped_elm;
-        } else {
-            /* first */
-            ret = CONS(Scm_call(proc, LIST_1(CAR(lst))), SCM_NULL);
-            ret_last = ret;
-        }
+    res = SCM_NULL;
+    SCM_QUEUE_POINT_TO(q, res);
+    while (!NO_MORE_ARG(lst)) {
+        elm = POP_ARG(lst);
+        SCM_QUEUE_ADD(q, Scm_call(proc, LIST_1(elm)));
     }
 
-    return ret;
+    return res;
 }
 
-/*
- * FIXME:
- * - Simplify and make names appropriate as like as map_singular_arg()
- */
 static ScmObj map_multiple_args(ScmObj proc, ScmObj args)
 {
-    ScmObj map_arg      = SCM_FALSE;
-    ScmObj map_arg_last = SCM_FALSE;
-    ScmObj tmp_lsts     = SCM_FALSE;
-    ScmObj lst          = SCM_FALSE;
-    ScmObj ret          = SCM_FALSE;
-    ScmObj ret_last     = SCM_FALSE;
+    ScmQueue resq, argq;
+    ScmObj res, map_args, rest_args, arg;
+    DECLARE_INTERNAL_FUNCTION("map");
 
-    while (1) {
-        /* construct "map_arg" */
-        map_arg  = SCM_FALSE;
-        tmp_lsts = args;
-        for (; !NULLP(tmp_lsts); tmp_lsts = CDR(tmp_lsts)) {
-            lst = CAR(tmp_lsts);
-            if (NULLP(lst))
-                return ret;
-
-            if (NFALSEP(map_arg)) {
-                /* subsequent */
-                SET_CDR(map_arg_last, CONS(CAR(lst), SCM_NULL));
-                map_arg_last = CDR(map_arg_last);
-            } else {
-                /* first */
-                map_arg = CONS(CAR(lst), SCM_NULL);
-                map_arg_last = map_arg;
-            }
-
-            /* update tmp_lsts */
-            SET_CAR(tmp_lsts, CDR(lst));
+    res = SCM_NULL;
+    SCM_QUEUE_POINT_TO(resq, res);
+    for (;;) {
+        /* slice args */
+        map_args = SCM_NULL;
+        SCM_QUEUE_POINT_TO(argq, map_args);
+        for (rest_args = args; CONSP(rest_args); rest_args = CDR(rest_args)) {
+            arg = CAR(rest_args);
+            if (NULLP(arg))
+                return res;
+            if (CONSP(arg))
+                SCM_QUEUE_ADD(argq, CAR(arg));
+            else
+                ERR_OBJ("invalid argument", arg);
+            /* pop destructively */
+            SET_CAR(rest_args, CDR(arg));
         }
 
-        /* construct "ret" by applying proc to each map_arg */
-        if (NFALSEP(ret)) {
-            /* subsequent */
-            SET_CDR(ret_last, CONS(Scm_call(proc, map_arg), SCM_NULL));
-            ret_last = CDR(ret_last);
-        } else {
-            /* first */
-            ret = CONS(Scm_call(proc, map_arg), SCM_NULL);
-            ret_last = ret;
-        }
+        SCM_QUEUE_ADD(resq, Scm_call(proc, map_args));
     }
-
-    SigScm_Error("map : invalid argument ", args);
-    return SCM_NULL;
 }
 
 ScmObj ScmOp_for_each(ScmObj proc, ScmObj args)

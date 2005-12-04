@@ -529,30 +529,24 @@ eval_loop:
 
 ScmObj ScmOp_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state)
 {
-    ScmObj args = SCM_INVALID;
-    ScmObj tail = SCM_INVALID;
-    ScmObj last = SCM_INVALID;
-    ScmObj lst  = SCM_INVALID;
-
+    ScmQueue q;
+    ScmObj args, arg, last;
     DECLARE_FUNCTION("apply", ProcedureVariadicTailRec2);
 
     if (NULLP(rest)) {
         args = last = arg0;
     } else {
         /* More than one argument given. */
-        tail = args = LIST_1(arg0);
-        for (lst=rest; CONSP(CDR(lst)); lst = CDR(lst)) {
-            SET_CDR(tail, LIST_1(CAR(lst)));
-            tail = CDR(tail);
-        }
-        last = CAR(lst);
-        SET_CDR(tail, last); /* The last one is spliced. */
-        if (!NULLP(CDR(lst)))
-            ERR_OBJ("improper argument list", CONS(arg0, rest));
+        args = LIST_1(arg0);
+        q = REF_CDR(args);
+        while (arg = POP_ARG(rest), !NO_MORE_ARG(rest))
+            SCM_QUEUE_ADD(q, arg);
+        /* The last one is spliced. */
+        SCM_QUEUE_SLOPPY_APPEND(q, arg);
+        last = arg;
     }
 
-    if (FALSEP(ScmOp_listp(last)))
-        ERR_OBJ("list required but got", last);
+    ASSERT_LISTP(last);
 
     /* The last argument inhibits argument re-evaluation. */
     return call(proc, args, eval_state, 1);
@@ -579,37 +573,31 @@ ScmObj Scm_SymbolValue(ScmObj var, ScmObj env)
     return val;
 }
 
-/* FIXME: Simplify */
 static ScmObj map_eval(ScmObj args, ScmObj env)
 {
-    ScmObj result  = SCM_NULL;
-    ScmObj tail    = SCM_NULL;
-    ScmObj newtail = SCM_NULL;
+    ScmQueue q;
+    ScmObj res, elm;
     DECLARE_INTERNAL_FUNCTION("(function call)");
 
-    /* sanity check */
     if (NULLP(args))
         return SCM_NULL;
 
-    /* eval each element of args */
-    result  = CONS(EVAL(CAR(args), env), SCM_NULL);
+    res = SCM_NULL;
+    SCM_QUEUE_POINT_TO(q, res);
+    /* does not use POP_ARG() to increace performance */
+    for (; CONSP(args); args = CDR(args)) {
+        elm = EVAL(CAR(args), env);
 #if SCM_STRICT_ARGCHECK
-    if (VALUEPACKETP(CAR(result)))
-        ERR_OBJ("multiple values are not allowed here", CAR(result));
+        if (VALUEPACKETP(elm))
+            ERR_OBJ("multiple values are not allowed here", elm);
 #endif
-    tail    = result;
-    newtail = SCM_NULL;
-    for (args = CDR(args); !NULLP(args); args = CDR(args)) {
-        newtail = CONS(EVAL(CAR(args), env), SCM_NULL);
-#if SCM_STRICT_ARGCHECK
-    if (VALUEPACKETP(CAR(newtail)))
-        ERR_OBJ("multiple values are not allowed here", CAR(newtail));
-#endif
-        SET_CDR(tail, newtail);
-        tail = newtail;
+        SCM_QUEUE_ADD(q, elm);
     }
+    /* dot list */
+    if (!NULLP(args))
+        SCM_QUEUE_SLOPPY_APPEND(q, EVAL(args, env));
 
-    return result;
+    return res;
 }
 
 /*===========================================================================
