@@ -307,31 +307,34 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
 void Scm_CallContinuation(ScmObj cont, ScmObj ret)
 {
     struct continuation_frame *frame;
+#if SCM_NESTED_CONTINUATION_ONLY
+    ScmObj obj;
+#endif
+
     DECLARE_INTERNAL_FUNCTION("Scm_CallContinuation");
 
     frame = CONTINUATION_FRAME(cont);
-
-    if (frame != INVALID_CONTINUATION_OPAQUE
-#if SCM_NESTED_CONTINUATION_ONLY
-        && CONTINUATIONP(continuation_stack_unwind(cont))
-#endif
-        )
-    {
-        if (VALUEPACKETP(ret))
-            ERR_OBJ("continuations take exactly one value but got", ret);
-
-        /*
-         * Don't refer cont because it may already be invalidated by
-         * continuation_stack_unwind().
-         */
-        exit_dynamic_extent(frame->dyn_ext);
-
-        frame->ret_val = ret;
-        longjmp(frame->c_env, 1);
-        /* NOTREACHED */
-    } else {
+    if (frame == INVALID_CONTINUATION_OPAQUE)
         ERR("Scm_CallContinuation: called expired continuation");
-    }
+
+#if SCM_NESTED_CONTINUATION_ONLY
+    obj = continuation_stack_unwind(cont);
+    if (!CONTINUATIONP(obj))
+        ERR("Scm_CallContinuation: called expired continuation");
+#endif
+
+    if (VALUEPACKETP(ret))
+        ERR_OBJ("continuations take exactly one value but got", ret);
+
+    /*
+     * Don't refer cont because it may already be invalidated by
+     * continuation_stack_unwind().
+     */
+    exit_dynamic_extent(frame->dyn_ext);
+    
+    frame->ret_val = ret;
+    longjmp(frame->c_env, 1);
+    /* NOTREACHED */
 }
 
 /*============================================================================
