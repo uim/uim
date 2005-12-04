@@ -998,22 +998,18 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
     SCM_QUEUE_POINT_TO(valq, vals);
     for (; CONSP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
-
-        if (!CONSP(binding) || !SYMBOLP(var = CAR(binding)))
-            ERR_OBJ("invalid binding form", binding);
-
 #if SCM_COMPAT_SIOD_BUGS
-        val = (!CONSP(CDR(binding))) ? SCM_FALSE : CADR(binding);
-#else
-        if (!CONSP(CDR(binding)))
-            ERR_OBJ("invalid binding form", binding);
-        val = CADR(binding);
-        if (!NULLP(CDDR(binding)))
-            ERR_OBJ("invalid binding form (superfluous object)", binding);
+        /* temporary solution. the inefficiency is not a problem */
+        if (LIST_1_P(binding))
+            binding = LIST_2(CAR(binding), SCM_FALSE);
 #endif
 
+        if (!LIST_2_P(binding) || !SYMBOLP(var = CAR(binding)))
+            ERR_OBJ("invalid binding form", binding);
+        val = EVAL(CADR(binding), env);
+
         SCM_QUEUE_ADD(varq, var);
-        SCM_QUEUE_ADD(valq, EVAL(val, env));
+        SCM_QUEUE_ADD(valq, val);
     }
 
     if (!NULLP(bindings))
@@ -1050,21 +1046,15 @@ ScmObj ScmExp_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 
     for (; CONSP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
-
-        if (!CONSP(binding) || !SYMBOLP(var = CAR(binding)))
-            ERR_OBJ("invalid binding form", binding);
-
 #if SCM_COMPAT_SIOD_BUGS
-        val = (!CONSP(CDR(binding))) ? SCM_FALSE : CADR(binding);
-#else
-        if (!CONSP(CDR(binding)))
-            ERR_OBJ("invalid binding form", binding);
-        val = CADR(binding);
-        if (!NULLP(CDDR(binding)))
-            ERR_OBJ("invalid binding form (superfluous object)", binding);
+        /* temporary solution. the inefficiency is not a problem */
+        if (LIST_1_P(binding))
+            binding = LIST_2(CAR(binding), SCM_FALSE);
 #endif
 
-        val = EVAL(val, env);
+        if (!LIST_2_P(binding) || !SYMBOLP(var = CAR(binding)))
+            ERR_OBJ("invalid binding form", binding);
+        val = EVAL(CADR(binding), env);
 
         /* extend env for each variable */
         env = Scm_ExtendEnvironment(LIST_1(var), LIST_1(val), env);
@@ -1106,24 +1096,20 @@ ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 
     for (; CONSP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
-
-        if (!CONSP(binding) || !SYMBOLP(var = CAR(binding)))
-            ERR_OBJ("invalid binding form", binding);
-
 #if SCM_COMPAT_SIOD_BUGS
-        val = (!CONSP(CDR(binding))) ? SCM_FALSE : CADR(binding);
-#else
-        if (!CONSP(CDR(binding)))
-            ERR_OBJ("invalid binding form", binding);
-        val = CADR(binding);
-        if (!NULLP(CDDR(binding)))
-            ERR_OBJ("invalid binding form (superfluous object)", binding);
+        /* temporary solution. the inefficiency is not a problem */
+        if (LIST_1_P(binding))
+            binding = LIST_2(CAR(binding), SCM_FALSE);
 #endif
+
+        if (!LIST_2_P(binding) || !SYMBOLP(var = CAR(binding)))
+            ERR_OBJ("invalid binding form", binding);
+        val = EVAL(CADR(binding), env);
 
         /* construct vars and vals list: any <init> must not refer a
            <variable> at this time */
         vars = CONS(var, vars);
-        vals = CONS(EVAL(val, env), vals);
+        vals = CONS(val, vals);
     }
 
     if (!NULLP(bindings))
