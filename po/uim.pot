@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-05 22:24+0900\n"
+"POT-Creation-Date: 2005-12-06 08:05+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1386,9 +1386,8 @@ msgstr ""
 msgid "Kana input method menu items"
 msgstr ""
 
-#: scm/anthy-custom.lisp:289 scm/canna-custom.lisp:363
-#: scm/mana-custom.lisp:289 scm/prime-custom.lisp:134 scm/skk-custom.lisp:432
-msgid "Friendly for vi user"
+#: scm/anthy-custom.lisp:289 scm/skk-custom.lisp:432
+msgid "Enable vi-cooperative mode"
 msgstr ""
 
 #: scm/anthy-key-custom.lisp:36
@@ -1618,7 +1617,7 @@ msgid "[Anthy] go right"
 msgstr ""
 
 #: scm/anthy-key-custom.lisp:241
-msgid "[Anthy] anthy-vi-escape-key?"
+msgid "[Anthy] ESC keys on vi-cooperative mode"
 msgstr ""
 
 #: scm/byeoru-custom.lisp:37
@@ -1731,7 +1730,7 @@ msgid "Jamo input is"
 msgstr ""
 
 #: scm/byeoru-custom.lisp:130
-msgid "ESC turns off Hangul mode"
+msgid "ESC turns off Hangul mode (for vi users)"
 msgstr ""
 
 #: scm/byeoru-custom.lisp:136
@@ -1832,6 +1831,11 @@ msgstr ""
 
 #: scm/canna-custom.lisp:306
 msgid "Canna server name"
+msgstr ""
+
+#: scm/canna-custom.lisp:363 scm/mana-custom.lisp:289
+#: scm/prime-custom.lisp:134
+msgid "Friendly for vi user"
 msgstr ""
 
 #: scm/canna-key-custom.lisp:36
