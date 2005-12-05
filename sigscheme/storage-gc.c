@@ -352,18 +352,21 @@ static void finalize_heap(void)
 
 static void gc_preprocess(void)
 {
+    int  i = 0;
+    long j = 0;
+
 #if SCM_OBJ_COMPACT
-    /* TODO : Implement Here! */
-    ;
+    for (i = 0; i < scm_heap_num; i++) {
+        for (j = 0; j < SCM_HEAP_SIZE; j++) {
+            SCM_DO_UNMARK(&scm_heaps[i][j]);
+        }
+    }    
 #else /* SCM_OBJ_COMPACT */
     ++scm_cur_marker;           /* make everything unmarked */
 
     if (scm_cur_marker == SCM_UNMARKER) {
         /* We've been running long enough to do
          * (1 << (sizeof(int)*8)) - 1 GCs, yay! */
-        int  i = 0;
-        long j = 0;
-
         scm_cur_marker = SCM_INITIAL_MARKER;
 
         /* unmark everything */
@@ -393,17 +396,18 @@ static void gc_mark_and_sweep(void)
 
 static void mark_obj(ScmObj obj)
 {
-#if SCM_OBJ_COMPACT
-    /* TODO : Implement Here! */
-    ;
-#else /* SCM_OBJ_COMPACT */
     int i = 0;
 
 mark_loop:
+#if SCM_OBJ_COMPACT
+    /* no need to mark immediates */
+    if (INTP(obj) || CHARP(obj) || SCM_CONSTANTP(obj))
+        return;
+#else
     /* no need to mark SCM_NULL */
     if (NULLP(obj))
         return;
-
+#endif
     /* avoid cyclic marking */
     if (SCM_IS_MARKED(obj))
         return;
@@ -447,7 +451,6 @@ mark_loop:
     default:
         break;
     }
-#endif /* SCM_OBJ_COMPACT */
 }
 
 static void finalize_protected_var(void)
@@ -547,10 +550,6 @@ static void gc_mark(void)
 
 static void sweep_obj(ScmObj obj)
 {
-#if SCM_OBJ_COMPACT
-    /* TODO : Implement Here! */
-    ;
-#else /* SCM_OBJ_COMPACT */
     /* if the type has the pointer to free, then free it! */
     switch (SCM_TYPE(obj)) {
     case ScmCons:
@@ -597,15 +596,10 @@ static void sweep_obj(ScmObj obj)
     default:
         break;
     }
-#endif
 }
 
 static void gc_sweep(void)
 {
-#if SCM_OBJ_COMPACT
-    /* TODO : Implement Here! */
-    ;
-#else /* SCM_OBJ_COMPACT */
     int i = 0;
     int j = 0;
     int corrected_obj_num = 0;
@@ -619,7 +613,9 @@ static void gc_sweep(void)
         /* iterate in heap */
         for (j = 0; j < SCM_HEAP_SIZE; j++) {
             obj = &scm_heaps[i][j];
+#if !SCM_OBJ_COMPACT
             SCM_ASSERT(!SCM_MARK_CORRUPTED(obj));
+#endif
             if (!SCM_IS_MARKED(obj)) {
                 sweep_obj(obj);
 
@@ -634,5 +630,4 @@ static void gc_sweep(void)
         CDBG((SCM_DBG_GC, "heap[%d] swept = %d", i, corrected_obj_num));
     }
     scm_freelist = scm_new_freelist;
-#endif
 }
