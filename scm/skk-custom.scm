@@ -429,7 +429,7 @@
 (define-custom 'skk-use-with-vi? #f
   '(skk-advanced special-op)
   '(boolean)
-  (_ "Friendly for vi user")
+  (_ "Enable vi-cooperative mode")
   (_ "long description will be here."))
 
 (define-custom 'skk-egg-like-newline? #f

@@ -127,7 +127,7 @@
 (define-custom 'byeoru-esc-turns-off? #t
   '(byeoru byeoru-properties)
   '(boolean)
-  (_ "ESC turns off Hangul mode")
+  (_ "ESC turns off Hangul mode (for vi users)")
   (_ "long description will be here."))
 
 (define-custom 'byeoru-commit-by-word? #f
