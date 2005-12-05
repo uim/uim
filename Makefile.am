@@ -11,7 +11,9 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = uim.pc
 
 desktopdir = $(datadir)/applications
-desktop_DATA = uim.desktop
+desktop_in_files = uim.desktop.in
+desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
+@INTLTOOL_DESKTOP_RULE@
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -80,3 +82,6 @@ releasetest: dist
 	@(echo "$(distdir) archives ready for distribution: "; \
 	  list='$(DIST_ARCHIVES)'; for i in $$list; do echo $$i; done) | \
 	  sed -e '1{h;s/./=/g;p;x;}' -e '$${p;x;}'
+
+dist-hook: uim.spec
+	cp uim.spec $(distdir)

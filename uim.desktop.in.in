@@ -1,10 +1,8 @@
 [Desktop Entry]
 Type=Application
 Encoding=UTF-8
-Name=Preference of uim
-Name[ja]=uimの設定
-Comment=
-Comment[ja]=
+_Name=Preference of uim
+_Comment=Input method settings
 Exec=uim-pref-gtk
 Icon=@uim_pixmapsdir@/uim-icon.png
 Terminal=false

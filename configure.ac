@@ -845,7 +845,8 @@ AC_CONFIG_FILES([Makefile
 		 pixmaps/Makefile
 		 replace/Makefile
 		 uim.pc
-		 uim.desktop
+		 uim.desktop.in
+		 uim.spec
 		 ])
 
 AC_OUTPUT
