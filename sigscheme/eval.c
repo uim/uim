@@ -837,6 +837,15 @@ ScmObj ScmExp_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_sta
                 }
             }
 
+            /* 
+             * Handle the case like follows.
+             *
+             * (case 1
+             *   ((1) . 2))
+             */
+            if (!CONSP(exps))
+                ERR_OBJ("bad dot clause", clause);
+
             /*
              * If the selected <clause> uses the => alternate form, then the
              * <expression> is evaluated. Its value must be a procedure that
