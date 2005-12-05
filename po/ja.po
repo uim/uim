@@ -4,30 +4,92 @@
 # TOKUNAGA Hiroyuki <tkng@xem.jp>, 2004.
 # Daichi Kawahata <daichik@users.sourceforge.net>, 2005.
 #
+# 諸規則:
+# - 意訳優先。原意が多少損われても気にしない
+#
+# - 簡潔に。わかりやすくするつもりで冗長な文にしない
+#
+# - 体言止めを基本とする。文末に「〜です」等を付加しない
+#
+# - boolean設定の説明は「〜を有効にする」「〜を使用する」のように「する」
+#   で終える
+#
+# - カタカナ語の語尾は延ばさない(「サーバー」ではなく「サーバ」とする)
+#
+# - 英数記号はASCII(半角)で表記し、全角文字は使わない
+#
+# - 日本語の複合語中に英字表記の語が含まれても語境界にスペースを入れない。
+#   "uim アプレット" や "ATOK 風" ではなく "uimアプレット" "ATOK風" とする
+#
+# - 日本語文中に英単語が現れた場合スペースを入れる作法が普及しているが、本
+#   ファイル中では日本語に訳さないと意味を為さないので基本的にそのような状
+#   況は発生しないはず(uim, GNOME等の固有名詞は日本語の単語と同様に扱う)。
+#   もし必要になったらその時議論する
+#
+# - 漢字圏の外国語に由来する用語は日本語で一般に使われている表現を用いる。
+#   その言語でネイティブに使われている用語も漢語ゆえ日本語話者にも理解可能
+#   であるが(例: 「中文」)、あくまで外国語であり一般の日本語話者には不自然
+#   であったり理解不能な場合がある事を念頭に置く
+#
+# - 言語名と国名は区別する。基本的にja.wikipedia.orgに見出しのある言語名を
+#   採用する
+#
+#
 # 日本語訳に使用する用語 (適宜追加お願いします):
 #
-# Uim          → uim
-# advanced     → 詳細
-# annotation   → 註釈
-# binding(s)   → バインド
-# candidate    → 変換候補
-# commit       → 確定
-# default      → 標準
-# enable       → 有効
+# Uim, UIM     → uim
+# Unicode      → ユニコード
+# International Phonetic Alphabet (IPA) → 国際音声記号
+# Emacs        → Emacs (固有名詞として)
+# emacs        → emacs (コマンドとして)
+# Vi, vi       → vi    (固有名詞、コマンド共)
+#
 # input method → 入力方式
 # preedit      → 編集領域
+# commit       → 確定
+# candidate    → 候補
 # separator    → 区切り
-# switch       → 切換え(る)
-# toggle       → トグル
-# transposed   → 置換えて
+# transposed   → (置き換えて)
+#
+# global       → 全体 (状況に応じて他の訳も可。「全般」はgenericの意を含むので避ける)
+# mode         → モード
+# on           → オン
+# off          → オフ
+# item         → 項目 (状況に応じて他の訳も可)
+# preference   → 設定
+# default      → 標準
+# advanced     → 高度(な)
+# enable       → 有効 (状況に応じて他の訳も可。availableとの誤認を避けるよう留意)
+# deploy       → 状況に応じて適切に意訳。「配備」はものものしいので使わない
+# cancel       → キャンセル (「取消」はeraseの意を含むので避ける)
+# save         → 保存
+# annotation   → 註釈
+# binding(s)   → 設定 (状況に応じて他の訳も可)
 # use          → 使用
+# status       → 状態
+# quit         → 終了
+# transition   → 遷移 (ただし、わかりにくいという意見が多ければ「移行」等に)
+# switch       → 切り換え(る)
+# toggle       → 反転 (状況に応じて他の訳も可。「トグル」は携帯電話の入力方式等
+#                 で誤用が広まっているので避ける)
+# ESC, escape  → ESC
+# Enter        → Enter
+# Return, return → リターン
+# hot key      → ホットキー (shortcutとショートカットの方がいいかもしれない。要議論)
+#
+# beol         → ボル
+# beol-sik     → ボル式
+# pinyin       → ピンイン (「拼音」等は認知度が低いので外来語としてカタカナ表記)
+# Chinese      → 中国語 (「中文」は一般に知られていない外国語なので避ける)
+# traditional Chinese → 繁体字(中国語)
+# simplified Chinese  → 簡体字(中国語)
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-12-05 20:15+0900\n"
-"PO-Revision-Date: 2005-12-05 20:30+0900\n"
+"PO-Revision-Date: 2005-12-06 07:53+0900\n"
 "Last-Translator: Daichi Kawahata <daichik@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
