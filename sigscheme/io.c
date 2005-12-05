@@ -143,6 +143,9 @@ void SigScm_PortPrintf(ScmObj port, const char *fmt, ...)
 {
     va_list args;
 
+    if (!port)
+        return;
+
     va_start(args, fmt);
     SigScm_VPortPrintf(port, fmt, args);
     va_end(args);
@@ -150,6 +153,9 @@ void SigScm_PortPrintf(ScmObj port, const char *fmt, ...)
 
 void SigScm_VPortPrintf(ScmObj port, const char *fmt, va_list args)
 {
+    if (!port)
+        return;
+
     SCM_PORT_VPRINTF(port, fmt, args);
 #if SCM_VOLATILE_OUTPUT
     SCM_PORT_FLUSH(port);
@@ -158,6 +164,9 @@ void SigScm_VPortPrintf(ScmObj port, const char *fmt, va_list args)
 
 void SigScm_PortNewline(ScmObj port)
 {
+    if (!port)
+        return;
+
     SCM_PORT_PUTS(port, SCM_NEWLINE_STR);
     SCM_PORT_FLUSH(port);  /* required */
 }
