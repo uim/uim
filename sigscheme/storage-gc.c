@@ -282,8 +282,6 @@ static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmOb
     int i = 0;
     ScmObj heap, cell;
 
-    CDBG((SCM_DBG_GC, "allocate_heap num:%d size:%d", num_heap, HEAP_SIZE));
-
     /* allocate heap */
     (*heaps) = (ScmObj*)malloc(sizeof(ScmObj) * num_heap);
     (*freelist) = SCM_NULL;
@@ -405,7 +403,7 @@ mark_loop:
         return;
 #else
     /* no need to mark SCM_NULL */
-    if (NULLP(obj))
+    if (SCM_CONSTANTP(obj))
         return;
 #endif
     /* avoid cyclic marking */
