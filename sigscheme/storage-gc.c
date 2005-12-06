@@ -360,7 +360,7 @@ static void gc_preprocess(void)
         for (j = 0; j < SCM_HEAP_SIZE; j++) {
             SCM_DO_UNMARK(&scm_heaps[i][j]);
         }
-    }    
+    }
 #else /* SCM_OBJ_COMPACT */
     ++scm_cur_marker;           /* make everything unmarked */
 
@@ -466,16 +466,24 @@ static void finalize_protected_var(void)
     protected_var_list = NULL;
 }
 
+/* The core part of Conservative GC */
 static int is_pointer_to_heap(ScmObj obj)
 {
-    /* The core part of Conservative GC */
-    int i = 0;
+#if SCM_OBJ_COMPACT
+    /* The pointer on the stack is 'tagged' to represent its types.
+     * So we need to ignore the tag to get its real pointer value. */
+    ScmObj ptr = (ScmObj)(((unsigned int)(obj)) & SCM_VALUE_MASK);
+#else
+    ScmObj ptr = obj;
+#endif
     ScmObj head = SCM_NULL;
+    int i;
+
     for (i = 0; i < scm_heap_num; i++) {
         if ((head = scm_heaps[i])
-            && (head <= obj)
-            && (obj  <  head + SCM_HEAP_SIZE)
-            && ((((char*)obj - (char*)head) % sizeof(ScmCell)) == 0))
+            && (head <= ptr)
+            && (ptr  <  head + SCM_HEAP_SIZE)
+            && ((((char*)ptr - (char*)head) % sizeof(ScmCell)) == 0))
             return 1;
     }
 
