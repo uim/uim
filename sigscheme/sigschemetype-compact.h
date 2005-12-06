@@ -715,6 +715,17 @@ enum ScmStrMutationType {
 #define SCM_CANBE_MARKED(a)   ((a) && !SCM_TAG_IMMP(a))
 #define SCM_STRIP_TAG_INFO(a) (SCM_CAST_UINT(a) & SCM_VALUE_MASK)
 
+/* When we sweep the object, we have no type information because the pointer is
+ * not tagged (raw pointer to heap). So, we see the S->cdr's GC bit and its value
+ * is 1, the object contains the pointer to be freed. */
+#define SCM_NEED_SWEEPP(a) (SCM_CAST_CDR_UINT(a) & SCM_GCBIT_MASK)
+/* directry see the S->cdr's tag */
+#define SCM_SWEEP_PHASE_SYMBOLP(a)       (SCM_TAG_OTHERS_SYMBOLP(a))
+#define SCM_SWEEP_PHASE_STRINGP(a)       (SCM_TAG_OTHERS_STRINGP(a))
+#define SCM_SWEEP_PHASE_VECTORP(a)       (SCM_TAG_OTHERS_VECTORP(a))
+#define SCM_SWEEP_PHASE_PORTP(a)         (SCM_TAG_OTHERS_PORTP(a))
+#define SCM_SWEEP_PHASE_CONTINUATIONP(a) (SCM_TAG_OTHERS_CONTINUATIONP(a))
+
 /*============================================================================
   Predefined Symbols
 ============================================================================*/

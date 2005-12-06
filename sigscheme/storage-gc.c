@@ -145,10 +145,15 @@ static void gc_mark_locations(ScmObj *start, ScmObj *end);
 static void gc_mark(void);
 
 /* GC Sweep Related Functions */
-static void sweep_obj(ScmObj obj);
 static void gc_sweep(void);
 
 static void finalize_protected_var(void);
+
+#if SCM_OBJ_COMPACT
+static void sweep_compact_cell(ScmCell *cell);
+#else /* SCM_OBJ_COMPACT */
+static void sweep_obj(ScmObj obj);
+#endif /* SCM_OBJ_COMPACT */
 
 /*=======================================
   Function Implementations
@@ -323,10 +328,7 @@ static void finalize_heap(void)
         heap = scm_heaps[i];
         for (cell = &heap[0]; cell < &heap[SCM_HEAP_SIZE]; cell++) {
 #if SCM_OBJ_COMPACT
-            /* FIXME: we have no type information for obj here. So
-             * sweep_obj(obj) is inefficient since type information retrieval
-             * is expensive. Provide sweep_compact_cell(ScmCell *cell).
-             */
+            sweep_compact_cell(cell);
 #else
             sweep_obj((ScmObj)cell);
 #endif
@@ -468,12 +470,10 @@ static void gc_mark_protected_var(void)
 static void gc_mark_locations_n(ScmObj *start, int n)
 {
     ScmObj *objp;
-
     for (objp = start; objp < &start[n]; objp++) {
         if (is_pointer_to_heap(*objp))
             mark_obj(*objp);
     }
-
 }
 
 static void gc_mark_locations(ScmObj *start, ScmObj *end)
@@ -525,6 +525,35 @@ static void gc_mark(void)
     gc_mark_symbol_hash();
 }
 
+#if SCM_OBJ_COMPACT
+static void sweep_compact_cell(ScmCell *cell)
+{
+    if (SCM_NEED_SWEEPP(cell)) {
+        if (SCM_SWEEP_PHASE_SYMBOLP(cell)) {
+            if (SCM_SYMBOL_NAME(cell))
+                free(SCM_SYMBOL_NAME(cell));
+        } else if (SCM_SWEEP_PHASE_STRINGP(cell)) {
+            if (SCM_STRING_STR(cell))
+                free(SCM_STRING_STR(cell));
+        } else if (SCM_SWEEP_PHASE_VECTORP(cell)) {
+            if (SCM_VECTOR_VEC(cell))
+                free(SCM_VECTOR_VEC(cell));
+        } else if (SCM_SWEEP_PHASE_PORTP(cell)) {
+            if (SCM_PORT_IMPL(cell))
+                SCM_PORT_CLOSE_IMPL(cell);
+        } else if (SCM_SWEEP_PHASE_CONTINUATIONP(cell)) {
+            /*
+             * Since continuation object is not so many, destructing the object by
+             * function call will not cost high. This function interface makes
+             * continuation module substitution easy without preparing
+             * module-specific header file which contains the module-specific
+             * destruction macro.
+             */
+            Scm_DestructContinuation(cell);
+        }
+    }
+}
+#else /* SCM_OBJ_COMPACT */
 static void sweep_obj(ScmObj obj)
 {
     switch (SCM_TYPE(obj)) {
@@ -573,6 +602,7 @@ static void sweep_obj(ScmObj obj)
         break;
     }
 }
+#endif /* SCM_OBJ_COMPACT */
 
 static void gc_sweep(void)
 {
@@ -597,11 +627,7 @@ static void gc_sweep(void)
                 SCM_DO_UNMARK(obj);
             } else {
 #if SCM_OBJ_COMPACT
-                /* FIXME: we have no type information for obj here. So
-                 * sweep_obj(obj) is inefficient since type information
-                 * retrieval is expensive. Provide sweep_compact_cell(ScmCell
-                 * *cell).
-                 */
+                sweep_compact_cell(cell);
 #else
                 sweep_obj(obj);
 #endif
