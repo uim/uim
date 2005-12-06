@@ -63,6 +63,8 @@
 #include <stdlib.h>
 #include <setjmp.h>
 
+#include <assert.h>
+
 /*=======================================
   Portability Coordination
 =======================================*/
@@ -95,6 +97,11 @@
 /*=======================================
   File Local Struct Declarations
 =======================================*/
+#if 1
+/* FIXME: replace with C99-independent stdint.h */
+typedef unsigned long uintptr_t;
+#endif
+
 typedef ScmCell *ScmObjHeap;
 
 /* Represents C variable that is holding a ScmObj to be protected from GC */
@@ -265,6 +272,7 @@ void SigScm_GC_UnprotectStack(ScmObj *stack_start)
 /*============================================================================
   Heap Allocator & Garbage Collector
 ============================================================================*/
+/* FIXME: ensure safety in a portable way */
 static void *malloc_aligned(size_t size)
 {
     void *p;
@@ -274,6 +282,10 @@ static void *malloc_aligned(size_t size)
      * posix_memalign(&p, 16, size);
      */
     p = malloc(size);
+
+    /* heaps must be aligned to sizeof(ScmCell) */
+    assert(!((uintptr_t)p % sizeof(ScmCell)));
+
     return p;
 }
 
@@ -465,6 +477,10 @@ static void finalize_protected_var(void)
 }
 
 /* The core part of Conservative GC */
+
+/* TODO: improve average performance by maintaining max(scm_heaps[all]) and
+ * min(scm_heaps[all]) at add_heap().
+ */
 static int is_pointer_to_heap(ScmObj obj)
 {
     ScmCell *head, *ptr;
@@ -479,11 +495,13 @@ static int is_pointer_to_heap(ScmObj obj)
 #else
     ptr = obj;
 #endif
+    /* heaps must be aligned to sizeof(ScmCell) */
+    if ((uintptr_t)ptr % sizeof(ScmCell))
+        return 0;
+
     for (i = 0; i < scm_heap_num; i++) {
-        if ((head = scm_heaps[i])
-            && (head <= ptr)
-            && (ptr  <  head + SCM_HEAP_SIZE)
-            && ((((char*)ptr - (char*)head) % sizeof(ScmCell)) == 0))
+        head = scm_heaps[i];
+        if (head && head <= ptr && ptr < &head[SCM_HEAP_SIZE])
             return 1;
     }
 
