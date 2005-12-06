@@ -123,6 +123,7 @@
  */
 #define HAVE_ASPRINTF           1
 #define HAVE_VASPRINTF          1
+#define HAVE_POSIX_MEMALIGN     0
 
 /*===========================================================================
   Dependency Resolution

@@ -66,29 +66,6 @@
 #include <assert.h>
 
 /*=======================================
-  Portability Coordination
-=======================================*/
-#if 0
-/* malloc.h is obsoleted by stdlib.h. At least FreeBSD generates an error. */
-#include <malloc.h>
-#endif
-
-#if 0
-#ifndef posix_memalign
-/*
- * Cited from manpage of posix_memalign(3) of glibc:
- *
- * CONFORMING TO
- *     The  function  valloc()  appeared in 3.0 BSD. It is documented as being
- *     obsolete in BSD 4.3, and as legacy in SUSv2. It  no  longer  occurs  in
- *     SUSv3.   The  function memalign() appears in SunOS 4.1.3 but not in BSD
- *     4.4.  The function posix_memalign() comes from POSIX 1003.1d.
- */
-#error "posix_memalign(3) is not available in this system"
-#endif
-#endif
-
-/*=======================================
   Local Include
 =======================================*/
 #include "sigscheme.h"
@@ -273,15 +250,23 @@ void SigScm_GC_UnprotectStack(ScmObj *stack_start)
 static void *malloc_aligned(size_t size)
 {
     void *p;
-    /* 2005/08/08  Kazuki Ohta  <mover@hct.zaq.ne.jp>
-     * commented out "posix_memalign"
-     *
-     * posix_memalign(&p, 16, size);
-     */
-    p = malloc(size);
 
+#if HAVE_POSIX_MEMALIGN
+    /*
+     * Cited from manpage of posix_memalign(3) of glibc:
+     *
+     * CONFORMING TO
+     *     The function valloc() appeared in 3.0 BSD. It is documented as being
+     *     obsolete in BSD 4.3, and as legacy in SUSv2. It no longer occurs in
+     *     SUSv3.  The function memalign() appears in SunOS 4.1.3 but not in
+     *     BSD 4.4.  The function posix_memalign() comes from POSIX 1003.1d.
+     */
+    posix_memalign(&p, 16, size);
+#else
+    p = malloc(size);
     /* heaps must be aligned to sizeof(ScmCell) */
     assert(!((uintptr_t)p % sizeof(ScmCell)));
+#endif
 
     return p;
 }
