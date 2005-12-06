@@ -154,6 +154,7 @@ static void SigScm_Initialize_internal(void)
     Scm_sym_else             = Scm_Intern("else");
     Scm_sym_yields           = Scm_Intern("=>");
 
+    SigScm_GC_Protect(&features);
     features = SCM_NULL;
 
     /*=======================================================================
