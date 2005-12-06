@@ -372,8 +372,8 @@ enum ScmStrMutationType {
    Casting to unsigned int
 =======================================*/
 #define SCM_CAST_UINT(a)     ((unsigned int)(a))
-#define SCM_CAST_CAR_UINT(a) SCM_CAST_UINT(SCM_GET_DIRECT_CAR(a))
-#define SCM_CAST_CDR_UINT(a) SCM_CAST_UINT(SCM_GET_DIRECT_CDR(a))
+#define SCM_CAST_CAR_UINT(a) (SCM_CAST_UINT(SCM_GET_DIRECT_CAR(a)))
+#define SCM_CAST_CDR_UINT(a) (SCM_CAST_UINT(SCM_GET_DIRECT_CDR(a)))
 
 /*=======================================
    GC bit Accessor
@@ -446,11 +446,10 @@ enum ScmStrMutationType {
 /*=======================================
    Type Confirmation
 =======================================*/
-/*
 #if SCM_ACCESSOR_ASSERT
-#define SCM_ASSERT_TYPE(cond, a) (SCM_ASSERT(cond), SCM_GET_VALUE_AS_OBJ((a)))
+#define SCM_ASSERT_TYPE(cond, a) (SCM_ASSERT(cond), (a))
 #else
-#define SCM_ASSERT_TYPE(cond, a) (SCM_GET_VALUE_AS_OBJ((a)))
+#define SCM_ASSERT_TYPE(cond, a) (a)
 #endif
 #define SCM_AS_CONS(a)           (SCM_ASSERT_TYPE(SCM_CONSP((a)),          (a)))
 #define SCM_AS_CLOSURE(a)        (SCM_ASSERT_TYPE(SCM_CLOSUREP((a)),       (a)))
@@ -465,7 +464,6 @@ enum ScmStrMutationType {
 #define SCM_AS_C_FUNCPOINTER(a)  (SCM_ASSERT_TYPE(SCM_C_FUNCPOINTERP((a)), (a)))
 #define SCM_AS_INT(a)            (SCM_ASSERT_TYPE(SCM_INTP((a)),           (a)))
 #define SCM_AS_CHAR(a)           (SCM_ASSERT_TYPE(SCM_CHARP((a)),          (a)))
-*/
 
 /*=======================================
    Entyping Macros
@@ -505,29 +503,39 @@ enum ScmStrMutationType {
 /*=======================================
    Real Accessors
 =======================================*/
-#define SCM_CAR(a)                       (SCM_CAR_GET_VALUE_AS_OBJ(a))
-#define SCM_CDR(a)                       (SCM_CDR_GET_VALUE_AS_OBJ(a))
-#define SCM_CONS_SET_CAR(a, car)         (SCM_CAR_SET_VALUE_AS_OBJ((a), (car)))
-#define SCM_CONS_SET_CDR(a, cdr)         (SCM_CDR_SET_VALUE_AS_OBJ((a), (cdr)))
+/*============================================================================
+   Real Accessors : Cons
+============================================================================*/
+#define SCM_CAR(a)                       (SCM_CAR_GET_VALUE_AS_OBJ(SCM_AS_CONS(a)))
+#define SCM_CDR(a)                       (SCM_CDR_GET_VALUE_AS_OBJ(SCM_AS_CONS(a)))
+#define SCM_CONS_SET_CAR(a, car)         (SCM_CAR_SET_VALUE_AS_OBJ(SCM_AS_CONS(a), (car)))
+#define SCM_CONS_SET_CDR(a, cdr)         (SCM_CDR_SET_VALUE_AS_OBJ(SCM_AS_CONS(a), (cdr)))
 #define SCM_CAAR(a)                      (SCM_CAR(SCM_CAR(a)))
 #define SCM_CADR(a)                      (SCM_CAR(SCM_CDR(a)))
 #define SCM_CDAR(a)                      (SCM_CDR(SCM_CAR(a)))
 #define SCM_CDDR(a)                      (SCM_CDR(SCM_CDR(a)))
 
+/*============================================================================
+   Real Accessors : Closure
+============================================================================*/
+#define SCM_CLOSURE_EXP(a)               (SCM_CAR_GET_VALUE_AS_OBJ(SCM_AS_CLOSURE(a)))
+#define SCM_CLOSURE_ENV(a)               (SCM_CDR_GET_VALUE_AS_OBJ(SCM_AS_CLOSURE(a)))
+#define SCM_CLOSURE_SET_EXP(a, exp)      (SCM_CAR_SET_VALUE_AS_OBJ(SCM_AS_CLOSURE(a), (exp)))
+#define SCM_CLOSURE_SET_ENV(a, env)      (SCM_CDR_SET_VALUE_AS_OBJ(SCM_AS_CLOSURE(a), (env)))
 
-#define SCM_CLOSURE_EXP(a)               (SCM_CAR_GET_VALUE_AS_OBJ(a))
-#define SCM_CLOSURE_ENV(a)               (SCM_CDR_GET_VALUE_AS_OBJ(a))
-#define SCM_CLOSURE_SET_EXP(a, exp)      (SCM_CAR_SET_VALUE_AS_OBJ((a), (exp)))
-#define SCM_CLOSURE_SET_ENV(a, env)      (SCM_CDR_SET_VALUE_AS_OBJ((a), (env)))
+/*============================================================================
+   Real Accessors : Symbol
+============================================================================*/
+#define SCM_SYMBOL_VCELL(a)              (SCM_CAR_GET_VALUE_AS_OBJ(SCM_AS_SYMBOL(a)))
+#define SCM_SYMBOL_NAME(a)               (SCM_CDR_GET_VALUE_AS_STR(SCM_AS_SYMBOL(a), ~SCM_TAG_OTHERS_MASK_SYMBOL))
+#define SCM_SYMBOL_SET_VCELL(a, vcell)   (SCM_CAR_SET_VALUE_AS_OBJ(SCM_AS_SYMBOL(a), (vcell)))
+#define SCM_SYMBOL_SET_NAME(a, name)     (SCM_CDR_SET_VALUE_AS_STR(SCM_AS_SYMBOL(a), (name), SCM_TAG_OTHERS_SYMBOL))
 
+/*============================================================================
+   Real Accessors : String
 
-#define SCM_SYMBOL_VCELL(a)              (SCM_CAR_GET_VALUE_AS_OBJ(a))
-#define SCM_SYMBOL_NAME(a)               (SCM_CDR_GET_VALUE_AS_STR((a), ~SCM_TAG_OTHERS_MASK_SYMBOL))
-#define SCM_SYMBOL_SET_VCELL(a, vcell)   (SCM_CAR_SET_VALUE_AS_OBJ((a), (vcell)))
-#define SCM_SYMBOL_SET_NAME(a, name)     (SCM_CDR_SET_VALUE_AS_STR((a), (name), SCM_TAG_OTHERS_SYMBOL))
-
-
-/* 2nd lowest bit of S->car is used to represent mutation type (mutable or immutable). */
+   2nd lowest bit of S->car is used to represent mutation type (mutable or immutable)
+============================================================================*/
 #define SCM_STRING_MUTATION_TYPE_OFFSET  1
 #define SCM_STRING_MUTATION_TYPE_MASK    (0x1 << SCM_STRING_MUTATION_TYPE_OFFSET)
 #define SCM_STRING_STR_VALUE_MASK        ~(SCM_STRING_MUTATION_TYPE_MASK | SCM_GCBIT_MASK)
@@ -542,28 +550,34 @@ enum ScmStrMutationType {
 #define SCM_STRING_SET_LEN(a, len)       (SCM_CDR_SET_VALUE_AS_INT((a), (len), SCM_TAG_OTHERS_VALUE_OFFSET_STRING, SCM_TAG_OTHERS_STRING))
 #define SCM_STRING_SET_STR(a, str)       (SCM_CAR_SET_VALUE_AS_STR((a), (SCM_CAST_UINT(str) | (SCM_STRING_MUTATION_TYPE(a) << SCM_STRING_MUTATION_TYPE_OFFSET))))
 
-
-#define SCM_VECTOR_VEC(a)                ((ScmObj*)(SCM_CAR_GET_VALUE_AS_PTR((a))))
-#define SCM_VECTOR_LEN(a)                (SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR))
-#define SCM_VECTOR_SET_VEC(a, vec)       (SCM_CAR_SET_VALUE_AS_PTR((a), (vec)))
-#define SCM_VECTOR_SET_LEN(a, len)       (SCM_CDR_SET_VALUE_AS_INT((a), (len), SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR, SCM_TAG_OTHERS_VECTOR))
+/*============================================================================
+   Real Accessors : Vector
+============================================================================*/
+#define SCM_VECTOR_VEC(a)                ((ScmObj*)(SCM_CAR_GET_VALUE_AS_PTR(SCM_AS_VECTOR(a))))
+#define SCM_VECTOR_LEN(a)                (SCM_CDR_GET_VALUE_AS_INT(SCM_AS_VECTOR(a), SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR))
+#define SCM_VECTOR_SET_VEC(a, vec)       (SCM_CAR_SET_VALUE_AS_PTR(SCM_AS_VECTOR(a), (vec)))
+#define SCM_VECTOR_SET_LEN(a, len)       (SCM_CDR_SET_VALUE_AS_INT(SCM_AS_VECTOR(a), (len), SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR, SCM_TAG_OTHERS_VECTOR))
 #define SCM_VECTOR_CREF(a, idx)          ((SCM_VECTOR_VEC(a))[idx])
 #define SCM_VECTOR_SET_CREF(a, idx, b)   (SCM_VECTOR_CREF((a), (idx)) = (b))
 #define SCM_VECTOR_REF(a, idx)           (SCM_VECTOR_CREF((a), SCM_INT_VALUE(idx)))
 #define SCM_VECTOR_SET_REF(a, idx, b)    (SCM_VECTOR_REF((a), (idx)) = (b))
 
-
+/*============================================================================
+   Real Accessors : ValuePacket
+============================================================================*/
 #define SCM_MAKE_VALUEPACKET(vals)       (Scm_NewValuePacket(vals))
-#define SCM_VALUEPACKET_VALUES(a)        (SCM_CAR_GET_VALUE_AS_OBJ(a))
-#define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_CAR_SET_VALUE_AS_OBJ((a), (v)))
+#define SCM_VALUEPACKET_VALUES(a)        (SCM_CAR_GET_VALUE_AS_OBJ(SCM_AS_VALUEPACKET(a)))
+#define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_CAR_SET_VALUE_AS_OBJ(SCM_AS_VALUEPACKET(a), (v)))
 
 
-/*
- * GCC4.0 doesn't align the address of function, so we need to store LSB of the function
- * address to the cdr part.
- *
- * FuncAddr = (S->car & ~0x01) | ((S->cdr >> SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR) & 0x1)
- */
+/*============================================================================
+   Real Accessors : CFunc
+
+   GCC4.0 doesn't align the address of function, so we need to store LSB of the function
+   address to the cdr part.
+  
+   FuncAddr = (S->car & ~0x01) | ((S->cdr >> SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR) & 0x1)
+============================================================================*/
 #define SCM_FUNC_CFUNC_OTHERB(a) (SCM_CAST_UINT(SCM_CAR_GET_VALUE_AS_PTR(a)))
 #define SCM_FUNC_CFUNC_LSB(a)    (SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR) & 0x1)
 #define SCM_FUNC_CFUNC(a)        (SCM_WORD_CAST(ScmFuncType, SCM_FUNC_CFUNC_OTHERB(a) | SCM_FUNC_CFUNC_LSB(a)))
@@ -585,29 +599,37 @@ enum ScmStrMutationType {
                            || SCM_CLOSUREP(a)                                \
                            || SCM_CONTINUATIONP(a))
 
+/*============================================================================
+   Real Accessors : Port
+============================================================================*/
+#define SCM_PORT_IMPL(a)                 ((ScmCharPort*)SCM_CAR_GET_VALUE_AS_PTR(SCM_AS_PORT(a)))
+#define SCM_PORT_FLAG(a)                 ((enum ScmPortFlag)SCM_CDR_GET_VALUE_AS_INT(SCM_AS_PORT(a), SCM_TAG_OTHERS_VALUE_OFFSET_PORT))
+#define SCM_PORT_SET_IMPL(a, impl)       (SCM_CAR_SET_VALUE_AS_PTR(SCM_AS_PORT(a), (impl)))
+#define SCM_PORT_SET_FLAG(a, flag)       (SCM_CDR_SET_VALUE_AS_INT(SCM_AS_PORT(a), (flag), SCM_TAG_OTHERS_VALUE_OFFSET_PORT, SCM_TAG_OTHERS_PORT))
 
-#define SCM_PORT_IMPL(a)                 ((ScmCharPort*)SCM_CAR_GET_VALUE_AS_PTR(a))
-#define SCM_PORT_FLAG(a)                 ((enum ScmPortFlag)SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_PORT))
-#define SCM_PORT_SET_IMPL(a, impl)       (SCM_CAR_SET_VALUE_AS_PTR((a), (impl)))
-#define SCM_PORT_SET_FLAG(a, flag)       (SCM_CDR_SET_VALUE_AS_INT((a), (flag), SCM_TAG_OTHERS_VALUE_OFFSET_PORT, SCM_TAG_OTHERS_PORT))
+/*============================================================================
+   Real Accessors : Continuation
+============================================================================*/
+#define SCM_CONTINUATION_OPAQUE(a)          ((void*)SCM_CAR_GET_VALUE_AS_PTR(SCM_AS_CONTINUATION(a)))
+#define SCM_CONTINUATION_TAG(a)             (SCM_CDR_GET_VALUE_AS_INT(SCM_AS_CONTINUATION(a), SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION))
+#define SCM_CONTINUATION_SET_OPAQUE(a, val) (SCM_CAR_SET_VALUE_AS_PTR(SCM_AS_CONTINUATION(a), (val)))
+#define SCM_CONTINUATION_SET_TAG(a, val)    (SCM_CDR_SET_VALUE_AS_INT(SCM_AS_CONTINUATION(a), (val), SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION, SCM_TAG_OTHERS_CONTINUATION))
 
+/*============================================================================
+   Real Accessors : CPointer
+============================================================================*/
+#define SCM_C_POINTER_VALUE(a)              ((void*)SCM_CAR_GET_VALUE_AS_PTR(SCM_AS_C_POINTER(a)))
+#define SCM_C_POINTER_SET_VALUE(a, val)     (SCM_CAR_SET_VALUE_AS_PTR(SCM_AS_C_POINTER(a), (val)))
 
-#define SCM_CONTINUATION_OPAQUE(a)          ((void*)SCM_CAR_GET_VALUE_AS_PTR(a))
-#define SCM_CONTINUATION_TAG(a)             (SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION))
-#define SCM_CONTINUATION_SET_OPAQUE(a, val) (SCM_CAR_SET_VALUE_AS_PTR((a), (val)))
-#define SCM_CONTINUATION_SET_TAG(a, val)    (SCM_CDR_SET_VALUE_AS_INT((a), (val), SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION, SCM_TAG_OTHERS_CONTINUATION))
+/*============================================================================
+   Real Accessors : CFuncPointer
 
-
-#define SCM_C_POINTER_VALUE(a)              ((void*)SCM_CAR_GET_VALUE_AS_PTR(a))
-#define SCM_C_POINTER_SET_VALUE(a, val)     (SCM_CAR_SET_VALUE_AS_PTR((a), (val)))
-
-
-/*
- * GCC4.0 doesn't align the address of function, so we need to store LSB of the function
- * address to the cdr part.
- *
- * FuncAddr = (S->car & ~0x01) | ((S->cdr >> SCM_TAG_OTHERS_VALUE_OFFSET_C_FUNCPOINTER_LSBADDR) & 0x1)
- */
+   
+   GCC4.0 doesn't align the address of function, so we need to store LSB of the function
+   address to the cdr part.
+  
+   FuncAddr = (S->car & ~0x01) | ((S->cdr >> SCM_TAG_OTHERS_VALUE_OFFSET_C_FUNCPOINTER_LSBADDR) & 0x1)
+============================================================================*/
 #define SCM_C_FUNCPOINTER_OTHERSB(a)        (SCM_CAST_UINT(SCM_CAR_GET_VALUE_AS_PTR(a)))
 #define SCM_C_FUNCPOINTER_LSB(a)            (SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_C_FUNCPOINTER_LSBADDR) & 0x1)
 #define SCM_C_FUNCPOINTER_VALUE(a)          (SCM_WORD_CAST(ScmCFunc, SCM_C_FUNCPOINTER_OTHERSB(a) | SCM_C_FUNCPOINTER_LSB(a)))
@@ -619,21 +641,23 @@ enum ScmStrMutationType {
 #define SCM_C_FUNCPOINTER_SET_VALUE(a, val)   (SCM_C_FUNCPOINTER_SET_OTHERSB((a), (SCM_CAST_UINT(val) & ~0x1)), \
                                                SCM_C_FUNCPOINTER_SET_LSB((a), (SCM_CAST_UINT(val) & 0x1)))
 
-/*
- * Integer need to preserve 'singed' or 'unsigned', so need special accessor.
- * Current pack and unpack algorithm is like this.
- *
- * int pack(int a) {
- *   return (a < 0) ? (~a << OFFSET) | SIGNED_MARK
- *                  : (a << OFFSET);
- * }
- *
- * int unpack(int a) {
- *   return (a & SIGN_BIT_MASK) ? ~((a & SIGN_VALUE_MASK) >> OFFSET) | SIGNED_MARK
- *                              : (a >> OFFSET);
- * }
- *
- */
+/*============================================================================
+   Real Accessors : Int
+
+   Integer need to preserve 'singed' or 'unsigned', so need special accessor.
+   Current pack and unpack algorithm is like this.
+   
+   int pack(int a) {
+     return (a < 0) ? (~a << OFFSET) | SIGNED_MARK
+            : (a << OFFSET);
+   }
+ 
+   int unpack(int a) {
+     return (a & SIGN_BIT_MASK) ? ~((a & SIGN_VALUE_MASK) >> OFFSET) | SIGNED_MARK
+                                : (a >> OFFSET);
+   }
+============================================================================*/
+
 #define BITS_PER_BITE             8
 #define SIZEOF_INT                sizeof(int)
 #define SIGN_BIT_MASK             (0x1 << (SIZEOF_INT * BITS_PER_BITE - 1))
@@ -650,6 +674,9 @@ enum ScmStrMutationType {
                                                                      : (~(val) << SCM_TAG_IMM_VALUE_OFFSET_INT) | SIGNED_MARK | SCM_TAG_IMM_INT))
 
 
+/*============================================================================
+   Real Accessors : Char
+============================================================================*/
 #define SCM_CHAR_VALUE(a)         (SCM_PRIMARY_GET_VALUE_AS_INT((a), SCM_TAG_IMM_VALUE_OFFSET_CHAR))
 #define SCM_CHAR_SET_VALUE(a, ch) (SCM_PRIMARY_SET_VALUE_AS_INT((a), (ch), SCM_TAG_IMM_VALUE_OFFSET_CHAR, SCM_TAG_IMM_CHAR))
 
