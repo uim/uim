@@ -361,7 +361,7 @@ mark_loop:
      * representation
      */
     /* no need to mark immediates */
-    if (INTP(obj) || CHARP(obj) || SCM_CONSTANTP(obj))
+    if (!SCM_CANBE_MARKED(obj))
         return;
 #else
     /* no need to mark constants */
@@ -435,11 +435,11 @@ static int is_pointer_to_heap(ScmObj obj)
     int i;
 
 #if SCM_OBJ_COMPACT
-    /* FIXME: reject immediate objects here for efficiency */
-    /* FIXME: hide internal representation by a GC bit stripping macro */
     /* The pointer on the stack is 'tagged' to represent its types.
      * So we need to ignore the tag to get its real pointer value. */
-    ptr = (ScmCell *)(((unsigned int)(obj)) & SCM_VALUE_MASK);
+    ptr = (ScmCell *)SCM_STRIP_TAG_INFO(obj);
+    if (!SCM_CANBE_MARKED(ptr))
+        return 0;
 #else
     ptr = obj;
 #endif
