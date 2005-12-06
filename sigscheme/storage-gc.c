@@ -431,14 +431,14 @@ static void finalize_protected_var(void)
  */
 static int is_pointer_to_heap(ScmObj obj)
 {
-    ScmCell *head, *ptr;
+    ScmCell *heap, *ptr;
     int i;
 
 #if SCM_OBJ_COMPACT
-    /* The pointer on the stack is 'tagged' to represent its types.
-     * So we need to ignore the tag to get its real pointer value. */
     if (!SCM_CANBE_MARKED(obj))
         return 0;
+    /* The pointer on the stack is 'tagged' to represent its types.
+     * So we need to ignore the tag to get its real pointer value. */
     ptr = (ScmCell *)SCM_STRIP_TAG_INFO(obj);
 #else
     ptr = obj;
@@ -448,8 +448,8 @@ static int is_pointer_to_heap(ScmObj obj)
         return 0;
 
     for (i = 0; i < scm_heap_num; i++) {
-        head = scm_heaps[i];
-        if (head && head <= ptr && ptr < &head[SCM_HEAP_SIZE])
+        heap = scm_heaps[i];
+        if (heap && heap <= ptr && ptr < &heap[SCM_HEAP_SIZE])
             return 1;
     }
 
