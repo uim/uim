@@ -85,7 +85,9 @@ enum ScmObjType {
     ScmFreeCell     = 12,
 
     ScmCPointer     = 20,
-    ScmCFuncPointer = 21
+    ScmCFuncPointer = 21,
+
+    ScmInvalid      = 31
 };
 
 enum ScmPortFlag {
