@@ -338,7 +338,10 @@ static void finalize_heap(void)
         heap = scm_heaps[i];
         for (cell = &heap[0]; cell < &heap[SCM_HEAP_SIZE]; cell++) {
 #if SCM_OBJ_COMPACT
-            /* FIXME: sweep_compact_cell(ScmCell *cell) */
+            /* FIXME: we have no type information for obj here. So
+             * sweep_obj(obj) is inefficient since type information retrieval
+             * is expensive. Provide sweep_compact_cell(ScmCell *cell).
+             */
 #else
             sweep_obj((ScmObj)cell);
 #endif
@@ -368,11 +371,15 @@ static void mark_obj(ScmObj obj)
 
 mark_loop:
 #if SCM_OBJ_COMPACT
+    /*
+     * FIXME: provide IMMEDIATEP(obj) and replace with it to abstract object
+     * representation
+     */
     /* no need to mark immediates */
     if (INTP(obj) || CHARP(obj) || SCM_CONSTANTP(obj))
         return;
 #else
-    /* no need to mark SCM_NULL */
+    /* no need to mark constants */
     if (SCM_CONSTANTP(obj))
         return;
 #endif
@@ -389,17 +396,15 @@ mark_loop:
         mark_obj(CAR(obj));
         obj = CDR(obj);
         goto mark_loop;
-        break;
 
     case ScmSymbol:
-        mark_obj(SCM_SYMBOL_VCELL(obj));
-        break;
+        obj = SCM_SYMBOL_VCELL(obj);
+        goto mark_loop;
 
     case ScmClosure:
         mark_obj(SCM_CLOSURE_EXP(obj));
         obj = SCM_CLOSURE_ENV(obj);
         goto mark_loop;
-        break;
 
     case ScmValuePacket:
 #if SCM_USE_VALUECONS
@@ -474,26 +479,22 @@ static void gc_mark_protected_var(void)
     }
 }
 
+/* mark a contiguous region such as stack */
 static void gc_mark_locations_n(ScmObj *start, int n)
 {
-    int i = 0;
-    ScmObj obj = SCM_NULL;
+    ScmObj *objp;
 
-    /* mark stack */
-    for (i = 0; i < n; i++) {
-        obj = start[i];
-
-        if (is_pointer_to_heap(obj)) {
-            mark_obj(obj);
-        }
+    for (objp = start; objp < &start[n]; objp++) {
+        if (is_pointer_to_heap(*objp))
+            mark_obj(*objp);
     }
 
 }
 
 static void gc_mark_locations(ScmObj *start, ScmObj *end)
 {
-    int size = 0;
-    ScmObj *tmp = NULL;
+    int size;
+    ScmObj *tmp;
 
     /* swap end and start if (end < start) */
     if (end < start) {
@@ -502,7 +503,6 @@ static void gc_mark_locations(ScmObj *start, ScmObj *end)
         start = tmp;
     }
 
-    /* get size */
     size = end - start;
 
     CDBG((SCM_DBG_GC, "gc_mark_locations() : size = %d", size));
@@ -512,14 +512,17 @@ static void gc_mark_locations(ScmObj *start, ScmObj *end)
 
 static void gc_mark_symbol_hash(void)
 {
-    int i = 0;
+    ScmObj *objp;
 
     /* not initialized yet */
     if (!scm_symbol_hash)
         return;
 
-    for (i = 0; i < NAMEHASH_SIZE; i++) {
-        mark_obj(scm_symbol_hash[i]);
+    for (objp = &scm_symbol_hash[0];
+         objp < &scm_symbol_hash[NAMEHASH_SIZE];
+         objp++)
+    {
+        mark_obj(*objp);
     }
 }
 
@@ -539,7 +542,6 @@ static void gc_mark(void)
 
 static void sweep_obj(ScmObj obj)
 {
-    /* if the type has the pointer to free, then free it! */
     switch (SCM_TYPE(obj)) {
     case ScmCons:
     case ScmInt:
@@ -589,34 +591,45 @@ static void sweep_obj(ScmObj obj)
 
 static void gc_sweep(void)
 {
-    int i = 0;
-    int j = 0;
-    int corrected_obj_num = 0;
+    int i, corrected_obj_num;
+    ScmObjHeap heap;
+    ScmCell *cell;
+    ScmObj obj, new_freelist;
 
-    ScmObj obj = SCM_NULL;
-    ScmObj scm_new_freelist = scm_freelist; /* freelist remains on manual GC */
+    new_freelist = scm_freelist; /* freelist remains on manual GC */
+
     /* iterate heaps */
     for (i = 0; i < scm_heap_num; i++) {
         corrected_obj_num = 0;
+        heap = scm_heaps[i];
 
         /* iterate in heap */
-        for (j = 0; j < SCM_HEAP_SIZE; j++) {
-            obj = &scm_heaps[i][j];
+        for (cell = &heap[0]; cell < &heap[SCM_HEAP_SIZE]; cell++) {
+            /* FIXME: is this safe for SCM_OBJ_COMPACT? */
+            obj = (ScmObj)cell;
 
             if (SCM_IS_MARKED(obj)) {
                 SCM_DO_UNMARK(obj);
             } else {
+#if SCM_OBJ_COMPACT
+                /* FIXME: we have no type information for obj here. So
+                 * sweep_obj(obj) is inefficient since type information
+                 * retrieval is expensive. Provide sweep_compact_cell(ScmCell
+                 * *cell).
+                 */
+#else
                 sweep_obj(obj);
+#endif
 
                 SCM_ENTYPE_FREECELL(obj);
                 SCM_FREECELL_SET_CAR(obj, SCM_NULL);
-                SCM_FREECELL_SET_CDR(obj, scm_new_freelist);
-                scm_new_freelist = obj;
+                SCM_FREECELL_SET_CDR(obj, new_freelist);
+                new_freelist = obj;
                 corrected_obj_num++;
             }
         }
 
         CDBG((SCM_DBG_GC, "heap[%d] swept = %d", i, corrected_obj_num));
     }
-    scm_freelist = scm_new_freelist;
+    scm_freelist = new_freelist;
 }
