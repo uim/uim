@@ -114,6 +114,10 @@ struct gc_protected_var_ {
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+#define SCM_HEAP_SIZE 10240
+#define NHEAP_INITIAL 1
+#define NHEAP_MAX     8
+
 #if !SCM_OBJ_COMPACT
 #define SCM_UNMARKER          0
 #define SCM_INITIAL_MARKER    (SCM_UNMARKER + 1)
@@ -127,8 +131,7 @@ struct gc_protected_var_ {
 /*=======================================
   Variable Declarations
 =======================================*/
-static int           SCM_HEAP_SIZE = 10240;
-static int           scm_heap_num  = 8;
+static int           scm_heap_num;
 static ScmObjHeap   *scm_heaps     = NULL;
 static ScmObj        scm_freelist  = NULL;
 
@@ -154,8 +157,8 @@ extern ScmObj *scm_symbol_hash;
 =======================================*/
 static void *malloc_aligned(size_t size);
 
-static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmObj *freelist);
-static void add_heap(ScmObjHeap **heaps, int *num_heap, int HEAP_SIZE, ScmObj *freelist);
+static void initialize_heap(void);
+static void add_heap(ScmObjHeap **heaps, int *num_heap, size_t heap_size, ScmObj *freelist);
 static void finalize_heap(void);
 
 static void gc_preprocess(void);
@@ -181,7 +184,7 @@ static void finalize_protected_var(void);
 =======================================*/
 void SigScm_InitGC(void)
 {
-    allocate_heap(&scm_heaps, scm_heap_num, SCM_HEAP_SIZE, &scm_freelist);
+    initialize_heap();
 }
 
 void SigScm_FinalizeGC(void)
@@ -289,61 +292,46 @@ static void *malloc_aligned(size_t size)
     return p;
 }
 
-static void allocate_heap(ScmObjHeap **heaps, int num_heap, int HEAP_SIZE, ScmObj *freelist)
+static void initialize_heap(void)
 {
-    int i = 0;
-    ScmObj heap, cell;
+    int i;
 
-    /* allocate heap */
-    (*heaps) = (ScmObj*)malloc(sizeof(ScmObj) * num_heap);
-    (*freelist) = SCM_NULL;
+    scm_heap_num = 0;
+    scm_heaps = NULL;
+    scm_freelist = SCM_NULL;
 
-    /* fill with zero and construct free_list */
-    for (i = 0; i < num_heap; i++) {
-        /* Initialize Heap */
-        heap = (ScmObj)malloc_aligned(sizeof(ScmCell) * HEAP_SIZE);
-        (*heaps)[i] = heap;
-
-        /* link in order */
-        for (cell=heap; cell-heap < HEAP_SIZE; cell++) {
-            SCM_ENTYPE_FREECELL(cell);
-            SCM_DO_UNMARK(cell);
-            SCM_FREECELL_SET_CDR(cell, cell+1);
-        }
-
-        SCM_FREECELL_SET_CDR(cell-1, (*freelist));
-        /* and freelist is head of the heap */
-        (*freelist) = (*heaps)[i];
-    }
+    /* preallocate heaps */
+    for (i = 0; i < NHEAP_INITIAL; i++)
+        add_heap(&scm_heaps, &scm_heap_num, SCM_HEAP_SIZE, &scm_freelist);
 }
 
-static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, int HEAP_SIZE, ScmObj *freelist)
+static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, size_t heap_size, ScmObj *freelist)
 {
-    int    num_heap = 0;
-    ScmObj heap, cell;
+    int num_heap;
+    ScmObjHeap heap;
+    ScmCell *cell;
 
     CDBG((SCM_DBG_GC, "add_heap current num of heaps:%d", *orig_num_heap));
 
-    /* increment num_heap */
-    (*orig_num_heap) += 1;
-    num_heap = (*orig_num_heap);
+    if (NHEAP_MAX <= *orig_num_heap)
+        ERR("heap exhausted"); /* FIXME: replace with fatal error handling */
 
-    /* add heap */
-    (*heaps) = (ScmObj*)realloc((*heaps), sizeof(ScmObj) * num_heap);
+    num_heap = *orig_num_heap + 1;
+    *orig_num_heap = num_heap;
+    *heaps = realloc(*heaps, sizeof(ScmObjHeap) * num_heap);
 
-    /* allocate heap */
-    heap = (ScmObj)malloc_aligned(sizeof(ScmCell) * HEAP_SIZE);
+    heap = malloc_aligned(sizeof(ScmCell) * heap_size);
     (*heaps)[num_heap - 1] = heap;
 
     /* link in order */
-    for (cell=heap; cell-heap < HEAP_SIZE; cell++) {
+    for (cell = heap; cell < &heap[heap_size]; cell++) {
         SCM_ENTYPE_FREECELL(cell);
         SCM_DO_UNMARK(cell);
-        SCM_FREECELL_SET_CDR(cell, cell+1);
+        SCM_FREECELL_SET_CDR(cell, cell + 1);
     }
 
-    SCM_FREECELL_SET_CDR(cell-1, *freelist);
-    (*freelist) = (*heaps)[num_heap - 1];
+    SCM_FREECELL_SET_CDR(cell - 1, *freelist);
+    *freelist = heap;
 }
 
 static void finalize_heap(void)
@@ -555,6 +543,11 @@ static void gc_mark_locations(ScmObj *start, ScmObj *end)
 static void gc_mark_symbol_hash(void)
 {
     int i = 0;
+
+    /* not initialized yet */
+    if (!scm_symbol_hash)
+        return;
+
     for (i = 0; i < NAMEHASH_SIZE; i++) {
         mark_obj(scm_symbol_hash[i]);
     }
@@ -631,7 +624,7 @@ static void gc_sweep(void)
     int corrected_obj_num = 0;
 
     ScmObj obj = SCM_NULL;
-    ScmObj scm_new_freelist = SCM_NULL;
+    ScmObj scm_new_freelist = scm_freelist; /* freelist remains on manual GC */
     /* iterate heaps */
     for (i = 0; i < scm_heap_num; i++) {
         corrected_obj_num = 0;
