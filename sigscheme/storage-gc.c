@@ -120,12 +120,11 @@ struct gc_protected_var_ {
 
 #if !SCM_OBJ_COMPACT
 #define SCM_UNMARKER          0
-#define SCM_INITIAL_MARKER    (SCM_UNMARKER + 1)
-#define SCM_IS_MARKED(a)      (SCM_MARK(a) == scm_cur_marker)
-#define SCM_IS_UNMARKED(a)    (!SCM_IS_MARKED)
-#define SCM_DO_MARK(a)        (SCM_MARK(a) = scm_cur_marker)
+#define SCM_MARKER            (SCM_UNMARKER + 1)
+#define SCM_IS_MARKED(a)      (SCM_MARK(a) == SCM_MARKER)
+#define SCM_IS_UNMARKED(a)    (!SCM_IS_MARKED(a))
+#define SCM_DO_MARK(a)        (SCM_MARK(a) = SCM_MARKER)
 #define SCM_DO_UNMARK(a)      (SCM_MARK(a) = SCM_UNMARKER)
-#define SCM_MARK_CORRUPTED(a) ((unsigned)SCM_MARK(a) > (unsigned)scm_cur_marker)
 #endif /* !SCM_OBJ_COMPACT */
 
 /*=======================================
@@ -134,10 +133,6 @@ struct gc_protected_var_ {
 static int           scm_heap_num;
 static ScmObjHeap   *scm_heaps     = NULL;
 static ScmObj        scm_freelist  = NULL;
-
-#if !SCM_OBJ_COMPACT
-static int           scm_cur_marker = SCM_INITIAL_MARKER;
-#endif
 
 static jmp_buf save_regs_buf;
 static ScmObj *stack_start_pointer = NULL;
@@ -161,7 +156,6 @@ static void initialize_heap(void);
 static void add_heap(ScmObjHeap **heaps, int *num_heap, size_t heap_size, ScmObj *freelist);
 static void finalize_heap(void);
 
-static void gc_preprocess(void);
 static void gc_mark_and_sweep(void);
 
 /* GC Mark Related Functions */
@@ -336,52 +330,28 @@ static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, size_t heap_size, S
 
 static void finalize_heap(void)
 {
-    int i = 0;
-    int j = 0;
+    int i;
+    ScmCell *cell;
+    ScmObjHeap heap;
 
     for (i = 0; i < scm_heap_num; i++) {
-        for (j = 0; j < SCM_HEAP_SIZE; j++) {
-            sweep_obj(&scm_heaps[i][j]);
+        heap = scm_heaps[i];
+        for (cell = &heap[0]; cell < &heap[SCM_HEAP_SIZE]; cell++) {
+#if SCM_OBJ_COMPACT
+            /* FIXME: sweep_compact_cell(ScmCell *cell) */
+#else
+            sweep_obj((ScmObj)cell);
+#endif
         }
-        free(scm_heaps[i]);
+        free(heap);
     }
     free(scm_heaps);
-}
-
-static void gc_preprocess(void)
-{
-    int  i = 0;
-    long j = 0;
-
-#if SCM_OBJ_COMPACT
-    for (i = 0; i < scm_heap_num; i++) {
-        for (j = 0; j < SCM_HEAP_SIZE; j++) {
-            SCM_DO_UNMARK(&scm_heaps[i][j]);
-        }
-    }
-#else /* SCM_OBJ_COMPACT */
-    ++scm_cur_marker;           /* make everything unmarked */
-
-    if (scm_cur_marker == SCM_UNMARKER) {
-        /* We've been running long enough to do
-         * (1 << (sizeof(int)*8)) - 1 GCs, yay! */
-        scm_cur_marker = SCM_INITIAL_MARKER;
-
-        /* unmark everything */
-        for (i = 0; i < scm_heap_num; i++) {
-            for (j = 0; j < SCM_HEAP_SIZE; j++) {
-                SCM_DO_UNMARK(&scm_heaps[i][j]);
-            }
-        }
-    }
-#endif /* SCM_OBJ_COMPACT */
 }
 
 static void gc_mark_and_sweep(void)
 {
     CDBG((SCM_DBG_GC, "[ gc start ]"));
 
-    gc_preprocess();
     gc_mark();
     gc_sweep();
 
@@ -632,10 +602,10 @@ static void gc_sweep(void)
         /* iterate in heap */
         for (j = 0; j < SCM_HEAP_SIZE; j++) {
             obj = &scm_heaps[i][j];
-#if !SCM_OBJ_COMPACT
-            SCM_ASSERT(!SCM_MARK_CORRUPTED(obj));
-#endif
-            if (!SCM_IS_MARKED(obj)) {
+
+            if (SCM_IS_MARKED(obj)) {
+                SCM_DO_UNMARK(obj);
+            } else {
                 sweep_obj(obj);
 
                 SCM_ENTYPE_FREECELL(obj);
