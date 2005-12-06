@@ -540,9 +540,9 @@ enum ScmStrMutationType {
 #define SCM_STRING_MUTATION_TYPE_MASK    (0x1 << SCM_STRING_MUTATION_TYPE_OFFSET)
 #define SCM_STRING_STR_VALUE_MASK        ~(SCM_STRING_MUTATION_TYPE_MASK | SCM_GCBIT_MASK)
 
-#define SCM_STRING_MUTATION_TYPE(a)      ((enum ScmStrMutationType)((SCM_CAST_UINT(SCM_GET_DIRECT_CAR(a)) & SCM_STRING_MUTATION_TYPE_MASK) >> SCM_STRING_MUTATION_TYPE_OFFSET))
-#define SCM_STRING_SET_MUTABLE(a)        (SCM_SET_DIRECT_CAR((a), ((SCM_CAST_UINT(SCM_GET_DIRECT_CAR(a)) | (SCM_STR_MUTABLE << SCM_STRING_MUTATION_TYPE_OFFSET)))))
-#define SCM_STRING_SET_IMMUTABLE(a)      (SCM_SET_DIRECT_CAR((a), (SCM_CAST_UINT(SCM_GET_DIRECT_CAR(a)) & ~SCM_STRING_MUTATION_TYPE_MASK)))
+#define SCM_STRING_MUTATION_TYPE(a)      ((enum ScmStrMutationType)((SCM_CAST_CAR_UINT(a) & SCM_STRING_MUTATION_TYPE_MASK) >> SCM_STRING_MUTATION_TYPE_OFFSET))
+#define SCM_STRING_SET_MUTABLE(a)        (SCM_SET_DIRECT_CAR((a), ((SCM_CAST_CAR_UINT(a) | (SCM_STR_MUTABLE << SCM_STRING_MUTATION_TYPE_OFFSET)))))
+#define SCM_STRING_SET_IMMUTABLE(a)      (SCM_SET_DIRECT_CAR((a), (SCM_CAST_CAR_UINT(a) & ~SCM_STRING_MUTATION_TYPE_MASK)))
 
 #define SCM_STRING_LEN(a)                (SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_STRING))
 #define SCM_STRING_STR(a)                ((char*)(SCM_CAST_UINT(SCM_CAR_GET_VALUE_AS_STR((a))) & SCM_STRING_STR_VALUE_MASK))
@@ -583,9 +583,9 @@ enum ScmStrMutationType {
 #define SCM_FUNC_CFUNC(a)        (SCM_WORD_CAST(ScmFuncType, SCM_FUNC_CFUNC_OTHERB(a) | SCM_FUNC_CFUNC_LSB(a)))
 #define SCM_FUNC_TYPECODE(a)     ((enum ScmFuncTypeCode)SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_FUNCTYPE))
 
-#define SCM_FUNC_SET_CFUNC_LSB(a, val)    (SCM_GET_DIRECT_CDR(a) = \
-                                           (ScmObj)(SCM_CAST_UINT(SCM_GET_DIRECT_CDR(a)) \
-                                                    | ((SCM_CAST_UINT(val) & 0x1) << SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR)))
+#define SCM_FUNC_SET_CFUNC_LSB(a, val)    (SCM_SET_DIRECT_CDR((a),\
+                                                              (SCM_CAST_CDR_UINT(a) \
+                                                               | ((SCM_CAST_UINT(val) & 0x1) << SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR))))
 #define SCM_FUNC_SET_CFUNC_OTHERB(a, val) (SCM_CAR_SET_VALUE_AS_PTR((a), SCM_WORD_CAST(ScmObj, (val))))
 #define SCM_FUNC_SET_CFUNC(a, fptr)       (SCM_FUNC_SET_CFUNC_OTHERB((a), (SCM_CAST_UINT(fptr) & ~0x1)), \
                                            SCM_FUNC_SET_CFUNC_LSB((a), (SCM_CAST_UINT(fptr) & 0x1)))
@@ -635,9 +635,9 @@ enum ScmStrMutationType {
 #define SCM_C_FUNCPOINTER_VALUE(a)          (SCM_WORD_CAST(ScmCFunc, SCM_C_FUNCPOINTER_OTHERSB(a) | SCM_C_FUNCPOINTER_LSB(a)))
 
 #define SCM_C_FUNCPOINTER_SET_OTHERSB(a, val) (SCM_CAR_SET_VALUE_AS_PTR((a), (val)))
-#define SCM_C_FUNCPOINTER_SET_LSB(a, val)     (SCM_GET_DIRECT_CDR(a) = \
-                                               (ScmObj)(SCM_CAST_UINT(SCM_GET_DIRECT_CDR(a)) \
-                                                        | ((SCM_CAST_UINT(val) & 0x1) << SCM_TAG_OTHERS_VALUE_OFFSET_C_FUNCPOINTER_LSBADDR)))
+#define SCM_C_FUNCPOINTER_SET_LSB(a, val)     (SCM_SET_DIRECT_CDR((a),  \
+                                                                  (SCM_CAST_CDR_UINT(a) \
+                                                                   | ((SCM_CAST_UINT(val) & 0x1) << SCM_TAG_OTHERS_VALUE_OFFSET_C_FUNCPOINTER_LSBADDR))))
 #define SCM_C_FUNCPOINTER_SET_VALUE(a, val)   (SCM_C_FUNCPOINTER_SET_OTHERSB((a), (SCM_CAST_UINT(val) & ~0x1)), \
                                                SCM_C_FUNCPOINTER_SET_LSB((a), (SCM_CAST_UINT(val) & 0x1)))
 
@@ -702,10 +702,10 @@ enum ScmStrMutationType {
 /*============================================================================
   GC Marking & Unmarking
 ============================================================================*/
-#define SCM_DO_MARK(a)     (SCM_GET_DIRECT_CAR(a) = (ScmObj)(SCM_CAST_UINT(SCM_GET_DIRECT_CAR(a)) & ~0x1))
-#define SCM_DO_UNMARK(a)   (SCM_GET_DIRECT_CAR(a) = (ScmObj)(SCM_CAST_UINT(SCM_GET_DIRECT_CAR(a)) | 0x1))
+#define SCM_DO_MARK(a)     (SCM_SET_DIRECT_CAR((a), (SCM_CAST_CAR_UINT(a) & ~0x1)))
+#define SCM_DO_UNMARK(a)   (SCM_SET_DIRECT_CAR((a), (SCM_CAST_CAR_UINT(a) | 0x1)))
 
-#define SCM_IS_MARKED(a)   ((SCM_CAST_UINT(SCM_GET_DIRECT_CAR(a)) & SCM_GCBIT_MASK) == 0x0)
+#define SCM_IS_MARKED(a)   ((SCM_CAST_CAR_UINT(a) & SCM_GCBIT_MASK) == 0x0)
 #define SCM_IS_UNMARKED(a) (!SCM_IS_MARKED(obj))
 
 /*============================================================================
