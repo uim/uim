@@ -437,9 +437,9 @@ static int is_pointer_to_heap(ScmObj obj)
 #if SCM_OBJ_COMPACT
     /* The pointer on the stack is 'tagged' to represent its types.
      * So we need to ignore the tag to get its real pointer value. */
-    ptr = (ScmCell *)SCM_STRIP_TAG_INFO(obj);
-    if (!SCM_CANBE_MARKED(ptr))
+    if (!SCM_CANBE_MARKED(obj))
         return 0;
+    ptr = (ScmCell *)SCM_STRIP_TAG_INFO(obj);
 #else
     ptr = obj;
 #endif
