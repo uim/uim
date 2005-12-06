@@ -95,7 +95,7 @@
 /*=======================================
   File Local Struct Declarations
 =======================================*/
-typedef ScmObj ScmObjHeap;
+typedef ScmCell *ScmObjHeap;
 
 /* Represents C variable that is holding a ScmObj to be protected from GC */
 typedef struct gc_protected_var_ gc_protected_var;
@@ -467,16 +467,18 @@ static void finalize_protected_var(void)
 /* The core part of Conservative GC */
 static int is_pointer_to_heap(ScmObj obj)
 {
-#if SCM_OBJ_COMPACT
-    /* The pointer on the stack is 'tagged' to represent its types.
-     * So we need to ignore the tag to get its real pointer value. */
-    ScmObj ptr = (ScmObj)(((unsigned int)(obj)) & SCM_VALUE_MASK);
-#else
-    ScmObj ptr = obj;
-#endif
-    ScmObj head = SCM_NULL;
+    ScmCell *head, *ptr;
     int i;
 
+#if SCM_OBJ_COMPACT
+    /* FIXME: reject immediate objects here for efficiency */
+    /* FIXME: hide internal representation by a GC bit stripping macro */
+    /* The pointer on the stack is 'tagged' to represent its types.
+     * So we need to ignore the tag to get its real pointer value. */
+    ptr = (ScmCell *)(((unsigned int)(obj)) & SCM_VALUE_MASK);
+#else
+    ptr = obj;
+#endif
     for (i = 0; i < scm_heap_num; i++) {
         if ((head = scm_heaps[i])
             && (head <= ptr)
