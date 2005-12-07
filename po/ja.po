@@ -34,6 +34,10 @@
 # - 言語名と国名は区別する。基本的にja.wikipedia.orgに見出しのある言語名を
 #   採用する
 #
+# - "Anthy"と"Anthy キー設定1"のように関連するグループ名は同じ"Anthy"で始める事
+#   によって関連を示す。その際従属するグループ名では"Anthy キー設定1"のようにス
+#   ペースを空けて"Anthy"が名前空間を形成している事を視覚的に示す
+#
 #
 # 日本語訳に使用する用語 (適宜追加お願いします):
 #
@@ -78,6 +82,8 @@
 # Return, return → リターン
 # hot key      → ホットキー (shortcutとショートカットの方がいいかもしれない。要議論)
 #
+# fullwidth alphanumeric → 全角英数(字) (label中では「字」を入れず、short-desc
+#                           には入れる)
 # beol         → ボル
 # beol-sik     → ボル式
 # pinyin       → ピンイン (「拼音」等は認知度が低いので外来語としてカタカナ表記)
@@ -90,7 +96,7 @@ msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-12-07 16:38+0900\n"
-"PO-Revision-Date: 2005-12-06 07:53+0900\n"
+"PO-Revision-Date: 2005-12-07 23:32+0900\n"
 "Last-Translator: Daichi Kawahata <daichik@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -623,7 +629,7 @@ msgstr "ヘルプ"
 
 #: helper/toolbar-common-gtk.c:593 qt/toolbar-common-quimhelpertoolbar.cpp:61
 msgid "Quit this toolbar"
-msgstr "このツールバーを閉じる"
+msgstr "終了"
 
 #: helper/toolbar-standalone-gtk.c:257
 #, c-format
@@ -687,6 +693,7 @@ msgstr ""
 msgid "Show this dialog on startup"
 msgstr "起動時にこのダイアログを表示"
 
+# FIXME: 元メッセージと共にtoolbar-common-gtk.cのメッセージに同期
 #: qt/toolbar-common-quimhelpertoolbar.cpp:99 scm/action.lisp:547
 #: scm/action.lisp:548
 msgid "exec im-switcher"
@@ -876,7 +883,7 @@ msgstr "全角英数"
 #: scm/anthy-custom.lisp:140 scm/canna-custom.lisp:140
 #: scm/mana-custom.lisp:140 scm/prime-custom.lisp:171 scm/skk-custom.lisp:189
 msgid "Fullwidth Alphanumeric input mode"
-msgstr "全角英数入力モード"
+msgstr "全角英数字入力モード"
 
 #: scm/anthy-custom.lisp:147 scm/canna-custom.lisp:147
 #: scm/mana-custom.lisp:147 scm/skk-custom.lisp:196
@@ -922,10 +929,12 @@ msgstr "入力モード"
 msgid "Kana input method"
 msgstr "かな入力方式"
 
+# 「ツールバー上に表示するボタン」だと単に「ツールバー上への表示用途」というカテ
+# ゴリの限定の意に誤読されるので採用しない
 #: scm/anthy-custom.lisp:172 scm/canna-custom.lisp:172
 #: scm/mana-custom.lisp:172 scm/skk-custom.lisp:216
 msgid "Enabled toolbar buttons"
-msgstr "ツールバー上に表示するボタン"
+msgstr "有効にするツールバーボタン"
 
 #: scm/anthy-custom.lisp:191 scm/canna-custom.lisp:191
 #: scm/mana-custom.lisp:191 scm/skk-custom.lisp:235
@@ -953,15 +962,15 @@ msgstr "vi協調モードを有効にする"
 
 #: scm/anthy-key-custom.lisp:36
 msgid "Anthy key bindings 1"
-msgstr "Anthyキー設定1"
+msgstr "Anthyキー 設定1"
 
 #: scm/anthy-key-custom.lisp:40
 msgid "Anthy key bindings 2"
-msgstr "Anthyキー設定2"
+msgstr "Anthyキー 設定2"
 
 #: scm/anthy-key-custom.lisp:44
 msgid "Anthy key bindings 3"
-msgstr "Anthyキー設定3"
+msgstr "Anthyキー 設定3"
 
 #: scm/anthy-key-custom.lisp:51
 msgid "[Anthy] next segment"
@@ -1075,11 +1084,11 @@ msgstr "[Anthy] 文節を縮める"
 
 #: scm/anthy-key-custom.lisp:75
 msgid "[Anthy] convert to halfwidth alphanumeric"
-msgstr "[Anthy] 半角英数に変換"
+msgstr "[Anthy] 半角英数字に変換"
 
 #: scm/anthy-key-custom.lisp:81
 msgid "[Anthy] convert to fullwidth alphanumeric"
-msgstr "[Anthy] 全角英数に変換"
+msgstr "[Anthy] 全角英数字に変換"
 
 #: scm/anthy-key-custom.lisp:87
 msgid "[Anthy] convert to hiragana"
@@ -1321,7 +1330,7 @@ msgstr "互換性のある字母を使用して不完全な音節を表す"
 
 #: scm/byeoru-key-custom.lisp:38
 msgid "Byeoru key bindings"
-msgstr "Byeoruキー設定"
+msgstr "Byeoru キー設定"
 
 #: scm/byeoru-key-custom.lisp:44
 msgid "[Byeoru] on"
@@ -1406,15 +1415,15 @@ msgstr "vi協調モードを有効にする"
 
 #: scm/canna-key-custom.lisp:36
 msgid "Canna key bindings 1"
-msgstr "Cannaキー設定1"
+msgstr "Canna キー設定1"
 
 #: scm/canna-key-custom.lisp:40
 msgid "Canna key bindings 2"
-msgstr "Cannaキー設定2"
+msgstr "Canna キー設定2"
 
 #: scm/canna-key-custom.lisp:44
 msgid "Canna key bindings 3"
-msgstr "Cannaキー設定3"
+msgstr "Canna キー設定3"
 
 #: scm/canna-key-custom.lisp:51
 msgid "[Canna] next segment"
@@ -1792,9 +1801,11 @@ msgstr "編集領域の左端"
 msgid "Right end of preedit area"
 msgstr "編集領域の右端"
 
+# 「候補ウィンドウの位置」では何を規定する位置なのか不明瞭な印象を受ける。具体例
+# が出たら追記する事 -- YamaKen 2005-12-07 
 #: scm/im-custom.lisp:341
 msgid "Candidate window position"
-msgstr "候補ウィンドウの位置"
+msgstr "候補ウィンドウの表示位置"
 
 #: scm/im-custom.lisp:347
 msgid "Enable lazy input method loading for fast startup"
@@ -1886,15 +1897,15 @@ msgstr "mana"
 
 #: scm/mana-key-custom.lisp:36
 msgid "mana key bindings 1"
-msgstr "manaキー設定1"
+msgstr "mana キー設定1"
 
 #: scm/mana-key-custom.lisp:40
 msgid "mana key bindings 2"
-msgstr "manaキー設定2"
+msgstr "mana キー設定2"
 
 #: scm/mana-key-custom.lisp:44
 msgid "mana key bindings 3"
-msgstr "manaキー設定3"
+msgstr "mana キー設定3"
 
 #: scm/mana-key-custom.lisp:51
 msgid "[mana] next segment"
@@ -2103,15 +2114,15 @@ msgstr "PRIME オン"
 
 #: scm/prime-key-custom.lisp:60
 msgid "PRIME key bindings 1"
-msgstr "PRIMEキー設定1"
+msgstr "PRIME キー設定1"
 
 #: scm/prime-key-custom.lisp:64
 msgid "PRIME key bindings 2"
-msgstr "PRIMEキー設定2"
+msgstr "PRIME キー設定2"
 
 #: scm/prime-key-custom.lisp:68
 msgid "PRIME key bindings 3"
-msgstr "PRIMEキー設定3"
+msgstr "PRIME キー設定3"
 
 #: scm/prime-key-custom.lisp:75
 msgid "[PRIME] prime-register-key"
@@ -2239,7 +2250,7 @@ msgstr "SKK入力方式のuim版"
 
 #: scm/skk-custom.lisp:43
 msgid "SKK dictionaries"
-msgstr "SKK辞書"
+msgstr "SKK 辞書"
 
 #: scm/skk-custom.lisp:44
 msgid "Dictionary settings for SKK"
@@ -2335,15 +2346,15 @@ msgstr "改行をネイティブキーイベントの代わりにASCII文字列�
 
 #: scm/skk-key-custom.lisp:64
 msgid "SKK key bindings 1"
-msgstr "SKKキー設定1"
+msgstr "SKK キー設定1"
 
 #: scm/skk-key-custom.lisp:68
 msgid "SKK key bindings 2"
-msgstr "SKKキー設定2"
+msgstr "SKK キー設定2"
 
 #: scm/skk-key-custom.lisp:72
 msgid "SKK key bindings 3"
-msgstr "SKKキー設定3"
+msgstr "SKK キー設定3"
 
 #: scm/skk-key-custom.lisp:77
 msgid "Completion"
@@ -2496,11 +2507,11 @@ msgstr "漢字直接入力方式"
 
 #: scm/tutcode-key-custom.lisp:65
 msgid "TUT-Code key bindings 1"
-msgstr "TUT-Codeキー設定1"
+msgstr "TUT-Code キー設定1"
 
 #: scm/tutcode-key-custom.lisp:69
 msgid "TUT-Code key bindings 2"
-msgstr "TUT-Codeキー設定2"
+msgstr "TUT-Code キー設定2"
 
 #: scm/tutcode-key-custom.lisp:75
 msgid "[TUT-Code] on"
@@ -3152,373 +3163,3 @@ msgstr "ヨルバ語"
 #: uim/iso-639-1.def:185
 msgid "Zulu"
 msgstr "ズール語"
-
-#~ msgid "[Canna] canna-vi-escape-key?"
-#~ msgstr "[Canna] vi協調モードでESCとして扱うキー"
-
-#~ msgid "[mana] mana-vi-escape-key?"
-#~ msgstr "[mana] vi協調モードでESCとして扱うキー"
-
-#~ msgid "[SKK] skk-vi-escape-key?"
-#~ msgstr "[SKK] vi協調モードでESCとして扱うキー"
-
-# FIXME: 元メッセージと共にtoolbar-common-gtk.cのメッセージに同期
-#~ msgid "Execute uim's input method switcher"
-#~ msgstr "入力方式の切り換え"
-
-#~ msgid "Execute uim's preference tool"
-#~ msgstr "設定ツールの起動"
-
-#~ msgid "Execute uim's Japanese dictionary tool"
-#~ msgstr "日本語辞書ツールの実行"
-
-#~ msgid "Execute uim's input pad tool"
-#~ msgstr "入力パッドの起動"
-
-#~ msgid "Execute uim's handwriting input pad tool"
-#~ msgstr "手書き入力パッドツールの起動"
-
-#~ msgid "Execute uim's help tool"
-#~ msgstr "ヘルプの起動"
-
-#~ msgid "Bushu List"
-#~ msgstr "部首一覧"
-
-#~ msgid "Mode:"
-#~ msgstr "モード:"
-
-#~ msgid "Bushu Search"
-#~ msgstr "部首検索"
-
-#~ msgid "Unicode Search"
-#~ msgstr "ユニコード検索"
-
-#~ msgid "Select Font"
-#~ msgstr "フォントの選択"
-
-#~ msgid "Chars:"
-#~ msgstr "文字:"
-
-#~ msgid "Basic Latin"
-#~ msgstr "基本ラテン文字"
-
-#~ msgid "Latin-1 Supplement"
-#~ msgstr "ラテン1追加 (ISO 8859-1 右面)"
-
-#~ msgid "Latin Extended-A"
-#~ msgstr "ラテン文字拡張A"
-
-#~ msgid "Latin Extended-B"
-#~ msgstr "ラテン文字拡張B"
-
-#~ msgid "IPA Extensions"
-#~ msgstr "国際音声記号 (IPA 拡張)"
-
-#~ msgid "Spacing Modifier Letters"
-#~ msgstr "国際音声記号 (長音記号)"
-
-#~ msgid "Combining Diacritical Marks"
-#~ msgstr "国際音声記号 (合成用記号)"
-
-#~ msgid "Greek and Coptic"
-#~ msgstr "ギリシャ文字とコプト文字"
-
-#~ msgid "Cyrillic"
-#~ msgstr "キリル文字"
-
-#~ msgid "Cyrillic Supplement"
-#~ msgstr "キリル文字追加"
-
-#~ msgid "Thaana"
-#~ msgstr "ターナ文字"
-
-#~ msgid "Devanagari"
-#~ msgstr "デーヴァナーガリー文字"
-
-#~ msgid "Gurmukhi"
-#~ msgstr "グルムキー文字"
-
-#~ msgid "Sinhala"
-#~ msgstr "シンハラ文字"
-
-#~ msgid "Lao"
-#~ msgstr "ラオス文字"
-
-#~ msgid "Hangul Jamo"
-#~ msgstr "ハングル字母"
-
-#~ msgid "Ethiopic"
-#~ msgstr "エチオピア文字"
-
-#~ msgid "Cherokee"
-#~ msgstr "チェロキー文字"
-
-#~ msgid "Unified Canadian Aboriginal Syllabics"
-#~ msgstr "統合カナダ先住民音節"
-
-#~ msgid "Ogham"
-#~ msgstr "オーガム文字"
-
-#~ msgid "Runic"
-#~ msgstr "ルーン文字"
-
-#~ msgid "Hanunoo"
-#~ msgstr "ハヌノオ文字"
-
-#~ msgid "Buhid"
-#~ msgstr "ブヒッド文字"
-
-#~ msgid "Tagbanwa"
-#~ msgstr "タグバンワ文字"
-
-#~ msgid "Khmer"
-#~ msgstr "クメール文字"
-
-#~ msgid "Limbu"
-#~ msgstr "リンブー文字"
-
-#~ msgid "Tai Letters"
-#~ msgstr "タイ文字"
-
-#~ msgid "Khmer Symbols"
-#~ msgstr "クメール記号"
-
-#~ msgid "Phonetic Extensions"
-#~ msgstr "ウラル地方の発音記号"
-
-#~ msgid "Latin Extended Additional"
-#~ msgstr "ラテン文字拡張追加"
-
-#~ msgid "Greek Extended-B"
-#~ msgstr "ギリシア文字拡張B"
-
-#~ msgid "General Punctuation"
-#~ msgstr "一般句読点"
-
-#~ msgid "Superscripts and Subscripts"
-#~ msgstr "上付き/下付き文字"
-
-#~ msgid "Currency Symbols"
-#~ msgstr "通貨記号"
-
-#~ msgid "Combining Diacritical Marks for Symbols"
-#~ msgstr "国際音声記号 (合成用記号)"
-
-#~ msgid "Letterlike Symbols"
-#~ msgstr "文字様記号"
-
-#~ msgid "Number Forms"
-#~ msgstr "数字に準じるもの"
-
-#~ msgid "Arrows"
-#~ msgstr "矢印"
-
-#~ msgid "Mathematical Operators"
-#~ msgstr "数学記号"
-
-#~ msgid "Miscellaneous Technical"
-#~ msgstr "その他の技術用記号"
-
-#~ msgid "Control Pictures"
-#~ msgstr "制御機能用記号"
-
-#~ msgid "Optical Character Recognition"
-#~ msgstr "光学式文字認識"
-
-#~ msgid "Enclosed Alphanumerics"
-#~ msgstr "囲み英数字"
-
-#~ msgid "Box Drawing"
-#~ msgstr "罫線素辺"
-
-#~ msgid "Block Elements"
-#~ msgstr "ブロック要素"
-
-#~ msgid "Geometric Shapes"
-#~ msgstr "幾何学模様"
-
-#~ msgid "Miscellaneous Symbols"
-#~ msgstr "その他の記号"
-
-#~ msgid "Dingbats"
-#~ msgstr "装飾記号"
-
-#~ msgid "Miscellaneous Mathematical Symbols-A"
-#~ msgstr "その他の数学記号A"
-
-#~ msgid "Supplemental Arrows-A"
-#~ msgstr "追加矢印A"
-
-#~ msgid "Braille Patterns"
-#~ msgstr "ブライユ点字図形"
-
-#~ msgid "Supplemental Arrows-B"
-#~ msgstr "追加矢印B"
-
-#~ msgid "Miscellaneous Mathematical Symbols-B"
-#~ msgstr "その他の数学記号B"
-
-#~ msgid "Supplemental Mathematical Operators"
-#~ msgstr "追加数学記号"
-
-#~ msgid "Miscellaneous Symbols and Arrows-B"
-#~ msgstr "その他の記号及び矢印B"
-
-#~ msgid "CJK Radicals Supplemental"
-#~ msgstr "CJK部首追加"
-
-#~ msgid "Kangxi Radicals"
-#~ msgstr "康煕部首"
-
-#~ msgid "Ideographic Description Characters"
-#~ msgstr "漢字構成記述文字"
-
-#~ msgid "CJK Symbols and Punctuation"
-#~ msgstr "CJKの記号及び句読点"
-
-#~ msgid "Bopomofo"
-#~ msgstr "注音字母"
-
-#~ msgid "Hangul Compatibility Jamo"
-#~ msgstr "ハングル互換字母"
-
-#~ msgid "Kanbun"
-#~ msgstr "漢文"
-
-#~ msgid "Bopomofo Extended-B 1F00"
-#~ msgstr "注音字母拡張B 1F00"
-
-#~ msgid "Katakana Phonetic Extensions"
-#~ msgstr "カタカナ表音拡張"
-
-#~ msgid "Enclosed CJK Letters and Months"
-#~ msgstr "囲みCJK文字・月"
-
-#~ msgid "CJK Compatibility"
-#~ msgstr "CJK互換用文字"
-
-#~ msgid "CJK Unified Ideographs Extension and"
-#~ msgstr "CJK統合漢字拡張及び"
-
-#~ msgid "Yijing Hexagram Symbols-B"
-#~ msgstr "易経記号B"
-
-#~ msgid "CJK Unified Ideographs"
-#~ msgstr "CJK統合漢字"
-
-#~ msgid "Yi Syllables"
-#~ msgstr "イ音節文字"
-
-#~ msgid "Yi Radicals"
-#~ msgstr "イ文字部首"
-
-#~ msgid "Hangul Syllables"
-#~ msgstr "ハングル音節文字"
-
-#~ msgid "High Surrogates"
-#~ msgstr "上位サロゲート"
-
-#~ msgid "High Private Use Surrogates"
-#~ msgstr "上位私用サロゲート"
-
-#~ msgid "Low Surrogates"
-#~ msgstr "下位サロゲート"
-
-#~ msgid "Private Use Area"
-#~ msgstr "私用領域"
-
-#~ msgid "CJK Compatibility Ideographs"
-#~ msgstr "CJK互換漢字"
-
-#~ msgid "Alphabetic Presentation Forms"
-#~ msgstr "アルファベット表示形"
-
-#~ msgid "Arabic Presentation Forms-A"
-#~ msgstr "アラビア表示形A"
-
-#~ msgid "Variation Selectors"
-#~ msgstr "バリエーション・セレクター"
-
-#~ msgid "Combining Half Marks"
-#~ msgstr "半記号 (合成可能)"
-
-#~ msgid "CJK Compatibility Forms-A"
-#~ msgstr "CJK互換形A"
-
-#~ msgid "Small Form Variants"
-#~ msgstr "小字形"
-
-#~ msgid "Arabic Presentation Forms-B"
-#~ msgstr "アラビア表示形B"
-
-#~ msgid "Halfwidth and Fullwidth Forms-B"
-#~ msgstr "半角及び全角形B"
-
-#~ msgid "Specials"
-#~ msgstr "特殊用途"
-
-#~ msgid "Linear B Syllabary"
-#~ msgstr "線文字B音節文字"
-
-#~ msgid "Linear B Ideograms"
-#~ msgstr "線文字B表意文字"
-
-#~ msgid "Aegean Numbers"
-#~ msgstr "エーゲ数字"
-
-#~ msgid "Old Italic"
-#~ msgstr "オールド・イタリック"
-
-#~ msgid "Gothic"
-#~ msgstr "ゴシック"
-
-#~ msgid "Ugaritic"
-#~ msgstr "ウガリト楔形文字"
-
-#~ msgid "Deseret"
-#~ msgstr "デゼレット・アルファベット"
-
-#~ msgid "Shavian"
-#~ msgstr "シェイヴィアン文字"
-
-#~ msgid "Osmanya"
-#~ msgstr "オスマン文字"
-
-#~ msgid "Cypriot Syllabary"
-#~ msgstr "キプロス音節文字"
-
-#~ msgid "Byzantine Musical Symbols-B 4DC0"
-#~ msgstr "ビザンチン音楽記号B 4DC0"
-
-#~ msgid "Musical Symbols-B 4DC0 1D000"
-#~ msgstr "音楽記号B 4DC0 1D000"
-
-#~ msgid "Tai Xuan Jing Symbols-B 4DC0 1D000 1D100"
-#~ msgstr "太玄經B 4DC0 1D000 1D100"
-
-#~ msgid "Mathematical Alphanumeric Symbols-B 4DC0 1D000 1D100 1D300"
-#~ msgstr "数学記号B 4DC0 1D000 1D100 1D300"
-
-#~ msgid "CJK Unified Ideographs Extension B 4DC0 1D000 1D100 1D300 1D400"
-#~ msgstr "CJK統合漢字拡張B 4DC0 1D000 1D100 1D300 1D400"
-
-#~ msgid "CJK Compatibility Ideographs Supplemental 2E80"
-#~ msgstr "CJK互換漢字補助 2E80"
-
-#~ msgid "Tags"
-#~ msgstr "タグ"
-
-#~ msgid "Variation Selectors Supplemental 2E80 2F800"
-#~ msgstr "バリエーション・セレクター補助 2E80 2F800"
-
-#~ msgid "Supplementary Private Use Area-A"
-#~ msgstr "補助私用領域A"
-
-#~ msgid "Supplementary Private Use Area-B"
-#~ msgstr "補助私用領域B"
-
-#~ msgid "UnicodeBlock List"
-#~ msgstr "ユニコード区画リスト"
-
-#~ msgid "[Anthy] anthy-vi-escape-key?"
-#~ msgstr "[Anthy] vi協調モードでESCとして扱うキー"
