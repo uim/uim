@@ -238,5 +238,5 @@
 (define-custom 'mana-vi-escape-key '("escape" "<Control>[")
                '(mana-keys3)
 	       '(key)
-	       (_ "[mana] mana-vi-escape-key?")
+	       (_ "[mana] ESC keys on vi-cooperative mode")
 	       (_ "long description will be here"))

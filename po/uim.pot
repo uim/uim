@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-07 13:38+0900\n"
+"POT-Creation-Date: 2005-12-07 16:38+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -497,27 +497,27 @@ msgstr ""
 msgid "Applet for indicate uim's status"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:63
+#: helper/toolbar-common-gtk.c:63 qt/toolbar-common-quimhelpertoolbar.cpp:55
 msgid "Switch input method"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:69
+#: helper/toolbar-common-gtk.c:69 qt/toolbar-common-quimhelpertoolbar.cpp:56
 msgid "Preference"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:75
+#: helper/toolbar-common-gtk.c:75 qt/toolbar-common-quimhelpertoolbar.cpp:57
 msgid "Japanese dictionary editor"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:81
+#: helper/toolbar-common-gtk.c:81 qt/toolbar-common-quimhelpertoolbar.cpp:58
 msgid "Input pad"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:87
+#: helper/toolbar-common-gtk.c:87 qt/toolbar-common-quimhelpertoolbar.cpp:59
 msgid "Handwriting input pad"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:93
+#: helper/toolbar-common-gtk.c:93 qt/toolbar-common-quimhelpertoolbar.cpp:60
 msgid "Help"
 msgstr ""
 
@@ -579,30 +579,6 @@ msgstr ""
 
 #: qt/pref-qt.cpp:314
 msgid "Show this dialog on startup"
-msgstr ""
-
-#: qt/toolbar-common-quimhelpertoolbar.cpp:55
-msgid "Execute uim's input method switcher"
-msgstr ""
-
-#: qt/toolbar-common-quimhelpertoolbar.cpp:56
-msgid "Execute uim's preference tool"
-msgstr ""
-
-#: qt/toolbar-common-quimhelpertoolbar.cpp:57
-msgid "Execute uim's Japanese dictionary tool"
-msgstr ""
-
-#: qt/toolbar-common-quimhelpertoolbar.cpp:58
-msgid "Execute uim's input pad tool"
-msgstr ""
-
-#: qt/toolbar-common-quimhelpertoolbar.cpp:59
-msgid "Execute uim's handwriting input pad tool"
-msgstr ""
-
-#: qt/toolbar-common-quimhelpertoolbar.cpp:60
-msgid "Execute uim's help tool"
 msgstr ""
 
 #: qt/toolbar-common-quimhelpertoolbar.cpp:99 scm/action.lisp:547
@@ -1442,7 +1418,7 @@ msgid "[Canna] go right"
 msgstr ""
 
 #: scm/canna-key-custom.lisp:226
-msgid "[Canna] canna-vi-escape-key?"
+msgid "[Canna] ESC keys on vi-cooperative mode"
 msgstr ""
 
 #: scm/custom.lisp:749
@@ -1928,7 +1904,7 @@ msgid "[mana] go right"
 msgstr ""
 
 #: scm/mana-key-custom.lisp:241
-msgid "[mana] mana-vi-escape-key?"
+msgid "[mana] ESC keys on vi-cooperative mode"
 msgstr ""
 
 #: scm/prime-custom.lisp:34
@@ -2345,7 +2321,7 @@ msgid "[SKK] skk-special-midashi-key?"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:212
-msgid "[SKK] skk-vi-escape-key?"
+msgid "[SKK] ESC keys on vi-cooperative mode"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:218

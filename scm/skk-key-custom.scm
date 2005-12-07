@@ -209,7 +209,7 @@
 (define-custom 'skk-vi-escape-key '("escape" "<Control>[")
                '(skk-keys2)
 	       '(key)
-	       (_ "[SKK] skk-vi-escape-key?")
+	       (_ "[SKK] ESC keys on vi-cooperative mode")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-state-direct-no-preedit-nop-key '("<IgnoreCase><Control>j")

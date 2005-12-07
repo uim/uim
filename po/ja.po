@@ -49,7 +49,8 @@
 # commit       → 確定
 # candidate    → 候補
 # separator    → 区切り
-# transposed   → (置き換えて)
+# transposed   → (置き換えて、反転して)
+# key bindings → キー設定
 #
 # global       → 全体 (状況に応じて他の訳も可。「全般」はgenericの意を含むので避ける)
 # mode         → モード
@@ -88,7 +89,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-07 13:38+0900\n"
+"POT-Creation-Date: 2005-12-07 16:38+0900\n"
 "PO-Revision-Date: 2005-12-06 07:53+0900\n"
 "Last-Translator: Daichi Kawahata <daichik@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -229,7 +230,7 @@ msgstr "選択した単語を編集します"
 
 #: helper/dict-word-list-win-gtk.c:97
 msgid "_Popup Menu"
-msgstr "ポップアップ・メニュー(_P)"
+msgstr "ポップアップメニュー(_P)"
 
 #: helper/dict-word-list-win-gtk.c:98
 msgid "Show popup menu"
@@ -320,7 +321,7 @@ msgstr "追加項目"
 #. action area
 #: helper/dict-word-win-gtk.c:179
 msgid "continuance"
-msgstr "接続詞"
+msgstr "連続"
 
 #: helper/dict-word-win-gtk.c:191
 msgid "Add"
@@ -363,7 +364,7 @@ msgstr "頻度(_F):"
 # FIXME: should be revised
 #: helper/dict-word-win-gtk.c:349
 msgid "Part of Speech(_narrow):"
-msgstr "狭義の品詞(_N):"
+msgstr "品詞(狭義)(_N):"
 
 #: helper/dict-word-win-gtk.c:362
 msgid "_Browse..."
@@ -596,33 +597,33 @@ msgstr "GNOMEパネル用のuimアプレット"
 msgid "Applet for indicate uim's status"
 msgstr "uimの状態を示すアプレット"
 
-#: helper/toolbar-common-gtk.c:63
+#: helper/toolbar-common-gtk.c:63 qt/toolbar-common-quimhelpertoolbar.cpp:55
 msgid "Switch input method"
 msgstr "入力方式の切り換え"
 
-#: helper/toolbar-common-gtk.c:69
+#: helper/toolbar-common-gtk.c:69 qt/toolbar-common-quimhelpertoolbar.cpp:56
 msgid "Preference"
 msgstr "設定"
 
-#: helper/toolbar-common-gtk.c:75
+#: helper/toolbar-common-gtk.c:75 qt/toolbar-common-quimhelpertoolbar.cpp:57
 msgid "Japanese dictionary editor"
-msgstr "日本語辞書エディタ"
+msgstr "日本語辞書ツール"
 
-#: helper/toolbar-common-gtk.c:81
+#: helper/toolbar-common-gtk.c:81 qt/toolbar-common-quimhelpertoolbar.cpp:58
 msgid "Input pad"
 msgstr "入力パッド"
 
-#: helper/toolbar-common-gtk.c:87
+#: helper/toolbar-common-gtk.c:87 qt/toolbar-common-quimhelpertoolbar.cpp:59
 msgid "Handwriting input pad"
 msgstr "手書き入力パッド"
 
-#: helper/toolbar-common-gtk.c:93
+#: helper/toolbar-common-gtk.c:93 qt/toolbar-common-quimhelpertoolbar.cpp:60
 msgid "Help"
 msgstr "ヘルプ"
 
 #: helper/toolbar-common-gtk.c:593 qt/toolbar-common-quimhelpertoolbar.cpp:61
 msgid "Quit this toolbar"
-msgstr "終了"
+msgstr "このツールバーを閉じる"
 
 #: helper/toolbar-standalone-gtk.c:257
 #, c-format
@@ -672,7 +673,7 @@ msgstr "キャンセル"
 
 #: qt/pref-qt.cpp:235
 msgid "Save Confirm"
-msgstr "保存"
+msgstr "保存確認"
 
 #: qt/pref-qt.cpp:236
 msgid ""
@@ -686,55 +687,30 @@ msgstr ""
 msgid "Show this dialog on startup"
 msgstr "起動時にこのダイアログを表示"
 
-# FIXME: 元メッセージと共にtoolbar-common-gtk.cのメッセージに同期
-#: qt/toolbar-common-quimhelpertoolbar.cpp:55
-msgid "Execute uim's input method switcher"
-msgstr "uim の入力方式スイッチャーを実行"
-
-#: qt/toolbar-common-quimhelpertoolbar.cpp:56
-msgid "Execute uim's preference tool"
-msgstr "uim の環境設定ツールを実行"
-
-#: qt/toolbar-common-quimhelpertoolbar.cpp:57
-msgid "Execute uim's Japanese dictionary tool"
-msgstr "uim の日本語辞書ツールを実行"
-
-#: qt/toolbar-common-quimhelpertoolbar.cpp:58
-msgid "Execute uim's input pad tool"
-msgstr "uim の入力パッドツールを実行"
-
-#: qt/toolbar-common-quimhelpertoolbar.cpp:59
-msgid "Execute uim's handwriting input pad tool"
-msgstr "uim の手書き入力パッドツールを実行"
-
-#: qt/toolbar-common-quimhelpertoolbar.cpp:60
-msgid "Execute uim's help tool"
-msgstr "uim のヘルプツールを実行"
-
 #: qt/toolbar-common-quimhelpertoolbar.cpp:99 scm/action.lisp:547
 #: scm/action.lisp:548
 msgid "exec im-switcher"
-msgstr "im-switcher を実行"
+msgstr "入力方式の切り換え"
 
 #: qt/toolbar-common-quimhelpertoolbar.cpp:123
 msgid "exec Preference Application"
-msgstr "環境設定アプリケーションを実行"
+msgstr "設定ツールの起動"
 
 #: qt/toolbar-common-quimhelpertoolbar.cpp:143
 msgid "exec Japanese dictionary Tool Application"
-msgstr "日本語辞書ツール・アプリケーションを実行"
+msgstr "日本語辞書ツールの起動"
 
 #: qt/toolbar-common-quimhelpertoolbar.cpp:163
 msgid "exec Input Pad Tool Application"
-msgstr "入力パッド・ツール・アプリケーションを実行"
+msgstr "入力パッドの起動"
 
 #: qt/toolbar-common-quimhelpertoolbar.cpp:183
 msgid "exec Handwriting Input Pad Tool Application"
-msgstr "手書き入力パッド・ツール・アプリケーションを実行"
+msgstr "手書き入力パッドの起動"
 
 #: qt/toolbar-common-quimhelpertoolbar.cpp:202
 msgid "exec Help Application"
-msgstr "ヘルプ・アプリケーションを実行"
+msgstr "ヘルプの起動"
 
 #: scm/action.lisp:502 scm/action.lisp:503
 msgid "unknown"
@@ -900,7 +876,7 @@ msgstr "全角英数"
 #: scm/anthy-custom.lisp:140 scm/canna-custom.lisp:140
 #: scm/mana-custom.lisp:140 scm/prime-custom.lisp:171 scm/skk-custom.lisp:189
 msgid "Fullwidth Alphanumeric input mode"
-msgstr "全角英数字入力モード"
+msgstr "全角英数入力モード"
 
 #: scm/anthy-custom.lisp:147 scm/canna-custom.lisp:147
 #: scm/mana-custom.lisp:147 scm/skk-custom.lisp:196
@@ -949,7 +925,7 @@ msgstr "かな入力方式"
 #: scm/anthy-custom.lisp:172 scm/canna-custom.lisp:172
 #: scm/mana-custom.lisp:172 scm/skk-custom.lisp:216
 msgid "Enabled toolbar buttons"
-msgstr "有効にするツールバーボタン"
+msgstr "ツールバー上に表示するボタン"
 
 #: scm/anthy-custom.lisp:191 scm/canna-custom.lisp:191
 #: scm/mana-custom.lisp:191 scm/skk-custom.lisp:235
@@ -964,7 +940,7 @@ msgstr "入力モードのメニュー項目"
 #: scm/anthy-custom.lisp:242 scm/canna-custom.lisp:242
 #: scm/mana-custom.lisp:242 scm/skk-custom.lisp:275
 msgid "Default kana input method"
-msgstr "標準のかな入力モード"
+msgstr "標準のかな入力方式"
 
 #: scm/anthy-custom.lisp:251 scm/canna-custom.lisp:251
 #: scm/mana-custom.lisp:251 scm/skk-custom.lisp:284
@@ -977,15 +953,15 @@ msgstr "vi協調モードを有効にする"
 
 #: scm/anthy-key-custom.lisp:36
 msgid "Anthy key bindings 1"
-msgstr "Anthy キー設定1"
+msgstr "Anthyキー設定1"
 
 #: scm/anthy-key-custom.lisp:40
 msgid "Anthy key bindings 2"
-msgstr "Anthy キー設定2"
+msgstr "Anthyキー設定2"
 
 #: scm/anthy-key-custom.lisp:44
 msgid "Anthy key bindings 3"
-msgstr "Anthy キー設定3"
+msgstr "Anthyキー設定3"
 
 #: scm/anthy-key-custom.lisp:51
 msgid "[Anthy] next segment"
@@ -1099,11 +1075,11 @@ msgstr "[Anthy] 文節を縮める"
 
 #: scm/anthy-key-custom.lisp:75
 msgid "[Anthy] convert to halfwidth alphanumeric"
-msgstr "[Anthy] 半角英数字に変換"
+msgstr "[Anthy] 半角英数に変換"
 
 #: scm/anthy-key-custom.lisp:81
 msgid "[Anthy] convert to fullwidth alphanumeric"
-msgstr "[Anthy] 全角英数字に変換"
+msgstr "[Anthy] 全角英数に変換"
 
 #: scm/anthy-key-custom.lisp:87
 msgid "[Anthy] convert to hiragana"
@@ -1117,18 +1093,17 @@ msgstr "[Anthy] カタカナに変換"
 msgid "[Anthy] convert to halfwidth katakana"
 msgstr "[Anthy] 半角カタカナに変換"
 
-# FIXME: should be revised
 #: scm/anthy-key-custom.lisp:105
 msgid "[Anthy] commit as transposed kana"
 msgstr "[Anthy] かな/カナ反転確定"
 
 #: scm/anthy-key-custom.lisp:111
 msgid "[Anthy] fullwidth alphanumeric mode"
-msgstr "[Anthy] 全角英数字モード"
+msgstr "[Anthy] 全角英数入力モード"
 
 #: scm/anthy-key-custom.lisp:118
 msgid "[Anthy] halfwidth katakana mode"
-msgstr "[Anthy] 半角カタカナモード"
+msgstr "[Anthy] 半角カタカナ入力モード"
 
 #: scm/anthy-key-custom.lisp:124
 msgid "[Anthy] toggle hiragana/katakana mode"
@@ -1204,7 +1179,7 @@ msgstr "[Anthy] 右に移動"
 
 #: scm/anthy-key-custom.lisp:241
 msgid "[Anthy] ESC keys on vi-cooperative mode"
-msgstr ""
+msgstr "[Anthy] vi協調モードでESCとして扱うキー"
 
 # FIXME: Byeoru全般改訂
 #: scm/byeoru-custom.lisp:37
@@ -1223,66 +1198,70 @@ msgid ""
 "features such as Hangul-Chinese conversion. The name 'byeoru' is Korean for "
 "inkstone."
 msgstr ""
+"ハングルのための包括的な入力方式スイートです。2ボルや3ボル式とこれらの別バー"
+"ジョンを含む、主な入力方式の大半をカバーします。また一部では、ハングル-中国語"
+"変換のような高度な機能も提供します。このスイート名 \"Byeoru\" は韓国語で \"硯"
+"\" を意味します。"
 
 #. 2-beol can not be orderless.
 #: scm/byeoru-custom.lisp:46
 msgid "Hangul 2-beol"
-msgstr "ハングル 2-beol 式"
+msgstr "ハングル2-beol式"
 
 #: scm/byeoru-custom.lisp:47
 msgid "Standard Hangul 2-beol keyboard"
-msgstr "標準のハングル 2-beol 式キーボード"
+msgstr "標準のハングル2-beol式キーボード"
 
 #. neither can strict 3-beol.
 #: scm/byeoru-custom.lisp:50
 msgid "Hangul 3-beol final strict"
-msgstr ""
+msgstr "ハングル3ボル式(final strict)"
 
 #: scm/byeoru-custom.lisp:51
 msgid "Hangul 3-beol that forbids composition of precomposed jamos"
-msgstr ""
+msgstr "合成済み字母の合成を禁止するハングル3ボル式キーボード"
 
 #. generous 3-beol can be orderless.
 #: scm/byeoru-custom.lisp:54
 msgid "Hangul 3-beol final generous"
-msgstr ""
+msgstr "ハングル3ボル式(final generous)"
 
 #: scm/byeoru-custom.lisp:55
 msgid "Hangul 3-beol that allows composition of precomposed jamos"
-msgstr ""
+msgstr "合成済み字母の合成を許可するハングル3ボル式キーボード"
 
 #: scm/byeoru-custom.lisp:58
 msgid "Hangul 390 strict"
-msgstr ""
+msgstr "ハングル390式(strict)"
 
 #: scm/byeoru-custom.lisp:59
 msgid "Hangul 390 that forbids composition of precomposed jamos"
-msgstr ""
+msgstr "合成済み字母の合成を禁止するハングル390式キーボード"
 
 #: scm/byeoru-custom.lisp:62
 msgid "Hangul 390 generous"
-msgstr ""
+msgstr "ハングル390式 (generous)"
 
 #: scm/byeoru-custom.lisp:63
 msgid "Hangul 390 that allows composition of precomposed jamos"
-msgstr ""
+msgstr "合成済み字母の合成を許可するハングル390式キーボード"
 
 #: scm/byeoru-custom.lisp:66
 msgid "Hangul 3-beol no-shift"
-msgstr "ハングル 3-beol 式 (シフトなし)"
+msgstr "ハングル3ボル式(シフトなし)"
 
 #: scm/byeoru-custom.lisp:67
 msgid "Hangul 3-beol that does not require any shift key press"
-msgstr "シフトキーを押下を必要としないハングル 3-boel 式"
+msgstr "シフトキー押下を必要としないハングル3ボル式"
 
 #. romaja can not be orderless.
 #: scm/byeoru-custom.lisp:70
 msgid "Hangul romaja"
-msgstr "ハングル (ローマ字)"
+msgstr "ハングルローマ字式"
 
 #: scm/byeoru-custom.lisp:71
 msgid "Hangul romaja in the style of HWP 2004"
-msgstr "HWP 2004 式のハングルのローマ字です"
+msgstr "HWP2004スタイルのハングルローマ字式"
 
 #: scm/byeoru-custom.lisp:80
 msgid "Keyboard"
@@ -1326,7 +1305,7 @@ msgstr "標準の確定を単語単位にする"
 
 #: scm/byeoru-custom.lisp:142
 msgid "Shifted roman vowel inputs an isolated vowel"
-msgstr ""
+msgstr "ローマ字母音をシフトして単母音を入力する"
 
 #: scm/byeoru-custom.lisp:153
 msgid "Candidate window size"
@@ -1342,7 +1321,7 @@ msgstr "互換性のある字母を使用して不完全な音節を表す"
 
 #: scm/byeoru-key-custom.lisp:38
 msgid "Byeoru key bindings"
-msgstr "Byeoru キー設定"
+msgstr "Byeoruキー設定"
 
 #: scm/byeoru-key-custom.lisp:44
 msgid "[Byeoru] on"
@@ -1366,19 +1345,19 @@ msgstr "[Byeoru] 変換キャンセル"
 
 #: scm/byeoru-key-custom.lisp:74
 msgid "[Byeoru] next candidate"
-msgstr "[Byeoru] 次の候補"
+msgstr "[Byeoru] 次候補"
 
 #: scm/byeoru-key-custom.lisp:80
 msgid "[Byeoru] previous candidate"
-msgstr "[Byeoru] 前の候補"
+msgstr "[Byeoru] 前候補"
 
 #: scm/byeoru-key-custom.lisp:86
 msgid "[Byeoru] next page of candidate window"
-msgstr "[Byeoru] 候補ウィンドウの次のページ"
+msgstr "[Byeoru] 候補ウィンドウの次ページ"
 
 #: scm/byeoru-key-custom.lisp:92
 msgid "[Byeoru] previous page of candidate window"
-msgstr "[Byeoru] 候補ウィンドウの前のページ"
+msgstr "[Byeoru] 候補ウィンドウの前ページ"
 
 #: scm/byeoru-key-custom.lisp:98
 msgid "[Byeoru] backspace"
@@ -1404,7 +1383,6 @@ msgstr "[Byeoru] 単語の先頭"
 msgid "[Byeoru] end of word"
 msgstr "[Byeoru] 単語の末尾"
 
-# FIXME: Canna全体の文言をAnthyに追従
 #: scm/canna-custom.lisp:35
 msgid "Canna"
 msgstr "Canna"
@@ -1428,15 +1406,15 @@ msgstr "vi協調モードを有効にする"
 
 #: scm/canna-key-custom.lisp:36
 msgid "Canna key bindings 1"
-msgstr "Canna キー設定1"
+msgstr "Cannaキー設定1"
 
 #: scm/canna-key-custom.lisp:40
 msgid "Canna key bindings 2"
-msgstr "Canna キー設定2"
+msgstr "Cannaキー設定2"
 
 #: scm/canna-key-custom.lisp:44
 msgid "Canna key bindings 3"
-msgstr "Canna キー設定3"
+msgstr "Cannaキー設定3"
 
 #: scm/canna-key-custom.lisp:51
 msgid "[Canna] next segment"
@@ -1466,22 +1444,21 @@ msgstr "[Canna] カタカナに変換"
 msgid "[Canna] convert to halfwidth katakana"
 msgstr "[Canna] 半角カタカナに変換"
 
-# FIXME: should be revised
 #: scm/canna-key-custom.lisp:93
 msgid "[Canna] commit as transposed kana"
-msgstr "[Canna] ひらがな/カタカナを置換えて確定"
+msgstr "[Canna] かな/カナ反転確定"
 
 #: scm/canna-key-custom.lisp:99
 msgid "[Canna] fullwidth alphanumeric mode"
-msgstr "[Canna] 全角英数字モード"
+msgstr "[Canna] 全角英数入力モード"
 
 #: scm/canna-key-custom.lisp:105
 msgid "[Canna] halfwidth katakana mode"
-msgstr "[Canna] 半角カタカナモード"
+msgstr "[Canna] 半角カタカナ入力モード"
 
 #: scm/canna-key-custom.lisp:111
 msgid "[Canna] toggle hiragana/katakana mode"
-msgstr "[Canna] ひらがな/カタカナモードのトグル"
+msgstr "[Canna] ひらがな/カタカナ入力モードを反転"
 
 #: scm/canna-key-custom.lisp:120
 msgid "[Canna] on"
@@ -1505,19 +1482,19 @@ msgstr "[Canna] キャンセル"
 
 #: scm/canna-key-custom.lisp:151
 msgid "[Canna] next candidate"
-msgstr "[Canna] 次の候補"
+msgstr "[Canna] 次候補"
 
 #: scm/canna-key-custom.lisp:157
 msgid "[Canna] previous candidate"
-msgstr "[Canna] 前の候補"
+msgstr "[Canna] 前候補"
 
 #: scm/canna-key-custom.lisp:163
 msgid "[Canna] next page of candidate window"
-msgstr "[Canna] 候補ウィンドウの次のページ"
+msgstr "[Canna] 候補ウィンドウの次ページ"
 
 #: scm/canna-key-custom.lisp:169
 msgid "[Canna] previous page of candidate window"
-msgstr "[Canna] 候補ウィンドウの前のページ"
+msgstr "[Canna] 候補ウィンドウの前ページ"
 
 #: scm/canna-key-custom.lisp:178
 msgid "[Canna] beginning of preedit"
@@ -1529,11 +1506,11 @@ msgstr "[Canna] 編集領域の末尾"
 
 #: scm/canna-key-custom.lisp:190
 msgid "[Canna] erase after cursor"
-msgstr "[Canna] カーソルより後の文字列を消去"
+msgstr "[Canna] カーソル以降を消去"
 
 #: scm/canna-key-custom.lisp:196
 msgid "[Canna] erase before cursor"
-msgstr "[Canna] カーソルより前の文字列を消去"
+msgstr "[Canna] カーソル以前を消去"
 
 #: scm/canna-key-custom.lisp:202
 msgid "[Canna] backspace"
@@ -1551,10 +1528,9 @@ msgstr "[Canna] カーソルを左へ移動"
 msgid "[Canna] go right"
 msgstr "[Canna] カーソルを右へ移動"
 
-# FIXME: should be revised
 #: scm/canna-key-custom.lisp:226
-msgid "[Canna] canna-vi-escape-key?"
-msgstr "[Canna] Vi のエスケープキー"
+msgid "[Canna] ESC keys on vi-cooperative mode"
+msgstr "[Canna] vi協調モードでESCとして扱うキー"
 
 #: scm/custom.lisp:749
 msgid "-"
@@ -1596,7 +1572,6 @@ msgstr "全てのユーザ入力を素通し"
 msgid "Other input methods"
 msgstr "その他の入力方式"
 
-# FIXME: generic IM全体の文言をAnthyに追従
 #: scm/generic-key-custom.lisp:36
 msgid "Global key bindings 1"
 msgstr "全体キー設定1"
@@ -1627,19 +1602,19 @@ msgstr "[全体] キャンセル"
 
 #: scm/generic-key-custom.lisp:77
 msgid "[Global] next candidate"
-msgstr "[全体] 次の候補"
+msgstr "[全体] 次候補"
 
 #: scm/generic-key-custom.lisp:83
 msgid "[Global] previous candidate"
-msgstr "[全体] 前の候補"
+msgstr "[全体] 前候補"
 
 #: scm/generic-key-custom.lisp:89
 msgid "[Global] next page of candidate window"
-msgstr "[全体] 候補ウィンドウの次のページ"
+msgstr "[全体] 候補ウィンドウの次ページ"
 
 #: scm/generic-key-custom.lisp:95
 msgid "[Global] previous page of candidate window"
-msgstr "[全体] 候補ウィンドウの前のページ"
+msgstr "[全体] 候補ウィンドウの前ページ"
 
 #: scm/generic-key-custom.lisp:105
 msgid "[Global] beginning of preedit"
@@ -1651,11 +1626,11 @@ msgstr "[全体] 編集領域の末尾"
 
 #: scm/generic-key-custom.lisp:117
 msgid "[Global] erase after cursor"
-msgstr "[全体] カーソルより後の文字列を消去"
+msgstr "[全体] カーソル以降を消去"
 
 #: scm/generic-key-custom.lisp:123
 msgid "[Global] erase before cursor"
-msgstr "[全体] カーソルより前の文字列を消去"
+msgstr "[全体] カーソル以前を消去"
 
 #: scm/generic-key-custom.lisp:129
 msgid "[Global] backspace"
@@ -1759,7 +1734,7 @@ msgstr "入力方式の利用準備"
 
 #: scm/im-custom.lisp:105
 msgid "Visual preference"
-msgstr "外観設定"
+msgstr "視覚設定"
 
 #: scm/im-custom.lisp:116
 msgid "Specify default IM"
@@ -1819,7 +1794,7 @@ msgstr "編集領域の右端"
 
 #: scm/im-custom.lisp:341
 msgid "Candidate window position"
-msgstr "候補ウィンドウの表示位置"
+msgstr "候補ウィンドウの位置"
 
 #: scm/im-custom.lisp:347
 msgid "Enable lazy input method loading for fast startup"
@@ -1905,22 +1880,21 @@ msgstr "主にラテン・ゲルマン諸語で使われるラテン文字入力
 msgid "An input method provided by the m17n library"
 msgstr "m17nライブラリが提供する入力方式"
 
-# FIXME: Mana全体の文言をAnthyに追従
 #: scm/mana-custom.lisp:35
 msgid "mana"
 msgstr "mana"
 
 #: scm/mana-key-custom.lisp:36
 msgid "mana key bindings 1"
-msgstr "mana キー設定1"
+msgstr "manaキー設定1"
 
 #: scm/mana-key-custom.lisp:40
 msgid "mana key bindings 2"
-msgstr "mana キー設定2"
+msgstr "manaキー設定2"
 
 #: scm/mana-key-custom.lisp:44
 msgid "mana key bindings 3"
-msgstr "mana キー設定3"
+msgstr "manaキー設定3"
 
 #: scm/mana-key-custom.lisp:51
 msgid "[mana] next segment"
@@ -1958,18 +1932,17 @@ msgstr "[mana] カタカナに変換"
 msgid "[mana] convert to halfwidth katakana"
 msgstr "[mana] 半角カタカナに変換"
 
-# FIXME: should be revised
 #: scm/mana-key-custom.lisp:105
 msgid "[mana] commit as transposed kana"
 msgstr "[mana] ひらがな/カタカナを置換えて確定"
 
 #: scm/mana-key-custom.lisp:111
 msgid "[mana] fullwidth alphanumeric mode"
-msgstr "[mana] 全角英数字モード"
+msgstr "[mana] 全角英数字入力モード"
 
 #: scm/mana-key-custom.lisp:118
 msgid "[mana] halfwidth katakana mode"
-msgstr "[mana] 半角カタカナモード"
+msgstr "[mana] 半角カタカナ入力モード"
 
 #: scm/mana-key-custom.lisp:124
 msgid "[mana] toggle hiragana/katakana mode"
@@ -2021,11 +1994,11 @@ msgstr "[mana] 編集領域の末尾"
 
 #: scm/mana-key-custom.lisp:205
 msgid "[mana] erase after cursor"
-msgstr "[mana] カーソルより後の文字列を消去"
+msgstr "[mana] カーソル以降を消去"
 
 #: scm/mana-key-custom.lisp:211
 msgid "[mana] erase before cursor"
-msgstr "[mana] カーソルより前の文字列を消去"
+msgstr "[mana] カーソル以前を消去"
 
 #: scm/mana-key-custom.lisp:217
 msgid "[mana] backspace"
@@ -2043,10 +2016,9 @@ msgstr "[mana] カーソルを左へ移動"
 msgid "[mana] go right"
 msgstr "[mana] カーソルを右へ移動"
 
-# FIXME: should be revised
 #: scm/mana-key-custom.lisp:241
-msgid "[mana] mana-vi-escape-key?"
-msgstr "[mana] Vi のエスケープキー"
+msgid "[mana] ESC keys on vi-cooperative mode"
+msgstr "[mana] vi協調モードでESCとして扱うキー"
 
 #: scm/prime-custom.lisp:34
 msgid "PRIME"
@@ -2131,15 +2103,15 @@ msgstr "PRIME オン"
 
 #: scm/prime-key-custom.lisp:60
 msgid "PRIME key bindings 1"
-msgstr "PRIME キー設定1"
+msgstr "PRIMEキー設定1"
 
 #: scm/prime-key-custom.lisp:64
 msgid "PRIME key bindings 2"
-msgstr "PRIME キー設定2"
+msgstr "PRIMEキー設定2"
 
 #: scm/prime-key-custom.lisp:68
 msgid "PRIME key bindings 3"
-msgstr "PRIME キー設定3"
+msgstr "PRIMEキー設定3"
 
 #: scm/prime-key-custom.lisp:75
 msgid "[PRIME] prime-register-key"
@@ -2267,7 +2239,7 @@ msgstr "SKK入力方式のuim版"
 
 #: scm/skk-custom.lisp:43
 msgid "SKK dictionaries"
-msgstr "SKK 辞書"
+msgstr "SKK辞書"
 
 #: scm/skk-custom.lisp:44
 msgid "Dictionary settings for SKK"
@@ -2363,15 +2335,15 @@ msgstr "改行をネイティブキーイベントの代わりにASCII文字列�
 
 #: scm/skk-key-custom.lisp:64
 msgid "SKK key bindings 1"
-msgstr "SKK キー設定1"
+msgstr "SKKキー設定1"
 
 #: scm/skk-key-custom.lisp:68
 msgid "SKK key bindings 2"
-msgstr "SKK キー設定2"
+msgstr "SKKキー設定2"
 
 #: scm/skk-key-custom.lisp:72
 msgid "SKK key bindings 3"
-msgstr "SKK キー設定3"
+msgstr "SKKキー設定3"
 
 #: scm/skk-key-custom.lisp:77
 msgid "Completion"
@@ -2429,7 +2401,6 @@ msgstr "[SKK] アルファベット変換開始"
 msgid "[SKK] commit as fullwidth alphanumeric"
 msgstr "[SKK] 全角英数字として確定"
 
-# FIXME: should be revised
 #: scm/skk-key-custom.lisp:164
 msgid "[SKK] commit as opposite case in latin conversion"
 msgstr "[SKK] 大文字/小文字を反転して確定"
@@ -2463,7 +2434,7 @@ msgid "[SKK] skk-special-midashi-key?"
 msgstr "[SKK] 接頭辞、接尾辞の入力"
 
 #: scm/skk-key-custom.lisp:212
-msgid "[SKK] skk-vi-escape-key?"
+msgid "[SKK] ESC keys on vi-cooperative mode"
 msgstr "[SKK] vi協調モードでESCとして扱うキー"
 
 #: scm/skk-key-custom.lisp:218
@@ -2525,11 +2496,11 @@ msgstr "漢字直接入力方式"
 
 #: scm/tutcode-key-custom.lisp:65
 msgid "TUT-Code key bindings 1"
-msgstr "TUT-Code キー設定1"
+msgstr "TUT-Codeキー設定1"
 
 #: scm/tutcode-key-custom.lisp:69
 msgid "TUT-Code key bindings 2"
-msgstr "TUT-Code キー設定2"
+msgstr "TUT-Codeキー設定2"
 
 #: scm/tutcode-key-custom.lisp:75
 msgid "[TUT-Code] on"
@@ -2605,11 +2576,11 @@ msgstr "uimの設定"
 #.
 #: uim/iso-639-1.def:39
 msgid "Abkhazian"
-msgstr "アブハジア語"
+msgstr "アブハズ語"
 
 #: uim/iso-639-1.def:40
 msgid "Afar"
-msgstr "アファール語"
+msgstr "アファル語"
 
 #: uim/iso-639-1.def:41
 msgid "Afrikaans"
@@ -2637,7 +2608,7 @@ msgstr "アッサム語"
 
 #: uim/iso-639-1.def:47
 msgid "Aymara"
-msgstr "アイマーラ語"
+msgstr "アイマラ語"
 
 #: uim/iso-639-1.def:48
 msgid "Azerbaijani"
@@ -2653,11 +2624,11 @@ msgstr "バスク語"
 
 #: uim/iso-639-1.def:51
 msgid "Bengali (Bangla)"
-msgstr "ベンガル語 (バングラデシュ)"
+msgstr "ベンガル語"
 
 #: uim/iso-639-1.def:52
 msgid "Bengali"
-msgstr "ベンガル文字"
+msgstr "ベンガル語"
 
 #: uim/iso-639-1.def:53
 msgid "Bhutani"
@@ -2665,11 +2636,11 @@ msgstr "ブータン語"
 
 #: uim/iso-639-1.def:54
 msgid "Bihari"
-msgstr "ビハール語"
+msgstr "ビハリ語"
 
 #: uim/iso-639-1.def:55
 msgid "Bislama"
-msgstr "ビーチラマー語"
+msgstr "ビスラマ語"
 
 #: uim/iso-639-1.def:56
 msgid "Breton"
@@ -2685,11 +2656,11 @@ msgstr "ビルマ語"
 
 #: uim/iso-639-1.def:59
 msgid "Byelorussian (Belarusian)"
-msgstr "白ロシア語 (ベラルーシ語)"
+msgstr "ベラルーシ語"
 
 #: uim/iso-639-1.def:60
 msgid "Byelorussian"
-msgstr "白ロシア語 (ベラルーシ語)"
+msgstr "ベラルーシ語"
 
 #: uim/iso-639-1.def:61
 msgid "Cambodian"
@@ -2753,7 +2724,7 @@ msgstr "フェロー語"
 
 #: uim/iso-639-1.def:78
 msgid "Farsi"
-msgstr "ペルシア語"
+msgstr "近代ペルシア語"
 
 #: uim/iso-639-1.def:79
 msgid "Fiji"
@@ -2774,19 +2745,19 @@ msgstr "フランス語"
 
 #: uim/iso-639-1.def:83
 msgid "Frisian"
-msgstr "フリースランド語"
+msgstr "フリースラント語"
 
 #: uim/iso-639-1.def:84
 msgid "Galician"
-msgstr "ガリシア語"
+msgstr "ガリチア語"
 
 #: uim/iso-639-1.def:85
 msgid "Gaelic (Scottish)"
-msgstr "ゲール語 (スコティッシュ)"
+msgstr "ゲール語 (スコットランド語)"
 
 #: uim/iso-639-1.def:86
 msgid "Gaelic (Manx)"
-msgstr "マン島語"
+msgstr "ゲール語 (マン島語)"
 
 #: uim/iso-639-1.def:87
 msgid "Georgian"
@@ -2814,11 +2785,11 @@ msgstr "グジャラート文字"
 
 #: uim/iso-639-1.def:93
 msgid "Hausa"
-msgstr "ハウザ語"
+msgstr "ハウサ語"
 
 #: uim/iso-639-1.def:94
 msgid "Hebrew"
-msgstr "ヘブライ文字"
+msgstr "ヘブライ語"
 
 #: uim/iso-639-1.def:95
 msgid "Hindi"
@@ -2838,19 +2809,19 @@ msgstr "インドネシア語"
 
 #: uim/iso-639-1.def:99
 msgid "Interlingua"
-msgstr "国際代用語"
+msgstr "インターリングア語"
 
 #: uim/iso-639-1.def:100
 msgid "Interlingue"
-msgstr "国際代用語"
+msgstr "インテルリング語"
 
 #: uim/iso-639-1.def:101
 msgid "Inuktitut"
-msgstr "イヌート語"
+msgstr "イヌクティトット語"
 
 #: uim/iso-639-1.def:102
 msgid "Inupiak"
-msgstr "イヌピア語"
+msgstr "イヌピアック語"
 
 #: uim/iso-639-1.def:103
 msgid "Irish"
@@ -2878,7 +2849,7 @@ msgstr "カザフ語"
 
 #: uim/iso-639-1.def:110
 msgid "Kinyarwanda (Ruanda)"
-msgstr "ルアンダ語"
+msgstr "キンヤルワンダ語"
 
 #: uim/iso-639-1.def:111
 msgid "Kirghiz"
@@ -2886,7 +2857,7 @@ msgstr "キルギス語"
 
 #: uim/iso-639-1.def:112
 msgid "Kirundi (Rundi)"
-msgstr "ルンディ語"
+msgstr "キルンディ語"
 
 #: uim/iso-639-1.def:113
 msgid "Konkani"
@@ -2927,7 +2898,7 @@ msgstr "マケドニア語"
 
 #: uim/iso-639-1.def:122
 msgid "Malagasy"
-msgstr "マラガシ語"
+msgstr "マラガスカル語"
 
 #: uim/iso-639-1.def:123
 msgid "Malay"
@@ -2947,7 +2918,7 @@ msgstr "マオリ語"
 
 #: uim/iso-639-1.def:127
 msgid "Marathi"
-msgstr "マラティ語"
+msgstr "マラーティー語"
 
 #: uim/iso-639-1.def:128
 msgid "Moldavian"
@@ -2975,7 +2946,7 @@ msgstr "ノルウェー語"
 
 #: uim/iso-639-1.def:134
 msgid "Occitan"
-msgstr "オック語"
+msgstr "オクシタン語"
 
 #: uim/iso-639-1.def:135
 msgid "Oriya"
@@ -2983,11 +2954,11 @@ msgstr "オリヤ文字"
 
 #: uim/iso-639-1.def:136
 msgid "Oromo (Afan, Galla)"
-msgstr "ガラ語"
+msgstr "オロモ語"
 
 #: uim/iso-639-1.def:137
 msgid "Pashto (Pushto)"
-msgstr "パシュト語"
+msgstr "パシュトー語"
 
 #: uim/iso-639-1.def:138
 msgid "Polish"
@@ -3031,7 +3002,7 @@ msgstr "セルビア語"
 
 #: uim/iso-639-1.def:148
 msgid "Sesotho"
-msgstr "セソト語"
+msgstr "ソト語"
 
 #: uim/iso-639-1.def:149
 msgid "Setswana"
@@ -3043,7 +3014,7 @@ msgstr "ショナ語"
 
 #: uim/iso-639-1.def:151
 msgid "Sindhi"
-msgstr "シンド語"
+msgstr "シンディ語"
 
 #: uim/iso-639-1.def:152
 msgid "Sinhalese"
@@ -3051,7 +3022,7 @@ msgstr "シンハラ語"
 
 #: uim/iso-639-1.def:153
 msgid "Siswati"
-msgstr "スワージ語"
+msgstr "シスワティ語"
 
 #: uim/iso-639-1.def:154
 msgid "Slovak"
@@ -3059,7 +3030,7 @@ msgstr "スロバキア語"
 
 #: uim/iso-639-1.def:155
 msgid "Slovenian"
-msgstr "スロバニア語"
+msgstr "スロベニア語"
 
 #: uim/iso-639-1.def:156
 msgid "Somali"
@@ -3071,11 +3042,11 @@ msgstr "スペイン語"
 
 #: uim/iso-639-1.def:158
 msgid "Sundanese"
-msgstr "スーダン語"
+msgstr "スンダ語"
 
 #: uim/iso-639-1.def:159
 msgid "Swahili (Kiswahili)"
-msgstr "スワヒリ語 (キスワヒリ)"
+msgstr "スワヒリ語"
 
 #: uim/iso-639-1.def:160
 msgid "Swedish"
@@ -3092,7 +3063,7 @@ msgstr "タガログ文字"
 
 #: uim/iso-639-1.def:163
 msgid "Tajik"
-msgstr "タジク語"
+msgstr "タジクスタン語"
 
 #: uim/iso-639-1.def:164
 msgid "Tamil"
@@ -3116,7 +3087,7 @@ msgstr "チベット文字"
 
 #: uim/iso-639-1.def:169
 msgid "Tigrinya"
-msgstr "チグリナ語"
+msgstr "チグリヤナ語"
 
 #: uim/iso-639-1.def:170
 msgid "Tonga"
@@ -3124,7 +3095,7 @@ msgstr "トンガ語"
 
 #: uim/iso-639-1.def:171
 msgid "Tsonga"
-msgstr "ツソンガ語"
+msgstr "ツォンガ語"
 
 #: uim/iso-639-1.def:172
 msgid "Turkish"
@@ -3132,11 +3103,11 @@ msgstr "トルコ語"
 
 #: uim/iso-639-1.def:173
 msgid "Turkmen"
-msgstr "トルクメン語"
+msgstr "トルクメニスタン語"
 
 #: uim/iso-639-1.def:174
 msgid "Twi"
-msgstr "トゥイ語"
+msgstr "チュイ語"
 
 #: uim/iso-639-1.def:175
 msgid "Uighur"
@@ -3168,11 +3139,11 @@ msgstr "ヴォラフ語"
 
 #: uim/iso-639-1.def:182
 msgid "Xhosa"
-msgstr "コサ語"
+msgstr "コーサ語"
 
 #: uim/iso-639-1.def:183
 msgid "Yiddish"
-msgstr "ユダヤ語"
+msgstr "イディッシュ語"
 
 #: uim/iso-639-1.def:184
 msgid "Yoruba"
@@ -3181,6 +3152,34 @@ msgstr "ヨルバ語"
 #: uim/iso-639-1.def:185
 msgid "Zulu"
 msgstr "ズール語"
+
+#~ msgid "[Canna] canna-vi-escape-key?"
+#~ msgstr "[Canna] vi協調モードでESCとして扱うキー"
+
+#~ msgid "[mana] mana-vi-escape-key?"
+#~ msgstr "[mana] vi協調モードでESCとして扱うキー"
+
+#~ msgid "[SKK] skk-vi-escape-key?"
+#~ msgstr "[SKK] vi協調モードでESCとして扱うキー"
+
+# FIXME: 元メッセージと共にtoolbar-common-gtk.cのメッセージに同期
+#~ msgid "Execute uim's input method switcher"
+#~ msgstr "入力方式の切り換え"
+
+#~ msgid "Execute uim's preference tool"
+#~ msgstr "設定ツールの起動"
+
+#~ msgid "Execute uim's Japanese dictionary tool"
+#~ msgstr "日本語辞書ツールの実行"
+
+#~ msgid "Execute uim's input pad tool"
+#~ msgstr "入力パッドの起動"
+
+#~ msgid "Execute uim's handwriting input pad tool"
+#~ msgstr "手書き入力パッドツールの起動"
+
+#~ msgid "Execute uim's help tool"
+#~ msgstr "ヘルプの起動"
 
 #~ msgid "Bushu List"
 #~ msgstr "部首一覧"

@@ -52,12 +52,12 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags 
     m_preficon = QPixmap( ICONDIR + "/configure-qt.png");
 
     m_contextMenu = new QPopupMenu( this );
-    m_contextMenu->insertItem( m_swicon,   _("Execute uim's input method switcher"), this, SLOT(slotExecImSwitcher()) );
-    m_contextMenu->insertItem( m_preficon, _("Execute uim's preference tool"), this, SLOT(slotExecPref()) );
-    m_contextMenu->insertItem( _("Execute uim's Japanese dictionary tool"), this, SLOT(slotExecDict()) );
-    m_contextMenu->insertItem( _("Execute uim's input pad tool"), this, SLOT(slotExecInputPad()) );
-    m_contextMenu->insertItem( _("Execute uim's handwriting input pad tool"), this, SLOT(slotExecHandwritingInputPad()) );
-    m_contextMenu->insertItem( _("Execute uim's help tool"), this, SLOT(slotExecHelp()) );
+    m_contextMenu->insertItem( m_swicon,   _("Switch input method"), this, SLOT(slotExecImSwitcher()) );
+    m_contextMenu->insertItem( m_preficon, _("Preference"), this, SLOT(slotExecPref()) );
+    m_contextMenu->insertItem( _("Japanese dictionary editor"), this, SLOT(slotExecDict()) );
+    m_contextMenu->insertItem( _("Input pad"), this, SLOT(slotExecInputPad()) );
+    m_contextMenu->insertItem( _("Handwriting input pad"), this, SLOT(slotExecHandwritingInputPad()) );
+    m_contextMenu->insertItem( _("Help"), this, SLOT(slotExecHelp()) );
     m_contextMenu->insertItem( _("Quit this toolbar"), this, SIGNAL(quitToolbar()) );
 
     // toolbar buttons    
