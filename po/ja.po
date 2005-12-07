@@ -1898,11 +1898,11 @@ msgstr "manaキー設定3"
 
 #: scm/mana-key-custom.lisp:51
 msgid "[mana] next segment"
-msgstr "[mana] 次の文節"
+msgstr "[mana] 次文節"
 
 #: scm/mana-key-custom.lisp:57
 msgid "[mana] previous segment"
-msgstr "[mana] 前の文節"
+msgstr "[mana] 前文節"
 
 #: scm/mana-key-custom.lisp:63
 msgid "[mana] extend segment"
@@ -1970,19 +1970,19 @@ msgstr "[mana] キャンセル"
 
 #: scm/mana-key-custom.lisp:165
 msgid "[mana] next candidate"
-msgstr "[mana] 次の候補"
+msgstr "[mana] 次候補"
 
 #: scm/mana-key-custom.lisp:171
 msgid "[mana] previous candidate"
-msgstr "[mana] 前の候補"
+msgstr "[mana] 前候補"
 
 #: scm/mana-key-custom.lisp:177
 msgid "[mana] next page of candidate window"
-msgstr "[mana] 候補ウィンドウの次のページ"
+msgstr "[mana] 候補ウィンドウの次ページ"
 
 #: scm/mana-key-custom.lisp:183
 msgid "[mana] previous page of candidate window"
-msgstr "[mana] 候補ウィンドウの前のページ"
+msgstr "[mana] 候補ウィンドウの前ページ"
 
 #: scm/mana-key-custom.lisp:193
 msgid "[mana] beginning of preedit"
@@ -2163,19 +2163,19 @@ msgstr "[PRIME] キャンセル"
 
 #: scm/prime-key-custom.lisp:150
 msgid "[PRIME] next candidate"
-msgstr "[PRIME] 次の候補"
+msgstr "[PRIME] 次候補"
 
 #: scm/prime-key-custom.lisp:156
 msgid "[PRIME] previous candidate"
-msgstr "[PRIME] 前の候補"
+msgstr "[PRIME] 前候補"
 
 #: scm/prime-key-custom.lisp:162
 msgid "[PRIME] next page of candidate window"
-msgstr "[PRIME] 候補ウィンドウの次のページ"
+msgstr "[PRIME] 候補ウィンドウの次ページ"
 
 #: scm/prime-key-custom.lisp:168
 msgid "[PRIME] previous page of candidate window"
-msgstr "[PRIME] 候補ウィンドウの前のページ"
+msgstr "[PRIME] 候補ウィンドウの前ページ"
 
 #: scm/prime-key-custom.lisp:177
 msgid "[PRIME] beginning of preedit"
