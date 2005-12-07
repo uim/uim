@@ -1369,11 +1369,11 @@ msgstr "[Byeoru] デリート"
 
 #: scm/byeoru-key-custom.lisp:110
 msgid "[Byeoru] go left"
-msgstr "[Byeoru] カーソルを左へ移動"
+msgstr "[Byeoru] 左に移動"
 
 #: scm/byeoru-key-custom.lisp:116
 msgid "[Byeoru] go right"
-msgstr "[Byeoru] カーソルを右へ移動"
+msgstr "[Byeoru] 右に移動"
 
 #: scm/byeoru-key-custom.lisp:122
 msgid "[Byeoru] beginning of word"
@@ -1426,7 +1426,7 @@ msgstr "[Canna] 前の文節"
 
 #: scm/canna-key-custom.lisp:63
 msgid "[Canna] extend segment"
-msgstr "[Canna] 文節を延ばす"
+msgstr "[Canna] 文節を伸ばす"
 
 #: scm/canna-key-custom.lisp:69
 msgid "[Canna] shrink segment"
@@ -1522,11 +1522,11 @@ msgstr "[Canna] デリート"
 
 #: scm/canna-key-custom.lisp:214
 msgid "[Canna] go left"
-msgstr "[Canna] カーソルを左へ移動"
+msgstr "[Canna] 左に移動"
 
 #: scm/canna-key-custom.lisp:220
 msgid "[Canna] go right"
-msgstr "[Canna] カーソルを右へ移動"
+msgstr "[Canna] 右に移動"
 
 #: scm/canna-key-custom.lisp:226
 msgid "[Canna] ESC keys on vi-cooperative mode"
@@ -1642,11 +1642,11 @@ msgstr "[全体] デリート"
 
 #: scm/generic-key-custom.lisp:141
 msgid "[Global] go left"
-msgstr "[全体] カーソルを左へ移動"
+msgstr "[全体] 左に移動"
 
 #: scm/generic-key-custom.lisp:147
 msgid "[Global] go right"
-msgstr "[全体] カーソルを右へ移動"
+msgstr "[全体] 右に移動"
 
 #: scm/generic-key-custom.lisp:153
 msgid "[Global] return"
@@ -1906,7 +1906,7 @@ msgstr "[mana] 前の文節"
 
 #: scm/mana-key-custom.lisp:63
 msgid "[mana] extend segment"
-msgstr "[mana] 文節を延ばす"
+msgstr "[mana] 文節を伸ばす"
 
 #: scm/mana-key-custom.lisp:69
 msgid "[mana] shrink segment"
@@ -1934,7 +1934,7 @@ msgstr "[mana] 半角カタカナに変換"
 
 #: scm/mana-key-custom.lisp:105
 msgid "[mana] commit as transposed kana"
-msgstr "[mana] ひらがな/カタカナを置換えて確定"
+msgstr "[mana] かな/カナ反転確定"
 
 #: scm/mana-key-custom.lisp:111
 msgid "[mana] fullwidth alphanumeric mode"
@@ -1946,7 +1946,7 @@ msgstr "[mana] 半角カタカナ入力モード"
 
 #: scm/mana-key-custom.lisp:124
 msgid "[mana] toggle hiragana/katakana mode"
-msgstr "[mana] ひらがな/カタカナモードのトグル"
+msgstr "[mana] ひらがな/カタカナ入力モードを反転"
 
 #: scm/mana-key-custom.lisp:135
 msgid "[mana] on"
@@ -2010,11 +2010,11 @@ msgstr "[mana] デリート"
 
 #: scm/mana-key-custom.lisp:229
 msgid "[mana] go left"
-msgstr "[mana] カーソルを左へ移動"
+msgstr "[mana] 左に移動"
 
 #: scm/mana-key-custom.lisp:235
 msgid "[mana] go right"
-msgstr "[mana] カーソルを右へ移動"
+msgstr "[mana] 右に移動"
 
 #: scm/mana-key-custom.lisp:241
 msgid "[mana] ESC keys on vi-cooperative mode"
@@ -2195,11 +2195,11 @@ msgstr "[PRIME] デリート"
 
 #: scm/prime-key-custom.lisp:201
 msgid "[PRIME] go left"
-msgstr "[PRIME] カーソルを左へ移動"
+msgstr "[PRIME] 左に移動"
 
 #: scm/prime-key-custom.lisp:207
 msgid "[PRIME] go right"
-msgstr "[PRIME] カーソルを右へ移動"
+msgstr "[PRIME] 右に移動"
 
 #: scm/pyload.lisp:42
 msgid "New Pinyin (Simplified)"
