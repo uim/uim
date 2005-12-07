@@ -835,6 +835,8 @@ AC_CONFIG_FILES([Makefile
 		 gtk/test/Makefile
 		 gtk/test/test.sh
 		 qt/Makefile
+		 qt/chardict/Makefile
+		 qt/chardict/po/Makefile.in
 		 qt/test/Makefile
 		 xim/Makefile
 		 fep/Makefile

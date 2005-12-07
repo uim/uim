@@ -1,5 +1,5 @@
-SUBDIRS = test
-EXTRA_DIST = pref-keyeditformbase.ui  pref-olisteditformbase.ui bushu.t
+SUBDIRS = chardict test
+EXTRA_DIST = pref-keyeditformbase.ui  pref-olisteditformbase.ui
 
 if QT
 INCLUDES += -I$(top_srcdir) -I$(top_builddir)
@@ -18,12 +18,7 @@ HEADER_FILES = \
 	switcher-qt.h \
 	pref-customwidgets.h \
 	pref-kseparator.h \
-	pref-qt.h \
-	chardict-bushuviewwidget.h \
-	chardict-unicodeviewwidget.h \
-	chardict-chargridview.h \
-	chardict-kseparator.h \
-	chardict-qt.h
+	pref-qt.h
 MOC_FILES = \
 	toolbar-common-quimhelpertoolbar.moc \
 	toolbar-common-uimstateindicator.moc \
@@ -32,12 +27,7 @@ MOC_FILES = \
 	switcher-qt.moc \
 	pref-customwidgets.moc \
 	pref-kseparator.moc \
-	pref-qt.moc \
-	chardict-bushuviewwidget.moc \
-	chardict-unicodeviewwidget.moc \
-	chardict-chargridview.moc \
-	chardict-kseparator.moc \
-	chardict-qt.moc
+	pref-qt.moc
 UI_TMP_FILES = \
 	pref-olisteditformbase.cpp \
 	pref-olisteditformbase.h \
@@ -51,8 +41,7 @@ noinst_HEADERS = $(HEADER_FILES)
 bin_PROGRAMS = \
 	uim-toolbar-qt \
 	uim-im-switcher-qt \
-	uim-pref-qt \
-	uim-chardict-qt
+	uim-pref-qt
 
 libexec_PROGRAMS = uim-candwin-qt
 
@@ -150,26 +139,6 @@ pref-keyeditformbase.cpp: pref-keyeditformbase.h pref-keyeditformbase.moc
 	mv pref-keyeditformbase.cpp.tmp pref-keyeditformbase.cpp
 pref-keyeditformbase.h:
 	$(UIC) $(top_srcdir)/qt/pref-keyeditformbase.ui -o pref-keyeditformbase.h
-
-uim_chardict_qt_SOURCES = \
-	chardict-qt.cpp chardict-qt.h \
-	chardict-bushuviewwidget.cpp chardict-bushuviewwidget.h \
-	chardict-chargridview.cpp chardict-chargridview.h \
-	chardict-kseparator.cpp chardict-kseparator.h \
-	chardict-unicodeviewwidget.cpp chardict-unicodeviewwidget.h \
-	qtgettext.h
-uim_chardict_qt_CXXFLAGS = $(QT_CXXFLAGS) -DBUSHUDICT=\"$(datadir)/uim/helperdata/bushu.t\"
-uim_chardict_qt_LDFLAGS  = $(QT_LDFLAGS)
-uim_chardict_qt_LDADD    = $(top_builddir)/uim/libuim.la
-chardict-qt.cpp: chardict-qt.moc
-
-chardict-bushuviewwidget.cpp: chardict-bushuviewwidget.moc
-chardict-unicodeviewwidget.cpp: chardict-unicodeviewwidget.moc
-chardict-chargridview.cpp: chardict-chargridview.moc
-chardict-kseparator.cpp: chardict-kseparator.moc
-EXTRA_DIST += $(helperdata_DATA)
-helperdatadir = $(datadir)/uim/helperdata
-helperdata_DATA = bushu.t
 
 CLEANFILES = \
 	$(MOC_FILES) \
