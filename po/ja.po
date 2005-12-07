@@ -1802,27 +1802,27 @@ msgstr "高速起動のための遅延ローディングを有効にする"
 
 #: scm/im-custom.lisp:354
 msgid "Show input method switcher button on toolbar"
-msgstr "ツールバーに入力方式の切り換えボタンを表示"
+msgstr "入力方式の切り換えボタンを表示"
 
 #: scm/im-custom.lisp:360
 msgid "Show uim preference tool button on toolbar"
-msgstr "ツールバーに設定ツールボタンを表示"
+msgstr "設定ツールボタンを表示"
 
 #: scm/im-custom.lisp:366
 msgid "Show uim Japanese dictionary tool button on toolbar"
-msgstr "ツールバーに日本語辞書ツールボタンを表示"
+msgstr "日本語辞書ツールボタンを表示"
 
 #: scm/im-custom.lisp:372
 msgid "Show uim input pad button on toolbar"
-msgstr "ツールバーに入力パッドボタンを表示"
+msgstr "入力パッドボタンを表示"
 
 #: scm/im-custom.lisp:378
 msgid "Show uim handwriting-input pad button on toolbar"
-msgstr "ツールバーに手書き入力パッドボタンを表示"
+msgstr "手書き入力パッドボタンを表示"
 
 #: scm/im-custom.lisp:384
 msgid "Show uim help button on toolbar"
-msgstr "ツールバーにヘルプボタンを表示"
+msgstr "ヘルプボタンを表示"
 
 #: scm/im-custom.lisp:390
 msgid "Show input mode nearby cursor"
