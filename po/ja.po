@@ -54,6 +54,7 @@
 # candidate    → 候補
 # separator    → 区切り
 # transposed   → (置き換えて、反転して)
+# compose, composition → 構成 (文脈により「合成」)
 # key bindings → キー設定
 #
 # global       → 全体 (状況に応じて他の訳も可。「全般」はgenericの意を含むので避ける)
@@ -96,7 +97,7 @@ msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-12-07 16:38+0900\n"
-"PO-Revision-Date: 2005-12-07 23:56+0900\n"
+"PO-Revision-Date: 2005-12-08 01:41+0900\n"
 "Last-Translator: Daichi Kawahata <daichik@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -1190,7 +1191,6 @@ msgstr "[Anthy] 右に移動"
 msgid "[Anthy] ESC keys on vi-cooperative mode"
 msgstr "[Anthy] vi協調モードでESCとして扱うキー"
 
-# FIXME: Byeoru全般改訂
 #: scm/byeoru-custom.lisp:37
 msgid "Byeoru"
 msgstr "Byeoru"
@@ -1206,58 +1206,54 @@ msgid ""
 "input methods such as 2-beol and 3-beol variants, and provides some advanced "
 "features such as Hangul-Chinese conversion. The name 'byeoru' is Korean for "
 "inkstone."
-msgstr ""
-"ハングルのための包括的な入力方式スイートです。2ボルや3ボル式とこれらの別バー"
-"ジョンを含む、主な入力方式の大半をカバーします。また一部では、ハングル-中国語"
-"変換のような高度な機能も提供します。このスイート名 \"Byeoru\" は韓国語で \"硯"
-"\" を意味します。"
+msgstr "ハングルのための包括的な入力方式スイート。2ボルや3ボル式とその派生版を含む主な入力方式の大半をカバーし、また、ハングル-中国語変換のような高度な機能も提供します。このスイート名 \"Byeoru\" は韓国語で \"硯\" を意味します。"
 
 #. 2-beol can not be orderless.
 #: scm/byeoru-custom.lisp:46
 msgid "Hangul 2-beol"
-msgstr "ハングル2-beol式"
+msgstr "ハングル2ボル式"
 
 #: scm/byeoru-custom.lisp:47
 msgid "Standard Hangul 2-beol keyboard"
-msgstr "標準のハングル2-beol式キーボード"
+msgstr "標準のハングル2ボル式"
 
 #. neither can strict 3-beol.
 #: scm/byeoru-custom.lisp:50
 msgid "Hangul 3-beol final strict"
-msgstr "ハングル3ボル式(final strict)"
+msgstr "ハングル3ボル式最終版 (厳密)"
 
 #: scm/byeoru-custom.lisp:51
 msgid "Hangul 3-beol that forbids composition of precomposed jamos"
-msgstr "合成済み字母の合成を禁止するハングル3ボル式キーボード"
+msgstr "構成済み字母の合成を禁止するハングル3ボル式"
 
 #. generous 3-beol can be orderless.
 #: scm/byeoru-custom.lisp:54
 msgid "Hangul 3-beol final generous"
-msgstr "ハングル3ボル式(final generous)"
+msgstr "ハングル3ボル式最終版 (寛容)"
 
 #: scm/byeoru-custom.lisp:55
 msgid "Hangul 3-beol that allows composition of precomposed jamos"
-msgstr "合成済み字母の合成を許可するハングル3ボル式キーボード"
+msgstr "構成済み字母の合成を許可するハングル3ボル式"
 
 #: scm/byeoru-custom.lisp:58
 msgid "Hangul 390 strict"
-msgstr "ハングル390式(strict)"
+msgstr "ハングル390式 (厳密)"
 
 #: scm/byeoru-custom.lisp:59
 msgid "Hangul 390 that forbids composition of precomposed jamos"
-msgstr "合成済み字母の合成を禁止するハングル390式キーボード"
+msgstr "構成済み字母の合成を禁止するハングル390式"
 
 #: scm/byeoru-custom.lisp:62
 msgid "Hangul 390 generous"
-msgstr "ハングル390式 (generous)"
+msgstr "ハングル390式 (寛容)"
 
 #: scm/byeoru-custom.lisp:63
 msgid "Hangul 390 that allows composition of precomposed jamos"
-msgstr "合成済み字母の合成を許可するハングル390式キーボード"
+msgstr "構成済み字母の合成を許可するハングル390式"
 
 #: scm/byeoru-custom.lisp:66
 msgid "Hangul 3-beol no-shift"
-msgstr "ハングル3ボル式(シフトなし)"
+msgstr "ハングル3ボル式 (シフトなし)"
 
 #: scm/byeoru-custom.lisp:67
 msgid "Hangul 3-beol that does not require any shift key press"
@@ -1302,19 +1298,19 @@ msgstr "さらに順序なし"
 
 #: scm/byeoru-custom.lisp:118
 msgid "Jamo input is"
-msgstr "字母入力"
+msgstr "字母入力: "
 
 #: scm/byeoru-custom.lisp:130
 msgid "ESC turns off Hangul mode (for vi users)"
-msgstr "エスケープキーでハングルモードをオフにする (viユーザ向け)"
+msgstr "ESCキーでハングルモードをオフにする (viユーザ向け)"
 
 #: scm/byeoru-custom.lisp:136
 msgid "Default unit of commitment is word"
-msgstr "標準の確定を単語単位にする"
+msgstr "標準の確定単位を単語にする"
 
 #: scm/byeoru-custom.lisp:142
 msgid "Shifted roman vowel inputs an isolated vowel"
-msgstr "ローマ字母音をシフトして単母音を入力する"
+msgstr "シフト+ローマ字母音で単母音を入力する"
 
 #: scm/byeoru-custom.lisp:153
 msgid "Candidate window size"
@@ -1326,7 +1322,7 @@ msgstr "記号のキャッシュサイズ"
 
 #: scm/byeoru-custom.lisp:166
 msgid "Represent incomplete syllables using compatibility jamos"
-msgstr "互換性のある字母を使用して不完全な音節を表す"
+msgstr "互換字母を使用して構成中の音節を表す"
 
 #: scm/byeoru-key-custom.lisp:38
 msgid "Byeoru key bindings"
