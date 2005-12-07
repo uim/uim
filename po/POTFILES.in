@@ -12,9 +12,6 @@ helper/pref-gtk.c
 helper/toolbar-applet-gnome.c
 helper/toolbar-common-gtk.c
 helper/toolbar-standalone-gtk.c
-qt/chardict-bushuviewwidget.cpp
-qt/chardict-qt.cpp
-qt/chardict-unicodeviewwidget.cpp
 qt/pref-customwidgets.cpp
 qt/pref-qt.cpp
 qt/qtgettext.h

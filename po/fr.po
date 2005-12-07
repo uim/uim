@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-06 08:05+0900\n"
+"POT-Creation-Date: 2005-12-07 13:38+0900\n"
 "PO-Revision-Date: 2005-02-21 15:52+0100\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -529,545 +529,6 @@ msgstr ""
 msgid "Unable to parse the geometry string '%s'"
 msgstr ""
 
-#: qt/chardict-bushuviewwidget.cpp:72
-msgid "Bushu List"
-msgstr ""
-
-#: qt/chardict-qt.cpp:105
-msgid "Mode:"
-msgstr ""
-
-#: qt/chardict-qt.cpp:107
-msgid "Bushu Search"
-msgstr ""
-
-#: qt/chardict-qt.cpp:108
-msgid "Unicode Search"
-msgstr ""
-
-#: qt/chardict-qt.cpp:114
-msgid "Select Font"
-msgstr ""
-
-#: qt/chardict-qt.cpp:118
-msgid "Chars:"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:66
-#, fuzzy
-msgid "Basic Latin"
-msgstr "Latin"
-
-#: qt/chardict-unicodeviewwidget.cpp:67
-msgid "Latin-1 Supplement"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:68
-msgid "Latin Extended-A"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:69
-msgid "Latin Extended-B"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:70
-msgid "IPA Extensions"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:71
-msgid "Spacing Modifier Letters"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:72
-msgid "Combining Diacritical Marks"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:73
-#, fuzzy
-msgid "Greek and Coptic"
-msgstr "Groenlandais"
-
-#: qt/chardict-unicodeviewwidget.cpp:74
-msgid "Cyrillic"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:75
-msgid "Cyrillic Supplement"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:76 uim/iso-639-1.def:45
-msgid "Armenian"
-msgstr "Arménien"
-
-#: qt/chardict-unicodeviewwidget.cpp:77 uim/iso-639-1.def:94
-msgid "Hebrew"
-msgstr "Hébreu"
-
-#: qt/chardict-unicodeviewwidget.cpp:78 uim/iso-639-1.def:44
-msgid "Arabic"
-msgstr "Arabe"
-
-#: qt/chardict-unicodeviewwidget.cpp:79 uim/iso-639-1.def:161
-msgid "Syriac"
-msgstr "Syriaque"
-
-#: qt/chardict-unicodeviewwidget.cpp:80
-msgid "Thaana"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:81
-msgid "Devanagari"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:82 uim/iso-639-1.def:52
-msgid "Bengali"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:83
-msgid "Gurmukhi"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:84 uim/iso-639-1.def:92
-msgid "Gujarati"
-msgstr "Gujarati"
-
-#: qt/chardict-unicodeviewwidget.cpp:85 uim/iso-639-1.def:135
-msgid "Oriya"
-msgstr "Oriya"
-
-#: qt/chardict-unicodeviewwidget.cpp:86 uim/iso-639-1.def:164
-msgid "Tamil"
-msgstr "Tamoul"
-
-#: qt/chardict-unicodeviewwidget.cpp:87 uim/iso-639-1.def:166
-msgid "Telugu"
-msgstr "Telugu"
-
-#: qt/chardict-unicodeviewwidget.cpp:88 uim/iso-639-1.def:107
-msgid "Kannada"
-msgstr "Kannada"
-
-#: qt/chardict-unicodeviewwidget.cpp:89 uim/iso-639-1.def:124
-msgid "Malayalam"
-msgstr "Malayalam"
-
-#: qt/chardict-unicodeviewwidget.cpp:90
-#, fuzzy
-msgid "Sinhala"
-msgstr "Sinhalese"
-
-#: qt/chardict-unicodeviewwidget.cpp:91 uim/iso-639-1.def:167
-msgid "Thai"
-msgstr "Thaïlandais"
-
-#: qt/chardict-unicodeviewwidget.cpp:92
-msgid "Lao"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:93 uim/iso-639-1.def:168
-msgid "Tibetan"
-msgstr "Tibétain"
-
-#: qt/chardict-unicodeviewwidget.cpp:94 uim/iso-639-1.def:130
-msgid "Myanmar"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:95 uim/iso-639-1.def:87
-msgid "Georgian"
-msgstr "Georgien"
-
-#: qt/chardict-unicodeviewwidget.cpp:96
-#, fuzzy
-msgid "Hangul Jamo"
-msgstr "Hangul (2-bul)"
-
-#: qt/chardict-unicodeviewwidget.cpp:97
-msgid "Ethiopic"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:98
-msgid "Cherokee"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:99
-msgid "Unified Canadian Aboriginal Syllabics"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:100
-msgid "Ogham"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:101
-msgid "Runic"
-msgstr ""
-
-#. defined as "syr" in ISO 639-2
-#: qt/chardict-unicodeviewwidget.cpp:102 uim/iso-639-1.def:162
-msgid "Tagalog"
-msgstr "Tagalog"
-
-#: qt/chardict-unicodeviewwidget.cpp:103
-msgid "Hanunoo"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:104
-msgid "Buhid"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:105
-msgid "Tagbanwa"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:106
-#, fuzzy
-msgid "Khmer"
-msgstr "Kashmiri"
-
-#: qt/chardict-unicodeviewwidget.cpp:107 uim/iso-639-1.def:129
-msgid "Mongolian"
-msgstr "Mongol"
-
-#: qt/chardict-unicodeviewwidget.cpp:108
-msgid "Limbu"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:109
-msgid "Tai Letters"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:110
-msgid "Khmer Symbols"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:111
-msgid "Phonetic Extensions"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:112
-msgid "Latin Extended Additional"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:113
-msgid "Greek Extended-B"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:114
-msgid "General Punctuation"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:115
-msgid "Superscripts and Subscripts"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:116
-msgid "Currency Symbols"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:117
-msgid "Combining Diacritical Marks for Symbols"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:118
-msgid "Letterlike Symbols"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:119
-msgid "Number Forms"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:120
-msgid "Arrows"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:121
-msgid "Mathematical Operators"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:122
-msgid "Miscellaneous Technical"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:123
-msgid "Control Pictures"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:124
-msgid "Optical Character Recognition"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:125
-msgid "Enclosed Alphanumerics"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:126
-msgid "Box Drawing"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:127
-msgid "Block Elements"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:128
-msgid "Geometric Shapes"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:129
-msgid "Miscellaneous Symbols"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:130
-msgid "Dingbats"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:131
-msgid "Miscellaneous Mathematical Symbols-A"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:132
-msgid "Supplemental Arrows-A"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:133
-msgid "Braille Patterns"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:134
-msgid "Supplemental Arrows-B"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:135
-msgid "Miscellaneous Mathematical Symbols-B"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:136
-msgid "Supplemental Mathematical Operators"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:137
-msgid "Miscellaneous Symbols and Arrows-B"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:138
-msgid "CJK Radicals Supplemental"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:139
-msgid "Kangxi Radicals"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:140
-msgid "Ideographic Description Characters"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:141
-msgid "CJK Symbols and Punctuation"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:142 scm/anthy-custom.lisp:124
-#: scm/canna-custom.lisp:124 scm/mana-custom.lisp:124 scm/skk-custom.lisp:173
-msgid "Hiragana"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:143 scm/anthy-custom.lisp:129
-#: scm/canna-custom.lisp:129 scm/mana-custom.lisp:129 scm/skk-custom.lisp:178
-msgid "Katakana"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:144
-msgid "Bopomofo"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:145
-msgid "Hangul Compatibility Jamo"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:146
-#, fuzzy
-msgid "Kanbun"
-msgstr "Kannada"
-
-#: qt/chardict-unicodeviewwidget.cpp:147
-msgid "Bopomofo Extended-B 1F00"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:148
-msgid "Katakana Phonetic Extensions"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:149
-msgid "Enclosed CJK Letters and Months"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:150
-msgid "CJK Compatibility"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:151
-msgid "CJK Unified Ideographs Extension and"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:152
-msgid "Yijing Hexagram Symbols-B"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:153
-msgid "CJK Unified Ideographs"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:154
-msgid "Yi Syllables"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:155
-msgid "Yi Radicals"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:156
-msgid "Hangul Syllables"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:157
-msgid "High Surrogates"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:158
-msgid "High Private Use Surrogates"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:159
-msgid "Low Surrogates"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:160
-msgid "Private Use Area"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:161
-msgid "CJK Compatibility Ideographs"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:162
-msgid "Alphabetic Presentation Forms"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:163
-msgid "Arabic Presentation Forms-A"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:164
-msgid "Variation Selectors"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:165
-msgid "Combining Half Marks"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:166
-msgid "CJK Compatibility Forms-A"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:167
-msgid "Small Form Variants"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:168
-msgid "Arabic Presentation Forms-B"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:169
-msgid "Halfwidth and Fullwidth Forms-B"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:170
-msgid "Specials"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:171
-msgid "Linear B Syllabary"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:172
-msgid "Linear B Ideograms"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:173
-msgid "Aegean Numbers"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:174
-msgid "Old Italic"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:175
-msgid "Gothic"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:176
-msgid "Ugaritic"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:177
-#, fuzzy
-msgid "Deseret"
-msgstr "Direct"
-
-#: qt/chardict-unicodeviewwidget.cpp:178
-#, fuzzy
-msgid "Shavian"
-msgstr "Abkhazien"
-
-#: qt/chardict-unicodeviewwidget.cpp:179
-msgid "Osmanya"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:180
-msgid "Cypriot Syllabary"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:181
-msgid "Byzantine Musical Symbols-B 4DC0"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:182
-msgid "Musical Symbols-B 4DC0 1D000"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:183
-msgid "Tai Xuan Jing Symbols-B 4DC0 1D000 1D100"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:184
-msgid "Mathematical Alphanumeric Symbols-B 4DC0 1D000 1D100 1D300"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:185
-msgid "CJK Unified Ideographs Extension B 4DC0 1D000 1D100 1D300 1D400"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:186
-msgid "CJK Compatibility Ideographs Supplemental 2E80"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:187
-msgid "Tags"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:188
-msgid "Variation Selectors Supplemental 2E80 2F800"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:189
-msgid "Supplementary Private Use Area-A"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:190
-msgid "Supplementary Private Use Area-B"
-msgstr ""
-
-#: qt/chardict-unicodeviewwidget.cpp:214
-msgid "UnicodeBlock List"
-msgstr ""
-
 #: qt/pref-customwidgets.cpp:172
 msgid "File"
 msgstr "Fichier"
@@ -1294,9 +755,19 @@ msgstr ""
 msgid "Direct input mode"
 msgstr ""
 
+#: scm/anthy-custom.lisp:124 scm/canna-custom.lisp:124
+#: scm/mana-custom.lisp:124 scm/skk-custom.lisp:173
+msgid "Hiragana"
+msgstr ""
+
 #: scm/anthy-custom.lisp:125 scm/canna-custom.lisp:125
 #: scm/mana-custom.lisp:125 scm/skk-custom.lisp:174
 msgid "Hiragana input mode"
+msgstr ""
+
+#: scm/anthy-custom.lisp:129 scm/canna-custom.lisp:129
+#: scm/mana-custom.lisp:129 scm/skk-custom.lisp:178
+msgid "Katakana"
 msgstr ""
 
 #: scm/anthy-custom.lisp:130 scm/canna-custom.lisp:130
@@ -1982,9 +1453,8 @@ msgid "Main settings of this group"
 msgstr ""
 
 #: scm/custom.lisp:753
-#, fuzzy
 msgid "Hidden settings"
-msgstr "Paramètres avancés"
+msgstr ""
 
 #: scm/custom.lisp:754
 msgid ""
@@ -2105,24 +1575,20 @@ msgid " Mode"
 msgstr ""
 
 #: scm/hangul.lisp:107
-#, fuzzy
 msgid "Hangul (2-beol)"
-msgstr "Hangul (2-bul)"
+msgstr ""
 
 #: scm/hangul.lisp:108
-#, fuzzy
 msgid "2-beol style hangul input method"
-msgstr "Méthode d'entrée Kana par défaut"
+msgstr ""
 
 #: scm/hangul.lisp:116
-#, fuzzy
 msgid "Hangul (3-beol)"
-msgstr "Hangul (3-bul)"
+msgstr ""
 
 #: scm/hangul.lisp:117
-#, fuzzy
 msgid "3-beol style hangul input method"
-msgstr "Méthode d'entrée Kana par défaut"
+msgstr ""
 
 #: scm/hangul.lisp:124
 msgid "Hangul (Romaja)"
@@ -2325,9 +1791,8 @@ msgid "An input method provided by the m17n library"
 msgstr "Une méthode d'entrée fournie par la bibliothèqye m17n-lib"
 
 #: scm/mana-custom.lisp:35
-#, fuzzy
 msgid "mana"
-msgstr "Kana"
+msgstr ""
 
 #: scm/mana-key-custom.lisp:36
 msgid "mana key bindings 1"
@@ -2410,9 +1875,8 @@ msgid "[mana] commit"
 msgstr ""
 
 #: scm/mana-key-custom.lisp:159
-#, fuzzy
 msgid "[mana] cancel"
-msgstr "[SKK] annuler"
+msgstr "[mana] annuler"
 
 #: scm/mana-key-custom.lisp:165
 msgid "[mana] next candidate"
@@ -2451,9 +1915,8 @@ msgid "[mana] backspace"
 msgstr ""
 
 #: scm/mana-key-custom.lisp:223
-#, fuzzy
 msgid "[mana] delete"
-msgstr "[PRIME] effacer"
+msgstr "[mana] effacer"
 
 #: scm/mana-key-custom.lisp:229
 msgid "[mana] go left"
@@ -2673,9 +2136,8 @@ msgid "Pinyin input method (Traditional Chinese version)"
 msgstr ""
 
 #: scm/scim.lisp:336
-#, fuzzy
 msgid "An input method provided by the scim library"
-msgstr "Une méthode d'entrée fournie par la bibliothèqye m17n-lib"
+msgstr ""
 
 #: scm/skk-custom.lisp:35
 msgid "SKK"
@@ -2979,9 +2441,8 @@ msgid "VIetnamese Quoted-Readable"
 msgstr ""
 
 #: uim.desktop.in.in.h:1
-#, fuzzy
 msgid "Input method settings"
-msgstr "Paramètres avancés"
+msgstr ""
 
 #: uim.desktop.in.in.h:2
 msgid "Preference of uim"
@@ -3043,6 +2504,14 @@ msgstr "Albanais"
 msgid "Amharic"
 msgstr "Amharic"
 
+#: uim/iso-639-1.def:44
+msgid "Arabic"
+msgstr "Arabe"
+
+#: uim/iso-639-1.def:45
+msgid "Armenian"
+msgstr "Arménien"
+
 #: uim/iso-639-1.def:46
 msgid "Assamese"
 msgstr "Assamese"
@@ -3065,6 +2534,10 @@ msgstr "Basque"
 
 #: uim/iso-639-1.def:51
 msgid "Bengali (Bangla)"
+msgstr ""
+
+#: uim/iso-639-1.def:52
+msgid "Bengali"
 msgstr ""
 
 #: uim/iso-639-1.def:53
@@ -3196,6 +2669,10 @@ msgstr "Gaélique d'Écosse"
 msgid "Gaelic (Manx)"
 msgstr "Gaélique (Man)"
 
+#: uim/iso-639-1.def:87
+msgid "Georgian"
+msgstr "Georgien"
+
 #: uim/iso-639-1.def:88
 msgid "German"
 msgstr "Allemand"
@@ -3212,9 +2689,17 @@ msgstr "Groenlandais"
 msgid "Guarani"
 msgstr "Guarani"
 
+#: uim/iso-639-1.def:92
+msgid "Gujarati"
+msgstr "Gujarati"
+
 #: uim/iso-639-1.def:93
 msgid "Hausa"
 msgstr "Hausa"
+
+#: uim/iso-639-1.def:94
+msgid "Hebrew"
+msgstr "Hébreu"
 
 #: uim/iso-639-1.def:95
 msgid "Hindi"
@@ -3259,6 +2744,10 @@ msgstr "Italien"
 #: uim/iso-639-1.def:106
 msgid "Javanese"
 msgstr "Javanais"
+
+#: uim/iso-639-1.def:107
+msgid "Kannada"
+msgstr "Kannada"
 
 #: uim/iso-639-1.def:108
 msgid "Kashmiri"
@@ -3325,6 +2814,10 @@ msgstr "Malagasy"
 msgid "Malay"
 msgstr "Malay"
 
+#: uim/iso-639-1.def:124
+msgid "Malayalam"
+msgstr "Malayalam"
+
 #: uim/iso-639-1.def:125
 msgid "Maltese"
 msgstr "Maltais"
@@ -3341,6 +2834,14 @@ msgstr "Marathi"
 msgid "Moldavian"
 msgstr "Moldave"
 
+#: uim/iso-639-1.def:129
+msgid "Mongolian"
+msgstr "Mongol"
+
+#: uim/iso-639-1.def:130
+msgid "Myanmar"
+msgstr ""
+
 #: uim/iso-639-1.def:131
 msgid "Nauru"
 msgstr "Nauru"
@@ -3356,6 +2857,10 @@ msgstr "Norvégien"
 #: uim/iso-639-1.def:134
 msgid "Occitan"
 msgstr "Occitan"
+
+#: uim/iso-639-1.def:135
+msgid "Oriya"
+msgstr "Oriya"
 
 #: uim/iso-639-1.def:136
 msgid "Oromo (Afan, Galla)"
@@ -3457,13 +2962,38 @@ msgstr "Swahili (Kiswahili)"
 msgid "Swedish"
 msgstr "Suédois"
 
+#: uim/iso-639-1.def:161
+msgid "Syriac"
+msgstr "Syriaque"
+
+#. defined as "syr" in ISO 639-2
+#: uim/iso-639-1.def:162
+msgid "Tagalog"
+msgstr "Tagalog"
+
 #: uim/iso-639-1.def:163
 msgid "Tajik"
 msgstr "Tajikistanais"
 
+#: uim/iso-639-1.def:164
+msgid "Tamil"
+msgstr "Tamoul"
+
 #: uim/iso-639-1.def:165
 msgid "Tatar"
 msgstr "Tatar"
+
+#: uim/iso-639-1.def:166
+msgid "Telugu"
+msgstr "Telugu"
+
+#: uim/iso-639-1.def:167
+msgid "Thai"
+msgstr "Thaïlandais"
+
+#: uim/iso-639-1.def:168
+msgid "Tibetan"
+msgstr "Tibétain"
 
 #: uim/iso-639-1.def:169
 msgid "Tigrinya"

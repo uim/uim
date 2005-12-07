@@ -88,7 +88,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-06 08:05+0900\n"
+"POT-Creation-Date: 2005-12-07 13:38+0900\n"
 "PO-Revision-Date: 2005-12-06 07:53+0900\n"
 "Last-Translator: Daichi Kawahata <daichik@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -629,537 +629,6 @@ msgstr "終了"
 msgid "Unable to parse the geometry string '%s'"
 msgstr "ジオメトリ文字列 '%s' を解析できません"
 
-#: qt/chardict-bushuviewwidget.cpp:72
-msgid "Bushu List"
-msgstr "部首一覧"
-
-#: qt/chardict-qt.cpp:105
-msgid "Mode:"
-msgstr "モード:"
-
-#: qt/chardict-qt.cpp:107
-msgid "Bushu Search"
-msgstr "部首検索"
-
-#: qt/chardict-qt.cpp:108
-msgid "Unicode Search"
-msgstr "ユニコード検索"
-
-#: qt/chardict-qt.cpp:114
-msgid "Select Font"
-msgstr "フォントの選択"
-
-#: qt/chardict-qt.cpp:118
-msgid "Chars:"
-msgstr "文字:"
-
-#: qt/chardict-unicodeviewwidget.cpp:66
-msgid "Basic Latin"
-msgstr "基本ラテン文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:67
-msgid "Latin-1 Supplement"
-msgstr "ラテン1追加 (ISO 8859-1 右面)"
-
-#: qt/chardict-unicodeviewwidget.cpp:68
-msgid "Latin Extended-A"
-msgstr "ラテン文字拡張A"
-
-#: qt/chardict-unicodeviewwidget.cpp:69
-msgid "Latin Extended-B"
-msgstr "ラテン文字拡張B"
-
-#: qt/chardict-unicodeviewwidget.cpp:70
-msgid "IPA Extensions"
-msgstr "国際音声記号 (IPA 拡張)"
-
-#: qt/chardict-unicodeviewwidget.cpp:71
-msgid "Spacing Modifier Letters"
-msgstr "国際音声記号 (長音記号)"
-
-#: qt/chardict-unicodeviewwidget.cpp:72
-msgid "Combining Diacritical Marks"
-msgstr "国際音声記号 (合成用記号)"
-
-#: qt/chardict-unicodeviewwidget.cpp:73
-msgid "Greek and Coptic"
-msgstr "ギリシャ文字とコプト文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:74
-msgid "Cyrillic"
-msgstr "キリル文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:75
-msgid "Cyrillic Supplement"
-msgstr "キリル文字追加"
-
-#: qt/chardict-unicodeviewwidget.cpp:76 uim/iso-639-1.def:45
-msgid "Armenian"
-msgstr "アルメニア文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:77 uim/iso-639-1.def:94
-msgid "Hebrew"
-msgstr "ヘブライ文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:78 uim/iso-639-1.def:44
-msgid "Arabic"
-msgstr "アラビア文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:79 uim/iso-639-1.def:161
-msgid "Syriac"
-msgstr "シリア文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:80
-msgid "Thaana"
-msgstr "ターナ文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:81
-msgid "Devanagari"
-msgstr "デーヴァナーガリー文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:82 uim/iso-639-1.def:52
-msgid "Bengali"
-msgstr "ベンガル文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:83
-msgid "Gurmukhi"
-msgstr "グルムキー文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:84 uim/iso-639-1.def:92
-msgid "Gujarati"
-msgstr "グジャラート文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:85 uim/iso-639-1.def:135
-msgid "Oriya"
-msgstr "オリヤ文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:86 uim/iso-639-1.def:164
-msgid "Tamil"
-msgstr "タミル文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:87 uim/iso-639-1.def:166
-msgid "Telugu"
-msgstr "テルグ文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:88 uim/iso-639-1.def:107
-msgid "Kannada"
-msgstr "カンナダ文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:89 uim/iso-639-1.def:124
-msgid "Malayalam"
-msgstr "マラヤーラム文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:90
-msgid "Sinhala"
-msgstr "シンハラ文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:91 uim/iso-639-1.def:167
-msgid "Thai"
-msgstr "タイ文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:92
-msgid "Lao"
-msgstr "ラオス文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:93 uim/iso-639-1.def:168
-msgid "Tibetan"
-msgstr "チベット文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:94 uim/iso-639-1.def:130
-msgid "Myanmar"
-msgstr "ミャンマー文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:95 uim/iso-639-1.def:87
-msgid "Georgian"
-msgstr "グルジア文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:96
-msgid "Hangul Jamo"
-msgstr "ハングル字母"
-
-#: qt/chardict-unicodeviewwidget.cpp:97
-msgid "Ethiopic"
-msgstr "エチオピア文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:98
-msgid "Cherokee"
-msgstr "チェロキー文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:99
-msgid "Unified Canadian Aboriginal Syllabics"
-msgstr "統合カナダ先住民音節"
-
-#: qt/chardict-unicodeviewwidget.cpp:100
-msgid "Ogham"
-msgstr "オーガム文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:101
-msgid "Runic"
-msgstr "ルーン文字"
-
-#. defined as "syr" in ISO 639-2
-#: qt/chardict-unicodeviewwidget.cpp:102 uim/iso-639-1.def:162
-msgid "Tagalog"
-msgstr "タガログ文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:103
-msgid "Hanunoo"
-msgstr "ハヌノオ文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:104
-msgid "Buhid"
-msgstr "ブヒッド文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:105
-msgid "Tagbanwa"
-msgstr "タグバンワ文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:106
-msgid "Khmer"
-msgstr "クメール文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:107 uim/iso-639-1.def:129
-msgid "Mongolian"
-msgstr "モンゴル文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:108
-msgid "Limbu"
-msgstr "リンブー文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:109
-msgid "Tai Letters"
-msgstr "タイ文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:110
-msgid "Khmer Symbols"
-msgstr "クメール記号"
-
-#: qt/chardict-unicodeviewwidget.cpp:111
-msgid "Phonetic Extensions"
-msgstr "ウラル地方の発音記号"
-
-#: qt/chardict-unicodeviewwidget.cpp:112
-msgid "Latin Extended Additional"
-msgstr "ラテン文字拡張追加"
-
-#: qt/chardict-unicodeviewwidget.cpp:113
-msgid "Greek Extended-B"
-msgstr "ギリシア文字拡張B"
-
-#: qt/chardict-unicodeviewwidget.cpp:114
-msgid "General Punctuation"
-msgstr "一般句読点"
-
-#: qt/chardict-unicodeviewwidget.cpp:115
-msgid "Superscripts and Subscripts"
-msgstr "上付き/下付き文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:116
-msgid "Currency Symbols"
-msgstr "通貨記号"
-
-#: qt/chardict-unicodeviewwidget.cpp:117
-msgid "Combining Diacritical Marks for Symbols"
-msgstr "国際音声記号 (合成用記号)"
-
-#: qt/chardict-unicodeviewwidget.cpp:118
-msgid "Letterlike Symbols"
-msgstr "文字様記号"
-
-#: qt/chardict-unicodeviewwidget.cpp:119
-msgid "Number Forms"
-msgstr "数字に準じるもの"
-
-#: qt/chardict-unicodeviewwidget.cpp:120
-msgid "Arrows"
-msgstr "矢印"
-
-#: qt/chardict-unicodeviewwidget.cpp:121
-msgid "Mathematical Operators"
-msgstr "数学記号"
-
-#: qt/chardict-unicodeviewwidget.cpp:122
-msgid "Miscellaneous Technical"
-msgstr "その他の技術用記号"
-
-#: qt/chardict-unicodeviewwidget.cpp:123
-msgid "Control Pictures"
-msgstr "制御機能用記号"
-
-#: qt/chardict-unicodeviewwidget.cpp:124
-msgid "Optical Character Recognition"
-msgstr "光学式文字認識"
-
-#: qt/chardict-unicodeviewwidget.cpp:125
-msgid "Enclosed Alphanumerics"
-msgstr "囲み英数字"
-
-#: qt/chardict-unicodeviewwidget.cpp:126
-msgid "Box Drawing"
-msgstr "罫線素辺"
-
-#: qt/chardict-unicodeviewwidget.cpp:127
-msgid "Block Elements"
-msgstr "ブロック要素"
-
-#: qt/chardict-unicodeviewwidget.cpp:128
-msgid "Geometric Shapes"
-msgstr "幾何学模様"
-
-#: qt/chardict-unicodeviewwidget.cpp:129
-msgid "Miscellaneous Symbols"
-msgstr "その他の記号"
-
-#: qt/chardict-unicodeviewwidget.cpp:130
-msgid "Dingbats"
-msgstr "装飾記号"
-
-#: qt/chardict-unicodeviewwidget.cpp:131
-msgid "Miscellaneous Mathematical Symbols-A"
-msgstr "その他の数学記号A"
-
-#: qt/chardict-unicodeviewwidget.cpp:132
-msgid "Supplemental Arrows-A"
-msgstr "追加矢印A"
-
-#: qt/chardict-unicodeviewwidget.cpp:133
-msgid "Braille Patterns"
-msgstr "ブライユ点字図形"
-
-#: qt/chardict-unicodeviewwidget.cpp:134
-msgid "Supplemental Arrows-B"
-msgstr "追加矢印B"
-
-#: qt/chardict-unicodeviewwidget.cpp:135
-msgid "Miscellaneous Mathematical Symbols-B"
-msgstr "その他の数学記号B"
-
-#: qt/chardict-unicodeviewwidget.cpp:136
-msgid "Supplemental Mathematical Operators"
-msgstr "追加数学記号"
-
-#: qt/chardict-unicodeviewwidget.cpp:137
-msgid "Miscellaneous Symbols and Arrows-B"
-msgstr "その他の記号及び矢印B"
-
-#: qt/chardict-unicodeviewwidget.cpp:138
-msgid "CJK Radicals Supplemental"
-msgstr "CJK部首追加"
-
-#: qt/chardict-unicodeviewwidget.cpp:139
-msgid "Kangxi Radicals"
-msgstr "康煕部首"
-
-#: qt/chardict-unicodeviewwidget.cpp:140
-msgid "Ideographic Description Characters"
-msgstr "漢字構成記述文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:141
-msgid "CJK Symbols and Punctuation"
-msgstr "CJKの記号及び句読点"
-
-#: qt/chardict-unicodeviewwidget.cpp:142 scm/anthy-custom.lisp:124
-#: scm/canna-custom.lisp:124 scm/mana-custom.lisp:124 scm/skk-custom.lisp:173
-msgid "Hiragana"
-msgstr "ひらがな"
-
-#: qt/chardict-unicodeviewwidget.cpp:143 scm/anthy-custom.lisp:129
-#: scm/canna-custom.lisp:129 scm/mana-custom.lisp:129 scm/skk-custom.lisp:178
-msgid "Katakana"
-msgstr "カタカナ"
-
-#: qt/chardict-unicodeviewwidget.cpp:144
-msgid "Bopomofo"
-msgstr "注音字母"
-
-#: qt/chardict-unicodeviewwidget.cpp:145
-msgid "Hangul Compatibility Jamo"
-msgstr "ハングル互換字母"
-
-#: qt/chardict-unicodeviewwidget.cpp:146
-msgid "Kanbun"
-msgstr "漢文"
-
-#: qt/chardict-unicodeviewwidget.cpp:147
-msgid "Bopomofo Extended-B 1F00"
-msgstr "注音字母拡張B 1F00"
-
-#: qt/chardict-unicodeviewwidget.cpp:148
-msgid "Katakana Phonetic Extensions"
-msgstr "カタカナ表音拡張"
-
-#: qt/chardict-unicodeviewwidget.cpp:149
-msgid "Enclosed CJK Letters and Months"
-msgstr "囲みCJK文字・月"
-
-#: qt/chardict-unicodeviewwidget.cpp:150
-msgid "CJK Compatibility"
-msgstr "CJK互換用文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:151
-msgid "CJK Unified Ideographs Extension and"
-msgstr "CJK統合漢字拡張及び"
-
-#: qt/chardict-unicodeviewwidget.cpp:152
-msgid "Yijing Hexagram Symbols-B"
-msgstr "易経記号B"
-
-#: qt/chardict-unicodeviewwidget.cpp:153
-msgid "CJK Unified Ideographs"
-msgstr "CJK統合漢字"
-
-#: qt/chardict-unicodeviewwidget.cpp:154
-msgid "Yi Syllables"
-msgstr "イ音節文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:155
-msgid "Yi Radicals"
-msgstr "イ文字部首"
-
-#: qt/chardict-unicodeviewwidget.cpp:156
-msgid "Hangul Syllables"
-msgstr "ハングル音節文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:157
-msgid "High Surrogates"
-msgstr "上位サロゲート"
-
-#: qt/chardict-unicodeviewwidget.cpp:158
-msgid "High Private Use Surrogates"
-msgstr "上位私用サロゲート"
-
-#: qt/chardict-unicodeviewwidget.cpp:159
-msgid "Low Surrogates"
-msgstr "下位サロゲート"
-
-#: qt/chardict-unicodeviewwidget.cpp:160
-msgid "Private Use Area"
-msgstr "私用領域"
-
-#: qt/chardict-unicodeviewwidget.cpp:161
-msgid "CJK Compatibility Ideographs"
-msgstr "CJK互換漢字"
-
-#: qt/chardict-unicodeviewwidget.cpp:162
-msgid "Alphabetic Presentation Forms"
-msgstr "アルファベット表示形"
-
-#: qt/chardict-unicodeviewwidget.cpp:163
-msgid "Arabic Presentation Forms-A"
-msgstr "アラビア表示形A"
-
-#: qt/chardict-unicodeviewwidget.cpp:164
-msgid "Variation Selectors"
-msgstr "バリエーション・セレクター"
-
-#: qt/chardict-unicodeviewwidget.cpp:165
-msgid "Combining Half Marks"
-msgstr "半記号 (合成可能)"
-
-#: qt/chardict-unicodeviewwidget.cpp:166
-msgid "CJK Compatibility Forms-A"
-msgstr "CJK互換形A"
-
-#: qt/chardict-unicodeviewwidget.cpp:167
-msgid "Small Form Variants"
-msgstr "小字形"
-
-#: qt/chardict-unicodeviewwidget.cpp:168
-msgid "Arabic Presentation Forms-B"
-msgstr "アラビア表示形B"
-
-#: qt/chardict-unicodeviewwidget.cpp:169
-msgid "Halfwidth and Fullwidth Forms-B"
-msgstr "半角及び全角形B"
-
-#: qt/chardict-unicodeviewwidget.cpp:170
-msgid "Specials"
-msgstr "特殊用途"
-
-#: qt/chardict-unicodeviewwidget.cpp:171
-msgid "Linear B Syllabary"
-msgstr "線文字B音節文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:172
-msgid "Linear B Ideograms"
-msgstr "線文字B表意文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:173
-msgid "Aegean Numbers"
-msgstr "エーゲ数字"
-
-#: qt/chardict-unicodeviewwidget.cpp:174
-msgid "Old Italic"
-msgstr "オールド・イタリック"
-
-#: qt/chardict-unicodeviewwidget.cpp:175
-msgid "Gothic"
-msgstr "ゴシック"
-
-#: qt/chardict-unicodeviewwidget.cpp:176
-msgid "Ugaritic"
-msgstr "ウガリト楔形文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:177
-msgid "Deseret"
-msgstr "デゼレット・アルファベット"
-
-#: qt/chardict-unicodeviewwidget.cpp:178
-msgid "Shavian"
-msgstr "シェイヴィアン文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:179
-msgid "Osmanya"
-msgstr "オスマン文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:180
-msgid "Cypriot Syllabary"
-msgstr "キプロス音節文字"
-
-#: qt/chardict-unicodeviewwidget.cpp:181
-msgid "Byzantine Musical Symbols-B 4DC0"
-msgstr "ビザンチン音楽記号B 4DC0"
-
-#: qt/chardict-unicodeviewwidget.cpp:182
-msgid "Musical Symbols-B 4DC0 1D000"
-msgstr "音楽記号B 4DC0 1D000"
-
-#: qt/chardict-unicodeviewwidget.cpp:183
-msgid "Tai Xuan Jing Symbols-B 4DC0 1D000 1D100"
-msgstr "太玄經B 4DC0 1D000 1D100"
-
-#: qt/chardict-unicodeviewwidget.cpp:184
-msgid "Mathematical Alphanumeric Symbols-B 4DC0 1D000 1D100 1D300"
-msgstr "数学記号B 4DC0 1D000 1D100 1D300"
-
-#: qt/chardict-unicodeviewwidget.cpp:185
-msgid "CJK Unified Ideographs Extension B 4DC0 1D000 1D100 1D300 1D400"
-msgstr "CJK統合漢字拡張B 4DC0 1D000 1D100 1D300 1D400"
-
-#: qt/chardict-unicodeviewwidget.cpp:186
-msgid "CJK Compatibility Ideographs Supplemental 2E80"
-msgstr "CJK互換漢字補助 2E80"
-
-#: qt/chardict-unicodeviewwidget.cpp:187
-msgid "Tags"
-msgstr "タグ"
-
-#: qt/chardict-unicodeviewwidget.cpp:188
-msgid "Variation Selectors Supplemental 2E80 2F800"
-msgstr "バリエーション・セレクター補助 2E80 2F800"
-
-#: qt/chardict-unicodeviewwidget.cpp:189
-msgid "Supplementary Private Use Area-A"
-msgstr "補助私用領域A"
-
-#: qt/chardict-unicodeviewwidget.cpp:190
-msgid "Supplementary Private Use Area-B"
-msgstr "補助私用領域B"
-
-#: qt/chardict-unicodeviewwidget.cpp:214
-msgid "UnicodeBlock List"
-msgstr "ユニコード区画リスト"
-
 #: qt/pref-customwidgets.cpp:172
 msgid "File"
 msgstr "ファイル"
@@ -1393,10 +862,20 @@ msgstr "直接入力"
 msgid "Direct input mode"
 msgstr "直接入力モード"
 
+#: scm/anthy-custom.lisp:124 scm/canna-custom.lisp:124
+#: scm/mana-custom.lisp:124 scm/skk-custom.lisp:173
+msgid "Hiragana"
+msgstr "ひらがな"
+
 #: scm/anthy-custom.lisp:125 scm/canna-custom.lisp:125
 #: scm/mana-custom.lisp:125 scm/skk-custom.lisp:174
 msgid "Hiragana input mode"
 msgstr "ひらがな入力モード"
+
+#: scm/anthy-custom.lisp:129 scm/canna-custom.lisp:129
+#: scm/mana-custom.lisp:129 scm/skk-custom.lisp:178
+msgid "Katakana"
+msgstr "カタカナ"
 
 #: scm/anthy-custom.lisp:130 scm/canna-custom.lisp:130
 #: scm/mana-custom.lisp:130 scm/skk-custom.lisp:179
@@ -3144,6 +2623,14 @@ msgstr "アルバニア語"
 msgid "Amharic"
 msgstr "アムハラ語"
 
+#: uim/iso-639-1.def:44
+msgid "Arabic"
+msgstr "アラビア文字"
+
+#: uim/iso-639-1.def:45
+msgid "Armenian"
+msgstr "アルメニア文字"
+
 #: uim/iso-639-1.def:46
 msgid "Assamese"
 msgstr "アッサム語"
@@ -3167,6 +2654,10 @@ msgstr "バスク語"
 #: uim/iso-639-1.def:51
 msgid "Bengali (Bangla)"
 msgstr "ベンガル語 (バングラデシュ)"
+
+#: uim/iso-639-1.def:52
+msgid "Bengali"
+msgstr "ベンガル文字"
 
 #: uim/iso-639-1.def:53
 msgid "Bhutani"
@@ -3297,6 +2788,10 @@ msgstr "ゲール語 (スコティッシュ)"
 msgid "Gaelic (Manx)"
 msgstr "マン島語"
 
+#: uim/iso-639-1.def:87
+msgid "Georgian"
+msgstr "グルジア文字"
+
 #: uim/iso-639-1.def:88
 msgid "German"
 msgstr "ドイツ語"
@@ -3313,9 +2808,17 @@ msgstr "グリーンランド語"
 msgid "Guarani"
 msgstr "グアラニー語"
 
+#: uim/iso-639-1.def:92
+msgid "Gujarati"
+msgstr "グジャラート文字"
+
 #: uim/iso-639-1.def:93
 msgid "Hausa"
 msgstr "ハウザ語"
+
+#: uim/iso-639-1.def:94
+msgid "Hebrew"
+msgstr "ヘブライ文字"
 
 #: uim/iso-639-1.def:95
 msgid "Hindi"
@@ -3360,6 +2863,10 @@ msgstr "イタリア語"
 #: uim/iso-639-1.def:106
 msgid "Javanese"
 msgstr "ジャワ語"
+
+#: uim/iso-639-1.def:107
+msgid "Kannada"
+msgstr "カンナダ文字"
 
 #: uim/iso-639-1.def:108
 msgid "Kashmiri"
@@ -3426,6 +2933,10 @@ msgstr "マラガシ語"
 msgid "Malay"
 msgstr "マレー語"
 
+#: uim/iso-639-1.def:124
+msgid "Malayalam"
+msgstr "マラヤーラム文字"
+
 #: uim/iso-639-1.def:125
 msgid "Maltese"
 msgstr "マルタ語"
@@ -3442,6 +2953,14 @@ msgstr "マラティ語"
 msgid "Moldavian"
 msgstr "モルドバ語"
 
+#: uim/iso-639-1.def:129
+msgid "Mongolian"
+msgstr "モンゴル文字"
+
+#: uim/iso-639-1.def:130
+msgid "Myanmar"
+msgstr "ミャンマー文字"
+
 #: uim/iso-639-1.def:131
 msgid "Nauru"
 msgstr "ナウル語"
@@ -3457,6 +2976,10 @@ msgstr "ノルウェー語"
 #: uim/iso-639-1.def:134
 msgid "Occitan"
 msgstr "オック語"
+
+#: uim/iso-639-1.def:135
+msgid "Oriya"
+msgstr "オリヤ文字"
 
 #: uim/iso-639-1.def:136
 msgid "Oromo (Afan, Galla)"
@@ -3558,13 +3081,38 @@ msgstr "スワヒリ語 (キスワヒリ)"
 msgid "Swedish"
 msgstr "スウェーデン語"
 
+#: uim/iso-639-1.def:161
+msgid "Syriac"
+msgstr "シリア文字"
+
+#. defined as "syr" in ISO 639-2
+#: uim/iso-639-1.def:162
+msgid "Tagalog"
+msgstr "タガログ文字"
+
 #: uim/iso-639-1.def:163
 msgid "Tajik"
 msgstr "タジク語"
 
+#: uim/iso-639-1.def:164
+msgid "Tamil"
+msgstr "タミル文字"
+
 #: uim/iso-639-1.def:165
 msgid "Tatar"
 msgstr "タタール語"
+
+#: uim/iso-639-1.def:166
+msgid "Telugu"
+msgstr "テルグ文字"
+
+#: uim/iso-639-1.def:167
+msgid "Thai"
+msgstr "タイ文字"
+
+#: uim/iso-639-1.def:168
+msgid "Tibetan"
+msgstr "チベット文字"
 
 #: uim/iso-639-1.def:169
 msgid "Tigrinya"
@@ -3633,6 +3181,345 @@ msgstr "ヨルバ語"
 #: uim/iso-639-1.def:185
 msgid "Zulu"
 msgstr "ズール語"
+
+#~ msgid "Bushu List"
+#~ msgstr "部首一覧"
+
+#~ msgid "Mode:"
+#~ msgstr "モード:"
+
+#~ msgid "Bushu Search"
+#~ msgstr "部首検索"
+
+#~ msgid "Unicode Search"
+#~ msgstr "ユニコード検索"
+
+#~ msgid "Select Font"
+#~ msgstr "フォントの選択"
+
+#~ msgid "Chars:"
+#~ msgstr "文字:"
+
+#~ msgid "Basic Latin"
+#~ msgstr "基本ラテン文字"
+
+#~ msgid "Latin-1 Supplement"
+#~ msgstr "ラテン1追加 (ISO 8859-1 右面)"
+
+#~ msgid "Latin Extended-A"
+#~ msgstr "ラテン文字拡張A"
+
+#~ msgid "Latin Extended-B"
+#~ msgstr "ラテン文字拡張B"
+
+#~ msgid "IPA Extensions"
+#~ msgstr "国際音声記号 (IPA 拡張)"
+
+#~ msgid "Spacing Modifier Letters"
+#~ msgstr "国際音声記号 (長音記号)"
+
+#~ msgid "Combining Diacritical Marks"
+#~ msgstr "国際音声記号 (合成用記号)"
+
+#~ msgid "Greek and Coptic"
+#~ msgstr "ギリシャ文字とコプト文字"
+
+#~ msgid "Cyrillic"
+#~ msgstr "キリル文字"
+
+#~ msgid "Cyrillic Supplement"
+#~ msgstr "キリル文字追加"
+
+#~ msgid "Thaana"
+#~ msgstr "ターナ文字"
+
+#~ msgid "Devanagari"
+#~ msgstr "デーヴァナーガリー文字"
+
+#~ msgid "Gurmukhi"
+#~ msgstr "グルムキー文字"
+
+#~ msgid "Sinhala"
+#~ msgstr "シンハラ文字"
+
+#~ msgid "Lao"
+#~ msgstr "ラオス文字"
+
+#~ msgid "Hangul Jamo"
+#~ msgstr "ハングル字母"
+
+#~ msgid "Ethiopic"
+#~ msgstr "エチオピア文字"
+
+#~ msgid "Cherokee"
+#~ msgstr "チェロキー文字"
+
+#~ msgid "Unified Canadian Aboriginal Syllabics"
+#~ msgstr "統合カナダ先住民音節"
+
+#~ msgid "Ogham"
+#~ msgstr "オーガム文字"
+
+#~ msgid "Runic"
+#~ msgstr "ルーン文字"
+
+#~ msgid "Hanunoo"
+#~ msgstr "ハヌノオ文字"
+
+#~ msgid "Buhid"
+#~ msgstr "ブヒッド文字"
+
+#~ msgid "Tagbanwa"
+#~ msgstr "タグバンワ文字"
+
+#~ msgid "Khmer"
+#~ msgstr "クメール文字"
+
+#~ msgid "Limbu"
+#~ msgstr "リンブー文字"
+
+#~ msgid "Tai Letters"
+#~ msgstr "タイ文字"
+
+#~ msgid "Khmer Symbols"
+#~ msgstr "クメール記号"
+
+#~ msgid "Phonetic Extensions"
+#~ msgstr "ウラル地方の発音記号"
+
+#~ msgid "Latin Extended Additional"
+#~ msgstr "ラテン文字拡張追加"
+
+#~ msgid "Greek Extended-B"
+#~ msgstr "ギリシア文字拡張B"
+
+#~ msgid "General Punctuation"
+#~ msgstr "一般句読点"
+
+#~ msgid "Superscripts and Subscripts"
+#~ msgstr "上付き/下付き文字"
+
+#~ msgid "Currency Symbols"
+#~ msgstr "通貨記号"
+
+#~ msgid "Combining Diacritical Marks for Symbols"
+#~ msgstr "国際音声記号 (合成用記号)"
+
+#~ msgid "Letterlike Symbols"
+#~ msgstr "文字様記号"
+
+#~ msgid "Number Forms"
+#~ msgstr "数字に準じるもの"
+
+#~ msgid "Arrows"
+#~ msgstr "矢印"
+
+#~ msgid "Mathematical Operators"
+#~ msgstr "数学記号"
+
+#~ msgid "Miscellaneous Technical"
+#~ msgstr "その他の技術用記号"
+
+#~ msgid "Control Pictures"
+#~ msgstr "制御機能用記号"
+
+#~ msgid "Optical Character Recognition"
+#~ msgstr "光学式文字認識"
+
+#~ msgid "Enclosed Alphanumerics"
+#~ msgstr "囲み英数字"
+
+#~ msgid "Box Drawing"
+#~ msgstr "罫線素辺"
+
+#~ msgid "Block Elements"
+#~ msgstr "ブロック要素"
+
+#~ msgid "Geometric Shapes"
+#~ msgstr "幾何学模様"
+
+#~ msgid "Miscellaneous Symbols"
+#~ msgstr "その他の記号"
+
+#~ msgid "Dingbats"
+#~ msgstr "装飾記号"
+
+#~ msgid "Miscellaneous Mathematical Symbols-A"
+#~ msgstr "その他の数学記号A"
+
+#~ msgid "Supplemental Arrows-A"
+#~ msgstr "追加矢印A"
+
+#~ msgid "Braille Patterns"
+#~ msgstr "ブライユ点字図形"
+
+#~ msgid "Supplemental Arrows-B"
+#~ msgstr "追加矢印B"
+
+#~ msgid "Miscellaneous Mathematical Symbols-B"
+#~ msgstr "その他の数学記号B"
+
+#~ msgid "Supplemental Mathematical Operators"
+#~ msgstr "追加数学記号"
+
+#~ msgid "Miscellaneous Symbols and Arrows-B"
+#~ msgstr "その他の記号及び矢印B"
+
+#~ msgid "CJK Radicals Supplemental"
+#~ msgstr "CJK部首追加"
+
+#~ msgid "Kangxi Radicals"
+#~ msgstr "康煕部首"
+
+#~ msgid "Ideographic Description Characters"
+#~ msgstr "漢字構成記述文字"
+
+#~ msgid "CJK Symbols and Punctuation"
+#~ msgstr "CJKの記号及び句読点"
+
+#~ msgid "Bopomofo"
+#~ msgstr "注音字母"
+
+#~ msgid "Hangul Compatibility Jamo"
+#~ msgstr "ハングル互換字母"
+
+#~ msgid "Kanbun"
+#~ msgstr "漢文"
+
+#~ msgid "Bopomofo Extended-B 1F00"
+#~ msgstr "注音字母拡張B 1F00"
+
+#~ msgid "Katakana Phonetic Extensions"
+#~ msgstr "カタカナ表音拡張"
+
+#~ msgid "Enclosed CJK Letters and Months"
+#~ msgstr "囲みCJK文字・月"
+
+#~ msgid "CJK Compatibility"
+#~ msgstr "CJK互換用文字"
+
+#~ msgid "CJK Unified Ideographs Extension and"
+#~ msgstr "CJK統合漢字拡張及び"
+
+#~ msgid "Yijing Hexagram Symbols-B"
+#~ msgstr "易経記号B"
+
+#~ msgid "CJK Unified Ideographs"
+#~ msgstr "CJK統合漢字"
+
+#~ msgid "Yi Syllables"
+#~ msgstr "イ音節文字"
+
+#~ msgid "Yi Radicals"
+#~ msgstr "イ文字部首"
+
+#~ msgid "Hangul Syllables"
+#~ msgstr "ハングル音節文字"
+
+#~ msgid "High Surrogates"
+#~ msgstr "上位サロゲート"
+
+#~ msgid "High Private Use Surrogates"
+#~ msgstr "上位私用サロゲート"
+
+#~ msgid "Low Surrogates"
+#~ msgstr "下位サロゲート"
+
+#~ msgid "Private Use Area"
+#~ msgstr "私用領域"
+
+#~ msgid "CJK Compatibility Ideographs"
+#~ msgstr "CJK互換漢字"
+
+#~ msgid "Alphabetic Presentation Forms"
+#~ msgstr "アルファベット表示形"
+
+#~ msgid "Arabic Presentation Forms-A"
+#~ msgstr "アラビア表示形A"
+
+#~ msgid "Variation Selectors"
+#~ msgstr "バリエーション・セレクター"
+
+#~ msgid "Combining Half Marks"
+#~ msgstr "半記号 (合成可能)"
+
+#~ msgid "CJK Compatibility Forms-A"
+#~ msgstr "CJK互換形A"
+
+#~ msgid "Small Form Variants"
+#~ msgstr "小字形"
+
+#~ msgid "Arabic Presentation Forms-B"
+#~ msgstr "アラビア表示形B"
+
+#~ msgid "Halfwidth and Fullwidth Forms-B"
+#~ msgstr "半角及び全角形B"
+
+#~ msgid "Specials"
+#~ msgstr "特殊用途"
+
+#~ msgid "Linear B Syllabary"
+#~ msgstr "線文字B音節文字"
+
+#~ msgid "Linear B Ideograms"
+#~ msgstr "線文字B表意文字"
+
+#~ msgid "Aegean Numbers"
+#~ msgstr "エーゲ数字"
+
+#~ msgid "Old Italic"
+#~ msgstr "オールド・イタリック"
+
+#~ msgid "Gothic"
+#~ msgstr "ゴシック"
+
+#~ msgid "Ugaritic"
+#~ msgstr "ウガリト楔形文字"
+
+#~ msgid "Deseret"
+#~ msgstr "デゼレット・アルファベット"
+
+#~ msgid "Shavian"
+#~ msgstr "シェイヴィアン文字"
+
+#~ msgid "Osmanya"
+#~ msgstr "オスマン文字"
+
+#~ msgid "Cypriot Syllabary"
+#~ msgstr "キプロス音節文字"
+
+#~ msgid "Byzantine Musical Symbols-B 4DC0"
+#~ msgstr "ビザンチン音楽記号B 4DC0"
+
+#~ msgid "Musical Symbols-B 4DC0 1D000"
+#~ msgstr "音楽記号B 4DC0 1D000"
+
+#~ msgid "Tai Xuan Jing Symbols-B 4DC0 1D000 1D100"
+#~ msgstr "太玄經B 4DC0 1D000 1D100"
+
+#~ msgid "Mathematical Alphanumeric Symbols-B 4DC0 1D000 1D100 1D300"
+#~ msgstr "数学記号B 4DC0 1D000 1D100 1D300"
+
+#~ msgid "CJK Unified Ideographs Extension B 4DC0 1D000 1D100 1D300 1D400"
+#~ msgstr "CJK統合漢字拡張B 4DC0 1D000 1D100 1D300 1D400"
+
+#~ msgid "CJK Compatibility Ideographs Supplemental 2E80"
+#~ msgstr "CJK互換漢字補助 2E80"
+
+#~ msgid "Tags"
+#~ msgstr "タグ"
+
+#~ msgid "Variation Selectors Supplemental 2E80 2F800"
+#~ msgstr "バリエーション・セレクター補助 2E80 2F800"
+
+#~ msgid "Supplementary Private Use Area-A"
+#~ msgstr "補助私用領域A"
+
+#~ msgid "Supplementary Private Use Area-B"
+#~ msgstr "補助私用領域B"
+
+#~ msgid "UnicodeBlock List"
+#~ msgstr "ユニコード区画リスト"
 
 #~ msgid "[Anthy] anthy-vi-escape-key?"
 #~ msgstr "[Anthy] vi協調モードでESCとして扱うキー"
