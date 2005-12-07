@@ -47,6 +47,8 @@ SUCH DAMAGE.
 #include <qvbox.h>
 #include <qsettings.h>
 
+#include <locale.h>
+
 #include "qtgettext.h"
 
 int main( int argc, char *argv[] )
