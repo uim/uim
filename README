@@ -1,13 +1,8 @@
-See http://uim.freedesktop.org/ although it contains obsoleted
-information.
+uim is a multilingual input method library, whose goal is to provide a
+secure and useful input method for all languages.
 
-How to test
-===========
+See http://uim.freedesktop.org/ for more detail.
 
-You can test them simply doing
-$ ./configure; make
-$ GTK_IM_MODULE=uim sh test.sh
-at the source directory.
 
 Acknowledgements
 ================
