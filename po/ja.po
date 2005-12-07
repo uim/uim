@@ -96,7 +96,7 @@ msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-12-07 16:38+0900\n"
-"PO-Revision-Date: 2005-12-07 23:32+0900\n"
+"PO-Revision-Date: 2005-12-07 23:56+0900\n"
 "Last-Translator: Daichi Kawahata <daichik@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -2549,6 +2549,8 @@ msgstr "入力方式の設定"
 msgid "Preference of uim"
 msgstr "uimの設定"
 
+# FIXME: http://ja.wikipedia.org/wiki/ISO_639 の表で使われている表記に同期
+# する。Wikipedia側が不適切と思われる場合はそちらも修正する
 #.
 #.
 #. Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
@@ -2607,11 +2609,11 @@ msgstr "アムハラ語"
 
 #: uim/iso-639-1.def:44
 msgid "Arabic"
-msgstr "アラビア文字"
+msgstr "アラビア語"
 
 #: uim/iso-639-1.def:45
 msgid "Armenian"
-msgstr "アルメニア文字"
+msgstr "アルメニア語"
 
 #: uim/iso-639-1.def:46
 msgid "Assamese"
@@ -2633,6 +2635,7 @@ msgstr "バシキール語"
 msgid "Basque"
 msgstr "バスク語"
 
+# 日本語においては「ベンガル語」で統一されているようなので(Bangla)は訳さない
 #: uim/iso-639-1.def:51
 msgid "Bengali (Bangla)"
 msgstr "ベンガル語"
@@ -2691,7 +2694,7 @@ msgstr "中国語 (簡体字)"
 
 #: uim/iso-639-1.def:65 uim/iso-639-1.def:66
 msgid "Chinese (Traditional)"
-msgstr "中国語 (正体字)"
+msgstr "中国語 (繁体字)"
 
 #: uim/iso-639-1.def:67
 msgid "Chinese"
@@ -2772,7 +2775,7 @@ msgstr "ゲール語 (マン島語)"
 
 #: uim/iso-639-1.def:87
 msgid "Georgian"
-msgstr "グルジア文字"
+msgstr "グルジア語"
 
 #: uim/iso-639-1.def:88
 msgid "German"
@@ -2792,7 +2795,7 @@ msgstr "グアラニー語"
 
 #: uim/iso-639-1.def:92
 msgid "Gujarati"
-msgstr "グジャラート文字"
+msgstr "グジャラート語"
 
 #: uim/iso-639-1.def:93
 msgid "Hausa"
@@ -2820,11 +2823,11 @@ msgstr "インドネシア語"
 
 #: uim/iso-639-1.def:99
 msgid "Interlingua"
-msgstr "インターリングア語"
+msgstr "インターリングア"
 
 #: uim/iso-639-1.def:100
 msgid "Interlingue"
-msgstr "インテルリング語"
+msgstr "インターリング"
 
 #: uim/iso-639-1.def:101
 msgid "Inuktitut"
@@ -2848,7 +2851,7 @@ msgstr "ジャワ語"
 
 #: uim/iso-639-1.def:107
 msgid "Kannada"
-msgstr "カンナダ文字"
+msgstr "カンナダ語"
 
 #: uim/iso-639-1.def:108
 msgid "Kashmiri"
@@ -2917,7 +2920,7 @@ msgstr "マレー語"
 
 #: uim/iso-639-1.def:124
 msgid "Malayalam"
-msgstr "マラヤーラム文字"
+msgstr "マラヤラム語"
 
 #: uim/iso-639-1.def:125
 msgid "Maltese"
@@ -2937,11 +2940,11 @@ msgstr "モルドバ語"
 
 #: uim/iso-639-1.def:129
 msgid "Mongolian"
-msgstr "モンゴル文字"
+msgstr "モンゴル語"
 
 #: uim/iso-639-1.def:130
 msgid "Myanmar"
-msgstr "ミャンマー文字"
+msgstr "ミャンマー語"
 
 #: uim/iso-639-1.def:131
 msgid "Nauru"
@@ -2961,7 +2964,7 @@ msgstr "オクシタン語"
 
 #: uim/iso-639-1.def:135
 msgid "Oriya"
-msgstr "オリヤ文字"
+msgstr "オリヤ語"
 
 #: uim/iso-639-1.def:136
 msgid "Oromo (Afan, Galla)"
@@ -3065,12 +3068,12 @@ msgstr "スウェーデン語"
 
 #: uim/iso-639-1.def:161
 msgid "Syriac"
-msgstr "シリア文字"
+msgstr "シリア語"
 
 #. defined as "syr" in ISO 639-2
 #: uim/iso-639-1.def:162
 msgid "Tagalog"
-msgstr "タガログ文字"
+msgstr "タガログ語"
 
 #: uim/iso-639-1.def:163
 msgid "Tajik"
@@ -3078,7 +3081,7 @@ msgstr "タジクスタン語"
 
 #: uim/iso-639-1.def:164
 msgid "Tamil"
-msgstr "タミル文字"
+msgstr "タミル語"
 
 #: uim/iso-639-1.def:165
 msgid "Tatar"
@@ -3086,15 +3089,15 @@ msgstr "タタール語"
 
 #: uim/iso-639-1.def:166
 msgid "Telugu"
-msgstr "テルグ文字"
+msgstr "テルグ語"
 
 #: uim/iso-639-1.def:167
 msgid "Thai"
-msgstr "タイ文字"
+msgstr "タイ語"
 
 #: uim/iso-639-1.def:168
 msgid "Tibetan"
-msgstr "チベット文字"
+msgstr "チベット語"
 
 #: uim/iso-639-1.def:169
 msgid "Tigrinya"
