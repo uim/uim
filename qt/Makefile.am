@@ -109,10 +109,14 @@ uim_im_switcher_qt_LDADD    = $(top_builddir)/uim/libuim.la
 switcher-qt.cpp: switcher-qt.moc
 
 # Pref
+nodist_uim_pref_qt_SOURCES = \
+	pref-olisteditformbase.cpp \
+	pref-olisteditformbase.h \
+	pref-keyeditformbase.cpp \
+	pref-keyeditformbase.h
 uim_pref_qt_SOURCES = \
-	pref-olisteditformbase.cpp pref-keyeditformbase.cpp \
-	pref-olisteditformbase.h   pref-keyeditformbase.h   \
-	pref-qt.cpp pref-customwidgets.cpp pref-kseparator.cpp qtgettext.h pref-qt.h \
+	pref-qt.cpp pref-customwidgets.cpp pref-kseparator.cpp \
+	qtgettext.h pref-qt.h \
 	pref-customwidgets.h pref-kseparator.h
 
 uim_pref_qt_CXXFLAGS = $(QT_CXXFLAGS)
