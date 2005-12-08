@@ -159,6 +159,8 @@ create_window_anthy(void)
     window = word_list_window_new();
   } else {
     dict = uim_dict_open(N_("Anthy private dictionary"));
+    if (!dict)
+      return NULL;
     window = word_window_new(WORD_WINDOW_MODE_ADD, dict);
     uim_dict_unref(dict);
   }
