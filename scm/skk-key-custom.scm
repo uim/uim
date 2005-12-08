@@ -187,7 +187,7 @@
 	       (_ "long description will be here"))
 
 (define-custom 'skk-new-completion-from-current-comp-key '("<Alt>tab" "<IgnoreCase><Control><Alt>i")
-	       '(skk-keys3 skk-keys-dcomp)
+	       '(skk-keys2 skk-keys-completion)
 	       '(key)
 	       (_ "[SKK] new completion using current completion")
 	       (_ "long description will be here"))
