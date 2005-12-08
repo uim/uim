@@ -450,7 +450,9 @@ msgstr ""
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you realy quit this program?"
-msgstr "바뀐 내용이 있습니다.정말로 종료하시겠습니까?"
+msgstr ""
+"바뀐 내용이 있습니다.\n"
+"정말로 종료하시겠습니까?"
 
 #: helper/pref-gtk.c:255 qt/pref-qt.cpp:138
 msgid "Group"
@@ -459,7 +461,7 @@ msgstr "그룹"
 #. Defaults button
 #: helper/pref-gtk.c:347
 msgid "_Defaults"
-msgstr "디폴트 (_D)"
+msgstr "디폴트(_D)"
 
 #: helper/pref-gtk.c:352
 msgid "Revert all changes to default"
