@@ -124,9 +124,8 @@ uim_pref_qt_LDFLAGS  = $(QT_LDFLAGS)
 uim_pref_qt_LDADD    = $(top_builddir)/uim/libuim-custom.la $(top_builddir)/uim/libuim.la
 
 pref-customwidgets.h:pref-olisteditformbase.h pref-keyeditformbase.h
-pref-qt.h:pref-olisteditformbase.h pref-keyeditformbase.h
 
-pref-qt.cpp: pref-qt.moc
+pref-qt.cpp: pref-qt.moc pref-olisteditformbase.h pref-keyeditformbase.h
 pref-customwidgets.cpp: pref-customwidgets.moc
 pref-kseparator.cpp: pref-kseparator.moc
 
