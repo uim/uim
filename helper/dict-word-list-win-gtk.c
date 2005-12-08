@@ -201,7 +201,7 @@ warn_dict_open()
   GtkWidget *dialog;
   const gchar *message;
 
-  message = N_("Couldn't open a library for manipulating the dictionaly.\n");
+  message = N_("Couldn't open a library for manipulating the dictionary.\n");
   dialog = gtk_message_dialog_new(NULL,
 		  		  GTK_DIALOG_MODAL,
 				  GTK_MESSAGE_WARNING,
