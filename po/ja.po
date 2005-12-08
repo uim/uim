@@ -97,7 +97,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-09 00:22+0900\n"
+"POT-Creation-Date: 2005-12-09 04:59+0900\n"
 "PO-Revision-Date: 2005-12-09 00:31+0900\n"
 "Last-Translator: Daichi Kawahata <daichik@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -125,18 +125,18 @@ msgstr "uimアプレット・ファクトリ"
 msgid "uim applet for the GNOME2 panel"
 msgstr "GNOMEパネル用のuimアプレット"
 
-#: helper/dict-anthy.c:77 helper/dict-main-gtk.c:161
-#: helper/dict-word-list-win-gtk.c:271
+#: helper/dict-anthy.c:78 helper/dict-main-gtk.c:161
+#: helper/dict-word-list-win-gtk.c:272
 msgid "Anthy private dictionary"
 msgstr "Anthy個人辞書"
 
 #. construct dialog
-#: helper/dict-cclass-dialog.c:66 helper/dict-cclass-dialog.c:103
-#: helper/dict-word-list-view-gtk.c:263
+#: helper/dict-cclass-dialog.c:67 helper/dict-cclass-dialog.c:104
+#: helper/dict-word-list-view-gtk.c:264
 msgid "Part of Speech"
 msgstr "品詞"
 
-#: helper/dict-cclass-dialog.c:112
+#: helper/dict-cclass-dialog.c:113
 msgid "Example"
 msgstr "例"
 
@@ -145,148 +145,147 @@ msgstr "例"
 msgid "Error:%s\n"
 msgstr "エラー: %s\n"
 
-# FIXME: should be revised
-#: helper/dict-word-list-view-gtk.c:129
-msgid "Show conjection class code column"
-msgstr "接続詞のコード欄を表示"
+#: helper/dict-word-list-view-gtk.c:130
+msgid "Show part of speech column"
+msgstr "品詞欄を表示"
 
-#: helper/dict-word-list-view-gtk.c:130 helper/dict-word-list-view-gtk.c:139
-#: helper/dict-word-list-view-gtk.c:147 helper/dict-word-list-view-gtk.c:154
-#: helper/dict-word-list-view-gtk.c:162 helper/dict-word-list-view-gtk.c:163
+#: helper/dict-word-list-view-gtk.c:131 helper/dict-word-list-view-gtk.c:140
+#: helper/dict-word-list-view-gtk.c:148 helper/dict-word-list-view-gtk.c:155
+#: helper/dict-word-list-view-gtk.c:163 helper/dict-word-list-view-gtk.c:164
 msgid "to be written"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:138
+#: helper/dict-word-list-view-gtk.c:139
 msgid "Show freq column"
 msgstr "使用頻度欄を表示"
 
-#: helper/dict-word-list-view-gtk.c:146
+#: helper/dict-word-list-view-gtk.c:147
 msgid "Show okuri column"
 msgstr "送り仮名欄を表示"
 
-#: helper/dict-word-list-view-gtk.c:155
+#: helper/dict-word-list-view-gtk.c:156
 msgid "to be written "
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:199
+#: helper/dict-word-list-view-gtk.c:200
 msgid "Word Type"
 msgstr "単語の種類"
 
-#: helper/dict-word-list-view-gtk.c:217
+#: helper/dict-word-list-view-gtk.c:218
 msgid "Phonetic"
 msgstr "読み方"
 
-#: helper/dict-word-list-view-gtk.c:247
+#: helper/dict-word-list-view-gtk.c:248
 msgid "Literal"
 msgstr "書き方"
 
-#: helper/dict-word-list-view-gtk.c:279
+#: helper/dict-word-list-view-gtk.c:280
 msgid "Frequency"
 msgstr "使用頻度"
 
-#: helper/dict-word-list-view-gtk.c:290
+#: helper/dict-word-list-view-gtk.c:291
 msgid "Okuri"
 msgstr "送り仮名"
 
-#: helper/dict-word-list-win-gtk.c:85
+#: helper/dict-word-list-win-gtk.c:86
 msgid "_File"
 msgstr "ファイル(_F)"
 
-#: helper/dict-word-list-win-gtk.c:86
+#: helper/dict-word-list-win-gtk.c:87
 msgid "_Edit"
 msgstr "編集(_E)"
 
-#: helper/dict-word-list-win-gtk.c:87
+#: helper/dict-word-list-win-gtk.c:88
 msgid "_Option"
 msgstr "オプション(_O)"
 
-#: helper/dict-word-list-win-gtk.c:88
+#: helper/dict-word-list-win-gtk.c:89
 msgid "_Help"
 msgstr "ヘルプ(_H)"
 
-#: helper/dict-word-list-win-gtk.c:89
+#: helper/dict-word-list-win-gtk.c:90
 msgid "_Quit"
 msgstr "終了(_Q)"
 
-#: helper/dict-word-list-win-gtk.c:90
+#: helper/dict-word-list-win-gtk.c:91
 msgid "Quit uim-dict"
 msgstr "uim-dict を終了します"
 
-#: helper/dict-word-list-win-gtk.c:91
+#: helper/dict-word-list-win-gtk.c:92
 msgid "A_dd..."
 msgstr "追加(_D)..."
 
-#: helper/dict-word-list-win-gtk.c:92
+#: helper/dict-word-list-win-gtk.c:93
 msgid "Add a new word"
 msgstr "新しい単語を追加します"
 
-#: helper/dict-word-list-win-gtk.c:93
+#: helper/dict-word-list-win-gtk.c:94
 msgid "_Remove..."
 msgstr "削除(_R)..."
 
-#: helper/dict-word-list-win-gtk.c:94
+#: helper/dict-word-list-win-gtk.c:95
 msgid "Remove the selected word"
 msgstr "選択した単語を削除します"
 
-#: helper/dict-word-list-win-gtk.c:95
+#: helper/dict-word-list-win-gtk.c:96
 msgid "_Edit..."
 msgstr "編集(_E)..."
 
-#: helper/dict-word-list-win-gtk.c:96
+#: helper/dict-word-list-win-gtk.c:97
 msgid "Edit the selected word"
 msgstr "選択した単語を編集します"
 
-#: helper/dict-word-list-win-gtk.c:97
+#: helper/dict-word-list-win-gtk.c:98
 msgid "_Popup Menu"
 msgstr "ポップアップメニュー(_P)"
 
-#: helper/dict-word-list-win-gtk.c:98
+#: helper/dict-word-list-win-gtk.c:99
 msgid "Show popup menu"
 msgstr "ポップアップ・メニューを表示します"
 
 # FIXME: should be revised
-#: helper/dict-word-list-win-gtk.c:99
+#: helper/dict-word-list-win-gtk.c:100
 msgid "_About"
 msgstr "このプログラムについて(_A)"
 
-#: helper/dict-word-list-win-gtk.c:100 helper/dict-word-list-win-gtk.c:499
+#: helper/dict-word-list-win-gtk.c:101 helper/dict-word-list-win-gtk.c:500
 msgid "About uim-dict"
 msgstr "uim-dict について"
 
-#: helper/dict-word-list-win-gtk.c:204
+#: helper/dict-word-list-win-gtk.c:205
 msgid "Couldn't open a library for manipulating the dictionary.\n"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:225
+#: helper/dict-word-list-win-gtk.c:226
 msgid "Edit the dictionary"
 msgstr "辞書を編集します"
 
-#: helper/dict-word-list-win-gtk.c:279
+#: helper/dict-word-list-win-gtk.c:280
 #, c-format
 msgid "%s"
 msgstr "%s"
 
-#: helper/dict-word-list-win-gtk.c:393
+#: helper/dict-word-list-win-gtk.c:394
 msgid "Are you sure to remove seleted words?"
 msgstr "選択した複数の単語を削除してもよろしいですか？"
 
-#: helper/dict-word-list-win-gtk.c:399
+#: helper/dict-word-list-win-gtk.c:400
 msgid "Are you sure to remove the selected word?"
 msgstr "選択した単語を削除してもよろしいですか？"
 
-#: helper/dict-word-list-win-gtk.c:427
+#: helper/dict-word-list-win-gtk.c:428
 msgid "Word deletion succeded."
 msgstr "単語の削除に成功しました。"
 
-#: helper/dict-word-list-win-gtk.c:433
+#: helper/dict-word-list-win-gtk.c:434
 msgid "Word deletion failed."
 msgstr "単語の削除に失敗しました。"
 
-#: helper/dict-word-list-win-gtk.c:492
+#: helper/dict-word-list-win-gtk.c:493
 msgid "<span size=\"20000\">uim-dict "
 msgstr "<span size=\"20000\">uim-dict "
 
-#: helper/dict-word-list-win-gtk.c:492
+#: helper/dict-word-list-win-gtk.c:493
 msgid ""
 "</span>\n"
 "\n"
@@ -581,7 +580,7 @@ msgstr "設定変更を適用せず終了"
 msgid "Quit this application with applying changes"
 msgstr "設定を保存して終了"
 
-#: helper/pref-gtk.c:530
+#: helper/pref-gtk.c:530 qt/pref-qt.cpp:106
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -653,18 +652,6 @@ msgstr "編集"
 #: qt/pref-customwidgets.cpp:842
 msgid "Key Grab Dialog"
 msgstr "キー取得ダイアログ"
-
-#: qt/pref-qt.cpp:106
-msgid ""
-"The user customize file \"~/.uim\" is found.\n"
-"This file will override all conflicted settings set by\n"
-"this tool (stored in ~/.uim.d/customs/*.scm).\n"
-"Please check the file if you find your settings aren't applied"
-msgstr ""
-"ユーザ設定ファイル \"~/.uim\" が存在します。\n"
-"このファイルによる設定は、このツールが保存する設定\n"
-"(\"~/.uim.d/customs/*.scm\") よりも優先されます。\n"
-"設定が反映されない場合は、このファイルの内容を確認して下さい。"
 
 #: qt/pref-qt.cpp:113
 msgid "~/.uim exists!"
@@ -1211,7 +1198,10 @@ msgid ""
 "A comprehensive input method suite for Hangul. This covers most of the major "
 "input methods such as 2-beol and 3-beol variants, and provides features such "
 "as Hangul-Chinese conversion. The name 'byeoru' means inkstone in Korean."
-msgstr "ハングルのための包括的な入力方式スイート。2ボルや3ボル式とその派生版を含む主な入力方式の大半をカバーし、また、ハングル-中国語変換のような機能も提供します。このスイート名 \"Byeoru\" は韓国語で \"硯\" を意味します。"
+msgstr ""
+"ハングルのための包括的な入力方式スイート。2ボルや3ボル式とその派生版を含む主"
+"な入力方式の大半をカバーし、また、ハングル-中国語変換のような機能も提供しま"
+"す。このスイート名 \"Byeoru\" は韓国語で \"硯\" を意味します。"
 
 #. 2-beol can not be orderless.
 #: scm/byeoru-custom.lisp:46
@@ -3174,3 +3164,18 @@ msgstr "ヨルバ語"
 #: uim/iso-639-1.def:185
 msgid "Zulu"
 msgstr "ズール語"
+
+# FIXME: should be revised
+#~ msgid "Show conjection class code column"
+#~ msgstr "接続詞のコード欄を表示"
+
+#~ msgid ""
+#~ "The user customize file \"~/.uim\" is found.\n"
+#~ "This file will override all conflicted settings set by\n"
+#~ "this tool (stored in ~/.uim.d/customs/*.scm).\n"
+#~ "Please check the file if you find your settings aren't applied"
+#~ msgstr ""
+#~ "ユーザ設定ファイル \"~/.uim\" が存在します。\n"
+#~ "このファイルによる設定は、このツールが保存する設定\n"
+#~ "(\"~/.uim.d/customs/*.scm\") よりも優先されます。\n"
+#~ "設定が反映されない場合は、このファイルの内容を確認して下さい。"
