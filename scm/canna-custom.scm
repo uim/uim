@@ -295,13 +295,13 @@
 
 ;; warning: must be defined before custom-preserved-canna-server-name
 (define-custom 'custom-activate-canna-server-name? #f
-  '(canna cannaserver)
+  '(cannaserver)
   '(boolean)
   (_ "Use Canna server")
   (_ "long description will be here."))
 
 (define-custom 'custom-preserved-canna-server-name ""
-  '(canna cannaserver)
+  '(cannaserver)
   '(string ".*")
   (_ "Canna server name")
   (_ "long description will be here."))
