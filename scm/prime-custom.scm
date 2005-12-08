@@ -71,7 +71,7 @@
 (define-custom 'prime-use-unixdomain? #f
   '(prime advanced)
   '(boolean)
-  (_ "Use Unix Domain Socket to communicate with PRIME")
+  (_ "Use UNIX domain socket to communicate with PRIME")
   (_ "long description will be here."))
 
 ;(define-custom 'prime-use-candidate-window? #t
@@ -131,7 +131,7 @@
 (define-custom 'prime-custom-app-mode-vi? #f
   '(prime-advanced special-op)
   '(boolean)
-  (_ "Friendly for vi user")
+  (_ "Enable vi-cooperative mode")
   (_ "long description will be here."))
 
 (define-custom 'prime-pseudo-mode-cursor? #f

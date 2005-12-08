@@ -360,5 +360,5 @@
 (define-custom 'canna-use-with-vi? #f
   '(canna special-op)
   '(boolean)
-  (_ "Friendly for vi user")
+  (_ "Enable vi-cooperative mode")
   (_ "long description will be here."))
