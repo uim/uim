@@ -285,6 +285,7 @@ enum ScmStrMutationType {
 #define SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_FUNCTYPE (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 3 + 1)
 #define SCM_TAG_OTHERS_VALUE_OFFSET_PORT          (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 3)
 #define SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION  (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 3)
+#define SCM_TAG_OTHERS_VALUE_OFFSET_C_POINTER_LSBADDR     (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 3 + 1)
 #define SCM_TAG_OTHERS_VALUE_OFFSET_C_FUNCPOINTER_LSBADDR (SCM_GCBIT_WIDTH + SCM_TAG_WIDTH + 3 + 1)
 
 /*==============================================================================
@@ -569,36 +570,6 @@ enum ScmStrMutationType {
 #define SCM_VALUEPACKET_VALUES(a)        (SCM_CAR_GET_VALUE_AS_OBJ(SCM_AS_VALUEPACKET(a)))
 #define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_CAR_SET_VALUE_AS_OBJ(SCM_AS_VALUEPACKET(a), (v)))
 
-
-/*============================================================================
-   Real Accessors : CFunc
-
-   GCC4.0 doesn't align the address of function, so we need to store LSB of the function
-   address to the cdr part.
-  
-   FuncAddr = (S->car & ~0x01) | ((S->cdr >> SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR) & 0x1)
-============================================================================*/
-#define SCM_FUNC_CFUNC_OTHERB(a) (SCM_CAST_UINT(SCM_CAR_GET_VALUE_AS_PTR(a)))
-#define SCM_FUNC_CFUNC_LSB(a)    (SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR) & 0x1)
-#define SCM_FUNC_CFUNC(a)        (SCM_WORD_CAST(ScmFuncType, SCM_FUNC_CFUNC_OTHERB(a) | SCM_FUNC_CFUNC_LSB(a)))
-#define SCM_FUNC_TYPECODE(a)     ((enum ScmFuncTypeCode)SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_FUNCTYPE))
-
-#define SCM_FUNC_SET_CFUNC_LSB(a, val)    (SCM_SET_DIRECT_CDR((a),\
-                                                              (SCM_CAST_CDR_UINT(a) \
-                                                               | ((SCM_CAST_UINT(val) & 0x1) << SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR))))
-#define SCM_FUNC_SET_CFUNC_OTHERB(a, val) (SCM_CAR_SET_VALUE_AS_PTR((a), SCM_WORD_CAST(ScmObj, (val))))
-#define SCM_FUNC_SET_CFUNC(a, fptr)       (SCM_FUNC_SET_CFUNC_OTHERB((a), (SCM_CAST_UINT(fptr) & ~0x1)), \
-                                           SCM_FUNC_SET_CFUNC_LSB((a), (SCM_CAST_UINT(fptr) & 0x1)))
-#define SCM_FUNC_SET_TYPECODE(a, code)    (SCM_CDR_SET_VALUE_AS_INT((a), (code), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_FUNCTYPE, \
-                                                                    (SCM_TAG_OTHERS_FUNC | (SCM_FUNC_CFUNC_LSB(a) << SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR))))
-
-#define SCM_SYNTAXP(a) (SCM_FUNCP(a)                                    \
-                        && (SCM_FUNC_TYPECODE(a) & SCM_FUNCTYPE_SYNTAX))
-#define SCM_PROCEDUREP(a) ((SCM_FUNCP(a)                                     \
-                            && !(SCM_FUNC_TYPECODE(a) & SCM_FUNCTYPE_SYNTAX)) \
-                           || SCM_CLOSUREP(a)                                \
-                           || SCM_CONTINUATIONP(a))
-
 /*============================================================================
    Real Accessors : Port
 ============================================================================*/
@@ -616,30 +587,43 @@ enum ScmStrMutationType {
 #define SCM_CONTINUATION_SET_TAG(a, val)    (SCM_CDR_SET_VALUE_AS_INT(SCM_AS_CONTINUATION(a), (val), SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION, SCM_TAG_OTHERS_CONTINUATION))
 
 /*============================================================================
-   Real Accessors : CPointer
+   Real Accessors : Pointer Handling Types (CFunc, CPointer, CFuncPointer)
+
+   GCC4.0 doesn't align the address of function, so we need to store LSB of
+   the function address to the cdr part.
+
+   Addr = ((S->car & ~0x01)
+            | ((S->cdr >> lsboffset) & 0x1))
 ============================================================================*/
-#define SCM_C_POINTER_VALUE(a)              ((void*)SCM_CAR_GET_VALUE_AS_PTR(SCM_AS_C_POINTER(a)))
-#define SCM_C_POINTER_SET_VALUE(a, val)     (SCM_CAR_SET_VALUE_AS_PTR(SCM_AS_C_POINTER(a), (val)))
+/* General Pointer Accessor */
+#define SCM_PTR_OTHERSBITS(a)       (SCM_CAST_UINT(SCM_CAR_GET_VALUE_AS_PTR(a)))
+#define SCM_PTR_RAW_LSB(a, offset)  (SCM_CAST_CDR_UINT(a) & (0x1 << (offset)))
+#define SCM_PTR_LSB(a, offset)      (SCM_CDR_GET_VALUE_AS_INT((a), (offset)) & 0x1)
+#define SCM_PTR_VALUE(a, lsboffset) ((void*)(SCM_PTR_OTHERSBITS(a) | SCM_PTR_LSB((a), (lsboffset))))
 
-/*============================================================================
-   Real Accessors : CFuncPointer
+#define SCM_SET_PTR_OTHERSBITS(a, val)  (SCM_CAR_SET_VALUE_AS_PTR((a), SCM_WORD_CAST(ScmObj, (val))))
+#define SCM_SET_PTR_LSB(a, val, offset) (SCM_SET_DIRECT_CDR((a),         \
+                                                            (SCM_CAST_CDR_UINT(a) \
+                                                             | ((SCM_CAST_UINT(val) & 0x1) << (offset)))))
+#define SCM_SET_PTR_VALUE(a, val, lsboffset) (SCM_SET_PTR_OTHERSBITS((a), (val)), \
+                                              SCM_SET_PTR_LSB((a), (SCM_CAST_UINT(val) & 0x1), (lsboffset)))
 
-   
-   GCC4.0 doesn't align the address of function, so we need to store LSB of the function
-   address to the cdr part.
-  
-   FuncAddr = (S->car & ~0x01) | ((S->cdr >> SCM_TAG_OTHERS_VALUE_OFFSET_C_FUNCPOINTER_LSBADDR) & 0x1)
-============================================================================*/
-#define SCM_C_FUNCPOINTER_OTHERSB(a)        (SCM_CAST_UINT(SCM_CAR_GET_VALUE_AS_PTR(a)))
-#define SCM_C_FUNCPOINTER_LSB(a)            (SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_C_FUNCPOINTER_LSBADDR) & 0x1)
-#define SCM_C_FUNCPOINTER_VALUE(a)          (SCM_WORD_CAST(ScmCFunc, SCM_C_FUNCPOINTER_OTHERSB(a) | SCM_C_FUNCPOINTER_LSB(a)))
+/* CFunc */
+#define SCM_FUNC_CFUNC(a) (SCM_WORD_CAST(ScmFuncType, SCM_PTR_VALUE((a), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR)))
+#define SCM_FUNC_SET_CFUNC(a, val) (SCM_SET_PTR_VALUE((a), SCM_CAST_UINT(val), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR))
 
-#define SCM_C_FUNCPOINTER_SET_OTHERSB(a, val) (SCM_CAR_SET_VALUE_AS_PTR((a), (val)))
-#define SCM_C_FUNCPOINTER_SET_LSB(a, val)     (SCM_SET_DIRECT_CDR((a),  \
-                                                                  (SCM_CAST_CDR_UINT(a) \
-                                                                   | ((SCM_CAST_UINT(val) & 0x1) << SCM_TAG_OTHERS_VALUE_OFFSET_C_FUNCPOINTER_LSBADDR))))
-#define SCM_C_FUNCPOINTER_SET_VALUE(a, val)   (SCM_C_FUNCPOINTER_SET_OTHERSB((a), (SCM_CAST_UINT(val) & ~0x1)), \
-                                               SCM_C_FUNCPOINTER_SET_LSB((a), (SCM_CAST_UINT(val) & 0x1)))
+#define SCM_FUNC_TYPECODE(a) ((enum ScmFuncTypeCode)SCM_CDR_GET_VALUE_AS_INT((a), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_FUNCTYPE))
+#define SCM_FUNC_SET_TYPECODE(a, val) (SCM_CDR_SET_VALUE_AS_INT((a), (val), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_FUNCTYPE, \
+                                                                (SCM_TAG_OTHERS_FUNC \
+                                                                 | SCM_PTR_RAW_LSB((a), SCM_TAG_OTHERS_VALUE_OFFSET_FUNC_LSBADDR))))
+
+/* CPointer */
+#define SCM_C_POINTER_VALUE(a) (SCM_PTR_VALUE((a), SCM_TAG_OTHERS_VALUE_OFFSET_C_POINTER_LSBADDR))
+#define SCM_C_POINTER_SET_VALUE(a, val) (SCM_SET_PTR_VALUE((a), SCM_CAST_UINT(val), SCM_TAG_OTHERS_VALUE_OFFSET_C_POINTER_LSBADDR))
+
+/* CFuncPointer */
+#define SCM_C_FUNCPOINTER_VALUE(a) (SCM_WORD_CAST(ScmCFunc, SCM_PTR_VALUE((a), SCM_TAG_OTHERS_VALUE_OFFSET_C_FUNCPOINTER_LSBADDR)))
+#define SCM_C_FUNCPOINTER_SET_VALUE(a, val) (SCM_SET_PTR_VALUE((a), SCM_CAST_UINT(val), SCM_TAG_OTHERS_VALUE_OFFSET_C_FUNCPOINTER_LSBADDR))
 
 /*============================================================================
    Real Accessors : Int
@@ -679,6 +663,16 @@ enum ScmStrMutationType {
 ============================================================================*/
 #define SCM_CHAR_VALUE(a)         (SCM_PRIMARY_GET_VALUE_AS_INT((a), SCM_TAG_IMM_VALUE_OFFSET_CHAR))
 #define SCM_CHAR_SET_VALUE(a, ch) (SCM_PRIMARY_SET_VALUE_AS_INT((a), (ch), SCM_TAG_IMM_VALUE_OFFSET_CHAR, SCM_TAG_IMM_CHAR))
+
+/*=======================================
+   Misc Predicates
+=======================================*/
+#define SCM_SYNTAXP(a) (SCM_FUNCP(a)                                    \
+                        && (SCM_FUNC_TYPECODE(a) & SCM_FUNCTYPE_SYNTAX))
+#define SCM_PROCEDUREP(a) ((SCM_FUNCP(a)                                \
+                            && !(SCM_FUNC_TYPECODE(a) & SCM_FUNCTYPE_SYNTAX)) \
+                           || SCM_CLOSUREP(a)                           \
+                           || SCM_CONTINUATIONP(a))
 
 /*=======================================
    Scheme Special Constants
