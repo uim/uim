@@ -196,6 +196,22 @@ translate_func(const gchar *path, gpointer data)
 }
 
 static void
+warn_dict_open()
+{
+  GtkWidget *dialog;
+  const gchar *message;
+
+  message = N_("Couldn't open a library for manipulating the dictionaly.\n");
+  dialog = gtk_message_dialog_new(NULL,
+		  		  GTK_DIALOG_MODAL,
+				  GTK_MESSAGE_WARNING,
+				  GTK_BUTTONS_OK,
+				  _(message));
+  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy(GTK_WIDGET(dialog));
+}
+
+static void
 word_list_window_init (WordListWindow *window)
 {
   GtkWidget *word_list, *vbox, *statusbar;
@@ -253,6 +269,10 @@ word_list_window_init (WordListWindow *window)
 
 #if 1 /* FIXME! currently the identifier of Anthy is hard coded */
   dict = uim_dict_open(N_("Anthy private dictionary"));
+  if (!dict) {
+    warn_dict_open();
+    exit(1);
+  }
 #endif
   word_list_view_set_dict(WORD_LIST_VIEW(word_list), dict);
 
