@@ -963,15 +963,15 @@ msgstr "vi協調モードを有効にする"
 
 #: scm/anthy-key-custom.lisp:36
 msgid "Anthy key bindings 1"
-msgstr "Anthyキー 設定1"
+msgstr "Anthy キー設定1"
 
 #: scm/anthy-key-custom.lisp:40
 msgid "Anthy key bindings 2"
-msgstr "Anthyキー 設定2"
+msgstr "Anthy キー設定2"
 
 #: scm/anthy-key-custom.lisp:44
 msgid "Anthy key bindings 3"
-msgstr "Anthyキー 設定3"
+msgstr "Anthy キー設定3"
 
 #: scm/anthy-key-custom.lisp:51
 msgid "[Anthy] next segment"
