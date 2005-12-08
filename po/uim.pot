@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-08 22:27+0900\n"
+"POT-Creation-Date: 2005-12-09 00:22+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -644,53 +644,54 @@ msgstr ""
 #: scm/byeoru-custom.lisp:137 scm/byeoru-custom.lisp:143
 #: scm/byeoru-custom.lisp:154 scm/byeoru-custom.lisp:160
 #: scm/byeoru-custom.lisp:167 scm/byeoru-key-custom.lisp:39
-#: scm/canna-custom.lisp:44 scm/canna-custom.lisp:55 scm/canna-custom.lisp:61
-#: scm/canna-custom.lisp:76 scm/canna-custom.lisp:82 scm/canna-custom.lisp:88
-#: scm/canna-custom.lisp:94 scm/canna-custom.lisp:173
-#: scm/canna-custom.lisp:192 scm/canna-custom.lisp:201
-#: scm/canna-custom.lisp:243 scm/canna-custom.lisp:252
-#: scm/canna-custom.lisp:301 scm/canna-custom.lisp:307
-#: scm/canna-custom.lisp:364 scm/canna-key-custom.lisp:37
-#: scm/canna-key-custom.lisp:41 scm/canna-key-custom.lisp:45
-#: scm/generic-custom.lisp:37 scm/generic-custom.lisp:43
-#: scm/generic-custom.lisp:49 scm/generic-custom.lisp:55
-#: scm/generic-custom.lisp:61 scm/generic-key-custom.lisp:37
-#: scm/generic-key-custom.lisp:41 scm/im-custom.lisp:47 scm/im-custom.lisp:51
-#: scm/im-custom.lisp:56 scm/im-custom.lisp:61 scm/im-custom.lisp:66
-#: scm/im-custom.lisp:71 scm/im-custom.lisp:76 scm/im-custom.lisp:81
-#: scm/im-custom.lisp:86 scm/im-custom.lisp:91 scm/im-custom.lisp:96
-#: scm/im-custom.lisp:101 scm/im-custom.lisp:106 scm/im-custom.lisp:117
-#: scm/im-custom.lisp:127 scm/im-custom.lisp:229 scm/im-custom.lisp:286
-#: scm/im-custom.lisp:292 scm/im-custom.lisp:298 scm/im-custom.lisp:306
-#: scm/im-custom.lisp:326 scm/im-custom.lisp:342 scm/im-custom.lisp:348
-#: scm/im-custom.lisp:355 scm/im-custom.lisp:361 scm/im-custom.lisp:367
-#: scm/im-custom.lisp:373 scm/im-custom.lisp:379 scm/im-custom.lisp:385
-#: scm/im-custom.lisp:391 scm/im-custom.lisp:404 scm/im-custom.lisp:410
-#: scm/im-custom.lisp:417 scm/im-custom.lisp:423 scm/im-custom.lisp:427
-#: scm/im-custom.lisp:433 scm/im-custom.lisp:439 scm/mana-custom.lisp:51
-#: scm/mana-custom.lisp:57 scm/mana-custom.lisp:72 scm/mana-custom.lisp:78
-#: scm/mana-custom.lisp:84 scm/mana-custom.lisp:90 scm/mana-custom.lisp:173
-#: scm/mana-custom.lisp:192 scm/mana-custom.lisp:201 scm/mana-custom.lisp:243
-#: scm/mana-custom.lisp:252 scm/mana-custom.lisp:290
-#: scm/mana-key-custom.lisp:37 scm/mana-key-custom.lisp:41
-#: scm/mana-key-custom.lisp:45 scm/prime-custom.lisp:55
-#: scm/prime-custom.lisp:61 scm/prime-custom.lisp:69 scm/prime-custom.lisp:75
-#: scm/prime-custom.lisp:93 scm/prime-custom.lisp:99 scm/prime-custom.lisp:106
-#: scm/prime-custom.lisp:113 scm/prime-custom.lisp:121
-#: scm/prime-custom.lisp:129 scm/prime-custom.lisp:135
-#: scm/prime-custom.lisp:141 scm/prime-key-custom.lisp:61
-#: scm/prime-key-custom.lisp:65 scm/prime-key-custom.lisp:69
-#: scm/skk-custom.lisp:59 scm/skk-custom.lisp:65 scm/skk-custom.lisp:73
-#: scm/skk-custom.lisp:79 scm/skk-custom.lisp:85 scm/skk-custom.lisp:91
-#: scm/skk-custom.lisp:217 scm/skk-custom.lisp:236 scm/skk-custom.lisp:245
-#: scm/skk-custom.lisp:276 scm/skk-custom.lisp:285 scm/skk-custom.lisp:328
-#: scm/skk-custom.lisp:334 scm/skk-custom.lisp:346 scm/skk-custom.lisp:353
-#: scm/skk-custom.lisp:360 scm/skk-custom.lisp:372 scm/skk-custom.lisp:378
-#: scm/skk-custom.lisp:384 scm/skk-custom.lisp:390 scm/skk-custom.lisp:396
-#: scm/skk-custom.lisp:406 scm/skk-custom.lisp:412 scm/skk-custom.lisp:433
-#: scm/skk-custom.lisp:439 scm/skk-custom.lisp:446 scm/skk-key-custom.lisp:65
-#: scm/skk-key-custom.lisp:69 scm/skk-key-custom.lisp:73
-#: scm/skk-key-custom.lisp:78 scm/skk-key-custom.lisp:82
+#: scm/byeoru-key-custom.lisp:43 scm/canna-custom.lisp:44
+#: scm/canna-custom.lisp:55 scm/canna-custom.lisp:61 scm/canna-custom.lisp:76
+#: scm/canna-custom.lisp:82 scm/canna-custom.lisp:88 scm/canna-custom.lisp:94
+#: scm/canna-custom.lisp:173 scm/canna-custom.lisp:192
+#: scm/canna-custom.lisp:201 scm/canna-custom.lisp:243
+#: scm/canna-custom.lisp:252 scm/canna-custom.lisp:301
+#: scm/canna-custom.lisp:307 scm/canna-custom.lisp:364
+#: scm/canna-key-custom.lisp:37 scm/canna-key-custom.lisp:41
+#: scm/canna-key-custom.lisp:45 scm/generic-custom.lisp:37
+#: scm/generic-custom.lisp:43 scm/generic-custom.lisp:49
+#: scm/generic-custom.lisp:55 scm/generic-custom.lisp:61
+#: scm/generic-key-custom.lisp:37 scm/generic-key-custom.lisp:41
+#: scm/im-custom.lisp:47 scm/im-custom.lisp:51 scm/im-custom.lisp:56
+#: scm/im-custom.lisp:61 scm/im-custom.lisp:66 scm/im-custom.lisp:71
+#: scm/im-custom.lisp:76 scm/im-custom.lisp:81 scm/im-custom.lisp:86
+#: scm/im-custom.lisp:91 scm/im-custom.lisp:96 scm/im-custom.lisp:101
+#: scm/im-custom.lisp:106 scm/im-custom.lisp:117 scm/im-custom.lisp:127
+#: scm/im-custom.lisp:229 scm/im-custom.lisp:286 scm/im-custom.lisp:292
+#: scm/im-custom.lisp:298 scm/im-custom.lisp:306 scm/im-custom.lisp:326
+#: scm/im-custom.lisp:342 scm/im-custom.lisp:348 scm/im-custom.lisp:355
+#: scm/im-custom.lisp:361 scm/im-custom.lisp:367 scm/im-custom.lisp:373
+#: scm/im-custom.lisp:379 scm/im-custom.lisp:385 scm/im-custom.lisp:391
+#: scm/im-custom.lisp:404 scm/im-custom.lisp:410 scm/im-custom.lisp:417
+#: scm/im-custom.lisp:423 scm/im-custom.lisp:427 scm/im-custom.lisp:433
+#: scm/im-custom.lisp:439 scm/mana-custom.lisp:51 scm/mana-custom.lisp:57
+#: scm/mana-custom.lisp:72 scm/mana-custom.lisp:78 scm/mana-custom.lisp:84
+#: scm/mana-custom.lisp:90 scm/mana-custom.lisp:173 scm/mana-custom.lisp:192
+#: scm/mana-custom.lisp:201 scm/mana-custom.lisp:243 scm/mana-custom.lisp:252
+#: scm/mana-custom.lisp:290 scm/mana-key-custom.lisp:37
+#: scm/mana-key-custom.lisp:41 scm/mana-key-custom.lisp:45
+#: scm/prime-custom.lisp:55 scm/prime-custom.lisp:61 scm/prime-custom.lisp:69
+#: scm/prime-custom.lisp:75 scm/prime-custom.lisp:93 scm/prime-custom.lisp:99
+#: scm/prime-custom.lisp:106 scm/prime-custom.lisp:113
+#: scm/prime-custom.lisp:121 scm/prime-custom.lisp:129
+#: scm/prime-custom.lisp:135 scm/prime-custom.lisp:141
+#: scm/prime-key-custom.lisp:61 scm/prime-key-custom.lisp:65
+#: scm/prime-key-custom.lisp:69 scm/skk-custom.lisp:59 scm/skk-custom.lisp:65
+#: scm/skk-custom.lisp:73 scm/skk-custom.lisp:79 scm/skk-custom.lisp:85
+#: scm/skk-custom.lisp:91 scm/skk-custom.lisp:217 scm/skk-custom.lisp:236
+#: scm/skk-custom.lisp:245 scm/skk-custom.lisp:276 scm/skk-custom.lisp:285
+#: scm/skk-custom.lisp:328 scm/skk-custom.lisp:334 scm/skk-custom.lisp:346
+#: scm/skk-custom.lisp:353 scm/skk-custom.lisp:360 scm/skk-custom.lisp:372
+#: scm/skk-custom.lisp:378 scm/skk-custom.lisp:384 scm/skk-custom.lisp:390
+#: scm/skk-custom.lisp:396 scm/skk-custom.lisp:406 scm/skk-custom.lisp:412
+#: scm/skk-custom.lisp:433 scm/skk-custom.lisp:439 scm/skk-custom.lisp:446
+#: scm/skk-key-custom.lisp:65 scm/skk-key-custom.lisp:69
+#: scm/skk-key-custom.lisp:73 scm/skk-key-custom.lisp:78
+#: scm/skk-key-custom.lisp:82 scm/skk-key-custom.lisp:86
 #: scm/spellcheck-custom.lisp:48 scm/spellcheck-custom.lisp:54
 #: scm/spellcheck-custom.lisp:60 scm/spellcheck-custom.lisp:66
 #: scm/tutcode-key-custom.lisp:66 scm/tutcode-key-custom.lisp:70
@@ -881,14 +882,14 @@ msgstr ""
 #: scm/anthy-key-custom.lisp:206 scm/anthy-key-custom.lisp:212
 #: scm/anthy-key-custom.lisp:218 scm/anthy-key-custom.lisp:224
 #: scm/anthy-key-custom.lisp:230 scm/anthy-key-custom.lisp:236
-#: scm/anthy-key-custom.lisp:242 scm/byeoru-key-custom.lisp:45
-#: scm/byeoru-key-custom.lisp:51 scm/byeoru-key-custom.lisp:57
-#: scm/byeoru-key-custom.lisp:63 scm/byeoru-key-custom.lisp:69
-#: scm/byeoru-key-custom.lisp:75 scm/byeoru-key-custom.lisp:81
-#: scm/byeoru-key-custom.lisp:87 scm/byeoru-key-custom.lisp:93
-#: scm/byeoru-key-custom.lisp:99 scm/byeoru-key-custom.lisp:105
-#: scm/byeoru-key-custom.lisp:111 scm/byeoru-key-custom.lisp:117
-#: scm/byeoru-key-custom.lisp:123 scm/byeoru-key-custom.lisp:129
+#: scm/anthy-key-custom.lisp:242 scm/byeoru-key-custom.lisp:50
+#: scm/byeoru-key-custom.lisp:56 scm/byeoru-key-custom.lisp:62
+#: scm/byeoru-key-custom.lisp:68 scm/byeoru-key-custom.lisp:74
+#: scm/byeoru-key-custom.lisp:80 scm/byeoru-key-custom.lisp:86
+#: scm/byeoru-key-custom.lisp:92 scm/byeoru-key-custom.lisp:98
+#: scm/byeoru-key-custom.lisp:104 scm/byeoru-key-custom.lisp:110
+#: scm/byeoru-key-custom.lisp:116 scm/byeoru-key-custom.lisp:122
+#: scm/byeoru-key-custom.lisp:128 scm/byeoru-key-custom.lisp:134
 #: scm/canna-key-custom.lisp:52 scm/canna-key-custom.lisp:58
 #: scm/canna-key-custom.lisp:64 scm/canna-key-custom.lisp:70
 #: scm/canna-key-custom.lisp:76 scm/canna-key-custom.lisp:82
@@ -939,24 +940,23 @@ msgstr ""
 #: scm/prime-key-custom.lisp:178 scm/prime-key-custom.lisp:184
 #: scm/prime-key-custom.lisp:190 scm/prime-key-custom.lisp:196
 #: scm/prime-key-custom.lisp:202 scm/prime-key-custom.lisp:208
-#: scm/skk-key-custom.lisp:89 scm/skk-key-custom.lisp:95
-#: scm/skk-key-custom.lisp:101 scm/skk-key-custom.lisp:107
-#: scm/skk-key-custom.lisp:113 scm/skk-key-custom.lisp:119
-#: scm/skk-key-custom.lisp:125 scm/skk-key-custom.lisp:131
-#: scm/skk-key-custom.lisp:137 scm/skk-key-custom.lisp:147
-#: scm/skk-key-custom.lisp:153 scm/skk-key-custom.lisp:159
-#: scm/skk-key-custom.lisp:165 scm/skk-key-custom.lisp:171
-#: scm/skk-key-custom.lisp:177 scm/skk-key-custom.lisp:183
-#: scm/skk-key-custom.lisp:189 scm/skk-key-custom.lisp:195
-#: scm/skk-key-custom.lisp:201 scm/skk-key-custom.lisp:207
-#: scm/skk-key-custom.lisp:213 scm/skk-key-custom.lisp:219
-#: scm/skk-key-custom.lisp:225 scm/skk-key-custom.lisp:243
-#: scm/skk-key-custom.lisp:249 scm/skk-key-custom.lisp:255
-#: scm/skk-key-custom.lisp:261 scm/skk-key-custom.lisp:267
-#: scm/skk-key-custom.lisp:273 scm/skk-key-custom.lisp:279
-#: scm/spellcheck-custom.lisp:72 scm/tutcode-key-custom.lisp:76
-#: scm/tutcode-key-custom.lisp:82 scm/tutcode-key-custom.lisp:88
-#: scm/tutcode-key-custom.lisp:95
+#: scm/skk-key-custom.lisp:93 scm/skk-key-custom.lisp:99
+#: scm/skk-key-custom.lisp:105 scm/skk-key-custom.lisp:111
+#: scm/skk-key-custom.lisp:117 scm/skk-key-custom.lisp:123
+#: scm/skk-key-custom.lisp:129 scm/skk-key-custom.lisp:135
+#: scm/skk-key-custom.lisp:141 scm/skk-key-custom.lisp:151
+#: scm/skk-key-custom.lisp:157 scm/skk-key-custom.lisp:163
+#: scm/skk-key-custom.lisp:169 scm/skk-key-custom.lisp:175
+#: scm/skk-key-custom.lisp:181 scm/skk-key-custom.lisp:187
+#: scm/skk-key-custom.lisp:193 scm/skk-key-custom.lisp:199
+#: scm/skk-key-custom.lisp:205 scm/skk-key-custom.lisp:211
+#: scm/skk-key-custom.lisp:217 scm/skk-key-custom.lisp:229
+#: scm/skk-key-custom.lisp:247 scm/skk-key-custom.lisp:253
+#: scm/skk-key-custom.lisp:259 scm/skk-key-custom.lisp:265
+#: scm/skk-key-custom.lisp:271 scm/skk-key-custom.lisp:277
+#: scm/skk-key-custom.lisp:283 scm/spellcheck-custom.lisp:72
+#: scm/tutcode-key-custom.lisp:76 scm/tutcode-key-custom.lisp:82
+#: scm/tutcode-key-custom.lisp:88 scm/tutcode-key-custom.lisp:95
 msgid "long description will be here"
 msgstr ""
 
@@ -1213,66 +1213,70 @@ msgid "Represent incomplete syllables using compatibility jamos"
 msgstr ""
 
 #: scm/byeoru-key-custom.lisp:38
-msgid "Byeoru key bindings"
+msgid "Byeoru key bindings 1"
 msgstr ""
 
-#: scm/byeoru-key-custom.lisp:44
+#: scm/byeoru-key-custom.lisp:42
+msgid "Byeoru key bindings 2"
+msgstr ""
+
+#: scm/byeoru-key-custom.lisp:49
 msgid "[Byeoru] on"
 msgstr ""
 
-#: scm/byeoru-key-custom.lisp:50
+#: scm/byeoru-key-custom.lisp:55
 msgid "[Byeoru] off"
 msgstr ""
 
-#: scm/byeoru-key-custom.lisp:56
+#: scm/byeoru-key-custom.lisp:61
 msgid "[Byeoru] convert Hangul to Chinese"
 msgstr ""
 
-#: scm/byeoru-key-custom.lisp:62
+#: scm/byeoru-key-custom.lisp:67
 msgid "[Byeoru] confirm conversion"
 msgstr ""
 
-#: scm/byeoru-key-custom.lisp:68
+#: scm/byeoru-key-custom.lisp:73
 msgid "[Byeoru] cancel conversion"
 msgstr ""
 
-#: scm/byeoru-key-custom.lisp:74
+#: scm/byeoru-key-custom.lisp:79
 msgid "[Byeoru] next candidate"
 msgstr ""
 
-#: scm/byeoru-key-custom.lisp:80
+#: scm/byeoru-key-custom.lisp:85
 msgid "[Byeoru] previous candidate"
 msgstr ""
 
-#: scm/byeoru-key-custom.lisp:86
+#: scm/byeoru-key-custom.lisp:91
 msgid "[Byeoru] next page of candidate window"
 msgstr ""
 
-#: scm/byeoru-key-custom.lisp:92
+#: scm/byeoru-key-custom.lisp:97
 msgid "[Byeoru] previous page of candidate window"
 msgstr ""
 
-#: scm/byeoru-key-custom.lisp:98
+#: scm/byeoru-key-custom.lisp:103
 msgid "[Byeoru] backspace"
 msgstr ""
 
-#: scm/byeoru-key-custom.lisp:104
+#: scm/byeoru-key-custom.lisp:109
 msgid "[Byeoru] delete"
 msgstr ""
 
-#: scm/byeoru-key-custom.lisp:110
+#: scm/byeoru-key-custom.lisp:115
 msgid "[Byeoru] go left"
 msgstr ""
 
-#: scm/byeoru-key-custom.lisp:116
+#: scm/byeoru-key-custom.lisp:121
 msgid "[Byeoru] go right"
 msgstr ""
 
-#: scm/byeoru-key-custom.lisp:122
+#: scm/byeoru-key-custom.lisp:127
 msgid "[Byeoru] beginning of word"
 msgstr ""
 
-#: scm/byeoru-key-custom.lisp:128
+#: scm/byeoru-key-custom.lisp:133
 msgid "[Byeoru] end of word"
 msgstr ""
 
@@ -2236,126 +2240,134 @@ msgid "Completion"
 msgstr ""
 
 #: scm/skk-key-custom.lisp:81
+msgid "Dynamic completion"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:85
 msgid "Latin conversion"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:88
+#: scm/skk-key-custom.lisp:92
 msgid "[SKK] on"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:94
+#: scm/skk-key-custom.lisp:98
 msgid "[SKK] latin mode"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:100
+#: scm/skk-key-custom.lisp:104
 msgid "[SKK] wide-latin mode"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:106
+#: scm/skk-key-custom.lisp:110
 msgid "[SKK] kanji mode"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:112
+#: scm/skk-key-custom.lisp:116
 msgid "[SKK] halfwidth katakana mode"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:118
+#: scm/skk-key-custom.lisp:122
 msgid "[SKK] toggle hiragana/katakana mode"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:124
+#: scm/skk-key-custom.lisp:128
 msgid "[SKK] begin conversion"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:130
+#: scm/skk-key-custom.lisp:134
 msgid "[SKK] commit"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:136
+#: scm/skk-key-custom.lisp:140
 msgid "[SKK] cancel"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:146
+#: scm/skk-key-custom.lisp:150
 msgid "[SKK] return"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:152
+#: scm/skk-key-custom.lisp:156
 msgid "[SKK] begin latin conversion"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:158
+#: scm/skk-key-custom.lisp:162
 msgid "[SKK] commit as fullwidth alphanumeric"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:164
+#: scm/skk-key-custom.lisp:168
 msgid "[SKK] commit as opposite case in latin conversion"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:170
+#: scm/skk-key-custom.lisp:174
 msgid "[SKK] begin completion"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:176
+#: scm/skk-key-custom.lisp:180
 msgid "[SKK] next completion candidate"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:182
+#: scm/skk-key-custom.lisp:186
 msgid "[SKK] previous completion candidate"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:188
+#: scm/skk-key-custom.lisp:192
 msgid "[SKK] new completion using current completion"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:194
+#: scm/skk-key-custom.lisp:198
 msgid "[SKK] begin conversion with completion"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:200
+#: scm/skk-key-custom.lisp:204
 msgid "[SKK] commit the first candidate with completion"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:206
-msgid "[SKK] skk-special-midashi-key?"
+#: scm/skk-key-custom.lisp:210
+msgid "[SKK] join prefix or suffix"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:212
+#: scm/skk-key-custom.lisp:216
 msgid "[SKK] ESC keys on vi-cooperative mode"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:218
-msgid "[SKK] skk-state-direct-no-preedit-nop-key?"
+#: scm/skk-key-custom.lisp:222
+msgid "[SKK] no-operation on no-preedit state"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:224
-msgid "[SKK] skk-purge-candidate-key?"
+#: scm/skk-key-custom.lisp:223
+msgid "See [Anthy-dev 1616] and related messages for further information"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:242
+#: scm/skk-key-custom.lisp:228
+msgid "[SKK] purge the entry from dictionary"
+msgstr ""
+
+#: scm/skk-key-custom.lisp:246
 msgid "[SKK] next candidate"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:248
+#: scm/skk-key-custom.lisp:252
 msgid "[SKK] previous candidate"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:254
+#: scm/skk-key-custom.lisp:258
 msgid "[SKK] next page of candidate window"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:260
+#: scm/skk-key-custom.lisp:264
 msgid "[SKK] previous page of candidate window"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:266
+#: scm/skk-key-custom.lisp:270
 msgid "[SKK] backspace"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:272
+#: scm/skk-key-custom.lisp:276
 msgid "[SKK] go left"
 msgstr ""
 
-#: scm/skk-key-custom.lisp:278
+#: scm/skk-key-custom.lisp:282
 msgid "[SKK] go right"
 msgstr ""
 
