@@ -40,6 +40,9 @@ Overview of changes from 0.4.9.1 to 1.0.0
     - PRIME
       - proper custom setting (YamaKen)
 
+    - uim-im-switcher-qt
+      - show list of IM properly (Etsushi)
+
 * Others
   o obsolete table API
   o translations
