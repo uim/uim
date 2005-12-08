@@ -43,6 +43,7 @@
 #include <qlayout.h>
 #include <qsizepolicy.h>
 
+#include <stdlib.h>
 #include <locale.h>
 
 #include "uim/config.h"
@@ -59,6 +60,8 @@ int main( int argc, char **argv )
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);
     bind_textdomain_codeset(PACKAGE, "UTF-8"); // ensure code encoding is UTF8-
+
+    setenv("XMODIFIERS", "@im=none", 1);
     
     QApplication a( argc, argv );
 
