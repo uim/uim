@@ -7,4 +7,4 @@ Exec=uim-pref-gtk
 Icon=@uim_pixmapsdir@/uim-icon.png
 Terminal=false
 MimeType=text/plain
-Categories=Settings
+Categories=Settings;
