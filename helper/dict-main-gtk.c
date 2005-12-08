@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2004,2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -114,7 +114,7 @@ get_error_msg(void)
 static void
 parse_arg(int argc, char *argv[])
 {
-  int ch, option_index;
+  int ch;
 
   ae_mode = MODE_EDIT;
 

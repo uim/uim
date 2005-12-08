@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2004,2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -31,6 +31,7 @@
 
 */
 
+#include <stdlib.h>
 #include <gdk/gdkkeysyms.h>
 #include "uim/config.h"
 #include "uim/gettext.h"
