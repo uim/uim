@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-08 16:24+0900\n"
+"POT-Creation-Date: 2005-12-08 22:27+0900\n"
 "PO-Revision-Date: 2005-12-07 22:31+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -37,7 +37,7 @@ msgid "uim applet for the GNOME2 panel"
 msgstr "GNOME 패널용 uim 애플릿"
 
 #: helper/dict-anthy.c:77 helper/dict-main-gtk.c:161
-#: helper/dict-word-list-win-gtk.c:255
+#: helper/dict-word-list-win-gtk.c:271
 msgid "Anthy private dictionary"
 msgstr ""
 
@@ -51,7 +51,7 @@ msgstr ""
 msgid "Example"
 msgstr ""
 
-#: helper/dict-main-gtk.c:224
+#: helper/dict-main-gtk.c:226
 #, c-format
 msgid "Error:%s\n"
 msgstr ""
@@ -158,40 +158,44 @@ msgstr ""
 msgid "_About"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:100 helper/dict-word-list-win-gtk.c:479
+#: helper/dict-word-list-win-gtk.c:100 helper/dict-word-list-win-gtk.c:499
 msgid "About uim-dict"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:209
+#: helper/dict-word-list-win-gtk.c:204
+msgid "Couldn't open a library for manipulating the dictionary.\n"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:225
 msgid "Edit the dictionary"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:259
+#: helper/dict-word-list-win-gtk.c:279
 #, c-format
 msgid "%s"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:373
+#: helper/dict-word-list-win-gtk.c:393
 msgid "Are you sure to remove seleted words?"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:379
+#: helper/dict-word-list-win-gtk.c:399
 msgid "Are you sure to remove the selected word?"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:407
+#: helper/dict-word-list-win-gtk.c:427
 msgid "Word deletion succeded."
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:413
+#: helper/dict-word-list-win-gtk.c:433
 msgid "Word deletion failed."
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:472
+#: helper/dict-word-list-win-gtk.c:492
 msgid "<span size=\"20000\">uim-dict "
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:472
+#: helper/dict-word-list-win-gtk.c:492
 msgid ""
 "</span>\n"
 "\n"
@@ -300,36 +304,36 @@ msgstr ""
 msgid "Part of speech is emtpy!"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:274 qt/switcher-qt.cpp:99
+#: helper/im-switcher-gtk.c:274 qt/switcher-qt.cpp:102
 msgid "InputMethodName"
 msgstr "입력기 이름"
 
-#: helper/im-switcher-gtk.c:283 qt/switcher-qt.cpp:100
+#: helper/im-switcher-gtk.c:283 qt/switcher-qt.cpp:103
 msgid "Language"
 msgstr "언어"
 
-#: helper/im-switcher-gtk.c:292 qt/switcher-qt.cpp:101
+#: helper/im-switcher-gtk.c:292 qt/switcher-qt.cpp:104
 msgid "Description"
 msgstr "설명"
 
-#: helper/im-switcher-gtk.c:323 qt/switcher-qt.cpp:67
+#: helper/im-switcher-gtk.c:323 qt/switcher-qt.cpp:70
 msgid "uim input method switcher"
 msgstr "uim 입력기 전환"
 
-#: helper/im-switcher-gtk.c:352 qt/switcher-qt.cpp:105
+#: helper/im-switcher-gtk.c:352 qt/switcher-qt.cpp:108
 msgid "Changing way"
 msgstr "바뀌는 범위"
 
-#: helper/im-switcher-gtk.c:360 qt/switcher-qt.cpp:106
+#: helper/im-switcher-gtk.c:360 qt/switcher-qt.cpp:109
 msgid "Change whole desktop"
 msgstr "데스크탑 전체"
 
 #. default is "Change whole desktop"
-#: helper/im-switcher-gtk.c:361 qt/switcher-qt.cpp:109
+#: helper/im-switcher-gtk.c:361 qt/switcher-qt.cpp:112
 msgid "Change this application only"
 msgstr "이 응용프로그램만"
 
-#: helper/im-switcher-gtk.c:362 qt/switcher-qt.cpp:111
+#: helper/im-switcher-gtk.c:362 qt/switcher-qt.cpp:114
 msgid "Change this text area only"
 msgstr "이 텍스트영역만"
 
@@ -571,11 +575,11 @@ msgid "Defaults"
 msgstr "디폴트"
 
 #: qt/pref-qt.cpp:159 qt/pref-qt.cpp:237 qt/pref-qt.cpp:319
-#: qt/switcher-qt.cpp:116
+#: qt/switcher-qt.cpp:119
 msgid "OK"
 msgstr "확인"
 
-#: qt/pref-qt.cpp:166 qt/pref-qt.cpp:238 qt/switcher-qt.cpp:121
+#: qt/pref-qt.cpp:166 qt/pref-qt.cpp:238 qt/switcher-qt.cpp:124
 msgid "Cancel"
 msgstr "취소"
 
@@ -855,7 +859,8 @@ msgstr ""
 msgid "Kana input method menu items"
 msgstr ""
 
-#: scm/anthy-custom.lisp:289 scm/skk-custom.lisp:432
+#: scm/anthy-custom.lisp:289 scm/canna-custom.lisp:363
+#: scm/mana-custom.lisp:289 scm/prime-custom.lisp:134 scm/skk-custom.lisp:432
 msgid "Enable vi-cooperative mode"
 msgstr ""
 
@@ -1302,11 +1307,6 @@ msgstr ""
 msgid "Canna server name"
 msgstr ""
 
-#: scm/canna-custom.lisp:363 scm/mana-custom.lisp:289
-#: scm/prime-custom.lisp:134
-msgid "Friendly for vi user"
-msgstr ""
-
 #: scm/canna-key-custom.lisp:36
 msgid "Canna key bindings 1"
 msgstr ""
@@ -1702,28 +1702,34 @@ msgid "Enable lazy input method loading for fast startup"
 msgstr "빨리 시작하기 위해서 입력기 로드를 늦춤"
 
 #: scm/im-custom.lisp:354
-msgid "Show input method switcher button on toolbar"
-msgstr "입력기 전환 버튼을 표시"
+#, fuzzy
+msgid "input method switcher"
+msgstr "uim 입력기 전환"
 
 #: scm/im-custom.lisp:360
-msgid "Show uim preference tool button on toolbar"
-msgstr "설정 도구 버튼을 표시"
+#, fuzzy
+msgid "preference tool"
+msgstr "설정"
 
 #: scm/im-custom.lisp:366
-msgid "Show uim Japanese dictionary tool button on toolbar"
-msgstr "일본어 사전 도구를 표시"
+#, fuzzy
+msgid "Japanese dictionary tool"
+msgstr "일본어 사전 도구"
 
 #: scm/im-custom.lisp:372
-msgid "Show uim input pad button on toolbar"
-msgstr "입력 패드 버튼을 표시"
+#, fuzzy
+msgid "input pad"
+msgstr "입력 패드"
 
 #: scm/im-custom.lisp:378
-msgid "Show uim handwriting-input pad button on toolbar"
-msgstr "손글씨 입력 패드 버튼을 표시"
+#, fuzzy
+msgid "handwriting-input pad"
+msgstr "손글씨 입력 패드"
 
 #: scm/im-custom.lisp:384
-msgid "Show uim help button on toolbar"
-msgstr "도움말 버튼을 표시"
+#, fuzzy
+msgid "help"
+msgstr "도움말"
 
 #: scm/im-custom.lisp:390
 msgid "Show input mode nearby cursor"
@@ -1738,7 +1744,7 @@ msgid "Set 0 to show indicator always."
 msgstr "입력 모드를 항상 표시하려면 0으로 두십시오."
 
 #: scm/im-custom.lisp:403
-msgid "EB library settings"
+msgid "EB library"
 msgstr ""
 
 #: scm/im-custom.lisp:409
@@ -1750,7 +1756,7 @@ msgid "The directory which contains EB dictionary file"
 msgstr ""
 
 #: scm/im-custom.lisp:422
-msgid "XIM settings"
+msgid "XIM"
 msgstr ""
 
 #: scm/im-custom.lisp:426
@@ -1774,7 +1780,7 @@ msgid "Latin characters"
 msgstr ""
 
 #: scm/latin.lisp:721
-msgid "Latin characters mainly used for Latin and German languages"
+msgid "Latin characters mainly used for Latin and Germanic languages"
 msgstr ""
 
 #: scm/m17nlib.lisp:338
@@ -1971,7 +1977,7 @@ msgid "Space character"
 msgstr ""
 
 #: scm/prime-custom.lisp:74
-msgid "Use Unix Domain Socket to communicate with PRIME"
+msgid "Use UNIX domain socket to communicate with PRIME"
 msgstr ""
 
 #: scm/prime-custom.lisp:98 scm/spellcheck-custom.lisp:65
@@ -3053,3 +3059,21 @@ msgstr ""
 #: uim/iso-639-1.def:185
 msgid "Zulu"
 msgstr ""
+
+#~ msgid "Show input method switcher button on toolbar"
+#~ msgstr "입력기 전환 버튼을 표시"
+
+#~ msgid "Show uim preference tool button on toolbar"
+#~ msgstr "설정 도구 버튼을 표시"
+
+#~ msgid "Show uim Japanese dictionary tool button on toolbar"
+#~ msgstr "일본어 사전 도구를 표시"
+
+#~ msgid "Show uim input pad button on toolbar"
+#~ msgstr "입력 패드 버튼을 표시"
+
+#~ msgid "Show uim handwriting-input pad button on toolbar"
+#~ msgstr "손글씨 입력 패드 버튼을 표시"
+
+#~ msgid "Show uim help button on toolbar"
+#~ msgstr "도움말 버튼을 표시"

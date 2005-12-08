@@ -42,6 +42,7 @@
 # 日本語訳に使用する用語 (適宜追加お願いします):
 #
 # Uim, UIM     → uim
+# Unix, unix   → UNIX
 # Unicode      → ユニコード
 # International Phonetic Alphabet (IPA) → 国際音声記号
 # Emacs        → Emacs (固有名詞として)
@@ -87,7 +88,7 @@
 #                           には入れる)
 # beol         → ボル
 # beol-sik     → ボル式
-# pinyin       → ピンイン (「拼音」等は認知度が低いので外来語としてカタカナ表記)
+# pinyin       → ピンイン (「音」等は認知度が低いので外来語としてカタカナ表記)
 # Chinese      → 中国語 (「中文」は一般に知られていない外国語なので避ける)
 # traditional Chinese → 繁体字(中国語)
 # simplified Chinese  → 簡体字(中国語)
@@ -96,8 +97,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-08 16:24+0900\n"
-"PO-Revision-Date: 2005-12-08 01:41+0900\n"
+"POT-Creation-Date: 2005-12-08 22:27+0900\n"
+"PO-Revision-Date: 2005-12-08 02:48+0900\n"
 "Last-Translator: Daichi Kawahata <daichik@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -125,7 +126,7 @@ msgid "uim applet for the GNOME2 panel"
 msgstr "GNOMEパネル用のuimアプレット"
 
 #: helper/dict-anthy.c:77 helper/dict-main-gtk.c:161
-#: helper/dict-word-list-win-gtk.c:255
+#: helper/dict-word-list-win-gtk.c:271
 msgid "Anthy private dictionary"
 msgstr "Anthy個人辞書"
 
@@ -139,7 +140,7 @@ msgstr "品詞"
 msgid "Example"
 msgstr "例"
 
-#: helper/dict-main-gtk.c:224
+#: helper/dict-main-gtk.c:226
 #, c-format
 msgid "Error:%s\n"
 msgstr "エラー: %s\n"
@@ -248,40 +249,44 @@ msgstr "ポップアップ・メニューを表示します"
 msgid "_About"
 msgstr "このプログラムについて(_A)"
 
-#: helper/dict-word-list-win-gtk.c:100 helper/dict-word-list-win-gtk.c:479
+#: helper/dict-word-list-win-gtk.c:100 helper/dict-word-list-win-gtk.c:499
 msgid "About uim-dict"
 msgstr "uim-dict について"
 
-#: helper/dict-word-list-win-gtk.c:209
+#: helper/dict-word-list-win-gtk.c:204
+msgid "Couldn't open a library for manipulating the dictionary.\n"
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:225
 msgid "Edit the dictionary"
 msgstr "辞書を編集します"
 
-#: helper/dict-word-list-win-gtk.c:259
+#: helper/dict-word-list-win-gtk.c:279
 #, c-format
 msgid "%s"
 msgstr "%s"
 
-#: helper/dict-word-list-win-gtk.c:373
+#: helper/dict-word-list-win-gtk.c:393
 msgid "Are you sure to remove seleted words?"
 msgstr "選択した複数の単語を削除してもよろしいですか？"
 
-#: helper/dict-word-list-win-gtk.c:379
+#: helper/dict-word-list-win-gtk.c:399
 msgid "Are you sure to remove the selected word?"
 msgstr "選択した単語を削除してもよろしいですか？"
 
-#: helper/dict-word-list-win-gtk.c:407
+#: helper/dict-word-list-win-gtk.c:427
 msgid "Word deletion succeded."
 msgstr "単語の削除に成功しました。"
 
-#: helper/dict-word-list-win-gtk.c:413
+#: helper/dict-word-list-win-gtk.c:433
 msgid "Word deletion failed."
 msgstr "単語の削除に失敗しました。"
 
-#: helper/dict-word-list-win-gtk.c:472
+#: helper/dict-word-list-win-gtk.c:492
 msgid "<span size=\"20000\">uim-dict "
 msgstr "<span size=\"20000\">uim-dict "
 
-#: helper/dict-word-list-win-gtk.c:472
+#: helper/dict-word-list-win-gtk.c:492
 msgid ""
 "</span>\n"
 "\n"
@@ -397,36 +402,36 @@ msgstr "書き方が入力されていません！"
 msgid "Part of speech is emtpy!"
 msgstr "品詞が入力されていません！"
 
-#: helper/im-switcher-gtk.c:274 qt/switcher-qt.cpp:99
+#: helper/im-switcher-gtk.c:274 qt/switcher-qt.cpp:102
 msgid "InputMethodName"
 msgstr "入力方式名"
 
-#: helper/im-switcher-gtk.c:283 qt/switcher-qt.cpp:100
+#: helper/im-switcher-gtk.c:283 qt/switcher-qt.cpp:103
 msgid "Language"
 msgstr "言語名"
 
-#: helper/im-switcher-gtk.c:292 qt/switcher-qt.cpp:101
+#: helper/im-switcher-gtk.c:292 qt/switcher-qt.cpp:104
 msgid "Description"
 msgstr "説明"
 
-#: helper/im-switcher-gtk.c:323 qt/switcher-qt.cpp:67
+#: helper/im-switcher-gtk.c:323 qt/switcher-qt.cpp:70
 msgid "uim input method switcher"
 msgstr "uim 入力方式スイッチャー"
 
-#: helper/im-switcher-gtk.c:352 qt/switcher-qt.cpp:105
+#: helper/im-switcher-gtk.c:352 qt/switcher-qt.cpp:108
 msgid "Changing way"
 msgstr "変更の適用範囲"
 
-#: helper/im-switcher-gtk.c:360 qt/switcher-qt.cpp:106
+#: helper/im-switcher-gtk.c:360 qt/switcher-qt.cpp:109
 msgid "Change whole desktop"
 msgstr "デスクトップ全体"
 
 #. default is "Change whole desktop"
-#: helper/im-switcher-gtk.c:361 qt/switcher-qt.cpp:109
+#: helper/im-switcher-gtk.c:361 qt/switcher-qt.cpp:112
 msgid "Change this application only"
 msgstr "このアプリケーションのみ"
 
-#: helper/im-switcher-gtk.c:362 qt/switcher-qt.cpp:111
+#: helper/im-switcher-gtk.c:362 qt/switcher-qt.cpp:114
 msgid "Change this text area only"
 msgstr "このテキスト領域のみ"
 
@@ -670,11 +675,11 @@ msgid "Defaults"
 msgstr "標準"
 
 #: qt/pref-qt.cpp:159 qt/pref-qt.cpp:237 qt/pref-qt.cpp:319
-#: qt/switcher-qt.cpp:116
+#: qt/switcher-qt.cpp:119
 msgid "OK"
 msgstr "OK"
 
-#: qt/pref-qt.cpp:166 qt/pref-qt.cpp:238 qt/switcher-qt.cpp:121
+#: qt/pref-qt.cpp:166 qt/pref-qt.cpp:238 qt/switcher-qt.cpp:124
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -935,7 +940,7 @@ msgstr "かな入力方式"
 #: scm/anthy-custom.lisp:172 scm/canna-custom.lisp:172
 #: scm/mana-custom.lisp:172 scm/skk-custom.lisp:216
 msgid "Enabled toolbar buttons"
-msgstr "有効にするツールバーボタン"
+msgstr "有効にするボタン"
 
 #: scm/anthy-custom.lisp:191 scm/canna-custom.lisp:191
 #: scm/mana-custom.lisp:191 scm/skk-custom.lisp:235
@@ -957,7 +962,8 @@ msgstr "標準のかな入力方式"
 msgid "Kana input method menu items"
 msgstr "かな入力方式のメニュー項目"
 
-#: scm/anthy-custom.lisp:289 scm/skk-custom.lisp:432
+#: scm/anthy-custom.lisp:289 scm/canna-custom.lisp:363
+#: scm/mana-custom.lisp:289 scm/prime-custom.lisp:134 scm/skk-custom.lisp:432
 msgid "Enable vi-cooperative mode"
 msgstr "vi協調モードを有効にする"
 
@@ -1280,7 +1286,7 @@ msgstr "プロパティ"
 
 #: scm/byeoru-custom.lisp:88
 msgid "Workarounds"
-msgstr "一時措置"
+msgstr "その他"
 
 #: scm/byeoru-custom.lisp:103
 msgid "Hangul keyboard layout"
@@ -1300,7 +1306,7 @@ msgstr "さらに順序なし"
 
 #: scm/byeoru-custom.lisp:118
 msgid "Jamo input is"
-msgstr "字母入力: "
+msgstr "字母入力"
 
 #: scm/byeoru-custom.lisp:130
 msgid "ESC turns off Hangul mode (for vi users)"
@@ -1405,11 +1411,6 @@ msgstr "Cannaサーバを使用する"
 #: scm/canna-custom.lisp:306
 msgid "Canna server name"
 msgstr "Cannaサーバ名"
-
-#: scm/canna-custom.lisp:363 scm/mana-custom.lisp:289
-#: scm/prime-custom.lisp:134
-msgid "Friendly for vi user"
-msgstr "vi協調モードを有効にする"
 
 #: scm/canna-key-custom.lisp:36
 msgid "Canna key bindings 1"
@@ -1810,28 +1811,34 @@ msgid "Enable lazy input method loading for fast startup"
 msgstr "高速起動のための遅延ローディングを有効にする"
 
 #: scm/im-custom.lisp:354
-msgid "Show input method switcher button on toolbar"
-msgstr "入力方式の切り換えボタンを表示"
+#, fuzzy
+msgid "input method switcher"
+msgstr "uim 入力方式スイッチャー"
 
 #: scm/im-custom.lisp:360
-msgid "Show uim preference tool button on toolbar"
-msgstr "設定ツールボタンを表示"
+#, fuzzy
+msgid "preference tool"
+msgstr "設定"
 
 #: scm/im-custom.lisp:366
-msgid "Show uim Japanese dictionary tool button on toolbar"
-msgstr "日本語辞書ツールボタンを表示"
+#, fuzzy
+msgid "Japanese dictionary tool"
+msgstr "日本語辞書ツール"
 
 #: scm/im-custom.lisp:372
-msgid "Show uim input pad button on toolbar"
-msgstr "入力パッドボタンを表示"
+#, fuzzy
+msgid "input pad"
+msgstr "入力パッド"
 
 #: scm/im-custom.lisp:378
-msgid "Show uim handwriting-input pad button on toolbar"
-msgstr "手書き入力パッドボタンを表示"
+#, fuzzy
+msgid "handwriting-input pad"
+msgstr "手書き入力パッド"
 
 #: scm/im-custom.lisp:384
-msgid "Show uim help button on toolbar"
-msgstr "ヘルプボタンを表示"
+#, fuzzy
+msgid "help"
+msgstr "ヘルプ"
 
 #: scm/im-custom.lisp:390
 msgid "Show input mode nearby cursor"
@@ -1846,7 +1853,8 @@ msgid "Set 0 to show indicator always."
 msgstr "常にインジケーターを表示するなら 0 にして下さい。"
 
 #: scm/im-custom.lisp:403
-msgid "EB library settings"
+#, fuzzy
+msgid "EB library"
 msgstr "EBライブラリ"
 
 #: scm/im-custom.lisp:409
@@ -1858,8 +1866,8 @@ msgid "The directory which contains EB dictionary file"
 msgstr "EB辞書ファイルを格納しているディレクトリ"
 
 #: scm/im-custom.lisp:422
-msgid "XIM settings"
-msgstr "XIM"
+msgid "XIM"
+msgstr ""
 
 #: scm/im-custom.lisp:426
 msgid "Preedit settings of XIM"
@@ -1882,7 +1890,8 @@ msgid "Latin characters"
 msgstr "ラテン文字"
 
 #: scm/latin.lisp:721
-msgid "Latin characters mainly used for Latin and German languages"
+#, fuzzy
+msgid "Latin characters mainly used for Latin and Germanic languages"
 msgstr "主にラテン・ゲルマン諸語で使われるラテン文字入力方式"
 
 #: scm/m17nlib.lisp:338
@@ -2079,8 +2088,9 @@ msgid "Space character"
 msgstr "空白文字"
 
 #: scm/prime-custom.lisp:74
-msgid "Use Unix Domain Socket to communicate with PRIME"
-msgstr "PRIME と通信するのに Unix ドメイン・ソケットを使用する"
+#, fuzzy
+msgid "Use UNIX domain socket to communicate with PRIME"
+msgstr "PRIMEとの通信にUNIXドメインソケットを使用する"
 
 #: scm/prime-custom.lisp:98 scm/spellcheck-custom.lisp:65
 msgid "Always showing candidate window"
@@ -2088,7 +2098,7 @@ msgstr "常に候補ウィンドウを表示する"
 
 #: scm/prime-custom.lisp:105
 msgid "Show usage examples of candidate words"
-msgstr "候補単語の使用例を表示"
+msgstr "候補単語の用例を表示"
 
 #: scm/prime-custom.lisp:112
 msgid "Show candidate annotations"
@@ -3164,3 +3174,27 @@ msgstr "ヨルバ語"
 #: uim/iso-639-1.def:185
 msgid "Zulu"
 msgstr "ズール語"
+
+#~ msgid "Friendly for vi user"
+#~ msgstr "vi協調モードを有効にする"
+
+#~ msgid "Show input method switcher button on toolbar"
+#~ msgstr "入力方式の切り換え"
+
+#~ msgid "Show uim preference tool button on toolbar"
+#~ msgstr "設定ツール"
+
+#~ msgid "Show uim Japanese dictionary tool button on toolbar"
+#~ msgstr "日本語辞書ツール"
+
+#~ msgid "Show uim input pad button on toolbar"
+#~ msgstr "入力パッド"
+
+#~ msgid "Show uim handwriting-input pad button on toolbar"
+#~ msgstr "手書き入力パッド"
+
+#~ msgid "Show uim help button on toolbar"
+#~ msgstr "ヘルプ"
+
+#~ msgid "XIM settings"
+#~ msgstr "XIM"
