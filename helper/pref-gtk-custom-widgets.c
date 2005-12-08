@@ -377,6 +377,7 @@ add_custom_type_string(GtkWidget *vbox, struct uim_custom *custom)
 
 
 
+/* FIXME: make pathname widget activity-sensitive */
 static void
 custom_pathname_button_clicked_cb(GtkWidget *button, GtkWidget *entry)
 {

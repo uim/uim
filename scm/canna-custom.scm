@@ -104,6 +104,10 @@
 		 (lambda ()
 		   canna-use-candidate-window?))
 
+(custom-add-hook 'canna-select-candidate-by-numeral-key?
+		 'custom-activity-hooks
+		 (lambda ()
+		   canna-use-candidate-window?))
 
 ;;
 ;; toolbar
