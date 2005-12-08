@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-09 00:22+0900\n"
+"POT-Creation-Date: 2005-12-09 04:59+0900\n"
 "PO-Revision-Date: 2005-02-21 15:52+0100\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -35,18 +35,18 @@ msgstr ""
 msgid "uim applet for the GNOME2 panel"
 msgstr ""
 
-#: helper/dict-anthy.c:77 helper/dict-main-gtk.c:161
-#: helper/dict-word-list-win-gtk.c:271
+#: helper/dict-anthy.c:78 helper/dict-main-gtk.c:161
+#: helper/dict-word-list-win-gtk.c:272
 msgid "Anthy private dictionary"
 msgstr ""
 
 #. construct dialog
-#: helper/dict-cclass-dialog.c:66 helper/dict-cclass-dialog.c:103
-#: helper/dict-word-list-view-gtk.c:263
+#: helper/dict-cclass-dialog.c:67 helper/dict-cclass-dialog.c:104
+#: helper/dict-word-list-view-gtk.c:264
 msgid "Part of Speech"
 msgstr ""
 
-#: helper/dict-cclass-dialog.c:112
+#: helper/dict-cclass-dialog.c:113
 msgid "Example"
 msgstr "Exemple"
 
@@ -55,146 +55,146 @@ msgstr "Exemple"
 msgid "Error:%s\n"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:129
-msgid "Show conjection class code column"
+#: helper/dict-word-list-view-gtk.c:130
+msgid "Show part of speech column"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:130 helper/dict-word-list-view-gtk.c:139
-#: helper/dict-word-list-view-gtk.c:147 helper/dict-word-list-view-gtk.c:154
-#: helper/dict-word-list-view-gtk.c:162 helper/dict-word-list-view-gtk.c:163
+#: helper/dict-word-list-view-gtk.c:131 helper/dict-word-list-view-gtk.c:140
+#: helper/dict-word-list-view-gtk.c:148 helper/dict-word-list-view-gtk.c:155
+#: helper/dict-word-list-view-gtk.c:163 helper/dict-word-list-view-gtk.c:164
 msgid "to be written"
 msgstr "à écrire"
 
-#: helper/dict-word-list-view-gtk.c:138
+#: helper/dict-word-list-view-gtk.c:139
 msgid "Show freq column"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:146
+#: helper/dict-word-list-view-gtk.c:147
 msgid "Show okuri column"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:155
+#: helper/dict-word-list-view-gtk.c:156
 msgid "to be written "
 msgstr "à écrire"
 
-#: helper/dict-word-list-view-gtk.c:199
+#: helper/dict-word-list-view-gtk.c:200
 msgid "Word Type"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:217
+#: helper/dict-word-list-view-gtk.c:218
 msgid "Phonetic"
 msgstr "Phonétique"
 
-#: helper/dict-word-list-view-gtk.c:247
+#: helper/dict-word-list-view-gtk.c:248
 msgid "Literal"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:279
+#: helper/dict-word-list-view-gtk.c:280
 msgid "Frequency"
 msgstr "Fréquence"
 
-#: helper/dict-word-list-view-gtk.c:290
+#: helper/dict-word-list-view-gtk.c:291
 msgid "Okuri"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:85
+#: helper/dict-word-list-win-gtk.c:86
 msgid "_File"
 msgstr "_Fichier"
 
-#: helper/dict-word-list-win-gtk.c:86
+#: helper/dict-word-list-win-gtk.c:87
 msgid "_Edit"
 msgstr "_Éditer"
 
-#: helper/dict-word-list-win-gtk.c:87
+#: helper/dict-word-list-win-gtk.c:88
 msgid "_Option"
 msgstr "_Option"
 
-#: helper/dict-word-list-win-gtk.c:88
+#: helper/dict-word-list-win-gtk.c:89
 msgid "_Help"
 msgstr "_Aide"
 
-#: helper/dict-word-list-win-gtk.c:89
+#: helper/dict-word-list-win-gtk.c:90
 msgid "_Quit"
 msgstr "_Quitter"
 
-#: helper/dict-word-list-win-gtk.c:90
+#: helper/dict-word-list-win-gtk.c:91
 msgid "Quit uim-dict"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:91
+#: helper/dict-word-list-win-gtk.c:92
 msgid "A_dd..."
 msgstr "A_jouter ..."
 
-#: helper/dict-word-list-win-gtk.c:92
+#: helper/dict-word-list-win-gtk.c:93
 msgid "Add a new word"
 msgstr "Ajouter un mot nouveau"
 
-#: helper/dict-word-list-win-gtk.c:93
+#: helper/dict-word-list-win-gtk.c:94
 msgid "_Remove..."
 msgstr "_Enlever ..."
 
-#: helper/dict-word-list-win-gtk.c:94
+#: helper/dict-word-list-win-gtk.c:95
 msgid "Remove the selected word"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:95
+#: helper/dict-word-list-win-gtk.c:96
 msgid "_Edit..."
 msgstr "_Éditer ..."
 
-#: helper/dict-word-list-win-gtk.c:96
+#: helper/dict-word-list-win-gtk.c:97
 msgid "Edit the selected word"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:97
+#: helper/dict-word-list-win-gtk.c:98
 msgid "_Popup Menu"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:98
+#: helper/dict-word-list-win-gtk.c:99
 msgid "Show popup menu"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:99
+#: helper/dict-word-list-win-gtk.c:100
 msgid "_About"
 msgstr "_A propos"
 
-#: helper/dict-word-list-win-gtk.c:100 helper/dict-word-list-win-gtk.c:499
+#: helper/dict-word-list-win-gtk.c:101 helper/dict-word-list-win-gtk.c:500
 msgid "About uim-dict"
 msgstr "À propos de uim-dict"
 
-#: helper/dict-word-list-win-gtk.c:204
+#: helper/dict-word-list-win-gtk.c:205
 msgid "Couldn't open a library for manipulating the dictionary.\n"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:225
+#: helper/dict-word-list-win-gtk.c:226
 msgid "Edit the dictionary"
 msgstr "Éditer le dictionnaire"
 
-#: helper/dict-word-list-win-gtk.c:279
+#: helper/dict-word-list-win-gtk.c:280
 #, c-format
 msgid "%s"
 msgstr "%s"
 
-#: helper/dict-word-list-win-gtk.c:393
+#: helper/dict-word-list-win-gtk.c:394
 msgid "Are you sure to remove seleted words?"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:399
+#: helper/dict-word-list-win-gtk.c:400
 msgid "Are you sure to remove the selected word?"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:427
+#: helper/dict-word-list-win-gtk.c:428
 msgid "Word deletion succeded."
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:433
+#: helper/dict-word-list-win-gtk.c:434
 msgid "Word deletion failed."
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:492
+#: helper/dict-word-list-win-gtk.c:493
 msgid "<span size=\"20000\">uim-dict "
 msgstr "<span size=\\\"20000\\\">uim-dict "
 
-#: helper/dict-word-list-win-gtk.c:492
+#: helper/dict-word-list-win-gtk.c:493
 msgid ""
 "</span>\n"
 "\n"
@@ -478,7 +478,7 @@ msgstr ""
 msgid "Quit this application with applying changes"
 msgstr ""
 
-#: helper/pref-gtk.c:530
+#: helper/pref-gtk.c:530 qt/pref-qt.cpp:106
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -543,14 +543,6 @@ msgstr "Édition"
 
 #: qt/pref-customwidgets.cpp:842
 msgid "Key Grab Dialog"
-msgstr ""
-
-#: qt/pref-qt.cpp:106
-msgid ""
-"The user customize file \"~/.uim\" is found.\n"
-"This file will override all conflicted settings set by\n"
-"this tool (stored in ~/.uim.d/customs/*.scm).\n"
-"Please check the file if you find your settings aren't applied"
 msgstr ""
 
 #: qt/pref-qt.cpp:113
@@ -1690,18 +1682,16 @@ msgid "Enable lazy input method loading for fast startup"
 msgstr ""
 
 #: scm/im-custom.lisp:354
-#, fuzzy
 msgid "input method switcher"
-msgstr "Entrées de menu de la méthode d'entrée Kana"
+msgstr ""
 
 #: scm/im-custom.lisp:360
 msgid "preference tool"
 msgstr ""
 
 #: scm/im-custom.lisp:366
-#, fuzzy
 msgid "Japanese dictionary tool"
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: scm/im-custom.lisp:372
 msgid "input pad"
@@ -1712,9 +1702,8 @@ msgid "handwriting-input pad"
 msgstr ""
 
 #: scm/im-custom.lisp:384
-#, fuzzy
 msgid "help"
-msgstr "Aide"
+msgstr "aide"
 
 #: scm/im-custom.lisp:390
 msgid "Show input mode nearby cursor"
@@ -1729,9 +1718,8 @@ msgid "Set 0 to show indicator always."
 msgstr ""
 
 #: scm/im-custom.lisp:403
-#, fuzzy
 msgid "EB library"
-msgstr "Paramètres de la bibliothèque EB"
+msgstr ""
 
 #: scm/im-custom.lisp:409
 msgid "Use EB library to search annotations"
@@ -2243,9 +2231,8 @@ msgid "Completion"
 msgstr "Complètement"
 
 #: scm/skk-key-custom.lisp:81
-#, fuzzy
 msgid "Dynamic completion"
-msgstr "Complètement"
+msgstr ""
 
 #: scm/skk-key-custom.lisp:85
 msgid "Latin conversion"
