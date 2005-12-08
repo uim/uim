@@ -42,4 +42,7 @@ Overview of changes from 0.4.9.1 to 1.0.0
 
 * Others
   o obsolete table API
+  o translations
+    - add ko (Jae-hyeon)
+    - update ja (Daichi Kawahata, YamaKen)
 
