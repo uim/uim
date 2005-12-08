@@ -1,27 +1,28 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# -*- coding: utf-8 -*-
+# Korean translations for uim package.
+# Copyright (C) 2003-2005, uim Developers.
+# This file is distributed under the same license as the uim package.
+# Jae-hyeon Park <jhyeon@gmail.com>, 2005.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: uim\n"
+"Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-12-08 16:24+0900\n"
-"PO-Revision-Date: 2005-02-21 15:52+0100\n"
-"Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
-"Language-Team: fr <LL@li.org>\n"
+"PO-Revision-Date: 2005-12-07 22:31+0900\n"
+"Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
+"Language-Team: Korean <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: helper/GNOME_UimApplet.server.in.in.h:1
 msgid "Utility"
-msgstr "Utilitaire"
+msgstr "유틸리티"
 
 #: helper/GNOME_UimApplet.server.in.in.h:2
 msgid "uim Applet"
-msgstr "Apliquette UIM"
+msgstr "uim 애플릿"
 
 #: helper/GNOME_UimApplet.server.in.in.h:3
 msgid "uim Applet Factory"
@@ -33,7 +34,7 @@ msgstr ""
 
 #: helper/GNOME_UimApplet.server.in.in.h:5
 msgid "uim applet for the GNOME2 panel"
-msgstr ""
+msgstr "GNOME 패널용 uim 애플릿"
 
 #: helper/dict-anthy.c:77 helper/dict-main-gtk.c:161
 #: helper/dict-word-list-win-gtk.c:255
@@ -48,7 +49,7 @@ msgstr ""
 
 #: helper/dict-cclass-dialog.c:112
 msgid "Example"
-msgstr "Exemple"
+msgstr ""
 
 #: helper/dict-main-gtk.c:224
 #, c-format
@@ -63,7 +64,7 @@ msgstr ""
 #: helper/dict-word-list-view-gtk.c:147 helper/dict-word-list-view-gtk.c:154
 #: helper/dict-word-list-view-gtk.c:162 helper/dict-word-list-view-gtk.c:163
 msgid "to be written"
-msgstr "à écrire"
+msgstr ""
 
 #: helper/dict-word-list-view-gtk.c:138
 msgid "Show freq column"
@@ -75,7 +76,7 @@ msgstr ""
 
 #: helper/dict-word-list-view-gtk.c:155
 msgid "to be written "
-msgstr "à écrire"
+msgstr ""
 
 #: helper/dict-word-list-view-gtk.c:199
 msgid "Word Type"
@@ -83,7 +84,7 @@ msgstr ""
 
 #: helper/dict-word-list-view-gtk.c:217
 msgid "Phonetic"
-msgstr "Phonétique"
+msgstr ""
 
 #: helper/dict-word-list-view-gtk.c:247
 msgid "Literal"
@@ -91,7 +92,7 @@ msgstr ""
 
 #: helper/dict-word-list-view-gtk.c:279
 msgid "Frequency"
-msgstr "Fréquence"
+msgstr ""
 
 #: helper/dict-word-list-view-gtk.c:290
 msgid "Okuri"
@@ -99,23 +100,23 @@ msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:85
 msgid "_File"
-msgstr "_Fichier"
+msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:86
 msgid "_Edit"
-msgstr "_Éditer"
+msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:87
 msgid "_Option"
-msgstr "_Option"
+msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:88
 msgid "_Help"
-msgstr "_Aide"
+msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:89
 msgid "_Quit"
-msgstr "_Quitter"
+msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:90
 msgid "Quit uim-dict"
@@ -123,15 +124,15 @@ msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:91
 msgid "A_dd..."
-msgstr "A_jouter ..."
+msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:92
 msgid "Add a new word"
-msgstr "Ajouter un mot nouveau"
+msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:93
 msgid "_Remove..."
-msgstr "_Enlever ..."
+msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:94
 msgid "Remove the selected word"
@@ -139,7 +140,7 @@ msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:95
 msgid "_Edit..."
-msgstr "_Éditer ..."
+msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:96
 msgid "Edit the selected word"
@@ -155,20 +156,20 @@ msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:99
 msgid "_About"
-msgstr "_A propos"
+msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:100 helper/dict-word-list-win-gtk.c:479
 msgid "About uim-dict"
-msgstr "À propos de uim-dict"
+msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:209
 msgid "Edit the dictionary"
-msgstr "Éditer le dictionnaire"
+msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:259
 #, c-format
 msgid "%s"
-msgstr "%s"
+msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:373
 msgid "Are you sure to remove seleted words?"
@@ -188,7 +189,7 @@ msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:472
 msgid "<span size=\"20000\">uim-dict "
-msgstr "<span size=\\\"20000\\\">uim-dict "
+msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:472
 msgid ""
@@ -206,15 +207,15 @@ msgstr ""
 
 #: helper/dict-word-win-gtk.c:51
 msgid "Verb"
-msgstr "Verbe"
+msgstr ""
 
 #: helper/dict-word-win-gtk.c:52
 msgid "Adjective"
-msgstr "Adjectif"
+msgstr ""
 
 #: helper/dict-word-win-gtk.c:53
 msgid "Adverb"
-msgstr "Adverbe"
+msgstr ""
 
 #: helper/dict-word-win-gtk.c:54
 msgid "Etc"
@@ -235,11 +236,11 @@ msgstr ""
 
 #: helper/dict-word-win-gtk.c:191
 msgid "Add"
-msgstr "Ajouter"
+msgstr ""
 
 #: helper/dict-word-win-gtk.c:197
 msgid "Clear"
-msgstr "Effacer"
+msgstr ""
 
 #: helper/dict-word-win-gtk.c:204
 msgid "Add a word"
@@ -257,7 +258,7 @@ msgstr ""
 
 #: helper/dict-word-win-gtk.c:268
 msgid "_Phonetic:"
-msgstr "_Phonétique :"
+msgstr ""
 
 #: helper/dict-word-win-gtk.c:278
 msgid "_Literal:"
@@ -269,7 +270,7 @@ msgstr ""
 
 #: helper/dict-word-win-gtk.c:318
 msgid "_Frequency:"
-msgstr "_Fréquence :"
+msgstr ""
 
 #: helper/dict-word-win-gtk.c:349
 msgid "Part of Speech(_narrow):"
@@ -277,7 +278,7 @@ msgstr ""
 
 #: helper/dict-word-win-gtk.c:362
 msgid "_Browse..."
-msgstr "_Parcourir ..."
+msgstr ""
 
 #: helper/dict-word-win-gtk.c:488
 msgid "Word registration failed."
@@ -301,36 +302,36 @@ msgstr ""
 
 #: helper/im-switcher-gtk.c:274 qt/switcher-qt.cpp:99
 msgid "InputMethodName"
-msgstr "Nom de la méthode d'entrée"
+msgstr "입력기 이름"
 
 #: helper/im-switcher-gtk.c:283 qt/switcher-qt.cpp:100
 msgid "Language"
-msgstr "Langue"
+msgstr "언어"
 
 #: helper/im-switcher-gtk.c:292 qt/switcher-qt.cpp:101
 msgid "Description"
-msgstr "Description"
+msgstr "설명"
 
 #: helper/im-switcher-gtk.c:323 qt/switcher-qt.cpp:67
 msgid "uim input method switcher"
-msgstr ""
+msgstr "uim 입력기 전환"
 
 #: helper/im-switcher-gtk.c:352 qt/switcher-qt.cpp:105
 msgid "Changing way"
-msgstr ""
+msgstr "바뀌는 범위"
 
 #: helper/im-switcher-gtk.c:360 qt/switcher-qt.cpp:106
 msgid "Change whole desktop"
-msgstr ""
+msgstr "데스크탑 전체"
 
 #. default is "Change whole desktop"
 #: helper/im-switcher-gtk.c:361 qt/switcher-qt.cpp:109
 msgid "Change this application only"
-msgstr ""
+msgstr "이 응용프로그램만"
 
 #: helper/im-switcher-gtk.c:362 qt/switcher-qt.cpp:111
 msgid "Change this text area only"
-msgstr ""
+msgstr "이 텍스트영역만"
 
 #: helper/input-pad-ja.c:371
 msgid "ja-pad"
@@ -350,7 +351,7 @@ msgstr ""
 
 #: helper/input-pad-ja.c:402
 msgid "symbol"
-msgstr "symbol"
+msgstr ""
 
 #: helper/input-pad-ja.c:405
 msgid "bracket"
@@ -374,7 +375,7 @@ msgstr ""
 
 #: helper/input-pad-ja.c:420
 msgid "number"
-msgstr "numéro"
+msgstr ""
 
 #: helper/input-pad-ja.c:423
 msgid "academic"
@@ -382,97 +383,99 @@ msgstr ""
 
 #: helper/input-pad-ja.c:426
 msgid "line"
-msgstr "droite"
+msgstr ""
 
 #: helper/pref-gtk-custom-widgets.c:384
 msgid "Specify file"
-msgstr ""
+msgstr "파일을 지정하십시오"
 
 #: helper/pref-gtk-custom-widgets.c:421
 msgid "File..."
-msgstr "Fichier..."
+msgstr "파일..."
 
 #: helper/pref-gtk-custom-widgets.c:1110
 msgid "Enabled"
-msgstr ""
+msgstr "유효"
 
 #: helper/pref-gtk-custom-widgets.c:1136
 msgid "Enabled items"
-msgstr ""
+msgstr "유효한 항목"
 
 #: helper/pref-gtk-custom-widgets.c:1214
 msgid "Disabled"
-msgstr ""
+msgstr "무효"
 
 #: helper/pref-gtk-custom-widgets.c:1240
 msgid "Disabled items"
-msgstr ""
+msgstr "무효인 항목"
 
 #: helper/pref-gtk-custom-widgets.c:1278 helper/pref-gtk-custom-widgets.c:1867
 msgid "Edit..."
-msgstr "_Édition ..."
+msgstr "편집..."
 
 #: helper/pref-gtk-custom-widgets.c:1486 qt/pref-customwidgets.cpp:839
 msgid "Press keys to grab (e.g. <Control>a)"
-msgstr ""
+msgstr "잡을 키를 누르십시오 (예 <Control>a)"
 
 #: helper/pref-gtk-custom-widgets.c:1487
 msgid "Grabbing keys"
-msgstr ""
+msgstr "키를 잡고 있는 중"
 
 #: helper/pref-gtk-custom-widgets.c:1708
 #, c-format
 msgid "%s - key configuration"
-msgstr ""
+msgstr "%s - 키 설정"
 
 #: helper/pref-gtk-custom-widgets.c:1745
 msgid "Key preference"
-msgstr ""
+msgstr "키 설정"
 
 #: helper/pref-gtk-custom-widgets.c:1791
 msgid "Key:"
-msgstr ""
+msgstr "키:"
 
 #: helper/pref-gtk-custom-widgets.c:1812
 msgid "Grab..."
-msgstr ""
+msgstr "잡기..."
 
 #: helper/pref-gtk.c:144
 msgid ""
 "Some value(s) have been changed.\n"
 "Save?"
 msgstr ""
+"바뀐 내용이 있습니다.\n"
+"저장하시겠습니까?"
 
 #: helper/pref-gtk.c:216
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you realy quit this program?"
-msgstr ""
+msgstr "바뀐 내용이 있습니다.정말로 종료하시겠습니까?"
 
 #: helper/pref-gtk.c:255 qt/pref-qt.cpp:138
 msgid "Group"
-msgstr "Groupe"
+msgstr "그룹"
 
 #. Defaults button
 #: helper/pref-gtk.c:347
 msgid "_Defaults"
-msgstr ""
+msgstr "디폴트 (_D)"
 
 #: helper/pref-gtk.c:352
 msgid "Revert all changes to default"
-msgstr ""
+msgstr "모든 설정을 디폴트로"
 
 #: helper/pref-gtk.c:362
 msgid "Apply all changes"
-msgstr ""
+msgstr "바뀐 설정을 모두 적용"
 
 #: helper/pref-gtk.c:370
 msgid "Quit this application without applying changes"
-msgstr ""
+msgstr "바뀐 설정을 버리고 종료"
 
 #: helper/pref-gtk.c:381
 msgid "Quit this application with applying changes"
-msgstr ""
+msgstr "바뀐 설정을 저장하고 종료"
 
 #: helper/pref-gtk.c:530
 msgid ""
@@ -481,48 +484,52 @@ msgid ""
 "this tool (stored in ~/.uim.d/customs/*.scm).\n"
 "Please check the file if you find your settings aren't applied."
 msgstr ""
+"사용자 설정 파일인 \"~/.uim\"이 있습니다.\n"
+"\"~/.uim\"에 의한 설정이 이 도구가 저장하는 설정\n"
+"(\"~/.uim.d/customs/*.scm\")보다 우선합니다.\n"
+"설정이 반영되지 않을 경우에는 \"~/.uim\"의 내용을 확인하십시오."
 
 #. Feel free to put your names here translators
 #: helper/toolbar-applet-gnome.c:125
 msgid "TRANSLATORS"
-msgstr ""
+msgstr "Jae-hyeon Park <jhyeon@gmail.com>"
 
 #. icon = gdk_pixbuf_new_from_xpm_data(ICON_APPLET);
 #: helper/toolbar-applet-gnome.c:129
 msgid "Uim Applet for GNOME"
-msgstr ""
+msgstr "GNOME 패널용 uim 애플릿"
 
 #: helper/toolbar-applet-gnome.c:130
 msgid "Applet for indicate uim's status"
-msgstr ""
+msgstr "uim 상태 표시 애플릿"
 
 #: helper/toolbar-common-gtk.c:63 qt/toolbar-common-quimhelpertoolbar.cpp:55
 msgid "Switch input method"
-msgstr ""
+msgstr "입력기 전환"
 
 #: helper/toolbar-common-gtk.c:69 qt/toolbar-common-quimhelpertoolbar.cpp:56
 msgid "Preference"
-msgstr ""
+msgstr "설정"
 
 #: helper/toolbar-common-gtk.c:75 qt/toolbar-common-quimhelpertoolbar.cpp:57
 msgid "Japanese dictionary editor"
-msgstr ""
+msgstr "일본어 사전 도구"
 
 #: helper/toolbar-common-gtk.c:81 qt/toolbar-common-quimhelpertoolbar.cpp:58
 msgid "Input pad"
-msgstr ""
+msgstr "입력 패드"
 
 #: helper/toolbar-common-gtk.c:87 qt/toolbar-common-quimhelpertoolbar.cpp:59
 msgid "Handwriting input pad"
-msgstr ""
+msgstr "손글씨 입력 패드"
 
 #: helper/toolbar-common-gtk.c:93 qt/toolbar-common-quimhelpertoolbar.cpp:60
 msgid "Help"
-msgstr "Aide"
+msgstr "도움말"
 
 #: helper/toolbar-common-gtk.c:593 qt/toolbar-common-quimhelpertoolbar.cpp:61
 msgid "Quit this toolbar"
-msgstr ""
+msgstr "이 툴바를 닫음"
 
 #: helper/toolbar-standalone-gtk.c:257
 #, c-format
@@ -531,15 +538,15 @@ msgstr ""
 
 #: qt/pref-customwidgets.cpp:172
 msgid "File"
-msgstr "Fichier"
+msgstr "파일"
 
 #: qt/pref-customwidgets.cpp:310 qt/pref-customwidgets.cpp:592
 msgid "Edit"
-msgstr "Édition"
+msgstr "편집"
 
 #: qt/pref-customwidgets.cpp:842
 msgid "Key Grab Dialog"
-msgstr ""
+msgstr "키 잡기 대화창"
 
 #: qt/pref-qt.cpp:106
 msgid ""
@@ -548,66 +555,72 @@ msgid ""
 "this tool (stored in ~/.uim.d/customs/*.scm).\n"
 "Please check the file if you find your settings aren't applied"
 msgstr ""
+"사용자 설정 파일인 \"~/.uim\"이 있습니다.\n"
+"\"~/.uim\"에 의한 설정이 이 도구가 저장하는 설정\n"
+"(\"~/.uim.d/customs/*.scm\")보다 우선합니다.\n"
+"설정이 반영되지 않을 경우에는 \"~/.uim\"의 내용을 확인하십시오."
 
 #: qt/pref-qt.cpp:113
 msgid "~/.uim exists!"
-msgstr ""
+msgstr "~/.uim 가 있습니다!"
 
 #: qt/pref-qt.cpp:156
 msgid "Defaults"
-msgstr "Options par défaut"
+msgstr "디폴트"
 
 #: qt/pref-qt.cpp:159 qt/pref-qt.cpp:237 qt/pref-qt.cpp:319
 #: qt/switcher-qt.cpp:116
 msgid "OK"
-msgstr "OK"
+msgstr "확인"
 
 #: qt/pref-qt.cpp:166 qt/pref-qt.cpp:238 qt/switcher-qt.cpp:121
 msgid "Cancel"
-msgstr "Annuler"
+msgstr "취소"
 
 #: qt/pref-qt.cpp:235
 msgid "Save Confirm"
-msgstr ""
+msgstr "저장 확인"
 
 #: qt/pref-qt.cpp:236
 msgid ""
 "The value was changed.\n"
 "Save?"
 msgstr ""
+"내용이 바뀌었습니다.\n"
+"저장하시겠습니까?"
 
 #: qt/pref-qt.cpp:314
 msgid "Show this dialog on startup"
-msgstr ""
+msgstr "시작할 때 이 대화창을 표시"
 
 #: qt/toolbar-common-quimhelpertoolbar.cpp:99 scm/action.lisp:547
 #: scm/action.lisp:548
 msgid "exec im-switcher"
-msgstr ""
+msgstr "입력기 전환"
 
 #: qt/toolbar-common-quimhelpertoolbar.cpp:123
 msgid "exec Preference Application"
-msgstr ""
+msgstr "설정 도구 실행"
 
 #: qt/toolbar-common-quimhelpertoolbar.cpp:143
 msgid "exec Japanese dictionary Tool Application"
-msgstr ""
+msgstr "일본어 사전 도구 실행"
 
 #: qt/toolbar-common-quimhelpertoolbar.cpp:163
 msgid "exec Input Pad Tool Application"
-msgstr ""
+msgstr "입력 패드 도구 실행"
 
 #: qt/toolbar-common-quimhelpertoolbar.cpp:183
 msgid "exec Handwriting Input Pad Tool Application"
-msgstr ""
+msgstr "손글씨 입력 패드 실행"
 
 #: qt/toolbar-common-quimhelpertoolbar.cpp:202
 msgid "exec Help Application"
-msgstr ""
+msgstr "도움말"
 
 #: scm/action.lisp:502 scm/action.lisp:503
 msgid "unknown"
-msgstr "inconnu"
+msgstr ""
 
 #: scm/action.lisp:542
 msgid "Japanese Kana Kanji Conversion Engine, Example"
@@ -784,7 +797,7 @@ msgstr ""
 #: scm/anthy-custom.lisp:152 scm/canna-custom.lisp:152
 #: scm/mana-custom.lisp:152
 msgid "Kana"
-msgstr "Kana"
+msgstr ""
 
 #: scm/anthy-custom.lisp:153 scm/canna-custom.lisp:153
 #: scm/mana-custom.lisp:153
@@ -813,7 +826,7 @@ msgstr ""
 #: scm/mana-custom.lisp:170 scm/mana-custom.lisp:171 scm/skk-custom.lisp:214
 #: scm/skk-custom.lisp:215
 msgid "Kana input method"
-msgstr "Méthode d'entrée Kana"
+msgstr ""
 
 #: scm/anthy-custom.lisp:172 scm/canna-custom.lisp:172
 #: scm/mana-custom.lisp:172 scm/skk-custom.lisp:216
@@ -833,12 +846,12 @@ msgstr ""
 #: scm/anthy-custom.lisp:242 scm/canna-custom.lisp:242
 #: scm/mana-custom.lisp:242 scm/skk-custom.lisp:275
 msgid "Default kana input method"
-msgstr "Méthode d'entrée Kana par défaut"
+msgstr ""
 
 #: scm/anthy-custom.lisp:251 scm/canna-custom.lisp:251
 #: scm/mana-custom.lisp:251 scm/skk-custom.lisp:284
 msgid "Kana input method menu items"
-msgstr "Entrées de menu de la méthode d'entrée Kana"
+msgstr ""
 
 #: scm/anthy-custom.lisp:289 scm/skk-custom.lisp:432
 msgid "Enable vi-cooperative mode"
@@ -1076,11 +1089,11 @@ msgstr ""
 
 #: scm/byeoru-custom.lisp:37
 msgid "Byeoru"
-msgstr ""
+msgstr "벼루"
 
 #: scm/byeoru-custom.lisp:38
 msgid "The Byeoru Hangul input suite"
-msgstr ""
+msgstr "벼루 한글 입력기"
 
 #. for future use
 #: scm/byeoru-custom.lisp:40
@@ -1093,182 +1106,183 @@ msgstr ""
 #. 2-beol can not be orderless.
 #: scm/byeoru-custom.lisp:46
 msgid "Hangul 2-beol"
-msgstr ""
+msgstr "두벌식"
 
+# CHECK: 자판 or 배열
 #: scm/byeoru-custom.lisp:47
 msgid "Standard Hangul 2-beol keyboard"
-msgstr ""
+msgstr "표준 두벌식 자판"
 
 #. neither can strict 3-beol.
 #: scm/byeoru-custom.lisp:50
 msgid "Hangul 3-beol final strict"
-msgstr ""
+msgstr "엄격한 세벌식 최종"
 
 #: scm/byeoru-custom.lisp:51
 msgid "Hangul 3-beol that forbids composition of precomposed jamos"
-msgstr ""
+msgstr "겹모음이나 겹받침의 올바른 조합방법만을 허용하는 세벌식 최종 자판"
 
 #. generous 3-beol can be orderless.
 #: scm/byeoru-custom.lisp:54
 msgid "Hangul 3-beol final generous"
-msgstr ""
+msgstr "세벌식 최종"
 
 #: scm/byeoru-custom.lisp:55
 msgid "Hangul 3-beol that allows composition of precomposed jamos"
-msgstr ""
+msgstr "겹모음과 겹받침의 모든 조합방법을 허용하는 세벌식 최종 자판"
 
 #: scm/byeoru-custom.lisp:58
 msgid "Hangul 390 strict"
-msgstr ""
+msgstr "엄격한 세벌식 390"
 
 #: scm/byeoru-custom.lisp:59
 msgid "Hangul 390 that forbids composition of precomposed jamos"
-msgstr ""
+msgstr "겹모음이나 겹받침의 올바른 조합방법만을 허용하는 세벌식 390 자판"
 
 #: scm/byeoru-custom.lisp:62
 msgid "Hangul 390 generous"
-msgstr ""
+msgstr "세벌식 390"
 
 #: scm/byeoru-custom.lisp:63
 msgid "Hangul 390 that allows composition of precomposed jamos"
-msgstr ""
+msgstr "겹모음과 겹받침의 모든 조합방법을 허용하는 세벌식 390 자판"
 
 #: scm/byeoru-custom.lisp:66
 msgid "Hangul 3-beol no-shift"
-msgstr ""
+msgstr "세벌식 순아래"
 
 #: scm/byeoru-custom.lisp:67
 msgid "Hangul 3-beol that does not require any shift key press"
-msgstr ""
+msgstr "쉬프트 키를 사용하지 않는 세벌식 자판"
 
 #. romaja can not be orderless.
 #: scm/byeoru-custom.lisp:70
 msgid "Hangul romaja"
-msgstr ""
+msgstr "로마자"
 
 #: scm/byeoru-custom.lisp:71
 msgid "Hangul romaja in the style of HWP 2004"
-msgstr ""
+msgstr "한글 2004 방식의 로마자 배열"
 
 #: scm/byeoru-custom.lisp:80
 msgid "Keyboard"
-msgstr ""
+msgstr "자판"
 
 #: scm/byeoru-custom.lisp:84
 msgid "Properties"
-msgstr ""
+msgstr "속성"
 
 #: scm/byeoru-custom.lisp:88
 msgid "Workarounds"
-msgstr ""
+msgstr "꼼수"
 
 #: scm/byeoru-custom.lisp:103
 msgid "Hangul keyboard layout"
-msgstr ""
+msgstr "한글 자판 배열"
 
 #: scm/byeoru-custom.lisp:110
 msgid "ordered"
-msgstr ""
+msgstr "순서대로"
 
 #: scm/byeoru-custom.lisp:113
 msgid "orderless"
-msgstr ""
+msgstr "순서 없음"
 
 #: scm/byeoru-custom.lisp:116
 msgid "more orderless"
-msgstr ""
+msgstr "순서 엉망"
 
 #: scm/byeoru-custom.lisp:118
 msgid "Jamo input is"
-msgstr ""
+msgstr "자모 입력은"
 
 #: scm/byeoru-custom.lisp:130
 msgid "ESC turns off Hangul mode (for vi users)"
-msgstr ""
+msgstr "ESC를 누르면 영문모드로 (vi 사용자용)"
 
 #: scm/byeoru-custom.lisp:136
 msgid "Default unit of commitment is word"
-msgstr ""
+msgstr "따로 지정하지 않으면 단어단위 입력"
 
 #: scm/byeoru-custom.lisp:142
 msgid "Shifted roman vowel inputs an isolated vowel"
-msgstr ""
+msgstr "쉬프트를 누른 채 로마자 모음 키를 누르면 한글 모음만 입력"
 
 #: scm/byeoru-custom.lisp:153
 msgid "Candidate window size"
-msgstr ""
+msgstr "한자메뉴창의 크기"
 
 #: scm/byeoru-custom.lisp:159
 msgid "Symbol cache size"
-msgstr ""
+msgstr "기억하고 있을 기호 개수"
 
 #: scm/byeoru-custom.lisp:166
 msgid "Represent incomplete syllables using compatibility jamos"
-msgstr ""
+msgstr "미완성 음절을 한글 호환성 자모로 표현"
 
 #: scm/byeoru-key-custom.lisp:38
 msgid "Byeoru key bindings"
-msgstr ""
+msgstr "벼루 키 설정"
 
 #: scm/byeoru-key-custom.lisp:44
 msgid "[Byeoru] on"
-msgstr ""
+msgstr "[벼루] 한글모드로"
 
 #: scm/byeoru-key-custom.lisp:50
 msgid "[Byeoru] off"
-msgstr ""
+msgstr "[벼루] 영문모드로"
 
 #: scm/byeoru-key-custom.lisp:56
 msgid "[Byeoru] convert Hangul to Chinese"
-msgstr ""
+msgstr "[벼루] 한자 및 기호"
 
 #: scm/byeoru-key-custom.lisp:62
 msgid "[Byeoru] confirm conversion"
-msgstr ""
+msgstr "[벼루] 한자 및 기호 확정"
 
 #: scm/byeoru-key-custom.lisp:68
 msgid "[Byeoru] cancel conversion"
-msgstr ""
+msgstr "[벼루] 메뉴에서 빠져나오기"
 
 #: scm/byeoru-key-custom.lisp:74
 msgid "[Byeoru] next candidate"
-msgstr ""
+msgstr "[벼루] 메뉴에서 아래로"
 
 #: scm/byeoru-key-custom.lisp:80
 msgid "[Byeoru] previous candidate"
-msgstr ""
+msgstr "[벼루] 메뉴에서 위로"
 
 #: scm/byeoru-key-custom.lisp:86
 msgid "[Byeoru] next page of candidate window"
-msgstr ""
+msgstr "[벼루] 메뉴에서 아래 페이지로"
 
 #: scm/byeoru-key-custom.lisp:92
 msgid "[Byeoru] previous page of candidate window"
-msgstr ""
+msgstr "[벼루] 메뉴에서 위 페이지로"
 
 #: scm/byeoru-key-custom.lisp:98
 msgid "[Byeoru] backspace"
-msgstr ""
+msgstr "[벼루] 백스페이스"
 
 #: scm/byeoru-key-custom.lisp:104
 msgid "[Byeoru] delete"
-msgstr ""
+msgstr "[벼루] 삭제"
 
 #: scm/byeoru-key-custom.lisp:110
 msgid "[Byeoru] go left"
-msgstr ""
+msgstr "[벼루] 단어모드에서 왼쪽으로"
 
 #: scm/byeoru-key-custom.lisp:116
 msgid "[Byeoru] go right"
-msgstr ""
+msgstr "[벼루] 단어모드에서 오른쪽으로"
 
 #: scm/byeoru-key-custom.lisp:122
 msgid "[Byeoru] beginning of word"
-msgstr ""
+msgstr "[벼루] 단어모드에서 단어의 처음으로"
 
 #: scm/byeoru-key-custom.lisp:128
 msgid "[Byeoru] end of word"
-msgstr ""
+msgstr "[벼루] 단어모드에서 단어의 끝으로"
 
 #: scm/canna-custom.lisp:35
 msgid "Canna"
@@ -1447,7 +1461,7 @@ msgstr ""
 
 #: scm/direct.lisp:131
 msgid "Direct"
-msgstr "Direct"
+msgstr ""
 
 #: scm/direct.lisp:132
 msgid "Pass through all user input without any modification"
@@ -1455,99 +1469,99 @@ msgstr ""
 
 #: scm/generic-custom.lisp:36
 msgid "Other input methods"
-msgstr "Autres méthodes d'entrée"
+msgstr "다른 입력기"
 
 #: scm/generic-key-custom.lisp:36
 msgid "Global key bindings 1"
-msgstr ""
+msgstr "전체적인 키 설정 1"
 
 #: scm/generic-key-custom.lisp:40
 msgid "Global key bindings 2"
-msgstr ""
+msgstr "전체적인 키 설정 2"
 
 #: scm/generic-key-custom.lisp:47
 msgid "[Global] on"
-msgstr ""
+msgstr "[전체] 켜기"
 
 #: scm/generic-key-custom.lisp:53
 msgid "[Global] off"
-msgstr ""
+msgstr "[전체] 끄기"
 
 #: scm/generic-key-custom.lisp:59
 msgid "[Global] begin conversion"
-msgstr ""
+msgstr "[전체] 변환 개시"
 
 #: scm/generic-key-custom.lisp:65
 msgid "[Global] commit"
-msgstr ""
+msgstr "[전체] 확정"
 
 #: scm/generic-key-custom.lisp:71
 msgid "[Global] cancel"
-msgstr ""
+msgstr "[전체] 취소"
 
 #: scm/generic-key-custom.lisp:77
 msgid "[Global] next candidate"
-msgstr ""
+msgstr "[전체] 아래 후보"
 
 #: scm/generic-key-custom.lisp:83
 msgid "[Global] previous candidate"
-msgstr ""
+msgstr "[전체] 위 후보"
 
 #: scm/generic-key-custom.lisp:89
 msgid "[Global] next page of candidate window"
-msgstr ""
+msgstr "[전체] 후보창에서 아래 페이지로"
 
 #: scm/generic-key-custom.lisp:95
 msgid "[Global] previous page of candidate window"
-msgstr ""
+msgstr "[전체] 후보창에서 위 페이지로"
 
 #: scm/generic-key-custom.lisp:105
 msgid "[Global] beginning of preedit"
-msgstr ""
+msgstr "[전체] 편집영역의 처음으로"
 
 #: scm/generic-key-custom.lisp:111
 msgid "[Global] end of preedit"
-msgstr ""
+msgstr "[전체] 편집영역의 끝으로"
 
 #: scm/generic-key-custom.lisp:117
 msgid "[Global] erase after cursor"
-msgstr ""
+msgstr "[전체] 커서 다음을 삭제"
 
 #: scm/generic-key-custom.lisp:123
 msgid "[Global] erase before cursor"
-msgstr ""
+msgstr "[전체] 커서 이전을 삭제"
 
 #: scm/generic-key-custom.lisp:129
 msgid "[Global] backspace"
-msgstr ""
+msgstr "[전체] 백스페이스"
 
 #: scm/generic-key-custom.lisp:135
 msgid "[Global] delete"
-msgstr ""
+msgstr "[전체] 삭제"
 
 #: scm/generic-key-custom.lisp:141
 msgid "[Global] go left"
-msgstr ""
+msgstr "[전체] 왼쪽으로"
 
 #: scm/generic-key-custom.lisp:147
 msgid "[Global] go right"
-msgstr ""
+msgstr "[전체] 오른쪽으로"
 
 #: scm/generic-key-custom.lisp:153
 msgid "[Global] return"
-msgstr ""
+msgstr "[전체] 리턴"
 
 #: scm/generic.lisp:71 scm/m17nlib.lisp:62 scm/scim.lisp:62
 msgid "off"
-msgstr "Désactivée"
+msgstr "끄기"
 
 #: scm/generic.lisp:86 scm/m17nlib.lisp:76 scm/scim.lisp:76
 msgid "on"
-msgstr "Activée"
+msgstr "켜기"
 
 #: scm/generic.lisp:87 scm/m17nlib.lisp:77 scm/scim.lisp:77
 msgid " Mode"
-msgstr ""
+msgstr " 모드"
 
 #: scm/hangul.lisp:107
 msgid "Hangul (2-beol)"
@@ -1567,7 +1581,7 @@ msgstr ""
 
 #: scm/hangul.lisp:124
 msgid "Hangul (Romaja)"
-msgstr "Hangul (Romaja)"
+msgstr ""
 
 #: scm/hangul.lisp:125
 msgid "Romaja input style hangul input method"
@@ -1575,75 +1589,75 @@ msgstr ""
 
 #: scm/im-custom.lisp:46
 msgid "Global settings"
-msgstr "Paramètres globaux"
+msgstr "전체적인 설정"
 
 #: scm/im-custom.lisp:50
 msgid "Toolbar"
-msgstr "Barre d'outils"
+msgstr "툴바"
 
 #: scm/im-custom.lisp:55
 msgid "Advanced settings"
-msgstr "Paramètres avancés"
+msgstr "고급 설정"
 
 #: scm/im-custom.lisp:60
 msgid "Buttons"
-msgstr "Boutons"
+msgstr "버튼"
 
 #: scm/im-custom.lisp:65
 msgid "Candidate window"
-msgstr "Fenêtre des candidats"
+msgstr "후보 창"
 
 #: scm/im-custom.lisp:70
 msgid "Annotation"
-msgstr "Annotation"
+msgstr "주석"
 
 #: scm/im-custom.lisp:75
 msgid "Dictionary"
-msgstr "Dictionnaire"
+msgstr "사전"
 
 #: scm/im-custom.lisp:85
 msgid "Mode transition"
-msgstr ""
+msgstr "모드 전이"
 
 #: scm/im-custom.lisp:90
 msgid "Special operation"
-msgstr ""
+msgstr "특수 조작"
 
 #: scm/im-custom.lisp:95 scm/im-custom.lisp:126
 msgid "Default input method"
-msgstr "Méthode d'entrée par défaut"
+msgstr "디폴트 입력기"
 
 #: scm/im-custom.lisp:100
 msgid "Input method deployment"
-msgstr ""
+msgstr "입력기 이용 준비"
 
 #: scm/im-custom.lisp:105
 msgid "Visual preference"
-msgstr ""
+msgstr "겉모양 설정"
 
 #: scm/im-custom.lisp:116
 msgid "Specify default IM"
-msgstr ""
+msgstr "디폴트 입력기 지정"
 
 #: scm/im-custom.lisp:228
 msgid "Enabled input methods"
-msgstr "Méthodes d'entrée activées"
+msgstr "사용가능한 입력기"
 
 #: scm/im-custom.lisp:285
 msgid "Input method toggle"
-msgstr ""
+msgstr "입력기 토글"
 
 #: scm/im-custom.lisp:291
 msgid "Enable input method toggle by hot keys"
-msgstr ""
+msgstr "단축키로 입력기 토글"
 
 #: scm/im-custom.lisp:297
 msgid "Input method toggle key"
-msgstr ""
+msgstr "입력기 토글키"
 
 #: scm/im-custom.lisp:305
 msgid "Alternative input method"
-msgstr ""
+msgstr "두번째 입력기"
 
 #: scm/im-custom.lisp:323 scm/skk-custom.lisp:70 scm/skk-custom.lisp:370
 msgid "uim"
@@ -1651,79 +1665,79 @@ msgstr "uim"
 
 #: scm/im-custom.lisp:323 scm/skk-custom.lisp:70 scm/skk-custom.lisp:370
 msgid "uim native"
-msgstr "uim natif"
+msgstr "uim 본모습"
 
 #: scm/im-custom.lisp:324
 msgid "ATOK like"
-msgstr "comme ATOK"
+msgstr "ATOK와 비슷하게"
 
 #: scm/im-custom.lisp:324
 msgid "Similar to ATOK"
-msgstr "Semblable à ATOK"
+msgstr "ATOK와 비슷하게"
 
 #: scm/im-custom.lisp:325
 msgid "Preedit color"
-msgstr ""
+msgstr "편집영역 색상"
 
 #: scm/im-custom.lisp:333 scm/im-custom.lisp:334
 msgid "Adjacent to cursor"
-msgstr ""
+msgstr "커서 옆"
 
 #: scm/im-custom.lisp:336 scm/im-custom.lisp:337
 msgid "Left end of preedit area"
-msgstr ""
+msgstr "편집영역의 왼쪽 끝"
 
 #: scm/im-custom.lisp:339 scm/im-custom.lisp:340
 msgid "Right end of preedit area"
-msgstr ""
+msgstr "편집영역의 오른쪽 끝"
 
 #: scm/im-custom.lisp:341
 msgid "Candidate window position"
-msgstr ""
+msgstr "후보 창의 위치"
 
 #: scm/im-custom.lisp:347
 msgid "Enable lazy input method loading for fast startup"
-msgstr ""
+msgstr "빨리 시작하기 위해서 입력기 로드를 늦춤"
 
 #: scm/im-custom.lisp:354
 msgid "Show input method switcher button on toolbar"
-msgstr ""
+msgstr "입력기 전환 버튼을 표시"
 
 #: scm/im-custom.lisp:360
 msgid "Show uim preference tool button on toolbar"
-msgstr ""
+msgstr "설정 도구 버튼을 표시"
 
 #: scm/im-custom.lisp:366
 msgid "Show uim Japanese dictionary tool button on toolbar"
-msgstr ""
+msgstr "일본어 사전 도구를 표시"
 
 #: scm/im-custom.lisp:372
 msgid "Show uim input pad button on toolbar"
-msgstr ""
+msgstr "입력 패드 버튼을 표시"
 
 #: scm/im-custom.lisp:378
 msgid "Show uim handwriting-input pad button on toolbar"
-msgstr ""
+msgstr "손글씨 입력 패드 버튼을 표시"
 
 #: scm/im-custom.lisp:384
 msgid "Show uim help button on toolbar"
-msgstr ""
+msgstr "도움말 버튼을 표시"
 
 #: scm/im-custom.lisp:390
 msgid "Show input mode nearby cursor"
-msgstr ""
+msgstr "입력 모드를 커서 근처에 표시"
 
 #: scm/im-custom.lisp:396
 msgid "Time length for showing input mode nearby the cursor"
-msgstr ""
+msgstr "커서 근처에 입력 모드를 표시하는 시간"
 
 #: scm/im-custom.lisp:397
 msgid "Set 0 to show indicator always."
-msgstr ""
+msgstr "입력 모드를 항상 표시하려면 0으로 두십시오."
 
 #: scm/im-custom.lisp:403
 msgid "EB library settings"
-msgstr "Paramètres de la bibliothèque EB"
+msgstr ""
 
 #: scm/im-custom.lisp:409
 msgid "Use EB library to search annotations"
@@ -1739,7 +1753,7 @@ msgstr ""
 
 #: scm/im-custom.lisp:426
 msgid "Preedit settings of XIM"
-msgstr ""
+msgstr "XIM 편집영역"
 
 #: scm/im-custom.lisp:432
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
@@ -1755,7 +1769,7 @@ msgstr ""
 
 #: scm/latin.lisp:720
 msgid "Latin characters"
-msgstr "Caractères latins"
+msgstr ""
 
 #: scm/latin.lisp:721
 msgid "Latin characters mainly used for Latin and German languages"
@@ -1763,7 +1777,7 @@ msgstr ""
 
 #: scm/m17nlib.lisp:338
 msgid "An input method provided by the m17n library"
-msgstr "Une méthode d'entrée fournie par la bibliothèqye m17n-lib"
+msgstr ""
 
 #: scm/mana-custom.lisp:35
 msgid "mana"
@@ -1851,7 +1865,7 @@ msgstr ""
 
 #: scm/mana-key-custom.lisp:159
 msgid "[mana] cancel"
-msgstr "[mana] annuler"
+msgstr ""
 
 #: scm/mana-key-custom.lisp:165
 msgid "[mana] next candidate"
@@ -1891,7 +1905,7 @@ msgstr ""
 
 #: scm/mana-key-custom.lisp:223
 msgid "[mana] delete"
-msgstr "[mana] effacer"
+msgstr ""
 
 #: scm/mana-key-custom.lisp:229
 msgid "[mana] go left"
@@ -1907,7 +1921,7 @@ msgstr ""
 
 #: scm/prime-custom.lisp:34
 msgid "PRIME"
-msgstr "PRIME"
+msgstr ""
 
 #: scm/prime-custom.lisp:35
 msgid "Japanese predictive input method"
@@ -1915,16 +1929,16 @@ msgstr ""
 
 #: scm/prime-custom.lisp:42
 msgid "PRIME (advanced)"
-msgstr "PRIME (avancé)"
+msgstr ""
 
 #: scm/prime-custom.lisp:43
 msgid "Advanced settings for PRIME"
-msgstr "Paramètres avancés pour PRIME"
+msgstr ""
 
 #: scm/prime-custom.lisp:46 scm/prime-custom.lisp:52 scm/prime-custom.lisp:165
 #: uim/iso-639-1.def:105
 msgid "Japanese"
-msgstr "Japonais"
+msgstr ""
 
 #: scm/prime-custom.lisp:47
 msgid "Japanese specific settings"
@@ -1932,7 +1946,7 @@ msgstr ""
 
 #: scm/prime-custom.lisp:53 uim/iso-639-1.def:74
 msgid "English"
-msgstr "Anglais"
+msgstr ""
 
 #: scm/prime-custom.lisp:54
 msgid "Default language"
@@ -1980,11 +1994,11 @@ msgstr ""
 
 #: scm/prime-custom.lisp:161
 msgid "PRIME off"
-msgstr "PRIME désactivé"
+msgstr ""
 
 #: scm/prime-custom.lisp:166
 msgid "PRIME on"
-msgstr "PRIME sactivé"
+msgstr ""
 
 #: scm/prime-key-custom.lisp:60
 msgid "PRIME key bindings 1"
@@ -2024,11 +2038,11 @@ msgstr ""
 
 #: scm/prime-key-custom.lisp:114
 msgid "[PRIME] on"
-msgstr "[PRIME] sactivé"
+msgstr ""
 
 #: scm/prime-key-custom.lisp:120
 msgid "[PRIME] off"
-msgstr "[PRIME] désactivé"
+msgstr ""
 
 #: scm/prime-key-custom.lisp:126
 msgid "[PRIME] fullwidth alphanumeric mode"
@@ -2044,7 +2058,7 @@ msgstr ""
 
 #: scm/prime-key-custom.lisp:144
 msgid "[PRIME] cancel"
-msgstr "[PRIME] annuler"
+msgstr ""
 
 #: scm/prime-key-custom.lisp:150
 msgid "[PRIME] next candidate"
@@ -2076,7 +2090,7 @@ msgstr ""
 
 #: scm/prime-key-custom.lisp:195
 msgid "[PRIME] delete"
-msgstr "[PRIME] effacer"
+msgstr ""
 
 #: scm/prime-key-custom.lisp:201
 msgid "[PRIME] go left"
@@ -2088,7 +2102,7 @@ msgstr ""
 
 #: scm/pyload.lisp:42
 msgid "New Pinyin (Simplified)"
-msgstr "Pinyin (simplifié)"
+msgstr ""
 
 #: scm/pyload.lisp:43
 msgid "Pinyin input method (Simplified Chinese version)"
@@ -2096,7 +2110,7 @@ msgstr ""
 
 #: scm/pyload.lisp:55
 msgid "Pinyin (Unicode)"
-msgstr "Pinyin (Unicode)"
+msgstr ""
 
 #: scm/pyload.lisp:56
 msgid "Pinyin input method (Unicode version)"
@@ -2104,7 +2118,7 @@ msgstr ""
 
 #: scm/pyload.lisp:68
 msgid "Pinyin (Traditional)"
-msgstr "Pinyin (traditionnel)"
+msgstr ""
 
 #: scm/pyload.lisp:69
 msgid "Pinyin input method (Traditional Chinese version)"
@@ -2116,7 +2130,7 @@ msgstr ""
 
 #: scm/skk-custom.lisp:35
 msgid "SKK"
-msgstr "SKK"
+msgstr ""
 
 #: scm/skk-custom.lisp:36
 msgid "uim version of SKK input method"
@@ -2132,11 +2146,11 @@ msgstr ""
 
 #: scm/skk-custom.lisp:47
 msgid "SKK (advanced)"
-msgstr "SKK (avancé)"
+msgstr ""
 
 #: scm/skk-custom.lisp:48
 msgid "Advanced settings for SKK"
-msgstr "Paramètres avancés pour SKK"
+msgstr ""
 
 #: scm/skk-custom.lisp:64
 msgid "Commit candidate by heading label keys"
@@ -2148,7 +2162,7 @@ msgstr ""
 
 #: scm/skk-custom.lisp:71 scm/skk-custom.lisp:369
 msgid "Similar to ddskk"
-msgstr "Semblable à ddskk"
+msgstr ""
 
 #: scm/skk-custom.lisp:72
 msgid "Candidate selection style"
@@ -2168,11 +2182,11 @@ msgstr ""
 
 #: scm/skk-custom.lisp:345
 msgid "Dictionary file"
-msgstr "Fichier dictionnaire"
+msgstr ""
 
 #: scm/skk-custom.lisp:352
 msgid "Personal dictionary file"
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: scm/skk-custom.lisp:359
 msgid "Personal dictionary file (dedicated to uim)"
@@ -2180,11 +2194,11 @@ msgstr ""
 
 #: scm/skk-custom.lisp:369
 msgid "ddskk"
-msgstr "ddskk"
+msgstr ""
 
 #: scm/skk-custom.lisp:371
 msgid "Visual style"
-msgstr "Style visuel"
+msgstr ""
 
 #: scm/skk-custom.lisp:377
 msgid "Use recursive learning"
@@ -2232,7 +2246,7 @@ msgstr ""
 
 #: scm/skk-key-custom.lisp:77
 msgid "Completion"
-msgstr "Complètement"
+msgstr ""
 
 #: scm/skk-key-custom.lisp:81
 msgid "Latin conversion"
@@ -2240,11 +2254,11 @@ msgstr ""
 
 #: scm/skk-key-custom.lisp:88
 msgid "[SKK] on"
-msgstr "[SKK] activé"
+msgstr ""
 
 #: scm/skk-key-custom.lisp:94
 msgid "[SKK] latin mode"
-msgstr "[SKK] mode latin"
+msgstr ""
 
 #: scm/skk-key-custom.lisp:100
 msgid "[SKK] wide-latin mode"
@@ -2252,7 +2266,7 @@ msgstr ""
 
 #: scm/skk-key-custom.lisp:106
 msgid "[SKK] kanji mode"
-msgstr "[SKK] mode kanji"
+msgstr ""
 
 #: scm/skk-key-custom.lisp:112
 msgid "[SKK] halfwidth katakana mode"
@@ -2272,7 +2286,7 @@ msgstr ""
 
 #: scm/skk-key-custom.lisp:136
 msgid "[SKK] cancel"
-msgstr "[SKK] annuler"
+msgstr ""
 
 #: scm/skk-key-custom.lisp:146
 msgid "[SKK] return"
@@ -2361,7 +2375,7 @@ msgstr ""
 #. spellcheck IM is not available yet
 #: scm/spellcheck-custom.lisp:37 scm/spellcheck-custom.lisp:38
 msgid "Spellcheck"
-msgstr "Spellcheck"
+msgstr ""
 
 #: scm/spellcheck-custom.lisp:59
 msgid "spell-preedit-immediate-commit?"
@@ -2409,7 +2423,7 @@ msgstr ""
 
 #: scm/viqr.lisp:206
 msgid "VIQR"
-msgstr "VIQR"
+msgstr ""
 
 #: scm/viqr.lisp:207
 msgid "VIetnamese Quoted-Readable"
@@ -2461,51 +2475,51 @@ msgstr ""
 #.
 #: uim/iso-639-1.def:39
 msgid "Abkhazian"
-msgstr "Abkhazien"
+msgstr ""
 
 #: uim/iso-639-1.def:40
 msgid "Afar"
-msgstr "Afar"
+msgstr ""
 
 #: uim/iso-639-1.def:41
 msgid "Afrikaans"
-msgstr "Afrikaans"
+msgstr ""
 
 #: uim/iso-639-1.def:42
 msgid "Albanian"
-msgstr "Albanais"
+msgstr ""
 
 #: uim/iso-639-1.def:43
 msgid "Amharic"
-msgstr "Amharic"
+msgstr ""
 
 #: uim/iso-639-1.def:44
 msgid "Arabic"
-msgstr "Arabe"
+msgstr ""
 
 #: uim/iso-639-1.def:45
 msgid "Armenian"
-msgstr "Arménien"
+msgstr ""
 
 #: uim/iso-639-1.def:46
 msgid "Assamese"
-msgstr "Assamese"
+msgstr ""
 
 #: uim/iso-639-1.def:47
 msgid "Aymara"
-msgstr "Aymara"
+msgstr ""
 
 #: uim/iso-639-1.def:48
 msgid "Azerbaijani"
-msgstr "Azerbaïdjanais"
+msgstr ""
 
 #: uim/iso-639-1.def:49
 msgid "Bashkir"
-msgstr "Bashkir"
+msgstr ""
 
 #: uim/iso-639-1.def:50
 msgid "Basque"
-msgstr "Basque"
+msgstr ""
 
 #: uim/iso-639-1.def:51
 msgid "Bengali (Bangla)"
@@ -2521,23 +2535,23 @@ msgstr ""
 
 #: uim/iso-639-1.def:54
 msgid "Bihari"
-msgstr "Bihari"
+msgstr ""
 
 #: uim/iso-639-1.def:55
 msgid "Bislama"
-msgstr "Bislama"
+msgstr ""
 
 #: uim/iso-639-1.def:56
 msgid "Breton"
-msgstr "Breton"
+msgstr ""
 
 #: uim/iso-639-1.def:57
 msgid "Bulgarian"
-msgstr "Bulgare"
+msgstr ""
 
 #: uim/iso-639-1.def:58
 msgid "Burmese"
-msgstr "Birman"
+msgstr ""
 
 #: uim/iso-639-1.def:59
 msgid "Byelorussian (Belarusian)"
@@ -2549,11 +2563,11 @@ msgstr ""
 
 #: uim/iso-639-1.def:61
 msgid "Cambodian"
-msgstr "Cambodgien"
+msgstr ""
 
 #: uim/iso-639-1.def:62
 msgid "Catalan"
-msgstr "Catalan"
+msgstr ""
 
 #: uim/iso-639-1.def:63
 msgid "Chewa"
@@ -2561,31 +2575,31 @@ msgstr ""
 
 #: uim/iso-639-1.def:64
 msgid "Chinese (Simplified)"
-msgstr "Chinois (simplifié)"
+msgstr ""
 
 #: uim/iso-639-1.def:65 uim/iso-639-1.def:66
 msgid "Chinese (Traditional)"
-msgstr "Chinois (traditionnel)"
+msgstr ""
 
 #: uim/iso-639-1.def:67
 msgid "Chinese"
-msgstr "Chinois"
+msgstr ""
 
 #: uim/iso-639-1.def:68
 msgid "Corsican"
-msgstr "Corse"
+msgstr ""
 
 #: uim/iso-639-1.def:69
 msgid "Croatian"
-msgstr "Croate"
+msgstr ""
 
 #: uim/iso-639-1.def:70
 msgid "Czech"
-msgstr "Tchèque"
+msgstr ""
 
 #: uim/iso-639-1.def:71
 msgid "Danish"
-msgstr "Danois"
+msgstr ""
 
 #: uim/iso-639-1.def:72
 msgid "Dhivehi"
@@ -2593,15 +2607,15 @@ msgstr ""
 
 #: uim/iso-639-1.def:73
 msgid "Dutch"
-msgstr "Hollandais"
+msgstr ""
 
 #: uim/iso-639-1.def:75
 msgid "Esperanto"
-msgstr "Esperanto"
+msgstr ""
 
 #: uim/iso-639-1.def:76
 msgid "Estonian"
-msgstr "Estonien"
+msgstr ""
 
 #: uim/iso-639-1.def:77
 msgid "Faeroese"
@@ -2609,15 +2623,15 @@ msgstr ""
 
 #: uim/iso-639-1.def:78
 msgid "Farsi"
-msgstr "Farsi"
+msgstr ""
 
 #: uim/iso-639-1.def:79
 msgid "Fiji"
-msgstr "Îles Fidji"
+msgstr ""
 
 #: uim/iso-639-1.def:80
 msgid "Finnish"
-msgstr "Finlandais"
+msgstr ""
 
 #: uim/iso-639-1.def:81
 msgid "Flemish"
@@ -2626,83 +2640,83 @@ msgstr ""
 #. defined as "nl" in the source
 #: uim/iso-639-1.def:82
 msgid "French"
-msgstr "Français"
+msgstr ""
 
 #: uim/iso-639-1.def:83
 msgid "Frisian"
-msgstr "Frisian"
+msgstr ""
 
 #: uim/iso-639-1.def:84
 msgid "Galician"
-msgstr "Galicien"
+msgstr ""
 
 #: uim/iso-639-1.def:85
 msgid "Gaelic (Scottish)"
-msgstr "Gaélique d'Écosse"
+msgstr ""
 
 #: uim/iso-639-1.def:86
 msgid "Gaelic (Manx)"
-msgstr "Gaélique (Man)"
+msgstr ""
 
 #: uim/iso-639-1.def:87
 msgid "Georgian"
-msgstr "Georgien"
+msgstr ""
 
 #: uim/iso-639-1.def:88
 msgid "German"
-msgstr "Allemand"
+msgstr ""
 
 #: uim/iso-639-1.def:89
 msgid "Greek"
-msgstr "Grec"
+msgstr ""
 
 #: uim/iso-639-1.def:90
 msgid "Greenlandic"
-msgstr "Groenlandais"
+msgstr ""
 
 #: uim/iso-639-1.def:91
 msgid "Guarani"
-msgstr "Guarani"
+msgstr ""
 
 #: uim/iso-639-1.def:92
 msgid "Gujarati"
-msgstr "Gujarati"
+msgstr ""
 
 #: uim/iso-639-1.def:93
 msgid "Hausa"
-msgstr "Hausa"
+msgstr ""
 
 #: uim/iso-639-1.def:94
 msgid "Hebrew"
-msgstr "Hébreu"
+msgstr ""
 
 #: uim/iso-639-1.def:95
 msgid "Hindi"
-msgstr "Hindi"
+msgstr ""
 
 #: uim/iso-639-1.def:96
 msgid "Hungarian"
-msgstr "Hongrois"
+msgstr ""
 
 #: uim/iso-639-1.def:97
 msgid "Icelandic"
-msgstr "Islandais"
+msgstr ""
 
 #: uim/iso-639-1.def:98
 msgid "Indonesian"
-msgstr "Indonésien"
+msgstr ""
 
 #: uim/iso-639-1.def:99
 msgid "Interlingua"
-msgstr "Interlingua"
+msgstr ""
 
 #: uim/iso-639-1.def:100
 msgid "Interlingue"
-msgstr "Interlangue"
+msgstr ""
 
 #: uim/iso-639-1.def:101
 msgid "Inuktitut"
-msgstr "Inuktitut"
+msgstr ""
 
 #: uim/iso-639-1.def:102
 msgid "Inupiak"
@@ -2710,27 +2724,27 @@ msgstr ""
 
 #: uim/iso-639-1.def:103
 msgid "Irish"
-msgstr "Irlandais"
+msgstr ""
 
 #: uim/iso-639-1.def:104
 msgid "Italian"
-msgstr "Italien"
+msgstr ""
 
 #: uim/iso-639-1.def:106
 msgid "Javanese"
-msgstr "Javanais"
+msgstr ""
 
 #: uim/iso-639-1.def:107
 msgid "Kannada"
-msgstr "Kannada"
+msgstr ""
 
 #: uim/iso-639-1.def:108
 msgid "Kashmiri"
-msgstr "Kashmiri"
+msgstr ""
 
 #: uim/iso-639-1.def:109
 msgid "Kazakh"
-msgstr "Kazakh"
+msgstr ""
 
 #: uim/iso-639-1.def:110
 msgid "Kinyarwanda (Ruanda)"
@@ -2738,7 +2752,7 @@ msgstr ""
 
 #: uim/iso-639-1.def:111
 msgid "Kirghiz"
-msgstr "Kirghiz"
+msgstr ""
 
 #: uim/iso-639-1.def:112
 msgid "Kirundi (Rundi)"
@@ -2751,19 +2765,19 @@ msgstr ""
 #. defined as "kok" in ISO 639-2
 #: uim/iso-639-1.def:114
 msgid "Korean"
-msgstr "Coréen"
+msgstr ""
 
 #: uim/iso-639-1.def:115
 msgid "Kurdish"
-msgstr "Kurde"
+msgstr ""
 
 #: uim/iso-639-1.def:116
 msgid "Laothian"
-msgstr "Laotien"
+msgstr ""
 
 #: uim/iso-639-1.def:117
 msgid "Latin"
-msgstr "Latin"
+msgstr ""
 
 #: uim/iso-639-1.def:118
 msgid "Latvian (Lettish)"
@@ -2771,47 +2785,47 @@ msgstr ""
 
 #: uim/iso-639-1.def:119
 msgid "Lingala"
-msgstr "Lingala"
+msgstr ""
 
 #: uim/iso-639-1.def:120
 msgid "Lithuanian"
-msgstr "Lituanien"
+msgstr ""
 
 #: uim/iso-639-1.def:121
 msgid "Macedonian"
-msgstr "Macédonien"
+msgstr ""
 
 #: uim/iso-639-1.def:122
 msgid "Malagasy"
-msgstr "Malagasy"
+msgstr ""
 
 #: uim/iso-639-1.def:123
 msgid "Malay"
-msgstr "Malay"
+msgstr ""
 
 #: uim/iso-639-1.def:124
 msgid "Malayalam"
-msgstr "Malayalam"
+msgstr ""
 
 #: uim/iso-639-1.def:125
 msgid "Maltese"
-msgstr "Maltais"
+msgstr ""
 
 #: uim/iso-639-1.def:126
 msgid "Maori"
-msgstr "Maori"
+msgstr ""
 
 #: uim/iso-639-1.def:127
 msgid "Marathi"
-msgstr "Marathi"
+msgstr ""
 
 #: uim/iso-639-1.def:128
 msgid "Moldavian"
-msgstr "Moldave"
+msgstr ""
 
 #: uim/iso-639-1.def:129
 msgid "Mongolian"
-msgstr "Mongol"
+msgstr ""
 
 #: uim/iso-639-1.def:130
 msgid "Myanmar"
@@ -2819,23 +2833,23 @@ msgstr ""
 
 #: uim/iso-639-1.def:131
 msgid "Nauru"
-msgstr "Nauru"
+msgstr ""
 
 #: uim/iso-639-1.def:132
 msgid "Nepali"
-msgstr "Népalais"
+msgstr ""
 
 #: uim/iso-639-1.def:133
 msgid "Norwegian"
-msgstr "Norvégien"
+msgstr ""
 
 #: uim/iso-639-1.def:134
 msgid "Occitan"
-msgstr "Occitan"
+msgstr ""
 
 #: uim/iso-639-1.def:135
 msgid "Oriya"
-msgstr "Oriya"
+msgstr ""
 
 #: uim/iso-639-1.def:136
 msgid "Oromo (Afan, Galla)"
@@ -2847,31 +2861,31 @@ msgstr ""
 
 #: uim/iso-639-1.def:138
 msgid "Polish"
-msgstr "Polonais"
+msgstr ""
 
 #: uim/iso-639-1.def:139
 msgid "Portuguese"
-msgstr "Portugais"
+msgstr ""
 
 #: uim/iso-639-1.def:140
 msgid "Punjabi"
-msgstr "Punjabi"
+msgstr ""
 
 #: uim/iso-639-1.def:141
 msgid "Quechua"
-msgstr "Quechua"
+msgstr ""
 
 #: uim/iso-639-1.def:142
 msgid "Romanian"
-msgstr "Roumain"
+msgstr ""
 
 #: uim/iso-639-1.def:143
 msgid "Russian"
-msgstr "Russe"
+msgstr ""
 
 #: uim/iso-639-1.def:144
 msgid "Samoan"
-msgstr "Samoan"
+msgstr ""
 
 #: uim/iso-639-1.def:145
 msgid "Sangro"
@@ -2879,11 +2893,11 @@ msgstr ""
 
 #: uim/iso-639-1.def:146
 msgid "Sanskrit"
-msgstr "Sanskrit"
+msgstr ""
 
 #: uim/iso-639-1.def:147
 msgid "Serbian"
-msgstr "Serbe"
+msgstr ""
 
 #: uim/iso-639-1.def:148
 msgid "Sesotho"
@@ -2895,15 +2909,15 @@ msgstr ""
 
 #: uim/iso-639-1.def:150
 msgid "Shona"
-msgstr "Shona"
+msgstr ""
 
 #: uim/iso-639-1.def:151
 msgid "Sindhi"
-msgstr "Sindhi"
+msgstr ""
 
 #: uim/iso-639-1.def:152
 msgid "Sinhalese"
-msgstr "Sinhalese"
+msgstr ""
 
 #: uim/iso-639-1.def:153
 msgid "Siswati"
@@ -2911,129 +2925,129 @@ msgstr ""
 
 #: uim/iso-639-1.def:154
 msgid "Slovak"
-msgstr "Slovaque"
+msgstr ""
 
 #: uim/iso-639-1.def:155
 msgid "Slovenian"
-msgstr "Slovène"
+msgstr ""
 
 #: uim/iso-639-1.def:156
 msgid "Somali"
-msgstr "Somalien"
+msgstr ""
 
 #: uim/iso-639-1.def:157
 msgid "Spanish"
-msgstr "Espagnol"
+msgstr ""
 
 #: uim/iso-639-1.def:158
 msgid "Sundanese"
-msgstr "Soundanais"
+msgstr ""
 
 #: uim/iso-639-1.def:159
 msgid "Swahili (Kiswahili)"
-msgstr "Swahili (Kiswahili)"
+msgstr ""
 
 #: uim/iso-639-1.def:160
 msgid "Swedish"
-msgstr "Suédois"
+msgstr ""
 
 #: uim/iso-639-1.def:161
 msgid "Syriac"
-msgstr "Syriaque"
+msgstr ""
 
 #. defined as "syr" in ISO 639-2
 #: uim/iso-639-1.def:162
 msgid "Tagalog"
-msgstr "Tagalog"
+msgstr ""
 
 #: uim/iso-639-1.def:163
 msgid "Tajik"
-msgstr "Tajikistanais"
+msgstr ""
 
 #: uim/iso-639-1.def:164
 msgid "Tamil"
-msgstr "Tamoul"
+msgstr ""
 
 #: uim/iso-639-1.def:165
 msgid "Tatar"
-msgstr "Tatar"
+msgstr ""
 
 #: uim/iso-639-1.def:166
 msgid "Telugu"
-msgstr "Telugu"
+msgstr ""
 
 #: uim/iso-639-1.def:167
 msgid "Thai"
-msgstr "Thaïlandais"
+msgstr ""
 
 #: uim/iso-639-1.def:168
 msgid "Tibetan"
-msgstr "Tibétain"
+msgstr ""
 
 #: uim/iso-639-1.def:169
 msgid "Tigrinya"
-msgstr "Tigrinya"
+msgstr ""
 
 #: uim/iso-639-1.def:170
 msgid "Tonga"
-msgstr "Tonga"
+msgstr ""
 
 #: uim/iso-639-1.def:171
 msgid "Tsonga"
-msgstr "Tsonga"
+msgstr ""
 
 #: uim/iso-639-1.def:172
 msgid "Turkish"
-msgstr "Turque"
+msgstr ""
 
 #: uim/iso-639-1.def:173
 msgid "Turkmen"
-msgstr "Turkmène"
+msgstr ""
 
 #: uim/iso-639-1.def:174
 msgid "Twi"
-msgstr "Twi"
+msgstr ""
 
 #: uim/iso-639-1.def:175
 msgid "Uighur"
-msgstr "Uighur"
+msgstr ""
 
 #: uim/iso-639-1.def:176
 msgid "Ukrainian"
-msgstr "Ukrainien"
+msgstr ""
 
 #: uim/iso-639-1.def:177
 msgid "Urdu"
-msgstr "Urdu"
+msgstr ""
 
 #: uim/iso-639-1.def:178
 msgid "Uzbek"
-msgstr "Ouzbek"
+msgstr ""
 
 #: uim/iso-639-1.def:179
 msgid "Vietnamese"
-msgstr "Vietnamien"
+msgstr ""
 
 #: uim/iso-639-1.def:180
 msgid "Welsh"
-msgstr "Gallois"
+msgstr ""
 
 #: uim/iso-639-1.def:181
 msgid "Wolof"
-msgstr "Wolof"
+msgstr ""
 
 #: uim/iso-639-1.def:182
 msgid "Xhosa"
-msgstr "Xhosa"
+msgstr ""
 
 #: uim/iso-639-1.def:183
 msgid "Yiddish"
-msgstr "Yiddish"
+msgstr ""
 
 #: uim/iso-639-1.def:184
 msgid "Yoruba"
-msgstr "Yoruba"
+msgstr ""
 
 #: uim/iso-639-1.def:185
 msgid "Zulu"
-msgstr "Zoulou"
+msgstr ""

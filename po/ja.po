@@ -96,7 +96,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-07 16:38+0900\n"
+"POT-Creation-Date: 2005-12-08 16:24+0900\n"
 "PO-Revision-Date: 2005-12-08 01:41+0900\n"
 "Last-Translator: Daichi Kawahata <daichik@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1202,11 +1202,13 @@ msgstr "Byeoru ハングル入力スイート"
 #. for future use
 #: scm/byeoru-custom.lisp:40
 msgid ""
-"A comprehensive input method suite for Hangul. This covers almost major "
-"input methods such as 2-beol and 3-beol variants, and provides some advanced "
-"features such as Hangul-Chinese conversion. The name 'byeoru' is Korean for "
-"inkstone."
-msgstr "ハングルのための包括的な入力方式スイート。2ボルや3ボル式とその派生版を含む主な入力方式の大半をカバーし、また、ハングル-中国語変換のような高度な機能も提供します。このスイート名 \"Byeoru\" は韓国語で \"硯\" を意味します。"
+"A comprehensive input method suite for Hangul. This covers most of the major "
+"input methods such as 2-beol and 3-beol variants, and provides features such "
+"as Hangul-Chinese conversion. The name 'byeoru' means inkstone in Korean."
+msgstr ""
+"ハングルのための包括的な入力方式スイート。2ボルや3ボル式とその派生版を含む主"
+"な入力方式の大半をカバーし、また、ハングル-中国語変換のような高度な機能も提供"
+"します。このスイート名 \"Byeoru\" は韓国語で \"硯\" を意味します。"
 
 #. 2-beol can not be orderless.
 #: scm/byeoru-custom.lisp:46
