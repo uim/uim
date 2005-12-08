@@ -251,15 +251,24 @@ void UimImSwitcher::parseHelperStrImList( const QString &message )
     const QStringList lines = QStringList::split( "\n", message );
     for ( unsigned int i = 2; i < lines.count(); i++ )
     {
-        const QStringList iminfoList = QStringList::split( "\t", lines[ i ] );
+        const QStringList iminfoList = QStringList::split( "\t", lines[ i ], true );
 
         if ( !iminfoList.isEmpty()
                 && !iminfoList[ 0 ].isEmpty()
-                && !iminfoList[ 1 ].isEmpty()
+		// Language of IM with any locale is set as "".
+                // && !iminfoList[ 1 ].isEmpty()
                 && !iminfoList[ 2 ].isEmpty() )
         {
+	    QString lang, short_desc;
+
+	    if (iminfoList[1].isEmpty())
+		lang = QString("-");
+	    else
+		lang = QString::fromUtf8(gettext(iminfoList[1].utf8()));
+	    short_desc = QString::fromUtf8(gettext(iminfoList[2].utf8()));
+
             // add new item to listview
-            QListViewItem * item = new QListViewItem( listview, iminfoList[ 0 ], iminfoList[ 1 ], iminfoList[ 2 ] );
+            QListViewItem * item = new QListViewItem( listview, iminfoList[ 0 ], lang, short_desc );
 
             if ( !iminfoList[ 3 ].isEmpty() && QString::compare( iminfoList[ 3 ], "selected" ) == 0 )
                 listview->setSelected( item, TRUE );
