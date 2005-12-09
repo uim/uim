@@ -137,13 +137,13 @@ static void finalize_dynamic_extent(void)
 static void wind_onto_dynamic_extent(ScmObj before, ScmObj after)
 {
     current_dynamic_extent = CONS(MAKE_DYNEXT_FRAME(before, after),
-                                      current_dynamic_extent);
+                                  current_dynamic_extent);
 }
 
 static void unwind_dynamic_extent(void)
 {
     if (NULLP(current_dynamic_extent))
-        SigScm_Error("corrupted dynamic extent");
+        ERR("corrupted dynamic extent");
 
     current_dynamic_extent = CDR(current_dynamic_extent);
 }
@@ -151,9 +151,9 @@ static void unwind_dynamic_extent(void)
 /* enter a dynamic extent of another continuation (dest) */
 static void enter_dynamic_extent(ScmObj dest)
 {
-    ScmObj frame   = SCM_FALSE;
-    ScmObj unwound = SCM_FALSE;
-    ScmObj retpath = SCM_NULL;
+    ScmObj frame, unwound, retpath;
+
+    retpath = SCM_NULL;
 
     for (unwound = dest; !NULLP(unwound); unwound = CDR(unwound)) {
         if (EQ(unwound, current_dynamic_extent))
@@ -171,7 +171,7 @@ static void enter_dynamic_extent(ScmObj dest)
 /* exit to a dynamic extent of another continuation (dest) */
 static void exit_dynamic_extent(ScmObj dest)
 {
-    ScmObj frame = SCM_FALSE;
+    ScmObj frame;
 
     for (;
          !NULLP(current_dynamic_extent);
@@ -186,7 +186,7 @@ static void exit_dynamic_extent(ScmObj dest)
 
 ScmObj Scm_DynamicWind(ScmObj before, ScmObj thunk, ScmObj after)
 {
-    ScmObj ret   = SCM_FALSE;
+    ScmObj ret;
 
     Scm_call(before, SCM_NULL);
     
@@ -219,11 +219,13 @@ static void continuation_stack_push(ScmObj cont)
 
 static ScmObj continuation_stack_pop(void)
 {
-    ScmObj recentmost = SCM_FALSE;
+    ScmObj recentmost;
 
     if (!NULLP(continuation_stack)) {
         recentmost = CAR(continuation_stack);
         continuation_stack = CDR(continuation_stack);
+    } else {
+        recentmost = SCM_FALSE;
     }
 
     return recentmost;
@@ -232,7 +234,7 @@ static ScmObj continuation_stack_pop(void)
 /* expire all descendant continuations and dest_cont */
 static ScmObj continuation_stack_unwind(ScmObj dest_cont)
 {
-    ScmObj cont = SCM_FALSE;
+    ScmObj cont;
 
     do {
         cont = continuation_stack_pop();
@@ -251,8 +253,7 @@ void Scm_DestructContinuation(ScmObj cont)
 
 ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
 {
-    volatile ScmObj cont = SCM_FALSE;
-    volatile ScmObj ret  = SCM_FALSE;
+    volatile ScmObj cont, ret;
     struct continuation_frame cont_frame;
 
     cont_frame.dyn_ext = current_dynamic_extent;
