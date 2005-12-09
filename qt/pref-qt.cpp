@@ -104,9 +104,9 @@ void UimPrefDialog::checkDotUimFile()
     if( QFile::exists( dotUim ) )
     {
         QString msg = _("The user customize file \"~/.uim\" is found.\n"
-                         "This file will override all conflicted settings set by\n"
-                         "this tool (stored in ~/.uim.d/customs/*.scm).\n"
-                         "Please check the file if you find your settings aren't applied.");
+                        "This file will override all conflicted settings set by\n"
+                        "this tool (stored in ~/.uim.d/customs/*.scm).\n"
+                        "Please check the file if you find your settings aren't applied.");
         QConfirmDialog *d = new QConfirmDialog( msg,
                                                 "/uim/qt/warnDotUim",
                                                 this );
