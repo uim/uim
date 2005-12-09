@@ -396,6 +396,11 @@
   (_ "Time length for showing input mode nearby the cursor")
   (_ "Set 0 to show indicator always."))
 
+(custom-add-hook 'bridge-show-input-state-time-length
+		 'custom-activity-hooks
+		 (lambda ()
+		   bridge-show-input-state?))
+
 ;; EB Library support
 ;; 2005-02-08 Takuro Ashie <ashie@homa.ne.jp>
 ;; FIXME! Here isn't suitable position for EB support preference
@@ -416,6 +421,10 @@
   (_ "The directory which contains EB dictionary file")
   (_ "long description will be here."))
 
+(custom-add-hook 'eb-dic-path
+		 'custom-activity-hooks
+		 (lambda ()
+		   eb-enable-for-annotation?))
 
 ;; uim-xim specific custom
 (define-custom-group 'xim

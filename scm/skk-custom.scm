@@ -359,6 +359,11 @@
   (_ "Personal dictionary file (dedicated to uim)")
   (_ "long description will be here."))
 
+(custom-add-hook 'skk-dic-file-name
+		 'custom-activity-hooks
+		 (lambda ()
+		   (not skk-use-skkserv?)))
+
 ;;
 ;; advanced
 ;;
