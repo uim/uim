@@ -33,24 +33,24 @@
 ===========================================================================*/
 
 /*
- * Description of the Garbage Collection
- *
- * Our GC uses Mark-and-Sweep algorithm. So, we have MARK phase and SWEEP phase.
+ * The GC performs conservative mark-and-sweep.
  *
  * [1] Mark phase : gc_mark()
  *   - gc_mark_locations()
- *       marking the Scheme object which are stored in the registers.
- *
- *   - gc_mark_protected_var()
- *       marking the protected Scheme object which are being hold by C
- *       variables registered by SigScm_GC_Protect().
+ *       marks Scheme objects that held in the registers.
  *
  *   - gc_mark_locations()
- *       marking the Scheme object which are pushed to the stack, so we need to
- *       traverse the stack for marking the objects.
+ *       marks Scheme objects that located on the stack.
+ *
+ *   - gc_mark_protected_var()
+ *       marks Scheme objects held in off-heap locations that registered by
+ *       SigScm_GC_Protect().
+ *
+ *   - gc_mark_definite_locations_n()
+ *       marks Scheme objects that held in the symbol table.
  *
  * [2] Sweep phase : gc_sweep()
- *   - scanning heaps and move non-marked object to the freelist.
+ *   - collects unmarked objects on heaps into the freelist.
  */
 
 /*=======================================
@@ -501,12 +501,12 @@ static void gc_mark(void)
     ScmObj stack_end;
     void *save_regs_buf_end = (char *)save_regs_buf + sizeof(save_regs_buf);
 
-    CDBG((SCM_DBG_GC, "gc_mark()"));
-
     setjmp(save_regs_buf);
     gc_mark_locations((ScmObj *)save_regs_buf, (ScmObj *)save_regs_buf_end);
-    gc_mark_protected_var();
     gc_mark_locations(stack_start_pointer, &stack_end);
+
+    /* performed after above two because of cache pollution */
+    gc_mark_protected_var();
     if (scm_symbol_hash)
         gc_mark_definite_locations_n(scm_symbol_hash, NAMEHASH_SIZE);
 }
