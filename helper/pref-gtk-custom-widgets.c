@@ -377,7 +377,6 @@ add_custom_type_string(GtkWidget *vbox, struct uim_custom *custom)
 
 
 
-/* FIXME: make pathname widget activity-sensitive */
 static void
 custom_pathname_button_clicked_cb(GtkWidget *button, GtkWidget *entry)
 {
@@ -435,6 +434,7 @@ add_custom_type_pathname(GtkWidget *vbox, struct uim_custom *custom)
 
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(custom_pathname_button_clicked_cb), entry);
+  uim_custom_cb_add(custom->symbol, entry, update_custom_type_string_cb);
 }
 
 
