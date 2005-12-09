@@ -49,6 +49,7 @@
 #include "preedit.h"
 #include "im.h"
 #include "callback.h"
+#include "encoding.h"
 
 typedef struct uim_agent_context {
   uim_context context;
@@ -77,6 +78,8 @@ uim_agent_context *get_uim_agent_context(int id);
 
 uim_agent_context *switch_context_im(uim_agent_context *ua, const char *im,
 									 const char *encoding);
+
+void update_context_configuration(uim_agent_context *ua);
 
 /* current focused context */
 extern uim_agent_context *current;

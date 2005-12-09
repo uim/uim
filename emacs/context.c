@@ -42,6 +42,39 @@ uim_agent_context *current;
 uim_agent_context_list *agent_context_list_head = NULL;
 uim_agent_context_list *agent_context_list_tail = NULL;
 
+static void
+update_context_im(uim_agent_context *ua)
+{
+  debug_printf(DEBUG_NOTE, "update_context_im\n");
+
+  uim_switch_im(ua->context, ua->im);
+
+  if (ua->im && strcmp(ua->im, uim_get_current_im_name(ua->context)) != 0) {
+	debug_printf(DEBUG_ERROR,
+				 "update_context_im: failed to switch IM to %s\n", ua->im);
+	free(ua->im);
+	ua->im = strdup(uim_get_current_im_name(ua->context));
+  }
+}
+
+static void
+update_context_encoding(uim_agent_context *ua)
+{
+
+  debug_printf(DEBUG_NOTE, "update_context_encoding\n");
+
+  /* discard current context */
+  clear_candidate(ua->pe->cand);
+  clear_preedit(ua->pe);
+  uim_release_context(ua->context);
+  
+  ua->context = create_context(ua->encoding, ua);
+
+  update_context_im(ua);
+  
+}
+
+
 /* search context */
 uim_agent_context *
 get_uim_agent_context(int id)
@@ -71,25 +104,23 @@ switch_context_im(uim_agent_context *ua, const char *im, const char *encoding)
 	return ua;
   }
 
+  if (ua->im) free(ua->im);
+
+  if (im)
+	ua->im = strdup(im);
+  else
+	ua->im = NULL;
+
   if (strcmp(ua->encoding, encoding) == 0) {
 	/* encodings are same */
 
 	debug_printf(DEBUG_NOTE,
 				 "same encoding %s %s\n", ua->im, im);
 
-	if (ua->im) free(ua->im);
-
-	if (im)
-	  ua->im = strdup(im);
-	else
-	  ua->im = NULL;
-
-	uim_switch_im(ua->context, im);  
+	update_context_im(ua);
 
 	uim_prop_label_update(ua->context);
 	uim_prop_list_update(ua->context);
-
-	return ua;
 
   } else {
 	/* encodings are different */
@@ -97,29 +128,21 @@ switch_context_im(uim_agent_context *ua, const char *im, const char *encoding)
 	debug_printf(DEBUG_NOTE, 
 				 "different encoding %s %s\n", ua->encoding, encoding);
 
-	/* discard current context */
-	clear_candidate(ua->pe->cand);
-	clear_preedit(ua->pe);
-	uim_release_context(ua->context);
-
-	ua->context = create_context(encoding, ua);
-
-	uim_switch_im(ua->context, im);
-
-	if (ua->im) free(ua->im);
-
-	ua->im = strdup(uim_get_current_im_name(ua->context));
-
 	if (ua->encoding) free(ua->encoding);
-
 	ua->encoding = strdup(encoding);
 
-	uim_prop_label_update(ua->context);
-	uim_prop_list_update(ua->context);
+	update_context_encoding(ua);
 
-	return ua;
   }
+
+  uim_prop_label_update(ua->context);
+  uim_prop_list_update(ua->context);
+
+  return ua;
+
 }
+
+
 
 
 uim_context
@@ -150,6 +173,9 @@ create_context(const char *encoding, uim_agent_context *ptr)
 
   uim_set_prop_label_update_cb(context,
 							   prop_label_update_cb);
+
+  uim_set_configuration_changed_cb(context,
+								   configuration_changed_cb);
   
   return context;
 
@@ -285,3 +311,28 @@ release_uim_agent_context(int id)
   return -1;
 }
 
+
+
+/* handle configuration change */
+void
+update_context_configuration(uim_agent_context *ua)
+{
+
+  /* configuration of context has changed at uim side */
+  debug_printf(DEBUG_NOTE, "update_context_configuration\n");
+  
+  /* update IM name */
+  if (ua->im) free(ua->im);
+  ua->im = strdup(uim_get_current_im_name(ua->context));
+
+  debug_printf(DEBUG_NOTE, "ua->im %s\n", ua->im);
+
+  if (ua->encoding) free(ua->encoding);
+  ua->encoding = strdup(get_im_encoding(ua->im));
+
+  debug_printf(DEBUG_NOTE, "ua->encoding %s\n", ua->encoding);
+
+  /* switch IM again to update encoding for Emacs...orz */
+  update_context_encoding(ua);
+
+}

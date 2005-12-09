@@ -150,3 +150,17 @@ prop_label_update_cb(void *ptr , const char *str)
   update_prop_label(ua->prop, str);
 }
 
+
+void
+configuration_changed_cb(void *ptr)
+{
+
+  uim_agent_context *ua = (uim_agent_context *)ptr;
+
+  /* configuration of context has changed at uim side */
+  debug_printf(DEBUG_NOTE, "configuration_changed_cb\n");
+
+  update_context_configuration(ua);
+  
+}
+

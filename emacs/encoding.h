@@ -52,6 +52,8 @@ typedef struct im_encoding {
 
 extern im_encoding *im_enc_list_head, *im_enc_list_tail;
 
+extern char default_encoding[];
+
 im_encoding *search_im_encoding(const char *im);
 im_encoding *new_im_encoding(const char *im, const char *encoding);
 int set_im_encoding(const char *im, const char *encoding);

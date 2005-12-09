@@ -38,6 +38,7 @@
 
 im_encoding *im_enc_list_head = NULL, *im_enc_list_tail = NULL;
 
+char default_encoding[] = "UTF-8";
 
 /* search encoding entry */
 im_encoding *
@@ -130,6 +131,7 @@ get_im_encoding(const char *im)
 	debug_printf(DEBUG_NOTE, " encoding = %s\n", im_enc->encoding);
 	return im_enc->encoding;
   } else {
-	return NULL;
+	/*return NULL;*/
+	return default_encoding;
   }
 }
