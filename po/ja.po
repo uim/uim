@@ -97,7 +97,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-09 16:13+0900\n"
+"POT-Creation-Date: 2005-12-09 18:52+0900\n"
 "PO-Revision-Date: 2005-12-09 16:17+0900\n"
 "Last-Translator: Daichi Kawahata <daichik@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -547,7 +547,7 @@ msgstr ""
 "いくつかの値が変更されています。\n"
 "保存しますか？"
 
-#: helper/pref-gtk.c:216
+#: helper/pref-gtk.c:216 qt/pref-qt.cpp:263
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you realy quit this program?"
@@ -661,20 +661,20 @@ msgstr "~/.uim が存在します！"
 msgid "Defaults"
 msgstr "標準"
 
-#: qt/pref-qt.cpp:159 qt/pref-qt.cpp:237 qt/pref-qt.cpp:319
+#: qt/pref-qt.cpp:159 qt/pref-qt.cpp:246 qt/pref-qt.cpp:352
 #: qt/switcher-qt.cpp:119
 msgid "OK"
 msgstr "OK"
 
-#: qt/pref-qt.cpp:166 qt/pref-qt.cpp:238 qt/switcher-qt.cpp:124
+#: qt/pref-qt.cpp:166 qt/pref-qt.cpp:247 qt/switcher-qt.cpp:124
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: qt/pref-qt.cpp:235
+#: qt/pref-qt.cpp:244
 msgid "Save Confirm"
 msgstr "保存確認"
 
-#: qt/pref-qt.cpp:236
+#: qt/pref-qt.cpp:245
 msgid ""
 "The value was changed.\n"
 "Save?"
@@ -682,7 +682,19 @@ msgstr ""
 "値が変更されました。\n"
 "保存しますか？"
 
-#: qt/pref-qt.cpp:314
+#: qt/pref-qt.cpp:262
+msgid "Quit Confirm"
+msgstr "終了確認"
+
+#: qt/pref-qt.cpp:265
+msgid "Yes"
+msgstr "はい"
+
+#: qt/pref-qt.cpp:266
+msgid "No"
+msgstr "いいえ"
+
+#: qt/pref-qt.cpp:347
 msgid "Show this dialog on startup"
 msgstr "起動時にこのダイアログを表示"
 

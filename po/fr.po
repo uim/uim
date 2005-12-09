@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-09 16:13+0900\n"
+"POT-Creation-Date: 2005-12-09 18:52+0900\n"
 "PO-Revision-Date: 2005-02-21 15:52+0100\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -447,7 +447,7 @@ msgid ""
 "Save?"
 msgstr ""
 
-#: helper/pref-gtk.c:216
+#: helper/pref-gtk.c:216 qt/pref-qt.cpp:263
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you realy quit this program?"
@@ -553,26 +553,38 @@ msgstr ""
 msgid "Defaults"
 msgstr "Options par défaut"
 
-#: qt/pref-qt.cpp:159 qt/pref-qt.cpp:237 qt/pref-qt.cpp:319
+#: qt/pref-qt.cpp:159 qt/pref-qt.cpp:246 qt/pref-qt.cpp:352
 #: qt/switcher-qt.cpp:119
 msgid "OK"
 msgstr "OK"
 
-#: qt/pref-qt.cpp:166 qt/pref-qt.cpp:238 qt/switcher-qt.cpp:124
+#: qt/pref-qt.cpp:166 qt/pref-qt.cpp:247 qt/switcher-qt.cpp:124
 msgid "Cancel"
 msgstr "Annuler"
 
-#: qt/pref-qt.cpp:235
+#: qt/pref-qt.cpp:244
 msgid "Save Confirm"
 msgstr ""
 
-#: qt/pref-qt.cpp:236
+#: qt/pref-qt.cpp:245
 msgid ""
 "The value was changed.\n"
 "Save?"
 msgstr ""
 
-#: qt/pref-qt.cpp:314
+#: qt/pref-qt.cpp:262
+msgid "Quit Confirm"
+msgstr ""
+
+#: qt/pref-qt.cpp:265
+msgid "Yes"
+msgstr ""
+
+#: qt/pref-qt.cpp:266
+msgid "No"
+msgstr ""
+
+#: qt/pref-qt.cpp:347
 msgid "Show this dialog on startup"
 msgstr ""
 
@@ -1762,9 +1774,8 @@ msgid "An input method provided by the m17n library"
 msgstr "Une méthode d'entrée fournie par la bibliothèqye m17n-lib"
 
 #: scm/mana-custom.lisp:35
-#, fuzzy
 msgid "Mana"
-msgstr "Kana"
+msgstr ""
 
 #: scm/mana-key-custom.lisp:36
 msgid "Mana key bindings 1"
@@ -1831,14 +1842,12 @@ msgid "[Mana] toggle hiragana/katakana mode"
 msgstr ""
 
 #: scm/mana-key-custom.lisp:135
-#, fuzzy
 msgid "[Mana] on"
-msgstr "[mana] annuler"
+msgstr ""
 
 #: scm/mana-key-custom.lisp:141
-#, fuzzy
 msgid "[Mana] off"
-msgstr "[PRIME] désactivé"
+msgstr ""
 
 #: scm/mana-key-custom.lisp:147
 msgid "[Mana] begin conversion"
@@ -1849,9 +1858,8 @@ msgid "[Mana] commit"
 msgstr ""
 
 #: scm/mana-key-custom.lisp:159
-#, fuzzy
 msgid "[Mana] cancel"
-msgstr "[mana] annuler"
+msgstr ""
 
 #: scm/mana-key-custom.lisp:165
 msgid "[Mana] next candidate"
@@ -1886,19 +1894,16 @@ msgid "[Mana] erase before cursor"
 msgstr ""
 
 #: scm/mana-key-custom.lisp:217
-#, fuzzy
 msgid "[Mana] backspace"
-msgstr "[mana] annuler"
+msgstr ""
 
 #: scm/mana-key-custom.lisp:223
-#, fuzzy
 msgid "[Mana] delete"
-msgstr "[mana] effacer"
+msgstr ""
 
 #: scm/mana-key-custom.lisp:229
-#, fuzzy
 msgid "[Mana] go left"
-msgstr "[mana] effacer"
+msgstr ""
 
 #: scm/mana-key-custom.lisp:235
 msgid "[Mana] go right"
