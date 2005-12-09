@@ -1,4 +1,4 @@
-EXTRA_DIST = README.jp
+EXTRA_DIST = README.ja
 
 if UIM_EL
 
