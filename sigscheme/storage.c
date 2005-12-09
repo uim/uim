@@ -87,11 +87,12 @@ static void initialize_special_constants(void);
 /*=======================================
   Function Implementations
 =======================================*/
-void SigScm_InitStorage(void)
+void SigScm_InitStorage(size_t heap_size, size_t heap_alloc_threshold,
+                        int n_heaps_max, int n_heaps_init)
 {
     initialize_special_constants();
 
-    SigScm_InitGC();
+    SigScm_InitGC(heap_size, heap_alloc_threshold, n_heaps_max, n_heaps_init);
 
 #if 0 && (SCM_COMPAT_SIOD_BUGS && !SCM_OBJ_COMPACT)
     SigScm_GC_Protect(&SigScm_true);

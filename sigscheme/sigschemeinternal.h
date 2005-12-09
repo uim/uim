@@ -423,11 +423,13 @@ typedef ScmRef ScmQueue;
    Function Declarations
 =======================================*/
 /* storage.c */
-void SigScm_InitStorage(void);
+void SigScm_InitStorage(size_t heap_size, size_t heap_alloc_threshold,
+                        int n_heaps_max, int n_heaps_init);
 void SigScm_FinalizeStorage(void);
 
 /* storage-gc.c */
-void   SigScm_InitGC(void);
+void   SigScm_InitGC(size_t heap_size, size_t heap_alloc_threshold,
+                     int n_heaps_max, int n_heaps_init);
 void   SigScm_FinalizeGC(void);
 ScmObj SigScm_NewObjFromHeap(void);
 

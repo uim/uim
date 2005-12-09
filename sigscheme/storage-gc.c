@@ -91,10 +91,6 @@ struct gc_protected_var_ {
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define SCM_HEAP_SIZE 10240
-#define NHEAP_INITIAL 1
-#define NHEAP_MAX     8
-
 #if !SCM_OBJ_COMPACT
 #define SCM_UNMARKER          0
 #define SCM_MARKER            (SCM_UNMARKER + 1)
@@ -107,9 +103,10 @@ struct gc_protected_var_ {
 /*=======================================
   Variable Declarations
 =======================================*/
-static int           scm_heap_num;
-static ScmObjHeap   *scm_heaps     = NULL;
-static ScmObj        scm_freelist  = NULL;
+static size_t heap_size, heap_alloc_threshold;
+static int n_heaps, n_heaps_max;
+static ScmObjHeap *heaps;
+static ScmObj freelist;
 
 static jmp_buf save_regs_buf;
 static ScmObj *stack_start_pointer = NULL;
@@ -129,8 +126,9 @@ extern ScmObj *scm_symbol_hash;
 =======================================*/
 static void *malloc_aligned(size_t size);
 
-static void initialize_heap(void);
-static void add_heap(ScmObjHeap **heaps, int *num_heap, size_t heap_size, ScmObj *freelist);
+static void initialize_heap(size_t size, size_t alloc_threshold,
+                            int n_max, int n_init);
+static void add_heap(void);
 static void finalize_heap(void);
 
 static void gc_mark_and_sweep(void);
@@ -146,16 +144,17 @@ static void gc_mark(void);
 
 /* GC Sweep Related Functions */
 static void free_cell(ScmCell *cell);
-static void gc_sweep(void);
+static size_t gc_sweep(void);
 
 static void finalize_protected_var(void);
 
 /*=======================================
   Function Implementations
 =======================================*/
-void SigScm_InitGC(void)
+void SigScm_InitGC(size_t heap_size, size_t heap_alloc_threshold,
+                   int n_heaps_max, int n_heaps_init)
 {
-    initialize_heap();
+    initialize_heap(heap_size, heap_alloc_threshold, n_heaps_max, n_heaps_init);
 }
 
 void SigScm_FinalizeGC(void)
@@ -168,11 +167,11 @@ ScmObj SigScm_NewObjFromHeap(void)
 {
     ScmObj ret = SCM_FALSE;
 
-    if (NULLP(scm_freelist))
+    if (NULLP(freelist))
         gc_mark_and_sweep();
 
-    ret = scm_freelist;
-    scm_freelist = SCM_FREECELL_CDR(scm_freelist);
+    ret = freelist;
+    freelist = SCM_FREECELL_CDR(freelist);
 
     return ret;
 }
@@ -271,46 +270,48 @@ static void *malloc_aligned(size_t size)
     return p;
 }
 
-static void initialize_heap(void)
+static void initialize_heap(size_t size, size_t alloc_threshold,
+                            int n_max, int n_init)
 {
     int i;
 
-    scm_heap_num = 0;
-    scm_heaps = NULL;
-    scm_freelist = SCM_NULL;
+    heap_size = size;
+    heap_alloc_threshold = alloc_threshold;
+    n_heaps_max = n_max;
+    n_heaps = 0;
+    heaps = NULL;
+    freelist = SCM_NULL;
 
     /* preallocate heaps */
-    for (i = 0; i < NHEAP_INITIAL; i++)
-        add_heap(&scm_heaps, &scm_heap_num, SCM_HEAP_SIZE, &scm_freelist);
+    for (i = 0; i < n_init; i++)
+        add_heap();
 }
 
-static void add_heap(ScmObjHeap **heaps, int *orig_num_heap, size_t heap_size, ScmObj *freelist)
+static void add_heap(void)
 {
-    int num_heap;
     ScmObjHeap heap;
     ScmCell *cell;
 
-    CDBG((SCM_DBG_GC, "add_heap current num of heaps:%d", *orig_num_heap));
+    CDBG((SCM_DBG_GC, "add_heap current num of heaps:%d", n_heaps));
 
-    if (NHEAP_MAX <= *orig_num_heap)
+    if (n_heaps_max <= n_heaps)
         ERR("heap exhausted"); /* FIXME: replace with fatal error handling */
 
-    num_heap = *orig_num_heap + 1;
-    *orig_num_heap = num_heap;
-    *heaps = realloc(*heaps, sizeof(ScmObjHeap) * num_heap);
-
+    heaps = realloc(heaps, sizeof(ScmObjHeap) * (n_heaps + 1));
     heap = malloc_aligned(sizeof(ScmCell) * heap_size);
-    (*heaps)[num_heap - 1] = heap;
+    if (!heaps || !heap)
+        ERR("memory exhausted"); /* FIXME: replace with fatal error handling */
+    heaps[n_heaps++] = heap;
 
     /* link in order */
-    for (cell = heap; cell < &heap[heap_size]; cell++) {
+    for (cell = &heap[0]; cell < &heap[heap_size]; cell++) {
         SCM_ENTYPE_FREECELL(cell);
         SCM_DO_UNMARK(cell);
         SCM_FREECELL_SET_CDR(cell, cell + 1);
     }
 
-    SCM_FREECELL_SET_CDR(cell - 1, *freelist);
-    *freelist = heap;
+    SCM_FREECELL_SET_CDR(cell - 1, freelist);
+    freelist = heap;
 }
 
 static void finalize_heap(void)
@@ -319,26 +320,27 @@ static void finalize_heap(void)
     ScmCell *cell;
     ScmObjHeap heap;
 
-    for (i = 0; i < scm_heap_num; i++) {
-        heap = scm_heaps[i];
-        for (cell = &heap[0]; cell < &heap[SCM_HEAP_SIZE]; cell++)
+    for (i = 0; i < n_heaps; i++) {
+        heap = heaps[i];
+        for (cell = &heap[0]; cell < &heap[heap_size]; cell++)
             free_cell(cell);
         free(heap);
     }
-    free(scm_heaps);
+    free(heaps);
 }
 
 static void gc_mark_and_sweep(void)
 {
+    size_t n_collected;
+
     CDBG((SCM_DBG_GC, "[ gc start ]"));
 
     gc_mark();
-    gc_sweep();
+    n_collected = gc_sweep();
 
-    /* we cannot sweep the object, so let's add new heap */
-    if (NULLP(scm_freelist)) {
+    if (n_collected < heap_alloc_threshold) {
         CDBG((SCM_DBG_GC, "Cannot sweep the object, allocating new heap."));
-        add_heap(&scm_heaps, &scm_heap_num, SCM_HEAP_SIZE, &scm_freelist);
+        add_heap();
     }
 }
 
@@ -414,8 +416,8 @@ static void finalize_protected_var(void)
 
 /* The core part of Conservative GC */
 
-/* TODO: improve average performance by maintaining max(scm_heaps[all]) and
- * min(scm_heaps[all]) at add_heap().
+/* TODO: improve average performance by maintaining max(heaps[all]) and
+ * min(heaps[all]) at add_heap().
  */
 static int is_pointer_to_heap(ScmObj obj)
 {
@@ -435,9 +437,9 @@ static int is_pointer_to_heap(ScmObj obj)
     if ((uintptr_t)ptr % sizeof(ScmCell))
         return 0;
 
-    for (i = 0; i < scm_heap_num; i++) {
-        heap = scm_heaps[i];
-        if (heap && heap <= ptr && ptr < &heap[SCM_HEAP_SIZE])
+    for (i = 0; i < n_heaps; i++) {
+        heap = heaps[i];
+        if (heap && heap <= ptr && ptr < &heap[heap_size])
             return 1;
     }
 
@@ -587,22 +589,22 @@ static void free_cell(ScmCell *cell)
 #endif /* SCM_OBJ_COMPACT */
 }
 
-static void gc_sweep(void)
+static size_t gc_sweep(void)
 {
-    int i, corrected_obj_num;
+    int i;
+    size_t sum_collected, n_collected;
     ScmObjHeap heap;
     ScmCell *cell;
     ScmObj obj, new_freelist;
 
-    new_freelist = scm_freelist; /* freelist remains on manual GC */
+    new_freelist = freelist; /* freelist remains on manual GC */
 
-    /* iterate heaps */
-    for (i = 0; i < scm_heap_num; i++) {
-        corrected_obj_num = 0;
-        heap = scm_heaps[i];
+    sum_collected = 0;
+    for (i = 0; i < n_heaps; i++) {
+        n_collected = 0;
+        heap = heaps[i];
 
-        /* iterate in heap */
-        for (cell = &heap[0]; cell < &heap[SCM_HEAP_SIZE]; cell++) {
+        for (cell = &heap[0]; cell < &heap[heap_size]; cell++) {
             /* FIXME: is this safe for SCM_OBJ_COMPACT? */
             obj = (ScmObj)cell;
 
@@ -615,11 +617,14 @@ static void gc_sweep(void)
                 SCM_FREECELL_SET_CAR(obj, SCM_NULL);
                 SCM_FREECELL_SET_CDR(obj, new_freelist);
                 new_freelist = obj;
-                corrected_obj_num++;
+                n_collected++;
             }
         }
 
-        CDBG((SCM_DBG_GC, "heap[%d] swept = %d", i, corrected_obj_num));
+        sum_collected += n_collected;
+        CDBG((SCM_DBG_GC, "heap[%d] swept = %d", i, n_collected));
     }
-    scm_freelist = new_freelist;
+    freelist = new_freelist;
+
+    return sum_collected;
 }

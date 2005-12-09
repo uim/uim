@@ -141,7 +141,8 @@ static void SigScm_Initialize_internal(void)
     =======================================================================*/
     SigScm_SetDebugCategories(SCM_DBG_ERRMSG | SCM_DBG_BACKTRACE
                               | SigScm_PredefinedDebugCategories());
-    SigScm_InitStorage();
+    /* FIXME: make configurable from libsscm client */
+    SigScm_InitStorage(10240, 8192, 8, 1);
     SigScm_InitError();
 
     /*=======================================================================
