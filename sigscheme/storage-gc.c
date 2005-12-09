@@ -103,6 +103,7 @@ struct gc_protected_var_ {
 static size_t heap_size, heap_alloc_threshold;
 static int n_heaps, n_heaps_max;
 static ScmObjHeap *heaps;
+static ScmCell *heaps_lowest, *heaps_highest;
 static ScmObj freelist;
 
 static jmp_buf save_regs_buf;
@@ -280,6 +281,7 @@ static void initialize_heap(size_t size, size_t alloc_threshold,
     n_heaps_max = n_max;
     n_heaps = 0;
     heaps = NULL;
+    heaps_lowest = heaps_highest = NULL;
     freelist = SCM_NULL;
 
     /* preallocate heaps */
@@ -302,6 +304,12 @@ static void add_heap(void)
     if (!heaps || !heap)
         ERR("memory exhausted"); /* FIXME: replace with fatal error handling */
     heaps[n_heaps++] = heap;
+
+    /* update the enclosure */
+    if (heaps_highest < &heap[heap_size])
+        heaps_highest = &heap[heap_size];
+    if (&heap[0] < heaps_lowest)
+        heaps_lowest = &heap[0];
 
     /* link in order */
     for (cell = &heap[0]; cell < &heap[heap_size]; cell++) {
@@ -416,9 +424,6 @@ static void finalize_protected_var(void)
 
 /* The core part of Conservative GC */
 
-/* TODO: improve average performance by maintaining max(heaps[all]) and
- * min(heaps[all]) at add_heap().
- */
 static int within_heapp(ScmObj obj)
 {
     ScmCell *heap, *ptr;
@@ -433,13 +438,18 @@ static int within_heapp(ScmObj obj)
 #else
     ptr = obj;
 #endif
-    /* heaps must be aligned to sizeof(ScmCell) */
-    if ((uintptr_t)ptr % sizeof(ScmCell))
+    /*
+     * Reject by rough conditions:
+     * - heaps must be aligned to sizeof(ScmCell)
+     * - ptr is pointing to outside the enclosure which contain all heaps
+     */
+    if (((uintptr_t)ptr % sizeof(ScmCell))
+        || (ptr < heaps_lowest || heaps_highest <= ptr))
         return 0;
 
     for (i = 0; i < n_heaps; i++) {
         heap = heaps[i];
-        if (heap && heap <= ptr && ptr < &heap[heap_size])
+        if (heap && &heap[0] <= ptr && ptr < &heap[heap_size])
             return 1;
     }
 
