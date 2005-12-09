@@ -77,10 +77,10 @@
 		(let ((face (cond
 			     ((string-match "s" preedit-flag)
 			      'uim-separator-face)
-			     ((string-match "u" preedit-flag)
-			      'uim-preedit-underline-face)
 			     ((string-match "ru" preedit-flag)
 			      'uim-preedit-highlight-underline-face)
+			     ((string-match "u" preedit-flag)
+			      'uim-preedit-underline-face)
 			     ((string-match "r" preedit-flag)
 			      'uim-preedit-highlight-face)
 			     (t 
