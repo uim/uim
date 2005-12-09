@@ -97,8 +97,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-09 04:59+0900\n"
-"PO-Revision-Date: 2005-12-09 00:31+0900\n"
+"POT-Creation-Date: 2005-12-09 16:13+0900\n"
+"PO-Revision-Date: 2005-12-09 16:17+0900\n"
 "Last-Translator: Daichi Kawahata <daichik@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -494,48 +494,48 @@ msgstr "ファイルを指定して下さい"
 msgid "File..."
 msgstr "参照..."
 
-#: helper/pref-gtk-custom-widgets.c:1110
+#: helper/pref-gtk-custom-widgets.c:1111
 msgid "Enabled"
 msgstr "有効"
 
-#: helper/pref-gtk-custom-widgets.c:1136
+#: helper/pref-gtk-custom-widgets.c:1137
 msgid "Enabled items"
 msgstr "有効なアイテム"
 
-#: helper/pref-gtk-custom-widgets.c:1214
+#: helper/pref-gtk-custom-widgets.c:1215
 msgid "Disabled"
 msgstr "無効"
 
-#: helper/pref-gtk-custom-widgets.c:1240
+#: helper/pref-gtk-custom-widgets.c:1241
 msgid "Disabled items"
 msgstr "無効なアイテム"
 
-#: helper/pref-gtk-custom-widgets.c:1278 helper/pref-gtk-custom-widgets.c:1867
+#: helper/pref-gtk-custom-widgets.c:1279 helper/pref-gtk-custom-widgets.c:1868
 msgid "Edit..."
 msgstr "編集..."
 
-#: helper/pref-gtk-custom-widgets.c:1486 qt/pref-customwidgets.cpp:839
+#: helper/pref-gtk-custom-widgets.c:1487 qt/pref-customwidgets.cpp:839
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr "割り当てるキーを押して下さい (例 <Control>a)"
 
-#: helper/pref-gtk-custom-widgets.c:1487
+#: helper/pref-gtk-custom-widgets.c:1488
 msgid "Grabbing keys"
 msgstr "キーを取得中"
 
-#: helper/pref-gtk-custom-widgets.c:1708
+#: helper/pref-gtk-custom-widgets.c:1709
 #, c-format
 msgid "%s - key configuration"
 msgstr "%s - キー設定"
 
-#: helper/pref-gtk-custom-widgets.c:1745
+#: helper/pref-gtk-custom-widgets.c:1746
 msgid "Key preference"
 msgstr "キー設定"
 
-#: helper/pref-gtk-custom-widgets.c:1791
+#: helper/pref-gtk-custom-widgets.c:1792
 msgid "Key:"
 msgstr "キー:"
 
-#: helper/pref-gtk-custom-widgets.c:1812
+#: helper/pref-gtk-custom-widgets.c:1813
 msgid "Grab..."
 msgstr "取得..."
 
@@ -749,10 +749,10 @@ msgstr "文節区切りを表示"
 #: scm/byeoru-key-custom.lisp:43 scm/canna-custom.lisp:44
 #: scm/canna-custom.lisp:55 scm/canna-custom.lisp:61 scm/canna-custom.lisp:76
 #: scm/canna-custom.lisp:82 scm/canna-custom.lisp:88 scm/canna-custom.lisp:94
-#: scm/canna-custom.lisp:173 scm/canna-custom.lisp:192
-#: scm/canna-custom.lisp:201 scm/canna-custom.lisp:243
-#: scm/canna-custom.lisp:252 scm/canna-custom.lisp:301
-#: scm/canna-custom.lisp:307 scm/canna-custom.lisp:364
+#: scm/canna-custom.lisp:177 scm/canna-custom.lisp:196
+#: scm/canna-custom.lisp:205 scm/canna-custom.lisp:247
+#: scm/canna-custom.lisp:256 scm/canna-custom.lisp:305
+#: scm/canna-custom.lisp:311 scm/canna-custom.lisp:368
 #: scm/canna-key-custom.lisp:37 scm/canna-key-custom.lisp:41
 #: scm/canna-key-custom.lisp:45 scm/generic-custom.lisp:37
 #: scm/generic-custom.lisp:43 scm/generic-custom.lisp:49
@@ -768,9 +768,9 @@ msgstr "文節区切りを表示"
 #: scm/im-custom.lisp:342 scm/im-custom.lisp:348 scm/im-custom.lisp:355
 #: scm/im-custom.lisp:361 scm/im-custom.lisp:367 scm/im-custom.lisp:373
 #: scm/im-custom.lisp:379 scm/im-custom.lisp:385 scm/im-custom.lisp:391
-#: scm/im-custom.lisp:404 scm/im-custom.lisp:410 scm/im-custom.lisp:417
-#: scm/im-custom.lisp:423 scm/im-custom.lisp:427 scm/im-custom.lisp:433
-#: scm/im-custom.lisp:439 scm/mana-custom.lisp:51 scm/mana-custom.lisp:57
+#: scm/im-custom.lisp:409 scm/im-custom.lisp:415 scm/im-custom.lisp:422
+#: scm/im-custom.lisp:432 scm/im-custom.lisp:436 scm/im-custom.lisp:442
+#: scm/im-custom.lisp:448 scm/mana-custom.lisp:51 scm/mana-custom.lisp:57
 #: scm/mana-custom.lisp:72 scm/mana-custom.lisp:78 scm/mana-custom.lisp:84
 #: scm/mana-custom.lisp:90 scm/mana-custom.lisp:173 scm/mana-custom.lisp:192
 #: scm/mana-custom.lisp:201 scm/mana-custom.lisp:243 scm/mana-custom.lisp:252
@@ -787,10 +787,10 @@ msgstr "文節区切りを表示"
 #: scm/skk-custom.lisp:91 scm/skk-custom.lisp:217 scm/skk-custom.lisp:236
 #: scm/skk-custom.lisp:245 scm/skk-custom.lisp:276 scm/skk-custom.lisp:285
 #: scm/skk-custom.lisp:328 scm/skk-custom.lisp:334 scm/skk-custom.lisp:346
-#: scm/skk-custom.lisp:353 scm/skk-custom.lisp:360 scm/skk-custom.lisp:372
-#: scm/skk-custom.lisp:378 scm/skk-custom.lisp:384 scm/skk-custom.lisp:390
-#: scm/skk-custom.lisp:396 scm/skk-custom.lisp:406 scm/skk-custom.lisp:412
-#: scm/skk-custom.lisp:433 scm/skk-custom.lisp:439 scm/skk-custom.lisp:446
+#: scm/skk-custom.lisp:353 scm/skk-custom.lisp:360 scm/skk-custom.lisp:377
+#: scm/skk-custom.lisp:383 scm/skk-custom.lisp:389 scm/skk-custom.lisp:395
+#: scm/skk-custom.lisp:401 scm/skk-custom.lisp:411 scm/skk-custom.lisp:417
+#: scm/skk-custom.lisp:438 scm/skk-custom.lisp:444 scm/skk-custom.lisp:451
 #: scm/skk-key-custom.lisp:65 scm/skk-key-custom.lisp:69
 #: scm/skk-key-custom.lisp:73 scm/skk-key-custom.lisp:78
 #: scm/skk-key-custom.lisp:82 scm/skk-key-custom.lisp:86
@@ -829,95 +829,95 @@ msgstr "候補ウィンドウに一度に表示する候補数"
 msgid "Select candidate by numeral keys"
 msgstr "数字キーで候補を選択する"
 
-#: scm/anthy-custom.lisp:119 scm/canna-custom.lisp:119
+#: scm/anthy-custom.lisp:119 scm/canna-custom.lisp:123
 #: scm/mana-custom.lisp:119 scm/prime-custom.lisp:160 scm/skk-custom.lisp:168
 msgid "Direct input"
 msgstr "直接入力"
 
-#: scm/anthy-custom.lisp:120 scm/canna-custom.lisp:120
+#: scm/anthy-custom.lisp:120 scm/canna-custom.lisp:124
 #: scm/mana-custom.lisp:120 scm/skk-custom.lisp:169
 msgid "Direct input mode"
 msgstr "直接入力モード"
 
-#: scm/anthy-custom.lisp:124 scm/canna-custom.lisp:124
+#: scm/anthy-custom.lisp:124 scm/canna-custom.lisp:128
 #: scm/mana-custom.lisp:124 scm/skk-custom.lisp:173
 msgid "Hiragana"
 msgstr "ひらがな"
 
-#: scm/anthy-custom.lisp:125 scm/canna-custom.lisp:125
+#: scm/anthy-custom.lisp:125 scm/canna-custom.lisp:129
 #: scm/mana-custom.lisp:125 scm/skk-custom.lisp:174
 msgid "Hiragana input mode"
 msgstr "ひらがな入力モード"
 
-#: scm/anthy-custom.lisp:129 scm/canna-custom.lisp:129
+#: scm/anthy-custom.lisp:129 scm/canna-custom.lisp:133
 #: scm/mana-custom.lisp:129 scm/skk-custom.lisp:178
 msgid "Katakana"
 msgstr "カタカナ"
 
-#: scm/anthy-custom.lisp:130 scm/canna-custom.lisp:130
+#: scm/anthy-custom.lisp:130 scm/canna-custom.lisp:134
 #: scm/mana-custom.lisp:130 scm/skk-custom.lisp:179
 msgid "Katakana input mode"
 msgstr "カタカナ入力モード"
 
-#: scm/anthy-custom.lisp:134 scm/canna-custom.lisp:134
+#: scm/anthy-custom.lisp:134 scm/canna-custom.lisp:138
 #: scm/mana-custom.lisp:134 scm/skk-custom.lisp:183
 msgid "Halfwidth Katakana"
 msgstr "半角カタカナ"
 
-#: scm/anthy-custom.lisp:135 scm/canna-custom.lisp:135
+#: scm/anthy-custom.lisp:135 scm/canna-custom.lisp:139
 #: scm/mana-custom.lisp:135 scm/skk-custom.lisp:184
 msgid "Halfwidth Katakana input mode"
 msgstr "半角カタカナ入力モード"
 
-#: scm/anthy-custom.lisp:139 scm/canna-custom.lisp:139
+#: scm/anthy-custom.lisp:139 scm/canna-custom.lisp:143
 #: scm/mana-custom.lisp:139 scm/prime-custom.lisp:170 scm/skk-custom.lisp:188
 msgid "Fullwidth Alphanumeric"
 msgstr "全角英数"
 
-#: scm/anthy-custom.lisp:140 scm/canna-custom.lisp:140
+#: scm/anthy-custom.lisp:140 scm/canna-custom.lisp:144
 #: scm/mana-custom.lisp:140 scm/prime-custom.lisp:171 scm/skk-custom.lisp:189
 msgid "Fullwidth Alphanumeric input mode"
 msgstr "全角英数字入力モード"
 
-#: scm/anthy-custom.lisp:147 scm/canna-custom.lisp:147
+#: scm/anthy-custom.lisp:147 scm/canna-custom.lisp:151
 #: scm/mana-custom.lisp:147 scm/skk-custom.lisp:196
 msgid "Romaji"
 msgstr "ローマ字"
 
-#: scm/anthy-custom.lisp:148 scm/canna-custom.lisp:148
+#: scm/anthy-custom.lisp:148 scm/canna-custom.lisp:152
 #: scm/mana-custom.lisp:148 scm/skk-custom.lisp:197
 msgid "Romaji input mode"
 msgstr "ローマ字入力モード"
 
-#: scm/anthy-custom.lisp:152 scm/canna-custom.lisp:152
+#: scm/anthy-custom.lisp:152 scm/canna-custom.lisp:156
 #: scm/mana-custom.lisp:152
 msgid "Kana"
 msgstr "かな"
 
-#: scm/anthy-custom.lisp:153 scm/canna-custom.lisp:153
+#: scm/anthy-custom.lisp:153 scm/canna-custom.lisp:157
 #: scm/mana-custom.lisp:153
 msgid "Kana input mode"
 msgstr "かな入力モード"
 
-#: scm/anthy-custom.lisp:157 scm/canna-custom.lisp:157
+#: scm/anthy-custom.lisp:157 scm/canna-custom.lisp:161
 #: scm/mana-custom.lisp:157 scm/skk-custom.lisp:201
 msgid "AZIK"
 msgstr "AZIK"
 
-#: scm/anthy-custom.lisp:158 scm/canna-custom.lisp:158
+#: scm/anthy-custom.lisp:158 scm/canna-custom.lisp:162
 #: scm/mana-custom.lisp:158 scm/skk-custom.lisp:202
 msgid "AZIK extended romaji input mode"
 msgstr "AZIK拡張ローマ字入力モード"
 
 #: scm/anthy-custom.lisp:167 scm/anthy-custom.lisp:168
-#: scm/canna-custom.lisp:167 scm/canna-custom.lisp:168
+#: scm/canna-custom.lisp:171 scm/canna-custom.lisp:172
 #: scm/mana-custom.lisp:167 scm/mana-custom.lisp:168 scm/skk-custom.lisp:211
 #: scm/skk-custom.lisp:212
 msgid "Input mode"
 msgstr "入力モード"
 
 #: scm/anthy-custom.lisp:170 scm/anthy-custom.lisp:171
-#: scm/canna-custom.lisp:170 scm/canna-custom.lisp:171
+#: scm/canna-custom.lisp:174 scm/canna-custom.lisp:175
 #: scm/mana-custom.lisp:170 scm/mana-custom.lisp:171 scm/skk-custom.lisp:214
 #: scm/skk-custom.lisp:215
 msgid "Kana input method"
@@ -925,33 +925,33 @@ msgstr "かな入力方式"
 
 # 「ツールバー上に表示するボタン」だと単に「ツールバー上への表示用途」というカテ
 # ゴリの限定の意に誤読されるので採用しない
-#: scm/anthy-custom.lisp:172 scm/canna-custom.lisp:172
+#: scm/anthy-custom.lisp:172 scm/canna-custom.lisp:176
 #: scm/mana-custom.lisp:172 scm/skk-custom.lisp:216
 msgid "Enabled toolbar buttons"
 msgstr "有効にするボタン"
 
-#: scm/anthy-custom.lisp:191 scm/canna-custom.lisp:191
+#: scm/anthy-custom.lisp:191 scm/canna-custom.lisp:195
 #: scm/mana-custom.lisp:191 scm/skk-custom.lisp:235
 msgid "Default input mode"
 msgstr "標準の入力モード"
 
-#: scm/anthy-custom.lisp:200 scm/canna-custom.lisp:200
+#: scm/anthy-custom.lisp:200 scm/canna-custom.lisp:204
 #: scm/mana-custom.lisp:200 scm/skk-custom.lisp:244
 msgid "Input mode menu items"
 msgstr "入力モードのメニュー項目"
 
-#: scm/anthy-custom.lisp:242 scm/canna-custom.lisp:242
+#: scm/anthy-custom.lisp:242 scm/canna-custom.lisp:246
 #: scm/mana-custom.lisp:242 scm/skk-custom.lisp:275
 msgid "Default kana input method"
 msgstr "標準のかな入力方式"
 
-#: scm/anthy-custom.lisp:251 scm/canna-custom.lisp:251
+#: scm/anthy-custom.lisp:251 scm/canna-custom.lisp:255
 #: scm/mana-custom.lisp:251 scm/skk-custom.lisp:284
 msgid "Kana input method menu items"
 msgstr "かな入力方式のメニュー項目"
 
-#: scm/anthy-custom.lisp:289 scm/canna-custom.lisp:363
-#: scm/mana-custom.lisp:289 scm/prime-custom.lisp:134 scm/skk-custom.lisp:432
+#: scm/anthy-custom.lisp:289 scm/canna-custom.lisp:367
+#: scm/mana-custom.lisp:289 scm/prime-custom.lisp:134 scm/skk-custom.lisp:437
 msgid "Enable vi-cooperative mode"
 msgstr "vi協調モードを有効にする"
 
@@ -1395,11 +1395,11 @@ msgstr "Canna"
 msgid "Canna server"
 msgstr "Canna サーバ"
 
-#: scm/canna-custom.lisp:300
+#: scm/canna-custom.lisp:304
 msgid "Use Canna server"
 msgstr "Cannaサーバを使用する"
 
-#: scm/canna-custom.lisp:306
+#: scm/canna-custom.lisp:310
 msgid "Canna server name"
 msgstr "Cannaサーバ名"
 
@@ -1759,11 +1759,11 @@ msgstr "一時切り換えキー"
 msgid "Alternative input method"
 msgstr "副入力方式"
 
-#: scm/im-custom.lisp:323 scm/skk-custom.lisp:70 scm/skk-custom.lisp:370
+#: scm/im-custom.lisp:323 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
 msgid "uim"
 msgstr "uim"
 
-#: scm/im-custom.lisp:323 scm/skk-custom.lisp:70 scm/skk-custom.lisp:370
+#: scm/im-custom.lisp:323 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
 msgid "uim native"
 msgstr "uimネイティブ"
 
@@ -1837,31 +1837,31 @@ msgstr "カーソルの側に入力モードを表示する時間"
 msgid "Set 0 to show indicator always."
 msgstr "常にインジケーターを表示するなら 0 にして下さい。"
 
-#: scm/im-custom.lisp:403
+#: scm/im-custom.lisp:408
 msgid "EB library"
 msgstr "EBライブラリ"
 
-#: scm/im-custom.lisp:409
+#: scm/im-custom.lisp:414
 msgid "Use EB library to search annotations"
 msgstr "註釈の検索にEBライブラリを使用する"
 
-#: scm/im-custom.lisp:416
+#: scm/im-custom.lisp:421
 msgid "The directory which contains EB dictionary file"
 msgstr "EB辞書ファイルを格納しているディレクトリ"
 
-#: scm/im-custom.lisp:422
+#: scm/im-custom.lisp:431
 msgid "XIM"
 msgstr "XIM"
 
-#: scm/im-custom.lisp:426
+#: scm/im-custom.lisp:435
 msgid "Preedit settings of XIM"
 msgstr "XIMの編集領域"
 
-#: scm/im-custom.lisp:432
+#: scm/im-custom.lisp:441
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr "編集領域のフォントにアンチエイリアスをかける"
 
-#: scm/im-custom.lisp:438
+#: scm/im-custom.lisp:447
 msgid "Font name for preedit area (anti-aliased)"
 msgstr "編集領域で使用されるフォント名 (アンチエイリアス時)"
 
@@ -1882,144 +1882,144 @@ msgid "An input method provided by the m17n library"
 msgstr "m17nライブラリが提供する入力方式"
 
 #: scm/mana-custom.lisp:35
-msgid "mana"
-msgstr "mana"
+msgid "Mana"
+msgstr "Mana"
 
 #: scm/mana-key-custom.lisp:36
-msgid "mana key bindings 1"
-msgstr "mana キー設定1"
+msgid "Mana key bindings 1"
+msgstr "Mana キー設定1"
 
 #: scm/mana-key-custom.lisp:40
-msgid "mana key bindings 2"
-msgstr "mana キー設定2"
+msgid "Mana key bindings 2"
+msgstr "Mana キー設定2"
 
 #: scm/mana-key-custom.lisp:44
-msgid "mana key bindings 3"
-msgstr "mana キー設定3"
+msgid "Mana key bindings 3"
+msgstr "Mana キー設定3"
 
 #: scm/mana-key-custom.lisp:51
-msgid "[mana] next segment"
-msgstr "[mana] 次文節"
+msgid "[Mana] next segment"
+msgstr "[Mana] 次文節"
 
 #: scm/mana-key-custom.lisp:57
-msgid "[mana] previous segment"
-msgstr "[mana] 前文節"
+msgid "[Mana] previous segment"
+msgstr "[Mana] 前文節"
 
 #: scm/mana-key-custom.lisp:63
-msgid "[mana] extend segment"
-msgstr "[mana] 文節を伸ばす"
+msgid "[Mana] extend segment"
+msgstr "[Mana] 文節を伸ばす"
 
 #: scm/mana-key-custom.lisp:69
-msgid "[mana] shrink segment"
-msgstr "[mana] 文節を縮める"
+msgid "[Mana] shrink segment"
+msgstr "[Mana] 文節を縮める"
 
 #: scm/mana-key-custom.lisp:75
-msgid "[mana] convert to halfwidth alphanumeric"
-msgstr "[mana] 半角英数字に変換"
+msgid "[Mana] convert to halfwidth alphanumeric"
+msgstr "[Mana] 半角英数字に変換"
 
 #: scm/mana-key-custom.lisp:81
-msgid "[mana] convert to fullwidth alphanumeric"
-msgstr "[mana] 全角英数字に変換"
+msgid "[Mana] convert to fullwidth alphanumeric"
+msgstr "[Mana] 全角英数字に変換"
 
 #: scm/mana-key-custom.lisp:87
-msgid "[mana] convert to hiragana"
-msgstr "[mana] ひらがなに変換"
+msgid "[Mana] convert to hiragana"
+msgstr "[Mana] ひらがなに変換"
 
 #: scm/mana-key-custom.lisp:93
-msgid "[mana] convert to katakana"
-msgstr "[mana] カタカナに変換"
+msgid "[Mana] convert to katakana"
+msgstr "[Mana] カタカナに変換"
 
 #: scm/mana-key-custom.lisp:99
-msgid "[mana] convert to halfwidth katakana"
-msgstr "[mana] 半角カタカナに変換"
+msgid "[Mana] convert to halfwidth katakana"
+msgstr "[Mana] 半角カタカナに変換"
 
 #: scm/mana-key-custom.lisp:105
-msgid "[mana] commit as transposed kana"
-msgstr "[mana] かな/カナ反転確定"
+msgid "[Mana] commit as transposed kana"
+msgstr "[Mana] かな/カナ反転確定"
 
 #: scm/mana-key-custom.lisp:111
-msgid "[mana] fullwidth alphanumeric mode"
-msgstr "[mana] 全角英数字入力モード"
+msgid "[Mana] fullwidth alphanumeric mode"
+msgstr "[Mana] 全角英数字入力モード"
 
 #: scm/mana-key-custom.lisp:118
-msgid "[mana] halfwidth katakana mode"
-msgstr "[mana] 半角カタカナ入力モード"
+msgid "[Mana] halfwidth katakana mode"
+msgstr "[Mana] 半角カタカナ入力モード"
 
 #: scm/mana-key-custom.lisp:124
-msgid "[mana] toggle hiragana/katakana mode"
-msgstr "[mana] ひらがな/カタカナ入力モードを反転"
+msgid "[Mana] toggle hiragana/katakana mode"
+msgstr "[Mana] ひらがな/カタカナ入力モードを反転"
 
 #: scm/mana-key-custom.lisp:135
-msgid "[mana] on"
-msgstr "[mana] オン"
+msgid "[Mana] on"
+msgstr "[Mana] オン"
 
 #: scm/mana-key-custom.lisp:141
-msgid "[mana] off"
-msgstr "[mana] オフ"
+msgid "[Mana] off"
+msgstr "[Mana] オフ"
 
 #: scm/mana-key-custom.lisp:147
-msgid "[mana] begin conversion"
-msgstr "[mana] 変換開始"
+msgid "[Mana] begin conversion"
+msgstr "[Mana] 変換開始"
 
 #: scm/mana-key-custom.lisp:153
-msgid "[mana] commit"
-msgstr "[mana] 確定"
+msgid "[Mana] commit"
+msgstr "[Mana] 確定"
 
 #: scm/mana-key-custom.lisp:159
-msgid "[mana] cancel"
-msgstr "[mana] キャンセル"
+msgid "[Mana] cancel"
+msgstr "[Mana] キャンセル"
 
 #: scm/mana-key-custom.lisp:165
-msgid "[mana] next candidate"
-msgstr "[mana] 次候補"
+msgid "[Mana] next candidate"
+msgstr "[Mana] 次候補"
 
 #: scm/mana-key-custom.lisp:171
-msgid "[mana] previous candidate"
-msgstr "[mana] 前候補"
+msgid "[Mana] previous candidate"
+msgstr "[Mana] 前候補"
 
 #: scm/mana-key-custom.lisp:177
-msgid "[mana] next page of candidate window"
-msgstr "[mana] 候補ウィンドウの次ページ"
+msgid "[Mana] next page of candidate window"
+msgstr "[Mana] 候補ウィンドウの次ページ"
 
 #: scm/mana-key-custom.lisp:183
-msgid "[mana] previous page of candidate window"
-msgstr "[mana] 候補ウィンドウの前ページ"
+msgid "[Mana] previous page of candidate window"
+msgstr "[Mana] 候補ウィンドウの前ページ"
 
 #: scm/mana-key-custom.lisp:193
-msgid "[mana] beginning of preedit"
-msgstr "[mana] 編集領域の先頭"
+msgid "[Mana] beginning of preedit"
+msgstr "[Mana] 編集領域の先頭"
 
 #: scm/mana-key-custom.lisp:199
-msgid "[mana] end of preedit"
-msgstr "[mana] 編集領域の末尾"
+msgid "[Mana] end of preedit"
+msgstr "[Mana] 編集領域の末尾"
 
 #: scm/mana-key-custom.lisp:205
-msgid "[mana] erase after cursor"
-msgstr "[mana] カーソル以降を消去"
+msgid "[Mana] erase after cursor"
+msgstr "[Mana] カーソル以降を消去"
 
 #: scm/mana-key-custom.lisp:211
-msgid "[mana] erase before cursor"
-msgstr "[mana] カーソル以前を消去"
+msgid "[Mana] erase before cursor"
+msgstr "[Mana] カーソル以前を消去"
 
 #: scm/mana-key-custom.lisp:217
-msgid "[mana] backspace"
-msgstr "[mana] バックスペース"
+msgid "[Mana] backspace"
+msgstr "[Mana] バックスペース"
 
 #: scm/mana-key-custom.lisp:223
-msgid "[mana] delete"
-msgstr "[mana] デリート"
+msgid "[Mana] delete"
+msgstr "[Mana] デリート"
 
 #: scm/mana-key-custom.lisp:229
-msgid "[mana] go left"
-msgstr "[mana] 左に移動"
+msgid "[Mana] go left"
+msgstr "[Mana] 左に移動"
 
 #: scm/mana-key-custom.lisp:235
-msgid "[mana] go right"
-msgstr "[mana] 右に移動"
+msgid "[Mana] go right"
+msgstr "[Mana] 右に移動"
 
 #: scm/mana-key-custom.lisp:241
-msgid "[mana] ESC keys on vi-cooperative mode"
-msgstr "[mana] vi協調モードでESCとして扱うキー"
+msgid "[Mana] ESC keys on vi-cooperative mode"
+msgstr "[Mana] vi協調モードでESCとして扱うキー"
 
 #: scm/prime-custom.lisp:34
 msgid "PRIME"
@@ -2262,7 +2262,7 @@ msgstr "見出し表示のキーで候補を確定する"
 msgid "ddskk-like"
 msgstr "ddskk風"
 
-#: scm/skk-custom.lisp:71 scm/skk-custom.lisp:369
+#: scm/skk-custom.lisp:71 scm/skk-custom.lisp:374
 msgid "Similar to ddskk"
 msgstr "ddskk風"
 
@@ -2294,43 +2294,43 @@ msgstr "個人辞書ファイル"
 msgid "Personal dictionary file (dedicated to uim)"
 msgstr "個人辞書ファイル (uim専用)"
 
-#: scm/skk-custom.lisp:369
+#: scm/skk-custom.lisp:374
 msgid "ddskk"
 msgstr "ddskk"
 
-#: scm/skk-custom.lisp:371
+#: scm/skk-custom.lisp:376
 msgid "Visual style"
 msgstr "ビジュアルスタイル"
 
-#: scm/skk-custom.lisp:377
+#: scm/skk-custom.lisp:382
 msgid "Use recursive learning"
 msgstr "再帰学習を使用する"
 
-#: scm/skk-custom.lisp:383
+#: scm/skk-custom.lisp:388
 msgid "Use numeric conversion"
 msgstr "数値変換を使用する"
 
-#: scm/skk-custom.lisp:389
+#: scm/skk-custom.lisp:394
 msgid "Enable auto conversion with punctuation marks"
 msgstr "句読点での自動変換を有効にする"
 
-#: scm/skk-custom.lisp:395
+#: scm/skk-custom.lisp:400
 msgid "Enable dynamic completion"
 msgstr "動的補完を有効にする"
 
-#: scm/skk-custom.lisp:405
+#: scm/skk-custom.lisp:410
 msgid "Show annotation of candidate word"
 msgstr "候補の註釈を表示する"
 
-#: scm/skk-custom.lisp:411
+#: scm/skk-custom.lisp:416
 msgid "Show annotation also in preedit area"
 msgstr "編集領域内にも註釈を表示する"
 
-#: scm/skk-custom.lisp:438
+#: scm/skk-custom.lisp:443
 msgid "Use Enter key as just committing (egg-like operation)"
 msgstr "Enterキーを単に確定のために使う (egg風の操作)"
 
-#: scm/skk-custom.lisp:445
+#: scm/skk-custom.lisp:450
 msgid "Commit newline as ASCII string instead of native key-event"
 msgstr "改行をネイティブキーイベントの代わりにASCII文字列として確定する"
 
@@ -3168,14 +3168,3 @@ msgstr "ズール語"
 # FIXME: should be revised
 #~ msgid "Show conjection class code column"
 #~ msgstr "接続詞のコード欄を表示"
-
-#~ msgid ""
-#~ "The user customize file \"~/.uim\" is found.\n"
-#~ "This file will override all conflicted settings set by\n"
-#~ "this tool (stored in ~/.uim.d/customs/*.scm).\n"
-#~ "Please check the file if you find your settings aren't applied"
-#~ msgstr ""
-#~ "ユーザ設定ファイル \"~/.uim\" が存在します。\n"
-#~ "このファイルによる設定は、このツールが保存する設定\n"
-#~ "(\"~/.uim.d/customs/*.scm\") よりも優先されます。\n"
-#~ "設定が反映されない場合は、このファイルの内容を確認して下さい。"

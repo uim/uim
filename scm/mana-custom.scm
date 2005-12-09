@@ -32,7 +32,7 @@
 (require "i18n.scm")
 
 
-(define mana-im-name-label (N_ "mana"))
+(define mana-im-name-label (N_ "Mana"))
 (define mana-im-short-desc (N_ "A multi-segment kana-kanji conversion engine"))
 
 (define-custom-group 'mana
