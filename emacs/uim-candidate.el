@@ -64,7 +64,7 @@
 
     ;; mark current-point
     (setq mark-base (point-marker))
-    (uim-debug (format "before: %s" (marker-position mark-base)))
+    ;;(uim-debug (format "before: %s" (marker-position mark-base)))
 
     ;; save original string
     (setq uim-candidate-original-str
@@ -90,7 +90,7 @@
       (setq base-ofs (- (marker-position mark-base) uim-candidate-start))
       (setq uim-candidate-start (+ uim-candidate-start base-ofs)))
 
-    (uim-debug (format "after: %s" (marker-position mark-base)))
+    ;;(uim-debug (format "after: %s" (marker-position mark-base)))
 
     (set-marker mark-base nil)
 
@@ -101,7 +101,7 @@
       (setq offset 
 	    (uim-string-width (buffer-substring (point) uim-candidate-start))))
 
-    (uim-debug (format "offset: %s" offset))
+    ;;(uim-debug (format "offset: %s" offset))
 
     ;; if offset + maxwidth >= window-width then reduce offset
     (if (>= (+ offset maxwidth 2) (window-width))
@@ -316,31 +316,88 @@
 	  (message cands)
 	  )
       ;; Emacs-20 or XEmacs
-      (let* ((page-width (+ (string-width uim-candidate-page-label) 2))
+;;       (let* ((page-width (+ (string-width uim-candidate-page-label) 2))
+;; 	     (cands-width (string-width cands))
+;; 	     (echoreg-width (- (- (window-width) 1) page-width)))
+;; 	(if (>= echoreg-width cands-width)
+;; 	    (setq cands
+;; 		  (concat cands
+;; 			  (make-string (- echoreg-width cands-width) 32)
+;; 			  "(" uim-candidate-page-label ")"))
+;; 	  (if (> (string-width (substring cands 0 selend))
+;; 		 (+ (- cands-width echoreg-width) 3))
+;; 	      (setq cands
+;; 		    (concat "..."
+;; 			    (truncate-string-to-width cands
+;; 						      cands-width 
+;; 						      (+ (- cands-width echoreg-width) 3))
+;; 			    "(" uim-candidate-page-label ")"))
+;; 	    (setq cands 
+;; 		  (concat "..."
+;; 			  (truncate-string-to-width (substring cands (- selend 1))
+;; 						    (if (> echoreg-width 6)
+;; 							(- echoreg-width 6)
+;; 						      0))
+;; 			  "..."
+;; 			  "(" uim-candidate-page-label ")")))))
+
+      (let* ((page-space (- (string-width page-total) 
+			    (string-width page-current)))
+	     (page-label (concat (if (> page-space 0) 
+				     (make-string page-space 32))
+				  page-current  "/" page-total " "))
+	     (page-width (string-width page-label))
 	     (cands-width (string-width cands))
 	     (echoreg-width (- (- (window-width) 1) page-width)))
-	(if (>= echoreg-width cands-width)
-	    (setq cands
-		  (concat cands
-			  (make-string (- echoreg-width cands-width) 32)
-			  "(" uim-candidate-page-label ")"))
-	  (if (> (string-width (substring cands 0 selend))
-		 (+ (- cands-width echoreg-width) 3))
-	      (setq cands
-		    (concat "..."
-			    (truncate-string-to-width cands
-						      cands-width 
-						      (+ (- cands-width echoreg-width) 3))
-			    "(" uim-candidate-page-label ")"))
-	    (setq cands 
-		  (concat "..."
-			  (truncate-string-to-width (substring cands (- selend 1))
-						    (if (> echoreg-width 6)
-							(- echoreg-width 6)
-						      0))
-			  "..."
-			  "(" uim-candidate-page-label ")")))))
-      
+
+	(cond ((>= echoreg-width cands-width)
+	       (setq cands
+		     (concat page-label cands)))
+
+	      ((= selstart 0)
+	       ;; | 10/134 [1.xxxxx] 2.yyyyy 3.zzzzz ...|
+	       (setq cands 
+		     (truncate-string-to-width cands
+					       (if (> echoreg-width 3)
+						   (- echoreg-width 3)
+						 0)))
+	       (setq cands
+		     (concat page-label
+			     cands
+			     (make-string (- echoreg-width
+					     (string-width cands))
+					  ?.)))
+
+	       )
+	      ((> (string-width (substring cands 0 selstart))
+		  (+ (- cands-width echoreg-width) 3))
+	       ;; | 10/134 ...yyy [3.zzzzz] 
+	       (setq cands
+		     (truncate-string-to-width cands
+					       cands-width 
+					       (+ (- cands-width echoreg-width) 3)))
+	       (setq cands
+		     (concat page-label
+			     (make-string (- echoreg-width 
+					     (string-width cands))
+					  ?.)
+			     cands)))
+	      (t
+	       ;; | 10/134 ...[3.zzzzz] ---- ...|
+	       (setq cands 
+		     (concat "..."
+			     (truncate-string-to-width (substring cands selstart)
+						       (if (> echoreg-width 6)
+							   (- echoreg-width 6)
+							 0))
+			     ))
+	       (setq cands
+		     (concat page-label
+			     cands
+			     (make-string (- echoreg-width 
+					     (string-width cands))
+					  ?.))))))
+
       (let (message-log-max)
 	(message cands))
       )
@@ -583,11 +640,6 @@
 	(save-excursion
 	  (goto-char uim-candidate-original-start)
 	  (insert uim-candidate-original-str))
-
-	;; delete overlay
-	;;(mapcar 'delete-overlay uim-candidate-overlays)
-	;;(setq uim-candidate-overlays nil)
-
 	)
 
     ;; clear minibuffer

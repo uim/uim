@@ -219,6 +219,7 @@
 	   (if (eq bind 'self-insert-command)
 	       (progn
 		 (setq this-command bind)
+		 (setq last-command-char (aref keyvec 0))
 		 (call-interactively bind)
 		 (uim-concat-undo))
 	     (setq this-command bind)
@@ -279,7 +280,9 @@
 	 (lastkey (nth (- (length keylist) 1) keylist)))
     (cond ((setq button
 		 (assoc lastkey
-			'((button1 . 1) (button2 . 2) (button3 . 3))))
+			'((button1 . 1) (button2 . 2) 
+			  (button3 . 3) (button4 . 4)
+			  (button5 . 5))))
 	   ;; mouse press
 	   (delq lastkey keylist)
 	   (setq event 
@@ -288,7 +291,9 @@
 	   )
 	  ((setq button
 		 (assoc lastkey
-			'((button1up . 1) (button2up . 2) (button3up . 3))))
+			'((button1up . 1) (button2up . 2) 
+			  (button3up . 3) (button4up . 4)
+			  (button5up . 5))))
 	   ;; mouse up
 	   (delq lastkey keylist)
 	   (setq event 
@@ -543,7 +548,7 @@
 
     ;;(uim-debug (format "stacked-key-vector: %s" uim-stacked-key-vector))
 
-    (cond ((and uim-preedit-displayed
+    (cond ((and uim-preedit-keymap-enabled
 		(uim-is-escape uim-stacked-key-vector)) ;; preedit ESC-ESC
 	   (uim-debug "Escape")
 	   ;; stop waiting and return ESC key
@@ -553,10 +558,10 @@
 	       (setq keyvec (vector (uim-xemacs-make-event [escape]))))
 	   (setq uim-stacked-key-vector nil)
 	   )
-	  ((or (and uim-preedit-displayed ;; with preedit
+	  ((or (and uim-preedit-keymap-enabled
 		    (and replace-continue ;; wait ESC- key vector
 			 (uim-is-start-with-escape uim-stacked-key-vector)))
-	       (and (not uim-preedit-displayed) ;; without preedit
+	       (and (not uim-preedit-keymap-enabled)
 		    (or replace-continue ;; wait all
 			(keymapp (uim-getbind uim-stacked-key-vector)))))
 	   ;; wait next

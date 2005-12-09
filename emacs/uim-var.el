@@ -34,7 +34,7 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;
 
-(defconst uim-el-version "0.0.6-beta2")
+(defconst uim-el-version "0.0.6-beta3")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -335,6 +335,7 @@ displayed at the echo area.")
 
 (uim-deflocalvar uim-undo-stacking nil)
 
+(uim-deflocalvar uim-preedit-keymap-enabled nil)
 
 ;; save font-lock mode
 (uim-deflocalvar uim-font-lock-mode nil)
