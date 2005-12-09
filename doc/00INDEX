@@ -1,11 +1,12 @@
 00INDEX (This file) contain the index.
 COMPATIBILITY       Tracks API/ABI compatibility change
 CUSTOM              Usage of uim-custom API for developers
+DOT-UIM             Usage of the user customization file
 HELPER-CANDWIN      Protocol between candidatewindow apps and uim-xim
 HELPER-PROTOCOL     Description of the helper message protocol 
 KEY                 KEY customizationg guide
 PLUGIN              Description of the plugin
+RELEASING           Release procedure (obsolete)
 UIM-SCM             Usage of uim-scm API for developers
 UIM-SH              How to use uim-sh to debug interactively
 UNIT-TEST           usage of the unit testing framework for uim for developers
-XIM-SERVER          Description of uim-xim
