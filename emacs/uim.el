@@ -1039,7 +1039,7 @@
 		 (if uim-last-key-vector
 		     (progn
 		       (setq key uim-last-key-vector)
-		       (uim-debug (format "%s" key)))
+		       (uim-debug (format "last-key: %s" key)))
 		   (setq key (car rval)))
 		 )
 		((string= rcode "s") ;; commit string

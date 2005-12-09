@@ -219,6 +219,7 @@
 	   (if (eq bind 'self-insert-command)
 	       (progn
 		 (setq this-command bind)
+		 (setq last-command-char (aref keyvec 0))
 		 (call-interactively bind)
 		 (uim-concat-undo))
 	     (setq this-command bind)
