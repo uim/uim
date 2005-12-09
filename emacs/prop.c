@@ -44,6 +44,8 @@ update_prop_list(property *prop, const char *str)
 
   prop->list = strdup(str);
   
+  debug_printf(DEBUG_NOTE, "prop->list: %s\n", prop->list);  
+
   prop->list_update = 1;
 
 }
@@ -54,6 +56,8 @@ update_prop_label(property *prop, const char *str)
   if (prop->label != NULL) free(prop->label);
 
   prop->label = strdup(str);
+
+  debug_printf(DEBUG_NOTE, "prop->label: %s\n", prop->label);  
 
   prop->label_update = 1;
 
