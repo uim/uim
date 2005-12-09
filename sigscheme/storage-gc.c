@@ -78,13 +78,6 @@ typedef unsigned long uintptr_t;
 
 typedef ScmCell *ScmObjHeap;
 
-/* Represents C variable that is holding a ScmObj to be protected from GC */
-typedef struct gc_protected_var_ gc_protected_var;
-struct gc_protected_var_ {
-    ScmObj *var;
-    gc_protected_var *next_var;
-};
-
 /*=======================================
   File Local Macro Declarations
 =======================================*/
@@ -114,7 +107,8 @@ ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *)
     = &SigScm_GC_ProtectStackInternal;
 #endif /* UIM_SCM_GCC4_READY_GC */
 
-static gc_protected_var *protected_var_list;
+static ScmObj **protected_vars;
+static size_t protected_vars_size, n_empty_protected_vars;
 
 /* storage-symbol.c */
 extern ScmObj *scm_symbol_hash;
@@ -122,6 +116,8 @@ extern ScmObj *scm_symbol_hash;
 /*=======================================
   File Local Function Declarations
 =======================================*/
+static ScmObj **locate_protected_var(ScmObj *var);
+
 static void *malloc_aligned(size_t size);
 
 static void initialize_heap(size_t size, size_t alloc_threshold,
@@ -154,7 +150,9 @@ void SigScm_InitGC(size_t heap_size, size_t heap_alloc_threshold,
                    int n_heaps_max, int n_heaps_init)
 {
     stack_start_pointer = NULL;
-    protected_var_list = NULL;
+    protected_vars = NULL;
+    protected_vars_size = 0;
+    n_empty_protected_vars = 0;
     initialize_heap(heap_size, heap_alloc_threshold, n_heaps_max, n_heaps_init);
 }
 
@@ -180,29 +178,52 @@ ScmObj SigScm_NewObjFromHeap(void)
 /*============================================================================
   ScmObj Protection
 ============================================================================*/
+/*
+ * Registered veriable locations are held in vector instead of linked list to
+ * maximize space and performance efficiency.
+ */
+static ScmObj **locate_protected_var(ScmObj *var)
+{
+    ScmObj **slot;
+
+    if (protected_vars) {
+        for (slot = protected_vars;
+             slot < &protected_vars[protected_vars_size];
+             slot++)
+        {
+            if (*slot == var)
+                return slot;
+        }
+    }
+
+    return NULL;
+}
+
 void SigScm_GC_Protect(ScmObj *var)
 {
-    gc_protected_var *item;
+    ScmObj **slot;
 
-    item = (gc_protected_var *)malloc(sizeof(gc_protected_var));
-    item->var = var;
-
-    item->next_var = protected_var_list;
-    protected_var_list = item;
+    if (n_empty_protected_vars) {
+        slot = locate_protected_var(NULL);
+        n_empty_protected_vars--;
+    } else {
+        protected_vars = realloc(protected_vars,
+                                 sizeof(ScmObj *) * (protected_vars_size + 1));
+        if (!protected_vars)
+            ERR("memory exhausted");  /* FIXME: replace with fatal error */
+        slot = &protected_vars[protected_vars_size++];
+    }
+    *slot = var;
 }
 
 void SigScm_GC_Unprotect(ScmObj *var)
 {
-    gc_protected_var *item, **prev_next;
+    ScmObj **slot;
 
-    prev_next = &protected_var_list;
-    for (item = protected_var_list; item; item = item->next_var) {
-        if (item->var == var) {
-            *prev_next = item->next_var;
-            free(item);
-            break;
-        }
-        prev_next = &item->next_var;
+    slot = locate_protected_var(var);
+    if (slot) {
+        *slot = NULL;
+        n_empty_protected_vars++;
     }
 }
 
@@ -411,15 +432,7 @@ mark_loop:
 
 static void finalize_protected_var(void)
 {
-    gc_protected_var *item = protected_var_list;
-    gc_protected_var *tmp  = NULL;
-    while (item) {
-        *item->var = NULL;
-        tmp  = item;
-        item = item->next_var;
-        free(tmp);
-    }
-    protected_var_list = NULL;
+    free(protected_vars);
 }
 
 /* The core part of Conservative GC */
@@ -458,9 +471,16 @@ static int within_heapp(ScmObj obj)
 
 static void gc_mark_protected_var(void)
 {
-    gc_protected_var *item = NULL;
-    for (item = protected_var_list; item; item = item->next_var) {
-        mark_obj(*item->var);
+    ScmObj **slot;
+
+    if (protected_vars) {
+        for (slot = protected_vars;
+             slot < &protected_vars[protected_vars_size];
+             slot++)
+        {
+            if (*slot)
+                mark_obj(**slot);
+        }
     }
 }
 
