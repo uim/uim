@@ -280,7 +280,9 @@
 	 (lastkey (nth (- (length keylist) 1) keylist)))
     (cond ((setq button
 		 (assoc lastkey
-			'((button1 . 1) (button2 . 2) (button3 . 3))))
+			'((button1 . 1) (button2 . 2) 
+			  (button3 . 3) (button4 . 4)
+			  (button5 . 5))))
 	   ;; mouse press
 	   (delq lastkey keylist)
 	   (setq event 
@@ -289,7 +291,9 @@
 	   )
 	  ((setq button
 		 (assoc lastkey
-			'((button1up . 1) (button2up . 2) (button3up . 3))))
+			'((button1up . 1) (button2up . 2) 
+			  (button3up . 3) (button4up . 4)
+			  (button5up . 5))))
 	   ;; mouse up
 	   (delq lastkey keylist)
 	   (setq event 

@@ -77,7 +77,7 @@
 (defun uim-unbind-mouse-event ()
   (let ((mouse-modifiers uim-mouse-modifiers))
     (while mouse-modifiers
-      (let ((mouse '(mouse-1 mouse-2 mouse-3)))
+      (let ((mouse '(mouse-1 mouse-2 mouse-3 mouse-4 mouse-5)))
 	(while mouse
 	  (let ((event (vector (append (car mouse-modifiers)
 				       (list (car mouse))))))

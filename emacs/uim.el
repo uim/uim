@@ -911,7 +911,7 @@
 		 (setq sendkey 
 		       (uim-convert-keystr-to-uimagent-vector (key-description keyvec)))
 
-		 (cond ((string-match "button\\(1\\|2\\|3\\)" 
+		 (cond ((string-match "button\\(1\\|2\\|3\\|4\\|5\\)" 
 				      (key-description keyvec))
 			;; through mouse event
 			(setq mouse t)
@@ -946,7 +946,7 @@
 			(setq count (prefix-numeric-value arg)))
 		       ((and (eventp event)
 			     (memq (event-basic-type event) 
-				   '(mouse-1 mouse-2 mouse-3)))
+				   '(mouse-1 mouse-2 mouse-3 mouse-4 mouse-5)))
 			;; detect mouse event
 			;;(uim-debug "mouse event")
 			(setq bypass t)
