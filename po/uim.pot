@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-09 16:13+0900\n"
+"POT-Creation-Date: 2005-12-09 18:52+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -448,7 +448,7 @@ msgid ""
 "Save?"
 msgstr ""
 
-#: helper/pref-gtk.c:216
+#: helper/pref-gtk.c:216 qt/pref-qt.cpp:263
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you realy quit this program?"
@@ -554,26 +554,38 @@ msgstr ""
 msgid "Defaults"
 msgstr ""
 
-#: qt/pref-qt.cpp:159 qt/pref-qt.cpp:237 qt/pref-qt.cpp:319
+#: qt/pref-qt.cpp:159 qt/pref-qt.cpp:246 qt/pref-qt.cpp:352
 #: qt/switcher-qt.cpp:119
 msgid "OK"
 msgstr ""
 
-#: qt/pref-qt.cpp:166 qt/pref-qt.cpp:238 qt/switcher-qt.cpp:124
+#: qt/pref-qt.cpp:166 qt/pref-qt.cpp:247 qt/switcher-qt.cpp:124
 msgid "Cancel"
 msgstr ""
 
-#: qt/pref-qt.cpp:235
+#: qt/pref-qt.cpp:244
 msgid "Save Confirm"
 msgstr ""
 
-#: qt/pref-qt.cpp:236
+#: qt/pref-qt.cpp:245
 msgid ""
 "The value was changed.\n"
 "Save?"
 msgstr ""
 
-#: qt/pref-qt.cpp:314
+#: qt/pref-qt.cpp:262
+msgid "Quit Confirm"
+msgstr ""
+
+#: qt/pref-qt.cpp:265
+msgid "Yes"
+msgstr ""
+
+#: qt/pref-qt.cpp:266
+msgid "No"
+msgstr ""
+
+#: qt/pref-qt.cpp:347
 msgid "Show this dialog on startup"
 msgstr ""
 
