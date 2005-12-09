@@ -471,7 +471,7 @@ AC_ARG_ENABLE(fep,
 
 AC_ARG_ENABLE(emacs,
   AC_HELP_STRING([--disable-emacs],
-                 [disable uim-el]),
+                 [disable uim.el]),
   [
     case $enable_emacs in
       no)

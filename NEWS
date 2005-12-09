@@ -2,7 +2,7 @@ Overview of changes from 0.4.9.1 to 1.0.0
 ==
 * New features
   o Main features
-    - uim-el (bridge for Emacs) (Konosuke)
+    - uim.el (bridge for Emacs) (Konosuke)
     - byeoru Hangul input suite (Jae-hyeon)
     - mana Japanese input (Masanari)
 
@@ -21,11 +21,12 @@ Overview of changes from 0.4.9.1 to 1.0.0
     - fix segmentation fault if uim is compiled with '--enabled-debug'
       (Etsushi, dai <d+r AT vdr.jp>)
     - fix ipc (prime connection) in some rare cases (Masanari)
+    - fix possible GC crash with anti-stack smashing compilers such as
+      GCC4 (Jun, YamaKen)
 
   o Minor
     - preedit reset with IM switch (Masanari)
     - some build fixes (Masanari)
-    - safe scheme interpreter with gcc4 (YamaKen, Jun)
   
     - gtk+ immodule
       - disable warnings (Etsushi)
