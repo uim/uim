@@ -364,16 +364,6 @@
 		 (lambda ()
 		   (not skk-use-skkserv?)))
 
-(custom-add-hook 'skk-personal-dic-filename
-		 'custom-activity-hooks
-		 (lambda ()
-		   (not skk-use-skkserv?)))
-
-(custom-add-hook 'skk-uim-personal-dic-filename
-		 'custom-activity-hooks
-		 (lambda ()
-		   (not skk-use-skkserv?)))
-
 ;;
 ;; advanced
 ;;
