@@ -212,15 +212,24 @@ void UimPrefDialog::createGroupWidgets()
  */
 void UimPrefDialog::slotSelectionChanged( QListViewItem * item )
 {
+    /*
+     * Don't confirm on each change in slot selection according to
+     * [Anthy-dev 1795].
+     * Dec 09 2005 ekato
+     */
+#if 0
     /* confirm if save the change */
     if( m_isValueChanged )    
         confirmChange();
+#endif
     
     /* switch group widget */
     QString grpname = item->text( 0 );
     m_groupWidgetStack->raiseWidget( m_groupWidgetsDict[grpname] );
 
+#if 0
     m_applyButton->setEnabled( false );
+#endif
 }
 
 void UimPrefDialog::slotCustomValueChanged()
@@ -243,6 +252,27 @@ void UimPrefDialog::confirmChange()
         break;
     case 1:
         m_isValueChanged = false;
+        break;
+    }
+}
+
+void UimPrefDialog::confirmQuit()
+{
+    int result = QMessageBox::question( this,
+                                        _("Quit Confirm"),
+                                        _("Some value(s) have been changed.\n"
+                                          "Do you realy quit this program?"),
+                                        _("Yes"),
+                                        _("No"),
+                                        QString::null, 0, 1);
+    switch(result)
+    {
+    case 0:
+        reject();
+        break;
+    case 1:
+        break;
+    default:
         break;
     }
 }
@@ -282,11 +312,14 @@ void UimPrefDialog::slotOK()
 void UimPrefDialog::slotCancel()
 {
     /*
+     * Enable confirmation since each change in slot selection is not
+     * checked strictly according to [Anthy-dev 1795].
+     * Dec 09 2005 ekato
+     */
     if( m_isValueChanged )
-        confirmChange();
-    */
-
-    reject();
+        confirmQuit();
+    else
+        reject();
 }
 
 //-------------------------------------------------------------------------------------

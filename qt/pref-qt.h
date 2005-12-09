@@ -68,6 +68,7 @@ protected:
     void createGroupWidgets();
 
     void confirmChange();
+    void confirmQuit();
     
 protected slots:
     void slotSetDefault();
