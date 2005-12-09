@@ -64,7 +64,7 @@
 
     ;; mark current-point
     (setq mark-base (point-marker))
-    (uim-debug (format "before: %s" (marker-position mark-base)))
+    ;;(uim-debug (format "before: %s" (marker-position mark-base)))
 
     ;; save original string
     (setq uim-candidate-original-str
@@ -90,7 +90,7 @@
       (setq base-ofs (- (marker-position mark-base) uim-candidate-start))
       (setq uim-candidate-start (+ uim-candidate-start base-ofs)))
 
-    (uim-debug (format "after: %s" (marker-position mark-base)))
+    ;;(uim-debug (format "after: %s" (marker-position mark-base)))
 
     (set-marker mark-base nil)
 
@@ -101,7 +101,7 @@
       (setq offset 
 	    (uim-string-width (buffer-substring (point) uim-candidate-start))))
 
-    (uim-debug (format "offset: %s" offset))
+    ;;(uim-debug (format "offset: %s" offset))
 
     ;; if offset + maxwidth >= window-width then reduce offset
     (if (>= (+ offset maxwidth 2) (window-width))
@@ -583,11 +583,6 @@
 	(save-excursion
 	  (goto-char uim-candidate-original-start)
 	  (insert uim-candidate-original-str))
-
-	;; delete overlay
-	;;(mapcar 'delete-overlay uim-candidate-overlays)
-	;;(setq uim-candidate-overlays nil)
-
 	)
 
     ;; clear minibuffer

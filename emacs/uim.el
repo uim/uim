@@ -361,7 +361,7 @@
   ;; hide candidate/preedit when buffer-save has been called
   (add-hook 'local-write-file-hooks 
 	    '(lambda ()
-	       (if uim-preedit-displayed
+	       (if (or uim-preedit-displayed uim-candidate-displayed)
 		   (uim-process-agent-output '(("e"))))))
 
   ;; change IM engine to uim-default-im-engine
@@ -528,6 +528,7 @@
 ;;
 (defun uim-restore-undo ()
   (when uim-buffer-undo-list-saved
+    (uim-debug "restore undo list")
     (buffer-enable-undo)
     (setq buffer-undo-list uim-buffer-undo-list)
     (setq uim-buffer-undo-list-saved nil))
@@ -539,6 +540,7 @@
 ;;
 (defun uim-save-undo ()
   (when (not uim-buffer-undo-list-saved)
+    (uim-debug "save undo list")
     (setq uim-buffer-undo-list buffer-undo-list)
     (buffer-disable-undo)
     (setq uim-buffer-undo-list-saved 't))
@@ -920,8 +922,9 @@
 			(setq bypass t)
 			(setq count (prefix-numeric-value arg)))
 		       
-		       ((and (not uim-preedit-displayed)
-			     (uim-buffer-not-editable) )
+		       ((and (not (or uim-preedit-displayed 
+				      uim-candidate-displayed))
+			     (uim-buffer-not-editable))
 			;; through uim-el-agent when buffer is uneditable
 			(setq bypass t)
 			))
@@ -949,7 +952,8 @@
 			(setq bypass t)
 			(setq mouse t)
 			)
-		       ((and (not uim-preedit-displayed)
+		       ((and (not (or uim-preedit-displayed
+				      uim-candidate-displayed))
 			     (uim-buffer-not-editable))
 			(setq bypass t))
 		       (t 
@@ -1001,22 +1005,24 @@
 
 ;; process return expression from uim-el-agent 
 (defun uim-process-agent-output (str)
-  (let (preedit-exists
-	candidate-exists
-	key commit (preedit nil) candidate default label imlist)
+  (let (preedit-existed
+	candidate-existed
+	key commit preedit candidate default label imlist)
 
     (let ((modified (buffer-modified-p)))
       ;; remove candidate anyway
       (when uim-candidate-displayed
-	(setq candidate-exists t)
+	(setq candidate-existed t)
 	(uim-remove-candidate)
-	(setq uim-candidate-displayed nil))
+	(setq uim-candidate-displayed nil)
+	(goto-char uim-candidate-start))
 
       ;; remove preedit anyway
       (when uim-preedit-displayed
-	(setq preedit-exists t)
+	(setq preedit-existed t)
 	(uim-remove-preedit)
-	(setq uim-preedit-displayed nil))
+	(setq uim-preedit-displayed nil)
+	(goto-char uim-preedit-start))
 
       ;; restore modified flag
       (set-buffer-modified-p modified))
@@ -1070,76 +1076,96 @@
     (when imlist
       (uim-update-imlist imlist))
 
-    (if (or commit
-	    (and preedit-exists (not preedit)))
-	(uim-restore-undo))
 
     (if commit
-	(mapcar '(lambda (x) 
-		   (insert x) (undo-boundary)) 
-		commit))
+	(let ((buffer-undo-list-saved uim-buffer-undo-list-saved))
+	  ;; restore undo history before committing
+	  (when buffer-undo-list-saved
+	    (uim-debug "call restore undo")
+	    (uim-restore-undo))
 
-    (if key
-	;; process raw key
-	(progn
-	  (if preedit-exists
-	      (uim-disable-preedit-keymap))
-	  (uim-process-keyvec key))
+	  ;; insert committed strings
+	  (mapcar
+	   '(lambda (x) 
+	      (insert x)
+	      (uim-debug (format "insert %s" x))
+	      (undo-boundary))
+	   commit)
 
-      ;; process preedit
-      (if preedit
-	  (let ((modified (buffer-modified-p)))
-
-	    (uim-flush-concat-undo)
-
-	    ;; switch keymap to preedit mode
-	    (if (not preedit-exists)
-		(uim-enable-preedit-keymap))
-
-	    (uim-save-undo)
-
-	    (setq uim-preedit-displayed t)
-
-	    ;; freeze buffer if the first preedit display
-	    (if (and (not preedit-exists)
-		     (= (minibuffer-depth) 0))
-		(uim-freeze-buffer))
-
-	    (uim-insert-preedit preedit)
-
-	    ;; show candidate
-	    (if candidate
-		(progn
-		  (setq uim-candidate-displayed t)
-		  (if (uim-check-candidate-space)
-		      (uim-show-candidate candidate))))
-
-	    (set-buffer-modified-p modified)
-	    )
-
-	(when (and preedit-exists
-		   uim-buffer-frozen)
-	  (uim-disable-preedit-keymap)
-	  (uim-unfreeze-buffer)
-
-	  )
-	)
-
-      (when (and candidate-exists
-		 (not uim-candidate-displayed)
-		 uim-window-force-scrolled)
-	(uim-debug "recenter: window-force-scrolled is true")
-	(setq uim-window-force-scrolled nil)
-	(recenter)
-	)
-      
-
-      ;; move cursor
-
-      (when uim-preedit-displayed
-	(goto-char uim-preedit-cursor))
+	  ;; save undo hisotry again
+	  (when buffer-undo-list-saved
+	    (uim-debug "call save undo")
+	    (uim-save-undo)))
       )
 
+
+    (if (or preedit candidate)
+	;; process preedit/candidate
+	(let ((modified (buffer-modified-p)))
+
+	  ;; save undo list if not saved
+	  (when (not uim-buffer-undo-list-saved)
+	    (uim-flush-concat-undo)
+	    (uim-debug "call save undo")
+	    (uim-save-undo))
+
+	  ;; change keymap and freeze faces at first time
+	  (when (not uim-preedit-keymap-enabled)
+	    (uim-debug "call enable keymap")
+	    (uim-enable-preedit-keymap)
+	    (if (= (minibuffer-depth) 0)
+		(uim-freeze-buffer)))
+
+	  ;; show preedit
+	  (if preedit
+	      (progn
+		(setq uim-preedit-displayed t)
+		(uim-insert-preedit preedit))
+	    (setq uim-candidate-start (point))
+	    (setq uim-candidate-vofs 0)
+	    (setq uim-preedit-cursor (point)))
+
+	  ;; show candidate
+	  (if candidate
+	      (progn
+		(setq uim-candidate-displayed t)
+		(if (uim-check-candidate-space)
+		    (uim-show-candidate candidate))))
+	  
+	  (set-buffer-modified-p modified)
+
+	  )
+
+      ;; no preedit/candidate
+
+      ;; restore undo-list before raw key processing
+      (when uim-buffer-undo-list-saved
+	(uim-debug "call restore undo")
+	(uim-restore-undo))
+
+      ;; no raw-key and no preedit/candidate
+      (when uim-preedit-keymap-enabled
+	(uim-debug "call disable preedit keymap")
+	(uim-disable-preedit-keymap)
+	(uim-unfreeze-buffer))
+
+      (if key
+	  ;; process raw key
+	  (uim-process-keyvec key))
+      )
+
+    ;; scroll buffer after candidate removed
+    ;;  recenter if buffer is force scrolled at candidate displaying
+    (when (and candidate-existed
+	       (not uim-candidate-displayed) 
+	       uim-window-force-scrolled) 
+      (uim-debug "recenter: window-force-scrolled is true")
+      (setq uim-window-force-scrolled nil)
+      (recenter))
+
+    ;; move cursor
+    (when (or uim-preedit-displayed uim-candidate-displayed)
+      (goto-char uim-preedit-cursor))
 
     ))
 

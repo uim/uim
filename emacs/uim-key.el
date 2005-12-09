@@ -543,7 +543,7 @@
 
     ;;(uim-debug (format "stacked-key-vector: %s" uim-stacked-key-vector))
 
-    (cond ((and uim-preedit-displayed
+    (cond ((and uim-preedit-keymap-enabled
 		(uim-is-escape uim-stacked-key-vector)) ;; preedit ESC-ESC
 	   (uim-debug "Escape")
 	   ;; stop waiting and return ESC key
@@ -553,10 +553,10 @@
 	       (setq keyvec (vector (uim-xemacs-make-event [escape]))))
 	   (setq uim-stacked-key-vector nil)
 	   )
-	  ((or (and uim-preedit-displayed ;; with preedit
+	  ((or (and uim-preedit-keymap-enabled
 		    (and replace-continue ;; wait ESC- key vector
 			 (uim-is-start-with-escape uim-stacked-key-vector)))
-	       (and (not uim-preedit-displayed) ;; without preedit
+	       (and (not uim-preedit-keymap-enabled)
 		    (or replace-continue ;; wait all
 			(keymapp (uim-getbind uim-stacked-key-vector)))))
 	   ;; wait next

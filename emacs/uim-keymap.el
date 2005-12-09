@@ -206,42 +206,63 @@
 	  nil))
 
 (defun uim-enable-preedit-keymap ()
-  (setcdr (assq 'uim-mode minor-mode-map-alist) 
-	  uim-preedit-map) 
+  (when (not uim-preedit-keymap-enabled)
 
-  (when (not uim-minor-mode-map-alist)
-    (setq uim-minor-mode-map-alist minor-mode-map-alist)
-    (setq minor-mode-map-alist (list (assq 'uim-mode minor-mode-map-alist)))
+    (setq uim-preedit-keymap-enabled t)
+    (uim-debug "enable preedit keymap")
 
-    (when (and uim-emacs (= emacs-major-version 22)) 
-      (setq uim-emulation-mode-map-alists emulation-mode-map-alists)
-      (setq emulation-mode-map-alists nil)))
+    (setcdr (assq 'uim-mode minor-mode-map-alist) 
+	    uim-preedit-map) 
 
-  (when uim-xemacs
-    (make-variable-buffer-local 'toolbar-map)
-    (setq toolbar-map uim-toolbar-map)
-    (uim-xemacs-save-menubar)
+    ;; disable other keymaps
+    (when (not uim-minor-mode-map-alist)
+      (setq uim-minor-mode-map-alist minor-mode-map-alist)
+      (setq minor-mode-map-alist (list (assq 'uim-mode minor-mode-map-alist)))
+
+      (when (and uim-emacs (= emacs-major-version 22)) 
+	(setq uim-emulation-mode-map-alists emulation-mode-map-alists)
+	(setq emulation-mode-map-alists nil)))
+
+    (when uim-xemacs
+      ;; disable toolbar and menubar
+      (make-variable-buffer-local 'toolbar-map)
+      (setq toolbar-map uim-toolbar-map)
+      (uim-xemacs-save-menubar))
     )
-
   )
 
 (defun uim-disable-preedit-keymap ()
+  (when uim-preedit-keymap-enabled
+    (setq uim-preedit-keymap-enabled nil)
+    (uim-debug "disable preedit keymap")
 
-  (when uim-minor-mode-map-alist
-    (setq minor-mode-map-alist uim-minor-mode-map-alist)
-    (setq uim-minor-mode-map-alist nil)
+    ;; enable other keymaps
+    (when uim-minor-mode-map-alist
+      (setq minor-mode-map-alist uim-minor-mode-map-alist)
+      (setq uim-minor-mode-map-alist nil)
 
-    (when (and uim-emacs (= emacs-major-version 22)) 
-      (setq emulation-mode-map-alists uim-emulation-mode-map-alists)
-      (setq uim-emulation-mode-map-alists nil)))
+      (when (and uim-emacs (= emacs-major-version 22)) 
+	(setq emulation-mode-map-alists uim-emulation-mode-map-alists)
+	(setq uim-emulation-mode-map-alists nil)))
 
-  (uim-enable-mode-keymap)
+    (uim-enable-mode-keymap)
 
-  (when uim-xemacs
-    (kill-local-variable 'toolbar-map)
-    (uim-xemacs-restore-menubar)
+    (when uim-xemacs
+      ;;enable toolbar and menubar
+      (kill-local-variable 'toolbar-map)
+      (uim-xemacs-restore-menubar))
+
     )
   )
+
+
+;; (defun uim-mode-keymap-enabled ()
+;;   (eq (cdr (assq 'uim-mode minor-mode-map-alist))
+;;       uim-mode-map))
+
+;; (defun uim-preedit-keymap-enabled ()
+;;   (eq (cdr (assq 'uim-mode minor-mode-map-alist))
+;;       uim-preedit-map))
 
 
 ;;

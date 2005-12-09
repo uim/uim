@@ -57,18 +57,16 @@
 
 	(mapcar
 	 '(lambda (x)
-	    (let (cand-start-cand
-		  (preedit-flag (format "%s" (car x)))
+	    (let ((preedit-flag (format "%s" (car x)))
 		  (preedit-str (car (cdr x))))
 
 	      ;; save point for candidate displaying before insertion
 	      ;;  i.e. head of the block
 	      (if (string-match "c" preedit-flag)
-		  (progn
-		    (if (> (length preedit-str) 0)
-			(setq uim-candidate-start (point))
-		      ;; workaround for uim-prime 
-		      (setq uim-candidate-start block-start-point))))
+		  (if (> (length preedit-str) 0)
+		      (setq uim-candidate-start (point))
+		    ;; workaround for uim-prime 
+		    (setq uim-candidate-start block-start-point)))
 	    
 	      (setq block-start-point (point))
 
