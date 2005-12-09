@@ -54,7 +54,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-ScmObj *scm_symbol_hash = NULL;
+ScmObj *scm_symbol_hash;
 
 /*=======================================
   File Local Function Declarations
@@ -68,26 +68,21 @@ static int  symbol_name_hash(const char *name);
 =======================================*/
 ScmObj Scm_Intern(const char *name)
 {
-    int n = symbol_name_hash(name);
-    ScmObj sym     = SCM_FALSE;
-    ScmObj lst     = SCM_FALSE;
-    ScmObj sym_lst = scm_symbol_hash[n];
+    ScmObj sym, lst, rest;
+    int hash;
 
-    /* Search Symbol by name */
-    for (lst = sym_lst; !NULLP(lst); lst = CDR(lst)) {
-        sym = CAR(lst);
+    hash = symbol_name_hash(name);
+    lst = scm_symbol_hash[hash];
 
-        if (strcmp(SCM_SYMBOL_NAME(sym), name) == 0) {
+    for (rest = lst; !NULLP(rest); rest = CDR(rest)) {
+        sym = CAR(rest);
+        if (strcmp(SCM_SYMBOL_NAME(sym), name) == 0)
             return sym;
-        }
     }
 
-    /* If not in the sym_lst, allocate new Symbol */
+    /* if not found, allocate new symbol object and prepend it into the list */
     sym = Scm_NewSymbol(strdup(name), SCM_UNBOUND);
-
-    /* And Append it to the head of symbol_hash */
-    sym_lst = CONS(sym, sym_lst);
-    scm_symbol_hash[n] = sym_lst;
+    scm_symbol_hash[hash] = CONS(sym, lst);
 
     return sym;
 }
@@ -126,22 +121,19 @@ void SigScm_FinalizeSymbol(void)
 /*============================================================================
   Symbol table
 ============================================================================*/
-/*
- * Symbol Name Hash Related Functions
- *
- * - Data Structure of Symbol Name Hash
- *
- *     - n = symbol_name_hash(name)
- *     - symbol_hash[n] = sym_list
- *     - sym_list = ( ScmObj(SYMBOL) ScmObj(SYMBOL) ... )
- *
- */
 static void initialize_symbol_hash(void)
 {
-    int i = 0;
-    scm_symbol_hash = (ScmObj*)malloc(sizeof(ScmObj) * NAMEHASH_SIZE);
-    for (i = 0; i < NAMEHASH_SIZE; i++) {
-        scm_symbol_hash[i] = SCM_NULL;
+    ScmObj *slot;
+
+    scm_symbol_hash = malloc(sizeof(ScmObj) * NAMEHASH_SIZE);
+    if (!scm_symbol_hash)
+        ERR("memory exhausted");
+
+    for (slot = &scm_symbol_hash[0];
+         slot < &scm_symbol_hash[NAMEHASH_SIZE];
+         slot++)
+    {
+        *slot = SCM_NULL;
     }
 }
 
@@ -152,11 +144,10 @@ static void finalize_symbol_hash(void)
 
 static int symbol_name_hash(const char *name)
 {
-    int hash = 0;
-    int c;
-    char *cname = (char *)name;
-    while ((c = *cname++)) {
+    int hash, c;
+
+    for (hash = 0; (c = *name); name++)
         hash = ((hash * 17) ^ c) % NAMEHASH_SIZE;
-    }
+
     return hash;
 }
