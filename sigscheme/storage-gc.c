@@ -49,9 +49,6 @@
  *       marking the Scheme object which are pushed to the stack, so we need to
  *       traverse the stack for marking the objects.
  *
- *   - gc_mark_symbol_hash()
- *       marking the Scheme object which is interned by calling Scm_Intern().
- *
  * [2] Sweep phase : gc_sweep()
  *   - scanning heaps and move non-marked object to the freelist.
  */
@@ -109,14 +106,14 @@ static ScmObjHeap *heaps;
 static ScmObj freelist;
 
 static jmp_buf save_regs_buf;
-static ScmObj *stack_start_pointer = NULL;
+static ScmObj *stack_start_pointer;
 #if UIM_SCM_GCC4_READY_GC
 /* See also the comment about these variables in sigscheme.h */
 ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *)
     = &SigScm_GC_ProtectStackInternal;
 #endif /* UIM_SCM_GCC4_READY_GC */
 
-static gc_protected_var *protected_var_list = NULL;
+static gc_protected_var *protected_var_list;
 
 /* storage-symbol.c */
 extern ScmObj *scm_symbol_hash;
@@ -135,10 +132,11 @@ static void gc_mark_and_sweep(void);
 
 /* GC Mark Related Functions */
 static void mark_obj(ScmObj obj);
-static int  is_pointer_to_heap(ScmObj obj);
+static int  within_heapp(ScmObj obj);
 
 static void gc_mark_protected_var();
-static void gc_mark_locations_n(ScmObj *start, int n);
+static void gc_mark_locations_n(ScmObj *start, size_t n);
+static void gc_mark_definite_locations_n(ScmObj *start, size_t n);
 static void gc_mark_locations(ScmObj *start, ScmObj *end);
 static void gc_mark(void);
 
@@ -154,6 +152,8 @@ static void finalize_protected_var(void);
 void SigScm_InitGC(size_t heap_size, size_t heap_alloc_threshold,
                    int n_heaps_max, int n_heaps_init)
 {
+    stack_start_pointer = NULL;
+    protected_var_list = NULL;
     initialize_heap(heap_size, heap_alloc_threshold, n_heaps_max, n_heaps_init);
 }
 
@@ -419,7 +419,7 @@ static void finalize_protected_var(void)
 /* TODO: improve average performance by maintaining max(heaps[all]) and
  * min(heaps[all]) at add_heap().
  */
-static int is_pointer_to_heap(ScmObj obj)
+static int within_heapp(ScmObj obj)
 {
     ScmCell *heap, *ptr;
     int i;
@@ -455,13 +455,22 @@ static void gc_mark_protected_var(void)
 }
 
 /* mark a contiguous region such as stack */
-static void gc_mark_locations_n(ScmObj *start, int n)
+static void gc_mark_locations_n(ScmObj *start, size_t n)
 {
     ScmObj *objp;
+
     for (objp = start; objp < &start[n]; objp++) {
-        if (is_pointer_to_heap(*objp))
+        if (within_heapp(*objp))
             mark_obj(*objp);
     }
+}
+
+static void gc_mark_definite_locations_n(ScmObj *start, size_t n)
+{
+    ScmObj *objp;
+
+    for (objp = start; objp < &start[n]; objp++)
+        mark_obj(*objp);
 }
 
 static void gc_mark_locations(ScmObj *start, ScmObj *end)
@@ -483,22 +492,10 @@ static void gc_mark_locations(ScmObj *start, ScmObj *end)
     gc_mark_locations_n(start, size);
 }
 
-static void gc_mark_symbol_hash(void)
-{
-    ScmObj *objp;
-
-    /* not initialized yet */
-    if (!scm_symbol_hash)
-        return;
-
-    for (objp = &scm_symbol_hash[0];
-         objp < &scm_symbol_hash[NAMEHASH_SIZE];
-         objp++)
-    {
-        mark_obj(*objp);
-    }
-}
-
+/*
+ * To avoid incorrect stack_end placement, the jmp_buf is allocated to outside
+ * of stack
+ */
 static void gc_mark(void)
 {
     ScmObj stack_end;
@@ -510,7 +507,8 @@ static void gc_mark(void)
     gc_mark_locations((ScmObj *)save_regs_buf, (ScmObj *)save_regs_buf_end);
     gc_mark_protected_var();
     gc_mark_locations(stack_start_pointer, &stack_end);
-    gc_mark_symbol_hash();
+    if (scm_symbol_hash)
+        gc_mark_definite_locations_n(scm_symbol_hash, NAMEHASH_SIZE);
 }
 
 static void free_cell(ScmCell *cell)
