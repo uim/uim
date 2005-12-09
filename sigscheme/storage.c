@@ -348,13 +348,22 @@ enum ScmObjType Scm_Type(ScmObj obj)
             return ScmCPointer;
         else if (C_FUNCPOINTERP(obj))
             return ScmCFuncPointer;
+
+        ERR("invalid others object : ptr = %p, car = %p, cdr = %p",
+            (void*)obj, SCM_GET_DIRECT_CAR(obj), SCM_GET_DIRECT_CDR(obj));
     } else if (SCM_TAG_IMMP(obj)) {
         if (INTP(obj))
             return ScmInt;
         else if (CHARP(obj))
             return ScmChar;
+        else if (SCM_CONSTANTP(obj))
+            return ScmConstant;
+
+        ERR("invalid imm object : ptr = %p, car = %p, cdr = %p",
+            (void*)obj, SCM_GET_DIRECT_CAR(obj), SCM_GET_DIRECT_CDR(obj));
     }
 
-    ERR("corrupted object");
+    ERR("corrupted object : ptr = %p, car = %p, cdr = %p",
+        (void*)obj, SCM_GET_DIRECT_CAR(obj), SCM_GET_DIRECT_CDR(obj));
 }
 #endif /* SCM_OBJ_COMPACT */
