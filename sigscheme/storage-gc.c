@@ -145,15 +145,10 @@ static void gc_mark_locations(ScmObj *start, ScmObj *end);
 static void gc_mark(void);
 
 /* GC Sweep Related Functions */
+static void free_cell(ScmCell *cell);
 static void gc_sweep(void);
 
 static void finalize_protected_var(void);
-
-#if SCM_OBJ_COMPACT
-static void sweep_compact_cell(ScmCell *cell);
-#else /* SCM_OBJ_COMPACT */
-static void sweep_obj(ScmObj obj);
-#endif /* SCM_OBJ_COMPACT */
 
 /*=======================================
   Function Implementations
@@ -326,13 +321,8 @@ static void finalize_heap(void)
 
     for (i = 0; i < scm_heap_num; i++) {
         heap = scm_heaps[i];
-        for (cell = &heap[0]; cell < &heap[SCM_HEAP_SIZE]; cell++) {
-#if SCM_OBJ_COMPACT
-            sweep_compact_cell(cell);
-#else
-            sweep_obj((ScmObj)cell);
-#endif
-        }
+        for (cell = &heap[0]; cell < &heap[SCM_HEAP_SIZE]; cell++)
+            free_cell(cell);
         free(heap);
     }
     free(scm_heaps);
@@ -358,10 +348,6 @@ static void mark_obj(ScmObj obj)
 
 mark_loop:
 #if SCM_OBJ_COMPACT
-    /*
-     * FIXME: provide IMMEDIATEP(obj) and replace with it to abstract object
-     * representation
-     */
     /* no need to mark immediates */
     if (!SCM_CANBE_MARKED(obj))
         return;
@@ -525,9 +511,9 @@ static void gc_mark(void)
     gc_mark_symbol_hash();
 }
 
-#if SCM_OBJ_COMPACT
-static void sweep_compact_cell(ScmCell *cell)
+static void free_cell(ScmCell *cell)
 {
+#if SCM_OBJ_COMPACT
     if (SCM_NEED_SWEEPP(cell)) {
         if (SCM_SWEEP_PHASE_SYMBOLP(cell)) {
             if (SCM_SYMBOL_NAME(cell))
@@ -552,11 +538,8 @@ static void sweep_compact_cell(ScmCell *cell)
             Scm_DestructContinuation(cell);
         }
     }
-}
 #else /* SCM_OBJ_COMPACT */
-static void sweep_obj(ScmObj obj)
-{
-    switch (SCM_TYPE(obj)) {
+    switch (SCM_TYPE(cell)) {
     case ScmCons:
     case ScmInt:
     case ScmChar:
@@ -564,23 +547,23 @@ static void sweep_obj(ScmObj obj)
         break;
 
     case ScmString:
-        if (SCM_STRING_STR(obj))
-            free(SCM_STRING_STR(obj));
+        if (SCM_STRING_STR(cell))
+            free(SCM_STRING_STR(cell));
         break;
 
     case ScmVector:
-        if (SCM_VECTOR_VEC(obj))
-            free(SCM_VECTOR_VEC(obj));
+        if (SCM_VECTOR_VEC(cell))
+            free(SCM_VECTOR_VEC(cell));
         break;
 
     case ScmSymbol:
-        if (SCM_SYMBOL_NAME(obj))
-            free(SCM_SYMBOL_NAME(obj));
+        if (SCM_SYMBOL_NAME(cell))
+            free(SCM_SYMBOL_NAME(cell));
         break;
 
     case ScmPort:
-        if (SCM_PORT_IMPL(obj))
-            SCM_PORT_CLOSE_IMPL(obj);
+        if (SCM_PORT_IMPL(cell))
+            SCM_PORT_CLOSE_IMPL(cell);
         break;
 
     /* rarely swept objects */
@@ -592,7 +575,7 @@ static void sweep_obj(ScmObj obj)
          * module-specific header file which contains the module-specific
          * destruction macro.
          */
-        Scm_DestructContinuation(obj);
+        Scm_DestructContinuation(cell);
         break;
 
     case ScmFunc:
@@ -601,8 +584,8 @@ static void sweep_obj(ScmObj obj)
     default:
         break;
     }
-}
 #endif /* SCM_OBJ_COMPACT */
+}
 
 static void gc_sweep(void)
 {
@@ -626,11 +609,7 @@ static void gc_sweep(void)
             if (SCM_IS_MARKED(obj)) {
                 SCM_DO_UNMARK(obj);
             } else {
-#if SCM_OBJ_COMPACT
-                sweep_compact_cell(cell);
-#else
-                sweep_obj(obj);
-#endif
+                free_cell(cell);
 
                 SCM_ENTYPE_FREECELL(obj);
                 SCM_FREECELL_SET_CAR(obj, SCM_NULL);
