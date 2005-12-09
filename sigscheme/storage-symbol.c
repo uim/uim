@@ -74,7 +74,7 @@ ScmObj Scm_Intern(const char *name)
     hash = symbol_name_hash(name);
     lst = scm_symbol_hash[hash];
 
-    for (rest = lst; !NULLP(rest); rest = CDR(rest)) {
+    for (rest = lst; CONSP(rest); rest = CDR(rest)) {
         sym = CAR(rest);
         if (strcmp(SCM_SYMBOL_NAME(sym), name) == 0)
             return sym;
@@ -91,14 +91,11 @@ ScmObj Scm_Intern(const char *name)
 ScmObj Scm_SymbolBoundTo(ScmObj obj)
 {
     int i;
-    ScmObj sym_lst, sym, val;
+    ScmObj lst, sym, val;
 
     for (i = 0; i < NAMEHASH_SIZE; i++) {
-        for (sym_lst = scm_symbol_hash[i];
-             CONSP(sym_lst);
-             sym_lst = CDR(sym_lst))
-        {
-            sym = CAR(sym_lst);
+        for (lst = scm_symbol_hash[i]; CONSP(lst); lst = CDR(lst)) {
+            sym = CAR(lst);
             val = SCM_SYMBOL_VCELL(sym);
             if (!EQ(val, SCM_UNBOUND) && EQ(val, obj))
                 return sym;
@@ -123,18 +120,14 @@ void SigScm_FinalizeSymbol(void)
 ============================================================================*/
 static void initialize_symbol_hash(void)
 {
-    ScmObj *slot;
+    int i;
 
     scm_symbol_hash = malloc(sizeof(ScmObj) * NAMEHASH_SIZE);
     if (!scm_symbol_hash)
         ERR("memory exhausted");
 
-    for (slot = &scm_symbol_hash[0];
-         slot < &scm_symbol_hash[NAMEHASH_SIZE];
-         slot++)
-    {
-        *slot = SCM_NULL;
-    }
+    for (i = 0; i < NAMEHASH_SIZE; i++)
+        scm_symbol_hash[i] = SCM_NULL;
 }
 
 static void finalize_symbol_hash(void)
