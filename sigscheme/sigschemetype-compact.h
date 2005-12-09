@@ -794,9 +794,7 @@ enum ScmObjType {
     ScmFreeCell     = 12,
 
     ScmCPointer     = 20,
-    ScmCFuncPointer = 21,
-
-    ScmInvalid      = 31    
+    ScmCFuncPointer = 21
 };
 
 /* storage.c */

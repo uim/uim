@@ -355,7 +355,6 @@ enum ScmObjType Scm_Type(ScmObj obj)
             return ScmChar;
     }
 
-   /* FIXME: Should we need to raise an error here? */
-    return ScmInvalid;
+    ERR("corrupted object");
 }
 #endif /* SCM_OBJ_COMPACT */
