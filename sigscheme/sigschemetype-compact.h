@@ -702,11 +702,7 @@ enum ScmStrMutationType {
 #define SCM_IS_MARKED(a)   ((SCM_CAST_CAR_UINT(a) & SCM_GCBIT_MASK) == 0x0)
 #define SCM_IS_UNMARKED(a) (!SCM_IS_MARKED(a))
 
-/* FIXME: currently, NULL value is sometimes passed to this macro.
- * The invalid objects are always on the c stack, so we missed something.
- * To reject it, we check the value of (a) temporally, but need to investigate
- * the further reason of this problem. */
-#define SCM_CANBE_MARKED(a)   ((a) && !SCM_TAG_IMMP(a))
+#define SCM_CANBE_MARKED(a)   (!SCM_TAG_IMMP(a))
 #define SCM_STRIP_TAG_INFO(a) (SCM_CAST_UINT(a) & SCM_VALUE_MASK)
 
 /* When we sweep the object, we have no type information because the pointer is
