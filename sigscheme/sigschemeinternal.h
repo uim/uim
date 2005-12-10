@@ -65,9 +65,12 @@ extern ScmObj Scm_sym_else, Scm_sym_yields;
 extern ScmObj scm_current_input_port;
 extern ScmObj scm_current_output_port;
 extern ScmObj scm_current_error_port;
-extern const ScmSpecialCharInfo Scm_special_char_table[];
 
+/* debug.c */
 extern void (*Scm_writess_func)(ScmObj port, ScmObj obj);
+
+/* read.c */
+extern const ScmSpecialCharInfo Scm_special_char_table[];
 
 /* storage.c */
 #if SCM_USE_VALUECONS
@@ -470,6 +473,7 @@ void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj) SCM_NORETU
 int ScmOp_c_length(ScmObj lst);
 
 /* io.c */
+void Scm_InitIO(void);
 ScmCharPort *Scm_NewCharPort(ScmBytePort *bport);
 
 /* sigscheme.c */

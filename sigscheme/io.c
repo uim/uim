@@ -71,41 +71,11 @@ ScmObj scm_current_error_port  = NULL;
 
 const char *scm_lib_path = NULL;
 
-const ScmSpecialCharInfo Scm_special_char_table[] = {
-    /* printable characters */
-    {'\"',   "\\\"",  "\""},         /* 34, R5RS */
-    {'\\',   "\\\\",  "\\"},         /* 92, R5RS */
-    {' ',    " ",     "space"},      /* 32, R5RS */
-#if 0
-    /* to avoid portability problem, we should not support #\Space and so on */
-    {' ',    " ",     "Space"},
-#endif
-#if SCM_USE_SRFI75
-    {'|',    "\\|",   "|"},
-#endif
-
-    /* control characters */
-    {'\n',   "\\n",   "newline"},    /*  10, R5RS */
-#if SCM_USE_SRFI75_NAMED_CHARS
-    {'\0',   "\\x00", "nul"},        /*   0 */
-    {'\a',   "\\a",   "alarm"},      /*   7 */
-    {'\b',   "\\b",   "backspace"},  /*   8 */
-    {'\t',   "\\t",   "tab"},        /*   9 */
-    {'\n',   "\\n",   "linefeed"},   /*  10 */
-    {'\v',   "\\v",   "vtab"},       /*  11 */
-    {'\f',   "\\f",   "page"},       /*  12 */
-    {'\r',   "\\r",   "return"},     /*  13 */
-    {0x1b,   "\\x1b", "esc"},        /*  27 */
-    {0x7f,   "\\x7f", "delete"},     /* 127 */
-#endif /* SCM_USE_SRFI75_NAMED_CHARS */
-    {0, NULL, NULL}
-};
-
 /*=======================================
   File Local Function Declarations
 =======================================*/
 static ScmObj SigScm_load_internal(const char *c_filename);
-static char*  create_valid_path(const char *c_filename);
+static char *find_path(const char *c_filename);
 static int    file_existsp(const char *filepath);
 #if SCM_USE_SRFI22
 static void interpret_script_prelude(ScmObj port);
@@ -115,6 +85,31 @@ static char **parse_script_prelude(ScmObj port);
 /*=======================================
   Function Implementations
 =======================================*/
+void Scm_InitIO(void)
+{
+    Scm_fileport_init();
+#if SCM_USE_MULTIBYTE_CHAR
+    Scm_mbcport_init();
+#else
+    Scm_sbcport_init();
+#endif
+
+    scm_current_input_port  = Scm_MakeSharedFilePort(stdin, "stdin",
+                                                     SCM_PORTFLAG_INPUT);
+    scm_current_output_port = Scm_MakeSharedFilePort(stdout, "stdout",
+                                                     SCM_PORTFLAG_OUTPUT);
+    scm_current_error_port  = Scm_MakeSharedFilePort(stderr, "stderr",
+                                                     SCM_PORTFLAG_OUTPUT);
+    SigScm_GC_Protect(&scm_current_input_port);
+    SigScm_GC_Protect(&scm_current_output_port);
+    SigScm_GC_Protect(&scm_current_error_port);
+}
+
+void SigScm_set_lib_path(const char *path)
+{
+    scm_lib_path = path;
+}
+
 ScmCharPort *Scm_NewCharPort(ScmBytePort *bport)
 {
 #if  SCM_USE_MULTIBYTE_CHAR
@@ -122,11 +117,6 @@ ScmCharPort *Scm_NewCharPort(ScmBytePort *bport)
 #else
     return ScmSingleByteCharPort_new(bport);
 #endif
-}
-
-void SigScm_set_lib_path(const char *path)
-{
-    scm_lib_path = path;
 }
 
 ScmObj Scm_MakeSharedFilePort(FILE *file, const char *aux_info,
@@ -189,8 +179,7 @@ void SigScm_ErrorNewline(void)
 ===========================================================================*/
 ScmObj ScmOp_call_with_input_file(ScmObj filepath, ScmObj proc)
 {
-    ScmObj port = SCM_FALSE;
-    ScmObj ret  = SCM_FALSE;
+    ScmObj port, ret;
     DECLARE_FUNCTION("call-with-input-file", ProcedureFixed2);
 
     ASSERT_STRINGP(filepath);
@@ -207,8 +196,7 @@ ScmObj ScmOp_call_with_input_file(ScmObj filepath, ScmObj proc)
 
 ScmObj ScmOp_call_with_output_file(ScmObj filepath, ScmObj proc)
 {
-    ScmObj port = SCM_FALSE;
-    ScmObj ret  = SCM_FALSE;
+    ScmObj port, ret;
     DECLARE_FUNCTION("call-with-output-file", ProcedureFixed2);
 
     ASSERT_STRINGP(filepath);
@@ -226,6 +214,7 @@ ScmObj ScmOp_call_with_output_file(ScmObj filepath, ScmObj proc)
 ScmObj ScmOp_input_portp(ScmObj port)
 {
     DECLARE_FUNCTION("input-port?", ProcedureFixed1);
+
     ASSERT_PORTP(port);
 
     return (SCM_PORT_FLAG(port) & SCM_PORTFLAG_INPUT) ? SCM_TRUE : SCM_FALSE;
@@ -234,6 +223,7 @@ ScmObj ScmOp_input_portp(ScmObj port)
 ScmObj ScmOp_output_portp(ScmObj port)
 {
     DECLARE_FUNCTION("output-port?", ProcedureFixed1);
+
     ASSERT_PORTP(port);
 
     return (SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT) ? SCM_TRUE : SCM_FALSE;
@@ -242,51 +232,51 @@ ScmObj ScmOp_output_portp(ScmObj port)
 ScmObj ScmOp_current_input_port(void)
 {
     DECLARE_FUNCTION("current-input-port", ProcedureFixed0);
+
     return scm_current_input_port;
 }
 
 ScmObj ScmOp_current_output_port(void)
 {
     DECLARE_FUNCTION("current-output-port", ProcedureFixed0);
+
     return scm_current_output_port;
 }
 
 ScmObj ScmOp_with_input_from_file(ScmObj filepath, ScmObj thunk)
 {
-    ScmObj tmp_port = SCM_FALSE;
-    ScmObj ret      = SCM_FALSE;
+    ScmObj saved_port, ret;
     DECLARE_FUNCTION("with-input-from-file", ProcedureFixed2);
 
     ASSERT_STRINGP(filepath);
     ASSERT_PROCEDUREP(thunk);
 
-    tmp_port = scm_current_input_port;
+    saved_port = scm_current_input_port;
     scm_current_input_port = ScmOp_open_input_file(filepath);
 
     ret = Scm_call(thunk, SCM_NULL);
 
     ScmOp_close_input_port(scm_current_input_port);
-    scm_current_input_port = tmp_port;
+    scm_current_input_port = saved_port;
 
     return ret;
 }
 
 ScmObj ScmOp_with_output_to_file(ScmObj filepath, ScmObj thunk)
 {
-    ScmObj tmp_port = SCM_FALSE;
-    ScmObj ret      = SCM_FALSE;
+    ScmObj saved_port, ret;
     DECLARE_FUNCTION("with-output-to-file", ProcedureFixed2);
 
     ASSERT_STRINGP(filepath);
     ASSERT_PROCEDUREP(thunk);
 
-    tmp_port = scm_current_output_port;
+    saved_port = scm_current_output_port;
     scm_current_output_port = ScmOp_open_output_file(filepath);
 
     ret = Scm_call(thunk, SCM_NULL);
 
     ScmOp_close_output_port(scm_current_output_port);
-    scm_current_output_port = tmp_port;
+    scm_current_output_port = saved_port;
 
     return ret;
 }
@@ -364,7 +354,7 @@ ScmObj ScmOp_close_output_port(ScmObj port)
 
 ScmObj ScmOp_read(ScmObj args)
 {
-    ScmObj port = SCM_INVALID;
+    ScmObj port;
     DECLARE_FUNCTION("read", ProcedureVariadic0);
 
     PREPARE_PORT(port, args, scm_current_input_port);
@@ -373,8 +363,8 @@ ScmObj ScmOp_read(ScmObj args)
 
 ScmObj ScmOp_read_char(ScmObj args)
 {
-    ScmObj port = SCM_INVALID;
-    int    ch;
+    ScmObj port;
+    int ch;
     DECLARE_FUNCTION("read-char", ProcedureVariadic0);
 
     PREPARE_PORT(port, args, scm_current_input_port);
@@ -388,8 +378,8 @@ ScmObj ScmOp_read_char(ScmObj args)
 
 ScmObj ScmOp_peek_char(ScmObj args)
 {
-    ScmObj port = SCM_INVALID;
-    int    ch;
+    ScmObj port;
+    int ch;
     DECLARE_FUNCTION("peek-char", ProcedureVariadic0);
 
     PREPARE_PORT(port, args, scm_current_input_port);
@@ -404,12 +394,13 @@ ScmObj ScmOp_peek_char(ScmObj args)
 ScmObj ScmOp_eof_objectp(ScmObj obj)
 {
     DECLARE_FUNCTION("eof-object?", ProcedureFixed1);
+
     return (EOFP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
 ScmObj ScmOp_char_readyp(ScmObj args)
 {
-    ScmObj port = SCM_INVALID;
+    ScmObj port;
     DECLARE_FUNCTION("char-ready?", ProcedureVariadic0);
 
     PREPARE_PORT(port, args, scm_current_input_port);
@@ -422,7 +413,7 @@ ScmObj ScmOp_char_readyp(ScmObj args)
 ===========================================================================*/
 ScmObj ScmOp_write(ScmObj obj, ScmObj args)
 {
-    ScmObj port = SCM_INVALID;
+    ScmObj port;
     DECLARE_FUNCTION("write", ProcedureVariadic1);
 
     PREPARE_PORT(port, args, scm_current_output_port);
@@ -432,7 +423,7 @@ ScmObj ScmOp_write(ScmObj obj, ScmObj args)
 
 ScmObj ScmOp_display(ScmObj obj, ScmObj args)
 {
-    ScmObj port = SCM_INVALID;
+    ScmObj port;
     DECLARE_FUNCTION("display", ProcedureVariadic1);
 
     PREPARE_PORT(port, args, scm_current_output_port);
@@ -442,7 +433,7 @@ ScmObj ScmOp_display(ScmObj obj, ScmObj args)
 
 ScmObj ScmOp_newline(ScmObj args)
 {
-    ScmObj port = SCM_INVALID;
+    ScmObj port;
     DECLARE_FUNCTION("newline", ProcedureVariadic0);
 
     PREPARE_PORT(port, args, scm_current_output_port);
@@ -452,7 +443,7 @@ ScmObj ScmOp_newline(ScmObj args)
 
 ScmObj ScmOp_write_char(ScmObj obj, ScmObj args)
 {
-    ScmObj port = SCM_INVALID;
+    ScmObj port;
     DECLARE_FUNCTION("write-char", ProcedureVariadic1);
 
     ASSERT_CHARP(obj);
@@ -468,9 +459,9 @@ ScmObj ScmOp_write_char(ScmObj obj, ScmObj args)
 ScmObj SigScm_load(const char *c_filename)
 {
 #if !SCM_GCC4_READY_GC
-    ScmObj stack_start = NULL;
+    ScmObj stack_start;
 #endif
-    ScmObj succeeded   = SCM_FALSE;
+    ScmObj succeeded;
 
 #if SCM_GCC4_READY_GC
     SCM_GC_PROTECTED_CALL(succeeded, ScmObj, SigScm_load_internal, (c_filename));
@@ -489,21 +480,18 @@ ScmObj SigScm_load(const char *c_filename)
 
 static ScmObj SigScm_load_internal(const char *c_filename)
 {
-    ScmObj port         = SCM_FALSE;
-    ScmObj s_expression = SCM_FALSE;
-    ScmObj filepath     = SCM_FALSE;
+    ScmObj path, port, sexp;
+    char *c_path;
     ScmCharCodec *saved_codec;
-    char  *c_filepath   = create_valid_path(c_filename);
 
     CDBG((SCM_DBG_FILE, "loading %s", c_filename));
 
-    /* sanity check */
-    if (!c_filepath)
-        SigScm_Error("SigScm_load_internal : file \"%s\" not found",
-                     c_filename);
+    c_path = find_path(c_filename);
+    if (!c_path)
+        ERR("SigScm_load_internal: file \"%s\" not found", c_filename);
 
-    filepath = Scm_NewImmutableString(c_filepath);
-    port = ScmOp_open_input_file(filepath);
+    path = Scm_NewImmutableString(c_path);
+    port = ScmOp_open_input_file(path);
 
     saved_codec = Scm_current_char_codec;
 #if SCM_USE_SRFI22
@@ -512,9 +500,8 @@ static ScmObj SigScm_load_internal(const char *c_filename)
 #endif
 
     /* read & eval cycle */
-    while (s_expression = SigScm_Read(port), !EOFP(s_expression)) {
-        EVAL(s_expression, SCM_INTERACTION_ENV);
-    }
+    while (sexp = SigScm_Read(port), !EOFP(sexp))
+        EVAL(sexp, SCM_INTERACTION_ENV);
 
     ScmOp_close_input_port(port);
     Scm_current_char_codec = saved_codec;
@@ -524,18 +511,13 @@ static ScmObj SigScm_load_internal(const char *c_filename)
     return SCM_TRUE;
 }
 
-/* TODO: reject relative paths to ensure security */
-static char* create_valid_path(const char *filename)
+/* FIXME: reject relative paths to ensure security */
+static char *find_path(const char *filename)
 {
-    char *filepath   = NULL;
-    int lib_path_len = 0;
-    int filename_len = 0;
+    char *path;
+    int lib_path_len, filename_len, path_len;
 
-    /* sanity check */
     SCM_ASSERT(filename);
-
-    lib_path_len = scm_lib_path ? strlen(scm_lib_path) : 0;
-    filename_len = strlen(filename);
 
     /* try absolute and relative path */
     if (file_existsp(filename))
@@ -543,15 +525,15 @@ static char* create_valid_path(const char *filename)
 
     /* try under scm_lib_path */
     if (scm_lib_path) {
-        filepath = (char*)malloc(lib_path_len + 1 + filename_len + 1);
-        snprintf(filepath,
-                 lib_path_len + 1 + filename_len + 1,
-                 "%s/%s",
-                 scm_lib_path,
-                 filename);
-        if (file_existsp(filepath))
-            return filepath;
-        free(filepath);
+        lib_path_len = scm_lib_path ? strlen(scm_lib_path) : 0;
+        filename_len = strlen(filename);
+        path_len = lib_path_len + sizeof((char)'/') + filename_len + sizeof((char)'\0');
+
+        path = malloc(path_len);
+        snprintf(path, path_len, "%s/%s", scm_lib_path, filename);
+        if (file_existsp(path))
+            return path;
+        free(path);
     }
 
     return NULL;
@@ -559,26 +541,26 @@ static char* create_valid_path(const char *filename)
 
 static int file_existsp(const char *c_filepath)
 {
-    FILE *f = fopen(c_filepath, "r");
-    if (!f)
-        return 0;
+    FILE *f;
 
-    fclose(f);
-    return 1;
+    f = fopen(c_filepath, "r");
+    if (f) {
+        fclose(f);
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 ScmObj ScmOp_load(ScmObj filename)
 {
-    char *c_filename = SCM_STRING_STR(filename);
     DECLARE_FUNCTION("load", ProcedureFixed1);
 
-    SigScm_load_internal(c_filename);
+    ASSERT_STRINGP(filename);
 
-#if SCM_STRICT_R5RS
+    SigScm_load_internal(SCM_STRING_STR(filename));
+
     return SCM_UNDEF;
-#else
-    return SCM_TRUE;
-#endif
 }
 
 #if SCM_USE_SRFI22

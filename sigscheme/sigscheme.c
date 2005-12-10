@@ -43,13 +43,7 @@
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 #include "baseport.h"
-#include "fileport.h"
 #include "strport.h"
-#if SCM_USE_MULTIBYTE_CHAR
-#include "mbcport.h"
-#else /* SCM_USE_MULTIBYTE_CHAR */
-#include "sbcport.h"
-#endif /* SCM_USE_MULTIBYTE_CHAR */
 
 /*=======================================
   File Local Struct Declarations
@@ -144,6 +138,7 @@ static void SigScm_Initialize_internal(void)
     /* FIXME: make configurable from libsscm client */
     SigScm_InitStorage(0x4000, 0x2000, 0x800, 1);
     SigScm_InitError();
+    Scm_InitIO();
 
     /*=======================================================================
       Predefined Symbols and Variables
@@ -159,43 +154,23 @@ static void SigScm_Initialize_internal(void)
     features = SCM_NULL;
 
     /*=======================================================================
-      Preallocated Ports
-    =======================================================================*/
-    Scm_fileport_init();
-#if SCM_USE_MULTIBYTE_CHAR
-    Scm_mbcport_init();
-#else
-    Scm_sbcport_init();
-#endif
-
-    scm_current_input_port  = Scm_MakeSharedFilePort(stdin, "stdin",
-                                                     SCM_PORTFLAG_INPUT);
-    scm_current_output_port = Scm_MakeSharedFilePort(stdout, "stdout",
-                                                     SCM_PORTFLAG_OUTPUT);
-    scm_current_error_port  = Scm_MakeSharedFilePort(stderr, "stderr",
-                                                     SCM_PORTFLAG_OUTPUT);
-    SigScm_GC_Protect(&scm_current_input_port);
-    SigScm_GC_Protect(&scm_current_output_port);
-    SigScm_GC_Protect(&scm_current_error_port);
-
-    /*=======================================================================
       Register Built-in Functions
     =======================================================================*/
     /* R5RS Functions */
     REGISTER_FUNC_TABLE(r5rs_func_info_table);
-    Scm_DefineAlias("integer?"                  , "number?");
+    Scm_DefineAlias("integer?", "number?");
 
 #if SCM_USE_DEEP_CADRS
     /* Deep c[ad]+r Functions */
     REGISTER_FUNC_TABLE(r5rs_deepcadrs_func_info_table);
 #endif
+#if SCM_USE_NONSTD_FEATURES
+    Scm_Use("sscm");
+#endif
 
     /*=======================================================================
       Fixing up
     =======================================================================*/
-#if SCM_USE_NONSTD_FEATURES
-    Scm_Use("sscm");
-#endif
     /* to evaluate SigScheme-dependent codes conditionally */
     Scm_Provide(Scm_NewImmutableStringCopying("sigscheme"));
 #if SCM_STRICT_R5RS
