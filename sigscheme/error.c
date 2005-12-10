@@ -55,6 +55,7 @@
 #define SCM_BACKTRACE_HEADER "**** BACKTRACE ****\n"
 
 #define ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"
+#define ERRMSG_MEMORY_EXHAUSTED    "memory exhausted"
 
 /*=======================================
   Variable Declarations
@@ -90,6 +91,39 @@ void SigScm_InitError(void)
     fatal_err_looped = FALSE;
 
     REGISTER_FUNC_TABLE(scm_error_func_info_table);
+}
+
+void *Scm_malloc(size_t size)
+{
+    void *p;
+
+    p = malloc(size);
+    if (!p)
+        Scm_FatalError(ERRMSG_MEMORY_EXHAUSTED);
+
+    return p;
+}
+
+void *Scm_calloc(size_t number, size_t size)
+{
+    void *p;
+
+    p = calloc(number, size);
+    if (!p)
+        Scm_FatalError(ERRMSG_MEMORY_EXHAUSTED);
+
+    return p;
+}
+
+void *Scm_realloc(void *ptr, size_t size)
+{
+    void *p;
+
+    p = realloc(ptr, size);
+    if (!p)
+        Scm_FatalError(ERRMSG_MEMORY_EXHAUSTED);
+
+    return p;
 }
 
 #if SCM_USE_SRFI34
