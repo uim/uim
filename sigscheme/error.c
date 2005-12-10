@@ -67,6 +67,9 @@ static ScmObj err_obj_tag, str_srfi34;
   File Local Function Declarations
 =======================================*/
 static int srfi34_providedp(void);
+#if SCM_DEBUG_BACKTRACE_VAL
+static void show_arg(ScmObj arg, ScmObj env);
+#endif
 
 /*=======================================
   Function Implementations
@@ -102,6 +105,7 @@ static int srfi34_providedp(void)
 ScmObj ScmOp_error_objectp(ScmObj obj)
 {
     DECLARE_FUNCTION("%%error-object?", ProcedureFixed1);
+
     return (CONSP(obj) && EQ(CAR(obj), err_obj_tag)) ? SCM_TRUE : SCM_FALSE;
 }
 
@@ -261,18 +265,30 @@ void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj)
     /* NOTREACHED */
 }
 
-void SigScm_ShowBacktrace(ScmObj trace_stack)
+#if SCM_DEBUG_BACKTRACE_VAL
+static void show_arg(ScmObj arg, ScmObj env)
 {
 #define UNBOUNDP(var, env)                                              \
     (Scm_LookupEnvironment(var, env) == SCM_INVALID_REF                 \
      && !SCM_SYMBOL_BOUNDP(var))
 
+    if (SYMBOLP(arg) && !UNBOUNDP(arg, env)) {
+        SigScm_ErrorPrintf("  - [%s]: ", SCM_SYMBOL_NAME(arg));
+        SCM_WRITESS_TO_PORT(scm_current_error_port, Scm_SymbolValue(arg, env));
+        SigScm_ErrorNewline();
+    }
+
+#undef UNBOUNDP
+}
+#endif /* SCM_DEBUG_BACKTRACE_VAL */
+
+void SigScm_ShowBacktrace(ScmObj trace_stack)
+{
 #if SCM_DEBUG
     ScmObj top;
     ScmObj frame;
     ScmObj env;
     ScmObj obj;
-    ScmObj proc;
 
     SigScm_ErrorPrintf(SCM_BACKTRACE_HEADER);
 
@@ -286,55 +302,21 @@ void SigScm_ShowBacktrace(ScmObj trace_stack)
         env = TRACE_FRAME_ENV(frame);
         obj = TRACE_FRAME_OBJ(frame);
 
-#if SCM_USE_SRFI38
-        SigScm_WriteToPortWithSharedStructure(scm_current_error_port, obj);
-#else
-        SigScm_WriteToPort(scm_current_error_port, obj);
-#endif
+        SCM_WRITESS_TO_PORT(scm_current_error_port, obj);
         SigScm_ErrorNewline();
 
 #if SCM_DEBUG_BACKTRACE_VAL
         switch (SCM_TYPE(obj)) {
         case ScmSymbol:
-            if (UNBOUNDP(obj, env))
-                break;
-            SigScm_ErrorPrintf("  - [%s]: ", SCM_SYMBOL_NAME(obj));
-#if SCM_USE_SRFI38
-            SigScm_WriteToPortWithSharedStructure(scm_current_error_port, Scm_SymbolValue(obj, env));
-#else
-            SigScm_WriteToPort(scm_current_error_port, Scm_SymbolValue(obj, env));
-#endif
-            SigScm_ErrorNewline();
+            show_arg(obj, env);
             break;
 
         case ScmCons:
-            for (; CONSP(obj); obj = CDR(obj)) {
-                proc = CAR(obj);
-                if (SYMBOLP(proc)) {
-                    if (UNBOUNDP(proc, env))
-                        break;
-                    SigScm_ErrorPrintf("  - [%s]: ", SCM_SYMBOL_NAME(proc));
-#if SCM_USE_SRFI38
-                    SigScm_WriteToPortWithSharedStructure(scm_current_error_port,
-                                                          Scm_SymbolValue(proc, env));
-#else
-                    SigScm_WriteToPort(scm_current_error_port,
-                                       Scm_SymbolValue(proc, env));
-#endif
-                    SigScm_ErrorNewline();
-                }
-            }
-            if (SYMBOLP(obj)) {
-                SigScm_ErrorPrintf("  - [%s]: ", SCM_SYMBOL_NAME(proc));
-#if SCM_USE_SRFI38
-                SigScm_WriteToPortWithSharedStructure(scm_current_error_port,
-                                                      Scm_SymbolValue(proc, env));
-#else
-                SigScm_WriteToPort(scm_current_error_port,
-                                   Scm_SymbolValue(proc, env));
-#endif
-                SigScm_ErrorNewline();
-            }
+            for (; CONSP(obj); obj = CDR(obj))
+                show_arg(CAR(obj), env);
+            /* dot list */
+            if (SYMBOLP(obj))
+                show_arg(obj, env);
             break;
 
         default:
@@ -346,7 +328,6 @@ void SigScm_ShowBacktrace(ScmObj trace_stack)
         SigScm_ErrorPrintf("------------------------------\n");
 #endif /* SCM_DEBUG_BACKTRACE_SEP */
 #endif /* SCM_DEBUG */
-#undef UNBOUNDP
 }
 
 void SigScm_ShowErrorHeader(void)
