@@ -772,7 +772,7 @@ extern ScmObj Scm_sym_unquote, Scm_sym_unquote_splicing;
 #define SCM_DEREF(ref)    ((ScmObj)(SCM_CAST_UINT(*(ref)) & ~SCM_GCBIT_MASK))
 
 /* RFC: Is there a better name? */
-#define SCM_SET(ref, obj) (*(ref) = (ScmObj)((SCM_CAST_UINT(*(ref)) & SCM_GCBIT_MASK) | SCM_CAST_UINT(obj)))
+#define SCM_SET(ref, obj) (*(ref) = (ScmObj)(SCM_GC_BIT(*(ref)) | (SCM_CAST_UINT(obj) & ~SCM_GCBIT_MASK)))
 
 /*============================================================================
   Compatibility for non-compact code
