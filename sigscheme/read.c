@@ -457,7 +457,7 @@ static int read_unicode_sequence(ScmObj port, char prefix)
     case 'u': len = 4; break;
     case 'U': len = 8; break;
     default:
-        /* FIXME: add fatal error handling */
+        SCM_ASSERT(FALSE);
         break;
     }
     seq[0] = prefix;

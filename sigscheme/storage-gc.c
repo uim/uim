@@ -318,7 +318,7 @@ static void add_heap(void)
     CDBG((SCM_DBG_GC, "add_heap current num of heaps:%d", n_heaps));
 
     if (n_heaps_max <= n_heaps)
-        ERR("heap exhausted"); /* FIXME: replace with fatal error handling */
+        Scm_FatalError("heap exhausted");
 
     heaps = realloc(heaps, sizeof(ScmObjHeap) * (n_heaps + 1));
     heap = malloc_aligned(sizeof(ScmCell) * heap_size);
