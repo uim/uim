@@ -157,6 +157,10 @@ void QUimHelperManager::parseHelperStr( const QString &str )
             }
         }
     }
+    else if ( str.startsWith( "custom_reload_notify" ) )
+    {
+        uim_prop_reload_configs();
+    }
 }
 
 void QUimHelperManager::parseHelperStrImChange( const QString &str )
