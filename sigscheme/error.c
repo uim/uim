@@ -144,6 +144,7 @@ void Scm_FatalError(const char *msg)
 {
     /* don't use Scheme-level ports here */
     if (msg) {
+        fputs("Error: ", stderr);
         fputs(msg, stderr);
         fputs(SCM_NEWLINE_STR, stderr);
     }
@@ -162,18 +163,18 @@ void Scm_SetFatalErrorCallback(void (*cb)(void))
 
 ScmObj ScmOp_fatal_error(ScmObj err_obj)
 {
-    ScmObj reason;
     const char *msg;
     DECLARE_FUNCTION("%%fatal-error", ProcedureFixed1);
 
-    if (!fatal_err_looped) {
+    if (fatal_err_looped) {
+        /* to avoid infinite loop by implicit assertion, use no SCM macros */
+        msg = "looped fatal error";
+    } else {
         fatal_err_looped = TRUE;
         ASSERT_ERROBJP(err_obj);
         ScmOp_inspect_error(err_obj);
+        msg = NULL;
     }
-    /* ERROBJP(err_obj) is always true here */
-    reason = CADR(err_obj);
-    msg = (STRINGP(reason)) ? SCM_STRING_STR(reason) : NULL;
 
     Scm_FatalError(msg);
     /* NOTREACHED */
