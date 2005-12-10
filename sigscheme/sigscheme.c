@@ -120,7 +120,7 @@ void SigScm_Initialize(void)
 #if SCM_GCC4_READY_GC
     SCM_GC_PROTECTED_CALL_VOID(SigScm_Initialize_internal, ());
 #else
-    ScmObj stack_start = NULL;
+    ScmObj stack_start;
 
     SigScm_GC_ProtectStack(&stack_start);
     SigScm_Initialize_internal();
@@ -207,6 +207,7 @@ int Scm_Providedp(ScmObj feature)
 int Scm_Use(const char *feature)
 {
     ScmObj ok;
+
     SCM_ASSERT(feature);
 
     ok = ScmExp_use(Scm_Intern(feature), SCM_INTERACTION_ENV);
@@ -227,8 +228,8 @@ int Scm_Use(const char *feature)
  */
 ScmObj ScmExp_use(ScmObj feature, ScmObj env)
 {
-    struct module_info *mod = NULL;
-    ScmObj feature_str = SCM_FALSE;
+    struct module_info *mod;
+    ScmObj feature_str;
     DECLARE_FUNCTION("use", SyntaxFixed1);
 
     ASSERT_SYMBOLP(feature);
@@ -250,9 +251,9 @@ ScmObj ScmExp_use(ScmObj feature, ScmObj env)
 ScmObj Scm_eval_c_string(const char *exp)
 {
 #if !SCM_GCC4_READY_GC
-    ScmObj stack_start = NULL;
+    ScmObj stack_start;
 #endif
-    ScmObj ret         = SCM_NULL;
+    ScmObj ret;
 
 #if SCM_GCC4_READY_GC
     SCM_GC_PROTECTED_CALL(ret, ScmObj, Scm_eval_c_string_internal, (exp));
@@ -271,8 +272,7 @@ ScmObj Scm_eval_c_string(const char *exp)
 
 ScmObj Scm_eval_c_string_internal(const char *exp)
 {
-    ScmObj str_port    = SCM_FALSE;
-    ScmObj ret         = SCM_FALSE;
+    ScmObj str_port, ret;
     ScmBytePort *bport;
 
     bport = ScmInputStrPort_new_const(exp, NULL);
@@ -302,7 +302,7 @@ char **Scm_InterpretArgv(char **argv)
     char **argp, **rest;
     const char *encoding;
     ScmCharCodec *specified_codec;
-    ScmObj err_obj; /* dont' initialize */
+    ScmObj err_obj;
     DECLARE_INTERNAL_FUNCTION("Scm_InterpretArgv");
 
     encoding = NULL;
