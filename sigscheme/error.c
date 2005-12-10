@@ -60,6 +60,7 @@
   Variable Declarations
 =======================================*/
 static int srfi34_is_provided, fatal_err_looped;
+static void (*cb_fatal_error)(void);
 
 static ScmObj err_obj_tag, str_srfi34;
 
@@ -85,6 +86,7 @@ void SigScm_InitError(void)
     str_srfi34 = Scm_NewImmutableStringCopying("srfi-34");
     srfi34_is_provided = FALSE;
 
+    cb_fatal_error = NULL;
     fatal_err_looped = FALSE;
 
     REGISTER_FUNC_TABLE(scm_error_func_info_table);
@@ -138,8 +140,30 @@ void Scm_RaiseError(ScmObj err_obj)
     ScmOp_fatal_error(err_obj);
 }
 
+void Scm_FatalError(const char *msg)
+{
+    /* don't use Scheme-level ports here */
+    if (msg) {
+        fputs(msg, stderr);
+        fputs(SCM_NEWLINE_STR, stderr);
+    }
+
+    if (cb_fatal_error)
+        (*cb_fatal_error)();
+
+    exit(EXIT_FAILURE);
+    /* NOTREACHED */
+}
+
+void Scm_SetFatalErrorCallback(void (*cb)(void))
+{
+    cb_fatal_error = cb;
+}
+
 ScmObj ScmOp_fatal_error(ScmObj err_obj)
 {
+    ScmObj reason;
+    const char *msg;
     DECLARE_FUNCTION("%%fatal-error", ProcedureFixed1);
 
     if (!fatal_err_looped) {
@@ -147,13 +171,11 @@ ScmObj ScmOp_fatal_error(ScmObj err_obj)
         ASSERT_ERROBJP(err_obj);
         ScmOp_inspect_error(err_obj);
     }
+    /* ERROBJP(err_obj) is always true here */
+    reason = CADR(err_obj);
+    msg = (STRINGP(reason)) ? SCM_STRING_STR(reason) : NULL;
 
-#if 0
-    if (cb_fatal_error)
-        (*cb_fatal_error)();
-#endif
-
-    exit(EXIT_FAILURE);
+    Scm_FatalError(msg);
     /* NOTREACHED */
 }
 
