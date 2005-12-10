@@ -135,7 +135,7 @@ static ScmObj create_loaded_str(ScmObj filename)
 
     /* generate loaded_str, contents is filename-loaded* */
     size = (strlen(SCM_STRING_STR(filename)) + strlen("*-loaded*") + 1);
-    loaded_str = (char*)malloc(sizeof(char) * size);
+    loaded_str = Scm_malloc(size);
     snprintf(loaded_str, size, "*%s-loaded*", SCM_STRING_STR(filename));
 
     return Scm_NewImmutableString(loaded_str);

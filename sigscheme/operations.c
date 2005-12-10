@@ -1244,7 +1244,7 @@ ScmObj ScmOp_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     total_size = prefix_size + newch_size + postfix_size;
 
     /* copy each part */
-    new_str = (char*)malloc(total_size + 1);
+    new_str = Scm_malloc(total_size + 1);
     memcpy(new_str, string_str, prefix_size);
     memcpy(new_str+prefix_size, new_ch_str, newch_size);
     memcpy(new_str+prefix_size+newch_size,
@@ -1304,7 +1304,7 @@ ScmObj ScmOp_substring(ScmObj str, ScmObj start, ScmObj end)
     mbs = Scm_mb_substring(mbs, c_start_index, c_end_index - c_start_index);
 
     /* copy from start_ptr to end_ptr */
-    new_str = (char*)malloc(SCM_MBS_GET_SIZE(mbs) + 1);
+    new_str = Scm_malloc(SCM_MBS_GET_SIZE(mbs) + 1);
     memcpy(new_str, SCM_MBS_GET_STR(mbs), SCM_MBS_GET_SIZE(mbs));
     new_str[SCM_MBS_GET_SIZE(mbs)] = 0;
 
@@ -1334,8 +1334,7 @@ ScmObj ScmOp_string_append(ScmObj args)
         total_len  += SCM_STRING_LEN(obj);
     }
 
-    /* allocate new string */
-    new_str = (char*)malloc(sizeof(char) * total_size + 1);
+    new_str = Scm_malloc(total_size + 1);
 
     /* copy string by string */
     p = new_str;
@@ -1442,7 +1441,7 @@ ScmObj ScmOp_string_filld(ScmObj str, ScmObj ch)
 
     /* create new str */
     char_size = next - ch_str;
-    new_str   = realloc(SCM_STRING_STR(str), str_len * char_size + 1);
+    new_str = Scm_realloc(SCM_STRING_STR(str), str_len * char_size + 1);
     for (p = new_str; p < &new_str[char_size * str_len]; p += char_size) {
         strcpy(p, ch_str);
     }
@@ -1477,7 +1476,7 @@ ScmObj ScmOp_make_vector(ScmObj vector_len, ScmObj args)
 
     /* allocate vector */
     len = SCM_INT_VALUE(vector_len);
-    vec = (ScmObj*)malloc(sizeof(ScmObj) * len);
+    vec = Scm_malloc(sizeof(ScmObj) * len);
 
     /* fill vector */
     filler = SCM_UNDEF;
@@ -1494,7 +1493,7 @@ ScmObj ScmOp_vector(ScmObj args)
 {
     int len = SCM_INT_VALUE(ScmOp_length(args));
     int i   = 0;
-    ScmObj *vec = (ScmObj*)malloc(sizeof(ScmObj) * len); /* allocate vector */
+    ScmObj *vec = Scm_malloc(sizeof(ScmObj) * len); /* allocate vector */
     DECLARE_FUNCTION("vector", ProcedureVariadic0);
 
     /* set item */
@@ -1577,7 +1576,7 @@ ScmObj ScmOp_list2vector(ScmObj lst)
 
     scm_len = ScmOp_length(lst);
     c_len   = SCM_INT_VALUE(scm_len);
-    v       = (ScmObj*)malloc(sizeof(ScmObj) * c_len);
+    v       = Scm_malloc(sizeof(ScmObj) * c_len);
     for (i = 0; i < c_len; i++) {
         v[i] = CAR(lst);
         lst  = CDR(lst);

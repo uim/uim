@@ -202,15 +202,14 @@ static ScmObj **locate_protected_var(ScmObj *var)
 void SigScm_GC_Protect(ScmObj *var)
 {
     ScmObj **slot;
+    size_t new_size;
 
     if (n_empty_protected_vars) {
         slot = locate_protected_var(NULL);
         n_empty_protected_vars--;
     } else {
-        protected_vars = realloc(protected_vars,
-                                 sizeof(ScmObj *) * (protected_vars_size + 1));
-        if (!protected_vars)
-            ERR("memory exhausted");  /* FIXME: replace with fatal error */
+        new_size = sizeof(ScmObj *) * (protected_vars_size + 1);
+        protected_vars = Scm_realloc(protected_vars, new_size);
         slot = &protected_vars[protected_vars_size++];
     }
     *slot = var;
@@ -283,8 +282,10 @@ static void *malloc_aligned(size_t size)
      *     BSD 4.4.  The function posix_memalign() comes from POSIX 1003.1d.
      */
     posix_memalign(&p, 16, size);
+    if (!p)
+        ERR("memory exhausted");
 #else
-    p = malloc(size);
+    p = Scm_malloc(size);
     /* heaps must be aligned to sizeof(ScmCell) */
     assert(!((uintptr_t)p % sizeof(ScmCell)));
 #endif
@@ -320,10 +321,8 @@ static void add_heap(void)
     if (n_heaps_max <= n_heaps)
         Scm_FatalError("heap exhausted");
 
-    heaps = realloc(heaps, sizeof(ScmObjHeap) * (n_heaps + 1));
+    heaps = Scm_realloc(heaps, sizeof(ScmObjHeap) * (n_heaps + 1));
     heap = malloc_aligned(sizeof(ScmCell) * heap_size);
-    if (!heaps || !heap)
-        ERR("memory exhausted"); /* FIXME: replace with fatal error handling */
     heaps[n_heaps++] = heap;
 
     /* update the enclosure */

@@ -529,7 +529,7 @@ static char *find_path(const char *filename)
         filename_len = strlen(filename);
         path_len = lib_path_len + sizeof((char)'/') + filename_len + sizeof((char)'\0');
 
-        path = malloc(path_len);
+        path = Scm_malloc(path_len);
         snprintf(path, path_len, "%s/%s", scm_lib_path, filename);
         if (file_existsp(path))
             return path;
@@ -609,7 +609,7 @@ static char **parse_script_prelude(ScmObj port)
     }
 #endif
 
-    argv = malloc(sizeof(char *));
+    argv = Scm_malloc(sizeof(char *));
     argc = 0;
     for (p = &line[3]; p < &line[SCRIPT_PRELUDE_MAXLEN]; p += len + 1) {
         p += strspn(p, SCRIPT_PRELUDE_DELIM);
@@ -618,7 +618,7 @@ static char **parse_script_prelude(ScmObj port)
             p[len] = '\0';
             arg = strdup(p);
             argv[argc] = arg;
-            argv = realloc(argv, sizeof(char *) * (++argc + 1));
+            argv = Scm_realloc(argv, sizeof(char *) * (++argc + 1));
             argv[argc] = NULL;
         }
     }         

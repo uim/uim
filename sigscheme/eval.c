@@ -1314,7 +1314,7 @@ static qquote_result qquote_vector(ScmObj input, ScmObj env, int nest)
         return my_result;
     }
 
-    copy_buf = malloc((len + growth) * sizeof(ScmObj));
+    copy_buf = Scm_malloc((len + growth) * sizeof(ScmObj));
 
     /* i indexes input and cpi indexes copy_buf. */
     next_rindex = SCM_INT_VALUE(CAAR(replacements));

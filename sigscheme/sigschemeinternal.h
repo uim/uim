@@ -377,25 +377,16 @@ typedef ScmRef ScmQueue;
 
 #define LBUF_ALLOC(lbuf, size)                                               \
     do {                                                                     \
-        (lbuf)._buf = malloc(size);                                          \
+        (lbuf)._buf = Scm_malloc(size);                                      \
         (lbuf)._size = (size);                                               \
-        if (!(lbuf)._buf)                                                    \
-            ERR("memory exhausted");                                         \
     } while (/* CONSTCOND */ 0)
 
 #define LBUF_REALLOC(lbuf, size)                                             \
     do {                                                                     \
         if ((lbuf)._buf == (lbuf)._init_buf) {                               \
-            void *new_buf;                                                   \
-                                                                             \
-            new_buf = malloc(size);                                          \
-            if (!new_buf)                                                    \
-                ERR("memory exhausted");                                     \
-            (lbuf)._buf = memcpy(new_buf, LBUF_BUF(lbuf), LBUF_SIZE(lbuf));  \
+            (lbuf)._buf = memcpy(Scm_malloc(size), LBUF_BUF(lbuf), LBUF_SIZE(lbuf)); \
         } else {                                                             \
-            (lbuf)._buf = realloc((lbuf)._buf, (size));                      \
-            if (!(lbuf)._buf)                                                \
-                ERR("memory exhausted");                                     \
+            (lbuf)._buf = Scm_realloc((lbuf)._buf, (size));                  \
         }                                                                    \
         (lbuf)._size = (size);                                               \
     } while (/* CONSTCOND */ 0)
