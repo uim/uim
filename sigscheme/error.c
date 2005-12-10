@@ -226,7 +226,7 @@ ScmObj ScmOp_backtrace(void)
 int SigScm_Die(const char *msg, const char *filename, int line)
 {
     char *reason;
-    ScmObj err_obj;
+    ScmObj reason_holder;
 
 #if HAVE_ASPRINTF
     asprintf(&reason, "SigScheme Died : %s (file : %s, line : %d)",
@@ -235,8 +235,10 @@ int SigScm_Die(const char *msg, const char *filename, int line)
     /* FIXME: provide replace asprintf */
     reason = strdup("SigScheme Died");
 #endif /* HAVE_ASPRINTF */
-    err_obj = Scm_MakeErrorObj(Scm_NewImmutableString(reason), LIST_1(SCM_UNDEF));
-    ScmOp_fatal_error(err_obj);
+    /* reason will implicitly be freed via the object on GC */
+    reason_holder = Scm_NewImmutableString(reason);
+
+    Scm_FatalError(reason);
     /* NOTREACHED */
     return 1;  /* dummy value for boolean expression */
 }
