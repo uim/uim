@@ -50,7 +50,7 @@
 =======================================*/
 typedef struct ScmSpecialCharInfo_ ScmSpecialCharInfo;
 struct ScmSpecialCharInfo_ {
-    unsigned int code;    /* character code as ASCII/Unicode */
+    int code;             /* character code as ASCII/Unicode */
     const char *esc_seq;  /* escape sequence as string */
     const char *lex_rep;  /* lexical representation as character object */
 };

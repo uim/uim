@@ -46,6 +46,11 @@
 /*=======================================
   File Local Struct Declarations
 =======================================*/
+#if 1
+/* FIXME: replace with C99-independent stdint.h */
+typedef unsigned long uintptr_t;
+#endif
+
 enum OutputType {
     AS_WRITE,   /* string is enclosed by ", char is written using #\ notation. */
     AS_DISPLAY, /* string and char is written as-is */
@@ -93,12 +98,7 @@ typedef struct {
 /*=======================================
   Variable Declarations
 =======================================*/
-void (*Scm_writess_func)(ScmObj port, ScmObj obj)
-#if SCM_USE_SRFI38
-    = &SigScm_WriteToPortWithSharedStructure;
-#else
-    = &SigScm_WriteToPort;
-#endif
+void (*Scm_writess_func)(ScmObj port, ScmObj obj) = &SigScm_WriteToPort;
 
 static int debug_mask;
 #if SCM_USE_SRFI38
@@ -262,12 +262,12 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
             SigScm_DisplayToPort(port, sym);
         else
             SigScm_PortPrintf(port, "%p", (void *)obj);
-        SCM_PORT_PRINT(port, ">");
+        SCM_PORT_PUT_CHAR(port, '>');
         break;
     case ScmClosure:
         SCM_PORT_PRINT(port, "#<closure ");
         print_ScmObj_internal(port, SCM_CLOSURE_EXP(obj), otype);
-        SCM_PORT_PRINT(port, ">");
+        SCM_PORT_PUT_CHAR(port, '>');
         break;
     case ScmVector:
         print_vector(port, obj, otype);
@@ -288,7 +288,7 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
         /* SCM_VALUEPACKET_VALUES() changes the type destructively */
         SCM_ENTYPE_VALUEPACKET(obj);
 #endif
-        SCM_PORT_PRINT(port, ">");
+        SCM_PORT_PUT_CHAR(port, '>');
         break;
     case ScmConstant:
         print_constant(port, obj, otype);
@@ -301,7 +301,7 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
         break;
     case ScmCFuncPointer:
         SigScm_PortPrintf(port, "#<c_func_pointer %p>",
-                          SCM_WORD_CAST(void *, SCM_C_FUNCPOINTER_VALUE(obj)));
+                          (void *)(uintptr_t)SCM_C_FUNCPOINTER_VALUE(obj));
         break;
     }
 }
@@ -317,7 +317,7 @@ static void print_char(ScmObj port, ScmObj obj, enum OutputType otype)
         SCM_PORT_PUTS(port, "#\\");
         /* special chars */
         for (info = Scm_special_char_table; info->esc_seq; info++) {
-            if (c == (int)info->code) {
+            if (c == info->code) {
                 SCM_PORT_PUTS(port, info->lex_rep);
                 return;
             }
@@ -339,42 +339,37 @@ static void print_char(ScmObj port, ScmObj obj, enum OutputType otype)
     }
 }
 
+/* FIXME: support multibyte char properly */
 static void print_string(ScmObj port, ScmObj obj, enum OutputType otype)
 {
-    const char *str = SCM_STRING_STR(obj);
-    const ScmSpecialCharInfo *info = NULL;
-    int size = strlen(str);
-    int i = 0;
-    int found = 0;
-    unsigned int  c = 0;
+    const ScmSpecialCharInfo *info;
+    const char *str;
+    int len, c, i;
+
+    str = SCM_STRING_STR(obj);
+    len = strlen(str);
 
     switch (otype) {
     case AS_WRITE:
-        /*
-         * in write, strings that appear in the written representation are
-         * enclosed in doublequotes, and within those strings backslash and
-         * doublequote characters are escaped by backslashes.
-         */
-        SCM_PORT_PRINT(port, "\""); /* first doublequote */
-        for (i = 0; i < size; i++) {
-            /* iterate Scm_special_char_table */
+        SCM_PORT_PUT_CHAR(port, '\"'); /* first doublequote */
+        for (i = 0; i < len; i++) {
             c = str[i];
-            found = 0;
             for (info = Scm_special_char_table; info->esc_seq; info++) {
                 if (c == info->code) {
-                    SigScm_PortPrintf(port, "%s", info->esc_seq);
-                    found = 1;
+                    SCM_PORT_PUTS(port, info->esc_seq);
                     break;
                 }
             }
-            if (!found)
-                SigScm_PortPrintf(port, "%c", str[i]);
+            if (!info->esc_seq)
+                SCM_PORT_PUT_CHAR(port, str[i]);
         }
-        SCM_PORT_PRINT(port, "\""); /* last doublequote */
+        SCM_PORT_PUT_CHAR(port, '\"'); /* last doublequote */
         break;
+
     case AS_DISPLAY:
-        SCM_PORT_PRINT(port, SCM_STRING_STR(obj));
+        SCM_PORT_PRINT(port, str);
         break;
+
     default:
         ERR("print_string : unknown output type");
         break;
@@ -383,20 +378,20 @@ static void print_string(ScmObj port, ScmObj obj, enum OutputType otype)
 
 static void print_list(ScmObj port, ScmObj lst, enum OutputType otype)
 {
-    ScmObj car = SCM_NULL;
+    ScmObj car;
 #if SCM_USE_SRFI38
-    int index;
-    int necessary_close_parens = 1;
+    int index, necessary_close_parens;
+
+    necessary_close_parens = 1;
   cheap_recursion:
 #endif
 
-    /* print left parenthesis */
-    SCM_PORT_PRINT(port, "(");
-
     if (NULLP(lst)) {
-        SCM_PORT_PRINT(port, ")");
+        SCM_PORT_PRINT(port, "()");
         return;
     }
+
+    SCM_PORT_PUT_CHAR(port, '(');
 
     for (;;) {
         car = CAR(lst);
@@ -404,7 +399,7 @@ static void print_list(ScmObj port, ScmObj lst, enum OutputType otype)
         lst = CDR(lst);
         if (!CONSP(lst))
             break;
-        SCM_PORT_PRINT(port, " ");
+        SCM_PORT_PUT_CHAR(port, ' ');
 
 #if SCM_USE_SRFI38
         /* See if the next pair is shared.  Note that the case
@@ -436,27 +431,25 @@ static void print_list(ScmObj port, ScmObj lst, enum OutputType otype)
   close_parens_and_return:
     while (necessary_close_parens--)
 #endif
-        SCM_PORT_PRINT(port, ")");
+        SCM_PORT_PUT_CHAR(port, ')');
 }
 
 static void print_vector(ScmObj port, ScmObj vec, enum OutputType otype)
 {
-    ScmObj *v = SCM_VECTOR_VEC(vec);
-    int c_len = SCM_VECTOR_LEN(vec);
-    int i     = 0;
+    ScmObj *v;
+    int len, i;
 
-    /* print left parenthesis with '#' */
     SCM_PORT_PRINT(port, "#(");
 
-    /* print each element */
-    for (i = 0; i < c_len; i++) {
+    v = SCM_VECTOR_VEC(vec);
+    len = SCM_VECTOR_LEN(vec);
+    for (i = 0; i < len; i++) {
+        if (i)
+            SCM_PORT_PUT_CHAR(port, ' ');
         print_ScmObj_internal(port, v[i], otype);
-
-        if (i != c_len - 1)
-            SCM_PORT_PRINT(port, " ");
     }
 
-    SCM_PORT_PRINT(port, ")");
+    SCM_PORT_PUT_CHAR(port, ')');
 }
 
 static void print_port(ScmObj port, ScmObj obj, enum OutputType otype)
@@ -468,41 +461,45 @@ static void print_port(ScmObj port, ScmObj obj, enum OutputType otype)
     /* input or output */
     /* print "i", "o" or "io" if bidirectional port */
     if (SCM_PORT_FLAG(obj) & SCM_PORTFLAG_INPUT)
-        SCM_PORT_PRINT(port, "i");
+        SCM_PORT_PUT_CHAR(port, 'i');
     if (SCM_PORT_FLAG(obj) & SCM_PORTFLAG_OUTPUT)
-        SCM_PORT_PRINT(port, "o");
+        SCM_PORT_PUT_CHAR(port, 'o');
 
     SCM_PORT_PRINT(port, "port");
 
     /* file or string */
     info = SCM_PORT_INSPECT(obj);
     if (*info) {
-        SCM_PORT_PRINT(port, " ");
+        SCM_PORT_PUT_CHAR(port, ' ');
         SCM_PORT_PRINT(port, info);
     }
     free(info);
 
-    SCM_PORT_PRINT(port, ">");
+    SCM_PORT_PUT_CHAR(port, '>');
 }
 
 static void print_constant(ScmObj port, ScmObj obj, enum  OutputType otype)
 {
+    const char *str;
+
     if (EQ(obj, SCM_NULL))
-        SCM_PORT_PRINT(port, "()");
+        str = "()";
     else if (EQ(obj, SCM_TRUE))
-        SCM_PORT_PRINT(port, "#t");
+        str = "#t";
     else if (EQ(obj, SCM_FALSE))
-        SCM_PORT_PRINT(port, "#f");
+        str = "#f";
     else if (EQ(obj, SCM_EOF))
 #if SCM_COMPAT_SIOD_BUGS
-        SCM_PORT_PRINT(port, "(eof)");
+        str = "(eof)";
 #else
-        SCM_PORT_PRINT(port, "#<eof>");
+        str = "#<eof>";
 #endif
     else if (EQ(obj, SCM_UNBOUND))
-        SCM_PORT_PRINT(port, "#<unbound>");
+        str = "#<unbound>";
     else if (EQ(obj, SCM_UNDEF))
-        SCM_PORT_PRINT(port, "#<undef>");
+        str = "#<undef>";
+
+    SCM_PORT_PUTS(port, str);
 }
 
 static void print_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
@@ -525,7 +522,7 @@ static void print_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
     case AS_DISPLAY:
         SigScm_DisplayToPort(port, reason);
         if (CONSP(objs))
-            SCM_PORT_PRINT(port, ":");
+            SCM_PORT_PUT_CHAR(port, ':');
         break;
 
     default:
@@ -534,21 +531,23 @@ static void print_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
     }
 
     for (; CONSP(objs); objs = CDR(objs)) {
-        SCM_PORT_PRINT(port, " ");
+        SCM_PORT_PUT_CHAR(port, ' ');
         SigScm_WriteToPort(port, CAR(objs));
     }
 
     if (otype == AS_WRITE)
-        SCM_PORT_PRINT(port, ">");
+        SCM_PORT_PUT_CHAR(port, '>');
 }
 
 #if SCM_USE_SRFI38
 static void hash_grow(hash_table *tab)
 {
-    size_t old_size = tab->size;
-    size_t new_size = old_size * 2;
-    size_t i;
-    hash_entry *old_ents = tab->ents;
+    size_t old_size, new_size, i;
+    hash_entry *old_ents;
+
+    old_size = tab->size;
+    new_size = old_size * 2;
+    old_ents = tab->ents;
 
     tab->ents = calloc(new_size, sizeof(hash_entry));
     tab->size = new_size;
@@ -617,6 +616,7 @@ static void write_ss_scan(ScmObj obj, write_ss_context *ctx)
 {
     int i;
     hash_entry *ent;
+
     /* (for-each mark-as-seen-or-return-if-familiar obj) */
     while (CONSP(obj)) {
         ent = hash_lookup(&ctx->seen, obj, NONDEFINING_DATUM, HASH_INSERT);

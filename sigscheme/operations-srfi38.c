@@ -65,6 +65,8 @@ void SigScm_Initialize_SRFI38(void)
 
     /* SRFI-38 allows providing (read/ss) and (write/ss) */
     Scm_DefineAlias("write/ss", "write-with-shared-structure");
+
+    Scm_writess_func = SigScm_WriteToPortWithSharedStructure;
 }
 
 /*=============================================================================
