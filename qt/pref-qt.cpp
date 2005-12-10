@@ -294,7 +294,7 @@ void UimPrefDialog::slotApply()
     qDebug("start saving....");
 
     uim_custom_save();
-    uim_custom_broadcast();
+    uim_custom_broadcast_reload_request();
 
     m_isValueChanged = false;
     m_applyButton->setEnabled( false );
