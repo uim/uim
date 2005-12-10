@@ -247,7 +247,7 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
             print_list(port, obj, otype);
         break;
     case ScmSymbol:
-        SCM_PORT_PRINT(port, SCM_SYMBOL_NAME(obj));
+        SCM_PORT_PUTS(port, SCM_SYMBOL_NAME(obj));
         break;
     case ScmChar:
         print_char(port, obj, otype);
@@ -256,7 +256,7 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
         print_string(port, obj, otype);
         break;
     case ScmFunc:
-        SCM_PORT_PRINT(port, (SCM_SYNTAXP(obj)) ? "#<syntax " : "#<subr ");
+        SCM_PORT_PUTS(port, (SCM_SYNTAXP(obj)) ? "#<syntax " : "#<subr ");
         sym = Scm_SymbolBoundTo(obj);
         if (NFALSEP(sym))
             SigScm_DisplayToPort(port, sym);
@@ -265,7 +265,7 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
         SCM_PORT_PUT_CHAR(port, '>');
         break;
     case ScmClosure:
-        SCM_PORT_PRINT(port, "#<closure ");
+        SCM_PORT_PUTS(port, "#<closure ");
         print_ScmObj_internal(port, SCM_CLOSURE_EXP(obj), otype);
         SCM_PORT_PUT_CHAR(port, '>');
         break;
@@ -276,12 +276,12 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
         print_port(port, obj, otype);
         break;
     case ScmContinuation:
-        SCM_PORT_PRINT(port, "#<subr continuation>");
+        SCM_PORT_PUTS(port, "#<subr continuation>");
         break;
     case ScmValuePacket:
-        SCM_PORT_PRINT(port, "#<values ");
+        SCM_PORT_PUTS(port, "#<values ");
         if (NULLP(SCM_VALUEPACKET_VALUES(obj)))
-            SCM_PORT_PRINT(port, "()");
+            SCM_PORT_PUTS(port, "()");
         else
             print_list(port, SCM_VALUEPACKET_VALUES(obj), otype);
 #if SCM_USE_VALUECONS
@@ -367,7 +367,7 @@ static void print_string(ScmObj port, ScmObj obj, enum OutputType otype)
         break;
 
     case AS_DISPLAY:
-        SCM_PORT_PRINT(port, str);
+        SCM_PORT_PUTS(port, str);
         break;
 
     default:
@@ -387,7 +387,7 @@ static void print_list(ScmObj port, ScmObj lst, enum OutputType otype)
 #endif
 
     if (NULLP(lst)) {
-        SCM_PORT_PRINT(port, "()");
+        SCM_PORT_PUTS(port, "()");
         return;
     }
 
@@ -422,7 +422,7 @@ static void print_list(ScmObj port, ScmObj lst, enum OutputType otype)
 
     /* last item */
     if (!NULLP(lst)) {
-        SCM_PORT_PRINT(port, " . ");
+        SCM_PORT_PUTS(port, " . ");
         /* Callee takes care of shared data. */
         print_ScmObj_internal(port, lst, otype);
     }
@@ -439,7 +439,7 @@ static void print_vector(ScmObj port, ScmObj vec, enum OutputType otype)
     ScmObj *v;
     int len, i;
 
-    SCM_PORT_PRINT(port, "#(");
+    SCM_PORT_PUTS(port, "#(");
 
     v = SCM_VECTOR_VEC(vec);
     len = SCM_VECTOR_LEN(vec);
@@ -456,7 +456,7 @@ static void print_port(ScmObj port, ScmObj obj, enum OutputType otype)
 {
     char *info;
 
-    SCM_PORT_PRINT(port, "#<");
+    SCM_PORT_PUTS(port, "#<");
 
     /* input or output */
     /* print "i", "o" or "io" if bidirectional port */
@@ -465,13 +465,13 @@ static void print_port(ScmObj port, ScmObj obj, enum OutputType otype)
     if (SCM_PORT_FLAG(obj) & SCM_PORTFLAG_OUTPUT)
         SCM_PORT_PUT_CHAR(port, 'o');
 
-    SCM_PORT_PRINT(port, "port");
+    SCM_PORT_PUTS(port, "port");
 
     /* file or string */
     info = SCM_PORT_INSPECT(obj);
     if (*info) {
         SCM_PORT_PUT_CHAR(port, ' ');
-        SCM_PORT_PRINT(port, info);
+        SCM_PORT_PUTS(port, info);
     }
     free(info);
 
@@ -515,7 +515,7 @@ static void print_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
 
     switch (otype) {
     case AS_WRITE:
-        SCM_PORT_PRINT(port, "#<error ");
+        SCM_PORT_PUTS(port, "#<error ");
         SigScm_WriteToPort(port, reason);
         break;
 

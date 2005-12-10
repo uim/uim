@@ -175,11 +175,6 @@ extern "C" {
 #define SCM_PORT_FLUSH(port)                                                 \
     (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_FLUSH(SCM_PORT_IMPL(port)))
 
-/* backward compatibility */
-#define SCM_PORT_GETC(port, c) ((c) = SCM_PORT_GET_CHAR(port))
-#define SCM_PORT_UNGETC(port, c)
-#define SCM_PORT_PRINT SCM_PORT_PUTS
-
 /*
  * SCM_CHARPORT_ERROR and SCM_BYTEPORT_ERROR must be defined before this
  * inclusion

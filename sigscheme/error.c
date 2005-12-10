@@ -172,8 +172,8 @@ ScmObj ScmOp_inspect_error(ScmObj err_obj)
         if (ERROBJP(err_obj)) {
             SigScm_DisplayToPort(scm_current_error_port, err_obj);
         } else {
-            SCM_PORT_PRINT(scm_current_error_port, ERRMSG_UNHANDLED_EXCEPTION);
-            SCM_PORT_PRINT(scm_current_error_port, ": ");
+            SCM_PORT_PUTS(scm_current_error_port, ERRMSG_UNHANDLED_EXCEPTION);
+            SCM_PORT_PUTS(scm_current_error_port, ": ");
             SigScm_WriteToPort(scm_current_error_port, err_obj);
         }
         SigScm_ErrorNewline();
