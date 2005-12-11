@@ -63,7 +63,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-static int srfi34_is_provided, fatal_err_looped;
+static int srfi34_is_provided, fatal_error_looped;
 static void (*cb_fatal_error)(void);
 
 static ScmObj err_obj_tag, str_srfi34;
@@ -91,7 +91,7 @@ void SigScm_InitError(void)
     srfi34_is_provided = FALSE;
 
     cb_fatal_error = NULL;
-    fatal_err_looped = FALSE;
+    fatal_error_looped = FALSE;
 
     REGISTER_FUNC_TABLE(scm_error_func_info_table);
 }
@@ -203,11 +203,11 @@ ScmObj ScmOp_fatal_error(ScmObj err_obj)
     const char *msg;
     DECLARE_FUNCTION("%%fatal-error", ProcedureFixed1);
 
-    if (fatal_err_looped) {
+    if (fatal_error_looped) {
         /* to avoid infinite loop by implicit assertion, use no SCM macros */
         msg = "looped fatal error";
     } else {
-        fatal_err_looped = TRUE;
+        fatal_error_looped = TRUE;
         ASSERT_ERROBJP(err_obj);
         ScmOp_inspect_error(err_obj);
         msg = NULL;
@@ -316,7 +316,12 @@ void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj)
     /* NOTREACHED */
 }
 
-#if SCM_DEBUG_BACKTRACE_VAL
+void SigScm_ShowErrorHeader(void)
+{
+    SigScm_ErrorPrintf(SCM_ERR_HEADER);
+}
+
+#if (SCM_DEBUG && SCM_DEBUG_BACKTRACE_VAL)
 static void show_arg(ScmObj arg, ScmObj env)
 {
 #define UNBOUNDP(var, env)                                              \
@@ -331,15 +336,12 @@ static void show_arg(ScmObj arg, ScmObj env)
 
 #undef UNBOUNDP
 }
-#endif /* SCM_DEBUG_BACKTRACE_VAL */
+#endif /* (SCM_DEBUG && SCM_DEBUG_BACKTRACE_VAL) */
 
 void SigScm_ShowBacktrace(ScmObj trace_stack)
 {
 #if SCM_DEBUG
-    ScmObj top;
-    ScmObj frame;
-    ScmObj env;
-    ScmObj obj;
+    ScmObj top, frame, env, obj;
 
     SigScm_ErrorPrintf(SCM_BACKTRACE_HEADER);
 
@@ -379,9 +381,4 @@ void SigScm_ShowBacktrace(ScmObj trace_stack)
     SigScm_ErrorPrintf(SCM_BACKTRACE_SEP);
 #endif /* SCM_DEBUG_BACKTRACE_SEP */
 #endif /* SCM_DEBUG */
-}
-
-void SigScm_ShowErrorHeader(void)
-{
-    SigScm_ErrorPrintf(SCM_ERR_HEADER);
 }
