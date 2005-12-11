@@ -64,11 +64,6 @@
 #define EVAL_ARGS          0
 #define SUPPRESS_EVAL_ARGS 1
 
-#define IS_LIST_LEN_1(args)  (CONSP(args) && NULLP(CDR(args)))
-/* for the quasiquote family */
-#define QQUOTE_SET_VERBATIM(x) ((x) = SCM_INVALID)
-#define QQUOTE_IS_VERBATIM(x)  (EQ((x), SCM_INVALID))
-
 #define SCM_ERRMSG_WRONG_NR_ARG " Wrong number of arguments "
 #define SCM_ERRMSG_NON_R5RS_ENV " the environment is not conformed to R5RS"
 
@@ -203,7 +198,7 @@ static ScmRef lookup_frame(ScmObj var, ScmObj frame)
          CONSP(vars);
          vars = CDR(vars), vals = REF_CDR(DEREF(vals)))
     {
-#if 1 && SCM_STRICT_ARGCHECK
+#if SCM_STRICT_ARGCHECK
         /*
          * This is required to reject hand-maid broken frame:
          *   (eval '(+ x y) '((x . 4)
@@ -647,7 +642,7 @@ enum _tr_msg {
     /** Extract the product. */
     TR_MSG_EXTRACT,
 
-    /** True iff the end of the sequence has been reached. */
+    /** True if the end of the sequence has been reached. */
     TR_MSG_ENDP,
 
     /**
@@ -814,7 +809,7 @@ static ScmObj vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
         break;
 
     case TR_MSG_EXTRACT:
-        /* Create a new vector iff modifications have been recorded. */
+        /* Create a new vector if modifications have been recorded. */
         if (!NULLP(t->u.vec.diff)) {
             ScmObj *copy_buf;
             ScmObj *src_buf;
