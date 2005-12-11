@@ -685,7 +685,7 @@ enum ScmStrMutationType {
 #define SCM_FALSE       ((ScmObj)(SCM_IMM_FALSE))
 #define SCM_TRUE        ((ScmObj)(SCM_IMM_TRUE))
 
-#define SCM_EQ(a, b)    ((a) == (b))
+#define SCM_EQ(a, b)    ((SCM_CAST_UINT(a) & ~SCM_GCBIT_MASK) == (SCM_CAST_UINT(b) & ~SCM_GCBIT_MASK))
 #define SCM_VALIDP(a)   (!SCM_TAG_IMM_INVALIDP(a))
 #define SCM_INVALIDP(a) (SCM_TAG_IMM_INVALIDP(a))
 #define SCM_NULLP(a)    (SCM_TAG_IMM_NULLP(a))
