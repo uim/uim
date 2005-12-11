@@ -21,14 +21,6 @@ libuim_la_SOURCES = uim.c uim-util.c uim-func.c uim-key.c \
 		intl.c \
 		uim-ipc.c \
 		plugin.c
-#		getpeereid.c
-
-#if NEED_SETENV_C
-#libuim_la_SOURCES += setenv.c
-#endif
-#if NEED_STRSEP_C
-#libuim_la_SOURCES += strsep.c
-#endif
 
 if COMPAT_SCM
   pkginclude_HEADERS += uim-compat-scm.h
@@ -136,9 +128,6 @@ uim_module_manager_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DUIM_DATADIR=\""$(dat
 uim_module_manager_CFLAGS =
 uim_module_manager_LDADD = libuim.la $(top_builddir)/replace/libreplace.la
 uim_module_manager_SOURCES = uim-module-manager.c
-#if NEED_SETENV_C
-#uim_module_manager_SOURCES += setenv.c
-#endif
 
 noinst_PROGRAMS = uim-agent
 
