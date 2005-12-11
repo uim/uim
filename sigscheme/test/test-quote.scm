@@ -1,6 +1,7 @@
 (load "test/unittest.scm")
 
-(assert-true "quasiquote check" (equal? '(1 2 3) `(1 2 3)))
+(assert-true "quasiquote check #1" (equal? '(1 2 3) `(1 2 3)))
+(assert-true "quasiquote check #2" (equal? '(5) `(,(+ 2 3))))
 (assert-true "unquote check" (equal? `(1 2 3) `(1 ,(+ 1 1) ,(+ 1 2))))
 (assert-true "unquote-splicing check" (equal? `(1 2 3) `(1 ,@(cdr '(1 2)) 3)))
 (assert-true "mixed check" (equal? '(a 3 c 7 8 9) `(a ,(+ 1 2) c ,@(cdr '(6 7 8 9)))))
