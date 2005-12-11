@@ -606,9 +606,7 @@ AM_CONDITIONAL(COMPAT_SCM, test x$enable_compat_scm = xyes)
 AM_CONDITIONAL(NEED_SETENV_C, test $ac_cv_func_setenv = no -o $ac_cv_func_unsetenv = no)
 AM_CONDITIONAL(NEED_STRSEP_C, test $ac_cv_func_strsep = no)
 
-if test "x$use_applet" = "xyes"; then
-  AC_PROG_INTLTOOL
-fi
+AC_PROG_INTLTOOL([0.31], [no-xml])
 
 
 GTK_BINARY_VERSION=`pkg-config gtk+-2.0 --variable=gtk_binary_version`
