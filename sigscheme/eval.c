@@ -610,8 +610,9 @@ static ScmObj map_eval(ScmObj args, ScmObj env)
  * TR_ENDP() returns true.  Replacement of that portion must be done
  * with TRL_SET_SUBLS().
  *
- * No operation except TRL_GET_SUBLS(), TRL_SET_SUBLS(), and TR_ENDP()
- * can be done on a translator for which TR_ENDP() returns true.
+ * No operation except TRL_GET_SUBLS(), TRL_SET_SUBLS(), TR_EXTRACT(),
+ * and TR_ENDP() can be done on a translator for which TR_ENDP()
+ * returns true.
  *
  * Everything prefixed with TRL_ is specific to list translators.
  * Likewise, TRV_ shows specificity to vector translators.  TR_
