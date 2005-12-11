@@ -81,8 +81,12 @@ extern "C" {
 #define SCM_DBG(args)
 #endif /* SCM_DEBUG */
 
-#define SCM_ASSERT(cond) \
-    ((cond) || SigScm_Die("assertion failed.", __FILE__, __LINE__))
+/* FIXME:
+ * - separate required validation from optional assertion
+ * - support immediate termination to produce core instead of robust recovery
+ */
+#define SCM_ASSERT(cond)                                                     \
+    ((cond) || SigScm_Die("assertion failed", __FILE__, __LINE__))
 
 #define SCM_ERROBJP(obj)       (NFALSEP(ScmOp_error_objectp(obj)))
 

@@ -84,7 +84,7 @@ Assigned to Kazuki:
 
 Assigned to YamaKen:
 
-* Revise fatal error handling
+* Separate SCM_ASSERT into required validation optional assertion
 
 * Fix character and escape sequence related issues. grep Scm_special_char_table
   to find the issues, and make all tests in test-char.scm and test-string.scm

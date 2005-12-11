@@ -53,9 +53,12 @@
   File Local Macro Declarations
 =======================================*/
 #define SCM_BACKTRACE_HEADER "**** BACKTRACE ****\n"
+#define SCM_BACKTRACE_SEP    "------------------------------\n"
 
 #define ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"
 #define ERRMSG_MEMORY_EXHAUSTED    "memory exhausted"
+
+#define ASSERT_ALLOCATED(p) ((p) || (ERR(ERRMSG_MEMORY_EXHAUSTED), 1))
 
 /*=======================================
   Variable Declarations
@@ -178,7 +181,7 @@ void Scm_FatalError(const char *msg)
 {
     /* don't use Scheme-level ports here */
     if (msg) {
-        fputs("Error: ", stderr);
+        fputs(SCM_ERR_HEADER, stderr);
         fputs(msg, stderr);
         fputs(SCM_NEWLINE_STR, stderr);
     }
@@ -263,13 +266,8 @@ int SigScm_Die(const char *msg, const char *filename, int line)
     char *reason;
     ScmObj reason_holder;
 
-#if HAVE_ASPRINTF
-    asprintf(&reason, "SigScheme Died : %s (file : %s, line : %d)",
-             msg, filename, line);
-#else /* HAVE_ASPRINTF */
-    /* FIXME: provide replace asprintf */
-    reason = strdup("SigScheme Died");
-#endif /* HAVE_ASPRINTF */
+    asprintf(&reason, "%s: (file : %s, line : %d)", msg, filename, line);
+    ASSERT_ALLOCATED(reason);
     /* reason will implicitly be freed via the object on GC */
     reason_holder = Scm_NewImmutableString(reason);
 
@@ -284,14 +282,11 @@ void SigScm_Error(const char *msg, ...)
     char *reason;
     ScmObj err_obj;
 
-#if HAVE_VASPRINTF
     va_start(va, msg);
     vasprintf(&reason, msg, va);
     va_end(va);
-#else /* HAVE_VASPRINTF */
-    /* FIXME: provide replace vasprintf */
-    reason = strdup(msg);
-#endif /* HAVE_VASPRINTF */
+    ASSERT_ALLOCATED(reason);
+
     err_obj = Scm_MakeErrorObj(Scm_NewImmutableString(reason), SCM_NULL);
     Scm_RaiseError(err_obj);
     /* NOTREACHED */
@@ -313,12 +308,9 @@ void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj)
     char *reason;
     ScmObj err_obj;
 
-#if HAVE_ASPRINTF
     asprintf(&reason, "in %s: %s", func_name, msg);
-#else /* HAVE_ASPRINTF */
-    /* FIXME: provide replace asprintf */
-    reason = strdup(msg);
-#endif /* HAVE_ASPRINTF */
+    ASSERT_ALLOCATED(reason);
+
     err_obj = Scm_MakeErrorObj(Scm_NewImmutableString(reason), LIST_1(obj));
     Scm_RaiseError(err_obj);
     /* NOTREACHED */
@@ -354,8 +346,8 @@ void SigScm_ShowBacktrace(ScmObj trace_stack)
     /* show each frame's obj */
     for (top = trace_stack; !NULLP(top); top = CDR(top)) {
 #if SCM_DEBUG_BACKTRACE_SEP
-        SigScm_ErrorPrintf("------------------------------\n");
-#endif /* SCM_DEBUG_BACKTRACE_SEP */
+        SigScm_ErrorPrintf(SCM_BACKTRACE_SEP);
+#endif
 
         frame = CAR(top);
         env = TRACE_FRAME_ENV(frame);
@@ -384,7 +376,7 @@ void SigScm_ShowBacktrace(ScmObj trace_stack)
 #endif /* SCM_DEBUG_BACKTRACE_VAL */
     }
 #if SCM_DEBUG_BACKTRACE_SEP
-        SigScm_ErrorPrintf("------------------------------\n");
+    SigScm_ErrorPrintf(SCM_BACKTRACE_SEP);
 #endif /* SCM_DEBUG_BACKTRACE_SEP */
 #endif /* SCM_DEBUG */
 }

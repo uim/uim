@@ -128,6 +128,11 @@
 /*===========================================================================
   Dependency Resolution
 ===========================================================================*/
+/* FIXME: provide replace functions */
+#if (!HAVE_ASPRINTF || !HAVE_VASPRINTF)
+#error "This platform is not supported yet"
+#endif
+
 #if SCM_COMPAT_SIOD
 #undef SCM_USE_NONSTD_FEATURES
 #define SCM_USE_NONSTD_FEATURES 1
