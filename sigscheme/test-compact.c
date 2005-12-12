@@ -732,6 +732,30 @@ ScmObj Scm_CheckConstant()
     return SCM_NULL;
 }
 
+ScmObj Scm_CheckRef()
+{
+    PRINT_SECTION("REF");
+
+    ScmObj cons = Scm_CheckCons();
+    ScmObj tmp  = Scm_CheckCons();
+    ScmRef ref_car = SCM_REF_CAR(cons);
+    ScmRef ref_cdr = SCM_REF_CDR(cons);
+
+    SCM_ASSERT(SCM_EQ(cons, SCM_DEREF(SCM_REF_OFF_HEAP(cons))));
+    SCM_ASSERT(SCM_EQ(SCM_CAR(cons), SCM_DEREF(SCM_REF_OFF_HEAP(SCM_CAR(cons)))));
+    SCM_ASSERT(SCM_EQ(SCM_CDR(cons), SCM_DEREF(SCM_REF_OFF_HEAP(SCM_CDR(cons)))));
+    SCM_ASSERT(SCM_EQ(SCM_CAR(cons), SCM_DEREF(ref_car)));
+    SCM_ASSERT(SCM_EQ(SCM_CDR(cons), SCM_DEREF(ref_cdr)));
+
+    SCM_SET(ref_car, tmp);
+    SCM_SET(ref_cdr, tmp);
+    SCM_ASSERT(SCM_EQ(cons, SCM_DEREF(SCM_REF_OFF_HEAP(cons))));
+    SCM_ASSERT(SCM_EQ(SCM_CAR(cons), SCM_DEREF(SCM_REF_OFF_HEAP(SCM_CAR(cons)))));
+    SCM_ASSERT(SCM_EQ(SCM_CDR(cons), SCM_DEREF(SCM_REF_OFF_HEAP(SCM_CDR(cons)))));
+    SCM_ASSERT(SCM_EQ(SCM_CAR(cons), SCM_DEREF(ref_car)));
+    SCM_ASSERT(SCM_EQ(SCM_CDR(cons), SCM_DEREF(ref_cdr)));
+}
+
 int main(void)
 {
     Scm_CheckInt(0);
@@ -761,6 +785,7 @@ int main(void)
     Scm_CheckCFuncPointer((ScmCFunc)0xfffffffe);
     Scm_CheckCFuncPointer((ScmCFunc)0xffffffff);
     Scm_CheckConstant();
+    Scm_CheckRef();
 
     SCM_INVALIDP(SCM_INVALID);
 }

@@ -418,13 +418,13 @@ enum ScmStrMutationType {
 #define SCM_TAG_IMM_CHARP(a)              ((SCM_CAST_UINT(a) & SCM_TAG_IMM_MASK_CHAR)  == SCM_TAG_IMM_CHAR)
 
 #define SCM_TAG_IMM_CONSTANTP(a)          ((SCM_CAST_UINT(a) & SCM_TAG_IMM_MASK_CONST) == (SCM_TAG_IMM | (0x3 << 3)))
-#define SCM_TAG_IMM_NULLP(a)              (SCM_CAST_UINT(a) == SCM_IMM_NULL)
-#define SCM_TAG_IMM_INVALIDP(a)           (SCM_CAST_UINT(a) == SCM_IMM_INVALID)
-#define SCM_TAG_IMM_UNBOUNDP(a)           (SCM_CAST_UINT(a) == SCM_IMM_UNBOUND)
-#define SCM_TAG_IMM_FALSEP(a)             (SCM_CAST_UINT(a) == SCM_IMM_FALSE)
-#define SCM_TAG_IMM_TRUEP(a)              (SCM_CAST_UINT(a) == SCM_IMM_TRUE)
-#define SCM_TAG_IMM_EOFP(a)               (SCM_CAST_UINT(a) == SCM_IMM_EOF)
-#define SCM_TAG_IMM_UNDEFP(a)             (SCM_CAST_UINT(a) == SCM_IMM_UNDEF)
+#define SCM_TAG_IMM_NULLP(a)              (SCM_EQ((a), SCM_IMM_NULL))
+#define SCM_TAG_IMM_INVALIDP(a)           (SCM_EQ((a), SCM_IMM_INVALID))
+#define SCM_TAG_IMM_UNBOUNDP(a)           (SCM_EQ((a), SCM_IMM_UNBOUND))
+#define SCM_TAG_IMM_FALSEP(a)             (SCM_EQ((a), SCM_IMM_FALSE))
+#define SCM_TAG_IMM_TRUEP(a)              (SCM_EQ((a), SCM_IMM_TRUE))
+#define SCM_TAG_IMM_EOFP(a)               (SCM_EQ((a), SCM_IMM_EOF))
+#define SCM_TAG_IMM_UNDEFP(a)             (SCM_EQ((a), SCM_IMM_UNDEF))
 
 /* Type Predicates */
 #define SCM_CONSP(a)             (SCM_TAG_CONSP(a))
@@ -765,7 +765,7 @@ extern ScmObj Scm_sym_unquote, Scm_sym_unquote_splicing;
 #define SCM_REF_OFF_HEAP(obj) (&(obj))
 
 /* SCM_DEREF(ref) is not permitted to be used as lvalue */
-#define SCM_DEREF(ref)    ((ScmObj)(SCM_CAST_UINT(*(ref)) & ~SCM_GCBIT_MASK))
+#define SCM_DEREF(ref)    ((ScmObj)(SCM_CAST_UINT(*(ref))))
 
 /* RFC: Is there a better name? */
 #define SCM_SET(ref, obj) (*(ref) = (ScmObj)(SCM_GC_BIT(*(ref)) | (SCM_CAST_UINT(obj) & ~SCM_GCBIT_MASK)))
