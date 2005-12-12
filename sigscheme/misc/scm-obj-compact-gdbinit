@@ -1,0 +1,62 @@
+# This file defines handy gdb macros
+# To use it, add this line to your ~/.gdbinit or
+# source this file.
+
+define scm_immp
+  set $ptr = ($arg0)
+  set $tag = ((((unsigned int)($ptr)) & (0x3 << 1)) >> 1)
+
+  if $tag == 0x3
+    if ((((unsigned int)($ptr)) & 0xe) == 0x6)
+      printf "this is : Integer\n"
+    end
+    if ((((unsigned int)($ptr)) & 0x1e) == 0xe)
+      printf "this is : Char\n"
+    end
+
+    if ((((unsigned int)($ptr)) & 0xfe) == 0x1e)
+      printf "this is : SCM_NULL\n"
+    end
+    if ((((unsigned int)($ptr)) & 0xfe) == 0x3e)
+      printf "this is : SCM_INVALID\n"
+    end
+    if ((((unsigned int)($ptr)) & 0xfe) == 0x5e)
+      printf "this is : SCM_UNBOUND\n"
+    end
+    if ((((unsigned int)($ptr)) & 0xfe) == 0x7e)
+      printf "this is : SCM_TRUE\n"
+    end
+    if ((((unsigned int)($ptr)) & 0xfe) == 0x9e)
+      printf "this is : SCM_FALSE\n"
+    end
+    if ((((unsigned int)($ptr)) & 0xfe) == 0xbe)
+      printf "this is : SCM_EOF\n"
+    end
+    if ((((unsigned int)($ptr)) & 0xfe) == 0xde)
+      printf "this is : SCM_UNDEF\n"
+    end
+  end
+end
+
+
+define p_car
+  set $ptr = ((ScmObj)(((unsigned int)($arg0)) & (~0U << 3)))
+  set $car = ((ScmObj)$ptr)->car
+  p $car
+  scm_immp $car
+end
+
+define p_cdr
+  set $ptr = ((ScmObj)(((unsigned int)($arg0)) & (~0U << 3)))
+  set $cdr = ((ScmObj)$ptr)->cdr
+  p $cdr
+  scm_immp $cdr
+end
+
+define p_obj
+  p ($arg0)
+  scm_immp ($arg0)
+
+  p_car ($arg0)
+  p_cdr ($arg0)
+end
