@@ -159,7 +159,7 @@ void UimPrefDialog::createMainWidgets()
     QPushButton *okButton = new QPushButton( _("OK"), buttonHWidget );
     QObject::connect( okButton, SIGNAL(clicked()),
                       this, SLOT(slotOK()) );
-    m_applyButton = new QPushButton( "Apply", buttonHWidget );
+    m_applyButton = new QPushButton( _("Apply"), buttonHWidget );
     m_applyButton->setEnabled( false );
     QObject::connect( m_applyButton, SIGNAL(clicked()),
                       this, SLOT(slotApply()) );
@@ -264,7 +264,7 @@ void UimPrefDialog::confirmQuit()
                                           "Do you realy quit this program?"),
                                         _("Yes"),
                                         _("No"),
-                                        QString::null, 0, 1);
+                                        QString::null, 1, -1);
     switch(result)
     {
     case 0:

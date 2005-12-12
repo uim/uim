@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-09 18:52+0900\n"
+"POT-Creation-Date: 2005-12-12 19:20+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -546,7 +546,7 @@ msgstr ""
 msgid "Key Grab Dialog"
 msgstr ""
 
-#: qt/pref-qt.cpp:113
+#: qt/pref-qt.cpp:114
 msgid "~/.uim exists!"
 msgstr ""
 
@@ -554,9 +554,13 @@ msgstr ""
 msgid "Defaults"
 msgstr ""
 
-#: qt/pref-qt.cpp:159 qt/pref-qt.cpp:246 qt/pref-qt.cpp:352
+#: qt/pref-qt.cpp:159 qt/pref-qt.cpp:246 qt/pref-qt.cpp:351
 #: qt/switcher-qt.cpp:119
 msgid "OK"
+msgstr ""
+
+#: qt/pref-qt.cpp:162
+msgid "Apply"
 msgstr ""
 
 #: qt/pref-qt.cpp:166 qt/pref-qt.cpp:247 qt/switcher-qt.cpp:124
