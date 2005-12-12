@@ -94,27 +94,30 @@
                                         ((integer? 2))
                                         ((integer? #t)))
                                'ok))
+;; procedure itself as value
+(assert-true "and-let* #22" (and-let* ((even?))
+                               'ok))
 
 ;; combined form
-(assert-true  "and-let* #22" (and-let* (true
+(assert-true  "and-let* #23" (and-let* (true
                                         even?
                                         ((integer? 1)))
                                'ok))
-(assert-true  "and-let* #23" (and-let* (true
+(assert-true  "and-let* #24" (and-let* (true
                                         even?
                                         ((integer? 1))
                                         (foo '(1 2 3))
                                         ((list? foo))
                                         (bar foo))
                                'ok))
-(assert-false "and-let* #24" (and-let* (true
+(assert-false "and-let* #25" (and-let* (true
                                         even?
                                         ((integer? 1))
                                         (foo #(1 2 3))
                                         ((list? foo))
                                         (bar foo))
                                'ok))
-(assert-false "and-let* #25" (and-let* (true
+(assert-false "and-let* #26" (and-let* (true
                                         even?
                                         ((integer? 1))
                                         (foo '(1 2 3))
