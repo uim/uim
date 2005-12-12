@@ -52,8 +52,6 @@ Logical simplifications:
 
 * Replace all Scm_ErrorObj() in procedures and syntaxes with ERR_OBJ
 
-* Reorganize SCM_SHIFT*() macros to complement POP_ARG() macro
-
 ==============================================================================
 Namings and Cosmetic things:
 

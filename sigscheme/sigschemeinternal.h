@@ -193,34 +193,6 @@ extern ScmObj SigScm_null_values;
  * SCM_UNDEF
  */
 
-/*
- * Macros For List Element Extraction With Safety Check
- *
- * SCM_SHIFT_*() safely and efficiently extracts elements of a list into
- * arbitrary storages (Suppose 'shift' function of scripting languages).
- *
- * The macro overwrites the argument variable 'lst' as list iterator, and
- * returns rest list after requested number of elements have been
- * extracted. Caller can test whether the list has been empty or not by
- * applying NULLP to the result. If a shotage of the list has been occurred
- * before extracting all elements, the iteration stops with false value, and
- * the lst becomes to empty list. The macro itself does not have any error
- * handlings. Caller must do it appropriately by referencing the result value.
- */
-#define SCM_SHIFT_RAW(elm, lst)                                              \
-    ((!NULLP(lst)) && ((elm) = CAR(lst), (lst) = CDR(lst), (lst)))
-
-#define SCM_SHIFT_RAW_1(elm0, lst)                                           \
-    (SCM_SHIFT_RAW((elm0), (lst)) ? (lst) : 0)
-#define SCM_SHIFT_RAW_2(elm0, elm1, lst)                                     \
-    ((SCM_SHIFT_RAW((elm0), (lst))                                           \
-      && SCM_SHIFT_RAW((elm1), (lst))) ? (lst) : 0)
-
-#define SCM_SHIFT_RAW_3(elm0, elm1, elm2, lst)                               \
-    ((SCM_SHIFT_RAW((elm0), (lst))                                           \
-      && SCM_SHIFT_RAW((elm1), (lst))                                        \
-      && SCM_SHIFT_RAW((elm2), (lst))) ? (lst) : 0)
-
 /* Obscures identifier ID. */
 #define SCM_MANGLE(id) Scm_internal_##id
 
