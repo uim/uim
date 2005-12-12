@@ -107,13 +107,13 @@ void UimPrefDialog::checkDotUimFile()
                         "This file will override all conflicted settings set by\n"
                         "this tool (stored in ~/.uim.d/customs/*.scm).\n"
                         "Please check the file if you find your settings aren't applied.");
+
         QConfirmDialog *d = new QConfirmDialog( msg,
                                                 "/uim/qt/warnDotUim",
                                                 this );
         d->setCaption( _("~/.uim exists!") );
         d->exec();
-        // To avoid crashes... --ekato 2005.02.25
-        //delete d;
+        delete d;            
     }
 }
 
@@ -335,29 +335,24 @@ QConfirmDialog::QConfirmDialog( const QString &msg, const QString &confname, QWi
 
 void QConfirmDialog::setupWidgets( const QString&msg )
 {
-    QVBoxLayout *vbox = new QVBoxLayout( this );
-    vbox->setSpacing( 6 );
-    vbox->setMargin( 6 );
-
+    QVBoxLayout *vLayout = new QVBoxLayout( this );
+    vLayout->setSpacing( 6 );
+    vLayout->setMargin( 6 );
     QLabel *msgLabel = new QLabel( msg, this );
     KSeparator *sep = new KSeparator( this );
+    vLayout->addWidget( msgLabel );
+    vLayout->addWidget( sep );
 
-    QHBoxLayout *buttonHBox = new QHBoxLayout(vbox, 4);
-
+    QHBoxLayout *buttonHLayout = new QHBoxLayout( vLayout );
     QCheckBox *checkBox = new QCheckBox( _("Show this dialog on startup"), this );
     QSettings settings;
     bool isWarnDotUim = settings.readBoolEntry( m_confname, true );
     checkBox->setChecked( isWarnDotUim );
-
     QPushButton *ok = new QPushButton( _("OK"), this );
     ok->setDefault(true);
-    buttonHBox->addWidget( checkBox );
-    buttonHBox->addStretch();
-    buttonHBox->addWidget( ok );
-
-    vbox->addWidget( msgLabel );
-    vbox->addWidget( sep );
-    vbox->addLayout( buttonHBox );
+    buttonHLayout->addWidget( checkBox );
+    buttonHLayout->addStretch();    
+    buttonHLayout->addWidget( ok );
 
     QObject::connect( ok, SIGNAL(clicked()),
                       this, SLOT(accept()) );
