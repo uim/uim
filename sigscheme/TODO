@@ -44,9 +44,6 @@ Performance improvements:
 ==============================================================================
 Logical simplifications:
 
-* rewrite all #ifdef'ed SigScm_WriteToPortWithSharedStructure() invocation with
-  SCM_WRITESS_TO_PORT()
-
 * Simplify argument extraction by DECLARE_FUNCTION, ASSERT_*P, POP_ARG and
   NO_MORE_ARG macros in all procedure and syntaxes
 
