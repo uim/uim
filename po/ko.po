@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-09 18:52+0900\n"
+"POT-Creation-Date: 2005-12-12 19:20+0900\n"
 "PO-Revision-Date: 2005-12-07 22:31+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -554,7 +554,7 @@ msgstr "편집"
 msgid "Key Grab Dialog"
 msgstr "키 잡기 대화창"
 
-#: qt/pref-qt.cpp:113
+#: qt/pref-qt.cpp:114
 msgid "~/.uim exists!"
 msgstr "~/.uim 가 있습니다!"
 
@@ -562,10 +562,14 @@ msgstr "~/.uim 가 있습니다!"
 msgid "Defaults"
 msgstr "디폴트"
 
-#: qt/pref-qt.cpp:159 qt/pref-qt.cpp:246 qt/pref-qt.cpp:352
+#: qt/pref-qt.cpp:159 qt/pref-qt.cpp:246 qt/pref-qt.cpp:351
 #: qt/switcher-qt.cpp:119
 msgid "OK"
 msgstr "확인"
+
+#: qt/pref-qt.cpp:162
+msgid "Apply"
+msgstr ""
 
 #: qt/pref-qt.cpp:166 qt/pref-qt.cpp:247 qt/switcher-qt.cpp:124
 msgid "Cancel"
