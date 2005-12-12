@@ -1,4 +1,15 @@
-Overview of changes from 0.4.9.1 to 1.0.0
+Overview of changes from 1.0.0-alpha to 1.0.0-beta
+==
+* Fixes
+ o Minor
+    - update configure script not to require XML::Parser (Etsushi)
+    - Qt immodule
+      - fix to respond to uim-pref-gtk's custom messages on the fly in
+	addition to uim-pref-qt's (Etsushi)
+
+
+
+Overview of changes from 0.4.9.1 to 1.0.0-alpha
 ==
 * New features
   o Main features
@@ -8,6 +19,10 @@ Overview of changes from 0.4.9.1 to 1.0.0
 
   o IM related
     - toggle-im facility (Etsushi, YamaKen)
+    - Anthy
+      - vi-cooperative mode (Masanari)
+    - Canna
+      - vi-cooperative mode (Masanari)
     - SKK (Etsushi)
       - dynamic completion
       - ddskk compatible behavior with mistypes while starting
@@ -20,7 +35,7 @@ Overview of changes from 0.4.9.1 to 1.0.0
   o Critical
     - fix segmentation fault if uim is compiled with '--enabled-debug'
       (Etsushi, dai <d+r AT vdr.jp>)
-    - fix ipc (prime connection) in some rare cases (Masanari)
+    - fix IPC (connection to PRIME) in some rare cases (Masanari)
     - fix possible GC crash with anti-stack smashing compilers such as
       GCC4 (Jun, YamaKen)
 
