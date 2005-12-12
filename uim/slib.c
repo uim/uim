@@ -511,7 +511,7 @@ my_err (char *message, LISP x)
   if (fatal_exit_hook)
     (*fatal_exit_hook) ();
   else
-    exit (1);
+    exit (EXIT_FAILURE);
   return (NIL);
 }
 

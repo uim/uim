@@ -224,7 +224,7 @@ main(int argc, char *argv[])
 
   if (result == -1) {
     g_printerr(_("Error:%s\n"), get_error_msg());
-    exit(-1);
+    exit(EXIT_FAILURE);
   }
 
   /* connect to uim helper message bus */

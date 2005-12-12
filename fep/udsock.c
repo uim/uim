@@ -118,7 +118,7 @@ void init_recvsocket(const char *sock_path)
   strncpy(s_servaddr.sun_path, sock_path, UNIX_PATH_MAX - 1);
   if (bind(s_recv_sockfd, (struct sockaddr *)&s_servaddr, sizeof(s_servaddr)) < 0) {
     perror(sock_path);
-    exit(1);
+    exit(EXIT_FAILURE);
   }
   chmod(sock_path, S_IRUSR|S_IWUSR);
 }

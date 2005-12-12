@@ -73,7 +73,7 @@ void init_str(void)
 {
   if (setlocale(LC_CTYPE, "") == NULL) {
     printf("locale not supported\n");
-    exit(1);
+    exit(EXIT_FAILURE);
   }
   s_utf8 = (strcasecmp(get_enc(), "UTF-8") == 0 || strcasecmp(get_enc(), "UTF8") == 0);
 }
