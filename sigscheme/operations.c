@@ -1491,14 +1491,15 @@ ScmObj ScmOp_make_vector(ScmObj vector_len, ScmObj args)
 
 ScmObj ScmOp_vector(ScmObj args)
 {
-    int len = SCM_INT_VALUE(ScmOp_length(args));
-    int i   = 0;
-    ScmObj *vec = Scm_malloc(sizeof(ScmObj) * len); /* allocate vector */
+    int len, i;
+    ScmObj *vec;
     DECLARE_FUNCTION("vector", ProcedureVariadic0);
 
-    /* set item */
+    len = SCM_INT_VALUE(ScmOp_length(args));
+    vec = Scm_malloc(sizeof(ScmObj) * len);
+
     for (i = 0; i < len; i++)
-        SCM_SHIFT_RAW_1(vec[i], args);
+        vec[i] = POP_ARG(args);
 
     return Scm_NewVector(vec, len);
 }

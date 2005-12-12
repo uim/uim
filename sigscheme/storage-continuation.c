@@ -152,6 +152,7 @@ static void unwind_dynamic_extent(void)
 static void enter_dynamic_extent(ScmObj dest)
 {
     ScmObj frame, unwound, retpath;
+    DECLARE_INTERNAL_FUNCTION("enter_dynamic_extent");
 
     retpath = SCM_NULL;
 
@@ -162,8 +163,7 @@ static void enter_dynamic_extent(ScmObj dest)
         retpath = CONS(frame, retpath);
     }
 
-    /* assumes that (SCM_NULL != NULL) */
-    while (SCM_SHIFT_RAW(frame, retpath)) {
+    while (frame = POP_ARG(retpath), VALIDP(frame)) {
         Scm_call(DYNEXT_FRAME_BEFORE(frame), SCM_NULL);
     }
 }
