@@ -272,7 +272,7 @@ word_list_window_init (WordListWindow *window)
   dict = uim_dict_open(N_("Anthy private dictionary"));
   if (!dict) {
     warn_dict_open();
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 #endif
   word_list_view_set_dict(WORD_LIST_VIEW(word_list), dict);

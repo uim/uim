@@ -225,8 +225,10 @@ main(int argc, char *argv[]) {
   uim_scm_init_subr_1("write-loader.scm", write_loader_scm);
   uim_scm_init_subr_1("write-installed-modules.scm", write_installed_modules_scm);
 
-  if (!uim_scm_require_file("uim-module-manager.scm"))
-    exit(1);
+  if (!uim_scm_require_file("uim-module-manager.scm")) {
+    perror("failed to require uim-module-manager.scm");
+    exit(EXIT_FAILURE);
+  }
 
   if (path) {
     char *extra_file = concat(path, "/installed-modules.scm");

@@ -586,7 +586,7 @@ read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
     n = read(fd, buf, CANDIDATE_BUFFER_SIZE - 1);
     if (n == 0) {
       close(fd);
-      exit(-1);
+      exit(EXIT_FAILURE);
     }
     if (n == -1)
       return TRUE;

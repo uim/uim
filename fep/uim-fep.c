@@ -203,7 +203,7 @@ static void init_uim(const char *engine)
   if (i == nr) {
     printf("%s is not a input method\n\n", engine);
     usage();
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 }
 
