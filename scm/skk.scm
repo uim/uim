@@ -1714,23 +1714,24 @@
     (skk-context-set-state! sc 'skk-state-kanji)
     (skk-context-set-okuri-head! sc "")
     (if (not (null? (skk-context-okuri sc)))
-	(skk-context-set-head! sc
-			       (append (skk-context-okuri sc)
-				       (skk-context-head sc))))
+	(begin
+	  (skk-context-set-head! sc
+				 (append (skk-context-okuri sc)
+					 (skk-context-head sc)))
+	  (if skk-dcomp-activate?
+	      (skk-context-set-dcomp-word! sc ""))))
     (if (not (null? (skk-context-appendix sc)))
-	(skk-context-set-head! sc
-			       (append (skk-context-appendix sc)
-				       (skk-context-head sc))))
+	(begin
+	  (skk-context-set-head! sc
+				 (append (skk-context-appendix sc)
+					 (skk-context-head sc)))
+	  (if skk-dcomp-activate?
+	      (skk-context-set-dcomp-word! sc ""))))
     (skk-context-set-okuri! sc '())
     (skk-context-set-appendix! sc '())
     ;; don't clear dcomp (not compatible with ddskk's behavior)
-    (if skk-dcomp-activate?
-    	(skk-context-set-dcomp-word!
-	 sc
-	 (skk-lib-get-dcomp-word
-	  (skk-make-string
-	   (skk-context-head sc) (skk-context-kana-mode sc))
-	  skk-use-numeric-conversion?)))
+    ;;(if skk-dcomp-activate?
+    ;; (skk-context-set-dcomp-word! sc ""))
     (skk-context-set-nr-candidates! sc 0)))
 
 (define skk-back-to-converting-state
