@@ -95,8 +95,10 @@ ScmObj ScmExp_SRFI2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_st
                     val = EVAL(exp, env);
                 } else if (SYMBOLP(CAR(claw))) {
                     /* (<variable> <expression>) */
-                    if (!NULLP(SCM_SHIFT_RAW_2(var, exp, claw)))
+                    if (!LIST_2_P(claw))
                         goto err;
+                    var = CAR(claw);
+                    exp = CADR(claw);
                     val = EVAL(exp, env);
                     env = Scm_ExtendEnvironment(LIST_1(var), LIST_1(val), env);
                 } else {
