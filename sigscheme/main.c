@@ -188,7 +188,7 @@ int main(int argc, char **argv)
 #else
         repl();
 #endif
-        /*        SigScm_Error("usage : sscm <filename>"); */
+        /* ERR("usage: sscm <filename>"); */
     }
 
     SigScm_Finalize();

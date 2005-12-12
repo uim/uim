@@ -47,8 +47,6 @@ Logical simplifications:
 * Simplify argument extraction by DECLARE_FUNCTION, ASSERT_*P, POP_ARG and
   NO_MORE_ARG macros in all procedure and syntaxes
 
-* Replace all Scm_ErrorObj() in procedures and syntaxes with ERR_OBJ
-
 ==============================================================================
 Namings and Cosmetic things:
 

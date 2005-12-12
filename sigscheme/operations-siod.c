@@ -235,7 +235,8 @@ long SigScm_GetVerboseLevel(void)
 void SigScm_SetVerboseLevel(long level)
 {
     if (level < 0)
-        SigScm_Error("SigScm_SetVerboseLevel : negative value has been given");
+        ERR("SigScm_SetVerboseLevel: positive value required but got: %d",
+            level);
 
     if (sscm_verbose_level == level)
         return;

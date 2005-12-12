@@ -97,7 +97,7 @@ ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2)
 
 #if SCM_DEBUG
     case ScmFreeCell:
-        SigScm_Error("eqv? : cannnot compare freecell, gc broken?");
+        ERR("eqv?: cannnot compare freecell, gc broken?");
         break;
 #endif
 

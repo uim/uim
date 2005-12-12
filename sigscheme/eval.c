@@ -396,7 +396,7 @@ static ScmObj call(ScmObj proc, ScmObj args,
     /* Collect mandatory arguments. */
     mand_count = type & SCM_FUNCTYPE_MAND_MASK;
     if (mand_count > SCM_FUNCTYPE_MAND_MAX)
-        SigScm_Error("Corrupted function: typecode=0x%x", type);
+        ERR("corrupted function: typecode=0x%x", type);
     for (i = 0; i < mand_count; i++) {
         argbuf[i] = MUST_POP_ARG(args);
         if (!suppress_eval)
@@ -452,7 +452,7 @@ static ScmObj call(ScmObj proc, ScmObj args,
         return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], argbuf[6]);
 #endif
     default:
-        SigScm_Error("Corrupted function: typecode=0x%x", type);
+        ERR("corrupted function: typecode=0x%x", type);
     }
     return SCM_INVALID;
 }
@@ -484,7 +484,7 @@ eval_loop:
 #if SCM_STRICT_R5RS
     /* () is allowed by default for efficiency */
     if (NULLP(obj))
-        SigScm_Error("() is not a valid R5RS form. use '() instead");
+        ERR("eval: () is not a valid R5RS form. use '() instead");
 #endif
     switch (SCM_TYPE(obj)) {
     case ScmSymbol:
@@ -1155,7 +1155,7 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
     ========================================================================*/
 
     if (NULLP(args))
-        SigScm_Error("let : invalid form");
+        ERR("let: invalid form");
     bindings = POP_ARG(args);
 
     /* named let */
@@ -1163,7 +1163,7 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
         named_let_sym = bindings;
 
         if (NULLP(args))
-            SigScm_Error("let : invalid named let form");
+            ERR("let: invalid named let form");
         bindings = POP_ARG(args);
     }
 
@@ -1217,7 +1217,7 @@ ScmObj ScmExp_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
                      ...)
     ========================================================================*/
     if (!CONSP(bindings) && !NULLP(bindings))
-        SigScm_Error("let* : syntax error");
+        ERR("let*: syntax error");
 
     for (; CONSP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
@@ -1262,7 +1262,7 @@ ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
                      ...)
     ========================================================================*/
     if (!CONSP(bindings) && !NULLP(bindings))
-        SigScm_Error("letrec : syntax error");
+        ERR("letrec: syntax error");
 
     /* extend env by placeholder frame for subsequent lambda evaluations */
     frame = CONS(SCM_NULL, SCM_NULL);
@@ -1405,7 +1405,7 @@ ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalStat
             if (obj != SCM_INVALID_REF) {
                 SET(obj, CAR(vals));
             } else {
-                SigScm_Error("do : broken env");
+                ERR("do: broken env");
             }
         }
     }
@@ -1543,7 +1543,7 @@ ScmObj ScmExp_unquote(ScmObj dummy, ScmObj env)
 {
     DECLARE_FUNCTION("unquote", SyntaxFixed1);
 
-    SigScm_Error("unquote outside quasiquote");
+    ERR("unquote outside quasiquote");
     return SCM_NULL;
 }
 
@@ -1551,7 +1551,7 @@ ScmObj ScmExp_unquote_splicing(ScmObj dummy, ScmObj env)
 {
     DECLARE_FUNCTION("unquote-splicing", SyntaxFixed1);
 
-    SigScm_Error("unquote-splicing outside quasiquote");
+    ERR("unquote-splicing outside quasiquote");
     return SCM_NULL;
 }
 
@@ -1636,10 +1636,10 @@ ScmObj ScmOp_scheme_report_environment(ScmObj version)
         ERR_OBJ("version must be 5 but got", version);
 
 #if SCM_STRICT_R5RS
-    SigScm_Error("scheme-report-environment :" SCM_ERRMSG_NON_R5RS_ENV);
+    ERR("scheme-report-environment:" SCM_ERRMSG_NON_R5RS_ENV);
 #else
     CDBG((SCM_DBG_COMPAT,
-          "scheme-report-environment : warning:" SCM_ERRMSG_NON_R5RS_ENV));
+          "scheme-report-environment: warning:" SCM_ERRMSG_NON_R5RS_ENV));
 #endif
 
     return SCM_INTERACTION_ENV;
@@ -1655,10 +1655,10 @@ ScmObj ScmOp_null_environment(ScmObj version)
         ERR_OBJ("version must be 5 but got", version);
 
 #if SCM_STRICT_R5RS
-    SigScm_Error("null-environment :" SCM_ERRMSG_NON_R5RS_ENV);
+    ERR("null-environment:" SCM_ERRMSG_NON_R5RS_ENV);
 #else
     CDBG((SCM_DBG_COMPAT,
-          "null-environment : warning:" SCM_ERRMSG_NON_R5RS_ENV));
+          "null-environment: warning:" SCM_ERRMSG_NON_R5RS_ENV));
 #endif
 
     return SCM_INTERACTION_ENV;
