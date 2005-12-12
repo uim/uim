@@ -6,6 +6,8 @@ Overview of changes from 1.0.0-alpha to 1.0.0-beta
     - Qt immodule
       - fix to respond to uim-pref-gtk's custom messages on the fly in
 	addition to uim-pref-qt's (Etsushi)
+    - uim-pref-qt
+      - code cleanup (Kazuki)
 
 
 
@@ -58,6 +60,8 @@ Overview of changes from 0.4.9.1 to 1.0.0-alpha
 
     - uim-im-switcher-qt
       - show list of IM properly (Etsushi)
+    - uim-pref-qt
+      - compatible behavior with uim-pref-gtk (Etsushi)
 
 * Others
   o obsolete table API
