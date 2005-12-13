@@ -394,24 +394,26 @@ InputContext::createUimContext(const char *engine)
 					NULL, real_im, uim_iconv,
 					InputContext::commit_cb);
 
-    uim_set_preedit_cb(uc,
-		       InputContext::clear_cb,
-		       InputContext::pushback_cb,
-		       InputContext::update_cb);
-    uim_set_candidate_selector_cb(uc,
-				  InputContext::candidate_activate_cb,
-				  InputContext::candidate_select_cb,
-				  InputContext::candidate_shift_page_cb,
-				  InputContext::candidate_deactivate_cb);
-    uim_set_prop_list_update_cb(uc,
-				InputContext::update_prop_list_cb);
-    uim_set_prop_label_update_cb(uc,
-				 InputContext::update_prop_label_cb);
-    uim_set_configuration_changed_cb(uc, InputContext::configuration_changed_cb);
+    if (uc) {
+	uim_set_preedit_cb(uc,
+			InputContext::clear_cb,
+			InputContext::pushback_cb,
+			InputContext::update_cb);
+	uim_set_candidate_selector_cb(uc,
+			InputContext::candidate_activate_cb,
+			InputContext::candidate_select_cb,
+			InputContext::candidate_shift_page_cb,
+			InputContext::candidate_deactivate_cb);
+	uim_set_prop_list_update_cb(uc,
+			InputContext::update_prop_list_cb);
+	uim_set_prop_label_update_cb(uc,
+			InputContext::update_prop_label_cb);
+	uim_set_configuration_changed_cb(uc,
+			InputContext::configuration_changed_cb);
 
-    if (mFocusedContext == this)
-	uim_prop_list_update(uc);
-
+	if (mFocusedContext == this)
+	    uim_prop_list_update(uc);
+    }
     mUc = uc;
 }
 
