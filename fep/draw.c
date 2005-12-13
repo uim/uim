@@ -321,6 +321,7 @@ void draw_commit_and_preedit(void)
   start_preedit();
   /* prev_preedit¤Ï¶õ */
   draw_preedit(s_preedit, &s_save_preedit);
+  put_cursor_normal();
 }
 
 /*
