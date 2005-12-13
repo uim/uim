@@ -29,19 +29,27 @@ You can use, modify, distribute and sell this package under the terms of BSD lic
   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
   SUCH DAMAGE.
 
-But there are three exceptions.
+But there are five exceptions.
 
-   * scm/PY-old.scm is come from emacs, so you can use, modify, distribute and sell this
-   package under the terms of GPL *only*.
+   * scm/PY-old.scm is come from emacs, so you can use, modify,
+     distribute and sell this package under the terms of GPL *only*.
 
-  * scm/py.scm is come from m17n-lib,you can use, modify, distribute and sell this
-   package under the terms of LGPL *only*.
+  * scm/py.scm is come from m17n-lib,you can use, modify, distribute
+    and sell this package under the terms of LGPL *only*.
 
-  * helper/eggtrayicon.[ch] is come from libegg, so you can use, modify, distribute 
-   and sell this package under the terms of LGPL *only*.
+  * helper/eggtrayicon.[ch] is come from libegg, so you can use,
+    modify, distribute and sell uim-toolbar-gtk-systray under the
+    terms of LGPL *only*.
 
+  * qt/pref-kseparator.{cpp,h} is come from kdeui, so you can use,
+    modify, distribute and sell uim-pref-qt under the terms of LGPL
+    *only*.
 
-This Package uses a scheme system SIOD, and the license follows.
+  * qt/chardict/chardict-kseparator.{cpp,h} is come from kdeui, so you
+    can use, modify, distribute and sell uim-chardict-qt under the
+    terms of LGPL *only*.
+
+This Package uses a scheme system SIOD, and the license is as follows:
 /* Scheme In One Defun, but in C this time.
 
  *                      COPYRIGHT (c) 1988-1994 BY                          *
