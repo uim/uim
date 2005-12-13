@@ -1416,6 +1416,8 @@
 	   (begin
 	     (skk-append-residual-kana sc)
 	     (skk-append-string sc '(">" ">" ">"))
+	     (if skk-dcomp-activate?
+		 (skk-context-set-dcomp-word! sc ""))
 	     (skk-begin-conversion sc)
 	     #f)
 	   #t)
