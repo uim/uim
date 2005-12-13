@@ -31,11 +31,11 @@ You can use, modify, distribute and sell this package under the terms of BSD lic
 
 But there are five exceptions.
 
-   * scm/PY-old.scm is come from emacs, so you can use, modify,
-     distribute and sell this package under the terms of GPL *only*.
+  * scm/PY-old.scm is come from emacs, so you can use, modify,
+     distribute and sell this under the terms of GPL *only*.
 
   * scm/py.scm is come from m17n-lib,you can use, modify, distribute
-    and sell this package under the terms of LGPL *only*.
+    and sell this under the terms of LGPL *only*.
 
   * helper/eggtrayicon.[ch] is come from libegg, so you can use,
     modify, distribute and sell uim-toolbar-gtk-systray under the
