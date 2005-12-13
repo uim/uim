@@ -80,7 +80,7 @@ void CustomCheckBox::slotCustomToggled( bool check )
 
 //----------------------------------------------------------------------------------------
 CustomSpinBox::CustomSpinBox( struct uim_custom *c, QWidget *parent, const char *name)
-    : QSpinBox( parent, name ),
+    : QSpinBox(c->range->as_int.min, c->range->as_int.max, 1, parent, name ),
       UimCustomItemIface( c )
 {
     QObject::connect( this, SIGNAL(valueChanged(int)),
