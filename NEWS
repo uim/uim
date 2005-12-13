@@ -1,6 +1,11 @@
 Overview of changes from 1.0.0-alpha to 1.0.0-beta
 ==
 * Fixes
+ o Critical
+    - uim-pref-qt
+      - fix custom setting with integer number whose value is greater
+	than 99 (Etsushi)
+
  o Minor
     - update configure script not to require XML::Parser (Etsushi)
     - Qt immodule
