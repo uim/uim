@@ -1197,7 +1197,8 @@
 	  (let ((dcomp (skk-lib-get-dcomp-word
 			(skk-make-string
 			 (skk-context-head sc)
-			 (skk-context-kana-mode sc)))))
+			 (skk-context-kana-mode sc))
+			skk-use-numeric-conversion?)))
 	    (if (not (string=? dcomp ""))
 		(begin
 		  (skk-string-list-to-context-head
