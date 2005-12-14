@@ -3345,12 +3345,12 @@ look_popen(const char *str)
   FILE *fp;
   int len;
   
-  len = strlen(LOOK_COMMAND) + strlen(str) + 1;
+  len = strlen(LOOK_COMMAND) + strlen(str) + strlen(" 2>/dev/null") + 1;
   command = malloc(len + 1);
   if (!command)
     return NULL;
 
-  snprintf(command, len + 1, "%s %s", LOOK_COMMAND, str);
+  snprintf(command, len + 1, "%s %s%s", LOOK_COMMAND, str, " 2>/dev/null");
   fp = popen(command, "r");
   free(command);
 
@@ -3383,7 +3383,7 @@ look_get_top_word(const char *str)
     }
   }
   /* read to the end */
-  while (fgets(buf, 512, fp) != NULL) ;
+  /* while (fgets(buf, 512, fp) != NULL) ; */
   pclose(fp);
 
   return ret_;
