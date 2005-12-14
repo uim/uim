@@ -55,6 +55,9 @@ extern "C" {
 /*=======================================
    Macro Declarations
 =======================================*/
+#define SCM_ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"
+#define SCM_ERRMSG_MEMORY_EXHAUSTED    "memory exhausted"
+
 #ifdef __GNUC__
 #define SCM_NOINLINE __attribute__((noinline))
 #define SCM_NORETURN __attribute__((noreturn))
@@ -87,6 +90,9 @@ extern "C" {
  */
 #define SCM_ASSERT(cond)                                                     \
     ((cond) || SigScm_Die("assertion failed", __FILE__, __LINE__))
+
+#define SCM_ASSERT_ALLOCATED(p)                                              \
+    ((p) || (Scm_FatalError(SCM_ERRMSG_MEMORY_EXHAUSTED), 1))
 
 #define SCM_ERROBJP(obj)       (NFALSEP(ScmOp_error_objectp(obj)))
 
@@ -382,6 +388,12 @@ void Scm_RegisterProcedureVariadicTailRec4(const char *name, ScmObj (*func)(ScmO
 #if SCM_FUNCTYPE_MAND_MAX >= 5
 void Scm_RegisterProcedureVariadicTailRec5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
+
+/* alloc.c */
+void *scm_malloc_aligned(size_t size);
+void *scm_malloc(size_t size);
+void *scm_calloc(size_t number, size_t size);
+void *scm_realloc(void *ptr, size_t size);
 
 /* storage.c */
 ScmObj Scm_NewCons(ScmObj a, ScmObj b);

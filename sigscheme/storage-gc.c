@@ -60,8 +60,6 @@
 #include <stdlib.h>
 #include <setjmp.h>
 
-#include <assert.h>
-
 /*=======================================
   Local Include
 =======================================*/
@@ -117,8 +115,6 @@ extern ScmObj *scm_symbol_hash;
   File Local Function Declarations
 =======================================*/
 static ScmObj **locate_protected_var(ScmObj *var);
-
-void *scm_malloc_aligned(size_t size);
 
 static void initialize_heap(size_t size, size_t alloc_threshold,
                             int n_max, int n_init);
@@ -266,33 +262,6 @@ void SigScm_GC_UnprotectStack(ScmObj *stack_start)
 /*============================================================================
   Heap Allocator & Garbage Collector
 ============================================================================*/
-/* FIXME: ensure safety in a portable way */
-void *scm_malloc_aligned(size_t size)
-{
-    void *p;
-
-#if HAVE_POSIX_MEMALIGN
-    /*
-     * Cited from manpage of posix_memalign(3) of glibc:
-     *
-     * CONFORMING TO
-     *     The function valloc() appeared in 3.0 BSD. It is documented as being
-     *     obsolete in BSD 4.3, and as legacy in SUSv2. It no longer occurs in
-     *     SUSv3.  The function memalign() appears in SunOS 4.1.3 but not in
-     *     BSD 4.4.  The function posix_memalign() comes from POSIX 1003.1d.
-     */
-    posix_memalign(&p, 16, size);
-    if (!p)
-        ERR("memory exhausted");
-#else
-    p = scm_malloc(size);
-    /* heaps must be aligned to sizeof(ScmCell) */
-    assert(!((uintptr_t)p % sizeof(ScmCell)));
-#endif
-
-    return p;
-}
-
 static void initialize_heap(size_t size, size_t alloc_threshold,
                             int n_max, int n_init)
 {

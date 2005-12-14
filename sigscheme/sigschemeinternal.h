@@ -283,7 +283,10 @@ extern ScmObj SigScm_null_values;
 /* Symbol Name Hash Size */
 #define NAMEHASH_SIZE 1024
 
+/* error handlings */
 #define SCM_ERR_HEADER "Error: "
+
+#define ASSERT_ALLOCATED SCM_ASSERT_ALLOCATED
 
 /*=======================================
    String Mutation Assertion
@@ -428,9 +431,6 @@ ScmObj ScmExp_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_sta
 
 /* error.c */
 void SigScm_InitError(void);
-void *scm_malloc(size_t size);
-void *scm_calloc(size_t number, size_t size);
-void *scm_realloc(void *ptr, size_t size);
 void Scm_ThrowException(ScmObj errorobj) SCM_NORETURN;
 void SigScm_ShowErrorHeader(void);
 void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj) SCM_NORETURN;

@@ -55,13 +55,6 @@
 #define SCM_BACKTRACE_HEADER "**** BACKTRACE ****\n"
 #define SCM_BACKTRACE_SEP    "------------------------------\n"
 
-#define SCM_ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"
-#define SCM_ERRMSG_MEMORY_EXHAUSTED    "memory exhausted"
-
-#define SCM_ASSERT_ALLOCATED(p)                                              \
-    ((p) || (Scm_FatalError(SCM_ERRMSG_MEMORY_EXHAUSTED), 1))
-#define ASSERT_ALLOCATED SCM_ASSERT_ALLOCATED
-
 /*=======================================
   Variable Declarations
 =======================================*/
@@ -149,36 +142,6 @@ void SigScm_Debug(const char *msg, ...)
         SigScm_ErrorNewline();
     }
     va_end(va);
-}
-
-void *scm_malloc(size_t size)
-{
-    void *p;
-
-    p = malloc(size);
-    ASSERT_ALLOCATED(p);
-
-    return p;
-}
-
-void *scm_calloc(size_t number, size_t size)
-{
-    void *p;
-
-    p = calloc(number, size);
-    ASSERT_ALLOCATED(p);
-
-    return p;
-}
-
-void *scm_realloc(void *ptr, size_t size)
-{
-    void *p;
-
-    p = realloc(ptr, size);
-    ASSERT_ALLOCATED(p);
-
-    return p;
 }
 
 #if SCM_USE_SRFI34
