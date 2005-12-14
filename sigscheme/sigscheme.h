@@ -672,7 +672,7 @@ ScmObj ScmOp_fatal_error(ScmObj err_obj) SCM_NORETURN;
 ScmObj ScmOp_inspect_error(ScmObj err_obj);
 ScmObj ScmOp_backtrace(void);
 
-/* debug.c */
+/* print.c */
 void SigScm_Display(ScmObj obj);
 void SigScm_WriteToPort(ScmObj port, ScmObj obj);
 void SigScm_DisplayToPort(ScmObj port, ScmObj obj);

@@ -1,6 +1,6 @@
 /*===========================================================================
- *  FileName : debug.c
- *  About    : Functions for debugging
+ *  FileName : print.c
+ *  About    : Printing functions
  *
  *  Copyright (C) 2005      by Kazuki Ohta (mover@hct.zaq.ne.jp)
  *

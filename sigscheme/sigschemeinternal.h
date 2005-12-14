@@ -66,7 +66,7 @@ extern ScmObj scm_current_input_port;
 extern ScmObj scm_current_output_port;
 extern ScmObj scm_current_error_port;
 
-/* debug.c */
+/* print.c */
 extern void (*Scm_writess_func)(ScmObj port, ScmObj obj);
 
 /* read.c */
