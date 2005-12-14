@@ -3394,6 +3394,8 @@ look_get_comp(struct skk_comp_array *ca, const char *str)
 {
   char buf[512], *p;
   FILE *fp;
+  int i, nr_pre, top_line = 1;
+  int *matched;
 
   if (!skk_isalpha(str[0]))
     return;
@@ -3404,17 +3406,42 @@ look_get_comp(struct skk_comp_array *ca, const char *str)
     return;
   }
 
+  nr_pre = ca->nr_comps;
+  matched = malloc(sizeof(int) * nr_pre);
+  for (i = 0; i < nr_pre; i++)
+    matched[i] = 0;
+
   while (fgets(buf, 512, fp) != NULL) {
+    int match = 0;
+
     p = strchr(buf, '\n');
     if (p != NULL)
       *p = '\0';
-    if (strcmp(buf, str)) { /* don't use the word itself */
+
+    /* don't use the word itself */
+    if (top_line == 1 && !strcmp(buf, str)) {
+	top_line = 0;
+	continue;
+    }
+
+    /* skip words already in the cache */
+    for (i = 0; i < nr_pre; i++) {
+      if (matched[i])
+	continue;
+      if (!strcmp(ca->comps[i], buf)) {
+	matched[i] = 1;
+	match = 1;
+	break;
+      }
+    }
+    if (!match) {
       ca->nr_comps++;
       ca->comps = realloc(ca->comps, sizeof(char *) * ca->nr_comps);
       ca->comps[ca->nr_comps - 1] = strdup(buf);
     }
   }
   pclose(fp);
+  free(matched);
 }
 
 void
