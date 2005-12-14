@@ -118,7 +118,7 @@ extern ScmObj *scm_symbol_hash;
 =======================================*/
 static ScmObj **locate_protected_var(ScmObj *var);
 
-static void *malloc_aligned(size_t size);
+void *scm_malloc_aligned(size_t size);
 
 static void initialize_heap(size_t size, size_t alloc_threshold,
                             int n_max, int n_init);
@@ -267,7 +267,7 @@ void SigScm_GC_UnprotectStack(ScmObj *stack_start)
   Heap Allocator & Garbage Collector
 ============================================================================*/
 /* FIXME: ensure safety in a portable way */
-static void *malloc_aligned(size_t size)
+void *scm_malloc_aligned(size_t size)
 {
     void *p;
 
@@ -322,7 +322,7 @@ static void add_heap(void)
         Scm_FatalError("heap exhausted");
 
     heaps = Scm_realloc(heaps, sizeof(ScmObjHeap) * (n_heaps + 1));
-    heap = malloc_aligned(sizeof(ScmCell) * heap_size);
+    heap = scm_malloc_aligned(sizeof(ScmCell) * heap_size);
     heaps[n_heaps++] = heap;
 
     /* update the enclosure */
