@@ -231,6 +231,34 @@ struct ScmCell_ {
 };
 
 /*=======================================
+  Object Creators
+=======================================*/
+#define SCM_MAKE_BOOL(x)                  ((x) ? SCM_TRUE : SCM_FALSE)
+#define SCM_MAKE_INT                      Scm_NewInt
+#define SCM_MAKE_CONS                     Scm_NewCons
+#define SCM_MAKE_SYMBOL                   Scm_NewSymbol
+#define SCM_MAKE_CHAR                     Scm_NewChar
+#define SCM_MAKE_STRING                   Scm_NewMutableString
+#define SCM_MAKE_STRING_COPYING           Scm_NewMutableStringCopying
+#define SCM_MAKE_IMMUTABLE_STRING         Scm_NewImmutableString
+#define SCM_MAKE_IMMUTABLE_STRING_COPYING Scm_NewImmutableStringCopying
+#define SCM_MAKE_FUNC                     Scm_NewFunc
+#define SCM_MAKE_CLOSURE                  Scm_NewClosure
+#define SCM_MAKE_VECTOR                   Scm_NewVector
+#define SCM_MAKE_PORT                     Scm_NewPort
+#define SCM_MAKE_CONTINUATION             Scm_NewContinuation
+#if SCM_USE_NONSTD_FEATURES
+#define SCM_MAKE_C_POINTER                Scm_NewCPointer
+#define SCM_MAKE_C_FUNCPOINTER            Scm_NewCFuncPointer
+#endif /* SCM_USE_NONSTD_FEATURES */
+#if SCM_USE_VALUECONS
+#define SCM_MAKE_VALUEPACKET(vals) (NULLP(vals) ? SigScm_null_values :       \
+                                    (SCM_ENTYPE_VALUEPACKET(vals), (vals)))
+#else /* SCM_USE_VALUECONS */
+#define SCM_MAKE_VALUEPACKET(vals) (Scm_NewValuePacket(vals))
+#endif /* SCM_USE_VALUECONS */
+
+/*=======================================
    Accessors For Scheme Objects
 =======================================*/
 /* ScmObj Global Attribute */
@@ -364,8 +392,6 @@ struct ScmCell_ {
 #define SCM_VALUEPACKETP(a)       (SCM_TYPE(a) == ScmValuePacket)
 #define SCM_NULLVALUESP(a)        (EQ((a), SigScm_null_values))
 #define SCM_ENTYPE_VALUEPACKET(a) (SCM_ENTYPE((a), ScmValuePacket))
-#define SCM_MAKE_VALUEPACKET(vals) (NULLP(vals) ? SigScm_null_values :       \
-                                    (SCM_ENTYPE_VALUEPACKET(vals), (vals)))
 #define SCM_VALUEPACKET_VALUES(a) ((SCM_NULLVALUESP(a)) ? SCM_NULL :         \
                                    (SCM_ENTYPE_CONS(a), (a)))
 #define SCM_VALUECONS_CAR(a)      (SCM_AS_VALUEPACKET(a)->obj.cons.car)
@@ -373,7 +399,6 @@ struct ScmCell_ {
 #else /* SCM_USE_VALUECONS */
 #define SCM_VALUEPACKETP(a)          (SCM_TYPE(a) == ScmValuePacket)
 #define SCM_ENTYPE_VALUEPACKET(a)        (SCM_ENTYPE((a), ScmValuePacket))
-#define SCM_MAKE_VALUEPACKET(vals) (Scm_NewValuePacket(vals))
 #define SCM_VALUEPACKET_VALUES(a)    (SCM_AS_VALUEPACKET(a)->obj.value_pack.values)
 #define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_VALUEPACKET_VALUES(a) = (v))
 #endif /* SCM_USE_VALUECONS */

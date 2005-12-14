@@ -396,6 +396,9 @@ void *scm_calloc(size_t number, size_t size);
 void *scm_realloc(void *ptr, size_t size);
 
 /* storage.c */
+/* Don't use these functions directly. Use SCM_MAKE_*() or MAKE_*() instead to
+ * allow flexible object allocation. */
+/* FIXME: rename to scm_make_*() */
 ScmObj Scm_NewCons(ScmObj a, ScmObj b);
 ScmObj Scm_NewInt(int val);
 ScmObj Scm_NewSymbol(char *name, ScmObj v_cell);

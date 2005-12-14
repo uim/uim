@@ -231,6 +231,29 @@ enum ScmStrMutationType {
     SCM_STR_MUTABLE             = 1
 };
 
+/*============================================================================
+  Object Creators
+============================================================================*/
+#define SCM_MAKE_BOOL(x)                  ((x) ? SCM_TRUE : SCM_FALSE)
+#define SCM_MAKE_INT                      Scm_NewInt
+#define SCM_MAKE_CONS                     Scm_NewCons
+#define SCM_MAKE_SYMBOL                   Scm_NewSymbol
+#define SCM_MAKE_CHAR                     Scm_NewChar
+#define SCM_MAKE_STRING                   Scm_NewMutableString
+#define SCM_MAKE_STRING_COPYING           Scm_NewMutableStringCopying
+#define SCM_MAKE_IMMUTABLE_STRING         Scm_NewImmutableString
+#define SCM_MAKE_IMMUTABLE_STRING_COPYING Scm_NewImmutableStringCopying
+#define SCM_MAKE_FUNC                     Scm_NewFunc
+#define SCM_MAKE_CLOSURE                  Scm_NewClosure
+#define SCM_MAKE_VECTOR                   Scm_NewVector
+#define SCM_MAKE_PORT                     Scm_NewPort
+#define SCM_MAKE_CONTINUATION             Scm_NewContinuation
+#if SCM_USE_NONSTD_FEATURES
+#define SCM_MAKE_C_POINTER                Scm_NewCPointer
+#define SCM_MAKE_C_FUNCPOINTER            Scm_NewCFuncPointer
+#endif /* SCM_USE_NONSTD_FEATURES */
+#define SCM_MAKE_VALUEPACKET              Scm_NewValuePacket
+
 /*=======================================
    Masks Offsets, and Tags
 =======================================*/
@@ -566,7 +589,6 @@ enum ScmStrMutationType {
 /*============================================================================
    Real Accessors : ValuePacket
 ============================================================================*/
-#define SCM_MAKE_VALUEPACKET(vals)       (Scm_NewValuePacket(vals))
 #define SCM_VALUEPACKET_VALUES(a)        (SCM_CAR_GET_VALUE_AS_OBJ(SCM_AS_VALUEPACKET(a)))
 #define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_CAR_SET_VALUE_AS_OBJ(SCM_AS_VALUEPACKET(a), (v)))
 

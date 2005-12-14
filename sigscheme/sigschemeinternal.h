@@ -149,6 +149,26 @@ extern ScmObj SigScm_null_values;
 
 #define EVAL           SCM_EVAL
 
+#define MAKE_BOOL                     SCM_MAKE_BOOL
+#define MAKE_INT                      SCM_MAKE_INT
+#define MAKE_CONS                     SCM_MAKE_CONS
+#define MAKE_SYMBOL                   SCM_MAKE_SYMBOL
+#define MAKE_CHAR                     SCM_MAKE_CHAR
+#define MAKE_STRING                   SCM_MAKE_STRING
+#define MAKE_STRING_COPYING           SCM_MAKE_STRING_COPYING
+#define MAKE_IMMUTABLE_STRING         SCM_MAKE_IMMUTABLE_STRING
+#define MAKE_IMMUTABLE_STRING_COPYING SCM_MAKE_IMMUTABLE_STRING_COPYING
+#define MAKE_FUNC                     SCM_MAKE_FUNC
+#define MAKE_CLOSURE                  SCM_MAKE_CLOSURE
+#define MAKE_VECTOR                   SCM_MAKE_VECTOR
+#define MAKE_PORT                     SCM_MAKE_PORT
+#define MAKE_CONTINUATION             SCM_MAKE_CONTINUATION
+#if SCM_USE_NONSTD_FEATURES
+#define MAKE_C_POINTER                SCM_MAKE_C_POINTER
+#define MAKE_C_FUNCPOINTER            SCM_MAKE_C_FUNCPOINTER
+#endif /* SCM_USE_NONSTD_FEATURES */
+#define MAKE_VALUEPACKET              SCM_MAKE_VALUEPACKET
+
 #define INTP           SCM_INTP
 #define CONSP          SCM_CONSP
 #define SYMBOLP        SCM_SYMBOLP
