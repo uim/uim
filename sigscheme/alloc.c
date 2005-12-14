@@ -68,7 +68,8 @@ typedef unsigned long uintptr_t;
   Function Implementations
 =======================================*/
 /* FIXME: ensure safety in a portable way */
-void *scm_malloc_aligned(size_t size)
+void *
+scm_malloc_aligned(size_t size)
 {
     void *p;
 
@@ -94,7 +95,8 @@ void *scm_malloc_aligned(size_t size)
     return p;
 }
 
-void *scm_malloc(size_t size)
+void *
+scm_malloc(size_t size)
 {
     void *p;
 
@@ -104,7 +106,8 @@ void *scm_malloc(size_t size)
     return p;
 }
 
-void *scm_calloc(size_t number, size_t size)
+void *
+scm_calloc(size_t number, size_t size)
 {
     void *p;
 
@@ -114,7 +117,8 @@ void *scm_calloc(size_t number, size_t size)
     return p;
 }
 
-void *scm_realloc(void *ptr, size_t size)
+void *
+scm_realloc(void *ptr, size_t size)
 {
     void *p;
 
