@@ -97,7 +97,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-12 19:20+0900\n"
+"POT-Creation-Date: 2005-12-15 01:00+0900\n"
 "PO-Revision-Date: 2005-12-09 16:17+0900\n"
 "Last-Translator: Daichi Kawahata <daichik@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -805,14 +805,15 @@ msgstr "文節区切りを表示"
 #: scm/skk-custom.lisp:328 scm/skk-custom.lisp:334 scm/skk-custom.lisp:346
 #: scm/skk-custom.lisp:353 scm/skk-custom.lisp:360 scm/skk-custom.lisp:377
 #: scm/skk-custom.lisp:383 scm/skk-custom.lisp:389 scm/skk-custom.lisp:395
-#: scm/skk-custom.lisp:401 scm/skk-custom.lisp:411 scm/skk-custom.lisp:417
-#: scm/skk-custom.lisp:438 scm/skk-custom.lisp:444 scm/skk-custom.lisp:451
-#: scm/skk-key-custom.lisp:65 scm/skk-key-custom.lisp:69
-#: scm/skk-key-custom.lisp:73 scm/skk-key-custom.lisp:78
-#: scm/skk-key-custom.lisp:82 scm/skk-key-custom.lisp:86
-#: scm/spellcheck-custom.lisp:48 scm/spellcheck-custom.lisp:54
-#: scm/spellcheck-custom.lisp:60 scm/spellcheck-custom.lisp:66
-#: scm/tutcode-key-custom.lisp:66 scm/tutcode-key-custom.lisp:70
+#: scm/skk-custom.lisp:401 scm/skk-custom.lisp:407 scm/skk-custom.lisp:416
+#: scm/skk-custom.lisp:422 scm/skk-custom.lisp:443 scm/skk-custom.lisp:449
+#: scm/skk-custom.lisp:456 scm/skk-key-custom.lisp:65
+#: scm/skk-key-custom.lisp:69 scm/skk-key-custom.lisp:73
+#: scm/skk-key-custom.lisp:78 scm/skk-key-custom.lisp:82
+#: scm/skk-key-custom.lisp:86 scm/spellcheck-custom.lisp:48
+#: scm/spellcheck-custom.lisp:54 scm/spellcheck-custom.lisp:60
+#: scm/spellcheck-custom.lisp:66 scm/tutcode-key-custom.lisp:66
+#: scm/tutcode-key-custom.lisp:70
 msgid "long description will be here."
 msgstr "詳細記述予定"
 
@@ -967,7 +968,7 @@ msgid "Kana input method menu items"
 msgstr "かな入力方式のメニュー項目"
 
 #: scm/anthy-custom.lisp:289 scm/canna-custom.lisp:367
-#: scm/mana-custom.lisp:289 scm/prime-custom.lisp:134 scm/skk-custom.lisp:437
+#: scm/mana-custom.lisp:289 scm/prime-custom.lisp:134 scm/skk-custom.lisp:442
 msgid "Enable vi-cooperative mode"
 msgstr "vi協調モードを有効にする"
 
@@ -2334,19 +2335,23 @@ msgstr "句読点での自動変換を有効にする"
 msgid "Enable dynamic completion"
 msgstr "動的補完を有効にする"
 
-#: scm/skk-custom.lisp:410
+#: scm/skk-custom.lisp:406
+msgid "Use UNIX look command for completion"
+msgstr "アルファベット変換時の補完にlookコマンドを使用"
+
+#: scm/skk-custom.lisp:415
 msgid "Show annotation of candidate word"
 msgstr "候補の註釈を表示する"
 
-#: scm/skk-custom.lisp:416
+#: scm/skk-custom.lisp:421
 msgid "Show annotation also in preedit area"
 msgstr "編集領域内にも註釈を表示する"
 
-#: scm/skk-custom.lisp:443
+#: scm/skk-custom.lisp:448
 msgid "Use Enter key as just committing (egg-like operation)"
 msgstr "Enterキーを単に確定のために使う (egg風の操作)"
 
-#: scm/skk-custom.lisp:450
+#: scm/skk-custom.lisp:455
 msgid "Commit newline as ASCII string instead of native key-event"
 msgstr "改行をネイティブキーイベントの代わりにASCII文字列として確定する"
 
