@@ -107,7 +107,7 @@ static write_ss_context *write_ss_ctx; /* misc info in priting shared structures
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype);
+static void print_obj(ScmObj port, ScmObj obj, enum OutputType otype);
 static void print_char(ScmObj port, ScmObj obj, enum OutputType otype);
 static void print_string(ScmObj port, ScmObj obj, enum OutputType otype);
 static void print_list(ScmObj port, ScmObj lst, enum OutputType otype);
@@ -140,7 +140,7 @@ void SigScm_WriteToPort(ScmObj port, ScmObj obj)
     if (!(SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT))
         ERR("output port is required");
 
-    print_ScmObj_internal(port, obj, AS_WRITE);
+    print_obj(port, obj, AS_WRITE);
 
 #if SCM_VOLATILE_OUTPUT
     SCM_PORT_FLUSH(port);
@@ -156,14 +156,14 @@ void SigScm_DisplayToPort(ScmObj port, ScmObj obj)
     if (!(SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT))
         ERR("output port is required");
 
-    print_ScmObj_internal(port, obj, AS_DISPLAY);
+    print_obj(port, obj, AS_DISPLAY);
 
 #if SCM_VOLATILE_OUTPUT
     SCM_PORT_FLUSH(port);
 #endif /* SCM_VOLATILE_OUTPUT */
 }
 
-static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype)
+static void print_obj(ScmObj port, ScmObj obj, enum OutputType otype)
 {
     ScmObj sym;
 
@@ -212,7 +212,7 @@ static void print_ScmObj_internal(ScmObj port, ScmObj obj, enum OutputType otype
         break;
     case ScmClosure:
         SCM_PORT_PUTS(port, "#<closure ");
-        print_ScmObj_internal(port, SCM_CLOSURE_EXP(obj), otype);
+        print_obj(port, SCM_CLOSURE_EXP(obj), otype);
         SCM_PORT_PUT_CHAR(port, '>');
         break;
     case ScmVector:
@@ -341,7 +341,7 @@ static void print_list(ScmObj port, ScmObj lst, enum OutputType otype)
 
     for (;;) {
         car = CAR(lst);
-        print_ScmObj_internal(port, car, otype);
+        print_obj(port, car, otype);
         lst = CDR(lst);
         if (!CONSP(lst))
             break;
@@ -350,7 +350,7 @@ static void print_list(ScmObj port, ScmObj lst, enum OutputType otype)
 #if SCM_USE_SRFI38
         /* See if the next pair is shared.  Note that the case
          * where the first pair is shared is handled in
-         * print_ScmObj_internal(). */
+         * print_obj(). */
         index = get_shared_index(lst);
         if (index > 0) {
             /* defined datum */
@@ -370,7 +370,7 @@ static void print_list(ScmObj port, ScmObj lst, enum OutputType otype)
     if (!NULLP(lst)) {
         SCM_PORT_PUTS(port, " . ");
         /* Callee takes care of shared data. */
-        print_ScmObj_internal(port, lst, otype);
+        print_obj(port, lst, otype);
     }
 
 #if SCM_USE_SRFI38
@@ -392,7 +392,7 @@ static void print_vector(ScmObj port, ScmObj vec, enum OutputType otype)
     for (i = 0; i < len; i++) {
         if (i)
             SCM_PORT_PUT_CHAR(port, ' ');
-        print_ScmObj_internal(port, v[i], otype);
+        print_obj(port, v[i], otype);
     }
 
     SCM_PORT_PUT_CHAR(port, ')');
