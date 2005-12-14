@@ -149,7 +149,7 @@ void SigScm_Debug(const char *msg, ...)
     va_end(va);
 }
 
-void *Scm_malloc(size_t size)
+void *scm_malloc(size_t size)
 {
     void *p;
 
@@ -160,7 +160,7 @@ void *Scm_malloc(size_t size)
     return p;
 }
 
-void *Scm_calloc(size_t number, size_t size)
+void *scm_calloc(size_t number, size_t size)
 {
     void *p;
 
@@ -171,7 +171,7 @@ void *Scm_calloc(size_t number, size_t size)
     return p;
 }
 
-void *Scm_realloc(void *ptr, size_t size)
+void *scm_realloc(void *ptr, size_t size)
 {
     void *p;
 

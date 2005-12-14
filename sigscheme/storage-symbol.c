@@ -122,7 +122,7 @@ static void initialize_symbol_hash(void)
 {
     int i;
 
-    scm_symbol_hash = Scm_malloc(sizeof(ScmObj) * NAMEHASH_SIZE);
+    scm_symbol_hash = scm_malloc(sizeof(ScmObj) * NAMEHASH_SIZE);
 
     for (i = 0; i < NAMEHASH_SIZE; i++)
         scm_symbol_hash[i] = SCM_NULL;

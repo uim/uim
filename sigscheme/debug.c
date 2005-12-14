@@ -495,7 +495,7 @@ static void hash_grow(hash_table *tab)
     new_size = old_size * 2;
     old_ents = tab->ents;
 
-    tab->ents = Scm_calloc(new_size, sizeof(hash_entry));
+    tab->ents = scm_calloc(new_size, sizeof(hash_entry));
     tab->size = new_size;
     tab->used = 0;
 
@@ -640,7 +640,7 @@ void SigScm_WriteToPortWithSharedStructure(ScmObj port, ScmObj obj)
 
     ctx.next_index = 1;
     ctx.seen.size = 1 << 8; /* arbitrary initial size */
-    ctx.seen.ents = Scm_calloc(ctx.seen.size, sizeof(hash_entry));
+    ctx.seen.ents = scm_calloc(ctx.seen.size, sizeof(hash_entry));
     for (i = 0; i < ctx.seen.size; i++) {
         ctx.seen.ents[i].key = SCM_INVALID;
     }

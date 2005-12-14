@@ -209,7 +209,7 @@ void SigScm_GC_Protect(ScmObj *var)
         n_empty_protected_vars--;
     } else {
         new_size = sizeof(ScmObj *) * (protected_vars_size + 1);
-        protected_vars = Scm_realloc(protected_vars, new_size);
+        protected_vars = scm_realloc(protected_vars, new_size);
         slot = &protected_vars[protected_vars_size++];
     }
     *slot = var;
@@ -285,7 +285,7 @@ void *scm_malloc_aligned(size_t size)
     if (!p)
         ERR("memory exhausted");
 #else
-    p = Scm_malloc(size);
+    p = scm_malloc(size);
     /* heaps must be aligned to sizeof(ScmCell) */
     assert(!((uintptr_t)p % sizeof(ScmCell)));
 #endif
@@ -321,7 +321,7 @@ static void add_heap(void)
     if (n_heaps_max <= n_heaps)
         Scm_FatalError("heap exhausted");
 
-    heaps = Scm_realloc(heaps, sizeof(ScmObjHeap) * (n_heaps + 1));
+    heaps = scm_realloc(heaps, sizeof(ScmObjHeap) * (n_heaps + 1));
     heap = scm_malloc_aligned(sizeof(ScmCell) * heap_size);
     heaps[n_heaps++] = heap;
 

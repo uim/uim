@@ -349,16 +349,16 @@ typedef ScmRef ScmQueue;
 
 #define LBUF_ALLOC(lbuf, size)                                               \
     do {                                                                     \
-        (lbuf)._buf = Scm_malloc(size);                                      \
+        (lbuf)._buf = scm_malloc(size);                                      \
         (lbuf)._size = (size);                                               \
     } while (/* CONSTCOND */ 0)
 
 #define LBUF_REALLOC(lbuf, size)                                             \
     do {                                                                     \
         if ((lbuf)._buf == (lbuf)._init_buf) {                               \
-            (lbuf)._buf = memcpy(Scm_malloc(size), LBUF_BUF(lbuf), LBUF_SIZE(lbuf)); \
+            (lbuf)._buf = memcpy(scm_malloc(size), LBUF_BUF(lbuf), LBUF_SIZE(lbuf)); \
         } else {                                                             \
-            (lbuf)._buf = Scm_realloc((lbuf)._buf, (size));                  \
+            (lbuf)._buf = scm_realloc((lbuf)._buf, (size));                  \
         }                                                                    \
         (lbuf)._size = (size);                                               \
     } while (/* CONSTCOND */ 0)
@@ -428,9 +428,9 @@ ScmObj ScmExp_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_sta
 
 /* error.c */
 void SigScm_InitError(void);
-void *Scm_malloc(size_t size);
-void *Scm_calloc(size_t number, size_t size);
-void *Scm_realloc(void *ptr, size_t size);
+void *scm_malloc(size_t size);
+void *scm_calloc(size_t number, size_t size);
+void *scm_realloc(void *ptr, size_t size);
 void Scm_ThrowException(ScmObj errorobj) SCM_NORETURN;
 void SigScm_ShowErrorHeader(void);
 void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj) SCM_NORETURN;
