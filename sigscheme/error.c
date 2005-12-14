@@ -63,7 +63,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-static int srfi34_is_provided, fatal_error_looped;
+static int debug_mask, srfi34_is_provided, fatal_error_looped;
 static void (*cb_fatal_error)(void);
 
 static ScmObj err_obj_tag, str_srfi34;
@@ -94,6 +94,59 @@ void SigScm_InitError(void)
     fatal_error_looped = FALSE;
 
     REGISTER_FUNC_TABLE(scm_error_func_info_table);
+}
+
+int SigScm_DebugCategories(void)
+{
+    return debug_mask;
+}
+
+void SigScm_SetDebugCategories(int categories)
+{
+    debug_mask = categories;
+}
+
+int SigScm_PredefinedDebugCategories(void)
+{
+#if SCM_DEBUG
+    return (SCM_DBG_DEVEL | SCM_DBG_COMPAT | SCM_DBG_OTHER
+#if SCM_DEBUG_PARSER
+            | SCM_DBG_PARSER
+#endif
+#if SCM_DEBUG_GC
+            | SCM_DBG_GC
+#endif
+#if SCM_DEBUG_ENCODING
+            | SCM_DBG_ENCODING
+#endif
+            );
+#else /* SCM_DEBUG */
+    return SCM_DBG_NONE;
+#endif /* SCM_DEBUG */
+}
+
+void SigScm_CategorizedDebug(int category, const char *msg, ...)
+{
+    va_list va;
+
+    va_start(va, msg);
+    if (debug_mask & category) {
+        SigScm_VErrorPrintf(msg, va);
+        SigScm_ErrorNewline();
+    }
+    va_end(va);
+}
+
+void SigScm_Debug(const char *msg, ...)
+{
+    va_list va;
+
+    va_start(va, msg);
+    if (debug_mask & SCM_DBG_DEVEL) {
+        SigScm_VErrorPrintf(msg, va);
+        SigScm_ErrorNewline();
+    }
+    va_end(va);
 }
 
 void *Scm_malloc(size_t size)

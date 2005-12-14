@@ -642,6 +642,11 @@ ScmObj SigScm_Read(ScmObj port);
 ScmObj SigScm_Read_Char(ScmObj port);
 
 /* error.c */
+int  SigScm_DebugCategories(void);
+void SigScm_SetDebugCategories(int categories);
+int  SigScm_PredefinedDebugCategories(void);
+void SigScm_CategorizedDebug(int category, const char *msg, ...);
+void SigScm_Debug(const char *msg, ...);
 int  SigScm_Die(const char *msg, const char *filename, int line);
 void SigScm_Error(const char *msg, ...) SCM_NORETURN;
 void SigScm_ErrorObj(const char *msg, ScmObj obj) SCM_NORETURN;
@@ -656,11 +661,6 @@ ScmObj ScmOp_inspect_error(ScmObj err_obj);
 ScmObj ScmOp_backtrace(void);
 
 /* debug.c */
-int  SigScm_DebugCategories(void);
-void SigScm_SetDebugCategories(int categories);
-int  SigScm_PredefinedDebugCategories(void);
-void SigScm_CategorizedDebug(int category, const char *msg, ...);
-void SigScm_Debug(const char *msg, ...);
 void SigScm_Display(ScmObj obj);
 void SigScm_WriteToPort(ScmObj port, ScmObj obj);
 void SigScm_DisplayToPort(ScmObj port, ScmObj obj);

@@ -100,7 +100,6 @@ typedef struct {
 =======================================*/
 void (*Scm_writess_func)(ScmObj port, ScmObj obj) = &SigScm_WriteToPort;
 
-static int debug_mask;
 #if SCM_USE_SRFI38
 static write_ss_context *write_ss_ctx; /* misc info in priting shared structures */
 #endif
@@ -127,59 +126,6 @@ static int  get_shared_index(ScmObj obj);
 /*=======================================
    Function Implementations
 =======================================*/
-int SigScm_DebugCategories(void)
-{
-    return debug_mask;
-}
-
-void SigScm_SetDebugCategories(int categories)
-{
-    debug_mask = categories;
-}
-
-int SigScm_PredefinedDebugCategories(void)
-{
-#if SCM_DEBUG
-    return (SCM_DBG_DEVEL | SCM_DBG_COMPAT | SCM_DBG_OTHER
-#if SCM_DEBUG_PARSER
-            | SCM_DBG_PARSER
-#endif
-#if SCM_DEBUG_GC
-            | SCM_DBG_GC
-#endif
-#if SCM_DEBUG_ENCODING
-            | SCM_DBG_ENCODING
-#endif
-            );
-#else /* SCM_DEBUG */
-    return SCM_DBG_NONE;
-#endif /* SCM_DEBUG */
-}
-
-void SigScm_CategorizedDebug(int category, const char *msg, ...)
-{
-    va_list va;
-
-    va_start(va, msg);
-    if (debug_mask & category) {
-        SigScm_VErrorPrintf(msg, va);
-        SigScm_ErrorNewline();
-    }
-    va_end(va);
-}
-
-void SigScm_Debug(const char *msg, ...)
-{
-    va_list va;
-
-    va_start(va, msg);
-    if (debug_mask & SCM_DBG_DEVEL) {
-        SigScm_VErrorPrintf(msg, va);
-        SigScm_ErrorNewline();
-    }
-    va_end(va);
-}
-
 void SigScm_Display(ScmObj obj)
 {
     SigScm_DisplayToPort(scm_current_output_port, obj);
