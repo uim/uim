@@ -517,7 +517,8 @@
     (skk-lib-get-nth-completion
      n
      (skk-make-string (skk-context-head sc) skk-type-hiragana)
-     skk-use-numeric-conversion?)))
+     skk-use-numeric-conversion?
+     skk-use-look?)))
 
 (define skk-get-current-completion
   (lambda (sc)
@@ -620,7 +621,8 @@
 	  (skk-lib-get-dcomp-word
 	   (skk-make-string
 	    (skk-context-head sc) (skk-context-kana-mode sc))
-	   skk-use-numeric-conversion?))))))
+	   skk-use-numeric-conversion?
+	   skk-use-look?))))))
 
 (define skk-append-okuri-string
   (lambda (sc str)
@@ -670,7 +672,8 @@
 	(skk-append-residual-kana sc))
     (skk-lib-get-completion
      (skk-make-string (skk-context-head sc) (skk-context-kana-mode sc))
-     skk-use-numeric-conversion?)
+     skk-use-numeric-conversion?
+     skk-use-look?)
     (skk-context-set-completion-nth! sc 0)
     (skk-context-set-state! sc 'skk-state-completion)))
 
@@ -1198,7 +1201,8 @@
 			(skk-make-string
 			 (skk-context-head sc)
 			 (skk-context-kana-mode sc))
-			skk-use-numeric-conversion?)))
+			skk-use-numeric-conversion?
+			skk-use-look?)))
 	    (if (not (string=? dcomp ""))
 		(begin
 		  (skk-string-list-to-context-head
@@ -1295,7 +1299,8 @@
 		       (skk-make-string
 			(skk-context-head sc)
 			(skk-context-kana-mode sc))
-		       skk-use-numeric-conversion?)
+		       skk-use-numeric-conversion?
+		       skk-use-look?)
 			"")))
 	     #f)
 	   #t)
@@ -1336,7 +1341,8 @@
 			   (skk-make-string
 			    (skk-context-head sc)
 			    (skk-context-kana-mode sc))
-			   skk-use-numeric-conversion?))))
+			   skk-use-numeric-conversion?
+			   skk-use-look?))))
 		 (if (not (null? sl))
 		     (begin
 		       (skk-string-list-to-context-head sc sl)
@@ -1729,7 +1735,8 @@
 	(begin
 	  (if (> (- (skk-lib-get-nr-completions
 		     (skk-make-string (skk-context-head sc) skk-type-hiragana)
-		     skk-use-numeric-conversion?)
+		     skk-use-numeric-conversion?
+		     skk-use-look?)
 		    1)
 		 (skk-context-completion-nth sc))
 	      (skk-context-set-completion-nth!
@@ -1795,7 +1802,8 @@
 	     (if (not (null? sl))
 		 (begin (skk-lib-get-completion
 			 (skk-get-current-completion sc)
-			 skk-use-numeric-conversion?)))
+			 skk-use-numeric-conversion?
+			 skk-use-look?)))
 	     (skk-lib-clear-completions
 	      (skk-make-string
 	       (skk-context-head sc)

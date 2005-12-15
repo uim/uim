@@ -400,6 +400,11 @@
   (_ "Enable dynamic completion")
   (_ "long description will be here."))
 
+(define-custom 'skk-use-look? #f
+  '(skk-advanced)
+  '(boolean)
+  (_ "Use UNIX look command for completion")
+  (_ "long description will be here."))
 ;;
 ;; annotation
 ;;
