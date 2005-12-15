@@ -304,11 +304,21 @@ struct ScmCell_ {
 ============================================================================*/
 #define SCM_SAL_FREECELLP(a)            (SCM_TYPE(a) == ScmFreeCell)
 #define SCM_SAL_AS_FREECELL(a)          (SCM_ASSERT_TYPE(SCM_FREECELLP(a), (a)))
-#define SCM_SAL_FREECELL_CAR(a)         (SCM_AS_FREECELL(a)->obj.cons.car)
-#define SCM_SAL_FREECELL_CDR(a)         (SCM_AS_FREECELL(a)->obj.cons.cdr)
+#define SCM_SAL_FREECELL_NEXT(a)         (SCM_AS_FREECELL(a)->obj.cons.car)
+#define SCM_SAL_FREECELL_FREESLOT(a)         (SCM_AS_FREECELL(a)->obj.cons.cdr)
 #define SCM_SAL_ENTYPE_FREECELL(a)      (SCM_ENTYPE((a), ScmFreeCell))
-#define SCM_SAL_FREECELL_SET_CAR(a, car) (SCM_FREECELL_CAR(a) = (car))
-#define SCM_SAL_FREECELL_SET_CDR(a, cdr) (SCM_FREECELL_CDR(a) = (cdr))
+#define SCM_SAL_FREECELL_SET_NEXT(a, next) (SCM_FREECELL_NEXT(a) = (next))
+#define SCM_SAL_FREECELL_SET_FREESLOT(a, v) (SCM_FREECELL_FREESLOT(a) = (v))
+#define SCM_SAL_FREECELL_CLEAR_FREESLOT(o)                                   \
+    SCM_SAL_FREECELL_SET_FREESLOT((o), SCM_FALSE)
+
+#define SCM_SAL_RECLAIM_CELL(cell, next)                                     \
+    do {                                                                     \
+        SCM_ENTYPE_FREECELL(cell);                                           \
+        SCM_DO_UNMARK(cell);                                                 \
+        SCM_FREECELL_SET_NEXT((cell), (next));                               \
+        SCM_FREECELL_CLEAR_FREESLOT(cell);                                   \
+    } while (/* CONSTCOND */ 0)
 
 #define SCM_UNMARKER          0
 #define SCM_MARKER            (SCM_UNMARKER + 1)

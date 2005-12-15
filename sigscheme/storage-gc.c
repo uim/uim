@@ -166,7 +166,7 @@ ScmObj SigScm_NewObjFromHeap(void)
         gc_mark_and_sweep();
 
     ret = freelist;
-    freelist = SCM_FREECELL_CDR(freelist);
+    freelist = SCM_FREECELL_NEXT(freelist);
 
     return ret;
 }
@@ -301,13 +301,9 @@ static void add_heap(void)
         heaps_lowest = &heap[0];
 
     /* link in order */
-    for (cell = &heap[0]; cell < &heap[heap_size]; cell++) {
-        SCM_ENTYPE_FREECELL(cell);
-        SCM_DO_UNMARK(cell);
-        SCM_FREECELL_SET_CDR(cell, cell + 1);
-    }
-
-    SCM_FREECELL_SET_CDR(cell - 1, freelist);
+    for (cell = &heap[0]; cell < &heap[heap_size - 1]; cell++)
+        SCM_RECLAIM_CELL(cell, cell + 1);
+    SCM_RECLAIM_CELL(cell, freelist);
     freelist = heap;
 }
 
@@ -608,10 +604,7 @@ static size_t gc_sweep(void)
                 SCM_DO_UNMARK(obj);
             } else {
                 free_cell(cell);
-
-                SCM_ENTYPE_FREECELL(obj);
-                SCM_FREECELL_SET_CAR(obj, SCM_NULL);
-                SCM_FREECELL_SET_CDR(obj, new_freelist);
+                SCM_RECLAIM_CELL(cell, new_freelist);
                 new_freelist = obj;
                 n_collected++;
             }

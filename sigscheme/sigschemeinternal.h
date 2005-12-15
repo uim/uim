@@ -120,10 +120,15 @@ extern ScmObj SigScm_null_values;
 #define SCM_AS_FREECELL(o)           (SCM_SAL_AS_FREECELL(o))
 
 #define SCM_FREECELLP(o)             (SCM_SAL_FREECELLP(o))
-#define SCM_FREECELL_CAR(o)          (SCM_SAL_FREECELL_CAR(o))
-#define SCM_FREECELL_CDR(o)          (SCM_SAL_FREECELL_CDR(o))
-#define SCM_FREECELL_SET_CAR(o, kar) (SCM_SAL_FREECELL_SET_CAR((o), (kar)))
-#define SCM_FREECELL_SET_CDR(o, kdr) (SCM_SAL_FREECELL_SET_CDR((o), (kdr)))
+#define SCM_FREECELL_NEXT(o)            SCM_SAL_FREECELL_NEXT(o)
+#define SCM_FREECELL_FREESLOT(o)        SCM_SAL_FREECELL_FREESLOT(o)
+#define SCM_FREECELL_SET_NEXT(o, next)  SCM_SAL_FREECELL_SET_NEXT((o), (next))
+#define SCM_FREECELL_SET_FREESLOT(o, v) SCM_SAL_FREECELL_SET_FREESLOT((o), (v))
+#define SCM_FREECELL_CLEAR_FREESLOT(o)  SCM_SAL_FREECELL_CLEAR_FREESLOT((o))
+
+/* For optimized operation: Cleanup a destructed ScmCell *cell to a freecell
+ * and chain it into freelist. */
+#define SCM_RECLAIM_CELL(cell, next)    SCM_SAL_RECLAIM_CELL((cell), (next))
 
 /* FIXME: rename appropriately */
 #define SCM_IS_MARKED(o)             (SCM_SAL_IS_MARKED(o))
