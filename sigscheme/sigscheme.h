@@ -99,6 +99,14 @@ extern "C" {
 #define SCM_SYMBOL_BOUNDP(sym) (!SCM_EQ(SCM_SYMBOL_VCELL(sym), SCM_UNBOUND))
 
 #define SCM_CONS(kar, kdr) (Scm_NewCons((kar), (kdr)))
+#if SCM_USE_STORAGE_ABSTRACTION_LAYER
+#define SCM_CAR(kons)  (SCM_CONS_CAR(kons))
+#define SCM_CDR(kons)  (SCM_CONS_CDR(kons))
+#define SCM_CAAR(kons) (SCM_CAR(SCM_CAR(kons)))
+#define SCM_CADR(kons) (SCM_CAR(SCM_CDR(kons)))
+#define SCM_CDAR(kons) (SCM_CDR(SCM_CAR(kons)))
+#define SCM_CDDR(kons) (SCM_CDR(SCM_CDR(kons)))
+#endif /* SCM_USE_STORAGE_ABSTRACTION_LAYER */
 
 #define SCM_LIST_1(elm0) \
     (SCM_CONS((elm0), SCM_NULL))
@@ -193,18 +201,9 @@ extern "C" {
 
 #define SCM_WRITESS_TO_PORT(port, obj) ((*Scm_writess_func)(port, obj))
 
-/*=======================================
-   Struct Declarations
-=======================================*/
-typedef void (*ScmCFunc)(void);
-
-/* type declaration */
-#if SCM_OBJ_COMPACT
-#include "sigschemetype-compact.h"
-#else
-#include "sigschemetype.h"
-#endif
-
+/*============================================================================
+  Type Definitions
+============================================================================*/
 enum ScmDebugCategory {
     SCM_DBG_NONE         = 0,
     SCM_DBG_ERRMSG       = 1 << 0,   /* the "Error: foo bar" style msgs */
@@ -224,6 +223,308 @@ enum ScmDebugCategory {
     SCM_DBG_ENCODING     = 1 << 14,  /* multibyte handling */
     SCM_DBG_OTHER        = 1 << 30   /* all other messages */
 };
+
+#if SCM_USE_STORAGE_ABSTRACTION_LAYER
+enum ScmObjType {
+    ScmInt          = 0,
+    ScmCons         = 1,
+    ScmSymbol       = 2,
+    ScmChar         = 3,
+    ScmString       = 4,
+    ScmFunc         = 5,
+    ScmClosure      = 6,
+    ScmVector       = 7,
+    ScmPort         = 8,
+    ScmContinuation = 9,
+    ScmConstant     = 10,
+    ScmValuePacket  = 11,
+    ScmFreeCell     = 12,
+
+    ScmCPointer     = 20,
+    ScmCFuncPointer = 21
+};
+
+/*
+ * Function types:
+ *
+ * Function objects must tag themselves with proper information so
+ * that the evaluator can correctly invoke them.  See doc/invocation
+ * for details.
+ */
+enum ScmFuncTypeCode {
+    SCM_FUNCTYPE_MAND_BITS = 4,
+    SCM_FUNCTYPE_MAND_MASK = (1 << SCM_FUNCTYPE_MAND_BITS)-1,
+#define SCM_FUNCTYPE_MAND_MAX 5
+    /* SCM_FUNCTYPE_MAND_MAX  = 5, */
+    SCM_FUNCTYPE_SYNTAX    = 1 << SCM_FUNCTYPE_MAND_BITS,
+
+    SCM_FUNCTYPE_FIXED     = 0 << (SCM_FUNCTYPE_MAND_BITS+1),
+    SCM_FUNCTYPE_VARIADIC  = 1 << (SCM_FUNCTYPE_MAND_BITS+1),
+    SCM_FUNCTYPE_TAIL_REC  = 1 << (SCM_FUNCTYPE_MAND_BITS+2),
+
+    SCM_FUNCTYPE_ODDBALL   = 1 << (SCM_FUNCTYPE_MAND_BITS+10),
+
+    /* Compound types. */
+    SCM_PROCEDURE_FIXED              = SCM_FUNCTYPE_FIXED,
+    SCM_PROCEDURE_FIXED_TAIL_REC     = SCM_FUNCTYPE_TAIL_REC,
+    SCM_PROCEDURE_VARIADIC           = SCM_FUNCTYPE_VARIADIC,
+    SCM_PROCEDURE_VARIADIC_TAIL_REC  = SCM_FUNCTYPE_VARIADIC | SCM_FUNCTYPE_TAIL_REC,
+
+    SCM_SYNTAX_FIXED          = SCM_PROCEDURE_FIXED | SCM_FUNCTYPE_SYNTAX,
+    SCM_SYNTAX_FIXED_TAIL_REC = SCM_PROCEDURE_FIXED_TAIL_REC | SCM_FUNCTYPE_SYNTAX,
+    SCM_SYNTAX_VARIADIC       = SCM_PROCEDURE_VARIADIC | SCM_FUNCTYPE_SYNTAX,
+    SCM_SYNTAX_VARIADIC_TAIL_REC = SCM_PROCEDURE_VARIADIC_TAIL_REC | SCM_FUNCTYPE_SYNTAX,
+
+    /* Special type. */
+    SCM_REDUCTION_OPERATOR = SCM_FUNCTYPE_ODDBALL
+};
+
+/* Where we are in a reduction process. */
+enum ScmReductionState {
+    SCM_REDUCE_0,               /* No argument was given. */
+    SCM_REDUCE_1,               /* Only 1 argument was given. */
+    SCM_REDUCE_PARTWAY,         /* We have more arguments pending. */
+    SCM_REDUCE_LAST,            /* The callee must finalize. */
+    SCM_REDUCE_STOP             /* Callee wants to stop. */
+};
+
+enum ScmReturnType {
+    SCM_RETTYPE_AS_IS           = 0,
+    SCM_RETTYPE_NEED_EVAL       = 1
+};
+
+enum ScmPortFlag {
+    SCM_PORTFLAG_NONE        = 0,
+    SCM_PORTFLAG_OUTPUT      = 1 << 0,
+    SCM_PORTFLAG_INPUT       = 1 << 1,
+    SCM_PORTFLAG_LIVE_OUTPUT = 1 << 2,
+    SCM_PORTFLAG_LIVE_INPUT  = 1 << 3,
+
+    SCM_PORTFLAG_DIR_MASK = (SCM_PORTFLAG_OUTPUT | SCM_PORTFLAG_INPUT),
+    SCM_PORTFLAG_ALIVENESS_MASK = (SCM_PORTFLAG_LIVE_OUTPUT
+                                   | SCM_PORTFLAG_LIVE_INPUT)
+};
+
+typedef void (*ScmCFunc)(void);
+
+#if SCM_OBJ_COMPACT
+#include "storage-compact.h"
+#else /* SCM_OBJ_COMPACT */
+#include "storage-fatty.h"
+#endif /* SCM_OBJ_COMPACT */
+/*
+ * A storage implementation defines following types.
+ *
+ * typedef <hidden> ScmCell;
+ * typedef <hidden> ScmObj;
+ * typedef <hidden> ScmRef;
+ *
+ * typedef ScmObj (*ScmFuncType)();
+ */
+
+/* The evaluator's state */
+typedef struct ScmEvalState_ ScmEvalState;
+struct ScmEvalState_ {
+    ScmObj env;
+    enum ScmReturnType ret_type;
+};
+
+/*=======================================
+  Object Creators
+=======================================*/
+#define SCM_MAKE_BOOL(x)                  ((x) ? SCM_TRUE : SCM_FALSE)
+/* FIXME: define arguments */
+#define SCM_MAKE_INT                      SCM_SAL_MAKE_INT
+#define SCM_MAKE_CONS                     SCM_SAL_MAKE_CONS
+#define SCM_MAKE_SYMBOL                   SCM_SAL_MAKE_SYMBOL
+#define SCM_MAKE_CHAR                     SCM_SAL_MAKE_CHAR
+#define SCM_MAKE_STRING                   SCM_SAL_MAKE_STRING
+#define SCM_MAKE_STRING_COPYING           SCM_SAL_MAKE_STRING_COPYING
+#define SCM_MAKE_IMMUTABLE_STRING         SCM_SAL_MAKE_IMMUTABLE_STRING
+#define SCM_MAKE_IMMUTABLE_STRING_COPYING SCM_SAL_MAKE_IMMUTABLE_STRING_COPYING
+#define SCM_MAKE_FUNC                     SCM_SAL_MAKE_FUNC
+#define SCM_MAKE_CLOSURE                  SCM_SAL_MAKE_CLOSURE
+#define SCM_MAKE_VECTOR                   SCM_SAL_MAKE_VECTOR
+#define SCM_MAKE_PORT                     SCM_SAL_MAKE_PORT
+#define SCM_MAKE_CONTINUATION             SCM_SAL_MAKE_CONTINUATION
+#if SCM_USE_NONSTD_FEATURES
+#define SCM_MAKE_C_POINTER                SCM_SAL_MAKE_C_POINTER
+#define SCM_MAKE_C_FUNCPOINTER            SCM_SAL_MAKE_C_FUNCPOINTER
+#endif /* SCM_USE_NONSTD_FEATURES */
+#define SCM_MAKE_VALUEPACKET              SCM_SAL_MAKE_VALUEPACKET
+
+/*=======================================
+  Object Accessors
+=======================================*/
+/* ScmObj Global Attribute */
+#define SCM_TYPE(o) SCM_SAL_TYPE(o)
+
+/* Type Confirmation */
+#if SCM_ACCESSOR_ASSERT
+#define SCM_ASSERT_TYPE(cond, o) (SCM_ASSERT(cond), (o))
+#else /* SCM_ACCESSOR_ASSERT */
+#define SCM_ASSERT_TYPE(cond, o) (o)
+#endif /* SCM_ACCESSOR_ASSERT */
+#define SCM_AS_INT(o)           (SCM_ASSERT_TYPE(SCM_INTP(o),           (o)))
+#define SCM_AS_CONS(o)          (SCM_ASSERT_TYPE(SCM_CONSP(o),          (o)))
+#define SCM_AS_SYMBOL(o)        (SCM_ASSERT_TYPE(SCM_SYMBOLP(o),        (o)))
+#define SCM_AS_CHAR(o)          (SCM_ASSERT_TYPE(SCM_CHARP(o),          (o)))
+#define SCM_AS_STRING(o)        (SCM_ASSERT_TYPE(SCM_STRINGP(o),        (o)))
+#define SCM_AS_FUNC(o)          (SCM_ASSERT_TYPE(SCM_FUNCP(o),          (o)))
+#define SCM_AS_CLOSURE(o)       (SCM_ASSERT_TYPE(SCM_CLOSUREP(o),       (o)))
+#define SCM_AS_VECTOR(o)        (SCM_ASSERT_TYPE(SCM_VECTORP(o),        (o)))
+#define SCM_AS_PORT(o)          (SCM_ASSERT_TYPE(SCM_PORTP(o),          (o)))
+#define SCM_AS_CONTINUATION(o)  (SCM_ASSERT_TYPE(SCM_CONTINUATIONP(o),  (o)))
+#define SCM_AS_VALUEPACKET(o)   (SCM_ASSERT_TYPE(SCM_VALUEPACKETP(o),   (o)))
+#define SCM_AS_C_POINTER(o)     (SCM_ASSERT_TYPE(SCM_C_POINTERP(o),     (o)))
+#define SCM_AS_C_FUNCPOINTER(o) (SCM_ASSERT_TYPE(SCM_C_FUNCPOINTERP(o), (o)))
+
+#define SCM_INTP(o)                     SCM_SAL_INTP(o)
+#define SCM_INT_VALUE(o)                SCM_SAL_INT_VALUE(o)
+#define SCM_INT_SET_VALUE(o, val)       SCM_SAL_INT_SET_VALUE((o), (val))
+
+#define SCM_CONSP(o)                    SCM_SAL_CONSP(o)
+#define SCM_CONS_CAR(o)                 SCM_SAL_CONS_CAR(o)
+#define SCM_CONS_CDR(o)                 SCM_SAL_CONS_CDR(o)
+#define SCM_CONS_SET_CAR(o, kar)        SCM_SAL_CONS_SET_CAR((o), (kar))
+#define SCM_CONS_SET_CDR(o, kdr)        SCM_SAL_CONS_SET_CDR((o), (kdr))
+
+#define SCM_SYMBOLP(o)                  SCM_SAL_SYMBOLP(o)
+#define SCM_SYMBOL_NAME(o)              SCM_SAL_SYMBOL_NAME(o)
+#define SCM_SYMBOL_VCELL(o)             SCM_SAL_SYMBOL_VCELL(o)
+#define SCM_SYMBOL_SET_NAME(o, name)    SCM_SAL_SYMBOL_SET_NAME((o), (name))
+#define SCM_SYMBOL_SET_VCELL(o, val)    SCM_SAL_SYMBOL_SET_VCELL((o), (val))
+
+#define SCM_CHARP(o)                    SCM_SAL_CHARP(o)
+#define SCM_CHAR_VALUE(o)               SCM_SAL_CHAR_VALUE(o)
+#define SCM_CHAR_SET_VALUE(o, val)      SCM_SAL_CHAR_SET_VALUE((o), (val))
+
+#define SCM_STRINGP(o)                  SCM_SAL_STRINGP(o)
+#define SCM_STRING_STR(o)               SCM_SAL_STRING_STR(o)
+#define SCM_STRING_LEN(o)               SCM_SAL_STRING_LEN(o)
+#define SCM_STRING_SET_STR(o, str)      SCM_SAL_STRING_SET_STR((o), (str))
+#define SCM_STRING_SET_LEN(o, len)      SCM_SAL_STRING_SET_LEN((o), (len))
+#define SCM_STRING_MUTABLEP(o)          SCM_SAL_STRING_MUTABLEP(o)
+#define SCM_STRING_SET_MUTABLE(o)       SCM_SAL_STRING_SET_MUTABLE(o)
+#define SCM_STRING_SET_IMMUTABLE(o)     SCM_SAL_STRING_SET_IMMUTABLE(o)
+
+#define SCM_FUNCP(o)                    SCM_SAL_FUNCP(o)
+#define SCM_FUNC_TYPECODE(o)            SCM_SAL_FUNC_TYPECODE(o)
+#define SCM_FUNC_CFUNC(o)               SCM_SAL_FUNC_CFUNC(o)
+#define SCM_FUNC_SET_TYPECODE(o, type)  SCM_SAL_FUNC_SET_TYPECODE((o), (type))
+#define SCM_FUNC_SET_CFUNC(o, func)     SCM_SAL_FUNC_SET_CFUNC((o), (func))
+#define SCM_SYNTAXP(o)    (SCM_FUNCP(o)                                      \
+                           && (SCM_FUNC_TYPECODE(o) & SCM_FUNCTYPE_SYNTAX))
+#define SCM_PROCEDUREP(o) ((SCM_FUNCP(o)                                     \
+                            && !(SCM_FUNC_TYPECODE(o) & SCM_FUNCTYPE_SYNTAX)) \
+                           || SCM_CLOSUREP(o)                                \
+                           || SCM_CONTINUATIONP(o))
+
+#define SCM_CLOSUREP(o)                 SCM_SAL_CLOSUREP(o)
+#define SCM_CLOSURE_EXP(o)              SCM_SAL_CLOSURE_EXP(o)
+#define SCM_CLOSURE_SET_EXP(o, exp)     SCM_SAL_CLOSURE_SET_EXP((o), (exp))
+#define SCM_CLOSURE_ENV(o)              SCM_SAL_CLOSURE_ENV(o)
+#define SCM_CLOSURE_SET_ENV(o, env)     SCM_SAL_CLOSURE_SET_ENV((o), (env))
+
+#define SCM_VECTORP(o)                  SCM_SAL_VECTORP(o)
+#define SCM_VECTOR_VEC(o)               SCM_SAL_VECTOR_VEC(o)
+#define SCM_VECTOR_LEN(o)               SCM_SAL_VECTOR_LEN(o)
+#define SCM_VECTOR_SET_VEC(o, vec)      SCM_SAL_VECTOR_SET_VEC((o), (vec))
+#define SCM_VECTOR_SET_LEN(o, len)      SCM_SAL_VECTOR_SET_LEN((o), (len))
+#define SCM_VECTOR_VALID_INDEXP(o, i)   SCM_SAL_VECTOR_VALID_INDEXP((o), (i))
+
+#define SCM_PORTP(o)                    SCM_SAL_PORTP(o)
+#define SCM_PORT_FLAG(o)                SCM_SAL_PORT_FLAG(o)
+#define SCM_PORT_IMPL(o)                SCM_SAL_PORT_IMPL(o)
+#define SCM_PORT_SET_FLAG(o, flag)      SCM_SAL_PORT_SET_FLAG((o), (flag))
+#define SCM_PORT_SET_IMPL(o, impl)      SCM_SAL_PORT_SET_IMPL((o), (impl))
+
+#define SCM_CONTINUATIONP(o)            SCM_SAL_CONTINUATIONP(o)
+#define SCM_CONTINUATION_OPAQUE(o)      SCM_SAL_CONTINUATION_OPAQUE(o)
+#define SCM_CONTINUATION_TAG(o)         SCM_SAL_CONTINUATION_TAG(o)
+#define SCM_CONTINUATION_SET_OPAQUE(o, val)                                  \
+    SCM_SAL_CONTINUATION_SET_OPAQUE((o), (val))
+#define SCM_CONTINUATION_SET_TAG(o, val)                                     \
+    SCM_SAL_CONTINUATION_SET_TAG((o), (val))
+
+#define SCM_VALUEPACKETP(o)             SCM_SAL_VALUEPACKETP(o)
+#define SCM_VALUEPACKET_VALUES(o)       SCM_SAL_VALUEPACKET_VALUES(o)
+
+#define SCM_CONSTANTP(o)                SCM_SAL_CONSTANTP(o)
+
+#define SCM_C_POINTERP(o)               SCM_SAL_C_POINTERP(o)
+#define SCM_C_POINTER_VALUE(o)          SCM_SAL_C_POINTER_VALUE(o)
+#define SCM_C_POINTER_SET_VALUE(o, ptr) SCM_SAL_C_POINTER_SET_VALUE((o), (ptr))
+
+#define SCM_C_FUNCPOINTERP(o)           SCM_SAL_C_FUNCPOINTERP(o)
+#define SCM_C_FUNCPOINTER_VALUE(o)      SCM_SAL_C_FUNCPOINTER_VALUE(o)
+#define SCM_C_FUNCPOINTER_SET_VALUE(o, funcptr)                              \
+    SCM_SAL_C_FUNCPOINTER_SET_VALUE((o), (funcptr))
+
+/*============================================================================
+  Environment Specifiers
+============================================================================*/
+#define SCM_INTERACTION_ENV SCM_SAL_INTERACTION_ENV
+/*
+ * Current implementation cannot handle scheme-report-environment and
+ * null-environment properly. Be careful to use these environemnts.
+ */
+#define SCM_R5RS_ENV        SCM_SAL_R5RS_ENV
+#define SCM_NULL_ENV        SCM_SAL_NULL_ENV
+
+#define SCM_ENVP(env)       SCM_SAL_ENVP(env)
+
+/*============================================================================
+  Abstract ScmObj Reference For Storage-Representation Independent Efficient
+  List Operations
+============================================================================*/
+#define SCM_INVALID_REF       SCM_SAL_INVALID_REF
+
+#define SCM_REF_CAR(kons)     (SCM_SAL_REF_CAR(kons))
+#define SCM_REF_CDR(kons)     (SCM_SAL_REF_CDR(kons))
+#define SCM_REF_OFF_HEAP(obj) (SCM_SAL_REF_OFF_HEAP(obj))
+
+/* SCM_DEREF(ref) is not permitted to be used as lvalue */
+#define SCM_DEREF(ref)        (SCM_SAL_DEREF(ref))
+
+/* RFC: Is there a better name? */
+#define SCM_SET(ref, obj)     (SCM_SAL_SET((ref), (obj)))
+
+/*============================================================================
+  Special Constants and Predicates
+============================================================================*/
+#define SCM_INVALID SCM_SAL_INVALID
+#define SCM_NULL    SCM_SAL_NULL
+#define SCM_TRUE    SCM_SAL_TRUE
+#define SCM_FALSE   SCM_SAL_FALSE
+#define SCM_EOF     SCM_SAL_EOF
+#define SCM_UNBOUND SCM_SAL_UNBOUND
+#define SCM_UNDEF   SCM_SAL_UNDEF
+
+#define SCM_EQ(a, b)   (SCM_SAL_EQ((a), (b)))
+#define SCM_NULLP(a)   (SCM_EQ((a),  SCM_NULL))
+#define SCM_FALSEP(a)  (SCM_EQ((a),  SCM_FALSE))
+#define SCM_NFALSEP(a) (!SCM_EQ((a), SCM_FALSE))
+#define SCM_EOFP(a)    (SCM_EQ((a),  SCM_EOF))
+
+/*============================================================================
+  Predefined Symbols
+============================================================================*/
+/* for list construction */
+#define SCM_SYM_QUOTE            SCM_SAL_SYM_QUOTE
+#define SCM_SYM_QUASIQUOTE       SCM_SAL_SYM_QUASIQUOTE
+#define SCM_SYM_UNQUOTE          SCM_SAL_SYM_UNQUOTE
+#define SCM_SYM_UNQUOTE_SPLICING SCM_SAL_SYM_UNQUOTE_SPLICING
+
+#else /* SCM_USE_STORAGE_ABSTRACTION_LAYER */
+
+/* type declaration */
+#if SCM_OBJ_COMPACT
+#include "sigschemetype-compact.h"
+#else
+#include "sigschemetype.h"
+#endif
+#endif /* SCM_USE_STORAGE_ABSTRACTION_LAYER */
 
 /*=======================================
    Variable Declarations
