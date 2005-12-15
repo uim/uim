@@ -176,9 +176,11 @@ public:
 protected slots:
     void slotPathnameButtonClicked();
     void slotCustomTextChanged( const QString & text );
+    void slotFileDialogFilterSelected( const QString & text );
 private:
     QLineEdit *m_lineEdit;
     QPushButton *m_fileButton;
+    QFileDialog *m_fileDialog;
 protected:
     void currentCustomValueChanged(){ emit customValueChanged(); }
 signals:
