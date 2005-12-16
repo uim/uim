@@ -60,7 +60,7 @@
 /*=======================================
   Function Implementations
 =======================================*/
-void 
+void
 scm_initialize_srfi23(void)
 {
     /*=======================================================================
@@ -85,7 +85,7 @@ scm_initialize_srfi23(void)
  *    error object to an exception handler. The default exception handler then
  *    might do something as described in points 1 to 3.
  */
-ScmObj 
+ScmObj
 scm_p_srfi23_error(ScmObj reason, ScmObj args)
 {
     ScmObj err_obj;

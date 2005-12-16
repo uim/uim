@@ -10,7 +10,7 @@ Feature
 SigScheme has following features.
 
 - Cover R5RS almost
-- Support Following SRFIs 
+- Support Following SRFIs
   - SRFI-2  : And-let*
   - SRFI-6  : Basic String Ports
   - SRFI-8  : Receive
@@ -18,7 +18,7 @@ SigScheme has following features.
   - SRFI-34 : Exception Handling for Programs
   - SRFI-38 : External Representation for Data with Shared Structure
   - SRFI-60 : Integer as Bits
-- Multibyte String Support 
+- Multibyte String Support
 - SIOD compatible mode
 
 

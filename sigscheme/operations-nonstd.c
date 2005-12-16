@@ -62,7 +62,7 @@ static ScmObj create_loaded_str(ScmObj filename);
 /*=======================================
   Function Implementations
 =======================================*/
-void 
+void
 scm_initialize_nonstd_features(void)
 {
     REGISTER_FUNC_TABLE(nonstd_func_info_table);
@@ -78,7 +78,7 @@ scm_initialize_nonstd_features(void)
  * procedure with global-variable-bound?.
  */
 /* The implementation is fully compatible with SIOD */
-ScmObj 
+ScmObj
 scm_p_symbol_boundp(ScmObj sym, ScmObj rest)
 {
     ScmObj env = SCM_INVALID;
@@ -97,7 +97,7 @@ scm_p_symbol_boundp(ScmObj sym, ScmObj rest)
 }
 
 /* SIOD compatible */
-ScmObj 
+ScmObj
 scm_p_load_path(void)
 {
     DECLARE_FUNCTION("load-path", procedure_fixed_0);
@@ -105,7 +105,7 @@ scm_p_load_path(void)
 }
 
 /* FIXME: add ScmObj scm_require(const char *c_filename) */
-ScmObj 
+ScmObj
 scm_p_require(ScmObj filename)
 {
     ScmObj loaded_str = SCM_FALSE;
@@ -150,7 +150,7 @@ create_loaded_str(ScmObj filename)
  * TODO: replace original specification with a SRFI standard or other de facto
  * standard
  */
-ScmObj 
+ScmObj
 scm_p_provide(ScmObj feature)
 {
     DECLARE_FUNCTION("provide", procedure_fixed_1);
@@ -166,7 +166,7 @@ scm_p_provide(ScmObj feature)
  * TODO: replace original specification with a SRFI standard or other de facto
  * standard
  */
-ScmObj 
+ScmObj
 scm_p_providedp(ScmObj feature)
 {
     DECLARE_FUNCTION("provided?", procedure_fixed_1);
@@ -180,7 +180,7 @@ scm_p_providedp(ScmObj feature)
  * TODO: describe compatibility with de facto standard of other Scheme
  * implementations
  */
-ScmObj 
+ScmObj
 scm_p_file_existsp(ScmObj filepath)
 {
     FILE *f;
@@ -197,7 +197,7 @@ scm_p_file_existsp(ScmObj filepath)
 }
 
 /* TODO: remove to ensure security */
-ScmObj 
+ScmObj
 scm_p_delete_file(ScmObj filepath)
 {
     DECLARE_FUNCTION("delete-file", procedure_fixed_1);

@@ -743,7 +743,7 @@ ScmObj *scm_gc_protect_stack_internal(ScmObj *designated_stack_start) SCM_NOINLI
 #else /* SCM_GCC4_READY_GC */
 void   scm_gc_protect_stack(ScmObj *stack_start);
 #endif /* SCM_GCC4_READY_GC */
-void   scm_gc_unprotect_stack(ScmObj *stack_start);    
+void   scm_gc_unprotect_stack(ScmObj *stack_start);
 
 /* storage-symbol.c */
 ScmObj scm_intern(const char *name);

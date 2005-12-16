@@ -159,7 +159,7 @@ const ScmBytePortVTbl *ScmOutputStrPort_vptr = &ScmOutputStrPort_vtbl;
  * Client code must call this first even if current implementation does not
  * contain actual code.
  */
-void 
+void
 scm_strport_init(void)
 {
     return;
@@ -375,7 +375,7 @@ ostrport_vprintf(ScmOutputStrPort *port, const char *str, va_list args)
 #if HAVE_VASPRINTF
     char *appendix;
     int len;
-    
+
     len = vasprintf(&appendix, str, args);
     if (!appendix)
         SCM_PORT_ERROR_NOMEM(BYTE, port, ScmOutputStrPort);

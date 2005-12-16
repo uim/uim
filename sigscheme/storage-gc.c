@@ -152,14 +152,14 @@ void scm_init_gc(size_t heap_size, size_t heap_alloc_threshold,
     initialize_heap(heap_size, heap_alloc_threshold, n_heaps_max, n_heaps_init);
 }
 
-void 
+void
 scm_finalize_gc(void)
 {
     finalize_heap();
     finalize_protected_var();
 }
 
-ScmObj 
+ScmObj
 scm_make_obj_from_heap(void)
 {
     ScmObj ret = SCM_FALSE;
@@ -198,7 +198,7 @@ locate_protected_var(ScmObj *var)
     return NULL;
 }
 
-void 
+void
 scm_gc_protect(ScmObj *var)
 {
     ScmObj **slot;
@@ -215,7 +215,7 @@ scm_gc_protect(ScmObj *var)
     *slot = var;
 }
 
-void 
+void
 scm_gc_unprotect(ScmObj *var)
 {
     ScmObj **slot;
@@ -252,7 +252,7 @@ scm_gc_protect_stack_internal(ScmObj *designated_stack_start)
 
 #else /* SCM_GCC4_READY_GC */
 
-void 
+void
 scm_gc_protect_stack(ScmObj *stack_start)
 {
     if (!stack_start_pointer)
@@ -260,7 +260,7 @@ scm_gc_protect_stack(ScmObj *stack_start)
 }
 #endif /* SCM_GCC4_READY_GC */
 
-void 
+void
 scm_gc_unprotect_stack(ScmObj *stack_start)
 {
     if (stack_start_pointer == stack_start)

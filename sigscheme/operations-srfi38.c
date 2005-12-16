@@ -59,7 +59,7 @@
 /*=======================================
   Function Implementations
 =======================================*/
-void 
+void
 scm_initialize_srfi38(void)
 {
     REGISTER_FUNC_TABLE(srfi38_func_info_table);
@@ -73,7 +73,7 @@ scm_initialize_srfi38(void)
 /*=============================================================================
   SRFI38 : External Representation for Data With Shared Structure
 =============================================================================*/
-ScmObj 
+ScmObj
 scm_p_srfi38_write_with_shared_structure(ScmObj obj, ScmObj args)
 {
     ScmObj port = scm_current_output_port;

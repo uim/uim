@@ -102,7 +102,7 @@ static ScmObj continuation_stack_unwind(ScmObj dest_cont);
 /*=======================================
   Function Implementations
 =======================================*/
-void 
+void
 scm_init_continuation(void)
 {
     initialize_dynamic_extent();
@@ -112,7 +112,7 @@ scm_init_continuation(void)
     scm_gc_protect((ScmObj *)&trace_stack);
 }
 
-void 
+void
 scm_finalize_continuation(void)
 {
     finalize_continuation_env();
@@ -192,13 +192,13 @@ exit_dynamic_extent(ScmObj dest)
     }
 }
 
-ScmObj 
+ScmObj
 scm_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after)
 {
     ScmObj ret;
 
     scm_call(before, SCM_NULL);
-    
+
     wind_onto_dynamic_extent(before, after);
     ret = scm_call(thunk, SCM_NULL);
     unwind_dynamic_extent();
@@ -260,13 +260,13 @@ continuation_stack_unwind(ScmObj dest_cont)
     return dest_cont;
 }
 
-void 
+void
 scm_destruct_continuation(ScmObj cont)
 {
     /* no object to free(3) in this implementation */
 }
 
-ScmObj 
+ScmObj
 scm_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
 {
     volatile ScmObj cont, ret;
@@ -321,7 +321,7 @@ scm_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
     }
 }
 
-void 
+void
 scm_call_continuation(ScmObj cont, ScmObj ret)
 {
     struct continuation_frame *frame;
@@ -359,7 +359,7 @@ scm_call_continuation(ScmObj cont, ScmObj ret)
 /*============================================================================
   Trace Stack
 ============================================================================*/
-void 
+void
 scm_push_trace_frame(ScmObj obj, ScmObj env)
 {
     ScmObj frame;
@@ -368,13 +368,13 @@ scm_push_trace_frame(ScmObj obj, ScmObj env)
     trace_stack = CONS(frame, trace_stack);
 }
 
-void 
+void
 scm_pop_trace_frame(void)
 {
     trace_stack = CDR(trace_stack);
 }
 
-ScmObj 
+ScmObj
 scm_trace_stack(void)
 {
     return trace_stack;

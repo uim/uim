@@ -13,7 +13,7 @@ until 0.5.0 release.
 In gauche, require works at compile time, not at executiontime. SigScheme
 should be so. Instead of require, load actually works at execution time.
 
-Gauche uses dynamic-load to load shared library. 
+Gauche uses dynamic-load to load shared library.
 
 If the implementation cost is low, impelmenting autoloading feature would
 be a good idea.
@@ -24,7 +24,7 @@ Vector will be very important data structure. Sorted vector data will
 make uim faster. In addition, it would reduce memory consumption.
 
 In Gauche, find, map, for-each, and remove are applyicable to vector.
-This feature need generic function,  I think generic function is not 
+This feature need generic function,  I think generic function is not
 need for SigScheme. So I'll propose 'vector-' prefix to impelement
 map, for-each, remove for vector. i.e. vector-map is map for vector.
 

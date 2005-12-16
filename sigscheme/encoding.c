@@ -226,7 +226,7 @@ ScmCharCodec *scm_current_char_codec
   Public API
 =======================================*/
 
-int 
+int
 scm_mb_strlen(ScmMultibyteString mbs)
 {
     int len = 0;
@@ -247,7 +247,7 @@ scm_mb_strlen(ScmMultibyteString mbs)
 }
 
 /* FIXME: pick a better name. */
-int 
+int
 scm_mb_bare_c_strlen(const char *s)
 {
     ScmMultibyteString mbs;
@@ -257,7 +257,7 @@ scm_mb_bare_c_strlen(const char *s)
     return scm_mb_strlen(mbs);
 }
 
-ScmMultibyteString 
+ScmMultibyteString
 scm_mb_substring(ScmMultibyteString mbs, int i, int len)
 {
     ScmMultibyteString ret;
@@ -530,7 +530,7 @@ euccn_encoding(void)
 }
 
 /* FIXME: NOT TESTED!
- * 
+ *
  * G0 <- ASCII (or GB 1988?)
  * G1 <- GB2312
  *
@@ -750,7 +750,7 @@ utf8_int2str(uchar *dst, int ch, ScmMultibyteState state)
  * 0xE0 .. 0xEF: lead byte of 2-byte char
  * 0xF0 .. 0xFC: lead byte of 2-byte char if JIS X 0213 is used
  * 0xFD .. 0xFF: undefined
- * 
+ *
  * 0x40 .. 0x7E: trailing byte of 2-byte char
  * 0x80 .. 0xFC: trailing byte of 2-byte char
  */
@@ -820,7 +820,7 @@ sjis_int2str(uchar *dst, int ch)
 
 /* Single-byte encodings.  Please add any that you know are missing.
  * Sorted alphabetically.
- * 
+ *
  * ASCII
  * ISO 646
  * ISO-8859-*

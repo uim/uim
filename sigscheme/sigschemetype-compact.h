@@ -116,7 +116,7 @@
  *         impl (ScmCharPort*) : 2
  *     Continuation
  *         opaque (void*)      : 2
- *     
+ *
  *
  */
 
@@ -652,12 +652,12 @@ enum ScmStrMutationType {
 
    Integer need to preserve 'singed' or 'unsigned', so need special accessor.
    Current pack and unpack algorithm is like this.
-   
+
    int pack(int a) {
      return (a < 0) ? (~a << OFFSET) | SIGNED_MARK
             : (a << OFFSET);
    }
- 
+
    int unpack(int a) {
      return (a & SIGN_BIT_MASK) ? ~((a & SIGN_VALUE_MASK) >> OFFSET) | SIGNED_MARK
                                 : (a >> OFFSET);

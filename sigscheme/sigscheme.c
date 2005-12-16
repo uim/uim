@@ -115,7 +115,7 @@ static ScmObj scm_eval_c_string_internal(const char *exp);
 /*=======================================
   Function Implementations
 =======================================*/
-void 
+void
 scm_initialize(void)
 {
 #if SCM_GCC4_READY_GC
@@ -184,33 +184,33 @@ scm_initialize_internal(void)
     scm_initialized = TRUE;
 }
 
-void 
+void
 scm_finalize()
 {
     scm_finalize_storage();
     scm_initialized = FALSE;
 }
 
-void 
+void
 scm_define_alias(const char *newsym, const char *sym)
 {
     SCM_SYMBOL_SET_VCELL(scm_intern(newsym),
                          SCM_SYMBOL_VCELL(scm_intern(sym)));
 }
 
-void 
+void
 scm_provide(ScmObj feature)
 {
     features = CONS(feature, features);
 }
 
-int 
+int
 scm_providedp(ScmObj feature)
 {
     return NFALSEP(scm_p_member(feature, features));
 }
 
-int 
+int
 scm_use(const char *feature)
 {
     ScmObj ok;
@@ -233,7 +233,7 @@ scm_use(const char *feature)
  * - Make the module_info_table dynamically registerable for dynamic loadable
  *   objects (if necessary)
  */
-ScmObj 
+ScmObj
 scm_s_use(ScmObj feature, ScmObj env)
 {
     struct module_info *mod;
@@ -256,7 +256,7 @@ scm_s_use(ScmObj feature, ScmObj env)
     return SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_eval_c_string(const char *exp)
 {
 #if !SCM_GCC4_READY_GC
@@ -279,7 +279,7 @@ scm_eval_c_string(const char *exp)
     return ret;
 }
 
-ScmObj 
+ScmObj
 scm_eval_c_string_internal(const char *exp)
 {
     ScmObj str_port, ret;
@@ -299,7 +299,7 @@ scm_eval_c_string_internal(const char *exp)
 }
 
 #if SCM_COMPAT_SIOD
-ScmObj 
+ScmObj
 scm_return_value(void)
 {
     return scm_return_value_cache;
@@ -360,7 +360,7 @@ scm_interpret_argv(char **argv)
     return rest;
 }
 
-void 
+void
 scm_free_argv(char **argv)
 {
     char **argp;

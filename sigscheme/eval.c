@@ -102,7 +102,7 @@ static qquote_result qquote_internal(ScmObj input, ScmObj env, int nest);
  *             list.
  * @see scm_eval()
  */
-ScmObj 
+ScmObj
 scm_extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
 {
     ScmObj frame, rest_vars, rest_vals;
@@ -130,7 +130,7 @@ scm_extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
 }
 
 /** Add a binding to newest frame of an env */
-ScmObj 
+ScmObj
 scm_add_environment(ScmObj var, ScmObj val, ScmObj env)
 {
     ScmObj newest_frame;
@@ -162,7 +162,7 @@ scm_add_environment(ScmObj var, ScmObj val, ScmObj env)
  *
  * @return Reference to the variable. SCM_INVALID_REF if not found.
  */
-ScmRef 
+ScmRef
 scm_lookup_environment(ScmObj var, ScmObj env)
 {
     ScmObj frame;
@@ -222,7 +222,7 @@ lookup_frame(ScmObj var, ScmObj frame)
 }
 
 /* A wrapper for call() for internal proper tail recursion */
-ScmObj 
+ScmObj
 scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
 {
     eval_state->ret_type = SCM_RETTYPE_AS_IS;
@@ -232,7 +232,7 @@ scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
 /* Wrapper for call().  Just like scm_p_apply(), except ARGS is used
  * as given---nothing special is done about the last item in the
  * list. */
-ScmObj 
+ScmObj
 scm_call(ScmObj proc, ScmObj args)
 {
     ScmEvalState state;
@@ -468,7 +468,7 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state, int suppress_eval)
 /*===========================================================================
   S-Expression Evaluation
 ===========================================================================*/
-ScmObj 
+ScmObj
 scm_p_eval(ScmObj obj, ScmObj env)
 {
     DECLARE_FUNCTION("eval", procedure_fixed_2);
@@ -478,7 +478,7 @@ scm_p_eval(ScmObj obj, ScmObj env)
     return scm_eval(obj, env);
 }
 
-ScmObj 
+ScmObj
 scm_eval(ScmObj obj, ScmObj env)
 {
     ScmObj ret  = SCM_NULL;
@@ -517,7 +517,7 @@ eval_loop:
     return ret;
 }
 
-ScmObj 
+ScmObj
 scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state)
 {
     ScmQueue q;
@@ -544,7 +544,7 @@ scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state)
 }
 
 /* 'var' must be a symbol as precondition */
-ScmObj 
+ScmObj
 scm_symbol_value(ScmObj var, ScmObj env)
 {
     ScmRef ref;
@@ -738,7 +738,7 @@ struct _sequence_translator {
 
 /**
  * Performs (relatively) complex operations on a list translator.
- * 
+ *
  * @see list_translator, tr_msg
  */
 static ScmObj
@@ -872,7 +872,7 @@ vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.2 Literal expressions
 ===========================================================================*/
-ScmObj 
+ScmObj
 scm_s_quote(ScmObj datum, ScmObj env)
 {
     DECLARE_FUNCTION("quote", syntax_fixed_1);
@@ -882,7 +882,7 @@ scm_s_quote(ScmObj datum, ScmObj env)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.4 Procedures
 ===========================================================================*/
-ScmObj 
+ScmObj
 scm_s_lambda(ScmObj formals, ScmObj body, ScmObj env)
 {
     DECLARE_FUNCTION("lambda", syntax_variadic_1);
@@ -897,7 +897,7 @@ scm_s_lambda(ScmObj formals, ScmObj body, ScmObj env)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.5 Conditionals
 ===========================================================================*/
-ScmObj 
+ScmObj
 scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state)
 {
     ScmObj env = eval_state->env;
@@ -930,7 +930,7 @@ scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.6 Assignment
 ===========================================================================*/
-ScmObj 
+ScmObj
 scm_s_setd(ScmObj sym, ScmObj exp, ScmObj env)
 {
     ScmObj evaled        = SCM_FALSE;
@@ -968,7 +968,7 @@ scm_s_setd(ScmObj sym, ScmObj exp, ScmObj env)
   R5RS : 4.2 Derived expression types : 4.2.1 Conditionals
 ===========================================================================*/
 /* body of 'cond' and also invoked from 'case' and 'guard' of SRFI-34 */
-ScmObj 
+ScmObj
 scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
 {
     /*
@@ -1029,7 +1029,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
                 }
             }
 
-            /* 
+            /*
              * Handle the case like follows.
              *
              * (case 1
@@ -1069,7 +1069,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
     return SCM_INVALID;
 }
 
-ScmObj 
+ScmObj
 scm_s_cond(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj ret;
@@ -1079,7 +1079,7 @@ scm_s_cond(ScmObj args, ScmEvalState *eval_state)
     return (VALIDP(ret)) ? ret : SCM_UNDEF;
 }
 
-ScmObj 
+ScmObj
 scm_s_case(ScmObj key, ScmObj clauses, ScmEvalState *eval_state)
 {
     ScmObj ret;
@@ -1090,7 +1090,7 @@ scm_s_case(ScmObj key, ScmObj clauses, ScmEvalState *eval_state)
     return (VALIDP(ret)) ? ret : SCM_UNDEF;
 }
 
-ScmObj 
+ScmObj
 scm_s_and(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env  = eval_state->env;
@@ -1113,7 +1113,7 @@ scm_s_and(ScmObj args, ScmEvalState *eval_state)
     return expr;
 }
 
-ScmObj 
+ScmObj
 scm_s_or(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env  = eval_state->env;
@@ -1146,7 +1146,7 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
  *   bound to the closure.  <procname>'s scope must not penetrate to the
  *   surrounding environment.
  */
-ScmObj 
+ScmObj
 scm_s_let(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env           = eval_state->env;
@@ -1227,7 +1227,7 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
     return scm_s_begin(body, eval_state);
 }
 
-ScmObj 
+ScmObj
 scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
     ScmObj env     = eval_state->env;
@@ -1270,7 +1270,7 @@ scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     return scm_s_begin(body, eval_state);
 }
 
-ScmObj 
+ScmObj
 scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
     ScmObj env      = eval_state->env;
@@ -1329,7 +1329,7 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.3 Sequencing
 ===========================================================================*/
-ScmObj 
+ScmObj
 scm_s_begin(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env  = eval_state->env;
@@ -1349,7 +1349,7 @@ scm_s_begin(ScmObj args, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.4 Iteration
 ===========================================================================*/
-ScmObj 
+ScmObj
 scm_s_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_state)
 {
     /*
@@ -1447,7 +1447,7 @@ scm_s_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.5 Delayed evaluation
 ===========================================================================*/
-ScmObj 
+ScmObj
 scm_s_delay(ScmObj expr, ScmObj env)
 {
     DECLARE_FUNCTION("delay", syntax_fixed_1);
@@ -1550,7 +1550,7 @@ qquote_internal(ScmObj input, ScmObj env, int nest)
 }
 
 
-ScmObj 
+ScmObj
 scm_s_quasiquote(ScmObj datum, ScmObj env)
 {
     qquote_result ret = qquote_internal(datum, env, 1);
@@ -1571,7 +1571,7 @@ scm_s_quasiquote(ScmObj datum, ScmObj env)
     }
 }
 
-ScmObj 
+ScmObj
 scm_s_unquote(ScmObj dummy, ScmObj env)
 {
     DECLARE_FUNCTION("unquote", syntax_fixed_1);
@@ -1580,7 +1580,7 @@ scm_s_unquote(ScmObj dummy, ScmObj env)
     return SCM_NULL;
 }
 
-ScmObj 
+ScmObj
 scm_s_unquote_splicing(ScmObj dummy, ScmObj env)
 {
     DECLARE_FUNCTION("unquote-splicing", syntax_fixed_1);
@@ -1605,7 +1605,7 @@ define_internal(ScmObj var, ScmObj exp, ScmObj env)
     }
 }
 
-ScmObj 
+ScmObj
 scm_s_define(ScmObj var, ScmObj rest, ScmObj env)
 {
     ScmObj procname = SCM_FALSE;
@@ -1662,7 +1662,7 @@ scm_s_define(ScmObj var, ScmObj rest, ScmObj env)
 /*=======================================
   R5RS : 6.5 Eval
 =======================================*/
-ScmObj 
+ScmObj
 scm_p_scheme_report_environment(ScmObj version)
 {
     DECLARE_FUNCTION("scheme-report-environment", procedure_fixed_1);
@@ -1682,7 +1682,7 @@ scm_p_scheme_report_environment(ScmObj version)
     return SCM_INTERACTION_ENV;
 }
 
-ScmObj 
+ScmObj
 scm_p_null_environment(ScmObj version)
 {
     DECLARE_FUNCTION("null-environment", procedure_fixed_1);
@@ -1702,7 +1702,7 @@ scm_p_null_environment(ScmObj version)
     return SCM_INTERACTION_ENV;
 }
 
-ScmObj 
+ScmObj
 scm_p_interaction_environment(void)
 {
     DECLARE_FUNCTION("interaction-environment", procedure_fixed_0);

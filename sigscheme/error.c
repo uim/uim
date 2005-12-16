@@ -74,7 +74,7 @@ static void show_arg(ScmObj arg, ScmObj env);
 /*=======================================
   Function Implementations
 =======================================*/
-void 
+void
 scm_init_error(void)
 {
     scm_gc_protect(&err_obj_tag);
@@ -92,19 +92,19 @@ scm_init_error(void)
     REGISTER_FUNC_TABLE(scm_error_func_info_table);
 }
 
-int 
+int
 scm_debug_categories(void)
 {
     return debug_mask;
 }
 
-void 
+void
 scm_set_debug_categories(int categories)
 {
     debug_mask = categories;
 }
 
-int 
+int
 scm_predefined_debug_categories(void)
 {
 #if SCM_DEBUG
@@ -124,7 +124,7 @@ scm_predefined_debug_categories(void)
 #endif /* SCM_DEBUG */
 }
 
-void 
+void
 scm_categorized_debug(int category, const char *msg, ...)
 {
     va_list va;
@@ -137,7 +137,7 @@ scm_categorized_debug(int category, const char *msg, ...)
     va_end(va);
 }
 
-void 
+void
 scm_debug(const char *msg, ...)
 {
     va_list va;
@@ -163,7 +163,7 @@ srfi34_providedp(void)
 #endif
 
 /* The name 'error?' should be reserved for SRFI-35 */
-ScmObj 
+ScmObj
 scm_p_error_objectp(ScmObj obj)
 {
     DECLARE_FUNCTION("%%error-object?", procedure_fixed_1);
@@ -172,7 +172,7 @@ scm_p_error_objectp(ScmObj obj)
 }
 
 /* FIXME: make (pair? err-obj) #f */
-ScmObj 
+ScmObj
 scm_make_error_obj(ScmObj reason, ScmObj objs)
 {
     DECLARE_INTERNAL_FUNCTION("scm_make_error_obj");
@@ -186,7 +186,7 @@ scm_make_error_obj(ScmObj reason, ScmObj objs)
     return LIST_4(err_obj_tag, reason, objs, scm_trace_stack());
 }
 
-void 
+void
 scm_raise_error(ScmObj err_obj)
 {
     DECLARE_INTERNAL_FUNCTION("scm_raise_error");
@@ -202,7 +202,7 @@ scm_raise_error(ScmObj err_obj)
     scm_p_fatal_error(err_obj);
 }
 
-void 
+void
 scm_fatal_error(const char *msg)
 {
     /* don't use Scheme-level ports here */
@@ -224,7 +224,7 @@ void scm_set_fatal_error_callback(void (*cb)(void))
     cb_fatal_error = cb;
 }
 
-ScmObj 
+ScmObj
 scm_p_fatal_error(ScmObj err_obj)
 {
     const char *msg;
@@ -244,7 +244,7 @@ scm_p_fatal_error(ScmObj err_obj)
     /* NOTREACHED */
 }
 
-ScmObj 
+ScmObj
 scm_p_inspect_error(ScmObj err_obj)
 {
     ScmObj rest, err_obj_tag, reason, objs, trace_stack;
@@ -281,7 +281,7 @@ scm_p_inspect_error(ScmObj err_obj)
     return SCM_UNDEF;
 }
 
-ScmObj 
+ScmObj
 scm_p_backtrace(void)
 {
     DECLARE_FUNCTION("%%backtrace", procedure_fixed_0);
@@ -291,7 +291,7 @@ scm_p_backtrace(void)
     return SCM_UNDEF;
 }
 
-int 
+int
 scm_die(const char *msg, const char *filename, int line)
 {
     char *reason;
@@ -307,7 +307,7 @@ scm_die(const char *msg, const char *filename, int line)
     return 1;  /* dummy value for boolean expression */
 }
 
-void 
+void
 scm_error(const char *msg, ...)
 {
     va_list va;
@@ -325,7 +325,7 @@ scm_error(const char *msg, ...)
 }
 
 /* This function obsoletes scm_error_obj(). */
-void 
+void
 scm_error_obj(const char *func_name, const char *msg, ScmObj obj)
 {
     char *reason;
@@ -339,7 +339,7 @@ scm_error_obj(const char *func_name, const char *msg, ScmObj obj)
     /* NOTREACHED */
 }
 
-void 
+void
 scm_show_error_header(void)
 {
     scm_error_printf(SCM_ERR_HEADER);
@@ -363,7 +363,7 @@ show_arg(ScmObj arg, ScmObj env)
 }
 #endif /* (SCM_DEBUG && SCM_DEBUG_BACKTRACE_VAL) */
 
-void 
+void
 scm_show_backtrace(ScmObj trace_stack)
 {
 #if SCM_DEBUG

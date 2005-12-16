@@ -71,7 +71,7 @@ static ScmObj map_multiple_args(ScmObj proc, ScmObj args);
 /*==============================================================================
   R5RS : 6.1 Equivalence predicates
 ==============================================================================*/
-ScmObj 
+ScmObj
 scm_p_eqvp(ScmObj obj1, ScmObj obj2)
 {
     enum ScmObjType type;
@@ -109,14 +109,14 @@ scm_p_eqvp(ScmObj obj1, ScmObj obj2)
     return SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_eqp(ScmObj obj1, ScmObj obj2)
 {
     DECLARE_FUNCTION("eq?", procedure_fixed_2);
     return (EQ(obj1, obj2)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_equalp(ScmObj obj1, ScmObj obj2)
 {
     enum ScmObjType type;
@@ -209,7 +209,7 @@ scm_p_equalp(ScmObj obj1, ScmObj obj2)
 ==============================================================================*/
 /* Note: SigScheme supports only the integer part of the numerical tower. */
 
-ScmObj 
+ScmObj
 scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     int result = 0;
@@ -233,7 +233,7 @@ scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state)
     return scm_make_int(result);
 }
 
-ScmObj 
+ScmObj
 scm_p_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     int result = 1;
@@ -257,7 +257,7 @@ scm_p_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state)
     return scm_make_int(result);
 }
 
-ScmObj 
+ScmObj
 scm_p_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     int result = 0;
@@ -281,7 +281,7 @@ scm_p_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state)
     return scm_make_int(result);
 }
 
-ScmObj 
+ScmObj
 scm_p_divide(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     int result = 1;
@@ -306,14 +306,14 @@ scm_p_divide(ScmObj left, ScmObj right, enum ScmReductionState *state)
     return scm_make_int(result);
 }
 
-ScmObj 
+ScmObj
 scm_p_numberp(ScmObj obj)
 {
     DECLARE_FUNCTION("number?", procedure_fixed_1);
     return (INTP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_equal(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("=", reduction_operator);
@@ -338,28 +338,28 @@ scm_p_equal(ScmObj left, ScmObj right, enum ScmReductionState *state)
     COMPARATOR_BODY(==);
 }
 
-ScmObj 
+ScmObj
 scm_p_less(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("<", reduction_operator);
     COMPARATOR_BODY(<);
 }
 
-ScmObj 
+ScmObj
 scm_p_less_eq(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("<=", reduction_operator);
     COMPARATOR_BODY(<=);
 }
 
-ScmObj 
+ScmObj
 scm_p_greater(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION(">", reduction_operator);
     COMPARATOR_BODY(>);
 }
 
-ScmObj 
+ScmObj
 scm_p_greater_eq(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION(">=", reduction_operator);
@@ -367,7 +367,7 @@ scm_p_greater_eq(ScmObj left, ScmObj right, enum ScmReductionState *state)
 #undef COMPARATOR_BODY
 }
 
-ScmObj 
+ScmObj
 scm_p_zerop(ScmObj scm_num)
 {
     DECLARE_FUNCTION("zero?", procedure_fixed_1);
@@ -375,7 +375,7 @@ scm_p_zerop(ScmObj scm_num)
     return (SCM_INT_VALUE(scm_num) == 0) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_positivep(ScmObj scm_num)
 {
     DECLARE_FUNCTION("positive?", procedure_fixed_1);
@@ -383,7 +383,7 @@ scm_p_positivep(ScmObj scm_num)
     return (SCM_INT_VALUE(scm_num) > 0) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_negativep(ScmObj scm_num)
 {
     DECLARE_FUNCTION("negative?", procedure_fixed_1);
@@ -391,7 +391,7 @@ scm_p_negativep(ScmObj scm_num)
     return (SCM_INT_VALUE(scm_num) < 0) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_oddp(ScmObj scm_num)
 {
     DECLARE_FUNCTION("odd?", procedure_fixed_1);
@@ -399,7 +399,7 @@ scm_p_oddp(ScmObj scm_num)
     return (SCM_INT_VALUE(scm_num) & 0x1) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_evenp(ScmObj scm_num)
 {
     DECLARE_FUNCTION("even?", procedure_fixed_1);
@@ -407,7 +407,7 @@ scm_p_evenp(ScmObj scm_num)
     return (SCM_INT_VALUE(scm_num) & 0x1) ? SCM_FALSE : SCM_TRUE;
 }
 
-ScmObj 
+ScmObj
 scm_p_max(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("max", reduction_operator);
@@ -419,7 +419,7 @@ scm_p_max(ScmObj left, ScmObj right, enum ScmReductionState *state)
     return SCM_INT_VALUE(left) > SCM_INT_VALUE(right) ? left : right;
 }
 
-ScmObj 
+ScmObj
 scm_p_min(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("min", reduction_operator);
@@ -432,7 +432,7 @@ scm_p_min(ScmObj left, ScmObj right, enum ScmReductionState *state)
 }
 
 
-ScmObj 
+ScmObj
 scm_p_abs(ScmObj scm_num)
 {
     int num = 0;
@@ -445,7 +445,7 @@ scm_p_abs(ScmObj scm_num)
     return (num < 0) ? scm_make_int(-num) : scm_num;
 }
 
-ScmObj 
+ScmObj
 scm_p_quotient(ScmObj scm_n1, ScmObj scm_n2)
 {
     int n1 = 0;
@@ -464,7 +464,7 @@ scm_p_quotient(ScmObj scm_n1, ScmObj scm_n2)
     return scm_make_int((int)(n1 / n2));
 }
 
-ScmObj 
+ScmObj
 scm_p_modulo(ScmObj scm_n1, ScmObj scm_n2)
 {
     int n1  = 0;
@@ -491,7 +491,7 @@ scm_p_modulo(ScmObj scm_n1, ScmObj scm_n2)
     return scm_make_int(rem);
 }
 
-ScmObj 
+ScmObj
 scm_p_remainder(ScmObj scm_n1, ScmObj scm_n2)
 {
     int n1  = 0;
@@ -513,7 +513,7 @@ scm_p_remainder(ScmObj scm_n1, ScmObj scm_n2)
 /*==============================================================================
   R5RS : 6.2 Numbers : 6.2.6 Numerical input and output
 ==============================================================================*/
-ScmObj 
+ScmObj
 scm_p_number2string(ScmObj num, ScmObj args)
 {
   char buf[sizeof(int)*CHAR_BIT + 1];
@@ -562,7 +562,7 @@ scm_p_number2string(ScmObj num, ScmObj args)
   return scm_make_mutable_string_copying(p);
 }
 
-ScmObj 
+ScmObj
 scm_p_string2number(ScmObj str, ScmObj args)
 {
     ScmObj radix = SCM_FALSE;
@@ -601,14 +601,14 @@ scm_p_string2number(ScmObj str, ScmObj args)
 /*==============================================================================
   R5RS : 6.3 Other data types : 6.3.1 Booleans
 ==============================================================================*/
-ScmObj 
+ScmObj
 scm_p_not(ScmObj obj)
 {
     DECLARE_FUNCTION("not", procedure_fixed_1);
     return (FALSEP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_booleanp(ScmObj obj)
 {
     DECLARE_FUNCTION("boolean?", procedure_fixed_1);
@@ -618,7 +618,7 @@ scm_p_booleanp(ScmObj obj)
 /*==============================================================================
   R5RS : 6.3 Other data types : 6.3.2 Pairs and lists
 ==============================================================================*/
-ScmObj 
+ScmObj
 scm_p_car(ScmObj obj)
 {
     DECLARE_FUNCTION("car", procedure_fixed_1);
@@ -632,7 +632,7 @@ scm_p_car(ScmObj obj)
     return CAR(obj);
 }
 
-ScmObj 
+ScmObj
 scm_p_cdr(ScmObj obj)
 {
     DECLARE_FUNCTION("cdr", procedure_fixed_1);
@@ -646,21 +646,21 @@ scm_p_cdr(ScmObj obj)
     return CDR(obj);
 }
 
-ScmObj 
+ScmObj
 scm_p_pairp(ScmObj obj)
 {
     DECLARE_FUNCTION("pair?", procedure_fixed_1);
     return (CONSP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_cons(ScmObj car, ScmObj cdr)
 {
     DECLARE_FUNCTION("cons", procedure_fixed_2);
     return CONS(car, cdr);
 }
 
-ScmObj 
+ScmObj
 scm_p_set_card(ScmObj pair, ScmObj car)
 {
     DECLARE_FUNCTION("set-car!", procedure_fixed_2);
@@ -675,7 +675,7 @@ scm_p_set_card(ScmObj pair, ScmObj car)
 #endif
 }
 
-ScmObj 
+ScmObj
 scm_p_set_cdrd(ScmObj pair, ScmObj cdr)
 {
     DECLARE_FUNCTION("set-cdr!", procedure_fixed_2);
@@ -690,59 +690,59 @@ scm_p_set_cdrd(ScmObj pair, ScmObj cdr)
 #endif
 }
 
-ScmObj 
+ScmObj
 scm_p_caar(ScmObj lst)
 {
     DECLARE_FUNCTION("caar", procedure_fixed_1);
     return scm_p_car( scm_p_car(lst) );
 }
-ScmObj 
+ScmObj
 scm_p_cadr(ScmObj lst)
 {
     DECLARE_FUNCTION("cadr", procedure_fixed_1);
     return scm_p_car( scm_p_cdr(lst) );
 }
-ScmObj 
+ScmObj
 scm_p_cdar(ScmObj lst)
 {
     DECLARE_FUNCTION("cdar", procedure_fixed_1);
     return scm_p_cdr( scm_p_car(lst) );
 }
-ScmObj 
+ScmObj
 scm_p_cddr(ScmObj lst)
 {
     DECLARE_FUNCTION("cddr", procedure_fixed_1);
     return scm_p_cdr( scm_p_cdr(lst) );
 }
 
-ScmObj 
+ScmObj
 scm_p_caddr(ScmObj lst)
 {
     DECLARE_FUNCTION("caddr", procedure_fixed_1);
     return scm_p_car( scm_p_cdr( scm_p_cdr(lst) ));
 }
-ScmObj 
+ScmObj
 scm_p_cdddr(ScmObj lst)
 {
     DECLARE_FUNCTION("cdddr", procedure_fixed_1);
     return scm_p_cdr( scm_p_cdr( scm_p_cdr(lst) ));
 }
 
-ScmObj 
+ScmObj
 scm_p_list(ScmObj args)
 {
     DECLARE_FUNCTION("list", procedure_variadic_0);
     return args;
 }
 
-ScmObj 
+ScmObj
 scm_p_nullp(ScmObj obj)
 {
     DECLARE_FUNCTION("null?", procedure_fixed_1);
     return (NULLP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_listp(ScmObj obj)
 {
     int len = 0;
@@ -767,7 +767,7 @@ scm_p_listp(ScmObj obj)
  * - Rename to scm_c_length() since it isn't a Scheme procedure
  * - Insert its copyright and license into this file properly
  */
-int 
+int
 scm_p_c_length(ScmObj lst)
 {
     ScmObj slow = lst;
@@ -792,7 +792,7 @@ scm_p_c_length(ScmObj lst)
     return len;
 }
 
-ScmObj 
+ScmObj
 scm_p_length(ScmObj obj)
 {
     int len = scm_p_c_length(obj);
@@ -804,7 +804,7 @@ scm_p_length(ScmObj obj)
     return scm_make_int(len);
 }
 
-ScmObj 
+ScmObj
 scm_p_append(ScmObj args)
 {
     ScmQueue q;
@@ -829,7 +829,7 @@ scm_p_append(ScmObj args)
     return res;
 }
 
-ScmObj 
+ScmObj
 scm_p_reverse(ScmObj lst)
 {
     ScmObj ret_lst  = SCM_NULL;
@@ -856,7 +856,7 @@ scm_p_listtail_internal(ScmObj lst, int k)
     return lst;
 }
 
-ScmObj 
+ScmObj
 scm_p_list_tail(ScmObj lst, ScmObj scm_k)
 {
     ScmObj ret;
@@ -871,7 +871,7 @@ scm_p_list_tail(ScmObj lst, ScmObj scm_k)
     return ret;
 }
 
-ScmObj 
+ScmObj
 scm_p_list_ref(ScmObj lst, ScmObj scm_k)
 {
     ScmObj tail = SCM_NULL;
@@ -882,7 +882,7 @@ scm_p_list_ref(ScmObj lst, ScmObj scm_k)
     tail = scm_p_listtail_internal(lst, SCM_INT_VALUE(scm_k));
     if (EQ(tail, SCM_INVALID) || NULLP(tail))
         ERR_OBJ("out of range or bad list, arglist is", CONS(lst, scm_k));
-    
+
     return CAR(tail);
 }
 
@@ -894,7 +894,7 @@ scm_p_list_ref(ScmObj lst, ScmObj scm_k)
         return SCM_FALSE;                       \
     } while (/* CONSTCOND */ 0)
 
-ScmObj 
+ScmObj
 scm_p_memq(ScmObj obj, ScmObj lst)
 {
     DECLARE_FUNCTION("memq", procedure_fixed_2);
@@ -911,7 +911,7 @@ scm_p_memq(ScmObj obj, ScmObj lst)
     return SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_memv(ScmObj obj, ScmObj lst)
 {
     DECLARE_FUNCTION("memv", procedure_fixed_2);
@@ -928,7 +928,7 @@ scm_p_memv(ScmObj obj, ScmObj lst)
     return SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_member(ScmObj obj, ScmObj lst)
 {
     DECLARE_FUNCTION("member", procedure_fixed_2);
@@ -945,7 +945,7 @@ scm_p_member(ScmObj obj, ScmObj lst)
     return SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_assq(ScmObj obj, ScmObj alist)
 {
     ScmObj tmp_lst = SCM_NULL;
@@ -969,7 +969,7 @@ scm_p_assq(ScmObj obj, ScmObj alist)
     return SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_assv(ScmObj obj, ScmObj alist)
 {
     ScmObj tmp_lst = SCM_NULL;
@@ -993,7 +993,7 @@ scm_p_assv(ScmObj obj, ScmObj alist)
     return SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_assoc(ScmObj obj, ScmObj alist)
 {
     ScmObj tmp_lst = SCM_NULL;
@@ -1021,14 +1021,14 @@ scm_p_assoc(ScmObj obj, ScmObj alist)
 /*==============================================================================
   R5RS : 6.3 Other data types : 6.3.3 Symbols
 ==============================================================================*/
-ScmObj 
+ScmObj
 scm_p_symbolp(ScmObj obj)
 {
     DECLARE_FUNCTION("symbol?", procedure_fixed_1);
     return (SYMBOLP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_symbol2string(ScmObj obj)
 {
     DECLARE_FUNCTION("symbol->string", procedure_fixed_1);
@@ -1036,7 +1036,7 @@ scm_p_symbol2string(ScmObj obj)
     return scm_make_immutable_string_copying(SCM_SYMBOL_NAME(obj));
 }
 
-ScmObj 
+ScmObj
 scm_p_string2symbol(ScmObj str)
 {
     DECLARE_FUNCTION("string->symbol", procedure_fixed_1);
@@ -1047,14 +1047,14 @@ scm_p_string2symbol(ScmObj str)
 /*==============================================================================
   R5RS : 6.3 Other data types : 6.3.4 Characters
 ==============================================================================*/
-ScmObj 
+ScmObj
 scm_p_charp(ScmObj obj)
 {
     DECLARE_FUNCTION("char?", procedure_fixed_1);
     return (CHARP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_charequalp(ScmObj ch1, ScmObj ch2)
 {
     DECLARE_FUNCTION("char=?", procedure_fixed_2);
@@ -1065,7 +1065,7 @@ scm_p_charequalp(ScmObj ch1, ScmObj ch2)
     return (SCM_CHAR_VALUE(ch1) == SCM_CHAR_VALUE(ch2)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_char_alphabeticp(ScmObj obj)
 {
     int ch;
@@ -1078,7 +1078,7 @@ scm_p_char_alphabeticp(ScmObj obj)
     return (isascii(ch) && isalpha(ch)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_char_numericp(ScmObj obj)
 {
     int ch;
@@ -1091,7 +1091,7 @@ scm_p_char_numericp(ScmObj obj)
     return (isascii(ch) && isdigit(ch)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_char_whitespacep(ScmObj obj)
 {
     int ch;
@@ -1104,7 +1104,7 @@ scm_p_char_whitespacep(ScmObj obj)
     return (isascii(ch) && isspace(ch)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_char_upper_casep(ScmObj obj)
 {
     int ch;
@@ -1117,7 +1117,7 @@ scm_p_char_upper_casep(ScmObj obj)
     return (isascii(ch) && isupper(ch)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_char_lower_casep(ScmObj obj)
 {
     int ch;
@@ -1130,7 +1130,7 @@ scm_p_char_lower_casep(ScmObj obj)
     return (isascii(ch) && islower(ch)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_char2integer(ScmObj obj)
 {
     DECLARE_FUNCTION("char->integer", procedure_fixed_1);
@@ -1140,7 +1140,7 @@ scm_p_char2integer(ScmObj obj)
     return scm_make_int(SCM_CHAR_VALUE(obj));
 }
 
-ScmObj 
+ScmObj
 scm_p_integer2char(ScmObj obj)
 {
     int val;
@@ -1155,7 +1155,7 @@ scm_p_integer2char(ScmObj obj)
     return scm_make_char(val);
 }
 
-ScmObj 
+ScmObj
 scm_p_char_upcase(ScmObj obj)
 {
     int ch;
@@ -1170,7 +1170,7 @@ scm_p_char_upcase(ScmObj obj)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_p_char_downcase(ScmObj obj)
 {
     int ch;
@@ -1188,14 +1188,14 @@ scm_p_char_downcase(ScmObj obj)
 /*==============================================================================
   R5RS : 6.3 Other data types : 6.3.5 Strings
 ==============================================================================*/
-ScmObj 
+ScmObj
 scm_p_stringp(ScmObj obj)
 {
     DECLARE_FUNCTION("string?", procedure_fixed_1);
     return (STRINGP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_make_string(ScmObj length, ScmObj args)
 {
     int filler_val, len, i;
@@ -1230,14 +1230,14 @@ scm_p_make_string(ScmObj length, ScmObj args)
     return scm_p_srfi6_get_output_string(sport);
 }
 
-ScmObj 
+ScmObj
 scm_p_string(ScmObj args)
 {
     DECLARE_FUNCTION("string", procedure_variadic_0);
     return scm_p_list2string(args);
 }
 
-ScmObj 
+ScmObj
 scm_p_string_length(ScmObj str)
 {
     DECLARE_FUNCTION("string-length", procedure_fixed_1);
@@ -1245,7 +1245,7 @@ scm_p_string_length(ScmObj str)
     return scm_make_int(scm_mb_bare_c_strlen(SCM_STRING_STR(str)));
 }
 
-ScmObj 
+ScmObj
 scm_p_string_ref(ScmObj str, ScmObj k)
 {
     int   c_index = 0;
@@ -1274,7 +1274,7 @@ scm_p_string_ref(ScmObj str, ScmObj k)
     return scm_make_char(ch);
 }
 
-ScmObj 
+ScmObj
 scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
 {
     int   c_start_index = 0;
@@ -1334,7 +1334,7 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     return str;
 }
 
-ScmObj 
+ScmObj
 scm_p_stringequalp(ScmObj str1, ScmObj str2)
 {
     DECLARE_FUNCTION("string=?", procedure_fixed_2);
@@ -1348,7 +1348,7 @@ scm_p_stringequalp(ScmObj str1, ScmObj str2)
     return SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_substring(ScmObj str, ScmObj start, ScmObj end)
 {
     int   c_start_index = 0;
@@ -1389,7 +1389,7 @@ scm_p_substring(ScmObj str, ScmObj start, ScmObj end)
     return scm_make_mutable_string(new_str);
 }
 
-ScmObj 
+ScmObj
 scm_p_string_append(ScmObj args)
 {
     /* FIXME: transition to new arg extraction mechanism incomplete. */
@@ -1427,7 +1427,7 @@ scm_p_string_append(ScmObj args)
     return scm_make_mutable_string(new_str);
 }
 
-ScmObj 
+ScmObj
 scm_p_string2list(ScmObj str)
 {
     ScmQueue q;
@@ -1465,7 +1465,7 @@ scm_p_string2list(ScmObj str)
     return res;
 }
 
-ScmObj 
+ScmObj
 scm_p_list2string(ScmObj lst)
 {
     ScmObj rest, ch, sport;
@@ -1489,7 +1489,7 @@ scm_p_list2string(ScmObj lst)
     return scm_p_srfi6_get_output_string(sport);
 }
 
-ScmObj 
+ScmObj
 scm_p_string_copy(ScmObj str)
 {
     DECLARE_FUNCTION("string-copy", procedure_fixed_1);
@@ -1497,7 +1497,7 @@ scm_p_string_copy(ScmObj str)
     return scm_make_mutable_string_copying(SCM_STRING_STR(str));
 }
 
-ScmObj 
+ScmObj
 scm_p_string_filld(ScmObj str, ScmObj ch)
 {
     int  char_size = 0;
@@ -1537,14 +1537,14 @@ scm_p_string_filld(ScmObj str, ScmObj ch)
 /*==============================================================================
   R5RS : 6.3 Other data types : 6.3.6 Vectors
 ==============================================================================*/
-ScmObj 
+ScmObj
 scm_p_vectorp(ScmObj obj)
 {
     DECLARE_FUNCTION("vector?", procedure_fixed_1);
     return (VECTORP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_make_vector(ScmObj vector_len, ScmObj args)
 {
     ScmObj *vec    = NULL;
@@ -1574,7 +1574,7 @@ scm_p_make_vector(ScmObj vector_len, ScmObj args)
     return scm_make_vector(vec, len);
 }
 
-ScmObj 
+ScmObj
 scm_p_vector(ScmObj args)
 {
     int len, i;
@@ -1590,7 +1590,7 @@ scm_p_vector(ScmObj args)
     return scm_make_vector(vec, len);
 }
 
-ScmObj 
+ScmObj
 scm_p_vector_length(ScmObj vec)
 {
     DECLARE_FUNCTION("vector-length", procedure_fixed_1);
@@ -1599,7 +1599,7 @@ scm_p_vector_length(ScmObj vec)
     return scm_make_int(SCM_VECTOR_LEN(vec));
 }
 
-ScmObj 
+ScmObj
 scm_p_vector_ref(ScmObj vec, ScmObj scm_k)
 {
     DECLARE_FUNCTION("vector-ref", procedure_fixed_2);
@@ -1614,7 +1614,7 @@ scm_p_vector_ref(ScmObj vec, ScmObj scm_k)
     return SCM_VECTOR_REF(vec, scm_k);
 }
 
-ScmObj 
+ScmObj
 scm_p_vector_setd(ScmObj vec, ScmObj scm_k, ScmObj obj)
 {
     DECLARE_FUNCTION("vector-set!", procedure_fixed_3);
@@ -1631,7 +1631,7 @@ scm_p_vector_setd(ScmObj vec, ScmObj scm_k, ScmObj obj)
     return SCM_UNDEF;
 }
 
-ScmObj 
+ScmObj
 scm_p_vector2list(ScmObj vec)
 {
     ScmQueue q;
@@ -1653,7 +1653,7 @@ scm_p_vector2list(ScmObj vec)
     return res;
 }
 
-ScmObj 
+ScmObj
 scm_p_list2vector(ScmObj lst)
 {
     ScmObj  scm_len = SCM_NULL;
@@ -1677,7 +1677,7 @@ scm_p_list2vector(ScmObj lst)
     return scm_make_vector(v, c_len);
 }
 
-ScmObj 
+ScmObj
 scm_p_vector_filld(ScmObj vec, ScmObj fill)
 {
     int c_len = 0;
@@ -1697,14 +1697,14 @@ scm_p_vector_filld(ScmObj vec, ScmObj fill)
 /*=======================================
   R5RS : 6.4 Control Features
 =======================================*/
-ScmObj 
+ScmObj
 scm_p_procedurep(ScmObj obj)
 {
     DECLARE_FUNCTION("procedure?", procedure_fixed_1);
     return (PROCEDUREP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_map(ScmObj proc, ScmObj args)
 {
     DECLARE_FUNCTION("map", procedure_variadic_1);
@@ -1768,7 +1768,7 @@ map_multiple_args(ScmObj proc, ScmObj args)
     }
 }
 
-ScmObj 
+ScmObj
 scm_p_for_each(ScmObj proc, ScmObj args)
 {
     DECLARE_FUNCTION("for-each", procedure_variadic_1);
@@ -1777,7 +1777,7 @@ scm_p_for_each(ScmObj proc, ScmObj args)
     return SCM_UNDEF;
 }
 
-ScmObj 
+ScmObj
 scm_p_force(ScmObj closure)
 {
     DECLARE_FUNCTION("force", procedure_fixed_1);
@@ -1787,7 +1787,7 @@ scm_p_force(ScmObj closure)
     return scm_call(closure, SCM_NULL);
 }
 
-ScmObj 
+ScmObj
 scm_p_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
 {
     DECLARE_FUNCTION("call-with-current-continuation", procedure_fixed_tailrec_1);
@@ -1797,7 +1797,7 @@ scm_p_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
     return scm_call_with_current_continuation(proc, eval_state);
 }
 
-ScmObj 
+ScmObj
 scm_p_values(ScmObj args)
 {
     DECLARE_FUNCTION("values", procedure_variadic_0);
@@ -1828,11 +1828,11 @@ ScmObj scm_p_call_with_values(ScmObj producer, ScmObj consumer,
         /* extract */
         vals = SCM_VALUEPACKET_VALUES(vals);
     }
-    
+
     return scm_tailcall(consumer, vals, eval_state);
 }
 
-ScmObj 
+ScmObj
 scm_p_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after)
 {
     DECLARE_FUNCTION("dynamic-wind", procedure_fixed_3);
@@ -1849,7 +1849,7 @@ scm_p_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after)
 #endif
 #if SCM_USE_NONSTD_FEATURES
 #include "operations-nonstd.c"
-#endif 
+#endif
 #if SCM_USE_SRFI1
 #include "operations-srfi1.c"
 #endif

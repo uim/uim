@@ -113,7 +113,7 @@ void scm_init_storage(size_t heap_size, size_t heap_alloc_threshold,
     scm_init_symbol();
 }
 
-void 
+void
 scm_finalize_storage(void)
 {
     scm_finalize_symbol();
@@ -149,7 +149,7 @@ initialize_special_constants(void)
 /*===========================================================================
   Object Allocators
 ===========================================================================*/
-ScmObj 
+ScmObj
 scm_make_cons(ScmObj a, ScmObj b)
 {
     ScmObj obj = scm_make_obj_from_heap();
@@ -161,7 +161,7 @@ scm_make_cons(ScmObj a, ScmObj b)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_make_int(int val)
 {
     ScmObj obj = scm_make_obj_from_heap();
@@ -172,7 +172,7 @@ scm_make_int(int val)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_make_symbol(char *name, ScmObj v_cell)
 {
     ScmObj obj = scm_make_obj_from_heap();
@@ -184,7 +184,7 @@ scm_make_symbol(char *name, ScmObj v_cell)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_make_char(int val)
 {
     ScmObj obj = scm_make_obj_from_heap();
@@ -195,7 +195,7 @@ scm_make_char(int val)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_make_string(char *str, int is_immutable)
 {
     ScmObj obj = scm_make_obj_from_heap();
@@ -212,31 +212,31 @@ scm_make_string(char *str, int is_immutable)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_make_immutable_string(char *str)
 {
     return scm_make_string(str, 1);
 }
 
-ScmObj 
+ScmObj
 scm_make_immutable_string_copying(const char *str)
 {
     return scm_make_string(strdup(str), 1);
 }
 
-ScmObj 
+ScmObj
 scm_make_mutable_string(char *str)
 {
     return scm_make_string(str, 0);
 }
 
-ScmObj 
+ScmObj
 scm_make_mutable_string_copying(const char *str)
 {
     return scm_make_string(strdup(str), 0);
 }
 
-ScmObj 
+ScmObj
 scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func)
 {
     ScmObj obj = scm_make_obj_from_heap();
@@ -248,7 +248,7 @@ scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_make_closure(ScmObj exp, ScmObj env)
 {
     ScmObj obj = scm_make_obj_from_heap();
@@ -260,7 +260,7 @@ scm_make_closure(ScmObj exp, ScmObj env)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_make_vector(ScmObj *vec, int len)
 {
     ScmObj obj = scm_make_obj_from_heap();
@@ -272,7 +272,7 @@ scm_make_vector(ScmObj *vec, int len)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag)
 {
     ScmObj obj = scm_make_obj_from_heap();
@@ -290,7 +290,7 @@ scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_make_continuation(void)
 {
     ScmObj obj = scm_make_obj_from_heap();
@@ -303,7 +303,7 @@ scm_make_continuation(void)
 }
 
 #if !SCM_USE_VALUECONS
-ScmObj 
+ScmObj
 scm_make_value_packet(ScmObj values)
 {
     ScmObj obj = scm_make_obj_from_heap();
@@ -316,7 +316,7 @@ scm_make_value_packet(ScmObj values)
 #endif
 
 #if SCM_USE_NONSTD_FEATURES
-ScmObj 
+ScmObj
 scm_make_cpointer(void *data)
 {
     ScmObj obj = scm_make_obj_from_heap();
@@ -327,7 +327,7 @@ scm_make_cpointer(void *data)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_make_cfunc_pointer(ScmCFunc func)
 {
     ScmObj obj = scm_make_obj_from_heap();
@@ -340,7 +340,7 @@ scm_make_cfunc_pointer(ScmCFunc func)
 #endif /* SCM_USE_NONSTD_FEATURES */
 
 #if SCM_OBJ_COMPACT
-enum ScmObjType 
+enum ScmObjType
 scm_type(ScmObj obj)
 {
     if (SCM_TAG_CONSP(obj)) {

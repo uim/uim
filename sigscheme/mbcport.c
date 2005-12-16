@@ -252,7 +252,7 @@ mbcport_fill_rbuf(ScmMultiByteCharPort *port, int block)
         SCM_MBS_SET_SIZE(mbs, end - port->rbuf);
 
         mbc = SCM_CHARCODEC_SCAN_CHAR(port->codec, mbs);
-        
+
         if (SCM_MBCINFO_ERRORP(mbc))
             SCM_CHARPORT_ERROR(port, "ScmMultibyteCharPort: broken character");
         if (!SCM_MBCINFO_INCOMPLETEP(mbc) && SCM_MBCINFO_GET_SIZE(mbc))

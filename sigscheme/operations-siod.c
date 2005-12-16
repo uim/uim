@@ -98,7 +98,7 @@ static ScmObj saved_error_port  = NULL;
 
   TODO : remove these functions!
 =======================================*/
-void 
+void
 scm_initialize_siod(void)
 {
     REGISTER_FUNC_TABLE(siod_func_info_table);
@@ -129,7 +129,7 @@ scm_initialize_siod(void)
  * - make the portable proc interface similar to a de facto standard of other
  *   Scheme implementations if existing
  */
-ScmObj 
+ScmObj
 scm_p_symbol_value(ScmObj var)
 {
     DECLARE_FUNCTION("symbol-value", procedure_fixed_1);
@@ -146,7 +146,7 @@ scm_p_symbol_value(ScmObj var)
  * - make the portable proc interface similar to a de facto standard of other
  *   Scheme implementations if existing
  */
-ScmObj 
+ScmObj
 scm_p_set_symbol_valued(ScmObj var, ScmObj val)
 {
     DECLARE_FUNCTION("set-symbol-value!", procedure_fixed_2);
@@ -156,7 +156,7 @@ scm_p_set_symbol_valued(ScmObj var, ScmObj val)
     return SCM_SYMBOL_SET_VCELL(var, val);
 }
 
-ScmObj 
+ScmObj
 scm_p_siod_equal(ScmObj obj1, ScmObj obj2)
 {
     DECLARE_FUNCTION("=", procedure_fixed_2);
@@ -171,7 +171,7 @@ scm_p_siod_equal(ScmObj obj1, ScmObj obj2)
     return SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_the_environment(ScmEvalState *eval_state)
 {
     DECLARE_FUNCTION("the-environment", procedure_fixed_tailrec_0);
@@ -181,7 +181,7 @@ scm_p_the_environment(ScmEvalState *eval_state)
     return eval_state->env;
 }
 
-ScmObj 
+ScmObj
 scm_p_closure_code(ScmObj closure)
 {
     ScmObj exp, body;
@@ -194,11 +194,11 @@ scm_p_closure_code(ScmObj closure)
         body = CADR(exp);
     else
         body = CONS(scm_intern("begin"), CDR(exp));
-    
+
     return CONS(CAR(exp), body);
 }
 
-ScmObj 
+ScmObj
 scm_p_verbose(ScmObj args)
 {
     DECLARE_FUNCTION("verbose", procedure_variadic_0);
@@ -212,14 +212,14 @@ scm_p_verbose(ScmObj args)
     return scm_make_int(sscm_verbose_level);
 }
 
-ScmObj 
+ScmObj
 scm_p_eof_val(void)
 {
     DECLARE_FUNCTION("eof-val", procedure_fixed_0);
     return SCM_EOF;
 }
 
-ScmObj 
+ScmObj
 scm_s_undefine(ScmObj var, ScmObj env)
 {
     ScmRef val;
@@ -236,13 +236,13 @@ scm_s_undefine(ScmObj var, ScmObj env)
     return SCM_FALSE;
 }
 
-long 
+long
 scm_get_verbose_level(void)
 {
     return sscm_verbose_level;
 }
 
-void 
+void
 scm_set_verbose_level(long level)
 {
     if (level < 0)

@@ -80,7 +80,7 @@
 /*=======================================
   Function Implementations
 =======================================*/
-void 
+void
 scm_initialize_srfi60(void)
 {
     /*=======================================================================
@@ -122,7 +122,7 @@ ScmObj scm_p_srfi60_logxor(ScmObj left, ScmObj right,
     BITWISE_OPERATION_BODY(^, "logxor");
 }
 
-ScmObj 
+ScmObj
 scm_p_srfi60_lognot(ScmObj n)
 {
     DECLARE_FUNCTION("lognot", procedure_fixed_1);
@@ -132,7 +132,7 @@ scm_p_srfi60_lognot(ScmObj n)
     return scm_make_int(~SCM_INT_VALUE(n));
 }
 
-ScmObj 
+ScmObj
 scm_p_srfi60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1)
 {
     int result, c_mask;
@@ -148,7 +148,7 @@ scm_p_srfi60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1)
     return scm_make_int(result);
 }
 
-ScmObj 
+ScmObj
 scm_p_srfi60_logtest(ScmObj j, ScmObj k)
 {
     DECLARE_FUNCTION("logtest", procedure_fixed_2);

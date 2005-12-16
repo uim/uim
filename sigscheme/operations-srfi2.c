@@ -61,7 +61,7 @@
 /*=======================================
   Function Implementations
 =======================================*/
-void 
+void
 scm_initialize_srfi2(void)
 {
     /*=======================================================================
@@ -70,7 +70,7 @@ scm_initialize_srfi2(void)
     REGISTER_FUNC_TABLE(srfi2_func_info_table);
 }
 
-ScmObj 
+ScmObj
 scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
 {
     ScmObj env  = eval_state->env;

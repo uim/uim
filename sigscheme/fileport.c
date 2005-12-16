@@ -122,7 +122,7 @@ const ScmBytePortVTbl *ScmFilePort_vptr = &ScmFilePort_vtbl;
  * Client code must call this first even if current implementation does not
  * contain actual code.
  */
-void 
+void
 scm_fileport_init(void)
 {
     return;

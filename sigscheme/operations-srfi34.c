@@ -119,7 +119,7 @@ static ScmObj guard_body(ScmEvalState *eval_state);
 /*=======================================
   Function Implementations
 =======================================*/
-void 
+void
 scm_initialize_srfi34(void)
 {
     ScmObj *const *var;
@@ -221,7 +221,7 @@ with_exception_handlers(ScmObj new_handlers, ScmObj thunk)
 
 /* with-exception-handler */
 
-ScmObj 
+ScmObj
 scm_p_srfi34_with_exception_handler(ScmObj handler, ScmObj thunk)
 {
     ScmObj handlers;
@@ -236,7 +236,7 @@ scm_p_srfi34_with_exception_handler(ScmObj handler, ScmObj thunk)
 
 /* raise */
 
-ScmObj 
+ScmObj
 scm_p_srfi34_raise(ScmObj obj)
 {
     ScmObj handler, rest_handlers, thunk, err_obj;
@@ -281,7 +281,7 @@ ScmObj scm_s_srfi34_guard(ScmObj cond_catch, ScmObj body,
     proc_guard_int = scm_s_lambda(LIST_1(sym_guard_k),
                                    LIST_1(LIST_2(syn_guard_internal, sym_guard_k)),
                                    eval_state->env);
-    
+
     ret = scm_call_with_current_continuation(proc_guard_int, eval_state);
     eval_state->env      = lex_env;
     eval_state->ret_type = SCM_RETTYPE_AS_IS;

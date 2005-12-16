@@ -85,7 +85,7 @@ static char **parse_script_prelude(ScmObj port);
 /*=======================================
   Function Implementations
 =======================================*/
-void 
+void
 scm_init_io(void)
 {
     scm_fileport_init();
@@ -106,7 +106,7 @@ scm_init_io(void)
     scm_gc_protect(&scm_current_error_port);
 }
 
-void 
+void
 scm_set_lib_path(const char *path)
 {
     scm_lib_path = path;
@@ -132,7 +132,7 @@ ScmObj scm_make_shared_file_port(FILE *file, const char *aux_info,
     return scm_make_port(scm_make_char_port(bport), flag);
 }
 
-void 
+void
 scm_port_printf(ScmObj port, const char *fmt, ...)
 {
     va_list args;
@@ -142,7 +142,7 @@ scm_port_printf(ScmObj port, const char *fmt, ...)
     va_end(args);
 }
 
-void 
+void
 scm_port_vprintf(ScmObj port, const char *fmt, va_list args)
 {
     SCM_PORT_VPRINTF(port, fmt, args);
@@ -151,14 +151,14 @@ scm_port_vprintf(ScmObj port, const char *fmt, va_list args)
 #endif
 }
 
-void 
+void
 scm_port_newline(ScmObj port)
 {
     SCM_PORT_PUTS(port, SCM_NEWLINE_STR);
     SCM_PORT_FLUSH(port);  /* required */
 }
 
-void 
+void
 scm_error_printf(const char *fmt, ...)
 {
     va_list args;
@@ -168,13 +168,13 @@ scm_error_printf(const char *fmt, ...)
     va_end(args);
 }
 
-void 
+void
 scm_error_vprintf(const char *fmt, va_list args)
 {
     scm_port_vprintf(scm_current_error_port, fmt, args);
 }
 
-void 
+void
 scm_error_newline(void)
 {
     scm_port_newline(scm_current_error_port);
@@ -186,7 +186,7 @@ scm_error_newline(void)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.1 Ports
 ===========================================================================*/
-ScmObj 
+ScmObj
 scm_p_call_with_input_file(ScmObj filepath, ScmObj proc)
 {
     ScmObj port, ret;
@@ -204,7 +204,7 @@ scm_p_call_with_input_file(ScmObj filepath, ScmObj proc)
     return ret;
 }
 
-ScmObj 
+ScmObj
 scm_p_call_with_output_file(ScmObj filepath, ScmObj proc)
 {
     ScmObj port, ret;
@@ -222,7 +222,7 @@ scm_p_call_with_output_file(ScmObj filepath, ScmObj proc)
     return ret;
 }
 
-ScmObj 
+ScmObj
 scm_p_input_portp(ScmObj port)
 {
     DECLARE_FUNCTION("input-port?", procedure_fixed_1);
@@ -232,7 +232,7 @@ scm_p_input_portp(ScmObj port)
     return (SCM_PORT_FLAG(port) & SCM_PORTFLAG_INPUT) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_output_portp(ScmObj port)
 {
     DECLARE_FUNCTION("output-port?", procedure_fixed_1);
@@ -242,7 +242,7 @@ scm_p_output_portp(ScmObj port)
     return (SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_current_input_port(void)
 {
     DECLARE_FUNCTION("current-input-port", procedure_fixed_0);
@@ -250,7 +250,7 @@ scm_p_current_input_port(void)
     return scm_current_input_port;
 }
 
-ScmObj 
+ScmObj
 scm_p_current_output_port(void)
 {
     DECLARE_FUNCTION("current-output-port", procedure_fixed_0);
@@ -258,7 +258,7 @@ scm_p_current_output_port(void)
     return scm_current_output_port;
 }
 
-ScmObj 
+ScmObj
 scm_p_with_input_from_file(ScmObj filepath, ScmObj thunk)
 {
     ScmObj saved_port, ret;
@@ -278,7 +278,7 @@ scm_p_with_input_from_file(ScmObj filepath, ScmObj thunk)
     return ret;
 }
 
-ScmObj 
+ScmObj
 scm_p_with_output_to_file(ScmObj filepath, ScmObj thunk)
 {
     ScmObj saved_port, ret;
@@ -298,7 +298,7 @@ scm_p_with_output_to_file(ScmObj filepath, ScmObj thunk)
     return ret;
 }
 
-ScmObj 
+ScmObj
 scm_p_open_input_file(ScmObj filepath)
 {
     ScmBytePort *bport;
@@ -313,7 +313,7 @@ scm_p_open_input_file(ScmObj filepath)
     return scm_make_port(scm_make_char_port(bport), SCM_PORTFLAG_INPUT);
 }
 
-ScmObj 
+ScmObj
 scm_p_open_output_file(ScmObj filepath)
 {
     ScmBytePort *bport;
@@ -328,7 +328,7 @@ scm_p_open_output_file(ScmObj filepath)
     return scm_make_port(scm_make_char_port(bport), SCM_PORTFLAG_OUTPUT);
 }
 
-ScmObj 
+ScmObj
 scm_p_close_input_port(ScmObj port)
 {
     int flag;
@@ -344,7 +344,7 @@ scm_p_close_input_port(ScmObj port)
     return SCM_UNDEF;
 }
 
-ScmObj 
+ScmObj
 scm_p_close_output_port(ScmObj port)
 {
     int flag;
@@ -373,7 +373,7 @@ scm_p_close_output_port(ScmObj port)
     } while (/* CONSTCOND */ 0)
 
 
-ScmObj 
+ScmObj
 scm_p_read(ScmObj args)
 {
     ScmObj port;
@@ -383,7 +383,7 @@ scm_p_read(ScmObj args)
     return scm_read(port);
 }
 
-ScmObj 
+ScmObj
 scm_p_read_char(ScmObj args)
 {
     ScmObj port;
@@ -399,7 +399,7 @@ scm_p_read_char(ScmObj args)
     return scm_make_char(ch);
 }
 
-ScmObj 
+ScmObj
 scm_p_peek_char(ScmObj args)
 {
     ScmObj port;
@@ -415,7 +415,7 @@ scm_p_peek_char(ScmObj args)
     return scm_make_char(ch);
 }
 
-ScmObj 
+ScmObj
 scm_p_eof_objectp(ScmObj obj)
 {
     DECLARE_FUNCTION("eof-object?", procedure_fixed_1);
@@ -423,7 +423,7 @@ scm_p_eof_objectp(ScmObj obj)
     return (EOFP(obj)) ? SCM_TRUE : SCM_FALSE;
 }
 
-ScmObj 
+ScmObj
 scm_p_char_readyp(ScmObj args)
 {
     ScmObj port;
@@ -437,7 +437,7 @@ scm_p_char_readyp(ScmObj args)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.3 Output
 ===========================================================================*/
-ScmObj 
+ScmObj
 scm_p_write(ScmObj obj, ScmObj args)
 {
     ScmObj port;
@@ -448,7 +448,7 @@ scm_p_write(ScmObj obj, ScmObj args)
     return SCM_UNDEF;
 }
 
-ScmObj 
+ScmObj
 scm_p_display(ScmObj obj, ScmObj args)
 {
     ScmObj port;
@@ -459,7 +459,7 @@ scm_p_display(ScmObj obj, ScmObj args)
     return SCM_UNDEF;
 }
 
-ScmObj 
+ScmObj
 scm_p_newline(ScmObj args)
 {
     ScmObj port;
@@ -470,7 +470,7 @@ scm_p_newline(ScmObj args)
     return SCM_UNDEF;
 }
 
-ScmObj 
+ScmObj
 scm_p_write_char(ScmObj obj, ScmObj args)
 {
     ScmObj port;
@@ -486,7 +486,7 @@ scm_p_write_char(ScmObj obj, ScmObj args)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.4 System Interface
 ===========================================================================*/
-ScmObj 
+ScmObj
 scm_load(const char *c_filename)
 {
 #if !SCM_GCC4_READY_GC
@@ -586,7 +586,7 @@ file_existsp(const char *c_filepath)
     }
 }
 
-ScmObj 
+ScmObj
 scm_p_load(ScmObj filename)
 {
     DECLARE_FUNCTION("load", procedure_fixed_1);
@@ -658,7 +658,7 @@ parse_script_prelude(ScmObj port)
             argv = scm_realloc(argv, sizeof(char *) * (++argc + 1));
             argv[argc] = NULL;
         }
-    }         
+    }
     argv[argc] = NULL;
 
     return argv;

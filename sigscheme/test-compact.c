@@ -183,7 +183,7 @@ aligned_strdup(const char *str)
     return ret;
 }
 
-ScmObj 
+ScmObj
 scm_check_int(int val)
 {
     ScmObj obj;
@@ -200,7 +200,7 @@ scm_check_int(int val)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_check_cons()
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
@@ -252,7 +252,7 @@ scm_check_cons()
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_check_symbol(const char *name)
 {
     ScmObj obj   = (ScmObj)malloc(sizeof(ScmCell));
@@ -299,7 +299,7 @@ scm_check_symbol(const char *name)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_check_char(unsigned int val)
 {
     ScmObj obj;
@@ -316,7 +316,7 @@ scm_check_char(unsigned int val)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_check_string_copying(char *str)
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
@@ -350,7 +350,7 @@ scm_check_string_copying(char *str)
     SCM_ASSERT(SCM_STRING_MUTATION_TYPE(obj) == SCM_STR_IMMUTABLE);
     SCM_ASSERT(SCM_IS_UNMARKED(obj));
     check_type(ScmString, obj);
-    SCM_ASSERT(strlen(str) == SCM_STRING_LEN(obj)); 
+    SCM_ASSERT(strlen(str) == SCM_STRING_LEN(obj));
 
     /* marked state */
     SCM_DO_MARK(obj);
@@ -382,7 +382,7 @@ scm_check_string_copying(char *str)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_check_func(void *funcptr)
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
@@ -423,7 +423,7 @@ scm_check_func(void *funcptr)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_check_closure()
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
@@ -477,7 +477,7 @@ scm_check_closure()
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_check_vector(unsigned int len)
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
@@ -539,7 +539,7 @@ scm_check_vector(unsigned int len)
 }
 
 
-ScmObj 
+ScmObj
 scm_check_port()
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
@@ -581,7 +581,7 @@ scm_check_port()
 }
 
 
-ScmObj 
+ScmObj
 scm_check_continuation(void *val)
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
@@ -620,7 +620,7 @@ scm_check_continuation(void *val)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_check_value_packet()
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
@@ -653,7 +653,7 @@ scm_check_value_packet()
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_check_cpointer(void *data)
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
@@ -683,7 +683,7 @@ scm_check_cpointer(void *data)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_check_cfunc_pointer(ScmCFunc funcptr)
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
@@ -713,7 +713,7 @@ scm_check_cfunc_pointer(ScmCFunc funcptr)
     return obj;
 }
 
-ScmObj 
+ScmObj
 scm_check_constant()
 {
     PRINT_SECTION("Constant");
@@ -751,7 +751,7 @@ scm_check_constant()
     return SCM_NULL;
 }
 
-ScmObj 
+ScmObj
 scm_check_ref()
 {
     PRINT_SECTION("REF");

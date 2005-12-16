@@ -60,7 +60,7 @@
 /*=======================================
   Function Implementations
 =======================================*/
-void 
+void
 scm_initialize_srfi8(void)
 {
     /*=======================================================================
@@ -72,7 +72,7 @@ scm_initialize_srfi8(void)
 /*=============================================================================
   SRFI8 : Receive
 =============================================================================*/
-ScmObj 
+ScmObj
 scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalState *eval_state)
 {
     /*

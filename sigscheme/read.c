@@ -136,7 +136,7 @@ static ScmObj read_quote(ScmObj port, ScmObj quoter);
 /*===========================================================================
   S-Expression Parser
 ===========================================================================*/
-ScmObj 
+ScmObj
 scm_read(ScmObj port)
 {
     ScmObj sexp = SCM_FALSE;
@@ -155,7 +155,7 @@ scm_read(ScmObj port)
     return sexp;
 }
 
-ScmObj 
+ScmObj
 scm_read_char(ScmObj port)
 {
     DECLARE_INTERNAL_FUNCTION("scm_read_char");
@@ -604,11 +604,11 @@ read_symbol(ScmObj port)
     int err;
     ScmLBuf(char) lbuf;
     char init_buf[SCM_INITIAL_SYMBOL_BUF_SIZE];
- 
+
     CDBG((SCM_DBG_PARSER, "read_symbol"));
 
     LBUF_INIT(lbuf, init_buf, sizeof(init_buf));
- 
+
     for (offset = 0;;) {
         tail_len = read_token(port, &err,
                               &LBUF_BUF(lbuf)[offset],
@@ -619,10 +619,10 @@ read_symbol(ScmObj port)
         offset += tail_len;
         LBUF_EXTEND(lbuf, SCM_LBUF_F_SYMBOL, LBUF_SIZE(lbuf) + MB_MAX_SIZE);
     }
- 
+
     sym = scm_intern(LBUF_BUF(lbuf));
     LBUF_FREE(lbuf);
- 
+
     return sym;
 }
 

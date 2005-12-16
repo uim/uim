@@ -126,13 +126,13 @@ static int  get_shared_index(ScmObj obj);
 /*=======================================
    Function Implementations
 =======================================*/
-void 
+void
 scm_display(ScmObj obj)
 {
     scm_display_to_port(scm_current_output_port, obj);
 }
 
-void 
+void
 scm_write_to_port(ScmObj port, ScmObj obj)
 {
     DECLARE_INTERNAL_FUNCTION("scm_write_to_port");
@@ -149,7 +149,7 @@ scm_write_to_port(ScmObj port, ScmObj obj)
 #endif /* SCM_VOLATILE_OUTPUT */
 }
 
-void 
+void
 scm_display_to_port(ScmObj port, ScmObj obj)
 {
     DECLARE_INTERNAL_FUNCTION("scm_display_to_port");
@@ -274,7 +274,7 @@ print_char(ScmObj port, ScmObj obj, enum OutputType otype)
             }
         }
 
-        /* other control chars are printed in hexadecimal form */ 
+        /* other control chars are printed in hexadecimal form */
         if (isascii(c) && iscntrl(c)) {
             scm_port_printf(port, "x%02x", c);
             return;
@@ -648,7 +648,7 @@ get_shared_index(ScmObj obj)
     return 0;
 }
 
-void 
+void
 scm_write_to_port_with_shared_structure(ScmObj port, ScmObj obj)
 {
     write_ss_context ctx = {{0}};

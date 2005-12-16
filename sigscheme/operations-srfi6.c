@@ -64,7 +64,7 @@ static void istrport_finalize(char **str, int ownership, void **opaque);
 /*=======================================
   Function Implementations
 =======================================*/
-void 
+void
 scm_initialize_srfi6(void)
 {
     scm_strport_init();
@@ -81,7 +81,7 @@ istrport_finalize(char **str, int ownership, void **opaque)
     scm_gc_unprotect((ScmObj *)opaque);
 }
 
-ScmObj 
+ScmObj
 scm_p_srfi6_open_input_string(ScmObj str)
 {
     ScmObj      *hold_str;
@@ -97,7 +97,7 @@ scm_p_srfi6_open_input_string(ScmObj str)
     return scm_make_port(scm_make_char_port(bport), SCM_PORTFLAG_INPUT);
 }
 
-ScmObj 
+ScmObj
 scm_p_srfi6_open_output_string(void)
 {
     ScmBytePort *bport;
@@ -107,7 +107,7 @@ scm_p_srfi6_open_output_string(void)
     return scm_make_port(scm_make_char_port(bport), SCM_PORTFLAG_OUTPUT);
 }
 
-ScmObj 
+ScmObj
 scm_p_srfi6_get_output_string(ScmObj port)
 {
     ScmBaseCharPort *cport;
