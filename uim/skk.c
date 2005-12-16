@@ -3394,7 +3394,7 @@ look_get_comp(struct skk_comp_array *ca, const char *str)
 {
   char buf[512], *p;
   FILE *fp;
-  int i, nr_pre, top_line = 1;
+  int i, nr_pre, c = 0;
   int *matched;
 
   if (!skk_isalpha(str[0]))
@@ -3419,9 +3419,12 @@ look_get_comp(struct skk_comp_array *ca, const char *str)
       *p = '\0';
 
     /* don't use the word itself */
-    if (top_line == 1 && !strcmp(buf, str)) {
-	top_line = 0;
+    if ((c == 0 || c == 1)) {
+      c++;
+      if (!strcmp(buf, str)) {
+	c = -1;
 	continue;
+      }
     }
 
     /* skip words already in the cache */
