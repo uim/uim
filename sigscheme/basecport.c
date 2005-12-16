@@ -143,7 +143,12 @@ basecport_dyn_cast(ScmCharPort *cport, const ScmCharPortVTbl *dst_vptr)
 static int
 basecport_close(ScmBaseCharPort *port)
 {
-    return SCM_BYTEPORT_CLOSE(port->bport);
+    int err;
+
+    err = SCM_BYTEPORT_CLOSE(port->bport);
+    free(port);
+
+    return err;
 }
 
 static const char *
