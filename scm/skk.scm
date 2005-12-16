@@ -1773,11 +1773,9 @@
 	    (append-list-to-context-head
 	      sc
 	      (if (or
-		  (skk-context-latin-conv sc)
-		  ;; handle Setsubi-ji
-		  (and
-		   (null? (cdr sl))
-		   (string=? ">" (car sl)))
+		   (skk-context-latin-conv sc)
+		   ;; handle Setsubi-ji and Settou-ji
+		   (string=? ">" (car sl))
 		   (and
 		    skk-use-numeric-conversion?
 		    (string=? "#" (car sl))))
