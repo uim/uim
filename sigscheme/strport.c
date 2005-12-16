@@ -414,7 +414,10 @@ ostrport_append(ScmOutputStrPort *port, size_t len, const char *str)
 {
     /* extend the buffer */
     if (port->buf_size - port->cur < len + sizeof((char)'\0')) {
-        port->buf_size += (!port->buf_size) ? len + sizeof((char)'\0') : len;
+        if (!port->buf_size)
+            port->buf_size = sizeof((char)'\0');
+
+        port->buf_size += len;
         port->str = SCM_PORT_REALLOC(port->str, port->buf_size);
     }
 
