@@ -60,7 +60,8 @@
 /*=======================================
   Function Implementations
 =======================================*/
-void SigScm_Initialize_SRFI8(void)
+void 
+scm_initialize_srfi8(void)
 {
     /*=======================================================================
       SRFI-8 Procedure
@@ -71,14 +72,15 @@ void SigScm_Initialize_SRFI8(void)
 /*=============================================================================
   SRFI8 : Receive
 =============================================================================*/
-ScmObj ScmExp_SRFI8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalState *eval_state)
+ScmObj 
+scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalState *eval_state)
 {
     /*
      * (receive <formals> <expression> <body>)
      */
     ScmObj env     = eval_state->env;
     ScmObj actuals = SCM_FALSE;
-    DECLARE_FUNCTION("receive", SyntaxVariadicTailRec2);
+    DECLARE_FUNCTION("receive", syntax_variadic_tailrec_2);
 
     if (!(CONSP(formals) || NULLP(formals) || SYMBOLP(formals)))
         ERR_OBJ("bad formals", formals);
@@ -92,7 +94,7 @@ ScmObj ScmExp_SRFI8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalSta
     else
         actuals = CONS(actuals, SCM_NULL);
 
-    eval_state->env = env = Scm_ExtendEnvironment(formals, actuals, env);
+    eval_state->env = env = scm_extend_environment(formals, actuals, env);
 
-    return ScmExp_begin(body, eval_state);
+    return scm_s_begin(body, eval_state);
 }

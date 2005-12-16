@@ -98,7 +98,7 @@ typedef struct {
 /*=======================================
   Variable Declarations
 =======================================*/
-void (*Scm_writess_func)(ScmObj port, ScmObj obj) = &SigScm_WriteToPort;
+void (*scm_writess_func)(ScmObj port, ScmObj obj) = &scm_write_to_port;
 
 #if SCM_USE_SRFI38
 static write_ss_context *write_ss_ctx; /* misc info in priting shared structures */
@@ -126,14 +126,16 @@ static int  get_shared_index(ScmObj obj);
 /*=======================================
    Function Implementations
 =======================================*/
-void SigScm_Display(ScmObj obj)
+void 
+scm_display(ScmObj obj)
 {
-    SigScm_DisplayToPort(scm_current_output_port, obj);
+    scm_display_to_port(scm_current_output_port, obj);
 }
 
-void SigScm_WriteToPort(ScmObj port, ScmObj obj)
+void 
+scm_write_to_port(ScmObj port, ScmObj obj)
 {
-    DECLARE_INTERNAL_FUNCTION("SigScm_WriteToPort");
+    DECLARE_INTERNAL_FUNCTION("scm_write_to_port");
 
     ASSERT_PORTP(port);
     SCM_ASSERT_LIVE_PORT(port);
@@ -147,9 +149,10 @@ void SigScm_WriteToPort(ScmObj port, ScmObj obj)
 #endif /* SCM_VOLATILE_OUTPUT */
 }
 
-void SigScm_DisplayToPort(ScmObj port, ScmObj obj)
+void 
+scm_display_to_port(ScmObj port, ScmObj obj)
 {
-    DECLARE_INTERNAL_FUNCTION("SigScm_DisplayToPort");
+    DECLARE_INTERNAL_FUNCTION("scm_display_to_port");
 
     ASSERT_PORTP(port);
     SCM_ASSERT_LIVE_PORT(port);
@@ -172,19 +175,19 @@ static void print_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         int index = get_shared_index(obj);
         if (index > 0) {
             /* defined datum */
-            SigScm_PortPrintf(port, "#%d#", index);
+            scm_port_printf(port, "#%d#", index);
             return;
         }
         if (index < 0) {
             /* defining datum, with the new index negated */
-            SigScm_PortPrintf(port, "#%d=", -index);
+            scm_port_printf(port, "#%d=", -index);
             /* Print it; the next time it'll be defined. */
         }
     }
 #endif
     switch (SCM_TYPE(obj)) {
     case ScmInt:
-        SigScm_PortPrintf(port, "%d", SCM_INT_VALUE(obj));
+        scm_port_printf(port, "%d", SCM_INT_VALUE(obj));
         break;
     case ScmCons:
         if (ERROBJP(obj))
@@ -203,11 +206,11 @@ static void print_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         break;
     case ScmFunc:
         SCM_PORT_PUTS(port, (SCM_SYNTAXP(obj)) ? "#<syntax " : "#<subr ");
-        sym = Scm_SymbolBoundTo(obj);
+        sym = scm_symbol_bound_to(obj);
         if (NFALSEP(sym))
-            SigScm_DisplayToPort(port, sym);
+            scm_display_to_port(port, sym);
         else
-            SigScm_PortPrintf(port, "%p", (void *)obj);
+            scm_port_printf(port, "%p", (void *)obj);
         SCM_PORT_PUT_CHAR(port, '>');
         break;
     case ScmClosure:
@@ -243,10 +246,10 @@ static void print_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         ERR("You cannot print ScmFreeCell, may be GC bug.");
         break;
     case ScmCPointer:
-        SigScm_PortPrintf(port, "#<c_pointer %p>", SCM_C_POINTER_VALUE(obj));
+        scm_port_printf(port, "#<c_pointer %p>", SCM_C_POINTER_VALUE(obj));
         break;
     case ScmCFuncPointer:
-        SigScm_PortPrintf(port, "#<c_func_pointer %p>",
+        scm_port_printf(port, "#<c_func_pointer %p>",
                           (void *)(uintptr_t)SCM_C_FUNCPOINTER_VALUE(obj));
         break;
     }
@@ -262,7 +265,7 @@ static void print_char(ScmObj port, ScmObj obj, enum OutputType otype)
     case AS_WRITE:
         SCM_PORT_PUTS(port, "#\\");
         /* special chars */
-        for (info = Scm_special_char_table; info->esc_seq; info++) {
+        for (info = scm_special_char_table; info->esc_seq; info++) {
             if (c == info->code) {
                 SCM_PORT_PUTS(port, info->lex_rep);
                 return;
@@ -271,7 +274,7 @@ static void print_char(ScmObj port, ScmObj obj, enum OutputType otype)
 
         /* other control chars are printed in hexadecimal form */ 
         if (isascii(c) && iscntrl(c)) {
-            SigScm_PortPrintf(port, "x%02x", c);
+            scm_port_printf(port, "x%02x", c);
             return;
         }
         /* FALLTHROUGH */
@@ -300,7 +303,7 @@ static void print_string(ScmObj port, ScmObj obj, enum OutputType otype)
         SCM_PORT_PUT_CHAR(port, '\"'); /* first doublequote */
         for (i = 0; i < len; i++) {
             c = str[i];
-            for (info = Scm_special_char_table; info->esc_seq; info++) {
+            for (info = scm_special_char_table; info->esc_seq; info++) {
                 if (c == info->code) {
                     SCM_PORT_PUTS(port, info->esc_seq);
                     break;
@@ -354,12 +357,12 @@ static void print_list(ScmObj port, ScmObj lst, enum OutputType otype)
         index = get_shared_index(lst);
         if (index > 0) {
             /* defined datum */
-            SigScm_PortPrintf(port, ". #%d#", index);
+            scm_port_printf(port, ". #%d#", index);
             goto close_parens_and_return;
         }
         if (index < 0) {
             /* defining datum, with the new index negated */
-            SigScm_PortPrintf(port, ". #%d=", -index);
+            scm_port_printf(port, ". #%d=", -index);
             necessary_close_parens++;
             goto cheap_recursion;
         }
@@ -462,11 +465,11 @@ static void print_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
     switch (otype) {
     case AS_WRITE:
         SCM_PORT_PUTS(port, "#<error ");
-        SigScm_WriteToPort(port, reason);
+        scm_write_to_port(port, reason);
         break;
 
     case AS_DISPLAY:
-        SigScm_DisplayToPort(port, reason);
+        scm_display_to_port(port, reason);
         if (CONSP(objs))
             SCM_PORT_PUT_CHAR(port, ':');
         break;
@@ -478,7 +481,7 @@ static void print_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
 
     for (; CONSP(objs); objs = CDR(objs)) {
         SCM_PORT_PUT_CHAR(port, ' ');
-        SigScm_WriteToPort(port, CAR(objs));
+        scm_write_to_port(port, CAR(objs));
     }
 
     if (otype == AS_WRITE)
@@ -633,7 +636,8 @@ static int get_shared_index(ScmObj obj)
     return 0;
 }
 
-void SigScm_WriteToPortWithSharedStructure(ScmObj port, ScmObj obj)
+void 
+scm_write_to_port_with_shared_structure(ScmObj port, ScmObj obj)
 {
     write_ss_context ctx = {{0}};
     unsigned int i;
@@ -651,7 +655,7 @@ void SigScm_WriteToPortWithSharedStructure(ScmObj port, ScmObj obj)
     if (!HASH_EMPTY(ctx.seen))
         write_ss_ctx = &ctx;
 
-    SigScm_WriteToPort(port, obj);
+    scm_write_to_port(port, obj);
 
     write_ss_ctx = NULL;
     free(ctx.seen.ents);

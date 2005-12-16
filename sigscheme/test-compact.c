@@ -178,7 +178,8 @@ static void* aligned_strdup(const char *str)
     return ret;
 }
 
-ScmObj Scm_CheckInt(int val)
+ScmObj 
+scm_check_int(int val)
 {
     ScmObj obj;
 
@@ -194,11 +195,12 @@ ScmObj Scm_CheckInt(int val)
     return obj;
 }
 
-ScmObj Scm_CheckCons()
+ScmObj 
+scm_check_cons()
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
-    ScmObj car = Scm_CheckInt(1);
-    ScmObj cdr = Scm_CheckInt(2);
+    ScmObj car = scm_check_int(1);
+    ScmObj cdr = scm_check_int(2);
 
     PRINT_SECTION("Cons");
 
@@ -245,10 +247,11 @@ ScmObj Scm_CheckCons()
     return obj;
 }
 
-ScmObj Scm_CheckSymbol(const char *name)
+ScmObj 
+scm_check_symbol(const char *name)
 {
     ScmObj obj   = (ScmObj)malloc(sizeof(ScmCell));
-    ScmObj vcell = Scm_CheckInt(1);
+    ScmObj vcell = scm_check_int(1);
 
     PRINT_SECTION("Symbol");
 
@@ -291,7 +294,8 @@ ScmObj Scm_CheckSymbol(const char *name)
     return obj;
 }
 
-ScmObj Scm_CheckChar(unsigned int val)
+ScmObj 
+scm_check_char(unsigned int val)
 {
     ScmObj obj;
     PRINT_SECTION("Char");
@@ -307,7 +311,8 @@ ScmObj Scm_CheckChar(unsigned int val)
     return obj;
 }
 
-ScmObj Scm_CheckStringCopying(char *str)
+ScmObj 
+scm_check_string_copying(char *str)
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
 
@@ -372,7 +377,8 @@ ScmObj Scm_CheckStringCopying(char *str)
     return obj;
 }
 
-ScmObj Scm_CheckFunc(void *funcptr)
+ScmObj 
+scm_check_func(void *funcptr)
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
     PRINT_SECTION("Func");
@@ -412,11 +418,12 @@ ScmObj Scm_CheckFunc(void *funcptr)
     return obj;
 }
 
-ScmObj Scm_CheckClosure()
+ScmObj 
+scm_check_closure()
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
-    ScmObj exp = Scm_CheckCons();
-    ScmObj env = Scm_CheckCons();
+    ScmObj exp = scm_check_cons();
+    ScmObj env = scm_check_cons();
 
     PRINT_SECTION("Closure");
 
@@ -465,7 +472,8 @@ ScmObj Scm_CheckClosure()
     return obj;
 }
 
-ScmObj Scm_CheckVector(unsigned int len)
+ScmObj 
+scm_check_vector(unsigned int len)
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
     ScmObj *vec = (ScmObj*)malloc(sizeof(ScmObj) * len);
@@ -488,12 +496,12 @@ ScmObj Scm_CheckVector(unsigned int len)
     check_type(ScmVector, obj);
     SCM_ASSERT(SCM_VECTOR_LEN(obj) == len);
 
-    SCM_VECTOR_SET_CREF(obj, 0, Scm_CheckInt(11));
+    SCM_VECTOR_SET_CREF(obj, 0, scm_check_int(11));
     check_type(ScmVector, obj);
     SCM_ASSERT(SCM_INTP(SCM_VECTOR_CREF(obj, 0)));
     SCM_ASSERT(SCM_INT_VALUE(SCM_VECTOR_CREF(obj, 0)) == 11);
 
-    SCM_VECTOR_SET_CREF(obj, 0, Scm_CheckInt(3));
+    SCM_VECTOR_SET_CREF(obj, 0, scm_check_int(3));
     check_type(ScmVector, obj);
     SCM_ASSERT(SCM_INTP(SCM_VECTOR_CREF(obj, 0)));
     SCM_ASSERT(SCM_INT_VALUE(SCM_VECTOR_CREF(obj, 0)) == 3);
@@ -512,12 +520,12 @@ ScmObj Scm_CheckVector(unsigned int len)
     check_type(ScmVector, obj);
     SCM_ASSERT(SCM_VECTOR_LEN(obj) == len);
 
-    SCM_VECTOR_SET_CREF(obj, 0, Scm_CheckInt(11));
+    SCM_VECTOR_SET_CREF(obj, 0, scm_check_int(11));
     check_type(ScmVector, obj);
     SCM_ASSERT(SCM_INTP(SCM_VECTOR_CREF(obj, 0)));
     SCM_ASSERT(SCM_INT_VALUE(SCM_VECTOR_CREF(obj, 0)) == 11);
 
-    SCM_VECTOR_SET_CREF(obj, 0, Scm_CheckInt(3));
+    SCM_VECTOR_SET_CREF(obj, 0, scm_check_int(3));
     check_type(ScmVector, obj);
     SCM_ASSERT(SCM_INTP(SCM_VECTOR_CREF(obj, 0)));
     SCM_ASSERT(SCM_INT_VALUE(SCM_VECTOR_CREF(obj, 0)) == 3);
@@ -526,7 +534,8 @@ ScmObj Scm_CheckVector(unsigned int len)
 }
 
 
-ScmObj Scm_CheckPort()
+ScmObj 
+scm_check_port()
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
     ScmCharPort *port = (ScmCharPort*)0x20;
@@ -567,7 +576,8 @@ ScmObj Scm_CheckPort()
 }
 
 
-ScmObj Scm_CheckContinuation(void *val)
+ScmObj 
+scm_check_continuation(void *val)
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
     PRINT_SECTION("Continuation");
@@ -605,10 +615,11 @@ ScmObj Scm_CheckContinuation(void *val)
     return obj;
 }
 
-ScmObj Scm_CheckValuePacket()
+ScmObj 
+scm_check_value_packet()
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
-    ScmObj values = Scm_CheckCons();
+    ScmObj values = scm_check_cons();
 
     PRINT_SECTION("ValuePacket");
 
@@ -637,7 +648,8 @@ ScmObj Scm_CheckValuePacket()
     return obj;
 }
 
-ScmObj Scm_CheckCPointer(void *data)
+ScmObj 
+scm_check_cpointer(void *data)
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
 
@@ -666,7 +678,8 @@ ScmObj Scm_CheckCPointer(void *data)
     return obj;
 }
 
-ScmObj Scm_CheckCFuncPointer(ScmCFunc funcptr)
+ScmObj 
+scm_check_cfunc_pointer(ScmCFunc funcptr)
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
 
@@ -695,7 +708,8 @@ ScmObj Scm_CheckCFuncPointer(ScmCFunc funcptr)
     return obj;
 }
 
-ScmObj Scm_CheckConstant()
+ScmObj 
+scm_check_constant()
 {
     PRINT_SECTION("Constant");
 
@@ -732,12 +746,13 @@ ScmObj Scm_CheckConstant()
     return SCM_NULL;
 }
 
-ScmObj Scm_CheckRef()
+ScmObj 
+scm_check_ref()
 {
     PRINT_SECTION("REF");
 
-    ScmObj cons = Scm_CheckCons();
-    ScmObj tmp  = Scm_CheckCons();
+    ScmObj cons = scm_check_cons();
+    ScmObj tmp  = scm_check_cons();
     ScmRef ref_car = SCM_REF_CAR(cons);
     ScmRef ref_cdr = SCM_REF_CDR(cons);
 
@@ -758,34 +773,34 @@ ScmObj Scm_CheckRef()
 
 int main(void)
 {
-    Scm_CheckInt(0);
-    Scm_CheckInt(1);
-    Scm_CheckInt(-1);
-    Scm_CheckCons();
-    Scm_CheckSymbol("aiueo");
-    Scm_CheckSymbol(NULL);
-    Scm_CheckChar(0);
-    Scm_CheckChar(255);
-    Scm_CheckStringCopying("aiueo");
-//    Scm_CheckStringCopying(NULL);
-    Scm_CheckClosure();
-    Scm_CheckFunc((void*)0x00000000);
-    Scm_CheckFunc((void*)0xfffffffe);
-    Scm_CheckFunc((void*)0xffffffff);
-    Scm_CheckVector(0);
-    Scm_CheckVector(5);
-    Scm_CheckContinuation((void*)NULL);
-    Scm_CheckContinuation((void*)0x20);
-    Scm_CheckValuePacket();
-    Scm_CheckPort();
-    Scm_CheckCPointer((void*)0x00000000);
-    Scm_CheckCPointer((void*)0xfffffffe);
-    Scm_CheckCPointer((void*)0xffffffff);
-    Scm_CheckCFuncPointer((ScmCFunc)0x00000000);
-    Scm_CheckCFuncPointer((ScmCFunc)0xfffffffe);
-    Scm_CheckCFuncPointer((ScmCFunc)0xffffffff);
-    Scm_CheckConstant();
-    Scm_CheckRef();
+    scm_check_int(0);
+    scm_check_int(1);
+    scm_check_int(-1);
+    scm_check_cons();
+    scm_check_symbol("aiueo");
+    scm_check_symbol(NULL);
+    scm_check_char(0);
+    scm_check_char(255);
+    scm_check_string_copying("aiueo");
+//    scm_check_string_copying(NULL);
+    scm_check_closure();
+    scm_check_func((void*)0x00000000);
+    scm_check_func((void*)0xfffffffe);
+    scm_check_func((void*)0xffffffff);
+    scm_check_vector(0);
+    scm_check_vector(5);
+    scm_check_continuation((void*)NULL);
+    scm_check_continuation((void*)0x20);
+    scm_check_value_packet();
+    scm_check_port();
+    scm_check_cpointer((void*)0x00000000);
+    scm_check_cpointer((void*)0xfffffffe);
+    scm_check_cpointer((void*)0xffffffff);
+    scm_check_cfunc_pointer((ScmCFunc)0x00000000);
+    scm_check_cfunc_pointer((ScmCFunc)0xfffffffe);
+    scm_check_cfunc_pointer((ScmCFunc)0xffffffff);
+    scm_check_constant();
+    scm_check_ref();
 
     SCM_INVALIDP(SCM_INVALID);
 }

@@ -235,24 +235,24 @@ enum ScmStrMutationType {
   Object Creators
 ============================================================================*/
 #define SCM_MAKE_BOOL(x)                  ((x) ? SCM_TRUE : SCM_FALSE)
-#define SCM_MAKE_INT                      Scm_NewInt
-#define SCM_MAKE_CONS                     Scm_NewCons
-#define SCM_MAKE_SYMBOL                   Scm_NewSymbol
-#define SCM_MAKE_CHAR                     Scm_NewChar
-#define SCM_MAKE_STRING                   Scm_NewMutableString
-#define SCM_MAKE_STRING_COPYING           Scm_NewMutableStringCopying
-#define SCM_MAKE_IMMUTABLE_STRING         Scm_NewImmutableString
-#define SCM_MAKE_IMMUTABLE_STRING_COPYING Scm_NewImmutableStringCopying
-#define SCM_MAKE_FUNC                     Scm_NewFunc
-#define SCM_MAKE_CLOSURE                  Scm_NewClosure
-#define SCM_MAKE_VECTOR                   Scm_NewVector
-#define SCM_MAKE_PORT                     Scm_NewPort
-#define SCM_MAKE_CONTINUATION             Scm_NewContinuation
+#define SCM_MAKE_INT                      scm_make_int
+#define SCM_MAKE_CONS                     scm_make_cons
+#define SCM_MAKE_SYMBOL                   scm_make_symbol
+#define SCM_MAKE_CHAR                     scm_make_char
+#define SCM_MAKE_STRING                   scm_make_mutable_string
+#define SCM_MAKE_STRING_COPYING           scm_make_mutable_string_copying
+#define SCM_MAKE_IMMUTABLE_STRING         scm_make_immutable_string
+#define SCM_MAKE_IMMUTABLE_STRING_COPYING scm_make_immutable_string_copying
+#define SCM_MAKE_FUNC                     scm_make_func
+#define SCM_MAKE_CLOSURE                  scm_make_closure
+#define SCM_MAKE_VECTOR                   scm_make_vector
+#define SCM_MAKE_PORT                     scm_make_port
+#define SCM_MAKE_CONTINUATION             scm_make_continuation
 #if SCM_USE_NONSTD_FEATURES
-#define SCM_MAKE_C_POINTER                Scm_NewCPointer
-#define SCM_MAKE_C_FUNCPOINTER            Scm_NewCFuncPointer
+#define SCM_MAKE_C_POINTER                scm_make_cpointer
+#define SCM_MAKE_C_FUNCPOINTER            scm_make_cfunc_pointer
 #endif /* SCM_USE_NONSTD_FEATURES */
-#define SCM_MAKE_VALUEPACKET              Scm_NewValuePacket
+#define SCM_MAKE_VALUEPACKET              scm_make_value_packet
 
 /*=======================================
    Masks Offsets, and Tags
@@ -742,10 +742,10 @@ enum ScmStrMutationType {
   Predefined Symbols
 ============================================================================*/
 /* for list construction */
-#define SCM_SYM_QUOTE            Scm_sym_quote
-#define SCM_SYM_QUASIQUOTE       Scm_sym_quasiquote
-#define SCM_SYM_UNQUOTE          Scm_sym_unquote
-#define SCM_SYM_UNQUOTE_SPLICING Scm_sym_unquote_splicing
+#define SCM_SYM_QUOTE            scm_sym_quote
+#define SCM_SYM_QUASIQUOTE       scm_sym_quasiquote
+#define SCM_SYM_UNQUOTE          scm_sym_unquote
+#define SCM_SYM_UNQUOTE_SPLICING scm_sym_unquote_splicing
 
 /*============================================================================
   Internal Declarations For Predefined Symbols
@@ -760,8 +760,8 @@ enum ScmStrMutationType {
  * defined above. They safely hides the internal model against such change.
  */
 /* sigscheme.c */
-extern ScmObj Scm_sym_quote, Scm_sym_quasiquote;
-extern ScmObj Scm_sym_unquote, Scm_sym_unquote_splicing;
+extern ScmObj scm_sym_quote, scm_sym_quasiquote;
+extern ScmObj scm_sym_unquote, scm_sym_unquote_splicing;
 
 /*============================================================================
   Environment Specifiers
@@ -816,7 +816,7 @@ enum ScmObjType {
 };
 
 /* storage.c */
-#define SCM_TYPE(a) Scm_Type(a)
-extern enum ScmObjType Scm_Type(ScmObj obj);
+#define SCM_TYPE(a) scm_type(a)
+extern enum ScmObjType scm_type(ScmObj obj);
 
 #endif /* __SIGSCMTYPE_COMPACT_H */

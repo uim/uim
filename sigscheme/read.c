@@ -77,7 +77,7 @@ enum LexerState {
 /*=======================================
   Variable Declarations
 =======================================*/
-const ScmSpecialCharInfo Scm_special_char_table[] = {
+const ScmSpecialCharInfo scm_special_char_table[] = {
     /* printable characters */
     {'\"',   "\\\"",  "\""},         /* 34, R5RS */
     {'\\',   "\\\\",  "\\"},         /* 92, R5RS */
@@ -136,27 +136,29 @@ static ScmObj read_quote(ScmObj port, ScmObj quoter);
 /*===========================================================================
   S-Expression Parser
 ===========================================================================*/
-ScmObj SigScm_Read(ScmObj port)
+ScmObj 
+scm_read(ScmObj port)
 {
     ScmObj sexp = SCM_FALSE;
-    DECLARE_INTERNAL_FUNCTION("SigScm_Read");
+    DECLARE_INTERNAL_FUNCTION("scm_read");
 
     ASSERT_PORTP(port);
 
     sexp = read_sexpression(port);
 #if SCM_DEBUG
-    if ((SigScm_DebugCategories() & SCM_DBG_READ) && !EOFP(sexp)) {
-        SigScm_WriteToPort(scm_current_error_port, sexp);
-        SigScm_ErrorNewline();
+    if ((scm_debug_categories() & SCM_DBG_READ) && !EOFP(sexp)) {
+        scm_write_to_port(scm_current_error_port, sexp);
+        scm_error_newline();
     }
 #endif
 
     return sexp;
 }
 
-ScmObj SigScm_Read_Char(ScmObj port)
+ScmObj 
+scm_read_char(ScmObj port)
 {
-    DECLARE_INTERNAL_FUNCTION("SigScm_Read_Char");
+    DECLARE_INTERNAL_FUNCTION("scm_read_char");
 
     ASSERT_PORTP(port);
 
@@ -238,8 +240,8 @@ static size_t read_token(ScmObj port, int *err,
                 *err = TOKEN_BUF_EXCEEDED;
                 break;
             }
-            /* FIXME: check Unicode capability of Scm_current_char_codec */
-            p = SCM_CHARCODEC_INT2STR(Scm_current_char_codec,
+            /* FIXME: check Unicode capability of scm_current_char_codec */
+            p = SCM_CHARCODEC_INT2STR(scm_current_char_codec,
                                       p, c, SCM_MB_STATELESS);
 #else
             ERR("non-ASCII char in token: 0x%x", c);
@@ -287,7 +289,7 @@ static ScmObj read_sexpression(ScmObj port)
             case 'f':
                 return SCM_FALSE;
             case '(':
-                return ScmOp_list2vector(read_list(port, ')'));
+                return scm_p_list2vector(read_list(port, ')'));
             case '\\':
                 return read_char(port);
             case 'b': case 'o': case 'd': case 'x':
@@ -401,7 +403,7 @@ static ScmObj read_list(ScmObj port, int closeParen)
                 SCM_QUEUE_SLOPPY_APPEND(q, cdr);
                 return lst;
             } else if (strcmp(dot_buf, "...") == 0) {
-                elm = Scm_Intern(dot_buf);
+                elm = scm_intern(dot_buf);
             } else {
                 ERR("bad dot syntax");
             }
@@ -480,7 +482,7 @@ static ScmObj read_char(ScmObj port)
     c = SCM_PORT_GET_CHAR(port);
     next = SCM_PORT_PEEK_CHAR(port);
     if (strchr(DELIMITER_CHARS, next) || next == EOF)
-        return Scm_NewChar(c);
+        return scm_make_char(c);
 #if SCM_USE_SRFI75
     else if (!isascii(c))
         ERR("invalid character literal");
@@ -496,12 +498,12 @@ static ScmObj read_char(ScmObj port)
 #if SCM_USE_SRFI75
     unicode = parse_unicode_sequence(buf, len + 1);
     if (0 <= unicode)
-        return Scm_NewChar(unicode);
+        return scm_make_char(unicode);
 #endif
     /* named chars */
-    for (info = Scm_special_char_table; info->esc_seq; info++) {
+    for (info = scm_special_char_table; info->esc_seq; info++) {
         if (strcmp(buf, info->lex_rep) == 0)
-            return Scm_NewChar(info->code);
+            return scm_make_char(info->code);
     }
     ERR("invalid character literal: #\\%s", buf);
 }
@@ -535,7 +537,7 @@ static ScmObj read_string(ScmObj port)
         case '\"':
             LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + 1);
             *p = '\0';
-            obj = Scm_NewImmutableStringCopying(LBUF_BUF(lbuf));
+            obj = scm_make_immutable_string_copying(LBUF_BUF(lbuf));
             LBUF_FREE(lbuf);
             return obj;
 
@@ -546,8 +548,8 @@ static ScmObj read_string(ScmObj port)
                 c = read_unicode_sequence(port, c);
                 LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + MB_MAX_SIZE);
                 p = &LBUF_BUF(lbuf)[offset];
-                /* FIXME: check Unicode capability of Scm_current_char_codec */
-                p = SCM_CHARCODEC_INT2STR(Scm_current_char_codec,
+                /* FIXME: check Unicode capability of scm_current_char_codec */
+                p = SCM_CHARCODEC_INT2STR(scm_current_char_codec,
                                           p, c, SCM_MB_STATELESS);
                 if (!p)
                     ERR("invalid Unicode sequence in string: 0x%x", c);
@@ -556,7 +558,7 @@ static ScmObj read_string(ScmObj port)
 #endif
             {
                 /* escape sequences */
-                for (info = Scm_special_char_table; info->esc_seq; info++) {
+                for (info = scm_special_char_table; info->esc_seq; info++) {
                     if (strlen(info->esc_seq) == 2 && c == info->esc_seq[1]) {
                         LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + 1);
                         p = &LBUF_BUF(lbuf)[offset];
@@ -573,7 +575,7 @@ static ScmObj read_string(ScmObj port)
             LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + MB_MAX_SIZE);
             p = &LBUF_BUF(lbuf)[offset];
             /* FIXME: support stateful encoding */
-            p = SCM_CHARCODEC_INT2STR(Scm_current_char_codec,
+            p = SCM_CHARCODEC_INT2STR(scm_current_char_codec,
                                       p, c, SCM_MB_STATELESS);
             if (!p)
                 ERR("invalid char in string: 0x%x", c);
@@ -608,7 +610,7 @@ static ScmObj read_symbol(ScmObj port)
         LBUF_EXTEND(lbuf, SCM_LBUF_F_SYMBOL, LBUF_SIZE(lbuf) + MB_MAX_SIZE);
     }
  
-    sym = Scm_Intern(LBUF_BUF(lbuf));
+    sym = scm_intern(LBUF_BUF(lbuf));
     LBUF_FREE(lbuf);
  
     return sym;
@@ -633,14 +635,14 @@ static ScmObj read_number_or_symbol(ScmObj port)
             if (err == TOKEN_BUF_EXCEEDED)
                 ERR("invalid number literal");
             if (!buf[1])
-                return Scm_Intern(buf);
+                return scm_intern(buf);
             return parse_number(port, buf, sizeof(buf), 'd');
         }
 
         if (c == '.') {
             read_token(port, &err, buf, sizeof(buf), DELIMITER_CHARS);
             if (strcmp(buf, "...") == 0)
-                return Scm_Intern(buf);
+                return scm_intern(buf);
             /* TODO: support numeric expressions when the numeric tower is
                implemented */
             ERR("invalid identifier: %s", buf);
@@ -673,7 +675,7 @@ static ScmObj parse_number(ScmObj port,
     if (*first_nondigit)
         goto err;
 
-    return Scm_NewInt(number);
+    return scm_make_int(number);
 
  err:
     ERR("ill-formatted number: #%c%s", prefix, buf);

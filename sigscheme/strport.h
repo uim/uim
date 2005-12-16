@@ -70,7 +70,7 @@ extern const ScmBytePortVTbl *ScmOutputStrPort_vptr;
 /*=======================================
    Function Declarations
 =======================================*/
-void Scm_strport_init(void);
+void scm_strport_init(void);
 
 ScmBytePort *ScmInputStrPort_new(char *str,
                                  ScmInputStrPort_finalizer finalize);

@@ -79,13 +79,13 @@ static void repl(void)
 #endif
 
 #if !SCM_GCC4_READY_GC
-    SigScm_GC_ProtectStack(&stack_start);
+    scm_gc_protect_stack(&stack_start);
 #endif
 
     repl_loop();
 
 #if !SCM_GCC4_READY_GC
-    SigScm_GC_UnprotectStack(&stack_start);
+    scm_gc_unprotect_stack(&stack_start);
 #endif
 }
 
@@ -95,15 +95,15 @@ static void repl_loop(void)
 #if SCM_USE_SRFI34
     ScmObj sym_guard, cond_catch, proc_read, err;
 
-    proc_read = Scm_SymbolValue(Scm_Intern("read"), SCM_INTERACTION_ENV);
+    proc_read = scm_symbol_value(scm_intern("read"), SCM_INTERACTION_ENV);
     err = CONS(SCM_UNDEF, SCM_UNDEF); /* unique ID */
 
     /* prepare the constant part of the form to get the loop fast */
-    sym_guard = Scm_Intern("guard");
-    cond_catch = LIST_2(Scm_Intern("err"),
+    sym_guard = scm_intern("guard");
+    cond_catch = LIST_2(scm_intern("err"),
                         LIST_3(SYM_ELSE,
-                               LIST_2(Scm_Intern("%%inspect-error"),
-                                      Scm_Intern("err")),
+                               LIST_2(scm_intern("%%inspect-error"),
+                                      scm_intern("err")),
                                LIST_2(SCM_SYM_QUOTE, err)));
 #endif /* SCM_USE_SRFI34 */
 
@@ -136,7 +136,7 @@ static void repl_loop(void)
         result = EVAL(LIST_3(sym_guard, cond_catch, sexp),
                       SCM_INTERACTION_ENV);
 #else /* SCM_USE_SRFI34 */
-        sexp = SigScm_Read(scm_current_input_port)
+        sexp = scm_read(scm_current_input_port)
         if (EOFP(sexp))
             break;
 
@@ -145,7 +145,7 @@ static void repl_loop(void)
 
         if (!EQ(result, err)) {
             SCM_WRITESS_TO_PORT(scm_current_output_port, result);
-            SigScm_PortNewline(scm_current_output_port);
+            scm_port_newline(scm_current_output_port);
         }
     }
 }
@@ -153,8 +153,8 @@ static void repl_loop(void)
 static int show_promptp(void)
 {
 #if SCM_COMPAT_SIOD
-    return (FALSEP(ScmOp_providedp(feature_id_siod))
-            || SigScm_GetVerboseLevel() >= 2);
+    return (FALSEP(scm_p_providedp(feature_id_siod))
+            || scm_get_verbose_level() >= 2);
 #else
     return TRUE;
 #endif
@@ -165,23 +165,23 @@ int main(int argc, char **argv)
     const char *filename;
     char **rest_argv;
 
-    /* must be done before SigScm_Initialize() */
-    rest_argv = Scm_InterpretArgv(argv);
+    /* must be done before scm_initialize() */
+    rest_argv = scm_interpret_argv(argv);
     filename = rest_argv[0];
 
-    SigScm_Initialize();
+    scm_initialize();
 
 #if SCM_USE_SRFI34
-    Scm_Use("srfi-34");
+    scm_use("srfi-34");
 #endif
 
 #if SCM_COMPAT_SIOD
-    SigScm_GC_Protect(&feature_id_siod);
-    feature_id_siod = Scm_NewImmutableStringCopying(FEATURE_ID_SIOD);
+    scm_gc_protect(&feature_id_siod);
+    feature_id_siod = scm_make_immutable_string_copying(FEATURE_ID_SIOD);
 #endif
 
     if (filename) {
-        SigScm_load(filename);
+        scm_load(filename);
     } else {
 #if SCM_GCC4_READY_GC
         SCM_GC_PROTECTED_CALL_VOID(repl, ());
@@ -191,6 +191,6 @@ int main(int argc, char **argv)
         /* ERR("usage: sscm <filename>"); */
     }
 
-    SigScm_Finalize();
+    scm_finalize();
     return EXIT_SUCCESS;
 }

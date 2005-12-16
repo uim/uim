@@ -207,7 +207,7 @@ static ScmCharCodec *available_codecs[] = {
   Global Variables
 =======================================*/
 /* temporary solution */
-ScmCharCodec *Scm_current_char_codec
+ScmCharCodec *scm_current_char_codec
 #if SCM_USE_UTF8_AS_DEFAULT
     = utf8_codec;
 #elif SCM_USE_EUCJP_AS_DEFAULT
@@ -226,7 +226,8 @@ ScmCharCodec *Scm_current_char_codec
   Public API
 =======================================*/
 
-int Scm_mb_strlen(ScmMultibyteString mbs)
+int 
+scm_mb_strlen(ScmMultibyteString mbs)
 {
     int len = 0;
     ScmMultibyteCharInfo c;
@@ -235,7 +236,7 @@ int Scm_mb_strlen(ScmMultibyteString mbs)
           SCM_MBS_GET_SIZE(mbs), SCM_MBS_GET_STR(mbs)));
 
     while (SCM_MBS_GET_SIZE(mbs)) {
-        c = SCM_CHARCODEC_SCAN_CHAR(Scm_current_char_codec, mbs);
+        c = SCM_CHARCODEC_SCAN_CHAR(scm_current_char_codec, mbs);
         CDBG((SCM_DBG_ENCODING, "%d, %d;", SCM_MBCINFO_GET_SIZE(c), c.flag));
         SCM_MBS_SKIP_CHAR(mbs, c);
         len++;
@@ -246,16 +247,18 @@ int Scm_mb_strlen(ScmMultibyteString mbs)
 }
 
 /* FIXME: pick a better name. */
-int Scm_mb_bare_c_strlen(const char *s)
+int 
+scm_mb_bare_c_strlen(const char *s)
 {
     ScmMultibyteString mbs;
     SCM_MBS_INIT(mbs);
     SCM_MBS_SET_STR(mbs, s);
     SCM_MBS_SET_SIZE(mbs, strlen(s));
-    return Scm_mb_strlen(mbs);
+    return scm_mb_strlen(mbs);
 }
 
-ScmMultibyteString Scm_mb_substring(ScmMultibyteString mbs, int i, int len)
+ScmMultibyteString 
+scm_mb_substring(ScmMultibyteString mbs, int i, int len)
 {
     ScmMultibyteString ret;
     ScmMultibyteString end;
@@ -264,14 +267,14 @@ ScmMultibyteString Scm_mb_substring(ScmMultibyteString mbs, int i, int len)
     ret = mbs;
 
     while (i--) {
-        c = SCM_CHARCODEC_SCAN_CHAR(Scm_current_char_codec, ret);
+        c = SCM_CHARCODEC_SCAN_CHAR(scm_current_char_codec, ret);
         SCM_MBS_SKIP_CHAR(ret, c);
     }
 
     end = ret;
 
     while (len--) {
-        c = SCM_CHARCODEC_SCAN_CHAR(Scm_current_char_codec, end);
+        c = SCM_CHARCODEC_SCAN_CHAR(scm_current_char_codec, end);
         SCM_MBS_SKIP_CHAR(end, c);
     }
 
@@ -280,7 +283,8 @@ ScmMultibyteString Scm_mb_substring(ScmMultibyteString mbs, int i, int len)
 }
 
 /* TODO: support encoding name canonicalization */
-ScmCharCodec *Scm_mb_find_codec(const char *encoding)
+ScmCharCodec *
+scm_mb_find_codec(const char *encoding)
 {
     ScmCharCodec **codecp;
 

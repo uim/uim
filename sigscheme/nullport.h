@@ -65,7 +65,7 @@ extern const ScmBytePortVTbl *ScmNullPort_vptr;
 /*=======================================
    Function Declarations
 =======================================*/
-void Scm_nullport_init(void);
+void scm_nullport_init(void);
 
 ScmBytePort *ScmNullPort_new(void);
 

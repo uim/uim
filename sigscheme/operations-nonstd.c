@@ -62,10 +62,11 @@ static ScmObj create_loaded_str(ScmObj filename);
 /*=======================================
   Function Implementations
 =======================================*/
-void SigScm_Initialize_NONSTD_FEATURES(void)
+void 
+scm_initialize_nonstd_features(void)
 {
     REGISTER_FUNC_TABLE(nonstd_func_info_table);
-    Scm_DefineAlias("call/cc", "call-with-current-continuation");
+    scm_define_alias("call/cc", "call-with-current-continuation");
 }
 
 /*
@@ -77,10 +78,11 @@ void SigScm_Initialize_NONSTD_FEATURES(void)
  * procedure with global-variable-bound?.
  */
 /* The implementation is fully compatible with SIOD */
-ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest)
+ScmObj 
+scm_p_symbol_boundp(ScmObj sym, ScmObj rest)
 {
     ScmObj env = SCM_INVALID;
-    DECLARE_FUNCTION("symbol-bound?", ProcedureVariadic1);
+    DECLARE_FUNCTION("symbol-bound?", procedure_variadic_1);
 
     ASSERT_SYMBOLP(sym);
 
@@ -90,36 +92,38 @@ ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest)
     else
         env = SCM_INTERACTION_ENV;
 
-    return (Scm_LookupEnvironment(sym, env) != SCM_INVALID_REF
+    return (scm_lookup_environment(sym, env) != SCM_INVALID_REF
             || SCM_SYMBOL_BOUNDP(sym)) ? SCM_TRUE : SCM_FALSE;
 }
 
 /* SIOD compatible */
-ScmObj ScmOp_load_path(void)
+ScmObj 
+scm_p_load_path(void)
 {
-    DECLARE_FUNCTION("load-path", ProcedureFixed0);
-    return Scm_NewImmutableStringCopying(scm_lib_path);
+    DECLARE_FUNCTION("load-path", procedure_fixed_0);
+    return scm_make_immutable_string_copying(scm_lib_path);
 }
 
-/* FIXME: add ScmObj SigScm_require(const char *c_filename) */
-ScmObj ScmOp_require(ScmObj filename)
+/* FIXME: add ScmObj scm_require(const char *c_filename) */
+ScmObj 
+scm_p_require(ScmObj filename)
 {
     ScmObj loaded_str = SCM_FALSE;
 #if SCM_COMPAT_SIOD
     ScmObj retsym     = SCM_FALSE;
 #endif
-    DECLARE_FUNCTION("require", ProcedureFixed1);
+    DECLARE_FUNCTION("require", procedure_fixed_1);
 
     ASSERT_STRINGP(filename);
 
     loaded_str = create_loaded_str(filename);
-    if (FALSEP(ScmOp_providedp(loaded_str))) {
-        ScmOp_load(filename);
-        ScmOp_provide(loaded_str);
+    if (FALSEP(scm_p_providedp(loaded_str))) {
+        scm_p_load(filename);
+        scm_p_provide(loaded_str);
     }
 
 #if SCM_COMPAT_SIOD
-    retsym = Scm_Intern(SCM_STRING_STR(loaded_str));
+    retsym = scm_intern(SCM_STRING_STR(loaded_str));
     SCM_SYMBOL_SET_VCELL(retsym, SCM_TRUE);
 
     return retsym;
@@ -138,20 +142,21 @@ static ScmObj create_loaded_str(ScmObj filename)
     loaded_str = scm_malloc(size);
     snprintf(loaded_str, size, "*%s-loaded*", SCM_STRING_STR(filename));
 
-    return Scm_NewImmutableString(loaded_str);
+    return scm_make_immutable_string(loaded_str);
 }
 
 /*
  * TODO: replace original specification with a SRFI standard or other de facto
  * standard
  */
-ScmObj ScmOp_provide(ScmObj feature)
+ScmObj 
+scm_p_provide(ScmObj feature)
 {
-    DECLARE_FUNCTION("provide", ProcedureFixed1);
+    DECLARE_FUNCTION("provide", procedure_fixed_1);
 
     ASSERT_STRINGP(feature);
 
-    Scm_Provide(feature);
+    scm_provide(feature);
 
     return SCM_TRUE;
 }
@@ -160,23 +165,25 @@ ScmObj ScmOp_provide(ScmObj feature)
  * TODO: replace original specification with a SRFI standard or other de facto
  * standard
  */
-ScmObj ScmOp_providedp(ScmObj feature)
+ScmObj 
+scm_p_providedp(ScmObj feature)
 {
-    DECLARE_FUNCTION("provided?", ProcedureFixed1);
+    DECLARE_FUNCTION("provided?", procedure_fixed_1);
 
     ASSERT_STRINGP(feature);
 
-    return (Scm_Providedp(feature)) ? SCM_TRUE : SCM_FALSE;
+    return (scm_providedp(feature)) ? SCM_TRUE : SCM_FALSE;
 }
 
 /*
  * TODO: describe compatibility with de facto standard of other Scheme
  * implementations
  */
-ScmObj ScmOp_file_existsp(ScmObj filepath)
+ScmObj 
+scm_p_file_existsp(ScmObj filepath)
 {
     FILE *f;
-    DECLARE_FUNCTION("file-exists?", ProcedureFixed1);
+    DECLARE_FUNCTION("file-exists?", procedure_fixed_1);
 
     ASSERT_STRINGP(filepath);
 
@@ -189,9 +196,10 @@ ScmObj ScmOp_file_existsp(ScmObj filepath)
 }
 
 /* TODO: remove to ensure security */
-ScmObj ScmOp_delete_file(ScmObj filepath)
+ScmObj 
+scm_p_delete_file(ScmObj filepath)
 {
-    DECLARE_FUNCTION("delete-file", ProcedureFixed1);
+    DECLARE_FUNCTION("delete-file", procedure_fixed_1);
 
     ASSERT_STRINGP(filepath);
 

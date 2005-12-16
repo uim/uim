@@ -61,7 +61,8 @@
 /*=======================================
   Function Implementations
 =======================================*/
-void SigScm_Initialize_SRFI2(void)
+void 
+scm_initialize_srfi2(void)
 {
     /*=======================================================================
       SRFI-2 Procedure
@@ -69,14 +70,15 @@ void SigScm_Initialize_SRFI2(void)
     REGISTER_FUNC_TABLE(srfi2_func_info_table);
 }
 
-ScmObj ScmExp_SRFI2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
+ScmObj 
+scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
 {
     ScmObj env  = eval_state->env;
     ScmObj claw = SCM_FALSE;
     ScmObj var  = SCM_FALSE;
     ScmObj val  = SCM_FALSE;
     ScmObj exp  = SCM_FALSE;
-    DECLARE_FUNCTION("and-let*", SyntaxVariadicTailRec1);
+    DECLARE_FUNCTION("and-let*", syntax_variadic_tailrec_1);
 
     /*========================================================================
       (and-let* <claws> <body>)
@@ -100,7 +102,7 @@ ScmObj ScmExp_SRFI2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_st
                     var = CAR(claw);
                     exp = CADR(claw);
                     val = EVAL(exp, env);
-                    env = Scm_ExtendEnvironment(LIST_1(var), LIST_1(val), env);
+                    env = scm_extend_environment(LIST_1(var), LIST_1(val), env);
                 } else {
                     goto err;
                 }
@@ -114,14 +116,14 @@ ScmObj ScmExp_SRFI2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_st
                 return SCM_FALSE;
         }
     } else if (NULLP(claws)) {
-        env = Scm_ExtendEnvironment(SCM_NULL, SCM_NULL, env);
+        env = scm_extend_environment(SCM_NULL, SCM_NULL, env);
     } else {
         goto err;
     }
 
     eval_state->env = env;
 
-    return ScmExp_begin(body, eval_state);
+    return scm_s_begin(body, eval_state);
 
  err:
     ERR_OBJ("invalid claws form", claws);

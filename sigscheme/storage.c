@@ -66,15 +66,15 @@
 =======================================*/
 /* multiple values */
 #if SCM_USE_VALUECONS
-ScmObj SigScm_null_values;
+ScmObj scm_null_values;
 #endif
 
 #if !SCM_OBJ_COMPACT
 /* SCM_OBJ_COMPACT MUST NOT refer these variables. Use SCM_NULL and so on. */
 
 /* constants */
-ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
-ScmObj SigScm_unbound, SigScm_undef;
+ScmObj scm_null, scm_true, scm_false, scm_eof;
+ScmObj scm_unbound, scm_undef;
 static ScmCell null_cell, true_cell, false_cell, eof_cell;
 static ScmCell unbound_cell, undef_cell;
 #endif
@@ -87,16 +87,16 @@ static void initialize_special_constants(void);
 /*=======================================
   Function Implementations
 =======================================*/
-void SigScm_InitStorage(size_t heap_size, size_t heap_alloc_threshold,
+void scm_init_storage(size_t heap_size, size_t heap_alloc_threshold,
                         int n_heaps_max, int n_heaps_init)
 {
     initialize_special_constants();
 
-    SigScm_InitGC(heap_size, heap_alloc_threshold, n_heaps_max, n_heaps_init);
+    scm_init_gc(heap_size, heap_alloc_threshold, n_heaps_max, n_heaps_init);
 
 #if 0 && (SCM_COMPAT_SIOD_BUGS && !SCM_OBJ_COMPACT)
-    SigScm_GC_Protect(&SigScm_true);
-    SigScm_true = Scm_NewInt(1);
+    scm_gc_protect(&scm_true);
+    scm_true = scm_make_int(1);
 #endif
 
 #if SCM_USE_VALUECONS
@@ -104,20 +104,21 @@ void SigScm_InitStorage(size_t heap_size, size_t heap_alloc_threshold,
      * To keep storage model abstract, the cell is allocated from a heap
      * instead of directly construct ScmCell
      */
-    SigScm_null_values = CONS(SCM_NULL, SCM_NULL);
-    SCM_ENTYPE_VALUEPACKET(SigScm_null_values);
-    SigScm_GC_Protect(&SigScm_null_values);
+    scm_null_values = CONS(SCM_NULL, SCM_NULL);
+    SCM_ENTYPE_VALUEPACKET(scm_null_values);
+    scm_gc_protect(&scm_null_values);
 #endif
 
-    SigScm_InitContinuation();
-    SigScm_InitSymbol();
+    scm_init_continuation();
+    scm_init_symbol();
 }
 
-void SigScm_FinalizeStorage(void)
+void 
+scm_finalize_storage(void)
 {
-    SigScm_FinalizeSymbol();
-    SigScm_FinalizeContinuation();
-    SigScm_FinalizeGC();
+    scm_finalize_symbol();
+    scm_finalize_continuation();
+    scm_finalize_gc();
 }
 
 /*===========================================================================
@@ -131,15 +132,15 @@ void SigScm_FinalizeStorage(void)
 static void initialize_special_constants(void)
 {
 #if !SCM_OBJ_COMPACT
-    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_null,    null_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_true,    true_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_false,   false_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_eof,     eof_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_unbound, unbound_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(SigScm_undef,   undef_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_null,    null_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_true,    true_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_false,   false_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_eof,     eof_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_unbound, unbound_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_undef,   undef_cell);
 
 #if SCM_COMPAT_SIOD_BUGS
-    SigScm_false = SigScm_null;
+    scm_false = scm_null;
 #endif /* SCM_COMPAT_SIOD_BUGS */
 #endif /* !SCM_OBJ_COMPACT */
 }
@@ -147,9 +148,10 @@ static void initialize_special_constants(void)
 /*===========================================================================
   Object Allocators
 ===========================================================================*/
-ScmObj Scm_NewCons(ScmObj a, ScmObj b)
+ScmObj 
+scm_make_cons(ScmObj a, ScmObj b)
 {
-    ScmObj obj = SigScm_NewObjFromHeap();
+    ScmObj obj = scm_make_obj_from_heap();
 
     SCM_ENTYPE_CONS(obj);
     SET_CAR(obj, a);
@@ -158,9 +160,10 @@ ScmObj Scm_NewCons(ScmObj a, ScmObj b)
     return obj;
 }
 
-ScmObj Scm_NewInt(int val)
+ScmObj 
+scm_make_int(int val)
 {
-    ScmObj obj = SigScm_NewObjFromHeap();
+    ScmObj obj = scm_make_obj_from_heap();
 
     SCM_ENTYPE_INT(obj);
     SCM_INT_SET_VALUE(obj, val);
@@ -168,9 +171,10 @@ ScmObj Scm_NewInt(int val)
     return obj;
 }
 
-ScmObj Scm_NewSymbol(char *name, ScmObj v_cell)
+ScmObj 
+scm_make_symbol(char *name, ScmObj v_cell)
 {
-    ScmObj obj = SigScm_NewObjFromHeap();
+    ScmObj obj = scm_make_obj_from_heap();
 
     SCM_ENTYPE_SYMBOL(obj);
     SCM_SYMBOL_SET_NAME(obj, name);
@@ -179,9 +183,10 @@ ScmObj Scm_NewSymbol(char *name, ScmObj v_cell)
     return obj;
 }
 
-ScmObj Scm_NewChar(int val)
+ScmObj 
+scm_make_char(int val)
 {
-    ScmObj obj = SigScm_NewObjFromHeap();
+    ScmObj obj = scm_make_obj_from_heap();
 
     SCM_ENTYPE_CHAR(obj);
     SCM_CHAR_SET_VALUE(obj, val);
@@ -189,13 +194,14 @@ ScmObj Scm_NewChar(int val)
     return obj;
 }
 
-ScmObj Scm_NewString(char *str, int is_immutable)
+ScmObj 
+scm_make_string(char *str, int is_immutable)
 {
-    ScmObj obj = SigScm_NewObjFromHeap();
+    ScmObj obj = scm_make_obj_from_heap();
 
     SCM_ENTYPE_STRING(obj);
     SCM_STRING_SET_STR(obj, str);
-    SCM_STRING_SET_LEN(obj, str ? Scm_mb_bare_c_strlen(str) : 0);
+    SCM_STRING_SET_LEN(obj, str ? scm_mb_bare_c_strlen(str) : 0);
 
     if (is_immutable)
         SCM_STRING_SET_IMMUTABLE(obj);
@@ -205,29 +211,34 @@ ScmObj Scm_NewString(char *str, int is_immutable)
     return obj;
 }
 
-ScmObj Scm_NewImmutableString(char *str)
+ScmObj 
+scm_make_immutable_string(char *str)
 {
-    return Scm_NewString(str, 1);
+    return scm_make_string(str, 1);
 }
 
-ScmObj Scm_NewImmutableStringCopying(const char *str)
+ScmObj 
+scm_make_immutable_string_copying(const char *str)
 {
-    return Scm_NewString(strdup(str), 1);
+    return scm_make_string(strdup(str), 1);
 }
 
-ScmObj Scm_NewMutableString(char *str)
+ScmObj 
+scm_make_mutable_string(char *str)
 {
-    return Scm_NewString(str, 0);
+    return scm_make_string(str, 0);
 }
 
-ScmObj Scm_NewMutableStringCopying(const char *str)
+ScmObj 
+scm_make_mutable_string_copying(const char *str)
 {
-    return Scm_NewString(strdup(str), 0);
+    return scm_make_string(strdup(str), 0);
 }
 
-ScmObj Scm_NewFunc(enum ScmFuncTypeCode type, ScmFuncType func)
+ScmObj 
+scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func)
 {
-    ScmObj obj = SigScm_NewObjFromHeap();
+    ScmObj obj = scm_make_obj_from_heap();
 
     SCM_ENTYPE_FUNC(obj);
     SCM_FUNC_SET_TYPECODE(obj, type);
@@ -236,9 +247,10 @@ ScmObj Scm_NewFunc(enum ScmFuncTypeCode type, ScmFuncType func)
     return obj;
 }
 
-ScmObj Scm_NewClosure(ScmObj exp, ScmObj env)
+ScmObj 
+scm_make_closure(ScmObj exp, ScmObj env)
 {
-    ScmObj obj = SigScm_NewObjFromHeap();
+    ScmObj obj = scm_make_obj_from_heap();
 
     SCM_ENTYPE_CLOSURE(obj);
     SCM_CLOSURE_SET_EXP(obj, exp);
@@ -247,9 +259,10 @@ ScmObj Scm_NewClosure(ScmObj exp, ScmObj env)
     return obj;
 }
 
-ScmObj Scm_NewVector(ScmObj *vec, int len)
+ScmObj 
+scm_make_vector(ScmObj *vec, int len)
 {
-    ScmObj obj = SigScm_NewObjFromHeap();
+    ScmObj obj = scm_make_obj_from_heap();
 
     SCM_ENTYPE_VECTOR(obj);
     SCM_VECTOR_SET_VEC(obj, vec);
@@ -258,9 +271,10 @@ ScmObj Scm_NewVector(ScmObj *vec, int len)
     return obj;
 }
 
-ScmObj Scm_NewPort(ScmCharPort *cport, enum ScmPortFlag flag)
+ScmObj 
+scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag)
 {
-    ScmObj obj = SigScm_NewObjFromHeap();
+    ScmObj obj = scm_make_obj_from_heap();
 
     SCM_ENTYPE_PORT(obj);
 
@@ -275,9 +289,10 @@ ScmObj Scm_NewPort(ScmCharPort *cport, enum ScmPortFlag flag)
     return obj;
 }
 
-ScmObj Scm_NewContinuation(void)
+ScmObj 
+scm_make_continuation(void)
 {
-    ScmObj obj = SigScm_NewObjFromHeap();
+    ScmObj obj = scm_make_obj_from_heap();
 
     SCM_ENTYPE_CONTINUATION(obj);
     SCM_CONTINUATION_SET_OPAQUE(obj, INVALID_CONTINUATION_OPAQUE);
@@ -287,9 +302,10 @@ ScmObj Scm_NewContinuation(void)
 }
 
 #if !SCM_USE_VALUECONS
-ScmObj Scm_NewValuePacket(ScmObj values)
+ScmObj 
+scm_make_value_packet(ScmObj values)
 {
-    ScmObj obj = SigScm_NewObjFromHeap();
+    ScmObj obj = scm_make_obj_from_heap();
 
     SCM_ENTYPE_VALUEPACKET(obj);
     SCM_VALUEPACKET_SET_VALUES(obj, values);
@@ -299,9 +315,10 @@ ScmObj Scm_NewValuePacket(ScmObj values)
 #endif
 
 #if SCM_USE_NONSTD_FEATURES
-ScmObj Scm_NewCPointer(void *data)
+ScmObj 
+scm_make_cpointer(void *data)
 {
-    ScmObj obj = SigScm_NewObjFromHeap();
+    ScmObj obj = scm_make_obj_from_heap();
 
     SCM_ENTYPE_C_POINTER(obj);
     SCM_C_POINTER_SET_VALUE(obj, data);
@@ -309,9 +326,10 @@ ScmObj Scm_NewCPointer(void *data)
     return obj;
 }
 
-ScmObj Scm_NewCFuncPointer(ScmCFunc func)
+ScmObj 
+scm_make_cfunc_pointer(ScmCFunc func)
 {
-    ScmObj obj = SigScm_NewObjFromHeap();
+    ScmObj obj = scm_make_obj_from_heap();
 
     SCM_ENTYPE_C_FUNCPOINTER(obj);
     SCM_C_FUNCPOINTER_SET_VALUE(obj, func);
@@ -321,7 +339,8 @@ ScmObj Scm_NewCFuncPointer(ScmCFunc func)
 #endif /* SCM_USE_NONSTD_FEATURES */
 
 #if SCM_OBJ_COMPACT
-enum ScmObjType Scm_Type(ScmObj obj)
+enum ScmObjType 
+scm_type(ScmObj obj)
 {
     if (SCM_TAG_CONSP(obj)) {
         return ScmCons;

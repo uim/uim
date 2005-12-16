@@ -124,7 +124,7 @@
  */
 #define HAVE_ASPRINTF           1
 #define HAVE_VASPRINTF          1
-#define HAVE_POSIX_MEMALIGN     0
+#define HAVE_POSIX_MEMALIGN     1
 
 /*===========================================================================
   Dependency Resolution
@@ -177,7 +177,7 @@
 #error "disabled character encoding is chosen as default"
 #endif
 
-/* for Scm_eval_c_string_internal() */
+/* for scm_eval_c_string_internal() */
 #undef SCM_USE_SRFI6
 #define SCM_USE_SRFI6           1
 

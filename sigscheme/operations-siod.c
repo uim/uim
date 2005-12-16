@@ -98,28 +98,29 @@ static ScmObj saved_error_port  = NULL;
 
   TODO : remove these functions!
 =======================================*/
-void SigScm_Initialize_SIOD(void)
+void 
+scm_initialize_siod(void)
 {
     REGISTER_FUNC_TABLE(siod_func_info_table);
 
-    Scm_Use("srfi-60");
-    Scm_DefineAlias("bit-and", "logand");
-    Scm_DefineAlias("bit-or",  "logior");
-    Scm_DefineAlias("bit-xor", "logxor");
-    Scm_DefineAlias("bit-not", "lognot");
+    scm_use("srfi-60");
+    scm_define_alias("bit-and", "logand");
+    scm_define_alias("bit-or",  "logior");
+    scm_define_alias("bit-xor", "logxor");
+    scm_define_alias("bit-not", "lognot");
 
     null_port         = SCM_FALSE;
     saved_output_port = SCM_FALSE;
     saved_error_port  = SCM_FALSE;
-    SigScm_GC_Protect(&null_port);
-    SigScm_GC_Protect(&saved_output_port);
-    SigScm_GC_Protect(&saved_error_port);
+    scm_gc_protect(&null_port);
+    scm_gc_protect(&saved_output_port);
+    scm_gc_protect(&saved_error_port);
 
-    Scm_nullport_init();
-    null_port = Scm_NewPort(Scm_NewCharPort(ScmNullPort_new()),
+    scm_nullport_init();
+    null_port = scm_make_port(scm_make_char_port(ScmNullPort_new()),
                             SCM_PORTFLAG_INPUT | SCM_PORTFLAG_OUTPUT);
 
-    SigScm_SetVerboseLevel(2);
+    scm_set_verbose_level(2);
 }
 
 /*
@@ -128,13 +129,14 @@ void SigScm_Initialize_SIOD(void)
  * - make the portable proc interface similar to a de facto standard of other
  *   Scheme implementations if existing
  */
-ScmObj ScmOp_symbol_value(ScmObj var)
+ScmObj 
+scm_p_symbol_value(ScmObj var)
 {
-    DECLARE_FUNCTION("symbol-value", ProcedureFixed1);
+    DECLARE_FUNCTION("symbol-value", procedure_fixed_1);
 
     ASSERT_SYMBOLP(var);
 
-    return Scm_SymbolValue(var, SCM_NULL);
+    return scm_symbol_value(var, SCM_NULL);
 }
 
 /*
@@ -144,18 +146,20 @@ ScmObj ScmOp_symbol_value(ScmObj var)
  * - make the portable proc interface similar to a de facto standard of other
  *   Scheme implementations if existing
  */
-ScmObj ScmOp_set_symbol_valued(ScmObj var, ScmObj val)
+ScmObj 
+scm_p_set_symbol_valued(ScmObj var, ScmObj val)
 {
-    DECLARE_FUNCTION("set-symbol-value!", ProcedureFixed2);
+    DECLARE_FUNCTION("set-symbol-value!", procedure_fixed_2);
 
     ASSERT_SYMBOLP(var);
 
     return SCM_SYMBOL_SET_VCELL(var, val);
 }
 
-ScmObj ScmOp_SIOD_equal(ScmObj obj1, ScmObj obj2)
+ScmObj 
+scm_p_siod_equal(ScmObj obj1, ScmObj obj2)
 {
-    DECLARE_FUNCTION("=", ProcedureFixed2);
+    DECLARE_FUNCTION("=", procedure_fixed_2);
 
     if (EQ(obj1, obj2))
         return SCM_TRUE;
@@ -167,19 +171,21 @@ ScmObj ScmOp_SIOD_equal(ScmObj obj1, ScmObj obj2)
     return SCM_FALSE;
 }
 
-ScmObj ScmOp_the_environment(ScmEvalState *eval_state)
+ScmObj 
+scm_p_the_environment(ScmEvalState *eval_state)
 {
-    DECLARE_FUNCTION("the-environment", ProcedureFixedTailRec0);
+    DECLARE_FUNCTION("the-environment", procedure_fixed_tailrec_0);
 
     eval_state->ret_type = SCM_RETTYPE_AS_IS;
 
     return eval_state->env;
 }
 
-ScmObj ScmOp_closure_code(ScmObj closure)
+ScmObj 
+scm_p_closure_code(ScmObj closure)
 {
     ScmObj exp, body;
-    DECLARE_FUNCTION("%%closure-code", ProcedureFixed1);
+    DECLARE_FUNCTION("%%closure-code", procedure_fixed_1);
 
     ASSERT_CLOSUREP(closure);
 
@@ -187,38 +193,41 @@ ScmObj ScmOp_closure_code(ScmObj closure)
     if (NULLP(CDDR(exp)))
         body = CADR(exp);
     else
-        body = CONS(Scm_Intern("begin"), CDR(exp));
+        body = CONS(scm_intern("begin"), CDR(exp));
     
     return CONS(CAR(exp), body);
 }
 
-ScmObj ScmOp_verbose(ScmObj args)
+ScmObj 
+scm_p_verbose(ScmObj args)
 {
-    DECLARE_FUNCTION("verbose", ProcedureVariadic0);
+    DECLARE_FUNCTION("verbose", procedure_variadic_0);
 
     if (!NULLP(args)) {
         ASSERT_INTP(CAR(args));
 
-        SigScm_SetVerboseLevel(SCM_INT_VALUE(CAR(args)));
+        scm_set_verbose_level(SCM_INT_VALUE(CAR(args)));
     }
 
-    return Scm_NewInt(sscm_verbose_level);
+    return scm_make_int(sscm_verbose_level);
 }
 
-ScmObj ScmOp_eof_val(void)
+ScmObj 
+scm_p_eof_val(void)
 {
-    DECLARE_FUNCTION("eof-val", ProcedureFixed0);
+    DECLARE_FUNCTION("eof-val", procedure_fixed_0);
     return SCM_EOF;
 }
 
-ScmObj ScmExp_undefine(ScmObj var, ScmObj env)
+ScmObj 
+scm_s_undefine(ScmObj var, ScmObj env)
 {
     ScmRef val;
-    DECLARE_FUNCTION("undefine", SyntaxFixed1);
+    DECLARE_FUNCTION("undefine", syntax_fixed_1);
 
     ASSERT_SYMBOLP(var);
 
-    val = Scm_LookupEnvironment(var, env);
+    val = scm_lookup_environment(var, env);
     if (val != SCM_INVALID_REF)
         return SET(val, SCM_UNBOUND);
 
@@ -227,15 +236,17 @@ ScmObj ScmExp_undefine(ScmObj var, ScmObj env)
     return SCM_FALSE;
 }
 
-long SigScm_GetVerboseLevel(void)
+long 
+scm_get_verbose_level(void)
 {
     return sscm_verbose_level;
 }
 
-void SigScm_SetVerboseLevel(long level)
+void 
+scm_set_verbose_level(long level)
 {
     if (level < 0)
-        ERR("SigScm_SetVerboseLevel: positive value required but got: %d",
+        ERR("scm_set_verbose_level: positive value required but got: %d",
             level);
 
     if (sscm_verbose_level == level)
@@ -245,11 +256,11 @@ void SigScm_SetVerboseLevel(long level)
 
     if (level > 5)
         level = 5;
-    SigScm_SetDebugCategories(sscm_debug_mask_tbl[level]);
+    scm_set_debug_categories(sscm_debug_mask_tbl[level]);
 
     if (level >= 2)
-        SigScm_SetDebugCategories(SigScm_DebugCategories()
-                                  | SigScm_PredefinedDebugCategories());
+        scm_set_debug_categories(scm_debug_categories()
+                                  | scm_predefined_debug_categories());
 
     if (level == 0) {
         saved_error_port = scm_current_error_port;

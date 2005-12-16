@@ -159,7 +159,8 @@ const ScmBytePortVTbl *ScmOutputStrPort_vptr = &ScmOutputStrPort_vtbl;
  * Client code must call this first even if current implementation does not
  * contain actual code.
  */
-void Scm_strport_init(void)
+void 
+scm_strport_init(void)
 {
     return;
 }

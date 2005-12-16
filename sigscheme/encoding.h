@@ -153,16 +153,16 @@ struct ScmCharCodecVTbl_ {
 /*=======================================
    Variable Declarations
 =======================================*/
-extern ScmCharCodec *Scm_current_char_codec;
+extern ScmCharCodec *scm_current_char_codec;
 
 /*=======================================
    Function Declarations
 =======================================*/
-int Scm_mb_strlen(ScmMultibyteString mbs);
-int Scm_mb_bare_c_strlen(const char *str);
-ScmMultibyteString Scm_mb_substring(ScmMultibyteString str, int i, int len);
-#define Scm_mb_strref(str, i) (Scm_mb_substring((str), (i), 1))
-ScmCharCodec *Scm_mb_find_codec(const char *encoding);
+int scm_mb_strlen(ScmMultibyteString mbs);
+int scm_mb_bare_c_strlen(const char *str);
+ScmMultibyteString scm_mb_substring(ScmMultibyteString str, int i, int len);
+#define scm_mb_strref(str, i) (scm_mb_substring((str), (i), 1))
+ScmCharCodec *scm_mb_find_codec(const char *encoding);
 
 
 #endif /* __SCM_ENCODING_H */

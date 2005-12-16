@@ -234,28 +234,28 @@ struct ScmCell_ {
   Object Creators
 =======================================*/
 #define SCM_MAKE_BOOL(x)                  ((x) ? SCM_TRUE : SCM_FALSE)
-#define SCM_MAKE_INT                      Scm_NewInt
-#define SCM_MAKE_CONS                     Scm_NewCons
-#define SCM_MAKE_SYMBOL                   Scm_NewSymbol
-#define SCM_MAKE_CHAR                     Scm_NewChar
-#define SCM_MAKE_STRING                   Scm_NewMutableString
-#define SCM_MAKE_STRING_COPYING           Scm_NewMutableStringCopying
-#define SCM_MAKE_IMMUTABLE_STRING         Scm_NewImmutableString
-#define SCM_MAKE_IMMUTABLE_STRING_COPYING Scm_NewImmutableStringCopying
-#define SCM_MAKE_FUNC                     Scm_NewFunc
-#define SCM_MAKE_CLOSURE                  Scm_NewClosure
-#define SCM_MAKE_VECTOR                   Scm_NewVector
-#define SCM_MAKE_PORT                     Scm_NewPort
-#define SCM_MAKE_CONTINUATION             Scm_NewContinuation
+#define SCM_MAKE_INT                      scm_make_int
+#define SCM_MAKE_CONS                     scm_make_cons
+#define SCM_MAKE_SYMBOL                   scm_make_symbol
+#define SCM_MAKE_CHAR                     scm_make_char
+#define SCM_MAKE_STRING                   scm_make_mutable_string
+#define SCM_MAKE_STRING_COPYING           scm_make_mutable_string_copying
+#define SCM_MAKE_IMMUTABLE_STRING         scm_make_immutable_string
+#define SCM_MAKE_IMMUTABLE_STRING_COPYING scm_make_immutable_string_copying
+#define SCM_MAKE_FUNC                     scm_make_func
+#define SCM_MAKE_CLOSURE                  scm_make_closure
+#define SCM_MAKE_VECTOR                   scm_make_vector
+#define SCM_MAKE_PORT                     scm_make_port
+#define SCM_MAKE_CONTINUATION             scm_make_continuation
 #if SCM_USE_NONSTD_FEATURES
-#define SCM_MAKE_C_POINTER                Scm_NewCPointer
-#define SCM_MAKE_C_FUNCPOINTER            Scm_NewCFuncPointer
+#define SCM_MAKE_C_POINTER                scm_make_cpointer
+#define SCM_MAKE_C_FUNCPOINTER            scm_make_cfunc_pointer
 #endif /* SCM_USE_NONSTD_FEATURES */
 #if SCM_USE_VALUECONS
-#define SCM_MAKE_VALUEPACKET(vals) (NULLP(vals) ? SigScm_null_values :       \
+#define SCM_MAKE_VALUEPACKET(vals) (NULLP(vals) ? scm_null_values :       \
                                     (SCM_ENTYPE_VALUEPACKET(vals), (vals)))
 #else /* SCM_USE_VALUECONS */
-#define SCM_MAKE_VALUEPACKET(vals) (Scm_NewValuePacket(vals))
+#define SCM_MAKE_VALUEPACKET(vals) (scm_make_value_packet(vals))
 #endif /* SCM_USE_VALUECONS */
 
 /*=======================================
@@ -390,7 +390,7 @@ struct ScmCell_ {
 #if SCM_USE_VALUECONS
 /* to modify a VALUECONS, rewrite its type to cons by SCM_ENTYPE_CONS(vcons) */
 #define SCM_VALUEPACKETP(a)       (SCM_TYPE(a) == ScmValuePacket)
-#define SCM_NULLVALUESP(a)        (EQ((a), SigScm_null_values))
+#define SCM_NULLVALUESP(a)        (EQ((a), scm_null_values))
 #define SCM_ENTYPE_VALUEPACKET(a) (SCM_ENTYPE((a), ScmValuePacket))
 #define SCM_VALUEPACKET_VALUES(a) ((SCM_NULLVALUESP(a)) ? SCM_NULL :         \
                                    (SCM_ENTYPE_CONS(a), (a)))
@@ -458,12 +458,12 @@ struct ScmCell_ {
   Special Constants and Predicates
 ============================================================================*/
 #define SCM_INVALID          NULL
-#define SCM_NULL             SigScm_null
-#define SCM_TRUE             SigScm_true
-#define SCM_FALSE            SigScm_false
-#define SCM_EOF              SigScm_eof
-#define SCM_UNBOUND          SigScm_unbound
-#define SCM_UNDEF            SigScm_undef
+#define SCM_NULL             scm_null
+#define SCM_TRUE             scm_true
+#define SCM_FALSE            scm_false
+#define SCM_EOF              scm_eof
+#define SCM_UNBOUND          scm_unbound
+#define SCM_UNDEF            scm_undef
 
 #define SCM_EQ(a, b)   ((a) == (b))
 #define SCM_NULLP(a)   (SCM_EQ((a),  SCM_NULL))
@@ -475,10 +475,10 @@ struct ScmCell_ {
   Predefined Symbols
 ============================================================================*/
 /* for list construction */
-#define SCM_SYM_QUOTE            Scm_sym_quote
-#define SCM_SYM_QUASIQUOTE       Scm_sym_quasiquote
-#define SCM_SYM_UNQUOTE          Scm_sym_unquote
-#define SCM_SYM_UNQUOTE_SPLICING Scm_sym_unquote_splicing
+#define SCM_SYM_QUOTE            scm_sym_quote
+#define SCM_SYM_QUASIQUOTE       scm_sym_quasiquote
+#define SCM_SYM_UNQUOTE          scm_sym_unquote
+#define SCM_SYM_UNQUOTE_SPLICING scm_sym_unquote_splicing
 
 /*============================================================================
   Internal Declarations For Special Constants And Predefined Symbols
@@ -493,11 +493,11 @@ struct ScmCell_ {
  * above. They safely hides the internal model against such change.
  */
 /* storage.c */
-extern ScmObj SigScm_null, SigScm_true, SigScm_false, SigScm_eof;
-extern ScmObj SigScm_unbound, SigScm_undef;
+extern ScmObj scm_null, scm_true, scm_false, scm_eof;
+extern ScmObj scm_unbound, scm_undef;
 
 /* sigscheme.c */
-extern ScmObj Scm_sym_quote, Scm_sym_quasiquote;
-extern ScmObj Scm_sym_unquote, Scm_sym_unquote_splicing;
+extern ScmObj scm_sym_quote, scm_sym_quasiquote;
+extern ScmObj scm_sym_unquote, scm_sym_unquote_splicing;
 
 #endif /* __SIGSCMTYPE_H */

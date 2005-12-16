@@ -59,29 +59,31 @@
 /*=======================================
   Function Implementations
 =======================================*/
-void SigScm_Initialize_SRFI38(void)
+void 
+scm_initialize_srfi38(void)
 {
     REGISTER_FUNC_TABLE(srfi38_func_info_table);
 
     /* SRFI-38 allows providing (read/ss) and (write/ss) */
-    Scm_DefineAlias("write/ss", "write-with-shared-structure");
+    scm_define_alias("write/ss", "write-with-shared-structure");
 
-    Scm_writess_func = SigScm_WriteToPortWithSharedStructure;
+    scm_writess_func = scm_write_to_port_with_shared_structure;
 }
 
 /*=============================================================================
   SRFI38 : External Representation for Data With Shared Structure
 =============================================================================*/
-ScmObj ScmOp_SRFI38_write_with_shared_structure(ScmObj obj, ScmObj args)
+ScmObj 
+scm_p_srfi38_write_with_shared_structure(ScmObj obj, ScmObj args)
 {
     ScmObj port = scm_current_output_port;
-    DECLARE_FUNCTION("write-with-shared-structure", ProcedureVariadic1);
+    DECLARE_FUNCTION("write-with-shared-structure", procedure_variadic_1);
 
     /* get port */
     port = scm_current_output_port;
     if (!NULLP(args) && PORTP(CAR(args)))
         port = CAR(args);
 
-    SigScm_WriteToPortWithSharedStructure(port, obj);
+    scm_write_to_port_with_shared_structure(port, obj);
     return SCM_UNDEF;
 }

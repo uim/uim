@@ -67,7 +67,7 @@ extern const ScmBytePortVTbl *ScmFilePort_vptr;
 /*=======================================
    Function Declarations
 =======================================*/
-void Scm_fileport_init(void);
+void scm_fileport_init(void);
 
 ScmBytePort *ScmFilePort_new(FILE *file, const char *aux_info);
 ScmBytePort *ScmFilePort_new_shared(FILE *file, const char *aux_info);

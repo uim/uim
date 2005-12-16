@@ -74,15 +74,16 @@ static void show_arg(ScmObj arg, ScmObj env);
 /*=======================================
   Function Implementations
 =======================================*/
-void SigScm_InitError(void)
+void 
+scm_init_error(void)
 {
-    SigScm_GC_Protect(&err_obj_tag);
-    SigScm_GC_Protect(&str_srfi34);
+    scm_gc_protect(&err_obj_tag);
+    scm_gc_protect(&str_srfi34);
 
     /* allocate a cons cell as unique ID */
     err_obj_tag = CONS(SCM_UNDEF, SCM_UNDEF);
 
-    str_srfi34 = Scm_NewImmutableStringCopying("srfi-34");
+    str_srfi34 = scm_make_immutable_string_copying("srfi-34");
     srfi34_is_provided = FALSE;
 
     cb_fatal_error = NULL;
@@ -91,17 +92,20 @@ void SigScm_InitError(void)
     REGISTER_FUNC_TABLE(scm_error_func_info_table);
 }
 
-int SigScm_DebugCategories(void)
+int 
+scm_debug_categories(void)
 {
     return debug_mask;
 }
 
-void SigScm_SetDebugCategories(int categories)
+void 
+scm_set_debug_categories(int categories)
 {
     debug_mask = categories;
 }
 
-int SigScm_PredefinedDebugCategories(void)
+int 
+scm_predefined_debug_categories(void)
 {
 #if SCM_DEBUG
     return (SCM_DBG_DEVEL | SCM_DBG_COMPAT | SCM_DBG_OTHER
@@ -120,26 +124,28 @@ int SigScm_PredefinedDebugCategories(void)
 #endif /* SCM_DEBUG */
 }
 
-void SigScm_CategorizedDebug(int category, const char *msg, ...)
+void 
+scm_categorized_debug(int category, const char *msg, ...)
 {
     va_list va;
 
     va_start(va, msg);
     if (debug_mask & category) {
-        SigScm_VErrorPrintf(msg, va);
-        SigScm_ErrorNewline();
+        scm_error_vprintf(msg, va);
+        scm_error_newline();
     }
     va_end(va);
 }
 
-void SigScm_Debug(const char *msg, ...)
+void 
+scm_debug(const char *msg, ...)
 {
     va_list va;
 
     va_start(va, msg);
     if (debug_mask & SCM_DBG_DEVEL) {
-        SigScm_VErrorPrintf(msg, va);
-        SigScm_ErrorNewline();
+        scm_error_vprintf(msg, va);
+        scm_error_newline();
     }
     va_end(va);
 }
@@ -149,24 +155,26 @@ static int srfi34_providedp(void)
 {
     if (!srfi34_is_provided) {
         /* expensive */
-        srfi34_is_provided = NFALSEP(ScmOp_providedp(str_srfi34));
+        srfi34_is_provided = NFALSEP(scm_p_providedp(str_srfi34));
     }
     return srfi34_is_provided;
 }
 #endif
 
 /* The name 'error?' should be reserved for SRFI-35 */
-ScmObj ScmOp_error_objectp(ScmObj obj)
+ScmObj 
+scm_p_error_objectp(ScmObj obj)
 {
-    DECLARE_FUNCTION("%%error-object?", ProcedureFixed1);
+    DECLARE_FUNCTION("%%error-object?", procedure_fixed_1);
 
     return (CONSP(obj) && EQ(CAR(obj), err_obj_tag)) ? SCM_TRUE : SCM_FALSE;
 }
 
 /* FIXME: make (pair? err-obj) #f */
-ScmObj Scm_MakeErrorObj(ScmObj reason, ScmObj objs)
+ScmObj 
+scm_make_error_obj(ScmObj reason, ScmObj objs)
 {
-    DECLARE_INTERNAL_FUNCTION("Scm_MakeErrorObj");
+    DECLARE_INTERNAL_FUNCTION("scm_make_error_obj");
 
     ASSERT_LISTP(objs);
 #if 0
@@ -174,25 +182,27 @@ ScmObj Scm_MakeErrorObj(ScmObj reason, ScmObj objs)
     ASSERT_STRINGP(reason);
 #endif
 
-    return LIST_4(err_obj_tag, reason, objs, Scm_TraceStack());
+    return LIST_4(err_obj_tag, reason, objs, scm_trace_stack());
 }
 
-void Scm_RaiseError(ScmObj err_obj)
+void 
+scm_raise_error(ScmObj err_obj)
 {
-    DECLARE_INTERNAL_FUNCTION("Scm_RaiseError");
+    DECLARE_INTERNAL_FUNCTION("scm_raise_error");
 
     ASSERT_ERROBJP(err_obj);
 
 #if SCM_USE_SRFI34
     if (srfi34_providedp()) {
-        ScmOp_SRFI34_raise(err_obj);
+        scm_p_srfi34_raise(err_obj);
         /* NOTREACHED */
     }
 #endif
-    ScmOp_fatal_error(err_obj);
+    scm_p_fatal_error(err_obj);
 }
 
-void Scm_FatalError(const char *msg)
+void 
+scm_fatal_error(const char *msg)
 {
     /* don't use Scheme-level ports here */
     if (msg) {
@@ -208,15 +218,16 @@ void Scm_FatalError(const char *msg)
     /* NOTREACHED */
 }
 
-void Scm_SetFatalErrorCallback(void (*cb)(void))
+void scm_set_fatal_error_callback(void (*cb)(void))
 {
     cb_fatal_error = cb;
 }
 
-ScmObj ScmOp_fatal_error(ScmObj err_obj)
+ScmObj 
+scm_p_fatal_error(ScmObj err_obj)
 {
     const char *msg;
-    DECLARE_FUNCTION("%%fatal-error", ProcedureFixed1);
+    DECLARE_FUNCTION("%%fatal-error", procedure_fixed_1);
 
     if (fatal_error_looped) {
         /* to avoid infinite loop by implicit assertion, use no SCM macros */
@@ -224,18 +235,19 @@ ScmObj ScmOp_fatal_error(ScmObj err_obj)
     } else {
         fatal_error_looped = TRUE;
         ASSERT_ERROBJP(err_obj);
-        ScmOp_inspect_error(err_obj);
+        scm_p_inspect_error(err_obj);
         msg = NULL;
     }
 
-    Scm_FatalError(msg);
+    scm_fatal_error(msg);
     /* NOTREACHED */
 }
 
-ScmObj ScmOp_inspect_error(ScmObj err_obj)
+ScmObj 
+scm_p_inspect_error(ScmObj err_obj)
 {
     ScmObj rest, err_obj_tag, reason, objs, trace_stack;
-    DECLARE_FUNCTION("%%inspect-error", ProcedureFixed1);
+    DECLARE_FUNCTION("%%inspect-error", procedure_fixed_1);
 
     if (ERROBJP(err_obj)) {
         rest = err_obj;
@@ -246,38 +258,40 @@ ScmObj ScmOp_inspect_error(ScmObj err_obj)
         ASSERT_NO_MORE_ARG(rest);
     }
 
-    if (SigScm_DebugCategories() & SCM_DBG_ERRMSG) {
-        SigScm_ShowErrorHeader();
+    if (scm_debug_categories() & SCM_DBG_ERRMSG) {
+        scm_show_error_header();
         if (ERROBJP(err_obj)) {
-            SigScm_DisplayToPort(scm_current_error_port, err_obj);
+            scm_display_to_port(scm_current_error_port, err_obj);
         } else {
             SCM_PORT_PUTS(scm_current_error_port,
                           SCM_ERRMSG_UNHANDLED_EXCEPTION);
             SCM_PORT_PUTS(scm_current_error_port, ": ");
-            SigScm_WriteToPort(scm_current_error_port, err_obj);
+            scm_write_to_port(scm_current_error_port, err_obj);
         }
-        SigScm_ErrorNewline();
+        scm_error_newline();
     }
 
-    if (SigScm_DebugCategories() & SCM_DBG_BACKTRACE) {
+    if (scm_debug_categories() & SCM_DBG_BACKTRACE) {
         if (!ERROBJP(err_obj))
-            trace_stack = Scm_TraceStack();
-        SigScm_ShowBacktrace(trace_stack);
+            trace_stack = scm_trace_stack();
+        scm_show_backtrace(trace_stack);
     }
 
     return SCM_UNDEF;
 }
 
-ScmObj ScmOp_backtrace(void)
+ScmObj 
+scm_p_backtrace(void)
 {
-    DECLARE_FUNCTION("%%backtrace", ProcedureFixed0);
+    DECLARE_FUNCTION("%%backtrace", procedure_fixed_0);
 
-    SigScm_ShowBacktrace(Scm_TraceStack());
+    scm_show_backtrace(scm_trace_stack());
 
     return SCM_UNDEF;
 }
 
-int SigScm_Die(const char *msg, const char *filename, int line)
+int 
+scm_die(const char *msg, const char *filename, int line)
 {
     char *reason;
     ScmObj reason_holder;
@@ -285,14 +299,15 @@ int SigScm_Die(const char *msg, const char *filename, int line)
     asprintf(&reason, "%s: (file : %s, line : %d)", msg, filename, line);
     ASSERT_ALLOCATED(reason);
     /* reason will implicitly be freed via the object on GC */
-    reason_holder = Scm_NewImmutableString(reason);
+    reason_holder = scm_make_immutable_string(reason);
 
-    Scm_FatalError(reason);
+    scm_fatal_error(reason);
     /* NOTREACHED */
     return 1;  /* dummy value for boolean expression */
 }
 
-void SigScm_Error(const char *msg, ...)
+void 
+scm_error(const char *msg, ...)
 {
     va_list va;
     char *reason;
@@ -303,23 +318,14 @@ void SigScm_Error(const char *msg, ...)
     va_end(va);
     ASSERT_ALLOCATED(reason);
 
-    err_obj = Scm_MakeErrorObj(Scm_NewImmutableString(reason), SCM_NULL);
-    Scm_RaiseError(err_obj);
+    err_obj = scm_make_error_obj(scm_make_immutable_string(reason), SCM_NULL);
+    scm_raise_error(err_obj);
     /* NOTREACHED */
 }
 
-/* Obsolete. */
-void SigScm_ErrorObj(const char *msg, ScmObj obj)
-{
-    ScmObj err_obj;
-
-    err_obj = Scm_MakeErrorObj(Scm_NewImmutableStringCopying(msg), LIST_1(obj));
-    Scm_RaiseError(err_obj);
-    /* NOTREACHED */
-}
-
-/* This function obsoletes SigScm_ErrorObj(). */
-void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj)
+/* This function obsoletes scm_error_obj(). */
+void 
+scm_error_obj(const char *func_name, const char *msg, ScmObj obj)
 {
     char *reason;
     ScmObj err_obj;
@@ -327,44 +333,46 @@ void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj)
     asprintf(&reason, "in %s: %s", func_name, msg);
     ASSERT_ALLOCATED(reason);
 
-    err_obj = Scm_MakeErrorObj(Scm_NewImmutableString(reason), LIST_1(obj));
-    Scm_RaiseError(err_obj);
+    err_obj = scm_make_error_obj(scm_make_immutable_string(reason), LIST_1(obj));
+    scm_raise_error(err_obj);
     /* NOTREACHED */
 }
 
-void SigScm_ShowErrorHeader(void)
+void 
+scm_show_error_header(void)
 {
-    SigScm_ErrorPrintf(SCM_ERR_HEADER);
+    scm_error_printf(SCM_ERR_HEADER);
 }
 
 #if (SCM_DEBUG && SCM_DEBUG_BACKTRACE_VAL)
 static void show_arg(ScmObj arg, ScmObj env)
 {
 #define UNBOUNDP(var, env)                                              \
-    (Scm_LookupEnvironment(var, env) == SCM_INVALID_REF                 \
+    (scm_lookup_environment(var, env) == SCM_INVALID_REF                 \
      && !SCM_SYMBOL_BOUNDP(var))
 
     if (SYMBOLP(arg) && !UNBOUNDP(arg, env)) {
-        SigScm_ErrorPrintf("  - [%s]: ", SCM_SYMBOL_NAME(arg));
-        SCM_WRITESS_TO_PORT(scm_current_error_port, Scm_SymbolValue(arg, env));
-        SigScm_ErrorNewline();
+        scm_error_printf("  - [%s]: ", SCM_SYMBOL_NAME(arg));
+        SCM_WRITESS_TO_PORT(scm_current_error_port, scm_symbol_value(arg, env));
+        scm_error_newline();
     }
 
 #undef UNBOUNDP
 }
 #endif /* (SCM_DEBUG && SCM_DEBUG_BACKTRACE_VAL) */
 
-void SigScm_ShowBacktrace(ScmObj trace_stack)
+void 
+scm_show_backtrace(ScmObj trace_stack)
 {
 #if SCM_DEBUG
     ScmObj top, frame, env, obj;
 
-    SigScm_ErrorPrintf(SCM_BACKTRACE_HEADER);
+    scm_error_printf(SCM_BACKTRACE_HEADER);
 
     /* show each frame's obj */
     for (top = trace_stack; !NULLP(top); top = CDR(top)) {
 #if SCM_DEBUG_BACKTRACE_SEP
-        SigScm_ErrorPrintf(SCM_BACKTRACE_SEP);
+        scm_error_printf(SCM_BACKTRACE_SEP);
 #endif
 
         frame = CAR(top);
@@ -372,7 +380,7 @@ void SigScm_ShowBacktrace(ScmObj trace_stack)
         obj = TRACE_FRAME_OBJ(frame);
 
         SCM_WRITESS_TO_PORT(scm_current_error_port, obj);
-        SigScm_ErrorNewline();
+        scm_error_newline();
 
 #if SCM_DEBUG_BACKTRACE_VAL
         switch (SCM_TYPE(obj)) {
@@ -394,7 +402,7 @@ void SigScm_ShowBacktrace(ScmObj trace_stack)
 #endif /* SCM_DEBUG_BACKTRACE_VAL */
     }
 #if SCM_DEBUG_BACKTRACE_SEP
-    SigScm_ErrorPrintf(SCM_BACKTRACE_SEP);
+    scm_error_printf(SCM_BACKTRACE_SEP);
 #endif /* SCM_DEBUG_BACKTRACE_SEP */
 #endif /* SCM_DEBUG */
 }

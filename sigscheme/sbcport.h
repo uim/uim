@@ -66,7 +66,7 @@ extern const ScmCharPortVTbl *ScmSingleByteCharPort_vptr;
 /*=======================================
    Function Declarations
 =======================================*/
-void Scm_sbcport_init(void);
+void scm_sbcport_init(void);
 
 void ScmSingleByteCharPort_construct(ScmSingleByteCharPort *port,
                                      const ScmCharPortVTbl *vptr,

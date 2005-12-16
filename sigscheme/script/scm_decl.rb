@@ -42,7 +42,7 @@
 # $8  :register_func   ProcedureFixedTailRec2
 # $9  :functype_prefix Procedure
 # $10 :functype_spec   FixedTailRec2
-SCM_DECL_RE = /\n((ScmObj)\s+(Scm(Op|Exp)_(\w+))\(([^{]+)\))[ \t]*\n\s*\{[^{}]+DECLARE_FUNCTION\(\s*\"([^\"]+)\"[\s,]+([^\s,]+)\)/m
+SCM_DECL_RE = /\n((ScmObj)\s+(scm_([sp])_(\w+))\(([^{]+)\))[ \t]*\n\s*\{[^{}]+DECLARE_FUNCTION\(\s*\"([^\"]+)\"[\s,]+([^\s,]+)\)/m
 
 
 class String
@@ -57,7 +57,7 @@ class String
         :func_body       => func_body,
         :args            => args.gsub(/\s+/, " "),
         :proc            => proc,
-        :register_func   => "Scm_Register" + register_func,
+        :register_func   => "scm_register_" + register_func,
         :functype_prefix => functype_prefix,
         :functype_spec   => functype_spec,
       }

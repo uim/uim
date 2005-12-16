@@ -103,7 +103,8 @@ const ScmBytePortVTbl *ScmNullPort_vptr = &ScmNullPort_vtbl;
  * Client code must call this first even if current implementation does not
  * contain actual code.
  */
-void Scm_nullport_init(void)
+void 
+scm_nullport_init(void)
 {
 }
 

@@ -71,7 +71,7 @@ extern const ScmCharPortVTbl *ScmMultiByteCharPort_vptr;
 /*=======================================
    Function Declarations
 =======================================*/
-void Scm_mbcport_init(void);
+void scm_mbcport_init(void);
 
 void ScmMultiByteCharPort_construct(ScmMultiByteCharPort *port,
                                     const ScmCharPortVTbl *vptr,

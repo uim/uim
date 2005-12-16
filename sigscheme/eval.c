@@ -100,12 +100,13 @@ static qquote_result qquote_internal(ScmObj input, ScmObj env, int nest);
  * @param vals Arbitrary Scheme object list as values of new frame. Side
  *             effect: destructively modifyies the vals when vars is a dot
  *             list.
- * @see Scm_eval()
+ * @see scm_eval()
  */
-ScmObj Scm_ExtendEnvironment(ScmObj vars, ScmObj vals, ScmObj env)
+ScmObj 
+scm_extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
 {
     ScmObj frame, rest_vars, rest_vals;
-    DECLARE_INTERNAL_FUNCTION("Scm_ExtendEnvironment");
+    DECLARE_INTERNAL_FUNCTION("scm_extend_environment");
 
 #if SCM_STRICT_ARGCHECK
     if (!LISTP(env))
@@ -129,11 +130,12 @@ ScmObj Scm_ExtendEnvironment(ScmObj vars, ScmObj vals, ScmObj env)
 }
 
 /** Add a binding to newest frame of an env */
-ScmObj Scm_AddEnvironment(ScmObj var, ScmObj val, ScmObj env)
+ScmObj 
+scm_add_environment(ScmObj var, ScmObj val, ScmObj env)
 {
     ScmObj newest_frame;
     ScmObj new_vars, new_vals;
-    DECLARE_INTERNAL_FUNCTION("Scm_AddEnvironment");
+    DECLARE_INTERNAL_FUNCTION("scm_add_environment");
 
     /* sanity check */
     if (!SYMBOLP(var))
@@ -160,11 +162,12 @@ ScmObj Scm_AddEnvironment(ScmObj var, ScmObj val, ScmObj env)
  *
  * @return Reference to the variable. SCM_INVALID_REF if not found.
  */
-ScmRef Scm_LookupEnvironment(ScmObj var, ScmObj env)
+ScmRef 
+scm_lookup_environment(ScmObj var, ScmObj env)
 {
     ScmObj frame;
     ScmRef ref;
-    DECLARE_INTERNAL_FUNCTION("Scm_LookupEnvironment");
+    DECLARE_INTERNAL_FUNCTION("scm_lookup_environment");
 
     /* lookup in frames */
     for (; CONSP(env); env = CDR(env)) {
@@ -218,16 +221,18 @@ static ScmRef lookup_frame(ScmObj var, ScmObj frame)
 }
 
 /* A wrapper for call() for internal proper tail recursion */
-ScmObj Scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
+ScmObj 
+scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
 {
     eval_state->ret_type = SCM_RETTYPE_AS_IS;
     return call(proc, args, eval_state, SUPPRESS_EVAL_ARGS);
 }
 
-/* Wrapper for call().  Just like ScmOp_apply(), except ARGS is used
+/* Wrapper for call().  Just like scm_p_apply(), except ARGS is used
  * as given---nothing special is done about the last item in the
  * list. */
-ScmObj Scm_call(ScmObj proc, ScmObj args)
+ScmObj 
+scm_call(ScmObj proc, ScmObj args)
 {
     ScmEvalState state;
     ScmObj ret;
@@ -303,7 +308,7 @@ static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
 
     if (SYMBOLP(formals)) {
         /* (1) : <variable> */
-        eval_state->env = Scm_ExtendEnvironment(LIST_1(formals),
+        eval_state->env = scm_extend_environment(LIST_1(formals),
                                              LIST_1(args),
                                              SCM_CLOSURE_ENV(proc));
     } else if (CONSP(formals)) {
@@ -313,7 +318,7 @@ static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
          *
          *  - dot list is handled in lookup_frame().
          */
-        eval_state->env = Scm_ExtendEnvironment(formals,
+        eval_state->env = scm_extend_environment(formals,
                                              args,
                                              SCM_CLOSURE_ENV(proc));
     } else if (NULLP(formals)) {
@@ -321,7 +326,7 @@ static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
          * (2') : <variable> is '()
          */
         eval_state->env
-            = Scm_ExtendEnvironment(SCM_NULL,
+            = scm_extend_environment(SCM_NULL,
                                  SCM_NULL,
                                  SCM_CLOSURE_ENV(proc));
     } else {
@@ -329,7 +334,7 @@ static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
     }
 
     eval_state->ret_type = SCM_RETTYPE_NEED_EVAL;
-    return ScmExp_begin(CDR(SCM_CLOSURE_EXP(proc)), eval_state);
+    return scm_s_begin(CDR(SCM_CLOSURE_EXP(proc)), eval_state);
 }
 
 /**
@@ -370,7 +375,7 @@ static ScmObj call(ScmObj proc, ScmObj args,
     case ScmContinuation:
         if (!CONSP(args) || !NULLP(CDR(args)))
             ERR("continuation takes exactly one argument");
-        Scm_CallContinuation(proc,
+        scm_call_continuation(proc,
                              suppress_eval ? CAR(args) : EVAL(CAR(args), env));
         /* NOTREACHED */
     default:
@@ -460,22 +465,24 @@ static ScmObj call(ScmObj proc, ScmObj args,
 /*===========================================================================
   S-Expression Evaluation
 ===========================================================================*/
-ScmObj ScmOp_eval(ScmObj obj, ScmObj env)
+ScmObj 
+scm_p_eval(ScmObj obj, ScmObj env)
 {
-    DECLARE_FUNCTION("eval", ProcedureFixed2);
+    DECLARE_FUNCTION("eval", procedure_fixed_2);
 
     ASSERT_ENVP(env);
 
-    return Scm_eval(obj, env);
+    return scm_eval(obj, env);
 }
 
-ScmObj Scm_eval(ScmObj obj, ScmObj env)
+ScmObj 
+scm_eval(ScmObj obj, ScmObj env)
 {
     ScmObj ret  = SCM_NULL;
     ScmEvalState state = {0};
 
 #if SCM_DEBUG
-    Scm_PushTraceFrame(obj, env);
+    scm_push_trace_frame(obj, env);
 #endif
 
     state.env = env;
@@ -488,7 +495,7 @@ eval_loop:
 #endif
     switch (SCM_TYPE(obj)) {
     case ScmSymbol:
-        ret = Scm_SymbolValue(obj, state.env);
+        ret = scm_symbol_value(obj, state.env);
         break;
 
     case ScmCons:
@@ -502,16 +509,17 @@ eval_loop:
     }
 
 #if SCM_DEBUG
-    Scm_PopTraceFrame();
+    scm_pop_trace_frame();
 #endif
     return ret;
 }
 
-ScmObj ScmOp_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state)
+ScmObj 
+scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state)
 {
     ScmQueue q;
     ScmObj args, arg, last;
-    DECLARE_FUNCTION("apply", ProcedureVariadicTailRec2);
+    DECLARE_FUNCTION("apply", procedure_variadic_tailrec_2);
 
     if (NULLP(rest)) {
         args = last = arg0;
@@ -533,14 +541,15 @@ ScmObj ScmOp_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_sta
 }
 
 /* 'var' must be a symbol as precondition */
-ScmObj Scm_SymbolValue(ScmObj var, ScmObj env)
+ScmObj 
+scm_symbol_value(ScmObj var, ScmObj env)
 {
     ScmRef ref;
     ScmObj val;
-    DECLARE_INTERNAL_FUNCTION("Scm_SymbolValue");
+    DECLARE_INTERNAL_FUNCTION("scm_symbol_value");
 
     /* first, lookup the environment */
-    ref = Scm_LookupEnvironment(var, env);
+    ref = scm_lookup_environment(var, env);
     if (ref != SCM_INVALID_REF) {
         /* variable is found in environment, so returns its value */
         return DEREF(ref);
@@ -792,7 +801,7 @@ static ScmObj vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
         return (ScmObj)TRV_ENDP(*t);
 
     case TR_MSG_SPLICE:
-        splice_len = ScmOp_c_length(obj);
+        splice_len = scm_p_c_length(obj);
 #if SCM_STRICT_R5RS
         if (splice_len < 0)
             ERR_OBJ("got bad splice list", obj);
@@ -805,7 +814,7 @@ static ScmObj vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
         change_index = t->u.vec.index;
 
       record_change:
-        SCM_QUEUE_ADD(t->u.vec.q, CONS(Scm_NewInt(change_index), obj));
+        SCM_QUEUE_ADD(t->u.vec.q, CONS(scm_make_int(change_index), obj));
         break;
 
     case TR_MSG_EXTRACT:
@@ -844,7 +853,7 @@ static ScmObj vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
                 else
                     change_index = SCM_INT_VALUE(CAAR(diff));
             }
-            return Scm_NewVector(copy_buf, src_len + t->u.vec.growth);
+            return scm_make_vector(copy_buf, src_len + t->u.vec.growth);
         }
         break;
     }
@@ -857,34 +866,37 @@ static ScmObj vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.2 Literal expressions
 ===========================================================================*/
-ScmObj ScmExp_quote(ScmObj datum, ScmObj env)
+ScmObj 
+scm_s_quote(ScmObj datum, ScmObj env)
 {
-    DECLARE_FUNCTION("quote", SyntaxFixed1);
+    DECLARE_FUNCTION("quote", syntax_fixed_1);
     return datum;
 }
 
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.4 Procedures
 ===========================================================================*/
-ScmObj ScmExp_lambda(ScmObj formals, ScmObj body, ScmObj env)
+ScmObj 
+scm_s_lambda(ScmObj formals, ScmObj body, ScmObj env)
 {
-    DECLARE_FUNCTION("lambda", SyntaxVariadic1);
+    DECLARE_FUNCTION("lambda", syntax_variadic_1);
     if (!CONSP(formals) && !NULLP(formals) && !SYMBOLP(formals))
         ERR_OBJ("bad formals", formals);
     if (!CONSP(body))
         ERR_OBJ("at least one expression required", body);
 
-    return Scm_NewClosure(CONS(formals, body), env);
+    return scm_make_closure(CONS(formals, body), env);
 }
 
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.5 Conditionals
 ===========================================================================*/
-ScmObj ScmExp_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state)
+ScmObj 
+scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state)
 {
     ScmObj env = eval_state->env;
     ScmObj alt;
-    DECLARE_FUNCTION("if", SyntaxVariadicTailRec2);
+    DECLARE_FUNCTION("if", syntax_variadic_tailrec_2);
 
     /*========================================================================
       (if <test> <consequent>)
@@ -912,14 +924,15 @@ ScmObj ScmExp_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_sta
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.6 Assignment
 ===========================================================================*/
-ScmObj ScmExp_setd(ScmObj sym, ScmObj exp, ScmObj env)
+ScmObj 
+scm_s_setd(ScmObj sym, ScmObj exp, ScmObj env)
 {
     ScmObj evaled        = SCM_FALSE;
     ScmRef locally_bound;
-    DECLARE_FUNCTION("set!", SyntaxFixed2);
+    DECLARE_FUNCTION("set!", syntax_fixed_2);
 
     evaled = EVAL(exp, env);
-    locally_bound = Scm_LookupEnvironment(sym, env);
+    locally_bound = scm_lookup_environment(sym, env);
     if (locally_bound == SCM_INVALID_REF) {
         if (!SYMBOLP(sym))
             ERR_OBJ("symbol required but got", sym);
@@ -949,7 +962,8 @@ ScmObj ScmExp_setd(ScmObj sym, ScmObj exp, ScmObj env)
   R5RS : 4.2 Derived expression types : 4.2.1 Conditionals
 ===========================================================================*/
 /* body of 'cond' and also invoked from 'case' and 'guard' of SRFI-34 */
-ScmObj ScmExp_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
+ScmObj 
+scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
 {
     /*
      * (cond <clause1> <clause2> ...)
@@ -989,7 +1003,7 @@ ScmObj ScmExp_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_sta
             ASSERT_NO_MORE_ARG(args);
         } else {
             if (VALIDP(case_key))
-                test = (NFALSEP(ScmOp_memv(case_key, test))) ? case_key : SCM_FALSE;
+                test = (NFALSEP(scm_p_memv(case_key, test))) ? case_key : SCM_FALSE;
             else
                 test = EVAL(test, env);
         }
@@ -1035,10 +1049,10 @@ ScmObj ScmExp_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_sta
                     ERR_OBJ("exp after => must be the procedure but got", proc);
 
                 eval_state->ret_type = SCM_RETTYPE_AS_IS;
-                return Scm_call(proc, LIST_1(test));
+                return scm_call(proc, LIST_1(test));
             }
 
-            return ScmExp_begin(exps, eval_state);
+            return scm_s_begin(exps, eval_state);
         }
     }
 
@@ -1049,31 +1063,34 @@ ScmObj ScmExp_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_sta
     return SCM_INVALID;
 }
 
-ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state)
+ScmObj 
+scm_s_cond(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj ret;
-    DECLARE_FUNCTION("cond", SyntaxVariadicTailRec0);
+    DECLARE_FUNCTION("cond", syntax_variadic_tailrec_0);
 
-    ret = ScmExp_cond_internal(args, SCM_INVALID, eval_state);
+    ret = scm_s_cond_internal(args, SCM_INVALID, eval_state);
     return (VALIDP(ret)) ? ret : SCM_UNDEF;
 }
 
-ScmObj ScmExp_case(ScmObj key, ScmObj clauses, ScmEvalState *eval_state)
+ScmObj 
+scm_s_case(ScmObj key, ScmObj clauses, ScmEvalState *eval_state)
 {
     ScmObj ret;
-    DECLARE_FUNCTION("case", SyntaxVariadicTailRec1);
+    DECLARE_FUNCTION("case", syntax_variadic_tailrec_1);
 
     key = EVAL(key, eval_state->env);
-    ret = ScmExp_cond_internal(clauses, key, eval_state);
+    ret = scm_s_cond_internal(clauses, key, eval_state);
     return (VALIDP(ret)) ? ret : SCM_UNDEF;
 }
 
-ScmObj ScmExp_and(ScmObj args, ScmEvalState *eval_state)
+ScmObj 
+scm_s_and(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env  = eval_state->env;
     ScmObj expr = SCM_INVALID;
     ScmObj val  = SCM_FALSE;
-    DECLARE_FUNCTION("and", SyntaxVariadicTailRec0);
+    DECLARE_FUNCTION("and", syntax_variadic_tailrec_0);
 
     if (NO_MORE_ARG(args))
         return SCM_TRUE;
@@ -1090,12 +1107,13 @@ ScmObj ScmExp_and(ScmObj args, ScmEvalState *eval_state)
     return expr;
 }
 
-ScmObj ScmExp_or(ScmObj args, ScmEvalState *eval_state)
+ScmObj 
+scm_s_or(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env  = eval_state->env;
     ScmObj expr = SCM_INVALID;
     ScmObj val  = SCM_INVALID;
-    DECLARE_FUNCTION("or", SyntaxVariadicTailRec0);
+    DECLARE_FUNCTION("or", syntax_variadic_tailrec_0);
 
     if (NO_MORE_ARG(args))
         return SCM_FALSE;
@@ -1122,7 +1140,8 @@ ScmObj ScmExp_or(ScmObj args, ScmEvalState *eval_state)
  *   bound to the closure.  <procname>'s scope must not penetrate to the
  *   surrounding environment.
  */
-ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
+ScmObj 
+scm_s_let(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env           = eval_state->env;
     ScmObj named_let_sym = SCM_FALSE;
@@ -1135,7 +1154,7 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
     ScmObj vars          = SCM_NULL;
     ScmObj vals          = SCM_NULL;
     ScmQueue varq, valq;
-    DECLARE_FUNCTION("let", SyntaxVariadicTailRec0);
+    DECLARE_FUNCTION("let", syntax_variadic_tailrec_0);
 
     /*========================================================================
       normal let:
@@ -1190,25 +1209,26 @@ ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state)
     if (!NULLP(bindings))
         ERR_OBJ("invalid bindings form", bindings);
 
-    env = Scm_ExtendEnvironment(vars, vals, env);
+    env = scm_extend_environment(vars, vals, env);
     eval_state->env = env;
 
     /* named let */
     if (SYMBOLP(named_let_sym)) {
-        proc = Scm_NewClosure(CONS(vars, body), env);
+        proc = scm_make_closure(CONS(vars, body), env);
         define_internal(named_let_sym, proc, env);
     }
 
-    return ScmExp_begin(body, eval_state);
+    return scm_s_begin(body, eval_state);
 }
 
-ScmObj ScmExp_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
+ScmObj 
+scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
     ScmObj env     = eval_state->env;
     ScmObj var     = SCM_FALSE;
     ScmObj val     = SCM_FALSE;
     ScmObj binding = SCM_FALSE;
-    DECLARE_FUNCTION("let*", SyntaxVariadicTailRec1);
+    DECLARE_FUNCTION("let*", syntax_variadic_tailrec_1);
 
     /*========================================================================
       (let* <bindings> <body>)
@@ -1232,7 +1252,7 @@ ScmObj ScmExp_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
         val = EVAL(CADR(binding), env);
 
         /* extend env for each variable */
-        env = Scm_ExtendEnvironment(LIST_1(var), LIST_1(val), env);
+        env = scm_extend_environment(LIST_1(var), LIST_1(val), env);
     }
 
     if (!NULLP(bindings))
@@ -1241,10 +1261,11 @@ ScmObj ScmExp_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     eval_state->env = env;
 
     /* evaluate body */
-    return ScmExp_begin(body, eval_state);
+    return scm_s_begin(body, eval_state);
 }
 
-ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
+ScmObj 
+scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
     ScmObj env      = eval_state->env;
     ScmObj frame    = SCM_FALSE;
@@ -1253,7 +1274,7 @@ ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     ScmObj binding  = SCM_FALSE;
     ScmObj var      = SCM_FALSE;
     ScmObj val      = SCM_FALSE;
-    DECLARE_FUNCTION("letrec", SyntaxVariadicTailRec1);
+    DECLARE_FUNCTION("letrec", syntax_variadic_tailrec_1);
 
     /*========================================================================
       (letrec <bindings> <body>)
@@ -1295,18 +1316,19 @@ ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     SET_CDR(frame, vals);
 
     /* evaluate body */
-    return ScmExp_begin(body, eval_state);
+    return scm_s_begin(body, eval_state);
 }
 
 
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.3 Sequencing
 ===========================================================================*/
-ScmObj ScmExp_begin(ScmObj args, ScmEvalState *eval_state)
+ScmObj 
+scm_s_begin(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env  = eval_state->env;
     ScmObj expr = SCM_INVALID;
-    DECLARE_FUNCTION("begin", SyntaxVariadicTailRec0);
+    DECLARE_FUNCTION("begin", syntax_variadic_tailrec_0);
 
     if (NO_MORE_ARG(args))
         return SCM_UNDEF;
@@ -1321,7 +1343,8 @@ ScmObj ScmExp_begin(ScmObj args, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.4 Iteration
 ===========================================================================*/
-ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_state)
+ScmObj 
+scm_s_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_state)
 {
     /*
      * (do ((<variable1> <init1> <step1>)
@@ -1342,7 +1365,7 @@ ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalStat
     ScmObj tmp_steps  = SCM_FALSE;
     ScmObj tmp_vars   = SCM_FALSE;
     ScmRef obj;
-    DECLARE_FUNCTION("do", SyntaxVariadicTailRec2);
+    DECLARE_FUNCTION("do", syntax_variadic_tailrec_2);
 
     /* construct Environment and steps */
     for (; !NULLP(bindings); bindings = CDR(bindings)) {
@@ -1367,7 +1390,7 @@ ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalStat
     }
 
     /* now extend environment */
-    env = Scm_ExtendEnvironment(vars, vals, env);
+    env = scm_extend_environment(vars, vals, env);
 
     /* construct test */
     if (NULLP(testframe))
@@ -1378,7 +1401,7 @@ ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalStat
     /* now execution phase! */
     while (FALSEP(EVAL(test, env))) {
         /* execute commands */
-        EVAL(ScmExp_begin(commands, eval_state), env);
+        EVAL(scm_s_begin(commands, eval_state), env);
 
         /*
          * Notice
@@ -1394,14 +1417,14 @@ ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalStat
         {
             vals = CONS(EVAL(CAR(tmp_steps), env), vals);
         }
-        vals = ScmOp_reverse(vals);
+        vals = scm_p_reverse(vals);
 
         /* set it */
         for (tmp_vars = vars;
              !NULLP(tmp_vars) && !NULLP(vals);
              tmp_vars = CDR(tmp_vars), vals = CDR(vals))
         {
-            obj = Scm_LookupEnvironment(CAR(tmp_vars), env);
+            obj = scm_lookup_environment(CAR(tmp_vars), env);
             if (obj != SCM_INVALID_REF) {
                 SET(obj, CAR(vals));
             } else {
@@ -1412,18 +1435,19 @@ ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalStat
 
     eval_state->env = env;
 
-    return NULLP(expression) ? EVAL(test, env) : ScmExp_begin(expression, eval_state);
+    return NULLP(expression) ? EVAL(test, env) : scm_s_begin(expression, eval_state);
 }
 
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.5 Delayed evaluation
 ===========================================================================*/
-ScmObj ScmExp_delay(ScmObj expr, ScmObj env)
+ScmObj 
+scm_s_delay(ScmObj expr, ScmObj env)
 {
-    DECLARE_FUNCTION("delay", SyntaxFixed1);
+    DECLARE_FUNCTION("delay", syntax_fixed_1);
 
     /* (lambda () exp) */
-    return Scm_NewClosure(SCM_LIST_2(SCM_NULL, expr), env);
+    return scm_make_closure(SCM_LIST_2(SCM_NULL, expr), env);
 }
 
 /*===========================================================================
@@ -1519,10 +1543,11 @@ static qquote_result qquote_internal(ScmObj input, ScmObj env, int nest)
 }
 
 
-ScmObj ScmExp_quasiquote(ScmObj datum, ScmObj env)
+ScmObj 
+scm_s_quasiquote(ScmObj datum, ScmObj env)
 {
     qquote_result ret = qquote_internal(datum, env, 1);
-    DECLARE_FUNCTION("quasiquote", SyntaxFixed1);
+    DECLARE_FUNCTION("quasiquote", syntax_fixed_1);
 
     switch (ret.insn) {
     case TR_MSG_NOP:
@@ -1539,17 +1564,19 @@ ScmObj ScmExp_quasiquote(ScmObj datum, ScmObj env)
     }
 }
 
-ScmObj ScmExp_unquote(ScmObj dummy, ScmObj env)
+ScmObj 
+scm_s_unquote(ScmObj dummy, ScmObj env)
 {
-    DECLARE_FUNCTION("unquote", SyntaxFixed1);
+    DECLARE_FUNCTION("unquote", syntax_fixed_1);
 
     ERR("unquote outside quasiquote");
     return SCM_NULL;
 }
 
-ScmObj ScmExp_unquote_splicing(ScmObj dummy, ScmObj env)
+ScmObj 
+scm_s_unquote_splicing(ScmObj dummy, ScmObj env)
 {
-    DECLARE_FUNCTION("unquote-splicing", SyntaxFixed1);
+    DECLARE_FUNCTION("unquote-splicing", syntax_fixed_1);
 
     ERR("unquote-splicing outside quasiquote");
     return SCM_NULL;
@@ -1566,16 +1593,17 @@ static void define_internal(ScmObj var, ScmObj exp, ScmObj env)
         SCM_SYMBOL_SET_VCELL(var, EVAL(exp, env));
     } else {
         /* add val to the environment */
-        env = Scm_AddEnvironment(var, EVAL(exp, env), env);
+        env = scm_add_environment(var, EVAL(exp, env), env);
     }
 }
 
-ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
+ScmObj 
+scm_s_define(ScmObj var, ScmObj rest, ScmObj env)
 {
     ScmObj procname = SCM_FALSE;
     ScmObj body     = SCM_FALSE;
     ScmObj formals  = SCM_FALSE;
-    DECLARE_FUNCTION("define", SyntaxVariadic1);
+    DECLARE_FUNCTION("define", syntax_variadic_1);
 
     /*========================================================================
       (define <variable> <expression>)
@@ -1610,7 +1638,7 @@ ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
         ASSERT_SYMBOLP(procname);
 
         define_internal(procname,
-                        Scm_NewClosure(CONS(formals, body), env),
+                        scm_make_closure(CONS(formals, body), env),
                         env);
     } else {
         ERR_OBJ("syntax error", var);
@@ -1626,9 +1654,10 @@ ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env)
 /*=======================================
   R5RS : 6.5 Eval
 =======================================*/
-ScmObj ScmOp_scheme_report_environment(ScmObj version)
+ScmObj 
+scm_p_scheme_report_environment(ScmObj version)
 {
-    DECLARE_FUNCTION("scheme-report-environment", ProcedureFixed1);
+    DECLARE_FUNCTION("scheme-report-environment", procedure_fixed_1);
 
     /* sanity check */
     ASSERT_INTP(version);
@@ -1645,9 +1674,10 @@ ScmObj ScmOp_scheme_report_environment(ScmObj version)
     return SCM_INTERACTION_ENV;
 }
 
-ScmObj ScmOp_null_environment(ScmObj version)
+ScmObj 
+scm_p_null_environment(ScmObj version)
 {
-    DECLARE_FUNCTION("null-environment", ProcedureFixed1);
+    DECLARE_FUNCTION("null-environment", procedure_fixed_1);
 
     /* sanity check */
     ASSERT_INTP(version);
@@ -1664,8 +1694,9 @@ ScmObj ScmOp_null_environment(ScmObj version)
     return SCM_INTERACTION_ENV;
 }
 
-ScmObj ScmOp_interaction_environment(void)
+ScmObj 
+scm_p_interaction_environment(void)
 {
-    DECLARE_FUNCTION("interaction-environment", ProcedureFixed0);
+    DECLARE_FUNCTION("interaction-environment", procedure_fixed_0);
     return SCM_INTERACTION_ENV;
 }

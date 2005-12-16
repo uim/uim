@@ -57,20 +57,20 @@
  *       ScmObj str_port = SCM_FALSE;
  *       ScmObj ret = SCM_FALSE;
  *
- *       SigScm_GC_ProtectStack(&stack_start);
+ *       scm_gc_protect_stack(&stack_start);
  *
- *       str_port = Scm_NewStringPort(exp);
- *       ret = SigScm_Read(str_port);
+ *       str_port = scm_make_string_port(exp);
+ *       ret = scm_read(str_port);
  *       ret = EVAL(ret, SCM_NULL);
  *
- *       SigScm_GC_UnprotectStack(stack_start);
+ *       scm_gc_unprotect_stack(stack_start);
  *   }
  *
  *   The previous strategy assumes that stack_start is certainly located at
  *   lower than str_port and ret. But the optimization breaks the assumption as
  *   follows.
  *
- *   At the breakpoint immediately before SigScm_GC_ProtectStack() of the code
+ *   At the breakpoint immediately before scm_gc_protect_stack() of the code
  *   compiled with gcc4 ((GCC) 4.0.1 20050617 (prerelease) (Debian 4.0.0-10)
  *   (IA32)), actual storage layout had reported as follows.
  *
@@ -109,8 +109,8 @@
  *          ScmObj str_port = SCM_FALSE;
  *          ScmObj ret = SCM_FALSE;
  *
- *          str_port = Scm_NewStringPort(exp);
- *          ret = SigScm_Read(str_port);
+ *          str_port = scm_make_string_port(exp);
+ *          ret = scm_read(str_port);
  *          ret = EVAL(ret, SCM_NULL);
  *          return SCM_STRING_STR(ret);
  *      }
@@ -127,8 +127,8 @@
  *          ScmObj str_port = SCM_FALSE;
  *          ScmObj ret = SCM_FALSE;
  *
- *          str_port = Scm_NewStringPort(exp);
- *          ret = SigScm_Read(str_port);
+ *          str_port = scm_make_string_port(exp);
+ *          ret = scm_read(str_port);
  *          ret = EVAL(ret, SCM_NULL);
  *          return SCM_STRING_STR(ret);
  *      }
@@ -188,7 +188,7 @@
  *
  *     To avoid this condition, gc_protect_stack() and gc_unprotect_stack()
  *     must certainly be invoked in a separated function which will not be
- *     inlined. So SigScm_GC_CallProtectedFuncn() are prepared as function.
+ *     inlined. So scm_gc_call_protected_funcn() are prepared as function.
  *
  *  -- YamaKen 2005-09-07
  */

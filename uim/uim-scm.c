@@ -94,7 +94,7 @@ uim_scm_error_internal(const char *msg, uim_lisp errobj)
 #endif
 
   /* FIXME: don't terminate the process */
-  SigScm_ErrorObj(msg, (ScmObj)errobj);
+  scm_error_obj(NULL, msg, (ScmObj)errobj);
 
 #if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_unprotect_stack(&stack_start);
@@ -166,7 +166,7 @@ uim_scm_c_int_internal(uim_lisp integer)
 uim_lisp
 uim_scm_make_int(int integer)
 {
-  return (uim_lisp)Scm_NewInt(integer);
+  return (uim_lisp)scm_make_int(integer);
 }
 
 char *
@@ -222,7 +222,7 @@ uim_scm_refer_c_str_internal(uim_lisp str)
 uim_lisp
 uim_scm_make_str(const char *str)
 {
-  return (uim_lisp)Scm_NewMutableStringCopying(str);
+  return (uim_lisp)scm_make_mutable_string_copying(str);
 }
 
 char *
@@ -234,7 +234,7 @@ uim_scm_c_symbol(uim_lisp symbol)
 uim_lisp
 uim_scm_make_symbol(const char *name)
 {
-  return (uim_lisp)Scm_Intern(name);
+  return (uim_lisp)scm_intern(name);
 }
 
 void *
@@ -251,7 +251,7 @@ uim_scm_c_ptr(uim_lisp ptr)
 uim_lisp
 uim_scm_make_ptr(void *ptr)
 {
-  return (uim_lisp)Scm_NewCPointer(ptr);
+  return (uim_lisp)scm_make_cpointer(ptr);
 }
 
 uim_func_ptr
@@ -269,19 +269,19 @@ uim_scm_c_func_ptr(uim_lisp func_ptr)
 uim_lisp
 uim_scm_make_func_ptr(uim_func_ptr func_ptr)
 {
-  return (uim_lisp)Scm_NewCFuncPointer((ScmCFunc)func_ptr);
+  return (uim_lisp)scm_make_cfunc_pointer((ScmCFunc)func_ptr);
 }
 
 void
 uim_scm_gc_protect(uim_lisp *location)
 {
-  SigScm_GC_Protect((ScmObj *)location);
+  scm_gc_protect((ScmObj *)location);
 }
 
 void
 uim_scm_gc_unprotect_stack(uim_lisp *stack_start)
 {
-  SigScm_GC_UnprotectStack((ScmObj*)stack_start);
+  scm_gc_unprotect_stack((ScmObj*)stack_start);
 }
 
 #if UIM_SCM_GCC4_READY_GC
@@ -295,13 +295,13 @@ uim_scm_gc_protect_stack_internal(void)
   ScmObj stack_start;
 
   /* intentionally returns invalidated local address */
-  return (uim_lisp *)SigScm_GC_ProtectStack(&stack_start);
+  return (uim_lisp *)scm_gc_protect_stack(&stack_start);
 }
 #else /* UIM_SCM_GCC4_READY_GC */
 void
 uim_scm_gc_protect_stack(uim_lisp *stack_start)
 {
-  SigScm_GC_ProtectStack((ScmObj*)stack_start);
+  scm_gc_protect_stack((ScmObj*)stack_start);
 }
 #endif /* UIM_SCM_GCC4_READY_GC */
 
@@ -314,19 +314,19 @@ uim_scm_is_alive(void)
 long
 uim_scm_get_verbose_level(void)
 {
-  return (long)SigScm_GetVerboseLevel();
+  return (long)scm_get_verbose_level();
 }
 
 void
 uim_scm_set_verbose_level(long new_value)
 {
-  SigScm_SetVerboseLevel(new_value);
+  scm_set_verbose_level(new_value);
 }
 
 void
 uim_scm_set_lib_path(const char *path)
 {
-  SigScm_set_lib_path(path);
+  scm_set_lib_path(path);
 }
 
 uim_bool
@@ -336,7 +336,7 @@ uim_scm_load_file(const char *fn)
     return UIM_FALSE;
 
   /* FIXME! */
-  SigScm_load(fn);
+  scm_load(fn);
 
   return UIM_TRUE;
 }
@@ -392,7 +392,7 @@ uim_scm_eq(uim_lisp a, uim_lisp b)
 uim_bool
 uim_scm_string_equal(uim_lisp a, uim_lisp b)
 {
-  return (SCM_NFALSEP(ScmOp_stringequalp((ScmObj)a, (ScmObj)b)));
+  return (SCM_NFALSEP(scm_p_stringequalp((ScmObj)a, (ScmObj)b)));
 }
 
 uim_lisp
@@ -417,7 +417,7 @@ uim_scm_eval_internal(uim_lisp obj)
   uim_scm_gc_protect_stack(&stack_start);
 #endif
 
-  ret = (uim_lisp)ScmOp_eval((ScmObj)obj, SCM_NULL);
+  ret = (uim_lisp)scm_p_eval((ScmObj)obj, SCM_NULL);
 
 #if !UIM_SCM_GCC4_READY_GC
   uim_scm_gc_unprotect_stack(&stack_start);
@@ -430,7 +430,7 @@ uim_scm_eval_internal(uim_lisp obj)
 uim_lisp
 uim_scm_apply(uim_lisp proc, uim_lisp args)
 {
-  return (uim_lisp)Scm_call((ScmObj)proc, Scm_NewCons((ScmObj)args, SCM_NULL));
+  return (uim_lisp)scm_call((ScmObj)proc, scm_make_cons((ScmObj)args, SCM_NULL));
 }
 #endif  /* UIM_SCM_EXTENDED_API */
 
@@ -449,68 +449,68 @@ static uim_lisp
 uim_scm_eval_c_string_internal(const char *str)
 #endif
 {
-  return (uim_lisp)Scm_eval_c_string(str);
+  return (uim_lisp)scm_eval_c_string(str);
 }
 
 uim_lisp
 uim_scm_return_value(void)
 {
   /* FIXME: This function should be removed. */
-  return (uim_lisp)Scm_return_value();
+  return (uim_lisp)scm_return_value();
 }
 
 uim_lisp
 uim_scm_car(uim_lisp pair)
 {
-  return (uim_lisp)ScmOp_car((ScmObj)pair);
+  return (uim_lisp)scm_p_car((ScmObj)pair);
 }
 
 uim_lisp
 uim_scm_cdr(uim_lisp pair)
 {
-  return (uim_lisp)ScmOp_cdr((ScmObj)pair);
+  return (uim_lisp)scm_p_cdr((ScmObj)pair);
 }
 
 uim_lisp
 uim_scm_cadr(uim_lisp lst)
 {
-  return (uim_lisp)ScmOp_cadr((ScmObj)lst);
+  return (uim_lisp)scm_p_cadr((ScmObj)lst);
 }
 
 uim_lisp
 uim_scm_caar(uim_lisp lst)
 {
-  return (uim_lisp)ScmOp_caar((ScmObj)lst);
+  return (uim_lisp)scm_p_caar((ScmObj)lst);
 }
 
 uim_lisp
 uim_scm_cdar(uim_lisp lst)
 {
-  return (uim_lisp)ScmOp_cdar((ScmObj)lst);
+  return (uim_lisp)scm_p_cdar((ScmObj)lst);
 }
 
 uim_lisp
 uim_scm_cddr(uim_lisp lst)
 {
-  return (uim_lisp)ScmOp_cddr((ScmObj)lst);
+  return (uim_lisp)scm_p_cddr((ScmObj)lst);
 }
 
 uim_lisp
 uim_scm_cons(uim_lisp car, uim_lisp cdr)
 {
-  return (uim_lisp)Scm_NewCons((ScmObj)car, (ScmObj)cdr);
+  return (uim_lisp)scm_make_cons((ScmObj)car, (ScmObj)cdr);
 }
 
 uim_lisp
 uim_scm_length(uim_lisp lst)
 {
-  return (uim_lisp)ScmOp_length((ScmObj)lst);
+  return (uim_lisp)scm_p_length((ScmObj)lst);
 }
 
 uim_lisp
 uim_scm_reverse(uim_lisp lst)
 {
-  return (uim_lisp)ScmOp_reverse((ScmObj)lst);
+  return (uim_lisp)scm_p_reverse((ScmObj)lst);
 }
 
 uim_bool
@@ -537,39 +537,39 @@ typedef ScmObj (*ScmProcedureFixed5)(ScmObj arg1, ScmObj arg2, ScmObj arg3, ScmO
 void
 uim_scm_init_subr_0(const char *name, uim_lisp (*func)(void))
 {
-  Scm_RegisterProcedureFixed0(name, (ScmProcedureFixed0)func);
+  scm_register_procedure_fixed_0(name, (ScmProcedureFixed0)func);
 }
 
 void
 uim_scm_init_subr_1(const char *name, uim_lisp (*func)(uim_lisp))
 {
-  Scm_RegisterProcedureFixed1(name, (ScmProcedureFixed1)func);
+  scm_register_procedure_fixed_1(name, (ScmProcedureFixed1)func);
 }
 
 void
 uim_scm_init_subr_2(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp))
 {
-  Scm_RegisterProcedureFixed2(name, (ScmProcedureFixed2)func);
+  scm_register_procedure_fixed_2(name, (ScmProcedureFixed2)func);
 }
 
 void
 uim_scm_init_subr_3(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp))
 {
-  Scm_RegisterProcedureFixed3(name, (ScmProcedureFixed3)func);
+  scm_register_procedure_fixed_3(name, (ScmProcedureFixed3)func);
 }
 
 void
 uim_scm_init_subr_4(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
-						uim_lisp))
+                                                       uim_lisp))
 {
-  Scm_RegisterProcedureFixed4(name, (ScmProcedureFixed4)func);
+  scm_register_procedure_fixed_4(name, (ScmProcedureFixed4)func);
 }
 
 void
 uim_scm_init_subr_5(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
-						uim_lisp, uim_lisp))
+                                                       uim_lisp, uim_lisp))
 {
-  Scm_RegisterProcedureFixed5(name, (ScmProcedureFixed5)func);
+  scm_register_procedure_fixed_5(name, (ScmProcedureFixed5)func);
 }
 
 static void
@@ -601,12 +601,12 @@ uim_scm_init(const char *verbose_level)
    * multibyte character as string, it is not a problem. The name
    * "ISO-8859-1" is a dummy name for the codec.
    */
-  Scm_current_char_codec = Scm_mb_find_codec("ISO-8859-1");
+  scm_current_char_codec = scm_mb_find_codec("ISO-8859-1");
 
-  SigScm_Initialize();
+  scm_initialize();
 
   /* GC safe */
-  output_port = Scm_MakeSharedFilePort(uim_output, "uim", SCM_PORTFLAG_OUTPUT);
+  output_port = scm_make_shared_file_port(uim_output, "uim", SCM_PORTFLAG_OUTPUT);
   scm_current_output_port = scm_current_error_port = output_port;
 
 #ifdef DEBUG_SCM
@@ -614,9 +614,9 @@ uim_scm_init(const char *verbose_level)
   uim_scm_provide("debug");
 #endif
 
-  Scm_Use("srfi-23");
-  Scm_Use("srfi-34");
-  Scm_Use("siod");
+  scm_use("srfi-23");
+  scm_use("srfi-34");
+  scm_use("siod");
 
   true_sym  = (uim_lisp)SCM_TRUE;
   false_sym = (uim_lisp)SCM_FALSE;
@@ -628,6 +628,6 @@ uim_scm_init(const char *verbose_level)
 void
 uim_scm_quit(void)
 {
-  SigScm_Finalize();
+  scm_finalize();
   uim_output = NULL;
 }

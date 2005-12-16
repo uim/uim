@@ -77,8 +77,8 @@ extern "C" {
 
 /* RFC: better names for the debug printing */
 #if SCM_DEBUG
-#define SCM_CDBG(args) (SigScm_CategorizedDebug args)
-#define SCM_DBG(args)  (SigScm_Debug args)
+#define SCM_CDBG(args) (scm_categorized_debug args)
+#define SCM_DBG(args)  (scm_debug args)
 #else /* SCM_DEBUG */
 #define SCM_CDBG(args)
 #define SCM_DBG(args)
@@ -89,16 +89,16 @@ extern "C" {
  * - support immediate termination to produce core instead of robust recovery
  */
 #define SCM_ASSERT(cond)                                                     \
-    ((cond) || SigScm_Die("assertion failed", __FILE__, __LINE__))
+    ((cond) || scm_die("assertion failed", __FILE__, __LINE__))
 
 #define SCM_ASSERT_ALLOCATED(p)                                              \
-    ((p) || (Scm_FatalError(SCM_ERRMSG_MEMORY_EXHAUSTED), 1))
+    ((p) || (scm_fatal_error(SCM_ERRMSG_MEMORY_EXHAUSTED), 1))
 
-#define SCM_ERROBJP(obj)       (NFALSEP(ScmOp_error_objectp(obj)))
+#define SCM_ERROBJP(obj)       (NFALSEP(scm_p_error_objectp(obj)))
 
 #define SCM_SYMBOL_BOUNDP(sym) (!SCM_EQ(SCM_SYMBOL_VCELL(sym), SCM_UNBOUND))
 
-#define SCM_CONS(kar, kdr) (Scm_NewCons((kar), (kdr)))
+#define SCM_CONS(kar, kdr) (scm_make_cons((kar), (kdr)))
 #if SCM_USE_STORAGE_ABSTRACTION_LAYER
 #define SCM_CAR(kons)  (SCM_CONS_CAR(kons))
 #define SCM_CDR(kons)  (SCM_CONS_CDR(kons))
@@ -126,7 +126,7 @@ extern "C" {
 #define SCM_LIST_4_P(lst) (SCM_CONSP(lst) && SCM_LIST_3_P(SCM_CDR(lst)))
 #define SCM_LIST_5_P(lst) (SCM_CONSP(lst) && SCM_LIST_4_P(SCM_CDR(lst)))
 
-#define SCM_EVAL(obj, env) (Scm_eval((obj), (env)))
+#define SCM_EVAL(obj, env) (scm_eval((obj), (env)))
 
 #if SCM_GCC4_READY_GC
 /*
@@ -152,9 +152,9 @@ extern "C" {
         ScmObj *stack_start;                                                 \
                                                                              \
         if (0) exp_ret func args;  /* compile-time type check */             \
-        stack_start = SigScm_GC_ProtectStack(NULL);                          \
+        stack_start = scm_gc_protect_stack(NULL);                          \
         exp_ret (*fp)args;                                                   \
-        SigScm_GC_UnprotectStack(stack_start);                               \
+        scm_gc_unprotect_stack(stack_start);                               \
     } while (/* CONSTCOND */ 0)
 
 #endif /* SCM_GCC4_READY_GC */
@@ -163,15 +163,15 @@ extern "C" {
 /*
  * Port I/O Handling macros
  */
-#define SCM_CHARPORT_ERROR(cport, msg) (SigScm_Error(msg))
-#define SCM_BYTEPORT_ERROR(bport, msg) (SigScm_Error(msg))
+#define SCM_CHARPORT_ERROR(cport, msg) (scm_error(msg))
+#define SCM_BYTEPORT_ERROR(bport, msg) (scm_error(msg))
 #define SCM_PORT_MALLOC(size)          (scm_malloc(size))
 #define SCM_PORT_CALLOC(number, size)  (scm_calloc(number, size))
 #define SCM_PORT_REALLOC(ptr, size)    (scm_realloc(ptr, size))
 
 #define SCM_ASSERT_LIVE_PORT(port)                                           \
     (SCM_PORT_IMPL(port)                                                     \
-     || (SigScm_ErrorObj("operated on closed port", port), 1))
+     || (scm_error_obj("(unknown)", "operated on closed port", port), 1))
 
 #define SCM_PORT_CLOSE_IMPL(port)                                            \
     (SCM_CHARPORT_CLOSE(SCM_PORT_IMPL(port)), SCM_PORT_SET_IMPL(port, NULL))
@@ -202,7 +202,7 @@ extern "C" {
  */
 #include "baseport.h"
 
-#define SCM_WRITESS_TO_PORT(port, obj) ((*Scm_writess_func)(port, obj))
+#define SCM_WRITESS_TO_PORT(port, obj) ((*scm_writess_func)(port, obj))
 
 /*============================================================================
   Type Definitions
@@ -535,7 +535,7 @@ struct ScmEvalState_ {
 /* storage-gc.c */
 #if SCM_GCC4_READY_GC
 /*
- * The variable to ensure that a call of SigScm_GC_ProtectStack() is
+ * The variable to ensure that a call of scm_gc_protect_stack() is
  * uninlined in portable way through (*f)().
  *
  * Don't access this variables directly. Use SCM_GC_PROTECTED_CALL*() instead.
@@ -550,147 +550,147 @@ extern ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *);
    SigScheme : Core Functions
 ===========================================================================*/
 /* sigscheme.c */
-void SigScm_Initialize(void);
-void SigScm_Finalize(void);
-void Scm_DefineAlias(const char *newsym, const char *sym);
-void Scm_Provide(ScmObj feature);
-int  Scm_Providedp(ScmObj feature);
-int  Scm_Use(const char *feature);
-ScmObj ScmExp_use(ScmObj feature, ScmObj env);
-ScmObj Scm_eval_c_string(const char *exp);
+void scm_initialize(void);
+void scm_finalize(void);
+void scm_define_alias(const char *newsym, const char *sym);
+void scm_provide(ScmObj feature);
+int  scm_providedp(ScmObj feature);
+int  scm_use(const char *feature);
+ScmObj scm_s_use(ScmObj feature, ScmObj env);
+ScmObj scm_eval_c_string(const char *exp);
 #if SCM_COMPAT_SIOD
-ScmObj Scm_return_value(void);
+ScmObj scm_return_value(void);
 #endif
 
 /* Procedure/Syntax Registration */
-void Scm_RegisterReductionOperator(const char *name, ScmObj (*func)(ScmObj, ScmObj, enum ScmReductionState*));
-void Scm_RegisterSyntaxFixed0(const char *name, ScmObj (*func)(ScmObj));
+void scm_register_reduction_operator(const char *name, ScmObj (*func)(ScmObj, ScmObj, enum ScmReductionState*));
+void scm_register_syntax_fixed_0(const char *name, ScmObj (*func)(ScmObj));
 #if SCM_FUNCTYPE_MAND_MAX >= 1
-void Scm_RegisterSyntaxFixed1(const char *name, ScmObj (*func)(ScmObj, ScmObj));
+void scm_register_syntax_fixed_1(const char *name, ScmObj (*func)(ScmObj, ScmObj));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 2
-void Scm_RegisterSyntaxFixed2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj));
+void scm_register_syntax_fixed_2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 3
-void Scm_RegisterSyntaxFixed3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj));
+void scm_register_syntax_fixed_3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 4
-void Scm_RegisterSyntaxFixed4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+void scm_register_syntax_fixed_4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 5
-void Scm_RegisterSyntaxFixed5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+void scm_register_syntax_fixed_5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
 #endif
-void Scm_RegisterSyntaxFixedTailRec0(const char *name, ScmObj (*func)(ScmEvalState*));
+void scm_register_syntax_fixed_tailrec_0(const char *name, ScmObj (*func)(ScmEvalState*));
 #if SCM_FUNCTYPE_MAND_MAX >= 1
-void Scm_RegisterSyntaxFixedTailRec1(const char *name, ScmObj (*func)(ScmObj, ScmEvalState*));
+void scm_register_syntax_fixed_tailrec_1(const char *name, ScmObj (*func)(ScmObj, ScmEvalState*));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 2
-void Scm_RegisterSyntaxFixedTailRec2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmEvalState*));
+void scm_register_syntax_fixed_tailrec_2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmEvalState*));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 3
-void Scm_RegisterSyntaxFixedTailRec3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmEvalState*));
+void scm_register_syntax_fixed_tailrec_3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 4
-void Scm_RegisterSyntaxFixedTailRec4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+void scm_register_syntax_fixed_tailrec_4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 5
-void Scm_RegisterSyntaxFixedTailRec5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+void scm_register_syntax_fixed_tailrec_5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
-void Scm_RegisterSyntaxVariadic0(const char *name, ScmObj (*func)(ScmObj, ScmObj));
+void scm_register_syntax_variadic_0(const char *name, ScmObj (*func)(ScmObj, ScmObj));
 #if SCM_FUNCTYPE_MAND_MAX >= 1
-void Scm_RegisterSyntaxVariadic1(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj));
+void scm_register_syntax_variadic_1(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 2
-void Scm_RegisterSyntaxVariadic2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj));
+void scm_register_syntax_variadic_2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 3
-void Scm_RegisterSyntaxVariadic3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+void scm_register_syntax_variadic_3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 4
-void Scm_RegisterSyntaxVariadic4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+void scm_register_syntax_variadic_4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 5
-void Scm_RegisterSyntaxVariadic5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+void scm_register_syntax_variadic_5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
 #endif
-void Scm_RegisterSyntaxVariadicTailRec0(const char *name, ScmObj (*func)(ScmObj, ScmEvalState*));
+void scm_register_syntax_variadic_tailrec_0(const char *name, ScmObj (*func)(ScmObj, ScmEvalState*));
 #if SCM_FUNCTYPE_MAND_MAX >= 1
-void Scm_RegisterSyntaxVariadicTailRec1(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmEvalState*));
+void scm_register_syntax_variadic_tailrec_1(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmEvalState*));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 2
-void Scm_RegisterSyntaxVariadicTailRec2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmEvalState*));
+void scm_register_syntax_variadic_tailrec_2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 3
-void Scm_RegisterSyntaxVariadicTailRec3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+void scm_register_syntax_variadic_tailrec_3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 4
-void Scm_RegisterSyntaxVariadicTailRec4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+void scm_register_syntax_variadic_tailrec_4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 5
-void Scm_RegisterSyntaxVariadicTailRec5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+void scm_register_syntax_variadic_tailrec_5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
-void Scm_RegisterProcedureFixed0(const char *name, ScmObj (*func)());
+void scm_register_procedure_fixed_0(const char *name, ScmObj (*func)());
 #if SCM_FUNCTYPE_MAND_MAX >= 1
-void Scm_RegisterProcedureFixed1(const char *name, ScmObj (*func)(ScmObj));
+void scm_register_procedure_fixed_1(const char *name, ScmObj (*func)(ScmObj));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 2
-void Scm_RegisterProcedureFixed2(const char *name, ScmObj (*func)(ScmObj, ScmObj));
+void scm_register_procedure_fixed_2(const char *name, ScmObj (*func)(ScmObj, ScmObj));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 3
-void Scm_RegisterProcedureFixed3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj));
+void scm_register_procedure_fixed_3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 4
-void Scm_RegisterProcedureFixed4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj));
+void scm_register_procedure_fixed_4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 5
-void Scm_RegisterProcedureFixed5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+void scm_register_procedure_fixed_5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
 #endif
-void Scm_RegisterProcedureFixedTailRec0(const char *name, ScmObj (*func)(ScmEvalState*));
+void scm_register_procedure_fixed_tailrec_0(const char *name, ScmObj (*func)(ScmEvalState*));
 #if SCM_FUNCTYPE_MAND_MAX >= 1
-void Scm_RegisterProcedureFixedTailRec1(const char *name, ScmObj (*func)(ScmObj, ScmEvalState*));
+void scm_register_procedure_fixed_tailrec_1(const char *name, ScmObj (*func)(ScmObj, ScmEvalState*));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 2
-void Scm_RegisterProcedureFixedTailRec2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmEvalState*));
+void scm_register_procedure_fixed_tailrec_2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmEvalState*));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 3
-void Scm_RegisterProcedureFixedTailRec3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmEvalState*));
+void scm_register_procedure_fixed_tailrec_3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 4
-void Scm_RegisterProcedureFixedTailRec4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+void scm_register_procedure_fixed_tailrec_4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 5
-void Scm_RegisterProcedureFixedTailRec5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+void scm_register_procedure_fixed_tailrec_5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
-void Scm_RegisterProcedureVariadic0(const char *name, ScmObj (*func)(ScmObj));
+void scm_register_procedure_variadic_0(const char *name, ScmObj (*func)(ScmObj));
 #if SCM_FUNCTYPE_MAND_MAX >= 1
-void Scm_RegisterProcedureVariadic1(const char *name, ScmObj (*func)(ScmObj, ScmObj));
+void scm_register_procedure_variadic_1(const char *name, ScmObj (*func)(ScmObj, ScmObj));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 2
-void Scm_RegisterProcedureVariadic2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj));
+void scm_register_procedure_variadic_2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 3
-void Scm_RegisterProcedureVariadic3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj));
+void scm_register_procedure_variadic_3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 4
-void Scm_RegisterProcedureVariadic4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+void scm_register_procedure_variadic_4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 5
-void Scm_RegisterProcedureVariadic5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
+void scm_register_procedure_variadic_5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj));
 #endif
-void Scm_RegisterProcedureVariadicTailRec0(const char *name, ScmObj (*func)(ScmObj, ScmEvalState*));
+void scm_register_procedure_variadic_tailrec_0(const char *name, ScmObj (*func)(ScmObj, ScmEvalState*));
 #if SCM_FUNCTYPE_MAND_MAX >= 1
-void Scm_RegisterProcedureVariadicTailRec1(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmEvalState*));
+void scm_register_procedure_variadic_tailrec_1(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmEvalState*));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 2
-void Scm_RegisterProcedureVariadicTailRec2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmEvalState*));
+void scm_register_procedure_variadic_tailrec_2(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 3
-void Scm_RegisterProcedureVariadicTailRec3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+void scm_register_procedure_variadic_tailrec_3(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 4
-void Scm_RegisterProcedureVariadicTailRec4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+void scm_register_procedure_variadic_tailrec_4(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 5
-void Scm_RegisterProcedureVariadicTailRec5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
+void scm_register_procedure_variadic_tailrec_5(const char *name, ScmObj (*func)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState*));
 #endif
 
 /* alloc.c */
@@ -703,288 +703,288 @@ void *scm_realloc(void *ptr, size_t size);
 /* Don't use these functions directly. Use SCM_MAKE_*() or MAKE_*() instead to
  * allow flexible object allocation. */
 /* FIXME: rename to scm_make_*() */
-ScmObj Scm_NewCons(ScmObj a, ScmObj b);
-ScmObj Scm_NewInt(int val);
-ScmObj Scm_NewSymbol(char *name, ScmObj v_cell);
-ScmObj Scm_NewChar(int val);
-ScmObj Scm_NewString(char *str, int is_immutable);
-ScmObj Scm_NewImmutableString(char *str);
-ScmObj Scm_NewImmutableStringCopying(const char *str);
-ScmObj Scm_NewMutableString(char *str);
-ScmObj Scm_NewMutableStringCopying(const char *str);
-ScmObj Scm_NewFunc(enum ScmFuncTypeCode type, ScmFuncType func);
-ScmObj Scm_NewClosure(ScmObj exp, ScmObj env);
-ScmObj Scm_NewVector(ScmObj *vec, int len);
-ScmObj Scm_NewPort(ScmCharPort *cport, enum ScmPortFlag flag);
-ScmObj Scm_NewContinuation(void);
+ScmObj scm_make_cons(ScmObj a, ScmObj b);
+ScmObj scm_make_int(int val);
+ScmObj scm_make_symbol(char *name, ScmObj v_cell);
+ScmObj scm_make_char(int val);
+ScmObj scm_make_string(char *str, int is_immutable);
+ScmObj scm_make_immutable_string(char *str);
+ScmObj scm_make_immutable_string_copying(const char *str);
+ScmObj scm_make_mutable_string(char *str);
+ScmObj scm_make_mutable_string_copying(const char *str);
+ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
+ScmObj scm_make_closure(ScmObj exp, ScmObj env);
+ScmObj scm_make_vector(ScmObj *vec, int len);
+ScmObj scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag);
+ScmObj scm_make_continuation(void);
 #if !SCM_USE_VALUECONS
-ScmObj Scm_NewValuePacket(ScmObj values);
+ScmObj scm_make_value_packet(ScmObj values);
 #endif
 #if SCM_USE_NONSTD_FEATURES
-ScmObj Scm_NewCPointer(void *data);
-ScmObj Scm_NewCFuncPointer(ScmCFunc func);
+ScmObj scm_make_cpointer(void *data);
+ScmObj scm_make_cfunc_pointer(ScmCFunc func);
 #endif
 
 /* storage-gc.c */
-void SigScm_GC_Protect(ScmObj *var);
-void SigScm_GC_Unprotect(ScmObj *var);
+void scm_gc_protect(ScmObj *var);
+void scm_gc_unprotect(ScmObj *var);
 #if SCM_GCC4_READY_GC
 /*
  * Ordinary programs should not call these functions directly. Use
  * SCM_GC_PROTECTED_CALL*() instead.
  */
 #ifdef __GNUC__
-#define SigScm_GC_ProtectStack SigScm_GC_ProtectStackInternal
+#define scm_gc_protect_stack scm_gc_protect_stack_internal
 #else /* __GNUC__ */
-#define SigScm_GC_ProtectStack (*scm_gc_protect_stack)
+#define scm_gc_protect_stack (*scm_gc_protect_stack)
 #endif /* __GNUC__ */
 
-ScmObj *SigScm_GC_ProtectStackInternal(ScmObj *designated_stack_start) SCM_NOINLINE;
+ScmObj *scm_gc_protect_stack_internal(ScmObj *designated_stack_start) SCM_NOINLINE;
 #else /* SCM_GCC4_READY_GC */
-void   SigScm_GC_ProtectStack(ScmObj *stack_start);
+void   scm_gc_protect_stack(ScmObj *stack_start);
 #endif /* SCM_GCC4_READY_GC */
-void   SigScm_GC_UnprotectStack(ScmObj *stack_start);    
+void   scm_gc_unprotect_stack(ScmObj *stack_start);    
 
 /* storage-symbol.c */
-ScmObj Scm_Intern(const char *name);
-ScmObj Scm_SymbolBoundTo(ScmObj obj);
+ScmObj scm_intern(const char *name);
+ScmObj scm_symbol_bound_to(ScmObj obj);
 
 /* eval.c */
-ScmObj ScmOp_eval(ScmObj obj, ScmObj env);
-ScmObj ScmOp_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state);
-ScmObj ScmExp_quote(ScmObj datum, ScmObj env);
-ScmObj ScmExp_lambda(ScmObj formals, ScmObj body, ScmObj env);
-ScmObj ScmExp_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state);
-ScmObj ScmExp_setd(ScmObj var, ScmObj val, ScmObj env);
-ScmObj ScmExp_cond(ScmObj args, ScmEvalState *eval_state);
-ScmObj ScmExp_case(ScmObj key, ScmObj args, ScmEvalState *eval_state);
-ScmObj ScmExp_and(ScmObj args, ScmEvalState *eval_state);
-ScmObj ScmExp_or(ScmObj args, ScmEvalState *eval_state);
-ScmObj ScmExp_let(ScmObj args, ScmEvalState *eval_state);
-ScmObj ScmExp_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state);
-ScmObj ScmExp_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state);
-ScmObj ScmExp_begin(ScmObj args, ScmEvalState *eval_state);
-ScmObj ScmExp_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_state);
-ScmObj ScmExp_delay(ScmObj expr, ScmObj env);
-ScmObj ScmExp_quasiquote(ScmObj datum, ScmObj env);
-ScmObj ScmExp_unquote(ScmObj dummy, ScmObj env);
-ScmObj ScmExp_unquote_splicing(ScmObj dummy, ScmObj env);
-ScmObj ScmExp_define(ScmObj var, ScmObj rest, ScmObj env);
-ScmObj ScmOp_scheme_report_environment(ScmObj version);
-ScmObj ScmOp_null_environment(ScmObj version);
-ScmObj ScmOp_interaction_environment(void);
+ScmObj scm_p_eval(ScmObj obj, ScmObj env);
+ScmObj scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state);
+ScmObj scm_s_quote(ScmObj datum, ScmObj env);
+ScmObj scm_s_lambda(ScmObj formals, ScmObj body, ScmObj env);
+ScmObj scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state);
+ScmObj scm_s_setd(ScmObj var, ScmObj val, ScmObj env);
+ScmObj scm_s_cond(ScmObj args, ScmEvalState *eval_state);
+ScmObj scm_s_case(ScmObj key, ScmObj args, ScmEvalState *eval_state);
+ScmObj scm_s_and(ScmObj args, ScmEvalState *eval_state);
+ScmObj scm_s_or(ScmObj args, ScmEvalState *eval_state);
+ScmObj scm_s_let(ScmObj args, ScmEvalState *eval_state);
+ScmObj scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state);
+ScmObj scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state);
+ScmObj scm_s_begin(ScmObj args, ScmEvalState *eval_state);
+ScmObj scm_s_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_state);
+ScmObj scm_s_delay(ScmObj expr, ScmObj env);
+ScmObj scm_s_quasiquote(ScmObj datum, ScmObj env);
+ScmObj scm_s_unquote(ScmObj dummy, ScmObj env);
+ScmObj scm_s_unquote_splicing(ScmObj dummy, ScmObj env);
+ScmObj scm_s_define(ScmObj var, ScmObj rest, ScmObj env);
+ScmObj scm_p_scheme_report_environment(ScmObj version);
+ScmObj scm_p_null_environment(ScmObj version);
+ScmObj scm_p_interaction_environment(void);
 
-ScmObj Scm_call(ScmObj proc, ScmObj args);
+ScmObj scm_call(ScmObj proc, ScmObj args);
 
 /* operations.c */
-ScmObj ScmOp_eqvp(ScmObj obj1, ScmObj obj2);
-ScmObj ScmOp_eqp(ScmObj obj1, ScmObj obj2);
-ScmObj ScmOp_equalp(ScmObj obj1, ScmObj obj2);
-ScmObj ScmOp_add(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj ScmOp_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj ScmOp_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj ScmOp_divide(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj ScmOp_equal(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj ScmOp_less(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj ScmOp_less_eq(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj ScmOp_greater(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj ScmOp_greater_eq(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj ScmOp_numberp(ScmObj obj);
-ScmObj ScmOp_zerop(ScmObj scm_num);
-ScmObj ScmOp_positivep(ScmObj scm_num);
-ScmObj ScmOp_negativep(ScmObj scm_num);
-ScmObj ScmOp_oddp(ScmObj scm_num);
-ScmObj ScmOp_evenp(ScmObj scm_num);
-ScmObj ScmOp_max(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj ScmOp_min(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj ScmOp_abs(ScmObj scm_num);
-ScmObj ScmOp_quotient(ScmObj scm_n1, ScmObj scm_n2);
-ScmObj ScmOp_modulo(ScmObj scm_n1, ScmObj scm_n2);
-ScmObj ScmOp_remainder(ScmObj scm_n1, ScmObj scm_n2);
-ScmObj ScmOp_number2string (ScmObj num, ScmObj args);
-ScmObj ScmOp_string2number(ScmObj str, ScmObj args);
-ScmObj ScmOp_not(ScmObj obj);
-ScmObj ScmOp_booleanp(ScmObj obj);
-ScmObj ScmOp_car(ScmObj obj);
-ScmObj ScmOp_cdr(ScmObj obj);
-ScmObj ScmOp_pairp(ScmObj obj);
-ScmObj ScmOp_cons(ScmObj car, ScmObj cdr);
-ScmObj ScmOp_set_card(ScmObj pair, ScmObj car);
-ScmObj ScmOp_set_cdrd(ScmObj pair, ScmObj cdr);
-ScmObj ScmOp_caar(ScmObj lst);
-ScmObj ScmOp_cadr(ScmObj lst);
-ScmObj ScmOp_cdar(ScmObj lst);
-ScmObj ScmOp_cddr(ScmObj lst);
-ScmObj ScmOp_caddr(ScmObj lst);
-ScmObj ScmOp_cdddr(ScmObj lst);
-ScmObj ScmOp_list(ScmObj args);
-ScmObj ScmOp_nullp(ScmObj obj);
-ScmObj ScmOp_listp(ScmObj obj);
-ScmObj ScmOp_length(ScmObj obj);
-ScmObj ScmOp_append(ScmObj args);
-ScmObj ScmOp_reverse(ScmObj lst);
-ScmObj ScmOp_list_tail(ScmObj lst, ScmObj scm_k);
-ScmObj ScmOp_list_ref(ScmObj lst, ScmObj scm_k);
-ScmObj ScmOp_memq(ScmObj obj, ScmObj lst);
-ScmObj ScmOp_memv(ScmObj obj, ScmObj lst);
-ScmObj ScmOp_member(ScmObj obj, ScmObj lst);
-ScmObj ScmOp_assq(ScmObj obj, ScmObj alist);
-ScmObj ScmOp_assv(ScmObj obj, ScmObj alist);
-ScmObj ScmOp_assoc(ScmObj obj, ScmObj alist);
-ScmObj ScmOp_symbolp(ScmObj obj);
-ScmObj ScmOp_symbol2string(ScmObj obj);
-ScmObj ScmOp_string2symbol(ScmObj str);
+ScmObj scm_p_eqvp(ScmObj obj1, ScmObj obj2);
+ScmObj scm_p_eqp(ScmObj obj1, ScmObj obj2);
+ScmObj scm_p_equalp(ScmObj obj1, ScmObj obj2);
+ScmObj scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_divide(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_equal(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_less(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_less_eq(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_greater(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_greater_eq(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_numberp(ScmObj obj);
+ScmObj scm_p_zerop(ScmObj scm_num);
+ScmObj scm_p_positivep(ScmObj scm_num);
+ScmObj scm_p_negativep(ScmObj scm_num);
+ScmObj scm_p_oddp(ScmObj scm_num);
+ScmObj scm_p_evenp(ScmObj scm_num);
+ScmObj scm_p_max(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_min(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_abs(ScmObj scm_num);
+ScmObj scm_p_quotient(ScmObj scm_n1, ScmObj scm_n2);
+ScmObj scm_p_modulo(ScmObj scm_n1, ScmObj scm_n2);
+ScmObj scm_p_remainder(ScmObj scm_n1, ScmObj scm_n2);
+ScmObj scm_p_number2string (ScmObj num, ScmObj args);
+ScmObj scm_p_string2number(ScmObj str, ScmObj args);
+ScmObj scm_p_not(ScmObj obj);
+ScmObj scm_p_booleanp(ScmObj obj);
+ScmObj scm_p_car(ScmObj obj);
+ScmObj scm_p_cdr(ScmObj obj);
+ScmObj scm_p_pairp(ScmObj obj);
+ScmObj scm_p_cons(ScmObj car, ScmObj cdr);
+ScmObj scm_p_set_card(ScmObj pair, ScmObj car);
+ScmObj scm_p_set_cdrd(ScmObj pair, ScmObj cdr);
+ScmObj scm_p_caar(ScmObj lst);
+ScmObj scm_p_cadr(ScmObj lst);
+ScmObj scm_p_cdar(ScmObj lst);
+ScmObj scm_p_cddr(ScmObj lst);
+ScmObj scm_p_caddr(ScmObj lst);
+ScmObj scm_p_cdddr(ScmObj lst);
+ScmObj scm_p_list(ScmObj args);
+ScmObj scm_p_nullp(ScmObj obj);
+ScmObj scm_p_listp(ScmObj obj);
+ScmObj scm_p_length(ScmObj obj);
+ScmObj scm_p_append(ScmObj args);
+ScmObj scm_p_reverse(ScmObj lst);
+ScmObj scm_p_list_tail(ScmObj lst, ScmObj scm_k);
+ScmObj scm_p_list_ref(ScmObj lst, ScmObj scm_k);
+ScmObj scm_p_memq(ScmObj obj, ScmObj lst);
+ScmObj scm_p_memv(ScmObj obj, ScmObj lst);
+ScmObj scm_p_member(ScmObj obj, ScmObj lst);
+ScmObj scm_p_assq(ScmObj obj, ScmObj alist);
+ScmObj scm_p_assv(ScmObj obj, ScmObj alist);
+ScmObj scm_p_assoc(ScmObj obj, ScmObj alist);
+ScmObj scm_p_symbolp(ScmObj obj);
+ScmObj scm_p_symbol2string(ScmObj obj);
+ScmObj scm_p_string2symbol(ScmObj str);
 
-ScmObj ScmOp_charp(ScmObj obj);
-ScmObj ScmOp_charequalp(ScmObj ch1, ScmObj ch2);
+ScmObj scm_p_charp(ScmObj obj);
+ScmObj scm_p_charequalp(ScmObj ch1, ScmObj ch2);
 /* TODO : many comparing functions around char is unimplemented */
-ScmObj ScmOp_char_alphabeticp(ScmObj obj);
-ScmObj ScmOp_char_numericp(ScmObj obj);
-ScmObj ScmOp_char_whitespacep(ScmObj obj);
-ScmObj ScmOp_char_upper_casep(ScmObj obj);
-ScmObj ScmOp_char_lower_casep(ScmObj obj);
-ScmObj ScmOp_char2integer(ScmObj obj);
-ScmObj ScmOp_integer2char(ScmObj obj);
-ScmObj ScmOp_char_upcase(ScmObj obj);
-ScmObj ScmOp_char_downcase(ScmObj obj);
+ScmObj scm_p_char_alphabeticp(ScmObj obj);
+ScmObj scm_p_char_numericp(ScmObj obj);
+ScmObj scm_p_char_whitespacep(ScmObj obj);
+ScmObj scm_p_char_upper_casep(ScmObj obj);
+ScmObj scm_p_char_lower_casep(ScmObj obj);
+ScmObj scm_p_char2integer(ScmObj obj);
+ScmObj scm_p_integer2char(ScmObj obj);
+ScmObj scm_p_char_upcase(ScmObj obj);
+ScmObj scm_p_char_downcase(ScmObj obj);
 
-ScmObj ScmOp_stringp(ScmObj obj);
-ScmObj ScmOp_make_string(ScmObj length, ScmObj args);
-ScmObj ScmOp_string(ScmObj args);
-ScmObj ScmOp_string_length(ScmObj str);
-ScmObj ScmOp_string_ref(ScmObj str, ScmObj k);
-ScmObj ScmOp_string_setd(ScmObj str, ScmObj k, ScmObj ch);
-ScmObj ScmOp_stringequalp(ScmObj str1, ScmObj str2);
+ScmObj scm_p_stringp(ScmObj obj);
+ScmObj scm_p_make_string(ScmObj length, ScmObj args);
+ScmObj scm_p_string(ScmObj args);
+ScmObj scm_p_string_length(ScmObj str);
+ScmObj scm_p_string_ref(ScmObj str, ScmObj k);
+ScmObj scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch);
+ScmObj scm_p_stringequalp(ScmObj str1, ScmObj str2);
 /* TODO : many comparing functions around string is unimplemented */
-ScmObj ScmOp_substring(ScmObj str, ScmObj start, ScmObj end);
-ScmObj ScmOp_string_append(ScmObj args);
-ScmObj ScmOp_string2list(ScmObj str);
-ScmObj ScmOp_list2string(ScmObj lst);
-ScmObj ScmOp_string_copy(ScmObj str);
-ScmObj ScmOp_string_filld(ScmObj str, ScmObj ch);
-ScmObj ScmOp_vectorp(ScmObj obj);
-ScmObj ScmOp_make_vector(ScmObj vector_len, ScmObj args);
-ScmObj ScmOp_vector(ScmObj args);
-ScmObj ScmOp_vector_length(ScmObj vec);
-ScmObj ScmOp_vector_ref(ScmObj vec, ScmObj scm_k);
-ScmObj ScmOp_vector_setd(ScmObj vec, ScmObj scm_k, ScmObj obj);
-ScmObj ScmOp_vector2list(ScmObj vec);
-ScmObj ScmOp_list2vector(ScmObj lst);
-ScmObj ScmOp_vector_filld(ScmObj vec, ScmObj fill);
-ScmObj ScmOp_procedurep(ScmObj obj);
-ScmObj ScmOp_map(ScmObj proc, ScmObj args);
-ScmObj ScmOp_for_each(ScmObj proc, ScmObj args);
-ScmObj ScmOp_force(ScmObj closure);
-ScmObj ScmOp_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state);
-ScmObj ScmOp_values(ScmObj args);
-ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer, ScmEvalState *eval_state);
-ScmObj ScmOp_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
+ScmObj scm_p_substring(ScmObj str, ScmObj start, ScmObj end);
+ScmObj scm_p_string_append(ScmObj args);
+ScmObj scm_p_string2list(ScmObj str);
+ScmObj scm_p_list2string(ScmObj lst);
+ScmObj scm_p_string_copy(ScmObj str);
+ScmObj scm_p_string_filld(ScmObj str, ScmObj ch);
+ScmObj scm_p_vectorp(ScmObj obj);
+ScmObj scm_p_make_vector(ScmObj vector_len, ScmObj args);
+ScmObj scm_p_vector(ScmObj args);
+ScmObj scm_p_vector_length(ScmObj vec);
+ScmObj scm_p_vector_ref(ScmObj vec, ScmObj scm_k);
+ScmObj scm_p_vector_setd(ScmObj vec, ScmObj scm_k, ScmObj obj);
+ScmObj scm_p_vector2list(ScmObj vec);
+ScmObj scm_p_list2vector(ScmObj lst);
+ScmObj scm_p_vector_filld(ScmObj vec, ScmObj fill);
+ScmObj scm_p_procedurep(ScmObj obj);
+ScmObj scm_p_map(ScmObj proc, ScmObj args);
+ScmObj scm_p_for_each(ScmObj proc, ScmObj args);
+ScmObj scm_p_force(ScmObj closure);
+ScmObj scm_p_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state);
+ScmObj scm_p_values(ScmObj args);
+ScmObj scm_p_call_with_values(ScmObj producer, ScmObj consumer, ScmEvalState *eval_state);
+ScmObj scm_p_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
 
 /* operations-r5rs-deepcadrs.c */
 #if SCM_USE_DEEP_CADRS
-ScmObj ScmOp_caaar(ScmObj lst);
-ScmObj ScmOp_caadr(ScmObj lst);
-ScmObj ScmOp_cadar(ScmObj lst);
-ScmObj ScmOp_cdaar(ScmObj lst);
-ScmObj ScmOp_cdadr(ScmObj lst);
-ScmObj ScmOp_cddar(ScmObj lst);
-ScmObj ScmOp_caaaar(ScmObj lst);
-ScmObj ScmOp_caaadr(ScmObj lst);
-ScmObj ScmOp_caadar(ScmObj lst);
-ScmObj ScmOp_caaddr(ScmObj lst);
-ScmObj ScmOp_cadaar(ScmObj lst);
-ScmObj ScmOp_cadadr(ScmObj lst);
-ScmObj ScmOp_caddar(ScmObj lst);
-ScmObj ScmOp_cadddr(ScmObj lst);
-ScmObj ScmOp_cdaaar(ScmObj lst);
-ScmObj ScmOp_cdaadr(ScmObj lst);
-ScmObj ScmOp_cdadar(ScmObj lst);
-ScmObj ScmOp_cdaddr(ScmObj lst);
-ScmObj ScmOp_cddaar(ScmObj lst);
-ScmObj ScmOp_cddadr(ScmObj lst);
-ScmObj ScmOp_cdddar(ScmObj lst);
-ScmObj ScmOp_cddddr(ScmObj lst);
+ScmObj scm_p_caaar(ScmObj lst);
+ScmObj scm_p_caadr(ScmObj lst);
+ScmObj scm_p_cadar(ScmObj lst);
+ScmObj scm_p_cdaar(ScmObj lst);
+ScmObj scm_p_cdadr(ScmObj lst);
+ScmObj scm_p_cddar(ScmObj lst);
+ScmObj scm_p_caaaar(ScmObj lst);
+ScmObj scm_p_caaadr(ScmObj lst);
+ScmObj scm_p_caadar(ScmObj lst);
+ScmObj scm_p_caaddr(ScmObj lst);
+ScmObj scm_p_cadaar(ScmObj lst);
+ScmObj scm_p_cadadr(ScmObj lst);
+ScmObj scm_p_caddar(ScmObj lst);
+ScmObj scm_p_cadddr(ScmObj lst);
+ScmObj scm_p_cdaaar(ScmObj lst);
+ScmObj scm_p_cdaadr(ScmObj lst);
+ScmObj scm_p_cdadar(ScmObj lst);
+ScmObj scm_p_cdaddr(ScmObj lst);
+ScmObj scm_p_cddaar(ScmObj lst);
+ScmObj scm_p_cddadr(ScmObj lst);
+ScmObj scm_p_cdddar(ScmObj lst);
+ScmObj scm_p_cddddr(ScmObj lst);
 #endif /* SCM_USE_DEEP_CADRS */
 
 /* operations-nonstd.c */
 #if SCM_USE_NONSTD_FEATURES
-void SigScm_Initialize_NONSTD_FEATURES(void);
-ScmObj ScmOp_symbol_boundp(ScmObj sym, ScmObj rest);
-ScmObj ScmOp_load_path(void);
-/* FIXME: add ScmObj SigScm_require(const char *c_filename); */
-ScmObj ScmOp_require(ScmObj filename);
-ScmObj ScmOp_provide(ScmObj feature);
-ScmObj ScmOp_providedp(ScmObj feature);
-ScmObj ScmOp_file_existsp(ScmObj filepath);
-ScmObj ScmOp_delete_file(ScmObj filepath);
+void scm_initialize_nonstd_features(void);
+ScmObj scm_p_symbol_boundp(ScmObj sym, ScmObj rest);
+ScmObj scm_p_load_path(void);
+/* FIXME: add ScmObj scm_require(const char *c_filename); */
+ScmObj scm_p_require(ScmObj filename);
+ScmObj scm_p_provide(ScmObj feature);
+ScmObj scm_p_providedp(ScmObj feature);
+ScmObj scm_p_file_existsp(ScmObj filepath);
+ScmObj scm_p_delete_file(ScmObj filepath);
 #endif
 
 /* io.c */
-void   SigScm_set_lib_path(const char *path);
-ScmObj Scm_MakeSharedFilePort(FILE *file, const char *aux_info,
+void   scm_set_lib_path(const char *path);
+ScmObj scm_make_shared_file_port(FILE *file, const char *aux_info,
                               enum ScmPortFlag flag);
-void SigScm_PortPrintf(ScmObj port, const char *fmt, ...);
-void SigScm_VPortPrintf(ScmObj port, const char *fmt, va_list args);
-void SigScm_PortNewline(ScmObj port);
-void SigScm_ErrorPrintf(const char *fmt, ...);
-void SigScm_VErrorPrintf(const char *fmt, va_list args);
-void SigScm_ErrorNewline(void);
+void scm_port_printf(ScmObj port, const char *fmt, ...);
+void scm_port_vprintf(ScmObj port, const char *fmt, va_list args);
+void scm_port_newline(ScmObj port);
+void scm_error_printf(const char *fmt, ...);
+void scm_error_vprintf(const char *fmt, va_list args);
+void scm_error_newline(void);
 
-ScmObj ScmOp_call_with_input_file(ScmObj filepath, ScmObj proc);
-ScmObj ScmOp_call_with_output_file(ScmObj filepath, ScmObj proc);
-ScmObj ScmOp_input_portp(ScmObj obj);
-ScmObj ScmOp_output_portp(ScmObj obj);
-ScmObj ScmOp_current_input_port(void);
-ScmObj ScmOp_current_output_port(void);
-ScmObj ScmOp_with_input_from_file(ScmObj filepath, ScmObj thunk);
-ScmObj ScmOp_with_output_to_file(ScmObj filepath, ScmObj thunk);
-ScmObj ScmOp_open_input_file(ScmObj filepath);
-ScmObj ScmOp_open_output_file(ScmObj filepath);
-ScmObj ScmOp_close_input_port(ScmObj port);
-ScmObj ScmOp_close_output_port(ScmObj port);
+ScmObj scm_p_call_with_input_file(ScmObj filepath, ScmObj proc);
+ScmObj scm_p_call_with_output_file(ScmObj filepath, ScmObj proc);
+ScmObj scm_p_input_portp(ScmObj obj);
+ScmObj scm_p_output_portp(ScmObj obj);
+ScmObj scm_p_current_input_port(void);
+ScmObj scm_p_current_output_port(void);
+ScmObj scm_p_with_input_from_file(ScmObj filepath, ScmObj thunk);
+ScmObj scm_p_with_output_to_file(ScmObj filepath, ScmObj thunk);
+ScmObj scm_p_open_input_file(ScmObj filepath);
+ScmObj scm_p_open_output_file(ScmObj filepath);
+ScmObj scm_p_close_input_port(ScmObj port);
+ScmObj scm_p_close_output_port(ScmObj port);
 
-ScmObj ScmOp_read(ScmObj args);
-ScmObj ScmOp_read_char(ScmObj args);
-ScmObj ScmOp_peek_char(ScmObj args);
-ScmObj ScmOp_eof_objectp(ScmObj obj);
-ScmObj ScmOp_char_readyp(ScmObj args);
-ScmObj ScmOp_write(ScmObj obj, ScmObj args);
-ScmObj ScmOp_display(ScmObj obj, ScmObj args);
-ScmObj ScmOp_newline(ScmObj args);
-ScmObj ScmOp_write_char(ScmObj obj, ScmObj args);
+ScmObj scm_p_read(ScmObj args);
+ScmObj scm_p_read_char(ScmObj args);
+ScmObj scm_p_peek_char(ScmObj args);
+ScmObj scm_p_eof_objectp(ScmObj obj);
+ScmObj scm_p_char_readyp(ScmObj args);
+ScmObj scm_p_write(ScmObj obj, ScmObj args);
+ScmObj scm_p_display(ScmObj obj, ScmObj args);
+ScmObj scm_p_newline(ScmObj args);
+ScmObj scm_p_write_char(ScmObj obj, ScmObj args);
 
-ScmObj SigScm_load(const char *c_filename);
-ScmObj ScmOp_load(ScmObj filename);
+ScmObj scm_load(const char *c_filename);
+ScmObj scm_p_load(ScmObj filename);
 
 /* read.c */
-ScmObj SigScm_Read(ScmObj port);
-ScmObj SigScm_Read_Char(ScmObj port);
+ScmObj scm_read(ScmObj port);
+ScmObj scm_read_char(ScmObj port);
 
 /* error.c */
-int  SigScm_DebugCategories(void);
-void SigScm_SetDebugCategories(int categories);
-int  SigScm_PredefinedDebugCategories(void);
-void SigScm_CategorizedDebug(int category, const char *msg, ...);
-void SigScm_Debug(const char *msg, ...);
-int  SigScm_Die(const char *msg, const char *filename, int line);
-void SigScm_Error(const char *msg, ...) SCM_NORETURN;
-void SigScm_ErrorObj(const char *msg, ScmObj obj) SCM_NORETURN;
-void SigScm_ShowBacktrace(ScmObj trace_stack);
-ScmObj Scm_MakeErrorObj(ScmObj reason, ScmObj objs);
-void Scm_RaiseError(ScmObj err_obj) SCM_NORETURN;
-void Scm_FatalError(const char *msg) SCM_NORETURN;
-void Scm_SetFatalErrorCallback(void (*cb)(void));
-ScmObj ScmOp_error_objectp(ScmObj obj);
-ScmObj ScmOp_fatal_error(ScmObj err_obj) SCM_NORETURN;
-ScmObj ScmOp_inspect_error(ScmObj err_obj);
-ScmObj ScmOp_backtrace(void);
+int  scm_debug_categories(void);
+void scm_set_debug_categories(int categories);
+int  scm_predefined_debug_categories(void);
+void scm_categorized_debug(int category, const char *msg, ...);
+void scm_debug(const char *msg, ...);
+int  scm_die(const char *msg, const char *filename, int line);
+void scm_error(const char *msg, ...) SCM_NORETURN;
+void scm_error_obj(const char *funcname, const char *msg, ScmObj obj) SCM_NORETURN;
+void scm_show_backtrace(ScmObj trace_stack);
+ScmObj scm_make_error_obj(ScmObj reason, ScmObj objs);
+void scm_raise_error(ScmObj err_obj) SCM_NORETURN;
+void scm_fatal_error(const char *msg) SCM_NORETURN;
+void scm_set_fatal_error_callback(void (*cb)(void));
+ScmObj scm_p_error_objectp(ScmObj obj);
+ScmObj scm_p_fatal_error(ScmObj err_obj) SCM_NORETURN;
+ScmObj scm_p_inspect_error(ScmObj err_obj);
+ScmObj scm_p_backtrace(void);
 
 /* print.c */
-void SigScm_Display(ScmObj obj);
-void SigScm_WriteToPort(ScmObj port, ScmObj obj);
-void SigScm_DisplayToPort(ScmObj port, ScmObj obj);
+void scm_display(ScmObj obj);
+void scm_write_to_port(ScmObj port, ScmObj obj);
+void scm_display_to_port(ScmObj port, ScmObj obj);
 #if SCM_USE_SRFI38
-void SigScm_WriteToPortWithSharedStructure(ScmObj port, ScmObj obj);
+void scm_write_to_port_with_shared_structure(ScmObj port, ScmObj obj);
 #endif
 
 
@@ -993,105 +993,105 @@ void SigScm_WriteToPortWithSharedStructure(ScmObj port, ScmObj obj);
 ===========================================================================*/
 #if SCM_USE_SRFI1
 /* operations-srfi1.c */
-void   SigScm_Initialize_SRFI1(void);
-ScmObj ScmOp_SRFI1_xcons(ScmObj a, ScmObj b);
-ScmObj ScmOp_SRFI1_consstar(ScmObj args);
-ScmObj ScmOp_SRFI1_make_list(ScmObj length, ScmObj args);
-ScmObj ScmOp_SRFI1_list_tabulate(ScmObj scm_n, ScmObj args);
-ScmObj ScmOp_SRFI1_list_copy(ScmObj lst);
-ScmObj ScmOp_SRFI1_circular_list(ScmObj args);
-ScmObj ScmOp_SRFI1_iota(ScmObj scm_count, ScmObj args);
-ScmObj ScmOp_SRFI1_proper_listp(ScmObj lst);
-ScmObj ScmOp_SRFI1_circular_listp(ScmObj lst);
-ScmObj ScmOp_SRFI1_dotted_listp(ScmObj lst);
-ScmObj ScmOp_SRFI1_not_pairp(ScmObj pair);
-ScmObj ScmOp_SRFI1_null_listp(ScmObj lst);
-ScmObj ScmOp_SRFI1_listequal(ScmObj eqproc, ScmObj args);
-ScmObj ScmOp_SRFI1_first(ScmObj lst);
-ScmObj ScmOp_SRFI1_second(ScmObj lst);
-ScmObj ScmOp_SRFI1_third(ScmObj lst);
-ScmObj ScmOp_SRFI1_fourth(ScmObj lst);
-ScmObj ScmOp_SRFI1_fifth(ScmObj lst);
-ScmObj ScmOp_SRFI1_sixth(ScmObj lst);
-ScmObj ScmOp_SRFI1_seventh(ScmObj lst);
-ScmObj ScmOp_SRFI1_eighth(ScmObj lst);
-ScmObj ScmOp_SRFI1_ninth(ScmObj lst);
-ScmObj ScmOp_SRFI1_tenth(ScmObj lst);
-ScmObj ScmOp_SRFI1_carpluscdr(ScmObj lst);
-ScmObj ScmOp_SRFI1_take(ScmObj lst, ScmObj scm_idx);
-ScmObj ScmOp_SRFI1_drop(ScmObj lst, ScmObj scm_idx);
-ScmObj ScmOp_SRFI1_take_right(ScmObj lst, ScmObj scm_elem);
-ScmObj ScmOp_SRFI1_drop_right(ScmObj lst, ScmObj scm_elem);
-ScmObj ScmOp_SRFI1_taked(ScmObj lst, ScmObj scm_idx);
-ScmObj ScmOp_SRFI1_drop_rightd(ScmObj lst, ScmObj scm_idx);
-ScmObj ScmOp_SRFI1_split_at(ScmObj lst, ScmObj idx);
-ScmObj ScmOp_SRFI1_split_atd(ScmObj lst, ScmObj idx);
-ScmObj ScmOp_SRFI1_last(ScmObj lst);
-ScmObj ScmOp_SRFI1_last_pair(ScmObj lst);
-ScmObj ScmOp_SRFI1_lengthplus(ScmObj lst);
-ScmObj ScmOp_SRFI1_concatenate(ScmObj args);
+void   scm_initialize_srfi1(void);
+ScmObj scm_p_srfi1_xcons(ScmObj a, ScmObj b);
+ScmObj scm_p_srfi1_consstar(ScmObj args);
+ScmObj scm_p_srfi1_make_list(ScmObj length, ScmObj args);
+ScmObj scm_p_srfi1_list_tabulate(ScmObj scm_n, ScmObj args);
+ScmObj scm_p_srfi1_list_copy(ScmObj lst);
+ScmObj scm_p_srfi1_circular_list(ScmObj args);
+ScmObj scm_p_srfi1_iota(ScmObj scm_count, ScmObj args);
+ScmObj scm_p_srfi1_proper_listp(ScmObj lst);
+ScmObj scm_p_srfi1_circular_listp(ScmObj lst);
+ScmObj scm_p_srfi1_dotted_listp(ScmObj lst);
+ScmObj scm_p_srfi1_not_pairp(ScmObj pair);
+ScmObj scm_p_srfi1_null_listp(ScmObj lst);
+ScmObj scm_p_srfi1_listequal(ScmObj eqproc, ScmObj args);
+ScmObj scm_p_srfi1_first(ScmObj lst);
+ScmObj scm_p_srfi1_second(ScmObj lst);
+ScmObj scm_p_srfi1_third(ScmObj lst);
+ScmObj scm_p_srfi1_fourth(ScmObj lst);
+ScmObj scm_p_srfi1_fifth(ScmObj lst);
+ScmObj scm_p_srfi1_sixth(ScmObj lst);
+ScmObj scm_p_srfi1_seventh(ScmObj lst);
+ScmObj scm_p_srfi1_eighth(ScmObj lst);
+ScmObj scm_p_srfi1_ninth(ScmObj lst);
+ScmObj scm_p_srfi1_tenth(ScmObj lst);
+ScmObj scm_p_srfi1_carpluscdr(ScmObj lst);
+ScmObj scm_p_srfi1_take(ScmObj lst, ScmObj scm_idx);
+ScmObj scm_p_srfi1_drop(ScmObj lst, ScmObj scm_idx);
+ScmObj scm_p_srfi1_take_right(ScmObj lst, ScmObj scm_elem);
+ScmObj scm_p_srfi1_drop_right(ScmObj lst, ScmObj scm_elem);
+ScmObj scm_p_srfi1_taked(ScmObj lst, ScmObj scm_idx);
+ScmObj scm_p_srfi1_drop_rightd(ScmObj lst, ScmObj scm_idx);
+ScmObj scm_p_srfi1_split_at(ScmObj lst, ScmObj idx);
+ScmObj scm_p_srfi1_split_atd(ScmObj lst, ScmObj idx);
+ScmObj scm_p_srfi1_last(ScmObj lst);
+ScmObj scm_p_srfi1_last_pair(ScmObj lst);
+ScmObj scm_p_srfi1_lengthplus(ScmObj lst);
+ScmObj scm_p_srfi1_concatenate(ScmObj args);
 #endif
 #if SCM_USE_SRFI2
 /* operations-srfi2.c */
-void   SigScm_Initialize_SRFI2(void);
-ScmObj ScmExp_SRFI2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state);
+void   scm_initialize_srfi2(void);
+ScmObj scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state);
 #endif
 #if SCM_USE_SRFI6
 /* operations-srfi6.c */
-void   SigScm_Initialize_SRFI6(void);
-ScmObj ScmOp_SRFI6_open_input_string(ScmObj str);
-ScmObj ScmOp_SRFI6_open_output_string(void);
-ScmObj ScmOp_SRFI6_get_output_string(ScmObj port);
+void   scm_initialize_srfi6(void);
+ScmObj scm_p_srfi6_open_input_string(ScmObj str);
+ScmObj scm_p_srfi6_open_output_string(void);
+ScmObj scm_p_srfi6_get_output_string(ScmObj port);
 #endif
 #if SCM_USE_SRFI8
 /* operations-srfi8.c */
-void   SigScm_Initialize_SRFI8(void);
-ScmObj ScmExp_SRFI8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalState *eval_state);
+void   scm_initialize_srfi8(void);
+ScmObj scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalState *eval_state);
 #endif
 #if SCM_USE_SRFI23
 /* operations-srfi23.c */
-void   SigScm_Initialize_SRFI23(void);
-ScmObj ScmOp_SRFI23_error(ScmObj reason, ScmObj args);
+void   scm_initialize_srfi23(void);
+ScmObj scm_p_srfi23_error(ScmObj reason, ScmObj args);
 #endif
 #if SCM_USE_SRFI34
 /* operations-srfi34.c */
-void  SigScm_Initialize_SRFI34(void);
-ScmObj ScmOp_SRFI34_with_exception_handler(ScmObj handler, ScmObj thunk);
-ScmObj ScmExp_SRFI34_guard(ScmObj cond_catch, ScmObj body,
+void  scm_initialize_srfi34(void);
+ScmObj scm_p_srfi34_with_exception_handler(ScmObj handler, ScmObj thunk);
+ScmObj scm_s_srfi34_guard(ScmObj cond_catch, ScmObj body,
                            ScmEvalState *eval_state);
-ScmObj ScmOp_SRFI34_raise(ScmObj obj);
+ScmObj scm_p_srfi34_raise(ScmObj obj);
 #endif
 #if SCM_USE_SRFI38
 /* operations-srfi38.c */
-void   SigScm_Initialize_SRFI38(void);
-ScmObj ScmOp_SRFI38_write_with_shared_structure(ScmObj obj, ScmObj args);
+void   scm_initialize_srfi38(void);
+ScmObj scm_p_srfi38_write_with_shared_structure(ScmObj obj, ScmObj args);
 #endif
 #if SCM_USE_SRFI60
 /* operations-srfi60.c */
-void   SigScm_Initialize_SRFI60(void);
-ScmObj ScmOp_SRFI60_logand(ScmObj left, ScmObj right,
+void   scm_initialize_srfi60(void);
+ScmObj scm_p_srfi60_logand(ScmObj left, ScmObj right,
                            enum ScmReductionState *state);
-ScmObj ScmOp_SRFI60_logior(ScmObj left, ScmObj right,
+ScmObj scm_p_srfi60_logior(ScmObj left, ScmObj right,
                            enum ScmReductionState *state);
-ScmObj ScmOp_SRFI60_logxor(ScmObj left, ScmObj right,
+ScmObj scm_p_srfi60_logxor(ScmObj left, ScmObj right,
                            enum ScmReductionState *state);
-ScmObj ScmOp_SRFI60_lognot(ScmObj n);
-ScmObj ScmOp_SRFI60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1);
-ScmObj ScmOp_SRFI60_logtest(ScmObj j, ScmObj k);
+ScmObj scm_p_srfi60_lognot(ScmObj n);
+ScmObj scm_p_srfi60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1);
+ScmObj scm_p_srfi60_logtest(ScmObj j, ScmObj k);
 #endif
 #if SCM_COMPAT_SIOD
 /* operations-siod.c */
-void   SigScm_Initialize_SIOD(void);
-ScmObj ScmOp_symbol_value(ScmObj var);
-ScmObj ScmOp_set_symbol_valued(ScmObj var, ScmObj val);
-ScmObj ScmOp_SIOD_equal(ScmObj obj1, ScmObj obj2);
-ScmObj ScmOp_the_environment(ScmEvalState *eval_state);
-ScmObj ScmOp_closure_code(ScmObj closure);
-ScmObj ScmOp_verbose(ScmObj args);
-ScmObj ScmOp_eof_val(void);
-ScmObj ScmExp_undefine(ScmObj var, ScmObj env);
-long   SigScm_GetVerboseLevel(void);
-void   SigScm_SetVerboseLevel(long level);
+void   scm_initialize_siod(void);
+ScmObj scm_p_symbol_value(ScmObj var);
+ScmObj scm_p_set_symbol_valued(ScmObj var, ScmObj val);
+ScmObj scm_p_siod_equal(ScmObj obj1, ScmObj obj2);
+ScmObj scm_p_the_environment(ScmEvalState *eval_state);
+ScmObj scm_p_closure_code(ScmObj closure);
+ScmObj scm_p_verbose(ScmObj args);
+ScmObj scm_p_eof_val(void);
+ScmObj scm_s_undefine(ScmObj var, ScmObj env);
+long   scm_get_verbose_level(void);
+void   scm_set_verbose_level(long level);
 #endif
 
 #ifdef __cplusplus

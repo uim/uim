@@ -44,7 +44,7 @@
  *
  *   - gc_mark_protected_var()
  *       marks Scheme objects held in off-heap locations that registered by
- *       SigScm_GC_Protect().
+ *       scm_gc_protect().
  *
  *   - gc_mark_definite_locations_n()
  *       marks Scheme objects that held in the symbol table.
@@ -102,7 +102,7 @@ static ScmObj *stack_start_pointer;
 #if UIM_SCM_GCC4_READY_GC
 /* See also the comment about these variables in sigscheme.h */
 ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *)
-    = &SigScm_GC_ProtectStackInternal;
+    = &scm_gc_protect_stack_internal;
 #endif /* UIM_SCM_GCC4_READY_GC */
 
 static ScmObj **protected_vars;
@@ -142,7 +142,7 @@ static void finalize_protected_var(void);
 /*=======================================
   Function Implementations
 =======================================*/
-void SigScm_InitGC(size_t heap_size, size_t heap_alloc_threshold,
+void scm_init_gc(size_t heap_size, size_t heap_alloc_threshold,
                    int n_heaps_max, int n_heaps_init)
 {
     stack_start_pointer = NULL;
@@ -152,13 +152,15 @@ void SigScm_InitGC(size_t heap_size, size_t heap_alloc_threshold,
     initialize_heap(heap_size, heap_alloc_threshold, n_heaps_max, n_heaps_init);
 }
 
-void SigScm_FinalizeGC(void)
+void 
+scm_finalize_gc(void)
 {
     finalize_heap();
     finalize_protected_var();
 }
 
-ScmObj SigScm_NewObjFromHeap(void)
+ScmObj 
+scm_make_obj_from_heap(void)
 {
     ScmObj ret = SCM_FALSE;
 
@@ -195,7 +197,8 @@ static ScmObj **locate_protected_var(ScmObj *var)
     return NULL;
 }
 
-void SigScm_GC_Protect(ScmObj *var)
+void 
+scm_gc_protect(ScmObj *var)
 {
     ScmObj **slot;
     size_t new_size;
@@ -211,7 +214,8 @@ void SigScm_GC_Protect(ScmObj *var)
     *slot = var;
 }
 
-void SigScm_GC_Unprotect(ScmObj *var)
+void 
+scm_gc_unprotect(ScmObj *var)
 {
     ScmObj **slot;
 
@@ -226,7 +230,8 @@ void SigScm_GC_Unprotect(ScmObj *var)
   C Stack Protection
 ============================================================================*/
 #if SCM_GCC4_READY_GC
-ScmObj *SigScm_GC_ProtectStackInternal(ScmObj *designated_stack_start)
+ScmObj *
+scm_gc_protect_stack_internal(ScmObj *designated_stack_start)
 {
     /*
      * &stack_start will be relocated to start of the frame of subsequent
@@ -246,14 +251,16 @@ ScmObj *SigScm_GC_ProtectStackInternal(ScmObj *designated_stack_start)
 
 #else /* SCM_GCC4_READY_GC */
 
-void SigScm_GC_ProtectStack(ScmObj *stack_start)
+void 
+scm_gc_protect_stack(ScmObj *stack_start)
 {
     if (!stack_start_pointer)
         stack_start_pointer = stack_start;
 }
 #endif /* SCM_GCC4_READY_GC */
 
-void SigScm_GC_UnprotectStack(ScmObj *stack_start)
+void 
+scm_gc_unprotect_stack(ScmObj *stack_start)
 {
     if (stack_start_pointer == stack_start)
         stack_start_pointer = NULL;
@@ -288,7 +295,7 @@ static void add_heap(void)
     CDBG((SCM_DBG_GC, "add_heap current num of heaps:%d", n_heaps));
 
     if (n_heaps_max <= n_heaps)
-        Scm_FatalError("heap exhausted");
+        scm_fatal_error("heap exhausted");
 
     heaps = scm_realloc(heaps, sizeof(ScmObjHeap) * (n_heaps + 1));
     heap = scm_malloc_aligned(sizeof(ScmCell) * heap_size);
@@ -529,7 +536,7 @@ static void free_cell(ScmCell *cell)
              * module-specific header file which contains the module-specific
              * destruction macro.
              */
-            Scm_DestructContinuation(cell);
+            scm_destruct_continuation(cell);
         }
     }
 #else /* SCM_OBJ_COMPACT */
@@ -569,7 +576,7 @@ static void free_cell(ScmCell *cell)
          * module-specific header file which contains the module-specific
          * destruction macro.
          */
-        Scm_DestructContinuation(cell);
+        scm_destruct_continuation(cell);
         break;
 
     case ScmFunc:

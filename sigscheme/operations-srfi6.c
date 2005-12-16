@@ -64,9 +64,10 @@ static void istrport_finalize(char **str, int ownership, void **opaque);
 /*=======================================
   Function Implementations
 =======================================*/
-void SigScm_Initialize_SRFI6(void)
+void 
+scm_initialize_srfi6(void)
 {
-    Scm_strport_init();
+    scm_strport_init();
 
     /*=======================================================================
       SRFI-6 Procedures
@@ -76,44 +77,47 @@ void SigScm_Initialize_SRFI6(void)
 
 static void istrport_finalize(char **str, int ownership, void **opaque)
 {
-    SigScm_GC_Unprotect((ScmObj *)opaque);
+    scm_gc_unprotect((ScmObj *)opaque);
 }
 
-ScmObj ScmOp_SRFI6_open_input_string(ScmObj str)
+ScmObj 
+scm_p_srfi6_open_input_string(ScmObj str)
 {
     ScmObj      *hold_str;
     ScmBytePort *bport;
-    DECLARE_FUNCTION("open-input-string", ProcedureFixed1);
+    DECLARE_FUNCTION("open-input-string", procedure_fixed_1);
 
     ASSERT_STRINGP(str);
 
     bport = ScmInputStrPort_new_const(SCM_STRING_STR(str), istrport_finalize);
     hold_str = (ScmObj *)ScmInputStrPort_ref_opaque(bport);
     *hold_str = str;
-    SigScm_GC_Protect(hold_str);
-    return Scm_NewPort(Scm_NewCharPort(bport), SCM_PORTFLAG_INPUT);
+    scm_gc_protect(hold_str);
+    return scm_make_port(scm_make_char_port(bport), SCM_PORTFLAG_INPUT);
 }
 
-ScmObj ScmOp_SRFI6_open_output_string(void)
+ScmObj 
+scm_p_srfi6_open_output_string(void)
 {
     ScmBytePort *bport;
-    DECLARE_FUNCTION("open-output-string", ProcedureFixed0);
+    DECLARE_FUNCTION("open-output-string", procedure_fixed_0);
 
     bport = ScmOutputStrPort_new(NULL);
-    return Scm_NewPort(Scm_NewCharPort(bport), SCM_PORTFLAG_OUTPUT);
+    return scm_make_port(scm_make_char_port(bport), SCM_PORTFLAG_OUTPUT);
 }
 
-ScmObj ScmOp_SRFI6_get_output_string(ScmObj port)
+ScmObj 
+scm_p_srfi6_get_output_string(ScmObj port)
 {
     ScmBaseCharPort *cport;
-    DECLARE_FUNCTION("get-output-string", ProcedureFixed1);
+    DECLARE_FUNCTION("get-output-string", procedure_fixed_1);
 
     ASSERT_PORTP(port);
 
     SCM_ASSERT_LIVE_PORT(port);
     cport = SCM_CHARPORT_DYNAMIC_CAST(ScmBaseCharPort, SCM_PORT_IMPL(port));
 
-    return Scm_NewMutableStringCopying(ScmOutputStrPort_str(cport->bport));
+    return scm_make_mutable_string_copying(ScmOutputStrPort_str(cport->bport));
 }
 
 

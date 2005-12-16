@@ -102,16 +102,18 @@ static ScmObj continuation_stack_unwind(ScmObj dest_cont);
 /*=======================================
   Function Implementations
 =======================================*/
-void SigScm_InitContinuation(void)
+void 
+scm_init_continuation(void)
 {
     initialize_dynamic_extent();
     initialize_continuation_env();
 
     trace_stack = SCM_NULL;
-    SigScm_GC_Protect((ScmObj *)&trace_stack);
+    scm_gc_protect((ScmObj *)&trace_stack);
 }
 
-void SigScm_FinalizeContinuation(void)
+void 
+scm_finalize_continuation(void)
 {
     finalize_continuation_env();
     finalize_dynamic_extent();
@@ -127,7 +129,7 @@ void SigScm_FinalizeContinuation(void)
 static void initialize_dynamic_extent(void)
 {
     current_dynamic_extent = SCM_NULL;
-    SigScm_GC_Protect((ScmObj *)&current_dynamic_extent);
+    scm_gc_protect((ScmObj *)&current_dynamic_extent);
 }
 
 static void finalize_dynamic_extent(void)
@@ -164,7 +166,7 @@ static void enter_dynamic_extent(ScmObj dest)
     }
 
     while (frame = POP_ARG(retpath), VALIDP(frame)) {
-        Scm_call(DYNEXT_FRAME_BEFORE(frame), SCM_NULL);
+        scm_call(DYNEXT_FRAME_BEFORE(frame), SCM_NULL);
     }
 }
 
@@ -180,21 +182,22 @@ static void exit_dynamic_extent(ScmObj dest)
         if (EQ(current_dynamic_extent, dest))
             return;
         frame = CAR(current_dynamic_extent);
-        Scm_call(DYNEXT_FRAME_AFTER(frame), SCM_NULL);
+        scm_call(DYNEXT_FRAME_AFTER(frame), SCM_NULL);
     }
 }
 
-ScmObj Scm_DynamicWind(ScmObj before, ScmObj thunk, ScmObj after)
+ScmObj 
+scm_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after)
 {
     ScmObj ret;
 
-    Scm_call(before, SCM_NULL);
+    scm_call(before, SCM_NULL);
     
     wind_onto_dynamic_extent(before, after);
-    ret = Scm_call(thunk, SCM_NULL);
+    ret = scm_call(thunk, SCM_NULL);
     unwind_dynamic_extent();
 
-    Scm_call(after, SCM_NULL);
+    scm_call(after, SCM_NULL);
 
     return ret;
 }
@@ -205,7 +208,7 @@ ScmObj Scm_DynamicWind(ScmObj before, ScmObj thunk, ScmObj after)
 static void initialize_continuation_env(void)
 {
     continuation_stack = SCM_NULL;
-    SigScm_GC_Protect((ScmObj *)&continuation_stack);
+    scm_gc_protect((ScmObj *)&continuation_stack);
 }
 
 static void finalize_continuation_env(void)
@@ -246,12 +249,14 @@ static ScmObj continuation_stack_unwind(ScmObj dest_cont)
     return dest_cont;
 }
 
-void Scm_DestructContinuation(ScmObj cont)
+void 
+scm_destruct_continuation(ScmObj cont)
 {
     /* no object to free(3) in this implementation */
 }
 
-ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
+ScmObj 
+scm_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
 {
     volatile ScmObj cont, ret;
     struct continuation_frame cont_frame;
@@ -261,7 +266,7 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
 #if SCM_DEBUG
     cont_frame.trace_stack = trace_stack;
 #endif
-    cont = Scm_NewContinuation();
+    cont = scm_make_continuation();
     CONTINUATION_SET_FRAME(cont, &cont_frame);
 #if SCM_NESTED_CONTINUATION_ONLY
     continuation_stack_push(cont);
@@ -284,17 +289,17 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
     } else {
 #if SCM_NESTED_CONTINUATION_ONLY
         /* call proc with current continutation as (proc cont): This call must
-         * not be Scm_tailcall(), to preserve current stack until longjmp()
+         * not be scm_tailcall(), to preserve current stack until longjmp()
          * called.
          */
         eval_state->ret_type = SCM_RETTYPE_AS_IS;
-        ret = Scm_call(proc, LIST_1(cont));
+        ret = scm_call(proc, LIST_1(cont));
 #else
         /* ONLY FOR TESTING: This call is properly recursible, but all
          * continuations are broken and cannot be called, if the continuation
          * is implemented by longjmp().
          */
-        ret = Scm_tailcall(proc, LIST_1(cont), eval_state);
+        ret = scm_tailcall(proc, LIST_1(cont), eval_state);
 #endif
 
 #if SCM_NESTED_CONTINUATION_ONLY
@@ -305,13 +310,14 @@ ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state)
     }
 }
 
-void Scm_CallContinuation(ScmObj cont, ScmObj ret)
+void 
+scm_call_continuation(ScmObj cont, ScmObj ret)
 {
     struct continuation_frame *frame;
 #if SCM_NESTED_CONTINUATION_ONLY
     ScmObj dst;
 #endif
-    DECLARE_INTERNAL_FUNCTION("Scm_CallContinuation");
+    DECLARE_INTERNAL_FUNCTION("scm_call_continuation");
 
     frame = CONTINUATION_FRAME(cont);
 
@@ -335,14 +341,15 @@ void Scm_CallContinuation(ScmObj cont, ScmObj ret)
         longjmp(frame->c_env, 1);
         /* NOTREACHED */
     } else {
-        ERR("Scm_CallContinuation: called expired continuation");
+        ERR("scm_call_continuation: called expired continuation");
     }
 }
 
 /*============================================================================
   Trace Stack
 ============================================================================*/
-void Scm_PushTraceFrame(ScmObj obj, ScmObj env)
+void 
+scm_push_trace_frame(ScmObj obj, ScmObj env)
 {
     ScmObj frame;
 
@@ -350,12 +357,14 @@ void Scm_PushTraceFrame(ScmObj obj, ScmObj env)
     trace_stack = CONS(frame, trace_stack);
 }
 
-void Scm_PopTraceFrame(void)
+void 
+scm_pop_trace_frame(void)
 {
     trace_stack = CDR(trace_stack);
 }
 
-ScmObj Scm_TraceStack(void)
+ScmObj 
+scm_trace_stack(void)
 {
     return trace_stack;
 }

@@ -60,7 +60,8 @@
 /*=======================================
   Function Implementations
 =======================================*/
-void SigScm_Initialize_SRFI23(void)
+void 
+scm_initialize_srfi23(void)
 {
     /*=======================================================================
       SRFI-23 Procedure
@@ -84,10 +85,11 @@ void SigScm_Initialize_SRFI23(void)
  *    error object to an exception handler. The default exception handler then
  *    might do something as described in points 1 to 3.
  */
-ScmObj ScmOp_SRFI23_error(ScmObj reason, ScmObj args)
+ScmObj 
+scm_p_srfi23_error(ScmObj reason, ScmObj args)
 {
     ScmObj err_obj;
-    DECLARE_FUNCTION("error", ProcedureVariadic1);
+    DECLARE_FUNCTION("error", procedure_variadic_1);
 #if 0
     /*
      * Although SRFI-23 specified that "The argument <reason> should be a
@@ -96,8 +98,8 @@ ScmObj ScmOp_SRFI23_error(ScmObj reason, ScmObj args)
     ASSERT_STRINGP(reason);
 #endif
 
-    err_obj = Scm_MakeErrorObj(reason, args);
-    Scm_RaiseError(err_obj);
+    err_obj = scm_make_error_obj(reason, args);
+    scm_raise_error(err_obj);
     /* NOTREACHED */
     return SCM_UNDEF;
 }

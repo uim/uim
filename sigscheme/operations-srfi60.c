@@ -66,7 +66,7 @@
         default:                                                             \
             ERR(opstr ": (internal error) unrecognized state specifier: %d", *state); \
         }                                                                    \
-        return Scm_NewInt(result);                                           \
+        return scm_make_int(result);                                           \
     } while (/* CONSTCOND */ 0)
 
 /*=======================================
@@ -80,19 +80,20 @@
 /*=======================================
   Function Implementations
 =======================================*/
-void SigScm_Initialize_SRFI60(void)
+void 
+scm_initialize_srfi60(void)
 {
     /*=======================================================================
       SRFI-60 Procedures
     =======================================================================*/
     REGISTER_FUNC_TABLE(srfi60_func_info_table);
 
-    Scm_DefineAlias("bitwise-and"            , "logand");
-    Scm_DefineAlias("bitwise-ior"            , "logior");
-    Scm_DefineAlias("bitwise-xor"            , "logxor");
-    Scm_DefineAlias("bitwise-not"            , "lognot");
-    Scm_DefineAlias("bitwise-merge"          , "bitwise-if");
-    Scm_DefineAlias("any-bits-set?"          , "logtest");
+    scm_define_alias("bitwise-and"            , "logand");
+    scm_define_alias("bitwise-ior"            , "logior");
+    scm_define_alias("bitwise-xor"            , "logxor");
+    scm_define_alias("bitwise-not"            , "lognot");
+    scm_define_alias("bitwise-merge"          , "bitwise-if");
+    scm_define_alias("any-bits-set?"          , "logtest");
 }
 
 /*=============================================================================
@@ -100,40 +101,42 @@ void SigScm_Initialize_SRFI60(void)
 =============================================================================*/
 
 /* Bitwise Operations */
-ScmObj ScmOp_SRFI60_logand(ScmObj left, ScmObj right,
+ScmObj scm_p_srfi60_logand(ScmObj left, ScmObj right,
                            enum ScmReductionState *state)
 {
-    DECLARE_FUNCTION("logand", ReductionOperator);
+    DECLARE_FUNCTION("logand", reduction_operator);
     BITWISE_OPERATION_BODY(&, "logand");
 }
 
-ScmObj ScmOp_SRFI60_logior(ScmObj left, ScmObj right,
+ScmObj scm_p_srfi60_logior(ScmObj left, ScmObj right,
                            enum ScmReductionState *state)
 {
-    DECLARE_FUNCTION("logior", ReductionOperator);
+    DECLARE_FUNCTION("logior", reduction_operator);
     BITWISE_OPERATION_BODY(|, "logior");
 }
 
-ScmObj ScmOp_SRFI60_logxor(ScmObj left, ScmObj right,
+ScmObj scm_p_srfi60_logxor(ScmObj left, ScmObj right,
                            enum ScmReductionState *state)
 {
-    DECLARE_FUNCTION("logxor", ReductionOperator);
+    DECLARE_FUNCTION("logxor", reduction_operator);
     BITWISE_OPERATION_BODY(^, "logxor");
 }
 
-ScmObj ScmOp_SRFI60_lognot(ScmObj n)
+ScmObj 
+scm_p_srfi60_lognot(ScmObj n)
 {
-    DECLARE_FUNCTION("lognot", ProcedureFixed1);
+    DECLARE_FUNCTION("lognot", procedure_fixed_1);
 
     ASSERT_INTP(n);
 
-    return Scm_NewInt(~SCM_INT_VALUE(n));
+    return scm_make_int(~SCM_INT_VALUE(n));
 }
 
-ScmObj ScmOp_SRFI60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1)
+ScmObj 
+scm_p_srfi60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1)
 {
     int result, c_mask;
-    DECLARE_FUNCTION("bitwise-if", ProcedureFixed3);
+    DECLARE_FUNCTION("bitwise-if", procedure_fixed_3);
 
     ASSERT_INTP(mask);
     ASSERT_INTP(n0);
@@ -142,12 +145,13 @@ ScmObj ScmOp_SRFI60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1)
     c_mask = SCM_INT_VALUE(mask);
     result = (c_mask & SCM_INT_VALUE(n0)) | (~c_mask & SCM_INT_VALUE(n1));
 
-    return Scm_NewInt(result);
+    return scm_make_int(result);
 }
 
-ScmObj ScmOp_SRFI60_logtest(ScmObj j, ScmObj k)
+ScmObj 
+scm_p_srfi60_logtest(ScmObj j, ScmObj k)
 {
-    DECLARE_FUNCTION("logtest", ProcedureFixed2);
+    DECLARE_FUNCTION("logtest", procedure_fixed_2);
 
     ASSERT_INTP(j);
     ASSERT_INTP(k);

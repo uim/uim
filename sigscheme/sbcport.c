@@ -82,7 +82,7 @@ const ScmCharPortVTbl *ScmSingleByteCharPort_vptr = &ScmSingleByteCharPort_vtbl;
   Function Implementations
 =======================================*/
 void
-Scm_sbcport_init(void)
+scm_sbcport_init(void)
 {
     ScmCharPortVTbl *vptr;
 

@@ -59,7 +59,7 @@ struct ScmSpecialCharInfo_ {
    Variable Declarations
 =======================================*/
 /* sigscheme.c */
-extern ScmObj Scm_sym_else, Scm_sym_yields;
+extern ScmObj scm_sym_else, scm_sym_yields;
 
 /* io.c */
 extern ScmObj scm_current_input_port;
@@ -67,14 +67,14 @@ extern ScmObj scm_current_output_port;
 extern ScmObj scm_current_error_port;
 
 /* print.c */
-extern void (*Scm_writess_func)(ScmObj port, ScmObj obj);
+extern void (*scm_writess_func)(ScmObj port, ScmObj obj);
 
 /* read.c */
-extern const ScmSpecialCharInfo Scm_special_char_table[];
+extern const ScmSpecialCharInfo scm_special_char_table[];
 
 /* storage.c */
 #if SCM_USE_VALUECONS
-extern ScmObj SigScm_null_values;
+extern ScmObj scm_null_values;
 #endif
 
 /*=======================================
@@ -163,8 +163,8 @@ extern ScmObj SigScm_null_values;
 #define SYM_QUASIQUOTE       SCM_SYM_QUASIQUOTE
 #define SYM_UNQUOTE          SCM_SYM_UNQUOTE
 #define SYM_UNQUOTE_SPLICING SCM_SYM_UNQUOTE_SPLICING
-#define SYM_ELSE             Scm_sym_else
-#define SYM_YIELDS           Scm_sym_yields
+#define SYM_ELSE             scm_sym_else
+#define SYM_YIELDS           scm_sym_yields
 
 #define EQ             SCM_EQ
 #define NULLP          SCM_NULLP
@@ -261,7 +261,7 @@ extern ScmObj SigScm_null_values;
  */
 
 /* Obscures identifier ID. */
-#define SCM_MANGLE(id) Scm_internal_##id
+#define SCM_MANGLE(id) scm_internal_##id
 
 #define VALIDP(obj)   (!EQ((obj), SCM_INVALID))
 #define INVALIDP(obj) (EQ((obj), SCM_INVALID))
@@ -282,12 +282,12 @@ extern ScmObj SigScm_null_values;
 
 /* Signals an error.  The current function name and the message are
    sent to the error port.  The message is formatted by vfprintf(). */
-#define ERR SigScm_Error
+#define ERR scm_error
 
 /* Signals an error that occured on an object.  The current function
  * name, the message, then the object, are written (with `write') to
  * the error port. */
-#define ERR_OBJ(msg, obj) Scm_ErrorObj(SCM_MANGLE(name), (msg), (obj))
+#define ERR_OBJ(msg, obj) scm_error_obj(SCM_MANGLE(name), (msg), (obj))
 
 /* ASSERT_NO_MORE_ARG() asserts that the variadic argument list has
  * been exhausted.  The assertion is implicit in NO_MORE_ARG(), so
@@ -304,7 +304,7 @@ extern ScmObj SigScm_null_values;
 #define ASSERT_NO_MORE_ARG(args) \
     (NO_MORE_ARG(args) || (ERR_OBJ("superfluous argument(s)", (args)), 1))
 #define ASSERT_PROPER_ARG_LIST(args) \
-    (ScmOp_c_length(args) >= 0 \
+    (scm_p_c_length(args) >= 0 \
      || (ERR_OBJ("bad argument list", (args)), 1))
 #else  /* not SCM_STRICT_ARGCHECK */
 #define NO_MORE_ARG(args) (!CONSP(args))
@@ -459,58 +459,58 @@ typedef ScmRef ScmQueue;
    Function Declarations
 =======================================*/
 /* storage.c */
-void SigScm_InitStorage(size_t heap_size, size_t heap_alloc_threshold,
+void scm_init_storage(size_t heap_size, size_t heap_alloc_threshold,
                         int n_heaps_max, int n_heaps_init);
-void SigScm_FinalizeStorage(void);
+void scm_finalize_storage(void);
 
 /* storage-gc.c */
-void   SigScm_InitGC(size_t heap_size, size_t heap_alloc_threshold,
+void   scm_init_gc(size_t heap_size, size_t heap_alloc_threshold,
                      int n_heaps_max, int n_heaps_init);
-void   SigScm_FinalizeGC(void);
-ScmObj SigScm_NewObjFromHeap(void);
+void   scm_finalize_gc(void);
+ScmObj scm_make_obj_from_heap(void);
 
 /* storage-continuation.c */
-void   SigScm_InitContinuation(void);
-void   SigScm_FinalizeContinuation(void);
-void   Scm_DestructContinuation(ScmObj cont);
-ScmObj Scm_CallWithCurrentContinuation(ScmObj proc, ScmEvalState *eval_state);
-void   Scm_CallContinuation(ScmObj cont, ScmObj ret);
-ScmObj Scm_DynamicWind(ScmObj before, ScmObj thunk, ScmObj after);
-void Scm_PushTraceFrame(ScmObj obj, ScmObj env);
-void Scm_PopTraceFrame(void);
-ScmObj Scm_TraceStack(void);
+void   scm_init_continuation(void);
+void   scm_finalize_continuation(void);
+void   scm_destruct_continuation(ScmObj cont);
+ScmObj scm_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state);
+void   scm_call_continuation(ScmObj cont, ScmObj ret);
+ScmObj scm_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
+void scm_push_trace_frame(ScmObj obj, ScmObj env);
+void scm_pop_trace_frame(void);
+ScmObj scm_trace_stack(void);
 
 /* storage-symbol.c */
-void   SigScm_InitSymbol(void);
-void   SigScm_FinalizeSymbol(void);
+void   scm_init_symbol(void);
+void   scm_finalize_symbol(void);
 
 /* eval.c */
 /* environment related functions */
-ScmObj Scm_ExtendEnvironment(ScmObj vars, ScmObj vals, ScmObj env);
-ScmObj Scm_AddEnvironment(ScmObj var, ScmObj val, ScmObj env);
-ScmRef Scm_LookupEnvironment(ScmObj var, ScmObj env);
-ScmObj Scm_SymbolValue(ScmObj var, ScmObj env);
+ScmObj scm_extend_environment(ScmObj vars, ScmObj vals, ScmObj env);
+ScmObj scm_add_environment(ScmObj var, ScmObj val, ScmObj env);
+ScmRef scm_lookup_environment(ScmObj var, ScmObj env);
+ScmObj scm_symbol_value(ScmObj var, ScmObj env);
 
-ScmObj Scm_eval(ScmObj obj, ScmObj env);
-ScmObj Scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
+ScmObj scm_eval(ScmObj obj, ScmObj env);
+ScmObj scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
 
-ScmObj ScmExp_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state);
+ScmObj scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state);
 
 /* error.c */
-void SigScm_InitError(void);
-void Scm_ThrowException(ScmObj errorobj) SCM_NORETURN;
-void SigScm_ShowErrorHeader(void);
-void Scm_ErrorObj(const char *func_name, const char *msg, ScmObj obj) SCM_NORETURN;
+void scm_init_error(void);
+void scm_throw_exception(ScmObj errorobj) SCM_NORETURN;
+void scm_show_error_header(void);
+void scm_error_obj(const char *func_name, const char *msg, ScmObj obj) SCM_NORETURN;
 
 /* operations.c */
-int ScmOp_c_length(ScmObj lst);
+int scm_p_c_length(ScmObj lst);
 
 /* io.c */
-void Scm_InitIO(void);
-ScmCharPort *Scm_NewCharPort(ScmBytePort *bport);
+void scm_init_io(void);
+ScmCharPort *scm_make_char_port(ScmBytePort *bport);
 
 /* sigscheme.c */
-char **Scm_InterpretArgv(char **argv);
-void Scm_FreeArgv(char **argv);
+char **scm_interpret_argv(char **argv);
+void scm_free_argv(char **argv);
 
 #endif /* __SIGSCHEMEINTERNAL_H */

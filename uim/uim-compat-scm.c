@@ -57,7 +57,7 @@ long
 uim_scm_repl_c_string(char *str, long want_init, long want_print)
 {
   /* TODO: fix return value */
-  Scm_eval_c_string(str);
+  scm_eval_c_string(str);
 
   return 0;
 }
@@ -187,8 +187,8 @@ uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
 
   for (i = n_strs - 1; 0 <= i; i--) {
     c_str = strs[i];
-    str = (uim_lisp)Scm_NewMutableStringCopying(c_str);
-    lst = (uim_lisp)Scm_NewCons((ScmObj)str, (ScmObj)lst);
+    str = (uim_lisp)scm_make_mutable_string_copying(c_str);
+    lst = (uim_lisp)scm_make_cons((ScmObj)str, (ScmObj)lst);
   }
 
   return (uim_lisp)lst;
@@ -197,7 +197,7 @@ uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
 uim_lisp
 uim_scm_symbol_value(const char *symbol_str)
 {
-  return (uim_lisp)ScmOp_symbol_value(Scm_Intern(symbol_str));
+  return (uim_lisp)scm_p_symbol_value(scm_intern(symbol_str));
 }
 
 uim_lisp
@@ -221,7 +221,7 @@ uim_scm_quote(uim_lisp obj)
 uim_lisp
 uim_scm_nth(uim_lisp n, uim_lisp lst)
 {
-  return (uim_lisp)ScmOp_list_ref((ScmObj)lst,
+  return (uim_lisp)scm_p_list_ref((ScmObj)lst,
 				  (ScmObj)n);
 }
 
@@ -286,13 +286,13 @@ uim_scm_nreverse(uim_lisp cell)
 void
 uim_scm_init_fsubr(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp))
 {
-  Scm_RegisterSyntaxVariadic0(name, (ScmObj (*)(ScmObj, ScmObj))fcn);
+  scm_register_syntax_variadic_0(name, (ScmObj (*)(ScmObj, ScmObj))fcn);
 }
 
 void
 uim_scm_provide(const char *feature)
 {
-  ScmOp_provide(Scm_NewImmutableStringCopying(feature));
+  scm_p_provide(scm_make_immutable_string_copying(feature));
 }
 
 

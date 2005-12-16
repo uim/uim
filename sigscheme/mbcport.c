@@ -102,7 +102,7 @@ const ScmCharPortVTbl *ScmMultiByteCharPort_vptr = &ScmMultiByteCharPort_vtbl;
   Function Implementations
 =======================================*/
 void
-Scm_mbcport_init(void)
+scm_mbcport_init(void)
 {
     ScmCharPortVTbl *vptr;
 

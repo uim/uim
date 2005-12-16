@@ -281,5 +281,4 @@
 ;; API
 (define rk-pending
   (lambda (c)
-    (string-list-concat
-     (rk-context-seq c))))
+    (string-list-concat (rk-context-seq c))))
