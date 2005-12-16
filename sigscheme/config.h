@@ -124,7 +124,12 @@
  */
 #define HAVE_ASPRINTF           1
 #define HAVE_VASPRINTF          1
+/* FIXME */
+#if (defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__))
+#define HAVE_POSIX_MEMALIGN     0
+#else
 #define HAVE_POSIX_MEMALIGN     1
+#endif
 
 /*===========================================================================
   Dependency Resolution

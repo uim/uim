@@ -83,9 +83,13 @@ scm_malloc_aligned(size_t size)
      *     SUSv3.  The function memalign() appears in SunOS 4.1.3 but not in
      *     BSD 4.4.  The function posix_memalign() comes from POSIX 1003.1d.
      */
+    /* FIXME: replace the '16' with sizeof(ScmCell) if not required */
     posix_memalign(&p, 16, size);
-    if (!p)
-        ERR("memory exhausted");
+    SCM_ASSERT_ALLOCATED(p);
+#if SCM_DEBUG
+    /* check for buggy allocator */
+    assert(!((uintptr_t)p % 16));
+#endif
 #else
     p = scm_malloc(size);
     /* heaps must be aligned to sizeof(ScmCell) */
