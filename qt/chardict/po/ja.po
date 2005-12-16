@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: uim-chardict-qt 1.0.0\n"
-"Report-Msgid-Bugs-To: tkng@xem.jp\n"
-"POT-Creation-Date: 2005-12-07 13:16+0900\n"
+"Report-Msgid-Bugs-To: uim@lists.freedesktop.org\n"
+"POT-Creation-Date: 2005-12-09 14:52+0900\n"
 "PO-Revision-Date: 2005-12-06 16:15+900\n"
 "Last-Translator: Daichi Kawahata <daichik@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -20,23 +20,23 @@ msgstr ""
 msgid "Bushu List"
 msgstr "部首一覧"
 
-#: qt/chardict/chardict-qt.cpp:111
+#: qt/chardict/chardict-qt.cpp:113
 msgid "Mode:"
 msgstr "モード:"
 
-#: qt/chardict/chardict-qt.cpp:113
+#: qt/chardict/chardict-qt.cpp:115
 msgid "Bushu Search"
 msgstr "部首検索"
 
-#: qt/chardict/chardict-qt.cpp:114
+#: qt/chardict/chardict-qt.cpp:116
 msgid "Unicode Search"
 msgstr "ユニコード検索"
 
-#: qt/chardict/chardict-qt.cpp:120
+#: qt/chardict/chardict-qt.cpp:122
 msgid "Select Font"
 msgstr "フォントの選択"
 
-#: qt/chardict/chardict-qt.cpp:124
+#: qt/chardict/chardict-qt.cpp:126
 msgid "Chars:"
 msgstr "文字:"
 
