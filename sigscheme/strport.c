@@ -412,14 +412,11 @@ ostrport_flush(ScmOutputStrPort *port)
 static size_t
 ostrport_append(ScmOutputStrPort *port, size_t len, const char *str)
 {
-    char *new_str = NULL;
+    char *new_str;
 
     /* extend the buffer */
     if (port->buf_size - port->cur < len + sizeof((char)'\0')) {
-        if (port->buf_size == 0)
-            port->buf_size += sizeof((char)'\0');
-
-        port->buf_size += len;
+        port->buf_size += (!port->buf_size) ? sizeof((char)'\0') : len;
         new_str = realloc(port->str, port->buf_size);
         if (!new_str)
             SCM_PORT_ERROR_NOMEM(BYTE, NULL, ScmOutputStrPort);
