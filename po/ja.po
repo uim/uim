@@ -97,7 +97,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-15 01:00+0900\n"
+"POT-Creation-Date: 2005-12-16 14:33+0900\n"
 "PO-Revision-Date: 2005-12-09 16:17+0900\n"
 "Last-Translator: Daichi Kawahata <daichik@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -514,7 +514,7 @@ msgstr "無効なアイテム"
 msgid "Edit..."
 msgstr "編集..."
 
-#: helper/pref-gtk-custom-widgets.c:1487 qt/pref-customwidgets.cpp:839
+#: helper/pref-gtk-custom-widgets.c:1487 qt/pref-customwidgets.cpp:853
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr "割り当てるキーを押して下さい (例 <Control>a)"
 
@@ -550,7 +550,7 @@ msgstr ""
 #: helper/pref-gtk.c:216 qt/pref-qt.cpp:263
 msgid ""
 "Some value(s) have been changed.\n"
-"Do you realy quit this program?"
+"Do you really quit this program?"
 msgstr ""
 "いくつかの値が変更されています。\n"
 "本当に終了しますか？"
@@ -645,11 +645,11 @@ msgstr "ジオメトリ文字列 '%s' を解析できません"
 msgid "File"
 msgstr "ファイル"
 
-#: qt/pref-customwidgets.cpp:310 qt/pref-customwidgets.cpp:592
+#: qt/pref-customwidgets.cpp:324 qt/pref-customwidgets.cpp:606
 msgid "Edit"
 msgstr "編集"
 
-#: qt/pref-customwidgets.cpp:842
+#: qt/pref-customwidgets.cpp:856
 msgid "Key Grab Dialog"
 msgstr "キー取得ダイアログ"
 

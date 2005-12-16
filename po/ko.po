@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-15 01:00+0900\n"
+"POT-Creation-Date: 2005-12-16 14:33+0900\n"
 "PO-Revision-Date: 2005-12-07 22:31+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -417,7 +417,7 @@ msgstr "무효인 항목"
 msgid "Edit..."
 msgstr "편집..."
 
-#: helper/pref-gtk-custom-widgets.c:1487 qt/pref-customwidgets.cpp:839
+#: helper/pref-gtk-custom-widgets.c:1487 qt/pref-customwidgets.cpp:853
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr "잡을 키를 누르십시오 (예 <Control>a)"
 
@@ -453,7 +453,7 @@ msgstr ""
 #: helper/pref-gtk.c:216 qt/pref-qt.cpp:263
 msgid ""
 "Some value(s) have been changed.\n"
-"Do you realy quit this program?"
+"Do you really quit this program?"
 msgstr ""
 "바뀐 내용이 있습니다.\n"
 "정말로 종료하시겠습니까?"
@@ -546,11 +546,11 @@ msgstr ""
 msgid "File"
 msgstr "파일"
 
-#: qt/pref-customwidgets.cpp:310 qt/pref-customwidgets.cpp:592
+#: qt/pref-customwidgets.cpp:324 qt/pref-customwidgets.cpp:606
 msgid "Edit"
 msgstr "편집"
 
-#: qt/pref-customwidgets.cpp:842
+#: qt/pref-customwidgets.cpp:856
 msgid "Key Grab Dialog"
 msgstr "키 잡기 대화창"
 
