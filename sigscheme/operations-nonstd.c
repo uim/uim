@@ -132,7 +132,8 @@ scm_p_require(ScmObj filename)
 #endif
 }
 
-static ScmObj create_loaded_str(ScmObj filename)
+static ScmObj
+create_loaded_str(ScmObj filename)
 {
     char  *loaded_str = NULL;
     int    size = 0;

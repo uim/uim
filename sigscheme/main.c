@@ -72,7 +72,8 @@ static int show_promptp(void);
 /*=======================================
   Function Implementations
 =======================================*/
-static void repl(void)
+static void
+repl(void)
 {
 #if !SCM_GCC4_READY_GC
     ScmObj stack_start = NULL;
@@ -89,7 +90,8 @@ static void repl(void)
 #endif
 }
 
-static void repl_loop(void)
+static void
+repl_loop(void)
 {
     ScmObj sexp, result;
 #if SCM_USE_SRFI34
@@ -150,7 +152,8 @@ static void repl_loop(void)
     }
 }
 
-static int show_promptp(void)
+static int
+show_promptp(void)
 {
 #if SCM_COMPAT_SIOD
     return (FALSEP(scm_p_providedp(feature_id_siod))

@@ -129,7 +129,8 @@ scm_finalize_storage(void)
  * initialization is encapsulated in this file. Upper layers must only use
  * abstract interfaces such as SCM_NULL and SCM_NULLP().
  */
-static void initialize_special_constants(void)
+static void
+initialize_special_constants(void)
 {
 #if !SCM_OBJ_COMPACT
     SCM_CONSTANT_BIND_SUBSTANCE(scm_null,    null_cell);

@@ -166,7 +166,8 @@ scm_read_char(ScmObj port)
 }
 
 
-static int skip_comment_and_space(ScmObj port)
+static int
+skip_comment_and_space(ScmObj port)
 {
     int c, state;
 
@@ -191,7 +192,8 @@ static int skip_comment_and_space(ScmObj port)
     }
 }
 
-static void read_sequence(ScmObj port, char *buf, int len)
+static void
+read_sequence(ScmObj port, char *buf, int len)
 {
     int c;
     char *p;
@@ -207,8 +209,9 @@ static void read_sequence(ScmObj port, char *buf, int len)
     buf[len] = '\0';
 }
 
-static size_t read_token(ScmObj port, int *err,
-                         char *buf, size_t buf_size, const char *delim)
+static size_t
+read_token(ScmObj port,
+           int *err, char *buf, size_t buf_size, const char *delim)
 {
     int c;
     size_t len;
@@ -255,7 +258,8 @@ static size_t read_token(ScmObj port, int *err,
     return len;
 }
 
-static ScmObj read_sexpression(ScmObj port)
+static ScmObj
+read_sexpression(ScmObj port)
 {
     int c;
 
@@ -340,7 +344,8 @@ static ScmObj read_sexpression(ScmObj port)
     }
 }
 
-static ScmObj read_list(ScmObj port, int closeParen)
+static ScmObj
+read_list(ScmObj port, int closeParen)
 {
     ScmObj lst, elm, cdr;
     ScmQueue q;
@@ -414,7 +419,8 @@ static ScmObj read_list(ScmObj port, int closeParen)
 }
 
 #if SCM_USE_SRFI75
-static int parse_unicode_sequence(const char *seq, int len)
+static int
+parse_unicode_sequence(const char *seq, int len)
 {
     int c;
     char *first_nondigit;
@@ -449,7 +455,8 @@ static int parse_unicode_sequence(const char *seq, int len)
     return (*first_nondigit) ? -1 : c;
 }
 
-static int read_unicode_sequence(ScmObj port, char prefix)
+static int
+read_unicode_sequence(ScmObj port, char prefix)
 {
     int len;
     char seq[sizeof("U0010ffff")];
@@ -468,7 +475,8 @@ static int read_unicode_sequence(ScmObj port, char prefix)
 }
 #endif /* SCM_USE_SRFI75 */
 
-static ScmObj read_char(ScmObj port)
+static ScmObj
+read_char(ScmObj port)
 {
     int c, next, err;
 #if SCM_USE_SRFI75
@@ -508,7 +516,8 @@ static ScmObj read_char(ScmObj port)
     ERR("invalid character literal: #\\%s", buf);
 }
 
-static ScmObj read_string(ScmObj port)
+static ScmObj
+read_string(ScmObj port)
 {
     ScmObj obj;
     const ScmSpecialCharInfo *info;
@@ -587,7 +596,8 @@ static ScmObj read_string(ScmObj port)
     /* NOTREACHED */
 }
 
-static ScmObj read_symbol(ScmObj port)
+static ScmObj
+read_symbol(ScmObj port)
 {
     ScmObj sym;
     size_t offset, tail_len;
@@ -616,7 +626,8 @@ static ScmObj read_symbol(ScmObj port)
     return sym;
 }
 
-static ScmObj read_number_or_symbol(ScmObj port)
+static ScmObj
+read_number_or_symbol(ScmObj port)
 {
     int c, err;
     size_t len;
@@ -656,8 +667,8 @@ static ScmObj read_number_or_symbol(ScmObj port)
 }
 
 /* reads 'b123' part of #b123 */
-static ScmObj parse_number(ScmObj port,
-                           char *buf, size_t buf_size, char prefix)
+static ScmObj
+parse_number(ScmObj port, char *buf, size_t buf_size, char prefix)
 {
     int radix, number;
     char *first_nondigit;
@@ -681,7 +692,8 @@ static ScmObj parse_number(ScmObj port,
     ERR("ill-formatted number: #%c%s", prefix, buf);
 }
 
-static ScmObj read_number(ScmObj port, char prefix)
+static ScmObj
+read_number(ScmObj port, char prefix)
 {
     int err;
     size_t len;
@@ -694,7 +706,8 @@ static ScmObj read_number(ScmObj port, char prefix)
     return parse_number(port, buf, sizeof(buf), prefix);
 }
 
-static ScmObj read_quote(ScmObj port, ScmObj quoter)
+static ScmObj
+read_quote(ScmObj port, ScmObj quoter)
 {
     return SCM_LIST_2(quoter, read_sexpression(port));
 }

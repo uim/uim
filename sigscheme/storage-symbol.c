@@ -122,7 +122,8 @@ scm_finalize_symbol(void)
 /*============================================================================
   Symbol table
 ============================================================================*/
-static void initialize_symbol_hash(void)
+static void
+initialize_symbol_hash(void)
 {
     int i;
 
@@ -132,12 +133,14 @@ static void initialize_symbol_hash(void)
         scm_symbol_hash[i] = SCM_NULL;
 }
 
-static void finalize_symbol_hash(void)
+static void
+finalize_symbol_hash(void)
 {
     free(scm_symbol_hash);
 }
 
-static int symbol_name_hash(const char *name)
+static int
+symbol_name_hash(const char *name)
 {
     int hash, c;
 

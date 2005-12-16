@@ -166,7 +166,8 @@ scm_display_to_port(ScmObj port, ScmObj obj)
 #endif /* SCM_VOLATILE_OUTPUT */
 }
 
-static void print_obj(ScmObj port, ScmObj obj, enum OutputType otype)
+static void
+print_obj(ScmObj port, ScmObj obj, enum OutputType otype)
 {
     ScmObj sym;
 
@@ -255,7 +256,8 @@ static void print_obj(ScmObj port, ScmObj obj, enum OutputType otype)
     }
 }
 
-static void print_char(ScmObj port, ScmObj obj, enum OutputType otype)
+static void
+print_char(ScmObj port, ScmObj obj, enum OutputType otype)
 {
     const ScmSpecialCharInfo *info;
     int c;
@@ -289,7 +291,8 @@ static void print_char(ScmObj port, ScmObj obj, enum OutputType otype)
 }
 
 /* FIXME: support multibyte char properly */
-static void print_string(ScmObj port, ScmObj obj, enum OutputType otype)
+static void
+print_string(ScmObj port, ScmObj obj, enum OutputType otype)
 {
     const ScmSpecialCharInfo *info;
     const char *str;
@@ -325,7 +328,8 @@ static void print_string(ScmObj port, ScmObj obj, enum OutputType otype)
     }
 }
 
-static void print_list(ScmObj port, ScmObj lst, enum OutputType otype)
+static void
+print_list(ScmObj port, ScmObj lst, enum OutputType otype)
 {
     ScmObj car;
 #if SCM_USE_SRFI38
@@ -383,7 +387,8 @@ static void print_list(ScmObj port, ScmObj lst, enum OutputType otype)
         SCM_PORT_PUT_CHAR(port, ')');
 }
 
-static void print_vector(ScmObj port, ScmObj vec, enum OutputType otype)
+static void
+print_vector(ScmObj port, ScmObj vec, enum OutputType otype)
 {
     ScmObj *v;
     int len, i;
@@ -401,7 +406,8 @@ static void print_vector(ScmObj port, ScmObj vec, enum OutputType otype)
     SCM_PORT_PUT_CHAR(port, ')');
 }
 
-static void print_port(ScmObj port, ScmObj obj, enum OutputType otype)
+static void
+print_port(ScmObj port, ScmObj obj, enum OutputType otype)
 {
     char *info;
 
@@ -427,7 +433,8 @@ static void print_port(ScmObj port, ScmObj obj, enum OutputType otype)
     SCM_PORT_PUT_CHAR(port, '>');
 }
 
-static void print_constant(ScmObj port, ScmObj obj, enum  OutputType otype)
+static void
+print_constant(ScmObj port, ScmObj obj, enum  OutputType otype)
 {
     const char *str;
 
@@ -451,7 +458,8 @@ static void print_constant(ScmObj port, ScmObj obj, enum  OutputType otype)
     SCM_PORT_PUTS(port, str);
 }
 
-static void print_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
+static void
+print_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
 {
     ScmObj err_obj_tag, reason, objs, trace_stack;
     DECLARE_INTERNAL_FUNCTION("print_errobj");
@@ -489,7 +497,8 @@ static void print_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
 }
 
 #if SCM_USE_SRFI38
-static void hash_grow(hash_table *tab)
+static void
+hash_grow(hash_table *tab)
 {
     size_t old_size, new_size, i;
     hash_entry *old_ents;
@@ -511,7 +520,8 @@ static void hash_grow(hash_table *tab)
 /**
  * @return A pointer to the entry, or NULL if not found.
  */
-static hash_entry *hash_lookup(hash_table *tab, ScmObj key, int datum, int flag)
+static hash_entry *
+hash_lookup(hash_table *tab, ScmObj key, int datum, int flag)
 {
     size_t i;
     unsigned hashval;
@@ -561,7 +571,8 @@ static hash_entry *hash_lookup(hash_table *tab, ScmObj key, int datum, int flag)
  * @param obj The object in question, or a part of it.
  * @param ctx Where to put the scan results.
  */
-static void write_ss_scan(ScmObj obj, write_ss_context *ctx)
+static void
+write_ss_scan(ScmObj obj, write_ss_context *ctx)
 {
     int i;
     hash_entry *ent;
@@ -618,7 +629,8 @@ static void write_ss_scan(ScmObj obj, write_ss_context *ctx)
  *         *additive inverse* of the index.  If obj is nondefining,
  *         return zero.
  */
-static int get_shared_index(ScmObj obj)
+static int
+get_shared_index(ScmObj obj)
 {
     hash_entry *ent;
 

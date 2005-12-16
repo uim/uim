@@ -151,7 +151,8 @@ scm_debug(const char *msg, ...)
 }
 
 #if SCM_USE_SRFI34
-static int srfi34_providedp(void)
+static int
+srfi34_providedp(void)
 {
     if (!srfi34_is_provided) {
         /* expensive */
@@ -345,7 +346,8 @@ scm_show_error_header(void)
 }
 
 #if (SCM_DEBUG && SCM_DEBUG_BACKTRACE_VAL)
-static void show_arg(ScmObj arg, ScmObj env)
+static void
+show_arg(ScmObj arg, ScmObj env)
 {
 #define UNBOUNDP(var, env)                                              \
     (scm_lookup_environment(var, env) == SCM_INVALID_REF                 \

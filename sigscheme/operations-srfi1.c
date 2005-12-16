@@ -341,7 +341,8 @@ scm_p_srfi1_listequal(ScmObj eqproc, ScmObj args)
     return SCM_TRUE;
 }
 
-static ScmObj compare_list(ScmObj eqproc, ScmObj lst1, ScmObj lst2)
+static ScmObj
+compare_list(ScmObj eqproc, ScmObj lst1, ScmObj lst2)
 {
 #define CHECK_LIST_EQUALITY_WITH_EQPROC(eqproc, obj1, obj2)             \
     (scm_call(eqproc,                                                   \

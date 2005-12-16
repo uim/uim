@@ -56,13 +56,15 @@
         }                                                               \
     } while(0)
 
-static int die(const char *filename, int line)
+static int
+die(const char *filename, int line)
 {
     printf("assertion faled. (file : %s, line : %d)\n", filename, line);
     return -1;
 }
 
-static const char* typecode2typestr(enum ScmObjType type)
+static const char*
+typecode2typestr(enum ScmObjType type)
 {
     switch (type) {
     case ScmInt: return "Int";
@@ -87,7 +89,8 @@ static const char* typecode2typestr(enum ScmObjType type)
     return "Invalid";
 }
 
-static void check_type(enum ScmObjType type, ScmObj obj)
+static void
+check_type(enum ScmObjType type, ScmObj obj)
 {
     if (type == ScmInt)
         SCM_ASSERT(SCM_INTP(obj));
@@ -160,14 +163,16 @@ static void check_type(enum ScmObjType type, ScmObj obj)
         ASSERT_TYPE(type, ScmCFuncPointer, !SCM_C_FUNCPOINTERP(obj));
 }
 
-static void *malloc_aligned(size_t size)
+static void *
+malloc_aligned(size_t size)
 {
     void *p;
     posix_memalign(&p, 32, size);
     return p;
 }
 
-static void* aligned_strdup(const char *str)
+static void*
+aligned_strdup(const char *str)
 {
     char *ret = NULL;
     if (str) {

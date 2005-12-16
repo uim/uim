@@ -844,7 +844,7 @@ scm_p_reverse(ScmObj lst)
     return ret_lst;
 }
 
-static ScmObj 
+static ScmObj
 scm_p_listtail_internal(ScmObj lst, int k)
 {
     while (k--) {
@@ -1720,7 +1720,8 @@ scm_p_map(ScmObj proc, ScmObj args)
     return map_multiple_args(proc, args);
 }
 
-static ScmObj map_single_arg(ScmObj proc, ScmObj lst)
+static ScmObj
+map_single_arg(ScmObj proc, ScmObj lst)
 {
     ScmQueue q;
     ScmObj elm, res;
@@ -1736,7 +1737,8 @@ static ScmObj map_single_arg(ScmObj proc, ScmObj lst)
     return res;
 }
 
-static ScmObj map_multiple_args(ScmObj proc, ScmObj args)
+static ScmObj
+map_multiple_args(ScmObj proc, ScmObj args)
 {
     ScmQueue resq, argq;
     ScmObj res, map_args, rest_args, arg;

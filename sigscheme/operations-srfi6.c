@@ -75,7 +75,8 @@ scm_initialize_srfi6(void)
     REGISTER_FUNC_TABLE(srfi6_func_info_table);
 }
 
-static void istrport_finalize(char **str, int ownership, void **opaque)
+static void
+istrport_finalize(char **str, int ownership, void **opaque)
 {
     scm_gc_unprotect((ScmObj *)opaque);
 }

@@ -129,7 +129,7 @@ scm_initialize(void)
 #endif
 }
 
-static void 
+static void
 scm_initialize_internal(void)
 {
     /*=======================================================================
@@ -375,7 +375,7 @@ scm_free_argv(char **argv)
   Scheme Function Export Related Functions
 ===========================================================================*/
 /* New Interfaces */
-static int 
+static int
 scm_register_func(const char *name, ScmFuncType c_func, enum ScmFuncTypeCode type)
 {
     ScmObj sym  = scm_intern(name);

@@ -126,23 +126,27 @@ scm_finalize_continuation(void)
 #define DYNEXT_FRAME_BEFORE CAR
 #define DYNEXT_FRAME_AFTER  CDR
 
-static void initialize_dynamic_extent(void)
+static void
+initialize_dynamic_extent(void)
 {
     current_dynamic_extent = SCM_NULL;
     scm_gc_protect((ScmObj *)&current_dynamic_extent);
 }
 
-static void finalize_dynamic_extent(void)
+static void
+finalize_dynamic_extent(void)
 {
 }
 
-static void wind_onto_dynamic_extent(ScmObj before, ScmObj after)
+static void
+wind_onto_dynamic_extent(ScmObj before, ScmObj after)
 {
     current_dynamic_extent = CONS(MAKE_DYNEXT_FRAME(before, after),
                                   current_dynamic_extent);
 }
 
-static void unwind_dynamic_extent(void)
+static void
+unwind_dynamic_extent(void)
 {
     if (NULLP(current_dynamic_extent))
         ERR("corrupted dynamic extent");
@@ -151,7 +155,8 @@ static void unwind_dynamic_extent(void)
 }
 
 /* enter a dynamic extent of another continuation (dest) */
-static void enter_dynamic_extent(ScmObj dest)
+static void
+enter_dynamic_extent(ScmObj dest)
 {
     ScmObj frame, unwound, retpath;
     DECLARE_INTERNAL_FUNCTION("enter_dynamic_extent");
@@ -171,7 +176,8 @@ static void enter_dynamic_extent(ScmObj dest)
 }
 
 /* exit to a dynamic extent of another continuation (dest) */
-static void exit_dynamic_extent(ScmObj dest)
+static void
+exit_dynamic_extent(ScmObj dest)
 {
     ScmObj frame;
 
@@ -205,22 +211,26 @@ scm_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after)
 /*============================================================================
   Continuation
 ============================================================================*/
-static void initialize_continuation_env(void)
+static void
+initialize_continuation_env(void)
 {
     continuation_stack = SCM_NULL;
     scm_gc_protect((ScmObj *)&continuation_stack);
 }
 
-static void finalize_continuation_env(void)
+static void
+finalize_continuation_env(void)
 {
 }
 
-static void continuation_stack_push(ScmObj cont)
+static void
+continuation_stack_push(ScmObj cont)
 {
     continuation_stack = CONS(cont, continuation_stack);
 }
 
-static ScmObj continuation_stack_pop(void)
+static ScmObj
+continuation_stack_pop(void)
 {
     ScmObj recentmost;
 
@@ -235,7 +245,8 @@ static ScmObj continuation_stack_pop(void)
 }
 
 /* expire all descendant continuations and dest_cont */
-static ScmObj continuation_stack_unwind(ScmObj dest_cont)
+static ScmObj
+continuation_stack_unwind(ScmObj dest_cont)
 {
     ScmObj cont;
 

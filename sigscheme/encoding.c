@@ -345,7 +345,8 @@ scm_mb_find_codec(const char *encoding)
 #define SS3 0x8F
 
 #if SCM_USE_EUCJP
-static const char *eucjp_encoding(void)
+static const char *
+eucjp_encoding(void)
 {
     return "EUC-JP";
 }
@@ -359,7 +360,8 @@ static const char *eucjp_encoding(void)
  * GR <- G1 (JIS X 0208)
  * CL <- JIS X 0211 C0
  * CR <- JIS X 0211 C1 */
-static ScmMultibyteCharInfo eucjp_scan_char(ScmMultibyteString mbs)
+static ScmMultibyteCharInfo
+eucjp_scan_char(ScmMultibyteString mbs)
 {
     const char *str = SCM_MBS_GET_STR(mbs);
     const int size  = SCM_MBS_GET_SIZE(mbs);
@@ -397,7 +399,8 @@ static ScmMultibyteCharInfo eucjp_scan_char(ScmMultibyteString mbs)
     RETURN_ERROR();
 }
 
-static int eucjp_str2int(const uchar *src, size_t len, ScmMultibyteState state)
+static int
+eucjp_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 {
     int ch;
 
@@ -427,7 +430,8 @@ static int eucjp_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 /* TODO: migrate to a canonical form shared with ISO-2022 variants that contain
    absolute character set identifier instead of raw encoding-dependent
    shifts */
-static uchar *eucjp_int2str(uchar *dst, int ch, ScmMultibyteState state)
+static uchar *
+eucjp_int2str(uchar *dst, int ch, ScmMultibyteState state)
 {
 #if SCM_STRICT_ENCODING_CHECK
     uchar seq[3];
@@ -467,7 +471,8 @@ static uchar *eucjp_int2str(uchar *dst, int ch, ScmMultibyteState state)
 
 #if (SCM_USE_EUCCN || SCM_USE_EUCKR || SCM_USE_SJIS)
 /* generic double-byte char */
-static int dbc_str2int(const uchar *src, size_t len, ScmMultibyteState state)
+static int
+dbc_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 {
     int ch;
 
@@ -490,7 +495,8 @@ static int dbc_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 #endif /* (SCM_USE_EUCCN || SCM_USE_EUCKR || SCM_USE_SJIS) */
 
 #if (SCM_USE_EUCCN || SCM_USE_EUCKR)
-static uchar *euc_int2str(uchar *dst, int ch, ScmMultibyteState state)
+static uchar *
+euc_int2str(uchar *dst, int ch, ScmMultibyteState state)
 {
 #if SCM_STRICT_ENCODING_CHECK
     uchar seq[2];
@@ -517,7 +523,8 @@ static uchar *euc_int2str(uchar *dst, int ch, ScmMultibyteState state)
 #endif /* (SCM_USE_EUCCN || SCM_USE_EUCKR) */
 
 #if SCM_USE_EUCCN
-static const char *euccn_encoding(void)
+static const char *
+euccn_encoding(void)
 {
     return "EUC-CN";
 }
@@ -529,7 +536,8 @@ static const char *euccn_encoding(void)
  *
  * GL <- G0 (ASCII)
  * GR <- G1 (GB2312) */
-static ScmMultibyteCharInfo euccn_scan_char(ScmMultibyteString mbs)
+static ScmMultibyteCharInfo
+euccn_scan_char(ScmMultibyteString mbs)
 {
     /* TODO: maybe we can make this an alias of eucjp_scan_char()? */
     const char *str = SCM_MBS_GET_STR(mbs);
@@ -555,7 +563,8 @@ static ScmMultibyteCharInfo euccn_scan_char(ScmMultibyteString mbs)
 #endif
 
 #if SCM_USE_EUCKR
-static const char *euckr_encoding(void)
+static const char *
+euckr_encoding(void)
 {
     return "EUC-KR";
 }
@@ -569,7 +578,8 @@ static const char *euckr_encoding(void)
  *
  * GL <- G0
  * GR <- G1 */
-static ScmMultibyteCharInfo euckr_scan_char(ScmMultibyteString mbs)
+static ScmMultibyteCharInfo
+euckr_scan_char(ScmMultibyteString mbs)
 {
     const char *str = SCM_MBS_GET_STR(mbs);
     const int size  = SCM_MBS_GET_SIZE(mbs);
@@ -612,12 +622,14 @@ static ScmMultibyteCharInfo euckr_scan_char(ScmMultibyteString mbs)
 #define LEADING_VAL(u, n)   ((u) >> TRAILING_VAL_BITS * ((n) - 1))
 #define TRAILING_VAL(u, i)  (~MASK(1) & ((u) >> TRAILING_VAL_BITS * (i)))
 
-static const char *utf8_encoding(void)
+static const char *
+utf8_encoding(void)
 {
     return "UTF-8";
 }
 
-static ScmMultibyteCharInfo utf8_scan_char(ScmMultibyteString mbs)
+static ScmMultibyteCharInfo
+utf8_scan_char(ScmMultibyteString mbs)
 {
     const char *str = SCM_MBS_GET_STR(mbs);
     const int size  = SCM_MBS_GET_SIZE(mbs);
@@ -653,7 +665,8 @@ static ScmMultibyteCharInfo utf8_scan_char(ScmMultibyteString mbs)
 
 }
 
-static int utf8_str2int(const uchar *src, size_t len, ScmMultibyteState state)
+static int
+utf8_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 {
     int ch;
 
@@ -687,7 +700,8 @@ static int utf8_str2int(const uchar *src, size_t len, ScmMultibyteState state)
     return ch;
 }
 
-static uchar *utf8_int2str(uchar *dst, int ch, ScmMultibyteState state)
+static uchar *
+utf8_int2str(uchar *dst, int ch, ScmMultibyteState state)
 {
     if (IS_ASCII(ch)) {
         *dst++ = ch;
@@ -748,12 +762,14 @@ static uchar *utf8_int2str(uchar *dst, int ch, ScmMultibyteState state)
     && (uchar)(c) != 0xA0)
 #define IS_TRAIL(c) (0x40 <= (uchar)(c) && (uchar)(c) <= 0xFC && (c) != 0x7E)
 
-static const char *sjis_encoding(void)
+static const char *
+sjis_encoding(void)
 {
     return "SHIFT_JIS";
 }
 
-static ScmMultibyteCharInfo sjis_scan_char(ScmMultibyteString mbs)
+static ScmMultibyteCharInfo
+sjis_scan_char(ScmMultibyteString mbs)
 {
     const char *str = SCM_MBS_GET_STR(mbs);
     const int  size = SCM_MBS_GET_SIZE(mbs);
@@ -773,7 +789,8 @@ static ScmMultibyteCharInfo sjis_scan_char(ScmMultibyteString mbs)
     RETURN(1);
 }
 
-static uchar *sjis_int2str(uchar *dst, int ch)
+static uchar *
+sjis_int2str(uchar *dst, int ch)
 {
     uchar high, low;
 
@@ -809,13 +826,15 @@ static uchar *sjis_int2str(uchar *dst, int ch)
  * ISO-8859-*
  * VISCII
  */
-static const char *unibyte_encoding(void)
+static const char *
+unibyte_encoding(void)
 {
     /* conventional assumption */
     return "ISO-8859-1";
 }
 
-static ScmMultibyteCharInfo unibyte_scan_char(ScmMultibyteString mbs)
+static ScmMultibyteCharInfo
+unibyte_scan_char(ScmMultibyteString mbs)
 {
     ENTER;
     if (SCM_MBS_GET_SIZE(mbs))
@@ -823,8 +842,8 @@ static ScmMultibyteCharInfo unibyte_scan_char(ScmMultibyteString mbs)
     RETURN(0);
 }
 
-static int unibyte_str2int(const uchar *src, size_t len,
-                           ScmMultibyteState state)
+static int
+unibyte_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 {
 #if SCM_STRICT_ENCODING_CHECK
     if (len != 1)
@@ -833,7 +852,8 @@ static int unibyte_str2int(const uchar *src, size_t len,
     return src[0];
 }
 
-static uchar *unibyte_int2str(uchar *dst, int ch, ScmMultibyteState state)
+static uchar *
+unibyte_int2str(uchar *dst, int ch, ScmMultibyteState state)
 {
 #if SCM_STRICT_ENCODING_CHECK
     if (ch & ~BYTE_MASK)

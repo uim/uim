@@ -509,7 +509,7 @@ scm_load(const char *c_filename)
     return succeeded;
 }
 
-static ScmObj 
+static ScmObj
 scm_load_internal(const char *c_filename)
 {
     ScmObj path, port, sexp;
@@ -544,7 +544,8 @@ scm_load_internal(const char *c_filename)
 }
 
 /* FIXME: reject relative paths to ensure security */
-static char *find_path(const char *filename)
+static char *
+find_path(const char *filename)
 {
     char *path;
     int lib_path_len, filename_len, path_len;
@@ -571,7 +572,8 @@ static char *find_path(const char *filename)
     return NULL;
 }
 
-static int file_existsp(const char *c_filepath)
+static int
+file_existsp(const char *c_filepath)
 {
     FILE *f;
 
@@ -597,7 +599,8 @@ scm_p_load(ScmObj filename)
 }
 
 #if SCM_USE_SRFI22
-static void interpret_script_prelude(ScmObj port)
+static void
+interpret_script_prelude(ScmObj port)
 {
     char **argv;
 
@@ -612,7 +615,8 @@ static void interpret_script_prelude(ScmObj port)
     scm_free_argv(argv);
 }
 
-static char **parse_script_prelude(ScmObj port)
+static char **
+parse_script_prelude(ScmObj port)
 {
     int argc, c, len;
     char **argv, *arg, *p, line[SCRIPT_PRELUDE_MAXLEN];

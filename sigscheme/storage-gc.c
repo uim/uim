@@ -180,7 +180,8 @@ scm_make_obj_from_heap(void)
  * Registered veriable locations are held in vector instead of linked list to
  * maximize space and performance efficiency.
  */
-static ScmObj **locate_protected_var(ScmObj *var)
+static ScmObj **
+locate_protected_var(ScmObj *var)
 {
     ScmObj **slot;
 
@@ -269,7 +270,8 @@ scm_gc_unprotect_stack(ScmObj *stack_start)
 /*============================================================================
   Heap Allocator & Garbage Collector
 ============================================================================*/
-static void initialize_heap(size_t size, size_t alloc_threshold,
+static void
+initialize_heap(size_t size, size_t alloc_threshold,
                             int n_max, int n_init)
 {
     int i;
@@ -287,7 +289,8 @@ static void initialize_heap(size_t size, size_t alloc_threshold,
         add_heap();
 }
 
-static void add_heap(void)
+static void
+add_heap(void)
 {
     ScmObjHeap heap;
     ScmCell *cell;
@@ -314,7 +317,8 @@ static void add_heap(void)
     freelist = heap;
 }
 
-static void finalize_heap(void)
+static void
+finalize_heap(void)
 {
     int i;
     ScmCell *cell;
@@ -329,7 +333,8 @@ static void finalize_heap(void)
     free(heaps);
 }
 
-static void gc_mark_and_sweep(void)
+static void
+gc_mark_and_sweep(void)
 {
     size_t n_collected;
 
@@ -344,7 +349,8 @@ static void gc_mark_and_sweep(void)
     }
 }
 
-static void mark_obj(ScmObj obj)
+static void
+mark_obj(ScmObj obj)
 {
     int i = 0;
 
@@ -401,14 +407,16 @@ mark_loop:
     }
 }
 
-static void finalize_protected_var(void)
+static void
+finalize_protected_var(void)
 {
     free(protected_vars);
 }
 
 /* The core part of Conservative GC */
 
-static int within_heapp(ScmObj obj)
+static int
+within_heapp(ScmObj obj)
 {
     ScmCell *heap, *ptr;
     int i;
@@ -440,7 +448,8 @@ static int within_heapp(ScmObj obj)
     return 0;
 }
 
-static void gc_mark_protected_var(void)
+static void
+gc_mark_protected_var(void)
 {
     ScmObj **slot;
 
@@ -456,7 +465,8 @@ static void gc_mark_protected_var(void)
 }
 
 /* mark a contiguous region such as stack */
-static void gc_mark_locations_n(ScmObj *start, size_t n)
+static void
+gc_mark_locations_n(ScmObj *start, size_t n)
 {
     ScmObj *objp;
 
@@ -466,7 +476,8 @@ static void gc_mark_locations_n(ScmObj *start, size_t n)
     }
 }
 
-static void gc_mark_definite_locations_n(ScmObj *start, size_t n)
+static void
+gc_mark_definite_locations_n(ScmObj *start, size_t n)
 {
     ScmObj *objp;
 
@@ -474,7 +485,8 @@ static void gc_mark_definite_locations_n(ScmObj *start, size_t n)
         mark_obj(*objp);
 }
 
-static void gc_mark_locations(ScmObj *start, ScmObj *end)
+static void
+gc_mark_locations(ScmObj *start, ScmObj *end)
 {
     int size;
     ScmObj *tmp;
@@ -497,7 +509,8 @@ static void gc_mark_locations(ScmObj *start, ScmObj *end)
  * To avoid incorrect stack_end placement, the jmp_buf is allocated to outside
  * of stack
  */
-static void gc_mark(void)
+static void
+gc_mark(void)
 {
     ScmObj stack_end;
     void *save_regs_buf_end = (char *)save_regs_buf + sizeof(save_regs_buf);
@@ -512,7 +525,8 @@ static void gc_mark(void)
         gc_mark_definite_locations_n(scm_symbol_hash, NAMEHASH_SIZE);
 }
 
-static void free_cell(ScmCell *cell)
+static void
+free_cell(ScmCell *cell)
 {
 #if SCM_OBJ_COMPACT
     if (SCM_NEED_SWEEPP(cell)) {
@@ -588,7 +602,8 @@ static void free_cell(ScmCell *cell)
 #endif /* SCM_OBJ_COMPACT */
 }
 
-static size_t gc_sweep(void)
+static size_t
+gc_sweep(void)
 {
     int i;
     size_t sum_collected, n_collected;

@@ -194,7 +194,8 @@ scm_initialize_srfi34(void)
     current_exception_handlers = LIST_1(proc_fallback_handler);
 }
 
-static ScmObj set_cur_handlers(ScmObj handlers, ScmObj env)
+static ScmObj
+set_cur_handlers(ScmObj handlers, ScmObj env)
 {
     DECLARE_PRIVATE_FUNCTION("with_exception_handlers", SyntaxFixed1);
 
@@ -202,7 +203,8 @@ static ScmObj set_cur_handlers(ScmObj handlers, ScmObj env)
     return SCM_UNDEF;
 }
 
-static ScmObj with_exception_handlers(ScmObj new_handlers, ScmObj thunk)
+static ScmObj
+with_exception_handlers(ScmObj new_handlers, ScmObj thunk)
 {
     ScmObj prev_handlers, before, after;
     DECLARE_PRIVATE_FUNCTION("with_exception_handlers", ProcedureFixed2);
@@ -286,7 +288,8 @@ ScmObj scm_s_srfi34_guard(ScmObj cond_catch, ScmObj body,
     return scm_call(ret, SCM_NULL);
 }
 
-static ScmObj guard_internal(ScmObj q_guard_k, ScmObj env)
+static ScmObj
+guard_internal(ScmObj q_guard_k, ScmObj env)
 {
     ScmObj handler, body;
     DECLARE_PRIVATE_FUNCTION("guard", SyntaxFixed1);
@@ -301,7 +304,8 @@ static ScmObj guard_internal(ScmObj q_guard_k, ScmObj env)
     return scm_p_srfi34_with_exception_handler(handler, body);
 }
 
-static ScmObj guard_handler(ScmObj q_condition, ScmEvalState *eval_state)
+static ScmObj
+guard_handler(ScmObj q_condition, ScmEvalState *eval_state)
 {
     ScmObj handler_body, ret;
     DECLARE_PRIVATE_FUNCTION("guard", SyntaxFixedTailRec1);
@@ -319,7 +323,8 @@ static ScmObj guard_handler(ScmObj q_condition, ScmEvalState *eval_state)
 }
 
 /* assumes that scm_s_delay() returns a closure */
-static ScmObj delay(ScmObj evaled_obj, ScmObj env)
+static ScmObj
+delay(ScmObj evaled_obj, ScmObj env)
 {
     ScmObj vals;
 
@@ -334,7 +339,8 @@ static ScmObj delay(ScmObj evaled_obj, ScmObj env)
 }
 
 /* assumes that scm_s_delay() returns a closure */
-static ScmObj guard_handler_body(ScmObj q_handler_k, ScmObj env)
+static ScmObj
+guard_handler_body(ScmObj q_handler_k, ScmObj env)
 {
     ScmEvalState eval_state;
     ScmObj lex_env, cond_env, condition, cond_catch, guard_k, handler_k;
@@ -371,7 +377,8 @@ static ScmObj guard_handler_body(ScmObj q_handler_k, ScmObj env)
     return SCM_UNDEF;
 }
 
-static ScmObj guard_body(ScmEvalState *eval_state)
+static ScmObj
+guard_body(ScmEvalState *eval_state)
 {
     ScmEvalState lex_eval_state;
     ScmObj lex_env, guard_k, body, result;

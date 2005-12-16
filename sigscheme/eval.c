@@ -186,7 +186,8 @@ scm_lookup_environment(ScmObj var, ScmObj env)
 }
 
 /** Lookup a variable of a frame */
-static ScmRef lookup_frame(ScmObj var, ScmObj frame)
+static ScmRef
+lookup_frame(ScmObj var, ScmObj frame)
 {
     ScmObj vars;
     ScmRef vals;
@@ -252,7 +253,8 @@ scm_call(ScmObj proc, ScmObj args)
 }
 
 /* ARGS should NOT have been evaluated yet. */
-static ScmObj reduce(ScmObj (*func)(), ScmObj args, ScmObj env, int suppress_eval)
+static ScmObj
+reduce(ScmObj (*func)(), ScmObj args, ScmObj env, int suppress_eval)
 {
     ScmObj left;
     ScmObj right;
@@ -288,7 +290,8 @@ static ScmObj reduce(ScmObj (*func)(), ScmObj args, ScmObj env, int suppress_eva
 }
 
 /* ARGS should already be evaluated. */
-static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
+static ScmObj
+call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj formals;
     DECLARE_INTERNAL_FUNCTION("call_closure");
@@ -347,8 +350,8 @@ static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
  * @param suppress_eval PROC and ARGS are assumed to have already gone
  * through all necessary evaluations if this flag is nonzero.
  */
-static ScmObj call(ScmObj proc, ScmObj args,
-                   ScmEvalState *eval_state, int suppress_eval)
+static ScmObj
+call(ScmObj proc, ScmObj args, ScmEvalState *eval_state, int suppress_eval)
 {
     ScmObj env                = eval_state->env;
     ScmObj (*func)()          = NULL;
@@ -563,7 +566,8 @@ scm_symbol_value(ScmObj var, ScmObj env)
     return val;
 }
 
-static ScmObj map_eval(ScmObj args, ScmObj env)
+static ScmObj
+map_eval(ScmObj args, ScmObj env)
 {
     ScmQueue q;
     ScmObj res, elm;
@@ -737,7 +741,8 @@ struct _sequence_translator {
  * 
  * @see list_translator, tr_msg
  */
-static ScmObj listran(sequence_translator *t, tr_msg msg, ScmObj obj)
+static ScmObj
+listran(sequence_translator *t, tr_msg msg, ScmObj obj)
 {
     DECLARE_INTERNAL_FUNCTION("(list translator)");
     switch (msg) {
@@ -783,7 +788,8 @@ static ScmObj listran(sequence_translator *t, tr_msg msg, ScmObj obj)
     return SCM_INVALID;
 }
 
-static ScmObj vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
+static ScmObj
+vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
 {
     int splice_len;
     int change_index;
@@ -1464,7 +1470,8 @@ struct _qquote_result {
  *
  * @see qquote_vector()
  */
-static qquote_result qquote_internal(ScmObj input, ScmObj env, int nest)
+static qquote_result
+qquote_internal(ScmObj input, ScmObj env, int nest)
 {
     ScmObj obj;
     sequence_translator tr;
@@ -1586,7 +1593,8 @@ scm_s_unquote_splicing(ScmObj dummy, ScmObj env)
 /*=======================================
   R5RS : 5.2 Definitions
 =======================================*/
-static void define_internal(ScmObj var, ScmObj exp, ScmObj env)
+static void
+define_internal(ScmObj var, ScmObj exp, ScmObj env)
 {
     if (NULLP(env)) {
         /* given top-level environment */
