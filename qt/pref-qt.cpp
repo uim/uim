@@ -261,7 +261,7 @@ void UimPrefDialog::confirmQuit()
     int result = QMessageBox::question( this,
                                         _("Quit Confirm"),
                                         _("Some value(s) have been changed.\n"
-                                          "Do you realy quit this program?"),
+                                          "Do you really quit this program?"),
                                         _("Yes"),
                                         _("No"),
                                         QString::null, 1, -1);
