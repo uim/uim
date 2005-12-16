@@ -97,7 +97,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-16 14:33+0900\n"
+"POT-Creation-Date: 2005-12-16 16:23+0900\n"
 "PO-Revision-Date: 2005-12-09 16:17+0900\n"
 "Last-Translator: Daichi Kawahata <daichik@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1413,8 +1413,8 @@ msgid "Canna server"
 msgstr "Canna サーバ"
 
 #: scm/canna-custom.lisp:304
-msgid "Use Canna server"
-msgstr "Cannaサーバを使用する"
+msgid "Specify Canna server"
+msgstr "Cannaサーバを指定する"
 
 #: scm/canna-custom.lisp:310
 msgid "Canna server name"
