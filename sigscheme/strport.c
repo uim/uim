@@ -169,7 +169,7 @@ istrport_new(char *str, int ownership, ScmInputStrPort_finalizer finalize)
 {
     ScmInputStrPort *port;
 
-    SCM_PORT_ALLOC(BYTE, port, ScmInputStrPort);
+    port = SCM_PORT_MALLOC(sizeof(ScmInputStrPort));
 
     port->vptr = ScmInputStrPort_vptr;
     port->cur = port->str = str;
@@ -289,7 +289,7 @@ ScmOutputStrPort_new(ScmOutputStrPort_finalizer finalize)
 {
     ScmOutputStrPort *port;
 
-    SCM_PORT_ALLOC(BYTE, port, ScmOutputStrPort);
+    port = SCM_PORT_MALLOC(sizeof(ScmOutputStrPort));
 
     port->vptr = ScmOutputStrPort_vptr;
     port->str = NULL;
@@ -412,15 +412,10 @@ ostrport_flush(ScmOutputStrPort *port)
 static size_t
 ostrport_append(ScmOutputStrPort *port, size_t len, const char *str)
 {
-    char *new_str;
-
     /* extend the buffer */
     if (port->buf_size - port->cur < len + sizeof((char)'\0')) {
         port->buf_size += (!port->buf_size) ? len + sizeof((char)'\0') : len;
-        new_str = realloc(port->str, port->buf_size);
-        if (!new_str)
-            SCM_PORT_ERROR_NOMEM(BYTE, NULL, ScmOutputStrPort);
-        port->str = new_str;
+        port->str = SCM_PORT_REALLOC(port->str, port->buf_size);
     }
 
     memcpy(port->str + port->cur, str, len);

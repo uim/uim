@@ -135,7 +135,7 @@ ScmMultiByteCharPort_new(ScmBytePort *bport, ScmCharCodec *codec)
 {
     ScmMultiByteCharPort *cport;
 
-    SCM_PORT_ALLOC(CHAR, cport, ScmMultiByteCharPort);
+    cport = SCM_PORT_MALLOC(sizeof(ScmMultiByteCharPort));
     ScmMultiByteCharPort_construct(cport, ScmMultiByteCharPort_vptr,
                                    bport, codec);
 

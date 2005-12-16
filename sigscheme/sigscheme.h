@@ -165,6 +165,9 @@ extern "C" {
  */
 #define SCM_CHARPORT_ERROR(cport, msg) (SigScm_Error(msg))
 #define SCM_BYTEPORT_ERROR(bport, msg) (SigScm_Error(msg))
+#define SCM_PORT_MALLOC(size)          (scm_malloc(size))
+#define SCM_PORT_CALLOC(number, size)  (scm_calloc(number, size))
+#define SCM_PORT_REALLOC(ptr, size)    (scm_realloc(ptr, size))
 
 #define SCM_ASSERT_LIVE_PORT(port)                                           \
     (SCM_PORT_IMPL(port)                                                     \

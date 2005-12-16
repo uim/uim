@@ -76,12 +76,16 @@
 #define SCM_PORT_ERROR_NOMEM(klass, port, type)                              \
     SCM_##klass##PORT_ERROR((port), #type ": Out of memory")
 
-#define SCM_PORT_ALLOC(klass, port, type)                                    \
-    do {                                                                     \
-        (port) = malloc(sizeof(type));                                       \
-        if (!(port))                                                         \
-            SCM_PORT_ERROR_NOMEM(klass, NULL, type);                         \
-    } while (/* CONSTCOND */ 0)
+/* Allocation error handling in the macros is strongly recommended. */
+#ifndef SCM_PORT_MALLOC
+#define SCM_PORT_MALLOC(size) (malloc(size))
+#endif /* SCM_PORT_MALLOC */
+#ifndef SCM_PORT_CALLOC
+#define SCM_PORT_CALLOC(number, size) (calloc(number, size))
+#endif /* SCM_PORT_CALLOC */
+#ifndef SCM_PORT_REALLOC
+#define SCM_PORT_REALLOC(ptr, size) (realloc(ptr, size))
+#endif /* SCM_PORT_REALLOC */
 
 /*
  * To allow safe method invocation (contains from subclasses), all non-standard

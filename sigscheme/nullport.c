@@ -112,7 +112,7 @@ ScmNullPort_new(void)
 {
     ScmNullPort *port;
 
-    SCM_PORT_ALLOC(BYTE, port, ScmNullPort);
+    port = SCM_PORT_MALLOC(sizeof(ScmNullPort));
 
     port->vptr = ScmNullPort_vptr;
 

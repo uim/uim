@@ -132,7 +132,7 @@ fileport_new_internal(FILE *file, const char *aux_info, int ownership)
 {
     ScmFilePort *port;
 
-    SCM_PORT_ALLOC(BYTE, port, ScmFilePort);
+    port = SCM_PORT_MALLOC(sizeof(ScmFilePort));
 
     port->vptr = ScmFilePort_vptr;
     port->file = file;
@@ -198,7 +198,7 @@ fileport_inspect(ScmFilePort *port)
 
     if (port->aux_info) {
         size = sizeof("file ") + strlen(port->aux_info);
-        combined = malloc(size);
+        combined = SCM_PORT_MALLOC(size);
         snprintf(combined, size, "file %s", port->aux_info);
         return combined;
     } else {

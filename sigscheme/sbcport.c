@@ -108,7 +108,7 @@ ScmSingleByteCharPort_new(ScmBytePort *bport)
 {
     ScmSingleByteCharPort *cport;
 
-    SCM_PORT_ALLOC(CHAR, cport, ScmSingleByteCharPort);
+    cport = SCM_PORT_MALLOC(sizeof(ScmSingleByteCharPort));
     ScmSingleByteCharPort_construct(cport, ScmSingleByteCharPort_vptr, bport);
 
     return (ScmCharPort *)cport;
