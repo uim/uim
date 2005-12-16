@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-16 14:33+0900\n"
+"POT-Creation-Date: 2005-12-16 16:23+0900\n"
 "PO-Revision-Date: 2005-02-21 15:52+0100\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -1297,7 +1297,7 @@ msgid "Canna server"
 msgstr ""
 
 #: scm/canna-custom.lisp:304
-msgid "Use Canna server"
+msgid "Specify Canna server"
 msgstr ""
 
 #: scm/canna-custom.lisp:310

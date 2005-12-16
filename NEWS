@@ -22,6 +22,9 @@ Overview of changes from 1.0.0-alpha to 1.0.0-beta
     - uim-pref-qt
       - code cleanup (Kazuki)
 
+    - Canna
+      - fix behavior of backspace key in conversion state (Etsushi)
+
   o Others
     - Update translations
 

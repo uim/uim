@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-16 14:33+0900\n"
+"POT-Creation-Date: 2005-12-16 16:23+0900\n"
 "PO-Revision-Date: 2005-12-07 22:31+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -1309,7 +1309,7 @@ msgid "Canna server"
 msgstr ""
 
 #: scm/canna-custom.lisp:304
-msgid "Use Canna server"
+msgid "Specify Canna server"
 msgstr ""
 
 #: scm/canna-custom.lisp:310

@@ -301,7 +301,7 @@
 (define-custom 'custom-activate-canna-server-name? #f
   '(cannaserver)
   '(boolean)
-  (_ "Use Canna server")
+  (_ "Specify Canna server")
   (_ "long description will be here."))
 
 (define-custom 'custom-preserved-canna-server-name ""
