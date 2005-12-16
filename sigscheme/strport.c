@@ -412,10 +412,13 @@ ostrport_flush(ScmOutputStrPort *port)
 static size_t
 ostrport_append(ScmOutputStrPort *port, size_t len, const char *str)
 {
-    char *new_str;
+    char *new_str = NULL;
 
     /* extend the buffer */
     if (port->buf_size - port->cur < len + sizeof((char)'\0')) {
+        if (port->buf_size == 0)
+            port->buf_size += sizeof((char)'\0');
+
         port->buf_size += len;
         new_str = realloc(port->str, port->buf_size);
         if (!new_str)
@@ -425,7 +428,7 @@ ostrport_append(ScmOutputStrPort *port, size_t len, const char *str)
 
     memcpy(port->str + port->cur, str, len);
     port->cur += len;
-    new_str[port->cur] = '\0';
+    port->str[port->cur] = '\0';
 
     return len + sizeof((char)'\0');
 }
