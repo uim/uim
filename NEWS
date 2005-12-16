@@ -1,20 +1,29 @@
 Overview of changes from 1.0.0-alpha to 1.0.0-beta
 ==
-* Fixes
- o Critical
-    - uim-pref-qt
-      - fix custom setting with integer number whose value is greater
-	than 99 (Etsushi)
+* New features
+ 
+  o IM related
+    - SKK
+      - enable word completion with UNIX look command (Etsushi)
 
- o Minor
-    - update configure script not to require XML::Parser (Etsushi)
+* Fixes
+  o Critical
+    - uim-pref-qt
+      - fix behavior of custom widget with integer number when the
+        value in the stored file is greater than 99 (Etsushi)
+
+  o Minor
+    - update configure script (Etsushi)
+      - don't require XML::Parser
+      - more strict check for canna
     - Qt immodule
       - fix to respond to uim-pref-gtk's custom messages on the fly in
 	addition to uim-pref-qt's (Etsushi)
     - uim-pref-qt
       - code cleanup (Kazuki)
 
-
+  o Others
+    - Update translations
 
 Overview of changes from 0.4.9.1 to 1.0.0-alpha
 ==
