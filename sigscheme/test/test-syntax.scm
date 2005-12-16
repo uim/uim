@@ -53,6 +53,10 @@
 (assert-parse-error "invalid identifier" "+a")
 (assert-parse-error "invalid identifier" "++")
 (assert-parse-error "invalid identifier" "--")
+(assert-parse-error "invalid identifier" "-=")
+(assert-parse-error "invalid identifier" "-$")
+(assert-parse-error "invalid identifier" "-.")
+(assert-parse-error "invalid identifier" "-@")
 (assert-parse-error "invalid identifier" "@")
 (assert-parse-error "invalid identifier" "1a")
 
@@ -109,6 +113,9 @@
 (assert-true "identifier" (symbol? (string-read "a-")))
 (assert-true "identifier" (symbol? (string-read "a@")))
 (assert-true "identifier" (symbol? (string-read "a1")))
+(if (and (provided? "sigscheme")
+         (not (provided? "strict-r5rs")))
+    (assert-true "identifier" (symbol? (string-read "-a"))))
 
 (assert-true "integer" (integer? (string-read "1")))
 (assert-true "integer" (integer? (string-read "1")))

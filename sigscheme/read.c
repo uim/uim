@@ -645,8 +645,17 @@ read_number_or_symbol(ScmObj port)
             len = read_token(port, &err, buf, sizeof(buf), DELIMITER_CHARS);
             if (err == TOKEN_BUF_EXCEEDED)
                 ERR("invalid number literal");
-            if (!buf[1])
+
+            
+            if (!buf[1]                         /* '+' or '-' */
+#if !SCM_STRICT_R5RS
+                || c == '-' && isalpha(buf[1])  /* '-sym' */
+#endif
+                )
+            {
                 return scm_intern(buf);
+            }
+
             return parse_number(port, buf, sizeof(buf), 'd');
         }
 
