@@ -118,7 +118,7 @@ scm_p_srfi6_get_output_string(ScmObj port)
     SCM_ASSERT_LIVE_PORT(port);
     cport = SCM_CHARPORT_DYNAMIC_CAST(ScmBaseCharPort, SCM_PORT_IMPL(port));
 
-    return scm_make_mutable_string_copying(ScmOutputStrPort_str(cport->bport));
+    return MAKE_STRING_COPYING(ScmOutputStrPort_str(cport->bport));
 }
 
 

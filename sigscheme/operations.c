@@ -559,7 +559,7 @@ scm_p_number2string(ScmObj num, ScmObj args)
   if (r == 10 && SCM_INT_VALUE (num) < 0)
     *--p = '-';
 
-  return scm_make_mutable_string_copying(p);
+  return MAKE_STRING_COPYING(p);
 }
 
 ScmObj
@@ -1033,7 +1033,7 @@ scm_p_symbol2string(ScmObj obj)
 {
     DECLARE_FUNCTION("symbol->string", procedure_fixed_1);
     ASSERT_SYMBOLP(obj);
-    return scm_make_immutable_string_copying(SCM_SYMBOL_NAME(obj));
+    return MAKE_IMMUTABLE_STRING_COPYING(SCM_SYMBOL_NAME(obj));
 }
 
 ScmObj
@@ -1206,7 +1206,7 @@ scm_p_make_string(ScmObj length, ScmObj args)
     ASSERT_INTP(length);
     len = SCM_INT_VALUE(length);
     if (len == 0)
-        return scm_make_mutable_string_copying("");
+        return MAKE_STRING_COPYING("");
     if (len < 0)
         ERR_OBJ("length must be a positive integer", length);
 
@@ -1386,7 +1386,7 @@ scm_p_substring(ScmObj str, ScmObj start, ScmObj end)
     memcpy(new_str, SCM_MBS_GET_STR(mbs), SCM_MBS_GET_SIZE(mbs));
     new_str[SCM_MBS_GET_SIZE(mbs)] = 0;
 
-    return scm_make_mutable_string(new_str);
+    return MAKE_STRING(new_str);
 }
 
 ScmObj
@@ -1402,7 +1402,7 @@ scm_p_string_append(ScmObj args)
     DECLARE_FUNCTION("string-append", procedure_variadic_0);
 
     if (NO_MORE_ARG(args))
-        return scm_make_mutable_string_copying("");
+        return MAKE_STRING_COPYING("");
 
     /* count total size of the new string */
     for (strlst = args; !NULLP(strlst); strlst = CDR(strlst)) {
@@ -1424,7 +1424,7 @@ scm_p_string_append(ScmObj args)
         p += strlen(SCM_STRING_STR(obj));
     }
 
-    return scm_make_mutable_string(new_str);
+    return MAKE_STRING(new_str);
 }
 
 ScmObj
@@ -1474,7 +1474,7 @@ scm_p_list2string(ScmObj lst)
     ASSERT_LISTP(lst);
 
     if (NULLP(lst))
-        return scm_make_mutable_string_copying("");
+        return MAKE_STRING_COPYING("");
 
     /* TODO: make efficient */
     sport = scm_p_srfi6_open_output_string();
@@ -1494,7 +1494,7 @@ scm_p_string_copy(ScmObj str)
 {
     DECLARE_FUNCTION("string-copy", procedure_fixed_1);
     ASSERT_STRINGP(str);
-    return scm_make_mutable_string_copying(SCM_STRING_STR(str));
+    return MAKE_STRING_COPYING(SCM_STRING_STR(str));
 }
 
 ScmObj
@@ -1514,7 +1514,7 @@ scm_p_string_filld(ScmObj str, ScmObj ch)
 
     str_len = SCM_STRING_LEN(str);
     if (str_len == 0)
-        return scm_make_mutable_string_copying("");
+        return MAKE_STRING_COPYING("");
 
     /* FIXME: support stateful encoding */
     next = SCM_CHARCODEC_INT2STR(scm_current_char_codec, ch_str,

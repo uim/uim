@@ -61,7 +61,6 @@
 #define ERRMSG_HANDLER_RETURNED    "handler returned"
 #define ERRMSG_FALLBACK_EXHAUSTED  "fallback handler exhausted"
 
-#define MAKE_STR_COPYING scm_make_immutable_string_copying
 #define DECLARE_PRIVATE_FUNCTION(func_name, type)                            \
     DECLARE_INTERNAL_FUNCTION(func_name)
 
@@ -132,9 +131,12 @@ scm_initialize_srfi34(void)
         scm_gc_protect(*var);
     }
 
-    errmsg_unhandled_exception = MAKE_STR_COPYING(ERRMSG_UNHANDLED_EXCEPTION);
-    errmsg_handler_returned    = MAKE_STR_COPYING(ERRMSG_HANDLER_RETURNED);
-    errmsg_fallback_exhausted  = MAKE_STR_COPYING(ERRMSG_FALLBACK_EXHAUSTED);
+    errmsg_unhandled_exception
+        = MAKE_IMMUTABLE_STRING_COPYING(ERRMSG_UNHANDLED_EXCEPTION);
+    errmsg_handler_returned
+        = MAKE_IMMUTABLE_STRING_COPYING(ERRMSG_HANDLER_RETURNED);
+    errmsg_fallback_exhausted
+        = MAKE_IMMUTABLE_STRING_COPYING(ERRMSG_FALLBACK_EXHAUSTED);
 
     sym_error      = scm_intern("error");
     sym_raise      = scm_intern("raise");

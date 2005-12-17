@@ -174,12 +174,12 @@ scm_initialize_internal(void)
       Fixing up
     =======================================================================*/
     /* to evaluate SigScheme-dependent codes conditionally */
-    scm_provide(scm_make_immutable_string_copying("sigscheme"));
+    scm_provide(MAKE_IMMUTABLE_STRING_COPYING("sigscheme"));
 #if SCM_STRICT_R5RS
-    scm_provide(scm_make_immutable_string_copying("strict-r5rs"));
+    scm_provide(MAKE_IMMUTABLE_STRING_COPYING("strict-r5rs"));
 #endif
 #if SCM_COMPAT_SIOD_BUGS
-    scm_provide(scm_make_immutable_string_copying("siod-bugs"));
+    scm_provide(MAKE_IMMUTABLE_STRING_COPYING("siod-bugs"));
 #endif
     scm_initialized = TRUE;
 }
@@ -345,7 +345,7 @@ scm_interpret_argv(char **argv)
         specified_codec = scm_mb_find_codec(encoding);
         if (!specified_codec) {
             if (scm_initialized) {
-                err_obj = scm_make_immutable_string_copying(encoding);
+                err_obj = MAKE_IMMUTABLE_STRING_COPYING(encoding);
                 scm_free_argv(argv);
                 ERR_OBJ("unsupported encoding", err_obj);
             } else {

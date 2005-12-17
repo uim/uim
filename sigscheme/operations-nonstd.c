@@ -101,7 +101,7 @@ ScmObj
 scm_p_load_path(void)
 {
     DECLARE_FUNCTION("load-path", procedure_fixed_0);
-    return scm_make_immutable_string_copying(scm_lib_path);
+    return MAKE_IMMUTABLE_STRING_COPYING(scm_lib_path);
 }
 
 /* FIXME: add ScmObj scm_require(const char *c_filename) */
@@ -143,7 +143,7 @@ create_loaded_str(ScmObj filename)
     loaded_str = scm_malloc(size);
     snprintf(loaded_str, size, "*%s-loaded*", SCM_STRING_STR(filename));
 
-    return scm_make_immutable_string(loaded_str);
+    return MAKE_IMMUTABLE_STRING(loaded_str);
 }
 
 /*

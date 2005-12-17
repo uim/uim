@@ -522,7 +522,7 @@ scm_load_internal(const char *c_filename)
     if (!c_path)
         ERR("scm_load_internal: file \"%s\" not found", c_filename);
 
-    path = scm_make_immutable_string(c_path);
+    path = MAKE_IMMUTABLE_STRING(c_path);
     port = scm_p_open_input_file(path);
 
     saved_codec = scm_current_char_codec;

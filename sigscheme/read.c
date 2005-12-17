@@ -546,7 +546,7 @@ read_string(ScmObj port)
         case '\"':
             LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + 1);
             *p = '\0';
-            obj = scm_make_immutable_string_copying(LBUF_BUF(lbuf));
+            obj = MAKE_IMMUTABLE_STRING_COPYING(LBUF_BUF(lbuf));
             LBUF_FREE(lbuf);
             return obj;
 

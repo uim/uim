@@ -180,7 +180,7 @@ int main(int argc, char **argv)
 
 #if SCM_COMPAT_SIOD
     scm_gc_protect(&feature_id_siod);
-    feature_id_siod = scm_make_immutable_string_copying(FEATURE_ID_SIOD);
+    feature_id_siod = MAKE_IMMUTABLE_STRING_COPYING(FEATURE_ID_SIOD);
 #endif
 
     if (filename) {

@@ -239,8 +239,8 @@ enum ScmStrMutationType {
 #define SCM_MAKE_CONS                     scm_make_cons
 #define SCM_MAKE_SYMBOL                   scm_make_symbol
 #define SCM_MAKE_CHAR                     scm_make_char
-#define SCM_MAKE_STRING                   scm_make_mutable_string
-#define SCM_MAKE_STRING_COPYING           scm_make_mutable_string_copying
+#define SCM_MAKE_STRING                   scm_make_string
+#define SCM_MAKE_STRING_COPYING           scm_make_string_copying
 #define SCM_MAKE_IMMUTABLE_STRING         scm_make_immutable_string
 #define SCM_MAKE_IMMUTABLE_STRING_COPYING scm_make_immutable_string_copying
 #define SCM_MAKE_FUNC                     scm_make_func
