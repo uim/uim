@@ -647,9 +647,9 @@ read_number_or_symbol(ScmObj port)
                 ERR("invalid number literal");
 
             
-            if (!buf[1]                         /* '+' or '-' */
+            if (!buf[1]                           /* '+' or '-' */
 #if !SCM_STRICT_R5RS
-                || c == '-' && isalpha(buf[1])  /* '-sym' */
+                || (c == '-' && isalpha(buf[1]))  /* '-sym' */
 #endif
                 )
             {
