@@ -903,10 +903,11 @@ int scm_port_peek_char(ScmObj port);
 int scm_port_char_readyp(ScmObj port);
 int scm_port_puts(ScmObj port, const char *str);
 int scm_port_put_char(ScmObj port, int ch);
-void scm_port_printf(ScmObj port, const char *fmt, ...);
-void scm_port_vprintf(ScmObj port, const char *fmt, va_list args);
-void scm_port_newline(ScmObj port);
+int scm_port_printf(ScmObj port, const char *fmt, ...);
+int scm_port_vprintf(ScmObj port, const char *fmt, va_list args);
+int scm_port_newline(ScmObj port);
 int scm_port_flush(ScmObj port);
+/* FIXME: obsolete these functions */
 void scm_error_printf(const char *fmt, ...);
 void scm_error_vprintf(const char *fmt, va_list args);
 void scm_error_newline(void);

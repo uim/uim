@@ -132,31 +132,42 @@ ScmObj scm_make_shared_file_port(FILE *file, const char *aux_info,
     return scm_make_port(scm_make_char_port(bport), flag);
 }
 
-void
+int
 scm_port_printf(ScmObj port, const char *fmt, ...)
 {
+    int ret;
     va_list args;
 
     va_start(args, fmt);
-    scm_port_vprintf(port, fmt, args);
+    ret = scm_port_vprintf(port, fmt, args);
     va_end(args);
+
+    return ret;
 }
 
-void
+int
 scm_port_vprintf(ScmObj port, const char *fmt, va_list args)
 {
+    int ret;
+
     SCM_ASSERT_LIVE_PORT(port);
-    SCM_CHARPORT_VPRINTF(SCM_PORT_IMPL(port), fmt, args);
+    ret = SCM_CHARPORT_VPRINTF(SCM_PORT_IMPL(port), fmt, args);
 #if SCM_VOLATILE_OUTPUT
     scm_port_flush(port);
 #endif
+
+    return ret;
 }
 
-void
+int
 scm_port_newline(ScmObj port)
 {
-    scm_port_puts(port, SCM_NEWLINE_STR);
+    int err;
+
+    err = scm_port_puts(port, SCM_NEWLINE_STR);
     scm_port_flush(port);  /* required */
+
+    return err;
 }
 
 void
