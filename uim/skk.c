@@ -3362,10 +3362,14 @@ look_get_top_word(const char *str)
 {
   char buf[512], *p;
   FILE *fp;
+  int i = 0;
   uim_lisp ret_ = uim_scm_f();
 
-  if (!skk_isalpha(str[0]))
-    return ret_;
+  while (str[i] != '\0') {
+    if (!skk_isalpha(str[i]))
+      return ret_;
+    i++;
+  }
 
   fp = look_popen(str);
   if (!fp) {
@@ -3394,11 +3398,14 @@ look_get_comp(struct skk_comp_array *ca, const char *str)
 {
   char buf[512], *p;
   FILE *fp;
-  int i, nr_pre, c = 0;
+  int i = 0, nr_pre, c = 0;
   int *matched;
 
-  if (!skk_isalpha(str[0]))
-    return;
+  while (str[i] != '\0') {
+    if (!skk_isalpha(str[0]))
+      return;
+    i++;
+  }
 
   fp = look_popen(str);
   if (!fp) {
