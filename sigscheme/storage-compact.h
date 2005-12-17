@@ -498,22 +498,22 @@ struct ScmCell_ {
   Object Creators
 =======================================*/
 #define SCM_SAL_MAKE_BOOL(x)                  ((x) ? SCM_TRUE : SCM_FALSE)
-#define SCM_SAL_MAKE_INT                      Scm_NewInt
-#define SCM_SAL_MAKE_CONS                     Scm_NewCons
-#define SCM_SAL_MAKE_SYMBOL                   Scm_NewSymbol
-#define SCM_SAL_MAKE_CHAR                     Scm_NewChar
-#define SCM_SAL_MAKE_STRING                   Scm_NewMutableString
-#define SCM_SAL_MAKE_STRING_COPYING           Scm_NewMutableStringCopying
-#define SCM_SAL_MAKE_IMMUTABLE_STRING         Scm_NewImmutableString
-#define SCM_SAL_MAKE_IMMUTABLE_STRING_COPYING Scm_NewImmutableStringCopying
-#define SCM_SAL_MAKE_FUNC                     Scm_NewFunc
-#define SCM_SAL_MAKE_CLOSURE                  Scm_NewClosure
-#define SCM_SAL_MAKE_VECTOR                   Scm_NewVector
-#define SCM_SAL_MAKE_PORT                     Scm_NewPort
-#define SCM_SAL_MAKE_CONTINUATION             Scm_NewContinuation
+#define SCM_SAL_MAKE_INT                      scm_make_int
+#define SCM_SAL_MAKE_CONS                     scm_make_cons
+#define SCM_SAL_MAKE_SYMBOL                   scm_make_symbol
+#define SCM_SAL_MAKE_CHAR                     scm_make_char
+#define SCM_SAL_MAKE_STRING                   scm_make_string
+#define SCM_SAL_MAKE_STRING_COPYING           scm_make_string_copying
+#define SCM_SAL_MAKE_IMMUTABLE_STRING         scm_make_immutable_string
+#define SCM_SAL_MAKE_IMMUTABLE_STRING_COPYING scm_make_immutable_string_copying
+#define SCM_SAL_MAKE_FUNC                     scm_make_func
+#define SCM_SAL_MAKE_CLOSURE                  scm_make_closure
+#define SCM_SAL_MAKE_VECTOR                   scm_make_vector
+#define SCM_SAL_MAKE_PORT                     scm_make_port
+#define SCM_SAL_MAKE_CONTINUATION             scm_make_continuation
 #if SCM_USE_NONSTD_FEATURES
-#define SCM_SAL_MAKE_C_POINTER                Scm_NewCPointer
-#define SCM_SAL_MAKE_C_FUNCPOINTER            Scm_NewCFuncPointer
+#define SCM_SAL_MAKE_C_POINTER                scm_make_cpointer
+#define SCM_SAL_MAKE_C_FUNCPOINTER            scm_make_cfunc_pointer
 #endif /* SCM_USE_NONSTD_FEATURES */
 #define SCM_SAL_MAKE_VALUEPACKET              Scm_NewValuePacket
 
