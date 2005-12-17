@@ -276,7 +276,7 @@ struct ScmCell_ {
 #define SCM_OTHERS_CDR_TAG_OFFSET_SYMBOL        \
     SCM_OTHERS_CDR_PRIMARY_TAG_OFFSET
 #define SCM_OTHERS_CDR_VAL_OFFSET_SYMBOL        \
-    SCM_OTHERS_CDR_PRIMARY_VAL_OFFSET
+    0
 #define SCM_OTHERS_CDR_VAL_MASK_SYMBOL          \
     (~0U << SCM_OTHERS_CDR_PRIMARY_VAL_OFFSET)
 
@@ -497,7 +497,9 @@ struct ScmCell_ {
 /*=======================================
   Accessor API
 =======================================*/
-/* for Cons */
+/*
+ * for Cons
+ */
 #define SCM_CONS_CAR_VAL(a) ((ScmObj)(SCM_STRIP_GCBIT(SCM_CELL_CAR(a))))
 #define SCM_CONS_CDR_VAL(a) ((ScmObj)(SCM_STRIP_GCBIT(SCM_CELL_CDR(a))))
 #define SCM_CONS_SET_CAR_VAL(a, val)                            \
@@ -505,7 +507,9 @@ struct ScmCell_ {
 #define SCM_CONS_SET_CDR_VAL(a, val)                            \
     SCM_CELL_SET_CDR((a), SCM_STRIP_GCBIT(val) | SCM_GCBIT(SCM_CELL_CDR(a)))
 
-/* for Closure */
+/*
+ * for Closure
+ */
 #define SCM_CLOSURE_CAR_VAL(a) ((ScmObj)(SCM_STRIP_GCBIT(SCM_CELL_CAR(a))))
 #define SCM_CLOSURE_CDR_VAL(a) ((ScmObj)(SCM_STRIP_GCBIT(SCM_CELL_CDR(a))))
 #define SCM_CLOSURE_SET_CAR_VAL(a, val)                         \
@@ -513,9 +517,29 @@ struct ScmCell_ {
 #define SCM_CLOSURE_SET_CDR_VAL(a, val)                         \
     SCM_CELL_SET_CDR((a), SCM_STRIP_GCBIT(val) | SCM_GCBIT(SCM_CELL_CDR(a)))
 
-/* for Others */
+/*
+ * for Others
+ */
+/* car */
+#define SCM_OTHERS_CAR_VAL(a) ((ScmObj)(SCM_STRIP_GCBIT(SCM_CELL_CAR(a))))
+#define SCM_OTHERS_SET_CAR_VAL(a, val)                                  \
+    SCM_CELL_SET_CAR((a), SCM_STRIP_GCBIT(val) | SCM_GCBIT(SCM_CELL_CAR(a)))
 
-/* for Immediates */
+/* cdr */
+#define SCM_OTHERS_CDR_TAGGING(a, type, val)                    \
+    ((SCM_CAST_UINT(val) << SCM_OTHERS_CDR_VAL_OFFSET_##type)   \
+     | SCM_OTHERS_CDR_TAG_##type                                \
+     | SCM_GCBIT(SCM_CELL_CDR(a)))
+
+#define SCM_OTHERS_CDR_VAL(a, type)                                     \
+    ((SCM_CAST_UINT(SCM_CELL_CDR(a)) & SCM_OTHERS_CDR_VAL_MASK_##type)  \
+     >> SCM_OTHERS_CDR_VAL_OFFSET_##type)
+#define SCM_OTHERS_SET_CDR_VAL(a, type, val)                           \
+    SCM_CELL_SET_CDR((a), SCM_OTHERS_CDR_TAGGING((a), type, (val)))
+
+/*
+ * for Immediates
+ */
 #define SCM_IMM_TAGGING(a, type, val)                                   \
     (SCM_CAST_UINT(val) | SCM_IMM_TAG_##type | SCM_GCBIT(a))
 /* we need to 'signed' bit shifting for integer, so cast to 'int', not
@@ -651,20 +675,13 @@ extern enum ScmObjType Scm_Type(ScmObj obj);
 /*==============================================================================
   Accessors For Scheme Objects : Others
 ==============================================================================*/
-/* Real Accessors : Symbol */
 /*
-#define SCM_SYMBOL_VCELL(a) \
-    ((ScmObj)(SCM_STRIP_GCBIT(SCM_CELL_CAR(a))))
-#define SCM_SYMBOL_NAME(a) \
-    ((char*) (SCM_STRIP_OTHERS_CDR_PRIMARY_TAG(a)))
-
-#define SCM_SYMBOL_SET_VCELL(a, vcell) \
-    (SCM_CELL_SET_CAR((a), \
-                      (SCM_STRIP_GCBIT(vcell) | SCM_GCBIT(SCM_CELL_CAR(a)))))
-#define SCM_SYMBOL_SET_NAME(a, name) \
-    (SCM_CELL_SET_CDR((a), \
-                      (SCM_CAST_UINT(name) | SCM_OTHERS_CDR_PRIMARY_TAG_SYMBOL)))
-*/
+ * Symbol
+ */
+#define SCM_SAL_SYMBOL_VCELL(a) ((ScmObj)SCM_OTHERS_CAR_VAL(a))
+#define SCM_SAL_SYMBOL_NAME(a)  ((char*) SCM_OTHERS_CDR_VAL((a), SYMBOL))
+#define SCM_SAL_SYMBOL_SET_VCELL(a, val) SCM_OTHERS_SET_CAR_VAL((a), (val))
+#define SCM_SAL_SYMBOL_SET_NAME(a, val)  SCM_OTHERS_SET_CDR_VAL((a), SYMBOL, (val))
 
 /* Real Accessors : String */
 /* 2nd lowest bit of S->car is used to represent mutation type (mutable or
@@ -696,40 +713,51 @@ extern enum ScmObjType Scm_Type(ScmObj obj);
     SCM_CELL_SET_CDR((a), ((SCM_CAST_UINT(SCM_CELL_CDR(a)) & ~SCM_OTHERS_CDR_TAG_VALUE_MASK_STRING)\
                            | (len << SCM_OTHERS_CDR_TAG_VALUE_OFFSET_STRING)))
 */
-/* Real Accessors : Vector */
-/*
-#define SCM_VECTOR_VEC(a)                ((ScmObj*)(SCM_CAR_GET_VALUE_AS_PTR(SCM_AS_VECTOR(a))))
-#define SCM_VECTOR_LEN(a)                (SCM_CDR_GET_VALUE_AS_INT(SCM_AS_VECTOR(a), SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR))
-#define SCM_VECTOR_SET_VEC(a, vec)       (SCM_CAR_SET_VALUE_AS_PTR(SCM_AS_VECTOR(a), (vec)))
-#define SCM_VECTOR_SET_LEN(a, len)       (SCM_CDR_SET_VALUE_AS_INT(SCM_AS_VECTOR(a), (len), SCM_TAG_OTHERS_VALUE_OFFSET_VECTOR, SCM_TAG_OTHERS_VECTOR))
-#define SCM_VECTOR_CREF(a, idx)          ((SCM_VECTOR_VEC(a))[idx])
-#define SCM_VECTOR_SET_CREF(a, idx, b)   (SCM_VECTOR_CREF((a), (idx)) = (b))
-#define SCM_VECTOR_REF(a, idx)           (SCM_VECTOR_CREF((a), SCM_INT_VALUE(idx)))
-#define SCM_VECTOR_SET_REF(a, idx, b)    (SCM_VECTOR_REF((a), (idx)) = (b))
-*/
 
-/* Real Accessors : ValuePacket */
 /*
-#define SCM_MAKE_VALUEPACKET(vals)       (Scm_NewValuePacket(vals))
-#define SCM_VALUEPACKET_VALUES(a)        (SCM_CAR_GET_VALUE_AS_OBJ(SCM_AS_VALUEPACKET(a)))
-#define SCM_VALUEPACKET_SET_VALUES(a, v) (SCM_CAR_SET_VALUE_AS_OBJ(SCM_AS_VALUEPACKET(a), (v)))
-*/
+ * Vector
+ */
+#define SCM_SAL_VECTOR_VEC(a) ((ScmObj*)SCM_OTHERS_CAR_VAL(a))
+#define SCM_SAL_VECTOR_LEN(a) ((unsigned int)SCM_OTHERS_CDR_VAL((a), VECTOR))
+#define SCM_SAL_VECTOR_SET_VEC(a, val)          \
+    SCM_OTHERS_SET_CAR_VAL((a), (val))
+#define SCM_SAL_VECTOR_SET_LEN(a, val)          \
+    SCM_OTHERS_SET_CDR_VAL((a), VECTOR, (val))
+/* backward compatibility */
+#define SCM_VECTOR_CREF(a, idx) (SCM_VECTOR_VEC(a)[idx])
+#define SCM_VECTOR_SET_CREF(a, idx, b) (SCM_VECTOR_CREF((a), (idx)) = (b))
+#define SCM_VECTOR_REF(a, idx)  (SCM_VECTOR_CREF((a), SCM_INT_VALUE(idx)))
+#define SCM_VECTOR_SET_REF(a, idx, b)  (SCM_VECTOR_REF((a), (idx)) = (b))
+#define SCM_VECTOR_CHECK_IDX(a, idx) ()
 
-/* Real Accessors : Port */
-/*
-#define SCM_PORT_IMPL(a)                 ((ScmCharPort*)SCM_CAR_GET_VALUE_AS_PTR(SCM_AS_PORT(a)))
-#define SCM_PORT_FLAG(a)                 ((enum ScmPortFlag)SCM_CDR_GET_VALUE_AS_INT(SCM_AS_PORT(a), SCM_TAG_OTHERS_VALUE_OFFSET_PORT))
-#define SCM_PORT_SET_IMPL(a, impl)       (SCM_CAR_SET_VALUE_AS_PTR(SCM_AS_PORT(a), (impl)))
-#define SCM_PORT_SET_FLAG(a, flag)       (SCM_CDR_SET_VALUE_AS_INT(SCM_AS_PORT(a), (flag), SCM_TAG_OTHERS_VALUE_OFFSET_PORT, SCM_TAG_OTHERS_PORT))
-*/
 
-/* Real Accessors : Continuation */
 /*
-#define SCM_CONTINUATION_OPAQUE(a)          ((void*)SCM_CAR_GET_VALUE_AS_PTR(SCM_AS_CONTINUATION(a)))
-#define SCM_CONTINUATION_TAG(a)             (SCM_CDR_GET_VALUE_AS_INT(SCM_AS_CONTINUATION(a), SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION))
-#define SCM_CONTINUATION_SET_OPAQUE(a, val) (SCM_CAR_SET_VALUE_AS_PTR(SCM_AS_CONTINUATION(a), (val)))
-#define SCM_CONTINUATION_SET_TAG(a, val)    (SCM_CDR_SET_VALUE_AS_INT(SCM_AS_CONTINUATION(a), (val), SCM_TAG_OTHERS_VALUE_OFFSET_CONTINUATION, SCM_TAG_OTHERS_CONTINUATION))
-*/
+ * ValuePacket
+ */
+#define SCM_SAL_VALUEPACKET_VALUES(a)           \
+    ((ScmObj)SCM_OTHERS_CAR_VAL(a))
+#define SCM_SAL_VALUEPACKET_SET_VALUES(a, val)  \
+    SCM_OTHERS_SET_CAR_VAL((a), (val))
+
+/*
+ * Port
+ */
+#define SCM_SAL_PORT_IMPL(a) ((ScmCharPort*)    SCM_OTHERS_CAR_VAL(a))
+#define SCM_SAL_PORT_FLAG(a) ((enum ScmPortFlag)SCM_OTHERS_CDR_VAL((a), PORT))
+#define SCM_SAL_PORT_SET_IMPL(a, val) SCM_OTHERS_SET_CAR_VAL((a), (val))
+#define SCM_SAL_PORT_SET_FLAG(a, val) SCM_OTHERS_SET_CDR_VAL((a), PORT, (val))
+
+/*
+ * Continuation
+ */
+#define SCM_SAL_CONTINUATION_OPAQUE(a)          \
+    ((void*)SCM_OTHERS_CAR_VAL(a))
+#define SCM_SAL_CONTINUATION_TAG(a)             \
+    ((int)  SCM_OTHERS_CDR_VAL((a), CONTINUATION))
+#define SCM_SAL_CONTINUATION_SET_OPAQUE(a, val) \
+    SCM_OTHERS_SET_CAR_VAL((a), (val))
+#define SCM_SAL_CONTINUATION_SET_TAG(a, val)    \
+    SCM_OTHERS_SET_CDR_VAL((a), CONTINUATION, (val))
 
 /* Real Accessors : Pointer */
 /*============================================================================
@@ -779,21 +807,22 @@ extern enum ScmObjType Scm_Type(ScmObj obj);
 #define SCM_C_FUNCPOINTER_SET_VALUE(a, val) (SCM_SET_PTR_VALUE((a), SCM_CAST_UINT(val), SCM_TAG_OTHERS_VALUE_OFFSET_C_FUNCPOINTER_LSBADDR))
 */
 
-/* Real Accessors : FreeCell */
 /*
-#define SCM_FREECELL_NEXT(a)          (SCM_CAR_GET_VALUE_AS_OBJ(a))
-#define SCM_FREECELL_SET_NEXT(a, obj) (SCM_CAR_SET_VALUE_AS_OBJ((a), (obj)))
-*/
+ * FreeCell
+ */
+#define SCM_SAL_FREECELL_NEXT(a) ((ScmObj)SCM_OTHERS_CAR_VAL(a))
+#define SCM_SAL_FREECELL_SET_NEXT(a, val) SCM_OTHERS_SET_CAR_VAL((a), (val))
 
 /*==============================================================================
   Accessors For Scheme Objects : Immediates
 ==============================================================================*/
-
+/* Int */
 #define SCM_SAL_INT_VALUE(a)          ((int)(SCM_IMM_VAL((a), INT)))
 #define SCM_SAL_INT_SET_VALUE(a, val) SCM_IMM_SET_VAL((a), INT, (val))
+
+/* Char */
 #define SCM_SAL_CHAR_VALUE(a)         ((int)(SCM_IMM_VAL((a), CHAR)))
 #define SCM_SAL_CHAR_SET_VALUE(a, ch) SCM_IMM_SET_VAL((a), CHAR, (ch))
-
 
 /*============================================================================
   GC Related Operations
