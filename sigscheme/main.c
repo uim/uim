@@ -111,7 +111,7 @@ repl_loop(void)
 
     for (;;) {
         if (show_promptp())
-            SCM_PORT_PUTS(scm_current_output_port, PROMPT_STR);
+            scm_port_puts(scm_current_output_port, PROMPT_STR);
 
 #if SCM_USE_SRFI34
         /* error-proof read */

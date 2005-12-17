@@ -168,39 +168,12 @@ extern "C" {
 #define SCM_PORT_MALLOC(size)          (scm_malloc(size))
 #define SCM_PORT_CALLOC(number, size)  (scm_calloc(number, size))
 #define SCM_PORT_REALLOC(ptr, size)    (scm_realloc(ptr, size))
+/* Above five macros must be defined before this inclusion. */
+#include "baseport.h"
 
 #define SCM_ASSERT_LIVE_PORT(port)                                           \
     (SCM_PORT_IMPL(port)                                                     \
      || (scm_error_obj("(unknown)", "operated on closed port", port), 1))
-
-#define SCM_PORT_CLOSE_IMPL(port)                                            \
-    (SCM_CHARPORT_CLOSE(SCM_PORT_IMPL(port)), SCM_PORT_SET_IMPL(port, NULL))
-#define SCM_PORT_ENCODING(port)                                              \
-    (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_ENCODING(SCM_PORT_IMPL(port)))
-#define SCM_PORT_INSPECT(port)                                              \
-    (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_INSPECT(SCM_PORT_IMPL(port)))
-#define SCM_PORT_GET_CHAR(port)                                              \
-    (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_GET_CHAR(SCM_PORT_IMPL(port)))
-#define SCM_PORT_PEEK_CHAR(port)                                             \
-    (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_PEEK_CHAR(SCM_PORT_IMPL(port)))
-#define SCM_PORT_CHAR_READYP(port)                                           \
-    (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_CHAR_READYP(SCM_PORT_IMPL(port)))
-#define SCM_PORT_VPRINTF(port, str, args)                                    \
-    (SCM_ASSERT_LIVE_PORT(port),                                             \
-     SCM_CHARPORT_VPRINTF(SCM_PORT_IMPL(port), (str), (args)))
-#define SCM_PORT_PUTS(port, str)                                             \
-    (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_PUTS(SCM_PORT_IMPL(port), (str)))
-#define SCM_PORT_PUT_CHAR(port, ch)                                          \
-    (SCM_ASSERT_LIVE_PORT(port),                                             \
-     SCM_CHARPORT_PUT_CHAR(SCM_PORT_IMPL(port), (ch)))
-#define SCM_PORT_FLUSH(port)                                                 \
-    (SCM_ASSERT_LIVE_PORT(port), SCM_CHARPORT_FLUSH(SCM_PORT_IMPL(port)))
-
-/*
- * SCM_CHARPORT_ERROR and SCM_BYTEPORT_ERROR must be defined before this
- * inclusion
- */
-#include "baseport.h"
 
 #define SCM_WRITESS_TO_PORT(port, obj) ((*scm_writess_func)(port, obj))
 
@@ -922,9 +895,18 @@ ScmObj scm_p_delete_file(ScmObj filepath);
 void   scm_set_lib_path(const char *path);
 ScmObj scm_make_shared_file_port(FILE *file, const char *aux_info,
                               enum ScmPortFlag flag);
+int scm_port_close(ScmObj port);
+const char *scm_port_encoding(ScmObj port);
+char *scm_port_inspect(ScmObj port);
+int scm_port_get_char(ScmObj port);
+int scm_port_peek_char(ScmObj port);
+int scm_port_char_readyp(ScmObj port);
+int scm_port_puts(ScmObj port, const char *str);
+int scm_port_put_char(ScmObj port, int ch);
 void scm_port_printf(ScmObj port, const char *fmt, ...);
 void scm_port_vprintf(ScmObj port, const char *fmt, va_list args);
 void scm_port_newline(ScmObj port);
+int scm_port_flush(ScmObj port);
 void scm_error_printf(const char *fmt, ...);
 void scm_error_vprintf(const char *fmt, va_list args);
 void scm_error_newline(void);

@@ -541,7 +541,7 @@ free_cell(ScmCell *cell)
                 free(SCM_VECTOR_VEC(cell));
         } else if (SCM_SWEEP_PHASE_PORTP(cell)) {
             if (SCM_PORT_IMPL(cell))
-                SCM_PORT_CLOSE_IMPL(cell);
+                scm_port_close(cell);
         } else if (SCM_SWEEP_PHASE_CONTINUATIONP(cell)) {
             /*
              * Since continuation object is not so many, destructing the object by
@@ -578,7 +578,7 @@ free_cell(ScmCell *cell)
 
     case ScmPort:
         if (SCM_PORT_IMPL(cell))
-            SCM_PORT_CLOSE_IMPL(cell);
+            scm_port_close(cell);
         break;
 
     /* rarely swept objects */

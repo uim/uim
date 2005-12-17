@@ -1224,7 +1224,7 @@ scm_p_make_string(ScmObj length, ScmObj args)
     /* fill string (multibyte-ready) */
     sport = scm_p_srfi6_open_output_string();
     for (i = 0; i < len; i++) {
-        SCM_PORT_PUT_CHAR(sport, filler_val);
+        scm_port_put_char(sport, filler_val);
     }
 
     return scm_p_srfi6_get_output_string(sport);
@@ -1481,7 +1481,7 @@ scm_p_list2string(ScmObj lst)
     for (rest = lst; CONSP(rest); rest = CDR(rest)) {
         ch = CAR(rest);
         ASSERT_CHARP(ch);
-        SCM_PORT_PUT_CHAR(sport, SCM_CHAR_VALUE(ch));
+        scm_port_put_char(sport, SCM_CHAR_VALUE(ch));
     }
     if (!NULLP(rest))
         ERR_OBJ("invalid char list", lst);

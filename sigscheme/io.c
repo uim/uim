@@ -145,17 +145,18 @@ scm_port_printf(ScmObj port, const char *fmt, ...)
 void
 scm_port_vprintf(ScmObj port, const char *fmt, va_list args)
 {
-    SCM_PORT_VPRINTF(port, fmt, args);
+    SCM_ASSERT_LIVE_PORT(port);
+    SCM_CHARPORT_VPRINTF(SCM_PORT_IMPL(port), fmt, args);
 #if SCM_VOLATILE_OUTPUT
-    SCM_PORT_FLUSH(port);
+    scm_port_flush(port);
 #endif
 }
 
 void
 scm_port_newline(ScmObj port)
 {
-    SCM_PORT_PUTS(port, SCM_NEWLINE_STR);
-    SCM_PORT_FLUSH(port);  /* required */
+    scm_port_puts(port, SCM_NEWLINE_STR);
+    scm_port_flush(port);  /* required */
 }
 
 void
@@ -178,6 +179,73 @@ void
 scm_error_newline(void)
 {
     scm_port_newline(scm_current_error_port);
+}
+
+int
+scm_port_close(ScmObj port)
+{
+    int err;
+
+    err = SCM_CHARPORT_CLOSE(SCM_PORT_IMPL(port));
+    SCM_PORT_SET_IMPL(port, NULL);
+
+    return err;
+}
+
+const char *
+scm_port_encoding(ScmObj port)
+{
+    SCM_ASSERT_LIVE_PORT(port);
+    return SCM_CHARPORT_ENCODING(SCM_PORT_IMPL(port));
+}
+
+char *
+scm_port_inspect(ScmObj port)
+{
+    SCM_ASSERT_LIVE_PORT(port);
+    return SCM_CHARPORT_INSPECT(SCM_PORT_IMPL(port));
+}
+
+int
+scm_port_get_char(ScmObj port)
+{
+    SCM_ASSERT_LIVE_PORT(port);
+    return SCM_CHARPORT_GET_CHAR(SCM_PORT_IMPL(port));
+}
+
+int
+scm_port_peek_char(ScmObj port)
+{
+    SCM_ASSERT_LIVE_PORT(port);
+    return SCM_CHARPORT_PEEK_CHAR(SCM_PORT_IMPL(port));
+}
+
+int
+scm_port_char_readyp(ScmObj port)
+{
+    SCM_ASSERT_LIVE_PORT(port);
+    return SCM_CHARPORT_CHAR_READYP(SCM_PORT_IMPL(port));
+}
+
+int
+scm_port_puts(ScmObj port, const char *str)
+{
+    SCM_ASSERT_LIVE_PORT(port);
+    return SCM_CHARPORT_PUTS(SCM_PORT_IMPL(port), str);
+}
+
+int
+scm_port_put_char(ScmObj port, int ch)
+{
+    SCM_ASSERT_LIVE_PORT(port);
+    return SCM_CHARPORT_PUT_CHAR(SCM_PORT_IMPL(port), ch);
+}
+
+int
+scm_port_flush(ScmObj port)
+{
+    SCM_ASSERT_LIVE_PORT(port);
+    return SCM_CHARPORT_FLUSH(SCM_PORT_IMPL(port));
 }
 
 /*=======================================
@@ -339,7 +407,7 @@ scm_p_close_input_port(ScmObj port)
     flag = SCM_PORT_FLAG(port) & ~SCM_PORTFLAG_LIVE_INPUT;
     SCM_PORT_SET_FLAG(port, flag);
     if (!(flag & SCM_PORTFLAG_ALIVENESS_MASK) && SCM_PORT_IMPL(port))
-        SCM_PORT_CLOSE_IMPL(port);
+        scm_port_close(port);
 
     return SCM_UNDEF;
 }
@@ -355,7 +423,7 @@ scm_p_close_output_port(ScmObj port)
     flag = SCM_PORT_FLAG(port) & ~SCM_PORTFLAG_LIVE_OUTPUT;
     SCM_PORT_SET_FLAG(port, flag);
     if (!(flag & SCM_PORTFLAG_ALIVENESS_MASK) && SCM_PORT_IMPL(port))
-        SCM_PORT_CLOSE_IMPL(port);
+        scm_port_close(port);
 
     return SCM_UNDEF;
 }
@@ -392,7 +460,7 @@ scm_p_read_char(ScmObj args)
 
     PREPARE_PORT(port, args, scm_current_input_port);
 
-    ch = SCM_PORT_GET_CHAR(port);
+    ch = scm_port_get_char(port);
     if (ch == EOF)
         return SCM_EOF;
 
@@ -408,7 +476,7 @@ scm_p_peek_char(ScmObj args)
 
     PREPARE_PORT(port, args, scm_current_input_port);
 
-    ch = SCM_PORT_PEEK_CHAR(port);
+    ch = scm_port_peek_char(port);
     if (ch == EOF)
         return SCM_EOF;
 
@@ -431,7 +499,7 @@ scm_p_char_readyp(ScmObj args)
 
     PREPARE_PORT(port, args, scm_current_input_port);
 
-    return (SCM_PORT_CHAR_READYP(port))? SCM_TRUE : SCM_FALSE;
+    return (scm_port_char_readyp(port))? SCM_TRUE : SCM_FALSE;
 }
 
 /*===========================================================================
@@ -527,7 +595,7 @@ scm_load_internal(const char *c_filename)
 
     saved_codec = scm_current_char_codec;
 #if SCM_USE_SRFI22
-    if (SCM_PORT_PEEK_CHAR(port) == '#')
+    if (scm_port_peek_char(port) == '#')
         interpret_script_prelude(port);
 #endif
 
@@ -623,7 +691,7 @@ parse_script_prelude(ScmObj port)
     DECLARE_INTERNAL_FUNCTION("parse_script_prelude");
 
     for (p = line; p < &line[SCRIPT_PRELUDE_MAXLEN]; p++) {
-        c = SCM_PORT_GET_CHAR(port);
+        c = scm_port_get_char(port);
         if (!isascii(c))
             ERR("non-ASCII char appeared in UNIX script prelude");
         if (c == SCM_NEWLINE_STR[0]) {

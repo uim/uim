@@ -72,7 +72,7 @@ enum LexerState {
 #define WHITESPACE_CHARS " \t\n\r\v\f"
 #define DELIMITER_CHARS  "()\";" WHITESPACE_CHARS
 
-#define DISCARD_LOOKAHEAD(port) (SCM_PORT_GET_CHAR(port))
+#define DISCARD_LOOKAHEAD(port) (scm_port_get_char(port))
 
 /*=======================================
   Variable Declarations
@@ -172,7 +172,7 @@ skip_comment_and_space(ScmObj port)
     int c, state;
 
     for (state = LEX_ST_NORMAL;;) {
-        c = SCM_PORT_PEEK_CHAR(port);
+        c = scm_port_peek_char(port);
         switch (state) {
         case LEX_ST_NORMAL:
             if (c == ';')
@@ -188,7 +188,7 @@ skip_comment_and_space(ScmObj port)
                 return c;  /* peeked */
             break;
         }
-        SCM_PORT_GET_CHAR(port);  /* skip the char */
+        scm_port_get_char(port);  /* skip the char */
     }
 }
 
@@ -199,7 +199,7 @@ read_sequence(ScmObj port, char *buf, int len)
     char *p;
 
     for (p = buf; p < &buf[len]; p++) {
-        c = SCM_PORT_GET_CHAR(port);
+        c = scm_port_get_char(port);
         if (c == EOF)
             ERR("unexpected EOF");
         if (!isascii(c))
@@ -218,7 +218,7 @@ read_token(ScmObj port,
     char *p;
 
     for (p = buf;;) {
-        c = SCM_PORT_PEEK_CHAR(port);
+        c = scm_port_peek_char(port);
         CDBG((SCM_DBG_PARSER, "c = %c", c));
 
         if (p == buf) {
@@ -286,7 +286,7 @@ read_sexpression(ScmObj port)
 
         case '#':
             DISCARD_LOOKAHEAD(port);
-            c = SCM_PORT_GET_CHAR(port);
+            c = scm_port_get_char(port);
             switch (c) {
             case 't':
                 return SCM_TRUE;
@@ -311,7 +311,7 @@ read_sexpression(ScmObj port)
 
         case ',':
             DISCARD_LOOKAHEAD(port);
-            c = SCM_PORT_PEEK_CHAR(port);
+            c = scm_port_peek_char(port);
             switch (c) {
             case EOF:
                 ERR("EOF in unquote");
@@ -392,7 +392,7 @@ read_list(ScmObj port, int closeParen)
                  * incompatibility problem into codes of SigScheme users,
                  * require explicit whitespace around the dot.
                  */
-                c = SCM_PORT_PEEK_CHAR(port);
+                c = scm_port_peek_char(port);
                 if (!strchr(WHITESPACE_CHARS, c))
                     ERR("implicit dot delimitation is disabled to avoid compatibility problem");
 #endif
@@ -487,8 +487,8 @@ read_char(ScmObj port)
     char buf[CHAR_LITERAL_LEN_MAX + sizeof((char)'\0')];
 
     /* plain char (multibyte-ready) */
-    c = SCM_PORT_GET_CHAR(port);
-    next = SCM_PORT_PEEK_CHAR(port);
+    c = scm_port_get_char(port);
+    next = scm_port_peek_char(port);
     if (strchr(DELIMITER_CHARS, next) || next == EOF)
         return scm_make_char(c);
 #if SCM_USE_SRFI75
@@ -532,7 +532,7 @@ read_string(ScmObj port)
     LBUF_INIT(lbuf, init_buf, sizeof(init_buf));
 
     for (offset = 0, p = LBUF_BUF(lbuf);; offset = p - LBUF_BUF(lbuf)) {
-        c = SCM_PORT_GET_CHAR(port);
+        c = scm_port_get_char(port);
 
         CDBG((SCM_DBG_PARSER, "read_string c = %c", c));
 
@@ -551,7 +551,7 @@ read_string(ScmObj port)
             return obj;
 
         case '\\':
-            c = SCM_PORT_GET_CHAR(port);
+            c = scm_port_get_char(port);
 #if SCM_USE_SRFI75
             if (strchr("xuU", c)) {
                 c = read_unicode_sequence(port, c);
@@ -635,7 +635,7 @@ read_number_or_symbol(ScmObj port)
 
     CDBG((SCM_DBG_PARSER, "read_number_or_symbol"));
 
-    c = SCM_PORT_PEEK_CHAR(port);
+    c = scm_port_peek_char(port);
 
     if (isascii(c)) {
         if (isdigit(c))

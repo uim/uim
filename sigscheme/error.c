@@ -264,9 +264,9 @@ scm_p_inspect_error(ScmObj err_obj)
         if (ERROBJP(err_obj)) {
             scm_display_to_port(scm_current_error_port, err_obj);
         } else {
-            SCM_PORT_PUTS(scm_current_error_port,
+            scm_port_puts(scm_current_error_port,
                           SCM_ERRMSG_UNHANDLED_EXCEPTION);
-            SCM_PORT_PUTS(scm_current_error_port, ": ");
+            scm_port_puts(scm_current_error_port, ": ");
             scm_write_to_port(scm_current_error_port, err_obj);
         }
         scm_error_newline();
