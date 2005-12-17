@@ -55,6 +55,7 @@
 #include <arpa/inet.h>
 
 #include "uim-scm.h"
+#include "uim-helper.h"
 #include "plugin.h"
 
 #define skk_isalpha(ch)	(skk_islower(ch) || skk_isupper(ch))
@@ -3341,18 +3342,24 @@ skk_substring(uim_lisp str_, uim_lisp start_, uim_lisp end_)
 static FILE *
 look_popen(const char *str)
 {
-  char *command;
+  char *cmd;
+  const char *look;
   FILE *fp;
   int len;
   
-  len = strlen(LOOK_COMMAND) + strlen(str) + strlen(" 2>/dev/null") + 1;
-  command = malloc(len + 1);
-  if (!command)
+  if (uim_helper_is_setugid()) 
+    look = "/usr/bin/" LOOK_COMMAND;
+  else
+    look = LOOK_COMMAND;
+
+  len = strlen(look) + strlen(str) + strlen(" 2>/dev/null") + 1;
+  cmd = malloc(len + 1);
+  if (!cmd)
     return NULL;
 
-  snprintf(command, len + 1, "%s %s%s", LOOK_COMMAND, str, " 2>/dev/null");
-  fp = popen(command, "r");
-  free(command);
+  snprintf(cmd, len + 1, "%s %s%s", look, str, " 2>/dev/null");
+  fp = popen(cmd, "r");
+  free(cmd);
 
   return fp;
 }
