@@ -88,38 +88,38 @@ extern ScmObj scm_null_values;
 #endif /* TRUE */
 
 /* trace stack for debugging */
-#define MAKE_TRACE_FRAME(obj, env) (CONS(obj, env))
+#define MAKE_TRACE_FRAME(obj, env) CONS(obj, env)
 #define TRACE_FRAME_OBJ CAR
 #define TRACE_FRAME_ENV CDR
 
 #if SCM_USE_STORAGE_ABSTRACTION_LAYER
-#define SCM_ENTYPE_INT(o)            (SCM_SAL_ENTYPE_INT(o))
-#define SCM_ENTYPE_CONS(o)           (SCM_SAL_ENTYPE_CONS(o))
-#define SCM_ENTYPE_SYMBOL(o)         (SCM_SAL_ENTYPE_SYMBOL(o))
-#define SCM_ENTYPE_CHAR(o)           (SCM_SAL_ENTYPE_CHAR(o))
-#define SCM_ENTYPE_STRING(o)         (SCM_SAL_ENTYPE_STRING(o))
-#define SCM_ENTYPE_FUNC(o)           (SCM_SAL_ENTYPE_FUNC(o))
-#define SCM_ENTYPE_CLOSURE(o)        (SCM_SAL_ENTYPE_CLOSURE(o))
-#define SCM_ENTYPE_VECTOR(o)         (SCM_SAL_ENTYPE_VECTOR(o))
-#define SCM_ENTYPE_PORT(o)           (SCM_SAL_ENTYPE_PORT(o))
-#define SCM_ENTYPE_CONTINUATION(o)   (SCM_SAL_ENTYPE_CONTINUATION(o))
-#define SCM_ENTYPE_C_POINTER(o)      (SCM_SAL_ENTYPE_C_POINTER(o))
-#define SCM_ENTYPE_C_FUNCPOINTER(o)  (SCM_SAL_ENTYPE_C_FUNCPOINTER(o))
+#define SCM_ENTYPE_INT(o)            SCM_SAL_ENTYPE_INT(o)
+#define SCM_ENTYPE_CONS(o)           SCM_SAL_ENTYPE_CONS(o)
+#define SCM_ENTYPE_SYMBOL(o)         SCM_SAL_ENTYPE_SYMBOL(o)
+#define SCM_ENTYPE_CHAR(o)           SCM_SAL_ENTYPE_CHAR(o)
+#define SCM_ENTYPE_STRING(o)         SCM_SAL_ENTYPE_STRING(o)
+#define SCM_ENTYPE_FUNC(o)           SCM_SAL_ENTYPE_FUNC(o)
+#define SCM_ENTYPE_CLOSURE(o)        SCM_SAL_ENTYPE_CLOSURE(o)
+#define SCM_ENTYPE_VECTOR(o)         SCM_SAL_ENTYPE_VECTOR(o)
+#define SCM_ENTYPE_PORT(o)           SCM_SAL_ENTYPE_PORT(o)
+#define SCM_ENTYPE_CONTINUATION(o)   SCM_SAL_ENTYPE_CONTINUATION(o)
+#define SCM_ENTYPE_C_POINTER(o)      SCM_SAL_ENTYPE_C_POINTER(o)
+#define SCM_ENTYPE_C_FUNCPOINTER(o)  SCM_SAL_ENTYPE_C_FUNCPOINTER(o)
 
-#define SCM_ENTYPE_VALUEPACKET(o)    (SCM_SAL_ENTYPE_VALUEPACKET(o))
+#define SCM_ENTYPE_VALUEPACKET(o)    SCM_SAL_ENTYPE_VALUEPACKET(o)
 #if SCM_USE_VALUECONS
-#define SCM_NULLVALUESP(o)           (SCM_SAL_NULLVALUESP(o))
-#define SCM_VALUECONS_CAR(o)         (SCM_SAL_VALUECONS_CAR(o))
-#define SCM_VALUECONS_CDR(o)         (SCM_SAL_VALUECONS_CDR(o))
+#define SCM_NULLVALUESP(o)           SCM_SAL_NULLVALUESP(o)
+#define SCM_VALUECONS_CAR(o)         SCM_SAL_VALUECONS_CAR(o)
+#define SCM_VALUECONS_CDR(o)         SCM_SAL_VALUECONS_CDR(o)
 #else /* SCM_USE_VALUECONS */
 #define SCM_VALUEPACKET_SET_VALUES(o, vals)                                  \
-    (SCM_SAL_VALUEPACKET_SET_VALUES((o), (vals)))
+    SCM_SAL_VALUEPACKET_SET_VALUES((o), (vals))
 #endif /* SCM_USE_VALUECONS */
 
-#define SCM_ENTYPE_FREECELL(o)       (SCM_SAL_ENTYPE_FREECELL(o))
-#define SCM_AS_FREECELL(o)           (SCM_SAL_AS_FREECELL(o))
+#define SCM_ENTYPE_FREECELL(o)       SCM_SAL_ENTYPE_FREECELL(o)
+#define SCM_AS_FREECELL(o)           SCM_SAL_AS_FREECELL(o)
 
-#define SCM_FREECELLP(o)             (SCM_SAL_FREECELLP(o))
+#define SCM_FREECELLP(o)                SCM_SAL_FREECELLP(o)
 #define SCM_FREECELL_NEXT(o)            SCM_SAL_FREECELL_NEXT(o)
 #define SCM_FREECELL_FREESLOT(o)        SCM_SAL_FREECELL_FREESLOT(o)
 #define SCM_FREECELL_SET_NEXT(o, next)  SCM_SAL_FREECELL_SET_NEXT((o), (next))
@@ -131,10 +131,10 @@ extern ScmObj scm_null_values;
 #define SCM_RECLAIM_CELL(cell, next)    SCM_SAL_RECLAIM_CELL((cell), (next))
 
 /* FIXME: rename appropriately */
-#define SCM_IS_MARKED(o)             (SCM_SAL_IS_MARKED(o))
-#define SCM_IS_UNMARKED(o)           (SCM_SAL_IS_UNMARKED(o))
-#define SCM_DO_MARK(o)               (SCM_SAL_DO_MARK(o))
-#define SCM_DO_UNMARK(o)             (SCM_SAL_DO_UNMARK(o))
+#define SCM_IS_MARKED(o)             SCM_SAL_IS_MARKED(o)
+#define SCM_IS_UNMARKED(o)           SCM_SAL_IS_UNMARKED(o)
+#define SCM_DO_MARK(o)               SCM_SAL_DO_MARK(o)
+#define SCM_DO_UNMARK(o)             SCM_SAL_DO_UNMARK(o)
 
 #else /* SCM_USE_STORAGE_ABSTRACTION_LAYER */
 

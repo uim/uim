@@ -483,15 +483,15 @@ struct ScmEvalState_ {
 ============================================================================*/
 #define SCM_INVALID_REF       SCM_SAL_INVALID_REF
 
-#define SCM_REF_CAR(kons)     (SCM_SAL_REF_CAR(kons))
-#define SCM_REF_CDR(kons)     (SCM_SAL_REF_CDR(kons))
-#define SCM_REF_OFF_HEAP(obj) (SCM_SAL_REF_OFF_HEAP(obj))
+#define SCM_REF_CAR(kons)     SCM_SAL_REF_CAR(kons)
+#define SCM_REF_CDR(kons)     SCM_SAL_REF_CDR(kons)
+#define SCM_REF_OFF_HEAP(obj) SCM_SAL_REF_OFF_HEAP(obj)
 
 /* SCM_DEREF(ref) is not permitted to be used as lvalue */
-#define SCM_DEREF(ref)        (SCM_SAL_DEREF(ref))
+#define SCM_DEREF(ref)        SCM_SAL_DEREF(ref)
 
 /* RFC: Is there a better name? */
-#define SCM_SET(ref, obj)     (SCM_SAL_SET((ref), (obj)))
+#define SCM_SET(ref, obj)     SCM_SAL_SET((ref), (obj))
 
 /*============================================================================
   Special Constants and Predicates
