@@ -182,6 +182,8 @@ static int open_skkserv(int portnum);
 static void close_skkserv(void);
 static void skkserv_disconnected(struct dic_info *di);
 
+static uim_bool is_setugid;
+
 static int
 calc_line_len(const char *s)
 {
@@ -410,6 +412,7 @@ nth_candidate(char *str, int nth)
   return p;
 }
 
+/* init */
 static uim_lisp
 skk_dic_open(uim_lisp fn_, uim_lisp use_skkserv_, uim_lisp skkserv_portnum_)
 {
@@ -417,6 +420,7 @@ skk_dic_open(uim_lisp fn_, uim_lisp use_skkserv_, uim_lisp skkserv_portnum_)
   uim_bool use_skkserv = uim_scm_c_bool(use_skkserv_);
   int skkserv_portnum = uim_scm_c_int(skkserv_portnum_);
   
+  is_setugid = uim_helper_is_setugid();
   signal(SIGPIPE, SIG_IGN);
 
   if (!skk_dic) {
@@ -3347,7 +3351,7 @@ look_popen(const char *str)
   FILE *fp;
   int len;
   
-  if (uim_helper_is_setugid()) 
+  if (is_setugid) 
     look = "/usr/bin/" LOOK_COMMAND;
   else
     look = LOOK_COMMAND;
