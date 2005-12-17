@@ -20,3 +20,10 @@ Coding style
     
     MAKE_LIST2(FOO, SCM_FALSE);
     /* => make_list(assert(), get_foo(), SCM_FALSE) */
+
+
+* Macro invocation
+
+  Don't pass a destructive expression to a SigScheme macro as an argument
+  (e.g. NFALSEP(scm_p_memv(key, test))), because there's an possibility that
+  scm_p_memv() is evaluated multiple times after the macro expantion.

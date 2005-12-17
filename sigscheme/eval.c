@@ -1009,10 +1009,6 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
             ASSERT_NO_MORE_ARG(args);
         } else {
             if (VALIDP(case_key)) {
-                /* Don't pass the scm_p_memv to the NFALSEP macro as an
-                 * argument (e.g. NFALSEP(scm_p_memv(key, test))), because
-                 * there's an possibility that scm_p_memv is called multiple
-                 * times after the macro expantion. */
                 test = scm_p_memv(case_key, test);
                 test = (NFALSEP(test)) ? case_key : SCM_FALSE;
             } else {
