@@ -3402,7 +3402,7 @@ look_get_comp(struct skk_comp_array *ca, const char *str)
   int *matched;
 
   while (str[i] != '\0') {
-    if (!skk_isalpha(str[0]))
+    if (!skk_isalpha(str[i]))
       return;
     i++;
   }
