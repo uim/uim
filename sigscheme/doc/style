@@ -24,6 +24,7 @@ Coding style
 
 * Macro invocation
 
-  Don't pass a destructive expression to a SigScheme macro as an argument
-  (e.g. NFALSEP(scm_p_memv(key, test))), because there's an possibility that
-  scm_p_memv() is evaluated multiple times after the macro expantion.
+  Don't pass a destructive or side-effective expression to a SigScheme macro as
+  an argument (e.g. CONTINUATIONP(continuation_stack_unwind(cont))), because
+  there's an possibility that continuation_stack_unwind() is evaluated multiple
+  times after the macro expantion.
