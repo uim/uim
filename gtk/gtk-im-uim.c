@@ -61,7 +61,6 @@ void im_module_list(const GtkIMContextInfo ***contexts, int *n_contexts);
 void im_module_exit(void);
 void im_module_init(GTypeModule *type_module);
 
-/**/
 #define NR_CANDIDATES 20
 #define DEFAULT_SEPARATOR_STR "|"
 
@@ -75,7 +74,6 @@ struct preedit_segment {
 };
 
 typedef struct _IMUIMContext {
-  /**/
   struct _GtkIMContext parent;
   struct _GtkIMContext *slave;
   uim_context uc;
@@ -83,13 +81,13 @@ typedef struct _IMUIMContext {
   gboolean cwin_is_active;
   int nr_psegs;
   struct preedit_segment *pseg;
-  /**/
+
   GtkWidget *menu;
   GdkWindow *win;
   GdkWindow *toplevel;
   GtkWidget *caret_state_indicator;
   GdkRectangle preedit_pos; /* preedit_pos not always point the cursor location */
-  /**/
+
   struct _IMUIMContext *prev, *next;
 } IMUIMContext;
 
@@ -132,7 +130,7 @@ static const GTypeInfo class_info = {
   (GBaseFinalizeFunc) NULL,
   (GClassInitFunc) im_uim_class_init,
   (GClassFinalizeFunc)im_uim_class_finalize,
-  NULL,/*for class data*/
+  NULL, /* for class data */
   sizeof(IMUIMContext), /* size of instance */
   0,
   (GInstanceInitFunc) im_uim_init, /* constructor */
@@ -192,7 +190,7 @@ pushback_cb(void *ptr, int attr, const char *str)
   g_return_if_fail(str);
 
   if (!strcmp(str, "")
-     && !(attr & (UPreeditAttr_Cursor | UPreeditAttr_Separator)))
+      && !(attr & (UPreeditAttr_Cursor | UPreeditAttr_Separator)))
     return;
 
   uic->pseg = realloc(uic->pseg,
@@ -292,7 +290,7 @@ filter_keypress(GtkIMContext *ic,
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
 
-  /*** Hack for combination of xchat + GTK+ 2.6 ***/
+  /* Hack for combination of xchat + GTK+ 2.6 */
   if (snooper_installed == FALSE) {
     int rv;
     int kv = convert_keyval(key->keyval);
@@ -308,7 +306,7 @@ filter_keypress(GtkIMContext *ic,
     }
     return TRUE;
   }
-  /*** Hack for combination of xchat + GTK+ 2.6 ***/
+  /* Hack for combination of xchat + GTK+ 2.6 */
 
   return gtk_im_context_filter_keypress(uic->slave, key);
 }
@@ -355,16 +353,14 @@ get_preedit_segment(struct preedit_segment *ps,
 	separator_fg_symbol = "separator-foreground";
 	separator_bg_symbol = "separator-background";
       }
-      if (get_user_defined_color(&color, separator_fg_symbol))
-      {
+      if (get_user_defined_color(&color, separator_fg_symbol)) {
 	attr = pango_attr_foreground_new(color.red, color.green, color.blue);
 	attr->start_index = begin;
 	attr->end_index = end;
 	pango_attr_list_change(attrs, attr);
       }
 
-      if (get_user_defined_color(&color, separator_bg_symbol))
-      {
+      if (get_user_defined_color(&color, separator_bg_symbol)) {
 	attr = pango_attr_background_new(color.red, color.green, color.blue);
 	attr->start_index = begin;
 	attr->end_index = end;
@@ -372,8 +368,7 @@ get_preedit_segment(struct preedit_segment *ps,
       }
     } else if (ps->attr & UPreeditAttr_Reverse) {
       if (get_user_defined_color(&color, "reversed-preedit-foreground")
-	  || pango_color_parse(&color, "#fff"))
-      {
+	  || pango_color_parse(&color, "#fff")) {
 	attr = pango_attr_foreground_new(color.red, color.green, color.blue);
 	attr->start_index = begin;
 	attr->end_index = end;
@@ -381,8 +376,7 @@ get_preedit_segment(struct preedit_segment *ps,
       }
 
       if (get_user_defined_color(&color, "reversed-preedit-background")
-	  || pango_color_parse(&color, "#000"))
-      {
+	  || pango_color_parse(&color, "#000")) {
 	attr = pango_attr_background_new(color.red, color.green, color.blue);
 	attr->start_index = begin;
 	attr->end_index = end;
@@ -557,7 +551,7 @@ show_preedit(GtkIMContext *ic, GtkWidget *preedit_label)
 
 
   if (strlen(str) > 0) {
-      gint x,y,w,h;
+      gint x, y, w, h;
       PangoLayout *layout;
 
       gtk_label_set_text(GTK_LABEL(preedit_label), str);
@@ -666,9 +660,9 @@ im_uim_finalize(GObject *obj)
     uic->cwin = NULL;
   }
   if (uic->caret_state_indicator) {
-    guint tag = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(uic->caret_state_indicator), "timeout-tag"));
+    guint tag = GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(uic->caret_state_indicator), "timeout-tag"));
     if (tag > 0)
-	g_source_remove(tag);
+      g_source_remove(tag);
     gtk_widget_destroy(uic->caret_state_indicator);
     uic->caret_state_indicator = NULL;
   }
@@ -747,10 +741,12 @@ update_prop_label_cb(void *ptr, const char *str)
   show_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
   if (show_state == UIM_TRUE && uic->win) {
     gint timeout;
+
     gdk_window_get_origin(uic->win, &x, &y);
     caret_state_indicator_update(uic->caret_state_indicator, x, y, str);
     timeout = uim_scm_symbol_value_int("bridge-show-input-state-time-length");
-    if(timeout != 0)
+
+    if (timeout != 0)
       caret_state_indicator_set_timeout(uic->caret_state_indicator, timeout * 1000);
     gtk_widget_show_all(uic->caret_state_indicator);
   }
@@ -782,13 +778,14 @@ im_uim_send_im_list(void)
 
     g_string_append(msg, name);
     g_string_append(msg, "\t");
-    if (lang) g_string_append(msg, lang);
+    if (lang)
+      g_string_append(msg, lang);
     g_string_append(msg, "\t");
-    if (short_desc) g_string_append(msg, short_desc);
+    if (short_desc)
+      g_string_append(msg, short_desc);
     g_string_append(msg, "\t");
-    if (strcmp(name, current_im_name) == 0) {
+    if (strcmp(name, current_im_name) == 0)
       g_string_append(msg, "selected");
-    }
     g_string_append(msg, "\n");
   }
   uim_helper_send_message(im_uim_fd, msg->str);
@@ -820,23 +817,24 @@ commit_string_from_other_process(const gchar *str)
   gchar **lines = g_strsplit(str, "\n", 0);
   gchar *commit_string;
 
-  if(!lines || !lines[0] || !lines[1] || !lines[2]) {
+  if (!lines || !lines[0] || !lines[1] || !lines[2]) {
     return; /* Message is broken, do nothing. */
   }
 
-  /* If second line exists, assume first line as character encoding.
-     This (rotten) convention is influenced by old design mistake (character
-     encoding was forgotten!), we would need novel protocol to fix this issue. */
-
-  if(strcmp(lines[2], "") != 0) {
+  /*
+   * If second line exists, assume first line as character encoding.
+   * This (rotten) convention is influenced by old design mistake
+   * (character encoding was forgotten!).
+   */
+  if (strcmp(lines[2], "") != 0) {
     gchar *encoding, *commit_string_utf8;
     encoding = get_charset(lines[1]);
     commit_string = lines[2];
     commit_string_utf8 = g_convert(commit_string, strlen(commit_string),
 				   "UTF-8", encoding,
 				   NULL, /* gsize *bytes_read */
-				   NULL, /*size *bytes_written */
-				   NULL); /* GError **error*/
+				   NULL, /* size *bytes_written */
+				   NULL); /* GError **error */
     g_signal_emit_by_name(focused_context, "commit", commit_string_utf8);
     g_free(encoding);
     g_free(commit_string_utf8);
@@ -962,8 +960,6 @@ im_module_create(const gchar *context_id)
 
   check_helper_connection();
 
-  /**/
-
   uim_set_preedit_cb(uic->uc, clear_cb,
 		     pushback_cb, update_cb);
   uim_set_prop_list_update_cb(uic->uc,
@@ -978,16 +974,14 @@ im_module_create(const gchar *context_id)
 
   uim_prop_list_update(uic->uc);
 
-
   /* slave exists for using gtk+'s table based input method */
   uic->slave = g_object_new(GTK_TYPE_IM_CONTEXT_SIMPLE,
 			    NULL);
   g_signal_connect(G_OBJECT(uic->slave), "commit",
 		   G_CALLBACK(im_uim_commit_cb), uic);
-  
+
   uic->caret_state_indicator = caret_state_indicator_new();
 
-  /**/
   uic->next = context_list.next;
   uic->prev = (IMUIMContext *)&context_list;
   context_list.next->prev = uic;

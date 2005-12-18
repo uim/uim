@@ -32,8 +32,7 @@
 
 #include <gtk/gtk.h>
 
-GtkWidget *
-caret_state_indicator_new(void);
+GtkWidget *caret_state_indicator_new(void);
 
 void
 caret_state_indicator_update(GtkWidget *window, gint topwin_x, gint topwin_y, const gchar *str);
