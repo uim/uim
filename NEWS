@@ -1,7 +1,17 @@
+Overview of changes from 1.0.0-beta to 1.0.0-final
+==
+* Fixes
+  o Minor
+    - gtk+ immodule
+      - fix SEGV with gvim when the caret state indicator is enabled
+	with a timeout value (Etsushi)
+    - SKK
+      - improve completion behavior (Masanari, Etsushi)
+
 Overview of changes from 1.0.0-alpha to 1.0.0-beta
 ==
 * New features
- 
+
   o IM related
     - SKK
       - enable word completion with UNIX look command (Etsushi)
