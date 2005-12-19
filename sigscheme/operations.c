@@ -1144,7 +1144,7 @@ ScmObj
 scm_p_integer2char(ScmObj obj)
 {
     int val;
-    char buf[SCM_MB_MAX_LEN + sizeof((char)'\0')];
+    char buf[SCM_MB_MAX_LEN + sizeof("")];
     DECLARE_FUNCTION("integer->char", procedure_fixed_1);
 
     ASSERT_INTP(obj);
@@ -1285,7 +1285,7 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     char *new_str  = NULL;
     ScmMultibyteString mbs;
     const char *string_str   = NULL;
-    char new_ch_str[SCM_MB_MAX_LEN + sizeof((char)'\0')];
+    char new_ch_str[SCM_MB_MAX_LEN + sizeof("")];
     const char *next;
     DECLARE_FUNCTION("string-set!", procedure_fixed_3);
 
@@ -1504,7 +1504,7 @@ scm_p_string_filld(ScmObj str, ScmObj ch)
     int  str_len   = 0;
     char *new_str  = NULL;
     char *p        = NULL;
-    char ch_str[SCM_MB_MAX_LEN + sizeof((char)'\0')];
+    char ch_str[SCM_MB_MAX_LEN + sizeof("")];
     const char *next;
     DECLARE_FUNCTION("string-fill!", procedure_fixed_2);
 

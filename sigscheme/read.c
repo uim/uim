@@ -61,13 +61,13 @@ enum LexerState {
 #define OK 0
 #define TOKEN_BUF_EXCEEDED -1
 
-#define MB_MAX_SIZE (SCM_MB_MAX_LEN + sizeof((char)'\0'))
+#define MB_MAX_SIZE (SCM_MB_MAX_LEN + sizeof(""))
 
 /* can accept "backspace" of R5RS and "U0010FFFF" of SRFI-75 */
-#define CHAR_LITERAL_LEN_MAX (sizeof("backspace") - sizeof((char)'\0'))
+#define CHAR_LITERAL_LEN_MAX (sizeof("backspace") - sizeof(""))
 
 /* #b-010101... */
-#define INT_LITERAL_LEN_MAX  (sizeof("-") + sizeof(int) * CHAR_BIT - sizeof((char)'\0'))
+#define INT_LITERAL_LEN_MAX  (sizeof("-") + sizeof(int) * CHAR_BIT - sizeof(""))
 
 #define WHITESPACE_CHARS " \t\n\r\v\f"
 #define DELIMITER_CHARS  "()\";" WHITESPACE_CHARS
@@ -232,7 +232,7 @@ read_token(ScmObj port,
         }
 
         if (isascii(c)) {
-            if (p == &buf[buf_size - sizeof((char)'\0')]) {
+            if (p == &buf[buf_size - sizeof("")]) {
                 *err = TOKEN_BUF_EXCEEDED;
                 break;
             }
@@ -484,7 +484,7 @@ read_char(ScmObj port)
 #endif
     const ScmSpecialCharInfo *info;
     size_t len;
-    char buf[CHAR_LITERAL_LEN_MAX + sizeof((char)'\0')];
+    char buf[CHAR_LITERAL_LEN_MAX + sizeof("")];
 
     /* plain char (multibyte-ready) */
     c = scm_port_get_char(port);
@@ -631,7 +631,7 @@ read_number_or_symbol(ScmObj port)
 {
     int c, err;
     size_t len;
-    char buf[INT_LITERAL_LEN_MAX + sizeof((char)'\0')];
+    char buf[INT_LITERAL_LEN_MAX + sizeof("")];
 
     CDBG((SCM_DBG_PARSER, "read_number_or_symbol"));
 
@@ -706,7 +706,7 @@ read_number(ScmObj port, char prefix)
 {
     int err;
     size_t len;
-    char buf[INT_LITERAL_LEN_MAX + sizeof((char)'\0')];
+    char buf[INT_LITERAL_LEN_MAX + sizeof("")];
 
     len = read_token(port, &err, buf, sizeof(buf), DELIMITER_CHARS);
     if (err == TOKEN_BUF_EXCEEDED)

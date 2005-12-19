@@ -614,7 +614,7 @@ find_path(const char *filename)
     if (scm_lib_path) {
         lib_path_len = scm_lib_path ? strlen(scm_lib_path) : 0;
         filename_len = strlen(filename);
-        path_len = lib_path_len + sizeof((char)'/') + filename_len + sizeof((char)'\0');
+        path_len = lib_path_len + sizeof((char)'/') + filename_len + sizeof("");
 
         path = scm_malloc(path_len);
         snprintf(path, path_len, "%s/%s", scm_lib_path, filename);

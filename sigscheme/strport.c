@@ -414,9 +414,9 @@ static size_t
 ostrport_append(ScmOutputStrPort *port, size_t len, const char *str)
 {
     /* extend the buffer */
-    if (port->buf_size - port->cur < len + sizeof((char)'\0')) {
+    if (port->buf_size - port->cur < len + sizeof("")) {
         if (!port->buf_size)
-            port->buf_size = sizeof((char)'\0');
+            port->buf_size = sizeof("");
 
         port->buf_size += len;
         port->str = SCM_PORT_REALLOC(port->str, port->buf_size);
@@ -426,5 +426,5 @@ ostrport_append(ScmOutputStrPort *port, size_t len, const char *str)
     port->cur += len;
     port->str[port->cur] = '\0';
 
-    return len + sizeof((char)'\0');
+    return len + sizeof("");
 }
