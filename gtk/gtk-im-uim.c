@@ -620,6 +620,7 @@ im_uim_init(IMUIMContext *uic)
 {
   uic->win = NULL;
   uic->menu = NULL;
+  uic->caret_state_indicator = NULL;
   uic->pseg = 0;
   uic->nr_psegs = 0;
 

@@ -78,7 +78,7 @@ caret_state_indicator_timeout(gpointer data)
 }
 
 static gint
-caret_state_indicator_paint_window (GtkWidget *window)
+caret_state_indicator_paint_window(GtkWidget *window)
 {
   GtkRequisition req;
 
@@ -122,6 +122,8 @@ caret_state_indicator_update(GtkWidget *window, gint topwin_x, gint topwin_y, co
   GtkWidget *label;
   gint cursor_x, cursor_y;
 
+  g_return_if_fail(window != NULL);
+
   label = g_object_get_data(G_OBJECT(window), "label");
   cursor_x = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), "cursor_x"));
   cursor_y = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), "cursor_y"));
@@ -140,6 +142,8 @@ caret_state_indicator_update(GtkWidget *window, gint topwin_x, gint topwin_y, co
 void
 caret_state_indicator_set_cursor_location(GtkWidget *window, GdkRectangle *cursor_location)
 {
+  g_return_if_fail(window != NULL);
+
   g_object_set_data(G_OBJECT(window), "cursor_x",
 		    GINT_TO_POINTER(cursor_location->x));
   g_object_set_data(G_OBJECT(window), "cursor_y",
@@ -152,6 +156,8 @@ caret_state_indicator_set_timeout(GtkWidget *window, gint timeout)
 {
   gint current_time;
   guint tag, oldtag;
+
+  g_return_if_fail(window != NULL);
 
   oldtag = GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(window), "timeout-tag"));
 
