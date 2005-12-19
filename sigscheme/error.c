@@ -67,7 +67,7 @@ static ScmObj err_obj_tag, str_srfi34;
   File Local Function Declarations
 =======================================*/
 static int srfi34_providedp(void);
-#if SCM_DEBUG_BACKTRACE_VAL
+#if (SCM_DEBUG && SCM_DEBUG_BACKTRACE_VAL)
 static void show_arg(ScmObj arg, ScmObj env);
 #endif
 
