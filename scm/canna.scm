@@ -208,7 +208,6 @@
     (list 'candidate-op-count ())
     (list 'wide-latin         #f)
     (list 'kana-mode          multi-segment-type-hiragana)
-    (list 'commit-raw         #t)
     (list 'input-rule         canna-input-rule-roma))))
 (define-record 'canna-context canna-context-rec-spec)
 (define canna-context-new-internal canna-context-new)
@@ -227,8 +226,7 @@
     cc))
 
 (define (canna-commit-raw cc)
-  (im-commit-raw cc)
-  (canna-context-set-commit-raw! cc #t))
+  (im-commit-raw cc))
 
 (define canna-opposite-kana
   (lambda (kana)

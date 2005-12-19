@@ -228,7 +228,6 @@
     (list 'candidate-op-count 0)
     (list 'wide-latin         #f)
     (list 'kana-mode          anthy-type-hiragana)
-    (list 'commit-raw         #t)
     (list 'input-rule         anthy-input-rule-roma)
     (list 'raw-ustr           #f))))
 (define-record 'anthy-context anthy-context-rec-spec)
@@ -260,8 +259,7 @@
 
 (define anthy-commit-raw
   (lambda (ac)
-    (im-commit-raw ac)
-    (anthy-context-set-commit-raw! ac #t)))
+    (im-commit-raw ac)))
 
 (define anthy-context-kana-toggle
   (lambda (ac)
@@ -372,16 +370,14 @@
 
 (define anthy-update-preedit
   (lambda (ac)
-    (if (not (anthy-context-commit-raw ac))
-	(let ((segments (if (anthy-context-on ac)
-			    (if (anthy-context-transposing ac)
-				(anthy-context-transposing-state-preedit ac)
-				(if (anthy-context-converting ac)
-				    (anthy-converting-state-preedit ac)
-				    (anthy-input-state-preedit ac)))
-			    ())))
-	  (context-update-preedit ac segments))
-	(anthy-context-set-commit-raw! ac #f))))
+    (let ((segments (if (anthy-context-on ac)
+                        (if (anthy-context-transposing ac)
+                            (anthy-context-transposing-state-preedit ac)
+                            (if (anthy-context-converting ac)
+                                (anthy-converting-state-preedit ac)
+                                (anthy-input-state-preedit ac)))
+                        ())))
+      (context-update-preedit ac segments))))
   
 (define anthy-proc-raw-state
   (lambda (ac key key-state)
@@ -513,8 +509,7 @@
 	(if (not (anthy-commit-key? key key-state))
 	    (begin 
 	      (anthy-context-set-transposing! ac #f)
-	      (anthy-proc-input-state ac key key-state)
-              (anthy-context-set-commit-raw! ac #f))))))))
+	      (anthy-proc-input-state ac key key-state))))))))
 
 (define anthy-proc-input-state-with-preedit
   (lambda (ac key key-state)

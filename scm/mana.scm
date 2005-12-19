@@ -380,7 +380,6 @@
       (list 'candidate-op-count 0)
       (list 'wide-latin         #f)
       (list 'kana-mode          mana-type-hiragana)
-      (list 'commit-raw         #t)
       (list 'input-rule         mana-input-rule-roma)
       (list 'raw-ustr           #f))))
 (define-record 'mana-context mana-context-rec-spec)
@@ -410,8 +409,7 @@
 
 (define mana-commit-raw
   (lambda (mc)
-    (im-commit-raw mc)
-    (mana-context-set-commit-raw! mc #t)))
+    (im-commit-raw mc)))
 
 (define mana-context-kana-toggle
   (lambda (mc)
@@ -524,16 +522,14 @@
 
 (define mana-update-preedit
   (lambda (mc)
-    (if (not (mana-context-commit-raw mc))
-        (let ((segments (if (mana-context-on mc)
-                            (if (mana-context-transposing mc)
-                                (mana-context-transposing-state-preedit mc)
-                                (if (mana-context-converting mc)
-                                    (mana-converting-state-preedit mc)
-                                    (mana-input-state-preedit mc)))
-                            ())))
-          (context-update-preedit mc segments))
-        (mana-context-set-commit-raw! mc #f))))
+    (let ((segments (if (mana-context-on mc)
+                        (if (mana-context-transposing mc)
+                            (mana-context-transposing-state-preedit mc)
+                            (if (mana-context-converting mc)
+                                (mana-converting-state-preedit mc)
+                                (mana-input-state-preedit mc)))
+                        ())))
+      (context-update-preedit mc segments))))
 
 (define mana-proc-raw-state
   (lambda (mc key key-state)
@@ -669,8 +665,7 @@
           (if (not (mana-commit-key? key key-state))
               (begin 
                 (mana-context-set-transposing! mc #f)
-                (mana-proc-input-state mc key key-state)
-                (mana-context-set-commit-raw! mc #f))))))))
+                (mana-proc-input-state mc key key-state))))))))
 
 (define mana-proc-input-state-with-preedit
   (lambda (mc key key-state)
