@@ -501,7 +501,7 @@ read_char(ScmObj port)
     if (err == TOKEN_BUF_EXCEEDED)
         ERR("invalid character literal");
 
-    CDBG((SCM_DBG_PARSER, "read_char : ch = %s", buf));
+    CDBG((SCM_DBG_PARSER, "read_char: ch = %s", buf));
 
 #if SCM_USE_SRFI75
     unicode = parse_unicode_sequence(buf, len + 1);

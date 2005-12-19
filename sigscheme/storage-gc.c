@@ -500,7 +500,7 @@ gc_mark_locations(ScmObj *start, ScmObj *end)
 
     size = end - start;
 
-    CDBG((SCM_DBG_GC, "gc_mark_locations() : size = %d", size));
+    CDBG((SCM_DBG_GC, "gc_mark_locations: size = %d", size));
 
     gc_mark_locations_n(start, size);
 }

@@ -333,7 +333,7 @@ call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
                                  SCM_NULL,
                                  SCM_CLOSURE_ENV(proc));
     } else {
-        ERR_OBJ("lambda : bad formals list", formals);
+        ERR_OBJ("lambda: bad formals list", formals);
     }
 
     eval_state->ret_type = SCM_RETTYPE_NEED_EVAL;

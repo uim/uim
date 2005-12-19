@@ -323,7 +323,7 @@ print_string(ScmObj port, ScmObj obj, enum OutputType otype)
         break;
 
     default:
-        ERR("print_string : unknown output type");
+        ERR("print_string: unknown output type");
         break;
     }
 }

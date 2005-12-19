@@ -59,7 +59,7 @@
 static int
 die(const char *filename, int line)
 {
-    printf("assertion faled. (file : %s, line : %d)\n", filename, line);
+    printf("assertion faled. (file: %s, line: %d)\n", filename, line);
     return -1;
 }
 

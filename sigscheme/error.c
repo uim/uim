@@ -296,7 +296,7 @@ scm_die(const char *msg, const char *filename, int line)
     char *reason;
     ScmObj reason_holder;
 
-    asprintf(&reason, "%s: (file : %s, line : %d)", msg, filename, line);
+    asprintf(&reason, "%s: (file: %s, line: %d)", msg, filename, line);
     ASSERT_ALLOCATED(reason);
     /* reason will implicitly be freed via the object on GC */
     reason_holder = MAKE_IMMUTABLE_STRING(reason);
