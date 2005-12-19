@@ -167,28 +167,6 @@ scm_port_newline(ScmObj port)
     return err;
 }
 
-void
-scm_error_printf(const char *fmt, ...)
-{
-    va_list args;
-
-    va_start(args, fmt);
-    scm_error_vprintf(fmt, args);
-    va_end(args);
-}
-
-void
-scm_error_vprintf(const char *fmt, va_list args)
-{
-    scm_port_vprintf(scm_err, fmt, args);
-}
-
-void
-scm_error_newline(void)
-{
-    scm_port_newline(scm_err);
-}
-
 int
 scm_port_close(ScmObj port)
 {

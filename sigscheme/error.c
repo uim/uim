@@ -131,8 +131,8 @@ scm_categorized_debug(int category, const char *msg, ...)
 
     va_start(va, msg);
     if (debug_mask & category) {
-        scm_error_vprintf(msg, va);
-        scm_error_newline();
+        scm_port_vprintf(scm_err, msg, va);
+        scm_port_newline(scm_err);
     }
     va_end(va);
 }
@@ -144,8 +144,8 @@ scm_debug(const char *msg, ...)
 
     va_start(va, msg);
     if (debug_mask & SCM_DBG_DEVEL) {
-        scm_error_vprintf(msg, va);
-        scm_error_newline();
+        scm_port_vprintf(scm_err, msg, va);
+        scm_port_newline(scm_err);
     }
     va_end(va);
 }
@@ -268,7 +268,7 @@ scm_p_inspect_error(ScmObj err_obj)
             scm_port_puts(scm_err, ": ");
             scm_write_to_port(scm_err, err_obj);
         }
-        scm_error_newline();
+        scm_port_newline(scm_err);
     }
 
     if (scm_debug_categories() & SCM_DBG_BACKTRACE) {
@@ -341,7 +341,7 @@ scm_error_obj(const char *func_name, const char *msg, ScmObj obj)
 void
 scm_show_error_header(void)
 {
-    scm_error_printf(SCM_ERR_HEADER);
+    scm_port_printf(scm_err, SCM_ERR_HEADER);
 }
 
 #if (SCM_DEBUG && SCM_DEBUG_BACKTRACE_VAL)
@@ -353,9 +353,9 @@ show_arg(ScmObj arg, ScmObj env)
      && !SCM_SYMBOL_BOUNDP(var))
 
     if (SYMBOLP(arg) && !UNBOUNDP(arg, env)) {
-        scm_error_printf("  - [%s]: ", SCM_SYMBOL_NAME(arg));
+        scm_port_printf(scm_err, "  - [%s]: ", SCM_SYMBOL_NAME(arg));
         SCM_WRITESS_TO_PORT(scm_err, scm_symbol_value(arg, env));
-        scm_error_newline();
+        scm_port_newline(scm_err);
     }
 
 #undef UNBOUNDP
@@ -368,12 +368,12 @@ scm_show_backtrace(ScmObj trace_stack)
 #if SCM_DEBUG
     ScmObj top, frame, env, obj;
 
-    scm_error_printf(SCM_BACKTRACE_HEADER);
+    scm_port_printf(scm_err, SCM_BACKTRACE_HEADER);
 
     /* show each frame's obj */
     for (top = trace_stack; !NULLP(top); top = CDR(top)) {
 #if SCM_DEBUG_BACKTRACE_SEP
-        scm_error_printf(SCM_BACKTRACE_SEP);
+        scm_port_printf(scm_err, SCM_BACKTRACE_SEP);
 #endif
 
         frame = CAR(top);
@@ -381,7 +381,7 @@ scm_show_backtrace(ScmObj trace_stack)
         obj = TRACE_FRAME_OBJ(frame);
 
         SCM_WRITESS_TO_PORT(scm_err, obj);
-        scm_error_newline();
+        scm_port_newline(scm_err);
 
 #if SCM_DEBUG_BACKTRACE_VAL
         switch (SCM_TYPE(obj)) {
@@ -403,7 +403,7 @@ scm_show_backtrace(ScmObj trace_stack)
 #endif /* SCM_DEBUG_BACKTRACE_VAL */
     }
 #if SCM_DEBUG_BACKTRACE_SEP
-    scm_error_printf(SCM_BACKTRACE_SEP);
+    scm_port_printf(scm_err, SCM_BACKTRACE_SEP);
 #endif /* SCM_DEBUG_BACKTRACE_SEP */
 #endif /* SCM_DEBUG */
 }
