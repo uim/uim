@@ -95,12 +95,9 @@ scm_init_io(void)
     scm_sbcport_init();
 #endif
 
-    scm_in  = scm_make_shared_file_port(stdin, "stdin",
-                                                     SCM_PORTFLAG_INPUT);
-    scm_out = scm_make_shared_file_port(stdout, "stdout",
-                                                     SCM_PORTFLAG_OUTPUT);
-    scm_err  = scm_make_shared_file_port(stderr, "stderr",
-                                                     SCM_PORTFLAG_OUTPUT);
+    scm_in  = scm_make_shared_file_port(stdin, "stdin", SCM_PORTFLAG_INPUT);
+    scm_out = scm_make_shared_file_port(stdout, "stdout", SCM_PORTFLAG_OUTPUT);
+    scm_err = scm_make_shared_file_port(stderr, "stderr", SCM_PORTFLAG_OUTPUT);
     scm_gc_protect(&scm_in);
     scm_gc_protect(&scm_out);
     scm_gc_protect(&scm_err);
