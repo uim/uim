@@ -111,12 +111,12 @@ repl_loop(void)
 
     for (;;) {
         if (show_promptp())
-            scm_port_puts(scm_current_output_port, PROMPT_STR);
+            scm_port_puts(scm_out, PROMPT_STR);
 
 #if SCM_USE_SRFI34
         /* error-proof read */
         sexp = EVAL(LIST_3(sym_guard, cond_catch,
-                           LIST_2(proc_read, scm_current_input_port)),
+                           LIST_2(proc_read, scm_in)),
                     SCM_INTERACTION_ENV);
         if (EOFP(sexp))
             break;
@@ -138,7 +138,7 @@ repl_loop(void)
         result = EVAL(LIST_3(sym_guard, cond_catch, sexp),
                       SCM_INTERACTION_ENV);
 #else /* SCM_USE_SRFI34 */
-        sexp = scm_read(scm_current_input_port)
+        sexp = scm_read(scm_in)
         if (EOFP(sexp))
             break;
 
@@ -146,8 +146,8 @@ repl_loop(void)
 #endif /* SCM_USE_SRFI34 */
 
         if (!EQ(result, err)) {
-            SCM_WRITESS_TO_PORT(scm_current_output_port, result);
-            scm_port_newline(scm_current_output_port);
+            SCM_WRITESS_TO_PORT(scm_out, result);
+            scm_port_newline(scm_out);
         }
     }
 }

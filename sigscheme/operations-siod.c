@@ -263,16 +263,16 @@ scm_set_verbose_level(long level)
                                   | scm_predefined_debug_categories());
 
     if (level == 0) {
-        saved_error_port = scm_current_error_port;
-        saved_output_port = scm_current_output_port;
+        saved_error_port = scm_err;
+        saved_output_port = scm_out;
 
-        scm_current_error_port = null_port;
-        scm_current_output_port = null_port;
+        scm_err = null_port;
+        scm_out = null_port;
     } else {
-        if (FALSEP(scm_current_error_port))
-            scm_current_error_port = saved_error_port;
-        if (FALSEP(scm_current_output_port))
-            scm_current_output_port = saved_output_port;
+        if (FALSEP(scm_err))
+            scm_err = saved_error_port;
+        if (FALSEP(scm_out))
+            scm_out = saved_output_port;
     }
 }
 

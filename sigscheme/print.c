@@ -129,7 +129,7 @@ static int  get_shared_index(ScmObj obj);
 void
 scm_display(ScmObj obj)
 {
-    scm_display_to_port(scm_current_output_port, obj);
+    scm_display_to_port(scm_out, obj);
 }
 
 void

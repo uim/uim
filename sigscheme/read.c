@@ -147,7 +147,7 @@ scm_read(ScmObj port)
     sexp = read_sexpression(port);
 #if SCM_DEBUG
     if ((scm_debug_categories() & SCM_DBG_READ) && !EOFP(sexp)) {
-        scm_write_to_port(scm_current_error_port, sexp);
+        scm_write_to_port(scm_err, sexp);
         scm_error_newline();
     }
 #endif

@@ -49,8 +49,8 @@
 #endif
 
 /* FIXME: violent internal access */
-extern ScmObj scm_current_output_port;
-extern ScmObj scm_current_error_port;
+extern ScmObj scm_out;
+extern ScmObj scm_err;
 
 static void uim_scm_error(const char *msg, uim_lisp errobj);
 
@@ -607,7 +607,7 @@ uim_scm_init(const char *verbose_level)
 
   /* GC safe */
   output_port = scm_make_shared_file_port(uim_output, "uim", SCM_PORTFLAG_OUTPUT);
-  scm_current_output_port = scm_current_error_port = output_port;
+  scm_out = scm_err = output_port;
 
 #ifdef DEBUG_SCM
   /* required by test-im.scm */

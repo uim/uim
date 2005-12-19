@@ -62,9 +62,9 @@ struct ScmSpecialCharInfo_ {
 extern ScmObj scm_sym_else, scm_sym_yields;
 
 /* io.c */
-extern ScmObj scm_current_input_port;
-extern ScmObj scm_current_output_port;
-extern ScmObj scm_current_error_port;
+extern ScmObj scm_in;
+extern ScmObj scm_out;
+extern ScmObj scm_err;
 
 /* print.c */
 extern void (*scm_writess_func)(ScmObj port, ScmObj obj);

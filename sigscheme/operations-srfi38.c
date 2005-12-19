@@ -76,11 +76,11 @@ scm_initialize_srfi38(void)
 ScmObj
 scm_p_srfi38_write_with_shared_structure(ScmObj obj, ScmObj args)
 {
-    ScmObj port = scm_current_output_port;
+    ScmObj port = scm_out;
     DECLARE_FUNCTION("write-with-shared-structure", procedure_variadic_1);
 
     /* get port */
-    port = scm_current_output_port;
+    port = scm_out;
     if (!NULLP(args) && PORTP(CAR(args)))
         port = CAR(args);
 
