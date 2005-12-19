@@ -101,9 +101,9 @@
 /*===========================================================================
   Debugging
 ===========================================================================*/
-#define SCM_DEBUG               0  /* enable debugging features */
+#define SCM_DEBUG               1  /* enable debugging features */
 #define SCM_DEBUG_GC            0  /* enable GC debugging */
-#define SCM_DEBUG_PORT          1  /* enable port debugging */
+#define SCM_DEBUG_PORT          0  /* enable port debugging */
 #define SCM_DEBUG_PARSER        0  /* enable parser debugging */
 #define SCM_DEBUG_ENCODING      0  /* debug encoding-related functions */
 #define SCM_DEBUG_BACKTRACE_SEP 1  /* enable frame-separator on backtrace */
