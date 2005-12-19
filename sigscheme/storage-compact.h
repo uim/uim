@@ -63,8 +63,8 @@
  *     -------------------------------------------------------------------------
  *     .......|I|G : String       : I bit is used to represent mutable or
  *                                  immutable string. G bit is used to GC mark
- *                                  information. The other bits are used to store
- *                                  string pointer value.
+ *                                  information (Mutation Bit). The other bits
+ *                                  are used to store string pointer value.
  *     .........|G : Otherwise    : LSB is used to GC mark information. The value
  *                                  of each type is stored in the other bits.
  *
@@ -118,15 +118,15 @@
  * Required Data Aligment:
  *
  *     Symbol
- *         name (char*)        : 8
+ *         name (char*)        : 8 byte
  *     String
- *         str (char*)         : 4
+ *         str (char*)         : 4 byte
  *     Vector
- *         vec (ScmObj*)       : 2
+ *         vec (ScmObj*)       : 2 byte
  *     Port
- *         impl (ScmCharPort*) : 2
+ *         impl (ScmCharPort*) : 2 byte
  *     Continuation
- *         opaque (void*)      : 2
+ *         opaque (void*)      : 2 byte
  */
 
 /*=======================================
@@ -182,6 +182,30 @@ struct ScmCell_ {
 #define SCM_TAG_CLOSURE     (0x1 << SCM_TAG_OFFSET)
 #define SCM_TAG_OTHERS      (0x2 << SCM_TAG_OFFSET)
 #define SCM_TAG_IMM         (0x3 << SCM_TAG_OFFSET)
+
+/*==============================================================================
+  Masks Offsets, and Tags : Others' CAR
+==============================================================================*/
+#define SCM_OTHERS_CAR_VAL_OFFSET_SYMBOL        \
+    (SCM_GCBIT_OFFSET + SCM_GCBIT_WIDTH)
+#define SCM_OTHERS_CAR_VAL_OFFSET_STRING        \
+    (SCM_GCBIT_OFFSET + SCM_GCBIT_WIDTH)
+#define SCM_OTHERS_CAR_VAL_OFFSET_VECTOR        \
+    (SCM_GCBIT_OFFSET + SCM_GCBIT_WIDTH)
+#define SCM_OTHERS_CAR_VAL_OFFSET_VALUES        \
+    (SCM_GCBIT_OFFSET + SCM_GCBIT_WIDTH)
+#define SCM_OTHERS_CAR_VAL_OFFSET_FUNC          \
+    (SCM_GCBIT_OFFSET + SCM_GCBIT_WIDTH)
+#define SCM_OTHERS_CAR_VAL_OFFSET_PORT          \
+    (SCM_GCBIT_OFFSET + SCM_GCBIT_WIDTH)
+#define SCM_OTHERS_CAR_VAL_OFFSET_CONTINUATION  \
+    (SCM_GCBIT_OFFSET + SCM_GCBIT_WIDTH)
+#define SCM_OTHERS_CAR_VAL_OFFSET_C_POINTER     \
+    (SCM_GCBIT_OFFSET + SCM_GCBIT_WIDTH)
+#define SCM_OTHERS_CAR_VAL_OFFSET_C_FUNCPOINTER \
+    (SCM_GCBIT_OFFSET + SCM_GCBIT_WIDTH)
+#define SCM_OTHERS_CAR_VAL_OFFSET_FREECELL      \
+    (SCM_GCBIT_OFFSET + SCM_GCBIT_WIDTH)
 
 /*==============================================================================
   Masks Offsets, and Tags : Others' CDR
@@ -276,7 +300,7 @@ struct ScmCell_ {
 #define SCM_OTHERS_CDR_TAG_OFFSET_SYMBOL        \
     SCM_OTHERS_CDR_PRIMARY_TAG_OFFSET
 #define SCM_OTHERS_CDR_VAL_OFFSET_SYMBOL        \
-    0
+    0 /* Note: str ptr value shouldn't be shifted */
 #define SCM_OTHERS_CDR_VAL_MASK_SYMBOL          \
     (~0U << SCM_OTHERS_CDR_PRIMARY_VAL_OFFSET)
 
@@ -680,39 +704,52 @@ extern enum ScmObjType Scm_Type(ScmObj obj);
  */
 #define SCM_SAL_SYMBOL_VCELL(a) ((ScmObj)SCM_OTHERS_CAR_VAL(a))
 #define SCM_SAL_SYMBOL_NAME(a)  ((char*) SCM_OTHERS_CDR_VAL((a), SYMBOL))
-#define SCM_SAL_SYMBOL_SET_VCELL(a, val) SCM_OTHERS_SET_CAR_VAL((a), (val))
-#define SCM_SAL_SYMBOL_SET_NAME(a, val)  SCM_OTHERS_SET_CDR_VAL((a), SYMBOL, (val))
+#define SCM_SAL_SYMBOL_SET_VCELL(a, val)        \
+    SCM_OTHERS_SET_CAR_VAL((a), (val))
+#define SCM_SAL_SYMBOL_SET_NAME(a, val)         \
+    SCM_OTHERS_SET_CDR_VAL((a), SYMBOL, (val))
 
-/* Real Accessors : String */
-/* 2nd lowest bit of S->car is used to represent mutation type (mutable or
- * immutable). See the description at the top of this file. */
 /*
-#define SCM_STRING_MUTATION_TYPE_OFFSET  1
-#define SCM_STRING_MUTATION_TYPE_MASK \
-    (0x1 << SCM_STRING_MUTATION_TYPE_OFFSET)
-#define SCM_STRING_STR_VALUE_MASK \
-    ~(SCM_STRING_MUTATION_TYPE_MASK | SCM_GCBIT_MASK)
+ * String
+ *
+ * Note: LSB of car is used to store mutation type and called 'MUTATIONBIT'.
+ */
+#define SCM_OTHERS_CAR_STRING_MUTATIONBIT_OFFSET        \
+    SCM_OTHERS_CAR_VAL_OFFSET_STRING
+#define SCM_OTHERS_CAR_STRING_MUTATIONBIT_MASK          \
+    (0x1 << SCM_OTHERS_CAR_STRING_MUTATIONBIT_OFFSET)
+#define SCM_OTHERS_CAR_STRING_MUTATIONBIT(a)                            \
+    (SCM_CAST_UINT(SCM_CELL_CAR(a)) & SCM_OTHERS_CAR_STRING_MUTATIONBIT_MASK)
+#define SCM_OTHERS_STRING_STRIP_MUTATIONBIT(a)                          \
+    (SCM_CAST_UINT(a) & ~SCM_OTHERS_CAR_STRING_MUTATIONBIT_MASK)
 
-#define SCM_STRING_MUTATION_TYPE(a) \
-    ((enum ScmStrMutationType)((SCM_CAST_UINT(SCM_CELL_CAR(a)) & SCM_STRING_MUTATION_TYPE_MASK) \
-                               >> SCM_STRING_MUTATION_TYPE_OFFSET))
-#define SCM_STRING_SET_MUTABLE(a) \
-    SCM_CELL_SET_CAR((a), (SCM_CAST_UINT(SCM_CELL_CAR(a)) | (SCM_STR_MUTABLE << SCM_STRING_MUTATION_TYPE_OFFSET)))
-#define SCM_STRING_SET_IMMUTABLE(a) \
-    SCM_CELL_SET_CAR((a), (SCM_CAST_UINT(SCM_CELL_CAR(a)) & ~SCM_STRING_MUTATION_TYPE_MASK))
+#define SCM_STRING_MUTATION_TYPE(a)                                     \
+    ((enum ScmStrMutationType)(SCM_OTHERS_CAR_STRING_MUTATIONBIT(a)     \
+                               >> SCM_OTHERS_CAR_STRING_MUTATIONBIT_OFFSET))
+#define SCM_STRING_SET_MUTATION_TYPE(a, type)                           \
+    SCM_OTHERS_SET_CAR_VAL((a),                                         \
+                           SCM_OTHERS_STRING_STRIP_MUTATIONBIT(SCM_OTHERS_CAR_VAL(a)) \
+                           | ((type)                                    \
+                              << SCM_OTHERS_CAR_STRING_MUTATIONBIT_OFFSET))
 
-#define SCM_STRING_STR(a) \
-    ((char*)(SCM_CAST_UINT(SCM_CELL_CAR(a)) & SCM_STRING_STR_VALUE_MASK))
-#define SCM_STRING_LEN(a) \
-    (SCM_CAST_UINT(SCM_CELL_CDR(a)) >> SCM_OTHERS_CDR_TAG_VALUE_OFFSET_STRING)
+#define SCM_SAL_STRING_MUTABLEP(a)                      \
+    (SCM_STRING_MUTATION_TYPE(a) == SCM_STR_MUTABLE)    
+#define SCM_SAL_STRING_SET_MUTABLE(a)                   \
+    SCM_STRING_SET_MUTATION_TYPE((a), SCM_STR_MUTABLE)
+#define SCM_SAL_STRING_SET_IMMUTABLE(a)                 \
+    SCM_STRING_SET_MUTATION_TYPE((a), SCM_STR_IMMUTABLE)
+    
+#define SCM_SAL_STRING_STR(a)                                           \
+    ((char*)SCM_OTHERS_STRING_STRIP_MUTATIONBIT(SCM_OTHERS_CAR_VAL(a)))
+#define SCM_SAL_STRING_SET_STR(a, val)                                  \
+    SCM_OTHERS_SET_CAR_VAL((a),                                         \
+                           SCM_CAST_UINT(val)                           \
+                           | SCM_OTHERS_CAR_STRING_MUTATIONBIT(a))
 
-#define SCM_STRING_SET_STR(a, str) \
-    SCM_CELL_SET_CAR((a), (SCM_CAST_UINT(str) \
-                           | (SCM_CAST_UINT(SCM_CELL_CAR(a)) & ~SCM_STRING_STR_VALUE_MASK)))
-#define SCM_STRING_SET_LEN(a, len) \
-    SCM_CELL_SET_CDR((a), ((SCM_CAST_UINT(SCM_CELL_CDR(a)) & ~SCM_OTHERS_CDR_TAG_VALUE_MASK_STRING)\
-                           | (len << SCM_OTHERS_CDR_TAG_VALUE_OFFSET_STRING)))
-*/
+#define SCM_SAL_STRING_LEN(a)                   \
+    ((int)SCM_OTHERS_CDR_VAL((a), STRING))
+#define SCM_SAL_STRING_SET_LEN(a, val)          \
+    SCM_OTHERS_SET_CDR_VAL((a), STRING, (val))
 
 /*
  * Vector
