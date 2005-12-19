@@ -535,7 +535,7 @@ msgstr "도움말"
 
 #: helper/toolbar-common-gtk.c:593 qt/toolbar-common-quimhelpertoolbar.cpp:61
 msgid "Quit this toolbar"
-msgstr "이 툴바를 닫음"
+msgstr "종료"
 
 #: helper/toolbar-standalone-gtk.c:257
 #, c-format
