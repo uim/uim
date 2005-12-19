@@ -264,7 +264,6 @@ extern ScmObj scm_null_values;
 #define SCM_MANGLE(id) scm_internal_##id
 
 #define VALIDP(obj)   (!EQ((obj), SCM_INVALID))
-#define INVALIDP(obj) (EQ((obj), SCM_INVALID))
 
 /* Declares the current function name as seen by Scheme codes.  TYPE
  * is ignored, but we may use it in the future to implement a stub
