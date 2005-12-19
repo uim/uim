@@ -33,8 +33,8 @@
 #include <gtk/gtk.h>
 #include "caret-state-indicator.h"
 
-#include "uim/uim.h"
 #include "config.h"
+#include "uim/uim.h"
 #include "uim/uim-helper.h"
 #include "uim/gettext.h"
 
@@ -53,6 +53,7 @@ static gint
 get_current_time(void)
 {
   GTimeVal result;
+
   g_get_current_time(&result);
   return result.tv_sec;
 }
@@ -65,7 +66,7 @@ caret_state_indicator_timeout(gpointer data)
 
   timeout = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), "timeout"));
   called_time = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window),
-			  "called_time"));
+				"called_time"));
   current_time = get_current_time();
 
   if ((current_time - called_time) * 1000 >= timeout)
@@ -77,15 +78,14 @@ caret_state_indicator_timeout(gpointer data)
 }
 
 static gint
-caret_state_indicator_paint_window (GtkWidget *window)
+caret_state_indicator_paint_window(GtkWidget *window)
 {
   GtkRequisition req;
 
-  gtk_widget_size_request (window, &req);
-  gtk_paint_flat_box (window->style, window->window,
-		      GTK_STATE_NORMAL, GTK_SHADOW_OUT,
-		      NULL, GTK_WIDGET(window), "tooltip",
-		      0, 0, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+  gtk_widget_size_request(window, &req);
+  gtk_paint_flat_box(window->style, window->window, GTK_STATE_NORMAL,
+		     GTK_SHADOW_OUT, NULL, GTK_WIDGET(window), "tooltip",
+		     0, 0, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
 
   return FALSE;
 }
@@ -103,13 +103,13 @@ caret_state_indicator_new(void)
   gtk_window_set_default_size(GTK_WINDOW(window),
 			      DEFAULT_WINDOW_WIDTH,
 			      DEFAULT_WINDOW_HEIGHT);
-  gtk_widget_set_app_paintable (window, TRUE);
+  gtk_widget_set_app_paintable(window, TRUE);
 
   g_signal_connect(window, "expose_event",
 		   G_CALLBACK (caret_state_indicator_paint_window), 
 		   NULL);
 
-  gtk_misc_set_alignment (GTK_MISC (label), 0.5, 0.5);
+  gtk_misc_set_alignment(GTK_MISC(label), 0.5, 0.5);
 
   g_object_set_data(G_OBJECT(window), "label", label);
 
@@ -119,27 +119,36 @@ caret_state_indicator_new(void)
 void
 caret_state_indicator_update(GtkWidget *window, gint topwin_x, gint topwin_y, const gchar *str)
 {
-  GtkWidget *label = g_object_get_data(G_OBJECT(window), "label");
-  gint cursor_x = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), "cursor_x"));
-  gint cursor_y = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), "cursor_y"));
+  GtkWidget *label;
+  gint cursor_x, cursor_y;
+
+  g_return_if_fail(window != NULL);
+
+  label = g_object_get_data(G_OBJECT(window), "label");
+  cursor_x = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), "cursor_x"));
+  cursor_y = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), "cursor_y"));
 
   if (str) {
     gchar **labels;
-    labels = g_strsplit(str, "\t", 2);
 
+    labels = g_strsplit(str, "\t", 2);
     gtk_label_set_text(GTK_LABEL(label), labels[0]);
     g_strfreev(labels);
   }
-  gtk_window_move(GTK_WINDOW(window), topwin_x + cursor_x, topwin_y + cursor_y + 3);
+  gtk_window_move(GTK_WINDOW(window), topwin_x + cursor_x,
+		  topwin_y + cursor_y + 3);
 }
 
 void
 caret_state_indicator_set_cursor_location(GtkWidget *window, GdkRectangle *cursor_location)
 {
+  g_return_if_fail(window != NULL);
+
   g_object_set_data(G_OBJECT(window), "cursor_x",
 		    GINT_TO_POINTER(cursor_location->x));
   g_object_set_data(G_OBJECT(window), "cursor_y",
-		    GINT_TO_POINTER(cursor_location->y+cursor_location->height));
+		    GINT_TO_POINTER(cursor_location->y +
+				    cursor_location->height));
 }
 
 void
@@ -147,6 +156,8 @@ caret_state_indicator_set_timeout(GtkWidget *window, gint timeout)
 {
   gint current_time;
   guint tag, oldtag;
+
+  g_return_if_fail(window != NULL);
 
   oldtag = GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(window), "timeout-tag"));
 
@@ -159,6 +170,6 @@ caret_state_indicator_set_timeout(GtkWidget *window, gint timeout)
   g_object_set_data(G_OBJECT(window), "timeout-tag", GUINT_TO_POINTER(tag));
   g_object_set_data(G_OBJECT(window), "timeout", GINT_TO_POINTER(timeout));
   /* "called_time" stores the latest time when this function is called */
-  g_object_set_data(G_OBJECT(window),
-		  "called_time", GINT_TO_POINTER(current_time));
+  g_object_set_data(G_OBJECT(window), "called_time",
+		    GINT_TO_POINTER(current_time));
 }

@@ -45,11 +45,11 @@
 #include <unistd.h>
 #include <locale.h>
 
+#include "config.h"
 #include "uim/uim.h"
 #include "uim/uim-util.h"
 #include "uim/uim-helper.h"
 #include "uim/uim-im-switcher.h"
-#include "uim/config.h"
 #include "uim/gettext.h"
 #include "uim/uim-compat-scm.h"
 #include "uim-cand-win-gtk.h"
@@ -86,7 +86,7 @@ typedef struct _IMUIMContext {
   GdkWindow *win;
   GdkWindow *toplevel;
   GtkWidget *caret_state_indicator;
-  GdkRectangle preedit_pos; /* preedit_pos not always point the cursor location */
+  GdkRectangle preedit_pos;
 
   struct _IMUIMContext *prev, *next;
 } IMUIMContext;
@@ -111,18 +111,12 @@ static void im_uim_init(IMUIMContext *uic);
 static void show_preedit(GtkIMContext *ic, GtkWidget *preedit_label);
 
 static void im_uim_helper_disconnect_cb(void);
-/* #ifndef GDK_DISABLE_DEPRECATED */
 static gboolean helper_read_cb(GIOChannel *channel, GIOCondition c, gpointer p);
-static GdkFilterReturn
-toplevel_window_candidate_cb(GdkXEvent *xevent, GdkEvent *ev, gpointer data);
+static GdkFilterReturn toplevel_window_candidate_cb(GdkXEvent *xevent, GdkEvent *ev, gpointer data);
 
-static void
-im_uim_parse_helper_str(const char *str);
-
+static void im_uim_parse_helper_str(const char *str);
 static gboolean get_user_defined_color(PangoColor *color, const gchar *uim_symbol);
-
-static gboolean
-uim_key_snoop(GtkWidget *grab_widget, GdkEventKey *key, gpointer data);
+static gboolean uim_key_snoop(GtkWidget *grab_widget, GdkEventKey *key, gpointer data);
 
 static const GTypeInfo class_info = {
   sizeof(IMContextUIMClass),
@@ -175,10 +169,11 @@ clear_cb(void *ptr)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
   int i;
-  for (i = 0; i < uic->nr_psegs; i++) {
+
+  for (i = 0; i < uic->nr_psegs; i++)
     free(uic->pseg[i].str);
-  }
   free(uic->pseg);
+
   uic->pseg = NULL;
   uic->nr_psegs = 0;
 }
@@ -194,8 +189,7 @@ pushback_cb(void *ptr, int attr, const char *str)
     return;
 
   uic->pseg = realloc(uic->pseg,
-		      sizeof(struct preedit_segment) *
-		      (uic->nr_psegs + 1));
+		      sizeof(struct preedit_segment) * (uic->nr_psegs + 1));
   uic->pseg[uic->nr_psegs].str = g_strdup(str);
   uic->pseg[uic->nr_psegs].attr = attr;
   uic->nr_psegs ++;
@@ -246,15 +240,15 @@ convert_keyval(int key)
   case GDK_Hyper_R: return UKey_Hyper_key;
   }
 
-  if (key >= GDK_F1 && key <= GDK_F35) {
+  if (key >= GDK_F1 && key <= GDK_F35)
     return key - GDK_F1 + UKey_F1;
-  }
-  if (key >= GDK_KP_0 && key <= GDK_KP_9) {
+
+  if (key >= GDK_KP_0 && key <= GDK_KP_9)
     return key - GDK_KP_0 + UKey_0;
-  }
-  if (key < 256) {
+
+  if (key < 256)
     return key;
-  }
+
   return UKey_Other;
 }
 
@@ -262,31 +256,30 @@ static int
 convert_modifier(int mod)
 {
   int rv = 0;
-  if (mod & GDK_SHIFT_MASK) {
+
+  if (mod & GDK_SHIFT_MASK)
     rv |= UMod_Shift;
-  }
-  if (mod & GDK_CONTROL_MASK) {
+
+  if (mod & GDK_CONTROL_MASK)
     rv |= UMod_Control;
-  }
-  if (mod & GDK_MOD1_MASK) {
+
+  if (mod & GDK_MOD1_MASK)
     rv |= UMod_Alt;
-  }
-  if (mod & GDK_MOD3_MASK) {  /* assuming mod3 */
+
+  if (mod & GDK_MOD3_MASK)  /* assuming mod3 */
     rv |= UMod_Super;
-  }
-  if (mod & GDK_MOD4_MASK) {  /* assuming mod4 */
+
+  if (mod & GDK_MOD4_MASK)  /* assuming mod4 */
     rv |= UMod_Hyper;
-  }
+
   return rv;
 }
-
 
 /*
  * KEY EVENT HANDLER
  */
 static gboolean
-filter_keypress(GtkIMContext *ic,
-		GdkEventKey *key)
+filter_keypress(GtkIMContext *ic, GdkEventKey *key)
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
 
@@ -296,14 +289,14 @@ filter_keypress(GtkIMContext *ic,
     int kv = convert_keyval(key->keyval);
     int mod = convert_modifier(key->state);
 
-    if (key->type == GDK_KEY_RELEASE) {
+    if (key->type == GDK_KEY_RELEASE)
       rv = uim_release_key(uic->uc, kv, mod);
-    } else {
+    else
       rv = uim_press_key(uic->uc, kv, mod);
-    }
-    if (rv) {
+
+    if (rv)
       return gtk_im_context_filter_keypress(uic->slave, key);
-    }
+
     return TRUE;
   }
   /* Hack for combination of xchat + GTK+ 2.6 */
@@ -316,36 +309,41 @@ get_user_defined_color(PangoColor *color, const gchar *uim_symbol)
 {
   gboolean parsed = FALSE;
   gchar *literal = uim_symbol_value_str(uim_symbol);
-  if (literal != NULL && literal[0] != '\0') {
+
+  if (literal != NULL && literal[0] != '\0')
     parsed = pango_color_parse(color, literal);
-  }
+
   g_free(literal);
+
   return parsed;
 }
 
 static char *
-get_preedit_segment(struct preedit_segment *ps,
-		    PangoAttrList *attrs,
-		    char *str)
+get_preedit_segment(struct preedit_segment *ps, PangoAttrList *attrs, char *str)
 {
   PangoAttribute *attr;
   const gchar *segment_str = ps->str;
-  if ((ps->attr & UPreeditAttr_Separator) && !strcmp(segment_str, "")) {
+
+  if ((ps->attr & UPreeditAttr_Separator) && !strcmp(segment_str, ""))
     segment_str = DEFAULT_SEPARATOR_STR;
-  }
+
   if (attrs) {
     PangoColor color;
     int begin, end;
+
     begin = strlen(str);
     end = begin + strlen(segment_str);
+
     if (ps->attr & UPreeditAttr_UnderLine) {
       attr = pango_attr_underline_new(PANGO_UNDERLINE_SINGLE);
       attr->start_index = begin;
       attr->end_index = end;
       pango_attr_list_change(attrs, attr);
     }
+
     if (ps->attr & UPreeditAttr_Separator) {
       const gchar *separator_fg_symbol, *separator_bg_symbol;
+
       if (ps->attr & UPreeditAttr_Reverse) {
 	separator_fg_symbol = "reversed-separator-foreground";
 	separator_bg_symbol = "reversed-separator-background";
@@ -353,6 +351,7 @@ get_preedit_segment(struct preedit_segment *ps,
 	separator_fg_symbol = "separator-foreground";
 	separator_bg_symbol = "separator-background";
       }
+
       if (get_user_defined_color(&color, separator_fg_symbol)) {
 	attr = pango_attr_foreground_new(color.red, color.green, color.blue);
 	attr->start_index = begin;
@@ -384,48 +383,47 @@ get_preedit_segment(struct preedit_segment *ps,
       }
     }
   }
+
   str = (char *)realloc(str, strlen(str) + strlen(segment_str) + 1);
   strcat(str, segment_str);
+
   return str;
 }
 
 
 static void
-im_uim_get_preedit_string(GtkIMContext *ic, gchar **str,
-			  PangoAttrList **attrs,
+im_uim_get_preedit_string(GtkIMContext *ic, gchar **str, PangoAttrList **attrs,
 			  gint *cursor_pos)
 {
   char *tmp;
   int i, pos = 0;
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
 
-  if (attrs) {
+  if (attrs)
     *attrs = pango_attr_list_new();
-  }
+
   tmp = g_strdup("");
+
   for (i = 0; i < uic->nr_psegs; i++) {
-    if (uic->pseg[i].attr & UPreeditAttr_Cursor) {
+    if (uic->pseg[i].attr & UPreeditAttr_Cursor)
       pos = g_utf8_strlen(tmp, -1);
-    }
-    if (attrs) {
+
+    if (attrs)
       tmp = get_preedit_segment(&uic->pseg[i], *attrs, tmp);
-    } else {
+    else
       tmp = get_preedit_segment(&uic->pseg[i], NULL, tmp);
-    }
   }
-  if (cursor_pos) {
+  if (cursor_pos)
     *cursor_pos = pos;
-  }
-  if (str) {
+
+  if (str)
     *str = tmp;
-  } else {
+  else
     free(tmp);
-  }
 }
 
 static void
-im_uim_set_cursor_location(GtkIMContext *ic,
-			   GdkRectangle *area)
+im_uim_set_cursor_location(GtkIMContext *ic, GdkRectangle *area)
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
 
@@ -436,9 +434,7 @@ im_uim_set_cursor_location(GtkIMContext *ic,
 
 
 static void
-im_uim_commit_cb(GtkIMContext *ic,
-		 const gchar *str,
-		 IMUIMContext *is)
+im_uim_commit_cb(GtkIMContext *ic, const gchar *str, IMUIMContext *is)
 {
   g_return_if_fail(str);
   g_signal_emit_by_name(is, "commit", str);
@@ -482,14 +478,12 @@ focus_in(GtkIMContext *ic)
   uim_prop_label_update(uic->uc);
 
   for (cc = context_list.next; cc != &context_list; cc = cc->next) {
-    if (cc != uic && cc->cwin) {
+    if (cc != uic && cc->cwin)
       gtk_widget_hide(GTK_WIDGET(cc->cwin));
-    }
   }
 
-  if (uic->cwin && uic->cwin_is_active) {
+  if (uic->cwin && uic->cwin_is_active)
     gtk_widget_show(GTK_WIDGET(uic->cwin));
-  }
 }
 
 static void
@@ -503,12 +497,11 @@ focus_out(GtkIMContext *ic)
   }
 
   check_helper_connection();
-
   uim_helper_client_focus_out(uic->uc);
 
-  if (uic->cwin) {
+  if (uic->cwin)
     gtk_widget_hide(GTK_WIDGET(uic->cwin));
-  }
+
   gtk_widget_hide(uic->caret_state_indicator);
 }
 
@@ -524,6 +517,7 @@ set_use_preedit(GtkIMContext *ic, gboolean use_preedit)
 {
   GtkWidget *preedit_window;
   GtkWidget *preedit_label;
+
   if (use_preedit == FALSE ) {
     preedit_window = gtk_window_new(GTK_WINDOW_POPUP);
     preedit_label = gtk_label_new("");
@@ -534,7 +528,6 @@ set_use_preedit(GtkIMContext *ic, gboolean use_preedit)
     gtk_widget_show_all(preedit_window);
   }
 }
-
 
 static void
 show_preedit(GtkIMContext *ic, GtkWidget *preedit_label)
@@ -548,7 +541,6 @@ show_preedit(GtkIMContext *ic, GtkWidget *preedit_label)
   preedit_window = gtk_widget_get_parent(preedit_label);
 
   gtk_im_context_get_preedit_string(ic, &str, &attrs, &cursor_pos);
-
 
   if (strlen(str) > 0) {
       gint x, y, w, h;
@@ -571,7 +563,6 @@ show_preedit(GtkIMContext *ic, GtkWidget *preedit_label)
       gtk_window_resize(GTK_WINDOW(preedit_window), w, h);
 
       gtk_widget_show(preedit_window);
-
   } else {
       gtk_label_set_text(GTK_LABEL(preedit_label), "");
       gtk_widget_hide(preedit_window);
@@ -579,7 +570,6 @@ show_preedit(GtkIMContext *ic, GtkWidget *preedit_label)
   }
   g_free(str);
   pango_attr_list_unref(attrs);
-
 }
 
 static GdkFilterReturn
@@ -597,6 +587,7 @@ toplevel_window_candidate_cb(GdkXEvent *xevent, GdkEvent *ev, gpointer data)
     gdk_window_get_origin(uic->win, &x, &y);
     uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
   }
+
   return GDK_FILTER_CONTINUE;
 }
 
@@ -629,6 +620,7 @@ im_uim_init(IMUIMContext *uic)
 {
   uic->win = NULL;
   uic->menu = NULL;
+  uic->caret_state_indicator = NULL;
   uic->pseg = 0;
   uic->nr_psegs = 0;
 
@@ -637,7 +629,6 @@ im_uim_init(IMUIMContext *uic)
   g_signal_connect(G_OBJECT(uic->cwin), "index-changed",
 		   G_CALLBACK(index_changed_cb), uic);
 }
-
 
 /*
  * DESTRUCTOR
@@ -669,8 +660,7 @@ im_uim_finalize(GObject *obj)
 
   uim_release_context(uic->uc);
 
-  g_signal_handlers_disconnect_by_func(uic->slave,
-				       (gpointer)im_uim_commit_cb,
+  g_signal_handlers_disconnect_by_func(uic->slave, (gpointer)im_uim_commit_cb,
 				       uic);
   g_object_unref(uic->slave);
   parent_class->finalize(obj);
@@ -685,6 +675,7 @@ static void
 im_uim_class_init(GtkIMContextClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS(class);
+
   parent_class = g_type_class_peek_parent(class);
   class->set_client_window = set_client_window;
   class->filter_keypress = filter_keypress;
@@ -702,41 +693,40 @@ im_uim_class_init(GtkIMContextClass *class)
 static void
 im_uim_class_finalize(GtkIMContextClass *class)
 {
-
 }
 
 static void
 update_prop_list_cb(void *ptr, const char *str)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
-  GString *tmp;
+  GString *prop_list;
 
   if (uic != focused_context || disable_focused_context)
     return;
 
-  tmp = g_string_new("");
-  g_string_printf(tmp, "prop_list_update\ncharset=UTF-8\n%s", str);
+  prop_list = g_string_new("");
+  g_string_printf(prop_list, "prop_list_update\ncharset=UTF-8\n%s", str);
 
-  uim_helper_send_message(im_uim_fd, tmp->str);
-  g_string_free(tmp, TRUE);
+  uim_helper_send_message(im_uim_fd, prop_list->str);
+  g_string_free(prop_list, TRUE);
 }
 
 static void
 update_prop_label_cb(void *ptr, const char *str)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
-  GString *tmp;
+  GString *prop_label;
   gint x, y;
   uim_bool show_state;
 
   if (uic != focused_context || disable_focused_context)
     return;
 
-  tmp = g_string_new("");
-  g_string_printf(tmp, "prop_label_update\ncharset=UTF-8\n%s", str);
+  prop_label = g_string_new("");
+  g_string_printf(prop_label, "prop_label_update\ncharset=UTF-8\n%s", str);
 
-  uim_helper_send_message(im_uim_fd, tmp->str);
-  g_string_free(tmp, TRUE);
+  uim_helper_send_message(im_uim_fd, prop_label->str);
+  g_string_free(prop_label, TRUE);
 
   show_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
   if (show_state == UIM_TRUE && uic->win) {
@@ -747,7 +737,8 @@ update_prop_label_cb(void *ptr, const char *str)
     timeout = uim_scm_symbol_value_int("bridge-show-input-state-time-length");
 
     if (timeout != 0)
-      caret_state_indicator_set_timeout(uic->caret_state_indicator, timeout * 1000);
+      caret_state_indicator_set_timeout(uic->caret_state_indicator,
+					timeout * 1000);
     gtk_widget_show_all(uic->caret_state_indicator);
   }
 }
@@ -767,11 +758,13 @@ im_uim_send_im_list(void)
 
   msg = g_string_new("im_list\ncharset=UTF-8\n");
   for (i = 0; i < nr; i++) {
+    /*
+     * Return value of uim_get_im_language() is an ISO 639-1
+     * compatible language code such as "ja". Since it is unfriendly
+     * for human reading, we convert it into friendly one by
+     * uim_get_language_name_from_locale() here.
+     */
     const char *name = uim_get_im_name(focused_context->uc, i);
-    /* return value of uim_get_im_language() is an ISO 639-1
-       compatible language code such as "ja". Since it is unfriendly
-       for human reading, we convert it into friendly one by
-       uim_get_language_name_from_locale() here */
     const char *langcode = uim_get_im_language(focused_context->uc, i);
     const char *lang = uim_get_language_name_from_locale(langcode);
     const char *short_desc = uim_get_im_short_desc(focused_context->uc, i);
@@ -801,7 +794,7 @@ get_charset(gchar *line)
   splitted = g_strsplit(line, "=", 0);
 
   if (splitted && splitted[0] && splitted[1]
-     && strcmp("charset", splitted[0]) == 0) {
+      && strcmp("charset", splitted[0]) == 0) {
     gchar *charset = g_strdup(splitted[1]);
     g_strfreev(splitted);
     return charset;
@@ -817,17 +810,17 @@ commit_string_from_other_process(const gchar *str)
   gchar **lines = g_strsplit(str, "\n", 0);
   gchar *commit_string;
 
-  if (!lines || !lines[0] || !lines[1] || !lines[2]) {
+  if (!lines || !lines[0] || !lines[1] || !lines[2])
     return; /* Message is broken, do nothing. */
-  }
 
   /*
-   * If second line exists, assume first line as character encoding.
-   * This (rotten) convention is influenced by old design mistake
-   * (character encoding was forgotten!).
+   * If second line exists, we assume the first line as a charset
+   * specifier.  This (rotten) convention is influenced by old design
+   * mistake (character encoding was forgotten!).
    */
   if (strcmp(lines[2], "") != 0) {
     gchar *encoding, *commit_string_utf8;
+
     encoding = get_charset(lines[1]);
     commit_string = lines[2];
     commit_string_utf8 = g_convert(commit_string, strlen(commit_string),
@@ -877,16 +870,13 @@ cand_activate_cb(void *ptr, int nr, int display_limit)
     GdkWindow *toplevel;
 
     toplevel = gdk_window_get_toplevel(uic->win);
-    gdk_window_add_filter(toplevel,
-			  toplevel_window_candidate_cb,
-			  uic);
+    gdk_window_add_filter(toplevel, toplevel_window_candidate_cb, uic);
   }
 }
 
-
-
-/* This function called by libuim.
-   Selected by keyboard, etc. */
+/*
+ * This function called by libuim.  Selected by keyboard, etc.
+ */
 static void
 cand_select_cb(void *ptr, int index)
 {
@@ -895,7 +885,9 @@ cand_select_cb(void *ptr, int index)
 
   gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
   gdk_window_get_origin(uic->win, &x, &y);
+
   uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
+
   g_signal_handlers_block_by_func(uic->cwin, (gpointer)index_changed_cb, uic);
   uim_cand_win_gtk_set_index(uic->cwin, index);
   g_signal_handlers_unblock_by_func(uic->cwin, (gpointer)index_changed_cb, uic);
@@ -909,7 +901,9 @@ cand_shift_page_cb(void *ptr, int direction)
 
   gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
   gdk_window_get_origin(uic->win, &x, &y);
+
   uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
+
   g_signal_handlers_block_by_func(uic->cwin, (gpointer)index_changed_cb, uic);
   uim_cand_win_gtk_shift_page(uic->cwin, direction);
   uim_set_candidate_index(uic->uc, uic->cwin->candidate_index);
@@ -927,6 +921,7 @@ cand_deactivate_cb(void *ptr)
     gtk_widget_hide(GTK_WIDGET(uic->cwin));
     uim_cand_win_gtk_clear_candidates(uic->cwin);
   }
+
   if (uic->win) {
     GdkWindow *toplevel;
 
@@ -934,7 +929,6 @@ cand_deactivate_cb(void *ptr)
     gdk_window_remove_filter(toplevel, toplevel_window_candidate_cb, uic);
   }
 }
-
 
 GtkIMContext *
 im_module_create(const gchar *context_id)
@@ -960,23 +954,16 @@ im_module_create(const gchar *context_id)
 
   check_helper_connection();
 
-  uim_set_preedit_cb(uic->uc, clear_cb,
-		     pushback_cb, update_cb);
-  uim_set_prop_list_update_cb(uic->uc,
-			      update_prop_list_cb);
-  uim_set_prop_label_update_cb(uic->uc,
-			      update_prop_label_cb);
-  uim_set_candidate_selector_cb(uic->uc,
-				cand_activate_cb,
-				cand_select_cb,
-				cand_shift_page_cb,
-				cand_deactivate_cb);
+  uim_set_preedit_cb(uic->uc, clear_cb, pushback_cb, update_cb);
+  uim_set_prop_list_update_cb(uic->uc, update_prop_list_cb);
+  uim_set_prop_label_update_cb(uic->uc, update_prop_label_cb);
+  uim_set_candidate_selector_cb(uic->uc, cand_activate_cb, cand_select_cb,
+				cand_shift_page_cb, cand_deactivate_cb);
 
   uim_prop_list_update(uic->uc);
 
   /* slave exists for using gtk+'s table based input method */
-  uic->slave = g_object_new(GTK_TYPE_IM_CONTEXT_SIMPLE,
-			    NULL);
+  uic->slave = g_object_new(GTK_TYPE_IM_CONTEXT_SIMPLE, NULL);
   g_signal_connect(G_OBJECT(uic->slave), "commit",
 		   G_CALLBACK(im_uim_commit_cb), uic);
 
@@ -1004,7 +991,9 @@ im_uim_parse_helper_str_im_change(const char *str)
   gchar **lines = g_strsplit(str, "\n", -1);
   gchar *im_name = lines[1];
   GString *im_name_sym = g_string_new(im_name);
+
   g_string_prepend_c(im_name_sym, '\'');
+
   if (g_str_has_prefix(str, "im_change_this_text_area_only") == TRUE) {
     if (focused_context && disable_focused_context == FALSE) {
       uim_switch_im(focused_context->uc, im_name);
@@ -1042,6 +1031,7 @@ im_uim_parse_helper_str(const char *str)
     im_uim_parse_helper_str_im_change(str);
   } else if (g_str_has_prefix(str, "prop_update_custom") == TRUE) {
     IMUIMContext *cc;
+
     lines = g_strsplit(str, "\n", 0);
     if (lines && lines[0] && lines[1] && lines[2]) {
       for (cc = context_list.next; cc != &context_list; cc = cc->next) {
@@ -1069,8 +1059,10 @@ im_uim_parse_helper_str(const char *str)
       commit_string_from_other_process(str);
     } else if (g_str_has_prefix(str, "focus_in") == TRUE) {
       disable_focused_context = TRUE;
-      /* We shouldn't do "focused_context = NULL" here, because some
-	 window manager has some focus related bugs. */
+      /*
+       * We don't set "focused_context = NULL" here, because some
+       * window managers have some focus related bugs??
+       */
     }
   }
 }
@@ -1078,12 +1070,13 @@ im_uim_parse_helper_str(const char *str)
 static gboolean
 helper_read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
 {
-  char *tmp;
+  char *msg;
   int fd = g_io_channel_unix_get_fd(channel);
+
   uim_helper_read_proc(fd);
-  while ((tmp = uim_helper_get_message())) {
-    im_uim_parse_helper_str(tmp);
-    free(tmp);
+  while ((msg = uim_helper_get_message())) {
+    im_uim_parse_helper_str(msg);
+    free(msg);
   }
   return TRUE;
 }
@@ -1104,14 +1097,13 @@ uim_key_snoop(GtkWidget *grab_widget, GdkEventKey *key, gpointer data)
     int kv = convert_keyval(key->keyval);
     int mod = convert_modifier(key->state);
 
-    if (key->type == GDK_KEY_RELEASE) {
+    if (key->type == GDK_KEY_RELEASE)
       rv = uim_release_key(focused_context->uc, kv, mod);
-    } else {
+    else
       rv = uim_press_key(focused_context->uc, kv, mod);
-    }
-    if (rv) {
+
+    if (rv)
       return FALSE;
-    }
     return TRUE;
   }
 
@@ -1121,17 +1113,13 @@ uim_key_snoop(GtkWidget *grab_widget, GdkEventKey *key, gpointer data)
 void
 im_module_init(GTypeModule *type_module)
 {
-  if (uim_init() == -1) {
+  if (uim_init() == -1)
     return;
-  }
 
   context_list.next = (IMUIMContext *)&context_list;
   context_list.prev = (IMUIMContext *)&context_list;
-  type_im_uim =
-    g_type_module_register_type(type_module,
-				GTK_TYPE_IM_CONTEXT,
-				"GtkIMContextUIM",
-				&class_info, 0);
+  type_im_uim = g_type_module_register_type(type_module, GTK_TYPE_IM_CONTEXT,
+					    "GtkIMContextUIM", &class_info, 0);
   uim_cand_win_gtk_register_type(type_module);
 
   /* XXX:This is not recommended way!! */
@@ -1142,9 +1130,9 @@ im_module_init(GTypeModule *type_module)
 void
 im_module_exit(void)
 {
-  if (im_uim_fd != -1) {
+  if (im_uim_fd != -1)
     uim_helper_close_client_fd(im_uim_fd);
-  }
+
   gtk_key_snooper_remove(snooper_id);
   uim_quit();
 }
