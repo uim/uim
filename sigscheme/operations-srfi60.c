@@ -83,22 +83,15 @@
 void
 scm_initialize_srfi60(void)
 {
-    /*=======================================================================
-      SRFI-60 Procedures
-    =======================================================================*/
     REGISTER_FUNC_TABLE(srfi60_func_info_table);
 
-    scm_define_alias("bitwise-and"            , "logand");
-    scm_define_alias("bitwise-ior"            , "logior");
-    scm_define_alias("bitwise-xor"            , "logxor");
-    scm_define_alias("bitwise-not"            , "lognot");
-    scm_define_alias("bitwise-merge"          , "bitwise-if");
-    scm_define_alias("any-bits-set?"          , "logtest");
+    scm_define_alias("bitwise-and",   "logand");
+    scm_define_alias("bitwise-ior",   "logior");
+    scm_define_alias("bitwise-xor",   "logxor");
+    scm_define_alias("bitwise-not",   "lognot");
+    scm_define_alias("bitwise-merge", "bitwise-if");
+    scm_define_alias("any-bits-set?", "logtest");
 }
-
-/*=============================================================================
-  SRFI-60 : Integers as Bits
-=============================================================================*/
 
 /* Bitwise Operations */
 ScmObj scm_p_srfi60_logand(ScmObj left, ScmObj right,
