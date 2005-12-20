@@ -80,6 +80,7 @@ typedef struct _IMUIMContext {
   UIMCandWinGtk *cwin;
   gboolean cwin_is_active;
   int nr_psegs;
+  int prev_preedit_len;
   struct preedit_segment *pseg;
 
   GtkWidget *menu;
@@ -87,6 +88,10 @@ typedef struct _IMUIMContext {
   GdkWindow *toplevel;
   GtkWidget *caret_state_indicator;
   GdkRectangle preedit_pos;
+
+  /* following two members are used when use_preedit == FALSE */
+  GtkWidget *preedit_window;
+  gulong preedit_handler_id;
 
   struct _IMUIMContext *prev, *next;
 } IMUIMContext;
@@ -192,15 +197,39 @@ pushback_cb(void *ptr, int attr, const char *str)
 		      sizeof(struct preedit_segment) * (uic->nr_psegs + 1));
   uic->pseg[uic->nr_psegs].str = g_strdup(str);
   uic->pseg[uic->nr_psegs].attr = attr;
-  uic->nr_psegs ++;
+  uic->nr_psegs++;
+}
+
+static int
+preedit_strlen(IMUIMContext *uic)
+{
+  int i, len = 0;
+  
+  for (i = 0; i < uic->nr_psegs; i++)
+    len += strlen(uic->pseg[i].str);
+
+  return len;
 }
 
 static void
 update_cb(void *ptr)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
+  int preedit_len;
+
   g_return_if_fail(uic);
+
+  preedit_len = preedit_strlen(uic);
+
+  if (uic->prev_preedit_len == 0 && preedit_len)
+    g_signal_emit_by_name(uic, "preedit_start");
+
   g_signal_emit_by_name(uic, "preedit_changed");
+  
+  if (uic->prev_preedit_len && preedit_len == 0)
+    g_signal_emit_by_name(uic, "preedit_end");
+
+  uic->prev_preedit_len = preedit_len;
 }
 
 static int
@@ -515,17 +544,28 @@ im_uim_reset(GtkIMContext *ic)
 static void
 set_use_preedit(GtkIMContext *ic, gboolean use_preedit)
 {
-  GtkWidget *preedit_window;
-  GtkWidget *preedit_label;
+  IMUIMContext *uic = IM_UIM_CONTEXT(ic);
+  GtkWidget *preedit_label = NULL;
 
-  if (use_preedit == FALSE ) {
-    preedit_window = gtk_window_new(GTK_WINDOW_POPUP);
-    preedit_label = gtk_label_new("");
-    gtk_container_add(GTK_CONTAINER(preedit_window), preedit_label);
-
-    g_signal_connect(G_OBJECT(ic), "preedit-changed",
-		     G_CALLBACK(show_preedit), preedit_label );
-    gtk_widget_show_all(preedit_window);
+  if (use_preedit == FALSE) {
+    if (!uic->preedit_window) {
+      uic->preedit_window = gtk_window_new(GTK_WINDOW_POPUP);
+      preedit_label = gtk_label_new("");
+      gtk_container_add(GTK_CONTAINER(uic->preedit_window), preedit_label);
+    }
+    uic->preedit_handler_id =
+      g_signal_connect(G_OBJECT(ic), "preedit-changed",
+		       G_CALLBACK(show_preedit), preedit_label);
+    gtk_widget_show_all(uic->preedit_window);
+  } else {
+    if (uic->preedit_handler_id) {
+      g_signal_handler_disconnect(G_OBJECT(ic), uic->preedit_handler_id);
+      uic->preedit_handler_id = 0;
+    }
+    if (uic->preedit_window) {
+      gtk_widget_destroy(uic->preedit_window);
+      uic->preedit_window = NULL;
+    }
   }
 }
 
@@ -543,30 +583,30 @@ show_preedit(GtkIMContext *ic, GtkWidget *preedit_label)
   gtk_im_context_get_preedit_string(ic, &str, &attrs, &cursor_pos);
 
   if (strlen(str) > 0) {
-      gint x, y, w, h;
-      PangoLayout *layout;
+    gint x, y, w, h;
+    PangoLayout *layout;
 
-      gtk_label_set_text(GTK_LABEL(preedit_label), str);
-      gtk_label_set_attributes(GTK_LABEL(preedit_label), attrs);
+    gtk_label_set_text(GTK_LABEL(preedit_label), str);
+    gtk_label_set_attributes(GTK_LABEL(preedit_label), attrs);
 
-      gdk_window_get_origin(uic->win, &x, &y);
+    gdk_window_get_origin(uic->win, &x, &y);
 
-      gtk_window_move(GTK_WINDOW(preedit_window),
-		      x + uic->preedit_pos.x,
-		      y + uic->preedit_pos.y );
+    gtk_window_move(GTK_WINDOW(preedit_window),
+		    x + uic->preedit_pos.x,
+		    y + uic->preedit_pos.y);
 
-      layout = gtk_label_get_layout(GTK_LABEL(preedit_label));
+    layout = gtk_label_get_layout(GTK_LABEL(preedit_label));
 
-      pango_layout_get_cursor_pos(layout, 0, NULL, NULL);
+    pango_layout_get_cursor_pos(layout, 0, NULL, NULL);
 
-      pango_layout_get_pixel_size(layout, &w, &h);
-      gtk_window_resize(GTK_WINDOW(preedit_window), w, h);
+    pango_layout_get_pixel_size(layout, &w, &h);
+    gtk_window_resize(GTK_WINDOW(preedit_window), w, h);
 
-      gtk_widget_show(preedit_window);
+    gtk_widget_show(preedit_window);
   } else {
-      gtk_label_set_text(GTK_LABEL(preedit_label), "");
-      gtk_widget_hide(preedit_window);
-      gtk_window_resize(GTK_WINDOW(preedit_window), 0, 0);
+    gtk_label_set_text(GTK_LABEL(preedit_label), "");
+    gtk_widget_hide(preedit_window);
+    gtk_window_resize(GTK_WINDOW(preedit_window), 0, 0);
   }
   g_free(str);
   pango_attr_list_unref(attrs);
@@ -621,11 +661,14 @@ im_uim_init(IMUIMContext *uic)
   uic->win = NULL;
   uic->menu = NULL;
   uic->caret_state_indicator = NULL;
-  uic->pseg = 0;
+  uic->pseg = NULL;
   uic->nr_psegs = 0;
+  uic->prev_preedit_len = 0;
 
   uic->cwin = uim_cand_win_gtk_new();
   uic->cwin_is_active = FALSE;
+  uic->preedit_window = NULL;
+  uic->preedit_handler_id = 0;
   g_signal_connect(G_OBJECT(uic->cwin), "index-changed",
 		   G_CALLBACK(index_changed_cb), uic);
 }
@@ -656,6 +699,15 @@ im_uim_finalize(GObject *obj)
       g_source_remove(tag);
     gtk_widget_destroy(uic->caret_state_indicator);
     uic->caret_state_indicator = NULL;
+  }
+
+  if (uic->preedit_handler_id) {
+    g_signal_handler_disconnect(obj, uic->preedit_handler_id);
+    uic->preedit_handler_id = 0;
+  }
+  if (uic->preedit_window) {
+    gtk_widget_destroy(uic->preedit_window);
+    uic->preedit_window = NULL;
   }
 
   uim_release_context(uic->uc);
