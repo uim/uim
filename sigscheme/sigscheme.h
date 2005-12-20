@@ -310,8 +310,8 @@ struct ScmEvalState_ {
 =======================================*/
 #define SCM_MAKE_BOOL(x)                  ((x) ? SCM_TRUE : SCM_FALSE)
 #define SCM_MAKE_INT(val)                 SCM_SAL_MAKE_INT(val)
-#define SCM_MAKE_CONS(kar, kdr)           SCM_SAL_MAKE_CONS(kar, kdr)
-#define SCM_MAKE_SYMBOL(name, val)        SCM_SAL_MAKE_SYMBOL(name, val)
+#define SCM_MAKE_CONS(kar, kdr)           SCM_SAL_MAKE_CONS((kar), (kdr))
+#define SCM_MAKE_SYMBOL(name, val)        SCM_SAL_MAKE_SYMBOL((name), (val))
 #define SCM_MAKE_CHAR(val)                SCM_SAL_MAKE_CHAR(val)
 #define SCM_MAKE_STRING(str)              SCM_SAL_MAKE_STRING(str)
 #define SCM_MAKE_STRING_COPYING(str)      SCM_SAL_MAKE_STRING_COPYING(str)
@@ -319,11 +319,11 @@ struct ScmEvalState_ {
 #define SCM_MAKE_IMMUTABLE_STRING_COPYING(str)                               \
     SCM_SAL_MAKE_IMMUTABLE_STRING_COPYING(str)
 /* SCM_MAKE_FUNC(enum ScmFuncTypeCode type, ScmFuncType func) */
-#define SCM_MAKE_FUNC(type, func)         SCM_SAL_MAKE_FUNC(type, func)
-#define SCM_MAKE_CLOSURE(exp, env)        SCM_SAL_MAKE_CLOSURE(exp, env)
+#define SCM_MAKE_FUNC(type, func)         SCM_SAL_MAKE_FUNC((type), (func))
+#define SCM_MAKE_CLOSURE(exp, env)        SCM_SAL_MAKE_CLOSURE((exp), (env))
 /* SCM_MAKE_VECTOR(ScmObj *vec, int len) */
-#define SCM_MAKE_VECTOR(vec, len)         SCM_SAL_MAKE_VECTOR(vec, len)
-#define SCM_MAKE_PORT(cport, flag)        SCM_SAL_MAKE_PORT(cport, flag)
+#define SCM_MAKE_VECTOR(vec, len)         SCM_SAL_MAKE_VECTOR((vec), (len))
+#define SCM_MAKE_PORT(cport, flag)        SCM_SAL_MAKE_PORT((cport), (flag))
 #define SCM_MAKE_CONTINUATION()           SCM_SAL_MAKE_CONTINUATION()
 #if SCM_USE_NONSTD_FEATURES
 /* SCM_MAKE_C_POINTER(void *ptr) */
