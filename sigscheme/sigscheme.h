@@ -675,10 +675,9 @@ void *scm_realloc(void *ptr, size_t size);
 /* storage.c */
 /* Don't use these functions directly. Use SCM_MAKE_*() or MAKE_*() instead to
  * allow flexible object allocation. */
-/* FIXME: rename to scm_make_*() */
-ScmObj scm_make_cons(ScmObj a, ScmObj b);
+ScmObj scm_make_cons(ScmObj kar, ScmObj kdr);
 ScmObj scm_make_int(int val);
-ScmObj scm_make_symbol(char *name, ScmObj v_cell);
+ScmObj scm_make_symbol(char *name, ScmObj val);
 ScmObj scm_make_char(int val);
 ScmObj scm_make_immutable_string(char *str);
 ScmObj scm_make_immutable_string_copying(const char *str);
@@ -693,8 +692,8 @@ ScmObj scm_make_continuation(void);
 ScmObj scm_make_value_packet(ScmObj values);
 #endif
 #if SCM_USE_NONSTD_FEATURES
-ScmObj scm_make_cpointer(void *data);
-ScmObj scm_make_cfunc_pointer(ScmCFunc func);
+ScmObj scm_make_cpointer(void *ptr);
+ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #endif
 
 /* storage-gc.c */

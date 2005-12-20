@@ -151,13 +151,14 @@ initialize_special_constants(void)
   Object Allocators
 ===========================================================================*/
 ScmObj
-scm_make_cons(ScmObj a, ScmObj b)
+scm_make_cons(ScmObj kar, ScmObj kdr)
 {
-    ScmObj obj = scm_alloc_cell();
+    ScmObj obj;
 
+    obj = scm_alloc_cell();
     SCM_ENTYPE_CONS(obj);
-    SET_CAR(obj, a);
-    SET_CDR(obj, b);
+    SET_CAR(obj, kar);
+    SET_CDR(obj, kdr);
 
     return obj;
 }
@@ -178,13 +179,14 @@ scm_make_int(int val)
 }
 
 ScmObj
-scm_make_symbol(char *name, ScmObj v_cell)
+scm_make_symbol(char *name, ScmObj val)
 {
-    ScmObj obj = scm_alloc_cell();
+    ScmObj obj;
 
+    obj = scm_alloc_cell();
     SCM_ENTYPE_SYMBOL(obj);
     SCM_SYMBOL_SET_NAME(obj, name);
-    SCM_SYMBOL_SET_VCELL(obj, v_cell);
+    SCM_SYMBOL_SET_VCELL(obj, val);
 
     return obj;
 }
@@ -326,23 +328,25 @@ scm_make_value_packet(ScmObj values)
 
 #if SCM_USE_NONSTD_FEATURES
 ScmObj
-scm_make_cpointer(void *data)
+scm_make_cpointer(void *ptr)
 {
-    ScmObj obj = scm_alloc_cell();
+    ScmObj obj;
 
+    obj = scm_alloc_cell();
     SCM_ENTYPE_C_POINTER(obj);
-    SCM_C_POINTER_SET_VALUE(obj, data);
+    SCM_C_POINTER_SET_VALUE(obj, ptr);
 
     return obj;
 }
 
 ScmObj
-scm_make_cfunc_pointer(ScmCFunc func)
+scm_make_cfunc_pointer(ScmCFunc ptr)
 {
-    ScmObj obj = scm_alloc_cell();
+    ScmObj obj;
 
+    obj = scm_alloc_cell();
     SCM_ENTYPE_C_FUNCPOINTER(obj);
-    SCM_C_FUNCPOINTER_SET_VALUE(obj, func);
+    SCM_C_FUNCPOINTER_SET_VALUE(obj, ptr);
 
     return obj;
 }
