@@ -601,7 +601,7 @@ struct ScmCell_ {
 #define SCM_SAL_MAKE_C_POINTER                scm_make_cpointer
 #define SCM_SAL_MAKE_C_FUNCPOINTER            scm_make_cfunc_pointer
 #endif /* SCM_USE_NONSTD_FEATURES */
-#define SCM_SAL_MAKE_VALUEPACKET              Scm_NewValuePacket
+#define SCM_SAL_MAKE_VALUEPACKET              scm_make_value_packet
 
 /*=======================================
   Type Predicates
@@ -944,13 +944,13 @@ extern enum ScmObjType Scm_Type(ScmObj obj);
   Predefined Symbols
 ============================================================================*/
 /* for list construction */
-#define SCM_SAL_SYM_QUOTE            Scm_sym_quote
-#define SCM_SAL_SYM_QUASIQUOTE       Scm_sym_quasiquote
-#define SCM_SAL_SYM_UNQUOTE          Scm_sym_unquote
-#define SCM_SAL_SYM_UNQUOTE_SPLICING Scm_sym_unquote_splicing
+#define SCM_SAL_SYM_QUOTE            scm_sym_quote
+#define SCM_SAL_SYM_QUASIQUOTE       scm_sym_quasiquote
+#define SCM_SAL_SYM_UNQUOTE          scm_sym_unquote
+#define SCM_SAL_SYM_UNQUOTE_SPLICING scm_sym_unquote_splicing
 
 /* sigscheme.c */
-extern ScmObj Scm_sym_quote, Scm_sym_quasiquote;
-extern ScmObj Scm_sym_unquote, Scm_sym_unquote_splicing;
+extern ScmObj scm_sym_quote, scm_sym_quasiquote;
+extern ScmObj scm_sym_unquote, scm_sym_unquote_splicing;
 
 #endif /* __STORAGE_COMPACT_H */
