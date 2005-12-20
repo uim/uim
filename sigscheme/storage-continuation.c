@@ -108,8 +108,8 @@ scm_init_continuation(void)
     initialize_dynamic_extent();
     initialize_continuation_env();
 
-    trace_stack = SCM_NULL;
     scm_gc_protect((ScmObj *)&trace_stack);
+    trace_stack = SCM_NULL;
 }
 
 void
@@ -129,8 +129,8 @@ scm_finalize_continuation(void)
 static void
 initialize_dynamic_extent(void)
 {
-    current_dynamic_extent = SCM_NULL;
     scm_gc_protect((ScmObj *)&current_dynamic_extent);
+    current_dynamic_extent = SCM_NULL;
 }
 
 static void
@@ -214,8 +214,8 @@ scm_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after)
 static void
 initialize_continuation_env(void)
 {
-    continuation_stack = SCM_NULL;
     scm_gc_protect((ScmObj *)&continuation_stack);
+    continuation_stack = SCM_NULL;
 }
 
 static void

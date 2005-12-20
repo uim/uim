@@ -89,7 +89,7 @@ static ScmObj scm_make_string_internal(char *str, int is_immutable);
   Function Implementations
 =======================================*/
 void scm_init_storage(size_t heap_size, size_t heap_alloc_threshold,
-                        int n_heaps_max, int n_heaps_init)
+                      int n_heaps_max, int n_heaps_init)
 {
     initialize_special_constants();
 
@@ -105,9 +105,9 @@ void scm_init_storage(size_t heap_size, size_t heap_alloc_threshold,
      * To keep storage model abstract, the cell is allocated from a heap
      * instead of directly construct ScmCell
      */
+    scm_gc_protect(&scm_null_values);
     scm_null_values = CONS(SCM_NULL, SCM_NULL);
     SCM_ENTYPE_VALUEPACKET(scm_null_values);
-    scm_gc_protect(&scm_null_values);
 #endif
 
     scm_init_continuation();
