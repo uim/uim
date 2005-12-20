@@ -165,7 +165,11 @@ scm_make_cons(ScmObj a, ScmObj b)
 ScmObj
 scm_make_int(int val)
 {
-    ScmObj obj = scm_alloc_cell();
+    ScmObj obj;
+
+#if !SCM_OBJ_COMPACT
+    obj = scm_alloc_cell();
+#endif
 
     SCM_ENTYPE_INT(obj);
     SCM_INT_SET_VALUE(obj, val);
@@ -188,7 +192,11 @@ scm_make_symbol(char *name, ScmObj v_cell)
 ScmObj
 scm_make_char(int val)
 {
-    ScmObj obj = scm_alloc_cell();
+    ScmObj obj;
+
+#if !SCM_OBJ_COMPACT
+    obj = scm_alloc_cell();
+#endif
 
     SCM_ENTYPE_CHAR(obj);
     SCM_CHAR_SET_VALUE(obj, val);
