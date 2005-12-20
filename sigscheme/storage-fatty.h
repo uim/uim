@@ -168,7 +168,6 @@ struct ScmCell_ {
 /* ScmObj Global Attribute */
 #define SCM_SAL_TYPE(o) ((o)->type)
 #define SCM_ENTYPE(a, objtype) ((a)->type = (objtype))
-#define SCM_MARK(a) ((a)->gcmark)
 
 /* Real Accessors */
 #define SCM_SAL_INTP(a)  (SCM_TYPE(a) == ScmInt)
@@ -314,12 +313,10 @@ struct ScmCell_ {
         SCM_FREECELL_CLEAR_FREESLOT(cell);                                   \
     } while (/* CONSTCOND */ 0)
 
-#define SCM_UNMARKER          0
-#define SCM_MARKER            (SCM_UNMARKER + 1)
-#define SCM_SAL_IS_MARKED(o)   (SCM_MARK(o) == SCM_MARKER)
+#define SCM_SAL_IS_MARKED(o)   ((o)->gcmark)
 #define SCM_SAL_IS_UNMARKED(o) (!SCM_IS_MARKED(o))
-#define SCM_SAL_DO_MARK(o)     (SCM_MARK(o) = SCM_MARKER)
-#define SCM_SAL_DO_UNMARK(o)   (SCM_MARK(o) = SCM_UNMARKER)
+#define SCM_SAL_DO_MARK(o)     ((o)->gcmark = 1)
+#define SCM_SAL_DO_UNMARK(o)   ((o)->gcmark = 0)
 
 /*============================================================================
   Environment Specifiers
