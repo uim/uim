@@ -122,7 +122,7 @@ uim_scm_c_bool(uim_lisp val)
 uim_lisp
 uim_scm_make_bool(uim_bool val)
 {
-  return (val) ? uim_scm_t() : uim_scm_f();
+  return (uim_lisp)SCM_MAKE_BOOL(val);
 }
 
 int
@@ -166,7 +166,7 @@ uim_scm_c_int_internal(uim_lisp integer)
 uim_lisp
 uim_scm_make_int(int integer)
 {
-  return (uim_lisp)scm_make_int(integer);
+  return (uim_lisp)SCM_MAKE_INT(integer);
 }
 
 char *
@@ -251,7 +251,7 @@ uim_scm_c_ptr(uim_lisp ptr)
 uim_lisp
 uim_scm_make_ptr(void *ptr)
 {
-  return (uim_lisp)scm_make_cpointer(ptr);
+  return (uim_lisp)SCM_MAKE_C_POINTER(ptr);
 }
 
 uim_func_ptr
@@ -269,7 +269,7 @@ uim_scm_c_func_ptr(uim_lisp func_ptr)
 uim_lisp
 uim_scm_make_func_ptr(uim_func_ptr func_ptr)
 {
-  return (uim_lisp)scm_make_cfunc_pointer((ScmCFunc)func_ptr);
+  return (uim_lisp)SCM_MAKE_C_FUNCPOINTER((ScmCFunc)func_ptr);
 }
 
 void
