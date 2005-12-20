@@ -315,7 +315,7 @@ scm_p_srfi1_null_listp(ScmObj lst)
 {
     DECLARE_FUNCTION("null-list?", procedure_fixed_1);
     /* TODO : check circular list */
-    return NULLP(lst) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(NULLP(lst));
 }
 
 ScmObj

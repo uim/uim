@@ -113,7 +113,7 @@ ScmObj
 scm_p_eqp(ScmObj obj1, ScmObj obj2)
 {
     DECLARE_FUNCTION("eq?", procedure_fixed_2);
-    return (EQ(obj1, obj2)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(EQ(obj1, obj2));
 }
 
 ScmObj
@@ -310,7 +310,7 @@ ScmObj
 scm_p_numberp(ScmObj obj)
 {
     DECLARE_FUNCTION("number?", procedure_fixed_1);
-    return (INTP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(INTP(obj));
 }
 
 ScmObj
@@ -372,7 +372,7 @@ scm_p_zerop(ScmObj scm_num)
 {
     DECLARE_FUNCTION("zero?", procedure_fixed_1);
     ASSERT_INTP(scm_num);
-    return (SCM_INT_VALUE(scm_num) == 0) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(SCM_INT_VALUE(scm_num) == 0);
 }
 
 ScmObj
@@ -380,7 +380,7 @@ scm_p_positivep(ScmObj scm_num)
 {
     DECLARE_FUNCTION("positive?", procedure_fixed_1);
     ASSERT_INTP(scm_num);
-    return (SCM_INT_VALUE(scm_num) > 0) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(SCM_INT_VALUE(scm_num) > 0);
 }
 
 ScmObj
@@ -388,7 +388,7 @@ scm_p_negativep(ScmObj scm_num)
 {
     DECLARE_FUNCTION("negative?", procedure_fixed_1);
     ASSERT_INTP(scm_num);
-    return (SCM_INT_VALUE(scm_num) < 0) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(SCM_INT_VALUE(scm_num) < 0);
 }
 
 ScmObj
@@ -396,7 +396,7 @@ scm_p_oddp(ScmObj scm_num)
 {
     DECLARE_FUNCTION("odd?", procedure_fixed_1);
     ASSERT_INTP(scm_num);
-    return (SCM_INT_VALUE(scm_num) & 0x1) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(SCM_INT_VALUE(scm_num) & 0x1);
 }
 
 ScmObj
@@ -404,7 +404,7 @@ scm_p_evenp(ScmObj scm_num)
 {
     DECLARE_FUNCTION("even?", procedure_fixed_1);
     ASSERT_INTP(scm_num);
-    return (SCM_INT_VALUE(scm_num) & 0x1) ? SCM_FALSE : SCM_TRUE;
+    return MAKE_BOOL(!(SCM_INT_VALUE(scm_num) & 0x1));
 }
 
 ScmObj
@@ -605,14 +605,14 @@ ScmObj
 scm_p_not(ScmObj obj)
 {
     DECLARE_FUNCTION("not", procedure_fixed_1);
-    return (FALSEP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(FALSEP(obj));
 }
 
 ScmObj
 scm_p_booleanp(ScmObj obj)
 {
     DECLARE_FUNCTION("boolean?", procedure_fixed_1);
-    return (EQ(obj, SCM_FALSE) || EQ(obj, SCM_TRUE)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(EQ(obj, SCM_FALSE) || EQ(obj, SCM_TRUE));
 }
 
 /*==============================================================================
@@ -650,7 +650,7 @@ ScmObj
 scm_p_pairp(ScmObj obj)
 {
     DECLARE_FUNCTION("pair?", procedure_fixed_1);
-    return (CONSP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(CONSP(obj));
 }
 
 ScmObj
@@ -739,7 +739,7 @@ ScmObj
 scm_p_nullp(ScmObj obj)
 {
     DECLARE_FUNCTION("null?", procedure_fixed_1);
-    return (NULLP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(NULLP(obj));
 }
 
 ScmObj
@@ -755,7 +755,7 @@ scm_p_listp(ScmObj obj)
 
     len = scm_p_c_length(obj);
 
-    return (len != -1) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(len != -1);
 }
 
 /*
@@ -1025,7 +1025,7 @@ ScmObj
 scm_p_symbolp(ScmObj obj)
 {
     DECLARE_FUNCTION("symbol?", procedure_fixed_1);
-    return (SYMBOLP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(SYMBOLP(obj));
 }
 
 ScmObj
@@ -1051,7 +1051,7 @@ ScmObj
 scm_p_charp(ScmObj obj)
 {
     DECLARE_FUNCTION("char?", procedure_fixed_1);
-    return (CHARP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(CHARP(obj));
 }
 
 ScmObj
@@ -1062,7 +1062,7 @@ scm_p_charequalp(ScmObj ch1, ScmObj ch2)
     ASSERT_CHARP(ch1);
     ASSERT_CHARP(ch2);
 
-    return (SCM_CHAR_VALUE(ch1) == SCM_CHAR_VALUE(ch2)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(SCM_CHAR_VALUE(ch1) == SCM_CHAR_VALUE(ch2));
 }
 
 ScmObj
@@ -1075,7 +1075,7 @@ scm_p_char_alphabeticp(ScmObj obj)
 
     ch = SCM_CHAR_VALUE(obj);
 
-    return (isascii(ch) && isalpha(ch)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(isascii(ch) && isalpha(ch));
 }
 
 ScmObj
@@ -1088,7 +1088,7 @@ scm_p_char_numericp(ScmObj obj)
 
     ch = SCM_CHAR_VALUE(obj);
 
-    return (isascii(ch) && isdigit(ch)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(isascii(ch) && isdigit(ch));
 }
 
 ScmObj
@@ -1101,7 +1101,7 @@ scm_p_char_whitespacep(ScmObj obj)
 
     ch = SCM_CHAR_VALUE(obj);
 
-    return (isascii(ch) && isspace(ch)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(isascii(ch) && isspace(ch));
 }
 
 ScmObj
@@ -1114,7 +1114,7 @@ scm_p_char_upper_casep(ScmObj obj)
 
     ch = SCM_CHAR_VALUE(obj);
 
-    return (isascii(ch) && isupper(ch)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(isascii(ch) && isupper(ch));
 }
 
 ScmObj
@@ -1127,7 +1127,7 @@ scm_p_char_lower_casep(ScmObj obj)
 
     ch = SCM_CHAR_VALUE(obj);
 
-    return (isascii(ch) && islower(ch)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(isascii(ch) && islower(ch));
 }
 
 ScmObj
@@ -1192,7 +1192,7 @@ ScmObj
 scm_p_stringp(ScmObj obj)
 {
     DECLARE_FUNCTION("string?", procedure_fixed_1);
-    return (STRINGP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(STRINGP(obj));
 }
 
 ScmObj
@@ -1541,7 +1541,7 @@ ScmObj
 scm_p_vectorp(ScmObj obj)
 {
     DECLARE_FUNCTION("vector?", procedure_fixed_1);
-    return (VECTORP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(VECTORP(obj));
 }
 
 ScmObj
@@ -1705,7 +1705,7 @@ ScmObj
 scm_p_procedurep(ScmObj obj)
 {
     DECLARE_FUNCTION("procedure?", procedure_fixed_1);
-    return (PROCEDUREP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(PROCEDUREP(obj));
 }
 
 ScmObj

@@ -283,7 +283,7 @@ scm_p_input_portp(ScmObj port)
 
     ASSERT_PORTP(port);
 
-    return (SCM_PORT_FLAG(port) & SCM_PORTFLAG_INPUT) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(SCM_PORT_FLAG(port) & SCM_PORTFLAG_INPUT);
 }
 
 ScmObj
@@ -293,7 +293,7 @@ scm_p_output_portp(ScmObj port)
 
     ASSERT_PORTP(port);
 
-    return (SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT);
 }
 
 ScmObj
@@ -474,7 +474,7 @@ scm_p_eof_objectp(ScmObj obj)
 {
     DECLARE_FUNCTION("eof-object?", procedure_fixed_1);
 
-    return (EOFP(obj)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(EOFP(obj));
 }
 
 ScmObj
@@ -485,7 +485,7 @@ scm_p_char_readyp(ScmObj args)
 
     PREPARE_PORT(port, args, scm_in);
 
-    return (scm_port_char_readyp(port))? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(scm_port_char_readyp(port));
 }
 
 /*===========================================================================

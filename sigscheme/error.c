@@ -168,7 +168,7 @@ scm_p_error_objectp(ScmObj obj)
 {
     DECLARE_FUNCTION("%%error-object?", procedure_fixed_1);
 
-    return (CONSP(obj) && EQ(CAR(obj), err_obj_tag)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(CONSP(obj) && EQ(CAR(obj), err_obj_tag));
 }
 
 /* FIXME: make (pair? err-obj) #f */

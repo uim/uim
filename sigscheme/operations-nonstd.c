@@ -92,8 +92,8 @@ scm_p_symbol_boundp(ScmObj sym, ScmObj rest)
     else
         env = SCM_INTERACTION_ENV;
 
-    return (scm_lookup_environment(sym, env) != SCM_INVALID_REF
-            || SCM_SYMBOL_BOUNDP(sym)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(scm_lookup_environment(sym, env) != SCM_INVALID_REF
+                     || SCM_SYMBOL_BOUNDP(sym));
 }
 
 /* SIOD compatible */
@@ -173,7 +173,7 @@ scm_p_providedp(ScmObj feature)
 
     ASSERT_STRINGP(feature);
 
-    return (scm_providedp(feature)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(scm_providedp(feature));
 }
 
 /*

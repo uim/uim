@@ -149,5 +149,5 @@ scm_p_srfi60_logtest(ScmObj j, ScmObj k)
     ASSERT_INTP(j);
     ASSERT_INTP(k);
 
-    return (SCM_INT_VALUE(j) & SCM_INT_VALUE(k)) ? SCM_TRUE : SCM_FALSE;
+    return MAKE_BOOL(SCM_INT_VALUE(j) & SCM_INT_VALUE(k));
 }
