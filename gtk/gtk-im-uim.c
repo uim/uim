@@ -80,6 +80,7 @@ typedef struct _IMUIMContext {
   UIMCandWinGtk *cwin;
   gboolean cwin_is_active;
   int nr_psegs;
+  int prev_preedit_len;
   struct preedit_segment *pseg;
 
   GtkWidget *menu;
@@ -192,15 +193,39 @@ pushback_cb(void *ptr, int attr, const char *str)
 		      sizeof(struct preedit_segment) * (uic->nr_psegs + 1));
   uic->pseg[uic->nr_psegs].str = g_strdup(str);
   uic->pseg[uic->nr_psegs].attr = attr;
-  uic->nr_psegs ++;
+  uic->nr_psegs++;
+}
+
+static int
+preedit_strlen(IMUIMContext *uic)
+{
+  int i, len = 0;
+  
+  for (i = 0; i < uic->nr_psegs; i++)
+    len += strlen(uic->pseg[i].str);
+
+  return len;
 }
 
 static void
 update_cb(void *ptr)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
+  int preedit_len;
+
   g_return_if_fail(uic);
+
+  preedit_len = preedit_strlen(uic);
+
+  if (uic->prev_preedit_len == 0 && preedit_len)
+    g_signal_emit_by_name(uic, "preedit_start");
+
   g_signal_emit_by_name(uic, "preedit_changed");
+  
+  if (uic->prev_preedit_len && preedit_len == 0)
+    g_signal_emit_by_name(uic, "preedit_end");
+
+  uic->prev_preedit_len = preedit_len;
 }
 
 static int
@@ -518,13 +543,13 @@ set_use_preedit(GtkIMContext *ic, gboolean use_preedit)
   GtkWidget *preedit_window;
   GtkWidget *preedit_label;
 
-  if (use_preedit == FALSE ) {
+  if (use_preedit == FALSE) {
     preedit_window = gtk_window_new(GTK_WINDOW_POPUP);
     preedit_label = gtk_label_new("");
     gtk_container_add(GTK_CONTAINER(preedit_window), preedit_label);
 
     g_signal_connect(G_OBJECT(ic), "preedit-changed",
-		     G_CALLBACK(show_preedit), preedit_label );
+		     G_CALLBACK(show_preedit), preedit_label);
     gtk_widget_show_all(preedit_window);
   }
 }
@@ -553,7 +578,7 @@ show_preedit(GtkIMContext *ic, GtkWidget *preedit_label)
 
       gtk_window_move(GTK_WINDOW(preedit_window),
 		      x + uic->preedit_pos.x,
-		      y + uic->preedit_pos.y );
+		      y + uic->preedit_pos.y);
 
       layout = gtk_label_get_layout(GTK_LABEL(preedit_label));
 
@@ -621,8 +646,9 @@ im_uim_init(IMUIMContext *uic)
   uic->win = NULL;
   uic->menu = NULL;
   uic->caret_state_indicator = NULL;
-  uic->pseg = 0;
+  uic->pseg = NULL;
   uic->nr_psegs = 0;
+  uic->prev_preedit_len = 0;
 
   uic->cwin = uim_cand_win_gtk_new();
   uic->cwin_is_active = FALSE;
