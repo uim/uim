@@ -583,7 +583,6 @@ struct ScmCell_ {
 /*=======================================
   Object Creators
 =======================================*/
-#define SCM_SAL_MAKE_BOOL(x)                  ((x) ? SCM_TRUE : SCM_FALSE)
 #define SCM_SAL_MAKE_INT                      scm_make_int
 #define SCM_SAL_MAKE_CONS                     scm_make_cons
 #define SCM_SAL_MAKE_SYMBOL                   scm_make_symbol
