@@ -98,7 +98,7 @@ extern "C" {
 
 #define SCM_SYMBOL_BOUNDP(sym) (!SCM_EQ(SCM_SYMBOL_VCELL(sym), SCM_UNBOUND))
 
-#define SCM_CONS(kar, kdr) (scm_make_cons((kar), (kdr)))
+#define SCM_CONS(kar, kdr) (SCM_MAKE_CONS((kar), (kdr)))
 #if SCM_USE_STORAGE_ABSTRACTION_LAYER
 #define SCM_CAR(kons)  (SCM_CONS_CAR(kons))
 #define SCM_CDR(kons)  (SCM_CONS_CDR(kons))
