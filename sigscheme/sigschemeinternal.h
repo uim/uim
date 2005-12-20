@@ -466,7 +466,7 @@ void scm_finalize_storage(void);
 void   scm_init_gc(size_t heap_size, size_t heap_alloc_threshold,
                      int n_heaps_max, int n_heaps_init);
 void   scm_finalize_gc(void);
-ScmObj scm_make_obj_from_heap(void);
+ScmObj scm_alloc_cell(void);
 
 /* storage-continuation.c */
 void   scm_init_continuation(void);

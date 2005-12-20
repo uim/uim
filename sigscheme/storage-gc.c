@@ -160,7 +160,7 @@ scm_finalize_gc(void)
 }
 
 ScmObj
-scm_make_obj_from_heap(void)
+scm_alloc_cell(void)
 {
     ScmObj ret = SCM_FALSE;
 

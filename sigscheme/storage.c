@@ -153,7 +153,7 @@ initialize_special_constants(void)
 ScmObj
 scm_make_cons(ScmObj a, ScmObj b)
 {
-    ScmObj obj = scm_make_obj_from_heap();
+    ScmObj obj = scm_alloc_cell();
 
     SCM_ENTYPE_CONS(obj);
     SET_CAR(obj, a);
@@ -165,7 +165,7 @@ scm_make_cons(ScmObj a, ScmObj b)
 ScmObj
 scm_make_int(int val)
 {
-    ScmObj obj = scm_make_obj_from_heap();
+    ScmObj obj = scm_alloc_cell();
 
     SCM_ENTYPE_INT(obj);
     SCM_INT_SET_VALUE(obj, val);
@@ -176,7 +176,7 @@ scm_make_int(int val)
 ScmObj
 scm_make_symbol(char *name, ScmObj v_cell)
 {
-    ScmObj obj = scm_make_obj_from_heap();
+    ScmObj obj = scm_alloc_cell();
 
     SCM_ENTYPE_SYMBOL(obj);
     SCM_SYMBOL_SET_NAME(obj, name);
@@ -188,7 +188,7 @@ scm_make_symbol(char *name, ScmObj v_cell)
 ScmObj
 scm_make_char(int val)
 {
-    ScmObj obj = scm_make_obj_from_heap();
+    ScmObj obj = scm_alloc_cell();
 
     SCM_ENTYPE_CHAR(obj);
     SCM_CHAR_SET_VALUE(obj, val);
@@ -199,7 +199,7 @@ scm_make_char(int val)
 static ScmObj
 scm_make_string_internal(char *str, int is_immutable)
 {
-    ScmObj obj = scm_make_obj_from_heap();
+    ScmObj obj = scm_alloc_cell();
 
     SCM_ENTYPE_STRING(obj);
     SCM_STRING_SET_STR(obj, str);
@@ -240,7 +240,7 @@ scm_make_string_copying(const char *str)
 ScmObj
 scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func)
 {
-    ScmObj obj = scm_make_obj_from_heap();
+    ScmObj obj = scm_alloc_cell();
 
     SCM_ENTYPE_FUNC(obj);
     SCM_FUNC_SET_TYPECODE(obj, type);
@@ -252,7 +252,7 @@ scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func)
 ScmObj
 scm_make_closure(ScmObj exp, ScmObj env)
 {
-    ScmObj obj = scm_make_obj_from_heap();
+    ScmObj obj = scm_alloc_cell();
 
     SCM_ENTYPE_CLOSURE(obj);
     SCM_CLOSURE_SET_EXP(obj, exp);
@@ -264,7 +264,7 @@ scm_make_closure(ScmObj exp, ScmObj env)
 ScmObj
 scm_make_vector(ScmObj *vec, int len)
 {
-    ScmObj obj = scm_make_obj_from_heap();
+    ScmObj obj = scm_alloc_cell();
 
     SCM_ENTYPE_VECTOR(obj);
     SCM_VECTOR_SET_VEC(obj, vec);
@@ -276,7 +276,7 @@ scm_make_vector(ScmObj *vec, int len)
 ScmObj
 scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag)
 {
-    ScmObj obj = scm_make_obj_from_heap();
+    ScmObj obj = scm_alloc_cell();
 
     SCM_ENTYPE_PORT(obj);
 
@@ -294,7 +294,7 @@ scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag)
 ScmObj
 scm_make_continuation(void)
 {
-    ScmObj obj = scm_make_obj_from_heap();
+    ScmObj obj = scm_alloc_cell();
 
     SCM_ENTYPE_CONTINUATION(obj);
     SCM_CONTINUATION_SET_OPAQUE(obj, INVALID_CONTINUATION_OPAQUE);
@@ -307,7 +307,7 @@ scm_make_continuation(void)
 ScmObj
 scm_make_value_packet(ScmObj values)
 {
-    ScmObj obj = scm_make_obj_from_heap();
+    ScmObj obj = scm_alloc_cell();
 
     SCM_ENTYPE_VALUEPACKET(obj);
     SCM_VALUEPACKET_SET_VALUES(obj, values);
@@ -320,7 +320,7 @@ scm_make_value_packet(ScmObj values)
 ScmObj
 scm_make_cpointer(void *data)
 {
-    ScmObj obj = scm_make_obj_from_heap();
+    ScmObj obj = scm_alloc_cell();
 
     SCM_ENTYPE_C_POINTER(obj);
     SCM_C_POINTER_SET_VALUE(obj, data);
@@ -331,7 +331,7 @@ scm_make_cpointer(void *data)
 ScmObj
 scm_make_cfunc_pointer(ScmCFunc func)
 {
-    ScmObj obj = scm_make_obj_from_heap();
+    ScmObj obj = scm_alloc_cell();
 
     SCM_ENTYPE_C_FUNCPOINTER(obj);
     SCM_C_FUNCPOINTER_SET_VALUE(obj, func);
