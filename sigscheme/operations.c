@@ -167,8 +167,8 @@ scm_p_equalp(ScmObj obj1, ScmObj obj2)
             return SCM_FALSE;
 
         for (i = 0; i < SCM_VECTOR_LEN(obj1); i++) {
-            elm1 = SCM_VECTOR_CREF(obj1, i);
-            elm2 = SCM_VECTOR_CREF(obj2, i);
+            elm1 = SCM_VECTOR_VEC(obj1)[i];
+            elm2 = SCM_VECTOR_VEC(obj2)[i];
             if (!EQ(elm1, elm2)
                 && (SCM_TYPE(elm1) != SCM_TYPE(elm2)
                     || FALSEP(scm_p_equalp(elm1, elm2))))
@@ -1602,31 +1602,35 @@ scm_p_vector_length(ScmObj vec)
 ScmObj
 scm_p_vector_ref(ScmObj vec, ScmObj scm_k)
 {
+    int k;
     DECLARE_FUNCTION("vector-ref", procedure_fixed_2);
 
     ASSERT_VECTORP(vec);
     ASSERT_INTP(scm_k);
 
-    /* sanity check */
-    if (SCM_INT_VALUE(scm_k) < 0 || SCM_VECTOR_LEN(vec) <= SCM_INT_VALUE(scm_k))
+    k = SCM_INT_VALUE(scm_k);
+
+    if (!SCM_VECTOR_VALID_INDEXP(vec, k))
         ERR_OBJ("index out of range", scm_k);
 
-    return SCM_VECTOR_REF(vec, scm_k);
+    return SCM_VECTOR_VEC(vec)[k];
 }
 
 ScmObj
 scm_p_vector_setd(ScmObj vec, ScmObj scm_k, ScmObj obj)
 {
+    int k;
     DECLARE_FUNCTION("vector-set!", procedure_fixed_3);
 
     ASSERT_VECTORP(vec);
     ASSERT_INTP(scm_k);
 
-    /* sanity check */
-    if (SCM_INT_VALUE(scm_k) < 0 || SCM_VECTOR_LEN(vec) <= SCM_INT_VALUE(scm_k))
+    k = SCM_INT_VALUE(scm_k);
+
+    if (!SCM_VECTOR_VALID_INDEXP(vec, k))
         ERR_OBJ("index out of range", scm_k);
 
-    SCM_VECTOR_SET_REF(vec, scm_k, obj);
+    SCM_VECTOR_VEC(vec)[k] = obj;
 
     return SCM_UNDEF;
 }

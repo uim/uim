@@ -760,13 +760,7 @@ extern enum ScmObjType Scm_Type(ScmObj obj);
     SCM_OTHERS_SET_CAR_VAL((a), (val))
 #define SCM_SAL_VECTOR_SET_LEN(a, val)          \
     SCM_OTHERS_SET_CDR_VAL((a), VECTOR, (val))
-/* backward compatibility */
-#define SCM_VECTOR_CREF(a, idx) (SCM_VECTOR_VEC(a)[idx])
-#define SCM_VECTOR_SET_CREF(a, idx, b) (SCM_VECTOR_CREF((a), (idx)) = (b))
-#define SCM_VECTOR_REF(a, idx)  (SCM_VECTOR_CREF((a), SCM_INT_VALUE(idx)))
-#define SCM_VECTOR_SET_REF(a, idx, b)  (SCM_VECTOR_REF((a), (idx)) = (b))
-#define SCM_VECTOR_CHECK_IDX(a, idx) ()
-
+#define SCM_SAL_VECTOR_VALID_INDEXP(o, i) (0 <= (i) && (i) < SCM_VECTOR_LEN(o))
 
 /*
  * ValuePacket

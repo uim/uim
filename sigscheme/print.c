@@ -614,7 +614,7 @@ write_ss_scan(ScmObj obj, write_ss_context *ctx)
 
         case ScmVector:
             for (i=0; i < SCM_VECTOR_LEN(obj); i++)
-                write_ss_scan(SCM_VECTOR_CREF(obj, i), ctx);
+                write_ss_scan(SCM_VECTOR_VEC(obj)[i], ctx);
             break;
 
         default:

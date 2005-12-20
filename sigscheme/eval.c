@@ -722,7 +722,7 @@ struct _sequence_translator {
                             (_t).u.vec.index = 0,                       \
                             (_t).u.vec.growth = 0,                      \
                             (_t).trans = vectran)
-#define TRV_GET_OBJ(_t)    (SCM_VECTOR_CREF((_t).u.vec.src, (_t).u.vec.index))
+#define TRV_GET_OBJ(_t)    (SCM_VECTOR_VEC((_t).u.vec.src)[(_t).u.vec.index])
 #define TRV_NEXT(_t)       (++(_t).u.vec.index)
 #define TRV_ENDP(_t)       (SCM_VECTOR_LEN((_t).u.vec.src) <= (_t).u.vec.index)
 #define TRV_EXTRACT(_t)    (TRV_CALL((_t), TR_MSG_EXTRACT, SCM_INVALID))

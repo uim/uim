@@ -501,15 +501,15 @@ scm_check_vector(unsigned int len)
     check_type(ScmVector, obj);
     SCM_ASSERT(SCM_VECTOR_LEN(obj) == len);
 
-    SCM_VECTOR_SET_CREF(obj, 0, scm_check_int(11));
+    SCM_VECTOR_VEC(obj)[0] = scm_check_int(11);
     check_type(ScmVector, obj);
-    SCM_ASSERT(SCM_INTP(SCM_VECTOR_CREF(obj, 0)));
-    SCM_ASSERT(SCM_INT_VALUE(SCM_VECTOR_CREF(obj, 0)) == 11);
+    SCM_ASSERT(SCM_INTP(SCM_VECTOR_VEC(obj)[0]));
+    SCM_ASSERT(SCM_INT_VALUE(SCM_VECTOR_VEC(obj)[0]) == 11);
 
-    SCM_VECTOR_SET_CREF(obj, 0, scm_check_int(3));
+    SCM_VECTOR_VEC(obj)[0] = scm_check_int(3);
     check_type(ScmVector, obj);
-    SCM_ASSERT(SCM_INTP(SCM_VECTOR_CREF(obj, 0)));
-    SCM_ASSERT(SCM_INT_VALUE(SCM_VECTOR_CREF(obj, 0)) == 3);
+    SCM_ASSERT(SCM_INTP(SCM_VECTOR_VEC(obj)[0]));
+    SCM_ASSERT(SCM_INT_VALUE(SCM_VECTOR_VEC(obj)[0]) == 3);
 
     /* marked state */
     SCM_DO_MARK(obj);
@@ -525,15 +525,15 @@ scm_check_vector(unsigned int len)
     check_type(ScmVector, obj);
     SCM_ASSERT(SCM_VECTOR_LEN(obj) == len);
 
-    SCM_VECTOR_SET_CREF(obj, 0, scm_check_int(11));
+    SCM_VECTOR_VEC(obj)[0] = scm_check_int(11);
     check_type(ScmVector, obj);
-    SCM_ASSERT(SCM_INTP(SCM_VECTOR_CREF(obj, 0)));
-    SCM_ASSERT(SCM_INT_VALUE(SCM_VECTOR_CREF(obj, 0)) == 11);
+    SCM_ASSERT(SCM_INTP(SCM_VECTOR_VEC(obj)[0]));
+    SCM_ASSERT(SCM_INT_VALUE(SCM_VECTOR_VEC(obj)[0]) == 11);
 
-    SCM_VECTOR_SET_CREF(obj, 0, scm_check_int(3));
+    SCM_VECTOR_VEC(obj)[0] = scm_check_int(3);
     check_type(ScmVector, obj);
-    SCM_ASSERT(SCM_INTP(SCM_VECTOR_CREF(obj, 0)));
-    SCM_ASSERT(SCM_INT_VALUE(SCM_VECTOR_CREF(obj, 0)) == 3);
+    SCM_ASSERT(SCM_INTP(SCM_VECTOR_VEC(obj)[0]));
+    SCM_ASSERT(SCM_INT_VALUE(SCM_VECTOR_VEC(obj)[0]) == 3);
 
     return obj;
 }
