@@ -309,25 +309,29 @@ struct ScmEvalState_ {
   Object Creators
 =======================================*/
 #define SCM_MAKE_BOOL(x)                  ((x) ? SCM_TRUE : SCM_FALSE)
-/* FIXME: define arguments */
-#define SCM_MAKE_INT                      SCM_SAL_MAKE_INT
-#define SCM_MAKE_CONS                     SCM_SAL_MAKE_CONS
-#define SCM_MAKE_SYMBOL                   SCM_SAL_MAKE_SYMBOL
-#define SCM_MAKE_CHAR                     SCM_SAL_MAKE_CHAR
-#define SCM_MAKE_STRING                   SCM_SAL_MAKE_STRING
-#define SCM_MAKE_STRING_COPYING           SCM_SAL_MAKE_STRING_COPYING
-#define SCM_MAKE_IMMUTABLE_STRING         SCM_SAL_MAKE_IMMUTABLE_STRING
-#define SCM_MAKE_IMMUTABLE_STRING_COPYING SCM_SAL_MAKE_IMMUTABLE_STRING_COPYING
-#define SCM_MAKE_FUNC                     SCM_SAL_MAKE_FUNC
-#define SCM_MAKE_CLOSURE                  SCM_SAL_MAKE_CLOSURE
-#define SCM_MAKE_VECTOR                   SCM_SAL_MAKE_VECTOR
-#define SCM_MAKE_PORT                     SCM_SAL_MAKE_PORT
-#define SCM_MAKE_CONTINUATION             SCM_SAL_MAKE_CONTINUATION
+#define SCM_MAKE_INT(val)                 SCM_SAL_MAKE_INT(val)
+#define SCM_MAKE_CONS(kar, kdr)           SCM_SAL_MAKE_CONS(kar, kdr)
+#define SCM_MAKE_SYMBOL(name, val)        SCM_SAL_MAKE_SYMBOL(name, val)
+#define SCM_MAKE_CHAR(val)                SCM_SAL_MAKE_CHAR(val)
+#define SCM_MAKE_STRING(str)              SCM_SAL_MAKE_STRING(str)
+#define SCM_MAKE_STRING_COPYING(str)      SCM_SAL_MAKE_STRING_COPYING(str)
+#define SCM_MAKE_IMMUTABLE_STRING(str)    SCM_SAL_MAKE_IMMUTABLE_STRING(str)
+#define SCM_MAKE_IMMUTABLE_STRING_COPYING(str)                               \
+    SCM_SAL_MAKE_IMMUTABLE_STRING_COPYING(str)
+/* SCM_MAKE_FUNC(enum ScmFuncTypeCode type, ScmFuncType func) */
+#define SCM_MAKE_FUNC(type, func)         SCM_SAL_MAKE_FUNC(type, func)
+#define SCM_MAKE_CLOSURE(exp, env)        SCM_SAL_MAKE_CLOSURE(exp, env)
+/* SCM_MAKE_VECTOR(ScmObj *vec, int len) */
+#define SCM_MAKE_VECTOR(vec, len)         SCM_SAL_MAKE_VECTOR(vec, len)
+#define SCM_MAKE_PORT(cport, flag)        SCM_SAL_MAKE_PORT(cport, flag)
+#define SCM_MAKE_CONTINUATION()           SCM_SAL_MAKE_CONTINUATION()
 #if SCM_USE_NONSTD_FEATURES
-#define SCM_MAKE_C_POINTER                SCM_SAL_MAKE_C_POINTER
-#define SCM_MAKE_C_FUNCPOINTER            SCM_SAL_MAKE_C_FUNCPOINTER
+/* SCM_MAKE_C_POINTER(void *ptr) */
+#define SCM_MAKE_C_POINTER(ptr)           SCM_SAL_MAKE_C_POINTER(ptr)
+/* SCM_MAKE_C_FUNCPOINTER(ScmCFunc ptr) */
+#define SCM_MAKE_C_FUNCPOINTER(ptr)       SCM_SAL_MAKE_C_FUNCPOINTER(ptr)
 #endif /* SCM_USE_NONSTD_FEATURES */
-#define SCM_MAKE_VALUEPACKET              SCM_SAL_MAKE_VALUEPACKET
+#define SCM_MAKE_VALUEPACKET(vals)        SCM_SAL_MAKE_VALUEPACKET(vals)
 
 /*=======================================
   Object Accessors
@@ -671,30 +675,6 @@ void *scm_malloc_aligned(size_t size);
 void *scm_malloc(size_t size);
 void *scm_calloc(size_t number, size_t size);
 void *scm_realloc(void *ptr, size_t size);
-
-/* storage.c */
-/* Don't use these functions directly. Use SCM_MAKE_*() or MAKE_*() instead to
- * allow flexible object allocation. */
-ScmObj scm_make_cons(ScmObj kar, ScmObj kdr);
-ScmObj scm_make_int(int val);
-ScmObj scm_make_symbol(char *name, ScmObj val);
-ScmObj scm_make_char(int val);
-ScmObj scm_make_immutable_string(char *str);
-ScmObj scm_make_immutable_string_copying(const char *str);
-ScmObj scm_make_string(char *str);
-ScmObj scm_make_string_copying(const char *str);
-ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
-ScmObj scm_make_closure(ScmObj exp, ScmObj env);
-ScmObj scm_make_vector(ScmObj *vec, int len);
-ScmObj scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag);
-ScmObj scm_make_continuation(void);
-#if !SCM_USE_VALUECONS
-ScmObj scm_make_value_packet(ScmObj values);
-#endif
-#if SCM_USE_NONSTD_FEATURES
-ScmObj scm_make_cpointer(void *ptr);
-ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
-#endif
 
 /* storage-gc.c */
 void scm_gc_protect(ScmObj *var);

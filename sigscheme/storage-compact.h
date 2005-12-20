@@ -602,6 +602,32 @@ struct ScmCell_ {
 #endif /* SCM_USE_NONSTD_FEATURES */
 #define SCM_SAL_MAKE_VALUEPACKET              scm_make_value_packet
 
+/* Don't use these functions directly. Use SCM_MAKE_*() or MAKE_*() instead to
+ * allow flexible object allocation. */
+ScmObj scm_make_cons(ScmObj kar, ScmObj kdr);
+#if 1
+/* FIXME: directly create by SCM_SAL_MAKE_*() */
+ScmObj scm_make_int(int val);
+ScmObj scm_make_char(int val);
+#endif
+ScmObj scm_make_symbol(char *name, ScmObj val);
+ScmObj scm_make_immutable_string(char *str);
+ScmObj scm_make_immutable_string_copying(const char *str);
+ScmObj scm_make_string(char *str);
+ScmObj scm_make_string_copying(const char *str);
+ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
+ScmObj scm_make_closure(ScmObj exp, ScmObj env);
+ScmObj scm_make_vector(ScmObj *vec, int len);
+ScmObj scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag);
+ScmObj scm_make_continuation(void);
+#if !SCM_USE_VALUECONS
+ScmObj scm_make_value_packet(ScmObj values);
+#endif
+#if SCM_USE_NONSTD_FEATURES
+ScmObj scm_make_cpointer(void *ptr);
+ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
+#endif
+
 /*=======================================
   Type Predicates
 =======================================*/
