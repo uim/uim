@@ -388,7 +388,7 @@ scm_type(ScmObj obj)
             return ScmCFuncPointer;
 
         ERR("invalid others object: ptr = %p, car = %p, cdr = %p",
-            (void*)obj, SCM_GET_DIRECT_CAR(obj), SCM_GET_DIRECT_CDR(obj));
+            (void*)obj, SCM_CELL_CAR(obj), SCM_CELL_CDR(obj));
     } else if (SCM_TAG_IMMP(obj)) {
         if (INTP(obj))
             return ScmInt;
@@ -398,10 +398,10 @@ scm_type(ScmObj obj)
             return ScmConstant;
 
         ERR("invalid imm object: ptr = %p, car = %p, cdr = %p",
-            (void*)obj, SCM_GET_DIRECT_CAR(obj), SCM_GET_DIRECT_CDR(obj));
+            (void*)obj, SCM_CELL_CAR(obj), SCM_CELL_CDR(obj));
     }
 
     ERR("corrupted object: ptr = %p, car = %p, cdr = %p",
-        (void*)obj, SCM_GET_DIRECT_CAR(obj), SCM_GET_DIRECT_CDR(obj));
+        (void*)obj, SCM_CELL_CAR(obj), SCM_CELL_CDR(obj));
 }
 #endif /* SCM_OBJ_COMPACT */
