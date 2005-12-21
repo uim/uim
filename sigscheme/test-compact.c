@@ -36,7 +36,22 @@
 #include <stdlib.h>
 
 #include "sigscheme.h"
-#include "sigschemetype-compact.h"
+#include "sigschemeinternal.h"
+
+ScmObj scm_check_cons();
+ScmObj scm_check_closure();
+ScmObj scm_check_symbol();
+ScmObj scm_check_string();
+ScmObj scm_check_vector();
+ScmObj scm_check_port();
+ScmObj scm_check_continuation();
+ScmObj scm_check_value_packet();
+ScmObj scm_check_freecell();
+ScmObj scm_check_int(int val);
+ScmObj scm_check_char(unsigned int val);
+ScmObj scm_check_constant();
+ScmObj scm_check_ref();
+
 
 #define PRINT_SECTION(SECTIONNAME)                      \
     do {                                                \
@@ -47,6 +62,7 @@
 #define SCM_ASSERT(cond)                      \
     ((cond) || die(__FILE__, __LINE__))
 
+#undef ASSERT_TYPE
 #define ASSERT_TYPE(expected, actual, pred)                             \
     do {                                                                \
         if (!(pred)) {                                                  \
@@ -161,6 +177,11 @@ check_type(enum ScmObjType type, ScmObj obj)
         SCM_ASSERT(SCM_C_FUNCPOINTERP(obj));
     else
         ASSERT_TYPE(type, ScmCFuncPointer, !SCM_C_FUNCPOINTERP(obj));
+
+    if (type == ScmFreeCell)
+        SCM_ASSERT(SCM_FREECELLP(obj));
+    else
+        ASSERT_TYPE(type, ScmFreeCell, !SCM_FREECELLP(obj));
 }
 
 static void *
@@ -181,23 +202,6 @@ aligned_strdup(const char *str)
     }
 
     return ret;
-}
-
-ScmObj
-scm_check_int(int val)
-{
-    ScmObj obj;
-
-    PRINT_SECTION("Int");
-
-    SCM_ENTYPE_INT(obj);
-    check_type(ScmInt, obj);
-
-    SCM_INT_SET_VALUE(obj, val);
-    check_type(ScmInt, obj);
-    SCM_ASSERT(SCM_INT_VALUE(obj) == val);
-
-    return obj;
 }
 
 ScmObj
@@ -253,6 +257,60 @@ scm_check_cons()
 }
 
 ScmObj
+scm_check_closure()
+{
+    ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
+    ScmObj exp = scm_check_cons();
+    ScmObj env = scm_check_cons();
+
+    PRINT_SECTION("Closure");
+
+    /* entyping */
+    SCM_ENTYPE_CLOSURE(obj);
+    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    check_type(ScmClosure, obj);
+
+    /* unmarked state */
+    SCM_CLOSURE_SET_EXP(obj, exp);
+    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    check_type(ScmClosure, obj);
+    check_type(ScmCons, SCM_CLOSURE_EXP(obj));
+    SCM_ASSERT(SCM_EQ(SCM_CLOSURE_EXP(obj), exp));
+    check_type(ScmInt, SCM_CAR(SCM_CLOSURE_EXP(obj)));
+    check_type(ScmInt, SCM_CDR(SCM_CLOSURE_EXP(obj)));
+
+    SCM_CLOSURE_SET_ENV(obj, env);
+    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    check_type(ScmClosure, obj);
+    check_type(ScmCons, SCM_CLOSURE_ENV(obj));
+    SCM_ASSERT(SCM_EQ(SCM_CLOSURE_ENV(obj), env));
+    check_type(ScmInt, SCM_CAR(SCM_CLOSURE_ENV(obj)));
+    check_type(ScmInt, SCM_CDR(SCM_CLOSURE_ENV(obj)));
+
+    /* marked state */
+    SCM_DO_MARK(obj);
+    SCM_ASSERT(SCM_IS_MARKED(obj));
+
+    SCM_CLOSURE_SET_EXP(obj, exp);
+    SCM_ASSERT(SCM_IS_MARKED(obj));
+    check_type(ScmClosure, obj);
+    check_type(ScmCons, SCM_CLOSURE_EXP(obj));
+    SCM_ASSERT(SCM_EQ(SCM_CLOSURE_EXP(obj), exp));
+    check_type(ScmInt, SCM_CAR(SCM_CLOSURE_EXP(obj)));
+    check_type(ScmInt, SCM_CDR(SCM_CLOSURE_EXP(obj)));
+
+    SCM_CLOSURE_SET_ENV(obj, env);
+    SCM_ASSERT(SCM_IS_MARKED(obj));
+    check_type(ScmClosure, obj);
+    check_type(ScmCons, SCM_CLOSURE_ENV(obj));
+    SCM_ASSERT(SCM_EQ(SCM_CLOSURE_ENV(obj), env));
+    check_type(ScmInt, SCM_CAR(SCM_CLOSURE_ENV(obj)));
+    check_type(ScmInt, SCM_CDR(SCM_CLOSURE_ENV(obj)));
+
+    return obj;
+}
+
+ScmObj
 scm_check_symbol(const char *name)
 {
     ScmObj obj   = (ScmObj)malloc(sizeof(ScmCell));
@@ -295,23 +353,6 @@ scm_check_symbol(const char *name)
     SCM_ASSERT(SCM_EQ(SCM_SYMBOL_VCELL(obj), vcell));
     SCM_ASSERT(SCM_INTP(SCM_SYMBOL_VCELL(obj)));
     SCM_ASSERT(SCM_INT_VALUE(SCM_SYMBOL_VCELL(obj)) == 1);
-
-    return obj;
-}
-
-ScmObj
-scm_check_char(unsigned int val)
-{
-    ScmObj obj;
-    PRINT_SECTION("Char");
-
-    /* entyping */
-    SCM_ENTYPE_CHAR(obj);
-    check_type(ScmChar, obj);
-
-    SCM_CHAR_SET_VALUE(obj, val);
-    check_type(ScmChar, obj);
-    SCM_ASSERT(SCM_CHAR_VALUE(obj) == val);
 
     return obj;
 }
@@ -383,101 +424,6 @@ scm_check_string_copying(char *str)
 }
 
 ScmObj
-scm_check_func(void *funcptr)
-{
-    ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
-    PRINT_SECTION("Func");
-
-    /* entyping */
-    SCM_ENTYPE_FUNC(obj);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
-    check_type(ScmFunc, obj);
-
-    /* unmarked state */
-    SCM_FUNC_SET_CFUNC(obj, funcptr);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
-    check_type(ScmFunc, obj);
-    SCM_ASSERT(SCM_FUNC_CFUNC(obj) == funcptr);
-
-    SCM_FUNC_SET_TYPECODE(obj, SCM_PROCEDURE_FIXED_TAIL_REC);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
-    check_type(ScmFunc, obj);
-    SCM_ASSERT(SCM_FUNC_TYPECODE(obj) == SCM_PROCEDURE_FIXED_TAIL_REC);
-    SCM_ASSERT(SCM_FUNC_CFUNC(obj) == funcptr);
-
-    /* marked state */
-    SCM_DO_MARK(obj);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
-
-    SCM_FUNC_SET_CFUNC(obj, funcptr);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
-    check_type(ScmFunc, obj);
-    SCM_ASSERT(SCM_FUNC_CFUNC(obj) == funcptr);
-
-    SCM_FUNC_SET_TYPECODE(obj, SCM_PROCEDURE_FIXED_TAIL_REC);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
-    check_type(ScmFunc, obj);
-    SCM_ASSERT(SCM_FUNC_TYPECODE(obj) == SCM_PROCEDURE_FIXED_TAIL_REC);
-    SCM_ASSERT(SCM_FUNC_CFUNC(obj) == funcptr);
-
-    return obj;
-}
-
-ScmObj
-scm_check_closure()
-{
-    ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
-    ScmObj exp = scm_check_cons();
-    ScmObj env = scm_check_cons();
-
-    PRINT_SECTION("Closure");
-
-    /* entyping */
-    SCM_ENTYPE_CLOSURE(obj);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
-    check_type(ScmClosure, obj);
-
-    /* unmarked state */
-    SCM_CLOSURE_SET_EXP(obj, exp);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
-    check_type(ScmClosure, obj);
-    check_type(ScmCons, SCM_CLOSURE_EXP(obj));
-    SCM_ASSERT(SCM_EQ(SCM_CLOSURE_EXP(obj), exp));
-    check_type(ScmInt, SCM_CAR(SCM_CLOSURE_EXP(obj)));
-    check_type(ScmInt, SCM_CDR(SCM_CLOSURE_EXP(obj)));
-
-    SCM_CLOSURE_SET_ENV(obj, env);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
-    check_type(ScmClosure, obj);
-    check_type(ScmCons, SCM_CLOSURE_ENV(obj));
-    SCM_ASSERT(SCM_EQ(SCM_CLOSURE_ENV(obj), env));
-    check_type(ScmInt, SCM_CAR(SCM_CLOSURE_ENV(obj)));
-    check_type(ScmInt, SCM_CDR(SCM_CLOSURE_ENV(obj)));
-
-    /* marked state */
-    SCM_DO_MARK(obj);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
-
-    SCM_CLOSURE_SET_EXP(obj, exp);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
-    check_type(ScmClosure, obj);
-    check_type(ScmCons, SCM_CLOSURE_EXP(obj));
-    SCM_ASSERT(SCM_EQ(SCM_CLOSURE_EXP(obj), exp));
-    check_type(ScmInt, SCM_CAR(SCM_CLOSURE_EXP(obj)));
-    check_type(ScmInt, SCM_CDR(SCM_CLOSURE_EXP(obj)));
-
-    SCM_CLOSURE_SET_ENV(obj, env);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
-    check_type(ScmClosure, obj);
-    check_type(ScmCons, SCM_CLOSURE_ENV(obj));
-    SCM_ASSERT(SCM_EQ(SCM_CLOSURE_ENV(obj), env));
-    check_type(ScmInt, SCM_CAR(SCM_CLOSURE_ENV(obj)));
-    check_type(ScmInt, SCM_CDR(SCM_CLOSURE_ENV(obj)));
-
-    return obj;
-}
-
-ScmObj
 scm_check_vector(unsigned int len)
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
@@ -538,6 +484,46 @@ scm_check_vector(unsigned int len)
     return obj;
 }
 
+ScmObj
+scm_check_func(void *funcptr)
+{
+    ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
+    PRINT_SECTION("Func");
+
+    /* entyping */
+    SCM_ENTYPE_FUNC(obj);
+    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    check_type(ScmFunc, obj);
+
+    /* unmarked state */
+    SCM_FUNC_SET_CFUNC(obj, funcptr);
+    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    check_type(ScmFunc, obj);
+    SCM_ASSERT(SCM_FUNC_CFUNC(obj) == funcptr);
+
+    SCM_FUNC_SET_TYPECODE(obj, SCM_PROCEDURE_FIXED_TAIL_REC);
+    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    check_type(ScmFunc, obj);
+    SCM_ASSERT(SCM_FUNC_TYPECODE(obj) == SCM_PROCEDURE_FIXED_TAIL_REC);
+    SCM_ASSERT(SCM_FUNC_CFUNC(obj) == funcptr);
+
+    /* marked state */
+    SCM_DO_MARK(obj);
+    SCM_ASSERT(SCM_IS_MARKED(obj));
+
+    SCM_FUNC_SET_CFUNC(obj, funcptr);
+    SCM_ASSERT(SCM_IS_MARKED(obj));
+    check_type(ScmFunc, obj);
+    SCM_ASSERT(SCM_FUNC_CFUNC(obj) == funcptr);
+
+    SCM_FUNC_SET_TYPECODE(obj, SCM_PROCEDURE_FIXED_TAIL_REC);
+    SCM_ASSERT(SCM_IS_MARKED(obj));
+    check_type(ScmFunc, obj);
+    SCM_ASSERT(SCM_FUNC_TYPECODE(obj) == SCM_PROCEDURE_FIXED_TAIL_REC);
+    SCM_ASSERT(SCM_FUNC_CFUNC(obj) == funcptr);
+
+    return obj;
+}
 
 ScmObj
 scm_check_port()
@@ -579,7 +565,6 @@ scm_check_port()
 
     return obj;
 }
-
 
 ScmObj
 scm_check_continuation(void *val)
@@ -649,6 +634,56 @@ scm_check_value_packet()
     check_type(ScmValuePacket, obj);
     SCM_ASSERT(SCM_EQ(SCM_VALUEPACKET_VALUES(obj), values));
     SCM_ASSERT(SCM_CONSP(SCM_VALUEPACKET_VALUES(obj)));
+
+    return obj;
+}
+
+ScmObj
+ scm_check_freecell()
+{
+    ScmObj obj  = (ScmObj)malloc(sizeof(ScmCell));
+    ScmObj next = scm_check_cons();
+
+    /* entyping */
+    SCM_ENTYPE_FREECELL(obj);
+    check_type(ScmFreeCell, obj);
+
+    SCM_FREECELL_SET_NEXT(obj, next);
+    check_type(ScmFreeCell, obj);
+    SCM_ASSERT(SCM_EQ(SCM_FREECELL_NEXT(obj), next));
+    SCM_ASSERT(SCM_CONSP(SCM_FREECELL_NEXT(obj)));
+}
+
+ScmObj
+scm_check_int(int val)
+{
+    ScmObj obj;
+
+    PRINT_SECTION("Int");
+
+    SCM_ENTYPE_INT(obj);
+    check_type(ScmInt, obj);
+
+    SCM_INT_SET_VALUE(obj, val);
+    check_type(ScmInt, obj);
+    SCM_ASSERT(SCM_INT_VALUE(obj) == val);
+
+    return obj;
+}
+
+ScmObj
+scm_check_char(unsigned int val)
+{
+    ScmObj obj;
+    PRINT_SECTION("Char");
+
+    /* entyping */
+    SCM_ENTYPE_CHAR(obj);
+    check_type(ScmChar, obj);
+
+    SCM_CHAR_SET_VALUE(obj, val);
+    check_type(ScmChar, obj);
+    SCM_ASSERT(SCM_CHAR_VALUE(obj) == val);
 
     return obj;
 }
@@ -724,12 +759,11 @@ scm_check_constant()
     check_type(ScmConstant, SCM_NULL);
 
     SCM_ASSERT(SCM_CONSTANTP(SCM_INVALID));
-    SCM_ASSERT(SCM_INVALIDP(SCM_INVALID));
-    SCM_ASSERT(!SCM_INTP(SCM_INVALID));
+    SCM_ASSERT(!VALIDP(SCM_INVALID));
     check_type(ScmConstant, SCM_INVALID);
 
     SCM_ASSERT(SCM_CONSTANTP(SCM_UNBOUND));
-    SCM_ASSERT(SCM_TAG_IMM_UNBOUNDP(SCM_UNBOUND));
+    SCM_ASSERT(SCM_IMM_TAG_UNBOUNDP(SCM_UNBOUND));
     check_type(ScmConstant, SCM_UNBOUND);
 
     SCM_ASSERT(SCM_CONSTANTP(SCM_FALSE));
@@ -737,7 +771,7 @@ scm_check_constant()
     check_type(ScmConstant, SCM_FALSE);
 
     SCM_ASSERT(SCM_CONSTANTP(SCM_TRUE));
-    SCM_ASSERT(SCM_TAG_IMM_TRUEP(SCM_TRUE));
+    SCM_ASSERT(SCM_IMM_TAG_TRUEP(SCM_TRUE));
     check_type(ScmConstant, SCM_TRUE);
 
     SCM_ASSERT(SCM_CONSTANTP(SCM_EOF));
@@ -745,7 +779,7 @@ scm_check_constant()
     check_type(ScmConstant, SCM_EOF);
 
     SCM_ASSERT(SCM_CONSTANTP(SCM_UNDEF));
-    SCM_ASSERT(SCM_TAG_IMM_UNDEFP(SCM_UNDEF));
+    SCM_ASSERT(SCM_IMM_TAG_UNDEFP(SCM_UNDEF));
     check_type(ScmConstant, SCM_UNDEF);
 
     return SCM_NULL;
@@ -762,16 +796,12 @@ scm_check_ref()
     ScmRef ref_cdr = SCM_REF_CDR(cons);
 
     SCM_ASSERT(SCM_EQ(cons, SCM_DEREF(SCM_REF_OFF_HEAP(cons))));
-    SCM_ASSERT(SCM_EQ(SCM_CAR(cons), SCM_DEREF(SCM_REF_OFF_HEAP(SCM_CAR(cons)))));
-    SCM_ASSERT(SCM_EQ(SCM_CDR(cons), SCM_DEREF(SCM_REF_OFF_HEAP(SCM_CDR(cons)))));
     SCM_ASSERT(SCM_EQ(SCM_CAR(cons), SCM_DEREF(ref_car)));
     SCM_ASSERT(SCM_EQ(SCM_CDR(cons), SCM_DEREF(ref_cdr)));
 
     SCM_SET(ref_car, tmp);
     SCM_SET(ref_cdr, tmp);
     SCM_ASSERT(SCM_EQ(cons, SCM_DEREF(SCM_REF_OFF_HEAP(cons))));
-    SCM_ASSERT(SCM_EQ(SCM_CAR(cons), SCM_DEREF(SCM_REF_OFF_HEAP(SCM_CAR(cons)))));
-    SCM_ASSERT(SCM_EQ(SCM_CDR(cons), SCM_DEREF(SCM_REF_OFF_HEAP(SCM_CDR(cons)))));
     SCM_ASSERT(SCM_EQ(SCM_CAR(cons), SCM_DEREF(ref_car)));
     SCM_ASSERT(SCM_EQ(SCM_CDR(cons), SCM_DEREF(ref_cdr)));
 }
@@ -787,7 +817,9 @@ int main(void)
     scm_check_char(0);
     scm_check_char(255);
     scm_check_string_copying("aiueo");
-//    scm_check_string_copying(NULL);
+/*
+    scm_check_string_copying(NULL);
+*/
     scm_check_closure();
     scm_check_func((void*)0x00000000);
     scm_check_func((void*)0xfffffffe);
@@ -804,8 +836,7 @@ int main(void)
     scm_check_cfunc_pointer((ScmCFunc)0x00000000);
     scm_check_cfunc_pointer((ScmCFunc)0xfffffffe);
     scm_check_cfunc_pointer((ScmCFunc)0xffffffff);
+    scm_check_freecell();
     scm_check_constant();
     scm_check_ref();
-
-    SCM_INVALIDP(SCM_INVALID);
 }
