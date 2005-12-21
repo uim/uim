@@ -295,8 +295,6 @@ add_heap(void)
     ScmObjHeap heap;
     ScmCell *cell;
 
-    CDBG((SCM_DBG_GC, "add_heap current num of heaps:%d", n_heaps));
-
     if (n_heaps_max <= n_heaps)
         scm_fatal_error("heap exhausted");
 
