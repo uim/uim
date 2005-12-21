@@ -386,6 +386,8 @@ scm_type(ScmObj obj)
             return ScmCPointer;
         else if (C_FUNCPOINTERP(obj))
             return ScmCFuncPointer;
+        else if (FREECELLP(obj))
+            return ScmFreeCell;
 
         ERR("invalid others object: ptr = %p, car = %p, cdr = %p",
             (void*)obj, SCM_CELL_CAR(obj), SCM_CELL_CDR(obj));
