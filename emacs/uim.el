@@ -278,6 +278,13 @@
 
 
 ;;
+;; Update IM label
+;;
+(defun uim-update-im-label ()
+  (uim-do-send-recv-cmd (format "%d LABEL" uim-context-id)))
+
+
+;;
 ;; Overwrite properties of current context
 ;;
 (defun uim-prop-activate (proplist)
@@ -1166,6 +1173,12 @@
     ;; move cursor
     (when (or uim-preedit-displayed uim-candidate-displayed)
       (goto-char uim-preedit-cursor))
+
+    (if (not uim-send-recv-again)
+	(when label 
+	  (setq uim-send-recv-again t)
+	  (uim-update-im-label))
+      (setq uim-send-recv-again nil))
 
     ))
 

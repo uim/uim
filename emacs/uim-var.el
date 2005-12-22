@@ -34,7 +34,7 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;
 
-(defconst uim-el-version "0.0.6-beta3")
+(defconst uim-el-version "0.0.6-beta4")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -231,6 +231,8 @@ displayed at the echo area.")
 (defvar uim-buffer-init-hook nil)
 ;; hook called after reset key map 
 (defvar uim-reset-keymap-hook nil)
+
+(defvar uim-send-recv-again nil)
 
 (defvar uim-last-key-vector nil
   "Recent key vector.")
