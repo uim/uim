@@ -62,7 +62,6 @@ static int cmd_setenc(const char *im, const char *encoding);
 static int cmd_prop(int context_id, const char *prop);
 static int cmd_error(void);
 
-static void check_prop(void);
 static void check_default_engine(void);
 
 static int process_command(int serial, int cid, char *cmd);

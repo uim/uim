@@ -247,6 +247,20 @@ cmd_prop(int context_id, const char *prop)
 
 
 static int
+cmd_label(int context_id)
+{
+
+  if (current == NULL)
+	return -1;
+  else 
+	output_prop_list(current->prop, current->im);
+
+  return 1;
+}
+
+
+
+static int
 cmd_error(void)
 {
   return -1;
@@ -264,7 +278,7 @@ check_default_engine(void)
 
 
 static void
-check_prop(void)
+check_prop_list_label(void)
 {
   if (current == NULL) return;
 
@@ -325,10 +339,12 @@ process_command(int serial, int cid, char *cmd)
   	ret = cmd_getenc(opt); /* for debug */
   else if (strcmp(cmd, "PROP") == 0)
   	ret = cmd_prop(cid, opt);
+  else if (strcmp(cmd, "LABEL") == 0)
+  	ret = cmd_label(cid);
   else
 	ret = cmd_error();
 
-  check_prop();
+  check_prop_list_label();
 
   check_default_engine();
 
@@ -477,7 +493,8 @@ process_keyvector(int serial, int cid, uim_key ukey, const char *keyname)
   if (ukey.key >= 0) {
 	/* key input is received by requested context */
 	ret = uim_press_key(current->context, ukey.key, ukey.mod);
-	uim_release_key(current->context , ukey.key, ukey.mod);
+
+	uim_release_key(current->context, ukey.key, ukey.mod);
 
 	if (ret > 0) {
 	  /* uim did not process the key */
@@ -528,7 +545,7 @@ process_keyvector(int serial, int cid, uim_key ukey, const char *keyname)
 	a_printf(" ( n ) ");
   }
 
-  check_prop();
+  check_prop_list_label();
 
   check_default_engine();
 
