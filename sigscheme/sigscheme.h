@@ -678,6 +678,7 @@ void *scm_realloc(void *ptr, size_t size);
 
 /* storage-gc.c */
 void scm_gc_protect(ScmObj *var);
+void scm_gc_protect_with_init(ScmObj *var, ScmObj init_val);
 void scm_gc_unprotect(ScmObj *var);
 #if SCM_GCC4_READY_GC
 /*

@@ -198,6 +198,7 @@ locate_protected_var(ScmObj *var)
     return NULL;
 }
 
+/* var must be initialized with a valid ScmObj before invocation */
 void
 scm_gc_protect(ScmObj *var)
 {
@@ -213,6 +214,13 @@ scm_gc_protect(ScmObj *var)
         slot = &protected_vars[protected_vars_size++];
     }
     *slot = var;
+}
+
+void
+scm_gc_protect_with_init(ScmObj *var, ScmObj init_val)
+{
+    *var = init_val;
+    scm_gc_protect(var);
 }
 
 void
