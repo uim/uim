@@ -1715,27 +1715,22 @@ msgid "input method switcher"
 msgstr "입력기 전환"
 
 #: scm/im-custom.lisp:360
-#, fuzzy
 msgid "preference tool"
 msgstr "설정"
 
 #: scm/im-custom.lisp:366
-#, fuzzy
 msgid "Japanese dictionary tool"
 msgstr "일본어 사전 도구"
 
 #: scm/im-custom.lisp:372
-#, fuzzy
 msgid "input pad"
 msgstr "입력 패드"
 
 #: scm/im-custom.lisp:378
-#, fuzzy
 msgid "handwriting-input pad"
 msgstr "손글씨 입력 패드"
 
 #: scm/im-custom.lisp:384
-#, fuzzy
 msgid "help"
 msgstr "도움말"
 
