@@ -142,8 +142,9 @@ static void finalize_protected_var(void);
 /*=======================================
   Function Implementations
 =======================================*/
-void scm_init_gc(size_t heap_size, size_t heap_alloc_threshold,
-                   int n_heaps_max, int n_heaps_init)
+void
+scm_init_gc(size_t heap_size, size_t heap_alloc_threshold,
+            int n_heaps_max, int n_heaps_init)
 {
     stack_start_pointer = NULL;
     protected_vars = NULL;

@@ -163,7 +163,8 @@ show_promptp(void)
 #endif
 }
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
     const char *filename;
     char **rest_argv;

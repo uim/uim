@@ -88,8 +88,9 @@ static ScmObj scm_make_string_internal(char *str, int is_immutable);
 /*=======================================
   Function Implementations
 =======================================*/
-void scm_init_storage(size_t heap_size, size_t heap_alloc_threshold,
-                      int n_heaps_max, int n_heaps_init)
+void
+scm_init_storage(size_t heap_size, size_t heap_alloc_threshold,
+                 int n_heaps_max, int n_heaps_init)
 {
     initialize_special_constants();
 
