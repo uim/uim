@@ -1,6 +1,9 @@
 ==============================================================================
 Requirements and bugs:
 
+* Investigate behavior of other implementations about constant {vector,list}
+  - Implement if needed
+
 * Autoconfiscate the SigScheme package (don't rely on uim's configure)
   - Prepare replace functions (asprintf and so on)
   - Introduce C99-independent stdint.h
