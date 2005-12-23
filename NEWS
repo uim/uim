@@ -2,9 +2,13 @@ Overview of changes from 1.0.0-beta to 1.0.0-final
 ==
 * Fixes
   o Minor
+    - uim.el
+      - Sync with uim-el 0.0.6-beta4
     - gtk+ immodule
       - fix SEGV with gvim when the caret state indicator is enabled
 	with a timeout value (Etsushi)
+      - workaround fix for preedit handling on gvim when use-with-vi?
+	is enabled with anthy and mana (Masanari, YamaKen, Etsushi)
     - SKK
       - improve completion behavior (Masanari, Etsushi)
 
