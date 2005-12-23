@@ -109,16 +109,13 @@ scm_initialize_siod(void)
     scm_define_alias("bit-xor", "logxor");
     scm_define_alias("bit-not", "lognot");
 
-    scm_gc_protect(&null_port);
-    scm_gc_protect(&saved_output_port);
-    scm_gc_protect(&saved_error_port);
-    null_port         = SCM_FALSE;
-    saved_output_port = SCM_FALSE;
-    saved_error_port  = SCM_FALSE;
+    scm_gc_protect_with_init(&null_port,         SCM_FALSE);
+    scm_gc_protect_with_init(&saved_output_port, SCM_FALSE);
+    scm_gc_protect_with_init(&saved_error_port,  SCM_FALSE);
 
     scm_nullport_init();
     null_port = scm_make_port(scm_make_char_port(ScmNullPort_new()),
-                            SCM_PORTFLAG_INPUT | SCM_PORTFLAG_OUTPUT);
+                              SCM_PORTFLAG_INPUT | SCM_PORTFLAG_OUTPUT);
 
     scm_set_verbose_level(2);
 }

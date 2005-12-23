@@ -152,8 +152,7 @@ scm_initialize_internal(void)
     scm_sym_else             = scm_intern("else");
     scm_sym_yields           = scm_intern("=>");
 
-    scm_gc_protect(&features);
-    features = SCM_NULL;
+    scm_gc_protect_with_init(&features, SCM_NULL);
 
     /*=======================================================================
       Register Built-in Functions

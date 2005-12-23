@@ -96,8 +96,7 @@ void scm_init_storage(size_t heap_size, size_t heap_alloc_threshold,
     scm_init_gc(heap_size, heap_alloc_threshold, n_heaps_max, n_heaps_init);
 
 #if 0 && (SCM_COMPAT_SIOD_BUGS && !SCM_OBJ_COMPACT)
-    scm_gc_protect(&scm_true);
-    scm_true = scm_make_int(1);
+    scm_gc_protect_with_init(&scm_true, scm_make_int(1));
 #endif
 
 #if SCM_USE_VALUECONS
@@ -105,8 +104,7 @@ void scm_init_storage(size_t heap_size, size_t heap_alloc_threshold,
      * To keep storage model abstract, the cell is allocated from a heap
      * instead of directly construct ScmCell
      */
-    scm_gc_protect(&scm_null_values);
-    scm_null_values = CONS(SCM_NULL, SCM_NULL);
+    scm_gc_protect_with_init(&scm_null_values, CONS(SCM_NULL, SCM_NULL));
     SCM_ENTYPE_VALUEPACKET(scm_null_values);
 #endif
 

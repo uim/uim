@@ -77,13 +77,11 @@ static void show_arg(ScmObj arg, ScmObj env);
 void
 scm_init_error(void)
 {
-    scm_gc_protect(&err_obj_tag);
-    scm_gc_protect(&str_srfi34);
-
     /* allocate a cons cell as unique ID */
-    err_obj_tag = CONS(SCM_UNDEF, SCM_UNDEF);
+    scm_gc_protect_with_init(&err_obj_tag, CONS(SCM_UNDEF, SCM_UNDEF));
 
-    str_srfi34 = MAKE_IMMUTABLE_STRING_COPYING("srfi-34");
+    scm_gc_protect_with_init(&str_srfi34,
+                             MAKE_IMMUTABLE_STRING_COPYING("srfi-34"));
     srfi34_is_provided = FALSE;
 
     cb_fatal_error = NULL;

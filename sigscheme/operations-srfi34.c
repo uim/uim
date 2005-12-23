@@ -126,10 +126,8 @@ scm_initialize_srfi34(void)
     scm_use("srfi-23");
 
     /* protect global variables */
-    for (var = &global_var_list[0]; *var; var++) {
-        **var = SCM_FALSE;
-        scm_gc_protect(*var);
-    }
+    for (var = &global_var_list[0]; *var; var++)
+        scm_gc_protect_with_init(*var, SCM_FALSE);
 
     errmsg_unhandled_exception
         = MAKE_IMMUTABLE_STRING_COPYING(ERRMSG_UNHANDLED_EXCEPTION);
