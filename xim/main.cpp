@@ -165,12 +165,15 @@ static void main_loop()
 	    continue;
 	}
 
-	for (it = fd_watch_stat.begin(); it != fd_watch_stat.end(); it++) {
+	it = fd_watch_stat.begin();
+	while (it != fd_watch_stat.end()) {
 	    int fd = it->first;
 	    if (FD_ISSET(fd, &rfds))
 		it->second.fn(fd, READ_OK);
 	    if (FD_ISSET(fd, &wfds))
 		it->second.fn(fd, WRITE_OK);
+	    it = fd_watch_stat.find(fd);
+	    it++;
 	}
     }
 }
