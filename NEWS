@@ -1,3 +1,10 @@
+Overview of changes from 1.0.0 to 1.0.1
+==
+* Fixes
+  o Minor
+    - uim-xim
+      - Workaround fix for preventing SEGV if compiled with g++-4.x.
+
 Overview of changes from 1.0.0-beta to 1.0.0-final
 ==
 * Fixes
