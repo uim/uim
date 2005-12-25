@@ -172,7 +172,13 @@ static void main_loop()
 		it->second.fn(fd, READ_OK);
 	    if (FD_ISSET(fd, &wfds))
 		it->second.fn(fd, WRITE_OK);
+	    // fd_watch_stat may be modified by above functions at
+	    // this point.  Since the behavior with incrementing
+	    // invalidated iterator is compiler dependent, use safer
+	    // way.
 	    it = fd_watch_stat.find(fd);
+	    if (it == fd_watch_stat.end())	// shouldn't happen
+		break;
 	    it++;
 	}
     }
