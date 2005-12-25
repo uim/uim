@@ -1,14 +1,24 @@
 ==============================================================================
 Requirements and bugs:
 
-* Investigate behavior of other implementations about constant {vector,list}
-  - Implement if needed
-
 * Autoconfiscate the SigScheme package (don't rely on uim's configure)
   - Prepare replace functions (asprintf and so on)
   - Introduce C99-independent stdint.h
     http://autoconf-archive.cryp.to/ax_create_stdint_h.html
   - [uim] configure sigscheme subdir by top-level configure like GCC
+  - Generate and pack sigschemefunctable*.[hc] into distribution file by make
+    dist
+
+* Fix all destructive expression on macros
+
+* Review and refactor all functions in eval.c, operations*.c, encoding.[hc] and
+  *port.[hc] (other files had already been done except for the destructive exp
+  on macros)
+
+* Investigate behavior of other implementations about constant {vector,list}
+  - Implement if needed
+
+* Make 64bit-safe
 
 * Add tests for proper tail recursion with 'apply' and 'guard' to
   test-tail-rec.scm
@@ -37,12 +47,14 @@ Extensions: (not required for now)
 Performance improvements:
 
 * Object representation compaction ([Anthy-dev 2353], [Anthy-dev 2360])
+  - Delete sigschemetype*.h
+  - Make all tests passed without error or SEGV
+  - Create immediate objects directly without calling scm_make_*()
+  - Refine logical structure and namings
 
-* Replace almost ScmObj initialization by SCM_NULL with SCM_FALSE. SCM_NULL is
-  not appropriate for such clean initialization. #f is the counterpart of NULL
-  of C. And using SCM_FALSE as the default value is the most efficient way in
-  macine-code level since SCM_FALSE will be represented by zero after the
-  compaction
+* (not required for now) Replace procedure registration functions with
+  typecode-base single function with typecheck macro, to reduce footprint
+  - Make private proc registration in SRFI-34 type-safe
 
 ==============================================================================
 Logical simplifications:
@@ -53,42 +65,61 @@ Logical simplifications:
 ==============================================================================
 Namings and Cosmetic things:
 
+* Elimnate initialization for variables and aggregate by type
+
 * Rename "Macro Declarations" of all C files, "Macro Definitions" and move to
   immediately after of "Local Include" section since other declarations and
   definitions sometimes need macros
 
-* Rename STL names (string, list) to another such as str, lst
+* Consider renaming about typenames (e.g. ScmObj -> scm_obj)
 
-* Grand renaming (prefix reorganization, consideration about func_name and
-  FuncName styles) ([Anthy-dev 2254], [Anthy-dev 2251])
+* Rename STL names (string, list) to another such as str, lst
 
 * Define the coding style for indent(1) and reform *.[ch] by it
 
 * Refill license header with fill-column 79, and insert it into all test files
 
-* [uim] Rename uim-scm.c to uim-scm-sigscheme.c
+* [uim] Rename uim-scm.c to uim-scm-sigscheme.c (after the merger)
 
 ==============================================================================
 Assigned to Kazuki:
 
 * Inhibit a mutation on string constants as described in "3.4 Storage model" of
   R5RS
+  - Fix incorrect mutability assertions and make all tests passed
   - Write both immutable and mutable case tests for all procedures that accepts
     a string
 
 ==============================================================================
-
 Assigned to YamaKen:
 
-* Separate SCM_ASSERT into required validation optional assertion
+* unittest.scm
+  - Separate testname and error message for assert
+  - Add auto-increment testname generator
 
-* Fix character and escape sequence related issues. grep Scm_special_char_table
-  to find the issues, and make all tests in test-char.scm and test-string.scm
-  passed
-  - Write tests for SRFI-75
+* Separate SCM_ASSERT into required validation (SCM_VALIDATE) and optional
+  assertion (SCM_ASSERT)
+
+* Add CCS identity for each codec and use it to check Unicode compatibility on
+  SRFI-75-related operations
+
+* Add charcodec_char_len() interface to codec and simplify string operations
+  with it (also used for validation)
+
+* Remove stateful encoding support from most string operations (i.e. make such
+  encodings dedicated to stream operations)
+
+* Add codec retrieval interface to character port, and use it in port-related
+  operations
+
+* [uim] Validate all uim_scm_gc_protect() invocation
+
+* Write tests for SRFI-75
 
 * Add integer->char and char->integer procedures with multibyte support
   - Write test
+
+* Make memory parameters runtime-configurable
 
 * GCC4-optimization-proof stack protection
   - Update the document
