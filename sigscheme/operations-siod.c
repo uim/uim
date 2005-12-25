@@ -150,7 +150,9 @@ scm_p_set_symbol_valued(ScmObj var, ScmObj val)
 
     ASSERT_SYMBOLP(var);
 
-    return SCM_SYMBOL_SET_VCELL(var, val);
+    SCM_SYMBOL_SET_VCELL(var, val);
+
+    return val;
 }
 
 ScmObj
