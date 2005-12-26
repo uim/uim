@@ -1,6 +1,6 @@
 AC_PREREQ(2.57)
 
-AC_INIT([uim], [1.0.1], [uim@lists.freedesktop.org])
+AC_INIT([uim], [1.0.2], [uim@lists.freedesktop.org])
 AM_INIT_AUTOMAKE(1.8.3)
 
 AC_CONFIG_SRCDIR([COPYING])
