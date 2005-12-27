@@ -208,30 +208,30 @@ struct ScmCell_ {
     (SCM_GCBIT_OFFSET + SCM_GCBIT_WIDTH)
 
 /* stored value alignment */
-#define SCM_ALIGNMENT_SCMOBJ     (0x1 << (SCM_TAG_OFFSET + SCM_TAG_WIDTH))
-#define SCM_ALIGNMENT_2BYTE      (0x1 << 2) /* FIXME: more better name? */
-#define SCM_ALIGNMENT_NOTALIGNED (0x1 << 1) /* FIXME: more better name? */
+#define SCM_ALIGN_SCMCELL (0x1 << (SCM_TAG_OFFSET + SCM_TAG_WIDTH))
+#define SCM_ALIGN_EVEN    (0x1 << 2)
+#define SCM_ALIGN_NONE    (0x1 << 1)
 
 #define SCM_OTHERS_CAR_VAL_ALIGNMENT_SYMBOL     \
-    SCM_ALIGNMENT_SCMOBJ
+    SCM_ALIGN_SCMCELL
 #define SCM_OTHERS_CAR_VAL_ALIGNMENT_STRING     \
-    SCM_ALIGNMENT_2BYTE
+    SCM_ALIGN_EVEN
 #define SCM_OTHERS_CAR_VAL_ALIGNMENT_VECTOR     \
-    SCM_ALIGNMENT_2BYTE
+    SCM_ALIGN_EVEN
 #define SCM_OTHERS_CAR_VAL_ALIGNMENT_VALUES     \
-    SCM_ALIGNMENT_SCMOBJ
+    SCM_ALIGN_SCMCELL
 #define SCM_OTHERS_CAR_VAL_ALIGNMENT_FUNC       \
-    SCM_ALIGNMENT_NOTALIGNED
+    SCM_ALIGN_NONE
 #define SCM_OTHERS_CAR_VAL_ALIGNMENT_PORT       \
-    SCM_ALIGNMENT_SCMOBJ
+    SCM_ALIGN_SCMCELL
 #define SCM_OTHERS_CAR_VAL_ALIGNMENT_CONTINUATION       \
-    SCM_ALIGNMENT_2BYTE
+    SCM_ALIGN_EVEN
 #define SCM_OTHERS_CAR_VAL_ALIGNMENT_C_POINTER          \
-    SCM_ALIGNMENT_NOTALIGNED
+    SCM_ALIGN_NONE
 #define SCM_OTHERS_CAR_VAL_ALIGNMENT_C_FUNCPOINTER      \
-    SCM_ALIGNMENT_NOTALIGNED
+    SCM_ALIGN_NONE
 #define SCM_OTHERS_CAR_VAL_ALIGNMENT_FREECELL   \
-    SCM_ALIGNMENT_SCMOBJ
+    SCM_ALIGN_SCMCELL
 
 /*==============================================================================
   Masks Offsets, and Tags : Others' CDR
@@ -571,8 +571,8 @@ struct ScmCell_ {
  * for Others
  */
 /* car */
-#define SCM_OTHERS_CAR_IS_NOTALIGNED_VAL(type)  \
-    (SCM_OTHERS_CAR_VAL_ALIGNMENT_##type == SCM_ALIGNMENT_NOTALIGNED)
+#define SCM_OTHERS_CAR_VAL_ALIGN_NONEP(type)    \
+    (SCM_OTHERS_CAR_VAL_ALIGNMENT_##type == SCM_ALIGN_NONE)
 #define SCM_OTHERS_CDR_CARLSB_VAL_OFFSET(type)  \
     (SCM_OTHERS_CDR_VAL_OFFSET_##type)
 #define SCM_OTHERS_CDR_CARLSB_VAL_MASK(type)    \
@@ -581,7 +581,7 @@ struct ScmCell_ {
     ((SCM_CAST_UINT(SCM_CELL_CDR(a)) >> SCM_OTHERS_CDR_CARLSB_VAL_OFFSET(type)) & 0x1)
 
 #define SCM_OTHERS_CAR_VAL(a, type)                             \
-    ((SCM_OTHERS_CAR_IS_NOTALIGNED_VAL(type))                   \
+    ((SCM_OTHERS_CAR_VAL_ALIGN_NONEP(type))                     \
      ? ((ScmObj)((SCM_STRIP_GCBIT(SCM_CELL_CAR(a)))             \
                  | SCM_OTHERS_CDR_CARLSB_VAL((a), type)))       \
      : ((ScmObj)((SCM_STRIP_GCBIT(SCM_CELL_CAR(a))))))
@@ -591,7 +591,7 @@ struct ScmCell_ {
         SCM_CELL_SET_CAR((a), (SCM_STRIP_GCBIT(val)                     \
                                | SCM_GCBIT(SCM_CELL_CAR(a))));          \
                                                                         \
-        if (SCM_OTHERS_CAR_IS_NOTALIGNED_VAL(type)) {                   \
+        if (SCM_OTHERS_CAR_VAL_ALIGN_NONEP(type)) {                     \
             /* store val's GCBIT to the CDR */                          \
             SCM_CELL_SET_CDR((a),                                       \
                              ((SCM_CAST_UINT(SCM_CELL_CDR(a))           \
@@ -602,17 +602,19 @@ struct ScmCell_ {
     } while (/*CONSTCOND*/ 0)
 
 /* cdr */
-#define SCM_OTHERS_CDR_TAGGING(a, type, val)                    \
-    ((SCM_OTHERS_CAR_IS_NOTALIGNED_VAL(type))                   \
+#define SCM_OTHERS_CDR_TAGGING(a, type, val)                            \
+    ((SCM_OTHERS_CAR_VAL_ALIGN_NONEP(type))                             \
      ? ((SCM_CAST_UINT(val) << (SCM_OTHERS_CDR_VAL_OFFSET_##type + 1))  \
-        | (SCM_CAST_UINT(SCM_CELL_CDR(a)) & (~SCM_OTHERS_CDR_VAL_MASK_##type \
-                              | SCM_OTHERS_CDR_CARLSB_VAL_MASK(type)))) \
+        | (SCM_CAST_UINT(SCM_CELL_CDR(a))                               \
+           & (~SCM_OTHERS_CDR_VAL_MASK_##type                           \
+              | SCM_OTHERS_CDR_CARLSB_VAL_MASK(type))))                 \
      : ((SCM_CAST_UINT(val) << SCM_OTHERS_CDR_VAL_OFFSET_##type)        \
-        | (SCM_CAST_UINT(SCM_CELL_CDR(a)) & (~SCM_OTHERS_CDR_VAL_MASK_##type))))
+        | (SCM_CAST_UINT(SCM_CELL_CDR(a))                               \
+           & (~SCM_OTHERS_CDR_VAL_MASK_##type))))
 
 #define SCM_OTHERS_CDR_VAL(a, type)                                     \
     ((SCM_CAST_UINT(SCM_CELL_CDR(a)) & SCM_OTHERS_CDR_VAL_MASK_##type)  \
-     >> ((SCM_OTHERS_CAR_IS_NOTALIGNED_VAL(type))                       \
+     >> ((SCM_OTHERS_CAR_VAL_ALIGN_NONEP(type))                         \
          ? (SCM_OTHERS_CDR_VAL_OFFSET_##type + 1)                       \
          : (SCM_OTHERS_CDR_VAL_OFFSET_##type)))
 #define SCM_OTHERS_SET_CDR_VAL(a, type, val)                            \
