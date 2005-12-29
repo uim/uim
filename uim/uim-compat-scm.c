@@ -188,7 +188,7 @@ uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
   for (i = n_strs - 1; 0 <= i; i--) {
     c_str = strs[i];
     str = (uim_lisp)SCM_MAKE_STRING_COPYING(c_str);
-    lst = (uim_lisp)scm_make_cons((ScmObj)str, (ScmObj)lst);
+    lst = (uim_lisp)SCM_CONS((ScmObj)str, (ScmObj)lst);
   }
 
   return (uim_lisp)lst;

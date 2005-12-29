@@ -230,7 +230,7 @@ scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state)
         ERR("(internal error) unrecognized state specifier: %d", *state);
     }
 
-    return scm_make_int(result);
+    return MAKE_INT(result);
 }
 
 ScmObj
@@ -254,7 +254,7 @@ scm_p_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state)
         ERR("(internal error) unrecognized state specifier: %d", *state);
     }
 
-    return scm_make_int(result);
+    return MAKE_INT(result);
 }
 
 ScmObj
@@ -278,7 +278,7 @@ scm_p_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state)
     default:
         ERR("(internal error) unrecognized state specifier: %d", *state);
     }
-    return scm_make_int(result);
+    return MAKE_INT(result);
 }
 
 ScmObj
@@ -303,7 +303,7 @@ scm_p_divide(ScmObj left, ScmObj right, enum ScmReductionState *state)
     default:
         ERR("(internal error) unrecognized state specifier: %d", *state);
     }
-    return scm_make_int(result);
+    return MAKE_INT(result);
 }
 
 ScmObj
@@ -442,7 +442,7 @@ scm_p_abs(ScmObj scm_num)
 
     num = SCM_INT_VALUE(scm_num);
 
-    return (num < 0) ? scm_make_int(-num) : scm_num;
+    return (num < 0) ? MAKE_INT(-num) : scm_num;
 }
 
 ScmObj
@@ -461,7 +461,7 @@ scm_p_quotient(ScmObj scm_n1, ScmObj scm_n2)
     if (n2 == 0)
         ERR("division by zero");
 
-    return scm_make_int((int)(n1 / n2));
+    return MAKE_INT((int)(n1 / n2));
 }
 
 ScmObj
@@ -488,7 +488,7 @@ scm_p_modulo(ScmObj scm_n1, ScmObj scm_n2)
         rem += n2;
     }
 
-    return scm_make_int(rem);
+    return MAKE_INT(rem);
 }
 
 ScmObj
@@ -507,7 +507,7 @@ scm_p_remainder(ScmObj scm_n1, ScmObj scm_n2)
     if (n2 == 0)
         ERR("division by zero");
 
-    return scm_make_int(n1 % n2);
+    return MAKE_INT(n1 % n2);
 }
 
 /*==============================================================================
@@ -592,7 +592,7 @@ scm_p_string2number(ScmObj str, ScmObj args)
     if (*first_nondigit)
         ERR("ill-formatted number: %s", SCM_STRING_STR(str));
 
-    return scm_make_int(num);
+    return MAKE_INT(num);
 }
 
 /*===================================
@@ -801,7 +801,7 @@ scm_p_length(ScmObj obj)
     if (len < 0)
         ERR_OBJ("list required but got", obj);
 
-    return scm_make_int(len);
+    return MAKE_INT(len);
 }
 
 ScmObj
@@ -1137,7 +1137,7 @@ scm_p_char2integer(ScmObj obj)
 
     ASSERT_CHARP(obj);
 
-    return scm_make_int(SCM_CHAR_VALUE(obj));
+    return MAKE_INT(SCM_CHAR_VALUE(obj));
 }
 
 ScmObj
@@ -1152,7 +1152,7 @@ scm_p_integer2char(ScmObj obj)
     val = SCM_INT_VALUE(obj);
     if (!SCM_CHARCODEC_INT2STR(scm_current_char_codec, buf, val, SCM_MB_STATELESS))
         ERR_OBJ("invalid char value", obj);
-    return scm_make_char(val);
+    return MAKE_CHAR(val);
 }
 
 ScmObj
@@ -1242,7 +1242,7 @@ scm_p_string_length(ScmObj str)
 {
     DECLARE_FUNCTION("string-length", procedure_fixed_1);
     ASSERT_STRINGP(str);
-    return scm_make_int(scm_mb_bare_c_strlen(SCM_STRING_STR(str)));
+    return MAKE_INT(scm_mb_bare_c_strlen(SCM_STRING_STR(str)));
 }
 
 ScmObj
@@ -1271,7 +1271,7 @@ scm_p_string_ref(ScmObj str, ScmObj k)
     if (ch == EOF)
         ERR("string-ref: invalid char sequence");
 
-    return scm_make_char(ch);
+    return MAKE_CHAR(ch);
 }
 
 ScmObj
@@ -1458,7 +1458,7 @@ scm_p_string2list(ScmObj str)
         if (ch == EOF)
             ERR("string->list: invalid char sequence");
 
-        SCM_QUEUE_ADD(q, scm_make_char(ch));
+        SCM_QUEUE_ADD(q, MAKE_CHAR(ch));
         SCM_MBS_SKIP_CHAR(mbs, mbc);
     }
 
@@ -1571,7 +1571,7 @@ scm_p_make_vector(ScmObj vector_len, ScmObj args)
     for (i = 0; i < len; i++)
         vec[i] = filler;
 
-    return scm_make_vector(vec, len);
+    return MAKE_VECTOR(vec, len);
 }
 
 ScmObj
@@ -1587,7 +1587,7 @@ scm_p_vector(ScmObj args)
     for (i = 0; i < len; i++)
         vec[i] = POP_ARG(args);
 
-    return scm_make_vector(vec, len);
+    return MAKE_VECTOR(vec, len);
 }
 
 ScmObj
@@ -1596,7 +1596,7 @@ scm_p_vector_length(ScmObj vec)
     DECLARE_FUNCTION("vector-length", procedure_fixed_1);
 
     ASSERT_VECTORP(vec);
-    return scm_make_int(SCM_VECTOR_LEN(vec));
+    return MAKE_INT(SCM_VECTOR_LEN(vec));
 }
 
 ScmObj
@@ -1678,7 +1678,7 @@ scm_p_list2vector(ScmObj lst)
         lst  = CDR(lst);
     }
 
-    return scm_make_vector(v, c_len);
+    return MAKE_VECTOR(v, c_len);
 }
 
 ScmObj

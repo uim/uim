@@ -66,7 +66,7 @@
         default:                                                             \
             ERR(opstr ": (internal error) unrecognized state specifier: %d", *state); \
         }                                                                    \
-        return scm_make_int(result);                                           \
+        return MAKE_INT(result);                                           \
     } while (/* CONSTCOND */ 0)
 
 /*=======================================
@@ -122,7 +122,7 @@ scm_p_srfi60_lognot(ScmObj n)
 
     ASSERT_INTP(n);
 
-    return scm_make_int(~SCM_INT_VALUE(n));
+    return MAKE_INT(~SCM_INT_VALUE(n));
 }
 
 ScmObj
@@ -138,7 +138,7 @@ scm_p_srfi60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1)
     c_mask = SCM_INT_VALUE(mask);
     result = (c_mask & SCM_INT_VALUE(n0)) | (~c_mask & SCM_INT_VALUE(n1));
 
-    return scm_make_int(result);
+    return MAKE_INT(result);
 }
 
 ScmObj

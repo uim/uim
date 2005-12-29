@@ -114,8 +114,8 @@ scm_initialize_siod(void)
     scm_gc_protect_with_init(&saved_error_port,  SCM_FALSE);
 
     scm_nullport_init();
-    null_port = scm_make_port(scm_make_char_port(ScmNullPort_new()),
-                              SCM_PORTFLAG_INPUT | SCM_PORTFLAG_OUTPUT);
+    null_port = MAKE_PORT(scm_make_char_port(ScmNullPort_new()),
+                          SCM_PORTFLAG_INPUT | SCM_PORTFLAG_OUTPUT);
 
     scm_set_verbose_level(2);
 }
@@ -208,7 +208,7 @@ scm_p_verbose(ScmObj args)
         scm_set_verbose_level(SCM_INT_VALUE(CAR(args)));
     }
 
-    return scm_make_int(sscm_verbose_level);
+    return MAKE_INT(sscm_verbose_level);
 }
 
 ScmObj

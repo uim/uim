@@ -490,7 +490,7 @@ read_char(ScmObj port)
     c = scm_port_get_char(port);
     next = scm_port_peek_char(port);
     if (strchr(DELIMITER_CHARS, next) || next == EOF)
-        return scm_make_char(c);
+        return MAKE_CHAR(c);
 #if SCM_USE_SRFI75
     else if (!isascii(c))
         ERR("invalid character literal");
@@ -506,12 +506,12 @@ read_char(ScmObj port)
 #if SCM_USE_SRFI75
     unicode = parse_unicode_sequence(buf, len + 1);
     if (0 <= unicode)
-        return scm_make_char(unicode);
+        return MAKE_CHAR(unicode);
 #endif
     /* named chars */
     for (info = scm_special_char_table; info->esc_seq; info++) {
         if (strcmp(buf, info->lex_rep) == 0)
-            return scm_make_char(info->code);
+            return MAKE_CHAR(info->code);
     }
     ERR("invalid character literal: #\\%s", buf);
 }
@@ -695,7 +695,7 @@ parse_number(ScmObj port, char *buf, size_t buf_size, char prefix)
     if (*first_nondigit)
         goto err;
 
-    return scm_make_int(number);
+    return MAKE_INT(number);
 
  err:
     ERR("ill-formatted number: #%c%s", prefix, buf);

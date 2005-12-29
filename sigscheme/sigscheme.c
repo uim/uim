@@ -285,7 +285,7 @@ scm_eval_c_string_internal(const char *exp)
     ScmBytePort *bport;
 
     bport = ScmInputStrPort_new_const(exp, NULL);
-    str_port = scm_make_port(scm_make_char_port(bport), SCM_PORTFLAG_INPUT);
+    str_port = MAKE_PORT(scm_make_char_port(bport), SCM_PORTFLAG_INPUT);
 
     ret = scm_read(str_port);
     ret = EVAL(ret, SCM_INTERACTION_ENV);
@@ -378,7 +378,7 @@ static int
 scm_register_func(const char *name, ScmFuncType c_func, enum ScmFuncTypeCode type)
 {
     ScmObj sym  = scm_intern(name);
-    ScmObj func = scm_make_func(type, c_func);
+    ScmObj func = MAKE_FUNC(type, c_func);
 
     /* TODO: reject bad TYPE */
     SCM_SYMBOL_SET_VCELL(sym, func);

@@ -97,7 +97,7 @@ scm_init_storage(size_t heap_size, size_t heap_alloc_threshold,
     scm_init_gc(heap_size, heap_alloc_threshold, n_heaps_max, n_heaps_init);
 
 #if 0 && (SCM_COMPAT_SIOD_BUGS && !SCM_OBJ_COMPACT)
-    scm_gc_protect_with_init(&scm_true, scm_make_int(1));
+    scm_gc_protect_with_init(&scm_true, MAKE_INT(1));
 #endif
 
 #if SCM_USE_VALUECONS

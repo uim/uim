@@ -430,7 +430,7 @@ uim_scm_eval_internal(uim_lisp obj)
 uim_lisp
 uim_scm_apply(uim_lisp proc, uim_lisp args)
 {
-  return (uim_lisp)scm_call((ScmObj)proc, scm_make_cons((ScmObj)args, SCM_NULL));
+  return (uim_lisp)scm_call((ScmObj)proc, SCM_CONS((ScmObj)args, SCM_NULL));
 }
 #endif  /* UIM_SCM_EXTENDED_API */
 
@@ -498,7 +498,7 @@ uim_scm_cddr(uim_lisp lst)
 uim_lisp
 uim_scm_cons(uim_lisp car, uim_lisp cdr)
 {
-  return (uim_lisp)scm_make_cons((ScmObj)car, (ScmObj)cdr);
+  return (uim_lisp)SCM_CONS((ScmObj)car, (ScmObj)cdr);
 }
 
 uim_lisp

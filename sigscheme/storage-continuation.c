@@ -274,7 +274,7 @@ scm_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
 #if SCM_DEBUG
     cont_frame.trace_stack = trace_stack;
 #endif
-    cont = scm_make_continuation();
+    cont = MAKE_CONTINUATION();
     CONTINUATION_SET_FRAME(cont, &cont_frame);
 #if SCM_NESTED_CONTINUATION_ONLY
     continuation_stack_push(cont);

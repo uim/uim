@@ -820,7 +820,7 @@ vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
         change_index = t->u.vec.index;
 
       record_change:
-        SCM_QUEUE_ADD(t->u.vec.q, CONS(scm_make_int(change_index), obj));
+        SCM_QUEUE_ADD(t->u.vec.q, CONS(MAKE_INT(change_index), obj));
         break;
 
     case TR_MSG_EXTRACT:
@@ -859,7 +859,7 @@ vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
                 else
                     change_index = SCM_INT_VALUE(CAAR(diff));
             }
-            return scm_make_vector(copy_buf, src_len + t->u.vec.growth);
+            return MAKE_VECTOR(copy_buf, src_len + t->u.vec.growth);
         }
         break;
     }
@@ -891,7 +891,7 @@ scm_s_lambda(ScmObj formals, ScmObj body, ScmObj env)
     if (!CONSP(body))
         ERR_OBJ("at least one expression required", body);
 
-    return scm_make_closure(CONS(formals, body), env);
+    return MAKE_CLOSURE(CONS(formals, body), env);
 }
 
 /*===========================================================================
@@ -1222,7 +1222,7 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
 
     /* named let */
     if (SYMBOLP(named_let_sym)) {
-        proc = scm_make_closure(CONS(vars, body), env);
+        proc = MAKE_CLOSURE(CONS(vars, body), env);
         define_internal(named_let_sym, proc, env);
     }
 
@@ -1455,7 +1455,7 @@ scm_s_delay(ScmObj expr, ScmObj env)
     DECLARE_FUNCTION("delay", syntax_fixed_1);
 
     /* (lambda () exp) */
-    return scm_make_closure(SCM_LIST_2(SCM_NULL, expr), env);
+    return MAKE_CLOSURE(SCM_LIST_2(SCM_NULL, expr), env);
 }
 
 /*===========================================================================
@@ -1647,9 +1647,7 @@ scm_s_define(ScmObj var, ScmObj rest, ScmObj env)
 
         ASSERT_SYMBOLP(procname);
 
-        define_internal(procname,
-                        scm_make_closure(CONS(formals, body), env),
-                        env);
+        define_internal(procname, MAKE_CLOSURE(CONS(formals, body), env), env);
     } else {
         ERR_OBJ("syntax error", var);
     }

@@ -149,7 +149,7 @@ scm_p_srfi1_list_tabulate(ScmObj scm_n, ScmObj args)
 
     /* then create list */
     for (i = n; 0 < i; i--) {
-        num = scm_make_int(i - 1);
+        num = MAKE_INT(i - 1);
 
         if (!NULLP(proc))
             num = scm_call(proc, LIST_1(num));
@@ -235,7 +235,7 @@ scm_p_srfi1_iota(ScmObj scm_count, ScmObj args)
     start = NULLP(scm_start) ? 0 : SCM_INT_VALUE(scm_start);
     step  = NULLP(scm_step)  ? 1 : SCM_INT_VALUE(scm_step);
     for (i = count - 1; 0 <= i; i--) {
-        head = CONS(scm_make_int(start + i*step), head);
+        head = CONS(MAKE_INT(start + i * step), head);
     }
 
     return head;
@@ -511,7 +511,7 @@ scm_p_srfi1_take_right(ScmObj lst, ScmObj scm_elem)
 
     len -= SCM_INT_VALUE(scm_elem);
 
-    return scm_p_srfi1_drop(lst, scm_make_int(len));
+    return scm_p_srfi1_drop(lst, MAKE_INT(len));
 }
 
 ScmObj
@@ -528,7 +528,7 @@ scm_p_srfi1_drop_right(ScmObj lst, ScmObj scm_elem)
 
     len -= SCM_INT_VALUE(scm_elem);
 
-    return scm_p_srfi1_take(lst, scm_make_int(len));
+    return scm_p_srfi1_take(lst, MAKE_INT(len));
 }
 
 ScmObj

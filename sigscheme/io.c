@@ -129,7 +129,7 @@ ScmObj scm_make_shared_file_port(FILE *file, const char *aux_info,
 
     /* GC safe */
     bport = ScmFilePort_new_shared(file, aux_info);
-    return scm_make_port(scm_make_char_port(bport), flag);
+    return MAKE_PORT(scm_make_char_port(bport), flag);
 }
 
 int
@@ -367,7 +367,7 @@ scm_p_open_input_file(ScmObj filepath)
     if (!bport)
         ERR_OBJ("cannot open file ", filepath);
 
-    return scm_make_port(scm_make_char_port(bport), SCM_PORTFLAG_INPUT);
+    return MAKE_PORT(scm_make_char_port(bport), SCM_PORTFLAG_INPUT);
 }
 
 ScmObj
@@ -382,7 +382,7 @@ scm_p_open_output_file(ScmObj filepath)
     if (!bport)
         ERR_OBJ("cannot open file ", filepath);
 
-    return scm_make_port(scm_make_char_port(bport), SCM_PORTFLAG_OUTPUT);
+    return MAKE_PORT(scm_make_char_port(bport), SCM_PORTFLAG_OUTPUT);
 }
 
 ScmObj
@@ -453,7 +453,7 @@ scm_p_read_char(ScmObj args)
     if (ch == EOF)
         return SCM_EOF;
 
-    return scm_make_char(ch);
+    return MAKE_CHAR(ch);
 }
 
 ScmObj
@@ -469,7 +469,7 @@ scm_p_peek_char(ScmObj args)
     if (ch == EOF)
         return SCM_EOF;
 
-    return scm_make_char(ch);
+    return MAKE_CHAR(ch);
 }
 
 ScmObj
