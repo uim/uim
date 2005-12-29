@@ -52,8 +52,8 @@
 (define total-report
   (lambda ()
     (let ((header (if (zero? *total-failures*)
-                      "OK : "
-                      "FAILED : "))
+                      "OK: "
+                      "FAILED: "))
           (total-successes (- *total-assertions* *total-failures*)))
       (for-each display
                 (list
@@ -66,10 +66,10 @@
       (newline))))
 
 (define report-error
-  (lambda (errmsg)
+  (lambda (err-msg)
     (begin
-      (display "error : ")
-      (display errmsg)
+      (display "error: ")
+      (display err-msg)
       (newline))))
 
 (define report-inequality
