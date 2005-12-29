@@ -84,13 +84,22 @@ extern "C" {
 #define SCM_DBG(args)
 #endif /* SCM_DEBUG */
 
-/* FIXME:
- * - separate required validation from optional assertion
- * - support immediate termination to produce core instead of robust recovery
- */
+#if SCM_DEBUG
+#if SCM_CHICKEN_DEBUG
+/* allows survival recovery */
 #define SCM_ASSERT(cond)                                                     \
     ((cond) || scm_die("assertion failed", __FILE__, __LINE__))
+#else /* SCM_CHICKEN_DEBUG */
+#include <assert.h>
+#define SCM_ASSERT(cond) (assert(cond))
+#endif /* SCM_CHICKEN_DEBUG */
+#else /* SCM_DEBUG */
+#define SCM_ASSERT(cond)
+#endif /* SCM_DEBUG */
+#define SCM_ENSURE(cond)                                                     \
+    ((cond) || scm_die("invalid condition", __FILE__, __LINE__))
 
+/* FIXME: Rename to SCM_ENSURE_ALLOCATED() */
 #define SCM_ASSERT_ALLOCATED(p)                                              \
     ((p) || (scm_fatal_error(SCM_ERRMSG_MEMORY_EXHAUSTED), 1))
 
@@ -171,6 +180,7 @@ extern "C" {
 /* Above five macros must be defined before this inclusion. */
 #include "baseport.h"
 
+/* FIXME: Rename to SCM_ENSURE_LIVE_PORT() */
 #define SCM_ASSERT_LIVE_PORT(port)                                           \
     (SCM_PORT_IMPL(port)                                                     \
      || (scm_error_obj("(unknown)", "operated on closed port", port), 1))

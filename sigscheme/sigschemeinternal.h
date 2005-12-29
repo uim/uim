@@ -325,9 +325,11 @@ extern ScmObj scm_null_values;
       ? (SCM_MANGLE(tmp) = CAR(args), (args) = CDR(args), SCM_MANGLE(tmp)) \
       : (ERR("missing argument(s)"), NULL))
 
+/* FIXME: Rename to ENSURE_TYPE() */
 #define ASSERT_TYPE(pred, typename, obj) \
     (pred(obj) || (ERR_OBJ(typename " required but got", (obj)), 1))
 
+/* FIXME: Rename to ENSURE_INT() and so on */
 #define ASSERT_INTP(obj)     ASSERT_TYPE(INTP, "integer", (obj))
 #define ASSERT_CONSP(obj)    ASSERT_TYPE(CONSP, "pair", (obj))
 #define ASSERT_SYMBOLP(obj)  ASSERT_TYPE(SYMBOLP, "symbol", (obj))
@@ -352,11 +354,13 @@ extern ScmObj scm_null_values;
 /* error handlings */
 #define SCM_ERR_HEADER "Error: "
 
+/* FIXME: Rename to ENSURE_ALLOCATED() */
 #define ASSERT_ALLOCATED SCM_ASSERT_ALLOCATED
 
 /*=======================================
    String Mutation Assertion
 =======================================*/
+/* FIXME: Rename to ENSURE_MUTABLE() */
 #define ASSERT_MUTABLEP(str)                                            \
     do {                                                                \
         if (SCM_STRING_MUTATION_TYPE(str) == SCM_STR_IMMUTABLE)         \

@@ -93,7 +93,7 @@ Assigned to Kazuki:
 ==============================================================================
 Assigned to YamaKen:
 
-* Separate SCM_ASSERT into required validation (SCM_VALIDATE) and optional
+* Separate SCM_ASSERT into required validation (SCM_ENSURE) and optional
   assertion (SCM_ASSERT)
 
 * Add CCS identity for each codec and use it to check Unicode compatibility on

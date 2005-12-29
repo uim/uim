@@ -102,6 +102,7 @@
   Debugging
 ===========================================================================*/
 #define SCM_DEBUG               1  /* enable debugging features */
+#define SCM_CHICKEN_DEBUG       1  /* allow survival recovery */
 #define SCM_DEBUG_GC            0  /* enable GC debugging */
 #define SCM_DEBUG_PORT          0  /* enable port debugging */
 #define SCM_DEBUG_PARSER        0  /* enable parser debugging */
