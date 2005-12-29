@@ -43,6 +43,8 @@
 
 ;;(set! *test-track-progress* #t)
 
+(define tn test-name)
+
 (define my-assert-error
   (lambda (test-name proc)
     (assert-error test-name (lambda ()
@@ -56,68 +58,68 @@
 ;; raise
 ;;
 
+(tn "raise")
+
 ;; no guard or raw exception handler
-(assert-error "raise #1" (lambda ()
-                              (raise 'exception)))
+(assert-error (tn) (lambda ()
+                     (raise 'exception)))
 
 ;;
 ;; with-exception-handler
 ;;
 
+(tn "with-exception-handler invalid form")
+
 ;; handler is not a procedure
-(my-assert-error "with-exception-handler invalid form #1"
-                 (lambda ()
-                   (with-exception-handler
-                       'a-handler-must-not-return
-                     (lambda ()
-                       (+ 1 (raise 'obj))))))
+(my-assert-error (tn) (lambda ()
+                        (with-exception-handler
+                            'a-handler-must-not-return
+                          (lambda ()
+                            (+ 1 (raise 'obj))))))
 
 ;; handler a procedure but takes 2 arguments
-(my-assert-error "with-exception-handler invalid form #2"
-                 (lambda ()
-                   (with-exception-handler
-                       eq?
-                     (lambda ()
-                       (+ 1 (raise 'obj))))))
+(my-assert-error (tn) (lambda ()
+                        (with-exception-handler
+                            eq?
+                          (lambda ()
+                            (+ 1 (raise 'obj))))))
 
 ;; thunk is not a procedure
-(my-assert-error "with-exception-handler invalid form #3"
-                 (lambda ()
-                   (with-exception-handler
-                       (lambda (x)
-                         'a-handler-must-not-return)
-                     'an-error)))
+(my-assert-error (tn) (lambda ()
+                        (with-exception-handler
+                            (lambda (x)
+                              'a-handler-must-not-return)
+                          'an-error)))
 
 ;; handler a procedure but takes an argument
-(my-assert-error "with-exception-handler invalid form #4"
-                 (lambda ()
-                   (with-exception-handler
-                       (lambda (x)
-                         'a-handler-must-not-return)
-                     (lambda (dummy)
-                       (+ 1 (raise 'obj))))))
+(my-assert-error (tn) (lambda ()
+                        (with-exception-handler
+                            (lambda (x)
+                              'a-handler-must-not-return)
+                          (lambda (dummy)
+                            (+ 1 (raise 'obj))))))
+
+(tn "with-exception-handler")
 
 ;; Although the behavior when a handler returned is not specified in SRFI-34,
 ;; SigScheme should produce an error to prevent being misused by users.
 (if (provided? "sigscheme")
-    (my-assert-error "with-exception-handler #1"
-                     (lambda ()
-                       (with-exception-handler
-                           (lambda (x)
-                             'a-handler-must-not-return)
-                         (lambda ()
-                           (+ 1 (raise 'obj)))))))
+    (my-assert-error (tn) (lambda ()
+                            (with-exception-handler
+                                (lambda (x)
+                                  'a-handler-must-not-return)
+                              (lambda ()
+                                (+ 1 (raise 'obj)))))))
 
-(assert-error "with-exception-handler #3"
-              (lambda ()
-                (with-exception-handler
-                    (lambda (x)
-                      (assert-equal? "with-exception-handler #2" 'an-error x)
-                      'a-handler-must-not-return)
-                  (lambda ()
-                    (+ 1 (raise 'an-error))))))
+(assert-error (tn) (lambda ()
+                     (with-exception-handler
+                         (lambda (x)
+                           (assert-equal? (tn) 'an-error x)
+                           'a-handler-must-not-return)
+                       (lambda ()
+                         (+ 1 (raise 'an-error))))))
 
-(assert-equal? "with-exception-handler #4"
+(assert-equal? (tn)
                6
 	       (with-exception-handler
                    (lambda (x)
@@ -125,7 +127,7 @@
                  (lambda ()
                    (+ 1 2 3))))
 
-(assert-equal? "with-exception-handler #5"
+(assert-equal? (tn)
                'success
 	       (with-exception-handler
                    (lambda (x)
@@ -135,7 +137,8 @@
 
 
 ;; guard
-(assert-equal? "guard #1"
+(tn "guard")
+(assert-equal? (tn)
                'exception
 	       (guard (condition
 		       (else
@@ -143,28 +146,28 @@
 			'exception))
                  (+ 1 (raise 'an-error))))
 
-(assert-equal? "guard #3"
+(assert-equal? (tn)
                3
 	       (guard (condition
 		       (else
 			'exception))
                  (+ 1 2)))
 
-(assert-equal? "guard #4"
+(assert-equal? (tn)
                'success
 	       (guard (condition
 		       (else
 			'exception))
                  'success))
 
-(assert-equal? "guard #5"
+(assert-equal? (tn)
                'exception
 	       (guard (condition
 		       (else
 			'exception))
                  (+ 1 (raise 'error))))
 
-(assert-equal? "guard #6"
+(assert-equal? (tn)
                42
                (guard (condition
                        ((assq 'a condition) => cdr)
@@ -174,7 +177,7 @@
                         (newline)))
                  (raise (list (cons 'a 42)))))
 
-(assert-equal? "guard #7"
+(assert-equal? (tn)
                '(b . 23)
                (guard (condition
                        ((assq 'a condition) => cdr)
@@ -185,7 +188,7 @@
                  (raise (list (cons 'b 23)))))
 
 ;; not matched against => and fall through to else
-(assert-equal? "guard #8"
+(assert-equal? (tn)
                #f
                (guard (condition
                        ((assv condition '((a 1) (b 2))) => cadr)
@@ -196,166 +199,149 @@
 ;; handler part of guard
 ;;
 
-(my-assert-error  "guard handler invalid form #1"
-                  (lambda ()
-                    (guard (var)
-                      (raise 'obj))))
+(tn "guard handler invalid form")
 
-(my-assert-error  "guard handler invalid form #2"
-                  (lambda ()
-                    (guard (var
-                            ())
-                      (raise 'obj))))
+(my-assert-error (tn) (lambda ()
+                        (guard (var)
+                          (raise 'obj))))
 
-(my-assert-error  "guard handler invalid form #3"
-                  (lambda ()
-                    (guard (var
-                            ()
-                            (else #t))
-                      (raise 'obj))))
+(my-assert-error (tn) (lambda ()
+                        (guard (var
+                                ())
+                          (raise 'obj))))
+
+(my-assert-error (tn) (lambda ()
+                        (guard (var
+                                ()
+                                (else #t))
+                          (raise 'obj))))
 
 ;; 'else' followed by another caluse
-(my-assert-error  "guard handler invalid form #4"
-                  (lambda ()
-                    (guard (var
-                            (else #t)
-                            (#t))
-                      (raise 'obj))))
+(my-assert-error (tn) (lambda ()
+                        (guard (var
+                                (else #t)
+                                (#t))
+                          (raise 'obj))))
 
 ;; not specified in R5RS 'case', but SigScheme should cause error
 (if (provided? "sigscheme")
-    (my-assert-error  "guard handler invalid form #5"
-                      (lambda ()
+    (my-assert-error (tn) (lambda ()
+                            (guard (var
+                                    (else))
+                              (raise 'obj)))))
+
+(my-assert-error (tn) (lambda ()
                         (guard (var
-                                (else))
-                          (raise 'obj)))))
+                                (#t =>))
+                          (raise 'obj))))
 
-(my-assert-error  "guard handler invalid form #6"
-                  (lambda ()
-                    (guard (var
-                            (#t =>))
-                      (raise 'obj))))
+(my-assert-error (tn) (lambda ()
+                        (guard (var
+                                (#t =>)
+                                (else #t))
+                          (raise 'obj))))
 
-(my-assert-error  "guard handler invalid form #7"
-                  (lambda ()
-                    (guard (var
-                            (#t =>)
-                            (else #t))
-                      (raise 'obj))))
-
-(my-assert-error  "guard handler invalid form #8"
-                  (lambda ()
-                    (guard (var
-                            (else =>))
-                      (raise 'obj))))
+(my-assert-error (tn) (lambda ()
+                        (guard (var
+                                (else =>))
+                          (raise 'obj))))
 
 ;; not a procedure
-(my-assert-error  "guard handler invalid form #9"
-                  (lambda ()
-                    (guard (var
-                            (#t => #t))
-                      (raise 'obj))))
+(my-assert-error (tn) (lambda ()
+                        (guard (var
+                                (#t => #t))
+                          (raise 'obj))))
 
 ;; not a procedure but #f
-(my-assert-error  "guard handler invalid form #10"
-                  (lambda ()
-                    (guard (var
-                            (#t => #f))
-                      (raise 'obj))))
+(my-assert-error (tn) (lambda ()
+                        (guard (var
+                                (#t => #f))
+                          (raise 'obj))))
 
 ;; procedure but argument number mismatch
-(my-assert-error  "guard handler invalid form #11"
-                  (lambda ()
-                    (guard (var
-                            (#t => eq?))
-                      (raise 'obj))))
+(my-assert-error (tn) (lambda ()
+                        (guard (var
+                                (#t => eq?))
+                          (raise 'obj))))
 
 ;; not a procedure but a syntax
-(my-assert-error  "guard handler invalid form #12"
-                  (lambda ()
-                    (guard (var
-                            (#t => delay))
-                      (raise 'obj))))
+(my-assert-error (tn) (lambda ()
+                        (guard (var
+                                (#t => delay))
+                          (raise 'obj))))
 
-(assert-false "guard namespace taintlessness #1"
-              (guard (var
-                      (#f var))
-                (symbol-bound? 'lex-env)))
+(tn "guard namespace taintlessness")
 
-(assert-false "guard namespace taintlessness #2"
-              (guard (var
-                      (#f var))
-                (symbol-bound? 'cond-catch)))
+(assert-false (tn) (guard (var
+                           (#f var))
+                     (symbol-bound? 'lex-env)))
 
-(assert-false "guard namespace taintlessness #3"
-              (guard (var
-                      (#f var))
-                (symbol-bound? 'body)))
+(assert-false (tn) (guard (var
+                           (#f var))
+                     (symbol-bound? 'cond-catch)))
 
-(assert-false "guard namespace taintlessness #4"
-              (guard (var
-                      (#f var))
-                (symbol-bound? 'condition)))
+(assert-false (tn) (guard (var
+                           (#f var))
+                     (symbol-bound? 'body)))
 
-(assert-false "guard namespace taintlessness #5"
-              (guard (var
-                      (#f var))
-                (symbol-bound? 'guard-k)))
+(assert-false (tn) (guard (var
+                           (#f var))
+                     (symbol-bound? 'condition)))
 
-(assert-false "guard namespace taintlessness #6"
-              (guard (var
-                      (#f var))
-                (symbol-bound? 'handler-k)))
+(assert-false (tn) (guard (var
+                           (#f var))
+                     (symbol-bound? 'guard-k)))
 
-(assert-false "guard namespace taintlessness #7"
-              (guard (var
-                      (#f var))
-                (symbol-bound? 'var)))
+(assert-false (tn) (guard (var
+                           (#f var))
+                     (symbol-bound? 'handler-k)))
 
-(assert-false "guard handler namespace taintlessness #1"
-              (guard (var
-                      (else
-                       (symbol-bound? 'lex-env)))
-                (raise 'err)))
+(assert-false (tn) (guard (var
+                           (#f var))
+                     (symbol-bound? 'var)))
 
-(assert-false "guard handler namespace taintlessness #2"
-              (guard (var
-                      (else
-                       (symbol-bound? 'cond-catch)))
-                (raise 'err)))
+(tn "guard handler namespace taintlessness")
 
-(assert-false "guard handler namespace taintlessness #3"
-              (guard (var
-                      (else
-                       (symbol-bound? 'body)))
-                (raise 'err)))
+(assert-false (tn) (guard (var
+                           (else
+                            (symbol-bound? 'lex-env)))
+                     (raise 'err)))
 
-(assert-false "guard handler namespace taintlessness #4"
-              (guard (var
-                      (else
-                       (symbol-bound? 'condition)))
-                (raise 'err)))
+(assert-false (tn) (guard (var
+                           (else
+                            (symbol-bound? 'cond-catch)))
+                     (raise 'err)))
 
-(assert-false "guard handler namespace taintlessness #5"
-              (guard (var
-                      (else
-                       (symbol-bound? 'guard-k)))
-                (raise 'err)))
+(assert-false (tn) (guard (var
+                           (else
+                            (symbol-bound? 'body)))
+                     (raise 'err)))
 
-(assert-false "guard handler namespace taintlessness #6"
-              (guard (var
-                      (else
-                       (symbol-bound? 'handler-k)))
-                (raise 'err)))
+(assert-false (tn) (guard (var
+                           (else
+                            (symbol-bound? 'condition)))
+                     (raise 'err)))
 
-(assert-equal? "guard handler condition variable #1"
+(assert-false (tn) (guard (var
+                           (else
+                            (symbol-bound? 'guard-k)))
+                     (raise 'err)))
+
+(assert-false (tn) (guard (var
+                           (else
+                            (symbol-bound? 'handler-k)))
+                     (raise 'err)))
+
+(tn "guard handler condition variable")
+
+(assert-equal? (tn)
                'err
                (guard (var
                        (else var))
                  (raise 'err)))
 
 ;; the variable can be modified
-(assert-equal? "guard handler condition variable #2"
+(assert-equal? (tn)
                'ERR
                (guard (var
                        (#t
@@ -365,7 +351,7 @@
 
 ;; the variable does not affect outer environment
 (define var 'global-var)
-(assert-equal? "guard handler condition variable #3"
+(assert-equal? (tn)
                'outer
                (let ((var 'outer))
                  (guard (var
@@ -376,7 +362,7 @@
 
 ;; the variable does not affect global one
 (define var 'global-var)
-(assert-equal? "guard handler condition variable #4"
+(assert-equal? (tn)
                'global-var
                (begin
                  (guard (var
@@ -385,25 +371,27 @@
                    (raise 'err))
                  var))
 
-(assert-equal? "guard evaluation count exactness #1"
+(tn "guard evaluation count exactness")
+
+(assert-equal? (tn)
                7
                (guard (var
                        (else var))
                  (+ 3 4)))
 
-(assert-equal? "guard evaluation count exactness #2"
+(assert-equal? (tn)
                7
                (guard (var
                        (else var))
                  (raise (+ 3 4))))
 
-(assert-equal? "guard evaluation count exactness #3"
+(assert-equal? (tn)
                7
                (guard (var
                        (else (+ 3 4)))
                  (raise 'err)))
 
-(assert-equal? "guard evaluation count exactness #4"
+(assert-equal? (tn)
                7
                (let ((a 3)
                      (b 4))
@@ -411,7 +399,7 @@
                          (else var))
                    (+ a b))))
 
-(assert-equal? "guard evaluation count exactness #5"
+(assert-equal? (tn)
                7
                (let ((a 3)
                      (b 4))
@@ -419,7 +407,7 @@
                          (else var))
                    (raise (+ a b)))))
 
-(assert-equal? "guard evaluation count exactness #6"
+(assert-equal? (tn)
                7
                (let ((a 3)
                      (b 4))
@@ -427,7 +415,7 @@
                          (else (+ a b)))
                    (raise 'err))))
 
-(assert-equal? "guard evaluation count exactness #7"
+(assert-equal? (tn)
                (list + 3 4)  ;; not 7
                (let ((a 3)
                      (b 4))
@@ -435,7 +423,7 @@
                          (else var))
                    (list + a b))))
 
-(assert-equal? "guard evaluation count exactness #8"
+(assert-equal? (tn)
                (list + 3 4)  ;; not 7
                (let ((a 3)
                      (b 4))
@@ -443,7 +431,7 @@
                          (else var))
                    (raise (list + a b)))))
 
-(assert-equal? "guard evaluation count exactness #9"
+(assert-equal? (tn)
                (list + 3 4)  ;; not 7
                (let ((a 3)
                      (b 4))
@@ -451,7 +439,9 @@
                          (else (list + a b)))
                    (raise 'err))))
 
-(assert-equal? "guard with multiple values #1"
+(tn "guard with multiple values")
+
+(assert-equal? (tn)
                '(1 2)
                (receive vals
                    (guard (var
@@ -459,7 +449,7 @@
                      (values 1 2))
                  vals))
 
-(assert-equal? "guard with multiple values #2"
+(assert-equal? (tn)
                '(1 2)
                (receive vals
                    (guard (var
@@ -468,14 +458,16 @@
                  vals))
 
 (if (provided? "sigscheme")
-    (assert-error "guard with multiple values #3"
+    (assert-error (tn)
                   (lambda ()
                     (guard (var
                             ((not (%%error-object? var))
                              var))
                       (raise (values 1 2))))))
 
-(assert-equal?  "guard handler reraise #1"
+(tn "guard handler reraise")
+
+(assert-equal?  (tn)
                 'reraised
                 (guard (var
                         ((eq? var 'error)
@@ -483,7 +475,7 @@
                   (guard (var
                           (#f))
                     (raise 'error))))
-(assert-equal?  "guard handler reraise #2"
+(assert-equal?  (tn)
                 'reraised
                 (guard (var
                         ((eq? var 'error)
@@ -492,27 +484,28 @@
                           ((even? 3) #f)
                           ((positive? -1) #f))
                     (raise 'error))))
-(assert-error "guard handler reraise #3"
-              (lambda ()
-                (guard (condition
-                        ((positive? condition) 'positive)
-                        ((negative? condition) 'negative))
-                  (raise 0))))
+(assert-error (tn) (lambda ()
+                     (guard (condition
+                             ((positive? condition) 'positive)
+                             ((negative? condition) 'negative))
+                       (raise 0))))
+
+(tn "guard handler tested value as result")
 
 ;; R5RS: If the selected <clause> contains only the <test> and no
 ;; <expression>s, then the value of the <test> is returned as the result.
-(assert-equal?  "guard handler tested value as result #1"
+(assert-equal?  (tn)
                 #t
                 (guard (var
                         (#t))
                   (raise 'error)))
-(assert-equal?  "guard handler tested value as result #2"
+(assert-equal?  (tn)
                 3
                 (guard (var
                         (#f)
                         (3))
                   (raise 'error)))
-(assert-equal?  "guard handler tested value as result #3"
+(assert-equal?  (tn)
                 3
                 (guard(var
                        (#f)
@@ -524,7 +517,9 @@
 ;; mixed use of with-exception-handler and guard
 ;;
 
-(assert-equal? "mixed exception handling #1"
+(tn "mixed exception handling")
+
+(assert-equal? (tn)
                'guard-ret
 	       (with-exception-handler (lambda (x)
 					 (k 'with-exception-ret))
@@ -534,7 +529,7 @@
                             'guard-ret))
                      (raise 1)))))
 
-(assert-error "mixed exception handling #2"
+(assert-error (tn)
               (lambda ()
                 (with-exception-handler (lambda (x)
                                           'with-exception-ret
@@ -547,7 +542,7 @@
                              'guard-ret))
                       (raise 1))))))
 
-(assert-equal? "mixed exception handling #3"
+(assert-equal? (tn)
                'positive
                (call-with-current-continuation
                 (lambda (k)
@@ -559,7 +554,7 @@
                               ((negative? condition) 'negative))
                         (raise 1)))))))
 
-(assert-equal? "mixed exception handling #4"
+(assert-equal? (tn)
                'negative
                (call-with-current-continuation
                 (lambda (k)
@@ -571,7 +566,7 @@
                               ((negative? condition) 'negative))
                         (raise -1)))))))
 
-(assert-equal? "mixed exception handling #5"
+(assert-equal? (tn)
                'zero
                (call-with-current-continuation
                 (lambda (k)
