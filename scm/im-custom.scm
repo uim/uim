@@ -325,6 +325,11 @@
   (_ "Preedit color")
   (_ "long description will be here."))
 
+(custom-add-hook 'uim-color
+		 'custom-set-hooks
+		 (lambda ()
+		   (update-style uim-color-spec (symbol-value uim-color))))
+
 ;; referred by some bridges
 (define-custom 'candidate-window-position 'caret
   '(global visual-preference)
