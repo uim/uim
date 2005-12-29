@@ -93,10 +93,6 @@ Assigned to Kazuki:
 ==============================================================================
 Assigned to YamaKen:
 
-* unittest.scm
-  - Separate testname and error message for assert
-  - Add auto-increment testname generator
-
 * Separate SCM_ASSERT into required validation (SCM_VALIDATE) and optional
   assertion (SCM_ASSERT)
 

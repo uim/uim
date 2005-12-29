@@ -84,12 +84,12 @@
     (newline)))
 
 (define assert
-  (lambda (err-msg exp)
+  (lambda (test-name err-msg exp)
     (set! *total-assertions* (+ *total-assertions* 1))
     (if *test-track-progress*
         (begin
           (display "done: ")
-          (display err-msg)  ;; FIXME: should indicate test-name
+          (display test-name)
           (newline)))
     (if exp
 	#t
@@ -102,20 +102,22 @@
 ;; assertions for test writers
 ;;
 
-(define assert-true assert)
+(define assert-true
+  (lambda (test-name exp)
+    (assert test-name test-name exp)))
 
 (define assert-false
   (lambda (test-name exp)
-    (assert test-name (not exp))))
+    (assert test-name test-name (not exp))))
 
 (define assert-eq?
   (lambda (test-name expected actual)
-    (or (assert test-name (eq? expected actual))
+    (or (assert test-name test-name (eq? expected actual))
         (report-inequality expected actual))))
 
 (define assert-equal?
   (lambda (test-name expected actual)
-    (or (assert test-name (equal? expected actual))
+    (or (assert test-name test-name (equal? expected actual))
         (report-inequality expected actual))))
 
 (define assert-error
@@ -127,7 +129,7 @@
                      #f))
           (err-msg (string-append "no error has occurred in test "
                                   test-name)))
-      (assert err-msg errored))))
+      (assert test-name err-msg errored))))
 
 (define assert-parse-error
   (lambda (test-name str)
@@ -169,6 +171,19 @@
   (lambda (str)
     (eval (string-read str)
           (interaction-environment))))
+
+(define test-name
+  (let ((name "anonymous test")
+        (serial 0))
+    (lambda args
+      (if (null? args)
+          (begin
+            (set! serial (+ serial 1))
+            (string-append name " #" (number->string serial)))
+          (begin
+            (set! name (car args))
+            (set! serial 0)
+            #f)))))
 
 (define (eval-counter n)
   (list 'eval-counter (+ n 1)))
