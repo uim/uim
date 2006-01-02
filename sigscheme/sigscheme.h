@@ -886,7 +886,7 @@ void   scm_set_lib_path(const char *path);
 ScmObj scm_make_shared_file_port(FILE *file, const char *aux_info,
                               enum ScmPortFlag flag);
 int scm_port_close(ScmObj port);
-const char *scm_port_encoding(ScmObj port);
+ScmCharCodec *scm_port_codec(ScmObj port);
 char *scm_port_inspect(ScmObj port);
 int scm_port_get_char(ScmObj port);
 int scm_port_peek_char(ScmObj port);

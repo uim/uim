@@ -181,11 +181,11 @@ scm_port_close(ScmObj port)
     return err;
 }
 
-const char *
-scm_port_encoding(ScmObj port)
+ScmCharCodec *
+scm_port_codec(ScmObj port)
 {
     SCM_ASSERT_LIVE_PORT(port);
-    return SCM_CHARPORT_ENCODING(SCM_PORT_IMPL(port));
+    return SCM_CHARPORT_CODEC(SCM_PORT_IMPL(port));
 }
 
 char *
