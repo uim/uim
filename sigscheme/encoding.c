@@ -711,7 +711,7 @@ utf8_encoding(void)
 enum ScmCodedCharSet
 utf8_ccs(void)
 {
-    return SCM_CCS_UNICODE;
+    return SCM_CCS_UCS4;
 }
 
 /* FIXME: Optimize */
