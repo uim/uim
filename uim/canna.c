@@ -37,7 +37,6 @@
 #ifdef HAVE_CANNA_RK_H
 #include <canna/RK.h>
 #include <stdlib.h>
-#include <dlfcn.h>
 #include <errno.h>
 #include <string.h>
 #include "uim-scm.h"
@@ -47,7 +46,6 @@
 /* #define UIM_CANNA_DEBUG */
 
 #define MAX_CONTEXT 256
-#define LIBCANNA_SO	"libcanna.so"
 
 #define BUFSIZE 1024
 

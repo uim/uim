@@ -104,8 +104,8 @@
  'hangul2
  "ko"
  "UTF-8"
- (N_ "Hangul (2-bul)")
- (N_ "2-bul style hangul input method")
+ (N_ "Hangul (2-beol)")
+ (N_ "2-beol style hangul input method")
  hangul2-init-handler)
 
 ;; hangul3 IM does not require generic-keys disabled
@@ -113,8 +113,8 @@
  'hangul3
  "ko"
  "UTF-8"
- (N_ "Hangul (3-bul)")
- (N_ "3-bul style hangul input method")
+ (N_ "Hangul (3-beol)")
+ (N_ "3-beol style hangul input method")
  hangul3-init-handler)
 
 (hangul-register-im

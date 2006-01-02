@@ -819,7 +819,8 @@
      ((canna-backspace-key? key key-state)
       (begin
 	(canna-context-set-state! cc #f)
-	(canna-reset-candidate-window cc)))
+	(canna-reset-candidate-window cc)
+	(canna-lib-reset-conversion cc-id)))
 
      ((canna-next-candidate-key? key key-state)
       (canna-move-candidate cc 1))

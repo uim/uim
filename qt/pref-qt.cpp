@@ -103,17 +103,17 @@ void UimPrefDialog::checkDotUimFile()
     QString dotUim = homeDir + "/.uim";
     if( QFile::exists( dotUim ) )
     {
-        QString msg = N_("The user customize file \"~/.uim\" is found.\n"
-                         "This file will override all conflicted settings set by\n"
-                         "this tool (stored in ~/.uim.d/customs/*.scm).\n"
-                         "Please check the file if you find your settings aren't applied");
+        QString msg = _("The user customize file \"~/.uim\" is found.\n"
+                        "This file will override all conflicted settings set by\n"
+                        "this tool (stored in ~/.uim.d/customs/*.scm).\n"
+                        "Please check the file if you find your settings aren't applied.");
+
         QConfirmDialog *d = new QConfirmDialog( msg,
                                                 "/uim/qt/warnDotUim",
                                                 this );
         d->setCaption( _("~/.uim exists!") );
         d->exec();
-        // To avoid crashes... --ekato 2005.02.25
-        //delete d;
+        delete d;            
     }
 }
 
@@ -159,7 +159,7 @@ void UimPrefDialog::createMainWidgets()
     QPushButton *okButton = new QPushButton( _("OK"), buttonHWidget );
     QObject::connect( okButton, SIGNAL(clicked()),
                       this, SLOT(slotOK()) );
-    m_applyButton = new QPushButton( "Apply", buttonHWidget );
+    m_applyButton = new QPushButton( _("Apply"), buttonHWidget );
     m_applyButton->setEnabled( false );
     QObject::connect( m_applyButton, SIGNAL(clicked()),
                       this, SLOT(slotApply()) );
@@ -212,15 +212,24 @@ void UimPrefDialog::createGroupWidgets()
  */
 void UimPrefDialog::slotSelectionChanged( QListViewItem * item )
 {
+    /*
+     * Don't confirm on each change in slot selection according to
+     * [Anthy-dev 1795].
+     * Dec 09 2005 ekato
+     */
+#if 0
     /* confirm if save the change */
     if( m_isValueChanged )    
         confirmChange();
+#endif
     
     /* switch group widget */
     QString grpname = item->text( 0 );
     m_groupWidgetStack->raiseWidget( m_groupWidgetsDict[grpname] );
 
+#if 0
     m_applyButton->setEnabled( false );
+#endif
 }
 
 void UimPrefDialog::slotCustomValueChanged()
@@ -247,6 +256,27 @@ void UimPrefDialog::confirmChange()
     }
 }
 
+void UimPrefDialog::confirmQuit()
+{
+    int result = QMessageBox::question( this,
+                                        _("Quit Confirm"),
+                                        _("Some value(s) have been changed.\n"
+                                          "Do you really quit this program?"),
+                                        _("Yes"),
+                                        _("No"),
+                                        QString::null, 1, -1);
+    switch(result)
+    {
+    case 0:
+        reject();
+        break;
+    case 1:
+        break;
+    default:
+        break;
+    }
+}
+
 void UimPrefDialog::slotSetDefault()
 {
     QWidget *w = m_groupWidgetStack->visibleWidget();
@@ -264,7 +294,7 @@ void UimPrefDialog::slotApply()
     qDebug("start saving....");
 
     uim_custom_save();
-    uim_custom_broadcast();
+    uim_custom_broadcast_reload_request();
 
     m_isValueChanged = false;
     m_applyButton->setEnabled( false );
@@ -282,11 +312,14 @@ void UimPrefDialog::slotOK()
 void UimPrefDialog::slotCancel()
 {
     /*
+     * Enable confirmation since each change in slot selection is not
+     * checked strictly according to [Anthy-dev 1795].
+     * Dec 09 2005 ekato
+     */
     if( m_isValueChanged )
-        confirmChange();
-    */
-
-    reject();
+        confirmQuit();
+    else
+        reject();
 }
 
 //-------------------------------------------------------------------------------------
@@ -302,29 +335,24 @@ QConfirmDialog::QConfirmDialog( const QString &msg, const QString &confname, QWi
 
 void QConfirmDialog::setupWidgets( const QString&msg )
 {
-    QVBoxLayout *vbox = new QVBoxLayout( this );
-    vbox->setSpacing( 6 );
-    vbox->setMargin( 6 );
-
+    QVBoxLayout *vLayout = new QVBoxLayout( this );
+    vLayout->setSpacing( 6 );
+    vLayout->setMargin( 6 );
     QLabel *msgLabel = new QLabel( msg, this );
     KSeparator *sep = new KSeparator( this );
+    vLayout->addWidget( msgLabel );
+    vLayout->addWidget( sep );
 
-    QHBoxLayout *buttonHBox = new QHBoxLayout(vbox, 4);
-
+    QHBoxLayout *buttonHLayout = new QHBoxLayout( vLayout );
     QCheckBox *checkBox = new QCheckBox( _("Show this dialog on startup"), this );
     QSettings settings;
     bool isWarnDotUim = settings.readBoolEntry( m_confname, true );
     checkBox->setChecked( isWarnDotUim );
-
     QPushButton *ok = new QPushButton( _("OK"), this );
     ok->setDefault(true);
-    buttonHBox->addWidget( checkBox );
-    buttonHBox->addStretch();
-    buttonHBox->addWidget( ok );
-
-    vbox->addWidget( msgLabel );
-    vbox->addWidget( sep );
-    vbox->addLayout( buttonHBox );
+    buttonHLayout->addWidget( checkBox );
+    buttonHLayout->addStretch();    
+    buttonHLayout->addWidget( ok );
 
     QObject::connect( ok, SIGNAL(clicked()),
                       this, SLOT(accept()) );

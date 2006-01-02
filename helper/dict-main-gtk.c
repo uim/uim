@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2004 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2004,2005 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -114,7 +114,7 @@ get_error_msg(void)
 static void
 parse_arg(int argc, char *argv[])
 {
-  int ch, option_index;
+  int ch;
 
   ae_mode = MODE_EDIT;
 
@@ -159,6 +159,8 @@ create_window_anthy(void)
     window = word_list_window_new();
   } else {
     dict = uim_dict_open(N_("Anthy private dictionary"));
+    if (!dict)
+      return NULL;
     window = word_window_new(WORD_WINDOW_MODE_ADD, dict);
     uim_dict_unref(dict);
   }
@@ -222,7 +224,7 @@ main(int argc, char *argv[])
 
   if (result == -1) {
     g_printerr(_("Error:%s\n"), get_error_msg());
-    exit(-1);
+    exit(EXIT_FAILURE);
   }
 
   /* connect to uim helper message bus */

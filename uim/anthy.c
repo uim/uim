@@ -30,7 +30,6 @@
   SUCH DAMAGE.
 */
 /**/
-#include <dlfcn.h>
 #include <stdlib.h>
 #include <anthy/anthy.h>
 
@@ -40,88 +39,9 @@
 
 #define MAX_CONTEXT 256
 
-#ifdef __APPLE__
-  #define LIBANTHY_SO    "libanthy.dylib"
-  #define LIBANTHYDIC_SO "libanthydic.dylib"
-#else
-  #define LIBANTHY_SO    "libanthy.so"
-  #define LIBANTHYDIC_SO "libanthydic.so"
-
-#endif /*__APPLE__*/
-
-static struct anthy_api {
-  void *diclib, *lib;
-
-  /* library management */
-  int  (*init)(void);
-  int  (*quit)(void);
-
-  /* context management */
-  anthy_context_t (*create_context)(void);
-  void (*release_context)(anthy_context_t );
-
-  /* conversion control */
-  int  (*set_string)(anthy_context_t , char *);
-  int  (*get_stat)(anthy_context_t , struct anthy_conv_stat *);
-  int  (*get_segment_stat)(anthy_context_t , int,
-			   struct anthy_segment_stat *);
-  int  (*get_segment)(anthy_context_t , int, int, char *, int);
-  void (*resize_segment)(anthy_context_t , int, int);
-  int  (*commit_segment)(anthy_context_t , int, int);
-
-#ifdef HAS_ANTHY_PREDICTION
-  /* prediction */
-  int  (*set_prediction_string)(anthy_context_t , const char *);
-  int  (*get_prediction_stat)(anthy_context_t , struct anthy_prediction_stat *);
-  int  (*get_prediction)(anthy_context_t , int, char *, int);
-#endif /* HAS_ANTHY_PREDICTION */
-} api;
-
 static struct context {
   anthy_context_t ac;
 } *context_slot;
-
-static int
-get_anthy_api(void)
-{
-  api.diclib = dlopen(LIBANTHYDIC_SO, RTLD_GLOBAL |RTLD_NOW);
-  if (!api.diclib) {
-	/*   fprintf (stdout, "%s\n", dlerror());*/
-    return -1;
-  }
-  api.lib = dlopen(LIBANTHY_SO, RTLD_NOW);
-  if (!api.lib) {
-	/*   fprintf (stdout, "%s\n", dlerror()); */
-    dlclose(api.diclib);
-    return -1;
-  }
-  *(int  **)(&api.init) = dlsym(api.lib, "anthy_init");
-  *(int  **)(&api.quit) = dlsym(api.lib, "anthy_quit");
-  *(anthy_context_t **)(&api.create_context) = dlsym(api.lib, "anthy_create_context");
-  *(void **)(&api.release_context) = dlsym(api.lib, "anthy_release_context");
-  *(int  **)(&api.set_string) = dlsym(api.lib, "anthy_set_string");
-  *(int  **)(&api.get_stat) = dlsym(api.lib, "anthy_get_stat");
-  *(int  **)(&api.get_segment_stat) = dlsym(api.lib, "anthy_get_segment_stat");
-  *(int  **)(&api.get_segment) = dlsym(api.lib, "anthy_get_segment");
-  *(void **)(&api.resize_segment) = dlsym(api.lib, "anthy_resize_segment");
-  *(int  **)(&api.commit_segment) = dlsym(api.lib, "anthy_commit_segment");
-#ifdef HAS_ANTHY_PREDICTION
-  *(int  **)(&api.set_prediction_string) = dlsym(api.lib, "anthy_set_prediction_string");
-  *(int  **)(&api.get_prediction_stat) = dlsym(api.lib, "anthy_get_prediction_stat");
-  *(int  **)(&api.get_prediction) = dlsym(api.lib, "anthy_get_prediction");
-#endif /* HAS_ANTHY_PREDICTION */
-  if (api.init && api.quit
-      && api.create_context && api.release_context
-      && api.set_string && api.get_stat && api.get_segment_stat
-      && api.get_segment && api.resize_segment && api.commit_segment
-#ifdef HAS_ANTHY_PREDICTION
-      && api.set_prediction_string && api.get_prediction_stat && api.get_prediction
-#endif /* HAS_ANTHY_PREDICTION */
-      ) {
-    return 0;
-  }
-  return -1;
-}
 
 static anthy_context_t 
 get_anthy_context(int id)
@@ -139,10 +59,7 @@ init_anthy_lib(void)
   if (context_slot) {
     return uim_scm_t();
   }
-  if (get_anthy_api() == -1) {
-    return uim_scm_f();
-  }
-  if (api.init() == -1) {
+  if (anthy_init() == -1) {
     return uim_scm_f();
   }
   context_slot = malloc(sizeof(struct context) *
@@ -166,7 +83,7 @@ create_context(void)
 
   for (i = 0; i < MAX_CONTEXT; i++) {
     if (!context_slot[i].ac) {
-      anthy_context_t ac = api.create_context();
+      anthy_context_t ac = anthy_create_context();
       if (!ac) {
 	return uim_scm_f();
       }
@@ -183,7 +100,7 @@ release_context(uim_lisp id_)
 {
   int id = uim_scm_c_int(id_);
   if (context_slot[id].ac) {
-    api.release_context(context_slot[id].ac);
+    anthy_release_context(context_slot[id].ac);
     context_slot[id].ac = NULL;
   }
   return uim_scm_f();
@@ -199,7 +116,7 @@ set_string(uim_lisp id_, uim_lisp str_)
     return uim_scm_f();
   }
   str = uim_scm_c_str(str_);
-  api.set_string(ac, str);
+  anthy_set_string(ac, str);
   free(str);
   return uim_scm_f();
 }
@@ -213,7 +130,7 @@ get_nr_segments(uim_lisp id_)
   if (!ac) {
     return uim_scm_f();
   }
-  api.get_stat(ac, &acs);
+  anthy_get_stat(ac, &acs);
 
   return uim_scm_make_int(acs.nr_segment);
 }
@@ -230,10 +147,10 @@ get_nr_candidates(uim_lisp id_, uim_lisp nth_)
   if (!ac) {
     return uim_scm_f();
   }
-  api.get_stat(ac, &cs);
+  anthy_get_stat(ac, &cs);
   if (nth < cs.nr_segment) {
     struct anthy_segment_stat ss;
-    api.get_segment_stat(ac, nth, &ss);
+    anthy_get_segment_stat(ac, nth, &ss);
     return uim_scm_make_int(ss.nr_candidate);
   }
   return uim_scm_f();
@@ -252,12 +169,12 @@ get_nth_candidate(uim_lisp id_, uim_lisp seg_, uim_lisp nth_)
   if (!ac) {
     return uim_scm_f();
   }
-  buflen = api.get_segment(ac, seg, nth, NULL, 0);
+  buflen = anthy_get_segment(ac, seg, nth, NULL, 0);
   if (buflen == -1) {
     return uim_scm_f();
   }
   buf = malloc(buflen+1);
-  api.get_segment(ac, seg, nth, buf, buflen+1);
+  anthy_get_segment(ac, seg, nth, buf, buflen+1);
   buf_ = uim_scm_make_str(buf);
   free(buf);
   return buf_;
@@ -275,10 +192,10 @@ get_segment_length(uim_lisp id_, uim_lisp nth_)
   if (!ac) {
     return uim_scm_f();
   }
-  api.get_stat(ac, &cs);
+  anthy_get_stat(ac, &cs);
   if (nth < cs.nr_segment) {
     struct anthy_segment_stat ss;
-    api.get_segment_stat(ac, nth, &ss);
+    anthy_get_segment_stat(ac, nth, &ss);
     return uim_scm_make_int(ss.seg_len);
   }
   return uim_scm_f();
@@ -291,7 +208,7 @@ resize_segment(uim_lisp id_, uim_lisp seg_, uim_lisp cnt_)
   int seg = uim_scm_c_int(seg_);
   int cnt = uim_scm_c_int(cnt_);
   anthy_context_t ac = get_anthy_context(id);
-  api.resize_segment(ac, seg, cnt);
+  anthy_resize_segment(ac, seg, cnt);
   return uim_scm_f();
 }
 
@@ -302,7 +219,7 @@ commit_segment(uim_lisp id_, uim_lisp s_, uim_lisp nth_)
   int s = uim_scm_c_int(s_);
   int nth = uim_scm_c_int(nth_);
   anthy_context_t ac = get_anthy_context(id);
-  api.commit_segment(ac, s, nth);
+  anthy_commit_segment(ac, s, nth);
   return uim_scm_f();
 }
 
@@ -316,7 +233,7 @@ set_prediction_src_string(uim_lisp id_, uim_lisp str_)
   if (!ac) {
     return uim_scm_f();
   }
-  api.set_prediction_string(ac, str);
+  anthy_set_prediction_string(ac, str);
   return uim_scm_f();
 }
 
@@ -329,7 +246,7 @@ get_nr_predictions(uim_lisp id_)
   if (!ac) {
     return uim_scm_f();
   }
-  api.get_prediction_stat(ac, &ps);
+  anthy_get_prediction_stat(ac, &ps);
   return uim_scm_make_int(ps.nr_prediction);
 }
 
@@ -345,12 +262,12 @@ get_nth_prediction(uim_lisp id_, uim_lisp nth_)
   if (!ac) {
     return uim_scm_f();
   }
-  buflen = api.get_prediction(ac, nth, NULL, 0);
+  buflen = anthy_get_prediction(ac, nth, NULL, 0);
   if (buflen == -1) {
     return uim_scm_f();
   }
   buf = (char *)malloc(buflen + 1);
-  api.get_prediction(ac, nth, buf, buflen + 1);
+  anthy_get_prediction(ac, nth, buf, buflen + 1);
   buf_ = uim_scm_make_str(buf);
   free(buf);
   return buf_;
@@ -388,19 +305,12 @@ uim_plugin_instance_quit(void)
 
   for (i = 0; i < MAX_CONTEXT; i++) {
     if (context_slot[i].ac) {
-      api.release_context(context_slot[i].ac);
+      anthy_release_context(context_slot[i].ac);
     }
   }
 
-  if (api.quit) {
-    api.quit();
-  }
-  if (api.diclib) {
-    dlclose(api.diclib);
-  }
-  if (api.lib) {
-    dlclose(api.lib);
-  }
+  anthy_quit();
+
   if (context_slot) {
     free(context_slot);
     context_slot = NULL;

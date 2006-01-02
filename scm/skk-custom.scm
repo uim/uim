@@ -64,7 +64,7 @@
   (_ "Commit candidate by heading label keys")
   (_ "long description will be here."))
 
-(define-custom 'skk-candidate-selection-style 'uim
+(define-custom 'skk-candidate-selection-style 'ddskk-like
   '(skk candwin)
   (list 'choice
 	(list 'uim (_ "uim") (_ "uim native"))
@@ -78,13 +78,13 @@
   (_ "Set candidate window behavior manually")
   (_ "long description will be here."))
 
-(define-custom 'skk-candidate-op-count 2
+(define-custom 'skk-candidate-op-count 5
   '(skk candwin)
   '(integer 0 99)
   (_ "Conversion key press count to show candidate window")
   (_ "long description will be here."))
 
-(define-custom 'skk-nr-candidate-max 10
+(define-custom 'skk-nr-candidate-max 7
   '(skk candwin)
   '(integer 1 20)
   (_ "Number of candidates in candidate window at a time")
@@ -359,6 +359,11 @@
   (_ "Personal dictionary file (dedicated to uim)")
   (_ "long description will be here."))
 
+(custom-add-hook 'skk-dic-file-name
+		 'custom-activity-hooks
+		 (lambda ()
+		   (not skk-use-skkserv?)))
+
 ;;
 ;; advanced
 ;;
@@ -395,6 +400,11 @@
   (_ "Enable dynamic completion")
   (_ "long description will be here."))
 
+(define-custom 'skk-use-look? #f
+  '(skk-advanced)
+  '(boolean)
+  (_ "Use UNIX look command for completion")
+  (_ "long description will be here."))
 ;;
 ;; annotation
 ;;
@@ -429,7 +439,7 @@
 (define-custom 'skk-use-with-vi? #f
   '(skk-advanced special-op)
   '(boolean)
-  (_ "Friendly for vi user")
+  (_ "Enable vi-cooperative mode")
   (_ "long description will be here."))
 
 (define-custom 'skk-egg-like-newline? #f

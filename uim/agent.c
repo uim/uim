@@ -72,7 +72,7 @@ init_agent()
   int i, nr;
   if (uim_init() == -1) {
     printf("failed to init\n");
-    exit(0);
+    exit(EXIT_FAILURE);
   }
   /**/
   uc =uim_create_context(&default_context,

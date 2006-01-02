@@ -1,6 +1,7 @@
 /*
  *  $Id:$
  *  Copyright (c) 2003,2004 Masahito Omote <omote@utyuuzin.net>
+ *                2005 uim Project http://uim.freedesktop.org/
  *
  *  All rights reserved.
  *
@@ -126,7 +127,7 @@ word_list_view_class_init(WordListViewClass *klass)
 	(gobject_class,
 	 PROP_CCLASS_CODE_SHOW,
 	 g_param_spec_boolean("cclass_code_show",
-			      _("Show conjection class code column"),
+			      _("Show part of speech column"),
 			      _("to be written"),
 			      FALSE,
 			      G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
@@ -248,7 +249,7 @@ word_list_view_init(WordListView *view)
     gtk_tree_view_column_set_visible(column, TRUE);
     view->desc_column = column;
 
-    /* Conjection Class Code */
+    /* CClass (part of speech) Code */
     renderer = gtk_cell_renderer_text_new();
     g_signal_connect(renderer, "edited",
 		     G_CALLBACK(word_list_view_callback_cell_edited),

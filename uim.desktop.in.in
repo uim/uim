@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+_Name=Preference of uim
+_Comment=Input method settings
+Exec=uim-pref-gtk
+Icon=@uim_pixmapsdir@/uim-icon.png
+Terminal=false
+MimeType=text/plain
+Categories=Settings;

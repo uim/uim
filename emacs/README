@@ -1,0 +1,313 @@
+uim.el - Emacs uim bridge
+
+Copyright (c) 2005 uim Project http://uim.freedesktop.org/
+
+All rights reserved.
+
+This software is released under the BSD license.
+
+
+ABOUT uim.el
+============
+
+uim.el is a bridge software between Emacs and uim.
+
+uim.el makes you able to use uim supported IMs from Emacs
+directly.
+
+
+FEATURES
+========
+
+- Inline Candidates Displaying Mode
+
+While most of IMs supported by Emacs display the candidates
+in the echo area, uim.el can display candidates as follows;
+  - display them just below the preedit string
+  - align them in vertical direction
+
+This is a mode called ``inline candidates displaying mode.''
+
+This mode releases users from an affliction that should move
+their eyes from current cursor position to bottom of the
+buffer every selection time.
+
+Also, by aligning candidates vertically, users can select a
+candidate naturally, like using other uim bridges.
+
+
+- Preedit Displaying on the Emacs Buffer
+
+Unlike uim-xim or uim-fep, uim.el displays preedit string on
+the Emacs buffer.  So, the existing characters after the
+cursor are never hidden behind the preedit string.
+
+
+- IM Managing on Each Buffer
+
+uim.el manages the IM on each buffer independently.
+
+Users can use different IM (such as Anthy, Skk, Canna and so
+on) on each buffer and also can do conversion in
+concurrently.
+
+
+REQUIREMENTS
+============
+
+As you guessed, uim.el requires Emacs and uim.
+
+- Emacs: following versions are supported
+
+  - FSF Emacs 20.7
+  - FSF Emacs 21.3.1
+  - FSF Emacs 22.0.50 (CVS version)
+  - XEmacs 21.4.17 (with sumo and mule-sumo)
+
+  * note: Ancient Emacs such as Emacs-19.x or Mule-2.3 are
+          not supported
+
+- uim: 0.4.6 or later
+          (highly recommended to use the latest version)
+
+  Also, you should install some IMs which can be used with
+  uim if required.
+
+
+INSTALLATION
+============
+
+You can install uim.el in usual way
+
+ % ./configure
+ % make
+ % su
+ # make install
+
+  * note: It is recommended to remove older version of uim.el
+          before upgrading.
+
+USAGE
+=====
+
+uim.el is implemented as a minor-mode of Emacs.
+
+You can call uim.el from Emacs in two ways; 
+directly or with the LEIM framework.
+
+Though settings of them are different, basic functions are
+same.
+
+If you want to switch between uim.el and other Emacs IMs
+frequently, you should use LEIM framework.
+
+
+[Settings for the minor-mode]
+
+Write the following settings into your .emacs or some other
+file for Emacs customizing.
+
+  ;; read uim.el
+  (require 'uim)
+  ;; uncomment next and comment out previous to load uim.el on-demand
+  ;; (autoload 'uim-mode "uim" nil t)
+
+  ;; set default IM (ex. use Anthy)
+  ;; (setq uim-default-im-engine "anthy")
+
+  ;; key-binding for activate uim (ex. C-o)
+  (global-set-key "\C-o" 'uim-mode)
+
+
+[Settings for the LEIM]
+
+Write the following settings into your .emacs or some other
+file for Emacs customizing.
+
+  ;; read uim.el with LEIM initializing
+  (require 'uim-leim)
+
+  ;; set default IM (ex. use Anthy)
+  (setq default-input-method "japanese-anthy-uim")
+
+  * note: The naming rule of the IMs of LEIM are as follows.
+
+     <lang. of Emacs>-<each IM name of uim>-uim
+
+     for example...
+       - chinese-big5-pinyin-big5-uim
+       - japanese-skk-uim
+       - vietnamese-viqr-uim
+
+     Correspondence between Emacs Language name and uim
+     Language name are described in uim-el/uim.el.
+
+     Also, available names can be listed in the following way;
+
+       M-x set-input-method RET TAB
+
+
+[Path Settings]
+
+You can install uim.el into any directory of your computer
+if you have a permit. 
+
+If you have installed uim.el and its back-end software 
+(i.e., uim-el-agent) into nonstandard directory, you should 
+describe paths to them before uim.el loading as follows.
+
+  ;; path to uim.el and other lisp files
+  (setq load-path (append '("/home/nosuke/uim-el/uim-el") load-path))
+
+  ;; path to uim-el-agent 
+  ;; (path of executable binary file, not a directory)
+  (setq uim-el-agent "/home/nosuke/uim-el/uim-el-agent/uim-el-agent")
+
+
+
+
+CUSTOMIZATION
+=============
+
+* Change treatment of Escape-key on terminal-mode
+
+To support function keys, such as F10 and Delete, 
+when Emacs has been executed on terminal 
+window (i.e., with -nw option), uim.el 
+doesn't pass  single Escape-key to uim by default.
+
+If you want to invoke uim function bound to a Escape-key,
+press Escape-key in two times.
+
+
+Following is a configuration to invalidate this 
+setting while preedits are displayed.
+
+  ;; enable single Escape-key pressing on terminal
+  (setq uim-use-single-escape-on-terminal t)
+
+  * note: This configuration is unrecommended.
+
+
+
+* Change candidate style
+
+If you want to enable inline candidates displaying mode by
+default, write as follows.
+
+   ;; set inline candidates displaying mode as default
+   (setq uim-candidate-display-inline t)
+
+
+Also, to switch candidates displaying mode immediately,
+write as follows.
+
+    ;; switch candidate displaying mode immediately
+    ;; (ex. binding to M-;)
+    (global-set-key "\M-;" 'uim-switch-candidate-display-mode)
+
+
+
+* Change appearances of preedits and candidates
+
+You can change appearances of preedit and candidates in the
+following way.
+
+  ;; text color and background color of preedit
+  (set-face-foreground 'uim-preedit-highlight-face "white")
+  (set-face-background 'uim-preedit-highlight-face "blue")
+
+  ;; separator color
+  (set-face-foreground 'uim-separator-face "white")
+
+  ;; text color and background color of odd number candidates
+  (set-face-foreground 'uim-candidate-odd-face "blue")
+  (set-face-background 'uim-candidate-odd-face "white")
+
+  ;; text color and background color of even number candidates
+  (set-face-foreground 'uim-candidate-even-face "blue")
+  (set-face-background 'uim-candidate-even-face "white")
+
+  ;; text color and background color of a selected candidate
+  (set-face-foreground 'uim-candidate-selected-face "blue")
+  (set-face-background 'uim-candidate-selected-face "white")
+
+  ;; text color and background color of page number of candidates
+  (set-face-foreground 'uim-candidate-nth-face "red")
+  (set-face-background 'uim-candidate-nth-face "white")
+
+
+* Display fences / frame (for poor Emacs environment)
+
+You also can use ASCII character as border of preedit and
+candidates.  It's maybe useful when using Emacs-20.x with
+terminal mode.
+
+  ;; display fences both sides of preedit
+  (setq-default uim-preedit-display-fences t)
+
+  ;; display frame of candidates
+  (setq-default uim-candidate-display-frame t)
+
+
+* Change IMs settings
+
+To overwrite default properties of each IM, write as
+follows.  
+
+  ;; set initial mode of anthy and skk to Hiragana mode
+  (setq uim-default-im-prop 
+          '("action_anthy_hiragana" "action_skk_hiragana"))
+
+
+
+* Activate uim.el 
+
+To enable uim from the beginning in particular major-mode, 
+write as follows.
+
+  ;; enable uim automatically on html-mode
+  ;;  for minor-mode
+  (add-hook 'html-mode-hook
+             (lambda () (uim-mode 1)))
+
+  ;;  for LEIM
+  (add-hook 'html-mode-hook
+             (lambda () (toggle-input-method)))
+
+
+
+MISC COMMANDS
+=============
+
+If you want to switch IM on minor-mode, just type following
+keys.
+
+  M-x uim-im-switch
+
+  * note: Use set-input-method instead of this if you are
+         using LEIM framework.
+
+
+
+KNOWN PROBLEMS
+==============
+
+See official web page.
+
+
+
+GET THE LATEST VERSION
+======================
+
+You can get the latest version of uim.el from the following URL.
+
+http://garakuta.homelinux.org/~nosuke/tsubo/uim-el.html
+
+
+
+CONTACT
+=======
+
+Konosuke Watanabe <sasugaanija@gmail.com>
+

@@ -658,7 +658,6 @@
 (define reversed-separator-foreground #f)
 (define reversed-separator-background #f)
 
-(define uim-color 'uim-color-uim)
 (define uim-color-spec
   '((reversed-preedit-foreground   . string?)
     (reversed-preedit-background   . string?)
@@ -677,7 +676,7 @@
     (reversed-separator-background . "black")))
 (define uim-color-atok
   '((reversed-preedit-foreground   . "black")
-    (reversed-preedit-background   . "blue")
+    (reversed-preedit-background   . "cyan")
     (separator-foreground          . "lightsteelblue")
     (separator-background          . "")
     (reversed-separator-foreground . "black")

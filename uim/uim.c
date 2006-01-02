@@ -656,10 +656,6 @@ uim_init_scm(void)
   uim_init_plugin();
   uim_init_im_subrs();
   uim_init_key_subrs();
-#ifdef UIM_COMPAT_TABLE
-  uim_init_table_subrs();
-#endif
-
   
   if (is_setugid() == 0) {
     scm_files = getenv("LIBUIM_SCM_FILES");

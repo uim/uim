@@ -1,7 +1,7 @@
 AC_PREREQ(2.57)
 
-AC_INIT([uim], 0.5.0, [tkng@xem.jp])
-AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION)
+AC_INIT([uim], [1.1.0], [uim@lists.freedesktop.org])
+AM_INIT_AUTOMAKE(1.8.3)
 
 AC_CONFIG_SRCDIR([COPYING])
 
@@ -75,16 +75,35 @@ AC_ARG_WITH(anthy,
   AC_HELP_STRING([--without-anthy], [Don't build with libanthy]),
   [
     if test "x$with_anthy" = "xyes"; then
-      AC_CHECK_HEADERS([anthy/anthy.h], [use_anthy="yes"],
-                       [use_anthy="no"])
+      AC_CHECK_HEADERS([anthy/anthy.h],
+        [
+          saved_LIBS=$LIBS
+          LIBS="$LIBS -lanthy -lanthydic"
+          AC_CHECK_LIB([anthy], [anthy_init], [use_anthy="yes"], [use_anthy="no"])
+          LIBS=$saved_LIBS
+        ],
+        [use_anthy="no"])
     else
       use_anthy="no"
     fi
   ],
   [
-    AC_CHECK_HEADERS([anthy/anthy.h], [use_anthy="yes"],
-                     [use_anthy="no"])
+    AC_CHECK_HEADERS([anthy/anthy.h],
+     [
+       saved_LIBS=$LIBS
+       LIBS="$LIBS -lanthy -lanthydic"
+       AC_CHECK_LIB([anthy], [anthy_init], [use_anthy="yes"], [use_anthy="no"])
+       LIBS=$saved_LIBS
+     ],
+     [use_anthy="no"])
   ])
+
+if test "x$use_anthy" = "xyes"; then
+  ANTHY_LIBS="-lanthy -lanthydic"
+  ANTHY_CFLAGS=""
+fi
+AC_SUBST(ANTHY_LIBS)
+AC_SUBST(ANTHY_CFLAGS)
 
 # ***********************
 # *** Tests for Canna ***
@@ -93,14 +112,39 @@ AC_ARG_WITH(canna,
 	AS_HELP_STRING([--with-canna], [Build with libcanna]),
 	[
 	if test "x$with_canna" = "xyes"; then
-		AC_CHECK_HEADERS([canna/RK.h], [use_canna="yes"],
-				 [use_canna="no"], [ #undef _WCHAR_T ])
-    		AC_CHECK_LIB(canna, RkInitialize, use_canna=yes, use_canna=no)
+		AC_CHECK_HEADERS([canna/RK.h],
+    		 [AC_CHECK_LIB(canna, RkInitialize, use_canna=yes, use_canna=no)
+		 ], [use_canna="no"], [ #undef _WCHAR_T ])
 	else
 		use_canna="no"
 	fi
 	],[
 	use_canna="no"
+])
+
+# ***********************
+# *** Tests for Mana ***
+# ***********************
+AC_ARG_WITH(mana,
+	AS_HELP_STRING([--with-mana], [Build a plugin for Mana]),
+	[
+	if test "x$with_mana" = "xyes"; then
+	        AC_CHECK_PROG(MANA, mana, mana)
+		if test -n "$MANA"; then
+			use_mana="yes"
+		else
+			use_mana="no"
+		fi
+	else
+		use_mana="no"
+	fi
+	],[
+	        AC_CHECK_PROG(MANA, mana, mana)
+		if test -n "$MANA"; then
+			use_mana="yes"
+		else
+			use_mana="no"
+		fi
 ])
 
 # ***********************
@@ -117,7 +161,6 @@ AC_ARG_WITH(prime,
 	],[
 	        PKG_CHECK_MODULES(PRIME, prime >= 0.8.5.2, use_prime="yes",use_prime="no")
 ])
-
 
 AC_PATH_XTRA
 
@@ -219,9 +262,15 @@ fi
 AC_SEARCH_LIBS(dlfunc,dl,
   [
     AC_DEFINE(HAVE_DLFUNC, 1,
-              [Define to 1 if you have the `dlfunc' function.])
+              [Define to 1 if you have the dlfunc function.])
 
   ])
+
+dnl Solaris 9 needs -lresolv for inet_aton
+NETLIBS=""
+AC_CHECK_FUNC(inet_aton, ,
+  [AC_CHECK_LIB(resolv, inet_aton, [NETLIBS="-lresolv"])])
+AC_SUBST(NETLIBS)
 
 GETTEXT_PACKAGE=uim
 AC_SUBST(GETTEXT_PACKAGE)
@@ -388,14 +437,6 @@ AC_ARG_ENABLE(compat-scm,
     enable_compat_scm="yes"
   ])
 
-AC_ARG_ENABLE(compat-table,
-  AC_HELP_STRING([--enable-compat-table],
-                 [enable obsolete table API for hk.scm (broken)]),
-  [],
-  [
-    enable_compat_table="no"
-  ])
-
 AC_ARG_ENABLE(fep,
   AC_HELP_STRING([--disable-fep],
                  [disable uim-fep]),
@@ -408,7 +449,7 @@ AC_ARG_ENABLE(fep,
         use_uim_fep="yes"
 	AC_CHECK_LIB(curses, setupterm, FEP_LIBADD="-lcurses $FEP_LIBADD",
 	  [AC_CHECK_LIB(ncurses, setupterm, FEP_LIBADD="-lncurses $FEP_LIBADD",
-	    AC_MSG_WARN([fep needs libcurses or libncurses. disabled...]);use_uim_fep="no")])
+	    AC_MSG_WARN([fep needs setupterm in libcurses or libncurses. disabled...]);use_uim_fep="no")])
 	AC_CHECK_FUNCS(forkpty)
 	if test $ac_cv_func_forkpty = no; then
 	  AC_CHECK_LIB(util, forkpty, [AC_DEFINE(HAVE_FORKPTY) FEP_LIBADD="-lutil $FEP_LIBADD"])
@@ -420,12 +461,32 @@ AC_ARG_ENABLE(fep,
   [ use_uim_fep="yes"
     AC_CHECK_LIB(curses, setupterm, FEP_LIBADD="-lcurses $FEP_LIBADD",
       [AC_CHECK_LIB(ncurses, setupterm, FEP_LIBADD="-lncurses $FEP_LIBADD",
-        AC_MSG_WARN([fep needs libcurses or libncurses. disabled...]);use_uim_fep="no")])
+        AC_MSG_WARN([fep needs setupterm in libcurses or libncurses. disabled...]);use_uim_fep="no")])
     AC_CHECK_FUNCS(forkpty)
     if test $ac_cv_func_forkpty = no; then
       AC_CHECK_LIB(util, forkpty, [AC_DEFINE(HAVE_FORKPTY) FEP_LIBADD="-lutil $FEP_LIBADD"])
     fi
     AC_SUBST(FEP_LIBADD)
+  ])
+
+AC_ARG_ENABLE(emacs,
+  AC_HELP_STRING([--disable-emacs],
+                 [disable uim.el]),
+  [
+    case $enable_emacs in
+      no)
+        use_uim_el="no"
+      ;;
+      yes|*)
+        use_uim_el="yes"
+        AM_PATH_LISPDIR
+        AC_SUBST(UIMEL_LISP_DIR, $lispdir/uim-el)
+      ;;
+    esac
+  ],
+  [ use_uim_el="yes"
+    AM_PATH_LISPDIR
+    AC_SUBST(UIMEL_LISP_DIR, $lispdir/uim-el)
   ])
 
 AC_ARG_ENABLE(dict,
@@ -525,6 +586,7 @@ AM_CONDITIONAL(M17NLIB, test x$use_m17nlib = xyes)
 AM_CONDITIONAL(SCIM, test x$use_scim = xyes)
 AM_CONDITIONAL(ANTHY, test x$use_anthy = xyes)
 AM_CONDITIONAL(CANNA, test x$use_canna = xyes)
+AM_CONDITIONAL(MANA, test x$use_mana = xyes)
 AM_CONDITIONAL(PRIME, test x$use_prime = xyes)
 AM_CONDITIONAL(SKK, true)
 AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
@@ -534,19 +596,17 @@ AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test x$default_toolkit = xqt)
 AM_CONDITIONAL(GNOME2, test x$use_gnome2 = xyes)
 AM_CONDITIONAL(APPLET, test x$use_applet = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
+AM_CONDITIONAL(UIM_EL, test x$use_uim_el = xyes)
 AM_CONDITIONAL(XIM, test x$use_xim = xyes)
 AM_CONDITIONAL(DICT, test x$use_dict = xyes)
 AM_CONDITIONAL(EB, test x$use_eb = xyes)
 AM_CONDITIONAL(LIBEDIT, test x$use_libedit = xyes)
 AM_CONDITIONAL(DEBUG, test x$enable_debug = xyes)
 AM_CONDITIONAL(COMPAT_SCM, test x$enable_compat_scm = xyes)
-AM_CONDITIONAL(COMPAT_TABLE, test x$enable_compat_table = xyes)
 AM_CONDITIONAL(NEED_SETENV_C, test $ac_cv_func_setenv = no -o $ac_cv_func_unsetenv = no)
 AM_CONDITIONAL(NEED_STRSEP_C, test $ac_cv_func_strsep = no)
 
-if test "x$use_applet" = "xyes"; then
-  AC_PROG_INTLTOOL
-fi
+AC_PROG_INTLTOOL([0.31], [no-xml])
 
 
 GTK_BINARY_VERSION=`pkg-config gtk+-2.0 --variable=gtk_binary_version`
@@ -735,11 +795,6 @@ if test x$enable_compat_scm = xyes; then
             [Enable obsolete part of uim-scm API])
 fi
 
-if test x$enable_compat_table = xyes; then
-  AC_DEFINE(UIM_COMPAT_TABLE, 1,
-            [Enable obsolete table API for hk.scm (broken)])
-fi
-
 AH_BOTTOM([/* Include os specific header. */
 #include "os_dep.h"])
 
@@ -767,28 +822,33 @@ SRCDIR=$srcdir
 AC_SUBST(SRCDIR)
 
 
-AC_CONFIG_FILES([test.sh
-                 Makefile
-                 po/Makefile.in
+AC_CONFIG_FILES([Makefile
+		 po/Makefile.in
 		 m4/Makefile
-                 helper/Makefile
-                 doc/Makefile
-                 uim/Makefile
+		 helper/Makefile
+		 doc/Makefile
 		 sigscheme/Makefile
-                 scm/Makefile
-                 gtk/Makefile
-                 qt/Makefile
-                 xim/Makefile
+		 uim/Makefile
+		 scm/Makefile
+		 gtk/Makefile
+		 gtk/test/Makefile
+		 gtk/test/test.sh
+		 qt/Makefile
+		 qt/chardict/Makefile
+		 qt/chardict/po/Makefile.in
+		 qt/test/Makefile
+		 xim/Makefile
 		 fep/Makefile
-		 tables/Makefile
+		 emacs/Makefile
 		 test/Makefile
 		 examples/Makefile
 		 examples/uim-custom/Makefile
 		 pixmaps/Makefile
 		 replace/Makefile
 		 uim.pc
-		 uim.desktop
-                 ])
+		 uim.desktop.in
+		 uim.spec
+		 ])
 
 AC_OUTPUT
 
@@ -797,6 +857,7 @@ Configure Result :
 
    Anthy           : ${use_anthy}
    Canna           : ${use_canna}
+   Mana            : ${use_mana}
    PRIME           : ${use_prime}
    m17n-lib        : ${use_m17nlib}
    SCIM            : ${use_scim}
@@ -806,6 +867,7 @@ Configure Result :
    Qt              : ${use_qt}
    Qt immodule     : ${use_qtimmodule}
    FEP             : ${use_uim_fep}
+   Emacs           : ${use_uim_el}
    XIM             : ${use_xim}
    DICT            : ${use_dict}
    EB              : ${use_eb}
@@ -819,6 +881,5 @@ Configure Result for developers:
 
    DEBUG           : ${enable_debug}
    COMPAT_SCM      : ${enable_compat_scm}
-   COMPAT_TABLE    : ${enable_compat_table}
 ])
 fi

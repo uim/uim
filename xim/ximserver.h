@@ -235,6 +235,7 @@ char *get_prefered_locale(const char *locales);
 const char *find_localename_from_encoding(const char *encoding);
 int utf8_mbtowc(uchar *wc, const unsigned char *src, int src_len);
 int utf8_wctomb(unsigned char *dest, uchar wc); // dest must have size 6
+int mb_string_to_utf8(char *utf8, const char *str, int to_len, const char *enc);
 
 class XimServer {
 public:

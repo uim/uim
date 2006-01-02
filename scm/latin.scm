@@ -718,7 +718,7 @@
  ""
  "UTF-8"
  (N_ "Latin characters")
- (N_ "Latin characters mainly used for Latin and German languages")
+ (N_ "Latin characters mainly used for Latin and Germanic languages")
  #f
  latin-init-handler
  #f

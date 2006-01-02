@@ -1,6 +1,7 @@
 /*
  *  $Id:$
  *  Copyright (c) 2003,2004 Masahito Omote <omote@utyuuzin.net>
+ *                2005 uim Project http://uim.freedesktop.org/
  *
  *  All rights reserved.
  *
@@ -97,10 +98,15 @@ struct _anthy_dic_api {
 static struct _anthy_dic_api anthy_dic_api;
 static void *anthy_dic_lib;
 
+#ifdef __APPLE__
+  #define ANTHYDIC_DYLIB	"libanthydic.0.dylib"
+#else
+  #define ANTHYDIC_DYLIB	"libanthydic.so.0"
+#endif
 static int
 get_anthydic_api()
 {
-    anthy_dic_lib = dlopen("libanthydic.so.0", RTLD_GLOBAL |RTLD_NOW);
+    anthy_dic_lib = dlopen(ANTHYDIC_DYLIB, RTLD_GLOBAL |RTLD_NOW);
     if (anthy_dic_lib == NULL) {
 	return -1;
     }
@@ -215,7 +221,8 @@ uim_dict_anthy_open(const char *identifier)
 {
   uim_dict *dict;
 
-  dict_anthy_init();
+  if (dict_anthy_init() == -1)
+    return NULL;
 
   if (identifier == NULL)
     return NULL;

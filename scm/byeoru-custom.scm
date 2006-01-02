@@ -35,7 +35,9 @@
 
 
 (define byeoru-im-name-label (N_ "Byeoru"))
-(define byeoru-im-short-desc (N_ "The Byeoru Hangul input module"))
+(define byeoru-im-short-desc (N_ "The Byeoru Hangul input suite"))
+;; for future use
+(define byeoru-im-long-desc (N_ "A comprehensive input method suite for Hangul. This covers most of the major input methods such as 2-beol and 3-beol variants, and provides features such as Hangul-Chinese conversion. The name 'byeoru' means inkstone in Korean."))
 
 (define byeoru-layout-alist
   (list 
@@ -125,7 +127,7 @@
 (define-custom 'byeoru-esc-turns-off? #t
   '(byeoru byeoru-properties)
   '(boolean)
-  (_ "ESC turns off Hangul mode")
+  (_ "ESC turns off Hangul mode (for vi users)")
   (_ "long description will be here."))
 
 (define-custom 'byeoru-commit-by-word? #f

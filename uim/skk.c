@@ -55,6 +55,7 @@
 #include <arpa/inet.h>
 
 #include "uim-scm.h"
+#include "uim-helper.h"
 #include "plugin.h"
 
 #define skk_isalpha(ch)	(skk_islower(ch) || skk_isupper(ch))
@@ -66,6 +67,7 @@
 #define USE_SKK_JISYO_S_BUF	1	/* use SKK-JISYO.S as a cache for
 					   word completion */
 #define SKK_JISYO_S	DATADIR "/skk/SKK-JISYO.S"
+#define LOOK_COMMAND	"look"		/* UNIX look command for completion */
 
 /*
  * cand : candidate
@@ -162,6 +164,8 @@ static void merge_purged_cand_to_dst_array(struct skk_cand_array *src_ca,
 		struct skk_cand_array *dst_ca, char *purged_cand);
 static void update_personal_dictionary_cache_with_file(const char *fn,
 		int is_personal);
+static void look_get_comp(struct skk_comp_array *ca, const char *str);
+static uim_lisp look_get_top_word(const char *str);
 
 /* skkserv connection */
 #define SKK_SERVICENAME	"skkserv"
@@ -177,6 +181,8 @@ static char *SKKServerHost = NULL;
 static int open_skkserv(int portnum);
 static void close_skkserv(void);
 static void skkserv_disconnected(struct dic_info *di);
+
+static uim_bool is_setugid;
 
 static int
 calc_line_len(const char *s)
@@ -406,6 +412,7 @@ nth_candidate(char *str, int nth)
   return p;
 }
 
+/* init */
 static uim_lisp
 skk_dic_open(uim_lisp fn_, uim_lisp use_skkserv_, uim_lisp skkserv_portnum_)
 {
@@ -413,6 +420,9 @@ skk_dic_open(uim_lisp fn_, uim_lisp use_skkserv_, uim_lisp skkserv_portnum_)
   uim_bool use_skkserv = uim_scm_c_bool(use_skkserv_);
   int skkserv_portnum = uim_scm_c_int(skkserv_portnum_);
   
+  is_setugid = uim_helper_is_setugid();
+  signal(SIGPIPE, SIG_IGN);
+
   if (!skk_dic) {
     skk_dic = open_dic(fn, use_skkserv, skkserv_portnum);
   }
@@ -1750,7 +1760,7 @@ skk_get_nr_candidates(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim
 }
 
 static struct skk_comp_array *
-make_comp_array_from_cache(struct dic_info *di, const char *s)
+make_comp_array_from_cache(struct dic_info *di, const char *s, uim_lisp use_look_)
 {
   struct skk_line *sl;
   struct skk_comp_array *ca;
@@ -1779,6 +1789,9 @@ make_comp_array_from_cache(struct dic_info *di, const char *s)
     }
   }
 
+  if NFALSEP(use_look_)
+    look_get_comp(ca, s);
+
   if (ca->nr_comps == 0) {
     free(ca);
     ca = NULL;
@@ -1791,7 +1804,7 @@ make_comp_array_from_cache(struct dic_info *di, const char *s)
 }
 
 static struct skk_comp_array *
-find_comp_array(struct dic_info *di, const char *s)
+find_comp_array(struct dic_info *di, const char *s, uim_lisp use_look_)
 {
   struct skk_comp_array *ca;
 
@@ -1803,14 +1816,14 @@ find_comp_array(struct dic_info *di, const char *s)
       break;
   }
   if (ca == NULL) {
-    ca = make_comp_array_from_cache(di, s);
+    ca = make_comp_array_from_cache(di, s, use_look_);
   }
 
   return ca;
 }
 
 static struct skk_comp_array *
-find_comp_array_lisp(uim_lisp head_, uim_lisp numeric_conv_)
+find_comp_array_lisp(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
 {
   const char *hs;
   struct skk_comp_array *ca;
@@ -1822,32 +1835,33 @@ find_comp_array_lisp(uim_lisp head_, uim_lisp numeric_conv_)
     rs = replace_numeric(hs);
 
   if (!rs)
-    ca = find_comp_array(skk_dic, hs);
+    ca = find_comp_array(skk_dic, hs, use_look_);
   else {
-    ca = find_comp_array(skk_dic, rs);
+    ca = find_comp_array(skk_dic, rs, use_look_);
     free(rs);
   }
   return ca;
 }
 
 static uim_lisp
-skk_get_completion(uim_lisp head_, uim_lisp numeric_conv_)
+skk_get_completion(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
 {
   struct skk_comp_array *ca;
-  ca = find_comp_array_lisp(head_, numeric_conv_);
+  ca = find_comp_array_lisp(head_, numeric_conv_, use_look_);
   if (ca) {
     ca->refcount++;
     return uim_scm_t();
   }
 
   if (NFALSEP(numeric_conv_) && has_numeric_in_head(head_))
-    return skk_get_completion(head_, uim_scm_f());
+    return skk_get_completion(head_, uim_scm_f(), use_look_);
 
   return uim_scm_f();
 }
 
 static uim_lisp
-skk_get_nth_completion(uim_lisp nth_, uim_lisp head_, uim_lisp numeric_conv_)
+skk_get_nth_completion(uim_lisp nth_, uim_lisp head_,
+		uim_lisp numeric_conv_, uim_lisp use_look_)
 {
   int n;
   struct skk_comp_array *ca;
@@ -1858,13 +1872,13 @@ skk_get_nth_completion(uim_lisp nth_, uim_lisp head_, uim_lisp numeric_conv_)
     numlst_ = skk_store_replaced_numeric_str(head_);
 
   if (!uim_scm_nullp(numlst_))
-    ca = find_comp_array_lisp(head_, numeric_conv_);
+    ca = find_comp_array_lisp(head_, numeric_conv_, use_look_);
   else
-    ca = find_comp_array_lisp(head_, uim_scm_f());
+    ca = find_comp_array_lisp(head_, uim_scm_f(), use_look_);
 
   if (!ca) {
     if (!uim_scm_nullp(numlst_))
-      return skk_get_nth_completion(nth_, head_, uim_scm_f());
+      return skk_get_nth_completion(nth_, head_, uim_scm_f(), use_look_);
     else
       return uim_scm_make_str("");
   }
@@ -1880,24 +1894,24 @@ skk_get_nth_completion(uim_lisp nth_, uim_lisp head_, uim_lisp numeric_conv_)
 
   if (!uim_scm_nullp(numlst_) && n >= ca->nr_comps)
     return skk_get_nth_completion(uim_scm_make_int(n - ca->nr_comps),
-		    head_, uim_scm_f());
+		    head_, uim_scm_f(), use_look_);
 
   return uim_scm_make_str("");
 }
 
 static uim_lisp
-skk_get_nr_completions(uim_lisp head_, uim_lisp numeric_conv_)
+skk_get_nr_completions(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
 {
   int n = 0;
   struct skk_comp_array *ca;
 
-  ca = find_comp_array_lisp(head_, numeric_conv_);
+  ca = find_comp_array_lisp(head_, numeric_conv_, use_look_);
   if (ca)
     n = ca->nr_comps;
 
   if (NFALSEP(numeric_conv_) && has_numeric_in_head(head_))
     return uim_scm_make_int(n +
-		    uim_scm_c_int(skk_get_nr_completions(head_, uim_scm_f()))); 
+		    uim_scm_c_int(skk_get_nr_completions(head_, uim_scm_f(), use_look_))); 
 
   return uim_scm_make_int(n);
 }
@@ -1992,14 +2006,15 @@ restore_numeric(const char *s, uim_lisp numlst_)
 }
 
 static uim_lisp
-skk_get_dcomp_word(uim_lisp head_, uim_lisp numeric_conv_)
+skk_get_dcomp_word(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
 {
   const char *hs;
   struct skk_line *sl;
   int len;
-  uim_lisp numlst_ = uim_scm_null_list();
+  uim_lisp numlst_, look_;
   char *rs = NULL;
-  
+
+  numlst_ = uim_scm_null_list();
   hs = uim_scm_refer_c_str(head_);
 
   if NFALSEP(numeric_conv_)
@@ -2013,14 +2028,19 @@ skk_get_dcomp_word(uim_lisp head_, uim_lisp numeric_conv_)
 
   if (len != 0) {
     /* Search from cache using same way as in make_comp_array_from_cache(). */
-    if (!rs)
+    if (!rs) {
       for (sl = skk_dic->head.next; sl; sl = sl->next) {
 	if (!strncmp(sl->head, hs, len) && strcmp(sl->head, hs) &&
 			sl->okuri_head == '\0' &&
 			sl->state & SKK_LINE_USE_FOR_COMPLETION)
 	  return uim_scm_make_str(sl->head);
       }
-    else {
+      if NFALSEP(use_look_) {
+	look_ = look_get_top_word(hs);
+	if NFALSEP(look_)
+	  return look_;
+      }
+    } else {
       for (sl = skk_dic->head.next; sl; sl = sl->next) {
 	if (!strncmp(sl->head, rs, len) && strcmp(sl->head, rs) &&
 			sl->okuri_head == '\0' &&
@@ -2029,8 +2049,15 @@ skk_get_dcomp_word(uim_lisp head_, uim_lisp numeric_conv_)
 	  return restore_numeric(sl->head, numlst_);
 	}
       }
-      free(rs);
-      return skk_get_dcomp_word(head_, uim_scm_f());
+      if NFALSEP(use_look_) {
+	look_ = look_get_top_word(rs);
+	free(rs);
+	if NFALSEP(look_)
+	  return look_;
+      } else {
+	free(rs);
+      }
+      return skk_get_dcomp_word(head_, uim_scm_f(), use_look_);
     }
   }
   return uim_scm_make_str("");
@@ -2710,7 +2737,8 @@ parse_dic_line(struct dic_info *di, char *line, int is_personal)
     return;
 
   *sep = '\0';
-  if (!skk_isascii(buf[0]) && skk_islower(sep[-1])) { /* okuri-ari entry */
+  if ((!skk_isascii(buf[0]) || buf[0] == '>') && skk_islower(sep[-1])) {
+    /* okuri-ari entry */
     char okuri_head = sep[-1];
     sep[-1] = '\0';
     sl = compose_line(di, buf, okuri_head, line);
@@ -3315,6 +3343,127 @@ skk_substring(uim_lisp str_, uim_lisp start_, uim_lisp end_)
   return ret;
 }
 
+static FILE *
+look_popen(const char *str)
+{
+  char *cmd;
+  const char *look;
+  FILE *fp;
+  int len;
+  
+  if (is_setugid) 
+    look = "/usr/bin/" LOOK_COMMAND;
+  else
+    look = LOOK_COMMAND;
+
+  len = strlen(look) + strlen(str) + strlen(" 2>/dev/null") + 1;
+  cmd = malloc(len + 1);
+  if (!cmd)
+    return NULL;
+
+  snprintf(cmd, len + 1, "%s %s%s", look, str, " 2>/dev/null");
+  fp = popen(cmd, "r");
+  free(cmd);
+
+  return fp;
+}
+
+static uim_lisp
+look_get_top_word(const char *str)
+{
+  char buf[512], *p;
+  FILE *fp;
+  int i = 0;
+  uim_lisp ret_ = uim_scm_f();
+
+  while (str[i] != '\0') {
+    if (!skk_isalpha(str[i]))
+      return ret_;
+    i++;
+  }
+
+  fp = look_popen(str);
+  if (!fp) {
+    perror("popen look");
+    return ret_;
+  }
+
+  while (fgets(buf, 512, fp) != NULL) {
+    p = strchr(buf, '\n');
+    if (p != NULL)
+      *p = '\0';
+    if (strcmp(buf, str)) { /* don't use the word itself */
+      ret_ = uim_scm_make_str(buf);
+      break;
+    }
+  }
+  /* read to the end */
+  /* while (fgets(buf, 512, fp) != NULL) ; */
+  pclose(fp);
+
+  return ret_;
+}
+
+static void
+look_get_comp(struct skk_comp_array *ca, const char *str)
+{
+  char buf[512], *p;
+  FILE *fp;
+  int i = 0, nr_pre, c = 0;
+  int *matched;
+
+  while (str[i] != '\0') {
+    if (!skk_isalpha(str[i]))
+      return;
+    i++;
+  }
+
+  fp = look_popen(str);
+  if (!fp) {
+    perror("popen look");
+    return;
+  }
+
+  nr_pre = ca->nr_comps;
+  matched = malloc(sizeof(int) * nr_pre);
+  for (i = 0; i < nr_pre; i++)
+    matched[i] = 0;
+
+  while (fgets(buf, 512, fp) != NULL) {
+    int match = 0;
+
+    p = strchr(buf, '\n');
+    if (p != NULL)
+      *p = '\0';
+
+    /* don't use the word itself */
+    if ((c == 0 || c == 1)) {
+      c++;
+      if (!strcmp(buf, str)) {
+	c = -1;
+	continue;
+      }
+    }
+
+    /* skip words already in the cache */
+    for (i = 0; i < nr_pre; i++) {
+      if (matched[i])
+	continue;
+      if (!strcmp(ca->comps[i], buf)) {
+	matched[i] = 1;
+	match = 1;
+	break;
+      }
+    }
+    if (!match) {
+      ca->nr_comps++;
+      ca->comps = realloc(ca->comps, sizeof(char *) * ca->nr_comps);
+      ca->comps[ca->nr_comps - 1] = strdup(buf);
+    }
+  }
+  pclose(fp);
+  free(matched);
+}
 
 void
 uim_plugin_instance_init(void)
@@ -3333,11 +3482,11 @@ uim_plugin_instance_init(void)
   uim_scm_init_subr_5("skk-lib-learn-word", skk_learn_word);
   uim_scm_init_subr_1("skk-lib-get-annotation", skk_get_annotation);
   uim_scm_init_subr_1("skk-lib-remove-annotation", skk_remove_annotation);
-  uim_scm_init_subr_2("skk-lib-get-completion", skk_get_completion);
-  uim_scm_init_subr_3("skk-lib-get-nth-completion", skk_get_nth_completion);
-  uim_scm_init_subr_2("skk-lib-get-nr-completions", skk_get_nr_completions);
+  uim_scm_init_subr_3("skk-lib-get-completion", skk_get_completion);
+  uim_scm_init_subr_4("skk-lib-get-nth-completion", skk_get_nth_completion);
+  uim_scm_init_subr_3("skk-lib-get-nr-completions", skk_get_nr_completions);
   uim_scm_init_subr_2("skk-lib-clear-completions", skk_clear_completions);
-  uim_scm_init_subr_2("skk-lib-get-dcomp-word", skk_get_dcomp_word);
+  uim_scm_init_subr_3("skk-lib-get-dcomp-word", skk_get_dcomp_word);
   uim_scm_init_subr_1("skk-lib-eval-candidate", skk_eval_candidate);
   uim_scm_init_subr_3("skk-lib-substring", skk_substring);
 }
@@ -3377,8 +3526,6 @@ open_skkserv(int portnum)
   /* struct servent *serv; */
   struct protoent *proto;
   char *hostname;
-
-  signal(SIGPIPE, SIG_IGN);
 
   /* serv = getservbyname(SKK_SERVICENAME, "tcp"); */
   memset((char*)&hostaddr, 0, sizeof(struct sockaddr_in));

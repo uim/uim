@@ -52,13 +52,13 @@
 #define COMPOSE_FILE	"Compose"
 #define COMPOSE_DIR_FILE	"X11/locale/compose.dir"
 #define XLOCALE_DIR	"X11/locale"
+#define FALLBACK_XLIB_DIR	"/usr/X11R6/lib"
 
 #define XLC_BUFSIZE	256
 #define iscomment(ch)	((ch) == '#' || (ch) == '\0')
 
 static int parse_line(char *line, char **argv, int argsize);
 static unsigned int KeySymToUcs4(KeySym keysym);
-static int mb_string_to_utf8(char *utf8, const char *str, int to_len, const char *enc);
 
 Compose::Compose(DefTree *top, XimIC *xic)
 {
@@ -735,6 +735,7 @@ char *XimIM::get_compose_filename()
 
     FILE *fp;
     char buf[XLC_BUFSIZE], *name = NULL, *filename = NULL;
+    const char *xlib_dir = XLIB_DIR ;
 
     lang_region = get_lang_region();
     encoding = get_encoding();
@@ -756,9 +757,29 @@ char *XimIM::get_compose_filename()
 
     fp = fopen(compose_dir_file, "r");
     if (fp == NULL) {
-	free(locale);
-	free(compose_dir_file);
-	return NULL;
+	/* retry with fallback file */
+	if (strcmp(FALLBACK_XLIB_DIR, XLIB_DIR)) {
+	    compose_dir_file = (char *)realloc(compose_dir_file,
+			    strlen(FALLBACK_XLIB_DIR) +
+			    strlen(COMPOSE_DIR_FILE) + 2);
+	    if (compose_dir_file == NULL) {
+		free(locale);
+		return NULL;
+	    }
+	    sprintf(compose_dir_file, "%s/%s",
+			    FALLBACK_XLIB_DIR, COMPOSE_DIR_FILE);
+	    fp = fopen(compose_dir_file, "r");
+	    if (fp == NULL) {
+		free(locale);
+		free(compose_dir_file);
+		return NULL;
+	    }
+	    xlib_dir = FALLBACK_XLIB_DIR;
+	} else {
+	    free(locale);
+	    free(compose_dir_file);
+	    return NULL;
+	}
     }
 
     while (fgets(buf, XLC_BUFSIZE, fp) != NULL) {
@@ -791,10 +812,11 @@ char *XimIM::get_compose_filename()
     if (name == NULL)
 	return NULL;
 
-    filename = (char *)malloc(sizeof(char) * (strlen(XLIB_DIR) + strlen(XLOCALE_DIR) + strlen(name) + 3));
+    filename = (char *)malloc(strlen(xlib_dir) + strlen(XLOCALE_DIR) +
+		    strlen(name) + 3);
     if (filename == NULL)
 	return NULL;
-    sprintf(filename, "%s/%s/%s", XLIB_DIR, XLOCALE_DIR, name);
+    sprintf(filename, "%s/%s/%s", xlib_dir, XLOCALE_DIR, name);
     free(name);
 
     return filename;
@@ -1142,7 +1164,7 @@ KeySymToUcs4(KeySym keysym)
 	return 0;
 }
 
-static int
+int
 mb_string_to_utf8(char *utf8, const char *str, int len, const char *enc) {
     size_t outbufsize = len + 1;
     const char *inbuf;

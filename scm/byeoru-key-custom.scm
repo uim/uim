@@ -34,96 +34,101 @@
 (require "i18n.scm")
 
 
-(define-custom-group 'byeoru-keys
-  (_ "Byeoru key bindings")
+(define-custom-group 'byeoru-keys1
+  (_ "Byeoru key bindings 1")
   (_ "long description will be here."))
 
+(define-custom-group 'byeoru-keys2
+  (_ "Byeoru key bindings 2")
+  (_ "long description will be here."))
+
+
 (define-custom 'byeoru-on-key '("<Shift> ")
-  '(byeoru-keys)
+  '(byeoru-keys1)
   '(key)
   (_ "[Byeoru] on")
   (_ "long description will be here"))
 
 (define-custom 'byeoru-latin-key '("<Shift> ")
-  '(byeoru-keys)
+  '(byeoru-keys1)
   '(key)
   (_ "[Byeoru] off")
   (_ "long description will be here"))
 
 (define-custom 'byeoru-conversion-key '("F9")
-  '(byeoru-keys)
+  '(byeoru-keys1)
   '(key)
   (_ "[Byeoru] convert Hangul to Chinese")
   (_ "long description will be here"))
 
 (define-custom 'byeoru-commit-key '(generic-commit-key)
-  '(byeoru-keys)
+  '(byeoru-keys1)
   '(key)
   (_ "[Byeoru] confirm conversion")
   (_ "long description will be here"))
 
 (define-custom 'byeoru-cancel-key '(generic-cancel-key)
-  '(byeoru-keys)
+  '(byeoru-keys1)
   '(key)
   (_ "[Byeoru] cancel conversion")
   (_ "long description will be here"))
 
 (define-custom 'byeoru-next-candidate-key '(generic-next-candidate-key)
-  '(byeoru-keys)
+  '(byeoru-keys2)
   '(key)
   (_ "[Byeoru] next candidate")
   (_ "long description will be here"))
 
 (define-custom 'byeoru-prev-candidate-key '(generic-prev-candidate-key)
-  '(byeoru-keys)
+  '(byeoru-keys2)
   '(key)
   (_ "[Byeoru] previous candidate")
   (_ "long description will be here"))
 
 (define-custom 'byeoru-next-page-key '(generic-next-page-key)
-  '(byeoru-keys)
+  '(byeoru-keys2)
   '(key)
   (_ "[Byeoru] next page of candidate window")
   (_ "long description will be here"))
 
 (define-custom 'byeoru-prev-page-key '(generic-prev-page-key)
-  '(byeoru-keys)
+  '(byeoru-keys2)
   '(key)
   (_ "[Byeoru] previous page of candidate window")
   (_ "long description will be here"))
 
 (define-custom 'byeoru-backspace-key '(generic-backspace-key)
-  '(byeoru-keys)
+  '(byeoru-keys2)
   '(key)
   (_ "[Byeoru] backspace")
   (_ "long description will be here"))
 
 (define-custom 'byeoru-delete-key '(generic-delete-key)
-  '(byeoru-keys)
+  '(byeoru-keys2)
   '(key)
   (_ "[Byeoru] delete")
   (_ "long description will be here"))
 
 (define-custom 'byeoru-go-left-key '(generic-go-left-key)
-  '(byeoru-keys)
+  '(byeoru-keys2)
   '(key)
   (_ "[Byeoru] go left")
   (_ "long description will be here"))
 
 (define-custom 'byeoru-go-right-key '(generic-go-right-key)
-  '(byeoru-keys)
+  '(byeoru-keys2)
   '(key)
   (_ "[Byeoru] go right")
   (_ "long description will be here"))
 
 (define-custom 'byeoru-beginning-of-preedit-key '(generic-beginning-of-preedit-key)
-  '(byeoru-keys)
+  '(byeoru-keys2)
   '(key)
   (_ "[Byeoru] beginning of word")
   (_ "long description will be here"))
 
 (define-custom 'byeoru-end-of-preedit-key '(generic-end-of-preedit-key)
-  '(byeoru-keys)
+  '(byeoru-keys2)
   '(key)
   (_ "[Byeoru] end of word")
   (_ "long description will be here"))

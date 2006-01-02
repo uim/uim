@@ -1,0 +1,357 @@
+uim.el - Emacs uim bridge
+
+Copyright (c) 2005 uim Project http://uim.freedesktop.org/
+
+All rights reserved.
+
+このソフトウェアはBSDライセンスに基づき配布されています．
+
+
+uim.elとは
+==========
+
+uim.elは，uimとEmacsの間を結ぶブリッジです．
+
+uim.elを導入することで，Emacs上から，uimのサポートしているイ
+ンプットメソッドを直接利用できるようになります．
+
+
+特徴
+====
+
+- インライン変換候補表示
+
+   Emacs上で動作する大抵のIMがエコー領域に変換候補を表示する
+   のに対し，uim.elは変換候補を
+
+    - 入力位置のすぐ下に
+    - 縦方向に並べて
+
+   表示することが可能です．これを「インライン変換候補表示」と
+   呼んでいます．
+
+   このインライン変換候補表示機能により，入力中，変換を行う
+   度に視線をフレームの最下部まで移す必要がなくなります．
+
+   また，縦方向に変換候補を並べることで，変換候補の配置が他
+   のuimのブリッジと同様になるため，横方向に並べた場合に比
+   べて違和感無く操作できるようになります．
+
+
+- プリエディットのバッファへの挿入
+
+   uim.elは変換中の文字列(プリエディット)を，バッファ上に直
+   接挿入して表示します．
+
+   そのため，uim-ximやuim-fep等でEmacsに入力する場合に発生
+   する，文字入力中に既存の文字が一時的に上書きされて見えな
+   くなってしまう問題が発生しません．
+
+
+- バッファごとに独立したIMの管理
+
+   uim.elは，入力エンジン等に関する情報をバッファ毎に完全に
+   独立して管理します．
+
+   そのため，バッファ毎に異なる変換エンジン(Anthy，SKK，
+   Canna等)を利用したり，複数のバッファで並行して変換処理を
+   進めたりすることが可能です．
+
+
+
+動かすのに必要なもの
+====================
+
+- GNU Emacs もしくは XEmacs
+
+ - GNU Emacsは，20.7.1，21.3.1，22.0.50(CVS版) で動作確認
+
+ - XEmacs は 21.4.17 (sumo + mule-sumo) で動作確認
+
+ ※ Mule-2.3 では動作しません
+    おそらく GNU Emacs-21.x が最も安定して動作すると思います
+
+- uim
+
+ - おそらく 0.4.6 以上 (最新版推奨)
+
+
+- Anthy 等の，uimから利用可能な各種インプットメソッド
+
+
+
+インストール手順
+================
+
+uim.elは，Emacs LISPで書かれたフロントエンドと，uimのライブ
+ラリとリンクして変換処理等を行うネイティブバイナリのバックエ
+ンド(uim-el-agent)とで構成されています．
+
+そのため，uim.elをソースからインストールには，Cのソースをコ
+ンパイルできる環境が必要になります．
+
+通常は，以下の手順でインストール可能です．
+
+ % ./configure
+ % make
+ % su
+ # make install
+
+
+※ ファイル構成に若干変更がありましたので，以前のバージョン
+   からアップデートするには，上書きインストールせずに，一旦
+   古いものを削除してからインストールしてください
+
+
+
+使い方
+======
+
+
+uim.elは，直接マイナーモードを起動して利用する方法と，LEIMの
+作法にしたがって起動する方法の2種類があります．
+
+どちらを選んでも，基本的な部分は変わりありません．
+
+※ 以前のバージョンと比べ，設定方法が若干変更されています．
+   御注意下さい．
+
+
+[マイナーモードで直接uim.elを利用する場合の基本設定]
+
+.emacsに以下の記述を加えてください
+
+  ;; uim.elを読み込む
+  (require 'uim)
+  ;; Emacs起動時に読み込んでほしくない場合は代わりに下記を記載
+  ;; (autoload 'uim-mode "uim" nil t)
+
+  ;; デフォルトのIMの指定 (以下はAnthyの例)
+  ;;   指定しない場合はuimのデフォルトと同じになります
+  ;; (setq uim-default-im-engine "anthy")
+
+  ;; uimを起動するためのキーの設定(C-oを使う場合の例)
+  (global-set-key "\C-o" 'uim-mode)
+
+
+[LEIMの作法にしたがってuim.elを利用する場合の基本設定]
+
+.emacsに以下の記述を加えてください
+
+  ;; LEIMのセットアップをしつつuim.elを読み込む
+  (require 'uim-leim)
+
+  ;; デフォルトのIMの設定 (以下はAnthyの例)
+  ;;   指定しない場合，LEIMのデフォルトのIMが起動します
+  (setq default-input-method "japanese-anthy-uim")
+
+
+  ※LEIMでの IM 名は
+
+     <Emacs的言語名>-<uimの返してくるIM名>-uim
+
+   となっています．uim的言語名とEmacs的言語名の対応については
+   uim-el/uim-var.elの uim-lang-code で確認できます．
+
+    登録されているIM一覧は，以下のコマンドで見ることができます
+
+     M-x set-input-method RET TAB
+
+
+
+[パスに関する設定]
+
+管理者権限が無い場合や，uim.elを他のプログラムとは別の場所に
+インストールしたい場合等は，以下のようにしてパスを通す必要が
+あります．必要に応じてuim.elを読み込む部分よりも 前 に記述し
+てください
+
+  ;; uim.elのlispファイルを，Emascがデフォルトでパスを通して
+  ;; くれないところに設置した場合，パスを通す
+  (setq load-path (append '("/home/nosuke/uim-el/uim-el") load-path))
+
+  ;; uim-el-agentが，Emacs上でパスの通っていない場所にある場合
+  ;; 直接場所を指定
+  (setq uim-el-agent "/home/nosuke/uim-el/uim-el-agent/uim-el-agent")
+
+
+
+
+[カスタマイズ用の設定]
+
+* ターミナルモードでのEscapeキーの挙動を変更する
+
+Emacsを -nw オプションをつけてターミナル上で起動した場合，
+uim.elは F10やDelete等のファンクションキーを認識するために，
+デフォルトでは単独で押下された Escapeをuim側に渡さないように
+なっています．
+
+uim側で単独のEscapeにバインドされた処理を呼び出すには，
+Escapeを2回続けて入力してください．
+
+
+なお，.emacsに以下のように設定することで，プリエディット表示
+時のみ，単独のEscapeを有効にすることができます．
+
+  ;; 単独のEscの押下をターミナル上で有効にする
+  (setq uim-use-single-escape-on-terminal t)
+
+ただし，この設定をした場合，ターミナル上ではFnキーやDeleteキー
+の他，Altキーを組み合わせたキーバインド等も正しく動作しなく
+なりますので，お薦めしません．
+
+
+* インライン変換候補表示をデフォルトで有効にする
+  
+インライン変換候補表示はEmacsで使用しているフォントがプロポー
+ショナルフォントで無い場合等に正常に動作しないため，デフォル
+トでは無効化してあります．
+
+変換候補のインライン表示に関するデフォルトの振舞を変更したい
+場合は，以下を .emacs に記述してください．
+
+  ;; 変換候補をデフォルトでインライン表示にする
+  (setq uim-candidate-display-inline t)
+
+
+変換候補のインライン表示のオンオフをキーボードから切替えたい
+場合は，以下を .emacs に記述してください．
+
+  ;; 動作中に変換候補の表示方式を切替える
+  ;; (M-;を使う場合の例)
+  (global-set-key "\M-;" 'uim-switch-candidate-display-mode)
+
+
+
+* プリエディットや変換候補の色を変更する
+
+変換候補等の色が気に入らない場合は，以下のように記述すること
+で変更可能です．
+
+利用可能な色は M-x list-colors-display で確認できます．
+
+  ;; プリエディットの文字色・背景色
+  (set-face-foreground 'uim-preedit-highlight-face "white")
+  (set-face-background 'uim-preedit-highlight-face "blue")
+
+  ;; プリエディットのセパレータの文字色
+  (set-face-foreground 'uim-separator-face "white")
+
+  ;; 変換候補の奇数番目の文字色・背景色
+  (set-face-foreground 'uim-candidate-odd-face "blue")
+  (set-face-background 'uim-candidate-odd-face "white")
+
+  ;; 変換候補の偶数番目の文字色・背景色
+  (set-face-foreground 'uim-candidate-even-face "blue")
+  (set-face-background 'uim-candidate-even-face "yellow")
+
+  ;; 変換候補の選択中の部分の文字色・背景色
+  (set-face-foreground 'uim-candidate-selected-face "blue")
+  (set-face-background 'uim-candidate-selected-face "white")
+
+  ;; 変換候補の現在のページ番号の表示分の文字色・背景色
+  (set-face-foreground 'uim-candidate-nth-face "red")
+  (set-face-background 'uim-candidate-nth-face "white")
+
+
+
+* プリエディットや変換候補に枠を付ける (貧弱なEmacs向け)
+
+Emacsが太線や下線の表示に対応していない場合(Emacs-20.xを-nw 
+オプションをつけてターミナルで起動した場合等)に，プリエディッ
+トや変換候補の境界をテキストで描画するには以下を設定します．
+
+  ;; プリエディットの両脇に「|」を表示する
+  (setq-default uim-preedit-display-fences t)
+
+  ;; 変換候補の左右と下を「|」や「-」で囲う
+  (setq-default uim-candidate-display-frame t)
+
+
+
+* 各IMのデフォルトの設定を指定する
+
+各IMのデフォルトの設定を，uim全体設定とは異なる内容に変更し
+たい場合は，設定を列挙したリストを記述する必要があります．
+
+  ;; Anthyとskkのデフォルトの入力モードをひらがなにする
+  (setq uim-default-im-prop 
+          '("action_anthy_hiragana" "action_skk_hiragana"))
+
+
+
+* デフォルトでuimが起動しているようにする
+
+特定のメジャーモードで最初からuimが起動するようにしたい場合
+は，以下のように.emacs などに書いておきます．
+
+  ;; html-modeで最初からuimを起動しておきたい場合
+  ;; (html-modeの起動にあわせてuimを起動する場合の例)
+  (add-hook 'html-mode-hook
+             (lambda ()
+              (uim-mode 1)
+               ))
+
+ ※ LEIMで使用する場合は，「(uim-mode 1)」の代わりに
+  「(toggle-input-method)」等と書けばうまくいくかもしれません
+
+
+たくさんある場合は，以下のようにまとめて書いてしまいましょう
+
+  (mapcar (lambda (x)
+    (add-hook x (lambda () (uim-mode 1))))
+     '(mew-draft-mode-hook
+       html-mode-hook
+       lisp-interaction-mode-hook
+       php-mode-hook
+       text-mode-hook))
+
+
+また，同様に，特定のモードでの変換候補のデフォルトの表示方式
+を設定することも可能です．
+
+  ;; navi2chで書き込み時に，デフォルトで uim が起動するようにし，
+  ;; 変換候補はインライン表示させないようにする例
+  (add-hook 'navi2ch-message-mode-hook 
+            (lambda () (uim-mode 1)
+              (setq uim-candidate-display-inline-buffer nil)
+              ))
+
+
+
+[その他特別な操作]
+
+マイナーモードでIMを切替えたい場合は
+
+  M-x uim-im-switch
+
+で uim.el で利用可能なIM一覧から選択するとができます．
+
+
+※ LEIMでuimを利用している場合は，IMの切替えにはLEIMの方式に
+  従い set-input-method コマンドを利用してください．
+
+
+既知の問題
+==========
+
+uim.el配布ページを参照してください．
+
+
+最新版の入手
+============
+
+- 下記のWikiからどうぞ
+
+http://garakuta.homelinux.org/~nosuke/tsubo/uim-el.html
+
+
+
+バグや要望の送り先
+==================
+
+- メールで報告する場合は のすけ<sasugaanija@gmail.com> 宛にお願いします
+
+- Wikiの方に書き込んでくださっても結構です
+
+

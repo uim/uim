@@ -18,6 +18,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  canna.scm canna-custom.scm canna-key-custom.scm \
  prime.scm prime-custom.scm prime-key-custom.scm \
  skk.scm skk-editor.scm skk-custom.scm skk-key-custom.scm skk-dialog.scm \
+ mana.scm mana-custom.scm mana-key-custom.scm \
  tcode.scm \
  tutcode.scm tutcode-key-custom.scm \
  hangul.scm hangul2.scm hangul3.scm romaja.scm \
@@ -34,16 +35,15 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
 
 ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)
 
-if COMPAT_TABLE
-SCM_FILES += hk.scm
-endif
-
 module_names = "pyload"
 if ANTHY
   module_names += "anthy"
 endif
 if CANNA
   module_names += "canna"
+endif
+if MANA
+  module_names += "mana"
 endif
 if PRIME
   module_names += "prime"

@@ -32,14 +32,10 @@
 
 #include <gtk/gtk.h>
 
-GtkWidget *
-caret_state_indicator_new(void);
+GtkWidget *caret_state_indicator_new(void);
 
-void
-caret_state_indicator_update(GtkWidget *window, gint topwin_x, gint topwin_y, const gchar *str);
+void caret_state_indicator_update(GtkWidget *window, gint topwin_x, gint topwin_y, const gchar *str);
 
-void
-caret_state_indicator_set_cursor_location(GtkWidget *window, GdkRectangle *cursor_location);
+void caret_state_indicator_set_cursor_location(GtkWidget *window, GdkRectangle *cursor_location);
 
-void
-caret_state_indicator_set_timeout(GtkWidget *window, gint timeout);
+void caret_state_indicator_set_timeout(GtkWidget *window, gint timeout);

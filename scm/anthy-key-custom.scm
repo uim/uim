@@ -238,5 +238,5 @@
 (define-custom 'anthy-vi-escape-key '("escape" "<Control>[")
                '(anthy-keys3)
 	       '(key)
-	       (_ "[Anthy] anthy-vi-escape-key?")
+	       (_ "[Anthy] ESC keys on vi-cooperative mode")
 	       (_ "long description will be here"))

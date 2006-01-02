@@ -77,6 +77,10 @@
 		     (_ "Completion")
 		     (_ "long description will be here."))
 
+(define-custom-group 'skk-keys-dcomp
+		     (_ "Dynamic completion")
+		     (_ "long description will be here."))
+
 (define-custom-group 'skk-keys-latin-conv
 		     (_ "Latin conversion")
 		     (_ "long description will be here."))
@@ -170,7 +174,7 @@
 	       (_ "[SKK] begin completion")
 	       (_ "long description will be here"))
 
-(define-custom 'skk-next-completion-key '("." skk-begin-completion-key)
+(define-custom 'skk-next-completion-key '("." "tab" "<IgnoreCase><Control>i")
                '(skk-keys2 skk-keys-completion)
 	       '(key)
 	       (_ "[SKK] next completion candidate")
@@ -183,19 +187,19 @@
 	       (_ "long description will be here"))
 
 (define-custom 'skk-new-completion-from-current-comp-key '("<Alt>tab" "<IgnoreCase><Control><Alt>i")
-	       '(skk-keys3 skk-keys-completion)
+	       '(skk-keys2 skk-keys-completion)
 	       '(key)
 	       (_ "[SKK] new completion using current completion")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-begin-conv-with-completion-key '("<Alt> ")
-	       '(skk-keys3 skk-keys-completion)
+	       '(skk-keys3 skk-keys-dcomp)
 	       '(key)
 	       (_ "[SKK] begin conversion with completion")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-commit-with-conv-completion-key '("<IgnoreCase><Control><Alt>j")
-	       '(skk-keys3 skk-keys-completion)
+	       '(skk-keys3 skk-keys-dcomp)
 	       '(key)
 	       (_ "[SKK] commit the first candidate with completion")
 	       (_ "long description will be here"))
@@ -203,25 +207,25 @@
 (define-custom 'skk-special-midashi-key '("<IgnoreShift>>" "<IgnoreShift><" "<IgnoreShift>?")
                '(skk-keys2)
 	       '(key)
-	       (_ "[SKK] skk-special-midashi-key?")
+	       (_ "[SKK] join prefix or suffix")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-vi-escape-key '("escape" "<Control>[")
                '(skk-keys2)
 	       '(key)
-	       (_ "[SKK] skk-vi-escape-key?")
+	       (_ "[SKK] ESC keys on vi-cooperative mode")
 	       (_ "long description will be here"))
 
 (define-custom 'skk-state-direct-no-preedit-nop-key '("<IgnoreCase><Control>j")
                '(skk-keys2)
 	       '(key)
-	       (_ "[SKK] skk-state-direct-no-preedit-nop-key?")
-	       (_ "long description will be here"))
+	       (_ "[SKK] no-operation on no-preedit state")
+	       (_ "See [Anthy-dev 1616] and related messages for further information"))
 
 (define-custom 'skk-purge-candidate-key '("<IgnoreCase><Shift>x")  ;; "X"
 	       '(skk-keys2)
 	       '(key)
-	       (_ "[SKK] skk-purge-candidate-key?")
+	       (_ "[SKK] purge the entry from dictionary")
 	       (_ "long description will be here"))
 
 ;; should not be changed

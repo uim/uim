@@ -203,7 +203,7 @@ static void init_uim(const char *engine)
   if (i == nr) {
     printf("%s is not a input method\n\n", engine);
     usage();
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 }
 
@@ -668,7 +668,7 @@ static pid_t my_forkpty(int *amaster, struct termios *termp, struct winsize *win
     return pid;
   }
 }
-#elif defined(__svr4__) 
+#elif defined(__svr4__) || defined(__sgi__)
 static pid_t my_forkpty(int *amaster, struct termios *termp, struct winsize *winp)
 {
   pid_t pid;

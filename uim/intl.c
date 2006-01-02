@@ -40,7 +40,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "config.h"
 #ifdef ENABLE_NLS
 #include <locale.h>
 #endif

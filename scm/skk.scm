@@ -358,8 +358,7 @@
       (skk-context-set-okuri-head! sc "")
       (skk-context-set-okuri! sc '())
       (skk-context-set-appendix! sc '())
-      (if skk-dcomp-activate?
-	  (skk-context-set-dcomp-word! sc ""))
+      (skk-reset-dcomp-word sc)
       (skk-reset-candidate-window sc)
       (skk-context-set-nr-candidates! sc 0)
       (skk-context-set-latin-conv! sc #f)
@@ -518,7 +517,8 @@
     (skk-lib-get-nth-completion
      n
      (skk-make-string (skk-context-head sc) skk-type-hiragana)
-     skk-use-numeric-conversion?)))
+     skk-use-numeric-conversion?
+     skk-use-look?)))
 
 (define skk-get-current-completion
   (lambda (sc)
@@ -599,6 +599,11 @@
       (skk-flush sc)
       res)))
 
+(define skk-reset-dcomp-word
+  (lambda (sc)
+    (if skk-dcomp-activate?
+	(skk-context-set-dcomp-word! sc ""))))
+
 (define skk-append-string
   (lambda (sc str)
     (and
@@ -606,12 +611,18 @@
      (if (not (string? (car str)))
 	 (begin
 	   (skk-append-string sc (car str))
-	   (skk-append-string sc (cdr str))
-	   )
+	   (skk-append-string sc (cdr str)))
 	 #t)
-     (skk-context-set-head!
-      sc
-      (cons str (skk-context-head sc))))))
+     (skk-context-set-head! sc (cons str (skk-context-head sc)))
+     ;;; dcomp
+     (if skk-dcomp-activate?
+	 (skk-context-set-dcomp-word!
+	  sc
+	  (skk-lib-get-dcomp-word
+	   (skk-make-string
+	    (skk-context-head sc) (skk-context-kana-mode sc))
+	   skk-use-numeric-conversion?
+	   skk-use-look?))))))
 
 (define skk-append-okuri-string
   (lambda (sc str)
@@ -661,7 +672,8 @@
 	(skk-append-residual-kana sc))
     (skk-lib-get-completion
      (skk-make-string (skk-context-head sc) (skk-context-kana-mode sc))
-     skk-use-numeric-conversion?)
+     skk-use-numeric-conversion?
+     skk-use-look?)
     (skk-context-set-completion-nth! sc 0)
     (skk-context-set-state! sc 'skk-state-completion)))
 
@@ -1093,14 +1105,6 @@
 					rkc
 					(charcode->string
 					 (to-lower-char key))))
-		 ;;; dcomp
-		 (if skk-dcomp-activate?
-		     (skk-context-set-dcomp-word!
-		      sc
-		      (skk-lib-get-dcomp-word
-		       (skk-make-string
-			(skk-context-head sc) (skk-context-kana-mode sc))
-		       skk-use-numeric-conversion?)))
 		 #f)
 	       (let* ((residual-kana (rk-push-key-last! rkc)))
 		 ;; handle preceding "n"
@@ -1136,15 +1140,7 @@
       (if (eq? (skk-context-state sc) 'skk-state-kanji)
 	  (begin
 	    (if res
-		(skk-append-string sc res))
-	    ;;; dcomp
-	    (if skk-dcomp-activate?
-		(skk-context-set-dcomp-word!
-		 sc
-		 (skk-lib-get-dcomp-word
-		  (skk-make-string
-		   (skk-context-head sc) (skk-context-kana-mode sc))
-		  skk-use-numeric-conversion?)))))
+		(skk-append-string sc res))))
       (if (or
 	   (eq? (skk-context-state sc) 'skk-state-direct)
 	   (eq? (skk-context-state sc) 'skk-state-latin)
@@ -1178,66 +1174,86 @@
 	     (cadr seq)
 	     #f))))
 
+; see [Anthy-dev: 2646, 2654]
 (define skk-commit-with-conv-completion
   (lambda (sc)
-    (if (and
-	 skk-dcomp-activate?
-	 (not (skk-rk-pending? sc))
-	 (not (string=? (skk-context-dcomp-word sc) "")))
-	(if (skk-lib-get-entry
-	     (skk-context-dcomp-word sc) "" "" skk-use-numeric-conversion?)
-	    (begin
-	      (skk-context-set-head! sc '())
-	      (skk-string-list-to-context-head
-	       sc
-	       (string-to-list (skk-context-dcomp-word sc)))
-	      (skk-context-set-nth! sc 0)
-	      (skk-commit sc (skk-prepare-commit-string sc))
-	    (begin
-	      (skk-commit sc (skk-context-dcomp-word sc))
-	      (skk-flush sc))))
-	(begin
-	  (skk-append-residual-kana sc)
-	  (if (not (null? (skk-context-head sc)))
-	      ; disabled completion --ekato. see [Anthy-dev: 2646]
-	      ;(let ((dcomp (skk-lib-get-dcomp-word
-	      ;		    (skk-make-string
-	      ;		     (skk-context-head sc)
-	      ;		     (skk-context-kana-mode sc)))))
-	      ;	(if (not (string=? dcomp ""))
-	      ;	    (begin
-	      ;	      (skk-context-set-head! sc '())
-	      ;	      (skk-string-list-to-context-head
-	      ;	       sc
-	      ;	       (string-to-list dcomp))
-	      ;	      (if (skk-lib-get-entry
-	      ;	      		 (skk-make-string
-	      ;			  (skk-context-head sc) skk-type-hiragana)
-	      ;			  ""
-	      ;			  ""
-	      ;			  skk-use-numeric-conversion?)
-	      ;		  (begin
-	      ;		    (skk-context-set-nth! sc 0)
-	      ;		    (skk-commit sc (skk-prepare-commit-string sc)))
-	      ;		  (begin
-	      ;		    (skk-commit sc dcomp)
-	      ;		    (skk-flush sc))))
-		    (begin
-		      (if (skk-lib-get-entry
-		      		 (skk-make-string
-				  (skk-context-head sc) skk-type-hiragana)
-				  ""
-				  ""
-				  skk-use-numeric-conversion?)
-			  (begin
-			    (skk-context-set-nth! sc 0)
-			    (skk-commit sc (skk-prepare-commit-string sc)))
-			  (begin
-			    (skk-commit sc (skk-make-string
-			    		    (skk-context-head sc)
-					    (skk-context-kana-mode sc)))
-			    (skk-flush sc))));))  --ekato
-	      (skk-flush sc))))))
+    (cond
+     ((and skk-dcomp-activate?
+	   (not (skk-rk-pending? sc))
+	   (not (string=? (skk-context-dcomp-word sc) "")))
+      (if (skk-lib-get-entry
+	   (skk-context-dcomp-word sc) "" "" skk-use-numeric-conversion?)
+	  (begin
+	    (skk-string-list-to-context-head
+	     sc
+	     (string-to-list (skk-context-dcomp-word sc)))
+	    (skk-context-set-nth! sc 0)
+	    (skk-commit sc (skk-prepare-commit-string sc)))
+	  (begin
+	    (skk-commit sc (skk-context-dcomp-word sc))
+	    (skk-flush sc))))
+     ((and skk-dcomp-activate?
+	   (skk-rk-pending? sc)
+	   (not (string=? (skk-context-dcomp-word sc) "")))
+      (skk-append-residual-kana sc)
+      (if (not (null? (skk-context-head sc)))
+	  (let ((dcomp (skk-lib-get-dcomp-word
+			(skk-make-string
+			 (skk-context-head sc)
+			 (skk-context-kana-mode sc))
+			skk-use-numeric-conversion?
+			skk-use-look?)))
+	    (if (not (string=? dcomp ""))
+		(begin
+		  (skk-string-list-to-context-head
+		   sc
+		   (string-to-list dcomp))
+		  (if (skk-lib-get-entry
+		       (skk-make-string
+			(skk-context-head sc) skk-type-hiragana)
+		       ""
+		       ""
+		       skk-use-numeric-conversion?)
+		      (begin
+			(skk-context-set-nth! sc 0)
+			(skk-commit sc (skk-prepare-commit-string sc)))
+		      (begin
+			(skk-commit sc dcomp)
+			(skk-flush sc))))
+		(begin
+		  (if (skk-lib-get-entry
+		       (skk-make-string
+			(skk-context-head sc) skk-type-hiragana)
+		       ""
+		       ""
+		       skk-use-numeric-conversion?)
+		      (begin
+			(skk-context-set-nth! sc 0)
+			(skk-commit sc (skk-prepare-commit-string sc)))
+		      (begin
+			(skk-commit sc (skk-make-string
+					(skk-context-head sc)
+					(skk-context-kana-mode sc)))
+			(skk-flush sc))))))))
+     (else
+      (skk-append-residual-kana sc)
+      (if (not (null? (skk-context-head sc)))
+	  (begin
+	    (if (skk-lib-get-entry
+		 (skk-make-string
+		  (skk-context-head sc) skk-type-hiragana)
+		 ""
+		 ""
+		 skk-use-numeric-conversion?)
+		(begin
+		  (skk-context-set-nth! sc 0)
+		  (skk-commit sc (skk-prepare-commit-string sc)))
+		(begin
+		  (skk-commit sc (skk-make-string
+				  (skk-context-head sc)
+				  (skk-context-kana-mode sc)))
+		  (skk-flush sc))))
+	  (skk-flush sc))))))
 
 (define skk-proc-state-kanji
   (lambda (c key key-state)
@@ -1283,7 +1299,8 @@
 		       (skk-make-string
 			(skk-context-head sc)
 			(skk-context-kana-mode sc))
-		       skk-use-numeric-conversion?)
+		       skk-use-numeric-conversion?
+		       skk-use-look?)
 			"")))
 	     #f)
 	   #t)
@@ -1306,33 +1323,39 @@
  	     #f)
 	   #t)
        (if (skk-begin-conv-with-completion-key? key key-state)
+	   ; do uim's own way --ekato. see [Anthy-dev: 2646, 2654]
 	   (begin
-	     (if (and
-		  skk-dcomp-activate?
-		  (not (skk-rk-pending? sc))
-		  (not (string=? (skk-context-dcomp-word sc) "")))
-		 (let ((sl (string-to-list (skk-context-dcomp-word sc))))
-		   (skk-context-set-head! sc '())
-		   (skk-string-list-to-context-head sc sl)
-		   (skk-begin-conversion sc))
-		 (begin
-		   (skk-append-residual-kana sc)
-		   ; do uim's own way --ekato. see [Anthy-dev: 2646]
-		   ;(let ((sl (string-to-list
-		   ;	    (skk-lib-get-dcomp-word
-		   ;	     (skk-make-string
-		   ;	      (skk-context-head sc)
-		   ;	      (skk-context-kana-mode sc))
-		   ;	     skk-use-numeric-conversion?))))
-		   ;  (if (not (null? sl))
-		   ;	 (begin
-		   ;	   (skk-context-set-head! sc '())
-		   ;	   (skk-string-list-to-context-head sc sl)
-		   ;	   (skk-begin-conversion sc))
-		   ;	 (begin
-			   (if (not (null? (skk-context-head sc)))
-			       (skk-begin-conversion sc)
-			       (skk-flush sc))));))) --ekato
+	     (cond
+	      ((and skk-dcomp-activate?
+		    (not (skk-rk-pending? sc))
+		    (not (string=? (skk-context-dcomp-word sc) "")))
+	       (let ((sl (string-to-list (skk-context-dcomp-word sc))))
+		 (skk-string-list-to-context-head sc sl)
+		 (skk-begin-conversion sc)))
+	      ((and skk-dcomp-activate?
+		    (skk-rk-pending? sc)
+		    (not (string=? (skk-context-dcomp-word sc) "")))
+	       (skk-append-residual-kana sc)
+	       (let ((sl (string-to-list
+			  (skk-lib-get-dcomp-word
+			   (skk-make-string
+			    (skk-context-head sc)
+			    (skk-context-kana-mode sc))
+			   skk-use-numeric-conversion?
+			   skk-use-look?))))
+		 (if (not (null? sl))
+		     (begin
+		       (skk-string-list-to-context-head sc sl)
+		       (skk-begin-conversion sc))
+		     (begin
+		       (if (not (null? (skk-context-head sc)))
+			   (skk-begin-conversion sc)
+			   (skk-flush sc))))))
+	      (else
+	       (skk-append-residual-kana sc)
+	       (if (not (null? (skk-context-head sc)))
+		   (skk-begin-conversion sc)
+		   (skk-flush sc))))
 	     #f)
 	   #t)
        (if (skk-commit-with-conv-completion-key? key key-state)
@@ -1364,15 +1387,7 @@
 		 (if (usual-char? key)
 		     (let* ((s (charcode->string key))
 			    (p (cons s (cons s (cons s s)))))
-		       (skk-append-string sc p)))
-		 ;; dcomp
-		 (if skk-dcomp-activate?
-		     (skk-context-set-dcomp-word!
-		      sc
-		      (skk-lib-get-dcomp-word
-		       (skk-make-string
-			(skk-context-head sc) (skk-context-kana-mode sc))
-		       skk-use-numeric-conversion?))))))
+		       (skk-append-string sc p))))))
 	     #f)
 	   #t)
        (if (skk-kanji-mode-key? key key-state)
@@ -1489,14 +1504,6 @@
 		    (not (string=? (car res) ""))))
 	      (begin
 		(skk-append-string sc res)
-		;; dcomp
-		(if skk-dcomp-activate?
-		    (skk-context-set-dcomp-word!
-		     sc
-		     (skk-lib-get-dcomp-word
-		      (skk-make-string
-		       (skk-context-head sc) (skk-context-kana-mode sc))
-		      skk-use-numeric-conversion?)))
 		#t)
 	      #t)
 	   (if (and res
@@ -1691,17 +1698,21 @@
     (skk-context-set-state! sc 'skk-state-kanji)
     (skk-context-set-okuri-head! sc "")
     (if (not (null? (skk-context-okuri sc)))
-	(skk-context-set-head! sc
-			       (append (skk-context-okuri sc)
-				       (skk-context-head sc))))
+	(begin
+	  (skk-context-set-head! sc
+				 (append (skk-context-okuri sc)
+					 (skk-context-head sc)))
+	  (skk-reset-dcomp-word sc)))
     (if (not (null? (skk-context-appendix sc)))
-	(skk-context-set-head! sc
-			       (append (skk-context-appendix sc)
-				       (skk-context-head sc))))
+	(begin
+	  (skk-context-set-head! sc
+				 (append (skk-context-appendix sc)
+					 (skk-context-head sc)))
+	  (skk-reset-dcomp-word sc)))
     (skk-context-set-okuri! sc '())
     (skk-context-set-appendix! sc '())
-    (if skk-dcomp-activate?
-	(skk-context-set-dcomp-word! sc ""))
+    ;; don't clear dcomp (not compatible with ddskk's behavior)
+    ;;(skk-reset-dcomp-word sc )
     (skk-context-set-nr-candidates! sc 0)))
 
 (define skk-back-to-converting-state
@@ -1724,7 +1735,8 @@
 	(begin
 	  (if (> (- (skk-lib-get-nr-completions
 		     (skk-make-string (skk-context-head sc) skk-type-hiragana)
-		     skk-use-numeric-conversion?)
+		     skk-use-numeric-conversion?
+		     skk-use-look?)
 		    1)
 		 (skk-context-completion-nth sc))
 	      (skk-context-set-completion-nth!
@@ -1745,29 +1757,32 @@
 	    (find-kana-list-from-rule (cdr rule) str))
 	(list str str str))))
 
-(define skk-append-list-to-context-head
-  (lambda (sc sl)
-     (skk-context-set-head! sc (append (skk-context-head sc) (list sl)))))
-
 (define skk-string-list-to-context-head
   (lambda (sc sl)
-    (if (not (null? sl))
-	(begin
-	  (skk-append-list-to-context-head
-	   sc
-	   (if (or
-		(skk-context-latin-conv sc)
-		;; handle Setsubi-ji
-		(and
-		 (null? (cdr sl))
-		 (string=? ">" (car sl)))
-		(and
-		 skk-use-numeric-conversion?
-		 (string=? "#" (car sl))))
+    (skk-context-set-head! sc '())
+    (skk-append-string-list-to-context-head sc sl)))
+
+(define skk-append-string-list-to-context-head
+  (lambda (sc sl)
+    (let ((append-list-to-context-head
+    	    (lambda (sc sl)
+	      (skk-context-set-head! sc (append (skk-context-head sc)
+	      (list sl))))))
+      (if (not (null? sl))
+	  (begin
+	    (append-list-to-context-head
+	      sc
+	      (if (or
+		   (skk-context-latin-conv sc)
+		   ;; handle Setsubi-ji and Settou-ji
+		   (string=? ">" (car sl))
+		   (and
+		    skk-use-numeric-conversion?
+		    (string=? "#" (car sl))))
 	       (list (car sl) (car sl) (car sl))
 	       (find-kana-list-from-rule ja-rk-rule-basic (car sl))))
-	  (skk-string-list-to-context-head sc (cdr sl)))
-	#f)))
+	  (skk-append-string-list-to-context-head sc (cdr sl)))
+	#f))))
 
 (define skk-proc-state-completion
   (lambda (c key key-state)
@@ -1785,18 +1800,20 @@
 	     (if (not (null? sl))
 		 (begin (skk-lib-get-completion
 			 (skk-get-current-completion sc)
-			 skk-use-numeric-conversion?)))
+			 skk-use-numeric-conversion?
+			 skk-use-look?)))
 	     (skk-lib-clear-completions
 	      (skk-make-string
 	       (skk-context-head sc)
 	       skk-type-hiragana)
 	       skk-use-numeric-conversion?)
-
 	     (if (not (null? sl))
-		 (begin
-		   (skk-context-set-head! sc '())
-		   (skk-string-list-to-context-head sc sl)))
+		 (skk-string-list-to-context-head sc sl))
 	     (skk-context-set-completion-nth! sc 0)
+	     (if skk-dcomp-activate?
+		 (skk-context-set-dcomp-word!
+		  sc
+		  (skk-get-current-completion sc)))
 	     #f)
 	   #t)
        (if (skk-cancel-key? key key-state)
@@ -1805,8 +1822,8 @@
 	       (skk-make-string (skk-context-head sc) skk-type-hiragana)
 	       skk-use-numeric-conversion?)
 	     (skk-context-set-state! sc 'skk-state-kanji)
-	     (if skk-dcomp-activate?
-		 (skk-context-set-dcomp-word! sc ""))
+	     ;; don't clear dcomp (not compatible with ddskk's behavior)
+	     ;;(skk-reset-dcomp-word sc)
 	     #f)
 	   #t)
        (let ((sl (string-to-list (skk-get-current-completion sc))))
@@ -1814,11 +1831,8 @@
 	  (skk-make-string (skk-context-head sc) (skk-context-kana-mode sc))
 	  skk-use-numeric-conversion?)
 	 (if (not (null? sl))
-	     (begin
-	       (skk-context-set-head! sc '())
-	       (skk-string-list-to-context-head sc sl)))
-	 (if skk-dcomp-activate?
-	     (skk-context-set-dcomp-word! sc ""))
+	     (skk-string-list-to-context-head sc sl))
+	 (skk-reset-dcomp-word sc)
 	 (skk-context-set-state! sc 'skk-state-kanji)
 	 (skk-proc-state-kanji c key key-state)))
       #f)))

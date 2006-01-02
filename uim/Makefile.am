@@ -1,6 +1,8 @@
+include libtool-version.mk
+
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = config.h.in iso-639-1.def uim-compat-scm.c
+EXTRA_DIST = iso-639-1.def uim-compat-scm.c
 
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 
@@ -19,18 +21,6 @@ libuim_la_SOURCES = uim.c uim-util.c uim-func.c uim-key.c \
 		intl.c \
 		uim-ipc.c \
 		plugin.c
-#		getpeereid.c
-
-#if NEED_SETENV_C
-#libuim_la_SOURCES += setenv.c
-#endif
-#if NEED_STRSEP_C
-#libuim_la_SOURCES += strsep.c
-#endif
-
-if COMPAT_TABLE
-libuim_la_SOURCES += uim-table.c
-endif
 
 if COMPAT_SCM
   pkginclude_HEADERS += uim-compat-scm.h
@@ -65,9 +55,17 @@ endif
 if ANTHY
   uim_plugin_LTLIBRARIES += libuim-anthy.la
   libuim_anthy_la_SOURCES = anthy.c
-  libuim_anthy_la_LIBADD = libuim.la
+  libuim_anthy_la_LIBADD = @ANTHY_LIBS@ libuim.la
   libuim_anthy_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
   libuim_anthy_la_CPPFLAGS = -I$(top_srcdir)
+endif
+
+if MANA
+uim_plugin_LTLIBRARIES += libuim-mana.la
+libuim_mana_la_SOURCES = mana.c
+libuim_mana_la_LIBADD = libuim.la
+libuim_mana_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_mana_la_CPPFLAGS = -I$(top_srcdir)
 endif
 
 if PRIME
@@ -80,13 +78,13 @@ endif
 
 uim_plugin_LTLIBRARIES += libuim-skk.la
 libuim_skk_la_SOURCES = skk.c
-libuim_skk_la_LIBADD = libuim.la
+libuim_skk_la_LIBADD = libuim.la @NETLIBS@
 libuim_skk_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_skk_la_CPPFLAGS = -I$(top_srcdir)
 
 libuimincludedir =  $(includedir)/uim
 
-libuim_la_LDFLAGS = -version-info 0:2:0 -export-symbols-regex uim.\*
+libuim_la_LDFLAGS = -version-info $(libuim_version) -export-symbols-regex uim.\*
 libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@ $(top_builddir)/sigscheme/libsscm.la  $(top_builddir)/replace/libreplace.la
 libuim_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DPKGLIBDIR=\"$(pkglibdir)\" \
 		     -DPKGDATADIR=\"$(pkgdatadir)\"
@@ -95,7 +93,7 @@ if DEBUG
 libuim_la_CPPFLAGS += -DDEBUG -DDEBUG_SCM=1
 endif
 
-libuim_custom_la_LDFLAGS = -version-info 0:1:0 -export-symbols-regex uim.\*
+libuim_custom_la_LDFLAGS = -version-info $(libuim_custom_version) -export-symbols-regex uim.\*
 libuim_custom_la_LIBADD = 
 libuim_custom_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
 
@@ -130,9 +128,6 @@ uim_module_manager_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DUIM_DATADIR=\""$(dat
 uim_module_manager_CFLAGS =
 uim_module_manager_LDADD = libuim.la $(top_builddir)/replace/libreplace.la
 uim_module_manager_SOURCES = uim-module-manager.c
-#if NEED_SETENV_C
-#uim_module_manager_SOURCES += setenv.c
-#endif
 
 noinst_PROGRAMS = uim-agent
 

@@ -80,7 +80,7 @@ void CustomCheckBox::slotCustomToggled( bool check )
 
 //----------------------------------------------------------------------------------------
 CustomSpinBox::CustomSpinBox( struct uim_custom *c, QWidget *parent, const char *name)
-    : QSpinBox( parent, name ),
+    : QSpinBox(c->range->as_int.min, c->range->as_int.max, 1, parent, name ),
       UimCustomItemIface( c )
 {
     QObject::connect( this, SIGNAL(valueChanged(int)),
@@ -198,14 +198,20 @@ void CustomPathnameEdit::setDefault()
 
 void CustomPathnameEdit::slotPathnameButtonClicked()
 {
-    QFileDialog* fd = new QFileDialog( this, "file dialog" );
-    fd->setMode( QFileDialog::Directory );
-    if ( fd->exec() == QDialog::Accepted )
+    m_fileDialog = new QFileDialog( this, "file dialog" );
+    QObject::connect( m_fileDialog, SIGNAL(filterSelected(const QString&)),
+                      this, SLOT(slotFileDialogFilterSelected(const QString&)) );
+
+
+    m_fileDialog->setMode( QFileDialog::ExistingFile );
+    m_fileDialog->addFilter( "Directories" );
+    m_fileDialog->setSelectedFilter( "All Files (*)" );
+    if ( m_fileDialog->exec() == QDialog::Accepted )
     {
-        QString fileName = fd->selectedFile();
+        QString fileName = m_fileDialog->selectedFile();
         m_lineEdit->setText( fileName );
     }
-    delete fd;
+    delete m_fileDialog;
 }
 
 void CustomPathnameEdit::slotCustomTextChanged( const QString & text )
@@ -216,6 +222,14 @@ void CustomPathnameEdit::slotCustomTextChanged( const QString & text )
     m_custom->value->as_pathname = strdup( (const char*)text.utf8() );
 
     setCustom( m_custom );
+}
+
+void CustomPathnameEdit::slotFileDialogFilterSelected( const QString & text )
+{
+    if (text == "Directories")
+        m_fileDialog->setMode( QFileDialog::Directory );
+    else
+        m_fileDialog->setMode( QFileDialog::ExistingFile );
 }
 
 //----------------------------------------------------------------------------------------

@@ -223,5 +223,5 @@
 (define-custom 'canna-vi-escape-key '("escape" "<Control>[")
                '(canna-keys3)
 	       '(key)
-	       (_ "[Canna] canna-vi-escape-key?")
+	       (_ "[Canna] ESC keys on vi-cooperative mode")
 	       (_ "long description will be here"))

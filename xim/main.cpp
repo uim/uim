@@ -165,12 +165,21 @@ static void main_loop()
 	    continue;
 	}
 
-	for (it = fd_watch_stat.begin(); it != fd_watch_stat.end(); it++) {
+	it = fd_watch_stat.begin();
+	while (it != fd_watch_stat.end()) {
 	    int fd = it->first;
 	    if (FD_ISSET(fd, &rfds))
 		it->second.fn(fd, READ_OK);
 	    if (FD_ISSET(fd, &wfds))
 		it->second.fn(fd, WRITE_OK);
+	    // fd_watch_stat may be modified by above functions at
+	    // this point.  Since the behavior with incrementing
+	    // invalidated iterator is compiler dependent, use safer
+	    // way.
+	    it = fd_watch_stat.find(fd);
+	    if (it == fd_watch_stat.end())	// shouldn't happen
+		break;
+	    it++;
 	}
     }
 }
@@ -305,6 +314,10 @@ ProcXEvent(XEvent *e)
 	break;
     case ClientMessage:
 	procXClientMessage(&e->xclient);
+	break;
+    case MappingNotify:
+	XRefreshKeyboardMapping((XMappingEvent *)e);
+	init_modifier_keys();
 	break;
     default:;
 	//printf("unknown type of X event. %d\n", e->type);

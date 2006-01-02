@@ -186,7 +186,27 @@ helper_str_parse(char *str)
 		*eol = '\0';
 	    else
 		return;
-	    focusedContext->extra_input(line);
+	    if (!strncmp(line, "charset=", 8)) {
+		const char *charset = line + 8;
+		line = eol + 1;
+		eol = strchr(line, '\n');
+		if (eol != NULL)
+		    *eol = '\0';
+		else
+		    return;
+		if (!strcmp(charset, "UTF-8"))
+		    focusedContext->extra_input(line);
+		else {
+		    int len = strlen(line);
+		    char *utf8_str = (char *)malloc(len * 6 + 1);
+		    if (!utf8_str)
+			return;
+		    mb_string_to_utf8(utf8_str, line, len * 6, charset);
+		    focusedContext->extra_input(utf8_str);
+		    free(utf8_str);
+		}
+	    } else
+		focusedContext->extra_input(line);
 	    return;
 	}
     }

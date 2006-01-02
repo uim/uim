@@ -1,2 +1,109 @@
-2002 10/20 Renamed im-scm -> im-uim
-           PLEASE REMOVE im-scm.o from /usr/local/lib/gtk-2.0/2.0.0/immodules/
+Overview of changes from 1.0.0 to 1.0.1
+==
+* Fixes
+  o Minor
+    - uim-xim
+      - Workaround fix for preventing SEGV if compiled with g++-4.x.
+
+Overview of changes from 1.0.0-beta to 1.0.0-final
+==
+* Fixes
+  o Minor
+    - uim.el
+      - Sync with uim-el 0.0.6-beta4
+    - gtk+ immodule
+      - fix SEGV with gvim when the caret state indicator is enabled
+	with a timeout value (Etsushi)
+      - workaround fix for preedit handling on gvim when use-with-vi?
+	is enabled with anthy and mana (Masanari, YamaKen, Etsushi)
+    - SKK
+      - improve completion behavior (Masanari, Etsushi)
+
+Overview of changes from 1.0.0-alpha to 1.0.0-beta
+==
+* New features
+
+  o IM related
+    - SKK
+      - enable word completion with UNIX look command (Etsushi)
+
+* Fixes
+  o Critical
+    - uim-pref-qt
+      - fix behavior of custom widget with integer number when the
+        value in the stored file is greater than 99 (Etsushi)
+
+  o Minor
+    - update configure script (Etsushi)
+      - don't require XML::Parser
+      - more strict check for canna
+    - Qt immodule
+      - fix to respond to uim-pref-gtk's custom messages on the fly in
+	addition to uim-pref-qt's (Etsushi)
+    - uim-pref-qt
+      - code cleanup (Kazuki)
+
+    - Canna
+      - fix behavior of backspace key in conversion state (Etsushi)
+
+  o Others
+    - Update translations
+
+Overview of changes from 0.4.9.1 to 1.0.0-alpha
+==
+* New features
+  o Main features
+    - uim.el (bridge for Emacs) (Konosuke)
+    - byeoru Hangul input suite (Jae-hyeon)
+    - mana Japanese input (Masanari)
+
+  o IM related
+    - toggle-im facility (Etsushi, YamaKen)
+    - Anthy
+      - vi-cooperative mode (Masanari)
+    - Canna
+      - vi-cooperative mode (Masanari)
+    - SKK (Etsushi)
+      - dynamic completion
+      - ddskk compatible behavior with mistypes while starting
+	kanji-mode, e.g. "kAnnji" for "Kannji"
+      - improved numeric conversion
+      - support commit with opposite case in latin-conversion
+      - support completion with conversion and/or commit at once
+
+* Fixes
+  o Critical
+    - fix segmentation fault if uim is compiled with '--enabled-debug'
+      (Etsushi, dai <d+r AT vdr.jp>)
+    - fix IPC (connection to PRIME) in some rare cases (Masanari)
+    - fix possible GC crash with anti-stack smashing compilers such as
+      GCC4 (Jun, YamaKen)
+
+  o Minor
+    - preedit reset with IM switch (Masanari)
+    - some build fixes (Masanari)
+  
+    - gtk+ immodule
+      - disable warnings (Etsushi)
+    - uim-xim
+      - support changes in X modifier keys on-the-fly (Etsushi)
+
+    - Anthy
+      - improve kana-input mode (Masanari)
+    - SKK
+      - improve completion behavior (Etsushi)
+      - improve skkserv connection (Masahito, Etsushi)
+    - PRIME
+      - proper custom setting (YamaKen)
+
+    - uim-im-switcher-qt
+      - show list of IM properly (Etsushi)
+    - uim-pref-qt
+      - compatible behavior with uim-pref-gtk (Etsushi)
+
+* Others
+  o obsolete table API
+  o translations
+    - add ko (Jae-hyeon)
+    - update ja (Daichi Kawahata, YamaKen)
+

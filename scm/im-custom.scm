@@ -325,7 +325,12 @@
   (_ "Preedit color")
   (_ "long description will be here."))
 
-; referred by some bridges
+(custom-add-hook 'uim-color
+		 'custom-set-hooks
+		 (lambda ()
+		   (update-style uim-color-spec (symbol-value uim-color))))
+
+;; referred by some bridges
 (define-custom 'candidate-window-position 'caret
   '(global visual-preference)
   (list 'choice
@@ -351,37 +356,37 @@
 (define-custom 'toolbar-show-switcher-button? #t
   '(toolbar buttons)
   '(boolean)
-  (_ "Show input method switcher button on toolbar")
+  (_ "input method switcher")
   (_ "long description will be here."))
 
 (define-custom 'toolbar-show-pref-button? #t
   '(toolbar buttons)
   '(boolean)
-  (_ "Show uim preference tool button on toolbar")
+  (_ "preference tool")
   (_ "long description will be here."))
 
 (define-custom 'toolbar-show-dict-button? #f
   '(toolbar buttons)
   '(boolean)
-  (_ "Show uim Japanese dictionary tool button on toolbar")
+  (_ "Japanese dictionary tool")
   (_ "long description will be here."))
 
 (define-custom 'toolbar-show-input-pad-button? #f
   '(toolbar buttons)
   '(boolean)
-  (_ "Show uim input pad button on toolbar")
+  (_ "input pad")
   (_ "long description will be here."))
 
 (define-custom 'toolbar-show-handwriting-input-pad-button? #f
   '(toolbar buttons)
   '(boolean)
-  (_ "Show uim handwriting-input pad button on toolbar")
+  (_ "handwriting-input pad")
   (_ "long description will be here."))
 
 (define-custom 'toolbar-show-help-button? #f
   '(toolbar buttons)
   '(boolean)
-  (_ "Show uim help button on toolbar")
+  (_ "help")
   (_ "long description will be here."))
 
 (define-custom 'bridge-show-input-state? #f
@@ -396,11 +401,16 @@
   (_ "Time length for showing input mode nearby the cursor")
   (_ "Set 0 to show indicator always."))
 
+(custom-add-hook 'bridge-show-input-state-time-length
+		 'custom-activity-hooks
+		 (lambda ()
+		   bridge-show-input-state?))
+
 ;; EB Library support
 ;; 2005-02-08 Takuro Ashie <ashie@homa.ne.jp>
 ;; FIXME! Here isn't suitable position for EB support preference
 (define-custom-group 'eb
-		     (_ "EB library settings")
+		     (_ "EB library")
 		     (_ "long description will be here."))
 
 (define-custom 'eb-enable-for-annotation? #f
@@ -416,10 +426,14 @@
   (_ "The directory which contains EB dictionary file")
   (_ "long description will be here."))
 
+(custom-add-hook 'eb-dic-path
+		 'custom-activity-hooks
+		 (lambda ()
+		   eb-enable-for-annotation?))
 
 ;; uim-xim specific custom
 (define-custom-group 'xim
-		     (_ "XIM settings")
+		     (_ "XIM")
 		     (_ "long description will be here."))
 
 (define-custom-group 'preedit

@@ -1,37 +1,49 @@
-You can install libuim(library), im-uim(gtk+-immodule)
-and other executables simply by typing
-$ configure; make
-# make install
+How to build uim
 
-If your gtk+-2 is installed under /usr/ directory you
-may add --prefix=/usr and --sysconfdir=/etc option to
-configure script.
+Requirements
+============
+The requirements for building uim is listed below.
 
-Following components would be installed
-*Core library
- libuim*
-*Gtk+2 immodule
- im-uim.so
-*Helpers
- uim-helper-candwin-gtk
- uim-helper-toolbar-gtk
- uim-helper-toolbar-gtk-systray
-*XIM server(only for Japanese)
- uim-xim
+    * iconv(3)
+    * curses (need to build uim-fep)
+    * Anthy (need to use Japanese Anthy module)
+    * Canna (need to use Japanese Canna module)
+    * mana (need to use Japanese mana module)
+    * PRIME (need to use Japanese PRIME module)
+    * m17nlib >= 1.2 (need to use uim-m17nlib bridge)
+    * GTK+ >= 2.4 (need to build gtk tools and gtk immodule)
+    * gnome-panel (need to build GNOME applet indicator)
+    * Qt >= 3.3.2 (need to build qt tools. you also need to apply
+      immodule patch to build qt immodule)
 
-----
-If you simply want to test libuim and don't want to install,
-please execute test.sh script in the source directory.
+Compilation
+===========
 
-$ GTK_IM_MODULE=uim-py ./test.sh
- You can type Chinese by Pin Yin
+First, please extract source from tar ball.
 
-$ GTK_IM_MODULE=uim-anthy ./test.sh
- You can type Japanese by Anthy conversion system.
- Unless libanthy(Japanese conversion system library),
- You can type only Phonetic Symbols in Japanese.
+      $ tar xvzf uim-x.x.x.tar.gz 
 
-$ GTK_IM_MODULE=uim-skk ./test.sh
- You can type Japanese by SKK conversion system.
- this implementation assumes you have SKK dictionary
- at /usr/share/skk/SKK-JISYO.L
+Then, move to the extracted directory and run configure.
+
+      $ cd uim-x.x.x
+      $ ./configure 
+
+configure options disabled as default is like this.
+
+    * --enable-debug : build uim with debug information
+    * --enable-dict : enable Japanese dictionary tool
+    * --with-canna : use Canna
+    * --with-qt : build qt tools
+    * --with-qt-immodule : build qt immodule. you need the qt with the
+                           qt-immodule patch
+
+Finally, make and install it.
+
+      $ make
+      $ su
+      $ make install
+
+By default, uim is installed under /usr/local , but this directory may
+not be on the system search path. Should that be the case, add the
+line /usr/local/lib to /etc/ld.conf and then, run ldconfig. 
+

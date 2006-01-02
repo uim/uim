@@ -104,6 +104,10 @@
 		 (lambda ()
 		   canna-use-candidate-window?))
 
+(custom-add-hook 'canna-select-candidate-by-numeral-key?
+		 'custom-activity-hooks
+		 (lambda ()
+		   canna-use-candidate-window?))
 
 ;;
 ;; toolbar
@@ -295,13 +299,13 @@
 
 ;; warning: must be defined before custom-preserved-canna-server-name
 (define-custom 'custom-activate-canna-server-name? #f
-  '(canna cannaserver)
+  '(cannaserver)
   '(boolean)
-  (_ "Use Canna server")
+  (_ "Specify Canna server")
   (_ "long description will be here."))
 
 (define-custom 'custom-preserved-canna-server-name ""
-  '(canna cannaserver)
+  '(cannaserver)
   '(string ".*")
   (_ "Canna server name")
   (_ "long description will be here."))
@@ -360,5 +364,5 @@
 (define-custom 'canna-use-with-vi? #f
   '(canna special-op)
   '(boolean)
-  (_ "Friendly for vi user")
+  (_ "Enable vi-cooperative mode")
   (_ "long description will be here."))

@@ -1,9 +1,9 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = m4 doc sigscheme replace uim scm gtk qt xim helper po tables test fep examples pixmaps
-EXTRA_DIST = README.ja INSTALL.ja test.sh.in uim.spec.in \
+SUBDIRS = m4 doc replace sigscheme uim scm gtk qt xim helper po test fep emacs \
+	examples pixmaps
+EXTRA_DIST = uim.spec.in \
 	intltool-extract.in intltool-merge.in intltool-update.in \
-	uim.pc.in ChangeLog.old uim.desktop autogen.sh RELEASING \
-	storage-fatty.h
+	uim.pc.in ChangeLog.old uim.desktop autogen.sh
 
 DISTCLEANFILES = uim.pc intltool-extract intltool-merge intltool-update po/.intltool-merge-cache
 
@@ -11,24 +11,9 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = uim.pc
 
 desktopdir = $(datadir)/applications
-desktop_DATA = uim.desktop
-
-noinst_PROGRAMS = $(gtk_entry) $(qedittest)
-
-if GTK2
-gtk_entry = gtk-entry
-gtk_entry_SOURCES = entry.c
-gtk_entry_LDADD = @GTK2_LIBS@
-gtk_entry_CFLAGS = @GTK2_CFLAGS@
-else
-endif
-
-if QT
-qedittest = qedittest
-qedittest_SOURCES = qedittest.cpp
-qedittest_CXXFLAGS  = $(UIM_QT_CXXFLAGS)
-qedittest_LDFLAGS = $(UIM_QT_LDFLAGS)
-endif
+desktop_in_files = uim.desktop.in
+desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
+@INTLTOOL_DESKTOP_RULE@
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -46,14 +31,15 @@ ChangeLog:
 .PHONY: ChangeLog releasetest-all-flag-enabled releasetest-all-flag-disabled each-releasetest releasetest
 
 releasetest-all-flag-enabled: RELEASETEST_CONFIGURE_FLAGS= --enable-debug \
-	 --enable-fep --enable-dict --with-m17nlib --with-canna \
-	 --with-gtk2 --with-gnome2 --with-qt --with-qt-immodule --with-libedit
+	--enable-fep --enable-emacs --enable-dict \
+	--with-m17nlib --with-canna --with-gtk2 --with-gnome2 --with-qt \
+	--with-qt-immodule --with-libedit
 releasetest-all-flag-enabled: each-releasetest
 
 releasetest-all-flag-disabled: RELEASETEST_CONFIGURE_FLAGS= --disable-debug \
-	--disable-fep --disable-sumika	--disable-dict --without-m17nlib \
-	--without-canna --without-gtk2  --without-gnome2 --without-qt \
-	--without-qt-immodule --without-libedit
+	--disable-fep --disable-sumika --disable-emacs --disable-dict \
+	--without-m17nlib --without-canna --without-gtk2  --without-gnome2 \
+	--without-qt --without-qt-immodule --without-libedit
 releasetest-all-flag-disabled: each-releasetest
 
 each-releasetest:
@@ -96,3 +82,6 @@ releasetest: dist
 	@(echo "$(distdir) archives ready for distribution: "; \
 	  list='$(DIST_ARCHIVES)'; for i in $$list; do echo $$i; done) | \
 	  sed -e '1{h;s/./=/g;p;x;}' -e '$${p;x;}'
+
+dist-hook: uim.spec
+	cp uim.spec $(distdir)
