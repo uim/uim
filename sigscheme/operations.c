@@ -1359,7 +1359,6 @@ scm_p_substring(ScmObj str, ScmObj start, ScmObj end)
     DECLARE_FUNCTION("substring", procedure_fixed_3);
 
     ASSERT_STRINGP(str);
-    ASSERT_MUTABLEP(str);
     ASSERT_INTP(start);
     ASSERT_INTP(end);
 

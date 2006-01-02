@@ -87,7 +87,6 @@ Assigned to Kazuki:
 
 * Inhibit a mutation on string constants as described in "3.4 Storage model" of
   R5RS
-  - Fix incorrect mutability assertions and make all tests passed
   - Write both immutable and mutable case tests for all procedures that accepts
     a string
 

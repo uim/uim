@@ -231,9 +231,9 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #define SCM_SAL_STRINGP(a)               (SCM_TYPE(a) == ScmString)
 #define SCM_SAL_ENTYPE_STRING(a)         (SCM_ENTYPE((a), ScmString))
 #define SCM_SAL_STRING_STR(a)            ((char*)(((unsigned int)(SCM_AS_STRING(a)->obj.string.str)) & SCM_STRING_STR_VALUE_MASK))
-#define SCM_SAL_STRING_SET_STR(a, val)   (SCM_AS_STRING(a)->obj.string.str = \
-                                      ((char*)((((unsigned int)(SCM_STRING_STR(a))) & SCM_STRING_MUTATION_TYPE_MASK) \
-                                               | ((unsigned int)(val)))))
+#define SCM_SAL_STRING_SET_STR(o, val)                                       \
+    (SCM_AS_STRING(o)->obj.string.str =                                      \
+     (char *)((unsigned long)(val) | (unsigned)SCM_STRING_MUTATION_TYPE(o)))
 #define SCM_SAL_STRING_LEN(a)            (SCM_AS_STRING(a)->obj.string.len)
 #define SCM_SAL_STRING_SET_LEN(a, len)   (SCM_STRING_LEN(a) = (len))
 #define SCM_STRING_MUTATION_TYPE(a)  ((enum ScmStrMutationType)(((unsigned int)SCM_AS_STRING(a)->obj.string.str) \
