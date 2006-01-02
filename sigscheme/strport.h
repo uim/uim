@@ -2,7 +2,7 @@
  *  FileName : strport.h
  *  About    : A ScmBytePort implementation for string
  *
- *  Copyright (C) 2005 YamaKen <yamaken  AT bp.iij4u.or.jp>
+ *  Copyright (C) 2005-2006 YamaKen <yamaken  AT bp.iij4u.or.jp>
  *
  *  All rights reserved.
  *

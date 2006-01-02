@@ -1,7 +1,7 @@
 ;;  FileName : test-srfi2.scm
 ;;  About    : unit test for the SRFI-2 'and-let*'
 ;;
-;;  Copyright (C) 2005 Kazuki Ohta <mover AT hct.zaq.ne.jp>
+;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
 ;;
 ;;  All rights reserved.
 ;;

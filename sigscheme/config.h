@@ -2,7 +2,7 @@
  *  FileName : config.h
  *  About    : build configuration file
  *
- *  Copyright (C) 2005 Kazuki Ohta <mover AT hct.zaq.ne.jp>
+ *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *
  *  All rights reserved.
  *

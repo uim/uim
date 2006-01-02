@@ -2,7 +2,7 @@
 #===========================================================================
 #  FileName : check_declare_func_typo.rb
 #
-#  Copyright (C) 2005 Kazuki Ohta <mover at hct.zaq.ne.jp>
+#  Copyright (C) 2005-2006 Kazuki Ohta <mover at hct.zaq.ne.jp>
 #
 #  All rights reserved.
 #

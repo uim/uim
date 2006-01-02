@@ -1,7 +1,7 @@
 ;;  FileName : test-string.scm
 ;;  About    : unit test for R5RS string
 ;;
-;;  Copyright (C) 2005 Kazuki Ohta <mover AT hct.zaq.ne.jp>
+;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
 ;;
 ;;  All rights reserved.
 ;;

@@ -2,7 +2,7 @@
  *  FileName : operations-srfi60.c
  *  About    : SRFI-60 integers as bits
  *
- *  Copyright (C) 2005 YamaKen
+ *  Copyright (C) 2005-2006 YamaKen
  *
  *  All rights reserved.
  *

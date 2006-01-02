@@ -3,7 +3,7 @@
  *  About    : S-Expression reader
  *
  *  Copyright (C) 2000-2001 Shiro Kawai <shiro AT acm.org>
- *  Copyright (C) 2005 Kazuki Ohta <mover AT hct.zaq.ne.jp>
+ *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *
  *  All rights reserved.
  *
