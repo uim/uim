@@ -1144,13 +1144,12 @@ ScmObj
 scm_p_integer2char(ScmObj obj)
 {
     int val;
-    char buf[SCM_MB_MAX_LEN + sizeof("")];
     DECLARE_FUNCTION("integer->char", procedure_fixed_1);
 
     ASSERT_INTP(obj);
 
     val = SCM_INT_VALUE(obj);
-    if (!SCM_CHARCODEC_INT2STR(scm_current_char_codec, buf, val, SCM_MB_STATELESS))
+    if (!SCM_CHARCODEC_CHAR_LEN(scm_current_char_codec, val))
         ERR_OBJ("invalid char value", obj);
     return MAKE_CHAR(val);
 }
@@ -1276,6 +1275,7 @@ scm_p_string_ref(ScmObj str, ScmObj k)
 ScmObj
 scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
 {
+    int ch_val;
     int   c_start_index = 0;
     int   prefix_size = 0;
     int   newch_size = 0;
@@ -1284,8 +1284,7 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     char *new_str  = NULL;
     ScmMultibyteString mbs;
     const char *string_str   = NULL;
-    char new_ch_str[SCM_MB_MAX_LEN + sizeof("")];
-    const char *next;
+    char *postfix;
     DECLARE_FUNCTION("string-set!", procedure_fixed_3);
 
     ENSURE_STATELESS_CODEC(scm_current_char_codec);
@@ -1294,7 +1293,7 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     ASSERT_INTP(k);
     ASSERT_CHARP(ch);
 
-    /* get indexes */
+    ch_val = SCM_CHAR_VALUE(ch);
     c_start_index = SCM_INT_VALUE(k);
     string_str    = SCM_STRING_STR(str);
     if (c_start_index < 0 || SCM_STRING_LEN(str) <= c_start_index)
@@ -1307,23 +1306,25 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     SCM_MBS_SET_SIZE(mbs, strlen(string_str));
     mbs = scm_mb_strref(mbs, c_start_index);
 
-    next = SCM_CHARCODEC_INT2STR(scm_current_char_codec, new_ch_str,
-                                 SCM_CHAR_VALUE(ch), SCM_MB_STATELESS);
-    if (!next)
-        ERR_OBJ("invalid char in", str);
-
     /* calculate total size */
     prefix_size = SCM_MBS_GET_STR(mbs) - string_str;
-    newch_size  = next - new_ch_str;
+    newch_size  = SCM_CHARCODEC_CHAR_LEN(scm_current_char_codec, ch_val);
     postfix_size  = strlen(SCM_MBS_GET_STR(mbs) + SCM_MBS_GET_SIZE(mbs));
     total_size = prefix_size + newch_size + postfix_size;
+
+    if (!newch_size)
+        ERR("string-set!: invalid char 0x%x for encoding %s",
+            ch_val, SCM_CHARCODEC_ENCODING(scm_current_char_codec));
 
     /* copy each part */
     new_str = scm_malloc(total_size + 1);
     memcpy(new_str, string_str, prefix_size);
-    memcpy(new_str+prefix_size, new_ch_str, newch_size);
-    memcpy(new_str+prefix_size+newch_size,
-           SCM_MBS_GET_STR(mbs)+SCM_MBS_GET_SIZE(mbs), postfix_size);
+    postfix = SCM_CHARCODEC_INT2STR(scm_current_char_codec,
+                                    &new_str[prefix_size],
+                                    ch_val,
+                                    SCM_MB_STATELESS);
+    memcpy(postfix, SCM_MBS_GET_STR(mbs) + SCM_MBS_GET_SIZE(mbs),
+           postfix_size);
 
     if (SCM_STRING_STR(str))
         free(SCM_STRING_STR(str));

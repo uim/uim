@@ -15,10 +15,11 @@ Requirements and bugs:
   *port.[hc] (other files had already been done except for the destructive exp
   on macros)
 
-* Investigate behavior of other implementations about constant {vector,list}
+* Investigate behavior of other Scheme implementations about constant vector
+  and list
   - Implement if needed
 
-* Make 64bit-safe
+* Make 64bit-safe (after compaction and stdint.h)
 
 * Add tests for proper tail recursion with 'apply' and 'guard' to
   test-tail-rec.scm
@@ -95,12 +96,6 @@ Assigned to YamaKen:
 
 * Separate SCM_ASSERT into required validation (SCM_ENSURE) and optional
   assertion (SCM_ASSERT)
-
-* Add charcodec_char_len() interface to codec and simplify string operations
-  with it (also used for validation)
-
-* Add codec retrieval interface to character port, and use it in port-related
-  operations
 
 * [uim] Validate all uim_scm_gc_protect() invocation
 
