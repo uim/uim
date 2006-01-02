@@ -35,6 +35,8 @@
 
 (load "./test/unittest.scm")
 
+(define tn test-name)
+
 (assert-equal? "string 1" "美人には" (string #\美 #\人 #\に #\は))
 (assert-equal? "list->string 1" "3日で" (list->string '(#\3 #\日 #\で)))
 (assert-equal? "string->list 1" '(#\ぁ #\き #\る) (string->list "ぁきる"))
@@ -53,5 +55,18 @@
 
 (assert-equal? "string 2" str1 (apply string str1-list))
 (assert-equal? "list->string 2" str1-list (string->list str1))
+
+;; SRFI-75
+(tn "SRFI-75")
+(assert-parseable (tn) "#\\x63")
+(assert-parseable (tn) "#\\u0063")
+(assert-parseable (tn) "#\\U00000063")
+
+(assert-parseable (tn) "\"\\x63\"")
+(assert-parseable (tn) "\"\\u0063\"")
+(assert-parseable (tn) "\"\\U00000063\"")
+
+(assert-parseable (tn) "'a")
+(assert-parseable (tn) "'あ")
 
 (total-report)

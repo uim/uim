@@ -96,9 +96,6 @@ Assigned to YamaKen:
 * Separate SCM_ASSERT into required validation (SCM_ENSURE) and optional
   assertion (SCM_ASSERT)
 
-* Add CCS identity for each codec and use it to check Unicode compatibility on
-  SRFI-75-related operations
-
 * Add charcodec_char_len() interface to codec and simplify string operations
   with it (also used for validation)
 

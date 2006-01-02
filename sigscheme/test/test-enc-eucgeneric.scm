@@ -35,6 +35,8 @@
 
 (load "./test/unittest.scm")
 
+(define tn test-name)
+
 ;; This file provides a fallback test unit for all EUC systems.  It's
 ;; just a copy of test-enc-eucjp.scm with EUCJP-specific character
 ;; sequences removed, so some characters may be undefined in other EUC
@@ -59,5 +61,18 @@
 
 (assert-equal? "string 2" str1 (apply string str1-list))
 (assert-equal? "list->string 2" str1-list (string->list str1))
+
+;; SRFI-75
+(tn "SRFI-75")
+(assert-parseable   (tn) "#\\x63")
+(assert-parse-error (tn) "#\\u0063")
+(assert-parse-error (tn) "#\\U00000063")
+
+(assert-parseable   (tn) "\"\\x63\"")
+(assert-parse-error (tn) "\"\\u0063\"")
+(assert-parse-error (tn) "\"\\U00000063\"")
+
+(assert-parseable   (tn) "'a")
+(assert-parse-error (tn) "'дв")
 
 (total-report)

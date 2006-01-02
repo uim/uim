@@ -35,6 +35,8 @@
 
 (load "./test/unittest.scm")
 
+(define tn test-name)
+
 ;; string?
 (assert-true "string? check" (string? "あいうえお"))
 
@@ -124,5 +126,18 @@
 
 (assert-equal? "string 2" str1 (apply string str1-list))
 (assert-equal? "list->string 2" str1-list (string->list str1))
+
+;; SRFI-75
+(tn "SRFI-75")
+(assert-parseable   (tn) "#\\x63")
+(assert-parse-error (tn) "#\\u0063")
+(assert-parse-error (tn) "#\\U00000063")
+
+(assert-parseable   (tn) "\"\\x63\"")
+(assert-parse-error (tn) "\"\\u0063\"")
+(assert-parse-error (tn) "\"\\U00000063\"")
+
+(assert-parseable   (tn) "'a")
+(assert-parse-error (tn) "'あ")
 
 (total-report)

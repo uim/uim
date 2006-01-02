@@ -36,6 +36,8 @@
 
 (load "./test/unittest.scm")
 
+(define tn test-name)
+
 (assert-equal? "string 1" "”ül‚É‚Í" (string #\”ü #\l #\‚É #\‚Í))
 (assert-equal? "list->string 1" "3“ú‚Å" (list->string '(#\3 #\“ú #\‚Å)))
 (assert-equal? "string->list 1" '(#\‚Ÿ #\‚« #\‚é) (string->list "‚Ÿ‚«‚é"))
@@ -74,5 +76,18 @@
 
 (assert-equal? "JIS X 0201 kana and 0208 kana" '(#\Ë #\ƒƒ) (string->list "Ëƒƒ"))
 (assert-equal? "JIS X 0201 kana and 0208 kana" "Ëƒƒ" (list->string '(#\Ë #\ƒƒ)))
+
+;; SRFI-75
+(tn "SRFI-75")
+(assert-parseable   (tn) "#\\x63")
+(assert-parse-error (tn) "#\\u0063")
+(assert-parse-error (tn) "#\\U00000063")
+
+(assert-parseable   (tn) "\"\\x63\"")
+(assert-parse-error (tn) "\"\\u0063\"")
+(assert-parse-error (tn) "\"\\U00000063\"")
+
+(assert-parseable   (tn) "'a")
+(assert-parse-error (tn) "'‚ ")
 
 (total-report)

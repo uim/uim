@@ -213,6 +213,7 @@ static size_t
 read_token(ScmObj port,
            int *err, char *buf, size_t buf_size, const char *delim)
 {
+    ScmCharCodec *codec;
     int c;
     size_t len;
     char *p;
@@ -243,9 +244,10 @@ read_token(ScmObj port,
                 *err = TOKEN_BUF_EXCEEDED;
                 break;
             }
-            /* FIXME: check Unicode capability of scm_current_char_codec */
-            p = SCM_CHARCODEC_INT2STR(scm_current_char_codec,
-                                      p, c, SCM_MB_STATELESS);
+            codec = scm_port_codec(port);
+            if (SCM_CHARCODEC_CCS(codec) != SCM_CCS_UCS4)
+                ERR("non-ASCII char in token on a non-Unicode port: 0x%x", c);
+            p = SCM_CHARCODEC_INT2STR(codec, p, c, SCM_MB_STATELESS);
 #else
             ERR("non-ASCII char in token: 0x%x", c);
 #endif
@@ -444,7 +446,7 @@ parse_unicode_sequence(const char *seq, int len)
 
     case 'U':
         /* #\U<x><x><x><x><x><x><x><x> : Unicode char of BMP or SMP */
-        if (len != 8 || (0xd800 <= c && c <= 0xdfff) || 0x10ffff < c)
+        if (len != 9 || (0xd800 <= c && c <= 0xdfff) || 0x10ffff < c)
             ERR("invalid Unicode sequence. conform \\U<x><x><x><x><x><x><x><x>");
         break;
 
@@ -483,8 +485,10 @@ read_char(ScmObj port)
     int unicode;
 #endif
     const ScmSpecialCharInfo *info;
+    ScmCharCodec *codec;
     size_t len;
     char buf[CHAR_LITERAL_LEN_MAX + sizeof("")];
+    DECLARE_INTERNAL_FUNCTION("read_char");
 
     /* plain char (multibyte-ready) */
     c = scm_port_get_char(port);
@@ -505,8 +509,12 @@ read_char(ScmObj port)
 
 #if SCM_USE_SRFI75
     unicode = parse_unicode_sequence(buf, len + 1);
-    if (0 <= unicode)
+    if (0 <= unicode) {
+        codec = scm_port_codec(port);
+        if (c != 'x' && SCM_CHARCODEC_CCS(codec) != SCM_CCS_UCS4)
+            ERR_OBJ("Unicode char sequence on non-Unicode port", port);
         return MAKE_CHAR(unicode);
+    }
 #endif
     /* named chars */
     for (info = scm_special_char_table; info->esc_seq; info++) {
@@ -521,15 +529,18 @@ read_string(ScmObj port)
 {
     ScmObj obj;
     const ScmSpecialCharInfo *info;
+    ScmCharCodec *codec;
     int c;
     size_t offset;
     char *p;
     ScmLBuf(char) lbuf;
     char init_buf[SCM_INITIAL_STRING_BUF_SIZE];
+    DECLARE_INTERNAL_FUNCTION("read_string");
 
     CDBG((SCM_DBG_PARSER, "read_string"));
 
     LBUF_INIT(lbuf, init_buf, sizeof(init_buf));
+    codec = scm_port_codec(port);
 
     for (offset = 0, p = LBUF_BUF(lbuf);; offset = p - LBUF_BUF(lbuf)) {
         c = scm_port_get_char(port);
@@ -554,12 +565,12 @@ read_string(ScmObj port)
             c = scm_port_get_char(port);
 #if SCM_USE_SRFI75
             if (strchr("xuU", c)) {
+                if (c != 'x' && SCM_CHARCODEC_CCS(codec) != SCM_CCS_UCS4)
+                    ERR_OBJ("Unicode char sequence on non-Unicode port", port);
                 c = read_unicode_sequence(port, c);
                 LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + MB_MAX_SIZE);
                 p = &LBUF_BUF(lbuf)[offset];
-                /* FIXME: check Unicode capability of scm_current_char_codec */
-                p = SCM_CHARCODEC_INT2STR(scm_current_char_codec,
-                                          p, c, SCM_MB_STATELESS);
+                p = SCM_CHARCODEC_INT2STR(codec, p, c, SCM_MB_STATELESS);
                 if (!p)
                     ERR("invalid Unicode sequence in string: 0x%x", c);
                 goto found;
@@ -584,8 +595,7 @@ read_string(ScmObj port)
             LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + MB_MAX_SIZE);
             p = &LBUF_BUF(lbuf)[offset];
             /* FIXME: support stateful encoding */
-            p = SCM_CHARCODEC_INT2STR(scm_current_char_codec,
-                                      p, c, SCM_MB_STATELESS);
+            p = SCM_CHARCODEC_INT2STR(codec, p, c, SCM_MB_STATELESS);
             if (!p)
                 ERR("invalid char in string: 0x%x", c);
             break;
