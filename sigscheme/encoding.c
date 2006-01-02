@@ -86,7 +86,7 @@ static ScmMultibyteCharInfo iso2022jp_scan_input_char(ScmMultibyteString mbs);
 #if SCM_USE_SJIS
 static const char *sjis_encoding(void);
 static ScmMultibyteCharInfo sjis_scan_char(ScmMultibyteString mbs);
-static uchar *sjis_int2str(uchar *dst, int ch);
+static uchar *sjis_int2str(uchar *dst, int ch, ScmMultibyteState state);
 #endif
 
 #if (SCM_USE_EUCCN || SCM_USE_EUCKR || SCM_USE_SJIS)
@@ -790,7 +790,7 @@ sjis_scan_char(ScmMultibyteString mbs)
 }
 
 static uchar *
-sjis_int2str(uchar *dst, int ch)
+sjis_int2str(uchar *dst, int ch, ScmMultibyteState state)
 {
     uchar high, low;
 
