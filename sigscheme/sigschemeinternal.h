@@ -347,6 +347,11 @@ extern ScmObj scm_null_values;
 #define ASSERT_ERROBJP(obj)  ASSERT_TYPE(ERROBJP, "error object", (obj))
 #define ASSERT_LISTP(obj)    ASSERT_TYPE(LISTP, "list", (obj))
 
+/* FIXME: Rename to ENSURE_MUTABLE() */
+#define ASSERT_MUTABLEP(str)                                                 \
+    (SCM_STRING_MUTABLEP(str)                                                \
+     || (ERR_OBJ("attempted to modify immutable string", str), 1))
+
 #define ENSURE_STATEFUL_CODEC(codec)                                         \
     (SCM_CHARCODEC_STATEFULP(codec)                                          \
      || (ERR("%s: stateful character codec required but got: %s",            \
@@ -367,14 +372,6 @@ extern ScmObj scm_null_values;
 
 /* FIXME: Rename to ENSURE_ALLOCATED() */
 #define ASSERT_ALLOCATED SCM_ASSERT_ALLOCATED
-
-/*=======================================
-   String Mutation Assertion
-=======================================*/
-/* FIXME: Rename to ENSURE_MUTABLE() */
-#define ASSERT_MUTABLEP(str)                                                 \
-    (SCM_STRING_MUTABLEP(str)                                                \
-     || (ERR_OBJ("attempted to modify immutable string", str), 1))
 
 /*=======================================
    List Constructor
