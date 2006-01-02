@@ -1,7 +1,7 @@
 ;;  FileName : test-srfi38.scm
 ;;  About    : unit test for SRFI-38
 ;;
-;;  Copyright (C) 2005      by Kazuki Ohta (mover@hct.zaq.ne.jp)
+;;  Copyright (C) 2005 Kazuki Ohta <mover AT hct.zaq.ne.jp>
 ;;
 ;;  All rights reserved.
 ;;

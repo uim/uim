@@ -2,7 +2,7 @@
  *  FileName : operations-srfi2.c
  *  About    : AND-LET*: an AND with local bindings, a guarded LET* special form
  *
- *  Copyright (C) 2005      by Kazuki Ohta (mover@hct.zaq.ne.jp)
+ *  Copyright (C) 2005 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *
  *  All rights reserved.
  *

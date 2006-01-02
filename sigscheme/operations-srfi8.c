@@ -2,7 +2,7 @@
  *  FileName : operations-srfi8.c
  *  About    : srfi8 receive syntax
  *
- *  Copyright (C) 2005      by Jun Inoue
+ *  Copyright (C) 2005 Jun Inoue
  *
  *  All rights reserved.
  *

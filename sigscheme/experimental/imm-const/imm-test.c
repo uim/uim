@@ -2,7 +2,7 @@
  *  FileName : imm-test.c
  *  About    : Efficiency evaluation for immediate constant values (temporary)
  *
- *  Copyright (C) 2005      by YamaKen
+ *  Copyright (C) 2005 YamaKen
  *
  *  All rights reserved.
  *

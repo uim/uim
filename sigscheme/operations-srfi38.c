@@ -2,7 +2,7 @@
  *  FileName : operations-srfi38.c
  *  About    : srfi38 shared structure I/O (currently only write/ss)
  *
- *  Copyright (C) 2005      by Jun Inoue
+ *  Copyright (C) 2005 Jun Inoue
  *
  *  All rights reserved.
  *

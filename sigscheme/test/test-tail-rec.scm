@@ -1,7 +1,7 @@
 ;;  FileName : test-tail-rec.scm
 ;;  About    : unit test for the proper tail recursion
 ;;
-;;  Copyright (C) 2005      by Kazuki Ohta (mover@hct.zaq.ne.jp)
+;;  Copyright (C) 2005 Kazuki Ohta <mover AT hct.zaq.ne.jp>
 ;;
 ;;  All rights reserved.
 ;;

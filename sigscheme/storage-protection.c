@@ -2,7 +2,7 @@
  *  FileName : storage-protection.c
  *  About    : GC protection interface
  *
- *  Copyright (C) 2005      by YamaKen
+ *  Copyright (C) 2005 YamaKen
  *
  *  All rights reserved.
  *

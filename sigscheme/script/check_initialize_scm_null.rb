@@ -3,7 +3,7 @@
 #  FileName : build_func_table.rb
 #  About    : script to building built-in function table
 #
-#  Copyright (C) 2005      by Kazuki Ohta <mover at hct.zaq.ne.jp>
+#  Copyright (C) 2005 Kazuki Ohta <mover at hct.zaq.ne.jp>
 #
 #  All rights reserved.
 #

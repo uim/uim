@@ -1,7 +1,7 @@
 ;;  FileName : test-srfi34-2.scm
 ;;  About    : unit test for SRFI-34 taken from "Examples" section of SRFI-34
 ;;
-;;  Copyright (C) 2005      by YamaKen <yamaken AT bp.iij4u.or.jp>
+;;  Copyright (C) 2005 YamaKen <yamaken AT bp.iij4u.or.jp>
 ;;
 ;;  All rights reserved.
 ;;
