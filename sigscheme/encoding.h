@@ -91,6 +91,8 @@
      SCM_MBS_SET_STATE((mbs), SCM_MBCINFO_GET_STATE(inf)))
 
 #define SCM_CHARCODEC_ENCODING(codec)           ((*(codec)->encoding)())
+#define SCM_CHARCODEC_CCS(codec)                ((*(codec)->ccs)())
+#define SCM_CHARCODEC_CHAR_LEN(codec, ch)       ((*(codec)->char_len)(ch))
 #define SCM_CHARCODEC_SCAN_CHAR(codec, mbs)     ((*(codec)->scan_char)(mbs))
 #define SCM_CHARCODEC_STR2INT(codec, src, len, state)                        \
     ((*(codec)->str2int)((src), (len), (state)))
@@ -100,6 +102,13 @@
 /*=======================================
   Type Definitions
 =======================================*/
+enum ScmCodedCharSet {
+    SCM_CCS_UNKNOWN   = 0,
+    SCM_CCS_UNICODE   = 1,
+    SCM_CCS_ISO8859_1 = 2,
+    SCM_CCS_JIS       = 3  /* ASCII + JIS X 0208, 0212, 0213 */
+};
+
 /* This type will actually contain some encoding-dependent enum value.
  * It might as well be defined as mbstate_t if we're using libc. */
 typedef int ScmMultibyteState;
@@ -137,6 +146,8 @@ typedef const ScmCharCodecVTbl ScmCharCodec;
 /* FIXME: replace (char *) with (uchar *) once C99-independent stdint is
    introduced */
 typedef const char *(*ScmCharCodecMethod_encoding)(void);
+typedef enum ScmCodedCharSet (*ScmCharCodecMethod_ccs)(void);
+typedef int (*ScmCharCodecMethod_char_len)(int ch);
 typedef ScmMultibyteCharInfo (*ScmCharCodecMethod_scan_char)(ScmMultibyteString mbs);
 typedef int (*ScmCharCodecMethod_str2int)(const char *src, size_t len,
                                           ScmMultibyteState state);
@@ -145,6 +156,8 @@ typedef char *(*ScmCharCodecMethod_int2str)(char *dst, int ch,
 
 struct ScmCharCodecVTbl_ {
     ScmCharCodecMethod_encoding  encoding;
+    ScmCharCodecMethod_ccs       ccs;
+    ScmCharCodecMethod_char_len  char_len;
     ScmCharCodecMethod_scan_char scan_char;
     ScmCharCodecMethod_str2int   str2int;
     ScmCharCodecMethod_int2str   int2str;

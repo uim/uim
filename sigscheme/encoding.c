@@ -67,6 +67,8 @@ typedef unsigned int  uint;
 =======================================*/
 #if SCM_USE_EUCJP
 static const char *eucjp_encoding(void);
+static enum ScmCodedCharSet eucjp_ccs(void);
+static int eucjp_char_len(int ch);
 static ScmMultibyteCharInfo eucjp_scan_char(ScmMultibyteString mbs);
 static int eucjp_str2int(const uchar *src, size_t len,
                          ScmMultibyteState state);
@@ -85,6 +87,8 @@ static ScmMultibyteCharInfo iso2022jp_scan_input_char(ScmMultibyteString mbs);
 
 #if SCM_USE_SJIS
 static const char *sjis_encoding(void);
+ static enum ScmCodedCharSet sjis_ccs(void);
+ static int sjis_char_len(int ch);
 static ScmMultibyteCharInfo sjis_scan_char(ScmMultibyteString mbs);
 static uchar *sjis_int2str(uchar *dst, int ch, ScmMultibyteState state);
 #endif
@@ -96,27 +100,34 @@ static int dbc_str2int(const uchar *src, size_t len, ScmMultibyteState state);
 
 #if (SCM_USE_EUCCN || SCM_USE_EUCKR)
 /* shared by EUCCN and EUCKR */
+static int euc_char_len(int ch);
 static uchar *euc_int2str(uchar *dst, int ch, ScmMultibyteState state);
 #endif
 
 #if SCM_USE_EUCCN
 static const char *euccn_encoding(void);
+static enum ScmCodedCharSet euccn_ccs(void);
 static ScmMultibyteCharInfo euccn_scan_char(ScmMultibyteString mbs);
 #endif
 
 #if SCM_USE_EUCKR
 static const char *euckr_encoding(void);
+static enum ScmCodedCharSet euckr_ccs(void);
 static ScmMultibyteCharInfo euckr_scan_char(ScmMultibyteString mbs);
 #endif
 
 #if SCM_USE_UTF8
 static const char *utf8_encoding(void);
+static enum ScmCodedCharSet utf8_ccs(void);
+static int utf8_char_len(int ch);
 static ScmMultibyteCharInfo utf8_scan_char(ScmMultibyteString mbs);
 static int utf8_str2int(const uchar *src, size_t len, ScmMultibyteState state);
 static uchar *utf8_int2str(uchar *dst, int ch, ScmMultibyteState state);
 #endif
 
 static const char *unibyte_encoding(void);
+static enum ScmCodedCharSet unibyte_ccs(void);
+static int unibyte_char_len(int ch);
 static ScmMultibyteCharInfo unibyte_scan_char(ScmMultibyteString mbs);
 static int unibyte_str2int(const uchar *src, size_t len,
                            ScmMultibyteState state);
@@ -128,6 +139,8 @@ static uchar *unibyte_int2str(uchar *dst, int ch, ScmMultibyteState state);
 #if SCM_USE_UTF8
 static const ScmCharCodecVTbl utf8_codec_vtbl = {
     &utf8_encoding,
+    &utf8_ccs,
+    &utf8_char_len,
     &utf8_scan_char,
     (ScmCharCodecMethod_str2int)&utf8_str2int,
     (ScmCharCodecMethod_int2str)&utf8_int2str
@@ -138,6 +151,8 @@ static const ScmCharCodecVTbl utf8_codec_vtbl = {
 #if SCM_USE_EUCCN
 static const ScmCharCodecVTbl euccn_codec_vtbl = {
     &euccn_encoding,
+    &euccn_ccs,
+    &euc_char_len,
     &euccn_scan_char,
     (ScmCharCodecMethod_str2int)&dbc_str2int,
     (ScmCharCodecMethod_int2str)&euc_int2str
@@ -148,6 +163,8 @@ static const ScmCharCodecVTbl euccn_codec_vtbl = {
 #if SCM_USE_EUCJP
 static const ScmCharCodecVTbl eucjp_codec_vtbl = {
     &eucjp_encoding,
+    &eucjp_ccs,
+    &eucjp_char_len,
     &eucjp_scan_char,
     (ScmCharCodecMethod_str2int)&eucjp_str2int,
     (ScmCharCodecMethod_int2str)&eucjp_int2str
@@ -158,6 +175,8 @@ static const ScmCharCodecVTbl eucjp_codec_vtbl = {
 #if SCM_USE_EUCKR
 static const ScmCharCodecVTbl euckr_codec_vtbl = {
     &euckr_encoding,
+    &euckr_ccs,
+    &euc_char_len,
     &euckr_scan_char,
     (ScmCharCodecMethod_str2int)&dbc_str2int,
     (ScmCharCodecMethod_int2str)&euc_int2str
@@ -168,6 +187,8 @@ static const ScmCharCodecVTbl euckr_codec_vtbl = {
 #if SCM_USE_SJIS
 static const ScmCharCodecVTbl sjis_codec_vtbl = {
     &sjis_encoding,
+    &sjis_ccs,
+    &sjis_char_len,
     &sjis_scan_char,
     (ScmCharCodecMethod_str2int)&dbc_str2int,
     (ScmCharCodecMethod_int2str)&sjis_int2str
@@ -177,6 +198,8 @@ static const ScmCharCodecVTbl sjis_codec_vtbl = {
 
 static const ScmCharCodecVTbl unibyte_codec_vtbl = {
     &unibyte_encoding,
+    &unibyte_ccs,
+    &unibyte_char_len,
     &unibyte_scan_char,
     (ScmCharCodecMethod_str2int)&unibyte_str2int,
     (ScmCharCodecMethod_int2str)&unibyte_int2str
@@ -351,6 +374,21 @@ eucjp_encoding(void)
     return "EUC-JP";
 }
 
+enum ScmCodedCharSet
+eucjp_ccs(void)
+{
+    return SCM_CCS_JIS;
+}
+
+/* FIXME: Optimize */
+int
+eucjp_char_len(int ch)
+{
+    char buf[SCM_MB_MAX_LEN + sizeof("")];
+
+    return (eucjp_int2str((uchar *)buf, ch, SCM_MB_STATELESS)) ? strlen(buf) : 0;
+}
+
 /* G0 <- (96) ASCII (or was it JIS X 0201 Roman?)
  * G1 <- (94x94) JIS X 0208 kanji/kana
  * G2 <- (94) JIS X 0201 Katakana ("half-width katakana")
@@ -495,6 +533,15 @@ dbc_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 #endif /* (SCM_USE_EUCCN || SCM_USE_EUCKR || SCM_USE_SJIS) */
 
 #if (SCM_USE_EUCCN || SCM_USE_EUCKR)
+/* FIXME: Optimize */
+int
+euc_char_len(int ch)
+{
+    char buf[SCM_MB_MAX_LEN + sizeof("")];
+
+    return (euc_int2str((uchar *)buf, ch, SCM_MB_STATELESS)) ? strlen(buf) : 0;
+}
+
 static uchar *
 euc_int2str(uchar *dst, int ch, ScmMultibyteState state)
 {
@@ -527,6 +574,12 @@ static const char *
 euccn_encoding(void)
 {
     return "EUC-CN";
+}
+
+enum ScmCodedCharSet
+euccn_ccs(void)
+{
+    return SCM_CCS_UNKNOWN;
 }
 
 /* FIXME: NOT TESTED!
@@ -563,6 +616,12 @@ euccn_scan_char(ScmMultibyteString mbs)
 #endif
 
 #if SCM_USE_EUCKR
+enum ScmCodedCharSet
+euckr_ccs(void)
+{
+    return SCM_CCS_UNKNOWN;
+}
+
 static const char *
 euckr_encoding(void)
 {
@@ -626,6 +685,21 @@ static const char *
 utf8_encoding(void)
 {
     return "UTF-8";
+}
+
+enum ScmCodedCharSet
+utf8_ccs(void)
+{
+    return SCM_CCS_UNICODE;
+}
+
+/* FIXME: Optimize */
+int
+utf8_char_len(int ch)
+{
+    char buf[SCM_MB_MAX_LEN + sizeof("")];
+
+    return (utf8_int2str((uchar *)buf, ch, SCM_MB_STATELESS)) ? strlen(buf) : 0;
 }
 
 static ScmMultibyteCharInfo
@@ -768,6 +842,21 @@ sjis_encoding(void)
     return "SHIFT_JIS";
 }
 
+enum ScmCodedCharSet
+sjis_ccs(void)
+{
+    return SCM_CCS_UNKNOWN;
+}
+
+/* FIXME: Optimize */
+int
+sjis_char_len(int ch)
+{
+    char buf[SCM_MB_MAX_LEN + sizeof("")];
+
+    return (sjis_int2str((uchar *)buf, ch, SCM_MB_STATELESS)) ? strlen(buf) : 0;
+}
+
 static ScmMultibyteCharInfo
 sjis_scan_char(ScmMultibyteString mbs)
 {
@@ -831,6 +920,19 @@ unibyte_encoding(void)
 {
     /* conventional assumption */
     return "ISO-8859-1";
+}
+
+enum ScmCodedCharSet
+unibyte_ccs(void)
+{
+    /* conventional assumption */
+    return SCM_CCS_ISO8859_1;
+}
+
+int
+unibyte_char_len(int ch)
+{
+    return (0 < ch && ch <= 0xff) ? 1 : 0;
 }
 
 static ScmMultibyteCharInfo
