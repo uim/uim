@@ -99,9 +99,6 @@ Assigned to YamaKen:
 * Add charcodec_char_len() interface to codec and simplify string operations
   with it (also used for validation)
 
-* Remove stateful encoding support from most string operations (i.e. make such
-  encodings dedicated to stream operations)
-
 * Add codec retrieval interface to character port, and use it in port-related
   operations
 

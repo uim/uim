@@ -347,12 +347,12 @@ extern ScmObj scm_null_values;
 
 #define ENSURE_STATEFUL_CODEC(codec)                                         \
     (SCM_CHARCODEC_STATEFULP(codec)                                          \
-     || ERR("%s: stateful character codec required but got: %s",             \
-            SCM_MANGLE(name), SCM_CHARCODEC_ENCODING(codec)))
+     || (ERR("%s: stateful character codec required but got: %s",            \
+             SCM_MANGLE(name), SCM_CHARCODEC_ENCODING(codec)), 0))
 #define ENSURE_STATELESS_CODEC(codec)                                        \
     (!SCM_CHARCODEC_STATEFULP(codec)                                         \
-     || ERR("%s: stateless character codec required but got: %s",            \
-            SCM_MANGLE(name), SCM_CHARCODEC_ENCODING(codec)))
+     || (ERR("%s: stateless character codec required but got: %s",           \
+             SCM_MANGLE(name), SCM_CHARCODEC_ENCODING(codec)), 0))
 
 /* Macros For Handling Continuation Object */
 #define INVALID_CONTINUATION_OPAQUE  NULL

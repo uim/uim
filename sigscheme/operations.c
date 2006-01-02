@@ -1265,9 +1265,8 @@ scm_p_string_ref(ScmObj str, ScmObj k)
     SCM_MBS_SET_SIZE(mbs, strlen(SCM_STRING_STR(str)));
     mbs = scm_mb_strref(mbs, c_index);
 
-    /* FIXME: support stateful encoding */
     ch = SCM_CHARCODEC_STR2INT(scm_current_char_codec, SCM_MBS_GET_STR(mbs),
-                               SCM_MBS_GET_SIZE(mbs), SCM_MB_STATELESS);
+                               SCM_MBS_GET_SIZE(mbs), SCM_MBS_GET_STATE(mbs));
     if (ch == EOF)
         ERR("string-ref: invalid char sequence");
 
@@ -1289,6 +1288,7 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     const char *next;
     DECLARE_FUNCTION("string-set!", procedure_fixed_3);
 
+    ENSURE_STATELESS_CODEC(scm_current_char_codec);
     ASSERT_STRINGP(str);
     ASSERT_MUTABLEP(str);
     ASSERT_INTP(k);
@@ -1307,7 +1307,6 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     SCM_MBS_SET_SIZE(mbs, strlen(string_str));
     mbs = scm_mb_strref(mbs, c_start_index);
 
-    /* FIXME: support stateful encoding */
     next = SCM_CHARCODEC_INT2STR(scm_current_char_codec, new_ch_str,
                                  SCM_CHAR_VALUE(ch), SCM_MB_STATELESS);
     if (!next)
@@ -1389,6 +1388,7 @@ scm_p_substring(ScmObj str, ScmObj start, ScmObj end)
     return MAKE_STRING(new_str);
 }
 
+/* FIXME: support stateful encoding */
 ScmObj
 scm_p_string_append(ScmObj args)
 {
@@ -1508,6 +1508,7 @@ scm_p_string_filld(ScmObj str, ScmObj ch)
     const char *next;
     DECLARE_FUNCTION("string-fill!", procedure_fixed_2);
 
+    ENSURE_STATELESS_CODEC(scm_current_char_codec);
     ASSERT_STRINGP(str);
     ASSERT_MUTABLEP(str);
     ASSERT_CHARP(ch);
@@ -1516,7 +1517,6 @@ scm_p_string_filld(ScmObj str, ScmObj ch)
     if (str_len == 0)
         return MAKE_STRING_COPYING("");
 
-    /* FIXME: support stateful encoding */
     next = SCM_CHARCODEC_INT2STR(scm_current_char_codec, ch_str,
                                  SCM_CHAR_VALUE(ch), SCM_MB_STATELESS);
     if (!next)
