@@ -372,11 +372,9 @@ extern ScmObj scm_null_values;
    String Mutation Assertion
 =======================================*/
 /* FIXME: Rename to ENSURE_MUTABLE() */
-#define ASSERT_MUTABLEP(str)                                            \
-    do {                                                                \
-        if (SCM_STRING_MUTATION_TYPE(str) == SCM_STR_IMMUTABLE)         \
-            ERR_OBJ("attempted to modify immutable string", str);       \
-    } while (/* CONSTCOND */ 0)
+#define ASSERT_MUTABLEP(str)                                                 \
+    (SCM_STRING_MUTABLEP(str)                                                \
+     || (ERR_OBJ("attempted to modify immutable string", str), 1))
 
 /*=======================================
    List Constructor

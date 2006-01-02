@@ -60,9 +60,9 @@ typedef ScmObj (*ScmFuncType)();
 /*=======================================
    Struct Declarations
 =======================================*/
-enum ScmStrMutationType {
-    SCM_STR_IMMUTABLE           = 0,
-    SCM_STR_MUTABLE             = 1
+enum ScmStrMutability {
+    SCM_STR_IMMUTABLE = 0,
+    SCM_STR_MUTABLE   = 1
 };
 
 /* Scheme Object */
@@ -223,11 +223,10 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #define SCM_SAL_CHAR_VALUE(a) (SCM_AS_CHAR(a)->obj.ch.value)
 #define SCM_SAL_CHAR_SET_VALUE(a, val) (SCM_CHAR_VALUE(a) = (val))
 
-/* String Object uses tagged pointer for packing mutation type.
- * LSB of ScmCell.obj.string.str is used to represent mutation type
- * (mutable or immutable). */
-#define SCM_STRING_MUTATION_TYPE_MASK  0x1UL
-#define SCM_STRING_STR_VALUE_MASK      ~SCM_STRING_MUTATION_TYPE_MASK
+/* String object uses a tagged pointer to multiplex its mutability.
+ * LSB of ScmCell.obj.string.str represents the value. */
+#define SCM_STRING_MUTABILITY_MASK     0x1UL
+#define SCM_STRING_STR_VALUE_MASK      ~SCM_STRING_MUTABILITY_MASK
 #define SCM_SAL_STRINGP(o)             (SCM_TYPE(o) == ScmString)
 #define SCM_SAL_ENTYPE_STRING(o)       (SCM_ENTYPE((o), ScmString))
 #define SCM_SAL_STRING_STR(o)                                                \
@@ -235,14 +234,14 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
               & SCM_STRING_STR_VALUE_MASK))
 #define SCM_SAL_STRING_SET_STR(o, val)                                       \
     (SCM_AS_STRING(o)->obj.string.str =                                      \
-     (char *)((unsigned long)(val) | (unsigned)SCM_STRING_MUTATION_TYPE(o)))
+     (char *)((unsigned long)(val) | (unsigned)SCM_STRING_MUTABILITY(o)))
 #define SCM_SAL_STRING_LEN(o)          (SCM_AS_STRING(o)->obj.string.len)
 #define SCM_SAL_STRING_SET_LEN(o, len) (SCM_STRING_LEN(o) = (len))
-#define SCM_STRING_MUTATION_TYPE(o)                                          \
-  ((enum ScmStrMutationType)((unsigned long)SCM_AS_STRING(o)->obj.string.str \
-                             & SCM_STRING_MUTATION_TYPE_MASK))
+#define SCM_STRING_MUTABILITY(o)                                             \
+  ((enum ScmStrMutability)((unsigned long)SCM_AS_STRING(o)->obj.string.str   \
+                           & SCM_STRING_MUTABILITY_MASK))
 #define SCM_SAL_STRING_MUTABLEP(o)                                           \
-    (SCM_STRING_MUTATION_TYPE(o) == SCM_STR_MUTABLE)
+    (SCM_STRING_MUTABILITY(o) == SCM_STR_MUTABLE)
 #define SCM_SAL_STRING_SET_MUTABLE(o)                                        \
     (SCM_AS_STRING(o)->obj.string.str =                                      \
      (char *)((unsigned long)SCM_AS_STRING(o)->obj.string.str                \
