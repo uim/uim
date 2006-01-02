@@ -68,7 +68,7 @@ struct ScmSingleByteCharPort_ {  /* inherits ScmBaseCharPort */
 =======================================*/
 static ScmCharPort *sbcport_dyn_cast(ScmCharPort *cport,
                                      const ScmCharPortVTbl *dst_vptr);
-static const char *sbcport_encoding(ScmSingleByteCharPort *port);
+static ScmCharCodec *sbcport_codec(ScmSingleByteCharPort *port);
 static char *sbcport_inspect(ScmSingleByteCharPort *port);
 static int sbcport_put_char(ScmSingleByteCharPort *port, int ch);
 
@@ -77,6 +77,8 @@ static int sbcport_put_char(ScmSingleByteCharPort *port, int ch);
 =======================================*/
 static ScmCharPortVTbl ScmSingleByteCharPort_vtbl;
 const ScmCharPortVTbl *ScmSingleByteCharPort_vptr = &ScmSingleByteCharPort_vtbl;
+
+static ScmCharCodec *codec;
 
 /*=======================================
   Function Implementations
@@ -90,9 +92,11 @@ scm_sbcport_init(void)
 
     vptr = &ScmSingleByteCharPort_vtbl;
     vptr->dyn_cast = (ScmCharPortMethod_dyn_cast)&sbcport_dyn_cast;
-    vptr->encoding = (ScmCharPortMethod_encoding)&sbcport_encoding;
+    vptr->codec    = (ScmCharPortMethod_codec)&sbcport_codec;
     vptr->inspect  = (ScmCharPortMethod_inspect)&sbcport_inspect;
     vptr->put_char = (ScmCharPortMethod_put_char)&sbcport_put_char;
+
+    codec = scm_mb_find_codec("ISO-8859-1");
 }
 
 void
@@ -121,10 +125,10 @@ sbcport_dyn_cast(ScmCharPort *cport, const ScmCharPortVTbl *dst_vptr)
             || dst_vptr == ScmSingleByteCharPort_vptr) ? cport : NULL;
 }
 
-static const char *
-sbcport_encoding(ScmSingleByteCharPort *port)
+static ScmCharCodec *
+sbcport_codec(ScmSingleByteCharPort *port)
 {
-    return "US-ASCII";
+    return codec;
 }
 
 static char *

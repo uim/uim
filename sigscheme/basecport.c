@@ -65,7 +65,7 @@
 static ScmCharPort *basecport_dyn_cast(ScmCharPort *cport,
                                        const ScmCharPortVTbl *dst_vptr);
 static int basecport_close(ScmBaseCharPort *port);
-static const char *basecport_encoding(ScmBaseCharPort *port);
+static ScmCharCodec *basecport_codec(ScmBaseCharPort *port);
 static char *basecport_inspect(ScmBaseCharPort *port);
 static int basecport_get_char(ScmBaseCharPort *port);
 static int basecport_peek_char(ScmBaseCharPort *port);
@@ -82,7 +82,7 @@ static int basecport_flush(ScmBaseCharPort *port);
 static const ScmCharPortVTbl ScmBaseCharPort_vtbl = {
     (ScmCharPortMethod_dyn_cast)   &basecport_dyn_cast,
     (ScmCharPortMethod_close)      &basecport_close,
-    (ScmCharPortMethod_encoding)   &basecport_encoding,
+    (ScmCharPortMethod_codec)      &basecport_codec,
     (ScmCharPortMethod_inspect)    &basecport_inspect,
     (ScmCharPortMethod_get_char)   &basecport_get_char,
     (ScmCharPortMethod_peek_char)  &basecport_peek_char,
@@ -151,8 +151,8 @@ basecport_close(ScmBaseCharPort *port)
     return err;
 }
 
-static const char *
-basecport_encoding(ScmBaseCharPort *port)
+static ScmCharCodec *
+basecport_codec(ScmBaseCharPort *port)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(CHAR, port, ScmBaseCharPort);
     /* NOTREACHED */

@@ -82,7 +82,7 @@ struct ScmMultiByteCharPort_ {  /* inherits ScmBaseCharPort */
 =======================================*/
 static ScmCharPort *mbcport_dyn_cast(ScmCharPort *cport,
                                      const ScmCharPortVTbl *dst_vptr);
-static const char *mbcport_encoding(ScmMultiByteCharPort *port);
+static ScmCharCodec *mbcport_codec(ScmMultiByteCharPort *port);
 static char *mbcport_inspect(ScmMultiByteCharPort *port);
 static int mbcport_get_char(ScmMultiByteCharPort *port);
 static int mbcport_peek_char(ScmMultiByteCharPort *port);
@@ -110,7 +110,7 @@ scm_mbcport_init(void)
 
     vptr = &ScmMultiByteCharPort_vtbl;
     vptr->dyn_cast    = (ScmCharPortMethod_dyn_cast)&mbcport_dyn_cast;
-    vptr->encoding    = (ScmCharPortMethod_encoding)&mbcport_encoding;
+    vptr->codec       = (ScmCharPortMethod_codec)&mbcport_codec;
     vptr->inspect     = (ScmCharPortMethod_inspect)&mbcport_inspect;
     vptr->get_char    = (ScmCharPortMethod_get_char)&mbcport_get_char;
     vptr->peek_char   = (ScmCharPortMethod_peek_char)&mbcport_peek_char;
@@ -162,10 +162,10 @@ mbcport_dyn_cast(ScmCharPort *cport, const ScmCharPortVTbl *dst_vptr)
             || dst_vptr == ScmMultiByteCharPort_vptr) ? cport : NULL;
 }
 
-static const char *
-mbcport_encoding(ScmMultiByteCharPort *port)
+static ScmCharCodec *
+mbcport_codec(ScmMultiByteCharPort *port)
 {
-    return SCM_CHARCODEC_ENCODING(port->codec);
+    return port->codec;
 }
 
 static char *

@@ -49,6 +49,7 @@
 /*=======================================
   Local Include
 =======================================*/
+#include "encoding.h"
 
 /*=======================================
   Macro Definitions
@@ -102,7 +103,11 @@
     ((type *)(*(obj)->vptr->dyn_cast)((obj), type##_vptr))
 
 #define SCM_CHARPORT_CLOSE(cport)        ((*(cport)->vptr->close)(cport))
-#define SCM_CHARPORT_ENCODING(cport)     ((*(cport)->vptr->encoding)(cport))
+#define SCM_CHARPORT_CODEC(cport)        ((*(cport)->vptr->codec)(cport))
+#define SCM_CHARPORT_ENCODING(cport)                                         \
+    (SCM_CHARCODEC_ENCODING(SCM_CHARPORT_CODEC(cport)))
+#define SCM_CHARPORT_CCS(cport)                                              \
+    (SCM_CHARCODEC_CCS(SCM_CHARPORT_CODEC(cport)))
 #define SCM_CHARPORT_INSPECT(cport)      ((*(cport)->vptr->inspect)(cport))
 #define SCM_CHARPORT_GET_CHAR(cport)     ((*(cport)->vptr->get_char)(cport))
 #define SCM_CHARPORT_PEEK_CHAR(cport)    ((*(cport)->vptr->peek_char)(cport))
@@ -142,8 +147,7 @@ typedef struct ScmBytePort_     ScmBytePort;
  */
 typedef ScmCharPort *(*ScmCharPortMethod_dyn_cast)(ScmCharPort *cport, const ScmCharPortVTbl *dst_vptr);
 typedef int (*ScmCharPortMethod_close)(ScmCharPort *cport);
-/* returns "UTF-8", "eucJP" and so on */
-typedef const char *(*ScmCharPortMethod_encoding)(ScmCharPort *cport);
+typedef ScmCharCodec *(*ScmCharPortMethod_codec)(ScmCharPort *cport);
 /* returns brief information */
 typedef char *(*ScmCharPortMethod_inspect)(ScmCharPort *cport);
 
@@ -162,7 +166,7 @@ typedef int (*ScmCharPortMethod_flush)(ScmCharPort *cport);
 struct ScmCharPortVTbl_ {
     ScmCharPortMethod_dyn_cast    dyn_cast;
     ScmCharPortMethod_close       close;
-    ScmCharPortMethod_encoding    encoding;
+    ScmCharPortMethod_codec       codec;
     ScmCharPortMethod_inspect     inspect;
     ScmCharPortMethod_get_char    get_char;
     ScmCharPortMethod_peek_char   peek_char;
