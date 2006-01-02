@@ -405,9 +405,11 @@ eucjp_ccs(void)
 int
 eucjp_char_len(int ch)
 {
-    char buf[SCM_MB_MAX_LEN + sizeof("")];
+    char *end, buf[SCM_MB_MAX_LEN + sizeof("")];
 
-    return (eucjp_int2str((uchar *)buf, ch, SCM_MB_STATELESS)) ? strlen(buf) : 0;
+    end = eucjp_int2str((uchar *)buf, ch, SCM_MB_STATELESS);
+
+    return (end) ? end - buf : 0;
 }
 
 /* G0 <- (96) ASCII (or was it JIS X 0201 Roman?)
@@ -558,9 +560,11 @@ dbc_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 int
 euc_char_len(int ch)
 {
-    char buf[SCM_MB_MAX_LEN + sizeof("")];
+    char *end, buf[SCM_MB_MAX_LEN + sizeof("")];
 
-    return (euc_int2str((uchar *)buf, ch, SCM_MB_STATELESS)) ? strlen(buf) : 0;
+    end = euc_int2str((uchar *)buf, ch, SCM_MB_STATELESS);
+
+    return (end) ? end - buf : 0;
 }
 
 static uchar *
@@ -718,9 +722,11 @@ utf8_ccs(void)
 int
 utf8_char_len(int ch)
 {
-    char buf[SCM_MB_MAX_LEN + sizeof("")];
+    char *end, buf[SCM_MB_MAX_LEN + sizeof("")];
 
-    return (utf8_int2str((uchar *)buf, ch, SCM_MB_STATELESS)) ? strlen(buf) : 0;
+    end = utf8_int2str((uchar *)buf, ch, SCM_MB_STATELESS);
+
+    return (end) ? end - buf : 0;
 }
 
 static ScmMultibyteCharInfo
@@ -873,9 +879,11 @@ sjis_ccs(void)
 int
 sjis_char_len(int ch)
 {
-    char buf[SCM_MB_MAX_LEN + sizeof("")];
+    char *end, buf[SCM_MB_MAX_LEN + sizeof("")];
 
-    return (sjis_int2str((uchar *)buf, ch, SCM_MB_STATELESS)) ? strlen(buf) : 0;
+    end = sjis_int2str((uchar *)buf, ch, SCM_MB_STATELESS);
+
+    return (end) ? end - buf : 0;
 }
 
 static ScmMultibyteCharInfo
