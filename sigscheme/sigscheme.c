@@ -42,6 +42,7 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
+#include "encoding.h"
 #include "baseport.h"
 #include "strport.h"
 
@@ -63,6 +64,9 @@ struct module_info {
 ScmObj scm_sym_quote, scm_sym_quasiquote;
 ScmObj scm_sym_unquote, scm_sym_unquote_splicing;
 ScmObj scm_sym_else, scm_sym_yields;
+
+/* canonical internal encoding for identifiers */
+ScmCharCodec *scm_identifier_codec;
 
 static int scm_initialized;
 static ScmObj features;
@@ -141,6 +145,9 @@ scm_initialize_internal(void)
     scm_init_storage(0x4000, 0x2000, 0x800, 1);
     scm_init_error();
     scm_init_io();
+
+    /* fallback to unibyte */
+    scm_identifier_codec = scm_mb_find_codec("UTF-8");
 
     /*=======================================================================
       Predefined Symbols and Variables

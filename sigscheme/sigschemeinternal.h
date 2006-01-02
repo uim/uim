@@ -44,6 +44,7 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemefunctable.h"
+#include "encoding.h"
 
 /*=======================================
    Type Definitions
@@ -60,6 +61,7 @@ struct ScmSpecialCharInfo_ {
 =======================================*/
 /* sigscheme.c */
 extern ScmObj scm_sym_else, scm_sym_yields;
+extern ScmCharCodec *scm_identifier_codec;
 
 /* io.c */
 extern ScmObj scm_in;

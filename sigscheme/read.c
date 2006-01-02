@@ -247,7 +247,9 @@ read_token(ScmObj port,
             codec = scm_port_codec(port);
             if (SCM_CHARCODEC_CCS(codec) != SCM_CCS_UCS4)
                 ERR("non-ASCII char in token on a non-Unicode port: 0x%x", c);
-            p = SCM_CHARCODEC_INT2STR(codec, p, c, SCM_MB_STATELESS);
+            /* canonicalize internal Unicode encoding */
+            p = SCM_CHARCODEC_INT2STR(scm_identifier_codec, p, c,
+                                      SCM_MB_STATELESS);
 #else
             ERR("non-ASCII char in token: 0x%x", c);
 #endif
