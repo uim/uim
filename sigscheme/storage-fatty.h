@@ -226,24 +226,31 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 /* String Object uses tagged pointer for packing mutation type.
  * LSB of ScmCell.obj.string.str is used to represent mutation type
  * (mutable or immutable). */
-#define SCM_STRING_MUTATION_TYPE_MASK 0x1
-#define SCM_STRING_STR_VALUE_MASK     ~SCM_STRING_MUTATION_TYPE_MASK
-#define SCM_SAL_STRINGP(a)               (SCM_TYPE(a) == ScmString)
-#define SCM_SAL_ENTYPE_STRING(a)         (SCM_ENTYPE((a), ScmString))
-#define SCM_SAL_STRING_STR(a)            ((char*)(((unsigned int)(SCM_AS_STRING(a)->obj.string.str)) & SCM_STRING_STR_VALUE_MASK))
+#define SCM_STRING_MUTATION_TYPE_MASK  0x1UL
+#define SCM_STRING_STR_VALUE_MASK      ~SCM_STRING_MUTATION_TYPE_MASK
+#define SCM_SAL_STRINGP(o)             (SCM_TYPE(o) == ScmString)
+#define SCM_SAL_ENTYPE_STRING(o)       (SCM_ENTYPE((o), ScmString))
+#define SCM_SAL_STRING_STR(o)                                                \
+    ((char *)((unsigned long)SCM_AS_STRING(o)->obj.string.str                \
+              & SCM_STRING_STR_VALUE_MASK))
 #define SCM_SAL_STRING_SET_STR(o, val)                                       \
     (SCM_AS_STRING(o)->obj.string.str =                                      \
      (char *)((unsigned long)(val) | (unsigned)SCM_STRING_MUTATION_TYPE(o)))
-#define SCM_SAL_STRING_LEN(a)            (SCM_AS_STRING(a)->obj.string.len)
-#define SCM_SAL_STRING_SET_LEN(a, len)   (SCM_STRING_LEN(a) = (len))
-#define SCM_STRING_MUTATION_TYPE(a)  ((enum ScmStrMutationType)(((unsigned int)SCM_AS_STRING(a)->obj.string.str) \
-                                                                & SCM_STRING_MUTATION_TYPE_MASK))
+#define SCM_SAL_STRING_LEN(o)          (SCM_AS_STRING(o)->obj.string.len)
+#define SCM_SAL_STRING_SET_LEN(o, len) (SCM_STRING_LEN(o) = (len))
+#define SCM_STRING_MUTATION_TYPE(o)                                          \
+  ((enum ScmStrMutationType)((unsigned long)SCM_AS_STRING(o)->obj.string.str \
+                             & SCM_STRING_MUTATION_TYPE_MASK))
 #define SCM_SAL_STRING_MUTABLEP(o)                                           \
     (SCM_STRING_MUTATION_TYPE(o) == SCM_STR_MUTABLE)
-#define SCM_SAL_STRING_SET_MUTABLE(a)   (SCM_AS_STRING(a)->obj.string.str = (char*)(((unsigned int)(SCM_AS_STRING(a)->obj.string.str)) \
-                                                                                | SCM_STR_MUTABLE))
-#define SCM_SAL_STRING_SET_IMMUTABLE(a) (SCM_AS_STRING(a)->obj.string.str = (char*)(((unsigned int)(SCM_AS_STRING(a)->obj.string.str)) \
-                                                                                | SCM_STR_IMMUTABLE))
+#define SCM_SAL_STRING_SET_MUTABLE(o)                                        \
+    (SCM_AS_STRING(o)->obj.string.str =                                      \
+     (char *)((unsigned long)SCM_AS_STRING(o)->obj.string.str                \
+              | SCM_STR_MUTABLE))
+#define SCM_SAL_STRING_SET_IMMUTABLE(o)                                      \
+    (SCM_AS_STRING(o)->obj.string.str =                                      \
+     (char *)((unsigned long)SCM_AS_STRING(o)->obj.string.str                \
+              | SCM_STR_IMMUTABLE))
 
 #define SCM_SAL_FUNCP(a) (SCM_TYPE(a) == ScmFunc)
 #define SCM_SAL_ENTYPE_FUNC(a)     (SCM_ENTYPE((a), ScmFunc))
