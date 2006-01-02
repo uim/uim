@@ -426,14 +426,6 @@ uim_scm_eval_internal(uim_lisp obj)
   return ret;
 }
 
-#ifdef UIM_SCM_EXTENDED_API
-uim_lisp
-uim_scm_apply(uim_lisp proc, uim_lisp args)
-{
-  return (uim_lisp)scm_call((ScmObj)proc, SCM_CONS((ScmObj)args, SCM_NULL));
-}
-#endif  /* UIM_SCM_EXTENDED_API */
-
 uim_lisp
 uim_scm_eval_c_string(const char *str)
 #if UIM_SCM_GCC4_READY_GC

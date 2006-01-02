@@ -176,11 +176,6 @@ uim_bool
 uim_scm_require_file(const char *fn);
 uim_lisp
 uim_scm_eval(uim_lisp obj);
-#ifdef UIM_SCM_EXTENDED_API
-uim_lisp
-uim_scm_apply(uim_lisp proc, uim_lisp args);
-#endif  /* UIM_SCM_EXTENDED_API */
-
 uim_lisp
 uim_scm_eval_c_string(const char *str);
 uim_lisp
