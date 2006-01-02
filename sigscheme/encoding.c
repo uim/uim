@@ -65,6 +65,9 @@ typedef unsigned int  uint;
 /*=======================================
   File Local Functions
 =======================================*/
+static int pred_always_true(void);
+static int pred_always_false(void);
+
 #if SCM_USE_EUCJP
 static const char *eucjp_encoding(void);
 static enum ScmCodedCharSet eucjp_ccs(void);
@@ -138,6 +141,7 @@ static uchar *unibyte_int2str(uchar *dst, int ch, ScmMultibyteState state);
 =======================================*/
 #if SCM_USE_UTF8
 static const ScmCharCodecVTbl utf8_codec_vtbl = {
+    &pred_always_false,
     &utf8_encoding,
     &utf8_ccs,
     &utf8_char_len,
@@ -150,6 +154,7 @@ static const ScmCharCodecVTbl utf8_codec_vtbl = {
 
 #if SCM_USE_EUCCN
 static const ScmCharCodecVTbl euccn_codec_vtbl = {
+    &pred_always_false,
     &euccn_encoding,
     &euccn_ccs,
     &euc_char_len,
@@ -162,6 +167,7 @@ static const ScmCharCodecVTbl euccn_codec_vtbl = {
 
 #if SCM_USE_EUCJP
 static const ScmCharCodecVTbl eucjp_codec_vtbl = {
+    &pred_always_false,
     &eucjp_encoding,
     &eucjp_ccs,
     &eucjp_char_len,
@@ -174,6 +180,7 @@ static const ScmCharCodecVTbl eucjp_codec_vtbl = {
 
 #if SCM_USE_EUCKR
 static const ScmCharCodecVTbl euckr_codec_vtbl = {
+    &pred_always_false,
     &euckr_encoding,
     &euckr_ccs,
     &euc_char_len,
@@ -186,6 +193,7 @@ static const ScmCharCodecVTbl euckr_codec_vtbl = {
 
 #if SCM_USE_SJIS
 static const ScmCharCodecVTbl sjis_codec_vtbl = {
+    &pred_always_false,
     &sjis_encoding,
     &sjis_ccs,
     &sjis_char_len,
@@ -197,6 +205,7 @@ static const ScmCharCodecVTbl sjis_codec_vtbl = {
 #endif
 
 static const ScmCharCodecVTbl unibyte_codec_vtbl = {
+    &pred_always_false,
     &unibyte_encoding,
     &unibyte_ccs,
     &unibyte_char_len,
@@ -322,6 +331,18 @@ scm_mb_find_codec(const char *encoding)
 /*=======================================
   Encoding-specific functions
 =======================================*/
+
+static int
+pred_always_true(void)
+{
+    return 1;
+}
+
+static int
+pred_always_false(void)
+{
+    return 0;
+}
 
 /* Every encoding implements the <encoding name>_scan_char()
  * primitive.  Its job is to determine the length of the first

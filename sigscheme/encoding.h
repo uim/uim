@@ -90,6 +90,7 @@
                       SCM_MBS_GET_SIZE(mbs) - SCM_MBCINFO_GET_SIZE(inf)),     \
      SCM_MBS_SET_STATE((mbs), SCM_MBCINFO_GET_STATE(inf)))
 
+#define SCM_CHARCODEC_STATEFULP(codec)          ((*(codec)->statefulp)())
 #define SCM_CHARCODEC_ENCODING(codec)           ((*(codec)->encoding)())
 #define SCM_CHARCODEC_CCS(codec)                ((*(codec)->ccs)())
 #define SCM_CHARCODEC_CHAR_LEN(codec, ch)       ((*(codec)->char_len)(ch))
@@ -143,6 +144,7 @@ typedef struct {
 typedef struct ScmCharCodecVTbl_ ScmCharCodecVTbl;
 typedef const ScmCharCodecVTbl ScmCharCodec;
 
+typedef int (*ScmCharCodecMethod_statefulp)(void);
 /* FIXME: replace (char *) with (uchar *) once C99-independent stdint is
    introduced */
 typedef const char *(*ScmCharCodecMethod_encoding)(void);
@@ -155,6 +157,7 @@ typedef char *(*ScmCharCodecMethod_int2str)(char *dst, int ch,
                                             ScmMultibyteState state);
 
 struct ScmCharCodecVTbl_ {
+    ScmCharCodecMethod_statefulp statefulp;
     ScmCharCodecMethod_encoding  encoding;
     ScmCharCodecMethod_ccs       ccs;
     ScmCharCodecMethod_char_len  char_len;
