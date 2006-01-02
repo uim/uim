@@ -2,7 +2,7 @@
  *  FileName : basecport.c
  *  About    : ScmBaseCharPort implementation
  *
- *  Copyright (C) 2005-2006 YamaKen <yamaken  AT bp.iij4u.or.jp>
+ *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>
  *
  *  All rights reserved.
  *

@@ -2,7 +2,7 @@
  *  FileName : nullport.c
  *  About    : A ScmBytePort implementation for null read/write
  *
- *  Copyright (C) 2005-2006 YamaKen <yamaken  AT bp.iij4u.or.jp>
+ *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>
  *
  *  All rights reserved.
  *

@@ -2,7 +2,7 @@
  *  FileName : operations-srfi34.c
  *  About    : New implementation of SRFI-34 exception handling for programs
  *
- *  Copyright (C) 2005-2006 YamaKen <yamaken  AT bp.iij4u.or.jp>
+ *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>
  *
  *  All rights reserved.
  *
