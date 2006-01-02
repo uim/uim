@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2004,2005 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2004-2006 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -493,7 +493,7 @@ help_about_action_cb(GtkAction *action, WordListWindow *window)
     N_("<span size=\"20000\">uim-dict " VERSION "</span>\n\n"
        "<span size=\"14000\">"
        "Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
-       "Copyright 2004 uim Project http://uim.freedesktop.org/\n"
+       "Copyright 2004-2006 uim Project http://uim.freedesktop.org/\n"
        "All rights reserved.</span>\n")
   };
 

@@ -291,14 +291,14 @@ msgid ""
 "\n"
 "<span size=\"14000\">Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin."
 "net&gt;\n"
-"Copyright 2004 uim Project http://uim.freedesktop.org/\n"
+"Copyright 2004-2006 uim Project http://uim.freedesktop.org/\n"
 "All rights reserved.</span>\n"
 msgstr ""
 "</span>\n"
 "\n"
 "<span size=\"14000\">Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin."
 "net&gt;\n"
-"Copyright 2004 uim Project http://uim.freedesktop.org/\n"
+"Copyright 2004-2006 uim Project http://uim.freedesktop.org/\n"
 "All rights reserved.</span>\n"
 
 #: helper/dict-word-win-gtk.c:50
@@ -2572,7 +2572,7 @@ msgstr "uimの設定"
 # する。Wikipedia側が不適切と思われる場合はそちらも修正する
 #.
 #.
-#. Copyright (c) 2003,2004 uim Project http://uim.freedesktop.org/
+#. Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
 #.
 #. All rights reserved.
 #.

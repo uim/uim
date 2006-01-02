@@ -1,7 +1,7 @@
 ;;; anthy.scm: Anthy for uim.
 ;;; charset: EUC-JP
 ;;;
-;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;

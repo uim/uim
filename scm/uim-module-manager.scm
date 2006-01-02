@@ -1,6 +1,6 @@
 ;;; uim-module-manager.scm: Part of uim-module-manager, it's not a part of libuim.
 ;;;
-;;; Copyright (c) 2005 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2005-2006 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
