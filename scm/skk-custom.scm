@@ -1,6 +1,6 @@
 ;;; skk-custom.scm: Customization variables for skk.scm
 ;;;
-;;; Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;

@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2005 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -126,7 +126,7 @@ display_about_dialog(BonoboUIComponent *uic, gpointer data, const gchar *verbnam
   
   /* icon = gdk_pixbuf_new_from_xpm_data(ICON_APPLET);*/
   
-  dialog = GTK_WIDGET(gnome_about_new (_("Uim Applet for GNOME"), VERSION, "Copyright 2003-2005 uim Project.",
+  dialog = GTK_WIDGET(gnome_about_new (_("Uim Applet for GNOME"), VERSION, "Copyright 2003-2006 uim Project.",
 				       _("Applet for indicate uim's status"),
 				       (const char **) authors, NULL, 
 				       strcmp("TRANSLATORS", translators) ? translators : NULL, 
