@@ -508,11 +508,13 @@ struct ScmEvalState_ {
 
 #else /* SCM_USE_STORAGE_ABSTRACTION_LAYER */
 
+/* FIXME: make sigschemetype-compact.h obsolete */
+
 /* type declaration */
 #if SCM_OBJ_COMPACT
 #include "sigschemetype-compact.h"
 #else
-#include "sigschemetype.h"
+#error "Use the Storage Abstraction Layer"
 #endif
 #endif /* SCM_USE_STORAGE_ABSTRACTION_LAYER */
 

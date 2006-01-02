@@ -50,7 +50,8 @@ sigschemefunctable-srfi60.c: operations-srfi60.c $(BUILD_FUNCTBL_SOURCES)
 sigschemefunctable-siod.c: operations-siod.c $(BUILD_FUNCTBL_SOURCES)
 	$(BUILD_FUNCTBL) "siod_func_info_table" $< > $@
 
-EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_SOURCES)
+EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_SOURCES) \
+        storage-fatty.h storage-compact.h
 libsscm_la_SOURCES = \
 		alloc.c storage.c print.c \
                 storage-gc.c \
@@ -61,7 +62,7 @@ libsscm_la_SOURCES = \
                 basecport.c fileport.c \
 		operations.c \
 		read.c sigscheme.c sigschemefunctable.c \
-		sigscheme.h sigschemetype.h sigschemefunctable.h
+		sigscheme.h sigschemefunctable.h
 
 libsscm_la_CFLAGS   = -Wall
 
