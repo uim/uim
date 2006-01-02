@@ -345,6 +345,15 @@ extern ScmObj scm_null_values;
 #define ASSERT_ERROBJP(obj)  ASSERT_TYPE(ERROBJP, "error object", (obj))
 #define ASSERT_LISTP(obj)    ASSERT_TYPE(LISTP, "list", (obj))
 
+#define ENSURE_STATEFUL_CODEC(codec)                                         \
+    (SCM_CHARCODEC_STATEFULP(codec)                                          \
+     || ERR("%s: stateful character codec required but got: %s",             \
+            SCM_MANGLE(name), SCM_CHARCODEC_ENCODING(codec)))
+#define ENSURE_STATELESS_CODEC(codec)                                        \
+    (!SCM_CHARCODEC_STATEFULP(codec)                                         \
+     || ERR("%s: stateless character codec required but got: %s",            \
+            SCM_MANGLE(name), SCM_CHARCODEC_ENCODING(codec)))
+
 /* Macros For Handling Continuation Object */
 #define INVALID_CONTINUATION_OPAQUE  NULL
 
