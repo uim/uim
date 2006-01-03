@@ -66,13 +66,6 @@ extern "C" {
 #define SCM_NORETURN
 #endif /* __GNUC__ */
 
-/*
- * Re-interprets a storage as-is, similarly to reinterpret_cast<type>(obj) of
- * C++. Don't change the semantics. This cast requires that obj is a pointable
- * storage.
- */
-#define SCM_REINTERPRET_CAST(type, obj) (*(type *)&(obj))
-
 /* RFC: better names for the debug printing */
 #if SCM_DEBUG
 #define SCM_CDBG(args) (scm_categorized_debug args)
