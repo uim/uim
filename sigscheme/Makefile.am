@@ -23,8 +23,9 @@ BUILD_FUNCTBL_SOURCES = \
 		./script/functable-footer.txt
 
 sigschemefunctable.c: $(FUNC_TABLES)
-sigschemefunctable-r5rs.c: sigscheme.c operations.c eval.c io.c $(BUILD_FUNCTBL_SOURCES)
-	$(BUILD_FUNCTBL) "r5rs_func_info_table" sigscheme.c operations.c eval.c io.c > $@
+sigschemefunctable-r5rs.c: sigscheme.c operations.c eval.c syntax.c io.c $(BUILD_FUNCTBL_SOURCES)
+	$(BUILD_FUNCTBL) "r5rs_func_info_table" \
+	  sigscheme.c operations.c eval.c syntax.c io.c > $@
 sigschemefunctable-r5rs-deepcadrs.c: operations-r5rs-deepcadrs.c $(BUILD_FUNCTBL_SOURCES)
 	$(BUILD_FUNCTBL) "r5rs_deepcadrs_func_info_table" $< > $@
 sigschemefunctable-error.c: error.c $(BUILD_FUNCTBL_SOURCES)
@@ -58,7 +59,7 @@ libsscm_la_SOURCES = \
                 storage-symbol.c \
 		storage-continuation.c \
 		encoding.c error.c \
-		env.c eval.c io.c \
+		env.c eval.c syntax.c io.c \
                 basecport.c fileport.c \
 		operations.c \
 		read.c sigscheme.c sigschemefunctable.c \

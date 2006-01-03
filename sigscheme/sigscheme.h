@@ -711,8 +711,14 @@ ScmObj scm_intern(const char *name);
 ScmObj scm_symbol_bound_to(ScmObj obj);
 
 /* eval.c */
+ScmObj scm_call(ScmObj proc, ScmObj args);
 ScmObj scm_p_eval(ScmObj obj, ScmObj env);
 ScmObj scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state);
+ScmObj scm_p_scheme_report_environment(ScmObj version);
+ScmObj scm_p_null_environment(ScmObj version);
+ScmObj scm_p_interaction_environment(void);
+
+/* syntax.c */
 ScmObj scm_s_quote(ScmObj datum, ScmObj env);
 ScmObj scm_s_lambda(ScmObj formals, ScmObj body, ScmObj env);
 ScmObj scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state);
@@ -731,11 +737,6 @@ ScmObj scm_s_quasiquote(ScmObj datum, ScmObj env);
 ScmObj scm_s_unquote(ScmObj dummy, ScmObj env);
 ScmObj scm_s_unquote_splicing(ScmObj dummy, ScmObj env);
 ScmObj scm_s_define(ScmObj var, ScmObj rest, ScmObj env);
-ScmObj scm_p_scheme_report_environment(ScmObj version);
-ScmObj scm_p_null_environment(ScmObj version);
-ScmObj scm_p_interaction_environment(void);
-
-ScmObj scm_call(ScmObj proc, ScmObj args);
 
 /* operations.c */
 ScmObj scm_p_eqvp(ScmObj obj1, ScmObj obj2);

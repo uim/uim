@@ -479,6 +479,7 @@ ScmObj scm_symbol_value(ScmObj var, ScmObj env);
 ScmObj scm_eval(ScmObj obj, ScmObj env);
 ScmObj scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
 
+/* syntax.c */
 ScmObj scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state);
 
 /* error.c */
