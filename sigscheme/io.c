@@ -249,8 +249,8 @@ scm_p_call_with_input_file(ScmObj filepath, ScmObj proc)
     ScmObj port, ret;
     DECLARE_FUNCTION("call-with-input-file", procedure_fixed_2);
 
-    ASSERT_STRINGP(filepath);
-    ASSERT_PROCEDUREP(proc);
+    ENSURE_STRING(filepath);
+    ENSURE_PROCEDURE(proc);
 
     port = scm_p_open_input_file(filepath);
 
@@ -267,8 +267,8 @@ scm_p_call_with_output_file(ScmObj filepath, ScmObj proc)
     ScmObj port, ret;
     DECLARE_FUNCTION("call-with-output-file", procedure_fixed_2);
 
-    ASSERT_STRINGP(filepath);
-    ASSERT_PROCEDUREP(proc);
+    ENSURE_STRING(filepath);
+    ENSURE_PROCEDURE(proc);
 
     port = scm_p_open_output_file(filepath);
 
@@ -284,7 +284,7 @@ scm_p_input_portp(ScmObj port)
 {
     DECLARE_FUNCTION("input-port?", procedure_fixed_1);
 
-    ASSERT_PORTP(port);
+    ENSURE_PORT(port);
 
     return MAKE_BOOL(SCM_PORT_FLAG(port) & SCM_PORTFLAG_INPUT);
 }
@@ -294,7 +294,7 @@ scm_p_output_portp(ScmObj port)
 {
     DECLARE_FUNCTION("output-port?", procedure_fixed_1);
 
-    ASSERT_PORTP(port);
+    ENSURE_PORT(port);
 
     return MAKE_BOOL(SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT);
 }
@@ -321,8 +321,8 @@ scm_p_with_input_from_file(ScmObj filepath, ScmObj thunk)
     ScmObj saved_port, ret;
     DECLARE_FUNCTION("with-input-from-file", procedure_fixed_2);
 
-    ASSERT_STRINGP(filepath);
-    ASSERT_PROCEDUREP(thunk);
+    ENSURE_STRING(filepath);
+    ENSURE_PROCEDURE(thunk);
 
     saved_port = scm_in;
     scm_in = scm_p_open_input_file(filepath);
@@ -341,8 +341,8 @@ scm_p_with_output_to_file(ScmObj filepath, ScmObj thunk)
     ScmObj saved_port, ret;
     DECLARE_FUNCTION("with-output-to-file", procedure_fixed_2);
 
-    ASSERT_STRINGP(filepath);
-    ASSERT_PROCEDUREP(thunk);
+    ENSURE_STRING(filepath);
+    ENSURE_PROCEDURE(thunk);
 
     saved_port = scm_out;
     scm_out = scm_p_open_output_file(filepath);
@@ -361,7 +361,7 @@ scm_p_open_input_file(ScmObj filepath)
     ScmBytePort *bport;
     DECLARE_FUNCTION("open-input-file", procedure_fixed_1);
 
-    ASSERT_STRINGP(filepath);
+    ENSURE_STRING(filepath);
 
     bport = ScmFilePort_open_input_file(SCM_STRING_STR(filepath));
     if (!bport)
@@ -376,7 +376,7 @@ scm_p_open_output_file(ScmObj filepath)
     ScmBytePort *bport;
     DECLARE_FUNCTION("open-output-file", procedure_fixed_1);
 
-    ASSERT_STRINGP(filepath);
+    ENSURE_STRING(filepath);
 
     bport = ScmFilePort_open_output_file(SCM_STRING_STR(filepath));
     if (!bport)
@@ -391,7 +391,7 @@ scm_p_close_input_port(ScmObj port)
     int flag;
     DECLARE_FUNCTION("close-input-port", procedure_fixed_1);
 
-    ASSERT_PORTP(port);
+    ENSURE_PORT(port);
 
     flag = SCM_PORT_FLAG(port) & ~SCM_PORTFLAG_LIVE_INPUT;
     SCM_PORT_SET_FLAG(port, flag);
@@ -407,7 +407,7 @@ scm_p_close_output_port(ScmObj port)
     int flag;
     DECLARE_FUNCTION("close-output-port", procedure_fixed_1);
 
-    ASSERT_PORTP(port);
+    ENSURE_PORT(port);
 
     flag = SCM_PORT_FLAG(port) & ~SCM_PORTFLAG_LIVE_OUTPUT;
     SCM_PORT_SET_FLAG(port, flag);
@@ -425,7 +425,7 @@ scm_p_close_output_port(ScmObj port)
         port = POP_ARG(args);                                                \
         if (!VALIDP(port))                                                   \
             port = default_port;                                             \
-        ASSERT_PORTP(port);                                                  \
+        ENSURE_PORT(port);                                                  \
         ASSERT_NO_MORE_ARG(args);                                            \
     } while (/* CONSTCOND */ 0)
 
@@ -533,7 +533,7 @@ scm_p_write_char(ScmObj obj, ScmObj args)
     ScmObj port;
     DECLARE_FUNCTION("write-char", procedure_variadic_1);
 
-    ASSERT_CHARP(obj);
+    ENSURE_CHAR(obj);
 
     PREPARE_PORT(port, args, scm_out);
     scm_display_to_port(port, obj);
@@ -648,7 +648,7 @@ scm_p_load(ScmObj filename)
 {
     DECLARE_FUNCTION("load", procedure_fixed_1);
 
-    ASSERT_STRINGP(filename);
+    ENSURE_STRING(filename);
 
     scm_load_internal(SCM_STRING_STR(filename));
 

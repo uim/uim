@@ -131,7 +131,7 @@ scm_p_symbol_value(ScmObj var)
 {
     DECLARE_FUNCTION("symbol-value", procedure_fixed_1);
 
-    ASSERT_SYMBOLP(var);
+    ENSURE_SYMBOL(var);
 
     return scm_symbol_value(var, SCM_NULL);
 }
@@ -148,7 +148,7 @@ scm_p_set_symbol_valued(ScmObj var, ScmObj val)
 {
     DECLARE_FUNCTION("set-symbol-value!", procedure_fixed_2);
 
-    ASSERT_SYMBOLP(var);
+    ENSURE_SYMBOL(var);
 
     SCM_SYMBOL_SET_VCELL(var, val);
 
@@ -186,7 +186,7 @@ scm_p_closure_code(ScmObj closure)
     ScmObj exp, body;
     DECLARE_FUNCTION("%%closure-code", procedure_fixed_1);
 
-    ASSERT_CLOSUREP(closure);
+    ENSURE_CLOSURE(closure);
 
     exp = SCM_CLOSURE_EXP(closure);
     if (NULLP(CDDR(exp)))
@@ -203,7 +203,7 @@ scm_p_verbose(ScmObj args)
     DECLARE_FUNCTION("verbose", procedure_variadic_0);
 
     if (!NULLP(args)) {
-        ASSERT_INTP(CAR(args));
+        ENSURE_INT(CAR(args));
 
         scm_set_verbose_level(SCM_INT_VALUE(CAR(args)));
     }
@@ -224,7 +224,7 @@ scm_s_undefine(ScmObj var, ScmObj env)
     ScmRef val;
     DECLARE_FUNCTION("undefine", syntax_fixed_1);
 
-    ASSERT_SYMBOLP(var);
+    ENSURE_SYMBOL(var);
 
     val = scm_lookup_environment(var, env);
     if (val != SCM_INVALID_REF)

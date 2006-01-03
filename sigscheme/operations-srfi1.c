@@ -110,7 +110,7 @@ scm_p_srfi1_make_list(ScmObj length, ScmObj args)
     int i   = 0;
     DECLARE_FUNCTION("make-list", procedure_variadic_1);
 
-    ASSERT_INTP(length);
+    ENSURE_INT(length);
 
     len = SCM_INT_VALUE(length);
 
@@ -138,7 +138,7 @@ scm_p_srfi1_list_tabulate(ScmObj scm_n, ScmObj args)
     int i = 0;
     DECLARE_FUNCTION("list-tabulate", procedure_variadic_1);
 
-    ASSERT_INTP(scm_n);
+    ENSURE_INT(scm_n);
 
     /* get n */
     n = SCM_INT_VALUE(scm_n);
@@ -224,11 +224,11 @@ scm_p_srfi1_iota(ScmObj scm_count, ScmObj args)
         scm_step = CAR(CDR(args));
 
     /* param type check */
-    ASSERT_INTP(scm_count);
+    ENSURE_INT(scm_count);
     if (!NULLP(scm_start))
-        ASSERT_INTP(scm_start);
+        ENSURE_INT(scm_start);
     if (!NULLP(scm_step))
-        ASSERT_INTP(scm_step);
+        ENSURE_INT(scm_step);
 
     /* now create list */
     count = SCM_INT_VALUE(scm_count);
@@ -455,7 +455,7 @@ scm_p_srfi1_take(ScmObj lst, ScmObj scm_idx)
     int i;
     DECLARE_FUNCTION("take", procedure_fixed_2);
 
-    ASSERT_INTP(scm_idx);
+    ENSURE_INT(scm_idx);
 
     idx = SCM_INT_VALUE(scm_idx);
     for (i = 0; i < idx; i++) {
@@ -484,7 +484,7 @@ scm_p_srfi1_drop(ScmObj lst, ScmObj scm_idx)
     int i;
     DECLARE_FUNCTION("drop", procedure_fixed_2);
 
-    ASSERT_INTP(scm_idx);
+    ENSURE_INT(scm_idx);
 
     idx = SCM_INT_VALUE(scm_idx);
     for (i = 0; i < idx; i++) {
@@ -504,7 +504,7 @@ scm_p_srfi1_take_right(ScmObj lst, ScmObj scm_elem)
     int len = 0;
     DECLARE_FUNCTION("take-right", procedure_fixed_2);
 
-    ASSERT_INTP(scm_elem);
+    ENSURE_INT(scm_elem);
 
     for (; CONSP(tmp); tmp = CDR(tmp))
         len++;
@@ -521,7 +521,7 @@ scm_p_srfi1_drop_right(ScmObj lst, ScmObj scm_elem)
     int len = 0;
     DECLARE_FUNCTION("drop-right", procedure_fixed_2);
 
-    ASSERT_INTP(scm_elem);
+    ENSURE_INT(scm_elem);
 
     for (; CONSP(tmp); tmp = CDR(tmp))
         len++;
@@ -539,7 +539,7 @@ scm_p_srfi1_taked(ScmObj lst, ScmObj scm_idx)
     int i;
     DECLARE_FUNCTION("take!", procedure_fixed_2);
 
-    ASSERT_INTP(scm_idx);
+    ENSURE_INT(scm_idx);
 
     idx = SCM_INT_VALUE(scm_idx);
 
@@ -560,7 +560,7 @@ scm_p_srfi1_drop_rightd(ScmObj lst, ScmObj scm_idx)
     int i;
     DECLARE_FUNCTION("drop-right!", procedure_fixed_2);
 
-    ASSERT_INTP(scm_idx);
+    ENSURE_INT(scm_idx);
 
     for (; CONSP(tmp); tmp = CDR(tmp))
         len++;

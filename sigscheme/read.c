@@ -142,7 +142,7 @@ scm_read(ScmObj port)
     ScmObj sexp = SCM_FALSE;
     DECLARE_INTERNAL_FUNCTION("scm_read");
 
-    ASSERT_PORTP(port);
+    ENSURE_PORT(port);
 
     sexp = read_sexpression(port);
 #if SCM_DEBUG
@@ -160,7 +160,7 @@ scm_read_char(ScmObj port)
 {
     DECLARE_INTERNAL_FUNCTION("scm_read_char");
 
-    ASSERT_PORTP(port);
+    ENSURE_PORT(port);
 
     return read_char(port);
 }

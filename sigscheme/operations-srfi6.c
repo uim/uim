@@ -88,7 +88,7 @@ scm_p_srfi6_open_input_string(ScmObj str)
     ScmBytePort *bport;
     DECLARE_FUNCTION("open-input-string", procedure_fixed_1);
 
-    ASSERT_STRINGP(str);
+    ENSURE_STRING(str);
 
     bport = ScmInputStrPort_new_const(SCM_STRING_STR(str), istrport_finalize);
     hold_str = (ScmObj *)ScmInputStrPort_ref_opaque(bport);
@@ -112,7 +112,7 @@ scm_p_srfi6_get_output_string(ScmObj port)
     ScmBaseCharPort *cport;
     DECLARE_FUNCTION("get-output-string", procedure_fixed_1);
 
-    ASSERT_PORTP(port);
+    ENSURE_PORT(port);
 
     SCM_ENSURE_LIVE_PORT(port);
     cport = SCM_CHARPORT_DYNAMIC_CAST(ScmBaseCharPort, SCM_PORT_IMPL(port));

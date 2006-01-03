@@ -95,7 +95,7 @@ scm_p_srfi23_error(ScmObj reason, ScmObj args)
      * Although SRFI-23 specified that "The argument <reason> should be a
      * string", we should not force it. Displayable is sufficient.
      */
-    ASSERT_STRINGP(reason);
+    ENSURE_STRING(reason);
 #endif
 
     err_obj = scm_make_error_obj(reason, args);

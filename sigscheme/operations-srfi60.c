@@ -55,12 +55,12 @@
         case SCM_REDUCE_0:                                                   \
             break;                                                           \
         case SCM_REDUCE_1:                                                   \
-            ASSERT_INTP(left);                                               \
+            ENSURE_INT(left);                                               \
             return right;                                                    \
         case SCM_REDUCE_PARTWAY:                                             \
         case SCM_REDUCE_LAST:                                                \
             /* left is already ensured as int by previous loop */            \
-            ASSERT_INTP(right);                                              \
+            ENSURE_INT(right);                                              \
             result = (SCM_INT_VALUE(left) op SCM_INT_VALUE(right));          \
             break;                                                           \
         default:                                                             \
@@ -120,7 +120,7 @@ scm_p_srfi60_lognot(ScmObj n)
 {
     DECLARE_FUNCTION("lognot", procedure_fixed_1);
 
-    ASSERT_INTP(n);
+    ENSURE_INT(n);
 
     return MAKE_INT(~SCM_INT_VALUE(n));
 }
@@ -131,9 +131,9 @@ scm_p_srfi60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1)
     int result, c_mask;
     DECLARE_FUNCTION("bitwise-if", procedure_fixed_3);
 
-    ASSERT_INTP(mask);
-    ASSERT_INTP(n0);
-    ASSERT_INTP(n1);
+    ENSURE_INT(mask);
+    ENSURE_INT(n0);
+    ENSURE_INT(n1);
 
     c_mask = SCM_INT_VALUE(mask);
     result = (c_mask & SCM_INT_VALUE(n0)) | (~c_mask & SCM_INT_VALUE(n1));
@@ -146,8 +146,8 @@ scm_p_srfi60_logtest(ScmObj j, ScmObj k)
 {
     DECLARE_FUNCTION("logtest", procedure_fixed_2);
 
-    ASSERT_INTP(j);
-    ASSERT_INTP(k);
+    ENSURE_INT(j);
+    ENSURE_INT(k);
 
     return MAKE_BOOL(SCM_INT_VALUE(j) & SCM_INT_VALUE(k));
 }

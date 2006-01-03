@@ -137,7 +137,7 @@ scm_write_to_port(ScmObj port, ScmObj obj)
 {
     DECLARE_INTERNAL_FUNCTION("scm_write_to_port");
 
-    ASSERT_PORTP(port);
+    ENSURE_PORT(port);
     SCM_ENSURE_LIVE_PORT(port);
     if (!(SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT))
         ERR("output port is required");
@@ -154,7 +154,7 @@ scm_display_to_port(ScmObj port, ScmObj obj)
 {
     DECLARE_INTERNAL_FUNCTION("scm_display_to_port");
 
-    ASSERT_PORTP(port);
+    ENSURE_PORT(port);
     SCM_ENSURE_LIVE_PORT(port);
     if (!(SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT))
         ERR("output port is required");

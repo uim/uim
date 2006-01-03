@@ -330,28 +330,25 @@ extern ScmObj scm_null_values;
       ? (SCM_MANGLE(tmp) = CAR(args), (args) = CDR(args), SCM_MANGLE(tmp)) \
       : (ERR("missing argument(s)"), NULL))
 
-/* FIXME: Rename to ENSURE_TYPE() */
-#define ASSERT_TYPE(pred, typename, obj) \
+#define ENSURE_TYPE(pred, typename, obj)                                     \
     (pred(obj) || (ERR_OBJ(typename " required but got", (obj)), 1))
 
-/* FIXME: Rename to ENSURE_INT() and so on */
-#define ASSERT_INTP(obj)     ASSERT_TYPE(INTP, "integer", (obj))
-#define ASSERT_CONSP(obj)    ASSERT_TYPE(CONSP, "pair", (obj))
-#define ASSERT_SYMBOLP(obj)  ASSERT_TYPE(SYMBOLP, "symbol", (obj))
-#define ASSERT_CHARP(obj)    ASSERT_TYPE(CHARP, "character", (obj))
-#define ASSERT_STRINGP(obj)  ASSERT_TYPE(STRINGP, "string", (obj))
-#define ASSERT_FUNCP(obj)    ASSERT_TYPE(FUNCP, "function", (obj))
-#define ASSERT_CLOSUREP(obj) ASSERT_TYPE(CLOSUREP, "closure", (obj))
-#define ASSERT_VECTORP(obj)  ASSERT_TYPE(VECTORP, "vector", (obj))
-#define ASSERT_PORTP(obj)    ASSERT_TYPE(PORTP, "port", (obj))
-#define ASSERT_CONTINUATIONP(obj) ASSERT_TYPE(CONTINUATIONP, "continuation", (obj))
-#define ASSERT_PROCEDUREP(obj) ASSERT_TYPE(PROCEDUREP, "procedure", (obj))
-#define ASSERT_ENVP(obj)     ASSERT_TYPE(ENVP, "environment specifier", (obj))
-#define ASSERT_ERROBJP(obj)  ASSERT_TYPE(ERROBJP, "error object", (obj))
-#define ASSERT_LISTP(obj)    ASSERT_TYPE(LISTP, "list", (obj))
+#define ENSURE_INT(obj)     ENSURE_TYPE(INTP, "integer", (obj))
+#define ENSURE_CONS(obj)    ENSURE_TYPE(CONSP, "pair", (obj))
+#define ENSURE_SYMBOL(obj)  ENSURE_TYPE(SYMBOLP, "symbol", (obj))
+#define ENSURE_CHAR(obj)    ENSURE_TYPE(CHARP, "character", (obj))
+#define ENSURE_STRING(obj)  ENSURE_TYPE(STRINGP, "string", (obj))
+#define ENSURE_FUNC(obj)    ENSURE_TYPE(FUNCP, "function", (obj))
+#define ENSURE_CLOSURE(obj) ENSURE_TYPE(CLOSUREP, "closure", (obj))
+#define ENSURE_VECTOR(obj)  ENSURE_TYPE(VECTORP, "vector", (obj))
+#define ENSURE_PORT(obj)    ENSURE_TYPE(PORTP, "port", (obj))
+#define ENSURE_CONTINUATION(obj) ENSURE_TYPE(CONTINUATIONP, "continuation", (obj))
+#define ENSURE_PROCEDURE(obj) ENSURE_TYPE(PROCEDUREP, "procedure", (obj))
+#define ENSURE_ENV(obj)     ENSURE_TYPE(ENVP, "environment specifier", (obj))
+#define ENSURE_ERROBJ(obj)  ENSURE_TYPE(ERROBJP, "error object", (obj))
+#define ENSURE_LIST(obj)    ENSURE_TYPE(LISTP, "list", (obj))
 
-/* FIXME: Rename to ENSURE_MUTABLE() */
-#define ASSERT_MUTABLEP(str)                                                 \
+#define ENSURE_MUTABLE(str)                                                  \
     (SCM_STRING_MUTABLEP(str)                                                \
      || (ERR_OBJ("attempted to modify immutable string", str), 1))
 

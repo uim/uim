@@ -217,11 +217,11 @@ scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state)
     switch (*state) {
     case SCM_REDUCE_PARTWAY:
     case SCM_REDUCE_LAST:
-        ASSERT_INTP(left);
+        ENSURE_INT(left);
         result = SCM_INT_VALUE(left);
         /* Fall through. */
     case SCM_REDUCE_1:
-        ASSERT_INTP(right);
+        ENSURE_INT(right);
         result += SCM_INT_VALUE(right);
         /* Fall through. */
     case SCM_REDUCE_0:
@@ -241,11 +241,11 @@ scm_p_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state)
     switch (*state) {
     case SCM_REDUCE_PARTWAY:
     case SCM_REDUCE_LAST:
-        ASSERT_INTP(left);
+        ENSURE_INT(left);
         result = SCM_INT_VALUE(left);
         /* Fall through. */
     case SCM_REDUCE_1:
-        ASSERT_INTP(right);
+        ENSURE_INT(right);
         result *= SCM_INT_VALUE(right);
         /* Fall through. */
     case SCM_REDUCE_0:
@@ -265,11 +265,11 @@ scm_p_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state)
     switch (*state) {
     case SCM_REDUCE_PARTWAY:
     case SCM_REDUCE_LAST:
-        ASSERT_INTP(left);
+        ENSURE_INT(left);
         result = SCM_INT_VALUE(left);
         /* Fall through. */
     case SCM_REDUCE_1:
-        ASSERT_INTP(right);
+        ENSURE_INT(right);
         result -= SCM_INT_VALUE(right);
         break;
 
@@ -289,11 +289,11 @@ scm_p_divide(ScmObj left, ScmObj right, enum ScmReductionState *state)
     switch (*state) {
     case SCM_REDUCE_PARTWAY:
     case SCM_REDUCE_LAST:
-        ASSERT_INTP(left);
+        ENSURE_INT(left);
         result = SCM_INT_VALUE(left);
         /* Fall through. */
     case SCM_REDUCE_1:
-        ASSERT_INTP(right);
+        ENSURE_INT(right);
         if (SCM_INT_VALUE(right) == 0)
             ERR("division by zero");
         result /= SCM_INT_VALUE(right);
@@ -324,8 +324,8 @@ scm_p_equal(ScmObj left, ScmObj right, enum ScmReductionState *state)
         ERR("at least 2 arguments required"); \
     case SCM_REDUCE_PARTWAY: \
     case SCM_REDUCE_LAST: \
-        ASSERT_INTP(left); \
-        ASSERT_INTP(right); \
+        ENSURE_INT(left); \
+        ENSURE_INT(right); \
         if (SCM_INT_VALUE(left) op SCM_INT_VALUE(right)) \
             return *state == SCM_REDUCE_LAST ? SCM_TRUE : right; \
         *state = SCM_REDUCE_STOP; \
@@ -371,7 +371,7 @@ ScmObj
 scm_p_zerop(ScmObj scm_num)
 {
     DECLARE_FUNCTION("zero?", procedure_fixed_1);
-    ASSERT_INTP(scm_num);
+    ENSURE_INT(scm_num);
     return MAKE_BOOL(SCM_INT_VALUE(scm_num) == 0);
 }
 
@@ -379,7 +379,7 @@ ScmObj
 scm_p_positivep(ScmObj scm_num)
 {
     DECLARE_FUNCTION("positive?", procedure_fixed_1);
-    ASSERT_INTP(scm_num);
+    ENSURE_INT(scm_num);
     return MAKE_BOOL(SCM_INT_VALUE(scm_num) > 0);
 }
 
@@ -387,7 +387,7 @@ ScmObj
 scm_p_negativep(ScmObj scm_num)
 {
     DECLARE_FUNCTION("negative?", procedure_fixed_1);
-    ASSERT_INTP(scm_num);
+    ENSURE_INT(scm_num);
     return MAKE_BOOL(SCM_INT_VALUE(scm_num) < 0);
 }
 
@@ -395,7 +395,7 @@ ScmObj
 scm_p_oddp(ScmObj scm_num)
 {
     DECLARE_FUNCTION("odd?", procedure_fixed_1);
-    ASSERT_INTP(scm_num);
+    ENSURE_INT(scm_num);
     return MAKE_BOOL(SCM_INT_VALUE(scm_num) & 0x1);
 }
 
@@ -403,7 +403,7 @@ ScmObj
 scm_p_evenp(ScmObj scm_num)
 {
     DECLARE_FUNCTION("even?", procedure_fixed_1);
-    ASSERT_INTP(scm_num);
+    ENSURE_INT(scm_num);
     return MAKE_BOOL(!(SCM_INT_VALUE(scm_num) & 0x1));
 }
 
@@ -413,8 +413,8 @@ scm_p_max(ScmObj left, ScmObj right, enum ScmReductionState *state)
     DECLARE_FUNCTION("max", reduction_operator);
     if (*state == SCM_REDUCE_0)
         ERR("at least 1 argument required");
-    ASSERT_INTP(left);
-    ASSERT_INTP(right);
+    ENSURE_INT(left);
+    ENSURE_INT(right);
 
     return SCM_INT_VALUE(left) > SCM_INT_VALUE(right) ? left : right;
 }
@@ -425,8 +425,8 @@ scm_p_min(ScmObj left, ScmObj right, enum ScmReductionState *state)
     DECLARE_FUNCTION("min", reduction_operator);
     if (*state == SCM_REDUCE_0)
         ERR("at least 1 argument required");
-    ASSERT_INTP(left);
-    ASSERT_INTP(right);
+    ENSURE_INT(left);
+    ENSURE_INT(right);
 
     return SCM_INT_VALUE(left) < SCM_INT_VALUE(right) ? left : right;
 }
@@ -438,7 +438,7 @@ scm_p_abs(ScmObj scm_num)
     int num = 0;
     DECLARE_FUNCTION("abs", procedure_fixed_1);
 
-    ASSERT_INTP(scm_num);
+    ENSURE_INT(scm_num);
 
     num = SCM_INT_VALUE(scm_num);
 
@@ -452,8 +452,8 @@ scm_p_quotient(ScmObj scm_n1, ScmObj scm_n2)
     int n2 = 0;
     DECLARE_FUNCTION("quotient", procedure_fixed_2);
 
-    ASSERT_INTP(scm_n1);
-    ASSERT_INTP(scm_n2);
+    ENSURE_INT(scm_n1);
+    ENSURE_INT(scm_n2);
 
     n1 = SCM_INT_VALUE(scm_n1);
     n2 = SCM_INT_VALUE(scm_n2);
@@ -472,8 +472,8 @@ scm_p_modulo(ScmObj scm_n1, ScmObj scm_n2)
     int rem = 0;
     DECLARE_FUNCTION("modulo", procedure_fixed_2);
 
-    ASSERT_INTP(scm_n1);
-    ASSERT_INTP(scm_n2);
+    ENSURE_INT(scm_n1);
+    ENSURE_INT(scm_n2);
 
     n1 = SCM_INT_VALUE(scm_n1);
     n2 = SCM_INT_VALUE(scm_n2);
@@ -498,8 +498,8 @@ scm_p_remainder(ScmObj scm_n1, ScmObj scm_n2)
     int n2  = 0;
     DECLARE_FUNCTION("remainder", procedure_fixed_2);
 
-    ASSERT_INTP(scm_n1);
-    ASSERT_INTP(scm_n2);
+    ENSURE_INT(scm_n1);
+    ENSURE_INT(scm_n2);
 
     n1 = SCM_INT_VALUE(scm_n1);
     n2 = SCM_INT_VALUE(scm_n2);
@@ -522,7 +522,7 @@ scm_p_number2string(ScmObj num, ScmObj args)
   ScmObj radix;
   DECLARE_FUNCTION("number->string", procedure_variadic_1);
 
-  ASSERT_INTP(num);
+  ENSURE_INT(num);
   n = SCM_INT_VALUE(num);
 
   /* r = radix */
@@ -532,7 +532,7 @@ scm_p_number2string(ScmObj num, ScmObj args)
       radix = POP_ARG(args);
       ASSERT_NO_MORE_ARG(args);
 
-      ASSERT_INTP(radix);
+      ENSURE_INT(radix);
       r = SCM_INT_VALUE(radix);
 #if SCM_STRICT_R5RS
       if (!(r == 2 || r == 8 || r == 10 || r == 16))
@@ -571,14 +571,14 @@ scm_p_string2number(ScmObj str, ScmObj args)
     char *first_nondigit = NULL;
     DECLARE_FUNCTION("string->number", procedure_variadic_1);
 
-    ASSERT_STRINGP(str);
+    ENSURE_STRING(str);
 
     /* r = radix */
     if (!NO_MORE_ARG(args)) {
         radix = POP_ARG(args);
         ASSERT_NO_MORE_ARG(args);
 
-        ASSERT_INTP(radix);
+        ENSURE_INT(radix);
         r = SCM_INT_VALUE(radix);
 #if SCM_STRICT_R5RS
       if (!(r == 2 || r == 8 || r == 10 || r == 16))
@@ -627,7 +627,7 @@ scm_p_car(ScmObj obj)
         return SCM_NULL;
 #endif
 
-    ASSERT_CONSP(obj);
+    ENSURE_CONS(obj);
 
     return CAR(obj);
 }
@@ -641,7 +641,7 @@ scm_p_cdr(ScmObj obj)
         return SCM_NULL;
 #endif
 
-    ASSERT_CONSP(obj);
+    ENSURE_CONS(obj);
 
     return CDR(obj);
 }
@@ -664,7 +664,7 @@ ScmObj
 scm_p_set_card(ScmObj pair, ScmObj car)
 {
     DECLARE_FUNCTION("set-car!", procedure_fixed_2);
-    ASSERT_CONSP(pair);
+    ENSURE_CONS(pair);
 
     SET_CAR(pair, car);
 
@@ -679,7 +679,7 @@ ScmObj
 scm_p_set_cdrd(ScmObj pair, ScmObj cdr)
 {
     DECLARE_FUNCTION("set-cdr!", procedure_fixed_2);
-    ASSERT_CONSP(pair);
+    ENSURE_CONS(pair);
 
     SET_CDR(pair, cdr);
 
@@ -862,7 +862,7 @@ scm_p_list_tail(ScmObj lst, ScmObj scm_k)
     ScmObj ret;
     DECLARE_FUNCTION("list-tail", procedure_fixed_2);
 
-    ASSERT_INTP(scm_k);
+    ENSURE_INT(scm_k);
 
     ret = scm_p_listtail_internal(lst, SCM_INT_VALUE(scm_k));
     if (EQ(ret, SCM_INVALID))
@@ -877,7 +877,7 @@ scm_p_list_ref(ScmObj lst, ScmObj scm_k)
     ScmObj tail = SCM_NULL;
     DECLARE_FUNCTION("list-ref", procedure_fixed_2);
 
-    ASSERT_INTP(scm_k);
+    ENSURE_INT(scm_k);
 
     tail = scm_p_listtail_internal(lst, SCM_INT_VALUE(scm_k));
     if (EQ(tail, SCM_INVALID) || NULLP(tail))
@@ -957,7 +957,7 @@ scm_p_assq(ScmObj obj, ScmObj alist)
         tmpobj = CAR(tmp_lst);
         car = CAR(tmpobj);
 #if SCM_STRICT_R5RS
-        ASSERT_CONSP(tmpobj);
+        ENSURE_CONS(tmpobj);
         if (EQ(CAR(tmpobj), obj))
             return tmpobj;
 #else
@@ -981,7 +981,7 @@ scm_p_assv(ScmObj obj, ScmObj alist)
         tmpobj = CAR(tmp_lst);
         car = CAR(tmpobj);
 #if SCM_STRICT_R5RS
-        ASSERT_CONSP(tmpobj);
+        ENSURE_CONS(tmpobj);
         if (NFALSEP(scm_p_eqvp(car, obj)))
             return tmpobj;
 #else
@@ -1005,7 +1005,7 @@ scm_p_assoc(ScmObj obj, ScmObj alist)
         tmpobj = CAR(tmp_lst);
         car = CAR(tmpobj);
 #if SCM_STRICT_R5RS
-        ASSERT_CONSP(tmpobj);
+        ENSURE_CONS(tmpobj);
         if (NFALSEP(scm_p_equalp(car, obj)))
             return tmpobj;
 #else
@@ -1032,7 +1032,7 @@ ScmObj
 scm_p_symbol2string(ScmObj obj)
 {
     DECLARE_FUNCTION("symbol->string", procedure_fixed_1);
-    ASSERT_SYMBOLP(obj);
+    ENSURE_SYMBOL(obj);
     return MAKE_IMMUTABLE_STRING_COPYING(SCM_SYMBOL_NAME(obj));
 }
 
@@ -1040,7 +1040,7 @@ ScmObj
 scm_p_string2symbol(ScmObj str)
 {
     DECLARE_FUNCTION("string->symbol", procedure_fixed_1);
-    ASSERT_STRINGP(str);
+    ENSURE_STRING(str);
     return scm_intern(SCM_STRING_STR(str));
 }
 
@@ -1059,8 +1059,8 @@ scm_p_charequalp(ScmObj ch1, ScmObj ch2)
 {
     DECLARE_FUNCTION("char=?", procedure_fixed_2);
 
-    ASSERT_CHARP(ch1);
-    ASSERT_CHARP(ch2);
+    ENSURE_CHAR(ch1);
+    ENSURE_CHAR(ch2);
 
     return MAKE_BOOL(SCM_CHAR_VALUE(ch1) == SCM_CHAR_VALUE(ch2));
 }
@@ -1071,7 +1071,7 @@ scm_p_char_alphabeticp(ScmObj obj)
     int ch;
     DECLARE_FUNCTION("char-alphabetic?", procedure_fixed_1);
 
-    ASSERT_CHARP(obj);
+    ENSURE_CHAR(obj);
 
     ch = SCM_CHAR_VALUE(obj);
 
@@ -1084,7 +1084,7 @@ scm_p_char_numericp(ScmObj obj)
     int ch;
     DECLARE_FUNCTION("char-numeric?", procedure_fixed_1);
 
-    ASSERT_CHARP(obj);
+    ENSURE_CHAR(obj);
 
     ch = SCM_CHAR_VALUE(obj);
 
@@ -1097,7 +1097,7 @@ scm_p_char_whitespacep(ScmObj obj)
     int ch;
     DECLARE_FUNCTION("char-whitespace?", procedure_fixed_1);
 
-    ASSERT_CHARP(obj);
+    ENSURE_CHAR(obj);
 
     ch = SCM_CHAR_VALUE(obj);
 
@@ -1110,7 +1110,7 @@ scm_p_char_upper_casep(ScmObj obj)
     int ch;
     DECLARE_FUNCTION("char-upper-case?", procedure_fixed_1);
 
-    ASSERT_CHARP(obj);
+    ENSURE_CHAR(obj);
 
     ch = SCM_CHAR_VALUE(obj);
 
@@ -1123,7 +1123,7 @@ scm_p_char_lower_casep(ScmObj obj)
     int ch;
     DECLARE_FUNCTION("char-lower-case?", procedure_fixed_1);
 
-    ASSERT_CHARP(obj);
+    ENSURE_CHAR(obj);
 
     ch = SCM_CHAR_VALUE(obj);
 
@@ -1135,7 +1135,7 @@ scm_p_char2integer(ScmObj obj)
 {
     DECLARE_FUNCTION("char->integer", procedure_fixed_1);
 
-    ASSERT_CHARP(obj);
+    ENSURE_CHAR(obj);
 
     return MAKE_INT(SCM_CHAR_VALUE(obj));
 }
@@ -1146,7 +1146,7 @@ scm_p_integer2char(ScmObj obj)
     int val;
     DECLARE_FUNCTION("integer->char", procedure_fixed_1);
 
-    ASSERT_INTP(obj);
+    ENSURE_INT(obj);
 
     val = SCM_INT_VALUE(obj);
     if (!SCM_CHARCODEC_CHAR_LEN(scm_current_char_codec, val))
@@ -1160,7 +1160,7 @@ scm_p_char_upcase(ScmObj obj)
     int ch;
     DECLARE_FUNCTION("char-upcase", procedure_fixed_1);
 
-    ASSERT_CHARP(obj);
+    ENSURE_CHAR(obj);
 
     ch = SCM_CHAR_VALUE(obj);
     if (isascii(ch))
@@ -1175,7 +1175,7 @@ scm_p_char_downcase(ScmObj obj)
     int ch;
     DECLARE_FUNCTION("char-downcase", procedure_fixed_1);
 
-    ASSERT_CHARP(obj);
+    ENSURE_CHAR(obj);
 
     ch = SCM_CHAR_VALUE(obj);
     if (isascii(ch))
@@ -1202,7 +1202,7 @@ scm_p_make_string(ScmObj length, ScmObj args)
     ScmObj sport  = SCM_FALSE;
     DECLARE_FUNCTION("make-string", procedure_variadic_1);
 
-    ASSERT_INTP(length);
+    ENSURE_INT(length);
     len = SCM_INT_VALUE(length);
     if (len == 0)
         return MAKE_STRING_COPYING("");
@@ -1215,7 +1215,7 @@ scm_p_make_string(ScmObj length, ScmObj args)
     } else {
         filler = POP_ARG(args);
         ASSERT_NO_MORE_ARG(args);
-        ASSERT_CHARP(filler);
+        ENSURE_CHAR(filler);
         filler_val = SCM_CHAR_VALUE(filler);
     }
 
@@ -1240,7 +1240,7 @@ ScmObj
 scm_p_string_length(ScmObj str)
 {
     DECLARE_FUNCTION("string-length", procedure_fixed_1);
-    ASSERT_STRINGP(str);
+    ENSURE_STRING(str);
     return MAKE_INT(scm_mb_bare_c_strlen(SCM_STRING_STR(str)));
 }
 
@@ -1252,8 +1252,8 @@ scm_p_string_ref(ScmObj str, ScmObj k)
     ScmMultibyteString mbs;
     DECLARE_FUNCTION("string-ref", procedure_fixed_2);
 
-    ASSERT_STRINGP(str);
-    ASSERT_INTP(k);
+    ENSURE_STRING(str);
+    ENSURE_INT(k);
 
     c_index = SCM_INT_VALUE(k);
     if (c_index < 0 || SCM_STRING_LEN(str) <= c_index)
@@ -1288,10 +1288,10 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     DECLARE_FUNCTION("string-set!", procedure_fixed_3);
 
     ENSURE_STATELESS_CODEC(scm_current_char_codec);
-    ASSERT_STRINGP(str);
-    ASSERT_MUTABLEP(str);
-    ASSERT_INTP(k);
-    ASSERT_CHARP(ch);
+    ENSURE_STRING(str);
+    ENSURE_MUTABLE(str);
+    ENSURE_INT(k);
+    ENSURE_CHAR(ch);
 
     ch_val = SCM_CHAR_VALUE(ch);
     c_start_index = SCM_INT_VALUE(k);
@@ -1339,8 +1339,8 @@ scm_p_stringequalp(ScmObj str1, ScmObj str2)
 {
     DECLARE_FUNCTION("string=?", procedure_fixed_2);
 
-    ASSERT_STRINGP(str1);
-    ASSERT_STRINGP(str2);
+    ENSURE_STRING(str1);
+    ENSURE_STRING(str2);
 
     if (strcmp(SCM_STRING_STR(str1), SCM_STRING_STR(str2)) == 0)
         return SCM_TRUE;
@@ -1358,9 +1358,9 @@ scm_p_substring(ScmObj str, ScmObj start, ScmObj end)
     const char *string_str   = NULL;
     DECLARE_FUNCTION("substring", procedure_fixed_3);
 
-    ASSERT_STRINGP(str);
-    ASSERT_INTP(start);
-    ASSERT_INTP(end);
+    ENSURE_STRING(str);
+    ENSURE_INT(start);
+    ENSURE_INT(end);
 
     /* get start_ptr and end_ptr */
     c_start_index = SCM_INT_VALUE(start);
@@ -1407,7 +1407,7 @@ scm_p_string_append(ScmObj args)
     /* count total size of the new string */
     for (strlst = args; !NULLP(strlst); strlst = CDR(strlst)) {
         obj = CAR(strlst);
-        ASSERT_STRINGP(obj);
+        ENSURE_STRING(obj);
 
         total_size += strlen(SCM_STRING_STR(obj));
         total_len  += SCM_STRING_LEN(obj);
@@ -1438,7 +1438,7 @@ scm_p_string2list(ScmObj str)
     ScmMultibyteState state;
     DECLARE_FUNCTION("string->list", procedure_fixed_1);
 
-    ASSERT_STRINGP(str);
+    ENSURE_STRING(str);
 
     SCM_MBS_INIT(mbs);
     SCM_MBS_SET_STR(mbs, SCM_STRING_STR(str));
@@ -1471,7 +1471,7 @@ scm_p_list2string(ScmObj lst)
     ScmObj rest, ch, sport;
     DECLARE_FUNCTION("list->string", procedure_fixed_1);
 
-    ASSERT_LISTP(lst);
+    ENSURE_LIST(lst);
 
     if (NULLP(lst))
         return MAKE_STRING_COPYING("");
@@ -1480,7 +1480,7 @@ scm_p_list2string(ScmObj lst)
     sport = scm_p_srfi6_open_output_string();
     for (rest = lst; CONSP(rest); rest = CDR(rest)) {
         ch = CAR(rest);
-        ASSERT_CHARP(ch);
+        ENSURE_CHAR(ch);
         scm_port_put_char(sport, SCM_CHAR_VALUE(ch));
     }
     if (!NULLP(rest))
@@ -1493,7 +1493,7 @@ ScmObj
 scm_p_string_copy(ScmObj str)
 {
     DECLARE_FUNCTION("string-copy", procedure_fixed_1);
-    ASSERT_STRINGP(str);
+    ENSURE_STRING(str);
     return MAKE_STRING_COPYING(SCM_STRING_STR(str));
 }
 
@@ -1509,9 +1509,9 @@ scm_p_string_filld(ScmObj str, ScmObj ch)
     DECLARE_FUNCTION("string-fill!", procedure_fixed_2);
 
     ENSURE_STATELESS_CODEC(scm_current_char_codec);
-    ASSERT_STRINGP(str);
-    ASSERT_MUTABLEP(str);
-    ASSERT_CHARP(ch);
+    ENSURE_STRING(str);
+    ENSURE_MUTABLE(str);
+    ENSURE_CHAR(ch);
 
     str_len = SCM_STRING_LEN(str);
     if (str_len == 0)
@@ -1553,7 +1553,7 @@ scm_p_make_vector(ScmObj vector_len, ScmObj args)
     int i   = 0;
     DECLARE_FUNCTION("make-vector", procedure_variadic_1);
 
-    ASSERT_INTP(vector_len);
+    ENSURE_INT(vector_len);
 
     /* sanity check */
     if (SCM_INT_VALUE(vector_len) < 0)
@@ -1595,7 +1595,7 @@ scm_p_vector_length(ScmObj vec)
 {
     DECLARE_FUNCTION("vector-length", procedure_fixed_1);
 
-    ASSERT_VECTORP(vec);
+    ENSURE_VECTOR(vec);
     return MAKE_INT(SCM_VECTOR_LEN(vec));
 }
 
@@ -1605,8 +1605,8 @@ scm_p_vector_ref(ScmObj vec, ScmObj scm_k)
     int k;
     DECLARE_FUNCTION("vector-ref", procedure_fixed_2);
 
-    ASSERT_VECTORP(vec);
-    ASSERT_INTP(scm_k);
+    ENSURE_VECTOR(vec);
+    ENSURE_INT(scm_k);
 
     k = SCM_INT_VALUE(scm_k);
 
@@ -1622,8 +1622,8 @@ scm_p_vector_setd(ScmObj vec, ScmObj scm_k, ScmObj obj)
     int k;
     DECLARE_FUNCTION("vector-set!", procedure_fixed_3);
 
-    ASSERT_VECTORP(vec);
-    ASSERT_INTP(scm_k);
+    ENSURE_VECTOR(vec);
+    ENSURE_INT(scm_k);
 
     k = SCM_INT_VALUE(scm_k);
 
@@ -1644,7 +1644,7 @@ scm_p_vector2list(ScmObj vec)
     int len, i;
     DECLARE_FUNCTION("vector->list", procedure_fixed_1);
 
-    ASSERT_VECTORP(vec);
+    ENSURE_VECTOR(vec);
 
     v = SCM_VECTOR_VEC(vec);
     len = SCM_VECTOR_LEN(vec);
@@ -1688,7 +1688,7 @@ scm_p_vector_filld(ScmObj vec, ScmObj fill)
     int i = 0;
     DECLARE_FUNCTION("vector-fill!", procedure_fixed_2);
 
-    ASSERT_VECTORP(vec);
+    ENSURE_VECTOR(vec);
 
     c_len = SCM_VECTOR_LEN(vec);
     for (i = 0; i < c_len; i++) {
@@ -1786,7 +1786,7 @@ scm_p_force(ScmObj closure)
 {
     DECLARE_FUNCTION("force", procedure_fixed_1);
 
-    ASSERT_CLOSUREP(closure);
+    ENSURE_CLOSURE(closure);
 
     return scm_call(closure, SCM_NULL);
 }
@@ -1796,7 +1796,7 @@ scm_p_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
 {
     DECLARE_FUNCTION("call-with-current-continuation", procedure_fixed_tailrec_1);
 
-    ASSERT_PROCEDUREP(proc);
+    ENSURE_PROCEDURE(proc);
 
     return scm_call_with_current_continuation(proc, eval_state);
 }
@@ -1820,8 +1820,8 @@ ScmObj scm_p_call_with_values(ScmObj producer, ScmObj consumer,
     ScmObj vals;
     DECLARE_FUNCTION("call-with-values", procedure_fixed_tailrec_2);
 
-    ASSERT_PROCEDUREP(producer);
-    ASSERT_PROCEDUREP(consumer);
+    ENSURE_PROCEDURE(producer);
+    ENSURE_PROCEDURE(consumer);
 
     vals = scm_call(producer, SCM_NULL);
 
@@ -1841,9 +1841,9 @@ scm_p_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after)
 {
     DECLARE_FUNCTION("dynamic-wind", procedure_fixed_3);
 
-    ASSERT_PROCEDUREP(before);
-    ASSERT_PROCEDUREP(thunk);
-    ASSERT_PROCEDUREP(after);
+    ENSURE_PROCEDURE(before);
+    ENSURE_PROCEDURE(thunk);
+    ENSURE_PROCEDURE(after);
 
     return scm_dynamic_wind(before, thunk, after);
 }

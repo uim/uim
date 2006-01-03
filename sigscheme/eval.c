@@ -194,8 +194,8 @@ lookup_frame(ScmObj var, ScmObj frame)
     DECLARE_INTERNAL_FUNCTION("lookup_frame");
 
 #if SCM_STRICT_ARGCHECK
-    ASSERT_SYMBOLP(var);
-    ASSERT_CONSP(frame);
+    ENSURE_SYMBOL(var);
+    ENSURE_CONS(frame);
 #endif
 
     for (vars = CAR(frame), vals = REF_CDR(frame);
@@ -210,7 +210,7 @@ lookup_frame(ScmObj var, ScmObj frame)
          *
          * It can be removed once the typed environment object is implemented.
          */
-        ASSERT_CONSP(DEREF(vals));
+        ENSURE_CONS(DEREF(vals));
 #endif
         if (EQ(var, CAR(vars)))
             return REF_CAR(DEREF(vals));
@@ -473,7 +473,7 @@ scm_p_eval(ScmObj obj, ScmObj env)
 {
     DECLARE_FUNCTION("eval", procedure_fixed_2);
 
-    ASSERT_ENVP(env);
+    ENSURE_ENV(env);
 
     return scm_eval(obj, env);
 }
@@ -537,7 +537,7 @@ scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state)
         last = arg;
     }
 
-    ASSERT_LISTP(last);
+    ENSURE_LIST(last);
 
     /* The last argument inhibits argument re-evaluation. */
     return call(proc, args, eval_state, SUPPRESS_EVAL_ARGS);
@@ -1382,7 +1382,7 @@ scm_s_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_
             ERR("invalid bindings");
 
         var = MUST_POP_ARG(binding);
-        ASSERT_SYMBOLP(var);
+        ENSURE_SYMBOL(var);
         val = MUST_POP_ARG(binding);
 
         vars = CONS(var, vars);
@@ -1645,7 +1645,7 @@ scm_s_define(ScmObj var, ScmObj rest, ScmObj env)
             ERR_OBJ("proper list is required as <body> but got", body);
 #endif
 
-        ASSERT_SYMBOLP(procname);
+        ENSURE_SYMBOL(procname);
 
         define_internal(procname, MAKE_CLOSURE(CONS(formals, body), env), env);
     } else {
@@ -1668,7 +1668,7 @@ scm_p_scheme_report_environment(ScmObj version)
     DECLARE_FUNCTION("scheme-report-environment", procedure_fixed_1);
 
     /* sanity check */
-    ASSERT_INTP(version);
+    ENSURE_INT(version);
     if (SCM_INT_VALUE(version) != 5)
         ERR_OBJ("version must be 5 but got", version);
 
@@ -1688,7 +1688,7 @@ scm_p_null_environment(ScmObj version)
     DECLARE_FUNCTION("null-environment", procedure_fixed_1);
 
     /* sanity check */
-    ASSERT_INTP(version);
+    ENSURE_INT(version);
     if (SCM_INT_VALUE(version) != 5)
         ERR_OBJ("version must be 5 but got", version);
 

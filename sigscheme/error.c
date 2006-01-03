@@ -175,10 +175,10 @@ scm_make_error_obj(ScmObj reason, ScmObj objs)
 {
     DECLARE_INTERNAL_FUNCTION("scm_make_error_obj");
 
-    ASSERT_LISTP(objs);
+    ENSURE_LIST(objs);
 #if 0
     /* should be string, but not forced. displayable is sufficient. */
-    ASSERT_STRINGP(reason);
+    ENSURE_STRING(reason);
 #endif
 
     return LIST_4(err_obj_tag, reason, objs, scm_trace_stack());
@@ -189,7 +189,7 @@ scm_raise_error(ScmObj err_obj)
 {
     DECLARE_INTERNAL_FUNCTION("scm_raise_error");
 
-    ASSERT_ERROBJP(err_obj);
+    ENSURE_ERROBJ(err_obj);
 
 #if SCM_USE_SRFI34
     if (srfi34_providedp()) {
@@ -233,7 +233,7 @@ scm_p_fatal_error(ScmObj err_obj)
         msg = "looped fatal error";
     } else {
         fatal_error_looped = TRUE;
-        ASSERT_ERROBJP(err_obj);
+        ENSURE_ERROBJ(err_obj);
         scm_p_inspect_error(err_obj);
         msg = NULL;
     }

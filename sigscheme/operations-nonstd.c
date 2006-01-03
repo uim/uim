@@ -84,11 +84,11 @@ scm_p_symbol_boundp(ScmObj sym, ScmObj rest)
     ScmObj env = SCM_INVALID;
     DECLARE_FUNCTION("symbol-bound?", procedure_variadic_1);
 
-    ASSERT_SYMBOLP(sym);
+    ENSURE_SYMBOL(sym);
 
     env = POP_ARG(rest);
     if (VALIDP(env))
-        ASSERT_ENVP(env);
+        ENSURE_ENV(env);
     else
         env = SCM_INTERACTION_ENV;
 
@@ -114,7 +114,7 @@ scm_p_require(ScmObj filename)
 #endif
     DECLARE_FUNCTION("require", procedure_fixed_1);
 
-    ASSERT_STRINGP(filename);
+    ENSURE_STRING(filename);
 
     loaded_str = create_loaded_str(filename);
     if (FALSEP(scm_p_providedp(loaded_str))) {
@@ -155,7 +155,7 @@ scm_p_provide(ScmObj feature)
 {
     DECLARE_FUNCTION("provide", procedure_fixed_1);
 
-    ASSERT_STRINGP(feature);
+    ENSURE_STRING(feature);
 
     scm_provide(feature);
 
@@ -171,7 +171,7 @@ scm_p_providedp(ScmObj feature)
 {
     DECLARE_FUNCTION("provided?", procedure_fixed_1);
 
-    ASSERT_STRINGP(feature);
+    ENSURE_STRING(feature);
 
     return MAKE_BOOL(scm_providedp(feature));
 }
@@ -186,7 +186,7 @@ scm_p_file_existsp(ScmObj filepath)
     FILE *f;
     DECLARE_FUNCTION("file-exists?", procedure_fixed_1);
 
-    ASSERT_STRINGP(filepath);
+    ENSURE_STRING(filepath);
 
     f = fopen(SCM_STRING_STR(filepath), "r");
     if (!f)
@@ -202,7 +202,7 @@ scm_p_delete_file(ScmObj filepath)
 {
     DECLARE_FUNCTION("delete-file", procedure_fixed_1);
 
-    ASSERT_STRINGP(filepath);
+    ENSURE_STRING(filepath);
 
     if (remove(SCM_STRING_STR(filepath)) == -1)
         ERR_OBJ("delete failed. file = ", filepath);

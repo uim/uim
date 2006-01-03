@@ -246,7 +246,7 @@ scm_s_use(ScmObj feature, ScmObj env)
     ScmObj feature_str;
     DECLARE_FUNCTION("use", syntax_fixed_1);
 
-    ASSERT_SYMBOLP(feature);
+    ENSURE_SYMBOL(feature);
 
     for (mod = module_info_table; mod->name; mod++) {
         if (EQ(feature, scm_intern(mod->name))) {

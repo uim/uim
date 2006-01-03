@@ -225,8 +225,8 @@ scm_p_srfi34_with_exception_handler(ScmObj handler, ScmObj thunk)
     ScmObj handlers;
     DECLARE_FUNCTION("with-exception-handler", procedure_fixed_2);
 
-    ASSERT_PROCEDUREP(handler);
-    ASSERT_PROCEDUREP(thunk);
+    ENSURE_PROCEDURE(handler);
+    ENSURE_PROCEDURE(thunk);
 
     handlers = CONS(handler, current_exception_handlers);
     return with_exception_handlers(handlers, thunk);
@@ -268,8 +268,8 @@ ScmObj scm_s_srfi34_guard(ScmObj cond_catch, ScmObj body,
     ScmObj lex_env, proc_guard_int, ret;
     DECLARE_FUNCTION("guard", syntax_variadic_tailrec_1);
 
-    ASSERT_CONSP(cond_catch);
-    ASSERT_CONSP(body);
+    ENSURE_CONS(cond_catch);
+    ENSURE_CONS(body);
 
     lex_env = eval_state->env;
     eval_state->env
@@ -354,7 +354,7 @@ guard_handler_body(ScmObj q_handler_k, ScmObj env)
     /* eval cond-catch block */
     sym_var = CAR(cond_catch);
     clauses = CDR(cond_catch);
-    ASSERT_SYMBOLP(sym_var);
+    ENSURE_SYMBOL(sym_var);
     cond_env = scm_extend_environment(LIST_1(sym_var),
                                      LIST_1(condition),
                                      lex_env);
