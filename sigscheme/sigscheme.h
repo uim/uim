@@ -179,8 +179,7 @@ extern "C" {
 /* Above five macros must be defined before this inclusion. */
 #include "baseport.h"
 
-/* FIXME: Rename to SCM_ENSURE_LIVE_PORT() */
-#define SCM_ASSERT_LIVE_PORT(port)                                           \
+#define SCM_ENSURE_LIVE_PORT(port)                                           \
     (SCM_PORT_IMPL(port)                                                     \
      || (scm_error_obj("(unknown)", "operated on closed port", port), 1))
 

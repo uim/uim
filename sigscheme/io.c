@@ -150,7 +150,7 @@ scm_port_vprintf(ScmObj port, const char *fmt, va_list args)
 {
     int ret;
 
-    SCM_ASSERT_LIVE_PORT(port);
+    SCM_ENSURE_LIVE_PORT(port);
     ret = SCM_CHARPORT_VPRINTF(SCM_PORT_IMPL(port), fmt, args);
 #if SCM_VOLATILE_OUTPUT
     scm_port_flush(port);
@@ -184,56 +184,56 @@ scm_port_close(ScmObj port)
 ScmCharCodec *
 scm_port_codec(ScmObj port)
 {
-    SCM_ASSERT_LIVE_PORT(port);
+    SCM_ENSURE_LIVE_PORT(port);
     return SCM_CHARPORT_CODEC(SCM_PORT_IMPL(port));
 }
 
 char *
 scm_port_inspect(ScmObj port)
 {
-    SCM_ASSERT_LIVE_PORT(port);
+    SCM_ENSURE_LIVE_PORT(port);
     return SCM_CHARPORT_INSPECT(SCM_PORT_IMPL(port));
 }
 
 int
 scm_port_get_char(ScmObj port)
 {
-    SCM_ASSERT_LIVE_PORT(port);
+    SCM_ENSURE_LIVE_PORT(port);
     return SCM_CHARPORT_GET_CHAR(SCM_PORT_IMPL(port));
 }
 
 int
 scm_port_peek_char(ScmObj port)
 {
-    SCM_ASSERT_LIVE_PORT(port);
+    SCM_ENSURE_LIVE_PORT(port);
     return SCM_CHARPORT_PEEK_CHAR(SCM_PORT_IMPL(port));
 }
 
 int
 scm_port_char_readyp(ScmObj port)
 {
-    SCM_ASSERT_LIVE_PORT(port);
+    SCM_ENSURE_LIVE_PORT(port);
     return SCM_CHARPORT_CHAR_READYP(SCM_PORT_IMPL(port));
 }
 
 int
 scm_port_puts(ScmObj port, const char *str)
 {
-    SCM_ASSERT_LIVE_PORT(port);
+    SCM_ENSURE_LIVE_PORT(port);
     return SCM_CHARPORT_PUTS(SCM_PORT_IMPL(port), str);
 }
 
 int
 scm_port_put_char(ScmObj port, int ch)
 {
-    SCM_ASSERT_LIVE_PORT(port);
+    SCM_ENSURE_LIVE_PORT(port);
     return SCM_CHARPORT_PUT_CHAR(SCM_PORT_IMPL(port), ch);
 }
 
 int
 scm_port_flush(ScmObj port)
 {
-    SCM_ASSERT_LIVE_PORT(port);
+    SCM_ENSURE_LIVE_PORT(port);
     return SCM_CHARPORT_FLUSH(SCM_PORT_IMPL(port));
 }
 
