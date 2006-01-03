@@ -57,7 +57,8 @@ extern const char *scm_lib_path;
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static ScmObj create_loaded_str(ScmObj filename);
+static void scm_require_internal(const char *filename);
+static ScmObj make_loaded_str(const char *filename);
 
 /*=======================================
   Function Implementations
@@ -104,25 +105,50 @@ scm_p_load_path(void)
     return MAKE_IMMUTABLE_STRING_COPYING(scm_lib_path);
 }
 
-/* FIXME: add ScmObj scm_require(const char *c_filename) */
+void
+scm_require(const char *filename)
+{
+#if !SCM_GCC4_READY_GC
+    ScmObj stack_start;
+#endif
+
+#if SCM_GCC4_READY_GC
+    SCM_GC_PROTECTED_CALL_VOID(scm_require_internal, (filename));
+#else
+    scm_gc_protect_stack(&stack_start);
+
+    scm_require_internal(filename);
+
+    scm_gc_unprotect_stack(&stack_start);
+#endif
+}
+
+static void
+scm_require_internal(const char *filename)
+{
+    ScmObj loaded_str;
+
+    loaded_str = make_loaded_str(filename);
+    if (!scm_providedp(loaded_str)) {
+        scm_load(filename);
+        scm_provide(loaded_str);
+    }
+}
+
 ScmObj
 scm_p_require(ScmObj filename)
 {
-    ScmObj loaded_str = SCM_FALSE;
 #if SCM_COMPAT_SIOD
-    ScmObj retsym     = SCM_FALSE;
+    ScmObj loaded_str, retsym;
 #endif
     DECLARE_FUNCTION("require", procedure_fixed_1);
 
     ENSURE_STRING(filename);
 
-    loaded_str = create_loaded_str(filename);
-    if (FALSEP(scm_p_providedp(loaded_str))) {
-        scm_p_load(filename);
-        scm_p_provide(loaded_str);
-    }
+    scm_require_internal(SCM_STRING_STR(filename));
 
 #if SCM_COMPAT_SIOD
+    loaded_str = make_loaded_str(SCM_STRING_STR(filename));
     retsym = scm_intern(SCM_STRING_STR(loaded_str));
     SCM_SYMBOL_SET_VCELL(retsym, SCM_TRUE);
 
@@ -133,15 +159,14 @@ scm_p_require(ScmObj filename)
 }
 
 static ScmObj
-create_loaded_str(ScmObj filename)
+make_loaded_str(const char *filename)
 {
-    char  *loaded_str = NULL;
-    int    size = 0;
+    char *loaded_str;
+    size_t size;
 
-    /* generate loaded_str, contents is filename-loaded* */
-    size = (strlen(SCM_STRING_STR(filename)) + strlen("*-loaded*") + 1);
+    size = (strlen(filename) + sizeof("*-loaded*"));
     loaded_str = scm_malloc(size);
-    snprintf(loaded_str, size, "*%s-loaded*", SCM_STRING_STR(filename));
+    snprintf(loaded_str, size, "*%s-loaded*", filename);
 
     return MAKE_IMMUTABLE_STRING(loaded_str);
 }

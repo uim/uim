@@ -873,7 +873,7 @@ ScmObj scm_p_cddddr(ScmObj lst);
 void scm_initialize_nonstd_features(void);
 ScmObj scm_p_symbol_boundp(ScmObj sym, ScmObj rest);
 ScmObj scm_p_load_path(void);
-/* FIXME: add ScmObj scm_require(const char *c_filename); */
+void scm_require(const char *filename);
 ScmObj scm_p_require(ScmObj filename);
 ScmObj scm_p_provide(ScmObj feature);
 ScmObj scm_p_providedp(ScmObj feature);
