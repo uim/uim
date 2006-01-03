@@ -436,7 +436,6 @@ struct ScmEvalState_ {
     SCM_SAL_CONTINUATION_SET_TAG((o), (val))
 
 #define SCM_VALUEPACKETP(o)             SCM_SAL_VALUEPACKETP(o)
-#define SCM_VALUEPACKET_VALUES(o)       SCM_SAL_VALUEPACKET_VALUES(o)
 
 #define SCM_CONSTANTP(o)                SCM_SAL_CONSTANTP(o)
 

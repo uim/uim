@@ -108,7 +108,9 @@ extern ScmObj scm_null_values;
 #define SCM_ENTYPE_C_POINTER(o)      SCM_SAL_ENTYPE_C_POINTER(o)
 #define SCM_ENTYPE_C_FUNCPOINTER(o)  SCM_SAL_ENTYPE_C_FUNCPOINTER(o)
 
+/* Extraction of a valuepacket is granted only for SigScheme-internals */
 #define SCM_ENTYPE_VALUEPACKET(o)    SCM_SAL_ENTYPE_VALUEPACKET(o)
+#define SCM_VALUEPACKET_VALUES(o)    SCM_SAL_VALUEPACKET_VALUES(o)
 #if SCM_USE_VALUECONS
 #define SCM_NULLVALUESP(o)           SCM_SAL_NULLVALUESP(o)
 #define SCM_VALUECONS_CAR(o)         SCM_SAL_VALUECONS_CAR(o)
