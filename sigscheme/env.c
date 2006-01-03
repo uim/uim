@@ -1,6 +1,6 @@
 /*===========================================================================
  *  FileName : env.c
- *  About    : A Scheme Environemnt Implementation
+ *  About    : A Scheme environemnt implementation
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *
@@ -120,9 +120,7 @@ scm_add_environment(ScmObj var, ScmObj val, ScmObj env)
     ScmObj new_vars, new_vals;
     DECLARE_INTERNAL_FUNCTION("scm_add_environment");
 
-    /* sanity check */
-    if (!SYMBOLP(var))
-        ERR_OBJ("broken environment handling", var);
+    SCM_ASSERT(SYMBOLP(var));
 
     /* add (var, val) pair to the newest frame in env */
     if (NULLP(env)) {
@@ -155,7 +153,7 @@ scm_lookup_environment(ScmObj var, ScmObj env)
     /* lookup in frames */
     for (; CONSP(env); env = CDR(env)) {
         frame = CAR(env);
-        ref   = lookup_frame(var, frame);
+        ref = lookup_frame(var, frame);
         if (ref != SCM_INVALID_REF)
             return ref;
     }

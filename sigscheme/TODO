@@ -11,7 +11,7 @@ Requirements and bugs:
 
 * Fix all destructive expression on macros
 
-* Review and refactor all functions in env.c, eval.c, syntax.c, operations*.c,
+* Review and refactor all functions in eval.c, syntax.c, operations*.c,
   encoding.[hc] and *port.[hc] (other files had already been done except for
   the destructive exp on macros)
 
