@@ -150,13 +150,7 @@ extern ScmObj scm_null_values;
 #define SCM_FREECELL_SET_CAR(a, car) (SCM_CONS_SET_CAR((a), (car)))
 #define SCM_FREECELL_SET_CDR(a, cdr) (SCM_CONS_SET_CDR((a), (cdr)))
 #else
-#define SCM_FREECELLP(a)            (SCM_TYPE(a) == ScmFreeCell)
-#define SCM_AS_FREECELL(a)          (SCM_ASSERT_TYPE(SCM_FREECELLP(a), (a)))
-#define SCM_FREECELL_CAR(a)         (SCM_AS_FREECELL(a)->obj.cons.car)
-#define SCM_FREECELL_CDR(a)         (SCM_AS_FREECELL(a)->obj.cons.cdr)
-#define SCM_ENTYPE_FREECELL(a)      (SCM_ENTYPE((a), ScmFreeCell))
-#define SCM_FREECELL_SET_CAR(a, car) (SCM_FREECELL_CAR(a) = (car))
-#define SCM_FREECELL_SET_CDR(a, cdr) (SCM_FREECELL_CDR(a) = (cdr))
+#error "Use the Storage Abstraction Layer"
 #endif
 #endif /* SCM_USE_STORAGE_ABSTRACTION_LAYER */
 
