@@ -85,7 +85,7 @@ scm_malloc_aligned(size_t size)
      */
     /* FIXME: replace the '16' with sizeof(ScmCell) if not required */
     posix_memalign(&p, 16, size);
-    SCM_ASSERT_ALLOCATED(p);
+    SCM_ENSURE_ALLOCATED(p);
 #if SCM_DEBUG
     /* check for buggy allocator */
     assert(!((uintptr_t)p % 16));
@@ -105,7 +105,7 @@ scm_malloc(size_t size)
     void *p;
 
     p = malloc(size);
-    ASSERT_ALLOCATED(p);
+    ENSURE_ALLOCATED(p);
 
     return p;
 }
@@ -116,7 +116,7 @@ scm_calloc(size_t number, size_t size)
     void *p;
 
     p = calloc(number, size);
-    ASSERT_ALLOCATED(p);
+    ENSURE_ALLOCATED(p);
 
     return p;
 }
@@ -127,7 +127,7 @@ scm_realloc(void *ptr, size_t size)
     void *p;
 
     p = realloc(ptr, size);
-    ASSERT_ALLOCATED(p);
+    ENSURE_ALLOCATED(p);
 
     return p;
 }

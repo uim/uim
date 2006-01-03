@@ -295,7 +295,7 @@ scm_die(const char *msg, const char *filename, int line)
     ScmObj reason_holder;
 
     asprintf(&reason, "%s: (file: %s, line: %d)", msg, filename, line);
-    ASSERT_ALLOCATED(reason);
+    ENSURE_ALLOCATED(reason);
     /* reason will implicitly be freed via the object on GC */
     reason_holder = MAKE_IMMUTABLE_STRING(reason);
 
@@ -314,7 +314,7 @@ scm_error(const char *msg, ...)
     va_start(va, msg);
     vasprintf(&reason, msg, va);
     va_end(va);
-    ASSERT_ALLOCATED(reason);
+    ENSURE_ALLOCATED(reason);
 
     err_obj = scm_make_error_obj(MAKE_IMMUTABLE_STRING(reason), SCM_NULL);
     scm_raise_error(err_obj);
@@ -329,7 +329,7 @@ scm_error_obj(const char *func_name, const char *msg, ScmObj obj)
     ScmObj err_obj;
 
     asprintf(&reason, "in %s: %s", func_name, msg);
-    ASSERT_ALLOCATED(reason);
+    ENSURE_ALLOCATED(reason);
 
     err_obj = scm_make_error_obj(MAKE_IMMUTABLE_STRING(reason), LIST_1(obj));
     scm_raise_error(err_obj);

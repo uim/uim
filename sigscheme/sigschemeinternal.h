@@ -370,8 +370,7 @@ extern ScmObj scm_null_values;
 /* error handlings */
 #define SCM_ERR_HEADER "Error: "
 
-/* FIXME: Rename to ENSURE_ALLOCATED() */
-#define ASSERT_ALLOCATED SCM_ASSERT_ALLOCATED
+#define ENSURE_ALLOCATED SCM_ENSURE_ALLOCATED
 
 /*=======================================
    List Constructor

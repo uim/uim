@@ -99,8 +99,7 @@ extern "C" {
 #define SCM_ENSURE(cond)                                                     \
     ((cond) || scm_die("invalid condition", __FILE__, __LINE__))
 
-/* FIXME: Rename to SCM_ENSURE_ALLOCATED() */
-#define SCM_ASSERT_ALLOCATED(p)                                              \
+#define SCM_ENSURE_ALLOCATED(p)                                              \
     ((p) || (scm_fatal_error(SCM_ERRMSG_MEMORY_EXHAUSTED), 1))
 
 #define SCM_ERROBJP(obj)       (NFALSEP(scm_p_error_objectp(obj)))
