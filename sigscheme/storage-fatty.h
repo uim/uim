@@ -73,7 +73,7 @@ struct ScmCell_ {
     union {
         struct {
             int value;
-        } int_value;
+        } integer;
 
         struct {
             ScmObj car;
@@ -81,13 +81,13 @@ struct ScmCell_ {
         } cons;
 
         struct {
-            char *sym_name;
-            ScmObj v_cell;
+            char *name;
+            ScmObj value;
         } symbol;
 
         struct {
             int value;
-        } ch;
+        } character;
 
         struct {
             char *str;
@@ -99,38 +99,38 @@ struct ScmCell_ {
             ScmFuncType func;
         } func;
 
-        struct ScmClosure {
+        struct {
             ScmObj exp;
             ScmObj env;
         } closure;
 
-        struct ScmVector {
+        struct {
             ScmObj *vec;
             int len;
         } vector;
 
-        struct ScmPort {
+        struct {
             enum ScmPortFlag flag;
             ScmCharPort *impl;
         } port;
 
-        struct ScmContinuation {
+        struct {
             void *opaque;
             int tag;
         } continuation;
 
 #if !SCM_USE_VALUECONS
-        struct ScmValuePacket {
+        struct {
             ScmObj values;
         } value_pack;
 #endif
 
-        struct ScmCPointer {
-            void *data;
+        struct {
+            void *value;
         } c_pointer;
 
-        struct ScmCFuncPointer {
-            ScmCFunc func;
+        struct {
+            ScmCFunc value;
         } c_func_pointer;
     } obj;
 };
@@ -195,7 +195,7 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 /* Real Accessors */
 #define SCM_SAL_INTP(a)  (SCM_TYPE(a) == ScmInt)
 #define SCM_SAL_ENTYPE_INT(a)    (SCM_ENTYPE((a), ScmInt))
-#define SCM_SAL_INT_VALUE(a) (SCM_AS_INT(a)->obj.int_value.value)
+#define SCM_SAL_INT_VALUE(a) (SCM_AS_INT(a)->obj.integer.value)
 #define SCM_SAL_INT_SET_VALUE(a, val) (SCM_INT_VALUE(a) = (val))
 
 #define SCM_SAL_CONSP(a) (SCM_TYPE(a) == ScmCons)
@@ -213,14 +213,14 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 
 #define SCM_SAL_SYMBOLP(a)      (SCM_TYPE(a) == ScmSymbol)
 #define SCM_SAL_ENTYPE_SYMBOL(a)    (SCM_ENTYPE((a), ScmSymbol))
-#define SCM_SAL_SYMBOL_NAME(a)  (SCM_AS_SYMBOL(a)->obj.symbol.sym_name)
-#define SCM_SAL_SYMBOL_SET_NAME(a, name)   (SCM_SYMBOL_NAME(a) = (name))
-#define SCM_SAL_SYMBOL_VCELL(a) (SCM_AS_SYMBOL(a)->obj.symbol.v_cell)
+#define SCM_SAL_SYMBOL_NAME(a)  (SCM_AS_SYMBOL(a)->obj.symbol.name)
+#define SCM_SAL_SYMBOL_SET_NAME(a, _name)   (SCM_SYMBOL_NAME(a) = (_name))
+#define SCM_SAL_SYMBOL_VCELL(a) (SCM_AS_SYMBOL(a)->obj.symbol.value)
 #define SCM_SAL_SYMBOL_SET_VCELL(a, vcell) (SCM_SYMBOL_VCELL(a) = (vcell))
 
 #define SCM_SAL_CHARP(a) (SCM_TYPE(a) == ScmChar)
 #define SCM_SAL_ENTYPE_CHAR(a) (SCM_ENTYPE((a), ScmChar))
-#define SCM_SAL_CHAR_VALUE(a) (SCM_AS_CHAR(a)->obj.ch.value)
+#define SCM_SAL_CHAR_VALUE(a) (SCM_AS_CHAR(a)->obj.character.value)
 #define SCM_SAL_CHAR_SET_VALUE(a, val) (SCM_CHAR_VALUE(a) = (val))
 
 /* String object uses a tagged pointer to multiplex its mutability.
@@ -311,13 +311,13 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 ============================================================================*/
 #define SCM_SAL_C_POINTERP(a) (SCM_TYPE(a) == ScmCPointer)
 #define SCM_SAL_ENTYPE_C_POINTER(a) (SCM_ENTYPE((a), ScmCPointer))
-#define SCM_SAL_C_POINTER_VALUE(a) (SCM_AS_C_POINTER(a)->obj.c_pointer.data)
+#define SCM_SAL_C_POINTER_VALUE(a) (SCM_AS_C_POINTER(a)->obj.c_pointer.value)
 #define SCM_SAL_C_POINTER_SET_VALUE(a, ptr) (SCM_C_POINTER_VALUE(a) = (ptr))
 
 #define SCM_SAL_C_FUNCPOINTERP(a) (SCM_TYPE(a) == ScmCFuncPointer)
 #define SCM_SAL_ENTYPE_C_FUNCPOINTER(a) (SCM_ENTYPE((a), ScmCFuncPointer))
-#define SCM_SAL_C_FUNCPOINTER_VALUE(a) (SCM_AS_C_FUNCPOINTER(a)->obj.c_func_pointer.func)
-#define SCM_SAL_C_FUNCPOINTER_SET_VALUE(a, funcptr) (SCM_C_FUNCPOINTER_VALUE(a) = (funcptr))
+#define SCM_SAL_C_FUNCPOINTER_VALUE(a) (SCM_AS_C_FUNCPOINTER(a)->obj.c_func_pointer.value)
+#define SCM_SAL_C_FUNCPOINTER_SET_VALUE(a, ptr) (SCM_C_FUNCPOINTER_VALUE(a) = (ptr))
 
 /*============================================================================
   GC Related Operations
