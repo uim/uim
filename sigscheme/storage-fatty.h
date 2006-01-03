@@ -96,8 +96,8 @@ struct ScmCell_ {
 
         struct {
             enum ScmFuncTypeCode type;
-            ScmFuncType func;
-        } func;
+            ScmFuncType ptr;
+        } function;
 
         struct {
             ScmObj exp;
@@ -121,8 +121,8 @@ struct ScmCell_ {
 
 #if !SCM_USE_VALUECONS
         struct {
-            ScmObj values;
-        } value_pack;
+            ScmObj lst;
+        } value_packet;
 #endif
 
         struct {
@@ -251,9 +251,9 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 
 #define SCM_SAL_FUNCP(a) (SCM_TYPE(a) == ScmFunc)
 #define SCM_SAL_ENTYPE_FUNC(a)     (SCM_ENTYPE((a), ScmFunc))
-#define SCM_SAL_FUNC_TYPECODE(a) (SCM_AS_FUNC(a)->obj.func.type)
+#define SCM_SAL_FUNC_TYPECODE(a) (SCM_AS_FUNC(a)->obj.function.type)
 #define SCM_SAL_FUNC_SET_TYPECODE(a, type) (SCM_FUNC_TYPECODE(a) = (type))
-#define SCM_SAL_FUNC_CFUNC(a)   (SCM_AS_FUNC(a)->obj.func.func)
+#define SCM_SAL_FUNC_CFUNC(a)   (SCM_AS_FUNC(a)->obj.function.ptr)
 #define SCM_SAL_FUNC_SET_CFUNC(a, func)     (SCM_FUNC_CFUNC(a) = (ScmFuncType)(func))
 
 #define SCM_SAL_CLOSUREP(a) (SCM_TYPE(a) == ScmClosure)
@@ -297,7 +297,7 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #else /* SCM_USE_VALUECONS */
 #define SCM_SAL_VALUEPACKETP(a)          (SCM_TYPE(a) == ScmValuePacket)
 #define SCM_SAL_ENTYPE_VALUEPACKET(a)        (SCM_ENTYPE((a), ScmValuePacket))
-#define SCM_SAL_VALUEPACKET_VALUES(a)    (SCM_AS_VALUEPACKET(a)->obj.value_pack.values)
+#define SCM_SAL_VALUEPACKET_VALUES(a)    (SCM_AS_VALUEPACKET(a)->obj.value_packet.lst)
 #define SCM_SAL_VALUEPACKET_SET_VALUES(a, v) (SCM_VALUEPACKET_VALUES(a) = (v))
 #endif /* SCM_USE_VALUECONS */
 
