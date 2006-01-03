@@ -11,7 +11,8 @@ Requirements and bugs:
 
 * Fix all destructive expression on macros
 
-* Review and refactor all functions in syntax.c, operations*.c, encoding.[hc]
+* Review and refactor all functions in syntax.c(listran, vectran,
+  qquote_internal, scm_s_quasiquote, scm_s_do), operations*.c, encoding.[hc]
   and *port.[hc] (other files had already been done except for the destructive
   exp on macros)
 
@@ -20,6 +21,10 @@ Requirements and bugs:
   - Implement if needed
 
 * Make 64bit-safe (after compaction and stdint.h)
+
+* Fix scm_s_do()
+  - SEGV conditions by manual arg extraction
+  - expensive operations
 
 * Add tests for proper tail recursion with 'apply' and 'guard' to
   test-tail-rec.scm

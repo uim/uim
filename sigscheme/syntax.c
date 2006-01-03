@@ -217,6 +217,7 @@ static ScmObj
 listran(sequence_translator *t, tr_msg msg, ScmObj obj)
 {
     DECLARE_INTERNAL_FUNCTION("(list translator)");
+
     switch (msg) {
     default:
         break;
@@ -348,6 +349,7 @@ ScmObj
 scm_s_quote(ScmObj datum, ScmObj env)
 {
     DECLARE_FUNCTION("quote", syntax_fixed_1);
+
     return datum;
 }
 
@@ -358,7 +360,8 @@ ScmObj
 scm_s_lambda(ScmObj formals, ScmObj body, ScmObj env)
 {
     DECLARE_FUNCTION("lambda", syntax_variadic_1);
-    if (!CONSP(formals) && !NULLP(formals) && !SYMBOLP(formals))
+
+    if (!LISTP(formals) && !SYMBOLP(formals))
         ERR_OBJ("bad formals", formals);
     if (!CONSP(body))
         ERR_OBJ("at least one expression required", body);
@@ -372,9 +375,10 @@ scm_s_lambda(ScmObj formals, ScmObj body, ScmObj env)
 ScmObj
 scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state)
 {
-    ScmObj env = eval_state->env;
-    ScmObj alt;
+    ScmObj env, alt;
     DECLARE_FUNCTION("if", syntax_variadic_tailrec_2);
+
+    env = eval_state->env;
 
     /*========================================================================
       (if <test> <consequent>)
@@ -405,19 +409,19 @@ scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state)
 ScmObj
 scm_s_setd(ScmObj sym, ScmObj exp, ScmObj env)
 {
-    ScmObj evaled        = SCM_FALSE;
+    ScmObj evaled;
     ScmRef locally_bound;
     DECLARE_FUNCTION("set!", syntax_fixed_2);
+
+    ENSURE_SYMBOL(sym);
 
     evaled = EVAL(exp, env);
     locally_bound = scm_lookup_environment(sym, env);
     if (locally_bound == SCM_INVALID_REF) {
-        if (!SYMBOLP(sym))
-            ERR_OBJ("symbol required but got", sym);
         /* Not found in the environment
            If symbol is not bound, error occurs */
         if (!SCM_SYMBOL_BOUNDP(sym))
-            ERR_OBJ("unbound variable:", sym);
+            ERR_OBJ("unbound variable", sym);
 
         SCM_SYMBOL_SET_VCELL(sym, evaled);
     } else {
@@ -443,6 +447,11 @@ scm_s_setd(ScmObj sym, ScmObj exp, ScmObj env)
 ScmObj
 scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
 {
+    ScmObj env, clause, test, exps, proc;
+    DECLARE_INTERNAL_FUNCTION("cond" /* , SyntaxVariadicTailRec0 */);
+
+    env = eval_state->env;
+
     /*
      * (cond <clause1> <clause2> ...)
      *
@@ -455,12 +464,6 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
      * last <clause> may be of the form
      *     (else <expression1> <expression2> ...)
      */
-    ScmObj env    = eval_state->env;
-    ScmObj clause = SCM_FALSE;
-    ScmObj test   = SCM_FALSE;
-    ScmObj exps   = SCM_FALSE;
-    ScmObj proc   = SCM_FALSE;
-    DECLARE_INTERNAL_FUNCTION("cond" /* , SyntaxVariadicTailRec0 */);
 
     /* dirty hack to replace internal function name */
     if (VALIDP(case_key))
@@ -526,7 +529,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
                     ERR_OBJ("bad clause", clause);
                 proc = EVAL(CADR(exps), env);
                 if (!PROCEDUREP(proc))
-                    ERR_OBJ("exp after => must be the procedure but got", proc);
+                    ERR_OBJ("exp after => must be a procedure but got", proc);
 
                 eval_state->ret_type = SCM_RETTYPE_AS_IS;
                 return scm_call(proc, LIST_1(test));
@@ -567,16 +570,14 @@ scm_s_case(ScmObj key, ScmObj clauses, ScmEvalState *eval_state)
 ScmObj
 scm_s_and(ScmObj args, ScmEvalState *eval_state)
 {
-    ScmObj env  = eval_state->env;
-    ScmObj expr = SCM_INVALID;
-    ScmObj val  = SCM_FALSE;
+    ScmObj expr, val;
     DECLARE_FUNCTION("and", syntax_variadic_tailrec_0);
 
     if (NO_MORE_ARG(args))
         return SCM_TRUE;
 
     while (expr = POP_ARG(args), !NO_MORE_ARG(args)) {
-        val = EVAL(expr, env);
+        val = EVAL(expr, eval_state->env);
         if (FALSEP(val)) {
             ASSERT_PROPER_ARG_LIST(args);
             eval_state->ret_type = SCM_RETTYPE_AS_IS;
@@ -590,16 +591,14 @@ scm_s_and(ScmObj args, ScmEvalState *eval_state)
 ScmObj
 scm_s_or(ScmObj args, ScmEvalState *eval_state)
 {
-    ScmObj env  = eval_state->env;
-    ScmObj expr = SCM_INVALID;
-    ScmObj val  = SCM_INVALID;
+    ScmObj expr, val;
     DECLARE_FUNCTION("or", syntax_variadic_tailrec_0);
 
     if (NO_MORE_ARG(args))
         return SCM_FALSE;
 
     while (expr = POP_ARG(args), !NO_MORE_ARG(args)) {
-        val = EVAL(expr, env);
+        val = EVAL(expr, eval_state->env);
         if (!FALSEP(val)) {
             ASSERT_PROPER_ARG_LIST(args);
             eval_state->ret_type = SCM_RETTYPE_AS_IS;
@@ -623,18 +622,15 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
 ScmObj
 scm_s_let(ScmObj args, ScmEvalState *eval_state)
 {
-    ScmObj env           = eval_state->env;
-    ScmObj named_let_sym = SCM_FALSE;
-    ScmObj proc          = SCM_FALSE;
-    ScmObj bindings      = SCM_FALSE;
-    ScmObj body          = SCM_FALSE;
-    ScmObj binding       = SCM_FALSE;
-    ScmObj var           = SCM_FALSE;
-    ScmObj val           = SCM_FALSE;
-    ScmObj vars          = SCM_NULL;
-    ScmObj vals          = SCM_NULL;
+    ScmObj env, named_let_sym, proc, bindings, binding, body;
+    ScmObj vars, var, vals, val;
     ScmQueue varq, valq;
     DECLARE_FUNCTION("let", syntax_variadic_tailrec_0);
+
+    env = eval_state->env;
+    named_let_sym = SCM_FALSE;
+    vars = SCM_NULL;
+    vals = SCM_NULL;
 
     /*========================================================================
       normal let:
@@ -653,7 +649,7 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
                      ...)
     ========================================================================*/
 
-    if (NULLP(args))
+    if (!CONSP(args))
         ERR("let: invalid form");
     bindings = POP_ARG(args);
 
@@ -661,7 +657,7 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
     if (SYMBOLP(bindings)) {
         named_let_sym = bindings;
 
-        if (NULLP(args))
+        if (!CONSP(args))
             ERR("let: invalid named let form");
         bindings = POP_ARG(args);
     }
@@ -704,11 +700,10 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
 ScmObj
 scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
-    ScmObj env     = eval_state->env;
-    ScmObj var     = SCM_FALSE;
-    ScmObj val     = SCM_FALSE;
-    ScmObj binding = SCM_FALSE;
+    ScmObj env, var, val, binding;
     DECLARE_FUNCTION("let*", syntax_variadic_tailrec_1);
+
+    env = eval_state->env;
 
     /*========================================================================
       (let* <bindings> <body>)
@@ -716,8 +711,9 @@ scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
                      (<variable2> <init2>)
                      ...)
     ========================================================================*/
-    if (!CONSP(bindings) && !NULLP(bindings))
-        ERR("let*: syntax error");
+
+    if (!LISTP(bindings))
+        ERR("let*: invalid bindings form");
 
     for (; CONSP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
@@ -740,20 +736,13 @@ scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 
     eval_state->env = env;
 
-    /* evaluate body */
     return scm_s_begin(body, eval_state);
 }
 
 ScmObj
 scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
-    ScmObj env      = eval_state->env;
-    ScmObj frame    = SCM_FALSE;
-    ScmObj vars     = SCM_NULL;
-    ScmObj vals     = SCM_NULL;
-    ScmObj binding  = SCM_FALSE;
-    ScmObj var      = SCM_FALSE;
-    ScmObj val      = SCM_FALSE;
+    ScmObj binding, frame, vars, var, vals, val;
     DECLARE_FUNCTION("letrec", syntax_variadic_tailrec_1);
 
     /*========================================================================
@@ -762,14 +751,16 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
                      (<variable2> <init2>)
                      ...)
     ========================================================================*/
-    if (!CONSP(bindings) && !NULLP(bindings))
-        ERR("letrec: syntax error");
+
+    if (!LISTP(bindings))
+        ERR("letrec: invalid bindings form");
 
     /* extend env by placeholder frame for subsequent lambda evaluations */
     frame = CONS(SCM_NULL, SCM_NULL);
-    env = CONS(frame, env);
-    eval_state->env = env;
+    eval_state->env = CONS(frame, eval_state->env);
 
+    vars = SCM_NULL;
+    vals = SCM_NULL;
     for (; CONSP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
 #if SCM_COMPAT_SIOD_BUGS
@@ -780,7 +771,7 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 
         if (!LIST_2_P(binding) || !SYMBOLP(var = CAR(binding)))
             ERR_OBJ("invalid binding form", binding);
-        val = EVAL(CADR(binding), env);
+        val = EVAL(CADR(binding), eval_state->env);
 
         /* construct vars and vals list: any <init> must not refer a
            <variable> at this time */
@@ -795,7 +786,6 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     SET_CAR(frame, vars);
     SET_CDR(frame, vals);
 
-    /* evaluate body */
     return scm_s_begin(body, eval_state);
 }
 
@@ -806,15 +796,14 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 ScmObj
 scm_s_begin(ScmObj args, ScmEvalState *eval_state)
 {
-    ScmObj env  = eval_state->env;
-    ScmObj expr = SCM_INVALID;
+    ScmObj expr;
     DECLARE_FUNCTION("begin", syntax_variadic_tailrec_0);
 
     if (NO_MORE_ARG(args))
         return SCM_UNDEF;
 
     while (expr = POP_ARG(args), !NO_MORE_ARG(args))
-        EVAL(expr, env);
+        EVAL(expr, eval_state->env);
 
     /* Return tail expression. */
     return expr;
@@ -823,6 +812,7 @@ scm_s_begin(ScmObj args, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.4 Iteration
 ===========================================================================*/
+/* FIXME: SEGV conditions by manual arg extraction, and expensive operations */
 ScmObj
 scm_s_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_state)
 {
@@ -1023,12 +1013,13 @@ qquote_internal(ScmObj input, ScmObj env, int nest)
     return my_result;
 }
 
-
 ScmObj
 scm_s_quasiquote(ScmObj datum, ScmObj env)
 {
-    qquote_result ret = qquote_internal(datum, env, 1);
+    qquote_result ret;
     DECLARE_FUNCTION("quasiquote", syntax_fixed_1);
+
+    ret = qquote_internal(datum, env, 1);
 
     switch (ret.insn) {
     case TR_MSG_NOP:
@@ -1082,9 +1073,7 @@ define_internal(ScmObj var, ScmObj exp, ScmObj env)
 ScmObj
 scm_s_define(ScmObj var, ScmObj rest, ScmObj env)
 {
-    ScmObj procname = SCM_FALSE;
-    ScmObj body     = SCM_FALSE;
-    ScmObj formals  = SCM_FALSE;
+    ScmObj procname, body, formals;
     DECLARE_FUNCTION("define", syntax_variadic_1);
 
     /*========================================================================
@@ -1104,9 +1093,9 @@ scm_s_define(ScmObj var, ScmObj rest, ScmObj env)
              (lambda (<formals>) <body>))
     ========================================================================*/
     else if (CONSP(var)) {
-        procname   = CAR(var);
-        formals    = CDR(var);
-        body       = rest;
+        procname = CAR(var);
+        formals  = CDR(var);
+        body     = rest;
 
         if (NULLP(body))
             ERR("define: missing function body");
