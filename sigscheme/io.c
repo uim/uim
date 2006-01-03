@@ -74,7 +74,7 @@ const char *scm_lib_path = NULL;
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static ScmObj scm_load_internal(const char *c_filename);
+static void scm_load_internal(const char *filename);
 static char *find_path(const char *c_filename);
 static int    file_existsp(const char *filepath);
 #if SCM_USE_SRFI22
@@ -543,41 +543,36 @@ scm_p_write_char(ScmObj obj, ScmObj args)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.4 System Interface
 ===========================================================================*/
-ScmObj
-scm_load(const char *c_filename)
+void
+scm_load(const char *filename)
 {
 #if !SCM_GCC4_READY_GC
     ScmObj stack_start;
 #endif
-    ScmObj succeeded;
 
 #if SCM_GCC4_READY_GC
-    SCM_GC_PROTECTED_CALL(succeeded, ScmObj, scm_load_internal, (c_filename));
+    SCM_GC_PROTECTED_CALL_VOID(scm_load_internal, (filename));
 #else
-    /* start protecting stack */
     scm_gc_protect_stack(&stack_start);
 
-    succeeded = scm_load_internal(c_filename);
+    scm_load_internal(filename);
 
-    /* now no need to protect stack */
     scm_gc_unprotect_stack(&stack_start);
 #endif
-
-    return succeeded;
 }
 
-static ScmObj
-scm_load_internal(const char *c_filename)
+static void
+scm_load_internal(const char *filename)
 {
     ScmObj path, port, sexp;
     char *c_path;
     ScmCharCodec *saved_codec;
 
-    CDBG((SCM_DBG_FILE, "loading %s", c_filename));
+    CDBG((SCM_DBG_FILE, "loading %s", filename));
 
-    c_path = find_path(c_filename);
+    c_path = find_path(filename);
     if (!c_path)
-        ERR("scm_load_internal: file \"%s\" not found", c_filename);
+        ERR("scm_load_internal: file \"%s\" not found", filename);
 
     path = MAKE_IMMUTABLE_STRING(c_path);
     port = scm_p_open_input_file(path);
@@ -596,8 +591,6 @@ scm_load_internal(const char *c_filename)
     scm_current_char_codec = saved_codec;
 
     CDBG((SCM_DBG_FILE, "done."));
-
-    return SCM_TRUE;
 }
 
 /* FIXME: reject relative paths to ensure security */

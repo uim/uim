@@ -921,7 +921,7 @@ ScmObj scm_p_display(ScmObj obj, ScmObj args);
 ScmObj scm_p_newline(ScmObj args);
 ScmObj scm_p_write_char(ScmObj obj, ScmObj args);
 
-ScmObj scm_load(const char *c_filename);
+void scm_load(const char *filename);
 ScmObj scm_p_load(ScmObj filename);
 
 /* read.c */

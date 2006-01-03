@@ -335,7 +335,6 @@ uim_scm_load_file(const char *fn)
   if (!fn)
     return UIM_FALSE;
 
-  /* FIXME! */
   scm_load(fn);
 
   return UIM_TRUE;
