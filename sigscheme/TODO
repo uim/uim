@@ -11,9 +11,9 @@ Requirements and bugs:
 
 * Fix all destructive expression on macros
 
-* Review and refactor all functions in eval.c, syntax.c, operations*.c,
-  encoding.[hc] and *port.[hc] (other files had already been done except for
-  the destructive exp on macros)
+* Review and refactor all functions in syntax.c, operations*.c, encoding.[hc]
+  and *port.[hc] (other files had already been done except for the destructive
+  exp on macros)
 
 * Investigate behavior of other Scheme implementations about constant vector
   and list

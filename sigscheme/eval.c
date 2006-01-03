@@ -94,8 +94,8 @@ scm_call(ScmObj proc, ScmObj args)
      * closure, it'll have its own environment, if it's a syntax, it's
      * an error, and if it's a C procedure, it doesn't have any free
      * variables at the Scheme level. */
-    state.env       = SCM_INTERACTION_ENV;
-    state.ret_type  = SCM_RETTYPE_AS_IS;
+    state.env      = SCM_INTERACTION_ENV;
+    state.ret_type = SCM_RETTYPE_AS_IS;
 
     ret = call(proc, args, &state, SUPPRESS_EVAL_ARGS);
     if (state.ret_type == SCM_RETTYPE_NEED_EVAL)
@@ -154,35 +154,34 @@ call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
      *
      * <formals> should have 3 forms.
      *
-     *   (1) : <variable>
-     *   (2) : (<variable1> <variable2> ...)
-     *   (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
+     *   (1) <variable>
+     *   (2) (<variable1> <variable2> ...)
+     *   (3) (<variable1> <variable2> ... <variable n-1> . <variable n>)
      */
     formals = CAR(SCM_CLOSURE_EXP(proc));
 
     if (SYMBOLP(formals)) {
-        /* (1) : <variable> */
+        /* (1) <variable> */
         eval_state->env = scm_extend_environment(LIST_1(formals),
-                                             LIST_1(args),
-                                             SCM_CLOSURE_ENV(proc));
+                                                 LIST_1(args),
+                                                 SCM_CLOSURE_ENV(proc));
     } else if (CONSP(formals)) {
         /*
-         * (2) : (<variable1> <variable2> ...)
-         * (3) : (<variable1> <variable2> ... <variable n-1> . <variable n>)
+         * (2) (<variable1> <variable2> ...)
+         * (3) (<variable1> <variable2> ... <variable n-1> . <variable n>)
          *
          *  - dot list is handled in lookup_frame().
          */
         eval_state->env = scm_extend_environment(formals,
-                                             args,
-                                             SCM_CLOSURE_ENV(proc));
+                                                 args,
+                                                 SCM_CLOSURE_ENV(proc));
     } else if (NULLP(formals)) {
         /*
-         * (2') : <variable> is '()
+         * (2') <variable> is '()
          */
-        eval_state->env
-            = scm_extend_environment(SCM_NULL,
-                                 SCM_NULL,
-                                 SCM_CLOSURE_ENV(proc));
+        eval_state->env = scm_extend_environment(SCM_NULL,
+                                                 SCM_NULL,
+                                                 SCM_CLOSURE_ENV(proc));
     } else {
         ERR_OBJ("lambda: bad formals list", formals);
     }
@@ -204,36 +203,32 @@ call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
 static ScmObj
 call(ScmObj proc, ScmObj args, ScmEvalState *eval_state, int suppress_eval)
 {
-    ScmObj env                = eval_state->env;
-    ScmObj (*func)()          = NULL;
-    enum ScmFuncTypeCode type = -1;
-    int mand_count            = 0; /* Number of mandatory args. */
-
+    ScmObj env, cont;
+    ScmObj (*func)();
+    enum ScmFuncTypeCode type;
+    int mand_count, i;
     /* The +2 is for rest and env/eval_state. */
-    void *argbuf[SCM_FUNCTYPE_MAND_MAX + 2] = {0};
-    int i = 0;     /* Number of arguments already stored in argbuf. */
+    void *argbuf[SCM_FUNCTYPE_MAND_MAX + 2];
     DECLARE_INTERNAL_FUNCTION("(function call)");
+
+    env = eval_state->env;
 
     if (!suppress_eval)
         proc = EVAL(proc, env);
 
-    switch (SCM_TYPE(proc)) {
-    case ScmFunc:
-        break;
-
-    case ScmClosure:
-        return call_closure(proc,
-                            suppress_eval ? args : map_eval(args, env),
-                            eval_state);
-
-    case ScmContinuation:
-        if (!CONSP(args) || !NULLP(CDR(args)))
-            ERR("continuation takes exactly one argument");
-        scm_call_continuation(proc,
-                             suppress_eval ? CAR(args) : EVAL(CAR(args), env));
-        /* NOTREACHED */
-    default:
-        ERR_OBJ("bad operator", proc);
+    if (!FUNCP(proc)) {
+        if (CLOSUREP(proc)) {
+            args = (suppress_eval) ? args : map_eval(args, env);
+            return call_closure(proc, args, eval_state);
+        }
+        if (CONTINUATIONP(proc)) {
+            if (!LIST_1_P(args))
+                ERR("continuation takes exactly one argument");
+            cont = (suppress_eval) ? CAR(args) : EVAL(CAR(args), env);
+            scm_call_continuation(proc, cont);
+            /* NOTREACHED */
+        }
+        SCM_ASSERT(scm_false);
     }
 
     /* We have a C function. */
@@ -254,8 +249,7 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state, int suppress_eval)
 
     /* Collect mandatory arguments. */
     mand_count = type & SCM_FUNCTYPE_MAND_MASK;
-    if (mand_count > SCM_FUNCTYPE_MAND_MAX)
-        ERR("corrupted function: typecode=0x%x", type);
+    SCM_ASSERT(mand_count <= SCM_FUNCTYPE_MAND_MAX);
     for (i = 0; i < mand_count; i++) {
         argbuf[i] = MUST_POP_ARG(args);
         if (!suppress_eval)
@@ -311,9 +305,9 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state, int suppress_eval)
         return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], argbuf[6]);
 #endif
     default:
-        ERR("corrupted function: typecode=0x%x", type);
+        SCM_ASSERT(scm_false);
+        return SCM_INVALID;
     }
-    return SCM_INVALID;
 }
 
 /*===========================================================================
@@ -332,8 +326,8 @@ scm_p_eval(ScmObj obj, ScmObj env)
 ScmObj
 scm_eval(ScmObj obj, ScmObj env)
 {
-    ScmObj ret  = SCM_NULL;
-    ScmEvalState state = {0};
+    ScmObj ret;
+    ScmEvalState state;
 
 #if SCM_DEBUG
     scm_push_trace_frame(obj, env);
@@ -467,5 +461,6 @@ ScmObj
 scm_p_interaction_environment(void)
 {
     DECLARE_FUNCTION("interaction-environment", procedure_fixed_0);
+
     return SCM_INTERACTION_ENV;
 }
