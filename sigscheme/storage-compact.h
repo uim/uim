@@ -132,6 +132,7 @@
 /*=======================================
   System Include
 =======================================*/
+#include <stdint.h> /* FIXME: make C99-independent */
 #include <stdio.h>
 
 /*=======================================
@@ -859,7 +860,7 @@ extern enum ScmObjType scm_type(ScmObj obj);
  * Func
  */
 #define SCM_SAL_FUNC_CFUNC(a)                   \
-    (SCM_WORD_CAST(ScmFuncType, SCM_OTHERS_CAR_VAL((a), FUNC)))
+    ((ScmFuncType)(uintptr_t)SCM_OTHERS_CAR_VAL((a), FUNC))
 #define SCM_SAL_FUNC_SET_CFUNC(a, val)          \
     SCM_OTHERS_SET_CAR_VAL((a), FUNC, (val))
 
@@ -900,7 +901,7 @@ extern enum ScmObjType scm_type(ScmObj obj);
  * CFuncPointer
  */
 #define SCM_SAL_C_FUNCPOINTER_VALUE(a)                  \
-    (SCM_WORD_CAST(ScmCFunc, SCM_OTHERS_CAR_VAL((a), C_FUNCPOINTER)))
+    ((ScmCFunc)(uintptr_t)SCM_OTHERS_CAR_VAL((a), C_FUNCPOINTER))
 #define SCM_SAL_C_FUNCPOINTER_SET_VALUE(a, val)         \
     SCM_OTHERS_SET_CAR_VAL((a), C_FUNCPOINTER, (val))
 
