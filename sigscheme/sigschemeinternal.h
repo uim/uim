@@ -353,6 +353,8 @@ extern ScmObj scm_null_values;
      || (ERR("%s: stateless character codec required but got: %s",           \
              SCM_MANGLE(name), SCM_CHARCODEC_ENCODING(codec)), 0))
 
+#define ENSURE_ALLOCATED SCM_ENSURE_ALLOCATED
+
 /* Macros For Handling Continuation Object */
 #define INVALID_CONTINUATION_OPAQUE  NULL
 
@@ -361,8 +363,6 @@ extern ScmObj scm_null_values;
 
 /* error handlings */
 #define SCM_ERR_HEADER "Error: "
-
-#define ENSURE_ALLOCATED SCM_ENSURE_ALLOCATED
 
 /*=======================================
    List Constructor

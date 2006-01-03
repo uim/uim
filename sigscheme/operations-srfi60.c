@@ -55,18 +55,18 @@
         case SCM_REDUCE_0:                                                   \
             break;                                                           \
         case SCM_REDUCE_1:                                                   \
-            ENSURE_INT(left);                                               \
+            ENSURE_INT(left);                                                \
             return right;                                                    \
         case SCM_REDUCE_PARTWAY:                                             \
         case SCM_REDUCE_LAST:                                                \
             /* left is already ensured as int by previous loop */            \
-            ENSURE_INT(right);                                              \
+            ENSURE_INT(right);                                               \
             result = (SCM_INT_VALUE(left) op SCM_INT_VALUE(right));          \
             break;                                                           \
         default:                                                             \
             ERR(opstr ": (internal error) unrecognized state specifier: %d", *state); \
         }                                                                    \
-        return MAKE_INT(result);                                           \
+        return MAKE_INT(result);                                             \
     } while (/* CONSTCOND */ 0)
 
 /*=======================================

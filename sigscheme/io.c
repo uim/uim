@@ -425,7 +425,7 @@ scm_p_close_output_port(ScmObj port)
         port = POP_ARG(args);                                                \
         if (!VALIDP(port))                                                   \
             port = default_port;                                             \
-        ENSURE_PORT(port);                                                  \
+        ENSURE_PORT(port);                                                   \
         ASSERT_NO_MORE_ARG(args);                                            \
     } while (/* CONSTCOND */ 0)
 

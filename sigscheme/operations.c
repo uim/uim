@@ -313,28 +313,28 @@ scm_p_numberp(ScmObj obj)
     return MAKE_BOOL(INTP(obj));
 }
 
+#define COMPARATOR_BODY(op)                                                  \
+    switch (*state) {                                                        \
+    case SCM_REDUCE_0:                                                       \
+    case SCM_REDUCE_1:                                                       \
+        ERR("at least 2 arguments required");                                \
+    case SCM_REDUCE_PARTWAY:                                                 \
+    case SCM_REDUCE_LAST:                                                    \
+        ENSURE_INT(left);                                                    \
+        ENSURE_INT(right);                                                   \
+        if (SCM_INT_VALUE(left) op SCM_INT_VALUE(right))                     \
+            return *state == SCM_REDUCE_LAST ? SCM_TRUE : right;             \
+        *state = SCM_REDUCE_STOP;                                            \
+        return SCM_FALSE;                                                    \
+    default:                                                                 \
+        ERR("(internal error) unrecognized state specifier: %d", *state);    \
+    }                                                                        \
+    return SCM_INVALID
+
 ScmObj
 scm_p_equal(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("=", reduction_operator);
-#define COMPARATOR_BODY(op) \
-    switch (*state) { \
-    case SCM_REDUCE_0: \
-    case SCM_REDUCE_1: \
-        ERR("at least 2 arguments required"); \
-    case SCM_REDUCE_PARTWAY: \
-    case SCM_REDUCE_LAST: \
-        ENSURE_INT(left); \
-        ENSURE_INT(right); \
-        if (SCM_INT_VALUE(left) op SCM_INT_VALUE(right)) \
-            return *state == SCM_REDUCE_LAST ? SCM_TRUE : right; \
-        *state = SCM_REDUCE_STOP; \
-        return SCM_FALSE; \
-    default: \
-        ERR("(internal error) unrecognized state specifier: %d", *state); \
-    } \
-    return SCM_INVALID
-
     COMPARATOR_BODY(==);
 }
 
