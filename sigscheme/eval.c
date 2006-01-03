@@ -430,7 +430,6 @@ scm_p_scheme_report_environment(ScmObj version)
 {
     DECLARE_FUNCTION("scheme-report-environment", procedure_fixed_1);
 
-    /* sanity check */
     ENSURE_INT(version);
     if (SCM_INT_VALUE(version) != 5)
         ERR_OBJ("version must be 5 but got", version);
@@ -442,7 +441,7 @@ scm_p_scheme_report_environment(ScmObj version)
           "scheme-report-environment: warning:" SCM_ERRMSG_NON_R5RS_ENV));
 #endif
 
-    return SCM_INTERACTION_ENV;
+    return SCM_R5RS_ENV;
 }
 
 ScmObj
@@ -450,7 +449,6 @@ scm_p_null_environment(ScmObj version)
 {
     DECLARE_FUNCTION("null-environment", procedure_fixed_1);
 
-    /* sanity check */
     ENSURE_INT(version);
     if (SCM_INT_VALUE(version) != 5)
         ERR_OBJ("version must be 5 but got", version);
@@ -462,7 +460,7 @@ scm_p_null_environment(ScmObj version)
           "null-environment: warning:" SCM_ERRMSG_NON_R5RS_ENV));
 #endif
 
-    return SCM_INTERACTION_ENV;
+    return SCM_NULL_ENV;
 }
 
 ScmObj
