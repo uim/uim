@@ -73,8 +73,8 @@ ScmObj scm_null_values;
 /* SCM_OBJ_COMPACT MUST NOT refer these variables. Use SCM_NULL and so on. */
 
 /* constants */
-ScmObj scm_null, scm_true, scm_false, scm_eof;
-ScmObj scm_unbound, scm_undef;
+ScmObj scm_const_null, scm_const_true, scm_const_false, scm_const_eof;
+ScmObj scm_const_unbound, scm_const_undef;
 static ScmCell null_cell, true_cell, false_cell, eof_cell;
 static ScmCell unbound_cell, undef_cell;
 #endif
@@ -97,7 +97,7 @@ scm_init_storage(size_t heap_size, size_t heap_alloc_threshold,
     scm_init_gc(heap_size, heap_alloc_threshold, n_heaps_max, n_heaps_init);
 
 #if 0 && (SCM_COMPAT_SIOD_BUGS && !SCM_OBJ_COMPACT)
-    scm_gc_protect_with_init(&scm_true, MAKE_INT(1));
+    scm_gc_protect_with_init(&scm_const_true, MAKE_INT(1));
 #endif
 
 #if SCM_USE_VALUECONS
@@ -133,15 +133,15 @@ static void
 initialize_special_constants(void)
 {
 #if !SCM_OBJ_COMPACT
-    SCM_CONSTANT_BIND_SUBSTANCE(scm_null,    null_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(scm_true,    true_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(scm_false,   false_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(scm_eof,     eof_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(scm_unbound, unbound_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(scm_undef,   undef_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_null,    null_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_true,    true_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_false,   false_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_eof,     eof_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_unbound, unbound_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_undef,   undef_cell);
 
 #if SCM_COMPAT_SIOD_BUGS
-    scm_false = scm_null;
+    scm_const_false = scm_const_null;
 #endif /* SCM_COMPAT_SIOD_BUGS */
 #endif /* !SCM_OBJ_COMPACT */
 }

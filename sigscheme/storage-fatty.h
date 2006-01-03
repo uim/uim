@@ -384,18 +384,18 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
   Special Constants and Predicates
 ============================================================================*/
 #define SCM_SAL_INVALID          NULL
-#define SCM_SAL_NULL             scm_null
-#define SCM_SAL_TRUE             scm_true
-#define SCM_SAL_FALSE            scm_false
-#define SCM_SAL_EOF              scm_eof
-#define SCM_SAL_UNBOUND          scm_unbound
-#define SCM_SAL_UNDEF            scm_undef
+#define SCM_SAL_NULL             scm_const_null
+#define SCM_SAL_TRUE             scm_const_true
+#define SCM_SAL_FALSE            scm_const_false
+#define SCM_SAL_EOF              scm_const_eof
+#define SCM_SAL_UNBOUND          scm_const_unbound
+#define SCM_SAL_UNDEF            scm_const_undef
 
 #define SCM_SAL_EQ(a, b)   ((a) == (b))
 
 /* storage.c */
-extern ScmObj scm_null, scm_true, scm_false, scm_eof;
-extern ScmObj scm_unbound, scm_undef;
+extern ScmObj scm_const_null, scm_const_true, scm_const_false, scm_const_eof;
+extern ScmObj scm_const_unbound, scm_const_undef;
 
 /*============================================================================
   Predefined Symbols
