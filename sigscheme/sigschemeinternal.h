@@ -469,13 +469,13 @@ ScmObj scm_trace_stack(void);
 void   scm_init_symbol(void);
 void   scm_finalize_symbol(void);
 
-/* eval.c */
-/* environment related functions */
+/* env.c */
 ScmObj scm_extend_environment(ScmObj vars, ScmObj vals, ScmObj env);
 ScmObj scm_add_environment(ScmObj var, ScmObj val, ScmObj env);
 ScmRef scm_lookup_environment(ScmObj var, ScmObj env);
 ScmObj scm_symbol_value(ScmObj var, ScmObj env);
 
+/* eval.c */
 ScmObj scm_eval(ScmObj obj, ScmObj env);
 ScmObj scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
 
