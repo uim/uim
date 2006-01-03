@@ -93,9 +93,6 @@ Assigned to Kazuki:
 ==============================================================================
 Assigned to YamaKen:
 
-* Separate SCM_ASSERT into required validation (SCM_ENSURE) and optional
-  assertion (SCM_ASSERT)
-
 * [uim] Validate all uim_scm_gc_protect() invocation
 
 * Write tests for SRFI-75

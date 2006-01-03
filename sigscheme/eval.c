@@ -1622,8 +1622,7 @@ scm_s_define(ScmObj var, ScmObj rest, ScmObj env)
         if (!LIST_1_P(rest))
             ERR_OBJ("exactly 1 arg required but got", rest);
 
-        define_internal(var, POP_ARG(rest), env);
-        ASSERT_NO_MORE_ARG(rest);
+        define_internal(var, CAR(rest), env);
     }
 
     /*========================================================================

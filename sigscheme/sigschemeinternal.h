@@ -291,8 +291,6 @@ extern ScmObj scm_null_values;
  * prematurely, e.g. if an argument to "and" evaluates to #f.  Both
  * macros expand to no-ops #if !SCM_STRICT_ARGCHECK.
  */
-/* FIXME: replace ASSERT_NO_MORE_ARG() and ASSERT_PROPER_ARG_LIST() with these
-   appropriately */
 #define ENSURE_NO_MORE_ARG(args)                                             \
     (NO_MORE_ARG(args) || (ERR_OBJ("superfluous argument(s)", (args)), 1))
 #define ENSURE_PROPER_ARG_LIST(args)                                         \
