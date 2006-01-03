@@ -188,6 +188,28 @@ extern "C" {
 /*============================================================================
   Type Definitions
 ============================================================================*/
+
+/*
+ * SigScheme's own Boolean type:
+ *
+ * libsscm does not use C99 stdbool, its autoconf equivalent or popular
+ * combination of {int, TRUE, FALSE}, to avoid system-dependent ABI
+ * incompatibility (such as size difference) and client-dependent problem (such
+ * as an unexpected assumption about TRUE value).
+ *
+ * The definition use plain typedef and macro definition to avoid
+ * misrecognition about the usage of the type, such as enum-related ones.
+ *
+ *                           *** IMPORTANT ***
+ *
+ * Do not test a value with (val == scm_true). The scm_true is only A TYPICAL
+ * VALUE FOR TRUE. Use (val) or (val != scm_false) instead.
+ *
+ */
+typedef int scm_bool;
+#define scm_false 0
+#define scm_true  (!scm_false)
+
 enum ScmDebugCategory {
     SCM_DBG_NONE         = 0,
     SCM_DBG_ERRMSG       = 1 << 0,   /* the "Error: foo bar" style msgs */
