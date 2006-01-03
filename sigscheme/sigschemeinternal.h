@@ -297,16 +297,19 @@ extern ScmObj scm_null_values;
  * prematurely, e.g. if an argument to "and" evaluates to #f.  Both
  * macros expand to no-ops #if !SCM_STRICT_ARGCHECK.
  */
-#if SCM_STRICT_ARGCHECK
-#define NO_MORE_ARG(args) \
-    (!CONSP(args) \
-     && (NULLP(args) \
-         || (ERR_OBJ("improper argument list terminator", (args)), 1)))
-#define ASSERT_NO_MORE_ARG(args) \
+/* FIXME: replace ASSERT_NO_MORE_ARG() and ASSERT_PROPER_ARG_LIST() with these
+   appropriately */
+#define ENSURE_NO_MORE_ARG(args)                                             \
     (NO_MORE_ARG(args) || (ERR_OBJ("superfluous argument(s)", (args)), 1))
-#define ASSERT_PROPER_ARG_LIST(args) \
-    (scm_p_c_length(args) >= 0 \
-     || (ERR_OBJ("bad argument list", (args)), 1))
+#define ENSURE_PROPER_ARG_LIST(args)                                         \
+    (scm_p_c_length(args) >= 0 || (ERR_OBJ("bad argument list", (args)), 1))
+#if SCM_STRICT_ARGCHECK
+#define NO_MORE_ARG(args)                                                    \
+    (!CONSP(args)                                                            \
+     && (NULLP(args)                                                         \
+         || (ERR_OBJ("improper argument list terminator", (args)), 1)))
+#define ASSERT_NO_MORE_ARG(args)     ENSURE_NO_MORE_ARG(args)
+#define ASSERT_PROPER_ARG_LIST(args) ENSURE_PROPER_ARG_LIST(args)
 #else  /* not SCM_STRICT_ARGCHECK */
 #define NO_MORE_ARG(args) (!CONSP(args))
 #define ASSERT_NO_MORE_ARG(args)
