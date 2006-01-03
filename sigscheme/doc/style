@@ -1,5 +1,30 @@
 Coding style
 
+* Cosmetic style
+
+  C:
+    indent-tabs-mode: nil
+    fill-column: 79
+    c-basic-offset: 4
+    substatement-open: 0
+    c-backslash-column: 77
+
+  Scheme:
+    (put 'and-let* 'scheme-indent-function 1)
+    (put 'receive 'scheme-indent-function 2)
+    (put 'with-exception-handler 'scheme-indent-function 1)
+    (put 'guard 'scheme-indent-function 1)
+
+  The value 77 for c-backslash-column is selected to maximize writable space,
+  eliminate jagged end of lines and prevent overflow of lines on diffs posted
+  to the uim-commit list.
+
+  Avoid placing a character at column 80 even if your editor displays it
+  without overflow in 80-column window. Many editor displays it as continuance
+  mark or folding mark. i.e. Treat column 79 as end-of-line, especially for
+  decorations for comments.
+
+
 * Macro definition
 
   Any argument should be wrapped into () or [] if no exceptional reason exist,
