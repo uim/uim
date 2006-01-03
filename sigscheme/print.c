@@ -34,6 +34,7 @@
 /*=======================================
   System Include
 =======================================*/
+#include <stdint.h> /* FIXME: make C99-independent */
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -46,11 +47,6 @@
 /*=======================================
   File Local Struct Declarations
 =======================================*/
-#if 1
-/* FIXME: replace with C99-independent stdint.h */
-typedef unsigned long uintptr_t;
-#endif
-
 enum OutputType {
     AS_WRITE,   /* string is enclosed by ", char is written using #\ notation. */
     AS_DISPLAY, /* string and char is written as-is */

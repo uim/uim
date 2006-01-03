@@ -145,8 +145,6 @@ typedef struct ScmCharCodecVTbl_ ScmCharCodecVTbl;
 typedef const ScmCharCodecVTbl ScmCharCodec;
 
 typedef int (*ScmCharCodecMethod_statefulp)(void);
-/* FIXME: replace (char *) with (uchar *) once C99-independent stdint is
-   introduced */
 typedef const char *(*ScmCharCodecMethod_encoding)(void);
 typedef enum ScmCodedCharSet (*ScmCharCodecMethod_ccs)(void);
 typedef int (*ScmCharCodecMethod_char_len)(int ch);

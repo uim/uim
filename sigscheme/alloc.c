@@ -35,6 +35,7 @@
 /*=======================================
   System Include
 =======================================*/
+#include <stdint.h> /* FIXME: make C99-independent */
 #include <stdlib.h>
 #include <assert.h>
 
@@ -47,10 +48,6 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
-#if 1
-/* FIXME: replace with C99-independent stdint.h */
-typedef unsigned long uintptr_t;
-#endif
 
 /*=======================================
   File Local Type Definitions

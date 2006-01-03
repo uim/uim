@@ -58,7 +58,6 @@
 /*=======================================
   File Local Type Definitions
 =======================================*/
-/* FIXME: replace with C99-independent stdint */
 typedef unsigned char uchar;
 typedef unsigned int  uint;
 

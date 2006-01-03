@@ -56,6 +56,7 @@
 /*=======================================
   System Include
 =======================================*/
+#include <stdint.h> /* FIXME: make C99-independent */
 #include <string.h>
 #include <stdlib.h>
 #include <setjmp.h>
@@ -69,11 +70,6 @@
 /*=======================================
   File Local Struct Declarations
 =======================================*/
-#if 1
-/* FIXME: replace with C99-independent stdint.h */
-typedef unsigned long uintptr_t;
-#endif
-
 typedef ScmCell *ScmObjHeap;
 
 /*=======================================
