@@ -113,6 +113,7 @@ static struct module_info module_info_table[] = {
   File Local Function Declarations
 =======================================*/
 static void scm_initialize_internal(void);
+static int scm_use_internal(const char *feature);
 static int scm_register_func(const char *name, ScmFuncType func, enum ScmFuncTypeCode type);
 static ScmObj scm_eval_c_string_internal(const char *exp);
 
@@ -218,6 +219,27 @@ scm_providedp(ScmObj feature)
 
 int
 scm_use(const char *feature)
+{
+    int ok;
+#if !SCM_GCC4_READY_GC
+    ScmObj stack_start;
+#endif
+
+#if SCM_GCC4_READY_GC
+    SCM_GC_PROTECTED_CALL(ok, int, scm_use_internal, (feature));
+#else
+    scm_gc_protect_stack(&stack_start);
+
+    ok = scm_use_internal(feature);
+
+    scm_gc_unprotect_stack(&stack_start);
+#endif
+
+    return ok;
+}
+
+static int
+scm_use_internal(const char *feature)
 {
     ScmObj ok;
 
