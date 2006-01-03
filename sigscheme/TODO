@@ -48,7 +48,6 @@ Extensions: (not required for now)
 Performance improvements:
 
 * Object representation compaction ([Anthy-dev 2353], [Anthy-dev 2360])
-  - Delete sigschemetype*.h
   - Make all tests passed without error or SEGV
   - Create immediate objects directly without calling scm_make_*()
   - Refine logical structure and namings

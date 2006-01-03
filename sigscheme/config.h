@@ -85,7 +85,6 @@
 #define SCM_OBJ_COMPACT         0  /* object representation compaction (experimental) */
 
 #define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
-#define SCM_USE_STORAGE_ABSTRACTION_LAYER 1 /* use the experimental code organization */
 
 /*===========================================================================
   Tunings

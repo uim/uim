@@ -75,14 +75,6 @@ typedef ScmCell *ScmObjHeap;
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#if (!SCM_OBJ_COMPACT && !SCM_USE_STORAGE_ABSTRACTION_LAYER)
-#define SCM_UNMARKER          0
-#define SCM_MARKER            (SCM_UNMARKER + 1)
-#define SCM_IS_MARKED(a)      (SCM_MARK(a) == SCM_MARKER)
-#define SCM_IS_UNMARKED(a)    (!SCM_IS_MARKED(a))
-#define SCM_DO_MARK(a)        (SCM_MARK(a) = SCM_MARKER)
-#define SCM_DO_UNMARK(a)      (SCM_MARK(a) = SCM_UNMARKER)
-#endif
 
 /*=======================================
   Variable Declarations

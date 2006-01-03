@@ -98,14 +98,12 @@ extern "C" {
 #define SCM_SYMBOL_BOUNDP(sym) (!SCM_EQ(SCM_SYMBOL_VCELL(sym), SCM_UNBOUND))
 
 #define SCM_CONS(kar, kdr) (SCM_MAKE_CONS((kar), (kdr)))
-#if SCM_USE_STORAGE_ABSTRACTION_LAYER
 #define SCM_CAR(kons)  (SCM_CONS_CAR(kons))
 #define SCM_CDR(kons)  (SCM_CONS_CDR(kons))
 #define SCM_CAAR(kons) (SCM_CAR(SCM_CAR(kons)))
 #define SCM_CADR(kons) (SCM_CAR(SCM_CDR(kons)))
 #define SCM_CDAR(kons) (SCM_CDR(SCM_CAR(kons)))
 #define SCM_CDDR(kons) (SCM_CDR(SCM_CDR(kons)))
-#endif /* SCM_USE_STORAGE_ABSTRACTION_LAYER */
 
 #define SCM_LIST_1(elm0) \
     (SCM_CONS((elm0), SCM_NULL))
@@ -221,7 +219,6 @@ enum ScmDebugCategory {
     SCM_DBG_OTHER        = 1 << 30   /* all other messages */
 };
 
-#if SCM_USE_STORAGE_ABSTRACTION_LAYER
 enum ScmObjType {
     ScmInt          = 0,
     ScmCons         = 1,
@@ -304,12 +301,9 @@ enum ScmPortFlag {
 
 typedef void (*ScmCFunc)(void);
 
-#if SCM_OBJ_COMPACT
-#include "storage-compact.h"
-#else /* SCM_OBJ_COMPACT */
-#include "storage-fatty.h"
-#endif /* SCM_OBJ_COMPACT */
 /*
+ * Interface to an implementation for the Storage Abstraction Layer:
+ *
  * A storage implementation defines following types.
  *
  * typedef <hidden> ScmCell;
@@ -318,6 +312,11 @@ typedef void (*ScmCFunc)(void);
  *
  * typedef ScmObj (*ScmFuncType)();
  */
+#if SCM_OBJ_COMPACT
+#include "storage-compact.h"
+#else /* SCM_OBJ_COMPACT */
+#include "storage-fatty.h"
+#endif /* SCM_OBJ_COMPACT */
 
 /* The evaluator's state */
 typedef struct ScmEvalState_ ScmEvalState;
@@ -515,18 +514,6 @@ struct ScmEvalState_ {
 #define SCM_SYM_QUASIQUOTE       SCM_SAL_SYM_QUASIQUOTE
 #define SCM_SYM_UNQUOTE          SCM_SAL_SYM_UNQUOTE
 #define SCM_SYM_UNQUOTE_SPLICING SCM_SAL_SYM_UNQUOTE_SPLICING
-
-#else /* SCM_USE_STORAGE_ABSTRACTION_LAYER */
-
-/* FIXME: make sigschemetype-compact.h obsolete */
-
-/* type declaration */
-#if SCM_OBJ_COMPACT
-#include "sigschemetype-compact.h"
-#else
-#error "Use the Storage Abstraction Layer"
-#endif
-#endif /* SCM_USE_STORAGE_ABSTRACTION_LAYER */
 
 /*=======================================
    Variable Declarations

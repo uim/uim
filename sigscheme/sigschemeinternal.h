@@ -94,7 +94,6 @@ extern ScmObj scm_null_values;
 #define TRACE_FRAME_OBJ CAR
 #define TRACE_FRAME_ENV CDR
 
-#if SCM_USE_STORAGE_ABSTRACTION_LAYER
 #define SCM_ENTYPE_INT(o)            SCM_SAL_ENTYPE_INT(o)
 #define SCM_ENTYPE_CONS(o)           SCM_SAL_ENTYPE_CONS(o)
 #define SCM_ENTYPE_SYMBOL(o)         SCM_SAL_ENTYPE_SYMBOL(o)
@@ -139,22 +138,6 @@ extern ScmObj scm_null_values;
 #define SCM_IS_UNMARKED(o)           SCM_SAL_IS_UNMARKED(o)
 #define SCM_DO_MARK(o)               SCM_SAL_DO_MARK(o)
 #define SCM_DO_UNMARK(o)             SCM_SAL_DO_UNMARK(o)
-
-#else /* SCM_USE_STORAGE_ABSTRACTION_LAYER */
-
-/* FreeCell Handling Macros */
-#if SCM_OBJ_COMPACT
-#define SCM_FREECELLP(a)            (SCM_CONSP(a))
-#define SCM_AS_FREECELL(a)          (SCM_ASSERT_TYPE(SCM_CONSP(a), (a)))
-#define SCM_FREECELL_CAR(a)         (SCM_CAR(a))
-#define SCM_FREECELL_CDR(a)         (SCM_CDR(a))
-#define SCM_ENTYPE_FREECELL(a)      (SCM_ENTYPE_CONS(a))
-#define SCM_FREECELL_SET_CAR(a, car) (SCM_CONS_SET_CAR((a), (car)))
-#define SCM_FREECELL_SET_CDR(a, cdr) (SCM_CONS_SET_CDR((a), (cdr)))
-#else
-#error "Use the Storage Abstraction Layer"
-#endif
-#endif /* SCM_USE_STORAGE_ABSTRACTION_LAYER */
 
 /* Prefix-less Abbreviation Names For Convenient Internal Use */
 #define SYM_QUOTE            SCM_SYM_QUOTE
