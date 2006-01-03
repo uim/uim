@@ -332,12 +332,15 @@ uim_scm_set_lib_path(const char *path)
 uim_bool
 uim_scm_load_file(const char *fn)
 {
+  uim_bool ret;
+
   if (!fn)
     return UIM_FALSE;
 
-  scm_load(fn);
+  UIM_EVAL_FSTRING1(NULL, "(guard (err (else #f)) (load \"%s\"))", fn);
+  ret = uim_scm_c_bool(uim_scm_return_value());
 
-  return UIM_TRUE;
+  return ret;
 }
 
 uim_lisp
