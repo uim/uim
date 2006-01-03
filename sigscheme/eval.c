@@ -807,7 +807,7 @@ vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
         return (ScmObj)TRV_ENDP(*t);
 
     case TR_MSG_SPLICE:
-        splice_len = scm_p_c_length(obj);
+        splice_len = scm_length(obj);
 #if SCM_STRICT_R5RS
         if (splice_len < 0)
             ERR_OBJ("got bad splice list", obj);

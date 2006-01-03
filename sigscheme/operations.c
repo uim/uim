@@ -753,7 +753,7 @@ scm_p_listp(ScmObj obj)
     if (!CONSP(obj))
         return SCM_FALSE;
 
-    len = scm_p_c_length(obj);
+    len = scm_length(obj);
 
     return MAKE_BOOL(len != -1);
 }
@@ -763,12 +763,9 @@ scm_p_listp(ScmObj obj)
  *
  * This function is ported from Gauche, by Shiro Kawai(shiro@acm.org)
  */
-/* FIXME:
- * - Rename to scm_c_length() since it isn't a Scheme procedure
- * - Insert its copyright and license into this file properly
- */
+/* FIXME: Insert its copyright and license into this file properly */
 int
-scm_p_c_length(ScmObj lst)
+scm_length(ScmObj lst)
 {
     ScmObj slow = lst;
     int len = 0;
@@ -795,7 +792,7 @@ scm_p_c_length(ScmObj lst)
 ScmObj
 scm_p_length(ScmObj obj)
 {
-    int len = scm_p_c_length(obj);
+    int len = scm_length(obj);
     DECLARE_FUNCTION("length", procedure_fixed_1);
 
     if (len < 0)

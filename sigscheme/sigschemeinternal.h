@@ -294,7 +294,7 @@ extern ScmObj scm_null_values;
 #define ENSURE_NO_MORE_ARG(args)                                             \
     (NO_MORE_ARG(args) || (ERR_OBJ("superfluous argument(s)", (args)), 1))
 #define ENSURE_PROPER_ARG_LIST(args)                                         \
-    (scm_p_c_length(args) >= 0 || (ERR_OBJ("bad argument list", (args)), 1))
+    (scm_length(args) >= 0 || (ERR_OBJ("bad argument list", (args)), 1))
 #if SCM_STRICT_ARGCHECK
 #define NO_MORE_ARG(args)                                                    \
     (!CONSP(args)                                                            \
@@ -503,7 +503,7 @@ void scm_show_error_header(void);
 void scm_error_obj(const char *func_name, const char *msg, ScmObj obj) SCM_NORETURN;
 
 /* operations.c */
-int scm_p_c_length(ScmObj lst);
+int scm_length(ScmObj lst);
 
 /* io.c */
 void scm_init_io(void);
