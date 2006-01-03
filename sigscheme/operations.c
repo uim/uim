@@ -1364,9 +1364,9 @@ scm_p_substring(ScmObj str, ScmObj start, ScmObj end)
     c_end_index   = SCM_INT_VALUE(end);
 
     /* sanity check */
-    if (c_start_index < 0 || SCM_STRING_LEN(str) <= c_start_index)
+    if (c_start_index < 0 || SCM_STRING_LEN(str) < c_start_index)
         ERR_OBJ("start index out of range", start);
-    if (c_end_index < 0 || SCM_STRING_LEN(str) <= c_end_index)
+    if (c_end_index < 0 || SCM_STRING_LEN(str) < c_end_index)
         ERR_OBJ("end index out of range", end);
     if (c_start_index > c_end_index)
         ERR("substring: start index is greater than end index.");

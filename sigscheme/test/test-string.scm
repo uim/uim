@@ -32,6 +32,7 @@
 
 (load "./test/unittest.scm")
 
+(define tn test-name)
 
 ;;
 ;; All procedures which take the string as argument is tested with
@@ -143,9 +144,21 @@
 
 ;; substring check
 ;;;; immutable
-(assert-error "substring immutable" (lambda () (substring "foo" 0 0)))
-(assert-error "substring immutable" (lambda () (substring "foo" 0 3)))
-(assert-error "substring immutable" (lambda () (substring (symbol->string 'foo) 0 3)))
+(tn "substring immutable")
+(assert-error  (tn) (lambda () (substring "foo" 0 -1)))
+(assert-equal? (tn) ""    (substring "foo" 0 0))
+(assert-equal? (tn) "f"   (substring "foo" 0 1))
+(assert-equal? (tn) "fo"  (substring "foo" 0 2))
+(assert-equal? (tn) "foo" (substring "foo" 0 3))
+(assert-error  (tn) (lambda () (substring "foo" 0 4)))
+(assert-error  (tn) (lambda () (substring "foo" -1 0)))
+(assert-error  (tn) (lambda () (substring "foo" 1 0)))
+(assert-equal? (tn) "oo"  (substring "foo" 1 3))
+(assert-equal? (tn) "o"   (substring "foo" 2 3))
+(assert-equal? (tn) ""    (substring "foo" 3 3))
+(assert-error  (tn) (lambda () (substring "foo" 4 3)))
+(assert-error  (tn) (lambda () (substring "foo" 4 4)))
+(assert-equal? (tn) "foo" (substring (symbol->string 'foo) 0 3))
 ;;;; mutable
 (assert-equal? "substring mutable" ""    (substring (string-copy "abcde") 0 0))
 (assert-equal? "substring mutable" "a"   (substring (string-copy "abcde") 0 1))
