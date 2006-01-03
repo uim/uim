@@ -60,9 +60,9 @@ typedef ScmObj (*ScmFuncType)();
 /*=======================================
    Struct Declarations
 =======================================*/
-enum ScmStrMutability {
-    SCM_STR_IMMUTABLE = 0,
-    SCM_STR_MUTABLE   = 1
+enum ScmMutability {
+    SCM_IMMUTABLE = 0,
+    SCM_MUTABLE   = 1
 };
 
 /* Scheme Object */
@@ -238,18 +238,16 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #define SCM_SAL_STRING_LEN(o)          (SCM_AS_STRING(o)->obj.string.len)
 #define SCM_SAL_STRING_SET_LEN(o, len) (SCM_STRING_LEN(o) = (len))
 #define SCM_STRING_MUTABILITY(o)                                             \
-  ((enum ScmStrMutability)((unsigned long)SCM_AS_STRING(o)->obj.string.str   \
-                           & SCM_STRING_MUTABILITY_MASK))
+  ((enum ScmMutability)((unsigned long)SCM_AS_STRING(o)->obj.string.str      \
+                        & SCM_STRING_MUTABILITY_MASK))
 #define SCM_SAL_STRING_MUTABLEP(o)                                           \
-    (SCM_STRING_MUTABILITY(o) == SCM_STR_MUTABLE)
+    (SCM_STRING_MUTABILITY(o) == SCM_MUTABLE)
 #define SCM_SAL_STRING_SET_MUTABLE(o)                                        \
     (SCM_AS_STRING(o)->obj.string.str =                                      \
-     (char *)((unsigned long)SCM_AS_STRING(o)->obj.string.str                \
-              | SCM_STR_MUTABLE))
+     (char *)((unsigned long)SCM_AS_STRING(o)->obj.string.str | SCM_MUTABLE))
 #define SCM_SAL_STRING_SET_IMMUTABLE(o)                                      \
     (SCM_AS_STRING(o)->obj.string.str =                                      \
-     (char *)((unsigned long)SCM_AS_STRING(o)->obj.string.str                \
-              | SCM_STR_IMMUTABLE))
+     (char *)((unsigned long)SCM_AS_STRING(o)->obj.string.str | SCM_IMMUTABLE))
 
 #define SCM_SAL_FUNCP(a) (SCM_TYPE(a) == ScmFunc)
 #define SCM_SAL_ENTYPE_FUNC(a)     (SCM_ENTYPE((a), ScmFunc))
