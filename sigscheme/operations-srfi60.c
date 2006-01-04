@@ -1,6 +1,6 @@
 /*===========================================================================
  *  FileName : operations-srfi60.c
- *  About    : SRFI-60 integers as bits
+ *  About    : SRFI-60 Integers as Bits
  *
  *  Copyright (C) 2005-2006 YamaKen
  *
@@ -48,23 +48,25 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define BITWISE_OPERATION_BODY(op, opstr)                                    \
+#define BITWISE_OPERATION_BODY(op, left, right)                              \
     do {                                                                     \
-        int result = 0;                                                      \
+        int result;                                                          \
+                                                                             \
+        result = 0;                                                          \
         switch (*state) {                                                    \
         case SCM_REDUCE_0:                                                   \
             break;                                                           \
         case SCM_REDUCE_1:                                                   \
-            ENSURE_INT(left);                                                \
+            ENSURE_INT(right);                                               \
             return right;                                                    \
         case SCM_REDUCE_PARTWAY:                                             \
         case SCM_REDUCE_LAST:                                                \
-            /* left is already ensured as int by previous loop */            \
+            ENSURE_INT(left);                                                \
             ENSURE_INT(right);                                               \
             result = (SCM_INT_VALUE(left) op SCM_INT_VALUE(right));          \
             break;                                                           \
         default:                                                             \
-            ERR(opstr ": (internal error) unrecognized state specifier: %d", *state); \
+            SCM_ASSERT(scm_false);                                           \
         }                                                                    \
         return MAKE_INT(result);                                             \
     } while (/* CONSTCOND */ 0)
@@ -94,25 +96,28 @@ scm_initialize_srfi60(void)
 }
 
 /* Bitwise Operations */
-ScmObj scm_p_srfi60_logand(ScmObj left, ScmObj right,
-                           enum ScmReductionState *state)
+ScmObj
+scm_p_srfi60_logand(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("logand", reduction_operator);
-    BITWISE_OPERATION_BODY(&, "logand");
+
+    BITWISE_OPERATION_BODY(&, left, right);
 }
 
-ScmObj scm_p_srfi60_logior(ScmObj left, ScmObj right,
-                           enum ScmReductionState *state)
+ScmObj
+scm_p_srfi60_logior(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("logior", reduction_operator);
-    BITWISE_OPERATION_BODY(|, "logior");
+
+    BITWISE_OPERATION_BODY(|, left, right);
 }
 
-ScmObj scm_p_srfi60_logxor(ScmObj left, ScmObj right,
-                           enum ScmReductionState *state)
+ScmObj
+scm_p_srfi60_logxor(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("logxor", reduction_operator);
-    BITWISE_OPERATION_BODY(^, "logxor");
+
+    BITWISE_OPERATION_BODY(^, left, right);
 }
 
 ScmObj

@@ -31,6 +31,9 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 (load "test/unittest.scm")
+
+(define tn test-name)
+
 (use srfi-60)
 
 
@@ -39,6 +42,12 @@
 ;;
 
 ;; logand
+(tn "logand invalid form")
+(assert-error (tn) (lambda () (logand #\a)))
+(assert-error (tn) (lambda () (logand #\a 1)))
+(assert-error (tn) (lambda () (logand 1 #\a)))
+(assert-error (tn) (lambda () (logand 1 1 #\a)))
+
 (assert-equal? "logand" 0      (logand))
 (assert-equal? "logand" 0      (logand 0))
 (assert-equal? "logand" #b11   (logand #b11))
