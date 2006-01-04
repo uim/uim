@@ -476,11 +476,11 @@ void   scm_finalize_symbol(void);
 ScmObj scm_extend_environment(ScmObj vars, ScmObj vals, ScmObj env);
 ScmObj scm_add_environment(ScmObj var, ScmObj val, ScmObj env);
 ScmRef scm_lookup_environment(ScmObj var, ScmObj env);
-ScmObj scm_symbol_value(ScmObj var, ScmObj env);
 
 /* eval.c */
-ScmObj scm_eval(ScmObj obj, ScmObj env);
+ScmObj scm_symbol_value(ScmObj var, ScmObj env);
 ScmObj scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
+ScmObj scm_eval(ScmObj obj, ScmObj env);
 
 /* syntax.c */
 ScmObj scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state);

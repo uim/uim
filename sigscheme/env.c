@@ -201,26 +201,3 @@ lookup_frame(ScmObj var, ScmObj frame)
 
     return SCM_INVALID_REF;
 }
-
-/* 'var' must be a symbol as precondition */
-ScmObj
-scm_symbol_value(ScmObj var, ScmObj env)
-{
-    ScmRef ref;
-    ScmObj val;
-    DECLARE_INTERNAL_FUNCTION("scm_symbol_value");
-
-    /* first, lookup the environment */
-    ref = scm_lookup_environment(var, env);
-    if (ref != SCM_INVALID_REF) {
-        /* variable is found in environment, so returns its value */
-        return DEREF(ref);
-    }
-
-    /* finally, look at the VCELL */
-    val = SCM_SYMBOL_VCELL(var);
-    if (EQ(val, SCM_UNBOUND))
-        ERR_OBJ("unbound variable", var);
-
-    return val;
-}

@@ -72,6 +72,29 @@ static ScmObj map_eval(ScmObj args, ScmObj env);
 /*=======================================
   Function Implementations
 =======================================*/
+/* 'var' must be a symbol as precondition */
+ScmObj
+scm_symbol_value(ScmObj var, ScmObj env)
+{
+    ScmRef ref;
+    ScmObj val;
+    DECLARE_INTERNAL_FUNCTION("scm_symbol_value");
+
+    /* first, lookup the environment */
+    ref = scm_lookup_environment(var, env);
+    if (ref != SCM_INVALID_REF) {
+        /* variable is found in environment, so returns its value */
+        return DEREF(ref);
+    }
+
+    /* finally, look at the VCELL */
+    val = SCM_SYMBOL_VCELL(var);
+    if (EQ(val, SCM_UNBOUND))
+        ERR_OBJ("unbound variable", var);
+
+    return val;
+}
+
 /* A wrapper for call() for internal proper tail recursion */
 ScmObj
 scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
