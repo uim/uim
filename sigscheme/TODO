@@ -12,7 +12,7 @@ Requirements and bugs:
 * Fix all destructive expression on macros
 
 * Review and refactor all functions in syntax.c(listran, vectran,
-  qquote_internal, scm_s_quasiquote, scm_s_do), encoding.[hc] and *port.[hc]
+  qquote_internal, scm_s_quasiquote, scm_s_do) and *port.[hc]
   sigschemeinternal.h, storage-fatty.h (other files had already been done
   except for the destructive exp on macros)
 

@@ -53,6 +53,14 @@
 #if SCM_ENCODING_USE_WITH_SIGSCHEME
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
+#else
+#define SCM_USE_UTF8  1
+#define SCM_USE_EUCJP 1
+#define SCM_USE_EUCCN 1
+#define SCM_USE_EUCKR 1
+#define SCM_USE_SJIS  1
+#define SCM_USE_UTF8_AS_DEFAULT 1
+#define CDBG(args)
 #endif
 
 /*=======================================
@@ -64,8 +72,8 @@ typedef unsigned int  uint;
 /*=======================================
   File Local Functions
 =======================================*/
-static int pred_always_true(void);
-static int pred_always_false(void);
+static scm_bool pred_always_true(void);
+static scm_bool pred_always_false(void);
 
 #if SCM_USE_EUCJP
 static const char *eucjp_encoding(void);
@@ -89,8 +97,8 @@ static ScmMultibyteCharInfo iso2022jp_scan_input_char(ScmMultibyteString mbs);
 
 #if SCM_USE_SJIS
 static const char *sjis_encoding(void);
- static enum ScmCodedCharSet sjis_ccs(void);
- static int sjis_char_len(int ch);
+static enum ScmCodedCharSet sjis_ccs(void);
+static int sjis_char_len(int ch);
 static ScmMultibyteCharInfo sjis_scan_char(ScmMultibyteString mbs);
 static uchar *sjis_int2str(uchar *dst, int ch, ScmMultibyteState state);
 #endif
@@ -260,17 +268,16 @@ ScmCharCodec *scm_current_char_codec
 int
 scm_mb_strlen(ScmMultibyteString mbs)
 {
-    int len = 0;
+    int len;
     ScmMultibyteCharInfo c;
 
     CDBG((SCM_DBG_ENCODING, "mb_strlen: size = %d; str = %s;",
           SCM_MBS_GET_SIZE(mbs), SCM_MBS_GET_STR(mbs)));
 
-    while (SCM_MBS_GET_SIZE(mbs)) {
+    for (len = 0; SCM_MBS_GET_SIZE(mbs); len++) {
         c = SCM_CHARCODEC_SCAN_CHAR(scm_current_char_codec, mbs);
         CDBG((SCM_DBG_ENCODING, "%d, %d;", SCM_MBCINFO_GET_SIZE(c), c.flag));
         SCM_MBS_SKIP_CHAR(mbs, c);
-        len++;
     }
 
     CDBG((SCM_DBG_ENCODING, "len=%d\n", len));
@@ -282,6 +289,7 @@ int
 scm_mb_bare_c_strlen(const char *s)
 {
     ScmMultibyteString mbs;
+
     SCM_MBS_INIT(mbs);
     SCM_MBS_SET_STR(mbs, s);
     SCM_MBS_SET_SIZE(mbs, strlen(s));
@@ -291,8 +299,7 @@ scm_mb_bare_c_strlen(const char *s)
 ScmMultibyteString
 scm_mb_substring(ScmMultibyteString mbs, int i, int len)
 {
-    ScmMultibyteString ret;
-    ScmMultibyteString end;
+    ScmMultibyteString ret, end;
     ScmMultibyteCharInfo c;
 
     ret = mbs;
@@ -331,16 +338,16 @@ scm_mb_find_codec(const char *encoding)
   Encoding-specific functions
 =======================================*/
 
-static int
+static scm_bool
 pred_always_true(void)
 {
-    return 1;
+    return scm_true;
 }
 
-static int
+static scm_bool
 pred_always_false(void)
 {
-    return 0;
+    return scm_false;
 }
 
 /* Every encoding implements the <encoding name>_scan_char()
@@ -354,10 +361,22 @@ pred_always_false(void)
  * use it to return information on how many octets are missing.  It
  * also serves as documentation.  */
 #define ENTER   ScmMultibyteCharInfo _ret;  SCM_MBCINFO_INIT(_ret)
-#define RETURN(n)  do { SCM_MBCINFO_SET_SIZE(_ret, n); return _ret; } while (0)
-#define RETURN_ERROR() do { SCM_MBCINFO_SET_ERROR(_ret); RETURN(1); } while (0)
-#define RETURN_INCOMPLETE(n) do { SCM_MBCINFO_SET_INCOMPLETE(_ret); RETURN(n); } while (0)
-#define SAVE_STATE(stat) (SCM_MBCINFO_SET_STATE(_ret, (stat)))
+#define RETURN(n)                                                            \
+    do {                                                                     \
+        SCM_MBCINFO_SET_SIZE(_ret, n);                                       \
+        return _ret;                                                         \
+    } while (/* CONSTCOND */ 0)
+#define RETURN_ERROR()                                                       \
+    do {                                                                     \
+        SCM_MBCINFO_SET_ERROR(_ret);                                         \
+        RETURN(1);                                                           \
+    } while (/* CONSTCOND */ 0)
+#define RETURN_INCOMPLETE(n)                                                 \
+    do {                                                                     \
+        SCM_MBCINFO_SET_INCOMPLETE(_ret);                                    \
+        RETURN(n);                                                           \
+    } while (/* CONSTCOND */ 0)
+#define SAVE_STATE(stat) SCM_MBCINFO_SET_STATE(_ret, (stat))
 #define EXPECT_SIZE(size) /* Currently ignored. */
 
 /* Encodings based on ISO/IEC 2022. */
@@ -370,7 +389,7 @@ pred_always_false(void)
 #define IN_GL94(c) (0x21 <= (uchar)(c) && (uchar)(c) <= 0x7E)
 #define IN_GL96(c) (0x20 <= (uchar)(c) && (uchar)(c) <= 0x7F)
 #define IN_GR94(c) (0xA1 <= (uchar)(c) && (uchar)(c) <= 0xFE)
-#define IN_GR96(c) (0xA0 <= (uchar)(c) && (uchar)(c) <= 0xFF)
+#define IN_GR96(c) (0xA0 <= (uchar)(c) /* && (uchar)(c) <= 0xFF */)
 
 #define IS_ASCII(c) ((uint)(c) <= 0x7F)
 #define IS_GR_SPC_OR_DEL(c)  ((uchar)(c) == 0xA0 || (uchar)(c) == 0xFF)
@@ -404,9 +423,9 @@ eucjp_ccs(void)
 int
 eucjp_char_len(int ch)
 {
-    char *end, buf[SCM_MB_MAX_LEN + sizeof("")];
+    uchar *end, buf[SCM_MB_MAX_LEN + sizeof("")];
 
-    end = eucjp_int2str((uchar *)buf, ch, SCM_MB_STATELESS);
+    end = eucjp_int2str(buf, ch, SCM_MB_STATELESS);
 
     return (end) ? end - buf : 0;
 }
@@ -559,9 +578,9 @@ dbc_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 int
 euc_char_len(int ch)
 {
-    char *end, buf[SCM_MB_MAX_LEN + sizeof("")];
+    uchar *end, buf[SCM_MB_MAX_LEN + sizeof("")];
 
-    end = euc_int2str((uchar *)buf, ch, SCM_MB_STATELESS);
+    end = euc_int2str(buf, ch, SCM_MB_STATELESS);
 
     return (end) ? end - buf : 0;
 }
@@ -721,9 +740,9 @@ utf8_ccs(void)
 int
 utf8_char_len(int ch)
 {
-    char *end, buf[SCM_MB_MAX_LEN + sizeof("")];
+    uchar *end, buf[SCM_MB_MAX_LEN + sizeof("")];
 
-    end = utf8_int2str((uchar *)buf, ch, SCM_MB_STATELESS);
+    end = utf8_int2str(buf, ch, SCM_MB_STATELESS);
 
     return (end) ? end - buf : 0;
 }
@@ -749,7 +768,7 @@ utf8_scan_char(ScmMultibyteString mbs)
 #if SCM_STRICT_ENCODING_CHECK
     {
         int i;
-        for (i=1; i < len; i++) {
+        for (i = 1; i < len; i++) {
             if (size <= i)
                 RETURN_INCOMPLETE(size);
             if (!IS_TRAILING(str[i]))
@@ -878,9 +897,9 @@ sjis_ccs(void)
 int
 sjis_char_len(int ch)
 {
-    char *end, buf[SCM_MB_MAX_LEN + sizeof("")];
+    uchar *end, buf[SCM_MB_MAX_LEN + sizeof("")];
 
-    end = sjis_int2str((uchar *)buf, ch, SCM_MB_STATELESS);
+    end = sjis_int2str(buf, ch, SCM_MB_STATELESS);
 
     return (end) ? end - buf : 0;
 }
@@ -891,6 +910,7 @@ sjis_scan_char(ScmMultibyteString mbs)
     const char *str = SCM_MBS_GET_STR(mbs);
     const int  size = SCM_MBS_GET_SIZE(mbs);
     ENTER;
+
     if (!size)
         RETURN(0);
     if (IS_LEAD(str[0])) {
@@ -967,6 +987,7 @@ static ScmMultibyteCharInfo
 unibyte_scan_char(ScmMultibyteString mbs)
 {
     ENTER;
+
     if (SCM_MBS_GET_SIZE(mbs))
         RETURN(1);
     RETURN(0);

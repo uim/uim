@@ -40,6 +40,7 @@
 /*=======================================
   System Include
 =======================================*/
+#include <stddef.h>
 
 /*=======================================
   Local Include
@@ -57,19 +58,28 @@
 #define SCM_MBS_SET_SIZE(mbs, siz)      ((mbs).size = (siz))
 #define SCM_MBS_GET_SIZE(mbs)           ((mbs).size)
 
-#define SCM_MBCINFO_SET_SIZE SCM_MBS_SET_SIZE
-#define SCM_MBCINFO_GET_SIZE SCM_MBS_GET_SIZE
-#define SCM_MBCINFO_CLEAR_STATE SCM_MBS_CLEAR_STATE
-#define SCM_MBCINFO_SET_STATE SCM_MBS_SET_STATE
-#define SCM_MBCINFO_GET_STATE SCM_MBS_GET_STATE
+#define SCM_MBCINFO_SET_SIZE(inf, siz)   ((inf).size = (siz))
+#define SCM_MBCINFO_GET_SIZE(inf)        ((inf).size)
+#if SCM_USE_STATEFUL_ENCODING
+#define SCM_MBCINFO_CLEAR_STATE(inf)     ((inf).state = 0)
+#define SCM_MBCINFO_SET_STATE(inf, stat) ((inf).state = (stat))
+#define SCM_MBCINFO_GET_STATE(inf)       ((inf).state)
+#else /* SCM_USE_STATEFUL_ENCODING */
+#define SCM_MBCINFO_CLEAR_STATE(inf)
+#define SCM_MBCINFO_SET_STATE(inf, stat)
+#define SCM_MBCINFO_GET_STATE(inf)       SCM_MB_STATELESS
+#endif /* SCM_USE_STATEFUL_ENCODING */
 #define SCM_MBCINFO_CLEAR_FLAG(inf)     ((inf).flag = 0)
 #define SCM_MBCINFO_SET_ERROR(inf)      ((inf).flag |= 1)
 #define SCM_MBCINFO_SET_INCOMPLETE(inf) ((inf).flag |= 2)
 #define SCM_MBCINFO_ERRORP(inf)         ((inf).flag & 1)
 #define SCM_MBCINFO_INCOMPLETEP(inf)    ((inf).flag & 2)
-#define SCM_MBCINFO_INIT(inf)  (SCM_MBCINFO_SET_SIZE((inf), 0),  \
-                                SCM_MBCINFO_CLEAR_STATE(inf),    \
-                                SCM_MBCINFO_CLEAR_FLAG(inf))
+#define SCM_MBCINFO_INIT(inf)                                                \
+    do {                                                                     \
+        SCM_MBCINFO_SET_SIZE((inf), 0);                                      \
+        SCM_MBCINFO_CLEAR_STATE(inf);                                        \
+        SCM_MBCINFO_CLEAR_FLAG(inf);                                         \
+    } while (/* CONSTCOND */ 0)
 
 
 #if SCM_USE_STATEFUL_ENCODING
@@ -77,18 +87,24 @@
 #define SCM_MBS_SET_STATE(mbs, stat)  ((mbs).state = (stat))
 #define SCM_MBS_CLEAR_STATE(mbs)      ((mbs).state = 0)
 #else
-#define SCM_MBS_GET_STATE(mbs)        0
-#define SCM_MBS_SET_STATE(mbs, stat)  0
-#define SCM_MBS_CLEAR_STATE(mbs)      0
+#define SCM_MBS_GET_STATE(mbs)        SCM_MB_STATELESS
+#define SCM_MBS_SET_STATE(mbs, stat)
+#define SCM_MBS_CLEAR_STATE(mbs)
 #endif
-#define SCM_MBS_INIT(mbs)  (SCM_MBS_SET_STR((mbs), NULL), \
-                            SCM_MBS_SET_SIZE((mbs), 0),   \
-                            SCM_MBS_CLEAR_STATE(mbs))
-#define SCM_MBS_SKIP_CHAR(mbs, inf)                                           \
-    (SCM_MBS_SET_STR((mbs), SCM_MBS_GET_STR(mbs) + SCM_MBCINFO_GET_SIZE(inf)),\
-     SCM_MBS_SET_SIZE((mbs),                                                  \
-                      SCM_MBS_GET_SIZE(mbs) - SCM_MBCINFO_GET_SIZE(inf)),     \
-     SCM_MBS_SET_STATE((mbs), SCM_MBCINFO_GET_STATE(inf)))
+#define SCM_MBS_INIT(mbs)                                                    \
+    do {                                                                     \
+        SCM_MBS_SET_STR((mbs), NULL);                                        \
+        SCM_MBS_SET_SIZE((mbs), 0);                                          \
+        SCM_MBS_CLEAR_STATE(mbs);                                            \
+    } while (/* CONSTCOND */ 0)
+#define SCM_MBS_SKIP_CHAR(mbs, inf)                                          \
+    do {                                                                     \
+        SCM_MBS_SET_STR((mbs),                                               \
+                        SCM_MBS_GET_STR(mbs) + SCM_MBCINFO_GET_SIZE(inf));   \
+        SCM_MBS_SET_SIZE((mbs),                                              \
+                         SCM_MBS_GET_SIZE(mbs) - SCM_MBCINFO_GET_SIZE(inf)); \
+        SCM_MBS_SET_STATE((mbs), SCM_MBCINFO_GET_STATE(inf));                \
+    } while (/* CONSTCOND */ 0)
 
 #define SCM_CHARCODEC_STATEFULP(codec)          ((*(codec)->statefulp)())
 #define SCM_CHARCODEC_ENCODING(codec)           ((*(codec)->encoding)())
@@ -103,6 +119,12 @@
 /*=======================================
   Type Definitions
 =======================================*/
+#if (!defined(scm_true) && !defined(scm_false))
+typedef int scm_bool;
+#define scm_false 0
+#define scm_true  (!scm_false)
+#endif
+
 enum ScmCodedCharSet {
     SCM_CCS_UNKNOWN   = 0,
     SCM_CCS_UCS4      = 1,
@@ -113,7 +135,6 @@ enum ScmCodedCharSet {
 /* This type will actually contain some encoding-dependent enum value.
  * It might as well be defined as mbstate_t if we're using libc. */
 typedef int ScmMultibyteState;
-
 #define SCM_MB_STATELESS 0
 
 /* Metadata of a multibyte character.  These are usually allocated on
@@ -144,7 +165,7 @@ typedef struct {
 typedef struct ScmCharCodecVTbl_ ScmCharCodecVTbl;
 typedef const ScmCharCodecVTbl ScmCharCodec;
 
-typedef int (*ScmCharCodecMethod_statefulp)(void);
+typedef scm_bool (*ScmCharCodecMethod_statefulp)(void);
 typedef const char *(*ScmCharCodecMethod_encoding)(void);
 typedef enum ScmCodedCharSet (*ScmCharCodecMethod_ccs)(void);
 typedef int (*ScmCharCodecMethod_char_len)(int ch);

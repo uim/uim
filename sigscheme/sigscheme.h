@@ -221,9 +221,11 @@ extern "C" {
  * VALUE FOR TRUE. Use (val) or (val != scm_false) instead.
  *
  */
+#if (!defined(scm_true) && !defined(scm_false))
 typedef int scm_bool;
 #define scm_false 0
 #define scm_true  (!scm_false)
+#endif
 
 enum ScmDebugCategory {
     SCM_DBG_NONE         = 0,
