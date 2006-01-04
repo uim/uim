@@ -1,6 +1,6 @@
 /*===========================================================================
  *  FileName : operations-srfi23.c
- *  About    : srfi23 Error reporting mechanism
+ *  About    : SRFI-23 Error reporting mechanism
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *
@@ -63,9 +63,6 @@
 void
 scm_initialize_srfi23(void)
 {
-    /*=======================================================================
-      SRFI-23 Procedure
-    =======================================================================*/
     REGISTER_FUNC_TABLE(srfi23_func_info_table);
 }
 
@@ -90,6 +87,7 @@ scm_p_srfi23_error(ScmObj reason, ScmObj args)
 {
     ScmObj err_obj;
     DECLARE_FUNCTION("error", procedure_variadic_1);
+
 #if 0
     /*
      * Although SRFI-23 specified that "The argument <reason> should be a
