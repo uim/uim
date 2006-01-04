@@ -72,13 +72,14 @@ static ScmObj map_eval(ScmObj args, ScmObj env);
 /*=======================================
   Function Implementations
 =======================================*/
-/* 'var' must be a symbol as precondition */
 ScmObj
 scm_symbol_value(ScmObj var, ScmObj env)
 {
     ScmRef ref;
     ScmObj val;
     DECLARE_INTERNAL_FUNCTION("scm_symbol_value");
+
+    SCM_ASSERT(SYMBOLP(var));
 
     /* first, lookup the environment */
     ref = scm_lookup_environment(var, env);
