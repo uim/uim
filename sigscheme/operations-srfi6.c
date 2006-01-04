@@ -69,9 +69,6 @@ scm_initialize_srfi6(void)
 {
     scm_strport_init();
 
-    /*=======================================================================
-      SRFI-6 Procedures
-    =======================================================================*/
     REGISTER_FUNC_TABLE(srfi6_func_info_table);
 }
 
@@ -84,7 +81,7 @@ istrport_finalize(char **str, int ownership, void **opaque)
 ScmObj
 scm_p_srfi6_open_input_string(ScmObj str)
 {
-    ScmObj      *hold_str;
+    ScmObj *hold_str;
     ScmBytePort *bport;
     DECLARE_FUNCTION("open-input-string", procedure_fixed_1);
 
