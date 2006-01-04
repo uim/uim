@@ -12,9 +12,8 @@ Requirements and bugs:
 * Fix all destructive expression on macros
 
 * Review and refactor all functions in syntax.c(listran, vectran,
-  qquote_internal, scm_s_quasiquote, scm_s_do), operations-srfi{1,2}.c,
-  encoding.[hc] and *port.[hc] (other files had already been done except for
-  the destructive exp on macros)
+  qquote_internal, scm_s_quasiquote, scm_s_do), encoding.[hc] and *port.[hc]
+  (other files had already been done except for the destructive exp on macros)
 
 * Investigate behavior of other Scheme implementations about constant vector
   and list
@@ -48,6 +47,9 @@ Extensions: (not required for now)
 * Add GB18030 to encoding.c
 
 * Add Big5 to encoding.c
+
+* Complete operations-srfi1.c and make it production quality if considerable
+  benefit exists against SLIB version of SRFI-1 implementation
 
 ==============================================================================
 Performance improvements:

@@ -31,6 +31,9 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 (load "./test/unittest.scm")
+
+(define tn test-name)
+
 (use srfi-2)
 
 ;; (and-let* <claws> <body>)
@@ -41,6 +44,10 @@
 
 (define true #t)
 (define false #f)
+
+(tn "and-let* invalid form")
+(assert-error (tn) (lambda () (and-let* ((#t) . #t) #t)))
+(assert-error (tn) (lambda () (and-let* ((foo #t) . #t) #t)))
 
 ; and-let*
 (assert-true  "and-let* test 1" (and-let* () #t))

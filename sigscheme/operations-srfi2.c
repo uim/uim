@@ -1,6 +1,7 @@
 /*===========================================================================
  *  FileName : operations-srfi2.c
- *  About    : AND-LET*: an AND with local bindings, a guarded LET* special form
+ *  About    : SRFI-2 AND-LET*: an AND with local bindings, a guarded LET*
+ *             special form
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *
@@ -64,21 +65,16 @@
 void
 scm_initialize_srfi2(void)
 {
-    /*=======================================================================
-      SRFI-2 Procedure
-    =======================================================================*/
     REGISTER_FUNC_TABLE(srfi2_func_info_table);
 }
 
 ScmObj
 scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
 {
-    ScmObj env  = eval_state->env;
-    ScmObj claw = SCM_FALSE;
-    ScmObj var  = SCM_FALSE;
-    ScmObj val  = SCM_FALSE;
-    ScmObj exp  = SCM_FALSE;
+    ScmObj env, claw, var, val, exp;
     DECLARE_FUNCTION("and-let*", syntax_variadic_tailrec_1);
+
+    env = eval_state->env;
 
     /*========================================================================
       (and-let* <claws> <body>)
@@ -88,8 +84,7 @@ scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
                    | <bound-variable>
     ========================================================================*/
     if (CONSP(claws)) {
-        for (; !NULLP(claws); claws = CDR(claws)) {
-            claw = CAR(claws);
+        while (claw = POP_ARG(claws), VALIDP(claw)) {
             if (CONSP(claw)) {
                 if (NULLP(CDR(claw))) {
                     /* (<expression>) */
@@ -115,6 +110,8 @@ scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
             if (FALSEP(val))
                 return SCM_FALSE;
         }
+        if (!NULLP(claws))
+            goto err;
     } else if (NULLP(claws)) {
         env = scm_extend_environment(SCM_NULL, SCM_NULL, env);
     } else {
