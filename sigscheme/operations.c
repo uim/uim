@@ -1562,7 +1562,7 @@ scm_p_make_vector(ScmObj scm_len, ScmObj args)
         ERR_OBJ("length must be a positive integer", scm_len);
 
     vec = scm_malloc(sizeof(ScmObj) * len);
-    filler = (!NULLP(args)) ? CAR(args) : SCM_UNDEF;
+    filler = (CONSP(args)) ? CAR(args) : SCM_UNDEF;
     for (i = 0; i < len; i++)
         vec[i] = filler;
 
