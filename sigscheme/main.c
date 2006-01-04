@@ -67,7 +67,7 @@ static ScmObj feature_id_siod;
 =======================================*/
 static void repl(void);
 static void repl_loop(void);
-static int show_promptp(void);
+static scm_bool show_promptp(void);
 
 /*=======================================
   Function Implementations
@@ -152,14 +152,14 @@ repl_loop(void)
     }
 }
 
-static int
+static scm_bool
 show_promptp(void)
 {
 #if SCM_COMPAT_SIOD
     return (FALSEP(scm_p_providedp(feature_id_siod))
             || scm_get_verbose_level() >= 2);
 #else
-    return TRUE;
+    return scm_true;
 #endif
 }
 

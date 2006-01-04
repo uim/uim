@@ -58,7 +58,8 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-static int debug_mask, srfi34_is_provided, fatal_error_looped;
+static int debug_mask;
+static scm_bool srfi34_is_provided, fatal_error_looped;
 static void (*cb_fatal_error)(void);
 
 static ScmObj err_obj_tag, str_srfi34;
@@ -82,10 +83,10 @@ scm_init_error(void)
 
     scm_gc_protect_with_init(&str_srfi34,
                              MAKE_IMMUTABLE_STRING_COPYING("srfi-34"));
-    srfi34_is_provided = FALSE;
+    srfi34_is_provided = scm_false;
 
     cb_fatal_error = NULL;
-    fatal_error_looped = FALSE;
+    fatal_error_looped = scm_false;
 
     REGISTER_FUNC_TABLE(scm_error_func_info_table);
 }
@@ -232,7 +233,7 @@ scm_p_fatal_error(ScmObj err_obj)
         /* to avoid infinite loop by implicit assertion, use no SCM macros */
         msg = "looped fatal error";
     } else {
-        fatal_error_looped = TRUE;
+        fatal_error_looped = scm_true;
         ENSURE_ERROBJ(err_obj);
         scm_p_inspect_error(err_obj);
         msg = NULL;

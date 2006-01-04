@@ -470,7 +470,7 @@ read_unicode_sequence(ScmObj port, char prefix)
     case 'u': len = 4; break;
     case 'U': len = 8; break;
     default:
-        SCM_ASSERT(FALSE);
+        SCM_ASSERT(scm_false);
         break;
     }
     seq[0] = prefix;

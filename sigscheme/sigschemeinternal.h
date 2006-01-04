@@ -82,13 +82,6 @@ extern ScmObj scm_null_values;
 /*=======================================
    Macro Declarations
 =======================================*/
-#ifndef FALSE
-#define FALSE 0
-#endif /* FALSE */
-#ifndef TRUE
-#define TRUE  (!FALSE)
-#endif /* TRUE */
-
 /* trace stack for debugging */
 #define MAKE_TRACE_FRAME(obj, env) CONS(obj, env)
 #define TRACE_FRAME_OBJ CAR

@@ -68,7 +68,7 @@ ScmObj scm_sym_else, scm_sym_yields;
 /* canonical internal encoding for identifiers */
 ScmCharCodec *scm_identifier_codec;
 
-static int scm_initialized;
+static scm_bool scm_initialized;
 static ScmObj features;
 
 #if SCM_COMPAT_SIOD
@@ -188,14 +188,14 @@ scm_initialize_internal(void)
 #if SCM_COMPAT_SIOD_BUGS
     scm_provide(MAKE_IMMUTABLE_STRING_COPYING("siod-bugs"));
 #endif
-    scm_initialized = TRUE;
+    scm_initialized = scm_true;
 }
 
 void
 scm_finalize()
 {
     scm_finalize_storage();
-    scm_initialized = FALSE;
+    scm_initialized = scm_false;
 }
 
 void

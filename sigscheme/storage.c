@@ -83,7 +83,7 @@ static ScmCell unbound_cell, undef_cell;
   File Local Function Declarations
 =======================================*/
 static void initialize_special_constants(void);
-static ScmObj scm_make_string_internal(char *str, int is_immutable);
+static ScmObj scm_make_string_internal(char *str, scm_bool is_immutable);
 
 /*=======================================
   Function Implementations
@@ -204,7 +204,7 @@ scm_make_char(int val)
 }
 
 static ScmObj
-scm_make_string_internal(char *str, int is_immutable)
+scm_make_string_internal(char *str, scm_bool is_immutable)
 {
     ScmObj obj;
 
@@ -226,25 +226,25 @@ scm_make_string_internal(char *str, int is_immutable)
 ScmObj
 scm_make_immutable_string(char *str)
 {
-    return scm_make_string_internal(str, TRUE);
+    return scm_make_string_internal(str, scm_true);
 }
 
 ScmObj
 scm_make_immutable_string_copying(const char *str)
 {
-    return scm_make_string_internal(strdup(str), TRUE);
+    return scm_make_string_internal(strdup(str), scm_true);
 }
 
 ScmObj
 scm_make_string(char *str)
 {
-    return scm_make_string_internal(str, FALSE);
+    return scm_make_string_internal(str, scm_false);
 }
 
 ScmObj
 scm_make_string_copying(const char *str)
 {
-    return scm_make_string_internal(strdup(str), FALSE);
+    return scm_make_string_internal(strdup(str), scm_false);
 }
 
 ScmObj
