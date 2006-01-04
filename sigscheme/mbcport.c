@@ -66,6 +66,8 @@
 /*=======================================
   File Local Type Definitions
 =======================================*/
+typedef unsigned char uchar;
+
 struct ScmMultiByteCharPort_ {  /* inherits ScmBaseCharPort */
     const ScmCharPortVTbl *vptr;
 
@@ -74,7 +76,7 @@ struct ScmMultiByteCharPort_ {  /* inherits ScmBaseCharPort */
 
     ScmCharCodec *codec;
     ScmMultibyteState state;
-    char rbuf[SCM_MB_MAX_LEN + sizeof("")];
+    uchar rbuf[SCM_MB_MAX_LEN + sizeof("")];
 };
 
 /*=======================================
@@ -86,11 +88,11 @@ static ScmCharCodec *mbcport_codec(ScmMultiByteCharPort *port);
 static char *mbcport_inspect(ScmMultiByteCharPort *port);
 static int mbcport_get_char(ScmMultiByteCharPort *port);
 static int mbcport_peek_char(ScmMultiByteCharPort *port);
-static int mbcport_char_readyp(ScmMultiByteCharPort *port);
+static scm_bool mbcport_char_readyp(ScmMultiByteCharPort *port);
 static int mbcport_put_char(ScmMultiByteCharPort *port, int ch);
 
 static ScmMultibyteCharInfo mbcport_fill_rbuf(ScmMultiByteCharPort *port,
-                                              int block);
+                                              scm_bool block);
 
 /*=======================================
   Variable Declarations
@@ -151,7 +153,7 @@ ScmMultiByteCharPort_set_codec(ScmCharPort *cport, ScmCharCodec *codec)
     mbcport->codec = codec;
     SCM_MBCPORT_CLEAR_STATE(mbcport);
     /* only one byte can be preserved for new codec. otherwise cleared */
-    if (1 < strlen(mbcport->rbuf))
+    if (1 < strlen((char *)mbcport->rbuf))
         mbcport->rbuf[0] = '\0';
 }
 
@@ -182,7 +184,7 @@ mbcport_get_char(ScmMultiByteCharPort *port)
     ScmMultibyteCharInfo mbc;
     ScmMultibyteState next_state;
 
-    mbc = mbcport_fill_rbuf(port, TRUE);
+    mbc = mbcport_fill_rbuf(port, scm_true);
     next_state = SCM_MBCINFO_GET_STATE(mbc);
 #endif
 
@@ -205,30 +207,30 @@ mbcport_peek_char(ScmMultiByteCharPort *port)
     ScmMultibyteCharInfo mbc;
     int size, ch;
 
-    mbc = mbcport_fill_rbuf(port, TRUE);
+    mbc = mbcport_fill_rbuf(port, scm_true);
     size = SCM_MBCINFO_GET_SIZE(mbc);
     if (size)
-        ch = SCM_CHARCODEC_STR2INT(port->codec, port->rbuf, size, port->state);
+        ch = SCM_CHARCODEC_STR2INT(port->codec, (char *)port->rbuf, size,
+                                   port->state);
     else
         ch = EOF;
 
     return ch;
 }
 
-static int
+static scm_bool
 mbcport_char_readyp(ScmMultiByteCharPort *port)
 {
     ScmMultibyteCharInfo mbc;
 
-    mbc = mbcport_fill_rbuf(port, FALSE);
+    mbc = mbcport_fill_rbuf(port, scm_false);
     return !SCM_MBCINFO_INCOMPLETEP(mbc);
 }
 
 static int
 mbcport_put_char(ScmMultiByteCharPort *port, int ch)
 {
-    char wbuf[SCM_MB_MAX_LEN + sizeof("")];
-    char *end;
+    char *end, wbuf[SCM_MB_MAX_LEN + sizeof("")];
 
     /* FIXME: set updated state to port->state */
     end = SCM_CHARCODEC_INT2STR(port->codec, wbuf, ch, port->state);
@@ -238,17 +240,17 @@ mbcport_put_char(ScmMultiByteCharPort *port, int ch)
 }
 
 static ScmMultibyteCharInfo
-mbcport_fill_rbuf(ScmMultiByteCharPort *port, int block)
+mbcport_fill_rbuf(ScmMultiByteCharPort *port, scm_bool block)
 {
-    char *end;
+    uchar *end;
     int byte;
     ScmMultibyteString mbs;
     ScmMultibyteCharInfo mbc;
 
-    end = strchr(port->rbuf, '\0');
+    end = (uchar *)strchr((char *)port->rbuf, '\0');
     SCM_MBS_SET_STATE(mbs, port->state);
     do {
-        SCM_MBS_SET_STR(mbs, port->rbuf);
+        SCM_MBS_SET_STR(mbs, (char *)port->rbuf);
         SCM_MBS_SET_SIZE(mbs, end - port->rbuf);
 
         mbc = SCM_CHARCODEC_SCAN_CHAR(port->codec, mbs);
@@ -266,7 +268,7 @@ mbcport_fill_rbuf(ScmMultiByteCharPort *port, int block)
             SCM_MBCINFO_INIT(mbc);
             port->rbuf[0] = '\0';
 #if HANDLE_MBC_START
-            mbc->start = port->rbuf;
+            mbc->start = (char *)port->rbuf;
 #endif
             break;
         }

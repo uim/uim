@@ -56,13 +56,6 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
-#ifndef FALSE
-#define FALSE 0
-#endif /* FALSE */
-#ifndef TRUE
-#define TRUE  (!FALSE)
-#endif /* TRUE */
-
 #define OK 0
 
 /*=======================================
@@ -75,14 +68,14 @@ struct ScmFilePort_ {  /* inherits ScmBytePort */
 
     FILE *file;
     char *aux_info;  /* human readable auxilialy information about the file */
-    int ownership;   /* whether close the file at fileport_close() */
+    scm_bool ownership;  /* whether close the file at fileport_close() */
 };
 
 /*=======================================
   File Local Function Declarations
 =======================================*/
 static ScmBytePort *fileport_new_internal(FILE *file, const char *aux_info,
-                                          int ownership);
+                                          scm_bool ownership);
 
 static ScmBytePort *fileport_dyn_cast(ScmBytePort *bport,
                                       const ScmBytePortVTbl *dest_vptr);
@@ -90,7 +83,7 @@ static int fileport_close(ScmFilePort *bport);
 static char *fileport_inspect(ScmFilePort *port);
 static int fileport_get_byte(ScmFilePort *bport);
 static int fileport_peek_byte(ScmFilePort *bport);
-static int fileport_byte_readyp(ScmFilePort *bport);
+static scm_bool fileport_byte_readyp(ScmFilePort *bport);
 static int fileport_vprintf(ScmFilePort *bport, const char *str, va_list args);
 static int fileport_puts(ScmFilePort *bport, const char *str);
 static size_t fileport_write(ScmFilePort *bport,
@@ -125,11 +118,10 @@ const ScmBytePortVTbl *ScmFilePort_vptr = &ScmFilePort_vtbl;
 void
 scm_fileport_init(void)
 {
-    return;
 }
 
 static ScmBytePort *
-fileport_new_internal(FILE *file, const char *aux_info, int ownership)
+fileport_new_internal(FILE *file, const char *aux_info, scm_bool ownership)
 {
     ScmFilePort *port;
 
@@ -146,13 +138,13 @@ fileport_new_internal(FILE *file, const char *aux_info, int ownership)
 ScmBytePort *
 ScmFilePort_new(FILE *file, const char *aux_info)
 {
-    return fileport_new_internal(file, aux_info, TRUE);
+    return fileport_new_internal(file, aux_info, scm_true);
 }
 
 ScmBytePort *
 ScmFilePort_new_shared(FILE *file, const char *aux_info)
 {
-    return fileport_new_internal(file, aux_info, FALSE);
+    return fileport_new_internal(file, aux_info, scm_false);
 }
 
 ScmBytePort *
@@ -222,12 +214,12 @@ fileport_peek_byte(ScmFilePort *port)
     return ungetc(ch, port->file);
 }
 
-static int
+static scm_bool
 fileport_byte_readyp(ScmFilePort *port)
 {
     /* does not support a FILE based on a pipe, or opened by fdopen(3) */
     /* FIXME: support stdin properly */
-    return TRUE;
+    return scm_true;
 }
 
 static int
@@ -245,7 +237,7 @@ fileport_puts(ScmFilePort *port, const char *str)
 static size_t
 fileport_write(ScmFilePort *port, size_t nbytes, const char *buf)
 {
-    return fwrite(buf, 1, nbytes, port->file);
+    return fwrite(buf, sizeof(char), nbytes, port->file);
 }
 
 static int

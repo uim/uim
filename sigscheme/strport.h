@@ -56,7 +56,7 @@
 /*=======================================
   Type Definitions
 =======================================*/
-typedef void (*ScmInputStrPort_finalizer)(char **str, int ownership,
+typedef void (*ScmInputStrPort_finalizer)(char **str, scm_bool ownership,
                                           void **opaque);
 typedef void (*ScmOutputStrPort_finalizer)(char **str, size_t buf_size,
                                            void **opaque);

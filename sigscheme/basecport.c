@@ -69,7 +69,7 @@ static ScmCharCodec *basecport_codec(ScmBaseCharPort *port);
 static char *basecport_inspect(ScmBaseCharPort *port);
 static int basecport_get_char(ScmBaseCharPort *port);
 static int basecport_peek_char(ScmBaseCharPort *port);
-static int basecport_char_readyp(ScmBaseCharPort *port);
+static scm_bool basecport_char_readyp(ScmBaseCharPort *port);
 static int basecport_vprintf(ScmBaseCharPort *port, const char *str,
                              va_list args);
 static int basecport_puts(ScmBaseCharPort *port, const char *str);
@@ -184,7 +184,7 @@ basecport_peek_char(ScmBaseCharPort *port)
     return SCM_BYTEPORT_PEEK_BYTE(port->bport);
 }
 
-static int
+static scm_bool
 basecport_char_readyp(ScmBaseCharPort *port)
 {
     return SCM_BYTEPORT_BYTE_READYP(port->bport);

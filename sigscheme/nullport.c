@@ -71,7 +71,7 @@ static int nullport_close(ScmNullPort *bport);
 static char *nullport_inspect(ScmNullPort *port);
 static int nullport_get_byte(ScmNullPort *bport);
 static int nullport_peek_byte(ScmNullPort *bport);
-static int nullport_byte_readyp(ScmNullPort *bport);
+static scm_bool nullport_byte_readyp(ScmNullPort *bport);
 static int nullport_vprintf(ScmNullPort *bport, const char *str, va_list args);
 static int nullport_puts(ScmNullPort *bport, const char *str);
 static size_t nullport_write(ScmNullPort *bport,
@@ -150,10 +150,10 @@ nullport_peek_byte(ScmNullPort *port)
     return EOF;
 }
 
-static int
+static scm_bool
 nullport_byte_readyp(ScmNullPort *port)
 {
-    return TRUE;
+    return scm_true;
 }
 
 static int

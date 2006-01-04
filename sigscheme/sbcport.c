@@ -143,5 +143,5 @@ sbcport_put_char(ScmSingleByteCharPort *port, int ch)
     char buf[1];
 
     buf[0] = ch;
-    return SCM_BYTEPORT_WRITE(port->bport, 1, buf);
+    return SCM_BYTEPORT_WRITE(port->bport, sizeof(char), buf);
 }

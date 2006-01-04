@@ -136,6 +136,12 @@
 /*=======================================
   Type Definitions
 =======================================*/
+#if (!defined(scm_true) && !defined(scm_false))
+typedef int scm_bool;
+#define scm_false 0
+#define scm_true  (!scm_false)
+#endif
+
 typedef struct ScmCharPortVTbl_ ScmCharPortVTbl;
 typedef struct ScmCharPort_     ScmCharPort;
 typedef struct ScmBaseCharPort_ ScmBaseCharPort;
@@ -154,7 +160,7 @@ typedef char *(*ScmCharPortMethod_inspect)(ScmCharPort *cport);
 /* input */
 typedef int (*ScmCharPortMethod_get_char)(ScmCharPort *cport);
 typedef int (*ScmCharPortMethod_peek_char)(ScmCharPort *cport);
-typedef int (*ScmCharPortMethod_char_readyp)(ScmCharPort *cport);
+typedef scm_bool (*ScmCharPortMethod_char_readyp)(ScmCharPort *cport);
 
 /* output */
 typedef int (*ScmCharPortMethod_vprintf)(ScmCharPort *cport,
@@ -199,7 +205,7 @@ typedef char *(*ScmBytePortMethod_inspect)(ScmBytePort *bport);
 /* input */
 typedef int (*ScmBytePortMethod_get_byte)(ScmBytePort *bport);
 typedef int (*ScmBytePortMethod_peek_byte)(ScmBytePort *bport);
-typedef int (*ScmBytePortMethod_byte_readyp)(ScmBytePort *bport);
+typedef scm_bool (*ScmBytePortMethod_byte_readyp)(ScmBytePort *bport);
 
 /* output */
 typedef int (*ScmBytePortMethod_vprintf)(ScmBytePort *bport,
