@@ -1,6 +1,6 @@
 /*===========================================================================
  *  FileName : operations-srfi8.c
- *  About    : srfi8 receive syntax
+ *  About    : SRFI-8 receive: Binding to multiple values
  *
  *  Copyright (C) 2005-2006 Jun Inoue
  *
@@ -63,36 +63,41 @@
 void
 scm_initialize_srfi8(void)
 {
-    /*=======================================================================
-      SRFI-8 Procedure
-    =======================================================================*/
     REGISTER_FUNC_TABLE(srfi8_func_info_table);
 }
 
-/*=============================================================================
-  SRFI8 : Receive
-=============================================================================*/
 ScmObj
-scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalState *eval_state)
+scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body,
+                    ScmEvalState *eval_state)
 {
+    ScmObj env, actuals;
+    DECLARE_FUNCTION("receive", syntax_variadic_tailrec_2);
+
+    env = eval_state->env;
+
     /*
      * (receive <formals> <expression> <body>)
      */
-    ScmObj env     = eval_state->env;
-    ScmObj actuals = SCM_FALSE;
-    DECLARE_FUNCTION("receive", syntax_variadic_tailrec_2);
 
-    if (!(CONSP(formals) || NULLP(formals) || SYMBOLP(formals)))
+    if (!(LISTP(formals) || SYMBOLP(formals)))
         ERR_OBJ("bad formals", formals);
 
     /* FIXME: do we have to extend the environment first?  The SRFI-8
      * document contradicts itself on this part. */
+    /*
+     * In my recognition, the description in SRFI-8 "The environment in which
+     * the receive-expression is evaluated is extended by binding <variable1>,
+     * ..." does not mean that the environment is extended for the evaluation
+     * of the receive-expression. Probably it only specifies which environment
+     * will be extended after the evaluation. So current implementation is
+     * correct, I think.  -- YamaKen 2006-01-05
+     */
     actuals = EVAL(expr, env);
 
     if (SCM_VALUEPACKETP(actuals))
         actuals = SCM_VALUEPACKET_VALUES(actuals);
     else
-        actuals = CONS(actuals, SCM_NULL);
+        actuals = LIST_1(actuals);
 
     eval_state->env = env = scm_extend_environment(formals, actuals, env);
 
