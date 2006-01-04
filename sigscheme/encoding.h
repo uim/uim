@@ -53,10 +53,10 @@
 
 #define SCM_MB_MAX_LEN 4
 
-#define SCM_MBS_SET_STR(mbs, s)         ((mbs).str = (s))
-#define SCM_MBS_GET_STR(mbs)            ((mbs).str)
-#define SCM_MBS_SET_SIZE(mbs, siz)      ((mbs).size = (siz))
-#define SCM_MBS_GET_SIZE(mbs)           ((mbs).size)
+#define SCM_MBS_SET_STR(mbs, s)          ((mbs).str = (s))
+#define SCM_MBS_GET_STR(mbs)             ((mbs).str)
+#define SCM_MBS_SET_SIZE(mbs, siz)       ((mbs).size = (siz))
+#define SCM_MBS_GET_SIZE(mbs)            ((mbs).size)
 
 #define SCM_MBCINFO_SET_SIZE(inf, siz)   ((inf).size = (siz))
 #define SCM_MBCINFO_GET_SIZE(inf)        ((inf).size)
@@ -69,11 +69,11 @@
 #define SCM_MBCINFO_SET_STATE(inf, stat)
 #define SCM_MBCINFO_GET_STATE(inf)       SCM_MB_STATELESS
 #endif /* SCM_USE_STATEFUL_ENCODING */
-#define SCM_MBCINFO_CLEAR_FLAG(inf)     ((inf).flag = 0)
-#define SCM_MBCINFO_SET_ERROR(inf)      ((inf).flag |= 1)
-#define SCM_MBCINFO_SET_INCOMPLETE(inf) ((inf).flag |= 2)
-#define SCM_MBCINFO_ERRORP(inf)         ((inf).flag & 1)
-#define SCM_MBCINFO_INCOMPLETEP(inf)    ((inf).flag & 2)
+#define SCM_MBCINFO_CLEAR_FLAG(inf)      ((inf).flag = 0)
+#define SCM_MBCINFO_SET_ERROR(inf)       ((inf).flag |= 1)
+#define SCM_MBCINFO_SET_INCOMPLETE(inf)  ((inf).flag |= 2)
+#define SCM_MBCINFO_ERRORP(inf)          ((inf).flag & 1)
+#define SCM_MBCINFO_INCOMPLETEP(inf)     ((inf).flag & 2)
 #define SCM_MBCINFO_INIT(inf)                                                \
     do {                                                                     \
         SCM_MBCINFO_SET_SIZE((inf), 0);                                      \
