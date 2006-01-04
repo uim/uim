@@ -18,6 +18,8 @@
 	     "ekato"    => 'Etsushi Kato <ekato@ees.hokudai.ac.jp>',
 	     "yamamoto" => 'Masanari Yamamoto <h013177b@ice.nuie.nagoya-u.ac.jp>',
 	     "jun0"     => 'Jun Inoue <jun.lambda@gmail.com>',
+	     "nosuke"   => 'Konosuke Watanabe <sasugaanija@gmail.com>',
+	     "jhpark"   => 'Jae-hyeon Park <jhyeon@gmail.com>',
 );
 
 $parse_next_line = 0;
