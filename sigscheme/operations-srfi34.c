@@ -1,6 +1,6 @@
 /*===========================================================================
  *  FileName : operations-srfi34.c
- *  About    : New implementation of SRFI-34 exception handling for programs
+ *  About    : SRFI-34 Exception Handling for Programs
  *
  *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>
  *
@@ -150,29 +150,31 @@ scm_initialize_srfi34(void)
     syn_apply   = scm_symbol_value(scm_intern("apply"),  SCM_INTERACTION_ENV);
     proc_values = scm_symbol_value(scm_intern("values"), SCM_INTERACTION_ENV);
     /* FIXME: make registration type-safe */
-    syn_set_cur_handlers = MAKE_FUNC(SCM_SYNTAX_FIXED | 1, &set_cur_handlers);
-    proc_with_exception_handlers = MAKE_FUNC(SCM_PROCEDURE_FIXED | 2,
-                                             &with_exception_handlers);
-    syn_guard_internal = MAKE_FUNC(SCM_SYNTAX_FIXED | 1, &guard_internal);
-    syn_guard_handler = MAKE_FUNC(SCM_SYNTAX_FIXED_TAIL_REC | 1,
-                                  &guard_handler);
-    syn_guard_handler_body = MAKE_FUNC(SCM_SYNTAX_FIXED | 1,
-                                       &guard_handler_body);
-    syn_guard_body = MAKE_FUNC(SCM_SYNTAX_FIXED_TAIL_REC | 0,
-                               &guard_body);
+    syn_set_cur_handlers
+        = MAKE_FUNC(SCM_SYNTAX_FIXED | 1,          &set_cur_handlers);
+    proc_with_exception_handlers
+        = MAKE_FUNC(SCM_PROCEDURE_FIXED | 2,       &with_exception_handlers);
+    syn_guard_internal
+        = MAKE_FUNC(SCM_SYNTAX_FIXED | 1,          &guard_internal);
+    syn_guard_handler
+        = MAKE_FUNC(SCM_SYNTAX_FIXED_TAIL_REC | 1, &guard_handler);
+    syn_guard_handler_body
+        = MAKE_FUNC(SCM_SYNTAX_FIXED | 1,          &guard_handler_body);
+    syn_guard_body
+        = MAKE_FUNC(SCM_SYNTAX_FIXED_TAIL_REC | 0, &guard_body);
 
 #if USE_WITH_SIGSCHEME_FATAL_ERROR
     proc_fallback_handler
         = scm_s_lambda(LIST_1(sym_condition),
-                        LIST_1(LIST_4(scm_intern("if"),
-                                      LIST_2(scm_intern("%%error-object?"),
-                                             sym_condition),
-                                      LIST_2(scm_intern("%%fatal-error"),
-                                             sym_condition),
-                                      LIST_3(sym_error,
-                                             errmsg_unhandled_exception,
-                                             sym_condition))),
-                        SCM_INTERACTION_ENV);
+                       LIST_1(LIST_4(scm_intern("if"),
+                                     LIST_2(scm_intern("%%error-object?"),
+                                            sym_condition),
+                                     LIST_2(scm_intern("%%fatal-error"),
+                                            sym_condition),
+                                     LIST_3(sym_error,
+                                            errmsg_unhandled_exception,
+                                            sym_condition))),
+                       SCM_INTERACTION_ENV);
 #else /* USE_WITH_SIGSCHEME_FATAL_ERROR */
     /*
      * The 'error' procedure should not be invoked directly by
@@ -181,10 +183,10 @@ scm_initialize_srfi34(void)
      */
     proc_fallback_handler
         = scm_s_lambda(LIST_1(sym_condition),
-                        LIST_1(LIST_3(sym_error,
-                                      errmsg_unhandled_exception,
-                                      sym_condition)),
-                        SCM_INTERACTION_ENV);
+                       LIST_1(LIST_3(sym_error,
+                                     errmsg_unhandled_exception,
+                                     sym_condition)),
+                       SCM_INTERACTION_ENV);
 #endif /* USE_WITH_SIGSCHEME_FATAL_ERROR */
 
     REGISTER_FUNC_TABLE(scm_new_srfi34_func_info_table);
@@ -209,11 +211,11 @@ with_exception_handlers(ScmObj new_handlers, ScmObj thunk)
 
     prev_handlers = current_exception_handlers;
     before = scm_s_lambda(SCM_NULL,
-                           LIST_1(LIST_2(syn_set_cur_handlers, new_handlers)),
-                           SCM_INTERACTION_ENV);
-    after = scm_s_lambda(SCM_NULL,
-                          LIST_1(LIST_2(syn_set_cur_handlers, prev_handlers)),
+                          LIST_1(LIST_2(syn_set_cur_handlers, new_handlers)),
                           SCM_INTERACTION_ENV);
+    after = scm_s_lambda(SCM_NULL,
+                         LIST_1(LIST_2(syn_set_cur_handlers, prev_handlers)),
+                         SCM_INTERACTION_ENV);
     return scm_dynamic_wind(before, thunk, after);
 }
 
@@ -244,7 +246,8 @@ scm_p_srfi34_raise(ScmObj obj)
         if (ERROBJP(obj))
             err_obj = obj;
         else
-            err_obj = scm_make_error_obj(errmsg_fallback_exhausted, LIST_1(obj));
+            err_obj
+                = scm_make_error_obj(errmsg_fallback_exhausted, LIST_1(obj));
         scm_p_fatal_error(err_obj);
         /* NOTREACHED */
     }
@@ -253,17 +256,17 @@ scm_p_srfi34_raise(ScmObj obj)
     rest_handlers = CDR(current_exception_handlers);
     obj = LIST_2(SYM_QUOTE, obj);
     thunk = scm_s_lambda(SCM_NULL,
-                          LIST_2(LIST_2(handler, obj),
-                                 LIST_3(sym_error,
-                                        errmsg_handler_returned, obj)),
-                          SCM_INTERACTION_ENV);
+                         LIST_2(LIST_2(handler, obj),
+                                LIST_3(sym_error,
+                                       errmsg_handler_returned, obj)),
+                         SCM_INTERACTION_ENV);
     return with_exception_handlers(rest_handlers, thunk);
 }
 
 /* guard */
 
-ScmObj scm_s_srfi34_guard(ScmObj cond_catch, ScmObj body,
-                           ScmEvalState *eval_state)
+ScmObj
+scm_s_srfi34_guard(ScmObj cond_catch, ScmObj body, ScmEvalState *eval_state)
 {
     ScmObj lex_env, proc_guard_int, ret;
     DECLARE_FUNCTION("guard", syntax_variadic_tailrec_1);
@@ -274,11 +277,11 @@ ScmObj scm_s_srfi34_guard(ScmObj cond_catch, ScmObj body,
     lex_env = eval_state->env;
     eval_state->env
         = scm_extend_environment(LIST_3(sym_lex_env, sym_cond_catch, sym_body),
-                                LIST_3(lex_env, cond_catch, body),
-                                lex_env);
+                                 LIST_3(lex_env, cond_catch, body),
+                                 lex_env);
     proc_guard_int = scm_s_lambda(LIST_1(sym_guard_k),
-                                   LIST_1(LIST_2(syn_guard_internal, sym_guard_k)),
-                                   eval_state->env);
+                                  LIST_1(LIST_2(syn_guard_internal, sym_guard_k)),
+                                  eval_state->env);
 
     ret = scm_call_with_current_continuation(proc_guard_int, eval_state);
     eval_state->env      = lex_env;
@@ -293,11 +296,11 @@ guard_internal(ScmObj q_guard_k, ScmObj env)
     DECLARE_PRIVATE_FUNCTION("guard", SyntaxFixed1);
 
     handler = scm_s_lambda(LIST_1(sym_condition),
-                            LIST_1(LIST_2(syn_guard_handler, sym_condition)),
-                            env);
+                           LIST_1(LIST_2(syn_guard_handler, sym_condition)),
+                           env);
     body = scm_s_lambda(SCM_NULL,
-                         LIST_1(LIST_1(syn_guard_body)),
-                         env);
+                        LIST_1(LIST_1(syn_guard_body)),
+                        env);
 
     return scm_p_srfi34_with_exception_handler(handler, body);
 }
@@ -310,8 +313,8 @@ guard_handler(ScmObj q_condition, ScmEvalState *eval_state)
 
     handler_body
         = scm_s_lambda(LIST_1(sym_handler_k),
-                        LIST_1(LIST_2(syn_guard_handler_body, sym_handler_k)),
-                        eval_state->env);
+                       LIST_1(LIST_2(syn_guard_handler_body, sym_handler_k)),
+                       eval_state->env);
     ret = scm_call_with_current_continuation(handler_body, eval_state);
     if (eval_state->ret_type == SCM_RETTYPE_NEED_EVAL) {
         ret = EVAL(ret, eval_state->env);
@@ -329,8 +332,8 @@ delay(ScmObj evaled_obj, ScmObj env)
     if (VALUEPACKETP(evaled_obj)) {
         vals = SCM_VALUEPACKET_VALUES(evaled_obj);
         return scm_s_delay(LIST_3(syn_apply,
-                                   proc_values, LIST_2(SYM_QUOTE, vals)),
-                            env);
+                                  proc_values, LIST_2(SYM_QUOTE, vals)),
+                           env);
     } else {
         return scm_s_delay(LIST_2(SYM_QUOTE, evaled_obj), env);
     }
@@ -356,8 +359,8 @@ guard_handler_body(ScmObj q_handler_k, ScmObj env)
     clauses = CDR(cond_catch);
     ENSURE_SYMBOL(sym_var);
     cond_env = scm_extend_environment(LIST_1(sym_var),
-                                     LIST_1(condition),
-                                     lex_env);
+                                      LIST_1(condition),
+                                      lex_env);
     eval_state.env = cond_env;
     eval_state.ret_type = SCM_RETTYPE_NEED_EVAL;
     caught = scm_s_cond_internal(clauses, SCM_INVALID, &eval_state);
@@ -368,7 +371,7 @@ guard_handler_body(ScmObj q_handler_k, ScmObj env)
         scm_call_continuation(guard_k, delay(caught, cond_env));
     } else {
         reraise = scm_s_delay(LIST_2(sym_raise, LIST_2(SYM_QUOTE, condition)),
-                               cond_env);
+                              cond_env);
         scm_call_continuation(handler_k, reraise);
     }
     /* NOTREACHED */
