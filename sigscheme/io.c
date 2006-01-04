@@ -420,16 +420,6 @@ scm_p_close_output_port(ScmObj port)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.2 Input
 ===========================================================================*/
-#define PREPARE_PORT(port, args, default_port)                               \
-    do {                                                                     \
-        port = POP_ARG(args);                                                \
-        if (!VALIDP(port))                                                   \
-            port = default_port;                                             \
-        ENSURE_PORT(port);                                                   \
-        ASSERT_NO_MORE_ARG(args);                                            \
-    } while (/* CONSTCOND */ 0)
-
-
 ScmObj
 scm_p_read(ScmObj args)
 {

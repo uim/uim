@@ -31,8 +31,13 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 (load "./test/unittest.scm")
 
+(define tn test-name)
+
 (use srfi-38)
 (use srfi-6)
+
+(tn "write/ss invalid form")
+(assert-error (tn) (lambda () (write/ss #f . (current-output-port))))
 
 (let* ((outs (open-output-string))
        (s "abc")

@@ -12,9 +12,9 @@ Requirements and bugs:
 * Fix all destructive expression on macros
 
 * Review and refactor all functions in syntax.c(listran, vectran,
-  qquote_internal, scm_s_quasiquote, scm_s_do), operations-srfi*.c,
-  encoding.[hc] and *port.[hc] (other files had already been done except for
-  the destructive exp on macros)
+  qquote_internal, scm_s_quasiquote, scm_s_do),
+  operations-srfi{1,2,6,8,23,34,60}.c, encoding.[hc] and *port.[hc] (other
+  files had already been done except for the destructive exp on macros)
 
 * Investigate behavior of other Scheme implementations about constant vector
   and list

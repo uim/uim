@@ -343,6 +343,15 @@ extern ScmObj scm_null_values;
 
 #define ENSURE_ALLOCATED SCM_ENSURE_ALLOCATED
 
+#define PREPARE_PORT(port, args, default_port)                               \
+    do {                                                                     \
+        port = POP_ARG(args);                                                \
+        if (!VALIDP(port))                                                   \
+            port = default_port;                                             \
+        ENSURE_PORT(port);                                                   \
+        ASSERT_NO_MORE_ARG(args);                                            \
+    } while (/* CONSTCOND */ 0)
+
 /* Macros For Handling Continuation Object */
 #define INVALID_CONTINUATION_OPAQUE  NULL
 
