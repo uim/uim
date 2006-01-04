@@ -34,13 +34,14 @@
 /*=======================================
   System Include
 =======================================*/
-#include "sigscheme.h"
-#include "sigschemeinternal.h"
-#include "nullport.h"
+#include <stddef.h>
 
 /*=======================================
   Local Include
 =======================================*/
+#include "sigscheme.h"
+#include "sigschemeinternal.h"
+#include "nullport.h"
 
 /*=======================================
   File Local Struct Declarations
@@ -82,9 +83,9 @@ static const int sscm_debug_mask_tbl[] = {
 };
 static long sscm_verbose_level = -1;
 
-static ScmObj null_port         = NULL;
-static ScmObj saved_output_port = NULL;
-static ScmObj saved_error_port  = NULL;
+static ScmObj null_port;
+static ScmObj saved_output_port;
+static ScmObj saved_error_port;
 
 /*=======================================
   File Local Function Declarations
@@ -92,11 +93,6 @@ static ScmObj saved_error_port  = NULL;
 
 /*=======================================
   Function Implementations
-=======================================*/
-/*=======================================
-  SIOD compatible procedures
-
-  TODO : remove these functions!
 =======================================*/
 void
 scm_initialize_siod(void)
@@ -200,12 +196,13 @@ scm_p_closure_code(ScmObj closure)
 ScmObj
 scm_p_verbose(ScmObj args)
 {
+    ScmObj level;
     DECLARE_FUNCTION("verbose", procedure_variadic_0);
 
-    if (!NULLP(args)) {
-        ENSURE_INT(CAR(args));
+    if (level = POP_ARG(args), VALIDP(level)) {
+        ENSURE_INT(level);
 
-        scm_set_verbose_level(SCM_INT_VALUE(CAR(args)));
+        scm_set_verbose_level(SCM_INT_VALUE(level));
     }
 
     return MAKE_INT(sscm_verbose_level);
@@ -215,6 +212,7 @@ ScmObj
 scm_p_eof_val(void)
 {
     DECLARE_FUNCTION("eof-val", procedure_fixed_0);
+
     return SCM_EOF;
 }
 
@@ -228,9 +226,9 @@ scm_s_undefine(ScmObj var, ScmObj env)
 
     val = scm_lookup_environment(var, env);
     if (val != SCM_INVALID_REF)
-        return SET(val, SCM_UNBOUND);
-
-    SCM_SYMBOL_SET_VCELL(var, SCM_UNBOUND);
+        SET(val, SCM_UNBOUND);
+    else
+        SCM_SYMBOL_SET_VCELL(var, SCM_UNBOUND);
 
     return SCM_FALSE;
 }
@@ -259,18 +257,20 @@ scm_set_verbose_level(long level)
 
     if (level >= 2)
         scm_set_debug_categories(scm_debug_categories()
-                                  | scm_predefined_debug_categories());
+                                 | scm_predefined_debug_categories());
 
     if (level == 0) {
-        saved_error_port = scm_err;
-        saved_output_port = scm_out;
+        if (!EQ(scm_err, null_port))
+            saved_error_port = scm_err;
+        if (!EQ(scm_out, null_port))
+            saved_output_port = scm_out;
 
         scm_err = null_port;
         scm_out = null_port;
     } else {
-        if (FALSEP(scm_err))
+        if (EQ(scm_err, null_port))
             scm_err = saved_error_port;
-        if (FALSEP(scm_out))
+        if (EQ(scm_out, null_port))
             scm_out = saved_output_port;
     }
 }

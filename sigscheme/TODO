@@ -13,7 +13,7 @@ Requirements and bugs:
 
 * Review and refactor all functions in syntax.c(listran, vectran,
   qquote_internal, scm_s_quasiquote, scm_s_do),
-  operations-{siod,r5rs-deepcadrs,srfi*}.c, encoding.[hc] and *port.[hc]
+  operations-{r5rs-deepcadrs,srfi*}.c, encoding.[hc] and *port.[hc]
   (other files had already been done except for the destructive exp on macros)
 
 * Investigate behavior of other Scheme implementations about constant vector
