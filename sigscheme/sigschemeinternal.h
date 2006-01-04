@@ -229,6 +229,9 @@ extern ScmObj scm_null_values;
 #define CDBG           SCM_CDBG
 #define DBG            SCM_DBG
 
+#define ENSURE_PROPER_LIST_TERMINATION SCM_ENSURE_PROPER_LIST_TERMINATION
+#define CHECK_PROPER_LIST_TERMINATION  SCM_CHECK_PROPER_LIST_TERMINATION
+
 /*
  * Abbrev name for these constants are not provided since it involves some
  * consistency problems and confusions. Use the canonical names always.

@@ -1,4 +1,38 @@
+;;  FileName : test-num.scm
+;;  About    : unit test for R5RS numbers
+;;
+;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
+;;
+;;  All rights reserved.
+;;
+;;  Redistribution and use in source and binary forms, with or without
+;;  modification, are permitted provided that the following conditions
+;;  are met:
+;;
+;;  1. Redistributions of source code must retain the above copyright
+;;     notice, this list of conditions and the following disclaimer.
+;;  2. Redistributions in binary form must reproduce the above copyright
+;;     notice, this list of conditions and the following disclaimer in the
+;;     documentation and/or other materials provided with the distribution.
+;;  3. Neither the name of authors nor the names of its contributors
+;;     may be used to endorse or promote products derived from this software
+;;     without specific prior written permission.
+;;
+;;  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS
+;;  IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+;;  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+;;  PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR
+;;  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+;;  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+;;  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+;;  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+;;  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+;;  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 (load "./test/unittest.scm")
+
+(define tn test-name)
 
 ; check =
 (assert-true  "= #1"  (= 1 1))
@@ -145,10 +179,64 @@
 (assert-equal? "remainder test3" 1 (remainder 13 -4))
 (assert-equal? "remainder test4" -1 (remainder -13 -4))
 
-; check number->string
-(assert-equal? "number->string test1" "1" (number->string 1))
-(assert-equal? "number->string test2" "10" (number->string 10))
-(assert-equal? "number->string test3" "100" (number->string 100))
+;;
+;; number->string
+;;
+(tn "number->string invalid radix")
+(assert-error  (tn) (lambda () (number->string 0 -16)))
+(assert-error  (tn) (lambda () (number->string 0 -10)))
+(assert-error  (tn) (lambda () (number->string 0 -8)))
+(assert-error  (tn) (lambda () (number->string 0 -2)))
+(assert-error  (tn) (lambda () (number->string 0 -1)))
+(assert-error  (tn) (lambda () (number->string 0 0)))
+(assert-error  (tn) (lambda () (number->string 0 1)))
+(assert-error  (tn) (lambda () (number->string 0 3)))
+(assert-error  (tn) (lambda () (number->string 0 4)))
+(assert-error  (tn) (lambda () (number->string 0 7)))
+(assert-error  (tn) (lambda () (number->string 0 9)))
+(assert-error  (tn) (lambda () (number->string 0 11)))
+(assert-error  (tn) (lambda () (number->string 0 15)))
+(assert-error  (tn) (lambda () (number->string 0 17)))
+(tn "number->string implicit decimal")
+(assert-equal? (tn) "-100" (number->string -100))
+(assert-equal? (tn) "-10"  (number->string -10))
+(assert-equal? (tn) "-1"   (number->string -1))
+(assert-equal? (tn) "0"    (number->string 0))
+(assert-equal? (tn) "1"    (number->string 1))
+(assert-equal? (tn) "10"   (number->string 10))
+(assert-equal? (tn) "100"  (number->string 100))
+(tn "number->string explicit decimal")
+(assert-equal? (tn) "-100" (number->string -100 10))
+(assert-equal? (tn) "-10"  (number->string -10  10))
+(assert-equal? (tn) "-1"   (number->string -1   10))
+(assert-equal? (tn) "0"    (number->string 0    10))
+(assert-equal? (tn) "1"    (number->string 1    10))
+(assert-equal? (tn) "10"   (number->string 10   10))
+(assert-equal? (tn) "100"  (number->string 100  10))
+(tn "number->string hexadecimal")
+(assert-equal? (tn) "-64"  (number->string -100 16))
+(assert-equal? (tn) "-A"   (number->string -10  16))
+(assert-equal? (tn) "-1"   (number->string -1   16))
+(assert-equal? (tn) "0"    (number->string 0    16))
+(assert-equal? (tn) "1"    (number->string 1    16))
+(assert-equal? (tn) "A"    (number->string 10   16))
+(assert-equal? (tn) "64"   (number->string 100  16))
+(tn "number->string octal")
+(assert-equal? (tn) "-144" (number->string -100 8))
+(assert-equal? (tn) "-12"  (number->string -10  8))
+(assert-equal? (tn) "-1"   (number->string -1   8))
+(assert-equal? (tn) "0"    (number->string 0    8))
+(assert-equal? (tn) "1"    (number->string 1    8))
+(assert-equal? (tn) "12"   (number->string 10   8))
+(assert-equal? (tn) "144"  (number->string 100  8))
+(tn "number->string binary")
+(assert-equal? (tn) "-1100100" (number->string -100 2))
+(assert-equal? (tn) "-1010"    (number->string -10  2))
+(assert-equal? (tn) "-1"       (number->string -1   2))
+(assert-equal? (tn) "0"        (number->string 0    2))
+(assert-equal? (tn) "1"        (number->string 1    2))
+(assert-equal? (tn) "1010"     (number->string 10   2))
+(assert-equal? (tn) "1100100"  (number->string 100  2))
 
 ; check string->number
 (assert-equal? "string->number test1"  1   (string->number "1"))

@@ -75,6 +75,23 @@ extern "C" {
 #define SCM_DBG(args)
 #endif /* SCM_DEBUG */
 
+/*
+ * Condition testers
+ *
+ * SigScheme uses these three types of condition testers.
+ *
+ * ASSERT: Asserts a condition that is expected as always true, as a contract
+ * programming. No actual check is performed when !SCM_DEBUG.
+ *
+ * ENSURE: Mandatory runtime check involving uncertain data. An exception is
+ * raised if failed. Actual check is always performed regaradless of debug
+ * configurations.
+ *
+ * CHECK: Optional runtime check. Actual check is performed only when
+ * configured to do so. Since the behavior, codes that include a CHECK must be
+ * sane even if the condition is false with no actual check.
+ *
+ */
 #if SCM_DEBUG
 #if SCM_CHICKEN_DEBUG
 /* allows survival recovery */
@@ -89,6 +106,15 @@ extern "C" {
 #endif /* SCM_DEBUG */
 #define SCM_ENSURE(cond)                                                     \
     ((cond) || scm_die("invalid condition", __FILE__, __LINE__))
+
+#define SCM_ENSURE_PROPER_LIST_TERMINATION(term, lst)                        \
+    (NULLP(term) || (ERR_OBJ("proper list required but got", (lst)), 1))
+
+#if SCM_STRICT_ARGCHECK
+#define SCM_CHECK_PROPER_LIST_TERMINATION SCM_ENSURE_PROPER_LIST_TERMINATION
+#else
+#define SCM_CHECK_PROPER_LIST_TERMINATION(term, lst)
+#endif
 
 #define SCM_ENSURE_ALLOCATED(p)                                              \
     ((p) || (scm_fatal_error(SCM_ERRMSG_MEMORY_EXHAUSTED), 1))
@@ -324,6 +350,10 @@ struct ScmEvalState_ {
     ScmObj env;
     enum ScmReturnType ret_type;
 };
+
+/* object representation information for optimization */
+#define SCM_HAS_IMMEDIATE_INT  SCM_SAL_HAS_IMMEDIATE_INT
+#define SCM_HAS_IMMEDIATE_CHAR SCM_SAL_HAS_IMMEDIATE_CHAR
 
 /*=======================================
   Object Creators
@@ -752,14 +782,14 @@ ScmObj scm_p_less_eq(ScmObj left, ScmObj right, enum ScmReductionState *state);
 ScmObj scm_p_greater(ScmObj left, ScmObj right, enum ScmReductionState *state);
 ScmObj scm_p_greater_eq(ScmObj left, ScmObj right, enum ScmReductionState *state);
 ScmObj scm_p_numberp(ScmObj obj);
-ScmObj scm_p_zerop(ScmObj scm_num);
-ScmObj scm_p_positivep(ScmObj scm_num);
-ScmObj scm_p_negativep(ScmObj scm_num);
-ScmObj scm_p_oddp(ScmObj scm_num);
-ScmObj scm_p_evenp(ScmObj scm_num);
+ScmObj scm_p_zerop(ScmObj n);
+ScmObj scm_p_positivep(ScmObj n);
+ScmObj scm_p_negativep(ScmObj n);
+ScmObj scm_p_oddp(ScmObj n);
+ScmObj scm_p_evenp(ScmObj n);
 ScmObj scm_p_max(ScmObj left, ScmObj right, enum ScmReductionState *state);
 ScmObj scm_p_min(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj scm_p_abs(ScmObj scm_num);
+ScmObj scm_p_abs(ScmObj scm_n);
 ScmObj scm_p_quotient(ScmObj scm_n1, ScmObj scm_n2);
 ScmObj scm_p_modulo(ScmObj scm_n1, ScmObj scm_n2);
 ScmObj scm_p_remainder(ScmObj scm_n1, ScmObj scm_n2);
@@ -785,7 +815,7 @@ ScmObj scm_p_listp(ScmObj obj);
 ScmObj scm_p_length(ScmObj obj);
 ScmObj scm_p_append(ScmObj args);
 ScmObj scm_p_reverse(ScmObj lst);
-ScmObj scm_p_list_tail(ScmObj lst, ScmObj scm_k);
+ScmObj scm_p_list_tail(ScmObj lst, ScmObj k);
 ScmObj scm_p_list_ref(ScmObj lst, ScmObj scm_k);
 ScmObj scm_p_memq(ScmObj obj, ScmObj lst);
 ScmObj scm_p_memv(ScmObj obj, ScmObj lst);
@@ -794,21 +824,21 @@ ScmObj scm_p_assq(ScmObj obj, ScmObj alist);
 ScmObj scm_p_assv(ScmObj obj, ScmObj alist);
 ScmObj scm_p_assoc(ScmObj obj, ScmObj alist);
 ScmObj scm_p_symbolp(ScmObj obj);
-ScmObj scm_p_symbol2string(ScmObj obj);
+ScmObj scm_p_symbol2string(ScmObj sym);
 ScmObj scm_p_string2symbol(ScmObj str);
 
 ScmObj scm_p_charp(ScmObj obj);
 ScmObj scm_p_charequalp(ScmObj ch1, ScmObj ch2);
 /* TODO : many comparing functions around char is unimplemented */
-ScmObj scm_p_char_alphabeticp(ScmObj obj);
-ScmObj scm_p_char_numericp(ScmObj obj);
-ScmObj scm_p_char_whitespacep(ScmObj obj);
-ScmObj scm_p_char_upper_casep(ScmObj obj);
-ScmObj scm_p_char_lower_casep(ScmObj obj);
-ScmObj scm_p_char2integer(ScmObj obj);
-ScmObj scm_p_integer2char(ScmObj obj);
-ScmObj scm_p_char_upcase(ScmObj obj);
-ScmObj scm_p_char_downcase(ScmObj obj);
+ScmObj scm_p_char_alphabeticp(ScmObj ch);
+ScmObj scm_p_char_numericp(ScmObj ch);
+ScmObj scm_p_char_whitespacep(ScmObj ch);
+ScmObj scm_p_char_upper_casep(ScmObj ch);
+ScmObj scm_p_char_lower_casep(ScmObj ch);
+ScmObj scm_p_char2integer(ScmObj ch);
+ScmObj scm_p_integer2char(ScmObj n);
+ScmObj scm_p_char_upcase(ScmObj ch);
+ScmObj scm_p_char_downcase(ScmObj ch);
 
 ScmObj scm_p_stringp(ScmObj obj);
 ScmObj scm_p_make_string(ScmObj length, ScmObj args);
@@ -825,7 +855,7 @@ ScmObj scm_p_list2string(ScmObj lst);
 ScmObj scm_p_string_copy(ScmObj str);
 ScmObj scm_p_string_filld(ScmObj str, ScmObj ch);
 ScmObj scm_p_vectorp(ScmObj obj);
-ScmObj scm_p_make_vector(ScmObj vector_len, ScmObj args);
+ScmObj scm_p_make_vector(ScmObj scm_len, ScmObj args);
 ScmObj scm_p_vector(ScmObj args);
 ScmObj scm_p_vector_length(ScmObj vec);
 ScmObj scm_p_vector_ref(ScmObj vec, ScmObj scm_k);

@@ -208,6 +208,8 @@ scm_make_string_internal(char *str, int is_immutable)
 {
     ScmObj obj;
 
+    SCM_ASSERT(str);
+
     obj = scm_alloc_cell();
     SCM_ENTYPE_STRING(obj);
     SCM_STRING_SET_STR(obj, str);

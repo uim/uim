@@ -135,6 +135,10 @@ struct ScmCell_ {
     } obj;
 };
 
+/* object representation information for optimization */
+#define SCM_SAL_HAS_IMMEDIATE_INT  0
+#define SCM_SAL_HAS_IMMEDIATE_CHAR 0
+
 /*=======================================
   Object Creators
 =======================================*/

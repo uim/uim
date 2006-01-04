@@ -640,6 +640,11 @@ struct ScmCell_ {
 /*==============================================================================
                                SAL Macros
 ==============================================================================*/
+
+/* object representation information for optimization */
+#define SCM_SAL_HAS_IMMEDIATE_INT  1
+#define SCM_SAL_HAS_IMMEDIATE_CHAR 1
+
 /*=======================================
   Object Creators
 =======================================*/
