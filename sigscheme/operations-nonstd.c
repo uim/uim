@@ -35,10 +35,14 @@
 /*=======================================
   System Include
 =======================================*/
+#include <stddef.h>
+#include <stdio.h>
 
 /*=======================================
   Local Include
 =======================================*/
+#include "sigscheme.h"
+#include "sigschemeinternal.h"
 
 /*=======================================
   File Local Macro Definitions
@@ -67,6 +71,7 @@ void
 scm_initialize_nonstd_features(void)
 {
     REGISTER_FUNC_TABLE(nonstd_func_info_table);
+
     scm_define_alias("call/cc", "call-with-current-continuation");
 }
 
@@ -82,7 +87,7 @@ scm_initialize_nonstd_features(void)
 ScmObj
 scm_p_symbol_boundp(ScmObj sym, ScmObj rest)
 {
-    ScmObj env = SCM_INVALID;
+    ScmObj env;
     DECLARE_FUNCTION("symbol-bound?", procedure_variadic_1);
 
     ENSURE_SYMBOL(sym);
@@ -102,6 +107,7 @@ ScmObj
 scm_p_load_path(void)
 {
     DECLARE_FUNCTION("load-path", procedure_fixed_0);
+
     return MAKE_IMMUTABLE_STRING_COPYING(scm_lib_path);
 }
 
@@ -164,7 +170,7 @@ make_loaded_str(const char *filename)
     char *loaded_str;
     size_t size;
 
-    size = (strlen(filename) + sizeof("*-loaded*"));
+    size = strlen(filename) + sizeof("*-loaded*");
     loaded_str = scm_malloc(size);
     snprintf(loaded_str, size, "*%s-loaded*", filename);
 
