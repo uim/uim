@@ -112,8 +112,8 @@ extern ScmObj scm_null_values;
     SCM_SAL_VALUEPACKET_SET_VALUES((o), (vals))
 #endif /* SCM_USE_VALUECONS */
 
-#define SCM_ENTYPE_FREECELL(o)       SCM_SAL_ENTYPE_FREECELL(o)
-#define SCM_AS_FREECELL(o)           SCM_SAL_AS_FREECELL(o)
+#define SCM_ENTYPE_FREECELL(o)          SCM_SAL_ENTYPE_FREECELL(o)
+#define SCM_AS_FREECELL(o)              SCM_SAL_AS_FREECELL(o)
 
 #define SCM_FREECELLP(o)                SCM_SAL_FREECELLP(o)
 #define SCM_FREECELL_NEXT(o)            SCM_SAL_FREECELL_NEXT(o)
@@ -246,10 +246,10 @@ extern ScmObj scm_null_values;
  * is ignored, but we may use it in the future to implement a stub
  * generator.  This macro can be invoked only at the beginning of a
  * function body, right after local variable declarations. */
-#define DECLARE_FUNCTION(func_name, type) \
-    const char *SCM_MANGLE(name); \
-    ScmObj SCM_MANGLE(tmp); \
-    SCM_MANGLE(name) = func_name; \
+#define DECLARE_FUNCTION(func_name, type)                                    \
+    const char *SCM_MANGLE(name);                                            \
+    ScmObj SCM_MANGLE(tmp);                                                  \
+    SCM_MANGLE(name) = func_name;                                            \
     SCM_MANGLE(tmp)  = SCM_INVALID /* No semicolon here. */
 
 /* DECLARE_FUNCTION without the functype.
@@ -291,16 +291,16 @@ extern ScmObj scm_null_values;
 
 /* Destructively retreives the first element of an argument list.  If
  * ARGS doesn't contain enough arguments, return SCM_INVALID. */
-#define POP_ARG(args) \
-     (CONSP(args) \
-      ? (SCM_MANGLE(tmp) = CAR(args), (args) = CDR(args), SCM_MANGLE(tmp)) \
+#define POP_ARG(args)                                                        \
+     (CONSP(args)                                                            \
+      ? (SCM_MANGLE(tmp) = CAR(args), (args) = CDR(args), SCM_MANGLE(tmp))   \
       : SCM_INVALID)
 
 /* Like POP_ARG(), but signals an error if no argument is
    available. */
-#define MUST_POP_ARG(args) \
-     (CONSP(args) \
-      ? (SCM_MANGLE(tmp) = CAR(args), (args) = CDR(args), SCM_MANGLE(tmp)) \
+#define MUST_POP_ARG(args)                                                   \
+     (CONSP(args)                                                            \
+      ? (SCM_MANGLE(tmp) = CAR(args), (args) = CDR(args), SCM_MANGLE(tmp))   \
       : (ERR("missing argument(s)"), NULL))
 
 #define ENSURE_TYPE(pred, typename, obj)                                     \
@@ -361,13 +361,13 @@ typedef ScmRef ScmQueue;
 #define SCM_QUEUE_INVALIDATE(_q) ((_q) = NULL)
 #define SCM_QUEUE_VALIDP(_q)     (_q)
 #define SCM_QUEUE_POINT_TO(_q, _out) ((_q) = SCM_REF_OFF_HEAP(_out))
-#define SCM_QUEUE_ADD(_q, _dat) (SET((_q), LIST_1(_dat)),       \
+#define SCM_QUEUE_ADD(_q, _dat) (SET((_q), LIST_1(_dat)),                    \
                                  (_q) = REF_CDR(DEREF(_q)))
-#define SCM_QUEUE_APPEND(_q, _lst)              \
-    do {                                        \
-        SET((_q), (_lst));                      \
-        while (CONSP(DEREF(_q)))                \
-            (_q) = REF_CDR(DEREF(_q));          \
+#define SCM_QUEUE_APPEND(_q, _lst)                                           \
+    do {                                                                     \
+        SET((_q), (_lst));                                                   \
+        while (CONSP(DEREF(_q)))                                             \
+            (_q) = REF_CDR(DEREF(_q));                                       \
     } while (/* CONSTCOND */ 0)
 #define SCM_QUEUE_TERMINATOR(_q)          (DEREF(_q))
 #define SCM_QUEUE_SLOPPY_APPEND(_q, _lst) (SET((_q), (_lst)))
@@ -450,29 +450,30 @@ typedef ScmRef ScmQueue;
 =======================================*/
 /* storage.c */
 void scm_init_storage(size_t heap_size, size_t heap_alloc_threshold,
-                        int n_heaps_max, int n_heaps_init);
+                      int n_heaps_max, int n_heaps_init);
 void scm_finalize_storage(void);
 
 /* storage-gc.c */
-void   scm_init_gc(size_t heap_size, size_t heap_alloc_threshold,
-                     int n_heaps_max, int n_heaps_init);
-void   scm_finalize_gc(void);
+void scm_init_gc(size_t heap_size, size_t heap_alloc_threshold,
+                 int n_heaps_max, int n_heaps_init);
+void scm_finalize_gc(void);
 ScmObj scm_alloc_cell(void);
 
 /* storage-continuation.c */
-void   scm_init_continuation(void);
-void   scm_finalize_continuation(void);
-void   scm_destruct_continuation(ScmObj cont);
-ScmObj scm_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state);
-void   scm_call_continuation(ScmObj cont, ScmObj ret);
+void scm_init_continuation(void);
+void scm_finalize_continuation(void);
+void scm_destruct_continuation(ScmObj cont);
+ScmObj scm_call_with_current_continuation(ScmObj proc,
+                                          ScmEvalState *eval_state);
+void scm_call_continuation(ScmObj cont, ScmObj ret);
 ScmObj scm_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
 void scm_push_trace_frame(ScmObj obj, ScmObj env);
 void scm_pop_trace_frame(void);
 ScmObj scm_trace_stack(void);
 
 /* storage-symbol.c */
-void   scm_init_symbol(void);
-void   scm_finalize_symbol(void);
+void scm_init_symbol(void);
+void scm_finalize_symbol(void);
 
 /* env.c */
 ScmObj scm_extend_environment(ScmObj vars, ScmObj vals, ScmObj env);
@@ -485,13 +486,15 @@ ScmObj scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
 ScmObj scm_eval(ScmObj obj, ScmObj env);
 
 /* syntax.c */
-ScmObj scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state);
+ScmObj scm_s_cond_internal(ScmObj args, ScmObj case_key,
+                           ScmEvalState *eval_state);
 
 /* error.c */
 void scm_init_error(void);
 void scm_throw_exception(ScmObj errorobj) SCM_NORETURN;
 void scm_show_error_header(void);
-void scm_error_obj(const char *func_name, const char *msg, ScmObj obj) SCM_NORETURN;
+void scm_error_obj(const char *func_name, const char *msg,
+                   ScmObj obj) SCM_NORETURN;
 
 /* operations.c */
 int scm_length(ScmObj lst);

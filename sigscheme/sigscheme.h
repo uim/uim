@@ -131,15 +131,15 @@ extern "C" {
 #define SCM_CDAR(kons) (SCM_CDR(SCM_CAR(kons)))
 #define SCM_CDDR(kons) (SCM_CDR(SCM_CDR(kons)))
 
-#define SCM_LIST_1(elm0) \
+#define SCM_LIST_1(elm0)                                                     \
     (SCM_CONS((elm0), SCM_NULL))
-#define SCM_LIST_2(elm0, elm1) \
+#define SCM_LIST_2(elm0, elm1)                                               \
     (SCM_CONS((elm0), SCM_LIST_1(elm1)))
-#define SCM_LIST_3(elm0, elm1, elm2) \
+#define SCM_LIST_3(elm0, elm1, elm2)                                         \
     (SCM_CONS((elm0), SCM_LIST_2((elm1), (elm2))))
-#define SCM_LIST_4(elm0, elm1, elm2, elm3) \
+#define SCM_LIST_4(elm0, elm1, elm2, elm3)                                   \
     (SCM_CONS((elm0), SCM_LIST_3((elm1), (elm2), (elm3))))
-#define SCM_LIST_5(elm0, elm1, elm2, elm3, elm4) \
+#define SCM_LIST_5(elm0, elm1, elm2, elm3, elm4)                             \
     (SCM_CONS((elm0), SCM_LIST_4((elm1), (elm2), (elm3), (elm4))))
 
 #define SCM_LISTP(obj)    (SCM_CONSP(obj) || SCM_NULLP(obj))
@@ -174,7 +174,7 @@ extern "C" {
         ret_type (*volatile fp)() = (ret_type (*)())&func;                   \
         ScmObj *stack_start;                                                 \
                                                                              \
-        if (scm_false) exp_ret func args;  /* compile-time type check */     \
+        if (0) exp_ret func args;  /* compile-time type check */             \
         stack_start = scm_gc_protect_stack(NULL);                            \
         exp_ret (*fp)args;                                                   \
         scm_gc_unprotect_stack(stack_start);                                 \
@@ -275,27 +275,32 @@ enum ScmObjType {
  */
 enum ScmFuncTypeCode {
     SCM_FUNCTYPE_MAND_BITS = 4,
-    SCM_FUNCTYPE_MAND_MASK = (1 << SCM_FUNCTYPE_MAND_BITS)-1,
+    SCM_FUNCTYPE_MAND_MASK = (1 << SCM_FUNCTYPE_MAND_BITS) - 1,
 #define SCM_FUNCTYPE_MAND_MAX 5
     /* SCM_FUNCTYPE_MAND_MAX  = 5, */
     SCM_FUNCTYPE_SYNTAX    = 1 << SCM_FUNCTYPE_MAND_BITS,
 
-    SCM_FUNCTYPE_FIXED     = 0 << (SCM_FUNCTYPE_MAND_BITS+1),
-    SCM_FUNCTYPE_VARIADIC  = 1 << (SCM_FUNCTYPE_MAND_BITS+1),
-    SCM_FUNCTYPE_TAIL_REC  = 1 << (SCM_FUNCTYPE_MAND_BITS+2),
+    SCM_FUNCTYPE_FIXED     = 0 << (SCM_FUNCTYPE_MAND_BITS + 1),
+    SCM_FUNCTYPE_VARIADIC  = 1 << (SCM_FUNCTYPE_MAND_BITS + 1),
+    SCM_FUNCTYPE_TAIL_REC  = 1 << (SCM_FUNCTYPE_MAND_BITS + 2),
 
-    SCM_FUNCTYPE_ODDBALL   = 1 << (SCM_FUNCTYPE_MAND_BITS+10),
+    SCM_FUNCTYPE_ODDBALL   = 1 << (SCM_FUNCTYPE_MAND_BITS + 10),
 
     /* Compound types. */
-    SCM_PROCEDURE_FIXED              = SCM_FUNCTYPE_FIXED,
-    SCM_PROCEDURE_FIXED_TAIL_REC     = SCM_FUNCTYPE_TAIL_REC,
-    SCM_PROCEDURE_VARIADIC           = SCM_FUNCTYPE_VARIADIC,
-    SCM_PROCEDURE_VARIADIC_TAIL_REC  = SCM_FUNCTYPE_VARIADIC | SCM_FUNCTYPE_TAIL_REC,
+    SCM_PROCEDURE_FIXED             = SCM_FUNCTYPE_FIXED,
+    SCM_PROCEDURE_FIXED_TAIL_REC    = SCM_FUNCTYPE_TAIL_REC,
+    SCM_PROCEDURE_VARIADIC          = SCM_FUNCTYPE_VARIADIC,
+    SCM_PROCEDURE_VARIADIC_TAIL_REC = (SCM_FUNCTYPE_VARIADIC
+                                       | SCM_FUNCTYPE_TAIL_REC),
 
-    SCM_SYNTAX_FIXED          = SCM_PROCEDURE_FIXED | SCM_FUNCTYPE_SYNTAX,
-    SCM_SYNTAX_FIXED_TAIL_REC = SCM_PROCEDURE_FIXED_TAIL_REC | SCM_FUNCTYPE_SYNTAX,
-    SCM_SYNTAX_VARIADIC       = SCM_PROCEDURE_VARIADIC | SCM_FUNCTYPE_SYNTAX,
-    SCM_SYNTAX_VARIADIC_TAIL_REC = SCM_PROCEDURE_VARIADIC_TAIL_REC | SCM_FUNCTYPE_SYNTAX,
+    SCM_SYNTAX_FIXED             = (SCM_FUNCTYPE_SYNTAX
+                                    | SCM_PROCEDURE_FIXED),
+    SCM_SYNTAX_FIXED_TAIL_REC    = (SCM_FUNCTYPE_SYNTAX
+                                    | SCM_PROCEDURE_FIXED_TAIL_REC),
+    SCM_SYNTAX_VARIADIC          = (SCM_FUNCTYPE_SYNTAX
+                                    | SCM_PROCEDURE_VARIADIC),
+    SCM_SYNTAX_VARIADIC_TAIL_REC = (SCM_FUNCTYPE_SYNTAX
+                                    | SCM_PROCEDURE_VARIADIC_TAIL_REC),
 
     /* Special type. */
     SCM_REDUCTION_OPERATOR = SCM_FUNCTYPE_ODDBALL
@@ -303,16 +308,16 @@ enum ScmFuncTypeCode {
 
 /* Where we are in a reduction process. */
 enum ScmReductionState {
-    SCM_REDUCE_0,               /* No argument was given. */
-    SCM_REDUCE_1,               /* Only 1 argument was given. */
-    SCM_REDUCE_PARTWAY,         /* We have more arguments pending. */
-    SCM_REDUCE_LAST,            /* The callee must finalize. */
-    SCM_REDUCE_STOP             /* Callee wants to stop. */
+    SCM_REDUCE_0,       /* No argument was given. */
+    SCM_REDUCE_1,       /* Only 1 argument was given. */
+    SCM_REDUCE_PARTWAY, /* We have more arguments pending. */
+    SCM_REDUCE_LAST,    /* The callee must finalize. */
+    SCM_REDUCE_STOP     /* Callee wants to stop. */
 };
 
 enum ScmReturnType {
-    SCM_RETTYPE_AS_IS           = 0,
-    SCM_RETTYPE_NEED_EVAL       = 1
+    SCM_RETTYPE_AS_IS     = 0,
+    SCM_RETTYPE_NEED_EVAL = 1
 };
 
 enum ScmPortFlag {
@@ -533,10 +538,10 @@ struct ScmEvalState_ {
 #define SCM_UNDEF   SCM_SAL_UNDEF
 
 #define SCM_EQ(a, b)   (SCM_SAL_EQ((a), (b)))
-#define SCM_NULLP(a)   (SCM_EQ((a),  SCM_NULL))
-#define SCM_FALSEP(a)  (SCM_EQ((a),  SCM_FALSE))
-#define SCM_NFALSEP(a) (!SCM_EQ((a), SCM_FALSE))
-#define SCM_EOFP(a)    (SCM_EQ((a),  SCM_EOF))
+#define SCM_NULLP(o)   (SCM_EQ((o),  SCM_NULL))
+#define SCM_FALSEP(o)  (SCM_EQ((o),  SCM_FALSE))
+#define SCM_NFALSEP(o) (!SCM_EQ((o), SCM_FALSE))
+#define SCM_EOFP(o)    (SCM_EQ((o),  SCM_EOF))
 
 /*============================================================================
   Predefined Symbols
@@ -745,7 +750,8 @@ ScmObj scm_symbol_bound_to(ScmObj obj);
 /* eval.c */
 ScmObj scm_call(ScmObj proc, ScmObj args);
 ScmObj scm_p_eval(ScmObj obj, ScmObj env);
-ScmObj scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state);
+ScmObj scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest,
+                   ScmEvalState *eval_state);
 ScmObj scm_p_scheme_report_environment(ScmObj version);
 ScmObj scm_p_null_environment(ScmObj version);
 ScmObj scm_p_interaction_environment(void);
@@ -753,7 +759,8 @@ ScmObj scm_p_interaction_environment(void);
 /* syntax.c */
 ScmObj scm_s_quote(ScmObj datum, ScmObj env);
 ScmObj scm_s_lambda(ScmObj formals, ScmObj body, ScmObj env);
-ScmObj scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state);
+ScmObj scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest,
+                ScmEvalState *eval_state);
 ScmObj scm_s_setd(ScmObj var, ScmObj val, ScmObj env);
 ScmObj scm_s_cond(ScmObj args, ScmEvalState *eval_state);
 ScmObj scm_s_case(ScmObj key, ScmObj args, ScmEvalState *eval_state);
@@ -763,7 +770,8 @@ ScmObj scm_s_let(ScmObj args, ScmEvalState *eval_state);
 ScmObj scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state);
 ScmObj scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state);
 ScmObj scm_s_begin(ScmObj args, ScmEvalState *eval_state);
-ScmObj scm_s_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_state);
+ScmObj scm_s_do(ScmObj bindings, ScmObj testframe, ScmObj commands,
+                ScmEvalState *eval_state);
 ScmObj scm_s_delay(ScmObj expr, ScmObj env);
 ScmObj scm_s_quasiquote(ScmObj datum, ScmObj env);
 ScmObj scm_s_unquote(ScmObj dummy, ScmObj env);
@@ -775,14 +783,17 @@ ScmObj scm_p_eqvp(ScmObj obj1, ScmObj obj2);
 ScmObj scm_p_eqp(ScmObj obj1, ScmObj obj2);
 ScmObj scm_p_equalp(ScmObj obj1, ScmObj obj2);
 ScmObj scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj scm_p_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj scm_p_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_subtract(ScmObj left, ScmObj right,
+                      enum ScmReductionState *state);
+ScmObj scm_p_multiply(ScmObj left, ScmObj right,
+                      enum ScmReductionState *state);
 ScmObj scm_p_divide(ScmObj left, ScmObj right, enum ScmReductionState *state);
 ScmObj scm_p_equal(ScmObj left, ScmObj right, enum ScmReductionState *state);
 ScmObj scm_p_less(ScmObj left, ScmObj right, enum ScmReductionState *state);
 ScmObj scm_p_less_eq(ScmObj left, ScmObj right, enum ScmReductionState *state);
 ScmObj scm_p_greater(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj scm_p_greater_eq(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_greater_eq(ScmObj left, ScmObj right,
+                        enum ScmReductionState *state);
 ScmObj scm_p_numberp(ScmObj obj);
 ScmObj scm_p_zerop(ScmObj n);
 ScmObj scm_p_positivep(ScmObj n);
@@ -869,9 +880,11 @@ ScmObj scm_p_procedurep(ScmObj obj);
 ScmObj scm_p_map(ScmObj proc, ScmObj args);
 ScmObj scm_p_for_each(ScmObj proc, ScmObj args);
 ScmObj scm_p_force(ScmObj closure);
-ScmObj scm_p_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state);
+ScmObj scm_p_call_with_current_continuation(ScmObj proc,
+                                            ScmEvalState *eval_state);
 ScmObj scm_p_values(ScmObj args);
-ScmObj scm_p_call_with_values(ScmObj producer, ScmObj consumer, ScmEvalState *eval_state);
+ScmObj scm_p_call_with_values(ScmObj producer, ScmObj consumer,
+                              ScmEvalState *eval_state);
 ScmObj scm_p_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
 
 /* operations-r5rs-deepcadrs.c */
@@ -916,7 +929,7 @@ ScmObj scm_p_delete_file(ScmObj filepath);
 /* io.c */
 void   scm_set_lib_path(const char *path);
 ScmObj scm_make_shared_file_port(FILE *file, const char *aux_info,
-                              enum ScmPortFlag flag);
+                                 enum ScmPortFlag flag);
 int scm_port_close(ScmObj port);
 ScmCharCodec *scm_port_codec(ScmObj port);
 char *scm_port_inspect(ScmObj port);
@@ -968,7 +981,8 @@ void scm_categorized_debug(int category, const char *msg, ...);
 void scm_debug(const char *msg, ...);
 scm_bool scm_die(const char *msg, const char *filename, int line);
 void scm_error(const char *msg, ...) SCM_NORETURN;
-void scm_error_obj(const char *funcname, const char *msg, ScmObj obj) SCM_NORETURN;
+void scm_error_obj(const char *funcname, const char *msg,
+                   ScmObj obj) SCM_NORETURN;
 void scm_show_backtrace(ScmObj trace_stack);
 ScmObj scm_make_error_obj(ScmObj reason, ScmObj objs);
 void scm_raise_error(ScmObj err_obj) SCM_NORETURN;
@@ -1034,7 +1048,8 @@ ScmObj scm_p_srfi1_concatenate(ScmObj args);
 #if SCM_USE_SRFI2
 /* operations-srfi2.c */
 void   scm_initialize_srfi2(void);
-ScmObj scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state);
+ScmObj scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body,
+                               ScmEvalState *eval_state);
 #endif
 #if SCM_USE_SRFI6
 /* operations-srfi6.c */
@@ -1046,7 +1061,8 @@ ScmObj scm_p_srfi6_get_output_string(ScmObj port);
 #if SCM_USE_SRFI8
 /* operations-srfi8.c */
 void   scm_initialize_srfi8(void);
-ScmObj scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body, ScmEvalState *eval_state);
+ScmObj scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body,
+                           ScmEvalState *eval_state);
 #endif
 #if SCM_USE_SRFI23
 /* operations-srfi23.c */
@@ -1058,7 +1074,7 @@ ScmObj scm_p_srfi23_error(ScmObj reason, ScmObj args);
 void  scm_initialize_srfi34(void);
 ScmObj scm_p_srfi34_with_exception_handler(ScmObj handler, ScmObj thunk);
 ScmObj scm_s_srfi34_guard(ScmObj cond_catch, ScmObj body,
-                           ScmEvalState *eval_state);
+                          ScmEvalState *eval_state);
 ScmObj scm_p_srfi34_raise(ScmObj obj);
 #endif
 #if SCM_USE_SRFI38
