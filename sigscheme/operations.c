@@ -802,25 +802,34 @@ scm_p_listp(ScmObj obj)
  * This function is ported from Gauche, by Shiro Kawai(shiro@acm.org)
  */
 /* FIXME: Insert its copyright and license into this file properly */
+/*
+ * ChangeLog:
+ *
+ * 2006-01-05 YamaKen  Return dot list length and circular indication.
+ *
+ */
 int
 scm_length(ScmObj lst)
 {
     ScmObj slow;
     int len;
 
+#define LISTLEN_ENCODE_DOT(len)      (-(len))
+#define LISTLEN_ENCODE_CIRCULAR(len) (INT_MIN)
+
     slow = lst;
     len = 0;
 
     for (;;) {
         if (NULLP(lst)) break;
-        if (!CONSP(lst)) return -1;
-        if (len != 0 && lst == slow) return -1; /* circular */
+        if (!CONSP(lst)) return LISTLEN_ENCODE_DOT(len);
+        if (len != 0 && lst == slow) return LISTLEN_ENCODE_CIRCULAR(len);
 
         lst = CDR(lst);
         len++;
         if (NULLP(lst)) break;
-        if (!CONSP(lst)) return -1;
-        if (lst == slow) return -1; /* circular */
+        if (!CONSP(lst)) return LISTLEN_ENCODE_DOT(len);
+        if (lst == slow) return LISTLEN_ENCODE_CIRCULAR(len);
 
         lst = CDR(lst);
         slow = CDR(slow);
@@ -828,6 +837,8 @@ scm_length(ScmObj lst)
     }
 
     return len;
+#undef LISTLEN_ENCODE_DOT
+#undef LISTLEN_ENCODE_CIRCULAR
 }
 
 ScmObj

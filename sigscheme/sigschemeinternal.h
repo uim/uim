@@ -37,6 +37,7 @@
 /*=======================================
    System Include
 =======================================*/
+#include <limits.h>
 #include <stdarg.h>
 
 /*=======================================
@@ -344,6 +345,12 @@ extern ScmObj scm_null_values;
 
 /* error handlings */
 #define SCM_ERR_HEADER "Error: "
+
+/* result decoders for scm_length() */
+#define SCM_LISTLEN_CIRCULARP(len)   ((len) == INT_MIN)
+#define SCM_LISTLEN_DOTP(len)        ((len) < 0                              \
+                                      && !SCM_LISTLEN_CIRCULARP(len))
+#define SCM_LISTLEN_BEFORE_DOT(len)  (~(len))  /* abs(len) - 1 */
 
 /*=======================================
    List Constructor
