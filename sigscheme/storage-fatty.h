@@ -43,6 +43,7 @@
    System Include
 =======================================*/
 #include <stddef.h>
+#include <stdint.h> /* FIXME: make C99-independent */
 
 /*=======================================
    Local Include
@@ -234,24 +235,24 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #define SCM_SAL_STRINGP(o)             (SCM_TYPE(o) == ScmString)
 #define SCM_SAL_ENTYPE_STRING(o)       (SCM_ENTYPE((o), ScmString))
 #define SCM_SAL_STRING_STR(o)                                                \
-    ((char *)((unsigned long)SCM_AS_STRING(o)->obj.string.str                \
+    ((char *)((uintptr_t)SCM_AS_STRING(o)->obj.string.str                    \
               & SCM_STRING_STR_VALUE_MASK))
 #define SCM_SAL_STRING_SET_STR(o, val)                                       \
     (SCM_AS_STRING(o)->obj.string.str =                                      \
-     (char *)((unsigned long)(val) | (unsigned)SCM_STRING_MUTABILITY(o)))
+     (char *)((uintptr_t)(val) | (unsigned)SCM_STRING_MUTABILITY(o)))
 #define SCM_SAL_STRING_LEN(o)          (SCM_AS_STRING(o)->obj.string.len)
 #define SCM_SAL_STRING_SET_LEN(o, len) (SCM_STRING_LEN(o) = (len))
 #define SCM_STRING_MUTABILITY(o)                                             \
-  ((enum ScmMutability)((unsigned long)SCM_AS_STRING(o)->obj.string.str      \
+  ((enum ScmMutability)((uintptr_t)SCM_AS_STRING(o)->obj.string.str          \
                         & SCM_STRING_MUTABILITY_MASK))
 #define SCM_SAL_STRING_MUTABLEP(o)                                           \
     (SCM_STRING_MUTABILITY(o) == SCM_MUTABLE)
 #define SCM_SAL_STRING_SET_MUTABLE(o)                                        \
     (SCM_AS_STRING(o)->obj.string.str =                                      \
-     (char *)((unsigned long)SCM_AS_STRING(o)->obj.string.str | SCM_MUTABLE))
+     (char *)((uintptr_t)SCM_AS_STRING(o)->obj.string.str | SCM_MUTABLE))
 #define SCM_SAL_STRING_SET_IMMUTABLE(o)                                      \
     (SCM_AS_STRING(o)->obj.string.str =                                      \
-     (char *)((unsigned long)SCM_AS_STRING(o)->obj.string.str | SCM_IMMUTABLE))
+     (char *)((uintptr_t)SCM_AS_STRING(o)->obj.string.str | SCM_IMMUTABLE))
 
 #define SCM_SAL_FUNCP(o)                   (SCM_TYPE(o) == ScmFunc)
 #define SCM_SAL_ENTYPE_FUNC(o)             (SCM_ENTYPE((o), ScmFunc))
