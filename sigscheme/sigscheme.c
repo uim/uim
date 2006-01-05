@@ -36,6 +36,7 @@
 =======================================*/
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 /*=======================================
   Local Include
@@ -267,16 +268,19 @@ scm_s_use(ScmObj feature, ScmObj env)
 {
     struct module_info *mod;
     ScmObj feature_str;
+    const char *c_feature_str;
     DECLARE_FUNCTION("use", syntax_fixed_1);
 
     ENSURE_SYMBOL(feature);
 
+    c_feature_str = SCM_SYMBOL_NAME(feature);
+
     for (mod = module_info_table; mod->name; mod++) {
-        if (EQ(feature, scm_intern(mod->name))) {
-            feature_str = scm_p_symbol2string(feature);
-            if (FALSEP(scm_p_providedp(feature_str))) {
+        if (strcmp(c_feature_str, mod->name) == 0) {
+            feature_str = MAKE_IMMUTABLE_STRING_COPYING(c_feature_str);
+            if (!scm_providedp(feature_str)) {
                 (*mod->initializer)();
-                scm_p_provide(feature_str);
+                scm_provide(feature_str);
             }
             return SCM_TRUE;
         }
