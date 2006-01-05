@@ -59,7 +59,7 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static void istrport_finalize(char **str, int ownership, void **opaque);
+static void istrport_finalize(char **str, scm_bool ownership, void **opaque);
 
 /*=======================================
   Function Implementations
@@ -73,7 +73,7 @@ scm_initialize_srfi6(void)
 }
 
 static void
-istrport_finalize(char **str, int ownership, void **opaque)
+istrport_finalize(char **str, scm_bool ownership, void **opaque)
 {
     scm_gc_unprotect((ScmObj *)opaque);
 }

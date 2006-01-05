@@ -174,10 +174,10 @@ extern "C" {
         ret_type (*volatile fp)() = (ret_type (*)())&func;                   \
         ScmObj *stack_start;                                                 \
                                                                              \
-        if (0) exp_ret func args;  /* compile-time type check */             \
-        stack_start = scm_gc_protect_stack(NULL);                          \
+        if (scm_false) exp_ret func args;  /* compile-time type check */     \
+        stack_start = scm_gc_protect_stack(NULL);                            \
         exp_ret (*fp)args;                                                   \
-        scm_gc_unprotect_stack(stack_start);                               \
+        scm_gc_unprotect_stack(stack_start);                                 \
     } while (/* CONSTCOND */ 0)
 
 #endif /* SCM_GCC4_READY_GC */
@@ -572,8 +572,8 @@ void scm_initialize(void);
 void scm_finalize(void);
 void scm_define_alias(const char *newsym, const char *sym);
 void scm_provide(ScmObj feature);
-int  scm_providedp(ScmObj feature);
-int  scm_use(const char *feature);
+scm_bool scm_providedp(ScmObj feature);
+scm_bool scm_use(const char *feature);
 ScmObj scm_s_use(ScmObj feature, ScmObj env);
 ScmObj scm_eval_c_string(const char *exp);
 #if SCM_COMPAT_SIOD
@@ -922,7 +922,7 @@ ScmCharCodec *scm_port_codec(ScmObj port);
 char *scm_port_inspect(ScmObj port);
 int scm_port_get_char(ScmObj port);
 int scm_port_peek_char(ScmObj port);
-int scm_port_char_readyp(ScmObj port);
+scm_bool scm_port_char_readyp(ScmObj port);
 int scm_port_puts(ScmObj port, const char *str);
 int scm_port_put_char(ScmObj port, int ch);
 int scm_port_printf(ScmObj port, const char *fmt, ...);
@@ -966,7 +966,7 @@ void scm_set_debug_categories(int categories);
 int  scm_predefined_debug_categories(void);
 void scm_categorized_debug(int category, const char *msg, ...);
 void scm_debug(const char *msg, ...);
-int  scm_die(const char *msg, const char *filename, int line);
+scm_bool scm_die(const char *msg, const char *filename, int line);
 void scm_error(const char *msg, ...) SCM_NORETURN;
 void scm_error_obj(const char *funcname, const char *msg, ScmObj obj) SCM_NORETURN;
 void scm_show_backtrace(ScmObj trace_stack);

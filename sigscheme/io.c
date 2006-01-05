@@ -76,7 +76,7 @@ const char *scm_lib_path = NULL;
 =======================================*/
 static void scm_load_internal(const char *filename);
 static char *find_path(const char *c_filename);
-static int    file_existsp(const char *filepath);
+static scm_bool file_existsp(const char *filepath);
 #if SCM_USE_SRFI22
 static void interpret_script_prelude(ScmObj port);
 static char **parse_script_prelude(ScmObj port);
@@ -209,7 +209,7 @@ scm_port_peek_char(ScmObj port)
     return SCM_CHARPORT_PEEK_CHAR(SCM_PORT_IMPL(port));
 }
 
-int
+scm_bool
 scm_port_char_readyp(ScmObj port)
 {
     SCM_ENSURE_LIVE_PORT(port);
@@ -612,7 +612,7 @@ find_path(const char *filename)
     return NULL;
 }
 
-static int
+static scm_bool
 file_existsp(const char *c_filepath)
 {
     FILE *f;
@@ -620,9 +620,9 @@ file_existsp(const char *c_filepath)
     f = fopen(c_filepath, "r");
     if (f) {
         fclose(f);
-        return 1;
+        return scm_true;
     } else {
-        return 0;
+        return scm_false;
     }
 }
 

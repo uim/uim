@@ -113,8 +113,9 @@ static struct module_info module_info_table[] = {
   File Local Function Declarations
 =======================================*/
 static void scm_initialize_internal(void);
-static int scm_use_internal(const char *feature);
-static int scm_register_func(const char *name, ScmFuncType func, enum ScmFuncTypeCode type);
+static scm_bool scm_use_internal(const char *feature);
+static scm_bool scm_register_func(const char *name, ScmFuncType func,
+                                  enum ScmFuncTypeCode type);
 static ScmObj scm_eval_c_string_internal(const char *exp);
 
 /*=======================================
@@ -211,22 +212,22 @@ scm_provide(ScmObj feature)
     features = CONS(feature, features);
 }
 
-int
+scm_bool
 scm_providedp(ScmObj feature)
 {
     return NFALSEP(scm_p_member(feature, features));
 }
 
-int
+scm_bool
 scm_use(const char *feature)
 {
-    int ok;
+    scm_bool ok;
 #if !SCM_GCC4_READY_GC
     ScmObj stack_start;
 #endif
 
 #if SCM_GCC4_READY_GC
-    SCM_GC_PROTECTED_CALL(ok, int, scm_use_internal, (feature));
+    SCM_GC_PROTECTED_CALL(ok, scm_bool, scm_use_internal, (feature));
 #else
     scm_gc_protect_stack(&stack_start);
 
@@ -238,7 +239,7 @@ scm_use(const char *feature)
     return ok;
 }
 
-static int
+static scm_bool
 scm_use_internal(const char *feature)
 {
     ScmObj ok;
@@ -402,16 +403,18 @@ scm_free_argv(char **argv)
 /*===========================================================================
   Scheme Function Export Related Functions
 ===========================================================================*/
-/* New Interfaces */
-static int
-scm_register_func(const char *name, ScmFuncType c_func, enum ScmFuncTypeCode type)
+static scm_bool
+scm_register_func(const char *name, ScmFuncType c_func,
+                  enum ScmFuncTypeCode type)
 {
-    ScmObj sym  = scm_intern(name);
-    ScmObj func = MAKE_FUNC(type, c_func);
+    ScmObj sym, func;
+
+    sym  = scm_intern(name);
+    func = MAKE_FUNC(type, c_func);
 
     /* TODO: reject bad TYPE */
     SCM_SYMBOL_SET_VCELL(sym, func);
-    return 1;
+    return scm_true;
 }
 
 /* Not implemented yet. */

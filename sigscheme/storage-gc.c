@@ -113,7 +113,7 @@ static void gc_mark_and_sweep(void);
 
 /* GC Mark Related Functions */
 static void mark_obj(ScmObj obj);
-static int  within_heapp(ScmObj obj);
+static scm_bool within_heapp(ScmObj obj);
 
 static void gc_mark_protected_var();
 static void gc_mark_locations_n(ScmObj *start, size_t n);
@@ -268,8 +268,7 @@ scm_gc_unprotect_stack(ScmObj *stack_start)
   Heap Allocator & Garbage Collector
 ============================================================================*/
 static void
-initialize_heap(size_t size, size_t alloc_threshold,
-                            int n_max, int n_init)
+initialize_heap(size_t size, size_t alloc_threshold, int n_max, int n_init)
 {
     int i;
 
@@ -410,7 +409,7 @@ finalize_protected_var(void)
 
 /* The core part of Conservative GC */
 
-static int
+static scm_bool
 within_heapp(ScmObj obj)
 {
     ScmCell *heap, *ptr;
@@ -418,7 +417,7 @@ within_heapp(ScmObj obj)
 
 #if SCM_OBJ_COMPACT
     if (!SCM_CANBE_MARKED(obj))
-        return 0;
+        return scm_false;
     /* The pointer on the stack is 'tagged' to represent its types.
      * So we need to ignore the tag to get its real pointer value. */
     ptr = (ScmCell *)SCM_STRIP_TAG_INFO(obj);
@@ -432,15 +431,15 @@ within_heapp(ScmObj obj)
      */
     if (((uintptr_t)ptr % sizeof(ScmCell))
         || (ptr < heaps_lowest || heaps_highest <= ptr))
-        return 0;
+        return scm_false;
 
     for (i = 0; i < n_heaps; i++) {
         heap = heaps[i];
         if (heap && &heap[0] <= ptr && ptr < &heap[heap_size])
-            return 1;
+            return scm_true;
     }
 
-    return 0;
+    return scm_false;
 }
 
 static void

@@ -49,8 +49,8 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define EVAL_ARGS          0
-#define SUPPRESS_EVAL_ARGS 1
+#define EVAL_ARGS          scm_false
+#define SUPPRESS_EVAL_ARGS scm_true
 
 #define SCM_ERRMSG_WRONG_NR_ARG " Wrong number of arguments "
 #define SCM_ERRMSG_NON_R5RS_ENV " the environment is not conformed to R5RS"
@@ -63,10 +63,10 @@
   File Local Function Declarations
 =======================================*/
 static ScmObj reduce(ScmObj (*func)(), ScmObj args, ScmObj env,
-                     int suppress_eval);
+                     scm_bool suppress_eval);
 static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
 static ScmObj call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
-                   int suppress_eval);
+                   scm_bool suppress_eval);
 static ScmObj map_eval(ScmObj args, ScmObj env);
 
 /*=======================================
@@ -129,7 +129,7 @@ scm_call(ScmObj proc, ScmObj args)
 
 /* ARGS should NOT have been evaluated yet. */
 static ScmObj
-reduce(ScmObj (*func)(), ScmObj args, ScmObj env, int suppress_eval)
+reduce(ScmObj (*func)(), ScmObj args, ScmObj env, scm_bool suppress_eval)
 {
     ScmObj left;
     ScmObj right;
@@ -225,7 +225,8 @@ call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
  * through all necessary evaluations if this flag is nonzero.
  */
 static ScmObj
-call(ScmObj proc, ScmObj args, ScmEvalState *eval_state, int suppress_eval)
+call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
+     scm_bool suppress_eval)
 {
     ScmObj env, cont;
     ScmObj (*func)();

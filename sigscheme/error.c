@@ -67,7 +67,7 @@ static ScmObj err_obj_tag, str_srfi34;
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static int srfi34_providedp(void);
+static scm_bool srfi34_providedp(void);
 #if (SCM_DEBUG && SCM_DEBUG_BACKTRACE_VAL)
 static void show_arg(ScmObj arg, ScmObj env);
 #endif
@@ -150,7 +150,7 @@ scm_debug(const char *msg, ...)
 }
 
 #if SCM_USE_SRFI34
-static int
+static scm_bool
 srfi34_providedp(void)
 {
     if (!srfi34_is_provided) {
@@ -289,7 +289,7 @@ scm_p_backtrace(void)
     return SCM_UNDEF;
 }
 
-int
+scm_bool
 scm_die(const char *msg, const char *filename, int line)
 {
     char *reason;
@@ -302,7 +302,7 @@ scm_die(const char *msg, const char *filename, int line)
 
     scm_fatal_error(reason);
     /* NOTREACHED */
-    return 1;  /* dummy value for boolean expression */
+    return scm_true;  /* dummy value for boolean expression */
 }
 
 void
