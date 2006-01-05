@@ -83,7 +83,7 @@ extern ScmObj scm_null_values;
    Macro Declarations
 =======================================*/
 /* trace stack for debugging */
-#define MAKE_TRACE_FRAME(obj, env) CONS(obj, env)
+#define MAKE_TRACE_FRAME(obj, env) CONS((obj), (env))
 #define TRACE_FRAME_OBJ CAR
 #define TRACE_FRAME_ENV CDR
 
@@ -338,9 +338,9 @@ extern ScmObj scm_null_values;
 
 #define PREPARE_PORT(port, args, default_port)                               \
     do {                                                                     \
-        port = POP_ARG(args);                                                \
+        (port) = POP_ARG(args);                                              \
         if (!VALIDP(port))                                                   \
-            port = default_port;                                             \
+            (port) = (default_port);                                         \
         ENSURE_PORT(port);                                                   \
         ASSERT_NO_MORE_ARG(args);                                            \
     } while (/* CONSTCOND */ 0)

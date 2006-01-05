@@ -121,7 +121,7 @@ scm_finalize_continuation(void)
 /*============================================================================
   Dynamic Extent
 ============================================================================*/
-#define MAKE_DYNEXT_FRAME(before, after) (CONS(before, after))
+#define MAKE_DYNEXT_FRAME(before, after) CONS((before), (after))
 #define DYNEXT_FRAME_BEFORE CAR
 #define DYNEXT_FRAME_AFTER  CDR
 
