@@ -130,8 +130,9 @@ scm_add_environment(ScmObj var, ScmObj val, ScmObj env)
         newest_frame = CAR(env);
         new_vars = CONS(var, CAR(newest_frame));
         new_vals = CONS(val, CDR(newest_frame));
+        newest_frame = CONS(new_vars, new_vals);
 
-        SET_CAR(env, CONS(new_vars, new_vals));
+        SET_CAR(env, newest_frame);
     } else {
         ERR_OBJ("broken environent", env);
     }

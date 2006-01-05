@@ -1240,11 +1240,14 @@ scm_p_string(ScmObj args)
 ScmObj
 scm_p_string_length(ScmObj str)
 {
+    int len;
     DECLARE_FUNCTION("string-length", procedure_fixed_1);
 
     ENSURE_STRING(str);
 
-    return MAKE_INT(scm_mb_bare_c_strlen(SCM_STRING_STR(str)));
+    len = scm_mb_bare_c_strlen(SCM_STRING_STR(str));
+
+    return MAKE_INT(len);
 }
 
 ScmObj
@@ -1717,7 +1720,8 @@ map_single_arg(ScmObj proc, ScmObj lst)
     SCM_QUEUE_POINT_TO(q, res);
     while (!NO_MORE_ARG(lst)) {
         elm = POP_ARG(lst);
-        SCM_QUEUE_ADD(q, scm_call(proc, LIST_1(elm)));
+        elm = scm_call(proc, LIST_1(elm));
+        SCM_QUEUE_ADD(q, elm);
     }
 
     return res;
@@ -1727,7 +1731,7 @@ static ScmObj
 map_multiple_args(ScmObj proc, ScmObj args)
 {
     ScmQueue resq, argq;
-    ScmObj res, map_args, rest_args, arg;
+    ScmObj res, elm, map_args, rest_args, arg;
     DECLARE_INTERNAL_FUNCTION("map");
 
     res = SCM_NULL;
@@ -1749,7 +1753,8 @@ map_multiple_args(ScmObj proc, ScmObj args)
         }
         ENSURE_PROPER_LIST_TERMINATION(rest_args, args);
 
-        SCM_QUEUE_ADD(resq, scm_call(proc, map_args));
+        elm = scm_call(proc, map_args);
+        SCM_QUEUE_ADD(resq, elm);
     }
 }
 

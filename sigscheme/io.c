@@ -122,14 +122,17 @@ scm_make_char_port(ScmBytePort *bport)
 #endif
 }
 
-ScmObj scm_make_shared_file_port(FILE *file, const char *aux_info,
-                                 enum ScmPortFlag flag)
+ScmObj
+scm_make_shared_file_port(FILE *file, const char *aux_info,
+                          enum ScmPortFlag flag)
 {
     ScmBytePort *bport;
+    ScmCharPort *cport;
 
     /* GC safe */
     bport = ScmFilePort_new_shared(file, aux_info);
-    return MAKE_PORT(scm_make_char_port(bport), flag);
+    cport = scm_make_char_port(bport);
+    return MAKE_PORT(cport, flag);
 }
 
 int
@@ -359,6 +362,7 @@ ScmObj
 scm_p_open_input_file(ScmObj filepath)
 {
     ScmBytePort *bport;
+    ScmCharPort *cport;
     DECLARE_FUNCTION("open-input-file", procedure_fixed_1);
 
     ENSURE_STRING(filepath);
@@ -366,14 +370,16 @@ scm_p_open_input_file(ScmObj filepath)
     bport = ScmFilePort_open_input_file(SCM_STRING_STR(filepath));
     if (!bport)
         ERR_OBJ("cannot open file ", filepath);
+    cport = scm_make_char_port(bport);
 
-    return MAKE_PORT(scm_make_char_port(bport), SCM_PORTFLAG_INPUT);
+    return MAKE_PORT(cport, SCM_PORTFLAG_INPUT);
 }
 
 ScmObj
 scm_p_open_output_file(ScmObj filepath)
 {
     ScmBytePort *bport;
+    ScmCharPort *cport;
     DECLARE_FUNCTION("open-output-file", procedure_fixed_1);
 
     ENSURE_STRING(filepath);
@@ -381,8 +387,9 @@ scm_p_open_output_file(ScmObj filepath)
     bport = ScmFilePort_open_output_file(SCM_STRING_STR(filepath));
     if (!bport)
         ERR_OBJ("cannot open file ", filepath);
+    cport = scm_make_char_port(bport);
 
-    return MAKE_PORT(scm_make_char_port(bport), SCM_PORTFLAG_OUTPUT);
+    return MAKE_PORT(cport, SCM_PORTFLAG_OUTPUT);
 }
 
 ScmObj
@@ -474,11 +481,13 @@ ScmObj
 scm_p_char_readyp(ScmObj args)
 {
     ScmObj port;
+    scm_bool res;
     DECLARE_FUNCTION("char-ready?", procedure_variadic_0);
 
     PREPARE_PORT(port, args, scm_in);
+    res = scm_port_char_readyp(port);
 
-    return MAKE_BOOL(scm_port_char_readyp(port));
+    return MAKE_BOOL(res);
 }
 
 /*===========================================================================

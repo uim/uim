@@ -313,9 +313,11 @@ scm_eval_c_string_internal(const char *exp)
 {
     ScmObj str_port, ret;
     ScmBytePort *bport;
+    ScmCharPort *cport;
 
     bport = ScmInputStrPort_new_const(exp, NULL);
-    str_port = MAKE_PORT(scm_make_char_port(bport), SCM_PORTFLAG_INPUT);
+    cport = scm_make_char_port(bport);
+    str_port = MAKE_PORT(cport, SCM_PORTFLAG_INPUT);
 
     ret = scm_read(str_port);
     ret = EVAL(ret, SCM_INTERACTION_ENV);

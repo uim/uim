@@ -385,7 +385,7 @@ scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state)
       (if <test> <consequent> <alternate>)
     ========================================================================*/
 
-    if (NFALSEP(EVAL(test, env))) {
+    if (test = EVAL(test, env), NFALSEP(test)) {
 #if SCM_STRICT_ARGCHECK
         POP_ARG(rest);
         ASSERT_NO_MORE_ARG(rest);
@@ -812,7 +812,11 @@ scm_s_begin(ScmObj args, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.4 Iteration
 ===========================================================================*/
-/* FIXME: SEGV conditions by manual arg extraction, and expensive operations */
+/* FIXME:
+ * - SEGV conditions by manual arg extraction
+ * - side-effective arg in macros such as EVAL, NFALSEP
+ * - expensive operations
+ */
 ScmObj
 scm_s_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_state)
 {
@@ -848,7 +852,8 @@ scm_s_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_
         val = MUST_POP_ARG(binding);
 
         vars = CONS(var, vars);
-        vals = CONS(EVAL(val, env), vals);
+        val  = EVAL(val, env);
+        vals = CONS(val, vals);
 
         /* append <step> to steps */
         if (NO_MORE_ARG(binding))
@@ -970,6 +975,7 @@ qquote_internal(ScmObj input, ScmObj env, int nest)
                 } else if (EQ(obj, SYM_UNQUOTE)) {
                     /* FORM == ,x */
                     if (--nest == 0) {
+                        /* FIXME: side-effective EVAL in another macro */
                         TRL_SET_SUBLS(tr, EVAL(CADR(form), env));
                         my_result.obj  = TRL_EXTRACT(tr);
                         my_result.insn = TR_MSG_REPLACE;
@@ -1061,9 +1067,12 @@ scm_s_unquote_splicing(ScmObj dummy, ScmObj env)
 static void
 define_internal(ScmObj var, ScmObj exp, ScmObj env)
 {
+    ScmObj val;
+
     if (NULLP(env)) {
         /* given top-level environment */
-        SCM_SYMBOL_SET_VCELL(var, EVAL(exp, env));
+        val = EVAL(exp, env);
+        SCM_SYMBOL_SET_VCELL(var, val);
     } else {
         /* add val to the environment */
         env = scm_add_environment(var, EVAL(exp, env), env);

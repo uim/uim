@@ -9,21 +9,23 @@ Requirements and bugs:
   - Generate and pack sigschemefunctable*.[hc] into distribution file by make
     dist
 
-* Fix all destructive expression on macros
+* Fix all side-effective expression in macros
+  - All files except for operations-srfi1.c and test-compact.c are checked
+  - scm_s_do() and qquote_internal() still have such expression
 
-* Review and refactor all functions in syntax.c(listran, vectran,
-  qquote_internal, scm_s_quasiquote, scm_s_do) and storage-fatty.h (other files
-  had already been done except for the destructive exp on macros)
+* Review and refactor some functions in syntax.c(listran, vectran,
+  qquote_internal, scm_s_quasiquote, scm_s_do) (other files had already been
+  done except for the destructive exp on macros)
+
+* Fix scm_s_do()
+  - SEGV conditions by manual arg extraction
+  - expensive operations
 
 * Investigate behavior of other Scheme implementations about constant vector
   and list
   - Implement if needed
 
 * Make 64bit-safe (after compaction and stdint.h)
-
-* Fix scm_s_do()
-  - SEGV conditions by manual arg extraction
-  - expensive operations
 
 * Add tests for proper tail recursion with 'apply' and 'guard' to
   test-tail-rec.scm
@@ -66,13 +68,8 @@ Performance improvements:
 ==============================================================================
 Logical simplifications:
 
-* Simplify argument extraction by DECLARE_FUNCTION, ASSERT_*P, POP_ARG and
-  NO_MORE_ARG macros in all procedure and syntaxes
-
 ==============================================================================
 Namings and Cosmetic things:
-
-* Elimnate initialization for variables and aggregate by type
 
 * Rename "Macro Declarations" of all C files, "Macro Definitions" and move to
   immediately after of "Local Include" section since other declarations and

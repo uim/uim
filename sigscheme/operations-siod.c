@@ -97,6 +97,7 @@ static ScmObj saved_error_port;
 void
 scm_initialize_siod(void)
 {
+    ScmCharPort *cport;
     REGISTER_FUNC_TABLE(siod_func_info_table);
 
     scm_use("srfi-60");
@@ -110,8 +111,8 @@ scm_initialize_siod(void)
     scm_gc_protect_with_init(&saved_error_port,  SCM_FALSE);
 
     scm_nullport_init();
-    null_port = MAKE_PORT(scm_make_char_port(ScmNullPort_new()),
-                          SCM_PORTFLAG_INPUT | SCM_PORTFLAG_OUTPUT);
+    cport = scm_make_char_port(ScmNullPort_new());
+    null_port = MAKE_PORT(cport, SCM_PORTFLAG_INPUT | SCM_PORTFLAG_OUTPUT);
 
     scm_set_verbose_level(2);
 }
@@ -179,16 +180,18 @@ scm_p_the_environment(ScmEvalState *eval_state)
 ScmObj
 scm_p_closure_code(ScmObj closure)
 {
-    ScmObj exp, body;
+    ScmObj exp, body, sym_begin;
     DECLARE_FUNCTION("%%closure-code", procedure_fixed_1);
 
     ENSURE_CLOSURE(closure);
 
     exp = SCM_CLOSURE_EXP(closure);
-    if (NULLP(CDDR(exp)))
+    if (NULLP(CDDR(exp))) {
         body = CADR(exp);
-    else
-        body = CONS(scm_intern("begin"), CDR(exp));
+    } else {
+        sym_begin = scm_intern("begin");
+        body = CONS(sym_begin, CDR(exp));
+    }
 
     return CONS(CAR(exp), body);
 }

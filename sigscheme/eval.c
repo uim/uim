@@ -435,8 +435,10 @@ map_eval(ScmObj args, ScmObj env)
         SCM_QUEUE_ADD(q, elm);
     }
     /* dot list */
-    if (!NULLP(args))
-        SCM_QUEUE_SLOPPY_APPEND(q, EVAL(args, env));
+    if (!NULLP(args)) {
+        elm = EVAL(args, env);
+        SCM_QUEUE_SLOPPY_APPEND(q, elm);
+    }
 
     return res;
 }

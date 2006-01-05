@@ -88,6 +88,7 @@ ScmObj
 scm_p_symbol_boundp(ScmObj sym, ScmObj rest)
 {
     ScmObj env;
+    ScmRef ref;
     DECLARE_FUNCTION("symbol-bound?", procedure_variadic_1);
 
     ENSURE_SYMBOL(sym);
@@ -97,9 +98,9 @@ scm_p_symbol_boundp(ScmObj sym, ScmObj rest)
         ENSURE_ENV(env);
     else
         env = SCM_INTERACTION_ENV;
+    ref = scm_lookup_environment(sym, env);
 
-    return MAKE_BOOL(scm_lookup_environment(sym, env) != SCM_INVALID_REF
-                     || SCM_SYMBOL_BOUNDP(sym));
+    return MAKE_BOOL(ref != SCM_INVALID_REF || SCM_SYMBOL_BOUNDP(sym));
 }
 
 /* SIOD compatible */

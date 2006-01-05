@@ -83,6 +83,7 @@ scm_p_srfi6_open_input_string(ScmObj str)
 {
     ScmObj *hold_str;
     ScmBytePort *bport;
+    ScmCharPort *cport;
     DECLARE_FUNCTION("open-input-string", procedure_fixed_1);
 
     ENSURE_STRING(str);
@@ -90,17 +91,20 @@ scm_p_srfi6_open_input_string(ScmObj str)
     bport = ScmInputStrPort_new_const(SCM_STRING_STR(str), istrport_finalize);
     hold_str = (ScmObj *)ScmInputStrPort_ref_opaque(bport);
     scm_gc_protect_with_init(hold_str, str);
-    return MAKE_PORT(scm_make_char_port(bport), SCM_PORTFLAG_INPUT);
+    cport = scm_make_char_port(bport);
+    return MAKE_PORT(cport, SCM_PORTFLAG_INPUT);
 }
 
 ScmObj
 scm_p_srfi6_open_output_string(void)
 {
     ScmBytePort *bport;
+    ScmCharPort *cport;
     DECLARE_FUNCTION("open-output-string", procedure_fixed_0);
 
     bport = ScmOutputStrPort_new(NULL);
-    return MAKE_PORT(scm_make_char_port(bport), SCM_PORTFLAG_OUTPUT);
+    cport = scm_make_char_port(bport);
+    return MAKE_PORT(cport, SCM_PORTFLAG_OUTPUT);
 }
 
 ScmObj
