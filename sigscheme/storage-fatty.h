@@ -194,38 +194,38 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 =======================================*/
 /* ScmObj Global Attribute */
 #define SCM_SAL_TYPE(o)        ((o)->type)
-#define SCM_ENTYPE(a, objtype) ((a)->type = (objtype))
+#define SCM_ENTYPE(o, objtype) ((o)->type = (objtype))
 
 /* Real Accessors */
-#define SCM_SAL_INTP(a)                (SCM_TYPE(a) == ScmInt)
-#define SCM_SAL_ENTYPE_INT(a)          (SCM_ENTYPE((a), ScmInt))
-#define SCM_SAL_INT_VALUE(a)           (SCM_AS_INT(a)->obj.integer.value)
-#define SCM_SAL_INT_SET_VALUE(a, val)  (SCM_INT_VALUE(a) = (val))
+#define SCM_SAL_INTP(o)                (SCM_TYPE(o) == ScmInt)
+#define SCM_SAL_ENTYPE_INT(o)          (SCM_ENTYPE((o), ScmInt))
+#define SCM_SAL_INT_VALUE(o)           (SCM_AS_INT(o)->obj.integer.value)
+#define SCM_SAL_INT_SET_VALUE(o, val)  (SCM_INT_VALUE(o) = (val))
 
-#define SCM_SAL_CONSP(a)               (SCM_TYPE(a) == ScmCons)
-#define SCM_SAL_ENTYPE_CONS(a)         (SCM_ENTYPE((a), ScmCons))
+#define SCM_SAL_CONSP(o)               (SCM_TYPE(o) == ScmCons)
+#define SCM_SAL_ENTYPE_CONS(o)         (SCM_ENTYPE((o), ScmCons))
 #if SCM_DEBUG
 /* don't use as lvalue */
-#define SCM_SAL_CONS_CAR(a)            (SCM_AS_CONS(a)->obj.cons.car + 0)
-#define SCM_SAL_CONS_CDR(a)            (SCM_AS_CONS(a)->obj.cons.cdr + 0)
+#define SCM_SAL_CONS_CAR(o)            (SCM_AS_CONS(o)->obj.cons.car + 0)
+#define SCM_SAL_CONS_CDR(o)            (SCM_AS_CONS(o)->obj.cons.cdr + 0)
 #else /* SCM_DEBUG */
-#define SCM_SAL_CONS_CAR(a)            (SCM_AS_CONS(a)->obj.cons.car)
-#define SCM_SAL_CONS_CDR(a)            (SCM_AS_CONS(a)->obj.cons.cdr)
+#define SCM_SAL_CONS_CAR(o)            (SCM_AS_CONS(o)->obj.cons.car)
+#define SCM_SAL_CONS_CDR(o)            (SCM_AS_CONS(o)->obj.cons.cdr)
 #endif /* SCM_DEBUG */
-#define SCM_SAL_CONS_SET_CAR(a, kar)   (SCM_AS_CONS(a)->obj.cons.car = (kar))
-#define SCM_SAL_CONS_SET_CDR(a, kdr)   (SCM_AS_CONS(a)->obj.cons.cdr = (kdr))
+#define SCM_SAL_CONS_SET_CAR(o, kar)   (SCM_AS_CONS(o)->obj.cons.car = (kar))
+#define SCM_SAL_CONS_SET_CDR(o, kdr)   (SCM_AS_CONS(o)->obj.cons.cdr = (kdr))
 
-#define SCM_SAL_SYMBOLP(a)             (SCM_TYPE(a) == ScmSymbol)
-#define SCM_SAL_ENTYPE_SYMBOL(a)       (SCM_ENTYPE((a), ScmSymbol))
-#define SCM_SAL_SYMBOL_NAME(a)         (SCM_AS_SYMBOL(a)->obj.symbol.name)
-#define SCM_SAL_SYMBOL_SET_NAME(a, _name)  (SCM_SYMBOL_NAME(a) = (_name))
-#define SCM_SAL_SYMBOL_VCELL(a)        (SCM_AS_SYMBOL(a)->obj.symbol.value)
-#define SCM_SAL_SYMBOL_SET_VCELL(a, vcell) (SCM_SYMBOL_VCELL(a) = (vcell))
+#define SCM_SAL_SYMBOLP(o)             (SCM_TYPE(o) == ScmSymbol)
+#define SCM_SAL_ENTYPE_SYMBOL(o)       (SCM_ENTYPE((o), ScmSymbol))
+#define SCM_SAL_SYMBOL_NAME(o)         (SCM_AS_SYMBOL(o)->obj.symbol.name)
+#define SCM_SAL_SYMBOL_SET_NAME(o, _name)  (SCM_SYMBOL_NAME(o) = (_name))
+#define SCM_SAL_SYMBOL_VCELL(o)        (SCM_AS_SYMBOL(o)->obj.symbol.value)
+#define SCM_SAL_SYMBOL_SET_VCELL(o, vcell) (SCM_SYMBOL_VCELL(o) = (vcell))
 
-#define SCM_SAL_CHARP(a)               (SCM_TYPE(a) == ScmChar)
-#define SCM_SAL_ENTYPE_CHAR(a)         (SCM_ENTYPE((a), ScmChar))
-#define SCM_SAL_CHAR_VALUE(a)          (SCM_AS_CHAR(a)->obj.character.value)
-#define SCM_SAL_CHAR_SET_VALUE(a, val) (SCM_CHAR_VALUE(a) = (val))
+#define SCM_SAL_CHARP(o)               (SCM_TYPE(o) == ScmChar)
+#define SCM_SAL_ENTYPE_CHAR(o)         (SCM_ENTYPE((o), ScmChar))
+#define SCM_SAL_CHAR_VALUE(o)          (SCM_AS_CHAR(o)->obj.character.value)
+#define SCM_SAL_CHAR_SET_VALUE(o, val) (SCM_CHAR_VALUE(o) = (val))
 
 /* String object uses a tagged pointer to multiplex its mutability.
  * LSB of ScmCell.obj.string.str represents the value. */
@@ -253,95 +253,95 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
     (SCM_AS_STRING(o)->obj.string.str =                                      \
      (char *)((unsigned long)SCM_AS_STRING(o)->obj.string.str | SCM_IMMUTABLE))
 
-#define SCM_SAL_FUNCP(a)                   (SCM_TYPE(a) == ScmFunc)
-#define SCM_SAL_ENTYPE_FUNC(a)             (SCM_ENTYPE((a), ScmFunc))
-#define SCM_SAL_FUNC_TYPECODE(a)           (SCM_AS_FUNC(a)->obj.function.type)
-#define SCM_SAL_FUNC_SET_TYPECODE(a, type) (SCM_FUNC_TYPECODE(a) = (type))
-#define SCM_SAL_FUNC_CFUNC(a)              (SCM_AS_FUNC(a)->obj.function.ptr)
-#define SCM_SAL_FUNC_SET_CFUNC(a, func)                                      \
-    (SCM_FUNC_CFUNC(a) = (ScmFuncType)(func))
+#define SCM_SAL_FUNCP(o)                   (SCM_TYPE(o) == ScmFunc)
+#define SCM_SAL_ENTYPE_FUNC(o)             (SCM_ENTYPE((o), ScmFunc))
+#define SCM_SAL_FUNC_TYPECODE(o)           (SCM_AS_FUNC(o)->obj.function.type)
+#define SCM_SAL_FUNC_SET_TYPECODE(o, type) (SCM_FUNC_TYPECODE(o) = (type))
+#define SCM_SAL_FUNC_CFUNC(o)              (SCM_AS_FUNC(o)->obj.function.ptr)
+#define SCM_SAL_FUNC_SET_CFUNC(o, func)                                      \
+    (SCM_FUNC_CFUNC(o) = (ScmFuncType)(func))
 
-#define SCM_SAL_CLOSUREP(a)               (SCM_TYPE(a) == ScmClosure)
-#define SCM_SAL_ENTYPE_CLOSURE(a)         (SCM_ENTYPE((a), ScmClosure))
-#define SCM_SAL_CLOSURE_EXP(a)            (SCM_AS_CLOSURE(a)->obj.closure.exp)
-#define SCM_SAL_CLOSURE_SET_EXP(a, exp)   (SCM_CLOSURE_EXP(a) = (exp))
-#define SCM_SAL_CLOSURE_ENV(a)            (SCM_AS_CLOSURE(a)->obj.closure.env)
-#define SCM_SAL_CLOSURE_SET_ENV(a, env)   (SCM_CLOSURE_ENV(a) = (env))
+#define SCM_SAL_CLOSUREP(o)               (SCM_TYPE(o) == ScmClosure)
+#define SCM_SAL_ENTYPE_CLOSURE(o)         (SCM_ENTYPE((o), ScmClosure))
+#define SCM_SAL_CLOSURE_EXP(o)            (SCM_AS_CLOSURE(o)->obj.closure.exp)
+#define SCM_SAL_CLOSURE_SET_EXP(o, exp)   (SCM_CLOSURE_EXP(o) = (exp))
+#define SCM_SAL_CLOSURE_ENV(o)            (SCM_AS_CLOSURE(o)->obj.closure.env)
+#define SCM_SAL_CLOSURE_SET_ENV(o, env)   (SCM_CLOSURE_ENV(o) = (env))
 
-#define SCM_SAL_VECTORP(a)                (SCM_TYPE(a) == ScmVector)
-#define SCM_SAL_ENTYPE_VECTOR(a)          (SCM_ENTYPE((a), ScmVector))
-#define SCM_SAL_VECTOR_VEC(a)             (SCM_AS_VECTOR(a)->obj.vector.vec)
-#define SCM_SAL_VECTOR_SET_VEC(a, vec)    (SCM_VECTOR_VEC(a) = (vec))
-#define SCM_SAL_VECTOR_LEN(a)             (SCM_AS_VECTOR(a)->obj.vector.len)
-#define SCM_SAL_VECTOR_SET_LEN(a, len)    (SCM_VECTOR_LEN(a) = (len))
+#define SCM_SAL_VECTORP(o)                (SCM_TYPE(o) == ScmVector)
+#define SCM_SAL_ENTYPE_VECTOR(o)          (SCM_ENTYPE((o), ScmVector))
+#define SCM_SAL_VECTOR_VEC(o)             (SCM_AS_VECTOR(o)->obj.vector.vec)
+#define SCM_SAL_VECTOR_SET_VEC(o, vec)    (SCM_VECTOR_VEC(o) = (vec))
+#define SCM_SAL_VECTOR_LEN(o)             (SCM_AS_VECTOR(o)->obj.vector.len)
+#define SCM_SAL_VECTOR_SET_LEN(o, len)    (SCM_VECTOR_LEN(o) = (len))
 #define SCM_SAL_VECTOR_VALID_INDEXP(o, i) (0 <= (i) && (i) < SCM_VECTOR_LEN(o))
 
-#define SCM_SAL_PORTP(a)               (SCM_TYPE(a) == ScmPort)
-#define SCM_SAL_ENTYPE_PORT(a)         (SCM_ENTYPE((a), ScmPort))
-#define SCM_SAL_PORT_FLAG(a)           (SCM_AS_PORT(a)->obj.port.flag)
-#define SCM_SAL_PORT_SET_FLAG(a, flag) (SCM_PORT_FLAG(a) = (flag))
-#define SCM_SAL_PORT_IMPL(a)           (SCM_AS_PORT(a)->obj.port.impl)
-#define SCM_SAL_PORT_SET_IMPL(a, impl) (SCM_PORT_IMPL(a) = (impl))
+#define SCM_SAL_PORTP(o)               (SCM_TYPE(o) == ScmPort)
+#define SCM_SAL_ENTYPE_PORT(o)         (SCM_ENTYPE((o), ScmPort))
+#define SCM_SAL_PORT_FLAG(o)           (SCM_AS_PORT(o)->obj.port.flag)
+#define SCM_SAL_PORT_SET_FLAG(o, flag) (SCM_PORT_FLAG(o) = (flag))
+#define SCM_SAL_PORT_IMPL(o)           (SCM_AS_PORT(o)->obj.port.impl)
+#define SCM_SAL_PORT_SET_IMPL(o, impl) (SCM_PORT_IMPL(o) = (impl))
 
-#define SCM_SAL_CONTINUATIONP(a)       (SCM_TYPE(a) == ScmContinuation)
-#define SCM_SAL_ENTYPE_CONTINUATION(a) (SCM_ENTYPE((a), ScmContinuation))
-#define SCM_SAL_CONTINUATION_OPAQUE(a)                                       \
-    (SCM_AS_CONTINUATION(a)->obj.continuation.opaque)
-#define SCM_SAL_CONTINUATION_SET_OPAQUE(a, val)                              \
-    (SCM_CONTINUATION_OPAQUE(a) = (val))
-#define SCM_SAL_CONTINUATION_TAG(a)                                          \
-    (SCM_AS_CONTINUATION(a)->obj.continuation.tag)
-#define SCM_SAL_CONTINUATION_SET_TAG(a, val)                                 \
-    (SCM_CONTINUATION_TAG(a) = (val))
+#define SCM_SAL_CONTINUATIONP(o)       (SCM_TYPE(o) == ScmContinuation)
+#define SCM_SAL_ENTYPE_CONTINUATION(o) (SCM_ENTYPE((o), ScmContinuation))
+#define SCM_SAL_CONTINUATION_OPAQUE(o)                                       \
+    (SCM_AS_CONTINUATION(o)->obj.continuation.opaque)
+#define SCM_SAL_CONTINUATION_SET_OPAQUE(o, val)                              \
+    (SCM_CONTINUATION_OPAQUE(o) = (val))
+#define SCM_SAL_CONTINUATION_TAG(o)                                          \
+    (SCM_AS_CONTINUATION(o)->obj.continuation.tag)
+#define SCM_SAL_CONTINUATION_SET_TAG(o, val)                                 \
+    (SCM_CONTINUATION_TAG(o) = (val))
 
 #if SCM_USE_VALUECONS
 /* to modify a VALUECONS, rewrite its type to cons by SCM_ENTYPE_CONS(vcons) */
-#define SCM_SAL_VALUEPACKETP(a)        (SCM_TYPE(a) == ScmValuePacket)
-#define SCM_SAL_NULLVALUESP(a)         (EQ((a), scm_null_values))
-#define SCM_SAL_ENTYPE_VALUEPACKET(a)  (SCM_ENTYPE((a), ScmValuePacket))
-#define SCM_SAL_VALUEPACKET_VALUES(a)                                        \
-    ((SCM_NULLVALUESP(a)) ? SCM_NULL : (SCM_ENTYPE_CONS(a), (a)))
-#define SCM_SAL_VALUECONS_CAR(a)       (SCM_AS_VALUEPACKET(a)->obj.cons.car)
-#define SCM_SAL_VALUECONS_CDR(a)       (SCM_AS_VALUEPACKET(a)->obj.cons.cdr)
+#define SCM_SAL_VALUEPACKETP(o)        (SCM_TYPE(o) == ScmValuePacket)
+#define SCM_SAL_NULLVALUESP(o)         (EQ((o), scm_null_values))
+#define SCM_SAL_ENTYPE_VALUEPACKET(o)  (SCM_ENTYPE((o), ScmValuePacket))
+#define SCM_SAL_VALUEPACKET_VALUES(o)                                        \
+    ((SCM_NULLVALUESP(o)) ? SCM_NULL : (SCM_ENTYPE_CONS(o), (o)))
+#define SCM_SAL_VALUECONS_CAR(o)       (SCM_AS_VALUEPACKET(o)->obj.cons.car)
+#define SCM_SAL_VALUECONS_CDR(o)       (SCM_AS_VALUEPACKET(o)->obj.cons.cdr)
 #else /* SCM_USE_VALUECONS */
-#define SCM_SAL_VALUEPACKETP(a)        (SCM_TYPE(a) == ScmValuePacket)
-#define SCM_SAL_ENTYPE_VALUEPACKET(a)  (SCM_ENTYPE((a), ScmValuePacket))
-#define SCM_SAL_VALUEPACKET_VALUES(a)                                        \
-    (SCM_AS_VALUEPACKET(a)->obj.value_packet.lst)
-#define SCM_SAL_VALUEPACKET_SET_VALUES(a, v) (SCM_VALUEPACKET_VALUES(a) = (v))
+#define SCM_SAL_VALUEPACKETP(o)        (SCM_TYPE(o) == ScmValuePacket)
+#define SCM_SAL_ENTYPE_VALUEPACKET(o)  (SCM_ENTYPE((o), ScmValuePacket))
+#define SCM_SAL_VALUEPACKET_VALUES(o)                                        \
+    (SCM_AS_VALUEPACKET(o)->obj.value_packet.lst)
+#define SCM_SAL_VALUEPACKET_SET_VALUES(o, v) (SCM_VALUEPACKET_VALUES(o) = (v))
 #endif /* SCM_USE_VALUECONS */
 
 /*============================================================================
   Special Constants (such as SCM_NULL)
 ============================================================================*/
-#define SCM_SAL_CONSTANTP(a)           (SCM_TYPE(a) == ScmConstant)
+#define SCM_SAL_CONSTANTP(o)           (SCM_TYPE(o) == ScmConstant)
 
 /*============================================================================
   C Pointer Object
 ============================================================================*/
-#define SCM_SAL_C_POINTERP(a)           (SCM_TYPE(a) == ScmCPointer)
-#define SCM_SAL_ENTYPE_C_POINTER(a)     (SCM_ENTYPE((a), ScmCPointer))
-#define SCM_SAL_C_POINTER_VALUE(a)                                           \
-    (SCM_AS_C_POINTER(a)->obj.c_pointer.value)
-#define SCM_SAL_C_POINTER_SET_VALUE(a, ptr)                                  \
-    (SCM_C_POINTER_VALUE(a) = (ptr))
-#define SCM_SAL_C_FUNCPOINTERP(a)       (SCM_TYPE(a) == ScmCFuncPointer)
-#define SCM_SAL_ENTYPE_C_FUNCPOINTER(a) (SCM_ENTYPE((a), ScmCFuncPointer))
-#define SCM_SAL_C_FUNCPOINTER_VALUE(a)                                       \
-    (SCM_AS_C_FUNCPOINTER(a)->obj.c_func_pointer.value)
-#define SCM_SAL_C_FUNCPOINTER_SET_VALUE(a, ptr)                              \
-    (SCM_C_FUNCPOINTER_VALUE(a) = (ptr))
+#define SCM_SAL_C_POINTERP(o)           (SCM_TYPE(o) == ScmCPointer)
+#define SCM_SAL_ENTYPE_C_POINTER(o)     (SCM_ENTYPE((o), ScmCPointer))
+#define SCM_SAL_C_POINTER_VALUE(o)                                           \
+    (SCM_AS_C_POINTER(o)->obj.c_pointer.value)
+#define SCM_SAL_C_POINTER_SET_VALUE(o, ptr)                                  \
+    (SCM_C_POINTER_VALUE(o) = (ptr))
+#define SCM_SAL_C_FUNCPOINTERP(o)       (SCM_TYPE(o) == ScmCFuncPointer)
+#define SCM_SAL_ENTYPE_C_FUNCPOINTER(o) (SCM_ENTYPE((o), ScmCFuncPointer))
+#define SCM_SAL_C_FUNCPOINTER_VALUE(o)                                       \
+    (SCM_AS_C_FUNCPOINTER(o)->obj.c_func_pointer.value)
+#define SCM_SAL_C_FUNCPOINTER_SET_VALUE(o, ptr)                              \
+    (SCM_C_FUNCPOINTER_VALUE(o) = (ptr))
 
 /*============================================================================
   GC Related Operations
 ============================================================================*/
-#define SCM_SAL_FREECELLP(a)           (SCM_TYPE(a) == ScmFreeCell)
-#define SCM_SAL_AS_FREECELL(a)         (SCM_ASSERT_TYPE(SCM_FREECELLP(a), (a)))
-#define SCM_SAL_FREECELL_NEXT(a)       (SCM_AS_FREECELL(a)->obj.cons.car)
-#define SCM_SAL_FREECELL_FREESLOT(a)   (SCM_AS_FREECELL(a)->obj.cons.cdr)
-#define SCM_SAL_ENTYPE_FREECELL(a)     (SCM_ENTYPE((a), ScmFreeCell))
-#define SCM_SAL_FREECELL_SET_NEXT(a, next)  (SCM_FREECELL_NEXT(a) = (next))
-#define SCM_SAL_FREECELL_SET_FREESLOT(a, v) (SCM_FREECELL_FREESLOT(a) = (v))
+#define SCM_SAL_FREECELLP(o)           (SCM_TYPE(o) == ScmFreeCell)
+#define SCM_SAL_AS_FREECELL(o)         (SCM_ASSERT_TYPE(SCM_FREECELLP(o), (o)))
+#define SCM_SAL_FREECELL_NEXT(o)       (SCM_AS_FREECELL(o)->obj.cons.car)
+#define SCM_SAL_FREECELL_FREESLOT(o)   (SCM_AS_FREECELL(o)->obj.cons.cdr)
+#define SCM_SAL_ENTYPE_FREECELL(o)     (SCM_ENTYPE((o), ScmFreeCell))
+#define SCM_SAL_FREECELL_SET_NEXT(o, next)  (SCM_FREECELL_NEXT(o) = (next))
+#define SCM_SAL_FREECELL_SET_FREESLOT(o, v) (SCM_FREECELL_FREESLOT(o) = (v))
 #define SCM_SAL_FREECELL_CLEAR_FREESLOT(o)                                   \
     SCM_SAL_FREECELL_SET_FREESLOT((o), SCM_FALSE)
 
