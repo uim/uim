@@ -112,6 +112,21 @@ scm_set_lib_path(const char *path)
     scm_lib_path = path;
 }
 
+ScmObj
+scm_prepare_port(ScmObj args, ScmObj default_port)
+{
+    ScmObj port;
+    DECLARE_INTERNAL_FUNCTION("prepare_port");
+
+    port = POP_ARG(args);
+    if (!VALIDP(port))
+        port = default_port;
+    ENSURE_PORT(port);
+    ASSERT_NO_MORE_ARG(args);
+
+    return port;
+}
+
 ScmCharPort *
 scm_make_char_port(ScmBytePort *bport)
 {
@@ -433,7 +448,7 @@ scm_p_read(ScmObj args)
     ScmObj port;
     DECLARE_FUNCTION("read", procedure_variadic_0);
 
-    PREPARE_PORT(port, args, scm_in);
+    port = scm_prepare_port(args, scm_in);
     return scm_read(port);
 }
 
@@ -444,7 +459,7 @@ scm_p_read_char(ScmObj args)
     int ch;
     DECLARE_FUNCTION("read-char", procedure_variadic_0);
 
-    PREPARE_PORT(port, args, scm_in);
+    port = scm_prepare_port(args, scm_in);
 
     ch = scm_port_get_char(port);
     if (ch == EOF)
@@ -460,7 +475,7 @@ scm_p_peek_char(ScmObj args)
     int ch;
     DECLARE_FUNCTION("peek-char", procedure_variadic_0);
 
-    PREPARE_PORT(port, args, scm_in);
+    port = scm_prepare_port(args, scm_in);
 
     ch = scm_port_peek_char(port);
     if (ch == EOF)
@@ -484,7 +499,7 @@ scm_p_char_readyp(ScmObj args)
     scm_bool res;
     DECLARE_FUNCTION("char-ready?", procedure_variadic_0);
 
-    PREPARE_PORT(port, args, scm_in);
+    port = scm_prepare_port(args, scm_in);
     res = scm_port_char_readyp(port);
 
     return MAKE_BOOL(res);
@@ -499,7 +514,7 @@ scm_p_write(ScmObj obj, ScmObj args)
     ScmObj port;
     DECLARE_FUNCTION("write", procedure_variadic_1);
 
-    PREPARE_PORT(port, args, scm_out);
+    port = scm_prepare_port(args, scm_out);
     scm_write_to_port(port, obj);
     return SCM_UNDEF;
 }
@@ -510,7 +525,7 @@ scm_p_display(ScmObj obj, ScmObj args)
     ScmObj port;
     DECLARE_FUNCTION("display", procedure_variadic_1);
 
-    PREPARE_PORT(port, args, scm_out);
+    port = scm_prepare_port(args, scm_out);
     scm_display_to_port(port, obj);
     return SCM_UNDEF;
 }
@@ -521,7 +536,7 @@ scm_p_newline(ScmObj args)
     ScmObj port;
     DECLARE_FUNCTION("newline", procedure_variadic_0);
 
-    PREPARE_PORT(port, args, scm_out);
+    port = scm_prepare_port(args, scm_out);
     scm_port_newline(port);
     return SCM_UNDEF;
 }
@@ -534,7 +549,7 @@ scm_p_write_char(ScmObj obj, ScmObj args)
 
     ENSURE_CHAR(obj);
 
-    PREPARE_PORT(port, args, scm_out);
+    port = scm_prepare_port(args, scm_out);
     scm_display_to_port(port, obj);
     return SCM_UNDEF;
 }

@@ -336,15 +336,6 @@ extern ScmObj scm_null_values;
 
 #define ENSURE_ALLOCATED SCM_ENSURE_ALLOCATED
 
-#define PREPARE_PORT(port, args, default_port)                               \
-    do {                                                                     \
-        (port) = POP_ARG(args);                                              \
-        if (!VALIDP(port))                                                   \
-            (port) = (default_port);                                         \
-        ENSURE_PORT(port);                                                   \
-        ASSERT_NO_MORE_ARG(args);                                            \
-    } while (/* CONSTCOND */ 0)
-
 /* Macros For Handling Continuation Object */
 #define INVALID_CONTINUATION_OPAQUE  NULL
 
@@ -501,6 +492,7 @@ int scm_length(ScmObj lst);
 
 /* io.c */
 void scm_init_io(void);
+ScmObj scm_prepare_port(ScmObj args, ScmObj default_port);
 ScmCharPort *scm_make_char_port(ScmBytePort *bport);
 
 /* sigscheme.c */
