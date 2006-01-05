@@ -238,7 +238,7 @@ scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state)
     case SCM_REDUCE_0:
         break;
     default:
-        ERR("(internal error) unrecognized state specifier: %d", *state);
+        SCM_ASSERT(scm_false);
     }
 
     return MAKE_INT(result);
@@ -264,7 +264,7 @@ scm_p_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state)
     case SCM_REDUCE_0:
         break;
     default:
-        ERR("(internal error) unrecognized state specifier: %d", *state);
+        SCM_ASSERT(scm_false);
     }
 
     return MAKE_INT(result);
@@ -291,7 +291,7 @@ scm_p_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state)
     case SCM_REDUCE_0:
         ERR("at least 1 argument required");
     default:
-        ERR("(internal error) unrecognized state specifier: %d", *state);
+        SCM_ASSERT(scm_false);
     }
     return MAKE_INT(result);
 }
@@ -318,7 +318,7 @@ scm_p_divide(ScmObj left, ScmObj right, enum ScmReductionState *state)
     case SCM_REDUCE_0:
         ERR("at least 1 argument required");
     default:
-        ERR("(internal error) unrecognized state specifier: %d", *state);
+        SCM_ASSERT(scm_false);
     }
     return MAKE_INT(result);
 }
@@ -345,7 +345,7 @@ scm_p_numberp(ScmObj obj)
         *state = SCM_REDUCE_STOP;                                            \
         return SCM_FALSE;                                                    \
     default:                                                                 \
-        ERR("(internal error) unrecognized state specifier: %d", *state);    \
+        SCM_ASSERT(scm_false);                                               \
     }                                                                        \
     return SCM_INVALID
 
