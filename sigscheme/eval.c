@@ -211,7 +211,9 @@ call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
          *
          *  - dotted list is handled in env.c
          */
-        formals_len = scm_length(formals); /* can skip full validation */
+        /* scm_finite_length() is enough since formals is fully validated
+         * previously */
+        formals_len = scm_finite_length(formals);
         if (!scm_valid_environment_extension_lengthp(formals_len, args_len))
             goto err_improper;
 

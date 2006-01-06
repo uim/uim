@@ -508,6 +508,7 @@ void scm_error_obj(const char *func_name, const char *msg,
                    ScmObj obj) SCM_NORETURN;
 
 /* operations.c */
+int scm_finite_length(ScmObj lst);
 int scm_length(ScmObj lst);
 
 /* io.c */

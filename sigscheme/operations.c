@@ -796,6 +796,23 @@ scm_p_listp(ScmObj obj)
     return MAKE_BOOL(len >= 0);
 }
 
+#define TERMINATOR_LEN 1
+
+/* scm_length() for non-circular list */
+int
+scm_finite_length(ScmObj lst)
+{
+    int len;
+
+    for (len = 0; CONSP(lst); lst = CDR(lst))
+        len++;
+
+    if (NULLP(lst))
+        return len;
+    else
+        return SCM_LISTLEN_ENCODE_DOTTED(len + TERMINATOR_LEN);
+}
+
 /*
  * Notice
  *
@@ -814,8 +831,6 @@ scm_length(ScmObj lst)
 {
     ScmObj slow;
     int proper_len;
-
-#define TERMINATOR_LEN 1
 
     for (proper_len = 0, slow = lst;;) {
         if (NULLP(lst)) break;
@@ -838,8 +853,9 @@ scm_length(ScmObj lst)
     }
 
     return proper_len;
-#undef TERMINATOR_LEN
 }
+
+#undef TERMINATOR_LEN
 
 ScmObj
 scm_p_length(ScmObj obj)
