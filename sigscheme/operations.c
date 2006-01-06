@@ -814,7 +814,7 @@ scm_length(ScmObj lst)
     ScmObj slow;
     int len;
 
-#define LISTLEN_ENCODE_DOT(len)      (-(len))
+#define LISTLEN_ENCODE_DOT(len)      (-(len)-1)
 #define LISTLEN_ENCODE_CIRCULAR(len) (INT_MIN)
 
     slow = lst;
