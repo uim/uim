@@ -101,24 +101,24 @@ static scm_bool valid_framep(ScmObj frame);
 /**
  * Construct new frame on an env
  *
- * @a vars and @a vals must surely be a list.
+ * @a formals and @a actuals must be valid.
  *
- * @param vars Symbol list as variable names of new frame. It accepts dotted
- *             list to handle function arguments directly.
- * @param vals Arbitrary Scheme object list as values of new frame.
+ * @param formals Symbol list as variable names of new frame. It accepts dotted
+ *                list to handle function arguments directly.
+ * @param actuals Arbitrary Scheme object list as values of new frame.
  *
  * @see scm_eval()
  */
 ScmObj
-scm_extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
+scm_extend_environment(ScmObj formals, ScmObj actuals, ScmObj env)
 {
     ScmObj frame;
     DECLARE_INTERNAL_FUNCTION("scm_extend_environment");
 
-    SCM_ASSERT(scm_valid_environment_extensionp(vars, vals));
+    SCM_ASSERT(scm_valid_environment_extensionp(formals, actuals));
     SCM_ASSERT(VALID_ENVP(env));
 
-    frame = CONS(vars, vals);
+    frame = CONS(formals, actuals);
     return CONS(frame, env);
 }
 
@@ -126,24 +126,23 @@ scm_extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
 ScmObj
 scm_add_environment(ScmObj var, ScmObj val, ScmObj env)
 {
-    ScmObj newest_frame;
-    ScmObj new_vars, new_vals;
+    ScmObj frame, formals, actuals;
     DECLARE_INTERNAL_FUNCTION("scm_add_environment");
 
     SCM_ASSERT(SYMBOLP(var));
     SCM_ASSERT(VALID_ENVP(env));
 
-    /* add (var, val) pair to the newest frame in env */
+    /* add (var, val) pair to most recent frame of the env */
     if (NULLP(env)) {
-        newest_frame = CONS(LIST_1(var), LIST_1(val));
-        env = LIST_1(newest_frame);
+        frame = CONS(LIST_1(var), LIST_1(val));
+        env = LIST_1(frame);
     } else if (CONSP(env)) {
-        newest_frame = CAR(env);
-        new_vars = CONS(var, CAR(newest_frame));
-        new_vals = CONS(val, CDR(newest_frame));
-        newest_frame = CONS(new_vars, new_vals);
+        frame = CAR(env);
+        formals = CONS(var, CAR(frame));
+        actuals = CONS(val, CDR(frame));
+        frame = CONS(formals, actuals);
 
-        SET_CAR(env, newest_frame);
+        SET_CAR(env, frame);
     } else {
         SCM_ASSERT(scm_false);
     }
@@ -181,23 +180,23 @@ scm_lookup_environment(ScmObj var, ScmObj env)
 static ScmRef
 lookup_frame(ScmObj var, ScmObj frame)
 {
-    ScmObj vars;
-    ScmRef vals;
+    ScmObj formals;
+    ScmRef actuals;
     DECLARE_INTERNAL_FUNCTION("lookup_frame");
 
     SCM_ASSERT(SYMBOLP(var));
     SCM_ASSERT(valid_framep(frame));
 
-    for (vars = CAR(frame), vals = REF_CDR(frame);
-         CONSP(vars);
-         vars = CDR(vars), vals = REF_CDR(DEREF(vals)))
+    for (formals = CAR(frame), actuals = REF_CDR(frame);
+         CONSP(formals);
+         formals = CDR(formals), actuals = REF_CDR(DEREF(actuals)))
     {
-        if (EQ(var, CAR(vars)))
-            return REF_CAR(DEREF(vals));
+        if (EQ(var, CAR(formals)))
+            return REF_CAR(DEREF(actuals));
     }
     /* dotted list */
-    if (EQ(var, vars))
-        return vals;
+    if (EQ(var, formals))
+        return actuals;
 
     return SCM_INVALID_REF;
 }
@@ -233,13 +232,13 @@ scm_valid_environmentp(ScmObj env)
 static scm_bool
 valid_framep(ScmObj frame)
 {
-    ScmObj vars, vals;
+    ScmObj formals, actuals;
     DECLARE_INTERNAL_FUNCTION("valid_framep");
 
     if (CONSP(frame)) {
-        vars = CAR(frame);
-        vals = CDR(frame);
-        if (scm_valid_environment_extensionp(vars, vals))
+        formals = CAR(frame);
+        actuals = CDR(frame);
+        if (scm_valid_environment_extensionp(formals, actuals))
             return scm_true;
     }
     return scm_false;
