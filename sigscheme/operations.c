@@ -815,22 +815,16 @@ scm_length(ScmObj lst)
     ScmObj slow;
     int len;
 
-#define LISTLEN_ENCODE_DOT(len)      (-(len))
-#define LISTLEN_ENCODE_CIRCULAR(len) (INT_MIN)
-
-    slow = lst;
-    len = 0;
-
-    for (;;) {
+    for (len = 0, slow = lst;;) {
         if (NULLP(lst)) break;
-        if (!CONSP(lst)) return LISTLEN_ENCODE_DOT(len + 1);
-        if (len != 0 && lst == slow) return LISTLEN_ENCODE_CIRCULAR(len);
+        if (!CONSP(lst))             return SCM_LISTLEN_ENCODE_DOT(len + 1);
+        if (len != 0 && lst == slow) return SCM_LISTLEN_ENCODE_CIRCULAR(len);
 
         lst = CDR(lst);
         len++;
         if (NULLP(lst)) break;
-        if (!CONSP(lst)) return LISTLEN_ENCODE_DOT(len + 1);
-        if (lst == slow) return LISTLEN_ENCODE_CIRCULAR(len);
+        if (!CONSP(lst)) return SCM_LISTLEN_ENCODE_DOT(len + 1);
+        if (lst == slow) return SCM_LISTLEN_ENCODE_CIRCULAR(len);
 
         lst = CDR(lst);
         slow = CDR(slow);
@@ -838,8 +832,6 @@ scm_length(ScmObj lst)
     }
 
     return len;
-#undef LISTLEN_ENCODE_DOT
-#undef LISTLEN_ENCODE_CIRCULAR
 }
 
 ScmObj

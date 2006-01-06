@@ -348,7 +348,9 @@ extern ScmObj scm_null_values;
 /* error handlings */
 #define SCM_ERR_HEADER "Error: "
 
-/* result decoders for scm_length() */
+/* result encoder/decoders for scm_length() */
+#define SCM_LISTLEN_ENCODE_DOT(len)      (-(len))
+#define SCM_LISTLEN_ENCODE_CIRCULAR(len) (INT_MIN)
 #define SCM_LISTLEN_PROPERP(len)     (0 <= (len))
 #define SCM_LISTLEN_CIRCULARP(len)   ((len) == INT_MIN)
 #define SCM_LISTLEN_DOTP(len)        ((len) < 0                              \
