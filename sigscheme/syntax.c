@@ -623,14 +623,14 @@ ScmObj
 scm_s_let(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env, named_let_sym, proc, bindings, binding, body;
-    ScmObj vars, var, vals, val;
+    ScmObj formals, var, actuals, val;
     ScmQueue varq, valq;
     DECLARE_FUNCTION("let", syntax_variadic_tailrec_0);
 
     env = eval_state->env;
     named_let_sym = SCM_FALSE;
-    vars = SCM_NULL;
-    vals = SCM_NULL;
+    formals = SCM_NULL;
+    actuals = SCM_NULL;
 
     /*========================================================================
       normal let:
@@ -664,8 +664,8 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
 
     body = args;
 
-    SCM_QUEUE_POINT_TO(varq, vars);
-    SCM_QUEUE_POINT_TO(valq, vals);
+    SCM_QUEUE_POINT_TO(varq, formals);
+    SCM_QUEUE_POINT_TO(valq, actuals);
     for (; CONSP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
 #if SCM_COMPAT_SIOD_BUGS
@@ -685,12 +685,12 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
     if (!NULLP(bindings))
         ERR_OBJ("invalid bindings form", bindings);
 
-    env = scm_extend_environment(vars, vals, env);
+    env = scm_extend_environment(formals, actuals, env);
     eval_state->env = env;
 
     /* named let */
     if (SYMBOLP(named_let_sym)) {
-        proc = MAKE_CLOSURE(CONS(vars, body), env);
+        proc = MAKE_CLOSURE(CONS(formals, body), env);
         define_internal(named_let_sym, proc, env);
     }
 
@@ -742,7 +742,7 @@ scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 ScmObj
 scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
-    ScmObj binding, frame, vars, var, vals, val;
+    ScmObj binding, frame, formals, var, actuals, val;
     DECLARE_FUNCTION("letrec", syntax_variadic_tailrec_1);
 
     /*========================================================================
@@ -759,8 +759,8 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     frame = CONS(SCM_NULL, SCM_NULL);
     eval_state->env = CONS(frame, eval_state->env);
 
-    vars = SCM_NULL;
-    vals = SCM_NULL;
+    formals = SCM_NULL;
+    actuals = SCM_NULL;
     for (; CONSP(bindings); bindings = CDR(bindings)) {
         binding = CAR(bindings);
 #if SCM_COMPAT_SIOD_BUGS
@@ -773,18 +773,18 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
             ERR_OBJ("invalid binding form", binding);
         val = EVAL(CADR(binding), eval_state->env);
 
-        /* construct vars and vals list: any <init> must not refer a
+        /* construct formals and actuals list: any <init> must not refer a
            <variable> at this time */
-        vars = CONS(var, vars);
-        vals = CONS(val, vals);
+        formals = CONS(var, formals);
+        actuals = CONS(val, actuals);
     }
 
     if (!NULLP(bindings))
         ERR_OBJ("invalid bindings form", bindings);
 
     /* fill the placeholder frame */
-    SET_CAR(frame, vars);
-    SET_CDR(frame, vals);
+    SET_CAR(frame, formals);
+    SET_CDR(frame, actuals);
 
     return scm_s_begin(body, eval_state);
 }
