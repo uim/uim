@@ -39,8 +39,29 @@
  *                   (val1 val2 val3 ...))
  *     Env   = (Frame1 Frame2 Frame3 ...)
  *
+ *   Other 2 forms are also used to handle dotted args.
+ *
+ *     Frame = (cons (var1 var2 var3 . rest1)
+ *                   (val1 val2 val3 var4 var5 ...))
+ *
+ *     Frame = (cons rest2
+ *                   (val1 val2 val3 var4 var5 ...))
+ *
+ *   In this case, rest1 is bound to (var4 var5 ...) and rest2 is bound to
+ *   (val1 val2 val3 var4 var5 ...).
+ *
  *   The environment object should not be manipulated manually, to allow
- *   replacing with another implementation. Use the three function interface.
+ *   replacing with another implementation. Use the function interfaces.
+ *
+ *   To ensure valid use of the environment objects is environment
+ *   constructor's responsibility. i.e. Any lookup operations assume that the
+ *   environment object is valid. To keep the assumption true, any environemnt
+ *   object modification and injection from user code must be
+ *   validated. Although the validation for the injection may cost high,
+ *   ordinary code only use (interaction-environment) and other R5RS
+ *   environment specifiers. Since these 'trusted' specifiers can cheaply be
+ *   identified, the validation cost is also. The validation can reject any
+ *   hand-maid invalid environment objects.
  */
 
 /*=======================================
@@ -60,6 +81,9 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+#define TRUSTED_ENVP(env) (EQ(env, SCM_INTERACTION_ENV)                      \
+                           || EQ(env, SCM_R5RS_ENV)                          \
+                           || EQ(env, SCM_NULL_ENV))
 
 /*=======================================
   Variable Declarations
@@ -69,6 +93,7 @@
   File Local Function Declarations
 =======================================*/
 static ScmRef lookup_frame(ScmObj var, ScmObj frame);
+static scm_bool valid_framep(ScmObj frame);
 
 /*=======================================
   Function Implementations
@@ -78,37 +103,22 @@ static ScmRef lookup_frame(ScmObj var, ScmObj frame);
  *
  * @a vars and @a vals must surely be a list.
  *
- * @param vars Symbol list as variable names of new frame. It accepts dot list
- *             to handle function arguments directly.
- * @param vals Arbitrary Scheme object list as values of new frame. Side
- *             effect: destructively modifyies the vals when vars is a dot
- *             list.
+ * @param vars Symbol list as variable names of new frame. It accepts dotted
+ *             list to handle function arguments directly.
+ * @param vals Arbitrary Scheme object list as values of new frame.
+ *
  * @see scm_eval()
  */
 ScmObj
 scm_extend_environment(ScmObj vars, ScmObj vals, ScmObj env)
 {
-    ScmObj frame, rest_vars, rest_vals;
+    ScmObj frame;
     DECLARE_INTERNAL_FUNCTION("scm_extend_environment");
 
-#if SCM_STRICT_ARGCHECK
-    if (!LISTP(env))
-        ERR("broken environment");
+    SCM_ASSERT(scm_valid_environment_extensionp(vars, vals));
+    SCM_ASSERT(VALID_ENVP(env));
 
-    for (rest_vars = vars, rest_vals = vals;
-         CONSP(rest_vars) && !NULLP(rest_vals);
-         rest_vars = CDR(rest_vars), rest_vals = CDR(rest_vals))
-    {
-        if (!SYMBOLP(CAR(rest_vars)))
-            break;
-    }
-    if (!(NULLP(rest_vars) || SYMBOLP(rest_vars)))
-        ERR_OBJ("broken environment extension", rest_vars);
-#endif /* SCM_STRICT_ARGCHECK */
-
-    /* create new frame */
     frame = CONS(vars, vals);
-
     return CONS(frame, env);
 }
 
@@ -121,6 +131,7 @@ scm_add_environment(ScmObj var, ScmObj val, ScmObj env)
     DECLARE_INTERNAL_FUNCTION("scm_add_environment");
 
     SCM_ASSERT(SYMBOLP(var));
+    SCM_ASSERT(VALID_ENVP(env));
 
     /* add (var, val) pair to the newest frame in env */
     if (NULLP(env)) {
@@ -134,7 +145,7 @@ scm_add_environment(ScmObj var, ScmObj val, ScmObj env)
 
         SET_CAR(env, newest_frame);
     } else {
-        ERR_OBJ("broken environent", env);
+        SCM_ASSERT(scm_false);
     }
     return env;
 }
@@ -151,18 +162,17 @@ scm_lookup_environment(ScmObj var, ScmObj env)
     ScmRef ref;
     DECLARE_INTERNAL_FUNCTION("scm_lookup_environment");
 
+    SCM_ASSERT(SYMBOLP(var));
+    SCM_ASSERT(VALID_ENVP(env));
+
     /* lookup in frames */
-    for (; CONSP(env); env = CDR(env)) {
+    for (; !NULLP(env); env = CDR(env)) {
         frame = CAR(env);
         ref = lookup_frame(var, frame);
         if (ref != SCM_INVALID_REF)
             return ref;
     }
-
-#if SCM_STRICT_ARGCHECK
-    if (!NULLP(env))
-        ERR_OBJ("broken environent", env);
-#endif
+    SCM_ASSERT(NULLP(env));
 
     return SCM_INVALID_REF;
 }
@@ -175,30 +185,117 @@ lookup_frame(ScmObj var, ScmObj frame)
     ScmRef vals;
     DECLARE_INTERNAL_FUNCTION("lookup_frame");
 
-#if SCM_STRICT_ARGCHECK
-    ENSURE_SYMBOL(var);
-    ENSURE_CONS(frame);
-#endif
+    SCM_ASSERT(SYMBOLP(var));
+    SCM_ASSERT(valid_framep(frame));
 
     for (vars = CAR(frame), vals = REF_CDR(frame);
          CONSP(vars);
          vars = CDR(vars), vals = REF_CDR(DEREF(vals)))
     {
-#if SCM_STRICT_ARGCHECK
-        /*
-         * This is required to reject hand-maid broken frame:
-         *   (eval '(+ x y) '((x . 4)
-         *                    (y . 6)))
-         *
-         * It can be removed once the typed environment object is implemented.
-         */
-        ENSURE_CONS(DEREF(vals));
-#endif
         if (EQ(var, CAR(vars)))
             return REF_CAR(DEREF(vals));
     }
-    if (EQ(vars, var))
+    /* dotted list */
+    if (EQ(var, vars))
         return vals;
 
     return SCM_INVALID_REF;
+}
+
+/*
+ * Validators
+ */
+scm_bool
+scm_valid_environmentp(ScmObj env)
+{
+    ScmObj frame, rest;
+    DECLARE_INTERNAL_FUNCTION("scm_valid_environmentp");
+
+    if (TRUSTED_ENVP(env))
+        return scm_true;
+
+    /*
+     * The env is extended and untrusted. Since this case rarely occurs in
+     * ordinary codes, the expensive validation cost is acceptable.
+     */
+
+    if (!PROPER_LISTP(env))
+        return scm_false;
+    for (rest = env; !NULLP(rest); rest = CDR(rest)) {
+        frame = CAR(rest);
+        if (!valid_framep(frame))
+            return scm_false;
+    }
+
+    return scm_true;
+}
+
+static scm_bool
+valid_framep(ScmObj frame)
+{
+    ScmObj vars, vals;
+    DECLARE_INTERNAL_FUNCTION("valid_framep");
+
+    if (CONSP(frame)) {
+        vars = CAR(frame);
+        vals = CDR(frame);
+        if (scm_valid_environment_extensionp(vars, vals))
+            return scm_true;
+    }
+    return scm_false;
+}
+
+scm_bool
+scm_valid_environment_extensionp(ScmObj formals, ScmObj actuals)
+{
+    int formals_len, actuals_len;
+
+    formals_len = scm_validate_formals(formals);
+    actuals_len = scm_validate_actuals(actuals);
+    return scm_valid_environment_extension_lengthp(formals_len, actuals_len);
+}
+
+/* formals_len must be validated by scm_validate_formals() prior to here */
+scm_bool
+scm_valid_environment_extension_lengthp(int formals_len, int actuals_len)
+{
+    if (SCM_LISTLEN_ERRORP(formals_len) || !SCM_LISTLEN_PROPERP(actuals_len))
+        return scm_false;
+    if (SCM_LISTLEN_DOTTEDP(formals_len)) {
+        formals_len = SCM_LISTLEN_BEFORE_DOT(formals_len);
+        return (formals_len <= actuals_len);
+    }
+    return (formals_len == actuals_len);
+}
+
+int
+scm_validate_formals(ScmObj formals)
+{
+    ScmObj var;
+    int len;
+    DECLARE_INTERNAL_FUNCTION("scm_validate_formals");
+
+    /* This loop goes infinite if the formals is circular. SigSchme expects
+     * that user codes are sane here. */
+    for (len = 0; var = POP_ARG(formals), VALIDP(var); len++) {
+        if (!SYMBOLP(var))
+            return SCM_LISTLEN_ENCODE_ERROR(len);
+    }
+    if (NULLP(formals))
+        return len;
+    /* dotted list allowed */
+    if (SYMBOLP(formals))
+        return SCM_LISTLEN_ENCODE_DOTTED(len + 1);
+    return SCM_LISTLEN_ENCODE_ERROR(len);
+}
+
+int
+scm_validate_actuals(ScmObj actuals)
+{
+    int len;
+
+    len = scm_length(actuals);
+    if (SCM_LISTLEN_DOTTEDP(len))
+        len = SCM_LISTLEN_ENCODE_ERROR(len);
+    return len;
 }

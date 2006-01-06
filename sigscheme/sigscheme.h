@@ -122,6 +122,8 @@ extern "C" {
 #define SCM_ENSURE_ALLOCATED(p)                                              \
     ((p) || (scm_fatal_error(SCM_ERRMSG_MEMORY_EXHAUSTED), 1))
 
+#define SCM_VALID_ENVP(obj)    (scm_valid_environmentp(env))
+
 #define SCM_ERROBJP(obj)       (NFALSEP(scm_p_error_objectp(obj)))
 
 #define SCM_SYMBOL_BOUNDP(sym) (!SCM_EQ(SCM_SYMBOL_VCELL(sym), SCM_UNBOUND))
@@ -160,6 +162,7 @@ extern "C" {
 /* result decoders for scm_length() */
 #define SCM_LISTLEN_PROPERP(len)    (0 <= (len))
 #define SCM_LISTLEN_CIRCULARP(len)  ((len) == INT_MIN)
+#define SCM_LISTLEN_ERRORP          SCM_LISTLEN_CIRCULARP
 #define SCM_LISTLEN_DOTTEDP(len)    ((len) < 0                               \
                                      && !SCM_LISTLEN_CIRCULARP(len))
 #define SCM_LISTLEN_DOTTED(len)     (abs(len))

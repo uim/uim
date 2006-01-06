@@ -64,10 +64,11 @@
 =======================================*/
 static ScmObj reduce(ScmObj (*func)(), ScmObj args, ScmObj env,
                      scm_bool suppress_eval);
-static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
+static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
+                           scm_bool suppress_eval);
 static ScmObj call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
                    scm_bool suppress_eval);
-static ScmObj map_eval(ScmObj args, ScmObj env);
+static ScmObj map_eval(ScmObj args, int *args_len, ScmObj env);
 
 /*=======================================
   Function Implementations
@@ -168,11 +169,12 @@ reduce(ScmObj (*func)(), ScmObj args, ScmObj env, scm_bool suppress_eval)
     return (*func)(left, right, &state);
 }
 
-/* ARGS should already be evaluated. */
 static ScmObj
-call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
+call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
+             scm_bool suppress_eval)
 {
-    ScmObj formals;
+    ScmObj formals, body, proc_env;
+    int formals_len, args_len;
     DECLARE_INTERNAL_FUNCTION("call_closure");
 
     /*
@@ -180,42 +182,57 @@ call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
      *
      * (lambda <formals> <body>)
      *
-     * <formals> should have 3 forms.
+     * <formals> may have 3 forms.
      *
      *   (1) <variable>
      *   (2) (<variable1> <variable2> ...)
      *   (3) (<variable1> <variable2> ... <variable n-1> . <variable n>)
      */
-    formals = CAR(SCM_CLOSURE_EXP(proc));
+    formals  = CAR(SCM_CLOSURE_EXP(proc));
+    body     = CDR(SCM_CLOSURE_EXP(proc));
+    proc_env = SCM_CLOSURE_ENV(proc);
+    if (suppress_eval) {
+        args_len = scm_validate_actuals(args);
+        if (SCM_LISTLEN_ERRORP(args_len))
+            goto err_improper;
+    } else {
+        args = map_eval(args, &args_len, eval_state->env);
+    }
 
     if (SYMBOLP(formals)) {
         /* (1) <variable> */
         eval_state->env = scm_extend_environment(LIST_1(formals),
                                                  LIST_1(args),
-                                                 SCM_CLOSURE_ENV(proc));
+                                                 proc_env);
     } else if (CONSP(formals)) {
         /*
          * (2) (<variable1> <variable2> ...)
          * (3) (<variable1> <variable2> ... <variable n-1> . <variable n>)
          *
-         *  - dot list is handled in lookup_frame().
+         *  - dotted list is handled in env.c
          */
-        eval_state->env = scm_extend_environment(formals,
-                                                 args,
-                                                 SCM_CLOSURE_ENV(proc));
+        formals_len = scm_length(formals); /* can skip full validation */
+        if (!scm_valid_environment_extension_lengthp(formals_len, args_len))
+            goto err_improper;
+
+        eval_state->env = scm_extend_environment(formals, args, proc_env);
     } else if (NULLP(formals)) {
         /*
          * (2') <variable> is '()
          */
-        eval_state->env = scm_extend_environment(SCM_NULL,
-                                                 SCM_NULL,
-                                                 SCM_CLOSURE_ENV(proc));
+        if (args_len)
+            goto err_improper;
+
+        eval_state->env = scm_extend_environment(SCM_NULL, SCM_NULL, proc_env);
     } else {
-        ERR_OBJ("lambda: bad formals list", formals);
+        ERR_OBJ("bad formals list", formals);
     }
 
     eval_state->ret_type = SCM_RETTYPE_NEED_EVAL;
-    return scm_s_begin(CDR(SCM_CLOSURE_EXP(proc)), eval_state);
+    return scm_s_begin(body, eval_state);
+
+ err_improper:
+    ERR_OBJ("unmatched number or improper args", args);
 }
 
 /**
@@ -236,7 +253,7 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
     ScmObj (*func)();
     enum ScmFuncTypeCode type;
     scm_bool syntaxp;
-    int mand_count, i;
+    int mand_count, i, variadic_len;
     /* The +2 is for rest and env/eval_state. */
     void *argbuf[SCM_FUNCTYPE_MAND_MAX + 2];
     DECLARE_INTERNAL_FUNCTION("(function call)");
@@ -247,10 +264,8 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
         proc = EVAL(proc, env);
 
     if (!FUNCP(proc)) {
-        if (CLOSUREP(proc)) {
-            args = (suppress_eval) ? args : map_eval(args, env);
-            return call_closure(proc, args, eval_state);
-        }
+        if (CLOSUREP(proc))
+            return call_closure(proc, args, eval_state, suppress_eval);
         if (CONTINUATIONP(proc)) {
             if (!LIST_1_P(args))
                 ERR("continuation takes exactly one argument");
@@ -293,7 +308,7 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
 
     if (type & SCM_FUNCTYPE_VARIADIC) {
         if (!suppress_eval)
-            args = map_eval(args, env);
+            args = map_eval(args, &variadic_len, env);
 #if 0
         /* Since this check is expensive, each syntax should do. Other
          * procedures are already ensured that having proper args here. */
@@ -355,7 +370,7 @@ scm_p_eval(ScmObj obj, ScmObj env)
 {
     DECLARE_FUNCTION("eval", procedure_fixed_2);
 
-    ENSURE_ENV(env);
+    ENSURE_VALID_ENV(env);
 
     return scm_eval(obj, env);
 }
@@ -426,19 +441,22 @@ scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state)
 }
 
 static ScmObj
-map_eval(ScmObj args, ScmObj env)
+map_eval(ScmObj args, int *args_len, ScmObj env)
 {
     ScmQueue q;
     ScmObj res, elm, rest;
+    int len;
     DECLARE_INTERNAL_FUNCTION("(function call)");
 
-    if (NULLP(args))
+    if (NULLP(args)) {
+        *args_len = 0;
         return SCM_NULL;
+    }
 
     res = SCM_NULL;
     SCM_QUEUE_POINT_TO(q, res);
     /* does not use POP_ARG() to increace performance */
-    for (rest = args; CONSP(rest); rest = CDR(rest)) {
+    for (len = 0, rest = args; CONSP(rest); len++, rest = CDR(rest)) {
         elm = EVAL(CAR(rest), env);
 #if SCM_STRICT_ARGCHECK
         if (VALUEPACKETP(elm))
@@ -449,6 +467,7 @@ map_eval(ScmObj args, ScmObj env)
     if (!NULLP(rest))
         ERR(SCM_ERRMSG_IMPROPER_ARGS, args);
 
+    *args_len = len;
     return res;
 }
 

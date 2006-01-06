@@ -247,7 +247,6 @@
 (tn "syntax application fixed_0")
 (define s (lambda () #t))  ;; FIXME: no syntax with syntax_fixed_0
 (assert-equal? (tn) #t         (s))
-(assert-error  (tn) (lambda () (s)))
 (assert-error  (tn) (lambda () (s . #t)))
 (assert-error  (tn) (lambda () (s #t)))
 (assert-error  (tn) (lambda () (s #t . #t)))

@@ -212,6 +212,7 @@ extern ScmObj scm_null_values;
 #define C_POINTERP     SCM_C_POINTERP
 #define C_FUNCPOINTERP SCM_C_FUNCPOINTERP
 #define ENVP           SCM_ENVP
+#define VALID_ENVP     SCM_VALID_ENVP
 #define ERROBJP        SCM_ERROBJP
 
 #define LISTP          SCM_LISTP
@@ -323,6 +324,8 @@ extern ScmObj scm_null_values;
 #define ENSURE_CONTINUATION(obj) ENSURE_TYPE(CONTINUATIONP, "continuation", (obj))
 #define ENSURE_PROCEDURE(obj) ENSURE_TYPE(PROCEDUREP, "procedure", (obj))
 #define ENSURE_ENV(obj)     ENSURE_TYPE(ENVP, "environment specifier", (obj))
+#define ENSURE_VALID_ENV(obj)                                                \
+    ENSURE_TYPE(VALID_ENVP, "valid environment specifier", (obj))
 #define ENSURE_ERROBJ(obj)  ENSURE_TYPE(ERROBJP, "error object", (obj))
 #define ENSURE_LIST(obj)    ENSURE_TYPE(LISTP, "list", (obj))
 
@@ -353,6 +356,7 @@ extern ScmObj scm_null_values;
 /* result encoders for scm_length() */
 #define SCM_LISTLEN_ENCODE_DOTTED(len)   (-(len))
 #define SCM_LISTLEN_ENCODE_CIRCULAR(len) (INT_MIN)
+#define SCM_LISTLEN_ENCODE_ERROR         SCM_LISTLEN_ENCODE_CIRCULAR
 
 /*=======================================
    List Constructor
@@ -479,6 +483,13 @@ void scm_finalize_symbol(void);
 ScmObj scm_extend_environment(ScmObj vars, ScmObj vals, ScmObj env);
 ScmObj scm_add_environment(ScmObj var, ScmObj val, ScmObj env);
 ScmRef scm_lookup_environment(ScmObj var, ScmObj env);
+
+scm_bool scm_valid_environmentp(ScmObj env);
+scm_bool scm_valid_environment_extensionp(ScmObj formals, ScmObj actuals);
+scm_bool scm_valid_environment_extension_lengthp(int formals_len,
+                                                 int actuals_len);
+int scm_validate_formals(ScmObj formals);
+int scm_validate_actuals(ScmObj actuals);
 
 /* eval.c */
 ScmObj scm_symbol_value(ScmObj var, ScmObj env);

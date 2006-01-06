@@ -32,6 +32,8 @@
 
 (load "./test/unittest.scm")
 
+(define tn test-name)
+
 ;; check eval
 (assert-equal? "eval #1" 3 (eval '(+ 1 2)
                                  (interaction-environment)))
@@ -48,5 +50,74 @@
                            (eval '(+ 1 2) "string")))
 (assert-error  "eval #6" (lambda ()
                            (eval '(+ 1 2) #\a)))
+
+(if (provided? "sigscheme")
+    (begin
+      (tn "eval with hand-maid env")
+      ;; single frame
+      (assert-equal? (tn) 10 (eval '(+ x y)
+                                   '(((x y) . (4 6)))))
+      ;; 2 frames
+      (assert-equal? (tn) 15 (eval '(+ x y z)
+                                   '(((x y) . (4 6))
+                                     ((z)   . (5)))))
+      ;; 3 frames
+      (assert-equal? (tn) 14 (eval '(+ x y z v w)
+                                   '(((x y) . (4 6))
+                                     ((v w) . (0 -1))
+                                     ((z)   . (5)))))
+      ;; dotted arg as formals
+      (assert-equal? (tn) 44 (eval '(apply + lst)
+                                   '(((x y . lst) . (4 6 8 10 12 14))
+                                     ((z)  . (5)))))
+      ;; symbol as formals
+      (assert-equal? (tn) 54 (eval '(apply + lst)
+                                   '((lst . (4 6 8 10 12 14))
+                                     ((z) . (5)))))
+
+      (tn "eval with invalid hand-maid env")
+      ;; improper frame list
+      (assert-error  (tn) (lambda ()
+                            (eval '(+ 1 2)
+                                  '(((x y) . (4 6))
+                                    . #t))))
+      ;; actuals shortage
+      (assert-error  (tn) (lambda ()
+                            (eval '(+ 1 2)
+                                  '(((x y z) . (4 6))))))
+      ;; actuals shortage #2
+      (assert-error  (tn) (lambda ()
+                            (eval '(+ 1 2)
+                                  '(((x y . z) . (4))))))
+      ;; superfluous actuals
+      (assert-error  (tn) (lambda ()
+                            (eval '(+ 1 2)
+                                  '(((x y) . (4 6 8))))))
+      ;; dotted actuals
+      (assert-error  (tn) (lambda ()
+                            (eval '(+ 1 2)
+                                  '(((x y) . (4 . 6))))))
+      ;; dotted actuals #2
+      (assert-error  (tn) (lambda ()
+                            (eval '(+ 1 2)
+                                  '(((x y) . (4 6 . 8))))))
+      ;; dotted actuals #3
+      (assert-error  (tn) (lambda ()
+                            (eval '(+ 1 2)
+                                  '(((x . y) . (4 6 . 8))))))
+      ;; not a symbol in formals
+      (assert-error  (tn) (lambda ()
+                            (eval '(+ 1 2)
+                                  '(((x 3) . (4 6))))))
+      ;; not a list as actuals
+      (assert-error  (tn) (lambda ()
+                            (eval '(+ 1 2)
+                                  '(((x) . 4)
+                                    ((y) . 6)))))
+      ;; not a list as both formals and actuals
+      (assert-error  (tn) (lambda ()
+                            (eval '(+ 1 2)
+                                  '((x . 4)
+                                    (y . 6)))))))
 
 (total-report)

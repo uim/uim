@@ -361,7 +361,7 @@ scm_s_lambda(ScmObj formals, ScmObj body, ScmObj env)
 {
     DECLARE_FUNCTION("lambda", syntax_variadic_1);
 
-    if (!LISTP(formals) && !SYMBOLP(formals))
+    if (SCM_LISTLEN_ERRORP(scm_validate_formals(formals)))
         ERR_OBJ("bad formals", formals);
     if (!CONSP(body))
         ERR_OBJ("at least one expression required", body);
