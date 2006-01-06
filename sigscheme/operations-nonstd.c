@@ -252,8 +252,8 @@ scm_p_lengthstar(ScmObj lst)
 
     len = scm_length(lst);
     if (!SCM_LISTLEN_PROPERP(len)) { /* make fast path for proper list */
-        if (SCM_LISTLEN_DOTP(len))
-            len = -SCM_LISTLEN_DOT(len);
+        if (SCM_LISTLEN_DOTTEDP(len))
+            len = -SCM_LISTLEN_DOTTED(len);
         else if (SCM_LISTLEN_CIRCULARP(len))
             return SCM_FALSE;
     }
