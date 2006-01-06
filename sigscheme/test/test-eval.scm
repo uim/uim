@@ -34,22 +34,22 @@
 
 (define tn test-name)
 
-;; check eval
-(assert-equal? "eval #1" 3 (eval '(+ 1 2)
-                                 (interaction-environment)))
+(tn "eval")
+(assert-equal? (tn) 3 (eval '(+ 1 2)
+                            (interaction-environment)))
 
-(assert-equal? "eval #2" 3 (eval '((lambda (x y) (+ x y)) 1 2)
-                                 (interaction-environment)))
+(assert-equal? (tn) 3 (eval '((lambda (x y) (+ x y)) 1 2)
+                            (interaction-environment)))
 
-;; invalid environment specifiers
-(assert-error  "eval #3" (lambda ()
-                           (eval '(+ 1 2) 3)))
-(assert-error  "eval #4" (lambda ()
-                           (eval '(+ 1 2) 'symbol)))
-(assert-error  "eval #5" (lambda ()
-                           (eval '(+ 1 2) "string")))
-(assert-error  "eval #6" (lambda ()
-                           (eval '(+ 1 2) #\a)))
+(tn "eval with invalid environment specifiers")
+(assert-error  (tn) (lambda ()
+                      (eval '(+ 1 2) 3)))
+(assert-error  (tn) (lambda ()
+                      (eval '(+ 1 2) 'symbol)))
+(assert-error  (tn) (lambda ()
+                      (eval '(+ 1 2) "string")))
+(assert-error  (tn) (lambda ()
+                      (eval '(+ 1 2) #\a)))
 
 (if (provided? "sigscheme")
     (begin
