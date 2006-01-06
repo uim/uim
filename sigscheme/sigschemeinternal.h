@@ -219,6 +219,7 @@ extern ScmObj scm_null_values;
 #define LIST_3_P       SCM_LIST_3_P
 #define LIST_4_P       SCM_LIST_4_P
 #define LIST_5_P       SCM_LIST_5_P
+#define PROPER_LISTP   SCM_PROPER_LISTP
 
 #define CDBG           SCM_CDBG
 #define DBG            SCM_DBG

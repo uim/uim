@@ -57,6 +57,8 @@ extern "C" {
 =======================================*/
 #define SCM_ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"
 #define SCM_ERRMSG_MEMORY_EXHAUSTED    "memory exhausted"
+#define SCM_ERRMSG_IMPROPER_ARGS                                             \
+    "proper list required for function call but got"
 
 #ifdef __GNUC__
 #define SCM_NOINLINE __attribute__((noinline))
@@ -148,6 +150,8 @@ extern "C" {
 #define SCM_LIST_3_P(lst) (SCM_CONSP(lst) && SCM_LIST_2_P(SCM_CDR(lst)))
 #define SCM_LIST_4_P(lst) (SCM_CONSP(lst) && SCM_LIST_3_P(SCM_CDR(lst)))
 #define SCM_LIST_5_P(lst) (SCM_CONSP(lst) && SCM_LIST_4_P(SCM_CDR(lst)))
+
+#define SCM_PROPER_LISTP(obj) (0 <= scm_length(obj))
 
 #define SCM_EVAL(obj, env) (scm_eval((obj), (env)))
 

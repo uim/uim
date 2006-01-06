@@ -100,6 +100,8 @@ scm_symbol_value(ScmObj var, ScmObj env)
 ScmObj
 scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
 {
+    SCM_ASSERT(PROPER_LISTP(args));
+
     eval_state->ret_type = SCM_RETTYPE_AS_IS;
     return call(proc, args, eval_state, SUPPRESS_EVAL_ARGS);
 }
@@ -112,6 +114,8 @@ scm_call(ScmObj proc, ScmObj args)
 {
     ScmEvalState state;
     ScmObj ret;
+
+    SCM_ASSERT(PROPER_LISTP(args));
 
     /* We don't need a nonempty environemnt, because this function
      * will never be called directly from Scheme code.  If PROC is a
@@ -231,6 +235,7 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
     ScmObj env, cont;
     ScmObj (*func)();
     enum ScmFuncTypeCode type;
+    scm_bool syntaxp;
     int mand_count, i;
     /* The +2 is for rest and env/eval_state. */
     void *argbuf[SCM_FUNCTYPE_MAND_MAX + 2];
@@ -265,11 +270,12 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
         return reduce(func, args, env, suppress_eval);
 
     /* Suppress argument evaluation for syntaxes. */
+    syntaxp = type & SCM_FUNCTYPE_SYNTAX;
     if (suppress_eval) {
-        if (type & SCM_FUNCTYPE_SYNTAX)
+        if (syntaxp)
             ERR_OBJ("can't apply/map a syntax", proc);
     } else {
-        suppress_eval = type & SCM_FUNCTYPE_SYNTAX;
+        suppress_eval = syntaxp;
     }
 
     /* Collect mandatory arguments. */
@@ -288,6 +294,12 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
     if (type & SCM_FUNCTYPE_VARIADIC) {
         if (!suppress_eval)
             args = map_eval(args, env);
+#if 0
+        /* Since this check is expensive, each syntax should do. Other
+         * procedures are already ensured that having proper args here. */
+        else if (syntaxp && !PROPER_LISTP(args))
+            ERR(SCM_ERRMSG_IMPROPER_ARGS, args);
+#endif
         argbuf[i++] = args;
     } else {
         ASSERT_NO_MORE_ARG(args);
@@ -417,7 +429,7 @@ static ScmObj
 map_eval(ScmObj args, ScmObj env)
 {
     ScmQueue q;
-    ScmObj res, elm;
+    ScmObj res, elm, rest;
     DECLARE_INTERNAL_FUNCTION("(function call)");
 
     if (NULLP(args))
@@ -426,19 +438,16 @@ map_eval(ScmObj args, ScmObj env)
     res = SCM_NULL;
     SCM_QUEUE_POINT_TO(q, res);
     /* does not use POP_ARG() to increace performance */
-    for (; CONSP(args); args = CDR(args)) {
-        elm = EVAL(CAR(args), env);
+    for (rest = args; CONSP(rest); rest = CDR(rest)) {
+        elm = EVAL(CAR(rest), env);
 #if SCM_STRICT_ARGCHECK
         if (VALUEPACKETP(elm))
             ERR_OBJ("multiple values are not allowed here", elm);
 #endif
         SCM_QUEUE_ADD(q, elm);
     }
-    /* dot list */
-    if (!NULLP(args)) {
-        elm = EVAL(args, env);
-        SCM_QUEUE_SLOPPY_APPEND(q, elm);
-    }
+    if (!NULLP(rest))
+        ERR(SCM_ERRMSG_IMPROPER_ARGS, args);
 
     return res;
 }
