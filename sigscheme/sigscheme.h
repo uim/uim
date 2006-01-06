@@ -165,8 +165,8 @@ extern "C" {
 #define SCM_LISTLEN_ERRORP          SCM_LISTLEN_CIRCULARP
 #define SCM_LISTLEN_DOTTEDP(len)    ((len) < 0                               \
                                      && !SCM_LISTLEN_CIRCULARP(len))
-#define SCM_LISTLEN_DOTTED(len)     (abs(len))
-#define SCM_LISTLEN_BEFORE_DOT(len) (~(len))  /* abs(len) - 1 */
+#define SCM_LISTLEN_DOTTED(len)     (-(len))
+#define SCM_LISTLEN_BEFORE_DOT(len) (~(len))  /* -(len) - 1 */
 
 #define SCM_EVAL(obj, env) (scm_eval((obj), (env)))
 

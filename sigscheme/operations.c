@@ -808,30 +808,37 @@ scm_p_listp(ScmObj obj)
  * 2006-01-05 YamaKen  Return dot list length and circular indication.
  *
  */
-/* Returns -1 for non-list, as zero length improper list. */
+/* Returns -1 as one length improper list for non-list obj. */
 int
 scm_length(ScmObj lst)
 {
     ScmObj slow;
-    int len;
+    int proper_len;
 
-    for (len = 0, slow = lst;;) {
+#define TERMINATOR_LEN 1
+
+    for (proper_len = 0, slow = lst;;) {
         if (NULLP(lst)) break;
-        if (!CONSP(lst))             return SCM_LISTLEN_ENCODE_DOTTED(len + 1);
-        if (len != 0 && lst == slow) return SCM_LISTLEN_ENCODE_CIRCULAR(len);
+        if (!CONSP(lst))
+            return SCM_LISTLEN_ENCODE_DOTTED(proper_len + TERMINATOR_LEN);
+        if (proper_len != 0 && lst == slow)
+            return SCM_LISTLEN_ENCODE_CIRCULAR(proper_len);
 
         lst = CDR(lst);
-        len++;
+        proper_len++;
         if (NULLP(lst)) break;
-        if (!CONSP(lst)) return SCM_LISTLEN_ENCODE_DOTTED(len + 1);
-        if (lst == slow) return SCM_LISTLEN_ENCODE_CIRCULAR(len);
+        if (!CONSP(lst))
+            return SCM_LISTLEN_ENCODE_DOTTED(proper_len + TERMINATOR_LEN);
+        if (lst == slow)
+            return SCM_LISTLEN_ENCODE_CIRCULAR(proper_len);
 
         lst = CDR(lst);
         slow = CDR(slow);
-        len++;
+        proper_len++;
     }
 
-    return len;
+    return proper_len;
+#undef TERMINATOR_LEN
 }
 
 ScmObj
