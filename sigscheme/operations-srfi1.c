@@ -197,9 +197,6 @@ scm_p_srfi1_circular_list(ScmObj args)
 {
     DECLARE_FUNCTION("circular-list", procedure_variadic_0);
 
-    if (FALSEP(scm_p_listp(args)))
-        ERR_OBJ("list required but got", args);
-
     SET_CDR(scm_p_srfi1_last_pair(args), args);
     return args;
 }
@@ -245,76 +242,47 @@ scm_p_srfi1_iota(ScmObj scm_count, ScmObj args)
   SRFI1 : The procedures : Predicates
 ==============================================================================*/
 ScmObj
-scm_p_srfi1_proper_listp(ScmObj lst)
+scm_p_srfi1_proper_listp(ScmObj obj)
 {
     DECLARE_FUNCTION("proper-list?", procedure_fixed_1);
-    return scm_p_listp(lst);
+
+    return MAKE_BOOL(PROPER_LISTP(obj));
 }
 
 ScmObj
 scm_p_srfi1_circular_listp(ScmObj obj)
 {
-    ScmObj slow = obj;
-    int len = 0;
     DECLARE_FUNCTION("circular-list?", procedure_fixed_1);
 
-    for (;;) {
-        if (NULLP(obj)) break;
-        if (!CONSP(obj)) return SCM_FALSE;
-        if (len != 0 && obj == slow) return SCM_TRUE; /* circular */
-
-        obj = CDR(obj);
-        len++;
-        if (NULLP(obj)) break;
-        if (!CONSP(obj)) return SCM_FALSE;
-        if (obj == slow) return SCM_TRUE; /* circular */
-
-        obj = CDR(obj);
-        slow = CDR(slow);
-        len++;
-    }
-
-    return SCM_FALSE;
+    return MAKE_BOOL(CIRCULAR_LISTP(obj));
 }
 
 ScmObj
 scm_p_srfi1_dotted_listp(ScmObj obj)
 {
-    ScmObj slow = obj;
-    int len = 0;
     DECLARE_FUNCTION("dotted-list?", procedure_fixed_1);
 
-    for (;;) {
-        if (NULLP(obj)) break;
-        if (!CONSP(obj)) return SCM_TRUE;
-        if (len != 0 && obj == slow) return SCM_FALSE; /* circular */
-
-        obj = CDR(obj);
-        len++;
-        if (NULLP(obj)) break;
-        if (!CONSP(obj)) return SCM_TRUE;
-        if (obj == slow) return SCM_FALSE; /* circular */
-
-        obj = CDR(obj);
-        slow = CDR(slow);
-        len++;
-    }
-
-    return SCM_FALSE;
+    return MAKE_BOOL(DOTTED_LISTP(obj));
 }
 
 ScmObj
-scm_p_srfi1_not_pairp(ScmObj pair)
+scm_p_srfi1_not_pairp(ScmObj obj)
 {
     DECLARE_FUNCTION("not-pair?", procedure_fixed_1);
-    return CONSP(pair) ? SCM_FALSE : SCM_TRUE;
+
+    return MAKE_BOOL(!CONSP(obj));
 }
 
 ScmObj
 scm_p_srfi1_null_listp(ScmObj lst)
 {
+    int len;
     DECLARE_FUNCTION("null-list?", procedure_fixed_1);
-    /* TODO : check circular list */
+
+    len = scm_length(lst);
+    if (!SCM_LISTLEN_PROPERP(len) && !SCM_LISTLEN_CIRCULARP(len))
+        ERR_OBJ("proper or circular list required but got", lst);
+
     return MAKE_BOOL(NULLP(lst));
 }
 
@@ -629,13 +597,11 @@ scm_p_srfi1_last_pair(ScmObj lst)
 ScmObj
 scm_p_srfi1_lengthplus(ScmObj lst)
 {
+    int len;
     DECLARE_FUNCTION("length+", procedure_fixed_1);
 
-    /* FIXME!: remove expensive circular_listp */
-    if (NFALSEP(scm_p_srfi1_circular_listp(lst)))
-        return SCM_FALSE;
-
-    return scm_p_length(lst);
+    len = scm_length(lst);
+    return (SCM_LISTLEN_PROPERP(len)) ? MAKE_INT(len) : SCM_FALSE;
 }
 
 ScmObj
