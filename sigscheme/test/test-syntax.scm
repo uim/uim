@@ -180,6 +180,16 @@
   (assert "dot pair without both space" "(\"foo\".\"bar\")")
   (assert "dot pair without both space" "(\"foo\" \"bar\".\"baz\")"))
 
+(tn "function calling fixed_0")
+(define f (lambda () #t))
+(assert-equal? (tn) #t         (f))
+(assert-error  (tn) (lambda () (f . #t)))
+(assert-error  (tn) (lambda () (f #t)))
+(assert-error  (tn) (lambda () (f #t . #t)))
+(assert-error  (tn) (lambda () (f #t #t)))
+(assert-error  (tn) (lambda () (f #t #t . #t)))
+(assert-error  (tn) (lambda () (f #t #t #t)))
+(assert-error  (tn) (lambda () (f #t #t #t . #t)))
 (tn "function calling variadic_0")
 (define f (lambda args args))
 (assert-equal? (tn) '()         (f))
@@ -234,6 +244,17 @@
 ;; Although SigScheme's eval facility itself does not ensure properness of
 ;; syntax args, each syntax implementation must check it. These tests only
 ;; indicate what should be done.
+(tn "syntax application fixed_0")
+(define s (lambda () #t))  ;; FIXME: no syntax with syntax_fixed_0
+(assert-equal? (tn) #t         (s))
+(assert-error  (tn) (lambda () (s)))
+(assert-error  (tn) (lambda () (s . #t)))
+(assert-error  (tn) (lambda () (s #t)))
+(assert-error  (tn) (lambda () (s #t . #t)))
+(assert-error  (tn) (lambda () (s #t #t)))
+(assert-error  (tn) (lambda () (s #t #t . #t)))
+(assert-error  (tn) (lambda () (s #t #t #t)))
+(assert-error  (tn) (lambda () (s #t #t #t . #t)))
 (tn "syntax application variadic_0")
 (define s and)
 (assert-equal? (tn) #t          (s))
