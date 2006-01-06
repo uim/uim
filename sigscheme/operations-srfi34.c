@@ -197,7 +197,7 @@ scm_initialize_srfi34(void)
 static ScmObj
 set_cur_handlers(ScmObj handlers, ScmObj env)
 {
-    DECLARE_PRIVATE_FUNCTION("with_exception_handlers", SyntaxFixed1);
+    DECLARE_PRIVATE_FUNCTION("with_exception_handlers", syntax_fixed_1);
 
     current_exception_handlers = handlers;
     return SCM_UNDEF;
@@ -207,7 +207,7 @@ static ScmObj
 with_exception_handlers(ScmObj new_handlers, ScmObj thunk)
 {
     ScmObj prev_handlers, before, after;
-    DECLARE_PRIVATE_FUNCTION("with_exception_handlers", ProcedureFixed2);
+    DECLARE_PRIVATE_FUNCTION("with_exception_handlers", procedure_fixed_2);
 
     prev_handlers = current_exception_handlers;
     before = scm_s_lambda(SCM_NULL,
@@ -293,7 +293,7 @@ static ScmObj
 guard_internal(ScmObj q_guard_k, ScmObj env)
 {
     ScmObj handler, body;
-    DECLARE_PRIVATE_FUNCTION("guard", SyntaxFixed1);
+    DECLARE_PRIVATE_FUNCTION("guard", syntax_fixed_1);
 
     handler = scm_s_lambda(LIST_1(sym_condition),
                            LIST_1(LIST_2(syn_guard_handler, sym_condition)),
@@ -309,7 +309,7 @@ static ScmObj
 guard_handler(ScmObj q_condition, ScmEvalState *eval_state)
 {
     ScmObj handler_body, ret;
-    DECLARE_PRIVATE_FUNCTION("guard", SyntaxFixedTailRec1);
+    DECLARE_PRIVATE_FUNCTION("guard", syntax_fixed_tailrec_1);
 
     handler_body
         = scm_s_lambda(LIST_1(sym_handler_k),
@@ -346,7 +346,7 @@ guard_handler_body(ScmObj q_handler_k, ScmObj env)
     ScmEvalState eval_state;
     ScmObj lex_env, cond_env, condition, cond_catch, guard_k, handler_k;
     ScmObj sym_var, clauses, caught, reraise;
-    DECLARE_PRIVATE_FUNCTION("guard", SyntaxFixed1);
+    DECLARE_PRIVATE_FUNCTION("guard", syntax_fixed_1);
 
     lex_env    = scm_symbol_value(sym_lex_env, env);
     condition  = scm_symbol_value(sym_condition, env);
@@ -383,7 +383,7 @@ guard_body(ScmEvalState *eval_state)
 {
     ScmEvalState lex_eval_state;
     ScmObj lex_env, guard_k, body, result;
-    DECLARE_PRIVATE_FUNCTION("guard", SyntaxFixedTailRec0);
+    DECLARE_PRIVATE_FUNCTION("guard", syntax_fixed_tailrec_0);
 
     lex_env = scm_symbol_value(sym_lex_env, eval_state->env);
     guard_k = scm_symbol_value(sym_guard_k, eval_state->env);

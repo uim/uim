@@ -448,7 +448,7 @@ ScmObj
 scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
 {
     ScmObj env, clause, test, exps, proc;
-    DECLARE_INTERNAL_FUNCTION("cond" /* , SyntaxVariadicTailRec0 */);
+    DECLARE_INTERNAL_FUNCTION("cond" /* , syntax_variadic_tailrec_0 */);
 
     env = eval_state->env;
 
