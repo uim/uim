@@ -38,7 +38,7 @@
    System Include
 =======================================*/
 #include <limits.h>
-#include <stdlib.h>
+#include <stddef.h>
 #include <stdarg.h>
 
 /*=======================================
@@ -221,6 +221,8 @@ extern ScmObj scm_null_values;
 #define LIST_4_P       SCM_LIST_4_P
 #define LIST_5_P       SCM_LIST_5_P
 #define PROPER_LISTP   SCM_PROPER_LISTP
+#define DOTTED_LISTP   SCM_DOTTED_LISTP
+#define CIRCULAR_LISTP SCM_CIRCULAR_LISTP
 
 #define CDBG           SCM_CDBG
 #define DBG            SCM_DBG
@@ -348,15 +350,9 @@ extern ScmObj scm_null_values;
 /* error handlings */
 #define SCM_ERR_HEADER "Error: "
 
-/* result encoder/decoders for scm_length() */
+/* result encoders for scm_length() */
 #define SCM_LISTLEN_ENCODE_DOTTED(len)   (-(len))
 #define SCM_LISTLEN_ENCODE_CIRCULAR(len) (INT_MIN)
-#define SCM_LISTLEN_PROPERP(len)         (0 <= (len))
-#define SCM_LISTLEN_CIRCULARP(len)       ((len) == INT_MIN)
-#define SCM_LISTLEN_DOTTEDP(len)         ((len) < 0                          \
-                                          && !SCM_LISTLEN_CIRCULARP(len))
-#define SCM_LISTLEN_DOTTED(len)          (abs(len))
-#define SCM_LISTLEN_BEFORE_DOT(len)      (~(len))  /* abs(len) - 1 */
 
 /*=======================================
    List Constructor

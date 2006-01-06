@@ -41,6 +41,7 @@ extern "C" {
 /*=======================================
    System Include
 =======================================*/
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -151,7 +152,18 @@ extern "C" {
 #define SCM_LIST_4_P(lst) (SCM_CONSP(lst) && SCM_LIST_3_P(SCM_CDR(lst)))
 #define SCM_LIST_5_P(lst) (SCM_CONSP(lst) && SCM_LIST_4_P(SCM_CDR(lst)))
 
-#define SCM_PROPER_LISTP(obj) (0 <= scm_length(obj))
+#define SCM_PROPER_LISTP(obj)   (SCM_LISTLEN_PROPERP(scm_length(obj)))
+#define SCM_DOTTED_LISTP(obj)   (CONSP(obj)                                  \
+                                 && SCM_LISTLEN_DOTTEDP(scm_length(obj)))
+#define SCM_CIRCULAR_LISTP(obj) (SCM_LISTLEN_CIRCULARP(scm_length(obj)))
+
+/* result decoders for scm_length() */
+#define SCM_LISTLEN_PROPERP(len)    (0 <= (len))
+#define SCM_LISTLEN_CIRCULARP(len)  ((len) == INT_MIN)
+#define SCM_LISTLEN_DOTTEDP(len)    ((len) < 0                               \
+                                     && !SCM_LISTLEN_CIRCULARP(len))
+#define SCM_LISTLEN_DOTTED(len)     (abs(len))
+#define SCM_LISTLEN_BEFORE_DOT(len) (~(len))  /* abs(len) - 1 */
 
 #define SCM_EVAL(obj, env) (scm_eval((obj), (env)))
 
