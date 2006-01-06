@@ -281,7 +281,7 @@ extern ScmObj scm_null_values;
 #define ENSURE_NO_MORE_ARG(args)                                             \
     (NO_MORE_ARG(args) || (ERR_OBJ("superfluous argument(s)", (args)), 1))
 #define ENSURE_PROPER_ARG_LIST(args)                                         \
-    (scm_length(args) >= 0 || (ERR_OBJ("bad argument list", (args)), 1))
+    (PROPER_LISTP(args) || (ERR_OBJ("bad argument list", (args)), 1))
 #if SCM_STRICT_ARGCHECK
 #define NO_MORE_ARG(args)                                                    \
     (!CONSP(args)                                                            \

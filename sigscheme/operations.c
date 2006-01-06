@@ -783,17 +783,15 @@ scm_p_nullp(ScmObj obj)
 ScmObj
 scm_p_listp(ScmObj obj)
 {
-    int len;
     DECLARE_FUNCTION("list?", procedure_fixed_1);
 
+    /* fast path */
     if (NULLP(obj))
         return SCM_TRUE;
     if (!CONSP(obj))
         return SCM_FALSE;
 
-    len = scm_length(obj);
-
-    return MAKE_BOOL(len >= 0);
+    return MAKE_BOOL(PROPER_LISTP(obj));
 }
 
 #define TERMINATOR_LEN 1
@@ -864,8 +862,8 @@ scm_p_length(ScmObj obj)
     DECLARE_FUNCTION("length", procedure_fixed_1);
 
     len = scm_length(obj);
-    if (len < 0)
-        ERR_OBJ("list required but got", obj);
+    if (!SCM_LISTLEN_PROPERP(len))
+        ERR_OBJ("proper list required but got", obj);
 
     return MAKE_INT(len);
 }
@@ -1682,7 +1680,7 @@ scm_p_list2vector(ScmObj lst)
     DECLARE_FUNCTION("list->vector", procedure_fixed_1);
 
     len = scm_length(lst);
-    if (len < 0)
+    if (!SCM_LISTLEN_PROPERP(len))
         ERR_OBJ("proper list required but got", lst);
 
     vec = scm_malloc(sizeof(ScmObj) * len);

@@ -282,7 +282,7 @@ vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
     case TR_MSG_SPLICE:
         splice_len = scm_length(obj);
 #if SCM_STRICT_R5RS
-        if (splice_len < 0)
+        if (!SCM_LISTLEN_PROPERP(splice_len))
             ERR_OBJ("got bad splice list", obj);
 #endif
         t->u.vec.growth += splice_len - 1;
