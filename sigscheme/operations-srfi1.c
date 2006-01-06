@@ -601,6 +601,12 @@ scm_p_srfi1_lengthplus(ScmObj lst)
     DECLARE_FUNCTION("length+", procedure_fixed_1);
 
     len = scm_length(lst);
+    /* although SRFI-1 does not specify the behavior for dotted list
+     * explicitly, the description indicates that dotted list is treated as
+     * same as R5RS 'length' procedure. So produce an error here. */
+    if (SCM_LISTLEN_DOTTEDP(len))
+        ERR_OBJ("proper or circular list required but got", lst);
+
     return (SCM_LISTLEN_PROPERP(len)) ? MAKE_INT(len) : SCM_FALSE;
 }
 

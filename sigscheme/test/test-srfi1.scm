@@ -31,6 +31,9 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 (load "./test/unittest.scm")
+
+(define tn test-name)
+
 (use srfi-1)
 (use srfi-8)
 
@@ -183,6 +186,31 @@
 
 ; length+
 (assert-false "length+ test 1" (length+ circular-lst))
+(tn "length+ proper list")
+(assert-equal? (tn) 0 (length+ '()))
+(assert-equal? (tn) 1 (length+ '(1)))
+(assert-equal? (tn) 2 (length+ '(1 2)))
+(assert-equal? (tn) 3 (length+ '(1 2 3)))
+(assert-equal? (tn) 4 (length+ '(1 2 3 4)))
+(tn "length+ improper list")
+(assert-error  (tn) (lambda () (length+ 1)))
+(assert-error  (tn) (lambda () (length+ '(1 . 2))))
+(assert-error  (tn) (lambda () (length+ '(1 2 . 3))))
+(assert-error  (tn) (lambda () (length+ '(1 2 3 . 4))))
+(assert-error  (tn) (lambda () (length+ '(1 2 3 4 . 5))))
+(tn "length+ circular list")
+(define lst1 '(1))
+(set-cdr! lst1 lst1)
+(define lst2 '(1 2))
+(set-cdr! (list-tail lst2 1) lst2)
+(define lst3 '(1 2 3))
+(set-cdr! (list-tail lst3 2) lst3)
+(define lst4 '(1 2 3 4))
+(set-cdr! (list-tail lst4 3) lst4)
+(assert-false (tn) (length+ lst1))
+(assert-false (tn) (length+ lst2))
+(assert-false (tn) (length+ lst3))
+(assert-false (tn) (length+ lst4))
 
 ; concatenate
 (assert-equal? "concatenate test 1" '() (concatenate '(())))
