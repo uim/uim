@@ -32,6 +32,7 @@
 
 (load "test/unittest.scm")
 
+(define tn test-name)
 
 (define elm0 (lambda () #f))
 (define elm1 (lambda () #f))
@@ -145,5 +146,34 @@
 
 ; assoc
 (assert-equal? "assoc test1" '((a)) (assoc (list 'a) '(((a)) ((b)) ((c)))))
+
+(if (provided? "sigscheme")
+    (begin
+      (use sscm)
+      (tn "length* proper list")
+      (assert-equal? (tn) 0 (length* '()))
+      (assert-equal? (tn) 1 (length* '(1)))
+      (assert-equal? (tn) 2 (length* '(1 2)))
+      (assert-equal? (tn) 3 (length* '(1 2 3)))
+      (assert-equal? (tn) 4 (length* '(1 2 3 4)))
+      (tn "length* improper list")
+      (assert-equal? (tn) -1 (length* 1))
+      (assert-equal? (tn) -2 (length* '(1 . 2)))
+      (assert-equal? (tn) -3 (length* '(1 2 . 3)))
+      (assert-equal? (tn) -4 (length* '(1 2 3 . 4)))
+      (assert-equal? (tn) -5 (length* '(1 2 3 4 . 5)))
+      (tn "length* circular list")
+      (define lst1 '(1))
+      (set-cdr! lst1 lst1)
+      (define lst2 '(1 2))
+      (set-cdr! (list-tail lst2 1) lst2)
+      (define lst3 '(1 2 3))
+      (set-cdr! (list-tail lst3 2) lst3)
+      (define lst4 '(1 2 3 4))
+      (set-cdr! (list-tail lst4 3) lst4)
+      (assert-false (tn) (length* lst1))
+      (assert-false (tn) (length* lst2))
+      (assert-false (tn) (length* lst3))
+      (assert-false (tn) (length* lst4))))
 
 (total-report)

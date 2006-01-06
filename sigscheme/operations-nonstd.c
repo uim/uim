@@ -241,3 +241,22 @@ scm_p_delete_file(ScmObj filepath)
 
     return SCM_TRUE;
 }
+
+/* to avoid being typo of length+, this procedure did not name as length++ */
+/* FIXME: replace with a SRFI or de facto standard equivalent if exist */
+ScmObj
+scm_p_lengthstar(ScmObj lst)
+{
+    int len;
+    DECLARE_FUNCTION("length*", procedure_fixed_1);
+
+    len = scm_length(lst);
+    if (!SCM_LISTLEN_PROPERP(len)) { /* make fast path for proper list */
+        if (SCM_LISTLEN_DOTP(len))
+            len = -SCM_LISTLEN_DOT(len);
+        else if (SCM_LISTLEN_CIRCULARP(len))
+            return SCM_FALSE;
+    }
+
+    return MAKE_INT(len);
+}

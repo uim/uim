@@ -808,13 +808,14 @@ scm_p_listp(ScmObj obj)
  * 2006-01-05 YamaKen  Return dot list length and circular indication.
  *
  */
+/* Returns -1 for non-list, as zero length improper list. */
 int
 scm_length(ScmObj lst)
 {
     ScmObj slow;
     int len;
 
-#define LISTLEN_ENCODE_DOT(len)      (-(len)-1)
+#define LISTLEN_ENCODE_DOT(len)      (-(len))
 #define LISTLEN_ENCODE_CIRCULAR(len) (INT_MIN)
 
     slow = lst;
@@ -822,13 +823,13 @@ scm_length(ScmObj lst)
 
     for (;;) {
         if (NULLP(lst)) break;
-        if (!CONSP(lst)) return LISTLEN_ENCODE_DOT(len);
+        if (!CONSP(lst)) return LISTLEN_ENCODE_DOT(len + 1);
         if (len != 0 && lst == slow) return LISTLEN_ENCODE_CIRCULAR(len);
 
         lst = CDR(lst);
         len++;
         if (NULLP(lst)) break;
-        if (!CONSP(lst)) return LISTLEN_ENCODE_DOT(len);
+        if (!CONSP(lst)) return LISTLEN_ENCODE_DOT(len + 1);
         if (lst == slow) return LISTLEN_ENCODE_CIRCULAR(len);
 
         lst = CDR(lst);

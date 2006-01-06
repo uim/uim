@@ -928,6 +928,7 @@ ScmObj scm_p_provide(ScmObj feature);
 ScmObj scm_p_providedp(ScmObj feature);
 ScmObj scm_p_file_existsp(ScmObj filepath);
 ScmObj scm_p_delete_file(ScmObj filepath);
+ScmObj scm_p_lengthstar(ScmObj lst);
 #endif
 
 /* io.c */
