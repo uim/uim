@@ -817,13 +817,13 @@ scm_length(ScmObj lst)
 
     for (len = 0, slow = lst;;) {
         if (NULLP(lst)) break;
-        if (!CONSP(lst))             return SCM_LISTLEN_ENCODE_DOT(len + 1);
+        if (!CONSP(lst))             return SCM_LISTLEN_ENCODE_DOTTED(len + 1);
         if (len != 0 && lst == slow) return SCM_LISTLEN_ENCODE_CIRCULAR(len);
 
         lst = CDR(lst);
         len++;
         if (NULLP(lst)) break;
-        if (!CONSP(lst)) return SCM_LISTLEN_ENCODE_DOT(len + 1);
+        if (!CONSP(lst)) return SCM_LISTLEN_ENCODE_DOTTED(len + 1);
         if (lst == slow) return SCM_LISTLEN_ENCODE_CIRCULAR(len);
 
         lst = CDR(lst);
