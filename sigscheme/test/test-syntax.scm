@@ -180,6 +180,14 @@
   (assert "dot pair without both space" "(\"foo\".\"bar\")")
   (assert "dot pair without both space" "(\"foo\" \"bar\".\"baz\")"))
 
+(assert-error "invalid function calling: boolean" (lambda () (#t)))
+(assert-error "invalid function calling: integer" (lambda () (1)))
+(assert-error "invalid function calling: null"    (lambda () ('())))
+(assert-error "invalid function calling: pair"    (lambda () ('(1 2))))
+(assert-error "invalid function calling: char"    (lambda () (#\a)))
+(assert-error "invalid function calling: string"  (lambda () ("a")))
+(assert-error "invalid function calling: vector"  (lambda () (#(1))))
+
 (tn "function calling fixed_0")
 (define f (lambda () #t))
 (assert-equal? (tn) #t         (f))

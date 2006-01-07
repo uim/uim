@@ -275,7 +275,7 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
             scm_call_continuation(proc, cont);
             /* NOTREACHED */
         }
-        SCM_ASSERT(scm_false);
+        ERR("procedure or syntax required but got", proc);
     }
 
     /* We have a C function. */
