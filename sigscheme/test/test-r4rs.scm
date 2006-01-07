@@ -41,7 +41,7 @@
 
 ;;; send corrections or additions to agj @ alum.mit.edu
 
-(require "test/unittest.scm")
+(load "./test/unittest.scm")
 
 (define tn test-name)
 (define tn-section
@@ -446,47 +446,57 @@
 (test '((a)) assoc (list 'a) '(((a)) ((b)) ((c))))
 (test '(5 7) assv 5 '((2 3) (5 7) (11 13)))
 (SECTION 6 4)
-;(test #t symbol? 'foo)
+(test #t symbol? 'foo)
 (test #t symbol? (car '(a b)))
-;(test #f symbol? "bar")
-;(test #t symbol? 'nil)
-;(test #f symbol? '())
-;(test #f symbol? #f)
-;;; But first, what case are symbols in?  Determine the standard case:
-(define char-standard-case char-upcase)
-(if (string=? (symbol->string 'A) "a")
-    (set! char-standard-case char-downcase))
-(test #t 'standard-case
-      (string=? (symbol->string 'a) (symbol->string 'A)))
-(test #t 'standard-case
-      (or (string=? (symbol->string 'a) "A")
-	  (string=? (symbol->string 'A) "a")))
-(define (str-copy s)
-  (let ((v (make-string (string-length s))))
-    (do ((i (- (string-length v) 1) (- i 1)))
-	((< i 0) v)
-      (string-set! v i (string-ref s i)))))
-(define (string-standard-case s)
-  (set! s (str-copy s))
-  (do ((i 0 (+ 1 i))
-       (sl (string-length s)))
-      ((>= i sl) s)
-      (string-set! s i (char-standard-case (string-ref s i)))))
-(test (string-standard-case "flying-fish") symbol->string 'flying-fish)
-(test (string-standard-case "martin") symbol->string 'Martin)
-(test "Malvina" symbol->string (string->symbol "Malvina"))
-(test #t 'standard-case (eq? 'a 'A))
+(test #f symbol? "bar")
+(test #t symbol? 'nil)
+(test #f symbol? '())
+(test #f symbol? #f)
 
-(define x (string #\a #\b))
-(define y (string->symbol x))
-(string-set! x 0 #\c)
-(test "cb" 'string-set! x)
-(test "ab" symbol->string y)
-(test y string->symbol "ab")
+;; DISABLED: Since SigScheme distinguishes letter case in
+;; indentifiers. Although R5RS specifies that case insensitivity as follows, it
+;; is hard to accept for the our application.
+;;
+;; 2. Lexical conventions
+;; Upper and lower case forms of a letter are never distinguished except within
+;; character and string constants. For example, `Foo' is the same identifier as
+;; `FOO', and #x1AB is the same number as #X1ab.
 
-(test #t eq? 'mISSISSIppi 'mississippi)
-(test #f 'string->symbol (eq? 'bitBlt (string->symbol "bitBlt")))
-(test 'JollyWog string->symbol (symbol->string 'JollyWog))
+;;;;; But first, what case are symbols in?  Determine the standard case:
+;;(define char-standard-case char-upcase)
+;;(if (string=? (symbol->string 'A) "a")
+;;    (set! char-standard-case char-downcase))
+;;(test #t 'standard-case
+;;      (string=? (symbol->string 'a) (symbol->string 'A)))
+;;(test #t 'standard-case
+;;      (or (string=? (symbol->string 'a) "A")
+;;	  (string=? (symbol->string 'A) "a")))
+;;(define (str-copy s)
+;;  (let ((v (make-string (string-length s))))
+;;    (do ((i (- (string-length v) 1) (- i 1)))
+;;	((< i 0) v)
+;;      (string-set! v i (string-ref s i)))))
+;;(define (string-standard-case s)
+;;  (set! s (str-copy s))
+;;  (do ((i 0 (+ 1 i))
+;;       (sl (string-length s)))
+;;      ((>= i sl) s)
+;;      (string-set! s i (char-standard-case (string-ref s i)))))
+;;(test (string-standard-case "flying-fish") symbol->string 'flying-fish)
+;;(test (string-standard-case "martin") symbol->string 'Martin)
+;;(test "Malvina" symbol->string (string->symbol "Malvina"))
+;;(test #t 'standard-case (eq? 'a 'A))
+;;
+;;(define x (string #\a #\b))
+;;(define y (string->symbol x))
+;;(string-set! x 0 #\c)
+;;(test "cb" 'string-set! x)
+;;(test "ab" symbol->string y)
+;;(test y string->symbol "ab")
+;;
+;;(test #t eq? 'mISSISSIppi 'mississippi)
+;;(test #f 'string->symbol (eq? 'bitBlt (string->symbol "bitBlt")))
+;;(test 'JollyWog string->symbol (symbol->string 'JollyWog))
 
 (SECTION 6 5 5)
 (test #t number? 3)

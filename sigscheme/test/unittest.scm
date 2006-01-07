@@ -84,11 +84,7 @@
     (newline)))
 
 (define assert
-  ;; to be protected from redifinitions in tests
-  (let ((+ +)
-        (set! set!)
-        (display display)
-        (newline newline))
+  (let ((+ +))  ;; protect from redefinition
     (lambda (test-name err-msg exp)
       (set! *total-assertions* (+ *total-assertions* 1))
       (if *test-track-progress*
@@ -180,9 +176,7 @@
 (define test-name
   (let ((name "anonymous test")
         (serial 0)
-        (+ +)
-        (set! set!)
-        (null? null?))
+        (+ +))  ;; protect from redefinition
     (lambda args
       (if (null? args)
           (begin
