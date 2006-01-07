@@ -622,13 +622,9 @@
 (assert-error  "letrec invalid form #3"
                (lambda ()
                  (letrec (a 1))))
-(if (provided? "siod-bugs")
-    (assert-equal? "letrec invalid form #4"
-                   (undef)
-                   (letrec ((a))))
-    (assert-error  "letrec invalid form #4"
-                   (lambda ()
-                     (letrec ((a))))))
+(assert-error  "letrec invalid form #4"
+               (lambda ()
+                 (letrec ((a)))))
 (assert-error  "letrec invalid form #5"
                (lambda ()
                  (letrec ((a 1 'excessive)))))

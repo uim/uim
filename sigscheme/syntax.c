@@ -753,7 +753,7 @@ scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 ScmObj
 scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
-    ScmObj binding, frame, formals, var, actuals, val;
+    ScmObj binding, frame, formals, actuals, var, val;
     DECLARE_FUNCTION("letrec", syntax_variadic_tailrec_1);
 
     /*========================================================================
@@ -764,7 +764,7 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     ========================================================================*/
 
     if (!LISTP(bindings))
-        ERR("letrec: invalid bindings form");
+        goto err;
 
     /* extend env by placeholder frame for subsequent lambda evaluations */
     /* FIXME: direct env object manipulation */
@@ -773,32 +773,29 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 
     formals = SCM_NULL;
     actuals = SCM_NULL;
-    for (; CONSP(bindings); bindings = CDR(bindings)) {
-        binding = CAR(bindings);
-#if SCM_COMPAT_SIOD_BUGS
-        /* temporary solution. the inefficiency is not a problem */
-        if (LIST_1_P(binding))
-            binding = LIST_2(CAR(binding), SCM_FALSE);
-#endif
-
+    FOR_EACH (binding, bindings) {
         if (!LIST_2_P(binding) || !SYMBOLP(var = CAR(binding)))
-            ERR_OBJ("invalid binding form", binding);
+            goto err;
         val = EVAL(CADR(binding), eval_state->env);
 
         /* construct formals and actuals list: any <init> must not refer a
-           <variable> at this time */
+         * <variable> at this time */
         formals = CONS(var, formals);
         actuals = CONS(val, actuals);
     }
-
     if (!NULLP(bindings))
-        ERR_OBJ("invalid bindings form", bindings);
+        goto err;
 
     /* fill the placeholder frame */
     SET_CAR(frame, formals);
     SET_CDR(frame, actuals);
 
     return scm_s_begin(body, eval_state);
+
+ err:
+    ERR_OBJ("invalid bindings form", bindings);
+    /* NOTREACHED */
+    return SCM_FALSE;
 }
 
 
