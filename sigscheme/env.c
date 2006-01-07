@@ -270,6 +270,7 @@ scm_valid_environment_extension_lengthp(int formals_len, int actuals_len)
 int
 scm_validate_formals(ScmObj formals)
 {
+#if SCM_STRICT_ARGCHECK
     ScmObj var;
     int len;
     DECLARE_INTERNAL_FUNCTION("scm_validate_formals");
@@ -286,6 +287,13 @@ scm_validate_formals(ScmObj formals)
     if (SYMBOLP(formals))
         return SCM_LISTLEN_ENCODE_DOTTED(len + 1);
     return SCM_LISTLEN_ENCODE_ERROR(len);
+#else
+    /* Crashless loose validation:
+     * Regard any non-list object as symbol. Since the lookup operation search
+     * for a variable by EQ, this is safe although loosely allows
+     * R5RS-incompatible code. */
+    return scm_finite_length(formals);
+#endif
 }
 
 int
@@ -293,7 +301,14 @@ scm_validate_actuals(ScmObj actuals)
 {
     int len;
 
+#if SCM_STRICT_ARGCHECK
     len = scm_length(actuals);
+#else
+    /* Crashless loose validation:
+     * This loop goes infinite if the formals is circular. SigSchme expects
+     * that user codes are sane here. */
+    len = scm_finite_length(actuals);
+#endif
     if (SCM_LISTLEN_DOTTEDP(len))
         len = SCM_LISTLEN_ENCODE_ERROR(len);
     return len;

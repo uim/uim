@@ -361,8 +361,15 @@ scm_s_lambda(ScmObj formals, ScmObj body, ScmObj env)
 {
     DECLARE_FUNCTION("lambda", syntax_variadic_1);
 
+#if SCM_STRICT_ARGCHECK
     if (SCM_LISTLEN_ERRORP(scm_validate_formals(formals)))
         ERR_OBJ("bad formals", formals);
+#else
+    /* Crashless no-validation:
+     * Regard any non-list object as symbol. Since the lookup operation search
+     * for a variable by EQ, this is safe although loosely allows
+     * R5RS-incompatible code. */
+#endif
     if (!CONSP(body))
         ERR_OBJ("at least one expression required", body);
 
@@ -1082,7 +1089,7 @@ define_internal(ScmObj var, ScmObj exp, ScmObj env)
 ScmObj
 scm_s_define(ScmObj var, ScmObj rest, ScmObj env)
 {
-    ScmObj procname, body, formals;
+    ScmObj procname, body, formals, proc;
     DECLARE_FUNCTION("define", syntax_variadic_1);
 
     /*========================================================================
@@ -1106,19 +1113,9 @@ scm_s_define(ScmObj var, ScmObj rest, ScmObj env)
         formals  = CDR(var);
         body     = rest;
 
-        if (NULLP(body))
-            ERR("define: missing function body");
-#if SCM_STRICT_ARGCHECK
-        /* this is not necessary because checked in closure call */
-        if (!CONSP(body))
-            ERR_OBJ("proper list is required as <body> but got", body);
-#endif
-
         ENSURE_SYMBOL(procname);
-        if (SCM_LISTLEN_ERRORP(scm_validate_formals(formals)))
-            ERR_OBJ("bad formals", formals);
-
-        define_internal(procname, MAKE_CLOSURE(CONS(formals, body), env), env);
+        proc = scm_s_lambda(formals, body, env);
+        define_internal(procname, proc, env);
     } else {
         ERR_OBJ("syntax error", var);
     }

@@ -187,6 +187,9 @@ scm_initialize_internal(void)
 #if SCM_STRICT_R5RS
     scm_provide(MAKE_IMMUTABLE_STRING_COPYING("strict-r5rs"));
 #endif
+#if SCM_STRICT_ARGCHECK
+    scm_provide(MAKE_IMMUTABLE_STRING_COPYING("strict-argcheck"));
+#endif
 #if SCM_COMPAT_SIOD_BUGS
     scm_provide(MAKE_IMMUTABLE_STRING_COPYING("siod-bugs"));
 #endif
