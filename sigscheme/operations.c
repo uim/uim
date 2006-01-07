@@ -602,7 +602,9 @@ ScmObj
 scm_p_string2number(ScmObj str, ScmObj args)
 {
     int n, r;
-    char *first_nondigit;
+    char *end;
+    const char *c_str;
+    scm_bool empty_strp;
     DECLARE_FUNCTION("string->number", procedure_variadic_1);
 
     ENSURE_STRING(str);
@@ -630,10 +632,12 @@ scm_p_string2number(ScmObj str, ScmObj args)
      *   #f whenever a decimal point is used.
      */
 
+    c_str = SCM_STRING_STR(str);
     r = prepare_radix(SCM_MANGLE(name), args);
-    n = (int)strtol(SCM_STRING_STR(str), &first_nondigit, r);
+    n = (int)strtol(c_str, &end, r);
 
-    return (*first_nondigit) ? SCM_FALSE : MAKE_INT(n);
+    empty_strp = (end == c_str);  /* apply the first rule above */
+    return (empty_strp || *end) ? SCM_FALSE : MAKE_INT(n);
 }
 
 /*===================================
