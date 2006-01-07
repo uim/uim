@@ -84,19 +84,24 @@
     (newline)))
 
 (define assert
-  (lambda (test-name err-msg exp)
-    (set! *total-assertions* (+ *total-assertions* 1))
-    (if *test-track-progress*
-        (begin
-          (display "done: ")
-          (display test-name)
-          (newline)))
-    (if exp
-	#t
-	(begin
-	  (set! *total-failures* (+ *total-failures* 1))
-	  (report-error err-msg)
-	  #f))))
+  ;; to be protected from redifinitions in tests
+  (let ((+ +)
+        (set! set!)
+        (display display)
+        (newline newline))
+    (lambda (test-name err-msg exp)
+      (set! *total-assertions* (+ *total-assertions* 1))
+      (if *test-track-progress*
+          (begin
+            (display "done: ")
+            (display test-name)
+            (newline)))
+      (if exp
+          #t
+          (begin
+            (set! *total-failures* (+ *total-failures* 1))
+            (report-error err-msg)
+            #f)))))
 
 ;;
 ;; assertions for test writers
@@ -174,7 +179,10 @@
 
 (define test-name
   (let ((name "anonymous test")
-        (serial 0))
+        (serial 0)
+        (+ +)
+        (set! set!)
+        (null? null?))
     (lambda args
       (if (null? args)
           (begin
