@@ -276,7 +276,7 @@ scm_validate_formals(ScmObj formals)
 
     /* This loop goes infinite if the formals is circular. SigSchme expects
      * that user codes are sane here. */
-    for (len = 0; formals = CDR(formals); len++) {
+    for (len = 0; CONSP(formals); formals = CDR(formals), len++) {
         if (!SYMBOLP(CAR(formals)))
             return SCM_LISTLEN_ENCODE_ERROR(len);
     }
