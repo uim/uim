@@ -607,12 +607,33 @@ scm_p_string2number(ScmObj str, ScmObj args)
 
     ENSURE_STRING(str);
 
+    /* R5RS:
+     *
+     * - If string is not a syntactically valid notation for a number, then
+     *   `string->number' returns #f.
+     *
+     * - `String->number' is permitted to return #f whenever string contains an
+     *   explicit radix prefix.
+     *
+     * - If all numbers supported by an implementation are real, then
+     *   `string->number' is permitted to return #f whenever string uses the
+     *   polar or rectangular notations for complex numbers.
+     *
+     * - If all numbers are integers, then `string->number' may return #f
+     *   whenever the fractional notation is used.
+     *
+     * - If all numbers are exact, then `string->number' may return #f whenever
+     *   an exponent marker or explicit exactness prefix is used, or if a #
+     *   appears in place of a digit.
+     *
+     * - If all inexact numbers are integers, then `string->number' may return
+     *   #f whenever a decimal point is used.
+     */
+
     r = prepare_radix(SCM_MANGLE(name), args);
     n = (int)strtol(SCM_STRING_STR(str), &first_nondigit, r);
-    if (*first_nondigit)
-        ERR("ill-formatted number: %s", SCM_STRING_STR(str));
 
-    return MAKE_INT(n);
+    return (*first_nondigit) ? SCM_FALSE : MAKE_INT(n);
 }
 
 /*===================================
