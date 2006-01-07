@@ -469,7 +469,7 @@ void scm_finalize_continuation(void);
 void scm_destruct_continuation(ScmObj cont);
 ScmObj scm_call_with_current_continuation(ScmObj proc,
                                           ScmEvalState *eval_state);
-void scm_call_continuation(ScmObj cont, ScmObj ret);
+void scm_call_continuation(ScmObj cont, ScmObj ret) SCM_NORETURN;
 ScmObj scm_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
 void scm_push_trace_frame(ScmObj obj, ScmObj env);
 void scm_pop_trace_frame(void);

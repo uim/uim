@@ -64,6 +64,9 @@
 =======================================*/
 static ScmObj reduce(ScmObj (*func)(), ScmObj args, ScmObj env,
                      scm_bool suppress_eval);
+static void call_continuation(ScmObj cont, ScmObj args,
+                              ScmEvalState *eval_state,
+                              scm_bool suppress_eval) SCM_NORETURN;
 static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
                            scm_bool suppress_eval);
 static ScmObj call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
@@ -169,6 +172,22 @@ reduce(ScmObj (*func)(), ScmObj args, ScmObj env, scm_bool suppress_eval)
     return (*func)(left, right, &state);
 }
 
+static void
+call_continuation(ScmObj cont, ScmObj args, ScmEvalState *eval_state,
+                  scm_bool suppress_eval)
+{
+    ScmObj ret;
+    DECLARE_INTERNAL_FUNCTION("call_continuation");
+
+    if (!LIST_1_P(args))
+        ERR("continuation takes exactly one argument");
+    ret = CAR(args);
+    if (!suppress_eval)
+        ret = EVAL(ret, eval_state->env);
+    scm_call_continuation(cont, ret);
+    /* NOTREACHED */
+}
+
 static ScmObj
 call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
              scm_bool suppress_eval)
@@ -251,7 +270,7 @@ static ScmObj
 call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
      scm_bool suppress_eval)
 {
-    ScmObj env, cont;
+    ScmObj env;
     ScmObj (*func)();
     enum ScmFuncTypeCode type;
     scm_bool syntaxp;
@@ -269,10 +288,7 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
         if (CLOSUREP(proc))
             return call_closure(proc, args, eval_state, suppress_eval);
         if (CONTINUATIONP(proc)) {
-            if (!LIST_1_P(args))
-                ERR("continuation takes exactly one argument");
-            cont = (suppress_eval) ? CAR(args) : EVAL(CAR(args), env);
-            scm_call_continuation(proc, cont);
+            call_continuation(proc, args, eval_state, suppress_eval);
             /* NOTREACHED */
         }
         ERR("procedure or syntax required but got", proc);
