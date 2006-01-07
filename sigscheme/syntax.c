@@ -681,7 +681,6 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
         SCM_QUEUE_ADD(varq, var);
         SCM_QUEUE_ADD(valq, val);
     }
-
     if (!NULLP(bindings))
         ERR_OBJ("invalid bindings form", bindings);
 
@@ -756,6 +755,7 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
         ERR("letrec: invalid bindings form");
 
     /* extend env by placeholder frame for subsequent lambda evaluations */
+    /* FIXME: direct env object manipulation */
     frame = CONS(SCM_NULL, SCM_NULL);
     eval_state->env = CONS(frame, eval_state->env);
 
@@ -1115,6 +1115,8 @@ scm_s_define(ScmObj var, ScmObj rest, ScmObj env)
 #endif
 
         ENSURE_SYMBOL(procname);
+        if (SCM_LISTLEN_ERRORP(scm_validate_formals(formals)))
+            ERR_OBJ("bad formals", formals);
 
         define_internal(procname, MAKE_CLOSURE(CONS(formals, body), env), env);
     } else {

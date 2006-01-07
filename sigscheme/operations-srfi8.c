@@ -70,6 +70,7 @@ ScmObj
 scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body,
                     ScmEvalState *eval_state)
 {
+    int formals_len, actuals_len;
     ScmObj env, actuals;
     DECLARE_FUNCTION("receive", syntax_variadic_tailrec_2);
 
@@ -79,7 +80,8 @@ scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body,
      * (receive <formals> <expression> <body>)
      */
 
-    if (!(LISTP(formals) || SYMBOLP(formals)))
+    formals_len = scm_validate_formals(formals);
+    if (SCM_LISTLEN_ERRORP(formals_len))
         ERR_OBJ("bad formals", formals);
 
     /* FIXME: do we have to extend the environment first?  The SRFI-8
@@ -94,11 +96,16 @@ scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body,
      */
     actuals = EVAL(expr, env);
 
-    if (SCM_VALUEPACKETP(actuals))
+    if (SCM_VALUEPACKETP(actuals)) {
         actuals = SCM_VALUEPACKET_VALUES(actuals);
-    else
+        actuals_len = scm_finite_length(actuals);
+    } else {
         actuals = LIST_1(actuals);
+        actuals_len = 1;
+    }
 
+    if (!scm_valid_environment_extension_lengthp(formals_len, actuals_len))
+        ERR_OBJ("unmatched number of args for multiple values", actuals);
     eval_state->env = env = scm_extend_environment(formals, actuals, env);
 
     return scm_s_begin(body, eval_state);

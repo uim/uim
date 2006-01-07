@@ -227,7 +227,7 @@ call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
 
         eval_state->env = scm_extend_environment(SCM_NULL, SCM_NULL, proc_env);
     } else {
-        ERR_OBJ("bad formals list", formals);
+        SCM_ASSERT(scm_false);
     }
 
     eval_state->ret_type = SCM_RETTYPE_NEED_EVAL;
