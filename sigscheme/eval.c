@@ -144,20 +144,24 @@ reduce(ScmObj (*func)(), ScmObj args, ScmObj env, scm_bool suppress_eval)
     enum ScmReductionState state;
     DECLARE_INTERNAL_FUNCTION("(reduction)");
 
-    state = SCM_REDUCE_0;
-    if (NO_MORE_ARG(args))
+    if (!CONSP(args)) {
+        state = SCM_REDUCE_0;
         return (*func)(SCM_INVALID, SCM_INVALID, &state);
+    }
 
     state = SCM_REDUCE_1;
-    left = POP_ARG(args);
+    left = POP(args);
     if (!suppress_eval)
         left = EVAL(left, env);
-    if (NO_MORE_ARG(args))
-        return (*func)(left, left, &state);
 
-    /* Reduce upto all but the last argument. */
+    if (!CONSP(args)) {
+        state = SCM_REDUCE_1;
+        return (*func)(left, left, &state);
+    }
+
+    /* Reduce upto the penult. */
     state = SCM_REDUCE_PARTWAY;
-    while (right = POP_ARG(args), !NO_MORE_ARG(args)) {
+    FOR_EACH_WHILE (right, args, CONSP(CDR(args))) {
         if (!suppress_eval)
             right = EVAL(right, env);
         left = (*func)(left, right, &state);
@@ -167,6 +171,7 @@ reduce(ScmObj (*func)(), ScmObj args, ScmObj env, scm_bool suppress_eval)
 
     /* Make the last call. */
     state = SCM_REDUCE_LAST;
+    right = CAR(args);
     if (!suppress_eval)
         right = EVAL(right, env);
     return (*func)(left, right, &state);
@@ -445,9 +450,10 @@ scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state)
         /* More than one argument given. */
         args = LIST_1(arg0);
         q = REF_CDR(args);
-        while (arg = POP_ARG(rest), !NO_MORE_ARG(rest))
+        FOR_EACH_WHILE (arg, rest, CONSP(CDR(rest)))
             SCM_QUEUE_ADD(q, arg);
         /* The last one is spliced. */
+        arg = POP(rest);
         SCM_QUEUE_SLOPPY_APPEND(q, arg);
         last = arg;
     }
@@ -473,8 +479,10 @@ map_eval(ScmObj args, int *args_len, ScmObj env)
 
     res = SCM_NULL;
     SCM_QUEUE_POINT_TO(q, res);
-    /* does not use POP_ARG() to increace performance */
-    for (len = 0, rest = args; CONSP(rest); len++, rest = CDR(rest)) {
+
+    len = 0;
+    FOR_EACH_PAIR (rest, args) {
+        len++;
         elm = EVAL(CAR(rest), env);
 #if SCM_STRICT_ARGCHECK
         if (VALUEPACKETP(elm))

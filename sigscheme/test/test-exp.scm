@@ -483,6 +483,7 @@
 (assert-equal? "and test 2" #f (and (= 2 2) (< 2 1)))
 (assert-equal? "and test 3" '(f g) (and 1 2 'c '(f g)))
 (assert-equal? "and test 4" #t (and))
+(assert-equal? "and test 5" #f (and #t #f))
 
 ;;
 ;; or

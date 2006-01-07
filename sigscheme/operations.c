@@ -556,7 +556,8 @@ prepare_radix(const char *funcname, ScmObj args)
     /* dirty hack to replace internal function name */
     SCM_MANGLE(name) = funcname;
 
-    if (radix = POP_ARG(args), VALIDP(radix)) {
+    if (CONSP(args)) {
+        radix = POP(args);
         ASSERT_NO_MORE_ARG(args);
         ENSURE_INT(radix);
         r = SCM_INT_VALUE(radix);
@@ -897,7 +898,7 @@ ScmObj
 scm_p_append(ScmObj args)
 {
     ScmQueue q;
-    ScmObj elm_lst, res;
+    ScmObj elm_lst, res, tmp;
     DECLARE_FUNCTION("append", procedure_variadic_0);
 
     if (NULLP(args))
@@ -906,13 +907,14 @@ scm_p_append(ScmObj args)
     res = SCM_NULL;
     SCM_QUEUE_POINT_TO(q, res);
     /* duplicate and merge all but the last argument */
-    while (elm_lst = POP_ARG(args), !NO_MORE_ARG(args)) {
-        for (; CONSP(elm_lst); elm_lst = CDR(elm_lst))
-            SCM_QUEUE_ADD(q, CAR(elm_lst));
+    FOR_EACH_WHILE (elm_lst, args, CONSP(CDR(args))) {
+        FOR_EACH (tmp, elm_lst)
+            SCM_QUEUE_ADD(q, tmp);
         ENSURE_PROPER_LIST_TERMINATION(elm_lst, args);
     }
+    tmp = POP(args);
     /* append the last argument */
-    SCM_QUEUE_SLOPPY_APPEND(q, elm_lst);
+    SCM_QUEUE_SLOPPY_APPEND(q, tmp);
 
     return res;
 }
@@ -1263,7 +1265,7 @@ scm_p_make_string(ScmObj length, ScmObj args)
     if (NO_MORE_ARG(args)) {
         filler_val = ' ';
     } else {
-        filler = POP_ARG(args);
+        filler = POP(args);
         ASSERT_NO_MORE_ARG(args);
         ENSURE_CHAR(filler);
         filler_val = SCM_CHAR_VALUE(filler);
@@ -1710,7 +1712,7 @@ scm_p_list2vector(ScmObj lst)
 
     vec = scm_malloc(sizeof(ScmObj) * len);
     for (i = 0; i < len; i++)
-        vec[i] = POP_ARG(lst);
+        vec[i] = POP(lst);
 
     return MAKE_VECTOR(vec, len);
 }
@@ -1768,8 +1770,7 @@ map_single_arg(ScmObj proc, ScmObj lst)
 
     res = SCM_NULL;
     SCM_QUEUE_POINT_TO(q, res);
-    while (!NO_MORE_ARG(lst)) {
-        elm = POP_ARG(lst);
+    FOR_EACH (elm, lst) {
         elm = scm_call(proc, LIST_1(elm));
         SCM_QUEUE_ADD(q, elm);
     }

@@ -295,19 +295,27 @@ extern ScmObj scm_null_values;
 #define ASSERT_PROPER_ARG_LIST(args)
 #endif /* not SCM_STRICT_ARGCHECK */
 
-/* Destructively retreives the first element of an argument list.  If
- * ARGS doesn't contain enough arguments, return SCM_INVALID. */
-#define POP_ARG(args)                                                        \
-     (CONSP(args)                                                            \
-      ? (SCM_MANGLE(tmp) = CAR(args), (args) = CDR(args), SCM_MANGLE(tmp))   \
-      : SCM_INVALID)
+/* Destructively retreives the first element of a list. */
+#define POP(_lst)                                  \
+    (SCM_MANGLE(tmp) = CAR(_lst), (_lst) = CDR(_lst), SCM_MANGLE(tmp))
 
-/* Like POP_ARG(), but signals an error if no argument is
-   available. */
+/* POP() with safety check. */
+#define SAFE_POP(_lst)                          \
+    (CONSP((_lst)) ? POP((_lst)) : SCM_INVALID)
+
+/* Like POP(), but signals an error if no argument is available. */
 #define MUST_POP_ARG(args)                                                   \
      (CONSP(args)                                                            \
       ? (SCM_MANGLE(tmp) = CAR(args), (args) = CDR(args), SCM_MANGLE(tmp))   \
       : (ERR("missing argument(s)"), NULL))
+
+#define FOR_EACH_WHILE(_kar, _lst, _cond)       \
+    while ((_cond) && ((_kar) = POP((_lst)), 1))
+
+#define FOR_EACH(_kar, _lst) FOR_EACH_WHILE((_kar), (_lst), CONSP(_lst))
+
+#define FOR_EACH_PAIR(_subls, _lst)                                     \
+    for ((_subls) = (_lst); CONSP((_subls)); (_subls) = CDR(_subls))
 
 #define ENSURE_TYPE(pred, typename, obj)                                     \
     (pred(obj) || (ERR_OBJ(typename " required but got", (obj)), 1))

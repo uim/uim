@@ -118,10 +118,12 @@ scm_prepare_port(ScmObj args, ScmObj default_port)
     ScmObj port;
     DECLARE_INTERNAL_FUNCTION("prepare_port");
 
-    port = POP_ARG(args);
-    if (!VALIDP(port))
+    if (CONSP(args)) {
+        port = POP(args);
+        ENSURE_PORT(port);
+    } else {
         port = default_port;
-    ENSURE_PORT(port);
+    }
     ASSERT_NO_MORE_ARG(args);
 
     return port;

@@ -168,9 +168,8 @@ enter_dynamic_extent(ScmObj dest)
         retpath = CONS(frame, retpath);
     }
 
-    while (frame = POP_ARG(retpath), VALIDP(frame)) {
+    FOR_EACH (frame, retpath)
         scm_call(DYNEXT_FRAME_BEFORE(frame), SCM_NULL);
-    }
 }
 
 /* exit to a dynamic extent of another continuation (dest) */

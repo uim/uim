@@ -394,16 +394,14 @@ scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state)
 
     if (test = EVAL(test, env), NFALSEP(test)) {
 #if SCM_STRICT_ARGCHECK
-        POP_ARG(rest);
+        SAFE_POP(rest);
         ASSERT_NO_MORE_ARG(rest);
 #endif
         return conseq;
     } else {
-        /* does not use POP_ARG() for efficiency since 'if' syntax is
-           frequently used */
         alt = (CONSP(rest)) ? CAR(rest) : SCM_UNDEF;
 #if SCM_STRICT_ARGCHECK
-        POP_ARG(rest);
+        SAFE_POP(rest);
         ASSERT_NO_MORE_ARG(rest);
 #endif
         return alt;
@@ -480,7 +478,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
         ERR("cond: syntax error: at least one clause required");
 
     /* looping in each clause */
-    while (clause = POP_ARG(args), VALIDP(clause)) {
+    FOR_EACH (clause, args) {
         if (!CONSP(clause))
             ERR_OBJ("bad clause", clause);
 
@@ -583,7 +581,7 @@ scm_s_and(ScmObj args, ScmEvalState *eval_state)
     if (NO_MORE_ARG(args))
         return SCM_TRUE;
 
-    while (expr = POP_ARG(args), !NO_MORE_ARG(args)) {
+    FOR_EACH_WHILE (expr, args, CONSP(CDR(args))) {
         val = EVAL(expr, eval_state->env);
         if (FALSEP(val)) {
             ASSERT_PROPER_ARG_LIST(args);
@@ -591,6 +589,8 @@ scm_s_and(ScmObj args, ScmEvalState *eval_state)
             return SCM_FALSE;
         }
     }
+    expr = POP(args);
+    ASSERT_NO_MORE_ARG(args);
 
     return expr;
 }
@@ -604,7 +604,7 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
     if (NO_MORE_ARG(args))
         return SCM_FALSE;
 
-    while (expr = POP_ARG(args), !NO_MORE_ARG(args)) {
+    FOR_EACH (expr, args) {
         val = EVAL(expr, eval_state->env);
         if (!FALSEP(val)) {
             ASSERT_PROPER_ARG_LIST(args);
@@ -658,7 +658,7 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
 
     if (!CONSP(args))
         ERR("let: invalid form");
-    bindings = POP_ARG(args);
+    bindings = POP(args);
 
     /* named let */
     if (SYMBOLP(bindings)) {
@@ -666,15 +666,14 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
 
         if (!CONSP(args))
             ERR("let: invalid named let form");
-        bindings = POP_ARG(args);
+        bindings = POP(args);
     }
 
     body = args;
 
     SCM_QUEUE_POINT_TO(varq, formals);
     SCM_QUEUE_POINT_TO(valq, actuals);
-    for (; CONSP(bindings); bindings = CDR(bindings)) {
-        binding = CAR(bindings);
+    FOR_EACH (binding, bindings) {
 #if SCM_COMPAT_SIOD_BUGS
         /* temporary solution. the inefficiency is not a problem */
         if (LIST_1_P(binding))
@@ -812,8 +811,12 @@ scm_s_begin(ScmObj args, ScmEvalState *eval_state)
     if (NO_MORE_ARG(args))
         return SCM_UNDEF;
 
-    while (expr = POP_ARG(args), !NO_MORE_ARG(args))
+    FOR_EACH_WHILE(expr, args, CONSP(CDR(args)))
         EVAL(expr, eval_state->env);
+
+    expr = POP(args);
+
+    ASSERT_NO_MORE_ARG(args);
 
     /* Return tail expression. */
     return expr;
@@ -846,16 +849,15 @@ scm_s_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_
     ScmObj steps      = SCM_NULL;
     ScmObj test       = SCM_FALSE;
     ScmObj expression = SCM_FALSE;
-    ScmObj tmp_steps  = SCM_FALSE;
     ScmObj tmp_vars   = SCM_FALSE;
+    ScmObj tmp;
     ScmRef obj;
     DECLARE_FUNCTION("do", syntax_variadic_tailrec_2);
 
     /* construct Environment and steps */
-    for (; !NULLP(bindings); bindings = CDR(bindings)) {
-        binding = CAR(bindings);
+    FOR_EACH (binding, bindings) {
         if (NULLP(binding))
-            ERR("invalid bindings");
+            ERR("invalid binding");
 
         var = MUST_POP_ARG(binding);
         ENSURE_SYMBOL(var);
@@ -869,7 +871,7 @@ scm_s_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_
         if (NO_MORE_ARG(binding))
             steps = CONS(var, steps);
         else
-            steps = CONS(POP_ARG(binding), steps);
+            steps = CONS(POP(binding), steps);
 
         ASSERT_NO_MORE_ARG(binding);
     }
@@ -896,12 +898,8 @@ scm_s_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_
          * results to the "vals" variable and set it in hand.
          */
         vals = SCM_NULL;
-        for (tmp_steps = steps;
-             !NULLP(tmp_steps);
-             tmp_steps = CDR(tmp_steps))
-        {
-            vals = CONS(EVAL(CAR(tmp_steps), env), vals);
-        }
+        FOR_EACH_PAIR (tmp, steps)
+            vals = CONS(EVAL(CAR(tmp), env), vals);
         vals = scm_p_reverse(vals);
 
         /* set it */

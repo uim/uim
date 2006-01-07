@@ -84,7 +84,7 @@ scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
                    | <bound-variable>
     ========================================================================*/
     if (CONSP(claws)) {
-        while (claw = POP_ARG(claws), VALIDP(claw)) {
+        FOR_EACH (claw, claws) {
             if (CONSP(claw)) {
                 if (NULLP(CDR(claw))) {
                     /* (<expression>) */

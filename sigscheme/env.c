@@ -271,14 +271,13 @@ int
 scm_validate_formals(ScmObj formals)
 {
 #if SCM_STRICT_ARGCHECK
-    ScmObj var;
     int len;
     DECLARE_INTERNAL_FUNCTION("scm_validate_formals");
 
     /* This loop goes infinite if the formals is circular. SigSchme expects
      * that user codes are sane here. */
-    for (len = 0; var = POP_ARG(formals), VALIDP(var); len++) {
-        if (!SYMBOLP(var))
+    for (len = 0; formals = CDR(formals); len++) {
+        if (!SYMBOLP(CAR(formals)))
             return SCM_LISTLEN_ENCODE_ERROR(len);
     }
     if (NULLP(formals))

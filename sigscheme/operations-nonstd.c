@@ -93,11 +93,12 @@ scm_p_symbol_boundp(ScmObj sym, ScmObj rest)
 
     ENSURE_SYMBOL(sym);
 
-    env = POP_ARG(rest);
-    if (VALIDP(env))
+    if (CONSP(env)) {
+        env = POP(rest);
         ENSURE_ENV(env);
-    else
+    } else {
         env = SCM_INTERACTION_ENV;
+    }
     ref = scm_lookup_environment(sym, env);
 
     return MAKE_BOOL(ref != SCM_INVALID_REF || SCM_SYMBOL_BOUNDP(sym));
