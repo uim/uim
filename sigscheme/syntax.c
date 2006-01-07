@@ -717,14 +717,8 @@ scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
                      ...)
     ========================================================================*/
 
-    if (!LISTP(bindings))
-        ERR("let*: invalid bindings form");
-
-    if (NULLP(bindings)) {
-        env = scm_extend_environment(SCM_NULL, SCM_NULL, env);
-    } else {
-        for (; CONSP(bindings); bindings = CDR(bindings)) {
-            binding = CAR(bindings);
+    if (CONSP(bindings)) {
+        FOR_EACH (binding, bindings) {
 #if SCM_COMPAT_SIOD_BUGS
             /* temporary solution. the inefficiency is not a problem */
             if (LIST_1_P(binding))
@@ -732,19 +726,28 @@ scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 #endif
 
             if (!LIST_2_P(binding) || !SYMBOLP(var = CAR(binding)))
-                ERR_OBJ("invalid binding form", binding);
+                goto err;
             val = EVAL(CADR(binding), env);
 
             /* extend env for each variable */
             env = scm_extend_environment(LIST_1(var), LIST_1(val), env);
         }
         if (!NULLP(bindings))
-            ERR_OBJ("invalid bindings form", bindings);
+            goto err;
+    } else if (NULLP(bindings)) {
+        env = scm_extend_environment(SCM_NULL, SCM_NULL, env);
+    } else {
+        goto err;
     }
 
     eval_state->env = env;
 
     return scm_s_begin(body, eval_state);
+
+ err:
+    ERR_OBJ("invalid bindings form", bindings);
+    /* NOTREACHED */
+    return SCM_FALSE;
 }
 
 ScmObj
