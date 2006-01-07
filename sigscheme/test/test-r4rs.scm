@@ -583,20 +583,14 @@
 (define (test-string->number str)
   (define ans (string->number str))
   (cond ((not ans) #t) ((number? ans) #t) (else ans)))
-;; MODIFIED: these exps are invalid for both R4RS and R5RS
-;;(for-each (lambda (str) (test #t test-string->number str))
-;;	  '("+#.#" "-#.#" "#.#" "#i" "#e" "#"))
-(for-each (lambda (str) (test #f test-string->number str))
-	  '("+#.#" "-#.#" "#.#" "#i" "#e" "#"))
-;; DISABLED: not supported by SigScheme
-;;(for-each (lambda (str) (test #t test-string->number str))
-;;	  '("1/0" "-1/0" "0/0"
-;;	    "+1/0i" "-1/0i" "0/0i" "0/0-0/0i" "1/0-1/0i" "-1/0+1/0i"
-;;	    "#i0/0"))
-;;(cond ((number? (string->number "1+1i")) ;More kawa bait
-;;       (test #t number? (string->number "#i-i"))
-;;       (test #t number? (string->number "#i+i"))
-;;       (test #t number? (string->number "#i2+i"))))
+(for-each (lambda (str) (test #t test-string->number str))
+         '("+#.#" "-#.#" "#.#" "1/0" "-1/0" "0/0"
+           "+1/0i" "-1/0i" "0/0i" "0/0-0/0i" "1/0-1/0i" "-1/0+1/0i"
+           "#i" "#e" "#" "#i0/0"))
+(cond ((number? (string->number "1+1i")) ;More kawa bait
+       (test #t number? (string->number "#i-i"))
+       (test #t number? (string->number "#i+i"))
+       (test #t number? (string->number "#i2+i"))))
 
 ;; DISABLED: not supported by SigScheme
 ;;;;;;From: fred@sce.carleton.ca (Fred J Kaudel)
