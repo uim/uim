@@ -942,6 +942,10 @@ extern enum ScmObjType scm_type(ScmObj obj);
 #define SCM_CANBE_MARKED(a)   (SCM_TAG(a) != SCM_TAG_IMM)
 #define SCM_STRIP_TAG_INFO(a) (SCM_STRIP_TAG(a))
 
+/* the upper bit of obj's tag and cdr's GC bit must be the same value */
+#define SCM_HAS_VALID_CDR_GCBITP(obj, cdr)                             \
+    ((SCM_TAG(obj) >> (SCM_TAG_OFFSET + (SCM_TAG_WIDTH - 1))) == SCM_GCBIT(cdr))
+
 /* When we sweep the object, we have no type information because the pointer is
  * not tagged (raw pointer to heap). So, we see the S->cdr's GC bit and its
  * value is 1, the object contains the pointer to be freed. */

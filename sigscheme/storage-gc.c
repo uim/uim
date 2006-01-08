@@ -343,21 +343,67 @@ gc_mark_and_sweep(void)
     }
 }
 
+#if SCM_OBJ_COMPACT
+static void
+mark_obj(ScmObj obj)
+{
+    int i = 0;
+    unsigned int tag;
+
+mark_loop:
+    /* no need to mark immediates */
+    if (!SCM_CANBE_MARKED(obj))
+        return;
+
+    /* avoid cyclic marking */
+    if (SCM_IS_MARKED(obj))
+        return;
+
+    /* mark this object */
+    SCM_DO_MARK(obj);
+
+    /* mark recursively */
+    tag = SCM_TAG(obj);
+    switch (tag) {
+    case SCM_TAG_CONS:
+        mark_obj(SCM_CAR(obj));
+        obj = CDR(obj);
+        goto mark_loop;
+
+    case SCM_TAG_CLOSURE:
+        mark_obj(SCM_CLOSURE_EXP(obj));
+        obj = SCM_CLOSURE_ENV(obj);
+        goto mark_loop;
+
+    case SCM_TAG_OTHERS:
+        if (SYMBOLP(obj)) {
+            obj = SCM_SYMBOL_VCELL(obj);
+            goto mark_loop;
+        } else if (VECTORP(obj)) {
+            for (i = 0; i < SCM_VECTOR_LEN(obj); i++) {
+                mark_obj(SCM_VECTOR_VEC(obj)[i]);
+            }
+        } else if (VALUEPACKETP(obj)) {
+            obj = SCM_VALUEPACKET_VALUES(obj);
+            goto mark_loop;
+        }
+        break;
+
+    default:
+        break;
+    }
+}
+#else /* SCM_OBJ_COMPACT */
 static void
 mark_obj(ScmObj obj)
 {
     int i = 0;
 
 mark_loop:
-#if SCM_OBJ_COMPACT
-    /* no need to mark immediates */
-    if (!SCM_CANBE_MARKED(obj))
-        return;
-#else
     /* no need to mark constants */
     if (SCM_CONSTANTP(obj))
         return;
-#endif
+
     /* avoid cyclic marking */
     if (SCM_IS_MARKED(obj))
         return;
@@ -400,6 +446,7 @@ mark_loop:
         break;
     }
 }
+#endif /* SCM_OBJ_COMPACT */
 
 static void
 finalize_protected_var(void)
@@ -435,8 +482,14 @@ within_heapp(ScmObj obj)
 
     for (i = 0; i < n_heaps; i++) {
         heap = heaps[i];
-        if (heap && &heap[0] <= ptr && ptr < &heap[heap_size])
+        if (heap && &heap[0] <= ptr && ptr < &heap[heap_size]) {
+#if SCM_OBJ_COMPACT
+            /* Check the consistency between obj's tag and ptr->cdr's GC bit. */
+            if (!SCM_HAS_VALID_CDR_GCBITP(obj, ptr->cdr))
+                return scm_false;
+#endif
             return scm_true;
+        }
     }
 
     return scm_false;
