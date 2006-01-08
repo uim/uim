@@ -543,6 +543,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
             return scm_s_begin(exps, eval_state);
         }
     }
+    NO_MORE_ARG(args);
 
     /*
      * To distinguish unmatched status from SCM_UNDEF from a clause, pure
@@ -604,7 +605,7 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
     if (NO_MORE_ARG(args))
         return SCM_FALSE;
 
-    FOR_EACH (expr, args) {
+    FOR_EACH_WHILE (expr, args, CONSP(CDR(args))) {
         val = EVAL(expr, eval_state->env);
         if (!FALSEP(val)) {
             ASSERT_PROPER_ARG_LIST(args);
@@ -612,6 +613,8 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
             return val;
         }
     }
+    expr = POP(args);
+    ASSERT_NO_MORE_ARG(args);
 
     return expr;
 }
@@ -813,9 +816,7 @@ scm_s_begin(ScmObj args, ScmEvalState *eval_state)
 
     FOR_EACH_WHILE(expr, args, CONSP(CDR(args)))
         EVAL(expr, eval_state->env);
-
     expr = POP(args);
-
     ASSERT_NO_MORE_ARG(args);
 
     /* Return tail expression. */

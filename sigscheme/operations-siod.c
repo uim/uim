@@ -204,6 +204,7 @@ scm_p_verbose(ScmObj args)
 
     if (CONSP(args)) {
         level = POP(args);
+        ASSERT_NO_MORE_ARG(args);
         ENSURE_INT(level);
 
         scm_set_verbose_level(SCM_INT_VALUE(level));

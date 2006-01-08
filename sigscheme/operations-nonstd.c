@@ -95,6 +95,7 @@ scm_p_symbol_boundp(ScmObj sym, ScmObj rest)
 
     if (CONSP(rest)) {
         env = POP(rest);
+        ASSERT_NO_MORE_ARG(rest);
         ENSURE_VALID_ENV(env);
     } else {
         env = SCM_INTERACTION_ENV;

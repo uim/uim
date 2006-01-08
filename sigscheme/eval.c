@@ -144,17 +144,16 @@ reduce(ScmObj (*func)(), ScmObj args, ScmObj env, scm_bool suppress_eval)
     enum ScmReductionState state;
     DECLARE_INTERNAL_FUNCTION("(reduction)");
 
-    if (!CONSP(args)) {
+    if (NO_MORE_ARG(args)) {
         state = SCM_REDUCE_0;
         return (*func)(SCM_INVALID, SCM_INVALID, &state);
     }
 
-    state = SCM_REDUCE_1;
     left = POP(args);
     if (!suppress_eval)
         left = EVAL(left, env);
 
-    if (!CONSP(args)) {
+    if (NO_MORE_ARG(args)) {
         state = SCM_REDUCE_1;
         return (*func)(left, left, &state);
     }
@@ -168,10 +167,11 @@ reduce(ScmObj (*func)(), ScmObj args, ScmObj env, scm_bool suppress_eval)
         if (state == SCM_REDUCE_STOP)
             return left;
     }
+    right = POP(args);
+    ASSERT_NO_MORE_ARG(args);
 
     /* Make the last call. */
     state = SCM_REDUCE_LAST;
-    right = CAR(args);
     if (!suppress_eval)
         right = EVAL(right, env);
     return (*func)(left, right, &state);
@@ -444,7 +444,7 @@ scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state)
     ScmObj args, arg, last;
     DECLARE_FUNCTION("apply", procedure_variadic_tailrec_2);
 
-    if (NULLP(rest)) {
+    if (NO_MORE_ARG(rest)) {
         args = last = arg0;
     } else {
         /* More than one argument given. */
