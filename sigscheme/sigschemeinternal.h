@@ -304,10 +304,8 @@ extern ScmObj scm_null_values;
     (CONSP((_lst)) ? POP((_lst)) : SCM_INVALID)
 
 /* Like POP(), but signals an error if no argument is available. */
-#define MUST_POP_ARG(args)                                                   \
-     (CONSP(args)                                                            \
-      ? (SCM_MANGLE(tmp) = CAR(args), (args) = CDR(args), SCM_MANGLE(tmp))   \
-      : (ERR("missing argument(s)"), NULL))
+#define MUST_POP_ARG(_lst)                                              \
+    (CONSP(_lst) ? POP(_lst) : (ERR("missing argument(s)"), NULL))
 
 #define FOR_EACH_WHILE(_kar, _lst, _cond)       \
     while ((_cond) && ((_kar) = POP((_lst)), 1))
