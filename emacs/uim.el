@@ -1255,6 +1255,13 @@
 
   (add-hook 'uim-reset-keymap-hook 'uim-update-keybind)
 
+  ;; advice to support kbd macro
+  (defadvice call-last-kbd-macro (around uim-call-last-kbd-macro activate)
+    (let ((current-uim-mode uim-mode))
+      (setq uim-mode nil)
+      (unwind-protect
+	  ad-do-it
+	(setq uim-mode current-uim-mode))))
   )
 
 
