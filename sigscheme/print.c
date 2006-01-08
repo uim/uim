@@ -286,32 +286,45 @@ print_char(ScmObj port, ScmObj obj, enum OutputType otype)
     }
 }
 
-/* FIXME: support multibyte char properly */
 static void
 print_string(ScmObj port, ScmObj obj, enum OutputType otype)
 {
+    ScmCharCodec *codec;
+    ScmMultibyteString mbs;
     const ScmSpecialCharInfo *info;
     const char *str;
-    int len, c, i;
+    int len, c;
+    DECLARE_INTERNAL_FUNCTION("print_string");
 
     str = SCM_STRING_STR(obj);
     len = strlen(str);
 
     switch (otype) {
     case AS_WRITE:
-        scm_port_put_char(port, '\"'); /* first doublequote */
-        for (i = 0; i < len; i++) {
-            c = str[i];
-            for (info = scm_special_char_table; info->esc_seq; info++) {
-                if (c == info->code) {
-                    scm_port_puts(port, info->esc_seq);
-                    break;
+        scm_port_put_char(port, '\"'); /* opening doublequote */
+        if (scm_current_char_codec != scm_port_codec(port)) {
+            /* Since the str does not have its encoding information, here
+             * assumes that scm_current_char_codec is that. And then SigScheme
+             * does not have an encoding conversion mechanism, puts it
+             * as-is. */
+            scm_port_puts(port, str);
+        } else {
+            codec = scm_port_codec(port);
+            SCM_MBS_INIT2(mbs, str, len);
+            while (SCM_MBS_GET_SIZE(mbs)) {
+                c = SCM_CHARCODEC_READ_CHAR(codec, mbs);
+                for (info = scm_special_char_table; info->esc_seq; info++) {
+                    if (c == info->code) {
+                        scm_port_puts(port, info->esc_seq);
+                        goto continue2;
+                    }
                 }
+                scm_port_put_char(port, c);
+            continue2:
+                ;
             }
-            if (!info->esc_seq)
-                scm_port_put_char(port, str[i]);
         }
-        scm_port_put_char(port, '\"'); /* last doublequote */
+        scm_port_put_char(port, '\"'); /* closing doublequote */
         break;
 
     case AS_DISPLAY:

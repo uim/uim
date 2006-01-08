@@ -334,6 +334,35 @@ scm_mb_find_codec(const char *encoding)
     return NULL;
 }
 
+int
+scm_charcodec_read_char(ScmCharCodec *codec, ScmMultibyteString *mbs,
+                        const char *caller)
+{
+    ScmMultibyteCharInfo mbc;
+    ScmMultibyteState state;
+    int ch;
+    DECLARE_INTERNAL_FUNCTION("scm_charcodec_read_char");
+
+    SCM_ASSERT(SCM_MBS_GET_SIZE(*mbs));
+
+    SCM_MANGLE(name) = caller;
+
+    state = SCM_MBS_GET_STATE(*mbs);
+    mbc = SCM_CHARCODEC_SCAN_CHAR(codec, *mbs);
+    if (SCM_MBCINFO_ERRORP(mbc) || SCM_MBCINFO_INCOMPLETEP(mbc))
+        ERR("invalid char sequence");
+    ch = SCM_CHARCODEC_STR2INT(codec,
+                               SCM_MBS_GET_STR(*mbs),
+                               SCM_MBCINFO_GET_SIZE(mbc),
+                               state);
+    if (ch == EOF)
+        ERR("invalid char sequence");
+
+    SCM_MBS_SKIP_CHAR(*mbs, mbc);
+
+    return ch;
+}
+
 /*=======================================
   Encoding-specific functions
 =======================================*/

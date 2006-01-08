@@ -97,6 +97,12 @@
         SCM_MBS_SET_SIZE((mbs), 0);                                          \
         SCM_MBS_CLEAR_STATE(mbs);                                            \
     } while (/* CONSTCOND */ 0)
+#define SCM_MBS_INIT2(mbs, s, siz)                                           \
+    do {                                                                     \
+        SCM_MBS_SET_STR((mbs), (s));                                         \
+        SCM_MBS_SET_SIZE((mbs), (siz));                                      \
+        SCM_MBS_CLEAR_STATE(mbs);                                            \
+    } while (/* CONSTCOND */ 0)
 #define SCM_MBS_SKIP_CHAR(mbs, inf)                                          \
     do {                                                                     \
         SCM_MBS_SET_STR((mbs),                                               \
@@ -115,6 +121,8 @@
     ((*(codec)->str2int)((src), (len), (state)))
 #define SCM_CHARCODEC_INT2STR(codec, dst, ch, state)                         \
     ((*(codec)->int2str)((dst), (ch), (state)))
+#define SCM_CHARCODEC_READ_CHAR(codec, mbs)                                  \
+    (scm_charcodec_read_char((codec), &(mbs), SCM_MANGLE(name)))
 
 /*=======================================
   Type Definitions
@@ -198,6 +206,7 @@ int scm_mb_bare_c_strlen(const char *str);
 ScmMultibyteString scm_mb_substring(ScmMultibyteString str, int i, int len);
 #define scm_mb_strref(str, i) (scm_mb_substring((str), (i), 1))
 ScmCharCodec *scm_mb_find_codec(const char *encoding);
-
+int scm_charcodec_read_char(ScmCharCodec *codec, ScmMultibyteString *mbs,
+                            const char *caller);
 
 #endif /* __SCM_ENCODING_H */
