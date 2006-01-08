@@ -386,9 +386,6 @@
   )
 
 
-(defun uim-update-keybind ()
-  (uim-copy-toggle-key 'uim-mode))
-
 ;;
 ;; Activate uim
 ;;
@@ -408,7 +405,6 @@
 
 	;; enable and update keymap
 	(uim-enable-mode-keymap)
-	(uim-update-keybind)
 
 	;; focus to current context
 	(uim-focused)
@@ -1252,8 +1248,6 @@
   ;; add hooks to detect minibuffer entering and leaving
   (add-hook 'minibuffer-setup-hook 'uim-minibuffer-enter)
   (add-hook 'minibuffer-exit-hook 'uim-minibuffer-exit)
-
-  (add-hook 'uim-reset-keymap-hook 'uim-update-keybind)
 
   ;; advice to support kbd macro
   (defadvice call-last-kbd-macro (around uim-call-last-kbd-macro activate)

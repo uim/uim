@@ -278,16 +278,6 @@
 ;;       uim-preedit-map))
 
 
-;;
-;; Copy toggle key to uim-mode-map
-;;
-(defun uim-copy-toggle-key (key)
-  (let ((toggle-key-list (where-is-internal key global-map)))
-    (while toggle-key-list
-      (if (not (eq (lookup-key uim-mode-map (car toggle-key-list)) key))
-	  (define-key uim-mode-map (car toggle-key-list) key))
-      (setq toggle-key-list (cdr toggle-key-list)))))
-
 
 (defun uim-reset-keymap ()
   (uim-init-keymap)

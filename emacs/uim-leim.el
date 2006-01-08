@@ -58,9 +58,6 @@
 ;;  all Uim related LEIM input methods call this function at activation time
 (defun uim-leim-activate (&optional name)
 
-  ;; copy toggle-input-method bindings to uim-mode-map
-  (uim-update-keybind)
-
   (let (im)
     ;; register inactivation function
     (setq inactivate-current-input-method-function 'uim-leim-inactivate)
@@ -140,8 +137,6 @@
   (interactive)
   (message "uim.el: use \"M-x set-input-method\" when using LEIM"))
 
-(defun uim-update-keybind ()
-  (uim-copy-toggle-key 'toggle-input-method))
 
 (uim-leim-init)
   
