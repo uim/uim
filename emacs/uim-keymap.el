@@ -50,6 +50,18 @@
     (triple drag)
     ))
 
+(defconst uim-generic-modifiers
+  '(
+    ()     
+    (shift)   
+    (control)
+    (meta)
+    (shift control)
+    (shift meta)
+    (control meta)
+    (shift control meta)  
+    ))
+
 
 (defconst uim-emacs-prefix-keys
   '(help-command
@@ -75,19 +87,20 @@
 ;; Bind all mouse event to nil (for GNU Emacs)
 ;; 
 (defun uim-unbind-mouse-event ()
-  (let ((mouse-modifiers uim-mouse-modifiers))
-    (while mouse-modifiers
-      (let ((mouse '(mouse-1 mouse-2 mouse-3 mouse-4 mouse-5)))
-	(while mouse
-	  (let ((event (vector (append (car mouse-modifiers)
-				       (list (car mouse))))))
+  (mapcar
+   '(lambda (w)
+      (mapcar 
+       '(lambda (x)
+	  (mapcar 
+	   '(lambda (y)
+	      (let ((event (vector (append w x (list y)))))
 
 	    (define-key uim-mode-map event nil)
 	    (define-key uim-preedit-map event nil)
-	    )
-
-	  (setq mouse (cdr mouse))))
-      (setq mouse-modifiers (cdr mouse-modifiers))))
+	    ))
+	   '(mouse-1 mouse-2 mouse-3 mouse-4 mouse-5)))
+       uim-mouse-modifiers))
+   uim-generic-modifiers)
   
   (define-key uim-mode-map [vertical-scroll-bar] nil)
   (define-key uim-mode-map [mode-line] nil)
