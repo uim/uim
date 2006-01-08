@@ -299,9 +299,6 @@ displayed at the echo area.")
 
 (uim-deflocalvar uim-preedit-position-list '())
 
-(uim-deflocalvar uim-preedit-overlays '())
-
-
 ;; freeze flag (to save font property)
 (uim-deflocalvar uim-buffer-frozen nil)
 

@@ -87,14 +87,6 @@
 			      'uim-preedit-face))))
 
 		  (put-text-property block-start-point (point) 'face face)
-
-		  (if (overlays-in block-start-point (point))
-		      (let (ol)
-			(setq ol (make-overlay block-start-point (point)))
-			(overlay-put ol 'face face)
-			(overlay-put ol 'priority 10)
-			(setq uim-preedit-overlays 
-			      (cons ol uim-preedit-overlays))))
 		  )
 		)
 	      
@@ -134,11 +126,6 @@
 (defun uim-remove-preedit ()
 
   (goto-char uim-preedit-start)
-
-  (if uim-preedit-overlays
-      (progn
-	(mapcar 'delete-overlay uim-preedit-overlays)
-	(setq uim-preedit-overlays nil)))
 
   (let ((inhibit-read-only t))
 
