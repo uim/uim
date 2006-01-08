@@ -1316,9 +1316,7 @@ scm_p_string_ref(ScmObj str, ScmObj k)
     if (idx < 0 || SCM_STRING_LEN(str) <= idx)
         ERR_OBJ("index out of range", k);
 
-    SCM_MBS_INIT(mbs);
-    SCM_MBS_SET_STR(mbs, SCM_STRING_STR(str));
-    SCM_MBS_SET_SIZE(mbs, strlen(SCM_STRING_STR(str)));
+    SCM_MBS_INIT2(mbs, SCM_STRING_STR(str), strlen(SCM_STRING_STR(str)));
     mbs = scm_mb_strref(mbs, idx);
 
     ch = SCM_CHARCODEC_STR2INT(scm_current_char_codec, SCM_MBS_GET_STR(mbs),
@@ -1352,9 +1350,7 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
         ERR_OBJ("index out of range", k);
 
     /* point at the char that to be replaced */
-    SCM_MBS_INIT(mbs_ch);
-    SCM_MBS_SET_STR(mbs_ch, c_str);
-    SCM_MBS_SET_SIZE(mbs_ch, strlen(c_str));
+    SCM_MBS_INIT2(mbs_ch, c_str, strlen(c_str));
     mbs_ch = scm_mb_strref(mbs_ch, idx);
     orig_ch_len = SCM_MBS_GET_SIZE(mbs_ch);
     prefix_len = SCM_MBS_GET_STR(mbs_ch) - c_str;
@@ -1434,9 +1430,7 @@ scm_p_substring(ScmObj str, ScmObj start, ScmObj end)
 
     /* substring */
     c_str = SCM_STRING_STR(str);
-    SCM_MBS_INIT(mbs);
-    SCM_MBS_SET_STR(mbs, c_str);
-    SCM_MBS_SET_SIZE(mbs, strlen(c_str));
+    SCM_MBS_INIT2(mbs, c_str, strlen(c_str));
     mbs = scm_mb_substring(mbs, c_start, c_end - c_start);
 
     /* copy the substring */
@@ -1491,32 +1485,17 @@ scm_p_string2list(ScmObj str)
     ScmObj res;
     int ch;
     ScmMultibyteString mbs;
-    ScmMultibyteCharInfo mbc;
-    ScmMultibyteState state;
     DECLARE_FUNCTION("string->list", procedure_fixed_1);
 
     ENSURE_STRING(str);
 
-    SCM_MBS_INIT(mbs);
-    SCM_MBS_SET_STR(mbs, SCM_STRING_STR(str));
-    SCM_MBS_SET_SIZE(mbs, strlen(SCM_STRING_STR(str)));
+    SCM_MBS_INIT2(mbs, SCM_STRING_STR(str), strlen(SCM_STRING_STR(str)));
 
     res = SCM_NULL;
     SCM_QUEUE_POINT_TO(q, res);
     while (SCM_MBS_GET_SIZE(mbs)) {
-        state = SCM_MBS_GET_STATE(mbs);
-        mbc = SCM_CHARCODEC_SCAN_CHAR(scm_current_char_codec, mbs);
-        if (SCM_MBCINFO_ERRORP(mbc) || SCM_MBCINFO_INCOMPLETEP(mbc))
-            ERR("string->list: invalid char sequence");
-        ch = SCM_CHARCODEC_STR2INT(scm_current_char_codec,
-                                   SCM_MBS_GET_STR(mbs),
-                                   SCM_MBCINFO_GET_SIZE(mbc),
-                                   state);
-        if (ch == EOF)
-            ERR("string->list: invalid char sequence");
-
+        ch = SCM_CHARCODEC_READ_CHAR(scm_current_char_codec, mbs);
         SCM_QUEUE_ADD(q, MAKE_CHAR(ch));
-        SCM_MBS_SKIP_CHAR(mbs, mbc);
     }
 
     return res;

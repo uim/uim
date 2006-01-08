@@ -290,9 +290,7 @@ scm_mb_bare_c_strlen(const char *s)
 {
     ScmMultibyteString mbs;
 
-    SCM_MBS_INIT(mbs);
-    SCM_MBS_SET_STR(mbs, s);
-    SCM_MBS_SET_SIZE(mbs, strlen(s));
+    SCM_MBS_INIT2(mbs, s, strlen(s));
     return scm_mb_strlen(mbs);
 }
 
