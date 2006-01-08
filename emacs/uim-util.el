@@ -92,10 +92,8 @@
 ;; My vertical-motion wrapper
 ;;
 (defun uim-vertical-motion (n)
-  (if (and (string< "21" emacs-version)
-	   (or (string< emacs-version "21.3.1")
-	       (string= emacs-version "21.3.1")
-	       (string= emacs-version "21.4.1")))
+  (if (and uim-emacs
+	   (= emacs-major-version 21))
       (uim-vertical-motion-exec n)
     (vertical-motion n)))
 
