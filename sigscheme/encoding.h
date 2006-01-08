@@ -53,11 +53,6 @@
 
 #define SCM_MB_MAX_LEN 4
 
-#define SCM_MBS_SET_STR(mbs, s)          ((mbs).str = (s))
-#define SCM_MBS_GET_STR(mbs)             ((mbs).str)
-#define SCM_MBS_SET_SIZE(mbs, siz)       ((mbs).size = (siz))
-#define SCM_MBS_GET_SIZE(mbs)            ((mbs).size)
-
 #define SCM_MBCINFO_SET_SIZE(inf, siz)   ((inf).size = (siz))
 #define SCM_MBCINFO_GET_SIZE(inf)        ((inf).size)
 #if SCM_USE_STATEFUL_ENCODING
@@ -82,6 +77,10 @@
     } while (/* CONSTCOND */ 0)
 
 
+#define SCM_MBS_SET_STR(mbs, s)       ((mbs).str = (s))
+#define SCM_MBS_GET_STR(mbs)          ((mbs).str)
+#define SCM_MBS_SET_SIZE(mbs, siz)    ((mbs).size = (siz))
+#define SCM_MBS_GET_SIZE(mbs)         ((mbs).size)
 #if SCM_USE_STATEFUL_ENCODING
 #define SCM_MBS_GET_STATE(mbs)        ((mbs).state)
 #define SCM_MBS_SET_STATE(mbs, stat)  ((mbs).state = (stat))
