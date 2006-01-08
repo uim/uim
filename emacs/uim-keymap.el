@@ -268,27 +268,9 @@
     )
   )
 
-
-;; (defun uim-mode-keymap-enabled ()
-;;   (eq (cdr (assq 'uim-mode minor-mode-map-alist))
-;;       uim-mode-map))
-
-;; (defun uim-preedit-keymap-enabled ()
-;;   (eq (cdr (assq 'uim-mode minor-mode-map-alist))
-;;       uim-preedit-map))
-
-
-
 (defun uim-reset-keymap ()
   (uim-init-keymap)
   (run-hooks 'uim-reset-keymap-hook))
-
-(defun uim-disable-single-escape-on-terminal ()
-  )
-
-(defun uim-enable-single-escape-on-terminal ()
-
-  )
 
 (provide 'uim-keymap)
 

@@ -326,31 +326,6 @@
 			page-current  "/" page-total " " cands))
 	  (message cands)
 	  )
-      ;; Emacs-20 or XEmacs
-;;       (let* ((page-width (+ (string-width uim-candidate-page-label) 2))
-;; 	     (cands-width (string-width cands))
-;; 	     (echoreg-width (- (- (window-width) 1) page-width)))
-;; 	(if (>= echoreg-width cands-width)
-;; 	    (setq cands
-;; 		  (concat cands
-;; 			  (make-string (- echoreg-width cands-width) 32)
-;; 			  "(" uim-candidate-page-label ")"))
-;; 	  (if (> (string-width (substring cands 0 selend))
-;; 		 (+ (- cands-width echoreg-width) 3))
-;; 	      (setq cands
-;; 		    (concat "..."
-;; 			    (truncate-string-to-width cands
-;; 						      cands-width 
-;; 						      (+ (- cands-width echoreg-width) 3))
-;; 			    "(" uim-candidate-page-label ")"))
-;; 	    (setq cands 
-;; 		  (concat "..."
-;; 			  (truncate-string-to-width (substring cands (- selend 1))
-;; 						    (if (> echoreg-width 6)
-;; 							(- echoreg-width 6)
-;; 						      0))
-;; 			  "..."
-;; 			  "(" uim-candidate-page-label ")")))))
 
       (let* ((page-space (- (string-width page-total) 
 			    (string-width page-current)))
@@ -489,7 +464,7 @@
 ;; Put overlay
 ;;
 (defun uim-set-candidate-face (index selected begin length)
-  (let (face ol)
+  (let (face)
     (cond 
      (selected
       (setq face 'uim-candidate-selected-face))
