@@ -510,8 +510,6 @@ ScmObj scm_s_cond_internal(ScmObj args, ScmObj case_key,
 void scm_init_error(void);
 void scm_throw_exception(ScmObj errorobj) SCM_NORETURN;
 void scm_show_error_header(void);
-void scm_error_obj(const char *func_name, const char *msg,
-                   ScmObj obj) SCM_NORETURN;
 
 /* operations.c */
 int scm_finite_length(ScmObj lst);
