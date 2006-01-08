@@ -366,8 +366,8 @@ mark_loop:
     tag = SCM_TAG(obj);
     switch (tag) {
     case SCM_TAG_CONS:
-        mark_obj(SCM_CAR(obj));
-        obj = CDR(obj);
+        mark_obj(SCM_CONS_CAR(obj));
+        obj = SCM_CONS_CDR(obj);
         goto mark_loop;
 
     case SCM_TAG_CLOSURE:

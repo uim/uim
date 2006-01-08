@@ -543,8 +543,8 @@ struct ScmCell_ {
 /*
  * for Cons
  */
-#define SCM_CONS_CAR_VAL(a) ((ScmObj)(SCM_STRIP_GCBIT(SCM_CELL_CAR(a))))
-#define SCM_CONS_CDR_VAL(a) ((ScmObj)(SCM_STRIP_GCBIT(SCM_CELL_CDR(a))))
+#define SCM_CONS_CAR_VAL(a) ((ScmObj)(SCM_CELL_CAR(a)))
+#define SCM_CONS_CDR_VAL(a) ((ScmObj)(SCM_CELL_CDR(a)))
 #define SCM_CONS_SET_CAR_VAL(a, val)                            \
     SCM_CELL_SET_CAR((a), SCM_STRIP_GCBIT(val) | SCM_GCBIT(SCM_CELL_CAR(a)))
 #define SCM_CONS_SET_CDR_VAL(a, val)                            \
