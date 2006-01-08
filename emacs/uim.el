@@ -852,6 +852,25 @@
 
 
 ;;
+;; Update font 
+;;
+(defun uim-update-font ()
+  (mapcar 
+   '(lambda (x)
+      (let ((font (or (cdr (assq 'font (frame-parameters)))
+		      (face-font 'default))))
+	(set-face-font x font)))
+   '(uim-preedit-face 
+     uim-preedit-underline-face 
+     uim-preedit-highlight-face
+     uim-preedit-highlight-underline-face
+     uim-separator-face
+     uim-candidate-odd-face
+     uim-candidate-even-face
+     uim-candidate-selected-face
+     uim-candidate-nth-face)))
+
+;;
 ;; Lock appearance of buffer
 ;;
 (defun uim-freeze-buffer ()
