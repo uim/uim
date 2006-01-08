@@ -104,8 +104,8 @@ scm_p_srfi1_consstar(ScmObj args)
 ScmObj
 scm_p_srfi1_make_list(ScmObj length, ScmObj args)
 {
-    ScmObj filler = SCM_FALSE;
-    ScmObj head   = SCM_FALSE;
+    ScmObj filler;
+    ScmObj head = SCM_NULL;
     int len = 0;
     int i   = 0;
     DECLARE_FUNCTION("make-list", procedure_variadic_1);
@@ -163,7 +163,7 @@ scm_p_srfi1_list_tabulate(ScmObj scm_n, ScmObj args)
 ScmObj
 scm_p_srfi1_list_copy(ScmObj lst)
 {
-    ScmObj head = SCM_FALSE;
+    ScmObj head = SCM_NULL;
     ScmObj tail = SCM_FALSE;
     ScmObj obj  = SCM_FALSE;
     DECLARE_FUNCTION("list-copy", procedure_fixed_1);
@@ -217,20 +217,21 @@ scm_p_srfi1_iota(ScmObj scm_count, ScmObj args)
     if (!NULLP(args))
         scm_start = CAR(args);
 
-    if (!NULLP(scm_start) && !NULLP(CDR(args)))
+    if (!FALSEP(scm_start) && !NULLP(CDR(args)))
         scm_step = CAR(CDR(args));
 
     /* param type check */
     ENSURE_INT(scm_count);
-    if (!NULLP(scm_start))
+    if (!FALSEP(scm_start))
         ENSURE_INT(scm_start);
-    if (!NULLP(scm_step))
+    if (!FALSEP(scm_step))
         ENSURE_INT(scm_step);
 
     /* now create list */
     count = SCM_INT_VALUE(scm_count);
-    start = NULLP(scm_start) ? 0 : SCM_INT_VALUE(scm_start);
-    step  = NULLP(scm_step)  ? 1 : SCM_INT_VALUE(scm_step);
+    start = FALSEP(scm_start) ? 0 : SCM_INT_VALUE(scm_start);
+    step  = FALSEP(scm_step)  ? 1 : SCM_INT_VALUE(scm_step);
+
     for (i = count - 1; 0 <= i; i--) {
         head = CONS(MAKE_INT(start + i * step), head);
     }
