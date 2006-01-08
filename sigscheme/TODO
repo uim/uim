@@ -27,6 +27,8 @@ Requirements and bugs:
 
 * Make 64bit-safe (after compaction and stdint.h)
 
+* Confirm public API
+
 * Add tests for proper tail recursion with 'apply' and 'guard' to
   test-tail-rec.scm
 
@@ -61,12 +63,20 @@ Performance improvements:
   - Create immediate objects directly without calling scm_make_*()
   - Refine logical structure and namings
 
+* Simplify string and character operations if !SCM_USE_MULTIBYTE_CHAR
+
 * (not required for now) Replace procedure registration functions with
   typecode-base single function with typecheck macro, to reduce footprint
   - Make private proc registration in SRFI-34 type-safe
 
+* (not required for now) Support string of constant-width char
+  - Define SigScheme's own internal multi-CCS code
+  - Make UCS2 selectable as canonical internal code
+
 ==============================================================================
 Logical simplifications:
+
+* (not required for now) Reorganize encoding and char codec API
 
 ==============================================================================
 Namings and Cosmetic things:
