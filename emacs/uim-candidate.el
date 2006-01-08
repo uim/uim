@@ -201,9 +201,20 @@
 		      (goto-char vhead)
 		      (delete-region vhead (+ vhead (length linetmp)))
 			
+		      (when uim-xemacs
+			(insert " ")
+			(remove-text-properties (- (point) 1) (point)
+						'(face nil))
+			(goto-char (- (point) 1)))
+
 		      (insert (concat padding 
 				      candstr
-				      overflow)))
+				      overflow))
+
+		      (when uim-xemacs
+			(delete-char 1))
+		      
+		      )
 		
 		    (uim-set-candidate-face candidx candsel 
 					    (+ vhead (length padding))
