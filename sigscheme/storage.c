@@ -362,11 +362,15 @@ scm_make_cfunc_pointer(ScmCFunc ptr)
 enum ScmObjType
 scm_type(ScmObj obj)
 {
-    if (SCM_TAG_CONSP(obj)) {
+    unsigned int tag = SCM_TAG(obj);
+    switch (tag) {
+    case SCM_TAG_CONS:
         return ScmCons;
-    } else if (SCM_TAG_CLOSUREP(obj)) {
+
+    case SCM_TAG_CLOSURE:
         return ScmClosure;
-    } else if (SCM_TAG_OTHERSP(obj)) {
+
+    case SCM_TAG_OTHERS:
         if (SYMBOLP(obj))
             return ScmSymbol;
         else if (STRINGP(obj))
@@ -389,22 +393,21 @@ scm_type(ScmObj obj)
             return ScmCFuncPointer;
         else if (FREECELLP(obj))
             return ScmFreeCell;
+        ERR("invalid others object: ptr = %p", (void*)obj);
 
-        ERR("invalid others object: ptr = %p, car = %p, cdr = %p",
-            (void*)obj, SCM_CELL_CAR(obj), SCM_CELL_CDR(obj));
-    } else if (SCM_TAG_IMMP(obj)) {
+    case SCM_TAG_IMM:
         if (INTP(obj))
             return ScmInt;
         else if (CHARP(obj))
             return ScmChar;
         else if (SCM_CONSTANTP(obj))
             return ScmConstant;
+        ERR("invalid imm object: ptr = %p", (void*)obj);
 
-        ERR("invalid imm object: ptr = %p, car = %p, cdr = %p",
-            (void*)obj, SCM_CELL_CAR(obj), SCM_CELL_CDR(obj));
+    default:
+        ERR("invalid object: ptr = %p", (void*)obj);
     }
 
-    ERR("corrupted object: ptr = %p, car = %p, cdr = %p",
-        (void*)obj, SCM_CELL_CAR(obj), SCM_CELL_CDR(obj));
+    /* NOTREACHED */
 }
 #endif /* SCM_OBJ_COMPACT */
