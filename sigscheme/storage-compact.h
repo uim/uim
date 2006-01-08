@@ -480,19 +480,11 @@ struct ScmCell_ {
 /* constant mask and offset are no need */
 
 /*=======================================
-  Casting Macros
-=======================================*/
-#define SCM_CAST_INT(a)    ((int)(a))
-#define SCM_CAST_UINT(a)   ((unsigned int)(a))
-#define SCM_CAST_SCMOBJ(a) ((ScmObj)(a))
-#define SCM_CAST_CHARP(a)  ((char*)(a))
-
-/*=======================================
    Strip Tag Macros
 =======================================*/
-#define SCM_STRIP_GCBIT(a) (SCM_CAST_UINT(a) & ~SCM_GCBIT_MASK)
+#define SCM_STRIP_GCBIT(a) (((unsigned long)(a)) & ~SCM_GCBIT_MASK)
 /* FIXME: we need to prepare both SCM_STRIP_TAG and SCM_STRIP_TAG_AND_GCBIT macro? */
-#define SCM_STRIP_TAG(a)   (SCM_CAST_UINT(a) & ~(SCM_GCBIT_MASK | SCM_TAG_MASK))
+#define SCM_STRIP_TAG(a)   (((unsigned long)(a)) & ~(SCM_GCBIT_MASK | SCM_TAG_MASK))
 
 /*=======================================
   GC bit Operator
@@ -503,8 +495,8 @@ struct ScmCell_ {
 /*=======================================
   Tag Accessor
 =======================================*/
-#define SCM_GCBIT(a) (SCM_CAST_UINT(a) & SCM_GCBIT_MASK)
-#define SCM_TAG(a)   (SCM_CAST_UINT(a) & SCM_TAG_MASK)
+#define SCM_GCBIT(a) (((unsigned long)(a)) & SCM_GCBIT_MASK)
+#define SCM_TAG(a)   (((unsigned long)(a)) & SCM_TAG_MASK)
 
 /*=======================================
   Cell CAR & CDR accessor
@@ -530,11 +522,11 @@ struct ScmCell_ {
 /* Tag Predicates with specifing Type */
 #define SCM_TAG_OTHERS_TYPEP(a, type)                                   \
     ((SCM_TAG(a) == SCM_TAG_OTHERS)                                     \
-     && (SCM_CAST_UINT(SCM_CELL_CDR(a)) & SCM_OTHERS_CDR_TAG_MASK_##type) \
+     && (((unsigned long)(SCM_CELL_CDR(a))) & SCM_OTHERS_CDR_TAG_MASK_##type) \
          == SCM_OTHERS_CDR_TAG_##type)
 #define SCM_TAG_IMM_TYPEP(a, type)                                      \
     ((SCM_TAG(a) == SCM_TAG_IMM)                                        \
-     && ((SCM_CAST_UINT(a) & SCM_IMM_TAG_MASK_##type) == SCM_IMM_TAG_##type))
+     && ((((unsigned long)(a)) & SCM_IMM_TAG_MASK_##type) == SCM_IMM_TAG_##type))
 
 /* Constant Predicates */
 #define SCM_IMM_TAG_NULLP(a)    (SCM_EQ((a), SCM_IMM_TAG_NULL))
@@ -579,7 +571,7 @@ struct ScmCell_ {
 #define SCM_OTHERS_CDR_CARLSB_VAL_MASK(type)    \
     (0x1 << SCM_OTHERS_CDR_CARLSB_VAL_OFFSET(type))
 #define SCM_OTHERS_CDR_CARLSB_VAL(a, type)                              \
-    ((SCM_CAST_UINT(SCM_CELL_CDR(a)) >> SCM_OTHERS_CDR_CARLSB_VAL_OFFSET(type)) & 0x1)
+    ((((unsigned long)(SCM_CELL_CDR(a))) >> SCM_OTHERS_CDR_CARLSB_VAL_OFFSET(type)) & 0x1)
 
 #define SCM_OTHERS_CAR_VAL(a, type)                             \
     ((SCM_OTHERS_CAR_VAL_ALIGN_NONEP(type))                     \
@@ -595,7 +587,7 @@ struct ScmCell_ {
         if (SCM_OTHERS_CAR_VAL_ALIGN_NONEP(type)) {                     \
             /* store val's GCBIT to the CDR */                          \
             SCM_CELL_SET_CDR((a),                                       \
-                             ((SCM_CAST_UINT(SCM_CELL_CDR(a))           \
+                             ((((unsigned long)(SCM_CELL_CDR(a)))           \
                                & ~SCM_OTHERS_CDR_CARLSB_VAL_MASK(type)) \
                               | (SCM_GCBIT(val)                         \
                                  << SCM_OTHERS_CDR_VAL_OFFSET_##type))); \
@@ -605,16 +597,16 @@ struct ScmCell_ {
 /* cdr */
 #define SCM_OTHERS_CDR_TAGGING(a, type, val)                            \
     ((SCM_OTHERS_CAR_VAL_ALIGN_NONEP(type))                             \
-     ? ((SCM_CAST_UINT(val) << (SCM_OTHERS_CDR_VAL_OFFSET_##type + 1))  \
-        | (SCM_CAST_UINT(SCM_CELL_CDR(a))                               \
+     ? ((((unsigned long)(val)) << (SCM_OTHERS_CDR_VAL_OFFSET_##type + 1))  \
+        | (((unsigned long)(SCM_CELL_CDR(a)))                               \
            & (~SCM_OTHERS_CDR_VAL_MASK_##type                           \
               | SCM_OTHERS_CDR_CARLSB_VAL_MASK(type))))                 \
-     : ((SCM_CAST_UINT(val) << SCM_OTHERS_CDR_VAL_OFFSET_##type)        \
-        | (SCM_CAST_UINT(SCM_CELL_CDR(a))                               \
+     : ((((unsigned long)(val)) << SCM_OTHERS_CDR_VAL_OFFSET_##type)        \
+        | (((unsigned long)(SCM_CELL_CDR(a)))                               \
            & (~SCM_OTHERS_CDR_VAL_MASK_##type))))
 
 #define SCM_OTHERS_CDR_VAL(a, type)                                     \
-    ((SCM_CAST_UINT(SCM_CELL_CDR(a)) & SCM_OTHERS_CDR_VAL_MASK_##type)  \
+    ((((unsigned long)(SCM_CELL_CDR(a))) & SCM_OTHERS_CDR_VAL_MASK_##type)  \
      >> ((SCM_OTHERS_CAR_VAL_ALIGN_NONEP(type))                         \
          ? (SCM_OTHERS_CDR_VAL_OFFSET_##type + 1)                       \
          : (SCM_OTHERS_CDR_VAL_OFFSET_##type)))
@@ -625,11 +617,11 @@ struct ScmCell_ {
  * for Immediates
  */
 #define SCM_IMM_TAGGING(a, type, val)                                   \
-    (SCM_CAST_UINT(val) | SCM_IMM_TAG_##type | SCM_GCBIT(a))
+    (((unsigned long)(val)) | SCM_IMM_TAG_##type | SCM_GCBIT(a))
 /* we need to 'signed' bit shifting for integer, so cast to 'int', not
  * 'unsigned int' */
 #define SCM_IMM_VAL(a, type)                                            \
-    ((int)((SCM_CAST_UINT(a) & SCM_IMM_VAL_MASK_##type))                \
+    ((int)((((unsigned long)(a)) & SCM_IMM_VAL_MASK_##type))                \
      >> SCM_IMM_VAL_OFFSET_##type)
 #define SCM_IMM_SET_VAL(a, type, val)                                   \
     ((a) = (ScmObj)(SCM_IMM_TAGGING((a),                                \
@@ -718,7 +710,7 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
    Entyping Macros
 =======================================*/
 #define SCM_ENTYPE_TAG(a, tag) \
-    ((a) = (ScmObj)(SCM_CAST_UINT(SCM_STRIP_TAG(a)) | (tag)))
+    ((a) = (ScmObj)(((unsigned long)(SCM_STRIP_TAG(a))) | (tag)))
 #define SCM_ENTYPE_OTHERS_CDR_TAG(a, tag) \
     SCM_CELL_SET_CDR((a), (tag))
 
@@ -809,9 +801,9 @@ extern enum ScmObjType scm_type(ScmObj obj);
 #define SCM_OTHERS_CAR_STRING_MUTATIONBIT_MASK          \
     (0x1 << SCM_OTHERS_CAR_STRING_MUTATIONBIT_OFFSET)
 #define SCM_OTHERS_CAR_STRING_MUTATIONBIT(a)                            \
-    (SCM_CAST_UINT(SCM_CELL_CAR(a)) & SCM_OTHERS_CAR_STRING_MUTATIONBIT_MASK)
+    (((unsigned long)(SCM_CELL_CAR(a))) & SCM_OTHERS_CAR_STRING_MUTATIONBIT_MASK)
 #define SCM_OTHERS_STRING_STRIP_MUTATIONBIT(a)                          \
-    (SCM_CAST_UINT(a) & ~SCM_OTHERS_CAR_STRING_MUTATIONBIT_MASK)
+    (((unsigned long)(a)) & ~SCM_OTHERS_CAR_STRING_MUTATIONBIT_MASK)
 
 #define SCM_STRING_MUTATION_TYPE(a)                                     \
     ((enum ScmStrMutationType)(SCM_OTHERS_CAR_STRING_MUTATIONBIT(a)     \
@@ -834,7 +826,7 @@ extern enum ScmObjType scm_type(ScmObj obj);
 #define SCM_SAL_STRING_SET_STR(a, val)                                  \
     SCM_OTHERS_SET_CAR_VAL((a),                                         \
                            STRING,                                      \
-                           SCM_CAST_UINT(val)                           \
+                           ((unsigned long)(val))                           \
                            | SCM_OTHERS_CAR_STRING_MUTATIONBIT(a))
 
 #define SCM_SAL_STRING_LEN(a)                   \
@@ -952,7 +944,7 @@ extern enum ScmObjType scm_type(ScmObj obj);
 #define SCM_NEED_SWEEPP(a)               (SCM_GCBIT(SCM_CELL_CDR(a)))
 /* To pass the normal tag check, directly see the S->cdr's tag */
 #define SCM_TAG_SWEEP_PHASE_OTHERSP(a, type)                           \
-    ((SCM_CAST_UINT(SCM_CELL_CDR(a)) & SCM_OTHERS_CDR_TAG_MASK_##type) \
+    ((((unsigned long)(SCM_CELL_CDR(a))) & SCM_OTHERS_CDR_TAG_MASK_##type) \
       == SCM_OTHERS_CDR_TAG_##type)
 #define SCM_SWEEP_PHASE_SYMBOLP(a)              \
     (SCM_TAG_SWEEP_PHASE_OTHERSP((a), SYMBOL))
@@ -1000,7 +992,7 @@ extern enum ScmObjType scm_type(ScmObj obj);
 #define SCM_SAL_REF_OFF_HEAP(obj) (&(obj))
 
 /* SCM_DEREF(ref) is not permitted to be used as lvalue */
-#define SCM_SAL_DEREF(ref) ((ScmObj)(SCM_CAST_UINT(*(ref))))
+#define SCM_SAL_DEREF(ref) ((ScmObj)(((unsigned long)(*(ref)))))
 
 /* RFC: Is there a better name? */
 #define SCM_SAL_SET(ref, obj) \
