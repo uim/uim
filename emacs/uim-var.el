@@ -34,7 +34,7 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;
 
-(defconst uim-el-version "0.0.6-beta4")
+(defconst uim-el-version "0.0.6-beta6")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -284,6 +284,10 @@ displayed at the echo area.")
 
 (uim-deflocalvar uim-emulation-mode-map-alists nil)
 
+
+;;
+(uim-deflocalvar uim-original-cursor nil)
+
 ;; preedit string is displayed or not
 (uim-deflocalvar uim-preedit-displayed nil)
 
@@ -299,6 +303,8 @@ displayed at the echo area.")
 
 (uim-deflocalvar uim-preedit-position-list '())
 
+(uim-deflocalvar uim-preedit-current-sentence-start nil)
+
 ;; freeze flag (to save font property)
 (uim-deflocalvar uim-buffer-frozen nil)
 
@@ -311,6 +317,7 @@ displayed at the echo area.")
 ;; distance between the candidate insertion base point and the candidate list
 ;;  which is used when the preedit string is lapped to next virtual line.
 (uim-deflocalvar uim-candidate-vofs 0)
+(uim-deflocalvar uim-preedit-overlap 0)
 ;; original data under candidate
 (uim-deflocalvar uim-candidate-original-str nil)
 (uim-deflocalvar uim-candidate-original-start nil)
@@ -318,6 +325,8 @@ displayed at the echo area.")
 (uim-deflocalvar uim-candidate-end 0)
 ;; list of overlays of candidate string
 (uim-deflocalvar uim-candidate-overlays '())
+
+(uim-deflocalvar uim-candidate-cursor nil)
 
 (uim-deflocalvar uim-show-candidate-upward nil)
 

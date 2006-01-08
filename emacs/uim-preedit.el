@@ -45,15 +45,11 @@
   (setq uim-preedit-cursor nil)
 
   ;; disregard read-only temporarily
-  (let ((inhibit-read-only t))
 
     (save-excursion
-      (setq uim-candidate-start nil)
-;;      (setq uim-candidate-vofs 0)
+    (setq uim-preedit-current-sentence-start nil)
       
       (let ((preedit-blocks preedit) block-start-point)
-
-	(setq uim-preedit-start (point))
 
 	(mapcar
 	 '(lambda (x)
@@ -64,9 +60,10 @@
 	      ;;  i.e. head of the block
 	      (if (string-match "c" preedit-flag)
 		  (if (> (length preedit-str) 0)
-		      (setq uim-candidate-start (point))
+		    (setq uim-preedit-current-sentence-start (point))
 		    ;; workaround for uim-prime 
-		    (setq uim-candidate-start block-start-point)))
+		  (setq uim-preedit-current-sentence-start
+			block-start-point)))
 	    
 	      (setq block-start-point (point))
 
@@ -87,6 +84,7 @@
 			      'uim-preedit-face))))
 
 		  (put-text-property block-start-point (point) 'face face)
+
 		  )
 		)
 	      
@@ -104,19 +102,16 @@
       )
 
     ;; if "c" flag not found in preedit 
-    (if (not uim-candidate-start)
-	(progn
-	  (setq uim-candidate-start uim-preedit-start)
+  (if (not uim-preedit-current-sentence-start)
+      (setq uim-preedit-current-sentence-start uim-preedit-start))
 	  (if (not uim-preedit-cursor)
-	      (setq uim-preedit-cursor uim-preedit-end))))
+      (setq uim-preedit-cursor uim-preedit-end))
 
     ;; set vertical offset
-    (setq uim-candidate-vofs 
-	  (uim-vertical-distance uim-candidate-start uim-preedit-cursor))
-    )
+  (setq uim-preedit-overlap
+	(uim-vertical-distance uim-preedit-current-sentence-start
+			       uim-preedit-cursor))
 
-  (setq uim-buffer-read-only buffer-read-only)
-  (setq buffer-read-only t)
 
   )
 
@@ -127,16 +122,11 @@
 
   (goto-char uim-preedit-start)
 
-  (let ((inhibit-read-only t))
-
     (save-excursion
       ;; remove preedit string
       (delete-region uim-preedit-start uim-preedit-end))
-  
     )
 
-  (setq buffer-read-only uim-buffer-read-only)
-  )
 
 
 (provide 'uim-preedit)

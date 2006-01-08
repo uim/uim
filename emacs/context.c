@@ -64,7 +64,7 @@ update_context_encoding(uim_agent_context *ua)
   debug_printf(DEBUG_NOTE, "update_context_encoding\n");
 
   /* discard current context */
-  clear_candidate(ua->pe->cand);
+  clear_candidate(ua->cand);
   clear_preedit(ua->pe);
   uim_release_context(ua->context);
   
@@ -90,6 +90,8 @@ get_uim_agent_context(int id)
 
   return NULL;
 }
+
+
 
 
 uim_agent_context *
@@ -209,18 +211,9 @@ create_uim_agent_context(const char *encoding)
   else
 	ret->im = NULL;
 
-  ret->pe = (preedit *)malloc(sizeof(preedit));
-
-  ret->pe->head = ret->pe->tail = NULL;
-
-  ret->pe->cand = (candidate_info *)malloc(sizeof(candidate_info));
-  ret->pe->cand->valid = 0;
-
-  ret->prop = (property *)malloc(sizeof(property));
-  ret->prop->list = NULL;
-  ret->prop->label = NULL;
-  ret->prop->list_update = 0;
-  ret->prop->label_update = 0;
+  ret->pe = create_preedit();
+  ret->cand = create_candidate();
+  ret->prop = create_prop();
 
   uim_prop_list_update(ret->context);
 
@@ -262,34 +255,34 @@ new_uim_agent_context(int id, const char *encoding)
 
 /* release context from context list */
 int
-release_uim_agent_context(int id)
+release_uim_agent_context(int context_id)
 {
   uim_agent_context_list *ptr;
   
   for (ptr = agent_context_list_head; ptr != NULL; ptr = ptr->next) {
-	if (ptr->agent_context->context_id == id) {
+	if (ptr->agent_context->context_id == context_id) {
 
-	  preedit_buffer *p, *ptmp;
+	  uim_agent_context *ua = ptr->agent_context;
 
-	  if (current == ptr->agent_context)
-		current = NULL;
+	  /* clear current */
+	  if (current == ua)
+		clear_current_uim_agent_context();
 	  
 	  /* release */
-	  uim_release_context(ptr->agent_context->context);
+	  uim_release_context(ua->context);
 
-	  clear_candidate(ptr->agent_context->pe->cand);
-	  free(ptr->agent_context->pe->cand);
+	  /* clear candidate */
+	  clear_candidate(ua->cand);
+	  free(ua->cand);
 
-	  p = ptr->agent_context->pe->head; 
+	  /* clear preedit */
+	  clear_preedit(ua->pe);
+	  free(ua->pe);
 
-	  while (p) {
-	  	ptmp = p;
-		p = p->next;
-		if (ptmp->str) free(ptmp->str);
-		free (ptmp);
-	  }
-
-	  free(ptr->agent_context->encoding);
+	  /* free others */
+	  free(ua->encoding);
+	  free(ua->im);
+	  free(ua->prop);
 
 	  /* rebuild list */
 	  if (ptr->next != NULL)
@@ -304,11 +297,53 @@ release_uim_agent_context(int id)
 
 	  free(ptr);
 
-	  return id;
+	  return context_id;
 	}
   }
 
   return -1;
+}
+
+
+
+
+
+int
+set_current_uim_agent_context(uim_agent_context *ua)
+{
+  debug_printf(DEBUG_NOTE, "set_current_context\n");
+
+  if (ua == NULL || ua->context == NULL) {
+	debug_printf(DEBUG_ERROR, "set_current_context: invalid context\n");
+	return -1;
+  }
+
+  uim_helper_client_focus_in(ua->context);
+
+  current = ua;
+
+  uim_prop_label_update(ua->context);
+  uim_prop_list_update(ua->context);
+
+  return ua->context_id;
+}
+
+
+int
+clear_current_uim_agent_context(void)
+{
+  int ret;
+
+  debug_printf(DEBUG_NOTE, "unfocused\n");
+
+  if (current == NULL || current->context == NULL) return -1;
+
+  ret = current->context_id;
+  uim_helper_client_focus_out(current->context);
+
+  current = NULL;
+
+  return ret;
 }
 
 
@@ -336,3 +371,44 @@ update_context_configuration(uim_agent_context *ua)
   update_context_encoding(ua);
 
 }
+
+
+int
+show_preedit_uim_agent_context(uim_agent_context *ua)
+{
+  if (ua == NULL || !ua->pe->valid) 
+	return -1;
+  else
+	return show_preedit(ua->pe);
+}
+
+
+int
+show_candidate_uim_agent_context(uim_agent_context *ua)
+{
+  if (ua == NULL || !ua->cand->valid)
+	return -1;
+  else
+	return show_candidate(ua->cand);
+}
+
+
+int
+show_prop_uim_agent_context(uim_agent_context *ua)
+{
+  if (ua == NULL || !ua->prop->valid)
+	return -1;
+  else
+	return show_prop(ua->prop);
+}
+
+
+int
+show_im_uim_agent_context(uim_agent_context *ua)
+{
+  if (ua == NULL)
+	return -1;
+  else
+	return show_im(ua->im);
+}
+

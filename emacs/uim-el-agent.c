@@ -53,52 +53,30 @@
 #include "uim-el-agent.h"
 
 
+/* called when owner buffer is killed  */
 static int
 cmd_release(int context_id)
 {
-  if (release_uim_agent_context(context_id) < 0)
-	return -1;
-  else
-	return 1;
+  return release_uim_agent_context(context_id);
 }
+
 
 
 static int
 cmd_unfocused(int context_id)
 {
-  int ret;
-  uim_agent_context *ua;
-
-  /* if context_id is 0, 
-	 this function unfocuses from current focused context 
-	 otherwise,
-	 compare current focused context and unfocuses if they are matching.
-  */
-
-  if (current != NULL) {
-	ua = current;
-	if (context_id != 0 && get_uim_agent_context(context_id) != current)
-	  ret = -1;
-	else
-	  ret = unfocused();
-  } else {
-	/* already unfocused */
-	if ((ua = get_uim_agent_context(context_id)))
-	  ret = context_id;
-	else
-	  ret = -1;
+  if (current) {
+	/* keep preedit if exist */
+	if (get_uim_agent_context(context_id) == current) {
+	  show_preedit_uim_agent_context(current);
+	  show_candidate_uim_agent_context(current);
   }
-	
-  if (ret > 0)
-	if (context_id != 0) {
-	  show_preedit(ua->pe);
-	  return 1;
+	/* unfocus anyway */
+	return clear_current_uim_agent_context();
 	} else {
-	  return 1;
+	return -1;
 	}
 
-  else
-	return -1;
 }
 
 
@@ -107,9 +85,9 @@ cmd_focused(int context_id)
 {
   uim_agent_context *ua = get_uim_agent_context(context_id);
 
-  if (focused(ua) > 0) {
-	if (show_preedit(ua->pe))
-	  show_candidate(ua->pe->cand);
+  if (set_current_uim_agent_context(ua) > 0) {
+	show_preedit_uim_agent_context(ua);
+	show_candidate_uim_agent_context(ua);
 	return 1;
   } else {
 	return -1;
@@ -128,14 +106,15 @@ cmd_hide(int context_id)
 	return -1;
 }
 
+
 static int
 cmd_show(int context_id)
 {
   uim_agent_context *ua = get_uim_agent_context(context_id);
   
   if (ua != NULL) {
-	if (show_preedit(ua->pe))
-	  show_candidate(ua->pe->cand);
+	show_preedit_uim_agent_context(ua);
+	show_candidate_uim_agent_context(ua);
 	return 1;
   } else {
 	return -1;
@@ -167,7 +146,7 @@ cmd_reset(int context_id)
   if (ua != NULL) {
 	/* before reset, clear preedit and candidate */
 	clear_preedit(ua->pe);
-	clear_candidate(ua->pe->cand);
+	clear_candidate(ua->cand);
 	uim_reset_context(ua->context);
 	return 1;
   } else {
@@ -184,7 +163,7 @@ cmd_change(int context_id, const char *im, const char *encoding)
   if (im && encoding && strlen(im) > 0 
 	  && (ua = get_uim_agent_context(context_id))) {
 
-	focused(ua);
+	set_current_uim_agent_context(ua);
 
 	if (check_im_name(im)) {
 	  switch_context_im(ua, im, encoding);
@@ -250,12 +229,15 @@ static int
 cmd_label(int context_id)
 {
 
-  if (current == NULL)
-	return -1;
-  else 
-	output_prop_list(current->prop, current->im);
-
+  if (current != NULL) {
+	show_im_uim_agent_context(current);
+	show_prop_uim_agent_context(current);
+	show_preedit_uim_agent_context(current);
+	show_candidate_uim_agent_context(current);
   return 1;
+  } else {
+	return -1;
+  }
 }
 
 
@@ -284,7 +266,8 @@ check_prop_list_label(void)
 
   if (current->prop->list_update) {
 	announce_prop_list_update(current->prop, current->encoding);
-	output_prop_list(current->prop, current->im);
+	show_im_uim_agent_context(current);
+	show_prop_uim_agent_context(current);
 	current->prop->list_update = 0;
   }
 
@@ -345,7 +328,6 @@ process_command(int serial, int cid, char *cmd)
 	ret = cmd_error();
 
   check_prop_list_label();
-
   check_default_engine();
 
   return ret;
@@ -478,12 +460,12 @@ analyze_keyvector(char *vector, uim_key *ukey, char *keyname)
 static int
 process_keyvector(int serial, int cid, uim_key ukey, const char *keyname)
 {
-  int ret;
+  int ret, ret2;
 
   if (current == NULL || 
 	  (current != NULL && current->context_id != cid)) {
 
-	if (focused(get_uim_agent_context(cid)) < 0) {
+	if (set_current_uim_agent_context(get_uim_agent_context(cid)) < 0) {
 	  debug_printf(DEBUG_WARNING, "context %d not found\n", cid);
 	  return -1;
 	}
@@ -494,13 +476,12 @@ process_keyvector(int serial, int cid, uim_key ukey, const char *keyname)
 	/* key input is received by requested context */
 	ret = uim_press_key(current->context, ukey.key, ukey.mod);
 
-	uim_release_key(current->context, ukey.key, ukey.mod);
+	ret2 = uim_release_key(current->context, ukey.key, ukey.mod);
+
+	debug_printf(DEBUG_NOTE, "ret = %d, ret2 = %d\n", ret, ret2);
 
 	if (ret > 0) {
 	  /* uim did not process the key */
-
-	  if (current->pe->head == NULL || current->pe->length == 0) {
-		/* no preedit */
 
 		if (ukey.mod & UMod_Shift && ukey.key >= 0x41 && ukey.key <= 0x5a)
 		  ukey.mod &= ~UMod_Shift;
@@ -527,26 +508,18 @@ process_keyvector(int serial, int cid, uim_key ukey, const char *keyname)
 		}
 
 	  } else {
-		/* discard the key if preedit exists */
-		show_preedit(current->pe);
-		show_candidate(current->pe->cand);
-		/* a_printf(" ( n ) "); */
+	  show_preedit_uim_agent_context(current);
+	  show_candidate_uim_agent_context(current);
 	  }
 			
 	} else {
-	  /* key has been processed by uim */
-	  show_preedit(current->pe);
-	  show_candidate(current->pe->cand);
-	}
-  } else {
 	/* ukey.key < 0 */
-	show_preedit(current->pe);
-	show_candidate(current->pe->cand);
-	a_printf(" ( n ) ");
+	show_preedit_uim_agent_context(current);
+	show_candidate_uim_agent_context(current);
+	a_printf(" ( n ) "); /* dummy */
   }
 
   check_prop_list_label();
-
   check_default_engine();
 
   return 1;
@@ -733,6 +706,7 @@ main(int argc, char *argv[])
 		  a_printf(" ( a ) ");
 
 		a_printf(" )\n");
+		fflush(stdout);
 
 		continue;
 	  }
@@ -752,6 +726,7 @@ main(int argc, char *argv[])
 	  }
 
   a_printf(" )\n");
+	  fflush(stdout);
 
 	  continue;
 	}
@@ -760,6 +735,7 @@ main(int argc, char *argv[])
 	
   ERROR:
 	a_printf("( %d 0 ( x ) )\n", serial);
+	fflush(stdout);
   }
 
 

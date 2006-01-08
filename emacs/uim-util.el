@@ -160,6 +160,7 @@
 ;; Replace tabs and spaces.
 ;;
 (defun uim-tab-pad-space (start end)
+  (uim-debug (format "uim-tab-pad-space %s %s" start end))
   (let (org lstart lend (endorg end) tabspace)
     (setq org (point))
     (save-excursion
@@ -296,5 +297,12 @@
     i
     ))
 
+
+(defun uim-goto-char (pt)
+  (uim-debug (format "uim-goto-char: %s" pt))
+  (set-window-point (get-buffer-window (current-buffer)) pt))
+
+(defun uim-point ()
+  (window-point (get-buffer-window (current-buffer))))
 
 (provide 'uim-util)

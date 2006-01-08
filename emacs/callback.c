@@ -91,7 +91,7 @@ candidate_activate_cb(void *ptr, int num, int limit)
   debug_printf(DEBUG_NOTE, 
 			   "candidate_activate_cb (num=%d,limit=%d)\n", num, limit);
 
-  new_candidate(ua->context, ua->pe->cand, num, limit);
+  new_candidate(ua->context, ua->cand, num, limit);
 }
 
 
@@ -103,7 +103,7 @@ candidate_select_cb(void *ptr, int index)
 
   debug_printf(DEBUG_NOTE, "candidate_select_cb (index: %d)\n", index);
 
-  ua->pe->cand->index = index;
+  ua->cand->index = index;
 }
 
 
@@ -114,7 +114,7 @@ candidate_shift_page_cb(void *ptr, int direction)
 
   debug_printf(DEBUG_NOTE, "candidate_shift_page_cb\n");
 
-  shift_candidate_page(ua->context, ua->pe->cand, direction);
+  shift_candidate_page(ua->context, ua->cand, direction);
 }
 
 
@@ -125,7 +125,7 @@ candidate_deactivate_cb(void *ptr)
 
   debug_printf(DEBUG_NOTE, "candidate_deactivate_cb\n");
 
-  clear_candidate(ua->pe->cand);
+  clear_candidate(ua->cand);
 }
 
 

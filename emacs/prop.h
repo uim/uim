@@ -51,11 +51,14 @@
 
 /* keep only prop_list (prpo_label is buggy...)  */
 typedef struct property {
+  int valid;
   int list_update;
   int label_update;
   char *list;
   char *label;
 } property;
+
+property *create_prop(void);
 
 void update_prop_list(property *prop, const char *str);
 void update_prop_label(property *prop, const char *str);
@@ -63,7 +66,7 @@ void update_prop_label(property *prop, const char *str);
 void announce_prop_list_update(property *prop, const char *encoding);
 void announce_prop_label_update(property *prop, const char *encoding);
 
-void output_prop_list(property *prop, const char *im);
+int show_prop(property *prop);
 
 
 #endif

@@ -126,6 +126,8 @@
 ;;
 (defun uim-update-current-engine (engine)
 
+  (setq engine (car engine))
+
   (uim-debug (format "update-current-engine: %s" engine))
 
   (when (not (equal uim-current-im-engine engine))
@@ -200,18 +202,18 @@
 ;;
 (defun uim-focused ()
   (uim-change-process-encoding uim-decoding-code)
-  (uim-do-send-recv-cmd (format "%d FOCUSED" uim-context-id))
   (setq uim-focused-buffer (current-buffer))
+  (uim-do-send-recv-cmd (format "%d FOCUSED" uim-context-id))
   )
 
 ;;
 ;; Unfocused
 ;;
 (defun uim-unfocused ()
+  (setq uim-focused-buffer nil)
   ;; don't send a message to uim-el-agent if it has been dead
   (if uim-el-agent-process
       (uim-do-send-recv-cmd (format "%d UNFOCUSED" uim-context-id)))
-  (setq uim-focused-buffer nil)
   )
 
 
@@ -247,32 +249,23 @@
     (setq uim-recent-buffer (current-buffer))
     
     ;; remove Uim focus from previous buffer
-    (if (and (bufferp uim-focused-buffer)
+    (when (and (bufferp uim-focused-buffer)
 	     (buffer-name uim-focused-buffer))
 	(save-current-buffer
 	  (set-buffer uim-focused-buffer)
-	  (when (and uim-initialized
-		     uim-mode)
-	    (uim-debug (format "unfocused %s" 
-			       (buffer-name (current-buffer))))
+	(when (and uim-initialized uim-mode)
+	  (uim-debug (format "unfocused %s" (buffer-name (current-buffer))))
 	    (uim-unfocused)
 	    )))
 	    
-	      
     ;; set Uim focus to current buffer if it has Uim context
-    (if (and uim-initialized
-	     uim-mode)
-	(progn 
-	  (uim-debug (format "focused %s" 
-			     (buffer-name (current-buffer))))
-
+    (when (and uim-initialized uim-mode)
+      (uim-debug (format "focused %s" (buffer-name (current-buffer))))
 	  (uim-focused)
 	  )
-      ;; no Uim context in current buffer
-      )
 
-    (uim-debug (format "current-buffer %s / uim-focused-buffer %s" (current-buffer) uim-focused-buffer ))
-
+    (uim-debug (format "current-buffer %s / uim-focused-buffer %s" 
+		       (current-buffer) uim-focused-buffer ))
     )
   )
 
@@ -431,6 +424,8 @@
 
   (uim-unfocused)
 
+  (uim-process-agent-output '(("e")))
+
   ;; update mode-line
   (force-mode-line-update)
 
@@ -465,6 +460,8 @@
 ;; Reset context
 ;;
 (defun uim-change-major-mode ()
+
+  (uim-debug "uim-change-major-mode")
 
   (when uim-initialized
        (uim-unfocused)
@@ -579,13 +576,9 @@
 ;; Update property label
 ;;
 (defun uim-update-label (label)
-  ;; label: ( "current" ("label_abbr"  "label") ... )
+  ;; label: ( ("label_abbr"  "label") ... )
   (let (label1 label2 mode-str)
     ;; current IM engine name
-    (uim-update-current-engine (car label))
-
-    (setq label (cdr label))
-
     (setq label1 (car label))
     (setq label (cdr label))
 
@@ -775,6 +768,7 @@
     (if (uim-send-cmd cmd serial)
 	(uim-wait-recv serial))))
 
+
 ;;
 ;; Save face property
 ;;
@@ -860,6 +854,7 @@
       (let ((font (or (cdr (assq 'font (frame-parameters)))
 		      (face-font 'default))))
 	(set-face-font x font)))
+		     
    '(uim-preedit-face 
      uim-preedit-underline-face 
      uim-preedit-highlight-face
@@ -1024,33 +1019,59 @@
 
 
 
+(defun uim-enter-preedit-mode ()
+  ;; change keymap and freeze faces at first time
+  (uim-enable-preedit-keymap)
+  (when (= (minibuffer-depth) 0)
+    (uim-freeze-buffer)
+    (setq uim-buffer-read-only buffer-read-only)
+    (setq buffer-read-only t))
+  )
+
+(defun uim-leave-preedit-mode ()
+  (uim-disable-preedit-keymap)
+  (uim-unfreeze-buffer)
+  (setq buffer-read-only uim-buffer-read-only)
+  )
+
+
 
 ;; process return expression from uim-el-agent 
 (defun uim-process-agent-output (str)
-  (let (preedit-existed
+  (catch 'process-agent-output
+    (let (;;(inhibit-quit t)
+	  preedit-existed
 	candidate-existed
-	key commit preedit candidate default label imlist)
+	  key commit preedit candidate default im label imlist ;;pc-exists
+	  )
+      
+      (uim-debug (format "%s" str))
+      
 
     (let ((modified (buffer-modified-p)))
+
       ;; remove candidate anyway
       (when uim-candidate-displayed
 	(setq candidate-existed t)
-	(uim-remove-candidate)
+	  (let ((inhibit-read-only t))
+	    (uim-remove-candidate))
 	(setq uim-candidate-displayed nil)
-	(goto-char uim-candidate-start))
+	  (uim-goto-char uim-preedit-start))
 
       ;; remove preedit anyway
       (when uim-preedit-displayed
 	(setq preedit-existed t)
-	(uim-remove-preedit)
+	  (let ((inhibit-read-only t))
+	    (uim-remove-preedit))
 	(setq uim-preedit-displayed nil)
-	(goto-char uim-preedit-start))
+	  (uim-goto-char uim-original-cursor))
+
+	;; restore cursor point
+	(when (and uim-preedit-keymap-enabled uim-original-cursor)
+	  (goto-char uim-original-cursor))
 
       ;; restore modified flag
       (set-buffer-modified-p modified))
-
-    (uim-debug (format "%s" str))
-
 
     (mapcar 
      '(lambda (x) 
@@ -1076,13 +1097,14 @@
 		((string= rcode "d") ;; default engine
 		 (setq default (car rval))
 		 )
+		  ((string= rcode "i") ;; current im
+		   (setq im rval)
+		   )
 		((string= rcode "l") ;; label
 		 (setq label rval)
 		 )
 		((string= rcode "L") ;; IM list
 		 (setq imlist rval)
-		 )
-		((string= rcode "e") ;; IM list
 		 )
 		)
 	  )) 
@@ -1092,6 +1114,9 @@
     (when default
       (uim-update-default-engine default))
 
+      (when im
+	(uim-update-current-engine im))
+
     (when label
       (uim-update-label label))
 
@@ -1100,13 +1125,19 @@
 
 
     (if commit
+
+	  ;; insert committed strings
+	  (let ((inhibit-read-only t)
+		(buffer-frozen uim-buffer-frozen))
+	    (if uim-buffer-frozen
+		(uim-unfreeze-buffer))
+
 	(let ((buffer-undo-list-saved uim-buffer-undo-list-saved))
 	  ;; restore undo history before committing
 	  (when buffer-undo-list-saved
-	    (uim-debug "call restore undo")
+		(uim-debug "call restore undo 1")
 	    (uim-restore-undo))
 
-	  ;; insert committed strings
 	  (mapcar
 	   '(lambda (x) 
 	      (insert x)
@@ -1116,9 +1147,45 @@
 
 	  ;; save undo hisotry again
 	  (when buffer-undo-list-saved
-	    (uim-debug "call save undo")
+		(uim-debug "call save undo 1")
 	    (uim-save-undo)))
+
+	    (if buffer-frozen
+		(uim-freeze-buffer))
       )
+
+	)
+
+
+      (if key
+	  (let (keyproc-done
+		(buffer-undo-list-saved uim-buffer-undo-list-saved))
+	    (when buffer-undo-list-saved
+	      (uim-debug "call restore undo 2")
+	      (uim-restore-undo))
+	    ;; process raw key
+	    ;;  C-o is also processed here ... orz
+	    (let ((inhibit-read-only t))
+	      (unwind-protect
+		  (progn
+		    (uim-process-keyvec key)
+		    (setq keyproc-done t))
+		(when (not keyproc-done)
+		  (uim-leave-preedit-mode)
+		  (uim-debug "leave preedit mode forcibly")
+		  )
+		)
+	      ;; following expressions will not be evaluated
+	      ;; when an error occurs in this function...
+      )
+	    (if (not uim-mode)
+		(throw 'process-agent-output t))
+	    ;; save undo hisotry again
+	    (when buffer-undo-list-saved
+	      (uim-debug "call save undo 2")
+	      (uim-save-undo))))
+
+      (setq uim-original-cursor (uim-point))
 
 
     (if (or preedit candidate)
@@ -1128,52 +1195,55 @@
 	  ;; save undo list if not saved
 	  (when (not uim-buffer-undo-list-saved)
 	    (uim-flush-concat-undo)
-	    (uim-debug "call save undo")
+	      (uim-debug "call save undo 3")
 	    (uim-save-undo))
 
 	  ;; change keymap and freeze faces at first time
 	  (when (not uim-preedit-keymap-enabled)
-	    (uim-debug "call enable keymap")
-	    (uim-enable-preedit-keymap)
-	    (if (= (minibuffer-depth) 0)
-		(uim-freeze-buffer)))
+	      (uim-enter-preedit-mode))
+
+	    (setq uim-preedit-start uim-original-cursor)
+	    (setq uim-preedit-overlap 0)
+	    (setq uim-preedit-current-sentence-start uim-preedit-start)
+	    (setq uim-preedit-cursor uim-preedit-start)
 
 	  ;; show preedit
-	  (if preedit
-	      (progn
+	    (when preedit
 		(setq uim-preedit-displayed t)
-		(uim-insert-preedit preedit))
-	    (setq uim-candidate-start (point))
-	    (setq uim-candidate-vofs 0)
-	    (setq uim-preedit-cursor (point)))
+	      (let ((inhibit-read-only t))
+		(uim-insert-preedit preedit)
+		))
+
+	    (uim-goto-char uim-preedit-cursor)
+
+	    (setq uim-candidate-cursor (uim-point))
 
 	  ;; show candidate
-	  (if candidate
-	      (progn
+	    (when (and candidate
+		       (uim-check-candidate-space)
+		       (eq uim-focused-buffer (current-buffer)))
 		(setq uim-candidate-displayed t)
-		(if (uim-check-candidate-space)
-		    (uim-show-candidate candidate))))
+	      (setq uim-candidate-start uim-preedit-current-sentence-start)
+	      (setq uim-candidate-vofs uim-preedit-overlap)
+	      (let ((inhibit-read-only t))
+		(uim-show-candidate candidate)))
 	  
-	  (set-buffer-modified-p modified)
+	    (uim-goto-char uim-candidate-cursor)
 
+	    (set-buffer-modified-p modified)
 	  )
 
       ;; no preedit/candidate
 
-      ;; restore undo-list before raw key processing
+	;; restore undo-list if saved
       (when uim-buffer-undo-list-saved
-	(uim-debug "call restore undo")
+	  (uim-debug "call restore undo 3")
 	(uim-restore-undo))
 
       ;; no raw-key and no preedit/candidate
       (when uim-preedit-keymap-enabled
-	(uim-debug "call disable preedit keymap")
-	(uim-disable-preedit-keymap)
-	(uim-unfreeze-buffer))
+	  (uim-leave-preedit-mode))
 
-      (if key
-	  ;; process raw key
-	  (uim-process-keyvec key))
       )
 
     ;; scroll buffer after candidate removed
@@ -1185,9 +1255,6 @@
       (setq uim-window-force-scrolled nil)
       (recenter))
 
-    ;; move cursor
-    (when (or uim-preedit-displayed uim-candidate-displayed)
-      (goto-char uim-preedit-cursor))
 
     (if (not uim-send-recv-again)
 	(when label 
@@ -1195,8 +1262,10 @@
 	  (uim-update-im-label))
       (setq uim-send-recv-again nil))
 
+      (uim-debug (format "uim-original-cursor %s" uim-original-cursor))
+      (uim-debug "process-agent-output done")
     ))
-
+  )
 
 
 
@@ -1276,6 +1345,7 @@
 	  ad-do-it
 	(setq uim-mode current-uim-mode))))
   )
+
 
 
 ;;

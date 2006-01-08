@@ -87,6 +87,7 @@
 ;; Bind all mouse event to nil (for GNU Emacs)
 ;; 
 (defun uim-unbind-mouse-event ()
+
   (mapcar
    '(lambda (w)
       (mapcar 
@@ -94,7 +95,6 @@
 	  (mapcar 
 	   '(lambda (y)
 	      (let ((event (vector (append w x (list y)))))
-
 	    (define-key uim-mode-map event nil)
 	    (define-key uim-preedit-map event nil)
 	    ))
@@ -267,6 +267,8 @@
 
     )
   )
+
+
 
 (defun uim-reset-keymap ()
   (uim-init-keymap)

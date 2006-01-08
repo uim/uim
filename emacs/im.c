@@ -79,7 +79,17 @@ check_im_name(const char *imname)
 }
 
 
-
+int
+show_im(const char *im)
+{
+  if (im == NULL) {
+	a_printf(" ( e ) ");
+	return 0;
+  } else {
+	a_printf(" ( i \"%s\" ) ", im); 
+	return 1;
+  }
+}
 
 /* show supported IM engines */
 int

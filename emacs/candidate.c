@@ -36,6 +36,17 @@
 
 #include "candidate.h"
 
+candidate_info *
+create_candidate()
+{
+  candidate_info *cand;
+
+  cand = (candidate_info *)malloc(sizeof(candidate_info));
+  cand->valid = 0;
+
+  return cand;
+}
+
 int
 new_candidate(uim_context context, candidate_info *cand, int num, int limit)
 {
@@ -43,7 +54,6 @@ new_candidate(uim_context context, candidate_info *cand, int num, int limit)
   uim_candidate u_cand;
 
   if (cand->valid) clear_candidate(cand);
-
 
   cand->valid = 1;
 
@@ -65,14 +75,17 @@ new_candidate(uim_context context, candidate_info *cand, int num, int limit)
 }
 
 
-void
+int
 show_candidate(candidate_info *cand)
 {
   int i;
   int page;
   int index;
 
-  if (!cand->valid || cand->num == 0) return;
+  if (cand->num == 0) {
+	a_printf("( e )");
+	return 0;
+  }
 
   index = cand->index;
   page = index / cand->disp_limit;
@@ -102,6 +115,8 @@ show_candidate(candidate_info *cand)
   }
 
   a_printf(") ");
+
+  return 1;
 }
 
 
