@@ -92,7 +92,7 @@ static scm_bool mbcport_char_readyp(ScmMultiByteCharPort *port);
 static int mbcport_put_char(ScmMultiByteCharPort *port, int ch);
 
 static ScmMultibyteCharInfo mbcport_fill_rbuf(ScmMultiByteCharPort *port,
-                                              scm_bool block);
+                                              scm_bool blockp);
 
 /*=======================================
   Variable Declarations
@@ -240,7 +240,7 @@ mbcport_put_char(ScmMultiByteCharPort *port, int ch)
 }
 
 static ScmMultibyteCharInfo
-mbcport_fill_rbuf(ScmMultiByteCharPort *port, scm_bool block)
+mbcport_fill_rbuf(ScmMultiByteCharPort *port, scm_bool blockp)
 {
     uchar *end;
     int byte;
@@ -274,7 +274,7 @@ mbcport_fill_rbuf(ScmMultiByteCharPort *port, scm_bool block)
         }
         *end++ = byte;
         *end = '\0';
-    } while (block || SCM_BYTEPORT_BYTE_READYP(port->bport));
+    } while (blockp || SCM_BYTEPORT_BYTE_READYP(port->bport));
 
     return mbc;
 }

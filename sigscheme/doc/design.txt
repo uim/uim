@@ -2,7 +2,7 @@ Design of SigScheme
 
 * Purposes
   - Embedded into an application
-  - Suitable for embedded computing environment (i.e. non-desktop)
+  - Suitable for embedded platforms (i.e. non-desktop {OS,hardware})
 
 * Requirements
   - 3-clause BSD license
@@ -11,7 +11,7 @@ Design of SigScheme
   - Low memory consumption
   - Highly modular and customizable
   - Code readability to enable learning Scheme by implementation
-  - Easy to write an extension by C
+  - Easily extensible by C
 
 * Code organization
   - Memory allocators
