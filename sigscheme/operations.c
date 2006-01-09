@@ -898,7 +898,7 @@ ScmObj
 scm_p_append(ScmObj args)
 {
     ScmQueue q;
-    ScmObj elm_lst, res, tmp;
+    ScmObj lst, elm, res;
     DECLARE_FUNCTION("append", procedure_variadic_0);
 
     if (NULLP(args))
@@ -907,14 +907,13 @@ scm_p_append(ScmObj args)
     res = SCM_NULL;
     SCM_QUEUE_POINT_TO(q, res);
     /* duplicate and merge all but the last argument */
-    FOR_EACH_WHILE (elm_lst, args, CONSP(CDR(args))) {
-        FOR_EACH (tmp, elm_lst)
-            SCM_QUEUE_ADD(q, tmp);
-        ENSURE_PROPER_LIST_TERMINATION(elm_lst, args);
+    FOR_EACH_BUTLAST (lst, args) {
+        FOR_EACH (elm, lst)
+            SCM_QUEUE_ADD(q, elm);
+        ENSURE_PROPER_LIST_TERMINATION(lst, args);
     }
-    tmp = POP(args);
     /* append the last argument */
-    SCM_QUEUE_SLOPPY_APPEND(q, tmp);
+    SCM_QUEUE_SLOPPY_APPEND(q, lst);
 
     return res;
 }
@@ -922,13 +921,12 @@ scm_p_append(ScmObj args)
 ScmObj
 scm_p_reverse(ScmObj lst)
 {
-    ScmObj ret, rest;
+    ScmObj ret, elm;
     DECLARE_FUNCTION("reverse", procedure_fixed_1);
 
-    for (ret = SCM_NULL, rest = lst; CONSP(rest); rest = CDR(rest))
-        ret = CONS(CAR(rest), ret);
-
-    ENSURE_PROPER_LIST_TERMINATION(rest, lst);
+    ret = SCM_NULL;
+    FOR_EACH (elm, lst)
+        ret = CONS(elm, ret);
 
     return ret;
 }

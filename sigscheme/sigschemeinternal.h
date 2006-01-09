@@ -315,6 +315,16 @@ extern ScmObj scm_null_values;
 #define FOR_EACH_PAIR(_subls, _lst)                                     \
     for ((_subls) = (_lst); CONSP((_subls)); (_subls) = CDR(_subls))
 
+/*
+ * - expression part for the syntax is evaluated for each element except for
+ *   the last one
+ * - _elm holds the last element after an overall iteration
+ * - _lst holds the terminal cdr after an overall iteration
+ */
+#define FOR_EACH_BUTLAST(_elm, _lst)                                         \
+    SCM_ASSERT(CONSP(_lst));                                                 \
+    while ((_elm) = POP(_lst), CONSP(_lst))
+
 #define ENSURE_TYPE(pred, typename, obj)                                     \
     (pred(obj) || (ERR_OBJ(typename " required but got", (obj)), 1))
 

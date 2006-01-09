@@ -582,7 +582,7 @@ scm_s_and(ScmObj args, ScmEvalState *eval_state)
     if (NO_MORE_ARG(args))
         return SCM_TRUE;
 
-    FOR_EACH_WHILE (expr, args, CONSP(CDR(args))) {
+    FOR_EACH_BUTLAST (expr, args) {
         val = EVAL(expr, eval_state->env);
         if (FALSEP(val)) {
             ASSERT_PROPER_ARG_LIST(args);
@@ -590,7 +590,6 @@ scm_s_and(ScmObj args, ScmEvalState *eval_state)
             return SCM_FALSE;
         }
     }
-    expr = POP(args);
     ASSERT_NO_MORE_ARG(args);
 
     return expr;
@@ -605,7 +604,7 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
     if (NO_MORE_ARG(args))
         return SCM_FALSE;
 
-    FOR_EACH_WHILE (expr, args, CONSP(CDR(args))) {
+    FOR_EACH_BUTLAST (expr, args) {
         val = EVAL(expr, eval_state->env);
         if (!FALSEP(val)) {
             ASSERT_PROPER_ARG_LIST(args);
@@ -613,7 +612,6 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
             return val;
         }
     }
-    expr = POP(args);
     ASSERT_NO_MORE_ARG(args);
 
     return expr;
@@ -814,9 +812,8 @@ scm_s_begin(ScmObj args, ScmEvalState *eval_state)
     if (NO_MORE_ARG(args))
         return SCM_UNDEF;
 
-    FOR_EACH_WHILE(expr, args, CONSP(CDR(args)))
+    FOR_EACH_BUTLAST (expr, args)
         EVAL(expr, eval_state->env);
-    expr = POP(args);
     ASSERT_NO_MORE_ARG(args);
 
     /* Return tail expression. */

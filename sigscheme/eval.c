@@ -160,14 +160,13 @@ reduce(ScmObj (*func)(), ScmObj args, ScmObj env, scm_bool suppress_eval)
 
     /* Reduce upto the penult. */
     state = SCM_REDUCE_PARTWAY;
-    FOR_EACH_WHILE (right, args, CONSP(CDR(args))) {
+    FOR_EACH_BUTLAST(right, args) {
         if (!suppress_eval)
             right = EVAL(right, env);
         left = (*func)(left, right, &state);
         if (state == SCM_REDUCE_STOP)
             return left;
     }
-    right = POP(args);
     ASSERT_NO_MORE_ARG(args);
 
     /* Make the last call. */
@@ -450,10 +449,9 @@ scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state)
         /* More than one argument given. */
         args = LIST_1(arg0);
         q = REF_CDR(args);
-        FOR_EACH_WHILE (arg, rest, CONSP(CDR(rest)))
+        FOR_EACH_BUTLAST (arg, rest)
             SCM_QUEUE_ADD(q, arg);
         /* The last one is spliced. */
-        arg = POP(rest);
         SCM_QUEUE_SLOPPY_APPEND(q, arg);
         last = arg;
     }
