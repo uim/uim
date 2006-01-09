@@ -266,6 +266,7 @@ vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
 {
     int splice_len;
     int change_index;
+    DECLARE_INTERNAL_FUNCTION("vectran");
 
     switch (msg) {
     default:
