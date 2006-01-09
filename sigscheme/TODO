@@ -21,8 +21,9 @@ Requirements and bugs:
   - SEGV conditions by manual arg extraction
   - expensive operations
 
-* Investigate behavior of other Scheme implementations about constant vector
-  and list
+* Confirm behavior of constant vector and list
+  - Investigate behavior of them in Scheme implementations other than Gauche
+    and Guile, and record it into doc/spec.txt
   - Implement if needed
 
 * Make 64bit-safe (after compaction and stdint.h)
@@ -33,6 +34,12 @@ Requirements and bugs:
   test-tail-rec.scm
 
 * [uim] link libsscm into libuim statically
+
+* Clear license, copyright and changes information
+  - slib.scm
+  - scm_length() in operations.c
+  - "Shiro Kawai" part of read.c
+  - test/*.scm
 
 * grep "FIXME" and fix them
 
@@ -91,7 +98,7 @@ Namings and Cosmetic things:
 
 * Define the coding style for indent(1) and reform *.[ch] by it
 
-* Refill license header with fill-column 79, and insert it into all test files
+* Refill license header with fill-column 79 in all files
 
 * [uim] Rename uim-scm.c to uim-scm-sigscheme.c (after the merger)
 
