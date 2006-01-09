@@ -365,17 +365,17 @@ void
 scm_show_backtrace(ScmObj trace_stack)
 {
 #if SCM_DEBUG
-    ScmObj top, frame, env, obj;
+    ScmObj frame, env, obj, elm;
+    DECLARE_INTERNAL_FUNCTION("scm_show_backtrace");
 
     scm_port_printf(scm_err, SCM_BACKTRACE_HEADER);
 
     /* show each frame's obj */
-    for (top = trace_stack; !NULLP(top); top = CDR(top)) {
+    FOR_EACH (frame, trace_stack) {
 #if SCM_DEBUG_BACKTRACE_SEP
         scm_port_printf(scm_err, SCM_BACKTRACE_SEP);
 #endif
 
-        frame = CAR(top);
         env = TRACE_FRAME_ENV(frame);
         obj = TRACE_FRAME_OBJ(frame);
 
@@ -389,8 +389,8 @@ scm_show_backtrace(ScmObj trace_stack)
             break;
 
         case ScmCons:
-            for (; CONSP(obj); obj = CDR(obj))
-                show_arg(CAR(obj), env);
+            FOR_EACH (elm, obj)
+                show_arg(elm, env);
             /* dot list */
             if (SYMBOLP(obj))
                 show_arg(obj, env);

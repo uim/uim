@@ -1014,10 +1014,11 @@ scm_p_member(ScmObj obj, ScmObj lst)
 
 #undef MEMBER_BODY
 
-#define ASSOC_BODY(obj, alist, cmp, pair, key)                               \
+#define ASSOC_BODY(obj, alist, cmp)                                          \
     do {                                                                     \
-        for (alist = alist; CONSP(alist); alist = CDR(alist)) {              \
-            pair = CAR(alist);                                               \
+        ScmObj pair, key;                                                    \
+                                                                             \
+        FOR_EACH (pair, alist) {                                             \
             ENSURE_CONS(pair);                                               \
             key = CAR(pair);                                                 \
             if (cmp(key, obj))                                               \
@@ -1030,32 +1031,29 @@ scm_p_member(ScmObj obj, ScmObj lst)
 ScmObj
 scm_p_assq(ScmObj obj, ScmObj alist)
 {
-    ScmObj pair, key;
     DECLARE_FUNCTION("assq", procedure_fixed_2);
 
-    ASSOC_BODY(obj, alist, EQ, pair, key);
+    ASSOC_BODY(obj, alist, EQ);
 }
 
 ScmObj
 scm_p_assv(ScmObj obj, ScmObj alist)
 {
-    ScmObj pair, key;
     DECLARE_FUNCTION("assv", procedure_fixed_2);
 
 #if (SCM_HAS_IMMEDIATE_INT && SCM_HAS_IMMEDIATE_CHAR)
-    ASSOC_BODY(obj, alist, EQ, pair, key);
+    ASSOC_BODY(obj, alist, EQ);
 #else
-    ASSOC_BODY(obj, alist, EQVP, pair, key);
+    ASSOC_BODY(obj, alist, EQVP);
 #endif
 }
 
 ScmObj
 scm_p_assoc(ScmObj obj, ScmObj alist)
 {
-    ScmObj pair, key;
     DECLARE_FUNCTION("assoc", procedure_fixed_2);
 
-    ASSOC_BODY(obj, alist, EQUALP, pair, key);
+    ASSOC_BODY(obj, alist, EQUALP);
 }
 
 #undef ASSOC_BODY
@@ -1515,8 +1513,8 @@ scm_p_list2string(ScmObj lst)
 
     /* TODO: make efficient */
     sport = scm_p_srfi6_open_output_string();
-    for (rest = lst; CONSP(rest); rest = CDR(rest)) {
-        ch = CAR(rest);
+    rest = lst;
+    FOR_EACH (ch, rest) {
         ENSURE_CHAR(ch);
         scm_port_put_char(sport, SCM_CHAR_VALUE(ch));
     }

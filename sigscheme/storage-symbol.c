@@ -71,12 +71,13 @@ scm_intern(const char *name)
 {
     ScmObj sym, lst, rest;
     int hash;
+    DECLARE_INTERNAL_FUNCTION("scm_intern");
 
     hash = symbol_name_hash(name);
     lst = scm_symbol_hash[hash];
 
-    for (rest = lst; CONSP(rest); rest = CDR(rest)) {
-        sym = CAR(rest);
+    rest = lst;
+    FOR_EACH (sym, rest) {
         if (strcmp(SCM_SYMBOL_NAME(sym), name) == 0)
             return sym;
     }
@@ -92,12 +93,13 @@ scm_intern(const char *name)
 ScmObj
 scm_symbol_bound_to(ScmObj obj)
 {
-    int i;
     ScmObj lst, sym, val;
+    int i;
+    DECLARE_INTERNAL_FUNCTION("scm_symbol_bound_to");
 
     for (i = 0; i < NAMEHASH_SIZE; i++) {
-        for (lst = scm_symbol_hash[i]; CONSP(lst); lst = CDR(lst)) {
-            sym = CAR(lst);
+        lst = scm_symbol_hash[i];
+        FOR_EACH (sym, lst) {
             val = SCM_SYMBOL_VCELL(sym);
             if (!EQ(val, SCM_UNBOUND) && EQ(val, obj))
                 return sym;
