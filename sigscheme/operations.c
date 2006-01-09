@@ -1456,6 +1456,7 @@ scm_p_string_append(ScmObj args)
         for (src = SCM_STRING_STR(str); *src;)
             *dst++ = *src++;
     }
+    *dst = '\0';
 
     ret = MAKE_STRING((char *)"");  /* dummy string */
     SCM_STRING_SET_STR(ret, new_str);
