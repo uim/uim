@@ -70,7 +70,7 @@ extern ScmObj scm_in;
 extern ScmObj scm_out;
 extern ScmObj scm_err;
 
-/* print.c */
+/* write.c */
 extern void (*scm_writess_func)(ScmObj port, ScmObj obj);
 
 /* read.c */

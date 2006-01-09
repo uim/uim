@@ -1,6 +1,6 @@
 /*===========================================================================
- *  FileName : print.c
- *  About    : Printing functions
+ *  FileName : write.c
+ *  About    : Object writer
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *

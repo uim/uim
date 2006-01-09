@@ -54,7 +54,7 @@ sigschemefunctable-siod.c: operations-siod.c $(BUILD_FUNCTBL_SOURCES)
 EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_SOURCES) \
         storage-fatty.h storage-compact.h
 libsscm_la_SOURCES = \
-		alloc.c storage.c print.c \
+		alloc.c storage.c write.c \
                 storage-gc.c \
                 storage-symbol.c \
 		storage-continuation.c \

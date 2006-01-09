@@ -1013,7 +1013,7 @@ ScmObj scm_p_fatal_error(ScmObj err_obj) SCM_NORETURN;
 ScmObj scm_p_inspect_error(ScmObj err_obj);
 ScmObj scm_p_backtrace(void);
 
-/* print.c */
+/* write.c */
 void scm_display(ScmObj obj);
 void scm_write_to_port(ScmObj port, ScmObj obj);
 void scm_display_to_port(ScmObj port, ScmObj obj);
