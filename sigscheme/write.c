@@ -103,14 +103,14 @@ static write_ss_context *write_ss_ctx; /* misc info in priting shared structures
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static void print_obj(ScmObj port, ScmObj obj, enum OutputType otype);
-static void print_char(ScmObj port, ScmObj obj, enum OutputType otype);
-static void print_string(ScmObj port, ScmObj obj, enum OutputType otype);
-static void print_list(ScmObj port, ScmObj lst, enum OutputType otype);
-static void print_vector(ScmObj port, ScmObj vec, enum OutputType otype);
-static void print_port(ScmObj port, ScmObj obj, enum OutputType otype);
-static void print_constant(ScmObj port, ScmObj obj, enum  OutputType otype);
-static void print_errobj(ScmObj port, ScmObj obj, enum  OutputType otype);
+static void write_obj(ScmObj port, ScmObj obj, enum OutputType otype);
+static void write_char(ScmObj port, ScmObj obj, enum OutputType otype);
+static void write_string(ScmObj port, ScmObj obj, enum OutputType otype);
+static void write_list(ScmObj port, ScmObj lst, enum OutputType otype);
+static void write_vector(ScmObj port, ScmObj vec, enum OutputType otype);
+static void write_port(ScmObj port, ScmObj obj, enum OutputType otype);
+static void write_constant(ScmObj port, ScmObj obj, enum  OutputType otype);
+static void write_errobj(ScmObj port, ScmObj obj, enum  OutputType otype);
 
 #if SCM_USE_SRFI38
 static void hash_grow(hash_table *tab);
@@ -138,7 +138,7 @@ scm_write_to_port(ScmObj port, ScmObj obj)
     if (!(SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT))
         ERR("output port is required");
 
-    print_obj(port, obj, AS_WRITE);
+    write_obj(port, obj, AS_WRITE);
 
 #if SCM_VOLATILE_OUTPUT
     scm_port_flush(port);
@@ -155,7 +155,7 @@ scm_display_to_port(ScmObj port, ScmObj obj)
     if (!(SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT))
         ERR("output port is required");
 
-    print_obj(port, obj, AS_DISPLAY);
+    write_obj(port, obj, AS_DISPLAY);
 
 #if SCM_VOLATILE_OUTPUT
     scm_port_flush(port);
@@ -163,7 +163,7 @@ scm_display_to_port(ScmObj port, ScmObj obj)
 }
 
 static void
-print_obj(ScmObj port, ScmObj obj, enum OutputType otype)
+write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
 {
     ScmObj sym;
 
@@ -188,18 +188,18 @@ print_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         break;
     case ScmCons:
         if (ERROBJP(obj))
-            print_errobj(port, obj, otype);
+            write_errobj(port, obj, otype);
         else
-            print_list(port, obj, otype);
+            write_list(port, obj, otype);
         break;
     case ScmSymbol:
         scm_port_puts(port, SCM_SYMBOL_NAME(obj));
         break;
     case ScmChar:
-        print_char(port, obj, otype);
+        write_char(port, obj, otype);
         break;
     case ScmString:
-        print_string(port, obj, otype);
+        write_string(port, obj, otype);
         break;
     case ScmFunc:
         scm_port_puts(port, (SCM_SYNTAXP(obj)) ? "#<syntax " : "#<subr ");
@@ -212,14 +212,14 @@ print_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         break;
     case ScmClosure:
         scm_port_puts(port, "#<closure ");
-        print_obj(port, SCM_CLOSURE_EXP(obj), otype);
+        write_obj(port, SCM_CLOSURE_EXP(obj), otype);
         scm_port_put_char(port, '>');
         break;
     case ScmVector:
-        print_vector(port, obj, otype);
+        write_vector(port, obj, otype);
         break;
     case ScmPort:
-        print_port(port, obj, otype);
+        write_port(port, obj, otype);
         break;
     case ScmContinuation:
         scm_port_puts(port, "#<subr continuation>");
@@ -229,7 +229,7 @@ print_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         if (NULLP(SCM_VALUEPACKET_VALUES(obj)))
             scm_port_puts(port, "()");
         else
-            print_list(port, SCM_VALUEPACKET_VALUES(obj), otype);
+            write_list(port, SCM_VALUEPACKET_VALUES(obj), otype);
 #if SCM_USE_VALUECONS
         /* SCM_VALUEPACKET_VALUES() changes the type destructively */
         SCM_ENTYPE_VALUEPACKET(obj);
@@ -237,7 +237,7 @@ print_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         scm_port_put_char(port, '>');
         break;
     case ScmConstant:
-        print_constant(port, obj, otype);
+        write_constant(port, obj, otype);
         break;
     case ScmFreeCell:
         ERR("You cannot print ScmFreeCell, may be GC bug.");
@@ -253,7 +253,7 @@ print_obj(ScmObj port, ScmObj obj, enum OutputType otype)
 }
 
 static void
-print_char(ScmObj port, ScmObj obj, enum OutputType otype)
+write_char(ScmObj port, ScmObj obj, enum OutputType otype)
 {
     const ScmSpecialCharInfo *info;
     int c;
@@ -281,20 +281,20 @@ print_char(ScmObj port, ScmObj obj, enum OutputType otype)
         break;
 
     default:
-        ERR("print_char: unknown output type");
+        ERR("write_char: unknown output type");
         break;
     }
 }
 
 static void
-print_string(ScmObj port, ScmObj obj, enum OutputType otype)
+write_string(ScmObj port, ScmObj obj, enum OutputType otype)
 {
     ScmCharCodec *codec;
     ScmMultibyteString mbs;
     const ScmSpecialCharInfo *info;
     const char *str;
     int len, c;
-    DECLARE_INTERNAL_FUNCTION("print_string");
+    DECLARE_INTERNAL_FUNCTION("write_string");
 
     str = SCM_STRING_STR(obj);
     len = strlen(str);
@@ -332,13 +332,13 @@ print_string(ScmObj port, ScmObj obj, enum OutputType otype)
         break;
 
     default:
-        ERR("print_string: unknown output type");
+        ERR("write_string: unknown output type");
         break;
     }
 }
 
 static void
-print_list(ScmObj port, ScmObj lst, enum OutputType otype)
+write_list(ScmObj port, ScmObj lst, enum OutputType otype)
 {
     ScmObj car;
 #if SCM_USE_SRFI38
@@ -357,7 +357,7 @@ print_list(ScmObj port, ScmObj lst, enum OutputType otype)
 
     for (;;) {
         car = CAR(lst);
-        print_obj(port, car, otype);
+        write_obj(port, car, otype);
         lst = CDR(lst);
         if (!CONSP(lst))
             break;
@@ -366,7 +366,7 @@ print_list(ScmObj port, ScmObj lst, enum OutputType otype)
 #if SCM_USE_SRFI38
         /* See if the next pair is shared.  Note that the case
          * where the first pair is shared is handled in
-         * print_obj(). */
+         * write_obj(). */
         index = get_shared_index(lst);
         if (index > 0) {
             /* defined datum */
@@ -386,7 +386,7 @@ print_list(ScmObj port, ScmObj lst, enum OutputType otype)
     if (!NULLP(lst)) {
         scm_port_puts(port, " . ");
         /* Callee takes care of shared data. */
-        print_obj(port, lst, otype);
+        write_obj(port, lst, otype);
     }
 
 #if SCM_USE_SRFI38
@@ -397,7 +397,7 @@ print_list(ScmObj port, ScmObj lst, enum OutputType otype)
 }
 
 static void
-print_vector(ScmObj port, ScmObj vec, enum OutputType otype)
+write_vector(ScmObj port, ScmObj vec, enum OutputType otype)
 {
     ScmObj *v;
     int len, i;
@@ -409,14 +409,14 @@ print_vector(ScmObj port, ScmObj vec, enum OutputType otype)
     for (i = 0; i < len; i++) {
         if (i)
             scm_port_put_char(port, ' ');
-        print_obj(port, v[i], otype);
+        write_obj(port, v[i], otype);
     }
 
     scm_port_put_char(port, ')');
 }
 
 static void
-print_port(ScmObj port, ScmObj obj, enum OutputType otype)
+write_port(ScmObj port, ScmObj obj, enum OutputType otype)
 {
     char *info;
 
@@ -443,7 +443,7 @@ print_port(ScmObj port, ScmObj obj, enum OutputType otype)
 }
 
 static void
-print_constant(ScmObj port, ScmObj obj, enum  OutputType otype)
+write_constant(ScmObj port, ScmObj obj, enum  OutputType otype)
 {
     const char *str;
 
@@ -468,10 +468,10 @@ print_constant(ScmObj port, ScmObj obj, enum  OutputType otype)
 }
 
 static void
-print_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
+write_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
 {
     ScmObj err_obj_tag, reason, objs, trace_stack;
-    DECLARE_INTERNAL_FUNCTION("print_errobj");
+    DECLARE_INTERNAL_FUNCTION("write_errobj");
 
     err_obj_tag = MUST_POP_ARG(obj);
     reason      = MUST_POP_ARG(obj);
@@ -492,7 +492,7 @@ print_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
         break;
 
     default:
-        ERR("print_errobj: unknown output type");
+        ERR("write_errobj: unknown output type");
         break;
     }
 
