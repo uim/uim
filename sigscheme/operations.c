@@ -54,6 +54,10 @@
 =======================================*/
 #define EQVP(a, b)   (NFALSEP(scm_p_eqvp((a), (b))))
 #define EQUALP(a, b) (NFALSEP(scm_p_equalp((a), (b))))
+#define STRING_EQUALP(str1, str2)                                            \
+    (EQ((str1), (str2))                                                      \
+     || (SCM_STRING_LEN(str1) == SCM_STRING_LEN(str2)  /* rough rejection */ \
+         && strcmp(SCM_STRING_STR(str1), SCM_STRING_STR(str2)) == 0))
 
 /*=======================================
   Variable Declarations
@@ -157,9 +161,7 @@ scm_p_equalp(ScmObj obj1, ScmObj obj2)
 #endif
 
     case ScmString:
-        if (strcmp(SCM_STRING_STR(obj1), SCM_STRING_STR(obj2)) == 0)
-            return SCM_TRUE;
-        break;
+        return MAKE_BOOL(STRING_EQUALP(obj1, obj2));
 
     case ScmCons:
         for (; CONSP(obj1) && CONSP(obj2); obj1 = CDR(obj1), obj2 = CDR(obj2))
@@ -1394,12 +1396,7 @@ scm_p_stringequalp(ScmObj str1, ScmObj str2)
     ENSURE_STRING(str1);
     ENSURE_STRING(str2);
 
-    if (EQ(str1, str2)
-        || (SCM_STRING_LEN(str1) == SCM_STRING_LEN(str2)  /* rough rejection */
-            && strcmp(SCM_STRING_STR(str1), SCM_STRING_STR(str2)) == 0))
-        return SCM_TRUE;
-
-    return SCM_FALSE;
+    return MAKE_BOOL(STRING_EQUALP(str1, str2));
 }
 
 ScmObj
