@@ -107,16 +107,12 @@ scm_p_eqvp(ScmObj obj1, ScmObj obj2)
     switch (type) {
 #if !SCM_HAS_IMMEDIATE_INT
     case ScmInt:
-        if ((SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2)))
-            return SCM_TRUE;
-        break;
+        return MAKE_BOOL(SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2));
 #endif
 
 #if !SCM_HAS_IMMEDIATE_CHAR
     case ScmChar:
-        if ((SCM_CHAR_VALUE(obj1) == SCM_CHAR_VALUE(obj2)))
-            return SCM_TRUE;
-        break;
+        return MAKE_BOOL(SCM_CHAR_VALUE(obj1) == SCM_CHAR_VALUE(obj2));
 #endif
 
     default:
@@ -148,16 +144,12 @@ scm_p_equalp(ScmObj obj1, ScmObj obj2)
     switch (type) {
 #if !SCM_HAS_IMMEDIATE_INT
     case ScmInt:
-        if ((SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2)))
-            return SCM_TRUE;
-        break;
+        return MAKE_BOOL(SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2));
 #endif
 
 #if !SCM_HAS_IMMEDIATE_CHAR
     case ScmChar:
-        if ((SCM_CHAR_VALUE(obj1) == SCM_CHAR_VALUE(obj2)))
-            return SCM_TRUE;
-        break;
+        return MAKE_BOOL(SCM_CHAR_VALUE(obj1) == SCM_CHAR_VALUE(obj2));
 #endif
 
     case ScmString:
@@ -195,14 +187,12 @@ scm_p_equalp(ScmObj obj1, ScmObj obj2)
 
 #if SCM_USE_NONSTD_FEATURES
     case ScmCPointer:
-        if (SCM_C_POINTER_VALUE(obj1) == SCM_C_POINTER_VALUE(obj2))
-            return SCM_TRUE;
-        break;
+        return MAKE_BOOL(SCM_C_POINTER_VALUE(obj1)
+                         == SCM_C_POINTER_VALUE(obj2));
 
     case ScmCFuncPointer:
-        if (SCM_C_FUNCPOINTER_VALUE(obj1) == SCM_C_FUNCPOINTER_VALUE(obj2))
-            return SCM_TRUE;
-        break;
+        return MAKE_BOOL(SCM_C_FUNCPOINTER_VALUE(obj1)
+                         == SCM_C_FUNCPOINTER_VALUE(obj2));
 #endif
 
     default:
