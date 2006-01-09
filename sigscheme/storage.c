@@ -213,7 +213,7 @@ scm_make_string_internal(char *str, scm_bool is_immutable)
     obj = scm_alloc_cell();
     SCM_ENTYPE_STRING(obj);
     SCM_STRING_SET_STR(obj, str);
-    SCM_STRING_SET_LEN(obj, str ? scm_mb_bare_c_strlen(str) : 0);
+    SCM_STRING_SET_LEN(obj, (*str) ? scm_mb_bare_c_strlen(str) : 0);
 
     if (is_immutable)
         SCM_STRING_SET_IMMUTABLE(obj);

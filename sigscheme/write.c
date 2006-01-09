@@ -470,7 +470,7 @@ write_constant(ScmObj port, ScmObj obj, enum  OutputType otype)
 static void
 write_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
 {
-    ScmObj err_obj_tag, reason, objs, trace_stack;
+    ScmObj err_obj_tag, reason, objs, trace_stack, elm;
     DECLARE_INTERNAL_FUNCTION("write_errobj");
 
     err_obj_tag = MUST_POP_ARG(obj);
@@ -496,9 +496,9 @@ write_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
         break;
     }
 
-    for (; CONSP(objs); objs = CDR(objs)) {
+    FOR_EACH(elm, objs) {
         scm_port_put_char(port, ' ');
-        scm_write_to_port(port, CAR(objs));
+        scm_write_to_port(port, elm);
     }
 
     if (otype == AS_WRITE)

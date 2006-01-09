@@ -93,12 +93,12 @@ scm_p_symbol_boundp(ScmObj sym, ScmObj rest)
 
     ENSURE_SYMBOL(sym);
 
-    if (CONSP(rest)) {
+    if (NULLP(rest)) {
+        env = SCM_INTERACTION_ENV;
+    } else {
         env = POP(rest);
         ASSERT_NO_MORE_ARG(rest);
         ENSURE_VALID_ENV(env);
-    } else {
-        env = SCM_INTERACTION_ENV;
     }
     ref = scm_lookup_environment(sym, env);
 

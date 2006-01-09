@@ -443,7 +443,7 @@ scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state)
     ScmObj args, arg, last;
     DECLARE_FUNCTION("apply", procedure_variadic_tailrec_2);
 
-    if (NO_MORE_ARG(rest)) {
+    if (NULLP(rest)) {
         args = last = arg0;
     } else {
         /* More than one argument given. */

@@ -202,7 +202,7 @@ scm_p_verbose(ScmObj args)
     ScmObj level;
     DECLARE_FUNCTION("verbose", procedure_variadic_0);
 
-    if (CONSP(args)) {
+    if (!NULLP(args)) {
         level = POP(args);
         ASSERT_NO_MORE_ARG(args);
         ENSURE_INT(level);

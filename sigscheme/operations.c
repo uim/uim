@@ -553,18 +553,20 @@ prepare_radix(const char *funcname, ScmObj args)
     int r;
     DECLARE_INTERNAL_FUNCTION("(internal)");
 
+    ASSERT_PROPER_ARG_LIST(args);
+
     /* dirty hack to replace internal function name */
     SCM_MANGLE(name) = funcname;
 
-    if (CONSP(args)) {
+    if (NULLP(args)) {
+        r = 10;
+    } else {
         radix = POP(args);
         ASSERT_NO_MORE_ARG(args);
         ENSURE_INT(radix);
         r = SCM_INT_VALUE(radix);
-      if (!(r == 2 || r == 8 || r == 10 || r == 16))
-          ERR_OBJ("invalid radix", radix);
-    } else {
-        r = 10;
+        if (!(r == 2 || r == 8 || r == 10 || r == 16))
+            ERR_OBJ("invalid radix", radix);
     }
 
     return r;
@@ -1260,7 +1262,7 @@ scm_p_make_string(ScmObj length, ScmObj args)
         ERR_OBJ("length must be a positive integer", length);
 
     /* extract filler */
-    if (NO_MORE_ARG(args)) {
+    if (NULLP(args)) {
         filler_val = ' ';
     } else {
         filler = POP(args);
@@ -1440,40 +1442,41 @@ scm_p_substring(ScmObj str, ScmObj start, ScmObj end)
 }
 
 /* FIXME: support stateful encoding */
-/* TODO: improve average performance for uim */
 ScmObj
 scm_p_string_append(ScmObj args)
 {
-    ScmObj rest, str;
+    ScmObj rest, str, ret;
     size_t byte_len, mb_len;
-    char  *new_str, *p;
+    char  *new_str, *dst;
+    const char *src;
     DECLARE_FUNCTION("string-append", procedure_variadic_0);
 
-    if (NO_MORE_ARG(args))
+    if (NULLP(args))
         return MAKE_STRING_COPYING("");
 
     /* count total size of the new string */
-    for (byte_len = mb_len = 0, rest = args; CONSP(rest); rest = CDR(rest)) {
-        str = CAR(rest);
+    byte_len = mb_len = 0;
+    rest = args;
+    FOR_EACH (str, rest) {
         ENSURE_STRING(str);
-
         byte_len += strlen(SCM_STRING_STR(str));
         mb_len   += SCM_STRING_LEN(str);
     }
-    ENSURE_PROPER_LIST_TERMINATION(rest, args);
 
     new_str = scm_malloc(byte_len + sizeof(""));
 
     /* copy all strings into new_str */
-    for (p = new_str, rest = args; !NULLP(rest); rest = CDR(rest)) {
-        str = CAR(rest);
-
-        /* expensive */
-        strcpy(p, SCM_STRING_STR(str));
-        p += strlen(SCM_STRING_STR(str));
+    dst = new_str;
+    FOR_EACH (str, args) {
+        for (src = SCM_STRING_STR(str); *src;)
+            *dst++ = *src++;
     }
 
-    return MAKE_STRING(new_str);
+    ret = MAKE_STRING((char *)"");  /* dummy string */
+    SCM_STRING_SET_STR(ret, new_str);
+    SCM_STRING_SET_LEN(ret, mb_len);
+
+    return ret;
 }
 
 ScmObj
@@ -1594,7 +1597,12 @@ scm_p_make_vector(ScmObj scm_len, ScmObj args)
         ERR_OBJ("length must be a positive integer", scm_len);
 
     vec = scm_malloc(sizeof(ScmObj) * len);
-    filler = (CONSP(args)) ? CAR(args) : SCM_UNDEF;
+    if (NULLP(args)) {
+        filler = SCM_UNDEF;
+    } else {
+        filler = POP(args);
+        ASSERT_NO_MORE_ARG(args);
+    }
     for (i = 0; i < len; i++)
         vec[i] = filler;
 
@@ -1770,16 +1778,15 @@ map_multiple_args(ScmObj proc, ScmObj args)
         SCM_QUEUE_POINT_TO(argq, map_args);
         for (rest_args = args; CONSP(rest_args); rest_args = CDR(rest_args)) {
             arg = CAR(rest_args);
-            if (NULLP(arg))
-                return res;
             if (CONSP(arg))
                 SCM_QUEUE_ADD(argq, CAR(arg));
+            else if (NULLP(arg))
+                return res;
             else
                 ERR_OBJ("invalid argument", arg);
             /* pop destructively */
             SET_CAR(rest_args, CDR(arg));
         }
-        ENSURE_PROPER_LIST_TERMINATION(rest_args, args);
 
         elm = scm_call(proc, map_args);
         SCM_QUEUE_ADD(resq, elm);
