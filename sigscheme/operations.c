@@ -569,6 +569,7 @@ scm_p_number2string(ScmObj num, ScmObj args)
 {
   char buf[sizeof(int) * CHAR_BIT + sizeof("")];
   char *p;
+  const char *end;
   int n, r, digit;
   scm_bool neg;
   DECLARE_FUNCTION("number->string", procedure_variadic_1);
@@ -580,7 +581,7 @@ scm_p_number2string(ScmObj num, ScmObj args)
   n = abs(n);
   r = prepare_radix(SCM_MANGLE(name), args);
 
-  p = &buf[sizeof(buf) - 1];
+  end = p = &buf[sizeof(buf) - 1];
   *p = '\0';
 
   do {
@@ -590,7 +591,7 @@ scm_p_number2string(ScmObj num, ScmObj args)
   if (neg)
     *--p = '-';
 
-  return MAKE_STRING_COPYING(p);
+  return MAKE_STRING_COPYING(p, end - p);
 }
 
 ScmObj
@@ -1068,7 +1069,7 @@ scm_p_symbol2string(ScmObj sym)
 
     ENSURE_SYMBOL(sym);
 
-    return MAKE_IMMUTABLE_STRING_COPYING(SCM_SYMBOL_NAME(sym));
+    return CONST_STRING(SCM_SYMBOL_NAME(sym));
 }
 
 ScmObj
@@ -1247,7 +1248,7 @@ scm_p_make_string(ScmObj length, ScmObj args)
     ENSURE_INT(length);
     len = SCM_INT_VALUE(length);
     if (len == 0)
-        return MAKE_STRING_COPYING("");
+        return MAKE_STRING_COPYING("", 0);
     if (len < 0)
         ERR_OBJ("length must be a positive integer", length);
 
@@ -1423,21 +1424,21 @@ scm_p_substring(ScmObj str, ScmObj start, ScmObj end)
     memcpy(new_str, SCM_MBS_GET_STR(mbs), SCM_MBS_GET_SIZE(mbs));
     new_str[SCM_MBS_GET_SIZE(mbs)] = '\0';
 
-    return MAKE_STRING(new_str);
+    return MAKE_STRING(new_str, c_end - c_start);
 }
 
 /* FIXME: support stateful encoding */
 ScmObj
 scm_p_string_append(ScmObj args)
 {
-    ScmObj rest, str, ret;
+    ScmObj rest, str;
     size_t byte_len, mb_len;
     char  *new_str, *dst;
     const char *src;
     DECLARE_FUNCTION("string-append", procedure_variadic_0);
 
     if (NULLP(args))
-        return MAKE_STRING_COPYING("");
+        return MAKE_STRING_COPYING("", 0);
 
     /* count total size of the new string */
     byte_len = mb_len = 0;
@@ -1458,11 +1459,7 @@ scm_p_string_append(ScmObj args)
     }
     *dst = '\0';
 
-    ret = MAKE_STRING((char *)"");  /* dummy string */
-    SCM_STRING_SET_STR(ret, new_str);
-    SCM_STRING_SET_LEN(ret, mb_len);
-
-    return ret;
+    return MAKE_STRING(new_str, mb_len);
 }
 
 ScmObj
@@ -1497,7 +1494,7 @@ scm_p_list2string(ScmObj lst)
     ENSURE_LIST(lst);
 
     if (NULLP(lst))
-        return MAKE_STRING_COPYING("");
+        return MAKE_STRING_COPYING("", 0);
 
     /* TODO: make efficient */
     sport = scm_p_srfi6_open_output_string();
@@ -1518,7 +1515,7 @@ scm_p_string_copy(ScmObj str)
 
     ENSURE_STRING(str);
 
-    return MAKE_STRING_COPYING(SCM_STRING_STR(str));
+    return MAKE_STRING_COPYING(SCM_STRING_STR(str), SCM_STRING_LEN(str));
 }
 
 ScmObj
@@ -1537,7 +1534,7 @@ scm_p_string_filld(ScmObj str, ScmObj ch)
 
     str_len = SCM_STRING_LEN(str);
     if (str_len == 0)
-        return MAKE_STRING_COPYING("");
+        return MAKE_STRING_COPYING("", 0);
 
     next = SCM_CHARCODEC_INT2STR(scm_current_char_codec, ch_str,
                                  SCM_CHAR_VALUE(ch), SCM_MB_STATELESS);

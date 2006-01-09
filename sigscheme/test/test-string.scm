@@ -318,28 +318,29 @@
 (assert-equal? "R5RS escape sequence" '(#\newline) (string->list "\n"))  ;; 110
 
 ;; R6RS(SRFI-75) compliant
-(assert-equal? "R6RS escape sequence" (integer->string 0)      "\x00")  ;; 0
-(assert-equal? "R6RS escape sequence" (list->string '(#\nul))  "\x00")  ;; 0
-(assert-equal? "R6RS escape sequence" '(#\nul)  (string->list "\x00"))  ;; 0
-(assert-equal? "R6RS escape sequence" (integer->string 7)        "\a")  ;; 97
-(assert-equal? "R6RS escape sequence" (list->string '(#\alarm))  "\a")  ;; 97
-(assert-equal? "R6RS escape sequence" '(#\alarm)  (string->list "\a"))  ;; 97
-(assert-equal? "R6RS escape sequence" (integer->string 8)        "\b")  ;; 98
-(assert-equal? "R6RS escape sequence" (list->string '(#\backspace)) "\b")  ;; 98
-(assert-equal? "R6RS escape sequence" '(#\backspace) (string->list "\b"))  ;; 98
-(assert-equal? "R6RS escape sequence" (integer->string 12)       "\f")  ;; 102
-(assert-equal? "R6RS escape sequence" (list->string '(#\page))   "\f")  ;; 102
-(assert-equal? "R6RS escape sequence" '(#\page)   (string->list "\f"))  ;; 102
-(assert-equal? "R6RS escape sequence" (integer->string 13)       "\r")  ;; 114
-(assert-equal? "R6RS escape sequence" (list->string '(#\return)) "\r")  ;; 114
-(assert-equal? "R6RS escape sequence" '(#\return) (string->list "\r"))  ;; 114
-(assert-equal? "R6RS escape sequence" (integer->string 9)        "\t")  ;; 116
-(assert-equal? "R6RS escape sequence" (list->string '(#\tab))    "\t")  ;; 116
-(assert-equal? "R6RS escape sequence" '(#\tab)    (string->list "\t"))  ;; 116
-(assert-equal? "R6RS escape sequence" (integer->string 11)       "\v")  ;; 118
-(assert-equal? "R6RS escape sequence" (list->string '(#\vtab))   "\v")  ;; 118
-(assert-equal? "R6RS escape sequence" '(#\vtab)   (string->list "\v"))  ;; 118
-(assert-equal? "R6RS escape sequence" (integer->string 124)      "\|")  ;; 124
+(tn "R6RS escape sequence")
+(assert-equal? (tn) (integer->string 0)         "\x00")  ;; 0
+(assert-equal? (tn) (list->string '(#\nul))     "\x00")  ;; 0
+(assert-equal? (tn) '(#\nul)  (string->list    "\x00"))  ;; 0
+(assert-equal? (tn) (integer->string 7)           "\a")  ;; 97
+(assert-equal? (tn) (list->string '(#\alarm))     "\a")  ;; 97
+(assert-equal? (tn) '(#\alarm)  (string->list    "\a"))  ;; 97
+(assert-equal? (tn) (integer->string 8)           "\b")  ;; 98
+(assert-equal? (tn) (list->string '(#\backspace)) "\b")  ;; 98
+(assert-equal? (tn) '(#\backspace) (string->list "\b"))  ;; 98
+(assert-equal? (tn) (integer->string 12)          "\f")  ;; 102
+(assert-equal? (tn) (list->string '(#\page))      "\f")  ;; 102
+(assert-equal? (tn) '(#\page)   (string->list    "\f"))  ;; 102
+(assert-equal? (tn) (integer->string 13)          "\r")  ;; 114
+(assert-equal? (tn) (list->string '(#\return))    "\r")  ;; 114
+(assert-equal? (tn) '(#\return) (string->list    "\r"))  ;; 114
+(assert-equal? (tn) (integer->string 9)           "\t")  ;; 116
+(assert-equal? (tn) (list->string '(#\tab))       "\t")  ;; 116
+(assert-equal? (tn) '(#\tab)    (string->list    "\t"))  ;; 116
+(assert-equal? (tn) (integer->string 11)          "\v")  ;; 118
+(assert-equal? (tn) (list->string '(#\vtab))      "\v")  ;; 118
+(assert-equal? (tn) '(#\vtab)   (string->list    "\v"))  ;; 118
+(assert-equal? (tn) (integer->string 124)         "\|")  ;; 124
 
 ;; All these conventional escape sequences should cause parse error as defined
 ;; in SRFI-75: "Any other character in a string after a backslash is an
@@ -442,40 +443,41 @@
 (assert-parse-error "conventional escape sequence" "\"\\~\"")  ;; 126
 
 ;; raw control chars
-(assert-equal? "raw control char in string literal" (integer->string   0) " ")  ;; 0
-(assert-equal? "raw control char in string literal" (integer->string   1) "")  ;; 1
-(assert-equal? "raw control char in string literal" (integer->string   2) "")  ;; 2
-(assert-equal? "raw control char in string literal" (integer->string   3) "")  ;; 3
-(assert-equal? "raw control char in string literal" (integer->string   4) "")  ;; 4
-(assert-equal? "raw control char in string literal" (integer->string   5) "")  ;; 5
-(assert-equal? "raw control char in string literal" (integer->string   6) "")  ;; 6
-(assert-equal? "raw control char in string literal" (integer->string   7) "")  ;; 7
-(assert-equal? "raw control char in string literal" (integer->string   8) "")  ;; 8  ;; DON'T EDIT THIS LINE!
-(assert-equal? "raw control char in string literal" (integer->string   9) "	")  ;; 9
-(assert-equal? "raw control char in string literal" (integer->string  10) "
-")  ;; 10  ;; DON'T EDIT THIS LINE!
-(assert-equal? "raw control char in string literal" (integer->string  11) "")  ;; 11
-(assert-equal? "raw control char in string literal" (integer->string  12) "")  ;; 12
-(assert-equal? "raw control char in string literal" (integer->string  13) "")  ;; 13  ;; DON'T EDIT THIS LINE!
-(assert-equal? "raw control char in string literal" (integer->string  14) "")  ;; 14
-(assert-equal? "raw control char in string literal" (integer->string  15) "")  ;; 15
-(assert-equal? "raw control char in string literal" (integer->string  16) "")  ;; 16
-(assert-equal? "raw control char in string literal" (integer->string  17) "")  ;; 17
-(assert-equal? "raw control char in string literal" (integer->string  18) "")  ;; 18
-(assert-equal? "raw control char in string literal" (integer->string  19) "")  ;; 19
-(assert-equal? "raw control char in string literal" (integer->string  20) "")  ;; 20
-(assert-equal? "raw control char in string literal" (integer->string  21) "")  ;; 21
-(assert-equal? "raw control char in string literal" (integer->string  22) "")  ;; 22
-(assert-equal? "raw control char in string literal" (integer->string  23) "")  ;; 23
-(assert-equal? "raw control char in string literal" (integer->string  24) "")  ;; 24
-(assert-equal? "raw control char in string literal" (integer->string  25) "")  ;; 25  ;; DON'T EDIT THIS LINE!
-(assert-equal? "raw control char in string literal" (integer->string  26) "")  ;; 26
-(assert-equal? "raw control char in string literal" (integer->string  27) "")  ;; 27
-(assert-equal? "raw control char in string literal" (integer->string  28) "")  ;; 28
-(assert-equal? "raw control char in string literal" (integer->string  29) "")  ;; 29
-(assert-equal? "raw control char in string literal" (integer->string  30) "")  ;; 30
-(assert-equal? "raw control char in string literal" (integer->string  31) "")  ;; 31
-(assert-equal? "raw control char in string literal" (integer->string 127) "")  ;; 127
+(tn "raw control char in string literal")
+(assert-equal? (tn) (integer->string   0) " ")  ;; 0
+(assert-equal? (tn) (integer->string   1) "")  ;; 1
+(assert-equal? (tn) (integer->string   2) "")  ;; 2
+(assert-equal? (tn) (integer->string   3) "")  ;; 3
+(assert-equal? (tn) (integer->string   4) "")  ;; 4
+(assert-equal? (tn) (integer->string   5) "")  ;; 5
+(assert-equal? (tn) (integer->string   6) "")  ;; 6
+(assert-equal? (tn) (integer->string   7) "")  ;; 7
+(assert-equal? (tn) (integer->string   8) "")  ;; 8  ;; DON'T EDIT THIS LINE!
+(assert-equal? (tn) (integer->string   9) "	")  ;; 9
+(assert-equal? (tn) (integer->string  10) "
+")  ;; 10 ;; DON'T EDIT THIS LINE!
+(assert-equal? (tn) (integer->string  11) "")  ;; 11
+(assert-equal? (tn) (integer->string  12) "")  ;; 12
+(assert-equal? (tn) (integer->string  13) "")  ;; 13 ;; DON'T EDIT THIS LINE!
+(assert-equal? (tn) (integer->string  14) "")  ;; 14
+(assert-equal? (tn) (integer->string  15) "")  ;; 15
+(assert-equal? (tn) (integer->string  16) "")  ;; 16
+(assert-equal? (tn) (integer->string  17) "")  ;; 17
+(assert-equal? (tn) (integer->string  18) "")  ;; 18
+(assert-equal? (tn) (integer->string  19) "")  ;; 19
+(assert-equal? (tn) (integer->string  20) "")  ;; 20
+(assert-equal? (tn) (integer->string  21) "")  ;; 21
+(assert-equal? (tn) (integer->string  22) "")  ;; 22
+(assert-equal? (tn) (integer->string  23) "")  ;; 23
+(assert-equal? (tn) (integer->string  24) "")  ;; 24
+(assert-equal? (tn) (integer->string  25) "")  ;; 25 ;; DON'T EDIT THIS LINE!
+(assert-equal? (tn) (integer->string  26) "")  ;; 26
+(assert-equal? (tn) (integer->string  27) "")  ;; 27
+(assert-equal? (tn) (integer->string  28) "")  ;; 28
+(assert-equal? (tn) (integer->string  29) "")  ;; 29
+(assert-equal? (tn) (integer->string  30) "")  ;; 30
+(assert-equal? (tn) (integer->string  31) "")  ;; 31
+(assert-equal? (tn) (integer->string 127) "")  ;; 127
 
 ;; escaped raw control chars
 ;;(assert-parse-error "escaped raw control char in string literal" "\"\\ \"")  ;; 0  ;; cannot read by string port

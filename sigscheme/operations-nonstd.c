@@ -111,7 +111,7 @@ scm_p_load_path(void)
 {
     DECLARE_FUNCTION("load-path", procedure_fixed_0);
 
-    return MAKE_IMMUTABLE_STRING_COPYING(scm_lib_path);
+    return CONST_STRING(scm_lib_path);
 }
 
 void
@@ -177,7 +177,7 @@ make_loaded_str(const char *filename)
     loaded_str = scm_malloc(size);
     snprintf(loaded_str, size, "*%s-loaded*", filename);
 
-    return MAKE_IMMUTABLE_STRING(loaded_str);
+    return MAKE_IMMUTABLE_STRING(loaded_str, STRLEN_UNKNOWN);
 }
 
 /*

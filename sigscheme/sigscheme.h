@@ -389,11 +389,19 @@ struct ScmEvalState_ {
 #define SCM_MAKE_CONS(kar, kdr)           SCM_SAL_MAKE_CONS((kar), (kdr))
 #define SCM_MAKE_SYMBOL(name, val)        SCM_SAL_MAKE_SYMBOL((name), (val))
 #define SCM_MAKE_CHAR(val)                SCM_SAL_MAKE_CHAR(val)
-#define SCM_MAKE_STRING(str)              SCM_SAL_MAKE_STRING(str)
-#define SCM_MAKE_STRING_COPYING(str)      SCM_SAL_MAKE_STRING_COPYING(str)
-#define SCM_MAKE_IMMUTABLE_STRING(str)    SCM_SAL_MAKE_IMMUTABLE_STRING(str)
-#define SCM_MAKE_IMMUTABLE_STRING_COPYING(str)                               \
-    SCM_SAL_MAKE_IMMUTABLE_STRING_COPYING(str)
+
+#define SCM_MAKE_STRING(str, len)                                            \
+    SCM_SAL_MAKE_STRING((str), (len))
+#define SCM_MAKE_STRING_COPYING(str, len)                                    \
+    SCM_SAL_MAKE_STRING_COPYING((str), (len))
+#define SCM_MAKE_IMMUTABLE_STRING(str, len)                                  \
+    SCM_SAL_MAKE_IMMUTABLE_STRING((str), (len))
+#define SCM_MAKE_IMMUTABLE_STRING_COPYING(str, len)                          \
+    SCM_SAL_MAKE_IMMUTABLE_STRING_COPYING((str), (len))
+#define SCM_CONST_STRING(str)                                                \
+    SCM_MAKE_IMMUTABLE_STRING_COPYING((str), SCM_STRLEN_UNKNOWN)
+#define SCM_STRLEN_UNKNOWN -1
+
 /* SCM_MAKE_FUNC(enum ScmFuncTypeCode type, ScmFuncType func) */
 #define SCM_MAKE_FUNC(type, func)         SCM_SAL_MAKE_FUNC((type), (func))
 #define SCM_MAKE_CLOSURE(exp, env)        SCM_SAL_MAKE_CLOSURE((exp), (env))

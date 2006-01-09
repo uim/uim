@@ -668,10 +668,10 @@ ScmObj scm_make_int(int val);
 ScmObj scm_make_char(int val);
 #endif
 ScmObj scm_make_symbol(char *name, ScmObj val);
-ScmObj scm_make_immutable_string(char *str);
-ScmObj scm_make_immutable_string_copying(const char *str);
-ScmObj scm_make_string(char *str);
-ScmObj scm_make_string_copying(const char *str);
+ScmObj scm_make_immutable_string(char *str, int len);
+ScmObj scm_make_immutable_string_copying(const char *str, int len);
+ScmObj scm_make_string(char *str, int len);
+ScmObj scm_make_string_copying(const char *str, int len);
 ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
 ScmObj scm_make_closure(ScmObj exp, ScmObj env);
 ScmObj scm_make_vector(ScmObj *vec, int len);

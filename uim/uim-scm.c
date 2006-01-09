@@ -222,7 +222,7 @@ uim_scm_refer_c_str_internal(uim_lisp str)
 uim_lisp
 uim_scm_make_str(const char *str)
 {
-  return (uim_lisp)SCM_MAKE_STRING_COPYING(str);
+  return (uim_lisp)SCM_MAKE_STRING_COPYING(str, SCM_STRLEN_UNKNOWN);
 }
 
 char *

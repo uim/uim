@@ -177,10 +177,14 @@ extern ScmObj scm_null_values;
 #define MAKE_CONS                     SCM_MAKE_CONS
 #define MAKE_SYMBOL                   SCM_MAKE_SYMBOL
 #define MAKE_CHAR                     SCM_MAKE_CHAR
+
 #define MAKE_STRING                   SCM_MAKE_STRING
 #define MAKE_STRING_COPYING           SCM_MAKE_STRING_COPYING
 #define MAKE_IMMUTABLE_STRING         SCM_MAKE_IMMUTABLE_STRING
 #define MAKE_IMMUTABLE_STRING_COPYING SCM_MAKE_IMMUTABLE_STRING_COPYING
+#define CONST_STRING                  SCM_CONST_STRING
+#define STRLEN_UNKNOWN                SCM_STRLEN_UNKNOWN
+
 #define MAKE_FUNC                     SCM_MAKE_FUNC
 #define MAKE_CLOSURE                  SCM_MAKE_CLOSURE
 #define MAKE_VECTOR                   SCM_MAKE_VECTOR
@@ -230,6 +234,7 @@ extern ScmObj scm_null_values;
 
 #define ENSURE_PROPER_LIST_TERMINATION SCM_ENSURE_PROPER_LIST_TERMINATION
 #define CHECK_PROPER_LIST_TERMINATION  SCM_CHECK_PROPER_LIST_TERMINATION
+
 
 /*
  * Abbrev name for these constants are not provided since it involves some

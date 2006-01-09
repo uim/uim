@@ -83,7 +83,8 @@ static ScmCell unbound_cell, undef_cell;
   File Local Function Declarations
 =======================================*/
 static void initialize_special_constants(void);
-static ScmObj scm_make_string_internal(char *str, scm_bool is_immutable);
+static ScmObj scm_make_string_internal(char *str, int len,
+                                       scm_bool is_immutable);
 
 /*=======================================
   Function Implementations
@@ -204,16 +205,19 @@ scm_make_char(int val)
 }
 
 static ScmObj
-scm_make_string_internal(char *str, scm_bool is_immutable)
+scm_make_string_internal(char *str, int len, scm_bool is_immutable)
 {
     ScmObj obj;
 
     SCM_ASSERT(str);
 
+    if (len == STRLEN_UNKNOWN)
+        len = scm_mb_bare_c_strlen(str);
+
     obj = scm_alloc_cell();
     SCM_ENTYPE_STRING(obj);
     SCM_STRING_SET_STR(obj, str);
-    SCM_STRING_SET_LEN(obj, (*str) ? scm_mb_bare_c_strlen(str) : 0);
+    SCM_STRING_SET_LEN(obj, len);
 
     if (is_immutable)
         SCM_STRING_SET_IMMUTABLE(obj);
@@ -224,27 +228,27 @@ scm_make_string_internal(char *str, scm_bool is_immutable)
 }
 
 ScmObj
-scm_make_immutable_string(char *str)
+scm_make_immutable_string(char *str, int len)
 {
-    return scm_make_string_internal(str, scm_true);
+    return scm_make_string_internal(str, len, scm_true);
 }
 
 ScmObj
-scm_make_immutable_string_copying(const char *str)
+scm_make_immutable_string_copying(const char *str, int len)
 {
-    return scm_make_string_internal(strdup(str), scm_true);
+    return scm_make_string_internal(strdup(str), len, scm_true);
 }
 
 ScmObj
-scm_make_string(char *str)
+scm_make_string(char *str, int len)
 {
-    return scm_make_string_internal(str, scm_false);
+    return scm_make_string_internal(str, len, scm_false);
 }
 
 ScmObj
-scm_make_string_copying(const char *str)
+scm_make_string_copying(const char *str, int len)
 {
-    return scm_make_string_internal(strdup(str), scm_false);
+    return scm_make_string_internal(strdup(str), len, scm_false);
 }
 
 ScmObj

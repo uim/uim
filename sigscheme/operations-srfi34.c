@@ -129,12 +129,9 @@ scm_initialize_srfi34(void)
     for (var = &global_var_list[0]; *var; var++)
         scm_gc_protect_with_init(*var, SCM_FALSE);
 
-    errmsg_unhandled_exception
-        = MAKE_IMMUTABLE_STRING_COPYING(ERRMSG_UNHANDLED_EXCEPTION);
-    errmsg_handler_returned
-        = MAKE_IMMUTABLE_STRING_COPYING(ERRMSG_HANDLER_RETURNED);
-    errmsg_fallback_exhausted
-        = MAKE_IMMUTABLE_STRING_COPYING(ERRMSG_FALLBACK_EXHAUSTED);
+    errmsg_unhandled_exception = CONST_STRING(ERRMSG_UNHANDLED_EXCEPTION);
+    errmsg_handler_returned    = CONST_STRING(ERRMSG_HANDLER_RETURNED);
+    errmsg_fallback_exhausted  = CONST_STRING(ERRMSG_FALLBACK_EXHAUSTED);
 
     sym_error      = scm_intern("error");
     sym_raise      = scm_intern("raise");

@@ -81,8 +81,7 @@ scm_init_error(void)
     /* allocate a cons cell as unique ID */
     scm_gc_protect_with_init(&err_obj_tag, CONS(SCM_UNDEF, SCM_UNDEF));
 
-    scm_gc_protect_with_init(&str_srfi34,
-                             MAKE_IMMUTABLE_STRING_COPYING("srfi-34"));
+    scm_gc_protect_with_init(&str_srfi34, CONST_STRING("srfi-34"));
     srfi34_is_provided = scm_false;
 
     cb_fatal_error = NULL;
@@ -298,7 +297,7 @@ scm_die(const char *msg, const char *filename, int line)
     asprintf(&reason, "%s: (file: %s, line: %d)", msg, filename, line);
     ENSURE_ALLOCATED(reason);
     /* reason will implicitly be freed via the object on GC */
-    reason_holder = MAKE_IMMUTABLE_STRING(reason);
+    reason_holder = MAKE_IMMUTABLE_STRING(reason, STRLEN_UNKNOWN);
 
     scm_fatal_error(reason);
     /* NOTREACHED */
@@ -317,7 +316,8 @@ scm_error(const char *msg, ...)
     va_end(va);
     ENSURE_ALLOCATED(reason);
 
-    err_obj = scm_make_error_obj(MAKE_IMMUTABLE_STRING(reason), SCM_NULL);
+    err_obj = scm_make_error_obj(MAKE_IMMUTABLE_STRING(reason, STRLEN_UNKNOWN),
+                                 SCM_NULL);
     scm_raise_error(err_obj);
     /* NOTREACHED */
 }
@@ -332,7 +332,8 @@ scm_error_obj(const char *func_name, const char *msg, ScmObj obj)
     asprintf(&reason, "in %s: %s", func_name, msg);
     ENSURE_ALLOCATED(reason);
 
-    err_obj = scm_make_error_obj(MAKE_IMMUTABLE_STRING(reason), LIST_1(obj));
+    err_obj = scm_make_error_obj(MAKE_IMMUTABLE_STRING(reason, STRLEN_UNKNOWN),
+                                 LIST_1(obj));
     scm_raise_error(err_obj);
     /* NOTREACHED */
 }

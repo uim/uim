@@ -183,15 +183,15 @@ scm_initialize_internal(void)
       Fixing up
     =======================================================================*/
     /* to evaluate SigScheme-dependent codes conditionally */
-    scm_provide(MAKE_IMMUTABLE_STRING_COPYING("sigscheme"));
+    scm_provide(CONST_STRING("sigscheme"));
 #if SCM_STRICT_R5RS
-    scm_provide(MAKE_IMMUTABLE_STRING_COPYING("strict-r5rs"));
+    scm_provide(CONST_STRING("strict-r5rs"));
 #endif
 #if SCM_STRICT_ARGCHECK
-    scm_provide(MAKE_IMMUTABLE_STRING_COPYING("strict-argcheck"));
+    scm_provide(CONST_STRING("strict-argcheck"));
 #endif
 #if SCM_COMPAT_SIOD_BUGS
-    scm_provide(MAKE_IMMUTABLE_STRING_COPYING("siod-bugs"));
+    scm_provide(CONST_STRING("siod-bugs"));
 #endif
     scm_initialized = scm_true;
 }
@@ -280,7 +280,7 @@ scm_s_use(ScmObj feature, ScmObj env)
 
     for (mod = module_info_table; mod->name; mod++) {
         if (strcmp(c_feature_str, mod->name) == 0) {
-            feature_str = MAKE_IMMUTABLE_STRING_COPYING(c_feature_str);
+            feature_str = CONST_STRING(c_feature_str);
             if (!scm_providedp(feature_str)) {
                 (*mod->initializer)();
                 scm_provide(feature_str);
@@ -383,7 +383,7 @@ scm_interpret_argv(char **argv)
         specified_codec = scm_mb_find_codec(encoding);
         if (!specified_codec) {
             if (scm_initialized) {
-                err_obj = MAKE_IMMUTABLE_STRING_COPYING(encoding);
+                err_obj = CONST_STRING(encoding);
                 scm_free_argv(argv);
                 ERR_OBJ("unsupported encoding", err_obj);
             } else {

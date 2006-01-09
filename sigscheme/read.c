@@ -532,7 +532,7 @@ read_string(ScmObj port)
     ScmObj obj;
     const ScmSpecialCharInfo *info;
     ScmCharCodec *codec;
-    int c;
+    int c, len;
     size_t offset;
     char *p;
     ScmLBuf(char) lbuf;
@@ -544,7 +544,10 @@ read_string(ScmObj port)
     LBUF_INIT(lbuf, init_buf, sizeof(init_buf));
     codec = scm_port_codec(port);
 
-    for (offset = 0, p = LBUF_BUF(lbuf);; offset = p - LBUF_BUF(lbuf)) {
+    for (offset = 0, p = LBUF_BUF(lbuf), len = 0;
+         ;
+         offset = p - LBUF_BUF(lbuf), len++)
+    {
         c = scm_port_get_char(port);
 
         CDBG((SCM_DBG_PARSER, "read_string c = %c", c));
@@ -559,7 +562,7 @@ read_string(ScmObj port)
         case '\"':
             LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + 1);
             *p = '\0';
-            obj = MAKE_IMMUTABLE_STRING_COPYING(LBUF_BUF(lbuf));
+            obj = MAKE_IMMUTABLE_STRING_COPYING(LBUF_BUF(lbuf), len);
             LBUF_FREE(lbuf);
             return obj;
 
