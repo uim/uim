@@ -1,0 +1,26 @@
+Design of SigScheme
+
+* Purposes
+  - Embedded into an application
+  - Suitable for embedded computing environment (i.e. non-desktop)
+
+* Requirements
+  - 3-clause BSD license
+  - Basic R5RS conformance
+  - Small footprint
+  - Low memory consumption
+  - Highly modular and customizable
+  - Code readability to enable learning Scheme by implementation
+  - Easy to write an extension by C
+
+* Code organization
+  - Memory allocators
+  - Exception and error handling
+  - Storage Abstraction Layer
+  - Continuation
+  - Environment
+  - Procedures and syntaxes
+  - Reader
+  - Writer
+  - Multibyte character processing
+  - Ports

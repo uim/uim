@@ -8,11 +8,15 @@ Specifications of SigScheme
 
   - 64bit environment is not supported (yet)
 
-* Standards conformance
+* R5RS conformance
 
   - Proper tail recursion
 
     Supported.
+
+  - Macros
+
+    Not supported (yet).
 
   - Continuations
 
