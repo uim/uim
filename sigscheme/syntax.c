@@ -127,7 +127,7 @@ enum _tr_msg {
     /** Extract the product. */
     TR_MSG_EXTRACT,
 
-    /** True if the end of the sequence has been reached. */
+    /** True iff the end of the sequence has been reached. */
     TR_MSG_ENDP,
 
     /**
@@ -298,7 +298,7 @@ vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
         break;
 
     case TR_MSG_EXTRACT:
-        /* Create a new vector if modifications have been recorded. */
+        /* Create a new vector iff modifications have been recorded. */
         if (!NULLP(t->u.vec.diff)) {
             ScmObj *copy_buf;
             ScmObj *src_buf;
