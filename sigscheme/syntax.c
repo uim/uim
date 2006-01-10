@@ -894,7 +894,8 @@ scm_s_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_
     /* now execution phase! */
     while (FALSEP(EVAL(test, env))) {
         /* execute commands */
-        EVAL(scm_s_begin(commands, eval_state), env);
+        FOR_EACH_PAIR(tmp, commands)
+            EVAL(CAR(tmp), env);
 
         /*
          * Notice
