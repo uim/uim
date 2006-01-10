@@ -41,6 +41,7 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
+#include "baseport.h"
 
 /*=======================================
   File Local Macro Declarations
@@ -93,6 +94,8 @@ repl(void)
 static void
 repl_loop(void)
 {
+    ScmBaseCharPort *cport;
+    ScmBytePort *bport;
     ScmObj sexp, result;
 #if SCM_USE_SRFI34
     ScmObj sym_guard, cond_catch, proc_read, err;
@@ -120,8 +123,20 @@ repl_loop(void)
                     SCM_INTERACTION_ENV);
         if (EOFP(sexp))
             break;
-        if (EQ(sexp, err))
-            continue;
+
+        /* parse error */
+        if (EQ(sexp, err)) {
+            cport = SCM_CHARPORT_DYNAMIC_CAST(ScmBaseCharPort,
+                                              SCM_PORT_IMPL(scm_in));
+            if (cport) {
+                bport = cport->bport;
+                /* discard all available input */
+                while (SCM_BYTEPORT_BYTE_READYP(bport))
+                    SCM_BYTEPORT_GET_BYTE(bport);
+                continue;
+            }
+            ERR("unrecoverable parse error");
+        }
 
         /*
          * Error-proof evaluation

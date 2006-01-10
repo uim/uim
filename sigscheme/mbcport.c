@@ -48,6 +48,10 @@
 /*=======================================
   Local Include
 =======================================*/
+/* To override SCM_{CHAR,BYTE}PORT_ERROR() and SCM_PORT_*ALLOC(). Don't depend
+ * on SigScheme-specific things */
+#include "sigscheme.h"
+
 #include "baseport.h"
 #include "encoding.h"
 #include "mbcport.h"
