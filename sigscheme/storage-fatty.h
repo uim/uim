@@ -398,7 +398,11 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #define SCM_SAL_INVALID  NULL
 #define SCM_SAL_NULL     scm_const_null
 #define SCM_SAL_TRUE     scm_const_true
+#if SCM_COMPAT_SIOD_BUGS
+#define SCM_SAL_FALSE    scm_const_null
+#else
 #define SCM_SAL_FALSE    scm_const_false
+#endif /* SCM_COMPAT_SIOD_BUGS */
 #define SCM_SAL_EOF      scm_const_eof
 #define SCM_SAL_UNBOUND  scm_const_unbound
 #define SCM_SAL_UNDEF    scm_const_undef

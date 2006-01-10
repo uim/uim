@@ -1006,7 +1006,12 @@ extern enum ScmObjType scm_type(ScmObj obj);
 #define SCM_SAL_UNDEF   ((ScmObj)(SCM_IMM_TAG_UNDEF))
 #define SCM_SAL_INVALID ((ScmObj)(SCM_IMM_TAG_INVALID))
 #define SCM_SAL_UNBOUND ((ScmObj)(SCM_IMM_TAG_UNBOUND))
+#if SCM_COMPAT_SIOD_BUGS
+#define SCM_SAL_FALSE   ((ScmObj)(SCM_IMM_TAG_NULL))
+#else
 #define SCM_SAL_FALSE   ((ScmObj)(SCM_IMM_TAG_FALSE))
+#endif /* SCM_COMPAT_SIOD_BUGS */
+
 #define SCM_SAL_TRUE    ((ScmObj)(SCM_IMM_TAG_TRUE))
 
 #define SCM_SAL_EQ(a, b) (SCM_STRIP_GCBIT(a) == SCM_STRIP_GCBIT(b))

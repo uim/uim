@@ -140,10 +140,6 @@ initialize_special_constants(void)
     SCM_CONSTANT_BIND_SUBSTANCE(scm_const_eof,     eof_cell);
     SCM_CONSTANT_BIND_SUBSTANCE(scm_const_unbound, unbound_cell);
     SCM_CONSTANT_BIND_SUBSTANCE(scm_const_undef,   undef_cell);
-
-#if SCM_COMPAT_SIOD_BUGS
-    scm_const_false = scm_const_null;
-#endif /* SCM_COMPAT_SIOD_BUGS */
 #endif /* !SCM_OBJ_COMPACT */
 }
 
