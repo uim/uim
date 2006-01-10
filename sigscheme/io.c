@@ -686,7 +686,7 @@ interpret_script_prelude(ScmObj port)
 static char **
 parse_script_prelude(ScmObj port)
 {
-    int argc, c, len;
+    int argc, c, len, line_len;
     char **argv, *arg, *p, line[SCRIPT_PRELUDE_MAXLEN];
     DECLARE_INTERNAL_FUNCTION("parse_script_prelude");
 
@@ -702,6 +702,7 @@ parse_script_prelude(ScmObj port)
     }
     if (*p)
         ERR("too long UNIX script prelude (max 64)");
+    line_len = p - line;
 
     if (line[0] != '#' || line[1] != '!') {
         ERR("Invalid UNIX script prelude");
@@ -715,19 +716,19 @@ parse_script_prelude(ScmObj port)
 #endif
 
     argv = scm_malloc(sizeof(char *));
+    argv[0] = NULL;
     argc = 0;
-    for (p = &line[3]; p < &line[SCRIPT_PRELUDE_MAXLEN]; p += len + 1) {
+    for (p = &line[3]; p < &line[line_len]; p += len + 1) {
         p += strspn(p, SCRIPT_PRELUDE_DELIM);
         len = strcspn(p, SCRIPT_PRELUDE_DELIM);
-        if (len) {
-            p[len] = '\0';
-            arg = strdup(p);
-            argv[argc] = arg;
-            argv = scm_realloc(argv, sizeof(char *) * (++argc + 1));
-            argv[argc] = NULL;
-        }
+        if (!len)
+            break;
+        p[len] = '\0';
+        arg = strdup(p);
+        argv[argc] = arg;
+        argv = scm_realloc(argv, sizeof(char *) * (++argc + 1));
+        argv[argc] = NULL;
     }
-    argv[argc] = NULL;
 
     return argv;
 }
