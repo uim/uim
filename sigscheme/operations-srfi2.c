@@ -107,8 +107,10 @@ scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
             } else {
                 goto err;
             }
-            if (FALSEP(val))
+            if (FALSEP(val)) {
+                eval_state->ret_type = SCM_RETTYPE_AS_IS;
                 return SCM_FALSE;
+            }
         }
         if (!NULLP(claws))
             goto err;

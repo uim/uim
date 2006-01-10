@@ -550,6 +550,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
      * To distinguish unmatched status from SCM_UNDEF from a clause, pure
      * internal value SCM_INVALID is returned. Don't pass it to Scheme world.
      */
+    eval_state->ret_type = SCM_RETTYPE_AS_IS;
     return SCM_INVALID;
 }
 
@@ -580,8 +581,10 @@ scm_s_and(ScmObj args, ScmEvalState *eval_state)
     ScmObj expr, val;
     DECLARE_FUNCTION("and", syntax_variadic_tailrec_0);
 
-    if (NO_MORE_ARG(args))
+    if (NO_MORE_ARG(args)) {
+        eval_state->ret_type = SCM_RETTYPE_AS_IS;
         return SCM_TRUE;
+    }
 
     FOR_EACH_BUTLAST (expr, args) {
         val = EVAL(expr, eval_state->env);
@@ -602,8 +605,10 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
     ScmObj expr, val;
     DECLARE_FUNCTION("or", syntax_variadic_tailrec_0);
 
-    if (NO_MORE_ARG(args))
+    if (NO_MORE_ARG(args)) {
+        eval_state->ret_type = SCM_RETTYPE_AS_IS;
         return SCM_FALSE;
+    }
 
     FOR_EACH_BUTLAST (expr, args) {
         val = EVAL(expr, eval_state->env);
@@ -810,8 +815,10 @@ scm_s_begin(ScmObj args, ScmEvalState *eval_state)
     ScmObj expr;
     DECLARE_FUNCTION("begin", syntax_variadic_tailrec_0);
 
-    if (NO_MORE_ARG(args))
+    if (NO_MORE_ARG(args)) {
+        eval_state->ret_type = SCM_RETTYPE_AS_IS;
         return SCM_UNDEF;
+    }
 
     FOR_EACH_BUTLAST (expr, args)
         EVAL(expr, eval_state->env);

@@ -458,7 +458,6 @@ scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state)
 
     ENSURE_LIST(last);
 
-    /* The last argument inhibits argument re-evaluation. */
     return call(proc, args, eval_state, SUPPRESS_EVAL_ARGS);
 }
 
