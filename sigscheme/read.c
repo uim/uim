@@ -605,6 +605,10 @@ read_string(ScmObj port)
                 ERR("invalid char in string: 0x%x", c);
             break;
         }
+#if !SCM_USE_NULL_CAPABLE_STRING
+        if (c == '\0')
+            ERR(SCM_ERRMSG_NULL_IN_STRING);
+#endif
     }
     LBUF_END(lbuf)[-1] = '\0';
     ERR("too long string: \"%s\"", LBUF_BUF(lbuf));

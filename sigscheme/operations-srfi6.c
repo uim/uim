@@ -35,6 +35,7 @@
 /*=======================================
   System Include
 =======================================*/
+#include <stdlib.h>
 
 /*=======================================
   Local Include
@@ -111,6 +112,12 @@ ScmObj
 scm_p_srfi6_get_output_string(ScmObj port)
 {
     ScmBaseCharPort *cport;
+    const char *str;
+    char *new_str;
+    int mb_len;
+#if SCM_USE_NULL_CAPABLE_STRING
+    size_t size;
+#endif
     DECLARE_FUNCTION("get-output-string", procedure_fixed_1);
 
     ENSURE_PORT(port);
@@ -118,8 +125,18 @@ scm_p_srfi6_get_output_string(ScmObj port)
     SCM_ENSURE_LIVE_PORT(port);
     cport = SCM_CHARPORT_DYNAMIC_CAST(ScmBaseCharPort, SCM_PORT_IMPL(port));
 
-    return MAKE_STRING_COPYING(ScmOutputStrPort_str(cport->bport),
-                               STRLEN_UNKNOWN);
+    str = ScmOutputStrPort_str(cport->bport);
+    /* FIXME: incorrect length for null-capable string */
+    mb_len = scm_mb_bare_c_strlen(scm_port_codec(port), str);
+#if SCM_USE_NULL_CAPABLE_STRING
+    size = ScmOutputStrPort_c_strlen(cport->bport) + sizeof("");
+    new_str = scm_malloc(size);
+    memcpy(new_str, str, size);
+#else
+    new_str = strdup(str);
+#endif
+
+    return MAKE_STRING(new_str, mb_len);
 }
 
 

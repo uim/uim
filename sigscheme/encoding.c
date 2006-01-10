@@ -266,7 +266,7 @@ ScmCharCodec *scm_current_char_codec
 =======================================*/
 
 int
-scm_mb_strlen(ScmMultibyteString mbs)
+scm_mb_strlen(ScmCharCodec *codec, ScmMultibyteString mbs)
 {
     int len;
     ScmMultibyteCharInfo c;
@@ -275,7 +275,7 @@ scm_mb_strlen(ScmMultibyteString mbs)
           SCM_MBS_GET_SIZE(mbs), SCM_MBS_GET_STR(mbs)));
 
     for (len = 0; SCM_MBS_GET_SIZE(mbs); len++) {
-        c = SCM_CHARCODEC_SCAN_CHAR(scm_current_char_codec, mbs);
+        c = SCM_CHARCODEC_SCAN_CHAR(codec, mbs);
         CDBG((SCM_DBG_ENCODING, "%d, %d;", SCM_MBCINFO_GET_SIZE(c), c.flag));
         SCM_MBS_SKIP_CHAR(mbs, c);
     }
@@ -286,16 +286,16 @@ scm_mb_strlen(ScmMultibyteString mbs)
 
 /* FIXME: pick a better name. */
 int
-scm_mb_bare_c_strlen(const char *s)
+scm_mb_bare_c_strlen(ScmCharCodec *codec, const char *s)
 {
     ScmMultibyteString mbs;
 
     SCM_MBS_INIT2(mbs, s, strlen(s));
-    return scm_mb_strlen(mbs);
+    return scm_mb_strlen(codec, mbs);
 }
 
 ScmMultibyteString
-scm_mb_substring(ScmMultibyteString mbs, int i, int len)
+scm_mb_substring(ScmCharCodec *codec, ScmMultibyteString mbs, int i, int len)
 {
     ScmMultibyteString ret, end;
     ScmMultibyteCharInfo c;
@@ -303,14 +303,14 @@ scm_mb_substring(ScmMultibyteString mbs, int i, int len)
     ret = mbs;
 
     while (i--) {
-        c = SCM_CHARCODEC_SCAN_CHAR(scm_current_char_codec, ret);
+        c = SCM_CHARCODEC_SCAN_CHAR(codec, ret);
         SCM_MBS_SKIP_CHAR(ret, c);
     }
 
     end = ret;
 
     while (len--) {
-        c = SCM_CHARCODEC_SCAN_CHAR(scm_current_char_codec, end);
+        c = SCM_CHARCODEC_SCAN_CHAR(codec, end);
         SCM_MBS_SKIP_CHAR(end, c);
     }
 

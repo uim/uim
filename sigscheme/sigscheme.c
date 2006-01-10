@@ -193,6 +193,9 @@ scm_initialize_internal(void)
 #if SCM_COMPAT_SIOD_BUGS
     scm_provide(CONST_STRING("siod-bugs"));
 #endif
+#if SCM_USE_NULL_CAPABLE_STRING
+    scm_provide(CONST_STRING("null-capable-string"));
+#endif
     scm_initialized = scm_true;
 }
 

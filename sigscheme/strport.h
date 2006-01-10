@@ -82,6 +82,7 @@ void **ScmInputStrPort_ref_opaque(ScmBytePort *bport);
 
 ScmBytePort *ScmOutputStrPort_new(ScmOutputStrPort_finalizer finalize);
 const char *ScmOutputStrPort_str(ScmBytePort *bport);
+size_t ScmOutputStrPort_c_strlen(ScmBytePort *bport);
 void **ScmOutputStrPort_ref_opaque(ScmBytePort *bport);
 
 

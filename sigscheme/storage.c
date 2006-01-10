@@ -208,7 +208,7 @@ scm_make_string_internal(char *str, int len, scm_bool is_immutable)
     SCM_ASSERT(str);
 
     if (len == STRLEN_UNKNOWN)
-        len = scm_mb_bare_c_strlen(str);
+        len = scm_mb_bare_c_strlen(scm_current_char_codec, str);
 
     obj = scm_alloc_cell();
     SCM_ENTYPE_STRING(obj);

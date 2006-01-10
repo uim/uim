@@ -1241,10 +1241,14 @@ scm_p_stringp(ScmObj obj)
 ScmObj
 scm_p_make_string(ScmObj length, ScmObj args)
 {
-    int filler_val, len, i;
-    ScmObj filler, sport;
+    ScmObj filler;
+    int filler_val, len, ch_len;
+    char *str, *dst;
+    const char *next;
+    char ch_str[SCM_MB_MAX_LEN + sizeof("")];
     DECLARE_FUNCTION("make-string", procedure_variadic_1);
 
+    ENSURE_STATELESS_CODEC(scm_current_char_codec);
     ENSURE_INT(length);
     len = SCM_INT_VALUE(length);
     if (len == 0)
@@ -1255,21 +1259,31 @@ scm_p_make_string(ScmObj length, ScmObj args)
     /* extract filler */
     if (NULLP(args)) {
         filler_val = ' ';
+        ch_len = sizeof((char)' ');
     } else {
         filler = POP(args);
         ASSERT_NO_MORE_ARG(args);
         ENSURE_CHAR(filler);
         filler_val = SCM_CHAR_VALUE(filler);
+        ch_len = SCM_CHARCODEC_CHAR_LEN(scm_current_char_codec, filler_val);
     }
+#if !SCM_USE_NULL_CAPABLE_STRING
+    if (filler_val == '\0')
+        ERR("make-string: " SCM_ERRMSG_NULL_IN_STRING);
+#endif
 
-    /* TODO: make efficient */
-    /* fill string (multibyte-ready) */
-    sport = scm_p_srfi6_open_output_string();
-    for (i = 0; i < len; i++) {
-        scm_port_put_char(sport, filler_val);
-    }
+    next = SCM_CHARCODEC_INT2STR(scm_current_char_codec, ch_str, filler_val,
+                                 SCM_MB_STATELESS);
+    if (!next)
+        ERR("make-string: invalid char 0x%x for encoding %s",
+            filler_val, SCM_CHARCODEC_ENCODING(scm_current_char_codec));
 
-    return scm_p_srfi6_get_output_string(sport);
+    str = scm_malloc(ch_len * len + sizeof(""));
+    for (dst = str; dst < &str[ch_len * len]; dst += ch_len)
+        memcpy(dst, ch_str, ch_len);
+    *dst = '\0';
+
+    return MAKE_STRING(str, len);
 }
 
 ScmObj
@@ -1288,7 +1302,7 @@ scm_p_string_length(ScmObj str)
 
     ENSURE_STRING(str);
 
-    len = scm_mb_bare_c_strlen(SCM_STRING_STR(str));
+    len = scm_mb_bare_c_strlen(scm_current_char_codec, SCM_STRING_STR(str));
 
     return MAKE_INT(len);
 }
@@ -1308,7 +1322,7 @@ scm_p_string_ref(ScmObj str, ScmObj k)
         ERR_OBJ("index out of range", k);
 
     SCM_MBS_INIT2(mbs, SCM_STRING_STR(str), strlen(SCM_STRING_STR(str)));
-    mbs = scm_mb_strref(mbs, idx);
+    mbs = scm_mb_strref(scm_current_char_codec, mbs, idx);
 
     ch = SCM_CHARCODEC_STR2INT(scm_current_char_codec, SCM_MBS_GET_STR(mbs),
                                SCM_MBS_GET_SIZE(mbs), SCM_MBS_GET_STATE(mbs));
@@ -1342,7 +1356,7 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
 
     /* point at the char that to be replaced */
     SCM_MBS_INIT2(mbs_ch, c_str, strlen(c_str));
-    mbs_ch = scm_mb_strref(mbs_ch, idx);
+    mbs_ch = scm_mb_strref(scm_current_char_codec, mbs_ch, idx);
     orig_ch_len = SCM_MBS_GET_SIZE(mbs_ch);
     prefix_len = SCM_MBS_GET_STR(mbs_ch) - c_str;
 
@@ -1417,14 +1431,20 @@ scm_p_substring(ScmObj str, ScmObj start, ScmObj end)
     /* substring */
     c_str = SCM_STRING_STR(str);
     SCM_MBS_INIT2(mbs, c_str, strlen(c_str));
-    mbs = scm_mb_substring(mbs, c_start, c_end - c_start);
+    mbs = scm_mb_substring(scm_current_char_codec,
+                           mbs, c_start, c_end - c_start);
 
     /* copy the substring */
     new_str = scm_malloc(SCM_MBS_GET_SIZE(mbs) + sizeof(""));
     memcpy(new_str, SCM_MBS_GET_STR(mbs), SCM_MBS_GET_SIZE(mbs));
     new_str[SCM_MBS_GET_SIZE(mbs)] = '\0';
 
+#if SCM_USE_NULL_CAPABLE_STRING
+    /* FIXME: the result is truncated at null and incorrect */
+    return MAKE_STRING(new_str, STRLEN_UNKNOWN);
+#else
     return MAKE_STRING(new_str, c_end - c_start);
+#endif
 }
 
 /* FIXME: support stateful encoding */
@@ -1459,7 +1479,12 @@ scm_p_string_append(ScmObj args)
     }
     *dst = '\0';
 
+#if SCM_USE_NULL_CAPABLE_STRING
+    /* each string is chopped at first null and the result is incorrect */
+    return MAKE_STRING(new_str, STRLEN_UNKNOWN);
+#else
     return MAKE_STRING(new_str, mb_len);
+#endif
 }
 
 ScmObj
@@ -1467,18 +1492,31 @@ scm_p_string2list(ScmObj str)
 {
     ScmQueue q;
     ScmObj res;
-    int ch;
+    int ch, mb_len;
+    const char *c_str;
     ScmMultibyteString mbs;
     DECLARE_FUNCTION("string->list", procedure_fixed_1);
 
     ENSURE_STRING(str);
 
-    SCM_MBS_INIT2(mbs, SCM_STRING_STR(str), strlen(SCM_STRING_STR(str)));
+    c_str = SCM_STRING_STR(str);
+    mb_len = SCM_STRING_LEN(str);
+    SCM_MBS_INIT2(mbs, c_str, strlen(c_str));
 
     res = SCM_NULL;
     SCM_QUEUE_POINT_TO(q, res);
-    while (SCM_MBS_GET_SIZE(mbs)) {
-        ch = SCM_CHARCODEC_READ_CHAR(scm_current_char_codec, mbs);
+    while (mb_len--) {
+        if (SCM_MBS_GET_SIZE(mbs)) {
+            ch = SCM_CHARCODEC_READ_CHAR(scm_current_char_codec, mbs);
+        } else {
+#if SCM_USE_NULL_CAPABLE_STRING
+            ch = '\0';
+            c_str = &SCM_MBS_GET_STR(mbs)[1];
+            SCM_MBS_INIT2(mbs, c_str, strlen(c_str));
+#else
+            break;
+#endif
+        }
         SCM_QUEUE_ADD(q, MAKE_CHAR(ch));
     }
 
@@ -1488,24 +1526,40 @@ scm_p_string2list(ScmObj str)
 ScmObj
 scm_p_list2string(ScmObj lst)
 {
-    ScmObj rest, ch, sport;
+    ScmObj rest, ch;
+    size_t str_size;
+    int ch_val, len;
+    char *str, *dst;
     DECLARE_FUNCTION("list->string", procedure_fixed_1);
 
+    ENSURE_STATELESS_CODEC(scm_current_char_codec);
     ENSURE_LIST(lst);
 
     if (NULLP(lst))
         return MAKE_STRING_COPYING("", 0);
 
-    /* TODO: make efficient */
-    sport = scm_p_srfi6_open_output_string();
+    str_size = sizeof("");
     rest = lst;
+    len = 0;
     FOR_EACH (ch, rest) {
         ENSURE_CHAR(ch);
-        scm_port_put_char(sport, SCM_CHAR_VALUE(ch));
+        ch_val = SCM_CHAR_VALUE(ch);
+        str_size += SCM_CHARCODEC_CHAR_LEN(scm_current_char_codec, ch_val);
+        len++;
     }
     ENSURE_PROPER_LIST_TERMINATION(rest, lst);
 
-    return scm_p_srfi6_get_output_string(sport);
+    dst = str = scm_malloc(str_size);
+    FOR_EACH (ch, lst) {
+#if !SCM_USE_NULL_CAPABLE_STRING
+        if (ch == '\0')
+            ERR("list->string: " SCM_ERRMSG_NULL_IN_STRING);
+#endif
+        dst = SCM_CHARCODEC_INT2STR(scm_current_char_codec, dst,
+                                    SCM_CHAR_VALUE(ch), SCM_MB_STATELESS);
+    }
+
+    return MAKE_STRING(str, len);
 }
 
 ScmObj
@@ -1515,7 +1569,12 @@ scm_p_string_copy(ScmObj str)
 
     ENSURE_STRING(str);
 
+#if SCM_USE_NULL_CAPABLE_STRING
+    /* result is truncated at first null and incorrect */
+    return MAKE_STRING_COPYING(SCM_STRING_STR(str), STRLEN_UNKNOWN);
+#else
     return MAKE_STRING_COPYING(SCM_STRING_STR(str), SCM_STRING_LEN(str));
+#endif
 }
 
 ScmObj

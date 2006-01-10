@@ -200,10 +200,11 @@ extern ScmCharCodec *scm_current_char_codec;
 /*=======================================
    Function Declarations
 =======================================*/
-int scm_mb_strlen(ScmMultibyteString mbs);
-int scm_mb_bare_c_strlen(const char *str);
-ScmMultibyteString scm_mb_substring(ScmMultibyteString str, int i, int len);
-#define scm_mb_strref(str, i) (scm_mb_substring((str), (i), 1))
+int scm_mb_strlen(ScmCharCodec *codec, ScmMultibyteString mbs);
+int scm_mb_bare_c_strlen(ScmCharCodec *codec, const char *str);
+ScmMultibyteString scm_mb_substring(ScmCharCodec *codec,
+                                    ScmMultibyteString str, int i, int len);
+#define scm_mb_strref(codec, str, i) (scm_mb_substring((codec), (str), (i), 1))
 ScmCharCodec *scm_mb_find_codec(const char *encoding);
 int scm_charcodec_read_char(ScmCharCodec *codec, ScmMultibyteString *mbs,
                             const char *caller);

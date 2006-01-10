@@ -311,6 +311,16 @@ ScmOutputStrPort_str(ScmBytePort *bport)
     return (port->str) ? port->str : "";
 }
 
+size_t
+ScmOutputStrPort_c_strlen(ScmBytePort *bport)
+{
+    ScmOutputStrPort *port;
+
+    port = SCM_BYTEPORT_DYNAMIC_CAST(ScmOutputStrPort, bport);
+
+    return (port->buf_size) ? port->buf_size - sizeof("") : 0;
+}
+
 void **
 ScmOutputStrPort_ref_opaque(ScmBytePort *bport)
 {

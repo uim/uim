@@ -60,6 +60,8 @@ extern "C" {
 #define SCM_ERRMSG_MEMORY_EXHAUSTED    "memory exhausted"
 #define SCM_ERRMSG_IMPROPER_ARGS                                             \
     "proper list required for function call but got"
+#define SCM_ERRMSG_NULL_IN_STRING                                            \
+    "null character in a middle of string is not enabled"
 
 #ifdef __GNUC__
 #define SCM_NOINLINE __attribute__((noinline))
