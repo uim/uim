@@ -44,7 +44,6 @@
 =======================================*/
 #include <limits.h>
 #include <stddef.h>
-#include <stdint.h> /* FIXME: make C99-independent */
 
 /*=======================================
    Local Include
@@ -62,12 +61,6 @@ typedef ScmObj (*ScmFuncType)();
 /*=======================================
    Struct Declarations
 =======================================*/
-enum ScmMutability {
-    SCM_IMMUTABLE = 0,
-    SCM_MUTABLE   = 1
-};
-
-/* Scheme Object */
 struct ScmCell_ {
     enum ScmObjType type;
     int gcmark;
@@ -260,31 +253,40 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #define SCM_SAL_CHAR_VALUE(o)          (SCM_AS_CHAR(o)->obj.character.value)
 #define SCM_SAL_CHAR_SET_VALUE(o, val) (SCM_CHAR_VALUE(o) = (val))
 
-/* String object uses a tagged pointer to multiplex its mutability.
- * LSB of ScmCell.obj.string.str represents the value. */
-#define SCM_STRING_MUTABILITY_MASK     0x1UL
-#define SCM_STRING_STR_VALUE_MASK      ~SCM_STRING_MUTABILITY_MASK
+/* MSB (sign bit) of obj.string.len of a string object holds its
+ * mutability. The attribute is stored into there since:
+ *
+ * - efficient due to single-op sign detection
+ *
+ * - string length must be representable by a scheme integer object
+ * - string length is always zero or positive
+ * - thus the sign bit is always empty
+ *
+ * - enables convenience debugging with displaying the raw str
+ * - tagged pointer approach prevents leak detection
+ * - tagged pointer approach brings alignment restriction
+ */
+#define SCM_INT_MSB                    (~((unsigned)-1 >> 1))
+#define SCM_STRING_MUTABILITY_MASK     SCM_INT_MSB
+#define SCM_STRING_MUTABLE             SCM_INT_MSB
 #define SCM_SAL_STRINGP(o)             (SCM_TYPE(o) == ScmString)
 #define SCM_SAL_ENTYPE_STRING(o)       (SCM_ENTYPE((o), ScmString))
-#define SCM_SAL_STRING_STR(o)                                                \
-    ((char *)((uintptr_t)SCM_AS_STRING(o)->obj.string.str                    \
-              & SCM_STRING_STR_VALUE_MASK))
+#define SCM_SAL_STRING_STR(o)          (SCM_AS_STRING(o)->obj.string.str)
 #define SCM_SAL_STRING_SET_STR(o, val)                                       \
-    (SCM_AS_STRING(o)->obj.string.str =                                      \
-     (char *)((uintptr_t)(val) | (unsigned)SCM_STRING_MUTABILITY(o)))
-#define SCM_SAL_STRING_LEN(o)          (SCM_AS_STRING(o)->obj.string.len)
-#define SCM_SAL_STRING_SET_LEN(o, len) (SCM_STRING_LEN(o) = (len))
-#define SCM_STRING_MUTABILITY(o)                                             \
-  ((enum ScmMutability)((uintptr_t)SCM_AS_STRING(o)->obj.string.str          \
-                        & SCM_STRING_MUTABILITY_MASK))
+    (SCM_AS_STRING(o)->obj.string.str = (val))
+#define SCM_SAL_STRING_LEN(o)                                                \
+    ((int)(SCM_AS_STRING(o)->obj.string.len & ~SCM_STRING_MUTABILITY_MASK))
+#define SCM_SAL_STRING_SET_LEN(o, _len)                                      \
+    (SCM_AS_STRING(o)->obj.string.len                                        \
+     = (_len) | (int)((o)->obj.string.len & SCM_STRING_MUTABILITY_MASK))
 #define SCM_SAL_STRING_MUTABLEP(o)                                           \
-    (SCM_STRING_MUTABILITY(o) == SCM_MUTABLE)
+    (SCM_AS_STRING(o)->obj.string.len < 0)
 #define SCM_SAL_STRING_SET_MUTABLE(o)                                        \
-    (SCM_AS_STRING(o)->obj.string.str =                                      \
-     (char *)((uintptr_t)SCM_AS_STRING(o)->obj.string.str | SCM_MUTABLE))
+    (SCM_AS_STRING(o)->obj.string.len                                        \
+     = (int)((o)->obj.string.len | SCM_STRING_MUTABLE))
 #define SCM_SAL_STRING_SET_IMMUTABLE(o)                                      \
-    (SCM_AS_STRING(o)->obj.string.str =                                      \
-     (char *)((uintptr_t)SCM_AS_STRING(o)->obj.string.str | SCM_IMMUTABLE))
+    (SCM_AS_STRING(o)->obj.string.len                                        \
+     = (int)((o)->obj.string.len & ~SCM_STRING_MUTABILITY_MASK))
 
 #define SCM_SAL_FUNCP(o)                   (SCM_TYPE(o) == ScmFunc)
 #define SCM_SAL_ENTYPE_FUNC(o)             (SCM_ENTYPE((o), ScmFunc))
