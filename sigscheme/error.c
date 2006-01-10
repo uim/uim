@@ -258,7 +258,7 @@ scm_p_inspect_error(ScmObj err_obj)
     }
 
     if (scm_debug_categories() & SCM_DBG_ERRMSG) {
-        scm_show_error_header();
+        scm_port_printf(scm_err, SCM_ERR_HEADER);
         if (ERROBJP(err_obj)) {
             scm_display_to_port(scm_err, err_obj);
         } else {
@@ -336,12 +336,6 @@ scm_error_obj(const char *func_name, const char *msg, ScmObj obj)
                                  LIST_1(obj));
     scm_raise_error(err_obj);
     /* NOTREACHED */
-}
-
-void
-scm_show_error_header(void)
-{
-    scm_port_printf(scm_err, SCM_ERR_HEADER);
 }
 
 #if (SCM_DEBUG && SCM_DEBUG_BACKTRACE_VAL)

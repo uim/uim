@@ -525,8 +525,6 @@ ScmObj scm_s_cond_internal(ScmObj args, ScmObj case_key,
 
 /* error.c */
 void scm_init_error(void);
-void scm_throw_exception(ScmObj errorobj) SCM_NORETURN;
-void scm_show_error_header(void);
 
 /* operations.c */
 int scm_finite_length(ScmObj lst);
