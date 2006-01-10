@@ -502,6 +502,8 @@ void scm_finalize_symbol(void);
 
 /* env.c */
 ScmObj scm_extend_environment(ScmObj formals, ScmObj actuals, ScmObj env);
+ScmObj scm_replace_environment(ScmObj formals, ScmObj actuals, ScmObj env);
+ScmObj scm_update_environment(ScmObj actuals, ScmObj env);
 ScmObj scm_add_environment(ScmObj var, ScmObj val, ScmObj env);
 ScmRef scm_lookup_environment(ScmObj var, ScmObj env);
 

@@ -760,7 +760,7 @@ scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 ScmObj
 scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
-    ScmObj binding, frame, formals, actuals, var, val;
+    ScmObj binding, formals, actuals, var, val;
     DECLARE_FUNCTION("letrec", syntax_variadic_tailrec_1);
 
     /*========================================================================
@@ -774,9 +774,8 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
         goto err;
 
     /* extend env by placeholder frame for subsequent lambda evaluations */
-    /* FIXME: direct env object manipulation */
-    frame = CONS(SCM_NULL, SCM_NULL);
-    eval_state->env = CONS(frame, eval_state->env);
+    eval_state->env
+        = scm_extend_environment(SCM_NULL, SCM_NULL, eval_state->env);
 
     formals = SCM_NULL;
     actuals = SCM_NULL;
@@ -794,8 +793,8 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
         goto err;
 
     /* fill the placeholder frame */
-    SET_CAR(frame, formals);
-    SET_CDR(frame, actuals);
+    eval_state->env
+        = scm_replace_environment(formals, actuals, eval_state->env);
 
     return scm_s_begin(body, eval_state);
 
@@ -836,13 +835,13 @@ scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
          ScmEvalState *eval_state)
 {
     ScmQueue stepq;
-    ScmObj env, orig_env, rest, rest_commands, val, termp;
+    ScmObj env, rest, rest_commands, val, termp;
     ScmObj formals, actuals, steps;
     ScmObj binding, var, init, step;
     ScmObj test, exps, command;
     DECLARE_FUNCTION("do", syntax_variadic_tailrec_2);
 
-    env = orig_env = eval_state->env;
+    env = eval_state->env;
 
     /*
      * (do ((<variable1> <init1> <step1>)
@@ -891,7 +890,7 @@ scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
     /* iteration phase */
     rest_commands = commands;
     /* extend env by <init>s */
-    env = scm_extend_environment(formals, actuals, orig_env);
+    env = scm_extend_environment(formals, actuals, env);
     while (termp = EVAL(test, env), FALSEP(termp)) {
         rest_commands = commands;
         FOR_EACH (command, rest_commands)
@@ -906,7 +905,7 @@ scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
             val = EVAL(step, env);
             actuals = CONS(val, actuals);
         }
-        env = scm_extend_environment(formals, actuals, orig_env);
+        env = scm_update_environment(actuals, env);
     }
 #if SCM_STRICT_ARGCHECK
     /* no iteration occurred */

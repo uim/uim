@@ -122,6 +122,53 @@ scm_extend_environment(ScmObj formals, ScmObj actuals, ScmObj env)
     return CONS(frame, env);
 }
 
+/**
+ * Replace entire content of newest frame of an env
+ *
+ * The environment must be replaced with returned one in caller side even if
+ * this implementation returns identical to the one passed. This rule is
+ * required to be compatible with future alternative implementations.
+ */
+ScmObj
+scm_replace_environment(ScmObj formals, ScmObj actuals, ScmObj env)
+{
+    ScmObj frame;
+    DECLARE_INTERNAL_FUNCTION("scm_replace_environment");
+
+    SCM_ASSERT(scm_valid_environment_extensionp(formals, actuals));
+    SCM_ASSERT(VALID_ENVP(env));
+    SCM_ASSERT(CONSP(env));
+
+    frame = CAR(env);
+    SET_CAR(frame, formals);
+    SET_CDR(frame, actuals);
+
+    return env;
+}
+
+/**
+ * Replace all actuals of newest frame of an env
+ *
+ * The environment must be replaced with returned one in caller side even if
+ * this implementation returns identical to the one passed. This rule is
+ * required to be compatible with future alternative implementations.
+ */
+ScmObj
+scm_update_environment(ScmObj actuals, ScmObj env)
+{
+    ScmObj frame;
+    DECLARE_INTERNAL_FUNCTION("scm_update_environment");
+
+    SCM_ASSERT(VALID_ENVP(env));
+    SCM_ASSERT(CONSP(env));
+
+    frame = CAR(env);
+    SCM_ASSERT(scm_valid_environment_extensionp(CAR(frame), actuals));
+    SET_CDR(frame, actuals);
+
+    return env;
+}
+
 /** Add a binding to newest frame of an env */
 ScmObj
 scm_add_environment(ScmObj var, ScmObj val, ScmObj env)
@@ -140,9 +187,8 @@ scm_add_environment(ScmObj var, ScmObj val, ScmObj env)
         frame = CAR(env);
         formals = CONS(var, CAR(frame));
         actuals = CONS(val, CDR(frame));
-        frame = CONS(formals, actuals);
-
-        SET_CAR(env, frame);
+        SET_CAR(frame, formals);
+        SET_CDR(frame, actuals);
     } else {
         SCM_ASSERT(scm_false);
     }
