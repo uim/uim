@@ -1,5 +1,5 @@
 ==============================================================================
-Requirements and bugs:
+Requirements and critical bugs:
 
 * Autoconfiscate the SigScheme package (don't rely on uim's configure)
   - Prepare replace functions (asprintf and so on)
@@ -42,6 +42,12 @@ Requirements and bugs:
   - test/*.scm
 
 * grep "FIXME" and fix them
+
+==============================================================================
+Low priority bugs:
+
+* fileport_byte_readyp() does not support a FILE based on a pipe, or opened by
+  fdopen(3)
 
 ==============================================================================
 Extensions: (not required for now)
