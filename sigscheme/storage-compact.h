@@ -633,9 +633,38 @@ struct ScmCell_ {
                                SAL Macros
 ==============================================================================*/
 
-/* object representation information for optimization */
-#define SCM_SAL_HAS_IMMEDIATE_INT  1
-#define SCM_SAL_HAS_IMMEDIATE_CHAR 1
+/*=======================================
+  Object Representation Information
+=======================================*/
+#define SCM_SAL_HAS_CHAR     1
+#define SCM_SAL_HAS_RATIONAL 0
+#define SCM_SAL_HAS_REAL     0
+#define SCM_SAL_HAS_COMPLEX  0
+#define SCM_SAL_HAS_STRING   1
+#define SCM_SAL_HAS_VECTOR   1
+
+/* for optimization */
+#define SCM_SAL_HAS_IMMEDIATE_CHAR_ONLY     1
+#define SCM_SAL_HAS_IMMEDIATE_NUMBER_ONLY   1
+#define SCM_SAL_HAS_IMMEDIATE_INT_ONLY      1
+#define SCM_SAL_HAS_IMMEDIATE_RATIONAL_ONLY 0
+#define SCM_SAL_HAS_IMMEDIATE_REAL_ONLY     0
+#define SCM_SAL_HAS_IMMEDIATE_COMPLEX_ONLY  0
+
+#define SCM_SAL_CHAR_BITS   /* FIXME */
+#define SCM_SAL_CHAR_MAX    /* FIXME */
+
+#define SCM_SAL_INT_BITS    /* FIXME */
+#define SCM_SAL_INT_MAX     /* FIXME */
+#define SCM_SAL_INT_MIN     /* FIXME */
+
+/* string length */
+#define SCM_SAL_STRLEN_BITS /* FIXME */
+#define SCM_SAL_STRLEN_MAX  /* FIXME */
+
+/* vector length */
+#define SCM_SAL_VECLEN_BITS /* FIXME */
+#define SCM_SAL_VECLEN_MAX  /* FIXME */
 
 /*=======================================
   Object Creators

@@ -88,7 +88,7 @@ scm_p_eqp(ScmObj obj1, ScmObj obj2)
 ScmObj
 scm_p_eqvp(ScmObj obj1, ScmObj obj2)
 {
-#if (!SCM_HAS_IMMEDIATE_INT || !SCM_HAS_IMMEDIATE_CHAR)
+#if (!(SCM_HAS_IMMEDIATE_NUMBER_ONLY && SCM_HAS_IMMEDIATE_CHAR_ONLY))
     enum ScmObjType type;
 #endif
     DECLARE_FUNCTION("eqv?", procedure_fixed_2);
@@ -96,7 +96,7 @@ scm_p_eqvp(ScmObj obj1, ScmObj obj2)
     if (EQ(obj1, obj2))
         return SCM_TRUE;
 
-#if (!SCM_HAS_IMMEDIATE_INT || !SCM_HAS_IMMEDIATE_CHAR)
+#if (!(SCM_HAS_IMMEDIATE_NUMBER_ONLY && SCM_HAS_IMMEDIATE_CHAR_ONLY))
     type = SCM_TYPE(obj1);
 
     /* different type */
@@ -105,12 +105,12 @@ scm_p_eqvp(ScmObj obj1, ScmObj obj2)
 
     /* same type */
     switch (type) {
-#if !SCM_HAS_IMMEDIATE_INT
+#if !SCM_HAS_IMMEDIATE_INT_ONLY
     case ScmInt:
         return MAKE_BOOL(SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2));
 #endif
 
-#if !SCM_HAS_IMMEDIATE_CHAR
+#if !SCM_HAS_IMMEDIATE_CHAR_ONLY
     case ScmChar:
         return MAKE_BOOL(SCM_CHAR_VALUE(obj1) == SCM_CHAR_VALUE(obj2));
 #endif
@@ -118,7 +118,7 @@ scm_p_eqvp(ScmObj obj1, ScmObj obj2)
     default:
         break;
     }
-#endif /* (!SCM_HAS_IMMEDIATE_INT || !SCM_HAS_IMMEDIATE_CHAR) */
+#endif /* (!(SCM_HAS_IMMEDIATE_NUMBER_ONLY && SCM_HAS_IMMEDIATE_CHAR_ONLY)) */
 
     return SCM_FALSE;
 }
@@ -142,12 +142,12 @@ scm_p_equalp(ScmObj obj1, ScmObj obj2)
 
     /* same type */
     switch (type) {
-#if !SCM_HAS_IMMEDIATE_INT
+#if !SCM_HAS_IMMEDIATE_INT_ONLY
     case ScmInt:
         return MAKE_BOOL(SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2));
 #endif
 
-#if !SCM_HAS_IMMEDIATE_CHAR
+#if !SCM_HAS_IMMEDIATE_CHAR_ONLY
     case ScmChar:
         return MAKE_BOOL(SCM_CHAR_VALUE(obj1) == SCM_CHAR_VALUE(obj2));
 #endif
@@ -990,7 +990,7 @@ scm_p_memv(ScmObj obj, ScmObj lst)
 {
     DECLARE_FUNCTION("memv", procedure_fixed_2);
 
-#if (SCM_HAS_IMMEDIATE_INT && SCM_HAS_IMMEDIATE_CHAR)
+#if (SCM_HAS_IMMEDIATE_NUMBER_ONLY && SCM_HAS_IMMEDIATE_CHAR_ONLY)
     MEMBER_BODY(obj, lst, EQ);
 #else
     MEMBER_BODY(obj, lst, EQVP);
@@ -1034,7 +1034,7 @@ scm_p_assv(ScmObj obj, ScmObj alist)
 {
     DECLARE_FUNCTION("assv", procedure_fixed_2);
 
-#if (SCM_HAS_IMMEDIATE_INT && SCM_HAS_IMMEDIATE_CHAR)
+#if (SCM_HAS_IMMEDIATE_NUMBER_ONLY && SCM_HAS_IMMEDIATE_CHAR_ONLY)
     ASSOC_BODY(obj, alist, EQ);
 #else
     ASSOC_BODY(obj, alist, EQVP);
@@ -1101,7 +1101,7 @@ scm_p_charequalp(ScmObj ch1, ScmObj ch2)
     ENSURE_CHAR(ch1);
     ENSURE_CHAR(ch2);
 
-#if SCM_HAS_IMMEDIATE_CHAR
+#if SCM_HAS_IMMEDIATE_CHAR_ONLY
     return MAKE_BOOL(EQ(ch1, ch2));
 #else
     return MAKE_BOOL(SCM_CHAR_VALUE(ch1) == SCM_CHAR_VALUE(ch2));

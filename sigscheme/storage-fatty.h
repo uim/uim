@@ -42,6 +42,7 @@
 /*=======================================
    System Include
 =======================================*/
+#include <limits.h>
 #include <stddef.h>
 #include <stdint.h> /* FIXME: make C99-independent */
 
@@ -136,9 +137,38 @@ struct ScmCell_ {
     } obj;
 };
 
-/* object representation information for optimization */
-#define SCM_SAL_HAS_IMMEDIATE_INT  0
-#define SCM_SAL_HAS_IMMEDIATE_CHAR 0
+/*=======================================
+  Object Representation Information
+=======================================*/
+#define SCM_SAL_HAS_CHAR     1
+#define SCM_SAL_HAS_RATIONAL 0
+#define SCM_SAL_HAS_REAL     0
+#define SCM_SAL_HAS_COMPLEX  0
+#define SCM_SAL_HAS_STRING   1
+#define SCM_SAL_HAS_VECTOR   1
+
+/* for optimization */
+#define SCM_SAL_HAS_IMMEDIATE_CHAR_ONLY     0
+#define SCM_SAL_HAS_IMMEDIATE_NUMBER_ONLY   0
+#define SCM_SAL_HAS_IMMEDIATE_INT_ONLY      0
+#define SCM_SAL_HAS_IMMEDIATE_RATIONAL_ONLY 0
+#define SCM_SAL_HAS_IMMEDIATE_REAL_ONLY     0
+#define SCM_SAL_HAS_IMMEDIATE_COMPLEX_ONLY  0
+
+#define SCM_SAL_CHAR_BITS   SCM_INT_BITS
+#define SCM_SAL_CHAR_MAX    SCM_INT_MAX
+
+#define SCM_SAL_INT_BITS    (sizeof(int) * CHAR_BIT)
+#define SCM_SAL_INT_MAX     INT_MAX
+#define SCM_SAL_INT_MIN     INT_MIN
+
+/* string length */
+#define SCM_SAL_STRLEN_BITS SCM_INT_BITS
+#define SCM_SAL_STRLEN_MAX  SCM_INT_MAX
+
+/* vector length */
+#define SCM_SAL_VECLEN_BITS SCM_INT_BITS
+#define SCM_SAL_VECLEN_MAX  SCM_INT_MAX
 
 /*=======================================
   Object Creators
@@ -198,6 +228,8 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #define SCM_ENTYPE(o, objtype) ((o)->type = (objtype))
 
 /* Real Accessors */
+#define SCM_SAL_NUMBERP(o)             SCM_SAL_INTP(o)
+
 #define SCM_SAL_INTP(o)                (SCM_TYPE(o) == ScmInt)
 #define SCM_SAL_ENTYPE_INT(o)          (SCM_ENTYPE((o), ScmInt))
 #define SCM_SAL_INT_VALUE(o)           (SCM_AS_INT(o)->obj.integer.value)

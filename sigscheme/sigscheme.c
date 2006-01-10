@@ -196,6 +196,12 @@ scm_initialize_internal(void)
 #if SCM_USE_NULL_CAPABLE_STRING
     scm_provide(CONST_STRING("null-capable-string"));
 #endif
+#if SCM_HAS_IMMEDIATE_CHAR_ONLY
+    scm_provide(CONST_STRING("immediate-char-only"));
+#endif
+#if SCM_HAS_IMMEDIATE_NUMBER_ONLY
+    scm_provide(CONST_STRING("immediate-number-only"));
+#endif
     scm_initialized = scm_true;
 }
 

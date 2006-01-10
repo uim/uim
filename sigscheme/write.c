@@ -239,9 +239,6 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
     case ScmConstant:
         write_constant(port, obj, otype);
         break;
-    case ScmFreeCell:
-        ERR("You cannot print ScmFreeCell, may be GC bug.");
-        break;
     case ScmCPointer:
         scm_port_printf(port, "#<c_pointer %p>", SCM_C_POINTER_VALUE(obj));
         break;
@@ -249,6 +246,8 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         scm_port_printf(port, "#<c_func_pointer %p>",
                           (void *)(uintptr_t)SCM_C_FUNCPOINTER_VALUE(obj));
         break;
+    default:
+        SCM_ASSERT(scm_false);
     }
 }
 

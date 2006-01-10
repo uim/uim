@@ -269,22 +269,28 @@ enum ScmDebugCategory {
 };
 
 enum ScmObjType {
-    ScmInt          = 0,
-    ScmCons         = 1,
-    ScmSymbol       = 2,
-    ScmChar         = 3,
+    /* sorted by majority to make immediate number encoding optimal */
+    ScmCons         = 0,
+    ScmInt          = 1,
+    ScmChar         = 2,
+    ScmSymbol       = 3,
+
     ScmString       = 4,
     ScmFunc         = 5,
     ScmClosure      = 6,
     ScmVector       = 7,
-    ScmPort         = 8,
-    ScmContinuation = 9,
-    ScmConstant     = 10,
-    ScmValuePacket  = 11,
-    ScmFreeCell     = 12,
 
-    ScmCPointer     = 20,
-    ScmCFuncPointer = 21
+    ScmRational     = 8,
+    ScmReal         = 9,
+    ScmComplex      = 10,
+    ScmConstant     = 11,
+    ScmContinuation = 12,
+    ScmValuePacket  = 13,
+    ScmPort         = 14,
+    ScmFreeCell     = 15,
+
+    ScmCFuncPointer = 30,
+    ScmCPointer     = 31
 };
 
 /*
@@ -379,9 +385,42 @@ struct ScmEvalState_ {
     enum ScmReturnType ret_type;
 };
 
-/* object representation information for optimization */
-#define SCM_HAS_IMMEDIATE_INT  SCM_SAL_HAS_IMMEDIATE_INT
-#define SCM_HAS_IMMEDIATE_CHAR SCM_SAL_HAS_IMMEDIATE_CHAR
+/*=======================================
+  Object Representation Information
+=======================================*/
+#define SCM_HAS_CHAR     SCM_SAL_HAS_CHAR
+#define SCM_HAS_INT      1
+#define SCM_HAS_RATIONAL SCM_SAL_HAS_RATIONAL
+#define SCM_HAS_REAL     SCM_SAL_HAS_REAL
+#define SCM_HAS_COMPLEX  SCM_SAL_HAS_COMPLEX
+#define SCM_HAS_STRING   SCM_SAL_HAS_STRING
+#define SCM_HAS_VECTOR   SCM_SAL_HAS_VECTOR
+
+/* for optimization */
+#define SCM_HAS_IMMEDIATE_CHAR_ONLY     SCM_SAL_HAS_IMMEDIATE_CHAR
+#define SCM_HAS_IMMEDIATE_NUMBER_ONLY   SCM_SAL_HAS_IMMEDIATE_NUMBER_ONLY
+#define SCM_HAS_IMMEDIATE_INT_ONLY      SCM_SAL_HAS_IMMEDIATE_INT_ONLY
+#define SCM_HAS_IMMEDIATE_RATIONAL_ONLY SCM_SAL_HAS_IMMEDIATE_RATIONAL_ONLY
+#define SCM_HAS_IMMEDIATE_REAL_ONLY     SCM_SAL_HAS_IMMEDIATE_REAL_ONLY
+#define SCM_HAS_IMMEDIATE_COMPLEX_ONLY  SCM_SAL_HAS_IMMEDIATE_COMPLEX_ONLY
+
+#define SCM_CHAR_BITS   SCM_SAL_CHAR_BITS
+#define SCM_CHAR_MAX    SCM_SAL_CHAR_MAX
+#define SCM_CHAR_MIN    0
+
+#define SCM_INT_BITS    SCM_SAL_INT_BITS
+#define SCM_INT_MAX     SCM_SAL_INT_MAX
+#define SCM_INT_MIN     SCM_SAL_INT_MIN
+
+/* string length */
+#define SCM_STRLEN_BITS SCM_SAL_STRLEN_BITS
+#define SCM_STRLEN_MAX  SCM_SAL_STRLEN_MAX
+#define SCM_STRLEN_MIN  0
+
+/* vector length */
+#define SCM_VECLEN_BITS SCM_SAL_VECLEN_BITS
+#define SCM_VECLEN_MAX  SCM_SAL_VECLEN_MAX
+#define SCM_VECLEN_MIN  0
 
 /*=======================================
   Object Creators
@@ -431,6 +470,7 @@ struct ScmEvalState_ {
 #else /* SCM_ACCESSOR_ASSERT */
 #define SCM_ASSERT_TYPE(cond, o) (o)
 #endif /* SCM_ACCESSOR_ASSERT */
+#define SCM_AS_NUMBER(o)        (SCM_ASSERT_TYPE(SCM_NUMBERP(o),        (o)))
 #define SCM_AS_INT(o)           (SCM_ASSERT_TYPE(SCM_INTP(o),           (o)))
 #define SCM_AS_CONS(o)          (SCM_ASSERT_TYPE(SCM_CONSP(o),          (o)))
 #define SCM_AS_SYMBOL(o)        (SCM_ASSERT_TYPE(SCM_SYMBOLP(o),        (o)))
@@ -444,6 +484,8 @@ struct ScmEvalState_ {
 #define SCM_AS_VALUEPACKET(o)   (SCM_ASSERT_TYPE(SCM_VALUEPACKETP(o),   (o)))
 #define SCM_AS_C_POINTER(o)     (SCM_ASSERT_TYPE(SCM_C_POINTERP(o),     (o)))
 #define SCM_AS_C_FUNCPOINTER(o) (SCM_ASSERT_TYPE(SCM_C_FUNCPOINTERP(o), (o)))
+
+#define SCM_NUMBERP(o)                  SCM_SAL_NUMBERP(o)
 
 #define SCM_INTP(o)                     SCM_SAL_INTP(o)
 #define SCM_INT_VALUE(o)                SCM_SAL_INT_VALUE(o)
