@@ -12,11 +12,10 @@ Requirements and critical bugs:
 * Fix all side-effective expression in macros
   - All files except for operations-srfi1.c, storage-compact.h and
     test-compact.c are checked
-  - scm_s_do() and qquote_internal() still have such expression
+  - qquote_internal() still have such expression
 
 * Review and refactor some functions in syntax.c(listran, vectran,
-  qquote_internal, scm_s_quasiquote, scm_s_do) (other files had already been
-  done except for the destructive exp on macros)
+  qquote_internal, scm_s_quasiquote) (other files had already been done)
 
 * Confirm behavior of constant vector and list
   - Investigate behavior of them in Scheme implementations other than Gauche
@@ -118,10 +117,6 @@ Assigned to Kazuki:
 
 ==============================================================================
 Assigned to YamaKen:
-
-* Fix scm_s_do()
-  - SEGV conditions by manual arg extraction
-  - expensive operations
 
 * [uim] Validate all uim_scm_gc_protect() invocation
 

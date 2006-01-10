@@ -843,7 +843,7 @@ ScmObj scm_s_let(ScmObj args, ScmEvalState *eval_state);
 ScmObj scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state);
 ScmObj scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state);
 ScmObj scm_s_begin(ScmObj args, ScmEvalState *eval_state);
-ScmObj scm_s_do(ScmObj bindings, ScmObj testframe, ScmObj commands,
+ScmObj scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
                 ScmEvalState *eval_state);
 ScmObj scm_s_delay(ScmObj expr, ScmObj env);
 ScmObj scm_s_quasiquote(ScmObj datum, ScmObj env);

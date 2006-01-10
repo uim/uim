@@ -831,14 +831,19 @@ scm_s_begin(ScmObj args, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.4 Iteration
 ===========================================================================*/
-/* FIXME:
- * - SEGV conditions by manual arg extraction
- * - side-effective arg in macros such as EVAL, NFALSEP
- * - expensive operations
- */
 ScmObj
-scm_s_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_state)
+scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
+         ScmEvalState *eval_state)
 {
+    ScmQueue stepq;
+    ScmObj env, orig_env, rest, rest_commands, val, termp;
+    ScmObj formals, actuals, steps;
+    ScmObj binding, var, init, step;
+    ScmObj test, exps, command;
+    DECLARE_FUNCTION("do", syntax_variadic_tailrec_2);
+
+    env = orig_env = eval_state->env;
+
     /*
      * (do ((<variable1> <init1> <step1>)
      *      (<variable2> <init2> <step2>)
@@ -846,86 +851,83 @@ scm_s_do(ScmObj bindings, ScmObj testframe, ScmObj commands, ScmEvalState *eval_
      *     (<test> <expression> ...)
      *   <command> ...)
      */
-    ScmObj env        = eval_state->env;
-    ScmObj binding    = SCM_FALSE;
-    ScmObj var        = SCM_FALSE;
-    ScmObj val        = SCM_FALSE;
-    ScmObj vars       = SCM_NULL;
-    ScmObj vals       = SCM_NULL;
-    ScmObj steps      = SCM_NULL;
-    ScmObj test       = SCM_FALSE;
-    ScmObj expression = SCM_FALSE;
-    ScmObj tmp_vars   = SCM_FALSE;
-    ScmObj tmp;
-    ScmRef obj;
-    DECLARE_FUNCTION("do", syntax_variadic_tailrec_2);
 
-    /* construct Environment and steps */
-    FOR_EACH (binding, bindings) {
-        if (NULLP(binding))
-            ERR("invalid binding");
-
-        var = MUST_POP_ARG(binding);
+    /* extract bindings ((<variable> <init> <step>) ...) */
+    formals = actuals = steps = SCM_NULL;
+    SCM_QUEUE_POINT_TO(stepq, steps);
+    rest = bindings;
+    FOR_EACH (binding, rest) {
+        if (!CONSP(binding))
+            goto err;
+        var  = POP(binding);
         ENSURE_SYMBOL(var);
-        val = MUST_POP_ARG(binding);
+        /* R5RS: It is an error for a <variable> to appear more than once in
+         * the list of `do' variables. */
+        if (NFALSEP(scm_p_memq(var, formals)))
+            ERR_OBJ("duplicate variable", var);
 
-        vars = CONS(var, vars);
-        val  = EVAL(val, env);
-        vals = CONS(val, vals);
+        if (!CONSP(binding))
+            goto err;
+        init = POP(binding);
 
-        /* append <step> to steps */
-        if (NO_MORE_ARG(binding))
-            steps = CONS(var, steps);
-        else
-            steps = CONS(POP(binding), steps);
+        step = (CONSP(binding)) ? POP(binding) : var;
+        if (!NULLP(binding))
+            goto err;
 
-        ASSERT_NO_MORE_ARG(binding);
+        init = EVAL(init, env);
+        formals = CONS(var, formals);
+        actuals = CONS(init, actuals);
+        SCM_QUEUE_ADD(stepq, step);
     }
+    if (!NULLP(rest))
+        goto err;
 
-    /* now extend environment */
-    env = scm_extend_environment(vars, vals, env);
+    /* (<test> <expression> ...) */
+    if (!CONSP(test_exps))
+        ERR_OBJ("invalid test form", test_exps);
+    test = CAR(test_exps);
+    exps = CDR(test_exps);
 
-    /* construct test */
-    if (NULLP(testframe))
-        ERR("invalid testframe");
-    test       = CAR(testframe);
-    expression = CDR(testframe);
+    /* iteration phase */
+    rest_commands = commands;
+    /* extend env by <init>s */
+    env = scm_extend_environment(formals, actuals, orig_env);
+    while (termp = EVAL(test, env), FALSEP(termp)) {
+        rest_commands = commands;
+        FOR_EACH (command, rest_commands)
+            EVAL(command, env);
+        ASSERT_NO_MORE_ARG(rest_commands);
 
-    /* now execution phase! */
-    while (FALSEP(EVAL(test, env))) {
-        /* execute commands */
-        FOR_EACH_PAIR(tmp, commands)
-            EVAL(CAR(tmp), env);
-
-        /*
-         * Notice
-         *
-         * the result of the execution of <step>s must not depend on each other's
-         * results. each execution must be done independently. So, we store the
-         * results to the "vals" variable and set it in hand.
-         */
-        vals = SCM_NULL;
-        FOR_EACH_PAIR (tmp, steps)
-            vals = CONS(EVAL(CAR(tmp), env), vals);
-        vals = scm_p_reverse(vals);
-
-        /* set it */
-        for (tmp_vars = vars;
-             !NULLP(tmp_vars) && !NULLP(vals);
-             tmp_vars = CDR(tmp_vars), vals = CDR(vals))
-        {
-            obj = scm_lookup_environment(CAR(tmp_vars), env);
-            if (obj != SCM_INVALID_REF) {
-                SET(obj, CAR(vals));
-            } else {
-                ERR("do: broken env");
-            }
+        /* Update variables by <step>s: <step>s evaluation must be isolated
+         * from the env for the next iteration. */
+        actuals = SCM_NULL;
+        rest = steps;
+        FOR_EACH (step, rest) {
+            val = EVAL(step, env);
+            actuals = CONS(val, actuals);
         }
+        env = scm_extend_environment(formals, actuals, orig_env);
+    }
+#if SCM_STRICT_ARGCHECK
+    /* no iteration occurred */
+    if (rest_commands == commands)
+        ENSURE_PROPER_ARG_LIST(commands);
+#endif
+
+    /* R5RS: If no <expression>s are present, then the value of the `do'
+     * expression is unspecified. */
+    eval_state->env = env;
+    if (NULLP(exps)) {
+        eval_state->ret_type = SCM_RETTYPE_AS_IS;
+        return SCM_UNDEF;
+    } else {
+        return scm_s_begin(exps, eval_state);
     }
 
-    eval_state->env = env;
-
-    return NULLP(expression) ? EVAL(test, env) : scm_s_begin(expression, eval_state);
+ err:
+    ERR_OBJ("invalid bindings form", bindings);
+    /* NOTREACHED */
+    return SCM_FALSE;
 }
 
 /*===========================================================================

@@ -34,6 +34,7 @@
 
 (use srfi-23)
 
+(define *test-track-progress* #f)
 (define tn test-name)
 
 (define tee #t)
@@ -795,6 +796,10 @@
                       (do ((v  1))
                           (#t #t)
                         #t . #t)))
+(assert-error  (tn) (lambda ()
+                      (do ((v  1 (+ v 1)))
+                          ((= v 2) #t)
+                        #t . #t)))
 
 (tn "do valid form: no bindings")
 (assert-true   (tn) (lambda ()
@@ -949,8 +954,16 @@
 (assert-equal? "do test4" '(c b a) (nreverse '(a b c)))
 (assert-equal? "do test5" '((5 6) (3 4) (1 2)) (nreverse '((1 2) (3 4) (5 6))))
 
-(assert-equal? "do test6" 1  (do ((a 1)) (a) 'some))
-(assert-equal? "do test7" #t (do ((a 1)) (#t) 'some))
+;; scm_s_do() has been changed as specified in R5RS. -- YamaKen 2006-01-11
+;; R5RS: If no <expression>s are present, then the value of the `do' expression
+;; is unspecified.
+;;(assert-equal? "do test6" 1  (do ((a 1)) (a) 'some))
+;;(assert-equal? "do test7" #t (do ((a 1)) (#t) 'some))
+(if (provided? "sigscheme")
+    (begin
+      (assert-equal? "do test6" (undef) (do ((a 1)) (a) 'some))
+      (assert-equal? "do test7" (undef) (do ((a 1)) (#t) 'some))))
+;; (do ((a 1)) 'eval) => (do ((a 1)) (quote eval))
 (assert-equal? "do test8" eval (do ((a 1)) 'eval))
 
 ;;
