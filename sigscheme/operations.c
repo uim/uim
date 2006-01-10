@@ -1510,6 +1510,8 @@ scm_p_string2list(ScmObj str)
             ch = SCM_CHARCODEC_READ_CHAR(scm_current_char_codec, mbs);
         } else {
 #if SCM_USE_NULL_CAPABLE_STRING
+            /* CAUTION: this code may crash when (scm_current_char_codec !=
+             * orig_codec) */
             ch = '\0';
             c_str = &SCM_MBS_GET_STR(mbs)[1];
             SCM_MBS_INIT2(mbs, c_str, strlen(c_str));

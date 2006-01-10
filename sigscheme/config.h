@@ -82,7 +82,7 @@
 #define SCM_ACCESSOR_ASSERT     0  /* enable strict type check with accessor */
 #define SCM_USE_VALUECONS       1  /* use experimental values passing */
 #define SCM_VOLATILE_OUTPUT     0  /* always flush files on write */
-#define SCM_USE_NULL_CAPABLE_STRING 1  /* accept null character in a middle of a string */
+#define SCM_USE_NULL_CAPABLE_STRING 1  /* enable experimental null character in a middle of a string */
 #define SCM_OBJ_COMPACT         0  /* object representation compaction (experimental) */
 
 #define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
@@ -138,6 +138,10 @@
 /* FIXME: provide replace functions */
 #if (!HAVE_ASPRINTF || !HAVE_VASPRINTF)
 #error "This platform is not supported yet"
+#endif
+
+#if (!SCM_DEBUG && SCM_USE_NULL_CAPABLE_STRING)
+#error "Don't enable dangerous SCM_USE_NULL_CAPABLE_STRING for production code"
 #endif
 
 #if SCM_COMPAT_SIOD
