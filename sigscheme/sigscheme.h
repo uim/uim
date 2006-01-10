@@ -63,6 +63,8 @@ extern "C" {
 #define SCM_ERRMSG_NULL_IN_STRING                                            \
     "null character in a middle of string is not enabled"
 
+/* FIXME: Confirm appropriate workaround about the noinline attribute vanishing
+ * problem for Linux environments */
 #ifdef __GNUC__
 #define SCM_NOINLINE __attribute__((noinline))
 #define SCM_NORETURN __attribute__((noreturn))

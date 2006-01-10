@@ -41,6 +41,9 @@ Requirements and critical bugs:
   - "Shiro Kawai" part of read.c
   - test/*.scm
 
+* Confirm appropriate workaround about the GCC's noinline attribute vanishing
+  problem for Linux environments
+
 * grep "FIXME" and fix them
 
 ==============================================================================
