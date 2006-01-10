@@ -278,15 +278,16 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
     ((int)(SCM_AS_STRING(o)->obj.string.len & ~SCM_STRING_MUTABILITY_MASK))
 #define SCM_SAL_STRING_SET_LEN(o, _len)                                      \
     (SCM_AS_STRING(o)->obj.string.len                                        \
-     = (_len) | (int)((o)->obj.string.len & SCM_STRING_MUTABILITY_MASK))
+     = (_len) | (int)(SCM_AS_STRING(o)->obj.string.len                       \
+                      & SCM_STRING_MUTABILITY_MASK))
 #define SCM_SAL_STRING_MUTABLEP(o)                                           \
     (SCM_AS_STRING(o)->obj.string.len < 0)
 #define SCM_SAL_STRING_SET_MUTABLE(o)                                        \
     (SCM_AS_STRING(o)->obj.string.len                                        \
-     = (int)((o)->obj.string.len | SCM_STRING_MUTABLE))
+     = (int)(SCM_AS_STRING(o)->obj.string.len | SCM_STRING_MUTABLE))
 #define SCM_SAL_STRING_SET_IMMUTABLE(o)                                      \
     (SCM_AS_STRING(o)->obj.string.len                                        \
-     = (int)((o)->obj.string.len & ~SCM_STRING_MUTABILITY_MASK))
+     = (int)(SCM_AS_STRING(o)->obj.string.len & ~SCM_STRING_MUTABILITY_MASK))
 
 #define SCM_SAL_FUNCP(o)                   (SCM_TYPE(o) == ScmFunc)
 #define SCM_SAL_ENTYPE_FUNC(o)             (SCM_ENTYPE((o), ScmFunc))
