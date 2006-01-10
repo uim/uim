@@ -92,10 +92,8 @@
 ;; My vertical-motion wrapper
 ;;
 (defun uim-vertical-motion (n)
-  (if (and (string< "21" emacs-version)
-	   (or (string< emacs-version "21.3.1")
-	       (string= emacs-version "21.3.1")
-	       (string= emacs-version "21.4.1")))
+  (if (and uim-emacs
+	   (= emacs-major-version 21))
       (uim-vertical-motion-exec n)
     (vertical-motion n)))
 
@@ -162,6 +160,7 @@
 ;; Replace tabs and spaces.
 ;;
 (defun uim-tab-pad-space (start end)
+  (uim-debug (format "uim-tab-pad-space %s %s" start end))
   (let (org lstart lend (endorg end) tabspace)
     (setq org (point))
     (save-excursion
@@ -298,5 +297,12 @@
     i
     ))
 
+
+(defun uim-goto-char (pt)
+  (uim-debug (format "uim-goto-char: %s" pt))
+  (set-window-point (get-buffer-window (current-buffer)) pt))
+
+(defun uim-point ()
+  (window-point (get-buffer-window (current-buffer))))
 
 (provide 'uim-util)

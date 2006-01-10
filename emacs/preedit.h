@@ -54,13 +54,14 @@ typedef struct preedit_buffer {
 } preedit_buffer;
 
 typedef struct preedit {
+  int valid;
   int length;
   preedit_buffer *head;
   preedit_buffer *tail;
-  candidate_info *cand;
+  /*  candidate_info *cand;*/
 } preedit;
 
-
+preedit *create_preedit(void);
 void add_preedit(preedit *pe, int attr, const char *str);
 void clear_preedit(preedit *pe);
 int show_preedit(preedit *pe);

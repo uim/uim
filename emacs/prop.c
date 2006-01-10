@@ -36,10 +36,29 @@
 
 #include "prop.h"
 
+property *
+create_prop()
+{
+  property *prop;
+
+  prop = (property *)malloc(sizeof(property));
+
+  prop->valid = 0;
+
+  prop->list = NULL;
+  prop->label = NULL;
+  prop->list_update = 0;
+  prop->label_update = 0;
+
+  return prop;
+}
 
 void
 update_prop_list(property *prop, const char *str)
 {
+
+  prop->valid = 1;
+
   if (prop->list != NULL) free(prop->list);
 
   prop->list = strdup(str);
@@ -53,6 +72,8 @@ update_prop_list(property *prop, const char *str)
 void
 update_prop_label(property *prop, const char *str)
 {
+  prop->valid = 1;
+
   if (prop->label != NULL) free(prop->label);
 
   prop->label = strdup(str);
@@ -93,8 +114,8 @@ announce_prop_list_update(property *prop, const char *encoding)
 }
 
 
-void
-output_prop_list(property *prop, const char *im)
+int
+show_prop(property *prop)
 {
   char *buf;
   char *p[4];
@@ -103,14 +124,12 @@ output_prop_list(property *prop, const char *im)
 
   if (prop->list == NULL) {
 	debug_printf(DEBUG_ERROR, "no prop_list\n");
-	return;
+	a_printf(" ( e ) ");
+	return 0;
   }
 
+  a_printf(" ( l ");
 
-  if (im)
-	a_printf(" ( l \"%s\"", im);
-  else
-	a_printf(" ( l \"\" ");
 
   buf = (char *)malloc(strlen(prop->list) + 1);
   strcpy(buf, prop->list);
@@ -138,8 +157,9 @@ output_prop_list(property *prop, const char *im)
 
   free(buf);
 
-
   a_printf(" ) ");
+
+  return 1;
 
 }
 

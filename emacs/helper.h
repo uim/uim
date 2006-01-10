@@ -56,7 +56,4 @@ void helper_im_changed(char *request, char *engine_name);
 
 void helper_handler(void);
 
-int focused(uim_agent_context *ua);
-int unfocused(void);
-
 #endif

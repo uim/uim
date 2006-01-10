@@ -59,12 +59,15 @@ typedef struct candidate_info {
 } candidate_info;
 
 
+candidate_info *create_candidate(void);
+
 int new_candidate(uim_context context, candidate_info *cand,
 				  int num, int limit);
 void clear_candidate(candidate_info *cand);
 
-void show_candidate(candidate_info *cand);
+int show_candidate(candidate_info *cand);
 
-void shift_candidate_page(uim_context context, candidate_info *cand, int direction);
+void shift_candidate_page(uim_context context, candidate_info *cand, 
+						  int direction);
 
 #endif

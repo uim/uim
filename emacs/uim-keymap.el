@@ -50,6 +50,18 @@
     (triple drag)
     ))
 
+(defconst uim-generic-modifiers
+  '(
+    ()     
+    (shift)   
+    (control)
+    (meta)
+    (shift control)
+    (shift meta)
+    (control meta)
+    (shift control meta)  
+    ))
+
 
 (defconst uim-emacs-prefix-keys
   '(help-command
@@ -75,19 +87,20 @@
 ;; Bind all mouse event to nil (for GNU Emacs)
 ;; 
 (defun uim-unbind-mouse-event ()
-  (let ((mouse-modifiers uim-mouse-modifiers))
-    (while mouse-modifiers
-      (let ((mouse '(mouse-1 mouse-2 mouse-3 mouse-4 mouse-5)))
-	(while mouse
-	  (let ((event (vector (append (car mouse-modifiers)
-				       (list (car mouse))))))
 
+  (mapcar
+   '(lambda (w)
+      (mapcar 
+       '(lambda (x)
+	  (mapcar 
+	   '(lambda (y)
+	      (let ((event (vector (append w x (list y)))))
 	    (define-key uim-mode-map event nil)
 	    (define-key uim-preedit-map event nil)
-	    )
-
-	  (setq mouse (cdr mouse))))
-      (setq mouse-modifiers (cdr mouse-modifiers))))
+	    ))
+	   '(mouse-1 mouse-2 mouse-3 mouse-4 mouse-5)))
+       uim-mouse-modifiers))
+   uim-generic-modifiers)
   
   (define-key uim-mode-map [vertical-scroll-bar] nil)
   (define-key uim-mode-map [mode-line] nil)
@@ -256,36 +269,10 @@
   )
 
 
-;; (defun uim-mode-keymap-enabled ()
-;;   (eq (cdr (assq 'uim-mode minor-mode-map-alist))
-;;       uim-mode-map))
-
-;; (defun uim-preedit-keymap-enabled ()
-;;   (eq (cdr (assq 'uim-mode minor-mode-map-alist))
-;;       uim-preedit-map))
-
-
-;;
-;; Copy toggle key to uim-mode-map
-;;
-(defun uim-copy-toggle-key (key)
-  (let ((toggle-key-list (where-is-internal key global-map)))
-    (while toggle-key-list
-      (if (not (eq (lookup-key uim-mode-map (car toggle-key-list)) key))
-	  (define-key uim-mode-map (car toggle-key-list) key))
-      (setq toggle-key-list (cdr toggle-key-list)))))
-
 
 (defun uim-reset-keymap ()
   (uim-init-keymap)
   (run-hooks 'uim-reset-keymap-hook))
-
-(defun uim-disable-single-escape-on-terminal ()
-  )
-
-(defun uim-enable-single-escape-on-terminal ()
-
-  )
 
 (provide 'uim-keymap)
 

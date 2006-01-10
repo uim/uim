@@ -232,7 +232,7 @@ helper_handler(void)
 
 	  if (current_exist) {
 		debug_printf(DEBUG_NOTE, " focus_in\n"); 
-		if (current) unfocused();
+		if (current) clear_current_uim_agent_context();
 	  } else {
 		debug_printf(DEBUG_NOTE, " ignored helper message: %s\n", message);
 	  }
@@ -314,41 +314,4 @@ helper_handler(void)
   }
 }
 
-
-/* focus in to a buffer */
-int
-focused(uim_agent_context *ua)
-{
-  debug_printf(DEBUG_NOTE, "focused\n");
-
-  if (ua == NULL || ua->context == NULL) return -1;
-
-  uim_helper_client_focus_in(ua->context);
-
-  current = ua;
-
-  uim_prop_label_update(ua->context);
-  uim_prop_list_update(ua->context);
-
-  return ua->context_id;
-}
-
-
-/* focus out from current buffer */
-int
-unfocused(void)
-{
-  int ret;
-
-  debug_printf(DEBUG_NOTE, "unfocused\n");
-
-  if (current == NULL || current->context == NULL) return -1;
-
-  ret = current->context_id;
-  uim_helper_client_focus_out(current->context);
-
-  current = NULL;
-
-  return ret;
-}
 

@@ -50,6 +50,9 @@ extern int default_engine_updated;
 extern char *default_engine_name;
 
 void output_default_im_engine(void);
+
+int show_im(const char *im);
+
 int list_im_engine(void);
 int check_im_name(const char *imname);
 

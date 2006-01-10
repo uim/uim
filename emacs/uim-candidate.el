@@ -59,6 +59,8 @@
 			       (if uim-candidate-display-frame ?- 32))
 		  uim-candidate-page-label))
 
+    ;; make mark for chasing
+    (setq mark-cursor (point-marker))
 
     (goto-char uim-candidate-start)
 
@@ -70,15 +72,6 @@
     (setq uim-candidate-original-str
 	  (buffer-substring uim-candidate-original-start
 			    uim-candidate-original-end))
-
-
-    (if (and uim-preedit-cursor 
-	     (> uim-preedit-cursor (point-min)))
-	(save-excursion
-	  (goto-char uim-preedit-cursor)
-	  (setq mark-cursor (point-marker))))
-
-    ;; set overlay for chasing
 
     ;; remove tabs/spaces
     (uim-tab-pad-space uim-candidate-original-start
@@ -201,9 +194,20 @@
 		      (goto-char vhead)
 		      (delete-region vhead (+ vhead (length linetmp)))
 			
+		      (when uim-xemacs
+			(insert " ")
+			(remove-text-properties (- (point) 1) (point)
+						'(face nil))
+			(goto-char (- (point) 1)))
+
 		      (insert (concat padding 
 				      candstr
-				      overflow)))
+				      overflow))
+
+		      (when uim-xemacs
+			(delete-char 1))
+		      
+		      )
 		
 		    (uim-set-candidate-face candidx candsel 
 					    (+ vhead (length padding))
@@ -260,7 +264,7 @@
 	(when mark-cursor
 	  
 	  (goto-char (marker-position mark-cursor))
-	  (setq uim-preedit-cursor (point))
+	  (setq uim-candidate-cursor (point))
 
 	  (set-marker mark-cursor nil)
 	  )
@@ -316,31 +320,6 @@
 	  (message cands)
 	  )
       ;; Emacs-20 or XEmacs
-;;       (let* ((page-width (+ (string-width uim-candidate-page-label) 2))
-;; 	     (cands-width (string-width cands))
-;; 	     (echoreg-width (- (- (window-width) 1) page-width)))
-;; 	(if (>= echoreg-width cands-width)
-;; 	    (setq cands
-;; 		  (concat cands
-;; 			  (make-string (- echoreg-width cands-width) 32)
-;; 			  "(" uim-candidate-page-label ")"))
-;; 	  (if (> (string-width (substring cands 0 selend))
-;; 		 (+ (- cands-width echoreg-width) 3))
-;; 	      (setq cands
-;; 		    (concat "..."
-;; 			    (truncate-string-to-width cands
-;; 						      cands-width 
-;; 						      (+ (- cands-width echoreg-width) 3))
-;; 			    "(" uim-candidate-page-label ")"))
-;; 	    (setq cands 
-;; 		  (concat "..."
-;; 			  (truncate-string-to-width (substring cands (- selend 1))
-;; 						    (if (> echoreg-width 6)
-;; 							(- echoreg-width 6)
-;; 						      0))
-;; 			  "..."
-;; 			  "(" uim-candidate-page-label ")")))))
-
       (let* ((page-space (- (string-width page-total) 
 			    (string-width page-current)))
 	     (page-label (concat (if (> page-space 0) 
@@ -478,7 +457,7 @@
 ;; Put overlay
 ;;
 (defun uim-set-candidate-face (index selected begin length)
-  (let (face ol)
+  (let (face)
     (cond 
      (selected
       (setq face 'uim-candidate-selected-face))
@@ -640,6 +619,7 @@
 	(save-excursion
 	  (goto-char uim-candidate-original-start)
 	  (insert uim-candidate-original-str))
+
 	)
 
     ;; clear minibuffer

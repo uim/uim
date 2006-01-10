@@ -36,10 +36,23 @@
 
 #include "preedit.h"
 
+preedit *
+create_preedit()
+{
+  preedit *pe;
+  pe = (preedit *)malloc(sizeof(preedit));
+  pe->valid = 0;
+  pe->head = pe->tail = NULL;
+
+  return pe;
+}
+
 void
 add_preedit(preedit *pe, int attr, const char *str)
 {
   preedit_buffer *pb;
+
+  pe->valid = 1;
 
   pb = (preedit_buffer *)malloc(sizeof(preedit_buffer));
 
@@ -50,7 +63,6 @@ add_preedit(preedit *pe, int attr, const char *str)
 	pe->tail->next = pb;
 	pe->tail = pb;
   }
-
 
   if (strlen(str) > 0) {
 	pb->str = (char *)malloc(strlen(str) + 1);
@@ -69,6 +81,8 @@ void
 clear_preedit(preedit *pe)
 {
   preedit_buffer *p, *ptmp;
+
+  pe->valid = 0;
 
   p = pe->head;
 
@@ -123,4 +137,5 @@ show_preedit(preedit *pe)
 
   return 1;
 }
+
 

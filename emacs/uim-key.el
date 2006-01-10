@@ -191,7 +191,9 @@
 	;; for transient-mark-mode
 	(setq deactivate-mark nil))
     
+    (unwind-protect    
     (cond ((or (keymapp bind)
+
 	       (and (not bind)
 		    (setq keyvectmp (uim-remove-shift keyvec))
 		    (setq keyvec keyvectmp)))
@@ -236,10 +238,10 @@
 	     (undefined))
 	   )
 	  )
-
     (if uim-emacs
 	(setq uim-deactivate-mark deactivate-mark))
     )
+  )
   )
 
 
@@ -501,8 +503,7 @@
 	    (and (vectorp keyvec)
 		 (= (length keyvec) 0)))
 	(setq keyvec uim-retry-keys))
-
-;    (uim-debug (format "keyvec %s" keyvec))
+    (uim-debug (format "keyvec %s" keyvec))
 
     (let* ((newvec (vconcat uim-stacked-key-vector keyvec))
 	   (keylist (append newvec nil))
@@ -546,7 +547,7 @@
 			   0))
 	       )))))
 
-    ;;(uim-debug (format "stacked-key-vector: %s" uim-stacked-key-vector))
+    (uim-debug (format "stacked-key-vector: %s" uim-stacked-key-vector))
 
     (cond ((and uim-preedit-keymap-enabled
 		(uim-is-escape uim-stacked-key-vector)) ;; preedit ESC-ESC
