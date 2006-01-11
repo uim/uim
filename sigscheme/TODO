@@ -37,8 +37,8 @@ Requirements and critical bugs:
   - "Shiro Kawai" part of read.c
   - test/*.scm
 
-* Confirm appropriate workaround about the GCC's noinline attribute vanishing
-  problem for Linux environments
+* Confirm appropriate workaround for the GCC's noinline attribute vanishing
+  problem on Linux environments
 
 * grep "FIXME" and fix them
 
@@ -74,8 +74,6 @@ Performance improvements:
   - Make all tests passed without error or SEGV
   - Create immediate objects directly without calling scm_make_*()
   - Refine logical structure and namings
-
-* Simplify string and character operations if !SCM_USE_MULTIBYTE_CHAR
 
 * (not required for now) Replace procedure registration functions with
   typecode-base single function with typecheck macro, to reduce footprint
@@ -118,7 +116,7 @@ Assigned to Kazuki:
 ==============================================================================
 Assigned to YamaKen:
 
-* [uim] Validate all uim_scm_gc_protect() invocation
+* Simplify string and character operations if !SCM_USE_MULTIBYTE_CHAR
 
 * Write tests for SRFI-75
 

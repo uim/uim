@@ -24,3 +24,14 @@ Design of SigScheme
   - Writer
   - Multibyte character processing
   - Ports
+
+* Trade-offs
+  - Multibyte string processing
+  - Function aggregation to share prolog/epilog code fragment
+
+* API and ABI
+  - ABI incompatibility between configurations
+  - SAL and ABI
+  - Dynamic link
+  - Static link
+  - Writing an extension by C

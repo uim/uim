@@ -153,6 +153,10 @@ uim_scm_set_lib_path(const char *path);
 #else /* __GNUC__ */
 #define uim_scm_gc_protect_stack (*uim_scm_gc_protect_stack_ptr)
 #endif /* __GNUC__ */
+/*
+ * The location must be initialized with a valid uim_lisp object
+ * before calling uim_scm_gc_protect().
+ */
 void
 uim_scm_gc_protect(uim_lisp *location);
 void
