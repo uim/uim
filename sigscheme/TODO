@@ -116,8 +116,6 @@ Assigned to Kazuki:
 ==============================================================================
 Assigned to YamaKen:
 
-* Simplify string and character operations if !SCM_USE_MULTIBYTE_CHAR
-
 * Write tests for SRFI-75
 
 * Add integer->char and char->integer procedures with multibyte support
