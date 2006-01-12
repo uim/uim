@@ -134,9 +134,10 @@ typedef int scm_bool;
 
 enum ScmCodedCharSet {
     SCM_CCS_UNKNOWN   = 0,
-    SCM_CCS_UCS4      = 1,
-    SCM_CCS_ISO8859_1 = 2,
-    SCM_CCS_JIS       = 3  /* ASCII + JIS X 0208, 0212, 0213 */
+    SCM_CCS_UCS2      = 1,
+    SCM_CCS_UCS4      = 2,
+    SCM_CCS_ISO8859_1 = 10,
+    SCM_CCS_JIS       = 30  /* ASCII + JIS X 0208, 0212, 0213 */
 };
 
 /* This type will actually contain some encoding-dependent enum value.
