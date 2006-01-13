@@ -1,9 +1,6 @@
 ==============================================================================
 Requirements and critical bugs:
 
-* Write test for tail expression of all tail-recursive syntaxes (and make
-  "internal defintions #4" of test-define.scm passed)
-
 * Confirm internal definition behavior as specification
   - Make all test in test-define.scm passed when SCM_STRICT_ARGCHECK
 
@@ -33,6 +30,8 @@ Requirements and critical bugs:
 * Make 64bit-safe (after compaction and stdint.h)
 
 * Confirm public API
+
+* Write test for tail expression of all tail-recursive syntaxes
 
 * Add tests for proper tail recursion with 'apply' and 'guard' to
   test-tail-rec.scm

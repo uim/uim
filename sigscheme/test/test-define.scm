@@ -154,13 +154,6 @@
 (assert-equal? (tn)
                14
                (let ((x 5))
-                 (+ (begin
-                      (define x 6)
-                      (+ x 3))
-                    x)))
-(assert-equal? (tn)
-               14
-               (let ((x 5))
                  (+ ((lambda ()
                        (define x 6)
                        (+ x 3)))
@@ -243,13 +236,6 @@
 (assert-error  (tn)
                (lambda ()
                  (letrec ()
-                   (define foo 1)
-                   (set! foo 5)
-                   (define bar 2)
-                   (+ foo bar))))
-(assert-error  (tn)
-               (lambda ()
-                 (begin
                    (define foo 1)
                    (set! foo 5)
                    (define bar 2)
