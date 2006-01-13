@@ -148,6 +148,8 @@ struct ScmCell_ {
 #define SCM_SAL_HAS_IMMEDIATE_REAL_ONLY     0
 #define SCM_SAL_HAS_IMMEDIATE_COMPLEX_ONLY  0
 
+#define SCM_SAL_PTR_BITS    (sizeof(void *) * CHAR_BIT)
+
 #define SCM_SAL_CHAR_BITS   SCM_INT_BITS
 #define SCM_SAL_CHAR_MAX    SCM_INT_MAX
 

@@ -132,6 +132,7 @@
 /*=======================================
   System Include
 =======================================*/
+#include <limits.h>
 #include <stdint.h> /* FIXME: make C99-independent */
 #include <stdio.h>
 
@@ -650,6 +651,8 @@ struct ScmCell_ {
 #define SCM_SAL_HAS_IMMEDIATE_RATIONAL_ONLY 0
 #define SCM_SAL_HAS_IMMEDIATE_REAL_ONLY     0
 #define SCM_SAL_HAS_IMMEDIATE_COMPLEX_ONLY  0
+
+#define SCM_SAL_PTR_BITS    (sizeof(void *) * CHAR_BIT)
 
 #define SCM_SAL_CHAR_BITS   /* FIXME */
 #define SCM_SAL_CHAR_MAX    /* FIXME */

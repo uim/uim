@@ -418,6 +418,9 @@ struct ScmStorageConf_ {
 #define SCM_HAS_IMMEDIATE_REAL_ONLY     SCM_SAL_HAS_IMMEDIATE_REAL_ONLY
 #define SCM_HAS_IMMEDIATE_COMPLEX_ONLY  SCM_SAL_HAS_IMMEDIATE_COMPLEX_ONLY
 
+/* addressable space: tag bits multiplexed in alignment part is also counted */
+#define SCM_PTR_BITS    SCM_SAL_PTR_BITS
+
 #define SCM_CHAR_BITS   SCM_SAL_CHAR_BITS
 #define SCM_CHAR_MAX    SCM_SAL_CHAR_MAX
 #define SCM_CHAR_MIN    0

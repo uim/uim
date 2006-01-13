@@ -80,11 +80,11 @@ static ScmCell unbound_cell, undef_cell;
 #endif
 
 static const ScmStorageConf default_storage_conf = {
-    0x4000,  /* number of ScmCell in a heap */
-    0x2000,  /* number of freecells always being preserved */
-    0x800,   /* max number of heaps */
-    1,       /* initial number of heaps */
-    0x400    /* hash size of symbol table */
+    SCM_DEFAULT_HEAP_SIZE,
+    SCM_DEFAULT_HEAP_ALLOC_THRESHOLD,
+    SCM_DEFAULT_N_HEAPS_MAX,
+    SCM_DEFAULT_N_HEAPS_INIT,
+    SCM_DEFAULT_SYMBOL_HASH_SIZE
 };
 
 /*=======================================
