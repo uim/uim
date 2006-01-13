@@ -1,0 +1,51 @@
+AC_PREREQ(2.57)
+
+AC_INIT([sigscheme], [0.5.0], [mover@hct.zaq.ne.jp])
+AM_INIT_AUTOMAKE(1.8.3)
+
+AC_CONFIG_SRCDIR([src/sigscheme.h])
+AC_CONFIG_HEADER([config.h])
+
+# Checks for programs.
+AC_PROG_CC
+AC_PROG_LIBTOOL
+
+# Checks for libraries.
+
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([limits.h malloc.h stddef.h stdint.h stdlib.h string.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_SIZE_T
+AC_C_VOLATILE
+
+# Checks for library functions.
+
+# FIXME: provide alternative source code
+# AC_REPLACE_FUNCS([asprintf vasprintf])
+AC_CHECK_FUNCS([fileno asprintf vasprintf posix_memalign])
+
+# Configure Option
+AC_ARG_ENABLE(debug,
+  AC_HELP_STRING([--enable-debug],
+                 [enable debugging]),
+  [],
+  [
+    enable_debug="no"
+  ])
+if test x$enable_debug = xyes; then
+	CFLAGS="$CFLAGS -g -DDEBUG"
+else
+	CFLAGS="$CFLAGS -O2"
+fi
+
+# Default Compiler Option for gcc
+if test x$CC = xgcc; then
+	CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
+fi
+
+AC_CONFIG_FILES([Makefile
+                 src/Makefile])
+AC_OUTPUT

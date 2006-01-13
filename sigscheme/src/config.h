@@ -34,6 +34,10 @@
 #ifndef __SIGSCHEME_CONFIG_H
 #define __SIGSCHEME_CONFIG_H
 
+#ifdef HAVE_CONFIG_H
+#  include "../config.h"
+#endif
+
 #include <stdint.h> /* FIXME: make C99-independent */
 
 /*===========================================================================
@@ -130,20 +134,6 @@
 #if 0
 #define SCM_NEWLINE_STR         "\r\n" /* Windows/DOS */
 #define SCM_NEWLINE_STR         "\r"   /* Mac OS */
-#endif
-
-/*
- * FIXME: detect with configure and link against a replace function if not
- * found
- */
-#define HAVE_FILENO             1
-#define HAVE_ASPRINTF           1
-#define HAVE_VASPRINTF          1
-/* FIXME */
-#if (defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__))
-#define HAVE_POSIX_MEMALIGN     0
-#else
-#define HAVE_POSIX_MEMALIGN     1
 #endif
 
 /*===========================================================================

@@ -26,14 +26,18 @@ How to build
 ======================================
 
 You can build SigScheme by simply doing
+
+$ ./configure
 $ make
-at the source directory.
+
+at the top directory.
 
 
 Installation
 ======================================
 
 If you want to install SigScheme, please execute
+
 $ make install
 
 
@@ -41,9 +45,11 @@ How to use
 ======================================
 
 To execute SigScheme in interactive mode, please type as follows.
+
 $ sscm
 
 To execute Scheme code by file, please execute like follows.
+
 $ sscm filename
 
 
