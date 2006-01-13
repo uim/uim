@@ -95,8 +95,8 @@
 #define SCM_INITIAL_SYMBOL_BUF_SIZE 64
 
 /* token buffer size extender function */
-#define SCM_LBUF_F_STRING LBUF_F_LINEAR
-#define SCM_LBUF_F_SYMBOL LBUF_F_LINEAR
+#define SCM_LBUF_F_STRING scm_lbuf_f_linear
+#define SCM_LBUF_F_SYMBOL scm_lbuf_f_linear
 
 /*===========================================================================
   Debugging

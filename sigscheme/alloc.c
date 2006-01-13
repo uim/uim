@@ -128,3 +128,70 @@ scm_realloc(void *ptr, size_t size)
 
     return p;
 }
+
+/*=======================================
+   Extendable Local Buffer
+=======================================*/
+void
+scm_lbuf_init(struct ScmLBuf_void_ *lbuf, void *init_buf, size_t init_size)
+{
+    lbuf->buf  = lbuf->init_buf  = init_buf;
+    lbuf->size = lbuf->init_size = init_size;
+    lbuf->extended_cnt = 0;
+}
+
+void
+scm_lbuf_free(struct ScmLBuf_void_ *lbuf)
+{
+    if (lbuf->buf != lbuf->init_buf)
+        free(lbuf->buf);
+}
+
+void
+scm_lbuf_alloc(struct ScmLBuf_void_ *lbuf, size_t size)
+{
+    lbuf->buf = scm_malloc(size);
+    lbuf->size = size;
+}
+
+void
+scm_lbuf_realloc(struct ScmLBuf_void_ *lbuf, size_t size)
+{
+    if (lbuf->buf == lbuf->init_buf) {
+        if (size < lbuf->size)
+            lbuf->size = size;
+        lbuf->buf = memcpy(scm_malloc(size), lbuf->buf, lbuf->size);
+    } else {
+        lbuf->buf = scm_realloc(lbuf->buf, size);
+    }
+    lbuf->size = size;
+}
+
+void
+scm_lbuf_extend(struct ScmLBuf_void_ *lbuf,
+                size_t (*f)(struct ScmLBuf_void_ *), size_t least_size)
+{
+    size_t new_size;
+
+    if (lbuf->size < least_size) {
+        new_size = (*f)(lbuf);
+        if (new_size < lbuf->size)
+            ERR("local buffer exceeded");
+        if (new_size < least_size)
+            new_size = least_size;
+        scm_lbuf_realloc(lbuf, new_size);
+        lbuf->extended_cnt++;
+    }
+}
+
+size_t
+scm_lbuf_f_linear(struct ScmLBuf_void_ *lbuf)
+{
+    return (lbuf->size + lbuf->init_size);
+}
+
+size_t
+scm_lbuf_f_exponential(struct ScmLBuf_void_ *lbuf)
+{
+    return (lbuf->size << 1);
+}
