@@ -1,6 +1,14 @@
 ==============================================================================
 Requirements and critical bugs:
 
+* Write test for tail expression of all tail-recursive syntaxes (and make
+  "internal defintions #4" of test-define.scm passed)
+
+* Confirm internal definition behavior as specification
+  - Make all test in test-define.scm passed when SCM_STRICT_ARGCHECK
+
+* Confirm R5RS and SRFI conformance for each function implementation
+
 * Autoconfiscate the SigScheme package (don't rely on uim's configure)
   - Prepare replace functions (asprintf and so on)
   - Introduce C99-independent stdint.h
