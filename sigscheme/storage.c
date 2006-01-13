@@ -79,6 +79,14 @@ static ScmCell null_cell, true_cell, false_cell, eof_cell;
 static ScmCell unbound_cell, undef_cell;
 #endif
 
+static const ScmStorageConf default_storage_conf = {
+    0x4000,  /* number of ScmCell in a heap */
+    0x2000,  /* number of freecells always being preserved */
+    0x800,   /* max number of heaps */
+    1,       /* initial number of heaps */
+    0x400    /* hash size of symbol table */
+};
+
 /*=======================================
   File Local Function Declarations
 =======================================*/
@@ -90,12 +98,14 @@ static ScmObj scm_make_string_internal(char *str, int len,
   Function Implementations
 =======================================*/
 void
-scm_init_storage(size_t heap_size, size_t heap_alloc_threshold,
-                 int n_heaps_max, int n_heaps_init)
+scm_init_storage(const ScmStorageConf *conf)
 {
+    if (!conf)
+        conf = &default_storage_conf;
+
     initialize_special_constants();
 
-    scm_init_gc(heap_size, heap_alloc_threshold, n_heaps_max, n_heaps_init);
+    scm_init_gc(conf);
 
 #if 0 && (SCM_COMPAT_SIOD_BUGS && !SCM_OBJ_COMPACT)
     scm_gc_protect_with_init(&scm_const_true, MAKE_INT(1));
@@ -111,7 +121,7 @@ scm_init_storage(size_t heap_size, size_t heap_alloc_threshold,
 #endif
 
     scm_init_continuation();
-    scm_init_symbol();
+    scm_init_symbol(conf);
 }
 
 void

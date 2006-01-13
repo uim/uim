@@ -577,6 +577,7 @@ exit_hook(void)
 void
 uim_scm_init(const char *verbose_level)
 {
+  ScmStorageConf storage_conf;
   long vlevel = 2;
   ScmObj output_port;
 
@@ -597,7 +598,12 @@ uim_scm_init(const char *verbose_level)
    */
   scm_current_char_codec = scm_mb_find_codec("ISO-8859-1");
 
-  scm_initialize();
+  storage_conf.heap_size            = 16384;
+  storage_conf.heap_alloc_threshold = 16384;
+  storage_conf.n_heaps_max          = 64;
+  storage_conf.n_heaps_init         = 1;
+  storage_conf.symbol_hash_size     = 1024;
+  scm_initialize(&storage_conf);
 
   /* GC safe */
   output_port = scm_make_shared_file_port(uim_output, "uim", SCM_PORTFLAG_OUTPUT);

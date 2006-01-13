@@ -98,14 +98,14 @@ static size_t protected_vars_size, n_empty_protected_vars;
 
 /* storage-symbol.c */
 extern ScmObj *scm_symbol_hash;
+extern size_t scm_symbol_hash_size;
 
 /*=======================================
   File Local Function Declarations
 =======================================*/
 static ScmObj **locate_protected_var(ScmObj *var);
 
-static void initialize_heap(size_t size, size_t alloc_threshold,
-                            int n_max, int n_init);
+static void initialize_heap(const ScmStorageConf *conf);
 static void add_heap(void);
 static void finalize_heap(void);
 
@@ -131,14 +131,13 @@ static void finalize_protected_var(void);
   Function Implementations
 =======================================*/
 void
-scm_init_gc(size_t heap_size, size_t heap_alloc_threshold,
-            int n_heaps_max, int n_heaps_init)
+scm_init_gc(const ScmStorageConf *conf)
 {
     stack_start_pointer = NULL;
     protected_vars = NULL;
     protected_vars_size = 0;
     n_empty_protected_vars = 0;
-    initialize_heap(heap_size, heap_alloc_threshold, n_heaps_max, n_heaps_init);
+    initialize_heap(conf);
 }
 
 void
@@ -268,20 +267,20 @@ scm_gc_unprotect_stack(ScmObj *stack_start)
   Heap Allocator & Garbage Collector
 ============================================================================*/
 static void
-initialize_heap(size_t size, size_t alloc_threshold, int n_max, int n_init)
+initialize_heap(const ScmStorageConf *conf)
 {
     int i;
 
-    heap_size = size;
-    heap_alloc_threshold = alloc_threshold;
-    n_heaps_max = n_max;
+    heap_size            = conf->heap_size;
+    heap_alloc_threshold = conf->heap_alloc_threshold;
+    n_heaps_max          = conf->n_heaps_max;
     n_heaps = 0;
     heaps = NULL;
     heaps_lowest = heaps_highest = NULL;
     freelist = SCM_NULL;
 
     /* preallocate heaps */
-    for (i = 0; i < n_init; i++)
+    for (i = 0; i < conf->n_heaps_init; i++)
         add_heap();
 }
 
@@ -569,7 +568,7 @@ gc_mark(void)
     /* performed after above two because of cache pollution */
     gc_mark_protected_var();
     if (scm_symbol_hash)
-        gc_mark_definite_locations_n(scm_symbol_hash, NAMEHASH_SIZE);
+        gc_mark_definite_locations_n(scm_symbol_hash, scm_symbol_hash_size);
 }
 
 static void

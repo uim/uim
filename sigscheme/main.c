@@ -188,7 +188,7 @@ main(int argc, char **argv)
     rest_argv = scm_interpret_argv(argv);
     filename = rest_argv[0];
 
-    scm_initialize();
+    scm_initialize(NULL);
 
 #if SCM_USE_SRFI34
     scm_use("srfi-34");

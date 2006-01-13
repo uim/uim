@@ -55,11 +55,12 @@
   Variable Declarations
 =======================================*/
 ScmObj *scm_symbol_hash;
+size_t scm_symbol_hash_size;
 
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static void initialize_symbol_hash(void);
+static void initialize_symbol_hash(const ScmStorageConf *conf);
 static void finalize_symbol_hash(void);
 static int  symbol_name_hash(const char *name);
 
@@ -94,10 +95,10 @@ ScmObj
 scm_symbol_bound_to(ScmObj obj)
 {
     ScmObj lst, sym, val;
-    int i;
+    size_t i;
     DECLARE_INTERNAL_FUNCTION("scm_symbol_bound_to");
 
-    for (i = 0; i < NAMEHASH_SIZE; i++) {
+    for (i = 0; i < scm_symbol_hash_size; i++) {
         lst = scm_symbol_hash[i];
         FOR_EACH (sym, lst) {
             val = SCM_SYMBOL_VCELL(sym);
@@ -110,9 +111,9 @@ scm_symbol_bound_to(ScmObj obj)
 }
 
 void
-scm_init_symbol(void)
+scm_init_symbol(const ScmStorageConf *conf)
 {
-    initialize_symbol_hash();
+    initialize_symbol_hash(conf);
 }
 
 void
@@ -125,13 +126,14 @@ scm_finalize_symbol(void)
   Symbol table
 ============================================================================*/
 static void
-initialize_symbol_hash(void)
+initialize_symbol_hash(const ScmStorageConf *conf)
 {
-    int i;
+    size_t i;
 
-    scm_symbol_hash = scm_malloc(sizeof(ScmObj) * NAMEHASH_SIZE);
+    scm_symbol_hash_size = conf->symbol_hash_size;
+    scm_symbol_hash      = scm_malloc(sizeof(ScmObj) * scm_symbol_hash_size);
 
-    for (i = 0; i < NAMEHASH_SIZE; i++)
+    for (i = 0; i < scm_symbol_hash_size; i++)
         scm_symbol_hash[i] = SCM_NULL;
 }
 
@@ -147,7 +149,7 @@ symbol_name_hash(const char *name)
     int hash, c;
 
     for (hash = 0; (c = *name); name++)
-        hash = ((hash * 17) ^ c) % NAMEHASH_SIZE;
+        hash = ((hash * 17) ^ c) % scm_symbol_hash_size;
 
     return hash;
 }

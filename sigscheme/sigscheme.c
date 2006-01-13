@@ -113,7 +113,7 @@ static struct module_info module_info_table[] = {
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static void scm_initialize_internal(void);
+static void scm_initialize_internal(const ScmStorageConf *storage_conf);
 static scm_bool scm_use_internal(const char *feature);
 static scm_bool scm_register_func(const char *name, ScmFuncType func,
                                   enum ScmFuncTypeCode type);
@@ -122,11 +122,17 @@ static ScmObj scm_eval_c_string_internal(const char *exp);
 /*=======================================
   Function Implementations
 =======================================*/
+/**
+ * Initialize the interpreter
+ *
+ * @param storage_conf Storage configuration parameters. NULL instructs
+ *                     default.
+ */
 void
-scm_initialize(void)
+scm_initialize(const ScmStorageConf *storage_conf)
 {
 #if SCM_GCC4_READY_GC
-    SCM_GC_PROTECTED_CALL_VOID(scm_initialize_internal, ());
+    SCM_GC_PROTECTED_CALL_VOID(scm_initialize_internal, (storage_conf));
 #else
     ScmObj stack_start;
 
@@ -137,15 +143,14 @@ scm_initialize(void)
 }
 
 static void
-scm_initialize_internal(void)
+scm_initialize_internal(const ScmStorageConf *storage_conf)
 {
     /*=======================================================================
       Core
     =======================================================================*/
     scm_set_debug_categories(SCM_DBG_ERRMSG | SCM_DBG_BACKTRACE
                               | scm_predefined_debug_categories());
-    /* FIXME: make configurable from libsscm client */
-    scm_init_storage(0x4000, 0x2000, 0x800, 1);
+    scm_init_storage(storage_conf);
     scm_init_error();
     scm_init_io();
 

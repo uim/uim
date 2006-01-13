@@ -387,6 +387,18 @@ struct ScmEvalState_ {
     enum ScmReturnType ret_type;
 };
 
+typedef struct ScmStorageConf_ ScmStorageConf;
+struct ScmStorageConf_ {
+    /* heap */
+    size_t heap_size;             /* number of ScmCell in a heap */
+    size_t heap_alloc_threshold;  /* minimum number of freecells after a GC */
+    int n_heaps_max;              /* max number of heaps */
+    int n_heaps_init;             /* initial number of heaps */
+
+    /* symbol table */
+    size_t symbol_hash_size;      /* hash size of symbol table */
+};
+
 /*=======================================
   Object Representation Information
 =======================================*/
@@ -646,7 +658,7 @@ extern ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *);
    SigScheme : Core Functions
 ===========================================================================*/
 /* sigscheme.c */
-void scm_initialize(void);
+void scm_initialize(const ScmStorageConf *storage_conf);
 void scm_finalize(void);
 void scm_define_alias(const char *newsym, const char *sym);
 void scm_provide(ScmObj feature);

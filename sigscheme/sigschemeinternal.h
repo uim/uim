@@ -368,9 +368,6 @@ extern ScmObj scm_null_values;
 /* Macros For Handling Continuation Object */
 #define INVALID_CONTINUATION_OPAQUE  NULL
 
-/* Symbol Name Hash Size */
-#define NAMEHASH_SIZE 1024
-
 /* error handlings */
 #define SCM_ERR_HEADER "Error: "
 
@@ -455,13 +452,11 @@ size_t scm_lbuf_f_exponential(struct ScmLBuf_void_ *lbuf);
    Function Declarations
 =======================================*/
 /* storage.c */
-void scm_init_storage(size_t heap_size, size_t heap_alloc_threshold,
-                      int n_heaps_max, int n_heaps_init);
+void scm_init_storage(const ScmStorageConf *conf);
 void scm_finalize_storage(void);
 
 /* storage-gc.c */
-void scm_init_gc(size_t heap_size, size_t heap_alloc_threshold,
-                 int n_heaps_max, int n_heaps_init);
+void scm_init_gc(const ScmStorageConf *conf);
 void scm_finalize_gc(void);
 ScmObj scm_alloc_cell(void);
 
@@ -478,7 +473,7 @@ void scm_pop_trace_frame(void);
 ScmObj scm_trace_stack(void);
 
 /* storage-symbol.c */
-void scm_init_symbol(void);
+void scm_init_symbol(const ScmStorageConf *conf);
 void scm_finalize_symbol(void);
 
 /* env.c */

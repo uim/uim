@@ -129,8 +129,6 @@ Assigned to YamaKen:
 * Add integer->char and char->integer procedures with multibyte support
   - Write test
 
-* Make memory parameters runtime-configurable
-
 * GCC4-optimization-proof stack protection
   - Update the document
 
