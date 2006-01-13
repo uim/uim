@@ -164,6 +164,14 @@ Specifications of SigScheme
     environemnt specified in R5RS. Current implementation returns same object
     of (interaction-environment).
 
+  - Internal definitions
+
+    FIXME
+
+  - Dotted list as arguments
+
+    FIXME
+
   - Procedures not implemented
 
     Following R5RS procedures are not implemented (yet).
