@@ -126,8 +126,7 @@ scm_call(ScmObj proc, ScmObj args)
      * closure, it'll have its own environment, if it's a syntax, it's
      * an error, and if it's a C procedure, it doesn't have any free
      * variables at the Scheme level. */
-    state.env      = SCM_INTERACTION_ENV;
-    state.ret_type = SCM_RETTYPE_AS_IS;
+    SCM_EVAL_STATE_INIT2(state, SCM_INTERACTION_ENV, SCM_RETTYPE_AS_IS);
 
     ret = call(proc, args, &state, SUPPRESS_EVAL_ARGS);
     if (state.ret_type == SCM_RETTYPE_NEED_EVAL)
@@ -407,6 +406,7 @@ scm_eval(ScmObj obj, ScmObj env)
     scm_push_trace_frame(obj, env);
 #endif
 
+    /* intentionally does not use SCM_EVAL_STATE_INIT() to avoid overhead */
     state.env = env;
 
 eval_loop:

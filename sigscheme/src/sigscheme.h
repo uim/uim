@@ -344,11 +344,6 @@ enum ScmReductionState {
     SCM_REDUCE_STOP     /* Callee wants to stop. */
 };
 
-enum ScmReturnType {
-    SCM_RETTYPE_AS_IS     = 0,
-    SCM_RETTYPE_NEED_EVAL = 1
-};
-
 enum ScmPortFlag {
     SCM_PORTFLAG_NONE        = 0,
     SCM_PORTFLAG_OUTPUT      = 1 << 0,
@@ -379,13 +374,6 @@ typedef void (*ScmCFunc)(void);
 #else /* SCM_OBJ_COMPACT */
 #include "storage-fatty.h"
 #endif /* SCM_OBJ_COMPACT */
-
-/* The evaluator's state */
-typedef struct ScmEvalState_ ScmEvalState;
-struct ScmEvalState_ {
-    ScmObj env;
-    enum ScmReturnType ret_type;
-};
 
 typedef struct ScmStorageConf_ ScmStorageConf;
 struct ScmStorageConf_ {
@@ -639,6 +627,35 @@ struct ScmStorageConf_ {
 #define SCM_SYM_QUASIQUOTE       SCM_SAL_SYM_QUASIQUOTE
 #define SCM_SYM_UNQUOTE          SCM_SAL_SYM_UNQUOTE
 #define SCM_SYM_UNQUOTE_SPLICING SCM_SAL_SYM_UNQUOTE_SPLICING
+
+/*=======================================
+   Evaluator's State
+=======================================*/
+enum ScmReturnType {
+    SCM_RETTYPE_AS_IS     = 0,
+    SCM_RETTYPE_NEED_EVAL = 1
+};
+
+typedef struct ScmEvalState_ ScmEvalState;
+struct ScmEvalState_ {
+    ScmObj env;
+    enum ScmReturnType ret_type;
+};
+
+/* Use these constructors instead of manually initialize each members because
+ * another member may be added. Such member will implicitly be initialized
+ * properly as long as the constructors are used. */
+#define SCM_EVAL_STATE_INIT(state)                                           \
+    SCM_EVAL_STATE_INIT2((state), SCM_INTERACTION_ENV, SCM_RETTYPE_NEED_EVAL)
+
+#define SCM_EVAL_STATE_INIT1(state, env)                                     \
+    SCM_EVAL_STATE_INIT2((state), (env), SCM_RETTYPE_NEED_EVAL)
+
+#define SCM_EVAL_STATE_INIT2(state, _env, _ret_type)                         \
+    do {                                                                     \
+        (state).env      = (_env);                                           \
+        (state).ret_type = (_ret_type);                                      \
+    } while (/* CONSTCOND */ 0)
 
 /*=======================================
    Variable Declarations

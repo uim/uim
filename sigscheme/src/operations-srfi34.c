@@ -358,8 +358,7 @@ guard_handler_body(ScmObj q_handler_k, ScmObj env)
     cond_env = scm_extend_environment(LIST_1(sym_var),
                                       LIST_1(condition),
                                       lex_env);
-    eval_state.env = cond_env;
-    eval_state.ret_type = SCM_RETTYPE_NEED_EVAL;
+    SCM_EVAL_STATE_INIT1(eval_state, cond_env);
     caught = scm_s_cond_internal(clauses, SCM_INVALID, &eval_state);
 
     if (VALIDP(caught)) {
@@ -387,8 +386,7 @@ guard_body(ScmEvalState *eval_state)
     body    = scm_symbol_value(sym_body,    eval_state->env);
 
     /* evaluate the body */
-    lex_eval_state.env      = lex_env;
-    lex_eval_state.ret_type = SCM_RETTYPE_NEED_EVAL;
+    SCM_EVAL_STATE_INIT1(lex_eval_state, lex_env);
     result = scm_s_body(body, &lex_eval_state);
     if (lex_eval_state.ret_type == SCM_RETTYPE_NEED_EVAL)
         result = EVAL(result, lex_env);
