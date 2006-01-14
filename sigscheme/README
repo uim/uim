@@ -4,10 +4,8 @@ What's SigScheme
 SigScheme is a R5RS Scheme interpreter for embedded use.
 
 
-Feature
+Features
 ======================================
-
-SigScheme has following features.
 
 - Conforms to R5RS basically (not fully compatible)
 - Supports Following SRFIs
