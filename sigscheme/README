@@ -1,7 +1,7 @@
 What's SigScheme
 ======================================
 
-SigScheme is R5RS compatible Scheme interpreter.
+SigScheme is a R5RS Scheme interpreter for embedded use.
 
 
 Feature
@@ -9,18 +9,21 @@ Feature
 
 SigScheme has following features.
 
-- Cover R5RS almost
-- Support Following SRFIs
+- Conforms to R5RS basically (not fully compatible)
+- Supports Following SRFIs
   - SRFI-2  : And-let*
   - SRFI-6  : Basic String Ports
   - SRFI-8  : Receive
+  - SRFI-22 : Running Scheme Scripts on Unix
   - SRFI-23 : Error Reporting Mechanism
   - SRFI-34 : Exception Handling for Programs
   - SRFI-38 : External Representation for Data with Shared Structure
   - SRFI-60 : Integer as Bits
-- Multibyte String Support
-- SIOD compatible mode
+  - SRFI-75 : R6RS Unicode data (partial)
+- Multibyte character support
+- Partial SIOD compatibility
 
+See doc/spec.txt and doc/design.txt for furtuer information.
 
 How to build
 ======================================
@@ -36,19 +39,17 @@ at the top directory.
 Installation
 ======================================
 
-If you want to install SigScheme, please execute
-
 $ make install
 
 
 How to use
 ======================================
 
-To execute SigScheme in interactive mode, please type as follows.
+To run SigScheme in interactive mode, type as follows.
 
 $ sscm
 
-To execute Scheme code by file, please execute like follows.
+To execute a file, do like following.
 
 $ sscm filename
 
