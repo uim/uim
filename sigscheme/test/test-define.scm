@@ -33,6 +33,7 @@
 (load "./test/unittest.scm")
 
 (define tn test-name)
+(define *test-track-progress* #t)
 
 ; invalid form
 (assert-error "define invalid form #1"
@@ -393,23 +394,157 @@
                    (eval '(define x 6)
                          (interaction-environment))))
 
-(tn "defintion in begin")
-;; FIXME
-;;(assert-equal? (tn)
-;;               15
-;;               (let ((x 5))
-;;                 (+ (begin
-;;                      (define x 6)
-;;                      (+ x 3))
-;;                    x)))
-;;(assert-equal? (tn)
-;;               7
-;;               (let ()
-;;                 (begin
-;;                   (define foo 1)
-;;                   (set! foo 5)
-;;                   (define bar 2)
-;;                   (+ foo bar))))
+;; 'begin' is treated as if transparent, as described as the third rule of
+;; above.
+(tn "definition in begin")
+(assert-equal? (tn)
+               3
+               (let ()
+                 (begin
+                   (define foo 1)
+                   (define bar 2)
+                   (+ foo bar))))
+(assert-equal? (tn)
+               3
+               (let* ()
+                 (begin
+                   (define foo 1)
+                   (define bar 2)
+                   (+ foo bar))))
+(assert-equal? (tn)
+               3
+               (letrec ()
+                 (begin
+                   (define foo 1)
+                   (define bar 2)
+                   (+ foo bar))))
+(assert-equal? (tn)
+               3
+               ((lambda ()
+                  (begin
+                    (define foo 1)
+                    (define bar 2)
+                    (+ foo bar)))))
+(assert-equal? (tn)
+               3
+               (let ()
+                 (lambda (f)
+                   (begin
+                     (define foo 1)
+                     (define bar 2)
+                     (+ foo bar)))
+                 (f)))
+(tn "definition in sequencial begin")
+(assert-equal? (tn)
+               3
+               (let ()
+                 (begin
+                   (define foo 4)
+                   (define bar 5))
+                 (begin
+                   (define foo 1)
+                   (define bar 2)
+                   (+ foo bar))))
+(assert-equal? (tn)
+               3
+               (let* ()
+                 (begin
+                   (define foo 4)
+                   (define bar 5))
+                 (begin
+                   (define foo 1)
+                   (define bar 2)
+                   (+ foo bar))))
+(assert-equal? (tn)
+               3
+               (letrec ()
+                 (begin
+                   (define foo 4)
+                   (define bar 5))
+                 (begin
+                   (define foo 1)
+                   (define bar 2)
+                   (+ foo bar))))
+(assert-equal? (tn)
+               3
+               ((lambda ()
+                  (begin
+                    (define foo 4)
+                    (define bar 5))
+                  (begin
+                    (define foo 1)
+                    (define bar 2)
+                    (+ foo bar)))))
+(assert-equal? (tn)
+               3
+               (let ()
+                 (lambda (f)
+                   (begin
+                     (define foo 4)
+                     (define bar 5))
+                   (begin
+                     (define foo 1)
+                     (define bar 2)
+                     (+ foo bar)))
+                 (f)))
+(tn "definition in invalid sequencial begin")
+(assert-equal? (tn)
+               3
+               (let ()
+                 (begin
+                   (define foo 4)
+                   (define bar 5)
+                   (set! foo 3))
+                 (begin
+                   (define foo 1)
+                   (define bar 2)
+                   (+ foo bar))))
+(assert-equal? (tn)
+               3
+               (let* ()
+                 (begin
+                   (define foo 4)
+                   (define bar 5)
+                   (set! foo 3))
+                 (begin
+                   (define foo 1)
+                   (define bar 2)
+                   (+ foo bar))))
+(assert-equal? (tn)
+               3
+               (letrec ()
+                 (begin
+                   (define foo 4)
+                   (define bar 5)
+                   (set! foo 3))
+                 (begin
+                   (define foo 1)
+                   (define bar 2)
+                   (+ foo bar))))
+(assert-equal? (tn)
+               3
+               ((lambda ()
+                  (begin
+                    (define foo 4)
+                    (define bar 5)
+                    (set! foo 3))
+                  (begin
+                    (define foo 1)
+                    (define bar 2)
+                    (+ foo bar)))))
+(assert-equal? (tn)
+               3
+               (let ()
+                 (lambda (f)
+                   (begin
+                     (define foo 4)
+                     (define bar 5)
+                     (set! foo 3))
+                   (begin
+                     (define foo 1)
+                     (define bar 2)
+                     (+ foo bar)))
+                 (f)))
 
 ; set!
 (define (set-dot a . b)
