@@ -49,9 +49,6 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define EVAL_ARGS          scm_false
-#define SUPPRESS_EVAL_ARGS scm_true
-
 #define SCM_ERRMSG_WRONG_NR_ARG " Wrong number of arguments "
 #define SCM_ERRMSG_NON_R5RS_ENV " the environment is not conformed to R5RS"
 
@@ -63,14 +60,14 @@
   File Local Function Declarations
 =======================================*/
 static ScmObj reduce(ScmObj (*func)(), ScmObj args, ScmObj env,
-                     scm_bool suppress_eval);
+                     enum ScmValueType need_eval);
 static void call_continuation(ScmObj cont, ScmObj args,
                               ScmEvalState *eval_state,
-                              scm_bool suppress_eval) SCM_NORETURN;
+                              enum ScmValueType need_eval) SCM_NORETURN;
 static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
-                           scm_bool suppress_eval);
+                           enum ScmValueType need_eval);
 static ScmObj call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
-                   scm_bool suppress_eval);
+                   enum ScmValueType need_eval);
 static ScmObj map_eval(ScmObj args, int *args_len, ScmObj env);
 
 /*=======================================
@@ -107,7 +104,7 @@ scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
     SCM_ASSERT(PROPER_LISTP(args));
 
     eval_state->ret_type = SCM_VALTYPE_AS_IS;
-    return call(proc, args, eval_state, SUPPRESS_EVAL_ARGS);
+    return call(proc, args, eval_state, SCM_VALTYPE_AS_IS);
 }
 
 /* Wrapper for call().  Just like scm_p_apply(), except ARGS is used
@@ -128,7 +125,7 @@ scm_call(ScmObj proc, ScmObj args)
      * variables at the Scheme level. */
     SCM_EVAL_STATE_INIT2(state, SCM_INTERACTION_ENV, SCM_VALTYPE_AS_IS);
 
-    ret = call(proc, args, &state, SUPPRESS_EVAL_ARGS);
+    ret = call(proc, args, &state, SCM_VALTYPE_AS_IS);
     if (state.ret_type == SCM_VALTYPE_NEED_EVAL)
         ret = EVAL(ret, state.env);
     return ret;
@@ -136,7 +133,7 @@ scm_call(ScmObj proc, ScmObj args)
 
 /* ARGS should NOT have been evaluated yet. */
 static ScmObj
-reduce(ScmObj (*func)(), ScmObj args, ScmObj env, scm_bool suppress_eval)
+reduce(ScmObj (*func)(), ScmObj args, ScmObj env, enum ScmValueType need_eval)
 {
     ScmObj left;
     ScmObj right;
@@ -149,7 +146,7 @@ reduce(ScmObj (*func)(), ScmObj args, ScmObj env, scm_bool suppress_eval)
     }
 
     left = POP(args);
-    if (!suppress_eval)
+    if (need_eval)
         left = EVAL(left, env);
 
     if (NO_MORE_ARG(args)) {
@@ -160,7 +157,7 @@ reduce(ScmObj (*func)(), ScmObj args, ScmObj env, scm_bool suppress_eval)
     /* Reduce upto the penult. */
     state = SCM_REDUCE_PARTWAY;
     FOR_EACH_BUTLAST(right, args) {
-        if (!suppress_eval)
+        if (need_eval)
             right = EVAL(right, env);
         left = (*func)(left, right, &state);
         if (state == SCM_REDUCE_STOP)
@@ -170,14 +167,14 @@ reduce(ScmObj (*func)(), ScmObj args, ScmObj env, scm_bool suppress_eval)
 
     /* Make the last call. */
     state = SCM_REDUCE_LAST;
-    if (!suppress_eval)
+    if (need_eval)
         right = EVAL(right, env);
     return (*func)(left, right, &state);
 }
 
 static void
 call_continuation(ScmObj cont, ScmObj args, ScmEvalState *eval_state,
-                  scm_bool suppress_eval)
+                  enum ScmValueType need_eval)
 {
     ScmObj ret;
     DECLARE_INTERNAL_FUNCTION("call_continuation");
@@ -185,7 +182,7 @@ call_continuation(ScmObj cont, ScmObj args, ScmEvalState *eval_state,
     if (!LIST_1_P(args))
         ERR("continuation takes exactly one argument");
     ret = CAR(args);
-    if (!suppress_eval)
+    if (need_eval)
         ret = EVAL(ret, eval_state->env);
     scm_call_continuation(cont, ret);
     /* NOTREACHED */
@@ -193,7 +190,7 @@ call_continuation(ScmObj cont, ScmObj args, ScmEvalState *eval_state,
 
 static ScmObj
 call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
-             scm_bool suppress_eval)
+             enum ScmValueType need_eval)
 {
     ScmObj formals, body, proc_env;
     int formals_len, args_len;
@@ -213,12 +210,12 @@ call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
     formals  = CAR(SCM_CLOSURE_EXP(proc));
     body     = CDR(SCM_CLOSURE_EXP(proc));
     proc_env = SCM_CLOSURE_ENV(proc);
-    if (suppress_eval) {
+    if (need_eval) {
+        args = map_eval(args, &args_len, eval_state->env);
+    } else {
         args_len = scm_validate_actuals(args);
         if (SCM_LISTLEN_ERRORP(args_len))
             goto err_improper;
-    } else {
-        args = map_eval(args, &args_len, eval_state->env);
     }
 
     if (SYMBOLP(formals)) {
@@ -266,12 +263,11 @@ call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
  *
  * @param eval_state The calling evaluator's state.
  *
- * @param suppress_eval PROC and ARGS are assumed to have already gone
- * through all necessary evaluations if this flag is nonzero.
+ * @param need_eval Indicates that @a args need be evaluated.
  */
 static ScmObj
 call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
-     scm_bool suppress_eval)
+     enum ScmValueType need_eval)
 {
     ScmObj env;
     ScmObj (*func)();
@@ -284,14 +280,14 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
 
     env = eval_state->env;
 
-    if (!suppress_eval)
+    if (need_eval)
         proc = EVAL(proc, env);
 
     if (!FUNCP(proc)) {
         if (CLOSUREP(proc))
-            return call_closure(proc, args, eval_state, suppress_eval);
+            return call_closure(proc, args, eval_state, need_eval);
         if (CONTINUATIONP(proc)) {
-            call_continuation(proc, args, eval_state, suppress_eval);
+            call_continuation(proc, args, eval_state, need_eval);
             /* NOTREACHED */
         }
         ERR("procedure or syntax required but got", proc);
@@ -303,15 +299,15 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
     func = SCM_FUNC_CFUNC(proc);
 
     if (type == SCM_REDUCTION_OPERATOR)
-        return reduce(func, args, env, suppress_eval);
+        return reduce(func, args, env, need_eval);
 
     /* Suppress argument evaluation for syntaxes. */
     syntaxp = type & SCM_FUNCTYPE_SYNTAX;
-    if (suppress_eval) {
+    if (need_eval) {
+        need_eval = !syntaxp;
+    } else {
         if (syntaxp)
             ERR_OBJ("can't apply/map a syntax", proc);
-    } else {
-        suppress_eval = syntaxp;
     }
 
     /* Collect mandatory arguments. */
@@ -319,7 +315,7 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
     SCM_ASSERT(mand_count <= SCM_FUNCTYPE_MAND_MAX);
     for (i = 0; i < mand_count; i++) {
         argbuf[i] = MUST_POP_ARG(args);
-        if (!suppress_eval)
+        if (need_eval)
             argbuf[i] = EVAL(argbuf[i], env);
 #if SCM_STRICT_ARGCHECK
         if (VALUEPACKETP((ScmObj)argbuf[i]))
@@ -328,7 +324,7 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
     }
 
     if (type & SCM_FUNCTYPE_VARIADIC) {
-        if (!suppress_eval)
+        if (need_eval)
             args = map_eval(args, &variadic_len, env);
 #if 0
         /* Since this check is expensive, each syntax should do. Other
@@ -421,7 +417,7 @@ eval_loop:
         break;
 
     case ScmCons:
-        obj = call(CAR(obj), CDR(obj), &state, EVAL_ARGS);
+        obj = call(CAR(obj), CDR(obj), &state, SCM_VALTYPE_NEED_EVAL);
         if (state.ret_type == SCM_VALTYPE_NEED_EVAL)
             goto eval_loop;
         /* FALLTHROUGH */
@@ -458,7 +454,7 @@ scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state)
 
     ENSURE_LIST(last);
 
-    return call(proc, args, eval_state, SUPPRESS_EVAL_ARGS);
+    return call(proc, args, eval_state, SCM_VALTYPE_AS_IS);
 }
 
 static ScmObj
