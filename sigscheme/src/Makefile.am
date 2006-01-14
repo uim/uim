@@ -64,8 +64,8 @@ libsscm_la_SOURCES = \
 		operations.c \
 		read.c sigscheme.c sigschemefunctable.c \
 		sigscheme.h sigschemefunctable.h
-libsscm_la_LIBADD  = $(top_builddir)/replace/libreplace.la
-libsscm_la_CFLAGS  = -Wall
+
+libsscm_la_CFLAGS   = -Wall
 
 bin_PROGRAMS  = sscm
 sscm_SOURCES  = main.c
