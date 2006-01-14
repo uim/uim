@@ -301,12 +301,11 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
     if (type == SCM_REDUCTION_OPERATOR)
         return reduce(func, args, env, need_eval);
 
-    /* Suppress argument evaluation for syntaxes. */
     syntaxp = type & SCM_FUNCTYPE_SYNTAX;
-    if (need_eval) {
-        need_eval = !syntaxp;
-    } else {
-        if (syntaxp)
+    if (syntaxp) {
+        if (need_eval)
+            need_eval = scm_false;
+        else
             ERR_OBJ("can't apply/map a syntax", proc);
     }
 
