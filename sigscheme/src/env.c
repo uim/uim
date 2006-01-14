@@ -98,6 +98,12 @@ static scm_bool valid_framep(ScmObj frame);
 /*=======================================
   Function Implementations
 =======================================*/
+scm_bool
+scm_toplevel_environmentp(ScmObj env)
+{
+    return NULLP(env);
+}
+
 /**
  * Construct new frame on an env
  *

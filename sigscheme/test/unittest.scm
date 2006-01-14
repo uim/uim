@@ -31,9 +31,10 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 (if (provided? "sigscheme")
-    (begin
-      (define cond-expand cond)
-      (define sigscheme #t)))
+    (eval '(begin
+             (define cond-expand cond)
+             (define sigscheme #t))
+          (interaction-environment)))
 
 (cond-expand
  (sigscheme

@@ -55,7 +55,7 @@
   Variable Declarations
 =======================================*/
 static ScmObj sym_else, sym_yields;
-#if SCM_STRICT_ARGCHECK
+#if SCM_STRICT_DEFINE_PLACEMENT
 static ScmObj sym_define, syn_lambda;
 #endif
 
@@ -78,7 +78,7 @@ scm_init_syntax(void)
 
     sym_else   = scm_intern("else");
     sym_yields = scm_intern("=>");
-#if SCM_STRICT_ARGCHECK
+#if SCM_STRICT_DEFINE_PLACEMENT
     sym_define = scm_intern("define");
     scm_gc_protect_with_init(&syn_lambda,
                              scm_symbol_value(scm_intern("lambda"),
@@ -653,14 +653,14 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
 ScmObj
 scm_s_body(ScmObj body, ScmEvalState *eval_state)
 {
-#if SCM_STRICT_ARGCHECK
+#if SCM_STRICT_DEFINE_PLACEMENT
     ScmQueue def_expq;
     ScmObj env, formals, actuals, def_exps, exp, var, sym;
     ScmObj lambda_formals, lambda_body;
 #endif
     DECLARE_INTERNAL_FUNCTION("(body)" /* , syntax_variadic_tailrec_0 */);
 
-#if SCM_STRICT_ARGCHECK
+#if SCM_STRICT_DEFINE_PLACEMENT
     if (NO_MORE_ARG(body)) {
         eval_state->ret_type = SCM_VALTYPE_AS_IS;
         return SCM_UNDEF;
@@ -706,33 +706,16 @@ scm_s_body(ScmObj body, ScmEvalState *eval_state)
     env = scm_replace_environment(formals, actuals, env);
 
     /* eval the definitions and fill the placeholder frame with the results */
-    exp = SCM_UNDEF;
     actuals = SCM_NULL;
     FOR_EACH (exp, def_exps) {
         exp = EVAL(exp, env);
         actuals = CONS(exp, actuals);
     }
-    env = scm_update_environment(actuals, env);
+    eval_state->env = scm_update_environment(actuals, env);
 
     /* eval rest of the body */
-    if (CONSP(body)) {
-        FOR_EACH_BUTLAST (exp, body) {
-            if (EQ(CAR(exp), sym_define))
-                ERR_OBJ(ERRMSG_BAD_DEFINE_PLACEMENT, exp);
-            EVAL(exp, env);
-        }
-        if (EQ(CAR(exp), sym_define))
-            ERR_OBJ(ERRMSG_BAD_DEFINE_PLACEMENT, exp);
-    } else {
-        eval_state->ret_type = SCM_VALTYPE_AS_IS;
-    }
-    ASSERT_NO_MORE_ARG(body);
-
-    eval_state->env = env;
-    return exp;
-#else
-    return scm_s_begin(body, eval_state);
 #endif
+    return scm_s_begin(body, eval_state);
 }
 
 /*
@@ -1195,12 +1178,16 @@ define_internal(ScmObj var, ScmObj exp, ScmObj env)
     ScmObj val;
 
     val = EVAL(exp, env);
-    if (NULLP(env)) {  /* FIXME: env-implementation specific */
-        /* given top-level environment */
+    if (scm_toplevel_environmentp(env)) {
         SCM_SYMBOL_SET_VCELL(var, val);
     } else {
-        /* add val to the environment */
+#if SCM_STRICT_DEFINE_PLACEMENT
+        /* internal definitions are handled as a virtual letrec in
+         * scm_s_body() */
+        ERR(ERRMSG_BAD_DEFINE_PLACEMENT);
+#else
         env = scm_add_environment(var, val, env);
+#endif
     }
 }
 

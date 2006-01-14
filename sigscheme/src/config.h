@@ -84,6 +84,7 @@
 ===========================================================================*/
 #define SCM_STRICT_R5RS         0  /* use strict R5RS check */
 #define SCM_STRICT_ARGCHECK     1  /* enable strict argument check */
+#define SCM_STRICT_DEFINE_PLACEMENT 1 /* enable strict check on internal definitions */
 #define SCM_STRICT_ENCODING_CHECK 1 /* do all feasible encoding error checks */
 #define SCM_ACCESSOR_ASSERT     0  /* enable strict type check with accessor */
 #define SCM_USE_VALUECONS       1  /* use experimental values passing */

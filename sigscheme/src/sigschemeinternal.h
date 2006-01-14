@@ -474,6 +474,7 @@ void scm_init_symbol(const ScmStorageConf *conf);
 void scm_finalize_symbol(void);
 
 /* env.c */
+scm_bool scm_toplevel_environmentp(ScmObj env);
 ScmObj scm_extend_environment(ScmObj formals, ScmObj actuals, ScmObj env);
 ScmObj scm_replace_environment(ScmObj formals, ScmObj actuals, ScmObj env);
 ScmObj scm_update_environment(ScmObj actuals, ScmObj env);
