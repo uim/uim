@@ -526,7 +526,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
                 if (EQ(test, sym_else)) {
                     ERR_OBJ("bad clause: else with no expressions", clause);
                 } else {
-                    eval_state->ret_type = SCM_RETTYPE_AS_IS;
+                    eval_state->ret_type = SCM_VALTYPE_AS_IS;
                     return test;
                 }
             }
@@ -556,7 +556,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
                 if (!PROCEDUREP(proc))
                     ERR_OBJ("exp after => must be a procedure but got", proc);
 
-                eval_state->ret_type = SCM_RETTYPE_AS_IS;
+                eval_state->ret_type = SCM_VALTYPE_AS_IS;
                 return scm_call(proc, LIST_1(test));
             }
 
@@ -569,7 +569,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
      * To distinguish unmatched status from SCM_UNDEF from a clause, pure
      * internal value SCM_INVALID is returned. Don't pass it to Scheme world.
      */
-    eval_state->ret_type = SCM_RETTYPE_AS_IS;
+    eval_state->ret_type = SCM_VALTYPE_AS_IS;
     return SCM_INVALID;
 }
 
@@ -601,7 +601,7 @@ scm_s_and(ScmObj args, ScmEvalState *eval_state)
     DECLARE_FUNCTION("and", syntax_variadic_tailrec_0);
 
     if (NO_MORE_ARG(args)) {
-        eval_state->ret_type = SCM_RETTYPE_AS_IS;
+        eval_state->ret_type = SCM_VALTYPE_AS_IS;
         return SCM_TRUE;
     }
 
@@ -609,7 +609,7 @@ scm_s_and(ScmObj args, ScmEvalState *eval_state)
         val = EVAL(expr, eval_state->env);
         if (FALSEP(val)) {
             ASSERT_PROPER_ARG_LIST(args);
-            eval_state->ret_type = SCM_RETTYPE_AS_IS;
+            eval_state->ret_type = SCM_VALTYPE_AS_IS;
             return SCM_FALSE;
         }
     }
@@ -625,7 +625,7 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
     DECLARE_FUNCTION("or", syntax_variadic_tailrec_0);
 
     if (NO_MORE_ARG(args)) {
-        eval_state->ret_type = SCM_RETTYPE_AS_IS;
+        eval_state->ret_type = SCM_VALTYPE_AS_IS;
         return SCM_FALSE;
     }
 
@@ -633,7 +633,7 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
         val = EVAL(expr, eval_state->env);
         if (!FALSEP(val)) {
             ASSERT_PROPER_ARG_LIST(args);
-            eval_state->ret_type = SCM_RETTYPE_AS_IS;
+            eval_state->ret_type = SCM_VALTYPE_AS_IS;
             return val;
         }
     }
@@ -661,7 +661,7 @@ scm_s_body(ScmObj body, ScmEvalState *eval_state)
 
 #if SCM_STRICT_ARGCHECK
     if (NO_MORE_ARG(body)) {
-        eval_state->ret_type = SCM_RETTYPE_AS_IS;
+        eval_state->ret_type = SCM_VALTYPE_AS_IS;
         return SCM_UNDEF;
     }
 
@@ -723,7 +723,7 @@ scm_s_body(ScmObj body, ScmEvalState *eval_state)
         if (EQ(CAR(exp), sym_define))
             ERR_OBJ(ERRMSG_NON_BEGINNING_INTERNAL_DEFINITION, exp);
     } else {
-        eval_state->ret_type = SCM_RETTYPE_AS_IS;
+        eval_state->ret_type = SCM_VALTYPE_AS_IS;
     }
     ASSERT_NO_MORE_ARG(body);
 
@@ -923,7 +923,7 @@ scm_s_begin(ScmObj args, ScmEvalState *eval_state)
     DECLARE_FUNCTION("begin", syntax_variadic_tailrec_0);
 
     if (NO_MORE_ARG(args)) {
-        eval_state->ret_type = SCM_RETTYPE_AS_IS;
+        eval_state->ret_type = SCM_VALTYPE_AS_IS;
         return SCM_UNDEF;
     }
 
@@ -1025,7 +1025,7 @@ scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
      * expression is unspecified. */
     eval_state->env = env;
     if (NULLP(exps)) {
-        eval_state->ret_type = SCM_RETTYPE_AS_IS;
+        eval_state->ret_type = SCM_VALTYPE_AS_IS;
         return SCM_UNDEF;
     } else {
         return scm_s_begin(exps, eval_state);

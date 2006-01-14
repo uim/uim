@@ -172,7 +172,7 @@ scm_p_the_environment(ScmEvalState *eval_state)
 {
     DECLARE_FUNCTION("the-environment", procedure_fixed_tailrec_0);
 
-    eval_state->ret_type = SCM_RETTYPE_AS_IS;
+    eval_state->ret_type = SCM_VALTYPE_AS_IS;
 
     return eval_state->env;
 }

@@ -108,7 +108,7 @@ scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
                 goto err;
             }
             if (FALSEP(val)) {
-                eval_state->ret_type = SCM_RETTYPE_AS_IS;
+                eval_state->ret_type = SCM_VALTYPE_AS_IS;
                 return SCM_FALSE;
             }
         }

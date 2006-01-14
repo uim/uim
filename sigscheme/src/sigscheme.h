@@ -631,25 +631,25 @@ struct ScmStorageConf_ {
 /*=======================================
    Evaluator's State
 =======================================*/
-enum ScmReturnType {
-    SCM_RETTYPE_AS_IS     = 0,
-    SCM_RETTYPE_NEED_EVAL = 1
+enum ScmValueType {
+    SCM_VALTYPE_AS_IS     = scm_false,
+    SCM_VALTYPE_NEED_EVAL = scm_true
 };
 
 typedef struct ScmEvalState_ ScmEvalState;
 struct ScmEvalState_ {
     ScmObj env;
-    enum ScmReturnType ret_type;
+    enum ScmValueType ret_type;
 };
 
 /* Use these constructors instead of manually initialize each members because
  * another member may be added. Such member will implicitly be initialized
  * properly as long as the constructors are used. */
 #define SCM_EVAL_STATE_INIT(state)                                           \
-    SCM_EVAL_STATE_INIT2((state), SCM_INTERACTION_ENV, SCM_RETTYPE_NEED_EVAL)
+    SCM_EVAL_STATE_INIT2((state), SCM_INTERACTION_ENV, SCM_VALTYPE_NEED_EVAL)
 
 #define SCM_EVAL_STATE_INIT1(state, env)                                     \
-    SCM_EVAL_STATE_INIT2((state), (env), SCM_RETTYPE_NEED_EVAL)
+    SCM_EVAL_STATE_INIT2((state), (env), SCM_VALTYPE_NEED_EVAL)
 
 #define SCM_EVAL_STATE_INIT2(state, _env, _ret_type)                         \
     do {                                                                     \

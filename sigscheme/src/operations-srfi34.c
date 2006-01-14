@@ -282,7 +282,7 @@ scm_s_srfi34_guard(ScmObj cond_catch, ScmObj body, ScmEvalState *eval_state)
 
     ret = scm_call_with_current_continuation(proc_guard_int, eval_state);
     eval_state->env      = lex_env;
-    eval_state->ret_type = SCM_RETTYPE_AS_IS;
+    eval_state->ret_type = SCM_VALTYPE_AS_IS;
     return scm_call(ret, SCM_NULL);
 }
 
@@ -313,9 +313,9 @@ guard_handler(ScmObj q_condition, ScmEvalState *eval_state)
                        LIST_1(LIST_2(syn_guard_handler_body, sym_handler_k)),
                        eval_state->env);
     ret = scm_call_with_current_continuation(handler_body, eval_state);
-    if (eval_state->ret_type == SCM_RETTYPE_NEED_EVAL) {
+    if (eval_state->ret_type == SCM_VALTYPE_NEED_EVAL) {
         ret = EVAL(ret, eval_state->env);
-        eval_state->ret_type = SCM_RETTYPE_AS_IS;
+        eval_state->ret_type = SCM_VALTYPE_AS_IS;
     }
     return scm_call(ret, SCM_NULL);
 }
@@ -362,7 +362,7 @@ guard_handler_body(ScmObj q_handler_k, ScmObj env)
     caught = scm_s_cond_internal(clauses, SCM_INVALID, &eval_state);
 
     if (VALIDP(caught)) {
-        if (eval_state.ret_type == SCM_RETTYPE_NEED_EVAL)
+        if (eval_state.ret_type == SCM_VALTYPE_NEED_EVAL)
             caught = EVAL(caught, cond_env);
         scm_call_continuation(guard_k, delay(caught, cond_env));
     } else {
@@ -388,9 +388,9 @@ guard_body(ScmEvalState *eval_state)
     /* evaluate the body */
     SCM_EVAL_STATE_INIT1(lex_eval_state, lex_env);
     result = scm_s_body(body, &lex_eval_state);
-    if (lex_eval_state.ret_type == SCM_RETTYPE_NEED_EVAL)
+    if (lex_eval_state.ret_type == SCM_VALTYPE_NEED_EVAL)
         result = EVAL(result, lex_env);
-    eval_state->ret_type = SCM_RETTYPE_AS_IS;
+    eval_state->ret_type = SCM_VALTYPE_AS_IS;
 
     scm_call_continuation(guard_k, delay(result, lex_env));
     /* NOTREACHED */

@@ -291,7 +291,7 @@ scm_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
 
         enter_dynamic_extent(cont_frame.dyn_ext);
 
-        eval_state->ret_type = SCM_RETTYPE_AS_IS;
+        eval_state->ret_type = SCM_VALTYPE_AS_IS;
         return cont_frame.ret_val;
     } else {
 #if SCM_NESTED_CONTINUATION_ONLY
@@ -299,7 +299,7 @@ scm_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
          * not be scm_tailcall(), to preserve current stack until longjmp()
          * called.
          */
-        eval_state->ret_type = SCM_RETTYPE_AS_IS;
+        eval_state->ret_type = SCM_VALTYPE_AS_IS;
         ret = scm_call(proc, LIST_1(cont));
 #else
         /* ONLY FOR TESTING: This call is properly recursible, but all
