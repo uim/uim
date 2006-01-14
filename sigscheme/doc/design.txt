@@ -26,6 +26,7 @@ Design of SigScheme
   - Ports
 
 * Trade-offs
+  - Strict form validation
   - Multibyte string processing
   - Function aggregation to share prolog/epilog code fragment
 
