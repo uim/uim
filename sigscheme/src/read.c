@@ -361,8 +361,7 @@ read_list(ScmObj port, int closeParen)
     CDBG((SCM_DBG_PARSER, "read_list"));
     basecport = SCM_PORT_TRY_DYNAMIC_CAST(ScmBaseCharPort,
                                           SCM_PORT_IMPL(port));
-    if (basecport)
-        start_line = ScmBaseCharPort_line_number(basecport);
+    start_line = (basecport) ? ScmBaseCharPort_line_number(basecport) : -1;
 
     for (lst = SCM_NULL, SCM_QUEUE_POINT_TO(q, lst);; SCM_QUEUE_ADD(q, elm)) {
         c = skip_comment_and_space(port);
@@ -427,10 +426,14 @@ static int
 parse_unicode_sequence(const char *seq, int len)
 {
     int c;
-    char *first_nondigit;
+    char *end;
 
     /* reject ordinary char literal and invalid signed hexadecimal */
     if (len < 3 || !isxdigit(seq[1]))
+        return -1;
+
+    c = strtol(&seq[1], &end, 16);
+    if (*end)
         return -1;
 
     switch (seq[0]) {
@@ -442,21 +445,24 @@ parse_unicode_sequence(const char *seq, int len)
 
     case 'u':
         /* #\u<x><x><x><x> : Unicode char of BMP */
-        if (len != 5 || (0xd800 <= c && c <= 0xdfff))
+        if (len != 5)
             ERR("invalid Unicode sequence. conform \\u<x><x><x><x>");
         break;
 
     case 'U':
         /* #\U<x><x><x><x><x><x><x><x> : Unicode char of BMP or SMP */
-        if (len != 9 || (0xd800 <= c && c <= 0xdfff) || 0x10ffff < c)
+        if (len != 9)
             ERR("invalid Unicode sequence. conform \\U<x><x><x><x><x><x><x><x>");
         break;
 
     default:
         return -1;
     }
-    c = strtol(&seq[1], &first_nondigit, 16);
-    return (*first_nondigit) ? -1 : c;
+
+    if ((0xd800 <= c && c <= 0xdfff) || 0x10ffff < c)
+        ERR("invalid Unicode value");
+
+    return c;
 }
 
 static int
@@ -471,7 +477,6 @@ read_unicode_sequence(ScmObj port, char prefix)
     case 'U': len = 8; break;
     default:
         SCM_ASSERT(scm_false);
-        break;
     }
     seq[0] = prefix;
     read_sequence(port, &seq[1], len);
@@ -699,7 +704,7 @@ static ScmObj
 parse_number(ScmObj port, char *buf, size_t buf_size, char prefix)
 {
     int radix, number;
-    char *first_nondigit;
+    char *end;
 
     switch (prefix) {
     case 'b': radix = 2;  break;
@@ -710,8 +715,8 @@ parse_number(ScmObj port, char *buf, size_t buf_size, char prefix)
         goto err;
     }
 
-    number = strtol(buf, &first_nondigit, radix);
-    if (*first_nondigit)
+    number = strtol(buf, &end, radix);
+    if (*end)
         goto err;
 
     return MAKE_INT(number);

@@ -103,7 +103,7 @@ extern "C" {
 #if SCM_CHICKEN_DEBUG
 /* allows survival recovery */
 #define SCM_ASSERT(cond)                                                     \
-    ((cond) || scm_die("assertion failed", __FILE__, __LINE__))
+    ((cond) || (scm_die("assertion failed", __FILE__, __LINE__), 1))
 #else /* SCM_CHICKEN_DEBUG */
 #include <assert.h>
 #define SCM_ASSERT(cond) (assert(cond))
@@ -112,7 +112,7 @@ extern "C" {
 #define SCM_ASSERT(cond)
 #endif /* SCM_DEBUG */
 #define SCM_ENSURE(cond)                                                     \
-    ((cond) || scm_die("invalid condition", __FILE__, __LINE__))
+    ((cond) || (scm_die("invalid condition", __FILE__, __LINE__), 1))
 
 #define SCM_ENSURE_PROPER_LIST_TERMINATION(term, lst)                        \
     (NULLP(term) || (ERR_OBJ("proper list required but got", (lst)), 1))
@@ -1068,7 +1068,7 @@ void scm_set_debug_categories(int categories);
 int  scm_predefined_debug_categories(void);
 void scm_categorized_debug(int category, const char *msg, ...);
 void scm_debug(const char *msg, ...);
-scm_bool scm_die(const char *msg, const char *filename, int line);
+void scm_die(const char *msg, const char *filename, int line) SCM_NORETURN;
 void scm_error(const char *msg, ...) SCM_NORETURN;
 void scm_error_obj(const char *funcname, const char *msg,
                    ScmObj obj) SCM_NORETURN;

@@ -462,6 +462,8 @@ write_constant(ScmObj port, ScmObj obj, enum  OutputType otype)
         str = "#<unbound>";
     else if (EQ(obj, SCM_UNDEF))
         str = "#<undef>";
+    else
+        SCM_ASSERT(scm_false);
 
     scm_port_puts(port, str);
 }

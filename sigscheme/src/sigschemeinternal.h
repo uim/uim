@@ -416,19 +416,19 @@ ScmLBuf(void);
 #define LBUF_EXT_CNT(lbuf)   ((lbuf).extended_cnt)
 
 #define LBUF_INIT(lbuf, init_buf, init_size)                                 \
-    scm_lbuf_init((struct ScmLBuf_void_ *)&(lbuf), (init_buf), (init_size))
+    scm_lbuf_init((void *)&(lbuf), (init_buf), (init_size))
 
 #define LBUF_FREE(lbuf)                                                      \
-    scm_lbuf_free((struct ScmLBuf_void_ *)&(lbuf))
+    scm_lbuf_free((void *)&(lbuf))
 
 #define LBUF_ALLOC(lbuf, size)                                               \
-    scm_lbuf_alloc((struct ScmLBuf_void_ *)&(lbuf), (size))
+    scm_lbuf_alloc((void *)&(lbuf), (size))
 
 #define LBUF_REALLOC(lbuf, size)                                             \
-    scm_lbuf_realloc((struct ScmLBuf_void_ *)&(lbuf), (size))
+    scm_lbuf_realloc((void *)&(lbuf), (size))
 
 #define LBUF_EXTEND(lbuf, f, least_size)                                     \
-    scm_lbuf_extend((struct ScmLBuf_void_ *)&(lbuf), (f), (least_size))
+    scm_lbuf_extend((void *)&(lbuf), (f), (least_size))
 
 void scm_lbuf_init(struct ScmLBuf_void_ *lbuf,
                    void *init_buf, size_t init_size);

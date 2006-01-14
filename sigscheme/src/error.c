@@ -255,6 +255,8 @@ scm_p_inspect_error(ScmObj err_obj)
         objs        = MUST_POP_ARG(rest);
         trace_stack = MUST_POP_ARG(rest);
         ASSERT_NO_MORE_ARG(rest);
+    } else {
+        trace_stack = scm_trace_stack();
     }
 
     if (scm_debug_categories() & SCM_DBG_ERRMSG) {
@@ -269,11 +271,8 @@ scm_p_inspect_error(ScmObj err_obj)
         scm_port_newline(scm_err);
     }
 
-    if (scm_debug_categories() & SCM_DBG_BACKTRACE) {
-        if (!ERROBJP(err_obj))
-            trace_stack = scm_trace_stack();
+    if (scm_debug_categories() & SCM_DBG_BACKTRACE)
         scm_show_backtrace(trace_stack);
-    }
 
     return SCM_UNDEF;
 }
@@ -288,7 +287,7 @@ scm_p_backtrace(void)
     return SCM_UNDEF;
 }
 
-scm_bool
+void
 scm_die(const char *msg, const char *filename, int line)
 {
     char *reason;
@@ -301,7 +300,6 @@ scm_die(const char *msg, const char *filename, int line)
 
     scm_fatal_error(reason);
     /* NOTREACHED */
-    return scm_true;  /* dummy value for boolean expression */
 }
 
 void
