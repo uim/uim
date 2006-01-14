@@ -256,6 +256,144 @@
                    (+ foo bar))
                  (f)))
 
+(tn "internal defintions: non-beginning of block (in begin)")
+(assert-error  (tn)
+               (lambda ()
+                 (let ()
+                   (define foo 1)
+                   (set! foo 5)
+                   (begin
+                     (define bar 2))
+                   (+ foo bar))))
+(assert-error  (tn)
+               (lambda ()
+                 (let* ()
+                   (define foo 1)
+                   (set! foo 5)
+                   (begin
+                     (define bar 2))
+                   (+ foo bar))))
+(assert-error  (tn)
+               (lambda ()
+                 (letrec ()
+                   (define foo 1)
+                   (set! foo 5)
+                   (begin
+                     (define bar 2))
+                   (+ foo bar))))
+(assert-error  (tn)
+               (lambda ()
+                 ((lambda ()
+                    (define foo 1)
+                    (set! foo 5)
+                    (begin
+                      (define bar 2))
+                    (+ foo bar)))))
+(assert-error  (tn)
+               (lambda ()
+                 (define (f)
+                   (define foo 1)
+                   (set! foo 5)
+                   (begin
+                     (define bar 2))
+                   (+ foo bar))
+                 (f)))
+
+(tn "internal defintions: non-beginning of block (in eval)")
+(assert-error  (tn)
+               (lambda ()
+                 (let ()
+                   (define foo 1)
+                   (set! foo 5)
+                   (eval '(define bar 2)
+                         (interaction-environment))
+                   (+ foo bar))))
+(assert-error  (tn)
+               (lambda ()
+                 (let* ()
+                   (define foo 1)
+                   (set! foo 5)
+                   (eval '(define bar 2)
+                         (interaction-environment))
+                   (+ foo bar))))
+(assert-error  (tn)
+               (lambda ()
+                 (letrec ()
+                   (define foo 1)
+                   (set! foo 5)
+                   (eval '(define bar 2)
+                         (interaction-environment))
+                   (+ foo bar))))
+(assert-error  (tn)
+               (lambda ()
+                 ((lambda ()
+                    (define foo 1)
+                    (set! foo 5)
+                    (begin
+                      (define bar 2))
+                    (+ foo bar)))))
+(assert-error  (tn)
+               (lambda ()
+                 (define (f)
+                   (define foo 1)
+                   (set! foo 5)
+                   (eval '(define bar 2)
+                         (interaction-environment))
+                   (+ foo bar))
+                 (f)))
+
+;; As specified as follows in R5RS, definitions in 'do' syntax is invalid.
+;;
+;; 5.2 Definitions
+;;
+;; Definitions are valid in some, but not all, contexts where expressions are
+;; allowed. They are valid only at the top level of a <program> and at the
+;; beginning of a <body>.
+;;
+;; 5.2.2 Internal definitions
+;;
+;; Definitions may occur at the beginning of a <body> (that is, the body of a
+;; lambda, let, let*, letrec, let-syntax, or letrec-syntax expression or that
+;; of a definition of an appropriate form).
+;;
+;; Wherever an internal definition may occur (begin <definition1> ...) is
+;; equivalent to the sequence of definitions that form the body of the begin.
+(tn "definition in do")
+(assert-error (tn)
+              (lambda ()
+                (do ((i 0 (+ i 1)))
+                    ((= i 1) (+ x 3))
+                  (define x 6))))
+(assert-error (tn)
+              (lambda ()
+                (do ((i 0 (+ i 1)))
+                    ((= i 1) (+ x 3))
+                  (begin
+                    (define x 6)))))
+(assert-error (tn)
+              (lambda ()
+                (do ((i 0 (+ i 1)))
+                    ((= i 1) (+ x 3))
+                  (eval '(define x 6)
+                        (interaction-environment)))))
+
+(tn "defintion in begin")
+(assert-equal? (tn)
+               15
+               (let ((x 5))
+                 (+ (begin
+                      (define x 6)
+                      (+ x 3))
+                    x)))
+(assert-equal? (tn)
+               7
+               (let ()
+                 (begin
+                   (define foo 1)
+                   (set! foo 5)
+                   (define bar 2)
+                   (+ foo bar))))
+
 ; set!
 (define (set-dot a . b)
   (set! b '(1 2))
