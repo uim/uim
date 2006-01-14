@@ -549,7 +549,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
             return scm_s_begin(exps, eval_state);
         }
     }
-    NO_MORE_ARG(args);
+    ASSERT_NO_MORE_ARG(args);
 
     /*
      * To distinguish unmatched status from SCM_UNDEF from a clause, pure
