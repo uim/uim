@@ -106,7 +106,7 @@ repl_loop(void)
     /* prepare the constant part of the form to get the loop fast */
     sym_guard = scm_intern("guard");
     cond_catch = LIST_2(scm_intern("err"),
-                        LIST_3(SYM_ELSE,
+                        LIST_3(scm_intern("else"),
                                LIST_2(scm_intern("%%inspect-error"),
                                       scm_intern("err")),
                                LIST_2(SCM_SYM_QUOTE, err)));

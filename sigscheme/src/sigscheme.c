@@ -64,9 +64,6 @@ struct module_info {
 =======================================*/
 ScmObj scm_sym_quote, scm_sym_quasiquote;
 ScmObj scm_sym_unquote, scm_sym_unquote_splicing;
-ScmObj scm_sym_else, scm_sym_yields;
-
-extern ScmObj scm_sym_define, scm_syn_lambda;
 
 /* canonical internal encoding for identifiers */
 ScmCharCodec *scm_identifier_codec;
@@ -166,21 +163,17 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
     scm_sym_quasiquote       = scm_intern("quasiquote");
     scm_sym_unquote          = scm_intern("unquote");
     scm_sym_unquote_splicing = scm_intern("unquote-splicing");
-    scm_sym_else             = scm_intern("else");
-    scm_sym_yields           = scm_intern("=>");
-
-#if SCM_STRICT_ARGCHECK
-    /* syntax.c */
-    scm_sym_define           = scm_intern("define");
-#endif
 
     scm_gc_protect_with_init(&features, SCM_NULL);
 
     /*=======================================================================
       Register Built-in Functions
     =======================================================================*/
-    /* R5RS Functions */
-    REGISTER_FUNC_TABLE(r5rs_func_info_table);
+    /* R5RS Syntaxes */
+    scm_init_syntax();
+
+    /* R5RS Procedures */
+    REGISTER_FUNC_TABLE(r5rs_procedure_func_info_table);
     scm_define_alias("integer?", "number?");
 
 #if SCM_USE_DEEP_CADRS
@@ -189,14 +182,6 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
 #endif
 #if SCM_USE_NONSTD_FEATURES
     scm_use("sscm");
-#endif
-
-    /*=======================================================================
-      Predefined Objects
-    =======================================================================*/
-#if SCM_STRICT_ARGCHECK
-    scm_syn_lambda
-        = scm_symbol_value(scm_intern("lambda"), SCM_INTERACTION_ENV);
 #endif
 
     /*=======================================================================

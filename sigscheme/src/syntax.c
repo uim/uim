@@ -55,8 +55,9 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+static ScmObj sym_else, sym_yields;
 #if SCM_STRICT_ARGCHECK
-ScmObj scm_sym_define, scm_syn_lambda;
+static ScmObj sym_define, syn_lambda;
 #endif
 
 /*=======================================
@@ -71,6 +72,19 @@ static qquote_result qquote_internal(ScmObj input, ScmObj env, int nest);
 /*=======================================
   Function Implementations
 =======================================*/
+void
+scm_init_syntax(void)
+{
+    REGISTER_FUNC_TABLE(r5rs_syntax_func_info_table);
+
+    sym_else   = scm_intern("else");
+    sym_yields = scm_intern("=>");
+#if SCM_STRICT_ARGCHECK
+    sym_define = scm_intern("define");
+    syn_lambda = scm_symbol_value(scm_intern("lambda"), SCM_INTERACTION_ENV);
+#endif
+}
+
 /*===========================================================================
   Utilities: Sequential Datum Translators
 ===========================================================================*/
@@ -491,7 +505,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
         test = CAR(clause);
         exps = CDR(clause);
 
-        if (EQ(test, SYM_ELSE)) {
+        if (EQ(test, sym_else)) {
             ASSERT_NO_MORE_ARG(args);
         } else {
             if (VALIDP(case_key)) {
@@ -509,7 +523,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
              * result.
              */
             if (NULLP(exps)) {
-                if (EQ(test, SYM_ELSE)) {
+                if (EQ(test, sym_else)) {
                     ERR_OBJ("bad clause: else with no expressions", clause);
                 } else {
                     eval_state->ret_type = SCM_RETTYPE_AS_IS;
@@ -533,8 +547,8 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
              * of the <test> and the value returned by this procedure is
              * returned by the cond expression.
              */
-            if (EQ(SYM_YIELDS, CAR(exps)) && CONSP(CDR(exps))
-                && !EQ(test, SYM_ELSE))
+            if (EQ(sym_yields, CAR(exps)) && CONSP(CDR(exps))
+                && !EQ(test, sym_else))
             {
                 if (!NULLP(CDDR(exps)))
                     ERR_OBJ("bad clause", clause);
@@ -659,7 +673,7 @@ scm_s_body(ScmObj body, ScmEvalState *eval_state)
     SCM_QUEUE_POINT_TO(def_expq, def_exps);
     while (CONSP(body)) {
         exp = CAR(body);
-        if (!CONSP(exp) || (sym = POP(exp), !EQ(sym, scm_sym_define)))
+        if (!CONSP(exp) || (sym = POP(exp), !EQ(sym, sym_define)))
             break;
         POP(body);
 
@@ -677,7 +691,7 @@ scm_s_body(ScmObj body, ScmEvalState *eval_state)
 
             ENSURE_SYMBOL(sym);
             var = sym;
-            exp = CONS(scm_syn_lambda, CONS(lambda_formals, lambda_body));
+            exp = CONS(syn_lambda, CONS(lambda_formals, lambda_body));
         } else {
             ERR_OBJ("syntax error", var);
         }
@@ -702,11 +716,11 @@ scm_s_body(ScmObj body, ScmEvalState *eval_state)
     /* eval rest of the body */
     if (CONSP(body)) {
         FOR_EACH_BUTLAST (exp, body) {
-            if (EQ(CAR(exp), scm_sym_define))
+            if (EQ(CAR(exp), sym_define))
                 ERR_OBJ(ERRMSG_NON_BEGINNING_INTERNAL_DEFINITION, exp);
             EVAL(exp, env);
         }
-        if (EQ(CAR(exp), scm_sym_define))
+        if (EQ(CAR(exp), sym_define))
             ERR_OBJ(ERRMSG_NON_BEGINNING_INTERNAL_DEFINITION, exp);
     } else {
         eval_state->ret_type = SCM_RETTYPE_AS_IS;

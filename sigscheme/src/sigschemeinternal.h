@@ -62,7 +62,6 @@ struct ScmSpecialCharInfo_ {
    Variable Declarations
 =======================================*/
 /* sigscheme.c */
-extern ScmObj scm_sym_else, scm_sym_yields;
 extern ScmCharCodec *scm_identifier_codec;
 
 /* io.c */
@@ -139,8 +138,6 @@ extern ScmObj scm_null_values;
 #define SYM_QUASIQUOTE       SCM_SYM_QUASIQUOTE
 #define SYM_UNQUOTE          SCM_SYM_UNQUOTE
 #define SYM_UNQUOTE_SPLICING SCM_SYM_UNQUOTE_SPLICING
-#define SYM_ELSE             scm_sym_else
-#define SYM_YIELDS           scm_sym_yields
 
 #define EQ             SCM_EQ
 #define NULLP          SCM_NULLP
@@ -496,6 +493,7 @@ ScmObj scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
 ScmObj scm_eval(ScmObj obj, ScmObj env);
 
 /* syntax.c */
+void scm_init_syntax(void);
 ScmObj scm_s_body(ScmObj body, ScmEvalState *eval_state);
 ScmObj scm_s_cond_internal(ScmObj args, ScmObj case_key,
                            ScmEvalState *eval_state);

@@ -53,7 +53,8 @@
 /*=======================================
    Builtin Function Tables
 =======================================*/
-#include "sigschemefunctable-r5rs.c"
+#include "sigschemefunctable-r5rs-syntax.c"
+#include "sigschemefunctable-r5rs-procedure.c"
 #include "sigschemefunctable-error.c"
 
 #if SCM_USE_DEEP_CADRS

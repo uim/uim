@@ -68,7 +68,8 @@ struct builtin_func_info {
 /*=======================================
    Variable Declarations
 =======================================*/
-extern struct builtin_func_info r5rs_func_info_table[];
+extern struct builtin_func_info r5rs_syntax_func_info_table[];
+extern struct builtin_func_info r5rs_procedure_func_info_table[];
 
 #if SCM_USE_DEEP_CADRS
 extern struct builtin_func_info r5rs_deepcadrs_func_info_table[];

@@ -1,7 +1,8 @@
 noinst_LTLIBRARIES  = libsscm.la
 
 FUNC_TABLES = \
-		sigschemefunctable-r5rs.c \
+		sigschemefunctable-r5rs-syntax.c \
+		sigschemefunctable-r5rs-procedure.c \
 		sigschemefunctable-r5rs-deepcadrs.c \
 		sigschemefunctable-error.c \
 		sigschemefunctable-nonstd.c \
@@ -23,9 +24,11 @@ BUILD_FUNCTBL_SOURCES = \
 		./script/functable-footer.txt
 
 sigschemefunctable.c: $(FUNC_TABLES)
-sigschemefunctable-r5rs.c: sigscheme.c operations.c eval.c syntax.c io.c $(BUILD_FUNCTBL_SOURCES)
-	$(BUILD_FUNCTBL) "r5rs_func_info_table" \
-	  sigscheme.c operations.c eval.c syntax.c io.c > $@
+sigschemefunctable-r5rs-syntax.c: syntax.c $(BUILD_FUNCTBL_SOURCES)
+	$(BUILD_FUNCTBL) "r5rs_syntax_func_info_table" $< > $@
+sigschemefunctable-r5rs-procedure.c: sigscheme.c operations.c eval.c io.c $(BUILD_FUNCTBL_SOURCES)
+	$(BUILD_FUNCTBL) "r5rs_procedure_func_info_table" \
+	  sigscheme.c operations.c eval.c io.c > $@
 sigschemefunctable-r5rs-deepcadrs.c: operations-r5rs-deepcadrs.c $(BUILD_FUNCTBL_SOURCES)
 	$(BUILD_FUNCTBL) "r5rs_deepcadrs_func_info_table" $< > $@
 sigschemefunctable-error.c: error.c $(BUILD_FUNCTBL_SOURCES)
