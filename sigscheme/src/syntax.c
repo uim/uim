@@ -49,8 +49,7 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define ERRMSG_NON_BEGINNING_INTERNAL_DEFINITION                             \
-    "internal definition must not appear in a middle of <body>"
+#define ERRMSG_BAD_DEFINE_PLACEMENT "bad define placement"
 
 /*=======================================
   Variable Declarations
@@ -81,7 +80,9 @@ scm_init_syntax(void)
     sym_yields = scm_intern("=>");
 #if SCM_STRICT_ARGCHECK
     sym_define = scm_intern("define");
-    syn_lambda = scm_symbol_value(scm_intern("lambda"), SCM_INTERACTION_ENV);
+    scm_gc_protect_with_init(&syn_lambda,
+                             scm_symbol_value(scm_intern("lambda"),
+                                              SCM_INTERACTION_ENV));
 #endif
 }
 
@@ -717,11 +718,11 @@ scm_s_body(ScmObj body, ScmEvalState *eval_state)
     if (CONSP(body)) {
         FOR_EACH_BUTLAST (exp, body) {
             if (EQ(CAR(exp), sym_define))
-                ERR_OBJ(ERRMSG_NON_BEGINNING_INTERNAL_DEFINITION, exp);
+                ERR_OBJ(ERRMSG_BAD_DEFINE_PLACEMENT, exp);
             EVAL(exp, env);
         }
         if (EQ(CAR(exp), sym_define))
-            ERR_OBJ(ERRMSG_NON_BEGINNING_INTERNAL_DEFINITION, exp);
+            ERR_OBJ(ERRMSG_BAD_DEFINE_PLACEMENT, exp);
     } else {
         eval_state->ret_type = SCM_VALTYPE_AS_IS;
     }
