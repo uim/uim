@@ -49,10 +49,15 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+#define ERRMSG_NON_BEGINNING_INTERNAL_DEFINITION                             \
+    "internal definition must not appear in a middle of <body>"
 
 /*=======================================
   Variable Declarations
 =======================================*/
+#if SCM_STRICT_ARGCHECK
+ScmObj scm_sym_define, scm_syn_lambda;
+#endif
 
 /*=======================================
   File Local Function Declarations
@@ -626,6 +631,95 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.2 Binding constructs
 ===========================================================================*/
+/* <body> part of let, let*, letrec and lambda. This function performs strict
+ * form validation for internal definitions as specified in R5RS (5.2.2
+ * Internal definitions). */
+/* TODO: Reform as a read-time syntax translator */
+ScmObj
+scm_s_body(ScmObj body, ScmEvalState *eval_state)
+{
+#if SCM_STRICT_ARGCHECK
+    ScmQueue def_expq;
+    ScmObj env, formals, actuals, def_exps, exp, var, sym;
+    ScmObj lambda_formals, lambda_body;
+#endif
+    DECLARE_INTERNAL_FUNCTION("(body)" /* , syntax_variadic_tailrec_0 */);
+
+#if SCM_STRICT_ARGCHECK
+    if (NO_MORE_ARG(body)) {
+        eval_state->ret_type = SCM_RETTYPE_AS_IS;
+        return SCM_UNDEF;
+    }
+
+    /* extend env by placeholder frame for subsequent internal definitions */
+    env = scm_extend_environment(SCM_NULL, SCM_NULL, eval_state->env);
+
+    /* collect internal definitions */
+    def_exps = formals = actuals = SCM_NULL;
+    SCM_QUEUE_POINT_TO(def_expq, def_exps);
+    while (CONSP(body)) {
+        exp = CAR(body);
+        if (!CONSP(exp) || (sym = POP(exp), !EQ(sym, scm_sym_define)))
+            break;
+        POP(body);
+
+        var = MUST_POP_ARG(exp);
+        if (SYMBOLP(var)) {
+            /* (define <variable> <expression>) */
+            if (!LIST_1_P(exp))
+                ERR_OBJ("exactly 1 arg required but got", exp);
+            exp = CAR(exp);
+        } else if (CONSP(var)) {
+            /* (define (<variable> . <formals>) <body>) */
+            sym            = CAR(var);
+            lambda_formals = CDR(var);
+            lambda_body    = exp;
+
+            ENSURE_SYMBOL(sym);
+            var = sym;
+            exp = CONS(scm_syn_lambda, CONS(lambda_formals, lambda_body));
+        } else {
+            ERR_OBJ("syntax error", var);
+        }
+        formals = CONS(var, formals);
+        actuals = CONS(SCM_UNBOUND, actuals);
+        SCM_QUEUE_ADD(def_expq, exp);
+    }
+
+    /* inject the unbound variables into the frame to make the variable
+     * references invalid through the evaluation */
+    env = scm_replace_environment(formals, actuals, env);
+
+    /* eval the definitions and fill the placeholder frame with the results */
+    exp = SCM_UNDEF;
+    actuals = SCM_NULL;
+    FOR_EACH (exp, def_exps) {
+        exp = EVAL(exp, env);
+        actuals = CONS(exp, actuals);
+    }
+    env = scm_update_environment(actuals, env);
+
+    /* eval rest of the body */
+    if (CONSP(body)) {
+        FOR_EACH_BUTLAST (exp, body) {
+            if (EQ(CAR(exp), scm_sym_define))
+                ERR_OBJ(ERRMSG_NON_BEGINNING_INTERNAL_DEFINITION, exp);
+            EVAL(exp, env);
+        }
+        if (EQ(CAR(exp), scm_sym_define))
+            ERR_OBJ(ERRMSG_NON_BEGINNING_INTERNAL_DEFINITION, exp);
+    } else {
+        eval_state->ret_type = SCM_RETTYPE_AS_IS;
+    }
+    ASSERT_NO_MORE_ARG(body);
+
+    eval_state->env = env;
+    return exp;
+#else
+    return scm_s_begin(body, eval_state);
+#endif
+}
+
 /*
  * FIXME:
  * - Write the test for the named let spec:
@@ -706,7 +800,7 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
         define_internal(named_let_sym, proc, env);
     }
 
-    return scm_s_begin(body, eval_state);
+    return scm_s_body(body, eval_state);
 }
 
 ScmObj
@@ -749,7 +843,7 @@ scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 
     eval_state->env = env;
 
-    return scm_s_begin(body, eval_state);
+    return scm_s_body(body, eval_state);
 
  err:
     ERR_OBJ("invalid bindings form", bindings);
@@ -796,7 +890,7 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     eval_state->env
         = scm_replace_environment(formals, actuals, eval_state->env);
 
-    return scm_s_begin(body, eval_state);
+    return scm_s_body(body, eval_state);
 
  err:
     ERR_OBJ("invalid bindings form", bindings);
@@ -1085,13 +1179,13 @@ define_internal(ScmObj var, ScmObj exp, ScmObj env)
 {
     ScmObj val;
 
-    if (NULLP(env)) {
+    val = EVAL(exp, env);
+    if (NULLP(env)) {  /* FIXME: env-implementation specific */
         /* given top-level environment */
-        val = EVAL(exp, env);
         SCM_SYMBOL_SET_VCELL(var, val);
     } else {
         /* add val to the environment */
-        env = scm_add_environment(var, EVAL(exp, env), env);
+        env = scm_add_environment(var, val, env);
     }
 }
 

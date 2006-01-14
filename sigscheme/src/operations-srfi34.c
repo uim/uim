@@ -389,8 +389,9 @@ guard_body(ScmEvalState *eval_state)
     /* evaluate the body */
     lex_eval_state.env      = lex_env;
     lex_eval_state.ret_type = SCM_RETTYPE_NEED_EVAL;
-    result = scm_s_begin(body, &lex_eval_state);  /* always NEED_EVAL */
-    result = EVAL(result, lex_env);
+    result = scm_s_body(body, &lex_eval_state);
+    if (lex_eval_state.ret_type == SCM_RETTYPE_NEED_EVAL)
+        result = EVAL(result, lex_env);
     eval_state->ret_type = SCM_RETTYPE_AS_IS;
 
     scm_call_continuation(guard_k, delay(result, lex_env));

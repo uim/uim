@@ -122,7 +122,7 @@ scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
 
     eval_state->env = env;
 
-    return scm_s_begin(body, eval_state);
+    return scm_s_body(body, eval_state);
 
  err:
     ERR_OBJ("invalid claws form", claws);

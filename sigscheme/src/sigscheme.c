@@ -66,6 +66,8 @@ ScmObj scm_sym_quote, scm_sym_quasiquote;
 ScmObj scm_sym_unquote, scm_sym_unquote_splicing;
 ScmObj scm_sym_else, scm_sym_yields;
 
+extern ScmObj scm_sym_define, scm_syn_lambda;
+
 /* canonical internal encoding for identifiers */
 ScmCharCodec *scm_identifier_codec;
 
@@ -167,6 +169,11 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
     scm_sym_else             = scm_intern("else");
     scm_sym_yields           = scm_intern("=>");
 
+#if SCM_STRICT_ARGCHECK
+    /* syntax.c */
+    scm_sym_define           = scm_intern("define");
+#endif
+
     scm_gc_protect_with_init(&features, SCM_NULL);
 
     /*=======================================================================
@@ -182,6 +189,14 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
 #endif
 #if SCM_USE_NONSTD_FEATURES
     scm_use("sscm");
+#endif
+
+    /*=======================================================================
+      Predefined Objects
+    =======================================================================*/
+#if SCM_STRICT_ARGCHECK
+    scm_syn_lambda
+        = scm_symbol_value(scm_intern("lambda"), SCM_INTERACTION_ENV);
 #endif
 
     /*=======================================================================

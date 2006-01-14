@@ -108,5 +108,5 @@ scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body,
         ERR_OBJ("unmatched number of args for multiple values", actuals);
     eval_state->env = env = scm_extend_environment(formals, actuals, env);
 
-    return scm_s_begin(body, eval_state);
+    return scm_s_body(body, eval_state);
 }

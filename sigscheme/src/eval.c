@@ -254,7 +254,7 @@ call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
     }
 
     eval_state->ret_type = SCM_RETTYPE_NEED_EVAL;
-    return scm_s_begin(body, eval_state);
+    return scm_s_body(body, eval_state);
 
  err_improper:
     ERR_OBJ("unmatched number or improper args", args);
