@@ -37,6 +37,8 @@
 =======================================*/
 #include <stdint.h> /* FIXME: make C99-independent */
 #include <stdlib.h>
+#include <string.h>
+
 #include <assert.h>
 
 /*=======================================
@@ -127,6 +129,17 @@ scm_realloc(void *ptr, size_t size)
     ENSURE_ALLOCATED(p);
 
     return p;
+}
+
+char *
+scm_strdup(const char *str)
+{
+    char *copied;
+
+    copied = strdup(str);
+    ENSURE_ALLOCATED(copied);
+
+    return copied;
 }
 
 /*=======================================

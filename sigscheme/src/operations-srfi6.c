@@ -133,7 +133,7 @@ scm_p_srfi6_get_output_string(ScmObj port)
     new_str = scm_malloc(size);
     memcpy(new_str, str, size);
 #else
-    new_str = strdup(str);
+    new_str = scm_strdup(str);
 #endif
 
     return MAKE_STRING(new_str, mb_len);

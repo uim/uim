@@ -826,6 +826,7 @@ void *scm_malloc_aligned(size_t size);
 void *scm_malloc(size_t size);
 void *scm_calloc(size_t number, size_t size);
 void *scm_realloc(void *ptr, size_t size);
+char *scm_strdup(const char *str);
 
 /* storage-gc.c */
 void scm_gc_protect(ScmObj *var);

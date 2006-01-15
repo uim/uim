@@ -194,7 +194,7 @@ ScmBytePort *
 ScmInputStrPort_new_copying(const char *str,
                             ScmInputStrPort_finalizer finalize)
 {
-    return istrport_new(strdup(str), scm_true, finalize);
+    return istrport_new(scm_strdup(str), scm_true, finalize);
 }
 
 ScmBytePort *
@@ -238,7 +238,7 @@ istrport_close(ScmInputStrPort *port)
 static char *
 istrport_inspect(ScmInputStrPort *port)
 {
-    return strdup("string");
+    return scm_strdup("string");
 }
 
 static int
@@ -358,7 +358,7 @@ ostrport_close(ScmOutputStrPort *port)
 static char *
 ostrport_inspect(ScmOutputStrPort *port)
 {
-    return strdup("string");
+    return scm_strdup("string");
 }
 
 static int

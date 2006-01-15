@@ -92,7 +92,7 @@ scm_intern(const char *name)
     }
 
     /* if not found, allocate new symbol object and prepend it into the list */
-    sym = MAKE_SYMBOL(strdup(name), SCM_UNBOUND);
+    sym = MAKE_SYMBOL(scm_strdup(name), SCM_UNBOUND);
     scm_symbol_hash[hash] = CONS(sym, lst);
 
     return sym;

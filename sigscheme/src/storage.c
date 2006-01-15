@@ -242,7 +242,7 @@ scm_make_immutable_string(char *str, int len)
 ScmObj
 scm_make_immutable_string_copying(const char *str, int len)
 {
-    return scm_make_string_internal(strdup(str), len, scm_true);
+    return scm_make_string_internal(scm_strdup(str), len, scm_true);
 }
 
 ScmObj
@@ -254,7 +254,7 @@ scm_make_string(char *str, int len)
 ScmObj
 scm_make_string_copying(const char *str, int len)
 {
-    return scm_make_string_internal(strdup(str), len, scm_false);
+    return scm_make_string_internal(scm_strdup(str), len, scm_false);
 }
 
 ScmObj

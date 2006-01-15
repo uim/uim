@@ -622,7 +622,7 @@ find_path(const char *filename)
 
     /* try absolute and relative path */
     if (file_existsp(filename))
-        return strdup(filename);
+        return scm_strdup(filename);
 
     /* try under scm_lib_path */
     if (scm_lib_path) {
@@ -724,7 +724,7 @@ parse_script_prelude(ScmObj port)
         if (!len)
             break;
         p[len] = '\0';
-        arg = strdup(p);
+        arg = scm_strdup(p);
         argv[argc] = arg;
         argv = scm_realloc(argv, sizeof(char *) * (++argc + 1));
         argv[argc] = NULL;

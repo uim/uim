@@ -133,7 +133,7 @@ fileport_new_internal(FILE *file, const char *aux_info, scm_bool ownership)
 
     port->vptr = ScmFilePort_vptr;
     port->file = file;
-    port->aux_info = strdup(aux_info);
+    port->aux_info = scm_strdup(aux_info);
     port->ownership = ownership;
 
     return (ScmBytePort *)port;
@@ -199,7 +199,7 @@ fileport_inspect(ScmFilePort *port)
         snprintf(combined, size, "file %s", port->aux_info);
         return combined;
     } else {
-        return strdup("file");
+        return scm_strdup("file");
     }
 }
 

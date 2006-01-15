@@ -139,7 +139,7 @@ nullport_close(ScmNullPort *port)
 static char *
 nullport_inspect(ScmNullPort *port)
 {
-    return strdup("null");
+    return scm_strdup("null");
 }
 
 static int
