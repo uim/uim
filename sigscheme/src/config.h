@@ -95,7 +95,7 @@
 #define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
 
 /*===========================================================================
-  Tunings
+  Memory configurations
 ===========================================================================*/
 /* on-stack initial token buffer size for parser */
 #define SCM_INITIAL_STRING_BUF_SIZE 64
@@ -115,6 +115,15 @@
      / (SCM_DEFAULT_HEAP_SIZE * sizeof(ScmCell)))
 #define SCM_DEFAULT_N_HEAPS_INIT         1
 #define SCM_DEFAULT_SYMBOL_HASH_SIZE     0x400
+
+#define SCM_USE_64BIT_FIXNUM    0 /* use int64_t  as scm_int_t */
+#define SCM_USE_32BIT_FIXNUM    0 /* use int32_t  as scm_int_t */
+#define SCM_USE_INT_FIXNUM      0 /* use int      as scm_int_t */
+#define SCM_USE_LONG_FIXNUM     0 /* use long     as scm_int_t (default) */
+
+#define SCM_USE_64BIT_SCMREF    0 /* use int64_t  as scm_intref_t */
+#define SCM_USE_32BIT_SCMREF    0 /* use int32_t  as scm_intref_t */
+#define SCM_USE_INTPTR_SCMREF   0 /* use intptr_t as scm_intref_t (default) */
 
 /*===========================================================================
   Debugging

@@ -53,6 +53,9 @@
 
 #define SCM_MB_MAX_LEN 4
 
+#define SCM_HAS_2OCT_WCHAR 0
+#define SCM_HAS_4OCT_WCHAR 0
+
 #define SCM_MBCINFO_SET_SIZE(inf, siz)   ((inf).size = (siz))
 #define SCM_MBCINFO_GET_SIZE(inf)        ((inf).size)
 #if SCM_USE_STATEFUL_ENCODING
