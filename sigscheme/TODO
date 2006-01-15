@@ -1,10 +1,11 @@
 ==============================================================================
 Requirements and critical bugs:
 
-* Confirm internal definition behavior as specification
-  - Make all test in test-define.scm passed when SCM_STRICT_ARGCHECK
-
-* Confirm R5RS and SRFI conformance for each function implementation
+* Implement format string
+  - Evaluate SRFI-28 and SRFI-48
+  - Implement limited part of the SRFIs for both Scheme object and raw C word
+  - Replace asprintf and vasprintf
+  - Obsolete vprintf method of port object
 
 * Autoconfiscate the SigScheme package (don't rely on uim's configure)
   - Prepare replace functions (asprintf and so on)
@@ -22,14 +23,17 @@ Requirements and critical bugs:
 * Review and refactor some functions in syntax.c(listran, vectran,
   qquote_internal, scm_s_quasiquote) (other files had already been done)
 
+* Make 64bit-safe (after compaction and stdint.h)
+
+* Confirm R5RS and SRFI conformance for each function implementation
+
 * Confirm behavior of constant vector and list
   - Investigate behavior of them in Scheme implementations other than Gauche
     and Guile, and record it into doc/spec.txt
   - Implement if needed
 
-* Make 64bit-safe (after compaction and stdint.h)
-
 * Confirm public API
+  - Evaluate SRFI-50 (although withdrawn)
 
 * Write test for tail expression of all tail-recursive syntaxes
 
@@ -67,12 +71,23 @@ Extensions: (not required for now)
   - Evaluate ces API of Gauche
   - Consider dynamic environment
 
+* Complete operations-srfi1.c and make it production quality if considerable
+  benefit exists against SLIB version of SRFI-1 implementation
+
+* Implement a record type
+  - Evaluate SRFI-9 and SRFI-76
+  - Make a comparison with uim's define-record
+
+* Make unittest.scm closer to SRFI-64 "A Scheme API for test suites" if
+  reasonable
+
+* Implement numbers other than integer
+  - Define SAL accessors considering SRFI-50 and other implementations
+  - Evaluate SRFI-77 "Preliminary Proposal for R6RS Arithmetic"
+
 * Add GB18030 to encoding.c
 
 * Add Big5 to encoding.c
-
-* Complete operations-srfi1.c and make it production quality if considerable
-  benefit exists against SLIB version of SRFI-1 implementation
 
 ==============================================================================
 Performance improvements:
