@@ -560,18 +560,20 @@
     (assert-equal? "lexical scope test5" 1 a)))
 (lexical-test)
 
-(assert-equal? "named let test" '((6 1 3) (-5 -2)) (let loop ((numbers '(3 -2 1 6 -5))
-							      (nonneg '())
-							      (neg '()))
-						     (cond ((null? numbers) (list nonneg neg))
-							   ((>= (car numbers) 0)
-							    (loop (cdr numbers)
-								  (cons (car numbers) nonneg)
-								  neg))
-							   ((< (car numbers) 0)
-							    (loop (cdr numbers)
-								  nonneg
-								  (cons (car numbers) neg))))))
+(assert-equal? "named let test"
+               '((6 1 3) (-5 -2))
+               (let loop ((numbers '(3 -2 1 6 -5))
+                          (nonneg '())
+                          (neg '()))
+                 (cond ((null? numbers) (list nonneg neg))
+                       ((>= (car numbers) 0)
+                        (loop (cdr numbers)
+                              (cons (car numbers) nonneg)
+                              neg))
+                       ((< (car numbers) 0)
+                        (loop (cdr numbers)
+                              nonneg
+                              (cons (car numbers) neg))))))
 
 ;;
 ;; let*
@@ -644,21 +646,25 @@
                (lambda ()
                  (letrec (1) #t)))
 
-(assert-equal? "basic letrec test1" #t (letrec ((even?
-					   (lambda (n)
-					     (if (zero? n)
-						 #t
-						 (odd? (- n 1)))))
-					  (odd?
-					   (lambda (n)
-					     (if (zero? n)
-						 #f
-						 (even? (- n 1))))))
-				      (even? 88)))
+(assert-equal? "basic letrec test1"
+               #t
+               (letrec ((even?
+                         (lambda (n)
+                           (if (zero? n)
+                               #t
+                               (odd? (- n 1)))))
+                        (odd?
+                         (lambda (n)
+                           (if (zero? n)
+                               #f
+                               (even? (- n 1))))))
+                 (even? 88)))
 
-(assert-equal? "basic letrec test2" "aiueo" (letrec ((a (lambda () b))
-						     (b "aiueo"))
-					      (a)))
+(assert-equal? "basic letrec test2"
+               "aiueo"
+               (letrec ((a (lambda () b))
+                        (b "aiueo"))
+                 (a)))
 
 (define mularg-apply
   (letrec ((apply-2 apply)

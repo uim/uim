@@ -814,14 +814,14 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
         ERR_OBJ("invalid bindings form", bindings);
 
     env = scm_extend_environment(formals, actuals, env);
-    eval_state->env = env;
 
     /* named let */
     if (SYMBOLP(named_let_sym)) {
         proc = MAKE_CLOSURE(CONS(formals, body), env);
-        define_internal(named_let_sym, proc, env);
+        env = scm_add_environment(named_let_sym, proc, env);
     }
 
+    eval_state->env = env;
     return scm_s_body(body, eval_state);
 }
 
