@@ -62,8 +62,10 @@ static ScmObj sym_define, sym_begin, syn_lambda;
 /*=======================================
   File Local Function Declarations
 =======================================*/
+#if SCM_STRICT_DEFINE_PLACEMENT
 static ScmObj filter_definitions(ScmObj body, ScmObj *formals, ScmObj *actuals,
                                  ScmQueue *def_expq);
+#endif
 static void define_internal(ScmObj var, ScmObj exp, ScmObj env);
 
 /* Quasiquotation. */
@@ -1021,7 +1023,12 @@ scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
             val = EVAL(step, env);
             actuals = CONS(val, actuals);
         }
+#if SCM_STRICT_DEFINE_PLACEMENT
         env = scm_update_environment(actuals, env);
+#else
+        /* silently discards new bindings from invalid internal definitions */
+        env = scm_replace_environment(formals, actuals, env);
+#endif
     }
 #if SCM_STRICT_ARGCHECK
     /* no iteration occurred */
