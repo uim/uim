@@ -33,7 +33,7 @@
 (load "./test/unittest.scm")
 
 (define tn test-name)
-(define *test-track-progress* #t)
+(define *test-track-progress* #f)
 
 ; invalid form
 (assert-error "define invalid form #1"
@@ -428,7 +428,7 @@
 (assert-equal? (tn)
                3
                (let ()
-                 (lambda (f)
+                 (define (f)
                    (begin
                      (define foo 1)
                      (define bar 2)
@@ -478,7 +478,7 @@
 (assert-equal? (tn)
                3
                (let ()
-                 (lambda (f)
+                 (define (f)
                    (begin
                      (define foo 4)
                      (define bar 5))
@@ -487,47 +487,49 @@
                      (define bar 2)
                      (+ foo bar)))
                  (f)))
-(tn "definition in invalid sequencial begin")
+(tn "definition in sequencial nested begin")
 (assert-equal? (tn)
                3
                (let ()
                  (begin
                    (define foo 4)
-                   (define bar 5)
-                   (set! foo 3))
+                   (define bar 5))
                  (begin
-                   (define foo 1)
-                   (define bar 2)
+                   (define foo 6)
+                   (begin
+                     (define foo 1)
+                     (define bar 2))
                    (+ foo bar))))
 (assert-equal? (tn)
                3
                (let* ()
                  (begin
                    (define foo 4)
-                   (define bar 5)
-                   (set! foo 3))
+                   (define bar 5))
                  (begin
-                   (define foo 1)
-                   (define bar 2)
+                   (define foo 6)
+                   (begin
+                     (define foo 1)
+                     (define bar 2))
                    (+ foo bar))))
 (assert-equal? (tn)
                3
                (letrec ()
                  (begin
                    (define foo 4)
-                   (define bar 5)
-                   (set! foo 3))
+                   (define bar 5))
                  (begin
-                   (define foo 1)
-                   (define bar 2)
+                   (define foo 6)
+                   (begin
+                     (define foo 1)
+                     (define bar 2))
                    (+ foo bar))))
 (assert-equal? (tn)
                3
                ((lambda ()
                   (begin
                     (define foo 4)
-                    (define bar 5)
-                    (set! foo 3))
+                    (define bar 5))
                   (begin
                     (define foo 1)
                     (define bar 2)
@@ -535,7 +537,21 @@
 (assert-equal? (tn)
                3
                (let ()
-                 (lambda (f)
+                 (define (f)
+                   (begin
+                     (define foo 4)
+                     (define bar 5))
+                   (begin
+                     (define foo 6)
+                     (begin
+                       (define foo 1)
+                       (define bar 2))
+                     (+ foo bar)))
+                 (f)))
+(tn "definition in invalid sequencial begin")
+(assert-error  (tn)
+               (lambda ()
+                 (let ()
                    (begin
                      (define foo 4)
                      (define bar 5)
@@ -543,8 +559,53 @@
                    (begin
                      (define foo 1)
                      (define bar 2)
-                     (+ foo bar)))
-                 (f)))
+                     (+ foo bar)))))
+(assert-error  (tn)
+               (lambda ()
+                 (let* ()
+                   (begin
+                     (define foo 4)
+                     (define bar 5)
+                     (set! foo 3))
+                   (begin
+                     (define foo 1)
+                     (define bar 2)
+                     (+ foo bar)))))
+(assert-error  (tn)
+               (lambda ()
+                 (letrec ()
+                   (begin
+                     (define foo 4)
+                     (define bar 5)
+                     (set! foo 3))
+                   (begin
+                     (define foo 1)
+                     (define bar 2)
+                     (+ foo bar)))))
+(assert-error  (tn)
+               (lambda ()
+                 ((lambda ()
+                    (begin
+                      (define foo 4)
+                      (define bar 5)
+                      (set! foo 3))
+                    (begin
+                      (define foo 1)
+                      (define bar 2)
+                      (+ foo bar))))))
+(assert-error  (tn)
+               (lambda ()
+                 (let ()
+                   (define (f)
+                     (begin
+                       (define foo 4)
+                       (define bar 5)
+                       (set! foo 3))
+                     (begin
+                       (define foo 1)
+                       (define bar 2)
+                       (+ foo bar)))
+                   (f))))
 
 ; set!
 (define (set-dot a . b)

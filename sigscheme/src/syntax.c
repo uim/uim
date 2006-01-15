@@ -56,12 +56,14 @@
 =======================================*/
 static ScmObj sym_else, sym_yields;
 #if SCM_STRICT_DEFINE_PLACEMENT
-static ScmObj sym_define, syn_lambda;
+static ScmObj sym_define, sym_begin, syn_lambda;
 #endif
 
 /*=======================================
   File Local Function Declarations
 =======================================*/
+static ScmObj filter_definitions(ScmObj body, ScmObj *formals, ScmObj *actuals,
+                                 ScmQueue *def_expq);
 static void define_internal(ScmObj var, ScmObj exp, ScmObj env);
 
 /* Quasiquotation. */
@@ -80,6 +82,7 @@ scm_init_syntax(void)
     sym_yields = scm_intern("=>");
 #if SCM_STRICT_DEFINE_PLACEMENT
     sym_define = scm_intern("define");
+    sym_begin  = scm_intern("begin");
     scm_gc_protect_with_init(&syn_lambda,
                              scm_symbol_value(scm_intern("lambda"),
                                               SCM_INTERACTION_ENV));
@@ -646,6 +649,55 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.2 Binding constructs
 ===========================================================================*/
+#if SCM_STRICT_DEFINE_PLACEMENT
+static ScmObj
+filter_definitions(ScmObj body, ScmObj *formals, ScmObj *actuals,
+                   ScmQueue *def_expq)
+{
+    ScmObj exp, var, sym, begin_rest, lambda_formals, lambda_body;
+    DECLARE_INTERNAL_FUNCTION("(body)");
+
+    for (; CONSP(body); POP(body)) {
+        exp = CAR(body);
+        if (!CONSP(exp))
+            break;
+        sym = POP(exp);
+        if (EQ(sym, sym_begin)) {
+            begin_rest = filter_definitions(exp, formals, actuals, def_expq);
+            if (CONSP(begin_rest))
+                return CONS(CONS(sym_begin, begin_rest), CDR(body));
+            ASSERT_NO_MORE_ARG(begin_rest);
+        } else if (EQ(sym, sym_define)) {
+            var = MUST_POP_ARG(exp);
+            if (SYMBOLP(var)) {
+                /* (define <variable> <expression>) */
+                if (!LIST_1_P(exp))
+                    ERR_OBJ("exactly 1 arg required but got", exp);
+                exp = CAR(exp);
+            } else if (CONSP(var)) {
+                /* (define (<variable> . <formals>) <body>) */
+                sym            = CAR(var);
+                lambda_formals = CDR(var);
+                lambda_body    = exp;
+
+                ENSURE_SYMBOL(sym);
+                var = sym;
+                exp = CONS(syn_lambda, CONS(lambda_formals, lambda_body));
+            } else {
+                ERR_OBJ("syntax error", var);
+            }
+            *formals = CONS(var, *formals);
+            *actuals = CONS(SCM_UNBOUND, *actuals);
+            SCM_QUEUE_ADD(*def_expq, exp);
+        } else {
+            break;
+        }
+    }
+    
+    return body;
+}
+#endif
+
 /* <body> part of let, let*, letrec and lambda. This function performs strict
  * form validation for internal definitions as specified in R5RS (5.2.2
  * Internal definitions). */
@@ -655,8 +707,7 @@ scm_s_body(ScmObj body, ScmEvalState *eval_state)
 {
 #if SCM_STRICT_DEFINE_PLACEMENT
     ScmQueue def_expq;
-    ScmObj env, formals, actuals, def_exps, exp, var, sym;
-    ScmObj lambda_formals, lambda_body;
+    ScmObj env, formals, actuals, def_exps, exp;
 #endif
     DECLARE_INTERNAL_FUNCTION("(body)" /* , syntax_variadic_tailrec_0 */);
 
@@ -672,34 +723,7 @@ scm_s_body(ScmObj body, ScmEvalState *eval_state)
     /* collect internal definitions */
     def_exps = formals = actuals = SCM_NULL;
     SCM_QUEUE_POINT_TO(def_expq, def_exps);
-    while (CONSP(body)) {
-        exp = CAR(body);
-        if (!CONSP(exp) || (sym = POP(exp), !EQ(sym, sym_define)))
-            break;
-        POP(body);
-
-        var = MUST_POP_ARG(exp);
-        if (SYMBOLP(var)) {
-            /* (define <variable> <expression>) */
-            if (!LIST_1_P(exp))
-                ERR_OBJ("exactly 1 arg required but got", exp);
-            exp = CAR(exp);
-        } else if (CONSP(var)) {
-            /* (define (<variable> . <formals>) <body>) */
-            sym            = CAR(var);
-            lambda_formals = CDR(var);
-            lambda_body    = exp;
-
-            ENSURE_SYMBOL(sym);
-            var = sym;
-            exp = CONS(syn_lambda, CONS(lambda_formals, lambda_body));
-        } else {
-            ERR_OBJ("syntax error", var);
-        }
-        formals = CONS(var, formals);
-        actuals = CONS(SCM_UNBOUND, actuals);
-        SCM_QUEUE_ADD(def_expq, exp);
-    }
+    body = filter_definitions(body, &formals, &actuals, &def_expq);
 
     /* inject the unbound variables into the frame to make the variable
      * references invalid through the evaluation */
