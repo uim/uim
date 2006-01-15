@@ -651,6 +651,29 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.2 Binding constructs
 ===========================================================================*/
+/*
+ * Valid placement for definitions
+ *
+ * Definitions on SigScheme is strictly conformed to the three rule specified
+ * in R5RS (see below), when SCM_STRICT_DEFINE_PLACEMENT is enabled. All
+ * conditions that are not specified by the rules cause syntax error.
+ *
+ * 5.2 Definitions
+ *
+ * Definitions are valid in some, but not all, contexts where expressions are
+ * allowed. They are valid only at the top level of a <program> and at the
+ * beginning of a <body>.
+ *
+ * 5.2.2 Internal definitions
+ *
+ * Definitions may occur at the beginning of a <body> (that is, the body of a
+ * lambda, let, let*, letrec, let-syntax, or letrec-syntax expression or that
+ * of a definition of an appropriate form).
+ *
+ * Wherever an internal definition may occur (begin <definition1> ...) is
+ * equivalent to the sequence of definitions that form the body of the begin.
+ */
+
 #if SCM_STRICT_DEFINE_PLACEMENT
 static ScmObj
 filter_definitions(ScmObj body, ScmObj *formals, ScmObj *actuals,
