@@ -38,6 +38,10 @@
  * merge into another file.
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef __SCM_FILEPORT_H
 #define __SCM_FILEPORT_H
 
@@ -74,5 +78,8 @@ ScmBytePort *ScmFilePort_new_shared(FILE *file, const char *aux_info);
 ScmBytePort *ScmFilePort_open_input_file(const char *path);
 ScmBytePort *ScmFilePort_open_output_file(const char *path);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __SCM_FILEPORT_H */

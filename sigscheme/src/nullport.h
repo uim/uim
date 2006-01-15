@@ -40,6 +40,10 @@
 #ifndef __SCM_NULLPORT_H
 #define __SCM_NULLPORT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*=======================================
   System Include
 =======================================*/
@@ -68,5 +72,9 @@ extern const ScmBytePortVTbl *ScmNullPort_vptr;
 void scm_nullport_init(void);
 
 ScmBytePort *ScmNullPort_new(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __SCM_NULLPORT_H */

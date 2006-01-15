@@ -40,6 +40,10 @@
 #ifndef __SCM_SBCPORT_H
 #define __SCM_SBCPORT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*=======================================
   System Include
 =======================================*/
@@ -73,5 +77,8 @@ void ScmSingleByteCharPort_construct(ScmSingleByteCharPort *port,
                                      ScmBytePort *bport);
 ScmCharPort *ScmSingleByteCharPort_new(ScmBytePort *bport);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __SCM_SBCPORT_H */

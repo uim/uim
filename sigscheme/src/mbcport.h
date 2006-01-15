@@ -40,6 +40,10 @@
 #ifndef __SCM_MBCPORT_H
 #define __SCM_MBCPORT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*=======================================
   System Include
 =======================================*/
@@ -79,5 +83,9 @@ void ScmMultiByteCharPort_construct(ScmMultiByteCharPort *port,
 ScmCharPort *ScmMultiByteCharPort_new(ScmBytePort *bport, ScmCharCodec *codec);
 
 void ScmMultiByteCharPort_set_codec(ScmCharPort *cport, ScmCharCodec *codec);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __SCM_MBCPORT_H */

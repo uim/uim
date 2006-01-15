@@ -40,6 +40,10 @@
 #ifndef __SCM_BASEPORT_H
 #define __SCM_BASEPORT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*=======================================
   System Include
 =======================================*/
@@ -246,5 +250,8 @@ void ScmBaseCharPort_construct(ScmBaseCharPort *port,
 char *ScmBaseCharPort_inspect(ScmBaseCharPort *port, const char *header);
 int ScmBaseCharPort_line_number(ScmBaseCharPort *port);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __SCM_BASEPORT_H */

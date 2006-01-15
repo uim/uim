@@ -40,6 +40,10 @@
 #ifndef __SCM_STRPORT_H
 #define __SCM_STRPORT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*=======================================
   System Include
 =======================================*/
@@ -85,5 +89,8 @@ const char *ScmOutputStrPort_str(ScmBytePort *bport);
 size_t ScmOutputStrPort_c_strlen(ScmBytePort *bport);
 void **ScmOutputStrPort_ref_opaque(ScmBytePort *bport);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __SCM_STRPORT_H */

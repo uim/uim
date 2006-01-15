@@ -37,6 +37,10 @@
 #ifndef __SCM_ENCODING_H
 #define __SCM_ENCODING_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*=======================================
   System Include
 =======================================*/
@@ -212,5 +216,9 @@ ScmMultibyteString scm_mb_substring(ScmCharCodec *codec,
 ScmCharCodec *scm_mb_find_codec(const char *encoding);
 int scm_charcodec_read_char(ScmCharCodec *codec, ScmMultibyteString *mbs,
                             const char *caller);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __SCM_ENCODING_H */
