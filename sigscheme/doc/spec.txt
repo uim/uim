@@ -6,7 +6,7 @@ Specifications of SigScheme
 
     To be described.
 
-  - 64bit environment is not supported (yet)
+  - 64bit environment is being supported
 
 * R5RS conformance
 
