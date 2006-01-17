@@ -38,6 +38,8 @@
 extern "C" {
 #endif
 
+#include "config.h"
+
 /*=======================================
    System Include
 =======================================*/
@@ -51,7 +53,6 @@ extern "C" {
 /*=======================================
    Local Include
 =======================================*/
-#include "config.h"
 #include "encoding.h"
 
 /*=======================================
@@ -66,13 +67,13 @@ extern "C" {
 
 /* FIXME: Confirm appropriate workaround about the noinline attribute vanishing
  * problem for Linux environments */
-#ifdef __GNUC__
+#if HAVE___ATTRIBUTE__
 #define SCM_NOINLINE __attribute__((noinline))
 #define SCM_NORETURN __attribute__((noreturn))
-#else
+#else /* HAVE___ATTRIBUTE__ */
 #define SCM_NOINLINE
 #define SCM_NORETURN
-#endif /* __GNUC__ */
+#endif /* HAVE___ATTRIBUTE__ */
 
 /* RFC: better names for the debug printing */
 #if SCM_DEBUG
