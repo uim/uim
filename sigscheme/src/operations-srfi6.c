@@ -114,7 +114,7 @@ scm_p_srfi6_get_output_string(ScmObj port)
     ScmBaseCharPort *cport;
     const char *str;
     char *new_str;
-    int mb_len;
+    scm_int_t mb_len;
 #if SCM_USE_NULL_CAPABLE_STRING
     size_t size;
 #endif

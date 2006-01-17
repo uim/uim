@@ -67,7 +67,6 @@
   File Local Type Definitions
 =======================================*/
 typedef unsigned char uchar;
-typedef unsigned int  uint;
 
 /*=======================================
   File Local Functions
@@ -78,11 +77,12 @@ static scm_bool pred_always_false(void);
 #if SCM_USE_EUCJP
 static const char *eucjp_encoding(void);
 static enum ScmCodedCharSet eucjp_ccs(void);
-static int eucjp_char_len(int ch);
+static int eucjp_char_len(scm_ichar_t ch);
 static ScmMultibyteCharInfo eucjp_scan_char(ScmMultibyteString mbs);
-static int eucjp_str2int(const uchar *src, size_t len,
-                         ScmMultibyteState state);
-static uchar *eucjp_int2str(uchar *dst, int ch, ScmMultibyteState state);
+static scm_ichar_t eucjp_str2int(const uchar *src, size_t len,
+                                 ScmMultibyteState state);
+static uchar *eucjp_int2str(uchar *dst, scm_ichar_t ch,
+                            ScmMultibyteState state);
 #endif
 
 #if SCM_USE_ISO2022KR
@@ -98,20 +98,22 @@ static ScmMultibyteCharInfo iso2022jp_scan_input_char(ScmMultibyteString mbs);
 #if SCM_USE_SJIS
 static const char *sjis_encoding(void);
 static enum ScmCodedCharSet sjis_ccs(void);
-static int sjis_char_len(int ch);
+static int sjis_char_len(scm_ichar_t ch);
 static ScmMultibyteCharInfo sjis_scan_char(ScmMultibyteString mbs);
-static uchar *sjis_int2str(uchar *dst, int ch, ScmMultibyteState state);
+static uchar *sjis_int2str(uchar *dst, scm_ichar_t ch,
+                           ScmMultibyteState state);
 #endif
 
 #if (SCM_USE_EUCCN || SCM_USE_EUCKR || SCM_USE_SJIS)
 /* generic double-byte char */
-static int dbc_str2int(const uchar *src, size_t len, ScmMultibyteState state);
+static scm_ichar_t dbc_str2int(const uchar *src, size_t len,
+                               ScmMultibyteState state);
 #endif
 
 #if (SCM_USE_EUCCN || SCM_USE_EUCKR)
 /* shared by EUCCN and EUCKR */
-static int euc_char_len(int ch);
-static uchar *euc_int2str(uchar *dst, int ch, ScmMultibyteState state);
+static int euc_char_len(scm_ichar_t ch);
+static uchar *euc_int2str(uchar *dst, scm_ichar_t ch, ScmMultibyteState state);
 #endif
 
 #if SCM_USE_EUCCN
@@ -129,19 +131,22 @@ static ScmMultibyteCharInfo euckr_scan_char(ScmMultibyteString mbs);
 #if SCM_USE_UTF8
 static const char *utf8_encoding(void);
 static enum ScmCodedCharSet utf8_ccs(void);
-static int utf8_char_len(int ch);
+static int utf8_char_len(scm_ichar_t ch);
 static ScmMultibyteCharInfo utf8_scan_char(ScmMultibyteString mbs);
-static int utf8_str2int(const uchar *src, size_t len, ScmMultibyteState state);
-static uchar *utf8_int2str(uchar *dst, int ch, ScmMultibyteState state);
+static scm_ichar_t utf8_str2int(const uchar *src, size_t len,
+                                ScmMultibyteState state);
+static uchar *utf8_int2str(uchar *dst, scm_ichar_t ch,
+                           ScmMultibyteState state);
 #endif
 
 static const char *unibyte_encoding(void);
 static enum ScmCodedCharSet unibyte_ccs(void);
-static int unibyte_char_len(int ch);
+static int unibyte_char_len(scm_ichar_t ch);
 static ScmMultibyteCharInfo unibyte_scan_char(ScmMultibyteString mbs);
-static int unibyte_str2int(const uchar *src, size_t len,
-                           ScmMultibyteState state);
-static uchar *unibyte_int2str(uchar *dst, int ch, ScmMultibyteState state);
+static scm_ichar_t unibyte_str2int(const uchar *src, size_t len,
+                                   ScmMultibyteState state);
+static uchar *unibyte_int2str(uchar *dst, scm_ichar_t ch,
+                              ScmMultibyteState state);
 
 /*=======================================
   Local Variables
@@ -265,27 +270,28 @@ ScmCharCodec *scm_current_char_codec
   Public API
 =======================================*/
 
-int
+size_t
 scm_mb_strlen(ScmCharCodec *codec, ScmMultibyteString mbs)
 {
-    int len;
+    size_t len;
     ScmMultibyteCharInfo c;
 
-    CDBG((SCM_DBG_ENCODING, "mb_strlen: size = %d; str = %s;",
+    CDBG((SCM_DBG_ENCODING, "mb_strlen: size = " SCM_SIZE_T_FMT "; str = %s;",
           SCM_MBS_GET_SIZE(mbs), SCM_MBS_GET_STR(mbs)));
 
     for (len = 0; SCM_MBS_GET_SIZE(mbs); len++) {
         c = SCM_CHARCODEC_SCAN_CHAR(codec, mbs);
-        CDBG((SCM_DBG_ENCODING, "%d, %d;", SCM_MBCINFO_GET_SIZE(c), c.flag));
+        CDBG((SCM_DBG_ENCODING, SCM_SIZE_T_FMT ", %d;",
+              SCM_MBCINFO_GET_SIZE(c), c.flag));
         SCM_MBS_SKIP_CHAR(mbs, c);
     }
 
-    CDBG((SCM_DBG_ENCODING, "len=%d\n", len));
+    CDBG((SCM_DBG_ENCODING, "len=" SCM_SIZE_T_FMT "\n", len));
     return len;
 }
 
 /* FIXME: pick a better name. */
-int
+size_t
 scm_mb_bare_c_strlen(ScmCharCodec *codec, const char *s)
 {
     ScmMultibyteString mbs;
@@ -295,7 +301,7 @@ scm_mb_bare_c_strlen(ScmCharCodec *codec, const char *s)
 }
 
 ScmMultibyteString
-scm_mb_substring(ScmCharCodec *codec, ScmMultibyteString mbs, int i, int len)
+scm_mb_substring(ScmCharCodec *codec, ScmMultibyteString mbs, size_t i, size_t len)
 {
     ScmMultibyteString ret, end;
     ScmMultibyteCharInfo c;
@@ -332,13 +338,13 @@ scm_mb_find_codec(const char *encoding)
     return NULL;
 }
 
-int
+scm_ichar_t
 scm_charcodec_read_char(ScmCharCodec *codec, ScmMultibyteString *mbs,
                         const char *caller)
 {
     ScmMultibyteCharInfo mbc;
     ScmMultibyteState state;
-    int ch;
+    scm_ichar_t ch;
     DECLARE_INTERNAL_FUNCTION("scm_charcodec_read_char");
 
     SCM_ASSERT(SCM_MBS_GET_SIZE(*mbs));
@@ -418,14 +424,14 @@ pred_always_false(void)
 #define IN_GR94(c) (0xA1 <= (uchar)(c) && (uchar)(c) <= 0xFE)
 #define IN_GR96(c) (0xA0 <= (uchar)(c) /* && (uchar)(c) <= 0xFF */)
 
-#define IS_ASCII(c) ((uint)(c) <= 0x7F)
+#define IS_ASCII(c) ((scm_ichar_t)(c) <= 0x7F)
 #define IS_GR_SPC_OR_DEL(c)  ((uchar)(c) == 0xA0 || (uchar)(c) == 0xFF)
 
 #define CHAR_BITS    8
 #define BYTE_MASK    0xFF
-#define IS_1BYTE(e)  ((uint)(e) <= 0x7F)
-#define IS_2BYTES(e) ((uint)(e) <= 0xFFFF)
-#define IS_3BYTES(e) ((uint)(e) <= ((SS3 << CHAR_BITS * 2) | 0xFFFF))
+#define IS_1BYTE(e)  ((scm_ichar_t)(e) <= 0x7F)
+#define IS_2BYTES(e) ((scm_ichar_t)(e) <= 0xFFFF)
+#define IS_3BYTES(e) ((scm_ichar_t)(e) <= ((SS3 << CHAR_BITS * 2) | 0xFFFF))
 
 #define ESC 0x1B
 #define SO  0x0E
@@ -448,7 +454,7 @@ eucjp_ccs(void)
 
 /* FIXME: Optimize */
 int
-eucjp_char_len(int ch)
+eucjp_char_len(scm_ichar_t ch)
 {
     uchar *end, buf[SCM_MB_MAX_LEN + sizeof("")];
 
@@ -469,8 +475,8 @@ eucjp_char_len(int ch)
 static ScmMultibyteCharInfo
 eucjp_scan_char(ScmMultibyteString mbs)
 {
-    const char *str = SCM_MBS_GET_STR(mbs);
-    const int size  = SCM_MBS_GET_SIZE(mbs);
+    const uchar *str = (const uchar *)SCM_MBS_GET_STR(mbs);
+    const size_t size = SCM_MBS_GET_SIZE(mbs);
     ENTER;
 
     if (!size)
@@ -505,10 +511,10 @@ eucjp_scan_char(ScmMultibyteString mbs)
     RETURN_ERROR();
 }
 
-static int
+static scm_ichar_t
 eucjp_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 {
-    int ch;
+    scm_ichar_t ch;
 
     switch (len) {
     case 1:
@@ -537,7 +543,7 @@ eucjp_str2int(const uchar *src, size_t len, ScmMultibyteState state)
    absolute character set identifier instead of raw encoding-dependent
    shifts */
 static uchar *
-eucjp_int2str(uchar *dst, int ch, ScmMultibyteState state)
+eucjp_int2str(uchar *dst, scm_ichar_t ch, ScmMultibyteState state)
 {
 #if SCM_STRICT_ENCODING_CHECK
     uchar seq[3];
@@ -577,10 +583,10 @@ eucjp_int2str(uchar *dst, int ch, ScmMultibyteState state)
 
 #if (SCM_USE_EUCCN || SCM_USE_EUCKR || SCM_USE_SJIS)
 /* generic double-byte char */
-static int
+static scm_ichar_t
 dbc_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 {
-    int ch;
+    scm_ichar_t ch;
 
     switch (len) {
     case 1:
@@ -603,7 +609,7 @@ dbc_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 #if (SCM_USE_EUCCN || SCM_USE_EUCKR)
 /* FIXME: Optimize */
 int
-euc_char_len(int ch)
+euc_char_len(scm_ichar_t ch)
 {
     uchar *end, buf[SCM_MB_MAX_LEN + sizeof("")];
 
@@ -613,7 +619,7 @@ euc_char_len(int ch)
 }
 
 static uchar *
-euc_int2str(uchar *dst, int ch, ScmMultibyteState state)
+euc_int2str(uchar *dst, scm_ichar_t ch, ScmMultibyteState state)
 {
 #if SCM_STRICT_ENCODING_CHECK
     uchar seq[2];
@@ -663,8 +669,8 @@ static ScmMultibyteCharInfo
 euccn_scan_char(ScmMultibyteString mbs)
 {
     /* TODO: maybe we can make this an alias of eucjp_scan_char()? */
-    const char *str = SCM_MBS_GET_STR(mbs);
-    const int size  = SCM_MBS_GET_SIZE(mbs);
+    const uchar *str = (const uchar *)SCM_MBS_GET_STR(mbs);
+    const size_t size = SCM_MBS_GET_SIZE(mbs);
     ENTER;
 
     if (!size)
@@ -710,8 +716,8 @@ euckr_encoding(void)
 static ScmMultibyteCharInfo
 euckr_scan_char(ScmMultibyteString mbs)
 {
-    const char *str = SCM_MBS_GET_STR(mbs);
-    const int size  = SCM_MBS_GET_SIZE(mbs);
+    const uchar *str = (const uchar *)SCM_MBS_GET_STR(mbs);
+    const size_t size = SCM_MBS_GET_SIZE(mbs);
     ENTER;
 
     if (!size)
@@ -733,9 +739,9 @@ euckr_scan_char(ScmMultibyteString mbs)
 #endif /* SCM_USE_EUCKR */
 
 /*==== Encodings for Unicode ====*/
-#define IN_OCT_BMP(u)  ((uint)(u) <= 0x7ff)
-#define IN_BMP(u)      ((uint)(u) <= 0xffff)
-#define IN_SMP(u)      ((uint)(u) <= 0x10ffff && !IN_BMP(u))
+#define IN_OCT_BMP(u)  ((scm_ichar_t)(u) <= 0x7ff)
+#define IN_BMP(u)      ((scm_ichar_t)(u) <= 0xffff)
+#define IN_SMP(u)      ((scm_ichar_t)(u) <= 0x10ffff && !IN_BMP(u))
 
 #if SCM_USE_UTF8
 /* RFC 3629 */
@@ -765,7 +771,7 @@ utf8_ccs(void)
 
 /* FIXME: Optimize */
 int
-utf8_char_len(int ch)
+utf8_char_len(scm_ichar_t ch)
 {
     uchar *end, buf[SCM_MB_MAX_LEN + sizeof("")];
 
@@ -777,9 +783,9 @@ utf8_char_len(int ch)
 static ScmMultibyteCharInfo
 utf8_scan_char(ScmMultibyteString mbs)
 {
-    const char *str = SCM_MBS_GET_STR(mbs);
-    const int size  = SCM_MBS_GET_SIZE(mbs);
-    int len;
+    const uchar *str = (const uchar *)SCM_MBS_GET_STR(mbs);
+    const size_t size = SCM_MBS_GET_SIZE(mbs);
+    size_t len;
     ENTER;
 
     if (!size)
@@ -794,7 +800,7 @@ utf8_scan_char(ScmMultibyteString mbs)
 
 #if SCM_STRICT_ENCODING_CHECK
     {
-        int i;
+        size_t i;
         for (i = 1; i < len; i++) {
             if (size <= i)
                 RETURN_INCOMPLETE(size);
@@ -811,10 +817,10 @@ utf8_scan_char(ScmMultibyteString mbs)
 
 }
 
-static int
+static scm_ichar_t
 utf8_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 {
-    int ch;
+    scm_ichar_t ch;
 
     switch (len) {
     case 1:
@@ -847,7 +853,7 @@ utf8_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 }
 
 static uchar *
-utf8_int2str(uchar *dst, int ch, ScmMultibyteState state)
+utf8_int2str(uchar *dst, scm_ichar_t ch, ScmMultibyteState state)
 {
     if (IS_ASCII(ch)) {
         *dst++ = ch;
@@ -922,7 +928,7 @@ sjis_ccs(void)
 
 /* FIXME: Optimize */
 int
-sjis_char_len(int ch)
+sjis_char_len(scm_ichar_t ch)
 {
     uchar *end, buf[SCM_MB_MAX_LEN + sizeof("")];
 
@@ -934,8 +940,8 @@ sjis_char_len(int ch)
 static ScmMultibyteCharInfo
 sjis_scan_char(ScmMultibyteString mbs)
 {
-    const char *str = SCM_MBS_GET_STR(mbs);
-    const int  size = SCM_MBS_GET_SIZE(mbs);
+    const uchar *str = (const uchar *)SCM_MBS_GET_STR(mbs);
+    const size_t size = SCM_MBS_GET_SIZE(mbs);
     ENTER;
 
     if (!size)
@@ -954,7 +960,7 @@ sjis_scan_char(ScmMultibyteString mbs)
 }
 
 static uchar *
-sjis_int2str(uchar *dst, int ch, ScmMultibyteState state)
+sjis_int2str(uchar *dst, scm_ichar_t ch, ScmMultibyteState state)
 {
     uchar high, low;
 
@@ -1005,7 +1011,7 @@ unibyte_ccs(void)
 }
 
 int
-unibyte_char_len(int ch)
+unibyte_char_len(scm_ichar_t ch)
 {
     return (0 < ch && ch <= 0xff) ? 1 : 0;
 }
@@ -1020,7 +1026,7 @@ unibyte_scan_char(ScmMultibyteString mbs)
     RETURN(0);
 }
 
-static int
+static scm_ichar_t
 unibyte_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 {
 #if SCM_STRICT_ENCODING_CHECK
@@ -1031,7 +1037,7 @@ unibyte_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 }
 
 static uchar *
-unibyte_int2str(uchar *dst, int ch, ScmMultibyteState state)
+unibyte_int2str(uchar *dst, scm_ichar_t ch, ScmMultibyteState state)
 {
 #if SCM_STRICT_ENCODING_CHECK
     if (ch & ~BYTE_MASK)

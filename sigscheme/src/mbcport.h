@@ -51,16 +51,12 @@ extern "C" {
 /*=======================================
   Local Include
 =======================================*/
-#include "baseport.h"
 #include "encoding.h"
+#include "baseport.h"
 
 /*=======================================
   Macro Definitions
 =======================================*/
-#ifndef SCM_MB_MAX_LEN
-#define SCM_MB_MAX_LEN 4
-#endif
-
 
 /*=======================================
   Type Definitions

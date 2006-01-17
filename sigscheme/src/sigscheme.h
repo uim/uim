@@ -166,7 +166,7 @@ extern "C" {
 
 /* result decoders for scm_length() */
 #define SCM_LISTLEN_PROPERP(len)    (0 <= (len))
-#define SCM_LISTLEN_CIRCULARP(len)  ((len) == INT_MIN)
+#define SCM_LISTLEN_CIRCULARP(len)  ((len) == SCM_INT_T_MIN)
 #define SCM_LISTLEN_ERRORP          SCM_LISTLEN_CIRCULARP
 #define SCM_LISTLEN_DOTTEDP(len)    ((len) < 0                               \
                                      && !SCM_LISTLEN_CIRCULARP(len))
@@ -247,11 +247,26 @@ extern "C" {
  * VALUE FOR TRUE. Use (val) or (val != scm_false) instead.
  *
  */
-#if (!defined(scm_true) && !defined(scm_false))
+#ifndef SCM_BOOL_DEFINED
 typedef int scm_bool;
 #define scm_false 0
 #define scm_true  (!scm_false)
-#endif
+#define SCM_BOOL_DEFINED
+#endif /* SCM_BOOL_DEFINED */
+
+/*
+ * 64-bit support of SigScheme
+ *
+ * SigScheme supports all data models of ILP32, ILP32 with 64-bit long long,
+ * LLP64, LP64 and ILP64. Default settings can automatically configure both ABI
+ * and the underlying storage implementation appropriately, if the storage
+ * implementation is storage-fatty or storage-compact. On the case, the integer
+ * size Scheme can handle is determined by sizeof(long), and heap capacity and
+ * addressable space are determined by the pointer size.
+ *
+ * Other storage implementations (currently not exist) may need some manual
+ * settings to fit to the specified data model.
+ */
 
 /*
  * Fixed bit width numbers
@@ -261,26 +276,35 @@ typedef int scm_bool;
  *
  * The configuration alters both ABI and storage implementation of
  * libsscm. Although it specifies the bit width, actual width varies for each
- * substantial storage implementation. Refer SCM_INT_BITS, SCM_INT_MAX and so
+ * underlying storage implementation. Refer SCM_INT_BITS, SCM_INT_MAX and so
  * on to know such values.
  *
- * The integer type defaults to 64bit on LP64 platforms.
+ * The integer type defaults to 64-bit on LP64 platforms.
  */
 #if SCM_USE_64BIT_FIXNUM
 typedef int64_t           scm_int_t;
 typedef uint64_t          scm_uint_t;
 #define SIZEOF_SCM_INT_T  SIZEOF_INT64_T
 #define SIZEOF_SCM_UINT_T SIZEOF_INT64_T
+#define SCM_INT_T_MAX     INT64_MAX
+#define SCM_INT_T_MIN     INT64_MIN
+#define SCM_UINT_T_MAX    UINT64_MAX
 #elif SCM_USE_32BIT_FIXNUM
 typedef int32_t           scm_int_t;
 typedef uint32_t          scm_uint_t;
 #define SIZEOF_SCM_INT_T  SIZEOF_INT32_T
 #define SIZEOF_SCM_UINT_T SIZEOF_INT32_T
+#define SCM_INT_T_MAX     INT32_MAX
+#define SCM_INT_T_MIN     INT32_MIN
+#define SCM_UINT_T_MAX    UINT32_MAX
 #elif SCM_USE_INT_FIXNUM
 typedef int               scm_int_t;
 typedef unsigned int      scm_uint_t;
 #define SIZEOF_SCM_INT_T  SIZEOF_INT
 #define SIZEOF_SCM_UINT_T SIZEOF_INT
+#define SCM_INT_T_MAX     INT_MAX
+#define SCM_INT_T_MIN     INT_MIN
+#define SCM_UINT_T_MAX    UINT_MAX
 #else
 #undef  SCM_USE_LONG_FIXNUM
 #define SCM_USE_LONG_FIXNUM
@@ -288,6 +312,31 @@ typedef long              scm_int_t;
 typedef unsigned long     scm_uint_t;
 #define SIZEOF_SCM_INT_T  SIZEOF_LONG
 #define SIZEOF_SCM_UINT_T SIZEOF_LONG
+#define SCM_INT_T_MAX     LONG_MAX
+#define SCM_INT_T_MIN     LONG_MIN
+#define SCM_UINT_T_MAX    ULONG_MAX
+#endif
+
+#if   (SIZEOF_SCM_INT_T == SIZEOF_INT)
+#define SCM_INT_T_FMT "%d"
+#elif (SIZEOF_SCM_INT_T == SIZEOF_LONG)
+    /* FIXME: check by autoconf */
+#define SCM_INT_T_FMT "%ld"
+#elif (SIZEOF_SCM_INT_T == SIZEOF_INT64_T && SIZEOF_INT64_T)
+    /* FIXME: check by autoconf */
+#if 1
+#define SCM_INT_T_FMT "%lld"
+#else
+#define SCM_INT_T_FMT "%qd"
+#endif
+#elif (SIZEOF_SCM_INT_T == SIZEOF_SHORT)
+    /* FIXME: check by autoconf */
+#define SCM_INT_T_FMT "%hd"
+#elif (SIZEOF_SCM_INT_T == 1)
+    /* FIXME: check by autoconf */
+#define SCM_INT_T_FMT "%hhd"
+#else
+#error "unsupported integer size for printf(3)"
 #endif
 
 /*
@@ -299,10 +348,10 @@ typedef unsigned long     scm_uint_t;
  * A ScmRef is abstract reference to a ScmObj. It is usually a pointer, but do
  * not assume it since another representation may be used. For instance, a pair
  * of heap index and object index in the heap can be a ScmRef. In such case,
- * scm_uintref_t can address any object in a heap scattered in full 64bit
- * address space even if the bit width of the reference is smaller than a 64bit
- * pointer. So any size assumption between pointer and the reference must not
- * be coded.
+ * scm_uintref_t can address any object in a heap scattered in full 64-bit
+ * address space even if the bit width of the reference is smaller than a
+ * 64-bit pointer. So any size assumption between pointer and the reference
+ * must not be coded.
  *
  * The integer representation is intended for low-level bitwise processing. Use
  * ScmRef instead for higher-level code.
@@ -312,7 +361,7 @@ typedef unsigned long     scm_uint_t;
  * of reference objects. Deal with particular storage implementation if fine
  * tuning is required. Otherwise simply keep untouched.
  *
- * The type defaults to direct pointer represenation, so *LP64 gets 64bit.
+ * The type defaults to direct pointer represenation, so *LP64 gets 64-bit.
  */
 #if SCM_USE_64BIT_SCMREF
 typedef int64_t              scm_intref_t;
@@ -374,8 +423,16 @@ typedef scm_uint_t           scm_uintobj_t;
  * Actual bit width varies for each storage implementation. Refer
  * SCM_CHAR_BITS, SCM_CHAR_MAX and SCM_CHAR_MIN if needed.
  */
+#ifndef SCM_ICHAR_T_DEFINED
 typedef int32_t            scm_ichar_t;
 #define SIZEOF_SCM_ICHAR_T SIZEOF_INT32_T
+#define SCM_ICHAR_T_MAX    INT32_MAX
+#define SCM_ICHAR_T_MIN    INT32_MIN
+#if (EOF < SCM_ICHAR_T_MIN || SCM_ICHAR_T_MAX < EOF)
+#error "scm_ichar_t cannot represent EOF on this platform"
+#endif
+#define SCM_ICHAR_T_DEFINED
+#endif /* SCM_ICHAR_T_DEFINED */
 
 /*
  * Definitive byte type
@@ -384,8 +441,13 @@ typedef int32_t            scm_ichar_t;
  * (for example, ARM compilers treat 'char' as 'unsigned char'), use this type
  * for raw strings and so on.
  */
-typedef unsigned char     scm_byte_t;
-#define SIZEOF_SCM_BYTE_T 1
+#ifndef SCM_BYTE_T_DEFINED
+#define SCM_BYTE_T_DEFINED
+typedef unsigned char      scm_byte_t;
+#define SIZEOF_SCM_BYTE_T  1
+#define SCM_BYTE_T_MAX     UCHAR_MAX
+#define SCM_BYTE_T_MIN     0
+#endif /* SCM_BYTE_T_DEFINED */
 
 /*
  * Constant-width character for strings (not used yet)
@@ -412,6 +474,25 @@ typedef scm_byte_t         scm_wchar_t;
       && SIZEOF_SCM_WCHAR_T  <= SIZEOF_SCM_ICHAR_T                           \
       && SIZEOF_SCM_ICHAR_T  <= SIZEOF_SCM_INT_T)
 #error "size constraints of primitive types are broken"
+#endif
+
+#if   0
+    /* FIXME: check by autoconf */
+#define SCM_SIZE_T_FMT "%zu"
+#elif (SIZEOF_SIZE_T == SIZEOF_INT)
+#define SCM_SIZE_T_FMT "%u"
+#elif (SIZEOF_SCM_INT_T == SIZEOF_LONG)
+    /* FIXME: check by autoconf */
+#define SCM_SIZE_T_FMT "%lu"
+#elif (SIZEOF_SCM_INT_T == SIZEOF_INT64_T && SIZEOF_INT64_T)
+    /* FIXME: check by autoconf */
+#if 1
+#define SCM_SIZE_T_FMT "%llu"
+#else
+#define SCM_SIZE_T_FMT "%qu"
+#endif
+#else
+#error "unsupported size_t size for printf(3)"
 #endif
 
 /*=======================================
@@ -547,8 +628,8 @@ struct ScmStorageConf_ {
     /* heap */
     size_t heap_size;             /* number of ScmCell in a heap */
     size_t heap_alloc_threshold;  /* minimum number of freecells after a GC */
-    int n_heaps_max;              /* max number of heaps */
-    int n_heaps_init;             /* initial number of heaps */
+    size_t n_heaps_max;           /* max number of heaps */
+    size_t n_heaps_init;          /* initial number of heaps */
 
     /* symbol table */
     size_t symbol_hash_size;      /* hash size of symbol table */
@@ -618,7 +699,7 @@ struct ScmStorageConf_ {
 /* SCM_MAKE_FUNC(enum ScmFuncTypeCode type, ScmFuncType func) */
 #define SCM_MAKE_FUNC(type, func)         SCM_SAL_MAKE_FUNC((type), (func))
 #define SCM_MAKE_CLOSURE(exp, env)        SCM_SAL_MAKE_CLOSURE((exp), (env))
-/* SCM_MAKE_VECTOR(ScmObj *vec, int len) */
+/* SCM_MAKE_VECTOR(ScmObj *vec, scm_int_t len) */
 #define SCM_MAKE_VECTOR(vec, len)         SCM_SAL_MAKE_VECTOR((vec), (len))
 #define SCM_MAKE_PORT(cport, flag)        SCM_SAL_MAKE_PORT((cport), (flag))
 #define SCM_MAKE_CONTINUATION()           SCM_SAL_MAKE_CONTINUATION()
@@ -1211,7 +1292,7 @@ int scm_port_get_char(ScmObj port);
 int scm_port_peek_char(ScmObj port);
 scm_bool scm_port_char_readyp(ScmObj port);
 int scm_port_puts(ScmObj port, const char *str);
-int scm_port_put_char(ScmObj port, int ch);
+int scm_port_put_char(ScmObj port, scm_ichar_t ch);
 int scm_port_printf(ScmObj port, const char *fmt, ...);
 int scm_port_vprintf(ScmObj port, const char *fmt, va_list args);
 int scm_port_newline(ScmObj port);

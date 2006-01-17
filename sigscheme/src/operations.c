@@ -67,7 +67,7 @@
   File Local Function Declarations
 =======================================*/
 static int prepare_radix(const char *funcname, ScmObj args);
-static ScmObj list_tail(ScmObj lst, int k);
+static ScmObj list_tail(ScmObj lst, scm_int_t k);
 static ScmObj map_single_arg(ScmObj proc, ScmObj args);
 static ScmObj map_multiple_args(ScmObj proc, ScmObj args);
 
@@ -128,7 +128,7 @@ scm_p_equalp(ScmObj obj1, ScmObj obj2)
 {
     enum ScmObjType type;
     ScmObj elm1, elm2, *v1, *v2;
-    int i, len;
+    scm_int_t i, len;
     DECLARE_FUNCTION("equal?", procedure_fixed_2);
 
     if (EQ(obj1, obj2))
@@ -213,7 +213,7 @@ scm_p_equalp(ScmObj obj1, ScmObj obj2)
 ScmObj
 scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    int result;
+    scm_int_t result;
     DECLARE_FUNCTION("+", reduction_operator);
 
     result = 0;
@@ -239,7 +239,7 @@ scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state)
 ScmObj
 scm_p_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    int result;
+    scm_int_t result;
     DECLARE_FUNCTION("*", reduction_operator);
 
     result = 1;
@@ -265,7 +265,7 @@ scm_p_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state)
 ScmObj
 scm_p_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    int result;
+    scm_int_t result;
     DECLARE_FUNCTION("-", reduction_operator);
 
     result = 0;
@@ -291,7 +291,7 @@ scm_p_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state)
 ScmObj
 scm_p_divide(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    int result;
+    scm_int_t result;
     DECLARE_FUNCTION("/", reduction_operator);
 
     result = 1;
@@ -463,7 +463,7 @@ scm_p_min(ScmObj left, ScmObj right, enum ScmReductionState *state)
 ScmObj
 scm_p_abs(ScmObj scm_n)
 {
-    int n;
+    scm_int_t n;
     DECLARE_FUNCTION("abs", procedure_fixed_1);
 
     ENSURE_INT(scm_n);
@@ -476,7 +476,7 @@ scm_p_abs(ScmObj scm_n)
 ScmObj
 scm_p_quotient(ScmObj scm_n1, ScmObj scm_n2)
 {
-    int n1, n2;
+    scm_int_t n1, n2;
     DECLARE_FUNCTION("quotient", procedure_fixed_2);
 
     ENSURE_INT(scm_n1);
@@ -494,7 +494,7 @@ scm_p_quotient(ScmObj scm_n1, ScmObj scm_n2)
 ScmObj
 scm_p_modulo(ScmObj scm_n1, ScmObj scm_n2)
 {
-    int n1, n2, rem;
+    scm_int_t n1, n2, rem;
     DECLARE_FUNCTION("modulo", procedure_fixed_2);
 
     ENSURE_INT(scm_n1);
@@ -519,7 +519,7 @@ scm_p_modulo(ScmObj scm_n1, ScmObj scm_n2)
 ScmObj
 scm_p_remainder(ScmObj scm_n1, ScmObj scm_n2)
 {
-    int n1, n2;
+    scm_int_t n1, n2;
     DECLARE_FUNCTION("remainder", procedure_fixed_2);
 
     ENSURE_INT(scm_n1);
@@ -570,7 +570,8 @@ scm_p_number2string(ScmObj num, ScmObj args)
   char buf[sizeof(int) * CHAR_BIT + sizeof("")];
   char *p;
   const char *end;
-  int n, r, digit;
+  scm_int_t n, digit;
+  int r;
   scm_bool neg;
   DECLARE_FUNCTION("number->string", procedure_variadic_1);
 
@@ -597,7 +598,8 @@ scm_p_number2string(ScmObj num, ScmObj args)
 ScmObj
 scm_p_string2number(ScmObj str, ScmObj args)
 {
-    int n, r;
+    scm_int_t n;
+    int r;
     char *end;
     const char *c_str;
     scm_bool empty_strp;
@@ -630,7 +632,7 @@ scm_p_string2number(ScmObj str, ScmObj args)
 
     c_str = SCM_STRING_STR(str);
     r = prepare_radix(SCM_MANGLE(name), args);
-    n = (int)strtol(c_str, &end, r);
+    n = (scm_int_t)strtol(c_str, &end, r);
 
     empty_strp = (end == c_str);  /* apply the first rule above */
     return (empty_strp || *end) ? SCM_FALSE : MAKE_INT(n);
@@ -818,10 +820,10 @@ scm_p_listp(ScmObj obj)
 #define TERMINATOR_LEN 1
 
 /* scm_length() for non-circular list */
-int
+scm_int_t
 scm_finite_length(ScmObj lst)
 {
-    int len;
+    scm_int_t len;
 
     for (len = 0; CONSP(lst); lst = CDR(lst))
         len++;
@@ -845,11 +847,11 @@ scm_finite_length(ScmObj lst)
  *
  */
 /* Returns -1 as one length improper list for non-list obj. */
-int
+scm_int_t
 scm_length(ScmObj lst)
 {
     ScmObj slow;
-    int proper_len;
+    scm_int_t proper_len;
 
     for (proper_len = 0, slow = lst;;) {
         if (NULLP(lst)) break;
@@ -879,7 +881,7 @@ scm_length(ScmObj lst)
 ScmObj
 scm_p_length(ScmObj obj)
 {
-    int len;
+    scm_int_t len;
     DECLARE_FUNCTION("length", procedure_fixed_1);
 
     len = scm_length(obj);
@@ -927,7 +929,7 @@ scm_p_reverse(ScmObj lst)
 }
 
 static ScmObj
-list_tail(ScmObj lst, int k)
+list_tail(ScmObj lst, scm_int_t k)
 {
     while (k--) {
         if (!CONSP(lst))
@@ -1111,7 +1113,7 @@ scm_p_charequalp(ScmObj ch1, ScmObj ch2)
 ScmObj
 scm_p_char_alphabeticp(ScmObj ch)
 {
-    int val;
+    scm_ichar_t val;
     DECLARE_FUNCTION("char-alphabetic?", procedure_fixed_1);
 
     ENSURE_CHAR(ch);
@@ -1124,7 +1126,7 @@ scm_p_char_alphabeticp(ScmObj ch)
 ScmObj
 scm_p_char_numericp(ScmObj ch)
 {
-    int val;
+    scm_ichar_t val;
     DECLARE_FUNCTION("char-numeric?", procedure_fixed_1);
 
     ENSURE_CHAR(ch);
@@ -1137,7 +1139,7 @@ scm_p_char_numericp(ScmObj ch)
 ScmObj
 scm_p_char_whitespacep(ScmObj ch)
 {
-    int val;
+    scm_ichar_t val;
     DECLARE_FUNCTION("char-whitespace?", procedure_fixed_1);
 
     ENSURE_CHAR(ch);
@@ -1150,7 +1152,7 @@ scm_p_char_whitespacep(ScmObj ch)
 ScmObj
 scm_p_char_upper_casep(ScmObj ch)
 {
-    int val;
+    scm_ichar_t val;
     DECLARE_FUNCTION("char-upper-case?", procedure_fixed_1);
 
     ENSURE_CHAR(ch);
@@ -1163,7 +1165,7 @@ scm_p_char_upper_casep(ScmObj ch)
 ScmObj
 scm_p_char_lower_casep(ScmObj ch)
 {
-    int val;
+    scm_ichar_t val;
     DECLARE_FUNCTION("char-lower-case?", procedure_fixed_1);
 
     ENSURE_CHAR(ch);
@@ -1186,7 +1188,7 @@ scm_p_char2integer(ScmObj ch)
 ScmObj
 scm_p_integer2char(ScmObj n)
 {
-    int val;
+    scm_int_t val;
     DECLARE_FUNCTION("integer->char", procedure_fixed_1);
 
     ENSURE_INT(n);
@@ -1205,7 +1207,7 @@ scm_p_integer2char(ScmObj n)
 ScmObj
 scm_p_char_upcase(ScmObj ch)
 {
-    int val;
+    scm_ichar_t val;
     DECLARE_FUNCTION("char-upcase", procedure_fixed_1);
 
     ENSURE_CHAR(ch);
@@ -1220,7 +1222,7 @@ scm_p_char_upcase(ScmObj ch)
 ScmObj
 scm_p_char_downcase(ScmObj ch)
 {
-    int val;
+    scm_ichar_t val;
     DECLARE_FUNCTION("char-downcase", procedure_fixed_1);
 
     ENSURE_CHAR(ch);
@@ -1247,7 +1249,9 @@ ScmObj
 scm_p_make_string(ScmObj length, ScmObj args)
 {
     ScmObj filler;
-    int filler_val, len, ch_len;
+    scm_ichar_t filler_val;
+    size_t len;
+    int ch_len;
     char *str, *dst;
 #if SCM_USE_MULTIBYTE_CHAR
     const char *next;
@@ -1286,7 +1290,7 @@ scm_p_make_string(ScmObj length, ScmObj args)
                                  SCM_MB_STATELESS);
     if (!next)
         ERR("make-string: invalid char 0x%x for encoding %s",
-            filler_val, SCM_CHARCODEC_ENCODING(scm_current_char_codec));
+            (int)filler_val, SCM_CHARCODEC_ENCODING(scm_current_char_codec));
 
     str = scm_malloc(ch_len * len + sizeof(""));
     for (dst = str; dst < &str[ch_len * len]; dst += ch_len)
@@ -1313,7 +1317,7 @@ scm_p_string(ScmObj args)
 ScmObj
 scm_p_string_length(ScmObj str)
 {
-    int len;
+    scm_int_t len;
     DECLARE_FUNCTION("string-length", procedure_fixed_1);
 
     ENSURE_STRING(str);
@@ -1330,7 +1334,8 @@ scm_p_string_length(ScmObj str)
 ScmObj
 scm_p_string_ref(ScmObj str, ScmObj k)
 {
-    int idx, ch;
+    scm_int_t idx;
+    scm_ichar_t ch;
 #if SCM_USE_MULTIBYTE_CHAR
     ScmMultibyteString mbs;
 #endif
@@ -1361,7 +1366,8 @@ scm_p_string_ref(ScmObj str, ScmObj k)
 ScmObj
 scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
 {
-    int idx, ch_val;
+    scm_int_t idx;
+    scm_ichar_t ch_val;
     char *c_str;
 #if SCM_USE_MULTIBYTE_CHAR
     int ch_len, orig_ch_len;
@@ -1397,7 +1403,7 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
                                    SCM_MB_STATELESS);
     if (!ch_end)
         ERR("string-set!: invalid char 0x%x for encoding %s",
-            ch_val, SCM_CHARCODEC_ENCODING(scm_current_char_codec));
+            (int)ch_val, SCM_CHARCODEC_ENCODING(scm_current_char_codec));
     ch_len = ch_end - ch_buf;
 
     /* prepare the space for new char */
@@ -1443,7 +1449,7 @@ scm_p_stringequalp(ScmObj str1, ScmObj str2)
 ScmObj
 scm_p_substring(ScmObj str, ScmObj start, ScmObj end)
 {
-    int c_start, c_end, len, sub_len;
+    scm_int_t c_start, c_end, len, sub_len;
     const char *c_str;
     char *new_str;
 #if SCM_USE_MULTIBYTE_CHAR
@@ -1497,7 +1503,8 @@ ScmObj
 scm_p_string_append(ScmObj args)
 {
     ScmObj rest, str;
-    size_t byte_len, mb_len;
+    size_t byte_len;
+    scm_int_t mb_len;
     char  *new_str, *dst;
     const char *src;
     DECLARE_FUNCTION("string-append", procedure_variadic_0);
@@ -1544,7 +1551,8 @@ scm_p_string2list(ScmObj str)
     ScmQueue q;
 #endif
     ScmObj res;
-    int ch, mb_len;
+    scm_ichar_t ch;
+    scm_int_t mb_len;
     const char *c_str;
     DECLARE_FUNCTION("string->list", procedure_fixed_1);
 
@@ -1588,10 +1596,10 @@ scm_p_list2string(ScmObj lst)
 {
     ScmObj rest, ch;
     size_t str_size;
-    int len;
+    scm_int_t len;
     char *str, *dst;
 #if SCM_USE_MULTIBYTE_CHAR
-    int ch_val;
+    scm_ichar_t ch_val;
 #endif
     DECLARE_FUNCTION("list->string", procedure_fixed_1);
 
@@ -1654,7 +1662,7 @@ scm_p_string_copy(ScmObj str)
 ScmObj
 scm_p_string_filld(ScmObj str, ScmObj ch)
 {
-    int str_len;
+    size_t str_len;
     char *dst;
 #if SCM_USE_MULTIBYTE_CHAR
     int ch_len;
@@ -1662,7 +1670,7 @@ scm_p_string_filld(ScmObj str, ScmObj ch)
     char ch_str[SCM_MB_MAX_LEN + sizeof("")];
     const char *next;
 #else
-    int ch_val;
+    scm_ichar_t ch_val;
     char *c_str;
 #endif
     DECLARE_FUNCTION("string-fill!", procedure_fixed_2);
@@ -1681,7 +1689,7 @@ scm_p_string_filld(ScmObj str, ScmObj ch)
                                  SCM_CHAR_VALUE(ch), SCM_MB_STATELESS);
     if (!next)
         ERR("string-fill!: invalid char 0x%x for encoding %s",
-            SCM_CHAR_VALUE(ch),
+            (int)SCM_CHAR_VALUE(ch),
             SCM_CHARCODEC_ENCODING(scm_current_char_codec));
 
     /* create new str */
@@ -1718,7 +1726,7 @@ ScmObj
 scm_p_make_vector(ScmObj scm_len, ScmObj args)
 {
     ScmObj *vec, filler;
-    int len, i;
+    scm_int_t len, i;
     DECLARE_FUNCTION("make-vector", procedure_variadic_1);
 
     ENSURE_INT(scm_len);
@@ -1761,7 +1769,7 @@ scm_p_vector_length(ScmObj vec)
 ScmObj
 scm_p_vector_ref(ScmObj vec, ScmObj scm_k)
 {
-    int k;
+    scm_int_t k;
     DECLARE_FUNCTION("vector-ref", procedure_fixed_2);
 
     ENSURE_VECTOR(vec);
@@ -1778,7 +1786,7 @@ scm_p_vector_ref(ScmObj vec, ScmObj scm_k)
 ScmObj
 scm_p_vector_setd(ScmObj vec, ScmObj scm_k, ScmObj obj)
 {
-    int k;
+    scm_int_t k;
     DECLARE_FUNCTION("vector-set!", procedure_fixed_3);
 
     ENSURE_VECTOR(vec);
@@ -1799,7 +1807,7 @@ scm_p_vector2list(ScmObj vec)
 {
     ScmQueue q;
     ScmObj res, *v;
-    int len, i;
+    scm_int_t len, i;
     DECLARE_FUNCTION("vector->list", procedure_fixed_1);
 
     ENSURE_VECTOR(vec);
@@ -1819,7 +1827,7 @@ ScmObj
 scm_p_list2vector(ScmObj lst)
 {
     ScmObj *vec;
-    int len, i;
+    scm_int_t len, i;
     DECLARE_FUNCTION("list->vector", procedure_fixed_1);
 
     len = scm_length(lst);
@@ -1837,7 +1845,7 @@ ScmObj
 scm_p_vector_filld(ScmObj vec, ScmObj fill)
 {
     ScmObj *v;
-    int len, i;
+    scm_int_t len, i;
     DECLARE_FUNCTION("vector-fill!", procedure_fixed_2);
 
     ENSURE_VECTOR(vec);

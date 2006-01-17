@@ -249,7 +249,7 @@ scm_set_verbose_level(long level)
 {
     if (level < 0)
         ERR("scm_set_verbose_level: positive value required but got: %d",
-            level);
+            (int)level);
 
     if (sscm_verbose_level == level)
         return;

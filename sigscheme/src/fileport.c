@@ -85,8 +85,8 @@ static ScmBytePort *fileport_dyn_cast(ScmBytePort *bport,
                                       const ScmBytePortVTbl *dest_vptr);
 static int fileport_close(ScmFilePort *bport);
 static char *fileport_inspect(ScmFilePort *port);
-static int fileport_get_byte(ScmFilePort *bport);
-static int fileport_peek_byte(ScmFilePort *bport);
+static scm_ichar_t fileport_get_byte(ScmFilePort *bport);
+static scm_ichar_t fileport_peek_byte(ScmFilePort *bport);
 static scm_bool fileport_byte_readyp(ScmFilePort *bport);
 static int fileport_vprintf(ScmFilePort *bport, const char *str, va_list args);
 static int fileport_puts(ScmFilePort *bport, const char *str);
@@ -203,16 +203,16 @@ fileport_inspect(ScmFilePort *port)
     }
 }
 
-static int
+static scm_ichar_t
 fileport_get_byte(ScmFilePort *port)
 {
     return getc(port->file);
 }
 
-static int
+static scm_ichar_t
 fileport_peek_byte(ScmFilePort *port)
 {
-    int ch;
+    scm_ichar_t ch;
 
     ch = getc(port->file);
     return ungetc(ch, port->file);

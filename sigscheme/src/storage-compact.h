@@ -35,6 +35,28 @@
 #define __STORAGE_COMPACT_H
 
 /*
+ * FIXME: Support 64-bit data models
+ *
+ * - fill all lacking SCM_SAL_*_{BITS,MAX,MIN}
+ * - replace casts for Scheme-level integers with scm_int_t or scm_uint_t
+ * - replace casts for internal integer chars with 'scm_ichar_t'
+ * - replace 'unsigned long' cast for pointers with 'uintptr_t'
+ * - eliminate all other 'int' to support LP64 properly
+ * - above modifications enables LLP64, LP64 and ILP64
+ * - (low priority) change ScmObj definition to the union below to support
+ *   ILP32 with 64-bit long long
+ */
+#if 0
+/* FIXME: adapt to this to support ILP32 with 64-bit long long */
+/* To allow scm_int_t broader than pointer width, ScmCell * is enclosed into
+ * the union. */
+union ScmObj_ {
+    ScmCell *cell;
+    scm_uintobj_t word;
+};
+#endif
+
+/*
  * Internal representation defined in this file MUST NOT directly touched by
  * libsscm users. Use abstract public APIs defined in sigscheme.h.
  */
@@ -696,17 +718,17 @@ struct ScmCell_ {
 ScmObj scm_make_cons(ScmObj kar, ScmObj kdr);
 #if 1
 /* FIXME: directly create by SCM_SAL_MAKE_*() */
-ScmObj scm_make_int(int val);
-ScmObj scm_make_char(int val);
+ScmObj scm_make_int(scm_int_t val);
+ScmObj scm_make_char(scm_ichar_t val);
 #endif
 ScmObj scm_make_symbol(char *name, ScmObj val);
-ScmObj scm_make_immutable_string(char *str, int len);
-ScmObj scm_make_immutable_string_copying(const char *str, int len);
-ScmObj scm_make_string(char *str, int len);
-ScmObj scm_make_string_copying(const char *str, int len);
+ScmObj scm_make_immutable_string(char *str, scm_int_t len);
+ScmObj scm_make_immutable_string_copying(const char *str, scm_int_t len);
+ScmObj scm_make_string(char *str, scm_int_t len);
+ScmObj scm_make_string_copying(const char *str, scm_int_t len);
 ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
 ScmObj scm_make_closure(ScmObj exp, ScmObj env);
-ScmObj scm_make_vector(ScmObj *vec, int len);
+ScmObj scm_make_vector(ScmObj *vec, scm_int_t len);
 ScmObj scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag);
 ScmObj scm_make_continuation(void);
 #if !SCM_USE_VALUECONS

@@ -53,7 +53,7 @@
 =======================================*/
 typedef struct ScmSpecialCharInfo_ ScmSpecialCharInfo;
 struct ScmSpecialCharInfo_ {
-    int code;             /* character code as ASCII/Unicode */
+    scm_ichar_t code;     /* character code as ASCII/Unicode */
     const char *esc_seq;  /* escape sequence as string */
     const char *lex_rep;  /* lexical representation as character object */
 };
@@ -370,7 +370,7 @@ extern ScmObj scm_null_values;
 
 /* result encoders for scm_length() */
 #define SCM_LISTLEN_ENCODE_DOTTED(len)   (-(len))
-#define SCM_LISTLEN_ENCODE_CIRCULAR(len) (INT_MIN)
+#define SCM_LISTLEN_ENCODE_CIRCULAR(len) (SCM_INT_T_MIN)
 #define SCM_LISTLEN_ENCODE_ERROR         SCM_LISTLEN_ENCODE_CIRCULAR
 
 /*=======================================
@@ -401,7 +401,7 @@ typedef ScmRef ScmQueue;
         size_t size;                                                         \
         T *init_buf;                                                         \
         size_t init_size;                                                    \
-        int extended_cnt;                                                    \
+        size_t extended_cnt;                                                 \
     }
 
 ScmLBuf(void);
@@ -483,10 +483,10 @@ ScmRef scm_lookup_environment(ScmObj var, ScmObj env);
 
 scm_bool scm_valid_environmentp(ScmObj env);
 scm_bool scm_valid_environment_extensionp(ScmObj formals, ScmObj actuals);
-scm_bool scm_valid_environment_extension_lengthp(int formals_len,
-                                                 int actuals_len);
-int scm_validate_formals(ScmObj formals);
-int scm_validate_actuals(ScmObj actuals);
+scm_bool scm_valid_environment_extension_lengthp(scm_int_t formals_len,
+                                                 scm_int_t actuals_len);
+scm_int_t scm_validate_formals(ScmObj formals);
+scm_int_t scm_validate_actuals(ScmObj actuals);
 
 /* eval.c */
 ScmObj scm_symbol_value(ScmObj var, ScmObj env);
@@ -503,8 +503,8 @@ ScmObj scm_s_cond_internal(ScmObj args, ScmObj case_key,
 void scm_init_error(void);
 
 /* operations.c */
-int scm_finite_length(ScmObj lst);
-int scm_length(ScmObj lst);
+scm_int_t scm_finite_length(ScmObj lst);
+scm_int_t scm_length(ScmObj lst);
 
 /* io.c */
 void scm_init_io(void);

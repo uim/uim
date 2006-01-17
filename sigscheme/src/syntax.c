@@ -70,7 +70,7 @@ static void define_internal(ScmObj var, ScmObj exp, ScmObj env);
 
 /* Quasiquotation. */
 typedef struct _qquote_result qquote_result;
-static qquote_result qquote_internal(ScmObj input, ScmObj env, int nest);
+static qquote_result qquote_internal(ScmObj input, ScmObj env, scm_int_t nest);
 
 /*=======================================
   Function Implementations
@@ -178,8 +178,8 @@ struct _vector_translator {
     ScmObj src;
     ScmObj diff;
     ScmQueue q;                 /* Points to diff. */
-    int index;                  /* Current position. */
-    int growth;
+    scm_int_t index;            /* Current position. */
+    scm_int_t growth;
 };
 
 struct _sequence_translator {
@@ -289,8 +289,8 @@ listran(sequence_translator *t, tr_msg msg, ScmObj obj)
 static ScmObj
 vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
 {
-    int splice_len;
-    int change_index;
+    scm_int_t splice_len;
+    scm_int_t change_index;
     DECLARE_INTERNAL_FUNCTION("vectran");
 
     switch (msg) {
@@ -329,7 +329,7 @@ vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
             ScmObj *src_buf;
             ScmObj tmp;
             ScmObj diff;
-            int src_len, i, cpi;
+            scm_int_t src_len, i, cpi;
 
             src_len = SCM_VECTOR_LEN(t->u.vec.src);
             src_buf = SCM_VECTOR_VEC(t->u.vec.src);
@@ -1102,7 +1102,7 @@ struct _qquote_result {
  * @see qquote_vector()
  */
 static qquote_result
-qquote_internal(ScmObj input, ScmObj env, int nest)
+qquote_internal(ScmObj input, ScmObj env, scm_int_t nest)
 {
     ScmObj obj;
     sequence_translator tr;

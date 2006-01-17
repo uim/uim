@@ -299,7 +299,7 @@ valid_framep(ScmObj frame)
 scm_bool
 scm_valid_environment_extensionp(ScmObj formals, ScmObj actuals)
 {
-    int formals_len, actuals_len;
+    scm_int_t formals_len, actuals_len;
 
     formals_len = scm_validate_formals(formals);
     actuals_len = scm_validate_actuals(actuals);
@@ -308,7 +308,8 @@ scm_valid_environment_extensionp(ScmObj formals, ScmObj actuals)
 
 /* formals_len must be validated by scm_validate_formals() prior to here */
 scm_bool
-scm_valid_environment_extension_lengthp(int formals_len, int actuals_len)
+scm_valid_environment_extension_lengthp(scm_int_t formals_len,
+                                        scm_int_t actuals_len)
 {
     if (SCM_LISTLEN_ERRORP(formals_len) || !SCM_LISTLEN_PROPERP(actuals_len))
         return scm_false;
@@ -319,11 +320,11 @@ scm_valid_environment_extension_lengthp(int formals_len, int actuals_len)
     return (formals_len == actuals_len);
 }
 
-int
+scm_int_t
 scm_validate_formals(ScmObj formals)
 {
 #if SCM_STRICT_ARGCHECK
-    int len;
+    scm_int_t len;
     DECLARE_INTERNAL_FUNCTION("scm_validate_formals");
 
     /* This loop goes infinite if the formals is circular. SigSchme expects
@@ -347,10 +348,10 @@ scm_validate_formals(ScmObj formals)
 #endif
 }
 
-int
+scm_int_t
 scm_validate_actuals(ScmObj actuals)
 {
-    int len;
+    scm_int_t len;
 
 #if SCM_STRICT_ARGCHECK
     len = scm_length(actuals);

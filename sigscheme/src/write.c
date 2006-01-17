@@ -48,7 +48,7 @@
   File Local Struct Declarations
 =======================================*/
 enum OutputType {
-    AS_WRITE,   /* string is enclosed by ", char is written using #\ notation. */
+    AS_WRITE,   /* string is enclosed by ", char is written using #\ notation */
     AS_DISPLAY, /* string and char is written as-is */
     UNKNOWN
 };
@@ -184,7 +184,7 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
 #endif
     switch (SCM_TYPE(obj)) {
     case ScmInt:
-        scm_port_printf(port, "%d", SCM_INT_VALUE(obj));
+        scm_port_printf(port, SCM_INT_T_FMT, SCM_INT_VALUE(obj));
         break;
     case ScmCons:
         if (ERROBJP(obj))
@@ -244,7 +244,7 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         break;
     case ScmCFuncPointer:
         scm_port_printf(port, "#<c_func_pointer %p>",
-                          (void *)(uintptr_t)SCM_C_FUNCPOINTER_VALUE(obj));
+                        (void *)(uintptr_t)SCM_C_FUNCPOINTER_VALUE(obj));
         break;
     default:
         SCM_ASSERT(scm_false);
@@ -255,7 +255,7 @@ static void
 write_char(ScmObj port, ScmObj obj, enum OutputType otype)
 {
     const ScmSpecialCharInfo *info;
-    int c;
+    scm_ichar_t c;
 
     c = SCM_CHAR_VALUE(obj);
     switch (otype) {
@@ -271,7 +271,7 @@ write_char(ScmObj port, ScmObj obj, enum OutputType otype)
 
         /* other control chars are printed in hexadecimal form */
         if (isascii(c) && iscntrl(c)) {
-            scm_port_printf(port, "x%02x", c);
+            scm_port_printf(port, "x%02x", (int)c);
             return;
         }
         /* FALLTHROUGH */
@@ -292,7 +292,8 @@ write_string(ScmObj port, ScmObj obj, enum OutputType otype)
     ScmMultibyteString mbs;
     const ScmSpecialCharInfo *info;
     const char *str;
-    int len, c;
+    size_t len;
+    scm_ichar_t c;
     DECLARE_INTERNAL_FUNCTION("write_string");
 
     str = SCM_STRING_STR(obj);
@@ -341,7 +342,8 @@ write_list(ScmObj port, ScmObj lst, enum OutputType otype)
 {
     ScmObj car;
 #if SCM_USE_SRFI38
-    int index, necessary_close_parens;
+    size_t necessary_close_parens;
+    int index;
 
     necessary_close_parens = 1;
   cheap_recursion:
@@ -399,7 +401,7 @@ static void
 write_vector(ScmObj port, ScmObj vec, enum OutputType otype)
 {
     ScmObj *v;
-    int len, i;
+    scm_int_t len, i;
 
     scm_port_puts(port, "#(");
 

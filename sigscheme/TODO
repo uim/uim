@@ -23,7 +23,12 @@ Requirements and critical bugs:
 * Review and refactor some functions in syntax.c(listran, vectran,
   qquote_internal, scm_s_quasiquote) (other files had already been done)
 
-* Make 64bit-safe (after compaction and stdint.h)
+* Make 64bit-safe
+  - Write tests
+  - Make the tests passed on actual 64bit environment with fatty representation
+  - Modify storage-compact.h
+  - Make the tests passed on actual 64bit environment with compact
+    representation
 
 * Confirm R5RS and SRFI conformance for each function implementation
 
@@ -94,6 +99,7 @@ Performance improvements:
 
 * Object representation compaction ([Anthy-dev 2353], [Anthy-dev 2360])
   - Make all tests passed without error or SEGV
+  - Support 64bit models
   - Create immediate objects directly without calling scm_make_*()
   - Refine logical structure and namings
 

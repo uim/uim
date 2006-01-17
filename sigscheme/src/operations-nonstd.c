@@ -249,7 +249,7 @@ scm_p_delete_file(ScmObj filepath)
 ScmObj
 scm_p_lengthstar(ScmObj lst)
 {
-    int len;
+    scm_int_t len;
     DECLARE_FUNCTION("length*", procedure_fixed_1);
 
     len = scm_length(lst);

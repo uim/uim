@@ -68,7 +68,7 @@ static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
                            enum ScmValueType need_eval);
 static ScmObj call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
                    enum ScmValueType need_eval);
-static ScmObj map_eval(ScmObj args, int *args_len, ScmObj env);
+static ScmObj map_eval(ScmObj args, scm_int_t *args_len, ScmObj env);
 
 /*=======================================
   Function Implementations
@@ -193,7 +193,7 @@ call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
              enum ScmValueType need_eval)
 {
     ScmObj formals, body, proc_env;
-    int formals_len, args_len;
+    scm_int_t formals_len, args_len;
     DECLARE_INTERNAL_FUNCTION("call_closure");
 
     /*
@@ -273,7 +273,8 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
     ScmObj (*func)();
     enum ScmFuncTypeCode type;
     scm_bool syntaxp;
-    int mand_count, i, variadic_len;
+    int mand_count, i;
+    scm_int_t variadic_len;
     /* The +2 is for rest and env/eval_state. */
     void *argbuf[SCM_FUNCTYPE_MAND_MAX + 2];
     DECLARE_INTERNAL_FUNCTION("(function call)");
@@ -457,11 +458,11 @@ scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state)
 }
 
 static ScmObj
-map_eval(ScmObj args, int *args_len, ScmObj env)
+map_eval(ScmObj args, scm_int_t *args_len, ScmObj env)
 {
     ScmQueue q;
     ScmObj res, elm, rest;
-    int len;
+    scm_int_t len;
     DECLARE_INTERNAL_FUNCTION("(function call)");
 
     if (NULLP(args)) {

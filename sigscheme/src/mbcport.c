@@ -52,8 +52,8 @@
  * on SigScheme-specific things */
 #include "sigscheme.h"
 
-#include "baseport.h"
 #include "encoding.h"
+#include "baseport.h"
 #include "mbcport.h"
 
 /*=======================================
@@ -70,8 +70,6 @@
 /*=======================================
   File Local Type Definitions
 =======================================*/
-typedef unsigned char uchar;
-
 struct ScmMultiByteCharPort_ {  /* inherits ScmBaseCharPort */
     const ScmCharPortVTbl *vptr;
 
@@ -80,7 +78,7 @@ struct ScmMultiByteCharPort_ {  /* inherits ScmBaseCharPort */
 
     ScmCharCodec *codec;
     ScmMultibyteState state;
-    uchar rbuf[SCM_MB_MAX_LEN + sizeof("")];
+    scm_byte_t rbuf[SCM_MB_MAX_LEN + sizeof("")];
 };
 
 /*=======================================
@@ -90,10 +88,10 @@ static ScmCharPort *mbcport_dyn_cast(ScmCharPort *cport,
                                      const ScmCharPortVTbl *dst_vptr);
 static ScmCharCodec *mbcport_codec(ScmMultiByteCharPort *port);
 static char *mbcport_inspect(ScmMultiByteCharPort *port);
-static int mbcport_get_char(ScmMultiByteCharPort *port);
-static int mbcport_peek_char(ScmMultiByteCharPort *port);
+static scm_ichar_t mbcport_get_char(ScmMultiByteCharPort *port);
+static scm_ichar_t mbcport_peek_char(ScmMultiByteCharPort *port);
 static scm_bool mbcport_char_readyp(ScmMultiByteCharPort *port);
-static int mbcport_put_char(ScmMultiByteCharPort *port, int ch);
+static int mbcport_put_char(ScmMultiByteCharPort *port, scm_ichar_t ch);
 
 static ScmMultibyteCharInfo mbcport_fill_rbuf(ScmMultiByteCharPort *port,
                                               scm_bool blockp);
@@ -180,10 +178,10 @@ mbcport_inspect(ScmMultiByteCharPort *port)
     return ScmBaseCharPort_inspect((ScmBaseCharPort *)port, "mb");
 }
 
-static int
+static scm_ichar_t
 mbcport_get_char(ScmMultiByteCharPort *port)
 {
-    int ch;
+    scm_ichar_t ch;
 #if SCM_USE_STATEFUL_ENCODING
     ScmMultibyteCharInfo mbc;
     ScmMultibyteState next_state;
@@ -205,11 +203,12 @@ mbcport_get_char(ScmMultiByteCharPort *port)
     return ch;
 }
 
-static int
+static scm_ichar_t
 mbcport_peek_char(ScmMultiByteCharPort *port)
 {
     ScmMultibyteCharInfo mbc;
-    int size, ch;
+    size_t size;
+    scm_ichar_t ch;
 
     mbc = mbcport_fill_rbuf(port, scm_true);
     size = SCM_MBCINFO_GET_SIZE(mbc);
@@ -232,7 +231,7 @@ mbcport_char_readyp(ScmMultiByteCharPort *port)
 }
 
 static int
-mbcport_put_char(ScmMultiByteCharPort *port, int ch)
+mbcport_put_char(ScmMultiByteCharPort *port, scm_ichar_t ch)
 {
     char *end, wbuf[SCM_MB_MAX_LEN + sizeof("")];
 
@@ -246,12 +245,12 @@ mbcport_put_char(ScmMultiByteCharPort *port, int ch)
 static ScmMultibyteCharInfo
 mbcport_fill_rbuf(ScmMultiByteCharPort *port, scm_bool blockp)
 {
-    uchar *end;
-    int byte;
+    scm_byte_t *end;
+    scm_ichar_t byte;
     ScmMultibyteString mbs;
     ScmMultibyteCharInfo mbc;
 
-    end = (uchar *)strchr((char *)port->rbuf, '\0');
+    end = (scm_byte_t *)strchr((char *)port->rbuf, '\0');
     SCM_MBS_SET_STATE(mbs, port->state);
     do {
         SCM_MBS_SET_STR(mbs, (char *)port->rbuf);

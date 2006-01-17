@@ -73,8 +73,8 @@ static ScmBytePort *nullport_dyn_cast(ScmBytePort *bport,
                                       const ScmBytePortVTbl *dest_vptr);
 static int nullport_close(ScmNullPort *bport);
 static char *nullport_inspect(ScmNullPort *port);
-static int nullport_get_byte(ScmNullPort *bport);
-static int nullport_peek_byte(ScmNullPort *bport);
+static scm_ichar_t nullport_get_byte(ScmNullPort *bport);
+static scm_ichar_t nullport_peek_byte(ScmNullPort *bport);
 static scm_bool nullport_byte_readyp(ScmNullPort *bport);
 static int nullport_vprintf(ScmNullPort *bport, const char *str, va_list args);
 static int nullport_puts(ScmNullPort *bport, const char *str);
@@ -142,13 +142,13 @@ nullport_inspect(ScmNullPort *port)
     return scm_strdup("null");
 }
 
-static int
+static scm_ichar_t
 nullport_get_byte(ScmNullPort *port)
 {
     return EOF;
 }
 
-static int
+static scm_ichar_t
 nullport_peek_byte(ScmNullPort *port)
 {
     return EOF;

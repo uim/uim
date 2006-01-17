@@ -39,6 +39,21 @@
  * libsscm users. Use abstract public APIs defined in sigscheme.h.
  */
 
+/*
+ * storage-fatty.h: An storage implementation with fatty represenation
+ *
+ * This is the most simple storage implementation for SigScheme. The features
+ * are below.
+ *
+ * - Supports all data models of ILP32, ILP32 with 64-bit long long, LLP64,
+ *   LP64 and ILP64
+ * - Consumes larger memory space (twice of storage-compact)
+ * - Can hold full-width integer
+ * - Easy to read and recognize
+ * - Easy to debug upper layer of SigScheme and its clients
+ * - Easy to extend and test experimental features
+ */
+
 /*=======================================
    System Include
 =======================================*/
@@ -50,24 +65,41 @@
 =======================================*/
 
 /*=======================================
-   Type Declarations
+   Type Definitions
 =======================================*/
+/* Since this storage implementation does not have any immediate values,
+ * (sizeof(ScmObj) == sizeof(ScmCell *)) is ensured even if sizeof(scm_int_t)
+ * is larger than sizeof(ScmObj). */
 typedef struct ScmCell_ ScmCell;
 typedef ScmCell *ScmObj;
 typedef ScmObj *ScmRef;
 
 typedef ScmObj (*ScmFuncType)();
 
-/*=======================================
-   Struct Declarations
-=======================================*/
 struct ScmCell_ {
-    enum ScmObjType type;
-    int gcmark;
-
     union {
         struct {
-            int value;
+            enum ScmObjType type;
+            scm_bool gcmark;
+        } v;
+
+        /* to align against 64-bit primitives */
+        struct {
+            scm_uintobj_t slot0;
+            scm_uintobj_t slot1;
+        } strut;
+    } attr;
+
+    /*
+     * Pointer members should be placed first for efficient alignment when
+     * strict alignment is not forced by the compiler/processor. (e.g. A 64-bit
+     * pointer placed on a 32-bit aligned address on amd64 with gcc -Os. The
+     * arch does not cause error even if a data is not aligned although it
+     * affects performence)
+     */
+    union {
+        struct {
+            scm_int_t value;
         } integer;
 
         struct {
@@ -81,17 +113,17 @@ struct ScmCell_ {
         } symbol;
 
         struct {
-            int value;
+            scm_ichar_t value;
         } character;
 
         struct {
             char *str;
-            int len;  /* number of (multibyte) chars */
+            scm_int_t len;  /* number of (multibyte) chars */
         } string;
 
         struct {
-            enum ScmFuncTypeCode type;
             ScmFuncType ptr;
+            enum ScmFuncTypeCode type;
         } function;
 
         struct {
@@ -101,17 +133,17 @@ struct ScmCell_ {
 
         struct {
             ScmObj *vec;
-            int len;
+            scm_int_t len;
         } vector;
 
         struct {
-            enum ScmPortFlag flag;
             ScmCharPort *impl;
+            enum ScmPortFlag flag;
         } port;
 
         struct {
             void *opaque;
-            int tag;
+            scm_int_t tag;
         } continuation;
 
 #if !SCM_USE_VALUECONS
@@ -127,6 +159,12 @@ struct ScmCell_ {
         struct {
             ScmCFunc value;
         } c_func_pointer;
+
+        /* to align against 64-bit primitives */
+        struct {
+            scm_uintobj_t slot2;
+            scm_uintobj_t slot3;
+        } strut;
     } obj;
 };
 
@@ -150,12 +188,12 @@ struct ScmCell_ {
 
 #define SCM_SAL_PTR_BITS    (sizeof(void *) * CHAR_BIT)
 
-#define SCM_SAL_CHAR_BITS   SCM_INT_BITS
-#define SCM_SAL_CHAR_MAX    SCM_INT_MAX
+#define SCM_SAL_CHAR_BITS   (sizeof(scm_ichar_t) * CHAR_BIT)
+#define SCM_SAL_CHAR_MAX    SCM_ICHAR_T_MAX
 
-#define SCM_SAL_INT_BITS    (sizeof(int) * CHAR_BIT)
-#define SCM_SAL_INT_MAX     INT_MAX
-#define SCM_SAL_INT_MIN     INT_MIN
+#define SCM_SAL_INT_BITS    (sizeof(scm_int_t) * CHAR_BIT)
+#define SCM_SAL_INT_MAX     SCM_INT_T_MAX
+#define SCM_SAL_INT_MIN     SCM_INT_T_MIN
 
 /* string length */
 #define SCM_SAL_STRLEN_BITS SCM_INT_BITS
@@ -195,16 +233,16 @@ struct ScmCell_ {
 /* Don't use these functions directly. Use SCM_MAKE_*() or MAKE_*() instead to
  * allow flexible object allocation. */
 ScmObj scm_make_cons(ScmObj kar, ScmObj kdr);
-ScmObj scm_make_int(int val);
+ScmObj scm_make_int(scm_int_t val);
 ScmObj scm_make_symbol(char *name, ScmObj val);
-ScmObj scm_make_char(int val);
-ScmObj scm_make_immutable_string(char *str, int len);
-ScmObj scm_make_immutable_string_copying(const char *str, int len);
-ScmObj scm_make_string(char *str, int len);
-ScmObj scm_make_string_copying(const char *str, int len);
+ScmObj scm_make_char(scm_ichar_t val);
+ScmObj scm_make_immutable_string(char *str, scm_int_t len);
+ScmObj scm_make_immutable_string_copying(const char *str, scm_int_t len);
+ScmObj scm_make_string(char *str, scm_int_t len);
+ScmObj scm_make_string_copying(const char *str, scm_int_t len);
 ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
 ScmObj scm_make_closure(ScmObj exp, ScmObj env);
-ScmObj scm_make_vector(ScmObj *vec, int len);
+ScmObj scm_make_vector(ScmObj *vec, scm_int_t len);
 ScmObj scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag);
 ScmObj scm_make_continuation(void);
 #if !SCM_USE_VALUECONS
@@ -219,8 +257,8 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
    Accessors For Scheme Objects
 =======================================*/
 /* ScmObj Global Attribute */
-#define SCM_SAL_TYPE(o)        ((o)->type)
-#define SCM_ENTYPE(o, objtype) ((o)->type = (objtype))
+#define SCM_SAL_TYPE(o)        ((o)->attr.v.type)
+#define SCM_ENTYPE(o, objtype) ((o)->attr.v.type = (objtype))
 
 /* Real Accessors */
 #define SCM_SAL_NUMBERP(o)             SCM_SAL_INTP(o)
@@ -268,7 +306,7 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
  * - tagged pointer approach prevents leak detection
  * - tagged pointer approach brings alignment restriction
  */
-#define SCM_INT_MSB                    (~((unsigned)-1 >> 1))
+#define SCM_INT_MSB                    (~((scm_uint_t)-1 >> 1))
 #define SCM_STRING_MUTABILITY_MASK     SCM_INT_MSB
 #define SCM_STRING_MUTABLE             SCM_INT_MSB
 #define SCM_SAL_STRINGP(o)             (SCM_TYPE(o) == ScmString)
@@ -277,19 +315,21 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #define SCM_SAL_STRING_SET_STR(o, val)                                       \
     (SCM_AS_STRING(o)->obj.string.str = (val))
 #define SCM_SAL_STRING_LEN(o)                                                \
-    ((int)(SCM_AS_STRING(o)->obj.string.len & ~SCM_STRING_MUTABILITY_MASK))
+    ((scm_int_t)(SCM_AS_STRING(o)->obj.string.len                            \
+                 & ~SCM_STRING_MUTABILITY_MASK))
 #define SCM_SAL_STRING_SET_LEN(o, _len)                                      \
     (SCM_AS_STRING(o)->obj.string.len                                        \
-     = (_len) | (int)(SCM_AS_STRING(o)->obj.string.len                       \
-                      & SCM_STRING_MUTABILITY_MASK))
+     = (_len) | (scm_int_t)(SCM_AS_STRING(o)->obj.string.len                 \
+                            & SCM_STRING_MUTABILITY_MASK))
 #define SCM_SAL_STRING_MUTABLEP(o)                                           \
     (SCM_AS_STRING(o)->obj.string.len < 0)
 #define SCM_SAL_STRING_SET_MUTABLE(o)                                        \
     (SCM_AS_STRING(o)->obj.string.len                                        \
-     = (int)(SCM_AS_STRING(o)->obj.string.len | SCM_STRING_MUTABLE))
+     = (scm_int_t)(SCM_AS_STRING(o)->obj.string.len | SCM_STRING_MUTABLE))
 #define SCM_SAL_STRING_SET_IMMUTABLE(o)                                      \
     (SCM_AS_STRING(o)->obj.string.len                                        \
-     = (int)(SCM_AS_STRING(o)->obj.string.len & ~SCM_STRING_MUTABILITY_MASK))
+     = (scm_int_t)(SCM_AS_STRING(o)->obj.string.len                          \
+                   & ~SCM_STRING_MUTABILITY_MASK))
 
 #define SCM_SAL_FUNCP(o)                   (SCM_TYPE(o) == ScmFunc)
 #define SCM_SAL_ENTYPE_FUNC(o)             (SCM_ENTYPE((o), ScmFunc))
@@ -391,10 +431,10 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
         SCM_FREECELL_CLEAR_FREESLOT(cell);                                   \
     } while (/* CONSTCOND */ 0)
 
-#define SCM_SAL_IS_MARKED(o)   ((o)->gcmark)
+#define SCM_SAL_IS_MARKED(o)   ((o)->attr.v.gcmark)
 #define SCM_SAL_IS_UNMARKED(o) (!SCM_IS_MARKED(o))
-#define SCM_SAL_DO_MARK(o)     ((o)->gcmark = 1)
-#define SCM_SAL_DO_UNMARK(o)   ((o)->gcmark = 0)
+#define SCM_SAL_DO_MARK(o)     ((o)->attr.v.gcmark = scm_true)
+#define SCM_SAL_DO_UNMARK(o)   ((o)->attr.v.gcmark = scm_false)
 
 /*============================================================================
   Environment Specifiers

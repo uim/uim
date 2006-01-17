@@ -91,7 +91,7 @@ static const ScmStorageConf default_storage_conf = {
   File Local Function Declarations
 =======================================*/
 static void initialize_special_constants(void);
-static ScmObj scm_make_string_internal(char *str, int len,
+static ScmObj scm_make_string_internal(char *str, scm_int_t len,
                                        scm_bool is_immutable);
 
 /*=======================================
@@ -170,7 +170,7 @@ scm_make_cons(ScmObj kar, ScmObj kdr)
 }
 
 ScmObj
-scm_make_int(int val)
+scm_make_int(scm_int_t val)
 {
     ScmObj obj;
 
@@ -197,7 +197,7 @@ scm_make_symbol(char *name, ScmObj val)
 }
 
 ScmObj
-scm_make_char(int val)
+scm_make_char(scm_ichar_t val)
 {
     ScmObj obj;
 
@@ -211,7 +211,7 @@ scm_make_char(int val)
 }
 
 static ScmObj
-scm_make_string_internal(char *str, int len, scm_bool is_immutable)
+scm_make_string_internal(char *str, scm_int_t len, scm_bool is_immutable)
 {
     ScmObj obj;
 
@@ -234,25 +234,25 @@ scm_make_string_internal(char *str, int len, scm_bool is_immutable)
 }
 
 ScmObj
-scm_make_immutable_string(char *str, int len)
+scm_make_immutable_string(char *str, scm_int_t len)
 {
     return scm_make_string_internal(str, len, scm_true);
 }
 
 ScmObj
-scm_make_immutable_string_copying(const char *str, int len)
+scm_make_immutable_string_copying(const char *str, scm_int_t len)
 {
     return scm_make_string_internal(scm_strdup(str), len, scm_true);
 }
 
 ScmObj
-scm_make_string(char *str, int len)
+scm_make_string(char *str, scm_int_t len)
 {
     return scm_make_string_internal(str, len, scm_false);
 }
 
 ScmObj
-scm_make_string_copying(const char *str, int len)
+scm_make_string_copying(const char *str, scm_int_t len)
 {
     return scm_make_string_internal(scm_strdup(str), len, scm_false);
 }
@@ -284,7 +284,7 @@ scm_make_closure(ScmObj exp, ScmObj env)
 }
 
 ScmObj
-scm_make_vector(ScmObj *vec, int len)
+scm_make_vector(ScmObj *vec, scm_int_t len)
 {
     ScmObj obj;
 
@@ -372,7 +372,7 @@ scm_make_cfunc_pointer(ScmCFunc ptr)
 enum ScmObjType
 scm_type(ScmObj obj)
 {
-    unsigned int tag = SCM_TAG(obj);
+    scm_uintobj_t tag = SCM_TAG(obj);
     switch (tag) {
     case SCM_TAG_CONS:
         return ScmCons;

@@ -74,7 +74,7 @@ static ScmCharPort *sbcport_dyn_cast(ScmCharPort *cport,
                                      const ScmCharPortVTbl *dst_vptr);
 static ScmCharCodec *sbcport_codec(ScmSingleByteCharPort *port);
 static char *sbcport_inspect(ScmSingleByteCharPort *port);
-static int sbcport_put_char(ScmSingleByteCharPort *port, int ch);
+static int sbcport_put_char(ScmSingleByteCharPort *port, scm_ichar_t ch);
 
 /*=======================================
   Variable Declarations
@@ -142,7 +142,7 @@ sbcport_inspect(ScmSingleByteCharPort *port)
 }
 
 static int
-sbcport_put_char(ScmSingleByteCharPort *port, int ch)
+sbcport_put_char(ScmSingleByteCharPort *port, scm_ichar_t ch)
 {
     char buf[1];
 

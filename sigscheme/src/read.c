@@ -59,7 +59,7 @@ enum LexerState {
   File Local Macro Declarations
 =======================================*/
 #define OK 0
-#define TOKEN_BUF_EXCEEDED -1
+#define TOKEN_BUF_EXCEEDED (-1)
 
 #define MB_MAX_SIZE (SCM_MB_MAX_LEN + sizeof(""))
 
@@ -67,7 +67,7 @@ enum LexerState {
 #define CHAR_LITERAL_LEN_MAX (sizeof("backspace") - sizeof(""))
 
 /* #b-010101... */
-#define INT_LITERAL_LEN_MAX  (sizeof("-") + sizeof(int) * CHAR_BIT - sizeof(""))
+#define INT_LITERAL_LEN_MAX SCM_INT_BITS
 
 #define WHITESPACE_CHARS " \t\n\r\v\f"
 #define DELIMITER_CHARS  "()\";" WHITESPACE_CHARS
@@ -110,16 +110,16 @@ const ScmSpecialCharInfo scm_special_char_table[] = {
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static int    skip_comment_and_space(ScmObj port);
+static scm_ichar_t skip_comment_and_space(ScmObj port);
 static void   read_sequence(ScmObj port, char *buf, int len);
 static size_t read_token(ScmObj port, int *err,
                          char *buf, size_t buf_size, const char *delim);
 
 static ScmObj read_sexpression(ScmObj port);
-static ScmObj read_list(ScmObj port, int closeParen);
+static ScmObj read_list(ScmObj port, scm_ichar_t closeParen);
 #if SCM_USE_SRFI75
-static int    parse_unicode_sequence(const char *seq, int len);
-static int    read_unicode_sequence(ScmObj port, char prefix);
+static scm_ichar_t parse_unicode_sequence(const char *seq, int len);
+static scm_ichar_t read_unicode_sequence(ScmObj port, char prefix);
 #endif
 static ScmObj read_char(ScmObj port);
 static ScmObj read_string(ScmObj port);
@@ -169,7 +169,8 @@ scm_read_char(ScmObj port)
 static int
 skip_comment_and_space(ScmObj port)
 {
-    int c, state;
+    scm_ichar_t c;
+    int state;
 
     for (state = LEX_ST_NORMAL;;) {
         c = scm_port_peek_char(port);
@@ -195,7 +196,7 @@ skip_comment_and_space(ScmObj port)
 static void
 read_sequence(ScmObj port, char *buf, int len)
 {
-    int c;
+    scm_ichar_t c;
     char *p;
 
     for (p = buf; p < &buf[len]; p++) {
@@ -214,13 +215,13 @@ read_token(ScmObj port,
            int *err, char *buf, size_t buf_size, const char *delim)
 {
     ScmCharCodec *codec;
-    int c;
+    scm_ichar_t c;
     size_t len;
     char *p;
 
     for (p = buf;;) {
         c = scm_port_peek_char(port);
-        CDBG((SCM_DBG_PARSER, "c = %c", c));
+        CDBG((SCM_DBG_PARSER, "c = %c", (int)c));
 
         if (p == buf) {
             if (c == EOF)
@@ -246,12 +247,13 @@ read_token(ScmObj port,
             }
             codec = scm_port_codec(port);
             if (SCM_CHARCODEC_CCS(codec) != SCM_CCS_UCS4)
-                ERR("non-ASCII char in token on a non-Unicode port: 0x%x", c);
+                ERR("non-ASCII char in token on a non-Unicode port: 0x%x",
+                    (int)c);
             /* canonicalize internal Unicode encoding */
             p = SCM_CHARCODEC_INT2STR(scm_identifier_codec, p, c,
                                       SCM_MB_STATELESS);
 #else
-            ERR("non-ASCII char in token: 0x%x", c);
+            ERR("non-ASCII char in token: 0x%x", (int)c);
 #endif
         }
         DISCARD_LOOKAHEAD(port);
@@ -265,14 +267,14 @@ read_token(ScmObj port,
 static ScmObj
 read_sexpression(ScmObj port)
 {
-    int c;
+    scm_ichar_t c;
 
     CDBG((SCM_DBG_PARSER, "read_sexpression"));
 
     for (;;) {
         c = skip_comment_and_space(port);
 
-        CDBG((SCM_DBG_PARSER, "read_sexpression c = %c", c));
+        CDBG((SCM_DBG_PARSER, "read_sexpression c = %c", (int)c));
 
         /* case labels are ordered by appearance rate and penalty cost */
         switch (c) {
@@ -305,7 +307,7 @@ read_sexpression(ScmObj port)
             case EOF:
                 ERR("EOF in #");
             default:
-                ERR("Unsupported # notation: %c", c);
+                ERR("Unsupported # notation: %c", (int)c);
             }
             break;
 
@@ -349,13 +351,13 @@ read_sexpression(ScmObj port)
 }
 
 static ScmObj
-read_list(ScmObj port, int closeParen)
+read_list(ScmObj port, scm_ichar_t closeParen)
 {
     ScmObj lst, elm, cdr;
     ScmQueue q;
     ScmBaseCharPort *basecport;
-    int start_line, cur_line;
-    int c, err;
+    scm_ichar_t c;
+    int err, start_line, cur_line;
     char dot_buf[sizeof("...")];
 
     CDBG((SCM_DBG_PARSER, "read_list"));
@@ -366,7 +368,7 @@ read_list(ScmObj port, int closeParen)
     for (lst = SCM_NULL, SCM_QUEUE_POINT_TO(q, lst);; SCM_QUEUE_ADD(q, elm)) {
         c = skip_comment_and_space(port);
 
-        CDBG((SCM_DBG_PARSER, "read_list c = [%c]", c));
+        CDBG((SCM_DBG_PARSER, "read_list c = [%c]", (int)c));
 
         if (c == EOF) {
             if (basecport) {
@@ -422,10 +424,10 @@ read_list(ScmObj port, int closeParen)
 }
 
 #if SCM_USE_SRFI75
-static int
+static scm_ichar_t
 parse_unicode_sequence(const char *seq, int len)
 {
-    int c;
+    scm_ichar_t c;
     char *end;
 
     /* reject ordinary char literal and invalid signed hexadecimal */
@@ -465,7 +467,7 @@ parse_unicode_sequence(const char *seq, int len)
     return c;
 }
 
-static int
+static scm_ichar_t
 read_unicode_sequence(ScmObj port, char prefix)
 {
     int len;
@@ -487,13 +489,14 @@ read_unicode_sequence(ScmObj port, char prefix)
 static ScmObj
 read_char(ScmObj port)
 {
-    int c, next, err;
-#if SCM_USE_SRFI75
-    int unicode;
-#endif
     const ScmSpecialCharInfo *info;
     ScmCharCodec *codec;
     size_t len;
+    scm_ichar_t c, next;
+#if SCM_USE_SRFI75
+    scm_ichar_t unicode;
+#endif
+    int err;
     char buf[CHAR_LITERAL_LEN_MAX + sizeof("")];
     DECLARE_INTERNAL_FUNCTION("read_char");
 
@@ -537,9 +540,10 @@ read_string(ScmObj port)
     ScmObj obj;
     const ScmSpecialCharInfo *info;
     ScmCharCodec *codec;
-    int c, len;
-    size_t offset;
+    scm_int_t len;
+    scm_ichar_t c;
     char *p;
+    size_t offset;
     ScmLBuf(char) lbuf;
     char init_buf[SCM_INITIAL_STRING_BUF_SIZE];
     DECLARE_INTERNAL_FUNCTION("read_string");
@@ -555,7 +559,7 @@ read_string(ScmObj port)
     {
         c = scm_port_get_char(port);
 
-        CDBG((SCM_DBG_PARSER, "read_string c = %c", c));
+        CDBG((SCM_DBG_PARSER, "read_string c = %c", (int)c));
 
         switch (c) {
         case EOF:
@@ -582,7 +586,7 @@ read_string(ScmObj port)
                 p = &LBUF_BUF(lbuf)[offset];
                 p = SCM_CHARCODEC_INT2STR(codec, p, c, SCM_MB_STATELESS);
                 if (!p)
-                    ERR("invalid Unicode sequence in string: 0x%x", c);
+                    ERR("invalid Unicode sequence in string: 0x%x", (int)c);
                 goto found;
             } else
 #endif
@@ -597,7 +601,7 @@ read_string(ScmObj port)
                     }
                 }
             }
-            ERR("invalid escape sequence in string: \\%c", c);
+            ERR("invalid escape sequence in string: \\%c", (int)c);
         found:
             break;
 
@@ -607,7 +611,7 @@ read_string(ScmObj port)
             /* FIXME: support stateful encoding */
             p = SCM_CHARCODEC_INT2STR(codec, p, c, SCM_MB_STATELESS);
             if (!p)
-                ERR("invalid char in string: 0x%x", c);
+                ERR("invalid char in string: 0x%x", (int)c);
             break;
         }
 #if !SCM_USE_NULL_CAPABLE_STRING
@@ -653,7 +657,8 @@ read_symbol(ScmObj port)
 static ScmObj
 read_number_or_symbol(ScmObj port)
 {
-    int c, err;
+    scm_ichar_t c;
+    int err;
     size_t len;
     char buf[INT_LITERAL_LEN_MAX + sizeof("")];
 
@@ -703,7 +708,8 @@ read_number_or_symbol(ScmObj port)
 static ScmObj
 parse_number(ScmObj port, char *buf, size_t buf_size, char prefix)
 {
-    int radix, number;
+    scm_int_t number;
+    int radix;
     char *end;
 
     switch (prefix) {
@@ -722,7 +728,7 @@ parse_number(ScmObj port, char *buf, size_t buf_size, char prefix)
     return MAKE_INT(number);
 
  err:
-    ERR("ill-formatted number: #%c%s", prefix, buf);
+    ERR("ill-formatted number: #%c%s", (int)prefix, buf);
 }
 
 static ScmObj

@@ -34,6 +34,7 @@
 /*=======================================
   System Include
 =======================================*/
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -246,7 +247,7 @@ scm_port_puts(ScmObj port, const char *str)
 }
 
 int
-scm_port_put_char(ScmObj port, int ch)
+scm_port_put_char(ScmObj port, scm_ichar_t ch)
 {
     SCM_ENSURE_LIVE_PORT(port);
     return SCM_CHARPORT_PUT_CHAR(SCM_PORT_IMPL(port), ch);
@@ -414,7 +415,7 @@ scm_p_open_output_file(ScmObj filepath)
 ScmObj
 scm_p_close_input_port(ScmObj port)
 {
-    int flag;
+    scm_int_t flag;
     DECLARE_FUNCTION("close-input-port", procedure_fixed_1);
 
     ENSURE_PORT(port);
@@ -430,7 +431,7 @@ scm_p_close_input_port(ScmObj port)
 ScmObj
 scm_p_close_output_port(ScmObj port)
 {
-    int flag;
+    scm_int_t flag;
     DECLARE_FUNCTION("close-output-port", procedure_fixed_1);
 
     ENSURE_PORT(port);
@@ -460,7 +461,7 @@ ScmObj
 scm_p_read_char(ScmObj args)
 {
     ScmObj port;
-    int ch;
+    scm_ichar_t ch;
     DECLARE_FUNCTION("read-char", procedure_variadic_0);
 
     port = scm_prepare_port(args, scm_in);
@@ -476,7 +477,7 @@ ScmObj
 scm_p_peek_char(ScmObj args)
 {
     ScmObj port;
-    int ch;
+    scm_ichar_t ch;
     DECLARE_FUNCTION("peek-char", procedure_variadic_0);
 
     port = scm_prepare_port(args, scm_in);
@@ -616,7 +617,7 @@ static char *
 find_path(const char *filename)
 {
     char *path;
-    int lib_path_len, filename_len, path_len;
+    size_t lib_path_len, filename_len, path_len;
 
     SCM_ASSERT(filename);
 

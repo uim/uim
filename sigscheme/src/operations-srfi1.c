@@ -106,8 +106,8 @@ scm_p_srfi1_make_list(ScmObj length, ScmObj args)
 {
     ScmObj filler;
     ScmObj head = SCM_NULL;
-    int len = 0;
-    int i   = 0;
+    scm_int_t len = 0;
+    scm_int_t i   = 0;
     DECLARE_FUNCTION("make-list", procedure_variadic_1);
 
     ENSURE_INT(length);
@@ -134,8 +134,8 @@ scm_p_srfi1_list_tabulate(ScmObj scm_n, ScmObj args)
     ScmObj proc  = SCM_FALSE;
     ScmObj head  = SCM_NULL;
     ScmObj num   = SCM_FALSE;
-    int n = 0;
-    int i = 0;
+    scm_int_t n = 0;
+    scm_int_t i = 0;
     DECLARE_FUNCTION("list-tabulate", procedure_variadic_1);
 
     ENSURE_INT(scm_n);
@@ -207,10 +207,10 @@ scm_p_srfi1_iota(ScmObj scm_count, ScmObj args)
     ScmObj scm_start = SCM_FALSE;
     ScmObj scm_step  = SCM_FALSE;
     ScmObj head      = SCM_NULL;
-    int count = 0;
-    int start = 0;
-    int step  = 0;
-    int i = 0;
+    scm_int_t count = 0;
+    scm_int_t start = 0;
+    scm_int_t step  = 0;
+    scm_int_t i = 0;
     DECLARE_FUNCTION("iota", procedure_variadic_1);
 
     /* get params */
@@ -277,7 +277,7 @@ scm_p_srfi1_not_pairp(ScmObj obj)
 ScmObj
 scm_p_srfi1_null_listp(ScmObj lst)
 {
-    int len;
+    scm_int_t len;
     DECLARE_FUNCTION("null-list?", procedure_fixed_1);
 
     len = scm_length(lst);
@@ -420,8 +420,8 @@ scm_p_srfi1_take(ScmObj lst, ScmObj scm_idx)
     ScmObj tmp      = lst;
     ScmObj ret      = SCM_FALSE;
     ScmObj ret_tail = SCM_FALSE;
-    int idx = 0;
-    int i;
+    scm_int_t idx = 0;
+    scm_int_t i;
     DECLARE_FUNCTION("take", procedure_fixed_2);
 
     ENSURE_INT(scm_idx);
@@ -449,8 +449,8 @@ ScmObj
 scm_p_srfi1_drop(ScmObj lst, ScmObj scm_idx)
 {
     ScmObj ret = lst;
-    int idx = 0;
-    int i;
+    scm_int_t idx = 0;
+    scm_int_t i;
     DECLARE_FUNCTION("drop", procedure_fixed_2);
 
     ENSURE_INT(scm_idx);
@@ -470,7 +470,7 @@ ScmObj
 scm_p_srfi1_take_right(ScmObj lst, ScmObj scm_elem)
 {
     ScmObj tmp = lst;
-    int len = 0;
+    scm_int_t len = 0;
     DECLARE_FUNCTION("take-right", procedure_fixed_2);
 
     ENSURE_INT(scm_elem);
@@ -487,7 +487,7 @@ ScmObj
 scm_p_srfi1_drop_right(ScmObj lst, ScmObj scm_elem)
 {
     ScmObj tmp = lst;
-    int len = 0;
+    scm_int_t len = 0;
     DECLARE_FUNCTION("drop-right", procedure_fixed_2);
 
     ENSURE_INT(scm_elem);
@@ -504,8 +504,8 @@ ScmObj
 scm_p_srfi1_taked(ScmObj lst, ScmObj scm_idx)
 {
     ScmObj tmp = lst;
-    int idx = 0;
-    int i;
+    scm_int_t idx = 0;
+    scm_int_t i;
     DECLARE_FUNCTION("take!", procedure_fixed_2);
 
     ENSURE_INT(scm_idx);
@@ -525,8 +525,8 @@ ScmObj
 scm_p_srfi1_drop_rightd(ScmObj lst, ScmObj scm_idx)
 {
     ScmObj tmp = lst;
-    int len = 0;
-    int i;
+    scm_int_t len = 0;
+    scm_int_t i;
     DECLARE_FUNCTION("drop-right!", procedure_fixed_2);
 
     ENSURE_INT(scm_idx);
@@ -598,7 +598,7 @@ scm_p_srfi1_last_pair(ScmObj lst)
 ScmObj
 scm_p_srfi1_lengthplus(ScmObj lst)
 {
-    int len;
+    scm_int_t len;
     DECLARE_FUNCTION("length+", procedure_fixed_1);
 
     len = scm_length(lst);

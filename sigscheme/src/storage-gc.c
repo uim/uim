@@ -56,6 +56,7 @@
 /*=======================================
   System Include
 =======================================*/
+#include <stddef.h>
 #include <stdint.h> /* FIXME: make C99-independent */
 #include <string.h>
 #include <stdlib.h>
@@ -75,12 +76,14 @@ typedef ScmCell *ScmObjHeap;
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+#define N_REGS_IN_JMP_BUF    (sizeof(jmp_buf) / sizeof(void *))
+#define SCMOBJ_ALIGNEDP(ptr) (!((uintptr_t)(ptr) % sizeof(ScmObj)))
 
 /*=======================================
   Variable Declarations
 =======================================*/
 static size_t heap_size, heap_alloc_threshold;
-static int n_heaps, n_heaps_max;
+static size_t n_heaps, n_heaps_max;
 static ScmObjHeap *heaps;
 static ScmCell *heaps_lowest, *heaps_highest;
 static ScmObj freelist;
@@ -242,6 +245,8 @@ scm_gc_protect_stack_internal(ScmObj *designated_stack_start)
     if (!stack_start_pointer)
         stack_start_pointer = designated_stack_start;
 
+    SCM_ASSERT(SCMOBJ_ALIGNEDP(stack_start_pointer));
+
     /* may intentionally be an invalidated local address */
     return designated_stack_start;
 }
@@ -269,7 +274,7 @@ scm_gc_unprotect_stack(ScmObj *stack_start)
 static void
 initialize_heap(const ScmStorageConf *conf)
 {
-    int i;
+    size_t i;
 
     heap_size            = conf->heap_size;
     heap_alloc_threshold = conf->heap_alloc_threshold;
@@ -313,7 +318,7 @@ add_heap(void)
 static void
 finalize_heap(void)
 {
-    int i;
+    size_t i;
     ScmCell *cell;
     ScmObjHeap heap;
 
@@ -346,8 +351,8 @@ gc_mark_and_sweep(void)
 static void
 mark_obj(ScmObj obj)
 {
-    int i = 0;
-    unsigned int tag;
+    scm_int_t i;
+    scm_uintobj_t tag;
 
 mark_loop:
     /* no need to mark immediates */
@@ -396,7 +401,7 @@ mark_loop:
 static void
 mark_obj(ScmObj obj)
 {
-    int i = 0;
+    scm_int_t i;
 
 mark_loop:
     /* no need to mark constants */
@@ -459,7 +464,7 @@ static scm_bool
 within_heapp(ScmObj obj)
 {
     ScmCell *heap, *ptr;
-    int i;
+    size_t i;
 
 #if SCM_OBJ_COMPACT
     if (!SCM_CANBE_MARKED(obj))
@@ -516,6 +521,8 @@ gc_mark_locations_n(ScmObj *start, size_t n)
 {
     ScmObj *objp;
 
+    SCM_ASSERT(SCMOBJ_ALIGNEDP(start));
+
     for (objp = start; objp < &start[n]; objp++) {
         if (within_heapp(*objp))
             mark_obj(*objp);
@@ -527,6 +534,8 @@ gc_mark_definite_locations_n(ScmObj *start, size_t n)
 {
     ScmObj *objp;
 
+    SCM_ASSERT(SCMOBJ_ALIGNEDP(start));
+
     for (objp = start; objp < &start[n]; objp++)
         mark_obj(*objp);
 }
@@ -534,8 +543,10 @@ gc_mark_definite_locations_n(ScmObj *start, size_t n)
 static void
 gc_mark_locations(ScmObj *start, ScmObj *end)
 {
-    int size;
+    ptrdiff_t size;
     ScmObj *tmp;
+
+    SCM_ASSERT(SCMOBJ_ALIGNEDP(end));
 
     /* swap end and start if (end < start) */
     if (end < start) {
@@ -546,7 +557,8 @@ gc_mark_locations(ScmObj *start, ScmObj *end)
 
     size = end - start;
 
-    CDBG((SCM_DBG_GC, "gc_mark_locations: size = %d", size));
+    CDBG((SCM_DBG_GC, "gc_mark_locations: size = " SCM_SIZE_T_FMT,
+          (size_t)size));
 
     gc_mark_locations_n(start, size);
 }
@@ -559,10 +571,9 @@ static void
 gc_mark(void)
 {
     ScmObj stack_end;
-    void *save_regs_buf_end = (char *)save_regs_buf + sizeof(save_regs_buf);
 
     setjmp(save_regs_buf);
-    gc_mark_locations((ScmObj *)save_regs_buf, (ScmObj *)save_regs_buf_end);
+    gc_mark_locations_n((ScmObj *)save_regs_buf, N_REGS_IN_JMP_BUF);
     gc_mark_locations(stack_start_pointer, &stack_end);
 
     /* performed after above two because of cache pollution */
@@ -651,8 +662,7 @@ free_cell(ScmCell *cell)
 static size_t
 gc_sweep(void)
 {
-    int i;
-    size_t sum_collected, n_collected;
+    size_t i, sum_collected, n_collected;
     ScmObjHeap heap;
     ScmCell *cell;
     ScmObj obj, new_freelist;
@@ -679,7 +689,8 @@ gc_sweep(void)
         }
 
         sum_collected += n_collected;
-        CDBG((SCM_DBG_GC, "heap[%d] swept = %d", i, n_collected));
+        CDBG((SCM_DBG_GC, "heap[" SCM_SIZE_T_FMT "] swept = " SCM_SIZE_T_FMT,
+              i, n_collected));
     }
     freelist = new_freelist;
 

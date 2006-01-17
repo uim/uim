@@ -45,6 +45,7 @@ extern "C" {
   System Include
 =======================================*/
 #include <stddef.h>
+#include <stdint.h> /* FIXME: make C99-independent */
 
 /*=======================================
   Local Include
@@ -133,11 +134,29 @@ extern "C" {
 /*=======================================
   Type Definitions
 =======================================*/
-#if (!defined(scm_true) && !defined(scm_false))
+#ifndef SCM_BOOL_DEFINED
 typedef int scm_bool;
 #define scm_false 0
 #define scm_true  (!scm_false)
+#define SCM_BOOL_DEFINED
+#endif /* SCM_BOOL_DEFINED */
+
+#ifndef SCM_ICHAR_T_DEFINED
+typedef int32_t            scm_ichar_t;
+#define SIZEOF_SCM_ICHAR_T SIZEOF_INT32_T
+#define SCM_ICHAR_T_MAX    INT32_MAX
+#define SCM_ICHAR_T_MIN    INT32_MIN
+#if (EOF < SCM_ICHAR_T_MIN || SCM_ICHAR_T_MAX < EOF)
+#error "scm_ichar_t cannot represent EOF on this platform"
 #endif
+#define SCM_ICHAR_T_DEFINED
+#endif /* SCM_ICHAR_T_DEFINED */
+
+#ifndef SCM_BYTE_T_DEFINED
+#define SCM_BYTE_T_DEFINED
+typedef unsigned char      scm_byte_t;
+#define SIZEOF_SCM_BYTE_T  1
+#endif /* SCM_BYTE_T_DEFINED */
 
 enum ScmCodedCharSet {
     SCM_CCS_UNKNOWN   = 0,
@@ -155,9 +174,14 @@ typedef int ScmMultibyteState;
 /* Metadata of a multibyte character.  These are usually allocated on
    stack or register, so we'll make liberal use of space. */
 typedef struct {
+#if 0
+    /* will be changed to this */
+    const scm_byte_t *start;
+#else
     const char *start;
+#endif
+    size_t size;
     int flag;
-    int size;
 
 #if SCM_USE_STATEFUL_ENCODING
     /* Shift state at the *end* of the described character. */
@@ -166,12 +190,17 @@ typedef struct {
 } ScmMultibyteCharInfo;
 
 typedef struct {
+#if 0
+    /* will be changed to this */
+    const scm_byte_t *str;
+#else
     const char *str;
+#endif
 
     /* Only the size is stored because ScmObj caches the length, and
      * we'll have to traverse from the beginning all the time
      * anyway. */
-    int size;
+    size_t size;
 #if SCM_USE_STATEFUL_ENCODING
     ScmMultibyteState state;
 #endif
@@ -183,11 +212,11 @@ typedef const ScmCharCodecVTbl ScmCharCodec;
 typedef scm_bool (*ScmCharCodecMethod_statefulp)(void);
 typedef const char *(*ScmCharCodecMethod_encoding)(void);
 typedef enum ScmCodedCharSet (*ScmCharCodecMethod_ccs)(void);
-typedef int (*ScmCharCodecMethod_char_len)(int ch);
+typedef int (*ScmCharCodecMethod_char_len)(scm_ichar_t ch);
 typedef ScmMultibyteCharInfo (*ScmCharCodecMethod_scan_char)(ScmMultibyteString mbs);
-typedef int (*ScmCharCodecMethod_str2int)(const char *src, size_t len,
-                                          ScmMultibyteState state);
-typedef char *(*ScmCharCodecMethod_int2str)(char *dst, int ch,
+typedef scm_ichar_t (*ScmCharCodecMethod_str2int)(const char *src, size_t len,
+                                                  ScmMultibyteState state);
+typedef char *(*ScmCharCodecMethod_int2str)(char *dst, scm_ichar_t ch,
                                             ScmMultibyteState state);
 
 struct ScmCharCodecVTbl_ {
@@ -208,14 +237,16 @@ extern ScmCharCodec *scm_current_char_codec;
 /*=======================================
    Function Declarations
 =======================================*/
-int scm_mb_strlen(ScmCharCodec *codec, ScmMultibyteString mbs);
-int scm_mb_bare_c_strlen(ScmCharCodec *codec, const char *str);
+size_t scm_mb_strlen(ScmCharCodec *codec, ScmMultibyteString mbs);
+size_t scm_mb_bare_c_strlen(ScmCharCodec *codec, const char *str);
 ScmMultibyteString scm_mb_substring(ScmCharCodec *codec,
-                                    ScmMultibyteString str, int i, int len);
+                                    ScmMultibyteString str,
+                                    size_t i, size_t len);
 #define scm_mb_strref(codec, str, i) (scm_mb_substring((codec), (str), (i), 1))
 ScmCharCodec *scm_mb_find_codec(const char *encoding);
-int scm_charcodec_read_char(ScmCharCodec *codec, ScmMultibyteString *mbs,
-                            const char *caller);
+scm_ichar_t scm_charcodec_read_char(ScmCharCodec *codec,
+                                    ScmMultibyteString *mbs,
+                                    const char *caller);
 
 #ifdef __cplusplus
 }

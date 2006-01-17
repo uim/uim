@@ -97,8 +97,8 @@ static ScmBytePort *istrport_dyn_cast(ScmBytePort *bport,
                                       const ScmBytePortVTbl *dest_vptr);
 static int istrport_close(ScmInputStrPort *port);
 static char *istrport_inspect(ScmInputStrPort *port);
-static int istrport_get_byte(ScmInputStrPort *port);
-static int istrport_peek_byte(ScmInputStrPort *port);
+static scm_ichar_t istrport_get_byte(ScmInputStrPort *port);
+static scm_ichar_t istrport_peek_byte(ScmInputStrPort *port);
 static scm_bool istrport_byte_readyp(ScmInputStrPort *port);
 static int istrport_vprintf(ScmInputStrPort *port,
                             const char *str, va_list args);
@@ -111,8 +111,8 @@ static ScmBytePort *ostrport_dyn_cast(ScmBytePort *bport,
                                       const ScmBytePortVTbl *dest_vptr);
 static int ostrport_close(ScmOutputStrPort *port);
 static char *ostrport_inspect(ScmOutputStrPort *port);
-static int ostrport_get_byte(ScmOutputStrPort *port);
-static int ostrport_peek_byte(ScmOutputStrPort *port);
+static scm_ichar_t ostrport_get_byte(ScmOutputStrPort *port);
+static scm_ichar_t ostrport_peek_byte(ScmOutputStrPort *port);
 static scm_bool ostrport_byte_readyp(ScmOutputStrPort *port);
 static int ostrport_vprintf(ScmOutputStrPort *port,
                             const char *str, va_list args);
@@ -241,13 +241,13 @@ istrport_inspect(ScmInputStrPort *port)
     return scm_strdup("string");
 }
 
-static int
+static scm_ichar_t
 istrport_get_byte(ScmInputStrPort *port)
 {
     return (*port->cur) ? *port->cur++ : EOF;
 }
 
-static int
+static scm_ichar_t
 istrport_peek_byte(ScmInputStrPort *port)
 {
     return (*port->cur) ? *port->cur : EOF;
@@ -361,14 +361,14 @@ ostrport_inspect(ScmOutputStrPort *port)
     return scm_strdup("string");
 }
 
-static int
+static scm_ichar_t
 ostrport_get_byte(ScmOutputStrPort *port)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmOutputStrPort);
     /* NOTREACHED */
 }
 
-static int
+static scm_ichar_t
 ostrport_peek_byte(ScmOutputStrPort *port)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmOutputStrPort);

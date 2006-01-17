@@ -70,7 +70,7 @@ ScmObj
 scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body,
                     ScmEvalState *eval_state)
 {
-    int formals_len, actuals_len;
+    scm_int_t formals_len, actuals_len;
     ScmObj env, actuals;
     DECLARE_FUNCTION("receive", syntax_variadic_tailrec_2);
 

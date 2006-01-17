@@ -50,6 +50,7 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
+#define ALIGN_CELL (sizeof(ScmCell))
 
 /*=======================================
   File Local Type Definitions
@@ -82,18 +83,13 @@ scm_malloc_aligned(size_t size)
      *     SUSv3.  The function memalign() appears in SunOS 4.1.3 but not in
      *     BSD 4.4.  The function posix_memalign() comes from POSIX 1003.1d.
      */
-    /* FIXME: replace the '16' with sizeof(ScmCell) if not required */
-    posix_memalign(&p, 16, size);
-    SCM_ENSURE_ALLOCATED(p);
-#if SCM_DEBUG
-    /* check for buggy allocator */
-    assert(!((uintptr_t)p % 16));
-#endif
+    posix_memalign(&p, ALIGN_CELL, size);
 #else
     p = scm_malloc(size);
-    /* heaps must be aligned to sizeof(ScmCell) */
-    assert(!((uintptr_t)p % sizeof(ScmCell)));
 #endif
+    SCM_ENSURE_ALLOCATED(p);
+    /* heaps must be aligned to sizeof(ScmCell) */
+    SCM_ASSERT(!((uintptr_t)p % ALIGN_CELL));
 
     return p;
 }

@@ -71,13 +71,13 @@ static ScmCharPort *basecport_dyn_cast(ScmCharPort *cport,
 static int basecport_close(ScmBaseCharPort *port);
 static ScmCharCodec *basecport_codec(ScmBaseCharPort *port);
 static char *basecport_inspect(ScmBaseCharPort *port);
-static int basecport_get_char(ScmBaseCharPort *port);
-static int basecport_peek_char(ScmBaseCharPort *port);
+static scm_ichar_t basecport_get_char(ScmBaseCharPort *port);
+static scm_ichar_t basecport_peek_char(ScmBaseCharPort *port);
 static scm_bool basecport_char_readyp(ScmBaseCharPort *port);
 static int basecport_vprintf(ScmBaseCharPort *port, const char *str,
                              va_list args);
 static int basecport_puts(ScmBaseCharPort *port, const char *str);
-static int basecport_put_char(ScmBaseCharPort *port, int ch);
+static int basecport_put_char(ScmBaseCharPort *port, scm_ichar_t ch);
 static int basecport_flush(ScmBaseCharPort *port);
 
 /*=======================================
@@ -168,10 +168,10 @@ basecport_inspect(ScmBaseCharPort *port)
     return ScmBaseCharPort_inspect(port, "unknown");
 }
 
-static int
+static scm_ichar_t
 basecport_get_char(ScmBaseCharPort *port)
 {
-    int ch;
+    scm_ichar_t ch;
 
     ch = SCM_BYTEPORT_GET_BYTE(port->bport);
 #if SCM_DEBUG
@@ -182,7 +182,7 @@ basecport_get_char(ScmBaseCharPort *port)
     return ch;
 }
 
-static int
+static scm_ichar_t
 basecport_peek_char(ScmBaseCharPort *port)
 {
     return SCM_BYTEPORT_PEEK_BYTE(port->bport);
@@ -207,7 +207,7 @@ basecport_puts(ScmBaseCharPort *port, const char *str)
 }
 
 static int
-basecport_put_char(ScmBaseCharPort *port, int ch)
+basecport_put_char(ScmBaseCharPort *port, scm_ichar_t ch)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(CHAR, port, ScmBaseCharPort);
     /* NOTREACHED */

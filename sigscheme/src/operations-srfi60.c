@@ -50,7 +50,7 @@
 =======================================*/
 #define BITWISE_OPERATION_BODY(op, left, right)                              \
     do {                                                                     \
-        int result;                                                          \
+        scm_int_t result;                                                    \
                                                                              \
         result = 0;                                                          \
         switch (*state) {                                                    \
@@ -133,7 +133,7 @@ scm_p_srfi60_lognot(ScmObj n)
 ScmObj
 scm_p_srfi60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1)
 {
-    int result, c_mask;
+    scm_int_t result, c_mask;
     DECLARE_FUNCTION("bitwise-if", procedure_fixed_3);
 
     ENSURE_INT(mask);

@@ -34,6 +34,7 @@
 /*=======================================
   System Include
 =======================================*/
+#include <stdint.h> /* FIXME: make C99-independent */
 #include <string.h>
 #include <stdlib.h>
 
@@ -62,7 +63,7 @@ size_t scm_symbol_hash_size;
 =======================================*/
 static void initialize_symbol_hash(const ScmStorageConf *conf);
 static void finalize_symbol_hash(void);
-static int  symbol_name_hash(const char *name);
+static uint32_t symbol_name_hash(const char *name);
 
 /*=======================================
   Function Implementations
@@ -71,7 +72,7 @@ ScmObj
 scm_intern(const char *name)
 {
     ScmObj sym, lst, rest;
-    int hash;
+    uint32_t hash;
     DECLARE_INTERNAL_FUNCTION("scm_intern");
 
 #if (SCM_USE_SRFI75 && SCM_STRICT_ARGCHECK)
@@ -151,12 +152,12 @@ finalize_symbol_hash(void)
     free(scm_symbol_hash);
 }
 
-static int
+static uint32_t
 symbol_name_hash(const char *name)
 {
-    int hash, c;
+    uint32_t hash, c;
 
-    for (hash = 0; (c = *name); name++)
+    for (hash = 0; (c = *(const scm_byte_t *)name); name++)
         hash = ((hash * 17) ^ c) % scm_symbol_hash_size;
 
     return hash;

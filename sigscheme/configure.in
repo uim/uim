@@ -22,29 +22,37 @@ AC_CHECK_HEADERS([limits.h malloc.h stddef.h stdint.h stdlib.h string.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
-AC_TYPE_SIZE_T
 AC_C_VOLATILE
+#AC_C_LONG_LONG
+#AC_C_LONG_DOUBLE
+AC_C_CHAR_UNSIGNED
+AC_C_BIGENDIAN
+AC_C_STRINGIZE
+AC_TYPE_SIZE_T
 
 AC_CHECK_SIZEOF(short)
 AC_CHECK_SIZEOF(int)
 AC_CHECK_SIZEOF(long)
-AC_CHECK_SIZEOF(float)
-AC_CHECK_SIZEOF(double)
-AC_CHECK_SIZEOF(long double)
+AC_CHECK_SIZEOF(long long)
+#AC_CHECK_SIZEOF(float)
+#AC_CHECK_SIZEOF(double)
+#AC_CHECK_SIZEOF(long double)
 AC_CHECK_SIZEOF(void *)
 
-# Do not assume (sizeof(int32_t) == 4) and so on
+AC_CHECK_SIZEOF(size_t)
+
+# Do not assume (sizeof(int32_t) == 4) and so on (i.e. do not (CHAR_BIT == 8)).
 AC_CHECK_SIZEOF(int16_t)
 AC_CHECK_SIZEOF(int32_t)
 AC_CHECK_SIZEOF(int64_t)
-AC_CHECK_SIZEOF(int_least8_t)
-AC_CHECK_SIZEOF(int_least16_t)
-AC_CHECK_SIZEOF(int_least32_t)
-AC_CHECK_SIZEOF(int_least64_t)
-AC_CHECK_SIZEOF(int_fast8_t)
-AC_CHECK_SIZEOF(int_fast16_t)
-AC_CHECK_SIZEOF(int_fast32_t)
-AC_CHECK_SIZEOF(int_fast64_t)
+#AC_CHECK_SIZEOF(int_least8_t)
+#AC_CHECK_SIZEOF(int_least16_t)
+#AC_CHECK_SIZEOF(int_least32_t)
+#AC_CHECK_SIZEOF(int_least64_t)
+#AC_CHECK_SIZEOF(int_fast8_t)
+#AC_CHECK_SIZEOF(int_fast16_t)
+#AC_CHECK_SIZEOF(int_fast32_t)
+#AC_CHECK_SIZEOF(int_fast64_t)
 AC_CHECK_SIZEOF(intmax_t)
 AC_CHECK_SIZEOF(intptr_t)
 
