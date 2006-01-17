@@ -45,11 +45,11 @@ extern "C" {
   System Include
 =======================================*/
 #include <stddef.h>
-#include <stdint.h> /* FIXME: make C99-independent */
 
 /*=======================================
   Local Include
 =======================================*/
+#include "my-stdint.h"
 
 /*=======================================
   Macro Definitions

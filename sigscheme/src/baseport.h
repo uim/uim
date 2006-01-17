@@ -47,7 +47,6 @@ extern "C" {
 /*=======================================
   System Include
 =======================================*/
-#include <stdint.h> /* FIXME: make C99-independent */
 #include <stdlib.h>
 #include <stdio.h>  /* for EOF */
 #include <stdarg.h>
@@ -55,6 +54,7 @@ extern "C" {
 /*=======================================
   Local Include
 =======================================*/
+#include "my-stdint.h"
 #include "encoding.h"
 
 /*=======================================

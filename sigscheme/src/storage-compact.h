@@ -155,12 +155,12 @@ union ScmObj_ {
   System Include
 =======================================*/
 #include <limits.h>
-#include <stdint.h> /* FIXME: make C99-independent */
 #include <stdio.h>
 
 /*=======================================
   Local Include
 =======================================*/
+#include "my-stdint.h"
 #include "baseport.h"
 
 /*=======================================

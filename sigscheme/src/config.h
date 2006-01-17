@@ -38,7 +38,7 @@
 #  include "../config.h"
 #endif
 
-#include <stdint.h> /* FIXME: make C99-independent */
+#include "my-stdint.h"
 
 /*===========================================================================
   Optional Features Written in C

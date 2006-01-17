@@ -37,7 +37,6 @@
 /*=======================================
   System Include
 =======================================*/
-#include <stdint.h> /* FIXME: make C99-independent */
 #include <stdlib.h>
 #include <string.h>
 #if HAVE_GETPAGESIZE
@@ -47,6 +46,7 @@
 /*=======================================
   Local Include
 =======================================*/
+#include "my-stdint.h"
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 

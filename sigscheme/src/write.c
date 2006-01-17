@@ -34,13 +34,13 @@
 /*=======================================
   System Include
 =======================================*/
-#include <stdint.h> /* FIXME: make C99-independent */
 #include <stdio.h>
 #include <stdarg.h>
 
 /*=======================================
   Local Include
 =======================================*/
+#include "my-stdint.h"
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 

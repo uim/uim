@@ -57,7 +57,6 @@
   System Include
 =======================================*/
 #include <stddef.h>
-#include <stdint.h> /* FIXME: make C99-independent */
 #include <string.h>
 #include <stdlib.h>
 #include <setjmp.h>
@@ -65,6 +64,7 @@
 /*=======================================
   Local Include
 =======================================*/
+#include "my-stdint.h"
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 

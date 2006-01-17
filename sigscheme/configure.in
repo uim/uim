@@ -18,8 +18,7 @@ fi
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([limits.h malloc.h stddef.h stdint.h stdlib.h string.h \
-                  unistd.h])
+AC_CHECK_HEADERS([limits.h malloc.h stddef.h stdlib.h string.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -31,6 +30,7 @@ AC_C_BIGENDIAN
 AC_C_STRINGIZE
 AX_C___ATTRIBUTE__
 
+AX_CREATE_STDINT_H(src/my-stdint.h)
 AC_TYPE_SIZE_T
 
 AC_CHECK_SIZEOF(short)

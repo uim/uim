@@ -9,8 +9,6 @@ Requirements and critical bugs:
 
 * Autoconfiscate the SigScheme package (don't rely on uim's configure)
   - Prepare replace functions (asprintf and so on)
-  - Introduce C99-independent stdint.h
-    http://autoconf-archive.cryp.to/ax_create_stdint_h.html
   - [uim] configure sigscheme subdir by top-level configure like GCC
   - Generate and pack sigschemefunctable*.[hc] into distribution file by make
     dist
