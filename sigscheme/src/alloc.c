@@ -32,14 +32,17 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
+#include "config.h"
+
 /*=======================================
   System Include
 =======================================*/
 #include <stdint.h> /* FIXME: make C99-independent */
 #include <stdlib.h>
 #include <string.h>
-
-#include <assert.h>
+#if HAVE_GETPAGESIZE
+#include <unistd.h>
+#endif
 
 /*=======================================
   Local Include
@@ -84,8 +87,13 @@ scm_malloc_aligned(size_t size)
      *     BSD 4.4.  The function posix_memalign() comes from POSIX 1003.1d.
      */
     posix_memalign(&p, ALIGN_CELL, size);
+#elif (HAVE_PAGE_ALIGNED_MALLOC && HAVE_GETPAGESIZE)
+    if ((size_t)getpagesize() <= size || size <= sizeof(void *))
+        p = scm_malloc(size);
+    else
+        ERR("cannot ensure memory alignment");
 #else
-    p = scm_malloc(size);
+#error "This platform is not supported yet"
 #endif
     SCM_ENSURE_ALLOCATED(p);
     /* heaps must be aligned to sizeof(ScmCell) */

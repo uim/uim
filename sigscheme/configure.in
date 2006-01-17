@@ -18,7 +18,8 @@ fi
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([limits.h malloc.h stddef.h stdint.h stdlib.h string.h])
+AC_CHECK_HEADERS([limits.h malloc.h stddef.h stdint.h stdlib.h string.h \
+                  unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -38,7 +39,6 @@ AC_CHECK_SIZEOF(long long)
 #AC_CHECK_SIZEOF(double)
 #AC_CHECK_SIZEOF(long double)
 AC_CHECK_SIZEOF(void *)
-
 AC_CHECK_SIZEOF(size_t)
 
 # Do not assume (sizeof(int32_t) == 4) and so on (i.e. do not (CHAR_BIT == 8)).
@@ -60,7 +60,9 @@ AC_CHECK_SIZEOF(intptr_t)
 
 # FIXME: provide alternative source code
 # AC_REPLACE_FUNCS([asprintf vasprintf])
-AC_CHECK_FUNCS([fileno asprintf vasprintf posix_memalign])
+AC_CHECK_FUNCS([fileno asprintf vasprintf posix_memalign getpagesize])
+
+AX_CHECK_PAGE_ALIGNED_MALLOC
 
 # Configure Option
 AC_ARG_ENABLE(debug,
@@ -82,5 +84,6 @@ if test x$CC = xgcc; then
 fi
 
 AC_CONFIG_FILES([Makefile
+                 m4/Makefile
                  src/Makefile])
 AC_OUTPUT

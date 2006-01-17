@@ -1,1 +1,1 @@
-SUBDIRS = src
+SUBDIRS = m4 src
