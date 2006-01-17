@@ -425,10 +425,10 @@ typedef scm_uint_t           scm_uintobj_t;
  * SCM_CHAR_BITS, SCM_CHAR_MAX and SCM_CHAR_MIN if needed.
  */
 #ifndef SCM_ICHAR_T_DEFINED
-typedef int32_t            scm_ichar_t;
-#define SIZEOF_SCM_ICHAR_T SIZEOF_INT32_T
-#define SCM_ICHAR_T_MAX    INT32_MAX
-#define SCM_ICHAR_T_MIN    INT32_MIN
+typedef int_fast32_t       scm_ichar_t;
+#define SIZEOF_SCM_ICHAR_T SIZEOF_INT_FAST32_T
+#define SCM_ICHAR_T_MAX    INT_FAST32_MAX
+#define SCM_ICHAR_T_MIN    INT_FAST32_MIN
 #if (EOF < SCM_ICHAR_T_MIN || SCM_ICHAR_T_MAX < EOF)
 #error "scm_ichar_t cannot represent EOF on this platform"
 #endif
