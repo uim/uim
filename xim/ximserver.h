@@ -133,16 +133,13 @@ public:
     bool is_push(); // for distinguish from release
     void print();
 private:
-    int revise_mod(int uim_mod);
     int mKey;
     int mModifier;
     KeySym mXKeySym;
     int mXKeyState;
     bool m_bPush;
-    bool mAltOn;
-    bool mMetaOn;
-    bool mHyperOn;
-    bool mSuperOn;
+    int mModState;
+    int mPreModState;
     Compose *mCompose;
     XimIC *mIc;
 };
