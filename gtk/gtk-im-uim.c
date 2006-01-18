@@ -52,8 +52,10 @@
 #include "uim/uim-im-switcher.h"
 #include "uim/gettext.h"
 #include "uim/uim-compat-scm.h"
+
 #include "uim-cand-win-gtk.h"
 #include "caret-state-indicator.h"
+#include "key-util-gtk.h"
 
 /* exported symbols */
 GtkIMContext *im_module_create(const gchar *context_id);
@@ -232,78 +234,6 @@ update_cb(void *ptr)
   uic->prev_preedit_len = preedit_len;
 }
 
-static int
-convert_keyval(int key)
-{
-  switch (key) {
-  case GDK_BackSpace: return UKey_Backspace;
-  case GDK_Delete: return UKey_Delete;
-  case GDK_Escape: return UKey_Escape;
-  case GDK_Tab: return UKey_Tab;
-  case GDK_Return: return UKey_Return;
-  case GDK_Left: return UKey_Left;
-  case GDK_Up: return UKey_Up;
-  case GDK_Right: return UKey_Right;
-  case GDK_Down: return UKey_Down;
-  case GDK_Prior: return UKey_Prior;
-  case GDK_Next: return UKey_Next;
-  case GDK_Home: return UKey_Home;
-  case GDK_End: return UKey_End;
-  case GDK_Kanji:
-  case GDK_Zenkaku_Hankaku: return UKey_Zenkaku_Hankaku;
-  case GDK_Multi_key: return UKey_Multi_key;
-  case GDK_Mode_switch: return UKey_Mode_switch;
-  case GDK_Henkan_Mode: return UKey_Henkan_Mode;
-  case GDK_Muhenkan: return UKey_Muhenkan;
-  case GDK_Shift_L: return UKey_Shift_key;
-  case GDK_Shift_R: return UKey_Shift_key;
-  case GDK_Control_L: return UKey_Control_key;
-  case GDK_Control_R: return UKey_Control_key;
-  case GDK_Alt_L: return UKey_Alt_key;
-  case GDK_Alt_R: return UKey_Alt_key;
-  case GDK_Meta_L: return UKey_Meta_key;
-  case GDK_Meta_R: return UKey_Meta_key;
-  case GDK_Super_L: return UKey_Super_key;
-  case GDK_Super_R: return UKey_Super_key;
-  case GDK_Hyper_L: return UKey_Hyper_key;
-  case GDK_Hyper_R: return UKey_Hyper_key;
-  }
-
-  if (key >= GDK_F1 && key <= GDK_F35)
-    return key - GDK_F1 + UKey_F1;
-
-  if (key >= GDK_KP_0 && key <= GDK_KP_9)
-    return key - GDK_KP_0 + UKey_0;
-
-  if (key < 256)
-    return key;
-
-  return UKey_Other;
-}
-
-static int
-convert_modifier(int mod)
-{
-  int rv = 0;
-
-  if (mod & GDK_SHIFT_MASK)
-    rv |= UMod_Shift;
-
-  if (mod & GDK_CONTROL_MASK)
-    rv |= UMod_Control;
-
-  if (mod & GDK_MOD1_MASK)
-    rv |= UMod_Alt;
-
-  if (mod & GDK_MOD3_MASK)  /* assuming mod3 */
-    rv |= UMod_Super;
-
-  if (mod & GDK_MOD4_MASK)  /* assuming mod4 */
-    rv |= UMod_Hyper;
-
-  return rv;
-}
-
 /*
  * KEY EVENT HANDLER
  */
@@ -314,9 +244,9 @@ filter_keypress(GtkIMContext *ic, GdkEventKey *key)
 
   /* Hack for combination of xchat + GTK+ 2.6 */
   if (snooper_installed == FALSE) {
-    int rv;
-    int kv = convert_keyval(key->keyval);
-    int mod = convert_modifier(key->state);
+    int rv, kv, mod;
+
+    im_uim_convert_keyevent(key, &kv, &mod);
 
     if (key->type == GDK_KEY_RELEASE)
       rv = uim_release_key(uic->uc, kv, mod);
@@ -1145,9 +1075,9 @@ static gboolean
 uim_key_snoop(GtkWidget *grab_widget, GdkEventKey *key, gpointer data)
 {
   if (focused_context) {
-    int rv;
-    int kv = convert_keyval(key->keyval);
-    int mod = convert_modifier(key->state);
+    int rv, kv, mod;
+
+    im_uim_convert_keyevent(key, &kv, &mod);
 
     if (key->type == GDK_KEY_RELEASE)
       rv = uim_release_key(focused_context->uc, kv, mod);
@@ -1177,6 +1107,8 @@ im_module_init(GTypeModule *type_module)
   /* XXX:This is not recommended way!! */
   snooper_id = gtk_key_snooper_install((GtkKeySnoopFunc)uim_key_snoop, NULL );
   snooper_installed = TRUE;
+
+  im_uim_init_modifier_keys();
 }
 
 void

@@ -44,6 +44,7 @@
 #include "uim/uim-custom.h"
 #include "uim/gettext.h"
 #include "pref-gtk-custom-widgets.h"
+#include "../gtk/key-util-gtk.h"
 
 #define DEFAULT_WINDOW_WIDTH_MAX 800
 #define DEFAULT_WINDOW_HEIGHT_MAX 600
@@ -582,8 +583,10 @@ main (int argc, char *argv[])
   if (uim_custom_enable()) {
     GtkWidget *pref;
 
-    gtk_idle_add((GtkFunction) check_dot_uim_file, NULL);
+    im_uim_init_modifier_keys();
   
+    gtk_idle_add((GtkFunction) check_dot_uim_file, NULL);
+
     pref = create_pref_window();
 
     gtk_widget_show_all(pref);
