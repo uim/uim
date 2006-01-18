@@ -503,7 +503,7 @@ create_pref_window(void)
   gtk_container_add(GTK_CONTAINER(scrolled_win), create_pref_treeview());
 
   vbox = gtk_vbox_new(FALSE, 8);
-  gtk_container_set_border_width(vbox, 8);
+  gtk_container_set_border_width(GTK_CONTAINER(vbox), 8);
   gtk_box_pack_start(GTK_BOX(vbox), pref_hbox, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vbox), create_setting_button_box("dummy-group-name"), FALSE, TRUE, 0);
   gtk_container_add(GTK_CONTAINER(window), vbox);
