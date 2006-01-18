@@ -1,8 +1,9 @@
 # Japanese translations for uim package.
-# Copyright (C) 2003-2005, uim Developers.
+# Copyright (C) 2003-2006, uim Project.
 # This file is distributed under the same license as the uim package.
 # TOKUNAGA Hiroyuki <tkng@xem.jp>, 2004.
-# Daichi Kawahata <daichik@users.sourceforge.net>, 2005.
+# YamaKen <yamaken@bp.iij4u.or.jp>, 2005.
+# Daichi Kawahata <daichik@users.sourceforge.net>, 2005-2006.
 #
 # 諸規則:
 # - 意訳優先。原意が多少損われても気にしない
@@ -98,7 +99,7 @@ msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-12-16 16:23+0900\n"
-"PO-Revision-Date: 2005-12-09 16:17+0900\n"
+"PO-Revision-Date: 2006-01-17 22:17+0900\n"
 "Last-Translator: Daichi Kawahata <daichik@users.sourceforge.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -243,7 +244,6 @@ msgstr "ポップアップメニュー(_P)"
 msgid "Show popup menu"
 msgstr "ポップアップ・メニューを表示します"
 
-# FIXME: should be revised
 #: helper/dict-word-list-win-gtk.c:100
 msgid "_About"
 msgstr "このプログラムについて(_A)"
@@ -252,13 +252,14 @@ msgstr "このプログラムについて(_A)"
 msgid "About uim-dict"
 msgstr "uim-dict について"
 
+# NOTE: libanthydic.so を指す
 #: helper/dict-word-list-win-gtk.c:205
 msgid "Couldn't open a library for manipulating the dictionary.\n"
-msgstr ""
+msgstr "辞書を操作するライブラリを開けませんでした。\n"
 
 #: helper/dict-word-list-win-gtk.c:226
 msgid "Edit the dictionary"
-msgstr "辞書を編集します"
+msgstr "辞書の編集"
 
 #: helper/dict-word-list-win-gtk.c:280
 #, c-format
@@ -372,7 +373,6 @@ msgstr "品詞(_S):"
 msgid "_Frequency:"
 msgstr "頻度(_F):"
 
-# FIXME: should be revised
 #: helper/dict-word-win-gtk.c:349
 msgid "Part of Speech(_narrow):"
 msgstr "品詞(狭義)(_N):"
@@ -3185,7 +3185,3 @@ msgstr "ヨルバ語"
 #: uim/iso-639-1.def:185
 msgid "Zulu"
 msgstr "ズール語"
-
-# FIXME: should be revised
-#~ msgid "Show conjection class code column"
-#~ msgstr "接続詞のコード欄を表示"
