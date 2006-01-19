@@ -344,6 +344,11 @@ im_uim_init_modifier_keys()
       k++;
     }
   }
+  g_slist_free(mod1_list);
+  g_slist_free(mod2_list);
+  g_slist_free(mod3_list);
+  g_slist_free(mod4_list);
+  g_slist_free(mod5_list);
   XFreeModifiermap(map);
   XFree(sym);
 #endif
