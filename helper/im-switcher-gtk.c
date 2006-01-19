@@ -49,7 +49,7 @@ static int uim_fd; /* file descriptor to connect helper message bus */
 static gchar *im_list_str_old; /* To compare new im_list_str */
 static GtkWidget *switcher_tree_view;
 
-static void
+static gboolean
 reload_im_list(GtkWindow *window, gpointer user_data);
 static void
 parse_helper_str(const char *sent_str);
@@ -401,15 +401,19 @@ create_switcher(void)
     gtk_window_set_position(GTK_WINDOW(switcher_win),
 			    GTK_WIN_POS_CENTER_ALWAYS);
   }
+  gtk_widget_grab_focus(switcher_tree_view);
   gtk_widget_show_all(switcher_win);
+
   return 0;
 }
 
-static void
+static gboolean
 reload_im_list(GtkWindow *window, gpointer user_data)
 {
   check_helper_connection();
   uim_helper_send_message(uim_fd, "im_list_get\n"); 
+
+  return FALSE;
 }
 
 static void
