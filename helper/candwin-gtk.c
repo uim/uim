@@ -85,7 +85,7 @@ struct _UIMCandidateWindowClass {
   void (*index_changed) (UIMCandidateWindowClass *candwin);
 };
 
-static UIMCandidateWindow *cwin; /* use static one */
+static UIMCandidateWindow *cwin; /* use single candwin */
 
 GType candidate_window_get_type(void);
 UIMCandidateWindow *candidate_window_new(void);
@@ -214,7 +214,7 @@ tree_selection_changed(GtkTreeSelection *selection,
   gint *indicies;
   gint idx;
 
-  if (!&cwin)
+  if (!cwin)
     return TRUE;
 
   indicies = gtk_tree_path_get_indices(path);
