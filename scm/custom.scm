@@ -86,8 +86,10 @@
     (string? x)))
 
 (define custom-pathname?
-  (lambda (str)
-    (string? str)))
+  (lambda (str type)
+    (and (string? str)
+	 (symbol? type)
+	 (assq type '(regular-file directory)))))
 
 (define custom-valid-choice?
   (lambda arg
@@ -116,6 +118,10 @@
 		      (and (symbol? key)  ;; 'generic-cancel-key
 			   (custom-exist? key 'key))))
 		key-repls))))
+
+(define custom-pathname-type
+  (lambda (custom-sym)
+    (car (custom-type-attrs custom-sym))))
 
 (define custom-expand-key-references
   (lambda (key)

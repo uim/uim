@@ -287,18 +287,21 @@ static struct uim_custom_pathname *
 uim_custom_pathname_get(const char *custom_sym, const char *getter_proc)
 {
   struct uim_custom_pathname *custom_pathname;
-  char *str;
+  char *str, *type_sym;
   int type;
 
   UIM_EVAL_FSTRING2(NULL, "(%s '%s)", getter_proc, custom_sym);
   return_val = uim_scm_return_value();
-
   str = uim_scm_c_str(return_val);
-  /* FIXME: retrieve custom attribute */
-  if (1)
-    type = UCustomPathnameType_RegularFile;
-  else
+
+  UIM_EVAL_FSTRING1(NULL, "(custom-pathname-type '%s)", custom_sym);
+  return_val = uim_scm_return_value();
+  type_sym = uim_scm_c_symbol(return_val);
+  if (strcmp(type_sym, "directory") == 0)
     type = UCustomPathnameType_Directory;
+  else
+    type = UCustomPathnameType_RegularFile;
+  free(type_sym);
 
   custom_pathname = uim_custom_pathname_new(str, type);
   if (!custom_pathname)
