@@ -127,7 +127,7 @@ uim_helper_get_pathname(void)
   char *login = NULL;
   struct passwd *pw = NULL;
  
-  if (is_setugid() == 0) {
+  if (!uim_issetugid()) {
     login = getenv("LOGNAME");
   }
 
@@ -210,23 +210,23 @@ uim_helper_buffer_get_message(char *buf)
   return NULL;
 }
 
-/* Interface function for is_setugid. */
+/* Public API for uim_issetugid(). */
+/* TODO: should be renamed to uim_helper_issetugid() */
 uim_bool
 uim_helper_is_setugid(void)
 {
-  return (is_setugid()) ? UIM_TRUE : UIM_FALSE;
+  return (uim_issetugid()) ? UIM_TRUE : UIM_FALSE;
 }
 
-int
-is_setugid(void)
+/* For internal use only. libuim clients should use uim_helper_is_setugid()
+ * since this is not a core uim function. */
+uim_bool
+uim_issetugid(void)
 {
   uid_t ruid = getuid();  /* real uid */
   gid_t rgid = getgid();  /* real gid */
   uid_t euid = geteuid(); /* effective uid */
   gid_t egid = getegid(); /* effective gid */
 
-  if (ruid != euid || rgid != egid) {
-    return 1;
-  }
-  return 0;
+  return (ruid != euid || rgid != egid);
 }

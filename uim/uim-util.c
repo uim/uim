@@ -617,7 +617,7 @@ lang_code_to_lang_name_raw(uim_lisp code_)
 static uim_lisp
 is_setugidp(void)
 {
-  if (is_setugid()) {
+  if (uim_issetugid()) {
     return uim_scm_t();
   }
   return uim_scm_f();

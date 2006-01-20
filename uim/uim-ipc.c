@@ -193,7 +193,7 @@ uim_ipc_open_command_with_option(int old_pid, FILE **read_fp,
       }
       *ap = NULL;
     }
-    if (is_setugid() != 0) {
+    if (uim_issetugid()) {
       int cmd_len = strlen(command) + 30;
       char *fullpath_command = malloc(cmd_len);
       char *cmd_name = strrchr(command, '/');
