@@ -3,10 +3,10 @@ EXTRA_DIST = GNOME_UimApplet.server.in.in
 helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
 
 if APPLET
-
 libexec_PROGRAMS =  uim-toolbar-applet
 
-uim_toolbar_applet_LDADD = @GNOME2_LIBS@ @GTK2_LIBS@ @APPLET_LIBS@  $(top_builddir)/uim/libuim.la
+uim_toolbar_applet_LDADD = @GNOME2_LIBS@ @GTK2_LIBS@ @APPLET_LIBS@ \
+			   $(top_builddir)/uim/libuim.la
 uim_toolbar_applet_CPPFLAGS = $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
 uim_toolbar_applet_CFLAGS = @GTK2_CFLAGS@ @APPLET_CFLAGS@ @GNOME2_CFLAGS@ -Wall
 
@@ -19,26 +19,18 @@ server_in_in_files = $(server_in_files:=.in)
 
 @INTLTOOL_SERVER_RULE@
 
-install-exec-hook-applet:
-	cd $(DESTDIR)$(libexecdir) && \
-	  rm -f uim-helper-applet && \
-	  $(LN_S) uim-toolbar-applet uim-helper-applet
-
 $(server_in_files): $(server_in_in_files) Makefile
 	sed s,@LIBEXECDIR@,$(libexecdir),g <$< >$@.tmp
 	sed s,@UIM_PIXMAPSDIR@,$(uim_pixmapsdir),g <$@.tmp >$@
 
-DISTCLEANFILES = GNOME_UimApplet.server.in GNOME_UimApplet.server GNOME_UimApplet.server.in.tmp
-
-else
-install-exec-hook-applet:
-	true #dummy
+DISTCLEANFILES = GNOME_UimApplet.server.in GNOME_UimApplet.server \
+		 GNOME_UimApplet.server.in.tmp
 endif
 
 
 if GTK2
-
-bin_PROGRAMS = uim-toolbar-gtk uim-toolbar-gtk-systray uim-im-switcher-gtk uim-input-pad-ja
+bin_PROGRAMS = uim-toolbar-gtk uim-toolbar-gtk-systray uim-im-switcher-gtk \
+	       uim-input-pad-ja
 if APPLET
 libexec_PROGRAMS += uim-candwin-gtk
 else
@@ -53,7 +45,7 @@ if GTK2_4
 bin_PROGRAMS += uim-pref-gtk
 endif
 
-uim_candwin_gtk_SOURCES  = helper-candwin-gtk.c \
+uim_candwin_gtk_SOURCES  = candwin-gtk.c \
 			   ../gtk/caret-state-indicator.c \
 			   ../gtk/caret-state-indicator.h
 uim_candwin_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim.la
@@ -65,7 +57,8 @@ uim_toolbar_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim.la
 uim_toolbar_gtk_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
 uim_toolbar_gtk_CFLAGS   = @GTK2_CFLAGS@ -Wall
 
-uim_toolbar_gtk_systray_SOURCES  = toolbar-systray-gtk.c toolbar-common-gtk.c eggtrayicon.c eggtrayicon.h
+uim_toolbar_gtk_systray_SOURCES  = toolbar-systray-gtk.c toolbar-common-gtk.c \
+				   eggtrayicon.c eggtrayicon.h
 uim_toolbar_gtk_systray_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim.la
 uim_toolbar_gtk_systray_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
 uim_toolbar_gtk_systray_CFLAGS   = @GTK2_CFLAGS@  -Wall
@@ -97,14 +90,4 @@ uim_dict_gtk_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
 uim_dict_gtk_CFLAGS   = @GTK2_CFLAGS@
 endif
 
-install-exec-hook-gtk2:
-	cd $(DESTDIR)$(bindir) && \
-	  rm -f uim-helper-toolbar-gtk uim-helper-toolbar-gtk-systray && \
-	  $(LN_S) uim-toolbar-gtk uim-helper-toolbar-gtk && \
-	  $(LN_S) uim-toolbar-gtk-systray uim-helper-toolbar-gtk-systray
-else
-install-exec-hook-gtk2:
-	true # dummy
 endif
-
-install-exec-hook: install-exec-hook-gtk2 install-exec-hook-applet
