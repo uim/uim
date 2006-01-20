@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 1999 of new repository
+;; This file is tested with revision 2950 of new repository
 
 ;; TODO:
 ;;
@@ -117,18 +117,45 @@
    (assert-false (uim-bool '(custom-string? () ".*")))
    (assert-false (uim-bool '(custom-string? '(1 "2" 'three) ".*"))))
   ("test custom-pathname?"
-   (assert-false (uim-bool '(custom-pathname? #f)))
-   (assert-false (uim-bool '(custom-pathname? 'foo)))
-   (assert-false (uim-bool '(custom-pathname? -1)))
-   (assert-false (uim-bool '(custom-pathname? 0)))
-   (assert-false (uim-bool '(custom-pathname? 1)))
-   (assert-false (uim-bool '(custom-pathname? 10)))
-   (assert-false (uim-bool '(custom-pathname? ())))
-   (assert-false (uim-bool '(custom-pathname? '(1 "2" 'three))))
-   (assert-true  (uim-bool '(custom-pathname? "/usr/share/uim/foo.scm")))
-   (assert-true  (uim-bool '(custom-pathname? "~/.uim")))
-   (assert-true  (uim-bool '(custom-pathname? "share/uim/bar.scm")))
-   (assert-true  (uim-bool '(custom-pathname? "baz.scm"))))
+   (assert-error (lambda () (uim-bool '(custom-pathname?))))
+   (assert-error (lambda () (uim-bool '(custom-pathname? #f))))
+   (assert-error (lambda () (uim-bool '(custom-pathname? 'foo))))
+   (assert-error (lambda () (uim-bool '(custom-pathname? -1))))
+   (assert-error (lambda () (uim-bool '(custom-pathname? 0))))
+   (assert-error (lambda () (uim-bool '(custom-pathname? 1))))
+   (assert-error (lambda () (uim-bool '(custom-pathname? 10))))
+   (assert-error (lambda () (uim-bool '(custom-pathname? ()))))
+   (assert-error (lambda () (uim-bool '(custom-pathname? '(1 "2" 'three)))))
+   (assert-error (lambda () (uim-bool '(custom-pathname? "/usr/share/uim/foo.scm"))))
+   (assert-error (lambda () (uim-bool '(custom-pathname? "~/.uim"))))
+   (assert-error (lambda () (uim-bool '(custom-pathname? "share/uim/bar.scm"))))
+   (assert-error (lambda () (uim-bool '(custom-pathname? "baz.scm"))))
+   (assert-false (uim-bool '(custom-pathname? #f 'regular-file)))
+   (assert-false (uim-bool '(custom-pathname? 'foo 'regular-file)))
+   (assert-false (uim-bool '(custom-pathname? -1 'regular-file)))
+   (assert-false (uim-bool '(custom-pathname? 0 'regular-file)))
+   (assert-false (uim-bool '(custom-pathname? 1 'regular-file)))
+   (assert-false (uim-bool '(custom-pathname? 10 'regular-file)))
+   (assert-false (uim-bool '(custom-pathname? () 'regular-file)))
+   (assert-false (uim-bool '(custom-pathname? '(1 "2" 'three) 'regular-file)))
+   ;; regular file
+   (assert-true  (uim-bool '(custom-pathname? "/usr/share/uim/foo.scm"
+					      'regular-file)))
+   (assert-true  (uim-bool '(custom-pathname? "~/.uim" 'regular-file)))
+   (assert-true  (uim-bool '(custom-pathname? "share/uim/bar.scm"
+					      'regular-file)))
+   (assert-true  (uim-bool '(custom-pathname? "baz.scm" 'regular-file)))
+   ;; directory
+   (assert-true  (uim-bool '(custom-pathname? "/usr/share/uim/" 'directory)))
+   (assert-true  (uim-bool '(custom-pathname? "~/" 'directory)))
+   (assert-true  (uim-bool '(custom-pathname? "/" 'directory)))
+   ;; current implementation does not validate the string form
+   (assert-true  (uim-bool '(custom-pathname? "/usr/share/uim/foo.scm"
+					      'directory)))
+   (assert-true  (uim-bool '(custom-pathname? "~/.uim" 'directory)))
+   (assert-true  (uim-bool '(custom-pathname? "share/uim/bar.scm"
+					      'directory)))
+   (assert-true  (uim-bool '(custom-pathname? "baz.scm" 'directory))))
   ("test custom-valid-choice?"
    (assert-false (uim-bool '(custom-valid-choice?
 			     #f
@@ -310,6 +337,29 @@
 		 (uim '(custom-expand-key-references
 			(custom-value 'test-baz-key))))))
 
+(define-uim-test-case "testcase custom custom-pathname"
+  (setup
+   (lambda ()
+     (uim '(require "custom.scm"))
+     (uim '(define-custom 'skk-dic-file-name (string-append (sys-datadir)
+							    "/skk/SKK-JISYO.L")
+	     '(global)
+	     '(pathname regular-file)
+	     (_ "Dictionary file")
+	     (_ "long description will be here.")))
+     (uim '(define-custom 'eb-dic-path
+	     (string-append (getenv "HOME") "/dict")
+	     '(global)
+	     '(pathname directory)
+	     (_ "The directory which contains EB dictionary file")
+	     (_ "long description will be here.")))))
+
+  ("test custom-pathname-type"
+   (assert-equal 'regular-file
+		 (uim '(custom-pathname-type 'skk-dic-file-name)))
+   (assert-equal 'directory
+		 (uim '(custom-pathname-type 'eb-dic-path)))))
+
 (define-uim-test-case "testcase custom custom-choice"
   (setup
    (lambda ()
@@ -471,21 +521,21 @@
 	     (define-custom 'skk-dic-file-name (string-append (sys-datadir)
 							      "/skk/SKK-JISYO.L")
 	       '(skk)
-	       '(pathname)
+	       '(pathname regular-file)
 	       (_ "Dictionary file")
 	       (_ "long description will be here."))
 
 	     (define-custom 'skk-personal-dic-filename
 	       (string-append (getenv "HOME") "/.skk-jisyo")
 	       '(skk)
-	       '(pathname)
+	       '(pathname regular-file)
 	       (_ "Personal dictionary file")
 	       (_ "long description will be here."))
 
 	     (define-custom 'skk-uim-personal-dic-filename
 	       (string-append (getenv "HOME") "/.skk-uim-jisyo")
 	       '(skk)
-	       '(pathname)
+	       '(pathname regular-file)
 	       (_ "Personal dictionary file (dedicated to uim)")
 	       (_ "long description will be here."))
 
@@ -1668,7 +1718,7 @@
 	     "long description will be here."))
      (uim '(define-custom 'test-dic-file-name "/usr/share/skk/SKK-JISYO.L"
 	     '(test)
-	     '(pathname)
+	     '(pathname regular-file)
 	     "Dictionary file"
 	     "long description will be here."))
      (uim '(define-custom 'test-modelist 'hiragana
@@ -1852,8 +1902,9 @@
    (assert-equal "/usr/share/skk/SKK-JISYO.L"
 		 (uim '(custom-value 'test-dic-file-name)))
    ;; valid value
-   (assert-true  (uim-bool '(custom-set-value! 'test-dic-file-name
-					 "/usr/local/share/skk/SKK-JISYO.ML")))
+   (assert-true  (uim-bool '(custom-set-value!
+			     'test-dic-file-name
+			     "/usr/local/share/skk/SKK-JISYO.ML")))
    (assert-equal "/usr/local/share/skk/SKK-JISYO.ML"
 		 (uim '(custom-value 'test-dic-file-name)))
    ;; invalid value is ignored
@@ -2100,7 +2151,7 @@
 		 (uim '(custom-type-attrs 'test-nr-candidate-max)))
    (assert-equal '(".+")
 		 (uim '(custom-type-attrs 'test-string)))
-   (assert-equal ()
+   (assert-equal '(regular-file)
 		 (uim '(custom-type-attrs 'test-dic-file-name))))
 
   ("test custom-range"

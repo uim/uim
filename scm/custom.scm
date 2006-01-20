@@ -89,7 +89,7 @@
   (lambda (str type)
     (and (string? str)
 	 (symbol? type)
-	 (assq type '(regular-file directory)))))
+	 (memq type '(regular-file directory)))))
 
 (define custom-valid-choice?
   (lambda arg
@@ -650,12 +650,13 @@
   (lambda (sym)
     (let* ((type (custom-type sym))
 	   (attrs (custom-type-attrs sym)))
-      (cond
-       ((or (eq? type 'choice)
-	    (eq? type 'ordered-list))
-	(map custom-choice-rec-sym attrs))
-       (else
-	attrs)))))
+      (case type
+	((choice ordered-list)
+	 (map custom-choice-rec-sym attrs))
+	((integer string)
+	 attrs)
+	(else
+	 ())))))
 
 ;; API
 (define custom-label
