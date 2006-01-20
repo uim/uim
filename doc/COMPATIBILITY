@@ -57,6 +57,36 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: File type information of pathname custom type
+Affects: IM developers, Helper program developers
+Updates: Scheme API, C API (uim-custom)
+Version: 1.1.0
+Revision: ac2946, ac2947, ac2948
+Date: 2006-01-21
+Modifier: YamaKen
+Related: bug #5666
+URL:
+  http://lists.freedesktop.org/archives/uim-commit/2005-December/002457.html
+Changes:
+ (affected) define-custom
+   (update) custom-pathname?
+      (new) custom-pathname-type
+   (update) struct uim_custom_value
+      (new) struct uim_custom_pathname
+      (new) enum UCustomPathnameType
+Description:
+  To enable appropriate GUI widget handling, 'pathname' custom
+  variable should provide the information whether the path is regular
+  file or directory.
+
+  Valid form for the pathname type on define-custom has been
+  changed. 4th argument for it must contain the type information. See
+  the real example of skk-custom.scm and im-custom.scm.
+
+  And since the changes break the uim-custom API, all programs using
+  libuim-custom must follow it. Although it broke uim-custom API, the
+  uim API and ABI (libuim) is not changed.
+------------------------------------------------------------------------------
 Summary: Update helper protocol about commit_string.
 Affects: Bridge developers, Helper program developers
 Updates: Helper protocol
