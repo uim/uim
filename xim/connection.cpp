@@ -93,7 +93,7 @@ static void
 reapOldConnection()
 {
     std::map<Window, XConnection *>::iterator it;
-    for (it = gXConnections.begin(); it != gXConnections.end(); it++) {
+    for (it = gXConnections.begin(); it != gXConnections.end(); ++it) {
 	XConnection *xc = (*it).second;
 	if (!xc->isValid()) {
 	    delete xc;
@@ -150,7 +150,7 @@ XConnection::~XConnection()
     free(mBuf.buf);
 }
 
-void XConnection::destroy(Window w)
+void XConnection::destroy(Window /* w */)
 {
     if (mIsValid)
 	OnClose();
@@ -256,7 +256,7 @@ void XConnection::writePendingPacket()
     bool sent_preedit_done = false;
     int major;
 
-    while (mPendingTxQ.size()) {
+    while (!mPendingTxQ.empty()) {
 	if (hasSyncFlag() || hasPreeditStartSyncFlag() ||
 			hasPreeditCaretSyncFlag())
 	    break;
@@ -291,7 +291,7 @@ void XConnection::writePendingPacket()
 	    // push first XIM_COMMIT into the head of the queue
 	    std::list<TxPacket *> tmp;
 	    bool first = true;
-	    while (mPendingTxQ.size()) {
+	    while (!mPendingTxQ.empty()) {
 		j = mPendingTxQ.begin();
 		major = (*j)->get_major();
 		if (major == XIM_COMMIT && first == true) {
@@ -314,8 +314,8 @@ void XConnection::writePassivePacket()
     bool sent_preedit_done = false;
     int major;
 
-    while (mPTxQ.size()) {
-	if (mPendingTxQ.size())
+    while (!mPTxQ.empty()) {
+	if (!mPendingTxQ.empty())
 	    break;
 
 	i = mPTxQ.begin();
@@ -355,7 +355,7 @@ void XConnection::writePassivePacket()
 	    // push first XIM_COMMIT into the head of passive queue
 	    std::list<TxPacket *> tmp;
 	    bool first = true;
-	    while (mPTxQ.size()) {
+	    while (!mPTxQ.empty()) {
 		j = mPTxQ.begin();
 		major = (*j)->get_major();
 		if (major == XIM_COMMIT && first == true) {
@@ -377,7 +377,7 @@ void XConnection::writeNormalPacket()
     std::list<TxPacket *>::iterator i;
     int major;
 
-    while (mTxQ.size()) {
+    while (!mTxQ.empty()) {
 	i = mTxQ.begin();
 	major = (*i)->get_major();
 	if (major == XIM_FORWARD_EVENT) {

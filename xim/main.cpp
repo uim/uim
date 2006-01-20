@@ -151,7 +151,7 @@ static void main_loop()
 
 	std::map<int, fd_watch_struct>::iterator it;
 	int  fd_max = 0;
-	for (it = fd_watch_stat.begin(); it != fd_watch_stat.end(); it++) {
+	for (it = fd_watch_stat.begin(); it != fd_watch_stat.end(); ++it) {
 	    int fd = it->first;
 	    if (it->second.mask & READ_OK)
 		FD_SET(fd, &rfds);
@@ -179,7 +179,7 @@ static void main_loop()
 	    it = fd_watch_stat.find(fd);
 	    if (it == fd_watch_stat.end())	// shouldn't happen
 		break;
-	    it++;
+	    ++it;
 	}
     }
 }
@@ -335,7 +335,7 @@ check_pending_xevent(void)
 }
 
 static void
-xEventRead(int fd, int ev)
+xEventRead(int /* fd */, int /* ev */)
 {
     XFlush(XimServer::gDpy);
     check_pending_xevent();
@@ -405,7 +405,7 @@ print_uim_info()
     if (uim_info.empty())
 	printf("  None.\n");
     else
-	for (it = uim_info.begin(); it != uim_info.end(); it++)
+	for (it = uim_info.begin(); it != uim_info.end(); ++it)
 	    printf("  %s (%s)\n", it->name, it->lang);
     
 }
@@ -414,7 +414,7 @@ static void
 clear_uim_info()
 {
     std::list<UIMInfo>::iterator it;
-    for (it = uim_info.begin(); it != uim_info.end(); it++) {
+    for (it = uim_info.begin(); it != uim_info.end(); ++it) {
 	free(it->name);
 	free(it->lang);
 	free(it->desc);
@@ -494,7 +494,7 @@ static void check_default_engine(const char *locale)
     bool found = false;
     if (default_engine) {
 	std::list<UIMInfo>::iterator it;
-	for (it = uim_info.begin(); it != uim_info.end(); it++) {
+	for (it = uim_info.begin(); it != uim_info.end(); ++it) {
 	    if (!strcmp(it->name, default_engine)) {
 		found = true;
 		break;
@@ -526,7 +526,7 @@ terminate_x_connection()
 }
 
 void
-reload_uim(int x)
+reload_uim(int /* x */)
 {
     fprintf(stderr, "\nReloading uim...\n\n");
 
@@ -537,9 +537,9 @@ reload_uim(int x)
     std::map<Window, XimServer *>::iterator it;
     std::list<InputContext *>::iterator it_c;
 
-    for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); it++) {
+    for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); ++it) {
 	XimServer *xs = it->second;
-	for (it_c = xs->ic_list.begin(); it_c != xs->ic_list.end(); it_c++)
+	for (it_c = xs->ic_list.begin(); it_c != xs->ic_list.end(); ++it_c)
 	    (*it_c)->clear();
     }
 
@@ -548,9 +548,9 @@ reload_uim(int x)
     get_uim_info();
     //print_uim_info();
 
-    for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); it++) {
+    for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); ++it) {
 	XimServer *xs = it->second;
-	for (it_c = xs->ic_list.begin(); it_c != xs->ic_list.end(); it_c++) {
+	for (it_c = xs->ic_list.begin(); it_c != xs->ic_list.end(); ++it_c) {
 	    const char *engine = (*it_c)->get_engine_name();
 	    (*it_c)->createUimContext(engine);
 	}
@@ -611,7 +611,7 @@ main(int argc, char **argv)
 
     // First, setup conversion engine selected by cmdline option or
     // "default-im-name" on ~/.uim.
-    for (it = uim_info.begin(); it != uim_info.end(); it++) {
+    for (it = uim_info.begin(); it != uim_info.end(); ++it) {
 	if (strcmp(it->name, default_engine) == 0) {
 	    XimServer *xs = new XimServer(it->name, it->lang);
 	    res = xs->setupConnection(true);

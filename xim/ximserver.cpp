@@ -77,7 +77,7 @@ void print_ustring(uString *s)
     uchar ch;
     char utf8[6];
     int nbyte;
-    for (i = s->begin(); i != s->end(); i++) {
+    for (i = s->begin(); i != s->end(); ++i) {
 	ch = *i;
 	nbyte = utf8_wctomb((unsigned char *)utf8, ch);
 	utf8[nbyte] = '\0';
@@ -94,7 +94,7 @@ void erase_ustring(uString *s)
 void append_ustring(uString *d, uString *s)
 {
     uString::iterator i;
-    for (i = s->begin(); i !=s->end(); i++) {
+    for (i = s->begin(); i !=s->end(); ++i) {
 	d->push_back(*i);
     }
 }
@@ -115,7 +115,7 @@ InputContext *XimServer::createContext(XimIC *xic, const char *engine)
 void XimServer::deleteContext(InputContext *ic)
 {
     std::list<InputContext *>::iterator it;
-    for (it = ic_list.begin(); it != ic_list.end(); it++) {
+    for (it = ic_list.begin(); it != ic_list.end(); ++it) {
 	if (*it == ic) {
 	    ic_list.erase(it);
 	    break;
@@ -126,7 +126,7 @@ void XimServer::deleteContext(InputContext *ic)
 void XimServer::changeContext(const char *engine) {
     set_im(engine);
     std::list<InputContext *>::iterator it;
-    for (it = ic_list.begin(); it != ic_list.end(); it++) {
+    for (it = ic_list.begin(); it != ic_list.end(); ++it) {
 	(*it)->changeContext(engine);
     }
     // make sure to use appropriate locale for the focused context
@@ -137,7 +137,7 @@ void XimServer::changeContext(const char *engine) {
 
 void XimServer::customContext(const char *custom, const char *val) {
     std::list<InputContext *>::iterator it;
-    for (it = ic_list.begin(); it != ic_list.end(); it++) {
+    for (it = ic_list.begin(); it != ic_list.end(); ++it) {
 	(*it)->customContext(custom, val);
 	break;
     }
@@ -298,7 +298,7 @@ void XimServer::set_im(const char *engine)
 const char *get_im_lang_from_engine(const char *engine)
 {
     std::list<UIMInfo>::iterator it;
-    for (it = uim_info.begin(); it != uim_info.end(); it++) {
+    for (it = uim_info.begin(); it != uim_info.end(); ++it) {
 	if (!strcmp(it->name, engine))
 	    return it->lang;
     }
@@ -660,7 +660,7 @@ void InputContext::pushback_preedit_string(int attr, const char *str)
     mServer->strToUstring(&js, str);
 
     uString::iterator it;
-    for (it = js.begin(); it != js.end(); it++) {
+    for (it = js.begin(); it != js.end(); ++it) {
 	m_pe->push_uchar(*it);
     }
 }
@@ -826,7 +826,7 @@ void InputContext::candidate_deactivate()
 	Canddisp *disp = canddisp_singleton();
 
 	disp->deactivate();
-	for (i = active_candidates.begin(); i != active_candidates.end(); i++) {
+	for (i = active_candidates.begin(); i != active_candidates.end(); ++i) {
 	    free((char *)*i);
 	}
 	mCandwinActive = false;
@@ -1066,7 +1066,7 @@ static int check_modifier(std::list<KeySym> keysym_list)
 {
     int ret = 0;
     std::list<KeySym>::iterator i;
-    for (i = keysym_list.begin(); i != keysym_list.end(); i++) {
+    for (i = keysym_list.begin(); i != keysym_list.end(); ++i) {
 	switch (*i) {
 	case XK_Alt_L:
 	case XK_Alt_R:

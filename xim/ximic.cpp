@@ -73,7 +73,7 @@ XFontSet
 get_font_set(const char *name, const char *locale)
 {
     std::list<FSCache>::iterator it;
-    for (it = fs_cache.begin(); it != fs_cache.end(); it++) {
+    for (it = fs_cache.begin(); it != fs_cache.end(); ++it) {
 	if (!strcmp(it->name, name) && !strcmp(it->locale, locale)) {
 	    it->refc++;
 	    return it->fs;
@@ -103,7 +103,7 @@ static void
 release_font_set(const char *name, const char *locale)
 {
     std::list<FSCache>::iterator it;
-    for (it = fs_cache.begin(); it != fs_cache.end(); it++) {
+    for (it = fs_cache.begin(); it != fs_cache.end(); ++it) {
 	if (!strcmp(it->name, name) && !strcmp(it->locale, locale)) {
 	    it->refc--;
 	    if (!it->refc) {
@@ -147,8 +147,8 @@ int pe_stat::get_char_count()
     std::list<pe_ustring>::iterator i;
     uString::iterator j;
     int k = 0;
-    for (i = ustrings.begin(); i != ustrings.end(); i++) {
-	for (j = (*i).s.begin(); j != (*i).s.end(); j++) {
+    for (i = ustrings.begin(); i != ustrings.end(); ++i) {
+	for (j = (*i).s.begin(); j != (*i).s.end(); ++j) {
 	    k++;
 	}
     }
@@ -574,7 +574,7 @@ void XimIC::reset_ic()
     // m_kkContext->get_preedit_string() returns uncommitted preedit
     // strings, which will be committed in client applications.
     s = m_kkContext->get_preedit_string();
-    if (s.size()) {
+    if (!s.empty()) {
 	char *p;
 	int i, len = 0;
 	p = get_im_by_id(mIMid)->uStringToCtext(&s);
@@ -615,7 +615,7 @@ Convdisp *XimIC::get_convdisp()
 
 void XimIC::onSendPacket()
 {
-    if (!mPending.size())
+    if (mPending.empty())
 	return;
 
     char *p;
