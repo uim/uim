@@ -214,11 +214,7 @@ uim_helper_buffer_get_message(char *buf)
 uim_bool
 uim_helper_is_setugid(void)
 {
-  if(is_setugid() != 0) {
-    return UIM_TRUE;
-  } else {
-    return UIM_FALSE;
-  }
+  return (is_setugid()) ? UIM_TRUE : UIM_FALSE;
 }
 
 int

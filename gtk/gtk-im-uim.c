@@ -165,7 +165,7 @@ im_uim_commit_string(void *ptr, const char *str)
   g_signal_emit_by_name(uic, "commit", str);
 
   show_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
-  if (show_state == UIM_TRUE) {
+  if (show_state) {
     gdk_window_get_origin(uic->win, &x, &y);
     caret_state_indicator_update(uic->caret_state_indicator, x, y, NULL);
   }
@@ -711,7 +711,7 @@ update_prop_label_cb(void *ptr, const char *str)
   g_string_free(prop_label, TRUE);
 
   show_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
-  if (show_state == UIM_TRUE && uic->win) {
+  if (show_state && uic->win) {
     gint timeout;
 
     gdk_window_get_origin(uic->win, &x, &y);

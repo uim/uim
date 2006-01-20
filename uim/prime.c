@@ -57,7 +57,7 @@ static int prime_pid = 0;
 static char *prime_command = "prime";
 static char *prime_ud_path;
 static int prime_fd;
-static int use_unix_domain_socket;
+static uim_bool use_unix_domain_socket;
 
 static int
 prime_init_ud(char *path)
@@ -195,13 +195,10 @@ static uim_lisp
 prime_lib_init(uim_lisp use_udp_)
 {
   char *option;
-  uim_bool use_udp = uim_scm_c_bool(use_udp_);
-  if (use_udp == UIM_TRUE)
-    use_unix_domain_socket = UIM_TRUE;
-  else
-    use_unix_domain_socket = UIM_FALSE;
 
-  if (use_unix_domain_socket == UIM_TRUE) {
+  use_unix_domain_socket = uim_scm_c_bool(use_udp_);
+
+  if (use_unix_domain_socket) {
     prime_ud_path = prime_get_ud_path();
     if (!prime_ud_path)
       return uim_scm_f();
