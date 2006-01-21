@@ -636,6 +636,15 @@ struct ScmStorageConf_ {
     size_t symbol_hash_size;      /* hash size of symbol table */
 };
 
+#define SCM_FULLY_ADDRESSABLEP                                               \
+    (SCM_PTR_BITS == (sizeof(void *) * CHAR_BIT))
+
+#ifndef SCM_DEFAULT_N_HEAPS_MAX
+#define SCM_DEFAULT_N_HEAPS_MAX                                              \
+    (((SCM_FULLY_ADDRESSABLEP) ? (uintptr_t)-1 : (1 << SCM_PTR_BITS))        \
+     / (SCM_DEFAULT_HEAP_SIZE * sizeof(ScmCell)))
+#endif
+
 /*=======================================
   Object Representation Information
 =======================================*/

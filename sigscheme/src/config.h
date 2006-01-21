@@ -38,8 +38,6 @@
 #  include "../config.h"
 #endif
 
-#include "my-stdint.h"
-
 /*===========================================================================
   Optional Features Written in C
 ===========================================================================*/
@@ -105,14 +103,9 @@
 #define SCM_LBUF_F_STRING scm_lbuf_f_linear
 #define SCM_LBUF_F_SYMBOL scm_lbuf_f_linear
 
-#define SCM_FULLY_ADDRESSABLEP                                               \
-    (SCM_PTR_BITS == (sizeof(void *) * CHAR_BIT))
-
 #define SCM_DEFAULT_HEAP_SIZE            0x4000
 #define SCM_DEFAULT_HEAP_ALLOC_THRESHOLD (SCM_DEFAULT_HEAP_SIZE / 2)
-#define SCM_DEFAULT_N_HEAPS_MAX                                              \
-    (((SCM_FULLY_ADDRESSABLEP) ? (uintptr_t)-1 : (1 << SCM_PTR_BITS))        \
-     / (SCM_DEFAULT_HEAP_SIZE * sizeof(ScmCell)))
+#undef  SCM_DEFAULT_N_HEAPS_MAX
 #define SCM_DEFAULT_N_HEAPS_INIT         1
 #define SCM_DEFAULT_SYMBOL_HASH_SIZE     0x400
 
