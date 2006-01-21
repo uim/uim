@@ -466,6 +466,7 @@ add_custom_type_pathname(GtkWidget *vbox, struct uim_custom *custom)
   GtkWidget *label;
   GtkWidget *entry;
   GtkWidget *button;
+  const char *button_label;
 
   hbox = gtk_hbox_new(FALSE, 8);
  
@@ -478,7 +479,16 @@ add_custom_type_pathname(GtkWidget *vbox, struct uim_custom *custom)
   UIMPREF_FILE_ENTRY(entry)->type = custom->value->as_pathname->type;
   gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
 
-  button = gtk_button_new_with_label(_("File..."));
+  switch (custom->value->as_pathname->type) {
+    case UCustomPathnameType_Directory:
+      button_label = "Directory...";
+      break;
+    case UCustomPathnameType_RegularFile:
+    default:
+      button_label = "File...";
+      break;
+  }
+  button = gtk_button_new_with_label(_(button_label));
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
 
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
