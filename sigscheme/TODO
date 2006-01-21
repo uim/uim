@@ -9,6 +9,7 @@ Requirements and critical bugs:
 
 * Autoconfiscate the SigScheme package (don't rely on uim's configure)
   - Prepare replace functions (asprintf and so on)
+  - Make most settings in src/config.h configurable with configure options
   - [uim] configure sigscheme subdir by top-level configure like GCC
   - Generate and pack sigschemefunctable*.[hc] into distribution file by make
     dist
@@ -28,12 +29,12 @@ Requirements and critical bugs:
   - Make the tests passed on actual 64bit environment with compact
     representation
 
-* Confirm R5RS and SRFI conformance for each function implementation
-
 * Confirm behavior of constant vector and list
   - Investigate behavior of them in Scheme implementations other than Gauche
     and Guile, and record it into doc/spec.txt
   - Implement if needed
+
+* Confirm R5RS and SRFI conformance for each function implementation
 
 * Confirm public API
   - Evaluate SRFI-50 (although withdrawn)
@@ -88,6 +89,12 @@ Extensions: (not required for now)
   - Define SAL accessors considering SRFI-50 and other implementations
   - Evaluate SRFI-77 "Preliminary Proposal for R6RS Arithmetic"
 
+* Make all global and static variables encapsulatable into a dynamic object, to
+  support embedded environment that cannot use it such as BREW
+  - Abstract accessors to the variables
+  - Make the accessors replaceable with platform-specific one such as
+    GET_APP_INSTANCE()->scm->var
+
 * Add GB18030 to encoding.c
 
 * Add Big5 to encoding.c
@@ -111,6 +118,8 @@ Performance improvements:
 
 ==============================================================================
 Logical simplifications:
+
+* (not required for now) Reorganize list (argument) extraction API
 
 * (not required for now) Reorganize encoding and char codec API
 

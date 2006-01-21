@@ -1,0 +1,11 @@
+Overview of changes from 0.5.0-alpha (r2902 + local modifications)
+==
+* New features
+
+  - Support 64-bit data models (storage-compact is not yet)
+
+* Fixes
+
+  - Make behavior of internal definitions strictly conforming to R5RS
+
+  - Make C99-dependent stdint.h unneeded
