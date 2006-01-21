@@ -336,13 +336,13 @@
 
 (define skk-read-personal-dictionary
   (lambda ()
-    (if (not (is-set-ugid?))
+    (if (not (setugid?))
 	(or (skk-lib-read-personal-dictionary skk-uim-personal-dic-filename)
 	    (skk-lib-read-personal-dictionary skk-personal-dic-filename)))))
 
 (define skk-save-personal-dictionary
   (lambda ()
-    (if (not (is-set-ugid?))
+    (if (not (setugid?))
 	(skk-lib-save-personal-dictionary skk-uim-personal-dic-filename))))
 
 (define skk-flush

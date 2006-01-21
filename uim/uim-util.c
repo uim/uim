@@ -615,7 +615,7 @@ lang_code_to_lang_name_raw(uim_lisp code_)
 }
 
 static uim_lisp
-is_setugidp(void)
+setugidp(void)
 {
   if (uim_issetugid()) {
     return uim_scm_t();
@@ -655,5 +655,5 @@ uim_init_util_subrs(void)
   uim_scm_init_subr_3("iterate-lists", iterate_lists);
   uim_scm_init_subr_2("find-tail", find_tail);
   uim_scm_init_subr_1("lang-code->lang-name-raw", lang_code_to_lang_name_raw);
-  uim_scm_init_subr_0("is-set-ugid?", is_setugidp);
+  uim_scm_init_subr_0("setugid?", setugidp);
 }
