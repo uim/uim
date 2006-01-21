@@ -181,7 +181,7 @@ void CustomPathnameEdit::update()
     if( !m_custom || m_custom->type != UCustom_Pathname )
         return;
 
-    m_lineEdit->setText( _FU8(m_custom->value->as_pathname) );
+    m_lineEdit->setText( _FU8(m_custom->value->as_pathname->str) );
 
     /* sync with Label */
     parentWidget()->setEnabled( m_custom->is_active );
@@ -189,8 +189,9 @@ void CustomPathnameEdit::update()
 
 void CustomPathnameEdit::setDefault()
 {
-    free( m_custom->value->as_pathname );
-    m_custom->value->as_pathname = strdup( m_custom->default_value->as_pathname );
+    free( m_custom->value->as_pathname->str );
+    m_custom->value->as_pathname->str = strdup( m_custom->default_value->as_pathname->str );
+    m_custom->value->as_pathname->type = m_custom->default_value->as_pathname->type;
 
     setCustom( m_custom );
     update();
@@ -218,8 +219,8 @@ void CustomPathnameEdit::slotCustomTextChanged( const QString & text )
 {
     Q_ASSERT( m_custom->type == UCustom_Pathname );
 
-    free( m_custom->value->as_pathname );
-    m_custom->value->as_pathname = strdup( (const char*)text.utf8() );
+    free( m_custom->value->as_pathname->str );
+    m_custom->value->as_pathname->str = strdup( (const char*)text.utf8() );
 
     setCustom( m_custom );
 }
