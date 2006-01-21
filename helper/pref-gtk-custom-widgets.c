@@ -76,6 +76,52 @@ static struct KeyPrefWin {
   NULL, NULL, NULL, NULL, NULL, 0, 0,
 };
 
+static void uimpref_file_entry_class_init(UimPrefFileEntryClass *klass);
+static void uimpref_file_entry_init(UimPrefFileEntry *entry);
+
+GType
+uimpref_file_entry_get_type(void)
+{
+  static GType uimpref_file_entry_type = 0;
+
+  if (!uimpref_file_entry_type)
+  {
+    static const GTypeInfo uimpref_file_entry_info =
+    {
+      sizeof(UimPrefFileEntryClass),
+      NULL,
+      NULL,
+      (GClassInitFunc)uimpref_file_entry_class_init,
+      NULL,
+      NULL,
+      sizeof(UimPrefFileEntry),
+      0,
+      (GInstanceInitFunc)uimpref_file_entry_init,
+    };
+
+    uimpref_file_entry_type = g_type_register_static(GTK_TYPE_ENTRY,
+		    "UimPrefFileEntry", &uimpref_file_entry_info, 0);
+  }
+
+  return uimpref_file_entry_type;
+}
+
+static void
+uimpref_file_entry_class_init(UimPrefFileEntryClass *klass)
+{
+}
+
+static void
+uimpref_file_entry_init(UimPrefFileEntry *entry)
+{
+  entry->type = UCustomPathnameType_RegularFile;
+}
+
+GtkWidget *
+uimpref_file_entry_new()
+{
+  return GTK_WIDGET(g_object_new(uimpref_file_entry_get_type(), NULL));
+}
 
 
 static void
@@ -295,8 +341,8 @@ custom_entry_changed_cb(GtkEntry *entry, gpointer user_data)
     custom->value->as_str = strdup(str);
     rv = uim_custom_set(custom);
   } else if (custom->type == UCustom_Pathname) {
-    free(custom->value->as_pathname);
-    custom->value->as_pathname = strdup(str);
+    free(custom->value->as_pathname->str);
+    custom->value->as_pathname->str = strdup(str);
     rv = uim_custom_set(custom);
   } else {
     rv = UIM_FALSE;
@@ -334,7 +380,7 @@ sync_value_string(GtkEntry *entry)
   if (custom->type == UCustom_Str) {
     gtk_entry_set_text(GTK_ENTRY(entry), custom->value->as_str);
   } else if (custom->type == UCustom_Pathname) {
-    gtk_entry_set_text(GTK_ENTRY(entry), custom->value->as_pathname);
+    gtk_entry_set_text(GTK_ENTRY(entry), custom->value->as_pathname->str);
   }
 
   uim_custom_free(custom);
@@ -383,9 +429,20 @@ static void
 custom_pathname_button_clicked_cb(GtkWidget *button, GtkWidget *entry)
 {
   GtkWidget *dialog;
+  GtkFileChooserAction action;
+
+  switch (UIMPREF_FILE_ENTRY(entry)->type) {
+    case UCustomPathnameType_Directory:
+      action = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
+      break;
+    case UCustomPathnameType_RegularFile:
+    default:
+      action = GTK_FILE_CHOOSER_ACTION_OPEN;
+      break;
+  }
   dialog = gtk_file_chooser_dialog_new (_("Specify file"),
 					NULL,
-					GTK_FILE_CHOOSER_ACTION_OPEN,
+					action,
 					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 					GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 					NULL);
@@ -417,7 +474,8 @@ add_custom_type_pathname(GtkWidget *vbox, struct uim_custom *custom)
   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
   gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
 
-  entry = gtk_entry_new();
+  entry = uimpref_file_entry_new();
+  UIMPREF_FILE_ENTRY(entry)->type = custom->value->as_pathname->type;
   gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
 
   button = gtk_button_new_with_label(_("File..."));
@@ -1972,8 +2030,9 @@ uim_pref_gtk_set_default_value(GtkWidget *widget)
     value->as_str = strdup(defval->as_str);
     break;
   case UCustom_Pathname:
-    free(value->as_pathname);
-    value->as_pathname = strdup(defval->as_pathname);
+    free(value->as_pathname->str);
+    value->as_pathname->str = strdup(defval->as_pathname->str);
+    value->as_pathname->type = defval->as_pathname->type;
     break;
   case UCustom_Choice:
     free(value->as_choice->symbol);
