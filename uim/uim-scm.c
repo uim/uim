@@ -37,8 +37,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "sigscheme/sigscheme.h"
-#include "sigscheme/encoding.h"
+#include "sigscheme.h"
+#include "encoding.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "uim-internal.h"
