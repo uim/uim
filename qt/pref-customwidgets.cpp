@@ -163,13 +163,24 @@ CustomPathnameEdit::CustomPathnameEdit( struct uim_custom *c, QWidget *parent, c
     : QHBox( parent, name ),
       UimCustomItemIface( c )
 {
+    const char *button;
+
     setSpacing( 3 );
     m_lineEdit = new QLineEdit( this );
     QObject::connect( m_lineEdit, SIGNAL(textChanged(const QString &)),
                       this, SLOT(slotCustomTextChanged(const QString &)) );
 
     m_fileButton = new QPushButton( this );
-    m_fileButton->setText( _("File") );
+    switch (m_custom->value->as_pathname->type) {
+    case UCustomPathnameType_Directory:
+        button = "Directory";
+        break;
+    case UCustomPathnameType_RegularFile:
+    default:
+        button = "File";
+        break;
+    }
+    m_fileButton->setText( _(button) );
     QObject::connect( m_fileButton, SIGNAL(clicked()),
                       this, SLOT(slotPathnameButtonClicked()) );
 
@@ -203,10 +214,15 @@ void CustomPathnameEdit::slotPathnameButtonClicked()
     QObject::connect( m_fileDialog, SIGNAL(filterSelected(const QString&)),
                       this, SLOT(slotFileDialogFilterSelected(const QString&)) );
 
-
-    m_fileDialog->setMode( QFileDialog::ExistingFile );
-    m_fileDialog->addFilter( "Directories" );
-    m_fileDialog->setSelectedFilter( "All Files (*)" );
+    switch (m_custom->value->as_pathname->type) {
+    case UCustomPathnameType_Directory:
+        m_fileDialog->setMode( QFileDialog::Directory );
+        break;
+    case UCustomPathnameType_RegularFile:
+    default:
+         m_fileDialog->setMode( QFileDialog::ExistingFile );
+         break;
+    }
     if ( m_fileDialog->exec() == QDialog::Accepted )
     {
         QString fileName = m_fileDialog->selectedFile();
