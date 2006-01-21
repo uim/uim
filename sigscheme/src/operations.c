@@ -567,7 +567,7 @@ prepare_radix(const char *funcname, ScmObj args)
 ScmObj
 scm_p_number2string(ScmObj num, ScmObj args)
 {
-  char buf[sizeof(int) * CHAR_BIT + sizeof("")];
+  char buf[sizeof(scm_int_t) * CHAR_BIT + sizeof("")];
   char *p;
   const char *end;
   scm_int_t n, digit;
@@ -579,7 +579,7 @@ scm_p_number2string(ScmObj num, ScmObj args)
 
   n = SCM_INT_VALUE(num);
   neg = (n < 0);
-  n = abs(n);
+  n = (neg) ? -n : n;
   r = prepare_radix(SCM_MANGLE(name), args);
 
   end = p = &buf[sizeof(buf) - 1];
