@@ -479,16 +479,23 @@ add_custom_type_pathname(GtkWidget *vbox, struct uim_custom *custom)
   UIMPREF_FILE_ENTRY(entry)->type = custom->value->as_pathname->type;
   gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
 
+  /* Since both pathname type opens the file dialog to select an item
+   * rather than open it, the label should always be "Select..." here.
+   * The type is obvious for uses even if the button label does not
+   * indicate it. Information about the action the button causes is
+   * more important. Even if a better label has been found, it should
+   * not contain the term 'directory' since GNOME uses 'folder' for
+   * it.  -- YamaKen 2006-01-21 */
   switch (custom->value->as_pathname->type) {
     case UCustomPathnameType_Directory:
-      button_label = "Directory...";
+      button_label = N_("Select...");
       break;
     case UCustomPathnameType_RegularFile:
     default:
-      button_label = "File...";
+      button_label = N_("Select...");
       break;
   }
-  button = gtk_button_new_with_label(_(button_label));
+  button = gtk_button_new_with_label(dgettext(GETTEXT_PACKAGE, button_label));
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
 
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);

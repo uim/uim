@@ -171,16 +171,21 @@ CustomPathnameEdit::CustomPathnameEdit( struct uim_custom *c, QWidget *parent, c
                       this, SLOT(slotCustomTextChanged(const QString &)) );
 
     m_fileButton = new QPushButton( this );
+    /* Since both pathname type opens the file dialog to select an item rather
+     * than open it, the label should always be "Select..." here.  The type is
+     * obvious for uses even if the button label does not indicate
+     * it. Information about the action the button causes is more important.
+     *   -- YamaKen 2006-01-21 */
     switch (m_custom->value->as_pathname->type) {
     case UCustomPathnameType_Directory:
-        button = "Directory";
+        button = N_( "Select..." );
         break;
     case UCustomPathnameType_RegularFile:
     default:
-        button = "File";
+        button = N_( "Select..." );
         break;
     }
-    m_fileButton->setText( _(button) );
+    m_fileButton->setText( mygettext(button) );
     QObject::connect( m_fileButton, SIGNAL(clicked()),
                       this, SLOT(slotPathnameButtonClicked()) );
 

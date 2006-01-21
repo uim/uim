@@ -39,17 +39,20 @@
 /* NLS can be disabled through the configure --disable-nls option.  */
 #if ENABLE_NLS
 
+/* translation without being the tag for xgettext(1) */
+#define mygettext(String) QString::fromUtf8( dgettext(GETTEXT_PACKAGE,String) )
+
 /* undef original _(String) macro for handling encoding */
 #ifdef _
 #undef _
 #endif
-#define _(String) QString::fromUtf8( dgettext(GETTEXT_PACKAGE,String) )
+#define _(String) mygettext(String)
 /* undef original N_(String) macro for handling encoding */
 #ifdef N_
 #undef N_
 #endif
 #ifdef gettext_noop
-#define N_(String) QString::fromUtf8( gettext_noop(String) )
+#define N_(String) gettext_noop(String)
 #else
 #define N_(String) (String)
 #endif /* gettext_noop */
