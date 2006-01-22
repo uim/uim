@@ -63,8 +63,10 @@ AC_CHECK_SIZEOF(intptr_t)
 # Checks for library functions.
 
 # FIXME: provide alternative source code
-# AC_REPLACE_FUNCS([asprintf vasprintf])
-AC_CHECK_FUNCS([strdup strcasecmp fileno asprintf vasprintf posix_memalign getpagesize])
+# AC_REPLACE_FUNCS([snprintf asprintf vasprintf])
+AC_CHECK_FUNCS([strdup strcasecmp \
+                snprintf asprintf vasprintf \
+                fileno posix_memalign getpagesize])
 
 AX_CHECK_PAGE_ALIGNED_MALLOC
 
