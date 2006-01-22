@@ -30,7 +30,9 @@
   SUCH DAMAGE.
 */
 
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE // for asprintf on stdio.h with old glibc/gcc
+#endif
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
