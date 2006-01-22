@@ -40,6 +40,11 @@
 #define _POSIX_C_SOURCE 200112L
 #endif
 
+#if HAVE_STRDUP
+/* Overrides _POSIX_C_SOURCE */
+#define _XOPEN_SOURCE 500
+#endif
+
 /*=======================================
   System Include
 =======================================*/
@@ -145,8 +150,16 @@ scm_strdup(const char *str)
 {
     char *copied;
 
+#if HAVE_STRDUP
     copied = strdup(str);
     ENSURE_ALLOCATED(copied);
+#else
+    size_t size;
+
+    size = strlen(str) + sizeof("");
+    copied = scm_malloc(size);
+    strcpy(copied, str);
+#endif
 
     return copied;
 }
