@@ -69,7 +69,7 @@
 (define report-error
   (lambda (err-msg)
     (begin
-      (display "error: ")
+      (display "failed: ")
       (display err-msg)
       (newline))))
 

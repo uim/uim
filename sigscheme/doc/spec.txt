@@ -37,6 +37,14 @@ Specifications of SigScheme
     processing specified in SRFI-75 nor other non-Unicode multibyte character
     processing are supported in such procedures/predicates.
 
+  - Case-insensitive character comparison
+
+    SigScheme's case-insensitive comparison conforms to the foldcase'ed
+    comparison described in SRFI-75 and SRFI-13, although R5RS does not specify
+    comparison between alphabetic and non-alphabetic char.
+
+    See the description in operations.c for further details.
+
   - Case-sensitive identifiers
 
     SigScheme does distinguish letter case in indentifiers. Although case

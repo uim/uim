@@ -70,9 +70,31 @@
 #define STRING_CI_CMP(str1, str2)                                            \
     (string_cmp(SCM_MANGLE(name), (str1), (str2), scm_true))
 
+/*
+ * SigScheme's case-insensitive comparison conforms to the foldcase'ed
+ * comparison described in SRFI-75 and SRFI-13, although R5RS does not specify
+ * comparison between alphabetic and non-alphabetic char.
+ *
+ * This specification is needed to produce natural result on sort functions
+ * with these case-insensitive predicates as comparator.
+ *
+ *   (a-sort '(#\a #\c #\B #\D #\1 #\[ #\$ #\_) char-ci<?)
+ *     => (#\$ #\1 #\a #\B #\c #\D #\[ #\_)  ;; the "natural result"
+ *
+ *     => (#\$ #\1 #\B #\D #\[ #\_ #\a #\c)  ;; "unnatural result"
+ *
+ * See also:
+ *
+ *   - Description around 'char-foldcase' in SRFI-75
+ *   - "Case mapping and case-folding" and "Comparison" section of SRFI-13
+ */
 /* FIXME: support SRFI-75 */
 #define ICHAR_DOWNCASE(c) ((isascii((int)(c))) ? tolower((int)(c)) : (c))
 #define ICHAR_UPCASE(c)   ((isascii((int)(c))) ? toupper((int)(c)) : (c))
+/* foldcase for case-insensitive character comparison is done by downcase as
+ * described in SRFI-75. Although SRFI-13 expects (char-downcase (char-upcase
+ * c)), this implementation is sufficient for ASCII range. */
+#define ICHAR_FOLDCASE(c) (ICHAR_DOWNCASE(c))
 
 /*=======================================
   Variable Declarations
@@ -1177,8 +1199,8 @@ scm_p_char_greater_equalp(ScmObj ch1, ScmObj ch2)
         ENSURE_CHAR(ch1);                                                    \
         ENSURE_CHAR(ch2);                                                    \
                                                                              \
-        val1 = ICHAR_DOWNCASE(SCM_CHAR_VALUE(ch1));                          \
-        val2 = ICHAR_DOWNCASE(SCM_CHAR_VALUE(ch2));                          \
+        val1 = ICHAR_FOLDCASE(SCM_CHAR_VALUE(ch1));                          \
+        val2 = ICHAR_FOLDCASE(SCM_CHAR_VALUE(ch2));                          \
                                                                              \
         return MAKE_BOOL(val1 op val2);                                      \
     } while (/* CONSTCOND */ 0)
@@ -1612,8 +1634,8 @@ string_cmp(const char *funcname,
         c1 = SCM_CHARCODEC_READ_CHAR(scm_current_char_codec, mbs1);
         c2 = SCM_CHARCODEC_READ_CHAR(scm_current_char_codec, mbs2);
         if (case_insensitive) {
-            c1 = ICHAR_DOWNCASE(c1);
-            c2 = ICHAR_DOWNCASE(c2);
+            c1 = ICHAR_FOLDCASE(c1);
+            c2 = ICHAR_FOLDCASE(c2);
         }
         
         if (c1 > c2)
