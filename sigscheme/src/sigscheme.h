@@ -1205,7 +1205,7 @@ ScmObj scm_p_symbol2string(ScmObj sym);
 ScmObj scm_p_string2symbol(ScmObj str);
 
 ScmObj scm_p_charp(ScmObj obj);
-ScmObj scm_p_charequalp(ScmObj ch1, ScmObj ch2);
+ScmObj scm_p_char_equalp(ScmObj ch1, ScmObj ch2);
 ScmObj scm_p_char_lessp(ScmObj ch1, ScmObj ch2);
 ScmObj scm_p_char_greaterp(ScmObj ch1, ScmObj ch2);
 ScmObj scm_p_char_greaterp(ScmObj ch1, ScmObj ch2);

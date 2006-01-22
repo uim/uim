@@ -1107,7 +1107,7 @@ scm_p_charp(ScmObj obj)
 }
 
 ScmObj
-scm_p_charequalp(ScmObj ch1, ScmObj ch2)
+scm_p_char_equalp(ScmObj ch1, ScmObj ch2)
 {
     DECLARE_FUNCTION("char=?", procedure_fixed_2);
 
