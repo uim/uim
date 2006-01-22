@@ -33,6 +33,7 @@
 ===========================================================================*/
 
 #include "config.h"
+#include "config-nonstd-string.h"
 /* FIXME: remove this for direct inclusion of operations-srfi6.c and
  * strport.c */
 #include "config-asprintf.h"
@@ -70,7 +71,6 @@
     (string_cmp(SCM_MANGLE(name), (str1), (str2), scm_true))
 
 /* FIXME: support SRFI-75 */
-/* get case insensitive character value */
 #define ICHAR_DOWNCASE(c) ((isascii((int)(c))) ? tolower((int)(c)) : (c))
 #define ICHAR_UPCASE(c)   ((isascii((int)(c))) ? toupper((int)(c)) : (c))
 

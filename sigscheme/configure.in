@@ -64,7 +64,7 @@ AC_CHECK_SIZEOF(intptr_t)
 
 # FIXME: provide alternative source code
 # AC_REPLACE_FUNCS([asprintf vasprintf])
-AC_CHECK_FUNCS([strdup fileno asprintf vasprintf posix_memalign getpagesize])
+AC_CHECK_FUNCS([strdup strcasecmp fileno asprintf vasprintf posix_memalign getpagesize])
 
 AX_CHECK_PAGE_ALIGNED_MALLOC
 
