@@ -67,8 +67,8 @@
 
 /* FIXME: support SRFI-75 */
 /* get case insensitive character value */
-#define ICHAR_DOWNCASE(ch_val) ((isascii(ch_val)) ? tolower(ch_val) : (ch_val))
-#define ICHAR_UPCASE(ch_val)   ((isascii(ch_val)) ? toupper(ch_val) : (ch_val))
+#define ICHAR_DOWNCASE(c) ((isascii((int)(c))) ? tolower((int)(c)) : (c))
+#define ICHAR_UPCASE(c)   ((isascii((int)(c))) ? toupper((int)(c)) : (c))
 
 /*=======================================
   Variable Declarations
