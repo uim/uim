@@ -64,6 +64,10 @@
     (EQ((str1), (str2))                                                      \
      || (SCM_STRING_LEN(str1) == SCM_STRING_LEN(str2)  /* rough rejection */ \
          && strcmp(SCM_STRING_STR(str1), SCM_STRING_STR(str2)) == 0))
+#define STRING_CMP(str1, str2)                                               \
+    (string_cmp(SCM_MANGLE(name), (str1), (str2), scm_false))
+#define STRING_CI_CMP(str1, str2)                                            \
+    (string_cmp(SCM_MANGLE(name), (str1), (str2), scm_true))
 
 /* FIXME: support SRFI-75 */
 /* get case insensitive character value */
@@ -79,6 +83,11 @@
 =======================================*/
 static int prepare_radix(const char *funcname, ScmObj args);
 static ScmObj list_tail(ScmObj lst, scm_int_t k);
+#if (!HAVE_STRCASECMP && !SCM_USE_MULTIBYTE_CHAR)
+static int strcasecmp(const char *s1, const char *s2);
+#endif
+static int string_cmp(const char *funcname,
+                      ScmObj str1, ScmObj str2, scm_bool case_insensitive);
 static ScmObj map_single_arg(ScmObj proc, ScmObj args);
 static ScmObj map_multiple_args(ScmObj proc, ScmObj args);
 
@@ -1540,6 +1549,87 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     return str;
 }
 
+#if (!HAVE_STRCASECMP && !SCM_USE_MULTIBYTE_CHAR)
+static int
+strcasecmp(const char *s1, const char *s2)
+{
+    unsigned char c1, c2;
+
+    for (;;) {
+        c1 = *(const unsigned char *)s1;
+        c2 = *(const unsigned char *)s2;
+
+        if (c1 && !c2)
+            return 1;
+        if (!c1 && c2)
+            return -1;
+        if (!c1 && !c2)
+            return 0;
+
+        if (isascii(c1))
+            c1 = tolower(c1);
+        if (isascii(c2))
+            c2 = tolower(c2);
+        
+        if (c1 > c2)
+            return 1;
+        if (c1 < c2)
+            return -1;
+    }
+}
+#endif
+
+static int
+string_cmp(const char *funcname,
+           ScmObj str1, ScmObj str2, scm_bool case_insensitive)
+{
+    const char *c_str1, *c_str2;
+#if SCM_USE_MULTIBYTE_CHAR
+    scm_ichar_t c1, c2;
+    ScmMultibyteString mbs1, mbs2;
+#endif
+    DECLARE_INTERNAL_FUNCTION("string_cmp");
+
+    /* dirty hack to replace internal function name */
+    SCM_MANGLE(name) = funcname;
+
+    ENSURE_STRING(str1);
+    ENSURE_STRING(str2);
+
+    c_str1 = SCM_STRING_STR(str1);
+    c_str2 = SCM_STRING_STR(str2);
+#if SCM_USE_MULTIBYTE_CHAR
+    SCM_MBS_INIT2(mbs1, c_str1, strlen(c_str1));
+    SCM_MBS_INIT2(mbs2, c_str2, strlen(c_str2));
+    for (;;) {
+        if (SCM_MBS_GET_SIZE(mbs1) && !SCM_MBS_GET_SIZE(mbs2))
+            return 1;
+        if (!SCM_MBS_GET_SIZE(mbs1) && SCM_MBS_GET_SIZE(mbs2))
+            return -1;
+        if (!SCM_MBS_GET_SIZE(mbs1) && !SCM_MBS_GET_SIZE(mbs2))
+            return 0;
+
+        c1 = SCM_CHARCODEC_READ_CHAR(scm_current_char_codec, mbs1);
+        c2 = SCM_CHARCODEC_READ_CHAR(scm_current_char_codec, mbs2);
+        if (case_insensitive) {
+            c1 = ICHAR_DOWNCASE(c1);
+            c2 = ICHAR_DOWNCASE(c2);
+        }
+        
+        if (c1 > c2)
+            return 1;
+        if (c1 < c2)
+            return -1;
+    }
+#else /* SCM_USE_MULTIBYTE_CHAR */
+    if (case_insensitive) {
+        return strcasecmp(c_str1, c_str2);
+    } else {
+        return strcmp(c_str1, c_str2);
+    }
+#endif /* SCM_USE_MULTIBYTE_CHAR */
+}
+
 ScmObj
 scm_p_stringequalp(ScmObj str1, ScmObj str2)
 {
@@ -1549,6 +1639,83 @@ scm_p_stringequalp(ScmObj str1, ScmObj str2)
     ENSURE_STRING(str2);
 
     return MAKE_BOOL(STRING_EQUALP(str1, str2));
+}
+
+ScmObj
+scm_p_string_ci_equalp(ScmObj str1, ScmObj str2)
+{
+    DECLARE_FUNCTION("string-ci=?", procedure_fixed_2);
+
+    ENSURE_STRING(str1);
+    ENSURE_STRING(str2);
+
+    return MAKE_BOOL(EQ((str1), (str2))                                     
+                     || (SCM_STRING_LEN(str1) == SCM_STRING_LEN(str2)
+                         && STRING_CI_CMP(str1, str2) == 0));
+}
+
+ScmObj
+scm_p_string_greaterp(ScmObj str1, ScmObj str2)
+{
+    DECLARE_FUNCTION("string>?", procedure_fixed_2);
+
+    return MAKE_BOOL(STRING_CMP(str1, str2) > 0);
+}
+
+ScmObj
+scm_p_string_lessp(ScmObj str1, ScmObj str2)
+{
+    DECLARE_FUNCTION("string<?", procedure_fixed_2);
+
+    return MAKE_BOOL(STRING_CMP(str1, str2) < 0);
+}
+
+ScmObj
+scm_p_string_greater_equalp(ScmObj str1, ScmObj str2)
+{
+    DECLARE_FUNCTION("string>=?", procedure_fixed_2);
+
+    return MAKE_BOOL(STRING_CMP(str1, str2) >= 0);
+}
+
+ScmObj
+scm_p_string_less_equalp(ScmObj str1, ScmObj str2)
+{
+    DECLARE_FUNCTION("string<?", procedure_fixed_2);
+
+    return MAKE_BOOL(STRING_CMP(str1, str2) <= 0);
+}
+
+ScmObj
+scm_p_string_ci_greaterp(ScmObj str1, ScmObj str2)
+{
+    DECLARE_FUNCTION("string-ci>?", procedure_fixed_2);
+
+    return MAKE_BOOL(STRING_CI_CMP(str1, str2) > 0);
+}
+
+ScmObj
+scm_p_string_ci_lessp(ScmObj str1, ScmObj str2)
+{
+    DECLARE_FUNCTION("string-ci<?", procedure_fixed_2);
+
+    return MAKE_BOOL(STRING_CI_CMP(str1, str2) < 0);
+}
+
+ScmObj
+scm_p_string_ci_greater_equalp(ScmObj str1, ScmObj str2)
+{
+    DECLARE_FUNCTION("string-ci>=?", procedure_fixed_2);
+
+    return MAKE_BOOL(STRING_CI_CMP(str1, str2) >= 0);
+}
+
+ScmObj
+scm_p_string_ci_less_equalp(ScmObj str1, ScmObj str2)
+{
+    DECLARE_FUNCTION("string-ci<?", procedure_fixed_2);
+
+    return MAKE_BOOL(STRING_CI_CMP(str1, str2) <= 0);
 }
 
 ScmObj

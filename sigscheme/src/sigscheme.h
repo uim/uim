@@ -1233,13 +1233,22 @@ ScmObj scm_p_string_length(ScmObj str);
 ScmObj scm_p_string_ref(ScmObj str, ScmObj k);
 ScmObj scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch);
 ScmObj scm_p_stringequalp(ScmObj str1, ScmObj str2);
-/* TODO : many comparing functions around string is unimplemented */
+ScmObj scm_p_string_ci_equalp(ScmObj str1, ScmObj str2);
+ScmObj scm_p_string_greaterp(ScmObj str1, ScmObj str2);
+ScmObj scm_p_string_lessp(ScmObj str1, ScmObj str2);
+ScmObj scm_p_string_greater_equalp(ScmObj str1, ScmObj str2);
+ScmObj scm_p_string_less_equalp(ScmObj str1, ScmObj str2);
+ScmObj scm_p_string_ci_greaterp(ScmObj str1, ScmObj str2);
+ScmObj scm_p_string_ci_lessp(ScmObj str1, ScmObj str2);
+ScmObj scm_p_string_ci_greater_equalp(ScmObj str1, ScmObj str2);
+ScmObj scm_p_string_ci_less_equalp(ScmObj str1, ScmObj str2);
 ScmObj scm_p_substring(ScmObj str, ScmObj start, ScmObj end);
 ScmObj scm_p_string_append(ScmObj args);
 ScmObj scm_p_string2list(ScmObj str);
 ScmObj scm_p_list2string(ScmObj lst);
 ScmObj scm_p_string_copy(ScmObj str);
 ScmObj scm_p_string_filld(ScmObj str, ScmObj ch);
+
 ScmObj scm_p_vectorp(ScmObj obj);
 ScmObj scm_p_make_vector(ScmObj scm_len, ScmObj args);
 ScmObj scm_p_vector(ScmObj args);

@@ -212,18 +212,6 @@ Specifications of SigScheme
       procedure: exact->inexact z
       procedure: inexact->exact z
 
-    * Strings
-
-      library procedure: string-ci=? string1 string2
-      library procedure: string<? string1 string2
-      library procedure: string>? string1 string2
-      library procedure: string<=? string1 string2
-      library procedure: string>=? string1 string2
-      library procedure: string-ci<? string1 string2
-      library procedure: string-ci>? string1 string2
-      library procedure: string-ci<=? string1 string2
-      library procedure: string-ci>=? string1 string2
-
 * SIOD compatibility
 
   - #f and '()
