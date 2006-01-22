@@ -688,7 +688,8 @@ static char **
 parse_script_prelude(ScmObj port)
 {
     int argc, c, len, line_len;
-    char **argv, *arg, *p, line[SCRIPT_PRELUDE_MAXLEN];
+    char **argv, *arg, *p;
+    char line[SCRIPT_PRELUDE_MAXLEN];
     DECLARE_INTERNAL_FUNCTION("parse_script_prelude");
 
     for (p = line; p < &line[SCRIPT_PRELUDE_MAXLEN]; p++) {

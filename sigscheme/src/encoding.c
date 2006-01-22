@@ -456,7 +456,8 @@ eucjp_ccs(void)
 int
 eucjp_char_len(scm_ichar_t ch)
 {
-    uchar *end, buf[SCM_MB_MAX_LEN + sizeof("")];
+    uchar *end;
+    uchar buf[SCM_MB_MAX_LEN + sizeof("")];
 
     end = eucjp_int2str(buf, ch, SCM_MB_STATELESS);
 
@@ -611,7 +612,8 @@ dbc_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 int
 euc_char_len(scm_ichar_t ch)
 {
-    uchar *end, buf[SCM_MB_MAX_LEN + sizeof("")];
+    uchar *end;
+    uchar buf[SCM_MB_MAX_LEN + sizeof("")];
 
     end = euc_int2str(buf, ch, SCM_MB_STATELESS);
 
@@ -773,7 +775,8 @@ utf8_ccs(void)
 int
 utf8_char_len(scm_ichar_t ch)
 {
-    uchar *end, buf[SCM_MB_MAX_LEN + sizeof("")];
+    uchar *end;
+    uchar buf[SCM_MB_MAX_LEN + sizeof("")];
 
     end = utf8_int2str(buf, ch, SCM_MB_STATELESS);
 
@@ -930,7 +933,8 @@ sjis_ccs(void)
 int
 sjis_char_len(scm_ichar_t ch)
 {
-    uchar *end, buf[SCM_MB_MAX_LEN + sizeof("")];
+    uchar *end;
+    uchar buf[SCM_MB_MAX_LEN + sizeof("")];
 
     end = sjis_int2str(buf, ch, SCM_MB_STATELESS);
 

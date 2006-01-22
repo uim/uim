@@ -233,7 +233,8 @@ mbcport_char_readyp(ScmMultiByteCharPort *port)
 static int
 mbcport_put_char(ScmMultiByteCharPort *port, scm_ichar_t ch)
 {
-    char *end, wbuf[SCM_MB_MAX_LEN + sizeof("")];
+    char *end;
+    char wbuf[SCM_MB_MAX_LEN + sizeof("")];
 
     /* FIXME: set updated state to port->state */
     end = SCM_CHARCODEC_INT2STR(port->codec, wbuf, ch, port->state);
