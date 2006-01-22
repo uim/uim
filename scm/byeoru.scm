@@ -1254,18 +1254,20 @@
   (byeoru-context-new id im))
 
 (define (byeoru-key-to-candidates key key-state)
-  (let* ((layout (symbol-value byeoru-layout))
-	 (pressed-key
-	  (charcode->string
-	   ;; avoid case change due to caps lock.
-	   (if (shift-key-mask key-state)
-	       (char-upcase key) (char-downcase key))))
-	 (entry (assoc pressed-key layout)))
-    (and entry
-	 (let ((candidates (cdr entry)))
-	   (if (number? candidates)
-	       (ucs-to-utf8-string candidates)
-	       candidates)))))
+  (and (or (not (modifier-key-mask key-state))
+	   (= key-state 1))		; CHECK: is this a right way?
+       (let* ((layout (symbol-value byeoru-layout))
+	      (pressed-key
+	       (charcode->string
+		;; avoid case change due to caps lock.
+		(if (shift-key-mask key-state)
+		    (char-upcase key) (char-downcase key))))
+	      (entry (assoc pressed-key layout)))
+	 (and entry
+	      (let ((candidates (cdr entry)))
+		(if (number? candidates)
+		    (ucs-to-utf8-string candidates)
+		    candidates))))))
 
 (define byeoru-dic-filename "byeoru-dic.scm")
 (define byeoru-load-dic-hook '())
@@ -1450,9 +1452,7 @@
 
 (define (byeoru-feed-hangul-key bc key key-state)
   (let ((candidates (byeoru-key-to-candidates key key-state)))
-    (and (or (not (modifier-key-mask key-state))
-	     (= key-state 1)) ; CHECK: is this a right way?
-	 (list? candidates) (not (null? candidates))
+    (and (list? candidates) (not (null? candidates))
 	 ;; Why should I check the length of candidates?
 	 ;; Isn't scheme supposed to distinguish #f from an empty list?
 	 ;; -> fixed in sigscheme.
