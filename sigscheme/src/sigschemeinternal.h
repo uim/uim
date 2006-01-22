@@ -193,6 +193,7 @@ extern ScmObj scm_null_values;
 #endif /* SCM_USE_NONSTD_FEATURES */
 #define MAKE_VALUEPACKET              SCM_MAKE_VALUEPACKET
 
+#define NUMBERP        SCM_NUMBERP
 #define INTP           SCM_INTP
 #define CONSP          SCM_CONSP
 #define SYMBOLP        SCM_SYMBOLP

@@ -174,7 +174,6 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
 
     /* R5RS Procedures */
     REGISTER_FUNC_TABLE(r5rs_procedure_func_info_table);
-    scm_define_alias("integer?", "number?");
 
 #if SCM_USE_DEEP_CADRS
     /* Deep c[ad]+r Functions */

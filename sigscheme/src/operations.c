@@ -362,6 +362,14 @@ scm_p_numberp(ScmObj obj)
 {
     DECLARE_FUNCTION("number?", procedure_fixed_1);
 
+    return MAKE_BOOL(NUMBERP(obj));
+}
+
+ScmObj
+scm_p_integerp(ScmObj obj)
+{
+    DECLARE_FUNCTION("integer?", procedure_fixed_1);
+
     return MAKE_BOOL(INTP(obj));
 }
 

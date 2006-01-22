@@ -1159,6 +1159,7 @@ ScmObj scm_p_greater(ScmObj left, ScmObj right, enum ScmReductionState *state);
 ScmObj scm_p_greater_eq(ScmObj left, ScmObj right,
                         enum ScmReductionState *state);
 ScmObj scm_p_numberp(ScmObj obj);
+ScmObj scm_p_integerp(ScmObj obj);
 ScmObj scm_p_zerop(ScmObj n);
 ScmObj scm_p_positivep(ScmObj n);
 ScmObj scm_p_negativep(ScmObj n);
