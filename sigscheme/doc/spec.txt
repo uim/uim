@@ -212,18 +212,6 @@ Specifications of SigScheme
       procedure: exact->inexact z
       procedure: inexact->exact z
 
-    * Characters
-
-      procedure: char<? char1 char2
-      procedure: char>? char1 char2
-      procedure: char<=? char1 char2
-      procedure: char>=? char1 char2
-      library procedure: char-ci=? char1 char2
-      library procedure: char-ci<? char1 char2
-      library procedure: char-ci>? char1 char2
-      library procedure: char-ci<=? char1 char2
-      library procedure: char-ci>=? char1 char2
-
     * Strings
 
       library procedure: string-ci=? string1 string2

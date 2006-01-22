@@ -1206,7 +1206,16 @@ ScmObj scm_p_string2symbol(ScmObj str);
 
 ScmObj scm_p_charp(ScmObj obj);
 ScmObj scm_p_charequalp(ScmObj ch1, ScmObj ch2);
-/* TODO : many comparing functions around char is unimplemented */
+ScmObj scm_p_char_lessp(ScmObj ch1, ScmObj ch2);
+ScmObj scm_p_char_greaterp(ScmObj ch1, ScmObj ch2);
+ScmObj scm_p_char_greaterp(ScmObj ch1, ScmObj ch2);
+ScmObj scm_p_char_less_equalp(ScmObj ch1, ScmObj ch2);
+ScmObj scm_p_char_greater_equalp(ScmObj ch1, ScmObj ch2);
+ScmObj scm_p_char_ci_equalp(ScmObj ch1, ScmObj ch2);
+ScmObj scm_p_char_ci_lessp(ScmObj ch1, ScmObj ch2);
+ScmObj scm_p_char_ci_greaterp(ScmObj ch1, ScmObj ch2);
+ScmObj scm_p_char_ci_less_equalp(ScmObj ch1, ScmObj ch2);
+ScmObj scm_p_char_ci_greater_equalp(ScmObj ch1, ScmObj ch2);
 ScmObj scm_p_char_alphabeticp(ScmObj ch);
 ScmObj scm_p_char_numericp(ScmObj ch);
 ScmObj scm_p_char_whitespacep(ScmObj ch);

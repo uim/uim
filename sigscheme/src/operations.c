@@ -65,6 +65,11 @@
      || (SCM_STRING_LEN(str1) == SCM_STRING_LEN(str2)  /* rough rejection */ \
          && strcmp(SCM_STRING_STR(str1), SCM_STRING_STR(str2)) == 0))
 
+/* FIXME: support SRFI-75 */
+/* get case insensitive character value */
+#define ICHAR_DOWNCASE(ch_val) ((isascii(ch_val)) ? tolower(ch_val) : (ch_val))
+#define ICHAR_UPCASE(ch_val)   ((isascii(ch_val)) ? toupper(ch_val) : (ch_val))
+
 /*=======================================
   Variable Declarations
 =======================================*/
@@ -1116,6 +1121,102 @@ scm_p_charequalp(ScmObj ch1, ScmObj ch2)
 #endif
 }
 
+#define CHAR_CMP_BODY(op, ch1, ch2)                                          \
+    do {                                                                     \
+        ENSURE_CHAR(ch1);                                                    \
+        ENSURE_CHAR(ch2);                                                    \
+                                                                             \
+        return MAKE_BOOL(SCM_CHAR_VALUE(ch1) op SCM_CHAR_VALUE(ch2));        \
+    } while (/* CONSTCOND */ 0)
+
+ScmObj
+scm_p_char_lessp(ScmObj ch1, ScmObj ch2)
+{
+    DECLARE_FUNCTION("char<?", procedure_fixed_2);
+
+    CHAR_CMP_BODY(<, ch1, ch2);
+}
+
+ScmObj
+scm_p_char_greaterp(ScmObj ch1, ScmObj ch2)
+{
+    DECLARE_FUNCTION("char>?", procedure_fixed_2);
+
+    CHAR_CMP_BODY(>, ch1, ch2);
+}
+
+ScmObj
+scm_p_char_less_equalp(ScmObj ch1, ScmObj ch2)
+{
+    DECLARE_FUNCTION("char<=?", procedure_fixed_2);
+
+    CHAR_CMP_BODY(<=, ch1, ch2);
+}
+
+ScmObj
+scm_p_char_greater_equalp(ScmObj ch1, ScmObj ch2)
+{
+    DECLARE_FUNCTION("char>=?", procedure_fixed_2);
+
+    CHAR_CMP_BODY(>=, ch1, ch2);
+}
+
+#define CHAR_CI_CMP_BODY(op, ch1, ch2)                                       \
+    do {                                                                     \
+        scm_ichar_t val1, val2;                                              \
+                                                                             \
+        ENSURE_CHAR(ch1);                                                    \
+        ENSURE_CHAR(ch2);                                                    \
+                                                                             \
+        val1 = ICHAR_DOWNCASE(SCM_CHAR_VALUE(ch1));                          \
+        val2 = ICHAR_DOWNCASE(SCM_CHAR_VALUE(ch2));                          \
+                                                                             \
+        return MAKE_BOOL(val1 op val2);                                      \
+    } while (/* CONSTCOND */ 0)
+
+ScmObj
+scm_p_char_ci_equalp(ScmObj ch1, ScmObj ch2)
+{
+    DECLARE_FUNCTION("char-ci=?", procedure_fixed_2);
+
+    CHAR_CI_CMP_BODY(==, ch1, ch2);
+}
+
+ScmObj
+scm_p_char_ci_lessp(ScmObj ch1, ScmObj ch2)
+{
+    DECLARE_FUNCTION("char-ci<?", procedure_fixed_2);
+
+    CHAR_CI_CMP_BODY(<, ch1, ch2);
+}
+
+ScmObj
+scm_p_char_ci_greaterp(ScmObj ch1, ScmObj ch2)
+{
+    DECLARE_FUNCTION("char-ci>?", procedure_fixed_2);
+
+    CHAR_CI_CMP_BODY(>, ch1, ch2);
+}
+
+ScmObj
+scm_p_char_ci_less_equalp(ScmObj ch1, ScmObj ch2)
+{
+    DECLARE_FUNCTION("char-ci<=?", procedure_fixed_2);
+
+    CHAR_CI_CMP_BODY(<=, ch1, ch2);
+}
+
+ScmObj
+scm_p_char_ci_greater_equalp(ScmObj ch1, ScmObj ch2)
+{
+    DECLARE_FUNCTION("char-ci>=?", procedure_fixed_2);
+
+    CHAR_CI_CMP_BODY(>=, ch1, ch2);
+}
+
+#undef CHAR_CMP_BODY
+#undef CHAR_CI_CMP_BODY
+
 ScmObj
 scm_p_char_alphabeticp(ScmObj ch)
 {
@@ -1219,8 +1320,7 @@ scm_p_char_upcase(ScmObj ch)
     ENSURE_CHAR(ch);
 
     val = SCM_CHAR_VALUE(ch);
-    if (isascii(val))
-        SCM_CHAR_SET_VALUE(ch, toupper(val));
+    SCM_CHAR_SET_VALUE(ch, ICHAR_UPCASE(val));
 
     return ch;
 }
@@ -1234,8 +1334,7 @@ scm_p_char_downcase(ScmObj ch)
     ENSURE_CHAR(ch);
 
     val = SCM_CHAR_VALUE(ch);
-    if (isascii(val))
-        SCM_CHAR_SET_VALUE(ch, tolower(val));
+    SCM_CHAR_SET_VALUE(ch, ICHAR_DOWNCASE(val));
 
     return ch;
 }
