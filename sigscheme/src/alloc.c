@@ -34,6 +34,12 @@
 
 #include "config.h"
 
+#if HAVE_POSIX_MEMALIGN
+/* For posix_memalign(3). although this value is overridden by _GNU_SOURCE on
+ * glibc, keep this for other environments. */
+#define _POSIX_C_SOURCE 200112L
+#endif
+
 /*=======================================
   System Include
 =======================================*/
@@ -70,7 +76,6 @@
 /*=======================================
   Function Implementations
 =======================================*/
-/* FIXME: ensure safety in a portable way */
 void *
 scm_malloc_aligned(size_t size)
 {
