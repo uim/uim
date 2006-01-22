@@ -384,8 +384,8 @@ scm_interpret_argv(char **argv)
                 if (scm_initialized) {
                     ERR("no encoding name specified");
                 } else {
-                    fprintf(stderr, "%sno encoding name specified\n",
-                            SCM_ERR_HEADER);
+                    fputs(SCM_ERR_HEADER "no encoding name specified\n",
+                          stderr);
                     exit(EXIT_FAILURE);
                 }
             }
@@ -401,8 +401,8 @@ scm_interpret_argv(char **argv)
                 scm_free_argv(argv);
                 ERR_OBJ("unsupported encoding", err_obj);
             } else {
-                fprintf(stderr, "%sunsupported encoding: %s\n",
-                        SCM_ERR_HEADER, encoding);
+                fprintf(stderr, SCM_ERR_HEADER "unsupported encoding: %s\n",
+                        encoding);
                 exit(EXIT_FAILURE);
             }
         }
