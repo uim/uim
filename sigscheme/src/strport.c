@@ -38,6 +38,9 @@
  *   into another
  */
 
+#include "config.h"
+#include "config-asprintf.h"
+
 /*=======================================
   System Include
 =======================================*/

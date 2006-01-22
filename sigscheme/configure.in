@@ -16,6 +16,8 @@ fi
 
 # Checks for libraries.
 
+AX_LIB_GLIBC
+
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([limits.h malloc.h stddef.h stdlib.h string.h unistd.h])
