@@ -35,6 +35,8 @@
 
 (load "./test/unittest.scm")
 
+(define tn test-name)
+
 (define i->chlit
   (lambda (i)
     (obj->literal (integer->char i))))
@@ -97,8 +99,22 @@
 (assert-true ") char"        (char? #\)))
 (assert-true "\\ char"       (char? #\\))
 
+(tn "R5RS named chars case-insensitivity")
+(assert-equal? (tn) #\newline (integer->char 10))
+(assert-equal? (tn) #\Newline (integer->char 10))
+(assert-equal? (tn) #\NEWLINE (integer->char 10))
+(assert-equal? (tn) #\NeWliNE (integer->char 10))
+(assert-equal? (tn) #\space   (integer->char 32))
+(assert-equal? (tn) #\Space   (integer->char 32))
+(assert-equal? (tn) #\SPACE   (integer->char 32))
+(assert-equal? (tn) #\SpACe   (integer->char 32))
+
+;;
 ;; R6RS(SRFI-75) named chars
+;;
+
 ;; NOTE: #\x0e -style character is defined in R6RS(SRFI-75)
+
 (assert-equal? "R6RS named chars" #\nul       #\x00)  ;; 0
 (assert-equal? "R6RS named chars" #\alarm     #\x07)  ;; 7
 (assert-equal? "R6RS named chars" #\backspace #\x08)  ;; 8

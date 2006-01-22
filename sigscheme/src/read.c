@@ -82,10 +82,6 @@ const ScmSpecialCharInfo scm_special_char_table[] = {
     {'\"',   "\\\"",  "\""},         /* 34, R5RS */
     {'\\',   "\\\\",  "\\"},         /* 92, R5RS */
     {' ',    " ",     "space"},      /* 32, R5RS */
-#if 0
-    /* to avoid portability problem, we should not support #\Space and so on */
-    {' ',    " ",     "Space"},
-#endif
 #if SCM_USE_SRFI75
     {'|',    "\\|",   "|"},
 #endif
@@ -528,7 +524,12 @@ read_char(ScmObj port)
 #endif
     /* named chars */
     for (info = scm_special_char_table; info->esc_seq; info++) {
-        if (strcmp(buf, info->lex_rep) == 0)
+        /*
+         * R5RS: 6.3.4 Characters
+         * Case is significant in #\<character>, but not in #\<character name>.
+         */
+        /* FIXME: make strcasecmp(3) portable */
+        if (strcasecmp(buf, info->lex_rep) == 0)
             return MAKE_CHAR(info->code);
     }
     ERR("invalid character literal: #\\%s", buf);
