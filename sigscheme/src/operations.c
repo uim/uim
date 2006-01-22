@@ -31,6 +31,12 @@
  *  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  *  SUCH DAMAGE.
 ===========================================================================*/
+
+#include "config.h"
+/* FIXME: remove this for direct inclusion of operations-srfi6.c and
+ * strport.c */
+#include "config-asprintf.h"
+
 /*=======================================
   System Include
 =======================================*/

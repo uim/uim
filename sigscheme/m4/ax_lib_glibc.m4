@@ -23,7 +23,7 @@ dnl @license AllPermissive
 AC_DEFUN([AX_LIB_GLIBC],
   [AC_CACHE_CHECK([if libc is the GNU libc],
     ax_cv_lib_glibc,
-    [AC_EGREP_CPP('^ax_cv_lib_glibc_yes$', [
+    [AC_EGREP_CPP([^ax_cv_lib_glibc_yes$], [
 /* To avoid being affected from possible header reorganization, this macro
  * does not include features.h directly. */
 #include <stdlib.h>
@@ -34,7 +34,7 @@ ax_cv_lib_glibc_yes
       ax_cv_lib_glibc=yes,
       ax_cv_lib_glibc=no)
     ])
-  if test "x$ax_cv_lib_glibc" = yes; then
+  if test "x$ax_cv_lib_glibc" = xyes; then
     AC_DEFINE(HAVE_GLIBC, 1, [Define to 1 if you have the GNU libc.])
   fi
 ])
