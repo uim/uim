@@ -4,6 +4,8 @@ Overview of changes from 0.5.0-alpha (r2902 + local modifications)
 
   - Support 64-bit data models (storage-compact is not yet)
 
+  - Add lacking character predicates and complete all R5RS character procedures
+
 * Fixes
 
   - Make behavior of internal definitions strictly conforming to R5RS
