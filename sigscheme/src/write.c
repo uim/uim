@@ -536,7 +536,7 @@ static hash_entry *
 hash_lookup(hash_table *tab, ScmObj key, int datum, int flag)
 {
     size_t i;
-    unsigned hashval;
+    hashval_t hashval;
     hash_entry *ent;
 
     /* If we have > 32 bits, we'll discard some of them.  The lower
@@ -545,7 +545,7 @@ hash_lookup(hash_table *tab, ScmObj key, int datum, int flag)
      * vector.  We'll drop these bits.  KEYs are expected to be
      * pointers into the heap, so their higher bis are probably
      * uniform.  I haven't confirmed either's validity, though. */
-    hashval = (unsigned)key;
+    hashval = (hashval_t)key;
     if (sizeof(hashval) > 4) {
         hashval /= sizeof(ScmCell);
         hashval &= 0xffffffff;

@@ -229,7 +229,7 @@ struct _sequence_translator {
 #define TR_CALL(_t, _msg, _p) ((*(_t).trans)(&(_t), (_msg), (_p)))
 #define TR_GET_OBJ(_t)     (TR_CALL((_t), TR_MSG_GET_OBJ, SCM_INVALID))
 #define TR_NEXT(_t)        ((void)TR_CALL((_t), TR_MSG_NEXT, SCM_INVALID))
-#define TR_ENDP(_t)        ((scm_bool)TR_CALL((_t), TR_MSG_ENDP, SCM_INVALID))
+#define TR_ENDP(_t)        (NFALSEP(TR_CALL((_t), TR_MSG_ENDP, SCM_INVALID)))
 #define TR_EXTRACT(_t)     (TR_CALL((_t), TR_MSG_EXTRACT, SCM_INVALID))
 
 
@@ -248,7 +248,7 @@ listran(sequence_translator *t, tr_msg msg, ScmObj obj)
         break;
 
     case TR_MSG_ENDP:
-        return (ScmObj)TRL_ENDP(*t);
+        return MAKE_BOOL(TRL_ENDP(*t));
 
     case TR_MSG_GET_OBJ:
         return TRL_GET_OBJ(*t);
@@ -303,7 +303,7 @@ vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
         TRV_NEXT(*t);
         break;
     case TR_MSG_ENDP:
-        return (ScmObj)TRV_ENDP(*t);
+        return MAKE_BOOL(TRV_ENDP(*t));
 
     case TR_MSG_SPLICE:
         splice_len = scm_length(obj);
