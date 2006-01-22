@@ -36,6 +36,11 @@
 
 #include "config.h"
 
+#if HAVE_STRDUP
+/* Overrides _POSIX_C_SOURCE */
+#define _XOPEN_SOURCE 500
+#endif
+
 #if (HAVE_GLIBC && HAVE_STRCASECMP)
 #define _BSD_SOURCE
 #endif

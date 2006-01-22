@@ -33,16 +33,12 @@
 ===========================================================================*/
 
 #include "config.h"
+#include "config-nonstd-string.h"
 
 #if HAVE_POSIX_MEMALIGN
 /* For posix_memalign(3). although this value is overridden by _GNU_SOURCE on
  * glibc, keep this for other environments. */
 #define _POSIX_C_SOURCE 200112L
-#endif
-
-#if HAVE_STRDUP
-/* Overrides _POSIX_C_SOURCE */
-#define _XOPEN_SOURCE 500
 #endif
 
 /*=======================================
