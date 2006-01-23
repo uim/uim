@@ -643,7 +643,7 @@ uim_init_scm(void)
   char *scm_files = NULL;
   char *env = NULL;
 
-  /*  if (is_setugid() == 0) {*/
+  /*  if (!uim_issetugid()) {*/
     env = getenv("LIBUIM_VERBOSE");
     /*  }*/
   uim_scm_init(env);  /* init Scheme interpreter */
@@ -657,7 +657,7 @@ uim_init_scm(void)
   uim_init_im_subrs();
   uim_init_key_subrs();
   
-  if (is_setugid() == 0) {
+  if (!uim_issetugid()) {
     scm_files = getenv("LIBUIM_SCM_FILES");
   }
   uim_scm_set_lib_path((scm_files) ? scm_files : SCM_FILES);

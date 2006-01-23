@@ -30,7 +30,9 @@
   SUCH DAMAGE.
 */
 
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE // for asprintf on stdio.h with old glibc/gcc
+#endif
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -66,8 +68,7 @@ extern Atom xim_servers;
 InputContext *InputContext::mFocusedContext = NULL;
 
 static int check_modifier(std::list<KeySym> list);
-static int gShiftMask, gLockMask, gControlMask, gMod1Mask,
-	   gMod2Mask, gMod3Mask, gMod4Mask, gMod5Mask;
+static int gMod1Mask, gMod2Mask, gMod3Mask, gMod4Mask, gMod5Mask;
 static int gXNumLockMask;
 
 
@@ -78,7 +79,7 @@ void print_ustring(uString *s)
     uchar ch;
     char utf8[6];
     int nbyte;
-    for (i = s->begin(); i != s->end(); i++) {
+    for (i = s->begin(); i != s->end(); ++i) {
 	ch = *i;
 	nbyte = utf8_wctomb((unsigned char *)utf8, ch);
 	utf8[nbyte] = '\0';
@@ -95,7 +96,7 @@ void erase_ustring(uString *s)
 void append_ustring(uString *d, uString *s)
 {
     uString::iterator i;
-    for (i = s->begin(); i !=s->end(); i++) {
+    for (i = s->begin(); i !=s->end(); ++i) {
 	d->push_back(*i);
     }
 }
@@ -116,7 +117,7 @@ InputContext *XimServer::createContext(XimIC *xic, const char *engine)
 void XimServer::deleteContext(InputContext *ic)
 {
     std::list<InputContext *>::iterator it;
-    for (it = ic_list.begin(); it != ic_list.end(); it++) {
+    for (it = ic_list.begin(); it != ic_list.end(); ++it) {
 	if (*it == ic) {
 	    ic_list.erase(it);
 	    break;
@@ -127,7 +128,7 @@ void XimServer::deleteContext(InputContext *ic)
 void XimServer::changeContext(const char *engine) {
     set_im(engine);
     std::list<InputContext *>::iterator it;
-    for (it = ic_list.begin(); it != ic_list.end(); it++) {
+    for (it = ic_list.begin(); it != ic_list.end(); ++it) {
 	(*it)->changeContext(engine);
     }
     // make sure to use appropriate locale for the focused context
@@ -138,7 +139,7 @@ void XimServer::changeContext(const char *engine) {
 
 void XimServer::customContext(const char *custom, const char *val) {
     std::list<InputContext *>::iterator it;
-    for (it = ic_list.begin(); it != ic_list.end(); it++) {
+    for (it = ic_list.begin(); it != ic_list.end(); ++it) {
 	(*it)->customContext(custom, val);
 	break;
     }
@@ -299,7 +300,7 @@ void XimServer::set_im(const char *engine)
 const char *get_im_lang_from_engine(const char *engine)
 {
     std::list<UIMInfo>::iterator it;
-    for (it = uim_info.begin(); it != uim_info.end(); it++) {
+    for (it = uim_info.begin(); it != uim_info.end(); ++it) {
 	if (!strcmp(it->name, engine))
 	    return it->lang;
     }
@@ -661,7 +662,7 @@ void InputContext::pushback_preedit_string(int attr, const char *str)
     mServer->strToUstring(&js, str);
 
     uString::iterator it;
-    for (it = js.begin(); it != js.end(); it++) {
+    for (it = js.begin(); it != js.end(); ++it) {
 	m_pe->push_uchar(*it);
     }
 }
@@ -827,7 +828,7 @@ void InputContext::candidate_deactivate()
 	Canddisp *disp = canddisp_singleton();
 
 	disp->deactivate();
-	for (i = active_candidates.begin(); i != active_candidates.end(); i++) {
+	for (i = active_candidates.begin(); i != active_candidates.end(); ++i) {
 	    free((char *)*i);
 	}
 	mCandwinActive = false;
@@ -885,10 +886,7 @@ keyState::keyState(XimIC *ic)
     XimIM *im;
     DefTree *top;
 
-    mAltOn = false;
-    mMetaOn = false;
-    mSuperOn = false;
-    mHyperOn = false;
+    mModState = 0;
     mIc = ic;
 
     im = get_im_by_id(mIc->get_imid());
@@ -908,32 +906,31 @@ void keyState::check_key(keyEventX *x)
     mXKeySym = x->key_sym;
     mXKeyState = x->state;
 
+    mPreModState = mModState;
+
     if (x->press) {
 	m_bPush = true;
 
-	if (!(g_option_mask & OPT_ON_DEMAND_SYNC)) {
-	    // Only KeyPress is forwarded with full-synchronous
-	    // method.  So reset modifiers here.
-	    if (!(x->state) || x->state == LockMask || x->state == gXNumLockMask)
-		mAltOn = mMetaOn = mSuperOn = mHyperOn = false;
-	}
+	if (!(x->state) || x->state == LockMask || x->state == gXNumLockMask)
+	    mModState = mPreModState = 0;
 
+	mPreModState = mModState;
 	switch (x->key_sym) {
 	case XK_Alt_L:
 	case XK_Alt_R:
-	    mAltOn = true;
+	    mModState |= UMod_Alt;
 	    break;
 	case XK_Meta_L:
 	case XK_Meta_R:
-	    mMetaOn = true;
+	    mModState |= UMod_Meta;
 	    break;
 	case XK_Super_L:
 	case XK_Super_R:
-	    mSuperOn = true;
+	    mModState |= UMod_Super;
 	    break;
 	case XK_Hyper_L:
 	case XK_Hyper_R:
-	    mHyperOn = true;
+	    mModState |= UMod_Hyper;
 	    break;
 	default:
 	    break;
@@ -944,19 +941,19 @@ void keyState::check_key(keyEventX *x)
 	switch (x->key_sym) {
 	case XK_Alt_L:
 	case XK_Alt_R:
-	    mAltOn = false;
+	    mModState &= ~UMod_Alt;
 	    break;
 	case XK_Meta_L:
 	case XK_Meta_R:
-	    mMetaOn = false;
+	    mModState &= ~UMod_Meta;
 	    break;
 	case XK_Super_L:
 	case XK_Super_R:
-	    mSuperOn = false;
+	    mModState &= ~UMod_Super;
 	    break;
 	case XK_Hyper_L:
 	case XK_Hyper_R:
-	    mHyperOn = false;
+	    mModState &= ~UMod_Hyper;
 	    break;
 	default:
 	    break;
@@ -964,21 +961,19 @@ void keyState::check_key(keyEventX *x)
     }
 
     if (x->state & ShiftMask)
-	mModifier |= gShiftMask;
-    if (x->state & LockMask)
-	mModifier |= gLockMask;
+	mModifier |= UMod_Shift;
     if (x->state & ControlMask)
-	mModifier |= gControlMask;
+	mModifier |= UMod_Control;
     if (x->state & Mod1Mask)
-	mModifier |= revise_mod(gMod1Mask);
+	mModifier |= (gMod1Mask & mPreModState);
     if (x->state & Mod2Mask)
-	mModifier |= revise_mod(gMod2Mask);
+	mModifier |= (gMod2Mask & mPreModState);
     if (x->state & Mod3Mask)
-	mModifier |= revise_mod(gMod3Mask);
+	mModifier |= (gMod3Mask & mPreModState);
     if (x->state & Mod4Mask)
-	mModifier |= revise_mod(gMod4Mask);
+	mModifier |= (gMod4Mask & mPreModState);
     if (x->state & Mod5Mask)
-	mModifier |= revise_mod(gMod5Mask);
+	mModifier |= (gMod5Mask & mPreModState);
 
     if (x->key_sym < 128 && x->key_sym >= 32)
 	mKey = x->key_sym;
@@ -1047,20 +1042,6 @@ bool keyState::is_push()
     return m_bPush;
 }
 
-int keyState::revise_mod(int uim_mod)
-{
-    if ((uim_mod & UMod_Alt) && (mAltOn == false))
-	uim_mod &= ~UMod_Alt;
-    if ((uim_mod & UMod_Meta) && (mMetaOn == false))
-	uim_mod &= ~UMod_Meta;
-    if ((uim_mod & UMod_Super) && (mSuperOn == false))
-	uim_mod &= ~UMod_Super;
-    if ((uim_mod & UMod_Hyper) && (mHyperOn == false))
-	uim_mod &= ~UMod_Hyper;
-
-    return uim_mod;
-}
-
 KeySym keyState::xkeysym()
 {
     return mXKeySym;
@@ -1073,7 +1054,7 @@ int keyState::xkeystate()
 
 void keyState::reset()
 {
-    mAltOn = mMetaOn = mHyperOn = mSuperOn = false;
+    mModState = 0;
     mCompose->reset();
 }
 
@@ -1087,16 +1068,8 @@ static int check_modifier(std::list<KeySym> keysym_list)
 {
     int ret = 0;
     std::list<KeySym>::iterator i;
-    for (i = keysym_list.begin(); i != keysym_list.end(); i++) {
+    for (i = keysym_list.begin(); i != keysym_list.end(); ++i) {
 	switch (*i) {
-	case XK_Shift_L:
-	case XK_Shift_R:
-	    ret |= UMod_Shift;
-	    break;
-	case XK_Control_L:
-	case XK_Control_R:
-	    ret |= UMod_Control;
-	    break;
 	case XK_Alt_L:
 	case XK_Alt_R:
 	    ret |= UMod_Alt;
@@ -1124,8 +1097,7 @@ void init_modifier_keys() {
     int i, k = 0;
     int min_keycode, max_keycode, keysyms_per_keycode = 0;
 
-    std::list<KeySym> ShiftMaskSyms, LockMaskSyms, ControlMaskSyms,
-		      Mod1MaskSyms, Mod2MaskSyms, Mod3MaskSyms,
+    std::list<KeySym> Mod1MaskSyms, Mod2MaskSyms, Mod3MaskSyms,
 		      Mod4MaskSyms, Mod5MaskSyms;
 
     gXNumLockMask = 0;
@@ -1146,9 +1118,9 @@ void init_modifier_keys() {
 		} while (!ks && index < keysyms_per_keycode);
 
 		switch (i) {
-		case ShiftMapIndex: ShiftMaskSyms.push_back(ks); break;
-		case LockMapIndex: LockMaskSyms.push_back(ks); break;
-		case ControlMapIndex: ControlMaskSyms.push_back(ks); break;
+		case ShiftMapIndex: break;
+		case LockMapIndex: break;
+		case ControlMapIndex: break;
 		case Mod1MapIndex: Mod1MaskSyms.push_back(ks); break;
 		case Mod2MapIndex: Mod2MaskSyms.push_back(ks); break;
 		case Mod3MapIndex: Mod3MaskSyms.push_back(ks); break;
@@ -1166,9 +1138,6 @@ void init_modifier_keys() {
     XFreeModifiermap(map);
     XFree(sym);
 
-    gShiftMask = check_modifier(ShiftMaskSyms);
-    gLockMask = check_modifier(LockMaskSyms);
-    gControlMask = check_modifier(ControlMaskSyms);
     gMod1Mask = check_modifier(Mod1MaskSyms);
     gMod2Mask = check_modifier(Mod2MaskSyms);
     gMod3Mask = check_modifier(Mod3MaskSyms);

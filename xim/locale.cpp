@@ -32,7 +32,9 @@
 
 // Locale dependent routines
 
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE // for asprintf on stdio.h with old glibc/gcc
+#endif
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -169,14 +171,14 @@ ustring_to_utf8_str(uString *s)
     int l = 0, nbyte;
     unsigned char utf8[6];
     // count the length
-    for (i = s->begin(); i != s->end(); i++) {
+    for (i = s->begin(); i != s->end(); ++i) {
 	nbyte = utf8_wctomb(utf8, *i);
 	l += nbyte;
     }
     char *c = (char *)malloc(l + 1);
     c[l] = 0;
     l = 0;
-    for (i = s->begin(); i != s->end(); i++) {
+    for (i = s->begin(); i != s->end(); ++i) {
 	nbyte = utf8_wctomb(utf8, *i);
 	int j;
 	for (j = 0; j < nbyte; j++) {

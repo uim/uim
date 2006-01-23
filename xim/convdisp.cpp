@@ -676,7 +676,7 @@ void PeLineWin::draw_pe(pe_stat *p)
     mCursorX = m_x;
     mCharPos = 0;
     std::list<pe_ustring>::iterator i;
-    for (i = p->ustrings.begin(); i != p->ustrings.end(); i++) {
+    for (i = p->ustrings.begin(); i != p->ustrings.end(); ++i) {
 	draw_segment(&(*i));
     }
     draw_cursor();
@@ -733,7 +733,7 @@ void PeLineWin::draw_segment(pe_ustring *s)
     uString::iterator i;
     int caret_pos = mConvdisp->get_caret_pos();
 
-    for (i = s->s.begin(); i != s->s.end(); i++) {
+    for (i = s->s.begin(); i != s->s.end(); ++i) {
 	uchar ch = *i;
 	int width = get_char_width(ch);
 	draw_char(m_x, PE_LINE_WIN_FONT_POS_Y, ch, s->stat);
@@ -768,7 +768,7 @@ int PeLineWin::calc_segment_extent(pe_ustring *s)
     int width = 0;
     uString::iterator i;
 
-    for (i = s->s.begin(); i != s->s.end(); i++) {
+    for (i = s->s.begin(); i != s->s.end(); ++i) {
 	uchar ch = *i;
 	width += get_char_width(ch);
     }
@@ -780,7 +780,7 @@ void PeLineWin::calc_extent(pe_stat *p)
     int width = 0;
     std::list<pe_ustring>::iterator i;
 
-    for (i = p->ustrings.begin(); i != p->ustrings.end(); i++)
+    for (i = p->ustrings.begin(); i != p->ustrings.end(); ++i)
 	width += calc_segment_extent(&(*i));	
 
     if (width < PE_LINE_WIN_WIDTH)
@@ -921,7 +921,7 @@ uString Convdisp::get_pe()
 {
     uString s;
     std::list<pe_ustring>::iterator it;
-    for (it = m_pe->ustrings.begin(); it != m_pe->ustrings.end(); it++) {
+    for (it = m_pe->ustrings.begin(); it != m_pe->ustrings.end(); ++it) {
 	append_ustring(&s, &(*it).s);
     }
     return s;
@@ -1395,9 +1395,9 @@ void ConvdispOv::make_ce_array()
     uString::iterator j;
     int s;
     int c = 0;
-    for (i = m_pe->ustrings.begin(); i != m_pe->ustrings.end(); i++) {
+    for (i = m_pe->ustrings.begin(); i != m_pe->ustrings.end(); ++i) {
 	s = (*i).stat;
-	for (j = (*i).s.begin(); j != (*i).s.end(); j++) {
+	for (j = (*i).s.begin(); j != (*i).s.end(); ++j) {
 	    m_ce[c].c = *j;
 	    m_ce[c].stat = s;
 	    c++;
@@ -1552,7 +1552,7 @@ void ConvdispOs::update_preedit()
     t->pushC32(0); // chg_first
     t->pushC32(mPrevLen); // chg_length
 
-    if (m_pe->ustrings.size())
+    if (!m_pe->ustrings.empty())
 	t->pushC32(0);
     else
 	t->pushC32(3);
@@ -1631,7 +1631,7 @@ void ConvdispOs::compose_preedit_array(TxPacket *t)
 {
     uString s;
     std::list<pe_ustring>::iterator it;
-    for (it = m_pe->ustrings.begin(); it != m_pe->ustrings.end(); it++) {
+    for (it = m_pe->ustrings.begin(); it != m_pe->ustrings.end(); ++it) {
 	append_ustring(&s, &(*it).s);
     }
 
@@ -1659,7 +1659,7 @@ void ConvdispOs::compose_feedback_array(TxPacket *t)
     t->pushC16(len * 4);
     t->pushC16(0);
     std::list<pe_ustring>::iterator it;
-    for (it = m_pe->ustrings.begin(); it != m_pe->ustrings.end(); it++) {
+    for (it = m_pe->ustrings.begin(); it != m_pe->ustrings.end(); ++it) {
 	len = (*it).s.size();
 	stat = (*it).stat;
 	xstat = FB_None;

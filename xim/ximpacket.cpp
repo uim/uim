@@ -54,7 +54,7 @@ rup4(int l)
 }
 
 void
-writeC8(C8 val, int byte_order, unsigned char *buf)
+writeC8(C8 val, int /* byte_order */, unsigned char *buf)
 {
     buf[0] = val;
 }
@@ -211,7 +211,7 @@ public:
     virtual int get_size() {
 	return m_len;
     }
-    virtual int write_to_buf(unsigned char *buf, int bo) {
+    virtual int write_to_buf(unsigned char *buf, int /* bo */) {
 	memcpy(buf, m_str, m_len);
 	return get_size();
     }
@@ -253,7 +253,7 @@ TxPacket_impl::TxPacket_impl(int major, int minor)
 TxPacket_impl::~TxPacket_impl()
 {
     std::list<TxElement *>::iterator i;
-    for (i = m_elms.begin(); i != m_elms.end(); i++) {
+    for (i = m_elms.begin(); i != m_elms.end(); ++i) {
 	delete *i;
     }
 }
@@ -263,7 +263,7 @@ int TxPacket_impl::get_length()
     std::list<TxElement *>::iterator i;
     int l;
     l = 4;
-    for (i = m_elms.begin(); i != m_elms.end(); i++) {
+    for (i = m_elms.begin(); i != m_elms.end(); ++i) {
 	l +=  (*i)->get_size();
     }  
     return l;
@@ -274,7 +274,7 @@ int TxPacket_impl::write_to_buf(unsigned char *buf, int buflen, int byte_order)
     std::list<TxElement *>::iterator i;
     int l, m;
     l = 4;
-    for (i = m_elms.begin(); i != m_elms.end(); i++) {
+    for (i = m_elms.begin(); i != m_elms.end(); ++i) {
 	m = (*i)->get_size();
 	if (l + m > buflen)
 	    return 0;

@@ -163,13 +163,29 @@ CustomPathnameEdit::CustomPathnameEdit( struct uim_custom *c, QWidget *parent, c
     : QHBox( parent, name ),
       UimCustomItemIface( c )
 {
+    const char *button;
+
     setSpacing( 3 );
     m_lineEdit = new QLineEdit( this );
     QObject::connect( m_lineEdit, SIGNAL(textChanged(const QString &)),
                       this, SLOT(slotCustomTextChanged(const QString &)) );
 
     m_fileButton = new QPushButton( this );
-    m_fileButton->setText( _("File") );
+    /* Since both pathname type opens the file dialog to select an item rather
+     * than open it, the label should always be "Select..." here.  The type is
+     * obvious for uses even if the button label does not indicate
+     * it. Information about the action the button causes is more important.
+     *   -- YamaKen 2006-01-21 */
+    switch (m_custom->value->as_pathname->type) {
+    case UCustomPathnameType_Directory:
+        button = N_( "Select..." );
+        break;
+    case UCustomPathnameType_RegularFile:
+    default:
+        button = N_( "Select..." );
+        break;
+    }
+    m_fileButton->setText( mygettext(button) );
     QObject::connect( m_fileButton, SIGNAL(clicked()),
                       this, SLOT(slotPathnameButtonClicked()) );
 
@@ -181,7 +197,7 @@ void CustomPathnameEdit::update()
     if( !m_custom || m_custom->type != UCustom_Pathname )
         return;
 
-    m_lineEdit->setText( _FU8(m_custom->value->as_pathname) );
+    m_lineEdit->setText( _FU8(m_custom->value->as_pathname->str) );
 
     /* sync with Label */
     parentWidget()->setEnabled( m_custom->is_active );
@@ -189,8 +205,9 @@ void CustomPathnameEdit::update()
 
 void CustomPathnameEdit::setDefault()
 {
-    free( m_custom->value->as_pathname );
-    m_custom->value->as_pathname = strdup( m_custom->default_value->as_pathname );
+    free( m_custom->value->as_pathname->str );
+    m_custom->value->as_pathname->str = strdup( m_custom->default_value->as_pathname->str );
+    m_custom->value->as_pathname->type = m_custom->default_value->as_pathname->type;
 
     setCustom( m_custom );
     update();
@@ -202,10 +219,15 @@ void CustomPathnameEdit::slotPathnameButtonClicked()
     QObject::connect( m_fileDialog, SIGNAL(filterSelected(const QString&)),
                       this, SLOT(slotFileDialogFilterSelected(const QString&)) );
 
-
-    m_fileDialog->setMode( QFileDialog::ExistingFile );
-    m_fileDialog->addFilter( "Directories" );
-    m_fileDialog->setSelectedFilter( "All Files (*)" );
+    switch (m_custom->value->as_pathname->type) {
+    case UCustomPathnameType_Directory:
+        m_fileDialog->setMode( QFileDialog::Directory );
+        break;
+    case UCustomPathnameType_RegularFile:
+    default:
+         m_fileDialog->setMode( QFileDialog::ExistingFile );
+         break;
+    }
     if ( m_fileDialog->exec() == QDialog::Accepted )
     {
         QString fileName = m_fileDialog->selectedFile();
@@ -218,8 +240,8 @@ void CustomPathnameEdit::slotCustomTextChanged( const QString & text )
 {
     Q_ASSERT( m_custom->type == UCustom_Pathname );
 
-    free( m_custom->value->as_pathname );
-    m_custom->value->as_pathname = strdup( (const char*)text.utf8() );
+    free( m_custom->value->as_pathname->str );
+    m_custom->value->as_pathname->str = strdup( (const char*)text.utf8() );
 
     setCustom( m_custom );
 }

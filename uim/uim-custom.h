@@ -51,6 +51,11 @@ enum UCustomType {
   UCustom_Key
 };
 
+enum UCustomPathnameType {
+  UCustomPathnameType_RegularFile,
+  UCustomPathnameType_Directory
+};
+
 enum UCustomKeyType {
   UCustomKey_Regular,   /* "<Control>j" */
   UCustomKey_Reference  /* "generic-cancel-key" */
@@ -65,10 +70,15 @@ union uim_custom_value {
   int as_bool;
   int as_int;
   char *as_str;
-  char *as_pathname;
+  struct uim_custom_pathname *as_pathname;
   struct uim_custom_choice *as_choice;
   struct uim_custom_choice **as_olist;
   struct uim_custom_key **as_key;
+};
+
+struct uim_custom_pathname {
+  char *str;
+  int type;   /* UCustomPathnameType */
 };
 
 struct uim_custom_choice {

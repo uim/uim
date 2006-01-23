@@ -626,7 +626,7 @@ static double my_modf(double x0, double *iptr)
     double x = x0;
     double f = 1.0;
 
-    for (i=0;i<100;i++) {
+    for (i = 0; i < 100; i++) {
 	l = (long)x;
 	if (l <= (x+1) && l >= (x-1)) break;
 	x *= 0.1;

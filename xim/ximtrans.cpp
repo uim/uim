@@ -203,22 +203,22 @@ Connection::~Connection()
 {
     // destruct all the IM created by this Connection
     std::list<int>::iterator i;
-    for (i = mCreatedIm.begin(); i != mCreatedIm.end(); i++) {
+    for (i = mCreatedIm.begin(); i != mCreatedIm.end(); ++i) {
 	close_im(*i);
     }
     //
     std::list<RxPacket *>::iterator ir;
-    for (ir = mRxQ.begin(); ir != mRxQ.end(); ir++) {
+    for (ir = mRxQ.begin(); ir != mRxQ.end(); ++ir) {
 	delete *ir;
     }
     std::list<TxPacket *>::iterator it;
-    for (it = mTxQ.begin(); it != mTxQ.end(); it++) {
+    for (it = mTxQ.begin(); it != mTxQ.end(); ++it) {
 	delete *it;
     }
-    for (it = mPTxQ.begin(); it != mPTxQ.end(); it++) {
+    for (it = mPTxQ.begin(); it != mPTxQ.end(); ++it) {
 	delete *it;
     }
-    for (it = mPendingTxQ.begin(); it != mPendingTxQ.end(); it++) {
+    for (it = mPendingTxQ.begin(); it != mPendingTxQ.end(); ++it) {
 	delete *it;
     }
 }
@@ -231,7 +231,7 @@ void Connection::terminate()
 void Connection::OnRecv()
 {
     std::list<RxPacket *>::iterator i;
-    while (mRxQ.size()) {
+    while (!mRxQ.empty()) {
 	i = mRxQ.begin();
 	int major = (*i)->getMajor();
 	if (g_option_mask & OPT_TRACE_XIM)
@@ -321,7 +321,7 @@ XimServer *Connection::getXimServer()
 void Connection::OnSend()
 {
     std::list<int>::iterator i;
-    for (i = mCreatedIm.begin(); i != mCreatedIm.end(); i++) {
+    for (i = mCreatedIm.begin(); i != mCreatedIm.end(); ++i) {
 	XimIM *im;
 	im = get_im_by_id(*i);
 	if (im)
@@ -332,7 +332,7 @@ void Connection::OnSend()
 void Connection::OnClose()
 {
     std::list<int>::iterator i;
-    for (i = mCreatedIm.begin(); i != mCreatedIm.end(); i++) {
+    for (i = mCreatedIm.begin(); i != mCreatedIm.end(); ++i) {
 	close_im(*i);
     }
     mCreatedIm.erase(mCreatedIm.begin(), mCreatedIm.end());
@@ -537,7 +537,7 @@ void Connection::xim_close(RxPacket *p)
     push_packet(t);
     close_im(imid);
     std::list<int>::iterator i;
-    for (i = mCreatedIm.begin(); i != mCreatedIm.end(); i++) {
+    for (i = mCreatedIm.begin(); i != mCreatedIm.end(); ++i) {
 	if (*i == imid) {
 	    mCreatedIm.erase(i);
 	    return;
@@ -799,7 +799,7 @@ bool Connection::is_xim_sync_reply_timeout(void)
 
 void Connection::clear_pending_queue() {
     std::list<TxPacket *>::iterator i;
-    while (mPendingTxQ.size()) {
+    while (!mPendingTxQ.empty()) {
 	i = mPendingTxQ.begin();
 	mPendingTxQ.pop_front();
 	delete *i;

@@ -43,6 +43,8 @@
 #include "uim/uim-custom.h"
 #include "uim/gettext.h"
 
+#include "../gtk/key-util-gtk.h"
+
 #define OBJECT_DATA_UIM_CUSTOM_SYM    "uim-pref-gtk::uim-custom-sym"
 
 extern gboolean uim_pref_gtk_value_changed;
@@ -68,12 +70,58 @@ static struct KeyPrefWin {
   GtkWidget *remove_button;
   GtkWidget *keycode_entry;
 
-  guint           grabbed_key_val;
-  GdkModifierType grabbed_key_state;
+  gint grabbed_key_val;
+  gint grabbed_key_state;
 } key_pref_win = {
   NULL, NULL, NULL, NULL, NULL, 0, 0,
 };
 
+static void uimpref_file_entry_class_init(UimPrefFileEntryClass *klass);
+static void uimpref_file_entry_init(UimPrefFileEntry *entry);
+
+GType
+uimpref_file_entry_get_type(void)
+{
+  static GType uimpref_file_entry_type = 0;
+
+  if (!uimpref_file_entry_type)
+  {
+    static const GTypeInfo uimpref_file_entry_info =
+    {
+      sizeof(UimPrefFileEntryClass),
+      NULL,
+      NULL,
+      (GClassInitFunc)uimpref_file_entry_class_init,
+      NULL,
+      NULL,
+      sizeof(UimPrefFileEntry),
+      0,
+      (GInstanceInitFunc)uimpref_file_entry_init,
+    };
+
+    uimpref_file_entry_type = g_type_register_static(GTK_TYPE_ENTRY,
+		    "UimPrefFileEntry", &uimpref_file_entry_info, 0);
+  }
+
+  return uimpref_file_entry_type;
+}
+
+static void
+uimpref_file_entry_class_init(UimPrefFileEntryClass *klass)
+{
+}
+
+static void
+uimpref_file_entry_init(UimPrefFileEntry *entry)
+{
+  entry->type = UCustomPathnameType_RegularFile;
+}
+
+GtkWidget *
+uimpref_file_entry_new()
+{
+  return GTK_WIDGET(g_object_new(uimpref_file_entry_get_type(), NULL));
+}
 
 
 static void
@@ -293,8 +341,8 @@ custom_entry_changed_cb(GtkEntry *entry, gpointer user_data)
     custom->value->as_str = strdup(str);
     rv = uim_custom_set(custom);
   } else if (custom->type == UCustom_Pathname) {
-    free(custom->value->as_pathname);
-    custom->value->as_pathname = strdup(str);
+    free(custom->value->as_pathname->str);
+    custom->value->as_pathname->str = strdup(str);
     rv = uim_custom_set(custom);
   } else {
     rv = UIM_FALSE;
@@ -332,7 +380,7 @@ sync_value_string(GtkEntry *entry)
   if (custom->type == UCustom_Str) {
     gtk_entry_set_text(GTK_ENTRY(entry), custom->value->as_str);
   } else if (custom->type == UCustom_Pathname) {
-    gtk_entry_set_text(GTK_ENTRY(entry), custom->value->as_pathname);
+    gtk_entry_set_text(GTK_ENTRY(entry), custom->value->as_pathname->str);
   }
 
   uim_custom_free(custom);
@@ -381,9 +429,20 @@ static void
 custom_pathname_button_clicked_cb(GtkWidget *button, GtkWidget *entry)
 {
   GtkWidget *dialog;
+  GtkFileChooserAction action;
+
+  switch (UIMPREF_FILE_ENTRY(entry)->type) {
+    case UCustomPathnameType_Directory:
+      action = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
+      break;
+    case UCustomPathnameType_RegularFile:
+    default:
+      action = GTK_FILE_CHOOSER_ACTION_OPEN;
+      break;
+  }
   dialog = gtk_file_chooser_dialog_new (_("Specify file"),
 					NULL,
-					GTK_FILE_CHOOSER_ACTION_OPEN,
+					action,
 					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 					GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 					NULL);
@@ -407,6 +466,7 @@ add_custom_type_pathname(GtkWidget *vbox, struct uim_custom *custom)
   GtkWidget *label;
   GtkWidget *entry;
   GtkWidget *button;
+  const char *button_label;
 
   hbox = gtk_hbox_new(FALSE, 8);
  
@@ -415,10 +475,27 @@ add_custom_type_pathname(GtkWidget *vbox, struct uim_custom *custom)
   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
   gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
 
-  entry = gtk_entry_new();
+  entry = uimpref_file_entry_new();
+  UIMPREF_FILE_ENTRY(entry)->type = custom->value->as_pathname->type;
   gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
 
-  button = gtk_button_new_with_label(_("File..."));
+  /* Since both pathname type opens the file dialog to select an item
+   * rather than open it, the label should always be "Select..." here.
+   * The type is obvious for uses even if the button label does not
+   * indicate it. Information about the action the button causes is
+   * more important. Even if a better label has been found, it should
+   * not contain the term 'directory' since GNOME uses 'folder' for
+   * it.  -- YamaKen 2006-01-21 */
+  switch (custom->value->as_pathname->type) {
+    case UCustomPathnameType_Directory:
+      button_label = N_("Select...");
+      break;
+    case UCustomPathnameType_RegularFile:
+    default:
+      button_label = N_("Select...");
+      break;
+  }
+  button = gtk_button_new_with_label(dgettext(GETTEXT_PACKAGE, button_label));
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
 
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
@@ -1308,7 +1385,7 @@ key_pref_selection_changed(GtkTreeSelection *selection,
 }
 
 static void
-key_pref_set_value(guint keyval, GdkModifierType mod)
+key_pref_set_value(gint ukey, gint umod)
 {
   GString *keystr;
 
@@ -1318,111 +1395,112 @@ key_pref_set_value(guint keyval, GdkModifierType mod)
    * easy-to-recognize key configuration.  uim-custom performs
    * implicit shift key encoding/decoding appropriately.
    */
-  if (((keyval >= 256) || !g_ascii_isgraph(keyval)) &&
-		  (mod & GDK_SHIFT_MASK))
+  if (((ukey >= 256) || !g_ascii_isgraph(ukey)) &&
+		  (umod & UMod_Shift))
     g_string_append(keystr, "<Shift>");
-  if (mod & GDK_CONTROL_MASK)
+  if (umod & UMod_Control)
     g_string_append(keystr, "<Control>");
-  if (mod & GDK_MOD1_MASK)
+  if (umod & UMod_Alt)
     g_string_append(keystr, "<Alt>");
+  if (umod & UMod_Meta)
+    g_string_append(keystr, "<Meta>");
+  if (umod & UMod_Super)
+    g_string_append(keystr, "<Super>");
+  if (umod & UMod_Hyper)
+    g_string_append(keystr, "<Hyper>");
 
-  switch (keyval) {
-  case GDK_space:
+  switch (ukey) {
+  case 0x20:
     /*
      * "space" is not proper uim keysym and only exists for user
      * convenience. It is converted to " " by uim-custom
      */
     g_string_append(keystr, "space");
     break;
-  case GDK_BackSpace:
+  case UKey_Backspace:
     g_string_append(keystr, "backspace");
     break;
-  case GDK_Delete:
+  case UKey_Delete:
     g_string_append(keystr, "delete");
     break;
-  case GDK_Insert:
+  case UKey_Insert:
     g_string_append(keystr, "insert");
     break;
-  case GDK_Escape:
+  case UKey_Escape:
     g_string_append(keystr, "escape");
     break;
-  case GDK_Tab:
+  case UKey_Tab:
     g_string_append(keystr, "tab");
     break;
-  case GDK_Return:
+  case UKey_Return:
     g_string_append(keystr, "return");
     break;
-  case GDK_Left:
+  case UKey_Left:
     g_string_append(keystr, "left");
     break;
-  case GDK_Up:
+  case UKey_Up:
     g_string_append(keystr, "up");
     break;
-  case GDK_Right:
+  case UKey_Right:
     g_string_append(keystr, "right");
     break;
-  case GDK_Down:
+  case UKey_Down:
     g_string_append(keystr, "down");
     break;
-  case GDK_Prior:
+  case UKey_Prior:
     g_string_append(keystr, "prior");
     break;
-  case GDK_Next:
+  case UKey_Next:
     g_string_append(keystr, "next");
     break;
-  case GDK_Home:
+  case UKey_Home:
     g_string_append(keystr, "home");
     break;
-  case GDK_End:
+  case UKey_End:
     g_string_append(keystr, "end");
     break;
-  case GDK_Kanji:
-  case GDK_Zenkaku_Hankaku:
+  case UKey_Zenkaku_Hankaku:
     g_string_append(keystr, "zenkaku-hankaku");
     break;
-  case GDK_Multi_key:
+  case UKey_Multi_key:
     g_string_append(keystr, "Multi_key");
     break;
-  case GDK_Mode_switch:
+  case UKey_Mode_switch:
     g_string_append(keystr, "Mode_switch");
     break;
-  case GDK_Henkan_Mode:
+  case UKey_Henkan_Mode:
     g_string_append(keystr, "Henkan_Mode");
     break;
-  case GDK_Muhenkan:
+  case UKey_Muhenkan:
     g_string_append(keystr, "Muhenkan");
     break;
-  case GDK_Shift_L:
-  case GDK_Shift_R:
+  case UKey_Shift_key:
     g_string_append(keystr, "Shift_key");
     break;
-  case GDK_Control_L:
-  case GDK_Control_R:
+  case UKey_Control_key:
     g_string_append(keystr, "Control_key");
     break;
-  case GDK_Alt_L:
-  case GDK_Alt_R:
+  case UKey_Alt_key:
     g_string_append(keystr, "Alt_key");
     break;
-  case GDK_Meta_L:
-  case GDK_Meta_R:
+  case UKey_Meta_key:
     g_string_append(keystr, "Meta_key");
     break;
-  case GDK_Super_L:
-  case GDK_Super_R:
+  case UKey_Super_key:
     g_string_append(keystr, "Super_key");
     break;
-  case GDK_Hyper_L:
-  case GDK_Hyper_R:
+  case UKey_Hyper_key:
     g_string_append(keystr, "Hyper_key");
     break;
   default:
-    if (keyval >= GDK_F1 && keyval <= GDK_F35) {
-      g_string_append_printf(keystr, "F%d", keyval - GDK_F1 + 1);
-    } else if (keyval >= GDK_F1 && keyval <= GDK_F35) {
+    if (ukey >= UKey_F1 && ukey <= UKey_F35) {
+      g_string_append_printf(keystr, "F%d", ukey - UKey_F1 + 1);
+#if 0
+    } else if (keyval >= GDK_KP_0 && keyval <= GDK_KP_9) {
       g_string_append_printf(keystr, "%d", keyval - GDK_KP_0 + UKey_0);
-    } else if (keyval < 256) {
-      g_string_append_printf(keystr, "%c", keyval);
+#endif
+    } else if (ukey < 256) {
+      g_string_append_printf(keystr, "%c", ukey);
     } else {
       /* UKey_Other */
     }
@@ -1441,8 +1519,8 @@ static gboolean
 grab_win_key_press_cb (GtkWidget *widget, GdkEventKey *event,
 		       GtkEntry *key_entry)
 {
-  key_pref_win.grabbed_key_val   = event->keyval;
-  key_pref_win.grabbed_key_state = event->state;
+  im_uim_convert_keyevent(event, &key_pref_win.grabbed_key_val,
+				 &key_pref_win.grabbed_key_state);
 
   return TRUE;
 }
@@ -1453,6 +1531,9 @@ grab_win_key_release_cb (GtkWidget *widget, GdkEventKey *event,
 {
   key_pref_set_value(key_pref_win.grabbed_key_val,
 		     key_pref_win.grabbed_key_state);
+
+  im_uim_convert_keyevent(event, &key_pref_win.grabbed_key_val,
+				 &key_pref_win.grabbed_key_state);
 
   g_signal_handlers_disconnect_by_func(G_OBJECT(widget),
 				       (gpointer) grab_win_key_press_cb,
@@ -1470,7 +1551,22 @@ static gboolean
 key_choose_entry_key_press_cb (GtkWidget *widget, GdkEventKey *event,
 			       GtkEntry *key_entry)
 {
-  key_pref_set_value(event->keyval, event->state);
+  int ukey, umod;
+
+  im_uim_convert_keyevent(event, &ukey, &umod);
+  key_pref_set_value(ukey, umod);
+
+  return TRUE;
+}
+
+static gboolean
+key_choose_entry_key_release_cb (GtkWidget *widget, GdkEventKey *event,
+			       GtkEntry *key_entry)
+{
+  int ukey, umod;
+
+  im_uim_convert_keyevent(event, &ukey, &umod);
+
   return TRUE;
 }
 
@@ -1808,6 +1904,8 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 		   G_CALLBACK(key_val_entry_changed_cb), key_entry);
   g_signal_connect(G_OBJECT(entry), "key-press-event",
 		   G_CALLBACK(key_choose_entry_key_press_cb), key_entry);
+  g_signal_connect(G_OBJECT(entry), "key-release-event",
+		   G_CALLBACK(key_choose_entry_key_release_cb), key_entry);
   gtk_widget_show(entry);
 
   button = gtk_button_new_with_label(_("Grab..."));
@@ -1949,8 +2047,9 @@ uim_pref_gtk_set_default_value(GtkWidget *widget)
     value->as_str = strdup(defval->as_str);
     break;
   case UCustom_Pathname:
-    free(value->as_pathname);
-    value->as_pathname = strdup(defval->as_pathname);
+    free(value->as_pathname->str);
+    value->as_pathname->str = strdup(defval->as_pathname->str);
+    value->as_pathname->type = defval->as_pathname->type;
     break;
   case UCustom_Choice:
     free(value->as_choice->symbol);

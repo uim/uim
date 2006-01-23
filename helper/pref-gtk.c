@@ -44,6 +44,7 @@
 #include "uim/uim-custom.h"
 #include "uim/gettext.h"
 #include "pref-gtk-custom-widgets.h"
+#include "../gtk/key-util-gtk.h"
 
 #define DEFAULT_WINDOW_WIDTH_MAX 800
 #define DEFAULT_WINDOW_HEIGHT_MAX 600
@@ -502,7 +503,7 @@ create_pref_window(void)
   gtk_container_add(GTK_CONTAINER(scrolled_win), create_pref_treeview());
 
   vbox = gtk_vbox_new(FALSE, 8);
-  gtk_container_set_border_width(vbox, 8);
+  gtk_container_set_border_width(GTK_CONTAINER(vbox), 8);
   gtk_box_pack_start(GTK_BOX(vbox), pref_hbox, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vbox), create_setting_button_box("dummy-group-name"), FALSE, TRUE, 0);
   gtk_container_add(GTK_CONTAINER(window), vbox);
@@ -582,8 +583,10 @@ main (int argc, char *argv[])
   if (uim_custom_enable()) {
     GtkWidget *pref;
 
-    gtk_idle_add((GtkFunction) check_dot_uim_file, NULL);
+    im_uim_init_modifier_keys();
   
+    gtk_idle_add((GtkFunction) check_dot_uim_file, NULL);
+
     pref = create_pref_window();
 
     gtk_widget_show_all(pref);

@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2005-2006 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -31,36 +31,24 @@
 
 */
 
+/*
+ * key utility for uim-gtk
+ */
+
+#ifndef _key_util_gtk_h_included_
+#define _key_util_gtk_h_included_
+
 #include <glib.h>
-#include <gtk/gtk.h>
 
-G_BEGIN_DECLS
+/*
+ * Initialize modifier key mappings.
+ */
+void im_uim_init_modifier_keys(void);
 
-#define UIMPREF_FILE_ENTRY_TYPE	(uimpref_file_entry_get_type())
-#define UIMPREF_FILE_ENTRY(obj)	(G_TYPE_CHECK_INSTANCE_CAST((obj), UIMPREF_FILE_ENTRY_TYPE, UimPrefFileEntry))
-#define UIMPREF_FILE_ENTRY_CLASS(klass)	(G_TYPE_CHECK_CLASS_CAST((klass), UIMPREF_FILE_ENTRY_TYPE, UimPrefFileEntryClass))
-#define IS_UIMPREF_FILE_ENTRY(obj)	(G_TYPE_CHECK_INSTANCE_TYPE((obj), UIMPREF_FILE_ENTRY_TYPE))
-#define IS_UIMPREF_FILE_ENTRY_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE((klass), UIMPREF_FILE_ENTRY_TYPE))
+/*
+ * Get ukey and umod from gdk's GdkEventKey->keyval and GdkEventKey->state.
+ * This function should be called at both key press and release events.
+ */
+void im_uim_convert_keyevent(GdkEventKey *key, int *ukey, int *umod);
 
-typedef struct _UimPrefFileEntry	UimPrefFileEntry;
-typedef struct _UimPrefFileEntryClass	UimPrefFileEntryClass;
-
-struct _UimPrefFileEntryClass
-{
-  GtkEntryClass parent_class;
-};
-
-struct _UimPrefFileEntry
-{
-  GtkEntry entry;
-  int type;
-};
-
-GType uimpref_file_entry_get_type(void);
-GtkWidget *uimpref_file_entry_new(void);
-
-G_END_DECLS
-
-
-void uim_pref_gtk_add_custom(GtkWidget *vbox, const char *custom_sym);
-void uim_pref_gtk_set_default_value(GtkWidget *widget);
+#endif

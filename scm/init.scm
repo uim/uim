@@ -57,7 +57,7 @@
 
 (define load-user-conf
   (lambda ()
-    (if (is-set-ugid?)
+    (if (setugid?)
 	#f
 	(let ((orig-verbose (verbose))
 	      (file (or (getenv "LIBUIM_USER_SCM_FILE")

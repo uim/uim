@@ -35,7 +35,7 @@
 (require "util.scm")
 
 (define uim-plugin-lib-load-path
-   (if (is-set-ugid?)
+   (if (setugid?)
        (list (string-append (sys-pkglibdir) "/plugin"))
        (filter string?
  	      (append (list (getenv "LIBUIM_PLUGIN_LIB_DIR")
@@ -47,7 +47,7 @@
  			  ())))))
 
 (define uim-plugin-scm-load-path
-  (if (is-set-ugid?)
+  (if (setugid?)
       (list (sys-pkgdatadir))
       (filter string?
  	      (list (getenv "LIBUIM_SCM_FILES")
@@ -125,7 +125,7 @@
 	   (conf-file "installed-modules.scm")
 	   (user-conf-file (string-append user-module-dir conf-file)))
       (try-load conf-file)
-      (if (is-set-ugid?)
+      (if (setugid?)
 	  #f
 	  (if (not (getenv "LIBUIM_VANILLA"))
 	      (let ((orig-module-list installed-im-module-list)
@@ -144,6 +144,6 @@
 	   (file "loader.scm")
 	   (user-file (string-append user-module-dir file)))
       (and (try-load file)
-	   (or (and (not (is-set-ugid?))
+	   (or (and (not (setugid?))
 		    (try-load user-file))
 	       #t)))))

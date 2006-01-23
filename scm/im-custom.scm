@@ -422,7 +422,7 @@
 (define-custom 'eb-dic-path
   (string-append (getenv "HOME") "/dict")
   '(eb candwin)
-  '(pathname)
+  '(pathname directory)
   (_ "The directory which contains EB dictionary file")
   (_ "long description will be here."))
 

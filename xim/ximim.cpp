@@ -154,7 +154,7 @@ void XimIM_impl::destroy_ic(int icid)
 void XimIM_impl::changeContext(const char *engine)
 {
     std::map<int, XimIC *>::iterator i;
-    for (i = m_ics.begin(); i != m_ics.end(); i++) {
+    for (i = m_ics.begin(); i != m_ics.end(); ++i) {
 	(*i).second->changeContext(engine);
     }
     if (mEngineName)
@@ -234,7 +234,7 @@ int XimIM_impl::unused_ic_id()
 {
     std::map<int, XimIC *>::iterator i;
     int max_id = 1; // Does ID of input-context start with 1?
-    for (i = m_ics.begin(); i != m_ics.end(); i++) {
+    for (i = m_ics.begin(); i != m_ics.end(); ++i) {
 	if (max_id <= (*i).first)
 	    max_id = (*i).first + 1;
     }
@@ -336,7 +336,7 @@ void XimIM_impl::forward_event(RxPacket *p)
 void XimIM_impl::free_all_ic()
 {
     std::map<int, XimIC *>::iterator i;
-    for (i = m_ics.begin(); i != m_ics.end(); i++) {
+    for (i = m_ics.begin(); i != m_ics.end(); ++i) {
 	(*i).second->unsetFocus();
 	delete (*i).second;
     }
@@ -346,7 +346,7 @@ void XimIM_impl::free_all_ic()
 void XimIM_impl::delete_ic(XimIC *ic)
 {
     std::map<int, XimIC *>::iterator it;
-    for (it = m_ics.begin(); it != m_ics.end(); it++) {
+    for (it = m_ics.begin(); it != m_ics.end(); ++it) {
 	if (it->second == ic) {
 	    it->second->unsetFocus();
 	    delete it->second;
@@ -375,7 +375,7 @@ void XimIM_impl::send_sync(int icid)
 void XimIM_impl::onSendPacket()
 {
     std::map<int, XimIC *>::iterator i;
-    for (i = m_ics.begin(); i != m_ics.end(); i++) {
+    for (i = m_ics.begin(); i != m_ics.end(); ++i) {
 	(*i).second->onSendPacket();
     }
 }
@@ -472,7 +472,7 @@ int unused_im_id()
     int max_id;
     std::map<int, XimIM *>::iterator i;
     max_id = 1;
-    for (i = g_ims.begin(); i != g_ims.end(); i++) {
+    for (i = g_ims.begin(); i != g_ims.end(); ++i) {
 	if ((*i).first == max_id)
 	    max_id = (*i).first + 1;
     }

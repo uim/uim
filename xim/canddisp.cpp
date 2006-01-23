@@ -30,7 +30,9 @@
   SUCH DAMAGE.
 */
 
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE // for asprintf on stdio.h with old glibc/gcc
+#endif
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -66,7 +68,7 @@ static FILE *candwin_r, *candwin_w;
 static int candwin_pid;
 static Canddisp *disp;
 static const char *command;
-static bool candwin_inited = false;
+static bool candwin_initted = false;
 
 static void candwin_read_cb(int fd, int ev);
 
@@ -106,7 +108,7 @@ Canddisp *canddisp_singleton()
     if (!command)
 	command = candwin_command();
 
-    if (!candwin_inited && command) {
+    if (!candwin_initted && command) {
 	candwin_pid = uim_ipc_open_command(candwin_pid, &candwin_r, &candwin_w, command);
 	if (disp)
 	    delete disp;
@@ -120,7 +122,7 @@ Canddisp *canddisp_singleton()
 		    add_fd_watch(fd, READ_OK, candwin_read_cb);
 	    }
 	}
-	candwin_inited = true;
+	candwin_initted = true;
     }
     return disp;
 }
@@ -141,7 +143,7 @@ void Canddisp::activate(std::vector<const char *> candidates, int display_limit)
 
     fprintf(candwin_w, "activate\ncharset=UTF-8\ndisplay_limit=%d\n",
 		    display_limit);
-    for (i = candidates.begin(); i != candidates.end(); i++)
+    for (i = candidates.begin(); i != candidates.end(); ++i)
 	fprintf(candwin_w, "%s\n", *i);
     fprintf(candwin_w, "\n");
     fflush(candwin_w);
@@ -233,7 +235,7 @@ void Canddisp::check_connection()
 	terminate_canddisp_connection();
 }
 
-static void candwin_read_cb(int fd, int ev)
+static void candwin_read_cb(int fd, int /* ev */)
 {
     char buf[1024];
     int n;
@@ -291,6 +293,6 @@ void terminate_canddisp_connection()
     }
 
     candwin_w = candwin_r = NULL;
-    candwin_inited = false;
+    candwin_initted = false;
     return;
 }

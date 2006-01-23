@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-16 16:23+0900\n"
+"POT-Creation-Date: 2006-01-24 02:22+0900\n"
 "PO-Revision-Date: 2005-02-21 15:52+0100\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -388,97 +388,99 @@ msgstr ""
 msgid "line"
 msgstr "droite"
 
-#: helper/pref-gtk-custom-widgets.c:384
+#: helper/pref-gtk-custom-widgets.c:443
 msgid "Specify file"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:421
-msgid "File..."
+#: helper/pref-gtk-custom-widgets.c:491 helper/pref-gtk-custom-widgets.c:495
+#: qt/pref-customwidgets.cpp:181 qt/pref-customwidgets.cpp:185
+#, fuzzy
+msgid "Select..."
 msgstr "Fichier..."
 
-#: helper/pref-gtk-custom-widgets.c:1111
+#: helper/pref-gtk-custom-widgets.c:1188
 msgid "Enabled"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1137
+#: helper/pref-gtk-custom-widgets.c:1214
 msgid "Enabled items"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1215
+#: helper/pref-gtk-custom-widgets.c:1292
 msgid "Disabled"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1241
+#: helper/pref-gtk-custom-widgets.c:1318
 msgid "Disabled items"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1279 helper/pref-gtk-custom-widgets.c:1868
+#: helper/pref-gtk-custom-widgets.c:1356 helper/pref-gtk-custom-widgets.c:1966
 msgid "Edit..."
 msgstr "_Édition ..."
 
-#: helper/pref-gtk-custom-widgets.c:1487 qt/pref-customwidgets.cpp:853
+#: helper/pref-gtk-custom-widgets.c:1583 qt/pref-customwidgets.cpp:875
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1488
+#: helper/pref-gtk-custom-widgets.c:1584
 msgid "Grabbing keys"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1709
+#: helper/pref-gtk-custom-widgets.c:1805
 #, c-format
 msgid "%s - key configuration"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1746
+#: helper/pref-gtk-custom-widgets.c:1842
 msgid "Key preference"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1792
+#: helper/pref-gtk-custom-widgets.c:1888
 msgid "Key:"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1813
+#: helper/pref-gtk-custom-widgets.c:1911
 msgid "Grab..."
 msgstr ""
 
-#: helper/pref-gtk.c:144
+#: helper/pref-gtk.c:145
 msgid ""
 "Some value(s) have been changed.\n"
 "Save?"
 msgstr ""
 
-#: helper/pref-gtk.c:216 qt/pref-qt.cpp:263
+#: helper/pref-gtk.c:217 qt/pref-qt.cpp:263
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you really quit this program?"
 msgstr ""
 
-#: helper/pref-gtk.c:255 qt/pref-qt.cpp:138
+#: helper/pref-gtk.c:256 qt/pref-qt.cpp:138
 msgid "Group"
 msgstr "Groupe"
 
 #. Defaults button
-#: helper/pref-gtk.c:347
+#: helper/pref-gtk.c:348
 msgid "_Defaults"
 msgstr ""
 
-#: helper/pref-gtk.c:352
+#: helper/pref-gtk.c:353
 msgid "Revert all changes to default"
 msgstr ""
 
-#: helper/pref-gtk.c:362
+#: helper/pref-gtk.c:363
 msgid "Apply all changes"
 msgstr ""
 
-#: helper/pref-gtk.c:370
+#: helper/pref-gtk.c:371
 msgid "Quit this application without applying changes"
 msgstr ""
 
-#: helper/pref-gtk.c:381
+#: helper/pref-gtk.c:382
 msgid "Quit this application with applying changes"
 msgstr ""
 
-#: helper/pref-gtk.c:530 qt/pref-qt.cpp:106
+#: helper/pref-gtk.c:531 qt/pref-qt.cpp:106
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -533,15 +535,11 @@ msgstr ""
 msgid "Unable to parse the geometry string '%s'"
 msgstr ""
 
-#: qt/pref-customwidgets.cpp:172
-msgid "File"
-msgstr "Fichier"
-
-#: qt/pref-customwidgets.cpp:324 qt/pref-customwidgets.cpp:606
+#: qt/pref-customwidgets.cpp:346 qt/pref-customwidgets.cpp:628
 msgid "Edit"
 msgstr "Édition"
 
-#: qt/pref-customwidgets.cpp:856
+#: qt/pref-customwidgets.cpp:878
 msgid "Key Grab Dialog"
 msgstr ""
 
@@ -670,12 +668,12 @@ msgstr ""
 #: scm/im-custom.lisp:106 scm/im-custom.lisp:117 scm/im-custom.lisp:127
 #: scm/im-custom.lisp:229 scm/im-custom.lisp:286 scm/im-custom.lisp:292
 #: scm/im-custom.lisp:298 scm/im-custom.lisp:306 scm/im-custom.lisp:326
-#: scm/im-custom.lisp:342 scm/im-custom.lisp:348 scm/im-custom.lisp:355
-#: scm/im-custom.lisp:361 scm/im-custom.lisp:367 scm/im-custom.lisp:373
-#: scm/im-custom.lisp:379 scm/im-custom.lisp:385 scm/im-custom.lisp:391
-#: scm/im-custom.lisp:409 scm/im-custom.lisp:415 scm/im-custom.lisp:422
-#: scm/im-custom.lisp:432 scm/im-custom.lisp:436 scm/im-custom.lisp:442
-#: scm/im-custom.lisp:448 scm/mana-custom.lisp:51 scm/mana-custom.lisp:57
+#: scm/im-custom.lisp:347 scm/im-custom.lisp:353 scm/im-custom.lisp:360
+#: scm/im-custom.lisp:366 scm/im-custom.lisp:372 scm/im-custom.lisp:378
+#: scm/im-custom.lisp:384 scm/im-custom.lisp:390 scm/im-custom.lisp:396
+#: scm/im-custom.lisp:414 scm/im-custom.lisp:420 scm/im-custom.lisp:427
+#: scm/im-custom.lisp:437 scm/im-custom.lisp:441 scm/im-custom.lisp:447
+#: scm/im-custom.lisp:453 scm/mana-custom.lisp:51 scm/mana-custom.lisp:57
 #: scm/mana-custom.lisp:72 scm/mana-custom.lisp:78 scm/mana-custom.lisp:84
 #: scm/mana-custom.lisp:90 scm/mana-custom.lisp:173 scm/mana-custom.lisp:192
 #: scm/mana-custom.lisp:201 scm/mana-custom.lisp:243 scm/mana-custom.lisp:252
@@ -1432,19 +1430,19 @@ msgstr ""
 msgid "[Canna] ESC keys on vi-cooperative mode"
 msgstr ""
 
-#: scm/custom.lisp:749
+#: scm/custom.lisp:756
 msgid "-"
 msgstr ""
 
-#: scm/custom.lisp:750
+#: scm/custom.lisp:757
 msgid "Main settings of this group"
 msgstr ""
 
-#: scm/custom.lisp:753
+#: scm/custom.lisp:760
 msgid "Hidden settings"
 msgstr ""
 
-#: scm/custom.lisp:754
+#: scm/custom.lisp:761
 msgid ""
 "Hidden settings of this group. This group is invisible from uim_custom "
 "clients. Exists for internal variable management."
@@ -1678,87 +1676,87 @@ msgstr "Semblable à ATOK"
 msgid "Preedit color"
 msgstr ""
 
-#: scm/im-custom.lisp:333 scm/im-custom.lisp:334
+#: scm/im-custom.lisp:338 scm/im-custom.lisp:339
 msgid "Adjacent to cursor"
 msgstr ""
 
-#: scm/im-custom.lisp:336 scm/im-custom.lisp:337
+#: scm/im-custom.lisp:341 scm/im-custom.lisp:342
 msgid "Left end of preedit area"
 msgstr ""
 
-#: scm/im-custom.lisp:339 scm/im-custom.lisp:340
+#: scm/im-custom.lisp:344 scm/im-custom.lisp:345
 msgid "Right end of preedit area"
 msgstr ""
 
-#: scm/im-custom.lisp:341
+#: scm/im-custom.lisp:346
 msgid "Candidate window position"
 msgstr ""
 
-#: scm/im-custom.lisp:347
+#: scm/im-custom.lisp:352
 msgid "Enable lazy input method loading for fast startup"
 msgstr ""
 
-#: scm/im-custom.lisp:354
+#: scm/im-custom.lisp:359
 msgid "input method switcher"
 msgstr ""
 
-#: scm/im-custom.lisp:360
+#: scm/im-custom.lisp:365
 msgid "preference tool"
 msgstr ""
 
-#: scm/im-custom.lisp:366
+#: scm/im-custom.lisp:371
 msgid "Japanese dictionary tool"
 msgstr ""
 
-#: scm/im-custom.lisp:372
+#: scm/im-custom.lisp:377
 msgid "input pad"
 msgstr ""
 
-#: scm/im-custom.lisp:378
+#: scm/im-custom.lisp:383
 msgid "handwriting-input pad"
 msgstr ""
 
-#: scm/im-custom.lisp:384
+#: scm/im-custom.lisp:389
 msgid "help"
 msgstr "aide"
 
-#: scm/im-custom.lisp:390
+#: scm/im-custom.lisp:395
 msgid "Show input mode nearby cursor"
 msgstr ""
 
-#: scm/im-custom.lisp:396
+#: scm/im-custom.lisp:401
 msgid "Time length for showing input mode nearby the cursor"
 msgstr ""
 
-#: scm/im-custom.lisp:397
+#: scm/im-custom.lisp:402
 msgid "Set 0 to show indicator always."
 msgstr ""
 
-#: scm/im-custom.lisp:408
+#: scm/im-custom.lisp:413
 msgid "EB library"
 msgstr ""
 
-#: scm/im-custom.lisp:414
+#: scm/im-custom.lisp:419
 msgid "Use EB library to search annotations"
 msgstr ""
 
-#: scm/im-custom.lisp:421
+#: scm/im-custom.lisp:426
 msgid "The directory which contains EB dictionary file"
 msgstr ""
 
-#: scm/im-custom.lisp:431
+#: scm/im-custom.lisp:436
 msgid "XIM"
 msgstr ""
 
-#: scm/im-custom.lisp:435
+#: scm/im-custom.lisp:440
 msgid "Preedit settings of XIM"
 msgstr ""
 
-#: scm/im-custom.lisp:441
+#: scm/im-custom.lisp:446
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr ""
 
-#: scm/im-custom.lisp:447
+#: scm/im-custom.lisp:452
 msgid "Font name for preedit area (anti-aliased)"
 msgstr ""
 
@@ -3062,3 +3060,6 @@ msgstr "Yoruba"
 #: uim/iso-639-1.def:185
 msgid "Zulu"
 msgstr "Zoulou"
+
+#~ msgid "File"
+#~ msgstr "Fichier"

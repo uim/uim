@@ -86,8 +86,10 @@
     (string? x)))
 
 (define custom-pathname?
-  (lambda (str)
-    (string? str)))
+  (lambda (str type)
+    (and (string? str)
+	 (symbol? type)
+	 (memq type '(regular-file directory)))))
 
 (define custom-valid-choice?
   (lambda arg
@@ -116,6 +118,10 @@
 		      (and (symbol? key)  ;; 'generic-cancel-key
 			   (custom-exist? key 'key))))
 		key-repls))))
+
+(define custom-pathname-type
+  (lambda (custom-sym)
+    (car (custom-type-attrs custom-sym))))
 
 (define custom-expand-key-references
   (lambda (key)
@@ -644,12 +650,13 @@
   (lambda (sym)
     (let* ((type (custom-type sym))
 	   (attrs (custom-type-attrs sym)))
-      (cond
-       ((or (eq? type 'choice)
-	    (eq? type 'ordered-list))
-	(map custom-choice-rec-sym attrs))
-       (else
-	attrs)))))
+      (case type
+	((choice ordered-list)
+	 (map custom-choice-rec-sym attrs))
+	((integer string)
+	 attrs)
+	(else
+	 ())))))
 
 ;; API
 (define custom-label

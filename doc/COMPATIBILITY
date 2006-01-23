@@ -57,6 +57,79 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Rename is-set-ugid? to follow the Scheme naming convention
+Affects: IM developers, uim developers
+Updates: Scheme API
+Version: 1.1.0
+Revision: ac2953
+Date: 2006-01-21
+Modifier: YamaKen
+Related:
+URL:
+Changes:
+ (removed) is-set-ugid?
+     (new) setugid?
+Description:
+  Ordinary Scheme predicate does not have 'is' prefix. And to indicate
+  its function similarity to the issetugid(3), the '_' separator
+  should be removed.
+------------------------------------------------------------------------------
+Summary: Hide unintentionally exposed is_setugid()
+Affects: uim developers
+Updates: C API
+Version: 1.1.0
+Revision: ac2952
+Date: 2006-01-21
+Modifier: YamaKen
+Related:
+URL:
+  http://lists.sourceforge.jp/mailman/archives/anthy-dev/2006-January/002799.html (Japanese)
+Changes:
+ (removed) is_setugid
+Description:
+  is_setugid() was supposed to be an internal function, but was
+  exposed as global symbol in libuim unintentionally. The libtool
+  option -export-symbols-regex was expected to hide the symbol, but
+  did not.
+
+  And it was inappropriately listed in the public header file
+  uim-util.h. So the function has been hidden as internal function,
+  and prefixed with 'uim_' to avoid symbol conflict.
+
+  Although this is an API/ABI change, the libtool version is not
+  changed since it was virtually an internal function. The change does
+  not affect the compatibility.
+------------------------------------------------------------------------------
+Summary: File type information of pathname custom type
+Affects: IM developers, Helper program developers
+Updates: Scheme API, C API (uim-custom)
+Version: 1.1.0
+Revision: ac2946, ac2947, ac2948
+Date: 2006-01-21
+Modifier: YamaKen
+Related: bug #5666
+URL:
+  http://lists.freedesktop.org/archives/uim-commit/2005-December/002457.html
+Changes:
+ (affected) define-custom
+   (update) custom-pathname?
+      (new) custom-pathname-type
+   (update) struct uim_custom_value
+      (new) struct uim_custom_pathname
+      (new) enum UCustomPathnameType
+Description:
+  To enable appropriate GUI widget handling, 'pathname' custom
+  variable should provide the information whether the path is regular
+  file or directory.
+
+  Valid form for the pathname type on define-custom has been
+  changed. 4th argument for it must contain the type information. See
+  the real example of skk-custom.scm and im-custom.scm.
+
+  And since the changes break the uim-custom API, all programs using
+  libuim-custom must follow it. Although it broke uim-custom API, the
+  uim API and ABI (libuim) is not changed.
+------------------------------------------------------------------------------
 Summary: Update helper protocol about commit_string.
 Affects: Bridge developers, Helper program developers
 Updates: Helper protocol

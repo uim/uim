@@ -282,6 +282,8 @@ void uim_eval_string(uim_context, char *str);
 void uim_release_preedit_segments(uim_context uc);
 void uim_update_preedit_segments(uim_context uc);
 
+uim_bool uim_issetugid(void);
+
 extern struct uim_im *uim_im_array;
 extern int uim_nr_im;
 extern char *uim_last_client_encoding;

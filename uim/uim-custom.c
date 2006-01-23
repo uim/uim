@@ -93,6 +93,9 @@ static char *uim_custom_get_str(const char *custom_sym, const char *proc);
 static char *uim_custom_label(const char *custom_sym);
 static char *uim_custom_desc(const char *custom_sym);
 
+static struct uim_custom_pathname *uim_custom_pathname_get(const char *custom_sym, const char *getter_proc);
+static struct uim_custom_pathname *uim_custom_pathname_new(char *str, int type);
+static void uim_custom_pathname_free(struct uim_custom_pathname *custom_pathname);
 static struct uim_custom_choice *uim_custom_choice_get(const char *custom_sym, const char *choice_sym);
 static char *extract_choice_symbol(const struct uim_custom_choice *custom_choice);
 static char *choice_list_to_str(const struct uim_custom_choice *const *list, const char *sep);
@@ -277,6 +280,58 @@ static char *
 uim_custom_desc(const char *custom_sym)
 {
   return uim_custom_get_str(custom_sym, "custom-desc");
+}
+
+/* pathname */
+static struct uim_custom_pathname *
+uim_custom_pathname_get(const char *custom_sym, const char *getter_proc)
+{
+  struct uim_custom_pathname *custom_pathname;
+  char *str, *type_sym;
+  int type;
+
+  UIM_EVAL_FSTRING2(NULL, "(%s '%s)", getter_proc, custom_sym);
+  return_val = uim_scm_return_value();
+  str = uim_scm_c_str(return_val);
+
+  UIM_EVAL_FSTRING1(NULL, "(custom-pathname-type '%s)", custom_sym);
+  return_val = uim_scm_return_value();
+  type_sym = uim_scm_c_symbol(return_val);
+  if (strcmp(type_sym, "directory") == 0)
+    type = UCustomPathnameType_Directory;
+  else
+    type = UCustomPathnameType_RegularFile;
+  free(type_sym);
+
+  custom_pathname = uim_custom_pathname_new(str, type);
+  if (!custom_pathname)
+    return NULL;
+
+  return custom_pathname;
+}
+
+static struct uim_custom_pathname *
+uim_custom_pathname_new(char *str, int type)
+{
+  struct uim_custom_pathname *custom_pathname;
+
+  custom_pathname = malloc(sizeof(struct uim_custom_pathname));
+  if (!custom_pathname)
+    return NULL;
+
+  custom_pathname->str = str;
+  custom_pathname->type = type;
+
+  return custom_pathname;
+}
+
+static void
+uim_custom_pathname_free(struct uim_custom_pathname *custom_pathname)
+{
+  if (!custom_pathname)
+    return;
+
+  free(custom_pathname->str);
 }
 
 /* choice */
@@ -568,7 +623,7 @@ uim_custom_value_internal(const char *custom_sym, const char *getter_proc)
     value->as_str = uim_scm_c_str(return_val);
     break;
   case UCustom_Pathname:
-    value->as_pathname = uim_scm_c_str(return_val);
+    value->as_pathname = uim_custom_pathname_get(custom_sym, getter_proc);
     break;
   case UCustom_Choice:
     custom_value_symbol = uim_scm_c_symbol(return_val);
@@ -611,7 +666,7 @@ uim_custom_value_free(int custom_type, union uim_custom_value *custom_value)
     free(custom_value->as_str);
     break;
   case UCustom_Pathname:
-    free(custom_value->as_pathname);
+    uim_custom_pathname_free(custom_value->as_pathname);
     break;
   case UCustom_Choice:
     uim_custom_choice_free(custom_value->as_choice);
@@ -1155,7 +1210,7 @@ uim_custom_set(const struct uim_custom *custom)
     free(literal);
     break;
   case UCustom_Pathname:
-    literal = literalize_string(custom->value->as_pathname);
+    literal = literalize_string(custom->value->as_pathname->str);
     UIM_EVAL_FSTRING2(NULL, "(custom-set-value! '%s %s)",
 		      custom->symbol, literal);
     free(literal);

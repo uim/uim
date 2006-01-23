@@ -32,7 +32,9 @@
 
 // uim-helper connection
 
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE // for asprintf on stdio.h with old glibc/gcc
+#endif
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -61,7 +63,7 @@ parse_helper_str_im_change(const char *level, const char *engine) {
 
     if (!strcmp(level, "im_change_whole_desktop")) {
 	std::map<Window, XimServer *>::iterator it;
-	for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); it++) {
+	for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); ++it) {
 	    (*it).second->changeContext(engine);
 	}
     }
@@ -93,7 +95,7 @@ send_im_list(void)
 	return;
 
     std::list<UIMInfo>::iterator it;
-    for (it = uim_info.begin(); it != uim_info.end(); it++) {
+    for (it = uim_info.begin(); it != uim_info.end(); ++it) {
 	if (client_locale) { // context with legacy encodings
 	    const char *engine_locales =
 		    compose_localenames_from_im_lang(it->lang);
@@ -239,13 +241,13 @@ helper_str_parse(char *str)
 	    return;
 
 	std::map<Window, XimServer *>::iterator it;
-	for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); it++) {
+	for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); ++it) {
 	    (*it).second->customContext(custom, val);
 	}
 	return;
     } else if (strcmp("custom_reload_notify", line) == 0) {
 	std::map<Window, XimServer *>::iterator it;
-	for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); it++) {
+	for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); ++it) {
 	    (*it).second->reloadConfigs();
 	}
 	return;
@@ -253,7 +255,7 @@ helper_str_parse(char *str)
 }
 
 static void
-helper_read_cb(int fd, int ev)
+helper_read_cb(int fd, int /* ev */)
 {
     uim_helper_read_proc(fd);
     char *tmp;
