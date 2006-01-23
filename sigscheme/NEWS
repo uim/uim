@@ -6,6 +6,8 @@ Overview of changes from 0.5.0-alpha (r2902 + local modifications)
 
   - Add lacking character predicates and complete all R5RS character procedures
 
+  - Add lacking string predicates and complete all R5RS string procedures
+
 * Fixes
 
   - Make behavior of internal definitions strictly conforming to R5RS

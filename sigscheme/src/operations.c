@@ -1609,6 +1609,7 @@ strcasecmp(const char *s1, const char *s2)
 }
 #endif
 
+/* Upper case letters are less than lower. */
 static int
 string_cmp(const char *funcname,
            ScmObj str1, ScmObj str2, scm_bool case_insensitive)
@@ -1711,7 +1712,7 @@ scm_p_string_greater_equalp(ScmObj str1, ScmObj str2)
 ScmObj
 scm_p_string_less_equalp(ScmObj str1, ScmObj str2)
 {
-    DECLARE_FUNCTION("string<?", procedure_fixed_2);
+    DECLARE_FUNCTION("string<=?", procedure_fixed_2);
 
     return MAKE_BOOL(STRING_CMP(str1, str2) <= 0);
 }
@@ -1743,7 +1744,7 @@ scm_p_string_ci_greater_equalp(ScmObj str1, ScmObj str2)
 ScmObj
 scm_p_string_ci_less_equalp(ScmObj str1, ScmObj str2)
 {
-    DECLARE_FUNCTION("string-ci<?", procedure_fixed_2);
+    DECLARE_FUNCTION("string-ci<=?", procedure_fixed_2);
 
     return MAKE_BOOL(STRING_CI_CMP(str1, str2) <= 0);
 }
