@@ -98,6 +98,20 @@ scm_malloc_aligned(size_t size)
         p = scm_malloc(size);
     else
         ERR("cannot ensure memory alignment");
+#elif defined(__APPLE__)
+    /*
+     * malloc in Mac OS X guarantees 16 byte alignment.  And large
+     * memory allocations are guaranteed to be page-aligned.  See
+     * http://developer.apple.com/documentation/Performance/Conceptual/
+     * ManagingMemory/Articles/MemoryAlloc.html
+     * -- 
+     * ekato Jan 23 2006
+     */
+    if ((ALIGN_CELL % 16 == 0) || (ALIGN_CELL % 8 == 0)
+        || (ALIGN_CELL % 4 == 0) || (ALIGN_CELL % 2 == 0))
+        p = malloc(size);
+    else
+        ERR("cannot ensure memory alignment");
 #else
 #error "This platform is not supported yet"
 #endif
