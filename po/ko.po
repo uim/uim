@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-16 16:23+0900\n"
+"POT-Creation-Date: 2006-01-24 02:22+0900\n"
 "PO-Revision-Date: 2005-12-07 22:31+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -389,60 +389,62 @@ msgstr ""
 msgid "line"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:384
+#: helper/pref-gtk-custom-widgets.c:443
 msgid "Specify file"
 msgstr "파일을 지정하십시오"
 
-#: helper/pref-gtk-custom-widgets.c:421
-msgid "File..."
+#: helper/pref-gtk-custom-widgets.c:491 helper/pref-gtk-custom-widgets.c:495
+#: qt/pref-customwidgets.cpp:181 qt/pref-customwidgets.cpp:185
+#, fuzzy
+msgid "Select..."
 msgstr "파일..."
 
-#: helper/pref-gtk-custom-widgets.c:1111
+#: helper/pref-gtk-custom-widgets.c:1188
 msgid "Enabled"
 msgstr "유효"
 
-#: helper/pref-gtk-custom-widgets.c:1137
+#: helper/pref-gtk-custom-widgets.c:1214
 msgid "Enabled items"
 msgstr "유효한 항목"
 
-#: helper/pref-gtk-custom-widgets.c:1215
+#: helper/pref-gtk-custom-widgets.c:1292
 msgid "Disabled"
 msgstr "무효"
 
-#: helper/pref-gtk-custom-widgets.c:1241
+#: helper/pref-gtk-custom-widgets.c:1318
 msgid "Disabled items"
 msgstr "무효인 항목"
 
-#: helper/pref-gtk-custom-widgets.c:1279 helper/pref-gtk-custom-widgets.c:1868
+#: helper/pref-gtk-custom-widgets.c:1356 helper/pref-gtk-custom-widgets.c:1966
 msgid "Edit..."
 msgstr "편집..."
 
-#: helper/pref-gtk-custom-widgets.c:1487 qt/pref-customwidgets.cpp:853
+#: helper/pref-gtk-custom-widgets.c:1583 qt/pref-customwidgets.cpp:875
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr "잡을 키를 누르십시오 (예 <Control>a)"
 
-#: helper/pref-gtk-custom-widgets.c:1488
+#: helper/pref-gtk-custom-widgets.c:1584
 msgid "Grabbing keys"
 msgstr "키를 잡고 있는 중"
 
-#: helper/pref-gtk-custom-widgets.c:1709
+#: helper/pref-gtk-custom-widgets.c:1805
 #, c-format
 msgid "%s - key configuration"
 msgstr "%s - 키 설정"
 
-#: helper/pref-gtk-custom-widgets.c:1746
+#: helper/pref-gtk-custom-widgets.c:1842
 msgid "Key preference"
 msgstr "키 설정"
 
-#: helper/pref-gtk-custom-widgets.c:1792
+#: helper/pref-gtk-custom-widgets.c:1888
 msgid "Key:"
 msgstr "키:"
 
-#: helper/pref-gtk-custom-widgets.c:1813
+#: helper/pref-gtk-custom-widgets.c:1911
 msgid "Grab..."
 msgstr "잡기..."
 
-#: helper/pref-gtk.c:144
+#: helper/pref-gtk.c:145
 msgid ""
 "Some value(s) have been changed.\n"
 "Save?"
@@ -450,7 +452,7 @@ msgstr ""
 "바뀐 내용이 있습니다.\n"
 "저장하시겠습니까?"
 
-#: helper/pref-gtk.c:216 qt/pref-qt.cpp:263
+#: helper/pref-gtk.c:217 qt/pref-qt.cpp:263
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you really quit this program?"
@@ -458,32 +460,32 @@ msgstr ""
 "바뀐 내용이 있습니다.\n"
 "정말로 종료하시겠습니까?"
 
-#: helper/pref-gtk.c:255 qt/pref-qt.cpp:138
+#: helper/pref-gtk.c:256 qt/pref-qt.cpp:138
 msgid "Group"
 msgstr "그룹"
 
 #. Defaults button
-#: helper/pref-gtk.c:347
+#: helper/pref-gtk.c:348
 msgid "_Defaults"
 msgstr "디폴트(_D)"
 
-#: helper/pref-gtk.c:352
+#: helper/pref-gtk.c:353
 msgid "Revert all changes to default"
 msgstr "모든 설정을 디폴트로"
 
-#: helper/pref-gtk.c:362
+#: helper/pref-gtk.c:363
 msgid "Apply all changes"
 msgstr "바뀐 설정을 모두 적용"
 
-#: helper/pref-gtk.c:370
+#: helper/pref-gtk.c:371
 msgid "Quit this application without applying changes"
 msgstr "바뀐 설정을 버리고 종료"
 
-#: helper/pref-gtk.c:381
+#: helper/pref-gtk.c:382
 msgid "Quit this application with applying changes"
 msgstr "바뀐 설정을 저장하고 종료"
 
-#: helper/pref-gtk.c:530 qt/pref-qt.cpp:106
+#: helper/pref-gtk.c:531 qt/pref-qt.cpp:106
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -542,15 +544,11 @@ msgstr "종료"
 msgid "Unable to parse the geometry string '%s'"
 msgstr ""
 
-#: qt/pref-customwidgets.cpp:172
-msgid "File"
-msgstr "파일"
-
-#: qt/pref-customwidgets.cpp:324 qt/pref-customwidgets.cpp:606
+#: qt/pref-customwidgets.cpp:346 qt/pref-customwidgets.cpp:628
 msgid "Edit"
 msgstr "편집"
 
-#: qt/pref-customwidgets.cpp:856
+#: qt/pref-customwidgets.cpp:878
 msgid "Key Grab Dialog"
 msgstr "키 잡기 대화창"
 
@@ -681,12 +679,12 @@ msgstr ""
 #: scm/im-custom.lisp:106 scm/im-custom.lisp:117 scm/im-custom.lisp:127
 #: scm/im-custom.lisp:229 scm/im-custom.lisp:286 scm/im-custom.lisp:292
 #: scm/im-custom.lisp:298 scm/im-custom.lisp:306 scm/im-custom.lisp:326
-#: scm/im-custom.lisp:342 scm/im-custom.lisp:348 scm/im-custom.lisp:355
-#: scm/im-custom.lisp:361 scm/im-custom.lisp:367 scm/im-custom.lisp:373
-#: scm/im-custom.lisp:379 scm/im-custom.lisp:385 scm/im-custom.lisp:391
-#: scm/im-custom.lisp:409 scm/im-custom.lisp:415 scm/im-custom.lisp:422
-#: scm/im-custom.lisp:432 scm/im-custom.lisp:436 scm/im-custom.lisp:442
-#: scm/im-custom.lisp:448 scm/mana-custom.lisp:51 scm/mana-custom.lisp:57
+#: scm/im-custom.lisp:347 scm/im-custom.lisp:353 scm/im-custom.lisp:360
+#: scm/im-custom.lisp:366 scm/im-custom.lisp:372 scm/im-custom.lisp:378
+#: scm/im-custom.lisp:384 scm/im-custom.lisp:390 scm/im-custom.lisp:396
+#: scm/im-custom.lisp:414 scm/im-custom.lisp:420 scm/im-custom.lisp:427
+#: scm/im-custom.lisp:437 scm/im-custom.lisp:441 scm/im-custom.lisp:447
+#: scm/im-custom.lisp:453 scm/mana-custom.lisp:51 scm/mana-custom.lisp:57
 #: scm/mana-custom.lisp:72 scm/mana-custom.lisp:78 scm/mana-custom.lisp:84
 #: scm/mana-custom.lisp:90 scm/mana-custom.lisp:173 scm/mana-custom.lisp:192
 #: scm/mana-custom.lisp:201 scm/mana-custom.lisp:243 scm/mana-custom.lisp:252
@@ -1444,19 +1442,19 @@ msgstr ""
 msgid "[Canna] ESC keys on vi-cooperative mode"
 msgstr ""
 
-#: scm/custom.lisp:749
+#: scm/custom.lisp:756
 msgid "-"
 msgstr ""
 
-#: scm/custom.lisp:750
+#: scm/custom.lisp:757
 msgid "Main settings of this group"
 msgstr ""
 
-#: scm/custom.lisp:753
+#: scm/custom.lisp:760
 msgid "Hidden settings"
 msgstr ""
 
-#: scm/custom.lisp:754
+#: scm/custom.lisp:761
 msgid ""
 "Hidden settings of this group. This group is invisible from uim_custom "
 "clients. Exists for internal variable management."
@@ -1690,87 +1688,87 @@ msgstr "ATOK와 비슷하게"
 msgid "Preedit color"
 msgstr "편집영역 색상"
 
-#: scm/im-custom.lisp:333 scm/im-custom.lisp:334
+#: scm/im-custom.lisp:338 scm/im-custom.lisp:339
 msgid "Adjacent to cursor"
 msgstr "커서 옆"
 
-#: scm/im-custom.lisp:336 scm/im-custom.lisp:337
+#: scm/im-custom.lisp:341 scm/im-custom.lisp:342
 msgid "Left end of preedit area"
 msgstr "편집영역의 왼쪽 끝"
 
-#: scm/im-custom.lisp:339 scm/im-custom.lisp:340
+#: scm/im-custom.lisp:344 scm/im-custom.lisp:345
 msgid "Right end of preedit area"
 msgstr "편집영역의 오른쪽 끝"
 
-#: scm/im-custom.lisp:341
+#: scm/im-custom.lisp:346
 msgid "Candidate window position"
 msgstr "후보 창의 위치"
 
-#: scm/im-custom.lisp:347
+#: scm/im-custom.lisp:352
 msgid "Enable lazy input method loading for fast startup"
 msgstr "빨리 시작하기 위해서 입력기 로드를 늦춤"
 
-#: scm/im-custom.lisp:354
+#: scm/im-custom.lisp:359
 msgid "input method switcher"
 msgstr "입력기 전환"
 
-#: scm/im-custom.lisp:360
+#: scm/im-custom.lisp:365
 msgid "preference tool"
 msgstr "설정"
 
-#: scm/im-custom.lisp:366
+#: scm/im-custom.lisp:371
 msgid "Japanese dictionary tool"
 msgstr "일본어 사전 도구"
 
-#: scm/im-custom.lisp:372
+#: scm/im-custom.lisp:377
 msgid "input pad"
 msgstr "입력 패드"
 
-#: scm/im-custom.lisp:378
+#: scm/im-custom.lisp:383
 msgid "handwriting-input pad"
 msgstr "손글씨 입력 패드"
 
-#: scm/im-custom.lisp:384
+#: scm/im-custom.lisp:389
 msgid "help"
 msgstr "도움말"
 
-#: scm/im-custom.lisp:390
+#: scm/im-custom.lisp:395
 msgid "Show input mode nearby cursor"
 msgstr "입력 모드를 커서 근처에 표시"
 
-#: scm/im-custom.lisp:396
+#: scm/im-custom.lisp:401
 msgid "Time length for showing input mode nearby the cursor"
 msgstr "커서 근처에 입력 모드를 표시하는 시간"
 
-#: scm/im-custom.lisp:397
+#: scm/im-custom.lisp:402
 msgid "Set 0 to show indicator always."
 msgstr "입력 모드를 항상 표시하려면 0으로 두십시오."
 
-#: scm/im-custom.lisp:408
+#: scm/im-custom.lisp:413
 msgid "EB library"
 msgstr ""
 
-#: scm/im-custom.lisp:414
+#: scm/im-custom.lisp:419
 msgid "Use EB library to search annotations"
 msgstr ""
 
-#: scm/im-custom.lisp:421
+#: scm/im-custom.lisp:426
 msgid "The directory which contains EB dictionary file"
 msgstr ""
 
-#: scm/im-custom.lisp:431
+#: scm/im-custom.lisp:436
 msgid "XIM"
 msgstr ""
 
-#: scm/im-custom.lisp:435
+#: scm/im-custom.lisp:440
 msgid "Preedit settings of XIM"
 msgstr "XIM 편집영역"
 
-#: scm/im-custom.lisp:441
+#: scm/im-custom.lisp:446
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr ""
 
-#: scm/im-custom.lisp:447
+#: scm/im-custom.lisp:452
 msgid "Font name for preedit area (anti-aliased)"
 msgstr ""
 
@@ -3074,6 +3072,9 @@ msgstr ""
 #: uim/iso-639-1.def:185
 msgid "Zulu"
 msgstr ""
+
+#~ msgid "File"
+#~ msgstr "파일"
 
 #~ msgid ""
 #~ "The user customize file \"~/.uim\" is found.\n"
