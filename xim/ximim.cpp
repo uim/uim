@@ -329,6 +329,8 @@ void XimIM_impl::forward_event(RxPacket *p)
 	break;
     default:
 	printf("unknown type of forwarded event.(%d)\n", k.ev.type);
+	if (!(g_option_mask & OPT_ON_DEMAND_SYNC))
+	    send_sync_reply(icid);
 	break;
     }
 }
