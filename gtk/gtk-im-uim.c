@@ -272,9 +272,9 @@ filter_keypress(GtkIMContext *ic, GdkEventKey *key)
 #elif IM_UIM_USE_TOPLEVEL
   /*
    * Sometimes key events are emitted from other than top level
-   * widget, so check time of the event and hardware_keycode...
+   * widget, so check time of the event...
    */
-  if (!cur_toplevel || ((key->time != uic->event_rec.time) && (key->hardware_keycode != key->hardware_keycode))) {
+  if (!cur_toplevel || key->time != uic->event_rec.time) {
 #else
   if (TRUE) {
 #endif
