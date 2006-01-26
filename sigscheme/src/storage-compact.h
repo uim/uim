@@ -888,6 +888,48 @@ extern enum ScmObjType scm_type(ScmObj obj);
 #define SCM_SAL_STRING_SET_LEN(a, val)          \
     SCM_OTHERS_SET_CDR_VAL((a), STRING, (val))
 
+#if 0
+/* For reference: a implementation of string mutability for storage-fatty */
+
+/* MSB (sign bit) of obj.string.len of a string object holds its
+ * mutability. The attribute is stored into there since:
+ *
+ * - efficient due to single-op sign detection
+ *
+ * - string length must be representable by a scheme integer object
+ * - string length is always zero or positive
+ * - thus the sign bit is always empty
+ *
+ * - enables convenience debugging with displaying the raw str
+ * - tagged pointer approach prevents leak detection
+ * - tagged pointer approach brings alignment restriction
+ */
+#define SCM_INT_MSB                    (~((scm_uint_t)-1 >> 1))
+#define SCM_STRING_MUTABILITY_MASK     SCM_INT_MSB
+#define SCM_STRING_MUTABLE             SCM_INT_MSB
+#define SCM_SAL_STRINGP(o)             (SCM_TYPE(o) == ScmString)
+#define SCM_SAL_ENTYPE_STRING(o)       (SCM_ENTYPE((o), ScmString))
+#define SCM_SAL_STRING_STR(o)          (SCM_AS_STRING(o)->obj.string.str)
+#define SCM_SAL_STRING_SET_STR(o, val)                                       \
+    (SCM_AS_STRING(o)->obj.string.str = (val))
+#define SCM_SAL_STRING_LEN(o)                                                \
+    ((scm_int_t)(SCM_AS_STRING(o)->obj.string.len                            \
+                 & ~SCM_STRING_MUTABILITY_MASK))
+#define SCM_SAL_STRING_SET_LEN(o, _len)                                      \
+    (SCM_AS_STRING(o)->obj.string.len                                        \
+     = (_len) | (scm_int_t)(SCM_AS_STRING(o)->obj.string.len                 \
+                            & SCM_STRING_MUTABILITY_MASK))
+#define SCM_SAL_STRING_MUTABLEP(o)                                           \
+    (SCM_AS_STRING(o)->obj.string.len < 0)
+#define SCM_SAL_STRING_SET_MUTABLE(o)                                        \
+    (SCM_AS_STRING(o)->obj.string.len                                        \
+     = (scm_int_t)(SCM_AS_STRING(o)->obj.string.len | SCM_STRING_MUTABLE))
+#define SCM_SAL_STRING_SET_IMMUTABLE(o)                                      \
+    (SCM_AS_STRING(o)->obj.string.len                                        \
+     = (scm_int_t)(SCM_AS_STRING(o)->obj.string.len                          \
+                   & ~SCM_STRING_MUTABILITY_MASK))
+#endif /* 0 */
+
 /*
  * Vector
  */

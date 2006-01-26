@@ -80,7 +80,7 @@ struct ScmCell_ {
     union {
         struct {
             enum ScmObjType type;
-            scm_bool gcmark;
+            char gcmark, immutable, pad2, pad3;
         } v;
 
         /* to align against 64-bit primitives */
@@ -259,6 +259,9 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 /* ScmObj Global Attribute */
 #define SCM_SAL_TYPE(o)        ((o)->attr.v.type)
 #define SCM_ENTYPE(o, objtype) ((o)->attr.v.type = (objtype))
+#define SCM_MUTABLEP(o)        (!(o)->attr.v.immutable)
+#define SCM_SET_MUTABLE(o)     ((o)->attr.v.immutable = scm_false)
+#define SCM_SET_IMMUTABLE(o)   ((o)->attr.v.immutable = scm_true)
 
 /* Real Accessors */
 #define SCM_SAL_NUMBERP(o)             SCM_SAL_INTP(o)
@@ -293,43 +296,15 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #define SCM_SAL_CHAR_VALUE(o)          (SCM_AS_CHAR(o)->obj.character.value)
 #define SCM_SAL_CHAR_SET_VALUE(o, val) (SCM_CHAR_VALUE(o) = (val))
 
-/* MSB (sign bit) of obj.string.len of a string object holds its
- * mutability. The attribute is stored into there since:
- *
- * - efficient due to single-op sign detection
- *
- * - string length must be representable by a scheme integer object
- * - string length is always zero or positive
- * - thus the sign bit is always empty
- *
- * - enables convenience debugging with displaying the raw str
- * - tagged pointer approach prevents leak detection
- * - tagged pointer approach brings alignment restriction
- */
-#define SCM_INT_MSB                    (~((scm_uint_t)-1 >> 1))
-#define SCM_STRING_MUTABILITY_MASK     SCM_INT_MSB
-#define SCM_STRING_MUTABLE             SCM_INT_MSB
-#define SCM_SAL_STRINGP(o)             (SCM_TYPE(o) == ScmString)
-#define SCM_SAL_ENTYPE_STRING(o)       (SCM_ENTYPE((o), ScmString))
-#define SCM_SAL_STRING_STR(o)          (SCM_AS_STRING(o)->obj.string.str)
-#define SCM_SAL_STRING_SET_STR(o, val)                                       \
-    (SCM_AS_STRING(o)->obj.string.str = (val))
-#define SCM_SAL_STRING_LEN(o)                                                \
-    ((scm_int_t)(SCM_AS_STRING(o)->obj.string.len                            \
-                 & ~SCM_STRING_MUTABILITY_MASK))
-#define SCM_SAL_STRING_SET_LEN(o, _len)                                      \
-    (SCM_AS_STRING(o)->obj.string.len                                        \
-     = (_len) | (scm_int_t)(SCM_AS_STRING(o)->obj.string.len                 \
-                            & SCM_STRING_MUTABILITY_MASK))
-#define SCM_SAL_STRING_MUTABLEP(o)                                           \
-    (SCM_AS_STRING(o)->obj.string.len < 0)
-#define SCM_SAL_STRING_SET_MUTABLE(o)                                        \
-    (SCM_AS_STRING(o)->obj.string.len                                        \
-     = (scm_int_t)(SCM_AS_STRING(o)->obj.string.len | SCM_STRING_MUTABLE))
-#define SCM_SAL_STRING_SET_IMMUTABLE(o)                                      \
-    (SCM_AS_STRING(o)->obj.string.len                                        \
-     = (scm_int_t)(SCM_AS_STRING(o)->obj.string.len                          \
-                   & ~SCM_STRING_MUTABILITY_MASK))
+#define SCM_SAL_STRINGP(o)              (SCM_TYPE(o) == ScmString)
+#define SCM_SAL_ENTYPE_STRING(o)        (SCM_ENTYPE((o), ScmString))
+#define SCM_SAL_STRING_STR(o)           (SCM_AS_STRING(o)->obj.string.str)
+#define SCM_SAL_STRING_SET_STR(o, val)  (SCM_STRING_STR(o) = (val))
+#define SCM_SAL_STRING_LEN(o)           (SCM_AS_STRING(o)->obj.string.len)
+#define SCM_SAL_STRING_SET_LEN(o, _len) (SCM_STRING_LEN(o) = (_len))
+#define SCM_SAL_STRING_MUTABLEP(o)      (SCM_MUTABLEP(o))
+#define SCM_SAL_STRING_SET_MUTABLE(o)   (SCM_SET_MUTABLE(o))
+#define SCM_SAL_STRING_SET_IMMUTABLE(o) (SCM_SET_IMMUTABLE(o))
 
 #define SCM_SAL_FUNCP(o)                   (SCM_TYPE(o) == ScmFunc)
 #define SCM_SAL_ENTYPE_FUNC(o)             (SCM_ENTYPE((o), ScmFunc))
