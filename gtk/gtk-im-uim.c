@@ -57,6 +57,9 @@
 #include "caret-state-indicator.h"
 #include "key-util-gtk.h"
 
+#define IM_UIM_USE_SNOOPER	0
+#define IM_UIM_USE_TOPLEVEL	1
+
 /* exported symbols */
 GtkIMContext *im_module_create(const gchar *context_id);
 void im_module_list(const GtkIMContextInfo ***contexts, int *n_contexts);
@@ -68,7 +71,13 @@ void im_module_init(GTypeModule *type_module);
 
 static int im_uim_fd = -1;
 static unsigned int read_tag;
+#if IM_UIM_USE_SNOOPER
 static guint snooper_id;
+#elif IM_UIM_USE_TOPLEVEL
+static GtkWidget *cur_toplevel;
+gulong cur_key_press_handler_id;
+gulong cur_key_release_handler_id;
+#endif
 
 struct preedit_segment {
   int attr;
@@ -87,7 +96,7 @@ typedef struct _IMUIMContext {
 
   GtkWidget *menu;
   GdkWindow *win;
-  GdkWindow *toplevel;
+
   GtkWidget *caret_state_indicator;
   GdkRectangle preedit_pos;
 
@@ -95,13 +104,21 @@ typedef struct _IMUIMContext {
   GtkWidget *preedit_window;
   gulong preedit_handler_id;
 
+#if IM_UIM_USE_TOPLEVEL
+  GtkWidget *widget;
+  gboolean in_toplevel;
+  GdkEventKey event_rec;
+#endif
+
   struct _IMUIMContext *prev, *next;
 } IMUIMContext;
 
 static IMUIMContext context_list;
 static IMUIMContext *focused_context = NULL;
 static gboolean disable_focused_context = FALSE;
+#if IM_UIM_USE_SNOOPER
 static gboolean snooper_installed = FALSE;
+#endif
 
 static GObjectClass *parent_class;
 
@@ -123,7 +140,11 @@ static GdkFilterReturn toplevel_window_candidate_cb(GdkXEvent *xevent, GdkEvent 
 
 static void im_uim_parse_helper_str(const char *str);
 static gboolean get_user_defined_color(PangoColor *color, const gchar *uim_symbol);
+#if IM_UIM_USE_SNOOPER
 static gboolean uim_key_snoop(GtkWidget *grab_widget, GdkEventKey *key, gpointer data);
+#elif IM_UIM_USE_TOPLEVEL
+static gboolean handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data);
+#endif
 
 static const GTypeInfo class_info = {
   sizeof(IMContextUIMClass),
@@ -235,15 +256,28 @@ update_cb(void *ptr)
 }
 
 /*
- * KEY EVENT HANDLER
+ * filter key event handler
+ * 
+ * uim uses key snooper or toplevel key event for IM.  So filter key
+ * event is just for fallbacks.
+ *
  */
 static gboolean
 filter_keypress(GtkIMContext *ic, GdkEventKey *key)
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
 
-  /* Hack for combination of xchat + GTK+ 2.6 */
-  if (snooper_installed == FALSE) {
+#if IM_UIM_USE_SNOOPER
+  if (!snooper_installed) {
+#elif IM_UIM_USE_TOPLEVEL
+  /*
+   * Sometimes key events are emitted from other than top level
+   * widget, so check time of the event and hardware_keycode...
+   */
+  if (!cur_toplevel || ((key->time != uic->event_rec.time) && (key->hardware_keycode != key->hardware_keycode))) {
+#else
+  if (TRUE) {
+#endif
     int rv, kv, mod;
 
     im_uim_convert_keyevent(key, &kv, &mod);
@@ -258,7 +292,6 @@ filter_keypress(GtkIMContext *ic, GdkEventKey *key)
 
     return TRUE;
   }
-  /* Hack for combination of xchat + GTK+ 2.6 */
 
   return gtk_im_context_filter_keypress(uic->slave, key);
 }
@@ -419,15 +452,28 @@ focus_in(GtkIMContext *ic)
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
   IMUIMContext *cc;
+#if IM_UIM_USE_TOPLEVEL
+  GtkWidget *toplevel;
+#endif
 
   focused_context = uic;
   disable_focused_context = FALSE;
 
-  /* XXX:Use of key snooper is not recommended way!! */
+#if IM_UIM_USE_SNOOPER
+  /* Using key snooper is not recommended */
   if (snooper_installed == FALSE) {
     snooper_id = gtk_key_snooper_install((GtkKeySnoopFunc)uim_key_snoop, NULL );
     snooper_installed = TRUE;
   }
+#elif IM_UIM_USE_TOPLEVEL
+  toplevel = gtk_widget_get_toplevel(uic->widget);
+  cur_toplevel = toplevel;
+
+  if (toplevel && GTK_WIDGET_TOPLEVEL(toplevel)) {
+    cur_key_press_handler_id = g_signal_connect(cur_toplevel, "key-press-event", G_CALLBACK(handle_key_on_toplevel), uic);
+    cur_key_release_handler_id = g_signal_connect(cur_toplevel, "key-release-event", G_CALLBACK(handle_key_on_toplevel), uic);
+  }
+#endif
 
   check_helper_connection();
 
@@ -450,10 +496,18 @@ focus_out(GtkIMContext *ic)
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
 
+#if IM_UIM_USE_SNOOPER
   if (snooper_installed == TRUE) {
     gtk_key_snooper_remove(snooper_id);
     snooper_installed = FALSE;
   }
+#elif IM_UIM_USE_TOPLEVEL
+  if (cur_toplevel) {
+    g_signal_handler_disconnect(cur_toplevel, cur_key_press_handler_id);
+    g_signal_handler_disconnect(cur_toplevel, cur_key_release_handler_id);
+    cur_toplevel = NULL;
+  }
+#endif
 
   check_helper_connection();
   uim_helper_client_focus_out(uic->uc);
@@ -561,6 +615,57 @@ toplevel_window_candidate_cb(GdkXEvent *xevent, GdkEvent *ev, gpointer data)
   return GDK_FILTER_CONTINUE;
 }
 
+#if IM_UIM_USE_TOPLEVEL
+static void
+update_in_toplevel(IMUIMContext *uic)
+{
+  if (uic->widget) {
+    GtkWidget *toplevel = gtk_widget_get_toplevel(uic->widget);
+    uic->in_toplevel = (toplevel && GTK_WIDGET_TOPLEVEL(toplevel));
+  } else {
+    uic->in_toplevel = FALSE;
+  }
+}
+
+static GtkWidget *
+widget_for_window (GdkWindow *window)
+{
+  while (window) {
+    gpointer user_data;
+    gdk_window_get_user_data (window, &user_data);
+    if (user_data)
+      return user_data;
+
+    window = gdk_window_get_parent (window);
+  }
+
+  return NULL;
+}
+
+static void
+on_client_widget_hierarchy_changed(GtkWidget *widget, GtkWidget *old_toplevel, IMUIMContext *uic)
+{
+  update_in_toplevel(uic);
+}
+
+static void
+update_client_widget(IMUIMContext *uic)
+{
+  GtkWidget *new_widget = widget_for_window(uic->win);
+  
+  if (new_widget != uic->widget) {
+    if (uic->widget)
+      g_signal_handlers_disconnect_by_func(uic->widget,
+		      (gpointer)on_client_widget_hierarchy_changed, uic);
+    uic->widget = new_widget;
+    if (uic->widget)
+      g_signal_connect(uic->widget, "hierarchy-changed",
+		      G_CALLBACK(on_client_widget_hierarchy_changed), uic);
+
+    update_in_toplevel(uic);
+  }
+}
+#endif /* IM_UIM_USE_TOPLEVEL */
 
 static void
 set_client_window(GtkIMContext *ic, GdkWindow *w)
@@ -575,6 +680,9 @@ set_client_window(GtkIMContext *ic, GdkWindow *w)
       g_object_unref(uic->win);
     uic->win = NULL;
   }
+#if IM_UIM_USE_TOPLEVEL
+  update_client_widget(uic);
+#endif
 }
 
 static void
@@ -589,6 +697,10 @@ static void
 im_uim_init(IMUIMContext *uic)
 {
   uic->win = NULL;
+#if IM_UIM_USE_TOPLEVEL
+  uic->widget = NULL;
+  uic->in_toplevel = FALSE;
+#endif
   uic->menu = NULL;
   uic->caret_state_indicator = NULL;
   uic->pseg = NULL;
@@ -1070,7 +1182,8 @@ im_uim_helper_disconnect_cb(void)
   g_source_remove(read_tag);
 }
 
-/* XXX:This is not a recommended way!! */
+#if IM_UIM_USE_SNOOPER
+/* snooper is not recommended! */
 static gboolean
 uim_key_snoop(GtkWidget *grab_widget, GdkEventKey *key, gpointer data)
 {
@@ -1091,6 +1204,44 @@ uim_key_snoop(GtkWidget *grab_widget, GdkEventKey *key, gpointer data)
 
   return FALSE;
 }
+#endif
+
+#if IM_UIM_USE_TOPLEVEL
+static gboolean
+handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data)
+{
+  IMUIMContext *uic = data;
+  GtkWindow *window = GTK_WINDOW(widget);
+
+  if (focused_context == uic) {
+    int rv, kv, mod;
+
+    uic->event_rec.time = event->time;
+    uic->event_rec.hardware_keycode = event->hardware_keycode;
+
+    im_uim_convert_keyevent(event, &kv, &mod);
+
+    if (event->type == GDK_KEY_RELEASE)
+      rv = uim_release_key(focused_context->uc, kv, mod);
+    else
+      rv = uim_press_key(focused_context->uc, kv, mod);
+
+    if (rv)
+      return gtk_window_activate_key(window, event);
+#if 0
+    if (GTK_IS_TEXT_VIEW(uic->widget))
+      GTK_TEXT_VIEW(uic->widget)->need_im_reset = TRUE;
+    else if (GTK_IS_ENTRY(uic->widget)) {
+      if (GTK_ENTRY(uic->widget)->editable)
+	GTK_ENTRY(uic->widget)->need_im_reset = TRUE;
+    }
+#endif
+    return TRUE;
+  }
+
+  return FALSE;
+}
+#endif
 
 void
 im_module_init(GTypeModule *type_module)
@@ -1104,9 +1255,11 @@ im_module_init(GTypeModule *type_module)
 					    "GtkIMContextUIM", &class_info, 0);
   uim_cand_win_gtk_register_type(type_module);
 
-  /* XXX:This is not recommended way!! */
+#if IM_UIM_USE_SNOOPER
+  /* Using snooper is not recommended! */
   snooper_id = gtk_key_snooper_install((GtkKeySnoopFunc)uim_key_snoop, NULL );
   snooper_installed = TRUE;
+#endif
 
   im_uim_init_modifier_keys();
 }
@@ -1117,6 +1270,8 @@ im_module_exit(void)
   if (im_uim_fd != -1)
     uim_helper_close_client_fd(im_uim_fd);
 
+#if IM_UIM_USE_SNOOPER
   gtk_key_snooper_remove(snooper_id);
+#endif
   uim_quit();
 }
