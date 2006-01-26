@@ -292,6 +292,19 @@ scm_make_vector(ScmObj *vec, scm_int_t len)
     SCM_ENTYPE_VECTOR(obj);
     SCM_VECTOR_SET_VEC(obj, vec);
     SCM_VECTOR_SET_LEN(obj, len);
+    SCM_VECTOR_SET_MUTABLE(obj);
+
+    return obj;
+}
+
+ScmObj
+scm_make_immutable_vector(ScmObj *vec, scm_int_t len)
+{
+    ScmObj obj;
+
+    /* Since this function is rarely used, the inefficiency is not problem */
+    obj = scm_make_vector(vec, len);
+    SCM_VECTOR_SET_IMMUTABLE(obj);
 
     return obj;
 }

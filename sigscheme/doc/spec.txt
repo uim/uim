@@ -108,8 +108,8 @@ Specifications of SigScheme
 
   - Constant vector
 
-    SigScheme allows modification of constant vector object for convenience
-    although it is required to be an error in R5RS.
+    SigScheme allows modification of constant vector object by default for
+    convenience although it is required to be an error in R5RS.
 
     > 6.3.6 Vectors
     > 
@@ -120,6 +120,9 @@ Specifications of SigScheme
 
     The object is modified as #(0 "doe" 2) in SigScheme. Gauche and Guile are
     also behaves so.
+
+    The behavior can be configured to R5RS-compatible with
+    SCM_CONST_VECTOR_LITERAL
 
   - Quote-less null list
 
@@ -139,9 +142,12 @@ Specifications of SigScheme
 
   - Quote-less vector literal
 
-    Sigscheme allows quote-less vector literal for convenience, although
-    quotation is required in formal R5RS syntax. This specification may be
-    changed to make notation rule consistent with constant list.
+    Sigscheme allows quote-less vector literal by default for convenience,
+    although quotation is required in formal R5RS syntax. This specification
+    may be changed to make notation rule consistent with constant list.
+
+    The behavior can be configured to R5RS-compatible with
+    SCM_STRICT_VECTOR_FORM
 
     > 6.3.6 Vectors
     > 

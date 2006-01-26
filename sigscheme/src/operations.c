@@ -2093,6 +2093,9 @@ scm_p_vector_setd(ScmObj vec, ScmObj scm_k, ScmObj obj)
     DECLARE_FUNCTION("vector-set!", procedure_fixed_3);
 
     ENSURE_VECTOR(vec);
+#if SCM_CONST_VECTOR_LITERAL
+    ENSURE_MUTABLE_VECTOR(vec);
+#endif
     ENSURE_INT(scm_k);
 
     k = SCM_INT_VALUE(scm_k);
@@ -2152,6 +2155,9 @@ scm_p_vector_filld(ScmObj vec, ScmObj fill)
     DECLARE_FUNCTION("vector-fill!", procedure_fixed_2);
 
     ENSURE_VECTOR(vec);
+#if SCM_CONST_VECTOR_LITERAL
+    ENSURE_MUTABLE_VECTOR(vec);
+#endif
 
     v   = SCM_VECTOR_VEC(vec);
     len = SCM_VECTOR_LEN(vec);

@@ -217,6 +217,7 @@ struct ScmCell_ {
 #define SCM_SAL_MAKE_FUNC                     scm_make_func
 #define SCM_SAL_MAKE_CLOSURE                  scm_make_closure
 #define SCM_SAL_MAKE_VECTOR                   scm_make_vector
+#define SCM_SAL_MAKE_IMMUTABLE_VECTOR         scm_make_immutable_vector
 #define SCM_SAL_MAKE_PORT                     scm_make_port
 #define SCM_SAL_MAKE_CONTINUATION             scm_make_continuation
 #if SCM_USE_NONSTD_FEATURES
@@ -243,6 +244,7 @@ ScmObj scm_make_string_copying(const char *str, scm_int_t len);
 ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
 ScmObj scm_make_closure(ScmObj exp, ScmObj env);
 ScmObj scm_make_vector(ScmObj *vec, scm_int_t len);
+ScmObj scm_make_immutable_vector(ScmObj *vec, scm_int_t len);
 ScmObj scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag);
 ScmObj scm_make_continuation(void);
 #if !SCM_USE_VALUECONS
@@ -327,6 +329,9 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #define SCM_SAL_VECTOR_SET_VEC(o, vec)    (SCM_VECTOR_VEC(o) = (vec))
 #define SCM_SAL_VECTOR_LEN(o)             (SCM_AS_VECTOR(o)->obj.vector.len)
 #define SCM_SAL_VECTOR_SET_LEN(o, len)    (SCM_VECTOR_LEN(o) = (len))
+#define SCM_SAL_VECTOR_MUTABLEP(o)        (SCM_MUTABLEP(o))
+#define SCM_SAL_VECTOR_SET_MUTABLE(o)     (SCM_SET_MUTABLE(o))
+#define SCM_SAL_VECTOR_SET_IMMUTABLE(o)   (SCM_SET_IMMUTABLE(o))
 #define SCM_SAL_VECTOR_VALID_INDEXP(o, i) (0 <= (i) && (i) < SCM_VECTOR_LEN(o))
 
 #define SCM_SAL_PORTP(o)               (SCM_TYPE(o) == ScmPort)

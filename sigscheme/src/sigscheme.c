@@ -194,6 +194,9 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
 #if SCM_STRICT_ARGCHECK
     scm_provide(CONST_STRING("strict-argcheck"));
 #endif
+#if SCM_CONST_VECTOR_LITERAL
+    scm_provide(CONST_STRING("const-vector-literal"));
+#endif
 #if SCM_COMPAT_SIOD_BUGS
     scm_provide(CONST_STRING("siod-bugs"));
 #endif

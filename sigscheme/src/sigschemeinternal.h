@@ -185,6 +185,7 @@ extern ScmObj scm_null_values;
 #define MAKE_FUNC                     SCM_MAKE_FUNC
 #define MAKE_CLOSURE                  SCM_MAKE_CLOSURE
 #define MAKE_VECTOR                   SCM_MAKE_VECTOR
+#define MAKE_IMMUTABLE_VECTOR         SCM_MAKE_IMMUTABLE_VECTOR
 #define MAKE_PORT                     SCM_MAKE_PORT
 #define MAKE_CONTINUATION             SCM_MAKE_CONTINUATION
 #if SCM_USE_NONSTD_FEATURES
@@ -351,6 +352,10 @@ extern ScmObj scm_null_values;
 #define ENSURE_MUTABLE_STRING(str)                                           \
     (SCM_STRING_MUTABLEP(str)                                                \
      || (ERR_OBJ("attempted to modify immutable string", str), 1))
+
+#define ENSURE_MUTABLE_VECTOR(vec)                                           \
+    (SCM_VECTOR_MUTABLEP(vec)                                                \
+     || (ERR_OBJ("attempted to modify immutable vector", vec), 1))
 
 #define ENSURE_STATEFUL_CODEC(codec)                                         \
     (SCM_CHARCODEC_STATEFULP(codec)                                          \

@@ -263,6 +263,7 @@ read_token(ScmObj port,
 static ScmObj
 read_sexpression(ScmObj port)
 {
+    ScmObj ret;
     scm_ichar_t c;
 
     CDBG((SCM_DBG_PARSER, "read_sexpression"));
@@ -295,7 +296,11 @@ read_sexpression(ScmObj port)
             case 'f':
                 return SCM_FALSE;
             case '(':
-                return scm_p_list2vector(read_list(port, ')'));
+                ret = scm_p_list2vector(read_list(port, ')'));
+#if SCM_CONST_VECTOR_LITERAL
+                SCM_VECTOR_SET_IMMUTABLE(ret);
+#endif
+                return ret;
             case '\\':
                 return read_char(port);
             case 'b': case 'o': case 'd': case 'x':

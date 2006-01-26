@@ -711,6 +711,8 @@ struct ScmStorageConf_ {
 #define SCM_MAKE_CLOSURE(exp, env)        SCM_SAL_MAKE_CLOSURE((exp), (env))
 /* SCM_MAKE_VECTOR(ScmObj *vec, scm_int_t len) */
 #define SCM_MAKE_VECTOR(vec, len)         SCM_SAL_MAKE_VECTOR((vec), (len))
+#define SCM_MAKE_IMMUTABLE_VECTOR(vec, len)                                  \
+    SCM_SAL_MAKE_IMMUTABLE_VECTOR((vec), (len))
 #define SCM_MAKE_PORT(cport, flag)        SCM_SAL_MAKE_PORT((cport), (flag))
 #define SCM_MAKE_CONTINUATION()           SCM_SAL_MAKE_CONTINUATION()
 #if SCM_USE_NONSTD_FEATURES
@@ -802,6 +804,9 @@ struct ScmStorageConf_ {
 #define SCM_VECTOR_LEN(o)               SCM_SAL_VECTOR_LEN(o)
 #define SCM_VECTOR_SET_VEC(o, vec)      SCM_SAL_VECTOR_SET_VEC((o), (vec))
 #define SCM_VECTOR_SET_LEN(o, len)      SCM_SAL_VECTOR_SET_LEN((o), (len))
+#define SCM_VECTOR_MUTABLEP(o)          SCM_SAL_VECTOR_MUTABLEP(o)
+#define SCM_VECTOR_SET_MUTABLE(o)       SCM_SAL_VECTOR_SET_MUTABLE(o)
+#define SCM_VECTOR_SET_IMMUTABLE(o)     SCM_SAL_VECTOR_SET_IMMUTABLE(o)
 #define SCM_VECTOR_VALID_INDEXP(o, i)   SCM_SAL_VECTOR_VALID_INDEXP((o), (i))
 
 #define SCM_PORTP(o)                    SCM_SAL_PORTP(o)

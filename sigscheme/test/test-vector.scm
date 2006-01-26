@@ -32,6 +32,8 @@
 
 (load "./test/unittest.scm")
 
+(define tn test-name)
+
 ;; vector
 (assert-equal? "vector test" '#()        (vector))
 (assert-equal? "vector test" '#(a)       (vector 'a))
@@ -66,30 +68,66 @@
 				   (vector-ref '#() 1)))
 
 ;; vector-set!
-(assert-equal? "vector-set! test"
+(tn "vector-set!")
+(assert-equal? (tn)
 	       '#(#t a "abc" #f ())
 	       (begin
 		 (define tmpvec (vector 1 'a "abc" #f '()))
 		 (vector-set! tmpvec 0 #t)
 		 tmpvec))
-(assert-equal? "vector-set! test"
+(assert-equal? (tn)
 	       '#(1 a #t #f ())
 	       (begin
 		 (define tmpvec (vector 1 'a "abc" #f '()))
 		 (vector-set! tmpvec 2 #t)
 		 tmpvec))
-(assert-equal? "vector-set! test"
+(assert-equal? (tn)
 	       '#(1 a "abc" #f #t)
 	       (begin
 		 (define tmpvec (vector 1 'a "abc" #f '()))
 		 (vector-set! tmpvec 4 #t)
 		 tmpvec))
-(assert-error  "vector-set! test"
+(assert-error  (tn)
 	       (lambda ()
 		 (vector-set! '#() -1 #t)))
-(assert-error  "vector-set! test"
+(assert-error  (tn)
 	       (lambda ()
 		 (vector-set! '#() 1 #t)))
+(tn "vector-set! const vector")
+(if (and (provided? "sigscheme")
+         (provided? "const-vector-literal"))
+    (begin
+      (assert-error  (tn)
+                     (lambda ()
+                       (define tmpvec '#(1 'a "abc" #f '()))
+                       (vector-set! tmpvec 0 #t)))
+      (assert-error  (tn)
+                     (lambda ()
+                       (define tmpvec '#(1 'a "abc" #f '()))
+                       (vector-set! tmpvec 2 #t)))
+      (assert-error  (tn)
+                     (lambda ()
+                       (define tmpvec '#(1 'a "abc" #f '()))
+                       (vector-set! tmpvec 4 #t))))
+    (begin
+      (assert-equal? (tn)
+                     '#(#t a "abc" #f ())
+                     (begin
+                       (define tmpvec '#(1 'a "abc" #f '()))
+                       (vector-set! tmpvec 0 #t)
+                       tmpvec))
+      (assert-equal? (tn)
+                     '#(1 a #t #f ())
+                     (begin
+                       (define tmpvec '#(1 'a "abc" #f '()))
+                       (vector-set! tmpvec 2 #t)
+                       tmpvec))
+      (assert-equal? (tn)
+                     '#(1 a "abc" #f #t)
+                     (begin
+                       (define tmpvec '#(1 'a "abc" #f '()))
+                       (vector-set! tmpvec 4 #t)
+                       tmpvec))))
 
 ;; vector->list
 (assert-equal? "vector->list test" '()    (vector->list '#()))
@@ -102,17 +140,43 @@
 (assert-equal? "list->vector test" '#(a b) (list->vector '(a b)))
 
 ;; vector-fill!
-(assert-equal? "vector-fill! test"
+(tn "vector-fill!")
+(assert-equal? (tn)
 	       '#()
 	       (begin
 		 (define tmpvec (vector))
 		 (vector-fill! tmpvec #f)
 		 tmpvec))
-(assert-equal? "vector-fill! test"
+(assert-equal? (tn)
 	       '#(#f #f #f #f)
 	       (begin
 		 (define tmpvec (vector #t #t #t #t))
 		 (vector-fill! tmpvec #f)
 		 tmpvec))
+(tn "vector-fill! const vector")
+(if (and (provided? "sigscheme")
+         (provided? "const-vector-literal"))
+    (begin
+      (assert-error  (tn)
+                     (lambda ()
+                       (define tmpvec '#())
+                       (vector-fill! tmpvec #f)))
+      (assert-error  (tn)
+                     (lambda ()
+                       (define tmpvec '#(#t #t #t #t))
+                       (vector-fill! tmpvec #f))))
+    (begin
+      (assert-equal? (tn)
+                     '#()
+                     (begin
+                       (define tmpvec '#())
+                       (vector-fill! tmpvec #f)
+                       tmpvec))
+      (assert-equal? (tn)
+                     '#(#f #f #f #f)
+                     (begin
+                       (define tmpvec '#(#t #t #t #t))
+                       (vector-fill! tmpvec #f)
+                       tmpvec))))
 
 (total-report)
