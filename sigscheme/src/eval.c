@@ -395,7 +395,6 @@ scm_p_eval(ScmObj obj, ScmObj env)
 ScmObj
 scm_eval(ScmObj obj, ScmObj env)
 {
-    ScmObj ret;
     ScmEvalState state;
 
 #if SCM_DEBUG
@@ -406,30 +405,23 @@ scm_eval(ScmObj obj, ScmObj env)
     state.env = env;
 
 eval_loop:
-#if SCM_STRICT_R5RS
-    /* () is allowed by default for efficiency */
-    if (NULLP(obj))
-        ERR("eval: () is not a valid R5RS form. use '() instead");
-#endif
-    switch (SCM_TYPE(obj)) {
-    case ScmSymbol:
-        ret = scm_symbol_value(obj, state.env);
-        break;
-
-    case ScmCons:
+    if (SYMBOLP(obj)) {
+        obj = scm_symbol_value(obj, state.env);
+    } else if (CONSP(obj)) {
         obj = call(CAR(obj), CDR(obj), &state, SCM_VALTYPE_NEED_EVAL);
         if (state.ret_type == SCM_VALTYPE_NEED_EVAL)
             goto eval_loop;
-        /* FALLTHROUGH */
-    default:
-        ret = obj;
-        break;
     }
+#if SCM_STRICT_R5RS
+    /* () is allowed by default for efficiency */
+    else if (NULLP(obj))
+        ERR("eval: () is not a valid R5RS form. use '() instead");
+#endif
 
 #if SCM_DEBUG
     scm_pop_trace_frame();
 #endif
-    return ret;
+    return obj;
 }
 
 ScmObj
