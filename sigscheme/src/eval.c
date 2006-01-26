@@ -412,10 +412,14 @@ eval_loop:
         if (state.ret_type == SCM_VALTYPE_NEED_EVAL)
             goto eval_loop;
     }
-#if SCM_STRICT_R5RS
+#if SCM_STRICT_NULL_FORM
     /* () is allowed by default for efficiency */
     else if (NULLP(obj))
         ERR("eval: () is not a valid R5RS form. use '() instead");
+#endif
+#if SCM_STRICT_VECTOR_FORM
+    else if (VECTORP(obj))
+        ERR("eval: #() is not a valid R5RS form. use '#() instead");
 #endif
 
 #if SCM_DEBUG

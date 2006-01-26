@@ -81,6 +81,8 @@
   Internal Behaviors
 ===========================================================================*/
 #define SCM_STRICT_R5RS         0  /* use strict R5RS check */
+#define SCM_STRICT_NULL_FORM    0  /* disallow quote-less () */
+#define SCM_STRICT_VECTOR_FORM  0  /* disallow quote-less vector literal */
 #define SCM_STRICT_ARGCHECK     1  /* enable strict argument check */
 #define SCM_STRICT_DEFINE_PLACEMENT 1 /* enable strict check on internal definitions */
 #define SCM_STRICT_ENCODING_CHECK 1 /* do all feasible encoding error checks */
@@ -150,6 +152,17 @@
 #if (!SCM_DEBUG && SCM_USE_NULL_CAPABLE_STRING)
 #error "Don't enable dangerous SCM_USE_NULL_CAPABLE_STRING for production code"
 #endif
+
+#if SCM_STRICT_R5RS
+#undef SCM_STRICT_NULL_FORM
+#define SCM_STRICT_NULL_FORM    1
+#undef SCM_STRICT_VECTOR_FORM
+#define SCM_STRICT_VECTOR_FORM  1
+#undef SCM_STRICT_ARGCHECK
+#define SCM_STRICT_ARGCHECK     1
+#undef SCM_STRICT_DEFINE_PLACEMENT
+#define SCM_STRICT_DEFINE_PLACEMENT 1
+#endif /* SCM_STRICT_R5RS */
 
 #if SCM_COMPAT_SIOD
 #undef SCM_USE_NONSTD_FEATURES
