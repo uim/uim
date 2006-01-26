@@ -1525,7 +1525,7 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
 
     ENSURE_STATELESS_CODEC(scm_current_char_codec);
     ENSURE_STRING(str);
-    ENSURE_MUTABLE(str);
+    ENSURE_MUTABLE_STRING(str);
     ENSURE_INT(k);
     ENSURE_CHAR(ch);
 
@@ -1980,7 +1980,7 @@ scm_p_string_filld(ScmObj str, ScmObj ch)
 
     ENSURE_STATELESS_CODEC(scm_current_char_codec);
     ENSURE_STRING(str);
-    ENSURE_MUTABLE(str);
+    ENSURE_MUTABLE_STRING(str);
     ENSURE_CHAR(ch);
 
     str_len = SCM_STRING_LEN(str);

@@ -348,7 +348,7 @@ extern ScmObj scm_null_values;
 #define ENSURE_ERROBJ(obj)  ENSURE_TYPE(ERROBJP, "error object", (obj))
 #define ENSURE_LIST(obj)    ENSURE_TYPE(LISTP, "list", (obj))
 
-#define ENSURE_MUTABLE(str)                                                  \
+#define ENSURE_MUTABLE_STRING(str)                                           \
     (SCM_STRING_MUTABLEP(str)                                                \
      || (ERR_OBJ("attempted to modify immutable string", str), 1))
 
