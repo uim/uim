@@ -700,6 +700,7 @@ im_uim_init(IMUIMContext *uic)
 #if IM_UIM_USE_TOPLEVEL
   uic->widget = NULL;
   uic->in_toplevel = FALSE;
+  uic->event_rec.time = 0;
 #endif
   uic->menu = NULL;
   uic->caret_state_indicator = NULL;
@@ -1217,7 +1218,6 @@ handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data)
     int rv, kv, mod;
 
     uic->event_rec.time = event->time;
-    uic->event_rec.hardware_keycode = event->hardware_keycode;
 
     im_uim_convert_keyevent(event, &kv, &mod);
 
