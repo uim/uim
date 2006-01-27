@@ -666,6 +666,10 @@ struct ScmCell_ {
 #define SCM_SAL_HAS_STRING   1
 #define SCM_SAL_HAS_VECTOR   1
 
+#define SCM_SAL_HAS_IMMUTABLE_CONS   0
+#define SCM_SAL_HAS_IMMUTABLE_STRING 1
+#define SCM_SAL_HAS_IMMUTABLE_VECTOR 0 /* FIXME: implement immutable vector  */
+
 /* for optimization */
 #define SCM_SAL_HAS_IMMEDIATE_CHAR_ONLY     1
 #define SCM_SAL_HAS_IMMEDIATE_NUMBER_ONLY   1
@@ -696,6 +700,7 @@ struct ScmCell_ {
 =======================================*/
 #define SCM_SAL_MAKE_INT                      scm_make_int
 #define SCM_SAL_MAKE_CONS                     scm_make_cons
+#define SCM_SAL_MAKE_IMMUTABLE_CONS           scm_make_immutable_cons
 #define SCM_SAL_MAKE_SYMBOL                   scm_make_symbol
 #define SCM_SAL_MAKE_CHAR                     scm_make_char
 #define SCM_SAL_MAKE_STRING                   scm_make_string
@@ -705,6 +710,7 @@ struct ScmCell_ {
 #define SCM_SAL_MAKE_FUNC                     scm_make_func
 #define SCM_SAL_MAKE_CLOSURE                  scm_make_closure
 #define SCM_SAL_MAKE_VECTOR                   scm_make_vector
+#define SCM_SAL_MAKE_IMMUTABLE_VECTOR         scm_make_immutable_vector
 #define SCM_SAL_MAKE_PORT                     scm_make_port
 #define SCM_SAL_MAKE_CONTINUATION             scm_make_continuation
 #if SCM_USE_NONSTD_FEATURES
@@ -716,6 +722,7 @@ struct ScmCell_ {
 /* Don't use these functions directly. Use SCM_MAKE_*() or MAKE_*() instead to
  * allow flexible object allocation. */
 ScmObj scm_make_cons(ScmObj kar, ScmObj kdr);
+ScmObj scm_make_immutable_cons(ScmObj kar, ScmObj kdr);
 #if 1
 /* FIXME: directly create by SCM_SAL_MAKE_*() */
 ScmObj scm_make_int(scm_int_t val);
@@ -729,6 +736,7 @@ ScmObj scm_make_string_copying(const char *str, scm_int_t len);
 ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
 ScmObj scm_make_closure(ScmObj exp, ScmObj env);
 ScmObj scm_make_vector(ScmObj *vec, scm_int_t len);
+ScmObj scm_make_immutable_vector(ScmObj *vec, scm_int_t len);
 ScmObj scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag);
 ScmObj scm_make_continuation(void);
 #if !SCM_USE_VALUECONS
@@ -823,6 +831,9 @@ extern enum ScmObjType scm_type(ScmObj obj);
 #define SCM_SAL_CONS_CDR(a) ((ScmObj)(SCM_CONS_CDR_VAL(a)))
 #define SCM_SAL_CONS_SET_CAR(a, val) SCM_CONS_SET_CAR_VAL((a), (val))
 #define SCM_SAL_CONS_SET_CDR(a, val) SCM_CONS_SET_CDR_VAL((a), (val))
+#define SCM_SAL_CONS_MUTABLEP(o)       (SCM_FALSE)
+#define SCM_SAL_CONS_SET_MUTABLE(o)
+#define SCM_SAL_CONS_SET_IMMUTABLE(o)
 
 /*==============================================================================
   Accessors For Scheme Objects : Closure
@@ -940,6 +951,10 @@ extern enum ScmObjType scm_type(ScmObj obj);
 #define SCM_SAL_VECTOR_SET_LEN(a, val)          \
     SCM_OTHERS_SET_CDR_VAL((a), VECTOR, (val))
 #define SCM_SAL_VECTOR_VALID_INDEXP(o, i) (0 <= (i) && (i) < SCM_VECTOR_LEN(o))
+
+#define SCM_SAL_VECTOR_MUTABLEP(o)        /* FIXME */
+#define SCM_SAL_VECTOR_SET_MUTABLE(o)     /* FIXME */
+#define SCM_SAL_VECTOR_SET_IMMUTABLE(o)   /* FIXME */
 
 /*
  * ValuePacket

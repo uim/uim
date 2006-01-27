@@ -516,6 +516,7 @@ scm_p_srfi1_taked(ScmObj lst, ScmObj scm_idx)
         tmp = CDR(tmp);
     }
 
+    ENSURE_MUTABLE_CONS(tmp);
     SET_CDR(tmp, SCM_NULL);
 
     return lst;
@@ -541,6 +542,7 @@ scm_p_srfi1_drop_rightd(ScmObj lst, ScmObj scm_idx)
         tmp = CDR(tmp);
     }
 
+    ENSURE_MUTABLE_CONS(tmp);
     SET_CDR(tmp, SCM_NULL);
 
     return lst;

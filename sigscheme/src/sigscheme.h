@@ -134,7 +134,8 @@ extern "C" {
 
 #define SCM_SYMBOL_BOUNDP(sym) (!SCM_EQ(SCM_SYMBOL_VCELL(sym), SCM_UNBOUND))
 
-#define SCM_CONS(kar, kdr) (SCM_MAKE_CONS((kar), (kdr)))
+#define SCM_CONS(kar, kdr)           (SCM_MAKE_CONS((kar), (kdr)))
+#define SCM_IMMUTABLE_CONS(kar, kdr) (SCM_MAKE_IMMUTABLE_CONS((kar), (kdr)))
 #define SCM_CAR(kons)  (SCM_CONS_CAR(kons))
 #define SCM_CDR(kons)  (SCM_CONS_CDR(kons))
 #define SCM_CAAR(kons) (SCM_CAR(SCM_CAR(kons)))
@@ -656,6 +657,10 @@ struct ScmStorageConf_ {
 #define SCM_HAS_STRING   SCM_SAL_HAS_STRING
 #define SCM_HAS_VECTOR   SCM_SAL_HAS_VECTOR
 
+#define SCM_HAS_IMMUTABLE_CONS   SCM_SAL_HAS_IMMUTABLE_CONS
+#define SCM_HAS_IMMUTABLE_STRING SCM_SAL_HAS_IMMUTABLE_STRING
+#define SCM_HAS_IMMUTABLE_VECTOR SCM_SAL_HAS_IMMUTABLE_VECTOR
+
 /* for optimization */
 #define SCM_HAS_IMMEDIATE_CHAR_ONLY     SCM_SAL_HAS_IMMEDIATE_CHAR
 #define SCM_HAS_IMMEDIATE_NUMBER_ONLY   SCM_SAL_HAS_IMMEDIATE_NUMBER_ONLY
@@ -691,6 +696,8 @@ struct ScmStorageConf_ {
 #define SCM_MAKE_BOOL(x)                  ((x) ? SCM_TRUE : SCM_FALSE)
 #define SCM_MAKE_INT(val)                 SCM_SAL_MAKE_INT(val)
 #define SCM_MAKE_CONS(kar, kdr)           SCM_SAL_MAKE_CONS((kar), (kdr))
+#define SCM_MAKE_IMMUTABLE_CONS(kar, kdr)                                    \
+    SCM_SAL_MAKE_IMMUTABLE_CONS((kar), (kdr))
 #define SCM_MAKE_SYMBOL(name, val)        SCM_SAL_MAKE_SYMBOL((name), (val))
 #define SCM_MAKE_CHAR(val)                SCM_SAL_MAKE_CHAR(val)
 
@@ -761,6 +768,9 @@ struct ScmStorageConf_ {
 #define SCM_CONS_CDR(o)                 SCM_SAL_CONS_CDR(o)
 #define SCM_CONS_SET_CAR(o, kar)        SCM_SAL_CONS_SET_CAR((o), (kar))
 #define SCM_CONS_SET_CDR(o, kdr)        SCM_SAL_CONS_SET_CDR((o), (kdr))
+#define SCM_CONS_MUTABLEP(o)            SCM_SAL_CONS_MUTABLEP(o)
+#define SCM_CONS_SET_MUTABLE(o)         SCM_SAL_CONS_SET_MUTABLE(o)
+#define SCM_CONS_SET_IMMUTABLE(o)       SCM_SAL_CONS_SET_IMMUTABLE(o)
 
 #define SCM_SYMBOLP(o)                  SCM_SAL_SYMBOLP(o)
 #define SCM_SYMBOL_NAME(o)              SCM_SAL_SYMBOL_NAME(o)

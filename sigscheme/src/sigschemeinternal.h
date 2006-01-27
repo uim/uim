@@ -155,6 +155,7 @@ extern ScmObj scm_null_values;
 #define CDDR           SCM_CDDR
 
 #define CONS           SCM_CONS
+#define IMMUTABLE_CONS SCM_IMMUTABLE_CONS
 #define LIST_1         SCM_LIST_1
 #define LIST_2         SCM_LIST_2
 #define LIST_3         SCM_LIST_3
@@ -172,6 +173,7 @@ extern ScmObj scm_null_values;
 #define MAKE_BOOL                     SCM_MAKE_BOOL
 #define MAKE_INT                      SCM_MAKE_INT
 #define MAKE_CONS                     SCM_MAKE_CONS
+#define MAKE_IMMUTABLE_CONS           SCM_MAKE_IMMUTABLE_CONS
 #define MAKE_SYMBOL                   SCM_MAKE_SYMBOL
 #define MAKE_CHAR                     SCM_MAKE_CHAR
 
@@ -349,6 +351,10 @@ extern ScmObj scm_null_values;
 #define ENSURE_ERROBJ(obj)  ENSURE_TYPE(ERROBJP, "error object", (obj))
 #define ENSURE_LIST(obj)    ENSURE_TYPE(LISTP, "list", (obj))
 
+#define ENSURE_MUTABLE_CONS(kons)                                            \
+    (SCM_CONS_MUTABLEP(kons)                                                 \
+     || (ERR_OBJ("attempted to modify immutable pair", kons), 1))
+
 #define ENSURE_MUTABLE_STRING(str)                                           \
     (SCM_STRING_MUTABLEP(str)                                                \
      || (ERR_OBJ("attempted to modify immutable string", str), 1))
@@ -388,6 +394,9 @@ typedef ScmRef ScmQueue;
 #define SCM_QUEUE_POINT_TO(_q, _out) ((_q) = SCM_REF_OFF_HEAP(_out))
 #define SCM_QUEUE_ADD(_q, _dat) (SET((_q), LIST_1(_dat)),                    \
                                  (_q) = REF_CDR(DEREF(_q)))
+#define SCM_QUEUE_CONST_ADD(_q, _dat)                                        \
+    (SET((_q), IMMUTABLE_CONS((_dat), SCM_NULL)),                            \
+     (_q) = REF_CDR(DEREF(_q)))
 #define SCM_QUEUE_APPEND(_q, _lst)                                           \
     do {                                                                     \
         SET((_q), (_lst));                                                   \

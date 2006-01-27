@@ -82,11 +82,12 @@
 ===========================================================================*/
 #define SCM_STRICT_R5RS         0  /* use strict R5RS check */
 #define SCM_STRICT_NULL_FORM    0  /* disallow quote-less () */
-#define SCM_STRICT_VECTOR_FORM  0  /* disallow quote-less vector literal */
+#define SCM_STRICT_VECTOR_FORM  1  /* disallow quote-less vector literal */
 #define SCM_STRICT_ARGCHECK     1  /* enable strict argument check */
-#define SCM_STRICT_DEFINE_PLACEMENT 1 /* enable strict check on internal definitions */
+#define SCM_STRICT_DEFINE_PLACEMENT 1 /* reject invalid internal definitions */
 #define SCM_STRICT_ENCODING_CHECK 1 /* do all feasible encoding error checks */
-#define SCM_CONST_VECTOR_LITERAL 0 /* parse vector literal as const */
+#define SCM_CONST_LIST_LITERAL  1  /* make list literal immutable */
+#define SCM_CONST_VECTOR_LITERAL 1 /* make vector literal immutable */
 #define SCM_ACCESSOR_ASSERT     0  /* enable strict type check with accessor */
 #define SCM_USE_VALUECONS       1  /* use experimental values passing */
 #define SCM_VOLATILE_OUTPUT     0  /* always flush files on write */

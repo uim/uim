@@ -178,6 +178,10 @@ struct ScmCell_ {
 #define SCM_SAL_HAS_STRING   1
 #define SCM_SAL_HAS_VECTOR   1
 
+#define SCM_SAL_HAS_IMMUTABLE_CONS   1
+#define SCM_SAL_HAS_IMMUTABLE_STRING 1
+#define SCM_SAL_HAS_IMMUTABLE_VECTOR 1
+
 /* for optimization */
 #define SCM_SAL_HAS_IMMEDIATE_CHAR_ONLY     0
 #define SCM_SAL_HAS_IMMEDIATE_NUMBER_ONLY   0
@@ -208,6 +212,7 @@ struct ScmCell_ {
 =======================================*/
 #define SCM_SAL_MAKE_INT                      scm_make_int
 #define SCM_SAL_MAKE_CONS                     scm_make_cons
+#define SCM_SAL_MAKE_IMMUTABLE_CONS           scm_make_immutable_cons
 #define SCM_SAL_MAKE_SYMBOL                   scm_make_symbol
 #define SCM_SAL_MAKE_CHAR                     scm_make_char
 #define SCM_SAL_MAKE_STRING                   scm_make_string
@@ -234,6 +239,7 @@ struct ScmCell_ {
 /* Don't use these functions directly. Use SCM_MAKE_*() or MAKE_*() instead to
  * allow flexible object allocation. */
 ScmObj scm_make_cons(ScmObj kar, ScmObj kdr);
+ScmObj scm_make_immutable_cons(ScmObj kar, ScmObj kdr);
 ScmObj scm_make_int(scm_int_t val);
 ScmObj scm_make_symbol(char *name, ScmObj val);
 ScmObj scm_make_char(scm_ichar_t val);
@@ -285,6 +291,9 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #endif /* SCM_DEBUG */
 #define SCM_SAL_CONS_SET_CAR(o, kar)   (SCM_AS_CONS(o)->obj.cons.car = (kar))
 #define SCM_SAL_CONS_SET_CDR(o, kdr)   (SCM_AS_CONS(o)->obj.cons.cdr = (kdr))
+#define SCM_SAL_CONS_MUTABLEP(o)       (SCM_MUTABLEP(o))
+#define SCM_SAL_CONS_SET_MUTABLE(o)    (SCM_SET_MUTABLE(o))
+#define SCM_SAL_CONS_SET_IMMUTABLE(o)  (SCM_SET_IMMUTABLE(o))
 
 #define SCM_SAL_SYMBOLP(o)             (SCM_TYPE(o) == ScmSymbol)
 #define SCM_SAL_ENTYPE_SYMBOL(o)       (SCM_ENTYPE((o), ScmSymbol))

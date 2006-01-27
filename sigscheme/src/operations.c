@@ -763,6 +763,7 @@ scm_p_set_card(ScmObj pair, ScmObj car)
     DECLARE_FUNCTION("set-car!", procedure_fixed_2);
 
     ENSURE_CONS(pair);
+    ENSURE_MUTABLE_CONS(pair);
 
     SET_CAR(pair, car);
 
@@ -779,6 +780,7 @@ scm_p_set_cdrd(ScmObj pair, ScmObj cdr)
     DECLARE_FUNCTION("set-cdr!", procedure_fixed_2);
 
     ENSURE_CONS(pair);
+    ENSURE_MUTABLE_CONS(pair);
 
     SET_CDR(pair, cdr);
 

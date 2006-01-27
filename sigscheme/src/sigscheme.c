@@ -194,7 +194,10 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
 #if SCM_STRICT_ARGCHECK
     scm_provide(CONST_STRING("strict-argcheck"));
 #endif
-#if SCM_CONST_VECTOR_LITERAL
+#if (SCM_CONST_LIST_LITERAL && SCM_HAS_IMMUTABLE_CONS)
+    scm_provide(CONST_STRING("const-list-literal"));
+#endif
+#if (SCM_CONST_VECTOR_LITERAL && SCM_HAS_IMMUTABLE_VECTOR)
     scm_provide(CONST_STRING("const-vector-literal"));
 #endif
 #if SCM_COMPAT_SIOD_BUGS

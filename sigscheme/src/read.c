@@ -366,7 +366,15 @@ read_list(ScmObj port, scm_ichar_t closeParen)
                                           SCM_PORT_IMPL(port));
     start_line = (basecport) ? ScmBaseCharPort_line_number(basecport) : -1;
 
-    for (lst = SCM_NULL, SCM_QUEUE_POINT_TO(q, lst);; SCM_QUEUE_ADD(q, elm)) {
+    for (lst = SCM_NULL, SCM_QUEUE_POINT_TO(q, lst);
+         ;
+#if SCM_CONST_LIST_LITERAL
+         SCM_QUEUE_CONST_ADD(q, elm)
+#else
+         SCM_QUEUE_ADD(q, elm)
+#endif
+         )
+    {
         c = skip_comment_and_space(port);
 
         CDBG((SCM_DBG_PARSER, "read_list c = [%c]", (int)c));

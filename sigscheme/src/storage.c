@@ -163,6 +163,21 @@ scm_make_cons(ScmObj kar, ScmObj kdr)
 
     obj = scm_alloc_cell();
     SCM_ENTYPE_CONS(obj);
+    SCM_CONS_SET_MUTABLE(obj);
+    SET_CAR(obj, kar);
+    SET_CDR(obj, kdr);
+
+    return obj;
+}
+
+ScmObj
+scm_make_immutable_cons(ScmObj kar, ScmObj kdr)
+{
+    ScmObj obj;
+
+    obj = scm_alloc_cell();
+    SCM_ENTYPE_CONS(obj);
+    SCM_CONS_SET_IMMUTABLE(obj);
     SET_CAR(obj, kar);
     SET_CDR(obj, kdr);
 
