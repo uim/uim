@@ -152,18 +152,19 @@ repl_loop(void)
          */
         result = EVAL(LIST_3(sym_guard, cond_catch, sexp),
                       SCM_INTERACTION_ENV);
-#else /* SCM_USE_SRFI34 */
-        sexp = scm_read(scm_in)
-        if (EOFP(sexp))
-            break;
-
-        result = EVAL(sexp, SCM_INTERACTION_ENV);
-#endif /* SCM_USE_SRFI34 */
-
         if (!EQ(result, err)) {
             SCM_WRITESS_TO_PORT(scm_out, result);
             scm_port_newline(scm_out);
         }
+#else /* SCM_USE_SRFI34 */
+        sexp = scm_read(scm_in);
+        if (EOFP(sexp))
+            break;
+
+        result = EVAL(sexp, SCM_INTERACTION_ENV);
+        SCM_WRITESS_TO_PORT(scm_out, result);
+        scm_port_newline(scm_out);
+#endif /* SCM_USE_SRFI34 */
     }
 }
 
