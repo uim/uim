@@ -1227,7 +1227,7 @@ handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data)
       rv = uim_press_key(focused_context->uc, kv, mod);
 
     if (rv)
-      return gtk_window_activate_key(window, event);
+      return FALSE;
 #if 0
     if (GTK_IS_TEXT_VIEW(uic->widget))
       GTK_TEXT_VIEW(uic->widget)->need_im_reset = TRUE;
