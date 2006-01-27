@@ -49,6 +49,7 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+#define ERRMSG_BAD_SPLICE_LIST      "bad splice list"
 #define ERRMSG_BAD_DEFINE_PLACEMENT "bad define placement"
 
 /*=======================================
@@ -244,7 +245,7 @@ listran(sequence_translator *t, tr_msg msg, ScmObj obj)
     DECLARE_INTERNAL_FUNCTION("(list translator)");
 
     switch (msg) {
-    default:
+    case TR_MSG_NOP: /* for better performance */
         break;
 
     case TR_MSG_ENDP:
@@ -273,7 +274,7 @@ listran(sequence_translator *t, tr_msg msg, ScmObj obj)
             SCM_QUEUE_APPEND(t->u.lst.q, obj);
 #if SCM_STRICT_R5RS
             if (!NULLP(SCM_QUEUE_TERMINATOR(t->u.lst.q)))
-                ERR_OBJ("bad splice list", obj);
+                ERR_OBJ(ERRMSG_BAD_SPLICE_LIST, obj);
 #endif
             t->u.lst.src = obj = CDR(t->u.lst.cur);
         }
@@ -281,27 +282,36 @@ listran(sequence_translator *t, tr_msg msg, ScmObj obj)
         break;
 
     case TR_MSG_EXTRACT:
-        return t->u.lst.output;
+        return TRL_EXTRACT(*t);
+
+    default:
+        SCM_ASSERT(scm_false);
     }
     return SCM_INVALID;
 }
+
+#define REPLACED_INDEX(i) (i)
+/* '- 1' allows zero as spliced index */
+#define SPLICED_INDEX(i)  (-(i) - 1)
 
 static ScmObj
 vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
 {
     scm_int_t splice_len;
     scm_int_t change_index;
-    DECLARE_INTERNAL_FUNCTION("vectran");
+    DECLARE_INTERNAL_FUNCTION("(vector translator)");
 
     switch (msg) {
-    default:
+    case TR_MSG_NOP: /* for better performance */
         break;
 
     case TR_MSG_GET_OBJ:
         return TRV_GET_OBJ(*t);
+
     case TR_MSG_NEXT:
         TRV_NEXT(*t);
         break;
+
     case TR_MSG_ENDP:
         return MAKE_BOOL(TRV_ENDP(*t));
 
@@ -309,14 +319,14 @@ vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
         splice_len = scm_length(obj);
 #if SCM_STRICT_R5RS
         if (!SCM_LISTLEN_PROPERP(splice_len))
-            ERR_OBJ("got bad splice list", obj);
+            ERR_OBJ(ERRMSG_BAD_SPLICE_LIST, obj);
 #endif
         t->u.vec.growth += splice_len - 1;
-        change_index = -t->u.vec.index - 1;
+        change_index = SPLICED_INDEX(t->u.vec.index);
         goto record_change;
 
     case TR_MSG_REPLACE:
-        change_index = t->u.vec.index;
+        change_index = REPLACED_INDEX(t->u.vec.index);
 
       record_change:
         SCM_QUEUE_ADD(t->u.vec.q, CONS(MAKE_INT(change_index), obj));
@@ -325,26 +335,23 @@ vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
     case TR_MSG_EXTRACT:
         /* Create a new vector iff modifications have been recorded. */
         if (!NULLP(t->u.vec.diff)) {
-            ScmObj *copy_buf;
-            ScmObj *src_buf;
-            ScmObj tmp;
-            ScmObj diff;
+            ScmObj *copy_buf, *src_buf;
+            ScmObj diff, appendix, elm;
             scm_int_t src_len, i, cpi;
 
             src_len = SCM_VECTOR_LEN(t->u.vec.src);
             src_buf = SCM_VECTOR_VEC(t->u.vec.src);
-            copy_buf = malloc ((src_len + t->u.vec.growth) * sizeof (ScmObj));
+            copy_buf = malloc((src_len + t->u.vec.growth) * sizeof(ScmObj));
 
             diff = t->u.vec.diff;
             change_index = SCM_INT_VALUE(CAAR(diff));
-
             for (i = cpi = 0; i < src_len; i++) {
-                if (i == change_index) {
+                if (REPLACED_INDEX(i) == change_index) {
                     copy_buf[cpi++] = CDAR(diff);
-                } else if (-i-1 == change_index) {
-                    /* Splice. */
-                    for (tmp = CDAR(diff); CONSP(tmp); tmp = CDR(tmp))
-                        copy_buf[cpi++] = CAR(tmp);
+                } else if (SPLICED_INDEX(i) == change_index) {
+                    appendix = CDAR(diff);
+                    FOR_EACH (elm, appendix)
+                        copy_buf[cpi++] = elm;
                 } else {
                     copy_buf[cpi++] = src_buf[i];
                     continue;
@@ -361,9 +368,15 @@ vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
             return MAKE_VECTOR(copy_buf, src_len + t->u.vec.growth);
         }
         break;
+
+    default:
+        SCM_ASSERT(scm_false);
     }
     return SCM_INVALID;
 }
+
+#undef REPLACED_INDEX
+#undef SPLICED_INDEX
 
 /*=======================================
   R5RS : 4.1 Primitive expression types
@@ -1137,8 +1150,8 @@ qquote_internal(ScmObj input, ScmObj env, scm_int_t nest)
                 } else if (EQ(obj, SYM_UNQUOTE)) {
                     /* FORM == ,x */
                     if (--nest == 0) {
-                        /* FIXME: side-effective EVAL in another macro */
-                        TRL_SET_SUBLS(tr, EVAL(CADR(form), env));
+                        obj = EVAL(CADR(form), env);
+                        TRL_SET_SUBLS(tr, obj);
                         my_result.obj  = TRL_EXTRACT(tr);
                         my_result.insn = TR_MSG_REPLACE;
                         return my_result;
@@ -1146,10 +1159,19 @@ qquote_internal(ScmObj input, ScmObj env, scm_int_t nest)
                 } else if (EQ(obj, SYM_UNQUOTE_SPLICING)) {
                     /* FORM == ,@x */
                     if (!EQ(form, input)) /* (a . ,@b) */
-                        ERR_OBJ(",@ in wrong context", input);
+                        ERR_OBJ(",@ in invalid context", input);
+
                     if (--nest == 0) {
+                        /* R5RS: 4.2.6 Quasiquotation
+                         * If a comma appears followed immediately by an
+                         * at-sign (@), then the following expression must
+                         * evaluate to a list */
+                        obj = EVAL(CADR(form), env);
+                        if (!LISTP(obj))
+                            ERR(",@<x> must evaluate to a list");
+
+                        my_result.obj  = obj;
                         my_result.insn = TR_MSG_SPLICE;
-                        my_result.obj  = EVAL(CADR(form), env);
                         return my_result;
                     }
                 }
@@ -1157,8 +1179,8 @@ qquote_internal(ScmObj input, ScmObj env, scm_int_t nest)
         }
     } else {
         /* An atomic datum. */
-        tmp_result.insn = TR_MSG_NOP;
         tmp_result.obj  = SCM_INVALID;
+        tmp_result.insn = TR_MSG_NOP;
         return tmp_result;
     }
 
@@ -1193,14 +1215,15 @@ scm_s_quasiquote(ScmObj datum, ScmObj env)
     case TR_MSG_NOP:
         return datum;
     case TR_MSG_SPLICE:
-#if SCM_STRICT_R5RS
-        ERR_OBJ("unquote-splicing in invalid context", datum);
-#endif
-        /* Otherwise fall through. */
+        /* R5RS: 4.2.6 Quasiquotation
+         * A comma at-sign should only appear within a list or vector <qq
+         * template>. */
+        ERR_OBJ(",@ in invalid context", datum);
+        /* NOTREACHED */
     case TR_MSG_REPLACE:
         return ret.obj;
     default:
-        ERR_OBJ("bug in quasiquote", datum);
+        SCM_ASSERT(scm_false);
     }
 }
 
@@ -1210,7 +1233,8 @@ scm_s_unquote(ScmObj dummy, ScmObj env)
     DECLARE_FUNCTION("unquote", syntax_fixed_1);
 
     ERR("unquote outside quasiquote");
-    return SCM_NULL;
+    /* NOTREACHED */
+    return SCM_FALSE;
 }
 
 ScmObj
@@ -1219,7 +1243,8 @@ scm_s_unquote_splicing(ScmObj dummy, ScmObj env)
     DECLARE_FUNCTION("unquote-splicing", syntax_fixed_1);
 
     ERR("unquote-splicing outside quasiquote");
-    return SCM_NULL;
+    /* NOTREACHED */
+    return SCM_FALSE;
 }
 
 

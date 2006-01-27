@@ -17,10 +17,9 @@ Requirements and critical bugs:
 * Fix all side-effective expression in macros
   - All files except for operations-srfi1.c, storage-compact.h and
     test-compact.c are checked
-  - qquote_internal() still have such expression
 
-* Review and refactor some functions in syntax.c(listran, vectran,
-  qquote_internal, scm_s_quasiquote) (other files had already been done)
+* Review and refactor some functions in syntax.c(qquote_internal) (other files
+  had already been done)
 
 * Make 64bit-safe
   - Write tests
