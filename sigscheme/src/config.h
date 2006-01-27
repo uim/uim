@@ -44,7 +44,7 @@
 #define SCM_USE_DEEP_CADRS      1  /* use all c[ad]+r defined in R5RS */
 #define SCM_USE_NONSTD_FEATURES 1  /* use Non-R5RS standard features such as "require" */
 
-#define SCM_USE_SRFI1           1  /* use SRFI-1  list library */
+#define SCM_USE_SRFI1           0  /* use SRFI-1  list library (broken) */
 #define SCM_USE_SRFI2           1  /* use SRFI-2  'and-let*' */
 #define SCM_USE_SRFI6           1  /* use SRFI-6  basic string ports */
 #define SCM_USE_SRFI8           1  /* use SRFI-8  'receive' */

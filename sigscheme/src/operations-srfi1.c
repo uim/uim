@@ -32,6 +32,13 @@
  *  SUCH DAMAGE.
 ===========================================================================*/
 
+/*
+ * Do not use this implementation for production code.
+ *
+ * This SRFI-1 implementation is still broken, and not using the SigScheme's
+ * safe and simple coding elements.
+ */
+
 /*=======================================
   System Include
 =======================================*/
@@ -160,9 +167,12 @@ scm_p_srfi1_list_tabulate(ScmObj scm_n, ScmObj args)
     return head;
 }
 
+/* FIXME: SRFI-1 list-copy is a shallow copy */
 ScmObj
 scm_p_srfi1_list_copy(ScmObj lst)
 {
+    /* broken */
+#if 0
     ScmObj head = SCM_NULL;
     ScmObj tail = SCM_FALSE;
     ScmObj obj  = SCM_FALSE;
@@ -190,6 +200,7 @@ scm_p_srfi1_list_copy(ScmObj lst)
     }
 
     return head;
+#endif
 }
 
 ScmObj
