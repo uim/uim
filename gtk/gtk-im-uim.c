@@ -61,8 +61,8 @@
 #include "key-util-gtk.h"
 
 /* select either of these two, or filter key event will be used */
-#define IM_UIM_USE_SNOOPER	1
-#define IM_UIM_USE_TOPLEVEL	0
+#define IM_UIM_USE_SNOOPER	0
+#define IM_UIM_USE_TOPLEVEL	1
 
 /* exported symbols */
 GtkIMContext *im_module_create(const gchar *context_id);
@@ -936,6 +936,13 @@ im_uim_focus_in(GtkIMContext *ic)
     snooper_installed = TRUE;
   }
 #elif IM_UIM_USE_TOPLEVEL
+  if (cur_toplevel) {
+    if (cur_key_press_handler_id)
+      g_signal_handler_disconnect(cur_toplevel, cur_key_press_handler_id);
+    if (cur_key_press_handler_id)
+      g_signal_handler_disconnect(cur_toplevel, cur_key_release_handler_id);
+  }
+
   toplevel = gtk_widget_get_toplevel(uic->widget);
   cur_toplevel = toplevel;
 
