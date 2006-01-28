@@ -94,13 +94,15 @@ repl(void)
 static void
 repl_loop(void)
 {
+    ScmEvalState eval_state;
     ScmBaseCharPort *cport;
     ScmBytePort *bport;
     ScmObj sexp, result;
 #if SCM_USE_SRFI34
-    ScmObj sym_guard, cond_catch, proc_read, err;
+    ScmObj sym_guard, cond_catch, proc_read, proc_eval, err;
 
     proc_read = scm_symbol_value(scm_intern("read"), SCM_INTERACTION_ENV);
+    proc_eval = scm_symbol_value(scm_intern("eval"), SCM_INTERACTION_ENV);
     err = CONS(SCM_UNDEF, SCM_UNDEF); /* unique ID */
 
     /* prepare the constant part of the form to get the loop fast */
@@ -118,11 +120,23 @@ repl_loop(void)
 
 #if SCM_USE_SRFI34
         /* error-proof read */
-        sexp = EVAL(LIST_3(sym_guard, cond_catch,
-                           LIST_2(proc_read, scm_in)),
-                    SCM_INTERACTION_ENV);
+        SCM_EVAL_STATE_INIT1(eval_state, SCM_INTERACTION_ENV);
+        sexp = scm_s_srfi34_guard(cond_catch,
+                                  LIST_1(LIST_2(proc_read, scm_in)),
+                                  &eval_state);
+        if (eval_state.ret_type == SCM_VALTYPE_NEED_EVAL)
+            sexp = EVAL(sexp, eval_state.env);
         if (EOFP(sexp))
             break;
+
+        SCM_EVAL_STATE_INIT1(eval_state, SCM_INTERACTION_ENV);
+        sexp = scm_s_srfi34_guard(cond_catch,
+                                  LIST_1(LIST_3(proc_eval,
+                                                sexp,
+                                                SCM_INTERACTION_ENV)),
+                                  &eval_state);
+        if (eval_state.ret_type == SCM_VALTYPE_NEED_EVAL)
+            sexp = EVAL(sexp, eval_state.env);
 
         /* parse error */
         if (EQ(sexp, err)) {
