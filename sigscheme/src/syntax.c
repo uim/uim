@@ -104,8 +104,8 @@ scm_init_syntax(void)
  * First, initialize the proper type of translator with either
  * TRL_INIT() or TRV_INIT(), supplying the datum to be duplicated.
  * Then, traverse over the `copy' by successively and alternately
- * calling TR_GET_OBJ() and TR_NEXT().  If an item returned by
- * TR_GET_OBJ() should be replaced, then call TR_CALL() with the
+ * calling TR_GET_ELM() and TR_NEXT().  If an item returned by
+ * TR_GET_ELM() should be replaced, then call TR_CALL() with the
  * message TR_REPLACE or TR_SPLICE (see their definition for details).
  * When TR_ENDP() returns true, stop and obtain the duplicate with
  * TR_EXTRACT().
@@ -145,7 +145,7 @@ enum _tr_msg {
      * message.  Use TRL_GET_SUBLS() to retrieve the terminator in
      * that case.
      */
-    TR_MSG_GET_OBJ,
+    TR_MSG_GET_ELM,
 
     /** Advance the iterator on the input. */
     TR_MSG_NEXT,
@@ -204,7 +204,7 @@ struct _sequence_translator {
                                (_t).u.lst.src = (_in),                  \
                                (_t).u.lst.cur = (_in),                  \
                                (_t).trans = listran)
-#define TRL_GET_OBJ(_t)       (CAR((_t).u.lst.cur))
+#define TRL_GET_ELM(_t)       (CAR((_t).u.lst.cur))
 #define TRL_NEXT(_t)          ((_t).u.lst.cur = CDR((_t).u.lst.cur))
 #define TRL_ENDP(_t)          (!CONSP((_t).u.lst.cur))
 #define TRL_GET_SUBLS(_t)     ((_t).u.lst.cur)
@@ -220,7 +220,7 @@ struct _sequence_translator {
                             (_t).u.vec.index = 0,                       \
                             (_t).u.vec.growth = 0,                      \
                             (_t).trans = vectran)
-#define TRV_GET_OBJ(_t)    (SCM_VECTOR_VEC((_t).u.vec.src)[(_t).u.vec.index])
+#define TRV_GET_ELM(_t)    (SCM_VECTOR_VEC((_t).u.vec.src)[(_t).u.vec.index])
 #define TRV_NEXT(_t)       (++(_t).u.vec.index)
 #define TRV_ENDP(_t)       (SCM_VECTOR_LEN((_t).u.vec.src) <= (_t).u.vec.index)
 #define TRV_EXTRACT(_t)    (TRV_CALL((_t), TR_MSG_EXTRACT, SCM_INVALID))
@@ -228,7 +228,7 @@ struct _sequence_translator {
 
 /* Polymorphic macros. */
 #define TR_CALL(_t, _msg, _p) ((*(_t).trans)(&(_t), (_msg), (_p)))
-#define TR_GET_OBJ(_t)     (TR_CALL((_t), TR_MSG_GET_OBJ, SCM_INVALID))
+#define TR_GET_ELM(_t)     (TR_CALL((_t), TR_MSG_GET_ELM, SCM_INVALID))
 #define TR_NEXT(_t)        ((void)TR_CALL((_t), TR_MSG_NEXT, SCM_INVALID))
 #define TR_ENDP(_t)        (NFALSEP(TR_CALL((_t), TR_MSG_ENDP, SCM_INVALID)))
 #define TR_EXTRACT(_t)     (TR_CALL((_t), TR_MSG_EXTRACT, SCM_INVALID))
@@ -251,8 +251,8 @@ listran(sequence_translator *t, tr_msg msg, ScmObj obj)
     case TR_MSG_ENDP:
         return MAKE_BOOL(TRL_ENDP(*t));
 
-    case TR_MSG_GET_OBJ:
-        return TRL_GET_OBJ(*t);
+    case TR_MSG_GET_ELM:
+        return TRL_GET_ELM(*t);
 
     case TR_MSG_NEXT:
         TRL_NEXT(*t);
@@ -305,8 +305,8 @@ vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
     case TR_MSG_NOP: /* for better performance */
         break;
 
-    case TR_MSG_GET_OBJ:
-        return TRV_GET_OBJ(*t);
+    case TR_MSG_GET_ELM:
+        return TRV_GET_ELM(*t);
 
     case TR_MSG_NEXT:
         TRV_NEXT(*t);
@@ -1134,7 +1134,7 @@ qquote_internal(ScmObj input, ScmObj env, scm_int_t nest)
          */
         if (CONSP(CDR(input))) {
             for (; CONSP(CDDR(TRL_GET_SUBLS(tr))); TRL_NEXT(tr)) {
-                obj = TRL_GET_OBJ(tr);
+                obj = TRL_GET_ELM(tr);
                 tmp_result = qquote_internal(obj, env, nest);
                 listran(&tr, tmp_result.insn, tmp_result.obj);
             }
@@ -1186,7 +1186,7 @@ qquote_internal(ScmObj input, ScmObj env, scm_int_t nest)
 
     /* Process all the other elements. */
     for (; !TR_ENDP(tr); TR_NEXT(tr)) {
-        obj = TR_GET_OBJ(tr);
+        obj = TR_GET_ELM(tr);
         tmp_result = qquote_internal(obj, env, nest);
         TR_CALL(tr, tmp_result.insn, tmp_result.obj);
     }
