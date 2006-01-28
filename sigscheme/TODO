@@ -18,9 +18,6 @@ Requirements and critical bugs:
   - All files except for operations-srfi1.c, storage-compact.h and
     test-compact.c are checked
 
-* Review and refactor some functions in syntax.c(qquote_internal) (other files
-  had already been done)
-
 * Make 64bit-safe
   - Write tests
   - Make the tests passed on actual 64bit environment with fatty representation

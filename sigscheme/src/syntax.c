@@ -1117,85 +1117,82 @@ struct _qquote_result {
 static qquote_result
 qquote_internal(ScmObj input, ScmObj env, scm_int_t nest)
 {
-    ScmObj obj;
+    ScmObj obj, form, args;
     sequence_translator tr;
-    qquote_result tmp_result;
-    qquote_result my_result;
+    qquote_result tmp_result, my_result;
     DECLARE_INTERNAL_FUNCTION("quasiquote");
 
     if (VECTORP(input)) {
-        TRV_INIT(tr, input);
+        for (TRV_INIT(tr, input); !TRV_ENDP(tr); TRV_NEXT(tr)) {
+            obj = TRV_GET_ELM(tr);
+            tmp_result = qquote_internal(obj, env, nest);
+            vectran(&tr, tmp_result.insn, tmp_result.obj);
+        }
     } else if (CONSP(input)) {
-        TRL_INIT(tr, input);
-        /* If INPUT has 2 or more elements, we process up to the
-         * penultimate item and see if the tail has the form (<syn>
-         * <datum>) where <syn> is unquote, unquote-splicing, or
-         * quasiquote.
-         */
-        if (CONSP(CDR(input))) {
-            for (; CONSP(CDDR(TRL_GET_SUBLS(tr))); TRL_NEXT(tr)) {
-                obj = TRL_GET_ELM(tr);
-                tmp_result = qquote_internal(obj, env, nest);
-                listran(&tr, tmp_result.insn, tmp_result.obj);
-            }
-            if (NULLP(CDDR(TRL_GET_SUBLS(tr)))) {
-                ScmObj form;
+        /* This implementation adopt "minimum mercy" interpretation depending
+         * on the R5RS specification cited below, to simplify the code.
+         * 
+         * 4.2.6 Quasiquotation
+         * Unpredictable behavior can result if any of the symbols quasiquote,
+         * unquote, or unquote-splicing appear in positions within a <qq
+         * template> otherwise than as described above. */
+        for (TRL_INIT(tr, input); !TRL_ENDP(tr); TRL_NEXT(tr)) {
+            form = TRL_GET_SUBLS(tr);
+            obj = CAR(form);
+            if (EQ(obj, SYM_QUASIQUOTE)) {
+                /* FORM == `x */
+                if (args = CDR(form), !LIST_1_P(args))
+                    ERR_OBJ("invalid quasiquote form", form);
 
-                form = TRL_GET_SUBLS(tr);
-                obj  = CAR(form);
+                ++nest;
+            } else if (EQ(obj, SYM_UNQUOTE)) {
+                /* FORM == ,x */
+                if (args = CDR(form), !LIST_1_P(args))
+                    ERR_OBJ("invalid unquote form", form);
 
-                if (EQ(obj, SYM_QUASIQUOTE)) {
-                    /* FORM == `x */
-                    ++nest;
-                } else if (EQ(obj, SYM_UNQUOTE)) {
-                    /* FORM == ,x */
-                    if (--nest == 0) {
-                        obj = EVAL(CADR(form), env);
-                        TRL_SET_SUBLS(tr, obj);
-                        my_result.obj  = TRL_EXTRACT(tr);
-                        my_result.insn = TR_MSG_REPLACE;
-                        return my_result;
-                    }
-                } else if (EQ(obj, SYM_UNQUOTE_SPLICING)) {
-                    /* FORM == ,@x */
-                    if (!EQ(form, input)) /* (a . ,@b) */
-                        ERR_OBJ(",@ in invalid context", input);
+                if (--nest == 0) {
+                    form = TRL_GET_SUBLS(tr);
+                    obj = EVAL(CAR(args), env);
+                    TRL_SET_SUBLS(tr, obj);
+                    my_result.obj  = TRL_EXTRACT(tr);
+                    my_result.insn = TR_MSG_REPLACE;
+                    return my_result;
+                }
+            } else if (EQ(obj, SYM_UNQUOTE_SPLICING)) {
+                /* FORM == ,@x */
+                if (!EQ(form, input)) /* (a . ,@b) */
+                    ERR_OBJ(",@ in invalid context", input);
+                if (args = CDR(form), !LIST_1_P(args))
+                    ERR_OBJ("invalid unquote-splicing form", form);
 
-                    if (--nest == 0) {
-                        /* R5RS: 4.2.6 Quasiquotation
-                         * If a comma appears followed immediately by an
-                         * at-sign (@), then the following expression must
-                         * evaluate to a list */
-                        obj = EVAL(CADR(form), env);
-                        if (!LISTP(obj))
-                            ERR(",@<x> must evaluate to a list");
+                if (--nest == 0) {
+                    /* R5RS: 4.2.6 Quasiquotation
+                     * If a comma appears followed immediately by an
+                     * at-sign (@), then the following expression must
+                     * evaluate to a list */
+                    obj = EVAL(CAR(args), env);
+                    if (!LISTP(obj))
+                        ERR(",@<x> must evaluate to a list");
 
-                        my_result.obj  = obj;
-                        my_result.insn = TR_MSG_SPLICE;
-                        return my_result;
-                    }
+                    my_result.obj  = obj;
+                    my_result.insn = TR_MSG_SPLICE;
+                    return my_result;
                 }
             }
+            tmp_result = qquote_internal(obj, env, nest);
+            listran(&tr, tmp_result.insn, tmp_result.obj);
+        }
+        /* Interpret the tail if an improper list. */
+        if (!NULLP(TRL_GET_SUBLS(tr))) {
+            tmp_result = qquote_internal(TRL_GET_SUBLS(tr), env, nest);
+            if (tmp_result.insn != TR_MSG_NOP)
+                TRL_SET_SUBLS(tr, tmp_result.obj);
         }
     } else {
         /* An atomic datum. */
         tmp_result.obj  = SCM_INVALID;
         tmp_result.insn = TR_MSG_NOP;
         return tmp_result;
-    }
-
-    /* Process all the other elements. */
-    for (; !TR_ENDP(tr); TR_NEXT(tr)) {
-        obj = TR_GET_ELM(tr);
-        tmp_result = qquote_internal(obj, env, nest);
-        TR_CALL(tr, tmp_result.insn, tmp_result.obj);
-    }
-
-    /* Interpret the tail if an improper list. */
-    if (CONSP(input) && !NULLP(TRL_GET_SUBLS(tr))) {
-        tmp_result = qquote_internal(TRL_GET_SUBLS(tr), env, nest);
-        if (tmp_result.insn != TR_MSG_NOP)
-            TRL_SET_SUBLS(tr, tmp_result.obj);
     }
 
     my_result.obj = TR_EXTRACT(tr);
