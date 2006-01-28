@@ -120,7 +120,7 @@
 (assert-false "and-let* #25" (and-let* (true
                                         even?
                                         ((integer? 1))
-                                        (foo #(1 2 3))
+                                        (foo '#(1 2 3))
                                         ((list? foo))
                                         (bar foo))
                                'ok))

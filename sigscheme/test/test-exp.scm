@@ -957,8 +957,10 @@
 	 (set-cdr! rev-it reved)
 	 (null? rev-cdr))
        rev-it)))
-(assert-equal? "do test4" '(c b a) (nreverse '(a b c)))
-(assert-equal? "do test5" '((5 6) (3 4) (1 2)) (nreverse '((1 2) (3 4) (5 6))))
+(assert-equal? "do test4" '(c b a) (nreverse (list 'a 'b 'c)))
+(assert-equal? "do test5"
+               '((5 6) (3 4) (1 2))
+               (nreverse (list '(1 2) '(3 4) '(5 6))))
 
 ;; scm_s_do() has been changed as specified in R5RS. -- YamaKen 2006-01-11
 ;; R5RS: If no <expression>s are present, then the value of the `do' expression

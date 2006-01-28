@@ -41,7 +41,7 @@
 
 (let* ((outs (open-output-string))
        (s "abc")
-       (convolution `(,s 1 #(,s b) (2) () ,s)))
+       (convolution `(,s 1 #(,s b) ,(list 2) () ,s)))
   ; go crazy with mutators
   (set-car! (cdr convolution) convolution)
   (vector-set! (caddr convolution) 1 (cddr convolution))
@@ -50,7 +50,7 @@
   (assert-equal? "srfi38 #1" "#1=(#2=\"abc\" . #3=(#1# . #4=(#(#2# #4#) (2 . #3#) () #2#)))" (get-output-string outs)))
 
 (let* ((outs (open-output-string))
-       (a-pair '(kar . kdr))
+       (a-pair (cons 'kar 'kdr))
             (convolution (eval (list 'lambda () a-pair) (scheme-report-environment 5))))
        (set-cdr! a-pair convolution)
        (write-with-shared-structure convolution outs)
