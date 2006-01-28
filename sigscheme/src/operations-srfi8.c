@@ -63,7 +63,7 @@
 void
 scm_initialize_srfi8(void)
 {
-    REGISTER_FUNC_TABLE(srfi8_func_info_table);
+    SCM_REGISTER_FUNC_TABLE(scm_srfi8_func_info_table);
 }
 
 ScmObj

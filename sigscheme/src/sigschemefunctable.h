@@ -34,6 +34,12 @@
 #ifndef __SIGSCHEME_FUNCTABLE_H
 #define __SIGSCHEME_FUNCTABLE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "config.h"
+
 /*=======================================
   System Include
 =======================================*/
@@ -45,12 +51,12 @@
 /*=======================================
   Macro Definitions
 =======================================*/
-#define REGISTER_FUNC_TABLE(functable)                                  \
-    do {                                                                \
-        struct builtin_func_info *info = NULL;                          \
-        for (info = functable; info->funcname; info++) {                \
-            (*info->reg_func)(info->funcname, info->c_func);            \
-        }                                                               \
+#define SCM_REGISTER_FUNC_TABLE(functable)                                   \
+    do {                                                                     \
+        struct scm_func_registration_info *info = NULL;                      \
+        for (info = functable; info->funcname; info++) {                     \
+            (*info->reg_func)(info->funcname, info->c_func);                 \
+        }                                                                    \
     } while (/* CONSTCOND */ 0)
 
 /*=======================================
@@ -59,7 +65,7 @@
 typedef ScmObj (*ScmBuiltinFunc)(void);
 typedef void   (*ScmRegisterFunc)(const char *name, ScmBuiltinFunc func);
 
-struct builtin_func_info {
+struct scm_func_registration_info {
     const char     *funcname;
     ScmBuiltinFunc  c_func;
     ScmRegisterFunc reg_func;
@@ -68,44 +74,46 @@ struct builtin_func_info {
 /*=======================================
    Variable Declarations
 =======================================*/
-extern struct builtin_func_info r5rs_syntax_func_info_table[];
-extern struct builtin_func_info r5rs_procedure_func_info_table[];
+extern struct scm_func_registration_info scm_r5rs_syntax_func_info_table[];
+extern struct scm_func_registration_info scm_r5rs_procedure_func_info_table[];
+extern struct scm_func_registration_info scm_error_func_info_table[];
 
 #if SCM_USE_DEEP_CADRS
-extern struct builtin_func_info r5rs_deepcadrs_func_info_table[];
+extern struct scm_func_registration_info scm_r5rs_deepcadrs_func_info_table[];
 #endif
 #if SCM_USE_NONSTD_FEATURES
-extern struct builtin_func_info nonstd_func_info_table[];
-#endif
-#if SCM_USE_NONSTD_FEATURES
-extern struct builtin_func_info scm_error_func_info_table[];
+extern struct scm_func_registration_info scm_nonstd_func_info_table[];
 #endif
 #if SCM_USE_SRFI1
-extern struct builtin_func_info srfi1_func_info_table[];
+extern struct scm_func_registration_info scm_srfi1_func_info_table[];
 #endif
 #if SCM_USE_SRFI2
-extern struct builtin_func_info srfi2_func_info_table[];
+extern struct scm_func_registration_info scm_srfi2_func_info_table[];
 #endif
 #if SCM_USE_SRFI6
-extern struct builtin_func_info srfi6_func_info_table[];
+extern struct scm_func_registration_info scm_srfi6_func_info_table[];
 #endif
 #if SCM_USE_SRFI8
-extern struct builtin_func_info srfi8_func_info_table[];
+extern struct scm_func_registration_info scm_srfi8_func_info_table[];
 #endif
 #if SCM_USE_SRFI23
-extern struct builtin_func_info srfi23_func_info_table[];
+extern struct scm_func_registration_info scm_srfi23_func_info_table[];
 #endif
 #if SCM_USE_SRFI34
-extern struct builtin_func_info scm_new_srfi34_func_info_table[];
+extern struct scm_func_registration_info scm_srfi34_func_info_table[];
 #endif
 #if SCM_USE_SRFI38
-extern struct builtin_func_info srfi38_func_info_table[];
+extern struct scm_func_registration_info scm_srfi38_func_info_table[];
 #endif
 #if SCM_USE_SRFI60
-extern struct builtin_func_info srfi60_func_info_table[];
+extern struct scm_func_registration_info scm_srfi60_func_info_table[];
 #endif
 #if SCM_COMPAT_SIOD
-extern struct builtin_func_info siod_func_info_table[];
+extern struct scm_func_registration_info scm_siod_func_info_table[];
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif /* __SIGSCHEME_FUNCTABLE_H */

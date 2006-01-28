@@ -63,7 +63,7 @@
 void
 scm_initialize_srfi23(void)
 {
-    REGISTER_FUNC_TABLE(srfi23_func_info_table);
+    SCM_REGISTER_FUNC_TABLE(scm_srfi23_func_info_table);
 }
 
 /*=============================================================================

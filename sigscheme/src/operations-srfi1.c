@@ -70,10 +70,7 @@ static ScmObj compare_list(ScmObj eqproc, ScmObj lst1, ScmObj lst2);
 void
 scm_initialize_srfi1(void)
 {
-    /*=======================================================================
-      SRFI-1 Procedures
-    =======================================================================*/
-    REGISTER_FUNC_TABLE(srfi1_func_info_table);
+    SCM_REGISTER_FUNC_TABLE(scm_srfi1_func_info_table);
 }
 
 /*==============================================================================

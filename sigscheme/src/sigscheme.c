@@ -173,11 +173,11 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
     scm_init_syntax();
 
     /* R5RS Procedures */
-    REGISTER_FUNC_TABLE(r5rs_procedure_func_info_table);
+    SCM_REGISTER_FUNC_TABLE(scm_r5rs_procedure_func_info_table);
 
 #if SCM_USE_DEEP_CADRS
     /* Deep c[ad]+r Functions */
-    REGISTER_FUNC_TABLE(r5rs_deepcadrs_func_info_table);
+    SCM_REGISTER_FUNC_TABLE(scm_r5rs_deepcadrs_func_info_table);
 #endif
 #if SCM_USE_NONSTD_FEATURES
     scm_use("sscm");

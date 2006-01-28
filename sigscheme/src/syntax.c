@@ -79,7 +79,7 @@ static qquote_result qquote_internal(ScmObj input, ScmObj env, scm_int_t nest);
 void
 scm_init_syntax(void)
 {
-    REGISTER_FUNC_TABLE(r5rs_syntax_func_info_table);
+    SCM_REGISTER_FUNC_TABLE(scm_r5rs_syntax_func_info_table);
 
     sym_else   = scm_intern("else");
     sym_yields = scm_intern("=>");

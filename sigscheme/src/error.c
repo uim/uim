@@ -90,7 +90,7 @@ scm_init_error(void)
     cb_fatal_error = NULL;
     fatal_error_looped = scm_false;
 
-    REGISTER_FUNC_TABLE(scm_error_func_info_table);
+    SCM_REGISTER_FUNC_TABLE(scm_error_func_info_table);
 }
 
 int

@@ -70,7 +70,7 @@ static ScmObj make_loaded_str(const char *filename);
 void
 scm_initialize_nonstd_features(void)
 {
-    REGISTER_FUNC_TABLE(nonstd_func_info_table);
+    SCM_REGISTER_FUNC_TABLE(scm_nonstd_func_info_table);
 
     scm_define_alias("call/cc", "call-with-current-continuation");
 }
