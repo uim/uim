@@ -6,7 +6,7 @@ Specifications of SigScheme
 
     To be described.
 
-  - 64bit environment is being supported
+  - 64-bit data models are being supported
 
 * R5RS conformance
 
@@ -28,7 +28,7 @@ Specifications of SigScheme
 
   - Numbers
 
-    Integer part is only implemented.
+    Only integer part is implemented.
 
   - Characters
 
@@ -69,8 +69,12 @@ Specifications of SigScheme
 
   - Constant list
 
-    SigScheme allows modification of constant list object for convenience
-    although it is required to be an error in R5RS.
+    SigScheme inhibits modification of constant list object by default as
+    specified in R5RS, if the storage implementation suports it. storage-fatty
+    supports it, but storage-compact does not due to no bit space for pair
+    object.
+
+    The behavior can be changed by SCM_CONST_LIST_LITERAL.
 
     > 4.1.2 Literal expressions
     > 
@@ -98,18 +102,13 @@ Specifications of SigScheme
     >     (define (g) '(constant-list))
     >     (set-car! (g) 3)                       ==>  error
 
-    sscm> (define (g) '(constant-list))
-    (g)
-    sscm> (set-car! (g) 3)
-    3
-
-    The object is modified as (3) in SigScheme. Gauche and Guile are also
-    behaves so.
-
   - Constant vector
 
-    SigScheme allows modification of constant vector object by default for
-    convenience although it is required to be an error in R5RS.
+    SigScheme inhibits modification of constant vector object by default as
+    specified in R5RS, if the storage implementation suports it. storage-fatty
+    supports it, but storage-compact is not yet.
+
+    The behavior can be changed by SCM_CONST_VECTOR_LITERAL.
 
     > 6.3.6 Vectors
     > 
@@ -117,12 +116,6 @@ Specifications of SigScheme
     > 
     >     (vector-set! '#(0 1 2) 1 "doe")
     >               ==>  error  ; constant vector
-
-    The object is modified as #(0 "doe" 2) in SigScheme. Gauche and Guile are
-    also behaves so.
-
-    The behavior can be configured to R5RS-compatible with
-    SCM_CONST_VECTOR_LITERAL
 
   - Quote-less null list
 
@@ -142,12 +135,10 @@ Specifications of SigScheme
 
   - Quote-less vector literal
 
-    Sigscheme allows quote-less vector literal by default for convenience,
-    although quotation is required in formal R5RS syntax. This specification
-    may be changed to make notation rule consistent with constant list.
+    Sigscheme inhibits quote-less vector literal by default, as specified in
+    R5RS.
 
-    The behavior can be configured to R5RS-compatible with
-    SCM_STRICT_VECTOR_FORM
+    The behavior can be changed by SCM_STRICT_VECTOR_FORM.
 
     > 6.3.6 Vectors
     > 
@@ -166,11 +157,9 @@ Specifications of SigScheme
     >           ==>  #(0 (2 2 2 2) "Anna")
 
     sscm> #(1 2 3)
-    #(1 2 3)
+    Error: eval: #() is not a valid R5RS form. use '#() instead
     sscm> '#(1 2 3)
     #(1 2 3)
-
-    Gauche and Guile are also behaves above.
 
   - Environment specifiers
 

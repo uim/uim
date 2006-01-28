@@ -67,6 +67,52 @@
 (assert-equal? "cdr test1" '(b c d) (cdr '((a) b c d)))
 (assert-equal? "cdr test2" 2 (cdr '(1 . 2)))
 
+(tn "set-car!")
+(define my-set-car!
+  (lambda (kons x)
+    (set-car! kons x)
+    kons))
+(assert-error  (tn) (lambda()  (my-set-car! (list) 2)))
+(assert-equal? (tn) '(2)       (my-set-car! (list 0) 2))
+(assert-equal? (tn) '(2 . 1)   (my-set-car! (cons 0 1) 2))
+(assert-equal? (tn) '(2 1)     (my-set-car! (list 0 1) 2))
+(assert-equal? (tn) '(2 1 . 2) (my-set-car! (cons 0 '(1 . 2)) 2))
+(if (and (provided? "sigscheme")
+         (provided? "const-list-literal"))
+    (begin
+      (assert-error  (tn) (lambda () (my-set-car! '(0) 2)))
+      (assert-error  (tn) (lambda () (my-set-car! '(0 . 1) 2)))
+      (assert-error  (tn) (lambda () (my-set-car! '(0 1) 2)))
+      (assert-error  (tn) (lambda () (my-set-car! '(0 1 . 2) 2))))
+    (begin
+      (assert-equal? (tn) '(2)       (my-set-car! '(0) 2))
+      (assert-equal? (tn) '(2 . 1)   (my-set-car! '(0 . 1) 2))
+      (assert-equal? (tn) '(2 1)     (my-set-car! '(0 1) 2))
+      (assert-equal? (tn) '(2 1 . 2) (my-set-car! '(0 1 . 2) 2))))
+
+(tn "set-cdr!")
+(define my-set-cdr!
+  (lambda (kons x)
+    (set-cdr! kons x)
+    kons))
+(assert-error  (tn) (lambda()  (my-set-cdr! (list) 2)))
+(assert-equal? (tn) '(0 . 2)   (my-set-cdr! (list 0) 2))
+(assert-equal? (tn) '(0 . 2)   (my-set-cdr! (cons 0 1) 2))
+(assert-equal? (tn) '(0 . 2)   (my-set-cdr! (list 0 1) 2))
+(assert-equal? (tn) '(0 . 2)   (my-set-cdr! (cons 0 '(1 . 2)) 2))
+(if (and (provided? "sigscheme")
+         (provided? "const-list-literal"))
+    (begin
+      (assert-error  (tn) (lambda () (my-set-cdr! '(0) 2)))
+      (assert-error  (tn) (lambda () (my-set-cdr! '(0 . 1) 2)))
+      (assert-error  (tn) (lambda () (my-set-cdr! '(0 1) 2)))
+      (assert-error  (tn) (lambda () (my-set-cdr! '(0 1 . 2) 2))))
+    (begin
+      (assert-equal? (tn) '(0 . 2) (my-set-cdr! '(0) 2))
+      (assert-equal? (tn) '(0 . 2) (my-set-cdr! '(0 . 1) 2))
+      (assert-equal? (tn) '(0 . 2) (my-set-cdr! '(0 1) 2))
+      (assert-equal? (tn) '(0 . 2) (my-set-cdr! '(0 1 . 2) 2))))
+
 ; null?
 (assert-true "null? test1" (null? '()))
 (assert-equal? "null? test2" #f (null? "aiueo"))

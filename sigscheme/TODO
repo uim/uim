@@ -25,11 +25,6 @@ Requirements and critical bugs:
   - Make the tests passed on actual 64bit environment with compact
     representation
 
-* Confirm behavior of constant vector and list
-  - Investigate behavior of them in Scheme implementations other than Gauche
-    and Guile, and record it into doc/spec.txt
-  - Implement if needed
-
 * Confirm R5RS and SRFI conformance for each function implementation
 
 * Confirm public API

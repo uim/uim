@@ -198,6 +198,7 @@ scm_p_srfi1_list_copy(ScmObj lst)
 
     return head;
 #endif
+    ERR("list-copy: bug: broken implementation");
 }
 
 ScmObj
