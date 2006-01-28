@@ -61,8 +61,8 @@
 #include "key-util-gtk.h"
 
 /* select either of these two, or filter key event will be used */
-#define IM_UIM_USE_SNOOPER	0
-#define IM_UIM_USE_TOPLEVEL	1
+#define IM_UIM_USE_SNOOPER	1
+#define IM_UIM_USE_TOPLEVEL	0
 
 /* exported symbols */
 GtkIMContext *im_module_create(const gchar *context_id);
