@@ -58,6 +58,8 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+/* canonical internal encoding for identifiers */
+ScmCharCodec *scm_identifier_codec;
 
 /*=======================================
   File Local Function Declarations

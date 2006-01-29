@@ -27,8 +27,9 @@ R5RS_PROC_SRCS = sigscheme.c operations.c eval.c list.c number.c string.c \
                  vector.c port.c read.c write.c load.c
 
 sigschemefunctable.c: $(FUNC_TABLES)
-sigschemefunctable-r5rs-syntax.c: syntax.c $(BUILD_FUNCTBL_SOURCES)
-	$(BUILD_FUNCTBL) "scm_r5rs_syntax_func_info_table" $< > $@
+sigschemefunctable-r5rs-syntax.c: syntax.c module.c $(BUILD_FUNCTBL_SOURCES)
+	$(BUILD_FUNCTBL) "scm_r5rs_syntax_func_info_table" \
+          syntax.c module.c > $@
 sigschemefunctable-r5rs-procedure.c: $(R5RS_PROC_SRCS) $(BUILD_FUNCTBL_SOURCES)
 	$(BUILD_FUNCTBL) "scm_r5rs_procedure_func_info_table" \
 	  $(R5RS_PROC_SRCS) > $@
@@ -65,7 +66,7 @@ libsscm_la_SOURCES = \
 		storage-continuation.c \
 		encoding.c error.c \
 		env.c eval.c syntax.c list.c number.c string.c vector.c \
-		port.c read.c write.c load.c\
+		port.c read.c write.c load.c module.c \
                 basecport.c fileport.c \
 		operations.c \
 		sigscheme.c sigschemefunctable.c \

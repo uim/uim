@@ -61,10 +61,10 @@ struct ScmSpecialCharInfo_ {
 /*=======================================
    Variable Declarations
 =======================================*/
-/* sigscheme.c */
+/* operations.c */
 extern ScmCharCodec *scm_identifier_codec;
 
-/* io.c */
+/* port.c */
 extern ScmObj scm_in;
 extern ScmObj scm_out;
 extern ScmObj scm_err;
@@ -532,6 +532,9 @@ scm_int_t scm_length(ScmObj lst);
 void scm_init_port(void);
 ScmObj scm_prepare_port(ScmObj args, ScmObj default_port);
 ScmCharPort *scm_make_char_port(ScmBytePort *bport);
+
+/* module.c */
+void scm_init_module(void);
 
 /* sigscheme.c */
 char **scm_interpret_argv(char **argv);

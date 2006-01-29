@@ -953,15 +953,17 @@ extern ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *);
 /* sigscheme.c */
 void scm_initialize(const ScmStorageConf *storage_conf);
 void scm_finalize(void);
-void scm_define_alias(const char *newsym, const char *sym);
-void scm_provide(ScmObj feature);
-scm_bool scm_providedp(ScmObj feature);
-scm_bool scm_use(const char *feature);
-ScmObj scm_s_use(ScmObj feature, ScmObj env);
 ScmObj scm_eval_c_string(const char *exp);
 #if SCM_COMPAT_SIOD
 ScmObj scm_return_value(void);
 #endif
+
+/* module.c */
+void scm_provide(ScmObj feature);
+scm_bool scm_providedp(ScmObj feature);
+scm_bool scm_use(const char *feature);
+ScmObj scm_s_use(ScmObj feature, ScmObj env);
+void scm_define_alias(const char *newsym, const char *sym);
 
 /* Procedure/Syntax Registration */
 void scm_register_reduction_operator(const char *name, ScmObj (*func)(ScmObj, ScmObj, enum ScmReductionState*));
@@ -1331,7 +1333,7 @@ ScmObj scm_p_delete_file(ScmObj filepath);
 ScmObj scm_p_lengthstar(ScmObj lst);
 #endif
 
-/* io.c */
+/* port.c */
 ScmObj scm_make_shared_file_port(FILE *file, const char *aux_info,
                                  enum ScmPortFlag flag);
 int scm_port_close(ScmObj port);
@@ -1449,12 +1451,14 @@ ScmObj scm_p_srfi1_last_pair(ScmObj lst);
 ScmObj scm_p_srfi1_lengthplus(ScmObj lst);
 ScmObj scm_p_srfi1_concatenate(ScmObj args);
 #endif
+
 #if SCM_USE_SRFI2
 /* operations-srfi2.c */
 void   scm_initialize_srfi2(void);
 ScmObj scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body,
                                ScmEvalState *eval_state);
 #endif
+
 #if SCM_USE_SRFI6
 /* operations-srfi6.c */
 void   scm_initialize_srfi6(void);
@@ -1462,17 +1466,20 @@ ScmObj scm_p_srfi6_open_input_string(ScmObj str);
 ScmObj scm_p_srfi6_open_output_string(void);
 ScmObj scm_p_srfi6_get_output_string(ScmObj port);
 #endif
+
 #if SCM_USE_SRFI8
 /* operations-srfi8.c */
 void   scm_initialize_srfi8(void);
 ScmObj scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body,
                            ScmEvalState *eval_state);
 #endif
+
 #if SCM_USE_SRFI23
 /* operations-srfi23.c */
 void   scm_initialize_srfi23(void);
 ScmObj scm_p_srfi23_error(ScmObj reason, ScmObj args);
 #endif
+
 #if SCM_USE_SRFI34
 /* operations-srfi34.c */
 void  scm_initialize_srfi34(void);
@@ -1481,11 +1488,13 @@ ScmObj scm_s_srfi34_guard(ScmObj cond_catch, ScmObj body,
                           ScmEvalState *eval_state);
 ScmObj scm_p_srfi34_raise(ScmObj obj);
 #endif
+
 #if SCM_USE_SRFI38
 /* operations-srfi38.c */
 void   scm_initialize_srfi38(void);
 ScmObj scm_p_srfi38_write_with_shared_structure(ScmObj obj, ScmObj args);
 #endif
+
 #if SCM_USE_SRFI60
 /* operations-srfi60.c */
 void   scm_initialize_srfi60(void);
@@ -1499,6 +1508,7 @@ ScmObj scm_p_srfi60_lognot(ScmObj n);
 ScmObj scm_p_srfi60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1);
 ScmObj scm_p_srfi60_logtest(ScmObj j, ScmObj k);
 #endif
+
 #if SCM_COMPAT_SIOD
 /* operations-siod.c */
 void   scm_initialize_siod(void);

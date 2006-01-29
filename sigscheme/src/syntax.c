@@ -55,6 +55,9 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+ScmObj scm_sym_quote, scm_sym_quasiquote;
+ScmObj scm_sym_unquote, scm_sym_unquote_splicing;
+
 static ScmObj sym_else, sym_yields;
 #if SCM_STRICT_DEFINE_PLACEMENT
 static ScmObj sym_define, sym_begin, syn_lambda;
@@ -80,6 +83,11 @@ void
 scm_init_syntax(void)
 {
     SCM_REGISTER_FUNC_TABLE(scm_r5rs_syntax_func_info_table);
+
+    scm_sym_quote            = scm_intern("quote");
+    scm_sym_quasiquote       = scm_intern("quasiquote");
+    scm_sym_unquote          = scm_intern("unquote");
+    scm_sym_unquote_splicing = scm_intern("unquote-splicing");
 
     sym_else   = scm_intern("else");
     sym_yields = scm_intern("=>");
