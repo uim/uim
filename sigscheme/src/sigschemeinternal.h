@@ -380,6 +380,11 @@ extern ScmObj scm_null_values;
 /* error handlings */
 #define SCM_ERR_HEADER "Error: "
 
+#define STRING_EQUALP(str1, str2)                                            \
+    (EQ((str1), (str2))                                                      \
+     || (SCM_STRING_LEN(str1) == SCM_STRING_LEN(str2)  /* rough rejection */ \
+         && strcmp(SCM_STRING_STR(str1), SCM_STRING_STR(str2)) == 0))
+
 /* result encoders for scm_length() */
 #define SCM_LISTLEN_ENCODE_DOTTED(len)   (-(len))
 #define SCM_LISTLEN_ENCODE_CIRCULAR(len) (SCM_INT_T_MIN)

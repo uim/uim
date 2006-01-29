@@ -61,10 +61,7 @@
 =======================================*/
 #define EQVP(a, b)   (NFALSEP(scm_p_eqvp((a), (b))))
 #define EQUALP(a, b) (NFALSEP(scm_p_equalp((a), (b))))
-#define STRING_EQUALP(str1, str2)                                            \
-    (EQ((str1), (str2))                                                      \
-     || (SCM_STRING_LEN(str1) == SCM_STRING_LEN(str2)  /* rough rejection */ \
-         && strcmp(SCM_STRING_STR(str1), SCM_STRING_STR(str2)) == 0))
+
 #define STRING_CMP(str1, str2)                                               \
     (string_cmp(SCM_MANGLE(name), (str1), (str2), scm_false))
 #define STRING_CI_CMP(str1, str2)                                            \
