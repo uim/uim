@@ -1220,6 +1220,27 @@ ScmObj scm_p_symbolp(ScmObj obj);
 ScmObj scm_p_symbol2string(ScmObj sym);
 ScmObj scm_p_string2symbol(ScmObj str);
 
+ScmObj scm_p_vectorp(ScmObj obj);
+ScmObj scm_p_make_vector(ScmObj scm_len, ScmObj args);
+ScmObj scm_p_vector(ScmObj args);
+ScmObj scm_p_vector_length(ScmObj vec);
+ScmObj scm_p_vector_ref(ScmObj vec, ScmObj scm_k);
+ScmObj scm_p_vector_setd(ScmObj vec, ScmObj scm_k, ScmObj obj);
+ScmObj scm_p_vector2list(ScmObj vec);
+ScmObj scm_p_list2vector(ScmObj lst);
+ScmObj scm_p_vector_filld(ScmObj vec, ScmObj fill);
+ScmObj scm_p_procedurep(ScmObj obj);
+ScmObj scm_p_map(ScmObj proc, ScmObj args);
+ScmObj scm_p_for_each(ScmObj proc, ScmObj args);
+ScmObj scm_p_force(ScmObj closure);
+ScmObj scm_p_call_with_current_continuation(ScmObj proc,
+                                            ScmEvalState *eval_state);
+ScmObj scm_p_values(ScmObj args);
+ScmObj scm_p_call_with_values(ScmObj producer, ScmObj consumer,
+                              ScmEvalState *eval_state);
+ScmObj scm_p_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
+
+/* string.c */
 ScmObj scm_p_charp(ScmObj obj);
 ScmObj scm_p_char_equalp(ScmObj ch1, ScmObj ch2);
 ScmObj scm_p_char_lessp(ScmObj ch1, ScmObj ch2);
@@ -1264,26 +1285,6 @@ ScmObj scm_p_string2list(ScmObj str);
 ScmObj scm_p_list2string(ScmObj lst);
 ScmObj scm_p_string_copy(ScmObj str);
 ScmObj scm_p_string_filld(ScmObj str, ScmObj ch);
-
-ScmObj scm_p_vectorp(ScmObj obj);
-ScmObj scm_p_make_vector(ScmObj scm_len, ScmObj args);
-ScmObj scm_p_vector(ScmObj args);
-ScmObj scm_p_vector_length(ScmObj vec);
-ScmObj scm_p_vector_ref(ScmObj vec, ScmObj scm_k);
-ScmObj scm_p_vector_setd(ScmObj vec, ScmObj scm_k, ScmObj obj);
-ScmObj scm_p_vector2list(ScmObj vec);
-ScmObj scm_p_list2vector(ScmObj lst);
-ScmObj scm_p_vector_filld(ScmObj vec, ScmObj fill);
-ScmObj scm_p_procedurep(ScmObj obj);
-ScmObj scm_p_map(ScmObj proc, ScmObj args);
-ScmObj scm_p_for_each(ScmObj proc, ScmObj args);
-ScmObj scm_p_force(ScmObj closure);
-ScmObj scm_p_call_with_current_continuation(ScmObj proc,
-                                            ScmEvalState *eval_state);
-ScmObj scm_p_values(ScmObj args);
-ScmObj scm_p_call_with_values(ScmObj producer, ScmObj consumer,
-                              ScmEvalState *eval_state);
-ScmObj scm_p_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
 
 /* operations-r5rs-deepcadrs.c */
 #if SCM_USE_DEEP_CADRS
