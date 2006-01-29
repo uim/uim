@@ -528,8 +528,8 @@ void scm_init_error(void);
 scm_int_t scm_finite_length(ScmObj lst);
 scm_int_t scm_length(ScmObj lst);
 
-/* io.c */
-void scm_init_io(void);
+/* port.c */
+void scm_init_port(void);
 ScmObj scm_prepare_port(ScmObj args, ScmObj default_port);
 ScmCharPort *scm_make_char_port(ScmBytePort *bport);
 

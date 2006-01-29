@@ -24,7 +24,7 @@ BUILD_FUNCTBL_SOURCES = \
 		./script/functable-footer.txt
 
 R5RS_PROC_SRCS = sigscheme.c operations.c eval.c list.c number.c string.c \
-                 vector.c io.c read.c write.c load.c
+                 vector.c port.c read.c write.c load.c
 
 sigschemefunctable.c: $(FUNC_TABLES)
 sigschemefunctable-r5rs-syntax.c: syntax.c $(BUILD_FUNCTBL_SOURCES)
@@ -61,16 +61,14 @@ EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_SOURCES) \
         storage-fatty.h storage-compact.h
 libsscm_la_SOURCES = \
 		config-asprintf.h \
-		alloc.c storage.c write.c \
-                storage-gc.c \
-                storage-symbol.c \
+		alloc.c storage.c storage-gc.c storage-symbol.c \
 		storage-continuation.c \
 		encoding.c error.c \
 		env.c eval.c syntax.c list.c number.c string.c vector.c \
-		io.c load.c\
+		port.c read.c write.c load.c\
                 basecport.c fileport.c \
 		operations.c \
-		read.c sigscheme.c sigschemefunctable.c \
+		sigscheme.c sigschemefunctable.c \
 		sigscheme.h sigschemefunctable.h
 
 libsscm_la_CFLAGS   = -Wall

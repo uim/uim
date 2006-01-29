@@ -1,6 +1,6 @@
 /*===========================================================================
- *  FileName : io.c
- *  About    : io related functions
+ *  FileName : port.c
+ *  About    : R5RS ports
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *
@@ -72,7 +72,7 @@ ScmObj scm_err;  /* current error port */
   Function Implementations
 =======================================*/
 void
-scm_init_io(void)
+scm_init_port(void)
 {
     scm_fileport_init();
 #if SCM_USE_MULTIBYTE_CHAR

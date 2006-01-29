@@ -151,7 +151,7 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
                               | scm_predefined_debug_categories());
     scm_init_storage(storage_conf);
     scm_init_error();
-    scm_init_io();
+    scm_init_port();
 
     /* fallback to unibyte */
     scm_identifier_codec = scm_mb_find_codec("UTF-8");

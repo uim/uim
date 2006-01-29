@@ -1332,7 +1332,6 @@ ScmObj scm_p_lengthstar(ScmObj lst);
 #endif
 
 /* io.c */
-void   scm_set_lib_path(const char *path);
 ScmObj scm_make_shared_file_port(FILE *file, const char *aux_info,
                                  enum ScmPortFlag flag);
 int scm_port_close(ScmObj port);
@@ -1366,9 +1365,6 @@ ScmObj scm_p_char_readyp(ScmObj args);
 ScmObj scm_p_newline(ScmObj args);
 ScmObj scm_p_write_char(ScmObj obj, ScmObj args);
 
-void scm_load(const char *filename);
-ScmObj scm_p_load(ScmObj filename);
-
 /* read.c */
 ScmObj scm_read(ScmObj port);
 ScmObj scm_read_char(ScmObj port);
@@ -1383,6 +1379,11 @@ void scm_write_to_port_with_shared_structure(ScmObj port, ScmObj obj);
 #endif
 ScmObj scm_p_write(ScmObj obj, ScmObj args);
 ScmObj scm_p_display(ScmObj obj, ScmObj args);
+
+/* load.c */
+void scm_set_lib_path(const char *path);
+void scm_load(const char *filename);
+ScmObj scm_p_load(ScmObj filename);
 
 /* error.c */
 int  scm_debug_categories(void);
