@@ -380,6 +380,8 @@ extern ScmObj scm_null_values;
 /* error handlings */
 #define SCM_ERR_HEADER "Error: "
 
+#define EQVP(a, b)   (NFALSEP(scm_p_eqvp((a), (b))))
+#define EQUALP(a, b) (NFALSEP(scm_p_equalp((a), (b))))
 #define STRING_EQUALP(str1, str2)                                            \
     (EQ((str1), (str2))                                                      \
      || (SCM_STRING_LEN(str1) == SCM_STRING_LEN(str2)  /* rough rejection */ \

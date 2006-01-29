@@ -38,7 +38,7 @@ Requirements and critical bugs:
 * [uim] link libsscm into libuim statically
 
 * Clear license, copyright and changes information
-  - scm_length() in operations.c
+  - scm_length() in list.c
   - "Shiro Kawai" part of read.c
   - slib.scm
   - test/{gauche*,bigloo*}.scm

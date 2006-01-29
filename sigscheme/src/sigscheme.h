@@ -1163,6 +1163,21 @@ ScmObj scm_p_eqvp(ScmObj obj1, ScmObj obj2);
 ScmObj scm_p_equalp(ScmObj obj1, ScmObj obj2);
 ScmObj scm_p_not(ScmObj obj);
 ScmObj scm_p_booleanp(ScmObj obj);
+ScmObj scm_p_symbolp(ScmObj obj);
+ScmObj scm_p_symbol2string(ScmObj sym);
+ScmObj scm_p_string2symbol(ScmObj str);
+ScmObj scm_p_procedurep(ScmObj obj);
+ScmObj scm_p_map(ScmObj proc, ScmObj args);
+ScmObj scm_p_for_each(ScmObj proc, ScmObj args);
+ScmObj scm_p_force(ScmObj closure);
+ScmObj scm_p_call_with_current_continuation(ScmObj proc,
+                                            ScmEvalState *eval_state);
+ScmObj scm_p_values(ScmObj args);
+ScmObj scm_p_call_with_values(ScmObj producer, ScmObj consumer,
+                              ScmEvalState *eval_state);
+ScmObj scm_p_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
+
+/* list.c */
 ScmObj scm_p_car(ScmObj obj);
 ScmObj scm_p_cdr(ScmObj obj);
 ScmObj scm_p_pairp(ScmObj obj);
@@ -1189,19 +1204,6 @@ ScmObj scm_p_member(ScmObj obj, ScmObj lst);
 ScmObj scm_p_assq(ScmObj obj, ScmObj alist);
 ScmObj scm_p_assv(ScmObj obj, ScmObj alist);
 ScmObj scm_p_assoc(ScmObj obj, ScmObj alist);
-ScmObj scm_p_symbolp(ScmObj obj);
-ScmObj scm_p_symbol2string(ScmObj sym);
-ScmObj scm_p_string2symbol(ScmObj str);
-ScmObj scm_p_procedurep(ScmObj obj);
-ScmObj scm_p_map(ScmObj proc, ScmObj args);
-ScmObj scm_p_for_each(ScmObj proc, ScmObj args);
-ScmObj scm_p_force(ScmObj closure);
-ScmObj scm_p_call_with_current_continuation(ScmObj proc,
-                                            ScmEvalState *eval_state);
-ScmObj scm_p_values(ScmObj args);
-ScmObj scm_p_call_with_values(ScmObj producer, ScmObj consumer,
-                              ScmEvalState *eval_state);
-ScmObj scm_p_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
 
 /* number.c */
 ScmObj scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state);
