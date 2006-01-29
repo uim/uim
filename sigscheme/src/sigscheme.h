@@ -1347,7 +1347,6 @@ int scm_port_printf(ScmObj port, const char *fmt, ...);
 int scm_port_vprintf(ScmObj port, const char *fmt, va_list args);
 int scm_port_newline(ScmObj port);
 int scm_port_flush(ScmObj port);
-
 ScmObj scm_p_call_with_input_file(ScmObj filepath, ScmObj proc);
 ScmObj scm_p_call_with_output_file(ScmObj filepath, ScmObj proc);
 ScmObj scm_p_input_portp(ScmObj obj);
@@ -1360,14 +1359,10 @@ ScmObj scm_p_open_input_file(ScmObj filepath);
 ScmObj scm_p_open_output_file(ScmObj filepath);
 ScmObj scm_p_close_input_port(ScmObj port);
 ScmObj scm_p_close_output_port(ScmObj port);
-
-ScmObj scm_p_read(ScmObj args);
 ScmObj scm_p_read_char(ScmObj args);
 ScmObj scm_p_peek_char(ScmObj args);
 ScmObj scm_p_eof_objectp(ScmObj obj);
 ScmObj scm_p_char_readyp(ScmObj args);
-ScmObj scm_p_write(ScmObj obj, ScmObj args);
-ScmObj scm_p_display(ScmObj obj, ScmObj args);
 ScmObj scm_p_newline(ScmObj args);
 ScmObj scm_p_write_char(ScmObj obj, ScmObj args);
 
@@ -1377,6 +1372,17 @@ ScmObj scm_p_load(ScmObj filename);
 /* read.c */
 ScmObj scm_read(ScmObj port);
 ScmObj scm_read_char(ScmObj port);
+ScmObj scm_p_read(ScmObj args);
+
+/* write.c */
+void scm_display(ScmObj obj);
+void scm_write_to_port(ScmObj port, ScmObj obj);
+void scm_display_to_port(ScmObj port, ScmObj obj);
+#if SCM_USE_SRFI38
+void scm_write_to_port_with_shared_structure(ScmObj port, ScmObj obj);
+#endif
+ScmObj scm_p_write(ScmObj obj, ScmObj args);
+ScmObj scm_p_display(ScmObj obj, ScmObj args);
 
 /* error.c */
 int  scm_debug_categories(void);
@@ -1397,14 +1403,6 @@ ScmObj scm_p_error_objectp(ScmObj obj);
 ScmObj scm_p_fatal_error(ScmObj err_obj) SCM_NORETURN;
 ScmObj scm_p_inspect_error(ScmObj err_obj);
 ScmObj scm_p_backtrace(void);
-
-/* write.c */
-void scm_display(ScmObj obj);
-void scm_write_to_port(ScmObj port, ScmObj obj);
-void scm_display_to_port(ScmObj port, ScmObj obj);
-#if SCM_USE_SRFI38
-void scm_write_to_port_with_shared_structure(ScmObj port, ScmObj obj);
-#endif
 
 
 /*===========================================================================

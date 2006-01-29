@@ -685,3 +685,28 @@ scm_write_to_port_with_shared_structure(ScmObj port, ScmObj obj)
     free(ctx.seen.ents);
 }
 #endif /* SCM_USE_SRFI38 */
+
+/*===========================================================================
+  R5RS : 6.6 Input and Output : 6.6.3 Output
+===========================================================================*/
+ScmObj
+scm_p_write(ScmObj obj, ScmObj args)
+{
+    ScmObj port;
+    DECLARE_FUNCTION("write", procedure_variadic_1);
+
+    port = scm_prepare_port(args, scm_out);
+    scm_write_to_port(port, obj);
+    return SCM_UNDEF;
+}
+
+ScmObj
+scm_p_display(ScmObj obj, ScmObj args)
+{
+    ScmObj port;
+    DECLARE_FUNCTION("display", procedure_variadic_1);
+
+    port = scm_prepare_port(args, scm_out);
+    scm_display_to_port(port, obj);
+    return SCM_UNDEF;
+}

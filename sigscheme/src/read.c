@@ -135,10 +135,8 @@ static ScmObj read_quote(ScmObj port, ScmObj quoter);
 ScmObj
 scm_read(ScmObj port)
 {
-    ScmObj sexp = SCM_FALSE;
+    ScmObj sexp;
     DECLARE_INTERNAL_FUNCTION("scm_read");
-
-    ENSURE_PORT(port);
 
     sexp = read_sexpression(port);
 #if SCM_DEBUG
@@ -763,4 +761,17 @@ static ScmObj
 read_quote(ScmObj port, ScmObj quoter)
 {
     return SCM_LIST_2(quoter, read_sexpression(port));
+}
+
+/*===========================================================================
+  R5RS : 6.6 Input and Output : 6.6.2 Input
+===========================================================================*/
+ScmObj
+scm_p_read(ScmObj args)
+{
+    ScmObj port;
+    DECLARE_FUNCTION("read", procedure_variadic_0);
+
+    port = scm_prepare_port(args, scm_in);
+    return scm_read(port);
 }

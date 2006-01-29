@@ -447,15 +447,7 @@ scm_p_close_output_port(ScmObj port)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.2 Input
 ===========================================================================*/
-ScmObj
-scm_p_read(ScmObj args)
-{
-    ScmObj port;
-    DECLARE_FUNCTION("read", procedure_variadic_0);
-
-    port = scm_prepare_port(args, scm_in);
-    return scm_read(port);
-}
+/* scm_p_read() is separated into read.c */
 
 ScmObj
 scm_p_read_char(ScmObj args)
@@ -513,27 +505,7 @@ scm_p_char_readyp(ScmObj args)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.3 Output
 ===========================================================================*/
-ScmObj
-scm_p_write(ScmObj obj, ScmObj args)
-{
-    ScmObj port;
-    DECLARE_FUNCTION("write", procedure_variadic_1);
-
-    port = scm_prepare_port(args, scm_out);
-    scm_write_to_port(port, obj);
-    return SCM_UNDEF;
-}
-
-ScmObj
-scm_p_display(ScmObj obj, ScmObj args)
-{
-    ScmObj port;
-    DECLARE_FUNCTION("display", procedure_variadic_1);
-
-    port = scm_prepare_port(args, scm_out);
-    scm_display_to_port(port, obj);
-    return SCM_UNDEF;
-}
+/* scm_p_write() and scm_p_display() are separated into write.c */
 
 ScmObj
 scm_p_newline(ScmObj args)
@@ -555,7 +527,7 @@ scm_p_write_char(ScmObj obj, ScmObj args)
     ENSURE_CHAR(obj);
 
     port = scm_prepare_port(args, scm_out);
-    scm_display_to_port(port, obj);
+    scm_port_put_char(port, SCM_CHAR_VALUE(obj));
     return SCM_UNDEF;
 }
 
