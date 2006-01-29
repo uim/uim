@@ -38,10 +38,10 @@ Requirements and critical bugs:
 * [uim] link libsscm into libuim statically
 
 * Clear license, copyright and changes information
-  - slib.scm
   - scm_length() in operations.c
   - "Shiro Kawai" part of read.c
-  - test/*.scm
+  - slib.scm
+  - test/{gauche*,bigloo*}.scm
 
 * Confirm appropriate workaround for the GCC's noinline attribute vanishing
   problem on Linux environments
@@ -126,8 +126,6 @@ Namings and Cosmetic things:
 * Rename STL names (string, list) to another such as str, lst
 
 * Define the coding style for indent(1) and reform *.[ch] by it
-
-* Refill license header with fill-column 79 in all files
 
 * [uim] Rename uim-scm.c to uim-scm-sigscheme.c (after the merger)
 
