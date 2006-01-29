@@ -99,8 +99,6 @@ typedef struct _IMUIMContext {
 
 #if IM_UIM_USE_TOPLEVEL
   GtkWidget *widget;
-  gboolean in_toplevel;
-  GdkEventKey event_rec;
 #endif
 
   struct _IMUIMContext *prev, *next;
@@ -113,6 +111,7 @@ static guint snooper_id;
 static gboolean snooper_installed = FALSE;
 #elif IM_UIM_USE_TOPLEVEL
 static GtkWidget *cur_toplevel;
+static GtkWidget *grab_widget;
 static gulong cur_key_press_handler_id;
 static gulong cur_key_release_handler_id;
 #endif
@@ -331,14 +330,37 @@ show_preedit(GtkIMContext *ic, GtkWidget *preedit_label)
 
 #if IM_UIM_USE_TOPLEVEL
 static void
-update_in_toplevel(IMUIMContext *uic)
+remove_cur_toplevel()
+{
+  if (cur_toplevel && GTK_WIDGET_TOPLEVEL(cur_toplevel)) {
+    if (cur_key_press_handler_id)
+      g_signal_handler_disconnect(cur_toplevel, cur_key_press_handler_id);
+    if (cur_key_release_handler_id)
+      g_signal_handler_disconnect(cur_toplevel, cur_key_release_handler_id);
+    cur_toplevel = NULL;
+  }
+}
+
+static void
+update_cur_toplevel(IMUIMContext *uic)
 {
   if (uic->widget) {
     GtkWidget *toplevel = gtk_widget_get_toplevel(uic->widget);
-    uic->in_toplevel = (toplevel && GTK_WIDGET_TOPLEVEL(toplevel));
-  } else {
-    uic->in_toplevel = FALSE;
-  }
+    if (toplevel && GTK_WIDGET_TOPLEVEL(toplevel)) {
+      if (cur_toplevel != toplevel) {
+	remove_cur_toplevel();
+	cur_toplevel = toplevel;
+	cur_key_press_handler_id = g_signal_connect(cur_toplevel,
+			"key-press-event",
+			G_CALLBACK(handle_key_on_toplevel), uic);
+	cur_key_release_handler_id = g_signal_connect(cur_toplevel,
+			"key-release-event",
+			G_CALLBACK(handle_key_on_toplevel), uic);
+      }
+    } else
+      remove_cur_toplevel();
+  } else
+    remove_cur_toplevel();
 }
 
 static GtkWidget *
@@ -359,7 +381,30 @@ widget_for_window(GdkWindow *window)
 static void
 on_client_widget_hierarchy_changed(GtkWidget *widget, GtkWidget *old_toplevel, IMUIMContext *uic)
 {
-  update_in_toplevel(uic);
+  update_cur_toplevel(uic);
+}
+
+static gboolean
+on_client_widget_grab_notify(GtkWidget *widget, gboolean was_grabbed, IMUIMContext *uic)
+{
+  if (was_grabbed)
+    grab_widget = NULL;
+  else {
+    grab_widget = gtk_grab_get_current();
+    if (!grab_widget) {
+      if (cur_toplevel && GTK_IS_WINDOW(cur_toplevel)) {
+	GtkWindowGroup *group;
+	GtkWindow *window;
+	
+	window = GTK_WINDOW(cur_toplevel);
+	group = window->group;
+	if (group)
+	  grab_widget = GTK_WIDGET(group->grabs->data);
+      }
+    }
+  }
+
+  return FALSE;
 }
 
 static void
@@ -368,18 +413,26 @@ update_client_widget(IMUIMContext *uic)
   GtkWidget *new_widget = widget_for_window(uic->win);
 
   if (new_widget != uic->widget) {
-    if (uic->widget)
+    if (uic->widget) {
       g_signal_handlers_disconnect_by_func(uic->widget,
 		      (gpointer)on_client_widget_hierarchy_changed, uic);
+      g_signal_handlers_disconnect_by_func(uic->widget,
+		      (gpointer)on_client_widget_grab_notify, uic);
+    }
     uic->widget = new_widget;
-    if (uic->widget)
+    if (uic->widget) {
       g_signal_connect(uic->widget, "hierarchy-changed",
 		      G_CALLBACK(on_client_widget_hierarchy_changed), uic);
+      g_signal_connect(uic->widget, "grab-notify",
+		      G_CALLBACK(on_client_widget_grab_notify), uic);
+    }
 
-    update_in_toplevel(uic);
+    update_cur_toplevel(uic);
   }
 }
 #endif /* IM_UIM_USE_TOPLEVEL */
+
+
 
 /* utility functions */
 
@@ -420,6 +473,7 @@ toplevel_window_candidate_cb(GdkXEvent *xevent, GdkEvent *ev, gpointer data)
 
   return GDK_FILTER_CONTINUE;
 }
+
 
 
 /* callback functions for libuim */
@@ -850,11 +904,7 @@ im_uim_filter_keypress(GtkIMContext *ic, GdkEventKey *key)
 #if IM_UIM_USE_SNOOPER
   if (!snooper_installed) {
 #elif IM_UIM_USE_TOPLEVEL
-  /*
-   * Sometimes key events are emitted from other than top level
-   * widget, so check time of the event...
-   */
-  if (!cur_toplevel || key->time != uic->event_rec.time) {
+  if (!cur_toplevel || (cur_toplevel && grab_widget)) {
 #else
   if (TRUE) {
 #endif
@@ -922,9 +972,6 @@ im_uim_focus_in(GtkIMContext *ic)
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
   IMUIMContext *cc;
-#if IM_UIM_USE_TOPLEVEL
-  GtkWidget *toplevel;
-#endif
 
   focused_context = uic;
   disable_focused_context = FALSE;
@@ -936,24 +983,7 @@ im_uim_focus_in(GtkIMContext *ic)
     snooper_installed = TRUE;
   }
 #elif IM_UIM_USE_TOPLEVEL
-  if (cur_toplevel) {
-    if (cur_key_press_handler_id)
-      g_signal_handler_disconnect(cur_toplevel, cur_key_press_handler_id);
-    if (cur_key_press_handler_id)
-      g_signal_handler_disconnect(cur_toplevel, cur_key_release_handler_id);
-  }
-
-  toplevel = gtk_widget_get_toplevel(uic->widget);
-  cur_toplevel = toplevel;
-
-  if (toplevel && GTK_WIDGET_TOPLEVEL(toplevel)) {
-    cur_key_press_handler_id = g_signal_connect(cur_toplevel,
-		    "key-press-event", G_CALLBACK(handle_key_on_toplevel),
-		    uic);
-    cur_key_release_handler_id = g_signal_connect(cur_toplevel,
-		    "key-release-event", G_CALLBACK(handle_key_on_toplevel),
-		    uic);
-  }
+  update_cur_toplevel(uic);
 #endif
 
   check_helper_connection();
@@ -983,11 +1013,7 @@ im_uim_focus_out(GtkIMContext *ic)
     snooper_installed = FALSE;
   }
 #elif IM_UIM_USE_TOPLEVEL
-  if (cur_toplevel) {
-    g_signal_handler_disconnect(cur_toplevel, cur_key_press_handler_id);
-    g_signal_handler_disconnect(cur_toplevel, cur_key_release_handler_id);
-    cur_toplevel = NULL;
-  }
+  remove_cur_toplevel();
 #endif
 
   check_helper_connection();
@@ -1058,8 +1084,6 @@ im_uim_init(IMUIMContext *uic)
   uic->win = NULL;
 #if IM_UIM_USE_TOPLEVEL
   uic->widget = NULL;
-  uic->in_toplevel = FALSE;
-  uic->event_rec.time = 0;
 #endif
   uic->caret_state_indicator = NULL;
   uic->pseg = NULL;
@@ -1228,8 +1252,6 @@ handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data)
 
   if (focused_context == uic) {
     int rv, kv, mod;
-
-    uic->event_rec.time = event->time;
 
     im_uim_convert_keyevent(event, &kv, &mod);
 
