@@ -1158,36 +1158,9 @@ ScmObj scm_s_unquote_splicing(ScmObj dummy, ScmObj env);
 ScmObj scm_s_define(ScmObj var, ScmObj rest, ScmObj env);
 
 /* operations.c */
-ScmObj scm_p_eqvp(ScmObj obj1, ScmObj obj2);
 ScmObj scm_p_eqp(ScmObj obj1, ScmObj obj2);
+ScmObj scm_p_eqvp(ScmObj obj1, ScmObj obj2);
 ScmObj scm_p_equalp(ScmObj obj1, ScmObj obj2);
-ScmObj scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj scm_p_subtract(ScmObj left, ScmObj right,
-                      enum ScmReductionState *state);
-ScmObj scm_p_multiply(ScmObj left, ScmObj right,
-                      enum ScmReductionState *state);
-ScmObj scm_p_divide(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj scm_p_equal(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj scm_p_less(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj scm_p_less_eq(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj scm_p_greater(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj scm_p_greater_eq(ScmObj left, ScmObj right,
-                        enum ScmReductionState *state);
-ScmObj scm_p_numberp(ScmObj obj);
-ScmObj scm_p_integerp(ScmObj obj);
-ScmObj scm_p_zerop(ScmObj n);
-ScmObj scm_p_positivep(ScmObj n);
-ScmObj scm_p_negativep(ScmObj n);
-ScmObj scm_p_oddp(ScmObj n);
-ScmObj scm_p_evenp(ScmObj n);
-ScmObj scm_p_max(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj scm_p_min(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj scm_p_abs(ScmObj scm_n);
-ScmObj scm_p_quotient(ScmObj scm_n1, ScmObj scm_n2);
-ScmObj scm_p_modulo(ScmObj scm_n1, ScmObj scm_n2);
-ScmObj scm_p_remainder(ScmObj scm_n1, ScmObj scm_n2);
-ScmObj scm_p_number2string (ScmObj num, ScmObj args);
-ScmObj scm_p_string2number(ScmObj str, ScmObj args);
 ScmObj scm_p_not(ScmObj obj);
 ScmObj scm_p_booleanp(ScmObj obj);
 ScmObj scm_p_car(ScmObj obj);
@@ -1239,6 +1212,35 @@ ScmObj scm_p_values(ScmObj args);
 ScmObj scm_p_call_with_values(ScmObj producer, ScmObj consumer,
                               ScmEvalState *eval_state);
 ScmObj scm_p_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
+
+/* number.c */
+ScmObj scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_subtract(ScmObj left, ScmObj right,
+                      enum ScmReductionState *state);
+ScmObj scm_p_multiply(ScmObj left, ScmObj right,
+                      enum ScmReductionState *state);
+ScmObj scm_p_divide(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_equal(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_less(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_less_eq(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_greater(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_greater_eq(ScmObj left, ScmObj right,
+                        enum ScmReductionState *state);
+ScmObj scm_p_numberp(ScmObj obj);
+ScmObj scm_p_integerp(ScmObj obj);
+ScmObj scm_p_zerop(ScmObj n);
+ScmObj scm_p_positivep(ScmObj n);
+ScmObj scm_p_negativep(ScmObj n);
+ScmObj scm_p_oddp(ScmObj n);
+ScmObj scm_p_evenp(ScmObj n);
+ScmObj scm_p_max(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_min(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_abs(ScmObj scm_n);
+ScmObj scm_p_quotient(ScmObj scm_n1, ScmObj scm_n2);
+ScmObj scm_p_modulo(ScmObj scm_n1, ScmObj scm_n2);
+ScmObj scm_p_remainder(ScmObj scm_n1, ScmObj scm_n2);
+ScmObj scm_p_number2string (ScmObj num, ScmObj args);
+ScmObj scm_p_string2number(ScmObj str, ScmObj args);
 
 /* string.c */
 ScmObj scm_p_charp(ScmObj obj);
