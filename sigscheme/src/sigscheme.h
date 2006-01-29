@@ -1216,10 +1216,11 @@ ScmObj scm_p_multiply(ScmObj left, ScmObj right,
 ScmObj scm_p_divide(ScmObj left, ScmObj right, enum ScmReductionState *state);
 ScmObj scm_p_equal(ScmObj left, ScmObj right, enum ScmReductionState *state);
 ScmObj scm_p_less(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj scm_p_less_eq(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj scm_p_greater(ScmObj left, ScmObj right, enum ScmReductionState *state);
-ScmObj scm_p_greater_eq(ScmObj left, ScmObj right,
+ScmObj scm_p_less_equal(ScmObj left, ScmObj right,
                         enum ScmReductionState *state);
+ScmObj scm_p_greater(ScmObj left, ScmObj right, enum ScmReductionState *state);
+ScmObj scm_p_greater_equal(ScmObj left, ScmObj right,
+                           enum ScmReductionState *state);
 ScmObj scm_p_numberp(ScmObj obj);
 ScmObj scm_p_integerp(ScmObj obj);
 ScmObj scm_p_zerop(ScmObj n);

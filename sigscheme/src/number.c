@@ -230,7 +230,7 @@ scm_p_less(ScmObj left, ScmObj right, enum ScmReductionState *state)
 }
 
 ScmObj
-scm_p_less_eq(ScmObj left, ScmObj right, enum ScmReductionState *state)
+scm_p_less_equal(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("<=", reduction_operator);
 
@@ -246,7 +246,7 @@ scm_p_greater(ScmObj left, ScmObj right, enum ScmReductionState *state)
 }
 
 ScmObj
-scm_p_greater_eq(ScmObj left, ScmObj right, enum ScmReductionState *state)
+scm_p_greater_equal(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION(">=", reduction_operator);
 
