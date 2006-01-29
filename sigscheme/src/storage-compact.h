@@ -186,9 +186,9 @@ struct ScmCell_ {
     ScmObj cdr;
 };
 
-/*==============================================================================
+/*===========================================================================
                                Internal Macros
-==============================================================================*/
+===========================================================================*/
 /*=======================================
   Masks Offsets, and Tags
 =======================================*/
@@ -207,9 +207,9 @@ struct ScmCell_ {
 #define SCM_TAG_OTHERS      (0x2 << SCM_TAG_OFFSET)
 #define SCM_TAG_IMM         (0x3 << SCM_TAG_OFFSET)
 
-/*==============================================================================
+/*===========================================================================
   Masks Offsets, and Tags : Others' CAR
-==============================================================================*/
+===========================================================================*/
 #define SCM_OTHERS_CAR_VAL_OFFSET_SYMBOL        \
     (SCM_GCBIT_OFFSET + SCM_GCBIT_WIDTH)
 #define SCM_OTHERS_CAR_VAL_OFFSET_STRING        \
@@ -257,9 +257,9 @@ struct ScmCell_ {
 #define SCM_OTHERS_CAR_VAL_ALIGNMENT_FREECELL   \
     SCM_ALIGN_SCMCELL
 
-/*==============================================================================
+/*===========================================================================
   Masks Offsets, and Tags : Others' CDR
-==============================================================================*/
+===========================================================================*/
 /* primary tag */
 #define SCM_OTHERS_CDR_PRIMARY_TAG_WIDTH  3
 #define SCM_OTHERS_CDR_PRIMARY_TAG_OFFSET 0
@@ -471,9 +471,9 @@ struct ScmCell_ {
 #define SCM_OTHERS_CDR_VAL_MASK_FREECELL        \
     (~0U << SCM_OTHERS_CDR_EXT_VAL_OFFSET)
 
-/*==============================================================================
+/*===========================================================================
   Masks Offsets, and Tags : Immediates
-==============================================================================*/
+===========================================================================*/
 /* mask */
 #define SCM_IMM_TAG_MASK_INT      (SCM_TAG_MASK | (0x1 << 3))
 #define SCM_IMM_TAG_MASK_CHAR     (SCM_TAG_MASK | (0x3 << 3))
@@ -652,9 +652,9 @@ struct ScmCell_ {
                                     (((int)(val))                       \
                                      << SCM_IMM_VAL_OFFSET_##type))))
 
-/*==============================================================================
+/*===========================================================================
                                SAL Macros
-==============================================================================*/
+===========================================================================*/
 
 /*=======================================
   Object Representation Information
@@ -824,9 +824,9 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #define SCM_SAL_TYPE(a) scm_type(a)
 extern enum ScmObjType scm_type(ScmObj obj);
 
-/*==============================================================================
+/*===========================================================================
   Accessors For Scheme Objects : Cons
-==============================================================================*/
+===========================================================================*/
 #define SCM_SAL_CONS_CAR(a) ((ScmObj)(SCM_CONS_CAR_VAL(a)))
 #define SCM_SAL_CONS_CDR(a) ((ScmObj)(SCM_CONS_CDR_VAL(a)))
 #define SCM_SAL_CONS_SET_CAR(a, val) SCM_CONS_SET_CAR_VAL((a), (val))
@@ -835,17 +835,17 @@ extern enum ScmObjType scm_type(ScmObj obj);
 #define SCM_SAL_CONS_SET_MUTABLE(o)
 #define SCM_SAL_CONS_SET_IMMUTABLE(o)
 
-/*==============================================================================
+/*===========================================================================
   Accessors For Scheme Objects : Closure
-==============================================================================*/
+===========================================================================*/
 #define SCM_SAL_CLOSURE_EXP(a) ((ScmObj)(SCM_CLOSURE_CAR_VAL(a)))
 #define SCM_SAL_CLOSURE_ENV(a) ((ScmObj)(SCM_CLOSURE_CDR_VAL(a)))
 #define SCM_SAL_CLOSURE_SET_EXP(a, val) SCM_CLOSURE_SET_CAR_VAL((a), (val))
 #define SCM_SAL_CLOSURE_SET_ENV(a, val) SCM_CLOSURE_SET_CDR_VAL((a), (val))
 
-/*==============================================================================
+/*===========================================================================
   Accessors For Scheme Objects : Others
-==============================================================================*/
+===========================================================================*/
 /*
  * Symbol
  */
@@ -1021,9 +1021,9 @@ extern enum ScmObjType scm_type(ScmObj obj);
 #define SCM_SAL_FREECELL_SET_NEXT(a, val)       \
     SCM_OTHERS_SET_CAR_VAL((a), FREECELL, (val))
 
-/*==============================================================================
+/*===========================================================================
   Accessors For Scheme Objects : Immediates
-==============================================================================*/
+===========================================================================*/
 /* Int */
 #define SCM_SAL_INT_VALUE(a)          ((int)(SCM_IMM_VAL((a), INT)))
 #define SCM_SAL_INT_SET_VALUE(a, val) SCM_IMM_SET_VAL((a), INT, (val))
@@ -1032,9 +1032,9 @@ extern enum ScmObjType scm_type(ScmObj obj);
 #define SCM_SAL_CHAR_VALUE(a)         ((int)(SCM_IMM_VAL((a), CHAR)))
 #define SCM_SAL_CHAR_SET_VALUE(a, ch) SCM_IMM_SET_VAL((a), CHAR, (ch))
 
-/*============================================================================
+/*===========================================================================
   GC Related Operations
-============================================================================*/
+===========================================================================*/
 #define SCM_SAL_RECLAIM_CELL(cell, next)                                     \
     do {                                                                     \
         SCM_ENTYPE_FREECELL(cell);                                           \
@@ -1079,9 +1079,9 @@ extern enum ScmObjType scm_type(ScmObj obj);
     (SCM_CELL_SET_CAR((a),                                              \
                       SCM_STRIP_GCBIT(SCM_CELL_CAR(a)) | SCM_GCBIT_UNMARKED))
 
-/*============================================================================
+/*===========================================================================
   Environment Specifiers
-============================================================================*/
+===========================================================================*/
 #define SCM_SAL_INTERACTION_ENV SCM_NULL
 /*
  * Current implementation cannot handle scheme-report-environment and
@@ -1092,10 +1092,10 @@ extern enum ScmObjType scm_type(ScmObj obj);
 
 #define SCM_SAL_ENVP(env) (NULLP(env) || CONSP(env))
 
-/*============================================================================
+/*===========================================================================
   Abstract ScmObj Reference For Storage-Representation Independent Efficient
   List Operations
-============================================================================*/
+===========================================================================*/
 #define SCM_SAL_INVALID_REF NULL
 
 #define SCM_SAL_REF_CAR(cons)     (&SCM_CELL_CAR(cons))
@@ -1109,9 +1109,9 @@ extern enum ScmObjType scm_type(ScmObj obj);
 #define SCM_SAL_SET(ref, obj) \
     (*(ref) = (ScmObj)(SCM_GCBIT(*(ref)) | SCM_STRIP_GCBIT(obj)))
 
-/*============================================================================
+/*===========================================================================
   Special Constants and Predicates
-============================================================================*/
+===========================================================================*/
 #define SCM_SAL_NULL    ((ScmObj)(SCM_IMM_TAG_NULL))
 #define SCM_SAL_EOF     ((ScmObj)(SCM_IMM_TAG_EOF))
 #define SCM_SAL_UNDEF   ((ScmObj)(SCM_IMM_TAG_UNDEF))
@@ -1127,9 +1127,9 @@ extern enum ScmObjType scm_type(ScmObj obj);
 
 #define SCM_SAL_EQ(a, b) (SCM_STRIP_GCBIT(a) == SCM_STRIP_GCBIT(b))
 
-/*============================================================================
+/*===========================================================================
   Predefined Symbols
-============================================================================*/
+===========================================================================*/
 /* for list construction */
 #define SCM_SAL_SYM_QUOTE            scm_sym_quote
 #define SCM_SAL_SYM_QUASIQUOTE       scm_sym_quasiquote

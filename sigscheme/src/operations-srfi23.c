@@ -30,7 +30,7 @@
  *  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *  =========================================================================*/
+===========================================================================*/
 /*=======================================
   System Include
 =======================================*/
@@ -66,9 +66,9 @@ scm_initialize_srfi23(void)
     SCM_REGISTER_FUNC_TABLE(scm_srfi23_func_info_table);
 }
 
-/*=============================================================================
+/*===========================================================================
   SRFI23 : Error reporting mechanism
-=============================================================================*/
+===========================================================================*/
 /*
  * This code implements the '4.' of following Specification defined in SRFI-34.
  *

@@ -76,13 +76,13 @@ scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
 
     env = eval_state->env;
 
-    /*========================================================================
+    /*=======================================================================
       (and-let* <claws> <body>)
 
       <claws> ::= '() | (cons <claw> <claws>)
       <claw>  ::=  (<variable> <expression>) | (<expression>)
                    | <bound-variable>
-    ========================================================================*/
+    =======================================================================*/
     if (CONSP(claws)) {
         FOR_EACH (claw, claws) {
             if (CONSP(claw)) {

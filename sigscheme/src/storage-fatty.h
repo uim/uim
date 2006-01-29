@@ -378,14 +378,14 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #define SCM_SAL_VALUEPACKET_SET_VALUES(o, v) (SCM_VALUEPACKET_VALUES(o) = (v))
 #endif /* SCM_USE_VALUECONS */
 
-/*============================================================================
+/*===========================================================================
   Special Constants (such as SCM_NULL)
-============================================================================*/
+===========================================================================*/
 #define SCM_SAL_CONSTANTP(o)           (SCM_TYPE(o) == ScmConstant)
 
-/*============================================================================
+/*===========================================================================
   C Pointer Object
-============================================================================*/
+===========================================================================*/
 #define SCM_SAL_C_POINTERP(o)           (SCM_TYPE(o) == ScmCPointer)
 #define SCM_SAL_ENTYPE_C_POINTER(o)     (SCM_ENTYPE((o), ScmCPointer))
 #define SCM_SAL_C_POINTER_VALUE(o)                                           \
@@ -399,9 +399,9 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #define SCM_SAL_C_FUNCPOINTER_SET_VALUE(o, ptr)                              \
     (SCM_C_FUNCPOINTER_VALUE(o) = (ptr))
 
-/*============================================================================
+/*===========================================================================
   GC Related Operations
-============================================================================*/
+===========================================================================*/
 #define SCM_SAL_FREECELLP(o)           (SCM_TYPE(o) == ScmFreeCell)
 #define SCM_SAL_AS_FREECELL(o)         (SCM_ASSERT_TYPE(SCM_FREECELLP(o), (o)))
 #define SCM_SAL_FREECELL_NEXT(o)       (SCM_AS_FREECELL(o)->obj.cons.car)
@@ -425,9 +425,9 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #define SCM_SAL_DO_MARK(o)     ((o)->attr.v.gcmark = scm_true)
 #define SCM_SAL_DO_UNMARK(o)   ((o)->attr.v.gcmark = scm_false)
 
-/*============================================================================
+/*===========================================================================
   Environment Specifiers
-============================================================================*/
+===========================================================================*/
 #define SCM_SAL_INTERACTION_ENV SCM_NULL
 /*
  * Current implementation cannot handle scheme-report-environment and
@@ -438,10 +438,10 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 
 #define SCM_SAL_ENVP(env) (NULLP(env) || CONSP(env))
 
-/*============================================================================
+/*===========================================================================
   Abstract ScmObj Reference For Storage-Representation Independent Efficient
   List Operations
-============================================================================*/
+===========================================================================*/
 #define SCM_SAL_INVALID_REF   NULL
 
 #define SCM_SAL_REF_CAR(kons)     (&SCM_AS_CONS(kons)->obj.cons.car)
@@ -458,9 +458,9 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 /* RFC: Is there a better name? */
 #define SCM_SAL_SET(ref, obj) (*(ref) = (obj))
 
-/*============================================================================
+/*===========================================================================
   Special Constants and Predicates
-============================================================================*/
+===========================================================================*/
 #define SCM_SAL_INVALID  NULL
 #define SCM_SAL_NULL     scm_const_null
 #define SCM_SAL_TRUE     scm_const_true
@@ -479,9 +479,9 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 extern ScmObj scm_const_null, scm_const_true, scm_const_false, scm_const_eof;
 extern ScmObj scm_const_unbound, scm_const_undef;
 
-/*============================================================================
+/*===========================================================================
   Predefined Symbols
-============================================================================*/
+===========================================================================*/
 /* for list construction */
 #define SCM_SAL_SYM_QUOTE            scm_sym_quote
 #define SCM_SAL_SYM_QUASIQUOTE       scm_sym_quasiquote

@@ -30,7 +30,7 @@
  *  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *  =========================================================================*/
+===========================================================================*/
 /*=======================================
   System Include
 =======================================*/
@@ -70,9 +70,9 @@ scm_initialize_srfi38(void)
     scm_writess_func = scm_write_to_port_with_shared_structure;
 }
 
-/*=============================================================================
+/*===========================================================================
   SRFI38 : External Representation for Data With Shared Structure
-=============================================================================*/
+===========================================================================*/
 ScmObj
 scm_p_srfi38_write_with_shared_structure(ScmObj obj, ScmObj args)
 {

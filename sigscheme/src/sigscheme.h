@@ -226,9 +226,9 @@ extern "C" {
 
 #define SCM_WRITESS_TO_PORT(port, obj) ((*scm_writess_func)(port, obj))
 
-/*============================================================================
+/*===========================================================================
   Type Definitions
-============================================================================*/
+===========================================================================*/
 /*=======================================
    Primitive Types
 =======================================*/
@@ -846,9 +846,9 @@ struct ScmStorageConf_ {
 #define SCM_C_FUNCPOINTER_SET_VALUE(o, funcptr)                              \
     SCM_SAL_C_FUNCPOINTER_SET_VALUE((o), (funcptr))
 
-/*============================================================================
+/*===========================================================================
   Environment Specifiers
-============================================================================*/
+===========================================================================*/
 #define SCM_INTERACTION_ENV SCM_SAL_INTERACTION_ENV
 /*
  * Current implementation cannot handle scheme-report-environment and
@@ -859,10 +859,10 @@ struct ScmStorageConf_ {
 
 #define SCM_ENVP(env)       SCM_SAL_ENVP(env)
 
-/*============================================================================
+/*===========================================================================
   Abstract ScmObj Reference For Storage-Representation Independent Efficient
   List Operations
-============================================================================*/
+===========================================================================*/
 #define SCM_INVALID_REF       SCM_SAL_INVALID_REF
 
 #define SCM_REF_CAR(kons)     SCM_SAL_REF_CAR(kons)
@@ -875,9 +875,9 @@ struct ScmStorageConf_ {
 /* RFC: Is there a better name? */
 #define SCM_SET(ref, obj)     SCM_SAL_SET((ref), (obj))
 
-/*============================================================================
+/*===========================================================================
   Special Constants and Predicates
-============================================================================*/
+===========================================================================*/
 #define SCM_INVALID SCM_SAL_INVALID
 #define SCM_NULL    SCM_SAL_NULL
 #define SCM_TRUE    SCM_SAL_TRUE
@@ -892,9 +892,9 @@ struct ScmStorageConf_ {
 #define SCM_NFALSEP(o) (!SCM_EQ((o), SCM_FALSE))
 #define SCM_EOFP(o)    (SCM_EQ((o),  SCM_EOF))
 
-/*============================================================================
+/*===========================================================================
   Predefined Symbols
-============================================================================*/
+===========================================================================*/
 /* for list construction */
 #define SCM_SYM_QUOTE            SCM_SAL_SYM_QUOTE
 #define SCM_SYM_QUASIQUOTE       SCM_SAL_SYM_QUASIQUOTE
