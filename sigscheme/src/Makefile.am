@@ -23,7 +23,7 @@ BUILD_FUNCTBL_SOURCES = \
 		./script/functable-header.txt \
 		./script/functable-footer.txt
 
-R5RS_PROC_SRCS = sigscheme.c operations.c eval.c list.c number.c string.c \
+R5RS_PROC_SRCS = sigscheme.c procedure.c eval.c list.c number.c string.c \
                  vector.c port.c read.c write.c load.c
 
 sigschemefunctable.c: $(FUNC_TABLES)
@@ -68,7 +68,7 @@ libsscm_la_SOURCES = \
 		env.c eval.c syntax.c list.c number.c string.c vector.c \
 		port.c read.c write.c load.c module.c \
                 basecport.c fileport.c \
-		operations.c \
+		procedure.c \
 		sigscheme.c sigschemefunctable.c \
 		sigscheme.h sigschemefunctable.h
 

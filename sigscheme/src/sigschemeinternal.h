@@ -61,7 +61,7 @@ struct ScmSpecialCharInfo_ {
 /*=======================================
    Variable Declarations
 =======================================*/
-/* operations.c */
+/* procedure.c */
 extern ScmCharCodec *scm_identifier_codec;
 
 /* port.c */
@@ -524,7 +524,7 @@ ScmObj scm_s_cond_internal(ScmObj args, ScmObj case_key,
 /* error.c */
 void scm_init_error(void);
 
-/* operations.c */
+/* list.c */
 scm_int_t scm_finite_length(ScmObj lst);
 scm_int_t scm_length(ScmObj lst);
 

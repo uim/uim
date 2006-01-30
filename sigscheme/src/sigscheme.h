@@ -1159,7 +1159,7 @@ ScmObj scm_s_unquote(ScmObj dummy, ScmObj env);
 ScmObj scm_s_unquote_splicing(ScmObj dummy, ScmObj env);
 ScmObj scm_s_define(ScmObj var, ScmObj rest, ScmObj env);
 
-/* operations.c */
+/* procedure.c */
 ScmObj scm_p_eqp(ScmObj obj1, ScmObj obj2);
 ScmObj scm_p_eqvp(ScmObj obj1, ScmObj obj2);
 ScmObj scm_p_equalp(ScmObj obj1, ScmObj obj2);

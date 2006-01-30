@@ -1,6 +1,6 @@
 /*===========================================================================
- *  FileName : operations.c
- *  About    : basic scheme procedure
+ *  FileName : procedure.c
+ *  About    : Miscellaneous R5RS procedures
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *
