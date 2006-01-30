@@ -1,3 +1,33 @@
+Overview of changes from 1.0.x to 1.1.0
+==
+* New features
+
+* Fixes
+  o Minor
+    - uim-im-switcher-gtk
+      - respond to the cursor movement from keyboard (Etsushi)
+    - uim-pref-gtk
+      - handle <Meta>, <Super>, and <Hyper> modifiers in the key
+	capture widget (Etsushi)
+      - distinguish directories and regular files on pathname custom
+	widget (Etsushi, YamaKen)
+
+    - uim-pref-qt
+      - distinguish directories and regular files on pathname custom
+	widget (Etsushi, YamaKen)
+
+    - gtk+ immodule
+      - enable <Alt>, <Meta>, <Super>, and <Hyper> modifier key
+	handling on X11 (bug #2468, Etsushi)
+      - don't use key snooper to improve short cut key handling
+	(Etsushi)
+    - uim-xim
+      - fix event handling with flushplayer plugin (Etsushi)
+
+* Others
+  - update translations
+    -ja (Daichi Kawahata, YamaKen)
+
 Overview of changes from 1.0.0 to 1.0.1
 ==
 * Fixes
