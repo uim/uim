@@ -460,7 +460,7 @@ scm_p_number2string(ScmObj num, ScmObj args)
 
   do {
       digit = un % r;
-      *--p = (digit <= 9) ? '0' + digit : 'A' + digit - 10;
+      *--p = (digit <= 9) ? '0' + digit : 'a' + digit - 10;
   } while (un /= r);
   if (neg)
     *--p = '-';
