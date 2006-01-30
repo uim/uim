@@ -106,6 +106,24 @@ scm_p_symbol_boundp(ScmObj sym, ScmObj rest)
     return MAKE_BOOL(ref != SCM_INVALID_REF || SCM_SYMBOL_BOUNDP(sym));
 }
 
+/* SRFI-77 compatible */
+ScmObj
+scm_p_least_fixnum(void)
+{
+    DECLARE_FUNCTION("least-fixnum", procedure_fixed_0);
+
+    return MAKE_INT(SCM_INT_MIN);
+}
+
+/* SRFI-77 compatible */
+ScmObj
+scm_p_greatest_fixnum(void)
+{
+    DECLARE_FUNCTION("greatest-fixnum", procedure_fixed_0);
+
+    return MAKE_INT(SCM_INT_MAX);
+}
+
 /* SIOD compatible */
 ScmObj
 scm_p_load_path(void)

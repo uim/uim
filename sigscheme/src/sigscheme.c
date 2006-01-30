@@ -155,6 +155,11 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
 #if SCM_HAS_IMMEDIATE_NUMBER_ONLY
     scm_provide(CONST_STRING("immediate-number-only"));
 #endif
+    /* Since SCM_SAL_PTR_BITS may use sizeof() instead of autoconf SIZEOF
+     * macro, #if is not safe here. */
+    if (SCM_PTR_BITS == 64)
+        scm_provide(CONST_STRING("64bit-addr"));
+
     scm_initialized = scm_true;
 }
 

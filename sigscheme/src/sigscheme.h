@@ -1322,6 +1322,8 @@ ScmObj scm_p_cddddr(ScmObj lst);
 #if SCM_USE_NONSTD_FEATURES
 void scm_initialize_nonstd_features(void);
 ScmObj scm_p_symbol_boundp(ScmObj sym, ScmObj rest);
+ScmObj scm_p_least_fixnum(void);
+ScmObj scm_p_greatest_fixnum(void);
 ScmObj scm_p_load_path(void);
 void scm_require(const char *filename);
 ScmObj scm_p_require(ScmObj filename);
