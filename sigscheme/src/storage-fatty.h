@@ -414,15 +414,15 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #define SCM_SAL_RECLAIM_CELL(cell, next)                                     \
     do {                                                                     \
         SCM_ENTYPE_FREECELL(cell);                                           \
-        SCM_DO_UNMARK(cell);                                                 \
+        SCM_UNMARK(cell);                                                    \
         SCM_FREECELL_SET_NEXT((cell), (next));                               \
         SCM_FREECELL_CLEAR_FREESLOT(cell);                                   \
     } while (/* CONSTCOND */ 0)
 
-#define SCM_SAL_IS_MARKED(o)   ((o)->attr.v.gcmark)
-#define SCM_SAL_IS_UNMARKED(o) (!SCM_IS_MARKED(o))
-#define SCM_SAL_DO_MARK(o)     ((o)->attr.v.gcmark = scm_true)
-#define SCM_SAL_DO_UNMARK(o)   ((o)->attr.v.gcmark = scm_false)
+#define SCM_SAL_MARKEDP(o)   ((o)->attr.v.gcmark)
+#define SCM_SAL_UNMARKEDP(o) (!SCM_MARKEDP(o))
+#define SCM_SAL_MARK(o)      ((o)->attr.v.gcmark = scm_true)
+#define SCM_SAL_UNMARK(o)    ((o)->attr.v.gcmark = scm_false)
 
 /*===========================================================================
   Environment Specifiers

@@ -775,25 +775,25 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
     SCM_CELL_SET_CDR((a), (tag))
 
 /* for each tag type */
-#define SCM_ENTYPE_TAG_CONS(a)                  \
-    do {                                        \
-        SCM_ENTYPE_TAG((a), SCM_TAG_CONS);      \
-        SCM_DO_UNMARK(a);                       \
-        SCM_GCBIT_OFF(SCM_CELL_CDR(a));         \
+#define SCM_ENTYPE_TAG_CONS(a)                                               \
+    do {                                                                     \
+        SCM_ENTYPE_TAG((a), SCM_TAG_CONS);                                   \
+        SCM_UNMARK(a);                                                       \
+        SCM_GCBIT_OFF(SCM_CELL_CDR(a));                                      \
     } while (/*CONSTCOND*/ 0)
 
-#define SCM_ENTYPE_TAG_CLOSURE(a)               \
-    do {                                        \
-        SCM_ENTYPE_TAG((a), SCM_TAG_CLOSURE);   \
-        SCM_DO_UNMARK(a);                       \
-        SCM_GCBIT_OFF(SCM_CELL_CDR(a));         \
+#define SCM_ENTYPE_TAG_CLOSURE(a)                                            \
+    do {                                                                     \
+        SCM_ENTYPE_TAG((a), SCM_TAG_CLOSURE);                                \
+        SCM_UNMARK(a);                                                       \
+        SCM_GCBIT_OFF(SCM_CELL_CDR(a));                                      \
     } while (/*CONSTCOND*/ 0)
 
-#define SCM_ENTYPE_TAG_OTHERS(a, type)                                  \
-    do {                                                                \
-        SCM_ENTYPE_TAG((a), SCM_TAG_OTHERS);                            \
-        SCM_DO_UNMARK(a);                                               \
-        SCM_ENTYPE_OTHERS_CDR_TAG((a), SCM_OTHERS_CDR_TAG_##type);      \
+#define SCM_ENTYPE_TAG_OTHERS(a, type)                                       \
+    do {                                                                     \
+        SCM_ENTYPE_TAG((a), SCM_TAG_OTHERS);                                 \
+        SCM_UNMARK(a);                                                       \
+        SCM_ENTYPE_OTHERS_CDR_TAG((a), SCM_OTHERS_CDR_TAG_##type);           \
     } while (/*CONSTCOND*/ 0)
 
 #define SCM_ENTYPE_TAG_IMM(a, type)             \
@@ -1036,7 +1036,7 @@ extern enum ScmObjType scm_type(ScmObj obj);
 #define SCM_SAL_RECLAIM_CELL(cell, next)                                     \
     do {                                                                     \
         SCM_ENTYPE_FREECELL(cell);                                           \
-        SCM_DO_UNMARK(cell);                                                 \
+        SCM_UNMARK(cell);                                                 \
         SCM_FREECELL_SET_NEXT((cell), (next));                               \
     } while (/* CONSTCOND */ 0)
 
@@ -1066,15 +1066,15 @@ extern enum ScmObjType scm_type(ScmObj obj);
 #define SCM_SWEEP_PHASE_CONTINUATIONP(a)        \
     (SCM_TAG_SWEEP_PHASE_OTHERSP((a), CONTINUATION))
 
-#define SCM_SAL_IS_MARKED(a)                    \
+#define SCM_SAL_MARKEDP(a)                                                   \
     (SCM_GCBIT(SCM_CELL_CAR(a)) == SCM_GCBIT_MARKED)
-#define SCM_SAL_IS_UNMARKED(a)                  \
-    (!SCM_IS_MARKED(a))
-#define SCM_SAL_DO_MARK(a)                                              \
-    (SCM_CELL_SET_CAR((a),                                              \
+#define SCM_SAL_UNMARKEDP(a)                                                 \
+    (!SCM_MARKEDP(a))
+#define SCM_SAL_MARK(a)                                                      \
+    (SCM_CELL_SET_CAR((a),                                                   \
                       SCM_STRIP_GCBIT(SCM_CELL_CAR(a)) | SCM_GCBIT_MARKED))
-#define SCM_SAL_DO_UNMARK(a)                                            \
-    (SCM_CELL_SET_CAR((a),                                              \
+#define SCM_SAL_UNMARK(a)                                                    \
+    (SCM_CELL_SET_CAR((a),                                                   \
                       SCM_STRIP_GCBIT(SCM_CELL_CAR(a)) | SCM_GCBIT_UNMARKED))
 
 /*===========================================================================

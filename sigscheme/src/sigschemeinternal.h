@@ -124,11 +124,10 @@ extern ScmObj scm_null_values;
  * and chain it into freelist. */
 #define SCM_RECLAIM_CELL(cell, next)    SCM_SAL_RECLAIM_CELL((cell), (next))
 
-/* FIXME: rename appropriately */
-#define SCM_IS_MARKED(o)             SCM_SAL_IS_MARKED(o)
-#define SCM_IS_UNMARKED(o)           SCM_SAL_IS_UNMARKED(o)
-#define SCM_DO_MARK(o)               SCM_SAL_DO_MARK(o)
-#define SCM_DO_UNMARK(o)             SCM_SAL_DO_UNMARK(o)
+#define SCM_MARKEDP(o)   SCM_SAL_MARKEDP(o)
+#define SCM_UNMARKEDP(o) SCM_SAL_UNMARKEDP(o)
+#define SCM_MARK(o)      SCM_SAL_MARK(o)
+#define SCM_UNMARK(o)    SCM_SAL_UNMARK(o)
 
 /* Prefix-less Abbreviation Names For Convenient Internal Use */
 #define SYM_QUOTE            SCM_SYM_QUOTE

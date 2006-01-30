@@ -215,12 +215,12 @@ scm_check_cons()
 
     /* entyping */
     SCM_ENTYPE_CONS(obj);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmCons, obj);
 
     /* unmarked state */
     SCM_CONS_SET_CAR(obj, car);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmCons, obj);
 
     SCM_CONS_SET_CAR(obj, car);
@@ -229,25 +229,25 @@ scm_check_cons()
     SCM_ASSERT(SCM_INT_VALUE(SCM_CAR(obj)) == 1);
 
     SCM_CONS_SET_CDR(obj, cdr);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmCons, obj);
     SCM_ASSERT(SCM_EQ(SCM_CDR(obj), cdr));
     SCM_ASSERT(SCM_INTP(SCM_CDR(obj)));
     SCM_ASSERT(SCM_INT_VALUE(SCM_CDR(obj)) == 2);
 
     /* marked state */
-    SCM_DO_MARK(obj);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_MARK(obj);
+    SCM_ASSERT(SCM_MARKEDP(obj));
 
     SCM_CONS_SET_CAR(obj, car);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmCons, obj);
     SCM_ASSERT(SCM_EQ(SCM_CAR(obj), car));
     SCM_ASSERT(SCM_INTP(SCM_CAR(obj)));
     SCM_ASSERT(SCM_INT_VALUE(SCM_CAR(obj)) == 1);
 
     SCM_CONS_SET_CDR(obj, cdr);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmCons, obj);
     SCM_ASSERT(SCM_EQ(SCM_CDR(obj), cdr));
     SCM_ASSERT(SCM_INTP(SCM_CDR(obj)));
@@ -267,12 +267,12 @@ scm_check_closure()
 
     /* entyping */
     SCM_ENTYPE_CLOSURE(obj);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmClosure, obj);
 
     /* unmarked state */
     SCM_CLOSURE_SET_EXP(obj, exp);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmClosure, obj);
     check_type(ScmCons, SCM_CLOSURE_EXP(obj));
     SCM_ASSERT(SCM_EQ(SCM_CLOSURE_EXP(obj), exp));
@@ -280,7 +280,7 @@ scm_check_closure()
     check_type(ScmInt, SCM_CDR(SCM_CLOSURE_EXP(obj)));
 
     SCM_CLOSURE_SET_ENV(obj, env);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmClosure, obj);
     check_type(ScmCons, SCM_CLOSURE_ENV(obj));
     SCM_ASSERT(SCM_EQ(SCM_CLOSURE_ENV(obj), env));
@@ -288,11 +288,11 @@ scm_check_closure()
     check_type(ScmInt, SCM_CDR(SCM_CLOSURE_ENV(obj)));
 
     /* marked state */
-    SCM_DO_MARK(obj);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_MARK(obj);
+    SCM_ASSERT(SCM_MARKEDP(obj));
 
     SCM_CLOSURE_SET_EXP(obj, exp);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmClosure, obj);
     check_type(ScmCons, SCM_CLOSURE_EXP(obj));
     SCM_ASSERT(SCM_EQ(SCM_CLOSURE_EXP(obj), exp));
@@ -300,7 +300,7 @@ scm_check_closure()
     check_type(ScmInt, SCM_CDR(SCM_CLOSURE_EXP(obj)));
 
     SCM_CLOSURE_SET_ENV(obj, env);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmClosure, obj);
     check_type(ScmCons, SCM_CLOSURE_ENV(obj));
     SCM_ASSERT(SCM_EQ(SCM_CLOSURE_ENV(obj), env));
@@ -320,35 +320,35 @@ scm_check_symbol(const char *name)
 
     /* entyping */
     SCM_ENTYPE_SYMBOL(obj);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmSymbol, obj);
 
     /* unmarked state */
     SCM_SYMBOL_SET_NAME(obj, aligned_strdup(name));
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmSymbol, obj);
     if (name)
         SCM_ASSERT(strcmp(SCM_SYMBOL_NAME(obj), name) == 0);
 
     SCM_SYMBOL_SET_VCELL(obj, vcell);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmSymbol, obj);
     SCM_ASSERT(SCM_EQ(SCM_SYMBOL_VCELL(obj), vcell));
     SCM_ASSERT(SCM_INTP(SCM_SYMBOL_VCELL(obj)));
     SCM_ASSERT(SCM_INT_VALUE(SCM_SYMBOL_VCELL(obj)) == 1);
 
     /* marked state */
-    SCM_DO_MARK(obj);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_MARK(obj);
+    SCM_ASSERT(SCM_MARKEDP(obj));
 
     SCM_SYMBOL_SET_NAME(obj, aligned_strdup(name));
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmSymbol, obj);
     if (name)
         SCM_ASSERT(strcmp(SCM_SYMBOL_NAME(obj), name) == 0);
 
     SCM_SYMBOL_SET_VCELL(obj, vcell);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmSymbol, obj);
     SCM_ASSERT(SCM_EQ(SCM_SYMBOL_VCELL(obj), vcell));
     SCM_ASSERT(SCM_INTP(SCM_SYMBOL_VCELL(obj)));
@@ -366,57 +366,57 @@ scm_check_string_copying(char *str)
 
     /* entyping */
     SCM_ENTYPE_STRING(obj);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmString, obj);
 
     /* unmarked state */
     SCM_STRING_SET_STR(obj, aligned_strdup(str));
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmString, obj);
     if (str)
         SCM_ASSERT(strcmp(SCM_STRING_STR(obj), str) == 0);
 
     SCM_STRING_SET_LEN(obj, strlen(str));
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmString, obj);
     SCM_ASSERT(strlen(str) == SCM_STRING_LEN(obj));
 
     SCM_STRING_SET_MUTABLE(obj);
     SCM_ASSERT(SCM_STRING_MUTATION_TYPE(obj) == SCM_STR_MUTABLE);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmString, obj);
     SCM_ASSERT(strlen(str) == SCM_STRING_LEN(obj));
 
     SCM_STRING_SET_IMMUTABLE(obj);
     SCM_ASSERT(SCM_STRING_MUTATION_TYPE(obj) == SCM_STR_IMMUTABLE);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmString, obj);
     SCM_ASSERT(strlen(str) == SCM_STRING_LEN(obj));
 
     /* marked state */
-    SCM_DO_MARK(obj);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_MARK(obj);
+    SCM_ASSERT(SCM_MARKEDP(obj));
 
     SCM_STRING_SET_STR(obj, aligned_strdup(str));
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmString, obj);
     if (str)
         SCM_ASSERT(strcmp(SCM_STRING_STR(obj), str) == 0);
 
     SCM_STRING_SET_LEN(obj, strlen(str));
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmString, obj);
     SCM_ASSERT(strlen(str) == SCM_STRING_LEN(obj));
 
     SCM_STRING_SET_MUTABLE(obj);
     SCM_ASSERT(SCM_STRING_MUTATION_TYPE(obj) == SCM_STR_MUTABLE);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmString, obj);
     SCM_ASSERT(strlen(str) == SCM_STRING_LEN(obj));
 
     SCM_STRING_SET_IMMUTABLE(obj);
     SCM_ASSERT(SCM_STRING_MUTATION_TYPE(obj) == SCM_STR_IMMUTABLE);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmString, obj);
     SCM_ASSERT(strlen(str) == SCM_STRING_LEN(obj));
 
@@ -433,17 +433,17 @@ scm_check_vector(unsigned int len)
 
     /* entyping */
     SCM_ENTYPE_VECTOR(obj);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmVector, obj);
 
     /* unmarked state */
     SCM_VECTOR_SET_VEC(obj, vec);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmVector, obj);
     SCM_ASSERT(SCM_VECTOR_VEC(obj) == vec);
 
     SCM_VECTOR_SET_LEN(obj, len);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmVector, obj);
     SCM_ASSERT(SCM_VECTOR_LEN(obj) == len);
 
@@ -458,16 +458,16 @@ scm_check_vector(unsigned int len)
     SCM_ASSERT(SCM_INT_VALUE(SCM_VECTOR_VEC(obj)[0]) == 3);
 
     /* marked state */
-    SCM_DO_MARK(obj);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_MARK(obj);
+    SCM_ASSERT(SCM_MARKEDP(obj));
 
     SCM_VECTOR_SET_VEC(obj, vec);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmVector, obj);
     SCM_ASSERT(SCM_VECTOR_VEC(obj) == vec);
 
     SCM_VECTOR_SET_LEN(obj, len);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmVector, obj);
     SCM_ASSERT(SCM_VECTOR_LEN(obj) == len);
 
@@ -492,32 +492,32 @@ scm_check_func(void *funcptr)
 
     /* entyping */
     SCM_ENTYPE_FUNC(obj);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmFunc, obj);
 
     /* unmarked state */
     SCM_FUNC_SET_CFUNC(obj, funcptr);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmFunc, obj);
     SCM_ASSERT(SCM_FUNC_CFUNC(obj) == funcptr);
 
     SCM_FUNC_SET_TYPECODE(obj, SCM_PROCEDURE_FIXED_TAIL_REC);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmFunc, obj);
     SCM_ASSERT(SCM_FUNC_TYPECODE(obj) == SCM_PROCEDURE_FIXED_TAIL_REC);
     SCM_ASSERT(SCM_FUNC_CFUNC(obj) == funcptr);
 
     /* marked state */
-    SCM_DO_MARK(obj);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_MARK(obj);
+    SCM_ASSERT(SCM_MARKEDP(obj));
 
     SCM_FUNC_SET_CFUNC(obj, funcptr);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmFunc, obj);
     SCM_ASSERT(SCM_FUNC_CFUNC(obj) == funcptr);
 
     SCM_FUNC_SET_TYPECODE(obj, SCM_PROCEDURE_FIXED_TAIL_REC);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmFunc, obj);
     SCM_ASSERT(SCM_FUNC_TYPECODE(obj) == SCM_PROCEDURE_FIXED_TAIL_REC);
     SCM_ASSERT(SCM_FUNC_CFUNC(obj) == funcptr);
@@ -535,31 +535,31 @@ scm_check_port()
 
     /* entyping */
     SCM_ENTYPE_PORT(obj);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmPort, obj);
 
     /* unmarked state */
     SCM_PORT_SET_FLAG(obj, SCM_PORTFLAG_INPUT);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmPort, obj);
     SCM_ASSERT(SCM_PORT_FLAG(obj) == SCM_PORTFLAG_INPUT);
 
     SCM_PORT_SET_IMPL(obj, port);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmPort, obj);
     SCM_ASSERT(SCM_PORT_IMPL(obj) == port);
 
     /* marked state */
-    SCM_DO_MARK(obj);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_MARK(obj);
+    SCM_ASSERT(SCM_MARKEDP(obj));
 
     SCM_PORT_SET_FLAG(obj, SCM_PORTFLAG_INPUT);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmPort, obj);
     SCM_ASSERT(SCM_PORT_FLAG(obj) == SCM_PORTFLAG_INPUT);
 
     SCM_PORT_SET_IMPL(obj, port);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmPort, obj);
     SCM_ASSERT(SCM_PORT_IMPL(obj) == port);
 
@@ -574,31 +574,31 @@ scm_check_continuation(void *val)
 
     /* entyping */
     SCM_ENTYPE_CONTINUATION(obj);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmContinuation, obj);
 
     /* unmarked state */
     SCM_CONTINUATION_SET_OPAQUE(obj, val);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmContinuation, obj);
     SCM_ASSERT(SCM_CONTINUATION_OPAQUE(obj) == val);
 
     SCM_CONTINUATION_SET_TAG(obj, 10);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmContinuation, obj);
     SCM_ASSERT(SCM_CONTINUATION_TAG(obj) == 10);
 
     /* marked state */
-    SCM_DO_MARK(obj);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_MARK(obj);
+    SCM_ASSERT(SCM_MARKEDP(obj));
 
     SCM_CONTINUATION_SET_OPAQUE(obj, val);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmContinuation, obj);
     SCM_ASSERT(SCM_CONTINUATION_OPAQUE(obj) == val);
 
     SCM_CONTINUATION_SET_TAG(obj, 10);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmContinuation, obj);
     SCM_ASSERT(SCM_CONTINUATION_TAG(obj) == 10);
 
@@ -615,22 +615,22 @@ scm_check_value_packet()
 
     /* entyping */
     SCM_ENTYPE_VALUEPACKET(obj);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmValuePacket, obj);
 
     /* unmarked state */
     SCM_VALUEPACKET_SET_VALUES(obj, values);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmValuePacket, obj);
     SCM_ASSERT(SCM_EQ(SCM_VALUEPACKET_VALUES(obj), values));
     SCM_ASSERT(SCM_CONSP(SCM_VALUEPACKET_VALUES(obj)));
 
     /* marked state */
-    SCM_DO_MARK(obj);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_MARK(obj);
+    SCM_ASSERT(SCM_MARKEDP(obj));
 
     SCM_VALUEPACKET_SET_VALUES(obj, values);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmValuePacket, obj);
     SCM_ASSERT(SCM_EQ(SCM_VALUEPACKET_VALUES(obj), values));
     SCM_ASSERT(SCM_CONSP(SCM_VALUEPACKET_VALUES(obj)));
@@ -697,21 +697,21 @@ scm_check_cpointer(void *data)
 
     /* entyping state */
     SCM_ENTYPE_C_POINTER(obj);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmCPointer, obj);
 
     /* unmarked state */
     SCM_C_POINTER_SET_VALUE(obj, data);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmCPointer, obj);
     SCM_ASSERT(SCM_C_POINTER_VALUE(obj) == data);
 
     /* marked state */
-    SCM_DO_MARK(obj);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_MARK(obj);
+    SCM_ASSERT(SCM_MARKEDP(obj));
 
     SCM_C_POINTER_SET_VALUE(obj, data);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmCPointer, obj);
     SCM_ASSERT(SCM_C_POINTER_VALUE(obj) == data);
 
@@ -727,21 +727,21 @@ scm_check_cfunc_pointer(ScmCFunc funcptr)
 
     /* entyping */
     SCM_ENTYPE_C_FUNCPOINTER(obj);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmCFuncPointer, obj);
 
     /* unmarked state */
     SCM_C_FUNCPOINTER_SET_VALUE(obj, funcptr);
-    SCM_ASSERT(SCM_IS_UNMARKED(obj));
+    SCM_ASSERT(SCM_UNMARKEDP(obj));
     check_type(ScmCFuncPointer, obj);
     SCM_ASSERT(SCM_C_FUNCPOINTER_VALUE(obj) == (ScmCFunc)funcptr);
 
     /* marked state */
-    SCM_DO_MARK(obj);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_MARK(obj);
+    SCM_ASSERT(SCM_MARKEDP(obj));
 
     SCM_C_FUNCPOINTER_SET_VALUE(obj, funcptr);
-    SCM_ASSERT(SCM_IS_MARKED(obj));
+    SCM_ASSERT(SCM_MARKEDP(obj));
     check_type(ScmCFuncPointer, obj);
     SCM_ASSERT(SCM_C_FUNCPOINTER_VALUE(obj) == (ScmCFunc)funcptr);
 

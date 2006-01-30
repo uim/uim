@@ -360,11 +360,11 @@ mark_loop:
         return;
 
     /* avoid cyclic marking */
-    if (SCM_IS_MARKED(obj))
+    if (SCM_MARKEDP(obj))
         return;
 
     /* mark this object */
-    SCM_DO_MARK(obj);
+    SCM_MARK(obj);
 
     /* mark recursively */
     tag = SCM_TAG(obj);
@@ -409,11 +409,11 @@ mark_loop:
         return;
 
     /* avoid cyclic marking */
-    if (SCM_IS_MARKED(obj))
+    if (SCM_MARKEDP(obj))
         return;
 
     /* mark this object */
-    SCM_DO_MARK(obj);
+    SCM_MARK(obj);
 
     /* mark recursively */
     switch (SCM_TYPE(obj)) {
@@ -678,8 +678,8 @@ gc_sweep(void)
             /* FIXME: is this safe for SCM_OBJ_COMPACT? */
             obj = (ScmObj)cell;
 
-            if (SCM_IS_MARKED(obj)) {
-                SCM_DO_UNMARK(obj);
+            if (SCM_MARKEDP(obj)) {
+                SCM_UNMARK(obj);
             } else {
                 free_cell(cell);
                 SCM_RECLAIM_CELL(cell, new_freelist);
