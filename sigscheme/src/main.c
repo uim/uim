@@ -129,15 +129,6 @@ repl_loop(void)
         if (EOFP(sexp))
             break;
 
-        SCM_EVAL_STATE_INIT1(eval_state, SCM_INTERACTION_ENV);
-        sexp = scm_s_srfi34_guard(cond_catch,
-                                  LIST_1(LIST_3(proc_eval,
-                                                sexp,
-                                                SCM_INTERACTION_ENV)),
-                                  &eval_state);
-        if (eval_state.ret_type == SCM_VALTYPE_NEED_EVAL)
-            sexp = EVAL(sexp, eval_state.env);
-
         /* parse error */
         if (EQ(sexp, err)) {
             cport = SCM_CHARPORT_DYNAMIC_CAST(ScmBaseCharPort,
@@ -159,13 +150,20 @@ repl_loop(void)
          *         (else
          *          (%%inspect-error err)
          *          #<err>))
-         *   exp)
+         *   (eval exp (interaction-environment)))
          *
          * To allow redefinition of 'guard' and '%%inspect-err', surely access
          * them via symbol instead of prepared syntax or procedure object.
          */
-        result = EVAL(LIST_3(sym_guard, cond_catch, sexp),
-                      SCM_INTERACTION_ENV);
+        SCM_EVAL_STATE_INIT1(eval_state, SCM_INTERACTION_ENV);
+        result = scm_s_srfi34_guard(cond_catch,
+                                    LIST_1(LIST_3(proc_eval,
+                                                  sexp,
+                                                  SCM_INTERACTION_ENV)),
+                                    &eval_state);
+        if (eval_state.ret_type == SCM_VALTYPE_NEED_EVAL)
+            result = EVAL(result, eval_state.env);
+
         if (!EQ(result, err)) {
             SCM_WRITESS_TO_PORT(scm_out, result);
             scm_port_newline(scm_out);
