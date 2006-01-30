@@ -67,7 +67,7 @@ enum LexerState {
 #define CHAR_LITERAL_LEN_MAX (sizeof("backspace") - sizeof(""))
 
 /* #b-010101... */
-#define INT_LITERAL_LEN_MAX SCM_INT_BITS
+#define INT_LITERAL_LEN_MAX (sizeof((char)'-') + SCM_INT_BITS)
 
 #define WHITESPACE_CHARS " \t\n\r\v\f"
 #define DELIMITER_CHARS  "()\";" WHITESPACE_CHARS

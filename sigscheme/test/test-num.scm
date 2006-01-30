@@ -32,6 +32,8 @@
 
 (load "./test/unittest.scm")
 
+(use srfi-23)
+
 (define tn test-name)
 
 ; check =
@@ -237,6 +239,43 @@
 (assert-equal? (tn) "1"        (number->string 1    2))
 (assert-equal? (tn) "1010"     (number->string 10   2))
 (assert-equal? (tn) "1100100"  (number->string 100  2))
+(if (and (symbol-bound? 'greatest-fixnum)
+         (symbol-bound? 'least-fixnum))
+    (let ((greatest (number->string (greatest-fixnum))))
+      (cond
+       ((string=? greatest "2147483647")
+        (tn "number->string 32bit fixnum")
+        (assert-equal? (tn)
+                       "-2147483648"
+                       (number->string (least-fixnum)))
+        (assert-equal? (tn)
+                       "1111111111111111111111111111111"
+                       (number->string (greatest-fixnum) 2))
+        (assert-equal? (tn)
+                       "-10000000000000000000000000000000"
+                       (number->string (least-fixnum) 2))
+        (assert-equal? (tn)
+                       "-1111111111111111111111111111111"
+                       (number->string (+ (least-fixnum) 1) 2)))
+
+       ((string=? greatest "9223372036854775807")
+        (tn "number->string 64bit fixnum")
+        (assert-equal? (tn)
+                       "-9223372036854775808"
+                       (number->string (least-fixnum)))
+        (assert-equal? (tn)
+                       "111111111111111111111111111111111111111111111111111111111111111"
+                       (number->string (greatest-fixnum) 2))
+        (assert-equal? (tn)
+                       "-1000000000000000000000000000000000000000000000000000000000000000"
+                       (number->string (least-fixnum) 2))
+        (assert-equal? (tn)
+                       "-111111111111111111111111111111111111111111111111111111111111111"
+                       (number->string (+ (least-fixnum) 1) 2)))
+
+       (else
+        (error "unknown int bitwidth")))))
+
 
 ; check string->number
 (assert-equal? "string->number test1"  1   (string->number "1"))

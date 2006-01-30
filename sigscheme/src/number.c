@@ -439,11 +439,12 @@ prepare_radix(const char *funcname, ScmObj args)
 ScmObj
 scm_p_number2string(ScmObj num, ScmObj args)
 {
-  char buf[sizeof(scm_int_t) * CHAR_BIT + sizeof("")];
+  char buf[sizeof("-") + SCM_INT_BITS];
   char *p;
   const char *end;
-  scm_int_t n, digit;
-  int r;
+  scm_int_t n;
+  /* 'un' must be unsinged to be capable of -INT_MIN */
+  scm_uint_t un, digit, r;
   scm_bool neg;
   DECLARE_FUNCTION("number->string", procedure_variadic_1);
 
@@ -451,16 +452,16 @@ scm_p_number2string(ScmObj num, ScmObj args)
 
   n = SCM_INT_VALUE(num);
   neg = (n < 0);
-  n = (neg) ? -n : n;
-  r = prepare_radix(SCM_MANGLE(name), args);
+  un = (neg) ? -n : n;
+  r = (scm_uint_t)prepare_radix(SCM_MANGLE(name), args);
 
   end = p = &buf[sizeof(buf) - 1];
   *p = '\0';
 
   do {
-      digit = n % r;
+      digit = un % r;
       *--p = (digit <= 9) ? '0' + digit : 'A' + digit - 10;
-  } while (n /= r);
+  } while (un /= r);
   if (neg)
     *--p = '-';
 
