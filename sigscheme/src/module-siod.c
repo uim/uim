@@ -247,9 +247,10 @@ scm_get_verbose_level(void)
 void
 scm_set_verbose_level(long level)
 {
+    DECLARE_INTERNAL_FUNCTION("scm_set_verbose_level");
+
     if (level < 0)
-        ERR("scm_set_verbose_level: positive value required but got: %d",
-            (int)level);
+        ERR("positive value required but got: %d", (int)level);
 
     if (sscm_verbose_level == level)
         return;

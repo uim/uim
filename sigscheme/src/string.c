@@ -395,14 +395,14 @@ scm_p_make_string(ScmObj length, ScmObj args)
     }
 #if !SCM_USE_NULL_CAPABLE_STRING
     if (filler_val == '\0')
-        ERR("make-string: " SCM_ERRMSG_NULL_IN_STRING);
+        ERR(SCM_ERRMSG_NULL_IN_STRING);
 #endif
 
 #if SCM_USE_MULTIBYTE_CHAR
     next = SCM_CHARCODEC_INT2STR(scm_current_char_codec, ch_str, filler_val,
                                  SCM_MB_STATELESS);
     if (!next)
-        ERR("make-string: invalid char 0x%x for encoding %s",
+        ERR("invalid char 0x%x for encoding %s",
             (int)filler_val, SCM_CHARCODEC_ENCODING(scm_current_char_codec));
 
     str = scm_malloc(ch_len * len + sizeof(""));
@@ -468,7 +468,7 @@ scm_p_string_ref(ScmObj str, ScmObj k)
     ch = SCM_CHARCODEC_STR2INT(scm_current_char_codec, SCM_MBS_GET_STR(mbs),
                                SCM_MBS_GET_SIZE(mbs), SCM_MBS_GET_STATE(mbs));
     if (ch == EOF)
-        ERR("string-ref: invalid char sequence");
+        ERR("invalid char sequence");
 #else
     ch = ((unsigned char *)SCM_STRING_STR(str))[idx];
 #endif
@@ -515,7 +515,7 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     ch_end = SCM_CHARCODEC_INT2STR(scm_current_char_codec, ch_buf, ch_val,
                                    SCM_MB_STATELESS);
     if (!ch_end)
-        ERR("string-set!: invalid char 0x%x for encoding %s",
+        ERR("invalid char 0x%x for encoding %s",
             (int)ch_val, SCM_CHARCODEC_ENCODING(scm_current_char_codec));
     ch_len = ch_end - ch_buf;
 
@@ -900,7 +900,7 @@ scm_p_list2string(ScmObj lst)
     FOR_EACH (ch, lst) {
 #if !SCM_USE_NULL_CAPABLE_STRING
         if (ch == '\0')
-            ERR("list->string: " SCM_ERRMSG_NULL_IN_STRING);
+            ERR(SCM_ERRMSG_NULL_IN_STRING);
 #endif
 #if SCM_USE_MULTIBYTE_CHAR
         dst = SCM_CHARCODEC_INT2STR(scm_current_char_codec, dst,
@@ -960,7 +960,7 @@ scm_p_string_filld(ScmObj str, ScmObj ch)
     next = SCM_CHARCODEC_INT2STR(scm_current_char_codec, ch_str,
                                  SCM_CHAR_VALUE(ch), SCM_MB_STATELESS);
     if (!next)
-        ERR("string-fill!: invalid char 0x%x for encoding %s",
+        ERR("invalid char 0x%x for encoding %s",
             (int)SCM_CHAR_VALUE(ch),
             SCM_CHARCODEC_ENCODING(scm_current_char_codec));
 

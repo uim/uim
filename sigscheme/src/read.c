@@ -167,6 +167,7 @@ read_sequence(ScmObj port, char *buf, int len)
 {
     scm_ichar_t c;
     char *p;
+    DECLARE_INTERNAL_FUNCTION("read");
 
     for (p = buf; p < &buf[len]; p++) {
         c = scm_port_get_char(port);
@@ -187,6 +188,7 @@ read_token(ScmObj port,
     scm_ichar_t c;
     size_t len;
     char *p;
+    DECLARE_INTERNAL_FUNCTION("read");
 
     for (p = buf;;) {
         c = scm_port_peek_char(port);
@@ -238,6 +240,7 @@ read_sexpression(ScmObj port)
 {
     ScmObj ret;
     scm_ichar_t c;
+    DECLARE_INTERNAL_FUNCTION("read");
 
     CDBG((SCM_DBG_PARSER, "read_sexpression"));
 
@@ -333,6 +336,7 @@ read_list(ScmObj port, scm_ichar_t closeParen)
     scm_ichar_t c;
     int err, start_line, cur_line;
     char dot_buf[sizeof("...")];
+    DECLARE_INTERNAL_FUNCTION("read");
 
     CDBG((SCM_DBG_PARSER, "read_list"));
     basecport = SCM_PORT_TRY_DYNAMIC_CAST(ScmBaseCharPort,
@@ -411,6 +415,7 @@ parse_unicode_sequence(const char *seq, int len)
 {
     scm_ichar_t c;
     char *end;
+    DECLARE_INTERNAL_FUNCTION("read");
 
     /* reject ordinary char literal and invalid signed hexadecimal */
     if (len < 3 || !isxdigit(seq[1]))
@@ -480,7 +485,7 @@ read_char(ScmObj port)
 #endif
     int err;
     char buf[CHAR_LITERAL_LEN_MAX + sizeof("")];
-    DECLARE_INTERNAL_FUNCTION("read_char");
+    DECLARE_INTERNAL_FUNCTION("read");
 
     /* plain char (multibyte-ready) */
     c = scm_port_get_char(port);
@@ -533,7 +538,7 @@ read_string(ScmObj port)
     size_t offset;
     ScmLBuf(char) lbuf;
     char init_buf[SCM_INITIAL_STRING_BUF_SIZE];
-    DECLARE_INTERNAL_FUNCTION("read_string");
+    DECLARE_INTERNAL_FUNCTION("read");
 
     CDBG((SCM_DBG_PARSER, "read_string"));
 
@@ -648,8 +653,9 @@ read_number_or_symbol(ScmObj port)
     int err;
     size_t len;
     char buf[INT_LITERAL_LEN_MAX + sizeof("")];
+    DECLARE_INTERNAL_FUNCTION("read");
 
-    CDBG((SCM_DBG_PARSER, "read_number_or_symbol"));
+    CDBG((SCM_DBG_PARSER, "read"));
 
     c = scm_port_peek_char(port);
 
@@ -698,6 +704,7 @@ parse_number(ScmObj port, char *buf, size_t buf_size, char prefix)
     scm_int_t number;
     int radix;
     char *end;
+    DECLARE_INTERNAL_FUNCTION("read");
 
     switch (prefix) {
     case 'b': radix = 2;  break;
@@ -724,6 +731,7 @@ read_number(ScmObj port, char prefix)
     int err;
     size_t len;
     char buf[INT_LITERAL_LEN_MAX + sizeof("")];
+    DECLARE_INTERNAL_FUNCTION("read");
 
     len = read_token(port, &err, buf, sizeof(buf), DELIMITER_CHARS);
     if (err == TOKEN_BUF_EXCEEDED)

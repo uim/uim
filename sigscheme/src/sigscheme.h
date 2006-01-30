@@ -212,8 +212,8 @@ extern "C" {
 /*
  * Port I/O Handling macros
  */
-#define SCM_CHARPORT_ERROR(cport, msg) (scm_error(msg))
-#define SCM_BYTEPORT_ERROR(bport, msg) (scm_error(msg))
+#define SCM_CHARPORT_ERROR(cport, msg) (scm_plain_error(msg))
+#define SCM_BYTEPORT_ERROR(bport, msg) (scm_plain_error(msg))
 #define SCM_PORT_MALLOC(size)          (scm_malloc(size))
 #define SCM_PORT_CALLOC(number, size)  (scm_calloc(number, size))
 #define SCM_PORT_REALLOC(ptr, size)    (scm_realloc(ptr, size))
@@ -1395,7 +1395,8 @@ int  scm_predefined_debug_categories(void);
 void scm_categorized_debug(int category, const char *msg, ...);
 void scm_debug(const char *msg, ...);
 void scm_die(const char *msg, const char *filename, int line) SCM_NORETURN;
-void scm_error(const char *msg, ...) SCM_NORETURN;
+void scm_plain_error(const char *msg, ...) SCM_NORETURN;
+void scm_error(const char *funcname, const char *msg, ...) SCM_NORETURN;
 void scm_error_obj(const char *funcname, const char *msg,
                    ScmObj obj) SCM_NORETURN;
 void scm_show_backtrace(ScmObj trace_stack);

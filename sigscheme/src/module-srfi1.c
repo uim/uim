@@ -168,13 +168,13 @@ scm_p_srfi1_list_tabulate(ScmObj scm_n, ScmObj args)
 ScmObj
 scm_p_srfi1_list_copy(ScmObj lst)
 {
-    /* broken */
-#if 0
     ScmObj head = SCM_NULL;
     ScmObj tail = SCM_FALSE;
     ScmObj obj  = SCM_FALSE;
     DECLARE_FUNCTION("list-copy", procedure_fixed_1);
 
+    /* broken */
+#if 0
     if (FALSEP(scm_p_listp(lst)))
         ERR_OBJ("list required but got", lst);
 
@@ -198,7 +198,7 @@ scm_p_srfi1_list_copy(ScmObj lst)
 
     return head;
 #endif
-    ERR("list-copy: bug: broken implementation");
+    ERR("bug: broken implementation");
 }
 
 ScmObj

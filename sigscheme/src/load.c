@@ -112,12 +112,13 @@ scm_load_internal(const char *filename)
     ScmObj path, port, sexp;
     char *c_path;
     ScmCharCodec *saved_codec;
+    DECLARE_INTERNAL_FUNCTION("load");
 
     CDBG((SCM_DBG_FILE, "loading %s", filename));
 
     c_path = find_path(filename);
     if (!c_path)
-        ERR("scm_load_internal: file \"%s\" not found", filename);
+        ERR("file \"%s\" not found", filename);
 
     path = MAKE_IMMUTABLE_STRING(c_path, STRLEN_UNKNOWN);
     port = scm_p_open_input_file(path);
@@ -216,12 +217,11 @@ parse_script_prelude(ScmObj port)
     int argc, c, len, line_len;
     char **argv, *arg, *p;
     char line[SCRIPT_PRELUDE_MAXLEN];
-    DECLARE_INTERNAL_FUNCTION("parse_script_prelude");
 
     for (p = line; p < &line[SCRIPT_PRELUDE_MAXLEN]; p++) {
         c = scm_port_get_char(port);
         if (!isascii(c))
-            ERR("non-ASCII char appeared in UNIX script prelude");
+            PLAIN_ERR("non-ASCII char appeared in UNIX script prelude");
         if (c == SCM_NEWLINE_STR[0]) {
             *p = '\0';
             break;
@@ -229,17 +229,17 @@ parse_script_prelude(ScmObj port)
         *p = c;
     }
     if (*p)
-        ERR("too long UNIX script prelude (max 64)");
+        PLAIN_ERR("too long UNIX script prelude (max 64)");
     line_len = p - line;
 
     if (line[0] != '#' || line[1] != '!') {
-        ERR("Invalid UNIX script prelude");
+        PLAIN_ERR("Invalid UNIX script prelude");
     }
 #if 1
     /* strict check */
     if (line[2] != ' ') {
-        ERR("Invalid UNIX script prelude: "
-            "SRFI-22 requires a space after hash-bang sequence");
+        PLAIN_ERR("Invalid UNIX script prelude: "
+                  "SRFI-22 requires a space after hash-bang sequence");
     }
 #endif
 

@@ -522,7 +522,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
         SCM_MANGLE(name) = "case";
 
     if (NO_MORE_ARG(args))
-        ERR("cond: syntax error: at least one clause required");
+        ERR("syntax error: at least one clause required");
 
     /* looping in each clause */
     FOR_EACH (clause, args) {
@@ -826,7 +826,7 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
     =======================================================================*/
 
     if (!CONSP(args))
-        ERR("let: invalid form");
+        ERR("invalid form");
     bindings = POP(args);
 
     /* named let */
@@ -834,7 +834,7 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
         named_let_sym = bindings;
 
         if (!CONSP(args))
-            ERR("let: invalid named let form");
+            ERR("invalid named let form");
         bindings = POP(args);
     }
 
@@ -1268,7 +1268,7 @@ define_internal(ScmObj var, ScmObj exp, ScmObj env)
 #if SCM_STRICT_DEFINE_PLACEMENT
         /* internal definitions are handled as a virtual letrec in
          * scm_s_body() */
-        ERR(ERRMSG_BAD_DEFINE_PLACEMENT);
+        PLAIN_ERR(ERRMSG_BAD_DEFINE_PLACEMENT);
 #else
         env = scm_add_environment(var, val, env);
 #endif

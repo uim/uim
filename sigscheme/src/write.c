@@ -280,8 +280,7 @@ write_char(ScmObj port, ScmObj obj, enum OutputType otype)
         break;
 
     default:
-        ERR("write_char: unknown output type");
-        break;
+        SCM_ASSERT(scm_false);
     }
 }
 
@@ -294,7 +293,7 @@ write_string(ScmObj port, ScmObj obj, enum OutputType otype)
     const char *str;
     size_t len;
     scm_ichar_t c;
-    DECLARE_INTERNAL_FUNCTION("write_string");
+    DECLARE_INTERNAL_FUNCTION("write");
 
     str = SCM_STRING_STR(obj);
     len = strlen(str);
@@ -332,8 +331,7 @@ write_string(ScmObj port, ScmObj obj, enum OutputType otype)
         break;
 
     default:
-        ERR("write_string: unknown output type");
-        break;
+        SCM_ASSERT(scm_false);
     }
 }
 
@@ -474,7 +472,7 @@ static void
 write_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
 {
     ScmObj err_obj_tag, reason, objs, trace_stack, elm;
-    DECLARE_INTERNAL_FUNCTION("write_errobj");
+    DECLARE_INTERNAL_FUNCTION("write");
 
     err_obj_tag = MUST_POP_ARG(obj);
     reason      = MUST_POP_ARG(obj);
@@ -495,8 +493,7 @@ write_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
         break;
 
     default:
-        ERR("write_errobj: unknown output type");
-        break;
+        SCM_ASSERT(scm_false);
     }
 
     FOR_EACH(elm, objs) {

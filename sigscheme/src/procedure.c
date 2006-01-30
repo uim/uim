@@ -268,7 +268,7 @@ scm_p_map(ScmObj proc, ScmObj args)
     DECLARE_FUNCTION("map", procedure_variadic_1);
 
     if (NULLP(args))
-        ERR("map: wrong number of arguments");
+        ERR("wrong number of arguments");
 
     /* fast path for single arg case */
     if (NULLP(CDR(args)))

@@ -149,7 +149,7 @@ repl_loop(void)
                     SCM_BYTEPORT_GET_BYTE(bport);
                 continue;
             }
-            ERR("unrecoverable parse error");
+            PLAIN_ERR("unrecoverable parse error");
         }
 
         /*

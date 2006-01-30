@@ -266,9 +266,23 @@ extern ScmObj scm_null_values;
  * FIXME: is there a better name? */
 #define DECLARE_INTERNAL_FUNCTION(name) DECLARE_FUNCTION((name), ignored)
 
+/* Signals an error without function name. The message is formatted by
+ * vfprintf(). */
+#define PLAIN_ERR scm_plain_error
+
 /* Signals an error.  The current function name and the message are
    sent to the error port.  The message is formatted by vfprintf(). */
-#define ERR scm_error
+/* FIXME: check variadic macro availability with autoconf */
+#if HAVE_C99_VARIADIC_MACRO
+#define ERR(fmt, ...)     (scm_error(SCM_MANGLE(name), fmt, __VA_ARGS__))
+#elif HAVE_GNU_VARIADIC_MACRO
+#define ERR(fmt, args...) (scm_error(SCM_MANGLE(name), fmt, args))
+#else
+extern const char *scm_err_funcname;
+void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
+#define ERR (scm_err_funcname = SCM_MANGLE(name)), scm_error_with_implicit_func
+#endif
+
 
 /* Signals an error that occured on an object.  The current function
  * name, the message, then the object, are written (with `write') to
@@ -363,12 +377,12 @@ extern ScmObj scm_null_values;
 
 #define ENSURE_STATEFUL_CODEC(codec)                                         \
     (SCM_CHARCODEC_STATEFULP(codec)                                          \
-     || (ERR("%s: stateful character codec required but got: %s",            \
-             SCM_MANGLE(name), SCM_CHARCODEC_ENCODING(codec)), 0))
+     || (ERR("stateful character codec required but got: %s",                \
+             SCM_CHARCODEC_ENCODING(codec)), 0))
 #define ENSURE_STATELESS_CODEC(codec)                                        \
     (!SCM_CHARCODEC_STATEFULP(codec)                                         \
-     || (ERR("%s: stateless character codec required but got: %s",           \
-             SCM_MANGLE(name), SCM_CHARCODEC_ENCODING(codec)), 0))
+     || (ERR("stateless character codec required but got: %s",               \
+             SCM_CHARCODEC_ENCODING(codec)), 0))
 
 #define ENSURE_ALLOCATED SCM_ENSURE_ALLOCATED
 

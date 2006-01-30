@@ -180,7 +180,7 @@ call_continuation(ScmObj cont, ScmObj args, ScmEvalState *eval_state,
     DECLARE_INTERNAL_FUNCTION("call_continuation");
 
     if (!LIST_1_P(args))
-        ERR("continuation takes exactly one argument");
+        ERR_OBJ("continuation takes exactly one argument but got", args);
     ret = CAR(args);
     if (need_eval)
         ret = EVAL(ret, eval_state->env);
@@ -415,11 +415,11 @@ eval_loop:
 #if SCM_STRICT_NULL_FORM
     /* () is allowed by default for efficiency */
     else if (NULLP(obj))
-        ERR("eval: () is not a valid R5RS form. use '() instead");
+        PLAIN_ERR("eval: () is not a valid R5RS form. use '() instead");
 #endif
 #if SCM_STRICT_VECTOR_FORM
     else if (VECTORP(obj))
-        ERR("eval: #() is not a valid R5RS form. use '#() instead");
+        PLAIN_ERR("eval: #() is not a valid R5RS form. use '#() instead");
 #endif
 
 #if SCM_DEBUG
@@ -499,7 +499,7 @@ scm_p_scheme_report_environment(ScmObj version)
         ERR_OBJ("version must be 5 but got", version);
 
 #if SCM_STRICT_R5RS
-    ERR("scheme-report-environment:" SCM_ERRMSG_NON_R5RS_ENV);
+    ERR(SCM_ERRMSG_NON_R5RS_ENV);
 #else
     CDBG((SCM_DBG_COMPAT,
           "scheme-report-environment: warning:" SCM_ERRMSG_NON_R5RS_ENV));
@@ -518,7 +518,7 @@ scm_p_null_environment(ScmObj version)
         ERR_OBJ("version must be 5 but got", version);
 
 #if SCM_STRICT_R5RS
-    ERR("null-environment:" SCM_ERRMSG_NON_R5RS_ENV);
+    ERR(SCM_ERRMSG_NON_R5RS_ENV);
 #else
     CDBG((SCM_DBG_COMPAT,
           "null-environment: warning:" SCM_ERRMSG_NON_R5RS_ENV));

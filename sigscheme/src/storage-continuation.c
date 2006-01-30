@@ -147,7 +147,7 @@ static void
 unwind_dynamic_extent(void)
 {
     if (NULLP(current_dynamic_extent))
-        ERR("corrupted dynamic extent");
+        PLAIN_ERR("corrupted dynamic extent");
 
     current_dynamic_extent = CDR(current_dynamic_extent);
 }
@@ -348,7 +348,7 @@ scm_call_continuation(ScmObj cont, ScmObj ret)
         longjmp(frame->c_env, 1);
         /* NOTREACHED */
     } else {
-        ERR("scm_call_continuation: called expired continuation");
+        ERR("called expired continuation");
     }
 }
 

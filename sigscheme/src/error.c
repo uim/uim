@@ -61,6 +61,10 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+#if (!HAVE_C99_VARIADIC_MACRO && !HAVE_GNU_VARIADIC_MACRO)
+const char *scm_err_funcname;
+#endif
+
 static int debug_mask;
 static scm_bool srfi34_is_provided, fatal_error_looped;
 static void (*cb_fatal_error)(void);
@@ -71,6 +75,8 @@ static ScmObj err_obj_tag, str_srfi34;
   File Local Function Declarations
 =======================================*/
 static scm_bool srfi34_providedp(void);
+static void scm_error_internal(const char *func_name, ScmObj obj,
+                               const char *msg, va_list args) SCM_NORETURN;
 #if (SCM_DEBUG && SCM_DEBUG_BACKTRACE_VAL)
 static void show_arg(ScmObj arg, ScmObj env);
 #endif
@@ -89,6 +95,10 @@ scm_init_error(void)
 
     cb_fatal_error = NULL;
     fatal_error_looped = scm_false;
+
+#if (!HAVE_C99_VARIADIC_MACRO && !HAVE_GNU_VARIADIC_MACRO)
+    scm_err_funcname = NULL;
+#endif
 
     SCM_REGISTER_FUNC_TABLE(scm_error_func_info_table);
 }
@@ -305,37 +315,71 @@ scm_die(const char *msg, const char *filename, int line)
     /* NOTREACHED */
 }
 
-void
-scm_error(const char *msg, ...)
+static void
+scm_error_internal(const char *func_name, ScmObj obj,
+                   const char *msg, va_list args)
 {
-    va_list va;
-    char *reason;
+    char *fmt, *reason;
     ScmObj err_obj;
 
-    va_start(va, msg);
-    vasprintf(&reason, msg, va);
-    va_end(va);
+    if (func_name) {
+        asprintf(&fmt, "in %s: %s", func_name, msg);
+        ENSURE_ALLOCATED(fmt);
+    } else {
+        fmt = (char *)msg;
+    }
+    vasprintf(&reason, fmt, args);
     ENSURE_ALLOCATED(reason);
-
-    err_obj = scm_make_error_obj(MAKE_IMMUTABLE_STRING(reason, STRLEN_UNKNOWN),
-                                 SCM_NULL);
-    scm_raise_error(err_obj);
-    /* NOTREACHED */
-}
-
-/* This function obsoletes scm_error_obj(). */
-void
-scm_error_obj(const char *func_name, const char *msg, ScmObj obj)
-{
-    char *reason;
-    ScmObj err_obj;
-
-    asprintf(&reason, "in %s: %s", func_name, msg);
-    ENSURE_ALLOCATED(reason);
+    if (func_name)
+        free(fmt);
 
     err_obj = scm_make_error_obj(MAKE_IMMUTABLE_STRING(reason, STRLEN_UNKNOWN),
                                  LIST_1(obj));
     scm_raise_error(err_obj);
+    /* NOTREACHED */
+}
+
+void
+scm_plain_error(const char *msg, ...)
+{
+    va_list va;
+
+    va_start(va, msg);
+    scm_error_internal(NULL, SCM_NULL, msg, va);
+    /* va_end(va); */
+    /* NOTREACHED */
+}
+
+#if (!HAVE_C99_VARIADIC_MACRO && !HAVE_GNU_VARIADIC_MACRO)
+void
+scm_error_with_implicit_func(const char *msg, ...)
+{
+    va_list va;
+
+    va_start(va, msg);
+    scm_error_internal(scm_err_funcname, SCM_NULL, msg, va);
+    /* va_end(va); */
+    /* NOTREACHED */
+}
+#endif /* (!HAVE_C99_VARIADIC_MACRO && !HAVE_GNU_VARIADIC_MACRO) */
+
+void
+scm_error(const char *func_name, const char *msg, ...)
+{
+    va_list va;
+
+    va_start(va, msg);
+    scm_error_internal(func_name, SCM_NULL, msg, va);
+    /* va_end(va); */
+    /* NOTREACHED */
+}
+
+void
+scm_error_obj(const char *func_name, const char *msg, ScmObj obj)
+{
+    va_list dummy_va;
+
+    scm_error_internal(func_name, obj, msg, dummy_va);
     /* NOTREACHED */
 }
 

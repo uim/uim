@@ -97,7 +97,7 @@ scm_malloc_aligned(size_t size)
     if ((size_t)getpagesize() <= size || size <= sizeof(void *))
         p = scm_malloc(size);
     else
-        ERR("cannot ensure memory alignment");
+        PLAIN_ERR("cannot ensure memory alignment");
 #elif defined(__APPLE__)
     /*
      * malloc in Mac OS X guarantees 16 byte alignment.  And large
@@ -111,7 +111,7 @@ scm_malloc_aligned(size_t size)
         || (ALIGN_CELL % 4 == 0) || (ALIGN_CELL % 2 == 0))
         p = malloc(size);
     else
-        ERR("cannot ensure memory alignment");
+        PLAIN_ERR("cannot ensure memory alignment");
 #else
 #error "This platform is not supported yet"
 #endif
@@ -221,7 +221,7 @@ scm_lbuf_extend(struct ScmLBuf_void_ *lbuf,
     if (lbuf->size < least_size) {
         new_size = (*f)(lbuf);
         if (new_size < lbuf->size)
-            ERR("local buffer exceeded");
+            PLAIN_ERR("local buffer exceeded");
         if (new_size < least_size)
             new_size = least_size;
         scm_lbuf_realloc(lbuf, new_size);
