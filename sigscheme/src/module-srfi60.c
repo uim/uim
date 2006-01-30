@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : operations-srfi60.c
+ *  FileName : module-srfi60.c
  *  About    : SRFI-60 Integers as Bits
  *
  *  Copyright (C) 2005-2006 YamaKen

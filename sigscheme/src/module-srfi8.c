@@ -1,8 +1,8 @@
 /*===========================================================================
- *  FileName : operations-srfi23.c
- *  About    : SRFI-23 Error reporting mechanism
+ *  FileName : module-srfi8.c
+ *  About    : SRFI-8 receive: Binding to multiple values
  *
- *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
+ *  Copyright (C) 2005-2006 Jun Inoue
  *
  *  All rights reserved.
  *
@@ -61,43 +61,52 @@
   Function Implementations
 =======================================*/
 void
-scm_initialize_srfi23(void)
+scm_initialize_srfi8(void)
 {
-    SCM_REGISTER_FUNC_TABLE(scm_srfi23_func_info_table);
+    SCM_REGISTER_FUNC_TABLE(scm_srfi8_func_info_table);
 }
 
-/*===========================================================================
-  SRFI23 : Error reporting mechanism
-===========================================================================*/
-/*
- * This code implements the '4.' of following Specification defined in SRFI-34.
- *
- * 1. Display <reason> and <arg1>... on the screen and terminate the Scheme
- *    program. (This might be suitable for a Scheme system implemented as a
- *    batch compiler.)
- * 2. Display <reason> and <arg1>... on the screen and go back to the
- *    read-evaluate-print loop. (This might be suitable for an interactive
- *    implementation).
- * 4. Package <reason> and <arg1>... up into an error object and pass this
- *    error object to an exception handler. The default exception handler then
- *    might do something as described in points 1 to 3.
- */
 ScmObj
-scm_p_srfi23_error(ScmObj reason, ScmObj args)
+scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body,
+                    ScmEvalState *eval_state)
 {
-    ScmObj err_obj;
-    DECLARE_FUNCTION("error", procedure_variadic_1);
+    scm_int_t formals_len, actuals_len;
+    ScmObj env, actuals;
+    DECLARE_FUNCTION("receive", syntax_variadic_tailrec_2);
 
-#if 0
+    env = eval_state->env;
+
     /*
-     * Although SRFI-23 specified that "The argument <reason> should be a
-     * string", we should not force it. Displayable is sufficient.
+     * (receive <formals> <expression> <body>)
      */
-    ENSURE_STRING(reason);
-#endif
 
-    err_obj = scm_make_error_obj(reason, args);
-    scm_raise_error(err_obj);
-    /* NOTREACHED */
-    return SCM_UNDEF;
+    formals_len = scm_validate_formals(formals);
+    if (SCM_LISTLEN_ERRORP(formals_len))
+        ERR_OBJ("bad formals", formals);
+
+    /* FIXME: do we have to extend the environment first?  The SRFI-8
+     * document contradicts itself on this part. */
+    /*
+     * In my recognition, the description in SRFI-8 "The environment in which
+     * the receive-expression is evaluated is extended by binding <variable1>,
+     * ..." does not mean that the environment is extended for the evaluation
+     * of the receive-expression. Probably it only specifies which environment
+     * will be extended after the evaluation. So current implementation is
+     * correct, I think.  -- YamaKen 2006-01-05
+     */
+    actuals = EVAL(expr, env);
+
+    if (SCM_VALUEPACKETP(actuals)) {
+        actuals = SCM_VALUEPACKET_VALUES(actuals);
+        actuals_len = scm_finite_length(actuals);
+    } else {
+        actuals = LIST_1(actuals);
+        actuals_len = 1;
+    }
+
+    if (!scm_valid_environment_extension_lengthp(formals_len, actuals_len))
+        ERR_OBJ("unmatched number of args for multiple values", actuals);
+    eval_state->env = env = scm_extend_environment(formals, actuals, env);
+
+    return scm_s_body(body, eval_state);
 }

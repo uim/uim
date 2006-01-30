@@ -1,8 +1,8 @@
 /*===========================================================================
- *  FileName : operations-srfi38.c
- *  About    : srfi38 shared structure I/O (currently only write/ss)
+ *  FileName : module-srfi6.c
+ *  About    : SRFI-6 Basic String Ports
  *
- *  Copyright (C) 2005-2006 Jun Inoue
+ *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *
  *  All rights reserved.
  *
@@ -31,14 +31,19 @@
  *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
+
 /*=======================================
   System Include
 =======================================*/
+#include <stdlib.h>
 
 /*=======================================
   Local Include
 =======================================*/
 #include "sigscheme.h"
+#include "sigschemeinternal.h"
+#include "baseport.h"
+#include "strport.h"
 
 /*=======================================
   File Local Struct Declarations
@@ -55,31 +60,85 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
+static void istrport_finalize(char **str, scm_bool ownership, void **opaque);
 
 /*=======================================
   Function Implementations
 =======================================*/
 void
-scm_initialize_srfi38(void)
+scm_initialize_srfi6(void)
 {
-    SCM_REGISTER_FUNC_TABLE(scm_srfi38_func_info_table);
+    scm_strport_init();
 
-    /* SRFI-38 allows providing (read/ss) and (write/ss) */
-    scm_define_alias("write/ss", "write-with-shared-structure");
-
-    scm_writess_func = scm_write_to_port_with_shared_structure;
+    SCM_REGISTER_FUNC_TABLE(scm_srfi6_func_info_table);
 }
 
-/*===========================================================================
-  SRFI38 : External Representation for Data With Shared Structure
-===========================================================================*/
+static void
+istrport_finalize(char **str, scm_bool ownership, void **opaque)
+{
+    scm_gc_unprotect((ScmObj *)opaque);
+}
+
 ScmObj
-scm_p_srfi38_write_with_shared_structure(ScmObj obj, ScmObj args)
+scm_p_srfi6_open_input_string(ScmObj str)
 {
-    ScmObj port;
-    DECLARE_FUNCTION("write-with-shared-structure", procedure_variadic_1);
+    ScmObj *hold_str;
+    ScmBytePort *bport;
+    ScmCharPort *cport;
+    DECLARE_FUNCTION("open-input-string", procedure_fixed_1);
 
-    port = scm_prepare_port(args, scm_out);
-    scm_write_to_port_with_shared_structure(port, obj);
-    return SCM_UNDEF;
+    ENSURE_STRING(str);
+
+    bport = ScmInputStrPort_new_const(SCM_STRING_STR(str), istrport_finalize);
+    hold_str = (ScmObj *)ScmInputStrPort_ref_opaque(bport);
+    scm_gc_protect_with_init(hold_str, str);
+    cport = scm_make_char_port(bport);
+    return MAKE_PORT(cport, SCM_PORTFLAG_INPUT);
 }
+
+ScmObj
+scm_p_srfi6_open_output_string(void)
+{
+    ScmBytePort *bport;
+    ScmCharPort *cport;
+    DECLARE_FUNCTION("open-output-string", procedure_fixed_0);
+
+    bport = ScmOutputStrPort_new(NULL);
+    cport = scm_make_char_port(bport);
+    return MAKE_PORT(cport, SCM_PORTFLAG_OUTPUT);
+}
+
+ScmObj
+scm_p_srfi6_get_output_string(ScmObj port)
+{
+    ScmBaseCharPort *cport;
+    const char *str;
+    char *new_str;
+    scm_int_t mb_len;
+#if SCM_USE_NULL_CAPABLE_STRING
+    size_t size;
+#endif
+    DECLARE_FUNCTION("get-output-string", procedure_fixed_1);
+
+    ENSURE_PORT(port);
+
+    SCM_ENSURE_LIVE_PORT(port);
+    cport = SCM_CHARPORT_DYNAMIC_CAST(ScmBaseCharPort, SCM_PORT_IMPL(port));
+
+    str = ScmOutputStrPort_str(cport->bport);
+    /* FIXME: incorrect length for null-capable string */
+    mb_len = scm_mb_bare_c_strlen(scm_port_codec(port), str);
+#if SCM_USE_NULL_CAPABLE_STRING
+    size = ScmOutputStrPort_c_strlen(cport->bport) + sizeof("");
+    new_str = scm_malloc(size);
+    memcpy(new_str, str, size);
+#else
+    new_str = scm_strdup(str);
+#endif
+
+    return MAKE_STRING(new_str, mb_len);
+}
+
+
+/* FIXME: link conditionally with autoconf */
+#include "strport.c"

@@ -1294,7 +1294,7 @@ ScmObj scm_p_vector2list(ScmObj vec);
 ScmObj scm_p_list2vector(ScmObj lst);
 ScmObj scm_p_vector_filld(ScmObj vec, ScmObj fill);
 
-/* operations-r5rs-deepcadrs.c */
+/* module-r5rs-deepcadrs.c */
 #if SCM_USE_DEEP_CADRS
 ScmObj scm_p_caaar(ScmObj lst);
 ScmObj scm_p_caadr(ScmObj lst);
@@ -1320,7 +1320,7 @@ ScmObj scm_p_cdddar(ScmObj lst);
 ScmObj scm_p_cddddr(ScmObj lst);
 #endif /* SCM_USE_DEEP_CADRS */
 
-/* operations-nonstd.c */
+/* module-nonstd.c */
 #if SCM_USE_NONSTD_FEATURES
 void scm_initialize_nonstd_features(void);
 ScmObj scm_p_symbol_boundp(ScmObj sym, ScmObj rest);
@@ -1413,7 +1413,7 @@ ScmObj scm_p_backtrace(void);
    SigScheme : Optional Funtions
 ===========================================================================*/
 #if SCM_USE_SRFI1
-/* operations-srfi1.c */
+/* module-srfi1.c */
 void   scm_initialize_srfi1(void);
 ScmObj scm_p_srfi1_xcons(ScmObj a, ScmObj b);
 ScmObj scm_p_srfi1_consstar(ScmObj args);
@@ -1454,14 +1454,14 @@ ScmObj scm_p_srfi1_concatenate(ScmObj args);
 #endif
 
 #if SCM_USE_SRFI2
-/* operations-srfi2.c */
+/* module-srfi2.c */
 void   scm_initialize_srfi2(void);
 ScmObj scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body,
                                ScmEvalState *eval_state);
 #endif
 
 #if SCM_USE_SRFI6
-/* operations-srfi6.c */
+/* module-srfi6.c */
 void   scm_initialize_srfi6(void);
 ScmObj scm_p_srfi6_open_input_string(ScmObj str);
 ScmObj scm_p_srfi6_open_output_string(void);
@@ -1469,20 +1469,20 @@ ScmObj scm_p_srfi6_get_output_string(ScmObj port);
 #endif
 
 #if SCM_USE_SRFI8
-/* operations-srfi8.c */
+/* module-srfi8.c */
 void   scm_initialize_srfi8(void);
 ScmObj scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body,
                            ScmEvalState *eval_state);
 #endif
 
 #if SCM_USE_SRFI23
-/* operations-srfi23.c */
+/* module-srfi23.c */
 void   scm_initialize_srfi23(void);
 ScmObj scm_p_srfi23_error(ScmObj reason, ScmObj args);
 #endif
 
 #if SCM_USE_SRFI34
-/* operations-srfi34.c */
+/* module-srfi34.c */
 void  scm_initialize_srfi34(void);
 ScmObj scm_p_srfi34_with_exception_handler(ScmObj handler, ScmObj thunk);
 ScmObj scm_s_srfi34_guard(ScmObj cond_catch, ScmObj body,
@@ -1491,13 +1491,13 @@ ScmObj scm_p_srfi34_raise(ScmObj obj);
 #endif
 
 #if SCM_USE_SRFI38
-/* operations-srfi38.c */
+/* module-srfi38.c */
 void   scm_initialize_srfi38(void);
 ScmObj scm_p_srfi38_write_with_shared_structure(ScmObj obj, ScmObj args);
 #endif
 
 #if SCM_USE_SRFI60
-/* operations-srfi60.c */
+/* module-srfi60.c */
 void   scm_initialize_srfi60(void);
 ScmObj scm_p_srfi60_logand(ScmObj left, ScmObj right,
                            enum ScmReductionState *state);
@@ -1511,7 +1511,7 @@ ScmObj scm_p_srfi60_logtest(ScmObj j, ScmObj k);
 #endif
 
 #if SCM_COMPAT_SIOD
-/* operations-siod.c */
+/* module-siod.c */
 void   scm_initialize_siod(void);
 ScmObj scm_p_symbol_value(ScmObj var);
 ScmObj scm_p_set_symbol_valued(ScmObj var, ScmObj val);

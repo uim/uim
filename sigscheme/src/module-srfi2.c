@@ -1,6 +1,7 @@
 /*===========================================================================
- *  FileName : operations-srfi6.c
- *  About    : Basic String Ports
+ *  FileName : module-srfi2.c
+ *  About    : SRFI-2 AND-LET*: an AND with local bindings, a guarded LET*
+ *             special form
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *
@@ -35,15 +36,12 @@
 /*=======================================
   System Include
 =======================================*/
-#include <stdlib.h>
 
 /*=======================================
   Local Include
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
-#include "baseport.h"
-#include "strport.h"
 
 /*=======================================
   File Local Struct Declarations
@@ -60,85 +58,74 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static void istrport_finalize(char **str, scm_bool ownership, void **opaque);
 
 /*=======================================
   Function Implementations
 =======================================*/
 void
-scm_initialize_srfi6(void)
+scm_initialize_srfi2(void)
 {
-    scm_strport_init();
-
-    SCM_REGISTER_FUNC_TABLE(scm_srfi6_func_info_table);
-}
-
-static void
-istrport_finalize(char **str, scm_bool ownership, void **opaque)
-{
-    scm_gc_unprotect((ScmObj *)opaque);
+    SCM_REGISTER_FUNC_TABLE(scm_srfi2_func_info_table);
 }
 
 ScmObj
-scm_p_srfi6_open_input_string(ScmObj str)
+scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
 {
-    ScmObj *hold_str;
-    ScmBytePort *bport;
-    ScmCharPort *cport;
-    DECLARE_FUNCTION("open-input-string", procedure_fixed_1);
+    ScmObj env, claw, var, val, exp;
+    DECLARE_FUNCTION("and-let*", syntax_variadic_tailrec_1);
 
-    ENSURE_STRING(str);
+    env = eval_state->env;
 
-    bport = ScmInputStrPort_new_const(SCM_STRING_STR(str), istrport_finalize);
-    hold_str = (ScmObj *)ScmInputStrPort_ref_opaque(bport);
-    scm_gc_protect_with_init(hold_str, str);
-    cport = scm_make_char_port(bport);
-    return MAKE_PORT(cport, SCM_PORTFLAG_INPUT);
+    /*=======================================================================
+      (and-let* <claws> <body>)
+
+      <claws> ::= '() | (cons <claw> <claws>)
+      <claw>  ::=  (<variable> <expression>) | (<expression>)
+                   | <bound-variable>
+    =======================================================================*/
+    if (CONSP(claws)) {
+        FOR_EACH (claw, claws) {
+            if (CONSP(claw)) {
+                if (NULLP(CDR(claw))) {
+                    /* (<expression>) */
+                    exp = CAR(claw);
+                    val = EVAL(exp, env);
+                } else if (SYMBOLP(CAR(claw))) {
+                    /* (<variable> <expression>) */
+                    if (!LIST_2_P(claw))
+                        goto err;
+                    var = CAR(claw);
+                    exp = CADR(claw);
+                    val = EVAL(exp, env);
+                    env = scm_extend_environment(LIST_1(var), LIST_1(val), env);
+                } else {
+                    goto err;
+                }
+            } else if (SYMBOLP(claw)) {
+                /* <bound-variable> */
+                val = EVAL(claw, env);
+            } else {
+                goto err;
+            }
+            if (FALSEP(val)) {
+                eval_state->ret_type = SCM_VALTYPE_AS_IS;
+                return SCM_FALSE;
+            }
+        }
+        if (!NULLP(claws))
+            goto err;
+    } else if (NULLP(claws)) {
+        env = scm_extend_environment(SCM_NULL, SCM_NULL, env);
+    } else {
+        goto err;
+    }
+
+    eval_state->env = env;
+
+    return scm_s_body(body, eval_state);
+
+ err:
+    ERR_OBJ("invalid claws form", claws);
+    /* NOTREACHED */
+    return SCM_FALSE;
 }
-
-ScmObj
-scm_p_srfi6_open_output_string(void)
-{
-    ScmBytePort *bport;
-    ScmCharPort *cport;
-    DECLARE_FUNCTION("open-output-string", procedure_fixed_0);
-
-    bport = ScmOutputStrPort_new(NULL);
-    cport = scm_make_char_port(bport);
-    return MAKE_PORT(cport, SCM_PORTFLAG_OUTPUT);
-}
-
-ScmObj
-scm_p_srfi6_get_output_string(ScmObj port)
-{
-    ScmBaseCharPort *cport;
-    const char *str;
-    char *new_str;
-    scm_int_t mb_len;
-#if SCM_USE_NULL_CAPABLE_STRING
-    size_t size;
-#endif
-    DECLARE_FUNCTION("get-output-string", procedure_fixed_1);
-
-    ENSURE_PORT(port);
-
-    SCM_ENSURE_LIVE_PORT(port);
-    cport = SCM_CHARPORT_DYNAMIC_CAST(ScmBaseCharPort, SCM_PORT_IMPL(port));
-
-    str = ScmOutputStrPort_str(cport->bport);
-    /* FIXME: incorrect length for null-capable string */
-    mb_len = scm_mb_bare_c_strlen(scm_port_codec(port), str);
-#if SCM_USE_NULL_CAPABLE_STRING
-    size = ScmOutputStrPort_c_strlen(cport->bport) + sizeof("");
-    new_str = scm_malloc(size);
-    memcpy(new_str, str, size);
-#else
-    new_str = scm_strdup(str);
-#endif
-
-    return MAKE_STRING(new_str, mb_len);
-}
-
-
-/* FIXME: link conditionally with autoconf */
-#include "strport.c"

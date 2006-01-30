@@ -1,6 +1,6 @@
 /*===========================================================================
- *  FileName : operations-srfi1.c
- *  About    : srfi1 procedures
+ *  FileName : module-srfi1.c
+ *  About    : SRFI-1 List Library
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *

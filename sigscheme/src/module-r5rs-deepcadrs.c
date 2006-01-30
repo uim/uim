@@ -1,6 +1,6 @@
 /*===========================================================================
- *  FileName : operations-r5rs-deepcadrs.c
- *  About    : Deep c[ad]+r operations
+ *  FileName : module-r5rs-deepcadrs.c
+ *  About    : Deep c[ad]+r operations of R5RS
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *

@@ -1,6 +1,6 @@
 /*===========================================================================
- *  FileName : operations-srfi8.c
- *  About    : SRFI-8 receive: Binding to multiple values
+ *  FileName : module-srfi38.c
+ *  About    : SRFI-38 External Representation for Data With Shared Structure
  *
  *  Copyright (C) 2005-2006 Jun Inoue
  *
@@ -31,6 +31,9 @@
  *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
+
+/* Only write/ss is provided currently. */
+
 /*=======================================
   System Include
 =======================================*/
@@ -39,7 +42,6 @@
   Local Include
 =======================================*/
 #include "sigscheme.h"
-#include "sigschemeinternal.h"
 
 /*=======================================
   File Local Struct Declarations
@@ -61,52 +63,26 @@
   Function Implementations
 =======================================*/
 void
-scm_initialize_srfi8(void)
+scm_initialize_srfi38(void)
 {
-    SCM_REGISTER_FUNC_TABLE(scm_srfi8_func_info_table);
+    SCM_REGISTER_FUNC_TABLE(scm_srfi38_func_info_table);
+
+    /* SRFI-38 allows providing (read/ss) and (write/ss) */
+    scm_define_alias("write/ss", "write-with-shared-structure");
+
+    scm_writess_func = scm_write_to_port_with_shared_structure;
 }
 
+/*===========================================================================
+  SRFI38 : External Representation for Data With Shared Structure
+===========================================================================*/
 ScmObj
-scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body,
-                    ScmEvalState *eval_state)
+scm_p_srfi38_write_with_shared_structure(ScmObj obj, ScmObj args)
 {
-    scm_int_t formals_len, actuals_len;
-    ScmObj env, actuals;
-    DECLARE_FUNCTION("receive", syntax_variadic_tailrec_2);
+    ScmObj port;
+    DECLARE_FUNCTION("write-with-shared-structure", procedure_variadic_1);
 
-    env = eval_state->env;
-
-    /*
-     * (receive <formals> <expression> <body>)
-     */
-
-    formals_len = scm_validate_formals(formals);
-    if (SCM_LISTLEN_ERRORP(formals_len))
-        ERR_OBJ("bad formals", formals);
-
-    /* FIXME: do we have to extend the environment first?  The SRFI-8
-     * document contradicts itself on this part. */
-    /*
-     * In my recognition, the description in SRFI-8 "The environment in which
-     * the receive-expression is evaluated is extended by binding <variable1>,
-     * ..." does not mean that the environment is extended for the evaluation
-     * of the receive-expression. Probably it only specifies which environment
-     * will be extended after the evaluation. So current implementation is
-     * correct, I think.  -- YamaKen 2006-01-05
-     */
-    actuals = EVAL(expr, env);
-
-    if (SCM_VALUEPACKETP(actuals)) {
-        actuals = SCM_VALUEPACKET_VALUES(actuals);
-        actuals_len = scm_finite_length(actuals);
-    } else {
-        actuals = LIST_1(actuals);
-        actuals_len = 1;
-    }
-
-    if (!scm_valid_environment_extension_lengthp(formals_len, actuals_len))
-        ERR_OBJ("unmatched number of args for multiple values", actuals);
-    eval_state->env = env = scm_extend_environment(formals, actuals, env);
-
-    return scm_s_body(body, eval_state);
+    port = scm_prepare_port(args, scm_out);
+    scm_write_to_port_with_shared_structure(port, obj);
+    return SCM_UNDEF;
 }

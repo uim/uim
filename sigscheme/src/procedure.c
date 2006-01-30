@@ -33,7 +33,7 @@
 ===========================================================================*/
 
 #include "config.h"
-/* FIXME: remove this for direct inclusion of operations-srfi6.c and
+/* FIXME: remove this for direct inclusion of module-srfi6.c and
  * strport.c */
 #include "config-asprintf.h"
 
@@ -406,35 +406,35 @@ scm_p_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after)
 }
 
 #if SCM_USE_DEEP_CADRS
-#include "operations-r5rs-deepcadrs.c"
+#include "module-r5rs-deepcadrs.c"
 #endif
 #if SCM_USE_NONSTD_FEATURES
-#include "operations-nonstd.c"
+#include "module-nonstd.c"
 #endif
 #if SCM_USE_SRFI1
-#include "operations-srfi1.c"
+#include "module-srfi1.c"
 #endif
 #if SCM_USE_SRFI2
-#include "operations-srfi2.c"
+#include "module-srfi2.c"
 #endif
 #if SCM_USE_SRFI6
-#include "operations-srfi6.c"
+#include "module-srfi6.c"
 #endif
 #if SCM_USE_SRFI8
-#include "operations-srfi8.c"
+#include "module-srfi8.c"
 #endif
 #if SCM_USE_SRFI23
-#include "operations-srfi23.c"
+#include "module-srfi23.c"
 #endif
 #if SCM_USE_SRFI34
-#include "operations-srfi34.c"
+#include "module-srfi34.c"
 #endif
 #if SCM_USE_SRFI38
-#include "operations-srfi38.c"
+#include "module-srfi38.c"
 #endif
 #if SCM_USE_SRFI60
-#include "operations-srfi60.c"
+#include "module-srfi60.c"
 #endif
 #if SCM_COMPAT_SIOD
-#include "operations-siod.c"
+#include "module-siod.c"
 #endif

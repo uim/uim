@@ -1,7 +1,6 @@
 /*===========================================================================
- *  FileName : operations-srfi2.c
- *  About    : SRFI-2 AND-LET*: an AND with local bindings, a guarded LET*
- *             special form
+ *  FileName : module-srfi23.c
+ *  About    : SRFI-23 Error reporting mechanism
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *
@@ -32,7 +31,6 @@
  *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-
 /*=======================================
   System Include
 =======================================*/
@@ -63,69 +61,43 @@
   Function Implementations
 =======================================*/
 void
-scm_initialize_srfi2(void)
+scm_initialize_srfi23(void)
 {
-    SCM_REGISTER_FUNC_TABLE(scm_srfi2_func_info_table);
+    SCM_REGISTER_FUNC_TABLE(scm_srfi23_func_info_table);
 }
 
+/*===========================================================================
+  SRFI23 : Error reporting mechanism
+===========================================================================*/
+/*
+ * This code implements the '4.' of following Specification defined in SRFI-34.
+ *
+ * 1. Display <reason> and <arg1>... on the screen and terminate the Scheme
+ *    program. (This might be suitable for a Scheme system implemented as a
+ *    batch compiler.)
+ * 2. Display <reason> and <arg1>... on the screen and go back to the
+ *    read-evaluate-print loop. (This might be suitable for an interactive
+ *    implementation).
+ * 4. Package <reason> and <arg1>... up into an error object and pass this
+ *    error object to an exception handler. The default exception handler then
+ *    might do something as described in points 1 to 3.
+ */
 ScmObj
-scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
+scm_p_srfi23_error(ScmObj reason, ScmObj args)
 {
-    ScmObj env, claw, var, val, exp;
-    DECLARE_FUNCTION("and-let*", syntax_variadic_tailrec_1);
+    ScmObj err_obj;
+    DECLARE_FUNCTION("error", procedure_variadic_1);
 
-    env = eval_state->env;
+#if 0
+    /*
+     * Although SRFI-23 specified that "The argument <reason> should be a
+     * string", we should not force it. Displayable is sufficient.
+     */
+    ENSURE_STRING(reason);
+#endif
 
-    /*=======================================================================
-      (and-let* <claws> <body>)
-
-      <claws> ::= '() | (cons <claw> <claws>)
-      <claw>  ::=  (<variable> <expression>) | (<expression>)
-                   | <bound-variable>
-    =======================================================================*/
-    if (CONSP(claws)) {
-        FOR_EACH (claw, claws) {
-            if (CONSP(claw)) {
-                if (NULLP(CDR(claw))) {
-                    /* (<expression>) */
-                    exp = CAR(claw);
-                    val = EVAL(exp, env);
-                } else if (SYMBOLP(CAR(claw))) {
-                    /* (<variable> <expression>) */
-                    if (!LIST_2_P(claw))
-                        goto err;
-                    var = CAR(claw);
-                    exp = CADR(claw);
-                    val = EVAL(exp, env);
-                    env = scm_extend_environment(LIST_1(var), LIST_1(val), env);
-                } else {
-                    goto err;
-                }
-            } else if (SYMBOLP(claw)) {
-                /* <bound-variable> */
-                val = EVAL(claw, env);
-            } else {
-                goto err;
-            }
-            if (FALSEP(val)) {
-                eval_state->ret_type = SCM_VALTYPE_AS_IS;
-                return SCM_FALSE;
-            }
-        }
-        if (!NULLP(claws))
-            goto err;
-    } else if (NULLP(claws)) {
-        env = scm_extend_environment(SCM_NULL, SCM_NULL, env);
-    } else {
-        goto err;
-    }
-
-    eval_state->env = env;
-
-    return scm_s_body(body, eval_state);
-
- err:
-    ERR_OBJ("invalid claws form", claws);
+    err_obj = scm_make_error_obj(reason, args);
+    scm_raise_error(err_obj);
     /* NOTREACHED */
-    return SCM_FALSE;
+    return SCM_UNDEF;
 }
