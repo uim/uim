@@ -1254,18 +1254,18 @@
   (byeoru-context-new id im))
 
 ;; Test that the input is not control-purpose but graphical character.
+;; This procedure is needed since byeoru-layout alists do not have
+;; modifier key information other than Shift.
 ;;
 ;; TODO:
-;; - rename appropriately in accordance with the intention in byeoru
-;; - move to appropriate place
 ;; - CHECK: is this a right way to check shift-only?
-(define byeoru-graphic-key?
+(define byeoru-non-control-key?
   (let ((shift-or-no-modifier? (make-key-predicate '("<Shift>" ""))))
     (lambda (key key-state)
       (shift-or-no-modifier? -1 key-state))))
 
 (define (byeoru-key-to-candidates key key-state)
-  (and (byeoru-graphic-key? key key-state)
+  (and (byeoru-non-control-key? key key-state)
        (let* ((layout (symbol-value byeoru-layout))
 	      (pressed-key
 	       (charcode->string
@@ -1377,8 +1377,7 @@
 ;; romaja, not a jamo.
 (define (byeoru-feed-romaja-key bc key key-state)
   (and
-   ; CHECK: is this a right way to check shift-only?
-   (byeoru-graphic-key? key key-state)
+   (byeoru-non-control-key? key key-state)
    (begin
 
      (define (flush-automata)
