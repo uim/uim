@@ -39,10 +39,30 @@
 #endif
 
 /*===========================================================================
-  Optional Features Written in C
+  R5RS Features
 ===========================================================================*/
+#define SCM_USE_CONTINUATION    1  /* (cannot be 0 yet) use continuation */
+#define SCM_USE_QUASIQUOTE      1  /* (cannot be 0 yet) use quasiquotation */
+#define SCM_USE_HYGIENIC_MACRO  0  /* (not supported yet) use hygienic macros */
+#define SCM_USE_INT             1  /* (cannot be 0 yet) use integer numbers */
+#define SCM_USE_RATIONAL        0  /* (not supported yet) use rational numbers */
+#define SCM_USE_REAL            0  /* (not supported yet) use real numbers */
+#define SCM_USE_COMPLEX         0  /* (not supported yet) use complex numbers */
+#define SCM_USE_CHAR            1  /* (cannot be 0 yet) use character */
+#define SCM_USE_STRING          1  /* (cannot be 0 yet) use string */
+#define SCM_USE_VECTOR          1  /* (cannot be 0 yet) use vector */
+#define SCM_USE_PORT            1  /* (cannot be 0 yet) use ports */
+#define SCM_USE_READER          1  /* (cannot be 0 yet) use sexp reader */
+#define SCM_USE_WRITER          1  /* (cannot be 0 yet) use sexp writer */
+#define SCM_USE_LOAD            1  /* (cannot be 0 yet) use 'load' */
 #define SCM_USE_DEEP_CADRS      1  /* use all c[ad]+r defined in R5RS */
+
+/*===========================================================================
+  Optional Features
+===========================================================================*/
 #define SCM_USE_NONSTD_FEATURES 1  /* use Non-R5RS standard features such as "require" */
+#define SCM_USE_LEGACY_MACRO    0  /* (not supported yet) use define-macro */
+#define SCM_USE_DUMP            0  /* (not supported yet) use storage dump */
 
 #define SCM_USE_SRFI1           0  /* use SRFI-1  list library (broken) */
 #define SCM_USE_SRFI2           1  /* use SRFI-2  'and-let*' */
@@ -56,7 +76,7 @@
 #define SCM_USE_SRFI75_NAMED_CHARS 1  /* use named characters of SRFI-75 R6RS unicode data */
 #define SCM_USE_SRFI75          1  /* use SRFI-75 R6RS unicode data */
 
-#define SCM_COMPAT_SIOD         1  /* use SIOD compatible features */
+#define SCM_COMPAT_SIOD         1  /* use (some) SIOD compatible features */
 #define SCM_COMPAT_SIOD_BUGS    1  /* emulate the buggy behaviors of SIOD */
 
 /*===========================================================================
@@ -153,6 +173,10 @@
 
 #if (!SCM_DEBUG && SCM_USE_NULL_CAPABLE_STRING)
 #error "Don't enable dangerous SCM_USE_NULL_CAPABLE_STRING for production code"
+#endif
+
+#if (SCM_USE_INT || SCM_USE_RATIONAL || SCM_USE_REAL || SCM_USE_COMPLEX)
+#define SCM_USE_NUMBER          1
 #endif
 
 #if SCM_STRICT_R5RS
