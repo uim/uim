@@ -36,6 +36,8 @@
 =======================================*/
 #include <stdio.h>
 #include <stdarg.h>
+#include <ctype.h>
+#include <string.h>
 
 /*=======================================
   Local Include
