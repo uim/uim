@@ -55,8 +55,8 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#define SCM_BACKTRACE_HEADER "**** BACKTRACE ****\n"
-#define SCM_BACKTRACE_SEP    "------------------------------\n"
+#define SCM_BACKTRACE_HEADER "**** BACKTRACE ****"
+#define SCM_BACKTRACE_SEP    "------------------------------"
 
 /*=======================================
   Variable Declarations
@@ -408,12 +408,17 @@ scm_show_backtrace(ScmObj trace_stack)
     ScmObj frame, env, obj, elm;
     DECLARE_INTERNAL_FUNCTION("scm_show_backtrace");
 
-    scm_port_printf(scm_err, SCM_BACKTRACE_HEADER);
+    if (NULLP(trace_stack))
+        return;
+
+    scm_port_puts(scm_err, SCM_BACKTRACE_HEADER);
+    scm_port_newline(scm_err);
 
     /* show each frame's obj */
     FOR_EACH (frame, trace_stack) {
 #if SCM_DEBUG_BACKTRACE_SEP
-        scm_port_printf(scm_err, SCM_BACKTRACE_SEP);
+        scm_port_puts(scm_err, SCM_BACKTRACE_SEP);
+        scm_port_newline(scm_err);
 #endif
 
         env = TRACE_FRAME_ENV(frame);
@@ -442,7 +447,8 @@ scm_show_backtrace(ScmObj trace_stack)
 #endif /* SCM_DEBUG_BACKTRACE_VAL */
     }
 #if SCM_DEBUG_BACKTRACE_SEP
-    scm_port_printf(scm_err, SCM_BACKTRACE_SEP);
+    scm_port_puts(scm_err, SCM_BACKTRACE_SEP);
+    scm_port_newline(scm_err);
 #endif /* SCM_DEBUG_BACKTRACE_SEP */
 #endif /* SCM_DEBUG */
 }
