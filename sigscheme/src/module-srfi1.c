@@ -133,7 +133,7 @@ scm_p_srfi1_make_list(ScmObj length, ScmObj args)
 }
 
 ScmObj
-scm_p_srfi1_list_tabulate(ScmObj scm_n, ScmObj args)
+scm_p_srfi1_list_tabulate(ScmObj _n, ScmObj args)
 {
     ScmObj proc  = SCM_FALSE;
     ScmObj head  = SCM_NULL;
@@ -142,10 +142,10 @@ scm_p_srfi1_list_tabulate(ScmObj scm_n, ScmObj args)
     scm_int_t i = 0;
     DECLARE_FUNCTION("list-tabulate", procedure_variadic_1);
 
-    ENSURE_INT(scm_n);
+    ENSURE_INT(_n);
 
     /* get n */
-    n = SCM_INT_VALUE(scm_n);
+    n = SCM_INT_VALUE(_n);
 
     /* get init_proc if available */
     if (!NULLP(args))

@@ -333,29 +333,29 @@ scm_p_min(ScmObj left, ScmObj right, enum ScmReductionState *state)
 
 
 ScmObj
-scm_p_abs(ScmObj scm_n)
+scm_p_abs(ScmObj _n)
 {
     scm_int_t n;
     DECLARE_FUNCTION("abs", procedure_fixed_1);
 
-    ENSURE_INT(scm_n);
+    ENSURE_INT(_n);
 
-    n = SCM_INT_VALUE(scm_n);
+    n = SCM_INT_VALUE(_n);
 
-    return (n < 0) ? MAKE_INT(-n) : scm_n;
+    return (n < 0) ? MAKE_INT(-n) : _n;
 }
 
 ScmObj
-scm_p_quotient(ScmObj scm_n1, ScmObj scm_n2)
+scm_p_quotient(ScmObj _n1, ScmObj _n2)
 {
     scm_int_t n1, n2;
     DECLARE_FUNCTION("quotient", procedure_fixed_2);
 
-    ENSURE_INT(scm_n1);
-    ENSURE_INT(scm_n2);
+    ENSURE_INT(_n1);
+    ENSURE_INT(_n2);
 
-    n1 = SCM_INT_VALUE(scm_n1);
-    n2 = SCM_INT_VALUE(scm_n2);
+    n1 = SCM_INT_VALUE(_n1);
+    n2 = SCM_INT_VALUE(_n2);
 
     if (n2 == 0)
         ERR("division by zero");
@@ -364,16 +364,16 @@ scm_p_quotient(ScmObj scm_n1, ScmObj scm_n2)
 }
 
 ScmObj
-scm_p_modulo(ScmObj scm_n1, ScmObj scm_n2)
+scm_p_modulo(ScmObj _n1, ScmObj _n2)
 {
     scm_int_t n1, n2, rem;
     DECLARE_FUNCTION("modulo", procedure_fixed_2);
 
-    ENSURE_INT(scm_n1);
-    ENSURE_INT(scm_n2);
+    ENSURE_INT(_n1);
+    ENSURE_INT(_n2);
 
-    n1 = SCM_INT_VALUE(scm_n1);
-    n2 = SCM_INT_VALUE(scm_n2);
+    n1 = SCM_INT_VALUE(_n1);
+    n2 = SCM_INT_VALUE(_n2);
 
     if (n2 == 0)
         ERR("division by zero");
@@ -389,16 +389,16 @@ scm_p_modulo(ScmObj scm_n1, ScmObj scm_n2)
 }
 
 ScmObj
-scm_p_remainder(ScmObj scm_n1, ScmObj scm_n2)
+scm_p_remainder(ScmObj _n1, ScmObj _n2)
 {
     scm_int_t n1, n2;
     DECLARE_FUNCTION("remainder", procedure_fixed_2);
 
-    ENSURE_INT(scm_n1);
-    ENSURE_INT(scm_n2);
+    ENSURE_INT(_n1);
+    ENSURE_INT(_n2);
 
-    n1 = SCM_INT_VALUE(scm_n1);
-    n2 = SCM_INT_VALUE(scm_n2);
+    n1 = SCM_INT_VALUE(_n1);
+    n2 = SCM_INT_VALUE(_n2);
 
     if (n2 == 0)
         ERR("division by zero");
