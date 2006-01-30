@@ -68,12 +68,10 @@ extern ScmCharCodec *scm_identifier_codec;
 extern ScmObj scm_in;
 extern ScmObj scm_out;
 extern ScmObj scm_err;
+extern const ScmSpecialCharInfo scm_special_char_table[];
 
 /* write.c */
 extern void (*scm_writess_func)(ScmObj port, ScmObj obj);
-
-/* read.c */
-extern const ScmSpecialCharInfo scm_special_char_table[];
 
 /* storage.c */
 #if SCM_USE_VALUECONS
