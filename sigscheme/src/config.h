@@ -151,7 +151,7 @@
 #define SCM_DEBUG_PORT          0  /* enable port debugging */
 #define SCM_DEBUG_PARSER        0  /* enable parser debugging */
 #define SCM_DEBUG_ENCODING      0  /* debug encoding-related functions */
-#define SCM_DEBUG_BACKTRACE_SEP 1  /* enable frame-separator on backtrace */
+#define SCM_DEBUG_BACKTRACE_SEP 0  /* enable frame-separator on backtrace */
 #define SCM_DEBUG_BACKTRACE_VAL 1  /* enable values printing on backtrace */
 
 /*===========================================================================

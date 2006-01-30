@@ -387,8 +387,8 @@ scm_error_obj(const char *func_name, const char *msg, ScmObj obj)
 static void
 show_arg(ScmObj arg, ScmObj env)
 {
-#define UNBOUNDP(var, env)                                              \
-    (scm_lookup_environment(var, env) == SCM_INVALID_REF                 \
+#define UNBOUNDP(var, env)                                                   \
+    (scm_lookup_environment(var, env) == SCM_INVALID_REF                     \
      && !SCM_SYMBOL_BOUNDP(var))
 
     if (SYMBOLP(arg) && !UNBOUNDP(arg, env)) {

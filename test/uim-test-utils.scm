@@ -76,7 +76,7 @@
                            #f)
                          (lambda ()
                            (read in)))))
-    (if (eq? 'Error: uim-sh-output)
+    (if (eq? 'ERROR: uim-sh-output)
 	(error (uim-sh-read-error in))
 	uim-sh-output)))
 

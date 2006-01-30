@@ -390,7 +390,7 @@ void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 #define INVALID_CONTINUATION_OPAQUE  NULL
 
 /* error handlings */
-#define SCM_ERR_HEADER "Error: "
+#define SCM_ERR_HEADER "ERROR: "
 
 #define EQVP(a, b)   (NFALSEP(scm_p_eqvp((a), (b))))
 #define EQUALP(a, b) (NFALSEP(scm_p_equalp((a), (b))))

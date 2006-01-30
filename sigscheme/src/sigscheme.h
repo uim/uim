@@ -502,7 +502,7 @@ typedef scm_byte_t         scm_wchar_t;
 =======================================*/
 enum ScmDebugCategory {
     SCM_DBG_NONE         = 0,
-    SCM_DBG_ERRMSG       = 1 << 0,   /* the "Error: foo bar" style msgs */
+    SCM_DBG_ERRMSG       = 1 << 0,   /* the "ERROR: foo bar" style msgs */
     SCM_DBG_BACKTRACE    = 1 << 1,
     SCM_DBG_GC           = 1 << 2,
     SCM_DBG_FILE         = 1 << 3,   /* file loading */
