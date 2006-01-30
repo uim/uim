@@ -282,28 +282,28 @@ static ScmObj
 map_single_arg(ScmObj proc, ScmObj lst)
 {
     ScmQueue q;
-    ScmObj elm, res;
+    ScmObj elm, ret;
     DECLARE_INTERNAL_FUNCTION("map");
 
-    res = SCM_NULL;
-    SCM_QUEUE_POINT_TO(q, res);
+    ret = SCM_NULL;
+    SCM_QUEUE_POINT_TO(q, ret);
     FOR_EACH (elm, lst) {
         elm = scm_call(proc, LIST_1(elm));
         SCM_QUEUE_ADD(q, elm);
     }
 
-    return res;
+    return ret;
 }
 
 static ScmObj
 map_multiple_args(ScmObj proc, ScmObj args)
 {
-    ScmQueue resq, argq;
-    ScmObj res, elm, map_args, rest_args, arg;
+    ScmQueue retq, argq;
+    ScmObj ret, elm, map_args, rest_args, arg;
     DECLARE_INTERNAL_FUNCTION("map");
 
-    res = SCM_NULL;
-    SCM_QUEUE_POINT_TO(resq, res);
+    ret = SCM_NULL;
+    SCM_QUEUE_POINT_TO(retq, ret);
     for (;;) {
         /* slice args */
         map_args = SCM_NULL;
@@ -313,7 +313,7 @@ map_multiple_args(ScmObj proc, ScmObj args)
             if (CONSP(arg))
                 SCM_QUEUE_ADD(argq, CAR(arg));
             else if (NULLP(arg))
-                return res;
+                return ret;
             else
                 ERR_OBJ("invalid argument", arg);
             /* pop destructively */
@@ -321,7 +321,7 @@ map_multiple_args(ScmObj proc, ScmObj args)
         }
 
         elm = scm_call(proc, map_args);
-        SCM_QUEUE_ADD(resq, elm);
+        SCM_QUEUE_ADD(retq, elm);
     }
 }
 

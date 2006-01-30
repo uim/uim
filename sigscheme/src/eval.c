@@ -457,7 +457,7 @@ static ScmObj
 map_eval(ScmObj args, scm_int_t *args_len, ScmObj env)
 {
     ScmQueue q;
-    ScmObj res, elm, rest;
+    ScmObj ret, elm, rest;
     scm_int_t len;
     DECLARE_INTERNAL_FUNCTION("(function call)");
 
@@ -466,8 +466,8 @@ map_eval(ScmObj args, scm_int_t *args_len, ScmObj env)
         return SCM_NULL;
     }
 
-    res = SCM_NULL;
-    SCM_QUEUE_POINT_TO(q, res);
+    ret = SCM_NULL;
+    SCM_QUEUE_POINT_TO(q, ret);
 
     len = 0;
     FOR_EACH_PAIR (rest, args) {
@@ -483,7 +483,7 @@ map_eval(ScmObj args, scm_int_t *args_len, ScmObj env)
         ERR_OBJ(SCM_ERRMSG_IMPROPER_ARGS, args);
 
     *args_len = len;
-    return res;
+    return ret;
 }
 
 /*=======================================

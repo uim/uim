@@ -301,14 +301,14 @@ ScmObj
 scm_p_append(ScmObj args)
 {
     ScmQueue q;
-    ScmObj lst, elm, res;
+    ScmObj lst, elm, ret;
     DECLARE_FUNCTION("append", procedure_variadic_0);
 
     if (NULLP(args))
         return SCM_NULL;
 
-    res = SCM_NULL;
-    SCM_QUEUE_POINT_TO(q, res);
+    ret = SCM_NULL;
+    SCM_QUEUE_POINT_TO(q, ret);
     /* duplicate and merge all but the last argument */
     FOR_EACH_BUTLAST (lst, args) {
         FOR_EACH (elm, lst)
@@ -318,7 +318,7 @@ scm_p_append(ScmObj args)
     /* append the last argument */
     SCM_QUEUE_SLOPPY_APPEND(q, lst);
 
-    return res;
+    return ret;
 }
 
 ScmObj

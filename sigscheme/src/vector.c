@@ -161,7 +161,7 @@ ScmObj
 scm_p_vector2list(ScmObj vec)
 {
     ScmQueue q;
-    ScmObj res, *v;
+    ScmObj ret, *v;
     scm_int_t len, i;
     DECLARE_FUNCTION("vector->list", procedure_fixed_1);
 
@@ -170,12 +170,12 @@ scm_p_vector2list(ScmObj vec)
     v   = SCM_VECTOR_VEC(vec);
     len = SCM_VECTOR_LEN(vec);
 
-    res = SCM_NULL;
-    SCM_QUEUE_POINT_TO(q, res);
+    ret = SCM_NULL;
+    SCM_QUEUE_POINT_TO(q, ret);
     for (i = 0; i < len; i++)
         SCM_QUEUE_ADD(q, v[i]);
 
-    return res;
+    return ret;
 }
 
 ScmObj

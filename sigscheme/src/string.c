@@ -822,7 +822,7 @@ scm_p_string2list(ScmObj str)
     ScmMultibyteString mbs;
     ScmQueue q;
 #endif
-    ScmObj res;
+    ScmObj ret;
     scm_ichar_t ch;
     scm_int_t mb_len;
     const char *c_str;
@@ -833,9 +833,9 @@ scm_p_string2list(ScmObj str)
     c_str = SCM_STRING_STR(str);
     mb_len = SCM_STRING_LEN(str);
 
-    res = SCM_NULL;
+    ret = SCM_NULL;
 #if SCM_USE_MULTIBYTE_CHAR
-    SCM_QUEUE_POINT_TO(q, res);
+    SCM_QUEUE_POINT_TO(q, ret);
     SCM_MBS_INIT2(mbs, c_str, strlen(c_str));
     while (mb_len--) {
         if (SCM_MBS_GET_SIZE(mbs)) {
@@ -856,11 +856,11 @@ scm_p_string2list(ScmObj str)
 #else /* SCM_USE_MULTIBYTE_CHAR */
     while (mb_len) {
         ch = ((unsigned char *)c_str)[--mb_len];
-        res = CONS(MAKE_CHAR(ch), res);
+        ret = CONS(MAKE_CHAR(ch), ret);
     }
 #endif /* SCM_USE_MULTIBYTE_CHAR */
 
-    return res;
+    return ret;
 }
 
 ScmObj

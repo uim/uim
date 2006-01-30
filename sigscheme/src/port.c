@@ -500,13 +500,13 @@ ScmObj
 scm_p_char_readyp(ScmObj args)
 {
     ScmObj port;
-    scm_bool res;
+    scm_bool ret;
     DECLARE_FUNCTION("char-ready?", procedure_variadic_0);
 
     port = scm_prepare_port(args, scm_in);
-    res = scm_port_char_readyp(port);
+    ret = scm_port_char_readyp(port);
 
-    return MAKE_BOOL(res);
+    return MAKE_BOOL(ret);
 }
 
 /*===========================================================================
