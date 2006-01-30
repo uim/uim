@@ -291,7 +291,7 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
             call_continuation(proc, args, eval_state, need_eval);
             /* NOTREACHED */
         }
-        ERR("procedure or syntax required but got", proc);
+        ERR_OBJ("procedure or syntax required but got", proc);
     }
 
     /* We have a C function. */
@@ -330,7 +330,7 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
         /* Since this check is expensive, each syntax should do. Other
          * procedures are already ensured that having proper args here. */
         else if (syntaxp && !PROPER_LISTP(args))
-            ERR(SCM_ERRMSG_IMPROPER_ARGS, args);
+            ERR_OBJ(SCM_ERRMSG_IMPROPER_ARGS, args);
 #endif
         argbuf[i++] = args;
     } else {
@@ -480,7 +480,7 @@ map_eval(ScmObj args, scm_int_t *args_len, ScmObj env)
         SCM_QUEUE_ADD(q, elm);
     }
     if (!NULLP(rest))
-        ERR(SCM_ERRMSG_IMPROPER_ARGS, args);
+        ERR_OBJ(SCM_ERRMSG_IMPROPER_ARGS, args);
 
     *args_len = len;
     return res;
