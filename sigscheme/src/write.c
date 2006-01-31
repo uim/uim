@@ -585,7 +585,7 @@ hash_lookup(hash_table *tab, ScmObj key, int datum, int flag)
 static void
 write_ss_scan(ScmObj obj, write_ss_context *ctx)
 {
-    int i;
+    scm_int_t i, len;
     hash_entry *ent;
 
     /* (for-each mark-as-seen-or-return-if-familiar obj) */
@@ -624,7 +624,7 @@ write_ss_scan(ScmObj obj, write_ss_context *ctx)
             break;
 
         case ScmVector:
-            for (i = 0; i < SCM_VECTOR_LEN(obj); i++)
+            for (i = 0, len = SCM_VECTOR_LEN(obj); i < len; i++)
                 write_ss_scan(SCM_VECTOR_VEC(obj)[i], ctx);
             break;
 
