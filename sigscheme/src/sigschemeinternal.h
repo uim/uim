@@ -70,7 +70,7 @@ extern ScmObj scm_err;
 extern const ScmSpecialCharInfo scm_special_char_table[];
 
 /* write.c */
-extern void (*scm_writess_func)(ScmObj port, ScmObj obj);
+extern void (*scm_write_ss_func)(ScmObj port, ScmObj obj);
 
 /* storage.c */
 #if SCM_USE_VALUECONS

@@ -222,7 +222,7 @@ extern "C" {
     (SCM_PORT_IMPL(port)                                                     \
      || (scm_error_obj("(unknown)", "operated on closed port", port), 1))
 
-#define SCM_WRITESS_TO_PORT(port, obj) ((*scm_writess_func)(port, obj))
+#define SCM_WRITE_SS(port, obj) ((*scm_write_ss_func)(port, obj))
 
 /*===========================================================================
   Type Definitions
@@ -1374,10 +1374,10 @@ ScmObj scm_read_char(ScmObj port);
 ScmObj scm_p_read(ScmObj args);
 
 /* write.c */
-void scm_write_to_port(ScmObj port, ScmObj obj);
-void scm_display_to_port(ScmObj port, ScmObj obj);
+void scm_write(ScmObj port, ScmObj obj);
+void scm_display(ScmObj port, ScmObj obj);
 #if SCM_USE_SRFI38
-void scm_write_to_port_with_shared_structure(ScmObj port, ScmObj obj);
+void scm_write_ss(ScmObj port, ScmObj obj);
 #endif
 ScmObj scm_p_write(ScmObj obj, ScmObj args);
 ScmObj scm_p_display(ScmObj obj, ScmObj args);

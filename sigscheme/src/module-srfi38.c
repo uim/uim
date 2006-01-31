@@ -70,7 +70,7 @@ scm_initialize_srfi38(void)
     /* SRFI-38 allows providing (read/ss) and (write/ss) */
     scm_define_alias("write/ss", "write-with-shared-structure");
 
-    scm_writess_func = scm_write_to_port_with_shared_structure;
+    scm_write_ss_func = scm_write_ss;
 }
 
 /*===========================================================================
@@ -83,6 +83,6 @@ scm_p_srfi38_write_with_shared_structure(ScmObj obj, ScmObj args)
     DECLARE_FUNCTION("write-with-shared-structure", procedure_variadic_1);
 
     port = scm_prepare_port(args, scm_out);
-    scm_write_to_port_with_shared_structure(port, obj);
+    scm_write_ss(port, obj);
     return SCM_UNDEF;
 }

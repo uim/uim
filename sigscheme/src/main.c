@@ -165,7 +165,7 @@ repl_loop(void)
             result = EVAL(result, eval_state.env);
 
         if (!EQ(result, err)) {
-            SCM_WRITESS_TO_PORT(scm_out, result);
+            SCM_WRITE_SS(scm_out, result);
             scm_port_newline(scm_out);
         }
 #else /* SCM_USE_SRFI34 */
@@ -174,7 +174,7 @@ repl_loop(void)
             break;
 
         result = EVAL(sexp, SCM_INTERACTION_ENV);
-        SCM_WRITESS_TO_PORT(scm_out, result);
+        SCM_WRITE_SS(scm_out, result);
         scm_port_newline(scm_out);
 #endif /* SCM_USE_SRFI34 */
     }

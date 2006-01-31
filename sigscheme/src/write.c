@@ -96,15 +96,17 @@ typedef struct {
 /*=======================================
   Variable Declarations
 =======================================*/
-void (*scm_writess_func)(ScmObj port, ScmObj obj) = &scm_write_to_port;
+void (*scm_write_ss_func)(ScmObj port, ScmObj obj) = &scm_write;
 
 #if SCM_USE_SRFI38
-static write_ss_context *write_ss_ctx; /* misc info in priting shared structures */
+/* misc info in priting shared structures */
+static write_ss_context *write_ss_ctx;
 #endif
 
 /*=======================================
   File Local Function Declarations
 =======================================*/
+static void write_internal(ScmObj port, ScmObj obj, enum OutputType otype);
 static void write_obj(ScmObj port, ScmObj obj, enum OutputType otype);
 static void write_char(ScmObj port, ScmObj obj, enum OutputType otype);
 static void write_string(ScmObj port, ScmObj obj, enum OutputType otype);
@@ -125,29 +127,28 @@ static int  get_shared_index(ScmObj obj);
    Function Implementations
 =======================================*/
 void
-scm_write_to_port(ScmObj port, ScmObj obj)
+scm_write(ScmObj port, ScmObj obj)
 {
-    DECLARE_INTERNAL_FUNCTION("scm_write_to_port");
-
-    ENSURE_PORT(port);
-    SCM_ENSURE_LIVE_PORT(port);
-    if (!(SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT))
-        ERR("output port is required");
-
-    write_obj(port, obj, AS_WRITE);
+    write_internal(port, obj, AS_WRITE);
 }
 
 void
-scm_display_to_port(ScmObj port, ScmObj obj)
+scm_display(ScmObj port, ScmObj obj)
 {
-    DECLARE_INTERNAL_FUNCTION("scm_display_to_port");
+    write_internal(port, obj, AS_DISPLAY);
+}
+
+static void
+write_internal(ScmObj port, ScmObj obj, enum OutputType otype)
+{
+    DECLARE_INTERNAL_FUNCTION("write");
 
     ENSURE_PORT(port);
     SCM_ENSURE_LIVE_PORT(port);
     if (!(SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT))
         ERR("output port is required");
 
-    write_obj(port, obj, AS_DISPLAY);
+    write_obj(port, obj, otype);
 }
 
 static void
@@ -193,7 +194,7 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         scm_port_puts(port, (SCM_SYNTAXP(obj)) ? "#<syntax " : "#<subr ");
         sym = scm_symbol_bound_to(obj);
         if (NFALSEP(sym))
-            scm_display_to_port(port, sym);
+            scm_display(port, sym);
         else
             scm_port_printf(port, "%p", (void *)obj);
         scm_port_put_char(port, '>');
@@ -472,11 +473,11 @@ write_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
     switch (otype) {
     case AS_WRITE:
         scm_port_puts(port, "#<error ");
-        scm_write_to_port(port, reason);
+        scm_write(port, reason);
         break;
 
     case AS_DISPLAY:
-        scm_display_to_port(port, reason);
+        scm_display(port, reason);
         if (CONSP(objs))
             scm_port_put_char(port, ':');
         break;
@@ -487,7 +488,7 @@ write_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
 
     FOR_EACH (elm, objs) {
         scm_port_put_char(port, ' ');
-        scm_write_to_port(port, elm);
+        scm_write(port, elm);
     }
 
     if (otype == AS_WRITE)
@@ -646,8 +647,9 @@ get_shared_index(ScmObj obj)
     return 0;
 }
 
+/* write with shared structure */
 void
-scm_write_to_port_with_shared_structure(ScmObj port, ScmObj obj)
+scm_write_ss(ScmObj port, ScmObj obj)
 {
     write_ss_context ctx = {{0}};
     unsigned int i;
@@ -665,7 +667,7 @@ scm_write_to_port_with_shared_structure(ScmObj port, ScmObj obj)
     if (!HASH_EMPTY(ctx.seen))
         write_ss_ctx = &ctx;
 
-    scm_write_to_port(port, obj);
+    scm_write(port, obj);
 
     write_ss_ctx = NULL;
     free(ctx.seen.ents);
@@ -682,7 +684,7 @@ scm_p_write(ScmObj obj, ScmObj args)
     DECLARE_FUNCTION("write", procedure_variadic_1);
 
     port = scm_prepare_port(args, scm_out);
-    scm_write_to_port(port, obj);
+    scm_write(port, obj);
     return SCM_UNDEF;
 }
 
@@ -693,6 +695,6 @@ scm_p_display(ScmObj obj, ScmObj args)
     DECLARE_FUNCTION("display", procedure_variadic_1);
 
     port = scm_prepare_port(args, scm_out);
-    scm_display_to_port(port, obj);
+    scm_display(port, obj);
     return SCM_UNDEF;
 }

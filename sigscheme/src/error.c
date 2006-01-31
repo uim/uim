@@ -275,11 +275,11 @@ scm_p_inspect_error(ScmObj err_obj)
     if (scm_debug_categories() & SCM_DBG_ERRMSG) {
         scm_port_printf(scm_err, SCM_ERR_HEADER);
         if (ERROBJP(err_obj)) {
-            scm_display_to_port(scm_err, err_obj);
+            scm_display(scm_err, err_obj);
         } else {
             scm_port_puts(scm_err, SCM_ERRMSG_UNHANDLED_EXCEPTION);
             scm_port_puts(scm_err, ": ");
-            scm_write_to_port(scm_err, err_obj);
+            scm_write(scm_err, err_obj);
         }
         scm_port_newline(scm_err);
     }
@@ -393,7 +393,7 @@ show_arg(ScmObj arg, ScmObj env)
 
     if (SYMBOLP(arg) && !UNBOUNDP(arg, env)) {
         scm_port_printf(scm_err, "  - [%s]: ", SCM_SYMBOL_NAME(arg));
-        SCM_WRITESS_TO_PORT(scm_err, scm_symbol_value(arg, env));
+        SCM_WRITE_SS(scm_err, scm_symbol_value(arg, env));
         scm_port_newline(scm_err);
     }
 
@@ -424,7 +424,7 @@ scm_show_backtrace(ScmObj trace_stack)
         env = TRACE_FRAME_ENV(frame);
         obj = TRACE_FRAME_OBJ(frame);
 
-        SCM_WRITESS_TO_PORT(scm_err, obj);
+        SCM_WRITE_SS(scm_err, obj);
         scm_port_newline(scm_err);
 
 #if SCM_DEBUG_BACKTRACE_VAL
