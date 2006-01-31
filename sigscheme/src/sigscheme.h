@@ -257,12 +257,12 @@ typedef int scm_bool;
 /*
  * 64-bit support of SigScheme
  *
- * SigScheme supports all data models of ILP32, ILP32 with 64-bit long long,
- * LLP64, LP64 and ILP64. Default settings automatically configure both ABI and
- * the underlying storage implementation appropriately, if the storage
- * implementation is storage-fatty or storage-compact. On the case, the integer
- * size Scheme can handle is determined by sizeof(long), and heap capacity and
- * addressable space are determined by the pointer size.
+ * SigScheme supports all data models of ILP32, LL64, LLP64, LP64 and
+ * ILP64. Default settings automatically configure both ABI and the underlying
+ * storage implementation appropriately, if the storage implementation is
+ * storage-fatty or storage-compact. On the case, the integer size Scheme can
+ * handle is determined by sizeof(long), and heap capacity and addressable
+ * space are determined by the pointer size.
  *
  * Other storage implementations (currently not exist) may need some manual
  * settings to fit to the specified data model.

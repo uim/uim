@@ -2,11 +2,25 @@ Specifications of SigScheme
 
 * General
 
+  - 64-bit data models
+
+    * Supports LL64, LLP64, LP64 and ILP64 (storage-fatty)
+
+    * storage-compact does not support any of above (yet)
+
+  - Addressable memory space
+
+    Ordinary storage implementation can address any Scheme object scattered on
+    whole memory space. Both storage-fatty and storage-compact have no
+    limitation on any 32 and 64-bit data models. But it may be limited if a
+    storage implementation is designed to do so for some specific advantages,
+    as like GNU Emacs' 28-bit tagged pointer does.
+
   - Integer range
 
-    To be described.
-
-  - 64-bit data models are being supported
+    Only supports fixnum, and its range is varied by the user-selected
+    underlying storage implementation. The range can be known via SRFI-77
+    compatible (least-fixnum) and (greatest-fixnum).
 
 * R5RS conformance
 
