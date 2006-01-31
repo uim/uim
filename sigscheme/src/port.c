@@ -182,9 +182,6 @@ scm_port_vprintf(ScmObj port, const char *fmt, va_list args)
 
     SCM_ENSURE_LIVE_PORT(port);
     ret = SCM_CHARPORT_VPRINTF(SCM_PORT_IMPL(port), fmt, args);
-#if SCM_VOLATILE_OUTPUT
-    scm_port_flush(port);
-#endif
 
     return ret;
 }

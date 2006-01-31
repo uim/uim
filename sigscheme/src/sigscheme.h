@@ -1374,7 +1374,6 @@ ScmObj scm_read_char(ScmObj port);
 ScmObj scm_p_read(ScmObj args);
 
 /* write.c */
-void scm_display(ScmObj obj);
 void scm_write_to_port(ScmObj port, ScmObj obj);
 void scm_display_to_port(ScmObj port, ScmObj obj);
 #if SCM_USE_SRFI38

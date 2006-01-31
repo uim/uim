@@ -125,12 +125,6 @@ static int  get_shared_index(ScmObj obj);
    Function Implementations
 =======================================*/
 void
-scm_display(ScmObj obj)
-{
-    scm_display_to_port(scm_out, obj);
-}
-
-void
 scm_write_to_port(ScmObj port, ScmObj obj)
 {
     DECLARE_INTERNAL_FUNCTION("scm_write_to_port");
@@ -141,10 +135,6 @@ scm_write_to_port(ScmObj port, ScmObj obj)
         ERR("output port is required");
 
     write_obj(port, obj, AS_WRITE);
-
-#if SCM_VOLATILE_OUTPUT
-    scm_port_flush(port);
-#endif /* SCM_VOLATILE_OUTPUT */
 }
 
 void
@@ -158,10 +148,6 @@ scm_display_to_port(ScmObj port, ScmObj obj)
         ERR("output port is required");
 
     write_obj(port, obj, AS_DISPLAY);
-
-#if SCM_VOLATILE_OUTPUT
-    scm_port_flush(port);
-#endif /* SCM_VOLATILE_OUTPUT */
 }
 
 static void
@@ -251,6 +237,7 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
     default:
         SCM_ASSERT(scm_false);
     }
+    scm_port_flush(port);
 }
 
 static void

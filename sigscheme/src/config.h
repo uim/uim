@@ -110,7 +110,6 @@
 #define SCM_CONST_VECTOR_LITERAL 1 /* make vector literal immutable */
 #define SCM_ACCESSOR_ASSERT     0  /* enable strict type check with accessor */
 #define SCM_USE_VALUECONS       1  /* use experimental values passing */
-#define SCM_VOLATILE_OUTPUT     0  /* always flush files on write */
 #define SCM_USE_NULL_CAPABLE_STRING 1  /* enable experimental null character in a middle of a string */
 #define SCM_OBJ_COMPACT         0  /* object representation compaction (experimental) */
 
@@ -213,11 +212,6 @@
 #if SCM_USE_SRFI75
 #define SCM_USE_SRFI75_NAMED_CHARS 1
 #endif
-
-#if SCM_DEBUG
-#undef SCM_VOLATILE_OUTPUT
-#define SCM_VOLATILE_OUTPUT     1
-#endif /* SCM_DEBUG */
 
 #if SCM_OBJ_COMPACT
 #undef SCM_USE_VALUECONS
