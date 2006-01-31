@@ -156,7 +156,7 @@ reduce(ScmObj (*func)(), ScmObj args, ScmObj env, enum ScmValueType need_eval)
 
     /* Reduce upto the penult. */
     state = SCM_REDUCE_PARTWAY;
-    FOR_EACH_BUTLAST(right, args) {
+    FOR_EACH_BUTLAST (right, args) {
         if (need_eval)
             right = EVAL(right, env);
         left = (*func)(left, right, &state);

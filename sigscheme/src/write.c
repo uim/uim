@@ -498,7 +498,7 @@ write_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
         SCM_ASSERT(scm_false);
     }
 
-    FOR_EACH(elm, objs) {
+    FOR_EACH (elm, objs) {
         scm_port_put_char(port, ' ');
         scm_write_to_port(port, elm);
     }
@@ -522,10 +522,10 @@ hash_grow(hash_table *tab)
     tab->size = new_size;
     tab->used = 0;
 
-    for (i=0; i < old_size; i++)
+    for (i = 0; i < old_size; i++)
         hash_lookup(tab, old_ents[i].key, old_ents[i].datum, HASH_INSERT);
 
-    free (old_ents);
+    free(old_ents);
 }
 
 /**
@@ -555,7 +555,7 @@ hash_lookup(hash_table *tab, ScmObj key, int datum, int flag)
     /* We probe linearly, since a) speed isn't a primary concern for
      * SigScheme, and b) having a table of primes only for this
      * purpose is probably just a waste. */
-    for (i=0; i < tab->size; i++) {
+    for (i = 0; i < tab->size; i++) {
         ent = &(tab->ents)[(hashval + i) & (tab->size - 1)];
         if (!OCCUPIED(ent)) {
             if (flag & HASH_INSERT) {
@@ -624,7 +624,7 @@ write_ss_scan(ScmObj obj, write_ss_context *ctx)
             break;
 
         case ScmVector:
-            for (i=0; i < SCM_VECTOR_LEN(obj); i++)
+            for (i = 0; i < SCM_VECTOR_LEN(obj); i++)
                 write_ss_scan(SCM_VECTOR_VEC(obj)[i], ctx);
             break;
 

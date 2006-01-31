@@ -140,15 +140,15 @@ union ScmObj_ {
  * Required Data Aligment:
  *
  *     Symbol
- *         name (char*)        : 8 byte
+ *         name (char *)        : 8 byte
  *     String
- *         str (char*)         : 4 byte
+ *         str (char *)         : 4 byte
  *     Vector
- *         vec (ScmObj*)       : 2 byte
+ *         vec (ScmObj *)       : 2 byte
  *     Port
- *         impl (ScmCharPort*) : 2 byte
+ *         impl (ScmCharPort *) : 2 byte
  *     Continuation
- *         opaque (void*)      : 2 byte
+ *         opaque (void *)      : 2 byte
  */
 
 /*=======================================
@@ -848,7 +848,7 @@ extern enum ScmObjType scm_type(ScmObj obj);
  * Symbol
  */
 #define SCM_SAL_SYMBOL_VCELL(a) ((ScmObj)SCM_OTHERS_CAR_VAL((a), SYMBOL))
-#define SCM_SAL_SYMBOL_NAME(a)  ((char*) SCM_OTHERS_CDR_VAL((a), SYMBOL))
+#define SCM_SAL_SYMBOL_NAME(a)  ((char *) SCM_OTHERS_CDR_VAL((a), SYMBOL))
 #define SCM_SAL_SYMBOL_SET_VCELL(a, val)        \
     SCM_OTHERS_SET_CAR_VAL((a), SYMBOL, (val))
 #define SCM_SAL_SYMBOL_SET_NAME(a, val)         \
@@ -885,7 +885,7 @@ extern enum ScmObjType scm_type(ScmObj obj);
 #define SCM_SAL_STRING_SET_IMMUTABLE(a)                 \
     SCM_STRING_SET_MUTATION_TYPE((a), SCM_STR_IMMUTABLE)
 #define SCM_SAL_STRING_STR(a)                                           \
-    ((char*)SCM_OTHERS_STRING_STRIP_MUTATIONBIT(SCM_OTHERS_CAR_VAL((a), STRING)))
+    ((char *)SCM_OTHERS_STRING_STRIP_MUTATIONBIT(SCM_OTHERS_CAR_VAL((a), STRING)))
 #define SCM_SAL_STRING_SET_STR(a, val)                                  \
     SCM_OTHERS_SET_CAR_VAL((a),                                         \
                            STRING,                                      \
@@ -942,7 +942,7 @@ extern enum ScmObjType scm_type(ScmObj obj);
 /*
  * Vector
  */
-#define SCM_SAL_VECTOR_VEC(a) ((ScmObj*)SCM_OTHERS_CAR_VAL((a), VECTOR))
+#define SCM_SAL_VECTOR_VEC(a) ((ScmObj *)SCM_OTHERS_CAR_VAL((a), VECTOR))
 #define SCM_SAL_VECTOR_LEN(a) ((int)SCM_OTHERS_CDR_VAL((a), VECTOR))
 #define SCM_SAL_VECTOR_SET_VEC(a, val)          \
     SCM_OTHERS_SET_CAR_VAL((a), VECTOR, (val))
@@ -978,7 +978,7 @@ extern enum ScmObjType scm_type(ScmObj obj);
 /*
  * Port
  */
-#define SCM_SAL_PORT_IMPL(a) ((ScmCharPort*)    SCM_OTHERS_CAR_VAL((a), PORT))
+#define SCM_SAL_PORT_IMPL(a) ((ScmCharPort *)    SCM_OTHERS_CAR_VAL((a), PORT))
 #define SCM_SAL_PORT_FLAG(a) ((enum ScmPortFlag)SCM_OTHERS_CDR_VAL((a), PORT))
 #define SCM_SAL_PORT_SET_IMPL(a, val) SCM_OTHERS_SET_CAR_VAL((a), PORT, (val))
 #define SCM_SAL_PORT_SET_FLAG(a, val) SCM_OTHERS_SET_CDR_VAL((a), PORT, (val))
@@ -987,7 +987,7 @@ extern enum ScmObjType scm_type(ScmObj obj);
  * Continuation
  */
 #define SCM_SAL_CONTINUATION_OPAQUE(a)          \
-    ((void*)SCM_OTHERS_CAR_VAL((a), CONTINUATION))
+    ((void *)SCM_OTHERS_CAR_VAL((a), CONTINUATION))
 #define SCM_SAL_CONTINUATION_TAG(a)             \
     ((int)  SCM_OTHERS_CDR_VAL((a), CONTINUATION))
 #define SCM_SAL_CONTINUATION_SET_OPAQUE(a, val) \
@@ -999,7 +999,7 @@ extern enum ScmObjType scm_type(ScmObj obj);
  * CPointer
  */
 #define SCM_SAL_C_POINTER_VALUE(a)              \
-    ((void*)SCM_OTHERS_CAR_VAL((a), C_POINTER))
+    ((void *)SCM_OTHERS_CAR_VAL((a), C_POINTER))
 #define SCM_SAL_C_POINTER_SET_VALUE(a, val)     \
     SCM_OTHERS_SET_CAR_VAL((a), C_POINTER, (val))
 

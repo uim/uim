@@ -70,7 +70,7 @@ ScmObj scm_check_ref();
                    typecode2typestr(expected),                          \
                    typecode2typestr(actual));                           \
         }                                                               \
-    } while(0)
+    } while (/* CONSTCOND */ 0)
 
 static int
 die(const char *filename, int line)
@@ -79,7 +79,7 @@ die(const char *filename, int line)
     return -1;
 }
 
-static const char*
+static const char *
 typecode2typestr(enum ScmObjType type)
 {
     switch (type) {
@@ -192,12 +192,12 @@ malloc_aligned(size_t size)
     return p;
 }
 
-static void*
+static void *
 aligned_strdup(const char *str)
 {
     char *ret = NULL;
     if (str) {
-        ret = (char*)malloc_aligned(sizeof(char) * strlen(str) + 1);
+        ret = (char *)malloc_aligned(sizeof(char) * strlen(str) + 1);
         strcpy(ret, str);
     }
 
@@ -427,7 +427,7 @@ ScmObj
 scm_check_vector(unsigned int len)
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
-    ScmObj *vec = (ScmObj*)malloc(sizeof(ScmObj) * len);
+    ScmObj *vec = (ScmObj *)malloc(sizeof(ScmObj) * len);
 
     PRINT_SECTION("Vector");
 
@@ -529,7 +529,7 @@ ScmObj
 scm_check_port()
 {
     ScmObj obj = (ScmObj)malloc(sizeof(ScmCell));
-    ScmCharPort *port = (ScmCharPort*)0x20;
+    ScmCharPort *port = (ScmCharPort *)0x20;
 
     PRINT_SECTION("Port");
 
@@ -639,7 +639,7 @@ scm_check_value_packet()
 }
 
 ScmObj
- scm_check_freecell()
+scm_check_freecell()
 {
     ScmObj obj  = (ScmObj)malloc(sizeof(ScmCell));
     ScmObj next = scm_check_cons();
@@ -806,7 +806,8 @@ scm_check_ref()
     SCM_ASSERT(SCM_EQ(SCM_CDR(cons), SCM_DEREF(ref_cdr)));
 }
 
-int main(void)
+int
+main(void)
 {
     scm_check_int(0);
     scm_check_int(1);
@@ -821,18 +822,18 @@ int main(void)
     scm_check_string_copying(NULL);
 */
     scm_check_closure();
-    scm_check_func((void*)0x00000000);
-    scm_check_func((void*)0xfffffffe);
-    scm_check_func((void*)0xffffffff);
+    scm_check_func((void *)0x00000000);
+    scm_check_func((void *)0xfffffffe);
+    scm_check_func((void *)0xffffffff);
     scm_check_vector(0);
     scm_check_vector(5);
-    scm_check_continuation((void*)NULL);
-    scm_check_continuation((void*)0x20);
+    scm_check_continuation((void *)NULL);
+    scm_check_continuation((void *)0x20);
     scm_check_value_packet();
     scm_check_port();
-    scm_check_cpointer((void*)0x00000000);
-    scm_check_cpointer((void*)0xfffffffe);
-    scm_check_cpointer((void*)0xffffffff);
+    scm_check_cpointer((void *)0x00000000);
+    scm_check_cpointer((void *)0xfffffffe);
+    scm_check_cpointer((void *)0xffffffff);
     scm_check_cfunc_pointer((ScmCFunc)0x00000000);
     scm_check_cfunc_pointer((ScmCFunc)0xfffffffe);
     scm_check_cfunc_pointer((ScmCFunc)0xffffffff);

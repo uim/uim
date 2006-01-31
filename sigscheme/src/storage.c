@@ -54,11 +54,11 @@
 =======================================*/
 #if !SCM_OBJ_COMPACT
 /* special constant initialization */
-#define SCM_CONSTANT_BIND_SUBSTANCE(obj, cell)                          \
-    do {                                                                \
-        (obj) = &(cell);                                                \
-        SCM_ENTYPE((obj), ScmConstant);                                 \
-    } while(/* CONSTCOND */ 0)
+#define SCM_CONSTANT_BIND_SUBSTANCE(obj, cell)                               \
+    do {                                                                     \
+        (obj) = &(cell);                                                     \
+        SCM_ENTYPE((obj), ScmConstant);                                      \
+    } while (/* CONSTCOND */ 0)
 #endif /* SCM_OBJ_COMPACT */
 
 /*=======================================
@@ -431,7 +431,7 @@ scm_type(ScmObj obj)
             return ScmCFuncPointer;
         else if (FREECELLP(obj))
             return ScmFreeCell;
-        ERR("invalid others object: ptr = %p", (void*)obj);
+        ERR("invalid others object: ptr = %p", (void *)obj);
 
     case SCM_TAG_IMM:
         if (INTP(obj))
@@ -440,10 +440,10 @@ scm_type(ScmObj obj)
             return ScmChar;
         else if (SCM_CONSTANTP(obj))
             return ScmConstant;
-        ERR("invalid imm object: ptr = %p", (void*)obj);
+        ERR("invalid imm object: ptr = %p", (void *)obj);
 
     default:
-        ERR("invalid object: ptr = %p", (void*)obj);
+        ERR("invalid object: ptr = %p", (void *)obj);
     }
 
     /* NOTREACHED */
