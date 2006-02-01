@@ -62,8 +62,7 @@ main (int argc, char *argv[])
 
   tray = egg_tray_icon_new("uim");
 
-  /* icon = uim_helper_trayicon_new(); */
-  icon = uim_helper_toolbar_new();
+  icon = uim_helper_trayicon_new();
 
   gtk_widget_show_all(icon);
 
