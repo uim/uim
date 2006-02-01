@@ -121,6 +121,7 @@ static void hash_grow(hash_table *tab);
 static hash_entry *hash_lookup(hash_table *tab, ScmObj key, int datum, int flag);
 static void write_ss_scan(ScmObj obj, write_ss_context *ctx);
 static int  get_shared_index(ScmObj obj);
+static void write_ss_internal(ScmObj port, ScmObj obj, enum OutputType otype);
 #endif /* SCM_USE_SRFI38 */
 
 /*=======================================
@@ -149,6 +150,7 @@ write_internal(ScmObj port, ScmObj obj, enum OutputType otype)
         ERR("output port is required");
 
     write_obj(port, obj, otype);
+    scm_port_flush(port);
 }
 
 static void
@@ -238,7 +240,6 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
     default:
         SCM_ASSERT(scm_false);
     }
-    scm_port_flush(port);
 }
 
 static void
@@ -647,9 +648,8 @@ get_shared_index(ScmObj obj)
     return 0;
 }
 
-/* write with shared structure */
-void
-scm_write_ss(ScmObj port, ScmObj obj)
+static void
+write_ss_internal(ScmObj port, ScmObj obj, enum OutputType otype)
 {
     write_ss_context ctx = {{0}};
     unsigned int i;
@@ -667,10 +667,23 @@ scm_write_ss(ScmObj port, ScmObj obj)
     if (!HASH_EMPTY(ctx.seen))
         write_ss_ctx = &ctx;
 
-    scm_write(port, obj);
+    write_internal(port, obj, otype);
 
     write_ss_ctx = NULL;
     free(ctx.seen.ents);
+}
+
+/* write with shared structure */
+void
+scm_write_ss(ScmObj port, ScmObj obj)
+{
+    write_ss_internal(port, obj, AS_WRITE);
+}
+
+void
+scm_display_errobj_ss(ScmObj port, ScmObj errobj)
+{
+    write_ss_internal(port, errobj, AS_DISPLAY);
 }
 #endif /* SCM_USE_SRFI38 */
 

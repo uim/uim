@@ -275,11 +275,15 @@ scm_p_inspect_error(ScmObj err_obj)
     if (scm_debug_categories() & SCM_DBG_ERRMSG) {
         scm_port_printf(scm_err, SCM_ERR_HEADER);
         if (ERROBJP(err_obj)) {
+#if SCM_USE_SRFI38
+            scm_display_errobj_ss(scm_err, err_obj);
+#else
             scm_display(scm_err, err_obj);
+#endif
         } else {
             scm_port_puts(scm_err, SCM_ERRMSG_UNHANDLED_EXCEPTION);
             scm_port_puts(scm_err, ": ");
-            scm_write(scm_err, err_obj);
+            SCM_WRITE_SS(scm_err, err_obj);
         }
         scm_port_newline(scm_err);
     }
