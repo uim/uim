@@ -42,6 +42,8 @@
  *   since SigScheme doesn't have a module or namespace feature (yet)
  */
 
+#include "config.h"
+
 /*=======================================
   System Include
 =======================================*/

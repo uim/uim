@@ -31,6 +31,9 @@
  *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
+
+#include "config.h"
+
 /*=======================================
   System Include
 =======================================*/
@@ -534,10 +537,3 @@ scm_p_write_char(ScmObj obj, ScmObj args)
     scm_port_put_char(port, SCM_CHAR_VALUE(obj));
     return SCM_UNDEF;
 }
-
-/* FIXME: link conditionally with autoconf */
-#if SCM_USE_MULTIBYTE_CHAR
-#include "mbcport.c"
-#else /* SCM_USE_MULTIBYTE_CHAR */
-#include "sbcport.c"
-#endif /* SCM_USE_MULTIBYTE_CHAR */

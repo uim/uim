@@ -1,4 +1,5 @@
-noinst_LTLIBRARIES  = libsscm.la
+#noinst_LTLIBRARIES = libsscm.la
+lib_LTLIBRARIES = libsscm.la
 
 FUNC_TABLES = \
 		sigschemefunctable-r5rs-syntax.c \
@@ -59,18 +60,88 @@ sigschemefunctable-siod.c: module-siod.c $(BUILD_FUNCTBL_SOURCES)
 	$(BUILD_FUNCTBL) "scm_siod_func_info_table" $< > $@
 
 EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_SOURCES) \
-        storage-fatty.h storage-compact.h
+        test-compact.c
+
+pkginclude_HEADERS = sigscheme.h config.h
+
 libsscm_la_SOURCES = \
-		config-asprintf.h \
-		alloc.c storage.c storage-gc.c storage-symbol.c \
-		storage-continuation.c \
-		encoding.c error.c \
-		env.c eval.c syntax.c list.c number.c string.c vector.c \
-		port.c read.c write.c load.c module.c \
-                basecport.c fileport.c \
-		procedure.c \
-		sigscheme.c sigschemefunctable.c \
-		sigscheme.h sigschemefunctable.h
+        config-nonstd-string.h config-asprintf.h \
+        alloc.c storage.c storage-gc.c storage-symbol.c \
+        error.c env.c eval.c syntax.c procedure.c list.c \
+        module.c \
+        sigscheme.c sigschemefunctable.c \
+        sigschemeinternal.h sigschemefunctable.h
+if USE_STORAGE_COMPACT
+  pkginclude_HEADERS += storage-compact.h
+else
+  pkginclude_HEADERS += storage-fatty.h
+endif
+if USE_CONTINUATION
+  libsscm_la_SOURCES += storage-continuation.c
+endif
+if USE_NUMBER
+  libsscm_la_SOURCES += number.c
+endif
+if USE_STRING
+  libsscm_la_SOURCES += string.c
+endif
+if USE_VECTOR
+  libsscm_la_SOURCES += vector.c
+endif
+if USE_PORT
+  libsscm_la_SOURCES += port.c baseport.h basecport.c fileport.h fileport.c
+if USE_MULTIBYTE_CHAR
+    libsscm_la_SOURCES += mbcport.h mbcport.c
+else
+    libsscm_la_SOURCES += sbcport.h sbcport.c
+endif
+endif
+if USE_READER
+  libsscm_la_SOURCES += read.c
+endif
+if USE_WRITER
+  libsscm_la_SOURCES += write.c
+endif
+if USE_LOAD
+  libsscm_la_SOURCES += load.c
+endif
+if USE_MULTIBYTE_CHAR
+  pkginclude_HEADERS += encoding.h
+  libsscm_la_SOURCES += encoding.c
+endif
+if USE_DEEP_CADRS
+  libsscm_la_SOURCES += module-r5rs-deepcadrs.c
+endif
+if USE_NONSTD_FEATURES
+  libsscm_la_SOURCES += module-nonstd.c
+endif
+if COMPAT_SIOD
+  libsscm_la_SOURCES += module-siod.c nullport.h nullport.c
+endif
+if USE_SRFI1
+  libsscm_la_SOURCES += module-srfi1.c
+endif
+if USE_SRFI2
+  libsscm_la_SOURCES += module-srfi2.c
+endif
+if USE_SRFI6
+  libsscm_la_SOURCES += module-srfi6.c strport.h strport.c
+endif
+if USE_SRFI8
+  libsscm_la_SOURCES += module-srfi8.c
+endif
+if USE_SRFI23
+  libsscm_la_SOURCES += module-srfi23.c
+endif
+if USE_SRFI34
+  libsscm_la_SOURCES += module-srfi34.c
+endif
+if USE_SRFI38
+  libsscm_la_SOURCES += module-srfi38.c
+endif
+if USE_SRFI60
+  libsscm_la_SOURCES += module-srfi60.c
+endif
 
 libsscm_la_CFLAGS   = -Wall
 

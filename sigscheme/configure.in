@@ -89,6 +89,76 @@ if test x$CC = xgcc; then
 	CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
 fi
 
+# FIXME: configure variables appropriately
+use_yes="yes"
+use_no="no"
+# R5RS Features
+AM_CONDITIONAL(USE_CONTINUATION,        test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_QUASIQUOTE,          test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_HYGIENIC_MACRO,      test "x$use_no" = xyes)
+AM_CONDITIONAL(USE_INT,                 test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_RATIONAL,            test "x$use_no" = xyes)
+AM_CONDITIONAL(USE_REAL,                test "x$use_no" = xyes)
+AM_CONDITIONAL(USE_COMPLEX,             test "x$use_no" = xyes)
+AM_CONDITIONAL(USE_NUMBER,              test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_CHAR,                test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_STRING,              test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_VECTOR,              test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_PORT,                test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_READER,              test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_WRITER,              test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_LOAD,                test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_DEEP_CADRS,          test "x$use_yes" = xyes)
+
+# Optional Features
+AM_CONDITIONAL(USE_NONSTD_FEATURES,     test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_LEGACY_MACRO,        test "x$use_no" = xyes)
+AM_CONDITIONAL(USE_DUMP,                test "x$use_no" = xyes)
+AM_CONDITIONAL(USE_EVAL_C_STRING,       test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_SRFI1,               test "x$use_no" = xyes)
+AM_CONDITIONAL(USE_SRFI2,               test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_SRFI6,               test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_SRFI8,               test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_SRFI22,              test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_SRFI23,              test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_SRFI34,              test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_SRFI38,              test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_SRFI60,              test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_SRFI75_NAMED_CHARS,  test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_SRFI75,              test "x$use_yes" = xyes)
+AM_CONDITIONAL(COMPAT_SIOD,             test "x$use_yes" = xyes)
+AM_CONDITIONAL(COMPAT_SIOD_BUGS,        test "x$use_yes" = xyes)
+
+# Character Encoding Handlers
+AM_CONDITIONAL(USE_UTF8,                test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_EUCCN,               test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_EUCJP,               test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_EUCKR,               test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_SJIS,                test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_MULTIBYTE_CHAR,      test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_UTF8_AS_DEFAULT,     test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_EUCCN_AS_DEFAULT,    test "x$use_no" = xyes)
+AM_CONDITIONAL(USE_EUCJP_AS_DEFAULT,    test "x$use_no" = xyes)
+AM_CONDITIONAL(USE_EUCKR_AS_DEFAULT,    test "x$use_no" = xyes)
+AM_CONDITIONAL(USE_SJIS_AS_DEFAULT,     test "x$use_no" = xyes)
+
+# Internal Behaviors
+AM_CONDITIONAL(STRICT_R5RS,             test "x$use_no" = xyes)
+AM_CONDITIONAL(STRICT_NULL_FORM,        test "x$use_no" = xyes)
+AM_CONDITIONAL(STRICT_VECTOR_FORM,      test "x$use_yes" = xyes)
+AM_CONDITIONAL(STRICT_ARGCHECK,         test "x$use_yes" = xyes)
+AM_CONDITIONAL(STRICT_DEFINE_PLACEMENT, test "x$use_yes" = xyes)
+AM_CONDITIONAL(STRICT_ENCODING_CHECK,   test "x$use_yes" = xyes)
+AM_CONDITIONAL(CONST_LIST_LITERAL,      test "x$use_yes" = xyes)
+AM_CONDITIONAL(CONST_VECTOR_LITERAL,    test "x$use_yes" = xyes)
+AM_CONDITIONAL(ACCESSOR_ASSERT,         test "x$use_no" = xyes)
+AM_CONDITIONAL(USE_VALUECONS,           test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_NULL_CAPABLE_STRING, test "x$use_yes" = xyes)
+
+# Storage configurations
+# FIXME
+AM_CONDITIONAL(USE_STORAGE_COMPACT,     test "x$use_no" = xyes)
+
 AC_CONFIG_FILES([Makefile
                  m4/Makefile
                  src/Makefile])

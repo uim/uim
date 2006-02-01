@@ -33,11 +33,6 @@
 ===========================================================================*/
 
 #include "config.h"
-#if SCM_USE_SRFI6
-/* FIXME: remove this for direct inclusion of module-srfi6.c and
- * strport.c */
-#include "config-asprintf.h"
-#endif
 
 /*=======================================
   System Include
@@ -406,37 +401,3 @@ scm_p_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after)
 
     return scm_dynamic_wind(before, thunk, after);
 }
-
-#if SCM_USE_DEEP_CADRS
-#include "module-r5rs-deepcadrs.c"
-#endif
-#if SCM_USE_NONSTD_FEATURES
-#include "module-nonstd.c"
-#endif
-#if SCM_USE_SRFI1
-#include "module-srfi1.c"
-#endif
-#if SCM_USE_SRFI2
-#include "module-srfi2.c"
-#endif
-#if SCM_USE_SRFI6
-#include "module-srfi6.c"
-#endif
-#if SCM_USE_SRFI8
-#include "module-srfi8.c"
-#endif
-#if SCM_USE_SRFI23
-#include "module-srfi23.c"
-#endif
-#if SCM_USE_SRFI34
-#include "module-srfi34.c"
-#endif
-#if SCM_USE_SRFI38
-#include "module-srfi38.c"
-#endif
-#if SCM_USE_SRFI60
-#include "module-srfi60.c"
-#endif
-#if SCM_COMPAT_SIOD
-#include "module-siod.c"
-#endif

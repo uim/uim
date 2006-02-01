@@ -39,6 +39,8 @@
  * safe and simple coding elements.
  */
 
+#include "config.h"
+
 /*=======================================
   System Include
 =======================================*/

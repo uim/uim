@@ -34,6 +34,8 @@
 
 /* Only write/ss is provided currently. */
 
+#include "config.h"
+
 /*=======================================
   System Include
 =======================================*/
@@ -42,6 +44,7 @@
   Local Include
 =======================================*/
 #include "sigscheme.h"
+#include "sigschemeinternal.h"
 
 /*=======================================
   File Local Struct Declarations

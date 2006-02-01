@@ -112,13 +112,13 @@
 #define SCM_ACCESSOR_ASSERT     0  /* enable strict type check with accessor */
 #define SCM_USE_VALUECONS       1  /* use experimental values passing */
 #define SCM_USE_NULL_CAPABLE_STRING 1  /* enable experimental null character in a middle of a string */
-#define SCM_OBJ_COMPACT         0  /* object representation compaction (experimental) */
-
-#define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
 
 /*===========================================================================
-  Memory configurations
+  Storage configurations
 ===========================================================================*/
+#define SCM_OBJ_COMPACT         0  /* object representation compaction (experimental) */
+#define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
+
 /* on-stack initial token buffer size for parser */
 #define SCM_INITIAL_STRING_BUF_SIZE 64
 #define SCM_INITIAL_SYMBOL_BUF_SIZE 64

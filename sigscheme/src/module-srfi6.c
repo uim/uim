@@ -32,6 +32,8 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
+#include "config.h"
+
 /*=======================================
   System Include
 =======================================*/
@@ -139,7 +141,3 @@ scm_p_srfi6_get_output_string(ScmObj port)
 
     return MAKE_STRING(new_str, mb_len);
 }
-
-
-/* FIXME: link conditionally with autoconf */
-#include "strport.c"

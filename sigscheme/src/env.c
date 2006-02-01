@@ -64,6 +64,8 @@
  *   hand-maid invalid environment objects.
  */
 
+#include "config.h"
+
 /*=======================================
   System Include
 =======================================*/

@@ -31,6 +31,9 @@
  *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
+
+#include "config.h"
+
 /*=======================================
   System Include
 =======================================*/
@@ -280,6 +283,3 @@ scm_set_verbose_level(long level)
             scm_out = saved_output_port;
     }
 }
-
-/* FIXME: link conditionally with autoconf */
-#include "nullport.c"

@@ -39,6 +39,8 @@
 
 /* This file is going to be portable. Don't depend on SigScheme if possible. */
 
+#include "config.h"
+
 /*=======================================
   System Include
 =======================================*/

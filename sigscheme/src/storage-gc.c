@@ -53,6 +53,8 @@
  *   - collects unmarked objects on heaps into the freelist.
  */
 
+#include "config.h"
+
 /*=======================================
   System Include
 =======================================*/
