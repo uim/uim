@@ -42,7 +42,7 @@
 #include <gtk/gtk.h>
 #include "uim/uim.h"
 
-extern GtkWidget *uim_helper_toolbar_new(void);
+extern GtkWidget *uim_toolbar_standalone_new(void);
 
 static gboolean toolbar_dragging = FALSE;
 static gint window_drag_start_x = -1, window_drag_start_y = -1;
@@ -241,7 +241,7 @@ main (int argc, char *argv[])
   gtk_widget_set_size_request(handle, 8, -1);
   gtk_box_pack_start(GTK_BOX (hbox), handle, FALSE, FALSE, 0);
 
-  toolbar = (GtkWidget*)uim_helper_toolbar_new();
+  toolbar = (GtkWidget*)uim_toolbar_standalone_new();
   gtk_box_pack_start(GTK_BOX (hbox), toolbar, FALSE, FALSE, 0);
   g_signal_connect(G_OBJECT(window), "size-request",
 		   G_CALLBACK(size_request_cb), NULL);

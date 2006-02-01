@@ -105,7 +105,7 @@ static unsigned int read_tag;
 static int uim_fd;
 
 enum {
-  TYPE_TOOLBAR,
+  TYPE_STANDALONE,
   TYPE_APPLET,
   TYPE_ICON
 };
@@ -122,11 +122,13 @@ static void
 prop_menu_activate(GtkMenu *menu_item, gpointer data);
 
 GtkWidget *
-uim_helper_toolbar_new(void);
+uim_toolbar_standalone_new(void);
 GtkWidget *
-uim_helper_trayicon_new(void);
+uim_toolbar_trayicon_new(void);
 GtkWidget *
-uim_helper_applet_new(void);
+uim_toolbar_applet_new(void);
+
+void uim_toolbar_check_helper_connection(GtkWidget *widget);
 
 static void
 prop_menu_activate(GtkMenu *menu_item, gpointer data)
@@ -619,8 +621,8 @@ prop_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *wi
   return FALSE;
 }
 
-static void
-check_helper_connection(GtkWidget *widget)
+void
+uim_toolbar_check_helper_connection(GtkWidget *widget)
 {
   if (uim_fd < 0) {
     uim_fd = uim_helper_init_client_fd(helper_disconnect_cb);
@@ -649,7 +651,7 @@ prop_button_released(GtkButton *prop_button, GdkEventButton *event, GtkWidget *w
   int i = 0;
   gboolean is_radio = FALSE;
 
-  check_helper_connection(widget);
+  uim_toolbar_check_helper_connection(widget);
   
   if (!event) {
     return FALSE;
@@ -795,44 +797,28 @@ toolbar_new(gint type)
 		    GINT_TO_POINTER(type));
   
   uim_fd = -1;
-  check_helper_connection(hbox);
-  uim_helper_client_get_prop_list();
+  if (type != TYPE_ICON) {
+    uim_toolbar_check_helper_connection(hbox);
+    uim_helper_client_get_prop_list();
+  }
 
   return hbox; 
 }
 
 GtkWidget *
-uim_helper_toolbar_new(void)
+uim_toolbar_standalone_new(void)
 {
-  return toolbar_new(TYPE_TOOLBAR);
+  return toolbar_new(TYPE_STANDALONE);
 }
 
 GtkWidget *
-uim_helper_applet_new(void)
+uim_toolbar_applet_new(void)
 {
   return toolbar_new(TYPE_APPLET);
 }
 
-
 GtkWidget *
-uim_helper_trayicon_new(void)
+uim_toolbar_trayicon_new(void)
 {
-  GtkWidget *button;
-
-  regist_icon();
-
-  prop_menu = gtk_menu_new();
-  right_click_menu = right_click_menu_create();
-  
-  button = gtk_button_new_with_label(" x");
-  gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
-  g_signal_connect(G_OBJECT(button), "button-press-event",
-		   G_CALLBACK(prop_button_pressed), button);
-  g_signal_connect(G_OBJECT(button), "button-release-event",
-		   G_CALLBACK(prop_button_released), button);
-  
-  uim_fd = -1;
-  check_helper_connection(button);
-  uim_helper_client_get_prop_list();
-  return button;
+  return toolbar_new(TYPE_ICON);
 }

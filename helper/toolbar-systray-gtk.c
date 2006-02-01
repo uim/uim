@@ -41,7 +41,17 @@
 #include <gtk/gtk.h>
 #include "eggtrayicon.h"
 
-GtkWidget *uim_helper_trayicon_new(void);
+GtkWidget *uim_toolbar_trayicon_new(void);
+void uim_toolbar_check_helper_connection(GtkWidget *widget);
+
+
+static void
+embedded_cb(GtkWidget *widget, gpointer user_data)
+{
+  uim_toolbar_check_helper_connection(user_data);
+  uim_helper_client_get_prop_list();
+}
+
 
 int 
 main (int argc, char *argv[])
@@ -62,7 +72,8 @@ main (int argc, char *argv[])
 
   tray = egg_tray_icon_new("uim");
 
-  icon = uim_helper_trayicon_new();
+  icon = uim_toolbar_trayicon_new();
+  g_signal_connect(G_OBJECT(tray), "embedded", G_CALLBACK(embedded_cb), icon);
 
   gtk_widget_show_all(icon);
 
@@ -70,6 +81,7 @@ main (int argc, char *argv[])
   gtk_widget_show(GTK_WIDGET (tray));
 
   gtk_main();
+
+  uim_quit();
   return 0;
 }
-

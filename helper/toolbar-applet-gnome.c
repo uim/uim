@@ -51,7 +51,7 @@ exec_pref(BonoboUIComponent *uic, gpointer data, const gchar *verbname);
 static void
 display_about_dialog(BonoboUIComponent *uic, gpointer data, const gchar *verbname);
 
-GtkWidget *uim_helper_applet_new(void);
+extern GtkWidget *uim_toolbar_applet_new(void);
 
 
 static const BonoboUIVerb uim_menu_verbs [] = {
@@ -149,7 +149,7 @@ uim_applet_new(PanelApplet *applet,
 
   uim_init();
 
-  toolbar = (GtkWidget*)uim_helper_applet_new();
+  toolbar = (GtkWidget*)uim_toolbar_applet_new();
 
   gtk_container_add (GTK_CONTAINER (applet), toolbar);  
   gtk_widget_show_all (GTK_WIDGET (applet));
