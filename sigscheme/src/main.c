@@ -150,7 +150,7 @@ repl_loop(void)
          *         (else
          *          (%%inspect-error err)
          *          #<err>))
-         *   (eval exp (interaction-environment)))
+         *   (eval (quote sexp) (interaction-environment)))
          *
          * To allow redefinition of 'guard' and '%%inspect-err', surely access
          * them via symbol instead of prepared syntax or procedure object.
@@ -158,7 +158,7 @@ repl_loop(void)
         SCM_EVAL_STATE_INIT1(eval_state, SCM_INTERACTION_ENV);
         result = scm_s_srfi34_guard(cond_catch,
                                     LIST_1(LIST_3(proc_eval,
-                                                  sexp,
+                                                  LIST_2(SYM_QUOTE, sexp),
                                                   SCM_INTERACTION_ENV)),
                                     &eval_state);
         if (eval_state.ret_type == SCM_VALTYPE_NEED_EVAL)
