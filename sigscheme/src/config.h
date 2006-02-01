@@ -63,6 +63,7 @@
 #define SCM_USE_NONSTD_FEATURES 1  /* use Non-R5RS standard features such as "require" */
 #define SCM_USE_LEGACY_MACRO    0  /* (not supported yet) use define-macro */
 #define SCM_USE_DUMP            0  /* (not supported yet) use storage dump */
+#define SCM_USE_EVAL_C_STRING   1  /* use scm_eval_c_string() */
 
 #define SCM_USE_SRFI1           0  /* use SRFI-1  list library (broken) */
 #define SCM_USE_SRFI2           1  /* use SRFI-2  'and-let*' */
@@ -232,8 +233,9 @@
 #error "disabled character encoding is chosen as default"
 #endif
 
-/* for scm_eval_c_string_internal() */
+#if SCM_USE_EVAL_C_STRING
 #undef SCM_USE_SRFI6
 #define SCM_USE_SRFI6           1
+#endif
 
 #endif /* __SIGSCHEME_CONFIG_H */

@@ -33,9 +33,11 @@
 ===========================================================================*/
 
 #include "config.h"
+#if SCM_USE_SRFI6
 /* FIXME: remove this for direct inclusion of module-srfi6.c and
  * strport.c */
 #include "config-asprintf.h"
+#endif
 
 /*=======================================
   System Include

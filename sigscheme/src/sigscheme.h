@@ -957,7 +957,9 @@ extern ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *);
 /* sigscheme.c */
 void scm_initialize(const ScmStorageConf *storage_conf);
 void scm_finalize(void);
+#if SCM_USE_EVAL_C_STRING
 ScmObj scm_eval_c_string(const char *exp);
+#endif
 #if SCM_COMPAT_SIOD
 ScmObj scm_return_value(void);
 #endif

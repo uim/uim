@@ -68,7 +68,9 @@ static ScmObj scm_return_value_cache    = NULL;
   File Local Function Declarations
 =======================================*/
 static void scm_initialize_internal(const ScmStorageConf *storage_conf);
+#if SCM_USE_EVAL_C_STRING
 static ScmObj scm_eval_c_string_internal(const char *exp);
+#endif
 
 /*=======================================
   Function Implementations
@@ -170,6 +172,7 @@ scm_finalize()
     scm_initialized = scm_false;
 }
 
+#if SCM_USE_EVAL_C_STRING
 ScmObj
 scm_eval_c_string(const char *exp)
 {
@@ -193,7 +196,7 @@ scm_eval_c_string(const char *exp)
     return ret;
 }
 
-ScmObj
+static ScmObj
 scm_eval_c_string_internal(const char *exp)
 {
     ScmObj str_port, ret;
@@ -213,6 +216,7 @@ scm_eval_c_string_internal(const char *exp)
 
     return ret;
 }
+#endif /* SCM_USE_EVAL_C_STRING */
 
 #if SCM_COMPAT_SIOD
 ScmObj
