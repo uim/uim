@@ -735,7 +735,7 @@ ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
 ScmObj scm_make_closure(ScmObj exp, ScmObj env);
 ScmObj scm_make_vector(ScmObj *vec, scm_int_t len);
 ScmObj scm_make_immutable_vector(ScmObj *vec, scm_int_t len);
-ScmObj scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag);
+ScmObj scm_make_port(struct ScmCharPort_ *cport, enum ScmPortFlag flag);
 ScmObj scm_make_continuation(void);
 #if !SCM_USE_VALUECONS
 ScmObj scm_make_value_packet(ScmObj values);
@@ -978,7 +978,8 @@ extern enum ScmObjType scm_type(ScmObj obj);
 /*
  * Port
  */
-#define SCM_SAL_PORT_IMPL(a) ((ScmCharPort *)    SCM_OTHERS_CAR_VAL((a), PORT))
+#define SCM_SAL_PORT_IMPL(a)                                                 \
+    ((struct ScmCharPort_ *)SCM_OTHERS_CAR_VAL((a), PORT))
 #define SCM_SAL_PORT_FLAG(a) ((enum ScmPortFlag)SCM_OTHERS_CDR_VAL((a), PORT))
 #define SCM_SAL_PORT_SET_IMPL(a, val) SCM_OTHERS_SET_CAR_VAL((a), PORT, (val))
 #define SCM_SAL_PORT_SET_FLAG(a, val) SCM_OTHERS_SET_CDR_VAL((a), PORT, (val))

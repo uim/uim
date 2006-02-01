@@ -206,23 +206,15 @@ extern "C" {
 
 #endif /* SCM_GCC4_READY_GC */
 
-
-/*
- * Port I/O Handling macros
- */
-#define SCM_CHARPORT_ERROR(cport, msg) (scm_plain_error(msg))
-#define SCM_BYTEPORT_ERROR(bport, msg) (scm_plain_error(msg))
-#define SCM_PORT_MALLOC(size)          (scm_malloc(size))
-#define SCM_PORT_CALLOC(number, size)  (scm_calloc(number, size))
-#define SCM_PORT_REALLOC(ptr, size)    (scm_realloc(ptr, size))
-/* Above five macros must be defined before this inclusion. */
-#include "baseport.h"
-
+#if SCM_USE_PORT
 #define SCM_ENSURE_LIVE_PORT(port)                                           \
     (SCM_PORT_IMPL(port)                                                     \
      || (scm_error_obj("(unknown)", "operated on closed port", port), 1))
+#endif
 
+#if SCM_USE_WRITER
 #define SCM_WRITE_SS(port, obj) ((*scm_write_ss_func)(port, obj))
+#endif
 
 /*===========================================================================
   Type Definitions

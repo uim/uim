@@ -136,7 +136,7 @@ struct ScmCell_ {
         } vector;
 
         struct {
-            ScmCharPort *impl;
+            struct ScmCharPort_ *impl;
             enum ScmPortFlag flag;
         } port;
 
@@ -250,7 +250,7 @@ ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
 ScmObj scm_make_closure(ScmObj exp, ScmObj env);
 ScmObj scm_make_vector(ScmObj *vec, scm_int_t len);
 ScmObj scm_make_immutable_vector(ScmObj *vec, scm_int_t len);
-ScmObj scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag);
+ScmObj scm_make_port(struct ScmCharPort_ *cport, enum ScmPortFlag flag);
 ScmObj scm_make_continuation(void);
 #if !SCM_USE_VALUECONS
 ScmObj scm_make_value_packet(ScmObj values);
