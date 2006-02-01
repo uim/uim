@@ -101,7 +101,7 @@ void
 scm_initialize_siod(void)
 {
     ScmCharPort *cport;
-    SCM_REGISTER_FUNC_TABLE(scm_siod_func_info_table);
+    scm_register_funcs(scm_siod_func_info_table);
 
     scm_use("srfi-60");
     scm_define_alias("bit-and", "logand");

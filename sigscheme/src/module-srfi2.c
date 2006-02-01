@@ -67,7 +67,7 @@
 void
 scm_initialize_srfi2(void)
 {
-    SCM_REGISTER_FUNC_TABLE(scm_srfi2_func_info_table);
+    scm_register_funcs(scm_srfi2_func_info_table);
 }
 
 ScmObj

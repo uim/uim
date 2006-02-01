@@ -188,7 +188,7 @@ scm_initialize_srfi34(void)
                        SCM_INTERACTION_ENV);
 #endif /* USE_WITH_SIGSCHEME_FATAL_ERROR */
 
-    SCM_REGISTER_FUNC_TABLE(scm_srfi34_func_info_table);
+    scm_register_funcs(scm_srfi34_func_info_table);
 
     current_exception_handlers = LIST_1(proc_fallback_handler);
 }

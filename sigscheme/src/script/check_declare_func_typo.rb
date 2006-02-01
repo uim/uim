@@ -145,7 +145,7 @@ def search_declare_function(prefix, filename)
       $declare_info[scm_func] = reg_func;
       $declare_info2[reg_func] = scm_func;
 
-#      puts "    { \"#{scm_func}\", (ScmBuiltinFunc)#{c_func}, (ScmRegisterFunc)#{reg_func} },"
+#      puts "    { \"#{scm_func}\", (ScmFuncType)#{c_func}, (ScmRegisterFunc)#{reg_func} },"
     end
   }
 end

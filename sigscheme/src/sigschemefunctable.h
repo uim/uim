@@ -51,25 +51,10 @@ extern "C" {
 /*=======================================
   Macro Definitions
 =======================================*/
-#define SCM_REGISTER_FUNC_TABLE(functable)                                   \
-    do {                                                                     \
-        struct scm_func_registration_info *info = NULL;                      \
-        for (info = functable; info->funcname; info++) {                     \
-            (*info->reg_func)(info->funcname, info->c_func);                 \
-        }                                                                    \
-    } while (/* CONSTCOND */ 0)
 
 /*=======================================
   Type Definitions
 =======================================*/
-typedef ScmObj (*ScmBuiltinFunc)(void);
-typedef void   (*ScmRegisterFunc)(const char *name, ScmBuiltinFunc func);
-
-struct scm_func_registration_info {
-    const char     *funcname;
-    ScmBuiltinFunc  c_func;
-    ScmRegisterFunc reg_func;
-};
 
 /*=======================================
    Variable Declarations

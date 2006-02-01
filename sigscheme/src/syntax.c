@@ -84,7 +84,7 @@ static qquote_result qquote_internal(ScmObj input, ScmObj env, scm_int_t nest);
 void
 scm_init_syntax(void)
 {
-    SCM_REGISTER_FUNC_TABLE(scm_r5rs_syntax_func_info_table);
+    scm_register_funcs(scm_r5rs_syntax_func_info_table);
 
     scm_sym_quote            = scm_intern("quote");
     scm_sym_quasiquote       = scm_intern("quasiquote");

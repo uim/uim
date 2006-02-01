@@ -205,6 +205,16 @@ scm_define_alias(const char *newsym, const char *sym)
                          SCM_SYMBOL_VCELL(scm_intern(sym)));
 }
 
+void
+scm_register_funcs(struct scm_func_registration_info *table)
+{
+    struct scm_func_registration_info *info;
+
+    for (info = &table[0]; info->funcname; info++) {
+        (*info->reg_func)(info->funcname, info->c_func);
+    }
+}
+
 static scm_bool
 scm_register_func(const char *name, ScmFuncType c_func,
                   enum ScmFuncTypeCode type)

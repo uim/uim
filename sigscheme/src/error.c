@@ -100,7 +100,7 @@ scm_init_error(void)
     scm_err_funcname = NULL;
 #endif
 
-    SCM_REGISTER_FUNC_TABLE(scm_error_func_info_table);
+    scm_register_funcs(scm_error_func_info_table);
 }
 
 int

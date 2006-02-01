@@ -72,7 +72,7 @@ static ScmObj compare_list(ScmObj eqproc, ScmObj lst1, ScmObj lst2);
 void
 scm_initialize_srfi1(void)
 {
-    SCM_REGISTER_FUNC_TABLE(scm_srfi1_func_info_table);
+    scm_register_funcs(scm_srfi1_func_info_table);
 }
 
 /*===========================================================================

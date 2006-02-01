@@ -44,7 +44,6 @@
    Local Include
 =======================================*/
 #include "sigscheme.h"
-#include "sigschemefunctable.h"
 #include "encoding.h"
 
 /*=======================================
@@ -56,6 +55,17 @@ struct ScmSpecialCharInfo_ {
     const char *esc_seq;  /* escape sequence as string */
     const char *lex_rep;  /* lexical representation as character object */
 };
+
+typedef void (*ScmRegisterFunc)(const char *name, ScmFuncType func);
+
+struct scm_func_registration_info {
+    const char     *funcname;
+    ScmFuncType     c_func;
+    ScmRegisterFunc reg_func;
+};
+
+/* workaround */
+#include "sigschemefunctable.h"
 
 /*=======================================
    Variable Declarations
@@ -563,6 +573,7 @@ void scm_display_errobj_ss(ScmObj port, ScmObj errobj);
 
 /* module.c */
 void scm_init_module(void);
+void scm_register_funcs(struct scm_func_registration_info *table);
 
 /* sigscheme.c */
 char **scm_interpret_argv(char **argv);

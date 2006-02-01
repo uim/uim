@@ -88,7 +88,7 @@
 void
 scm_initialize_srfi60(void)
 {
-    SCM_REGISTER_FUNC_TABLE(scm_srfi60_func_info_table);
+    scm_register_funcs(scm_srfi60_func_info_table);
 
     scm_define_alias("bitwise-and",   "logand");
     scm_define_alias("bitwise-ior",   "logior");

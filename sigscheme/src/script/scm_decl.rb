@@ -69,7 +69,7 @@ end
 
 def scm_func_table_entry(decl)
   proc, func, register_func = decl.values_at(:proc, :func, :register_func)
-  "{ \"#{proc}\", (ScmBuiltinFunc)#{func}, (ScmRegisterFunc)#{register_func} }"
+  "{ \"#{proc}\", (ScmFuncType)#{func}, (ScmRegisterFunc)#{register_func} }"
 end
 
 def scm_func_register_exp(decl)
