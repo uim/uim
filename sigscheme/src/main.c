@@ -124,8 +124,7 @@ repl_loop(void)
         sexp = scm_s_srfi34_guard(cond_catch,
                                   LIST_1(LIST_2(proc_read, scm_in)),
                                   &eval_state);
-        if (eval_state.ret_type == SCM_VALTYPE_NEED_EVAL)
-            sexp = EVAL(sexp, eval_state.env);
+        sexp = SCM_FINISH_TAILREC_CALL(sexp, &eval_state);
         if (EOFP(sexp))
             break;
 
@@ -161,8 +160,7 @@ repl_loop(void)
                                                   LIST_2(SYM_QUOTE, sexp),
                                                   SCM_INTERACTION_ENV)),
                                     &eval_state);
-        if (eval_state.ret_type == SCM_VALTYPE_NEED_EVAL)
-            result = EVAL(result, eval_state.env);
+        result = SCM_FINISH_TAILREC_CALL(result, &eval_state);
 
         if (!EQ(result, err)) {
             SCM_WRITE_SS(scm_out, result);

@@ -126,9 +126,7 @@ scm_call(ScmObj proc, ScmObj args)
     SCM_EVAL_STATE_INIT2(state, SCM_INTERACTION_ENV, SCM_VALTYPE_AS_IS);
 
     ret = call(proc, args, &state, SCM_VALTYPE_AS_IS);
-    if (state.ret_type == SCM_VALTYPE_NEED_EVAL)
-        ret = EVAL(ret, state.env);
-    return ret;
+    return SCM_FINISH_TAILREC_CALL(ret, &state);
 }
 
 /* ARGS should NOT have been evaluated yet. */

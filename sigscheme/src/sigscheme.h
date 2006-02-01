@@ -928,6 +928,12 @@ struct ScmEvalState_ {
         (state).ret_type = (_ret_type);                                      \
     } while (/* CONSTCOND */ 0)
 
+#define SCM_FINISH_TAILREC_CALL(obj, eval_state)                             \
+    (((eval_state)->ret_type == SCM_VALTYPE_NEED_EVAL)                       \
+     ? ((eval_state)->ret_type = SCM_VALTYPE_AS_IS,                          \
+        EVAL((obj), (eval_state)->env))                                      \
+     : (obj))
+
 /*=======================================
    Variable Declarations
 =======================================*/

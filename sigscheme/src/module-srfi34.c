@@ -313,10 +313,7 @@ guard_handler(ScmObj q_condition, ScmEvalState *eval_state)
                        LIST_1(LIST_2(syn_guard_handler_body, sym_handler_k)),
                        eval_state->env);
     ret = scm_call_with_current_continuation(handler_body, eval_state);
-    if (eval_state->ret_type == SCM_VALTYPE_NEED_EVAL) {
-        ret = EVAL(ret, eval_state->env);
-        eval_state->ret_type = SCM_VALTYPE_AS_IS;
-    }
+    ret = SCM_FINISH_TAILREC_CALL(ret, eval_state);
     return scm_call(ret, SCM_NULL);
 }
 
@@ -388,9 +385,7 @@ guard_body(ScmEvalState *eval_state)
     /* evaluate the body */
     SCM_EVAL_STATE_INIT1(lex_eval_state, lex_env);
     result = scm_s_body(body, &lex_eval_state);
-    if (lex_eval_state.ret_type == SCM_VALTYPE_NEED_EVAL)
-        result = EVAL(result, lex_env);
-    eval_state->ret_type = SCM_VALTYPE_AS_IS;
+    result = SCM_FINISH_TAILREC_CALL(result, &lex_eval_state);
 
     scm_call_continuation(guard_k, delay(result, lex_env));
     /* NOTREACHED */
