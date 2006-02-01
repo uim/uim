@@ -62,7 +62,7 @@ sigschemefunctable-siod.c: module-siod.c $(BUILD_FUNCTBL_SOURCES)
 EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_SOURCES) \
         test-compact.c
 
-pkginclude_HEADERS = sigscheme.h config.h
+pkginclude_HEADERS = sigscheme.h config.h my-stdint.h
 
 libsscm_la_SOURCES = \
         config-nonstd-string.h config-asprintf.h \
