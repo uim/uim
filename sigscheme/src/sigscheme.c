@@ -262,6 +262,7 @@ scm_interpret_argv(char **argv)
     rest = argp;
 
     if (encoding) {
+#if SCM_USE_MULTIBYTE_CHAR
         specified_codec = scm_mb_find_codec(encoding);
         if (!specified_codec) {
             if (scm_initialized) {
@@ -275,6 +276,9 @@ scm_interpret_argv(char **argv)
             }
         }
         scm_current_char_codec = specified_codec;
+#else
+        fprintf(stderr, SCM_ERR_HEADER "encoding switching is not supported on this build\n");
+#endif
     }
 
     return rest;

@@ -232,8 +232,13 @@ scm_make_string_internal(char *str, scm_int_t len, scm_bool is_immutable)
 
     SCM_ASSERT(str);
 
-    if (len == STRLEN_UNKNOWN)
+    if (len == STRLEN_UNKNOWN) {
+#if SCM_USE_MULTIBYTE_CHAR
         len = scm_mb_bare_c_strlen(scm_current_char_codec, str);
+#else
+        len = strlen(str);
+#endif
+    }
 
     obj = scm_alloc_cell();
     SCM_ENTYPE_STRING(obj);

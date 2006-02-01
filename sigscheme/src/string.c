@@ -372,7 +372,9 @@ scm_p_make_string(ScmObj length, ScmObj args)
 #endif
     DECLARE_FUNCTION("make-string", procedure_variadic_1);
 
+#if SCM_USE_MULTIBYTE_CHAR
     ENSURE_STATELESS_CODEC(scm_current_char_codec);
+#endif
     ENSURE_INT(length);
     len = SCM_INT_VALUE(length);
     if (len == 0)
@@ -492,7 +494,9 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
 #endif
     DECLARE_FUNCTION("string-set!", procedure_fixed_3);
 
+#if SCM_USE_MULTIBYTE_CHAR
     ENSURE_STATELESS_CODEC(scm_current_char_codec);
+#endif
     ENSURE_STRING(str);
     ENSURE_MUTABLE_STRING(str);
     ENSURE_INT(k);
@@ -875,7 +879,9 @@ scm_p_list2string(ScmObj lst)
 #endif
     DECLARE_FUNCTION("list->string", procedure_fixed_1);
 
+#if SCM_USE_MULTIBYTE_CHAR
     ENSURE_STATELESS_CODEC(scm_current_char_codec);
+#endif
     ENSURE_LIST(lst);
 
     if (NULLP(lst))
@@ -947,7 +953,9 @@ scm_p_string_filld(ScmObj str, ScmObj ch)
 #endif
     DECLARE_FUNCTION("string-fill!", procedure_fixed_2);
 
+#if SCM_USE_MULTIBYTE_CHAR
     ENSURE_STATELESS_CODEC(scm_current_char_codec);
+#endif
     ENSURE_STRING(str);
     ENSURE_MUTABLE_STRING(str);
     ENSURE_CHAR(ch);

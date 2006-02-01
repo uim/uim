@@ -278,20 +278,24 @@ write_char(ScmObj port, ScmObj obj, enum OutputType otype)
 static void
 write_string(ScmObj port, ScmObj obj, enum OutputType otype)
 {
+#if SCM_USE_MULTIBYTE_CHAR
     ScmCharCodec *codec;
     ScmMultibyteString mbs;
+    size_t len;
+#else
+    scm_int_t i, len;
+#endif
     const ScmSpecialCharInfo *info;
     const char *str;
-    size_t len;
     scm_ichar_t c;
     DECLARE_INTERNAL_FUNCTION("write");
 
     str = SCM_STRING_STR(obj);
-    len = strlen(str);
 
     switch (otype) {
     case AS_WRITE:
         scm_port_put_char(port, '\"'); /* opening doublequote */
+#if SCM_USE_MULTIBYTE_CHAR
         if (scm_current_char_codec != scm_port_codec(port)) {
             /* Since the str does not have its encoding information, here
              * assumes that scm_current_char_codec is that. And then SigScheme
@@ -299,10 +303,16 @@ write_string(ScmObj port, ScmObj obj, enum OutputType otype)
              * as-is. */
             scm_port_puts(port, str);
         } else {
+            len = strlen(str);
             codec = scm_port_codec(port);
             SCM_MBS_INIT2(mbs, str, len);
             while (SCM_MBS_GET_SIZE(mbs)) {
                 c = SCM_CHARCODEC_READ_CHAR(codec, mbs);
+#else /* SCM_USE_MULTIBYTE_CHAR */
+            len = SCM_STRING_LEN(obj);
+            for (i = 0; i < len; i++) {
+                c = str[i];
+#endif /* SCM_USE_MULTIBYTE_CHAR */
                 for (info = scm_special_char_table; info->esc_seq; info++) {
                     if (c == info->code) {
                         scm_port_puts(port, info->esc_seq);

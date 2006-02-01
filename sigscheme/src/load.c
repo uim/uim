@@ -112,7 +112,9 @@ scm_load_internal(const char *filename)
 {
     ScmObj path, port, sexp;
     char *c_path;
+#if SCM_USE_MULTIBYTE_CHAR
     ScmCharCodec *saved_codec;
+#endif
     DECLARE_INTERNAL_FUNCTION("load");
 
     CDBG((SCM_DBG_FILE, "loading %s", filename));
@@ -124,7 +126,9 @@ scm_load_internal(const char *filename)
     path = MAKE_IMMUTABLE_STRING(c_path, STRLEN_UNKNOWN);
     port = scm_p_open_input_file(path);
 
+#if SCM_USE_MULTIBYTE_CHAR
     saved_codec = scm_current_char_codec;
+#endif
 #if SCM_USE_SRFI22
     if (scm_port_peek_char(port) == '#')
         interpret_script_prelude(port);
@@ -135,7 +139,9 @@ scm_load_internal(const char *filename)
         EVAL(sexp, SCM_INTERACTION_ENV);
 
     scm_p_close_input_port(port);
+#if SCM_USE_MULTIBYTE_CHAR
     scm_current_char_codec = saved_codec;
+#endif
 
     CDBG((SCM_DBG_FILE, "done."));
 }
