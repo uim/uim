@@ -427,45 +427,8 @@ void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 /*=======================================
    Characters
 =======================================*/
-enum ScmCharClass {
-    /* ASCII */
-    SCM_CH_INVALID            = 0,
-    SCM_CH_CONTROL            = 1 << 0, /* iscntrl(3) + backslash */
-    SCM_CH_WHITESPACE         = 1 << 1, /* [ \t\n\r\v\f] */
-    SCM_CH_DIGIT              = 1 << 2, /* [0-9] */
-    SCM_CH_HEX_LETTER         = 1 << 3, /* [a-fA-F] */
-    SCM_CH_NONHEX_LETTER      = 1 << 4, /* [g-zG-Z] */
-    SCM_CH_SPECIAL_INITIAL    = 1 << 5, /* [!$%&*\/:<=>?^_~] */
-    SCM_CH_SPECIAL_SUBSEQUENT = 1 << 6, /* [-+\.@] */
-    /* currently '.' is not included in SCM_CH_TOKEN_INITIAL */
-    SCM_CH_TOKEN_INITIAL      = 1 << 7, /* [()#'`,\"\|\{\}\[\]] */
-
-    SCM_CH_LETTER     = SCM_CH_HEX_LETTER | SCM_CH_NONHEX_LETTER,
-    SCM_CH_HEX_DIGIT  = SCM_CH_DIGIT | SCM_CH_HEX_LETTER,
-    SCM_CH_INITIAL    = SCM_CH_LETTER | SCM_CH_SPECIAL_INITIAL,
-    SCM_CH_SUBSEQUENT = SCM_CH_INITIAL | SCM_CH_DIGIT,
-    SCM_CH_PECULIAR_IDENTIFIER_CAND = SCM_CH_SPECIAL_SUBSEQUENT,
-    SCM_CH_DELIMITER
-        = SCM_CH_CONTROL | SCM_CH_WHITESPACE | SCM_CH_TOKEN_INITIAL,
-
-    /* beyond ASCII */
-    SCM_CH_ASCII              = 0 << 8,
-    SCM_CH_8BIT               = 1 << 8,
-    SCM_CH_MULTIBYTE          = 1 << 9,
-
-    SCM_CH_NONASCII           = SCM_CH_8BIT | SCM_CH_MULTIBYTE
-};
-
-extern const unsigned char scm_char_class_table[];
-
 /* accepts EOF */
 #define ICHAR_ASCIIP(c)      (0 <= (c) && (c) <= 127)
-#define ICHAR_ASCII_CLASS(c)                                                 \
-    (ICHAR_ASCIIP(c) ? scm_char_class_table[c] : SCM_CH_INVALID)
-#define ICHAR_CLASS(c)                                                       \
-    ((127 < (c)) ? SCM_CH_NONASCII                                           \
-                 : (((c) < 0) ? SCM_CH_INVALID : scm_char_class_table[c]))
-
 #define ICHAR_CONTROLP(c)    ((0 <= (c) && (c) <= 31) || (c) == 127)
 #define ICHAR_WHITESPACEP(c) ((c) == ' ' || ('\t' <= (c) && (c) <= '\r'))
 #define ICHAR_NUMERICP(c)    ('0' <= (c) && (c) <= '9')
