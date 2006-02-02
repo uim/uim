@@ -601,6 +601,9 @@ void scm_init_error(void);
 scm_int_t scm_finite_length(ScmObj lst);
 scm_int_t scm_length(ScmObj lst);
 
+/* number.c */
+scm_int_t scm_string2number(const char *str, int radix, scm_bool *err);
+
 /* port.c */
 void scm_init_port(void);
 ScmObj scm_prepare_port(ScmObj args, ScmObj default_port);

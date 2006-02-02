@@ -66,6 +66,7 @@ AC_CHECK_SIZEOF(intptr_t)
 # AC_REPLACE_FUNCS([snprintf asprintf vasprintf])
 AC_CHECK_FUNCS([strdup strcasecmp \
                 snprintf asprintf vasprintf \
+                strtoll strtoimax \
                 fileno posix_memalign getpagesize])
 
 AX_CHECK_PAGE_ALIGNED_MALLOC

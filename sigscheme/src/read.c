@@ -946,7 +946,7 @@ parse_number(ScmObj port, char *buf, size_t buf_size, char prefix)
 {
     scm_int_t number;
     int radix;
-    char *end;
+    scm_bool err;
     DECLARE_INTERNAL_FUNCTION("read");
 
     switch (prefix) {
@@ -958,11 +958,9 @@ parse_number(ScmObj port, char *buf, size_t buf_size, char prefix)
         goto err;
     }
 
-    number = strtol(buf, &end, radix);
-    if (*end)
-        goto err;
-
-    return MAKE_INT(number);
+    number = scm_string2number(buf, radix, &err);
+    if (!err)
+        return MAKE_INT(number);
 
  err:
     ERR("ill-formatted number: #%c%s", (int)prefix, buf);

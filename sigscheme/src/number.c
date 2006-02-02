@@ -468,17 +468,13 @@ scm_p_number2string(ScmObj num, ScmObj args)
   return MAKE_STRING_COPYING(p, end - p);
 }
 
-ScmObj
-scm_p_string2number(ScmObj str, ScmObj args)
+scm_int_t
+scm_string2number(const char *str, int radix, scm_bool *err)
 {
     scm_int_t n;
-    int r;
     char *end;
-    const char *c_str;
     scm_bool empty_strp;
-    DECLARE_FUNCTION("string->number", procedure_variadic_1);
-
-    ENSURE_STRING(str);
+    DECLARE_INTERNAL_FUNCTION("string->number");
 
     /* R5RS:
      *
@@ -503,10 +499,35 @@ scm_p_string2number(ScmObj str, ScmObj args)
      *   #f whenever a decimal point is used.
      */
 
+#if (SIZEOF_SCM_INT_T <= SIZEOF_LONG)
+    n = (scm_int_t)strtol(str, &end, radix);
+#elif (HAVE_STRTOLL && SIZEOF_SCM_INT_T <= SIZEOF_LONG_LONG)
+    n = (scm_int_t)strtoll(str, &end, radix);
+#elif (HAVE_STRTOIMAX && Sizeof_SCM_INT_T <= SIZEOF_INTMAX_T)
+    n = (scm_int_t)strtoimax(str, &end, radix);
+#else
+#error "This platform is not supported"
+#endif
+
+    empty_strp = (end == str);  /* apply the first rule above */
+    *err = (empty_strp || *end);
+    return n;
+}
+
+ScmObj
+scm_p_string2number(ScmObj str, ScmObj args)
+{
+    scm_int_t ret;
+    int r;
+    const char *c_str;
+    scm_bool err;
+    DECLARE_FUNCTION("string->number", procedure_variadic_1);
+
+    ENSURE_STRING(str);
+
     c_str = SCM_STRING_STR(str);
     r = prepare_radix(SCM_MANGLE(name), args);
-    n = (scm_int_t)strtol(c_str, &end, r);
 
-    empty_strp = (end == c_str);  /* apply the first rule above */
-    return (empty_strp || *end) ? SCM_FALSE : MAKE_INT(n);
+    ret = scm_string2number(c_str, r, &err);
+    return (err) ? SCM_FALSE : MAKE_INT(ret);
 }
