@@ -178,7 +178,7 @@ scm_p_equalp(ScmObj obj1, ScmObj obj2)
         }
         return SCM_TRUE;
 
-#if SCM_USE_NONSTD_FEATURES
+#if SCM_USE_SSCM_EXTENSIONS
     case ScmCPointer:
         return MAKE_BOOL(SCM_C_POINTER_VALUE(obj1)
                          == SCM_C_POINTER_VALUE(obj2));

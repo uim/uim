@@ -712,12 +712,12 @@ struct ScmStorageConf_ {
     SCM_SAL_MAKE_IMMUTABLE_VECTOR((vec), (len))
 #define SCM_MAKE_PORT(cport, flag)        SCM_SAL_MAKE_PORT((cport), (flag))
 #define SCM_MAKE_CONTINUATION()           SCM_SAL_MAKE_CONTINUATION()
-#if SCM_USE_NONSTD_FEATURES
+#if SCM_USE_SSCM_EXTENSIONS
 /* SCM_MAKE_C_POINTER(void *ptr) */
 #define SCM_MAKE_C_POINTER(ptr)           SCM_SAL_MAKE_C_POINTER(ptr)
 /* SCM_MAKE_C_FUNCPOINTER(ScmCFunc ptr) */
 #define SCM_MAKE_C_FUNCPOINTER(ptr)       SCM_SAL_MAKE_C_FUNCPOINTER(ptr)
-#endif /* SCM_USE_NONSTD_FEATURES */
+#endif /* SCM_USE_SSCM_EXTENSIONS */
 #define SCM_MAKE_VALUEPACKET(vals)        SCM_SAL_MAKE_VALUEPACKET(vals)
 
 /*=======================================
@@ -1318,9 +1318,9 @@ ScmObj scm_p_cdddar(ScmObj lst);
 ScmObj scm_p_cddddr(ScmObj lst);
 #endif /* SCM_USE_DEEP_CADRS */
 
-/* module-nonstd.c */
-#if SCM_USE_NONSTD_FEATURES
-void scm_initialize_nonstd_features(void);
+/* module-sscm-ext.c */
+#if SCM_USE_SSCM_EXTENSIONS
+void scm_initialize_sscm_extensions(void);
 ScmObj scm_p_symbol_boundp(ScmObj sym, ScmObj rest);
 ScmObj scm_p_least_fixnum(void);
 ScmObj scm_p_greatest_fixnum(void);

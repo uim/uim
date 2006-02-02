@@ -377,7 +377,7 @@ scm_make_value_packet(ScmObj values)
 }
 #endif
 
-#if SCM_USE_NONSTD_FEATURES
+#if SCM_USE_SSCM_EXTENSIONS
 ScmObj
 scm_make_cpointer(void *ptr)
 {
@@ -401,7 +401,7 @@ scm_make_cfunc_pointer(ScmCFunc ptr)
 
     return obj;
 }
-#endif /* SCM_USE_NONSTD_FEATURES */
+#endif /* SCM_USE_SSCM_EXTENSIONS */
 
 #if SCM_OBJ_COMPACT
 enum ScmObjType

@@ -60,7 +60,7 @@
 /*===========================================================================
   Optional Features
 ===========================================================================*/
-#define SCM_USE_NONSTD_FEATURES 1  /* use Non-R5RS standard features such as "require" */
+#define SCM_USE_SSCM_EXTENSIONS 1  /* use SigScheme-specific extensions */
 #define SCM_USE_LEGACY_MACRO    0  /* (not supported yet) use define-macro */
 #define SCM_USE_DUMP            0  /* (not supported yet) use storage dump */
 #define SCM_USE_EVAL_C_STRING   1  /* use scm_eval_c_string() */
@@ -196,8 +196,8 @@
 #endif /* (SCM_USE_READER || SCM_USE_WRITER) */
 
 #if SCM_COMPAT_SIOD
-#undef SCM_USE_NONSTD_FEATURES
-#define SCM_USE_NONSTD_FEATURES 1
+#undef SCM_USE_SSCM_EXTENSIONS
+#define SCM_USE_SSCM_EXTENSIONS 1
 #undef SCM_USE_SRFI60
 #define SCM_USE_SRFI60          1
 #else /* SCM_COMPAT_SIOD */

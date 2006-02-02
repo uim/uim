@@ -711,10 +711,10 @@ struct ScmCell_ {
 #define SCM_SAL_MAKE_IMMUTABLE_VECTOR         scm_make_immutable_vector
 #define SCM_SAL_MAKE_PORT                     scm_make_port
 #define SCM_SAL_MAKE_CONTINUATION             scm_make_continuation
-#if SCM_USE_NONSTD_FEATURES
+#if SCM_USE_SSCM_EXTENSIONS
 #define SCM_SAL_MAKE_C_POINTER                scm_make_cpointer
 #define SCM_SAL_MAKE_C_FUNCPOINTER            scm_make_cfunc_pointer
-#endif /* SCM_USE_NONSTD_FEATURES */
+#endif /* SCM_USE_SSCM_EXTENSIONS */
 #define SCM_SAL_MAKE_VALUEPACKET              scm_make_value_packet
 
 /* Don't use these functions directly. Use SCM_MAKE_*() or MAKE_*() instead to
@@ -740,7 +740,7 @@ ScmObj scm_make_continuation(void);
 #if !SCM_USE_VALUECONS
 ScmObj scm_make_value_packet(ScmObj values);
 #endif
-#if SCM_USE_NONSTD_FEATURES
+#if SCM_USE_SSCM_EXTENSIONS
 ScmObj scm_make_cpointer(void *ptr);
 ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #endif

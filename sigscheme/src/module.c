@@ -64,8 +64,8 @@ struct module_info {
 static ScmObj features;
 
 static struct module_info module_info_table[] = {
-#if SCM_USE_NONSTD_FEATURES
-    {"sscm", scm_initialize_nonstd_features},
+#if SCM_USE_SSCM_EXTENSIONS
+    {"sscm-ext", scm_initialize_sscm_extensions},
 #endif
 #if SCM_USE_SRFI1
     {"srfi-1", scm_initialize_srfi1},

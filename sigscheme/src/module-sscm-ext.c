@@ -1,6 +1,6 @@
 /*===========================================================================
- *  FileName : module-nonstd.c
- *  About    : SigScheme-specific non standard operations
+ *  FileName : module-sscm-ext.c
+ *  About    : SigScheme-specific extensions
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *
@@ -58,7 +58,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-#include "functable-nonstd.c"
+#include "functable-sscm-ext.c"
 
 /* io.c */
 extern const char *scm_lib_path;
@@ -73,9 +73,9 @@ static ScmObj make_loaded_str(const char *filename);
   Function Implementations
 =======================================*/
 void
-scm_initialize_nonstd_features(void)
+scm_initialize_sscm_extensions(void)
 {
-    scm_register_funcs(scm_nonstd_func_info_table);
+    scm_register_funcs(scm_sscm_ext_func_info_table);
 
     scm_define_alias("call/cc", "call-with-current-continuation");
 }

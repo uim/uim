@@ -131,8 +131,8 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
     /* R5RS Procedures */
     scm_register_funcs(scm_r5rs_procedure_func_info_table);
 
-#if SCM_USE_NONSTD_FEATURES
-    scm_use("sscm");
+#if SCM_USE_SSCM_EXTENSIONS
+    scm_use("sscm-ext");
 #endif
 
     /*=======================================================================

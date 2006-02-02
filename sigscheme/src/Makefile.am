@@ -13,7 +13,7 @@ FUNC_TABLES = \
         functable-sscm-core.c \
         functable-r5rs-syntax.c \
         functable-r5rs-procedure.c \
-        functable-nonstd.c \
+        functable-sscm-ext.c \
         functable-siod.c \
         functable-srfi1.c \
         functable-srfi2.c \
@@ -64,8 +64,8 @@ functable-r5rs-syntax.c: syntax.c $(BUILD_FUNCTBL_DEPS)
 functable-r5rs-procedure.c: $(R5RS_PROC_SRCS) $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_r5rs_procedure_func_info_table" \
 	  $(R5RS_PROC_SRCS)
-functable-nonstd.c: module-nonstd.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_nonstd_func_info_table" $<
+functable-sscm-ext.c: module-sscm-ext.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL) $@ "scm_sscm_ext_func_info_table" $<
 functable-srfi1.c: module-srfi1.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_srfi1_func_info_table" $<
 functable-srfi2.c: module-srfi2.c $(BUILD_FUNCTBL_DEPS)
@@ -141,7 +141,7 @@ if USE_MULTIBYTE_CHAR
   libsscm_la_SOURCES += encoding.c
 endif
 if USE_NONSTD_FEATURES
-  libsscm_la_SOURCES += module-nonstd.c
+  libsscm_la_SOURCES += module-sscm-ext.c
 endif
 if COMPAT_SIOD
   libsscm_la_SOURCES += module-siod.c nullport.h nullport.c
