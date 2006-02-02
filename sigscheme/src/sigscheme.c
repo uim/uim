@@ -61,6 +61,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+#include "functable-sscm-core.c"
 #include "functable-r5rs-procedure.c"
 #if SCM_USE_DEEP_CADRS
 #include "functable-r5rs-deepcadrs.c"
@@ -122,6 +123,9 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
     /*=======================================================================
       Register Built-in Functions
     =======================================================================*/
+    /* SigScheme-specific core syntaxes and procedures */
+    scm_register_funcs(scm_sscm_core_func_info_table);
+
     /* R5RS Syntaxes */
     scm_init_syntax();
 

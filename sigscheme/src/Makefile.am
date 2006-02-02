@@ -2,12 +2,18 @@
 lib_LTLIBRARIES = libsscm.la
 
 SCRIPT_DIR = ./script
+BUILD_FUNCTBL = $(SCRIPT_DIR)/build_func_table.rb
+BUILD_FUNCTBL_DEPS = \
+        $(BUILD_FUNCTBL) \
+        $(SCRIPT_DIR)/scm_decl.rb \
+        $(SCRIPT_DIR)/functable-header.txt \
+        $(SCRIPT_DIR)/functable-footer.txt
 
 FUNC_TABLES = \
+        functable-sscm-core.c \
         functable-r5rs-syntax.c \
         functable-r5rs-procedure.c \
         functable-r5rs-deepcadrs.c \
-        functable-error.c \
         functable-nonstd.c \
         functable-siod.c \
         functable-srfi1.c \
@@ -19,28 +25,41 @@ FUNC_TABLES = \
         functable-srfi38.c \
         functable-srfi60.c
 
-BUILD_FUNCTBL = $(SCRIPT_DIR)/build_func_table.rb
-BUILD_FUNCTBL_DEPS = \
-        $(BUILD_FUNCTBL) \
-        $(SCRIPT_DIR)/scm_decl.rb \
-        $(SCRIPT_DIR)/functable-header.txt \
-        $(SCRIPT_DIR)/functable-footer.txt
-
-# FIXME: separate non-core R5RS features
-R5RS_PROC_SRCS = sigscheme.c procedure.c eval.c list.c number.c string.c \
-                 vector.c port.c read.c write.c load.c
+SSCM_PROC_SRCS = error.c module.c
+R5RS_PROC_SRCS = eval.c procedure.c list.c
+if USE_NUMBER
+  R5RS_PROC_SRCS += number.c
+endif
+if USE_STRING
+  R5RS_PROC_SRCS += string.c
+endif
+if USE_VECTOR
+  R5RS_PROC_SRCS += vector.c
+endif
+if USE_PORT
+  R5RS_PROC_SRCS += port.c
+endif
+if USE_READER
+  R5RS_PROC_SRCS += read.c
+endif
+if USE_WRITER
+  R5RS_PROC_SRCS += write.c
+endif
+if USE_LOAD
+  R5RS_PROC_SRCS += load.c
+endif
 
 .PHONY: func-tables
 func-tables: $(FUNC_TABLES)
-functable-r5rs-syntax.c: syntax.c module.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_r5rs_syntax_func_info_table" syntax.c module.c
+functable-sscm-core.c: $(SSCM_PROC_SRCS) $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL) $@ "scm_sscm_core_func_info_table" $(SSCM_PROC_SRCS)
+functable-r5rs-syntax.c: syntax.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL) $@ "scm_r5rs_syntax_func_info_table" syntax.c
 functable-r5rs-procedure.c: $(R5RS_PROC_SRCS) $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_r5rs_procedure_func_info_table" \
 	  $(R5RS_PROC_SRCS)
 functable-r5rs-deepcadrs.c: module-r5rs-deepcadrs.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_r5rs_deepcadrs_func_info_table" $<
-functable-error.c: error.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_error_func_info_table" $<
 functable-nonstd.c: module-nonstd.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_nonstd_func_info_table" $<
 functable-srfi1.c: module-srfi1.c $(BUILD_FUNCTBL_DEPS)

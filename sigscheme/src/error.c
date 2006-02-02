@@ -61,8 +61,6 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-#include "functable-error.c"
-
 #if (!HAVE_C99_VARIADIC_MACRO && !HAVE_GNU_VARIADIC_MACRO)
 const char *scm_err_funcname;
 #endif
@@ -101,8 +99,6 @@ scm_init_error(void)
 #if (!HAVE_C99_VARIADIC_MACRO && !HAVE_GNU_VARIADIC_MACRO)
     scm_err_funcname = NULL;
 #endif
-
-    scm_register_funcs(scm_error_func_info_table);
 }
 
 int
