@@ -437,13 +437,16 @@ enum ScmCharClass {
     SCM_CH_NONHEX_LETTER      = 1 << 4, /* [g-zG-Z] */
     SCM_CH_SPECIAL_INITIAL    = 1 << 5, /* [!$%&*\/:<=>?^_~] */
     SCM_CH_SPECIAL_SUBSEQUENT = 1 << 6, /* [-+\.@] */
-    SCM_CH_TOKEN_INITIAL      = 1 << 7, /* [()#'`,\.\"\|\{\}\[\]] */
+    /* currently '.' is not included in SCM_CH_TOKEN_INITIAL */
+    SCM_CH_TOKEN_INITIAL      = 1 << 7, /* [()#'`,\"\|\{\}\[\]] */
 
     SCM_CH_LETTER     = SCM_CH_HEX_LETTER | SCM_CH_NONHEX_LETTER,
     SCM_CH_HEX_DIGIT  = SCM_CH_DIGIT | SCM_CH_HEX_LETTER,
     SCM_CH_INITIAL    = SCM_CH_LETTER | SCM_CH_SPECIAL_INITIAL,
     SCM_CH_SUBSEQUENT = SCM_CH_INITIAL | SCM_CH_DIGIT,
     SCM_CH_PECULIAR_IDENTIFIER_CAND = SCM_CH_SPECIAL_SUBSEQUENT,
+    SCM_CH_DELIMITER
+        = SCM_CH_CONTROL | SCM_CH_WHITESPACE | SCM_CH_TOKEN_INITIAL,
 
     /* beyond ASCII */
     SCM_CH_ASCII              = 0 << 8,
@@ -455,15 +458,20 @@ enum ScmCharClass {
 
 extern const unsigned char scm_char_class_table[];
 
-#define ICHAR_ASCIIP(c)      (SCM_ASSERT(0 <= (c)), (c) <= 127)
+/* accepts EOF */
+#define ICHAR_ASCIIP(c)      (0 <= (c) && (c) <= 127)
 #define ICHAR_ASCII_CLASS(c)                                                 \
     (ICHAR_ASCIIP(c) ? scm_char_class_table[c] : SCM_CH_INVALID)
 #define ICHAR_CLASS(c)                                                       \
-    (ICHAR_ASCIIP(c) ? scm_char_class_table[c] : SCM_CH_NONASCII)
+    ((127 < (c)) ? SCM_CH_NONASCII                                           \
+                 : (((c) < 0) ? SCM_CH_INVALID : scm_char_class_table[c]))
 
 #define ICHAR_CONTROLP(c)    ((0 <= (c) && (c) <= 31) || (c) == 127)
 #define ICHAR_WHITESPACEP(c) ((c) == ' ' || ('\t' <= (c) && (c) <= '\r'))
 #define ICHAR_NUMERICP(c)    ('0' <= (c) && (c) <= '9')
+#define ICHAR_HEXA_NUMERICP(c) (ICHAR_NUMERICP(c)                            \
+                                || ('a' <= (c) && (c) <= 'f')                \
+                                || ('A' <= (c) && (c) <= 'F'))
 #define ICHAR_ALPHABETICP(c) (ICHAR_UPPER_CASEP(c) || ICHAR_LOWER_CASEP(c))
 #define ICHAR_UPPER_CASEP(c) ('A' <= (c) && (c) <= 'Z')
 #define ICHAR_LOWER_CASEP(c) ('a' <= (c) && (c) <= 'z')

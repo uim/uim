@@ -33,13 +33,14 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
+/* TODO: replace with character class sequence expression-based tokenizer */
+
 #include "config.h"
 
 /*=======================================
   System Include
 =======================================*/
 #include <limits.h>
-#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -71,9 +72,6 @@ enum LexerState {
 /* #b-010101... */
 #define INT_LITERAL_LEN_MAX (sizeof((char)'-') + SCM_INT_BITS)
 
-#define WHITESPACE_CHARS " \t\n\r\v\f"
-#define DELIMITER_CHARS  "()\";" WHITESPACE_CHARS
-
 #define DISCARD_LOOKAHEAD(port) (scm_port_get_char(port))
 
 /*=======================================
@@ -86,7 +84,7 @@ enum LexerState {
 static scm_ichar_t skip_comment_and_space(ScmObj port);
 static void   read_sequence(ScmObj port, char *buf, int len);
 static size_t read_token(ScmObj port, int *err,
-                         char *buf, size_t buf_size, const char *delim);
+                         char *buf, size_t buf_size, enum ScmCharClass delim);
 
 static ScmObj read_sexpression(ScmObj port);
 static ScmObj read_list(ScmObj port, scm_ichar_t closeParen);
@@ -149,7 +147,7 @@ skip_comment_and_space(ScmObj port)
         case LEX_ST_NORMAL:
             if (c == ';')
                 state = LEX_ST_COMMENT;
-            else if (!isascii(c) || !isspace(c) || c == EOF)
+            else if (!ICHAR_WHITESPACEP(c) || c == EOF)
                 return c;  /* peeked */
             break;
 
@@ -175,7 +173,7 @@ read_sequence(ScmObj port, char *buf, int len)
         c = scm_port_get_char(port);
         if (c == EOF)
             ERR("unexpected EOF");
-        if (!isascii(c))
+        if (!ICHAR_ASCIIP(c))
             ERR("unexpected non-ASCII char");
         *p = c;
     }
@@ -183,10 +181,11 @@ read_sequence(ScmObj port, char *buf, int len)
 }
 
 static size_t
-read_token(ScmObj port,
-           int *err, char *buf, size_t buf_size, const char *delim)
+read_token(ScmObj port, int *err,
+           char *buf, size_t buf_size, enum ScmCharClass delim)
 {
     ScmCharCodec *codec;
+    enum ScmCharClass ch_class;
     scm_ichar_t c;
     size_t len;
     char *p;
@@ -194,25 +193,20 @@ read_token(ScmObj port,
 
     for (p = buf;;) {
         c = scm_port_peek_char(port);
+        ch_class = ICHAR_CLASS(c);
         CDBG((SCM_DBG_PARSER, "c = %c", (int)c));
 
         if (p == buf) {
             if (c == EOF)
                 ERR("unexpected EOF at a token");
         } else {
-            if (strchr(delim, c) || c == EOF) {
+            if (ch_class & delim || c == EOF) {
                 *err = OK;
                 break;
             }
         }
 
-        if (isascii(c)) {
-            if (p == &buf[buf_size - sizeof("")]) {
-                *err = TOKEN_BUF_EXCEEDED;
-                break;
-            }
-            *p++ = c;
-        } else {
+        if (ch_class & SCM_CH_NONASCII) {
 #if SCM_USE_SRFI75
             if (&buf[buf_size] <= p + SCM_MB_MAX_LEN) {
                 *err = TOKEN_BUF_EXCEEDED;
@@ -228,6 +222,12 @@ read_token(ScmObj port,
 #else
             ERR("non-ASCII char in token: 0x%x", (int)c);
 #endif
+        } else {
+            if (p == &buf[buf_size - sizeof("")]) {
+                *err = TOKEN_BUF_EXCEEDED;
+                break;
+            }
+            *p++ = c;
         }
         DISCARD_LOOKAHEAD(port);
     }
@@ -241,6 +241,7 @@ static ScmObj
 read_sexpression(ScmObj port)
 {
     ScmObj ret;
+    enum ScmCharClass ch_class;
     scm_ichar_t c;
     DECLARE_INTERNAL_FUNCTION("read");
 
@@ -251,22 +252,26 @@ read_sexpression(ScmObj port)
 
         CDBG((SCM_DBG_PARSER, "read_sexpression c = %c", (int)c));
 
+        ch_class = ICHAR_CLASS(c);
+        if (ch_class & (SCM_CH_INITIAL | SCM_CH_NONASCII))
+            return read_symbol(port);
+
+        if (ch_class & (SCM_CH_DIGIT | SCM_CH_PECULIAR_IDENTIFIER_CAND))
+            return read_number_or_symbol(port);
+
         /* case labels are ordered by appearance rate and penalty cost */
+        DISCARD_LOOKAHEAD(port);
         switch (c) {
         case '(':
-            DISCARD_LOOKAHEAD(port);
             return read_list(port, ')');
 
         case '\"':
-            DISCARD_LOOKAHEAD(port);
             return read_string(port);
 
         case '\'':
-            DISCARD_LOOKAHEAD(port);
             return read_quote(port, SYM_QUOTE);
 
         case '#':
-            DISCARD_LOOKAHEAD(port);
             c = scm_port_get_char(port);
             switch (c) {
             case 't':
@@ -291,11 +296,9 @@ read_sexpression(ScmObj port)
             break;
 
         case '`':
-            DISCARD_LOOKAHEAD(port);
             return read_quote(port, SYM_QUASIQUOTE);
 
         case ',':
-            DISCARD_LOOKAHEAD(port);
             c = scm_port_peek_char(port);
             switch (c) {
             case EOF:
@@ -310,12 +313,6 @@ read_sexpression(ScmObj port)
                 return read_quote(port, SYM_UNQUOTE);
             }
 
-        case '.': case '+': case '-':
-        case '1': case '2': case '3': case '4': case '5':
-        case '6': case '7': case '8': case '9': case '0':
-        case '@':
-            return read_number_or_symbol(port);
-
         case ')':
             ERR("invalid close parenthesis");
             /* NOTREACHED */
@@ -324,7 +321,7 @@ read_sexpression(ScmObj port)
             return SCM_EOF;
 
         default:
-            return read_symbol(port);
+            SCM_ASSERT(scm_false);
         }
     }
 }
@@ -374,7 +371,7 @@ read_list(ScmObj port, scm_ichar_t closeParen)
              * '...' and numbers in R5RS (See "7.1.1 Lexical structure"), fixed
              * size buffer can safely buffer them.
              */
-            read_token(port, &err, dot_buf, sizeof(dot_buf), DELIMITER_CHARS);
+            read_token(port, &err, dot_buf, sizeof(dot_buf), SCM_CH_DELIMITER);
 
             if (dot_buf[1] == '\0') {
 #if !SCM_STRICT_R5RS
@@ -386,7 +383,7 @@ read_list(ScmObj port, scm_ichar_t closeParen)
                  * require explicit whitespace around the dot.
                  */
                 c = scm_port_peek_char(port);
-                if (!strchr(WHITESPACE_CHARS, c))
+                if (!ICHAR_WHITESPACEP(c))
                     ERR("implicit dot delimitation is disabled to avoid compatibility problem");
 #endif
                 if (NULLP(lst))
@@ -420,7 +417,7 @@ parse_unicode_sequence(const char *seq, int len)
     DECLARE_INTERNAL_FUNCTION("read");
 
     /* reject ordinary char literal and invalid signed hexadecimal */
-    if (len < 3 || !isxdigit(seq[1]))
+    if (len < 3 || !ICHAR_HEXA_NUMERICP(seq[1]))
         return -1;
 
     c = strtol(&seq[1], &end, 16);
@@ -492,15 +489,15 @@ read_char(ScmObj port)
     /* plain char (multibyte-ready) */
     c = scm_port_get_char(port);
     next = scm_port_peek_char(port);
-    if (strchr(DELIMITER_CHARS, next) || next == EOF)
+    if (ICHAR_ASCII_CLASS(next) & SCM_CH_DELIMITER || next == EOF)
         return MAKE_CHAR(c);
 #if SCM_USE_SRFI75
-    else if (!isascii(c))
+    else if (!ICHAR_ASCIIP(c))
         ERR("invalid character literal");
 #endif
 
     buf[0] = c;
-    len = read_token(port, &err, &buf[1], sizeof(buf) - 1, DELIMITER_CHARS);
+    len = read_token(port, &err, &buf[1], sizeof(buf) - 1, SCM_CH_DELIMITER);
     if (err == TOKEN_BUF_EXCEEDED)
         ERR("invalid character literal");
 
@@ -635,7 +632,7 @@ read_symbol(ScmObj port)
         tail_len = read_token(port, &err,
                               &LBUF_BUF(lbuf)[offset],
                               LBUF_SIZE(lbuf) - offset,
-                              DELIMITER_CHARS);
+                              SCM_CH_DELIMITER);
         if (err != TOKEN_BUF_EXCEEDED)
             break;
         offset += tail_len;
@@ -660,41 +657,42 @@ read_number_or_symbol(ScmObj port)
     CDBG((SCM_DBG_PARSER, "read"));
 
     c = scm_port_peek_char(port);
+    SCM_ASSERT(ICHAR_ASCII_CLASS(c)
+               & (SCM_CH_DIGIT | SCM_CH_PECULIAR_IDENTIFIER_CAND));
 
-    if (isascii(c)) {
-        if (isdigit(c))
-            return read_number(port, 'd');
+    if (ICHAR_NUMERICP(c))
+        return read_number(port, 'd');
 
-        if (c == '+' || c == '-') {
-            len = read_token(port, &err, buf, sizeof(buf), DELIMITER_CHARS);
-            if (err == TOKEN_BUF_EXCEEDED)
-                ERR("invalid number literal");
+    if (c == '+' || c == '-') {
+        len = read_token(port, &err, buf, sizeof(buf), SCM_CH_DELIMITER);
+        if (err == TOKEN_BUF_EXCEEDED)
+            ERR("invalid number literal");
 
             
-            if (!buf[1]                           /* '+' or '-' */
+        if (!buf[1]                           /* '+' or '-' */
 #if !SCM_STRICT_R5RS
-                || (c == '-' && isalpha(buf[1]))  /* '-sym' */
+            /* FIXME: Obsolete with SRFI-75 style '|-sym| */
+            || (c == '-' && ICHAR_ALPHABETICP(buf[1]))  /* '-sym' */
 #endif
-                )
-            {
-                return scm_intern(buf);
-            }
-
-            return parse_number(port, buf, sizeof(buf), 'd');
+            )
+        {
+            return scm_intern(buf);
         }
 
-        if (c == '.') {
-            read_token(port, &err, buf, sizeof(buf), DELIMITER_CHARS);
-            if (strcmp(buf, "...") == 0)
-                return scm_intern(buf);
-            /* TODO: support numeric expressions when the numeric tower is
-               implemented */
-            ERR("invalid identifier: %s", buf);
-        }
-
-        if (c == '@')
-            ERR("invalid identifier: %s", buf);
+        return parse_number(port, buf, sizeof(buf), 'd');
     }
+
+    if (c == '.') {
+        read_token(port, &err, buf, sizeof(buf), SCM_CH_DELIMITER);
+        if (strcmp(buf, "...") == 0)
+            return scm_intern(buf);
+        /* TODO: support numeric expressions when the numeric tower is
+           implemented */
+        ERR("invalid identifier: %s", buf);
+    }
+
+    if (c == '@')
+        ERR("invalid identifier: %s", buf);
 
     return read_symbol(port);
 }
@@ -735,7 +733,7 @@ read_number(ScmObj port, char prefix)
     char buf[INT_LITERAL_LEN_MAX + sizeof("")];
     DECLARE_INTERNAL_FUNCTION("read");
 
-    len = read_token(port, &err, buf, sizeof(buf), DELIMITER_CHARS);
+    len = read_token(port, &err, buf, sizeof(buf), SCM_CH_DELIMITER);
     if (err == TOKEN_BUF_EXCEEDED)
         ERR("invalid number literal");
 

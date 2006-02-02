@@ -180,7 +180,7 @@ const unsigned char scm_char_class_table[] = {
     SCM_CH_SPECIAL_SUBSEQUENT, /*  43  +         */
     SCM_CH_TOKEN_INITIAL,      /*  44  ,         */
     SCM_CH_SPECIAL_SUBSEQUENT, /*  45  -         */
-    SCM_CH_SPECIAL_SUBSEQUENT | SCM_CH_TOKEN_INITIAL, /*  46  .         */
+    SCM_CH_SPECIAL_SUBSEQUENT /* | SCM_CH_TOKEN_INITIAL */, /*  46  .        */
     SCM_CH_SPECIAL_INITIAL,    /*  47  /         */
     SCM_CH_DIGIT,              /*  48  0         */
     SCM_CH_DIGIT,              /*  49  1         */
