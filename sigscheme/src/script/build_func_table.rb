@@ -32,63 +32,58 @@
 #  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #===========================================================================
+
 require 'script/scm_decl.rb'
 
-def search_declare_function(filename)
-  puts "    /* #{filename} */"
-  f = File.new(filename)
+DATA_DIR    = "./script"
+FILE_HEADER = "#{DATA_DIR}/functable-header.txt"
+FILE_FOOTER = "#{DATA_DIR}/functable-footer.txt"
 
-  print (scm_generate_func_table_body f.read)
-
-  f.close
+def table_header(table_name)
+  "static struct scm_func_registration_info #{table_name}[] = {"
 end
 
-def build_table(filename)
-  search_declare_function(filename)
+def table_footer
+  "};"
 end
 
-def null_entry()
-  puts "    { NULL, NULL, NULL }"
+def build_table_body(filename)
+  src = File.new(filename).read
+  "    /* #{filename} */\n" + scm_generate_func_table_body(src)
 end
 
-def print_tableheader(tablename)
-  puts "static struct scm_func_registration_info #{tablename}[] = {"
+def terminal_entry
+  "    { NULL, NULL, NULL }"
 end
 
-def print_tablefooter()
-  puts "};"
-  puts ""
+def build_table(table_name, src_files)
+  [
+    table_header(table_name),
+    src_files.collect { |src|
+      build_table_body(src)
+    },
+    terminal_entry,
+    table_footer,
+    "\n"
+  ].flatten.join("\n")
 end
 
-def build_functable(tablename, filelist)
-  print_tableheader(tablename)
-  filelist.each { |filename|
-    build_table(filename)
-  }
-  null_entry()
-  print_tablefooter
+def file_header(table_filename)
+  File.new(FILE_HEADER).read.gsub("@filename@", table_filename)
 end
 
-def print_header()
-  IO.readlines("./script/functable-header.txt").each { |line|
-    puts line
-  }
-end
-
-def print_footer()
-  IO.readlines("script/functable-footer.txt").each { |line|
-    puts line
-  }
+def file_footer(table_filename)
+  File.new(FILE_FOOTER).read.gsub("@filename@", table_filename)
 end
 
 ######################################################################
 
-# Header
-print_header
+table_filename, table_name, *srcs = ARGV
+table = build_table(table_name, srcs)
+header = file_header(table_filename)
+footer = file_footer(table_filename)
 
-# Print Table
-build_functable(ARGV[0],
-                ARGV[1..-1])
-
-# Footer
-print_footer
+# The generated file should explicitly be opened by the script instead of
+# printing to stdout redirected by shell, to avoid the accidencial file
+# colluption problem that makes 'make' failed.
+File.new(table_filename, "w").print(header, table, footer)
