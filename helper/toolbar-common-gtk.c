@@ -203,7 +203,7 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
 
   i = 0;
   while ((menu_item = g_list_nth_data(menu_item_list, i)) != NULL) {    
-    gtk_container_remove(GTK_CONTAINER(prop_menu), menu_item);
+    gtk_widget_destroy(menu_item);
     i++;
   }
 
@@ -243,9 +243,8 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
     gtk_widget_show(menu_item);
     g_signal_connect(G_OBJECT(menu_item), "activate", 
 		     G_CALLBACK(prop_menu_activate), prop_menu);
-    g_object_set_data_full(G_OBJECT(menu_item), "prop_action",
-			   g_list_nth_data(action_list, i),
-			   (GDestroyNotify)g_free);
+    g_object_set_data(G_OBJECT(menu_item), "prop_action",
+		      g_list_nth_data(action_list, i));
     i++;
   }
 
@@ -618,7 +617,6 @@ helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
 
   g_free(charset);
 }
-
 
 static void
 helper_toolbar_parse_helper_str(GtkWidget *widget, gchar *str)
