@@ -40,8 +40,6 @@
 /*=======================================
   Local Include
 =======================================*/
-#include "sigscheme.h"
-#include "sigschemefunctable.h"
 
 /*=======================================
   Macro Definitions

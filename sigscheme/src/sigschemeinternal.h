@@ -64,9 +64,6 @@ struct scm_func_registration_info {
     ScmRegisterFunc reg_func;
 };
 
-/* workaround */
-#include "sigschemefunctable.h"
-
 /*=======================================
    Variable Declarations
 =======================================*/

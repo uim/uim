@@ -61,6 +61,11 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+#include "sigschemefunctable-r5rs-procedure.c"
+#if SCM_USE_DEEP_CADRS
+#include "sigschemefunctable-r5rs-deepcadrs.c"
+#endif
+
 static scm_bool scm_initialized;
 
 #if SCM_COMPAT_SIOD

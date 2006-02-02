@@ -59,6 +59,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+#include "sigschemefunctable-srfi6.c"
 
 /*=======================================
   File Local Function Declarations

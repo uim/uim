@@ -76,6 +76,8 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+#include "sigschemefunctable-siod.c"
+
 static const int sscm_debug_mask_tbl[] = {
     SCM_DBG_SIOD_V0,
     SCM_DBG_SIOD_V1,

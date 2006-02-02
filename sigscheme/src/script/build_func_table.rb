@@ -52,7 +52,7 @@ def null_entry()
 end
 
 def print_tableheader(tablename)
-  puts "struct scm_func_registration_info #{tablename}[] = {"
+  puts "static struct scm_func_registration_info #{tablename}[] = {"
 end
 
 def print_tablefooter()

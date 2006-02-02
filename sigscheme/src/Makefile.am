@@ -24,10 +24,12 @@ BUILD_FUNCTBL_SOURCES = \
 		./script/functable-header.txt \
 		./script/functable-footer.txt
 
+# FIXME: separate non-core R5RS features
 R5RS_PROC_SRCS = sigscheme.c procedure.c eval.c list.c number.c string.c \
                  vector.c port.c read.c write.c load.c
 
-sigschemefunctable.c: $(FUNC_TABLES)
+.PHONY: func-tables
+func-tables: $(FUNC_TABLES)
 sigschemefunctable-r5rs-syntax.c: syntax.c module.c $(BUILD_FUNCTBL_SOURCES)
 	$(BUILD_FUNCTBL) "scm_r5rs_syntax_func_info_table" \
           syntax.c module.c > $@
@@ -62,6 +64,10 @@ sigschemefunctable-siod.c: module-siod.c $(BUILD_FUNCTBL_SOURCES)
 EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_SOURCES) \
         test-compact.c
 
+# Only works on 'make all', 'make check' and 'make install'.
+# See "Built sources" section of automake info.
+BUILT_SOURCES = $(FUNC_TABLES)
+
 pkginclude_HEADERS = sigscheme.h config.h my-stdint.h
 
 libsscm_la_SOURCES = \
@@ -69,8 +75,7 @@ libsscm_la_SOURCES = \
         alloc.c storage.c storage-gc.c storage-symbol.c \
         error.c env.c eval.c syntax.c procedure.c list.c \
         module.c \
-        sigscheme.c sigschemefunctable.c \
-        sigschemeinternal.h sigschemefunctable.h
+        sigschemeinternal.h sigscheme.c
 if USE_STORAGE_COMPACT
   pkginclude_HEADERS += storage-compact.h
 else

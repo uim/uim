@@ -61,6 +61,8 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+#include "sigschemefunctable-error.c"
+
 #if (!HAVE_C99_VARIADIC_MACRO && !HAVE_GNU_VARIADIC_MACRO)
 const char *scm_err_funcname;
 #endif
