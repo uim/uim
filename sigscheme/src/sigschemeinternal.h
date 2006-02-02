@@ -39,7 +39,6 @@
 =======================================*/
 #include <stddef.h>
 #include <string.h>
-#include <ctype.h> /* for char macros */
 
 /*=======================================
    Local Include
@@ -428,10 +427,50 @@ void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 /*=======================================
    Characters
 =======================================*/
+enum ScmCharClass {
+    /* ASCII */
+    SCM_CH_INVALID            = 0,
+    SCM_CH_CONTROL            = 1 << 0, /* iscntrl(3) + backslash */
+    SCM_CH_WHITESPACE         = 1 << 1, /* [ \t\n\r\v\f] */
+    SCM_CH_DIGIT              = 1 << 2, /* [0-9] */
+    SCM_CH_HEX_LETTER         = 1 << 3, /* [a-fA-F] */
+    SCM_CH_NONHEX_LETTER      = 1 << 4, /* [g-zG-Z] */
+    SCM_CH_SPECIAL_INITIAL    = 1 << 5, /* [!$%&*\/:<=>?^_~] */
+    SCM_CH_SPECIAL_SUBSEQUENT = 1 << 6, /* [-+\.@] */
+    SCM_CH_TOKEN_INITIAL      = 1 << 7, /* [()#'`,\.\"\|\{\}\[\]] */
+
+    SCM_CH_LETTER     = SCM_CH_HEX_LETTER | SCM_CH_NONHEX_LETTER,
+    SCM_CH_HEX_DIGIT  = SCM_CH_DIGIT | SCM_CH_HEX_LETTER,
+    SCM_CH_INITIAL    = SCM_CH_LETTER | SCM_CH_SPECIAL_INITIAL,
+    SCM_CH_SUBSEQUENT = SCM_CH_INITIAL | SCM_CH_DIGIT,
+    SCM_CH_PECULIAR_IDENTIFIER_CAND = SCM_CH_SPECIAL_SUBSEQUENT,
+
+    /* beyond ASCII */
+    SCM_CH_ASCII              = 0 << 8,
+    SCM_CH_8BIT               = 1 << 8,
+    SCM_CH_MULTIBYTE          = 1 << 9,
+
+    SCM_CH_NONASCII           = SCM_CH_8BIT | SCM_CH_MULTIBYTE
+};
+
+extern const unsigned char scm_char_class_table[];
+
+#define ICHAR_ASCIIP(c)      (SCM_ASSERT(0 <= (c)), (c) <= 127)
+#define ICHAR_ASCII_CLASS(c)                                                 \
+    (ICHAR_ASCIIP(c) ? scm_char_class_table[c] : SCM_CH_INVALID)
+#define ICHAR_CLASS(c)                                                       \
+    (ICHAR_ASCIIP(c) ? scm_char_class_table[c] : SCM_CH_NONASCII)
+
+#define ICHAR_ALPHABETICP(c) (ICHAR_UPPER_CASEP(c) || ICHAR_LOWER_CASEP(c))
+#define ICHAR_NUMERICP(c)    ('0' <= (c) && (c) <= '9')
+#define ICHAR_WHITESPACEP(c) ((c) == ' ' || ('\t' <= (c) && (c) <= '\r'))
+#define ICHAR_UPPER_CASEP(c) ('A' <= (c) && (c) <= 'Z')
+#define ICHAR_LOWER_CASEP(c) ('a' <= (c) && (c) <= 'z')
+
 /*
- * SigScheme's case-insensitive comparison conforms to the foldcase'ed
- * comparison described in SRFI-75 and SRFI-13, although R5RS does not specify
- * comparison between alphabetic and non-alphabetic char.
+ * SigScheme's case-insensitive character comparison conforms to the
+ * foldcase'ed comparison described in SRFI-75 and SRFI-13, although R5RS does
+ * not define comparison between alphabetic and non-alphabetic char.
  *
  * This specification is needed to produce natural result on sort functions
  * with these case-insensitive predicates as comparator.
@@ -447,8 +486,8 @@ void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
  *   - "Case mapping and case-folding" and "Comparison" section of SRFI-13
  */
 /* FIXME: support SRFI-75 */
-#define ICHAR_DOWNCASE(c) ((isascii((int)(c))) ? tolower((int)(c)) : (c))
-#define ICHAR_UPCASE(c)   ((isascii((int)(c))) ? toupper((int)(c)) : (c))
+#define ICHAR_DOWNCASE(c) (ICHAR_UPPER_CASEP(c) ? (c) + ('a' - 'A') : (c))
+#define ICHAR_UPCASE(c)   (ICHAR_LOWER_CASEP(c) ? (c) - ('a' - 'A') : (c))
 /* foldcase for case-insensitive character comparison is done by downcase as
  * described in SRFI-75. Although SRFI-13 expects (char-downcase (char-upcase
  * c)), this implementation is sufficient for ASCII range. */
