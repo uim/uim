@@ -1,28 +1,30 @@
 #noinst_LTLIBRARIES = libsscm.la
 lib_LTLIBRARIES = libsscm.la
 
-FUNC_TABLES = \
-		sigschemefunctable-r5rs-syntax.c \
-		sigschemefunctable-r5rs-procedure.c \
-		sigschemefunctable-r5rs-deepcadrs.c \
-		sigschemefunctable-error.c \
-		sigschemefunctable-nonstd.c \
-		sigschemefunctable-siod.c \
-		sigschemefunctable-srfi1.c \
-		sigschemefunctable-srfi2.c \
-		sigschemefunctable-srfi6.c \
-		sigschemefunctable-srfi8.c \
-		sigschemefunctable-srfi23.c \
-		sigschemefunctable-srfi34.c \
-		sigschemefunctable-srfi38.c \
-		sigschemefunctable-srfi60.c
+SCRIPT_DIR = ./script
 
-BUILD_FUNCTBL = ./script/build_func_table.rb
-BUILD_FUNCTBL_SOURCES = \
-		$(BUILD_FUNCTBL) \
-		./script/scm_decl.rb
-		./script/functable-header.txt \
-		./script/functable-footer.txt
+FUNC_TABLES = \
+        functable-r5rs-syntax.c \
+        functable-r5rs-procedure.c \
+        functable-r5rs-deepcadrs.c \
+        functable-error.c \
+        functable-nonstd.c \
+        functable-siod.c \
+        functable-srfi1.c \
+        functable-srfi2.c \
+        functable-srfi6.c \
+        functable-srfi8.c \
+        functable-srfi23.c \
+        functable-srfi34.c \
+        functable-srfi38.c \
+        functable-srfi60.c
+
+BUILD_FUNCTBL = $(SCRIPT_DIR)/build_func_table.rb
+BUILD_FUNCTBL_DEPS = \
+        $(BUILD_FUNCTBL) \
+        $(SCRIPT_DIR)/scm_decl.rb \
+        $(SCRIPT_DIR)/functable-header.txt \
+        $(SCRIPT_DIR)/functable-footer.txt
 
 # FIXME: separate non-core R5RS features
 R5RS_PROC_SRCS = sigscheme.c procedure.c eval.c list.c number.c string.c \
@@ -30,38 +32,37 @@ R5RS_PROC_SRCS = sigscheme.c procedure.c eval.c list.c number.c string.c \
 
 .PHONY: func-tables
 func-tables: $(FUNC_TABLES)
-sigschemefunctable-r5rs-syntax.c: syntax.c module.c $(BUILD_FUNCTBL_SOURCES)
+functable-r5rs-syntax.c: syntax.c module.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_r5rs_syntax_func_info_table" syntax.c module.c
-sigschemefunctable-r5rs-procedure.c: $(R5RS_PROC_SRCS) $(BUILD_FUNCTBL_SOURCES)
+functable-r5rs-procedure.c: $(R5RS_PROC_SRCS) $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_r5rs_procedure_func_info_table" \
 	  $(R5RS_PROC_SRCS)
-sigschemefunctable-r5rs-deepcadrs.c: module-r5rs-deepcadrs.c $(BUILD_FUNCTBL_SOURCES)
+functable-r5rs-deepcadrs.c: module-r5rs-deepcadrs.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_r5rs_deepcadrs_func_info_table" $<
-sigschemefunctable-error.c: error.c $(BUILD_FUNCTBL_SOURCES)
+functable-error.c: error.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_error_func_info_table" $<
-sigschemefunctable-nonstd.c: module-nonstd.c $(BUILD_FUNCTBL_SOURCES)
+functable-nonstd.c: module-nonstd.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_nonstd_func_info_table" $<
-sigschemefunctable-srfi1.c: module-srfi1.c $(BUILD_FUNCTBL_SOURCES)
+functable-srfi1.c: module-srfi1.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_srfi1_func_info_table" $<
-sigschemefunctable-srfi2.c: module-srfi2.c $(BUILD_FUNCTBL_SOURCES)
+functable-srfi2.c: module-srfi2.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_srfi2_func_info_table" $<
-sigschemefunctable-srfi6.c: module-srfi6.c $(BUILD_FUNCTBL_SOURCES)
+functable-srfi6.c: module-srfi6.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_srfi6_func_info_table" $<
-sigschemefunctable-srfi8.c: module-srfi8.c $(BUILD_FUNCTBL_SOURCES)
+functable-srfi8.c: module-srfi8.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_srfi8_func_info_table" $<
-sigschemefunctable-srfi23.c: module-srfi23.c $(BUILD_FUNCTBL_SOURCES)
+functable-srfi23.c: module-srfi23.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_srfi23_func_info_table" $<
-sigschemefunctable-srfi34.c: module-srfi34.c $(BUILD_FUNCTBL_SOURCES)
+functable-srfi34.c: module-srfi34.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_srfi34_func_info_table" $<
-sigschemefunctable-srfi38.c: module-srfi38.c $(BUILD_FUNCTBL_SOURCES)
+functable-srfi38.c: module-srfi38.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_srfi38_func_info_table" $<
-sigschemefunctable-srfi60.c: module-srfi60.c $(BUILD_FUNCTBL_SOURCES)
+functable-srfi60.c: module-srfi60.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_srfi60_func_info_table" $<
-sigschemefunctable-siod.c: module-siod.c $(BUILD_FUNCTBL_SOURCES)
+functable-siod.c: module-siod.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_siod_func_info_table" $<
 
-EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_SOURCES) \
-        test-compact.c
+EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_DEPS) test-compact.c
 
 # Only works on 'make all', 'make check' and 'make install'.
 # See "Built sources" section of automake info.

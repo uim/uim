@@ -73,7 +73,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-#include "sigschemefunctable-srfi34.c"
+#include "functable-srfi34.c"
 
 static ScmObj current_exception_handlers;
 

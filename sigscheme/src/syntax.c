@@ -57,7 +57,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-#include "sigschemefunctable-r5rs-syntax.c"
+#include "functable-r5rs-syntax.c"
 
 ScmObj scm_sym_quote, scm_sym_quasiquote;
 ScmObj scm_sym_unquote, scm_sym_unquote_splicing;

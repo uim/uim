@@ -58,7 +58,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-#include "sigschemefunctable-nonstd.c"
+#include "functable-nonstd.c"
 
 /* io.c */
 extern const char *scm_lib_path;
