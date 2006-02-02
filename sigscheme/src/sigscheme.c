@@ -1,6 +1,6 @@
 /*===========================================================================
  *  FileName : sigscheme.c
- *  About    : initialization and finalization
+ *  About    : Client interfaces
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *
@@ -47,8 +47,10 @@
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 #include "encoding.h"
+#if SCM_USE_EVAL_C_STRING
 #include "baseport.h"
 #include "strport.h"
+#endif
 
 /*=======================================
   File Local Struct Declarations
