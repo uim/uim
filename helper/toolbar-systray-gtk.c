@@ -42,8 +42,9 @@
 #include <gtk/gtk.h>
 #include "eggtrayicon.h"
 
-GtkWidget *uim_toolbar_trayicon_new(void);
-void uim_toolbar_check_helper_connection(GtkWidget *widget);
+extern GtkWidget *uim_toolbar_trayicon_new(void);
+extern void uim_toolbar_check_helper_connection(GtkWidget *widget);
+extern void uim_toolbar_get_im_list(void);
 
 
 static void
@@ -51,25 +52,26 @@ embedded_cb(GtkWidget *widget, gpointer user_data)
 {
   uim_toolbar_check_helper_connection(user_data);
   uim_helper_client_get_prop_list();
+  uim_toolbar_get_im_list();
 }
 
 
 int 
-main (int argc, char *argv[])
+main(int argc, char *argv[])
 {
   GtkWidget *icon;
   EggTrayIcon *tray;
 
   setlocale(LC_ALL, "");
-  bindtextdomain( PACKAGE, LOCALEDIR );
-  textdomain( PACKAGE );
-  bind_textdomain_codeset( PACKAGE, "UTF-8");
+  bindtextdomain(PACKAGE, LOCALEDIR);
+  textdomain(PACKAGE);
+  bind_textdomain_codeset(PACKAGE, "UTF-8");
 
   gtk_set_locale();
   
   uim_init();
 
-  gtk_init( &argc, &argv );
+  gtk_init(&argc, &argv);
 
   tray = egg_tray_icon_new("uim");
 
