@@ -111,7 +111,7 @@ AM_CONDITIONAL(USE_LOAD,                test "x$use_yes" = xyes)
 AM_CONDITIONAL(USE_DEEP_CADRS,          test "x$use_yes" = xyes)
 
 # Optional Features
-AM_CONDITIONAL(USE_NONSTD_FEATURES,     test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_SSCM_EXTENSIONS,     test "x$use_yes" = xyes)
 AM_CONDITIONAL(USE_LEGACY_MACRO,        test "x$use_no" = xyes)
 AM_CONDITIONAL(USE_DUMP,                test "x$use_no" = xyes)
 AM_CONDITIONAL(USE_EVAL_C_STRING,       test "x$use_yes" = xyes)
