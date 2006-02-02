@@ -1126,6 +1126,27 @@ void   scm_gc_unprotect_stack(ScmObj *stack_start);
 ScmObj scm_intern(const char *name);
 ScmObj scm_symbol_bound_to(ScmObj obj);
 
+/* error.c */
+int  scm_debug_categories(void);
+void scm_set_debug_categories(int categories);
+int  scm_predefined_debug_categories(void);
+void scm_categorized_debug(int category, const char *msg, ...);
+void scm_debug(const char *msg, ...);
+void scm_die(const char *msg, const char *filename, int line) SCM_NORETURN;
+void scm_plain_error(const char *msg, ...) SCM_NORETURN;
+void scm_error(const char *funcname, const char *msg, ...) SCM_NORETURN;
+void scm_error_obj(const char *funcname, const char *msg,
+                   ScmObj obj) SCM_NORETURN;
+void scm_show_backtrace(ScmObj trace_stack);
+ScmObj scm_make_error_obj(ScmObj reason, ScmObj objs);
+void scm_raise_error(ScmObj err_obj) SCM_NORETURN;
+void scm_fatal_error(const char *msg) SCM_NORETURN;
+void scm_set_fatal_error_callback(void (*cb)(void));
+ScmObj scm_p_error_objectp(ScmObj obj);
+ScmObj scm_p_fatal_error(ScmObj err_obj) SCM_NORETURN;
+ScmObj scm_p_inspect_error(ScmObj err_obj);
+ScmObj scm_p_backtrace(void);
+
 /* eval.c */
 ScmObj scm_call(ScmObj proc, ScmObj args);
 ScmObj scm_p_eval(ScmObj obj, ScmObj env);
@@ -1205,6 +1226,7 @@ ScmObj scm_p_assq(ScmObj obj, ScmObj alist);
 ScmObj scm_p_assv(ScmObj obj, ScmObj alist);
 ScmObj scm_p_assoc(ScmObj obj, ScmObj alist);
 
+#if SCM_USE_NUMBER
 /* number.c */
 ScmObj scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state);
 ScmObj scm_p_subtract(ScmObj left, ScmObj right,
@@ -1234,7 +1256,9 @@ ScmObj scm_p_modulo(ScmObj _n1, ScmObj _n2);
 ScmObj scm_p_remainder(ScmObj _n1, ScmObj _n2);
 ScmObj scm_p_number2string (ScmObj num, ScmObj args);
 ScmObj scm_p_string2number(ScmObj str, ScmObj args);
+#endif /* SCM_USE_NUMBER */
 
+#if SCM_USE_CHAR
 /* char.c */
 ScmObj scm_p_charp(ScmObj obj);
 ScmObj scm_p_char_equalp(ScmObj ch1, ScmObj ch2);
@@ -1257,7 +1281,9 @@ ScmObj scm_p_char2integer(ScmObj ch);
 ScmObj scm_p_integer2char(ScmObj n);
 ScmObj scm_p_char_upcase(ScmObj ch);
 ScmObj scm_p_char_downcase(ScmObj ch);
+#endif /* SCM_USE_CHAR */
 
+#if SCM_USE_STRING
 /* string.c */
 ScmObj scm_p_stringp(ScmObj obj);
 ScmObj scm_p_make_string(ScmObj length, ScmObj args);
@@ -1281,7 +1307,9 @@ ScmObj scm_p_string2list(ScmObj str);
 ScmObj scm_p_list2string(ScmObj lst);
 ScmObj scm_p_string_copy(ScmObj str);
 ScmObj scm_p_string_filld(ScmObj str, ScmObj ch);
+#endif /* SCM_USE_STRING */
 
+#if SCM_USE_VECTOR
 /* vector.c */
 ScmObj scm_p_vectorp(ScmObj obj);
 ScmObj scm_p_make_vector(ScmObj scm_len, ScmObj args);
@@ -1292,9 +1320,10 @@ ScmObj scm_p_vector_setd(ScmObj vec, ScmObj _k, ScmObj obj);
 ScmObj scm_p_vector2list(ScmObj vec);
 ScmObj scm_p_list2vector(ScmObj lst);
 ScmObj scm_p_vector_filld(ScmObj vec, ScmObj fill);
+#endif /* SCM_USE_VECTOR */
 
-/* deep-cadrs.c */
 #if SCM_USE_DEEP_CADRS
+/* deep-cadrs.c */
 ScmObj scm_p_caaar(ScmObj lst);
 ScmObj scm_p_caadr(ScmObj lst);
 ScmObj scm_p_cadar(ScmObj lst);
@@ -1319,22 +1348,7 @@ ScmObj scm_p_cdddar(ScmObj lst);
 ScmObj scm_p_cddddr(ScmObj lst);
 #endif /* SCM_USE_DEEP_CADRS */
 
-/* module-sscm-ext.c */
-#if SCM_USE_SSCM_EXTENSIONS
-void scm_initialize_sscm_extensions(void);
-ScmObj scm_p_symbol_boundp(ScmObj sym, ScmObj rest);
-ScmObj scm_p_least_fixnum(void);
-ScmObj scm_p_greatest_fixnum(void);
-ScmObj scm_p_load_path(void);
-void scm_require(const char *filename);
-ScmObj scm_p_require(ScmObj filename);
-ScmObj scm_p_provide(ScmObj feature);
-ScmObj scm_p_providedp(ScmObj feature);
-ScmObj scm_p_file_existsp(ScmObj filepath);
-ScmObj scm_p_delete_file(ScmObj filepath);
-ScmObj scm_p_lengthstar(ScmObj lst);
-#endif
-
+#if SCM_USE_PORT
 /* port.c */
 ScmObj scm_make_shared_file_port(FILE *file, const char *aux_info,
                                  enum ScmPortFlag flag);
@@ -1368,51 +1382,67 @@ ScmObj scm_p_eof_objectp(ScmObj obj);
 ScmObj scm_p_char_readyp(ScmObj args);
 ScmObj scm_p_newline(ScmObj args);
 ScmObj scm_p_write_char(ScmObj obj, ScmObj args);
+#endif /* SCM_USE_PORT */
 
+#if SCM_USE_READER
 /* read.c */
 ScmObj scm_read(ScmObj port);
 ScmObj scm_read_char(ScmObj port);
 ScmObj scm_p_read(ScmObj args);
+#endif /* SCM_USE_READER */
 
+#if SCM_USE_WRITER
 /* write.c */
 void scm_write(ScmObj port, ScmObj obj);
 void scm_display(ScmObj port, ScmObj obj);
 #if SCM_USE_SRFI38
 void scm_write_ss(ScmObj port, ScmObj obj);
-#endif
+#endif /* SCM_USE_SRFI38 */
 ScmObj scm_p_write(ScmObj obj, ScmObj args);
 ScmObj scm_p_display(ScmObj obj, ScmObj args);
+#endif /* SCM_USE_WRITER */
 
+#if SCM_USE_LOAD
 /* load.c */
 void scm_set_lib_path(const char *path);
 void scm_load(const char *filename);
 ScmObj scm_p_load(ScmObj filename);
-
-/* error.c */
-int  scm_debug_categories(void);
-void scm_set_debug_categories(int categories);
-int  scm_predefined_debug_categories(void);
-void scm_categorized_debug(int category, const char *msg, ...);
-void scm_debug(const char *msg, ...);
-void scm_die(const char *msg, const char *filename, int line) SCM_NORETURN;
-void scm_plain_error(const char *msg, ...) SCM_NORETURN;
-void scm_error(const char *funcname, const char *msg, ...) SCM_NORETURN;
-void scm_error_obj(const char *funcname, const char *msg,
-                   ScmObj obj) SCM_NORETURN;
-void scm_show_backtrace(ScmObj trace_stack);
-ScmObj scm_make_error_obj(ScmObj reason, ScmObj objs);
-void scm_raise_error(ScmObj err_obj) SCM_NORETURN;
-void scm_fatal_error(const char *msg) SCM_NORETURN;
-void scm_set_fatal_error_callback(void (*cb)(void));
-ScmObj scm_p_error_objectp(ScmObj obj);
-ScmObj scm_p_fatal_error(ScmObj err_obj) SCM_NORETURN;
-ScmObj scm_p_inspect_error(ScmObj err_obj);
-ScmObj scm_p_backtrace(void);
-
+#endif /* SCM_USE_LOAD */
 
 /*===========================================================================
    SigScheme : Optional Funtions
 ===========================================================================*/
+#if SCM_USE_SSCM_EXTENSIONS
+/* module-sscm-ext.c */
+void scm_initialize_sscm_extensions(void);
+ScmObj scm_p_symbol_boundp(ScmObj sym, ScmObj rest);
+ScmObj scm_p_least_fixnum(void);
+ScmObj scm_p_greatest_fixnum(void);
+ScmObj scm_p_load_path(void);
+void scm_require(const char *filename);
+ScmObj scm_p_require(ScmObj filename);
+ScmObj scm_p_provide(ScmObj feature);
+ScmObj scm_p_providedp(ScmObj feature);
+ScmObj scm_p_file_existsp(ScmObj filepath);
+ScmObj scm_p_delete_file(ScmObj filepath);
+ScmObj scm_p_lengthstar(ScmObj lst);
+#endif /* SCM_USE_SSCM_EXTENSIONS */
+
+#if SCM_COMPAT_SIOD
+/* module-siod.c */
+void   scm_initialize_siod(void);
+ScmObj scm_p_symbol_value(ScmObj var);
+ScmObj scm_p_set_symbol_valued(ScmObj var, ScmObj val);
+ScmObj scm_p_siod_equal(ScmObj obj1, ScmObj obj2);
+ScmObj scm_p_the_environment(ScmEvalState *eval_state);
+ScmObj scm_p_closure_code(ScmObj closure);
+ScmObj scm_p_verbose(ScmObj args);
+ScmObj scm_p_eof_val(void);
+ScmObj scm_s_undefine(ScmObj var, ScmObj env);
+long   scm_get_verbose_level(void);
+void   scm_set_verbose_level(long level);
+#endif /* SCM_COMPAT_SIOD */
+
 #if SCM_USE_SRFI1
 /* module-srfi1.c */
 void   scm_initialize_srfi1(void);
@@ -1509,21 +1539,6 @@ ScmObj scm_p_srfi60_logxor(ScmObj left, ScmObj right,
 ScmObj scm_p_srfi60_lognot(ScmObj n);
 ScmObj scm_p_srfi60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1);
 ScmObj scm_p_srfi60_logtest(ScmObj j, ScmObj k);
-#endif
-
-#if SCM_COMPAT_SIOD
-/* module-siod.c */
-void   scm_initialize_siod(void);
-ScmObj scm_p_symbol_value(ScmObj var);
-ScmObj scm_p_set_symbol_valued(ScmObj var, ScmObj val);
-ScmObj scm_p_siod_equal(ScmObj obj1, ScmObj obj2);
-ScmObj scm_p_the_environment(ScmEvalState *eval_state);
-ScmObj scm_p_closure_code(ScmObj closure);
-ScmObj scm_p_verbose(ScmObj args);
-ScmObj scm_p_eof_val(void);
-ScmObj scm_s_undefine(ScmObj var, ScmObj env);
-long   scm_get_verbose_level(void);
-void   scm_set_verbose_level(long level);
 #endif
 
 #ifdef __cplusplus
