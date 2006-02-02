@@ -70,6 +70,7 @@ static scm_bool srfi34_is_provided, fatal_error_looped;
 static void (*cb_fatal_error)(void);
 
 static ScmObj err_obj_tag, str_srfi34;
+#define NO_ERR_OBJ err_obj_tag
 
 /*=======================================
   File Local Function Declarations
@@ -336,7 +337,7 @@ scm_error_internal(const char *func_name, ScmObj obj,
         free(fmt);
 
     err_obj = scm_make_error_obj(MAKE_IMMUTABLE_STRING(reason, STRLEN_UNKNOWN),
-                                 LIST_1(obj));
+                                 (EQ(obj, NO_ERR_OBJ)) ? SCM_NULL : LIST_1(obj));
     scm_raise_error(err_obj);
     /* NOTREACHED */
 }
@@ -347,7 +348,7 @@ scm_plain_error(const char *msg, ...)
     va_list va;
 
     va_start(va, msg);
-    scm_error_internal(NULL, SCM_NULL, msg, va);
+    scm_error_internal(NULL, NO_ERR_OBJ, msg, va);
     /* va_end(va); */
     /* NOTREACHED */
 }
@@ -359,7 +360,7 @@ scm_error_with_implicit_func(const char *msg, ...)
     va_list va;
 
     va_start(va, msg);
-    scm_error_internal(scm_err_funcname, SCM_NULL, msg, va);
+    scm_error_internal(scm_err_funcname, NO_ERR_OBJ, msg, va);
     /* va_end(va); */
     /* NOTREACHED */
 }
@@ -371,7 +372,7 @@ scm_error(const char *func_name, const char *msg, ...)
     va_list va;
 
     va_start(va, msg);
-    scm_error_internal(func_name, SCM_NULL, msg, va);
+    scm_error_internal(func_name, NO_ERR_OBJ, msg, va);
     /* va_end(va); */
     /* NOTREACHED */
 }

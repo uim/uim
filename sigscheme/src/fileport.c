@@ -55,6 +55,7 @@
 /* To override SCM_{CHAR,BYTE}PORT_ERROR() and SCM_PORT_*ALLOC(). Don't depend
  * on SigScheme-specific things */
 #include "sigscheme.h"
+#include "sigschemeinternal.h"
 
 #include "baseport.h"
 #include "fileport.h"
@@ -227,7 +228,7 @@ fileport_byte_readyp(ScmFilePort *port)
      * fdopen(3) */
 #if HAVE_FILENO
     if (fileno(port->file) >= 0)
-        SCM_BYTEPORT_ERROR(port, "Bug: ready? operation is not supported on this port");
+        SCM_BYTEPORT_ERROR(port, "known bug: ready? operation is not supported on this port");
 #endif
     return scm_true;
 }
