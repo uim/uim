@@ -51,8 +51,12 @@ if USE_DEEP_CADRS
   R5RS_PROC_SRCS += deep-cadrs.c
 endif
 
-.PHONY: func-tables
+# For developers
+.PHONY: func-tables clean-func-tables
 func-tables: $(FUNC_TABLES)
+clean-func-tables:
+	rm -rf $(FUNC_TABLES)
+
 functable-sscm-core.c: $(SSCM_PROC_SRCS) $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_sscm_core_func_info_table" $(SSCM_PROC_SRCS)
 functable-r5rs-syntax.c: syntax.c $(BUILD_FUNCTBL_DEPS)
@@ -174,5 +178,6 @@ sscm_SOURCES  = main.c
 sscm_CFLAGS   = -Wall
 sscm_LDADD    = $(top_builddir)/src/libsscm.la
 
-CLEANFILES = \
-	$(FUNC_TABLES)
+# To enable ruby-less build on tarball distribution, we should not delete
+# $(FUNC_TABLES) here.
+CLEANFILES =
