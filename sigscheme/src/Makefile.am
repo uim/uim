@@ -140,7 +140,7 @@ if USE_MULTIBYTE_CHAR
   pkginclude_HEADERS += encoding.h
   libsscm_la_SOURCES += encoding.c
 endif
-if USE_NONSTD_FEATURES
+if USE_SSCM_EXTENSIONS
   libsscm_la_SOURCES += module-sscm-ext.c
 endif
 if COMPAT_SIOD
