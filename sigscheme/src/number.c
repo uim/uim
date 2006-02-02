@@ -39,6 +39,7 @@
 =======================================*/
 #include <stdlib.h>
 #include <limits.h>
+#include <errno.h>
 
 /*=======================================
   Local Include
@@ -508,6 +509,9 @@ scm_string2number(const char *str, int radix, scm_bool *err)
 #else
 #error "This platform is not supported"
 #endif
+
+    if (errno == ERANGE || n < SCM_INT_MIN || SCM_INT_MAX < n)
+        ERR("fixnum limit exceeded: %d", n);
 
     empty_strp = (end == str);  /* apply the first rule above */
     *err = (empty_strp || *end);
