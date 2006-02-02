@@ -31,26 +31,29 @@
 
 */
 
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
+#include "config.h"
+
 #include <gtk/gtk.h>
 #include <string.h>
 #include <stdlib.h>
 
 #include <uim/uim.h>
-#include "uim/config.h"
 #include "uim/uim-helper.h"
 #include "uim/uim-compat-scm.h"
 #include "uim/gettext.h"
 
-#define BUTTON_WIDTH  22
-#define BUTTON_HEIGHT 22
-
-#define OBJECT_DATA_MENU_BUTTONS "MENU_BUTTONS"
+#define OBJECT_DATA_PROP_BUTTONS "PROP_BUTTONS"
+#define OBJECT_DATA_TOOL_BUTTONS "TOOL_BUTTONS"
 #define OBJECT_DATA_SIZE_GROUP "SIZE_GROUP"
 #define OBJECT_DATA_TOOLBAR_TYPE "TOOLBAR_TYPE"
 #define OBJECT_DATA_COMMAND "COMMAND"
+
+/* exported functions */
+GtkWidget *uim_toolbar_standalone_new(void);
+GtkWidget *uim_toolbar_trayicon_new(void);
+GtkWidget *uim_toolbar_applet_new(void);
+void uim_toolbar_check_helper_connection(GtkWidget *widget);
+
 
 /* FIXME! command menu and buttons should be customizable. */
 static struct _CommandEntry {
@@ -100,7 +103,6 @@ static gint command_entry_len = sizeof(command_entry) / sizeof(struct _CommandEn
 
 static GtkWidget *prop_menu;
 static GtkWidget *right_click_menu;
-
 static unsigned int read_tag;
 static int uim_fd;
 
@@ -110,35 +112,220 @@ enum {
   TYPE_ICON
 };
 
-static gboolean
-prop_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget);
-static gboolean
-prop_button_released(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget);
 
 static void
-calc_menu_position(GtkMenu *prop_menu, gint *x, gint *y, gboolean *push_in, GtkWidget *prop_button);
+calc_menu_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
+		   GtkWidget *button)
+{
+  gint sc_height, sc_width, menu_width, menu_height, button_height;
+  GtkRequisition requisition;
+  
+  g_return_if_fail(x && y);
+  g_return_if_fail(GTK_IS_BUTTON(button));
+  
+  gdk_window_get_origin(button->window, x, y);
+  gdk_drawable_get_size(button->window, NULL, &button_height);
+  
+  sc_height = gdk_screen_get_height(gdk_screen_get_default());
+  sc_width = gdk_screen_get_width(gdk_screen_get_default());
+  
+  gtk_widget_size_request(GTK_WIDGET(menu), &requisition);
+  
+  menu_width = requisition.width;
+  menu_height = requisition.height;
+  
+  if (*y + button_height + menu_height < sc_height)
+    *y = *y + button_height;
+  else
+    *y = *y - menu_height;
+  
+  if (*x + menu_width > sc_width)
+    *x = sc_width - menu_width;
+}
 
 static void
-prop_menu_activate(GtkMenu *menu_item, gpointer data);
+right_click_menu_quit_activated(GtkMenu *menu_item, gpointer data)
+{
+  gtk_main_quit();
+}
 
-GtkWidget *
-uim_toolbar_standalone_new(void);
-GtkWidget *
-uim_toolbar_trayicon_new(void);
-GtkWidget *
-uim_toolbar_applet_new(void);
+static void
+right_click_menu_activated(GtkMenu *menu_item, gpointer data)
+{
+  const char *command = data;
 
-void uim_toolbar_check_helper_connection(GtkWidget *widget);
+  if (command)
+    system(command);
+}
+
+static gboolean
+right_button_pressed(GtkButton *button, GdkEventButton *event, gpointer data)
+{
+  gtk_menu_popup(GTK_MENU(right_click_menu), NULL, NULL, 
+		 (GtkMenuPositionFunc)calc_menu_position,
+		 (gpointer)button, event->button, 
+		 gtk_get_current_event_time());
+
+  return FALSE;
+}
 
 static void
 prop_menu_activate(GtkMenu *menu_item, gpointer data)
 {
-  GString *tmp = g_string_new((gchar*)g_object_get_data(G_OBJECT(menu_item), "prop_name"));
-  g_string_prepend(tmp, "prop_activate\n");
-  g_string_append(tmp, "\n");
-  uim_helper_send_message(uim_fd, tmp->str);
-  g_string_free(tmp, TRUE);
+  GString *msg;
+  
+  msg = g_string_new((gchar*)g_object_get_data(G_OBJECT(menu_item),
+		     "prop_action"));
+  g_string_prepend(msg, "prop_activate\n");
+  g_string_append(msg, "\n");
+  uim_helper_send_message(uim_fd, msg->str);
+  g_string_free(msg, TRUE);
 }
+
+static gboolean
+prop_button_pressed(GtkButton *prop_button, GdkEventButton *event,
+		    GtkWidget *widget)
+{ 
+  gint type;
+
+  switch (event->button) {
+  case 3:
+    type = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget),
+			   OBJECT_DATA_TOOLBAR_TYPE));
+    if (type == TYPE_APPLET)
+      gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)),
+		      				(GdkEvent *)event);
+    else
+      right_button_pressed(prop_button, event, widget);
+    break;
+  case 2:
+    gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)),
+			(GdkEvent *) event);
+    break;
+  default:
+    break;
+  }
+
+  return FALSE;
+}
+
+static gboolean
+prop_button_released(GtkButton *prop_button, GdkEventButton *event,
+		     GtkWidget *widget)
+{
+  GtkWidget *menu_item;
+  GtkTooltips *tooltip;
+  GList *menu_item_list, *label_list, *tooltip_list, *action_list, *state_list;
+  gchar *label, *flag;
+  int i;
+  gboolean has_state = FALSE;
+
+  uim_toolbar_check_helper_connection(widget);
+  
+  if (event->button == 2 || event->button == 3) {
+    gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)),
+			(GdkEvent *)event);
+    return FALSE;
+  }
+
+  menu_item_list = gtk_container_get_children(GTK_CONTAINER(prop_menu));
+  label_list = g_object_get_data(G_OBJECT(prop_button), "prop_label");
+  tooltip_list = g_object_get_data(G_OBJECT(prop_button), "prop_tooltip");
+  action_list = g_object_get_data(G_OBJECT(prop_button), "prop_action");
+  state_list = g_object_get_data(G_OBJECT(prop_button), "prop_state");
+
+  i = 0;
+  while ((menu_item = g_list_nth_data(menu_item_list, i)) != NULL) {    
+    gtk_container_remove(GTK_CONTAINER(prop_menu), menu_item);
+    i++;
+  }
+
+  /* check if state_list contains state data */
+  i = 0;
+  while ((flag = g_list_nth_data(state_list, i)) != NULL) {
+    if (!strcmp("*", flag)) {
+      has_state = TRUE;
+      break;
+    }
+    i++;
+  }
+
+  i = 0;
+  while ((label = g_list_nth_data(label_list, i)) != NULL) {
+    if (has_state) {
+      menu_item = gtk_check_menu_item_new_with_label(label);
+#if GTK_CHECK_VERSION(2, 4, 0)
+      gtk_check_menu_item_set_draw_as_radio(GTK_CHECK_MENU_ITEM(menu_item),
+					    TRUE);
+#endif
+      flag = g_list_nth_data(state_list, i);
+      if (flag && !strcmp("*", flag))
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), TRUE);
+    } else {
+      menu_item = gtk_menu_item_new_with_label(label);
+    }
+
+    /* tooltips */
+    tooltip = gtk_tooltips_new();
+    gtk_tooltips_set_tip(tooltip, menu_item, g_list_nth_data(tooltip_list, i),
+			 NULL);
+    
+    /* add to the menu */
+    gtk_menu_shell_append(GTK_MENU_SHELL(prop_menu), menu_item);
+
+    gtk_widget_show(menu_item);
+    g_signal_connect(G_OBJECT(menu_item), "activate", 
+		     G_CALLBACK(prop_menu_activate), prop_menu);
+    g_object_set_data_full(G_OBJECT(menu_item), "prop_action",
+			   g_list_nth_data(action_list, i),
+			   (GDestroyNotify)g_free);
+    i++;
+  }
+
+  gtk_menu_popup(GTK_MENU(prop_menu), NULL, NULL, 
+		 (GtkMenuPositionFunc)calc_menu_position,
+		 (gpointer)prop_button, event->button, 
+		 gtk_get_current_event_time());
+
+  return FALSE;
+}
+
+static gboolean
+tool_button_pressed_cb(GtkButton *tool_button, GdkEventButton *event,
+		       GtkWidget *widget)
+{ 
+  const gchar *command;
+  gint type;
+  gboolean ret;
+  
+  switch (event->button) {
+  case 3:
+    type = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget),
+			   OBJECT_DATA_TOOLBAR_TYPE));
+    if (type == TYPE_APPLET)
+      gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(tool_button)),
+			  (GdkEvent *)event);
+    else
+      right_button_pressed(tool_button, event, NULL);
+    ret = TRUE;
+    break;
+  case 2:
+    gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(tool_button)),
+			(GdkEvent *)event);
+    ret = TRUE;
+    break;
+  default:
+    command = g_object_get_data(G_OBJECT(tool_button), OBJECT_DATA_COMMAND);
+    if (command)
+      system(command);
+    ret = FALSE;
+    break;
+  }
+
+  return ret;
+}
+
+
 
 static void
 list_data_free(GList *list)
@@ -146,7 +333,6 @@ list_data_free(GList *list)
   g_list_foreach(list, (GFunc)g_free, NULL);
   g_list_free(list);
 }
-
 
 static void
 prop_data_flush(gpointer data)
@@ -156,56 +342,39 @@ prop_data_flush(gpointer data)
   list_data_free(list);
   list = g_object_get_data(data, "prop_tooltip");
   list_data_free(list);
-  list = g_object_get_data(data, "prop_name");
+  list = g_object_get_data(data, "prop_action");
   list_data_free(list);
   list = g_object_get_data(data, "prop_state");
   list_data_free(list);
 
   g_object_set_data(G_OBJECT(data), "prop_label", NULL);
   g_object_set_data(G_OBJECT(data), "prop_tooltip", NULL);
-  g_object_set_data(G_OBJECT(data), "prop_name", NULL);
+  g_object_set_data(G_OBJECT(data), "prop_action", NULL);
   g_object_set_data(G_OBJECT(data), "prop_state", NULL);  
 }
 
 static void
-button_destroy(gpointer data, gpointer user_data)
+prop_button_destroy(gpointer data, gpointer user_data)
 {
   prop_data_flush(data);
   gtk_widget_destroy(GTK_WIDGET(data));
 }
 
 static void
-helper_disconnect_cb(void)
+tool_button_destroy(gpointer data, gpointer user_data)
 {
-  uim_fd = -1;
-  g_source_remove(read_tag);
-}
-
-static gchar *
-get_charset(gchar *line)
-{
-  gchar **splitted = NULL;
-
-  splitted = g_strsplit(line, "=", 0);
-
-  if (splitted && splitted[0] && splitted[1]
-     && strcmp("charset", splitted[0]) == 0) {
-    gchar *charset = g_strdup(splitted[1]);
-    g_strfreev(splitted);
-    return charset;
-  } else {
-    g_strfreev(splitted);
-    return NULL;
-  }
+  gtk_widget_destroy(GTK_WIDGET(data));
 }
 
 static GtkWidget *
-menu_button_create(GtkWidget *widget, const gchar *label, const gchar *tip_text)
+prop_button_create(GtkWidget *widget, const gchar *label,
+		   const gchar *tip_text)
 {
   GtkWidget *button;
   GtkTooltips *tooltip;
-  GtkSizeGroup *sg = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_SIZE_GROUP);
-
+  GtkSizeGroup *sg;
+  
+  sg = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_SIZE_GROUP);
   button = gtk_button_new_with_label(label);
   gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
   gtk_size_group_add_widget(sg, button);
@@ -216,136 +385,136 @@ menu_button_create(GtkWidget *widget, const gchar *label, const gchar *tip_text)
 		   G_CALLBACK(prop_button_pressed), widget);
   g_signal_connect(G_OBJECT(button), "button-release-event",
 		   G_CALLBACK(prop_button_released), widget);
+
   return button;
 }
 
 static void
-menu_button_append_menu(GtkWidget *button,
+prop_button_append_menu(GtkWidget *button,
 			const gchar *label, const gchar *tooltip,
-			const gchar *name,  const gchar *state)
+			const gchar *action, const gchar *state)
 {
-  GList *label_list   = g_object_get_data(G_OBJECT(button), "prop_label");
+  GList *label_list = g_object_get_data(G_OBJECT(button), "prop_label");
   GList *tooltip_list = g_object_get_data(G_OBJECT(button), "prop_tooltip");
-  GList *name_list    = g_object_get_data(G_OBJECT(button), "prop_name");
+  GList *action_list = g_object_get_data(G_OBJECT(button), "prop_action");
   
-  label_list   = g_list_append(label_list,   g_strdup(label));
+  label_list = g_list_append(label_list, g_strdup(label));
   tooltip_list = g_list_append(tooltip_list, g_strdup(tooltip));
-  name_list    = g_list_append(name_list,    g_strdup(name));
+  action_list = g_list_append(action_list, g_strdup(action));
   
-  g_object_set_data(G_OBJECT(button), "prop_label",
-		    label_list);
-  g_object_set_data(G_OBJECT(button), "prop_tooltip",
-		    tooltip_list);
-  g_object_set_data(G_OBJECT(button), "prop_name",
-		    name_list);
+  g_object_set_data(G_OBJECT(button), "prop_label", label_list);
+  g_object_set_data(G_OBJECT(button), "prop_tooltip", tooltip_list);
+  g_object_set_data(G_OBJECT(button), "prop_action", action_list);
 
   if (state) {
     GList *state_list = g_object_get_data(G_OBJECT(button), "prop_state");
     state_list = g_list_append(state_list, g_strdup(state));
-    g_object_set_data(G_OBJECT(button), "prop_state",
-		      state_list);
+    g_object_set_data(G_OBJECT(button), "prop_state", state_list);
   }
 }
 
 static void
-append_button(GtkWidget *hbox, GtkWidget *button)
+append_prop_button(GtkWidget *hbox, GtkWidget *button)
 {
-  GList *menu_buttons;
+  GList *prop_buttons;
+
   if (button) {
     gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
 
-    menu_buttons = g_object_get_data(G_OBJECT(hbox), OBJECT_DATA_MENU_BUTTONS);
-    menu_buttons = g_list_append(menu_buttons, button);
-    g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_MENU_BUTTONS, menu_buttons);
+    prop_buttons = g_object_get_data(G_OBJECT(hbox), OBJECT_DATA_PROP_BUTTONS);
+    prop_buttons = g_list_append(prop_buttons, button);
+    g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_PROP_BUTTONS, prop_buttons);
   }
-}
-
-static gchar *
-convert_charset(const gchar *charset, const gchar *line)
-{
-  if (charset == NULL) {
-    return NULL;
-  }
-  return g_convert(line, strlen(line),
-		   "UTF-8", charset, 
-		   NULL, /* gsize *bytes_read */
-		   NULL, /*size *bytes_written */
-		   NULL); /* GError **error*/
-}
-
-static gboolean
-prop_right_button_pressed(GtkButton *prop_button, GdkEventButton *event, gpointer dummy)
-{
-  gtk_menu_popup(GTK_MENU(right_click_menu), NULL, NULL, 
-		 (GtkMenuPositionFunc) calc_menu_position,
-		 (gpointer)prop_button, event->button, 
-		 gtk_get_current_event_time());
-  return FALSE;
-}
-
-static gboolean
-toolbar_button_press_cb(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget)
-{ 
-  const gchar *command = g_object_get_data(G_OBJECT(prop_button), OBJECT_DATA_COMMAND);
-  gint type =  GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), OBJECT_DATA_TOOLBAR_TYPE));
-  if (event->button == 3) {
-    if (type == TYPE_APPLET)
-      gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
-    else
-      prop_right_button_pressed(prop_button, event, prop_menu);
-    return TRUE;
-  } else if (event->button == 2) {
-    gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
-    return TRUE;
-  } else if (command && *command) {
-    system(command);
-  }
-
-  return FALSE;
 }
 
 static void
-helper_toolbar_prop_list_update(GtkWidget *widget, gchar **tmp)
+append_tool_button(GtkWidget *hbox, GtkWidget *button)
 {
-  GtkWidget *button = NULL; /* quiet gcc */
-  int i = 0;
-  gchar **tmp2 = NULL;
+  GList *tool_buttons;
+
+  if (button) {
+    gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
+
+    tool_buttons = g_object_get_data(G_OBJECT(hbox), OBJECT_DATA_TOOL_BUTTONS);
+    tool_buttons = g_list_append(tool_buttons, button);
+    g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_TOOL_BUTTONS, tool_buttons);
+  }
+}
+
+
+static gchar *
+get_charset(gchar *line)
+{
+  gchar **tokens;
   gchar *charset = NULL;
-  GList *menu_buttons;
+
+  tokens = g_strsplit(line, "=", 0);
+  if (tokens && tokens[0] && tokens[1] && !strcmp("charset", tokens[0]))
+    charset = g_strdup(tokens[1]);
+  g_strfreev(tokens);
+  
+  return charset;
+}
+
+static gchar *
+convert_charset(const gchar *charset, const gchar *str)
+{
+  if (!charset)
+    return NULL;
+
+  return g_convert(str, strlen(str),
+		   "UTF-8", charset, 
+		   NULL, /* gsize *bytes_read */
+		   NULL, /* size *bytes_written */
+		   NULL); /* GError **error */
+}
+
+static void
+helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
+{
+  GtkWidget *button = NULL;
+  int i;
+  gchar **cols;
+  gchar *charset = NULL;
+  GList *prop_buttons, *tool_buttons;
   GtkSizeGroup *sg;
 
-  charset = get_charset(tmp[1]);
+  charset = get_charset(lines[1]);
 
-  menu_buttons = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_MENU_BUTTONS);
+  prop_buttons = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_PROP_BUTTONS);
+  tool_buttons = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_TOOL_BUTTONS);
   sg  = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_SIZE_GROUP);
 
-  if (menu_buttons) {
-    g_list_foreach(menu_buttons, button_destroy, NULL);
-    g_list_free(menu_buttons);
-    g_object_set_data(G_OBJECT(widget), OBJECT_DATA_MENU_BUTTONS, NULL);
+  if (prop_buttons) {
+    g_list_foreach(prop_buttons, prop_button_destroy, NULL);
+    g_list_free(prop_buttons);
+    g_object_set_data(G_OBJECT(widget), OBJECT_DATA_PROP_BUTTONS, NULL);
+  }
+  if (tool_buttons) {
+    g_list_foreach(tool_buttons, tool_button_destroy, NULL);
+    g_list_free(tool_buttons);
+    g_object_set_data(G_OBJECT(widget), OBJECT_DATA_TOOL_BUTTONS, NULL);
   }
 
-  while (tmp[i] && strcmp("", tmp[i]) != 0) {
-    gchar *utf8_str;
-    utf8_str = convert_charset(charset, tmp[i]);
+  i = 0;
+  while (lines[i] && strcmp("", lines[i])) {
+    gchar *utf8_str = convert_charset(charset, lines[i]);
 
     if (utf8_str != NULL) {
-      tmp2 = g_strsplit(utf8_str, "\t", 0);
+      cols = g_strsplit(utf8_str, "\t", 0);
       g_free(utf8_str);
     } else {
-      tmp2 = g_strsplit(tmp[i], "\t", 0);
+      cols = g_strsplit(lines[i], "\t", 0);
     }
     
-    if (tmp2 && tmp2[0]) {
-      if (strcmp("branch", tmp2[0]) == 0) {
-
-	button = menu_button_create(widget, tmp2[1], tmp2[2]);
-	append_button(widget, button);
-	
-      } else if (strcmp("leaf", tmp2[0]) == 0) {
-	menu_button_append_menu(button, tmp2[2], tmp2[3], tmp2[4], tmp2[5]);
+    if (cols && cols[0]) {
+      if (!strcmp("branch", cols[0])) {
+	button = prop_button_create(widget, cols[1], cols[2]);
+	append_prop_button(widget, button);
+      } else if (!strcmp("leaf", cols[0])) {
+	prop_button_append_menu(button, cols[2], cols[3], cols[4], cols[5]);
       }
-      g_strfreev(tmp2);
+      g_strfreev(cols);
     }
     i++;
   }
@@ -353,7 +522,7 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **tmp)
   /* create tool buttons */
   /* FIXME! command menu and buttons should be customizable. */
   for (i = 0; i < command_entry_len; i++) {
-    GtkWidget *button;
+    GtkWidget *tool_button;
     GtkTooltips *tooltip;
     GtkWidget *img;
     uim_bool show_pref;
@@ -362,61 +531,57 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **tmp)
     if (show_pref == UIM_FALSE)
       continue;
 
-    button = gtk_button_new();
-    g_object_set_data(G_OBJECT(button), OBJECT_DATA_COMMAND,
-		      (gpointer) command_entry[i].command);
-    if (command_entry[i].icon) {
-      img = gtk_image_new_from_stock(command_entry[i].icon, GTK_ICON_SIZE_MENU);
-    } else {
+    tool_button = gtk_button_new();
+    g_object_set_data(G_OBJECT(tool_button), OBJECT_DATA_COMMAND,
+		      (gpointer)command_entry[i].command);
+    if (command_entry[i].icon)
+      img = gtk_image_new_from_stock(command_entry[i].icon,
+				     GTK_ICON_SIZE_MENU);
+    else {
       img = gtk_label_new("");
       gtk_label_set_markup(GTK_LABEL(img), command_entry[i].label);
     }
     if (img)
-      gtk_container_add(GTK_CONTAINER(button), img);
-    gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
-    gtk_size_group_add_widget(sg, button);
-    g_signal_connect(G_OBJECT(button), "button_press_event",
-		     G_CALLBACK(toolbar_button_press_cb), widget);
+      gtk_container_add(GTK_CONTAINER(tool_button), img);
+    gtk_button_set_relief(GTK_BUTTON(tool_button), GTK_RELIEF_NONE);
+    gtk_size_group_add_widget(sg, tool_button);
+    g_signal_connect(G_OBJECT(tool_button), "button_press_event",
+		     G_CALLBACK(tool_button_pressed_cb), widget);
 
     /* tooltip */
     tooltip = gtk_tooltips_new();
-    gtk_tooltips_set_tip(tooltip, button, _(command_entry[i].desc), NULL);
+    gtk_tooltips_set_tip(tooltip, tool_button, _(command_entry[i].desc), NULL);
 
-    append_button(widget, button);
+    append_tool_button(widget, tool_button);
   }
 
   gtk_widget_show_all(widget);
-
-  if (charset)
-    g_free(charset);
+  g_free(charset);
 }
 
 static void
 helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
 {
   GtkWidget *button;
-  unsigned int i = 0;
-  gchar **pair = NULL;
+  unsigned int i;
+  gchar **pair;
   gchar *charset = NULL;
-  GList *menu_buttons;
+  GList *prop_buttons;
 
-  charset = get_charset(lines[1]);
-
-  while (lines[i] && strcmp("", lines[i]) != 0) {
+  i = 0;
+  while (lines[i] && strcmp("", lines[i]))
     i++;
-  }
 
-  menu_buttons = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_MENU_BUTTONS);
-
-  if (!menu_buttons || i - 2 != g_list_length(menu_buttons)) {
+  prop_buttons = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_PROP_BUTTONS);
+  if (!prop_buttons || (i - 2) != g_list_length(prop_buttons)) {
     uim_helper_client_get_prop_list();
     return;
   }
   
-  i = 1; /* resetting temporary variable */
+  charset = get_charset(lines[1]);
 
-  while (lines[i] && strcmp("", lines[i]) != 0) {
-
+  i = 2;
+  while (lines[i] && strcmp("", lines[i])) {
     if (charset) {
       gchar *utf8_str;
       utf8_str = g_convert(lines[i], strlen(lines[i]),
@@ -424,24 +589,21 @@ helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
 			   NULL, /* gsize *bytes_read */
 			   NULL, /*size *bytes_written */
 			   NULL); /* GError **error*/
-
       pair = g_strsplit(utf8_str, "\t", 0);
       g_free(utf8_str);
     } else {
       pair = g_strsplit(lines[i], "\t", 0);
     }
     
-    if (pair && pair[0] && pair[1])
-      {
-	button = g_list_nth_data(menu_buttons, i - 2 );
-	gtk_button_set_label(GTK_BUTTON(button), pair[0]);
-      }
+    if (pair && pair[0] && pair[1]) {
+      button = g_list_nth_data(prop_buttons, i - 2 );
+      gtk_button_set_label(GTK_BUTTON(button), pair[0]);
+    }
     g_strfreev(pair);
     i++;
   }
 
-  if (charset)
-    g_free(charset);
+  g_free(charset);
 }
 
 
@@ -452,75 +614,10 @@ helper_toolbar_parse_helper_str(GtkWidget *widget, gchar *str)
   lines = g_strsplit(str, "\n", 0);
 
   if (lines && lines[0]) {
-    if ( strcmp("prop_list_update", lines[0]) == 0) {
+    if (!strcmp("prop_list_update", lines[0]))
       helper_toolbar_prop_list_update(widget, lines);
-    } else if ( strcmp("prop_label_update", lines[0]) == 0) {
+    else if (!strcmp("prop_label_update", lines[0]))
       helper_toolbar_prop_label_update(widget, lines);
-    }
-    g_strfreev(lines);
-  }
-}
-
-
-static void
-helper_icon_prop_list_update(GtkWidget *widget, gchar **tmp)
-{
-  gint i = 0;
-  gchar **tmp2 = NULL;
-  gchar *charset = NULL;
-  gboolean updated = FALSE;
-
-  charset = get_charset(tmp[1]);
-
-  while (tmp[i] && strcmp("", tmp[i]) != 0) {
-    gchar *utf8_str;
-    utf8_str = convert_charset(charset, tmp[i]);
-
-    if (utf8_str != NULL) {
-      tmp2 = g_strsplit(utf8_str, "\t", 0);
-      g_free(utf8_str);
-    } else {
-      tmp2 = g_strsplit(tmp[i], "\t", 0);
-    }
-    
-    if (tmp2 && tmp2[0]) {
-      if (strcmp("branch", tmp2[0]) == 0) {
-	if (updated) {
-	  break;
-	} else {
-	  GtkWidget *child = gtk_bin_get_child(GTK_BIN(widget));
-	  GtkWidget *label = gtk_label_new(tmp2[1]);
-	  gtk_widget_destroy(child);
-	  
-	  gtk_container_add(GTK_CONTAINER(widget), label);
-	  gtk_widget_show(label);
-	  prop_data_flush(widget);	  
-	  updated = TRUE;
-	}
-      } else if (strcmp("leaf", tmp2[0]) == 0) {
-	menu_button_append_menu(widget, tmp2[2], tmp2[3], tmp2[4], tmp2[5]);
-      }
-      g_strfreev(tmp2);
-    }
-    i++;
-  }
-  
-  gtk_widget_show_all(widget);
-
-  if (charset)
-    g_free(charset);
-}
-
-static void
-helper_icon_parse_helper_str(GtkWidget *widget, gchar *str)
-{
-  gchar **lines;
-  lines = g_strsplit(str, "\n", 0);
-
-  if (lines && lines[0]) {
-    if ( strcmp("prop_list_update", lines[0]) == 0) {
-      helper_icon_prop_list_update(widget, lines);
-    }
     g_strfreev(lines);
   }
 }
@@ -528,97 +625,25 @@ helper_icon_parse_helper_str(GtkWidget *widget, gchar *str)
 static gboolean
 fd_read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
 {
-  gchar *tmp;
+  gchar *msg;
   int fd = g_io_channel_unix_get_fd(channel);
   GtkWidget *widget = GTK_WIDGET(p);
 
   uim_helper_read_proc(fd);
 
-  if (g_object_get_data(G_OBJECT(widget), OBJECT_DATA_SIZE_GROUP))
-    while ((tmp = uim_helper_get_message())) {
-      helper_toolbar_parse_helper_str(widget, tmp);
-      free(tmp); tmp = NULL;
-    }
-  else {
-    while ((tmp = uim_helper_get_message())) {      
-      helper_icon_parse_helper_str(widget, tmp);
-      free(tmp); tmp = NULL;
-    }
+  while ((msg = uim_helper_get_message())) {
+    helper_toolbar_parse_helper_str(widget, msg);
+    free(msg);
   }
 
   return TRUE;
 }
 
 static void
-menu_quit_activated(GtkMenu *menu_item, gpointer data)
+helper_disconnect_cb(void)
 {
-  gtk_main_quit();
-}
-
-static void
-menu_activated(GtkMenu *menu_item, gpointer data)
-{
-  const char *command = data;
-
-  if (command && *command)
-    system(command);
-}
-
-static GtkWidget *
-right_click_menu_create(void)
-{
-  GtkWidget *menu;
-  GtkWidget *menu_item;
-  GtkWidget *img;
-
-  gint i;
-
-  menu = gtk_menu_new();
-
-  /* FIXME! command menu and buttons should be customizable. */
-  for (i = 0; i < command_entry_len; i++) {
-    menu_item = gtk_image_menu_item_new_with_label(_(command_entry[i].desc));
-
-    if (command_entry[i].icon) {
-      img = gtk_image_new_from_stock(command_entry[i].icon, GTK_ICON_SIZE_MENU);
-      if (img)
-	gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
-    }
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
-    g_signal_connect(G_OBJECT(menu_item), "activate", 
-		     G_CALLBACK(menu_activated),
-		     (gpointer) command_entry[i].command);
-  }
-
-  {
-    img = gtk_image_new_from_stock(GTK_STOCK_QUIT, GTK_ICON_SIZE_MENU);
-    menu_item = gtk_image_menu_item_new_with_label(_("Quit this toolbar"));
-    gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
-    g_signal_connect(G_OBJECT(menu_item), "activate", 
-		     G_CALLBACK(menu_quit_activated), NULL);
-  }
-
-
-  gtk_widget_show_all(menu);
-
-  return menu;
-}
-
-
-static gboolean
-prop_button_pressed(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget)
-{ 
-  gint type =  GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), OBJECT_DATA_TOOLBAR_TYPE));
-  if (event->button == 3) {
-    if (type == TYPE_APPLET)
-      gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
-    else
-      prop_right_button_pressed(prop_button, event, widget);
-  } else if (event->button == 2) {
-    gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
-  }
-  return FALSE;
+  uim_fd = -1;
+  g_source_remove(read_tag);
 }
 
 void
@@ -636,114 +661,44 @@ uim_toolbar_check_helper_connection(GtkWidget *widget)
   }
 }
 
-static gboolean
-prop_button_released(GtkButton *prop_button, GdkEventButton *event, GtkWidget *widget)
+static GtkWidget *
+right_click_menu_create(void)
 {
+  GtkWidget *menu;
   GtkWidget *menu_item;
-  GtkTooltips *tooltip;
-  GList *menu_item_list;
-  GList *label_list   = g_object_get_data(G_OBJECT(prop_button), "prop_label");
-  GList *tooltip_list = g_object_get_data(G_OBJECT(prop_button), "prop_tooltip");
-  GList *name_list    = g_object_get_data(G_OBJECT(prop_button), "prop_name");
-  GList *state_list   = g_object_get_data(G_OBJECT(prop_button), "prop_state");
-  gchar *label;
-  gchar *flag;
-  int i = 0;
-  gboolean is_radio = FALSE;
+  GtkWidget *img;
+  gint i;
 
-  uim_toolbar_check_helper_connection(widget);
-  
-  if (!event) {
-    return FALSE;
-  } else if (event->button == 2 || event->button == 3) {
-    gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(prop_button)), (GdkEvent *) event);
-    return FALSE;
-  }
+  menu = gtk_menu_new();
 
-  menu_item_list = gtk_container_get_children(GTK_CONTAINER(prop_menu));
+  /* FIXME! command menu and buttons should be customizable. */
+  for (i = 0; i < command_entry_len; i++) {
+    menu_item = gtk_image_menu_item_new_with_label(_(command_entry[i].desc));
 
-  while ((menu_item = g_list_nth_data(menu_item_list, i)) != NULL) {    
-    gtk_container_remove(GTK_CONTAINER(prop_menu), menu_item);
-    i++;
-  }
-
-  /* check if state_list contains state data */
-  i = 0;
-  while ((flag = g_list_nth_data(state_list, i)) != NULL) {
-    if (strcmp("*", flag) == 0)
-      is_radio = TRUE;
-
-    i++;
-  }
-
-  i = 0;
-  while ((label = g_list_nth_data(label_list, i)) != NULL) {
-    if (is_radio) {
-      menu_item = gtk_check_menu_item_new_with_label(label);
-#if GTK_CHECK_VERSION(2, 4, 0)
-      gtk_check_menu_item_set_draw_as_radio(GTK_CHECK_MENU_ITEM(menu_item), TRUE);
-#endif
-      flag = g_list_nth_data(state_list, i);
-      if (flag && strcmp("*", flag) == 0)
-        gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM(menu_item), TRUE);
-    } else {
-      /* no state data */
-      menu_item = gtk_menu_item_new_with_label(label);
+    if (command_entry[i].icon) {
+      img = gtk_image_new_from_stock(command_entry[i].icon,
+		      		     GTK_ICON_SIZE_MENU);
+      if (img)
+	gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
     }
 
-    /* tooltips */
-    tooltip = gtk_tooltips_new();
-    gtk_tooltips_set_tip(tooltip, menu_item, g_list_nth_data(tooltip_list, i), NULL);
-    
-    /* add to the menu */
-    gtk_menu_shell_append(GTK_MENU_SHELL(prop_menu), menu_item);
-
-    gtk_widget_show(menu_item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
     g_signal_connect(G_OBJECT(menu_item), "activate", 
-		     G_CALLBACK(prop_menu_activate), prop_menu);
-    g_object_set_data_full(G_OBJECT(menu_item), "prop_name",
-			   g_list_nth_data(name_list, i),
-			   (GDestroyNotify)g_free);
-    i++;
+		     G_CALLBACK(right_click_menu_activated),
+		     (gpointer)command_entry[i].command);
   }
-  gtk_menu_popup(GTK_MENU(prop_menu), NULL, NULL, 
-		 (GtkMenuPositionFunc) calc_menu_position,
-		 (gpointer)prop_button, event->button, 
-		 gtk_get_current_event_time());
 
-  return FALSE;
-}
+  /* Add quit item */
+  img = gtk_image_new_from_stock(GTK_STOCK_QUIT, GTK_ICON_SIZE_MENU);
+  menu_item = gtk_image_menu_item_new_with_label(_("Quit this toolbar"));
+  gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
+  g_signal_connect(G_OBJECT(menu_item), "activate", 
+		   G_CALLBACK(right_click_menu_quit_activated), NULL);
 
-static void
-calc_menu_position(GtkMenu *prop_menu, gint *x, gint *y, gboolean *push_in, GtkWidget *prop_button)
-{
-  gint sc_height, sc_width, menu_width, menu_height, button_height;
-  GtkRequisition requisition;
-  
-  g_return_if_fail(x && y);
-  g_return_if_fail(GTK_IS_BUTTON(prop_button));
-  
-  gdk_window_get_origin(prop_button->window, x, y);
-  gdk_drawable_get_size(prop_button->window, NULL, &button_height);
-  
-  sc_height = gdk_screen_get_height(gdk_screen_get_default ());
-  sc_width  = gdk_screen_get_width (gdk_screen_get_default ());
-  
-  gtk_widget_size_request(GTK_WIDGET(prop_menu), &requisition);
-  
-  menu_width  =  requisition.width;
-  menu_height =  requisition.height;
-  
-  
-  if (*y + button_height + menu_height < sc_height) {
-    *y = *y + button_height;
-  } else {
-    *y = *y - menu_height;
-  }
-  
-  if (*x + menu_width > sc_width) {
-    *x = sc_width - menu_width;
-  }
+  gtk_widget_show_all(menu);
+
+  return menu;
 }
 
 static void
@@ -753,7 +708,6 @@ regist_icon(void)
   GtkIconSet *icon_set;
   GdkPixbuf *pixbuf;
 
-  /* regist our icons */
   factory = gtk_icon_factory_new();
   gtk_icon_factory_add_default(factory);
   pixbuf = gdk_pixbuf_new_from_file(UIM_PIXMAPSDIR "/switcher-icon.png", NULL);
@@ -770,7 +724,7 @@ toolbar_new(gint type)
 {
   GtkWidget *button;
   GtkWidget *hbox;
-  GList *menu_buttons = NULL;
+  GList *prop_buttons = NULL;
   GtkSizeGroup *sg;
 
   regist_icon();
@@ -787,17 +741,17 @@ toolbar_new(gint type)
 		   G_CALLBACK(prop_button_pressed), NULL);
   gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
 
-  menu_buttons = g_list_append(menu_buttons, button);
+  prop_buttons = g_list_append(prop_buttons, button);
 
-  g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_MENU_BUTTONS,
-		    menu_buttons);
-  g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_SIZE_GROUP,
-		    sg);
+  g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_PROP_BUTTONS, prop_buttons);
+  g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_SIZE_GROUP, sg);
   g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_TOOLBAR_TYPE,
 		    GINT_TO_POINTER(type));
   
   uim_fd = -1;
+
   if (type != TYPE_ICON) {
+    /* delay initialization until getting "embedded" signal */
     uim_toolbar_check_helper_connection(hbox);
     uim_helper_client_get_prop_list();
   }
