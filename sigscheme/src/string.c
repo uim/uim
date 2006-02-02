@@ -38,7 +38,6 @@
 /*=======================================
   System Include
 =======================================*/
-#include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -140,7 +139,7 @@ scm_p_make_string(ScmObj length, ScmObj args)
     for (dst = str; dst < &str[ch_len * len]; dst += ch_len)
         memcpy(dst, ch_str, ch_len);
 #else
-    SCM_ASSERT(isascii(filler_val));
+    SCM_ASSERT(ICHAR_ASCIIP(filler_val));
     str = scm_malloc(len + sizeof(""));
     for (dst = str; dst < &str[len];)
         *dst++ = filler_val;
@@ -274,7 +273,7 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     SCM_STRING_SET_STR(str, new_str);
 #else
     ch_val = SCM_CHAR_VALUE(ch);
-    SCM_ASSERT(isascii(ch_val));
+    SCM_ASSERT(ICHAR_ASCIIP(ch_val));
     c_str[idx] = ch_val;
 #endif
 
@@ -298,10 +297,8 @@ strcasecmp(const char *s1, const char *s2)
         if (!c1 && !c2)
             return 0;
 
-        if (isascii(c1))
-            c1 = tolower(c1);
-        if (isascii(c2))
-            c2 = tolower(c2);
+        c1 = ICHAR_FOLDCASE(c1);
+        c2 = ICHAR_FOLDCASE(c2);
         
         if (c1 > c2)
             return 1;
@@ -711,7 +708,7 @@ scm_p_string_filld(ScmObj str, ScmObj ch)
     SCM_STRING_SET_STR(str, new_str);
 #else
     ch_val = SCM_CHAR_VALUE(ch);
-    SCM_ASSERT(isascii(ch_val));
+    SCM_ASSERT(ICHAR_ASCIIP(ch_val));
     c_str = SCM_STRING_STR(str);
     for (dst = c_str; dst < &c_str[str_len]; dst++)
         *dst = ch_val;

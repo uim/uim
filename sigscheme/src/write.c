@@ -39,7 +39,6 @@
 =======================================*/
 #include <stdio.h>
 #include <stdarg.h>
-#include <ctype.h>
 #include <string.h>
 
 /*=======================================
@@ -264,7 +263,7 @@ write_char(ScmObj port, ScmObj obj, enum OutputType otype)
         }
 
         /* other control chars are printed in hexadecimal form */
-        if (isascii(c) && iscntrl(c)) {
+        if (ICHAR_CONTROLP(c)) {
             scm_port_printf(port, "x%02x", (int)c);
             return;
         }

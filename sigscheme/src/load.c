@@ -39,7 +39,6 @@
 =======================================*/
 #include <stddef.h>
 #include <stdio.h>
-#include <ctype.h>
 #include <string.h>
 
 /*=======================================
@@ -224,13 +223,14 @@ interpret_script_prelude(ScmObj port)
 static char **
 parse_script_prelude(ScmObj port)
 {
-    int argc, c, len, line_len;
+    scm_ichar_t c;
+    int argc, len, line_len;
     char **argv, *arg, *p;
     char line[SCRIPT_PRELUDE_MAXLEN];
 
     for (p = line; p < &line[SCRIPT_PRELUDE_MAXLEN]; p++) {
         c = scm_port_get_char(port);
-        if (!isascii(c))
+        if (!ICHAR_ASCIIP(c))
             PLAIN_ERR("non-ASCII char appeared in UNIX script prelude");
         if (c == SCM_NEWLINE_STR[0]) {
             *p = '\0';

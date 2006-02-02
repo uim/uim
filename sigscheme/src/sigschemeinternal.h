@@ -461,9 +461,10 @@ extern const unsigned char scm_char_class_table[];
 #define ICHAR_CLASS(c)                                                       \
     (ICHAR_ASCIIP(c) ? scm_char_class_table[c] : SCM_CH_NONASCII)
 
-#define ICHAR_ALPHABETICP(c) (ICHAR_UPPER_CASEP(c) || ICHAR_LOWER_CASEP(c))
-#define ICHAR_NUMERICP(c)    ('0' <= (c) && (c) <= '9')
+#define ICHAR_CONTROLP(c)    ((0 <= (c) && (c) <= 31) || (c) == 127)
 #define ICHAR_WHITESPACEP(c) ((c) == ' ' || ('\t' <= (c) && (c) <= '\r'))
+#define ICHAR_NUMERICP(c)    ('0' <= (c) && (c) <= '9')
+#define ICHAR_ALPHABETICP(c) (ICHAR_UPPER_CASEP(c) || ICHAR_LOWER_CASEP(c))
 #define ICHAR_UPPER_CASEP(c) ('A' <= (c) && (c) <= 'Z')
 #define ICHAR_LOWER_CASEP(c) ('a' <= (c) && (c) <= 'z')
 
