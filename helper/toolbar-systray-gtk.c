@@ -38,6 +38,7 @@
 #include <locale.h>
 #include "uim/gettext.h"
 #include "uim/uim.h"
+#include "uim/uim-helper.h"
 #include <gtk/gtk.h>
 #include "eggtrayicon.h"
 
