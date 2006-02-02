@@ -61,43 +61,50 @@ static struct _CommandEntry {
   const gchar *label;
   const gchar *icon;
   const gchar *command;
-  const gchar *pref_button_show_symbol;
+  const gchar *custom_button_show_symbol;
+  uim_bool show_button;
 } command_entry[] = {
   {N_("Switch input method"),
    NULL,
    "switcher-icon",
    "uim-im-switcher-gtk &",
-   "toolbar-show-switcher-button?"},
+   "toolbar-show-switcher-button?",
+   UIM_FALSE},
 
   {N_("Preference"),
    NULL,
    GTK_STOCK_PREFERENCES,
    "uim-pref-gtk &",
-   "toolbar-show-pref-button?"},
+   "toolbar-show-pref-button?",
+   UIM_FALSE},
 
   {N_("Japanese dictionary editor"),
    "Dic",
    NULL,
    "uim-dict-gtk &",
-   "toolbar-show-dict-button?"},
+   "toolbar-show-dict-button?",
+   UIM_FALSE},
 
   {N_("Input pad"),
    "Pad",
    NULL,
    "uim-input-pad-ja &",
-   "toolbar-show-input-pad-button?"},
+   "toolbar-show-input-pad-button?",
+   UIM_FALSE},
 
   {N_("Handwriting input pad"),
    "Hand",
    NULL,
    "uim-tomoe-gtk &",
-   "toolbar-show-handwriting-input-pad-button?"},
+   "toolbar-show-handwriting-input-pad-button?",
+   UIM_FALSE},
 
   {N_("Help"),
    NULL,
    GTK_STOCK_HELP,
    "uim-help &",
-   "toolbar-show-help-button?"}
+   "toolbar-show-help-button?",
+   UIM_FALSE}
 };
 static gint command_entry_len = sizeof(command_entry) / sizeof(struct _CommandEntry);
 
@@ -535,10 +542,8 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
     GtkWidget *tool_button;
     GtkTooltips *tooltip;
     GtkWidget *img;
-    uim_bool show_pref;
 
-    show_pref = uim_scm_symbol_value_bool(command_entry[i].pref_button_show_symbol);
-    if (show_pref == UIM_FALSE)
+    if (!command_entry[i].show_button)
       continue;
 
     tool_button = gtk_button_new();
@@ -619,6 +624,16 @@ helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
 }
 
 static void
+helper_toolbar_check_custom()
+{
+  int i;
+
+  for (i = 0; i < command_entry_len; i++)
+    command_entry[i].show_button =
+      uim_scm_symbol_value_bool(command_entry[i].custom_button_show_symbol);
+}
+
+static void
 helper_toolbar_parse_helper_str(GtkWidget *widget, gchar *str)
 {
   gchar **lines;
@@ -629,6 +644,10 @@ helper_toolbar_parse_helper_str(GtkWidget *widget, gchar *str)
       helper_toolbar_prop_list_update(widget, lines);
     else if (!strcmp("prop_label_update", lines[0]))
       helper_toolbar_prop_label_update(widget, lines);
+    else if (!strcmp("custom_reload_notify", lines[0])) {
+      uim_prop_reload_configs();
+      helper_toolbar_check_custom();
+    }
     g_strfreev(lines);
   }
 }
@@ -759,6 +778,8 @@ toolbar_new(gint type)
   g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_TOOLBAR_TYPE,
 		    GINT_TO_POINTER(type));
   
+  helper_toolbar_check_custom();
+
   uim_fd = -1;
 
   if (type != TYPE_ICON) {
