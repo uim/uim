@@ -1292,7 +1292,7 @@ ScmObj scm_p_vector2list(ScmObj vec);
 ScmObj scm_p_list2vector(ScmObj lst);
 ScmObj scm_p_vector_filld(ScmObj vec, ScmObj fill);
 
-/* module-r5rs-deepcadrs.c */
+/* deep-cadrs.c */
 #if SCM_USE_DEEP_CADRS
 ScmObj scm_p_caaar(ScmObj lst);
 ScmObj scm_p_caadr(ScmObj lst);

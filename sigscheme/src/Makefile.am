@@ -13,7 +13,6 @@ FUNC_TABLES = \
         functable-sscm-core.c \
         functable-r5rs-syntax.c \
         functable-r5rs-procedure.c \
-        functable-r5rs-deepcadrs.c \
         functable-nonstd.c \
         functable-siod.c \
         functable-srfi1.c \
@@ -48,6 +47,9 @@ endif
 if USE_LOAD
   R5RS_PROC_SRCS += load.c
 endif
+if USE_DEEP_CADRS
+  R5RS_PROC_SRCS += deep-cadrs.c
+endif
 
 .PHONY: func-tables
 func-tables: $(FUNC_TABLES)
@@ -58,8 +60,6 @@ functable-r5rs-syntax.c: syntax.c $(BUILD_FUNCTBL_DEPS)
 functable-r5rs-procedure.c: $(R5RS_PROC_SRCS) $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_r5rs_procedure_func_info_table" \
 	  $(R5RS_PROC_SRCS)
-functable-r5rs-deepcadrs.c: module-r5rs-deepcadrs.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_r5rs_deepcadrs_func_info_table" $<
 functable-nonstd.c: module-nonstd.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_nonstd_func_info_table" $<
 functable-srfi1.c: module-srfi1.c $(BUILD_FUNCTBL_DEPS)
@@ -129,12 +129,12 @@ endif
 if USE_LOAD
   libsscm_la_SOURCES += load.c
 endif
+if USE_DEEP_CADRS
+  libsscm_la_SOURCES += deep-cadrs.c
+endif
 if USE_MULTIBYTE_CHAR
   pkginclude_HEADERS += encoding.h
   libsscm_la_SOURCES += encoding.c
-endif
-if USE_DEEP_CADRS
-  libsscm_la_SOURCES += module-r5rs-deepcadrs.c
 endif
 if USE_NONSTD_FEATURES
   libsscm_la_SOURCES += module-nonstd.c
