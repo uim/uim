@@ -39,6 +39,7 @@
 =======================================*/
 #include <stddef.h>
 #include <string.h>
+#include <ctype.h> /* for char macros */
 
 /*=======================================
    Local Include
@@ -423,6 +424,35 @@ void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 #define SCM_LISTLEN_ENCODE_DOTTED(len)   (-(len))
 #define SCM_LISTLEN_ENCODE_CIRCULAR(len) (SCM_INT_T_MIN)
 #define SCM_LISTLEN_ENCODE_ERROR         SCM_LISTLEN_ENCODE_CIRCULAR
+
+/*=======================================
+   Characters
+=======================================*/
+/*
+ * SigScheme's case-insensitive comparison conforms to the foldcase'ed
+ * comparison described in SRFI-75 and SRFI-13, although R5RS does not specify
+ * comparison between alphabetic and non-alphabetic char.
+ *
+ * This specification is needed to produce natural result on sort functions
+ * with these case-insensitive predicates as comparator.
+ *
+ *   (a-sort '(#\a #\c #\B #\D #\1 #\[ #\$ #\_) char-ci<?)
+ *     => (#\$ #\1 #\a #\B #\c #\D #\[ #\_)  ;; the "natural result"
+ *
+ *     => (#\$ #\1 #\B #\D #\[ #\_ #\a #\c)  ;; "unnatural result"
+ *
+ * See also:
+ *
+ *   - Description around 'char-foldcase' in SRFI-75
+ *   - "Case mapping and case-folding" and "Comparison" section of SRFI-13
+ */
+/* FIXME: support SRFI-75 */
+#define ICHAR_DOWNCASE(c) ((isascii((int)(c))) ? tolower((int)(c)) : (c))
+#define ICHAR_UPCASE(c)   ((isascii((int)(c))) ? toupper((int)(c)) : (c))
+/* foldcase for case-insensitive character comparison is done by downcase as
+ * described in SRFI-75. Although SRFI-13 expects (char-downcase (char-upcase
+ * c)), this implementation is sufficient for ASCII range. */
+#define ICHAR_FOLDCASE(c) (ICHAR_DOWNCASE(c))
 
 /*=======================================
    List Constructor

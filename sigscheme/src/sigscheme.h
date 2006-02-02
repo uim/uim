@@ -1235,7 +1235,7 @@ ScmObj scm_p_remainder(ScmObj _n1, ScmObj _n2);
 ScmObj scm_p_number2string (ScmObj num, ScmObj args);
 ScmObj scm_p_string2number(ScmObj str, ScmObj args);
 
-/* string.c */
+/* char.c */
 ScmObj scm_p_charp(ScmObj obj);
 ScmObj scm_p_char_equalp(ScmObj ch1, ScmObj ch2);
 ScmObj scm_p_char_lessp(ScmObj ch1, ScmObj ch2);
@@ -1258,6 +1258,7 @@ ScmObj scm_p_integer2char(ScmObj n);
 ScmObj scm_p_char_upcase(ScmObj ch);
 ScmObj scm_p_char_downcase(ScmObj ch);
 
+/* string.c */
 ScmObj scm_p_stringp(ScmObj obj);
 ScmObj scm_p_make_string(ScmObj length, ScmObj args);
 ScmObj scm_p_string(ScmObj args);

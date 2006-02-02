@@ -29,6 +29,9 @@ R5RS_PROC_SRCS = eval.c procedure.c list.c
 if USE_NUMBER
   R5RS_PROC_SRCS += number.c
 endif
+if USE_CHAR
+  R5RS_PROC_SRCS += char.c
+endif
 if USE_STRING
   R5RS_PROC_SRCS += string.c
 endif
@@ -109,6 +112,9 @@ if USE_CONTINUATION
 endif
 if USE_NUMBER
   libsscm_la_SOURCES += number.c
+endif
+if USE_CHAR
+  libsscm_la_SOURCES += char.c
 endif
 if USE_STRING
   libsscm_la_SOURCES += string.c
