@@ -1138,6 +1138,12 @@ im_uim_finalize(GObject *obj)
     gtk_widget_destroy(uic->preedit_window);
     uic->preedit_window = NULL;
   }
+  if (uic->widget) {
+    g_signal_handlers_disconnect_by_func(uic->widget,
+		    (gpointer)on_client_widget_hierarchy_changed, uic);
+    g_signal_handlers_disconnect_by_func(uic->widget,
+		    (gpointer)on_client_widget_grab_notify, uic);
+  }
 
   uim_release_context(uic->uc);
 
