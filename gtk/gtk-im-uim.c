@@ -137,6 +137,7 @@ static gboolean key_snoop(GtkWidget *grab_widget, GdkEventKey *key, gpointer dat
 #elif IM_UIM_USE_TOPLEVEL
 static gboolean handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data);
 #endif
+static void send_im_list(void);
 
 static const GTypeInfo class_info = {
   sizeof(IMContextUIMClass),
@@ -663,6 +664,15 @@ cand_deactivate_cb(void *ptr)
     toplevel = gdk_window_get_toplevel(uic->win);
     gdk_window_remove_filter(toplevel, toplevel_window_candidate_cb, uic);
   }
+}
+
+static void
+configuration_changed_cb(void *ptr)
+{
+  IMUIMContext *uic = (IMUIMContext *)ptr;
+
+  if (focused_context == uic && !disable_focused_context)
+    send_im_list();
 }
 
 
@@ -1194,6 +1204,7 @@ im_module_create(const gchar *context_id)
   uim_set_prop_label_update_cb(uic->uc, update_prop_label_cb);
   uim_set_candidate_selector_cb(uic->uc, cand_activate_cb, cand_select_cb,
 				cand_shift_page_cb, cand_deactivate_cb);
+  uim_set_configuration_changed_cb(uic->uc, configuration_changed_cb);
 
   uim_prop_list_update(uic->uc);
 

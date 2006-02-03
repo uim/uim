@@ -36,6 +36,7 @@
 
 void check_helper_connection();
 void helper_disconnect_cb();
+void send_im_list();
 
 #endif
 /*

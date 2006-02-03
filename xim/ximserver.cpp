@@ -447,6 +447,10 @@ void InputContext::configuration_changed()
     const char *engine = uim_get_current_im_name(mUc);
 
     review_im(engine);
+
+    InputContext *focusedContext = InputContext::focusedContext();
+    if (this == focusedContext)
+	send_im_list();
 }
 
 void InputContext::review_im(const char *engine)

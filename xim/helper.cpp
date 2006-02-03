@@ -76,7 +76,7 @@ parse_helper_str_im_change(const char *level, const char *engine) {
     }
 }
 
-static void
+void
 send_im_list(void)
 {
     char *buf = NULL, *tmp = NULL;
