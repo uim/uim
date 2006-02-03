@@ -114,6 +114,7 @@ static GtkWidget *cur_toplevel;
 static GtkWidget *grab_widget;
 static gulong cur_key_press_handler_id;
 static gulong cur_key_release_handler_id;
+static GList *cwin_list;
 #endif
 
 static IMUIMContext context_list;
@@ -345,6 +346,21 @@ remove_cur_toplevel()
 static void
 update_cur_toplevel(IMUIMContext *uic)
 {
+  /* Don't set our candwin's text widget as cur_toplevel */
+  if (uic->widget) {
+    UIMCandWinGtk *cwin;
+    GList *tmp_list;
+  
+    tmp_list = cwin_list;
+    while (tmp_list) {
+      cwin = tmp_list->data;
+      if (cwin->sub_window.text_view &&
+		      cwin->sub_window.text_view == uic->widget)
+	  return;
+      tmp_list = tmp_list->next;
+    }
+  }
+
   if (uic->widget) {
     GtkWidget *toplevel = gtk_widget_get_toplevel(uic->widget);
     if (toplevel && GTK_WIDGET_TOPLEVEL(toplevel)) {
@@ -1101,6 +1117,9 @@ im_uim_init(IMUIMContext *uic)
   uic->prev_preedit_len = 0;
 
   uic->cwin = uim_cand_win_gtk_new();
+#if IM_UIM_USE_TOPLEVEL
+  cwin_list = g_list_append(cwin_list, uic->cwin);
+#endif
   uic->cwin_is_active = FALSE;
   uic->preedit_window = NULL;
   uic->preedit_handler_id = 0;
@@ -1120,6 +1139,9 @@ im_uim_finalize(GObject *obj)
 
   if (uic->cwin) {
     gtk_widget_destroy(GTK_WIDGET(uic->cwin));
+#if IM_UIM_USE_TOPLEVEL
+    cwin_list = g_list_remove(cwin_list, uic->cwin);
+#endif
     uic->cwin = NULL;
   }
   if (uic->caret_state_indicator) {
