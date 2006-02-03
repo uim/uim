@@ -201,11 +201,8 @@ im_menu_activate(GtkMenu *menu_item, gpointer data)
 static void
 popup_im_menu(GtkButton *button, GdkEventButton *event, GtkWidget *widget)
 {
-  GtkWidget *menu_item;
   GList *menu_item_list, *im_list, *state_list;
-  gchar *im, *flag;
-  int i;
-  gboolean has_state = FALSE;
+  int i, selected = -1;
 
   uim_toolbar_check_helper_connection(widget);
 
@@ -213,36 +210,37 @@ popup_im_menu(GtkButton *button, GdkEventButton *event, GtkWidget *widget)
   im_list = g_object_get_data(G_OBJECT(button), "im_name");
   state_list = g_object_get_data(G_OBJECT(button), "im_state");
 
-  i = 0;
-  while ((menu_item = g_list_nth_data(menu_item_list, i)) != NULL) {    
-    gtk_widget_destroy(menu_item);
-    i++;
+  while (menu_item_list) {
+    gtk_widget_destroy(menu_item_list->data);
+    menu_item_list = menu_item_list->next;
   }
   gtk_widget_destroy(im_menu);
   im_menu = gtk_menu_new();
 
   i = 0;
-  while ((flag = g_list_nth_data(state_list, i)) != NULL) {
-    if (!strcmp("selected", flag)) {
-      has_state = TRUE;
+  while (state_list) {
+    if (!strcmp("selected", state_list->data)) {
+      selected = i;
       break;
     }
+    state_list = state_list->next;
     i++;
   }
 
   i = 0;
-  while ((im = g_list_nth_data(im_list, i)) != NULL) {
-    if (has_state) {
-      menu_item = gtk_check_menu_item_new_with_label(im);
+  while (im_list) {
+    GtkWidget *menu_item;
+
+    if (selected != -1) {
+      menu_item = gtk_check_menu_item_new_with_label(im_list->data);
 #if GTK_CHECK_VERSION(2, 4, 0)
       gtk_check_menu_item_set_draw_as_radio(GTK_CHECK_MENU_ITEM(menu_item),
-		      			    TRUE);
+					    TRUE);
 #endif
-      flag = g_list_nth_data(state_list, i);
-      if (flag && !strcmp("selected", flag))
+      if (i == selected)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), TRUE);
     } else {
-      menu_item = gtk_menu_item_new_with_label(im);
+      menu_item = gtk_menu_item_new_with_label(im_list->data);
     }
 
     gtk_menu_shell_append(GTK_MENU_SHELL(im_menu), menu_item);
@@ -250,8 +248,8 @@ popup_im_menu(GtkButton *button, GdkEventButton *event, GtkWidget *widget)
     gtk_widget_show(menu_item);
     g_signal_connect(G_OBJECT(menu_item), "activate",
 		     G_CALLBACK(im_menu_activate), im_menu);
-    g_object_set_data(G_OBJECT(menu_item), "im_name",
-		      g_list_nth_data(im_list, i));
+    g_object_set_data(G_OBJECT(menu_item), "im_name", im_list->data);
+    im_list = im_list->next;
     i++;
   }
 
@@ -281,9 +279,7 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
   GtkWidget *menu_item;
   GtkTooltips *tooltip;
   GList *menu_item_list, *label_list, *tooltip_list, *action_list, *state_list;
-  gchar *label, *flag;
-  int i;
-  gboolean has_state = FALSE;
+  int i, selected = -1;
 
   uim_toolbar_check_helper_connection(widget);
 
@@ -293,52 +289,54 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
   action_list = g_object_get_data(G_OBJECT(prop_button), "prop_action");
   state_list = g_object_get_data(G_OBJECT(prop_button), "prop_state");
 
-  i = 0;
-  while ((menu_item = g_list_nth_data(menu_item_list, i)) != NULL) {    
-    gtk_widget_destroy(menu_item);
-    i++;
+  while (menu_item_list) {
+    gtk_widget_destroy(menu_item_list->data);
+    menu_item_list = menu_item_list->next;
   }
   gtk_widget_destroy(prop_menu);
   prop_menu = gtk_menu_new();
 
   /* check if state_list contains state data */
   i = 0;
-  while ((flag = g_list_nth_data(state_list, i)) != NULL) {
-    if (!strcmp("*", flag)) {
-      has_state = TRUE;
+  while (state_list) {
+    if (!strcmp("*", state_list->data)) {
+      selected = i;
       break;
     }
+    state_list = state_list->next;
     i++;
   }
 
   i = 0;
-  while ((label = g_list_nth_data(label_list, i)) != NULL) {
-    if (has_state) {
-      menu_item = gtk_check_menu_item_new_with_label(label);
+  while (label_list) {
+    if (selected != -1) {
+      menu_item = gtk_check_menu_item_new_with_label(label_list->data);
 #if GTK_CHECK_VERSION(2, 4, 0)
       gtk_check_menu_item_set_draw_as_radio(GTK_CHECK_MENU_ITEM(menu_item),
-					    TRUE);
+		      			    TRUE);
 #endif
-      flag = g_list_nth_data(state_list, i);
-      if (flag && !strcmp("*", flag))
+      if (i == selected)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), TRUE);
     } else {
-      menu_item = gtk_menu_item_new_with_label(label);
+      menu_item = gtk_menu_item_new_with_label(label_list->data);
     }
 
     /* tooltips */
     tooltip = gtk_tooltips_new();
-    gtk_tooltips_set_tip(tooltip, menu_item, g_list_nth_data(tooltip_list, i),
-			 NULL);
-    
+    gtk_tooltips_set_tip(tooltip, menu_item, tooltip_list ? tooltip_list->data : NULL, NULL);
+
     /* add to the menu */
     gtk_menu_shell_append(GTK_MENU_SHELL(prop_menu), menu_item);
 
     gtk_widget_show(menu_item);
-    g_signal_connect(G_OBJECT(menu_item), "activate", 
+    g_signal_connect(G_OBJECT(menu_item), "activate",
 		     G_CALLBACK(prop_menu_activate), prop_menu);
-    g_object_set_data(G_OBJECT(menu_item), "prop_action",
-		      g_list_nth_data(action_list, i));
+    g_object_set_data(G_OBJECT(menu_item), "prop_action", action_list? action_list->data : NULL);
+    label_list = label_list->next;
+    if (action_list)
+      action_list = action_list->next;
+    if (tooltip_list)
+      tooltip_list = tooltip_list->next;
     i++;
   }
 
@@ -682,7 +680,7 @@ helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
     }
     
     if (pair && pair[0] && pair[1]) {
-      button = g_list_nth_data(prop_buttons, i - 2 );
+      button = g_list_nth_data(prop_buttons, i - 2);
       gtk_button_set_label(GTK_BUTTON(button), pair[0]);
     }
     g_strfreev(pair);
