@@ -849,25 +849,52 @@ void InputContext::update_prop_list(const char *str)
 	return;
     uim_helper_send_message(lib_uim_fd, buf);
     free(buf);
+
+#if 1
+    // Show caret state indicator with this function instead of
+    // InputContext::update_prop_label() to workaround the label
+    // mismatch during IM switch caused from context-update-widgets.
+    uim_bool show_caret_state =
+	uim_scm_symbol_value_bool("bridge-show-input-state?");
+    if (show_caret_state == UIM_TRUE) {
+	char *p, *q;
+	char label[10];
+	int len, timeout;
+	Canddisp *disp = canddisp_singleton();
+
+	timeout = uim_scm_symbol_value_int("bridge-show-input-state-time-length");
+	if ((p = strstr(str, "branch\t"))) {
+	    q = strchr(p + 7, '\t');
+	    len = q - (p + 7);
+	    if (q && len < 10) {
+		strncpy(label, p + 7, len);
+		label[len] = '\0';
+		disp->show_caret_state(label, timeout);
+		mCaretStateShown = true;
+	    }
+	}
+    }
+#endif
 }
 
 void InputContext::update_prop_label(const char *str)
 {
     char *buf;
-    uim_bool show_caret_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
 
     asprintf(&buf, "prop_label_update\ncharset=UTF-8\n%s", str);
     if (!buf)
 	return;
     uim_helper_send_message(lib_uim_fd, buf);
     free(buf);
-    
+#if 0    
+    uim_bool show_caret_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
     if (show_caret_state == UIM_TRUE) {
 	int timeout = uim_scm_symbol_value_int("bridge-show-input-state-time-length");
 	Canddisp *disp = canddisp_singleton();
 	disp->show_caret_state(str, timeout);
 	mCaretStateShown = true;
     }
+#endif
 }
 
 const char *InputContext::get_engine_name()
