@@ -64,6 +64,9 @@
 #define IM_UIM_USE_SNOOPER	0
 #define IM_UIM_USE_TOPLEVEL	1
 
+/* still need investigating... */
+#define IM_UIM_USE_TOPLEVEL_EVENT_HACK	1
+
 /* exported symbols */
 GtkIMContext *im_module_create(const gchar *context_id);
 void im_module_list(const GtkIMContextInfo ***contexts, int *n_contexts);
@@ -99,6 +102,9 @@ typedef struct _IMUIMContext {
 
 #if IM_UIM_USE_TOPLEVEL
   GtkWidget *widget;
+#if IM_UIM_USE_TOPLEVEL_EVENT_HACK
+  GdkEventKey event_rec;
+#endif
 #endif
 
   struct _IMUIMContext *prev, *next;
@@ -350,7 +356,7 @@ update_cur_toplevel(IMUIMContext *uic)
   if (uic->widget) {
     UIMCandWinGtk *cwin;
     GList *tmp_list;
-  
+
     tmp_list = cwin_list;
     while (tmp_list) {
       cwin = tmp_list->data;
@@ -930,7 +936,12 @@ im_uim_filter_keypress(GtkIMContext *ic, GdkEventKey *key)
 #if IM_UIM_USE_SNOOPER
   if (!snooper_installed) {
 #elif IM_UIM_USE_TOPLEVEL
+#if IM_UIM_USE_TOPLEVEL_EVENT_HACK
+  if (!cur_toplevel || (cur_toplevel && grab_widget) ||
+		  key->time != uic->event_rec.time) {
+#else
   if (!cur_toplevel || (cur_toplevel && grab_widget)) {
+#endif
 #else
   if (TRUE) {
 #endif
@@ -1110,6 +1121,9 @@ im_uim_init(IMUIMContext *uic)
   uic->win = NULL;
 #if IM_UIM_USE_TOPLEVEL
   uic->widget = NULL;
+#if IM_UIM_USE_TOPLEVEL_EVENT_HACK
+  uic->event_rec.time = 0;
+#endif
 #endif
   uic->caret_state_indicator = NULL;
   uic->pseg = NULL;
@@ -1294,6 +1308,9 @@ handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data)
   if (focused_context == uic) {
     int rv, kv, mod;
 
+#if IM_UIM_USE_TOPLEVEL_EVENT_HACK
+    uic->event_rec.time = event->time;
+#endif
     im_uim_convert_keyevent(event, &kv, &mod);
 
     if (event->type == GDK_KEY_RELEASE)
