@@ -46,6 +46,7 @@ extern "C" {
 #include <limits.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <stdarg.h>
 
 /*=======================================
    Local Include
