@@ -64,9 +64,6 @@
 #define IM_UIM_USE_SNOOPER	0
 #define IM_UIM_USE_TOPLEVEL	1
 
-/* still need investigating... */
-#define IM_UIM_USE_TOPLEVEL_EVENT_HACK	1
-
 /* exported symbols */
 GtkIMContext *im_module_create(const gchar *context_id);
 void im_module_list(const GtkIMContextInfo ***contexts, int *n_contexts);
@@ -102,9 +99,14 @@ typedef struct _IMUIMContext {
 
 #if IM_UIM_USE_TOPLEVEL
   GtkWidget *widget;
-#if IM_UIM_USE_TOPLEVEL_EVENT_HACK
+  /*
+   * event_rec is used to check the incoming event is already handled
+   * in our toplevel handler.  Since some widget (e.g. OOo2.0's vcl
+   * plugin) already connects key press/release event handlers to the
+   * topleve window, our toplevel handler is not called in the first
+   * place.
+   */ 
   GdkEventKey event_rec;
-#endif
 #endif
 
   struct _IMUIMContext *prev, *next;
@@ -496,6 +498,44 @@ toplevel_window_candidate_cb(GdkXEvent *xevent, GdkEvent *ev, gpointer data)
 
   return GDK_FILTER_CONTINUE;
 }
+
+#if IM_UIM_USE_TOPLEVEL
+static inline gboolean
+event_key_equal(GdkEventKey *event1, GdkEventKey *event2)
+{
+  return (event1->type == event2->type &&
+	  event1->window == event2->window &&
+	  event1->send_event == event2->send_event &&
+	  event1->time == event2->time &&
+	  event1->state == event2->state &&
+	  event1->keyval == event2->keyval &&
+	  event1->length == event2->length &&
+	  event1->string == event2->string &&
+	  event1->hardware_keycode == event2->hardware_keycode &&
+	  event1->group == event2->group);
+}
+
+static void
+init_event_key_rec(GdkEventKey *event)
+{
+  event->type = -1;
+  event->window = NULL;
+  event->send_event = 0;
+  event->time = 0;
+  event->state = 0;
+  event->keyval = 0;
+  event->length = 0;
+  event->string = NULL;
+  event->hardware_keycode = 0;
+  event->group = 0;
+}
+
+static inline void
+store_event_key(GdkEventKey *dest, GdkEventKey *source)
+{
+  memcpy(dest, source, sizeof(GdkEventKey));
+}
+#endif
 
 
 
@@ -936,12 +976,8 @@ im_uim_filter_keypress(GtkIMContext *ic, GdkEventKey *key)
 #if IM_UIM_USE_SNOOPER
   if (!snooper_installed) {
 #elif IM_UIM_USE_TOPLEVEL
-#if IM_UIM_USE_TOPLEVEL_EVENT_HACK
   if (!cur_toplevel || (cur_toplevel && grab_widget) ||
-		  key->time != uic->event_rec.time) {
-#else
-  if (!cur_toplevel || (cur_toplevel && grab_widget)) {
-#endif
+		  !event_key_equal(&uic->event_rec, key)) {
 #else
   if (TRUE) {
 #endif
@@ -1121,9 +1157,7 @@ im_uim_init(IMUIMContext *uic)
   uic->win = NULL;
 #if IM_UIM_USE_TOPLEVEL
   uic->widget = NULL;
-#if IM_UIM_USE_TOPLEVEL_EVENT_HACK
-  uic->event_rec.time = 0;
-#endif
+  init_event_key_rec(&uic->event_rec);
 #endif
   uic->caret_state_indicator = NULL;
   uic->pseg = NULL;
@@ -1308,9 +1342,7 @@ handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data)
   if (focused_context == uic) {
     int rv, kv, mod;
 
-#if IM_UIM_USE_TOPLEVEL_EVENT_HACK
-    uic->event_rec.time = event->time;
-#endif
+    store_event_key(&uic->event_rec, event);
     im_uim_convert_keyevent(event, &kv, &mod);
 
     if (event->type == GDK_KEY_RELEASE)
