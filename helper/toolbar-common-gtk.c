@@ -142,11 +142,14 @@ calc_menu_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
   gdk_window_get_origin(button->window, x, y);
   gdk_drawable_get_size(button->window, NULL, &button_height);
   
+  if (GTK_WIDGET_NO_WINDOW(button))
+    *x += button->allocation.x;
+  
   sc_height = gdk_screen_get_height(gdk_screen_get_default());
   sc_width = gdk_screen_get_width(gdk_screen_get_default());
   
   gtk_widget_size_request(GTK_WIDGET(menu), &requisition);
-  
+
   menu_width = requisition.width;
   menu_height = requisition.height;
   
