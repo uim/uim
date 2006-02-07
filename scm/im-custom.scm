@@ -353,7 +353,7 @@
   (_ "long description will be here."))
 
 ;; toolbar buttons
-(define-custom 'toolbar-show-switcher-button? #t
+(define-custom 'toolbar-show-switcher-button? #f
   '(toolbar buttons)
   '(boolean)
   (_ "input method switcher")
