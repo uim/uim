@@ -114,7 +114,7 @@ helper_im_changed(char *request, char *engine_name)
   if (strcmp(request, "im_change_this_text_area_only") == 0) {
 
     if (current) {
-      switch_context_im(current, engine_name, get_im_encoding(engine_name));
+	  switch_context_im(current, engine_name);
 	  if(current->im) free(current->im);
 	  current->im = strdup(engine_name);
       uim_prop_label_update(current->context);
@@ -137,8 +137,7 @@ helper_im_changed(char *request, char *engine_name)
 	  strcat(quot_engine_name, engine_name);
 	  for (ptr = agent_context_list_head; ptr != NULL; ptr = ptr->next) {
 
-		switch_context_im(ptr->agent_context, 
-						  engine_name, get_im_encoding(engine_name));
+		switch_context_im(ptr->agent_context, engine_name);
 
 		uim_prop_update_custom(ptr->agent_context->context,
 							   "custom-preserved-default-im-name",

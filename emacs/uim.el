@@ -92,7 +92,7 @@
 ;; Validation IM
 ;;
 (defun uim-check-im (im)
-  (if (assoc im (cdr uim-im-list))
+  (if (assoc im uim-im-alist)
       t
     (message (format "uim.el: invalid IM engine: %s" im))))
 
@@ -135,7 +135,7 @@
     (run-hooks 'uim-update-current-engine-hook))
 
   ;; update current decoding code   
-  (let ((newcode (uim-get-emacs-code uim-current-im-engine)))
+  (let ((newcode (uim-get-emacs-encoding uim-current-im-engine)))
     (when (not (string= newcode uim-decoding-code))
       (setq uim-decoding-code newcode)
       (uim-change-process-encoding uim-decoding-code)))
@@ -168,7 +168,7 @@
     ;;    Default context's encoding is determined by 
     ;;  the name of default IM 
     (uim-do-send-recv-cmd 
-     (format "%d NEW %s" id (uim-get-uim-code (uim-get-default-engine))))
+     (format "%d NEW %s" id (uim-get-uim-encoding (uim-get-default-engine))))
     id))
 
 
@@ -294,37 +294,34 @@
   (set-process-coding-system uim-el-agent-process outcode 'iso-8859-1)
   )
 
+;; 
+;; Get IM information from uim-im-alist
 ;;
-;; Get IM information from uim-im-list
-;;
-(defun uim-get-im-info (im info)
-  (cdr (assoc info (cdr (assoc im (cdr uim-im-list))))))
-
-(defun uim-get-uim-code (im)
-  (or (uim-get-im-info im 'uim-code)
-      "ISO-8859-1"))
-
-(defun uim-get-emacs-code (im)
-  (or (uim-get-im-info im 'emacs-code)
-      'iso-8859-1))
+(defun uim-get-im-info (im field)
+  (nth field (or (assoc im uim-im-alist)
+		 (assoc "direct" uim-im-alist))))
 
 (defun uim-get-uim-lang (im)
-  (or (uim-get-im-info im 'uim-lang)
-      "Unknown"))
+  (uim-get-im-info im 1))
 
 (defun uim-get-emacs-lang (im)
-  (or (uim-get-im-info im 'emacs-lang)
-      "ASCII"))
+  (uim-get-im-info im 2))
+
+(defun uim-get-emacs-encoding (im)
+  (uim-get-im-info im 3))
+
+(defun uim-get-uim-encoding (im)
+  (uim-get-im-info im 4))
+
 
 ;;
 ;; Change IM engine.
-;;   im should be valid egine name.
 ;; 
 (defun uim-change-im (im)
   ;; change decoding method temporarily to receive encoded IM label etc.
-  (uim-change-process-encoding (uim-get-emacs-code im))
+  (uim-change-process-encoding (uim-get-emacs-encoding im))
   (uim-do-send-recv-cmd 
-   (format "%d CHANGE %s %s" uim-context-id im (uim-get-uim-code im)))
+   (format "%d CHANGE %s" uim-context-id im))
 
   (if uim-default-im-prop
       (uim-prop-activate uim-default-im-prop)))
@@ -333,10 +330,9 @@
 ;;
 ;; Set each IM's output encoding 
 ;;
-(defun uim-set-encoding (im)
-  (let ((uim-code (uim-get-uim-code im)))
-    (uim-do-send-recv-cmd 
-     (format "0 SETENC %s %s" im uim-code))))
+(defun uim-set-encoding (im encoding)
+  (uim-do-send-recv-cmd 
+   (format "0 SETENC %s %s" im encoding)))
 
 
 
@@ -387,7 +383,8 @@
   (uim-debug "uim-mode-on")
 
   (if uim-mode
-      (message "uim.el: uim-mode is already activated. (buffer %s)" (current-buffer)))
+      (message "uim.el: uim-mode is already activated. (buffer %s)" 
+	       (current-buffer)))
 
   (if (not buffer-read-only)
       (progn 
@@ -551,24 +548,16 @@
 ;; Update IM list
 ;;
 (defun uim-update-imlist (imlist)
-  ;; imlist: default (engine lang_code Language explanation encoding)
+  ;; imlist: (engine lang_code Language explanation encoding) ...
 
-  (let ((default (car imlist)))
-
-    ;; initialize default IM engine name with the context's default value
-    (when (not uim-default-im-engine)
-      (uim-update-default-engine default))
-
-
-    (setq 
-     uim-im-list 
-     (cons default
-	   (mapcar (lambda (x) 
-		     (cons (car x)
-			   (cdr (or (assoc (nth 2 x) uim-lang-code-alist)
-				    (assoc "Other" uim-lang-code-alist)))))
-		   (cdr imlist))))
-    )
+  (setq uim-im-alist 
+	(mapcar '(lambda (x) 
+		   (let ((im (nth 0 x))
+			 (lang-uim (nth 2 x)))
+		     (cons im
+			   (or (assoc lang-uim uim-lang-code-alist)
+			       (assoc "Other" uim-lang-code-alist)))))
+		imlist))
   )
 
 
@@ -1277,23 +1266,22 @@
 (defun uim-get-im-list ()
   (uim-do-send-recv-cmd (format "0 LIST")))
 
+(defun uim-initialize-im-alist ()
+  (uim-get-im-list))
 
 ;;
 ;; Initialize IM list and encoding
 ;;
 (defun uim-init-im-encoding ()
 
-  (uim-get-im-list)
+  (uim-initialize-im-alist)
 
   ;; set Uim side encoding to agent
-  (let ((im-list (cdr uim-im-list)))
-    (while im-list
-      ;; cdar exists when im has valid encoding
-      (if (cdar im-list)
-	  (uim-set-encoding (caar im-list)))
-      (setq im-list (cdr im-list)))))
-
-
+  (mapcar 
+   '(lambda (x)
+      (let ((im (car x)))
+	(uim-set-encoding im (uim-get-uim-encoding im))))
+   uim-im-alist))
 
 ;;
 ;; Called when entering into the mini-buffer
@@ -1408,8 +1396,9 @@ uim mode facilitates internationalized input through the uim library."
   (when uim-initialized
     (if (not im)
 	(let (alist)
-	  (setq alist (mapcar (lambda (x) (cons (car x) (car x))) 
-			      (cdr uim-im-list)))
+	  (setq alist (mapcar '(lambda (x) 
+				 (cons (car x) (car x))) 
+			      uim-im-alist))
 	  (save-window-excursion
 	    (setq im (cdr (assoc
 			   (completing-read (concat "IM Engine: ") alist nil t)

@@ -93,19 +93,16 @@ get_uim_agent_context(int id)
 
 
 
-
 uim_agent_context *
-switch_context_im(uim_agent_context *ua, const char *im, const char *encoding)
+switch_context_im(uim_agent_context *ua, const char *im)
 {
+  const char *encoding;
+
   debug_printf(DEBUG_NOTE, "switch_context_im\n");
 
-  if (encoding == NULL) {
-	/* unspported engine or not ready for use from Emacs  */
-	debug_printf(DEBUG_WARNING,
-				 "switch_context_im: encoding of %s is NULL\n", im);
-	return ua;
-  }
+  encoding = get_im_encoding(im);
 
+  /* update IM name */
   if (ua->im) free(ua->im);
 
   if (im)
@@ -116,8 +113,7 @@ switch_context_im(uim_agent_context *ua, const char *im, const char *encoding)
   if (strcmp(ua->encoding, encoding) == 0) {
 	/* encodings are same */
 
-	debug_printf(DEBUG_NOTE,
-				 "same encoding %s %s\n", ua->im, im);
+	debug_printf(DEBUG_NOTE, "same encoding %s %s\n", ua->im, im);
 
 	update_context_im(ua);
 

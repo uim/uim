@@ -89,20 +89,19 @@
 (defun uim-leim-init ()
   ;; register IM to input-method-alist
   ;;   to display the alist, call list-input-methods
-  (let ((im-list (cdr uim-im-list)) lang name im)
-    (while im-list
-      (setq name (caar im-list))
-      (setq lang (cdr (assoc 'emacs-lang (cdar im-list))))
+  (mapcar
+   '(lambda (x)
+      (let* ((name (car x))
+	     (lang (uim-get-emacs-lang name)))
+	(when (and name lang)
+	  (setq im (uim-leim-make-im-name name))
+	  (register-input-method im lang 'uim-leim-activate "[Uim]"
+				 (concat "Uim " name))
 
-      (when (and name lang)
-	(setq im (uim-leim-make-im-name name))
-	(register-input-method im lang 'uim-leim-activate "[Uim]"
-			       (concat "Uim " name))
-
-	;; ( japanese-anthy-uim . anthy )
-	(setq uim-leim-inputmethod-alist 
-	      (cons (cons im name) uim-leim-inputmethod-alist)))
-      (setq im-list (cdr im-list))))
+	  ;; ( japanese-anthy-uim . anthy )
+	  (setq uim-leim-inputmethod-alist 
+		(cons (cons im name) uim-leim-inputmethod-alist)))))
+   uim-im-alist)
 
   (add-hook 'uim-update-default-engine-hook 
 	    (lambda ()

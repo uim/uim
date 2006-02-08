@@ -56,7 +56,7 @@ static int cmd_hide(int context_id);
 static int cmd_show(int context_id);
 static int cmd_new(int context_id, const char *encoding);
 static int cmd_reset(int context_id);
-static int cmd_change(int context_id, const char *im, const char *encoding);
+static int cmd_change(int context_id, const char *im);
 static int cmd_list(void);
 static int cmd_setenc(const char *im, const char *encoding);
 static int cmd_prop(int context_id, const char *prop);

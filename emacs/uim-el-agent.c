@@ -70,12 +70,12 @@ cmd_unfocused(int context_id)
 	if (get_uim_agent_context(context_id) == current) {
 	  show_preedit_uim_agent_context(current);
 	  show_candidate_uim_agent_context(current);
-  }
+	}
 	/* unfocus anyway */
 	return clear_current_uim_agent_context();
-	} else {
+  } else {
 	return -1;
-	}
+  }
 
 }
 
@@ -111,7 +111,7 @@ static int
 cmd_show(int context_id)
 {
   uim_agent_context *ua = get_uim_agent_context(context_id);
-  
+
   if (ua != NULL) {
 	show_preedit_uim_agent_context(ua);
 	show_candidate_uim_agent_context(ua);
@@ -156,17 +156,17 @@ cmd_reset(int context_id)
 
 
 static int
-cmd_change(int context_id, const char *im, const char *encoding)
+cmd_change(int context_id, const char *im)
 {
   uim_agent_context *ua;
 
-  if (im && encoding && strlen(im) > 0 
+  if (im && strlen(im) > 0 
 	  && (ua = get_uim_agent_context(context_id))) {
 
 	set_current_uim_agent_context(ua);
 
 	if (check_im_name(im)) {
-	  switch_context_im(ua, im, encoding);
+	  switch_context_im(ua, im);
 	  return 1;
 	} else {
 	  return -1;	 
@@ -180,6 +180,8 @@ cmd_change(int context_id, const char *im, const char *encoding)
 static int
 cmd_list(void)
 {
+  output_default_im_engine();
+
   if (list_im_engine() > 0)
 	return 1;
   else
@@ -234,7 +236,7 @@ cmd_label(int context_id)
 	show_prop_uim_agent_context(current);
 	show_preedit_uim_agent_context(current);
 	show_candidate_uim_agent_context(current);
-  return 1;
+	return 1;
   } else {
 	return -1;
   }
@@ -313,7 +315,7 @@ process_command(int serial, int cid, char *cmd)
   else if (strcmp(cmd, "RESET") == 0)
 	ret = cmd_reset(cid);
   else if (strcmp(cmd, "CHANGE") == 0)
-  	ret = cmd_change(cid, opt, opt2);
+  	ret = cmd_change(cid, opt);
   else if (strcmp(cmd, "LIST") == 0)
   	ret = cmd_list();
   else if (strcmp(cmd, "SETENC") == 0)
@@ -483,36 +485,36 @@ process_keyvector(int serial, int cid, uim_key ukey, const char *keyname)
 	if (ret > 0) {
 	  /* uim did not process the key */
 
-		if (ukey.mod & UMod_Shift && ukey.key >= 0x41 && ukey.key <= 0x5a)
-		  ukey.mod &= ~UMod_Shift;
+	  if (ukey.mod & UMod_Shift && ukey.key >= 0x41 && ukey.key <= 0x5a)
+		ukey.mod &= ~UMod_Shift;
 
-		if (ukey.mod != 0 || ukey.key > 255) {
+	  if (ukey.mod != 0 || ukey.key > 255) {
 
-		  a_printf(" ( n [(");
+		a_printf(" ( n [(");
 
-		  if (ukey.mod & UMod_Control) a_printf("control ");
-		  if (ukey.mod & UMod_Alt) a_printf("meta ");
-		  /* if (ukey->mod & UMod_Shift) a_printf("shift "); */
-		  if (ukey.mod & UMod_Hyper) a_printf("hyper ");
-		  if (ukey.mod & UMod_Super) a_printf("super ");
+		if (ukey.mod & UMod_Control) a_printf("control ");
+		if (ukey.mod & UMod_Alt) a_printf("meta ");
+		/* if (ukey->mod & UMod_Shift) a_printf("shift "); */
+		if (ukey.mod & UMod_Hyper) a_printf("hyper ");
+		if (ukey.mod & UMod_Super) a_printf("super ");
 
-		  if (ukey.key > 255)
-			a_printf("%s", keyname);
-		  else
-			a_printf("%d", ukey.key);
+		if (ukey.key > 255)
+		  a_printf("%s", keyname);
+		else
+		  a_printf("%d", ukey.key);
 
-		  a_printf(")] ) ");
-
-		} else {
-		  a_printf(" ( n [%d] ) ", ukey.key);
-		}
+		a_printf(")] ) ");
 
 	  } else {
-	  show_preedit_uim_agent_context(current);
-	  show_candidate_uim_agent_context(current);
+		a_printf(" ( n [%d] ) ", ukey.key);
 	  }
 			
 	} else {
+	  show_preedit_uim_agent_context(current);
+	  show_candidate_uim_agent_context(current);
+	}
+
+  } else {
 	/* ukey.key < 0 */
 	show_preedit_uim_agent_context(current);
 	show_candidate_uim_agent_context(current);
@@ -725,7 +727,7 @@ main(int argc, char *argv[])
 		a_printf(" ( a ) ");   /* command ok */
 	  }
 
-  a_printf(" )\n");
+	  a_printf(" )\n");
 	  fflush(stdout);
 
 	  continue;

@@ -56,6 +56,9 @@ output_default_im_engine(void)
 {
   if (default_engine_name)
 	a_printf(" ( d \"%s\" ) ", default_engine_name);
+  else
+	a_printf(" ( d \"%s\" ) ", 
+			 uim_get_default_im_name(setlocale(LC_ALL, NULL)));
 }
 
 
@@ -101,8 +104,8 @@ list_im_engine(void)
 
   context = uim_create_context(NULL, "UTF-8", NULL, NULL, NULL, NULL);
 
-  a_printf(" ( L \"%s\" ", uim_get_default_im_name(setlocale(LC_ALL, NULL)));
-  
+  a_printf(" ( L ");
+
   for (i = 0 ; i < uim_get_nr_im(context); i++) {
 	char dummy_str[] = "";
 	const char *name, *lang, *language, *shortd, *encoding;

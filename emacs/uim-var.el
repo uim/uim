@@ -34,7 +34,7 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;
 
-(defconst uim-el-version "0.0.6-beta6")
+(defconst uim-el-version "0.0.7")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -111,8 +111,8 @@ displayed at the echo area.")
 (defconst uim-emacs (string-match "^GNU Emacs" (emacs-version)))
 
 ;; Supported languages and encodings
-;; ("Uim-Language" "Emacs-Language" Emacs-encoding "Uim-Encoding")
-(defvar uim-lang-code
+;; ("UIM-Language" "Emacs-Language" Emacs-encoding "UIM-Encoding")
+(defvar uim-lang-code-alist
   '(("Japanese"              "Japanese"     euc-jp      "EUC-JP")
     ("Korean"                "Korean"       euc-kr      "EUC-KR")
     ("Chinese (Simplified)"  "Chinese-GB"   gb2312      "GB2312")
@@ -131,16 +131,6 @@ displayed at the echo area.")
     ("Other"                 "ASCII"        iso-8859-1  "ISO-8859-1")
     ))
 
-
-
-;; Alist of supported languages and encodings
-(defvar uim-lang-code-alist 
-  (mapcar (lambda (x)
-	    (list (nth 0 x)
-		  (cons 'uim-lang (nth 0 x))
-		  (cons 'emacs-lang (nth 1 x))
-		  (cons 'emacs-code (nth 2 x))
-		  (cons 'uim-code (nth 3 x)))) uim-lang-code))
 
 
 ;; Keymaps for minor-mode
@@ -181,7 +171,7 @@ displayed at the echo area.")
 
 ;; List of IM engine 
 ;; (looking up with IM name and obtain its language, encoding and so on)
-(defvar uim-im-list nil)
+(defvar uim-im-alist nil)
 
 ;; Current focused buffer
 ;;  if current-buffer has no Uim context, this should be nil
@@ -263,10 +253,6 @@ displayed at the echo area.")
 
 ;; current property label
 (uim-deflocalvar uim-current-prop-label nil)
-
-;; context's encoding of this buffer
-(uim-deflocalvar uim-context-encoding 
-		 (nth 2 (assoc current-language-environment uim-lang-code)))
 
 ;; minor-mode status
 (uim-deflocalvar uim-mode nil)
