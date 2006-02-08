@@ -1134,6 +1134,9 @@
 	      (undo-boundary))
 	   commit)
 
+	  (if auto-fill-function
+	      (funcall auto-fill-function))
+
 	  ;; save undo hisotry again
 	  (when buffer-undo-list-saved
 		(uim-debug "call save undo 1")
