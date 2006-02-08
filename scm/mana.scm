@@ -788,6 +788,18 @@
          #f)
 
         (else
+	  ;; handle "n1" sequence as "¤ó1"
+	  (if (and (not (alphabet-char? key))
+		   (not (string-find
+			 (rk-expect rkc)
+			 (charcode->string
+			  (if (= rule mana-input-rule-kana)
+			      key
+			      (to-lower-char key))))))
+	      (let ((residual-kana (rk-push-key-last! rkc)))
+		(if residual-kana
+		    (ustr-insert-elem! preconv-str residual-kana))))
+
           (let* ((key-str (charcode->string 
                             (if (= rule mana-input-rule-kana)
                                 key

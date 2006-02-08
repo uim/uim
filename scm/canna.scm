@@ -555,6 +555,18 @@
 	      (not (shift-key-mask key-state)))
       (canna-commit-raw cc))
      (else
+      ;; handle "n1" sequence as "¤ó1"
+      (if (and (not (alphabet-char? key))
+	       (not (string-find
+		     (rk-expect rkc)
+		     (charcode->string
+		      (if (= rule canna-input-rule-kana)
+		          key
+			  (to-lower-char key))))))
+	  (let ((residual-kana (rk-push-key-last! rkc)))
+	    (if residual-kana
+	        (canna-append-string cc residual-kana))))
+
       (let* ((key-str (charcode->string key))
 	     (pend (rk-pending rkc))
 	     (res (rk-push-key! rkc key-str)))
