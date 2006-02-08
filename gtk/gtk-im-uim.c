@@ -101,11 +101,10 @@ typedef struct _IMUIMContext {
   GtkWidget *widget;
   /*
    * event_rec is used to check the incoming event is already handled
-   * in our toplevel handler.  Since some widget (e.g. OOo2.0's vcl
-   * plugin) already connects key press/release event handlers to the
-   * topleve window, our toplevel handler is not called in the first
-   * place.
-   */ 
+   * in our toplevel handler.  Some widgets (e.g. OOo2.0's vcl plugin)
+   * have already connected key press/release event handlers to the
+   * toplevel window before our handler attempts to connect.
+   */
   GdkEventKey event_rec;
 #endif
 
