@@ -989,15 +989,18 @@
 		(uim-process-mouse-event event)
 	      (uim-process-keyvec uim-last-key-vector count)))
 	  )
-      
+
+      ;; if keyvec is nil
+      (setq uim-deactivate-mark nil)
+
       (if (not uim-show-keystrokes)
 	  (if (sit-for echo-keystrokes)
 	      (setq uim-show-keystrokes t)))
 
+      ;; display "ESC-" or something
       (if uim-show-keystrokes
 	  (let (message-log-max)
 	    (message (concat (key-description uim-stacked-key-vector) "-"))))
-
       )
     )
 
