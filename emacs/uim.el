@@ -1034,7 +1034,7 @@
     (let (;;(inhibit-quit t)
 	  preedit-existed
 	candidate-existed
-	  key commit preedit candidate default im label imlist ;;pc-exists
+	  key commit preedit candidate default im label imlist
 	  )
       
       (uim-debug (format "%s" str))
@@ -1124,31 +1124,28 @@
 	    (if uim-buffer-frozen
 		(uim-unfreeze-buffer))
 
-	(let ((buffer-undo-list-saved uim-buffer-undo-list-saved))
-	  ;; restore undo history before committing
-	  (when buffer-undo-list-saved
-		(uim-debug "call restore undo 1")
-	    (uim-restore-undo))
-
 	  (mapcar
 	   '(lambda (x) 
+		(let ((start (point)))
 	      (insert x)
 	      (uim-debug (format "insert %s" x))
-	      (undo-boundary))
+
+		  ;; append undo info to saved buffer-undo-list
+		  (if uim-buffer-undo-list-saved
+		      (setq uim-buffer-undo-list
+			    (cons nil
+				  (cons (cons start (point))
+					uim-buffer-undo-list))))
+		  )
+		)
 	   commit)
 
 	  (if auto-fill-function
 	      (funcall auto-fill-function))
 
-	  ;; save undo hisotry again
-	  (when buffer-undo-list-saved
-		(uim-debug "call save undo 1")
-	    (uim-save-undo)))
-
 	    (if buffer-frozen
 		(uim-freeze-buffer))
       )
-
 	)
 
 
