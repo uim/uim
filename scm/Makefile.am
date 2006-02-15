@@ -5,6 +5,7 @@ EXTRA_DIST = $(SCM_FILES)
 scm_DATA = $(SCM_FILES) $(GENERATED_SCM_FILES)
 GENERATED_SCM_FILES = installed-modules.scm loader.scm
 SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
+ im-switcher.scm \
  default.scm \
  util.scm key.scm ustr.scm action.scm load-action.scm i18n.scm \
  uim-sh.scm uim-db.scm custom.scm custom-rt.scm \
