@@ -58,65 +58,6 @@ void uim_toolbar_check_helper_connection(GtkWidget *widget);
 void uim_toolbar_get_im_list(void);
 
 
-/* FIXME! command menu and buttons should be customizable. */
-static struct _CommandEntry {
-  const gchar *desc;
-  const gchar *label;
-  const gchar *icon;
-  const gchar *command;
-  const gchar *custom_button_show_symbol;
-  uim_bool show_button;
-} command_entry[] = {
-  {N_("Switch input method"),
-   NULL,
-   "switcher-icon",
-   "uim-im-switcher-gtk &",
-   "toolbar-show-switcher-button?",
-   UIM_FALSE},
-
-  {N_("Preference"),
-   NULL,
-   GTK_STOCK_PREFERENCES,
-   "uim-pref-gtk &",
-   "toolbar-show-pref-button?",
-   UIM_FALSE},
-
-  {N_("Japanese dictionary editor"),
-   "Dic",
-   NULL,
-   "uim-dict-gtk &",
-   "toolbar-show-dict-button?",
-   UIM_FALSE},
-
-  {N_("Input pad"),
-   "Pad",
-   NULL,
-   "uim-input-pad-ja &",
-   "toolbar-show-input-pad-button?",
-   UIM_FALSE},
-
-  {N_("Handwriting input pad"),
-   "Hand",
-   NULL,
-   "uim-tomoe-gtk &",
-   "toolbar-show-handwriting-input-pad-button?",
-   UIM_FALSE},
-
-  {N_("Help"),
-   NULL,
-   GTK_STOCK_HELP,
-   "uim-help &",
-   "toolbar-show-help-button?",
-   UIM_FALSE}
-};
-static gint command_entry_len = sizeof(command_entry) / sizeof(struct _CommandEntry);
-
-static GtkWidget *im_menu;
-static GtkWidget *prop_menu;
-static GtkWidget *right_click_menu;
-static unsigned int read_tag;
-static int uim_fd;
-
 enum {
   TYPE_STANDALONE,
   TYPE_APPLET,
@@ -128,6 +69,80 @@ enum {
   BUTTON_PROP,
   BUTTON_TOOL
 };
+
+struct _CommandEntry {
+  const gchar *desc;
+  const gchar *label;
+  const gchar *icon;
+  const gchar *command;
+  const gchar *custom_button_show_symbol;
+  uim_bool show_button;
+};
+
+/* FIXME! command menu and buttons should be customizable. */
+static struct _CommandEntry command_entry[] = {
+  {
+    N_("Switch input method"),
+    NULL,
+    "switcher-icon",
+    "uim-im-switcher-gtk &",
+    "toolbar-show-switcher-button?",
+    UIM_FALSE
+  },
+
+  {
+    N_("Preference"),
+    NULL,
+    GTK_STOCK_PREFERENCES,
+    "uim-pref-gtk &",
+    "toolbar-show-pref-button?",
+    UIM_FALSE
+  },
+
+  {
+    N_("Japanese dictionary editor"),
+    "Dic",
+    NULL,
+    "uim-dict-gtk &",
+    "toolbar-show-dict-button?",
+    UIM_FALSE
+  },
+
+  {
+    N_("Input pad"),
+    "Pad",
+    NULL,
+    "uim-input-pad-ja &",
+    "toolbar-show-input-pad-button?",
+    UIM_FALSE
+  },
+
+  {
+    N_("Handwriting input pad"),
+    "Hand",
+    NULL,
+    "uim-tomoe-gtk &",
+    "toolbar-show-handwriting-input-pad-button?",
+    UIM_FALSE
+  },
+
+  {
+    N_("Help"),
+    NULL,
+    GTK_STOCK_HELP,
+    "uim-help &",
+    "toolbar-show-help-button?",
+    UIM_FALSE
+  }
+};
+
+static gint command_entry_len = sizeof(command_entry) / sizeof(struct _CommandEntry);
+
+static GtkWidget *im_menu;
+static GtkWidget *prop_menu;
+static GtkWidget *right_click_menu;
+static unsigned int read_tag;
+static int uim_fd;
 
 static void
 calc_menu_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
@@ -709,22 +724,24 @@ im_data_flush(gpointer data)
 static void
 im_button_append_menu(GtkWidget *button, gchar **cols)
 {
-  GList *im_list = g_object_get_data(G_OBJECT(button), "im_name");
+  GList *im_list, *state_list;
   const gchar *im_name, *state;	
   /* const gchar *im_lang, *im_desc; */
 
   im_name = cols[0];
   state = cols[3];
 
+  im_list = g_object_get_data(G_OBJECT(button), "im_name");
   im_list = g_list_append(im_list, g_strdup(im_name));
   g_object_set_data(G_OBJECT(button), "im_name", im_list);
 
   if (state) {
-    GList *state_list = g_object_get_data(G_OBJECT(button), "im_state");
+    state_list = g_object_get_data(G_OBJECT(button), "im_state");
     state_list = g_list_append(state_list, g_strdup(state));
     g_object_set_data(G_OBJECT(button), "im_state", state_list);
   }
 }
+
 static void
 helper_toolbar_im_list_update(GtkWidget *widget, gchar **lines)
 {
@@ -876,7 +893,7 @@ right_click_menu_create(void)
 }
 
 static void
-regist_icon(void)
+register_icon(void)
 {
   GtkIconFactory *factory;
   GtkIconSet *icon_set;
@@ -909,7 +926,7 @@ toolbar_new(gint type)
   GList *prop_buttons = NULL;
   GtkSizeGroup *sg;
 
-  regist_icon();
+  register_icon();
 
   /* create widgets */
   hbox = gtk_hbox_new(FALSE, 0);
