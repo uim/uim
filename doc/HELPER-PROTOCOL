@@ -99,6 +99,7 @@ protocol within uim.
   charset = "UTF-8" | "EUC-JP" | "GB18030" |
             <or any name that can be specified as iconv_open(3) argument>
   str = str <any characters except for '\0', '\t' or '\n'> | ""
+  identifier = [_a-zA-Z][_a-zA-Z0-9]*
 
 * Focus notification messages
 
@@ -166,6 +167,11 @@ protocol within uim.
     designed to reduce message passing overhead by replacing prop_list_update
     by this.
 
+    indication_id is an identifier that specifies visual appearance of the
+    item. The ID roughly considerable as "icon name", and so the message
+    receiver can use it to form filename for the corresponding icon
+    (e.g. "anthy" -> "/path/to/somewhere/32x32/anthy.png").
+
     iconic_label is a very short string typically 1 character to be used as
     icon. For example, "a" means 'direct input'.
 
@@ -177,8 +183,9 @@ protocol within uim.
 
     prop_label_update = "prop_label_update\n" charset_specifier labels
     labels = labels label | label
-    label = iconic_label "\t" buttontooltip_string "\n"
+    label = indication_id "\t" iconic_label "\t" buttontooltip_string "\n"
 
+    indication_id = identifier
     iconic_label = str
     buttontooltip_string = str
 
@@ -207,6 +214,12 @@ protocol within uim.
     iconic_label is a very short string typically 1 character to be used as
     icon. For example, "a" means 'direct input'.
 
+    indication_id is an identifier. This element has same meaning as in
+    prop_label_update except for the special ID "separator". If the ID is
+    "separator", message receivers should display the leaf as toolkit-native
+    separator. But it is not necessary since the "separator" appears as dummy
+    item with no action if the receiver is not aware of it.
+
     buttontooltip_string is a string for tooltip of the button.
 
     menulabel_string is a short string to be shown in the menu.
@@ -227,10 +240,11 @@ protocol within uim.
     prop_list_update = "prop_list_update\n" charset_specifier parts
     parts = parts part | part
     part = branch leaves
-    branch = "branch\t" iconic_label "\t" buttontooltip_string "\n"
+    branch = "branch\t" indication_id "\t" iconic_label "\t" buttontooltip_string "\n"
     leaves = leaves leaf | leaf
-    leaf = "leaf\t" iconic_label "\t" menulabel_string "\t" menutooltip_string "\t" menucommand_name "\t" flag "\n"
+    leaf = "leaf\t" indication_id "\t" iconic_label "\t" menulabel_string "\t" menutooltip_string "\t" menucommand_name "\t" flag "\n"
 
+    indication_id = identifier | "separator"
     iconic_label = str
     buttontooltip_string = str
     menulabel_string = str

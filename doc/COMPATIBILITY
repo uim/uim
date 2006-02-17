@@ -57,6 +57,26 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Add icon support to helper protocol
+Affects: Helper program developers
+Updates: Helper protocol
+Version: 1.1.0
+Revision: ac3110
+Date: 2006-02-18
+Modifier: YamaKen
+Related:
+URL:
+  http://lists.freedesktop.org/archives/uim/2006-February/001434.html
+Changes:
+  (update) "prop_label_update"
+  (update) "prop_list_update"
+Description:
+  Add 'indication_id' attribute to the two messages to support icons on
+  toolbars. And a special indication_id "separator" is also defined.
+  
+  The message formats have been incompatible with former ones. Helper program
+  developers, please read doc/HELPER-PROTOCOL and follow the changes.
+------------------------------------------------------------------------------
 Summary: Rename is-set-ugid? to follow the Scheme naming convention
 Affects: IM developers, uim developers
 Updates: Scheme API

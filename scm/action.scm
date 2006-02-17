@@ -261,7 +261,8 @@
 
 (define indication-compose-label
   (lambda (indication)
-    (string-append (indication-iconic-label indication) "\t"
+    (string-append (symbol->string (indication-id indication)) "\t"
+		   (indication-iconic-label indication) "\t"
 		   (indication-label indication) "\n")))
 
 (define indication-compose-branch
@@ -272,6 +273,7 @@
 (define indication-compose-leaf
   (lambda (indication act-id active?)
     (string-append "leaf\t"
+		   (symbol->string (indication-id indication)) "\t"
 		   (indication-iconic-label indication) "\t"
 		   (indication-label indication) "\t"
 		   (indication-short-desc indication) "\t"

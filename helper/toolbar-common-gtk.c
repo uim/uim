@@ -136,13 +136,31 @@ static struct _CommandEntry command_entry[] = {
   }
 };
 
-static gint command_entry_len = sizeof(command_entry) / sizeof(struct _CommandEntry);
+static guint command_entry_len = sizeof(command_entry) / sizeof(struct _CommandEntry);
 
 static GtkWidget *im_menu;
 static GtkWidget *prop_menu;
 static GtkWidget *right_click_menu;
 static unsigned int read_tag;
 static int uim_fd;
+
+static gboolean has_n_strs(gchar **str_list, guint n);
+
+static gboolean
+has_n_strs(gchar **str_list, guint n)
+{
+  guint i;
+
+  if (!str_list)
+    return FALSE;
+
+  for (i = 0; i < n; i++) {
+    if (!str_list[i])
+      return FALSE;
+  }
+
+  return TRUE;
+}
 
 static void
 calc_menu_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
@@ -573,9 +591,11 @@ static void
 helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
 {
   GtkWidget *button = NULL;
-  int i;
+  guint i;
   gchar **cols;
-  gchar *charset = NULL;
+  gchar *charset;
+  gchar *indication_id, *iconic_label, *label, *tooltip_str;
+  gchar *action_id, *is_selected;
   GList *prop_buttons, *tool_buttons;
   GtkSizeGroup *sg;
 
@@ -596,8 +616,7 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
     g_object_set_data(G_OBJECT(widget), OBJECT_DATA_TOOL_BUTTONS, NULL);
   }
 
-  i = 0;
-  while (lines[i] && strcmp("", lines[i])) {
+  for (i = 0; lines[i] && strcmp("", lines[i]); i++) {
     gchar *utf8_str = convert_charset(charset, lines[i]);
 
     if (utf8_str != NULL) {
@@ -608,15 +627,24 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
     }
     
     if (cols && cols[0]) {
-      if (!strcmp("branch", cols[0])) {
-	button = prop_button_create(widget, cols[1], cols[2]);
+      if (!strcmp("branch", cols[0]) && has_n_strs(cols, 4)) {
+	indication_id = cols[1];
+	iconic_label  = cols[2];
+	tooltip_str   = cols[3];
+	button = prop_button_create(widget, iconic_label, tooltip_str);
 	append_prop_button(widget, button);
-      } else if (!strcmp("leaf", cols[0])) {
-	prop_button_append_menu(button, cols[2], cols[3], cols[4], cols[5]);
+      } else if (!strcmp("leaf", cols[0]) && has_n_strs(cols, 7)) {
+	indication_id = cols[1];
+	iconic_label  = cols[2];
+	label         = cols[3];
+	tooltip_str   = cols[4];
+	action_id     = cols[5];
+	is_selected   = cols[6];
+	prop_button_append_menu(button,
+				label, tooltip_str, action_id, is_selected);
       }
       g_strfreev(cols);
     }
-    i++;
   }
   
   /* create tool buttons */
@@ -665,14 +693,13 @@ static void
 helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
 {
   GtkWidget *button;
-  unsigned int i;
-  gchar **pair;
-  gchar *charset = NULL;
+  guint i;
+  gchar **cols;
+  gchar *charset, *indication_id, *iconic_label, *tooltip_str;
   GList *prop_buttons;
 
-  i = 0;
-  while (lines[i] && strcmp("", lines[i]))
-    i++;
+  for (i = 0; lines[i] && strcmp("", lines[i]); i++)
+    continue;
 
   prop_buttons = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_PROP_BUTTONS);
   if (!prop_buttons || (i - 2) != g_list_length(prop_buttons)) {
@@ -682,8 +709,7 @@ helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
   
   charset = get_charset(lines[1]);
 
-  i = 2;
-  while (lines[i] && strcmp("", lines[i])) {
+  for (i = 2; lines[i] && strcmp("", lines[i]); i++) {
     if (charset) {
       gchar *utf8_str;
       utf8_str = g_convert(lines[i], strlen(lines[i]),
@@ -691,18 +717,20 @@ helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
 			   NULL, /* gsize *bytes_read */
 			   NULL, /*size *bytes_written */
 			   NULL); /* GError **error*/
-      pair = g_strsplit(utf8_str, "\t", 0);
+      cols = g_strsplit(utf8_str, "\t", 0);
       g_free(utf8_str);
     } else {
-      pair = g_strsplit(lines[i], "\t", 0);
+      cols = g_strsplit(lines[i], "\t", 0);
     }
     
-    if (pair && pair[0] && pair[1]) {
+    if (has_n_strs(cols, 3)) {
+      indication_id = cols[0];
+      iconic_label  = cols[1];
+      tooltip_str   = cols[2];
       button = g_list_nth_data(prop_buttons, i - 2);
-      gtk_button_set_label(GTK_BUTTON(button), pair[0]);
+      gtk_button_set_label(GTK_BUTTON(button), iconic_label);
     }
-    g_strfreev(pair);
-    i++;
+    g_strfreev(cols);
   }
 
   g_free(charset);
@@ -777,7 +805,7 @@ helper_toolbar_im_list_update(GtkWidget *widget, gchar **lines)
 static void
 helper_toolbar_check_custom()
 {
-  int i;
+  guint i;
 
   for (i = 0; i < command_entry_len; i++)
     command_entry[i].show_button =
@@ -858,7 +886,7 @@ right_click_menu_create(void)
   GtkWidget *menu;
   GtkWidget *menu_item;
   GtkWidget *img;
-  gint i;
+  guint i;
 
   menu = gtk_menu_new();
 
