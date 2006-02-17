@@ -25,6 +25,9 @@ Overview of changes from 1.0.x to 1.1.0
       - fix event handling with flushplayer plugin (Etsushi)
 
 * Others
+  - strip multiplexed IM name on iconic-label of input mode of skk and
+    tutcode that confuses users (YamaKen)
+
   - update translations
     -ja (Daichi Kawahata, YamaKen)
 

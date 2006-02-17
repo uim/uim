@@ -164,27 +164,27 @@
   (list
    (list 'action_skk_latin
 	 'ja_direct
-	 "s"
+	 "a"
 	 (N_ "Direct input")
 	 (N_ "Direct input mode"))
    (list 'action_skk_hiragana
 	 'ja_hiragana
-	 "¤¨"
+	 "¤¢"
 	 (N_ "Hiragana")
 	 (N_ "Hiragana input mode"))
    (list 'action_skk_katakana
 	 'ja_katakana
-	 "¥¨"
+	 "¥¢"
 	 (N_ "Katakana")
 	 (N_ "Katakana input mode"))
    (list 'action_skk_hankana
 	 'ja_halfwidth_katakana
-	 "Ž´"
+	 "Ž±"
 	 (N_ "Halfwidth Katakana")
 	 (N_ "Halfwidth Katakana input mode"))
    (list 'action_skk_wide_latin
 	 'ja_fullwidth_alnum
-	 "£Ó"
+	 "£Á"
 	 (N_ "Fullwidth Alphanumeric")
 	 (N_ "Fullwidth Alphanumeric input mode"))))
 

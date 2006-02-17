@@ -156,19 +156,24 @@
   (list
    (list 'action_prime_mode_latin
 	 'ja_direct
-	 "P"
+	 "--"
 	 (N_ "Direct input")
 	 (N_ "PRIME off"))
    (list 'action_prime_mode_hiragana
 	 'ja_hiragana
-	 "¤×"
+	 "¤¢"
 	 (N_ "Japanese")
 	 (N_ "PRIME on"))
    (list 'action_prime_mode_wide_latin
 	 'ja_fullwidth_alnum
-	 "£Ð"
+	 "£Á"
 	 (N_ "Fullwidth Alphanumeric")
-	 (N_ "Fullwidth Alphanumeric input mode"))))
+	 (N_ "Fullwidth Alphanumeric input mode"))
+   (list 'action_prime_mode_application
+	 'prime_mode_application
+	 "¡ª"
+	 (N_ "Peculiar")
+	 (N_ "Application specific input mode"))))
 
 (define prime-widgets '(widget_prime_input_mode))
 
