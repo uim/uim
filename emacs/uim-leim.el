@@ -89,6 +89,8 @@
 (defun uim-leim-init ()
   ;; register IM to input-method-alist
   ;;   to display the alist, call list-input-methods
+  (uim-im-init)
+
   (mapcar
    '(lambda (x)
       (let* ((name (car x))

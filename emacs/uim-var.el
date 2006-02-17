@@ -229,13 +229,19 @@ displayed at the echo area.")
 
 (defvar uim-retry-keys nil)
 
+(defvar uim-local-var '())
+
 ;; Macro for setting up buffer-local variable
 (defmacro uim-deflocalvar (var default &optional documentation)
   `(progn
      (defvar ,var ,default
        (format "%s (local\)" ,documentation))
+     (setq uim-local-var (cons (cons ',var ,default) uim-local-var))
      (make-variable-buffer-local ',var)))
 
+
+;; Encoding initialized flag
+(defvar uim-im-initialized nil)
 
 
 ;;; Buffer Local Variables

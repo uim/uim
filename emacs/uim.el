@@ -375,6 +375,14 @@
   )
 
 
+(defun uim-im-init ()
+  (when (not uim-im-initialized)
+    (uim-init-im-alist)
+    (uim-init-im-encoding)
+    (setq uim-im-initialized t)
+    ))
+
+
 ;;
 ;; Activate uim
 ;;
@@ -385,6 +393,9 @@
   (if uim-mode
       (message "uim.el: uim-mode is already activated. (buffer %s)" 
 	       (current-buffer)))
+
+  ;; Initialize IM encoding
+  (uim-im-init)
 
   (if (not buffer-read-only)
       (progn 
@@ -627,6 +638,15 @@
 
 
 ;; 
+;; Reset all uim.el buffer local variables
+;;
+(defun uim-init-all-local-var ()
+   (mapcar
+    '(lambda (x)
+       (set (car x) (cdr x)))
+    uim-local-var))
+
+;; 
 ;; Sentinel of uim-el-agent 
 ;;   STOP state is not supported yet
 ;; 
@@ -645,7 +665,8 @@
 	  ;; disable uim
 	  (uim-force-off)
 	  ;; reset all local variables
-	  (kill-all-local-variables)
+	  (uim-init-all-local-var)
+	  (setq uim-im-initialized nil)
 	  ))
       (setq bufs (cdr bufs)))
     ))
@@ -1269,15 +1290,13 @@
 (defun uim-get-im-list ()
   (uim-do-send-recv-cmd (format "0 LIST")))
 
-(defun uim-initialize-im-alist ()
+(defun uim-init-im-alist ()
   (uim-get-im-list))
 
 ;;
 ;; Initialize IM list and encoding
 ;;
 (defun uim-init-im-encoding ()
-
-  (uim-initialize-im-alist)
 
   ;; set Uim side encoding to agent
   (mapcar 
@@ -1312,9 +1331,6 @@
   ;; initialize minor-mode
   (uim-init-minor-mode)
 
-  ;; initialize encoding
-  (uim-init-im-encoding)
-  
   ;; initialize keymap
   (uim-init-keymap)
 
