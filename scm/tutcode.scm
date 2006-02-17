@@ -79,7 +79,7 @@
 
 (register-action 'action_tutcode_direct
 		 (lambda (tc)
-		   '(figure_ja_direct
+		   '(ja_direct
 		     "a"
 		     "直接入力"
 		     "直接入力モード"))
@@ -91,7 +91,7 @@
 
 (register-action 'action_tutcode_hiragana
 		 (lambda (tc)
-		   '(figure_ja_hiragana
+		   '(ja_hiragana
 		     "あ"
 		     "ひらがな"
 		     "ひらがなモード"))
@@ -105,7 +105,7 @@
 
 (register-action 'action_tutcode_katakana
 		 (lambda (tc)
-		   '(figure_ja_katakana
+		   '(ja_katakana
 		     "ア"
 		     "カタカナ"
 		     "カタカナモード"))

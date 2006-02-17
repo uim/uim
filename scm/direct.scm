@@ -48,7 +48,7 @@
 (register-action 'action_direct_direct
 		 (lambda (dc)
 		   (list
-		    'figure_direct_direct
+		    'direct_input
 		    "-"
 		    (N_ "direct")
 		    (N_ "Direct Input Mode")))

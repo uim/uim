@@ -55,7 +55,7 @@
 
 (register-action 'action_canna_hiragana
 		 (lambda (cc) ;; indication handler
-		   '(figure_ja_hiragana
+		   '(ja_hiragana
 		     "あ"
 		     "ひらがな"
 		     "ひらがな入力モード"))
@@ -73,7 +73,7 @@
 
 (register-action 'action_canna_katakana
 		 (lambda (cc)
-		   '(figure_ja_katakana
+		   '(ja_katakana
 		     "ア"
 		     "カタカナ"
 		     "カタカナ入力モード"))
@@ -89,7 +89,7 @@
 
 (register-action 'action_canna_hankana
 		 (lambda (cc)
-		   '(figure_ja_hankana
+		   '(ja_halfwidth_katakana
 		     "ｱ"
 		     "半角カタカナ"
 		     "半角カタカナ入力モード"))
@@ -105,7 +105,7 @@
 
 (register-action 'action_canna_direct
 		 (lambda (cc)
-		   '(figure_ja_direct
+		   '(ja_direct
 		     "a"
 		     "直接入力"
 		     "直接(無変換)入力モード"))
@@ -119,7 +119,7 @@
 
 (register-action 'action_canna_zenkaku
 		 (lambda (cc)
-		   '(figure_ja_zenkaku
+		   '(ja_fullwidth_alnum
 		     "Ａ"
 		     "全角英数"
 		     "全角英数入力モード"))
@@ -133,7 +133,7 @@
 
 (register-action 'action_canna_roma
 		 (lambda (cc)
-		   '(figure_ja_roma
+		   '(ja_romaji
 		     "Ｒ"
 		     "ローマ字"
 		     "ローマ字入力モード"))
@@ -148,7 +148,7 @@
 
 (register-action 'action_canna_kana
 		 (lambda (cc)
-		   '(figure_ja_kana
+		   '(ja_kana
 		     "か"
 		     "かな"
 		     "かな入力モード"))
@@ -163,7 +163,7 @@
 
 (register-action 'action_canna_azik
 		 (lambda (cc)
-		   '(figure_ja_azik
+		   '(ja_azik
 		     "Ａ"
 		     "AZIK"
 		     "AZIK拡張ローマ字入力モード"))

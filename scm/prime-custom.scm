@@ -155,17 +155,17 @@
 (define prime-input-mode-indication-alist
   (list
    (list 'action_prime_mode_latin
-	 'figure_prime_mode_latin
+	 'ja_direct
 	 "P"
 	 (N_ "Direct input")
 	 (N_ "PRIME off"))
    (list 'action_prime_mode_hiragana
-	 'figure_prime_mode_hiragana
+	 'ja_hiragana
 	 "คื"
 	 (N_ "Japanese")
 	 (N_ "PRIME on"))
    (list 'action_prime_mode_wide_latin
-	 'figure_prime_mode_wide_latin
+	 'ja_fullwidth_alnum
 	 "ฃะ"
 	 (N_ "Fullwidth Alphanumeric")
 	 (N_ "Fullwidth Alphanumeric input mode"))))

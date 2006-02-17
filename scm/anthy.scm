@@ -63,7 +63,7 @@
 ;;		 (indication-alist-indicator 'action_anthy_hiragana
 ;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac) ;; indication handler
-		   '(figure_ja_hiragana
+		   '(ja_hiragana
 		     "あ"
 		     "ひらがな"
 		     "ひらがな入力モード"))
@@ -82,7 +82,7 @@
 ;;		 (indication-alist-indicator 'action_anthy_katakana
 ;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac)
-		   '(figure_ja_katakana
+		   '(ja_katakana
 		     "ア"
 		     "カタカナ"
 		     "カタカナ入力モード"))
@@ -99,7 +99,7 @@
 ;;		 (indication-alist-indicator 'action_anthy_hankana
 ;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac)
-		   '(figure_ja_hankana
+		   '(ja_halfwidth_katakana
 		     "ｱ"
 		     "半角カタカナ"
 		     "半角カタカナ入力モード"))
@@ -116,7 +116,7 @@
 ;;		 (indication-alist-indicator 'action_anthy_direct
 ;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac)
-		   '(figure_ja_direct
+		   '(ja_direct
 		     "a"
 		     "直接入力"
 		     "直接(無変換)入力モード"))
@@ -132,7 +132,7 @@
 ;;		 (indication-alist-indicator 'action_anthy_zenkaku
 ;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac)
-		   '(figure_ja_zenkaku
+		   '(ja_fullwidth_alnum
 		     "Ａ"
 		     "全角英数"
 		     "全角英数入力モード"))
@@ -148,7 +148,7 @@
 ;;		 (indication-alist-indicator 'action_anthy_roma
 ;;					     anthy-kana-input-method-indication-alist)
 		 (lambda (ac)
-		   '(figure_ja_roma
+		   '(ja_romaji
 		     "Ｒ"
 		     "ローマ字"
 		     "ローマ字入力モード"))
@@ -165,7 +165,7 @@
 ;;		 (indication-alist-indicator 'action_anthy_kana
 ;;					     anthy-kana-input-method-indication-alist)
 		 (lambda (ac)
-		   '(figure_ja_kana
+		   '(ja_kana
 		     "か"
 		     "かな"
 		     "かな入力モード"))
@@ -185,7 +185,7 @@
 ;;		 (indication-alist-indicator 'action_anthy_azik
 ;;					     anthy-kana-input-method-indication-alist)
 		 (lambda (ac)
-		   '(figure_ja_azik
+		   '(ja_azik
 		     "Ａ"
 		     "AZIK"
 		     "AZIK拡張ローマ字入力モード"))

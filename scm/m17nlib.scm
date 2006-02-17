@@ -57,7 +57,7 @@
 (register-action 'action_m17nlib_off
 		 (lambda (mc)
 		   (list
-		    'figure_m17nlib_off
+		    'off
 		    "-"
 		    (N_ "off")
 		    (N_ "Direct Input Mode")))
@@ -71,7 +71,7 @@
 		   (let* ((im (m17nlib-context-im mc))
 			  (name (symbol->string (im-name im))))
 		     (list
-		      'figure_m17nlib_on
+		      'on
 		      "O"
 		      (N_ "on")
 		      (string-append name (N_ " Mode")))))

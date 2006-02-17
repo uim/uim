@@ -1198,7 +1198,7 @@
 
 (register-action 'action_byeoru_direct
 		 (lambda (bc)
-		   '(figure_ko_direct
+		   '(ko_direct
 		     "A"
 		     ;; Change this to a more reasonable name.
 		     "영문"
@@ -1211,7 +1211,7 @@
 
 (register-action 'action_byeoru_hangulchar
 		 (lambda (bc)
-		   '(figure_ko_hangulchar
+		   '(ko_hangulchar
 		     "가"
 		     "한글 글자"
 		     "한글 글자단위 입력모드"))
@@ -1225,7 +1225,7 @@
 
 (register-action 'action_byeoru_hangulword
 		 (lambda (bc)
-		   '(figure_ko_hangulword
+		   '(ko_hangulword
 		     "말"
 		     "한글 낱말"
 		     "한글 단어단위 입력모드"))

@@ -57,7 +57,7 @@
 (register-action 'action_scim_off
 		 (lambda (mc)
 		   (list
-		    'figure_scim_off
+		    'off
 		    "-"
 		    (N_ "off")
 		    (N_ "Direct Input Mode")))
@@ -71,7 +71,7 @@
 		   (let* ((im (scim-context-im mc))
 			  (name (symbol->string (im-name im))))
 		     (list
-		      'figure_scim_on
+		      'on
 		      "O"
 		      (N_ "on")
 		      (string-append name (N_ " Mode")))))

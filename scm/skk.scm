@@ -156,7 +156,7 @@
 
 (register-action 'action_skk_hiragana
 		 (lambda (sc)
-		   '(figure_ja_hiragana
+		   '(ja_hiragana
 		     "あ"
 		     "ひらがな"
 		     "ひらがな入力モード"))
@@ -173,7 +173,7 @@
 
 (register-action 'action_skk_katakana
 		 (lambda (sc)
-		   '(figure_ja_katakana
+		   '(ja_katakana
 		     "ア"
 		     "カタカナ"
 		     "カタカナ入力モード"))
@@ -190,7 +190,7 @@
 
 (register-action 'action_skk_hankana
 		 (lambda (sc)
-		   '(figure_ja_hankana
+		   '(ja_halfwidth_katakana
 		     "ｱ"
 		     "半角カタカナ"
 		     "半角カタカナ入力モード"))
@@ -207,7 +207,7 @@
 
 (register-action 'action_skk_latin
 		 (lambda (sc)
-		   '(figure_ja_latin
+		   '(ja_direct
 		     "a"
 		     "直接入力"
 		     "直接(無変換)入力モード"))
@@ -222,7 +222,7 @@
 
 (register-action 'action_skk_wide_latin
 		 (lambda (sc)
-		   '(figure_ja_wide_latin
+		   '(ja_fullwidth_alnum
 		     "Ａ"
 		     "全角英数"
 		     "全角英数入力モード"))
@@ -237,7 +237,7 @@
 
 (register-action 'action_skk_roma
 		 (lambda (sc)
-		   '(figure_ja_roma
+		   '(ja_romaji
 		     "Ｒ"
 		     "ローマ字"
 		     "ローマ字入力モード"))
@@ -252,7 +252,7 @@
 
 (register-action 'action_skk_azik
 		 (lambda (sc)
-		   '(figure_ja_azik
+		   '(ja_azik
 		     "Ａ"
 		     "AZIK"
 		     "AZIK拡張ローマ字入力モード"))

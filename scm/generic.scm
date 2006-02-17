@@ -66,7 +66,7 @@
 (register-action 'action_generic_off
 		 (lambda (gc)
 		   (list
-		    'figure_generic_off
+		    'off
 		    "-"
 		    (N_ "off")
 		    (N_ "Direct Input Mode")))
@@ -81,7 +81,7 @@
 		   (let* ((im (generic-context-im gc))
 			  (name (symbol->string (im-name im))))
 		     (list
-		      'figure_generic_on
+		      'on
 		      "O"
 		      (N_ "on")
 		      (string-append name (N_ " Mode")))))

@@ -429,7 +429,7 @@
 
 (register-action 'action_prime_mode_latin
 		 (lambda (context)
-		   '(figure_prime_mode_latin
+		   '(ja_direct
 		     "--"
 		     "通常入力"
 		     "PRIMEをオフ"))
@@ -441,7 +441,7 @@
 
 (register-action 'action_prime_mode_hiragana
 		 (lambda (context)
-		   '(figure_prime_mode_hiragana
+		   '(ja_hiragana
 		     "あ"
 		     "日本語"
 		     "PRIMEをオン"))
@@ -453,7 +453,7 @@
 
 (register-action 'action_prime_mode_wide_latin
 		 (lambda (context)
-		   '(figure_prime_mode_wide_latin
+		   '(ja_fullwidth_alnum
 		     "Ａ"
 		     "全角英数"
 		     "全角を入力"))
@@ -465,7 +465,7 @@
 
 (register-action 'action_prime_mode_application
 		 (lambda (context)
-		   '(figure_prime_mode_application
+		   '(prime_mode_application
 		     "！"
 		     "特殊"
 		     "アプリケーション依存"))

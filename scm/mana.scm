@@ -212,7 +212,7 @@
                  ;;              (indication-alist-indicator 'action_mana_hiragana
                  ;;                                          mana-input-mode-indication-alist)
                  (lambda (mc) ;; indication handler
-                   '(figure_ja_hiragana
+                   '(ja_hiragana
                       "あ"
                       "ひらがな"
                       "ひらがな入力モード"))
@@ -231,7 +231,7 @@
                  ;;              (indication-alist-indicator 'action_mana_katakana
                  ;;                                          mana-input-mode-indication-alist)
                  (lambda (mc)
-                   '(figure_ja_katakana
+                   '(ja_katakana
                       "ア"
                       "カタカナ"
                       "カタカナ入力モード"))
@@ -248,7 +248,7 @@
                  ;;              (indication-alist-indicator 'action_mana_hankana
                  ;;                                          mana-input-mode-indication-alist)
                  (lambda (mc)
-                   '(figure_ja_hankana
+                   '(ja_halfwidth_katakana
                       "ｱ"
                       "半角カタカナ"
                       "半角カタカナ入力モード"))
@@ -265,7 +265,7 @@
                  ;;              (indication-alist-indicator 'action_mana_direct
                  ;;                                          mana-input-mode-indication-alist)
                  (lambda (mc)
-                   '(figure_ja_direct
+                   '(ja_direct
                       "a"
                       "直接入力"
                       "直接(無変換)入力モード"))
@@ -281,7 +281,7 @@
                  ;;              (indication-alist-indicator 'action_mana_zenkaku
                  ;;                                          mana-input-mode-indication-alist)
                  (lambda (mc)
-                   '(figure_ja_zenkaku
+                   '(ja_fullwidth_alnum
                       "Ａ"
                       "全角英数"
                       "全角英数入力モード"))
@@ -297,7 +297,7 @@
                  ;;              (indication-alist-indicator 'action_mana_roma
                  ;;                                          mana-kana-input-method-indication-alist)
                  (lambda (mc)
-                   '(figure_ja_roma
+                   '(ja_romaji
                       "Ｒ"
                       "ローマ字"
                       "ローマ字入力モード"))
@@ -314,7 +314,7 @@
                  ;;              (indication-alist-indicator 'action_mana_kana
                  ;;                                          mana-kana-input-method-indication-alist)
                  (lambda (mc)
-                   '(figure_ja_kana
+                   '(ja_kana
                       "か"
                       "かな"
                       "かな入力モード"))
@@ -334,7 +334,7 @@
                  ;;              (indication-alist-indicator 'action_mana_azik
                  ;;                                          mana-kana-input-method-indication-alist)
                  (lambda (mc)
-                   '(figure_ja_azik
+                   '(ja_azik
                       "Ａ"
                       "AZIK"
                       "AZIK拡張ローマ字入力モード"))

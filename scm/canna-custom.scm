@@ -118,27 +118,27 @@
 (define canna-input-mode-indication-alist
   (list
    (list 'action_canna_direct
-	 'figure_ja_direct
+	 'ja_direct
 	 "a"
 	 (N_ "Direct input")
 	 (N_ "Direct input mode"))
    (list 'action_canna_hiragana
-	 'figure_ja_hiragana
+	 'ja_hiragana
 	 "дв"
 	 (N_ "Hiragana")
 	 (N_ "Hiragana input mode"))
    (list 'action_canna_katakana
-	 'figure_ja_katakana
+	 'ja_katakana
 	 "ев"
 	 (N_ "Katakana")
 	 (N_ "Katakana input mode"))
    (list 'action_canna_hankana
-	 'figure_ja_hankana
+	 'ja_halfwidth_katakana
 	 "О▒"
 	 (N_ "Halfwidth Katakana")
 	 (N_ "Halfwidth Katakana input mode"))
    (list 'action_canna_zenkaku
-	 'figure_ja_zenkaku
+	 'ja_fullwidth_alnum
 	 "г┴"
 	 (N_ "Fullwidth Alphanumeric")
 	 (N_ "Fullwidth Alphanumeric input mode"))))
@@ -146,17 +146,17 @@
 (define canna-kana-input-method-indication-alist
   (list
    (list 'action_canna_roma
-	 'figure_ja_roma
+	 'ja_romaji
 	 "г╥"
 	 (N_ "Romaji")
 	 (N_ "Romaji input mode"))
    (list 'action_canna_kana
-	 'figure_ja_kana
+	 'ja_kana
 	 "дл"
 	 (N_ "Kana")
 	 (N_ "Kana input mode"))
    (list 'action_canna_azik
-	 'figure_ja_azik
+	 'ja_azik
 	 "г┴"
 	 (N_ "AZIK")
 	 (N_ "AZIK extended romaji input mode"))))

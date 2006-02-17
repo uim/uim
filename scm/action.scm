@@ -499,7 +499,7 @@
 ;;
 
 (define fallback-indication
-  (list 'figure_unknown
+  (list 'unknown
 	"?"
 	(N_ "unknown")
 	(N_ "unknown")))
@@ -512,10 +512,10 @@
 
 ;; should be replaced with real separator by helper tool implementations
 (register-action 'action_separator
-		 (list 'figure_separator ;; dummy indication
+		 (list 'separator ;; dummy indication
 		       "--"
 		       "--------"
-		       "should be replaced with real separator")
+		       "")
 		 #f  ;; has no activity
 		 #f) ;; has no handler
 
@@ -538,13 +538,13 @@
 ;;; internal definitions
 
 (define example-im-name-indication
-  (list 'figure_im_name_example
+  (list 'im_name_example
 	"example"
 	"example (ja)"
 	(N_ "Japanese Kana Kanji Conversion Engine, Example")))
 
 (define example-exec-im-switcher-indication
-  (list 'figure_im_switcher
+  (list 'im_switcher
 	"sw"
 	(N_ "exec im-switcher")
 	(N_ "exec im-switcher")))
