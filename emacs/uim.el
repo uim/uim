@@ -1148,15 +1148,31 @@
 	  (mapcar
 	   '(lambda (x) 
 		(let ((start (point)))
+		  
+		  ;; enable buffer-undo temporarily
+		  (when uim-buffer-undo-list-saved
+		    (setq buffer-undo-list nil)
+		    (buffer-enable-undo))
+
 	      (insert x)
 	      (uim-debug (format "insert %s" x))
 
-		  ;; append undo info to saved buffer-undo-list
-		  (if uim-buffer-undo-list-saved
+		  ;; disable buffer-undo temporarily
+		  (when uim-buffer-undo-list-saved
+		    (let (delatom)
+		      (defun delatom (x)
+			(if (and x (not (atom x)))
+			    (if (and (car x) (atom (car x)))
+				(delatom (cdr x))
+			      (cons (car x) (delatom (cdr x))))
+			  x))
+		      (setq buffer-undo-list (delatom buffer-undo-list))
+		      )
+
 		      (setq uim-buffer-undo-list
-			    (cons nil
-				  (cons (cons start (point))
-					uim-buffer-undo-list))))
+			  (append buffer-undo-list uim-buffer-undo-list))
+		    (setq buffer-undo-list nil)
+		    (buffer-disable-undo))
 		  )
 		)
 	   commit)
