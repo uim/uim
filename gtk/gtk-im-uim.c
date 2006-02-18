@@ -608,6 +608,7 @@ update_prop_list_cb(void *ptr, const char *str)
   g_string_free(prop_list, TRUE);
 }
 
+#if 0
 static void
 update_prop_label_cb(void *ptr, const char *str)
 {
@@ -639,6 +640,7 @@ update_prop_label_cb(void *ptr, const char *str)
     gtk_widget_show_all(uic->caret_state_indicator);
   }
 }
+#endif
 
 static void
 cand_activate_cb(void *ptr, int nr, int display_limit)
@@ -1179,7 +1181,8 @@ static void
 im_uim_finalize(GObject *obj)
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(obj);
-  /* im_uim_set_client_window(GTK_IM_CONTEXT(uic), NULL); */
+
+  im_uim_set_client_window(GTK_IM_CONTEXT(uic), NULL);
 
   uic->next->prev = uic->prev;
   uic->prev->next = uic->next;
@@ -1191,6 +1194,7 @@ im_uim_finalize(GObject *obj)
 #endif
     uic->cwin = NULL;
   }
+
   if (uic->caret_state_indicator) {
     guint tag = GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(uic->caret_state_indicator), "timeout-tag"));
     if (tag > 0)
@@ -1207,14 +1211,6 @@ im_uim_finalize(GObject *obj)
     gtk_widget_destroy(uic->preedit_window);
     uic->preedit_window = NULL;
   }
-#if IM_UIM_USE_TOPLEVEL
-  if (uic->widget) {
-    g_signal_handlers_disconnect_by_func(uic->widget,
-		    (gpointer)on_client_widget_hierarchy_changed, uic);
-    g_signal_handlers_disconnect_by_func(uic->widget,
-		    (gpointer)on_client_widget_grab_notify, uic);
-  }
-#endif
 
   uim_release_context(uic->uc);
 
@@ -1278,7 +1274,7 @@ im_module_create(const gchar *context_id)
 
   uim_set_preedit_cb(uic->uc, clear_cb, pushback_cb, update_cb);
   uim_set_prop_list_update_cb(uic->uc, update_prop_list_cb);
-  uim_set_prop_label_update_cb(uic->uc, update_prop_label_cb);
+  /* uim_set_prop_label_update_cb(uic->uc, update_prop_label_cb); */
   uim_set_candidate_selector_cb(uic->uc, cand_activate_cb, cand_select_cb,
 				cand_shift_page_cb, cand_deactivate_cb);
   uim_set_configuration_changed_cb(uic->uc, configuration_changed_cb);
