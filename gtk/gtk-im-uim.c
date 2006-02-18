@@ -536,6 +536,35 @@ store_event_key(GdkEventKey *dest, GdkEventKey *source)
 }
 #endif
 
+static GString *
+get_caret_state_label_from_prop_list(const char *str)
+{
+  gchar **lines;
+  GString *label;
+  int i;
+
+  label = g_string_new("");
+  lines = g_strsplit(str, "\n", 0);
+  for (i = 0; lines[i] && strcmp("", lines[i]); i++) {
+    gchar **cols;
+
+    cols = g_strsplit(lines[i], "\t", 0);
+    if (cols && cols[0]) {
+      if (!strcmp("branch", cols[0])) {
+	gchar *iconic_label = cols[2];
+
+	if (strcmp(label->str, ""))
+	  g_string_append(label, "\t");
+	g_string_append(label, iconic_label);
+      }
+    }
+    g_strfreev(cols);
+  }
+  g_strfreev(lines);
+
+  return label;
+}
+
 
 
 /* callback functions for libuim */
@@ -597,6 +626,7 @@ update_prop_list_cb(void *ptr, const char *str)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
   GString *prop_list;
+  uim_bool show_state;
 
   if (uic != focused_context || disable_focused_context)
     return;
@@ -606,6 +636,24 @@ update_prop_list_cb(void *ptr, const char *str)
 
   uim_helper_send_message(im_uim_fd, prop_list->str);
   g_string_free(prop_list, TRUE);
+
+  show_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
+  if (show_state && uic->win) {
+    gint timeout;
+    gint x, y;
+    GString *label;
+
+    gdk_window_get_origin(uic->win, &x, &y);
+    label = get_caret_state_label_from_prop_list(str);
+    caret_state_indicator_update(uic->caret_state_indicator, x, y, label->str);
+    g_string_free(label, TRUE);
+    timeout = uim_scm_symbol_value_int("bridge-show-input-state-time-length");
+
+    if (timeout != 0)
+      caret_state_indicator_set_timeout(uic->caret_state_indicator,
+					timeout * 1000);
+    gtk_widget_show_all(uic->caret_state_indicator);
+  }
 }
 
 #if 0

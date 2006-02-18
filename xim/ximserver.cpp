@@ -407,8 +407,10 @@ InputContext::createUimContext(const char *engine)
 			InputContext::candidate_deactivate_cb);
 	uim_set_prop_list_update_cb(uc,
 			InputContext::update_prop_list_cb);
+#if 0
 	uim_set_prop_label_update_cb(uc,
 			InputContext::update_prop_label_cb);
+#endif
 	uim_set_configuration_changed_cb(uc,
 			InputContext::configuration_changed_cb);
 
@@ -840,6 +842,43 @@ void InputContext::candidate_deactivate()
     }
 }
 
+char *InputContext::get_caret_state_label_from_prop_list(const char *str)
+{
+    const char *p, *q;
+    char *state_label = NULL;
+    char label[10];
+    int len, state_label_len = 0;
+
+    p = str;
+    while ((p = strstr(p, "branch\t"))) {
+	p = strchr(p + 7, '\t');
+	if (p) {
+	    p++;
+	    q = strchr(p, '\t');
+	    len = q - p;
+	    if (q && len < 10) {
+		strncpy(label, p, len);
+		label[len] = '\0';
+		if (!state_label) {
+		    state_label_len = len;
+		    state_label = strdup(label);
+		} else {
+		    state_label_len += (len + 1);
+		    state_label = (char *)realloc(state_label,
+						      state_label_len + 1);
+		    if (state_label) {
+			strcat(state_label, "\t");
+			strcat(state_label, label);
+			state_label[state_label_len] = '\0';
+		    }
+		}
+	    }
+	}
+    }
+
+    return state_label;
+}
+
 void InputContext::update_prop_list(const char *str)
 {
     char *buf;
@@ -857,22 +896,16 @@ void InputContext::update_prop_list(const char *str)
     uim_bool show_caret_state =
 	uim_scm_symbol_value_bool("bridge-show-input-state?");
     if (show_caret_state == UIM_TRUE) {
-	char *p, *q;
-	char label[10];
-	int len, timeout;
+	char *label;
+	int timeout;
 	Canddisp *disp = canddisp_singleton();
 
-	timeout = uim_scm_symbol_value_int("bridge-show-input-state-time-length");
-	if ((p = strstr(str, "branch\t"))) {
-	    q = strchr(p + 7, '\t');
-	    len = q - (p + 7);
-	    if (q && len < 10) {
-		strncpy(label, p + 7, len);
-		label[len] = '\0';
-		disp->show_caret_state(label, timeout);
-		mCaretStateShown = true;
-	    }
-	}
+	timeout =
+	    uim_scm_symbol_value_int("bridge-show-input-state-time-length");
+	label = get_caret_state_label_from_prop_list(str);
+	disp->show_caret_state(label, timeout);
+	free(label);
+	mCaretStateShown = true;
     }
 #endif
 }

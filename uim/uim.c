@@ -390,14 +390,14 @@ uim_set_mode_cb(uim_context uc, void (*update_cb)(void *ptr,
 void
 uim_prop_list_update(uim_context uc)
 {
-  if (uc && uc->propstr)
+  if (uc && uc->propstr && uc->prop_list_update_cb)
     uc->prop_list_update_cb(uc->ptr, uc->propstr);
 }
 
 void
 uim_prop_label_update(uim_context uc)
 {
-  if (uc && uc->proplabelstr)
+  if (uc && uc->proplabelstr && uc->prop_label_update_cb)
     uc->prop_label_update_cb(uc->ptr, uc->proplabelstr);
 }
 

@@ -197,6 +197,7 @@ private:
     void commit_string(char *);
     void clear_pe_stat();
     void review_im(const char *engine);
+    char *get_caret_state_label_from_prop_list(const char *str);
 
     XimIC *mXic;
     XimServer *mServer;

@@ -339,7 +339,6 @@ check_pending_xevent(void)
 static void
 xEventRead(int /* fd */, int /* ev */)
 {
-    XFlush(XimServer::gDpy);
     check_pending_xevent();
 }
 
