@@ -907,8 +907,10 @@ parse_helper_str(const char *str)
   } else if (focused_context && !disable_focused_context) {
     if (g_str_has_prefix(str, "prop_list_get") == TRUE) {
       uim_prop_list_update(focused_context->uc);
+#if 0
     } else if (g_str_has_prefix(str, "prop_label_get") == TRUE) {
       uim_prop_label_update(focused_context->uc);
+#endif
     } else if (g_str_has_prefix(str, "prop_activate") == TRUE) {
       lines = g_strsplit(str, "\n", 0);
       if (lines && lines[0]) {
@@ -1065,7 +1067,9 @@ im_uim_focus_in(GtkIMContext *ic)
   uim_helper_client_focus_in(uic->uc);
 
   uim_prop_list_update(uic->uc);
+#if 0
   uim_prop_label_update(uic->uc);
+#endif
 
   for (cc = context_list.next; cc != &context_list; cc = cc->next) {
     if (cc != uic && cc->cwin)
