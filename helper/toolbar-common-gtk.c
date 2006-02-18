@@ -42,7 +42,6 @@
 #include "uim/uim-compat-scm.h"
 #include "uim/gettext.h"
 
-#define OBJECT_DATA_IM_BUTTON "IM_BUTTON"
 #define OBJECT_DATA_PROP_BUTTONS "PROP_BUTTONS"
 #define OBJECT_DATA_TOOL_BUTTONS "TOOL_BUTTONS"
 #define OBJECT_DATA_SIZE_GROUP "SIZE_GROUP"
@@ -752,72 +751,6 @@ helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
 }
 
 static void
-im_data_flush(gpointer data)
-{
-  GList *list;
-  list = g_object_get_data(data, "im_name");
-  list_data_free(list);
-  list = g_object_get_data(data, "im_state");
-  list_data_free(list);
-
-  g_object_set_data(G_OBJECT(data), "im_name", NULL);
-  g_object_set_data(G_OBJECT(data), "im_state", NULL);
-}
-
-static void
-im_button_append_menu(GtkWidget *button, gchar **cols)
-{
-  GList *im_list, *state_list;
-  const gchar *im_name, *state;	
-  /* const gchar *im_lang, *im_desc; */
-
-  im_name = cols[0];
-  state = cols[3];
-
-  im_list = g_object_get_data(G_OBJECT(button), "im_name");
-  im_list = g_list_append(im_list, g_strdup(im_name));
-  g_object_set_data(G_OBJECT(button), "im_name", im_list);
-
-  if (state) {
-    state_list = g_object_get_data(G_OBJECT(button), "im_state");
-    state_list = g_list_append(state_list, g_strdup(state));
-    g_object_set_data(G_OBJECT(button), "im_state", state_list);
-  }
-}
-
-static void
-helper_toolbar_im_list_update(GtkWidget *widget, gchar **lines)
-{
-  GtkWidget *im_button;
-  int i;
-  gchar **cols;
-  gchar *charset = NULL;
-
-  charset = get_charset(lines[1]);
-
-  im_button = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_IM_BUTTON);
-  im_data_flush(im_button);
-
-  i = 2;
-  while (lines[i] && strcmp("", lines[i])) {
-    gchar *utf8_str = convert_charset(charset, lines[i]);
-
-    if (utf8_str != NULL) {
-      cols = g_strsplit(utf8_str, "\t", 0);
-      g_free(utf8_str);
-    } else {
-      cols = g_strsplit(lines[i], "\t", 0);
-    }
-    if (cols && cols[0]) {
-      im_button_append_menu(im_button, cols);
-      g_strfreev(cols);
-    }
-    i++;
-  }
-  g_free(charset);
-}
-
-static void
 helper_toolbar_check_custom()
 {
   guint i;
@@ -838,10 +771,6 @@ helper_toolbar_parse_helper_str(GtkWidget *widget, gchar *str)
       helper_toolbar_prop_list_update(widget, lines);
     else if (!strcmp("prop_label_update", lines[0]))
       helper_toolbar_prop_label_update(widget, lines);
-    else if (!strcmp("focus_in", lines[0]))
-      uim_toolbar_get_im_list();
-    else if (g_str_has_prefix(lines[0], "im_list"))
-      helper_toolbar_im_list_update(widget, lines);
     else if (!strcmp("custom_reload_notify", lines[0])) {
       uim_prop_reload_configs();
       helper_toolbar_check_custom();
@@ -1002,7 +931,6 @@ toolbar_new(gint type)
 {
   GtkWidget *button;
   GtkWidget *hbox;
-  GtkWidget *img;
   GList *prop_buttons = NULL;
   GtkSizeGroup *sg;
 
@@ -1016,24 +944,13 @@ toolbar_new(gint type)
   right_click_menu = right_click_menu_create();
   sg = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
   
-  /* IM menu button */
-  button = gtk_button_new();
-  img = gtk_image_new_from_stock("uim-icon", GTK_ICON_SIZE_MENU);
-  gtk_container_add(GTK_CONTAINER(button), img);
-  gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
-  gtk_size_group_add_widget(sg, button);
-  gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
-  g_signal_connect(G_OBJECT(button), "button-press-event",
-		   G_CALLBACK(button_pressed), hbox);
-  g_object_set_data(G_OBJECT(button), OBJECT_DATA_BUTTON_TYPE, BUTTON_IM);
-  g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_IM_BUTTON, button);
-
   /* prop menu button */
   button = gtk_button_new_with_label(" x");
   gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
+  gtk_size_group_add_widget(sg, button);
   g_signal_connect(G_OBJECT(button), "button-press-event",
 		   G_CALLBACK(button_pressed), hbox);
-  gtk_box_pack_start(GTK_BOX(hbox), button, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
   g_object_set_data(G_OBJECT(button), OBJECT_DATA_BUTTON_TYPE,
 		    GINT_TO_POINTER(BUTTON_PROP));
 
