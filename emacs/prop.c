@@ -118,6 +118,7 @@ int
 show_prop(property *prop)
 {
   char *buf;
+  char *head, *tail;
   char *p[4];
   
   /* output new prop_list for Emacs */
@@ -134,25 +135,32 @@ show_prop(property *prop)
   buf = (char *)malloc(strlen(prop->list) + 1);
   strcpy(buf, prop->list);
 
-  p[0] = buf;
+  head = buf;
 
-  while (p[0] && *p[0]) { 
+  while (head && *head) { 
 
-	p[1] = strchr(p[0], '\n');
+	/* 
+	 * head: beginning of each line
+	 * tail: end of each line 
+	 * p[n]: token
+	 */
+	tail = strchr(head, '\n');
 
-	if (p[1]) 
-	  *p[1] = '\0';
+	if (tail)
+	  *tail = '\0';
 	else
 	  break;
 
-	/* p[0] always not equal NULL */
-	if (strlen(p[0]) >= 6 && strncmp(p[0], "branch", 6) == 0) {
-	  if ((p[2] = strchr(p[0], '\t')) && (p[3] = strchr(p[2] + 1, '\t'))) {
-		*p[2] = *p[3] = '\0';
-		a_printf(" ( \"%s\" \"%s\" ) ", p[2] + 1, p[3] + 1);
+	/* head always not equal NULL */
+	if (strlen(head) >= 6 && strncmp(head, "branch", 6) == 0) {
+	  if ((p[0] = strchr(head, '\t')) 
+		  && (p[1] = strchr(p[0] + 1, '\t'))
+		  && (p[2] = strchr(p[1] + 1, '\t'))) {
+		*p[0] = *p[1] = *p[2] = '\0';
+		a_printf(" ( \"%s\" \"%s\" \"%s\" ) ", p[0] + 1, p[1] + 1, p[2] + 1);
 	  }
 	}
-	p[0] = p[1] + 1;
+	head = tail + 1;
   }
 
   free(buf);

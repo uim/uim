@@ -576,26 +576,14 @@
 ;; Update property label
 ;;
 (defun uim-update-label (label)
-  ;; label: ( ("label_abbr"  "label") ... )
-  (let (label1 label2 mode-str)
-    ;; current IM engine name
-    (setq label1 (car label))
-    (setq label (cdr label))
-
-    (when label
-      (setq label2 (car label)))
-
-    ;; Update mode-line string to "label1 label2".
-    (setq mode-str (format "%s" (car label1)))
-
-    (if label2 
-	(setq mode-str (concat mode-str (format "%s" (car label2)))))
-
+  ;; label: ( ("indication_id" "iconic_label"  "buttontooltip_string") ... )
+  (let ((mode-str ""))
+    (mapcar
+     '(lambda (x)
+	(setq mode-str (concat mode-str (nth 1 x))))
+     label)
     (setq uim-mode-line-string 
-	  (format " U %s[%s]" uim-current-im-engine mode-str))
-
-
-    )
+	  (format " U %s[%s]" uim-current-im-engine mode-str)))
   )
 
 
